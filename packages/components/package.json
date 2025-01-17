@@ -1,0 +1,13 @@
+{
+  "name": "@xihan-ui/components",
+  "version": "0.0.5",
+  "description": "all components are settled here",
+  "main": "index.ts",
+  "module": "index.ts",
+  "unpkg": "index.js",
+  "jsdelivr": "index.js",
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "types": "index.d.ts"
+}
