@@ -1,0 +1,50 @@
+{
+  "name": "xihan-ui",
+  "private": true,
+  "title": "XiHan UI",
+  "version": "1.0.0",
+  "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
+  "license": "MIT",
+  "homepage": "https://ui.xihanfun.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/XiHanFun/XiHan.UI"
+  },
+  "bugs": {
+    "url": "https://github.com/XiHanFun/XiHan.UI/issues"
+  },
+  "keywords": [
+    "xihan",
+    "component",
+    "components",
+    "framework",
+    "ui",
+    "vue"
+  ],
+  "author": "zhaifanhua",
+  "scripts": {
+    "bootstrap": "pnpm install",
+    "dev": "vite dev",
+    "debug": "vite dev --debug",
+    "preview": "vite preview",
+    "build": "vite build",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,vue,css,scss,less,json,md}\"",
+    "lint-fix": "eslint --fix src/",
+    "update-pkg": "ncu -u",
+    "cache-verify": "npm cache verify",
+    "clean-lock": "node ./scripts/clean-lock.js",
+    "clean-modules": "node ./scripts/clean-modules.js",
+    "clean-build": "node ./scripts/clean-dist.js",
+    "clean-node": "pnpm run clean-lock && pnpm run clean-modules",
+    "reinstall": "pnpm run clean-node && pnpm run bootstrap",
+    "rebuild": "pnpm run clean-build && pnpm run build"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.7",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
+  }
+}
