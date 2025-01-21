@@ -2,7 +2,7 @@
   "name": "xihan-ui",
   "private": true,
   "title": "XiHan UI",
-  "version": "1.0.0",
+  "version": "0.8.9",
   "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
