@@ -1,9 +1,7 @@
 {
   "name": "xihan-ui",
-  "private": true,
-  "type": "module",
-  "title": "XiHan UI",
   "version": "0.8.9",
+  "private": true,
   "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -16,13 +14,17 @@
   },
   "keywords": [
     "xihan",
-    "component",
     "components",
     "framework",
     "ui",
     "vue"
   ],
-  "author": "zhaifanhua",
+  "author": {
+    "name": "zhaifanhua",
+    "email": "me@zhaifanhua.com",
+    "url": "https://www.zhaifanhua.com"
+  },
+  "type": "module",
   "scripts": {
     "bootstrap": "pnpm install",
     "dev": "vite dev",
@@ -45,11 +47,12 @@
   "peerDependencies": {
     "vue": "^3.5.0"
   },
-  "devDependencies": {
-    "vite": "^6.1.0",
-    "vue": "^3.5.13",
-    "vue-router": "^4.5.0",
-    "vitest": "^3.0.5"
+  "dependencies": {
+    "@xihan-ui/utils": "workspace:*",
+    "@xihan-ui/components": "workspace:*",
+    "@xihan-ui/constants": "workspace:*",
+    "@xihan-ui/directives": "workspace:*",
+    "@xihan-ui/themes": "workspace:*"
   },
   "workspaces": [
     "packages/*"
