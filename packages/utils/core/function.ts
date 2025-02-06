@@ -60,3 +60,94 @@ export const throttle = <T extends (...args: any[]) => any>(
     }
   };
 };
+
+/**
+ * 函数重试
+ *
+ * @param fn 要重试的函数
+ * @param options 重试选项
+ * @returns 返回重试后的结果
+ */
+export const retry = async <T>(
+  fn: () => Promise<T>,
+  options: {
+    maxAttempts?: number;
+    delay?: number;
+    onRetry?: (attempt: number, error: any) => void;
+  } = {}
+): Promise<T> => {
+  const { maxAttempts = 3, delay = 1000, onRetry } = options;
+  let attempt = 1;
+
+  while (attempt <= maxAttempts) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (attempt === maxAttempts) throw error;
+      if (onRetry) onRetry(attempt, error);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      attempt++;
+    }
+  }
+
+  throw new Error("Max retry attempts reached");
+};
+
+/**
+ * 函数缓存
+ *
+ * @param fn 要缓存的函数
+ * @param options 缓存选项
+ * @returns 返回缓存后的函数
+ */
+export const memoize = <T extends (...args: any[]) => any>(
+  fn: T,
+  options: {
+    maxSize?: number;
+    ttl?: number;
+  } = {}
+): T => {
+  const { maxSize = 1000, ttl } = options;
+  const cache = new Map<string, { value: any; timestamp: number }>();
+
+  return function (this: any, ...args: Parameters<T>) {
+    const key = JSON.stringify(args);
+    const now = Date.now();
+    const cached = cache.get(key);
+
+    if (cached && (!ttl || now - cached.timestamp < ttl)) {
+      return cached.value;
+    }
+
+    const result = fn.apply(this, args);
+    cache.set(key, { value: result, timestamp: now });
+
+    if (cache.size > maxSize) {
+      const firstKey = cache.keys().next().value;
+      if (firstKey) {
+        cache.delete(firstKey);
+      }
+    }
+
+    return result;
+  } as T;
+};
+
+/**
+ * 异步函数超时控制
+ *
+ * @param promise 要超时的异步函数
+ * @param ms 超时时间（毫秒）
+ * @param error 超时错误
+ * @returns 返回超时后的结果
+ */
+export const timeout = <T>(promise: Promise<T>, ms: number, error = new Error("Operation timed out")): Promise<T> => {
+  let timeoutId: number;
+
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) => {
+      timeoutId = window.setTimeout(() => reject(error), ms);
+    }),
+  ]).finally(() => clearTimeout(timeoutId));
+};

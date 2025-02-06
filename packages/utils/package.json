@@ -8,6 +8,7 @@
     "browser",
     "format",
     "security",
+    "css",
     "core"
   ],
   "author": "zhaifanhua",
@@ -22,21 +23,8 @@
     "README.md"
   ],
   "sideEffects": false,
-  "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
-    "test": "vitest",
-    "coverage": "vitest run --coverage",
-    "typecheck": "tsc --noEmit"
-  },
   "peerDependencies": {
     "vue": "^3.5.0"
-  },
-  "devDependencies": {
-    "tsup": "^8.0.0",
-    "typescript": "^5.0.0",
-    "vitest": "^3.0.0",
-    "@types/node": "^20.0.0"
   },
   "publishConfig": {
     "access": "public",

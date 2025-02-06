@@ -58,3 +58,91 @@ export const getType = (obj: any): string => {
 export const isEmpty = (obj: any): boolean => {
   return Object.keys(obj).length === 0;
 };
+
+/**
+ * 深度合并
+ *
+ * @param target 目标对象
+ * @param sources 源对象数组
+ * @returns 合并后的目标对象
+ */
+export const deepMerge = <T extends Record<string, any>>(target: T, ...sources: Partial<T>[]): T => {
+  if (!sources.length) return target;
+  const source = sources.shift();
+
+  if (isObject(target) && isObject(source)) {
+    Object.keys(source).forEach(key => {
+      if (isObject(source[key])) {
+        if (!target[key]) Object.assign(target, { [key]: {} });
+        deepMerge(target[key], source[key]);
+      } else {
+        Object.assign(target, { [key]: source[key] });
+      }
+    });
+  }
+
+  return deepMerge(target, ...sources);
+};
+
+/**
+ * 对象路径获取
+ *
+ * @param obj 需要获取路径的对象
+ * @param path 路径字符串或字符串数组
+ * @param defaultValue 默认值
+ * @returns 获取到的值或默认值
+ */
+export const get = (obj: any, path: string | string[], defaultValue?: any): any => {
+  const pathStr = Array.isArray(path) ? path.join(".") : path;
+  const travel = (regexp: RegExp) =>
+    pathStr
+      .split(regexp)
+      .filter(Boolean)
+      .reduce((res, key) => (res !== null && res !== undefined ? res[key] : res), obj);
+
+  const result = travel(/[,[\]]+?/) || travel(/[,[\].]+?/);
+  return result === undefined || result === obj ? defaultValue : result;
+};
+
+/**
+ * 对象路径设置
+ *
+ * @param obj 需要设置路径的对象
+ * @param path 路径字符串或字符串数组
+ * @param value 要设置的值
+ * @returns 设置后的对象
+ */
+export const set = (obj: any, path: string | string[], value: any): any => {
+  if (Object(obj) !== obj) return obj;
+  const keys = !Array.isArray(path) ? path.toString().match(/[^.[\]]+/g) ?? [] : path;
+
+  keys.slice(0, -1).reduce((a, c, i) => {
+    if (Object(a[c]) === a[c]) {
+      return a[c];
+    } else {
+      a[c] = Math.abs(Number(keys[i + 1])) >> 0 === +keys[i + 1] ? [] : {};
+      return a[c];
+    }
+  }, obj)[keys[keys.length - 1]] = value;
+
+  return obj;
+};
+
+/**
+ * 对象扁平化
+ *
+ * @param obj 需要扁平化的对象
+ * @param prefix 前缀
+ * @returns 扁平化后的对象
+ */
+export const flattenObject = (obj: Record<string, any>, prefix = ""): Record<string, any> => {
+  return Object.keys(obj).reduce((acc, k) => {
+    const pre = prefix.length ? prefix + "." : "";
+    if (isObject(obj[k])) {
+      Object.assign(acc, flattenObject(obj[k], pre + k));
+    } else {
+      acc[pre + k] = obj[k];
+    }
+    return acc;
+  }, {} as Record<string, any>);
+};
