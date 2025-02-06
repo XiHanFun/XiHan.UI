@@ -7,6 +7,9 @@ type ButtonType = "default" | "primary" | "success" | "warning" | "danger";
 // 按钮尺寸
 type ButtonSize = "small" | "medium" | "large";
 
+// 导出 props 类型
+export type ButtonProps = typeof buttonProps;
+
 export const buttonProps = {
   // 按钮类型
   type: {

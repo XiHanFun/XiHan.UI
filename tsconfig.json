@@ -1,8 +1,23 @@
 {
   "compilerOptions": {
+    "composite": true,
+    "target": "ES6",
     "jsx": "preserve",
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment",
-    "lib": ["ES2015", "DOM"]
+    "lib": ["ESNext", "DOM"],
+    "module": "ES6",
+    "moduleResolution": "Node",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["packages/*"]
+    },
+    "strict": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true
   }
 }
