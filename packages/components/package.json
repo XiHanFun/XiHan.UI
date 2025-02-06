@@ -1,6 +1,6 @@
 {
   "name": "@xihan-ui/components",
-  "version": "0.0.5",
+  "version": "0.8.9",
   "description": "all components are settled here",
   "main": "index.ts",
   "module": "index.ts",
@@ -9,5 +9,8 @@
   "peerDependencies": {
     "vue": "^3.5.0"
   },
-  "types": "index.d.ts"
+  "types": "index.d.ts",
+  "dependencies": {
+    "vue": "^3.5.0"
+  }
 }
