@@ -11,7 +11,7 @@
     "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["packages/*"]
+      "@xihan-ui/*": ["packages/*"]
     },
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
