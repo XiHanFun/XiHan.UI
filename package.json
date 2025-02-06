@@ -40,8 +40,7 @@
     "clean-build": "node ./scripts/clean-dist.js",
     "clean-node": "pnpm run clean-lock && pnpm run clean-modules",
     "reinstall": "pnpm run clean-node && pnpm run bootstrap",
-    "rebuild": "pnpm run clean-build && pnpm run build",
-    "clean": "node scripts/clean-modules.js"
+    "rebuild": "pnpm run clean-build && pnpm run build"
   },
   "peerDependencies": {
     "vue": "^3.5.0"
