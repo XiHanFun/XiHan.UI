@@ -28,6 +28,9 @@
     "debug": "vite dev --debug",
     "preview": "vite preview",
     "build": "vite build",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "coverage": "vitest run --coverage",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,vue,css,scss,less,json,md}\"",
     "lint-fix": "eslint --fix src/",
     "update-pkg": "ncu -u",
@@ -43,8 +46,11 @@
     "vue": "^3.5.0"
   },
   "devDependencies": {
-    "vite": "^6.0.7",
+    "vite": "^6.1.0",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.0",
+    "@vue/test-utils": "^2.4.6",
+    "vitest": "^3.0.5",
+    "happy-dom": "^17.0.0"
   }
 }

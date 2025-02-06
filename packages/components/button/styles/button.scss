@@ -1,0 +1,140 @@
+@use "../../../styles/mixins" as *;
+@use "../../../styles/vars" as *;
+
+// 添加按钮点击波纹动画
+@keyframes button-ripple {
+  to {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+// 添加加载动画
+@keyframes button-loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.xh-button {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  color: var(--xh-button-text-color);
+  background: var(--xh-button-bg-color);
+  border: var(--xh-border-width) solid var(--xh-button-border-color);
+  border-radius: var(--xh-border-radius);
+  padding: 12px 20px;
+  font-size: var(--xh-font-size);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  overflow: hidden; // 为波纹效果添加溢出隐藏
+
+  // 添加悬浮效果
+  &:not(.is-disabled):not(.is-loading):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  // 添加点击效果
+  &:not(.is-disabled):not(.is-loading):active {
+    transform: translateY(1px);
+  }
+
+  // 波纹效果
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: scale(0);
+    opacity: 1;
+    pointer-events: none;
+  }
+
+  &:not(.is-disabled):not(.is-loading):active::after {
+    animation: button-ripple 0.6s ease-out;
+  }
+
+  // 加载中动画
+  &__loading-icon {
+    position: relative;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+    vertical-align: middle;
+
+    &::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 2px solid currentColor;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: button-loading 0.8s infinite linear;
+    }
+  }
+
+  // 内容过渡动画
+  &__content {
+    transition: opacity 0.2s;
+    .is-loading & {
+      opacity: 0.7;
+    }
+  }
+
+  // 禁用状态
+  &.is-disabled,
+  &.is-loading {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  // 尺寸
+  &--small {
+    padding: 8px 16px;
+    font-size: var(--xh-font-size-sm);
+  }
+
+  &--large {
+    padding: 14px 24px;
+    font-size: var(--xh-font-size-lg);
+  }
+
+  // 类型样式
+  &--primary {
+    --xh-button-bg-color: var(--xh-primary-color);
+    --xh-button-text-color: var(--xh-white);
+    --xh-button-border-color: var(--xh-primary-color);
+
+    &.is-plain {
+      --xh-button-bg-color: var(--xh-white);
+      --xh-button-text-color: var(--xh-primary-color);
+    }
+  }
+
+  // 其他类型样式类似...
+
+  // 圆角和圆形
+  &.is-round {
+    border-radius: var(--xh-border-radius-round);
+  }
+
+  &.is-circle {
+    border-radius: 50%;
+    padding: 12px;
+  }
+}
