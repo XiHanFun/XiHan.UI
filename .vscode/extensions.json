@@ -1,0 +1,17 @@
+{
+  "recommendations": [
+    "mikestead.dotenv",
+    "cschlosser.doxdocgen",
+    "dbaeumer.vscode-eslint",
+    "ms-ceintl.vscode-language-pack-zh-hans",
+    "lokalise.i18n-ally",
+    "esbenp.prettier-vscode",
+    "stylelint.vscode-stylelint",
+    "pkief.material-icon-theme",
+    "syler.sass-indented",
+    "mrmlnc.vscode-scss",
+    "antfu.iconify",
+    "streetsidesoftware.code-spell-checker",
+    "heybourn.headwind"
+  ]
+}
