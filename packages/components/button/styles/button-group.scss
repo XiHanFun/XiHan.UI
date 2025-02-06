@@ -1,0 +1,49 @@
+.xh-button-group {
+  display: inline-flex;
+  vertical-align: middle;
+
+  & > .xh-button {
+    position: relative;
+
+    // 移除相邻按钮的重叠边框
+    &:not(:first-child) {
+      margin-left: -1px;
+    }
+
+    // 圆角处理
+    &:first-child {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    &:last-child {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    &:not(:first-child):not(:last-child) {
+      border-radius: 0;
+    }
+
+    // 悬浮状态时提升层级
+    &:hover,
+    &:focus,
+    &:active {
+      z-index: 1;
+    }
+
+    // 禁用状态不改变层级
+    &.is-disabled {
+      z-index: 0;
+    }
+  }
+}
+
+// 修改按钮组中按钮的样式
+.xh-button.is-in-group {
+  &.is-plain {
+    &:not(:first-child) {
+      border-left-color: var(--xh-button-border-color);
+    }
+  }
+}
