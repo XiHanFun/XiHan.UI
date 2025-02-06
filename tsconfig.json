@@ -2,16 +2,20 @@
   "compilerOptions": {
     "composite": true,
     "target": "ES6",
+    "noEmit": true,
     "jsx": "preserve",
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment",
     "lib": ["ESNext", "DOM"],
     "module": "ES6",
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
       "@/*": ["packages/*"]
     },
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "types": ["vue"],
     "strict": true,
     "strictNullChecks": true,
     "noImplicitAny": true,

@@ -1,6 +1,7 @@
 {
   "name": "xihan-ui",
   "private": true,
+  "type": "module",
   "title": "XiHan UI",
   "version": "0.8.9",
   "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
@@ -39,7 +40,8 @@
     "clean-build": "node ./scripts/clean-dist.js",
     "clean-node": "pnpm run clean-lock && pnpm run clean-modules",
     "reinstall": "pnpm run clean-node && pnpm run bootstrap",
-    "rebuild": "pnpm run clean-build && pnpm run build"
+    "rebuild": "pnpm run clean-build && pnpm run build",
+    "clean": "node scripts/clean-modules.js"
   },
   "peerDependencies": {
     "vue": "^3.5.0"
@@ -47,11 +49,10 @@
   "devDependencies": {
     "vite": "^6.1.0",
     "vue": "^3.5.13",
-    "@vitejs/plugin-vue": "^5.0.0",
-    "@vitejs/plugin-vue-jsx": "^5.0.0",
     "vue-router": "^4.5.0",
-    "@vue/test-utils": "^2.4.6",
-    "vitest": "^3.0.5",
-    "happy-dom": "^17.0.0"
-  }
+    "vitest": "^3.0.5"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }
