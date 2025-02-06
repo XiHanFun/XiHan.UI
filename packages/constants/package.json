@@ -1,20 +1,20 @@
 {
-  "name": "@xihan-ui/components",
+  "name": "@xihan-ui/constants",
   "version": "0.8.9",
-  "description": "all components are settled here",
+  "description": "all constants are settled here",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
   "repository": {
     "type": "git",
     "url": "https://github.com/XiHanFun/XiHan.UI",
-    "directory": "packages/components"
+    "directory": "packages/constants"
   },
   "bugs": {
     "url": "https://github.com/XiHanFun/XiHan.UI/issues"
   },
   "keywords": [
     "xihan",
-    "components",
+    "constants",
     "framework",
     "ui",
     "vue"
