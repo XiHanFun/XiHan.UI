@@ -9,9 +9,8 @@ export { Button, ButtonGroup };
 export type { ButtonProps } from "./button/src/Button";
 
 // 批量注册组件
-export default {
-  install(app: App) {
-    app.component(Button.name, Button);
-    app.component(ButtonGroup.name, ButtonGroup);
-  },
+export const install = (app: App) => {
+  app.component(Button.name as string, Button);
+  app.component(ButtonGroup.name as string, ButtonGroup);
+  // ... 其他组件
 };
