@@ -1,12 +1,10 @@
-import { defineComponent, provide, h } from "vue";
+import { defineComponent, provide } from "vue";
 import type { InjectionKey } from "vue";
 
-export const buttonGroupContextKey: InjectionKey<{ size?: string }> = Symbol(
-  "buttonGroupContextKey"
-);
+export const buttonGroupContextKey: InjectionKey<{ size?: string }> = Symbol("buttonGroupContextKey");
 
 export default defineComponent({
-  name: "XhButtonGroup",
+  name: "XhButtonGroup" as const,
 
   props: {
     // 统一设置按钮组内按钮的尺寸
