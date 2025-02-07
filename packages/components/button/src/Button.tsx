@@ -1,4 +1,4 @@
-import { computed, defineComponent, inject, h } from "vue";
+import { computed, defineComponent, inject } from "vue";
 import type { PropType } from "vue";
 import { buttonGroupContextKey } from "./ButtonGroup";
 
@@ -41,7 +41,7 @@ export const buttonProps = {
 };
 
 export default defineComponent({
-  name: "XhButton",
+  name: "XhButton" as const,
 
   props: buttonProps,
 

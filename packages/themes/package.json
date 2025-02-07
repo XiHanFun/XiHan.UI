@@ -1,6 +1,6 @@
 {
   "name": "@xihan-ui/themes",
-  "version": "0.8.9",
+  "version": "0.8.10",
   "description": "all themes are settled here",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -24,5 +24,14 @@
     "email": "me@zhaifanhua.com",
     "url": "https://www.zhaifanhua.com"
   },
-  "type": "module"
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ]
 }
