@@ -1,0 +1,24 @@
+// 亮色主题变量
+:root[data-theme="light"] {
+  // 主色
+  --xh-primary-color: #409eff;
+  --xh-success-color: #67c23a;
+  --xh-warning-color: #e6a23c;
+  --xh-danger-color: #f56c6c;
+
+  // 背景色
+  --xh-bg-color: #ffffff;
+  --xh-bg-color-light: #f5f7fa;
+
+  // 文字颜色
+  --xh-text-color: #303133;
+  --xh-text-color-light: #606266;
+
+  // 边框颜色
+  --xh-border-color: #dcdfe6;
+
+  // 按钮颜色
+  --xh-button-text-color: #606266;
+  --xh-button-bg-color: #ffffff;
+  --xh-button-border-color: #dcdfe6;
+}

@@ -1,0 +1,42 @@
+// 颜色系统
+$colors: (
+  "primary": #409eff,
+  "success": #67c23a,
+  "warning": #e6a23c,
+  "danger": #f56c6c,
+  "info": #909399,
+  "white": #ffffff,
+  "black": #000000,
+);
+
+// 字体大小
+$font-sizes: (
+  "xs": 12px,
+  "sm": 14px,
+  "base": 16px,
+  "lg": 18px,
+  "xl": 20px,
+);
+
+// 间距
+$spacings: (
+  "xs": 4px,
+  "sm": 8px,
+  "base": 12px,
+  "lg": 16px,
+  "xl": 24px,
+);
+
+// 圆角
+$border-radius: (
+  "none": 0,
+  "sm": 2px,
+  "base": 4px,
+  "lg": 8px,
+  "round": 20px,
+  "circle": 50%,
+);
+
+// 动画
+$transition-duration: 0.3s;
+$transition-timing: cubic-bezier(0.4, 0, 0.2, 1);

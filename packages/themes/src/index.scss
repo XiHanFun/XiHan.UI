@@ -1,0 +1,36 @@
+// 导入变量
+@use "./variables.scss" as *;
+@use "./themes/light.scss";
+@use "./themes/dark.scss";
+
+// 基础样式
+:root {
+  // 主色
+  --xh-primary-color: #409eff;
+  --xh-success-color: #67c23a;
+  --xh-warning-color: #e6a23c;
+  --xh-danger-color: #f56c6c;
+
+  // 文字
+  --xh-font-size: 14px;
+  --xh-font-size-sm: 12px;
+  --xh-font-size-lg: 16px;
+
+  // 边框
+  --xh-border-width: 1px;
+  --xh-border-radius: 4px;
+  --xh-border-radius-round: 20px;
+
+  // 按钮
+  --xh-button-text-color: #606266;
+  --xh-button-bg-color: #ffffff;
+  --xh-button-border-color: #dcdfe6;
+
+  // 主题切换动画
+  --xh-transition-theme: background-color 0.3s, border-color 0.3s, color 0.3s;
+}
+
+// 全局主题过渡动画
+* {
+  transition: var(--xh-transition-theme);
+}
