@@ -1,5 +1,5 @@
-@use "../../../styles/mixins" as *;
-@use "../../../styles/vars" as *;
+@use "@xihan-ui/themes/src/mixins" as *;
+@use "@xihan-ui/themes/src/variables" as *;
 
 // 添加按钮点击波纹动画
 @keyframes button-ripple {
@@ -33,38 +33,17 @@
   border-radius: var(--xh-border-radius);
   padding: 12px 20px;
   font-size: var(--xh-font-size);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: var(--xh-transition-theme), filter 0.2s ease-in-out;
   user-select: none;
-  overflow: hidden; // 为波纹效果添加溢出隐藏
 
   // 添加悬浮效果
   &:not(.is-disabled):not(.is-loading):hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    filter: brightness(0.9);
   }
 
   // 添加点击效果
   &:not(.is-disabled):not(.is-loading):active {
-    transform: translateY(1px);
-  }
-
-  // 波纹效果
-  &::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    transform: scale(0);
-    opacity: 1;
-    pointer-events: none;
-  }
-
-  &:not(.is-disabled):not(.is-loading):active::after {
-    animation: button-ripple 0.6s ease-out;
+    filter: brightness(0.8);
   }
 
   // 加载中动画
@@ -121,12 +100,43 @@
     --xh-button-border-color: var(--xh-primary-color);
 
     &.is-plain {
-      --xh-button-bg-color: var(--xh-white);
+      --xh-button-bg-color: var(--xh-bg-color);
       --xh-button-text-color: var(--xh-primary-color);
     }
   }
 
-  // 其他类型样式类似...
+  &--success {
+    --xh-button-bg-color: var(--xh-success-color);
+    --xh-button-text-color: var(--xh-white);
+    --xh-button-border-color: var(--xh-success-color);
+
+    &.is-plain {
+      --xh-button-bg-color: var(--xh-white);
+      --xh-button-text-color: var(--xh-success-color);
+    }
+  }
+
+  &--warning {
+    --xh-button-bg-color: var(--xh-warning-color);
+    --xh-button-text-color: var(--xh-white);
+    --xh-button-border-color: var(--xh-warning-color);
+
+    &.is-plain {
+      --xh-button-bg-color: var(--xh-white);
+      --xh-button-text-color: var(--xh-warning-color);
+    }
+  }
+
+  &--danger {
+    --xh-button-bg-color: var(--xh-danger-color);
+    --xh-button-text-color: var(--xh-white);
+    --xh-button-border-color: var(--xh-danger-color);
+
+    &.is-plain {
+      --xh-button-bg-color: var(--xh-white);
+      --xh-button-text-color: var(--xh-danger-color);
+    }
+  }
 
   // 圆角和圆形
   &.is-round {
@@ -136,5 +146,30 @@
   &.is-circle {
     border-radius: 50%;
     padding: 12px;
+  }
+
+  // 块级按钮
+  &.is-block {
+    display: flex;
+    width: 100%;
+  }
+
+  // 图标
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 4px;
+    font-size: 1em;
+
+    .icon-placement--right & {
+      margin-right: 0;
+      margin-left: 4px;
+      order: 1;
+    }
+  }
+
+  // 圆形按钮特殊处理
+  &.is-circle &__icon {
+    margin: 0;
   }
 }
