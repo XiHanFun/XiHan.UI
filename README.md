@@ -6,8 +6,6 @@
 
 Xihan ui repository. Fast, lightweight, efficient, and dedicated component library.Built on Vue.
 
-
-
 affix
 
 alert
