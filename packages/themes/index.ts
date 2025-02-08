@@ -8,6 +8,8 @@ export const useTheme = (theme: string) => {
   // 主题切换逻辑
 };
 
+export * from "./src/icons";
+
 export default {
   useTheme,
 };

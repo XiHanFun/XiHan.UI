@@ -2,6 +2,7 @@
 @use "./variables.scss" as *;
 @use "./themes/light.scss";
 @use "./themes/dark.scss";
+@use "./styles/icons.scss";
 
 // 基础样式
 :root {
