@@ -1,0 +1,53 @@
+.xh-icon {
+  display: inline-block;
+  vertical-align: middle;
+  transition: all 0.3s;
+
+  // 主题变体
+  &--outline {
+    fill: none;
+  }
+
+  &--filled {
+    fill: currentColor;
+    stroke: none;
+  }
+
+  &--two-tone {
+    .primary-color {
+      fill: currentColor;
+    }
+    .secondary-color {
+      fill: var(--xh-icon-secondary-color, #e6e6e6);
+    }
+  }
+
+  // 状态
+  &.is-spinning {
+    animation: icon-spin 1s infinite linear;
+  }
+
+  &.is-clickable {
+    cursor: pointer;
+    &:hover {
+      opacity: 0.8;
+    }
+    &:active {
+      opacity: 0.6;
+    }
+  }
+
+  &.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+@keyframes icon-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
