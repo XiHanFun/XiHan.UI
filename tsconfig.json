@@ -1,32 +1,27 @@
 {
   "compilerOptions": {
-    "composite": true,
-    "target": "ES6",
-    "noEmit": true,
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "strict": true,
     "jsx": "preserve",
-    "jsxFactory": "h",
-    "jsxFragmentFactory": "Fragment",
     "jsxImportSource": "vue",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
-    "module": "ES6",
-    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@xihan-ui/*": ["packages/*"]
+      "@xihan-ui/*": ["packages/*"],
+      "@xihan-ui/playground/*": ["playground/*"],
+      "xihan-ui": ["packages/xihan-ui"]
     },
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "types": ["vue"],
-    "strict": true,
-    "declaration": true,
-    "declarationDir": "dist",
-    "emitDeclarationOnly": true,
-    "strictNullChecks": true,
-    "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "types": ["vite/client", "vue", "@vue/runtime-core"]
   },
-  "include": ["packages", "packages/**/*.{ts,tsx,vue}", "packages/**/*.d.ts"],
+  "include": ["packages", "packages/**/*.ts", "packages/**/*.d.ts", "packages/**/*.tsx", "packages/**/*.vue"],
   "exclude": ["node_modules", "dist"]
 }

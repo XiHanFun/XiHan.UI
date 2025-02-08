@@ -1,5 +1,5 @@
 {
-  "name": "@xihan-ui/constants",
+  "name": "@xihan-ui/locales",
   "version": "0.8.12",
   "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
   "license": "MIT",
@@ -7,7 +7,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/XiHanFun/XiHan.UI",
-    "directory": "packages/constants"
+    "directory": "packages/locales"
   },
   "bugs": {
     "url": "https://github.com/XiHanFun/XiHan.UI/issues"
@@ -15,7 +15,7 @@
   "keywords": [
     "xihan",
     "ui",
-    "constants"
+    "locales"
   ],
   "author": {
     "name": "zhaifanhua",

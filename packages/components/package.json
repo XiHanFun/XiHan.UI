@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/components",
-  "version": "0.8.10",
-  "description": "all components are settled here",
+  "version": "0.8.12",
+  "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
   "repository": {
@@ -14,10 +14,8 @@
   },
   "keywords": [
     "xihan",
-    "components",
-    "framework",
     "ui",
-    "vue"
+    "components"
   ],
   "author": {
     "name": "zhaifanhua",
@@ -25,13 +23,16 @@
     "url": "https://www.zhaifanhua.com"
   },
   "type": "module",
-  "publishConfig": {
-    "access": "public"
-  },
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
-  ]
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  }
 }
