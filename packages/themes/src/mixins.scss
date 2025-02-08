@@ -1,0 +1,24 @@
+@use "sass:map";
+@use "./variables" as *;
+
+// 颜色混入
+@mixin use-color($type, $alpha: 1) {
+  color: rgba(map.get($colors, $type), $alpha);
+}
+
+// 背景色混入
+@mixin use-bg-color($type, $alpha: 1) {
+  background-color: rgba(map.get($colors, $type), $alpha);
+}
+
+// 边框混入
+@mixin use-border($width: 1px, $style: solid, $color: #dcdfe6) {
+  border: $width $style $color;
+}
+
+// 过渡混入
+@mixin use-transition($properties...) {
+  transition-property: $properties;
+  transition-duration: $transition-duration;
+  transition-timing-function: $transition-timing;
+}
