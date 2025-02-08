@@ -1,3 +1,6 @@
+@use "@xihan-ui/themes/src/mixins" as *;
+@use "@xihan-ui/themes/src/variables" as *;
+
 .xh-button-group {
   display: inline-flex;
   vertical-align: middle;
@@ -35,6 +38,57 @@
     // 禁用状态不改变层级
     &.is-disabled {
       z-index: 0;
+    }
+  }
+
+  // 垂直按钮组
+  &.is-vertical {
+    flex-direction: column;
+
+    & > .xh-button {
+      &:not(:first-child) {
+        margin-left: 0;
+        margin-top: -1px;
+      }
+
+      &:first-child {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+
+      &:last-child {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+      }
+    }
+  }
+
+  // 圆角按钮组
+  &.is-round {
+    & > .xh-button {
+      &:first-child {
+        border-top-left-radius: var(--xh-border-radius-round);
+        border-bottom-left-radius: var(--xh-border-radius-round);
+      }
+
+      &:last-child {
+        border-top-right-radius: var(--xh-border-radius-round);
+        border-bottom-right-radius: var(--xh-border-radius-round);
+      }
+    }
+
+    &.is-vertical > .xh-button {
+      &:first-child {
+        border-top-left-radius: var(--xh-border-radius-round);
+        border-top-right-radius: var(--xh-border-radius-round);
+        border-bottom-radius: 0;
+      }
+
+      &:last-child {
+        border-bottom-left-radius: var(--xh-border-radius-round);
+        border-bottom-right-radius: var(--xh-border-radius-round);
+        border-top-radius: 0;
+      }
     }
   }
 }
