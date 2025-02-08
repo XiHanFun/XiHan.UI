@@ -1,0 +1,37 @@
+{
+  "name": "@xihan-ui/hooks",
+  "version": "0.8.12",
+  "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
+  "license": "MIT",
+  "homepage": "https://ui.xihanfun.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/XiHanFun/XiHan.UI",
+    "directory": "packages/hooks"
+  },
+  "bugs": {
+    "url": "https://github.com/XiHanFun/XiHan.UI/issues"
+  },
+  "keywords": [
+    "xihan",
+    "ui",
+    "hooks"
+  ],
+  "author": {
+    "name": "zhaifanhua",
+    "email": "me@zhaifanhua.com",
+    "url": "https://www.zhaifanhua.com"
+  },
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ]
+}
