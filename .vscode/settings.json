@@ -15,7 +15,6 @@
   // 翻译插件配置
   "commentTranslate.source": "Google",
   // 国际化插件配置
-
   "i18n-ally.localesPaths": ["packages/locales/lang"],
   "i18n-ally.enabledParsers": ["ts"],
   "i18n-ally.enabledFrameworks": ["vue", "vue-sfc"],
