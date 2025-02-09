@@ -26,10 +26,10 @@
   "workspaces": [
     "packages/*"
   ],
-  "packageManager": "pnpm@10.2.0",
+  "packageManager": "pnpm@10.2.1",
   "engines": {
-    "node": ">= 23",
-    "pnpm": ">= 10"
+    "node": "^23.7.0",
+    "pnpm": "^10.2.0"
   },
   "scripts": {
     "bootstrap": "pnpm install",
@@ -41,11 +41,11 @@
     "coverage": "vitest run --coverage",
     "format": "prettier --write \"src/**/*.{js,mjs,jsx,ts,mts,tsx,vue,css,scss,less,json,md}\"",
     "lint-fix": "eslint --fix src/",
-    "clean-lock": "pnpm node ./scripts/clean-lock.mjs",
-    "clean-modules": "pnpm node ./scripts/clean-modules.mjs",
+    "clean-lock": "node scripts/clean-lock.mjs",
+    "clean-modules": "node scripts/clean-modules.mjs",
     "clean-node": "pnpm run clean-lock && pnpm run clean-modules",
-    "clean-build": "pnpm node ./scripts/clean-dist.mjs",
-    "gen-version": "pnpm node ./scripts/gen-version.mjs",
+    "clean-build": "node scripts/clean-dist.mjs",
+    "gen-version": "node scripts/gen-version.mjs",
     "update-pkg": "ncu -u",
     "reinstall": "pnpm run clean-node && pnpm run bootstrap",
     "rebuild": "pnpm run clean-build && pnpm run build",
@@ -66,7 +66,7 @@
     "@xihan-ui/utils": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
+    "@types/node": "^22.13.1",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vitejs/plugin-vue-jsx": "^4.1.1",
     "typescript": "^5.7.3",
