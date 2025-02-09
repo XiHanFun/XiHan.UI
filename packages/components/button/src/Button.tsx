@@ -26,8 +26,12 @@ export const buttonProps = {
     default: "medium",
   },
   // 图标
-  icon: String,
+  icon: {
+    type: String as PropType<string>,
+    default: "",
+  },
   // 图标位置
+
   iconPlacement: {
     type: String as PropType<IconPlacement>,
     default: "left",
