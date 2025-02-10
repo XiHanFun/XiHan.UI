@@ -7,7 +7,7 @@ export const screenUtils = {
    *
    * @returns 返回屏幕尺寸
    */
-  getSize() {
+  getSize: () => {
     return {
       width: window.screen.width,
       height: window.screen.height,
@@ -22,9 +22,10 @@ export const screenUtils = {
    *
    * @returns 返回视口尺寸
    */
-  getViewport() {
+  getViewport: () => {
     return {
       width: window.innerWidth,
+
       height: window.innerHeight,
       scrollX: window.scrollX,
       scrollY: window.scrollY,
@@ -36,7 +37,7 @@ export const screenUtils = {
    *
    * @returns 返回是否为视网膜屏幕
    */
-  isRetina(): boolean {
+  isRetina: (): boolean => {
     return window.devicePixelRatio >= 2;
   },
 
@@ -46,7 +47,7 @@ export const screenUtils = {
    * @param element 需要检查的元素
    * @returns 返回是否在视口中
    */
-  isInViewport(element: Element): boolean {
+  isInViewport: (element: Element): boolean => {
     const rect = element.getBoundingClientRect();
     return rect.top >= 0 && rect.left >= 0 && rect.bottom <= window.innerHeight && rect.right <= window.innerWidth;
   },
@@ -57,7 +58,7 @@ export const screenUtils = {
    * @param callback 回调函数
    * @returns 返回取消监听的函数
    */
-  onOrientationChange(callback: (isPortrait: boolean) => void): () => void {
+  onOrientationChange: (callback: (isPortrait: boolean) => void): (() => void) => {
     const handler = () => {
       callback(window.innerHeight > window.innerWidth);
     };

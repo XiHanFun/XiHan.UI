@@ -8,7 +8,7 @@ export const mouseUtils = {
    * @param event 鼠标事件对象
    * @returns 返回鼠标相对于视口的坐标
    */
-  getPosition(event: MouseEvent) {
+  getPosition: (event: MouseEvent): { x: number; y: number } => {
     return {
       x: event.clientX,
       y: event.clientY,
@@ -21,7 +21,7 @@ export const mouseUtils = {
    * @param event 鼠标事件对象
    * @returns 返回鼠标相对于页面的坐标
    */
-  getPagePosition(event: MouseEvent) {
+  getPagePosition: (event: MouseEvent): { x: number; y: number } => {
     return {
       x: event.pageX,
       y: event.pageY,
@@ -35,7 +35,7 @@ export const mouseUtils = {
    * @param target 目标元素
    * @returns 返回鼠标相对于目标元素的坐标
    */
-  getRelativePosition(event: MouseEvent, target: Element) {
+  getRelativePosition: (event: MouseEvent, target: Element): { x: number; y: number } => {
     const rect = target.getBoundingClientRect();
     return {
       x: event.clientX - rect.left,
@@ -49,9 +49,9 @@ export const mouseUtils = {
    * @param callback 回调函数，接收鼠标位置参数
    * @returns 返回取消监听的函数
    */
-  onMouseMove(callback: (position: { x: number; y: number }) => void) {
+  onMouseMove: (callback: (position: { x: number; y: number }) => void) => {
     const handler = (event: MouseEvent) => {
-      callback(this.getPosition(event));
+      callback(mouseUtils.getPosition(event));
     };
     window.addEventListener("mousemove", handler);
     return () => window.removeEventListener("mousemove", handler);
@@ -63,7 +63,7 @@ export const mouseUtils = {
    * @param event 鼠标事件对象
    * @returns 返回是否为右键点击
    */
-  isRightClick(event: MouseEvent): boolean {
+  isRightClick: (event: MouseEvent): boolean => {
     return event.button === 2;
   },
 
@@ -73,7 +73,7 @@ export const mouseUtils = {
    * @param element 目标元素，默认为 document
    * @returns 返回取消阻止的函数
    */
-  preventRightClick(element: Element | Document = document) {
+  preventRightClick: (element: Element | Document = document) => {
     const handler = (event: Event) => (event as MouseEvent).preventDefault();
     element.addEventListener("contextmenu", handler);
     return () => element.removeEventListener("contextmenu", handler);
@@ -85,7 +85,7 @@ export const mouseUtils = {
    * @param event 鼠标事件对象
    * @returns 返回按下的按键名称
    */
-  getButton(event: MouseEvent): "left" | "middle" | "right" | "unknown" {
+  getButton: (event: MouseEvent): "left" | "middle" | "right" | "unknown" => {
     switch (event.button) {
       case 0:
         return "left";
@@ -106,7 +106,7 @@ export const mouseUtils = {
    * @param options 配置选项
    * @returns 返回取消监听的函数
    */
-  onDoubleClick(element: Element, callback: (event: MouseEvent) => void, options: AddEventListenerOptions = {}) {
+  onDoubleClick: (element: Element, callback: (event: MouseEvent) => void, options: AddEventListenerOptions = {}) => {
     const handler = (event: Event) => callback(event as MouseEvent);
     element.addEventListener("dblclick", handler, options);
     return () => element.removeEventListener("dblclick", handler);
@@ -120,9 +120,10 @@ export const mouseUtils = {
    * @param onLeave 鼠标离开回调
    * @returns 返回取消监听的函数
    */
-  onHover(element: Element, onEnter: (event: MouseEvent) => void, onLeave: (event: MouseEvent) => void) {
+  onHover: (element: Element, onEnter: (event: MouseEvent) => void, onLeave: (event: MouseEvent) => void) => {
     const handleEnter = (event: Event) => onEnter(event as MouseEvent);
     const handleLeave = (event: Event) => onLeave(event as MouseEvent);
+
     element.addEventListener("mouseenter", handleEnter);
     element.addEventListener("mouseleave", handleLeave);
     return () => {

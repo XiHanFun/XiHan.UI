@@ -7,7 +7,7 @@ export const historyUtils = {
    *
    * @returns 返回上一页
    */
-  back() {
+  back: () => {
     window.history.back();
   },
 
@@ -16,7 +16,7 @@ export const historyUtils = {
    *
    * @returns 前进下一页
    */
-  forward() {
+  forward: () => {
     window.history.forward();
   },
 
@@ -25,7 +25,7 @@ export const historyUtils = {
    *
    * @param delta 前进或后退的页面数量
    */
-  go(delta: number) {
+  go: (delta: number) => {
     window.history.go(delta);
   },
 
@@ -35,8 +35,15 @@ export const historyUtils = {
    * @param url 要添加的URL
    * @param state 可选参数，表示要添加的状态对象
    */
-  push(url: string, state?: any) {
+  push: (url: string, state?: any) => {
     window.history.pushState(state, "", url);
+  },
+
+  /**
+   * 删除当前历史记录
+   */
+  remove: () => {
+    window.history.go(-1);
   },
 
   /**
@@ -45,7 +52,7 @@ export const historyUtils = {
    * @param url 要替换的URL
    * @param state 可选参数，表示要替换的状态对象
    */
-  replace(url: string, state?: any) {
+  replace: (url: string, state?: any) => {
     window.history.replaceState(state, "", url);
   },
 };

@@ -5,7 +5,7 @@ export const fingerprintUtils = {
   /**
    * 获取基础设备信息
    */
-  getDeviceInfo() {
+  getDeviceInfo: () => {
     return {
       userAgent: navigator.userAgent,
       platform: navigator.platform,
@@ -21,13 +21,14 @@ export const fingerprintUtils = {
   /**
    * 获取浏览器功能支持信息
    */
-  getBrowserFeatures() {
+  getBrowserFeatures: () => {
     return {
       cookieEnabled: navigator.cookieEnabled,
       localStorageEnabled: !!window.localStorage,
       sessionStorageEnabled: !!window.sessionStorage,
       webGLEnabled: !!window.WebGLRenderingContext,
       webWorkersEnabled: !!window.Worker,
+
       serviceWorkersEnabled: !!navigator.serviceWorker,
       indexedDBEnabled: !!window.indexedDB,
       addBehaviorEnabled: !!(document.body && "addBehavior" in document.body),
@@ -39,7 +40,7 @@ export const fingerprintUtils = {
   /**
    * 获取已安装的字体列表（通过 canvas 检测）
    */
-  async getInstalledFonts(): Promise<string> {
+  getInstalledFonts: async (): Promise<string> => {
     const baseFonts = ["monospace", "sans-serif", "serif"];
     const testString = "mmmmmmmmmmlli";
     const testSize = "72px";
@@ -81,7 +82,7 @@ export const fingerprintUtils = {
   /**
    * 获取 Canvas 指纹
    */
-  getCanvasFingerprint(): string {
+  getCanvasFingerprint: (): string => {
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
     if (!context) return "";
@@ -104,12 +105,13 @@ export const fingerprintUtils = {
   /**
    * 获取音频指纹
    */
-  async getAudioFingerprint(): Promise<string> {
+  getAudioFingerprint: async (): Promise<string> => {
     try {
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
       const analyser = audioContext.createAnalyser();
       const gainNode = audioContext.createGain();
+
       const scriptProcessor = audioContext.createScriptProcessor(4096, 1, 1);
 
       gainNode.gain.value = 0; // 静音
@@ -137,13 +139,13 @@ export const fingerprintUtils = {
   /**
    * 生成设备指纹
    */
-  async generateFingerprint(): Promise<string> {
+  generateFingerprint: async (): Promise<string> => {
     const components = [
-      JSON.stringify(this.getDeviceInfo()),
-      JSON.stringify(this.getBrowserFeatures()),
-      this.getCanvasFingerprint(),
-      await this.getAudioFingerprint(),
-      await this.getInstalledFonts(),
+      JSON.stringify(fingerprintUtils.getDeviceInfo()),
+      JSON.stringify(fingerprintUtils.getBrowserFeatures()),
+      fingerprintUtils.getCanvasFingerprint(),
+      await fingerprintUtils.getAudioFingerprint(),
+      await fingerprintUtils.getInstalledFonts(),
     ];
 
     // 使用 SHA-256 生成最终指纹

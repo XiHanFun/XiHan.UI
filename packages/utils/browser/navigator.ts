@@ -7,7 +7,7 @@ export const navigatorUtils = {
    *
    * @returns 返回浏览器语言
    */
-  getLanguage(): string {
+  getLanguage: (): string => {
     return window.navigator.language;
   },
 
@@ -16,7 +16,7 @@ export const navigatorUtils = {
    *
    * @returns 返回是否在线
    */
-  isOnline(): boolean {
+  isOnline: (): boolean => {
     return window.navigator.onLine;
   },
 
@@ -25,7 +25,7 @@ export const navigatorUtils = {
    *
    * @returns 返回是否为移动设备
    */
-  isMobile(): boolean {
+  isMobile: (): boolean => {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(window.navigator.userAgent);
   },
 
@@ -34,7 +34,7 @@ export const navigatorUtils = {
    *
    * @returns 返回浏览器信息
    */
-  getInfo() {
+  getInfo: () => {
     const ua = window.navigator.userAgent;
 
     const browserRegExp = {
