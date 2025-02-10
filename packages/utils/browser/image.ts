@@ -6,7 +6,7 @@ export const imageUtils = {
    * 预加载图片
    * @param src 图片地址
    */
-  preload(src: string): Promise<HTMLImageElement> {
+  preload: (src: string): Promise<HTMLImageElement> => {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => resolve(img);
@@ -20,15 +20,15 @@ export const imageUtils = {
    * @param srcs 图片地址数组
    * @returns 加载完成的图片数组
    */
-  preloadAll(srcs: string[]): Promise<HTMLImageElement[]> {
-    return Promise.all(srcs.map(src => this.preload(src)));
+  preloadAll: (srcs: string[]): Promise<HTMLImageElement[]> => {
+    return Promise.all(srcs.map(src => imageUtils.preload(src)));
   },
 
   /**
    * 检查图片是否已加载完成
    * @param img 图片元素
    */
-  isLoaded(img: HTMLImageElement): boolean {
+  isLoaded: (img: HTMLImageElement): boolean => {
     return img.complete && img.naturalHeight !== 0;
   },
 
@@ -37,9 +37,10 @@ export const imageUtils = {
    * @param img 图片元素
    * @returns RGB颜色值
    */
-  getDominantColor(img: HTMLImageElement): { r: number; g: number; b: number } {
+  getDominantColor: (img: HTMLImageElement): { r: number; g: number; b: number } => {
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
+
     if (!context) {
       throw new Error("Canvas context not supported");
     }
@@ -60,7 +61,10 @@ export const imageUtils = {
    * @param file 图片文件
    * @param options 压缩选项
    */
-  async compress(file: File, options: { maxWidth?: number; maxHeight?: number; quality?: number } = {}): Promise<Blob> {
+  compress: async (
+    file: File,
+    options: { maxWidth?: number; maxHeight?: number; quality?: number } = {}
+  ): Promise<Blob> => {
     const { maxWidth = 800, maxHeight = 600, quality = 0.8 } = options;
 
     return new Promise((resolve, reject) => {

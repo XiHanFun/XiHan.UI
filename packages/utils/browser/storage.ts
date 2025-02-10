@@ -9,7 +9,7 @@ export const storageUtils = {
    * @param key 要获取的值的键
    * @returns 返回解析后的JSON对象或原始字符串，如果键不存在则返回null
    */
-  get(key: string) {
+  get: (key: string) => {
     const value = localStorage.getItem(key);
     try {
       return value ? JSON.parse(value) : null;
@@ -24,7 +24,7 @@ export const storageUtils = {
    * @param key 要存储的值的键
    * @param value 要存储的值，可以是任何类型
    */
-  set(key: string, value: any) {
+  set: (key: string, value: any) => {
     localStorage.setItem(key, JSON.stringify(value));
   },
 
@@ -33,14 +33,14 @@ export const storageUtils = {
    *
    * @param key 要移除的值的键
    */
-  remove(key: string) {
+  remove: (key: string) => {
     localStorage.removeItem(key);
   },
 
   /**
    * 清空本地存储中的所有键值对
    */
-  clear() {
+  clear: () => {
     localStorage.clear();
   },
 };

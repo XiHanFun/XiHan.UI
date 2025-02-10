@@ -5,7 +5,7 @@ export const notificationUtils = {
   /**
    * 检查通知权限
    */
-  async checkPermission(): Promise<boolean> {
+  checkPermission: async (): Promise<boolean> => {
     if (!("Notification" in window)) {
       return false;
     }
@@ -27,13 +27,13 @@ export const notificationUtils = {
    * @param title 通知标题
    * @param options 通知选项
    */
-  async show(
+  show: async (
     title: string,
     options: NotificationOptions & { onClick?: (notification: Notification) => void } = {}
-  ): Promise<Notification | null> {
+  ): Promise<Notification | null> => {
     const { onClick, ...notificationOptions } = options;
 
-    if (!(await this.checkPermission())) {
+    if (!(await notificationUtils.checkPermission())) {
       return null;
     }
 
@@ -51,8 +51,8 @@ export const notificationUtils = {
    * @param title 通知标题
    * @param message 通知内容
    */
-  async showSimple(title: string, message: string): Promise<Notification | null> {
-    return this.show(title, {
+  showSimple: async (title: string, message: string): Promise<Notification | null> => {
+    return notificationUtils.show(title, {
       body: message,
       icon: "/favicon.ico",
     });
@@ -61,7 +61,7 @@ export const notificationUtils = {
   /**
    * 关闭所有通知
    */
-  closeAll() {
+  closeAll: () => {
     if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
       navigator.serviceWorker.ready.then(registration => {
         registration.getNotifications().then(notifications => {
