@@ -1,25 +1,42 @@
 /**
  * 浏览器环境检测工具
  */
-export const browser = {
-  // 获取浏览器语言
+export const navigatorUtils = {
+  /**
+   * 获取浏览器语言
+   *
+   * @returns 返回浏览器语言
+   */
   getLanguage(): string {
     return window.navigator.language;
   },
 
-  // 检查是否在线
+  /**
+   * 检查是否在线
+   *
+   * @returns 返回是否在线
+   */
   isOnline(): boolean {
     return window.navigator.onLine;
   },
 
-  // 检查是否为移动设备
+  /**
+   * 检查是否为移动设备
+   *
+   * @returns 返回是否为移动设备
+   */
   isMobile(): boolean {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(window.navigator.userAgent);
   },
 
-  // 获取浏览器信息
+  /**
+   * 获取浏览器信息
+   *
+   * @returns 返回浏览器信息
+   */
   getInfo() {
     const ua = window.navigator.userAgent;
+
     const browserRegExp = {
       Chrome: /Chrome/,
       Firefox: /Firefox/,
@@ -42,9 +59,12 @@ export const browser = {
     };
   },
 
-  // 检查浏览器功能支持
+  /**
+   * 检查浏览器功能支持
+   */
   supports: {
     touch: () => "ontouchstart" in window,
+
     webGL: () => {
       try {
         const canvas = document.createElement("canvas");
