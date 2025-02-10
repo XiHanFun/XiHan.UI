@@ -8,7 +8,7 @@ export const cookieUtils = {
    * @param name 需要获取的Cookie名称
    * @returns 获取到的Cookie值，如果未找到则返回null
    */
-  get(name: string): string | null {
+  get: (name: string): string | null => {
     const match = document.cookie.match(new RegExp(`(^|;\\s*)(${name})=([^;]*)`));
     return match ? decodeURIComponent(match[3]) : null;
   },
@@ -20,11 +20,11 @@ export const cookieUtils = {
    * @param value 需要设置的Cookie值
    * @param options 可选参数，表示Cookie的选项，包括过期时间、路径、域名和安全选项
    */
-  set(
+  set: (
     name: string,
     value: string,
     options: { expires?: number; path?: string; domain?: string; secure?: boolean } = {}
-  ) {
+  ) => {
     let cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
 
     if (options.expires) {
@@ -45,7 +45,7 @@ export const cookieUtils = {
    *
    * @param name 需要删除的Cookie名称
    */
-  remove(name: string) {
-    this.set(name, "", { expires: -1 });
+  remove: (name: string): void => {
+    cookieUtils.set(name, "", { expires: -1 });
   },
 };

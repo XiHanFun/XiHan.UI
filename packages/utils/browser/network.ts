@@ -5,7 +5,7 @@ export const networkUtils = {
   /**
    * 获取当前网络状态
    */
-  getNetworkStatus() {
+  getNetworkStatus: () => {
     const connection = (navigator as any).connection;
     return {
       online: navigator.onLine,
@@ -21,7 +21,7 @@ export const networkUtils = {
    * @param callback 回调函数
    * @returns 返回取消监听的函数
    */
-  onNetworkChange(callback: (status: { online: boolean }) => void) {
+  onNetworkChange: (callback: (status: { online: boolean }) => void) => {
     const handleOnline = () => callback({ online: true });
     const handleOffline = () => callback({ online: false });
 
@@ -40,9 +40,9 @@ export const networkUtils = {
    * @param imageUrl 用于测速的图片URL，默认为1x1像素的透明图
    * @returns Promise<number> 返回加载时间(ms)
    */
-  async checkNetworkSpeed(
+  checkNetworkSpeed: async (
     imageUrl = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-  ): Promise<number> {
+  ): Promise<number> => {
     const startTime = performance.now();
 
     return new Promise((resolve, reject) => {

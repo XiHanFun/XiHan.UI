@@ -8,7 +8,7 @@ export const urlUtils = {
    * @param url 可选参数，表示要解析的 URL 字符串。如果未提供，则使用当前窗口的 URL
    * @returns 返回一个包含所有 URL 参数的记录对象
    */
-  getParams(url?: string): Record<string, string> {
+  getParams: (url?: string): Record<string, string> => {
     const search = url ? new URL(url).search : window.location.search;
 
     const params = new URLSearchParams(search);
@@ -25,7 +25,7 @@ export const urlUtils = {
    * @param params 需要转换的对象
    * @returns 返回 URL 参数字符串
    */
-  stringifyParams(params: Record<string, any>): string {
+  stringifyParams: (params: Record<string, any>): string => {
     return new URLSearchParams(
       Object.entries(params).reduce((acc, [key, value]) => {
         acc[key] = String(value);
@@ -41,7 +41,7 @@ export const urlUtils = {
    * @param params 需要添加的参数对象
    * @returns 返回添加参数后的 URL 字符串
    */
-  addParams(url: string, params: Record<string, any>): string {
+  addParams: (url: string, params: Record<string, any>): string => {
     const urlObj = new URL(url);
     Object.entries(params).forEach(([key, value]) => {
       urlObj.searchParams.append(key, String(value));
@@ -56,7 +56,7 @@ export const urlUtils = {
    * @param params 需要移除的参数列表
    * @returns 返回移除参数后的 URL 字符串
    */
-  removeParams(url: string, params: string[]): string {
+  removeParams: (url: string, params: string[]): string => {
     const urlObj = new URL(url);
     params.forEach(param => {
       urlObj.searchParams.delete(param);
@@ -70,7 +70,7 @@ export const urlUtils = {
    * @param url 需要解析的 URL 字符串
    * @returns 返回一个包含 URL 各个部分的记录对象
    */
-  parse(url: string) {
+  parse: (url: string) => {
     const urlObj = new URL(url);
     return {
       protocol: urlObj.protocol,
@@ -90,7 +90,7 @@ export const urlUtils = {
    * @param url 需要判断的 URL 字符串
    * @returns 返回是否为绝对 URL
    */
-  isAbsolute(url: string): boolean {
+  isAbsolute: (url: string): boolean => {
     return /^[a-z][a-z0-9+.-]*:/.test(url);
   },
 
@@ -100,7 +100,7 @@ export const urlUtils = {
    * @param parts 需要拼接的 URL 路径部分
    * @returns 返回拼接后的 URL 路径
    */
-  join(...parts: string[]): string {
+  join: (...parts: string[]): string => {
     return parts
       .map(part => part.replace(/^\/+|\/+$/g, ""))
       .filter(Boolean)
