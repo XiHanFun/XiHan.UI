@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
     // 路径解析
     resolve: {
       alias: {
-        "@xihan-ui": resolve(__dirname, "../packages"),
+        "@xihan-ui/*": resolve(__dirname, "../packages/*"),
         "xihan-ui": resolve(__dirname, "../packages/xihan-ui"),
       },
     },
@@ -59,8 +59,8 @@ export default defineConfig(({ mode }) => {
       preprocessorOptions: {
         scss: {
           additionalData: `
-            @use "@xihan-ui/themes/src/variables.scss" as *;
-            @use "@xihan-ui/themes/src/mixins.scss" as *;
+            @use "@xihan-ui/themes/src/common/variables/index.scss" as *;
+            @use "@xihan-ui/themes/src/common/mixins/index.scss" as *;
           `,
         },
       },
