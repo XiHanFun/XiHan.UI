@@ -1,5 +1,5 @@
-@use "@xihan-ui/themes/src/mixins" as *;
-@use "@xihan-ui/themes/src/variables" as *;
+@use "#xihan-ui-themes/src/common/mixins" as *;
+@use "#xihan-ui-themes/src/common/variables" as *;
 
 .xh-button-group {
   display: inline-flex;
