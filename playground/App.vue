@@ -83,41 +83,12 @@
     <XhButton type="primary">按钮2</XhButton>
     <XhButton type="primary">按钮3</XhButton>
   </XhButtonGroup>
-
-  <!-- 图标 -->
-  <h1>图标</h1>
-  <div class="icons-demo">
-    <!-- 基础用法 -->
-    <XhIconClear />
-    <XhIconSuccess color="green" />
-    <XhIconWarning size="large" />
-    <XhIconError />
-
-    <!-- 主题和交互 -->
-    <XhIconTrash theme="filled" />
-    <XhIconAttach theme="two-tone" />
-    <XhIconCancel theme="filled" :rotate="10" />
-    <XhIconTo flip="horizontal" />
-    <XhIconRetry clickable @click="handleClick" />
-  </div>
 </template>
 
 <script setup lang="ts">
   import { useTheme } from "@xihan-ui/hooks";
-  import { iconManager } from "@xihan-ui/themes";
 
   const { mode, theme, setMode } = useTheme();
-
-  const handleClick = () => {
-    console.log("Icon clicked");
-  };
-
-  // 自定义图标配置
-  iconManager.setConfig({
-    defaultSize: "small",
-    defaultTheme: "outline",
-    defaultColor: "#333",
-  });
 </script>
 
 <style scoped lang="scss">

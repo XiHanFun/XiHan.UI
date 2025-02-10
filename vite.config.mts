@@ -7,9 +7,11 @@ import dts from "vite-plugin-dts";
 // 获取所有子包的路径配置
 const packages = {
   utils: resolve(__dirname, "packages/utils"),
-  themes: resolve(__dirname, "packages/themes"),
   constants: resolve(__dirname, "packages/constants"),
+  hooks: resolve(__dirname, "packages/hooks"),
   directives: resolve(__dirname, "packages/directives"),
+  themes: resolve(__dirname, "packages/themes"),
+  locales: resolve(__dirname, "packages/locales"),
   components: resolve(__dirname, "packages/components"),
 };
 
@@ -39,12 +41,13 @@ export default defineConfig({
       name: "XihanUI",
       formats: ["es", "cjs"],
       entry: {
-        index: resolve(__dirname, "packages/index.ts"),
         "utils/index": resolve(packages.utils, "index.ts"),
-        "components/index": resolve(packages.components, "index.ts"),
         "constants/index": resolve(packages.constants, "index.ts"),
+        "hooks/index": resolve(packages.hooks, "index.ts"),
         "directives/index": resolve(packages.directives, "index.ts"),
         "themes/index": resolve(packages.themes, "index.ts"),
+        "locales/index": resolve(packages.locales, "index.ts"),
+        "components/index": resolve(packages.components, "index.ts"),
       },
     },
     rollupOptions: {
@@ -69,8 +72,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@xihan-ui": resolve(__dirname, "packages"),
-      "@xihan-ui/playground": resolve(__dirname, "playground"),
+      "@xihan-ui/*": resolve(__dirname, "packages/*"),
+      "@xihan-ui/playground/*": resolve(__dirname, "playground/*"),
       "xihan-ui": resolve(__dirname, "packages/xihan-ui"),
     },
   },
