@@ -1,6 +1,6 @@
 import { ref, watch } from "vue";
 import type { Ref } from "vue";
-import { getSystemTheme, watchSystemTheme, type ThemeMode } from "@xihan-ui/utils/core/theme";
+import { getSystemTheme, watchSystemTheme, type ThemeMode } from "@xihan-ui/themes/theme";
 
 export function useTheme(initialMode: ThemeMode = "system") {
   const mode = ref(initialMode);
