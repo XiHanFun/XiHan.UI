@@ -37,32 +37,5 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-
-    // 构建配置
-    build: {
-      outDir: "dist",
-      assetsDir: "assets",
-      sourcemap: false,
-      chunkSizeWarningLimit: 1500,
-      rollupOptions: {
-        output: {
-          chunkFileNames: "assets/js/[name]-[hash].js",
-          entryFileNames: "assets/js/[name]-[hash].js",
-          assetFileNames: "assets/[ext]/[name]-[hash].[ext]",
-        },
-      },
-    },
-
-    // CSS 配置
-    css: {
-      preprocessorOptions: {
-        scss: {},
-      },
-    },
-
-    // 优化依赖
-    optimizeDeps: {
-      include: ["vue", "vue-router", "pinia"],
-    },
   };
 });
