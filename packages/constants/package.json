@@ -26,12 +26,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ]
+  "main": "index.ts",
+  "module": "index.ts",
+  "types": "index.d.ts"
 }

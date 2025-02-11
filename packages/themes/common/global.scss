@@ -1,24 +1,39 @@
-// 导入变量
-@use "./variables.scss" as *;
-@use "./themes/light.scss";
-@use "./themes/dark.scss";
-@use "./styles/icons.scss";
-
 // 基础样式
 :root {
-  // 主色
+  // 主题
   --xh-primary-color: #409eff;
   --xh-success-color: #67c23a;
   --xh-warning-color: #e6a23c;
   --xh-danger-color: #f56c6c;
+  --xh-info-color: #909399;
 
   // 文字
+  --xh-text-color: #303133;
+  --xh-text-color-regular: #606266;
+  --xh-text-color-secondary: #909399;
+  --xh-text-color-placeholder: #c0c4cc;
+
   --xh-font-size: 14px;
   --xh-font-size-sm: 12px;
   --xh-font-size-lg: 16px;
 
   // 边框
+  --xh-border-color: #dcdfe6;
+  --xh-border-color-light: #e4e7ed;
+
   --xh-border-width: 1px;
+  --xh-border-radius: 4px;
+  --xh-border-radius-round: 20px;
+
+  // 背景
+  --xh-bg-color: #ffffff;
+
+  // 字体大小
+  --xh-font-size: 14px;
+  --xh-font-size-sm: 13px;
+  --xh-font-size-lg: 16px;
+
+  // 圆角
   --xh-border-radius: 4px;
   --xh-border-radius-round: 20px;
 

@@ -5,7 +5,7 @@ type DateValue = Date | string | number;
 /**
  * 日期格式化工具
  */
-export const dateUtils = {
+export const dateFormatUtils = {
   /**
    * 格式化日期
    */

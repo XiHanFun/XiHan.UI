@@ -4,7 +4,7 @@
 export const dateUtils = {
   /**
    * 格式化日期
-   * 
+   *
    * @param date 日期对象或时间戳
    * @param options 格式化选项
    * @param locale 地区
@@ -14,10 +14,10 @@ export const dateUtils = {
     return new Intl.DateTimeFormat(locale, options).format(dateObj);
   },
 
-/**
- * 获取相对时间描述
- * @param date 目标日期
- * @param now 当前日期，默认为现在
+  /**
+   * 获取相对时间描述
+   * @param date 目标日期
+   * @param now 当前日期，默认为现在
    */
   getRelativeTime: (date: Date | number | string, now: Date = new Date()): string => {
     const targetDate = new Date(date);
@@ -34,12 +34,11 @@ export const dateUtils = {
     if (months > 0) return rtf.format(-months, "month");
     if (days > 0) return rtf.format(-days, "day");
     if (hours > 0) return rtf.format(-hours, "hour");
-      if (minutes > 0) return rtf.format(-minutes, "minute");
-      return rtf.format(-seconds, "second");
+    if (minutes > 0) return rtf.format(-minutes, "minute");
+    return rtf.format(-seconds, "second");
   },
 
-
-/**
+  /**
    * 获取日期范围
    * @param start 开始日期
    * @param end 结束日期
@@ -48,17 +47,16 @@ export const dateUtils = {
     const dates: Date[] = [];
     const current = new Date(start);
 
+    while (current <= end) {
+      dates.push(new Date(current));
+      current.setDate(current.getDate() + 1);
+    }
 
-  while (current <= end) {
-    dates.push(new Date(current));
-    current.setDate(current.getDate() + 1);
-  }
+    return dates;
+  },
 
-  return dates;
-};
-
-/**
- * 判断是否为同一天
+  /**
+   * 判断是否为同一天
    */
   isSameDay: (date1: Date, date2: Date): boolean => {
     return (
@@ -68,49 +66,42 @@ export const dateUtils = {
     );
   },
 
-
-/**
- * 获取月份的天数
+  /**
+   * 获取月份的天数
    */
   getDaysInMonth: (year: number, month: number): number => {
     return new Date(year, month + 1, 0).getDate();
   },
 
-
-/**
- * 获取日期是星期几
+  /**
+   * 获取日期是星期几
    */
   getDayOfWeek: (date: Date, locale: string = "zh-CN"): string => {
     return date.toLocaleDateString(locale, { weekday: "long" });
   },
 
-
-/**
- * 日期加减
- */
+  /**
+   * 日期加减
+   */
   addDays: (date: Date, days: number): Date => {
     const result = new Date(date);
     result.setDate(result.getDate() + days);
     return result;
   },
 
-
-/**
- * 获取时间戳
- */
+  /**
+   * 获取时间戳
+   */
   getTimestamp: (date: Date | number | string = new Date()): number => {
     return new Date(date).getTime();
   },
 
-
-/**
- * 检查是否为有效日期
- */
+  /**
+   * 检查是否为有效日期
+   */
   isValidDate: (date: any): boolean => {
     return date instanceof Date && !isNaN(date.getTime());
   },
-
-
 };
 
 /**
@@ -129,4 +120,3 @@ export interface DateFormatOptions {
   timeZone?: string;
   hour12?: boolean;
 }
-

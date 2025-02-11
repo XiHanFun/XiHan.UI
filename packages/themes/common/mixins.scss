@@ -1,5 +1,5 @@
 @use "sass:map";
-@use "./variables" as *;
+@use "./variables";
 
 // 颜色混入
 @mixin use-color($type, $alpha: 1) {

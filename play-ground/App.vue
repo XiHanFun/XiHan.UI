@@ -1,10 +1,4 @@
 <template>
-  <div class="theme-switch">
-    <XhButton :type="theme === 'light' ? 'primary' : 'default'" @click="setMode('light')"> 亮色主题 </XhButton>
-    <XhButton :type="theme === 'dark' ? 'primary' : 'default'" @click="setMode('dark')"> 暗色主题 </XhButton>
-    <XhButton :type="mode === 'system' ? 'primary' : 'default'" @click="setMode('system')"> 跟随系统 </XhButton>
-  </div>
-
   <!-- 按钮 -->
   <h1>按钮</h1>
   <h3>按钮类型</h3>
@@ -85,22 +79,6 @@
   </XhButtonGroup>
 </template>
 
-<script setup lang="ts">
-  import { useTheme } from "@xihan-ui/hooks";
+<script setup lang="ts"></script>
 
-  const { mode, theme, setMode } = useTheme();
-</script>
-
-<style scoped lang="scss">
-  .theme-switch {
-    margin-bottom: 20px;
-
-    .xh-button + .xh-button {
-      margin-left: 12px;
-    }
-  }
-
-  .icons-demo {
-    margin-top: 20px;
-  }
-</style>
+<style scoped lang="scss"></style>
