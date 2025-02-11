@@ -26,9 +26,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "index.ts",
-  "module": "index.ts",
-  "types": "index.d.ts",
+  "main": "index.css",
   "style": "index.css",
   "peerDependencies": {
     "vue": "^3.5.0"
