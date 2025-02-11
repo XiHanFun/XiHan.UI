@@ -28,7 +28,7 @@ export default defineConfig({
       cleanVueFileName: true,
       // 生成类型文件后的钩子
       afterBuild: () => {
-        console.log("Type definitions generated successfully!");
+        console.log("\n✨ Type definitions generated successfully!");
       },
       // 插入版权信息
       insertTypesEntry: true,
@@ -37,6 +37,7 @@ export default defineConfig({
     }),
   ],
   build: {
+    cssCodeSplit: true,
     lib: {
       name: "XihanUI",
       formats: ["es", "cjs"],
@@ -45,13 +46,13 @@ export default defineConfig({
         "constants/index": resolve(packages.constants, "index.ts"),
         "hooks/index": resolve(packages.hooks, "index.ts"),
         "directives/index": resolve(packages.directives, "index.ts"),
-        "themes/index": resolve(packages.themes, "index.ts"),
+        "themes/index": resolve(packages.themes, "index.scss"),
         "locales/index": resolve(packages.locales, "index.ts"),
         "components/index": resolve(packages.components, "index.ts"),
       },
     },
     rollupOptions: {
-      external: ["vue", "vue-router"],
+      external: ["vue"],
       output: {
         dir: "dist",
         entryFileNames: ({ name }) => {
@@ -63,12 +64,15 @@ export default defineConfig({
         preserveModulesRoot: "packages",
         globals: {
           vue: "Vue",
-          "vue-router": "VueRouter",
         },
       },
     },
     emptyOutDir: true,
-    sourcemap: true,
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {},
+    },
   },
   resolve: {
     alias: {
