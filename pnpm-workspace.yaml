@@ -1,5 +1,5 @@
 packages:
-  - internal/*
   - packages/*
+  - xihan-ui
   - playground
   - docs

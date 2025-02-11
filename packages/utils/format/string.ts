@@ -1,7 +1,7 @@
 /**
  * 字符串格式化工具
  */
-export const stringUtils = {
+export const stringFormatUtils = {
   /**
    * 首字母大写
    * @param str - 输入字符串

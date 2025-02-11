@@ -1,14 +1,3 @@
-@use "@xihan-ui/themes/src/mixins" as *;
-@use "@xihan-ui/themes/src/variables" as *;
-
-// 添加按钮点击波纹动画
-@keyframes button-ripple {
-  to {
-    transform: scale(2);
-    opacity: 0;
-  }
-}
-
 // 添加加载动画
 @keyframes button-loading {
   0% {
@@ -20,21 +9,73 @@
 }
 
 .xh-button {
-  position: relative;
   display: inline-flex;
   justify-content: center;
   align-items: center;
   line-height: 1;
+  height: 32px;
   white-space: nowrap;
   cursor: pointer;
-  color: var(--xh-button-text-color);
-  background: var(--xh-button-bg-color);
-  border: var(--xh-border-width) solid var(--xh-button-border-color);
-  border-radius: var(--xh-border-radius);
-  padding: 12px 20px;
-  font-size: var(--xh-font-size);
-  transition: var(--xh-transition-theme), filter 0.2s ease-in-out;
+  color: var(--xh-text-color);
+  text-align: center;
+  box-sizing: border-box;
+  outline: none;
+  transition: 0.1s;
+  font-weight: 500;
   user-select: none;
+  vertical-align: middle;
+  -webkit-appearance: none;
+  background-color: var(--xh-bg-color);
+  border: 1px solid var(--xh-border-color);
+  padding: 8px 15px;
+  font-size: var(--xh-font-size);
+  border-radius: var(--xh-border-radius);
+
+  &:hover,
+  &:focus {
+    color: var(--xh-primary-color);
+    border-color: var(--xh-primary-color-light);
+    background-color: var(--xh-primary-color-light-9);
+  }
+
+  // 主要按钮
+  &--primary {
+    color: #fff;
+    background-color: var(--xh-primary-color);
+    border-color: var(--xh-primary-color);
+
+    &:hover,
+    &:focus {
+      background: var(--xh-primary-color-light-3);
+      border-color: var(--xh-primary-color-light-3);
+      color: #fff;
+    }
+  }
+
+  // 其他类型按钮样式...
+
+  // 禁用状态
+  &.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  // 加载状态
+  &.is-loading {
+    position: relative;
+    pointer-events: none;
+
+    &:before {
+      content: "";
+      position: absolute;
+      left: -1px;
+      top: -1px;
+      right: -1px;
+      bottom: -1px;
+      border-radius: inherit;
+      background-color: rgba(255, 255, 255, 0.35);
+    }
+  }
 
   // 添加悬浮效果
   &:not(.is-disabled):not(.is-loading):hover {
@@ -75,13 +116,6 @@
     }
   }
 
-  // 禁用状态
-  &.is-disabled,
-  &.is-loading {
-    cursor: not-allowed;
-    opacity: 0.7;
-  }
-
   // 尺寸
   &--small {
     padding: 8px 16px;
@@ -94,17 +128,6 @@
   }
 
   // 类型样式
-  &--primary {
-    --xh-button-bg-color: var(--xh-primary-color);
-    --xh-button-text-color: var(--xh-white);
-    --xh-button-border-color: var(--xh-primary-color);
-
-    &.is-plain {
-      --xh-button-bg-color: var(--xh-bg-color);
-      --xh-button-text-color: var(--xh-primary-color);
-    }
-  }
-
   &--success {
     --xh-button-bg-color: var(--xh-success-color);
     --xh-button-text-color: var(--xh-white);

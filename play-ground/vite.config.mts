@@ -3,7 +3,6 @@ import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import { resolve } from "path";
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   // 加载环境变量
   const env = loadEnv(mode, process.cwd());
@@ -20,7 +19,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         "@xihan-ui/*": resolve(__dirname, "../packages/*"),
-        "xihan-ui": resolve(__dirname, "../packages/xihan-ui"),
+        "xihan-ui": resolve(__dirname, "../xihan-ui"),
       },
     },
 
@@ -57,12 +56,7 @@ export default defineConfig(({ mode }) => {
     // CSS 配置
     css: {
       preprocessorOptions: {
-        scss: {
-          additionalData: `
-            @use "@xihan-ui/themes/src/common/variables/index.scss" as *;
-            @use "@xihan-ui/themes/src/common/mixins/index.scss" as *;
-          `,
-        },
+        scss: {},
       },
     },
 
