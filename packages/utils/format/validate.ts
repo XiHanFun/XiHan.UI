@@ -1,6 +1,6 @@
 // 验证相关
 
-export const validateUtils = {
+export const validateFormatUtils = {
   /**
    * 验证邮箱
    *

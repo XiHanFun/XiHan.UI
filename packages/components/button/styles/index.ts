@@ -1,2 +1,2 @@
-import "@xihan-ui/themes/src/components/button.scss";
-import "@xihan-ui/themes/src/components/button-group.scss";
+import "../../../themes/src/components/button.scss";
+import "../../../themes/src/components/button-group.scss";

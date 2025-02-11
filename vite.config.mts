@@ -73,8 +73,8 @@ export default defineConfig({
   resolve: {
     alias: {
       "@xihan-ui/*": resolve(__dirname, "packages/*"),
-      "@xihan-ui/playground/*": resolve(__dirname, "playground/*"),
-      "xihan-ui": resolve(__dirname, "packages/xihan-ui"),
+      "xihan-ui": resolve(__dirname, "xihan-ui"),
+      "play-ground": resolve(__dirname, "play-ground"),
     },
   },
 });

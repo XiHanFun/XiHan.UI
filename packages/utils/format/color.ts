@@ -1,6 +1,6 @@
 // 颜色处理相关
 
-export const colorUtils = {
+export const colorFormatUtils = {
   /**
    * 将十六进制颜色转换为RGBA格式字符串
    *

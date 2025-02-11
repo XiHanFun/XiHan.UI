@@ -1,7 +1,7 @@
 /**
  * 数字格式化工具
  */
-export const numberUtils = {
+export const numberFormatUtils = {
   /**
    * 格式化数字（添加千分位）
    */

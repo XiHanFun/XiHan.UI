@@ -6,8 +6,9 @@
     "moduleResolution": "Node",
     "strict": true,
     "jsx": "preserve",
+    "outDir": "dist",
     "jsxImportSource": "vue",
-    "sourceMap": true,
+    "sourceMap": false,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
@@ -15,13 +16,22 @@
     "skipLibCheck": true,
     "noEmit": true,
     "baseUrl": ".",
+    "rootDir": ".",
     "paths": {
       "@xihan-ui/*": ["packages/*"],
-      "@xihan-ui/playground/*": ["playground/*"],
-      "xihan-ui": ["packages/xihan-ui"]
+      "xihan-ui": ["xihan-ui"],
+      "play-ground": ["play-ground"]
     },
     "types": ["vite/client", "vue", "@vue/runtime-core"]
   },
-  "include": ["packages", "packages/**/*.ts", "packages/**/*.d.ts", "packages/**/*.tsx", "packages/**/*.vue"],
+  "include": [
+    "packages",
+    "packages/**/*.ts",
+    "packages/**/*.d.ts",
+    "packages/**/*.tsx",
+    "packages/**/*.vue",
+    "xihan-ui",
+    "play-ground"
+  ],
   "exclude": ["node_modules", "dist"]
 }
