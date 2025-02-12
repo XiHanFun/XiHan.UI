@@ -23,13 +23,14 @@
     "url": "https://www.zhaifanhua.com"
   },
   "type": "module",
-  "main": "index.ts",
-  "module": "index.ts",
-  "types": "index.d.ts",
-  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
+  "main": "index.ts",
+  "module": "index.ts",
+  "unpkg": "index.js",
+  "jsdelivr": "index.js",
+  "types": "index.d.ts",
   "peerDependencies": {
     "vue": "^3.5.0"
   }
