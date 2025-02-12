@@ -1,6 +1,6 @@
 {
   "name": "@xihan-ui/components",
-  "version": "0.8.12",
+  "version": "0.8.13",
   "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -28,8 +28,6 @@
   },
   "main": "index.ts",
   "module": "index.ts",
-  "unpkg": "index.js",
-  "jsdelivr": "index.js",
   "types": "index.d.ts",
   "peerDependencies": {
     "vue": "^3.5.0"
