@@ -1,6 +1,6 @@
 import { defineComponent, provide } from "vue";
 import type { InjectionKey, PropType } from "vue";
-import type { ButtonSize, ButtonType } from "./Button";
+import type { ButtonSize, ButtonType } from "../../button";
 
 export interface ButtonGroupContext {
   size?: ButtonSize;

@@ -25,11 +25,9 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "lib/index.js",
-  "module": "es/index.mjs",
-  "unpkg": "dist/index.full.js",
-  "jsdelivr": "dist/index.full.js",
-  "types": "es/index.d.ts",
+  "main": "index.ts",
+  "module": "index.ts",
+  "types": "index.d.ts",
   "style": "dist/index.css",
   "exports": {
     ".": {

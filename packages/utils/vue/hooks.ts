@@ -174,3 +174,26 @@ export function useInterval(callback: () => void, delay: number | null) {
     return () => clearInterval(id);
   });
 }
+
+/**
+ * 网络状态
+ */
+export function useNetwork() {
+  const isOnline = ref(navigator.onLine);
+
+  const update = () => {
+    isOnline.value = navigator.onLine;
+  };
+
+  onMounted(() => {
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+  });
+
+  onUnmounted(() => {
+    window.removeEventListener("online", update);
+    window.removeEventListener("offline", update);
+  });
+
+  return { isOnline };
+}
