@@ -1,5 +1,4 @@
-import { ref, watch } from "vue";
-import type { Ref } from "vue";
+import { ref } from "vue";
 import { getSystemTheme, watchSystemTheme, type ThemeMode } from "./theme";
 
 export function useTheme(initialMode: ThemeMode = "system") {
