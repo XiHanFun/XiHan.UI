@@ -1,8 +1,4 @@
-// 导入基础样式
+// 导入顺序很重要
 @use "./common";
-
-// 导入组件样式
 @use "./components";
-
-// 导入主题样式
 @use "./themes";

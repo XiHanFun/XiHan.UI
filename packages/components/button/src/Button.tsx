@@ -1,6 +1,7 @@
 import { computed, defineComponent, inject, h } from "vue";
 import type { PropType } from "vue";
-import { buttonGroupContextKey } from "./ButtonGroup";
+import { buttonGroupContextKey } from "../../button-group";
+import "../styles/index";
 
 // 按钮类型
 export type ButtonType = "default" | "primary" | "success" | "warning" | "danger" | "info";
@@ -31,7 +32,6 @@ export const buttonProps = {
     default: "",
   },
   // 图标位置
-
   iconPlacement: {
     type: String as PropType<IconPlacement>,
     default: "left",
@@ -78,16 +78,16 @@ export default defineComponent({
     // 计算 class 类名
     const classes = computed(() => [
       "xh-button",
-      `xh-button--${buttonType.value}`,
-      `xh-button--${buttonSize.value}`,
       {
+        [`xh-button--${buttonType.value}`]: buttonType.value,
+        [`xh-button--${buttonSize.value}`]: buttonSize.value,
         "is-plain": isPlain.value,
         "is-round": isRound.value,
         "is-circle": props.circle,
         "is-disabled": props.disabled,
         "is-loading": props.loading,
-        "is-in-group": !!buttonGroupContext,
         "is-block": props.block,
+        "is-in-group": !!buttonGroupContext,
         [`icon-placement--${props.iconPlacement}`]: props.icon || slots.icon,
       },
     ]);
@@ -95,15 +95,18 @@ export default defineComponent({
     return () => (
       <button
         class={classes.value}
-        disabled={props.disabled || props.loading}
+        aria-disabled={props.disabled || props.loading}
         type={props.nativeType}
         autofocus={props.autofocus}
         // 添加 WAI-ARIA 属性增强可访问性
         role="button"
-        aria-disabled={props.disabled || props.loading}
       >
         {props.loading && <span class="xh-button__loading-icon"></span>}
-        {props.icon && !props.loading && <i class={["xh-button__icon", props.icon]}></i>}
+        {props.icon && !props.loading && (
+          <span class={`xh-button__icon icon-placement--${props.iconPlacement}`}>
+            <i class={props.icon}></i>
+          </span>
+        )}
         {slots.icon && !props.loading && <span class="xh-button__icon">{slots.icon()}</span>}
         <span class="xh-button__content">{slots.default?.()}</span>
       </button>

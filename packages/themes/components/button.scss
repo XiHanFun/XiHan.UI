@@ -1,164 +1,123 @@
+@use "sass:map";
+@use "../common/variables" as vars;
+@use "../common/mixins" as mix;
+@use "./_global";
+
 // 添加加载动画
-@keyframes button-loading {
-  0% {
+@keyframes xh-button-loading {
+  from {
     transform: rotate(0deg);
   }
-  100% {
+  to {
     transform: rotate(360deg);
   }
 }
 
 .xh-button {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  line-height: 1;
-  height: 32px;
-  white-space: nowrap;
-  cursor: pointer;
-  color: var(--xh-text-color);
-  text-align: center;
-  box-sizing: border-box;
-  outline: none;
-  transition: 0.1s;
-  font-weight: 500;
-  user-select: none;
-  vertical-align: middle;
-  -webkit-appearance: none;
-  background-color: var(--xh-bg-color);
-  border: 1px solid var(--xh-border-color);
-  padding: 8px 15px;
-  font-size: var(--xh-font-size);
-  border-radius: var(--xh-border-radius);
+  @extend .xh-component;
+  @include mix.use-flex(row, center, center);
+  @include mix.use-transition(all);
 
-  &:hover,
-  &:focus {
+  position: relative;
+  white-space: nowrap;
+  outline: none;
+  border: 1px solid var(--xh-border-color);
+  font-weight: map.get(vars.$font-weights, "medium");
+  user-select: none;
+  -webkit-appearance: none;
+
+  // 基础样式 - 移除固定高度
+  color: var(--xh-button-text-color);
+  background-color: var(--xh-button-bg-color);
+  border-radius: map.get(vars.$border-radius, "base");
+
+  // 默认尺寸
+  padding: map.get(vars.$spacings, "sm") map.get(vars.$spacings, "lg");
+  font-size: map.get(vars.$font-sizes, "base");
+  min-height: 32px;
+
+  // 尺寸变体
+  &--small {
+    padding: map.get(vars.$spacings, "xs") map.get(vars.$spacings, "base");
+    font-size: map.get(vars.$font-sizes, "sm");
+    min-height: 24px;
+  }
+
+  &--large {
+    padding: map.get(vars.$spacings, "base") map.get(vars.$spacings, "xl");
+    font-size: map.get(vars.$font-sizes, "lg");
+    min-height: 40px;
+  }
+
+  // 状态
+  &:hover:not(.is-disabled):not(.is-loading) {
     color: var(--xh-primary-color);
-    border-color: var(--xh-primary-color-light);
+    border-color: var(--xh-primary-color-light-3);
     background-color: var(--xh-primary-color-light-9);
   }
 
-  // 主要按钮
-  &--primary {
-    color: #fff;
-    background-color: var(--xh-primary-color);
-    border-color: var(--xh-primary-color);
-
-    &:hover,
-    &:focus {
-      background: var(--xh-primary-color-light-3);
-      border-color: var(--xh-primary-color-light-3);
-      color: #fff;
-    }
+  &:active:not(.is-disabled):not(.is-loading) {
+    filter: brightness(0.9);
   }
 
-  // 其他类型按钮样式...
+  // 类型
+  @each $type in ("primary", "success", "warning", "danger") {
+    &--#{$type} {
+      @include mix.use-color("white");
+      @include mix.use-bg-color($type);
+      border-color: var(--xh-#{$type}-color);
 
-  // 禁用状态
-  &.is-disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
+      &.is-plain {
+        color: var(--xh-#{$type}-color);
+        background-color: var(--xh-white);
+        border-color: var(--xh-#{$type}-color);
+
+        &:hover {
+          background-color: var(--xh-#{$type}-color);
+          color: var(--xh-white);
+        }
+      }
+    }
   }
 
   // 加载状态
   &.is-loading {
-    position: relative;
-    pointer-events: none;
+    cursor: wait !important;
+    pointer-events: auto !important;
 
-    &:before {
-      content: "";
-      position: absolute;
-      left: -1px;
-      top: -1px;
-      right: -1px;
-      bottom: -1px;
-      border-radius: inherit;
-      background-color: rgba(255, 255, 255, 0.35);
+    .xh-button__loading-icon {
+      margin-right: map.get(vars.$spacings, "xs");
+      animation: xh-button-loading 1s infinite linear;
     }
-  }
 
-  // 添加悬浮效果
-  &:not(.is-disabled):not(.is-loading):hover {
-    filter: brightness(0.9);
-  }
-
-  // 添加点击效果
-  &:not(.is-disabled):not(.is-loading):active {
-    filter: brightness(0.8);
-  }
-
-  // 加载中动画
-  &__loading-icon {
-    position: relative;
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    margin-right: 8px;
-    vertical-align: middle;
-
-    &::after {
-      content: "";
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border: 2px solid currentColor;
-      border-radius: 50%;
-      border-top-color: transparent;
-      animation: button-loading 0.8s infinite linear;
-    }
-  }
-
-  // 内容过渡动画
-  &__content {
-    transition: opacity 0.2s;
-    .is-loading & {
+    .xh-button__content {
       opacity: 0.7;
     }
-  }
 
-  // 尺寸
-  &--small {
-    padding: 8px 16px;
-    font-size: var(--xh-font-size-sm);
-  }
-
-  &--large {
-    padding: 14px 24px;
-    font-size: var(--xh-font-size-lg);
-  }
-
-  // 类型样式
-  &--success {
-    --xh-button-bg-color: var(--xh-success-color);
-    --xh-button-text-color: var(--xh-white);
-    --xh-button-border-color: var(--xh-success-color);
-
-    &.is-plain {
-      --xh-button-bg-color: var(--xh-white);
-      --xh-button-text-color: var(--xh-success-color);
+    &:hover,
+    &:focus,
+    &:active {
+      cursor: wait !important;
+      filter: none;
     }
   }
 
-  &--warning {
-    --xh-button-bg-color: var(--xh-warning-color);
-    --xh-button-text-color: var(--xh-white);
-    --xh-button-border-color: var(--xh-warning-color);
+  // 图标
+  &__icon {
+    @extend .xh-icon;
+    margin-right: map.get(vars.$spacings, "xs");
 
-    &.is-plain {
-      --xh-button-bg-color: var(--xh-white);
-      --xh-button-text-color: var(--xh-warning-color);
+    .icon-placement--right & {
+      margin-right: 0;
+      margin-left: map.get(vars.$spacings, "xs");
+      order: 1;
     }
   }
 
-  &--danger {
-    --xh-button-bg-color: var(--xh-danger-color);
-    --xh-button-text-color: var(--xh-white);
-    --xh-button-border-color: var(--xh-danger-color);
-
-    &.is-plain {
-      --xh-button-bg-color: var(--xh-white);
-      --xh-button-text-color: var(--xh-danger-color);
-    }
+  // 块级按钮
+  &.is-block {
+    display: flex;
+    width: 100%;
   }
 
   // 圆角和圆形
@@ -168,26 +127,32 @@
 
   &.is-circle {
     border-radius: 50%;
-    padding: 12px;
+    padding: map.get(vars.$spacings, "sm");
   }
 
-  // 块级按钮
-  &.is-block {
-    display: flex;
-    width: 100%;
+  // 禁用状态
+  &.is-disabled {
+    cursor: not-allowed !important;
+    pointer-events: auto !important;
+    opacity: 0.5;
+
+    &:hover,
+    &:focus,
+    &:active {
+      cursor: not-allowed !important;
+      filter: none;
+    }
   }
 
-  // 图标
-  &__icon {
-    display: inline-flex;
-    align-items: center;
-    margin-right: 4px;
-    font-size: 1em;
+  // 悬浮效果
+  &:not(.is-disabled):not(.is-loading) {
+    cursor: pointer;
+    &:hover {
+      filter: brightness(0.9);
+    }
 
-    .icon-placement--right & {
-      margin-right: 0;
-      margin-left: 4px;
-      order: 1;
+    &:active {
+      filter: brightness(0.8);
     }
   }
 

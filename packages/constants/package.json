@@ -26,9 +26,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "index.js",
-  "module": "index.mjs",
-  "unpkg": "index.js",
-  "jsdelivr": "index.js",
+  "main": "index.ts",
+  "module": "index.ts",
   "types": "index.d.ts"
 }

@@ -1,0 +1,32 @@
+@use "./variables" as *;
+@use "./mixins" as *;
+
+// 边框样式
+.xh-border {
+  @include use-border();
+
+  &--top {
+    border-top: var(--xh-border-width) solid var(--xh-border-color);
+  }
+
+  &--right {
+    border-right: var(--xh-border-width) solid var(--xh-border-color);
+  }
+
+  &--bottom {
+    border-bottom: var(--xh-border-width) solid var(--xh-border-color);
+  }
+
+  &--left {
+    border-left: var(--xh-border-width) solid var(--xh-border-color);
+  }
+}
+
+// 圆角样式
+.xh-radius {
+  @each $size, $value in $border-radius {
+    &--#{$size} {
+      border-radius: $value;
+    }
+  }
+}

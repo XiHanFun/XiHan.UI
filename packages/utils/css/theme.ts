@@ -1,17 +1,36 @@
-// 主题相关工具
+// 主题相关类型定义
+export type ThemeMode = "light" | "dark" | "system";
 
-interface ThemeVars {
+export interface ThemeVars {
   [key: string]: string;
 }
 
-interface ThemeConfig {
+export interface ThemeConfig {
   name: string;
+  mode: ThemeMode;
   vars: ThemeVars;
-  darkMode?: boolean;
+  primaryColor?: string;
 }
 
 /**
- * 主题管理工具
+ * 检测系统主题
+ */
+export const getSystemTheme = (): "light" | "dark" => {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+};
+
+/**
+ * 监听系统主题变化
+ */
+export const watchSystemTheme = (callback: (theme: "light" | "dark") => void): (() => void) => {
+  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const handler = (e: MediaQueryListEvent) => callback(e.matches ? "dark" : "light");
+  mediaQuery.addEventListener("change", handler);
+  return () => mediaQuery.removeEventListener("change", handler);
+};
+
+/**
+ * 主题管理类
  */
 export class ThemeManager {
   private themes: Map<string, ThemeConfig>;
@@ -40,27 +59,32 @@ export class ThemeManager {
     if (!theme) return;
 
     this.activeTheme = name;
-    Object.entries(theme.vars).forEach(([key, value]) => {
+    this.applyThemeVars(theme.vars);
+    document.documentElement.setAttribute("data-theme", name);
+  }
+
+  /**
+   * 应用主题变量
+   */
+  private applyThemeVars(vars: ThemeVars): void {
+    Object.entries(vars).forEach(([key, value]) => {
       document.documentElement.style.setProperty(`--${key}`, value);
     });
-
-    // 更新body的data-theme属性
-    document.body.dataset.theme = name;
   }
 
   /**
-   * 获取当前主题名称
+   * 获取当前主题
    */
-  getActive(): string {
-    return this.activeTheme;
+  getActive(): ThemeConfig | undefined {
+    return this.themes.get(this.activeTheme);
   }
 
   /**
-   * 获取主题变量值
+   * 获取主题变量
    */
   getVar(name: string): string {
-    const theme = this.themes.get(this.activeTheme);
-    return theme ? theme.vars[name] : "";
+    const theme = this.getActive();
+    return theme?.vars[name] || "";
   }
 
   /**
@@ -71,7 +95,6 @@ export class ThemeManager {
       this.apply(e.matches ? darkTheme : lightTheme);
     };
     this.darkModeMediaQuery.addEventListener("change", this.darkModeListener);
-    // 初始应用
     this.apply(this.darkModeMediaQuery.matches ? darkTheme : lightTheme);
   }
 
