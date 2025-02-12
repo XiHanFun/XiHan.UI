@@ -1,10 +1,9 @@
-@forward "./variables";
-@forward "./mixins";
-@forward "./global";
-@forward "./color";
+@use "./variables";
+@use "./mixins";
+@use "./color";
 // @use "./reset";
-@forward "./transition";
-@forward "./popup";
+@use "./transition";
+@use "./popup";
 // @use "./layout";
 // @use "./border";
 // @use "./spacing";

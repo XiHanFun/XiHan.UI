@@ -28,7 +28,6 @@
   },
   "main": "index.css",
   "style": "index.css",
-  "peerDependencies": {
-    "vue": "^3.5.0"
-  }
+  "unpkg": "index.css",
+  "jsdelivr": "index.css"
 }

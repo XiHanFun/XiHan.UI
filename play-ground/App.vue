@@ -1,4 +1,8 @@
 <template>
+  <h1>主题切换</h1>
+  <XhButton @click="setMode('light')">浅色主题</XhButton>
+  <XhButton @click="setMode('dark')">深色主题</XhButton>
+
   <!-- 按钮 -->
   <h1>按钮</h1>
   <h3>按钮类型</h3>
@@ -77,8 +81,14 @@
     <XhButton type="primary">按钮2</XhButton>
     <XhButton type="primary">按钮3</XhButton>
   </XhButtonGroup>
+
+
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useTheme } from "@xihan-ui/utils/themes/useTheme";
+
+const { mode, theme, setMode } = useTheme();
+</script>
 
 <style scoped lang="scss"></style>
