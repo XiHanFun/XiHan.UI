@@ -18,6 +18,7 @@
           <XhButton type="success">成功按钮</XhButton>
           <XhButton type="warning">警告按钮</XhButton>
           <XhButton type="danger">危险按钮</XhButton>
+          <XhButton type="info">信息按钮</XhButton>
         </div>
       </section>
 
@@ -29,6 +30,24 @@
           <XhButton type="success" plain>成功按钮</XhButton>
           <XhButton type="warning" plain>警告按钮</XhButton>
           <XhButton type="danger" plain>危险按钮</XhButton>
+          <XhButton type="info" plain>信息按钮</XhButton>
+        </div>
+      </section>
+
+      <section class="demo-section">
+        <h2>图标按钮</h2>
+        <div class="demo-row">
+          <XhButton icon="xh-icon-edit">编辑</XhButton>
+          <XhButton icon="xh-icon-share">分享</XhButton>
+          <XhButton icon="xh-icon-delete" type="danger">删除</XhButton>
+          <XhButton icon="xh-icon-search" type="primary">搜索</XhButton>
+          <XhButton icon="xh-icon-check" type="success" circle></XhButton>
+          <XhButton icon="xh-icon-message" type="info" circle></XhButton>
+        </div>
+        <div class="demo-row">
+          <XhButton icon="xh-icon-edit" iconPlacement="right">编辑</XhButton>
+          <XhButton icon="xh-icon-share" iconPlacement="right">分享</XhButton>
+          <XhButton icon="xh-icon-delete" type="danger" iconPlacement="right">删除</XhButton>
         </div>
       </section>
 
@@ -40,9 +59,9 @@
           <XhButton size="large" type="primary">大型按钮</XhButton>
         </div>
         <div class="demo-row">
-          <XhButton size="small">小型按钮</XhButton>
-          <XhButton>默认按钮</XhButton>
-          <XhButton size="large">大型按钮</XhButton>
+          <XhButton size="small" icon="xh-icon-edit" type="primary">编辑</XhButton>
+          <XhButton icon="xh-icon-edit" type="primary">编辑</XhButton>
+          <XhButton size="large" icon="xh-icon-edit" type="primary">编辑</XhButton>
         </div>
       </section>
 
@@ -50,15 +69,11 @@
         <h2>按钮形状</h2>
         <div class="demo-row">
           <XhButton round>圆角按钮</XhButton>
-          <XhButton type="primary" circle>圆形按钮</XhButton>
-        </div>
-      </section>
-
-      <section class="demo-section">
-        <h2>禁用状态</h2>
-        <div class="demo-row">
-          <XhButton disabled>禁用按钮</XhButton>
-          <XhButton type="primary" disabled>禁用按钮</XhButton>
+          <XhButton type="primary" round>圆角按钮</XhButton>
+          <XhButton type="success" round icon="xh-icon-check">成功按钮</XhButton>
+          <XhButton type="info" circle icon="xh-icon-info"></XhButton>
+          <XhButton type="warning" circle icon="xh-icon-star"></XhButton>
+          <XhButton type="danger" circle icon="xh-icon-delete"></XhButton>
         </div>
       </section>
 
@@ -67,6 +82,28 @@
         <div class="demo-row">
           <XhButton loading>加载中</XhButton>
           <XhButton type="primary" loading>加载中</XhButton>
+          <XhButton type="success" loading>加载中</XhButton>
+          <XhButton type="warning" loading></XhButton>
+          <XhButton type="danger" loading circle></XhButton>
+        </div>
+      </section>
+
+      <section class="demo-section">
+        <h2>禁用状态</h2>
+        <div class="demo-row">
+          <XhButton disabled>禁用按钮</XhButton>
+          <XhButton type="primary" disabled>禁用按钮</XhButton>
+          <XhButton type="success" disabled plain>禁用按钮</XhButton>
+          <XhButton type="info" disabled round>禁用按钮</XhButton>
+          <XhButton type="danger" disabled circle icon="xh-icon-delete"></XhButton>
+        </div>
+      </section>
+
+      <section class="demo-section">
+        <h2>块级按钮</h2>
+        <div class="demo-row">
+          <XhButton type="primary" block>块级按钮</XhButton>
+          <XhButton type="success" block round>圆角块级按钮</XhButton>
         </div>
       </section>
 
@@ -74,14 +111,22 @@
         <h2>按钮组</h2>
         <div class="demo-row">
           <XhButtonGroup>
-            <XhButton type="primary">上一页</XhButton>
-            <XhButton type="primary">下一页</XhButton>
+            <XhButton type="primary" icon="xh-icon-left">上一页</XhButton>
+            <XhButton type="primary" icon="xh-icon-right" iconPlacement="right">下一页</XhButton>
+          </XhButtonGroup>
+        </div>
+        <div class="demo-row">
+          <XhButtonGroup>
+            <XhButton type="primary" icon="xh-icon-edit"></XhButton>
+            <XhButton type="primary" icon="xh-icon-share"></XhButton>
+            <XhButton type="primary" icon="xh-icon-delete"></XhButton>
           </XhButtonGroup>
         </div>
         <div class="demo-row">
           <XhButtonGroup vertical>
-            <XhButton type="primary">上传</XhButton>
-            <XhButton type="primary">下载</XhButton>
+            <XhButton type="primary" icon="xh-icon-edit">编辑</XhButton>
+            <XhButton type="primary" icon="xh-icon-share">分享</XhButton>
+            <XhButton type="primary" icon="xh-icon-delete">删除</XhButton>
           </XhButtonGroup>
         </div>
       </section>
