@@ -28,5 +28,7 @@
   },
   "main": "index.ts",
   "module": "index.ts",
+  "unpkg": "index.js",
+  "jsdelivr": "index.js",
   "types": "index.d.ts"
 }
