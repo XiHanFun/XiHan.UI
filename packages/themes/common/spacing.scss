@@ -1,0 +1,38 @@
+@use "./variables" as *;
+
+// 边距工具类
+@each $size, $value in $spacings {
+  // margin
+  .xh-m-#{$size} {
+    margin: $value;
+  }
+  .xh-mt-#{$size} {
+    margin-top: $value;
+  }
+  .xh-mr-#{$size} {
+    margin-right: $value;
+  }
+  .xh-mb-#{$size} {
+    margin-bottom: $value;
+  }
+  .xh-ml-#{$size} {
+    margin-left: $value;
+  }
+
+  // padding
+  .xh-p-#{$size} {
+    padding: $value;
+  }
+  .xh-pt-#{$size} {
+    padding-top: $value;
+  }
+  .xh-pr-#{$size} {
+    padding-right: $value;
+  }
+  .xh-pb-#{$size} {
+    padding-bottom: $value;
+  }
+  .xh-pl-#{$size} {
+    padding-left: $value;
+  }
+}

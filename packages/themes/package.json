@@ -27,7 +27,5 @@
     "access": "public"
   },
   "main": "index.css",
-  "style": "index.css",
-  "unpkg": "index.css",
-  "jsdelivr": "index.css"
+  "style": "index.css"
 }

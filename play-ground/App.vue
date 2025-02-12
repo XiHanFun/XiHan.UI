@@ -1,94 +1,183 @@
 <template>
-  <h1>主题切换</h1>
-  <XhButton @click="setMode('light')">浅色主题</XhButton>
-  <XhButton @click="setMode('dark')">深色主题</XhButton>
+  <div class="app">
+    <header class="header">
+      <h1>XiHan UI</h1>
+      <div class="theme-switch">
+        <button @click="toggleTheme">
+          {{ theme === "light" ? "🌙" : "☀️" }}
+        </button>
+      </div>
+    </header>
 
-  <!-- 按钮 -->
-  <h1>按钮</h1>
-  <h3>按钮类型</h3>
-  <XhButton type="info">默认按钮</XhButton>
-  <XhButton type="primary">主要按钮</XhButton>
-  <XhButton type="success">成功按钮</XhButton>
-  <XhButton type="warning">警告按钮</XhButton>
-  <XhButton type="danger">危险按钮</XhButton>
+    <main class="main">
+      <section class="demo-section">
+        <h2>按钮类型</h2>
+        <div class="demo-row">
+          <xh-button>默认按钮</xh-button>
+          <xh-button type="primary">主要按钮</xh-button>
+          <xh-button type="success">成功按钮</xh-button>
+          <xh-button type="warning">警告按钮</xh-button>
+          <xh-button type="danger">危险按钮</xh-button>
+        </div>
+      </section>
 
-  <h3>按钮尺寸</h3>
-  <XhButton size="small">小按钮</XhButton>
-  <XhButton size="medium">中按钮</XhButton>
-  <XhButton size="large">大按钮</XhButton>
+      <section class="demo-section">
+        <h2>朴素按钮</h2>
+        <div class="demo-row">
+          <xh-button plain>朴素按钮</xh-button>
+          <xh-button type="primary" plain>主要按钮</xh-button>
+          <xh-button type="success" plain>成功按钮</xh-button>
+          <xh-button type="warning" plain>警告按钮</xh-button>
+          <xh-button type="danger" plain>危险按钮</xh-button>
+        </div>
+      </section>
 
-  <h3>按钮状态</h3>
-  <XhButton disabled>禁用按钮</XhButton>
-  <XhButton loading>加载中</XhButton>
+      <section class="demo-section">
+        <h2>按钮尺寸</h2>
+        <div class="demo-row">
+          <xh-button size="small" type="primary">小型按钮</xh-button>
+          <xh-button type="primary">默认按钮</xh-button>
+          <xh-button size="large" type="primary">大型按钮</xh-button>
+        </div>
+        <div class="demo-row">
+          <xh-button size="small">小型按钮</xh-button>
+          <xh-button>默认按钮</xh-button>
+          <xh-button size="large">大型按钮</xh-button>
+        </div>
+      </section>
 
-  <h3>按钮圆角</h3>
-  <XhButton round>圆角按钮</XhButton>
-  <XhButton circle>圆形按钮</XhButton>
+      <section class="demo-section">
+        <h2>按钮形状</h2>
+        <div class="demo-row">
+          <xh-button round>圆角按钮</xh-button>
+          <xh-button type="primary" circle>圆形按钮</xh-button>
+        </div>
+      </section>
 
-  <h3>按钮朴素</h3>
-  <XhButton type="primary" plain>朴素按钮</XhButton>
-  <XhButton type="primary">非朴素按钮</XhButton>
+      <section class="demo-section">
+        <h2>禁用状态</h2>
+        <div class="demo-row">
+          <xh-button disabled>禁用按钮</xh-button>
+          <xh-button type="primary" disabled>禁用按钮</xh-button>
+        </div>
+      </section>
 
-  <h3>按钮原生类型</h3>
-  <XhButton native-type="button">按钮</XhButton>
-  <XhButton native-type="submit">提交</XhButton>
-  <XhButton native-type="reset">重置</XhButton>
+      <section class="demo-section">
+        <h2>加载状态</h2>
+        <div class="demo-row">
+          <xh-button loading>加载中</xh-button>
+          <xh-button type="primary" loading>加载中</xh-button>
+        </div>
+      </section>
 
-  <h3>按钮自动获取焦点</h3>
-  <XhButton autofocus>自动获取焦点</XhButton>
-
-  <h3>图标按钮</h3>
-  <XhButton icon="icon-search">搜索</XhButton>
-  <XhButton icon="icon-edit" icon-placement="right">编辑</XhButton>
-  <XhButton icon="icon-delete" circle></XhButton>
-
-  <h3>块级按钮</h3>
-  <XhButton type="primary" block>块级按钮</XhButton>
-
-  <!-- 按钮分组 -->
-  <h1>按钮组</h1>
-  <h3>基础按钮组</h3>
-  <XhButtonGroup size="small">
-    <XhButton type="primary">按钮1</XhButton>
-    <XhButton type="primary">按钮2</XhButton>
-    <XhButton type="primary">按钮3</XhButton>
-  </XhButtonGroup>
-
-  <h3>垂直按钮组</h3>
-  <XhButtonGroup vertical type="primary">
-    <XhButton>按钮1</XhButton>
-    <XhButton>按钮2</XhButton>
-    <XhButton>按钮3</XhButton>
-  </XhButtonGroup>
-
-  <h3>圆角按钮组</h3>
-  <XhButtonGroup round type="primary">
-    <XhButton>按钮1</XhButton>
-    <XhButton>按钮2</XhButton>
-    <XhButton>按钮3</XhButton>
-  </XhButtonGroup>
-
-  <h3>朴素按钮组</h3>
-  <XhButtonGroup plain type="primary">
-    <XhButton>按钮1</XhButton>
-    <XhButton>按钮2</XhButton>
-    <XhButton>按钮3</XhButton>
-  </XhButtonGroup>
-
-  <h3>大尺寸按钮组</h3>
-  <XhButtonGroup size="large">
-    <XhButton type="primary">按钮1</XhButton>
-    <XhButton type="primary">按钮2</XhButton>
-    <XhButton type="primary">按钮3</XhButton>
-  </XhButtonGroup>
-
-
+      <section class="demo-section">
+        <h2>按钮组</h2>
+        <div class="demo-row">
+          <xh-button-group>
+            <xh-button type="primary">上一页</xh-button>
+            <xh-button type="primary">下一页</xh-button>
+          </xh-button-group>
+        </div>
+        <div class="demo-row">
+          <xh-button-group vertical>
+            <xh-button type="primary">上传</xh-button>
+            <xh-button type="primary">下载</xh-button>
+          </xh-button-group>
+        </div>
+      </section>
+    </main>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { useTheme } from "@xihan-ui/utils/themes/useTheme";
+  import { ref } from "vue";
 
-const { mode, theme, setMode } = useTheme();
+  const theme = ref("light");
+
+  const toggleTheme = () => {
+    theme.value = theme.value === "light" ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", theme.value);
+  };
 </script>
 
-<style scoped lang="scss"></style>
+<style lang="scss">
+  .app {
+    min-height: 100vh;
+    background-color: var(--xh-bg-color);
+    color: var(--xh-text-color);
+    transition: all 0.3s;
+  }
+
+  .header {
+    padding: 20px;
+    border-bottom: 1px solid var(--xh-border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .theme-switch {
+      button {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        transition: all 0.3s;
+
+        &:hover {
+          background-color: var(--xh-border-color-light);
+        }
+      }
+    }
+  }
+
+  .main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  .demo-section {
+    margin-bottom: 40px;
+
+    h2 {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      color: var(--xh-text-color);
+      position: relative;
+      padding-left: 12px;
+
+      &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 16px;
+        background-color: var(--xh-primary-color);
+        border-radius: 2px;
+      }
+    }
+  }
+
+  .demo-row {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+</style>

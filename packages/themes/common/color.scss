@@ -1,0 +1,39 @@
+@use "sass:map";
+@use "./variables" as *;
+
+// 生成主题色变量
+@mixin generate-theme-colors($type) {
+  $color: map.get($colors, $type);
+
+  --xh-color-#{$type}: #{$color};
+  --xh-color-#{$type}-light-3: mix(#fff, $color, 30%);
+  --xh-color-#{$type}-light-5: mix(#fff, $color, 50%);
+  --xh-color-#{$type}-light-7: mix(#fff, $color, 70%);
+  --xh-color-#{$type}-light-9: mix(#fff, $color, 90%);
+  --xh-color-#{$type}-dark-2: mix(#000, $color, 20%);
+}
+
+// 生成所有主题色
+:root {
+  @each $type, $color in $colors {
+    @include generate-theme-colors($type);
+  }
+
+  // 文字颜色
+  --xh-text-color-primary: #303133;
+  --xh-text-color-regular: #606266;
+  --xh-text-color-secondary: #909399;
+  --xh-text-color-placeholder: #c0c4cc;
+  --xh-text-color-disabled: #c0c4cc;
+
+  // 边框颜色
+  --xh-border-color: #dcdfe6;
+  --xh-border-color-light: #e4e7ed;
+  --xh-border-color-lighter: #ebeef5;
+  --xh-border-color-extra-light: #f2f6fc;
+
+  // 背景颜色
+  --xh-bg-color: #ffffff;
+  --xh-bg-color-page: #f2f3f5;
+  --xh-bg-color-overlay: #ffffff;
+}

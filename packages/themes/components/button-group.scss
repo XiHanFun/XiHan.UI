@@ -1,8 +1,12 @@
+@use "sass:map";
+@use "../common/variables" as vars;
+@use "../common/mixins" as mix;
+
 .xh-button-group {
-  display: inline-flex;
+  @include mix.use-flex(row);
   vertical-align: middle;
 
-  & > .xh-button {
+  .xh-button {
     position: relative;
 
     // 移除相邻按钮的重叠边框
@@ -25,24 +29,23 @@
       border-radius: 0;
     }
 
-    // 悬浮状态时提升层级
+    // 交互状态
     &:hover,
     &:focus,
     &:active {
       z-index: 1;
     }
 
-    // 禁用状态不改变层级
     &.is-disabled {
       z-index: 0;
     }
   }
 
-  // 垂直按钮组
+  // 垂直排列
   &.is-vertical {
     flex-direction: column;
 
-    & > .xh-button {
+    .xh-button {
       &:not(:first-child) {
         margin-left: 0;
         margin-top: -1px;
@@ -60,31 +63,27 @@
     }
   }
 
-  // 圆角按钮组
+  // 圆角样式
   &.is-round {
-    & > .xh-button {
+    .xh-button {
       &:first-child {
-        border-top-left-radius: var(--xh-border-radius-round);
-        border-bottom-left-radius: var(--xh-border-radius-round);
+        border-radius: map.get(vars.$border-radius, "round") 0 0 map.get(vars.$border-radius, "round");
       }
 
       &:last-child {
-        border-top-right-radius: var(--xh-border-radius-round);
-        border-bottom-right-radius: var(--xh-border-radius-round);
+        border-radius: 0 map.get(vars.$border-radius, "round") map.get(vars.$border-radius, "round") 0;
       }
     }
 
-    &.is-vertical > .xh-button {
-      &:first-child {
-        border-top-left-radius: var(--xh-border-radius-round);
-        border-top-right-radius: var(--xh-border-radius-round);
-        border-bottom-radius: 0;
-      }
+    &.is-vertical {
+      .xh-button {
+        &:first-child {
+          border-radius: map.get(vars.$border-radius, "round") map.get(vars.$border-radius, "round") 0 0;
+        }
 
-      &:last-child {
-        border-bottom-left-radius: var(--xh-border-radius-round);
-        border-bottom-right-radius: var(--xh-border-radius-round);
-        border-top-radius: 0;
+        &:last-child {
+          border-radius: 0 0 map.get(vars.$border-radius, "round") map.get(vars.$border-radius, "round");
+        }
       }
     }
   }
