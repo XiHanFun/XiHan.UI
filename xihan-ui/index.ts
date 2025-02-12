@@ -12,11 +12,14 @@ import type { App } from "vue";
 import { installComponents } from "@xihan-ui/components";
 // 引入样式
 import "@xihan-ui/themes/index.scss";
+import { useTheme } from "@xihan-ui/utils/themes/useTheme";
 
 export const install = (app: App) => {
   installComponents(app);
   // 其他子包的安装逻辑
 };
+
+export { useTheme };
 
 // 导出默认对象
 const XihanUI = { install };
