@@ -1,6 +1,7 @@
 import { computed, defineComponent, inject, h } from "vue";
 import type { PropType } from "vue";
 import { buttonGroupContextKey } from "../../button-group";
+import LoadingIcon from "../../icon/src/LoadingIcon";
 import "../styles/index";
 
 // 按钮类型
@@ -59,9 +60,10 @@ export const buttonProps = {
 
 export default defineComponent({
   name: "XhButton" as const,
-
+  components: {
+    LoadingIcon,
+  },
   props: buttonProps,
-
   setup(props, { slots }) {
     // 注入按钮组上下文
     const buttonGroupContext = inject(buttonGroupContextKey, undefined);
@@ -101,7 +103,11 @@ export default defineComponent({
         // 添加 WAI-ARIA 属性增强可访问性
         role="button"
       >
-        {props.loading && <span class="xh-button__loading-icon"></span>}
+        {props.loading && (
+          <span class="xh-button__loading-icon">
+            <LoadingIcon />
+          </span>
+        )}
         {props.icon && !props.loading && (
           <span class={`xh-button__icon icon-placement--${props.iconPlacement}`}>
             <i class={props.icon}></i>
