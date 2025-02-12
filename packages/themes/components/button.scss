@@ -87,7 +87,14 @@
 
     .xh-button__loading-icon {
       margin-right: map.get(vars.$spacings, "xs");
-      animation: xh-button-loading 1s infinite linear;
+      display: inline-flex;
+      align-items: center;
+
+      .xh-loading-icon {
+        animation: xh-button-loading 1s infinite linear;
+        width: 1em;
+        height: 1em;
+      }
     }
 
     .xh-button__content {

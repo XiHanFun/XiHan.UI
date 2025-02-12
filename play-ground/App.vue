@@ -13,76 +13,76 @@
       <section class="demo-section">
         <h2>按钮类型</h2>
         <div class="demo-row">
-          <xh-button>默认按钮</xh-button>
-          <xh-button type="primary">主要按钮</xh-button>
-          <xh-button type="success">成功按钮</xh-button>
-          <xh-button type="warning">警告按钮</xh-button>
-          <xh-button type="danger">危险按钮</xh-button>
+          <XhButton>默认按钮</XhButton>
+          <XhButton type="primary">主要按钮</XhButton>
+          <XhButton type="success">成功按钮</XhButton>
+          <XhButton type="warning">警告按钮</XhButton>
+          <XhButton type="danger">危险按钮</XhButton>
         </div>
       </section>
 
       <section class="demo-section">
         <h2>朴素按钮</h2>
         <div class="demo-row">
-          <xh-button plain>朴素按钮</xh-button>
-          <xh-button type="primary" plain>主要按钮</xh-button>
-          <xh-button type="success" plain>成功按钮</xh-button>
-          <xh-button type="warning" plain>警告按钮</xh-button>
-          <xh-button type="danger" plain>危险按钮</xh-button>
+          <XhButton plain>朴素按钮</XhButton>
+          <XhButton type="primary" plain>主要按钮</XhButton>
+          <XhButton type="success" plain>成功按钮</XhButton>
+          <XhButton type="warning" plain>警告按钮</XhButton>
+          <XhButton type="danger" plain>危险按钮</XhButton>
         </div>
       </section>
 
       <section class="demo-section">
         <h2>按钮尺寸</h2>
         <div class="demo-row">
-          <xh-button size="small" type="primary">小型按钮</xh-button>
-          <xh-button type="primary">默认按钮</xh-button>
-          <xh-button size="large" type="primary">大型按钮</xh-button>
+          <XhButton size="small" type="primary">小型按钮</XhButton>
+          <XhButton type="primary">默认按钮</XhButton>
+          <XhButton size="large" type="primary">大型按钮</XhButton>
         </div>
         <div class="demo-row">
-          <xh-button size="small">小型按钮</xh-button>
-          <xh-button>默认按钮</xh-button>
-          <xh-button size="large">大型按钮</xh-button>
+          <XhButton size="small">小型按钮</XhButton>
+          <XhButton>默认按钮</XhButton>
+          <XhButton size="large">大型按钮</XhButton>
         </div>
       </section>
 
       <section class="demo-section">
         <h2>按钮形状</h2>
         <div class="demo-row">
-          <xh-button round>圆角按钮</xh-button>
-          <xh-button type="primary" circle>圆形按钮</xh-button>
+          <XhButton round>圆角按钮</XhButton>
+          <XhButton type="primary" circle>圆形按钮</XhButton>
         </div>
       </section>
 
       <section class="demo-section">
         <h2>禁用状态</h2>
         <div class="demo-row">
-          <xh-button disabled>禁用按钮</xh-button>
-          <xh-button type="primary" disabled>禁用按钮</xh-button>
+          <XhButton disabled>禁用按钮</XhButton>
+          <XhButton type="primary" disabled>禁用按钮</XhButton>
         </div>
       </section>
 
       <section class="demo-section">
         <h2>加载状态</h2>
         <div class="demo-row">
-          <xh-button loading>加载中</xh-button>
-          <xh-button type="primary" loading>加载中</xh-button>
+          <XhButton loading>加载中</XhButton>
+          <XhButton type="primary" loading>加载中</XhButton>
         </div>
       </section>
 
       <section class="demo-section">
         <h2>按钮组</h2>
         <div class="demo-row">
-          <xh-button-group>
-            <xh-button type="primary">上一页</xh-button>
-            <xh-button type="primary">下一页</xh-button>
-          </xh-button-group>
+          <XhButtonGroup>
+            <XhButton type="primary">上一页</XhButton>
+            <XhButton type="primary">下一页</XhButton>
+          </XhButtonGroup>
         </div>
         <div class="demo-row">
-          <xh-button-group vertical>
-            <xh-button type="primary">上传</xh-button>
-            <xh-button type="primary">下载</xh-button>
-          </xh-button-group>
+          <XhButtonGroup vertical>
+            <XhButton type="primary">上传</XhButton>
+            <XhButton type="primary">下载</XhButton>
+          </XhButtonGroup>
         </div>
       </section>
     </main>
