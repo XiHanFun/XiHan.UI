@@ -1,6 +1,6 @@
 {
   // 拼写检查
-  "cSpell.words": ["XiHan", "xihan", "xihan-ui", "zhaifanhua"],
+  "cSpell.words": ["xihan", "XiHan", "xihan-ui", "xihanui", "zhaifanhua"],
   // 包管理器
   "npm.packageManager": "pnpm",
   // 控制相关文件嵌套展示

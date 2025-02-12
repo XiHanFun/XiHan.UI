@@ -1,6 +1,6 @@
 {
   "name": "@xihan-ui/hooks",
-  "version": "0.8.13",
+  "version": "0.8.14",
   "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -26,8 +26,8 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "index.ts",
-  "module": "index.ts",
+  "main": "index.js",
+  "module": "index.mjs",
   "unpkg": "index.js",
   "jsdelivr": "index.js",
   "types": "index.d.ts",
