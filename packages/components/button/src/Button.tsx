@@ -2,6 +2,7 @@ import { computed, defineComponent, inject, h } from "vue";
 import type { PropType } from "vue";
 import { buttonGroupContextKey } from "../../button-group";
 import LoadingIcon from "../../icon/src/LoadingIcon";
+import Icon from "../../icon/src/Icon";
 import "../styles/index";
 
 // 按钮类型
@@ -62,6 +63,7 @@ export default defineComponent({
   name: "XhButton" as const,
   components: {
     LoadingIcon,
+    Icon,
   },
   props: buttonProps,
   setup(props, { slots }) {
@@ -110,7 +112,7 @@ export default defineComponent({
         )}
         {props.icon && !props.loading && (
           <span class={`xh-button__icon icon-placement--${props.iconPlacement}`}>
-            <i class={props.icon}></i>
+            <Icon name={props.icon} />
           </span>
         )}
         {slots.icon && !props.loading && <span class="xh-button__icon">{slots.icon()}</span>}
