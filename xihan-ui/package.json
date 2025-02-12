@@ -1,6 +1,6 @@
 {
   "name": "xihan-ui",
-  "version": "0.8.13",
+  "version": "0.8.14",
   "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -25,7 +25,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "lib/index.ts",
+  "main": "lib/index.js",
   "module": "es/index.mjs",
   "unpkg": "dist/index.full.js",
   "jsdelivr": "dist/index.full.js",
@@ -37,16 +37,9 @@
       "import": "./es/index.mjs",
       "require": "./lib/index.js"
     },
-    "./global": {
-      "types": "./global.d.ts"
-    },
     "./es": {
       "types": "./es/index.d.ts",
       "import": "./es/index.mjs"
-    },
-    "./lib": {
-      "types": "./lib/index.d.ts",
-      "require": "./lib/index.js"
     },
     "./es/*.mjs": {
       "types": "./es/*.d.ts",
@@ -58,6 +51,10 @@
         "./es/*/index.d.ts"
       ],
       "import": "./es/*.mjs"
+    },
+    "./lib": {
+      "types": "./lib/index.d.ts",
+      "require": "./lib/index.js"
     },
     "./lib/*.js": {
       "types": "./lib/*.d.ts",
@@ -75,9 +72,8 @@
   "sideEffects": [
     "dist/*",
     "themes/**/*.css",
-    "themes/src/**/*.scss",
-    "es/components/*/style/*",
-    "lib/components/*/style/*"
+    "es/components/*/styles/*",
+    "lib/components/*/styles/*"
   ],
   "peerDependencies": {
     "vue": "^3.5.0"

@@ -16,7 +16,6 @@
     "skipLibCheck": true,
     "noEmit": true,
     "baseUrl": ".",
-    "rootDir": ".",
     "paths": {
       "@xihan-ui/*": ["packages/*"],
       "xihan-ui": ["xihan-ui"],
