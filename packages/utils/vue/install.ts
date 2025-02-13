@@ -76,7 +76,7 @@ export function makeInstaller(options: InstallOptions = {}) {
     };
 
     // 性能追踪（开发模式）
-    if (process.env.NODE_ENV === "development") {
+    if (import.meta.env.DEV) {
       app.config.performance = true;
     }
   };
