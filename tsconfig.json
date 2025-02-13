@@ -21,7 +21,7 @@
       "xihan-ui": ["xihan-ui"],
       "play-ground": ["play-ground"]
     },
-    "types": ["vite/client", "vue", "@vue/runtime-core"]
+    "types": ["vite/client", "vue", "node"]
   },
   "include": [
     "packages",
