@@ -62,18 +62,19 @@
     "@types/node": "*",
     "@vitejs/plugin-vue": "*",
     "@vitejs/plugin-vue-jsx": "*",
-    "sass": "*",
-    "sass-lint": "^1.13.1",
-    "typescript": "*",
-    "vite": "*",
-    "vite-plugin-dts": "*",
-    "vitest": "^3.0.5",
     "eslint": "^9.20.1",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-vue": "^9.32.0",
-    "stylelint": "^16.14.1",
     "prettier": "^3.5.0",
-    "vite-plugin-vue-devtools": "^7.7.2"
+    "rollup": "^4.34.7",
+    "sass": "*",
+    "sass-lint": "^1.13.1",
+    "stylelint": "^16.14.1",
+    "typescript": "*",
+    "vite": "*",
+    "vite-plugin-dts": "*",
+    "vite-plugin-vue-devtools": "^7.7.2",
+    "vitest": "^3.0.5"
   }
 }
