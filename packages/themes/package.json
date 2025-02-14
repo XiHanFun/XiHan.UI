@@ -27,5 +27,16 @@
     "access": "public"
   },
   "main": "index.css",
-  "style": "index.css"
+  "style": "index.css",
+  "peerDependencies": {
+    "vue": "*"
+  },
+  "dependencies": {
+    "@xihan-ui/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "*",
+    "typescript": "*",
+    "sass": "*"
+  }
 }

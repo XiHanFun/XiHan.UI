@@ -30,10 +30,14 @@
   "module": "index.ts",
   "types": "index.d.ts",
   "peerDependencies": {
-    "vue": "^3.5.0"
+    "vue": "*"
   },
   "dependencies": {
     "@xihan-ui/utils": "workspace:*",
     "@xihan-ui/themes": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "*",
+    "typescript": "*"
   }
 }
