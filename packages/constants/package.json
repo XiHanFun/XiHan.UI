@@ -28,5 +28,15 @@
   },
   "main": "index.ts",
   "module": "index.ts",
-  "types": "index.d.ts"
+  "types": "index.d.ts",
+  "peerDependencies": {
+    "vue": "*"
+  },
+  "dependencies": {
+    "@xihan-ui/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "*",
+    "typescript": "*"
+  }
 }
