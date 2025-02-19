@@ -17,7 +17,7 @@ import { useTheme } from "@xihan-ui/hooks";
 // 创建日志记录器
 const logger = createLogger({
   prefix: "XihanUI",
-  level: process.env.NODE_ENV === "development" ? "debug" : "error",
+  level: import.meta.env.DEV ? "debug" : "error",
 });
 
 // 安装函数
