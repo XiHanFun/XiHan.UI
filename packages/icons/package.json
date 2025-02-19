@@ -1,14 +1,13 @@
 {
-  "name": "play-ground",
-  "private": true,
-  "version": "0.8.12",
+  "name": "@xihan-ui/icons",
+  "version": "0.8.14",
   "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
   "repository": {
     "type": "git",
     "url": "https://github.com/XiHanFun/XiHan.UI",
-    "directory": "play-ground"
+    "directory": "packages/icons"
   },
   "bugs": {
     "url": "https://github.com/XiHanFun/XiHan.UI/issues"
@@ -16,34 +15,28 @@
   "keywords": [
     "xihan",
     "ui",
-    "playground"
+    "icons"
   ],
-  "type": "module",
   "author": {
     "name": "zhaifanhua",
     "email": "me@zhaifanhua.com",
     "url": "https://www.zhaifanhua.com"
   },
-  "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "preview": "vite preview"
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
   },
+  "main": "index.ts",
+  "module": "index.ts",
+  "types": "index.d.ts",
   "peerDependencies": {
     "vue": "*"
   },
   "dependencies": {
-    "pinia": "*",
-    "vue": "*",
-    "vue-router": "*",
-    "xihan-ui": "workspace:*"
+    "@xihan-ui/utils": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "*",
-    "typescript": "*",
-    "vite": "*",
-    "@vitejs/plugin-vue": "*",
-    "@vitejs/plugin-vue-jsx": "*",
-    "vite-plugin-dts": "*"
+    "typescript": "*"
   }
 }
