@@ -1,0 +1,42 @@
+{
+  "name": "@xihan-ui/plugins",
+  "version": "0.8.14",
+  "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
+  "license": "MIT",
+  "homepage": "https://ui.xihanfun.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/XiHanFun/XiHan.UI",
+    "directory": "packages/plugins"
+  },
+  "bugs": {
+    "url": "https://github.com/XiHanFun/XiHan.UI/issues"
+  },
+  "keywords": [
+    "xihan",
+    "ui",
+    "plugins"
+  ],
+  "author": {
+    "name": "zhaifanhua",
+    "email": "me@zhaifanhua.com",
+    "url": "https://www.zhaifanhua.com"
+  },
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "index.ts",
+  "module": "index.ts",
+  "types": "index.d.ts",
+  "peerDependencies": {
+    "vue": "*"
+  },
+  "dependencies": {
+    "@xihan-ui/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "*",
+    "typescript": "*"
+  }
+}
