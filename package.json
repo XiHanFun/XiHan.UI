@@ -26,7 +26,7 @@
   "workspaces": [
     "packages/*",
     "xihan-ui",
-    "playground"
+    "play-ground"
   ],
   "packageManager": "pnpm@10.2.1",
   "engines": {
@@ -34,7 +34,7 @@
     "pnpm": "^10.2.0"
   },
   "scripts": {
-    "bootstrap": "pnpm install",
+    "bootstrap": "pnpm -r install",
     "dev": "vite dev",
     "debug": "vite dev --debug",
     "preview": "vite preview",
@@ -48,34 +48,33 @@
     "clean-node": "pnpm run clean-lock && pnpm run clean-modules",
     "clean-build": "node scripts/clean-dist.mjs",
     "gen-version": "node scripts/gen-version.mjs",
-    "update-pkg": "ncu -u",
+    "update-pkg": "pnpm -r exec ncu -u",
     "reinstall": "pnpm run clean-node && pnpm run bootstrap",
     "rebuild": "pnpm run clean-build && pnpm run build",
-    "publish": "pnpm publish -r",
+    "publish": "pnpm -r publish",
     "prerelease": "pnpm run clean-build && pnpm gen-version && pnpm build",
-    "release": "pnpm publish -r --access public"
+    "release": "pnpm -r publish --access public"
   },
   "peerDependencies": {
-    "vue": "^3.5.0"
-  },
-  "dependencies": {
-    "@xihan-ui/components": "workspace:*",
-    "@xihan-ui/constants": "workspace:*",
-    "@xihan-ui/directives": "workspace:*",
-    "@xihan-ui/hooks": "workspace:*",
-    "@xihan-ui/locales": "workspace:*",
-    "@xihan-ui/themes": "workspace:*",
-    "@xihan-ui/utils": "workspace:*"
+    "vue": "*"
   },
   "devDependencies": {
-    "@types/node": "^22.13.1",
-    "@vitejs/plugin-vue": "^5.2.1",
-    "@vitejs/plugin-vue-jsx": "^4.1.1",
-    "sass": "^1.84.0",
-    "typescript": "^5.7.3",
-    "vite": "^6.1.0",
-    "vite-plugin-dts": "^4.5.0",
-    "vitest": "^3.0.5",
-    "vue": "^3.5.13"
+    "@types/node": "*",
+    "@vitejs/plugin-vue": "*",
+    "@vitejs/plugin-vue-jsx": "*",
+    "eslint": "^9.20.1",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.3",
+    "eslint-plugin-vue": "^9.32.0",
+    "prettier": "^3.5.0",
+    "rollup": "^4.34.7",
+    "sass": "*",
+    "sass-lint": "^1.13.1",
+    "stylelint": "^16.14.1",
+    "typescript": "*",
+    "vite": "*",
+    "vite-plugin-dts": "*",
+    "vite-plugin-vue-devtools": "^7.7.2",
+    "vitest": "^3.0.5"
   }
 }

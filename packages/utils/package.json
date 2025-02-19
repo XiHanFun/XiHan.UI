@@ -30,6 +30,10 @@
   "module": "index.ts",
   "types": "index.d.ts",
   "peerDependencies": {
-    "vue": "^3.5.0"
+    "vue": "*"
+  },
+  "devDependencies": {
+    "@types/node": "*",
+    "typescript": "*"
   }
 }
