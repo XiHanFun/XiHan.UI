@@ -1,5 +1,5 @@
 import { createApp } from "vue";
-import App from "./App.vue";
+import App from "./src/App.vue";
 import XihanUI from "xihan-ui";
 
 const app = createApp(App);
