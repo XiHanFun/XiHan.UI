@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/icons",
   "version": "0.8.14",
-  "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
+  "description": "Icon components for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
   "repository": {
@@ -29,14 +29,35 @@
   "main": "index.ts",
   "module": "index.ts",
   "types": "index.d.ts",
+  "scripts": {
+    "download": "tsx scripts/download.ts",
+    "build": "npm run download && npm run generate && vite build",
+    "generate": "tsx scripts/generate.ts"
+  },
   "peerDependencies": {
     "vue": "*"
   },
   "dependencies": {
-    "@xihan-ui/utils": "workspace:*"
+    "@xihan-ui/utils": "workspace:*",
+    "vue": "^3.0.0",
+    "ionicons": "^4.0.0",
+    "@primer/octicons": "^19.0.0",
+    "feather-icons": "^4.29.0",
+    "lucide-static": "^0.263.0"
   },
   "devDependencies": {
     "@types/node": "*",
-    "typescript": "*"
+    "@vitejs/plugin-vue": "^4.0.0",
+    "@vitejs/plugin-vue-jsx": "^3.0.0",
+    "sass": "^1.0.0",
+    "tsx": "^3.0.0",
+    "typescript": "*",
+    "vite": "^4.0.0",
+    "svgo": "^3.0.0",
+    "camelcase": "^7.0.0",
+    "@types/svgo": "^3.0.0",
+    "glob": "^10.0.0",
+    "@types/glob": "^8.0.0",
+    "@types/camelcase": "^5.2.0"
   }
 }
