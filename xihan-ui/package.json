@@ -25,10 +25,10 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "index.ts",
-  "module": "index.ts",
-  "types": "index.d.ts",
-  "style": "dist/index.css",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.d.ts",
+  "style": "src/index.css",
   "exports": {
     ".": {
       "types": "./es/index.d.ts",
