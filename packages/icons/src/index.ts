@@ -1,8 +1,6 @@
-import { resolve, dirname } from "path";
 import camelcase from "camelcase";
 import { getIconPath } from "./utils/path";
 import type { IconDefinition } from "./utils/creator";
-import { glob } from "./utils/glob";
 
 export const icons: IconDefinition[] = [
   {
@@ -521,7 +519,7 @@ export const icons: IconDefinition[] = [
   {
     id: "cg",
     name: "css.gg",
-    path: "css.gg",
+    path: "Css-Gg",
     contents: [
       {
         files: getIconPath(import.meta.url, "../css.gg/icons/svg/*.svg"),

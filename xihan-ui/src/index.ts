@@ -11,7 +11,7 @@ export * from "@xihan-ui/locales";
 export * from "@xihan-ui/components";
 
 // 引入样式
-import "@xihan-ui/themes/index.scss";
+import "@xihan-ui/themes";
 import { useTheme } from "@xihan-ui/hooks";
 
 // 创建日志记录器

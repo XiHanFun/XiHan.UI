@@ -26,8 +26,8 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "index.css",
-  "style": "index.css",
+  "main": "src/index.css",
+  "style": "src/index.css",
   "peerDependencies": {
     "vue": "*"
   },
