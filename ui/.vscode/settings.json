@@ -18,5 +18,6 @@
   "i18n-ally.localesPaths": ["packages/locales/lang"],
   "i18n-ally.enabledParsers": ["ts"],
   "i18n-ally.enabledFrameworks": ["vue", "vue-sfc"],
-  "i18n-ally.keystyle": "nested"
+  "i18n-ally.keystyle": "nested",
+  "git.ignoreLimitWarning": true
 }
