@@ -1,12 +1,8 @@
 import { resolve } from "path";
 import { readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync } from "fs";
 import { optimize, type Config } from "svgo";
-import { getDirname } from "../src/utils/path";
-import { icons } from "../src";
-
-// 修改路径以匹配实际结构
-const ASSETS_DIR = resolve(getDirname(import.meta.url), "../assets");
-const ICONS_DIR = resolve(getDirname(import.meta.url), "../src/icons");
+import { icons } from "../src/source";
+import { ASSETS_DIR, ICONS_DIR } from "../src/utils/path";
 
 // SVG优化配置
 const svgoConfig: Config = {
@@ -72,11 +68,10 @@ export const ${name} = createIcon({
     }
 
     // 生成索引文件
-    const indexContent = `
-${icons
-  .map(iconSet => iconSet.contents.map(content => `export * from "./${content.formatter("*")}";`).join("\n"))
-  .join("\n")}
-`;
+    const indexContent = `${icons
+      .map(iconSet => iconSet.contents.map(content => `export * from "./${content.formatter("*")}";`).join("\n"))
+      .join("\n")}`;
+
     writeFileSync(resolve(ICONS_DIR, "index.ts"), indexContent);
 
     console.log("Icons generated successfully!");

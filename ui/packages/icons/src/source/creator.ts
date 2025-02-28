@@ -2,7 +2,16 @@ import { defineComponent, h } from "vue";
 import IconBase from "../components/IconBase";
 import type { IconBaseProps } from "../components/IconBase";
 
-export interface IconDefinition {
+export interface SourceConfig {
+  type: "git";
+  localName: string;
+  remoteDir?: string;
+  url: string;
+  branch: string;
+  hash: string;
+}
+
+export interface IconSource {
   id: string;
   name: string;
   path: string;
@@ -15,17 +24,10 @@ export interface IconDefinition {
   projectUrl: string;
   license: string;
   licenseUrl: string;
-  source?: {
-    type: "git";
-    localName: string;
-    remoteDir: string;
-    url: string;
-    branch: string;
-    hash: string;
-  };
+  source?: SourceConfig;
 }
 
-export function createIcon(definition: IconDefinition) {
+export function createIcon(definition: IconSource) {
   return defineComponent({
     name: definition.name,
     inheritAttrs: false,

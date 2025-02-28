@@ -1,28 +1,23 @@
 import { resolve } from "path";
 import { execSync } from "child_process";
-import { mkdirSync, existsSync } from "fs";
-import { getDirname } from "../src/utils/path";
-import type { IconDefinition } from "../src/utils/creator";
+import { mkdirSync, existsSync, writeFileSync } from "fs";
+import type { SourceConfig, IconSource } from "../src/source/creator";
+import { ASSETS_DIR, ICONS_DIR } from "../src/utils/path";
 
 // 修改导入路径
-import { icons } from "../src";
+import { icons } from "../src/source";
 
-const ICONS_DIR = resolve(getDirname(import.meta.url), "../assets");
-
-interface SourceConfig {
-  type: "git";
-  localName: string;
-  url: string;
-  branch: string;
-  hash: string;
-}
-
-interface IconConfig extends IconDefinition {
+// 图标库配置
+interface IconConfig extends IconSource {
   source?: SourceConfig;
 }
 
+/**
+ * 下载仓库
+ * @param source 仓库配置
+ */
 async function downloadRepo(source: SourceConfig) {
-  const repoPath = resolve(ICONS_DIR, source.localName);
+  const repoPath = resolve(ASSETS_DIR, source.localName);
 
   try {
     if (!existsSync(repoPath)) {
@@ -42,11 +37,14 @@ async function downloadRepo(source: SourceConfig) {
   }
 }
 
+/**
+ * 下载所有图标库
+ */
 async function downloadAll() {
   try {
     // 创建图标目录
-    if (!existsSync(ICONS_DIR)) {
-      mkdirSync(ICONS_DIR, { recursive: true });
+    if (!existsSync(ASSETS_DIR)) {
+      mkdirSync(ASSETS_DIR, { recursive: true });
     }
 
     // 下载所有图标库

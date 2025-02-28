@@ -1,15 +1,15 @@
-import camelcase from "camelcase";
-import { getIconPath } from "./utils/path";
-import type { IconDefinition } from "./utils/creator";
+import { getIconPath } from "../utils/path";
+import type { IconSource } from "./creator";
+import { stringFormatUtils } from "@xihan-ui/utils";
 
-export const icons: IconDefinition[] = [
+export const icons: IconSource[] = [
   {
     id: "ci",
     name: "Circum Icons",
     path: "Circum-Icons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../assets/Circum-Icons/svg/*.svg"),
+        files: getIconPath("../Circum-Icons/svg/*.svg"),
         formatter: (name: string) => `Ci${name}`.replace(/_/g, "").replace(/&/g, "And"),
       },
     ],
@@ -22,7 +22,7 @@ export const icons: IconDefinition[] = [
       remoteDir: "svg/",
       url: "https://github.com/Klarr-Agency/Circum-Icons.git",
       branch: "main",
-      hash: "cec1364b5199f55e946a9a8360385a958b98cc60",
+      hash: "cec1364b5199f55e946a9a8360385a958b98cc60—1",
     },
   },
   {
@@ -31,11 +31,11 @@ export const icons: IconDefinition[] = [
     path: "Font-Awesome",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../fontawesome/svgs/+(brands|solid)/*.svg"),
+        files: getIconPath("../fontawesome/svgs/+(brands|solid)/*.svg"),
         formatter: name => `Fa${name}`,
       },
       {
-        files: getIconPath(import.meta.url, "../fontawesome/svgs/regular/*.svg"),
+        files: getIconPath("../fontawesome/svgs/regular/*.svg"),
         formatter: name => `FaReg${name}`,
       },
     ],
@@ -57,11 +57,11 @@ export const icons: IconDefinition[] = [
     path: "Font-Awesome",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../fontawesome-6/svgs/+(brands|solid)/*.svg"),
+        files: getIconPath("../fontawesome-6/svgs/+(brands|solid)/*.svg"),
         formatter: name => `Fa${name}`,
       },
       {
-        files: getIconPath(import.meta.url, "../fontawesome-6/svgs/regular/*.svg"),
+        files: getIconPath("../fontawesome-6/svgs/regular/*.svg"),
         formatter: name => `FaReg${name}`,
       },
     ],
@@ -79,32 +79,25 @@ export const icons: IconDefinition[] = [
   },
   {
     id: "io",
-    name: "Ionicons 4",
+    name: "Ionicons",
     path: "Ionicons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../../node_modules/ionicons/dist/collection/icon/svg/*.svg"),
+        files: getIconPath("../ionicons/src/svg/*.svg"),
         formatter: (name: string) => `Io${name}`,
       },
     ],
     projectUrl: "https://ionicons.com/",
     license: "MIT",
     licenseUrl: "https://github.com/ionic-team/ionicons/blob/master/LICENSE",
-  },
-  {
-    id: "io5",
-    name: "Ionicons 5",
-    path: "Ionicons",
-    contents: [
-      {
-        files: getIconPath(import.meta.url, "../../../../node_modules/ionicons-5/dist/svg/*.svg"),
-        formatter: name => `Io${name}`,
-        processWithSVGO: true,
-      },
-    ],
-    projectUrl: "https://ionicons.com/",
-    license: "MIT",
-    licenseUrl: "https://github.com/ionic-team/ionicons/blob/master/LICENSE",
+    source: {
+      type: "git",
+      localName: "ionicons",
+      remoteDir: "src/svg/",
+      url: "https://github.com/ionic-team/ionicons.git",
+      branch: "main",
+      hash: "4477c0251291dee6c2aeeebef8df928edf3e620f",
+    },
   },
   {
     id: "ti",
@@ -112,7 +105,7 @@ export const icons: IconDefinition[] = [
     path: "Typicons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../typicons/src/svg/*.svg"),
+        files: getIconPath("../typicons/src/svg/*.svg"),
         formatter: name => `Ti${name}`,
       },
     ],
@@ -134,13 +127,21 @@ export const icons: IconDefinition[] = [
     path: "Github-Octicons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../../node_modules/@primer/octicons/build/svg/*-24.svg"),
+        files: getIconPath("../../node_modules/@primer/octicons/build/svg/*-24.svg"),
         formatter: (name: string) => `Go${name}`.replace("24", ""),
       },
     ],
     projectUrl: "https://octicons.github.com/",
     license: "MIT",
     licenseUrl: "https://github.com/primer/octicons/blob/master/LICENSE",
+    source: {
+      type: "git",
+      localName: "typicons",
+      remoteDir: "src/svg/",
+      url: "https://github.com/stephenhutchings/typicons.font.git",
+      branch: "master",
+      hash: "0aa64f6ce8b892a83aeeafa42c74fb9c1f22ec84",
+    },
   },
   {
     id: "fi",
@@ -148,13 +149,21 @@ export const icons: IconDefinition[] = [
     path: "Feather",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../../node_modules/feather-icons/dist/icons/*.svg"),
+        files: getIconPath("../../node_modules/feather-icons/dist/icons/*.svg"),
         formatter: (name: string) => `Fi${name}`,
       },
     ],
     projectUrl: "https://feathericons.com/",
     license: "MIT",
     licenseUrl: "https://github.com/feathericons/feather/blob/master/LICENSE",
+    source: {
+      type: "git",
+      localName: "typicons",
+      remoteDir: "src/svg/",
+      url: "https://github.com/stephenhutchings/typicons.font.git",
+      branch: "master",
+      hash: "0aa64f6ce8b892a83aeeafa42c74fb9c1f22ec84",
+    },
   },
   {
     id: "lu",
@@ -162,13 +171,21 @@ export const icons: IconDefinition[] = [
     path: "Lucide",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../../node_modules/lucide-static/icons/*.svg"),
+        files: getIconPath("../lucide-static/icons/*.svg"),
         formatter: (name: string) => `Lu${name}`,
       },
     ],
     projectUrl: "https://lucide.dev/",
     license: "ISC",
     licenseUrl: "https://github.com/lucide-icons/lucide/blob/main/LICENSE",
+    source: {
+      type: "git",
+      localName: "typicons",
+      remoteDir: "src/svg/",
+      url: "https://github.com/stephenhutchings/typicons.font.git",
+      branch: "master",
+      hash: "0aa64f6ce8b892a83aeeafa42c74fb9c1f22ec84",
+    },
   },
   {
     id: "gi",
@@ -176,7 +193,7 @@ export const icons: IconDefinition[] = [
     path: "Game-Icons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../game-icons-inverted/all-icons/*.svg"),
+        files: getIconPath("../game-icons-inverted/all-icons/*.svg"),
         formatter: name => `Gi${name}`,
       },
     ],
@@ -198,7 +215,7 @@ export const icons: IconDefinition[] = [
     path: "Weather-Icons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../weather-icons/svg/*.svg"),
+        files: getIconPath("../weather-icons/svg/*.svg"),
         formatter: name => name,
       },
     ],
@@ -220,7 +237,7 @@ export const icons: IconDefinition[] = [
     path: "Devicons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../devicons/!SVG/*.svg"),
+        files: getIconPath("../devicons/!SVG/*.svg"),
         formatter: name => `Di${name}`,
       },
     ],
@@ -242,15 +259,15 @@ export const icons: IconDefinition[] = [
     path: "Ant-Design-Icons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../ant-design-icons/packages/icons-svg/svg/filled/*.svg"),
+        files: getIconPath("../ant-design-icons/packages/icons-svg/svg/filled/*.svg"),
         formatter: name => `AiFill${name}`,
       },
       {
-        files: getIconPath(import.meta.url, "../ant-design-icons/packages/icons-svg/svg/outlined/*.svg"),
+        files: getIconPath("../ant-design-icons/packages/icons-svg/svg/outlined/*.svg"),
         formatter: name => `AiOutline${name}`,
       },
       {
-        files: getIconPath(import.meta.url, "../ant-design-icons/packages/icons-svg/svg/twotone/*.svg"),
+        files: getIconPath("../ant-design-icons/packages/icons-svg/svg/twotone/*.svg"),
         formatter: name => `AiTwotone${name}`,
         multiColor: true,
       },
@@ -273,15 +290,15 @@ export const icons: IconDefinition[] = [
     path: "Bootstrap-Icons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../bootstrap/icons/*!(-reverse)-fill.svg"),
+        files: getIconPath("../bootstrap/icons/*!(-reverse)-fill.svg"),
         formatter: name => `BsFill${name}`,
       },
       {
-        files: getIconPath(import.meta.url, "../bootstrap/icons/*-reverse!(-fill).svg"),
+        files: getIconPath("../bootstrap/icons/*-reverse!(-fill).svg"),
         formatter: name => `BsReverse${name}`,
       },
       {
-        files: getIconPath(import.meta.url, "../bootstrap/icons/*!(-fill|-reverse|reverse-).svg"),
+        files: getIconPath("../bootstrap/icons/*!(-fill|-reverse|reverse-).svg"),
         formatter: name => `Bs${name}`,
       },
     ],
@@ -303,7 +320,7 @@ export const icons: IconDefinition[] = [
     path: "Remix-Icon",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../RemixIcon/icons/*/*.svg"),
+        files: getIconPath("../RemixIcon/icons/*/*.svg"),
         formatter: name => `Ri${name}`,
       },
     ],
@@ -325,7 +342,7 @@ export const icons: IconDefinition[] = [
     path: "Flat-Color-Icons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../flat-color-icons/svg/*.svg"),
+        files: getIconPath("../flat-color-icons/svg/*.svg"),
         formatter: name => `Fc${name}`,
         multiColor: true,
       },
@@ -348,7 +365,7 @@ export const icons: IconDefinition[] = [
     path: "Grommet-Icons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../grommet-icons/public/img/*.svg"),
+        files: getIconPath("../grommet-icons/public/img/*.svg"),
         formatter: name => `Gr${name}`,
       },
     ],
@@ -370,11 +387,11 @@ export const icons: IconDefinition[] = [
     path: "Heroicons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../heroicons/optimized/solid/*.svg"),
+        files: getIconPath("../heroicons/optimized/solid/*.svg"),
         formatter: name => `Hi${name}`,
       },
       {
-        files: getIconPath(import.meta.url, "../heroicons/optimized/outline/*.svg"),
+        files: getIconPath("../heroicons/optimized/outline/*.svg"),
         formatter: name => `HiOutline${name}`,
       },
     ],
@@ -396,15 +413,15 @@ export const icons: IconDefinition[] = [
     path: "Heroicons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../heroicons-2/optimized/24/solid/*.svg"),
+        files: getIconPath("../heroicons-2/optimized/24/solid/*.svg"),
         formatter: name => `Hi${name}`,
       },
       {
-        files: getIconPath(import.meta.url, "../heroicons-2/optimized/24/outline/*.svg"),
+        files: getIconPath("../heroicons-2/optimized/24/outline/*.svg"),
         formatter: name => `HiOutline${name}`,
       },
       {
-        files: getIconPath(import.meta.url, "../heroicons-2/optimized/20/solid/*.svg"),
+        files: getIconPath("../heroicons-2/optimized/20/solid/*.svg"),
         formatter: name => `HiMini${name}`,
       },
     ],
@@ -426,7 +443,7 @@ export const icons: IconDefinition[] = [
     path: "Simple-Icons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../simple-icons/icons/*.svg"),
+        files: getIconPath("../simple-icons/icons/*.svg"),
         formatter: name => `Si${name}`,
       },
     ],
@@ -448,7 +465,7 @@ export const icons: IconDefinition[] = [
     path: "Simple-Line-Icons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../simple-line-icons/src/svgs/*.svg"),
+        files: getIconPath("../simple-line-icons/src/svgs/*.svg"),
         formatter: name => `Sl${name}`,
       },
     ],
@@ -470,7 +487,7 @@ export const icons: IconDefinition[] = [
     path: "IcoMoon-Free",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../icomoon-free/SVG/*.svg"),
+        files: getIconPath("../icomoon-free/SVG/*.svg"),
         formatter: name => `Im${name.slice(3)}`,
       },
     ],
@@ -492,15 +509,15 @@ export const icons: IconDefinition[] = [
     path: "BoxIcons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../boxicons/svg/regular/*.svg"),
+        files: getIconPath("../boxicons/svg/regular/*.svg"),
         formatter: name => `Bi${name.replace("Bx", "")}`,
       },
       {
-        files: getIconPath(import.meta.url, "../boxicons/svg/solid/*.svg"),
+        files: getIconPath("../boxicons/svg/solid/*.svg"),
         formatter: name => `BiSolid${name.replace("Bxs", "")}`,
       },
       {
-        files: getIconPath(import.meta.url, "../boxicons/svg/logos/*.svg"),
+        files: getIconPath("../boxicons/svg/logos/*.svg"),
         formatter: name => `BiLogo${name.replace("Bxl", "")}`,
       },
     ],
@@ -522,7 +539,7 @@ export const icons: IconDefinition[] = [
     path: "Css-Gg",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../css.gg/icons/svg/*.svg"),
+        files: getIconPath("../css.gg/icons/svg/*.svg"),
         formatter: name => `Cg${name}`,
       },
     ],
@@ -544,7 +561,7 @@ export const icons: IconDefinition[] = [
     path: "VS-Code-Icons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../vscode-icons/src/icons/*.svg"),
+        files: getIconPath("../vscode-icons/src/icons/*.svg"),
         formatter: name => `Vsc${name}`,
       },
     ],
@@ -566,11 +583,11 @@ export const icons: IconDefinition[] = [
     path: "Tabler-Icons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../tabler-icons/icons/filled/*.svg"),
+        files: getIconPath("../tabler-icons/icons/filled/*.svg"),
         formatter: name => `Tb${name}Filled`,
       },
       {
-        files: getIconPath(import.meta.url, "../tabler-icons/icons/outline/*.svg"),
+        files: getIconPath("../tabler-icons/icons/outline/*.svg"),
         formatter: name => `Tb${name}`,
       },
     ],
@@ -592,7 +609,7 @@ export const icons: IconDefinition[] = [
     path: "Themify-Icons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../themify-icons/SVG/*.svg"),
+        files: getIconPath("../themify-icons/SVG/*.svg"),
         formatter: name => `Tfi${name}`,
       },
     ],
@@ -614,8 +631,8 @@ export const icons: IconDefinition[] = [
     path: "Radix-Icons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../radix-icons/packages/radix-icons/icons/*.svg"),
-        formatter: name => `Rx${camelcase(name, { pascalCase: true })}`,
+        files: getIconPath("../radix-icons/packages/radix-icons/icons/*.svg"),
+        formatter: name => `Rx${stringFormatUtils.toPascalCase(name)}`,
       },
     ],
     projectUrl: "https://icons.radix-ui.com",
@@ -636,7 +653,7 @@ export const icons: IconDefinition[] = [
     path: "Phosphor-Icons",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../phosphor-icons/assets/*/*.svg"),
+        files: getIconPath("../phosphor-icons/assets/*/*.svg"),
         formatter: name => `Pi${name}`,
       },
     ],
@@ -658,7 +675,7 @@ export const icons: IconDefinition[] = [
     path: "Line-Awesome",
     contents: [
       {
-        files: getIconPath(import.meta.url, "../line-awesome/svg/*.svg"),
+        files: getIconPath("../line-awesome/svg/*.svg"),
         formatter: name => `Lia${name}`,
       },
     ],
@@ -675,6 +692,3 @@ export const icons: IconDefinition[] = [
     },
   },
 ];
-
-// 导出类型
-export type { IconDefinition };

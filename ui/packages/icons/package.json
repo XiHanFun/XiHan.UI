@@ -30,20 +30,16 @@
   "module": "index.ts",
   "types": "index.d.ts",
   "scripts": {
+    "update": "tsx scripts/update.ts",
     "download": "tsx scripts/download.ts",
-    "build": "npm run download && npm run generate && vite build",
+    "build": "npm run update && npm run download && npm run generate && vite build",
     "generate": "tsx scripts/generate.ts"
   },
   "peerDependencies": {
     "vue": "*"
   },
   "dependencies": {
-    "@xihan-ui/utils": "workspace:*",
-    "vue": "^3.0.0",
-    "ionicons": "^4.0.0",
-    "@primer/octicons": "^19.0.0",
-    "feather-icons": "^4.29.0",
-    "lucide-static": "^0.263.0"
+    "@xihan-ui/utils": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "*",
@@ -52,12 +48,7 @@
     "sass": "^1.0.0",
     "tsx": "^3.0.0",
     "typescript": "*",
-    "vite": "^4.0.0",
     "svgo": "^3.0.0",
-    "camelcase": "^7.0.0",
-    "@types/svgo": "^3.0.0",
-    "glob": "^10.0.0",
-    "@types/glob": "^8.0.0",
-    "@types/camelcase": "^5.2.0"
+    "@types/svgo": "^3.0.0"
   }
 }
