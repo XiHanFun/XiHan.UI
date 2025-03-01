@@ -66,6 +66,7 @@ export default defineConfig({
       "@xihan-ui/components": resolve(packages.components, "src"),
       "xihan-ui": resolve(packages.xihanui, "src"),
     },
+    extensions: [".mjs", ".js", ".mts", ".ts", ".jsx", ".tsx", ".json", ".vue", ".scss", ".css"],
   },
   build: {
     outDir: "dist",
@@ -91,6 +92,7 @@ export default defineConfig({
           globals: {
             vue: "Vue",
           },
+          assetFileNames: "assets/[name][extname]",
         },
         {
           name: "xihan-ui",
@@ -103,16 +105,15 @@ export default defineConfig({
           globals: {
             vue: "Vue",
           },
+          assetFileNames: "assets/[name][extname]",
         },
       ],
     },
   },
   css: {
     preprocessorOptions: {
-      scss: {
-        // 可以在这里添加全局scss变量
-        // additionalData: `@import "@xihan-ui/themes/src/variables.scss";`
-      },
+      scss: {},
     },
+    devSourcemap: true,
   },
 });

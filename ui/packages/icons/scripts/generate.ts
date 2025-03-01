@@ -64,22 +64,110 @@ function extractAllPaths(svgContent: string): string {
 
   while ((match = pathRegex.exec(svgContent)) !== null) {
     // 确保只提取d属性的值
-    paths.push(match[1]);
+    // 清理路径字符串，移除换行和制表符
+    let pathData = match[1];
+    // 将多行字符串转换为单行，保留空格
+    pathData = pathData.replace(/[\r\n\t]+/g, " ");
+    // 将连续的多个空格替换为单个空格
+    pathData = pathData.replace(/\s{2,}/g, " ");
+    paths.push(pathData);
   }
 
-  // 如果没有找到path，检查是否有其他SVG元素未被转换
+  // 如果没有找到path，检查是否有其他SVG元素并尝试转换
   if (paths.length === 0) {
-    // console.warn("未找到path元素，检查原始SVG内容:");
+    console.warn("未找到path元素，尝试转换其他SVG元素");
 
-    // // 检查是否包含其他SVG元素
-    // const svgElements = ["rect", "circle", "ellipse", "line", "polyline", "polygon"];
-    // for (const element of svgElements) {
-    //   const regex = new RegExp(`<${element}[^>]*>`, "g");
-    //   if (regex.test(svgContent)) {
-    //     console.warn(`发现未转换的<${element}>元素`);
-    //   }
-    // }
+    // 检查并转换其他常见SVG元素
+    // 1. 矩形 <rect>
+    const rectRegex =
+      /<rect[^>]*x="([^"]*)"[^>]*y="([^"]*)"[^>]*width="([^"]*)"[^>]*height="([^"]*)"[^>]*(?:rx="([^"]*)")?[^>]*(?:ry="([^"]*)")?[^>]*\/?\s*>/g;
+    while ((match = rectRegex.exec(svgContent)) !== null) {
+      const [, x, y, width, height, rx, ry] = match;
+      const r = rx || ry || "0";
+      // 转换为path表示
+      if (parseFloat(r) > 0) {
+        // 带圆角的矩形
+        paths.push(
+          `M${parseFloat(x) + parseFloat(r)},${y} h${parseFloat(width) - 2 * parseFloat(r)} q${r},0 ${r},${r} v${parseFloat(height) - 2 * parseFloat(r)} q0,${r} -${r},${r} h-${parseFloat(width) - 2 * parseFloat(r)} q-${r},0 -${r},-${r} v-${parseFloat(height) - 2 * parseFloat(r)} q0,-${r} ${r},-${r} z`
+        );
+      } else {
+        // 普通矩形
+        paths.push(`M${x},${y} h${width} v${height} h-${width} z`);
+      }
+      console.log("转换rect为path");
+    }
 
+    // 2. 圆形 <circle>
+    const circleRegex = /<circle[^>]*cx="([^"]*)"[^>]*cy="([^"]*)"[^>]*r="([^"]*)"[^>]*\/?\s*>/g;
+    while ((match = circleRegex.exec(svgContent)) !== null) {
+      const [, cx, cy, r] = match;
+      const numR = parseFloat(r);
+      // 转换为path表示（近似表示圆形）
+      paths.push(`M${cx},${parseFloat(cy) - numR} a${r},${r} 0 1,0 ${numR * 2},0 a${r},${r} 0 1,0 -${numR * 2},0 z`);
+      console.log("转换circle为path");
+    }
+
+    // 3. 椭圆 <ellipse>
+    const ellipseRegex = /<ellipse[^>]*cx="([^"]*)"[^>]*cy="([^"]*)"[^>]*rx="([^"]*)"[^>]*ry="([^"]*)"[^>]*\/?\s*>/g;
+    while ((match = ellipseRegex.exec(svgContent)) !== null) {
+      const [, cx, cy, rx, ry] = match;
+      const numRx = parseFloat(rx);
+      const numRy = parseFloat(ry);
+      // 转换为path表示
+      paths.push(
+        `M${cx},${parseFloat(cy) - numRy} a${rx},${ry} 0 1,0 ${numRx * 2},0 a${rx},${ry} 0 1,0 -${numRx * 2},0 z`
+      );
+      console.log("转换ellipse为path");
+    }
+
+    // 4. 线段 <line>
+    const lineRegex = /<line[^>]*x1="([^"]*)"[^>]*y1="([^"]*)"[^>]*x2="([^"]*)"[^>]*y2="([^"]*)"[^>]*\/?\s*>/g;
+    while ((match = lineRegex.exec(svgContent)) !== null) {
+      const [, x1, y1, x2, y2] = match;
+      // 转换为path表示
+      paths.push(`M${x1},${y1} L${x2},${y2}`);
+      console.log("转换line为path");
+    }
+
+    // 5. 折线 <polyline>
+    const polylineRegex = /<polyline[^>]*points="([^"]*)"[^>]*\/?\s*>/g;
+    while ((match = polylineRegex.exec(svgContent)) !== null) {
+      const [, points] = match;
+      const pointPairs = points.trim().split(/\s+|,/);
+      if (pointPairs.length >= 2) {
+        let pathData = `M${pointPairs[0]},${pointPairs[1]}`;
+        for (let i = 2; i < pointPairs.length; i += 2) {
+          if (i + 1 < pointPairs.length) {
+            pathData += ` L${pointPairs[i]},${pointPairs[i + 1]}`;
+          }
+        }
+        paths.push(pathData);
+        console.log("转换polyline为path");
+      }
+    }
+
+    // 6. 多边形 <polygon>
+    const polygonRegex = /<polygon[^>]*points="([^"]*)"[^>]*\/?\s*>/g;
+    while ((match = polygonRegex.exec(svgContent)) !== null) {
+      const [, points] = match;
+      const pointPairs = points.trim().split(/\s+|,/);
+      if (pointPairs.length >= 2) {
+        let pathData = `M${pointPairs[0]},${pointPairs[1]}`;
+        for (let i = 2; i < pointPairs.length; i += 2) {
+          if (i + 1 < pointPairs.length) {
+            pathData += ` L${pointPairs[i]},${pointPairs[i + 1]}`;
+          }
+        }
+        pathData += " Z"; // 闭合路径
+        paths.push(pathData);
+        console.log("转换polygon为path");
+      }
+    }
+  }
+
+  // 如果仍然没有找到可转换的元素
+  if (paths.length === 0) {
+    console.warn("未能找到任何可转换为path的SVG元素");
     return "";
   }
 
@@ -89,7 +177,8 @@ function extractAllPaths(svgContent: string): string {
   // }
 
   // 返回所有path组合（多个path用空格分隔，符合SVG path规范）
-  return paths.join(" ");
+  // 确保最终返回的整个字符串也是单行的
+  return paths.join(" ").trim();
 }
 
 /**
