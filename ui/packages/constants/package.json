@@ -26,9 +26,21 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.d.ts",
+  "main": "../../dist/lib/packages/constants/src/index.js",
+  "module": "../../dist/es/packages/constants/src/index.mjs",
+  "types": "../../dist/es/packages/constants/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "../../dist/es/packages/constants/src/index.d.ts",
+      "import": "../../dist/es/packages/constants/src/index.mjs",
+      "require": "../../dist/lib/packages/constants/src/index.js"
+    }
+  },
+  "files": [
+    "src",
+    "../../dist/es/packages/constants",
+    "../../dist/lib/packages/constants"
+  ],
   "peerDependencies": {
     "vue": "*"
   },

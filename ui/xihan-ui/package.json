@@ -25,53 +25,63 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.d.ts",
-  "style": "src/index.css",
+  "main": "../dist/lib/xihan-ui/src/index.js",
+  "module": "../dist/es/xihan-ui/src/index.mjs",
+  "types": "../dist/es/xihan-ui/src/index.d.ts",
+  "style": "../dist/es/xihan-ui/src/index.css",
   "exports": {
     ".": {
-      "types": "./es/index.d.ts",
-      "import": "./es/index.mjs",
-      "require": "./lib/index.js"
+      "types": "../dist/es/xihan-ui/src/index.d.ts",
+      "import": "../dist/es/xihan-ui/src/index.mjs",
+      "require": "../dist/lib/xihan-ui/src/index.js",
+      "style": "../dist/es/xihan-ui/src/index.css"
     },
     "./es": {
-      "types": "./es/index.d.ts",
-      "import": "./es/index.mjs"
+      "types": "../dist/es/xihan-ui/src/index.d.ts",
+      "import": "../dist/es/xihan-ui/src/index.mjs"
     },
     "./es/*.mjs": {
-      "types": "./es/*.d.ts",
-      "import": "./es/*.mjs"
+      "types": "../dist/es/xihan-ui/src/*.d.ts",
+      "import": "../dist/es/xihan-ui/src/*.mjs"
     },
     "./es/*": {
       "types": [
-        "./es/*.d.ts",
-        "./es/*/index.d.ts"
+        "../dist/es/xihan-ui/src/*.d.ts",
+        "../dist/es/xihan-ui/src/*/index.d.ts"
       ],
-      "import": "./es/*.mjs"
+      "import": "../dist/es/xihan-ui/src/*.mjs"
     },
     "./lib": {
-      "types": "./lib/index.d.ts",
-      "require": "./lib/index.js"
+      "types": "../dist/lib/xihan-ui/src/index.d.ts",
+      "require": "../dist/lib/xihan-ui/src/index.js"
     },
     "./lib/*.js": {
-      "types": "./lib/*.d.ts",
-      "require": "./lib/*.js"
+      "types": "../dist/lib/xihan-ui/src/*.d.ts",
+      "require": "../dist/lib/xihan-ui/src/*.js"
     },
     "./lib/*": {
       "types": [
-        "./lib/*.d.ts",
-        "./lib/*/index.d.ts"
+        "../dist/lib/xihan-ui/src/*.d.ts",
+        "../dist/lib/xihan-ui/src/*/index.d.ts"
       ],
-      "require": "./lib/*.js"
+      "require": "../dist/lib/xihan-ui/src/*.js"
+    },
+    "./styles": {
+      "import": "../dist/es/xihan-ui/src/index.css",
+      "require": "../dist/lib/xihan-ui/src/index.css"
     },
     "./*": "./*"
   },
+  "files": [
+    "src",
+    "../dist/es/xihan-ui",
+    "../dist/lib/xihan-ui"
+  ],
   "sideEffects": [
-    "dist/*",
+    "../dist/*",
     "themes/**/*.css",
-    "es/components/*/styles/*",
-    "lib/components/*/styles/*"
+    "../dist/es/components/*/styles/*",
+    "../dist/lib/components/*/styles/*"
   ],
   "peerDependencies": {
     "vue": "*"
