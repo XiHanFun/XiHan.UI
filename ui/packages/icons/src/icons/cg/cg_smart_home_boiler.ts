@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const CgSmartHomeBoiler = createIcon({
+  name: "cg-smart-home-boiler",
+  path: "M5 5C5 2.79086 6.79086 1 9 1H15C17.2091 1 19 2.79086 19 5V21H15.144L15.8865 22.9999H13.8865L13.144 21H11.144L11.8865 22.9999H9.88653L9.14397 21H5V5ZM9 3H15C16.1046 3 17 3.89543 17 5V7H7V5C7 3.89543 7.89543 3 9 3ZM7 9H17V19H7V9Z",
+});

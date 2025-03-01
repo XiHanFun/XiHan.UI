@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const VscFeedback = createIcon({
+  name: "vsc-feedback",
+  path: "M4.5 1L4 1.5V3.02746C4.16417 3.00932 4.331 3 4.5 3C4.669 3 4.83583 3.00932 5 3.02746V2H14V7H12.2929L11 8.29289V7H8.97254C8.99068 7.16417 9 7.331 9 7.5C9 7.669 8.99068 7.83583 8.97254 8H10V9.5L10.8536 9.85355L12.7071 8H14.5L15 7.5V1.5L14.5 1H4.5Z",
+});

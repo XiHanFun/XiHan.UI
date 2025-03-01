@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const IoLayersOutline = createIcon({
+  name: "io-layers-outline",
+  path: "M434.8,137.65,285.44,69.55c-16.19-7.4-42.69-7.4-58.88,0L77.3,137.65c-17.6,8-17.6,21.09,0,29.09l148,67.5c16.89,7.7,44.69,7.7,61.58,0l148-67.5C452.4,158.74,452.4,145.64,434.8,137.65Z",
+});

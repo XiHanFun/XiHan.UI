@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const CgCarousel = createIcon({
+  name: "cg-carousel",
+  path: "M4 3C2.34315 3 1 4.34315 1 6V10C1 11.6569 2.34315 13 4 13H20C21.6569 13 23 11.6569 23 10V6C23 4.34315 21.6569 3 20 3H4ZM20 5H4C3.44772 5 3 5.44772 3 6V10C3 10.5523 3.44772 11 4 11H20C20.5523 11 21 10.5523 21 10V6C21 5.44771 20.5523 5 20 5Z",
+});

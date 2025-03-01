@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const IoLogoStencil = createIcon({
+  name: "io-logo-stencil",
+  path: "M188.8,334.07H386.13L279.47,448H83.2Z",
+});

@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const CgEject = createIcon({
+  name: "cg-eject",
+  path: "M16.9498 14.3948L18.364 12.9805L12 6.61658L5.63605 12.9805L7.05026 14.3948L12 9.445L16.9498 14.3948Z",
+});

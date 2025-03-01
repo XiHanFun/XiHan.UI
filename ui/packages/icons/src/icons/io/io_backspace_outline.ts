@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const IoBackspaceOutline = createIcon({
+  name: "io-backspace-outline",
+  path: "M135.19,390.14A28.79,28.79,0,0,0,156.87,400H403.13A29,29,0,0,0,432,371.13V140.87A29,29,0,0,0,403.13,112H156.87a28.84,28.84,0,0,0-21.67,9.84v0L46.33,256l88.86,134.11Z",
+});

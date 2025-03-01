@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const FcUpRight = createIcon({
+  name: "fc-up-right",
+  path: "new 0 0 48 48",
+});

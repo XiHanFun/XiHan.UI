@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const CgDetailsLess = createIcon({
+  name: "cg-details-less",
+  path: "M3 9C2.44772 9 2 9.44772 2 10C2 10.5523 2.44772 11 3 11H21C21.5523 11 22 10.5523 22 10C22 9.44772 21.5523 9 21 9H3Z",
+});

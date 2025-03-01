@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const IoInfiniteOutline = createIcon({
+  name: "io-infinite-outline",
+  path: "M256,256s-48-96-126-96c-54.12,0-98,43-98,96s43.88,96,98,96c37.51,0,71-22.41,94-48",
+});

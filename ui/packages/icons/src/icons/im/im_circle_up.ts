@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const ImCircleUp = createIcon({
+  name: "im-circle-up",
+  path: "M0 8c0 4.418 3.582 8 8 8s8-3.582 8-8-3.582-8-8-8-8 3.582-8 8zM14.5 8c0 3.59-2.91 6.5-6.5 6.5s-6.5-2.91-6.5-6.5 2.91-6.5 6.5-6.5 6.5 2.91 6.5 6.5z",
+});

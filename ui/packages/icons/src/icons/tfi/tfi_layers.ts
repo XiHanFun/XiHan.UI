@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TfiLayers = createIcon({
+  name: "tfi-layers",
+  path: "M13 1h-13v11h13v-11zM12 11h-11v-9h11v9zM17 5v11h-13v-3.031h1v2.031h11v-9h-2.016v-1h3.016z",
+});

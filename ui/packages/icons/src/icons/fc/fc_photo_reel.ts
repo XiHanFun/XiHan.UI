@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const FcPhotoReel = createIcon({
+  name: "fc-photo-reel",
+  path: "new 0 0 48 48",
+});

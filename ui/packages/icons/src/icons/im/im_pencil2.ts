@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const ImPencil2 = createIcon({
+  name: "im-pencil2",
+  path: "M6 10l2-1 7-7-1-1-7 7-1 2zM4.52 13.548c-0.494-1.043-1.026-1.574-2.069-2.069l1.548-4.262 2-1.217 6-6h-3l-6 6-3 10 10-3 6-6v-3l-6 6-1.217 2z",
+});

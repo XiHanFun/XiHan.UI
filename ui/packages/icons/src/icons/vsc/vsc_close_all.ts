@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const VscCloseAll = createIcon({
+  name: "vsc-close-all",
+  path: "M8.621 8.086l-.707-.707L6.5 8.793 5.086 7.379l-.707.707L5.793 9.5l-1.414 1.414.707.707L6.5 10.207l1.414 1.414.707-.707L7.207 9.5l1.414-1.414z",
+});

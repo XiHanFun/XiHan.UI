@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const CgArrowsScrollH = createIcon({
+  name: "cg-arrows-scroll-h",
+  path: "M15.3052 12L18.1299 9.17526L16.7157 7.76105L13.891 10.5858L13.8873 10.5821L12.4731 11.9963L12.4768 12L12.4731 12.0037L13.8873 13.4179L13.891 13.4142L16.7157 16.239L18.1299 14.8248L15.3052 12Z",
+});

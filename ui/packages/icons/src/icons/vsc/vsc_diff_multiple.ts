@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const VscDiffMultiple = createIcon({
+  name: "vsc-diff-multiple",
+  path: "M9.70994 1.29L12.7099 4.29L12.9999 5V14L11.9999 15H2.99994L1.99994 14V2L2.99994 1H8.99994L9.70994 1.29ZM2.99994 14H11.9999V5L8.99994 2H2.99994V14ZM7 6H5V7H7V9H8V7H10V6H8V4H7V6ZM5 11H10V12H5V11Z",
+});

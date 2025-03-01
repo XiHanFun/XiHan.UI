@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const ImLinkedin2 = createIcon({
+  name: "im-linkedin2",
+  path: "M6 6h2.767v1.418h0.040c0.385-0.691 1.327-1.418 2.732-1.418 2.921 0 3.461 1.818 3.461 4.183v4.817h-2.885v-4.27c0-1.018-0.021-2.329-1.5-2.329-1.502 0-1.732 1.109-1.732 2.255v4.344h-2.883v-9z",
+});

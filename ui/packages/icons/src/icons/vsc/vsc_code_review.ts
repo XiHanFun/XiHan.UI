@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const VscCodeReview = createIcon({
+  name: "vsc-code-review",
+  path: "M14.5 2H1.5L1 2.5V11.5L1.5 12H4V14.5L4.854 14.854L7.707 12H14.5L15 11.5V2.5L14.5 2ZM14 11H7.5L7.146 11.146L5 13.293V11.5L4.5 11H2V3H14V11Z",
+});

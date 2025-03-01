@@ -1,0 +1,7 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const VscErrorSmall = createIcon({
+  name: "vsc-error-small",
+  path: "M9.17699 10.1051L8.00026 8.92835L6.82348 10.1051L5.89526 9.17693L7.07205 8.00014L5.89526 6.82335L6.82348 5.89514L8.00026 7.07193L9.17699 5.8952L10.1052 6.82342L8.92848 8.00014L10.1052 9.17687L9.17699 10.1051Z",
+});
