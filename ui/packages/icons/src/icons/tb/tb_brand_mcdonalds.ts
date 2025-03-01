@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbBrandMcdonalds = createIcon({
+  name: "tb-brand-mcdonalds",
+  path: "M20 20c0 -3.952 -.966 -16 -4.038 -16s-3.962 9.087 -3.962 14.756c0 -5.669 -.896 -14.756 -3.962 -14.756c-3.065 0 -4.038 12.048 -4.038 16",
+});
+    

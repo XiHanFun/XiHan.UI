@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbCarouselVerticalFilled = createIcon({
+  name: "tb-carousel-vertical-filled",
+  path: "M19 8v8a1 1 0 0 1-1 1h-12a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zM7 22v-1a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v1M17 2v1a1 1 0 0 1-1 1h-8a1 1 0 0 1-1-1v-1",
+});
+    

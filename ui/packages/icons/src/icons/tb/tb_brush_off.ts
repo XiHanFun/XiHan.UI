@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbBrushOff = createIcon({
+  name: "tb-brush-off",
+  path: "M3 17a4 4 0 1 1 4 4h-4v-4z M21 3a16 16 0 0 0-9.309 4.704m-1.795 2.212a15.993 15.993 0 0 0-1.696 3.284M21 3a16 16 0 0 1-4.697 9.302m-2.195 1.786a15.993 15.993 0 0 1-3.308 1.712M3 3l18 18",
+});
+    

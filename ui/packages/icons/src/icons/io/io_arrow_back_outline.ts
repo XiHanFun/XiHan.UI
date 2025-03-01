@@ -3,5 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const IoArrowBackOutline = createIcon({
   name: "io-arrow-back-outline",
-  path: "",
+  path: "M244 400 100 256 244 112M120 256 412 256",
 });
+    

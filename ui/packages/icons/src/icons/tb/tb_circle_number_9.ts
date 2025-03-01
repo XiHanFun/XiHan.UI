@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbCircleNumber9 = createIcon({
+  name: "tb-circle-number-9",
+  path: "M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0 M10 15a1 1 0 0 0 1 1h2a1 1 0 0 0 1 -1v-6a1 1 0 0 0 -1 -1h-2a1 1 0 0 0 -1 1v2a1 1 0 0 0 1 1h3",
+});
+    

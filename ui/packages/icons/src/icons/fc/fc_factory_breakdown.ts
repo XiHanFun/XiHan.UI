@@ -3,5 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const FcFactoryBreakdown = createIcon({
   name: "fc-factory-breakdown",
-  path: "new 0 0 48 48",
+  path: "M29 23 29 17 21 21 21 23 17 23 17 27 13 27 13 23 5 23 5 43 33 43 33 23z M25 27H29V31H25zM9 35H13V39H9zM25 35H29V39H25zM17 35H21V39H17zM17 27H21V31H17zM41.2 5 38 5 38 7 36 7 36 9 33.7 9 32 43 43 43z",
 });
+    

@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbBrandZeitFilled = createIcon({
+  name: "tb-brand-zeit-filled",
+  path: "M3 20h18l-9 -16z",
+});
+    

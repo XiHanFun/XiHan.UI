@@ -3,5 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const FcOvertime = createIcon({
   name: "fc-overtime",
-  path: "new 0 0 48 48",
+  path: "M12,40V20h32v20c0,2.2-1.8,4-4,4H16C13.8,44,12,42.2,12,40z M44,16v6H12v-6c0-2.2,1.8-4,4-4h24C42.2,12,44,13.8,44,16z M37 10c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2s2-.9 2-2v-4C39 10.9 38.1 10 37 10zM20 10c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2s2-.9 2-2v-4C22 10.9 21.1 10 20 10z M32 34H36V38H32zM26 34H30V38H26zM20 34H24V38H20zM32 28H36V32H32zM26 28H30V32H26zM20 28H24V32H20z M15 8H17V15H15z M16.9 14.2H18.8V19.6H16.9z",
 });
+    

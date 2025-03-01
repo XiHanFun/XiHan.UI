@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbBoneOff = createIcon({
+  name: "tb-bone-off",
+  path: "m12.5 8.502.38-.38a3 3 0 1 1 5.12-2.122 3 3 0 1 1-2.12 5.122l-.372.372m-2.008 2.008-2.378 2.378a3 3 0 1 1-5.117 2.297l0-.177-.176 0a3 3 0 1 1 2.298-5.115l2.378-2.378M3 3l18 18",
+});
+    

@@ -3,5 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const IoLogoStencil = createIcon({
   name: "io-logo-stencil",
-  path: "M188.8,334.07H386.13L279.47,448H83.2Z",
+  path: "M188.8 334.07H386.13L279.47 448H83.2ZM512 199H106.61L0 313H405.39ZM232.2 64H428.8L322.62 177.93H125.87Z",
 });
+    

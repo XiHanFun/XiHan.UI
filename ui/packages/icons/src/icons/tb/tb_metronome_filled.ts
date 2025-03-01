@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbMetronomeFilled = createIcon({
+  name: "tb-metronome-filled",
+  path: "m14.153 8.188-.72-3.236a2.493 2.493 0 0 0-4.867 0l-3.025 13.614a2 2 0 0 0 1.952 2.434h7.014a2 2 0 0 0 1.952-2.434l-.524-2.357m-4.935 1.791 9-13m-1 0a1 1 0 1 0 2 0 1 1 0 1 0-2 0",
+});
+    

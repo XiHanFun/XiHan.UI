@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbNumber11Filled = createIcon({
+  name: "tb-number-11-filled",
+  path: "M8 20v-16l-5 5M18 20v-16l-5 5",
+});
+    

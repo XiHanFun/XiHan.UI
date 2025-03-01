@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbBrandVueFilled = createIcon({
+  name: "tb-brand-vue-filled",
+  path: "M16.5 4l-4.5 8l-4.5 -8 M3 4l9 16l9 -16",
+});
+    

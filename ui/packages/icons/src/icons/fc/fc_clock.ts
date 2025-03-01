@@ -3,5 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const FcClock = createIcon({
   name: "fc-clock",
-  path: "new 0 0 48 48",
+  path: "M23 11H25V24H23z M26.1 22.7H28.4V31.9H26.1z",
 });
+    

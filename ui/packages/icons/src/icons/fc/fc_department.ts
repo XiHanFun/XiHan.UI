@@ -3,5 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const FcDepartment = createIcon({
   name: "fc-department",
-  path: "new 0 0 48 48",
+  path: "M42 42 6 42 6 9 24 2 42 9zM6 42H42V44H6z M20 35H28V44H20z M31 27H37V32H31zM21 27H27V32H21zM11 27H17V32H11zM31 35H37V40H31zM11 35H17V40H11zM31 19H37V24H31zM21 19H27V24H21zM11 19H17V24H11zM31 11H37V16H31zM21 11H27V16H21zM11 11H17V16H11z",
 });
+    

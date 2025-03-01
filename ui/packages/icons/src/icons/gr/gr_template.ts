@@ -5,3 +5,4 @@ export const GrTemplate = createIcon({
   name: "gr-template",
   path: "M1,3 L23,3 L23,21 L1,21 L1,3 Z M1,8 L23,8 M7,8 L7,21",
 });
+    

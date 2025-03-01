@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbWindmill = createIcon({
+  name: "tb-windmill",
+  path: "M12 12c2.76 0 5-2.01 5-4.5s-2.24-4.5-5-4.5v9zM12 12c0 2.76 2.01 5 4.5 5s4.5-2.24 4.5-5h-9zM12 12c-2.76 0-5 2.01-5 4.5s2.24 4.5 5 4.5v-9zM12 12c0-2.76-2.01-5-4.5-5s-4.5 2.24-4.5 5h9z",
+});
+    

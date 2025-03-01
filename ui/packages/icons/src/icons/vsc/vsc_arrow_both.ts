@@ -5,3 +5,4 @@ export const VscArrowBoth = createIcon({
   name: "vsc-arrow-both",
   path: "M3 9l2.146 2.146-.707.708-3-3v-.708l3-3 .707.708L3 8h10l-2.146-2.146.707-.708 3 3v.708l-3 3-.707-.707L13 9H3z",
 });
+    

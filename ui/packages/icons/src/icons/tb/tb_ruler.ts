@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbRuler = createIcon({
+  name: "tb-ruler",
+  path: "M5 4h14a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-7a1 1 0 0 0-1 1v7a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-14a1 1 0 0 1 1-1M4 8l2 0M4 12l3 0M4 16l2 0M8 4l0 2M12 4l0 3M16 4l0 2",
+});
+    

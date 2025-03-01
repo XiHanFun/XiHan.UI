@@ -3,5 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const IoScan = createIcon({
   name: "io-scan",
-  path: "M342,444h46a56,56,0,0,0,56-56V342",
+  path: "M342 444h46a56 56 0 0 0 56-56V342M444 170V124a56 56 0 0 0-56-56H342M170 444H124a56 56 0 0 1-56-56V342M68 170V124a56 56 0 0 1 56-56h46",
 });
+    

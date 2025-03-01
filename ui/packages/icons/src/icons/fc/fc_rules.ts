@@ -3,5 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const FcRules = createIcon({
   name: "fc-rules",
-  path: "new 0 0 48 48",
+  path: "M39 45H9c0 0-3-.1-3-8h36C42 44.9 39 45 39 45zM8 3H40V37H8z M18 15H34V17H18zM18 19H34V21H18zM18 23H34V25H18zM18 27H34V29H18zM18 31H34V33H18z M14 15H16V17H14zM14 19H16V21H14zM14 23H16V25H14zM14 27H16V29H14zM14 31H16V33H14z",
 });
+    

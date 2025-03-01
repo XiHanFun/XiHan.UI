@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbSignalHPlusFilled = createIcon({
+  name: "tb-signal-h-plus-filled",
+  path: "M7 16v-8M11 8v8M7 12h4M14 12h4M16 10v4",
+});
+    

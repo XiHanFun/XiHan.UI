@@ -3,5 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const CgMenuGridR = createIcon({
   name: "cg-menu-grid-r",
-  path: "M4 4H8V8H4V4Z",
+  path: "M4 4H8V8H4V4ZM4 10H8V14H4V10ZM8 16H4V20H8V16ZM10 4H14V8H10V4ZM14 10H10V14H14V10ZM10 16H14V20H10V16ZM20 4H16V8H20V4ZM16 10H20V14H16V10ZM20 16H16V20H20V16Z",
 });
+    

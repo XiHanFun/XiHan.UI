@@ -3,5 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const IoSchoolSharp = createIcon({
   name: "io-school-sharp",
-  path: "",
+  path: "M256 370.43 96 279 96 377.42 256 466.3 416 377.42 416 279 256 370.43z M512.25 192 256 45.57-.25 192 256 338.43 464 219.57 464 384 512 384 512 192.14 512.25 192z",
 });
+    

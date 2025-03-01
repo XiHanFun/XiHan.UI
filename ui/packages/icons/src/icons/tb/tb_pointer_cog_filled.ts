@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbPointerCogFilled = createIcon({
+  name: "tb-pointer-cog-filled",
+  path: "m15.774 13.218-.996-.996 3.113-2.09a1.2 1.2 0 0 0-.309-2.228l-13.582-3.904 3.904 13.563a1.2 1.2 0 0 0 2.228.308l2.09-3.093.343.343m-2 0a2 2 0 1 0 4 0 2 2 0 1 0-4 0M19.001 15.5v1.5M19.001 21v1.5M22.032 17.25l-1.299.75M17.27 20l-1.3.75M15.97 17.25l1.3.75M20.733 20l1.3.75",
+});
+    

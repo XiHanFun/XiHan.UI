@@ -3,5 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const FcSms = createIcon({
   name: "fc-sms",
-  path: "new 0 0 48 48",
+  path: "M37,39H11l-6,6V11c0-3.3,2.7-6,6-6h26c3.3,0,6,2.7,6,6v22C43,36.3,40.3,39,37,39z",
 });
+    

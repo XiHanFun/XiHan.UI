@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const RiArrowRightBoxFill = createIcon({
+  name: "ri-arrow-right-box-fill",
+  path: "M4 3C3.44772 3 3 3.44772 3 4V20C3 20.5523 3.44772 21 4 21H20C20.5523 21 21 20.5523 21 20V4C21 3.44772 20.5523 3 20 3H4ZM17.6575 11.9996L11.7077 17.9493V12.9996H6.34375V10.9996H11.7077V6.0498L17.6575 11.9996Z",
+});
+    

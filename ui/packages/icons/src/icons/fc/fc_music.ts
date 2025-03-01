@@ -3,5 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const FcMusic = createIcon({
   name: "fc-music",
-  path: "new 0 0 48 48",
+  path: "M24 6 24 33 28 33 28 14 39 17 39 10z",
 });
+    

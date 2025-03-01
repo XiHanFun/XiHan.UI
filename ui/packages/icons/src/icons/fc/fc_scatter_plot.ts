@@ -3,5 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const FcScatterPlot = createIcon({
   name: "fc-scatter-plot",
-  path: "new 0 0 48 48",
+  path: "M9 39 9 6 7 6 7 41 42 41 42 39z",
 });
+    

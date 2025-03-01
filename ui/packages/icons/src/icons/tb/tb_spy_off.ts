@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbSpyOff = createIcon({
+  name: "tb-spy-off",
+  path: "M3 11h8m4 0h6M5 11v-4c0-.571.16-1.105.437-1.56m2.563-1.44h8a3 3 0 0 1 3 3v4m-3 0a3 3 0 1 0 6 0 3 3 0 1 0-6 0M14.88 14.877a3 3 0 1 0 4.239 4.247m.59-3.414a3.012 3.012 0 0 0-1.425-1.422M10 17h4M3 3l18 18",
+});
+    

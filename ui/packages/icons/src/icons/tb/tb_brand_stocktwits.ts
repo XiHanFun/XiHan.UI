@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbBrandStocktwits = createIcon({
+  name: "tb-brand-stocktwits",
+  path: "m16 3-8 4.5 8 4.5M8 12l8 4.5-8 4.5",
+});
+    

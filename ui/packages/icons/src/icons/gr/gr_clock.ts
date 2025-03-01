@@ -3,5 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const GrClock = createIcon({
   name: "gr-clock",
-  path: "M13 7a1 1 0 10-2 0v5a1 1 0 00.4.8l4 3a1 1 0 001.2-1.6L13 11.5V7z",
+  path: "M13 7a1 1 0 10-2 0v5a1 1 0 00.4.8l4 3a1 1 0 001.2-1.6L13 11.5V7z M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11 11-4.925 11-11S18.075 1 12 1zM3 12a9 9 0 1118 0 9 9 0 01-18 0z",
 });
+    

@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbAlarmOff = createIcon({
+  name: "tb-alarm-off",
+  path: "M7.587 7.566a7 7 0 1 0 9.833 9.864m1.35 -2.645a7 7 0 0 0 -8.536 -8.56 M12 12v1h1M5.261 5.265l-1.011.735M17 4l2.75 2M3 3l18 18",
+});
+    

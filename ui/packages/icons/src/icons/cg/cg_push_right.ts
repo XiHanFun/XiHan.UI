@@ -3,5 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const CgPushRight = createIcon({
   name: "cg-push-right",
-  path: "M1 12.9999V10.9999H15.4853L12.2427 7.75724L13.6569 6.34303L19.3137 11.9999L13.6569 17.6567L12.2427 16.2425L15.4853 12.9999H1Z",
+  path: "M1 13V11H15.485L12.243 7.757 13.657 6.343 19.314 12 13.657 17.657 12.243 16.243 15.485 13H1ZM20.288 6V18H22.288V6H20.288Z",
 });
+    

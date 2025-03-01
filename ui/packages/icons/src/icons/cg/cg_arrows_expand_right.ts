@@ -3,5 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const CgArrowsExpandRight = createIcon({
   name: "cg-arrows-expand-right",
-  path: "M13.8995 4.10052V2.10052H21.8995V10.1005H19.8995V5.51477L14.1213 11.293L12.7071 9.87878L18.4854 4.10052H13.8995Z",
+  path: "M13.9 4.101V2.101H21.9V10.101H19.9V5.515L14.121 11.293 12.707 9.879 18.485 4.101H13.9ZM4.1 13.9H2.1V21.9H10.101V19.9H5.515L11.293 14.121 9.879 12.707 4.1 18.485V13.9Z",
 });
+    
