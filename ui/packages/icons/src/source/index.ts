@@ -1,5 +1,5 @@
 import { getIconPath } from "../utils/path";
-import type { IconSource } from "./creator";
+import type { IconSource } from "../utils/creator";
 import { stringFormatUtils } from "@xihan-ui/utils";
 
 export const icons: IconSource[] = [
@@ -10,7 +10,7 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../Circum-Icons/svg/*.svg"),
-        formatter: (name: string) => `Ci${name}`.replace(/_/g, "").replace(/&/g, "And"),
+        formatter: (name: string) => `Ci-${name}`.replace(/_/g, "").replace(/&/g, "And"),
       },
     ],
     projectUrl: "https://circumicons.com/",
@@ -19,7 +19,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "Circum-Icons",
-      remoteDir: "svg/",
+      remoteDir: "svg",
       url: "https://github.com/Klarr-Agency/Circum-Icons.git",
       branch: "main",
       hash: "cec1364b5199f55e946a9a8360385a958b98cc60",
@@ -32,11 +32,11 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../fontawesome/svgs/+(brands|solid)/*.svg"),
-        formatter: name => `Fa${name}`,
+        formatter: name => `Fa-${name}`,
       },
       {
         files: getIconPath("../fontawesome/svgs/regular/*.svg"),
-        formatter: name => `FaReg${name}`,
+        formatter: name => `FaReg-${name}`,
       },
     ],
     projectUrl: "https://fontawesome.com/",
@@ -45,7 +45,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "fontawesome",
-      remoteDir: "svgs/",
+      remoteDir: "svgs",
       url: "https://github.com/FortAwesome/Font-Awesome.git",
       branch: "5.x",
       hash: "afecf2af5d897b763e5e8e28d46aad2f710ccad6",
@@ -58,11 +58,11 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../fontawesome-6/svgs/+(brands|solid)/*.svg"),
-        formatter: name => `Fa${name}`,
+        formatter: name => `Fa-${name}`,
       },
       {
         files: getIconPath("../fontawesome-6/svgs/regular/*.svg"),
-        formatter: name => `FaReg${name}`,
+        formatter: name => `FaReg-${name}`,
       },
     ],
     projectUrl: "https://fontawesome.com/",
@@ -71,7 +71,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "fontawesome-6",
-      remoteDir: "svgs/",
+      remoteDir: "svgs",
       url: "https://github.com/FortAwesome/Font-Awesome.git",
       branch: "6.x",
       hash: "af620534bfc3c2d4cbefcfeec29603bbe7809e64",
@@ -84,7 +84,7 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../ionicons/src/svg/*.svg"),
-        formatter: (name: string) => `Io${name}`,
+        formatter: (name: string) => `Io-${name}`,
       },
     ],
     projectUrl: "https://ionicons.com/",
@@ -93,7 +93,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "ionicons",
-      remoteDir: "src/svg/",
+      remoteDir: "src/svg",
       url: "https://github.com/ionic-team/ionicons.git",
       branch: "main",
       hash: "4477c0251291dee6c2aeeebef8df928edf3e620f",
@@ -106,7 +106,7 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../typicons/src/svg/*.svg"),
-        formatter: name => `Ti${name}`,
+        formatter: name => `Ti-${name}`,
       },
     ],
     projectUrl: "http://s-ings.com/typicons/",
@@ -115,7 +115,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "typicons",
-      remoteDir: "src/svg/",
+      remoteDir: "src/svg",
       url: "https://github.com/stephenhutchings/typicons.font.git",
       branch: "master",
       hash: "0aa64f6ce8b892a83aeeafa42c74fb9c1f22ec84",
@@ -128,7 +128,7 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../../node_modules/@primer/octicons/build/svg/*-24.svg"),
-        formatter: (name: string) => `Go${name}`.replace("24", ""),
+        formatter: (name: string) => `Go-${name}`.replace("24", ""),
       },
     ],
     projectUrl: "https://octicons.github.com/",
@@ -137,7 +137,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "typicons",
-      remoteDir: "src/svg/",
+      remoteDir: "src/svg",
       url: "https://github.com/stephenhutchings/typicons.font.git",
       branch: "master",
       hash: "0aa64f6ce8b892a83aeeafa42c74fb9c1f22ec84",
@@ -150,7 +150,7 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../../node_modules/feather-icons/dist/icons/*.svg"),
-        formatter: (name: string) => `Fi${name}`,
+        formatter: (name: string) => `Fi-${name}`,
       },
     ],
     projectUrl: "https://feathericons.com/",
@@ -159,7 +159,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "typicons",
-      remoteDir: "src/svg/",
+      remoteDir: "src/svg",
       url: "https://github.com/stephenhutchings/typicons.font.git",
       branch: "master",
       hash: "0aa64f6ce8b892a83aeeafa42c74fb9c1f22ec84",
@@ -172,7 +172,7 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../lucide-static/icons/*.svg"),
-        formatter: (name: string) => `Lu${name}`,
+        formatter: (name: string) => `Lu-${name}`,
       },
     ],
     projectUrl: "https://lucide.dev/",
@@ -181,7 +181,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "typicons",
-      remoteDir: "src/svg/",
+      remoteDir: "src/svg",
       url: "https://github.com/stephenhutchings/typicons.font.git",
       branch: "master",
       hash: "0aa64f6ce8b892a83aeeafa42c74fb9c1f22ec84",
@@ -194,7 +194,7 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../game-icons-inverted/all-icons/*.svg"),
-        formatter: name => `Gi${name}`,
+        formatter: name => `Gi-${name}`,
       },
     ],
     projectUrl: "https://game-icons.net/",
@@ -203,7 +203,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "game-icons-inverted",
-      remoteDir: "all-icons/",
+      remoteDir: "all-icons",
       url: "https://github.com/delacannon/game-icons-inverted.git",
       branch: "master",
       hash: "12920d6565588f0512542a3cb0cdfd36a497f910",
@@ -225,7 +225,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "weather-icons",
-      remoteDir: "svg/",
+      remoteDir: "svg",
       url: "https://github.com/erikflowers/weather-icons.git",
       branch: "master",
       hash: "bb80982bf1f43f2d57f9dd753e7413bf88beb9ed",
@@ -238,7 +238,7 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../devicons/!SVG/*.svg"),
-        formatter: name => `Di${name}`,
+        formatter: name => `Di-${name}`,
       },
     ],
     projectUrl: "https://vorillaz.github.io/devicons/",
@@ -247,7 +247,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "devicons",
-      remoteDir: "!SVG/",
+      remoteDir: "!SVG",
       url: "https://github.com/vorillaz/devicons.git",
       branch: "master",
       hash: "ba75593fdf8d66496676a90cbf127d721f73e961",
@@ -260,15 +260,15 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../ant-design-icons/packages/icons-svg/svg/filled/*.svg"),
-        formatter: name => `AiFill${name}`,
+        formatter: name => `AiFill-${name}`,
       },
       {
         files: getIconPath("../ant-design-icons/packages/icons-svg/svg/outlined/*.svg"),
-        formatter: name => `AiOutline${name}`,
+        formatter: name => `AiOutline-${name}`,
       },
       {
         files: getIconPath("../ant-design-icons/packages/icons-svg/svg/twotone/*.svg"),
-        formatter: name => `AiTwotone${name}`,
+        formatter: name => `AiTwotone-${name}`,
         multiColor: true,
       },
     ],
@@ -278,42 +278,42 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "ant-design-icons",
-      remoteDir: "packages/icons-svg/svg/",
+      remoteDir: "packages/icons-svg/svg",
       url: "https://github.com/ant-design/ant-design-icons.git",
       branch: "master",
       hash: "c40b685dd7eb079162cbb53398da874fd03070e2",
     },
   },
-  {
-    id: "bs",
-    name: "Bootstrap Icons",
-    path: "Bootstrap-Icons",
-    contents: [
-      {
-        files: getIconPath("../bootstrap/icons/*!(-reverse)-fill.svg"),
-        formatter: name => `BsFill${name}`,
-      },
-      {
-        files: getIconPath("../bootstrap/icons/*-reverse!(-fill).svg"),
-        formatter: name => `BsReverse${name}`,
-      },
-      {
-        files: getIconPath("../bootstrap/icons/*!(-fill|-reverse|reverse-).svg"),
-        formatter: name => `Bs${name}`,
-      },
-    ],
-    projectUrl: "https://github.com/twbs/icons",
-    license: "MIT",
-    licenseUrl: "https://opensource.org/licenses/MIT",
-    source: {
-      type: "git",
-      localName: "bootstrap",
-      remoteDir: "icons/",
-      url: "https://github.com/twbs/icons.git",
-      branch: "main",
-      hash: "e898da7559e12643a9b5a26f96d2b669a5dc3d8f",
-    },
-  },
+  // {
+  //   id: "bs",
+  //   name: "Bootstrap Icons",
+  //   path: "Bootstrap-Icons",
+  //   contents: [
+  //     {
+  //       files: getIconPath("../bootstrap/icons/*!(-reverse)-fill.svg"),
+  //       formatter: name => `BsFill-${name}`,
+  //     },
+  //     {
+  //       files: getIconPath("../bootstrap/icons/*-reverse!(-fill).svg"),
+  //       formatter: name => `BsReverse-${name}`,
+  //     },
+  //     {
+  //       files: getIconPath("../bootstrap/icons/*!(-fill|-reverse|reverse-).svg"),
+  //       formatter: name => `Bs-${name}`,
+  //     },
+  //   ],
+  //   projectUrl: "https://github.com/twbs/icons",
+  //   license: "MIT",
+  //   licenseUrl: "https://opensource.org/licenses/MIT",
+  //   source: {
+  //     type: "git",
+  //     localName: "bootstrap",
+  //     remoteDir: "icons",
+  //     url: "https://github.com/twbs/icons.git",
+  //     branch: "main",
+  //     hash: "e898da7559e12643a9b5a26f96d2b669a5dc3d8f",
+  //   },
+  // },
   {
     id: "ri",
     name: "Remix Icon",
@@ -321,7 +321,7 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../RemixIcon/icons/*/*.svg"),
-        formatter: name => `Ri${name}`,
+        formatter: name => `Ri-${name}`,
       },
     ],
     projectUrl: "https://github.com/Remix-Design/RemixIcon",
@@ -330,7 +330,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "RemixIcon",
-      remoteDir: "icons/",
+      remoteDir: "icons",
       url: "https://github.com/Remix-Design/RemixIcon.git",
       branch: "master",
       hash: "8bc436bdd329cf342958d8effdd078bfa74354c6",
@@ -343,7 +343,7 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../flat-color-icons/svg/*.svg"),
-        formatter: name => `Fc${name}`,
+        formatter: name => `Fc-${name}`,
         multiColor: true,
       },
     ],
@@ -353,7 +353,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "flat-color-icons",
-      remoteDir: "svg/",
+      remoteDir: "svg",
       url: "https://github.com/icons8/flat-color-icons.git",
       branch: "master",
       hash: "8eccbbbd8b2af1d2c9593e7cfba5ecb0d68ee378",
@@ -366,7 +366,7 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../grommet-icons/public/img/*.svg"),
-        formatter: name => `Gr${name}`,
+        formatter: name => `Gr-${name}`,
       },
     ],
     projectUrl: "https://github.com/grommet/grommet-icons",
@@ -375,7 +375,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "grommet-icons",
-      remoteDir: "public/img/",
+      remoteDir: "public/img",
       url: "https://github.com/grommet/grommet-icons.git",
       branch: "master",
       hash: "469590e6fb8b7a684756308f96a45a8425580f05",
@@ -388,11 +388,11 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../heroicons/optimized/solid/*.svg"),
-        formatter: name => `Hi${name}`,
+        formatter: name => `Hi-${name}`,
       },
       {
         files: getIconPath("../heroicons/optimized/outline/*.svg"),
-        formatter: name => `HiOutline${name}`,
+        formatter: name => `HiOutline-${name}`,
       },
     ],
     projectUrl: "https://github.com/tailwindlabs/heroicons",
@@ -401,7 +401,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "heroicons",
-      remoteDir: "optimized/",
+      remoteDir: "optimized",
       url: "https://github.com/tailwindlabs/heroicons.git",
       branch: "v1",
       hash: "b6de5792d3d53ff81c71b1b8283463aad622e0e3",
@@ -414,15 +414,15 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../heroicons-2/optimized/24/solid/*.svg"),
-        formatter: name => `Hi${name}`,
+        formatter: name => `Hi-${name}`,
       },
       {
         files: getIconPath("../heroicons-2/optimized/24/outline/*.svg"),
-        formatter: name => `HiOutline${name}`,
+        formatter: name => `HiOutline-${name}`,
       },
       {
         files: getIconPath("../heroicons-2/optimized/20/solid/*.svg"),
-        formatter: name => `HiMini${name}`,
+        formatter: name => `HiMini-${name}`,
       },
     ],
     projectUrl: "https://github.com/tailwindlabs/heroicons",
@@ -431,7 +431,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "heroicons-2",
-      remoteDir: "optimized/",
+      remoteDir: "optimized",
       url: "https://github.com/tailwindlabs/heroicons.git",
       branch: "master",
       hash: "fa902f44d071eac776758cfd6e0522cb7c37b1c3",
@@ -444,7 +444,7 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../simple-icons/icons/*.svg"),
-        formatter: name => `Si${name}`,
+        formatter: name => `Si-${name}`,
       },
     ],
     projectUrl: "https://simpleicons.org/",
@@ -453,7 +453,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "simple-icons",
-      remoteDir: "icons/",
+      remoteDir: "icons",
       url: "https://github.com/simple-icons/simple-icons.git",
       branch: "develop",
       hash: "6b348d4987613d568d12a862ad2b97a3f66fda52",
@@ -466,7 +466,7 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../simple-line-icons/src/svgs/*.svg"),
-        formatter: name => `Sl${name}`,
+        formatter: name => `Sl-${name}`,
       },
     ],
     projectUrl: "https://thesabbir.github.io/simple-line-icons/",
@@ -475,7 +475,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "simple-line-icons",
-      remoteDir: "src/svgs/",
+      remoteDir: "src/svgs",
       url: "https://github.com/thesabbir/simple-line-icons.git",
       branch: "master",
       hash: "f3ed94dd797bdcab52d6f27ba589aea4bb6f3e4d",
@@ -497,7 +497,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "icomoon-free",
-      remoteDir: "SVG/",
+      remoteDir: "SVG",
       url: "https://github.com/Keyamoon/IcoMoon-Free.git",
       branch: "master",
       hash: "d006795ede82361e1bac1ee76f215cf1dc51e4ca",
@@ -527,7 +527,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "boxicons",
-      remoteDir: "svg/",
+      remoteDir: "svg",
       url: "https://github.com/atisawd/boxicons.git",
       branch: "master",
       hash: "9ffa9136e8681886bb7bd2145cd4098717ce1c11",
@@ -540,7 +540,7 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../css.gg/icons/svg/*.svg"),
-        formatter: name => `Cg${name}`,
+        formatter: name => `Cg-${name}`,
       },
     ],
     projectUrl: "https://github.com/astrit/css.gg",
@@ -549,7 +549,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "css.gg",
-      remoteDir: "icons/svg/",
+      remoteDir: "icons/svg",
       url: "https://github.com/astrit/css.gg.git",
       branch: "main",
       hash: "ad0428df5491082b29a81d64dbdc59b9602cc059",
@@ -562,7 +562,7 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../vscode-icons/src/icons/*.svg"),
-        formatter: name => `Vsc${name}`,
+        formatter: name => `Vsc-${name}`,
       },
     ],
     projectUrl: "https://github.com/microsoft/vscode-codicons",
@@ -571,7 +571,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "vscode-icons",
-      remoteDir: "src/icons/",
+      remoteDir: "src/icons",
       url: "https://github.com/microsoft/vscode-codicons.git",
       branch: "main",
       hash: "a7c0d645fae136004f6af65b66a084747d36be37",
@@ -584,11 +584,11 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../tabler-icons/icons/filled/*.svg"),
-        formatter: name => `Tb${name}Filled`,
+        formatter: name => `Tb-${name}Filled`,
       },
       {
         files: getIconPath("../tabler-icons/icons/outline/*.svg"),
-        formatter: name => `Tb${name}`,
+        formatter: name => `Tb-${name}`,
       },
     ],
     projectUrl: "https://github.com/tabler/tabler-icons",
@@ -597,7 +597,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "tabler-icons",
-      remoteDir: "icons/",
+      remoteDir: "icons",
       url: "https://github.com/tabler/tabler-icons.git",
       branch: "main",
       hash: "a90ddb1fb22fbb28bcafcace6a43fe66ff1f16e2",
@@ -610,7 +610,7 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../themify-icons/SVG/*.svg"),
-        formatter: name => `Tfi${name}`,
+        formatter: name => `Tfi-${name}`,
       },
     ],
     projectUrl: "https://github.com/lykmapipo/themify-icons",
@@ -619,7 +619,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "themify-icons",
-      remoteDir: "SVG/",
+      remoteDir: "SVG",
       url: "https://github.com/lykmapipo/themify-icons.git",
       branch: "master",
       hash: "9600186b24a7242f0e1e0a186983e6253301bb5d",
@@ -641,7 +641,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "radix-icons",
-      remoteDir: "packages/radix-icons/icons/",
+      remoteDir: "packages/radix-icons/icons",
       url: "https://github.com/radix-ui/icons.git",
       branch: "master",
       hash: "bde33b13aa5848555f5512ac12155930fb4beb7d",
@@ -654,7 +654,7 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../phosphor-icons/assets/*/*.svg"),
-        formatter: name => `Pi${name}`,
+        formatter: name => `Pi-${name}`,
       },
     ],
     projectUrl: "https://github.com/phosphor-icons/core",
@@ -663,7 +663,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "phosphor-icons",
-      remoteDir: "assets/",
+      remoteDir: "assets",
       url: "https://github.com/phosphor-icons/core.git",
       branch: "main",
       hash: "718275586082878c7c7d220ad350db2962d749e6",
@@ -676,7 +676,7 @@ export const icons: IconSource[] = [
     contents: [
       {
         files: getIconPath("../line-awesome/svg/*.svg"),
-        formatter: name => `Lia${name}`,
+        formatter: name => `Lia-${name}`,
       },
     ],
     projectUrl: "https://icons8.com/line-awesome",
@@ -685,7 +685,7 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "line-awesome",
-      remoteDir: "svg/",
+      remoteDir: "svg",
       url: "https://github.com/icons8/line-awesome.git",
       branch: "master",
       hash: "78a101217707c9b1c4dcf2a821be75684e36307f",

@@ -1,14 +1,14 @@
 import { resolve } from "path";
 import { execSync } from "child_process";
 import { writeFileSync, readFileSync } from "fs";
-import type { SourceConfig, IconSource } from "../src/source/creator";
+import type { SourceConfig, IconSource } from "../src/utils/creator";
 import { getSourcePath } from "../src/utils/path";
 
 // 修改导入路径
 import { icons } from "../src/source";
 
 interface IconConfig extends IconSource {
-  source?: SourceConfig;
+  source: SourceConfig;
 }
 
 // 拉取仓库最新提交，并只更新 hash 值
@@ -19,7 +19,7 @@ async function updateRepoHash() {
     let hasUpdates = false;
 
     for (const icon of icons as IconConfig[]) {
-      if (icon.source?.type === "git") {
+      if (icon.source.type === "git") {
         console.log(`正在更新 ${icon.name} 的 hash...`);
         // 只获取最近一次提交的 hash 而不拉取仓库
         const repoUrl = icon.source.url;

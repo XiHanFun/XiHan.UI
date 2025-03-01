@@ -32,8 +32,8 @@
   "scripts": {
     "update": "tsx scripts/update.ts",
     "download": "tsx scripts/download.ts",
-    "build": "npm run update && npm run download && npm run generate && vite build",
-    "generate": "tsx scripts/generate.ts"
+    "generate": "tsx scripts/generate.ts",
+    "build": "npm run update && npm run download && npm run generate && vite build"
   },
   "peerDependencies": {
     "vue": "*"

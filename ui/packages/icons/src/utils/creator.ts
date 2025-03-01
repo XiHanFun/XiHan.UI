@@ -5,7 +5,7 @@ import type { IconBaseProps } from "../components/IconBase";
 export interface SourceConfig {
   type: "git";
   localName: string;
-  remoteDir?: string;
+  remoteDir: string;
   url: string;
   branch: string;
   hash: string;
@@ -24,7 +24,7 @@ export interface IconSource {
   projectUrl: string;
   license: string;
   licenseUrl: string;
-  source?: SourceConfig;
+  source: SourceConfig;
 }
 
 export function createIcon(definition: IconSource) {

@@ -1,7 +1,7 @@
 import { resolve } from "path";
 import { execSync } from "child_process";
 import { mkdirSync, existsSync, writeFileSync } from "fs";
-import type { SourceConfig, IconSource } from "../src/source/creator";
+import type { SourceConfig, IconSource } from "../src/utils/creator";
 import { ASSETS_DIR, ICONS_DIR } from "../src/utils/path";
 
 // 修改导入路径
@@ -9,7 +9,7 @@ import { icons } from "../src/source";
 
 // 图标库配置
 interface IconConfig extends IconSource {
-  source?: SourceConfig;
+  source: SourceConfig;
 }
 
 /**
@@ -49,7 +49,7 @@ async function downloadAll() {
 
     // 下载所有图标库
     for (const icon of icons as IconConfig[]) {
-      if (icon.source?.type === "git") {
+      if (icon.source.type === "git") {
         await downloadRepo(icon.source);
       }
     }

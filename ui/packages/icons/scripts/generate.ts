@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync } from 
 import { optimize, type Config } from "svgo";
 import { icons } from "../src/source";
 import { ASSETS_DIR, ICONS_DIR } from "../src/utils/path";
+import { stringFormatUtils } from "@xihan-ui/utils";
 
 // SVG优化配置
 const svgoConfig: Config = {
@@ -41,14 +42,21 @@ async function generate() {
 
     // 处理每个图标集
     for (const iconSet of icons) {
+      console.log("正在生成", iconSet.id, "...");
       for (const content of iconSet.contents) {
-        const svgFiles = readdirSync(resolve(ASSETS_DIR, iconSet.path)).filter(file => file.endsWith(".svg"));
-
+        const iconPath = resolve(ASSETS_DIR, iconSet.source.localName, iconSet.source.remoteDir);
+        const iconFilePaths = readdirSync(iconPath).filter(file => file.endsWith(".svg"));
         // 转换每个SVG文件
-        for (const file of svgFiles) {
-          const name = content.formatter(file.replace(".svg", ""));
-          const svgPath = resolve(ASSETS_DIR, iconSet.path, file);
-          const svgContent = readFileSync(svgPath, "utf-8");
+        for (const filePath of iconFilePaths) {
+          const name = content.formatter(filePath.replace(".svg", ""));
+          // 导出名称为大驼峰命名
+          const exportName = stringFormatUtils.toPascalCase(name);
+          // 声明名称为中划线命名
+          const declareName = stringFormatUtils.toKebabCase(name);
+          // 文件路径名称为下划线命名
+          const iconFilePathName = stringFormatUtils.toSnakeCase(name);
+
+          const svgContent = readFileSync(resolve(iconPath, filePath), "utf-8");
 
           const result = optimize(svgContent, svgoConfig);
           if ("data" in result) {
@@ -56,12 +64,14 @@ async function generate() {
             const iconContent = `
 import { createIcon } from "../utils/creator";
 
-export const ${name} = createIcon({
-  name: "${name}",
+export const ${exportName} = createIcon({
+  name: "${declareName}",
   path: "${path}",
 });
 `;
-            writeFileSync(resolve(ICONS_DIR, `${name}.ts`), iconContent);
+            const iconDir = resolve(ICONS_DIR, iconSet.id);
+            ensureDir(iconDir);
+            writeFileSync(resolve(iconDir, `${iconFilePathName}.ts`), iconContent);
           }
         }
       }
@@ -69,7 +79,7 @@ export const ${name} = createIcon({
 
     // 生成索引文件
     const indexContent = `${icons
-      .map(iconSet => iconSet.contents.map(content => `export * from "./${content.formatter("*")}";`).join("\n"))
+      .map(iconSet => iconSet.contents.map(content => `export * from "./${iconSet.id}/*";`).join("\n"))
       .join("\n")}`;
 
     writeFileSync(resolve(ICONS_DIR, "index.ts"), indexContent);
