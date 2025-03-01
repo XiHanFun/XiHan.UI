@@ -281,6 +281,7 @@ export * from './lu_th_list';
 export * from './lu_th_list_outline';
 export * from './lu_th_menu';
 export * from './lu_th_menu_outline';
+export * from './lu_th_small';
 export * from './lu_th_small_outline';
 export * from './lu_tick';
 export * from './lu_ticket';

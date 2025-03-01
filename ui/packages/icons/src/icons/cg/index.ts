@@ -373,6 +373,8 @@ export * from './cg_link';
 export * from './cg_list';
 export * from './cg_list_tree';
 export * from './cg_live_photo';
+export * from './cg_loadbar';
+export * from './cg_loadbar_alt';
 export * from './cg_loadbar_doc';
 export * from './cg_loadbar_sound';
 export * from './cg_lock';

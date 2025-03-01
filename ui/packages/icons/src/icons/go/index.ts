@@ -281,6 +281,7 @@ export * from './go_th_list';
 export * from './go_th_list_outline';
 export * from './go_th_menu';
 export * from './go_th_menu_outline';
+export * from './go_th_small';
 export * from './go_th_small_outline';
 export * from './go_tick';
 export * from './go_ticket';

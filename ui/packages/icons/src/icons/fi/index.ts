@@ -281,6 +281,7 @@ export * from './fi_th_list';
 export * from './fi_th_list_outline';
 export * from './fi_th_menu';
 export * from './fi_th_menu_outline';
+export * from './fi_th_small';
 export * from './fi_th_small_outline';
 export * from './fi_tick';
 export * from './fi_ticket';

@@ -1,6 +1,6 @@
 @use "sass:map";
-@use "../common/variables" as vars;
-@use "../common/mixins" as mix;
+@use "../variables" as vars;
+@use "../mixins" as mix;
 
 .xh-button-group {
   @include mix.use-flex(row);

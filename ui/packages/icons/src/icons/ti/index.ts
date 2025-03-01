@@ -281,6 +281,7 @@ export * from './ti_th_list';
 export * from './ti_th_list_outline';
 export * from './ti_th_menu';
 export * from './ti_th_menu_outline';
+export * from './ti_th_small';
 export * from './ti_th_small_outline';
 export * from './ti_tick';
 export * from './ti_ticket';

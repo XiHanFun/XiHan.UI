@@ -1,12 +1,15 @@
-export class XihanError extends Error {
-  constructor(message: string, public code: string) {
+export class XiHanError extends Error {
+  constructor(
+    message: string,
+    public code: string
+  ) {
     super(message);
-    this.name = "XihanError";
+    this.name = "XiHanError";
   }
 }
 
 export const throwError = (message: string, code = "UNKNOWN"): never => {
-  throw new XihanError(message, code);
+  throw new XiHanError(message, code);
 };
 
 export const assert = (condition: boolean, message: string, code = "ASSERTION"): void => {
