@@ -28,12 +28,13 @@ export const stringFormatUtils = {
    * @returns 小驼峰格式的字符串
    * @example toCamelCase('hello-world') => 'helloWorld'
    * @example toCamelCase('hello_world') => 'helloWorld'
+   * @example toCamelCase('HelloWorld') => 'helloWorld'
    */
   toCamelCase(str: string): string {
-    const pascalCase = str
-      .replace(/^[-_]/, "") // 移除开头的连字符或下划线
-      .replace(/[-_](\w)/g, (_, c) => c.toUpperCase());
-    return pascalCase.charAt(0).toLowerCase() + pascalCase.slice(1);
+    // 先处理kebab-case和snake_case
+    const normalized = str.replace(/[-_]([a-z])/g, (_, char) => char.toUpperCase());
+    // 处理PascalCase
+    return normalized.charAt(0).toLowerCase() + normalized.slice(1);
   },
 
   /**
@@ -42,12 +43,13 @@ export const stringFormatUtils = {
    * @returns 大驼峰格式的字符串
    * @example toPascalCase('hello-world') => 'HelloWorld'
    * @example toPascalCase('hello_world') => 'HelloWorld'
+   * @example toPascalCase('helloWorld') => 'HelloWorld'
    */
   toPascalCase(str: string): string {
-    const pascalCase = str
-      .replace(/^[-_]/, "") // 移除开头的连字符或下划线
-      .replace(/[-_](\w)/g, (_, c) => c.toUpperCase());
-    return pascalCase.charAt(0).toUpperCase() + pascalCase.slice(1);
+    // 先将字符串转换为camelCase
+    const camelCase = this.toCamelCase(str);
+    // 然后将首字母大写
+    return this.capitalize(camelCase);
   },
 
   /**
@@ -55,9 +57,16 @@ export const stringFormatUtils = {
    * @param str - 输入字符串
    * @returns 下划线格式的字符串
    * @example toSnakeCase('helloWorld') => 'hello_world'
+   * @example toSnakeCase('HelloWorld') => 'hello_world'
+   * @example toSnakeCase('Hello-World') => 'hello_world'
    */
   toSnakeCase(str: string): string {
-    return str.replace(/([a-z])([A-Z])/g, "$1_$2").toLowerCase();
+    // 处理kebab-case
+    let result = str.replace(/-/g, "_");
+    // 处理驼峰式命名
+    result = result.replace(/([A-Z])/g, "_$1").toLowerCase();
+    // 移除开头的下划线（如果存在）
+    return result.replace(/^_/, "");
   },
 
   /**
@@ -65,12 +74,12 @@ export const stringFormatUtils = {
    * @param str - 输入字符串
    * @returns 中划线格式的字符串
    * @example toKebabCase('helloWorld') => 'hello-world'
+   * @example toKebabCase('HelloWorld') => 'hello-world'
+   * @example toKebabCase('Hello-World') => 'hello-world'
    */
   toKebabCase(str: string): string {
-    return str
-      .replace(/([a-z])([A-Z])/g, "$1-$2")
-      .replace(/[\s_]+/g, "-")
-      .toLowerCase();
+    // 先转换为snake_case，然后将下划线替换为中划线
+    return this.toSnakeCase(str).replace(/_/g, "-");
   },
 
   /**
