@@ -7,10 +7,10 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "README.md": "README*,CHANGELOG*,LICENSE,CNAME,.cursorrules*",
-    "package.json": "pnpm-lock.yaml,pnpm-workspace.yaml,.gitattributes,.gitignore,.npmrc,",
-    "tsconfig.json": ".eslintignore,.prettierignore,.stylelintignore,.commitlintrc.*,.prettierrc.*,stylelint.config.*,",
-    "vite.config.mts": "vite.config.*,vitest.config.*,.env*"
+    "README.*": "README*,CHANGELOG*,LICENSE,CNAME,.cursorrules*",
+    "package.*": "pnpm-lock.yaml,pnpm-workspace.yaml,.gitattributes,.gitignore,.npmrc",
+    "tsconfig.*": "tsconfig.*.json,eslintignore,.prettierignore,.stylelintignore,.commitlintrc.*,.prettierrc.*,stylelint.config.*",
+    "vite.config.*": "vite.config.*,vitest.config.*,.env*"
   },
   // 翻译插件配置
   "commentTranslate.source": "Google",

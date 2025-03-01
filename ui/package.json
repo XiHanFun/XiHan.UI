@@ -35,10 +35,13 @@
   },
   "scripts": {
     "bootstrap": "pnpm -r install",
-    "dev": "vite dev",
-    "debug": "vite dev --debug",
-    "preview": "vite preview",
+    "dev": "pnpm run --filter play-ground dev",
+    "debug": "pnpm run --filter play-ground dev --debug",
+    "preview": "pnpm run --filter play-ground preview",
     "build": "vite build",
+    "build:types": "vue-tsc --declaration --emitDeclarationOnly",
+    "build:all": "pnpm run build && pnpm run build:types",
+    "build:playground": "pnpm run --filter play-ground build",
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "format": "prettier --write \"src/**/*.{js,mjs,jsx,ts,mts,tsx,vue,css,scss,less,json,md}\"",
@@ -50,13 +53,23 @@
     "gen-version": "node scripts/gen-version.mjs",
     "update-pkg": "pnpm -r exec ncu -u",
     "reinstall": "pnpm run clean-node && pnpm run bootstrap",
-    "rebuild": "pnpm run clean-build && pnpm run build",
+    "rebuild": "pnpm run clean-build && pnpm run build:all",
     "publish": "pnpm -r publish",
-    "prerelease": "pnpm run clean-build && pnpm gen-version && pnpm build",
+    "prerelease": "pnpm run clean-build && pnpm gen-version && pnpm build:all",
     "release": "pnpm -r publish --access public"
   },
   "peerDependencies": {
     "vue": "*"
+  },
+  "dependencies": {
+    "@xihan-ui/utils": "workspace:*",
+    "@xihan-ui/constants": "workspace:*",
+    "@xihan-ui/hooks": "workspace:*",
+    "@xihan-ui/icons": "workspace:*",
+    "@xihan-ui/directives": "workspace:*",
+    "@xihan-ui/themes": "workspace:*",
+    "@xihan-ui/locales": "workspace:*",
+    "@xihan-ui/components": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "*",
@@ -75,6 +88,8 @@
     "vite": "*",
     "vite-plugin-dts": "*",
     "vite-plugin-vue-devtools": "^7.7.2",
-    "vitest": "^3.0.5"
+    "vitest": "^3.0.5",
+    "vue-tsc": "*",
+    "tsx": "*"
   }
 }
