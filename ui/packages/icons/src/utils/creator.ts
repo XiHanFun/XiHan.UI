@@ -27,7 +27,12 @@ export interface IconSource {
   source: SourceConfig;
 }
 
-export function createIcon(definition: IconSource) {
+export interface IconDefinition {
+  name: string;
+  path: string;
+}
+
+export function createIcon(definition: IconDefinition) {
   return defineComponent({
     name: definition.name,
     inheritAttrs: false,

@@ -50,6 +50,7 @@ async function generate() {
         for (const filePath of iconFilePaths) {
           const name = content.formatter(filePath.replace(".svg", ""));
           // 导出名称为大驼峰命名
+          // gi_abstract_017 => GiAbstract017
           const exportName = stringFormatUtils.toPascalCase(name);
           // 声明名称为中划线命名
           const declareName = stringFormatUtils.toKebabCase(name);
@@ -62,7 +63,7 @@ async function generate() {
           if ("data" in result) {
             const path = result.data.match(/d="([^"]+)"/)?.[1] || "";
             const iconContent = `
-import { createIcon } from "../utils/creator";
+import { createIcon } from "../../utils/creator";
 
 export const ${exportName} = createIcon({
   name: "${declareName}",
