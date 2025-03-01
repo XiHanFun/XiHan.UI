@@ -26,33 +26,10 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "../../dist/lib/packages/themes/src/index.css",
-  "module": "../../dist/es/packages/themes/src/index.css",
-  "style": "../../dist/es/packages/themes/src/index.css",
-  "exports": {
-    ".": {
-      "import": "../../dist/es/packages/themes/src/index.css",
-      "require": "../../dist/lib/packages/themes/src/index.css"
-    },
-    "./variables": {
-      "import": "../../dist/es/packages/themes/src/variables.css",
-      "require": "../../dist/lib/packages/themes/src/variables.css"
-    }
-  },
-  "files": [
-    "src",
-    "../../dist/es/packages/themes",
-    "../../dist/lib/packages/themes"
-  ],
+  "main": "src/index.css",
+  "module": "src/index.css",
+  "style": "src/index.css",
   "peerDependencies": {
-    "vue": "*"
-  },
-  "dependencies": {
-    "@xihan-ui/utils": "workspace:*"
-  },
-  "devDependencies": {
-    "@types/node": "*",
-    "typescript": "*",
     "sass": "*"
   }
 }

@@ -37,17 +37,12 @@
       <section class="demo-section">
         <h2>图标按钮</h2>
         <div class="demo-row">
-          <XhButton icon="xh-icon-edit">编辑</XhButton>
-          <XhButton icon="xh-icon-share">分享</XhButton>
-          <XhButton icon="xh-icon-delete" type="danger">删除</XhButton>
-          <XhButton icon="xh-icon-search" type="primary">搜索</XhButton>
-          <XhButton icon="xh-icon-check" type="success" circle></XhButton>
-          <XhButton icon="xh-icon-message" type="info" circle></XhButton>
+          <XhButton :icon="FiEdit">编辑</XhButton>
+          <XhButton :icon="FiTrash" type="danger">删除</XhButton>
         </div>
         <div class="demo-row">
-          <XhButton icon="xh-icon-edit" iconPlacement="right">编辑</XhButton>
-          <XhButton icon="xh-icon-share" iconPlacement="right">分享</XhButton>
-          <XhButton icon="xh-icon-delete" type="danger" iconPlacement="right">删除</XhButton>
+          <XhButton :icon="FiEdit" iconPlacement="right">编辑</XhButton>
+          <XhButton :icon="FiTrash" type="danger" iconPlacement="right">删除</XhButton>
         </div>
       </section>
 
@@ -59,9 +54,9 @@
           <XhButton size="large" type="primary">大型按钮</XhButton>
         </div>
         <div class="demo-row">
-          <XhButton size="small" icon="xh-icon-edit" type="primary">编辑</XhButton>
-          <XhButton icon="xh-icon-edit" type="primary">编辑</XhButton>
-          <XhButton size="large" icon="xh-icon-edit" type="primary">编辑</XhButton>
+          <XhButton size="small" :icon="FiEdit" type="primary">编辑</XhButton>
+          <XhButton :icon="FiEdit" type="primary">编辑</XhButton>
+          <XhButton size="large" :icon="FiEdit" type="primary">编辑</XhButton>
         </div>
       </section>
 
@@ -69,11 +64,9 @@
         <h2>按钮形状</h2>
         <div class="demo-row">
           <XhButton round>圆角按钮</XhButton>
-          <XhButton type="primary" round>圆角按钮</XhButton>
-          <XhButton type="success" round icon="xh-icon-check">成功按钮</XhButton>
-          <XhButton type="info" circle icon="xh-icon-info"></XhButton>
-          <XhButton type="warning" circle icon="xh-icon-star"></XhButton>
-          <XhButton type="danger" circle icon="xh-icon-delete"></XhButton>
+          <XhButton type="info" circle :icon="FiInfo"></XhButton>
+          <XhButton type="warning" circle :icon="FiStar"></XhButton>
+          <XhButton type="danger" circle :icon="FiTrash"></XhButton>
         </div>
       </section>
 
@@ -95,7 +88,7 @@
           <XhButton type="primary" disabled>禁用按钮</XhButton>
           <XhButton type="success" disabled plain>禁用按钮</XhButton>
           <XhButton type="info" disabled round>禁用按钮</XhButton>
-          <XhButton type="danger" disabled circle icon="xh-icon-delete"></XhButton>
+          <XhButton type="danger" disabled circle :icon="FiTrash"></XhButton>
         </div>
       </section>
 
@@ -111,22 +104,20 @@
         <h2>按钮组</h2>
         <div class="demo-row">
           <XhButtonGroup>
-            <XhButton type="primary" icon="xh-icon-left">上一页</XhButton>
-            <XhButton type="primary" icon="xh-icon-right" iconPlacement="right">下一页</XhButton>
+            <XhButton type="primary" :icon="FiChevronLeft">上一页</XhButton>
+            <XhButton type="primary" :icon="FiChevronRight" iconPlacement="right">下一页</XhButton>
           </XhButtonGroup>
         </div>
         <div class="demo-row">
           <XhButtonGroup>
-            <XhButton type="primary" icon="xh-icon-edit"></XhButton>
-            <XhButton type="primary" icon="xh-icon-share"></XhButton>
-            <XhButton type="primary" icon="xh-icon-delete"></XhButton>
+            <XhButton type="primary" :icon="FiEdit"></XhButton>
+            <XhButton type="primary" :icon="FiTrash"></XhButton>
           </XhButtonGroup>
         </div>
         <div class="demo-row">
           <XhButtonGroup vertical>
-            <XhButton type="primary" icon="xh-icon-edit">编辑</XhButton>
-            <XhButton type="primary" icon="xh-icon-share">分享</XhButton>
-            <XhButton type="primary" icon="xh-icon-delete">删除</XhButton>
+            <XhButton type="primary" :icon="FiEdit">编辑</XhButton>
+            <XhButton type="primary" :icon="FiTrash">删除</XhButton>
           </XhButtonGroup>
         </div>
       </section>
@@ -136,6 +127,15 @@
 
 <script setup lang="ts">
   import { ref } from "vue";
+  import {
+    FiEdit,
+    FiTrash,
+    FiInfo,
+    FiStar,
+    FiChevronLeft,
+    FiChevronRight,
+    FiMessage as FiMessageSquare,
+  } from "@xihan-ui/icons";
 
   const theme = ref("light");
 

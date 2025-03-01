@@ -26,29 +26,10 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "../../dist/lib/packages/plugins/src/index.js",
-  "module": "../../dist/es/packages/plugins/src/index.mjs",
-  "types": "../../dist/es/packages/plugins/src/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "../../dist/es/packages/plugins/src/index.d.ts",
-      "import": "../../dist/es/packages/plugins/src/index.mjs",
-      "require": "../../dist/lib/packages/plugins/src/index.js"
-    }
-  },
-  "files": [
-    "src",
-    "../../dist/es/packages/plugins",
-    "../../dist/lib/packages/plugins"
-  ],
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.d.ts",
   "peerDependencies": {
     "vue": "*"
-  },
-  "dependencies": {
-    "@xihan-ui/utils": "workspace:*"
-  },
-  "devDependencies": {
-    "@types/node": "*",
-    "typescript": "*"
   }
 }

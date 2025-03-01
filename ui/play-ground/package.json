@@ -29,14 +29,10 @@
     "build": "vite build",
     "preview": "vite preview"
   },
-  "peerDependencies": {
-    "vue": "*"
-  },
   "dependencies": {
-    "pinia": "*",
     "vue": "*",
-    "vue-router": "*",
-    "xihan-ui": "workspace:*"
+    "pinia": "*",
+    "vue-router": "*"
   },
   "devDependencies": {
     "@types/node": "*",

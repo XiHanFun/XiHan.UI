@@ -1,4 +1,5 @@
-// 导入顺序很重要
+@use "./variables";
+@use "./mixins";
 @use "./common";
 @use "./components";
 @use "./themes";
