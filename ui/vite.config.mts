@@ -17,17 +17,37 @@ const packages = {
   xihanui: resolve(__dirname, "xihan-ui"),
 };
 
+// 包入口配置
+const entries = {
+  "@xihan-ui/utils": resolve(packages.utils, "src/index.ts"),
+  "@xihan-ui/constants": resolve(packages.constants, "src/index.ts"),
+  "@xihan-ui/hooks": resolve(packages.hooks, "src/index.ts"),
+  "@xihan-ui/icons": resolve(packages.icons, "src/index.ts"),
+  "@xihan-ui/directives": resolve(packages.directives, "src/index.ts"),
+  "@xihan-ui/themes": resolve(packages.themes, "src/index.scss"),
+  "@xihan-ui/locales": resolve(packages.locales, "src/index.ts"),
+  "@xihan-ui/components": resolve(packages.components, "src/index.ts"),
+  "xihan-ui": resolve(packages.xihanui, "src/index.ts"),
+};
+
 export default defineConfig({
   plugins: [
     vue(),
     vueJsx(),
     dts({
-      include: ["packages/**/*.ts", "packages/**/*.tsx", "packages/**/*.vue"],
+      include: [
+        "packages/**/src/**/*.ts",
+        "packages/**/src/**/*.tsx",
+        "packages/**/src/**/*.vue",
+        "xihan-ui/src/**/*.ts",
+      ],
       exclude: ["packages/**/demos/*", "packages/**/tests/*"],
       // 确保生成类型文件
       staticImport: true,
       // 插入版权信息
       insertTypesEntry: true,
+      // 输出目录配置
+      outDir: ["dist/es", "dist/lib"],
       // 生成类型文件后的钩子
       afterBuild: () => {
         console.log("\n✨ Type definitions generated successfully!");
@@ -36,47 +56,29 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      "@xihan-ui/utils": resolve(packages.utils),
-      "@xihan-ui/constants": resolve(packages.constants),
-      "@xihan-ui/hooks": resolve(packages.hooks),
-      "@xihan-ui/icons": resolve(packages.icons),
-      "@xihan-ui/directives": resolve(packages.directives),
-      "@xihan-ui/themes": resolve(packages.themes),
-      "@xihan-ui/locales": resolve(packages.locales),
-      "@xihan-ui/components": resolve(packages.components),
-      "xihan-ui": resolve(packages.xihanui),
+      "@xihan-ui/utils": resolve(packages.utils, "src"),
+      "@xihan-ui/constants": resolve(packages.constants, "src"),
+      "@xihan-ui/hooks": resolve(packages.hooks, "src"),
+      "@xihan-ui/icons": resolve(packages.icons, "src"),
+      "@xihan-ui/directives": resolve(packages.directives, "src"),
+      "@xihan-ui/themes": resolve(packages.themes, "src"),
+      "@xihan-ui/locales": resolve(packages.locales, "src"),
+      "@xihan-ui/components": resolve(packages.components, "src"),
+      "xihan-ui": resolve(packages.xihanui, "src"),
     },
   },
   build: {
     outDir: "dist",
     cssCodeSplit: true,
+    minify: false,
+    reportCompressedSize: false,
     lib: {
+      entry: entries,
       name: "xihan-ui",
-      entry: {
-        "@xihan-ui/utils": resolve(packages.utils, "index.ts"),
-        "@xihan-ui/constants": resolve(packages.constants, "index.ts"),
-        "@xihan-ui/hooks": resolve(packages.hooks, "index.ts"),
-        "@xihan-ui/icons": resolve(packages.icons, "index.ts"),
-        "@xihan-ui/directives": resolve(packages.directives, "index.ts"),
-        "@xihan-ui/themes": resolve(packages.themes, "index.scss"),
-        "@xihan-ui/locales": resolve(packages.locales, "index.ts"),
-        "@xihan-ui/components": resolve(packages.components, "index.ts"),
-        "xihan-ui": resolve(packages.xihanui, "index.ts"),
-      },
     },
     rollupOptions: {
       external: ["vue"],
-      input: {
-        "@xihan-ui/utils": resolve(packages.utils, "index.ts"),
-        "@xihan-ui/constants": resolve(packages.constants, "index.ts"),
-        "@xihan-ui/hooks": resolve(packages.hooks, "index.ts"),
-        "@xihan-ui/icons": resolve(packages.icons, "index.ts"),
-        "@xihan-ui/directives": resolve(packages.directives, "index.ts"),
-        "@xihan-ui/themes": resolve(packages.themes, "index.scss"),
-        "@xihan-ui/locales": resolve(packages.locales, "index.ts"),
-        "@xihan-ui/components": resolve(packages.components, "index.ts"),
-        "xihan-ui": resolve(packages.xihanui, "index.ts"),
-      },
+      input: entries,
       output: [
         {
           name: "xihan-ui",
@@ -85,7 +87,7 @@ export default defineConfig({
           entryFileNames: `[name].mjs`,
           preserveModules: true,
           exports: "named",
-          preserveModulesRoot: "xihan-ui",
+          preserveModulesRoot: "",
           globals: {
             vue: "Vue",
           },
@@ -97,7 +99,7 @@ export default defineConfig({
           entryFileNames: `[name].js`,
           preserveModules: true,
           exports: "named",
-          preserveModulesRoot: "xihan-ui",
+          preserveModulesRoot: "",
           globals: {
             vue: "Vue",
           },
@@ -107,7 +109,10 @@ export default defineConfig({
   },
   css: {
     preprocessorOptions: {
-      scss: {},
+      scss: {
+        // 可以在这里添加全局scss变量
+        // additionalData: `@import "@xihan-ui/themes/src/variables.scss";`
+      },
     },
   },
 });

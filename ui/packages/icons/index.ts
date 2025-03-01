@@ -1,5 +1,4 @@
 import type { App, Component } from "vue";
-import { withInstall } from "@xihan-ui/utils";
 import * as icons from "./src/icons";
 
 // 导出所有图标组件
@@ -7,7 +6,6 @@ export * from "./src/icons";
 
 // 导出类型
 export type { IconBaseProps } from "./src/components/IconBase";
-export type { IconDefinition } from "./src/utils/creator";
 
 // 安装函数
 export function install(app: App) {

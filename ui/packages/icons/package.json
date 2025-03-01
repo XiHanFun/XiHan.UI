@@ -26,9 +26,21 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "index.ts",
-  "module": "index.ts",
-  "types": "index.d.ts",
+  "main": "../../dist/lib/packages/icons/src/index.js",
+  "module": "../../dist/es/packages/icons/src/index.mjs",
+  "types": "../../dist/es/packages/icons/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "../../dist/es/packages/icons/src/index.d.ts",
+      "import": "../../dist/es/packages/icons/src/index.mjs",
+      "require": "../../dist/lib/packages/icons/src/index.js"
+    }
+  },
+  "files": [
+    "src",
+    "../../dist/es/packages/icons",
+    "../../dist/lib/packages/icons"
+  ],
   "scripts": {
     "update": "tsx scripts/update.ts",
     "download": "tsx scripts/download.ts",
@@ -43,12 +55,12 @@
   },
   "devDependencies": {
     "@types/node": "*",
-    "@vitejs/plugin-vue": "^4.0.0",
-    "@vitejs/plugin-vue-jsx": "^3.0.0",
-    "sass": "^1.0.0",
-    "tsx": "^3.0.0",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vitejs/plugin-vue-jsx": "^4.1.1",
+    "sass": "^1.85.1",
+    "tsx": "^4.19.3",
     "typescript": "*",
-    "svgo": "^3.0.0",
+    "svgo": "^3.3.2",
     "@types/svgo": "^3.0.0"
   }
 }
