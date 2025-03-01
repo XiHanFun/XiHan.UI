@@ -1,0 +1,31 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "jsx": "preserve",
+    "jsxImportSource": "vue",
+    "lib": ["ESNext", "DOM"],
+    "types": ["vite/client", "vue"]
+  },
+  "paths": {
+    "@xihan-ui/*": ["packages/*"],
+    "xihan-ui": ["xihan-ui"],
+    "play-ground": ["play-ground"]
+  },
+  "include": [
+    "packages",
+    "packages/themes/*",
+    "packages/locales/*",
+    "packages/components/*",
+    "packages/icons/*",
+    "packages/directives/*",
+    "packages/hooks/*",
+    "packages/constants/*",
+    "packages/utils/*",
+    "xihan-ui",
+    "xihan-ui/*",
+    "play-ground",
+    "play-ground/*"
+  ],
+  "exclude": ["**/tests/**", "**/dist"]
+}
