@@ -26,15 +26,35 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.d.ts",
+  "main": "../../dist/lib/packages/components/src/index.js",
+  "module": "../../dist/es/packages/components/src/index.mjs",
+  "types": "../../dist/es/packages/components/src/index.d.ts",
+  "style": "../../dist/es/packages/components/src/index.css",
+  "exports": {
+    ".": {
+      "types": "../../dist/es/packages/components/src/index.d.ts",
+      "import": "../../dist/es/packages/components/src/index.mjs",
+      "require": "../../dist/lib/packages/components/src/index.js"
+    },
+    "./styles": {
+      "import": "../../dist/es/packages/components/src/index.css"
+    },
+    "./styles/*": {
+      "import": "../../dist/es/packages/components/src/*/style/index.css"
+    }
+  },
+  "files": [
+    "src",
+    "../../dist/es/packages/components",
+    "../../dist/lib/packages/components"
+  ],
   "peerDependencies": {
     "vue": "*"
   },
   "dependencies": {
     "@xihan-ui/utils": "workspace:*",
-    "@xihan-ui/themes": "workspace:*"
+    "@xihan-ui/themes": "workspace:*",
+    "@xihan-ui/icons": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "*",
