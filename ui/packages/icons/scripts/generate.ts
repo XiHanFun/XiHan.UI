@@ -94,7 +94,6 @@ function extractAllPaths(svgContent: string): string {
         // 普通矩形
         paths.push(`M${x},${y} h${width} v${height} h-${width} z`);
       }
-      console.log("转换rect为path");
     }
 
     // 2. 圆形 <circle>
@@ -104,7 +103,6 @@ function extractAllPaths(svgContent: string): string {
       const numR = parseFloat(r);
       // 转换为path表示（近似表示圆形）
       paths.push(`M${cx},${parseFloat(cy) - numR} a${r},${r} 0 1,0 ${numR * 2},0 a${r},${r} 0 1,0 -${numR * 2},0 z`);
-      console.log("转换circle为path");
     }
 
     // 3. 椭圆 <ellipse>
@@ -117,7 +115,6 @@ function extractAllPaths(svgContent: string): string {
       paths.push(
         `M${cx},${parseFloat(cy) - numRy} a${rx},${ry} 0 1,0 ${numRx * 2},0 a${rx},${ry} 0 1,0 -${numRx * 2},0 z`
       );
-      console.log("转换ellipse为path");
     }
 
     // 4. 线段 <line>
@@ -126,7 +123,6 @@ function extractAllPaths(svgContent: string): string {
       const [, x1, y1, x2, y2] = match;
       // 转换为path表示
       paths.push(`M${x1},${y1} L${x2},${y2}`);
-      console.log("转换line为path");
     }
 
     // 5. 折线 <polyline>
@@ -142,7 +138,6 @@ function extractAllPaths(svgContent: string): string {
           }
         }
         paths.push(pathData);
-        console.log("转换polyline为path");
       }
     }
 
@@ -160,7 +155,6 @@ function extractAllPaths(svgContent: string): string {
         }
         pathData += " Z"; // 闭合路径
         paths.push(pathData);
-        console.log("转换polygon为path");
       }
     }
   }
@@ -245,15 +239,15 @@ async function generate() {
             }
 
             // 调用格式化器前做进一步清理
-            const cleanBaseName = baseName.replace(/[\/\\:*?"<>|]/g, "_");
-            const name = content.formatter(cleanBaseName);
+            const name = content.formatter(baseName);
+            const cleanBaseName = name.replace(/[\/\\:*?"<>|]/g, "_");
 
             // 导出名称为大驼峰命名
-            const exportName = stringFormatUtils.toPascalCase(name);
+            const exportName = stringFormatUtils.toPascalCase(cleanBaseName);
             // 声明名称为中划线命名
-            const declareName = stringFormatUtils.toKebabCase(name);
+            const declareName = stringFormatUtils.toKebabCase(cleanBaseName);
             // 文件路径名称为下划线命名
-            const iconFilePathName = stringFormatUtils.toSnakeCase(name);
+            const iconFilePathName = stringFormatUtils.toSnakeCase(cleanBaseName);
 
             // 使用完整路径读取SVG内容
             const svgContent = readFileSync(resolve(iconPath, relativePath), "utf-8");

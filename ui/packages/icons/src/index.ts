@@ -1,11 +1,11 @@
 import type { App, Component } from "vue";
-import * as icons from "./src/icons";
+import * as icons from "./icons";
 
 // 导出所有图标组件
-export * from "./src/icons";
+export * from "./icons";
 
 // 导出类型
-export type { IconBaseProps } from "./src/components/IconBase";
+export type { IconBaseProps } from "./components/IconBase";
 
 // 安装函数
 export function install(app: App) {
