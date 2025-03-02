@@ -24,13 +24,15 @@ async function downloadRepo(source: SourceConfig) {
       // 克隆仓库
       console.log(`Cloning ${source.url}...`);
       execSync(`git clone --depth 1 -b ${source.branch} ${source.url} ${repoPath}`);
+
+      // 切换到指定的 commit
+      console.log(`Checking out ${source.hash}...`);
+      execSync(`cd ${repoPath} && git fetch --depth 1 origin ${source.hash} && git checkout ${source.hash}`);
+
+      console.log(`Successfully downloaded ${source.localName}`);
+    } else {
+      console.log(`Assets directory ${repoPath} already exists, skipping download...`);
     }
-
-    // 切换到指定的 commit
-    console.log(`Checking out ${source.hash}...`);
-    execSync(`cd ${repoPath} && git fetch --depth 1 origin ${source.hash} && git checkout ${source.hash}`);
-
-    console.log(`Successfully downloaded ${source.localName}`);
   } catch (error) {
     console.error(`Error downloading ${source.localName}:`, error);
     throw error;

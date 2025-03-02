@@ -48,8 +48,13 @@ export const stringFormatUtils = {
    * @example toPascalCase('helloWorld') => 'HelloWorld'
    * @example toPascalCase('hello_world_123') => 'HelloWorld123'
    * @example toPascalCase('gi_abstract_017') => 'GiAbstract017'
+   * @example toPascalCase('IE') => 'IE'
    */
   toPascalCase(str: string): string {
+    // 特殊处理全大写的缩写词
+    if (/^[A-Z0-9]+$/.test(str) && str.length <= 5) {
+      return str;
+    }
     // 先将字符串转换为camelCase
     const camelCase = this.toCamelCase(str);
     // 然后将首字母大写
