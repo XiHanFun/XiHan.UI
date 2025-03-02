@@ -127,15 +127,7 @@
 
 <script setup lang="ts">
   import { ref } from "vue";
-  import {
-    FiEdit,
-    FiTrash,
-    FiInfo,
-    FiStar,
-    FiChevronLeft,
-    FiChevronRight,
-    FiMessage as FiMessageSquare,
-  } from "@xihan-ui/icons";
+  import { FiEdit, FiTrash, FiInfo, FiStar, FiChevronLeft, FiChevronRight } from "@xihan-ui/icons";
 
   const theme = ref("light");
 
