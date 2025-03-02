@@ -1,18 +1,40 @@
 {
   "compilerOptions": {
+    // 输出目录
     "outDir": "dist",
+    // 目标 ECMAScript 版本
     "target": "ESNext",
+    // 模块类型
     "module": "ESNext",
+    // 基础路径
     "baseUrl": ".",
+    // 根目录
     "rootDir": ".",
-    "sourceMap": false,
-    "moduleResolution": "Node",
+    // 启用 sourceMap 便于调试
+    "sourceMap": true,
+    // 使用 Bundler 模块解析策略，更适合 Vite 项目
+    "moduleResolution": "Bundler",
+    // 允许 JavaScript 文件
     "allowJs": false,
+    // 启用严格模式
     "strict": true,
+    // 不未使用的局部变量
     "noUnusedLocals": true,
+    // 解析 JSON 模块
     "resolveJsonModule": true,
+    // 允许合成默认导入
     "allowSyntheticDefaultImports": true,
+    // 启用 ES 模块互操作性
     "esModuleInterop": true,
-    "removeComments": false
+    // 删除注释
+    "removeComments": false,
+    // 跳过库检查
+    "skipLibCheck": true,
+    // 强制文件名一致性
+    "forceConsistentCasingInFileNames": true,
+    // 启用隔离模块，确保每个文件是独立的模块
+    "isolatedModules": true,
+    // 启用严格的模块语法
+    "verbatimModuleSyntax": true
   }
 }

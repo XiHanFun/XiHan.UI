@@ -1,31 +1,47 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
+    // 启用复合项目
     "composite": true,
+    // 启用 JSX 支持
     "jsx": "preserve",
+    // 指定 JSX 导入源
     "jsxImportSource": "vue",
+    // 目标 ECMAScript 版本
     "lib": ["ESNext", "DOM"],
-    "types": ["vite/client", "vue"]
+    // 类型
+    "types": ["vite/client", "vue"],
+    // 模块类型
+    "module": "ESNext",
+    // 模块解析策略
+    "moduleResolution": "Bundler",
+    // 生成声明文件
+    "declaration": true,
+    // 生成声明文件映射
+    "declarationMap": true
   },
   "paths": {
-    "@xihan-ui/*": ["packages/*"],
-    "xihan-ui": ["xihan-ui"],
-    "play-ground": ["play-ground"]
+    // 组件
+    "@xihan-ui/components": ["packages/components/src"],
+    // 钩子
+    "@xihan-ui/hooks": ["packages/hooks/src"],
+    // 图标
+    "@xihan-ui/icons": ["packages/icons/src"],
+    // 工具
+    "@xihan-ui/utils": ["packages/utils/src"],
+    // 常量
+    "@xihan-ui/constants": ["packages/constants/src"],
+    // 主题
+    "@xihan-ui/themes": ["packages/themes/src"],
+    // 国际化
+    "@xihan-ui/locales": ["packages/locales/src"],
+    // 指令
+    "@xihan-ui/directives": ["packages/directives/src"],
+    // 主包
+    "xihan-ui": ["xihan-ui/src"]
   },
-  "include": [
-    "packages",
-    "packages/themes/*",
-    "packages/locales/*",
-    "packages/components/*",
-    "packages/icons/*",
-    "packages/directives/*",
-    "packages/hooks/*",
-    "packages/constants/*",
-    "packages/utils/*",
-    "xihan-ui",
-    "xihan-ui/*",
-    "play-ground",
-    "play-ground/*"
-  ],
-  "exclude": ["**/tests/**", "**/dist"]
+  // 包含的文件
+  "include": ["packages/**/*", "xihan-ui/**/*"],
+  // 排除的文件
+  "exclude": ["**/tests/**", "**/dist", "**/node_modules", "**/play-ground/**"]
 }
