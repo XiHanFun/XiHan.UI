@@ -1,12 +1,4 @@
-@font-face {
-  font-family: "xh-icons";
-  src:
-    url("../fonts/xh-icons.woff2") format("woff2"),
-    url("../fonts/xh-icons.woff") format("woff");
-}
-
 .xh-icon {
-  font-family: "xh-icons" !important;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -16,45 +8,4 @@
   display: inline-block;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-// 定义图标
-.xh-icon-edit:before {
-  content: "\e601";
-}
-
-.xh-icon-share:before {
-  content: "\e602";
-}
-
-.xh-icon-delete:before {
-  content: "\e603";
-}
-
-.xh-icon-search:before {
-  content: "\e604";
-}
-
-.xh-icon-check:before {
-  content: "\e605";
-}
-
-.xh-icon-info:before {
-  content: "\e606";
-}
-
-.xh-icon-star:before {
-  content: "\e607";
-}
-
-.xh-icon-left:before {
-  content: "\e608";
-}
-
-.xh-icon-right:before {
-  content: "\e609";
-}
-
-.xh-icon-message:before {
-  content: "\e60a";
 }

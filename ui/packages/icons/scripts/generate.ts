@@ -40,11 +40,7 @@ function ensureDir(dir: string) {
   }
 }
 
-/**
- * 从SVG字符串中提取所有的path路径数据
- * @param svgContent SVG内容字符串
- * @returns 组合后的path路径字符串
- */
+// 从SVG字符串中提取所有的path路径数据
 function extractAllPaths(svgContent: string): string {
   // 仅匹配<path>标签的d属性
   const pathRegex = /<path[^>]*d="([^"]+)"[^>]*>/g;
@@ -64,88 +60,7 @@ function extractAllPaths(svgContent: string): string {
 
   // 如果没有找到path，检查是否有其他SVG元素并尝试转换
   if (paths.length === 0) {
-    console.warn("未找到path元素，尝试转换其他SVG元素");
-
-    // 检查并转换其他常见SVG元素
-    // 1. 矩形 <rect>
-    const rectRegex =
-      /<rect[^>]*x="([^"]*)"[^>]*y="([^"]*)"[^>]*width="([^"]*)"[^>]*height="([^"]*)"[^>]*(?:rx="([^"]*)")?[^>]*(?:ry="([^"]*)")?[^>]*\/?\s*>/g;
-    while ((match = rectRegex.exec(svgContent)) !== null) {
-      const [, x, y, width, height, rx, ry] = match;
-      const r = rx || ry || "0";
-      // 转换为path表示
-      if (parseFloat(r) > 0) {
-        // 带圆角的矩形
-        paths.push(
-          `M${parseFloat(x) + parseFloat(r)},${y} h${parseFloat(width) - 2 * parseFloat(r)} q${r},0 ${r},${r} v${parseFloat(height) - 2 * parseFloat(r)} q0,${r} -${r},${r} h-${parseFloat(width) - 2 * parseFloat(r)} q-${r},0 -${r},-${r} v-${parseFloat(height) - 2 * parseFloat(r)} q0,-${r} ${r},-${r} z`
-        );
-      } else {
-        // 普通矩形
-        paths.push(`M${x},${y} h${width} v${height} h-${width} z`);
-      }
-    }
-
-    // 2. 圆形 <circle>
-    const circleRegex = /<circle[^>]*cx="([^"]*)"[^>]*cy="([^"]*)"[^>]*r="([^"]*)"[^>]*\/?\s*>/g;
-    while ((match = circleRegex.exec(svgContent)) !== null) {
-      const [, cx, cy, r] = match;
-      const numR = parseFloat(r);
-      // 转换为path表示（近似表示圆形）
-      paths.push(`M${cx},${parseFloat(cy) - numR} a${r},${r} 0 1,0 ${numR * 2},0 a${r},${r} 0 1,0 -${numR * 2},0 z`);
-    }
-
-    // 3. 椭圆 <ellipse>
-    const ellipseRegex = /<ellipse[^>]*cx="([^"]*)"[^>]*cy="([^"]*)"[^>]*rx="([^"]*)"[^>]*ry="([^"]*)"[^>]*\/?\s*>/g;
-    while ((match = ellipseRegex.exec(svgContent)) !== null) {
-      const [, cx, cy, rx, ry] = match;
-      const numRx = parseFloat(rx);
-      const numRy = parseFloat(ry);
-      // 转换为path表示
-      paths.push(
-        `M${cx},${parseFloat(cy) - numRy} a${rx},${ry} 0 1,0 ${numRx * 2},0 a${rx},${ry} 0 1,0 -${numRx * 2},0 z`
-      );
-    }
-
-    // 4. 线段 <line>
-    const lineRegex = /<line[^>]*x1="([^"]*)"[^>]*y1="([^"]*)"[^>]*x2="([^"]*)"[^>]*y2="([^"]*)"[^>]*\/?\s*>/g;
-    while ((match = lineRegex.exec(svgContent)) !== null) {
-      const [, x1, y1, x2, y2] = match;
-      // 转换为path表示
-      paths.push(`M${x1},${y1} L${x2},${y2}`);
-    }
-
-    // 5. 折线 <polyline>
-    const polylineRegex = /<polyline[^>]*points="([^"]*)"[^>]*\/?\s*>/g;
-    while ((match = polylineRegex.exec(svgContent)) !== null) {
-      const [, points] = match;
-      const pointPairs = points.trim().split(/\s+|,/);
-      if (pointPairs.length >= 2) {
-        let pathData = `M${pointPairs[0]},${pointPairs[1]}`;
-        for (let i = 2; i < pointPairs.length; i += 2) {
-          if (i + 1 < pointPairs.length) {
-            pathData += ` L${pointPairs[i]},${pointPairs[i + 1]}`;
-          }
-        }
-        paths.push(pathData);
-      }
-    }
-
-    // 6. 多边形 <polygon>
-    const polygonRegex = /<polygon[^>]*points="([^"]*)"[^>]*\/?\s*>/g;
-    while ((match = polygonRegex.exec(svgContent)) !== null) {
-      const [, points] = match;
-      const pointPairs = points.trim().split(/\s+|,/);
-      if (pointPairs.length >= 2) {
-        let pathData = `M${pointPairs[0]},${pointPairs[1]}`;
-        for (let i = 2; i < pointPairs.length; i += 2) {
-          if (i + 1 < pointPairs.length) {
-            pathData += ` L${pointPairs[i]},${pointPairs[i + 1]}`;
-          }
-        }
-        pathData += " Z"; // 闭合路径
-        paths.push(pathData);
-      }
-    }
+    paths.push(checkAndConvertOtherSvgElements(svgContent));
   }
 
   // 如果仍然没有找到可转换的元素
@@ -154,22 +69,104 @@ function extractAllPaths(svgContent: string): string {
     return "";
   }
 
-  // 输出调试信息
-  // if (paths.length > 1) {
-  //   console.log(`发现多路径SVG，共有 ${paths.length} 个路径`);
-  // }
-
   // 返回所有path组合（多个path用空格分隔，符合SVG path规范）
-  // 确保最终返回的整个字符串也是单行的
   return paths.join(" ").trim();
 }
 
-/**
- * 使用 glob 模式匹配文件
- * @param baseDir 基础目录路径
- * @param pattern glob 匹配模式
- * @returns 匹配的文件相对路径列表
- */
+// 提取SVG的viewBox值
+function extractViewBox(svgContent: string): string {
+  const viewBoxMatch = svgContent.match(/viewBox="([^"]+)"/);
+  return viewBoxMatch ? viewBoxMatch[1] : "0 0 24 24"; // 默认值
+}
+
+// 检查并转换其他常见SVG元素
+function checkAndConvertOtherSvgElements(svgContent: string): string {
+  console.warn("未找到path元素，尝试转换其他SVG元素");
+
+  let tempPaths = "";
+  let match;
+
+  // 检查并转换其他常见SVG元素
+  // 1. 矩形 <rect>
+  const rectRegex =
+    /<rect[^>]*x="([^"]*)"[^>]*y="([^"]*)"[^>]*width="([^"]*)"[^>]*height="([^"]*)"[^>]*(?:rx="([^"]*)")?[^>]*(?:ry="([^"]*)")?[^>]*\/?\s*>/g;
+  while ((match = rectRegex.exec(svgContent)) !== null) {
+    const [, x, y, width, height, rx, ry] = match;
+    const r = rx || ry || "0";
+    // 转换为path表示
+    if (parseFloat(r) > 0) {
+      // 带圆角的矩形
+      tempPaths = `M${parseFloat(x) + parseFloat(r)},${y} h${parseFloat(width) - 2 * parseFloat(r)} q${r},0 ${r},${r} v${parseFloat(height) - 2 * parseFloat(r)} q0,${r} -${r},${r} h-${parseFloat(width) - 2 * parseFloat(r)} q-${r},0 -${r},-${r} v-${parseFloat(height) - 2 * parseFloat(r)} q0,-${r} ${r},-${r} z`;
+    } else {
+      // 普通矩形
+      tempPaths = `M${x},${y} h${width} v${height} h-${width} z`;
+    }
+  }
+
+  // 2. 圆形 <circle>
+  const circleRegex = /<circle[^>]*cx="([^"]*)"[^>]*cy="([^"]*)"[^>]*r="([^"]*)"[^>]*\/?\s*>/g;
+  while ((match = circleRegex.exec(svgContent)) !== null) {
+    const [, cx, cy, r] = match;
+    const numR = parseFloat(r);
+    // 转换为path表示（近似表示圆形）
+    tempPaths = `M${cx},${parseFloat(cy) - numR} a${r},${r} 0 1,0 ${numR * 2},0 a${r},${r} 0 1,0 -${numR * 2},0 z`;
+  }
+
+  // 3. 椭圆 <ellipse>
+  const ellipseRegex = /<ellipse[^>]*cx="([^"]*)"[^>]*cy="([^"]*)"[^>]*rx="([^"]*)"[^>]*ry="([^"]*)"[^>]*\/?\s*>/g;
+  while ((match = ellipseRegex.exec(svgContent)) !== null) {
+    const [, cx, cy, rx, ry] = match;
+    const numRx = parseFloat(rx);
+    const numRy = parseFloat(ry);
+    // 转换为path表示
+    tempPaths = `M${cx},${parseFloat(cy) - numRy} a${rx},${ry} 0 1,0 ${numRx * 2},0 a${rx},${ry} 0 1,0 -${numRx * 2},0 z`;
+  }
+
+  // 4. 线段 <line>
+  const lineRegex = /<line[^>]*x1="([^"]*)"[^>]*y1="([^"]*)"[^>]*x2="([^"]*)"[^>]*y2="([^"]*)"[^>]*\/?\s*>/g;
+  while ((match = lineRegex.exec(svgContent)) !== null) {
+    const [, x1, y1, x2, y2] = match;
+    // 转换为path表示
+    tempPaths = `M${x1},${y1} L${x2},${y2}`;
+  }
+
+  // 5. 折线 <polyline>
+  const polylineRegex = /<polyline[^>]*points="([^"]*)"[^>]*\/?\s*>/g;
+  while ((match = polylineRegex.exec(svgContent)) !== null) {
+    const [, points] = match;
+    const pointPairs = points.trim().split(/\s+|,/);
+    if (pointPairs.length >= 2) {
+      let pathData = `M${pointPairs[0]},${pointPairs[1]}`;
+      for (let i = 2; i < pointPairs.length; i += 2) {
+        if (i + 1 < pointPairs.length) {
+          pathData += ` L${pointPairs[i]},${pointPairs[i + 1]}`;
+        }
+      }
+      tempPaths = pathData;
+    }
+  }
+
+  // 6. 多边形 <polygon>
+  const polygonRegex = /<polygon[^>]*points="([^"]*)"[^>]*\/?\s*>/g;
+  while ((match = polygonRegex.exec(svgContent)) !== null) {
+    const [, points] = match;
+    const pointPairs = points.trim().split(/\s+|,/);
+    if (pointPairs.length >= 2) {
+      let pathData = `M${pointPairs[0]},${pointPairs[1]}`;
+      for (let i = 2; i < pointPairs.length; i += 2) {
+        if (i + 1 < pointPairs.length) {
+          pathData += ` L${pointPairs[i]},${pointPairs[i + 1]}`;
+        }
+      }
+      pathData += " Z"; // 闭合路径
+      tempPaths = pathData;
+    }
+  }
+
+  return tempPaths;
+}
+
+// 使用 glob 模式匹配文件
 function findSvgFilesByPattern(baseDir: string, pattern: string): string[] {
   try {
     // 使用globSync匹配文件
@@ -185,6 +182,61 @@ function findSvgFilesByPattern(baseDir: string, pattern: string): string[] {
     console.error(`匹配文件模式 "${pattern}" 时出错:`, error);
     return [];
   }
+}
+
+// 生成图标模块内容
+function generateIconModule(exportName: string, declareName: string, pathData: string, viewBox: string): string {
+  return `// 自动生成的图标，请勿手动修改
+import { defineComponent, h } from "vue";
+import IconBase from "../components/IconBase";
+import type { IconBaseProps } from "../components/IconBase";
+
+export const ${exportName} = defineComponent<IconBaseProps>({
+  name: "${declareName}",
+  setup(props) {
+    return () => h(IconBase, { ...props, viewBox: "${viewBox}" }, [
+      h("path", { d: "${pathData}" }),
+    ]);
+  },
+});
+
+export default ${exportName};
+`;
+}
+
+// 生成子索引文件
+function generateSubIndexFile(iconSetDir: string): void {
+  if (existsSync(iconSetDir)) {
+    const iconFiles = readdirSync(iconSetDir).filter(file => file.endsWith(".ts") && file !== "index.ts");
+
+    if (iconFiles.length > 0) {
+      const subIndexContent = iconFiles.map(file => `export * from './${file.replace(".ts", "")}';`).join("\n");
+
+      writeFileSync(resolve(iconSetDir, "index.ts"), subIndexContent);
+    }
+  }
+}
+
+// 生成主索引文件
+function generateMainIndexFile(): void {
+  const mainIndexContent = `
+/**
+ * 此文件由图标生成脚本自动更新
+ * 请勿手动修改
+ */
+
+${icons
+  .map(iconSet => {
+    const iconSetDir = resolve(ICONS_DIR, iconSet.id);
+    if (existsSync(iconSetDir) && existsSync(resolve(iconSetDir, "index.ts"))) {
+      return `export * from './${iconSet.id}';`;
+    }
+    return `// 图标集 ${iconSet.id} 未生成`;
+  })
+  .join("\n")}
+`;
+
+  writeFileSync(resolve(ICONS_DIR, "index.ts"), mainIndexContent);
 }
 
 // 主函数
@@ -237,10 +289,11 @@ async function generate() {
             // 使用完整路径读取SVG内容
             const svgContent = readFileSync(resolve(iconPath, relativePath), "utf-8");
 
-            const result = optimize(svgContent, svgoConfig);
-            if ("data" in result) {
+            const optimizedSvg = optimize(svgContent, svgoConfig);
+            if ("data" in optimizedSvg) {
               // 使用新的函数提取所有path路径
-              const pathData = extractAllPaths(result.data);
+              const pathData = extractAllPaths(optimizedSvg.data);
+              const viewBox = extractViewBox(optimizedSvg.data);
 
               // 如果没有找到path路径，记录警告并继续
               if (!pathData) {
@@ -248,14 +301,7 @@ async function generate() {
                 continue;
               }
 
-              const iconContent = `
-import { createIcon } from "../../utils/creator";
-
-export const ${exportName} = createIcon({
-  name: "${declareName}",
-  path: "${pathData}",
-});
-    `;
+              const iconContent = generateIconModule(exportName, declareName, pathData, viewBox);
               writeFileSync(resolve(iconSetDir, `${iconFilePathName}.ts`), iconContent);
             }
           } catch (fileError) {
@@ -265,38 +311,12 @@ export const ${exportName} = createIcon({
         }
       }
 
-      // 为每个图标集生成index.ts文件
-      if (existsSync(iconSetDir)) {
-        const iconFiles = readdirSync(iconSetDir).filter(file => file.endsWith(".ts") && file !== "index.ts");
-
-        if (iconFiles.length > 0) {
-          // 生成子文件夹的index.ts
-          const subIndexContent = iconFiles.map(file => `export * from './${file.replace(".ts", "")}';`).join("\n");
-
-          writeFileSync(resolve(iconSetDir, "index.ts"), subIndexContent);
-        }
-      }
+      // 生成子索引文件
+      generateSubIndexFile(iconSetDir);
     }
 
     // 生成主索引文件
-    const mainIndexContent = `
-/**
- * 此文件由图标生成脚本自动更新
- * 请勿手动修改
- */
-
-${icons
-  .map(iconSet => {
-    const iconSetDir = resolve(ICONS_DIR, iconSet.id);
-    if (existsSync(iconSetDir) && existsSync(resolve(iconSetDir, "index.ts"))) {
-      return `export * from './${iconSet.id}';`;
-    }
-    return `// 图标集 ${iconSet.id} 未生成`;
-  })
-  .join("\n")}
-`;
-
-    writeFileSync(resolve(ICONS_DIR, "index.ts"), mainIndexContent);
+    generateMainIndexFile();
 
     console.log("Icons generated successfully!");
   } catch (error) {

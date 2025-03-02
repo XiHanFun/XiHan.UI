@@ -6,6 +6,7 @@ export interface IconBaseProps {
   color?: string;
   spin?: boolean;
   rotate?: number;
+  viewBox?: string;
 }
 
 export default defineComponent({
@@ -27,13 +28,17 @@ export default defineComponent({
       type: Number,
       default: 0,
     },
+    viewBox: {
+      type: String,
+      default: "0 0 24 24",
+    },
   },
   setup(props, { slots }) {
     return () =>
       h(
         "svg",
         {
-          viewBox: "0 0 24 24",
+          viewBox: props.viewBox,
           width: props.size,
           height: props.size,
           fill: props.color,
