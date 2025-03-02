@@ -1,0 +1,39 @@
+# EditorConfig helps maintain consistent coding styles for multiple developers
+# 顶层配置文件
+root = true
+
+# 对所有文件生效
+[*]
+# 设置字符集
+charset = utf-8
+# 缩进风格
+indent_style = space
+# 缩进大小
+indent_size = 2
+# 换行符类型
+end_of_line = lf
+# 文件末尾插入新行
+insert_final_newline = true
+# 删除行末尾的空白字符
+trim_trailing_whitespace = true
+
+# 特定于Markdown文件的设置
+[*.md]
+trim_trailing_whitespace = false
+
+# 针对JSON文件的设置
+[*.json]
+insert_final_newline = false
+
+# 脚本文件配置
+[*.{js,jsx,ts,tsx,vue,mjs,cjs}]
+indent_size = 2
+max_line_length = 120
+
+# CSS/SCSS/LESS文件配置
+[*.{css,scss,less,styl}]
+indent_size = 2
+
+# HTML文件配置
+[*.{html,htm}]
+indent_size = 2

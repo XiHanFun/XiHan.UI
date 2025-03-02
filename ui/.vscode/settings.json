@@ -7,10 +7,16 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "README.*": "README*,CHANGELOG*,LICENSE,CNAME,.cursorrules*",
-    "package.*": "pnpm-lock.yaml,pnpm-workspace.yaml,.gitattributes,.gitignore,.npmrc",
-    "tsconfig.*": "tsconfig.*.json,eslintignore,.prettierignore,.stylelintignore,.commitlintrc.*,.prettierrc.*,stylelint.config.*",
-    "vite.config.*": "vite.config.*,vitest.config.*,.env*"
+    // 关于项目
+    "README.md": "README*,CHANGELOG*,LICENSE,CNAME,.cursorrules*",
+    // 包管理
+    "package.json": "pnpm-lock.yaml,pnpm-workspace.yaml,.gitattributes,.gitignore,.npmrc",
+    // 开发规范
+    ".eslintrc.mjs": ".eslintrc.*,eslint.config.*,eslint.config.mjs,.prettierrc.*,prettier.config.*,prettier.config.mjs,.stylelintrc.*,stylelint.config.*,stylelint.config.mjs,.commitlintrc.*,commitlint.config.*,commitlint.config.mjs,.editorconfig,lint-staged.config.*",
+    // 类型定义
+    "tsconfig.json": "tsconfig.*.json",
+    // 开发环境
+    "vite.config.mts": "vite.config.d.mts,vitest.config.mts,vitest.config.d.mts,.env*,.env.local,.env.development,.env.production"
   },
   // 翻译插件配置
   "commentTranslate.source": "Google",
