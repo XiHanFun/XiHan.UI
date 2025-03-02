@@ -1,4 +1,3 @@
-import { resolve } from "path";
 import { execSync } from "child_process";
 import { writeFileSync, readFileSync } from "fs";
 import type { SourceConfig, IconSource } from "../src/utils/creator";
@@ -56,7 +55,7 @@ async function updateRepoHash() {
         // 遍历所有需要更新的 hash
         for (const { oldHash, newHash } of Object.values(hashUpdates)) {
           // 如果该行包含旧的 hash 值
-          if (line.includes(`hash: "${oldHash}"`)) {
+          if (line.includes(`hash`)) {
             // 直接替换整行中的 hash 值
             return line.replace(`hash: "${oldHash}"`, `hash: "${newHash}"`);
           }

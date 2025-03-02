@@ -1,8 +1,8 @@
 import { resolve } from "path";
 import { execSync } from "child_process";
-import { mkdirSync, existsSync, writeFileSync } from "fs";
+import { mkdirSync, existsSync } from "fs";
 import type { SourceConfig, IconSource } from "../src/utils/creator";
-import { ASSETS_DIR, ICONS_DIR } from "../src/utils/path";
+import { ASSETS_DIR } from "../src/utils/path";
 
 // 修改导入路径
 import { icons } from "../src/source";

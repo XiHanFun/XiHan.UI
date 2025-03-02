@@ -5,7 +5,7 @@ import type { IconBaseProps } from "../components/IconBase";
 export interface SourceConfig {
   type: "git";
   localName: string;
-  remoteDir: string;
+  subFolders: string;
   url: string;
   branch: string;
   hash: string;
@@ -16,7 +16,7 @@ export interface IconSource {
   name: string;
   path: string;
   contents: {
-    files: string;
+    fileFilter: string;
     formatter: (name: string) => string;
     processWithSVGO?: boolean;
     multiColor?: boolean;
