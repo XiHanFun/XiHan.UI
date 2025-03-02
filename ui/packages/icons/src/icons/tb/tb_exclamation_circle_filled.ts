@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbExclamationCircleFilled = createIcon({
   name: "tb-exclamation-circle-filled",
-  path: "m-9 0a9 9 0 1 0 18 0 9 9 0 1 0-18 0M12 9v4M12 16v.01",
+  path: "M17 3.34a10 10 0 1 1 -15 8.66l.005 -.324a10 10 0 0 1 14.995 -8.336m-5 11.66a1 1 0 0 0 -1 1v.01a1 1 0 0 0 2 0v-.01a1 1 0 0 0 -1 -1m0 -7a1 1 0 0 0 -1 1v4a1 1 0 0 0 2 0v-4a1 1 0 0 0 -1 -1",
 });
     

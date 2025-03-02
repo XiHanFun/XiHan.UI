@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbPlayerStopFilled = createIcon({
   name: "tb-player-stop-filled",
-  path: "M5 5m0 2a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z",
+  path: "M17 4h-10a3 3 0 0 0 -3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3 -3v-10a3 3 0 0 0 -3 -3z",
 });
     

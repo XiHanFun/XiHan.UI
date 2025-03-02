@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbVacuumCleaner = createIcon({
-  name: "tb-vacuum-cleaner",
-  path: "M21 12a9 9 0 1 1 -18 0a9 9 0 0 1 18 0z M14 9a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM12 16h.01",
-});
-    

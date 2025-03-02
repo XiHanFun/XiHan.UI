@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const CgPushChevronRight = createIcon({
   name: "cg-push-chevron-right",
-  path: "M7.414 5 6 6.414 11.657 12.071 6 17.728 7.414 19.142 14.485 12.071 7.414 5ZM16.343 19V5H18.343V19H16.343Z",
+  path: "M7.41421 5L6 6.41421L11.6569 12.0711L6 17.7279L7.41421 19.1421L14.4853 12.0711L7.41421 5Z M16.3432 19V5H18.3432V19H16.3432Z",
 });
     

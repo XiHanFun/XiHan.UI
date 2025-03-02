@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbDeviceTvFilled = createIcon({
   name: "tb-device-tv-filled",
-  path: "m0 2a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-14a2 2 0 0 1-2-2zM16 3l-4 4-4-4",
+  path: "M8.707 2.293l3.293 3.292l3.293 -3.292a1 1 0 0 1 1.32 -.083l.094 .083a1 1 0 0 1 0 1.414l-2.293 2.293h4.586a3 3 0 0 1 3 3v9a3 3 0 0 1 -3 3h-14a3 3 0 0 1 -3 -3v-9a3 3 0 0 1 3 -3h4.585l-2.292 -2.293a1 1 0 0 1 1.414 -1.414",
 });
     

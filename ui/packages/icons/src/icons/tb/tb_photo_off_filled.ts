@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbPhotoOffFilled = createIcon({
-  name: "tb-photo-off-filled",
-  path: "M15 8h.01M7 3h11a3 3 0 0 1 3 3v11m-.856 3.099a2.991 2.991 0 0 1-2.144.901h-12a3 3 0 0 1-3-3v-12c0-.845.349-1.608.91-2.153 m3 16 5-5c.928-.893 2.072-.893 3 0l5 5M16.33 12.338c.574-.054 1.155.166 1.67.662l3 3M3 3l18 18",
-});
-    

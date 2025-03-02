@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbTopologyFullHierarchyFilled = createIcon({
-  name: "tb-topology-full-hierarchy-filled",
-  path: "M20 18a2 2 0 1 0-4 0 2 2 0 0 0 4 0zM8 18a2 2 0 1 0-4 0 2 2 0 0 0 4 0zM8 6a2 2 0 1 0-4 0 2 2 0 0 0 4 0zM20 6a2 2 0 1 0-4 0 2 2 0 0 0 4 0zM14 12a2 2 0 1 0-4 0 2 2 0 0 0 4 0zM6 8v8M18 16v-8M8 6h8M16 18h-8M7.5 7.5l3 3M13.5 13.5l3 3M16.5 7.5l-3 3M10.5 13.5l-3 3",
-});
-    

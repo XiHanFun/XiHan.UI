@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbArrowsSplit2Outline = createIcon({
+  name: "tb-arrows-split-2-outline",
+  path: "M21 17h-5.397a5 5 0 0 1 -4.096 -2.133l-.514 -.734a5 5 0 0 0 -4.096 -2.133h-3.897 M21 7h-5.395a5 5 0 0 0 -4.098 2.135l-.51 .73a5 5 0 0 1 -4.097 2.135h-3.9 M18 10l3 -3l-3 -3 M18 20l3 -3l-3 -3",
+});
+    

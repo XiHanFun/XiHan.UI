@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbDualScreenFilled = createIcon({
   name: "tb-dual-screen-filled",
-  path: "M5 4l8 3v15l-8 -3z M13 19h6v-15h-14",
+  path: "M19 3a1 1 0 0 1 1 1v15a1 1 0 0 1 -1 1h-5v2a1 1 0 0 1 -1.351 .936l-8 -3a1 1 0 0 1 -.649 -.936v-15a1 1 0 0 1 .212 -.616l.068 -.079l.078 -.072l.066 -.05l.092 -.058l.065 -.033l.1 -.04l.099 -.028l.046 -.01l.108 -.013l.066 -.001zm-5.649 3.064a1 1 0 0 1 .649 .936v11h4v-13h-7.486z",
 });
     

@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const LuSquareParkingOff = createIcon({
+  name: "lu-square-parking-off",
+  path: "M3.6 3.6A2 2 0 0 1 5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-.59 1.41 M3 8.7V19a2 2 0 0 0 2 2h10.3 m2 2 20 20 M13 13a3 3 0 1 0 0-6H9v2 M9 17v-2.3",
+});
+    

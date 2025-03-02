@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbSchemaOff = createIcon({
-  name: "tb-schema-off",
-  path: "M6 2h4v4m-4 0h-1v-1M15 11v-1h5v4h-2M5 18h5v4h-5zM5 10h5v4h-5zM10 12h2M7.5 7.5v2.5M7.5 14v4M3 3l18 18",
-});
-    

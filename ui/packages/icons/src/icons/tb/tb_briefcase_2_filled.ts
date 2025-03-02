@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbBriefcase2Filled = createIcon({
   name: "tb-briefcase-2-filled",
-  path: "M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-14a2 2 0 0 1-2-2v-9zM8 7v-2a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2",
+  path: "M14 2a3 3 0 0 1 3 3v1h2a3 3 0 0 1 3 3v9a3 3 0 0 1 -3 3h-14a3 3 0 0 1 -3 -3v-9a3 3 0 0 1 3 -3h2v-1a3 3 0 0 1 3 -3zm0 2h-4a1 1 0 0 0 -1 1v1h6v-1a1 1 0 0 0 -1 -1",
 });
     

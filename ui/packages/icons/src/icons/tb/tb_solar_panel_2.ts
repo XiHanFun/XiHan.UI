@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbSolarPanel2 = createIcon({
-  name: "tb-solar-panel-2",
-  path: "M8 2a4 4 0 1 0 8 0M4 3h1M19 3h1M12 9v1M17.2 7.2l.707.707M6.8 7.2l-.7.7M4.28 21h15.44a1 1 0 0 0 .97-1.243l-1.5-6a1 1 0 0 0-.97-.757h-12.44a1 1 0 0 0-.97.757l-1.5 6a1 1 0 0 0 .97 1.243zM4 17h16M10 13l-1 8M14 13l1 8",
-});
-    

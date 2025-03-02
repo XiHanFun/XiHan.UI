@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbTargetOffFilled = createIcon({
-  name: "tb-target-off-filled",
-  path: "M11.286 11.3a1 1 0 0 0 1.41 1.419 M8.44 8.49a5 5 0 0 0 7.098 7.044m1.377 -2.611a5 5 0 0 0 -5.846 -5.836 M5.649 5.623a9 9 0 1 0 12.698 12.758m1.683-2.313a9 9 0 0 0-12.076-12.11M3 3l18 18",
-});
-    

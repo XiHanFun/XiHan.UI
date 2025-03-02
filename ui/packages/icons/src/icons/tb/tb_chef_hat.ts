@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbChefHat = createIcon({
-  name: "tb-chef-hat",
-  path: "M12 3c1.918 0 3.52 1.35 3.91 3.151a4 4 0 0 1 2.09 7.723l0 7.126h-12v-7.126a4 4 0 1 1 2.092-7.723 4 4 0 0 1 3.908-3.151zM6.161 17.009l11.839-.009",
-});
-    

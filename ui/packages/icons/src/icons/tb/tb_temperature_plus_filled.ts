@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbTemperaturePlusFilled = createIcon({
   name: "tb-temperature-plus-filled",
-  path: "M8 13.5a4 4 0 1 0 4 0v-8.5a2 2 0 0 0-4 0v8.5M8 9l4 0M16 9l6 0M19 6l0 6",
+  path: "M10 2a3 3 0 0 1 3 3v7.965l.075 .056a5 5 0 0 1 1.81 5.01l-.055 .227a5 5 0 1 1 -7.905 -5.237l.075 -.056v-7.965a3 3 0 0 1 2.824 -2.995zm9 3a1 1 0 0 1 1 1v2h2a1 1 0 0 1 0 2h-2v2a1 1 0 0 1 -2 0v-2h-2a1 1 0 0 1 0 -2h2v-2a1 1 0 0 1 1 -1m-9 -1a1 1 0 0 0 -1 1v4h2v-4a1 1 0 0 0 -1 -1",
 });
     

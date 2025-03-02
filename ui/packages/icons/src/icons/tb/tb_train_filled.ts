@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbTrainFilled = createIcon({
   name: "tb-train-filled",
-  path: "M21 13c0-3.87-3.37-7-10-7h-8M3 15h16a2 2 0 0 0 2-2 M3 6v5h17.5M3 11v4M8 11v-5M13 11v-4.5M3 19h18",
+  path: "M11 5c6.634 0 10.853 3.11 10.996 7.754l.004 .246a3 3 0 0 1 -3 3h-16a1 1 0 0 1 -1 -1v-9a1 1 0 0 1 1 -1zm-4 2h-3v3h3zm4 0h-2v3h3v-2.974a19 19 0 0 0 -1 -.026m3.001 .257l-.001 2.743h5.04c-.979 -1.337 -2.689 -2.306 -5.039 -2.743m6.999 10.743a1 1 0 0 1 0 2h-18a1 1 0 0 1 0 -2z",
 });
     

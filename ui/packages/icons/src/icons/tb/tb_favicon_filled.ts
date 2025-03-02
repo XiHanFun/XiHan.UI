@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbFaviconFilled = createIcon({
   name: "tb-favicon-filled",
-  path: "m0 3a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-14a3 3 0 0 1-3-3zM6 10v4 M11 10a2 2 0 1 0 0 4m-2 0a2 2 0 1 0 4 0 2 2 0 1 0-4 0",
+  path: "M19 4a4 4 0 0 1 4 4v8a4 4 0 0 1 -4 4h-14a4 4 0 0 1 -4 -4v-8a4 4 0 0 1 4 -4zm-13 5a1 1 0 0 0 -1 1v4a1 1 0 0 0 2 0v-4a1 1 0 0 0 -1 -1m5 0a3 3 0 0 0 0 6a1 1 0 0 0 .117 -1.993l-.117 -.007a1 1 0 0 1 -.117 -1.993l.117 -.007a1 1 0 0 0 0 -2m5 0a3 3 0 0 0 -2.995 2.824l-.005 .176a3 3 0 1 0 3 -3 M16 11a1 1 0 1 0 0 2a1 1 0 0 0 0 -2",
 });
     

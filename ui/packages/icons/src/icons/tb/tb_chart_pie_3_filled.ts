@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbChartPie3Filled = createIcon({
   name: "tb-chart-pie-3-filled",
-  path: "m12 12-6.5 5.5M12 3v9h9 M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0",
+  path: "M17 20.66a10 10 0 0 1 -11.328 -.917l6.742 -6.743h9.536a10 10 0 0 1 -4.95 7.66m-6 -18.61v9.534l-6.743 6.744a10 10 0 0 1 -2.257 -6.328l.005 -.324a10 10 0 0 1 8.995 -9.626m6 1.29a10 10 0 0 1 4.95 7.66h-8.95v-8.95a10 10 0 0 1 4 1.29",
 });
     

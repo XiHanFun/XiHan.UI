@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbLayoutAlignTopFilled = createIcon({
   name: "tb-layout-align-top-filled",
-  path: "m4 4 16 0m0 2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z",
+  path: "M20 3a1 1 0 0 1 0 2h-16a1 1 0 1 1 0 -2z M13 7a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3z",
 });
     

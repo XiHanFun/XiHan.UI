@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbDeviceAirpodsCaseFilled = createIcon({
-  name: "tb-device-airpods-case-filled",
-  path: "M21 10h-18m0 4a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4h-10a4 4 0 0 1-4-4z M7 10v1.5a1.5 1.5 0 0 0 1.5 1.5h7a1.5 1.5 0 0 0 1.5 -1.5v-1.5",
-});
-    

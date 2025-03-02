@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbToggleLeftFilled = createIcon({
   name: "tb-toggle-left-filled",
-  path: "M8 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0 M2 6m0 6a6 6 0 0 1 6 -6h8a6 6 0 0 1 6 6v0a6 6 0 0 1 -6 6h-8a6 6 0 0 1 -6 -6z",
+  path: "M8 9a3 3 0 1 1 -3 3l.005 -.176a3 3 0 0 1 2.995 -2.824 M16 5a7 7 0 0 1 0 14h-8a7 7 0 0 1 0 -14zm0 2h-8a5 5 0 1 0 0 10h8a5 5 0 0 0 0 -10",
 });
     

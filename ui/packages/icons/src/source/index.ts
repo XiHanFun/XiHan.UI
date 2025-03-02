@@ -29,8 +29,16 @@ export const icons: IconSource[] = [
     path: "Font-Awesome",
     contents: [
       {
-        fileFilter: "*.svg",
-        formatter: name => `Fa-${name}`,
+        fileFilter: "brands/*.svg",
+        formatter: (name: string) => `Fa-${name}`,
+      },
+      {
+        fileFilter: "regular/*.svg",
+        formatter: (name: string) => `Fa-${name}`,
+      },
+      {
+        fileFilter: "solid/*.svg",
+        formatter: (name: string) => `Fa-${name}Solid`,
       },
     ],
     projectUrl: "https://fontawesome.com/",
@@ -95,8 +103,8 @@ export const icons: IconSource[] = [
     path: "Github-Octicons",
     contents: [
       {
-        fileFilter: "*.svg",
-        formatter: (name: string) => `Go-${name}`,
+        fileFilter: "*-24.svg",
+        formatter: (name: string) => `Go-${name.replace("-24", "")}`,
       },
     ],
     projectUrl: "https://octicons.github.com/",
@@ -105,10 +113,10 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "oct-icons",
-      subFolders: "src/svg",
+      subFolders: "icons",
       url: "https://github.com/primer/octicons.git",
       branch: "main",
-      hash: "0aa64f6ce8b892a83aeeafa42c74fb9c1f22ec84",
+      hash: "ea40d4aa6231292cc7b11a6aab229978607a9b54",
     },
   },
   {
@@ -127,10 +135,10 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "feather-icons",
-      subFolders: "src/svg",
+      subFolders: "icons",
       url: "https://github.com/feathericons/feather.git",
       branch: "main",
-      hash: "0aa64f6ce8b892a83aeeafa42c74fb9c1f22ec84",
+      hash: "ed76079f606c4b78a45ce8667a5eb1f163e89235",
     },
   },
   {
@@ -149,10 +157,10 @@ export const icons: IconSource[] = [
     source: {
       type: "git",
       localName: "lucide",
-      subFolders: "src/svg",
+      subFolders: "icons",
       url: "https://github.com/lucide-icons/lucide.git",
       branch: "main",
-      hash: "0aa64f6ce8b892a83aeeafa42c74fb9c1f22ec84",
+      hash: "16a18f790881adc6f44767edac29bfc2b42b8dc5",
     },
   },
   {
@@ -354,10 +362,6 @@ export const icons: IconSource[] = [
         fileFilter: "24/outline/*.svg",
         formatter: (name: string) => `Hi-${name}Outline`,
       },
-      {
-        fileFilter: "20/solid/*.svg",
-        formatter: (name: string) => `Hi-${name}Mini`,
-      },
     ],
     projectUrl: "https://github.com/tailwindlabs/heroicons",
     license: "MIT",
@@ -522,7 +526,7 @@ export const icons: IconSource[] = [
       },
       {
         fileFilter: "outline/*.svg",
-        formatter: name => `Tb-${name}`,
+        formatter: name => `Tb-${name}Outline`,
       },
     ],
     projectUrl: "https://github.com/tabler/tabler-icons",

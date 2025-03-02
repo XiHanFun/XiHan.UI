@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const FiDivide = createIcon({
   name: "fi-divide",
-  path: "M18 10h-12c-1.104 0-2 .896-2 2s.896 2 2 2h12c1.104 0 2-.896 2-2s-.896-2-2-2z",
+  path: "M12 4A2 2 0 1 0 12 8 2 2 0 1 0 12 4z M5 12 19 12 M12 16A2 2 0 1 0 12 20 2 2 0 1 0 12 16z",
 });
     

@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbLetterUSmallFilled = createIcon({
-  name: "tb-letter-u-small-filled",
-  path: "M10 8v6a2 2 0 1 0 4 0v-6",
-});
-    

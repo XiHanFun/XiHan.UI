@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbCropPortraitFilled = createIcon({
   name: "tb-crop-portrait-filled",
-  path: "M6 4m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z",
+  path: "M16 3a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-8a3 3 0 0 1 -3 -3v-12a3 3 0 0 1 3 -3z",
 });
     

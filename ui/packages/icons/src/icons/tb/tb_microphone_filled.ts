@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbMicrophoneFilled = createIcon({
   name: "tb-microphone-filled",
-  path: "M9 2m0 3a3 3 0 0 1 3 -3h0a3 3 0 0 1 3 3v5a3 3 0 0 1 -3 3h0a3 3 0 0 1 -3 -3z M5 10a7 7 0 0 0 14 0M8 21l8 0M12 17l0 4",
+  path: "M19 9a1 1 0 0 1 1 1a8 8 0 0 1 -6.999 7.938l-.001 2.062h3a1 1 0 0 1 0 2h-8a1 1 0 0 1 0 -2h3v-2.062a8 8 0 0 1 -7 -7.938a1 1 0 1 1 2 0a6 6 0 0 0 12 0a1 1 0 0 1 1 -1m-7 -8a4 4 0 0 1 4 4v5a4 4 0 1 1 -8 0v-5a4 4 0 0 1 4 -4",
 });
     

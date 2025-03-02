@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbPlayerTrackPrevFilled = createIcon({
   name: "tb-player-track-prev-filled",
-  path: "M21 5v14l-8-7zM10 5v14l-8-7z",
+  path: "M20.341 4.247l-8 7a1 1 0 0 0 0 1.506l8 7c.647 .565 1.659 .106 1.659 -.753v-14c0 -.86 -1.012 -1.318 -1.659 -.753z M9.341 4.247l-8 7a1 1 0 0 0 0 1.506l8 7c.647 .565 1.659 .106 1.659 -.753v-14c0 -.86 -1.012 -1.318 -1.659 -.753z",
 });
     

@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const BiSolidbxsBattery = createIcon({
-  name: "bi-solidbxs-battery",
-  path: "M20 8a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2h2v-4h-2V8z",
-});
-    

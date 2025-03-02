@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbPlayerSkipForwardFilled = createIcon({
   name: "tb-player-skip-forward-filled",
-  path: "M4 5v14l12-7zM20 5l0 14",
+  path: "M3 5v14a1 1 0 0 0 1.504 .864l12 -7a1 1 0 0 0 0 -1.728l-12 -7a1 1 0 0 0 -1.504 .864z M20 4a1 1 0 0 1 .993 .883l.007 .117v14a1 1 0 0 1 -1.993 .117l-.007 -.117v-14a1 1 0 0 1 1 -1z",
 });
     

@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbTimeDuration5 = createIcon({
-  name: "tb-time-duration-5",
-  path: "M10 15h2a1.5 1.5 0 0 0 0-3h-2v-3h3.5M3 12v.01M21 12v.01M12 21v.01M7.5 4.2v.01M16.5 19.8v.01M7.5 19.8v.01M4.2 16.5v.01M19.8 16.5v.01M19.8 7.5v.01M4.2 7.5v.01M16.5 4.206a9.042 9.042 0 0 0-4.5-1.206",
-});
-    

@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbDeviceSpeakerFilled = createIcon({
   name: "tb-device-speaker-filled",
-  path: "m0 2a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2zM-3 0a3 3 0 1 0 6 0 3 3 0 1 0-6 0M12 7l0 .01",
+  path: "M17 2a3 3 0 0 1 3 3v14a3 3 0 0 1 -3 3h-10a3 3 0 0 1 -3 -3v-14a3 3 0 0 1 3 -3zm-5 9a4 4 0 0 0 -3.995 3.8l-.005 .2a4 4 0 1 0 4 -4m0 -5a1 1 0 0 0 -1 1v.01a1 1 0 0 0 2 0v-.01a1 1 0 0 0 -1 -1",
 });
     

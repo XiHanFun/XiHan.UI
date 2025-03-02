@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbMouseOffFilled = createIcon({
-  name: "tb-mouse-off-filled",
-  path: "M7.733 3.704a3.982 3.982 0 0 1 2.267-.704h4a4 4 0 0 1 4 4v7m-.1 3.895a4 4 0 0 1-3.9 3.105h-4a4 4 0 0 1-4-4v-10c0-.3.033-.593.096-.874M12 7v1M3 3l18 18",
-});
-    

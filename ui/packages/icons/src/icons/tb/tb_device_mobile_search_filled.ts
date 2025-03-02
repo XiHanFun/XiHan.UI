@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbDeviceMobileSearchFilled = createIcon({
-  name: "tb-device-mobile-search-filled",
-  path: "M12 21h-4a2 2 0 0 1-2-2v-14a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v6m-3 0a3 3 0 1 0 6 0 3 3 0 1 0-6 0M20.2 20.2l1.8 1.8M11 4h2M12 17v.01",
-});
-    

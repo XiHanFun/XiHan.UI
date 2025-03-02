@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbDiscFilled = createIcon({
   name: "tb-disc-filled",
-  path: "M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0 m-1 0a1 1 0 1 0 2 0 1 1 0 1 0-2 0M7 12a5 5 0 0 1 5-5M12 17a5 5 0 0 0 5-5",
+  path: "M17 3.34a10 10 0 1 1 -15 8.66l.005 -.324a10 10 0 0 1 14.995 -8.336m0 7.66a1 1 0 0 0 -1 1a4 4 0 0 1 -4 4a1 1 0 0 0 0 2a6 6 0 0 0 6 -6a1 1 0 0 0 -1 -1m-5 -1a2 2 0 0 0 -1.995 1.85l-.005 .15a2 2 0 1 0 2 -2m0 -4a6 6 0 0 0 -6 6a1 1 0 0 0 2 0a4 4 0 0 1 4 -4a1 1 0 0 0 0 -2",
 });
     

@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbBrandTorchain = createIcon({
-  name: "tb-brand-torchain",
-  path: "m15.588 15.537-3.553-3.537-7.742 8.18c-.791.85.153 2.18 1.238 1.73l9.616-4.096a1.398 1.398 0 0 0 .44-2.277zM8.412 8.464l3.553 3.536 7.742-8.18c.791-.85-.153-2.18-1.238-1.73l-9.616 4.098a1.398 1.398 0 0 0-.44 2.277z",
-});
-    

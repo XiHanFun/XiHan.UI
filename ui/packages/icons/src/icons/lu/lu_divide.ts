@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const LuDivide = createIcon({
   name: "lu-divide",
-  path: "M18 10h-12c-1.104 0-2 .896-2 2s.896 2 2 2h12c1.104 0 2-.896 2-2s-.896-2-2-2z",
+  path: "M12 5A1 1 0 1 0 12 7 1 1 0 1 0 12 5z M5 12 19 12 M12 17A1 1 0 1 0 12 19 1 1 0 1 0 12 17z",
 });
     

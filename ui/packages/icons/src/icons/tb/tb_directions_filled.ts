@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbDirectionsFilled = createIcon({
   name: "tb-directions-filled",
-  path: "M12 21v-4M12 13v-4M12 5v-2M10 21h4M8 5v4h11l2-2-2-2zM14 13v4h-8l-2-2 2-2z",
+  path: "M10 22a1 1 0 0 1 0 -2h1v-2.001l-5 .001a1 1 0 0 1 -.707 -.293l-2 -2a1 1 0 0 1 0 -1.414l2 -2a1 1 0 0 1 .707 -.293l5 -.001v-1.999h-3a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h3v-1a1 1 0 0 1 2 0v1h6a1 1 0 0 1 .707 .293l2 2a1 1 0 0 1 0 1.414l-2 2a1 1 0 0 1 -.707 .293h-6v1.999l1 .001a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1l-1 -.001v2.001h1a1 1 0 0 1 0 2z",
 });
     

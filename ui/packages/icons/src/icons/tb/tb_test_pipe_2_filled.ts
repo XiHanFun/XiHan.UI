@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbTestPipe2Filled = createIcon({
   name: "tb-test-pipe-2-filled",
-  path: "M15 3v15a3 3 0 0 1-6 0v-15M9 12h6M8 3h8",
+  path: "M16 2a1 1 0 0 1 0 2v14a4 4 0 1 1 -8 0v-14a1 1 0 1 1 0 -2zm-2 2h-4v7h4z",
 });
     

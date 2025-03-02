@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const BiSolidbxsCaretDownCircle = createIcon({
-  name: "bi-solidbxs-caret-down-circle",
-  path: "M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10c5.515 0 10-4.486 10-10S17.515 2 12 2zm0 14-5-6h10l-5 6z",
-});
-    

@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbDeviceIpadFilled = createIcon({
   name: "tb-device-ipad-filled",
-  path: "M18 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-12a2 2 0 0 1-2-2v-14a2 2 0 0 1 2-2zM9 18h6",
+  path: "M18 2a3 3 0 0 1 3 3v14a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-14a3 3 0 0 1 3 -3zm-3 16h-6a1 1 0 0 0 0 2h6a1 1 0 0 0 0 -2",
 });
     

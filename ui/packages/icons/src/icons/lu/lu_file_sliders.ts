@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const LuFileSliders = createIcon({
+  name: "lu-file-sliders",
+  path: "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z M14 2v4a2 2 0 0 0 2 2h4 M8 12h8 M10 11v2 M8 17h8 M14 16v2",
+});
+    

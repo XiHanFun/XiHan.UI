@@ -6,7 +6,6 @@
 
 export * from './ci';
 export * from './fa';
-export * from './fa6';
 export * from './io';
 export * from './ti';
 export * from './go';
@@ -16,11 +15,11 @@ export * from './gi';
 export * from './wi';
 export * from './di';
 export * from './ai';
+export * from './bs';
 export * from './ri';
 export * from './fc';
 export * from './gr';
 export * from './hi';
-export * from './hi2';
 export * from './si';
 export * from './sl';
 export * from './im';

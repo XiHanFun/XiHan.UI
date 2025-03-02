@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbHandFingerDownOutline = createIcon({
+  name: "tb-hand-finger-down-outline",
+  path: "M8 12v8.5a1.5 1.5 0 0 0 3 0v-7.5 M11 13.5v2a1.5 1.5 0 0 0 3 0v-2.5 M14 14.5a1.5 1.5 0 0 0 3 0v-1.5 M17 13.5a1.5 1.5 0 0 0 3 0v-4.5a6 6 0 0 0 -6 -6h-2h.208a6 6 0 0 0 -5.012 2.7l-.196 .3q -.468 .718 -3.286 5.728a1.5 1.5 0 0 0 .536 2.022c.734 .44 1.674 .325 2.28 -.28l1.47 -1.47",
+});
+    

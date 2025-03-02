@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const BibxsChevronsLeft = createIcon({
-  name: "bibxs-chevrons-left",
-  path: "m8.121 12 4.94-4.939-2.122-2.122L3.879 12l7.06 7.061 2.122-2.122z M17.939 4.939 10.879 12l7.06 7.061 2.122-2.122L15.121 12l4.94-4.939z",
-});
-    

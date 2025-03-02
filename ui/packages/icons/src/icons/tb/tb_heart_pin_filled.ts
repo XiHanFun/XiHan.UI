@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbHeartPinFilled = createIcon({
-  name: "tb-heart-pin-filled",
-  path: "m12 20-7.5-7.428a5 5 0 1 1 7.5-6.566 5 5 0 0 1 8.5 5.179M21.121 20.121a3 3 0 1 0-4.242 0c.418.419 1.125 1.045 2.121 1.879 1.051-.89 1.759-1.516 2.121-1.879zM19 18v.01",
-});
-    

@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const FaCircle = createIcon({
   name: "fa-circle",
-  path: "M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8z",
+  path: "M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z",
 });
     

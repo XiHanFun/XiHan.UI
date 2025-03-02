@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const FiTv = createIcon({
+  name: "fi-tv",
+  path: "M17 2 12 7 7 2",
+});
+    

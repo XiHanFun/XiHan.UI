@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbBookmarkFilled = createIcon({
   name: "tb-bookmark-filled",
-  path: "M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z",
+  path: "M14 2a5 5 0 0 1 5 5v14a1 1 0 0 1 -1.555 .832l-5.445 -3.63l-5.444 3.63a1 1 0 0 1 -1.55 -.72l-.006 -.112v-14a5 5 0 0 1 5 -5h4z",
 });
     

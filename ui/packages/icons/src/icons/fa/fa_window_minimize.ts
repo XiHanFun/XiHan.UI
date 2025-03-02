@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const FaWindowMinimize = createIcon({
   name: "fa-window-minimize",
-  path: "M464 352H48c-26.5 0-48 21.5-48 48v32c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48v-32c0-26.5-21.5-48-48-48z",
+  path: "M24 432c-13.3 0-24 10.7-24 24s10.7 24 24 24l464 0c13.3 0 24-10.7 24-24s-10.7-24-24-24L24 432z",
 });
     

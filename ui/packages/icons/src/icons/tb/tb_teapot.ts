@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbTeapot = createIcon({
-  name: "tb-teapot",
-  path: "M10.29 3h3.42a2 2 0 0 1 1.988 1.78l1.555 14a2 2 0 0 1 -1.988 2.22h-6.53a2 2 0 0 1 -1.988 -2.22l1.555 -14a2 2 0 0 1 1.988 -1.78z m7.47 12.5-4.257-5.019a.899.899 0 0 1 .69-1.481h13.09a3 3 0 0 1 3.007 3v3c0 1.657-1.346 3-3.007 3M7 17h10",
-});
-    

@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbBuildingCottageOutline = createIcon({
+  name: "tb-building-cottage-outline",
+  path: "M3 21l18 0 M4 21v-11l2.5 -4.5l5.5 -2.5l5.5 2.5l2.5 4.5v11 M12 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0 M9 21v-5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v5",
+});
+    

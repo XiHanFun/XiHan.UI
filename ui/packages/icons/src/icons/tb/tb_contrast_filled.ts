@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbContrastFilled = createIcon({
   name: "tb-contrast-filled",
-  path: "M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0 M12 17a5 5 0 0 0 0 -10v10",
+  path: "M17 3.34a10 10 0 1 1 -15 8.66l.005 -.324a10 10 0 0 1 14.995 -8.336m-9 1.732a8 8 0 0 0 4.001 14.928l-.001 -16a8 8 0 0 0 -4 1.072",
 });
     

@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbBounceLeftOutline = createIcon({
+  name: "tb-bounce-left-outline",
+  path: "M20 15.5c-3 -1 -5.5 -.5 -8 4.5c-.5 -3 -1.5 -5.5 -3 -8 M6 9a2 2 0 1 1 0 -4a2 2 0 0 1 0 4z",
+});
+    

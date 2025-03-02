@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbMessageCircleSearch = createIcon({
-  name: "tb-message-circle-search",
-  path: "M11.303 19.955a9.818 9.818 0 0 1-3.603-.955l-4.7 1 1.3-3.9c-2.324-3.437-1.426-7.872 2.1-10.374 3.526-2.501 8.59-2.296 11.845.48 1.73 1.476 2.665 3.435 2.76 5.433M-3 0a3 3 0 1 0 6 0 3 3 0 1 0-6 0M20.2 20.2l1.8 1.8",
-});
-    

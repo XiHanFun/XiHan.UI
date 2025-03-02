@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const LuImage = createIcon({
   name: "lu-image",
-  path: "M16 10c-2 0-3 3-4.5 3s-1.499-1-3.5-1c-2 0-3.001 4-3.001 4h14.001s-1-6-3-6zM20 3h-16c-1.103 0-2 .897-2 2v12c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2v-12c0-1.103-.897-2-2-2zm0 14h-16v-12h16v12z",
+  path: "M9 7A2 2 0 1 0 9 11 2 2 0 1 0 9 7z m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21",
 });
     

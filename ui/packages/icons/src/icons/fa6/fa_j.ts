@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const FaJ = createIcon({
-  name: "fa-j",
-  path: "M288 32c17.7 0 32 14.3 32 32l0 256c0 88.4-71.6 160-160 160S0 408.4 0 320l0-32c0-17.7 14.3-32 32-32s32 14.3 32 32l0 32c0 53 43 96 96 96s96-43 96-96l0-256c0-17.7 14.3-32 32-32z",
-});
-    

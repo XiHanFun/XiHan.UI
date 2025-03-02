@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const BiLogobxCaretUp = createIcon({
-  name: "bi-logobx-caret-up",
-  path: "M5 15h14l-7-8z",
-});
-    

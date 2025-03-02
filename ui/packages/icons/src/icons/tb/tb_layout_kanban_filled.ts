@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbLayoutKanbanFilled = createIcon({
   name: "tb-layout-kanban-filled",
-  path: "m4 4 6 0M14 4l6 0m0 2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2zm0 2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z",
+  path: "M10 3a1 1 0 0 1 0 2h-6a1 1 0 1 1 0 -2z M20 3a1 1 0 0 1 0 2h-6a1 1 0 0 1 0 -2z M8 7a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3z M18 7a3 3 0 0 1 3 3v2a3 3 0 0 1 -3 3h-2a3 3 0 0 1 -3 -3v-2a3 3 0 0 1 3 -3z",
 });
     

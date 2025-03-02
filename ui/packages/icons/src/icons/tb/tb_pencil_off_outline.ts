@@ -1,0 +1,8 @@
+
+import { createIcon } from "../../utils/creator";
+
+export const TbPencilOffOutline = createIcon({
+  name: "tb-pencil-off-outline",
+  path: "M10 10l-6 6v4h4l6 -6m1.99 -1.99l2.504 -2.504a2.828 2.828 0 1 0 -4 -4l-2.5 2.5 M13.5 6.5l4 4 M3 3l18 18",
+});
+    

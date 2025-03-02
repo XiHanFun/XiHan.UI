@@ -3,6 +3,6 @@ import { createIcon } from "../../utils/creator";
 
 export const TbHospitalCircleFilled = createIcon({
   name: "tb-hospital-circle-filled",
-  path: "M10 16v-8M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0M14 16v-8M10 12h4",
+  path: "M12 2c5.523 0 10 4.477 10 10a10 10 0 0 1 -20 0l.004 -.28c.148 -5.393 4.566 -9.72 9.996 -9.72m2 5a1 1 0 0 0 -1 1v2.999h-2v-2.999a1 1 0 0 0 -.883 -.993l-.117 -.007a1 1 0 0 0 -1 1v8a1 1 0 0 0 2 0v-3.001h2v3.001a1 1 0 0 0 .883 .993l.117 .007a1 1 0 0 0 1 -1v-8a1 1 0 0 0 -1 -1",
 });
     
