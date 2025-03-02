@@ -30,15 +30,15 @@ export const icons: IconSource[] = [
     contents: [
       {
         fileFilter: "brands/*.svg",
-        formatter: (name: string) => `Fa-${name}`,
+        formatter: (name: string) => `Fa-${name}Brand`,
       },
       {
         fileFilter: "regular/*.svg",
-        formatter: (name: string) => `Fa-${name}`,
+        formatter: (name: string) => `Fa-${name}Regular`,
       },
       {
         fileFilter: "solid/*.svg",
-        formatter: (name: string) => `Fa-${name}-Solid`,
+        formatter: (name: string) => `Fa-${name}Solid`,
       },
     ],
     projectUrl: "https://fontawesome.com/",
@@ -236,15 +236,15 @@ export const icons: IconSource[] = [
     contents: [
       {
         fileFilter: "filled/*.svg",
-        formatter: (name: string) => `Ai-${name}-Fill`,
+        formatter: (name: string) => `Ai-${name}Fill`,
       },
       {
         fileFilter: "outlined/*.svg",
-        formatter: (name: string) => `Ai-${name}-Outline`,
+        formatter: (name: string) => `Ai-${name}Outline`,
       },
       {
         fileFilter: "twotone/*.svg",
-        formatter: (name: string) => `Ai-${name}-Twotone`,
+        formatter: (name: string) => `Ai-${name}Twotone`,
         multiColor: true,
       },
     ],
@@ -356,11 +356,11 @@ export const icons: IconSource[] = [
     contents: [
       {
         fileFilter: "24/solid/*.svg",
-        formatter: (name: string) => `Hi-${name}-Solid`,
+        formatter: (name: string) => `Hi-${name}Solid`,
       },
       {
         fileFilter: "24/outline/*.svg",
-        formatter: (name: string) => `Hi-${name}-Outline`,
+        formatter: (name: string) => `Hi-${name}Outline`,
       },
     ],
     projectUrl: "https://github.com/tailwindlabs/heroicons",
@@ -448,15 +448,15 @@ export const icons: IconSource[] = [
     contents: [
       {
         fileFilter: "regular/*.svg",
-        formatter: name => `Bi-${name.replace("bx-", "")}`,
+        formatter: name => `Bi-${name.replace("bx-", "")}Regular`,
       },
       {
         fileFilter: "solid/*.svg",
-        formatter: name => `Bi-${name.replace("bxs-", "")}-Solid`,
+        formatter: name => `Bi-${name.replace("bxs-", "")}Solid`,
       },
       {
         fileFilter: "logos/*.svg",
-        formatter: name => `BiLogo-${name.replace("bxl-", "")}`,
+        formatter: name => `Bi-${name.replace("bxl-", "")}Logo`,
       },
     ],
     projectUrl: "https://github.com/atisawd/boxicons",
@@ -522,11 +522,11 @@ export const icons: IconSource[] = [
     contents: [
       {
         fileFilter: "filled/*.svg",
-        formatter: name => `Tb-${name}-Filled`,
+        formatter: name => `Tb-${name}Filled`,
       },
       {
         fileFilter: "outline/*.svg",
-        formatter: name => `Tb-${name}-Outline`,
+        formatter: name => `Tb-${name}Outline`,
       },
     ],
     projectUrl: "https://github.com/tabler/tabler-icons",
