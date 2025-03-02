@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbCornerRightDownDoubleOutline = createIcon({
-  name: "tb-corner-right-down-double-outline",
-  path: "M5 4h6a3 3 0 0 1 3 3v7 M10 10l4 4l4 -4m-8 5l4 4l4 -4",
-});
-    

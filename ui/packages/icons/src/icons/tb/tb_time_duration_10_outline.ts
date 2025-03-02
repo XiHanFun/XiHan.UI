@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbTimeDuration10Outline = createIcon({
-  name: "tb-time-duration-10-outline",
-  path: "M9 9v6 M12 11v2a2 2 0 1 0 4 0v-2a2 2 0 1 0 -4 0z M3 12v.01 M21 12v.01 M12 21v.01 M7.5 4.2v.01 M16.5 19.8v.01 M7.5 19.8v.01 M4.2 16.5v.01 M19.8 16.5v.01 M4.2 7.5v.01 M19.81 7.527a8.994 8.994 0 0 0 -7.81 -4.527",
-});
-    

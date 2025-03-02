@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const SiNebula = createIcon({
-  name: "si-nebula",
-  path: "M7.417 9.307 0 14.693h9.167L12 23.413l2.833-8.72H24s-3.915-2.84-7.417-5.386l2.834-8.72L12 5.976C8.499 3.438 4.583.588 4.583.588z",
-});
-    

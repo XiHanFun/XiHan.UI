@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbTemperatureOffOutline = createIcon({
-  name: "tb-temperature-off-outline",
-  path: "M10 10v3.5a4 4 0 1 0 5.836 2.33m-1.836 -5.83v-5a2 2 0 1 0 -4 0v1 M13 9h1 M3 3l18 18",
-});
-    

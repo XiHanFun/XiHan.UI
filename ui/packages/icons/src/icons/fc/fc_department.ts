@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const FcDepartment = createIcon({
-  name: "fc-department",
-  path: "M42 42 6 42 6 9 24 2 42 9z M6 42H42V44H6z M20 35H28V44H20z M31 27H37V32H31z M21 27H27V32H21z M11 27H17V32H11z M31 35H37V40H31z M11 35H17V40H11z M31 19H37V24H31z M21 19H27V24H21z M11 19H17V24H11z M31 11H37V16H31z M21 11H27V16H21z M11 11H17V16H11z",
-});
-    

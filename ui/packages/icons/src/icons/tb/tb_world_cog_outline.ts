@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbWorldCogOutline = createIcon({
-  name: "tb-world-cog-outline",
-  path: "M21 12a9 9 0 1 0 -8.979 9 M3.6 9h16.8 M3.6 15h8.9 M11.5 3a17 17 0 0 0 0 18 M12.5 3a16.992 16.992 0 0 1 2.522 10.376 M19.001 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0 M19.001 15.5v1.5 M19.001 21v1.5 M22.032 17.25l-1.299 .75 M17.27 20l-1.3 .75 M15.97 17.25l1.3 .75 M20.733 20l1.3 .75",
-});
-    

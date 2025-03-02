@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbRectangleRoundedTopOutline = createIcon({
-  name: "tb-rectangle-rounded-top-outline",
-  path: "M9 6h6a6 6 0 0 1 6 6v5a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1v-5a6 6 0 0 1 6 -6z",
-});
-    

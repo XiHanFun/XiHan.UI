@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TfiDirectionAlt = createIcon({
-  name: "tfi-direction-alt",
-  path: "M9 6h4.695l1.938-2.563-1.946-2.437h-4.687v-1h-1v1h-6v5h6v2h-4.687l-1.946 2.437 1.938 2.563h4.695v4h1v-4h6v-5h-6v-2zM3 2h10.206l1.161 1.454-1.169 1.546h-10.198v-3zM14 12h-10.198l-1.169-1.546 1.161-1.454h10.206v3z",
-});
-    

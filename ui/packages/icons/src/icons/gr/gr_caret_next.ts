@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const GrCaretNext = createIcon({
-  name: "gr-caret-next",
-  path: "M6 2 18 12 6 22z",
-});
-    

@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const FcGenealogy = createIcon({
-  name: "fc-genealogy",
-  path: "M40 9 40 7 31 7 31 12 24 12 15 12 15 23 8 23 8 25 15 25 15 36 24 36 31 36 31 41 40 41 40 39 33 39 33 31 40 31 40 29 31 29 31 34 24 34 17 34 17 14 24 14 31 14 31 19 40 19 40 17 33 17 33 9z M4 20H12V28H4z M36 14H44V22H36z M36 4H44V12H36z M20 9H28V17H20z M20 31H28V39H20z M36 36H44V44H36z M36 26H44V34H36z",
-});
-    

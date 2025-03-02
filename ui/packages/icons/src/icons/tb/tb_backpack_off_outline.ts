@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbBackpackOffOutline = createIcon({
-  name: "tb-backpack-off-outline",
-  path: "M10 6h3a6 6 0 0 1 6 6v3m-.129 3.872a3 3 0 0 1 -2.871 2.128h-8a3 3 0 0 1 -3 -3v-6a5.99 5.99 0 0 1 2.285 -4.712 M10 6v-1a2 2 0 1 1 4 0v1 M9 21v-4a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v4 M3 3l18 18",
-});
-    

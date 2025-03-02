@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbFileSpreadsheetOutline = createIcon({
-  name: "tb-file-spreadsheet-outline",
-  path: "M14 3v4a1 1 0 0 0 1 1h4 M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z M8 11h8v7h-8z M8 15h8 M11 11v7",
-});
-    

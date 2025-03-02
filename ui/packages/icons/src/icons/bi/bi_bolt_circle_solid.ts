@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const BiBoltCircleSolid = createIcon({
-  name: "bi-bolt-circle-solid",
-  path: "M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm-1 16v-5H7l6-7v5h4l-6 7z",
-});
-    

@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbVocabularyOffOutline = createIcon({
-  name: "tb-vocabulary-off-outline",
-  path: "M7 3h3a2 2 0 0 1 2 2a2 2 0 0 1 2 -2h6a1 1 0 0 1 1 1v13m-2 2h-5a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2h-6a1 1 0 0 1 -1 -1v-14c0 -.279 .114 -.53 .298 -.712 M12 5v3m0 4v9 M7 11h1 M16 7h1 M16 11h1 M3 3l18 18",
-});
-    

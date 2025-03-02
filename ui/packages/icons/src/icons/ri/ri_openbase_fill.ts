@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const RiOpenbaseFill = createIcon({
-  name: "ri-openbase-fill",
-  path: "M12.0001 2.76001L21.9992 5.996L21.1001 15.464L12.0001 22.3235L2.90012 15.46L2.01074 6.00001L12.0001 2.76001ZM12.0001 3.58535L3.18898 6.43501L12.0001 20.7932L20.8058 6.43501L12.0001 3.58535Z",
-});
-    

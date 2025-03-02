@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const LuBookImage = createIcon({
-  name: "lu-book-image",
-  path: "m20 13.7-2.1-2.1a2 2 0 0 0-2.8 0L9.7 17 M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20 M10 6A2 2 0 1 0 10 10 2 2 0 1 0 10 6z",
-});
-    

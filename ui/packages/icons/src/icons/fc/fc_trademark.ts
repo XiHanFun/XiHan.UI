@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const FcTrademark = createIcon({
-  name: "fc-trademark",
-  path: "M24 3A21 21 0 1 0 24 45 21 21 0 1 0 24 3z M20.6,18.5h-4.2v14.2h-3.5V18.5H8.7v-2.9h11.9V18.5z M27.1,15.6L30.3,28l3.2-12.4h4.5v17.1h-3.5v-4.6l0.3-7.1l-3.4,11.8h-2.4L25.7,21l0.3,7.1v4.6h-3.5V15.6 H27.1z",
-});
-    

@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const TbSpyOffOutline = createIcon({
-  name: "tb-spy-off-outline",
-  path: "M3 11h8m4 0h6 M5 11v-4c0 -.571 .16 -1.105 .437 -1.56m2.563 -1.44h8a3 3 0 0 1 3 3v4 M7 17m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0 M14.88 14.877a3 3 0 1 0 4.239 4.247m.59 -3.414a3.012 3.012 0 0 0 -1.425 -1.422 M10 17h4 M3 3l18 18",
-});
-    

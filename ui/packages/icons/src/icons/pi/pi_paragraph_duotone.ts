@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const PiParagraphDuotone = createIcon({
-  name: "pi-paragraph-duotone",
-  path: "M144,48V160H96A56,56,0,0,1,96,48Z M208,40H96a64,64,0,0,0,0,128h40v40a8,8,0,0,0,16,0V56h24V208a8,8,0,0,0,16,0V56h16a8,8,0,0,0,0-16ZM136,152H96a48,48,0,0,1,0-96h40Z",
-});
-    

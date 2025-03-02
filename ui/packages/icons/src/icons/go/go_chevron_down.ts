@@ -1,8 +1,0 @@
-
-import { createIcon } from "../../utils/creator";
-
-export const GoChevronDown = createIcon({
-  name: "go-chevron-down",
-  path: "M5.22 8.22a.749.749 0 0 0 0 1.06l6.25 6.25a.749.749 0 0 0 1.06 0l6.25-6.25a.749.749 0 1 0-1.06-1.06L12 13.939 6.28 8.22a.749.749 0 0 0-1.06 0Z",
-});
-    
