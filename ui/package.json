@@ -69,7 +69,8 @@
     "@xihan-ui/directives": "workspace:*",
     "@xihan-ui/themes": "workspace:*",
     "@xihan-ui/locales": "workspace:*",
-    "@xihan-ui/components": "workspace:*"
+    "@xihan-ui/components": "workspace:*",
+    "xihan-ui": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "*",
@@ -90,6 +91,8 @@
     "vite-plugin-vue-devtools": "^7.7.2",
     "vitest": "^3.0.5",
     "vue-tsc": "*",
-    "tsx": "*"
+    "tsx": "*",
+    "lint-staged": "*",
+    "husky": "*"
   }
 }
