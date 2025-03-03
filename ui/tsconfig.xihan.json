@@ -1,6 +1,8 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
+    // 输出目录
+    "outDir": "dist",
     // 启用复合项目
     "composite": true,
     // 启用 JSX 支持
@@ -17,31 +19,37 @@
     "moduleResolution": "Bundler",
     // 生成声明文件
     "declaration": true,
-    // 生成声明文件映射
-    "declarationMap": true
-  },
-  "paths": {
-    // 组件
-    "@xihan-ui/components": ["packages/components/src"],
-    // 钩子
-    "@xihan-ui/hooks": ["packages/hooks/src"],
-    // 图标
-    "@xihan-ui/icons": ["packages/icons/src"],
-    // 工具
-    "@xihan-ui/utils": ["packages/utils/src"],
-    // 常量
-    "@xihan-ui/constants": ["packages/constants/src"],
-    // 主题
-    "@xihan-ui/themes": ["packages/themes/src"],
-    // 国际化
-    "@xihan-ui/locales": ["packages/locales/src"],
-    // 指令
-    "@xihan-ui/directives": ["packages/directives/src"],
-    // 主包
-    "xihan-ui": ["xihan-ui/src"]
+    // 路径别名
+    "paths": {
+      // 组件
+      "@xihan-ui/components": ["packages/components/src"],
+      // 钩子
+      "@xihan-ui/hooks": ["packages/hooks/src"],
+      // 图标
+      "@xihan-ui/icons": ["packages/icons/src"],
+      // 工具
+      "@xihan-ui/utils": ["packages/utils/src"],
+      // 常量
+      "@xihan-ui/constants": ["packages/constants/src"],
+      // 主题
+      "@xihan-ui/themes": ["packages/themes/src"],
+      // 国际化
+      "@xihan-ui/locales": ["packages/locales/src"],
+      // 指令
+      "@xihan-ui/directives": ["packages/directives/src"],
+      // 主包
+      "xihan-ui": ["xihan-ui/src"]
+    }
   },
   // 包含的文件
-  "include": ["packages/**/*", "xihan-ui/**/*"],
+  "include": [
+    "packages/**/*.ts",
+    "packages/**/*.tsx",
+    "packages/**/*.vue",
+    "xihan-ui/**/*.ts",
+    "xihan-ui/**/*.tsx",
+    "xihan-ui/**/*.vue"
+  ],
   // 排除的文件
-  "exclude": ["**/tests/**", "**/dist", "**/node_modules", "**/play-ground/**"]
+  "exclude": ["play-ground", "dist", "**/tests/**", "**/dist/**"]
 }
