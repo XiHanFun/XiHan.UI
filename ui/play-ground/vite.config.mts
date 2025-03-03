@@ -3,17 +3,16 @@ import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import { resolve } from "path";
 
-// 定义包目录（指向构建后的包，而非源码）
 const packages = {
-  utils: resolve(__dirname, "../packages/utils"),
-  constants: resolve(__dirname, "../packages/constants"),
-  hooks: resolve(__dirname, "../packages/hooks"),
-  icons: resolve(__dirname, "../packages/icons"),
-  directives: resolve(__dirname, "../packages/directives"),
-  themes: resolve(__dirname, "../packages/themes"),
-  locales: resolve(__dirname, "../packages/locales"),
-  components: resolve(__dirname, "../packages/components"),
-  xihanui: resolve(__dirname, "../xihan-ui"),
+  utils: resolve(__dirname, "../packages/utils/src"),
+  constants: resolve(__dirname, "../packages/constants/src"),
+  hooks: resolve(__dirname, "../packages/hooks/src"),
+  icons: resolve(__dirname, "../packages/icons/src"),
+  directives: resolve(__dirname, "../packages/directives/src"),
+  themes: resolve(__dirname, "../packages/themes/src"),
+  locales: resolve(__dirname, "../packages/locales/src"),
+  components: resolve(__dirname, "../packages/components/src"),
+  xihanui: resolve(__dirname, "../xihan-ui/src"),
 };
 
 export default defineConfig(({ mode }) => {
@@ -43,6 +42,7 @@ export default defineConfig(({ mode }) => {
         "xihan-ui": packages.xihanui,
       },
       preserveSymlinks: true,
+      extensions: [".mjs", ".js", ".mts", ".ts", ".jsx", ".tsx", ".json", ".vue", ".scss", ".css"],
     },
 
     // CSS 处理
@@ -50,13 +50,11 @@ export default defineConfig(({ mode }) => {
       preprocessorOptions: {
         scss: {},
       },
-      devSourcemap: true,
     },
 
     // 优化依赖
     optimizeDeps: {
       include: ["vue"],
-      exclude: ["xihan-ui", "@xihan-ui/icons"],
     },
 
     // 服务器配置

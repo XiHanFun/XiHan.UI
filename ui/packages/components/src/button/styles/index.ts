@@ -1,1 +1,1 @@
-import "@xihan-ui/themes/components/button.scss";
+import "@xihan-ui/themes/components/button";
