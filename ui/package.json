@@ -69,7 +69,8 @@
     "@xihan-ui/directives": "workspace:*",
     "@xihan-ui/themes": "workspace:*",
     "@xihan-ui/locales": "workspace:*",
-    "@xihan-ui/components": "workspace:*"
+    "@xihan-ui/components": "workspace:*",
+    "xihan-ui": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "*",
