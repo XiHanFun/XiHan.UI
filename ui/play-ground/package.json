@@ -30,16 +30,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "*",
+    "@vueuse/core": "^12.7.0",
     "pinia": "*",
+    "vue": "*",
     "vue-router": "*"
   },
   "devDependencies": {
     "@types/node": "*",
-    "typescript": "*",
-    "vite": "*",
     "@vitejs/plugin-vue": "*",
     "@vitejs/plugin-vue-jsx": "*",
+    "typescript": "*",
+    "vite": "*",
     "vite-plugin-dts": "*"
   }
 }
