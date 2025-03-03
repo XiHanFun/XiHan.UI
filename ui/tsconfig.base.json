@@ -1,7 +1,5 @@
 {
   "compilerOptions": {
-    // 输出目录
-    "outDir": "dist",
     // 目标 ECMAScript 版本
     "target": "ESNext",
     // 模块类型
