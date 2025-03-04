@@ -86,7 +86,7 @@ export default defineConfig({
           format: "es",
           dir: "dist/es",
           entryFileNames: `[name].mjs`,
-          preserveModules: true,
+          preserveModules: false,
           exports: "named",
           preserveModulesRoot: "",
           globals: {
@@ -99,7 +99,7 @@ export default defineConfig({
           format: "cjs",
           dir: "dist/lib",
           entryFileNames: `[name].js`,
-          preserveModules: true,
+          preserveModules: false,
           exports: "named",
           preserveModulesRoot: "",
           globals: {
