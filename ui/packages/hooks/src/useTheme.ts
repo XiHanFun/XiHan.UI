@@ -1,5 +1,5 @@
 import { ref, watch } from "vue";
-import { getSystemTheme, watchSystemTheme, ThemeMode } from "@xihan-ui/utils/css/theme";
+import { getSystemTheme, watchSystemTheme, type ThemeMode } from "@xihan-ui/utils";
 
 /**
  * 主题组合式函数
@@ -30,7 +30,7 @@ export function useTheme(initialMode: ThemeMode = "system") {
   watch(
     () => mode.value,
     newMode => setMode(newMode),
-    { immediate: true }
+    { immediate: true },
   );
 
   return {
