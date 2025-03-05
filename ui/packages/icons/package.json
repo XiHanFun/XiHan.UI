@@ -26,9 +26,12 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "update": "tsx scripts/update.ts",
     "download": "tsx scripts/download.ts",
@@ -40,7 +43,8 @@
     "vue": "*"
   },
   "dependencies": {
-    "glob": "^11.0.1"
+    "glob": "^11.0.1",
+    "@xihan-ui/utils": "workspace:*"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0"
