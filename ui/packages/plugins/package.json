@@ -26,10 +26,19 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build"
+  },
   "peerDependencies": {
     "vue": "*"
+  },
+  "dependencies": {
+    "@xihan-ui/utils": "workspace:*"
   }
 }

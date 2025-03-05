@@ -21,24 +21,10 @@
     "declaration": true,
     // 路径别名
     "paths": {
-      // 组件
-      "@xihan-ui/components": ["packages/components/src"],
-      // 钩子
-      "@xihan-ui/hooks": ["packages/hooks/src"],
-      // 图标
-      "@xihan-ui/icons": ["packages/icons/src"],
-      // 工具
-      "@xihan-ui/utils": ["packages/utils/src"],
-      // 常量
-      "@xihan-ui/constants": ["packages/constants/src"],
-      // 主题
-      "@xihan-ui/themes": ["packages/themes/src"],
-      // 国际化
-      "@xihan-ui/locales": ["packages/locales/src"],
-      // 指令
-      "@xihan-ui/directives": ["packages/directives/src"],
       // 主包
-      "xihan-ui": ["xihan-ui/src"]
+      "xihan-ui": ["xihan-ui/src"],
+      // 子包
+      "@xihan-ui/*": ["packages/*/src"]
     }
   },
   // 包含的文件
@@ -51,5 +37,5 @@
     "xihan-ui/**/*.vue"
   ],
   // 排除的文件
-  "exclude": ["play-ground", "dist", "**/tests/**", "**/dist/**"]
+  "exclude": ["**/node_modules/**", "**/tests/**", "**/dist/**"]
 }

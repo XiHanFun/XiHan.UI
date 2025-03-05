@@ -25,59 +25,61 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "./lib/index.js",
-  "module": "./es/index.mjs",
-  "types": "./es/index.d.ts",
-  "style": "dist/index.css",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "style": "./dist/index.css",
   "exports": {
     ".": {
-      "types": "./es/index.d.ts",
-      "import": "./es/index.mjs",
-      "require": "./lib/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
     },
     "./es": {
-      "types": "./es/index.d.ts",
-      "import": "./es/index.mjs"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
     },
     "./es/*.mjs": {
-      "types": "./es/*.d.ts",
-      "import": "./es/*.mjs"
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.mjs"
     },
     "./es/*": {
       "types": [
-        "./es/*.d.ts",
-        "./es/*/index.d.ts"
+        "./dist/*.d.ts",
+        "./dist/*/index.d.ts"
       ],
-      "import": "./es/*.mjs"
+      "import": "./dist/*.mjs"
     },
     "./lib": {
-      "types": "./lib/index.d.ts",
-      "require": "./lib/index.js"
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js"
     },
     "./lib/*.js": {
-      "types": "./lib/*.d.ts",
-      "require": "./lib/*.js"
+      "types": "./dist/*.d.ts",
+      "require": "./dist/*.js"
     },
     "./lib/*": {
       "types": [
-        "./lib/*.d.ts",
-        "./lib/*/index.d.ts"
+        "./dist/*.d.ts",
+        "./dist/*/index.d.ts"
       ],
-      "require": "./lib/*.js"
+      "require": "./dist/*.js"
     },
     "./*": "./*"
   },
   "sideEffects": [
-    "dist/*",
-    "themes/src/**/*.css",
-    "es/components/*/styles/*",
-    "lib/components/*/styles/*"
+    "dist/*"
   ],
   "peerDependencies": {
     "vue": "*"
   },
-  "devDependencies": {
-    "@types/node": "*",
-    "typescript": "*"
+  "dependencies": {
+    "@xihan-ui/components": "workspace:*",
+    "@xihan-ui/themes": "workspace:*",
+    "@xihan-ui/utils": "workspace:*",
+    "@xihan-ui/constants": "workspace:*",
+    "@xihan-ui/hooks": "workspace:*",
+    "@xihan-ui/icons": "workspace:*",
+    "@xihan-ui/directives": "workspace:*"
   }
 }
