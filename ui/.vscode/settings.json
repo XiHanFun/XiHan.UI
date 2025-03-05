@@ -8,7 +8,7 @@
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
     // 关于项目
-    "README.md": "README*,CHANGELOG*,LICENSE,CNAME,.cursorrules*",
+    "README.md": "README*,CHANGELOG*,LICENSE,CNAME,.cursorrules",
     // 包管理
     "package.json": "pnpm-lock.yaml,pnpm-workspace.yaml,.gitattributes,.gitignore,.npmrc",
     // 开发规范

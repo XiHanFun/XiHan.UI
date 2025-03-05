@@ -26,13 +26,26 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.d.ts",
-  "sideEffects": [
-    "*/style/*"
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "style": "./dist/index.css",
+  "files": [
+    "dist"
   ],
+  "scripts": {
+    "build": "vite build"
+  },
   "peerDependencies": {
     "vue": "*"
+  },
+  "dependencies": {
+    "@xihan-ui/utils": "workspace:*",
+    "@xihan-ui/constants": "workspace:*",
+    "@xihan-ui/hooks": "workspace:*",
+    "@xihan-ui/icons": "workspace:*",
+    "@xihan-ui/directives": "workspace:*",
+    "@xihan-ui/themes": "workspace:*",
+    "@xihan-ui/locales": "workspace:*"
   }
 }

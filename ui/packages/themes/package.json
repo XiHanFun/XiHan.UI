@@ -26,10 +26,17 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "src/index.css",
-  "module": "src/index.css",
-  "style": "src/index.css",
+  "style": "./dist/index.css",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build"
+  },
   "peerDependencies": {
     "sass": "*"
+  },
+  "dependencies": {
+    "@xihan-ui/utils": "workspace:*"
   }
 }
