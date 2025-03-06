@@ -12,6 +12,8 @@
     "sourceMap": true,
     // 使用 Bundler 模块解析策略，更适合 Vite 项目
     "moduleResolution": "Bundler",
+    // 启用复合项目
+    "composite": true,
     // 允许 JavaScript 文件
     "allowJs": false,
     // 启用严格模式

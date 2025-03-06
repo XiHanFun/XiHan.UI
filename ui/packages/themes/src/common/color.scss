@@ -1,5 +1,5 @@
 @use "sass:map";
-@use "../variables" as *;
+@use "./variables" as *;
 
 // 生成主题色变量
 @mixin generate-theme-colors($type) {

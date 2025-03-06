@@ -1,6 +1,6 @@
 @use "sass:map";
-@use "../variables" as vars;
-@use "../mixins" as mix;
+@use "../common/variables" as vars;
+@use "../common/mixins" as mix;
 @use "./_global";
 
 // 添加加载动画
