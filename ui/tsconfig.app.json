@@ -22,9 +22,17 @@
     // 路径别名
     "paths": {
       // 主包
-      "xihan-ui": ["xihan-ui/src"],
+      "xihan-ui/*": ["xihan-ui/src/*"],
       // 子包
-      "@xihan-ui/*": ["packages/*/src"]
+      "@xihan-ui/utils/*": ["packages/utils/src/*"],
+      "@xihan-ui/constants/*": ["packages/constants/src/*"],
+      "@xihan-ui/hooks/*": ["packages/hooks/src/*"],
+      "@xihan-ui/icons/*": ["packages/icons/src/*"],
+      "@xihan-ui/directives/*": ["packages/directives/src/*"],
+      "@xihan-ui/components/*": ["packages/components/src/*"],
+      "@xihan-ui/plugins/*": ["packages/plugins/src/*"],
+      "@xihan-ui/themes/*": ["packages/themes/src/*"],
+      "@xihan-ui/locales/*": ["packages/locales/src/*"]
     }
   },
   // 包含的文件
@@ -34,7 +42,8 @@
     "packages/**/*.vue",
     "xihan-ui/**/*.ts",
     "xihan-ui/**/*.tsx",
-    "xihan-ui/**/*.vue"
+    "xihan-ui/**/*.vue",
+    "internal/**/*.ts"
   ],
   // 排除的文件
   "exclude": ["**/node_modules/**", "**/tests/**", "**/dist/**"]

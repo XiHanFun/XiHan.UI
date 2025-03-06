@@ -1,5 +1,5 @@
-@use "../variables";
-@use "../mixins";
+@use "./variables";
+@use "./mixins";
 @use "./color";
 @use "./reset";
 @use "./transition";
@@ -9,8 +9,3 @@
 @use "./spacing";
 @use "./animation";
 @use "./shadow";
-
-// 导出所有变量和混入，方便其他文件使用
-@forward "../variables";
-@forward "../mixins";
-@forward "./color";

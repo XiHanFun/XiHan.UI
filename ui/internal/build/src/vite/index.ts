@@ -25,7 +25,7 @@ export const getVitePlugins = (rootDir: string = process.cwd()): Plugin[] => {
       // 插入版权信息
       insertTypesEntry: true,
       // 输出目录配置
-      outDir: ["./dist"],
+      outDir: ["dist"],
       // 生成类型文件后的钩子
       afterBuild: () => {
         console.log("\n✨ Type definitions generated successfully!");
