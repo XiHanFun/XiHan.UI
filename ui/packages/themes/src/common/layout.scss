@@ -1,7 +1,7 @@
 @use "sass:map";
 @use "sass:math";
-@use "../variables" as *;
-@use "../mixins" as *;
+@use "./variables" as *;
+@use "./mixins" as *;
 
 // 布局容器
 .xh-container {

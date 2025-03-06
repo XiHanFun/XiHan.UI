@@ -1,5 +1,28 @@
 {
   "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    // 启用复合项目
+    "composite": true,
+    // 不生成输出文件
+    "noEmit": true,
+    // 允许导入扩展名推断
+    "allowImportingTsExtensions": true,
+    // 目标 ECMAScript 版本
+    "lib": ["ESNext"],
+    // 类型
+    "types": ["node"],
+    // 模块类型
+    "module": "ESNext",
+    // 模块解析策略
+    "moduleResolution": "Bundler",
+    // 路径别名
+    "paths": {
+      "@build/*": ["internal/build/src/*"],
+      "@dev/*": ["internal/dev/src/*"]
+    }
+  },
+  // 包含的文件
+  "include": ["scripts/**/*", "vite.config.*", "vitest.config.*", "internal/**/*"],
   // 排除的文件
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist"]
 }

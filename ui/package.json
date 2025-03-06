@@ -62,20 +62,23 @@
     "vue": "*"
   },
   "dependencies": {
-    "@xihan-ui/utils": "workspace:*",
+    "@xihan-ui/components": "workspace:*",
     "@xihan-ui/constants": "workspace:*",
+    "@xihan-ui/directives": "workspace:*",
     "@xihan-ui/hooks": "workspace:*",
     "@xihan-ui/icons": "workspace:*",
-    "@xihan-ui/directives": "workspace:*",
-    "@xihan-ui/themes": "workspace:*",
     "@xihan-ui/locales": "workspace:*",
-    "@xihan-ui/components": "workspace:*",
+    "@xihan-ui/plugins": "workspace:*",
+    "@xihan-ui/themes": "workspace:*",
+    "@xihan-ui/utils": "workspace:*",
     "xihan-ui": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "*",
     "@vitejs/plugin-vue": "*",
     "@vitejs/plugin-vue-jsx": "*",
+    "@xihan-ui/build": "workspace:*",
+    "@xihan-ui/dev": "workspace:*",
     "eslint": "^9.20.1",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",
@@ -85,12 +88,12 @@
     "sass": "*",
     "sass-lint": "^1.13.1",
     "stylelint": "^16.14.1",
+    "tsx": "*",
     "typescript": "*",
     "vite": "*",
     "vite-plugin-dts": "*",
     "vite-plugin-vue-devtools": "^7.7.2",
     "vitest": "^3.0.5",
-    "vue-tsc": "*",
-    "tsx": "*"
+    "vue-tsc": "*"
   }
 }

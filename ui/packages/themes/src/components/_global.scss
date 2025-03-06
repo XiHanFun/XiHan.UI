@@ -1,6 +1,6 @@
 @use "sass:map";
-@use "../variables" as vars;
-@use "../mixins" as mix;
+@use "../common/variables" as vars;
+@use "../common/mixins" as mix;
 
 // 基础样式
 :root {
