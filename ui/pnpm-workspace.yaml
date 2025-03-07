@@ -1,5 +1,4 @@
 packages:
   - packages/*
   - internal/*
-  - xihan-ui
-  - play-ground
+  - playground
