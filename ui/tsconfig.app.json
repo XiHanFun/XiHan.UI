@@ -21,8 +21,6 @@
     "declaration": true,
     // 路径别名
     "paths": {
-      // 主包
-      "xihan-ui/*": ["xihan-ui/src/*"],
       // 子包
       "@xihan-ui/utils/*": ["packages/utils/src/*"],
       "@xihan-ui/constants/*": ["packages/constants/src/*"],
@@ -32,7 +30,9 @@
       "@xihan-ui/components/*": ["packages/components/src/*"],
       "@xihan-ui/plugins/*": ["packages/plugins/src/*"],
       "@xihan-ui/themes/*": ["packages/themes/src/*"],
-      "@xihan-ui/locales/*": ["packages/locales/src/*"]
+      "@xihan-ui/locales/*": ["packages/locales/src/*"],
+      // 主包
+      "xihan-ui/*": ["packages/xihan-ui/src/*"],
     }
   },
   // 包含的文件
@@ -40,9 +40,6 @@
     "packages/**/*.ts",
     "packages/**/*.tsx",
     "packages/**/*.vue",
-    "xihan-ui/**/*.ts",
-    "xihan-ui/**/*.tsx",
-    "xihan-ui/**/*.vue",
     "internal/**/*.ts"
   ],
   // 排除的文件
