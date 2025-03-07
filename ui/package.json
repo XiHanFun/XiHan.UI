@@ -25,8 +25,8 @@
   "type": "module",
   "workspaces": [
     "packages/*",
-    "xihan-ui",
-    "play-ground"
+    "internal/*",
+    "playground"
   ],
   "packageManager": "pnpm@10.2.1",
   "engines": {
