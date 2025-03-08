@@ -22,7 +22,14 @@
     // 路径别名
     "paths": {
       // 子包
-      "@xihan-ui/*": ["packages/*/src"],
+      "@xihan-ui/components": ["packages/components/src"],
+      "@xihan-ui/themes": ["packages/themes/src"],
+      "@xihan-ui/utils": ["packages/utils/src"],
+      "@xihan-ui/icons": ["packages/icons/src"],
+      "@xihan-ui/hooks": ["packages/hooks/src"],
+      "@xihan-ui/directives": ["packages/directives/src"],
+      "@xihan-ui/locales": ["packages/locales/src"],
+      "@xihan-ui/constants": ["packages/constants/src"],
       // 主包
       "xihan-ui": ["packages/xihan-ui/src"]
     }

@@ -1,5 +1,5 @@
 {
-  "name": "play",
+  "name": "@xihan-ui/playground",
   "private": true,
   "version": "0.8.12",
   "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
@@ -30,10 +30,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "xihan-ui": "workspace:*",
     "pinia": "catalog:",
     "vue": "catalog:",
-    "vue-router": "catalog:"
+    "vue-router": "catalog:",
+    "xihan-ui": "workspace:*"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "catalog:",

@@ -12,7 +12,7 @@ const packages = {
   themes: resolve(__dirname, "../packages/themes/src"),
   locales: resolve(__dirname, "../packages/locales/src"),
   components: resolve(__dirname, "../packages/components/src"),
-  xihanui: resolve(__dirname, "../xihan-ui/src"),
+  xihanui: resolve(__dirname, "../packages/xihan-ui/src"),
 };
 
 export default defineConfig(({ mode }) => {
