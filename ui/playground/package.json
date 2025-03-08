@@ -1,5 +1,5 @@
 {
-  "name": "play",
+  "name": "@xihan-ui/playground",
   "private": true,
   "version": "0.8.12",
   "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
@@ -30,17 +30,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@vueuse/core": "^12.7.0",
-    "pinia": "*",
-    "vue": "*",
-    "vue-router": "*"
+    "pinia": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "catalog:",
+    "xihan-ui": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "*",
-    "@vitejs/plugin-vue": "*",
-    "@vitejs/plugin-vue-jsx": "*",
-    "typescript": "*",
-    "vite": "*",
-    "vite-plugin-dts": "*"
+    "@vitejs/plugin-vue": "catalog:",
+    "@vitejs/plugin-vue-jsx": "catalog:",
+    "vite": "catalog:",
+    "vite-plugin-dts": "catalog:"
   }
 }
