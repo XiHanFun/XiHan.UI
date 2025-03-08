@@ -34,7 +34,7 @@
     "build": "vite build"
   },
   "peerDependencies": {
-    "sass": "*"
+    "sass": "catalog:"
   },
   "dependencies": {
     "@xihan-ui/utils": "workspace:*"

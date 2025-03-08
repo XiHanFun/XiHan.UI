@@ -71,15 +71,15 @@
     "dist/*"
   ],
   "peerDependencies": {
-    "vue": "*"
+    "vue": "catalog:"
   },
   "dependencies": {
     "@xihan-ui/components": "workspace:*",
-    "@xihan-ui/themes": "workspace:*",
-    "@xihan-ui/utils": "workspace:*",
     "@xihan-ui/constants": "workspace:*",
+    "@xihan-ui/directives": "workspace:*",
     "@xihan-ui/hooks": "workspace:*",
     "@xihan-ui/icons": "workspace:*",
-    "@xihan-ui/directives": "workspace:*"
+    "@xihan-ui/themes": "workspace:*",
+    "@xihan-ui/utils": "workspace:*"
   }
 }
