@@ -14,7 +14,7 @@ const packages = {
   locales: resolve(__dirname, "packages/locales"),
   components: resolve(__dirname, "packages/components"),
   themes: resolve(__dirname, "packages/themes"),
-  xihanui: resolve(__dirname, "xihan-ui"),
+  xihanui: resolve(__dirname, "packages/xihan-ui"),
 };
 
 // 包入口配置
@@ -35,12 +35,7 @@ export default defineConfig({
     vue(),
     vueJsx(),
     dts({
-      include: [
-        "packages/**/src/**/*.ts",
-        "packages/**/src/**/*.tsx",
-        "packages/**/src/**/*.vue",
-        "xihan-ui/src/**/*.ts",
-      ],
+      include: ["packages/**/src/**/*.ts", "packages/**/src/**/*.tsx", "packages/**/src/**/*.vue"],
       exclude: ["packages/**/demos/*", "packages/**/tests/*"],
       // 确保生成类型文件
       staticImport: true,
