@@ -46,4 +46,19 @@ function cleanAll() {
   }
 }
 
+function cleanPlayground() {
+  try {
+    // 清理根目录
+    const playgroundDir = path.join(rootDir, "playground");
+    cleanNodeModules(playgroundDir);
+
+    console.log("\n✨ playground node_modules have been cleaned successfully!");
+  } catch (error) {
+    console.error("\n❌ Error while cleaning node_modules:", error);
+    process.exit(1);
+  }
+}
+
 cleanAll();
+
+cleanPlayground();

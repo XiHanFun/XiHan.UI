@@ -28,11 +28,13 @@
   "module": "src/index.ts",
   "types": "src/index.d.ts",
   "dependencies": {
-    "rollup": "^4.34.9",
+    "rollup": "^4.35.0",
     "rollup-plugin-esbuild": "^6.2.1",
     "rollup-plugin-vue": "^6.0.0"
   },
   "devDependencies": {
+    "js-yaml": "^4.1.0",
+    "latest-version": "^9.0.0",
     "unbuild": "^3.5.0"
   }
 }

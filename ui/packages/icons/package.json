@@ -40,13 +40,13 @@
     "build": "vite build"
   },
   "peerDependencies": {
-    "vue": "*"
+    "vue": "catalog:"
   },
   "dependencies": {
-    "glob": "^11.0.1",
-    "@xihan-ui/utils": "workspace:*"
+    "@xihan-ui/utils": "workspace:*",
+    "glob": "catalog:"
   },
   "devDependencies": {
-    "@types/glob": "^8.1.0"
+    "@types/glob": "catalog:"
   }
 }

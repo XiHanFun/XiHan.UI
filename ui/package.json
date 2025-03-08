@@ -28,7 +28,7 @@
     "internal/*",
     "playground"
   ],
-  "packageManager": "pnpm@10.2.1",
+  "packageManager": "pnpm@10.6.1",
   "engines": {
     "node": "^23.7.0",
     "pnpm": "^10.2.0"
@@ -51,7 +51,7 @@
     "clean-node": "pnpm run clean-lock && pnpm run clean-modules",
     "clean-build": "node scripts/clean-dist.mjs",
     "gen-version": "node scripts/gen-version.mjs",
-    "update-pkg": "pnpm -r exec ncu -u",
+    "update-pkg": "npx taze -w -r",
     "reinstall": "pnpm run clean-node && pnpm run bootstrap",
     "rebuild": "pnpm run clean-build && pnpm run build:all",
     "publish": "pnpm -r publish",
@@ -59,7 +59,7 @@
     "release": "pnpm -r publish --access public"
   },
   "peerDependencies": {
-    "vue": "*"
+    "vue": "catalog:"
   },
   "dependencies": {
     "@xihan-ui/components": "workspace:*",
@@ -74,26 +74,26 @@
     "xihan-ui": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "*",
-    "@vitejs/plugin-vue": "*",
-    "@vitejs/plugin-vue-jsx": "*",
+    "@types/node": "catalog:",
+    "@vitejs/plugin-vue": "catalog:",
+    "@vitejs/plugin-vue-jsx": "catalog:",
     "@xihan-ui/build": "workspace:*",
     "@xihan-ui/dev": "workspace:*",
-    "eslint": "^9.20.1",
-    "eslint-config-prettier": "^10.0.1",
-    "eslint-plugin-prettier": "^5.2.3",
-    "eslint-plugin-vue": "^9.32.0",
-    "prettier": "^3.5.0",
-    "rollup": "^4.34.7",
-    "sass": "*",
-    "sass-lint": "^1.13.1",
-    "stylelint": "^16.14.1",
-    "tsx": "*",
-    "typescript": "*",
-    "vite": "*",
-    "vite-plugin-dts": "*",
-    "vite-plugin-vue-devtools": "^7.7.2",
-    "vitest": "^3.0.5",
-    "vue-tsc": "*"
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-prettier": "catalog:",
+    "eslint-plugin-vue": "catalog:",
+    "prettier": "catalog:",
+    "rollup": "catalog:",
+    "sass": "catalog:",
+    "sass-lint": "catalog:",
+    "stylelint": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-plugin-dts": "catalog:",
+    "vite-plugin-vue-devtools": "catalog:",
+    "vitest": "catalog:",
+    "vue-tsc": "catalog:"
   }
 }
