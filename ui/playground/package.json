@@ -30,17 +30,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@vueuse/core": "^12.7.0",
-    "pinia": "*",
-    "vue": "*",
-    "vue-router": "*"
+    "xihan-ui": "workspace:*",
+    "pinia": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "*",
-    "@vitejs/plugin-vue": "*",
-    "@vitejs/plugin-vue-jsx": "*",
-    "typescript": "*",
-    "vite": "*",
-    "vite-plugin-dts": "*"
+    "@vitejs/plugin-vue": "catalog:",
+    "@vitejs/plugin-vue-jsx": "catalog:",
+    "vite": "catalog:",
+    "vite-plugin-dts": "catalog:"
   }
 }
