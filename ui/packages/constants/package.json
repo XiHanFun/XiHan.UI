@@ -32,6 +32,12 @@
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
   "scripts": {
     "build": "vite build"
   }
