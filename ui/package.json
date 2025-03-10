@@ -28,20 +28,17 @@
     "internal/*",
     "playground"
   ],
-  "packageManager": "pnpm@10.6.1",
+  "packageManager": "pnpm@10.6.2",
+  "preinstall": "npx only-allow pnpm",
   "engines": {
     "node": "^23.7.0",
-    "pnpm": "^10.2.0"
+    "pnpm": "^10.6.2"
   },
   "scripts": {
     "bootstrap": "pnpm -r install",
-    "dev": "pnpm run --filter play-ground dev",
-    "debug": "pnpm run --filter play-ground dev --debug",
-    "preview": "pnpm run --filter play-ground preview",
-    "build": "vite build",
-    "build:types": "vue-tsc --declaration --emitDeclarationOnly",
-    "build:all": "pnpm run build && pnpm run build:types",
-    "build:playground": "pnpm run --filter play-ground build",
+    "dev": "turbo run dev",
+    "preview": "turbo run preview",
+    "build": "turbo run build",
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "format": "prettier --write \"src/**/*.{js,mjs,jsx,ts,mts,tsx,vue,css,scss,less,json,md}\"",
@@ -74,6 +71,8 @@
     "xihan-ui": "workspace:*"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "catalog:",
+    "@changesets/cli": "catalog:",
     "@types/node": "catalog:",
     "@vitejs/plugin-vue": "catalog:",
     "@vitejs/plugin-vue-jsx": "catalog:",
@@ -89,6 +88,7 @@
     "sass-lint": "catalog:",
     "stylelint": "catalog:",
     "tsx": "catalog:",
+    "turbo": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vite-plugin-dts": "catalog:",
