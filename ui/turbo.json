@@ -9,10 +9,6 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
-    "build:analyze": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
-    },
     "dev": {
       "dependsOn": [],
       "outputs": [],

@@ -36,9 +36,9 @@
   },
   "scripts": {
     "bootstrap": "pnpm -r install",
-    "dev": "turbo run dev",
-    "preview": "turbo run preview",
-    "build": "turbo run build",
+    "dev": "turbo dev",
+    "preview": "turbo preview",
+    "build": "turbo build",
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "format": "prettier --write \"src/**/*.{js,mjs,jsx,ts,mts,tsx,vue,css,scss,less,json,md}\"",
@@ -50,10 +50,8 @@
     "gen-version": "node scripts/gen-version.mjs",
     "update-pkg": "npx taze -w -r",
     "reinstall": "pnpm run clean-node && pnpm run bootstrap",
-    "rebuild": "pnpm run clean-build && pnpm run build:all",
-    "publish": "pnpm -r publish",
-    "prerelease": "pnpm run clean-build && pnpm gen-version && pnpm build:all",
-    "release": "pnpm -r publish --access public"
+    "rebuild": "pnpm run clean-build && pnpm run build",
+    "publish-packages": "turbo build lint test && changeset version && changeset publish"
   },
   "peerDependencies": {
     "vue": "catalog:"
@@ -93,7 +91,6 @@
     "vite": "catalog:",
     "vite-plugin-dts": "catalog:",
     "vite-plugin-vue-devtools": "catalog:",
-    "vitest": "catalog:",
     "vue-tsc": "catalog:"
   }
 }
