@@ -36,7 +36,7 @@ export default defineConfig({
     vueJsx(),
     dts({
       include: ["packages/**/src/**/*.ts", "packages/**/src/**/*.tsx", "packages/**/src/**/*.vue"],
-      exclude: ["packages/**/demos/*", "packages/**/tests/*"],
+      exclude: ["packages/**/demos/*", "packages/**/tests/*", "**/node_modules/**"],
       // 确保生成类型文件
       staticImport: true,
       // 插入版权信息
@@ -45,7 +45,7 @@ export default defineConfig({
       outDir: ["dist/es", "dist/lib"],
       // 生成类型文件后的钩子
       afterBuild: () => {
-        console.log("\n✨ Type definitions generated successfully!");
+        console.log("\n✨ 打包生成成功!");
       },
     }),
   ],
@@ -73,7 +73,7 @@ export default defineConfig({
       name: "xihan-ui",
     },
     rollupOptions: {
-      external: ["vue"],
+      external: ["vue", /^@xihan-ui\/.*/],
       input: entries,
       output: [
         {
@@ -81,9 +81,8 @@ export default defineConfig({
           format: "es",
           dir: "dist/es",
           entryFileNames: `[name].mjs`,
-          preserveModules: false,
+          preserveModules: true,
           exports: "named",
-          preserveModulesRoot: "",
           globals: {
             vue: "Vue",
           },
@@ -94,9 +93,8 @@ export default defineConfig({
           format: "cjs",
           dir: "dist/lib",
           entryFileNames: `[name].js`,
-          preserveModules: false,
+          preserveModules: true,
           exports: "named",
-          preserveModulesRoot: "",
           globals: {
             vue: "Vue",
           },

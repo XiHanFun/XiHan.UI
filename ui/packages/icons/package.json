@@ -36,7 +36,6 @@
     "update": "tsx scripts/update.ts",
     "download": "tsx scripts/download.ts",
     "generate": "tsx scripts/generate.ts",
-    "generateSingle": "tsx scripts/generateSingle.ts",
     "build": "vite build"
   },
   "peerDependencies": {
