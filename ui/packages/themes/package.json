@@ -26,12 +26,12 @@
   "publishConfig": {
     "access": "public"
   },
-  "style": "./dist/index.css",
+  "main": "./dist/index.css",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "vite build"
+    "build": "unbuild"
   },
   "peerDependencies": {
     "sass": "catalog:"
