@@ -25,51 +25,21 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "./dist/index.js",
+  "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
-  "style": "./dist/index.css",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
-    },
-    "./es": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs"
-    },
-    "./es/*.mjs": {
-      "types": "./dist/*.d.ts",
-      "import": "./dist/*.mjs"
-    },
-    "./es/*": {
-      "types": [
-        "./dist/*.d.ts",
-        "./dist/*/index.d.ts"
-      ],
-      "import": "./dist/*.mjs"
-    },
-    "./lib": {
-      "types": "./dist/index.d.ts",
-      "require": "./dist/index.js"
-    },
-    "./lib/*.js": {
-      "types": "./dist/*.d.ts",
-      "require": "./dist/*.js"
-    },
-    "./lib/*": {
-      "types": [
-        "./dist/*.d.ts",
-        "./dist/*/index.d.ts"
-      ],
-      "require": "./dist/*.js"
-    },
-    "./*": "./*"
+      "require": "./dist/index.cjs"
+    }
   },
-  "sideEffects": [
-    "dist/*"
+  "files": [
+    "dist"
   ],
+  "scripts": {
+    "build": "unbuild"
+  },
   "peerDependencies": {
     "vue": "catalog:"
   },
