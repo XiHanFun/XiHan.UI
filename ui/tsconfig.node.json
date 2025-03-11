@@ -22,12 +22,7 @@
     }
   },
   // 包含的文件
-  "include": [
-    "scripts/**/*",
-    "vite.config.*",
-    "vitest.config.*",
-    "internal/**/*.ts"
-  ],
+  "include": ["scripts/**/*", "internal/**/*.ts"],
   // 排除的文件
   "exclude": ["node_modules", "dist"]
 }
