@@ -1,9 +1,5 @@
 import type { Directive, DirectiveBinding } from "vue";
 
-/**
- * Vue 指令工具集
- */
-
 // 使用 WeakMap 存储元素的自定义属性
 const clickOutsideMap = new WeakMap<HTMLElement, (event: Event) => void>();
 const copyHandlerMap = new WeakMap<HTMLElement, () => void>();
@@ -11,6 +7,7 @@ const loadingContainerMap = new WeakMap<HTMLElement, HTMLDivElement>();
 
 /**
  * v-click-outside 指令
+ * 点击元素外部时触发回调
  */
 export const vClickOutside: Directive = {
   mounted(el: HTMLElement, binding: DirectiveBinding) {
@@ -33,6 +30,7 @@ export const vClickOutside: Directive = {
 
 /**
  * v-debounce 指令
+ * 防抖指令
  */
 export const vDebounce: Directive = {
   mounted(el: HTMLElement, binding: DirectiveBinding) {
@@ -50,6 +48,7 @@ export const vDebounce: Directive = {
 
 /**
  * v-copy 指令
+ * 复制指令
  */
 export const vCopy: Directive = {
   mounted(el: HTMLElement, binding: DirectiveBinding) {
@@ -76,8 +75,14 @@ export const vCopy: Directive = {
 
 /**
  * v-loading 指令
+ * 加载指令
  */
 export const vLoading: Directive = {
+  /**
+   * 挂载指令
+   * @param el 元素
+   * @param binding 指令绑定
+   */
   mounted(el: HTMLElement, binding: DirectiveBinding) {
     const loadingContainer = document.createElement("div");
 
@@ -97,6 +102,11 @@ export const vLoading: Directive = {
 
     loadingContainerMap.set(el, loadingContainer);
   },
+  /**
+   * 更新指令
+   * @param el 元素
+   * @param binding 指令绑定
+   */
   updated(el: HTMLElement, binding: DirectiveBinding) {
     if (binding.value !== binding.oldValue) {
       const loadingContainer = loadingContainerMap.get(el);
@@ -115,8 +125,13 @@ export const vLoading: Directive = {
 
 /**
  * v-focus 指令
+ * 聚焦指令
  */
 export const vFocus: Directive = {
+  /**
+   * 挂载指令
+   * @param el 元素
+   */
   mounted(el: HTMLElement) {
     el.focus();
   },
@@ -124,8 +139,14 @@ export const vFocus: Directive = {
 
 /**
  * v-resize 指令
+ * 调整大小指令
  */
 export const vResize: Directive = {
+  /**
+   * 挂载指令
+   * @param el 元素
+   * @param binding 指令绑定
+   */
   mounted(el: HTMLElement, binding: DirectiveBinding) {
     const observer = new ResizeObserver(entries => {
       binding.value(entries[0]);
@@ -136,6 +157,10 @@ export const vResize: Directive = {
     const resizeMap = new WeakMap<HTMLElement, ResizeObserver>();
     resizeMap.set(el, observer);
   },
+  /**
+   * 卸载指令
+   * @param el 元素
+   */
   unmounted(el: HTMLElement) {
     const resizeMap = new WeakMap<HTMLElement, ResizeObserver>();
     const observer = resizeMap.get(el);
@@ -145,3 +170,14 @@ export const vResize: Directive = {
     }
   },
 };
+
+export const directiveUtils = {
+  vClickOutside,
+  vDebounce,
+  vCopy,
+  vLoading,
+  vFocus,
+  vResize,
+};
+
+export default directiveUtils;
