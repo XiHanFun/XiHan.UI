@@ -1,11 +1,10 @@
 import { type Component, type App, defineAsyncComponent } from "vue";
 
 /**
- * Vue 工具函数集
- */
-
-/**
  * 批量注册全局组件（支持前缀）
+ * @param app - 应用实例
+ * @param components - 组件列表
+ * @param options - 选项
  */
 export function registerComponents(app: App, components: Record<string, Component>, options: { prefix?: string } = {}) {
   const { prefix = "" } = options;
@@ -18,6 +17,8 @@ export function registerComponents(app: App, components: Record<string, Componen
 
 /**
  * 批量注册全局指令
+ * @param app - 应用实例
+ * @param directives - 指令列表
  */
 export function registerDirectives(app: App, directives: Record<string, any>) {
   Object.entries(directives).forEach(([name, directive]) => {
@@ -27,6 +28,8 @@ export function registerDirectives(app: App, directives: Record<string, any>) {
 
 /**
  * 创建异步组件（支持更多配置）
+ * @param loader - 加载器
+ * @param options - 选项
  */
 export function createAsyncComponent(
   loader: () => Promise<Component>,
@@ -36,7 +39,7 @@ export function createAsyncComponent(
     loadingComponent?: Component;
     errorComponent?: Component;
     onError?: (error: Error) => void;
-  } = {}
+  } = {},
 ) {
   const { delay = 200, timeout = 3000, loadingComponent, errorComponent, onError } = options;
 
@@ -52,6 +55,8 @@ export function createAsyncComponent(
 
 /**
  * Props 类型推导工具
+ * @param props - 属性
+ * @returns 返回属性
  */
 export function defineProps<T extends Record<string, any>>(props: T) {
   return props;
