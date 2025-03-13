@@ -61,14 +61,3 @@ export const onOrientationChange = (callback: (isPortrait: boolean) => void): ((
   window.addEventListener("orientationchange", handler);
   return () => window.removeEventListener("orientationchange", handler);
 };
-
-export const screenUtils = {
-  getSize,
-  getViewport,
-  scrollToTop,
-  isRetina,
-  isInViewport,
-  onOrientationChange,
-} as const;
-
-export default screenUtils;

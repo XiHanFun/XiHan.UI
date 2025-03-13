@@ -283,13 +283,3 @@ export const rsa = {
     );
   },
 };
-
-export const cryptoUtils = {
-  generatePassword,
-  base64,
-  hash,
-  aes,
-  rsa,
-} as const;
-
-export default cryptoUtils;

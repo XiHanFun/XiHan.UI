@@ -106,13 +106,3 @@ export const checkPermission = async (type: "read" | "write" = "read"): Promise<
     return false;
   }
 };
-
-export const clipboardUtils = {
-  copyText,
-  copyImage,
-  readText,
-  readImage,
-  checkPermission,
-} as const;
-
-export default clipboardUtils;

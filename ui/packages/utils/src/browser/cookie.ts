@@ -41,11 +41,3 @@ export const set = (
 export const remove = (name: string): void => {
   set(name, "", { expires: -1 });
 };
-
-export const cookieUtils = {
-  get,
-  set,
-  remove,
-} as const;
-
-export default cookieUtils;

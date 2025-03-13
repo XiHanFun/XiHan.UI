@@ -97,15 +97,3 @@ export const join = (...parts: string[]): string => {
     .filter(Boolean)
     .join("/");
 };
-
-export const urlUtils = {
-  getParams,
-  stringifyParams,
-  addParams,
-  removeParams,
-  parse,
-  isAbsolute,
-  join,
-};
-
-export default urlUtils;

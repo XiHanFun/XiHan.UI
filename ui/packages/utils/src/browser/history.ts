@@ -46,14 +46,3 @@ export const remove = () => {
 export const replace = (url: string, state?: any) => {
   window.history.replaceState(state, "", url);
 };
-
-export const historyUtils = {
-  back,
-  forward,
-  go,
-  push,
-  remove,
-  replace,
-} as const;
-
-export default historyUtils;

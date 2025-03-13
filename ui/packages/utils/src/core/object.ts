@@ -139,16 +139,3 @@ export const flattenObject = (obj: Record<string, any>, prefix = ""): Record<str
     {} as Record<string, any>,
   );
 };
-
-export const objectUtils = {
-  deepClone,
-  merge,
-  getType,
-  isEmpty,
-  deepMerge,
-  get,
-  set,
-  flattenObject,
-} as const;
-
-export default objectUtils;
