@@ -4,9 +4,6 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    },
     "declaration": true,
     "outDir": "dist",
     "esModuleInterop": true,

@@ -171,10 +171,3 @@ export const cssVar = {
     return vars;
   },
 };
-
-export const styleUtils = {
-  style,
-  cssVar,
-} as const;
-
-export default styleUtils;

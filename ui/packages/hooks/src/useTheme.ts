@@ -1,12 +1,13 @@
 import { ref, watch } from "vue";
-import { getSystemTheme, watchSystemTheme, type ThemeMode } from "@xihan-ui/utils";
+import { getSystemTheme, watchSystemTheme, ThemeMode } from "@xihan-ui/utils";
+type ThemeModeType = (typeof ThemeMode)[keyof typeof ThemeMode];
 
 /**
  * 主题组合式函数
  */
-export function useTheme(initialMode: ThemeMode = "system") {
+export function useTheme(initialMode: ThemeModeType = "system") {
   const mode = ref(initialMode);
-  const theme = ref(initialMode === "system" ? getSystemTheme() : initialMode);
+  const theme = ref(initialMode === "system" || initialMode === "auto" ? getSystemTheme() : initialMode);
 
   // 更新主题
   const updateTheme = (newTheme: "light" | "dark") => {
@@ -15,14 +16,14 @@ export function useTheme(initialMode: ThemeMode = "system") {
   };
 
   // 设置主题模式
-  const setMode = (newMode: ThemeMode) => {
+  const setMode = (newMode: ThemeModeType) => {
     mode.value = newMode;
-    if (newMode === "system") {
+    if (newMode === "system" || newMode === "auto") {
       updateTheme(getSystemTheme());
       // 监听系统主题变化
       watchSystemTheme(updateTheme);
     } else {
-      updateTheme(newMode);
+      updateTheme(newMode as "light" | "dark");
     }
   };
 

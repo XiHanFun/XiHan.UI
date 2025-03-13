@@ -156,18 +156,3 @@ export const dispatchCustomEvent = <T = any>(
   const event = createCustomEvent(eventName, detail, options);
   return target.dispatchEvent(event);
 };
-
-export const eventUtils = {
-  on,
-  off,
-  once,
-  debounce,
-  throttle,
-  stopPropagation,
-  preventDefault,
-  getEventTarget,
-  createCustomEvent,
-  dispatchCustomEvent,
-} as const;
-
-export default eventUtils;

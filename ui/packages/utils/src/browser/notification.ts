@@ -66,12 +66,3 @@ export const closeAll = () => {
     });
   }
 };
-
-export const notificationUtils = {
-  checkPermission,
-  show,
-  showSimple,
-  closeAll,
-} as const;
-
-export default notificationUtils;

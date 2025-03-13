@@ -55,13 +55,3 @@ export const random = (min: number, max: number): number => {
 export const clamp = (num: number, min: number, max: number): number => {
   return Math.min(Math.max(num, min), max);
 };
-
-export const mathUtils = {
-  add,
-  subtract,
-  percentage,
-  random,
-  clamp,
-} as const;
-
-export default mathUtils;

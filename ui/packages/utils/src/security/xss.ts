@@ -59,13 +59,3 @@ export const sanitizeFormData = (formData: FormData): FormData => {
   });
   return sanitizedData;
 };
-
-export const xssUtils = {
-  escapeHtml,
-  sanitizeUrl,
-  sanitizeHtml,
-  sanitizeUrlParams,
-  sanitizeFormData,
-} as const;
-
-export default xssUtils;

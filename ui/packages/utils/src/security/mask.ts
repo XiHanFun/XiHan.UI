@@ -59,14 +59,3 @@ export const address = (addr: string, keepStart = 6, keepEnd = 0): string => {
   if (addr.length <= keepStart + keepEnd) return addr;
   return addr.substring(0, keepStart) + "****" + addr.substring(addr.length - keepEnd);
 };
-
-export const maskUtils = {
-  mask,
-  mobile,
-  email,
-  idCard,
-  bankCard,
-  address,
-} as const;
-
-export default maskUtils;

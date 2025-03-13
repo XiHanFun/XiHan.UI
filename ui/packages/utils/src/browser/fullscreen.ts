@@ -34,10 +34,10 @@ export const exit = async (): Promise<void> => {
  * @param element 要全屏显示的元素
  */
 export const toggle = async (element: Element = document.documentElement): Promise<void> => {
-  if (fullscreenUtils.isFullscreen()) {
-    await fullscreenUtils.exit();
+  if (isFullscreen()) {
+    await exit();
   } else {
-    await fullscreenUtils.enter(element);
+    await enter(element);
   }
 };
 
@@ -58,7 +58,7 @@ export const isFullscreen = (): boolean => {
  * @param callback 回调函数
  */
 export const onChange = (callback: (isFullscreen: boolean) => void): (() => void) => {
-  const handler = () => callback(fullscreenUtils.isFullscreen());
+  const handler = () => callback(isFullscreen());
   document.addEventListener("fullscreenchange", handler);
   document.addEventListener("webkitfullscreenchange", handler);
   document.addEventListener("mozfullscreenchange", handler);
@@ -71,13 +71,3 @@ export const onChange = (callback: (isFullscreen: boolean) => void): (() => void
     document.removeEventListener("MSFullscreenChange", handler);
   };
 };
-
-export const fullscreenUtils = {
-  enter,
-  exit,
-  toggle,
-  isFullscreen,
-  onChange,
-} as const;
-
-export default fullscreenUtils;

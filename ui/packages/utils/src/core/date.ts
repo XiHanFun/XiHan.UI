@@ -230,20 +230,3 @@ export const getTimestamp = (date: Date | number | string = new Date()): number 
 export const isValidDate = (date: any): boolean => {
   return date instanceof Date && !isNaN(date.getTime());
 };
-
-export const dateUtils = {
-  formatDate,
-  formatDateToLocale,
-  getRelativeTime,
-  getRelativeTimeLocaleChina,
-  getDateRange,
-  getDateStartToEndRange,
-  isSameDay,
-  getDaysInMonth,
-  getDayOfWeek,
-  addDays,
-  getTimestamp,
-  isValidDate,
-} as const;
-
-export default dateUtils;

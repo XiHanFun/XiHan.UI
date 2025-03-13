@@ -152,13 +152,3 @@ export const generateFingerprint = async (): Promise<string> => {
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
 };
-
-export const fingerprintUtils = {
-  getDeviceInfo,
-  getBrowserFeatures,
-  getCanvasFingerprint,
-  getAudioFingerprint,
-  generateFingerprint,
-} as const;
-
-export default fingerprintUtils;

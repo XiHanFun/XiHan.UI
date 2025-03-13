@@ -50,12 +50,3 @@ export const toggleClass = (el: Element, cls: string): void => {
   // 如果元素包含类名，则移除它，否则添加它
   hasClass(el, cls) ? removeClass(el, cls) : addClass(el, cls);
 };
-
-export const domUtils = {
-  hasClass,
-  addClass,
-  removeClass,
-  toggleClass,
-} as const;
-
-export default domUtils;

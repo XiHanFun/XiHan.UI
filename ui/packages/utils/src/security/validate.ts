@@ -62,14 +62,3 @@ export const checkPasswordStrength = (password: string): number => {
 export const isEmpty = (value: any): boolean => {
   return value === null || value === undefined || value === "";
 };
-
-export const validateFormatUtils = {
-  isEmail,
-  isMobile,
-  isIdCard,
-  isUrl,
-  checkPasswordStrength,
-  isEmpty,
-} as const;
-
-export default validateFormatUtils;

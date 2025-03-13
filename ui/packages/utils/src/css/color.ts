@@ -29,10 +29,3 @@ export const rgbaToHex = (rgba: string): string => {
   // 将rgb颜色值转换为十六进制，并确保每个颜色值占两位，然后拼接成最终的十六进制颜色字符串
   return "#" + [r, g, b].map(x => x.toString(16).padStart(2, "0")).join("");
 };
-
-export const colorUtils = {
-  hexToRgba,
-  rgbaToHex,
-} as const;
-
-export default colorUtils;

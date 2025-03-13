@@ -48,12 +48,3 @@ export const readLocalFile = (file: File): Promise<string> => {
     reader.readAsText(file);
   });
 };
-
-export const fileUtils = {
-  getFileExt,
-  formatFileSize,
-  downloadFile,
-  readLocalFile,
-} as const;
-
-export default fileUtils;

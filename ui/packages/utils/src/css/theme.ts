@@ -511,17 +511,3 @@ export class ThemeManager {
 export const createThemeManager = (defaultTheme: string = "default"): ThemeManager => {
   return new ThemeManager(defaultTheme);
 };
-
-// 默认导出
-export const themeUtils = {
-  ThemeStyle,
-  ThemeMode,
-  getSystemTheme,
-  watchSystemTheme,
-  flattenThemeVars,
-  generateCSSVars,
-  createThemeManager,
-  CSS_VAR_PREFIX,
-};
-
-export default themeUtils;

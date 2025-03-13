@@ -166,20 +166,3 @@ export const escapeHtml = (str: string): string => {
   };
   return str.replace(/[&<>"']/g, m => map[m]);
 };
-
-export const stringUtils = {
-  generateId,
-  isEmpty,
-  capitalize,
-  unCapitalize,
-  toCamelCase,
-  toPascalCase,
-  toSnakeCase,
-  toKebabCase,
-  truncate,
-  format,
-  template,
-  escapeHtml,
-} as const;
-
-export default stringUtils;

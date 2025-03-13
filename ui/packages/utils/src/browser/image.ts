@@ -113,13 +113,3 @@ export const compress = async (
     reader.readAsDataURL(file);
   });
 };
-
-export const imageUtils = {
-  preload,
-  preloadAll,
-  isLoaded,
-  getDominantColor,
-  compress,
-} as const;
-
-export default imageUtils;
