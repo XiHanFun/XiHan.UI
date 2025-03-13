@@ -1,7 +1,5 @@
-// BEM命名规范工具
-
 /**
- * BEM命名规范工具
+ * BEM命名规范
  * block: 块，独立实体，有意义的独立元素
  * element: 元素，块的一部分，没有独立含义
  * modifier: 修饰符，块或元素的特定状态
@@ -46,3 +44,9 @@ export class BEM {
     return `${this.e(element)}${this.options.modifierSeparator}${modifier}`;
   }
 }
+
+export const bemUtils = {
+  BEM,
+} as const;
+
+export default bemUtils;
