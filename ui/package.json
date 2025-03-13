@@ -82,16 +82,11 @@
     "eslint-plugin-vue": "catalog:",
     "prettier": "catalog:",
     "rollup": "catalog:",
-    "sass": "catalog:",
     "sass-lint": "catalog:",
     "stylelint": "catalog:",
     "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
-    "unbuild": "catalog:",
-    "vite": "catalog:",
-    "vite-plugin-dts": "catalog:",
-    "vite-plugin-vue-devtools": "catalog:",
-    "vue-tsc": "catalog:"
+    "unbuild": "catalog:"
   }
 }
