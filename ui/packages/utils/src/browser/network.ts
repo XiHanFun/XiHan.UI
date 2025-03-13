@@ -51,11 +51,3 @@ export const checkSpeed = async (
     img.src = imageUrl;
   });
 };
-
-export const networkUtils = {
-  getStatus,
-  onChange,
-  checkSpeed,
-} as const;
-
-export default networkUtils;

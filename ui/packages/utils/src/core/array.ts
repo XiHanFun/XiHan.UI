@@ -88,18 +88,3 @@ export const sortBy = <T extends Record<string, any>>(arr: T[], key: keyof T, or
     }
     return a[key] < b[key] ? 1 : -1;
   });
-
-export const arrayUtils = {
-  sum,
-  average,
-  max,
-  min,
-  unique,
-  flatten,
-  filter,
-  map,
-  groupBy,
-  sortBy,
-} as const;
-
-export default arrayUtils;

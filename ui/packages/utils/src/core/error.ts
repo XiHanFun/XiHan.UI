@@ -184,16 +184,3 @@ export const formatError = (err: any): string => {
 export const contextError = (context: string, message: string): string => {
   return `[${context}] ${message}`;
 };
-
-export const errorUtils = {
-  throwError,
-  assert,
-  assertType,
-  assertRequired,
-  tryCatch,
-  tryCatchAsync,
-  formatError,
-  contextError,
-} as const;
-
-export default errorUtils;

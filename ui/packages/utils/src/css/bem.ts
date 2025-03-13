@@ -44,9 +44,3 @@ export class BEM {
     return `${this.e(element)}${this.options.modifierSeparator}${modifier}`;
   }
 }
-
-export const bemUtils = {
-  BEM,
-} as const;
-
-export default bemUtils;

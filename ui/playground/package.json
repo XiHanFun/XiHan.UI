@@ -30,6 +30,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@xihan-ui/utils": "workspace:*",
     "pinia": "catalog:",
     "vue": "catalog:",
     "vue-router": "catalog:",

@@ -29,11 +29,3 @@ export const generateSession = (length = 32): string => {
 export const validate = (token: string, pattern: RegExp = /^[A-Za-z0-9-_]+$/): boolean => {
   return pattern.test(token);
 };
-
-export const tokenUtils = {
-  generateCsrf,
-  generateSession,
-  validate,
-} as const;
-
-export default tokenUtils;

@@ -196,35 +196,3 @@ export const isArrayBuffer = (val: unknown): val is ArrayBuffer => val instanceo
  * @returns 如果值为DataView对象，则返回true，否则返回false
  */
 export const isDataView = (val: unknown): val is DataView => val instanceof DataView;
-
-export const typeUtils = {
-  isUndefined,
-  isNull,
-  isString,
-  isNumber,
-  isBoolean,
-  isSymbol,
-  isBigInt,
-  isFunction,
-  isObject,
-  isArray,
-  isDate,
-  isRegExp,
-  isPromise,
-  isElement,
-  isError,
-  isWindow,
-  isMap,
-  isSet,
-  isWeakMap,
-  isWeakSet,
-  isFile,
-  isBlob,
-  isFormData,
-  isURLSearchParams,
-  isURL,
-  isArrayBuffer,
-  isDataView,
-} as const;
-
-export default typeUtils;

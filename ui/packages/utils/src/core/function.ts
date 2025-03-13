@@ -154,13 +154,3 @@ export const timeout = async <T>(
     }
   }
 };
-
-export const functionUtils = {
-  debounce,
-  throttle,
-  retry,
-  memoize,
-  timeout,
-} as const;
-
-export default functionUtils;

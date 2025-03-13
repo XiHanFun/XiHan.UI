@@ -82,13 +82,3 @@ export const supports = {
     });
   },
 };
-
-export const navigatorUtils = {
-  getLanguage,
-  isOnline,
-  isMobile,
-  getInfo,
-  supports,
-} as const;
-
-export default navigatorUtils;

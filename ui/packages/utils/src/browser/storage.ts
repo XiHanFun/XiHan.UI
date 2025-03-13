@@ -36,12 +36,3 @@ export const remove = (key: string) => {
 export const clear = () => {
   localStorage.clear();
 };
-
-export const storageUtils = {
-  get,
-  set,
-  remove,
-  clear,
-} as const;
-
-export default storageUtils;

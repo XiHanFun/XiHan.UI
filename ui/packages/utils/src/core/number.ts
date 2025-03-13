@@ -45,12 +45,3 @@ export const formatCurrency = (num: number, options: { currency?: string; locale
     currency,
   }).format(num);
 };
-
-export const numberUtils = {
-  round,
-  format,
-  formatPercent,
-  formatCurrency,
-} as const;
-
-export default numberUtils;

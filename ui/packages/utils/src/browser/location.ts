@@ -35,12 +35,3 @@ export const goto = (url: string) => {
 export const reload = () => {
   window.location.reload();
 };
-
-export const locationUtils = {
-  getParams,
-  getParamByName,
-  goto,
-  reload,
-} as const;
-
-export default locationUtils;

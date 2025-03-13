@@ -198,9 +198,3 @@ export const createLogger = (options: LoggerOptions = {}) => {
     },
   };
 };
-
-export const loggerUtils = {
-  createLogger,
-} as const;
-
-export default loggerUtils;

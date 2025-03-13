@@ -41,13 +41,3 @@ export const isAndroid = (): boolean => {
 export const getOrientation = (): "portrait" | "landscape" => {
   return window.innerHeight > window.innerWidth ? "portrait" : "landscape";
 };
-
-export const deviceUtils = {
-  getDeviceType,
-  isTouchDevice,
-  isIOS,
-  isAndroid,
-  getOrientation,
-} as const;
-
-export default deviceUtils;

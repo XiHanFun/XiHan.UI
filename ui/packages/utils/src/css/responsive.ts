@@ -109,11 +109,3 @@ export const responsive = <T>(values: Partial<Record<Breakpoint, T>>): T | undef
   }
   return undefined;
 };
-
-export const responsiveUtils = {
-  mediaQuery,
-  container,
-  responsive,
-} as const;
-
-export default responsiveUtils;

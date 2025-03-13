@@ -43,7 +43,7 @@ export const getRelativePosition = (event: MouseEvent, target: Element): { x: nu
  */
 export const onMouseMove = (callback: (position: { x: number; y: number }) => void) => {
   const handler = (event: MouseEvent) => {
-    callback(mouseUtils.getPosition(event));
+    callback(getPosition(event));
   };
   window.addEventListener("mousemove", handler);
   return () => window.removeEventListener("mousemove", handler);
@@ -126,16 +126,3 @@ export const onHover = (
     element.removeEventListener("mouseleave", handleLeave);
   };
 };
-
-export const mouseUtils = {
-  getPosition,
-  getPagePosition,
-  getRelativePosition,
-  onMouseMove,
-  isRightClick,
-  preventRightClick,
-  onDoubleClick,
-  onHover,
-} as const;
-
-export default mouseUtils;
