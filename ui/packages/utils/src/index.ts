@@ -1,7 +1,6 @@
 // 基础工具
-export * from "@/core";
-export * from "@/browser";
-export * from "@/format";
-export * from "@/vue";
-export * from "@/security";
-export * from "@/css";
+export * as core from "@/core";
+export * as browser from "@/browser";
+export * as vue from "@/vue";
+export * as security from "@/security";
+export * as css from "@/css";

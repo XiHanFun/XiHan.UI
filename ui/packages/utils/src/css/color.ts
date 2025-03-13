@@ -30,9 +30,9 @@ export const rgbaToHex = (rgba: string): string => {
   return "#" + [r, g, b].map(x => x.toString(16).padStart(2, "0")).join("");
 };
 
-export const colorFormatUtils = {
+export const colorUtils = {
   hexToRgba,
   rgbaToHex,
 } as const;
 
-export default colorFormatUtils;
+export default colorUtils;

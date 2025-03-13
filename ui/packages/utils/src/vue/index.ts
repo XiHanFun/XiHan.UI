@@ -1,18 +1,14 @@
 // 基础工具
-export * from "./utils";
-export * from "./install";
+export * as utils from "./utils";
+export * as install from "./install";
 
 // 组合式API
-export * from "./hooks";
-export * from "./watch";
+export * as hooks from "./hooks";
+export * as watch from "./watch";
 
 // 选项式API
-export * from "./mixins";
+export * as mixins from "./mixins";
 
 // 插件系统
-export * from "./plugins";
-export * from "./directives";
-
-// 类型导出
-export type { InstallOptions } from "./install";
-export type { PluginOptions } from "./plugins";
+export * as plugins from "./plugins";
+export * as directives from "./directives";

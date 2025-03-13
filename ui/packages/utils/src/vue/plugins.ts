@@ -1,5 +1,8 @@
 import type { App, Plugin } from "vue";
 
+/**
+ * 插件选项
+ */
 export interface PluginOptions {
   prefix?: string;
   zIndex?: number;
@@ -8,6 +11,8 @@ export interface PluginOptions {
 
 /**
  * 创建插件
+ * @param options - 插件选项
+ * @returns 返回插件
  */
 export function createPlugin(options: PluginOptions = {}): Plugin {
   return {
@@ -17,14 +22,6 @@ export function createPlugin(options: PluginOptions = {}): Plugin {
         zIndex: options.zIndex || 2000,
         locale: options.locale || "zh-CN",
       };
-
-      // 注入主题
-      app.provide("theme", {
-        mode: "light",
-        setMode: (mode: string) => {
-          document.documentElement.setAttribute("data-theme", mode);
-        },
-      });
     },
   };
 }
