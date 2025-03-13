@@ -1,5 +1,8 @@
 import type { App, Component, Directive, Plugin } from "vue";
 
+/**
+ * 安装选项
+ */
 export interface InstallOptions {
   prefix?: string;
   zIndex?: number;
@@ -11,6 +14,9 @@ export interface InstallOptions {
 
 /**
  * 注册组件
+ * @param app - 应用实例
+ * @param components - 组件列表
+ * @param prefix - 组件前缀
  */
 function registerComponents(app: App, components: Record<string, Component>, prefix = "Xh") {
   for (const [name, component] of Object.entries(components)) {
@@ -21,6 +27,8 @@ function registerComponents(app: App, components: Record<string, Component>, pre
 
 /**
  * 注册指令
+ * @param app - 应用实例
+ * @param directives - 指令列表
  */
 function registerDirectives(app: App, directives: Record<string, Directive>) {
   for (const [name, directive] of Object.entries(directives)) {
@@ -30,6 +38,8 @@ function registerDirectives(app: App, directives: Record<string, Directive>) {
 
 /**
  * 注册插件
+ * @param app - 应用实例
+ * @param plugins - 插件列表
  */
 function registerPlugins(app: App, plugins: Plugin[]) {
   plugins.forEach(plugin => app.use(plugin));
@@ -37,6 +47,7 @@ function registerPlugins(app: App, plugins: Plugin[]) {
 
 /**
  * 创建安装器
+ * @param options - 安装选项
  */
 export function makeInstaller(options: InstallOptions = {}) {
   const { prefix = "Xh", components = {}, directives = {}, plugins = [], zIndex = 2000, locale = "zh-CN" } = options;
@@ -89,6 +100,7 @@ export function makeInstaller(options: InstallOptions = {}) {
 
 /**
  * 创建异步安装器
+ * @param loader - 加载器
  */
 export function makeAsyncInstaller(loader: () => Promise<InstallOptions>) {
   return {
@@ -102,6 +114,7 @@ export function makeAsyncInstaller(loader: () => Promise<InstallOptions>) {
 
 /**
  * 创建组件安装器
+ * @param component - 组件
  */
 export function makeComponentInstaller<T extends Component>(component: T) {
   return {

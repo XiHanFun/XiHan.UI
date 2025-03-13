@@ -29,11 +29,37 @@ export interface DateFormatOptions {
 /**
  * 格式化日期
  * @param date 日期对象或时间戳
+ * @param format 格式化格式
+ * @returns 格式化后的日期字符串
+ */
+export const formatDate = (date: Date, format = "YYYY-MM-DD HH:mm:ss"): string => {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = d.getMonth() + 1;
+  const day = d.getDate();
+  const hour = d.getHours();
+  const minute = d.getMinutes();
+  const second = d.getSeconds();
+
+  const formatNumber = (n: number) => (n < 10 ? `0${n}` : `${n}`);
+
+  return format
+    .replace("YYYY", String(year))
+    .replace("MM", formatNumber(month))
+    .replace("DD", formatNumber(day))
+    .replace("HH", formatNumber(hour))
+    .replace("mm", formatNumber(minute))
+    .replace("ss", formatNumber(second));
+};
+
+/**
+ * 格式化日期
+ * @param date 日期对象或时间戳
  * @param options 格式化选项
  * @param locale 地区
  * @returns 格式化后的日期字符串
  */
-export const formatDate = (
+export const formatDateToLocale = (
   date: Date | number | string,
   options: DateFormatOptions = {},
   locale: string = "zh-CN",
@@ -68,6 +94,28 @@ export const getRelativeTime = (date: Date | number | string, now: Date = new Da
 };
 
 /**
+ * 相对时间
+ * @param date 日期
+ * @returns 相对时间
+ */
+export const getRelativeTimeLocaleChina = (date: Date): string => {
+  const now = Date.now();
+  const diff = now - new Date(date).getTime();
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+  const month = 30 * day;
+  const year = 365 * day;
+
+  if (diff < minute) return "刚刚";
+  if (diff < hour) return `${Math.floor(diff / minute)}分钟前`;
+  if (diff < day) return `${Math.floor(diff / hour)}小时前`;
+  if (diff < month) return `${Math.floor(diff / day)}天前`;
+  if (diff < year) return `${Math.floor(diff / month)}个月前`;
+  return `${Math.floor(diff / year)}年前`;
+};
+
+/**
  * 获取日期范围
  * @param start 开始日期
  * @param end 结束日期
@@ -83,6 +131,40 @@ export const getDateRange = (start: Date, end: Date): Date[] => {
   }
 
   return dates;
+};
+
+/**
+ * 获取日期起始范围
+ * @param date 日期
+ * @param unit 单位
+ * @returns 日期起始范围
+ */
+export const getDateStartToEndRange = (date: Date, unit: "year" | "month" | "week" | "day"): [Date, Date] => {
+  const d = new Date(date);
+  let start: Date;
+  let end: Date;
+
+  switch (unit) {
+    case "year":
+      start = new Date(d.getFullYear(), 0, 1);
+      end = new Date(d.getFullYear() + 1, 0, 0);
+      break;
+    case "month":
+      start = new Date(d.getFullYear(), d.getMonth(), 1);
+      end = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+      break;
+    case "week":
+      const day = d.getDay() || 7;
+      start = new Date(d.setDate(d.getDate() - day + 1));
+      end = new Date(d.setDate(d.getDate() + 6));
+      break;
+    case "day":
+      start = new Date(d.setHours(0, 0, 0, 0));
+      end = new Date(d.setHours(23, 59, 59, 999));
+      break;
+  }
+
+  return [start, end];
 };
 
 /**
@@ -151,8 +233,11 @@ export const isValidDate = (date: any): boolean => {
 
 export const dateUtils = {
   formatDate,
+  formatDateToLocale,
   getRelativeTime,
+  getRelativeTimeLocaleChina,
   getDateRange,
+  getDateStartToEndRange,
   isSameDay,
   getDaysInMonth,
   getDayOfWeek,

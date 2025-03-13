@@ -3,7 +3,6 @@
  * @param value 需要验证的邮箱地址
  * @returns 如果邮箱地址有效，则返回true，否则返回false
  */
-
 export const isEmail = (value: string): boolean => {
   return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(value);
 };
@@ -57,7 +56,6 @@ export const checkPasswordStrength = (password: string): number => {
 
 /**
  * 验证是否为空
- *
  * @param value 需要验证的值
  * @returns 如果值为空，则返回true，否则返回false
  */

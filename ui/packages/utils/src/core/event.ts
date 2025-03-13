@@ -66,7 +66,7 @@ export const once = (target: EventTarget, event: string, handler: Function, opti
  * @param wait 等待时间
  * @returns 返回防抖事件
  */
-export const debounceEvent = <T extends (...args: any[]) => any>(func: T, wait: number): T => {
+export const debounce = <T extends (...args: any[]) => any>(func: T, wait: number): T => {
   let timeout: ReturnType<typeof setTimeout>;
   return function (this: any, ...args: any[]) {
     clearTimeout(timeout);
@@ -80,7 +80,7 @@ export const debounceEvent = <T extends (...args: any[]) => any>(func: T, wait: 
  * @param wait 等待时间
  * @returns 返回节流事件
  */
-export const throttleEvent = <T extends (...args: any[]) => any>(func: T, wait: number): T => {
+export const throttle = <T extends (...args: any[]) => any>(func: T, wait: number): T => {
   let previous = 0;
 
   return function (this: any, ...args: any[]) {
@@ -161,8 +161,8 @@ export const eventUtils = {
   on,
   off,
   once,
-  debounceEvent,
-  throttleEvent,
+  debounce,
+  throttle,
   stopPropagation,
   preventDefault,
   getEventTarget,
