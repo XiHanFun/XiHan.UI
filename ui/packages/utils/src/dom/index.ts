@@ -16,4 +16,4 @@ export {
 
 export { hexToRgba, rgbaToHex } from "./color";
 
-export { style, cssVar } from "./style";
+export { style, cssVar } from "./css";
