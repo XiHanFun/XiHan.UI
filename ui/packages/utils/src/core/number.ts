@@ -1,25 +1,18 @@
-/**
- * 将数字四舍五入到指定精度
- * @param num 需要四舍五入的数字
- * @param precision 可选参数，表示保留的小数位数，默认为0
- * @returns 返回四舍五入后的数字
- */
-export const round = (num: number, precision = 0): number => {
-  const factor = Math.pow(10, precision);
-  return Math.round(num * factor) / factor;
-};
+import { round } from "./math";
 
 /**
- * 格式化数字（添加千分位）
+ * 格式化数字（添加千分位分隔符）
  * @param num 需要格式化的数字
- * @param options 可选参数，表示保留的小数位数，默认为0
- * @returns 返回格式化后的数字
+ * @param decimals 小数位数
+ * @param separator 分隔符，默认为','
+ * @returns 格式化后的字符串
  */
-export const format = (num: number, options: { decimals?: number; separator?: string } = {}): string => {
-  const { decimals = 0, separator = "," } = options;
-  return Number(num)
-    .toFixed(decimals)
-    .replace(/\B(?=(\d{3})+(?!\d))/g, separator);
+export const format = (num: number, decimals = 0, separator = ","): string => {
+  const rounded = round(num, decimals).toString();
+  const [intPart, decimalPart] = rounded.split(".");
+
+  const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, separator);
+  return decimalPart !== undefined ? `${formattedInt}.${decimalPart}` : formattedInt;
 };
 
 /**
