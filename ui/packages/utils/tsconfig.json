@@ -11,6 +11,6 @@
     "skipLibCheck": true,
     "types": ["vite/client"]
   },
-  "include": ["src/**/*", "../directives/src/directives.ts", "../hooks/src/hooks.ts"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }
