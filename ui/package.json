@@ -28,7 +28,7 @@
     "internal/*",
     "playground"
   ],
-  "packageManager": "pnpm@10.6.2",
+  "packageManager": "pnpm@10.6.5",
   "preinstall": "npx only-allow pnpm",
   "engines": {
     "node": "^23.7.0",

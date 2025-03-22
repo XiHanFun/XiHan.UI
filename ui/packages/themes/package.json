@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/themes",
   "version": "0.8.16",
-  "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
+  "description": "Themes for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
   "repository": {

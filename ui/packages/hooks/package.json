@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/hooks",
   "version": "0.8.16",
-  "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
+  "description": "Hooks for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
   "repository": {
