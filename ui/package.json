@@ -76,6 +76,7 @@
     "@vitejs/plugin-vue-jsx": "catalog:",
     "@xihan-ui/build": "workspace:*",
     "@xihan-ui/dev": "workspace:*",
+    "cross-env": "catalog:",
     "eslint": "catalog:",
     "eslint-config-prettier": "catalog:",
     "eslint-plugin-prettier": "catalog:",

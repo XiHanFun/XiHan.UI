@@ -45,12 +45,12 @@
     "vue": "catalog:"
   },
   "dependencies": {
+    "@xihan-ui/utils": "workspace:*",
     "@xihan-ui/constants": "workspace:*",
     "@xihan-ui/directives": "workspace:*",
     "@xihan-ui/hooks": "workspace:*",
-    "@xihan-ui/icons": "workspace:*",
     "@xihan-ui/locales": "workspace:*",
-    "@xihan-ui/themes": "workspace:*",
-    "@xihan-ui/utils": "workspace:*"
+    "@xihan-ui/icons": "workspace:*",
+    "@xihan-ui/themes": "workspace:*"
   }
 }
