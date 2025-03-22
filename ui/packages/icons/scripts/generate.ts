@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import { optimize, type Config } from "svgo";
 import { icons } from "../src/source";
 import { ASSETS_DIR, ICONS_DIR } from "../src/utils/path";
-import { stringFormatUtils } from "@xihan-ui/utils";
+import { toPascalCase, toKebabCase } from "@xihan-ui/utils";
 import { sync as globSync } from "glob";
 
 // SVG优化配置
@@ -200,20 +200,35 @@ export const ${exportName} = defineComponent<IconBaseProps>({
 
 // 生成主索引文件
 function generateMainIndexFile(): void {
-  const mainIndexContent = `
+  let mainIndexContent = `
 /**
  * 此文件由图标生成脚本自动更新
- * 请勿手动修改
  */
 
 ${icons
   .map(iconSet => {
+    let iconContent = "";
     if (existsSync(ICONS_DIR) && existsSync(resolve(ICONS_DIR, `${iconSet.id}.ts`))) {
-      return `export * from './${iconSet.id}';`;
+      iconContent = `export * from "./${iconSet.id}";`;
+      iconContent += `
+import { ${iconSet.id}Name, ${iconSet.id}DisplayName, ${iconSet.id}Count } from "./${iconSet.id}";
+`;
+    } else {
+      iconContent = `// 图标集 ${iconSet.id} 未生成`;
     }
-    return `// 图标集 ${iconSet.id} 未生成`;
+    return iconContent;
   })
   .join("\n")}
+`;
+
+  mainIndexContent += `
+export const Icons = [
+  ${icons
+    .map(iconSet => {
+      return `  { name: ${iconSet.id}Name, displayName: ${iconSet.id}DisplayName, count: ${iconSet.id}Count },`;
+    })
+    .join("\n")}
+];
 `;
 
   writeFileSync(resolve(ICONS_DIR, "index.ts"), mainIndexContent);
@@ -232,9 +247,12 @@ async function generate() {
       let singleContent = `
 // 自动生成的图标，请勿手动修改
 import { defineComponent, h } from "vue";
-import IconBase, { type IconBaseProps } from "../../components/IconBase";
+import IconBase, { type IconBaseProps } from "../components/IconBase";
 `;
 
+      const iconName = iconSet.id;
+      const iconDisplayName = iconSet.name;
+      let iconCount = 0;
       for (const content of iconSet.contents) {
         const iconPath = resolve(ASSETS_DIR, iconSet.source.localName, iconSet.source.subFolders);
 
@@ -265,9 +283,9 @@ import IconBase, { type IconBaseProps } from "../../components/IconBase";
             const cleanBaseName = name.replace(/[\/\\:*?"<>|]/g, "_");
 
             // 导出名称为大驼峰命名
-            const exportName = stringFormatUtils.toPascalCase(cleanBaseName);
+            const exportName = toPascalCase(cleanBaseName);
             // 声明名称为中划线命名
-            const declareName = stringFormatUtils.toKebabCase(cleanBaseName);
+            const declareName = toKebabCase(cleanBaseName);
 
             // 使用完整路径读取SVG内容
             const svgContent = readFileSync(resolve(iconPath, relativePath), "utf-8");
@@ -293,7 +311,17 @@ import IconBase, { type IconBaseProps } from "../../components/IconBase";
             // 继续处理下一个文件
           }
         }
+
+        iconCount += iconFilePaths.length;
       }
+
+      // 生成名称和数量
+      // { name: "fi", displayName: "Feather Icons", count: 287 },
+      singleContent += `
+export const ${iconName}Name = "${iconName}";
+export const ${iconName}DisplayName = "${iconDisplayName}";
+export const ${iconName}Count = ${iconCount};
+`;
 
       // 生成子索引文件
       writeFileSync(resolve(ICONS_DIR, `${iconSet.id}.ts`), singleContent);

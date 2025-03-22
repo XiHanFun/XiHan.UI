@@ -116,7 +116,7 @@ export const icons: IconSource[] = [
       subFolders: "icons",
       url: "https://github.com/primer/octicons.git",
       branch: "main",
-      hash: "c58bbbd244c6a3b7497a28591ace6f749ede8fb4",
+      hash: "863af9507f27e8e99f13237873c0a1897eaf5640",
     },
   },
   {

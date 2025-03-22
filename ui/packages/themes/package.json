@@ -26,17 +26,25 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "./dist/index.css",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "style": "./dist/styles/index.css",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "default": "./dist/styles/index.css"
+    }
+  },
   "files": [
-    "dist"
+    "dist",
+    "styles"
   ],
   "scripts": {
     "build": "unbuild"
   },
   "peerDependencies": {
     "sass": "catalog:"
-  },
-  "dependencies": {
-    "@xihan-ui/utils": "workspace:*"
   }
 }

@@ -42,14 +42,14 @@
     "update": "tsx scripts/update.ts",
     "download": "tsx scripts/download.ts",
     "generate": "tsx scripts/generate.ts",
-    "build": "unbuild"
+    "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 unbuild"
   },
   "peerDependencies": {
     "vue": "catalog:"
   },
   "dependencies": {
-    "@xihan-ui/utils": "workspace:*",
-    "glob": "catalog:"
+    "glob": "catalog:",
+    "@xihan-ui/utils": "workspace:*"
   },
   "devDependencies": {
     "@types/glob": "catalog:"

@@ -41,21 +41,20 @@
     theme.value = savedTheme;
     document.documentElement.setAttribute("data-theme", savedTheme);
 
-    // 在onMounted中使用await
-    const deviceInfo = getDeviceInfo();
-    console.log("设备信息：", deviceInfo);
-    const browserFeatures = getBrowserFeatures();
-    console.log("浏览器功能支持信息：", browserFeatures);
-    const installedFonts = await getInstalledFonts();
-    console.log("已安装字体：", installedFonts);
-    const canvasFingerprint = getCanvasFingerprint();
-    console.log("Canvas指纹：", canvasFingerprint);
-    const audioFingerprint = await getAudioFingerprint();
-    console.log("音频指纹：", audioFingerprint);
-    const networkFingerprint = await getNetworkFingerprint();
-    console.log("网络指纹：", networkFingerprint);
-    const behavioralFingerprint = getBehavioralFingerprint();
-    console.log("行为指纹：", behavioralFingerprint);
+    // const deviceInfo = getDeviceInfo();
+    // console.log("设备信息：", deviceInfo);
+    // const browserFeatures = getBrowserFeatures();
+    // console.log("浏览器功能支持信息：", browserFeatures);
+    // const installedFonts = await getInstalledFonts();
+    // console.log("已安装字体：", installedFonts);
+    // const canvasFingerprint = getCanvasFingerprint();
+    // console.log("Canvas指纹：", canvasFingerprint);
+    // const audioFingerprint = await getAudioFingerprint();
+    // console.log("音频指纹：", audioFingerprint);
+    // const networkFingerprint = await getNetworkFingerprint();
+    // console.log("网络指纹：", networkFingerprint);
+    // const behavioralFingerprint = getBehavioralFingerprint();
+    // console.log("行为指纹：", behavioralFingerprint);
     const fingerprint = await generateFingerprint();
     console.log("指纹：", fingerprint);
     const stableFingerprint = await generateStableFingerprint();
