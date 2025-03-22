@@ -4,7 +4,7 @@
 export const getDeviceInfo = () => {
   return {
     userAgent: navigator.userAgent,
-    platform: navigator.platform,
+    platform: (navigator as any).userAgentData?.platform || navigator.platform || "unknown",
     language: navigator.language,
     colorDepth: window.screen.colorDepth,
     pixelRatio: window.devicePixelRatio,
@@ -108,7 +108,9 @@ export const getAudioFingerprint = async (): Promise<string> => {
     const analyser = audioContext.createAnalyser();
     const gainNode = audioContext.createGain();
 
-    const scriptProcessor = audioContext.createScriptProcessor(4096, 1, 1);
+    analyser.fftSize = 4096;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Float32Array(bufferLength);
 
     gainNode.gain.value = 0; // 静音
     oscillator.type = "triangle"; // 使用三角波
@@ -118,15 +120,19 @@ export const getAudioFingerprint = async (): Promise<string> => {
 
     oscillator.start(0);
 
-    return new Promise(resolve => {
-      scriptProcessor.onaudioprocess = e => {
-        const inputData = e.inputBuffer.getChannelData(0);
-        const sum = inputData.reduce((acc, val) => acc + Math.abs(val), 0);
-        resolve(sum.toString());
-        oscillator.stop();
-        audioContext.close();
-      };
-    });
+    // 等待一小段时间确保有数据产生
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // 获取频率数据
+    analyser.getFloatFrequencyData(dataArray);
+
+    // 计算指纹
+    const sum = dataArray.reduce((acc, val) => acc + Math.abs(val), 0);
+
+    oscillator.stop();
+    audioContext.close();
+
+    return sum.toString();
   } catch {
     return "";
   }

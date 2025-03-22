@@ -1,14 +1,38 @@
 // 基础工具
-export * as utils from "./utils";
-export * as install from "./install";
+export { createAsyncComponent } from "./utils";
+
+// 安装系统
+export {
+  makeInstaller,
+  makeAsyncInstaller,
+  makeComponentInstaller,
+  registerComponents,
+  registerDirectives,
+  registerPlugins,
+} from "./install";
 
 // 组合式API
-export * as hooks from "../../../hooks/src/hooks";
-export * as watch from "./watch";
+export {
+  useDebounce,
+  useThrottle,
+  useStorage,
+  useWindowSize,
+  useClickOutside,
+  useAsync,
+  useCounter,
+  useInterval,
+  useNetwork,
+} from "./hooks";
+export type { AsyncState } from "./hooks";
+
+// 监听系统
+export { watchDebounced, watchThrottled, watchWhen } from "./watch";
 
 // 选项式API
-export * as mixins from "./mixins";
+export { themeMixin, sizeMixin, disabledMixin } from "./mixins";
 
 // 插件系统
-export * as plugins from "./plugins";
-export * as directives from "../../../directives/src/directives";
+export { createPlugin, createAsyncPlugin } from "./plugins";
+
+// 指令系统
+export { vClickOutside, vDebounce, vCopy, vLoading, vFocus, vResize } from "./directives";
