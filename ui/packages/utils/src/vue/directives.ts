@@ -170,14 +170,3 @@ export const vResize: Directive = {
     }
   },
 };
-
-export const directiveUtils = {
-  vClickOutside,
-  vDebounce,
-  vCopy,
-  vLoading,
-  vFocus,
-  vResize,
-};
-
-export default directiveUtils;

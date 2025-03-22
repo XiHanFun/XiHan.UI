@@ -1,4 +1,15 @@
-export { sum, average, max, min, unique, flatten, filter, map, groupBy, sortBy } from "./array";
+export {
+  sum as sumArray,
+  average as averageArray,
+  max,
+  min,
+  unique,
+  flatten,
+  filter,
+  map as mapArray,
+  groupBy,
+  sortBy,
+} from "./array";
 
 export {
   formatDate,
@@ -32,10 +43,27 @@ export type { EventOptions } from "./event";
 
 export { debounce as debounceFn, throttle as throttleFn, retry, memoize, timeout } from "./function";
 
-export { createLogger } from "./logger";
-export type { LogLevel, LoggerOptions, LogStyles, LogLevelWeight } from "./logger";
-
-export { add, subtract, percentage, random, clamp } from "./math";
+export {
+  add,
+  subtract,
+  multiply,
+  divide,
+  percentage,
+  random,
+  clamp,
+  round,
+  sum as sumMath,
+  average as averageMath,
+  toRadians,
+  toDegrees,
+  map,
+  inRange,
+  randomColor,
+  factorial,
+  distance,
+  isPrime,
+  toSignificantDigits,
+} from "./math";
 
 export { deepClone, merge, getType, isEmpty as isEmptyObject, deepMerge, get, set, flattenObject } from "./object";
 
@@ -84,16 +112,4 @@ export {
   isDataView,
 } from "./types";
 
-export {
-  throwError,
-  assert,
-  assertType,
-  assertRequired,
-  tryCatch,
-  tryCatchAsync,
-  formatError,
-  contextError,
-} from "./error";
-export type { ErrorCode, XiHanError } from "./error";
-
-export { round, format as formatNumber, formatPercent, formatCurrency } from "./number";
+export { format as formatNumber, formatPercent, formatCurrency } from "./number";

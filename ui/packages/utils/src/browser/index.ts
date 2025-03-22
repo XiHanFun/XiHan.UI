@@ -11,9 +11,13 @@ export { getFileExt, formatFileSize, downloadFile, readLocalFile } from "./file"
 export {
   getDeviceInfo,
   getBrowserFeatures,
+  getInstalledFonts,
   getCanvasFingerprint,
   getAudioFingerprint,
+  getNetworkFingerprint,
+  getBehavioralFingerprint,
   generateFingerprint,
+  generateStableFingerprint,
 } from "./fingerprint";
 
 export { enter, exit, toggle, isFullscreen, onChange as fullscreenOnChange } from "./fullscreen";
