@@ -21,14 +21,20 @@
 
 <script setup lang="ts">
   import { ref, onMounted } from "vue";
+  import { generateFingerprint } from "@xihan-ui/utils";
 
   const theme = ref("light");
+  const fingerprint = ref("");
 
-  // 在组件挂载时设置主题
-  onMounted(() => {
+  // 在组件挂载时设置主题和获取指纹
+  onMounted(async () => {
     const savedTheme = localStorage.getItem("theme") || "light";
     theme.value = savedTheme;
     document.documentElement.setAttribute("data-theme", savedTheme);
+
+    // 在onMounted中使用await
+    fingerprint.value = await generateFingerprint();
+    console.log("浏览器指纹：", fingerprint.value);
   });
 
   // 切换主题并保存到本地存储
