@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/plugins",
   "version": "0.8.16",
-  "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
+  "description": "Plugins for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
   "repository": {
@@ -26,7 +26,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
