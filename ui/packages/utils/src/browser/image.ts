@@ -17,7 +17,7 @@ export const preload = (src: string): Promise<HTMLImageElement> => {
  * @returns 加载完成的图片数组
  */
 export const preloadAll = (srcs: string[]): Promise<HTMLImageElement[]> => {
-  return Promise.all(srcs.map(src => imageUtils.preload(src)));
+  return Promise.all(srcs.map(src => preload(src)));
 };
 
 /**

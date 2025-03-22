@@ -8,12 +8,12 @@ import { watch, type WatchOptions, type WatchSource } from "vue";
  * @param options - 选项
  * @returns 返回监听
  */
-export function watchDebounced<T>(
+export const watchDebounced = <T>(
   source: WatchSource<T>,
   callback: (value: T) => void,
   delay = 300,
   options: WatchOptions = {},
-) {
+) => {
   let timer: number;
 
   return watch(
@@ -26,7 +26,7 @@ export function watchDebounced<T>(
     },
     options,
   );
-}
+};
 
 /**
  * 节流监听
@@ -36,12 +36,12 @@ export function watchDebounced<T>(
  * @param options - 选项
  * @returns 返回监听
  */
-export function watchThrottled<T>(
+export const watchThrottled = <T>(
   source: WatchSource<T>,
   callback: (value: T) => void,
   delay = 300,
   options: WatchOptions = {},
-) {
+) => {
   let lastTime = 0;
 
   return watch(
@@ -55,7 +55,7 @@ export function watchThrottled<T>(
     },
     options,
   );
-}
+};
 
 /**
  * 条件监听
@@ -64,18 +64,10 @@ export function watchThrottled<T>(
  * @param callback - 回调
  * @returns 返回监听
  */
-export function watchWhen<T>(source: WatchSource<T>, condition: () => boolean, callback: (value: T) => void) {
+export const watchWhen = <T>(source: WatchSource<T>, condition: () => boolean, callback: (value: T) => void) => {
   return watch(source, value => {
     if (condition()) {
       callback(value);
     }
   });
-}
-
-export const watchUtils = {
-  watchDebounced,
-  watchThrottled,
-  watchWhen,
-} as const;
-
-export default watchUtils;
+};
