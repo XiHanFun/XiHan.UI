@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/build",
   "private": true,
-  "version": "0.8.14",
+  "version": "0.8.18",
   "description": "Build tools for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
