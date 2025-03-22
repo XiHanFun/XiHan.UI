@@ -1,6 +1,4 @@
 import type { App } from "vue";
-import { createLogger, assert, throwError } from "@xihan-ui/utils";
-import { XhButton, XhButtonGroup } from "@xihan-ui/components";
 
 // 导出所有子包
 export * from "@xihan-ui/utils";
@@ -9,9 +7,14 @@ export * from "@xihan-ui/directives";
 export * from "@xihan-ui/hooks";
 export * from "@xihan-ui/locales";
 export * from "@xihan-ui/components";
+export * from "@xihan-ui/themes";
+
+// 在导出子包后，导入需要使用的函数
+import { createLogger, assert, throwError } from "@xihan-ui/utils";
+import { XhButton, XhButtonGroup } from "@xihan-ui/components";
 
 // 引入样式 - 使用别名
-import "@xihan-ui/themes/index.scss";
+import "@xihan-ui/themes";
 import { useTheme } from "@xihan-ui/hooks";
 
 // 创建日志记录器
@@ -48,7 +51,7 @@ export const install = (app: App) => {
     logger.info("XihanUI installed successfully");
   } catch (err) {
     if (err instanceof Error) {
-      throwError(`Failed to install XihanUI: ${err.message}`, "INSTALL_ERROR");
+      throwError(`Failed to install XihanUI: ${err.message}`, "UNKNOWN");
     }
     throw err;
   }
