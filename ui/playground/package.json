@@ -2,7 +2,7 @@
   "name": "@xihan-ui/playground",
   "private": true,
   "version": "0.8.12",
-  "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
+  "description": "Playground for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
   "repository": {

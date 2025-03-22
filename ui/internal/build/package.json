@@ -2,7 +2,7 @@
   "name": "@xihan-ui/build",
   "private": true,
   "version": "0.8.14",
-  "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
+  "description": "Build tools for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
   "repository": {
@@ -28,7 +28,7 @@
   "module": "src/index.ts",
   "types": "src/index.d.ts",
   "dependencies": {
-    "rollup": "^4.35.0",
+    "rollup": "^4.36.0",
     "rollup-plugin-esbuild": "^6.2.1",
     "rollup-plugin-vue": "^6.0.0"
   },

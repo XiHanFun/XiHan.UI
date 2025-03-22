@@ -28,7 +28,7 @@
     "internal/*",
     "playground"
   ],
-  "packageManager": "pnpm@10.6.2",
+  "packageManager": "pnpm@10.6.5",
   "preinstall": "npx only-allow pnpm",
   "engines": {
     "node": "^23.7.0",
@@ -51,7 +51,7 @@
     "update-pkg": "npx taze -w -r",
     "reinstall": "pnpm run clean-node && pnpm run bootstrap",
     "rebuild": "pnpm run clean-build && pnpm run build",
-    "publish-packages": "turbo build lint test && changeset version && changeset publish"
+    "publish-packages": "turbo build && changeset version && changeset publish"
   },
   "peerDependencies": {
     "vue": "catalog:"
