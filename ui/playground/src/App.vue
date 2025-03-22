@@ -21,10 +21,19 @@
 
 <script setup lang="ts">
   import { ref, onMounted } from "vue";
-  import { generateFingerprint } from "@xihan-ui/utils";
+  import {
+    getDeviceInfo,
+    getBrowserFeatures,
+    getInstalledFonts,
+    getCanvasFingerprint,
+    getAudioFingerprint,
+    getNetworkFingerprint,
+    getBehavioralFingerprint,
+    generateFingerprint,
+    generateStableFingerprint,
+  } from "@xihan-ui/utils";
 
   const theme = ref("light");
-  const fingerprint = ref("");
 
   // 在组件挂载时设置主题和获取指纹
   onMounted(async () => {
@@ -33,8 +42,24 @@
     document.documentElement.setAttribute("data-theme", savedTheme);
 
     // 在onMounted中使用await
-    fingerprint.value = await generateFingerprint();
-    console.log("浏览器指纹：", fingerprint.value);
+    const deviceInfo = getDeviceInfo();
+    console.log("设备信息：", deviceInfo);
+    const browserFeatures = getBrowserFeatures();
+    console.log("浏览器功能支持信息：", browserFeatures);
+    const installedFonts = await getInstalledFonts();
+    console.log("已安装字体：", installedFonts);
+    const canvasFingerprint = getCanvasFingerprint();
+    console.log("Canvas指纹：", canvasFingerprint);
+    const audioFingerprint = await getAudioFingerprint();
+    console.log("音频指纹：", audioFingerprint);
+    const networkFingerprint = await getNetworkFingerprint();
+    console.log("网络指纹：", networkFingerprint);
+    const behavioralFingerprint = getBehavioralFingerprint();
+    console.log("行为指纹：", behavioralFingerprint);
+    const fingerprint = await generateFingerprint();
+    console.log("指纹：", fingerprint);
+    const stableFingerprint = await generateStableFingerprint();
+    console.log("稳定设备指纹：", stableFingerprint);
   });
 
   // 切换主题并保存到本地存储
