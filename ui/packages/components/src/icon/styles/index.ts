@@ -1,1 +1,1 @@
-import "@xihan-ui/themes/components/icon.scss";
+import "@xihan-ui/themes/styles/components/icon";
