@@ -1,6 +1,6 @@
 {
   "name": "@xihan-ui/icons",
-  "version": "0.8.20",
+  "version": "0.9.0",
   "description": "Icons for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -49,8 +49,8 @@
     "vue": "catalog:"
   },
   "dependencies": {
-    "glob": "catalog:",
-    "@xihan-ui/utils": "workspace:*"
+    "@xihan-ui/utils": "workspace:*",
+    "glob": "catalog:"
   },
   "devDependencies": {
     "@types/glob": "catalog:"

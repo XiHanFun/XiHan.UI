@@ -6,6 +6,10 @@ export default defineBuildConfig({
   declaration: true,
   clean: true,
   failOnWarn: false,
+  rollup: {
+    inlineDependencies: true, // 内联依赖
+    preserveDynamicImports: true, // 保留动态导入
+  },
   hooks: {
     "build:done": ctx => {
       const srcFile = resolve(__dirname, "src/index.scss");
