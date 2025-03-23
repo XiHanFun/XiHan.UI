@@ -22,7 +22,7 @@
     }
   },
   // 包含的文件
-  "include": ["scripts/**/*", "internal/**/*.ts"],
+  "include": ["scripts/**/*.ts", "internal/**/*.ts"],
   // 排除的文件
   "exclude": ["node_modules", "dist"]
 }
