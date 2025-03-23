@@ -1,7 +1,7 @@
 {
   "name": "xihan-ui-monorepo",
   "private": true,
-  "version": "0.8.19",
+  "version": "0.8.20",
   "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -51,7 +51,8 @@
     "update-pkg": "npx taze -w -r",
     "reinstall": "pnpm run clean-node && pnpm run bootstrap",
     "rebuild": "pnpm run clean-build && pnpm run build",
-    "publish-packages": "turbo build && changeset version && changeset publish"
+    "changeset": "npx changeset",
+    "publish-packages": "turbo build && npx changeset version && npx changeset publish"
   },
   "peerDependencies": {
     "vue": "catalog:"
