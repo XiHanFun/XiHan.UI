@@ -15,7 +15,7 @@ import { XhButton, XhButtonGroup } from "@xihan-ui/components";
 
 // 引入样式 - 使用别名
 import "@xihan-ui/themes";
-import { useTheme } from "@xihan-ui/hooks";
+// import { useTheme } from "@xihan-ui/hooks";
 
 // 创建日志记录器
 const logger = createLogger({
@@ -58,7 +58,7 @@ export const install = (app: App) => {
 };
 
 // 导出工具函数
-export { useTheme };
+// export { useTheme };
 
 // 导出默认对象
 export default { install };
