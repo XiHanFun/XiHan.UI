@@ -1,6 +1,6 @@
 {
   "name": "@xihan-ui/components",
-  "version": "0.8.20",
+  "version": "0.9.0",
   "description": "Components for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -46,12 +46,12 @@
     "vue": "catalog:"
   },
   "dependencies": {
-    "@xihan-ui/utils": "workspace:*",
     "@xihan-ui/constants": "workspace:*",
     "@xihan-ui/directives": "workspace:*",
     "@xihan-ui/hooks": "workspace:*",
-    "@xihan-ui/locales": "workspace:*",
     "@xihan-ui/icons": "workspace:*",
-    "@xihan-ui/themes": "workspace:*"
+    "@xihan-ui/locales": "workspace:*",
+    "@xihan-ui/themes": "workspace:*",
+    "@xihan-ui/utils": "workspace:*"
   }
 }
