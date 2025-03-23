@@ -1,6 +1,6 @@
 {
   "name": "@xihan-ui/themes",
-  "version": "0.8.19",
+  "version": "0.8.20",
   "description": "Themes for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -26,15 +26,17 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/styles/index.css",
+  "module": "./dist/styles/index.css",
   "style": "./dist/styles/index.css",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
-      "default": "./dist/styles/index.css"
+      "import": "./dist/styles/index.css",
+      "require": "./dist/styles/index.css"
+    },
+    "./components/*": {
+      "import": "./dist/styles/components/*.css",
+      "require": "./dist/styles/components/*.css"
     }
   },
   "files": [
