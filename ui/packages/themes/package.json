@@ -26,27 +26,27 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "./dist/styles/index.css",
-  "module": "./dist/styles/index.css",
-  "style": "./dist/styles/index.css",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "style": "./dist/index.css",
   "exports": {
     ".": {
-      "import": "./dist/styles/index.css",
-      "require": "./dist/styles/index.css"
-    },
-    "./components/*": {
-      "import": "./dist/styles/components/*.css",
-      "require": "./dist/styles/components/*.css"
+      "development": "./src/index.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts",
+      "style": "./dist/index.css"
     }
   },
   "files": [
-    "dist",
-    "styles"
+    "dist"
   ],
   "scripts": {
     "build": "unbuild"
   },
-  "peerDependencies": {
-    "sass": "catalog:"
+  "devDependencies": {
+    "sass": "catalog:",
+    "rollup-plugin-scss": "catalog:"
   }
 }
