@@ -28,6 +28,17 @@ const logger = createLogger({
 // 安装函数
 export const install = (app: App) => {
   try {
+    logger.group("XihanUI Info");
+    logger.success(XiHan.Logo);
+    logger.success(XiHan.Version);
+    logger.success(XiHan.Copyright);
+    logger.success(XiHan.Doc);
+    logger.success(XiHan.Org);
+    logger.success(XiHan.Rep);
+    logger.success(XiHan.SendWord);
+    logger.success(XiHan.Tagline);
+    logger.groupEnd();
+
     assert(!!app, "App instance is required");
 
     // 注册组件
@@ -36,7 +47,7 @@ export const install = (app: App) => {
 
     // 注入全局配置
     app.config.globalProperties.$XIHAN = {
-      version: "__VERSION__",
+      version: XiHan.Version,
       mode: "light",
     };
 
@@ -49,10 +60,6 @@ export const install = (app: App) => {
     app.config.warnHandler = (msg, vm, trace) => {
       logger.warn("Vue Warning:", msg, vm, trace);
     };
-
-    logger.group("XihanUI info");
-    logger.info(XiHan.SayHello());
-    logger.groupEnd();
 
     logger.info("XihanUI installed successfully");
   } catch (err) {
