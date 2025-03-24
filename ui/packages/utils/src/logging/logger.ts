@@ -5,7 +5,7 @@
  * @param warn 警告日志级别
  * @param error 错误日志级别
  */
-export type LogLevel = "debug" | "info" | "warn" | "error";
+export type LogLevel = "debug" | "info" | "warn" | "success" | "error";
 
 /**
  * 日志配置
@@ -36,6 +36,7 @@ const logStyles = {
   debug: "color: #8a8a8a",
   info: "color: #2196f3",
   warn: "color: #ff9800",
+  success: "color: #4caf50",
   error: "color: #f44336",
   time: "color: #9e9e9e",
   prefix: "color: #673ab7",
@@ -54,7 +55,8 @@ const levelWeight = {
   debug: 0,
   info: 1,
   warn: 2,
-  error: 3,
+  success: 3,
+  error: 4,
 } as const;
 
 export type LogLevelWeight = typeof levelWeight;
@@ -141,6 +143,16 @@ export const createLogger = (options: LoggerOptions = {}) => {
       if (!shouldLog("warn")) return;
       const [prefix, styles] = buildPrefix("warn");
       console.warn(`%c${prefix}`, styles.join(";"), ...args);
+    },
+
+    /**
+     * 成功日志
+     * @param args 日志参数
+     */
+    success(...args: any[]) {
+      if (!shouldLog("success")) return;
+      const [prefix, styles] = buildPrefix("success");
+      console.log(`%c${prefix}`, styles.join(";"), ...args);
     },
 
     /**
