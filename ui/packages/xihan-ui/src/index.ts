@@ -8,6 +8,7 @@ export * from "@xihan-ui/hooks";
 export * from "@xihan-ui/locales";
 export * from "@xihan-ui/components";
 export * from "@xihan-ui/themes";
+export * from "./xihan";
 
 // 在导出子包后，导入需要使用的函数
 import { createLogger, assert, throwError } from "@xihan-ui/utils";
@@ -15,6 +16,7 @@ import { XhButton, XhButtonGroup } from "@xihan-ui/components";
 
 // 引入样式 - 使用别名
 import "@xihan-ui/themes";
+import { XiHan } from "./xihan";
 // import { useTheme } from "@xihan-ui/hooks";
 
 // 创建日志记录器
@@ -47,6 +49,10 @@ export const install = (app: App) => {
     app.config.warnHandler = (msg, vm, trace) => {
       logger.warn("Vue Warning:", msg, vm, trace);
     };
+
+    logger.group("XihanUI info");
+    logger.info(XiHan.SayHello());
+    logger.groupEnd();
 
     logger.info("XihanUI installed successfully");
   } catch (err) {
