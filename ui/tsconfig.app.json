@@ -35,7 +35,7 @@
     }
   },
   // 包含的文件
-  "include": ["packages"],
+  "include": ["packages/**/*.ts"],
   // 排除的文件
   "exclude": ["**/node_modules/**", "**/tests/**", "**/dist/**"]
 }
