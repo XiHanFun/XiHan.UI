@@ -5,13 +5,13 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, "..");
 
-const LOCK_FILES: string[] = ["pnpm-lock.yaml", "package-lock.json", "yarn.lock"];
+const LOCK_FILES = ["pnpm-lock.yaml", "package-lock.json", "yarn.lock"];
 
 /**
  * 删除指定目录下的锁文件
- * @param dir 目录路径
+ * @param {string} dir 目录路径
  */
-function cleanLockFiles(dir: string): void {
+function cleanLockFiles(dir) {
   LOCK_FILES.forEach(lockFile => {
     const lockPath = path.join(dir, lockFile);
     if (fs.existsSync(lockPath)) {
@@ -25,7 +25,7 @@ function cleanLockFiles(dir: string): void {
 /**
  * 清理所有锁文件
  */
-function cleanAll(): void {
+function cleanAll() {
   try {
     // 清理根目录
     cleanLockFiles(rootDir);
