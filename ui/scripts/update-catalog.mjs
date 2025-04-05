@@ -9,11 +9,11 @@ const workspaceFile = path.join(rootDir, "pnpm-workspace.yaml");
 
 /**
  * 更新YAML文件中的catalog部分而不影响其他部分
- * @param filePath YAML文件路径
- * @param packagesToUpdate 要更新的包
- * @param dryRun 是否只预演不实际更新
+ * @param {string} filePath YAML文件路径
+ * @param {string[]} packagesToUpdate 要更新的包
+ * @param {boolean} dryRun 是否只预演不实际更新
  */
-function updateCatalogInYaml(filePath: string, packagesToUpdate?: string[], dryRun?: boolean): void {
+function updateCatalogInYaml(filePath, packagesToUpdate, dryRun) {
   try {
     // 读取原始文件内容
     if (!fs.existsSync(filePath)) {
@@ -27,7 +27,7 @@ function updateCatalogInYaml(filePath: string, packagesToUpdate?: string[], dryR
     // 查找catalog部分
     let inCatalogSection = false;
     let catalogStartIndex = -1;
-    const catalogLines: string[] = [];
+    const catalogLines = [];
 
     // 提取catalog部分内容
     for (let i = 0; i < lines.length; i++) {
@@ -58,7 +58,7 @@ function updateCatalogInYaml(filePath: string, packagesToUpdate?: string[], dryR
     }
 
     // 解析catalog依赖项
-    const catalogDeps: Record<string, string> = {};
+    const catalogDeps = {};
     catalogLines.forEach(line => {
       const parts = line.trim().split(":");
       if (parts.length === 2) {
@@ -70,7 +70,7 @@ function updateCatalogInYaml(filePath: string, packagesToUpdate?: string[], dryR
 
     // 确定要更新的包
     const packagesToProcess = packagesToUpdate || Object.keys(catalogDeps);
-    const updates: Record<string, { old: string; new: string }> = {};
+    const updates = {};
 
     console.log("\n📦 依赖更新概览:");
 
@@ -128,10 +128,10 @@ function updateCatalogInYaml(filePath: string, packagesToUpdate?: string[], dryR
 
 /**
  * 从npm registry获取包的最新版本
- * @param packageName 包名
- * @returns 最新版本号
+ * @param {string} packageName 包名
+ * @returns {string} 最新版本号
  */
-function getLatestVersion(packageName: string): string {
+function getLatestVersion(packageName) {
   try {
     const output = execSync(`npm view ${packageName} version`, { encoding: "utf8" });
     return output.trim();
@@ -145,7 +145,7 @@ function getLatestVersion(packageName: string): string {
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run") || args.includes("-d");
 const packagesArg = args.find(arg => arg.startsWith("--packages=") || arg.startsWith("-p="));
-const packages = packagesArg ? packagesArg.split("=")[1].split(",") : undefined;
+const packages = packagesArg ? packagesArg.split("=")[1].split(",") : [];
 
 // 运行更新程序
 updateCatalogInYaml(workspaceFile, packages, dryRun);
