@@ -1,5 +1,5 @@
 import { resolve } from "path";
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from "fs";
 import { optimize, type Config } from "svgo";
 import { icons } from "../src/source";
 import { ASSETS_DIR, ICONS_DIR } from "../src/utils/path";
@@ -211,7 +211,7 @@ ${icons
     if (existsSync(ICONS_DIR) && existsSync(resolve(ICONS_DIR, `${iconSet.id}.ts`))) {
       iconContent = `export * from "./${iconSet.id}";`;
       iconContent += `
-import { ${iconSet.id}Name, ${iconSet.id}DisplayName, ${iconSet.id}Count } from "./${iconSet.id}";
+import { ${iconSet.id}Name, ${iconSet.id}DisplayName, ${iconSet.id}Count, ${iconSet.id}Components } from "./${iconSet.id}";
 `;
     } else {
       iconContent = `// 图标集 ${iconSet.id} 未生成`;
@@ -225,7 +225,7 @@ import { ${iconSet.id}Name, ${iconSet.id}DisplayName, ${iconSet.id}Count } from 
 export const Icons = [
   ${icons
     .map(iconSet => {
-      return `  { name: ${iconSet.id}Name, displayName: ${iconSet.id}DisplayName, count: ${iconSet.id}Count },`;
+      return ` { name: ${iconSet.id}Name, displayName: ${iconSet.id}DisplayName, count: ${iconSet.id}Count, components: ${iconSet.id}Components },`;
     })
     .join("\n")}
 ];
@@ -237,6 +237,11 @@ export const Icons = [
 // 主函数
 async function generate() {
   try {
+    // 先删除旧的图标文件
+    if (existsSync(ICONS_DIR)) {
+      rmSync(ICONS_DIR, { recursive: true, force: true });
+    }
+    // 再创建新的图标文件
     ensureDir(ICONS_DIR);
 
     // 处理每个图标集;
@@ -252,6 +257,7 @@ import IconBase, { type IconBaseProps } from "../components/IconBase";
 
       const iconName = iconSet.id;
       const iconDisplayName = iconSet.name;
+      const iconComponents = [];
       let iconCount = 0;
       for (const content of iconSet.contents) {
         const iconPath = resolve(ASSETS_DIR, iconSet.source.localName, iconSet.source.subFolders);
@@ -303,7 +309,7 @@ import IconBase, { type IconBaseProps } from "../components/IconBase";
               }
 
               const iconContent = generateIconModule(exportName, declareName, pathData, viewBox);
-
+              iconComponents.push(exportName);
               singleContent += iconContent;
             }
           } catch (fileError) {
@@ -321,6 +327,9 @@ import IconBase, { type IconBaseProps } from "../components/IconBase";
 export const ${iconName}Name = "${iconName}";
 export const ${iconName}DisplayName = "${iconDisplayName}";
 export const ${iconName}Count = ${iconCount};
+export const ${iconName}Components = [
+  ${iconComponents.join(",\n  ")}
+];
 `;
 
       // 生成子索引文件

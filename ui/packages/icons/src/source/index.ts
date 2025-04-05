@@ -138,7 +138,7 @@ export const icons: IconSource[] = [
       subFolders: "icons",
       url: "https://github.com/feathericons/feather.git",
       branch: "main",
-      hash: "ed76079f606c4b78a45ce8667a5eb1f163e89235",
+      hash: "3dc050d97405062eba78aa57115c0a15c63abdaa",
     },
   },
   {
