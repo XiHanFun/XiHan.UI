@@ -9,7 +9,7 @@ const rootDir = path.resolve(__dirname, "..");
  * 删除指定目录下的 node_modules
  * @param {string} dir 目录路径
  */
-function cleanNodeModules(dir: string): void {
+function cleanNodeModules(dir) {
   const nodeModulesPath = path.join(dir, "node_modules");
   if (fs.existsSync(nodeModulesPath)) {
     console.log(`Cleaning: ${nodeModulesPath}`);
@@ -21,7 +21,7 @@ function cleanNodeModules(dir: string): void {
 /**
  * 清理所有 node_modules
  */
-function cleanAll(): void {
+function cleanAll() {
   try {
     // 清理根目录
     cleanNodeModules(rootDir);
@@ -45,7 +45,10 @@ function cleanAll(): void {
   }
 }
 
-function cleanPlayground(): void {
+/**
+ * 清理 playground 目录下的 node_modules
+ */
+function cleanPlayground() {
   try {
     // 清理根目录
     const playgroundDir = path.join(rootDir, "playground");
