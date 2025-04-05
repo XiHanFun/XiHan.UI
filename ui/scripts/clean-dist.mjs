@@ -7,9 +7,9 @@ const rootDir = path.resolve(__dirname, "..");
 
 /**
  * 删除指定目录下的 dist
- * @param dir 目录路径
+ * @param {string} dir 目录路径
  */
-function cleanDist(dir: string): void {
+function cleanDist(dir) {
   const distPath = path.join(dir, "dist");
   if (fs.existsSync(distPath)) {
     console.log(`Cleaning: ${distPath}`);
@@ -21,7 +21,7 @@ function cleanDist(dir: string): void {
 /**
  * 清理所有 dist 目录
  */
-function cleanAll(): void {
+function cleanAll() {
   try {
     // 清理根目录
     cleanDist(rootDir);
