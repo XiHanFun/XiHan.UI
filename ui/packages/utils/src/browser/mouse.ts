@@ -126,3 +126,19 @@ export const onHover = (
     element.removeEventListener("mouseleave", handleLeave);
   };
 };
+
+// 同时提供命名空间对象
+export const mouseUtils = {
+  getPosition,
+  getPagePosition,
+  getRelativePosition,
+  onMouseMove,
+  isRightClick,
+  preventRightClick,
+  getButton,
+  onDoubleClick,
+  onHover,
+};
+
+// 默认导出命名空间对象
+export default mouseUtils;

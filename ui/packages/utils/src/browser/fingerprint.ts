@@ -390,3 +390,18 @@ export const generateStableFingerprint = async (): Promise<string> => {
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
 };
+
+// 同时提供命名空间对象
+export const fingerprintUtils = {
+  getDeviceInfo,
+  getBrowserFeatures,
+  getCanvasFingerprint,
+  getAudioFingerprint,
+  getNetworkFingerprint,
+  getBehavioralFingerprint,
+  generateFingerprint,
+  generateStableFingerprint,
+};
+
+// 默认导出命名空间对象
+export default fingerprintUtils;

@@ -41,3 +41,15 @@ export const isAndroid = (): boolean => {
 export const getOrientation = (): "portrait" | "landscape" => {
   return window.innerHeight > window.innerWidth ? "portrait" : "landscape";
 };
+
+// 同时提供命名空间对象
+export const deviceUtils = {
+  getDeviceType,
+  isTouchDevice,
+  isIOS,
+  isAndroid,
+  getOrientation,
+};
+
+// 默认导出命名空间对象
+export default deviceUtils;

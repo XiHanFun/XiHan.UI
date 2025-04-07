@@ -48,3 +48,14 @@ export const readLocalFile = (file: File): Promise<string> => {
     reader.readAsText(file);
   });
 };
+
+// 同时提供命名空间对象
+export const fileUtils = {
+  getFileExt,
+  formatFileSize,
+  downloadFile,
+  readLocalFile,
+};
+
+// 默认导出命名空间对象
+export default fileUtils;

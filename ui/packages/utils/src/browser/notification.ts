@@ -66,3 +66,14 @@ export const closeAll = () => {
     });
   }
 };
+
+// 同时提供命名空间对象
+export const notificationUtils = {
+  checkPermission,
+  show,
+  showSimple,
+  closeAll,
+};
+
+// 默认导出命名空间对象
+export default notificationUtils;

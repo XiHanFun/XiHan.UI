@@ -97,3 +97,17 @@ export const join = (...parts: string[]): string => {
     .filter(Boolean)
     .join("/");
 };
+
+// 同时提供命名空间对象
+export const urlUtils = {
+  getParams,
+  stringifyParams,
+  addParams,
+  removeParams,
+  parse,
+  isAbsolute,
+  join,
+};
+
+// 默认导出命名空间对象
+export default urlUtils;

@@ -41,3 +41,13 @@ export const set = (
 export const remove = (name: string): void => {
   set(name, "", { expires: -1 });
 };
+
+// 同时提供命名空间对象
+export const cookieUtils = {
+  get,
+  set,
+  remove,
+};
+
+// 默认导出命名空间对象
+export default cookieUtils;
