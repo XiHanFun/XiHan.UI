@@ -36,3 +36,57 @@ export { createPlugin, createAsyncPlugin } from "./plugins";
 
 // 指令系统
 export { vClickOutside, vDebounce, vCopy, vLoading, vFocus, vResize } from "./directives";
+
+// 路由辅助
+export {
+  goBack,
+  handleNavigationDuplicates,
+  useRouteHistory,
+  useRouteParam,
+  generateNestedRoutes,
+  usePermissionRoutes,
+  useRouteActive,
+} from "./router";
+
+// 状态管理辅助
+export {
+  createLocalState,
+  createSessionState,
+  createContextState,
+  piniaPersistedState,
+  defineSharedStore,
+  useStoreRefs,
+  useDerivedState,
+} from "./store";
+
+// 服务端渲染辅助
+export {
+  isServer,
+  isClient,
+  useServerPrefetch,
+  useClientOnly,
+  createHydrationContext,
+  useDeferredHydration,
+  useProgressiveHydration,
+  withTimeout,
+  useSSRMetadata,
+} from "./ssr";
+
+// Teleport 辅助
+export {
+  TeleportTargetManager,
+  useTeleportTarget,
+  ModalManager,
+  useModal,
+  useDynamicTeleport,
+  createPopover,
+} from "./teleport";
+
+// Suspense 辅助
+export {
+  useAsyncComponent,
+  useSuspenseWrapper,
+  createLazyComponent,
+  createErrorBoundary,
+  withSuspense,
+} from "./suspense";
