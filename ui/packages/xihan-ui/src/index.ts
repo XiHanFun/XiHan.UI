@@ -1,6 +1,4 @@
 import type { App } from "vue";
-import { createLogger, assert, throwError } from "@xihan-ui/utils";
-import { XhButton, XhButtonGroup } from "@xihan-ui/components";
 
 // 导出所有子包
 export * from "@xihan-ui/utils";
@@ -9,10 +7,17 @@ export * from "@xihan-ui/directives";
 export * from "@xihan-ui/hooks";
 export * from "@xihan-ui/locales";
 export * from "@xihan-ui/components";
+export * from "@xihan-ui/themes";
+export * from "./xihan";
+
+// 在导出子包后，导入需要使用的函数
+import { createLogger, assert, throwError } from "@xihan-ui/utils";
+import { XhButton, XhButtonGroup } from "@xihan-ui/components";
 
 // 引入样式 - 使用别名
-import "@xihan-ui/themes/index.scss";
-import { useTheme } from "@xihan-ui/hooks";
+import "@xihan-ui/themes";
+import { XiHan } from "./xihan";
+// import { useTheme } from "@xihan-ui/hooks";
 
 // 创建日志记录器
 const logger = createLogger({
@@ -23,6 +28,17 @@ const logger = createLogger({
 // 安装函数
 export const install = (app: App) => {
   try {
+    logger.group("XihanUI Info");
+    logger.success(XiHan.Logo);
+    logger.success(XiHan.Version);
+    logger.success(XiHan.Copyright);
+    logger.success(XiHan.Doc);
+    logger.success(XiHan.Org);
+    logger.success(XiHan.Rep);
+    logger.success(XiHan.SendWord);
+    logger.success(XiHan.Tagline);
+    logger.groupEnd();
+
     assert(!!app, "App instance is required");
 
     // 注册组件
@@ -31,7 +47,7 @@ export const install = (app: App) => {
 
     // 注入全局配置
     app.config.globalProperties.$XIHAN = {
-      version: "__VERSION__",
+      version: XiHan.Version,
       mode: "light",
     };
 
@@ -48,14 +64,14 @@ export const install = (app: App) => {
     logger.info("XihanUI installed successfully");
   } catch (err) {
     if (err instanceof Error) {
-      throwError(`Failed to install XihanUI: ${err.message}`, "INSTALL_ERROR");
+      throwError(`Failed to install XihanUI: ${err.message}`, "UNKNOWN");
     }
     throw err;
   }
 };
 
 // 导出工具函数
-export { useTheme };
+// export { useTheme };
 
 // 导出默认对象
 export default { install };

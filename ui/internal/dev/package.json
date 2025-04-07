@@ -1,8 +1,8 @@
 {
   "name": "@xihan-ui/dev",
   "private": true,
-  "version": "0.8.14",
-  "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
+  "version": "0.9.0",
+  "description": "Dev tools for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
   "repository": {

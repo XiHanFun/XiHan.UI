@@ -1,8 +1,9 @@
 /**
- * 事件工具函数
+ * 事件选项类型
+ * @param capture 是否捕获
+ * @param once 是否只执行一次
+ * @param passive 是否被动
  */
-
-// 事件选项类型
 export interface EventOptions {
   capture?: boolean;
   once?: boolean;
@@ -15,30 +16,41 @@ export interface EventOptions {
  * @param event 事件名称
  * @param handler 事件处理函数
  * @param options 事件选项
+ * @returns 返回事件监听器
  */
 export const on = (
   target: EventTarget,
   event: string,
   handler: EventListenerOrEventListenerObject,
-  options?: EventOptions
+  options?: EventOptions,
 ): void => {
   target.addEventListener(event, handler, options);
 };
 
 /**
  * 移除事件监听器
+ * @param target 目标元素
+ * @param event 事件名称
+ * @param handler 事件处理函数
+ * @param options 事件选项
+ * @returns 返回移除事件监听器
  */
 export const off = (
   target: EventTarget,
   event: string,
   handler: EventListenerOrEventListenerObject,
-  options?: EventOptions
+  options?: EventOptions,
 ): void => {
   target.removeEventListener(event, handler, options);
 };
 
 /**
  * 只执行一次的事件监听器
+ * @param target 目标元素
+ * @param event 事件名称
+ * @param handler 事件处理函数
+ * @param options 事件选项
+ * @returns 返回只执行一次的事件监听器
  */
 export const once = (target: EventTarget, event: string, handler: Function, options?: EventOptions): void => {
   const wrapper = (...args: any[]) => {
@@ -50,8 +62,11 @@ export const once = (target: EventTarget, event: string, handler: Function, opti
 
 /**
  * 防抖事件
+ * @param func 事件处理函数
+ * @param wait 等待时间
+ * @returns 返回防抖事件
  */
-export const debounceEvent = <T extends (...args: any[]) => any>(func: T, wait: number): T => {
+export const debounce = <T extends (...args: any[]) => any>(func: T, wait: number): T => {
   let timeout: ReturnType<typeof setTimeout>;
   return function (this: any, ...args: any[]) {
     clearTimeout(timeout);
@@ -61,8 +76,11 @@ export const debounceEvent = <T extends (...args: any[]) => any>(func: T, wait: 
 
 /**
  * 节流事件
+ * @param func 事件处理函数
+ * @param wait 等待时间
+ * @returns 返回节流事件
  */
-export const throttleEvent = <T extends (...args: any[]) => any>(func: T, wait: number): T => {
+export const throttle = <T extends (...args: any[]) => any>(func: T, wait: number): T => {
   let previous = 0;
 
   return function (this: any, ...args: any[]) {
@@ -76,6 +94,8 @@ export const throttleEvent = <T extends (...args: any[]) => any>(func: T, wait: 
 
 /**
  * 阻止事件冒泡
+ * @param e 事件对象
+ * @returns 返回阻止事件冒泡
  */
 export const stopPropagation = (e: Event): void => {
   e.stopPropagation();
@@ -83,6 +103,8 @@ export const stopPropagation = (e: Event): void => {
 
 /**
  * 阻止默认行为
+ * @param e 事件对象
+ * @returns 返回阻止默认行为
  */
 export const preventDefault = (e: Event): void => {
   e.preventDefault();
@@ -90,6 +112,8 @@ export const preventDefault = (e: Event): void => {
 
 /**
  * 获取事件目标元素
+ * @param e 事件对象
+ * @returns 返回事件目标元素
  */
 export const getEventTarget = <T extends EventTarget>(e: Event): T => {
   return e.target as T;
@@ -97,11 +121,15 @@ export const getEventTarget = <T extends EventTarget>(e: Event): T => {
 
 /**
  * 创建自定义事件
+ * @param eventName 事件名称
+ * @param detail 事件详情
+ * @param options 事件选项
+ * @returns 返回自定义事件
  */
 export const createCustomEvent = <T = any>(
   eventName: string,
   detail?: T,
-  options?: CustomEventInit
+  options?: CustomEventInit,
 ): CustomEvent<T> => {
   return new CustomEvent(eventName, {
     detail,
@@ -113,12 +141,17 @@ export const createCustomEvent = <T = any>(
 
 /**
  * 派发自定义事件
+ * @param target 目标元素
+ * @param eventName 事件名称
+ * @param detail 事件详情
+ * @param options 事件选项
+ * @returns 返回派发自定义事件
  */
 export const dispatchCustomEvent = <T = any>(
   target: EventTarget,
   eventName: string,
   detail?: T,
-  options?: CustomEventInit
+  options?: CustomEventInit,
 ): boolean => {
   const event = createCustomEvent(eventName, detail, options);
   return target.dispatchEvent(event);

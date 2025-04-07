@@ -1,4 +1,3 @@
-// clean-modules.js
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -46,6 +45,9 @@ function cleanAll() {
   }
 }
 
+/**
+ * 清理 playground 目录下的 node_modules
+ */
 function cleanPlayground() {
   try {
     // 清理根目录
@@ -60,5 +62,4 @@ function cleanPlayground() {
 }
 
 cleanAll();
-
 cleanPlayground();

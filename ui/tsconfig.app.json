@@ -12,7 +12,7 @@
     // 目标 ECMAScript 版本
     "lib": ["ESNext", "DOM"],
     // 类型
-    "types": ["vite/client", "vue"],
+    "types": ["vue"],
     // 模块类型
     "module": "ESNext",
     // 模块解析策略
@@ -22,20 +22,20 @@
     // 路径别名
     "paths": {
       // 子包
-      "@xihan-ui/components": ["packages/components/src"],
-      "@xihan-ui/themes": ["packages/themes/src"],
-      "@xihan-ui/utils": ["packages/utils/src"],
-      "@xihan-ui/icons": ["packages/icons/src"],
-      "@xihan-ui/hooks": ["packages/hooks/src"],
-      "@xihan-ui/directives": ["packages/directives/src"],
-      "@xihan-ui/locales": ["packages/locales/src"],
-      "@xihan-ui/constants": ["packages/constants/src"],
+      "@xihan-ui/components/*": ["packages/components/src/*"],
+      "@xihan-ui/themes/*": ["packages/themes/src/*"],
+      "@xihan-ui/utils/*": ["packages/utils/src/*"],
+      "@xihan-ui/icons/*": ["packages/icons/src/*"],
+      "@xihan-ui/hooks/*": ["packages/hooks/src/*"],
+      "@xihan-ui/directives/*": ["packages/directives/src/*"],
+      "@xihan-ui/locales/*": ["packages/locales/src/*"],
+      "@xihan-ui/constants/*": ["packages/constants/src/*"],
       // 主包
-      "xihan-ui": ["packages/xihan-ui/src"]
+      "xihan-ui/*": ["packages/xihan-ui/src/*"]
     }
   },
   // 包含的文件
-  "include": ["packages/**/*.ts", "packages/**/*.tsx", "packages/**/*.vue"],
+  "include": ["packages/**/*.ts"],
   // 排除的文件
   "exclude": ["**/node_modules/**", "**/tests/**", "**/dist/**"]
 }
