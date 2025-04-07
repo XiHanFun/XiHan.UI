@@ -46,3 +46,16 @@ export const remove = () => {
 export const replace = (url: string, state?: any) => {
   window.history.replaceState(state, "", url);
 };
+
+// 同时提供命名空间对象
+export const historyUtils = {
+  back,
+  forward,
+  go,
+  push,
+  remove,
+  replace,
+};
+
+// 默认导出命名空间对象
+export default historyUtils;

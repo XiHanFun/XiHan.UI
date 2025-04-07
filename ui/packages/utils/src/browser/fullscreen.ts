@@ -71,3 +71,15 @@ export const onChange = (callback: (isFullscreen: boolean) => void): (() => void
     document.removeEventListener("MSFullscreenChange", handler);
   };
 };
+
+// 同时提供命名空间对象
+export const fullscreenUtils = {
+  enter,
+  exit,
+  toggle,
+  isFullscreen,
+  onChange,
+};
+
+// 默认导出命名空间对象
+export default fullscreenUtils;

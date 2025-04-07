@@ -106,3 +106,15 @@ export const checkPermission = async (type: "read" | "write" = "read"): Promise<
     return false;
   }
 };
+
+// 同时提供命名空间对象
+export const clipboardUtils = {
+  copyText,
+  copyImage,
+  readText,
+  readImage,
+  checkPermission,
+};
+
+// 默认导出命名空间对象
+export default clipboardUtils;

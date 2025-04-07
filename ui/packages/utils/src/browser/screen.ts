@@ -61,3 +61,16 @@ export const onOrientationChange = (callback: (isPortrait: boolean) => void): ((
   window.addEventListener("orientationchange", handler);
   return () => window.removeEventListener("orientationchange", handler);
 };
+
+// 同时提供命名空间对象
+export const screenUtils = {
+  getSize,
+  getViewport,
+  scrollToTop,
+  isRetina,
+  isInViewport,
+  onOrientationChange,
+};
+
+// 默认导出命名空间对象
+export default screenUtils;

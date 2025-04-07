@@ -113,3 +113,15 @@ export const compress = async (
     reader.readAsDataURL(file);
   });
 };
+
+// 同时提供命名空间对象
+export const imageUtils = {
+  preload,
+  preloadAll,
+  isLoaded,
+  getDominantColor,
+  compress,
+};
+
+// 默认导出命名空间对象
+export default imageUtils;

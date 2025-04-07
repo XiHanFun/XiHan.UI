@@ -35,3 +35,14 @@ export const goto = (url: string) => {
 export const reload = () => {
   window.location.reload();
 };
+
+// 同时提供命名空间对象
+export const locationUtils = {
+  getParams,
+  getParamByName,
+  goto,
+  reload,
+};
+
+// 默认导出命名空间对象
+export default locationUtils;
