@@ -1,18 +1,92 @@
 // 基础工具
-export * from "./utils";
-export * from "./install";
+export { createAsyncComponent } from "./utils";
+
+// 安装系统
+export {
+  makeInstaller,
+  makeAsyncInstaller,
+  makeComponentInstaller,
+  registerComponents,
+  registerDirectives,
+  registerPlugins,
+} from "./install";
 
 // 组合式API
-export * from "./hooks";
-export * from "./watch";
+export {
+  useDebounce,
+  useThrottle,
+  useStorage,
+  useWindowSize,
+  useClickOutside,
+  useAsync,
+  useCounter,
+  useInterval,
+  useNetwork,
+} from "./hooks";
+export type { AsyncState } from "./hooks";
+
+// 监听系统
+export { watchDebounced, watchThrottled, watchWhen } from "./watch";
 
 // 选项式API
-export * from "./mixins";
+export { themeMixin, sizeMixin, disabledMixin } from "./mixins";
 
 // 插件系统
-export * from "./plugins";
-export * from "./directives";
+export { createPlugin, createAsyncPlugin } from "./plugins";
 
-// 类型导出
-export type { InstallOptions } from "./install";
-export type { PluginOptions } from "./plugins";
+// 指令系统
+export { vClickOutside, vDebounce, vCopy, vLoading, vFocus, vResize } from "./directives";
+
+// 路由辅助
+export {
+  goBack,
+  handleNavigationDuplicates,
+  useRouteHistory,
+  useRouteParam,
+  generateNestedRoutes,
+  usePermissionRoutes,
+  useRouteActive,
+} from "./router";
+
+// 状态管理辅助
+export {
+  createLocalState,
+  createSessionState,
+  createContextState,
+  piniaPersistedState,
+  defineSharedStore,
+  useStoreRefs,
+  useDerivedState,
+} from "./store";
+
+// 服务端渲染辅助
+export {
+  isServer,
+  isClient,
+  useServerPrefetch,
+  useClientOnly,
+  createHydrationContext,
+  useDeferredHydration,
+  useProgressiveHydration,
+  withTimeout,
+  useSSRMetadata,
+} from "./ssr";
+
+// Teleport 辅助
+export {
+  TeleportTargetManager,
+  useTeleportTarget,
+  ModalManager,
+  useModal,
+  useDynamicTeleport,
+  createPopover,
+} from "./teleport";
+
+// Suspense 辅助
+export {
+  useAsyncComponent,
+  useSuspenseWrapper,
+  createLazyComponent,
+  createErrorBoundary,
+  withSuspense,
+} from "./suspense";

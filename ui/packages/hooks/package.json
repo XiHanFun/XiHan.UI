@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/hooks",
-  "version": "0.8.16",
-  "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
+  "version": "0.9.0",
+  "description": "Hooks for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
   "repository": {
@@ -26,14 +26,21 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "vite build"
+    "build": "unbuild"
   },
   "peerDependencies": {
     "vue": "catalog:"

@@ -2,13 +2,18 @@ import { watch, type WatchOptions, type WatchSource } from "vue";
 
 /**
  * 防抖监听
+ * @param source - 源
+ * @param callback - 回调
+ * @param delay - 延迟
+ * @param options - 选项
+ * @returns 返回监听
  */
-export function watchDebounced<T>(
+export const watchDebounced = <T>(
   source: WatchSource<T>,
   callback: (value: T) => void,
   delay = 300,
-  options: WatchOptions = {}
-) {
+  options: WatchOptions = {},
+) => {
   let timer: number;
 
   return watch(
@@ -19,19 +24,24 @@ export function watchDebounced<T>(
         callback(value);
       }, delay);
     },
-    options
+    options,
   );
-}
+};
 
 /**
  * 节流监听
+ * @param source - 源
+ * @param callback - 回调
+ * @param delay - 延迟
+ * @param options - 选项
+ * @returns 返回监听
  */
-export function watchThrottled<T>(
+export const watchThrottled = <T>(
   source: WatchSource<T>,
   callback: (value: T) => void,
   delay = 300,
-  options: WatchOptions = {}
-) {
+  options: WatchOptions = {},
+) => {
   let lastTime = 0;
 
   return watch(
@@ -43,17 +53,21 @@ export function watchThrottled<T>(
         lastTime = now;
       }
     },
-    options
+    options,
   );
-}
+};
 
 /**
  * 条件监听
+ * @param source - 源
+ * @param condition - 条件
+ * @param callback - 回调
+ * @returns 返回监听
  */
-export function watchWhen<T>(source: WatchSource<T>, condition: () => boolean, callback: (value: T) => void) {
+export const watchWhen = <T>(source: WatchSource<T>, condition: () => boolean, callback: (value: T) => void) => {
   return watch(source, value => {
     if (condition()) {
       callback(value);
     }
   });
-}
+};

@@ -1,12 +1,9 @@
 import { isObject } from "./types";
 
-// 对象操作相关
-
 /**
  * 深度克隆一个对象
  * 深度克隆是指克隆的对象中的嵌套对象也会被克隆，而不是仅仅复制引用
  * 这对于需要完全独立于原始对象的新对象时非常有用
- *
  * @param obj 需要克隆的对象
  * @returns 克隆后的对象，与原对象完全独立
  */
@@ -24,7 +21,6 @@ export const deepClone = <T>(obj: T): T => {
 
 /**
  * 合并两个对象
- *
  * @param target 目标对象，用于存储合并后的结果
  * @param source 源对象，用于提供要合并的属性
  * @returns 合并后的目标对象
@@ -41,7 +37,6 @@ export const merge = <T extends Record<string, any>>(target: T, source: Record<s
 
 /**
  * 获取对象的类型
- *
  * @param obj 需要获取类型的对象
  * @returns 返回对象的类型
  */
@@ -51,7 +46,6 @@ export const getType = (obj: any): string => {
 
 /**
  * 检查对象是否为空
- *
  * @param obj 需要检查的对象
  * @returns 如果对象为空，则返回true，否则返回false
  */
@@ -61,7 +55,6 @@ export const isEmpty = (obj: any): boolean => {
 
 /**
  * 深度合并
- *
  * @param target 目标对象
  * @param sources 源对象数组
  * @returns 合并后的目标对象
@@ -86,7 +79,6 @@ export const deepMerge = <T extends Record<string, any>>(target: T, ...sources: 
 
 /**
  * 对象路径获取
- *
  * @param obj 需要获取路径的对象
  * @param path 路径字符串或字符串数组
  * @param defaultValue 默认值
@@ -106,7 +98,6 @@ export const get = (obj: any, path: string | string[], defaultValue?: any): any 
 
 /**
  * 对象路径设置
- *
  * @param obj 需要设置路径的对象
  * @param path 路径字符串或字符串数组
  * @param value 要设置的值
@@ -114,7 +105,7 @@ export const get = (obj: any, path: string | string[], defaultValue?: any): any 
  */
 export const set = (obj: any, path: string | string[], value: any): any => {
   if (Object(obj) !== obj) return obj;
-  const keys = !Array.isArray(path) ? path.toString().match(/[^.[\]]+/g) ?? [] : path;
+  const keys = !Array.isArray(path) ? (path.toString().match(/[^.[\]]+/g) ?? []) : path;
 
   keys.slice(0, -1).reduce((a, c, i) => {
     if (Object(a[c]) === a[c]) {
@@ -130,19 +121,21 @@ export const set = (obj: any, path: string | string[], value: any): any => {
 
 /**
  * 对象扁平化
- *
  * @param obj 需要扁平化的对象
  * @param prefix 前缀
  * @returns 扁平化后的对象
  */
 export const flattenObject = (obj: Record<string, any>, prefix = ""): Record<string, any> => {
-  return Object.keys(obj).reduce((acc, k) => {
-    const pre = prefix.length ? prefix + "." : "";
-    if (isObject(obj[k])) {
-      Object.assign(acc, flattenObject(obj[k], pre + k));
-    } else {
-      acc[pre + k] = obj[k];
-    }
-    return acc;
-  }, {} as Record<string, any>);
+  return Object.keys(obj).reduce(
+    (acc, k) => {
+      const pre = prefix.length ? prefix + "." : "";
+      if (isObject(obj[k])) {
+        Object.assign(acc, flattenObject(obj[k], pre + k));
+      } else {
+        acc[pre + k] = obj[k];
+      }
+      return acc;
+    },
+    {} as Record<string, any>,
+  );
 };

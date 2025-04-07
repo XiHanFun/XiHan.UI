@@ -1,7 +1,7 @@
 {
   "name": "xihan-ui-monorepo",
   "private": true,
-  "version": "0.8.16",
+  "version": "0.8.20",
   "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -28,35 +28,32 @@
     "internal/*",
     "playground"
   ],
-  "packageManager": "pnpm@10.6.1",
+  "packageManager": "pnpm@10.7.1",
+  "preinstall": "npx only-allow pnpm",
   "engines": {
     "node": "^23.7.0",
-    "pnpm": "^10.2.0"
+    "pnpm": "^10.6.2"
   },
   "scripts": {
     "bootstrap": "pnpm -r install",
-    "dev": "pnpm run --filter play-ground dev",
-    "debug": "pnpm run --filter play-ground dev --debug",
-    "preview": "pnpm run --filter play-ground preview",
-    "build": "vite build",
-    "build:types": "vue-tsc --declaration --emitDeclarationOnly",
-    "build:all": "pnpm run build && pnpm run build:types",
-    "build:playground": "pnpm run --filter play-ground build",
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "preview": "turbo preview",
     "test": "vitest",
-    "coverage": "vitest run --coverage",
-    "format": "prettier --write \"src/**/*.{js,mjs,jsx,ts,mts,tsx,vue,css,scss,less,json,md}\"",
-    "lint-fix": "eslint --fix src/",
-    "clean-lock": "node scripts/clean-lock.mjs",
-    "clean-modules": "node scripts/clean-modules.mjs",
-    "clean-node": "pnpm run clean-lock && pnpm run clean-modules",
-    "clean-build": "node scripts/clean-dist.mjs",
-    "gen-version": "node scripts/gen-version.mjs",
-    "update-pkg": "npx taze -w -r",
-    "reinstall": "pnpm run clean-node && pnpm run bootstrap",
-    "rebuild": "pnpm run clean-build && pnpm run build:all",
-    "publish": "pnpm -r publish",
-    "prerelease": "pnpm run clean-build && pnpm gen-version && pnpm build:all",
-    "release": "pnpm -r publish --access public"
+    "test:coverage": "vitest run --coverage",
+    "format": "prettier --write \"*.{js,mjs,jsx,ts,mts,tsx,vue,css,scss,less,json,md}\"",
+    "lint:fix": "eslint --fix",
+    "clean:lock": "node scripts/clean-lock.mjs",
+    "clean:modules": "node scripts/clean-modules.mjs",
+    "clean:node": "pnpm run clean:lock && pnpm run clean:modules",
+    "clean:build": "node scripts/clean-dist.mjs",
+    "gen:version": "node scripts/gen-version.mjs",
+    "update:pkg": "npx taze -w -r",
+    "update:catalog": "node scripts/update-catalog.mjs",
+    "reinstall": "pnpm run clean:node && pnpm run bootstrap",
+    "rebuild": "pnpm run clean:build && pnpm run build",
+    "changeset": "npx changeset",
+    "publish-packages": "turbo build && npx changeset version && npx changeset publish"
   },
   "peerDependencies": {
     "vue": "catalog:"
@@ -74,26 +71,25 @@
     "xihan-ui": "workspace:*"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "catalog:",
+    "@changesets/cli": "catalog:",
     "@types/node": "catalog:",
     "@vitejs/plugin-vue": "catalog:",
     "@vitejs/plugin-vue-jsx": "catalog:",
     "@xihan-ui/build": "workspace:*",
     "@xihan-ui/dev": "workspace:*",
+    "cross-env": "catalog:",
     "eslint": "catalog:",
     "eslint-config-prettier": "catalog:",
     "eslint-plugin-prettier": "catalog:",
     "eslint-plugin-vue": "catalog:",
     "prettier": "catalog:",
     "rollup": "catalog:",
-    "sass": "catalog:",
     "sass-lint": "catalog:",
     "stylelint": "catalog:",
     "tsx": "catalog:",
+    "turbo": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:",
-    "vite-plugin-dts": "catalog:",
-    "vite-plugin-vue-devtools": "catalog:",
-    "vitest": "catalog:",
-    "vue-tsc": "catalog:"
+    "unbuild": "catalog:"
   }
 }
