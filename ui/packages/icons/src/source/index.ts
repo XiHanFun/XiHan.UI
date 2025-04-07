@@ -116,7 +116,7 @@ export const icons: IconSource[] = [
       subFolders: "icons",
       url: "https://github.com/primer/octicons.git",
       branch: "main",
-      hash: "ea40d4aa6231292cc7b11a6aab229978607a9b54",
+      hash: "863af9507f27e8e99f13237873c0a1897eaf5640",
     },
   },
   {
@@ -138,7 +138,7 @@ export const icons: IconSource[] = [
       subFolders: "icons",
       url: "https://github.com/feathericons/feather.git",
       branch: "main",
-      hash: "ed76079f606c4b78a45ce8667a5eb1f163e89235",
+      hash: "3dc050d97405062eba78aa57115c0a15c63abdaa",
     },
   },
   {

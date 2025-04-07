@@ -1,9 +1,9 @@
-import { resolve, join } from "path";
-import { readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync } from "fs";
+import { resolve } from "path";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from "fs";
 import { optimize, type Config } from "svgo";
 import { icons } from "../src/source";
 import { ASSETS_DIR, ICONS_DIR } from "../src/utils/path";
-import { stringFormatUtils } from "@xihan-ui/utils";
+import { toPascalCase, toKebabCase } from "@xihan-ui/utils";
 import { sync as globSync } from "glob";
 
 // SVG优化配置
@@ -186,10 +186,7 @@ function findSvgFilesByPattern(baseDir: string, pattern: string): string[] {
 
 // 生成图标模块内容
 function generateIconModule(exportName: string, declareName: string, pathData: string, viewBox: string): string {
-  return `// 自动生成的图标，请勿手动修改
-import { defineComponent, h } from "vue";
-import IconBase, { type IconBaseProps } from "../../components/IconBase";
-
+  return `
 export const ${exportName} = defineComponent<IconBaseProps>({
   name: "${declareName}",
   setup(props) {
@@ -198,41 +195,40 @@ export const ${exportName} = defineComponent<IconBaseProps>({
     ]);
   },
 });
-
-export default ${exportName};
 `;
-}
-
-// 生成子索引文件
-function generateSubIndexFile(iconSetDir: string): void {
-  if (existsSync(iconSetDir)) {
-    const iconFiles = readdirSync(iconSetDir).filter(file => file.endsWith(".ts") && file !== "index.ts");
-
-    if (iconFiles.length > 0) {
-      const subIndexContent = iconFiles.map(file => `export * from './${file.replace(".ts", "")}';`).join("\n");
-
-      writeFileSync(resolve(iconSetDir, "index.ts"), subIndexContent);
-    }
-  }
 }
 
 // 生成主索引文件
 function generateMainIndexFile(): void {
-  const mainIndexContent = `
+  let mainIndexContent = `
 /**
  * 此文件由图标生成脚本自动更新
- * 请勿手动修改
  */
 
 ${icons
   .map(iconSet => {
-    const iconSetDir = resolve(ICONS_DIR, iconSet.id);
-    if (existsSync(iconSetDir) && existsSync(resolve(iconSetDir, "index.ts"))) {
-      return `export * from './${iconSet.id}';`;
+    let iconContent = "";
+    if (existsSync(ICONS_DIR) && existsSync(resolve(ICONS_DIR, `${iconSet.id}.ts`))) {
+      iconContent = `export * from "./${iconSet.id}";`;
+      iconContent += `
+import { ${iconSet.id}Name, ${iconSet.id}DisplayName, ${iconSet.id}Count, ${iconSet.id}Components } from "./${iconSet.id}";
+`;
+    } else {
+      iconContent = `// 图标集 ${iconSet.id} 未生成`;
     }
-    return `// 图标集 ${iconSet.id} 未生成`;
+    return iconContent;
   })
   .join("\n")}
+`;
+
+  mainIndexContent += `
+export const Icons = [
+  ${icons
+    .map(iconSet => {
+      return ` { name: ${iconSet.id}Name, displayName: ${iconSet.id}DisplayName, count: ${iconSet.id}Count, components: ${iconSet.id}Components },`;
+    })
+    .join("\n")}
+];
 `;
 
   writeFileSync(resolve(ICONS_DIR, "index.ts"), mainIndexContent);
@@ -241,14 +237,28 @@ ${icons
 // 主函数
 async function generate() {
   try {
+    // 先删除旧的图标文件
+    if (existsSync(ICONS_DIR)) {
+      rmSync(ICONS_DIR, { recursive: true, force: true });
+    }
+    // 再创建新的图标文件
     ensureDir(ICONS_DIR);
 
     // 处理每个图标集;
     for (const iconSet of icons) {
       console.log("正在生成", iconSet.id, "...");
-      const iconSetDir = resolve(ICONS_DIR, iconSet.id);
-      ensureDir(iconSetDir);
 
+      // 生成单个文件
+      let singleContent = `
+// 自动生成的图标，请勿手动修改
+import { defineComponent, h } from "vue";
+import IconBase, { type IconBaseProps } from "../components/IconBase";
+`;
+
+      const iconName = iconSet.id;
+      const iconDisplayName = iconSet.name;
+      const iconComponents = [];
+      let iconCount = 0;
       for (const content of iconSet.contents) {
         const iconPath = resolve(ASSETS_DIR, iconSet.source.localName, iconSet.source.subFolders);
 
@@ -279,18 +289,16 @@ async function generate() {
             const cleanBaseName = name.replace(/[\/\\:*?"<>|]/g, "_");
 
             // 导出名称为大驼峰命名
-            const exportName = stringFormatUtils.toPascalCase(cleanBaseName);
+            const exportName = toPascalCase(cleanBaseName);
             // 声明名称为中划线命名
-            const declareName = stringFormatUtils.toKebabCase(cleanBaseName);
-            // 文件路径名称为下划线命名
-            const iconFilePathName = stringFormatUtils.toSnakeCase(cleanBaseName);
+            const declareName = toKebabCase(cleanBaseName);
 
             // 使用完整路径读取SVG内容
             const svgContent = readFileSync(resolve(iconPath, relativePath), "utf-8");
 
             const optimizedSvg = optimize(svgContent, svgoConfig);
             if ("data" in optimizedSvg) {
-              // 使用新的函数提取所有path路径
+              // 提取所有path路径
               const pathData = extractAllPaths(optimizedSvg.data);
               const viewBox = extractViewBox(optimizedSvg.data);
 
@@ -301,17 +309,31 @@ async function generate() {
               }
 
               const iconContent = generateIconModule(exportName, declareName, pathData, viewBox);
-              writeFileSync(resolve(iconSetDir, `${iconFilePathName}.ts`), iconContent);
+              iconComponents.push(exportName);
+              singleContent += iconContent;
             }
           } catch (fileError) {
             console.error(`处理文件 ${relativePath} 时出错:`, fileError);
             // 继续处理下一个文件
           }
         }
+
+        iconCount += iconFilePaths.length;
       }
 
+      // 生成名称和数量
+      // { name: "fi", displayName: "Feather Icons", count: 287 },
+      singleContent += `
+export const ${iconName}Name = "${iconName}";
+export const ${iconName}DisplayName = "${iconDisplayName}";
+export const ${iconName}Count = ${iconCount};
+export const ${iconName}Components = [
+  ${iconComponents.join(",\n  ")}
+];
+`;
+
       // 生成子索引文件
-      generateSubIndexFile(iconSetDir);
+      writeFileSync(resolve(ICONS_DIR, `${iconSet.id}.ts`), singleContent);
     }
 
     // 生成主索引文件

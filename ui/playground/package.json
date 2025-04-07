@@ -1,8 +1,8 @@
 {
   "name": "@xihan-ui/playground",
   "private": true,
-  "version": "0.8.12",
-  "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
+  "version": "0.8.14",
+  "description": "Playground for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
   "repository": {
@@ -30,6 +30,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@xihan-ui/utils": "workspace:*",
     "pinia": "catalog:",
     "vue": "catalog:",
     "vue-router": "catalog:",
@@ -39,6 +40,7 @@
     "@vitejs/plugin-vue": "catalog:",
     "@vitejs/plugin-vue-jsx": "catalog:",
     "vite": "catalog:",
-    "vite-plugin-dts": "catalog:"
+    "vite-plugin-dts": "catalog:",
+    "vite-plugin-vue-devtools": "catalog:"
   }
 }

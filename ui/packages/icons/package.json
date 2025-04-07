@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/icons",
-  "version": "0.8.16",
-  "description": "Icon components for XiHan UI",
+  "version": "0.9.0",
+  "description": "Icons for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
   "repository": {
@@ -26,9 +26,16 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "./dist/index.js",
+  "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "files": [
     "dist"
   ],
@@ -36,8 +43,7 @@
     "update": "tsx scripts/update.ts",
     "download": "tsx scripts/download.ts",
     "generate": "tsx scripts/generate.ts",
-    "generateSingle": "tsx scripts/generateSingle.ts",
-    "build": "vite build"
+    "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 unbuild"
   },
   "peerDependencies": {
     "vue": "catalog:"

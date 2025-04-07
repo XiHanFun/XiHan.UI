@@ -47,7 +47,7 @@ export default defineComponent({
             animation: props.spin ? "xh-icon-spin 1s infinite linear" : undefined,
           },
         },
-        slots.default?.()
+        slots.default?.(),
       );
   },
 });

@@ -1,4 +1,4 @@
-import { Emitter, createEmitter, type EventHandler } from './emitter';
+import { Emitter, createEmitter, type EventHandler } from "./emitter";
 
 /**
  * 全局事件总线实例
@@ -16,7 +16,7 @@ export type EventBus = {
    * @returns 取消监听的函数
    */
   on: (event: string, handler: EventHandler) => () => void;
-  
+
   /**
    * 注册一次性事件监听器
    * @param event 事件名称
@@ -24,34 +24,34 @@ export type EventBus = {
    * @returns 取消监听的函数
    */
   once: (event: string, handler: EventHandler) => () => void;
-  
+
   /**
    * 移除事件监听器
    * @param event 事件名称
    * @param handler 事件处理函数（可选）
    */
   off: (event: string, handler?: EventHandler) => void;
-  
+
   /**
    * 触发事件
    * @param event 事件名称
    * @param args 传递给事件处理函数的参数
    */
   emit: (event: string, ...args: any[]) => void;
-  
+
   /**
    * 移除所有事件监听器
    * @param event 事件名称（可选）
    */
   clear: (event?: string) => void;
-  
+
   /**
    * 获取特定事件的监听器数量
    * @param event 事件名称
    * @returns 监听器数量
    */
   listenerCount: (event: string) => number;
-  
+
   /**
    * 获取所有已注册的事件名称
    * @returns 事件名称数组
@@ -77,14 +77,14 @@ type PluginInstallFunction = (app: any, options?: EventBusPluginOptions) => void
  */
 const eventBusPlugin = {
   install: ((app, options = {}) => {
-    const propertyName = options.propertyName || '$eventBus';
-    
+    const propertyName = options.propertyName || "$eventBus";
+
     // 将事件总线注册为全局属性
     app.config.globalProperties[propertyName] = eventBus;
-    
+
     // 提供事件总线作为全局依赖注入
-    app.provide('eventBus', eventBus);
-  }) as PluginInstallFunction
+    app.provide("eventBus", eventBus);
+  }) as PluginInstallFunction,
 };
 
 /**
@@ -94,14 +94,3 @@ const eventBusPlugin = {
 export function useEventBus(): EventBus {
   return eventBus;
 }
-
-// 导出事件总线相关内容
-export { 
-  Emitter,
-  createEmitter,
-  eventBus,
-  eventBusPlugin
-};
-
-// 默认导出插件
-export default eventBusPlugin;
