@@ -22,20 +22,22 @@
     // 路径别名
     "paths": {
       // 子包
-      "@xihan-ui/components/*": ["packages/components/src/*"],
-      "@xihan-ui/themes/*": ["packages/themes/src/*"],
-      "@xihan-ui/utils/*": ["packages/utils/src/*"],
-      "@xihan-ui/icons/*": ["packages/icons/src/*"],
-      "@xihan-ui/hooks/*": ["packages/hooks/src/*"],
-      "@xihan-ui/directives/*": ["packages/directives/src/*"],
-      "@xihan-ui/locales/*": ["packages/locales/src/*"],
-      "@xihan-ui/constants/*": ["packages/constants/src/*"],
+      "@xihan-ui/components": ["packages/components/src"],
+      "@xihan-ui/themes": ["packages/themes/src"],
+      "@xihan-ui/utils": ["packages/utils/src"],
+      "@xihan-ui/icons": ["packages/icons/src"],
+      "@xihan-ui/hooks": ["packages/hooks/src"],
+      "@xihan-ui/directives": ["packages/directives/src"],
+      "@xihan-ui/locales": ["packages/locales/src"],
+      "@xihan-ui/constants": ["packages/constants/src"],
       // 主包
-      "xihan-ui/*": ["packages/xihan-ui/src/*"]
-    }
+      "xihan-ui": ["packages/xihan-ui/src"]
+    },
+    // 保留符号链接
+    "preserveSymlinks": true
   },
   // 包含的文件
-  "include": ["packages/**/*.ts"],
+  "include": ["packages/**/*.ts", "packages/**/*.vue"],
   // 排除的文件
   "exclude": ["**/node_modules/**", "**/tests/**", "**/dist/**"]
 }
