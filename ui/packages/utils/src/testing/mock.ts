@@ -3,7 +3,7 @@
  * 提供各种类型的模拟数据生成方法
  */
 
-import type { MockOptions, MockDataConfig } from "./types";
+import type { MockDataConfig } from "./types";
 
 /**
  * 生成随机字符串
@@ -128,7 +128,6 @@ export default {
   mockDate,
   mockArray,
   mockObject,
-  mockFaker,
   mockResponse,
   mockError,
 };
