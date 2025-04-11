@@ -755,6 +755,7 @@ export const scroll = {
   parallaxScroll,
   createScrollTrigger,
   createScrollAnimation,
+  addScrollListener,
 };
 
 // 默认导出命名空间对象
