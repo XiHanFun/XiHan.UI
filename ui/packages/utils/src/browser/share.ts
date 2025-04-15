@@ -32,24 +32,24 @@ export interface ShareData {
  * 检查浏览器是否支持Web Share API
  * @returns 是否支持基本分享功能
  */
-export const isShareSupported = (): boolean => {
+export function isShareSupported(): boolean {
   return typeof navigator !== "undefined" && !!navigator.share;
-};
+}
 
 /**
  * 检查浏览器是否支持文件分享功能
  * @returns 是否支持文件分享
  */
-export const isFileShareSupported = (): boolean => {
+export function isFileShareSupported(): boolean {
   return typeof navigator !== "undefined" && !!navigator.share && !!navigator.canShare;
-};
+}
 
 /**
  * 检查指定的数据是否可以分享
  * @param data 要检查的分享数据
  * @returns 是否可以分享
  */
-export const canShare = (data: ShareData): boolean => {
+export function canShare(data: ShareData): boolean {
   if (!isShareSupported()) {
     return false;
   }
@@ -64,14 +64,14 @@ export const canShare = (data: ShareData): boolean => {
 
   // 基本数据分享检查
   return true;
-};
+}
 
 /**
  * 分享内容
  * @param data 分享数据
  * @returns 分享操作的Promise
  */
-export const share = async (data: ShareData): Promise<void> => {
+export async function share(data: ShareData): Promise<void> {
   if (!isShareSupported()) {
     throw new Error("您的浏览器不支持Web Share API");
   }
@@ -92,7 +92,7 @@ export const share = async (data: ShareData): Promise<void> => {
 
     throw error;
   }
-};
+}
 
 /**
  * 分享文本内容
@@ -100,9 +100,9 @@ export const share = async (data: ShareData): Promise<void> => {
  * @param title 可选的标题
  * @returns 分享操作的Promise
  */
-export const shareText = (text: string, title?: string): Promise<void> => {
+export async function shareText(text: string, title?: string): Promise<void> {
   return share({ text, title });
-};
+}
 
 /**
  * 分享URL链接
@@ -111,9 +111,9 @@ export const shareText = (text: string, title?: string): Promise<void> => {
  * @param text 可选的描述文本
  * @returns 分享操作的Promise
  */
-export const shareUrl = (url: string, title?: string, text?: string): Promise<void> => {
+export async function shareUrl(url: string, title?: string, text?: string): Promise<void> {
   return share({ url, title, text });
-};
+}
 
 /**
  * 分享当前页面
@@ -121,7 +121,7 @@ export const shareUrl = (url: string, title?: string, text?: string): Promise<vo
  * @param customText 自定义描述文本
  * @returns 分享操作的Promise
  */
-export const shareCurrentPage = (customTitle?: string, customText?: string): Promise<void> => {
+export async function shareCurrentPage(customTitle?: string, customText?: string): Promise<void> {
   if (typeof window === "undefined" || typeof document === "undefined") {
     throw new Error("当前环境不支持分享功能");
   }
@@ -130,7 +130,7 @@ export const shareCurrentPage = (customTitle?: string, customText?: string): Pro
   const url = window.location.href;
 
   return share({ title, url, text: customText });
-};
+}
 
 /**
  * 分享图片文件
@@ -139,7 +139,7 @@ export const shareCurrentPage = (customTitle?: string, customText?: string): Pro
  * @param text 可选的描述文本
  * @returns 分享操作的Promise
  */
-export const shareImage = (imageFile: File, title?: string, text?: string): Promise<void> => {
+export async function shareImage(imageFile: File, title?: string, text?: string): Promise<void> {
   if (!isFileShareSupported()) {
     throw new Error("您的浏览器不支持文件分享功能");
   }
@@ -149,7 +149,7 @@ export const shareImage = (imageFile: File, title?: string, text?: string): Prom
   }
 
   return share({ title, text, files: [imageFile] });
-};
+}
 
 /**
  * 分享多个文件
@@ -157,13 +157,13 @@ export const shareImage = (imageFile: File, title?: string, text?: string): Prom
  * @param title 可选的标题
  * @returns 分享操作的Promise
  */
-export const shareFiles = (files: File[], title?: string): Promise<void> => {
+export async function shareFiles(files: File[], title?: string): Promise<void> {
   if (!isFileShareSupported()) {
     throw new Error("您的浏览器不支持文件分享功能");
   }
 
   return share({ title, files });
-};
+}
 
 /**
  * 分享Canvas内容
@@ -174,13 +174,13 @@ export const shareFiles = (files: File[], title?: string): Promise<void> => {
  * @param title 可选的标题
  * @returns 分享操作的Promise
  */
-export const shareCanvas = (
+export async function shareCanvas(
   canvas: HTMLCanvasElement,
   filename: string = "canvas.png",
   type: string = "image/png",
   quality: number = 0.8,
   title?: string,
-): Promise<void> => {
+): Promise<void> {
   return new Promise((resolve, reject) => {
     if (!isFileShareSupported()) {
       reject(new Error("您的浏览器不支持文件分享功能"));
@@ -210,14 +210,14 @@ export const shareCanvas = (
       reject(error);
     }
   });
-};
+}
 
 /**
  * 提供后备分享方式（当Web Share API不可用时）
  * @param data 分享数据
  * @returns 是否成功提供了后备方式
  */
-export const shareFallback = (data: ShareData): boolean => {
+export function shareFallback(data: ShareData): boolean {
   if (typeof window === "undefined" || typeof document === "undefined") {
     return false;
   }
@@ -254,14 +254,14 @@ export const shareFallback = (data: ShareData): boolean => {
 
   // 无法提供后备方式
   return false;
-};
+}
 
 /**
  * 通用分享函数（自动使用后备方式）
  * @param data 分享数据
  * @returns 分享操作的Promise
  */
-export const smartShare = async (data: ShareData): Promise<boolean> => {
+export async function smartShare(data: ShareData): Promise<boolean> {
   // 检查是否支持原生分享
   if (canShare(data)) {
     try {
@@ -275,23 +275,4 @@ export const smartShare = async (data: ShareData): Promise<boolean> => {
 
   // 使用后备方式
   return shareFallback(data);
-};
-
-// 同时提供命名空间对象
-export const shareUtils = {
-  isShareSupported,
-  isFileShareSupported,
-  canShare,
-  share,
-  shareText,
-  shareUrl,
-  shareCurrentPage,
-  shareImage,
-  shareFiles,
-  shareCanvas,
-  shareFallback,
-  smartShare,
-};
-
-// 默认导出命名空间对象
-export default shareUtils;
+}

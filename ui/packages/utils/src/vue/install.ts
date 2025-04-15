@@ -18,38 +18,38 @@ export interface InstallOptions {
  * @param components - 组件列表
  * @param prefix - 组件前缀
  */
-export const registerComponents = (app: App, components: Record<string, Component>, prefix = "Xh") => {
+export function registerComponents(app: App, components: Record<string, Component>, prefix = "Xh") {
   for (const [name, component] of Object.entries(components)) {
     const componentName = prefix + name;
     app.component(componentName, component);
   }
-};
+}
 
 /**
  * 注册指令
  * @param app - 应用实例
  * @param directives - 指令列表
  */
-export const registerDirectives = (app: App, directives: Record<string, Directive>) => {
+export function registerDirectives(app: App, directives: Record<string, Directive>) {
   for (const [name, directive] of Object.entries(directives)) {
     app.directive(name, directive);
   }
-};
+}
 
 /**
  * 注册插件
  * @param app - 应用实例
  * @param plugins - 插件列表
  */
-export const registerPlugins = (app: App, plugins: Plugin[]) => {
+export function registerPlugins(app: App, plugins: Plugin[]) {
   plugins.forEach(plugin => app.use(plugin));
-};
+}
 
 /**
  * 创建安装器
  * @param options - 安装选项
  */
-export const makeInstaller = (options: InstallOptions = {}) => {
+export function makeInstaller(options: InstallOptions = {}) {
   const { prefix = "Xh", components = {}, directives = {}, plugins = [], zIndex = 2000, locale = "zh-CN" } = options;
 
   const install: Plugin["install"] = (app: App) => {
@@ -96,13 +96,13 @@ export const makeInstaller = (options: InstallOptions = {}) => {
     install,
     version: "__VERSION__", // 在构建时替换
   };
-};
+}
 
 /**
  * 创建异步安装器
  * @param loader - 加载器
  */
-export const makeAsyncInstaller = (loader: () => Promise<InstallOptions>) => {
+export function makeAsyncInstaller(loader: () => Promise<InstallOptions>) {
   return {
     async install(app: App) {
       const options = await loader();
@@ -110,16 +110,16 @@ export const makeAsyncInstaller = (loader: () => Promise<InstallOptions>) => {
       await installer.install(app);
     },
   };
-};
+}
 
 /**
  * 创建组件安装器
  * @param component - 组件
  */
-export const makeComponentInstaller = <T extends Component>(component: T) => {
+export function makeComponentInstaller<T extends Component>(component: T) {
   return {
     install(app: App) {
       app.component(component.name || "", component);
     },
   };
-};
+}

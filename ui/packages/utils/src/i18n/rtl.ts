@@ -358,25 +358,3 @@ export function autoFlipStyles(styles: Record<string, any>, isRtl: boolean): Rec
 
   return result;
 }
-
-// 同时提供命名空间对象
-export const rtl = {
-  isRTL,
-  getDirection,
-  getRTLConfig,
-  flipValue,
-  flipPositionValues,
-  flipBoxValues,
-  flipBorderRadius,
-  flipTransformOrigin,
-  flipProperty,
-  flipAngle,
-  flipTranslate,
-  getRTLClassName,
-  getRTLHtmlAttributes,
-  createRTLStyles,
-  autoFlipStyles,
-};
-
-// 默认导出命名空间对象
-export default rtl;

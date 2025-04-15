@@ -3,24 +3,24 @@
  * @param event 鼠标事件对象
  * @returns 返回鼠标相对于视口的坐标
  */
-export const getPosition = (event: MouseEvent): { x: number; y: number } => {
+export function getPosition(event: MouseEvent): { x: number; y: number } {
   return {
     x: event.clientX,
     y: event.clientY,
   };
-};
+}
 
 /**
  * 获取鼠标相对于页面的位置（包含滚动距离）
  * @param event 鼠标事件对象
  * @returns 返回鼠标相对于页面的坐标
  */
-export const getPagePosition = (event: MouseEvent): { x: number; y: number } => {
+export function getPagePosition(event: MouseEvent): { x: number; y: number } {
   return {
     x: event.pageX,
     y: event.pageY,
   };
-};
+}
 
 /**
  * 获取鼠标相对于目标元素的位置
@@ -28,53 +28,53 @@ export const getPagePosition = (event: MouseEvent): { x: number; y: number } => 
  * @param target 目标元素
  * @returns 返回鼠标相对于目标元素的坐标
  */
-export const getRelativePosition = (event: MouseEvent, target: Element): { x: number; y: number } => {
+export function getRelativePosition(event: MouseEvent, target: Element): { x: number; y: number } {
   const rect = target.getBoundingClientRect();
   return {
     x: event.clientX - rect.left,
     y: event.clientY - rect.top,
   };
-};
+}
 
 /**
  * 监听全局鼠标移动
  * @param callback 回调函数，接收鼠标位置参数
  * @returns 返回取消监听的函数
  */
-export const onMouseMove = (callback: (position: { x: number; y: number }) => void) => {
+export function onMouseMove(callback: (position: { x: number; y: number }) => void): () => void {
   const handler = (event: MouseEvent) => {
     callback(getPosition(event));
   };
   window.addEventListener("mousemove", handler);
   return () => window.removeEventListener("mousemove", handler);
-};
+}
 
 /**
  * 判断是否为右键点击
  * @param event 鼠标事件对象
  * @returns 返回是否为右键点击
  */
-export const isRightClick = (event: MouseEvent): boolean => {
+export function isRightClick(event: MouseEvent): boolean {
   return event.button === 2;
-};
+}
 
 /**
  * 阻止鼠标右键默认行为
  * @param element 目标元素，默认为 document
  * @returns 返回取消阻止的函数
  */
-export const preventRightClick = (element: Element | Document = document) => {
+export function preventRightClick(element: Element | Document = document): () => void {
   const handler = (event: Event) => (event as MouseEvent).preventDefault();
   element.addEventListener("contextmenu", handler);
   return () => element.removeEventListener("contextmenu", handler);
-};
+}
 
 /**
  * 获取鼠标按下的按键
  * @param event 鼠标事件对象
  * @returns 返回按下的按键名称
  */
-export const getButton = (event: MouseEvent): "left" | "middle" | "right" | "unknown" => {
+export function getButton(event: MouseEvent): "left" | "middle" | "right" | "unknown" {
   switch (event.button) {
     case 0:
       return "left";
@@ -85,7 +85,7 @@ export const getButton = (event: MouseEvent): "left" | "middle" | "right" | "unk
     default:
       return "unknown";
   }
-};
+}
 
 /**
  * 监听双击事件
@@ -94,15 +94,15 @@ export const getButton = (event: MouseEvent): "left" | "middle" | "right" | "unk
  * @param options 配置选项
  * @returns 返回取消监听的函数
  */
-export const onDoubleClick = (
+export function onDoubleClick(
   element: Element,
   callback: (event: MouseEvent) => void,
   options: AddEventListenerOptions = {},
-) => {
+): () => void {
   const handler = (event: Event) => callback(event as MouseEvent);
   element.addEventListener("dblclick", handler, options);
   return () => element.removeEventListener("dblclick", handler);
-};
+}
 
 /**
  * 监听鼠标悬停
@@ -111,11 +111,11 @@ export const onDoubleClick = (
  * @param onLeave 鼠标离开回调
  * @returns 返回取消监听的函数
  */
-export const onHover = (
+export function onHover(
   element: Element,
   onEnter: (event: MouseEvent) => void,
   onLeave: (event: MouseEvent) => void,
-) => {
+): () => void {
   const handleEnter = (event: Event) => onEnter(event as MouseEvent);
   const handleLeave = (event: Event) => onLeave(event as MouseEvent);
 
@@ -125,20 +125,4 @@ export const onHover = (
     element.removeEventListener("mouseenter", handleEnter);
     element.removeEventListener("mouseleave", handleLeave);
   };
-};
-
-// 同时提供命名空间对象
-export const mouseUtils = {
-  getPosition,
-  getPagePosition,
-  getRelativePosition,
-  onMouseMove,
-  isRightClick,
-  preventRightClick,
-  getButton,
-  onDoubleClick,
-  onHover,
-};
-
-// 默认导出命名空间对象
-export default mouseUtils;
+}

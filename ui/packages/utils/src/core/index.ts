@@ -8,12 +8,12 @@ export {
   average as averageArray,
   max,
   min,
-  unique,
-  flatten,
-  filter,
+  unique as uniqueArray,
+  flatten as flattenArray,
+  filter as filterArray,
   map as mapArray,
-  groupBy,
-  sortBy,
+  groupBy as groupByArray,
+  sortBy as sortByArray,
 } from "./array";
 
 // 日期工具
@@ -33,23 +33,47 @@ export {
 } from "./date";
 export type { DateFormatOptions } from "./date";
 
+// 错误处理工具
+export {
+  throwError,
+  assert,
+  assertType,
+  assertRequired,
+  tryCatch,
+  tryCatchAsync,
+  formatError,
+  contextError,
+  XiHanError,
+} from "./error";
+export type { ErrorCode } from "./error";
+
 // 事件工具
 export {
-  on,
-  off,
-  once,
+  on as onEvent,
+  off as offEvent,
+  once as onceEvent,
   debounce as debounceEvent,
   throttle as throttleEvent,
-  stopPropagation,
-  preventDefault,
-  getEventTarget,
-  createCustomEvent,
-  dispatchCustomEvent,
+  stopPropagation as stopPropagationEvent,
+  preventDefault as preventDefaultEvent,
+  getEventTarget as getEventTargetEvent,
+  createCustomEvent as createCustomEventEvent,
+  dispatchCustomEvent as dispatchCustomEventEvent,
 } from "./event";
-export type { EventOptions } from "./event";
+export type { EventOptions as EventOptionsEvent } from "./event";
 
 // 函数工具
-export { debounce as debounceFn, throttle as throttleFn, retry, memoize, timeout } from "./function";
+export {
+  debounce as debounceFn,
+  throttle as throttleFn,
+  retry,
+  memoize as memoizeFn,
+  timeout as timeoutFn,
+} from "./function";
+
+// 日志工具
+export { createLogger } from "./logger";
+export type { LogLevel, LoggerOptions, LogStyles, LogLevelWeight } from "./logger";
 
 // 数学工具
 export {
@@ -74,8 +98,20 @@ export {
   toSignificantDigits,
 } from "./math";
 
+// 数字工具
+export { formatPercent, formatCurrency, formatNumber } from "./number";
+
 // 对象工具
-export { deepClone, merge, getType, isEmpty as isEmptyObject, deepMerge, get, set, flattenObject } from "./object";
+export {
+  deepClone as deepCloneObject,
+  merge as mergeObject,
+  getType as getTypeObject,
+  isEmpty as isEmptyObject,
+  deepMerge as deepMergeObject,
+  get as getObject,
+  set as setObject,
+  flattenObject as flattenObject,
+} from "./object";
 
 // 字符串工具
 export {
@@ -88,9 +124,9 @@ export {
   toSnakeCase,
   toKebabCase,
   truncate,
-  format,
+  formatString,
   template,
-  escapeHtml as stringEscapeHtml,
+  escapeHtml,
 } from "./string";
 
 // 类型工具
@@ -123,19 +159,3 @@ export {
   isArrayBuffer,
   isDataView,
 } from "./types";
-
-// 数字工具
-export { format as formatNumber, formatPercent, formatCurrency } from "./number";
-
-// 错误处理工具
-export {
-  throwError,
-  assert,
-  assertType,
-  assertRequired,
-  tryCatch,
-  tryCatchAsync,
-  formatError,
-  contextError,
-} from "./error";
-export type { ErrorCode, XiHanError } from "./error";

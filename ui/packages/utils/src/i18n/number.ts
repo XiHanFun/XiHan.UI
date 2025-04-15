@@ -332,20 +332,3 @@ export function formatFileSize(bytes: number, locale: string = "zh-CN", decimals
 
   return formatWithUnit(value, sizes[i], { locale, decimals });
 }
-
-// 同时提供命名空间对象
-export const number = {
-  formatNumber,
-  formatPercent,
-  formatWithUnit,
-  parseNumber,
-  getNumberFormatInfo,
-  roundNumber,
-  padNumber,
-  formatFileSize,
-  COMMON_UNITS,
-  DEFAULT_NUMBER_FORMAT_OPTIONS,
-};
-
-// 默认导出命名空间对象
-export default number;

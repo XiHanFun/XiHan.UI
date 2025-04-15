@@ -4,14 +4,14 @@
  * @param options 密码选项，默认包含大小写字母、数字和符号
  * @returns 返回随机密码
  */
-export const generatePassword = (
+export function generatePassword(
   length = 12,
   options = {
     uppercase: true,
     numbers: true,
     symbols: true,
   },
-): string => {
+): string {
   const chars = {
     lowercase: "abcdefghijklmnopqrstuvwxyz",
     uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
@@ -25,7 +25,7 @@ export const generatePassword = (
   if (options.symbols) pool += chars.symbols;
 
   return Array.from({ length }, () => pool.charAt(Math.floor(Math.random() * pool.length))).join("");
-};
+}
 
 /**
  * Base64 编解码

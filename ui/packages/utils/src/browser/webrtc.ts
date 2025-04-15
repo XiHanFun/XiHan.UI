@@ -737,17 +737,3 @@ export function createSimplePeer(
     },
   };
 }
-
-// 同时提供命名空间对象
-export const webrtcUtils = {
-  checkWebRTCSupport,
-  createRTCConnection,
-  createPeerConnection,
-  createDataChannel,
-  createWebSocketSignaling,
-  getDefaultIceServers,
-  createSimplePeer,
-};
-
-// 默认导出命名空间对象
-export default webrtcUtils;

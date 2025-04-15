@@ -1,9 +1,13 @@
 /**
+ * 剪贴板处理工具函数
+ */
+
+/**
  * 复制文本到剪贴板
  * @param text 要复制的文本
  * @returns Promise<void>
  */
-export const copyText = async (text: string): Promise<void> => {
+export async function copyText(text: string): Promise<void> {
   try {
     await navigator.clipboard.writeText(text);
   } catch {
@@ -18,14 +22,14 @@ export const copyText = async (text: string): Promise<void> => {
     document.execCommand("copy", false, undefined);
     document.body.removeChild(textarea);
   }
-};
+}
 
 /**
  * 复制图片到剪贴板
  * @param image 要复制的图片或图片URL
  * @returns Promise<void>
  */
-export const copyImage = async (image: HTMLImageElement | string): Promise<void> => {
+export async function copyImage(image: HTMLImageElement | string): Promise<void> {
   try {
     let imgElement: HTMLImageElement;
 
@@ -56,25 +60,25 @@ export const copyImage = async (image: HTMLImageElement | string): Promise<void>
   } catch (error: unknown) {
     throw new Error(`复制图片失败: ${error instanceof Error ? error.message : "未知错误"}`);
   }
-};
+}
 
 /**
  * 从剪贴板读取文本
  * @returns Promise<string>
  */
-export const readText = async (): Promise<string> => {
+export async function readText(): Promise<string> {
   try {
     return await navigator.clipboard.readText();
   } catch {
     throw new Error("无法访问剪贴板");
   }
-};
+}
 
 /**
  * 从剪贴板读取图片
  * @returns Promise<Blob | null>
  */
-export const readImage = async (): Promise<Blob | null> => {
+export async function readImage(): Promise<Blob | null> {
   try {
     const items = await navigator.clipboard.read();
     for (const item of items) {
@@ -88,14 +92,14 @@ export const readImage = async (): Promise<Blob | null> => {
   } catch {
     throw new Error("无法从剪贴板读取图片");
   }
-};
+}
 
 /**
  * 检查剪贴板权限
  * @param type 权限类型
  * @returns Promise<boolean>
  */
-export const checkPermission = async (type: "read" | "write" = "read"): Promise<boolean> => {
+export async function checkPermission(type: "read" | "write" = "read"): Promise<boolean> {
   try {
     const permission = await navigator.permissions.query({
       name: "clipboard" as PermissionName,
@@ -105,16 +109,4 @@ export const checkPermission = async (type: "read" | "write" = "read"): Promise<
   } catch {
     return false;
   }
-};
-
-// 同时提供命名空间对象
-export const clipboardUtils = {
-  copyText,
-  copyImage,
-  readText,
-  readImage,
-  checkPermission,
-};
-
-// 默认导出命名空间对象
-export default clipboardUtils;
+}

@@ -46,7 +46,7 @@
     "build": "unbuild"
   },
   "devDependencies": {
-    "rollup-plugin-scss": "catalog:",
-    "sass": "catalog:"
+    "sass": "catalog:",
+    "rollup-plugin-scss": "catalog:"
   }
 }
