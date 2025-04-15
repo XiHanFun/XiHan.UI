@@ -37,17 +37,6 @@ export { createPlugin, createAsyncPlugin } from "./plugins";
 // 指令系统
 export { vClickOutside, vDebounce, vCopy, vLoading, vFocus, vResize } from "./directives";
 
-// 路由辅助
-export {
-  goBack,
-  handleNavigationDuplicates,
-  useRouteHistory,
-  useRouteParam,
-  generateNestedRoutes,
-  usePermissionRoutes,
-  useRouteActive,
-} from "./router";
-
 // 状态管理辅助
 export {
   createLocalState,
