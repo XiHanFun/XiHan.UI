@@ -536,21 +536,3 @@ export function estimateSpringDuration(config: SpringConfig, threshold: number =
     return duration * 1000;
   }
 }
-
-// 同时提供命名空间对象
-export const spring = {
-  createSpringSystem,
-  createSpringAnimation,
-  springTransition,
-  springTransform,
-  springIn,
-  springOut,
-  SpringPresets,
-  calculateCriticalDamping,
-  isUnderdamped,
-  isOverdamped,
-  estimateSpringDuration,
-};
-
-// 默认导出命名空间对象
-export default spring;
