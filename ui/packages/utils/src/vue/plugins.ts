@@ -14,7 +14,7 @@ export interface PluginOptions {
  * @param options - 插件选项
  * @returns 返回插件
  */
-export const createPlugin = (options: PluginOptions = {}) => {
+export function createPlugin(options: PluginOptions = {}) {
   return {
     install(app: App) {
       // 注入全局配置
@@ -24,14 +24,14 @@ export const createPlugin = (options: PluginOptions = {}) => {
       };
     },
   };
-};
+}
 
 /**
  * 创建异步插件
  * @param options - 插件选项
  * @returns 返回异步插件
  */
-export const createAsyncPlugin = (options: PluginOptions = {}) => {
+export function createAsyncPlugin(options: PluginOptions = {}) {
   return {
     async install(app: App) {
       // 注入全局配置
@@ -41,4 +41,4 @@ export const createAsyncPlugin = (options: PluginOptions = {}) => {
       };
     },
   };
-};
+}

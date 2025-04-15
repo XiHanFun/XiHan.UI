@@ -2,7 +2,7 @@
  * WebWorker 工具集
  * 提供简化的 Worker 创建和通信方案
  */
-import { isWebWorkerSupported, isSharedWorkerSupported, getHardwareConcurrency } from "./navigator";
+import { isWebWorkerSupported, isSharedWorkerSupported, getHardwareConcurrency } from "../device/navigator";
 
 /**
  * Worker 配置选项
@@ -480,12 +480,3 @@ export function createInlineWorker<T = any, R = any>(fn: Function, options?: Wor
 
   return worker;
 }
-
-// 同时提供命名空间对象
-export const workerUtils = {
-  WorkerWrapper,
-  WorkerPool,
-};
-
-// 默认导出命名空间对象
-export default workerUtils;

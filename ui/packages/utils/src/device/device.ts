@@ -1,7 +1,16 @@
 /**
+ * 设备处理工具函数
+ */
+
+/**
+ * 设备类型
+ */
+export type DeviceType = "mobile" | "tablet" | "desktop";
+
+/**
  * 获取设备类型
  */
-export const getDeviceType = (): "mobile" | "tablet" | "desktop" => {
+export function getDeviceType(): DeviceType {
   const ua = navigator.userAgent;
   if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
     return "tablet";
@@ -10,46 +19,34 @@ export const getDeviceType = (): "mobile" | "tablet" | "desktop" => {
     return "mobile";
   }
   return "desktop";
-};
+}
 
 /**
  * 检测是否支持触摸
  */
-export const isTouchDevice = (): boolean => {
+export function isTouchDevice(): boolean {
   return "ontouchstart" in window || navigator.maxTouchPoints > 0;
-};
+}
 
 /**
  * 检测是否为 iOS 设备
  */
-export const isIOS = (): boolean => {
+export function isIOS(): boolean {
   return (
     /iPad|iPhone|iPod/.test(navigator.platform) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
   );
-};
+}
 
 /**
  * 检测是否为安卓设备
  */
-export const isAndroid = (): boolean => {
+export function isAndroid(): boolean {
   return /Android/.test(navigator.userAgent);
-};
+}
 
 /**
  * 获取设备方向
  */
-export const getOrientation = (): "portrait" | "landscape" => {
+export function getOrientation(): "portrait" | "landscape" {
   return window.innerHeight > window.innerWidth ? "portrait" : "landscape";
-};
-
-// 同时提供命名空间对象
-export const deviceUtils = {
-  getDeviceType,
-  isTouchDevice,
-  isIOS,
-  isAndroid,
-  getOrientation,
-};
-
-// 默认导出命名空间对象
-export default deviceUtils;
+}

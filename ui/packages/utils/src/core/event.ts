@@ -18,14 +18,14 @@ export interface EventOptions {
  * @param options 事件选项
  * @returns 返回事件监听器
  */
-export const on = (
+export function on(
   target: EventTarget,
   event: string,
   handler: EventListenerOrEventListenerObject,
   options?: EventOptions,
-): void => {
+): void {
   target.addEventListener(event, handler, options);
-};
+}
 
 /**
  * 移除事件监听器
@@ -35,14 +35,14 @@ export const on = (
  * @param options 事件选项
  * @returns 返回移除事件监听器
  */
-export const off = (
+export function off(
   target: EventTarget,
   event: string,
   handler: EventListenerOrEventListenerObject,
   options?: EventOptions,
-): void => {
+): void {
   target.removeEventListener(event, handler, options);
-};
+}
 
 /**
  * 只执行一次的事件监听器
@@ -52,13 +52,13 @@ export const off = (
  * @param options 事件选项
  * @returns 返回只执行一次的事件监听器
  */
-export const once = (target: EventTarget, event: string, handler: Function, options?: EventOptions): void => {
+export function once(target: EventTarget, event: string, handler: Function, options?: EventOptions): void {
   const wrapper = (...args: any[]) => {
     handler.apply(null, args);
     off(target, event, wrapper);
   };
   on(target, event, wrapper, options);
-};
+}
 
 /**
  * 防抖事件
@@ -66,13 +66,13 @@ export const once = (target: EventTarget, event: string, handler: Function, opti
  * @param wait 等待时间
  * @returns 返回防抖事件
  */
-export const debounce = <T extends (...args: any[]) => any>(func: T, wait: number): T => {
+export function debounce<T extends (...args: any[]) => any>(func: T, wait: number): T {
   let timeout: ReturnType<typeof setTimeout>;
   return function (this: any, ...args: any[]) {
     clearTimeout(timeout);
     timeout = setTimeout(() => func.apply(this, args), wait);
   } as T;
-};
+}
 
 /**
  * 节流事件
@@ -80,7 +80,7 @@ export const debounce = <T extends (...args: any[]) => any>(func: T, wait: numbe
  * @param wait 等待时间
  * @returns 返回节流事件
  */
-export const throttle = <T extends (...args: any[]) => any>(func: T, wait: number): T => {
+export function throttle<T extends (...args: any[]) => any>(func: T, wait: number): T {
   let previous = 0;
 
   return function (this: any, ...args: any[]) {
@@ -90,34 +90,34 @@ export const throttle = <T extends (...args: any[]) => any>(func: T, wait: numbe
       previous = now;
     }
   } as T;
-};
+}
 
 /**
  * 阻止事件冒泡
  * @param e 事件对象
  * @returns 返回阻止事件冒泡
  */
-export const stopPropagation = (e: Event): void => {
+export function stopPropagation(e: Event): void {
   e.stopPropagation();
-};
+}
 
 /**
  * 阻止默认行为
  * @param e 事件对象
  * @returns 返回阻止默认行为
  */
-export const preventDefault = (e: Event): void => {
+export function preventDefault(e: Event): void {
   e.preventDefault();
-};
+}
 
 /**
  * 获取事件目标元素
  * @param e 事件对象
  * @returns 返回事件目标元素
  */
-export const getEventTarget = <T extends EventTarget>(e: Event): T => {
+export function getEventTarget<T extends EventTarget>(e: Event): T {
   return e.target as T;
-};
+}
 
 /**
  * 创建自定义事件
@@ -126,18 +126,14 @@ export const getEventTarget = <T extends EventTarget>(e: Event): T => {
  * @param options 事件选项
  * @returns 返回自定义事件
  */
-export const createCustomEvent = <T = any>(
-  eventName: string,
-  detail?: T,
-  options?: CustomEventInit,
-): CustomEvent<T> => {
+export function createCustomEvent<T = any>(eventName: string, detail?: T, options?: CustomEventInit): CustomEvent<T> {
   return new CustomEvent(eventName, {
     detail,
     bubbles: true,
     cancelable: true,
     ...options,
   });
-};
+}
 
 /**
  * 派发自定义事件
@@ -147,12 +143,12 @@ export const createCustomEvent = <T = any>(
  * @param options 事件选项
  * @returns 返回派发自定义事件
  */
-export const dispatchCustomEvent = <T = any>(
+export function dispatchCustomEvent<T = any>(
   target: EventTarget,
   eventName: string,
   detail?: T,
   options?: CustomEventInit,
-): boolean => {
+): boolean {
   const event = createCustomEvent(eventName, detail, options);
   return target.dispatchEvent(event);
-};
+}

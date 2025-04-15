@@ -344,18 +344,3 @@ export function getLocaleCurrency(locale: string): string {
 
   return defaultCurrency || "USD";
 }
-
-// 同时提供命名空间对象
-export const currency = {
-  formatCurrency,
-  parseCurrency,
-  getCurrencyInfo,
-  getCurrencySymbol,
-  convertCurrency,
-  getLocaleCurrency,
-  COMMON_CURRENCIES,
-  DEFAULT_CURRENCY_FORMAT_OPTIONS,
-};
-
-// 默认导出命名空间对象
-export default currency;

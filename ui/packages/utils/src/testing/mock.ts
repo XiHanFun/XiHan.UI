@@ -95,12 +95,15 @@ export function mockObject<T extends Record<string, any>>(config: MockDataConfig
  * @param options 响应选项
  * @returns 模拟响应
  */
-export function mockResponse<T>(data: T, options: { status?: number; delay?: number } = {}): Promise<{ data: T }> {
+export function mockResponse<T>(
+  data: T,
+  options: { status?: number; delay?: number } = {},
+): Promise<{ data: T; status: number }> {
   const { status = 200, delay = 500 } = options;
 
   return new Promise(resolve => {
     setTimeout(() => {
-      resolve({ data });
+      resolve({ data, status });
     }, delay);
   });
 }
@@ -116,18 +119,9 @@ export function mockError(message: string, options: { status?: number; delay?: n
 
   return new Promise((_, reject) => {
     setTimeout(() => {
-      reject(new Error(message));
+      const error = new Error(message);
+      (error as any).status = status;
+      reject(error);
     }, delay);
   });
 }
-
-export default {
-  mockString,
-  mockNumber,
-  mockBoolean,
-  mockDate,
-  mockArray,
-  mockObject,
-  mockResponse,
-  mockError,
-};

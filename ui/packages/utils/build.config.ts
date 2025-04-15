@@ -1,7 +1,21 @@
 import { defineBuildConfig } from "unbuild";
 
 export default defineBuildConfig({
-  entries: ["src/index"],
+  entries: [
+    "src/index",
+    "src/animation/index",
+    "src/browser/index",
+    "src/core/index",
+    "src/data/index",
+    "src/device/index",
+    "src/dom/index",
+    "src/i18n/index",
+    "src/media/index",
+    "src/performance/index",
+    "src/security/index",
+    "src/testing/index",
+    "src/vue/index",
+  ],
   declaration: true,
   clean: true,
   rollup: {

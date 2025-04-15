@@ -100,7 +100,7 @@ export const container = {
  * @param values 断点值
  * @returns 断点值
  */
-export const responsive = <T>(values: Partial<Record<Breakpoint, T>>): T | undefined => {
+export function responsive<T>(values: Partial<Record<Breakpoint, T>>): T | undefined {
   const sorted = Object.entries(breakpoints).sort((a, b) => b[1] - a[1]);
   for (const [key, width] of sorted) {
     if (window.innerWidth >= width && key in values) {
@@ -108,4 +108,4 @@ export const responsive = <T>(values: Partial<Record<Breakpoint, T>>): T | undef
     }
   }
   return undefined;
-};
+}

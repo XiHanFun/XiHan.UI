@@ -614,17 +614,3 @@ export async function scanBluetoothDevices(
   // 实际上用户需要手动选择设备
   throw new Error("Web蓝牙API不支持直接扫描设备，请使用connectBLE方法让用户选择设备");
 }
-
-// 同时提供命名空间对象
-export const bluetoothUtils = {
-  isBluetoothSupported,
-  createBluetoothDevice,
-  connectBLE,
-  stringToArrayBuffer,
-  arrayBufferToString,
-  arrayBufferToHex,
-  hexToArrayBuffer,
-};
-
-// 默认导出命名空间对象
-export default bluetoothUtils;

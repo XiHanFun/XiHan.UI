@@ -3,8 +3,8 @@
  * 提供异步组件加载与Suspense相关的工具
  */
 
-import { ref, onErrorCaptured, defineComponent, h, Suspense, Fragment } from "vue";
-import type { Ref, Component, VNode, AsyncComponentLoader } from "vue";
+import { ref, onErrorCaptured, defineComponent, h, Suspense, Fragment, shallowRef } from "vue";
+import type { Ref, Component, AsyncComponentLoader } from "vue";
 
 /**
  * 异步组件加载状态
@@ -290,13 +290,11 @@ export function withSuspense<T, Args extends any[]>(
   then: Promise<T>["then"];
 } {
   return (...args: Args) => {
-    // 创建跟踪状态
-    const suspensePromise = asyncFn(...args);
     const loading = ref(true);
     const error = ref<Error | null>(null);
-    const result = ref<T | null>(null);
+    const result = shallowRef<T | null>(null);
+    const suspensePromise = asyncFn(...args);
 
-    // 监听Promise结果
     suspensePromise
       .then(value => {
         result.value = value;
@@ -308,7 +306,6 @@ export function withSuspense<T, Args extends any[]>(
         loading.value = false;
       });
 
-    // 返回一个具有then方法的对象以支持Suspense
     return {
       loading,
       error,
@@ -317,11 +314,3 @@ export function withSuspense<T, Args extends any[]>(
     };
   };
 }
-
-export default {
-  useAsyncComponent,
-  useSuspenseWrapper,
-  createLazyComponent,
-  createErrorBoundary,
-  withSuspense,
-};

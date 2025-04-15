@@ -43,6 +43,7 @@
     "build": "unbuild"
   },
   "peerDependencies": {
+    "typescript": "catalog:",
     "vue": "catalog:"
   },
   "dependencies": {

@@ -32,7 +32,7 @@ export interface DateFormatOptions {
  * @param format 格式化格式
  * @returns 格式化后的日期字符串
  */
-export const formatDate = (date: Date, format = "YYYY-MM-DD HH:mm:ss"): string => {
+export function formatDate(date: Date, format = "YYYY-MM-DD HH:mm:ss"): string {
   const d = new Date(date);
   const year = d.getFullYear();
   const month = d.getMonth() + 1;
@@ -50,7 +50,7 @@ export const formatDate = (date: Date, format = "YYYY-MM-DD HH:mm:ss"): string =
     .replace("HH", formatNumber(hour))
     .replace("mm", formatNumber(minute))
     .replace("ss", formatNumber(second));
-};
+}
 
 /**
  * 格式化日期
@@ -59,14 +59,14 @@ export const formatDate = (date: Date, format = "YYYY-MM-DD HH:mm:ss"): string =
  * @param locale 地区
  * @returns 格式化后的日期字符串
  */
-export const formatDateToLocale = (
+export function formatDateToLocale(
   date: Date | number | string,
   options: DateFormatOptions = {},
   locale: string = "zh-CN",
-): string => {
+): string {
   const dateObj = new Date(date);
   return new Intl.DateTimeFormat(locale, options).format(dateObj);
-};
+}
 
 /**
  * 获取相对时间描述
@@ -74,7 +74,7 @@ export const formatDateToLocale = (
  * @param now 当前日期，默认为现在
  * @returns 相对时间描述
  */
-export const getRelativeTime = (date: Date | number | string, now: Date = new Date()): string => {
+export function getRelativeTime(date: Date | number | string, now: Date = new Date()): string {
   const targetDate = new Date(date);
   const diff = now.getTime() - targetDate.getTime();
   const rtf = new Intl.RelativeTimeFormat("zh-CN", { numeric: "auto" });
@@ -91,14 +91,14 @@ export const getRelativeTime = (date: Date | number | string, now: Date = new Da
   if (hours > 0) return rtf.format(-hours, "hour");
   if (minutes > 0) return rtf.format(-minutes, "minute");
   return rtf.format(-seconds, "second");
-};
+}
 
 /**
  * 相对时间
  * @param date 日期
  * @returns 相对时间
  */
-export const getRelativeTimeLocaleChina = (date: Date): string => {
+export function getRelativeTimeLocaleChina(date: Date): string {
   const now = Date.now();
   const diff = now - new Date(date).getTime();
   const minute = 60 * 1000;
@@ -113,7 +113,7 @@ export const getRelativeTimeLocaleChina = (date: Date): string => {
   if (diff < month) return `${Math.floor(diff / day)}天前`;
   if (diff < year) return `${Math.floor(diff / month)}个月前`;
   return `${Math.floor(diff / year)}年前`;
-};
+}
 
 /**
  * 获取日期范围
@@ -121,7 +121,7 @@ export const getRelativeTimeLocaleChina = (date: Date): string => {
  * @param end 结束日期
  * @returns 日期范围
  */
-export const getDateRange = (start: Date, end: Date): Date[] => {
+export function getDateRange(start: Date, end: Date): Date[] {
   const dates: Date[] = [];
   const current = new Date(start);
 
@@ -131,7 +131,7 @@ export const getDateRange = (start: Date, end: Date): Date[] => {
   }
 
   return dates;
-};
+}
 
 /**
  * 获取日期起始范围
@@ -139,7 +139,7 @@ export const getDateRange = (start: Date, end: Date): Date[] => {
  * @param unit 单位
  * @returns 日期起始范围
  */
-export const getDateStartToEndRange = (date: Date, unit: "year" | "month" | "week" | "day"): [Date, Date] => {
+export function getDateStartToEndRange(date: Date, unit: "year" | "month" | "week" | "day"): [Date, Date] {
   const d = new Date(date);
   let start: Date;
   let end: Date;
@@ -165,7 +165,7 @@ export const getDateStartToEndRange = (date: Date, unit: "year" | "month" | "wee
   }
 
   return [start, end];
-};
+}
 
 /**
  * 判断是否为同一天
@@ -173,13 +173,13 @@ export const getDateStartToEndRange = (date: Date, unit: "year" | "month" | "wee
  * @param date2 日期2
  * @returns 是否为同一天
  */
-export const isSameDay = (date1: Date, date2: Date): boolean => {
+export function isSameDay(date1: Date, date2: Date): boolean {
   return (
     date1.getFullYear() === date2.getFullYear() &&
     date1.getMonth() === date2.getMonth() &&
     date1.getDate() === date2.getDate()
   );
-};
+}
 
 /**
  * 获取月份的天数
@@ -187,9 +187,9 @@ export const isSameDay = (date1: Date, date2: Date): boolean => {
  * @param month 月份
  * @returns 月份的天数
  */
-export const getDaysInMonth = (year: number, month: number): number => {
+export function getDaysInMonth(year: number, month: number): number {
   return new Date(year, month + 1, 0).getDate();
-};
+}
 
 /**
  * 获取日期是星期几
@@ -197,9 +197,9 @@ export const getDaysInMonth = (year: number, month: number): number => {
  * @param locale 地区
  * @returns 星期几
  */
-export const getDayOfWeek = (date: Date, locale: string = "zh-CN"): string => {
+export function getDayOfWeek(date: Date, locale: string = "zh-CN"): string {
   return date.toLocaleDateString(locale, { weekday: "long" });
-};
+}
 
 /**
  * 日期加减
@@ -207,26 +207,26 @@ export const getDayOfWeek = (date: Date, locale: string = "zh-CN"): string => {
  * @param days 天数
  * @returns 加减后的日期
  */
-export const addDays = (date: Date, days: number): Date => {
+export function addDays(date: Date, days: number): Date {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
   return result;
-};
+}
 
 /**
  * 获取时间戳
  * @param date 日期
  * @returns 时间戳
  */
-export const getTimestamp = (date: Date | number | string = new Date()): number => {
+export function getTimestamp(date: Date | number | string = new Date()): number {
   return new Date(date).getTime();
-};
+}
 
 /**
  * 检查是否为有效日期
  * @param date 日期
  * @returns 是否为有效日期
  */
-export const isValidDate = (date: any): boolean => {
+export function isValidDate(date: any): boolean {
   return date instanceof Date && !isNaN(date.getTime());
-};
+}
