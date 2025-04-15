@@ -454,20 +454,3 @@ export function moveAlongPath(
     },
   );
 }
-
-// 同时提供命名空间对象
-export const svg = {
-  parsePath,
-  serializePath,
-  interpolatePath,
-  animatePath,
-  drawSVGPath,
-  morphSVG,
-  animateSVGColor,
-  animateStroke,
-  getPathPoints,
-  moveAlongPath,
-};
-
-// 默认导出命名空间对象
-export default svg;

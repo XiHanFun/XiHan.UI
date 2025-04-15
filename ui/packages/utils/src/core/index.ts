@@ -1,3 +1,8 @@
+/**
+ * 核心工具模块
+ */
+
+// 数组工具
 export {
   sum as sumArray,
   average as averageArray,
@@ -11,6 +16,7 @@ export {
   sortBy,
 } from "./array";
 
+// 日期工具
 export {
   formatDate,
   formatDateToLocale,
@@ -27,6 +33,7 @@ export {
 } from "./date";
 export type { DateFormatOptions } from "./date";
 
+// 事件工具
 export {
   on,
   off,
@@ -41,8 +48,10 @@ export {
 } from "./event";
 export type { EventOptions } from "./event";
 
+// 函数工具
 export { debounce as debounceFn, throttle as throttleFn, retry, memoize, timeout } from "./function";
 
+// 数学工具
 export {
   add,
   subtract,
@@ -65,8 +74,10 @@ export {
   toSignificantDigits,
 } from "./math";
 
+// 对象工具
 export { deepClone, merge, getType, isEmpty as isEmptyObject, deepMerge, get, set, flattenObject } from "./object";
 
+// 字符串工具
 export {
   generateId,
   isEmpty as isEmptyString,
@@ -82,6 +93,7 @@ export {
   escapeHtml as stringEscapeHtml,
 } from "./string";
 
+// 类型工具
 export {
   isUndefined,
   isNull,
@@ -112,4 +124,18 @@ export {
   isDataView,
 } from "./types";
 
+// 数字工具
 export { format as formatNumber, formatPercent, formatCurrency } from "./number";
+
+// 错误处理工具
+export {
+  throwError,
+  assert,
+  assertType,
+  assertRequired,
+  tryCatch,
+  tryCatchAsync,
+  formatError,
+  contextError,
+} from "./error";
+export type { ErrorCode, XiHanError } from "./error";
