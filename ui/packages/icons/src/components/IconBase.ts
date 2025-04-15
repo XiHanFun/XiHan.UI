@@ -4,9 +4,9 @@ import type { PropType } from "vue";
 export interface IconBaseProps {
   size?: number | string;
   color?: string;
-  spin?: boolean;
-  rotate?: number;
   viewBox?: string;
+  attributes?: Record<string, string>;
+  path?: string;
 }
 
 export default defineComponent({
@@ -20,17 +20,18 @@ export default defineComponent({
       type: String,
       default: "currentColor",
     },
-    spin: {
-      type: Boolean,
-      default: false,
-    },
-    rotate: {
-      type: Number,
-      default: 0,
-    },
     viewBox: {
       type: String,
       default: "0 0 24 24",
+    },
+    // 其他类似属性 stroke: "currentColor", stroke-width: "2", stroke-linecap: "round", stroke-linejoin: "round"
+    attributes: {
+      type: Object as PropType<Record<string, string>>,
+      default: () => ({}),
+    },
+    path: {
+      type: String,
+      default: "",
     },
   },
   setup(props, { slots }) {
@@ -38,15 +39,17 @@ export default defineComponent({
       h(
         "svg",
         {
-          viewBox: props.viewBox,
           width: props.size,
           height: props.size,
           fill: props.color,
-          style: {
-            transform: props.rotate ? `rotate(${props.rotate}deg)` : undefined,
-            animation: props.spin ? "xh-icon-spin 1s infinite linear" : undefined,
-          },
+          viewBox: props.viewBox,
+          ...props.attributes,
+           "path",
+        {
+          d: props.path,
         },
+        },
+
         slots.default?.(),
       );
   },
