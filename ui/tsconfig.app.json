@@ -30,6 +30,7 @@
       "@xihan-ui/directives": ["packages/directives/src"],
       "@xihan-ui/locales": ["packages/locales/src"],
       "@xihan-ui/constants": ["packages/constants/src"],
+      "@xihan-ui/cli": ["packages/cli/src"],
       // 主包
       "xihan-ui": ["packages/xihan-ui/src"]
     },

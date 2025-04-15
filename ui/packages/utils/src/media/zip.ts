@@ -86,14 +86,14 @@ export interface UnzipOptions extends ZipOptions {
  * 检查是否支持ZIP操作
  * 主要检查Blob，File，FileReader，ArrayBuffer等API是否可用
  */
-export const isZipSupported = (): boolean => {
+export function isZipSupported(): boolean {
   return (
     typeof Blob !== "undefined" &&
     typeof File !== "undefined" &&
     typeof FileReader !== "undefined" &&
     typeof ArrayBuffer !== "undefined"
   );
-};
+}
 
 /**
  * 创建ZIP文件
@@ -101,7 +101,7 @@ export const isZipSupported = (): boolean => {
  * @param options ZIP操作选项
  * @returns 包含ZIP数据的Blob对象
  */
-export const createZip = async (entries: ZipEntry[], options: ZipOptions = {}): Promise<Blob> => {
+export async function createZip(entries: ZipEntry[], options: ZipOptions = {}): Promise<Blob> {
   // 注意：此函数实现需要依赖如JSZip等第三方库
   // 以下是一个示例实现，实际使用时请引入适当的库
 
@@ -187,7 +187,7 @@ export const createZip = async (entries: ZipEntry[], options: ZipOptions = {}): 
     }
     throw err;
   }
-};
+}
 
 /**
  * 解压ZIP文件
@@ -195,10 +195,10 @@ export const createZip = async (entries: ZipEntry[], options: ZipOptions = {}): 
  * @param options 解压选项
  * @returns 文件映射对象，键为文件名，值为文件数据
  */
-export const unzip = async (
+export async function unzip(
   zipFile: File | Blob | ArrayBuffer,
   options: UnzipOptions = {},
-): Promise<Map<string, Blob>> => {
+): Promise<Map<string, Blob>> {
   // 注意：此函数实现需要依赖如JSZip等第三方库
   // 以下是一个示例实现，实际使用时请引入适当的库
 
@@ -280,7 +280,7 @@ export const unzip = async (
     }
     throw err;
   }
-};
+}
 
 /**
  * 从ZIP文件中提取单个文件
@@ -289,27 +289,27 @@ export const unzip = async (
  * @param options 解压选项
  * @returns 提取的文件内容
  */
-export const extractFile = async (
+export async function extractFile(
   zipFile: File | Blob | ArrayBuffer,
   filename: string,
   options: UnzipOptions = {},
-): Promise<Blob | null> => {
+): Promise<Blob | null> {
   const result = await unzip(zipFile, {
     ...options,
     files: [filename],
   });
 
   return result.get(filename) || null;
-};
+}
 
 /**
  * 列出ZIP文件内容
  * @param zipFile ZIP文件对象
  * @returns 文件列表信息
  */
-export const listZipContents = async (
+export async function listZipContents(
   zipFile: File | Blob | ArrayBuffer,
-): Promise<{ name: string; size: number; compressed: number; dir: boolean; date: Date }[]> => {
+): Promise<{ name: string; size: number; compressed: number; dir: boolean; date: Date }[]> {
   // 检查浏览器支持
   if (!isZipSupported()) {
     throw new Error("您的浏览器不支持ZIP操作");
@@ -337,14 +337,14 @@ export const listZipContents = async (
   });
 
   return contents;
-};
+}
 
 /**
  * 将ZIP文件保存到本地
  * @param zipData ZIP文件数据
  * @param filename 保存的文件名
  */
-export const saveZipFile = (zipData: Blob, filename: string = "archive.zip"): void => {
+export function saveZipFile(zipData: Blob, filename: string = "archive.zip"): void {
   const url = URL.createObjectURL(zipData);
 
   const a = document.createElement("a");
@@ -360,7 +360,7 @@ export const saveZipFile = (zipData: Blob, filename: string = "archive.zip"): vo
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }, 100);
-};
+}
 
 /**
  * 添加文件夹到ZIP
@@ -369,11 +369,11 @@ export const saveZipFile = (zipData: Blob, filename: string = "archive.zip"): vo
  * @param options ZIP操作选项
  * @returns ZIP文件数据
  */
-export const addFolderToZip = async (
+export async function addFolderToZip(
   folderName: string,
   files: Map<string, Blob | File | ArrayBuffer | Uint8Array>,
   options: ZipOptions = {},
-): Promise<Blob> => {
+): Promise<Blob> {
   const entries: ZipEntry[] = [];
 
   // 确保文件夹名称以/结尾
@@ -400,7 +400,7 @@ export const addFolderToZip = async (
 
   // 创建ZIP
   return createZip(entries, options);
-};
+}
 
 /**
  * 合并多个ZIP文件
@@ -408,7 +408,7 @@ export const addFolderToZip = async (
  * @param options ZIP操作选项
  * @returns 合并后的ZIP文件
  */
-export const mergeZips = async (zipFiles: (File | Blob | ArrayBuffer)[], options: ZipOptions = {}): Promise<Blob> => {
+export async function mergeZips(zipFiles: (File | Blob | ArrayBuffer)[], options: ZipOptions = {}): Promise<Blob> {
   // 检查浏览器支持
   if (!isZipSupported()) {
     throw new Error("您的浏览器不支持ZIP操作");
@@ -471,7 +471,7 @@ export const mergeZips = async (zipFiles: (File | Blob | ArrayBuffer)[], options
   }
 
   return blob;
-};
+}
 
 // 为TypeScript定义JSZip接口
 declare global {
@@ -479,18 +479,3 @@ declare global {
     JSZip: any;
   }
 }
-
-// 同时提供命名空间对象
-export const zipUtils = {
-  isZipSupported,
-  createZip,
-  unzip,
-  extractFile,
-  listZipContents,
-  saveZipFile,
-  addFolderToZip,
-  mergeZips,
-};
-
-// 默认导出命名空间对象
-export default zipUtils;

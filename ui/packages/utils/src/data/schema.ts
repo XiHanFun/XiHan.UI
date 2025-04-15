@@ -287,14 +287,14 @@ const validateObject = (data: any, schema: Schema, path = "$"): ValidationError[
  * @param schema Schema定义
  * @returns 验证结果
  */
-export const validate = (data: any, schema: Schema): ValidationResult => {
+export function validate(data: any, schema: Schema): ValidationResult {
   const errors = validateObject(data, schema);
 
   return {
     valid: errors.length === 0,
     errors,
   };
-};
+}
 
 /**
  * 根据Schema设置默认值
@@ -302,7 +302,7 @@ export const validate = (data: any, schema: Schema): ValidationResult => {
  * @param schema Schema定义
  * @returns 设置了默认值的数据
  */
-export const applyDefaults = <T>(data: T, schema: Schema): T => {
+export function applyDefaults<T>(data: T, schema: Schema): T {
   const result = { ...data } as any;
 
   if (schema.properties) {
@@ -327,18 +327,18 @@ export const applyDefaults = <T>(data: T, schema: Schema): T => {
   }
 
   return result as T;
-};
+}
 
 /**
  * 创建基于Schema的对象构建器
  * @param schema Schema定义
  * @returns 构建器函数
  */
-export const createBuilder = <T>(schema: Schema) => {
+export function createBuilder<T>(schema: Schema) {
   return (data: Partial<T> = {}): T => {
     const result = applyDefaults(data, schema) as T;
     return result;
   };
-};
+}
 
 export type { Schema, SchemaProperty, SchemaType, ValidationResult, ValidationError };

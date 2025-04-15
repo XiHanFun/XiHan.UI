@@ -834,22 +834,3 @@ export async function createGifFromVideo(
   });
   */
 }
-
-// 同时提供命名空间对象
-export const videoUtils = {
-  isSupportedVideoFormat,
-  getSupportedVideoFormats,
-  createVideoElement,
-  createVideoController,
-  createVideo,
-  captureVideoFrame,
-  getVideoDevices,
-  getCameraStream,
-  getScreenStream,
-  createVideoRecorder,
-  getVideoMetadata,
-  createStreamPreview,
-};
-
-// 默认导出命名空间对象
-export default videoUtils;

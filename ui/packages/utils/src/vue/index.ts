@@ -10,6 +10,7 @@ export {
   registerDirectives,
   registerPlugins,
 } from "./install";
+export type { InstallOptions } from "./install";
 
 // 组合式API
 export {
@@ -33,6 +34,7 @@ export { themeMixin, sizeMixin, disabledMixin } from "./mixins";
 
 // 插件系统
 export { createPlugin, createAsyncPlugin } from "./plugins";
+export type { PluginOptions } from "./plugins";
 
 // 指令系统
 export { vClickOutside, vDebounce, vCopy, vLoading, vFocus, vResize } from "./directives";

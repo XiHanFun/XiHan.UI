@@ -426,11 +426,11 @@ export const wasmManager = new WasmModuleManager();
  * @param onProgress 进度回调
  * @returns 加载后的模块信息
  */
-export const loadWasmModule = async (
+export async function loadWasmModule(
   url: string,
   imports: WebAssembly.Imports = {},
   onProgress?: (event: WasmProgressEvent) => void,
-): Promise<WasmModuleInfo> => {
+): Promise<WasmModuleInfo> {
   // 从URL生成模块名称
   const name = url.split("/").pop()!.split(".")[0];
 
@@ -443,14 +443,14 @@ export const loadWasmModule = async (
     },
     onProgress,
   );
-};
+}
 
 /**
  * 创建与WebAssembly模块交互的辅助对象
  * @param moduleInfo 模块信息
  * @returns 辅助对象
  */
-export const createWasmHelper = (moduleInfo: WasmModuleInfo) => {
+export function createWasmHelper(moduleInfo: WasmModuleInfo) {
   return {
     /**
      * 调用模块导出函数
@@ -522,14 +522,4 @@ export const createWasmHelper = (moduleInfo: WasmModuleInfo) => {
      */
     getModuleInfo: () => moduleInfo,
   };
-};
-
-// 同时提供命名空间对象
-export const wasmUtils = {
-  wasmManager,
-  loadWasmModule,
-  createWasmHelper,
-};
-
-// 默认导出命名空间对象
-export default wasmUtils;
+}

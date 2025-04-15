@@ -7,7 +7,7 @@ import { isObject } from "./types";
  * @param obj 需要克隆的对象
  * @returns 克隆后的对象，与原对象完全独立
  */
-export const deepClone = <T>(obj: T): T => {
+export function deepClone<T>(obj: T): T {
   if (!isObject(obj)) return obj;
 
   const clone: Record<string, any> = Array.isArray(obj) ? [] : {};
@@ -17,7 +17,7 @@ export const deepClone = <T>(obj: T): T => {
   });
 
   return clone as T;
-};
+}
 
 /**
  * 合并两个对象
@@ -25,7 +25,7 @@ export const deepClone = <T>(obj: T): T => {
  * @param source 源对象，用于提供要合并的属性
  * @returns 合并后的目标对象
  */
-export const merge = <T extends Record<string, any>>(target: T, source: Record<string, any>): T => {
+export function merge<T extends Record<string, any>>(target: T, source: Record<string, any>): T {
   Object.keys(source).forEach(key => {
     if (!(key in target)) {
       (target as Record<string, any>)[key] = source[key];
@@ -33,25 +33,25 @@ export const merge = <T extends Record<string, any>>(target: T, source: Record<s
   });
 
   return target;
-};
+}
 
 /**
  * 获取对象的类型
  * @param obj 需要获取类型的对象
  * @returns 返回对象的类型
  */
-export const getType = (obj: any): string => {
+export function getType(obj: any): string {
   return Object.prototype.toString.call(obj).slice(8, -1);
-};
+}
 
 /**
  * 检查对象是否为空
  * @param obj 需要检查的对象
  * @returns 如果对象为空，则返回true，否则返回false
  */
-export const isEmpty = (obj: any): boolean => {
+export function isEmpty(obj: any): boolean {
   return Object.keys(obj).length === 0;
-};
+}
 
 /**
  * 深度合并
@@ -59,7 +59,7 @@ export const isEmpty = (obj: any): boolean => {
  * @param sources 源对象数组
  * @returns 合并后的目标对象
  */
-export const deepMerge = <T extends Record<string, any>>(target: T, ...sources: Partial<T>[]): T => {
+export function deepMerge<T extends Record<string, any>>(target: T, ...sources: Partial<T>[]): T {
   if (!sources.length) return target;
   const source = sources.shift();
 
@@ -75,7 +75,7 @@ export const deepMerge = <T extends Record<string, any>>(target: T, ...sources: 
   }
 
   return deepMerge(target, ...sources);
-};
+}
 
 /**
  * 对象路径获取
@@ -84,7 +84,7 @@ export const deepMerge = <T extends Record<string, any>>(target: T, ...sources: 
  * @param defaultValue 默认值
  * @returns 获取到的值或默认值
  */
-export const get = (obj: any, path: string | string[], defaultValue?: any): any => {
+export function get(obj: any, path: string | string[], defaultValue?: any): any {
   const pathStr = Array.isArray(path) ? path.join(".") : path;
   const travel = (regexp: RegExp) =>
     pathStr
@@ -94,7 +94,7 @@ export const get = (obj: any, path: string | string[], defaultValue?: any): any 
 
   const result = travel(/[,[\]]+?/) || travel(/[,[\].]+?/);
   return result === undefined || result === obj ? defaultValue : result;
-};
+}
 
 /**
  * 对象路径设置
@@ -103,7 +103,7 @@ export const get = (obj: any, path: string | string[], defaultValue?: any): any 
  * @param value 要设置的值
  * @returns 设置后的对象
  */
-export const set = (obj: any, path: string | string[], value: any): any => {
+export function set(obj: any, path: string | string[], value: any): any {
   if (Object(obj) !== obj) return obj;
   const keys = !Array.isArray(path) ? (path.toString().match(/[^.[\]]+/g) ?? []) : path;
 
@@ -117,7 +117,7 @@ export const set = (obj: any, path: string | string[], value: any): any => {
   }, obj)[keys[keys.length - 1]] = value;
 
   return obj;
-};
+}
 
 /**
  * 对象扁平化
@@ -125,7 +125,7 @@ export const set = (obj: any, path: string | string[], value: any): any => {
  * @param prefix 前缀
  * @returns 扁平化后的对象
  */
-export const flattenObject = (obj: Record<string, any>, prefix = ""): Record<string, any> => {
+export function flattenObject(obj: Record<string, any>, prefix = ""): Record<string, any> {
   return Object.keys(obj).reduce(
     (acc, k) => {
       const pre = prefix.length ? prefix + "." : "";
@@ -138,4 +138,4 @@ export const flattenObject = (obj: Record<string, any>, prefix = ""): Record<str
     },
     {} as Record<string, any>,
   );
-};
+}

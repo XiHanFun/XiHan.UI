@@ -53,7 +53,7 @@ export interface CompressionOptions {
  * @param options 压缩选项
  * @returns 压缩后的文件对象
  */
-export const compressImage = async (file: File, options: CompressionOptions = {}): Promise<File> => {
+export async function compressImage(file: File, options: CompressionOptions = {}): Promise<File> {
   // 验证输入是否为图片文件
   if (!file.type.startsWith("image/")) {
     throw new Error("仅支持压缩图片文件");
@@ -143,14 +143,14 @@ export const compressImage = async (file: File, options: CompressionOptions = {}
       onProgress(0.1);
     }
   });
-};
+}
 
 /**
  * 压缩文本数据
  * @param text 需要压缩的文本
  * @returns 压缩后的 Uint8Array
  */
-export const compressText = async (text: string): Promise<Uint8Array> => {
+export async function compressText(text: string): Promise<Uint8Array> {
   if (!("CompressionStream" in window)) {
     throw new Error("您的浏览器不支持压缩流API");
   }
@@ -160,14 +160,14 @@ export const compressText = async (text: string): Promise<Uint8Array> => {
 
   // 使用GZIP压缩
   return await compressData(uint8Array);
-};
+}
 
 /**
  * 解压缩文本数据
  * @param compressedData 压缩后的数据
  * @returns 解压后的文本
  */
-export const decompressText = async (compressedData: Uint8Array): Promise<string> => {
+export async function decompressText(compressedData: Uint8Array): Promise<string> {
   if (!("DecompressionStream" in window)) {
     throw new Error("您的浏览器不支持解压缩流API");
   }
@@ -175,7 +175,7 @@ export const decompressText = async (compressedData: Uint8Array): Promise<string
   const decompressedData = await decompressData(compressedData);
   const decoder = new TextDecoder();
   return decoder.decode(decompressedData);
-};
+}
 
 /**
  * 压缩二进制数据
@@ -183,7 +183,7 @@ export const decompressText = async (compressedData: Uint8Array): Promise<string
  * @param format 压缩格式，默认为'gzip'
  * @returns 压缩后的 Uint8Array
  */
-export const compressData = async (data: Uint8Array, format: "gzip" | "deflate" = "gzip"): Promise<Uint8Array> => {
+export async function compressData(data: Uint8Array, format: "gzip" | "deflate" = "gzip"): Promise<Uint8Array> {
   if (!("CompressionStream" in window)) {
     throw new Error("您的浏览器不支持压缩流API");
   }
@@ -197,7 +197,7 @@ export const compressData = async (data: Uint8Array, format: "gzip" | "deflate" 
   // 读取压缩后的数据
   const arrayBuffer = await new Response(cs.readable).arrayBuffer();
   return new Uint8Array(arrayBuffer);
-};
+}
 
 /**
  * 解压缩二进制数据
@@ -205,10 +205,10 @@ export const compressData = async (data: Uint8Array, format: "gzip" | "deflate" 
  * @param format 解压格式，默认为'gzip'
  * @returns 解压后的 Uint8Array
  */
-export const decompressData = async (
+export async function decompressData(
   compressedData: Uint8Array,
   format: "gzip" | "deflate" = "gzip",
-): Promise<Uint8Array> => {
+): Promise<Uint8Array> {
   if (!("DecompressionStream" in window)) {
     throw new Error("您的浏览器不支持解压缩流API");
   }
@@ -222,7 +222,7 @@ export const decompressData = async (
   // 读取解压后的数据
   const arrayBuffer = await new Response(ds.readable).arrayBuffer();
   return new Uint8Array(arrayBuffer);
-};
+}
 
 /**
  * 对文件对象进行压缩
@@ -230,7 +230,7 @@ export const decompressData = async (
  * @param options 压缩选项
  * @returns 压缩后的文件对象
  */
-export const compressFile = async (file: File, options: CompressionOptions = {}): Promise<File> => {
+export async function compressFile(file: File, options: CompressionOptions = {}): Promise<File> {
   // 根据文件类型选择适当的压缩方法
   if (file.type.startsWith("image/")) {
     return compressImage(file, options);
@@ -256,7 +256,7 @@ export const compressFile = async (file: File, options: CompressionOptions = {})
     type: "application/gzip",
     lastModified: file.lastModified,
   });
-};
+}
 
 /**
  * 批量压缩文件
@@ -264,7 +264,7 @@ export const compressFile = async (file: File, options: CompressionOptions = {})
  * @param options 压缩选项
  * @returns 压缩后的文件列表
  */
-export const compressBatch = async (files: File[], options: CompressionOptions = {}): Promise<File[]> => {
+export async function compressBatch(files: File[], options: CompressionOptions = {}): Promise<File[]> {
   const compressedFiles: File[] = [];
   let processedCount = 0;
 
@@ -288,18 +288,4 @@ export const compressBatch = async (files: File[], options: CompressionOptions =
   }
 
   return compressedFiles;
-};
-
-// 同时提供命名空间对象
-export const compressionUtils = {
-  compressImage,
-  compressText,
-  decompressText,
-  compressData,
-  decompressData,
-  compressFile,
-  compressBatch,
-};
-
-// 默认导出命名空间对象
-export default compressionUtils;
+}
