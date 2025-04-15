@@ -782,21 +782,3 @@ export function sequenceTransitions(
     },
   };
 }
-
-// 同时提供命名空间对象
-export const transition = {
-  createTransition,
-  createCSSTransition,
-  fadeElement,
-  fadeIn,
-  fadeOut,
-  slideElement,
-  slideIn,
-  slideOut,
-  scaleElement,
-  colorTransition,
-  sequenceTransitions,
-};
-
-// 默认导出命名空间对象
-export default transition;
