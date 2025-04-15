@@ -409,15 +409,3 @@ export function mirrorEasing(easing: EasingFunction, mode: "in-out" | "out-in" =
     }
   };
 }
-
-// 同时提供命名空间对象
-export const easingUtils = {
-  Easing,
-  BezierPresets,
-  composeEasing,
-  sequenceEasing,
-  mirrorEasing,
-};
-
-// 默认导出命名空间对象
-export default easingUtils;
