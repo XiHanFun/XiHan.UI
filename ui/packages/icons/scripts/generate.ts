@@ -73,12 +73,6 @@ function extractAllPaths(svgContent: string): string {
   return paths.join(" ").trim();
 }
 
-// 提取SVG的viewBox值
-function extractViewBox(svgContent: string): string {
-  const viewBoxMatch = svgContent.match(/viewBox="([^"]+)"/);
-  return viewBoxMatch ? viewBoxMatch[1] : "0 0 24 24"; // 默认值
-}
-
 // 检查并转换其他常见SVG元素
 function checkAndConvertOtherSvgElements(svgContent: string): string {
   console.warn("未找到path元素，尝试转换其他SVG元素");
@@ -185,12 +179,12 @@ function findSvgFilesByPattern(baseDir: string, pattern: string): string[] {
 }
 
 // 生成图标模块内容
-function generateIconModule(exportName: string, declareName: string, pathData: string, viewBox: string): string {
+function generateIconModule(exportName: string, declareName: string, pathData: string): string {
   return `
 export const ${exportName} = defineComponent<IconBaseProps>({
   name: "${declareName}",
   setup(props) {
-    return () => h(IconBase, { ...props, viewBox: "${viewBox}" }, [
+    return () => h(IconBase, { ...props }, [
       h("path", { d: "${pathData}" }),
     ]);
   },
@@ -300,7 +294,6 @@ import IconBase, { type IconBaseProps } from "../components/IconBase";
             if ("data" in optimizedSvg) {
               // 提取所有path路径
               const pathData = extractAllPaths(optimizedSvg.data);
-              const viewBox = extractViewBox(optimizedSvg.data);
 
               // 如果没有找到path路径，记录警告并继续
               if (!pathData) {
@@ -308,7 +301,7 @@ import IconBase, { type IconBaseProps } from "../components/IconBase";
                 continue;
               }
 
-              const iconContent = generateIconModule(exportName, declareName, pathData, viewBox);
+              const iconContent = generateIconModule(exportName, declareName, pathData);
               iconComponents.push(exportName);
               singleContent += iconContent;
             }

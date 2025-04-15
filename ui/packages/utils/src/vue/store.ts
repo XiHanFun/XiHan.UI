@@ -3,8 +3,8 @@
  * 提供Pinia/Vuex状态管理增强和工具
  */
 
-import { computed, reactive, ref, readonly, provide, inject, InjectionKey, watch } from "vue";
-import type { Ref, ComputedRef, UnwrapRef } from "vue";
+import { computed, reactive, ref, readonly, provide, inject, watch } from "vue";
+import type { Ref, ComputedRef, UnwrapRef, InjectionKey } from "vue";
 import { defineStore, storeToRefs } from "pinia";
 import type { Store, PiniaPluginContext, StateTree, _GettersTree } from "pinia";
 
@@ -22,7 +22,7 @@ export function createLocalState<T extends object>(key: string, initialState: T)
   try {
     const storedState = localStorage.getItem(key);
     if (storedState) {
-      Object.assign(state, JSON.parse(storedState));
+      Object.assign(state as object, JSON.parse(storedState));
     }
   } catch (error) {
     console.error("Failed to load state from localStorage:", error);
@@ -43,7 +43,7 @@ export function createLocalState<T extends object>(key: string, initialState: T)
 
   // 重置状态方法
   const resetState = () => {
-    Object.assign(state, initialState);
+    Object.assign(state as object, initialState);
   };
 
   // 清除状态方法
@@ -73,7 +73,7 @@ export function createSessionState<T extends object>(key: string, initialState: 
   try {
     const storedState = sessionStorage.getItem(key);
     if (storedState) {
-      Object.assign(state, JSON.parse(storedState));
+      Object.assign(state as object, JSON.parse(storedState));
     }
   } catch (error) {
     console.error("Failed to load state from sessionStorage:", error);
@@ -94,7 +94,7 @@ export function createSessionState<T extends object>(key: string, initialState: 
 
   // 重置状态方法
   const resetState = () => {
-    Object.assign(state, initialState);
+    Object.assign(state as object, initialState);
   };
 
   // 清除状态方法
@@ -117,7 +117,7 @@ export function createSessionState<T extends object>(key: string, initialState: 
  */
 export function createContextState<T extends object>(initialState: T) {
   // 创建注入键
-  const stateKey = Symbol("contextState") as InjectionKey<UnwrapRef<T>>;
+  const stateKey = Symbol("contextState") as InjectionKey<object>;
   const actionsKey = Symbol("contextActions") as InjectionKey<{
     setState: (newState: Partial<T>) => void;
     resetState: () => void;
@@ -128,15 +128,15 @@ export function createContextState<T extends object>(initialState: T) {
     const state = reactive({ ...initialState }) as UnwrapRef<T>;
 
     const setState = (newState: Partial<T>) => {
-      Object.assign(state, newState);
+      Object.assign(state as object, newState);
     };
 
     const resetState = () => {
-      Object.assign(state, initialState);
+      Object.assign(state as object, initialState);
     };
 
     // 提供状态和操作
-    provide(stateKey, readonly(state));
+    provide(stateKey, state as object);
     provide(actionsKey, { setState, resetState });
 
     return {
@@ -241,9 +241,8 @@ export function defineSharedStore<
   Getters extends _GettersTree<State>,
   Actions,
 >(id: Id, initialState: State | (() => State), getters: Getters = {} as Getters, actions: Actions = {} as Actions) {
-  return defineStore({
-    id,
-    state: typeof initialState === "function" ? (initialState as () => State) : () => ({ ...initialState }),
+  return defineStore(id, {
+    state: typeof initialState === "function" ? initialState : () => ({ ...initialState }),
     getters,
     actions: actions as any,
   });

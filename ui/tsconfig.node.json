@@ -17,12 +17,14 @@
     "moduleResolution": "Bundler",
     // 路径别名
     "paths": {
-      "@build/*": ["internal/build/src/*"],
-      "@dev/*": ["internal/dev/src/*"]
-    }
+      "@build": ["internal/build/src"],
+      "@dev": ["internal/dev/src"]
+    },
+    // 保留符号链接
+    "preserveSymlinks": true
   },
   // 包含的文件
-  "include": ["scripts/**/*.ts", "internal/**/*.ts"],
+  "include": ["scripts/**/*.ts", "internal/**/*.ts", "internal/**/*.json"],
   // 排除的文件
   "exclude": ["node_modules", "dist"]
 }

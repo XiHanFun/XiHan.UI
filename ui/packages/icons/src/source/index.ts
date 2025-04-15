@@ -160,7 +160,7 @@ export const icons: IconSource[] = [
       subFolders: "icons",
       url: "https://github.com/lucide-icons/lucide.git",
       branch: "main",
-      hash: "16a18f790881adc6f44767edac29bfc2b42b8dc5",
+      hash: "5f5e052038f364b97d7310c0ac6ee686b90051f4",
     },
   },
   {

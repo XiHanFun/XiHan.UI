@@ -744,18 +744,3 @@ export function createScrollAnimation(
     window.removeEventListener("resize", resizeHandler);
   };
 }
-
-// 同时提供命名空间对象
-export const scroll = {
-  smoothScroll,
-  scrollToTop,
-  scrollToBottom,
-  scrollToElement,
-  scrollToCenter,
-  parallaxScroll,
-  createScrollTrigger,
-  createScrollAnimation,
-};
-
-// 默认导出命名空间对象
-export default scroll;

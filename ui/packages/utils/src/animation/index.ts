@@ -1,28 +1,37 @@
-/**
- * 动画与交互工具集
- * 提供丰富的动画效果和过渡控制功能
- */
+export { Easing, BezierPresets, composeEasing, sequenceEasing, mirrorEasing } from "./easing";
+export type { EasingFunction } from "./easing";
 
-export * from "./easing";
-export * from "./transition";
-export * from "./spring";
-export * from "./svg";
-export * from "./scroll";
+export {
+  createTransition,
+  createCSSTransition,
+  fadeElement,
+  fadeIn,
+  fadeOut,
+  slideElement,
+  slideIn,
+  slideOut,
+  scaleElement,
+  colorTransition,
+  sequenceTransitions,
+} from "./transition";
+export type { TransitionOptions, TransitionController, CSSTransitionProperty } from "./transition";
 
-import easing from "./easing";
-import transition from "./transition";
-import spring from "./spring";
-import svg from "./svg";
-import scroll from "./scroll";
+export {
+  createSpringAnimation,
+  springTransition,
+  springTransform,
+  springIn,
+  springOut,
+  calculateCriticalDamping,
+  isUnderdamped,
+  isOverdamped,
+  estimateSpringDuration,
+  createSpringSystem,
+} from "./spring";
+export type { SpringAnimationOptions, SpringState, SpringConfig } from "./spring";
 
-// 默认导出命名空间对象
-export const animation = {
-  easing,
-  transition,
-  spring,
-  svg,
-  scroll,
-};
+export { animatePath, drawSVGPath, morphSVG, animateSVGColor, animateStroke } from "./svg";
+export type { PathAnimationOptions, PathData } from "./svg";
 
-// 默认导出命名空间对象
-export default animation;
+export { createScrollTrigger, createScrollAnimation, scrollToTop, scrollToBottom, scrollToElement } from "./scroll";
+export type { ScrollTrigger, ScrollListenerOptions, ScrollAnimationTarget } from "./scroll";
