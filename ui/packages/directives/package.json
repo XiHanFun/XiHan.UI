@@ -1,6 +1,6 @@
 {
   "name": "@xihan-ui/directives",
-  "version": "0.9.0",
+  "version": "0.9.5",
   "description": "Directives for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -43,7 +43,6 @@
     "build": "unbuild"
   },
   "peerDependencies": {
-    "typescript": "catalog:",
     "vue": "catalog:"
   },
   "dependencies": {
