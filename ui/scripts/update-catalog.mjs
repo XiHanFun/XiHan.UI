@@ -10,10 +10,10 @@ const workspaceFile = path.join(rootDir, "pnpm-workspace.yaml");
 /**
  * 更新YAML文件中的catalog部分而不影响其他部分
  * @param {string} filePath YAML文件路径
- * @param {string[]} packagesToUpdate 要更新的包
  * @param {boolean} dryRun 是否只预演不实际更新
+ * @param {string[] | null} [packagesToUpdate] 要更新的包，不传则更新所有包
  */
-function updateCatalogInYaml(filePath, packagesToUpdate, dryRun) {
+function updateCatalogInYaml(filePath, dryRun, packagesToUpdate) {
   try {
     // 读取原始文件内容
     if (!fs.existsSync(filePath)) {
@@ -144,8 +144,25 @@ function getLatestVersion(packageName) {
 // 解析命令行参数
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run") || args.includes("-d");
-const packagesArg = args.find(arg => arg.startsWith("--packages=") || arg.startsWith("-p="));
-const packages = packagesArg ? packagesArg.split("=")[1].split(",") : [];
 
-// 运行更新程序
-updateCatalogInYaml(workspaceFile, packages, dryRun);
+// 显示使用说明
+if (args.includes("--help") || args.includes("-h")) {
+  console.log(`
+📦 更新 catalog 依赖工具
+
+用法:
+  node update-catalog.mjs [选项]
+
+选项:
+  --dry-run, -d    预演模式，不实际修改文件
+  --help, -h       显示帮助信息
+
+示例:
+  node update-catalog.mjs
+  node update-catalog.mjs --dry-run
+  `);
+  process.exit(0);
+}
+
+// 运行更新程序，不传入 packages 参数，这样会更新所有包
+updateCatalogInYaml(workspaceFile, dryRun, null);

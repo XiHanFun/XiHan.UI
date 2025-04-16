@@ -1,6 +1,6 @@
 {
   "name": "@xihan-ui/themes",
-  "version": "0.9.0",
+  "version": "0.9.5",
   "description": "Themes for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -46,7 +46,7 @@
     "build": "unbuild"
   },
   "devDependencies": {
-    "sass": "catalog:",
-    "rollup-plugin-scss": "catalog:"
+    "rollup-plugin-scss": "catalog:",
+    "sass": "catalog:"
   }
 }
