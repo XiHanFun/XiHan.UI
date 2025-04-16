@@ -88,11 +88,11 @@ export type ImageFormat = "jpeg" | "png" | "webp" | "gif" | "avif" | "bmp";
  * @param options 转换选项
  * @returns 转换后的文件对象
  */
-export const convertImage = async (
+export async function convertImage(
   file: File,
   format: ImageFormat,
   options: ImageConversionOptions = {},
-): Promise<File> => {
+): Promise<File> {
   // 验证输入是否为图片
   if (!file.type.startsWith("image/")) {
     throw new Error("输入文件不是图片格式");
@@ -231,7 +231,7 @@ export const convertImage = async (
     const url = URL.createObjectURL(file);
     img.src = url;
   });
-};
+}
 
 /**
  * 将图片转换为Base64数据URL
@@ -239,7 +239,7 @@ export const convertImage = async (
  * @param options 转换选项
  * @returns Base64数据URL
  */
-export const imageToDataURL = async (file: File, options: ImageConversionOptions = {}): Promise<string> => {
+export async function imageToDataURL(file: File, options: ImageConversionOptions = {}): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
@@ -320,7 +320,7 @@ export const imageToDataURL = async (file: File, options: ImageConversionOptions
 
     reader.readAsDataURL(file);
   });
-};
+}
 
 /**
  * 将Base64数据URL转换为文件对象
@@ -328,7 +328,7 @@ export const imageToDataURL = async (file: File, options: ImageConversionOptions
  * @param filename 文件名
  * @returns 文件对象
  */
-export const dataURLToFile = (dataURL: string, filename: string): File => {
+export async function dataURLToFile(dataURL: string, filename: string): Promise<File> {
   // 解析数据URL
   const arr = dataURL.split(",");
   const mime = arr[0].match(/:(.*?);/)?.[1];
@@ -342,7 +342,7 @@ export const dataURLToFile = (dataURL: string, filename: string): File => {
   }
 
   return new File([u8arr], filename, { type: mime });
-};
+}
 
 /**
  * 从canvas创建文件对象
@@ -352,12 +352,12 @@ export const dataURLToFile = (dataURL: string, filename: string): File => {
  * @param quality 质量 (0-1)
  * @returns Promise<File>
  */
-export const canvasToFile = (
+export async function canvasToFile(
   canvas: HTMLCanvasElement,
   filename: string,
   mimeType: string = "image/png",
   quality: number = 0.8,
-): Promise<File> => {
+): Promise<File> {
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       blob => {
@@ -373,7 +373,7 @@ export const canvasToFile = (
       quality,
     );
   });
-};
+}
 
 /**
  * 将HTML转换为PDF
@@ -381,12 +381,12 @@ export const canvasToFile = (
  * @param options 转换选项
  * @returns 转换后的PDF文件
  */
-export const htmlToPdf = async (element: HTMLElement | string, options: ConversionOptions = {}): Promise<File> => {
+export async function htmlToPdf(element: HTMLElement | string, options: ConversionOptions = {}): Promise<File> {
   // 注意：此功能需要引入额外的库如html2pdf.js, jsPDF等
   // 本示例仅提供接口结构
   // 在实际实现中，需要添加依赖库处理
   throw new Error("HTML转PDF功能需要额外的库支持");
-};
+}
 
 /**
  * 将JSON对象转换为CSV文件
@@ -394,7 +394,7 @@ export const htmlToPdf = async (element: HTMLElement | string, options: Conversi
  * @param options 转换选项
  * @returns CSV文件对象
  */
-export const jsonToCsv = (data: Record<string, any>[], options: ConversionOptions = {}): File => {
+export async function jsonToCsv(data: Record<string, any>[], options: ConversionOptions = {}): Promise<File> {
   if (!data || !Array.isArray(data) || data.length === 0) {
     throw new Error("数据不能为空");
   }
@@ -438,14 +438,14 @@ export const jsonToCsv = (data: Record<string, any>[], options: ConversionOption
   return new File([csvContent], outputFilename, {
     type: "text/csv;charset=utf-8",
   });
-};
+}
 
 /**
  * 将CSV转换为JSON对象数组
  * @param file CSV文件
  * @returns 解析后的JSON对象数组
  */
-export const csvToJson = async (file: File): Promise<Record<string, string>[]> => {
+export async function csvToJson(file: File): Promise<Record<string, string>[]> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
@@ -493,14 +493,14 @@ export const csvToJson = async (file: File): Promise<Record<string, string>[]> =
 
     reader.readAsText(file);
   });
-};
+}
 
 /**
  * 解析CSV行，处理引号内的特殊字符
  * @param line CSV行
  * @returns 解析后的值数组
  */
-const parseCsvLine = (line: string): string[] => {
+function parseCsvLine(line: string): string[] {
   const values: string[] = [];
   let current = "";
   let inQuotes = false;
@@ -532,14 +532,14 @@ const parseCsvLine = (line: string): string[] => {
   values.push(current);
 
   return values;
-};
+}
 
 /**
  * 将文件转换为ArrayBuffer
  * @param file 文件对象
  * @returns ArrayBuffer
  */
-export const fileToArrayBuffer = (file: File): Promise<ArrayBuffer> => {
+export async function fileToArrayBuffer(file: File): Promise<ArrayBuffer> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
@@ -552,7 +552,7 @@ export const fileToArrayBuffer = (file: File): Promise<ArrayBuffer> => {
     reader.onerror = () => reject(reader.error);
     reader.readAsArrayBuffer(file);
   });
-};
+}
 
 /**
  * 将ArrayBuffer转换为文件
@@ -564,19 +564,3 @@ export const fileToArrayBuffer = (file: File): Promise<ArrayBuffer> => {
 export const arrayBufferToFile = (buffer: ArrayBuffer, filename: string, mimeType: string): File => {
   return new File([buffer], filename, { type: mimeType });
 };
-
-// 同时提供命名空间对象
-export const conversionUtils = {
-  convertImage,
-  imageToDataURL,
-  dataURLToFile,
-  canvasToFile,
-  htmlToPdf,
-  jsonToCsv,
-  csvToJson,
-  fileToArrayBuffer,
-  arrayBufferToFile,
-};
-
-// 默认导出命名空间对象
-export default conversionUtils;

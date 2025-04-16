@@ -63,13 +63,13 @@ export interface StreamFilterOptions extends StreamOptions {
  * 检查浏览器是否支持流API
  * @returns 是否支持流API
  */
-export const isStreamSupported = (): boolean => {
+export function isStreamSupported(): boolean {
   return (
     typeof ReadableStream !== "undefined" &&
     typeof WritableStream !== "undefined" &&
     typeof TransformStream !== "undefined"
   );
-};
+}
 
 /**
  * 将文件转换为可读流
@@ -77,7 +77,7 @@ export const isStreamSupported = (): boolean => {
  * @param options 流处理选项
  * @returns 可读流
  */
-export const fileToReadableStream = (file: File, options: StreamOptions = {}): ReadableStream<Uint8Array> => {
+export function fileToReadableStream(file: File, options: StreamOptions = {}): ReadableStream<Uint8Array> {
   if (!isStreamSupported()) {
     throw new Error("您的浏览器不支持流API");
   }
@@ -158,7 +158,7 @@ export const fileToReadableStream = (file: File, options: StreamOptions = {}): R
       // 流被取消时的清理工作
     },
   });
-};
+}
 
 /**
  * 将流转换为Blob对象
@@ -166,7 +166,7 @@ export const fileToReadableStream = (file: File, options: StreamOptions = {}): R
  * @param options 流处理选项
  * @returns Blob对象
  */
-export const streamToBlob = async (stream: ReadableStream<Uint8Array>, options: StreamOptions = {}): Promise<Blob> => {
+export async function streamToBlob(stream: ReadableStream<Uint8Array>, options: StreamOptions = {}): Promise<Blob> {
   if (!isStreamSupported()) {
     throw new Error("您的浏览器不支持流API");
   }
@@ -203,7 +203,7 @@ export const streamToBlob = async (stream: ReadableStream<Uint8Array>, options: 
   } finally {
     reader.releaseLock();
   }
-};
+}
 
 /**
  * 将流转换为文件对象
@@ -213,15 +213,15 @@ export const streamToBlob = async (stream: ReadableStream<Uint8Array>, options: 
  * @param options 流处理选项
  * @returns 文件对象
  */
-export const streamToFile = async (
+export async function streamToFile(
   stream: ReadableStream<Uint8Array>,
   filename: string,
   mimeType: string,
   options: StreamOptions = {},
-): Promise<File> => {
+): Promise<File> {
   const blob = await streamToBlob(stream, options);
   return new File([blob], filename, { type: mimeType });
-};
+}
 
 /**
  * 将流保存为下载文件
@@ -230,12 +230,12 @@ export const streamToFile = async (
  * @param mimeType MIME类型
  * @param options 流处理选项
  */
-export const saveStreamAsFile = async (
+export async function saveStreamAsFile(
   stream: ReadableStream<Uint8Array>,
   filename: string,
   mimeType: string,
   options: StreamOptions = {},
-): Promise<void> => {
+): Promise<void> {
   const blob = await streamToBlob(stream, options);
   const url = URL.createObjectURL(blob);
 
@@ -252,7 +252,7 @@ export const saveStreamAsFile = async (
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }, 100);
-};
+}
 
 /**
  * 使用转换函数处理流数据
@@ -260,10 +260,10 @@ export const saveStreamAsFile = async (
  * @param options 转换选项
  * @returns 转换后的可读流
  */
-export const transformStream = (
+export function transformStream(
   inputStream: ReadableStream<Uint8Array>,
   options: StreamTransformOptions,
-): ReadableStream<Uint8Array> => {
+): ReadableStream<Uint8Array> {
   if (!isStreamSupported()) {
     throw new Error("您的浏览器不支持流API");
   }
@@ -322,7 +322,7 @@ export const transformStream = (
   }
 
   return inputStream.pipeThrough(transformer);
-};
+}
 
 /**
  * 过滤流数据
@@ -330,10 +330,10 @@ export const transformStream = (
  * @param options 过滤选项
  * @returns 过滤后的可读流
  */
-export const filterStream = (
+export function filterStream(
   inputStream: ReadableStream<Uint8Array>,
   options: StreamFilterOptions,
-): ReadableStream<Uint8Array> => {
+): ReadableStream<Uint8Array> {
   if (!isStreamSupported()) {
     throw new Error("您的浏览器不支持流API");
   }
@@ -395,7 +395,7 @@ export const filterStream = (
   }
 
   return inputStream.pipeThrough(transformer);
-};
+}
 
 /**
  * 流式分析文件内容，无需一次性加载整个文件
@@ -404,14 +404,14 @@ export const filterStream = (
  * @param options 流处理选项
  * @returns 分析结果
  */
-export const analyzeFileStream = async <T>(
+export function analyzeFileStream<T>(
   file: File,
   analyzer: (stream: ReadableStream<Uint8Array>) => Promise<T>,
   options: StreamOptions = {},
-): Promise<T> => {
+): Promise<T> {
   const stream = fileToReadableStream(file, options);
-  return await analyzer(stream);
-};
+  return analyzer(stream);
+}
 
 /**
  * 对流进行加密
@@ -420,11 +420,11 @@ export const analyzeFileStream = async <T>(
  * @param options 流处理选项
  * @returns 加密后的流
  */
-export const encryptStream = async (
+export async function encryptStream(
   inputStream: ReadableStream<Uint8Array>,
   key: CryptoKey,
   options: StreamOptions = {},
-): Promise<ReadableStream<Uint8Array>> => {
+): Promise<ReadableStream<Uint8Array>> {
   if (!isStreamSupported() || !window.crypto || !window.crypto.subtle) {
     throw new Error("您的浏览器不支持必要的加密API");
   }
@@ -449,7 +449,7 @@ export const encryptStream = async (
       return new Uint8Array(encryptedData);
     },
   });
-};
+}
 
 /**
  * 对流进行解密
@@ -458,11 +458,11 @@ export const encryptStream = async (
  * @param options 流处理选项
  * @returns 解密后的流
  */
-export const decryptStream = async (
+export async function decryptStream(
   inputStream: ReadableStream<Uint8Array>,
   key: CryptoKey,
   options: StreamOptions = {},
-): Promise<ReadableStream<Uint8Array>> => {
+): Promise<ReadableStream<Uint8Array>> {
   if (!isStreamSupported() || !window.crypto || !window.crypto.subtle) {
     throw new Error("您的浏览器不支持必要的加密API");
   }
@@ -487,14 +487,14 @@ export const decryptStream = async (
       return new Uint8Array(decryptedData);
     },
   });
-};
+}
 
 /**
  * 串联多个流
  * @param streams 流数组
  * @returns 合并后的流
  */
-export const concatStreams = (streams: ReadableStream<Uint8Array>[]): ReadableStream<Uint8Array> => {
+export function concatStreams(streams: ReadableStream<Uint8Array>[]): ReadableStream<Uint8Array> {
   if (!isStreamSupported()) {
     throw new Error("您的浏览器不支持流API");
   }
@@ -534,14 +534,14 @@ export const concatStreams = (streams: ReadableStream<Uint8Array>[]): ReadableSt
       }
     },
   });
-};
+}
 
 /**
  * 将文本流转换为行流，按行处理大型文本文件
  * @param textStream 文本数据流
  * @returns 行数据流
  */
-export const streamTextByLine = (textStream: ReadableStream<Uint8Array>): ReadableStream<string> => {
+export function streamTextByLine(textStream: ReadableStream<Uint8Array>): ReadableStream<string> {
   if (!isStreamSupported()) {
     throw new Error("您的浏览器不支持流API");
   }
@@ -578,23 +578,4 @@ export const streamTextByLine = (textStream: ReadableStream<Uint8Array>): Readab
       },
     }),
   );
-};
-
-// 同时提供命名空间对象
-export const streamingUtils = {
-  isStreamSupported,
-  fileToReadableStream,
-  streamToBlob,
-  streamToFile,
-  saveStreamAsFile,
-  transformStream,
-  filterStream,
-  analyzeFileStream,
-  encryptStream,
-  decryptStream,
-  concatStreams,
-  streamTextByLine,
-};
-
-// 默认导出命名空间对象
-export default streamingUtils;
+}

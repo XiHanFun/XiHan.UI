@@ -1,13 +1,13 @@
 {
-  "name": "@xihan-ui/themes",
+  "name": "@xihan-ui/cli",
   "version": "0.9.0",
-  "description": "Themes for XiHan UI",
+  "description": "CLI for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
   "repository": {
     "type": "git",
     "url": "https://github.com/XiHanFun/XiHan.UI",
-    "directory": "packages/themes"
+    "directory": "packages/cli"
   },
   "bugs": {
     "url": "https://github.com/XiHanFun/XiHan.UI/issues"
@@ -15,7 +15,7 @@
   "keywords": [
     "xihan",
     "ui",
-    "themes"
+    "cli"
   ],
   "author": {
     "name": "zhaifanhua",
@@ -29,14 +29,11 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
-  "style": "./dist/index.css",
   "exports": {
     ".": {
-      "development": "./src/index.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts",
-      "style": "./dist/index.css"
+      "types": "./dist/index.d.ts"
     }
   },
   "files": [
@@ -45,8 +42,8 @@
   "scripts": {
     "build": "unbuild"
   },
-  "devDependencies": {
-    "sass": "catalog:",
-    "rollup-plugin-scss": "catalog:"
+  "peerDependencies": {
+    "typescript": "catalog:",
+    "vue": "catalog:"
   }
 }

@@ -340,30 +340,35 @@ export function safeFormatNumber(
 }
 
 /**
- * 格式化数字为文件大小
- * @param bytes 字节数
- * @param options 格式化配置选项
- * @returns 格式化后的文件大小字符串
+ * 文件大小单位
  */
-export function formatFileSize(bytes: number, options: Partial<NumberFormatOptions> = {}): string {
+const FILE_SIZE_UNITS = ["B", "KB", "MB", "GB", "TB", "PB"] as const;
+
+/**
+ * 格式化文件大小为人类可读的字符串
+ * @param bytes 文件大小，以字节为单位
+ * @param decimals 保留的小数位数，默认为2
+ * @returns 格式化后的文件大小字符串，如 "1.23 KB"
+ */
+export function formatFileSize(bytes: number, decimals = 2): string {
   if (bytes === 0) return "0 B";
+  if (bytes < 0) throw new Error("文件大小不能为负数");
 
   const k = 1024;
-  const sizes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const size = bytes / Math.pow(k, i);
 
-  const opts = { ...DEFAULT_NUMBER_FORMAT, ...options, decimals: options.decimals ?? 2 };
-
-  return `${formatNumber(bytes / Math.pow(k, i), opts)} ${sizes[i]}`;
+  return `${size.toFixed(decimals)} ${FILE_SIZE_UNITS[i]}`;
 }
 
 /**
  * 简单的日期格式化（不依赖外部库）
  * @param date 日期对象或时间戳
- * @param format 格式字符串
+ * @param options 格式化配置选项
  * @returns 格式化后的日期字符串
  */
-export function formatDate(date: Date | number | string, format: string = "YYYY-MM-DD"): string {
+export function formatDate(date: Date | number | string, options: Partial<DateFormatOptions> = {}): string {
+  const opts = { ...DEFAULT_DATE_FORMAT, ...options };
   const d = new Date(date);
 
   if (isNaN(d.getTime())) {
@@ -384,8 +389,8 @@ export function formatDate(date: Date | number | string, format: string = "YYYY-
   const ampm = hours < 12 ? "AM" : "PM";
 
   // 替换格式字符串中的占位符
-  return format
-    .replace(/YYYY/g, year.toString())
+  return opts
+    .format!.replace(/YYYY/g, year.toString())
     .replace(/YY/g, (year % 100).toString().padStart(2, "0"))
     .replace(/MM/g, month.toString().padStart(2, "0"))
     .replace(/M/g, month.toString())

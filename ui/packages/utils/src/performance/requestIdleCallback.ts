@@ -397,9 +397,4 @@ export function idleChunk<T, R>(
 /**
  * 默认的空闲任务队列实例
  */
-const defaultIdleQueue = new IdleTaskQueue();
-
-/**
- * 导出默认的空闲任务队列
- */
-export default defaultIdleQueue;
+export const defaultIdleQueue = new IdleTaskQueue();

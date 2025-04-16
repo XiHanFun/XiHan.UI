@@ -6,10 +6,7 @@
  * @param delay 延迟时间，即在等待期间内再次触发函数，则重新计时的延迟时间（以毫秒为单位）
  * @returns 返回一个新的防抖函数，它接受与原函数相同的参数，但确保原函数在指定时间内只执行一次
  */
-export const debounce = <T extends (...args: any[]) => any>(
-  fn: T,
-  delay: number,
-): ((...args: Parameters<T>) => void) => {
+export function debounce<T extends (...args: any[]) => any>(fn: T, delay: number): (...args: Parameters<T>) => void {
   let timer: number | null = null;
   return function (this: any, ...args: Parameters<T>) {
     // 如果已存在定时器，则清除之前的定时器，确保在等待期间内再次触发时，重新计时
@@ -19,7 +16,7 @@ export const debounce = <T extends (...args: any[]) => any>(
       fn.apply(this, args);
     }, delay);
   };
-};
+}
 
 /**
  * 函数节流器，用于在指定时间内部分更新函数的执行
@@ -28,10 +25,7 @@ export const debounce = <T extends (...args: any[]) => any>(
  * @param delay 节流的时间间隔，单位为毫秒
  * @returns 返回一个新的节流函数，它将在调用时根据指定的延迟执行原始函数
  */
-export const throttle = <T extends (...args: any[]) => any>(
-  fn: T,
-  delay: number,
-): ((...args: Parameters<T>) => void) => {
+export function throttle<T extends (...args: any[]) => any>(fn: T, delay: number): (...args: Parameters<T>) => void {
   // 定时器ID，用于 clearTimeout 操作
   let timer: number | null = null;
   // 上次执行的时间戳
@@ -55,7 +49,7 @@ export const throttle = <T extends (...args: any[]) => any>(
       fn.apply(this, args);
     }
   };
-};
+}
 
 /**
  * 函数重试
@@ -63,14 +57,10 @@ export const throttle = <T extends (...args: any[]) => any>(
  * @param options 重试选项
  * @returns 返回重试后的结果
  */
-export const retry = async <T>(
+export async function retry<T>(
   fn: () => Promise<T>,
-  options: {
-    maxAttempts?: number;
-    delay?: number;
-    onRetry?: (attempt: number, error: any) => void;
-  } = {},
-): Promise<T> => {
+  options: { maxAttempts?: number; delay?: number; onRetry?: (attempt: number, error: any) => void } = {},
+): Promise<T> {
   const { maxAttempts = 3, delay = 1000, onRetry } = options;
   let attempt = 1;
 
@@ -86,7 +76,7 @@ export const retry = async <T>(
   }
 
   throw new Error("Max retry attempts reached");
-};
+}
 
 /**
  * 函数缓存
@@ -94,13 +84,13 @@ export const retry = async <T>(
  * @param options 缓存选项
  * @returns 返回缓存后的函数
  */
-export const memoize = <T extends (...args: any[]) => any>(
+export function memoize<T extends (...args: any[]) => any>(
   fn: T,
   options: {
     maxSize?: number;
     ttl?: number;
   } = {},
-): T => {
+): T {
   const { maxSize = 1000, ttl } = options;
   const cache = new Map<string, { value: any; timestamp: number }>();
 
@@ -125,7 +115,7 @@ export const memoize = <T extends (...args: any[]) => any>(
 
     return result;
   } as T;
-};
+}
 
 /**
  * 异步函数超时控制
@@ -134,11 +124,11 @@ export const memoize = <T extends (...args: any[]) => any>(
  * @param error 超时错误
  * @returns 返回超时后的结果
  */
-export const timeout = async <T>(
+export async function timeout<T>(
   promise: Promise<T>,
   ms: number,
   error = new Error("Operation timed out"),
-): Promise<T> => {
+): Promise<T> {
   let timeoutId: number | undefined;
 
   try {
@@ -153,4 +143,4 @@ export const timeout = async <T>(
       clearTimeout(timeoutId);
     }
   }
-};
+}

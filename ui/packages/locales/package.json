@@ -42,6 +42,10 @@
   "scripts": {
     "build": "unbuild"
   },
+  "peerDependencies": {
+    "typescript": "catalog:",
+    "vue": "catalog:"
+  },
   "dependencies": {
     "@xihan-ui/utils": "workspace:*"
   }

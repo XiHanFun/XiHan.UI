@@ -2,31 +2,31 @@
  * 预加载图片
  * @param src 图片地址
  */
-export const preload = (src: string): Promise<HTMLImageElement> => {
+export function preload(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
     img.onerror = reject;
     img.src = src;
   });
-};
+}
 
 /**
  * 批量预加载图片
  * @param srcs 图片地址数组
  * @returns 加载完成的图片数组
  */
-export const preloadAll = (srcs: string[]): Promise<HTMLImageElement[]> => {
+export function preloadAll(srcs: string[]): Promise<HTMLImageElement[]> {
   return Promise.all(srcs.map(src => preload(src)));
-};
+}
 
 /**
  * 检查图片是否已加载完成
  * @param img 图片元素
  */
-export const isLoaded = (img: HTMLImageElement): boolean => {
+export function isLoaded(img: HTMLImageElement): boolean {
   return img.complete && img.naturalHeight !== 0;
-};
+}
 
 /**
  * 获取图片的主要颜色
@@ -113,15 +113,3 @@ export const compress = async (
     reader.readAsDataURL(file);
   });
 };
-
-// 同时提供命名空间对象
-export const imageUtils = {
-  preload,
-  preloadAll,
-  isLoaded,
-  getDominantColor,
-  compress,
-};
-
-// 默认导出命名空间对象
-export default imageUtils;

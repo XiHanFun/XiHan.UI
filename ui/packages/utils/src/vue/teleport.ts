@@ -383,12 +383,3 @@ export function createPopover(content: Component, id: string = "popover-containe
     },
   });
 }
-
-export default {
-  TeleportTargetManager,
-  useTeleportTarget,
-  ModalManager,
-  useModal,
-  useDynamicTeleport,
-  createPopover,
-};

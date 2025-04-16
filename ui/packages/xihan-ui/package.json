@@ -52,6 +52,7 @@
     "@xihan-ui/icons": "workspace:*",
     "@xihan-ui/locales": "workspace:*",
     "@xihan-ui/themes": "workspace:*",
-    "@xihan-ui/utils": "workspace:*"
+    "@xihan-ui/utils": "workspace:*",
+    "@xihan-ui/cli": "workspace:*"
   }
 }

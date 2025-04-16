@@ -1,12 +1,12 @@
 /**
  * 获取当前网络状态
  */
-export const getStatus = (): {
+export function getStatus(): {
   online: boolean;
   effectiveType: string;
   type: string;
   saveData: boolean;
-} => {
+} {
   const connection = (navigator as any).connection;
   return {
     online: navigator.onLine,
@@ -14,14 +14,14 @@ export const getStatus = (): {
     type: connection?.type || "unknown",
     saveData: connection?.saveData || false,
   };
-};
+}
 
 /**
  * 监听网络状态变化
  * @param callback 回调函数
  * @returns 返回取消监听的函数
  */
-export const onChange = (callback: (status: { online: boolean }) => void) => {
+export function onChange(callback: (status: { online: boolean }) => void) {
   const handleOnline = () => callback({ online: true });
   const handleOffline = () => callback({ online: false });
 
@@ -32,16 +32,16 @@ export const onChange = (callback: (status: { online: boolean }) => void) => {
     window.removeEventListener("online", handleOnline);
     window.removeEventListener("offline", handleOffline);
   };
-};
+}
 
 /**
  * 检测网络速度
  * @param imageUrl 用于测速的图片URL，默认为1x1像素的透明图
  * @returns Promise<number> 返回加载时间(ms)
  */
-export const checkSpeed = async (
+export function checkSpeed(
   imageUrl = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
-): Promise<number> => {
+): Promise<number> {
   const startTime = performance.now();
 
   return new Promise((resolve, reject) => {
@@ -50,14 +50,4 @@ export const checkSpeed = async (
     img.onerror = reject;
     img.src = imageUrl;
   });
-};
-
-// 同时提供命名空间对象
-export const networkUtils = {
-  getStatus,
-  onChange,
-  checkSpeed,
-};
-
-// 默认导出命名空间对象
-export default networkUtils;
+}
