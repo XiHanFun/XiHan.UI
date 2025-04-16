@@ -7,13 +7,13 @@ import { round } from "./math";
  * @param separator 分隔符，默认为','
  * @returns 格式化后的字符串
  */
-export const format = (num: number, decimals = 0, separator = ","): string => {
+export function formatNumber(num: number, decimals = 0, separator = ","): string {
   const rounded = round(num, decimals).toString();
   const [intPart, decimalPart] = rounded.split(".");
 
   const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, separator);
   return decimalPart !== undefined ? `${formattedInt}.${decimalPart}` : formattedInt;
-};
+}
 
 /**
  * 格式化百分比
@@ -21,9 +21,9 @@ export const format = (num: number, decimals = 0, separator = ","): string => {
  * @param decimals 可选参数，表示保留的小数位数，默认为2
  * @returns 返回格式化后的百分比
  */
-export const formatPercent = (num: number, decimals = 2): string => {
+export function formatPercent(num: number, decimals = 2): string {
   return `${(num * 100).toFixed(decimals)}%`;
-};
+}
 
 /**
  * 格式化货币
@@ -31,10 +31,10 @@ export const formatPercent = (num: number, decimals = 2): string => {
  * @param options 可选参数，表示货币类型和地区，默认为"CNY"和"zh-CN"
  * @returns 返回格式化后的货币
  */
-export const formatCurrency = (num: number, options: { currency?: string; locale?: string } = {}): string => {
+export function formatCurrency(num: number, options: { currency?: string; locale?: string } = {}): string {
   const { currency = "CNY", locale = "zh-CN" } = options;
   return new Intl.NumberFormat(locale, {
     style: "currency",
     currency,
   }).format(num);
-};
+}

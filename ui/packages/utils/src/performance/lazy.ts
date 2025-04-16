@@ -117,25 +117,57 @@ export function createLazyLoad<T>(factory: () => T | Promise<T>, options: LazyLo
     // 调用加载前回调
     onBeforeLoad?.();
 
-    try {
-      // 执行工厂函数并等待结果
-      const factoryResult = factory();
-      result = factoryResult instanceof Promise ? await factoryResult : factoryResult;
+    const startLoad = async () => {
+      try {
+        // 执行工厂函数并等待结果
+        const factoryResult = factory();
+        result = factoryResult instanceof Promise ? await factoryResult : factoryResult;
 
-      // 调用成功回调
-      onSuccess?.(result);
+        // 调用成功回调
+        onSuccess?.(result);
 
-      loading = false;
-      return result;
-    } catch (err) {
-      error = err instanceof Error ? err : new Error(String(err));
+        loading = false;
+        return result;
+      } catch (err) {
+        error = err instanceof Error ? err : new Error(String(err));
 
-      // 调用错误回调
-      onError?.(error);
+        // 调用错误回调
+        onError?.(error);
 
-      loading = false;
-      throw error;
+        loading = false;
+        throw error;
+      }
+    };
+
+    // 根据选项决定如何延迟加载
+    if (useIdleCallback && hasRequestIdleCallback) {
+      return new Promise<T>((resolve, reject) => {
+        idleCallbackId = window.requestIdleCallback(
+          async () => {
+            try {
+              resolve(await startLoad());
+            } catch (err) {
+              reject(err);
+            }
+          },
+          { timeout },
+        );
+      });
     }
+
+    if (delay > 0) {
+      return new Promise<T>((resolve, reject) => {
+        timer = window.setTimeout(async () => {
+          try {
+            resolve(await startLoad());
+          } catch (err) {
+            reject(err);
+          }
+        }, delay);
+      });
+    }
+
+    return startLoad();
   };
 
   // 取消加载

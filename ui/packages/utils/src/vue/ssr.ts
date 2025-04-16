@@ -3,7 +3,7 @@
  * 提供SSR相关工具和优化方法
  */
 
-import { ref, onMounted, onServerPrefetch, nextTick } from "vue";
+import { ref, onMounted, onServerPrefetch } from "vue";
 import type { Ref } from "vue";
 
 /**
@@ -228,15 +228,3 @@ export function useSSRMetadata<T extends object>(getMetadata: () => T) {
     },
   };
 }
-
-export default {
-  isServer,
-  isClient,
-  useServerPrefetch,
-  useClientOnly,
-  createHydrationContext,
-  useDeferredHydration,
-  useProgressiveHydration,
-  withTimeout,
-  useSSRMetadata,
-};

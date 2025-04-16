@@ -36,11 +36,11 @@
       "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts"
     },
-    "./core": {
-      "development": "./src/core/index.ts",
-      "import": "./dist/core/index.mjs",
-      "require": "./dist/core/index.cjs",
-      "types": "./dist/core/index.d.ts"
+    "./animation": {
+      "development": "./src/animation/index.ts",
+      "import": "./dist/animation/index.mjs",
+      "require": "./dist/animation/index.cjs",
+      "types": "./dist/animation/index.d.ts"
     },
     "./browser": {
       "development": "./src/browser/index.ts",
@@ -48,35 +48,11 @@
       "require": "./dist/browser/index.cjs",
       "types": "./dist/browser/index.d.ts"
     },
-    "./error": {
-      "development": "./src/error/index.ts",
-      "import": "./dist/error/index.mjs",
-      "require": "./dist/error/index.cjs",
-      "types": "./dist/error/index.d.ts"
-    },
-    "./dom": {
-      "development": "./src/dom/index.ts",
-      "import": "./dist/dom/index.mjs",
-      "require": "./dist/dom/index.cjs",
-      "types": "./dist/dom/index.d.ts"
-    },
-    "./security": {
-      "development": "./src/security/index.ts",
-      "import": "./dist/security/index.mjs",
-      "require": "./dist/security/index.cjs",
-      "types": "./dist/security/index.d.ts"
-    },
-    "./logging": {
-      "development": "./src/logging/index.ts",
-      "import": "./dist/logging/index.mjs",
-      "require": "./dist/logging/index.cjs",
-      "types": "./dist/logging/index.d.ts"
-    },
-    "./vue": {
-      "development": "./src/vue/index.ts",
-      "import": "./dist/vue/index.mjs",
-      "require": "./dist/vue/index.cjs",
-      "types": "./dist/vue/index.d.ts"
+    "./core": {
+      "development": "./src/core/index.ts",
+      "import": "./dist/core/index.mjs",
+      "require": "./dist/core/index.cjs",
+      "types": "./dist/core/index.d.ts"
     },
     "./data": {
       "development": "./src/data/index.ts",
@@ -84,11 +60,17 @@
       "require": "./dist/data/index.cjs",
       "types": "./dist/data/index.d.ts"
     },
-    "./performance": {
-      "development": "./src/performance/index.ts",
-      "import": "./dist/performance/index.mjs",
-      "require": "./dist/performance/index.cjs",
-      "types": "./dist/performance/index.d.ts"
+    "./device": {
+      "development": "./src/device/index.ts",
+      "import": "./dist/device/index.mjs",
+      "require": "./dist/device/index.cjs",
+      "types": "./dist/device/index.d.ts"
+    },
+    "./dom": {
+      "development": "./src/dom/index.ts",
+      "import": "./dist/dom/index.mjs",
+      "require": "./dist/dom/index.cjs",
+      "types": "./dist/dom/index.d.ts"
     },
     "./i18n": {
       "development": "./src/i18n/index.ts",
@@ -96,17 +78,35 @@
       "require": "./dist/i18n/index.cjs",
       "types": "./dist/i18n/index.d.ts"
     },
-    "./animation": {
-      "development": "./src/animation/index.ts",
-      "import": "./dist/animation/index.mjs",
-      "require": "./dist/animation/index.cjs",
-      "types": "./dist/animation/index.d.ts"
+    "./media": {
+      "development": "./src/media/index.ts",
+      "import": "./dist/media/index.mjs",
+      "require": "./dist/media/index.cjs",
+      "types": "./dist/media/index.d.ts"
+    },
+    "./performance": {
+      "development": "./src/performance/index.ts",
+      "import": "./dist/performance/index.mjs",
+      "require": "./dist/performance/index.cjs",
+      "types": "./dist/performance/index.d.ts"
+    },
+    "./security": {
+      "development": "./src/security/index.ts",
+      "import": "./dist/security/index.mjs",
+      "require": "./dist/security/index.cjs",
+      "types": "./dist/security/index.d.ts"
     },
     "./testing": {
       "development": "./src/testing/index.ts",
       "import": "./dist/testing/index.mjs",
       "require": "./dist/testing/index.cjs",
       "types": "./dist/testing/index.d.ts"
+    },
+    "./vue": {
+      "development": "./src/vue/index.ts",
+      "import": "./dist/vue/index.mjs",
+      "require": "./dist/vue/index.cjs",
+      "types": "./dist/vue/index.d.ts"
     }
   },
   "files": [
@@ -116,6 +116,7 @@
     "build": "unbuild"
   },
   "peerDependencies": {
+    "typescript": "catalog:",
     "vue": "catalog:"
   }
 }

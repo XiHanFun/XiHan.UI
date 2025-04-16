@@ -272,16 +272,3 @@ export function createPluralTranslator(
     return formatPlural(count, templates, locale);
   };
 }
-
-// 同时提供命名空间对象
-export const pluralization = {
-  getPluralRule,
-  getPluralFormIndex,
-  getPluralFormName,
-  selectPluralForm,
-  formatPlural,
-  createPluralTranslator,
-};
-
-// 默认导出命名空间对象
-export default pluralization;

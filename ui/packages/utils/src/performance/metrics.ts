@@ -147,7 +147,7 @@ export interface PerformanceMetrics {
 /**
  * 指标评级阈值
  */
-const METRIC_THRESHOLDS = {
+const METRIC_THRESHOLDS: Partial<Record<PerformanceMetricType, { good: number; poor: number; unit: string }>> = {
   [PerformanceMetricType.LCP]: { good: 2500, poor: 4000, unit: "ms" }, // 2.5s / 4s
   [PerformanceMetricType.FID]: { good: 100, poor: 300, unit: "ms" }, // 100ms / 300ms
   [PerformanceMetricType.CLS]: { good: 0.1, poor: 0.25, unit: "score" }, // 0.1 / 0.25
@@ -362,7 +362,7 @@ export class PerformanceMetricsCollector {
       // LCP (Largest Contentful Paint)
       this.observePerformanceEntry("largest-contentful-paint", entries => {
         // 只取最后一个 LCP 值
-        const lastEntry = entries[entries.length - 1];
+        const lastEntry = entries[entries.length - 1] as LargestContentfulPaint;
         this.addMetric({
           name: PerformanceMetricType.LCP,
           value: lastEntry.startTime,
@@ -374,7 +374,7 @@ export class PerformanceMetricsCollector {
 
       // FID (First Input Delay)
       this.observePerformanceEntry("first-input", entries => {
-        const firstInput = entries[0];
+        const firstInput = entries[0] as PerformanceEventTiming;
         const inputDelay = firstInput.processingStart - firstInput.startTime;
 
         this.addMetric({
@@ -384,7 +384,7 @@ export class PerformanceMetricsCollector {
           timestamp: Date.now(),
           details: {
             type: firstInput.name,
-            target: firstInput.target?.tagName || "unknown",
+            target: (firstInput.target as HTMLElement)?.tagName || "unknown",
           },
         });
       });
@@ -878,6 +878,3 @@ export function measureFunctionExecution<T, Args extends any[]>(
 
   return { result, duration };
 }
-
-// 导出默认函数
-export default getMetricsCollector;

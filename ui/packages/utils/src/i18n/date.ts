@@ -537,21 +537,3 @@ export function simpleDateFormat(date: Date | number | string, format: string = 
 
   return formatted;
 }
-
-// 同时提供命名空间对象
-export const date = {
-  formatDate,
-  formatDateByTemplate,
-  parseDate,
-  formatRelativeTime,
-  getDateParts,
-  getLocaleDateNames,
-  isSameDay,
-  simpleDateFormat,
-  DEFAULT_DATE_FORMAT_OPTIONS,
-  DATE_FORMAT_TEMPLATES,
-  LOCALE_DATE_FORMATS,
-};
-
-// 默认导出命名空间对象
-export default date;
