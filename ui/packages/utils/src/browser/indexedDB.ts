@@ -199,15 +199,6 @@ class IndexedDBStorage {
  * @param version 数据库版本
  * @returns IndexedDB 存储实例
  */
-export const createIndexedDBStorage = (dbName: string, storeName: string, version?: number): IndexedDBStorage => {
+export function createIndexedDBStorage(dbName: string, storeName: string, version?: number): IndexedDBStorage {
   return new IndexedDBStorage({ dbName, storeName, version });
-};
-
-// 同时提供命名空间对象
-export const indexedDBUtils = {
-  createIndexedDBStorage,
-  IndexedDBStorage,
-};
-
-// 默认导出命名空间对象
-export default indexedDBUtils;
+}

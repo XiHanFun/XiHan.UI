@@ -76,9 +76,9 @@ export class XiHanError extends Error {
  * @param code 错误代码
  * @param details 错误详情
  */
-export const throwError = (message: string, code: ErrorCode = "UNKNOWN", details?: Record<string, any>): never => {
+export function throwError(message: string, code: ErrorCode = "UNKNOWN", details?: Record<string, any>): never {
   throw new XiHanError(message, code, details);
-};
+}
 
 /**
  * 断言
@@ -87,16 +87,16 @@ export const throwError = (message: string, code: ErrorCode = "UNKNOWN", details
  * @param code 错误代码
  * @param details 错误详情
  */
-export const assert = (
+export function assert(
   condition: boolean,
   message: string,
   code: ErrorCode = "ASSERTION",
   details?: Record<string, any>,
-): void => {
+): void {
   if (!condition) {
     throwError(message, code, details);
   }
-};
+}
 
 /**
  * 类型断言
@@ -104,7 +104,7 @@ export const assert = (
  * @param type 期望的类型
  * @param message 自定义错误信息
  */
-export const assertType = (value: any, type: string, message?: string): void => {
+export function assertType(value: any, type: string, message?: string): void {
   const actualType = typeof value;
   if (actualType !== type) {
     throwError(message || `期望类型为 ${type}，实际为 ${actualType}`, "TYPE_ERROR", {
@@ -113,18 +113,18 @@ export const assertType = (value: any, type: string, message?: string): void => 
       value,
     });
   }
-};
+}
 
 /**
  * 必须值断言
  * @param value 要检查的值
  * @param message 自定义错误信息
  */
-export const assertRequired = (value: any, message?: string): void => {
+export function assertRequired(value: any, message?: string): void {
   if (value === undefined || value === null) {
     throwError(message || "值不能为空", "ASSERTION", { value });
   }
-};
+}
 
 /**
  * 捕获并处理错误
@@ -132,7 +132,7 @@ export const assertRequired = (value: any, message?: string): void => {
  * @param errorHandler 错误处理函数
  * @returns 函数执行结果或错误处理结果
  */
-export const tryCatch = <T>(fn: () => T, errorHandler?: (err: Error) => T): T => {
+export function tryCatch<T>(fn: () => T, errorHandler?: (err: Error) => T): T {
   try {
     return fn();
   } catch (err) {
@@ -141,7 +141,7 @@ export const tryCatch = <T>(fn: () => T, errorHandler?: (err: Error) => T): T =>
     }
     throw err;
   }
-};
+}
 
 /**
  * 异步捕获并处理错误
@@ -149,10 +149,10 @@ export const tryCatch = <T>(fn: () => T, errorHandler?: (err: Error) => T): T =>
  * @param errorHandler 错误处理函数
  * @returns Promise
  */
-export const tryCatchAsync = async <T>(
+export async function tryCatchAsync<T>(
   fn: () => Promise<T>,
   errorHandler?: (err: Error) => Promise<T> | T,
-): Promise<T> => {
+): Promise<T> {
   try {
     return await fn();
   } catch (err) {
@@ -161,19 +161,19 @@ export const tryCatchAsync = async <T>(
     }
     throw err;
   }
-};
+}
 
 /**
  * 格式化错误信息
  * @param err 错误对象
  * @returns 格式化后的错误信息
  */
-export const formatError = (err: any): string => {
+export function formatError(err: any): string {
   if (err instanceof XiHanError) {
     return `[${err.code}] ${err.message}${err.details ? ` - 详情: ${JSON.stringify(err.details)}` : ""}`;
   }
   return err instanceof Error ? err.message : String(err);
-};
+}
 
 /**
  * 创建带上下文的错误信息
@@ -181,6 +181,6 @@ export const formatError = (err: any): string => {
  * @param message 错误信息
  * @returns 带上下文的错误信息
  */
-export const contextError = (context: string, message: string): string => {
+export function contextError(context: string, message: string): string {
   return `[${context}] ${message}`;
-};
+}

@@ -46,11 +46,12 @@
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 unbuild"
   },
   "peerDependencies": {
+    "typescript": "catalog:",
     "vue": "catalog:"
   },
   "dependencies": {
-    "@xihan-ui/utils": "workspace:*",
-    "glob": "catalog:"
+    "glob": "catalog:",
+    "@xihan-ui/utils": "workspace:*"
   },
   "devDependencies": {
     "@types/glob": "catalog:"

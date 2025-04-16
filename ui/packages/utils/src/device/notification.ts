@@ -1,7 +1,7 @@
 /**
  * 检查通知权限
  */
-export const checkPermission = async (): Promise<boolean> => {
+export async function checkPermission(): Promise<boolean> {
   if (!("Notification" in window)) {
     return false;
   }
@@ -16,17 +16,17 @@ export const checkPermission = async (): Promise<boolean> => {
   }
 
   return false;
-};
+}
 
 /**
  * 显示通知
  * @param title 通知标题
  * @param options 通知选项
  */
-export const show = async (
+export async function show(
   title: string,
   options: NotificationOptions & { onClick?: (notification: Notification) => void } = {},
-): Promise<Notification | null> => {
+): Promise<Notification | null> {
   const { onClick, ...notificationOptions } = options;
 
   if (!(await checkPermission())) {
@@ -40,24 +40,24 @@ export const show = async (
   }
 
   return notification;
-};
+}
 
 /**
  * 显示简单通知
  * @param title 通知标题
  * @param message 通知内容
  */
-export const showSimple = async (title: string, message: string): Promise<Notification | null> => {
+export async function showSimple(title: string, message: string): Promise<Notification | null> {
   return show(title, {
     body: message,
     icon: "/favicon.ico",
   });
-};
+}
 
 /**
  * 关闭所有通知
  */
-export const closeAll = () => {
+export function closeAll() {
   if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
     navigator.serviceWorker.ready.then(registration => {
       registration.getNotifications().then(notifications => {
@@ -65,15 +65,4 @@ export const closeAll = () => {
       });
     });
   }
-};
-
-// 同时提供命名空间对象
-export const notificationUtils = {
-  checkPermission,
-  show,
-  showSimple,
-  closeAll,
-};
-
-// 默认导出命名空间对象
-export default notificationUtils;
+}

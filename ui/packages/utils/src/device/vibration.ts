@@ -456,18 +456,3 @@ export function createVibrationManager(
  * 默认振动管理器实例
  */
 export const defaultVibrationManager = createVibrationManager();
-
-// 同时提供命名空间对象
-export const vibrationUtils = {
-  isVibrationSupported,
-  vibrate,
-  stopVibration,
-  createPattern,
-  vibrateWithRhythm,
-  VibrationPatterns,
-  createVibrationManager,
-  defaultVibrationManager,
-};
-
-// 默认导出命名空间对象
-export default vibrationUtils;

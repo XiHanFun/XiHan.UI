@@ -85,6 +85,11 @@ export interface TransitionController {
    * 过渡是否已经完成
    */
   isCompleted: boolean;
+
+  /**
+   * 完成回调函数
+   */
+  onComplete?: () => void;
 }
 
 /**

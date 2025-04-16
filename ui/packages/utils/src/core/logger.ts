@@ -66,7 +66,7 @@ export type LogLevelWeight = typeof levelWeight;
  * @param options 日志配置
  * @returns 日志记录器
  */
-export const createLogger = (options: LoggerOptions = {}) => {
+export function createLogger(options: LoggerOptions = {}) {
   const { level = "info", prefix = "", showTime = true, showLevel = true, disabled = false } = options;
 
   /**
@@ -209,4 +209,4 @@ export const createLogger = (options: LoggerOptions = {}) => {
       console.clear();
     },
   };
-};
+}

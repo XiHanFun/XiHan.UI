@@ -12,19 +12,17 @@ const svgoConfig: Config = {
     {
       name: "removeAttrs",
       params: {
-        attrs: "(fill|stroke|stroke-width|id|data-name)",
+        attrs: "(id|data-name)",
       },
     },
     {
       name: "convertShapeToPath",
       params: {
-        // 确保转换所有形状
         convertArcs: true,
         floatPrecision: 3,
       },
     },
   ],
-  // 添加必要的配置
   multipass: true,
   floatPrecision: 3,
   js2svg: {
@@ -40,17 +38,66 @@ function ensureDir(dir: string) {
   }
 }
 
-// 从SVG字符串中提取所有的path路径数据
-function extractAllPaths(svgContent: string): string {
-  // 仅匹配<path>标签的d属性
+// 从SVG字符串中提取所有的path路径数据和样式
+function extractAllPaths(svgContent: string): { pathData: string; attributes: Record<string, string> } {
+  // 提取SVG元素的公共属性
+  const svgAttributes: Record<string, string> = {};
+
+  // 查找SVG标签上的样式属性
+  const svgMatch = svgContent.match(/<svg[^>]*>/);
+  if (svgMatch) {
+    const svgTag = svgMatch[0];
+    // 提取关键样式属性
+    const fillMatch = svgTag.match(/fill="([^"]*)"/);
+    const strokeMatch = svgTag.match(/stroke="([^"]*)"/);
+    const strokeWidthMatch = svgTag.match(/stroke-width="([^"]*)"/);
+    const strokeLinecapMatch = svgTag.match(/stroke-linecap="([^"]*)"/);
+    const strokeLinejoinMatch = svgTag.match(/stroke-linejoin="([^"]*)"/);
+    const viewBoxMatch = svgTag.match(/viewBox="([^"]+)"/);
+
+    if (fillMatch) svgAttributes.fill = fillMatch[1];
+    if (strokeMatch) svgAttributes.stroke = strokeMatch[1];
+    if (strokeWidthMatch) svgAttributes["stroke-width"] = strokeWidthMatch[1];
+    if (strokeLinecapMatch) svgAttributes["stroke-linecap"] = strokeLinecapMatch[1];
+    if (strokeLinejoinMatch) svgAttributes["stroke-linejoin"] = strokeLinejoinMatch[1];
+    // 提取并设置viewBox
+    if (viewBoxMatch) {
+      svgAttributes.viewBox = viewBoxMatch[1];
+    } else {
+      svgAttributes.viewBox = "0 0 24 24"; // 默认值
+    }
+  }
+
+  // 仅匹配<path>标签的d属性和样式属性
   const pathRegex = /<path[^>]*d="([^"]+)"[^>]*>/g;
   const paths: string[] = [];
   let match;
 
+  // 如果在path元素上找到重要样式属性，优先使用path元素的属性
   while ((match = pathRegex.exec(svgContent)) !== null) {
-    // 确保只提取d属性的值
+    // 提取d属性和样式属性
+    const pathTag = match[0];
+    const pathD = match[1];
+
+    // 检查当前path标签是否有独特的样式属性
+    const fillMatch = pathTag.match(/fill="([^"]*)"/);
+    const strokeMatch = pathTag.match(/stroke="([^"]*)"/);
+    const strokeWidthMatch = pathTag.match(/stroke-width="([^"]*)"/);
+    const strokeLinecapMatch = pathTag.match(/stroke-linecap="([^"]*)"/);
+    const strokeLinejoinMatch = pathTag.match(/stroke-linejoin="([^"]*)"/);
+
+    // 如果path有独特的样式，并且不同于SVG全局样式，则优先使用path的样式
+    if (fillMatch && fillMatch[1] !== svgAttributes.fill) svgAttributes.fill = fillMatch[1];
+    if (strokeMatch && strokeMatch[1] !== svgAttributes.stroke) svgAttributes.stroke = strokeMatch[1];
+    if (strokeWidthMatch && strokeWidthMatch[1] !== svgAttributes["stroke-width"])
+      svgAttributes["stroke-width"] = strokeWidthMatch[1];
+    if (strokeLinecapMatch && strokeLinecapMatch[1] !== svgAttributes["stroke-linecap"])
+      svgAttributes["stroke-linecap"] = strokeLinecapMatch[1];
+    if (strokeLinejoinMatch && strokeLinejoinMatch[1] !== svgAttributes["stroke-linejoin"])
+      svgAttributes["stroke-linejoin"] = strokeLinejoinMatch[1];
+
     // 清理路径字符串，移除换行和制表符
-    let pathData = match[1];
+    let pathData = pathD;
     // 将多行字符串转换为单行，保留空格
     pathData = pathData.replace(/[\r\n\t]+/g, " ");
     // 将连续的多个空格替换为单个空格
@@ -60,24 +107,50 @@ function extractAllPaths(svgContent: string): string {
 
   // 如果没有找到path，检查是否有其他SVG元素并尝试转换
   if (paths.length === 0) {
-    paths.push(checkAndConvertOtherSvgElements(svgContent));
+    const conversion = checkAndConvertOtherSvgElements(svgContent);
+    if (conversion) {
+      paths.push(conversion);
+    }
   }
 
   // 如果仍然没有找到可转换的元素
   if (paths.length === 0) {
     console.warn("未能找到任何可转换为path的SVG元素");
-    return "";
+    return { pathData: "", attributes: {} };
   }
 
-  // 返回所有path组合（多个path用空格分隔，符合SVG path规范）
-  return paths.join(" ").trim();
+  // 默认属性，如果没有在SVG中找到
+  if (!svgAttributes.fill && !svgAttributes.stroke) {
+    svgAttributes.fill = "none";
+    svgAttributes.stroke = "currentColor";
+  }
+  if (!svgAttributes["stroke-width"]) {
+    svgAttributes["stroke-width"] = "2";
+  }
+  if (!svgAttributes["stroke-linecap"]) {
+    svgAttributes["stroke-linecap"] = "round";
+  }
+  if (!svgAttributes["stroke-linejoin"]) {
+    svgAttributes["stroke-linejoin"] = "round";
+  }
+  // 确保viewBox属性存在
+  if (!svgAttributes.viewBox) {
+    svgAttributes.viewBox = "0 0 24 24";
+  }
+
+  // 返回所有path组合和样式属性
+  return {
+    pathData: paths.join(" ").trim(),
+    attributes: svgAttributes,
+  };
 }
 
 // 检查并转换其他常见SVG元素
 function checkAndConvertOtherSvgElements(svgContent: string): string {
   console.warn("未找到path元素，尝试转换其他SVG元素");
 
-  let tempPaths = "";
+  // 收集所有转换后的路径
+  const paths: string[] = [];
   let match;
 
   // 检查并转换其他常见SVG元素
@@ -90,10 +163,12 @@ function checkAndConvertOtherSvgElements(svgContent: string): string {
     // 转换为path表示
     if (parseFloat(r) > 0) {
       // 带圆角的矩形
-      tempPaths = `M${parseFloat(x) + parseFloat(r)},${y} h${parseFloat(width) - 2 * parseFloat(r)} q${r},0 ${r},${r} v${parseFloat(height) - 2 * parseFloat(r)} q0,${r} -${r},${r} h-${parseFloat(width) - 2 * parseFloat(r)} q-${r},0 -${r},-${r} v-${parseFloat(height) - 2 * parseFloat(r)} q0,-${r} ${r},-${r} z`;
+      paths.push(
+        `M${parseFloat(x) + parseFloat(r)},${y} h${parseFloat(width) - 2 * parseFloat(r)} q${r},0 ${r},${r} v${parseFloat(height) - 2 * parseFloat(r)} q0,${r} -${r},${r} h-${parseFloat(width) - 2 * parseFloat(r)} q-${r},0 -${r},-${r} v-${parseFloat(height) - 2 * parseFloat(r)} q0,-${r} ${r},-${r} z`,
+      );
     } else {
       // 普通矩形
-      tempPaths = `M${x},${y} h${width} v${height} h-${width} z`;
+      paths.push(`M${x},${y} h${width} v${height} h-${width} z`);
     }
   }
 
@@ -103,7 +178,7 @@ function checkAndConvertOtherSvgElements(svgContent: string): string {
     const [, cx, cy, r] = match;
     const numR = parseFloat(r);
     // 转换为path表示（近似表示圆形）
-    tempPaths = `M${cx},${parseFloat(cy) - numR} a${r},${r} 0 1,0 ${numR * 2},0 a${r},${r} 0 1,0 -${numR * 2},0 z`;
+    paths.push(`M${cx},${parseFloat(cy) - numR} a${r},${r} 0 1,0 ${numR * 2},0 a${r},${r} 0 1,0 -${numR * 2},0 z`);
   }
 
   // 3. 椭圆 <ellipse>
@@ -113,7 +188,9 @@ function checkAndConvertOtherSvgElements(svgContent: string): string {
     const numRx = parseFloat(rx);
     const numRy = parseFloat(ry);
     // 转换为path表示
-    tempPaths = `M${cx},${parseFloat(cy) - numRy} a${rx},${ry} 0 1,0 ${numRx * 2},0 a${rx},${ry} 0 1,0 -${numRx * 2},0 z`;
+    paths.push(
+      `M${cx},${parseFloat(cy) - numRy} a${rx},${ry} 0 1,0 ${numRx * 2},0 a${rx},${ry} 0 1,0 -${numRx * 2},0 z`,
+    );
   }
 
   // 4. 线段 <line>
@@ -121,7 +198,7 @@ function checkAndConvertOtherSvgElements(svgContent: string): string {
   while ((match = lineRegex.exec(svgContent)) !== null) {
     const [, x1, y1, x2, y2] = match;
     // 转换为path表示
-    tempPaths = `M${x1},${y1} L${x2},${y2}`;
+    paths.push(`M${x1},${y1} L${x2},${y2}`);
   }
 
   // 5. 折线 <polyline>
@@ -136,7 +213,7 @@ function checkAndConvertOtherSvgElements(svgContent: string): string {
           pathData += ` L${pointPairs[i]},${pointPairs[i + 1]}`;
         }
       }
-      tempPaths = pathData;
+      paths.push(pathData);
     }
   }
 
@@ -153,11 +230,18 @@ function checkAndConvertOtherSvgElements(svgContent: string): string {
         }
       }
       pathData += " Z"; // 闭合路径
-      tempPaths = pathData;
+      paths.push(pathData);
     }
   }
 
-  return tempPaths;
+  // 如果没有找到可转换的元素
+  if (paths.length === 0) {
+    console.warn("未能找到任何可转换为path的SVG元素");
+    return "";
+  }
+
+  // 返回所有路径的集合（多个path用空格分隔，符合SVG path规范）
+  return paths.join(" ").trim();
 }
 
 // 使用 glob 模式匹配文件
@@ -179,14 +263,17 @@ function findSvgFilesByPattern(baseDir: string, pattern: string): string[] {
 }
 
 // 生成图标模块内容
-function generateIconModule(exportName: string, declareName: string, pathData: string): string {
+function generateIconModule(
+  exportName: string,
+  declareName: string,
+  pathData: string,
+  attributes: Record<string, string>,
+): string {
   return `
 export const ${exportName} = defineComponent<IconBaseProps>({
   name: "${declareName}",
   setup(props) {
-    return () => h(IconBase, { ...props }, [
-      h("path", { d: "${pathData}" }),
-    ]);
+    return () => h(IconBase, { path: "${pathData}", attributes: ${JSON.stringify(attributes)} });
   },
 });
 `;
@@ -292,8 +379,7 @@ import IconBase, { type IconBaseProps } from "../components/IconBase";
 
             const optimizedSvg = optimize(svgContent, svgoConfig);
             if ("data" in optimizedSvg) {
-              // 提取所有path路径
-              const pathData = extractAllPaths(optimizedSvg.data);
+              const { pathData, attributes } = extractAllPaths(optimizedSvg.data);
 
               // 如果没有找到path路径，记录警告并继续
               if (!pathData) {
@@ -301,7 +387,7 @@ import IconBase, { type IconBaseProps } from "../components/IconBase";
                 continue;
               }
 
-              const iconContent = generateIconModule(exportName, declareName, pathData);
+              const iconContent = generateIconModule(exportName, declareName, pathData, attributes);
               iconComponents.push(exportName);
               singleContent += iconContent;
             }

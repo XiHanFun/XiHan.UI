@@ -7,13 +7,18 @@
       </div>
     </header>
 
+    <!-- 复制成功提示 -->
+    <div v-if="showCopyTip" class="global-copy-tip">
+      <span>已复制: {{ copiedIcon }}</span>
+    </div>
+
     <div class="icon-layout">
       <!-- 左侧分组导航 -->
       <aside class="icon-sidebar">
         <div class="sidebar-title">图标分组</div>
         <div class="group-list">
           <div
-            v-for="group in iconGroups"
+            v-for="group in Icons"
             :key="group.name"
             class="group-item"
             :class="{ active: activeGroup === group.name }"
@@ -32,26 +37,25 @@
           <p>正在加载图标...</p>
         </div>
 
-        <div v-else-if="displayedIcons.length === 0" class="no-icons">
+        <div v-else-if="!displayedIcons.components || displayedIcons.components.length === 0" class="no-icons">
           <p>没有找到匹配的图标</p>
         </div>
 
         <section v-else class="icon-group" :id="`group-${activeGroup}`">
-          <h2 class="group-title">{{ activeGroup }} ({{ displayedIcons.length }})</h2>
+          <h2 class="group-title">{{ getActiveGroupDisplayName() }} ({{ displayedIcons.components?.length || 0 }})</h2>
           <div class="icon-grid">
             <div
-              v-for="icon in displayedIcons"
+              v-for="icon in displayedIcons.components || []"
               :key="icon.name"
               class="icon-item"
               @click="copyIconName(icon.name)"
-              :class="{ copied: copiedIcon === icon.name && copied }"
+              :class="{ copied: copiedIcon === icon.name && showCopyTip }"
             >
               <div class="icon-wrapper">
-                <component :is="icon.component" />
+                <component :is="icon" />
               </div>
               <div class="icon-name">
                 {{ icon.name }}
-                <span v-if="copiedIcon === icon.name && copied" class="copied-tooltip">已复制!</span>
               </div>
             </div>
           </div>
@@ -70,7 +74,7 @@
   const loading = ref(true);
   const activeGroup = ref("");
   const copiedIcon = ref("");
-  const copied = ref(false);
+  const showCopyTip = ref(false);
 
   // 将Icons数组转换为对象格式，以便于通过名称访问
   const iconsMap = computed(() => {
@@ -81,15 +85,6 @@
       },
       {} as Record<string, any>,
     );
-  });
-
-  // 构建图标组列表
-  const iconGroups = computed(() => {
-    return Icons.map(group => ({
-      name: group.name,
-      displayName: group.displayName,
-      count: group.count,
-    }));
   });
 
   // 初始化当前选中的图标分组
@@ -111,26 +106,22 @@
   // 处理图标显示
   const displayedIcons = computed(() => {
     if (!activeGroup.value || !iconsMap.value[activeGroup.value]) {
-      return [];
+      return { components: [] };
     }
 
     const groupData = iconsMap.value[activeGroup.value];
 
-    // 过滤图标名称和非组件属性
-    const iconsArray = Object.entries(groupData)
-      .filter(([key]) => !["name", "displayName", "count"].includes(key))
-      .map(([key, component]) => ({
-        name: key,
-        component,
-      }));
-
-    // 搜索过滤
+    // 如果有搜索关键词，过滤图标
     if (searchKeyword.value) {
       const keyword = searchKeyword.value.toLowerCase();
-      return iconsArray.filter(icon => icon.name.toLowerCase().includes(keyword));
+      const filteredComponents = groupData.components.filter(icon => icon.name.toLowerCase().includes(keyword));
+      return {
+        ...groupData,
+        components: filteredComponents,
+      };
     }
 
-    return iconsArray;
+    return groupData;
   });
 
   // 复制图标名称
@@ -139,20 +130,63 @@
       .writeText(name)
       .then(() => {
         copiedIcon.value = name;
-        copied.value = true;
+        showCopyTip.value = true;
 
         // 2秒后恢复
         setTimeout(() => {
-          copied.value = false;
+          showCopyTip.value = false;
         }, 2000);
       })
       .catch(err => {
         console.error("无法复制图标名称", err);
       });
   };
+
+  // 获取当前选中的图标分组的显示名称
+  const getActiveGroupDisplayName = () => {
+    if (!activeGroup.value || !iconsMap.value[activeGroup.value]) {
+      return "未命名分组";
+    }
+    return iconsMap.value[activeGroup.value].displayName;
+  };
 </script>
 
 <style scoped>
+  /* 全局复制成功提示 */
+  .global-copy-tip {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    z-index: 9999;
+    font-size: 14px;
+    animation: fadeInOut 2s ease-in-out;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  @keyframes fadeInOut {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -10px);
+    }
+    10% {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+    90% {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -10px);
+    }
+  }
+
   .icon-explorer {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     width: 100%;
@@ -332,20 +366,6 @@
     text-overflow: ellipsis;
     max-width: 100%;
     position: relative;
-  }
-
-  .copied-tooltip {
-    position: absolute;
-    bottom: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 2px 6px;
-    border-radius: 2px;
-    font-size: 10px;
-    white-space: nowrap;
-    z-index: 2;
   }
 
   .no-icons {
