@@ -1,6 +1,6 @@
 {
   "name": "xihan-ui",
-  "version": "0.9.0",
+  "version": "0.9.5",
   "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -45,6 +45,7 @@
     "vue": "catalog:"
   },
   "dependencies": {
+    "@xihan-ui/cli": "workspace:*",
     "@xihan-ui/components": "workspace:*",
     "@xihan-ui/constants": "workspace:*",
     "@xihan-ui/directives": "workspace:*",
@@ -52,7 +53,6 @@
     "@xihan-ui/icons": "workspace:*",
     "@xihan-ui/locales": "workspace:*",
     "@xihan-ui/themes": "workspace:*",
-    "@xihan-ui/utils": "workspace:*",
-    "@xihan-ui/cli": "workspace:*"
+    "@xihan-ui/utils": "workspace:*"
   }
 }
