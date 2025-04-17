@@ -1,7 +1,7 @@
 import { execSync } from "child_process";
 import { writeFileSync, readFileSync } from "fs";
 import type { SourceConfig, IconSource } from "../src/utils/creator";
-import { getSourcePath } from "../src/utils/path";
+import { getSourcePath } from "../src/source/path";
 
 // 修改导入路径
 import { icons } from "../src/source";

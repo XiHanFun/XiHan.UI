@@ -2,7 +2,7 @@ import { resolve } from "path";
 import { execSync } from "child_process";
 import { mkdirSync, existsSync } from "fs";
 import type { SourceConfig, IconSource } from "../src/utils/creator";
-import { ASSETS_DIR } from "../src/utils/path";
+import { ASSETS_DIR } from "../src/source/path";
 
 // 修改导入路径
 import { icons } from "../src/source";

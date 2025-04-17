@@ -2,7 +2,7 @@ import { resolve } from "path";
 import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from "fs";
 import { optimize, type Config } from "svgo";
 import { icons } from "../src/source";
-import { ASSETS_DIR, ICONS_DIR } from "../src/utils/path";
+import { ASSETS_DIR, ICONS_DIR } from "../src/source/path";
 import { toPascalCase, toKebabCase } from "@xihan-ui/utils";
 import { sync as globSync } from "glob";
 

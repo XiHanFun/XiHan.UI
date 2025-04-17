@@ -2,31 +2,6 @@ import { defineComponent, h } from "vue";
 import IconBase from "../components/IconBase";
 import type { IconBaseProps } from "../components/IconBase";
 
-export interface SourceConfig {
-  type: "git";
-  localName: string;
-  subFolders: string;
-  url: string;
-  branch: string;
-  hash: string;
-}
-
-export interface IconSource {
-  id: string;
-  name: string;
-  path: string;
-  contents: {
-    fileFilter: string;
-    formatter: (name: string) => string;
-    processWithSVGO?: boolean;
-    multiColor?: boolean;
-  }[];
-  projectUrl: string;
-  license: string;
-  licenseUrl: string;
-  source: SourceConfig;
-}
-
 export interface IconDefinition {
   name: string;
   path: string;
@@ -61,7 +36,7 @@ export function createIcon(definition: IconDefinition) {
           {
             ...props,
           },
-          () => h("path", { d: definition.path })
+          () => h("path", { d: definition.path }),
         );
     },
   });

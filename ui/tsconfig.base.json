@@ -24,8 +24,6 @@
     "allowSyntheticDefaultImports": true,
     // 启用 ES 模块互操作性
     "esModuleInterop": true,
-    // 删除注释
-    "removeComments": false,
     // 跳过库检查
     "skipLibCheck": true,
     // 强制文件名一致性
@@ -33,6 +31,10 @@
     // 启用隔离模块，确保每个文件是独立的模块
     "isolatedModules": true,
     // 启用严格的模块语法
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    // 删除注释
+    "removeComments": false,
+    // 保留常量枚举
+    "preserveConstEnums": true
   }
 }
