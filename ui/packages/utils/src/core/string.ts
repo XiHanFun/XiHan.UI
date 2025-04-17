@@ -116,6 +116,30 @@ export function toKebabCase(str: string): string {
 }
 
 /**
+ * 转换为标题格式
+ * @param str - 输入字符串
+ * @returns 标题格式的字符串
+ * @example toTitleCase('hello world') => 'Hello World'
+ * @example toTitleCase('Hello World') => 'Hello World'
+ * @example toTitleCase('hello_world') => 'Hello World'
+ * @example toTitleCase('hello-world') => 'Hello World'
+ */
+export function toTitleCase(str: string): string {
+  return str.replace(/\b\w/g, char => char.toUpperCase());
+}
+
+/**
+ * 转换为句子格式
+ * @param str - 输入字符串
+ * @returns 句子格式的字符串
+ * @example toSentenceCase('hello world') => 'Hello world'
+ * @example toSentenceCase('Hello World') => 'Hello world'
+ */
+export function toSentenceCase(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+/**
  * 截断字符串
  * @param str - 输入字符串
  * @param length - 截断长度
@@ -134,9 +158,13 @@ export function truncate(str: string, length: number, suffix = "..."): string {
  * @param args - 替换参数
  * @returns 格式化后的字符串
  * @example formatString('Hello {0}', 'World') => 'Hello World'
+ * @example formatString('Hello {name}', { name: 'World' }) => 'Hello World'
  */
-export function formatString(template: string, ...args: string[]): string {
-  return template.replace(/\{(\w+)\}/g, (_, key) => String(args[key] ?? ""));
+export function formatString(template: string, ...args: any[]): string {
+  if (args.length === 1 && typeof args[0] === "object") {
+    return template.replace(/\{(\w+)\}/g, (_, key) => String(args[0][key] ?? ""));
+  }
+  return template.replace(/\{(\d+)\}/g, (_, index) => String(args[index] ?? ""));
 }
 
 /**
@@ -165,4 +193,39 @@ export function escapeHtml(str: string): string {
     "'": "&#39;",
   };
   return str.replace(/[&<>"']/g, m => map[m]);
+}
+
+/**
+ * 反转义 HTML 特殊字符
+ * @param str - 输入字符串
+ * @returns 反转义后的字符串
+ * @example unescapeHtml('&lt;div&gt;') => '<div>'
+ * @example unescapeHtml('&#39;') => "'"
+ */
+export function unEscapeHtml(str: string): string {
+  const map: Record<string, string> = {
+    "&amp;": "&",
+    "&lt;": "<",
+    "&gt;": ">",
+    "&quot;": '"',
+    "&#39;": "'",
+  };
+  return str.replace(/&amp;|&lt;|&gt;|&quot;|&#39;/g, m => map[m]);
+}
+
+/**
+ * 填充字符串
+ * @param str - 输入字符串
+ * @param length - 目标长度
+ * @param char - 填充字符
+ * @param position - 填充位置（start/end）
+ * @returns 填充后的字符串
+ * @example pad('hello', 10, '*') => '*****hello'
+ * @example pad('hello', 10, '*', 'end') => 'hello*****'
+ */
+export function pad(str: string, length: number, char = " ", position: "start" | "end" = "start"): string {
+  const padLength = length - str.length;
+  if (padLength <= 0) return str;
+  const padding = char.repeat(padLength);
+  return position === "start" ? padding + str : str + padding;
 }
