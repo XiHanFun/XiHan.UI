@@ -23,8 +23,8 @@ export * from "./dom";
 // 国际化工具
 export * from "./i18n";
 
-// 媒体工具
-export * from "./media";
+// 文件工具
+export * from "./file";
 
 // 性能优化工具
 export * from "./performance";
