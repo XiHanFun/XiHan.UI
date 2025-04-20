@@ -46,12 +46,6 @@ export interface ZipOptions {
   compressionLevel?: number;
 
   /**
-   * 是否包含文件夹条目
-   * @default true
-   */
-  includeFolders?: boolean;
-
-  /**
    * 进度回调
    */
   onProgress?: (progress: number, currentFile?: string) => void;
@@ -80,6 +74,30 @@ export interface UnzipOptions extends ZipOptions {
    * 文件名过滤函数
    */
   filter?: (filename: string) => boolean;
+
+  /**
+   * 是否包含文件夹条目
+   * @default false
+   */
+  includeFolders?: boolean;
+}
+
+/**
+ * ZIP文件头信息
+ */
+interface ZipHeader {
+  signature: number;
+  version: number;
+  flags: number;
+  compression: number;
+  lastModified: Date;
+  crc32: number;
+  compressedSize: number;
+  uncompressedSize: number;
+  filenameLength: number;
+  extraLength: number;
+  filename: string;
+  extra: Uint8Array;
 }
 
 /**
@@ -91,8 +109,42 @@ export function isZipSupported(): boolean {
     typeof Blob !== "undefined" &&
     typeof File !== "undefined" &&
     typeof FileReader !== "undefined" &&
-    typeof ArrayBuffer !== "undefined"
+    typeof ArrayBuffer !== "undefined" &&
+    typeof TextDecoder !== "undefined"
   );
+}
+
+/**
+ * 解析ZIP文件头
+ */
+function parseZipHeader(view: DataView, offset: number): ZipHeader {
+  const signature = view.getUint32(offset, true);
+  const version = view.getUint16(offset + 4, true);
+  const flags = view.getUint16(offset + 6, true);
+  const compression = view.getUint16(offset + 8, true);
+  const lastModified = new Date(view.getUint16(offset + 10, true) * 1000 + view.getUint16(offset + 12, true));
+  const crc32 = view.getUint32(offset + 14, true);
+  const compressedSize = view.getUint32(offset + 18, true);
+  const uncompressedSize = view.getUint32(offset + 22, true);
+  const filenameLength = view.getUint16(offset + 26, true);
+  const extraLength = view.getUint16(offset + 28, true);
+  const filename = new TextDecoder().decode(new Uint8Array(view.buffer, offset + 30, filenameLength));
+  const extra = new Uint8Array(view.buffer, offset + 30 + filenameLength, extraLength);
+
+  return {
+    signature,
+    version,
+    flags,
+    compression,
+    lastModified,
+    crc32,
+    compressedSize,
+    uncompressedSize,
+    filenameLength,
+    extraLength,
+    filename,
+    extra,
+  };
 }
 
 /**
@@ -102,57 +154,24 @@ export function isZipSupported(): boolean {
  * @returns 包含ZIP数据的Blob对象
  */
 export async function createZip(entries: ZipEntry[], options: ZipOptions = {}): Promise<Blob> {
-  // 注意：此函数实现需要依赖如JSZip等第三方库
-  // 以下是一个示例实现，实际使用时请引入适当的库
-
   // 检查浏览器支持
   if (!isZipSupported()) {
     throw new Error("您的浏览器不支持ZIP操作");
   }
 
-  // 引入JSZip库示例
-  if (typeof window.JSZip === "undefined") {
-    throw new Error("需要JSZip库支持，请先加载JSZip");
-  }
-
-  const { compressionLevel = 5, includeFolders = true, onProgress, onComplete, onError } = options;
+  const { onComplete, onError } = options;
 
   try {
-    // 创建JSZip实例
-    const zip = new window.JSZip();
-    const totalEntries = entries.length;
-    let processedEntries = 0;
+    const zip = new Map<string, Blob>();
 
     // 添加文件
     for (const entry of entries) {
       try {
-        const {
-          filename,
-          data,
-          compressionLevel: entryCompressionLevel = compressionLevel,
-          lastModified = new Date(),
-          comment,
-        } = entry;
+        const { filename, data } = entry;
 
-        // 确定压缩方法
-        const compression = entryCompressionLevel > 0 ? "DEFLATE" : "STORE";
-        const compressionOptions = {
-          level: entryCompressionLevel,
-          comment,
-        };
-
-        // 添加到zip
-        zip.file(filename, data, {
-          compression,
-          compressionOptions,
-          date: lastModified,
-        });
-
-        // 更新进度
-        processedEntries++;
-        if (onProgress) {
-          onProgress(processedEntries / totalEntries, filename);
-        }
+        // 转换为Blob
+        const blob = data instanceof Blob ? data : new Blob([data]);
+        zip.set(filename, blob);
       } catch (err) {
         if (onError) {
           onError(err as Error, entry.filename);
@@ -161,26 +180,13 @@ export async function createZip(entries: ZipEntry[], options: ZipOptions = {}): 
     }
 
     // 生成ZIP文件
-    const blob = await zip.generateAsync(
-      {
-        type: "blob",
-        compression: "DEFLATE",
-        compressionOptions: {
-          level: compressionLevel,
-        },
-      },
-      (metadata: { percent: number }) => {
-        if (onProgress) {
-          onProgress(metadata.percent / 100);
-        }
-      },
-    );
+    const zipBlob = new Blob([...zip.values()], { type: "application/zip" });
 
     if (onComplete) {
       onComplete();
     }
 
-    return blob;
+    return zipBlob;
   } catch (err) {
     if (onError) {
       onError(err as Error);
@@ -199,73 +205,53 @@ export async function unzip(
   zipFile: File | Blob | ArrayBuffer,
   options: UnzipOptions = {},
 ): Promise<Map<string, Blob>> {
-  // 注意：此函数实现需要依赖如JSZip等第三方库
-  // 以下是一个示例实现，实际使用时请引入适当的库
-
   // 检查浏览器支持
   if (!isZipSupported()) {
     throw new Error("您的浏览器不支持ZIP操作");
   }
 
-  // 引入JSZip库示例
-  if (typeof window.JSZip === "undefined") {
-    throw new Error("需要JSZip库支持，请先加载JSZip");
-  }
-
-  const { files, filter, includeFolders = false, onProgress, onComplete, onError } = options;
+  const { files, filter, includeFolders = false, onComplete, onError } = options;
 
   try {
-    // 加载ZIP文件
-    const zip = await window.JSZip.loadAsync(zipFile);
     const result = new Map<string, Blob>();
+    const zipBlob = zipFile instanceof Blob ? zipFile : new Blob([zipFile]);
+    const reader = new FileReader();
 
-    // 获取所有文件
-    const zipFiles = zip.files;
-    const filenames = Object.keys(zipFiles).filter(name => {
-      // 过滤文件夹（除非特别指定）
-      if (!includeFolders && name.endsWith("/")) {
-        return false;
-      }
-
-      // 使用指定的文件列表进行过滤
-      if (files && files.length > 0) {
-        return files.includes(name);
-      }
-
-      // 使用自定义过滤函数
-      if (filter) {
-        return filter(name);
-      }
-
-      return true;
+    // 读取ZIP文件
+    const zipData = await new Promise<ArrayBuffer>((resolve, reject) => {
+      reader.onload = () => resolve(reader.result as ArrayBuffer);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsArrayBuffer(zipBlob);
     });
 
-    const totalFiles = filenames.length;
-    let processedFiles = 0;
+    // 解析ZIP文件
+    const view = new DataView(zipData);
+    let offset = 0;
 
-    // 逐个解压文件
-    for (const filename of filenames) {
-      try {
-        const fileObj = zipFiles[filename];
+    while (offset < zipData.byteLength) {
+      const header = parseZipHeader(view, offset);
 
-        // 跳过目录
-        if (fileObj.dir && !includeFolders) {
+      if (header.signature === 0x504b0304) {
+        // PK\3\4
+        if (
+          (!includeFolders && header.filename.endsWith("/")) ||
+          (files && !files.includes(header.filename)) ||
+          (filter && !filter(header.filename))
+        ) {
+          offset += 30 + header.filenameLength + header.extraLength + header.compressedSize;
           continue;
         }
 
-        // 获取文件内容
-        const blob = await fileObj.async("blob");
-        result.set(filename, blob);
+        const fileData = new Uint8Array(
+          zipData,
+          offset + 30 + header.filenameLength + header.extraLength,
+          header.compressedSize,
+        );
+        result.set(header.filename, new Blob([fileData]));
 
-        // 更新进度
-        processedFiles++;
-        if (onProgress) {
-          onProgress(processedFiles / totalFiles, filename);
-        }
-      } catch (err) {
-        if (onError) {
-          onError(err as Error, filename);
-        }
+        offset += 30 + header.filenameLength + header.extraLength + header.compressedSize;
+      } else {
+        offset++;
       }
     }
 
@@ -315,26 +301,39 @@ export async function listZipContents(
     throw new Error("您的浏览器不支持ZIP操作");
   }
 
-  // 引入JSZip库示例
-  if (typeof window.JSZip === "undefined") {
-    throw new Error("需要JSZip库支持，请先加载JSZip");
-  }
-
-  // 加载ZIP文件
-  const zip = await window.JSZip.loadAsync(zipFile);
+  const zipBlob = zipFile instanceof Blob ? zipFile : new Blob([zipFile]);
+  const reader = new FileReader();
   const contents: { name: string; size: number; compressed: number; dir: boolean; date: Date }[] = [];
 
-  // 遍历所有文件
-  Object.keys(zip.files).forEach(filename => {
-    const file = zip.files[filename];
-    contents.push({
-      name: filename,
-      size: file._data ? file._data.uncompressedSize : 0,
-      compressed: file._data ? file._data.compressedSize : 0,
-      dir: file.dir,
-      date: file.date,
-    });
+  // 读取ZIP文件
+  const zipData = await new Promise<ArrayBuffer>((resolve, reject) => {
+    reader.onload = () => resolve(reader.result as ArrayBuffer);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsArrayBuffer(zipBlob);
   });
+
+  // 解析ZIP文件
+  const view = new DataView(zipData);
+  let offset = 0;
+
+  while (offset < zipData.byteLength) {
+    const header = parseZipHeader(view, offset);
+
+    if (header.signature === 0x504b0304) {
+      // PK\3\4
+      contents.push({
+        name: header.filename,
+        size: header.uncompressedSize,
+        compressed: header.compressedSize,
+        dir: header.filename.endsWith("/"),
+        date: header.lastModified,
+      });
+
+      offset += 30 + header.filenameLength + header.extraLength + header.compressedSize;
+    } else {
+      offset++;
+    }
+  }
 
   return contents;
 }
@@ -380,13 +379,11 @@ export async function addFolderToZip(
   const normalizedFolderName = folderName.endsWith("/") ? folderName : `${folderName}/`;
 
   // 添加文件夹条目
-  if (options.includeFolders !== false) {
-    entries.push({
-      filename: normalizedFolderName,
-      data: new Blob([]),
-      compressionLevel: 0,
-    });
-  }
+  entries.push({
+    filename: normalizedFolderName,
+    data: new Blob([]),
+    compressionLevel: 0,
+  });
 
   // 添加文件
   for (const [relativePath, data] of files.entries()) {
@@ -414,68 +411,28 @@ export async function mergeZips(zipFiles: (File | Blob | ArrayBuffer)[], options
     throw new Error("您的浏览器不支持ZIP操作");
   }
 
-  // 引入JSZip库示例
-  if (typeof window.JSZip === "undefined") {
-    throw new Error("需要JSZip库支持，请先加载JSZip");
-  }
-
-  // 创建新的ZIP
-  const mergedZip = new window.JSZip();
+  const entries: ZipEntry[] = [];
 
   // 解压每个ZIP并合并内容
   for (let i = 0; i < zipFiles.length; i++) {
     const zipFile = zipFiles[i];
-    const zip = await window.JSZip.loadAsync(zipFile);
+    const files = await unzip(zipFile, { includeFolders: true });
 
-    // 遍历文件并添加到合并ZIP
-    for (const [filename, file] of Object.entries(zip.files) as [
-      string,
-      {
-        dir: boolean;
-        async: (type: string) => Promise<any>;
-        compression: string;
-        date: Date;
-      },
-    ][]) {
-      if (!file.dir) {
-        const content = await file.async("arraybuffer");
-        mergedZip.file(filename, content, {
-          compression: file.compression,
-          compressionOptions: {
-            level: options.compressionLevel || 5,
-          },
-          date: file.date,
-        });
-      } else if (options.includeFolders !== false) {
-        mergedZip.folder(filename);
-      }
-    }
-
-    // 更新进度
-    if (options.onProgress) {
-      options.onProgress((i + 1) / zipFiles.length);
+    // 添加文件到条目列表
+    for (const [filename, data] of files.entries()) {
+      entries.push({
+        filename,
+        data,
+      });
     }
   }
 
-  // 生成最终ZIP
-  const blob = await mergedZip.generateAsync({
-    type: "blob",
-    compression: "DEFLATE",
-    compressionOptions: {
-      level: options.compressionLevel || 5,
-    },
-  });
+  // 创建合并后的ZIP
+  const blob = await createZip(entries, options);
 
   if (options.onComplete) {
     options.onComplete();
   }
 
   return blob;
-}
-
-// 为TypeScript定义JSZip接口
-declare global {
-  interface Window {
-    JSZip: any;
-  }
 }
