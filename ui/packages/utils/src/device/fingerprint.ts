@@ -3,7 +3,7 @@
  */
 
 import { getInfo, isMobile, getHardwareConcurrency } from "./navigator";
-import { isAudioSupported, createAudioContext } from "../media/audio";
+import { isAudioSupported, createAudioContext } from "../file/audio";
 import { getDeviceType, isTouchDevice, isIOS, isAndroid, getOrientation } from "./device";
 import { getStatus } from "./network";
 
