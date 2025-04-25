@@ -1,6 +1,6 @@
 {
   "name": "@xihan-ui/utils",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "description": "Utils for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -31,7 +31,6 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "development": "./src/index.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts"
