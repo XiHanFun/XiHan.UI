@@ -21,50 +21,42 @@ import { XiHan } from "./xihan";
 
 // 创建日志记录器
 const logger = createLogger({
-  prefix: "XihanUI",
+  prefix: "XiHan",
   level: import.meta.env.DEV ? "debug" : "error",
+  disabled: import.meta.env.VITE_UI_LOG_DISABLED === "true",
 });
 
 // 安装函数
 export const install = (app: App) => {
   try {
-    logger.group("XihanUI Info");
-    logger.success(XiHan.Logo);
-    logger.success(XiHan.Version);
-    logger.success(XiHan.Copyright);
-    logger.success(XiHan.Doc);
-    logger.success(XiHan.Org);
-    logger.success(XiHan.Rep);
-    logger.success(XiHan.SendWord);
-    logger.success(XiHan.Tagline);
+    // ============ 项目信息 ============
+    logger.group("XiHan", true);
+    logger.info(XiHan.XiHanInfo);
     logger.groupEnd();
 
+    // ============ 加载组件 ============
+    logger.group("XiHan Load", true);
+    logger.time("Load");
     assert(!!app, "App instance is required");
-
     // 注册组件
     app.component("XhButton", XhButton);
     app.component("XhButtonGroup", XhButtonGroup);
-
     // 注入全局配置
-    app.config.globalProperties.$XIHAN = {
-      version: XiHan.Version,
-      mode: "light",
-    };
-
+    app.config.globalProperties.$XIHAN = XiHan;
     // 添加错误处理
     app.config.errorHandler = (err, vm, info) => {
       logger.error("Vue Error:", err, vm, info);
     };
-
     // 添加警告处理
     app.config.warnHandler = (msg, vm, trace) => {
       logger.warn("Vue Warning:", msg, vm, trace);
     };
-
-    logger.info("XihanUI installed successfully");
+    logger.success("XiHan loaded successfully");
+    logger.timeEnd("Load");
+    logger.groupEnd();
   } catch (err) {
     if (err instanceof Error) {
-      throwError(`Failed to install XihanUI: ${err.message}`, "UNKNOWN");
+      throwError(`Failed to load XiHan: ${err.message}`, "UNKNOWN");
     }
     throw err;
   }

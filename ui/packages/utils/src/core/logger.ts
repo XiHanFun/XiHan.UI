@@ -3,6 +3,7 @@
  * @param debug 调试日志级别
  * @param info 信息日志级别
  * @param warn 警告日志级别
+ * @param success 成功日志级别
  * @param error 错误日志级别
  */
 export type LogLevel = "debug" | "info" | "warn" | "success" | "error";
@@ -49,6 +50,7 @@ export type LogStyles = typeof logStyles;
  * @param debug 调试日志级别权重
  * @param info 信息日志级别权重
  * @param warn 警告日志级别权重
+ * @param success 成功日志级别权重
  * @param error 错误日志级别权重
  */
 const levelWeight = {
@@ -181,6 +183,15 @@ export function createLogger(options: LoggerOptions = {}) {
     groupEnd() {
       if (disabled) return;
       console.groupEnd();
+    },
+
+    /**
+     * 表格日志
+     * @param data 表格数据 数组或对象
+     */
+    table(data: any[] | object) {
+      if (disabled) return;
+      console.table(data);
     },
 
     /**
