@@ -31,7 +31,7 @@ export const install = (app: App) => {
   try {
     // ============ 项目信息 ============
     logger.group("XiHan", true);
-    logger.info(XiHan.XiHanInfo);
+    logger.info(XiHan.SayHello());
     logger.groupEnd();
 
     // ============ 加载组件 ============
