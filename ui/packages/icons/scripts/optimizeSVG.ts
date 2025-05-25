@@ -30,13 +30,7 @@ export const optimizeSVG = (svg: string) => {
           name: "removeAttrs",
           params: {
             elemSeparator: "^",
-            attrs: [
-              "data.*",
-              "version",
-              "svg^aria-label",
-              "svg^class",
-              // "xmlns:xlink"
-            ],
+            attrs: ["data.*", "version", "svg^aria-label", "svg^class", "xmlns:xlink"],
           },
         },
       ],

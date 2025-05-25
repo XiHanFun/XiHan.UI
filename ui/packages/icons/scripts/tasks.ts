@@ -4,12 +4,12 @@ import { icons } from "../source";
 import { SOURCE_PACKS_DIR, ICONS_PACKS_DIR, TYPES_DIR } from "../source/path";
 import { getIconFiles, convertSVG } from "./utils";
 import {
-  autoGenerateTemplate,
   indexDefImportTemplate,
   indexDtsTemplate,
   indexMjsImportTemplate,
   indexMjsTemplate,
-  packageJsonTemplate,
+  indexPackageJsonTemplate,
+  packsIndexPackageJsonTemplate,
   mainIndexTemplate,
 } from "./templates";
 
@@ -27,20 +27,20 @@ export async function dirInit(): Promise<void> {
     rmSync(ICONS_PACKS_DIR, { recursive: true, force: true });
   }
 
+  const writeFile = (filePath: string, str: string) => writeFileSync(resolve(ICONS_PACKS_DIR, filePath), str, "utf8");
+
   // 创建新的目录结构
   mkdirSync(ICONS_PACKS_DIR, { recursive: true });
   mkdirSync(TYPES_DIR, { recursive: true });
-
-  const writeIcon = (filePath: string, str: string) => writeFileSync(resolve(ICONS_PACKS_DIR, filePath), str, "utf8");
 
   // 为每个图标集创建目录和基础文件
   for (const iconSet of icons) {
     mkdirSync(resolve(ICONS_PACKS_DIR, iconSet.id), { recursive: true });
 
-    // 创建基础文件 index.d.ts、index.mjs、package.json
-    writeIcon(`${iconSet.id}/${indexDts}`, indexDefImportTemplate);
-    writeIcon(`${iconSet.id}/${indexMjs}`, indexMjsImportTemplate);
-    writeIcon(`${iconSet.id}/${packageJson}`, packageJsonTemplate);
+    // 创建基础文件 index.d.ts、index.mjs、package.json、packs/package.json
+    writeFile(`${iconSet.id}/${indexDts}`, indexDefImportTemplate);
+    writeFile(`${iconSet.id}/${indexMjs}`, indexMjsImportTemplate);
+    writeFile(`${iconSet.id}/${packageJson}`, indexPackageJsonTemplate);
   }
 }
 
@@ -151,5 +151,8 @@ export const ${iconSet.id}Info: IconSetInfo = ${JSON.stringify(iconSetInfo, null
 export async function finalizeBuild(): Promise<void> {
   // 创建主索引文件
   const mainContent = mainIndexTemplate(icons.map(icon => ({ id: icon.id, name: icon.name })));
-  writeFileSync(resolve(ICONS_PACKS_DIR, indexDts), mainContent);
+  writeFileSync(resolve(ICONS_PACKS_DIR, indexMjs), mainContent);
+
+  // 创建主 package.json
+  writeFileSync(resolve(ICONS_PACKS_DIR, packageJson), packsIndexPackageJsonTemplate);
 }

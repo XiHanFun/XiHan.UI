@@ -8,13 +8,29 @@ export const autoGenerateTemplate = "// 此文件由脚本自动生成，请勿�
  * package.json 模板
  * @returns package.json 模板内容
  */
-export const packageJsonTemplate =
+export const indexPackageJsonTemplate =
   JSON.stringify(
     {
       type: "module",
       main: "./index.mjs",
       module: "./index.mjs",
       types: "./index.d.ts",
+      sideEffects: false,
+    },
+    null,
+    2,
+  ) + "\n";
+
+/**
+ * packs/package.json 模板
+ * @returns packs/package.json 模板内容
+ */
+export const packsIndexPackageJsonTemplate =
+  JSON.stringify(
+    {
+      type: "module",
+      main: "./index.mjs",
+      module: "./index.mjs",
       sideEffects: false,
     },
     null,

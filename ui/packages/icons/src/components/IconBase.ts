@@ -75,6 +75,7 @@ export const IconBase = defineComponent({
     },
     // 图标动画
     animation: {
+      type: String,
       validator: (val: string): boolean => {
         // assert(
         //   ["spin", "spin-pulse", "wrench", "ring", "pulse", "flash", "float"].includes(val),
@@ -87,6 +88,7 @@ export const IconBase = defineComponent({
     hover: Boolean,
     // 图标翻转
     flip: {
+      type: String,
       validator: (val: string): boolean => {
         // assert(
         //   ["horizontal", "vertical", "both"].includes(val),
@@ -97,6 +99,7 @@ export const IconBase = defineComponent({
     },
     // 图标速度
     speed: {
+      type: String,
       validator: (val: string): boolean => {
         // assert(val === "fast" || val === "slow", "无效的属性。属性 'speed' 应该是一个 'fast' 或 'slow'。");
         return true;

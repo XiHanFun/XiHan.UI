@@ -40,6 +40,10 @@
       "require": "./types/index.d.ts",
       "types": "./types/index.d.ts"
     },
+    "./packs": {
+      "import": "./packs/index.mjs",
+      "require": "./packs/index.mjs"
+    },
     "./packs/*": {
       "import": "./packs/*/index.mjs",
       "require": "./packs/*/index.mjs",
@@ -55,7 +59,8 @@
     "update": "tsx scripts/update.ts",
     "download": "tsx scripts/download.ts",
     "generate": "tsx scripts/generate.ts",
-    "build": "pnpm generate && unbuild"
+    "buildSrc": "unbuild",
+    "build": "pnpm generate && pnpm buildSrc"
   },
   "peerDependencies": {
     "vue": "catalog:"
