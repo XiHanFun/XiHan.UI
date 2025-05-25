@@ -56,11 +56,11 @@
     "types"
   ],
   "scripts": {
-    "update": "tsx scripts/update.ts",
     "download": "tsx scripts/download.ts",
     "generate": "tsx scripts/generate.ts",
+    "update": "tsx scripts/update.ts",
     "buildSrc": "unbuild",
-    "build": "pnpm generate && pnpm buildSrc"
+    "build": "pnpm update && pnpm buildSrc"
   },
   "peerDependencies": {
     "vue": "3.5.14"
