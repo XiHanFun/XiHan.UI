@@ -3,18 +3,6 @@ import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import { resolve } from "path";
 
-const packages = {
-  utils: resolve(__dirname, "../packages/utils/src"),
-  constants: resolve(__dirname, "../packages/constants/src"),
-  hooks: resolve(__dirname, "../packages/hooks/src"),
-  icons: resolve(__dirname, "../packages/icons/src"),
-  directives: resolve(__dirname, "../packages/directives/src"),
-  themes: resolve(__dirname, "../packages/themes/src"),
-  locales: resolve(__dirname, "../packages/locales/src"),
-  components: resolve(__dirname, "../packages/components/src"),
-  xihanui: resolve(__dirname, "../packages/xihan-ui/src"),
-};
-
 export default defineConfig(({ mode }) => {
   // 加载环境变量
   const env = loadEnv(mode, process.cwd());
@@ -27,29 +15,28 @@ export default defineConfig(({ mode }) => {
     // 插件配置
     plugins: [vue(), vueJsx()],
 
-    // 路径解析
-    resolve: {
-      alias: {
-        "@": resolve(__dirname, "src"),
-        "@xihan-ui/utils": packages.utils,
-        "@xihan-ui/constants": packages.constants,
-        "@xihan-ui/hooks": packages.hooks,
-        "@xihan-ui/icons": packages.icons,
-        "@xihan-ui/directives": packages.directives,
-        "@xihan-ui/themes": packages.themes,
-        "@xihan-ui/locales": packages.locales,
-        "@xihan-ui/components": packages.components,
-        "xihan-ui": packages.xihanui,
-      },
-      preserveSymlinks: true,
-      extensions: [".mjs", ".js", ".mts", ".ts", ".jsx", ".tsx", ".json", ".vue", ".scss", ".css"],
-    },
-
     // CSS 处理
     css: {
       preprocessorOptions: {
         scss: {},
       },
+    },
+
+    // 路径解析
+    resolve: {
+      alias: [
+        { find: "@", replacement: resolve(__dirname, "src") },
+        { find: "@xihan-ui/icons/packs", replacement: resolve(__dirname, "../packages/icons/packs") },
+        { find: "@xihan-ui/utils", replacement: resolve(__dirname, "../packages/utils/src") },
+        { find: "@xihan-ui/constants", replacement: resolve(__dirname, "../packages/constants/src") },
+        { find: "@xihan-ui/hooks", replacement: resolve(__dirname, "../packages/hooks/src") },
+        { find: "@xihan-ui/icons", replacement: resolve(__dirname, "../packages/icons/src") },
+        { find: "@xihan-ui/directives", replacement: resolve(__dirname, "../packages/directives/src") },
+        { find: "@xihan-ui/themes", replacement: resolve(__dirname, "../packages/themes/src") },
+        { find: "@xihan-ui/locales", replacement: resolve(__dirname, "../packages/locales/src") },
+        { find: "@xihan-ui/components", replacement: resolve(__dirname, "../packages/components/src") },
+        { find: "xihan-ui", replacement: resolve(__dirname, "../packages/xihan-ui/src") },
+      ],
     },
 
     // 优化依赖
