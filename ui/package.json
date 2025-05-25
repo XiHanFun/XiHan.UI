@@ -1,7 +1,7 @@
 {
   "name": "xihan-ui-monorepo",
   "private": true,
-  "version": "0.9.6",
+  "version": "0.9.7",
   "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -31,8 +31,8 @@
   "packageManager": "pnpm@10.11.0",
   "preinstall": "npx only-allow pnpm",
   "engines": {
-    "node": "^23.7.0",
-    "pnpm": "^10.6.2"
+    "node": "^24.0.2",
+    "pnpm": "^10.11.0"
   },
   "scripts": {
     "bootstrap": "pnpm -r install",
@@ -49,15 +49,13 @@
     "clean:build": "node scripts/clean-dist.mjs",
     "gen:version": "node scripts/gen-version.mjs",
     "update:pkg": "npx taze -w -r",
-    "update:catalog": "node scripts/update-catalog.mjs",
     "reinstall": "pnpm run clean:node && pnpm run bootstrap",
     "rebuild": "pnpm run clean:build && pnpm run build",
-    "changeset": "npx changeset",
     "publish-packages": "turbo build && npx changeset version && npx changeset publish"
   },
   "peerDependencies": {
-    "typescript": "catalog:",
-    "vue": "catalog:"
+    "typescript": "5.8.3",
+    "vue": "3.5.14"
   },
   "dependencies": {
     "@xihan-ui/cli": "workspace:*",
@@ -73,24 +71,22 @@
     "xihan-ui": "workspace:*"
   },
   "devDependencies": {
-    "@changesets/changelog-github": "catalog:",
-    "@changesets/cli": "catalog:",
-    "@types/node": "catalog:",
-    "@vitejs/plugin-vue": "catalog:",
-    "@vitejs/plugin-vue-jsx": "catalog:",
+    "@types/node": "22.15.21",
+    "@vitejs/plugin-vue": "5.2.4",
+    "@vitejs/plugin-vue-jsx": "4.2.0",
     "@xihan-ui/build": "workspace:*",
     "@xihan-ui/dev": "workspace:*",
-    "cross-env": "catalog:",
-    "eslint": "catalog:",
-    "eslint-config-prettier": "catalog:",
-    "eslint-plugin-prettier": "catalog:",
-    "eslint-plugin-vue": "catalog:",
-    "prettier": "catalog:",
-    "rollup": "catalog:",
-    "sass-lint": "catalog:",
-    "stylelint": "catalog:",
-    "tsx": "catalog:",
-    "turbo": "catalog:",
-    "unbuild": "catalog:"
+    "cross-env": "7.0.3",
+    "eslint": "9.27.0",
+    "eslint-config-prettier": "10.1.5",
+    "eslint-plugin-prettier": "5.4.0",
+    "eslint-plugin-vue": "10.1.0",
+    "prettier": "3.5.3",
+    "rollup": "4.41.0",
+    "sass-lint": "1.13.1",
+    "stylelint": "16.19.1",
+    "tsx": "4.19.4",
+    "turbo": "2.5.3",
+    "unbuild": "3.5.0"
   }
 }

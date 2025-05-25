@@ -1,6 +1,6 @@
 {
   "name": "@xihan-ui/icons",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "description": "Icons for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -63,16 +63,16 @@
     "build": "pnpm generate && pnpm buildSrc"
   },
   "peerDependencies": {
-    "vue": "catalog:"
+    "vue": "3.5.14"
   },
   "dependencies": {
     "@xihan-ui/utils": "workspace:*",
-    "glob": "catalog:",
-    "svgo": "^3.0.0",
-    "adm-zip": "^0.5.10"
+    "adm-zip": "^0.5.16",
+    "glob": "11.0.2",
+    "svgo": "^3.3.2"
   },
   "devDependencies": {
-    "@types/glob": "catalog:",
-    "@types/adm-zip": "^0.5.0"
+    "@types/adm-zip": "^0.5.7",
+    "@types/glob": "8.1.0"
   }
 }
