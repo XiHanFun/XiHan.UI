@@ -48,10 +48,10 @@
     "clean:node": "pnpm run clean:lock && pnpm run clean:modules",
     "clean:build": "node scripts/clean-dist.mjs",
     "gen:version": "node scripts/gen-version.mjs",
-    "update:pkg": "npx taze -w -r",
+    "update:pkg": "pnpm dlx taze -w -r",
     "reinstall": "pnpm run clean:node && pnpm run bootstrap",
     "rebuild": "pnpm run clean:build && pnpm run build",
-    "publish-packages": "turbo build && npx changeset version && npx changeset publish"
+    "publish-packages": "turbo build && pnpm -r publish --no-git-checks"
   },
   "peerDependencies": {
     "typescript": "5.8.3",
