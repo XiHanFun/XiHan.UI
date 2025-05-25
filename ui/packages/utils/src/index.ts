@@ -17,7 +17,7 @@ export * from "./data";
 // 设备工具
 export * from "./device";
 
-// DOM操作工具
+// DOM工具
 export * from "./dom";
 
 // 国际化工具
