@@ -5,6 +5,8 @@ import router from "./router";
 import { IconBase, addIcons, listIcons } from "@xihan-ui/icons";
 import type { IconTypeCustomized } from "@xihan-ui/icons";
 
+import { adiInfo } from "@xihan-ui/icons/packs/adi";
+
 import * as Icons from "@xihan-ui/icons/packs";
 const icons = Object.values(Icons).map(icon => icon as IconTypeCustomized);
 addIcons(...icons);

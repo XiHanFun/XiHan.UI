@@ -1,1 +1,1 @@
-// import "@xihan-ui/themes/styles/components/icon";
+import "@xihan-ui/themes/components/icon";

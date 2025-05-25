@@ -14,14 +14,15 @@
         <h2>按钮组</h2>
         <div class="demo-row">
           <XhButtonGroup>
-            <XhButton type="primary" :icon="FiChevronLeft">上一页</XhButton>
-            <XhButton type="primary" :icon="FiChevronRight" iconPlacement="right">下一页</XhButton>
+            <XhIcon :name="'fei-chevron-right'" :scale="1" />
+            <XhButton type="primary"> 上一页</XhButton>
+            <XhButton type="primary" :icon="FeiChevronRight" iconPlacement="right">下一页</XhButton>
           </XhButtonGroup>
         </div>
         <div class="demo-row">
           <XhButtonGroup>
-            <XhButton type="primary" :icon="FiEdit"></XhButton>
-            <XhButton type="primary" :icon="FiTrash"></XhButton>
+            <XhButton type="primary" :icon="FeiEdit"></XhButton>
+            <XhButton type="primary" :icon="FeiTrash"></XhButton>
           </XhButtonGroup>
         </div>
         <div class="demo-row">
@@ -88,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-  import { FiEdit, FiTrash, FiChevronLeft, FiChevronRight, FiArrowLeft } from "@xihan-ui/icons";
+  import { FeiEdit, FeiTrash, FeiChevronLeft, FeiChevronRight, FeiArrowLeft } from "@xihan-ui/icons/packs/fei";
 </script>
 
 <style lang="scss" scoped>
