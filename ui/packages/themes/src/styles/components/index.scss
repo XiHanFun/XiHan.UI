@@ -1,6 +1,0 @@
-@use "./_global";
-
-// 图标样式必须在其他组件之前加载，因为其他组件可能会 @extend .xh-icon
-@use "./icon";
-@use "./button";
-@use "./button-group";
