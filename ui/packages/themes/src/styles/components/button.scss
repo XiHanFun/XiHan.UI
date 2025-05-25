@@ -111,7 +111,7 @@
 
   // 图标
   &__icon {
-    @extend .xh-icon;
+    @extend .xh-icon !optional;
     margin-right: map.get(vars.$spacings, "xs");
 
     .icon-placement--right & {
