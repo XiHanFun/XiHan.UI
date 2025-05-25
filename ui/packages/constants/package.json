@@ -1,6 +1,6 @@
 {
   "name": "@xihan-ui/constants",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "description": "Constants for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -41,8 +41,5 @@
   ],
   "scripts": {
     "build": "unbuild"
-  },
-  "peerDependencies": {
-    "typescript": "catalog:"
   }
 }

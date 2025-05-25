@@ -30,23 +30,23 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@xihan-ui/utils": "workspace:*",
-    "@xihan-ui/icons": "workspace:*",
-    "@xihan-ui/themes": "workspace:*",
-    "@xihan-ui/locales": "workspace:*",
     "@xihan-ui/components": "workspace:*",
-    "@xihan-ui/hooks": "workspace:*",
     "@xihan-ui/constants": "workspace:*",
-    "pinia": "catalog:",
-    "vue": "catalog:",
-    "vue-router": "catalog:",
+    "@xihan-ui/hooks": "workspace:*",
+    "@xihan-ui/icons": "workspace:*",
+    "@xihan-ui/locales": "workspace:*",
+    "@xihan-ui/themes": "workspace:*",
+    "@xihan-ui/utils": "workspace:*",
+    "pinia": "2.3.0",
+    "vue": "3.5.14",
+    "vue-router": "4.5.0",
     "xihan-ui": "workspace:*"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "catalog:",
-    "@vitejs/plugin-vue-jsx": "catalog:",
-    "vite": "catalog:",
-    "vite-plugin-dts": "catalog:",
-    "vite-plugin-vue-devtools": "catalog:"
+    "@vitejs/plugin-vue": "5.2.1",
+    "@vitejs/plugin-vue-jsx": "4.1.2",
+    "vite": "6.2.0",
+    "vite-plugin-dts": "4.4.1",
+    "vite-plugin-vue-devtools": "1.0.0"
   }
 }
