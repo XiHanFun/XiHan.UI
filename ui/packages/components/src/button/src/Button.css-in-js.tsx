@@ -1,11 +1,21 @@
 import { computed, defineComponent, inject, h } from "vue";
 import type { PropType } from "vue";
+import {
+  createSimpleStyleEngine,
+  provideSimpleStyleEngine,
+  useSimpleStyleEngine,
+  provideSimpleTheme,
+  useSimpleTheme,
+  simpleCx,
+  ref,
+  type SimpleTheme,
+} from "@xihan-ui/themes";
 import { buttonGroupContextKey } from "../../button-group";
 import Icon from "../../icon/src/Icon";
-import "../styles/index";
+import { useButtonStyles } from "./Button.simple-styles";
 
 // 按钮类型
-export type ButtonType = "default" | "primary" | "success" | "warning" | "danger" | "info";
+export type ButtonType = "default" | "primary" | "success" | "warning" | "danger" | "info" | "text" | "link";
 // 按钮尺寸
 export type ButtonSize = "small" | "medium" | "large";
 // 原生类型
@@ -47,10 +57,6 @@ export type ButtonProps = {
   autofocus?: boolean;
   /** 按钮文本 */
   text?: string;
-  /** 是否为文本按钮 */
-  textButton?: boolean;
-  /** 是否为链接按钮 */
-  link?: boolean;
   /** 按钮标题，用于无障碍访问 */
   title?: string;
   /** 按钮标签，用于屏幕阅读器 */
@@ -63,7 +69,7 @@ export const buttonProps = {
     type: String as PropType<ButtonType>,
     default: "default",
     validator: (val: string): boolean => {
-      return ["default", "primary", "success", "warning", "danger", "info"].includes(val);
+      return ["default", "primary", "success", "warning", "danger", "info", "text", "link"].includes(val);
     },
   },
   // 按钮尺寸
@@ -150,16 +156,6 @@ export const buttonProps = {
     type: String,
     default: "",
   },
-  // 是否为文本按钮
-  textButton: {
-    type: Boolean,
-    default: false,
-  },
-  // 是否为链接按钮
-  link: {
-    type: Boolean,
-    default: false,
-  },
   // 按钮标题
   title: {
     type: String,
@@ -172,8 +168,41 @@ export const buttonProps = {
   },
 };
 
+// 默认主题
+const defaultTheme: SimpleTheme = {
+  colors: {
+    primary: "#409eff",
+    success: "#67c23a",
+    warning: "#e6a23c",
+    danger: "#f56c6c",
+    info: "#909399",
+    white: "#ffffff",
+    black: "#000000",
+  },
+  fontSizes: {
+    xs: "12px",
+    sm: "14px",
+    base: "16px",
+    lg: "18px",
+    xl: "20px",
+  },
+  spacings: {
+    xs: "4px",
+    sm: "8px",
+    base: "12px",
+    lg: "16px",
+    xl: "24px",
+  },
+  borderRadius: {
+    sm: "2px",
+    base: "4px",
+    lg: "8px",
+    round: "20px",
+  },
+};
+
 export default defineComponent({
-  name: "XhButton" as const,
+  name: "XhButtonCssInJs" as const,
   components: {
     Icon,
   },
@@ -184,6 +213,13 @@ export default defineComponent({
     blur: (event: FocusEvent) => event instanceof FocusEvent,
   },
   setup(props, { slots, emit, attrs }) {
+    // 初始化样式引擎和主题
+    const styleEngine = createSimpleStyleEngine();
+    const theme = ref(defaultTheme);
+
+    provideSimpleStyleEngine(styleEngine);
+    provideSimpleTheme(theme);
+
     // 注入按钮组上下文
     const buttonGroupContext = inject(buttonGroupContextKey, undefined);
 
@@ -195,50 +231,37 @@ export default defineComponent({
     const isPlain = computed(() => buttonGroupContext?.plain || props.plain);
     // 计算是否为圆角按钮
     const isRound = computed(() => buttonGroupContext?.round || props.round);
-    // 计算是否为垂直布局
-    const isVertical = computed(() => buttonGroupContext?.vertical || false);
 
-    // 计算是否禁用
-    const isDisabled = computed(() => props.disabled || props.loading);
-
-    // 计算图标尺寸
-    const iconSize = computed(() => {
-      if (props.iconSize) return props.iconSize;
-
-      switch (buttonSize.value) {
-        case "small":
-          return 14;
-        case "large":
-          return 18;
-        default:
-          return 16;
-      }
+    // 使用样式
+    const buttonStyleClass = useButtonStyles({
+      type: buttonType.value,
+      size: buttonSize.value,
+      plain: isPlain.value,
+      loading: props.loading,
+      disabled: props.disabled,
+      block: props.block,
+      round: isRound.value,
+      circle: props.circle,
     });
 
-    // 计算 class 类名
-    const classes = computed(() => [
-      "xh-button",
-      {
-        [`xh-button--${buttonType.value}`]: buttonType.value,
-        [`xh-button--${buttonSize.value}`]: buttonSize.value,
+    // 计算类名
+    const buttonClass = computed(() => {
+      return simpleCx("xh-button", buttonStyleClass.value, {
+        [`xh-button--${buttonType.value}`]: buttonType.value !== "default",
+        [`xh-button--${buttonSize.value}`]: buttonSize.value !== "medium",
         "is-plain": isPlain.value,
         "is-round": isRound.value,
         "is-circle": props.circle,
-        "is-disabled": isDisabled.value,
-        "is-loading": props.loading,
         "is-block": props.block,
-        "is-text": props.textButton,
-        "is-link": props.link,
-        "is-in-group": !!buttonGroupContext,
-        "is-vertical": isVertical.value,
-        [`icon-placement--${props.iconPlacement}`]: (props.icon || slots.icon) && !props.circle,
-        "has-icon-only": (props.icon || slots.icon) && !slots.default && !props.text && props.circle,
-      },
-    ]);
+        "is-disabled": props.disabled,
+        "is-loading": props.loading,
+        [`icon-placement--${props.iconPlacement}`]: props.icon && props.iconPlacement === "right",
+      });
+    });
 
     // 事件处理
     const handleClick = (event: MouseEvent) => {
-      if (isDisabled.value) {
+      if (props.disabled || props.loading) {
         event.preventDefault();
         event.stopPropagation();
         return;
@@ -257,28 +280,22 @@ export default defineComponent({
     // 渲染图标
     const renderIcon = () => {
       if (props.loading) {
-        return (
-          <span class="xh-button__loading-icon">
-            <Icon
-              name={props.loadingIcon}
-              animation="spin"
-              size={iconSize.value}
-              color={props.iconColor || "currentColor"}
-            />
-          </span>
-        );
+        return h(Icon, {
+          name: props.loadingIcon,
+          color: props.iconColor,
+          size: props.iconSize,
+          class: "xh-button__loading-icon",
+          spin: true,
+        });
       }
 
       if (props.icon) {
-        return (
-          <span class={`xh-button__icon icon-placement--${props.iconPlacement}`}>
-            <Icon name={props.icon} size={iconSize.value} color={props.iconColor || "currentColor"} />
-          </span>
-        );
-      }
-
-      if (slots.icon) {
-        return <span class="xh-button__icon">{slots.icon()}</span>;
+        return h(Icon, {
+          name: props.icon,
+          color: props.iconColor,
+          size: props.iconSize,
+          class: "xh-button__icon",
+        });
       }
 
       return null;
@@ -286,32 +303,39 @@ export default defineComponent({
 
     // 渲染内容
     const renderContent = () => {
-      const content = slots.default?.() || props.text;
-      if (!content && props.circle) return null;
+      const content = slots.default?.() || (props.text ? [props.text] : []);
 
-      return <span class="xh-button__content">{content}</span>;
+      if (content.length === 0 && !props.icon && !props.loading) {
+        return null;
+      }
+
+      return h("span", { class: "xh-button__content" }, content);
     };
 
-    return () => (
-      <button
-        class={classes.value}
-        disabled={isDisabled.value}
-        type={props.nativeType}
-        autofocus={props.autofocus}
-        title={props.title}
-        aria-label={props.label || props.title}
-        aria-disabled={isDisabled.value}
-        aria-busy={props.loading}
-        role="button"
-        onClick={handleClick}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        {...attrs}
-      >
-        {props.iconPlacement === "left" && renderIcon()}
-        {renderContent()}
-        {props.iconPlacement === "right" && renderIcon()}
-      </button>
-    );
+    return () => {
+      const iconNode = renderIcon();
+      const contentNode = renderContent();
+
+      return h(
+        "button",
+        {
+          ...attrs,
+          type: props.nativeType,
+          class: buttonClass.value,
+          disabled: props.disabled || props.loading,
+          autofocus: props.autofocus,
+          title: props.title,
+          "aria-label": props.label,
+          "aria-disabled": props.disabled || props.loading,
+          "aria-busy": props.loading,
+          onClick: handleClick,
+          onFocus: handleFocus,
+          onBlur: handleBlur,
+        },
+        [props.iconPlacement === "left" && iconNode, contentNode, props.iconPlacement === "right" && iconNode].filter(
+          Boolean,
+        ),
+      );
+    };
   },
 });
