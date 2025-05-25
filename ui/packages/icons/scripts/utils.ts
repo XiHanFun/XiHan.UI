@@ -29,7 +29,7 @@ export async function getIconFiles(basePath: string, fileFilter: string): Promis
  */
 function cleanAttr(attr: Record<string, string>, prefix: string): Record<string, string> {
   const cleanedAttr: Record<string, string> = {};
-  const excludeAttrs = ["xmlns", "xmlns:xlink", "xml:space", "width", "height", "viewBox", "version"];
+  const excludeAttrs = ["xmlns", "xmlns:xlink", "xml:space", "width", "height", "version"];
 
   for (const [key, value] of Object.entries(attr)) {
     if (!excludeAttrs.includes(key) && value) {

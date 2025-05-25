@@ -1,6 +1,6 @@
 {
   "name": "@xihan-ui/icons",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "description": "Icons for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -42,7 +42,8 @@
     },
     "./packs": {
       "import": "./packs/index.mjs",
-      "require": "./packs/index.mjs"
+      "require": "./packs/index.mjs",
+      "types": "./packs/index.d.ts"
     },
     "./packs/*": {
       "import": "./packs/*/index.mjs",

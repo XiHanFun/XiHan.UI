@@ -24,7 +24,7 @@
 
 2. **样式工程化**
    - CSS 命名空间策略（BEM 扩展）
-   - 主题引擎开发（CSS Variables + SCSS 变量映射）
+   - 主题引擎开发（CSS-in-JS）
    - 按需加载实现（unplugin-vue-components 插件开发）
 
 3. **性能优化体系**

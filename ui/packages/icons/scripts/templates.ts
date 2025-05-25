@@ -11,26 +11,9 @@ export const autoGenerateTemplate = "// 此文件由脚本自动生成，请勿�
 export const indexPackageJsonTemplate =
   JSON.stringify(
     {
-      type: "module",
       main: "./index.mjs",
       module: "./index.mjs",
       types: "./index.d.ts",
-      sideEffects: false,
-    },
-    null,
-    2,
-  ) + "\n";
-
-/**
- * packs/package.json 模板
- * @returns packs/package.json 模板内容
- */
-export const packsIndexPackageJsonTemplate =
-  JSON.stringify(
-    {
-      type: "module",
-      main: "./index.mjs",
-      module: "./index.mjs",
       sideEffects: false,
     },
     null,
@@ -89,15 +72,11 @@ export * from "./${iconSetId}";
 export const mainIndexTemplate = (iconSets: Array<{ id: string; name: string }>): string => {
   const exports = iconSets.map(icon => `export * from "./${icon.id}";`).join("\n");
 
-  // 生成图标集信息的导出
-  const infoExports = iconSets.map(icon => `  ${icon.id}Info,`).join("\n");
-
   return `${autoGenerateTemplate}
 /**
  * XiHan UI Icons
  * 所有图标的统一导出
  */
-
 ${exports}
 `;
 };

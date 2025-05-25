@@ -9,7 +9,6 @@ import {
   indexMjsImportTemplate,
   indexMjsTemplate,
   indexPackageJsonTemplate,
-  packsIndexPackageJsonTemplate,
   mainIndexTemplate,
 } from "./templates";
 
@@ -151,8 +150,6 @@ export const ${iconSet.id}Info: IconSetInfo = ${JSON.stringify(iconSetInfo, null
 export async function finalizeBuild(): Promise<void> {
   // 创建主索引文件
   const mainContent = mainIndexTemplate(icons.map(icon => ({ id: icon.id, name: icon.name })));
+  writeFileSync(resolve(ICONS_PACKS_DIR, indexDts), mainContent);
   writeFileSync(resolve(ICONS_PACKS_DIR, indexMjs), mainContent);
-
-  // 创建主 package.json
-  writeFileSync(resolve(ICONS_PACKS_DIR, packageJson), packsIndexPackageJsonTemplate);
 }
