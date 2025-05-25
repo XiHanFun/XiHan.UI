@@ -3,32 +3,37 @@ packages:
   - internal/*
   - playground
 catalog:
-  "@types/node": 22.14.1
-  "@vitejs/plugin-vue": 5.2.3
-  "@vitejs/plugin-vue-jsx": 4.1.2
-  "@types/glob": 8.1.0
-  "@changesets/changelog-github": 0.5.1
-  "@changesets/cli": 2.29.2
+  '@types/node': 22.15.21
+  '@vitejs/plugin-vue': 5.2.4
+  '@vitejs/plugin-vue-jsx': 4.2.0
+  '@types/glob': 8.1.0
+  '@changesets/changelog-github': 0.5.1
+  '@changesets/cli': 2.29.4
   unbuild: 3.5.0
   cross-env: 7.0.3
-  eslint: 9.25.1
-  eslint-config-prettier: 10.1.2
-  eslint-plugin-prettier: 5.2.6
-  eslint-plugin-vue: 10.0.0
+  eslint: 9.27.0
+  eslint-config-prettier: 10.1.5
+  eslint-plugin-prettier: 5.4.0
+  eslint-plugin-vue: 10.1.0
   prettier: 3.5.3
-  rollup: 4.40.0
-  sass: 1.87.0
+  rollup: 4.41.0
+  sass: 1.89.0
   rollup-plugin-scss: 4.0.1
   sass-lint: 1.13.1
-  stylelint: 16.19.0
-  tsx: 4.19.3
+  stylelint: 16.19.1
+  tsx: 4.19.4
   typescript: 5.8.3
-  vue: 3.5.13
-  vite: 6.3.3
-  turbo: 2.5.1
-  vite-plugin-dts: 4.5.3
-  vite-plugin-vue-devtools: 7.7.5
+  vue: 3.5.14
+  vite: 6.3.5
+  turbo: 2.5.3
+  vite-plugin-dts: 4.5.4
+  vite-plugin-vue-devtools: 7.7.6
   vue-tsc: 2.2.10
   glob: 11.0.2
   pinia: 3.0.2
-  vue-router: 4.5.0
+  vue-router: 4.5.1
+  svgo: 3.3.2
+ignoredBuiltDependencies:
+  - '@parcel/watcher'
+  - es5-ext
+  - esbuild

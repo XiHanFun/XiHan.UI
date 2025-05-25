@@ -36,7 +36,9 @@
       "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts",
       "style": "./dist/index.css"
-    }
+    },
+    "./styles/*": "./src/styles/*",
+    "./components/*": "./src/styles/components/*"
   },
   "files": [
     "dist"

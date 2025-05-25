@@ -1,5 +1,6 @@
-// 导入所有图标组件
-export * from "./icons";
+// 导出核心组件
+export { IconBase, addIcons, listIcons } from "./components/IconBase";
 
 // 导出类型
-export type { IconBaseProps } from "./components/IconBase";
+export type { IconProps, IconDefinition, IconSetInfo } from "./components/IconDefinition";
+export type { ObjType, IconType, IconTypeCustomized } from "./components/IconType";

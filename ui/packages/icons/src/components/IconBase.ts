@@ -1,12 +1,12 @@
 import { generateId, assert, escapeHtml } from "@xihan-ui/utils";
 import { defineComponent, h, ref, computed, reactive, toRefs, onMounted, onUpdated } from "vue";
-import type { ObjType, IconTypeCustomized } from "./type";
+import type { ObjType, IconTypeCustomized } from "./IconType";
 
-type IconsTypeCustom = {
+type IconsType = {
   [key: string]: IconTypeCustomized;
 };
 
-const icons: IconsTypeCustom = {};
+const icons: IconsType = {};
 
 /**
  * 注册图标
@@ -23,13 +23,16 @@ const register = (data: IconTypeCustomized): void => {
     polygons,
   });
 
+  // 为缺少的属性提供默认值
   if (!icons[name].minX) icons[name].minX = 0;
   if (!icons[name].minY) icons[name].minY = 0;
+  if (!icons[name].width) icons[name].width = 24;
+  if (!icons[name].height) icons[name].height = 24;
 };
 
 /**
  * 添加图标
- * @param data - 图标数据
+ * @param data - 图标数据或图标对象
  */
 export const addIcons = (...data: IconTypeCustomized[]): void => {
   for (const icon of data) register(icon);
@@ -39,7 +42,7 @@ export const addIcons = (...data: IconTypeCustomized[]): void => {
  * 获取所有图标
  * @returns 所有图标
  */
-export const listIcons = (): IconsTypeCustom => {
+export const listIcons = (): IconsType => {
   return icons;
 };
 
@@ -47,17 +50,17 @@ export const listIcons = (): IconsTypeCustom => {
  * 图标基础组件
  */
 export const IconBase = defineComponent({
-  name: "IconBase",
+  name: "XhIconBase",
   props: {
     // 图标名称
     name: {
       type: String,
       required: true,
       validator: (val: string): boolean => {
-        assert(
-          !val || !(val in icons),
-          `无效的属性。属性 "name" 引用了未注册的图标 "${val}"，请确保在使用此图标之前已导入。`,
-        );
+        // assert(
+        //   !val || !(val in icons),
+        //   `无效的属性。属性 "name" 引用了未注册的图标 "${val}"，请确保在使用此图标之前已导入。`,
+        // );
         return true;
       },
     },
@@ -73,10 +76,10 @@ export const IconBase = defineComponent({
     // 图标动画
     animation: {
       validator: (val: string): boolean => {
-        assert(
-          ["spin", "spin-pulse", "wrench", "ring", "pulse", "flash", "float"].includes(val),
-          "无效的属性。属性 'animation' 应该是一个 'spin'、'spin-pulse'、'wrench'、'ring'、'pulse'、'flash' 或 'float'。",
-        );
+        // assert(
+        //   ["spin", "spin-pulse", "wrench", "ring", "pulse", "flash", "float"].includes(val),
+        //   "无效的属性。属性 'animation' 应该是一个 'spin'、'spin-pulse'、'wrench'、'ring'、'pulse'、'flash' 或 'float'。",
+        // );
         return true;
       },
     },
@@ -85,17 +88,17 @@ export const IconBase = defineComponent({
     // 图标翻转
     flip: {
       validator: (val: string): boolean => {
-        assert(
-          ["horizontal", "vertical", "both"].includes(val),
-          "无效的属性。属性 'flip' 应该是一个 'horizontal'、'vertical' 或 'both'。",
-        );
+        // assert(
+        //   ["horizontal", "vertical", "both"].includes(val),
+        //   "无效的属性。属性 'flip' 应该是一个 'horizontal'、'vertical' 或 'both'。",
+        // );
         return true;
       },
     },
     // 图标速度
     speed: {
       validator: (val: string): boolean => {
-        assert(val === "fast" || val === "slow", "无效的属性。属性 'speed' 应该是一个 'fast' 或 'slow'。");
+        // assert(val === "fast" || val === "slow", "无效的属性。属性 'speed' 应该是一个 'fast' 或 'slow'。");
         return true;
       },
     },
@@ -120,11 +123,11 @@ export const IconBase = defineComponent({
 
     const normalizedScale = computed(() => {
       const scale = Number(props.scale);
-      assert(isNaN(scale) || scale <= 0, "无效的属性。属性 'scale' 应该是一个大于 0 的数字。");
+      // assert(isNaN(scale) || scale <= 0, "无效的属性。属性 'scale' 应该是一个大于 0 的数字。");
       return scale * state.outerScale;
     });
 
-    const klass = computed(() => {
+    const classList = computed(() => {
       const classes = {
         "xh-icon": true,
         "xh-icon-inverse": props.inverse,
@@ -161,7 +164,7 @@ export const IconBase = defineComponent({
       if (!icon.value) return 1;
 
       const { width, height } = icon.value;
-      return Math.max(width, height) / 16;
+      return Math.max(width, height) / 24;
     });
 
     const width = computed((): number => {
@@ -208,7 +211,7 @@ export const IconBase = defineComponent({
     });
 
     const updateStack = () => {
-      assert(!props.name && props.name !== null && children.value.length === 0, "无效的属性。属性 'name' 是必需的。");
+      // assert(!props.name && props.name !== null && children.value.length === 0, "无效的属性。属性 'name' 是必需的。");
 
       if (icon.value) return;
 
@@ -243,7 +246,7 @@ export const IconBase = defineComponent({
       ...toRefs(state),
       children,
       icon,
-      klass,
+      classList,
       style,
       width,
       height,
@@ -278,7 +281,7 @@ export const IconBase = defineComponent({
     if (this.y) attrs.y = (this.y as number).toString();
 
     let options = {
-      class: this.klass,
+      class: this.classList,
       style: this.style,
     } as any;
 

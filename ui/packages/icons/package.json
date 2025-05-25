@@ -32,27 +32,42 @@
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
+      "require": "./dist/index.mjs",
       "types": "./dist/index.d.ts"
+    },
+    "./types": {
+      "import": "./types/index.d.ts",
+      "require": "./types/index.d.ts",
+      "types": "./types/index.d.ts"
+    },
+    "./packs/*": {
+      "import": "./packs/*/index.mjs",
+      "require": "./packs/*/index.mjs",
+      "types": "./packs/*/index.d.ts"
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "packs",
+    "types"
   ],
   "scripts": {
     "update": "tsx scripts/update.ts",
     "download": "tsx scripts/download.ts",
     "generate": "tsx scripts/generate.ts",
-    "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 unbuild"
+    "build": "pnpm generate && unbuild"
   },
   "peerDependencies": {
     "vue": "catalog:"
   },
   "dependencies": {
     "@xihan-ui/utils": "workspace:*",
-    "glob": "catalog:"
+    "glob": "catalog:",
+    "svgo": "^3.0.0",
+    "adm-zip": "^0.5.10"
   },
   "devDependencies": {
-    "@types/glob": "catalog:"
+    "@types/glob": "catalog:",
+    "@types/adm-zip": "^0.5.0"
   }
 }

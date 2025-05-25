@@ -7,8 +7,10 @@ export interface IconSource {
 export interface IconContents {
   subFolders: string;
   fileFilter: string;
+  formatter: (name: string) => string;
   exportName: (name: string) => string;
   declareName: (name: string) => string;
+  scale?: number;
   processWithSvgo?: boolean;
   multiColor?: boolean;
 }

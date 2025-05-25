@@ -3,7 +3,7 @@
     <div class="page-header">
       <h1 class="page-title">按钮 Button</h1>
       <router-link to="/components" class="back-link">
-        <FiArrowLeft class="back-icon" />
+        <XhIcon name="fa-arrow-left-solid" class="back-icon" />
         返回组件列表
       </router-link>
     </div>
@@ -39,12 +39,12 @@
       <section class="demo-section">
         <h2>图标按钮</h2>
         <div class="demo-row">
-          <XhButton :icon="FiEdit">编辑</XhButton>
-          <XhButton :icon="FiTrash" type="danger">删除</XhButton>
+          <XhButton icon="fa-edit-solid">编辑</XhButton>
+          <XhButton icon="fa-trash-solid" type="danger">删除</XhButton>
         </div>
         <div class="demo-row">
-          <XhButton :icon="FiEdit" iconPlacement="right">编辑</XhButton>
-          <XhButton :icon="FiTrash" type="danger" iconPlacement="right">删除</XhButton>
+          <XhButton icon="fa-edit-solid" iconPlacement="right">编辑</XhButton>
+          <XhButton icon="fa-trash-solid" type="danger" iconPlacement="right">删除</XhButton>
         </div>
       </section>
 
@@ -57,9 +57,9 @@
           <XhButton size="large" type="primary">大型按钮</XhButton>
         </div>
         <div class="demo-row">
-          <XhButton size="small" :icon="FiEdit" type="primary">编辑</XhButton>
-          <XhButton :icon="FiEdit" type="primary">编辑</XhButton>
-          <XhButton size="large" :icon="FiEdit" type="primary">编辑</XhButton>
+          <XhButton size="small" icon="fa-edit-solid" type="primary">编辑</XhButton>
+          <XhButton icon="fa-edit-solid" type="primary">编辑</XhButton>
+          <XhButton size="large" icon="fa-edit-solid" type="primary">编辑</XhButton>
         </div>
       </section>
 
@@ -68,9 +68,9 @@
         <h2>按钮形状</h2>
         <div class="demo-row">
           <XhButton round>圆角按钮</XhButton>
-          <XhButton type="info" circle :icon="FiInfo"></XhButton>
-          <XhButton type="warning" circle :icon="FiStar"></XhButton>
-          <XhButton type="danger" circle :icon="FiTrash"></XhButton>
+          <XhButton type="info" circle icon="fa-info-solid"></XhButton>
+          <XhButton type="warning" circle icon="fa-star-solid"></XhButton>
+          <XhButton type="danger" circle icon="fa-trash-solid"></XhButton>
         </div>
       </section>
 
@@ -94,7 +94,7 @@
           <XhButton type="primary" disabled>禁用按钮</XhButton>
           <XhButton type="success" disabled plain>禁用按钮</XhButton>
           <XhButton type="info" disabled round>禁用按钮</XhButton>
-          <XhButton type="danger" disabled circle :icon="FiTrash"></XhButton>
+          <XhButton type="danger" disabled circle icon="fa-trash-solid"></XhButton>
         </div>
       </section>
 
@@ -111,7 +111,7 @@
 </template>
 
 <script setup lang="ts">
-  import { FiEdit, FiTrash, FiInfo, FiStar, FiArrowLeft } from "@xihan-ui/icons";
+  // 图标现在通过 XhIcon 组件使用，不需要直接导入
 </script>
 
 <style lang="scss" scoped>
