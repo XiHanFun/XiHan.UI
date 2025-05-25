@@ -31,6 +31,12 @@
   },
   "dependencies": {
     "@xihan-ui/utils": "workspace:*",
+    "@xihan-ui/icons": "workspace:*",
+    "@xihan-ui/themes": "workspace:*",
+    "@xihan-ui/locales": "workspace:*",
+    "@xihan-ui/components": "workspace:*",
+    "@xihan-ui/hooks": "workspace:*",
+    "@xihan-ui/constants": "workspace:*",
     "pinia": "catalog:",
     "vue": "catalog:",
     "vue-router": "catalog:",
