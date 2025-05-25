@@ -1,6 +1,6 @@
 {
   "name": "@xihan-ui/cli",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "description": "CLI for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -43,6 +43,6 @@
     "build": "unbuild"
   },
   "peerDependencies": {
-    "vue": "catalog:"
+    "vue": "3.5.14"
   }
 }

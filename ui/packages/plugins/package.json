@@ -1,6 +1,6 @@
 {
   "name": "@xihan-ui/plugins",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "description": "Plugins for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -43,7 +43,7 @@
     "build": "unbuild"
   },
   "peerDependencies": {
-    "vue": "catalog:"
+    "vue": "3.5.14"
   },
   "dependencies": {
     "@xihan-ui/utils": "workspace:*"

@@ -1,6 +1,6 @@
 {
   "name": "xihan-ui",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
@@ -42,7 +42,7 @@
     "build": "unbuild"
   },
   "peerDependencies": {
-    "vue": "catalog:"
+    "vue": "3.5.14"
   },
   "dependencies": {
     "@xihan-ui/cli": "workspace:*",
