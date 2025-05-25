@@ -25,11 +25,26 @@
             v-for="group in iconGroups"
             :key="group.id"
             class="group-item"
-            :class="{ active: activeGroup === group.id }"
+            :class="{
+              active: activeGroup === group.id,
+              'is-colored': group.isColored === true,
+              'is-special': group.category === 'special',
+            }"
             @click="setActiveGroup(group.id)"
+            :title="group.name"
           >
-            <span class="group-name">{{ group.name }}</span>
-            <span class="group-count">{{ group.count }}</span>
+            <div class="group-info">
+              <div class="group-name">{{ group.name }}</div>
+              <div class="group-meta">
+                <div class="group-badges">
+                  <span v-if="group.isColored === true" class="color-badge">彩色</span>
+                  <span v-else-if="group.isColored === false && group.category !== 'special'" class="mono-badge"
+                    >单色</span
+                  >
+                </div>
+                <span class="group-count">{{ group.count }}</span>
+              </div>
+            </div>
           </div>
         </div>
       </aside>
@@ -56,7 +71,9 @@
               :key="iconName"
               class="icon-item"
               @click="copyIconName(iconName)"
-              :class="{ copied: copiedIcon === iconName && showCopyTip }"
+              :class="{
+                copied: copiedIcon === iconName && showCopyTip,
+              }"
               :title="`点击复制: ${iconName}`"
             >
               <div class="icon-wrapper">
@@ -76,6 +93,7 @@
 <script setup lang="ts">
   import { ref, computed, onMounted } from "vue";
   import { IconBase, listIcons } from "@xihan-ui/icons";
+  import * as iconsInfo from "@xihan-ui/icons/packs";
 
   // 响应式数据
   const searchKeyword = ref("");
@@ -94,13 +112,35 @@
     return Object.keys(registeredIcons.value).length;
   });
 
+  // 判断是否为彩色图标
+  const isColoredIcon = (iconName: string): boolean => {
+    // 彩色图标库的前缀
+    const coloredPrefixes = [
+      "fci", // Flat Color Icons
+      "csg", // CSS.GG (部分彩色)
+      "goi", // Google Icons (部分彩色)
+      "poi", // Pokemon Icons (彩色)
+      "imf", // Iconify (部分彩色)
+    ];
+
+    const prefix = iconName.split("-")[0];
+    return coloredPrefixes.includes(prefix);
+  };
+
   // 根据前缀分组图标
   const groupedIcons = computed(() => {
-    const grouped: Record<string, string[]> = { all: [] };
+    const grouped: Record<string, string[]> = { all: [], colored: [], monochrome: [] };
 
     Object.keys(registeredIcons.value).forEach(iconName => {
       // 添加到全部分组
       grouped.all.push(iconName);
+
+      // 根据是否为彩色图标分组
+      if (isColoredIcon(iconName)) {
+        grouped.colored.push(iconName);
+      } else {
+        grouped.monochrome.push(iconName);
+      }
 
       // 根据图标名称前缀分组 (kebab-case 格式: adi-account-book-fill -> adi)
       const parts = iconName.split("-");
@@ -118,59 +158,85 @@
 
   // 创建图标分组数据
   const iconGroups = computed(() => {
-    const groups: Array<{ id: string; name: string; count: number }> = [];
+    const groups: Array<{
+      id: string;
+      name: string;
+      count: number;
+      isColored?: boolean;
+      category?: string;
+    }> = [];
 
-    // 添加"全部"分组
+    // 添加特殊分组
     groups.push({
       id: "all",
       name: "全部图标",
       count: groupedIcons.value.all?.length || 0,
+      category: "special",
     });
 
     // 根据前缀创建分组
-    const prefixMap: Record<string, string> = {
-      fa: "Font Awesome",
-      adi: "Ant Design Icons",
-      bsi: "Bootstrap Icons",
-      bxi: "BoxIcons",
-      cii: "Circum Icons",
-      csg: "CSS.GG",
-      fci: "Flat Color Icons",
-      fei: "Feather Icons",
-      fli: "Fluent Icons",
-      goi: "Google Icons",
-      gri: "Grommet Icons",
-      hei: "Heroicons",
-      imf: "Iconify",
-      ioi: "Ionicons",
-      lia: "Lucide Icons",
-      luc: "Lucide",
-      phi: "Phosphor Icons",
-      poi: "Polaris Icons",
-      rdi: "Radix Icons",
-      rmi: "Remix Icon",
-      sii: "Simple Icons",
-      sli: "Simple Line Icons",
-      tbi: "Tabler Icons",
-      tfi: "Themify Icons",
-      tpi: "Typicons",
-      vci: "VS Code Icons",
-      wri: "Weather Icons",
+    const prefixMap: Record<
+      string,
+      {
+        name: string;
+        isColored: boolean;
+        category: string;
+      }
+    > = {
+      fa: { name: "Font Awesome", isColored: false, category: "popular" },
+      adi: { name: "Ant Design Icons", isColored: false, category: "design-system" },
+      bsi: { name: "Bootstrap Icons", isColored: false, category: "popular" },
+      bxi: { name: "BoxIcons", isColored: false, category: "general" },
+      cii: { name: "Circum Icons", isColored: false, category: "general" },
+      csg: { name: "CSS.GG", isColored: true, category: "general" },
+      fci: { name: "Flat Color Icons", isColored: true, category: "colored" },
+      fei: { name: "Feather Icons", isColored: false, category: "popular" },
+      fli: { name: "Fluent Icons", isColored: false, category: "design-system" },
+      goi: { name: "Google Icons", isColored: true, category: "design-system" },
+      gri: { name: "Grommet Icons", isColored: false, category: "general" },
+      hei: { name: "Heroicons", isColored: false, category: "popular" },
+      imf: { name: "Iconify", isColored: true, category: "general" },
+      ioi: { name: "Ionicons", isColored: false, category: "mobile" },
+      lia: { name: "Lucide Icons", isColored: false, category: "popular" },
+      luc: { name: "Lucide", isColored: false, category: "popular" },
+      phi: { name: "Phosphor Icons", isColored: false, category: "general" },
+      poi: { name: "Pokemon Icons", isColored: true, category: "themed" },
+      rdi: { name: "Radix Icons", isColored: false, category: "design-system" },
+      rmi: { name: "Remix Icon", isColored: false, category: "general" },
+      sii: { name: "Simple Icons", isColored: false, category: "brand" },
+      sli: { name: "Simple Line Icons", isColored: false, category: "general" },
+      tbi: { name: "Tabler Icons", isColored: false, category: "popular" },
+      tfi: { name: "Themify Icons", isColored: false, category: "general" },
+      tpi: { name: "Typicons", isColored: false, category: "general" },
+      vci: { name: "VS Code Icons", isColored: false, category: "development" },
+      wri: { name: "Weather Icons", isColored: false, category: "themed" },
     };
 
     Object.keys(groupedIcons.value).forEach(prefix => {
-      if (prefix !== "all" && groupedIcons.value[prefix].length > 0) {
+      if (!["all", "colored", "monochrome"].includes(prefix) && groupedIcons.value[prefix].length > 0) {
+        const info = prefixMap[prefix];
         groups.push({
           id: prefix,
-          name: prefixMap[prefix] || prefix,
+          name: info?.name || prefix,
           count: groupedIcons.value[prefix].length,
+          isColored: info?.isColored || false,
+          category: info?.category || "general",
         });
       }
     });
 
+    // 按字母排序
     return groups.sort((a, b) => {
-      if (a.id === "all") return -1;
-      if (b.id === "all") return 1;
+      // 特殊分组排在前面
+      if (a.category === "special" && b.category !== "special") return -1;
+      if (b.category === "special" && a.category !== "special") return 1;
+
+      // 特殊分组内部排序（只有 all 分组）
+      if (a.category === "special" && b.category === "special") {
+        return 0; // 只有一个特殊分组，无需排序
+      }
+
+      // 其他分组按名称字母排序
       return a.name.localeCompare(b.name);
     });
   });
@@ -369,29 +435,82 @@
 
   .group-item {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 12px;
-    border-radius: 6px;
+    align-items: stretch;
+    padding: 12px;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s;
+    border: 1px solid transparent;
   }
 
   .group-item:hover {
     background-color: #f5f5f5;
+    border-color: #e8e8e8;
   }
 
   .group-item.active {
     background-color: #1890ff;
     color: white;
+    border-color: #1890ff;
+  }
+
+  .group-item.is-special {
+    border-left: 3px solid #52c41a;
+  }
+
+  .group-item.is-colored:not(.is-special) {
+    border-left: 3px solid #ff7a45;
+  }
+
+  .group-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
 
   .group-name {
     font-size: 14px;
+    font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    flex: 1;
+    line-height: 1.2;
+  }
+
+  .group-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .group-badges {
+    display: flex;
+    gap: 4px;
+  }
+
+  .color-badge {
+    font-size: 10px;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+    color: white;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .mono-badge {
+    font-size: 10px;
+    background-color: #d9d9d9;
+    color: #595959;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .group-count {
@@ -401,7 +520,7 @@
     padding: 2px 8px;
     min-width: 24px;
     text-align: center;
-    margin-left: 8px;
+    flex-shrink: 0;
   }
 
   .group-item.active .group-count {
@@ -476,6 +595,7 @@
     height: 48px;
     color: #595959;
     margin-bottom: 12px;
+    position: relative;
   }
 
   .icon-name {
