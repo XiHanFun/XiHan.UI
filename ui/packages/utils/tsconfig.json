@@ -11,6 +11,6 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["src/**/*", "types/**/*", "scripts/**/*"],
+  "include": ["src/**/*", "types/**/*", "scripts/**/*", "../locales/src/i18n"],
   "exclude": ["node_modules", "dist"]
 }

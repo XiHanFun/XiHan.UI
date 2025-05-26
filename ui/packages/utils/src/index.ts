@@ -2,9 +2,6 @@
  * 工具库入口
  */
 
-// 动画工具
-export * from "./animation";
-
 // 浏览器工具
 export * from "./browser";
 
@@ -21,7 +18,7 @@ export * from "./device";
 export * from "./dom";
 
 // 国际化工具
-export * from "./i18n";
+export * from "../../locales/src/i18n";
 
 // 文件工具
 export * from "./file";

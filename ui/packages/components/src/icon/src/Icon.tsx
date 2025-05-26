@@ -11,7 +11,7 @@ import {
 import { IconBase, addIcons, listIcons } from "@xihan-ui/icons";
 import { isString, isNumber, isObject, generateId, createLogger, assert, tryCatch } from "@xihan-ui/utils/core";
 import { debounceFn, throttleFn } from "@xihan-ui/utils/core";
-import { style } from "@xihan-ui/utils/dom";
+import { style } from "@xihan-ui/themes/core";
 import { preloadImage } from "@xihan-ui/utils/file";
 
 // 创建日志记录器
