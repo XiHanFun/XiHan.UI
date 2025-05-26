@@ -1,15 +1,16 @@
 {
-  "extends": "../../tsconfig.app.json",
   "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
     "declaration": true,
     "outDir": "dist",
     "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
-    "types": ["vite/client"],
-    "baseUrl": ".",
-    "resolveJsonModule": true
+    "types": ["node"]
   },
-  "include": ["src/**/*", "package.json"],
+  "include": ["src/**/*", "types/**/*", "scripts/**/*"],
   "exclude": ["node_modules", "dist"]
 }
