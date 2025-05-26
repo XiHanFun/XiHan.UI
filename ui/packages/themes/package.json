@@ -26,6 +26,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "sideEffects": false,
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -36,8 +37,10 @@
   "scripts": {
     "build": "unbuild"
   },
-  "devDependencies": {
-    "rollup-plugin-scss": "4.0.1",
-    "sass": "1.89.0"
+  "peerDependencies": {
+    "vue": "3.5.14"
+  },
+  "dependencies": {
+    "@xihan-ui/utils": "workspace:*"
   }
 }
