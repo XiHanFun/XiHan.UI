@@ -17,7 +17,7 @@ import type {
   OverrideStep,
   MemoryUsage,
 } from "./types";
-import type { StyleObject } from "../css-in-js/types";
+import type { StyleObject } from "../css-in-js";
 
 /**
  * 样式调试器类

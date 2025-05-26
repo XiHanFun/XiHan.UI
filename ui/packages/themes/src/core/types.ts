@@ -3,7 +3,7 @@
  * 基于 @utils 功能构建的样式引擎类型系统
  */
 
-import type { StyleObject } from "../css-in-js/types";
+import type { StyleObject } from "../css-in-js";
 
 /**
  * 样式引擎配置

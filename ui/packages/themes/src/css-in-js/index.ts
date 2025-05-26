@@ -1,40 +1,70 @@
 /**
- * CSS-in-JS 系统模块
- * 提供完整的 CSS-in-JS 功能，基于 @utils/dom 构建
+ * CSS-in-JS 模块
+ * 提供完整的 CSS-in-JS 功能
  */
 
-// 主题系统
-export {
-  createTheme,
-  useTheme,
-  ThemeProvider,
-  createThemeContext,
-  provideTheme,
-  defaultThemeConfig,
-  darkThemeConfig,
-} from "../theme/theme";
-
-// CSS 工具函数
+// === 核心 CSS 功能 ===
 export {
   css,
+  simpleCss,
   keyframes,
   injectGlobal,
   cx,
+  cond,
+  responsive,
+  mergeStyles,
+  conditionalStyles,
   hover,
   focus,
   active,
   disabled,
+  firstChild,
+  lastChild,
+  before,
+  after,
+  child,
+  descendant,
+  sibling,
+  generalSibling,
   when,
-  supportsQuery,
   not,
-  cond,
+  mediaQuery,
+  containerQuery,
+  supportsQuery,
   combine,
   variant,
   size,
   colorScheme,
 } from "./css";
 
-// 组件样式系统
+// === 工具函数 ===
+export {
+  generateHash,
+  styleObjectToCSS,
+  rgba,
+  mixColor,
+  cssVar,
+  createCSSVars,
+  flattenObject,
+  normalizeStyleValue,
+  createStyleVariants,
+  debugStyles,
+  optimizeStyles,
+  addVendorPrefixes,
+} from "./utils";
+
+// === 响应式系统 ===
+export {
+  ResponsiveManager,
+  createResponsiveManager,
+  useResponsiveValue,
+  createResponsiveStyles,
+  responsiveUtils,
+  type Breakpoint,
+  type ResponsiveStyleConfig,
+} from "./responsive";
+
+// === 组件样式系统 ===
 export {
   createComponentStyles,
   createStyleFunction,
@@ -44,27 +74,7 @@ export {
   keyframeAnimations,
 } from "./component-styles";
 
-// 工具函数（基于 @utils/dom）
-export {
-  generateHash,
-  styleObjectToCSS,
-  mergeStyles,
-  flattenObject,
-  createCSSVars,
-  cssVar,
-  rgba,
-  hexToRgba,
-  rgbaToHex,
-  pseudoClass,
-  pseudoElement,
-  childSelector,
-  normalizeStyleValue,
-  conditionalStyles,
-  domStyleUtils,
-  cssVarUtils,
-} from "./utils";
-
-// DOM 集成工具（基于 @utils/dom）
+// === DOM 集成 ===
 export {
   DOMStyleApplier,
   domStyleApplier,
@@ -77,34 +87,26 @@ export {
   type StyledElementOptions,
 } from "./dom-integration";
 
-// 响应式工具（基于 @utils/dom）
-export {
-  ResponsiveManager,
-  responsiveManager,
-  mediaQuery,
-  containerQuery,
-  responsive,
-  createResponsiveStyles,
-  createResponsiveManager,
-  useResponsiveValue,
-  responsiveUtils,
-  responsivePresets,
-  defaultBreakpoints,
-  type Breakpoint,
-  type ResponsiveStyleConfig,
-} from "./responsive";
+// === CSS-in-JS 专有类型定义 ===
+export type {
+  // 样式相关类型
+  StyleObject,
 
-// 简化版系统（仅导出非重复的功能）
-export {
-  createSimpleStyleFunction,
-  provideSimpleTheme,
-  useSimpleTheme,
-  defaultTheme as simpleDefaultTheme,
-  css as simpleCss,
-  cx as simpleCx,
-  mergeStyles as simpleMergeStyles,
-  type SimpleTheme,
-} from "./simple";
+  // 组件相关类型
+  ComponentStylesConfig,
+  CSSRule,
+  ComponentStyleFunction,
+  StyleFactory,
+  StyleVariantConfig,
 
-// 类型定义
-export type { Theme, ThemeConfig, StyleObject, ComponentStylesConfig, ComponentStyleFunction } from "./types";
+  // 动画相关类型
+  AnimationConfig,
+  TransitionConfig,
+
+  // 查询相关类型
+  MediaQueryConfig,
+  ContainerQueryConfig,
+
+  // 其他类型
+  GlobalStylesConfig,
+} from "./types";

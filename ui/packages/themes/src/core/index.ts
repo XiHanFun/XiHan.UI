@@ -20,8 +20,11 @@ export {
   provideSimpleStyleEngine,
   useSimpleStyleEngine,
   globalSimpleStyleEngine,
-  type SimpleStyleObject,
-} from "./simple-engine";
+  simpleEngineUtils,
+} from "./style-engine";
+
+// 简化样式引擎类型
+export type { SimpleEngineConfig } from "./style-engine";
 
 // 样式缓存系统
 export { StyleCache, createStyleCache, globalStyleCache, cacheUtils } from "./cache";
