@@ -1,3 +1,2 @@
-import { buttonProps, default as XhButton } from "./src/Button";
-export { buttonProps, XhButton };
-export type { ButtonProps, ButtonSize, ButtonType, NativeType, IconPlacement } from "./src/Button";
+export { default as Button } from './src/Button'
+export type { ButtonProps, ButtonInstance, ButtonEvents, ButtonSlots } from './src/interface'
