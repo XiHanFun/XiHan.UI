@@ -1,6 +1,6 @@
-import { ref, computed, inject, provide, watch, type InjectionKey, type Ref } from "vue";
+import { ref, computed, inject, provide, type InjectionKey, type Ref } from "vue";
 
-// 简化的样式对象类型
+// 简化的样式对象类型（保留，因为 core 模块也需要）
 export interface SimpleStyleObject {
   [key: string]: string | number | SimpleStyleObject;
 }
@@ -14,106 +14,49 @@ export interface SimpleTheme {
   [key: string]: any;
 }
 
-// 样式引擎注入键
-export const SIMPLE_STYLE_ENGINE_KEY: InjectionKey<SimpleStyleEngine> = Symbol("simpleStyleEngine");
-
-// 简化的样式引擎
-export class SimpleStyleEngine {
-  private styleElements = new Map<string, HTMLStyleElement>();
-  private cache = new Map<string, string>();
-
-  // 生成 hash
-  private generateHash(input: string): string {
-    let hash = 0;
-    for (let i = 0; i < input.length; i++) {
-      const char = input.charCodeAt(i);
-      hash = (hash << 5) - hash + char;
-      hash = hash & hash;
-    }
-    return Math.abs(hash).toString(36).substring(0, 8);
-  }
-
-  // 将样式对象转换为 CSS
-  private styleObjectToCSS(styles: SimpleStyleObject): string {
-    return Object.entries(styles)
-      .map(([property, value]) => {
-        if (typeof value === "object") {
-          return `${property} { ${this.styleObjectToCSS(value)} }`;
-        }
-        const cssProperty = property.replace(/([A-Z])/g, "-$1").toLowerCase();
-        return `${cssProperty}: ${value};`;
-      })
-      .join(" ");
-  }
-
-  // 注入样式
-  injectStyle(css: string, id?: string): void {
-    const styleId = id || this.generateHash(css);
-
-    if (this.styleElements.has(styleId)) {
-      return;
-    }
-
-    const styleElement = document.createElement("style");
-    styleElement.setAttribute("data-xh-style", styleId);
-    styleElement.textContent = css;
-
-    document.head.appendChild(styleElement);
-    this.styleElements.set(styleId, styleElement);
-  }
-
-  // 创建动态样式
-  createDynamicStyle(styles: SimpleStyleObject): string {
-    const hash = this.generateHash(JSON.stringify(styles));
-    const className = `xh-${hash}`;
-    const cacheKey = `dynamic-${hash}`;
-
-    if (this.cache.has(cacheKey)) {
-      return this.cache.get(cacheKey)!;
-    }
-
-    const css = `.${className} { ${this.styleObjectToCSS(styles)} }`;
-    this.injectStyle(css, cacheKey);
-    this.cache.set(cacheKey, className);
-
-    return className;
-  }
-
-  // 清理样式
-  clear(): void {
-    this.styleElements.forEach(element => {
-      if (element.parentNode) {
-        element.parentNode.removeChild(element);
-      }
-    });
-    this.styleElements.clear();
-    this.cache.clear();
-  }
-}
-
-// 创建样式引擎
-export function createSimpleStyleEngine(): SimpleStyleEngine {
-  return new SimpleStyleEngine();
-}
-
-// 提供样式引擎
-export function provideSimpleStyleEngine(engine: SimpleStyleEngine): void {
-  provide(SIMPLE_STYLE_ENGINE_KEY, engine);
-}
-
-// 使用样式引擎
-export function useSimpleStyleEngine(): SimpleStyleEngine {
-  const engine = inject(SIMPLE_STYLE_ENGINE_KEY);
-  if (!engine) {
-    throw new Error("SimpleStyleEngine not provided");
-  }
-  return engine;
-}
-
-// 简化的 CSS 函数
+// 简化的 CSS 函数（使用 core 模块的引擎）
 export function css(styles: SimpleStyleObject): string {
-  const engine = useSimpleStyleEngine();
-  return engine.createDynamicStyle(styles);
+  // 这里应该使用 core 模块的 SimpleStyleEngine
+  // 为了避免循环依赖，这里提供一个简单的实现
+  const hash = generateSimpleHash(JSON.stringify(styles));
+  const className = `xh-${hash}`;
+
+  // 简单的样式注入
+  if (typeof document !== "undefined") {
+    const existingStyle = document.querySelector(`style[data-xh-simple="${hash}"]`);
+    if (!existingStyle) {
+      const styleElement = document.createElement("style");
+      styleElement.setAttribute("data-xh-simple", hash);
+      styleElement.textContent = `.${className} { ${styleObjectToCSS(styles)} }`;
+      document.head.appendChild(styleElement);
+    }
+  }
+
+  return className;
+}
+
+// 简单的 hash 生成函数
+function generateSimpleHash(input: string): string {
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    const char = input.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash).toString(36).substring(0, 8);
+}
+
+// 简单的样式对象转 CSS 函数
+function styleObjectToCSS(styles: SimpleStyleObject): string {
+  return Object.entries(styles)
+    .map(([property, value]) => {
+      if (typeof value === "object") {
+        return `${property} { ${styleObjectToCSS(value)} }`;
+      }
+      const cssProperty = property.replace(/([A-Z])/g, "-$1").toLowerCase();
+      return `${cssProperty}: ${value};`;
+    })
+    .join(" ");
 }
 
 // 样式组合函数
@@ -181,12 +124,11 @@ export function createSimpleStyleFunction<T = any>(
   styleFunction: (theme: SimpleTheme, props?: T) => SimpleStyleObject,
 ) {
   return (props?: T) => {
-    const engine = useSimpleStyleEngine();
     const theme = useSimpleTheme();
 
     return computed(() => {
       const styles = styleFunction(theme.value, props);
-      return engine.createDynamicStyle(styles);
+      return css(styles);
     });
   };
 }

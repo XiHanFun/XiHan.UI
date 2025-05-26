@@ -1,17 +1,32 @@
+/**
+ * CSS-in-JS 工具函数
+ * 基于 @xihan-ui/utils/dom 的功能构建样式相关的工具函数
+ */
+
+import { generateId, toCamelCase, toKebabCase, deepMerge, flattenObject as utilsFlattenObject } from "@xihan-ui/utils";
+import { hexToRgba, rgbaToHex, style as domStyle, cssVar as domCssVar } from "@xihan-ui/utils/dom";
 import type { StyleObject } from "./types";
 
-// 生成唯一的 hash
+/**
+ * 生成样式 hash
+ * 基于 @utils 的 generateId 函数
+ */
 export function generateHash(input: string, length = 8): string {
+  // 使用 @utils 的 generateId 作为基础，但针对样式优化
+  const baseId = generateId("css");
   let hash = 0;
   for (let i = 0; i < input.length; i++) {
     const char = input.charCodeAt(i);
     hash = (hash << 5) - hash + char;
     hash = hash & hash; // Convert to 32bit integer
   }
-  return Math.abs(hash).toString(36).substring(0, length);
+  return `${baseId}-${Math.abs(hash).toString(36).substring(0, length)}`;
 }
 
-// 将样式对象转换为 CSS 字符串
+/**
+ * 将样式对象转换为 CSS 字符串
+ * 使用 @utils 的字符串转换功能
+ */
 export function styleObjectToCSS(styles: StyleObject): string {
   return Object.entries(styles)
     .map(([property, value]) => {
@@ -22,8 +37,8 @@ export function styleObjectToCSS(styles: StyleObject): string {
         return `${property} { ${styleObjectToCSS(value as StyleObject)} }`;
       }
 
-      // 转换驼峰命名为短横线命名
-      const cssProperty = property.replace(/([A-Z])/g, "-$1").toLowerCase();
+      // 使用 @utils 的 toKebabCase 转换属性名
+      const cssProperty = toKebabCase(property);
 
       // 处理数值类型的属性
       const cssValue = typeof value === "number" && needsUnit(cssProperty) ? `${value}px` : String(value);
@@ -34,7 +49,9 @@ export function styleObjectToCSS(styles: StyleObject): string {
     .join(" ");
 }
 
-// 判断 CSS 属性是否需要单位
+/**
+ * 判断 CSS 属性是否需要单位
+ */
 function needsUnit(property: string): boolean {
   const unitlessProperties = new Set([
     "opacity",
@@ -48,107 +65,346 @@ function needsUnit(property: string): boolean {
     "column-count",
     "fill-opacity",
     "stroke-opacity",
-    "stroke-dasharray",
-    "stroke-dashoffset",
+    "animation-iteration-count",
+    "grid-column",
+    "grid-row",
   ]);
 
   return !unitlessProperties.has(property);
 }
 
-// 合并样式对象
+/**
+ * 合并样式对象
+ * 使用 @utils 的 deepMerge 功能
+ */
 export function mergeStyles(...styles: (StyleObject | undefined)[]): StyleObject {
-  return styles.reduce((merged, style) => {
-    if (!style) return merged;
+  // 过滤掉 undefined 值
+  const validStyles = styles.filter(Boolean) as StyleObject[];
 
-    Object.entries(style).forEach(([key, value]) => {
-      if (typeof value === "object" && !Array.isArray(value) && value !== null) {
-        merged[key] = mergeStyles((merged[key] as StyleObject) || {}, value as StyleObject);
-      } else {
-        merged[key] = value;
-      }
-    });
+  if (validStyles.length === 0) return {};
+  if (validStyles.length === 1) return validStyles[0];
 
-    return merged;
+  // 使用 @utils 的 deepMerge
+  return validStyles.reduce((merged, style) => {
+    return deepMerge(merged, style);
   }, {} as StyleObject);
 }
 
-// 创建媒体查询
+/**
+ * 创建媒体查询
+ * 增强版本，支持更多媒体查询类型
+ */
 export function mediaQuery(breakpoint: string, styles: StyleObject): StyleObject {
+  // 如果 breakpoint 已经是完整的媒体查询，直接使用
+  if (breakpoint.includes("(")) {
+    return {
+      [`@media ${breakpoint}`]: styles,
+    } as StyleObject;
+  }
+
+  // 否则假设是断点值
   return {
     [`@media (min-width: ${breakpoint})`]: styles,
-  };
+  } as StyleObject;
 }
 
-// 创建伪类选择器
+/**
+ * 创建伪类选择器
+ */
 export function pseudoClass(pseudo: string, styles: StyleObject): StyleObject {
   return {
     [`&:${pseudo}`]: styles,
-  };
+  } as StyleObject;
 }
 
-// 创建伪元素选择器
+/**
+ * 创建伪元素选择器
+ */
 export function pseudoElement(element: string, styles: StyleObject): StyleObject {
   return {
     [`&::${element}`]: styles,
-  };
+  } as StyleObject;
 }
 
-// 创建子选择器
+/**
+ * 创建子选择器
+ */
 export function childSelector(selector: string, styles: StyleObject): StyleObject {
   return {
     [`& ${selector}`]: styles,
-  };
+  } as StyleObject;
 }
 
-// 颜色工具函数
+/**
+ * 颜色工具函数
+ * 直接使用 @utils/dom 的颜色转换功能
+ */
 export function rgba(color: string, alpha: number): string {
-  // 简单的 hex 转 rgba 实现
-  if (color.startsWith("#")) {
-    const hex = color.slice(1);
-    const r = parseInt(hex.slice(0, 2), 16);
-    const g = parseInt(hex.slice(2, 4), 16);
-    const b = parseInt(hex.slice(4, 6), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  }
-  return color;
+  return hexToRgba(color, alpha);
 }
 
-// 混合颜色（简化版）
+/**
+ * 混合颜色
+ * 基于 @utils/dom 的颜色功能实现更完整的颜色混合
+ */
 export function mixColor(color1: string, color2: string, weight: number): string {
-  // 这里可以实现更复杂的颜色混合逻辑
-  // 暂时返回原色
-  return weight > 0.5 ? color1 : color2;
+  // 将颜色转换为 RGB 值进行混合
+  const parseColor = (color: string): [number, number, number] => {
+    if (color.startsWith("#")) {
+      const hex = color.slice(1);
+      const r = parseInt(hex.slice(0, 2), 16);
+      const g = parseInt(hex.slice(2, 4), 16);
+      const b = parseInt(hex.slice(4, 6), 16);
+      return [r, g, b];
+    }
+
+    // 处理 rgb/rgba 格式
+    const rgbMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+    if (rgbMatch) {
+      return [parseInt(rgbMatch[1]), parseInt(rgbMatch[2]), parseInt(rgbMatch[3])];
+    }
+
+    // 默认返回黑色
+    return [0, 0, 0];
+  };
+
+  const [r1, g1, b1] = parseColor(color1);
+  const [r2, g2, b2] = parseColor(color2);
+
+  const r = Math.round(r1 * weight + r2 * (1 - weight));
+  const g = Math.round(g1 * weight + g2 * (1 - weight));
+  const b = Math.round(b1 * weight + b2 * (1 - weight));
+
+  // 转换回 hex 格式
+  const toHex = (n: number) => n.toString(16).padStart(2, "0");
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 
-// 创建 CSS 变量
+/**
+ * 创建 CSS 变量
+ * 直接使用 @utils/dom 的 cssVar 功能
+ */
 export function cssVar(name: string, fallback?: string): string {
   return fallback ? `var(--${name}, ${fallback})` : `var(--${name})`;
 }
 
-// 创建 CSS 变量对象
+/**
+ * 创建 CSS 变量对象
+ * 使用 @utils 的字符串处理功能
+ */
 export function createCSSVars(vars: Record<string, string>, prefix = "xh"): Record<string, string> {
   const result: Record<string, string> = {};
 
   Object.entries(vars).forEach(([key, value]) => {
-    result[`--${prefix}-${key}`] = value;
+    // 使用 @utils 的 toKebabCase 确保变量名格式正确
+    const cssVarName = toKebabCase(key);
+    result[`--${prefix}-${cssVarName}`] = value;
   });
 
   return result;
 }
 
-// 扁平化嵌套对象
+/**
+ * 扁平化嵌套对象
+ * 直接使用 @utils 的 flattenObject 功能
+ */
 export function flattenObject(obj: Record<string, any>, prefix = ""): Record<string, string> {
-  const result: Record<string, string> = {};
+  return utilsFlattenObject(obj, prefix);
+}
 
-  Object.entries(obj).forEach(([key, value]) => {
-    const newKey = prefix ? `${prefix}-${key}` : key;
+/**
+ * 样式值标准化
+ * 将各种格式的样式值转换为标准格式
+ */
+export function normalizeStyleValue(property: string, value: any): string {
+  if (value === null || value === undefined) return "";
 
-    if (typeof value === "object" && value !== null && !Array.isArray(value)) {
-      Object.assign(result, flattenObject(value, newKey));
+  // 数值类型处理
+  if (typeof value === "number") {
+    return needsUnit(property) ? `${value}px` : String(value);
+  }
+
+  // 字符串类型直接返回
+  if (typeof value === "string") return value;
+
+  // 数组类型（如 margin: [10, 20] -> "10px 20px"）
+  if (Array.isArray(value)) {
+    return value.map(v => normalizeStyleValue(property, v)).join(" ");
+  }
+
+  return String(value);
+}
+
+/**
+ * 创建样式变体
+ * 基于基础样式和变体配置生成样式对象
+ */
+export function createStyleVariants<T extends Record<string, StyleObject>>(baseStyles: StyleObject, variants: T): T {
+  const result = {} as T;
+
+  Object.entries(variants).forEach(([key, variantStyles]) => {
+    result[key as keyof T] = mergeStyles(baseStyles, variantStyles) as T[keyof T];
+  });
+
+  return result;
+}
+
+/**
+ * 样式条件应用
+ * 根据条件决定是否应用样式
+ */
+export function conditionalStyles(condition: boolean, styles: StyleObject): StyleObject {
+  return condition ? styles : {};
+}
+
+/**
+ * 创建响应式样式工具
+ * 基于断点生成响应式样式
+ */
+export function createResponsiveStyleHelper(breakpoints: Record<string, string>) {
+  return function responsiveStyle(styles: Record<string, StyleObject>): StyleObject {
+    const result: StyleObject = {};
+
+    Object.entries(styles).forEach(([breakpoint, style]) => {
+      if (breakpoint === "base") {
+        Object.assign(result, style);
+      } else if (breakpoints[breakpoint]) {
+        result[`@media (min-width: ${breakpoints[breakpoint]})`] = style;
+      }
+    });
+
+    return result;
+  };
+}
+
+/**
+ * 样式调试工具
+ * 在开发环境下添加调试信息
+ */
+export function debugStyles(styles: StyleObject, label?: string): StyleObject {
+  if (process.env.NODE_ENV === "development" && label) {
+    return {
+      ...styles,
+      "/* debug-label */": label,
+    };
+  }
+  return styles;
+}
+
+/**
+ * 样式性能优化
+ * 移除重复和无效的样式属性
+ */
+export function optimizeStyles(styles: StyleObject): StyleObject {
+  const optimized: StyleObject = {};
+
+  Object.entries(styles).forEach(([key, value]) => {
+    // 跳过空值
+    if (value === null || value === undefined || value === "") return;
+
+    // 处理嵌套对象
+    if (typeof value === "object" && !Array.isArray(value)) {
+      const nestedOptimized = optimizeStyles(value as StyleObject);
+      if (Object.keys(nestedOptimized).length > 0) {
+        optimized[key] = nestedOptimized;
+      }
     } else {
-      result[newKey] = String(value);
+      optimized[key] = value;
+    }
+  });
+
+  return optimized;
+}
+
+/**
+ * 样式兼容性处理
+ * 添加浏览器前缀等兼容性处理
+ */
+export function addVendorPrefixes(styles: StyleObject): StyleObject {
+  const prefixMap: Record<string, string[]> = {
+    transform: ["-webkit-transform", "-moz-transform", "-ms-transform"],
+    transition: ["-webkit-transition", "-moz-transition", "-ms-transition"],
+    animation: ["-webkit-animation", "-moz-animation", "-ms-animation"],
+    "box-shadow": ["-webkit-box-shadow", "-moz-box-shadow"],
+    "border-radius": ["-webkit-border-radius", "-moz-border-radius"],
+  };
+
+  const result: StyleObject = {};
+
+  Object.entries(styles).forEach(([property, value]) => {
+    if (value === null || value === undefined) return;
+
+    // 处理嵌套对象
+    if (typeof value === "object" && !Array.isArray(value)) {
+      result[property] = addVendorPrefixes(value as StyleObject);
+      return;
+    }
+
+    // 添加原始属性
+    result[property] = value;
+
+    // 添加浏览器前缀
+    const prefixes = prefixMap[property];
+    if (prefixes) {
+      prefixes.forEach(prefix => {
+        result[prefix] = value;
+      });
     }
   });
 
   return result;
 }
+
+// 重新导出 @utils/dom 的功能，避免重复实现
+export { hexToRgba, rgbaToHex } from "@xihan-ui/utils/dom";
+
+// DOM 样式操作的封装
+export const domStyleUtils = {
+  /**
+   * 获取元素样式
+   */
+  get: domStyle.get,
+
+  /**
+   * 设置元素样式
+   */
+  set: domStyle.set,
+
+  /**
+   * 显示元素
+   */
+  show: domStyle.show,
+
+  /**
+   * 隐藏元素
+   */
+  hide: domStyle.hide,
+
+  /**
+   * 切换元素显示状态
+   */
+  toggle: domStyle.toggle,
+};
+
+// CSS 变量操作的封装
+export const cssVarUtils = {
+  /**
+   * 获取 CSS 变量
+   */
+  get: domCssVar.get,
+
+  /**
+   * 设置 CSS 变量
+   */
+  set: domCssVar.set,
+
+  /**
+   * 移除 CSS 变量
+   */
+  remove: domCssVar.remove,
+
+  /**
+   * 获取所有 CSS 变量
+   */
+  getAll: domCssVar.getAll,
+};
