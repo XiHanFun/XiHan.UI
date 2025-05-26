@@ -6,7 +6,7 @@
  */
 export class BEM {
   private block: string;
-  private options: {
+  public options: {
     elementSeparator: string;
     modifierSeparator: string;
   };
@@ -42,5 +42,10 @@ export class BEM {
    */
   em(element: string, modifier: string): string {
     return `${this.e(element)}${this.options.modifierSeparator}${modifier}`;
+  }
+
+  // 添加否定修饰符
+  notM(modifier: string): string {
+    return `${this.block}:not(.${this.m(modifier)})`;
   }
 }
