@@ -1,10 +1,10 @@
 import type { CSSProperties } from "vue";
 
-// 基础样式对象类型
-export interface StyleObject extends CSSProperties {
-  // 支持任意字符串键，用于嵌套选择器、媒体查询等
-  [key: string]: any;
-}
+// 基础样式对象类型，支持嵌套选择器、媒体查询等
+export type StyleObject = CSSProperties & {
+  // 支持其他任意选择器
+  [key: string]: string | number | undefined | StyleObject;
+};
 
 // 主题配置类型
 export interface ThemeConfig {
@@ -119,27 +119,7 @@ export interface CSSRule {
   styles: StyleObject;
 }
 
-// 样式引擎配置
-export interface StyleEngineConfig {
-  prefix?: string;
-  hashLength?: number;
-  insertionPoint?: HTMLElement;
-}
-
-// 样式注入器类型
-export interface StyleInjector {
-  inject: (css: string, id?: string) => void;
-  remove: (id: string) => void;
-  clear: () => void;
-}
-
-// 样式缓存类型
-export interface StyleCache {
-  get: (key: string) => string | undefined;
-  set: (key: string, value: string) => void;
-  has: (key: string) => boolean;
-  clear: () => void;
-}
+// 样式引擎相关类型已移至 core/types.ts
 
 // 组件样式函数类型
 export type ComponentStyleFunction<T = any> = (theme: Theme, props?: T) => StyleObject;
