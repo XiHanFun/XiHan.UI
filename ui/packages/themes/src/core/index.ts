@@ -3,6 +3,44 @@
  * 提供样式引擎的核心功能
  */
 
+export { BEM } from "./bem";
+
+export { mediaQuery, container, responsive } from "./responsive";
+export { type Breakpoint } from "./responsive";
+
+export { style, cssVar } from "./css";
+
+export {
+  CSSRenderer,
+  CSSRuleBuilder,
+  BEMStyleBuilder,
+  cssRenderer,
+  createCSSRenderer,
+  c,
+  cB,
+  cE,
+  cM,
+  cNotM,
+  find as cssFind,
+  media,
+  keyframes,
+  styleUtils,
+  breakpoints,
+  type CSSProperties,
+  type CSSRule,
+  type CSSRenderOptions,
+} from "./css-render";
+
+export {
+  animation,
+  transition,
+  AnimationSequence,
+  createAnimationSequence,
+  animationUtils,
+  type AnimationOptions,
+  type TransitionOptions,
+} from "./animation";
+
 // 完整样式引擎
 export {
   StyleEngine,
