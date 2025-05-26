@@ -64,16 +64,6 @@ export {
   type ResponsiveStyleConfig,
 } from "./responsive";
 
-// === 组件样式系统 ===
-export {
-  createComponentStyles,
-  createStyleFunction,
-  componentStyleFactories,
-  styleVariants,
-  animationStyles,
-  keyframeAnimations,
-} from "./component-styles";
-
 // === DOM 集成 ===
 export {
   DOMStyleApplier,
