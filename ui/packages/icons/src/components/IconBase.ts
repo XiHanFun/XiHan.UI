@@ -1,4 +1,4 @@
-import { generateId, assert, escapeHtml } from "@xihan-ui/utils";
+import { generateId, assert, assertType, escapeHtml } from "@xihan-ui/utils/core";
 import { defineComponent, h, ref, computed, reactive, toRefs, onMounted, onUpdated } from "vue";
 import type { ObjType, IconTypeCustomized } from "./IconType";
 
@@ -57,10 +57,10 @@ export const IconBase = defineComponent({
       type: String,
       required: true,
       validator: (val: string): boolean => {
-        // assert(
-        //   !val || !(val in icons),
-        //   `无效的属性。属性 "name" 引用了未注册的图标 "${val}"，请确保在使用此图标之前已导入。`,
-        // );
+        assert(
+          !val || !(val in icons),
+          `无效的属性。属性 "name" 引用了未注册的图标 "${val}"，请确保在使用此图标之前已导入。`,
+        );
         return true;
       },
     },
@@ -77,10 +77,10 @@ export const IconBase = defineComponent({
     animation: {
       type: String,
       validator: (val: string): boolean => {
-        // assert(
-        //   ["spin", "spin-pulse", "wrench", "ring", "pulse", "flash", "float"].includes(val),
-        //   "无效的属性。属性 'animation' 应该是一个 'spin'、'spin-pulse'、'wrench'、'ring'、'pulse'、'flash' 或 'float'。",
-        // );
+        assert(
+          ["spin", "spin-pulse", "wrench", "ring", "pulse", "flash", "float"].includes(val),
+          "无效的属性。属性 'animation' 应该是一个 'spin'、'spin-pulse'、'wrench'、'ring'、'pulse'、'flash' 或 'float'。",
+        );
         return true;
       },
     },
