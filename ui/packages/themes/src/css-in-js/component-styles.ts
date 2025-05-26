@@ -1,8 +1,8 @@
 import { computed, type ComputedRef } from "vue";
 import type { ComponentStylesConfig, StyleObject, ComponentStyleFunction } from "./types";
-import { useStyleEngine } from "./style-engine";
-import { useTheme } from "./theme";
+import { useTheme } from "../theme/theme";
 import { mergeStyles } from "./utils";
+import { css } from "./css";
 
 // 组件样式创建器
 export function createComponentStyles<T = any>(
@@ -18,7 +18,6 @@ export function createComponentStyles<T = any>(
 
   // 使用样式的 hook
   const useStyles = (props?: T) => {
-    const engine = useStyleEngine();
     const { theme } = useTheme();
 
     return computed(() => {
@@ -28,8 +27,8 @@ export function createComponentStyles<T = any>(
         // 这里可以根据 props 动态添加变体、尺寸、状态样式
       );
 
-      // 注册组件样式
-      return engine.registerComponentStyles(name, allStyles);
+      // 使用 css 函数创建样式
+      return css(allStyles);
     });
   };
 
@@ -44,12 +43,11 @@ export function createStyleFunction<T = any>(
   styleFunction: ComponentStyleFunction<T>,
 ): (props?: T) => ComputedRef<string> {
   return (props?: T) => {
-    const engine = useStyleEngine();
     const { theme } = useTheme();
 
     return computed(() => {
       const styles = styleFunction(theme.value, props);
-      return engine.createDynamicStyle(styles);
+      return css(styles);
     });
   };
 }
