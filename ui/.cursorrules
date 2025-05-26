@@ -108,3 +108,24 @@
 3. **智能组件探索**
    - 基于 AI 的表单生成
    - 自适应布局系统
+
+### 八、项目管理
+1. **内部项目结构**
+   - internal/dev 开发相关
+   - internal/build 构建相关
+
+2. **发布项目结构**
+   - packages/cli 命令行
+   - packages/components 组件
+   - packages/constants 常量
+   - packages/directives 指令
+   - packages/hooks 钩子
+   - packages/icons 图标
+   - packages/locales 国际化
+   - packages/plugins 插件
+   - packages/themes 主题
+   - packages/utils 工具
+   - packages/xihan-ui 主库
+
+3. **测试项目结构**
+   - playground 测试项目

@@ -5,7 +5,7 @@
 
 import { find } from "@xihan-ui/utils/dom";
 import type { PerformanceReport, MemoryUsage, StyleSnapshot, DebugConfig } from "./types";
-import type { StyleObject } from "../css-in-js/types";
+import type { StyleObject } from "../css-in-js";
 
 /**
  * 监控事件类型

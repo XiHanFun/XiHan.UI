@@ -3,7 +3,8 @@
  * 将 CSS-in-JS 样式系统与 @utils/dom 操作工具集成
  */
 
-import type { StyleObject, Theme } from "./types";
+import type { StyleObject } from "./types";
+import type { Theme } from "../theme";
 import { styleObjectToCSS, generateHash } from "./utils";
 import { createElement, element, attr, style as domStyle, type ElementOptions } from "@xihan-ui/utils/dom";
 

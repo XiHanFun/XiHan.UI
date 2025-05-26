@@ -2,7 +2,7 @@
  * 样式调试工具类型定义
  */
 
-import type { StyleObject } from "../css-in-js/types";
+import type { StyleObject } from "../css-in-js";
 
 /**
  * 样式检查结果

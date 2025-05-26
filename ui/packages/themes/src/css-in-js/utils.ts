@@ -3,7 +3,8 @@
  * 基于 @xihan-ui/utils/dom 的功能构建样式相关的工具函数
  */
 
-import { generateId, toCamelCase, toKebabCase, deepMerge, flattenObject as utilsFlattenObject } from "@xihan-ui/utils";
+import { generateId, toCamelCase, toKebabCase, flattenObject as utilsFlattenObject } from "@xihan-ui/utils/core";
+import { deepMerge } from "@xihan-ui/utils/data";
 import { hexToRgba, rgbaToHex, style as domStyle, cssVar as domCssVar } from "@xihan-ui/utils/dom";
 import type { StyleObject } from "./types";
 

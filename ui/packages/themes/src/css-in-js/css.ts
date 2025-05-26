@@ -6,6 +6,60 @@
 import type { StyleObject } from "./types";
 import { generateHash, styleObjectToCSS } from "./utils";
 
+// === 轻量级 CSS 功能（来自 simple 模块）===
+
+/**
+ * 简单的 hash 生成函数（轻量级版本）
+ */
+function generateSimpleHash(input: string): string {
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    const char = input.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash).toString(36).substring(0, 8);
+}
+
+/**
+ * 简单的样式对象转 CSS 函数（轻量级版本）
+ */
+function simpleStyleObjectToCSS(styles: StyleObject): string {
+  return Object.entries(styles)
+    .map(([property, value]) => {
+      if (typeof value === "object") {
+        return `${property} { ${simpleStyleObjectToCSS(value)} }`;
+      }
+      const cssProperty = property.replace(/([A-Z])/g, "-$1").toLowerCase();
+      return `${cssProperty}: ${value};`;
+    })
+    .join(" ");
+}
+
+/**
+ * 轻量级 CSS 函数（来自 simple 模块）
+ * 提供更简单的样式创建方式，适用于轻量级项目
+ */
+export function simpleCss(styles: StyleObject): string {
+  const hash = generateSimpleHash(JSON.stringify(styles));
+  const className = `xh-${hash}`;
+
+  // 简单的样式注入
+  if (typeof document !== "undefined") {
+    const existingStyle = document.querySelector(`style[data-xh-simple="${hash}"]`);
+    if (!existingStyle) {
+      const styleElement = document.createElement("style");
+      styleElement.setAttribute("data-xh-simple", hash);
+      styleElement.textContent = `.${className} { ${simpleStyleObjectToCSS(styles)} }`;
+      document.head.appendChild(styleElement);
+    }
+  }
+
+  return className;
+}
+
+// === 完整版 CSS 功能 ===
+
 // CSS 函数 - 创建动态样式
 export function css(styles: StyleObject): string {
   const hash = generateHash(JSON.stringify(styles));
@@ -87,6 +141,20 @@ export function responsive(styles: Record<string, StyleObject>): StyleObject {
   });
 
   return result;
+}
+
+/**
+ * 合并样式
+ */
+export function mergeStyles(...styles: StyleObject[]): StyleObject {
+  return styles.reduce((merged, style) => ({ ...merged, ...style }), {});
+}
+
+/**
+ * 条件样式
+ */
+export function conditionalStyles(condition: boolean, styles: StyleObject): StyleObject {
+  return condition ? styles : {};
 }
 
 // 伪类样式函数
