@@ -1,57 +1,61 @@
-// 基础组件
+// 导出所有组件
+export * from "./affix";
+export * from "./alert";
+export * from "./anchor";
+export * from "./avatar";
+export * from "./back-top";
+export * from "./breadcrumb";
 export * from "./button";
 export * from "./button-group";
-// export * from "./icon";
-
-// // 布局组件
-// export * from "./grid";
-// export * from "./layout";
-// export * from "./space";
-// export * from "./divider";
-
-// // 导航组件
-// export * from "./menu";
-// export * from "./tabs";
-// export * from "./breadcrumb";
-// export * from "./pagination";
-// export * from "./anchor";
-// export * from "./affix";
-// export * from "./back-top";
-
-// // 数据录入
-// export * from "./input";
-// export * from "./select";
-// export * from "./radio";
-// export * from "./checkbox";
-// export * from "./switch";
-// export * from "./slider";
-// export * from "./date-picker";
-// export * from "./time-picker";
-// export * from "./form";
-
-// // 数据展示
-// export * from "./table";
-// export * from "./list";
-// export * from "./card";
-// export * from "./avatar";
-// export * from "./badge";
-// export * from "./tag";
-// export * from "./progress";
-// export * from "./tree";
-
-// // 反馈组件
-// export * from "./alert";
-// export * from "./dialog";
-// export * from "./drawer";
-// export * from "./message";
-// export * from "./notification";
-// export * from "./popover";
-// export * from "./tooltip";
-// export * from "./loading";
-
-// // 其他组件
-// export * from "./scrollbar";
-// export * from "./virtual-list";
-// export * from "./infinite-scroll";
-// export * from "./color-picker";
-// export * from "./upload";
+export * from "./calendar";
+export * from "./card";
+export * from "./carousel";
+export * from "./cascader";
+export * from "./checkbox";
+export * from "./col";
+export * from "./collapse";
+export * from "./color-picker";
+export * from "./config-provider";
+export * from "./date-picker";
+export * from "./descriptions";
+export * from "./diff-checker";
+export * from "./divider";
+export * from "./drawer";
+export * from "./dropdown";
+export * from "./empty";
+export * from "./form";
+export * from "./icon";
+export * from "./image";
+export * from "./input";
+export * from "./input-number";
+export * from "./menu";
+export * from "./message";
+export * from "./notification";
+export * from "./pagination";
+export * from "./popconfirm";
+export * from "./popover";
+export * from "./progress";
+export * from "./radio";
+export * from "./rate";
+export * from "./result";
+export * from "./row";
+export * from "./segmented";
+export * from "./select";
+export * from "./skeleton";
+export * from "./slider";
+export * from "./space";
+export * from "./statistic";
+export * from "./steps";
+export * from "./switch";
+export * from "./table";
+export * from "./tabs";
+export * from "./tag";
+export * from "./time-picker";
+export * from "./timeline";
+export * from "./tooltip";
+export * from "./tour";
+export * from "./transfer";
+export * from "./tree";
+export * from "./tree-select";
+export * from "./upload";
+export * from "./watermark";
