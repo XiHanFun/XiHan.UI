@@ -65,7 +65,6 @@ export class ResponsiveManager {
         case "down":
           return domMediaQuery.down(breakpoint as Breakpoint).replace("@media ", "");
         case "only":
-          // DOM 工具没有 only 模式，需要自己实现
           const nextBreakpoint = this.getNextStandardBreakpoint(breakpoint);
           if (nextBreakpoint) {
             return domMediaQuery.between(breakpoint as Breakpoint, nextBreakpoint as Breakpoint).replace("@media ", "");

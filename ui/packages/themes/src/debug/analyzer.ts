@@ -14,7 +14,7 @@ import type {
   DependencyEdge,
   DuplicateOccurrence,
 } from "./types";
-import type { StyleObject } from "../css-in-js/types";
+import type { StyleObject } from "../css-in-js";
 
 /**
  * 样式分析器类

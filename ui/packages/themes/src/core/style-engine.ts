@@ -11,7 +11,155 @@ import type { StyleEngineConfig, IStyleEngine, CompiledStyle } from "./types";
 import type { StyleObject } from "../css-in-js/types";
 
 /**
- * 样式引擎实现
+ * 简化样式引擎配置
+ */
+export interface SimpleEngineConfig {
+  /** CSS 类名前缀 */
+  prefix?: string;
+  /** 是否启用开发模式 */
+  dev?: boolean;
+}
+
+/**
+ * 简化样式引擎类（来自 simple 模块）
+ */
+export class SimpleStyleEngine {
+  private readonly config: Required<SimpleEngineConfig>;
+
+  constructor(config: SimpleEngineConfig = {}) {
+    this.config = {
+      prefix: config.prefix ?? "xh",
+      dev: config.dev ?? process.env.NODE_ENV === "development",
+    };
+  }
+
+  /**
+   * 创建样式
+   */
+  css(styles: StyleObject): string {
+    const hash = this.generateSimpleHash(JSON.stringify(styles));
+    const className = `${this.config.prefix}-${hash}`;
+
+    // 简单的样式注入
+    if (typeof document !== "undefined") {
+      const existingStyle = document.querySelector(`style[data-xh-simple="${hash}"]`);
+      if (!existingStyle) {
+        const styleElement = document.createElement("style");
+        styleElement.setAttribute("data-xh-simple", hash);
+        styleElement.textContent = `.${className} { ${this.simpleStyleObjectToCSS(styles)} }`;
+        document.head.appendChild(styleElement);
+      }
+    }
+
+    return className;
+  }
+
+  /**
+   * 合并类名
+   */
+  cx(...classNames: Array<string | undefined | null | false>): string {
+    return classNames.filter(Boolean).join(" ");
+  }
+
+  /**
+   * 合并样式
+   */
+  merge(...styles: StyleObject[]): StyleObject {
+    return styles.reduce((merged, style) => ({ ...merged, ...style }), {});
+  }
+
+  /**
+   * 创建带前缀的类名
+   */
+  className(name: string): string {
+    return `${this.config.prefix}-${name}`;
+  }
+
+  /**
+   * 获取前缀
+   */
+  getPrefix(): string {
+    return this.config.prefix;
+  }
+
+  /**
+   * 获取配置
+   */
+  getConfig(): SimpleEngineConfig {
+    return { ...this.config };
+  }
+
+  /**
+   * 是否开发模式
+   */
+  isDev(): boolean {
+    return this.config.dev;
+  }
+
+  /**
+   * 创建样式变体
+   */
+  createVariants<T extends Record<string, StyleObject>>(baseStyles: StyleObject, variants: T): T & { base: string } {
+    const result = {} as T & { base: string };
+
+    // 基础样式
+    result.base = this.css(baseStyles);
+
+    // 变体样式
+    Object.entries(variants).forEach(([key, styles]) => {
+      (result as any)[key] = this.css(this.merge(baseStyles, styles));
+    });
+
+    return result;
+  }
+
+  /**
+   * 创建尺寸变体
+   */
+  createSizes<T extends Record<string, StyleObject>>(baseStyles: StyleObject, sizes: T): T & { base: string } {
+    return this.createVariants(baseStyles, sizes);
+  }
+
+  /**
+   * 条件样式
+   */
+  when(condition: boolean, styles: StyleObject): string {
+    return condition ? this.css(styles) : "";
+  }
+
+  /**
+   * 批量创建样式
+   */
+  batch(stylesList: StyleObject[]): string[] {
+    return stylesList.map(styles => this.css(styles));
+  }
+
+  // 私有方法
+  private generateSimpleHash(input: string): string {
+    let hash = 0;
+    for (let i = 0; i < input.length; i++) {
+      const char = input.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash = hash & hash;
+    }
+    return Math.abs(hash).toString(36).substring(0, 8);
+  }
+
+  private simpleStyleObjectToCSS(styles: StyleObject): string {
+    return Object.entries(styles)
+      .map(([property, value]) => {
+        if (typeof value === "object") {
+          return `${property} { ${this.simpleStyleObjectToCSS(value)} }`;
+        }
+        const cssProperty = property.replace(/([A-Z])/g, "-$1").toLowerCase();
+        return `${cssProperty}: ${value};`;
+      })
+      .join(" ");
+  }
+}
+
+/**
+ * 完整版样式引擎实现
  */
 export class StyleEngine implements IStyleEngine {
   private cache: StyleCache;
@@ -218,9 +366,17 @@ export function createStyleEngine(config?: StyleEngineConfig): StyleEngine {
 }
 
 /**
+ * 创建简化样式引擎实例（来自 simple 模块）
+ */
+export function createSimpleStyleEngine(config?: SimpleEngineConfig): SimpleStyleEngine {
+  return new SimpleStyleEngine(config);
+}
+
+/**
  * Vue 注入键
  */
 export const STYLE_ENGINE_KEY = Symbol("xihan-ui-style-engine");
+export const SIMPLE_STYLE_ENGINE_KEY = Symbol("xihan-ui-simple-style-engine");
 
 /**
  * 提供样式引擎
@@ -228,6 +384,15 @@ export const STYLE_ENGINE_KEY = Symbol("xihan-ui-style-engine");
 export function provideStyleEngine(engine?: StyleEngine): StyleEngine {
   const styleEngine = engine ?? createStyleEngine();
   provide(STYLE_ENGINE_KEY, styleEngine);
+  return styleEngine;
+}
+
+/**
+ * 提供简化样式引擎（来自 simple 模块）
+ */
+export function provideSimpleStyleEngine(engine?: SimpleStyleEngine): SimpleStyleEngine {
+  const styleEngine = engine ?? createSimpleStyleEngine();
+  provide(SIMPLE_STYLE_ENGINE_KEY, styleEngine);
   return styleEngine;
 }
 
@@ -243,6 +408,17 @@ export function useStyleEngine(): StyleEngine {
 }
 
 /**
+ * 使用简化样式引擎（来自 simple 模块）
+ */
+export function useSimpleStyleEngine(): SimpleStyleEngine {
+  const engine = inject<SimpleStyleEngine>(SIMPLE_STYLE_ENGINE_KEY);
+  if (!engine) {
+    throw new Error("SimpleStyleEngine not provided. Please use provideSimpleStyleEngine() first.");
+  }
+  return engine;
+}
+
+/**
  * 全局样式引擎实例
  */
 export const globalStyleEngine = createStyleEngine({
@@ -250,6 +426,14 @@ export const globalStyleEngine = createStyleEngine({
   hashLength: 8,
   dev: process.env.NODE_ENV === "development",
   cache: true,
+});
+
+/**
+ * 全局简化样式引擎实例（来自 simple 模块）
+ */
+export const globalSimpleStyleEngine = createSimpleStyleEngine({
+  prefix: "xh",
+  dev: process.env.NODE_ENV === "development",
 });
 
 /**
@@ -283,5 +467,37 @@ export const styleEngineUtils = {
    */
   batchCleanup(engines: StyleEngine[]): number {
     return engines.reduce((total, engine) => total + engine.cleanup(), 0);
+  },
+};
+
+/**
+ * 简化样式引擎工具函数（来自 simple 模块）
+ */
+export const simpleEngineUtils = {
+  /**
+   * 创建开发模式引擎
+   */
+  createDevEngine(prefix = "xh-dev"): SimpleStyleEngine {
+    return createSimpleStyleEngine({
+      prefix,
+      dev: true,
+    });
+  },
+
+  /**
+   * 创建生产模式引擎
+   */
+  createProdEngine(prefix = "xh"): SimpleStyleEngine {
+    return createSimpleStyleEngine({
+      prefix,
+      dev: false,
+    });
+  },
+
+  /**
+   * 获取当前环境的引擎
+   */
+  getEnvironmentEngine(): SimpleStyleEngine {
+    return process.env.NODE_ENV === "development" ? this.createDevEngine() : this.createProdEngine();
   },
 };

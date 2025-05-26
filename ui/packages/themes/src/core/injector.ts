@@ -4,7 +4,7 @@
  */
 
 import { createElement, element, find, attr } from "@xihan-ui/utils/dom";
-import { generateId } from "@xihan-ui/utils";
+import { generateId } from "@xihan-ui/utils/core";
 import type { StyleInjectorConfig, IStyleInjector } from "./types";
 
 /**

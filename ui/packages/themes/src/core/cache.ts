@@ -3,7 +3,7 @@
  * 基于 @utils 功能构建的高性能样式缓存
  */
 
-import { generateId } from "@xihan-ui/utils";
+import { generateId } from "@xihan-ui/utils/core";
 import type { StyleCacheConfig, IStyleCache, CompiledStyle } from "./types";
 
 /**
