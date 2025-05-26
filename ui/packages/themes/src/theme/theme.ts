@@ -1,6 +1,6 @@
 import { ref, reactive, computed, inject, provide, watch, type InjectionKey, type Ref } from "vue";
-import type { Theme, ThemeConfig } from "./types";
-import { createCSSVars, flattenObject } from "./utils";
+import type { Theme, ThemeConfig } from "../css-in-js/types";
+import { createCSSVars, flattenObject } from "../css-in-js/utils";
 
 // 主题注入键
 export const THEME_KEY: InjectionKey<ThemeContext> = Symbol("theme");

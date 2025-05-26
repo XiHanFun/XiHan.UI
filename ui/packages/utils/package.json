@@ -15,7 +15,19 @@
   "keywords": [
     "xihan",
     "ui",
-    "utils"
+    "utils",
+    "animation",
+    "browser",
+    "core",
+    "data",
+    "device",
+    "dom",
+    "file",
+    "i18n",
+    "performance",
+    "security",
+    "testing",
+    "vue"
   ],
   "author": {
     "name": "zhaifanhua",
@@ -26,6 +38,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "sideEffects": false,
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -34,6 +47,66 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts"
+    },
+    "./animation": {
+      "import": "./dist/animation/index.mjs",
+      "require": "./dist/animation/index.cjs",
+      "types": "./dist/animation/index.d.ts"
+    },
+    "./browser": {
+      "import": "./dist/browser/index.mjs",
+      "require": "./dist/browser/index.cjs",
+      "types": "./dist/browser/index.d.ts"
+    },
+    "./core": {
+      "import": "./dist/core/index.mjs",
+      "require": "./dist/core/index.cjs",
+      "types": "./dist/core/index.d.ts"
+    },
+    "./data": {
+      "import": "./dist/data/index.mjs",
+      "require": "./dist/data/index.cjs",
+      "types": "./dist/data/index.d.ts"
+    },
+    "./device": {
+      "import": "./dist/device/index.mjs",
+      "require": "./dist/device/index.cjs",
+      "types": "./dist/device/index.d.ts"
+    },
+    "./dom": {
+      "import": "./dist/dom/index.mjs",
+      "require": "./dist/dom/index.cjs",
+      "types": "./dist/dom/index.d.ts"
+    },
+    "./file": {
+      "import": "./dist/file/index.mjs",
+      "require": "./dist/file/index.cjs",
+      "types": "./dist/file/index.d.ts"
+    },
+    "./i18n": {
+      "import": "./dist/i18n/index.mjs",
+      "require": "./dist/i18n/index.cjs",
+      "types": "./dist/i18n/index.d.ts"
+    },
+    "./performance": {
+      "import": "./dist/performance/index.mjs",
+      "require": "./dist/performance/index.cjs",
+      "types": "./dist/performance/index.d.ts"
+    },
+    "./security": {
+      "import": "./dist/security/index.mjs",
+      "require": "./dist/security/index.cjs",
+      "types": "./dist/security/index.d.ts"
+    },
+    "./testing": {
+      "import": "./dist/testing/index.mjs",
+      "require": "./dist/testing/index.cjs",
+      "types": "./dist/testing/index.d.ts"
+    },
+    "./vue": {
+      "import": "./dist/vue/index.mjs",
+      "require": "./dist/vue/index.cjs",
+      "types": "./dist/vue/index.d.ts"
     }
   },
   "files": [
