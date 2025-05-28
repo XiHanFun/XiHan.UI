@@ -110,7 +110,7 @@ export {
   deepMerge as deepMergeObject,
   get as getObject,
   set as setObject,
-  flattenObject as flattenObject,
+  flattenObject,
 } from "./object";
 
 // 字符串工具

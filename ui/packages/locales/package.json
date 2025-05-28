@@ -35,6 +35,11 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts"
+    },
+    "./i18n": {
+      "import": "./dist/i18n/index.mjs",
+      "require": "./dist/i18n/index.cjs",
+      "types": "./dist/i18n/index.d.ts"
     }
   },
   "files": [
