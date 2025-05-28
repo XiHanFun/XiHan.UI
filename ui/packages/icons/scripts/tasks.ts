@@ -6,8 +6,10 @@ import { getIconFiles, convertSVG } from "./utils";
 import {
   indexDefImportTemplate,
   indexDtsTemplate,
+  indexSetInfoDtsTemplate,
   indexMjsImportTemplate,
   indexMjsTemplate,
+  indexSetInfoMjsTemplate,
   indexPackageJsonTemplate,
   mainIndexTemplate,
 } from "./templates";
@@ -128,15 +130,18 @@ export async function writeIconModule(iconSet: (typeof icons)[0]): Promise<void>
       variants,
     };
 
-    // 写入图标集元信息
-    const metaInfo = `
-// 图标集元信息
-export const ${iconSet.id}Info: IconSetInfo = ${JSON.stringify(iconSetInfo, null, 2)};
-`;
+    // 写入 index.mjs 图标集元信息
+    writeFileSync(
+      resolve(ICONS_PACKS_DIR, `${iconSet.id}/${indexMjs}`),
+      readFileSync(resolve(ICONS_PACKS_DIR, `${iconSet.id}/${indexMjs}`), "utf8") +
+        indexSetInfoMjsTemplate(iconSet.id, iconSetInfo),
+      "utf8",
+    );
 
+    // 写入 index.d.ts 图标集元信息
     writeFileSync(
       resolve(ICONS_PACKS_DIR, `${iconSet.id}/${indexDts}`),
-      readFileSync(resolve(ICONS_PACKS_DIR, `${iconSet.id}/${indexDts}`), "utf8") + metaInfo,
+      readFileSync(resolve(ICONS_PACKS_DIR, `${iconSet.id}/${indexDts}`), "utf8") + indexSetInfoDtsTemplate(iconSet.id),
       "utf8",
     );
   }
