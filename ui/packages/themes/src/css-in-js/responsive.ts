@@ -12,7 +12,7 @@ import {
   container as domContainer,
   responsive as domResponsive,
   type Breakpoint as DomBreakpoint,
-} from "@xihan-ui/utils";
+} from "../core";
 import type { StyleObject } from "./types";
 
 // 复用 @utils/dom 的断点类型和配置

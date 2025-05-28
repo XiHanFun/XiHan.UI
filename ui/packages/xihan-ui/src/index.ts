@@ -8,16 +8,13 @@ export * from "@xihan-ui/hooks";
 export * from "@xihan-ui/locales";
 export * from "@xihan-ui/components";
 export * from "@xihan-ui/themes";
-export * from "./xihan";
 
 // 在导出子包后，导入需要使用的函数
 import { createLogger, assert, throwError } from "@xihan-ui/utils";
-import { XhButton, XhButtonGroup } from "@xihan-ui/components";
+import { Button, ButtonGroup, Icon } from "@xihan-ui/components";
 
 // 引入样式 - 使用别名
-import "@xihan-ui/themes";
-import { XiHan } from "./xihan";
-// import { useTheme } from "@xihan-ui/hooks";
+import { XiHan } from "@xihan-ui/constants";
 
 // 创建日志记录器
 const logger = createLogger({
@@ -39,8 +36,9 @@ export const install = (app: App) => {
     logger.time("Load");
     assert(!!app, "App instance is required");
     // 注册组件
-    app.component("XhButton", XhButton);
-    app.component("XhButtonGroup", XhButtonGroup);
+    app.component("XhButton", Button);
+    app.component("XhButtonGroup", ButtonGroup);
+    app.component("XhIcon", Icon);
     // 注入全局配置
     app.config.globalProperties.$XIHAN = XiHan;
     // 添加错误处理

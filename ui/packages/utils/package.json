@@ -48,11 +48,6 @@
       "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts"
     },
-    "./animation": {
-      "import": "./dist/animation/index.mjs",
-      "require": "./dist/animation/index.cjs",
-      "types": "./dist/animation/index.d.ts"
-    },
     "./browser": {
       "import": "./dist/browser/index.mjs",
       "require": "./dist/browser/index.cjs",
@@ -82,11 +77,6 @@
       "import": "./dist/file/index.mjs",
       "require": "./dist/file/index.cjs",
       "types": "./dist/file/index.d.ts"
-    },
-    "./i18n": {
-      "import": "./dist/i18n/index.mjs",
-      "require": "./dist/i18n/index.cjs",
-      "types": "./dist/i18n/index.d.ts"
     },
     "./performance": {
       "import": "./dist/performance/index.mjs",

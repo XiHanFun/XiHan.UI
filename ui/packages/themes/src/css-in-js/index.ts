@@ -41,11 +41,9 @@ export {
 export {
   generateHash,
   styleObjectToCSS,
-  rgba,
   mixColor,
   cssVar,
   createCSSVars,
-  flattenObject,
   normalizeStyleValue,
   createStyleVariants,
   debugStyles,

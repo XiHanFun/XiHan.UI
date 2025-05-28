@@ -17,9 +17,6 @@ export * from "./device";
 // DOM工具
 export * from "./dom";
 
-// 国际化工具
-export * from "../../locales/src/i18n";
-
 // 文件工具
 export * from "./file";
 

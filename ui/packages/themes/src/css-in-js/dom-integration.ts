@@ -6,7 +6,8 @@
 import type { StyleObject } from "./types";
 import type { Theme } from "../theme";
 import { styleObjectToCSS, generateHash } from "./utils";
-import { createElement, element, attr, style as domStyle, type ElementOptions } from "@xihan-ui/utils/dom";
+import { createElement, element, attr, type ElementOptions } from "@xihan-ui/utils/dom";
+import { style as domStyle } from "../core";
 
 /**
  * DOM 样式应用器

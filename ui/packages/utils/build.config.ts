@@ -3,14 +3,12 @@ import { defineBuildConfig } from "unbuild";
 export default defineBuildConfig({
   entries: [
     "src/index",
-    "src/animation/index",
     "src/browser/index",
     "src/core/index",
     "src/data/index",
     "src/device/index",
     "src/dom/index",
     "src/file/index",
-    "src/i18n/index",
     "src/performance/index",
     "src/security/index",
     "src/testing/index",
