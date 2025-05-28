@@ -5,7 +5,6 @@
 
 import { generateId, toCamelCase, toKebabCase, flattenObject as utilsFlattenObject } from "@xihan-ui/utils/core";
 import { deepMerge } from "@xihan-ui/utils/data";
-import { hexToRgba, rgbaToHex, style as domStyle, cssVar as domCssVar } from "@xihan-ui/utils/dom";
 import type { StyleObject } from "./types";
 
 /**
@@ -137,14 +136,6 @@ export function childSelector(selector: string, styles: StyleObject): StyleObjec
 }
 
 /**
- * 颜色工具函数
- * 直接使用 @utils/dom 的颜色转换功能
- */
-export function rgba(color: string, alpha: number): string {
-  return hexToRgba(color, alpha);
-}
-
-/**
  * 混合颜色
  * 基于 @utils/dom 的颜色功能实现更完整的颜色混合
  */
@@ -203,14 +194,6 @@ export function createCSSVars(vars: Record<string, string>, prefix = "xh"): Reco
   });
 
   return result;
-}
-
-/**
- * 扁平化嵌套对象
- * 直接使用 @utils 的 flattenObject 功能
- */
-export function flattenObject(obj: Record<string, any>, prefix = ""): Record<string, string> {
-  return utilsFlattenObject(obj, prefix);
 }
 
 /**
