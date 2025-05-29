@@ -581,7 +581,7 @@ export default defineComponent({
 
       return (
         <Tag
-          ref={elementRef}
+          ref="iconRef"
           id={iconId}
           class={[iconClasses.value, props.class]}
           style={iconStyles.value}
