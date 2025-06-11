@@ -1,212 +1,392 @@
 /**
- * 过渡动画辅助模块
- * 提供用于创建和管理元素过渡效果的工具函数
+ * 过渡动画系统
+ * 统一的过渡动画实现，支持 CSS 和 JS 动画
  */
 
-import { Easing } from "./easing";
-import type { EasingFunction } from "./easing";
+import type { EasingFunction, AnimationController, TransitionConfig } from "../foundation/types";
+import { linear } from "./easing";
+import { debounce } from "../foundation/utils";
 
-/**
- * 过渡选项
- */
-export interface TransitionOptions {
-  /**
-   * 持续时间 (毫秒)
-   */
-  duration?: number;
+// =============================================
+// 过渡控制器实现
+// =============================================
 
-  /**
-   * 延迟时间 (毫秒)
-   */
-  delay?: number;
+export class TransitionController implements AnimationController {
+  private startTime: number = 0;
+  private pausedTime: number = 0;
+  private animationId?: number;
+  private _isRunning: boolean = false;
+  private _progress: number = 0;
+  private _isCompleted: boolean = false;
 
-  /**
-   * 缓动函数
-   */
-  easing?: EasingFunction;
+  constructor(
+    private updateFn: (progress: number) => void,
+    private config: Required<TransitionConfig>,
+  ) {}
 
-  /**
-   * 开始回调
-   */
-  onStart?: () => void;
+  play(): void {
+    if (this._isRunning) return;
 
-  /**
-   * 更新回调
-   * @param progress 当前进度 (0-1)
-   */
-  onUpdate?: (progress: number) => void;
+    this._isRunning = true;
+    this._isCompleted = false;
+    this.startTime = performance.now() - this.pausedTime;
+    this.pausedTime = 0;
 
-  /**
-   * 完成回调
-   */
+    this.tick();
+  }
+
+  pause(): void {
+    if (!this._isRunning) return;
+
+    this._isRunning = false;
+    this.pausedTime = performance.now() - this.startTime;
+
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+      this.animationId = undefined;
+    }
+  }
+
+  stop(): void {
+    this._isRunning = false;
+    this._isCompleted = false;
+    this._progress = 0;
+    this.pausedTime = 0;
+
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+      this.animationId = undefined;
+    }
+  }
+
+  finish(): void {
+    this.stop();
+    this._progress = 1;
+    this._isCompleted = true;
+    this.updateFn(1);
+    this.onComplete?.();
+  }
+
+  reverse(): void {
+    // 实现反向播放逻辑
+    const currentProgress = this._progress;
+    this.stop();
+    this._progress = 1 - currentProgress;
+    this.play();
+  }
+
+  get progress(): number {
+    return this._progress;
+  }
+
+  get isRunning(): boolean {
+    return this._isRunning;
+  }
+
+  get isCompleted(): boolean {
+    return this._isCompleted;
+  }
+
   onComplete?: () => void;
 
-  /**
-   * 取消回调
-   */
-  onCancel?: () => void;
+  private tick = (): void => {
+    if (!this._isRunning) return;
+
+    const now = performance.now();
+    const elapsed = now - this.startTime;
+    const rawProgress = Math.min(elapsed / this.config.duration, 1);
+
+    // 应用缓动函数
+    this._progress = this.config.easing(rawProgress);
+
+    // 更新动画
+    this.updateFn(this._progress);
+
+    if (rawProgress >= 1) {
+      this._isRunning = false;
+      this._isCompleted = true;
+      this.onComplete?.();
+    } else {
+      this.animationId = requestAnimationFrame(this.tick);
+    }
+  };
 }
 
-/**
- * 过渡控制器
- */
-export interface TransitionController {
-  /**
-   * 暂停过渡
-   */
-  pause: () => void;
-
-  /**
-   * 恢复过渡
-   */
-  resume: () => void;
-
-  /**
-   * 取消过渡
-   */
-  cancel: () => void;
-
-  /**
-   * 立即结束过渡
-   */
-  finish: () => void;
-
-  /**
-   * 当前进度 (0-1)
-   */
-  progress: number;
-
-  /**
-   * 过渡是否处于运行状态
-   */
-  isRunning: boolean;
-
-  /**
-   * 过渡是否已经完成
-   */
-  isCompleted: boolean;
-
-  /**
-   * 完成回调函数
-   */
-  onComplete?: () => void;
-}
+// =============================================
+// 过渡创建函数
+// =============================================
 
 /**
- * 创建一个简单的过渡动画
- * @param update 更新函数，接收当前进度 (0-1)
- * @param options 过渡选项
- * @returns 过渡控制器
+ * 创建基础过渡动画
  */
 export function createTransition(
-  update: (progress: number) => void,
-  options: TransitionOptions = {},
+  updateFn: (progress: number) => void,
+  options: Partial<TransitionConfig> = {},
 ): TransitionController {
-  const { duration = 300, delay = 0, easing = Easing.linear, onStart, onUpdate, onComplete, onCancel } = options;
+  const config: Required<TransitionConfig> = {
+    property: "all",
+    duration: 300,
+    easing: linear,
+    delay: 0,
+    ...options,
+  };
 
-  let startTime: number | null = null;
-  let pauseTime: number | null = null;
-  let pausedDuration = 0;
-  let rafId: number | null = null;
-  let progress = 0;
+  const controller = new TransitionController(updateFn, config);
+
+  // 处理延迟
+  if (config.delay > 0) {
+    setTimeout(() => controller.play(), config.delay);
+  } else {
+    controller.play();
+  }
+
+  return controller;
+}
+
+/**
+ * 创建 CSS 属性过渡
+ */
+export function createCSSTransition(
+  element: HTMLElement,
+  properties: Record<string, { from: string | number; to: string | number; unit?: string }>,
+  options: Partial<TransitionConfig> = {},
+): TransitionController {
+  // 设置初始值
+  Object.entries(properties).forEach(([prop, { from, unit = "" }]) => {
+    element.style.setProperty(prop, `${from}${unit}`);
+  });
+
+  const updateFn = (progress: number) => {
+    Object.entries(properties).forEach(([prop, { from, to, unit = "" }]) => {
+      const fromNum = typeof from === "number" ? from : parseFloat(from.toString());
+      const toNum = typeof to === "number" ? to : parseFloat(to.toString());
+      const current = fromNum + (toNum - fromNum) * progress;
+      element.style.setProperty(prop, `${current}${unit}`);
+    });
+  };
+
+  return createTransition(updateFn, options);
+}
+
+// =============================================
+// 常用过渡动画
+// =============================================
+
+/**
+ * 淡入动画
+ */
+export function fadeIn(element: HTMLElement, options: Partial<TransitionConfig> = {}): TransitionController {
+  return createCSSTransition(
+    element,
+    {
+      opacity: { from: 0, to: 1 },
+    },
+    options,
+  );
+}
+
+/**
+ * 淡出动画
+ */
+export function fadeOut(element: HTMLElement, options: Partial<TransitionConfig> = {}): TransitionController {
+  return createCSSTransition(
+    element,
+    {
+      opacity: { from: 1, to: 0 },
+    },
+    options,
+  );
+}
+
+/**
+ * 滑入动画
+ */
+export function slideIn(
+  element: HTMLElement,
+  direction: "up" | "down" | "left" | "right" = "up",
+  options: Partial<TransitionConfig> = {},
+): TransitionController {
+  const transforms = {
+    up: { from: "translateY(100%)", to: "translateY(0)" },
+    down: { from: "translateY(-100%)", to: "translateY(0)" },
+    left: { from: "translateX(100%)", to: "translateX(0)" },
+    right: { from: "translateX(-100%)", to: "translateX(0)" },
+  };
+
+  return createCSSTransition(
+    element,
+    {
+      transform: transforms[direction],
+    },
+    options,
+  );
+}
+
+/**
+ * 滑出动画
+ */
+export function slideOut(
+  element: HTMLElement,
+  direction: "up" | "down" | "left" | "right" = "down",
+  options: Partial<TransitionConfig> = {},
+): TransitionController {
+  const transforms = {
+    up: { from: "translateY(0)", to: "translateY(-100%)" },
+    down: { from: "translateY(0)", to: "translateY(100%)" },
+    left: { from: "translateX(0)", to: "translateX(-100%)" },
+    right: { from: "translateX(0)", to: "translateX(100%)" },
+  };
+
+  return createCSSTransition(
+    element,
+    {
+      transform: transforms[direction],
+    },
+    options,
+  );
+}
+
+/**
+ * 缩放动画
+ */
+export function scale(
+  element: HTMLElement,
+  from: number = 0,
+  to: number = 1,
+  options: Partial<TransitionConfig> = {},
+): TransitionController {
+  return createCSSTransition(
+    element,
+    {
+      transform: { from: `scale(${from})`, to: `scale(${to})` },
+    },
+    options,
+  );
+}
+
+/**
+ * 旋转动画
+ */
+export function rotate(
+  element: HTMLElement,
+  from: number = 0,
+  to: number = 360,
+  options: Partial<TransitionConfig> = {},
+): TransitionController {
+  return createCSSTransition(
+    element,
+    {
+      transform: { from: `rotate(${from}deg)`, to: `rotate(${to}deg)` },
+    },
+    options,
+  );
+}
+
+/**
+ * 颜色过渡
+ */
+export function colorTransition(
+  element: HTMLElement,
+  property: string,
+  fromColor: string,
+  toColor: string,
+  options: Partial<TransitionConfig> = {},
+): TransitionController {
+  const fromRgb = parseColor(fromColor);
+  const toRgb = parseColor(toColor);
+
+  if (!fromRgb || !toRgb) {
+    throw new Error("Invalid color format");
+  }
+
+  const updateFn = (progress: number) => {
+    const r = Math.round(fromRgb[0] + (toRgb[0] - fromRgb[0]) * progress);
+    const g = Math.round(fromRgb[1] + (toRgb[1] - fromRgb[1]) * progress);
+    const b = Math.round(fromRgb[2] + (toRgb[2] - fromRgb[2]) * progress);
+    element.style.setProperty(property, `rgb(${r}, ${g}, ${b})`);
+  };
+
+  return createTransition(updateFn, options);
+}
+
+// =============================================
+// 序列动画
+// =============================================
+
+/**
+ * 序列过渡动画
+ */
+export function sequenceTransitions(
+  transitions: Array<{
+    transition: () => TransitionController;
+    delay?: number;
+  }>,
+): AnimationController {
+  let currentIndex = 0;
+  let currentController: TransitionController | null = null;
   let isRunning = false;
   let isCompleted = false;
 
-  // 动画帧函数
-  const tick = (timestamp: number) => {
-    // 首次执行，记录开始时间
-    if (startTime === null) {
-      startTime = timestamp;
-      if (onStart) onStart();
-    }
-
-    // 计算经过的时间
-    const elapsed = timestamp - startTime - pausedDuration;
-
-    // 如果还在延迟中，继续等待
-    if (elapsed < delay) {
-      rafId = requestAnimationFrame(tick);
+  const startNext = () => {
+    if (currentIndex >= transitions.length) {
+      isRunning = false;
+      isCompleted = true;
+      controller.onComplete?.();
       return;
     }
 
-    // 计算动画进度 (0-1 范围)
-    progress = Math.min(1, (elapsed - delay) / duration);
+    const { transition, delay = 0 } = transitions[currentIndex];
+    currentIndex++;
 
-    // 应用缓动函数
-    const easedProgress = easing(progress);
+    setTimeout(() => {
+      if (!isRunning) return;
 
-    // 调用更新函数
-    update(easedProgress);
-    if (onUpdate) onUpdate(easedProgress);
-
-    // 检查是否完成
-    if (progress >= 1) {
-      isRunning = false;
-      isCompleted = true;
-      if (onComplete) onComplete();
-    } else {
-      // 继续下一帧
-      rafId = requestAnimationFrame(tick);
-    }
+      currentController = transition();
+      currentController.onComplete = () => {
+        startNext();
+      };
+    }, delay);
   };
 
-  // 开始过渡动画
-  isRunning = true;
-  rafId = requestAnimationFrame(tick);
-
-  // 返回控制器
-  return {
-    pause: () => {
-      if (!isRunning || isCompleted) return;
-
-      isRunning = false;
-      if (rafId !== null) {
-        cancelAnimationFrame(rafId);
-        rafId = null;
-      }
-      pauseTime = performance.now();
-    },
-
-    resume: () => {
-      if (isRunning || isCompleted || pauseTime === null) return;
-
-      // 计算暂停持续时间
-      pausedDuration += performance.now() - pauseTime;
-      pauseTime = null;
+  const controller: AnimationController = {
+    play() {
+      if (isRunning) return;
       isRunning = true;
-      rafId = requestAnimationFrame(tick);
+      isCompleted = false;
+      currentIndex = 0;
+      startNext();
     },
 
-    cancel: () => {
-      if (isCompleted) return;
-
+    pause() {
       isRunning = false;
-      if (rafId !== null) {
-        cancelAnimationFrame(rafId);
-        rafId = null;
-      }
-
-      if (onCancel) onCancel();
+      currentController?.pause();
     },
 
-    finish: () => {
-      if (isCompleted) return;
-
+    stop() {
       isRunning = false;
+      isCompleted = false;
+      currentIndex = 0;
+      currentController?.stop();
+      currentController = null;
+    },
+
+    finish() {
+      this.stop();
       isCompleted = true;
+      controller.onComplete?.();
+    },
 
-      if (rafId !== null) {
-        cancelAnimationFrame(rafId);
-        rafId = null;
-      }
-
-      progress = 1;
-      update(1);
-      if (onComplete) onComplete();
+    reverse() {
+      // 实现序列反向播放
+      currentController?.reverse();
     },
 
     get progress() {
-      return progress;
+      if (!currentController) return 0;
+      const segmentProgress = currentController.progress;
+      const totalSegments = transitions.length;
+      const completedSegments = currentIndex - 1;
+      return (completedSegments + segmentProgress) / totalSegments;
     },
 
     get isRunning() {
@@ -216,574 +396,131 @@ export function createTransition(
     get isCompleted() {
       return isCompleted;
     },
-  };
-}
 
-/**
- * CSS 过渡属性
- */
-export interface CSSTransitionProperty {
-  /**
-   * 属性名
-   */
-  property: string;
-
-  /**
-   * 起始值
-   */
-  from: string | number;
-
-  /**
-   * 结束值
-   */
-  to: string | number;
-
-  /**
-   * 单位 (可选)
-   */
-  unit?: string;
-}
-
-/**
- * 创建 DOM 元素的 CSS 过渡
- * @param element 目标 DOM 元素
- * @param properties 要过渡的 CSS 属性
- * @param options 过渡选项
- * @returns 过渡控制器
- */
-export function createCSSTransition(
-  element: HTMLElement,
-  properties: CSSTransitionProperty[],
-  options: TransitionOptions = {},
-): TransitionController {
-  // 提取初始值和目标值
-  const initialValues: Record<string, number> = {};
-  const targetValues: Record<string, number> = {};
-  const units: Record<string, string> = {};
-
-  // 处理每个属性
-  properties.forEach(prop => {
-    const { property, from, to, unit = "" } = prop;
-
-    // 将值转换为数字
-    initialValues[property] = typeof from === "string" ? parseFloat(from) : from;
-    targetValues[property] = typeof to === "string" ? parseFloat(to) : to;
-    units[property] = unit || (typeof from === "string" ? extractUnit(from) : "");
-  });
-
-  // 创建更新函数
-  const update = (progress: number) => {
-    for (const property of Object.keys(initialValues)) {
-      const from = initialValues[property];
-      const to = targetValues[property];
-      const unit = units[property];
-
-      // 计算当前值
-      const value = from + (to - from) * progress;
-
-      // 更新 CSS 属性
-      element.style[property as any] = `${value}${unit}`;
-    }
+    onComplete: undefined,
   };
 
-  // 创建并返回过渡控制器
-  return createTransition(update, options);
+  return controller;
 }
 
 /**
- * 从值字符串中提取单位
- * @param value 值字符串，如 "100px"
- * @returns 单位字符串，如 "px"
+ * 并行过渡动画
  */
-function extractUnit(value: string): string {
-  return value.replace(/^-?\d*\.?\d+/, "");
-}
-
-/**
- * 创建 DOM 元素透明度过渡
- * @param element 目标 DOM 元素
- * @param from 起始透明度 (0-1)
- * @param to 结束透明度 (0-1)
- * @param options 过渡选项
- * @returns 过渡控制器
- */
-export function fadeElement(
-  element: HTMLElement,
-  from: number,
-  to: number,
-  options: TransitionOptions = {},
-): TransitionController {
-  return createCSSTransition(element, [{ property: "opacity", from, to }], options);
-}
-
-/**
- * 淡入元素
- * @param element 目标 DOM 元素
- * @param options 过渡选项
- * @returns 过渡控制器
- */
-export function fadeIn(element: HTMLElement, options: TransitionOptions = {}): TransitionController {
-  // 确保元素可见
-  element.style.display = "";
-
-  // 创建从 0 到 1 的透明度过渡
-  return fadeElement(element, 0, 1, {
-    easing: Easing.easeOutQuad,
-    ...options,
-    onStart: () => {
-      // 如果元素当前隐藏，则显示它
-      if (getComputedStyle(element).display === "none") {
-        element.style.display = "";
-      }
-      if (options.onStart) options.onStart();
-    },
-  });
-}
-
-/**
- * 淡出元素
- * @param element 目标 DOM 元素
- * @param options 过渡选项
- * @returns 过渡控制器
- */
-export function fadeOut(element: HTMLElement, options: TransitionOptions = {}): TransitionController {
-  // 创建从 1 到 0 的透明度过渡
-  return fadeElement(element, 1, 0, {
-    easing: Easing.easeInQuad,
-    ...options,
-    onComplete: () => {
-      // 过渡完成后隐藏元素
-      element.style.display = "none";
-      if (options.onComplete) options.onComplete();
-    },
-  });
-}
-
-/**
- * 滑动方向
- */
-export type SlideDirection = "up" | "down" | "left" | "right";
-
-/**
- * 创建 DOM 元素滑动过渡
- * @param element 目标 DOM 元素
- * @param direction 滑动方向
- * @param distance 滑动距离 (像素)，若为 null 则使用元素自身尺寸
- * @param options 过渡选项
- * @returns 过渡控制器
- */
-export function slideElement(
-  element: HTMLElement,
-  direction: SlideDirection,
-  distance: number | null = null,
-  options: TransitionOptions = {},
-): TransitionController {
-  // 获取元素当前位置
-  const rect = element.getBoundingClientRect();
-
-  // 根据方向确定移动属性和距离
-  let property: "transform";
-  let transformFrom: string;
-  let transformTo: string;
-
-  // 计算滑动距离
-  const slideDistance =
-    distance !== null ? distance : direction === "up" || direction === "down" ? rect.height : rect.width;
-
-  // 设置初始和目标位置
-  switch (direction) {
-    case "up":
-      transformFrom = `translateY(${slideDistance}px)`;
-      transformTo = "translateY(0)";
-      break;
-    case "down":
-      transformFrom = "translateY(0)";
-      transformTo = `translateY(${slideDistance}px)`;
-      break;
-    case "left":
-      transformFrom = `translateX(${slideDistance}px)`;
-      transformTo = "translateX(0)";
-      break;
-    case "right":
-      transformFrom = "translateX(0)";
-      transformTo = `translateX(${slideDistance}px)`;
-      break;
-  }
-
-  // 创建过渡
-  const update = (progress: number) => {
-    if (direction === "up" || direction === "left") {
-      const currentDistance = slideDistance * (1 - progress);
-      const transform = direction === "up" ? `translateY(${currentDistance}px)` : `translateX(${currentDistance}px)`;
-
-      element.style.transform = transform;
-    } else {
-      const currentDistance = slideDistance * progress;
-      const transform = direction === "down" ? `translateY(${currentDistance}px)` : `translateX(${currentDistance}px)`;
-
-      element.style.transform = transform;
-    }
-  };
-
-  return createTransition(update, {
-    easing: Easing.easeInOutQuad,
-    ...options,
-  });
-}
-
-/**
- * 滑入元素
- * @param element 目标 DOM 元素
- * @param direction 滑动方向
- * @param options 过渡选项
- * @returns 过渡控制器
- */
-export function slideIn(
-  element: HTMLElement,
-  direction: SlideDirection = "up",
-  options: TransitionOptions = {},
-): TransitionController {
-  // 确保元素可见
-  const originalDisplay = element.style.display;
-  element.style.display = "";
-
-  // 获取元素尺寸
-  const rect = element.getBoundingClientRect();
-  const distance = direction === "up" || direction === "down" ? rect.height : rect.width;
-
-  // 设置初始状态
-  element.style.overflow = "hidden";
-  if (direction === "up") {
-    element.style.transform = `translateY(${distance}px)`;
-  } else if (direction === "down") {
-    element.style.transform = `translateY(-${distance}px)`;
-  } else if (direction === "left") {
-    element.style.transform = `translateX(${distance}px)`;
-  } else {
-    element.style.transform = `translateX(-${distance}px)`;
-  }
-
-  // 创建过渡
-  const update = (progress: number) => {
-    let transformValue = "";
-    if (direction === "up") {
-      transformValue = `translateY(${distance * (1 - progress)}px)`;
-    } else if (direction === "down") {
-      transformValue = `translateY(-${distance * (1 - progress)}px)`;
-    } else if (direction === "left") {
-      transformValue = `translateX(${distance * (1 - progress)}px)`;
-    } else {
-      transformValue = `translateX(-${distance * (1 - progress)}px)`;
-    }
-    element.style.transform = transformValue;
-  };
-
-  return createTransition(update, {
-    easing: Easing.easeOutQuad,
-    ...options,
-    onStart: () => {
-      // 如果元素当前隐藏，则显示它
-      if (originalDisplay === "none") {
-        element.style.display = "";
-      }
-      if (options.onStart) options.onStart();
-    },
-    onComplete: () => {
-      // 恢复默认样式
-      element.style.overflow = "";
-      if (options.onComplete) options.onComplete();
-    },
-  });
-}
-
-/**
- * 滑出元素
- * @param element 目标 DOM 元素
- * @param direction 滑动方向
- * @param options 过渡选项
- * @returns 过渡控制器
- */
-export function slideOut(
-  element: HTMLElement,
-  direction: SlideDirection = "down",
-  options: TransitionOptions = {},
-): TransitionController {
-  // 获取元素尺寸
-  const rect = element.getBoundingClientRect();
-  const distance = direction === "up" || direction === "down" ? rect.height : rect.width;
-
-  // 设置初始状态
-  element.style.overflow = "hidden";
-  element.style.transform = "translate(0, 0)";
-
-  // 创建过渡
-  const update = (progress: number) => {
-    let transformValue = "";
-    if (direction === "up") {
-      transformValue = `translateY(-${distance * progress}px)`;
-    } else if (direction === "down") {
-      transformValue = `translateY(${distance * progress}px)`;
-    } else if (direction === "left") {
-      transformValue = `translateX(-${distance * progress}px)`;
-    } else {
-      transformValue = `translateX(${distance * progress}px)`;
-    }
-    element.style.transform = transformValue;
-  };
-
-  return createTransition(update, {
-    easing: Easing.easeInQuad,
-    ...options,
-    onComplete: () => {
-      // 过渡完成后隐藏元素
-      element.style.display = "none";
-      element.style.transform = "";
-      element.style.overflow = "";
-      if (options.onComplete) options.onComplete();
-    },
-  });
-}
-
-/**
- * 创建元素缩放过渡
- * @param element 目标 DOM 元素
- * @param fromScale 起始缩放值
- * @param toScale 结束缩放值
- * @param options 过渡选项
- * @returns 过渡控制器
- */
-export function scaleElement(
-  element: HTMLElement,
-  fromScale: number,
-  toScale: number,
-  options: TransitionOptions = {},
-): TransitionController {
-  // 创建过渡
-  const update = (progress: number) => {
-    const currentScale = fromScale + (toScale - fromScale) * progress;
-    element.style.transform = `scale(${currentScale})`;
-  };
-
-  return createTransition(update, {
-    easing: Easing.easeInOutQuad,
-    ...options,
-  });
-}
-
-/**
- * 创建元素颜色过渡
- * @param element 目标 DOM 元素
- * @param property CSS 颜色属性名
- * @param fromColor 起始颜色 (CSS 颜色格式)
- * @param toColor 结束颜色 (CSS 颜色格式)
- * @param options 过渡选项
- * @returns 过渡控制器
- */
-export function colorTransition(
-  element: HTMLElement,
-  property: string,
-  fromColor: string,
-  toColor: string,
-  options: TransitionOptions = {},
-): TransitionController {
-  // 解析颜色为 RGB 分量
-  const fromRGB = parseColor(fromColor);
-  const toRGB = parseColor(toColor);
-
-  if (!fromRGB || !toRGB) {
-    throw new Error("Invalid color format");
-  }
-
-  // 创建过渡
-  const update = (progress: number) => {
-    const r = Math.round(fromRGB.r + (toRGB.r - fromRGB.r) * progress);
-    const g = Math.round(fromRGB.g + (toRGB.g - fromRGB.g) * progress);
-    const b = Math.round(fromRGB.b + (toRGB.b - fromRGB.b) * progress);
-    const a = fromRGB.a + (toRGB.a - fromRGB.a) * progress;
-
-    if (a < 1) {
-      element.style[property as any] = `rgba(${r}, ${g}, ${b}, ${a})`;
-    } else {
-      element.style[property as any] = `rgb(${r}, ${g}, ${b})`;
-    }
-  };
-
-  return createTransition(update, options);
-}
-
-/**
- * 解析 CSS 颜色字符串为 RGB 分量
- * @param color CSS 颜色字符串
- * @returns RGB 对象 或 null (如果解析失败)
- */
-function parseColor(color: string): { r: number; g: number; b: number; a: number } | null {
-  // 创建临时元素用于颜色解析
-  const tempEl = document.createElement("div");
-  tempEl.style.color = color;
-  document.body.appendChild(tempEl);
-
-  // 获取计算后的颜色
-  const computedColor = getComputedStyle(tempEl).color;
-  document.body.removeChild(tempEl);
-
-  // 提取 RGB 分量
-  const match = computedColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([0-9.]+))?\)/);
-
-  if (!match) return null;
-
-  return {
-    r: parseInt(match[1], 10),
-    g: parseInt(match[2], 10),
-    b: parseInt(match[3], 10),
-    a: match[4] ? parseFloat(match[4]) : 1,
-  };
-}
-
-/**
- * 创建一个序列过渡
- * @param transitions 要依次执行的过渡和延迟
- * @returns 过渡控制器
- */
-export function sequenceTransitions(
-  transitions: Array<{
-    transition: () => TransitionController;
-    delay?: number;
-  }>,
-): TransitionController {
-  let currentIndex = 0;
-  let currentTransition: TransitionController | null = null;
-  let currentTimeout: number | null = null;
-  let isCancelled = false;
+export function parallelTransitions(transitions: Array<() => TransitionController>): AnimationController {
+  const controllers: TransitionController[] = [];
+  let isRunning = false;
   let isCompleted = false;
 
-  // 开始序列中的下一个过渡
-  const startNext = () => {
-    // 序列已完成或已取消
-    if (isCompleted || isCancelled) return;
-
-    // 已执行完所有过渡
-    if (currentIndex >= transitions.length) {
+  const checkCompletion = debounce(() => {
+    if (controllers.every(c => c.isCompleted)) {
+      isRunning = false;
       isCompleted = true;
-      return;
+      controller.onComplete?.();
     }
+  }, 10);
 
-    const { transition, delay = 0 } = transitions[currentIndex];
+  const controller: AnimationController = {
+    play() {
+      if (isRunning) return;
+      isRunning = true;
+      isCompleted = false;
 
-    // 如果有延迟，等待后再开始过渡
-    if (delay > 0) {
-      currentTimeout = window.setTimeout(() => {
-        currentTimeout = null;
-        currentTransition = transition();
-
-        // 当前过渡完成后开始下一个
-        currentTransition.finish = () => {
-          currentTransition!.cancel();
-          currentIndex++;
-          startNext();
-        };
-
-        // 监听完成事件
-        const originalComplete = transitions[currentIndex].transition;
-        currentTransition.onComplete = () => {
-          currentIndex++;
-          startNext();
-        };
-      }, delay);
-    } else {
-      // 直接开始过渡
-      currentTransition = transition();
-
-      // 替换 finish 方法
-      const originalFinish = currentTransition.finish;
-      currentTransition.finish = () => {
-        originalFinish();
-        currentIndex++;
-        startNext();
-      };
-
-      // 当前过渡完成后开始下一个
-      const originalOnComplete = currentTransition.onComplete;
-      currentTransition.onComplete = () => {
-        if (originalOnComplete) originalOnComplete();
-        currentIndex++;
-        startNext();
-      };
-    }
-
-    currentIndex++;
-  };
-
-  // 开始第一个过渡
-  startNext();
-
-  // 返回控制器
-  return {
-    pause: () => {
-      if (currentTransition && currentTransition.isRunning) {
-        currentTransition.pause();
-      }
+      controllers.length = 0;
+      transitions.forEach(createTransition => {
+        const ctrl = createTransition();
+        ctrl.onComplete = checkCompletion;
+        controllers.push(ctrl);
+      });
     },
 
-    resume: () => {
-      if (currentTransition && !currentTransition.isRunning && !currentTransition.isCompleted) {
-        currentTransition.resume();
-      }
+    pause() {
+      isRunning = false;
+      controllers.forEach(c => c.pause());
     },
 
-    cancel: () => {
-      isCancelled = true;
-
-      if (currentTimeout) {
-        clearTimeout(currentTimeout);
-        currentTimeout = null;
-      }
-
-      if (currentTransition) {
-        currentTransition.cancel();
-      }
+    stop() {
+      isRunning = false;
+      isCompleted = false;
+      controllers.forEach(c => c.stop());
+      controllers.length = 0;
     },
 
-    finish: () => {
-      // 立即取消当前延迟
-      if (currentTimeout) {
-        clearTimeout(currentTimeout);
-        currentTimeout = null;
-      }
-
-      // 立即结束当前过渡
-      if (currentTransition) {
-        currentTransition.finish();
-      }
-
-      // 立即执行所有后续过渡
-      while (currentIndex < transitions.length) {
-        const { transition } = transitions[currentIndex];
-        const trans = transition();
-        trans.finish();
-        currentIndex++;
-      }
-
+    finish() {
+      controllers.forEach(c => c.finish());
+      isRunning = false;
       isCompleted = true;
+      controller.onComplete?.();
+    },
+
+    reverse() {
+      controllers.forEach(c => c.reverse());
     },
 
     get progress() {
-      if (isCompleted) return 1;
-      if (isCancelled) return 0;
-      if (!currentTransition) return 0;
-
-      // 计算总体进度
-      const segmentSize = 1 / transitions.length;
-      return (currentIndex - 1) * segmentSize + currentTransition.progress * segmentSize;
+      if (controllers.length === 0) return 0;
+      const totalProgress = controllers.reduce((sum, c) => sum + c.progress, 0);
+      return totalProgress / controllers.length;
     },
 
     get isRunning() {
-      return (
-        !isCompleted && !isCancelled && ((currentTransition && currentTransition.isRunning) || currentTimeout !== null)
-      );
+      return isRunning;
     },
 
     get isCompleted() {
       return isCompleted;
     },
+
+    onComplete: undefined,
   };
+
+  return controller;
+}
+
+// =============================================
+// 工具函数
+// =============================================
+
+/**
+ * 解析颜色为 RGB 数组
+ */
+function parseColor(color: string): [number, number, number] | null {
+  // 处理十六进制颜色
+  if (color.startsWith("#")) {
+    const hex = color.slice(1);
+    if (hex.length === 3) {
+      return [parseInt(hex[0] + hex[0], 16), parseInt(hex[1] + hex[1], 16), parseInt(hex[2] + hex[2], 16)];
+    } else if (hex.length === 6) {
+      return [parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2, 4), 16), parseInt(hex.slice(4, 6), 16)];
+    }
+  }
+
+  // 处理 RGB 颜色
+  const rgbMatch = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+  if (rgbMatch) {
+    return [parseInt(rgbMatch[1], 10), parseInt(rgbMatch[2], 10), parseInt(rgbMatch[3], 10)];
+  }
+
+  return null;
+}
+
+/**
+ * 等待过渡完成
+ */
+export function waitForTransition(element: HTMLElement): Promise<void> {
+  return new Promise(resolve => {
+    const handleEnd = () => {
+      element.removeEventListener("transitionend", handleEnd);
+      resolve();
+    };
+    element.addEventListener("transitionend", handleEnd);
+  });
+}
+
+/**
+ * 获取元素的过渡持续时间
+ */
+export function getTransitionDuration(element: HTMLElement): number {
+  const style = getComputedStyle(element);
+  const duration = style.transitionDuration;
+  return parseFloat(duration) * 1000; // 转换为毫秒
 }
