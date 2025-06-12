@@ -62,7 +62,7 @@ export function toPascalCase(str: string): string {
  * 生成唯一 ID
  */
 export function generateId(prefix: string = "id"): string {
-  return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).substr(2, 9)}`;
+  return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 9)}`;
 }
 
 // =============================================
