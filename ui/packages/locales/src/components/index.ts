@@ -1,16 +1,13 @@
 // 组件文案索引文件
 // 导出所有组件的国际化文案
 
-export * from "./button";
-export * from "./modal";
-export * from "./pagination";
-export * from "./alert";
 export * from "./affix";
-export * from "./form";
+export * from "./alert";
 export * from "./anchor";
 export * from "./avatar";
 export * from "./back-top";
 export * from "./breadcrumb";
+export * from "./button";
 export * from "./calendar";
 export * from "./card";
 export * from "./carousel";
@@ -27,13 +24,16 @@ export * from "./divider";
 export * from "./drawer";
 export * from "./dropdown";
 export * from "./empty";
+export * from "./form";
 export * from "./icon";
 export * from "./image";
 export * from "./input";
 export * from "./input-number";
 export * from "./menu";
 export * from "./message";
+export * from "./modal";
 export * from "./notification";
+export * from "./pagination";
 export * from "./popconfirm";
 export * from "./popover";
 export * from "./progress";
