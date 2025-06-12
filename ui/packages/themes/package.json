@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/themes",
   "version": "0.9.8",
-  "description": "Themes for XiHan UI",
+  "description": "Unified styling system for XiHan UI - includes theming, responsive design, animations, and debugging tools",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
   "repository": {
@@ -15,7 +15,12 @@
   "keywords": [
     "xihan",
     "ui",
-    "themes"
+    "themes",
+    "styling",
+    "responsive",
+    "animation",
+    "css-in-js",
+    "design-system"
   ],
   "author": {
     "name": "zhaifanhua",
@@ -35,26 +40,6 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts"
-    },
-    "./core": {
-      "import": "./dist/core/index.mjs",
-      "require": "./dist/core/index.cjs",
-      "types": "./dist/core/index.d.ts"
-    },
-    "./css-in-js": {
-      "import": "./dist/css-in-js/index.mjs",
-      "require": "./dist/css-in-js/index.cjs",
-      "types": "./dist/css-in-js/index.d.ts"
-    },
-    "./debug": {
-      "import": "./dist/debug/index.mjs",
-      "require": "./dist/debug/index.cjs",
-      "types": "./dist/debug/index.d.ts"
-    },
-    "./theme": {
-      "import": "./dist/theme/index.mjs",
-      "require": "./dist/theme/index.cjs",
-      "types": "./dist/theme/index.d.ts"
     }
   },
   "files": [
