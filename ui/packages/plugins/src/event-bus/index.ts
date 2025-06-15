@@ -1,4 +1,4 @@
-import { Emitter, createEmitter, type EventHandler } from "./emitter";
+import { createEmitter, type EventHandler } from "@xihan-ui/utils/core";
 
 /**
  * 全局事件总线实例
