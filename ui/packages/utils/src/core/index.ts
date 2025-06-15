@@ -71,10 +71,6 @@ export {
   timeout as timeoutFn,
 } from "./function";
 
-// 日志工具
-export { createLogger } from "./logger";
-export type { LogLevel, LoggerOptions, LogStyles, LogLevelWeight } from "./logger";
-
 // 数学工具
 export {
   add,
