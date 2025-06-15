@@ -155,3 +155,11 @@ export {
   isArrayBuffer,
   isDataView,
 } from "./types";
+
+// 日志工具
+export { createLogger } from "./logger";
+export type { LoggerOptions, LogLevel, LogStyles } from "./logger";
+
+// 事件发射器
+export { createEmitter, Emitter } from "./emitter";
+export type { EventHandler, EventHandlerMap } from "./emitter";
