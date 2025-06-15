@@ -74,6 +74,7 @@
     "@types/node": "22.15.21",
     "@vitejs/plugin-vue": "5.2.4",
     "@vitejs/plugin-vue-jsx": "4.2.0",
+    "@vue/test-utils": "^2.4.6",
     "@xihan-ui/build": "workspace:*",
     "@xihan-ui/dev": "workspace:*",
     "cross-env": "7.0.3",
@@ -83,10 +84,9 @@
     "eslint-plugin-vue": "10.1.0",
     "prettier": "3.5.3",
     "rollup": "4.41.0",
-    "sass-lint": "1.13.1",
-    "stylelint": "16.19.1",
     "tsx": "4.19.4",
     "turbo": "2.5.3",
-    "unbuild": "3.5.0"
+    "unbuild": "3.5.0",
+    "vitest": "^3.2.3"
   }
 }
