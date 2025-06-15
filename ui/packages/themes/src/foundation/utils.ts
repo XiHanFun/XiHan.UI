@@ -3,6 +3,7 @@
  * 统一整个样式系统的通用工具函数
  */
 
+import { XH_PREFIX } from "@xihan-ui/constants";
 import type { CSSValue, StyleObject, ClassName, CSSVarName } from "./types";
 
 // =============================================
@@ -24,7 +25,7 @@ export function generateHash(input: string, length: number = 8): string {
 /**
  * 为样式对象生成唯一哈希
  */
-export function generateStyleHash(styles: StyleObject, prefix: string = "xh"): string {
+export function generateStyleHash(styles: StyleObject, prefix: string = XH_PREFIX): string {
   const styleString = styleObjectToString(styles);
   const hash = generateHash(styleString);
   return `${prefix}-${hash}`;
@@ -114,7 +115,7 @@ function needsUnit(property: string): boolean {
 /**
  * 创建 CSS 变量名
  */
-export function createCSSVar(name: string, prefix: string = "xh"): CSSVarName {
+export function createCSSVar(name: string, prefix: string = XH_PREFIX): CSSVarName {
   const varName = `--${prefix}-${toKebabCase(name)}`;
   return varName as CSSVarName;
 }

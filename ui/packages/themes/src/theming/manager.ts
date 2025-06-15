@@ -3,9 +3,10 @@
  * 统一处理主题配置、CSS变量生成和主题切换
  */
 
-import type { ThemeTokens, ThemeConfig, CSSVarName, StyleObject } from "../foundation/types";
-import { createCSSVar, toKebabCase } from "../foundation/utils";
-import { createEventEmitter } from "../foundation/events";
+import { XH_PREFIX } from "@xihan-ui/constants";
+import type { ThemeTokens, ThemeConfig, CSSVarName, StyleObject, ThemeContext, ThemeUtils } from "../foundation/types";
+import { generateId, deepClone, mergeStyleObjects, createCSSVar, useCSSVar, toKebabCase } from "../foundation/utils";
+import { createEventEmitter, globalEvents } from "../foundation/events";
 
 // 简单的深度合并实现
 function deepMerge<T extends Record<string, any>>(target: T, source: Partial<T>): T {
@@ -63,12 +64,12 @@ export class ThemeManager {
 
   constructor(config: Partial<ThemeManagerConfig> = {}) {
     this.config = {
-      prefix: "xh",
+      prefix: XH_PREFIX,
       defaultTheme: "light",
       enableSystemTheme: true,
       enableStorage: true,
-      storageKey: "xh-theme",
-      cssVariableScope: ":root",
+      storageKey: "xihan-theme",
+      cssVariableScope: "root",
       ...config,
     };
 
@@ -80,14 +81,8 @@ export class ThemeManager {
    * 注册主题
    */
   registerTheme(name: string, tokens: ThemeTokens): void {
-    this.themes.set(name, tokens);
-
-    // 如果是当前主题，立即应用
-    if (name === this.currentTheme) {
-      this.applyTheme(name);
-    }
-
-    themeEvents.emit("theme-registered", { name, tokens });
+    this.themes.set(name, deepClone(tokens));
+    globalEvents.emit("theme-registered", { name, tokens: deepClone(tokens) });
   }
 
   /**
@@ -104,20 +99,24 @@ export class ThemeManager {
    */
   setTheme(themeName: string): void {
     if (!this.themes.has(themeName)) {
-      console.warn(`Theme "${themeName}" is not registered`);
-      return;
+      throw new Error(`Theme "${themeName}" not found`);
     }
 
     const previousTheme = this.currentTheme;
     this.currentTheme = themeName;
 
+    // 应用主题
     this.applyTheme(themeName);
-    this.storeTheme(themeName);
 
-    const tokens = this.themes.get(themeName)!;
-    themeEvents.emit("theme-changed", {
+    // 存储主题选择
+    if (this.config.enableStorage) {
+      this.storeTheme(themeName);
+    }
+
+    // 触发主题变更事件
+    globalEvents.emit("theme-changed", {
       theme: themeName,
-      tokens,
+      tokens: deepClone(this.themes.get(themeName)!),
       previousTheme,
     });
   }
@@ -209,18 +208,26 @@ export class ThemeManager {
    */
   createThemeStyles(styles: Record<string, any>): StyleObject {
     const result: StyleObject = {};
+    const tokens = this.getCurrentTokens();
 
-    for (const [property, tokenPath] of Object.entries(styles)) {
-      if (typeof tokenPath === "string") {
+    if (!tokens) {
+      return result;
+    }
+
+    // 使用 CSS 变量替换主题令牌
+    for (const [key, value] of Object.entries(styles)) {
+      if (typeof value === "string" && value.startsWith("$")) {
+        const tokenPath = value.slice(1);
         const cssVar = this.getCSSVar(tokenPath);
-        const fallback = this.getTokenValue(tokenPath);
-        result[property] = `var(${cssVar}, ${fallback})`;
+        result[key] = useCSSVar(cssVar);
+      } else if (typeof value === "object" && value !== null) {
+        result[key] = this.createThemeStyles(value);
       } else {
-        result[property] = tokenPath;
+        result[key] = value;
       }
     }
 
-    return result;
+    return mergeStyleObjects(result);
   }
 
   /**
@@ -483,7 +490,7 @@ export const themeUtils = {
    */
   createLightTheme(overrides: Partial<ThemeTokens> = {}): ThemeTokens {
     const baseTheme: ThemeTokens = {
-      colors: {
+      color: {
         primary: "#3b82f6",
         secondary: "#6366f1",
         success: "#10b981",
@@ -495,25 +502,25 @@ export const themeUtils = {
         text: "#1f2937",
         textSecondary: "#6b7280",
         border: "#e5e7eb",
-        ...overrides.colors,
+        ...overrides.color,
       },
-      fontSizes: {
+      fontSize: {
         xs: "0.75rem",
         sm: "0.875rem",
         base: "1rem",
         lg: "1.125rem",
         xl: "1.25rem",
         "2xl": "1.5rem",
-        ...overrides.fontSizes,
+        ...overrides.fontSize,
       },
-      spacings: {
+      spacing: {
         xs: "0.25rem",
         sm: "0.5rem",
         md: "1rem",
         lg: "1.5rem",
         xl: "2rem",
         "2xl": "3rem",
-        ...overrides.spacings,
+        ...overrides.spacing,
       },
       borderRadius: {
         none: "0",
@@ -524,34 +531,34 @@ export const themeUtils = {
         full: "9999px",
         ...overrides.borderRadius,
       },
-      shadows: {
+      shadow: {
         sm: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
         md: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
         lg: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
         xl: "0 20px 25px -5px rgb(0 0 0 / 0.1)",
-        ...overrides.shadows,
+        ...overrides.shadow,
       },
-      zIndexes: {
+      zIndex: {
         dropdown: 1000,
         modal: 1050,
         popover: 1060,
         tooltip: 1070,
-        ...overrides.zIndexes,
+        ...overrides.zIndex,
       },
-      transitions: {
+      transition: {
         fast: "150ms ease",
         normal: "300ms ease",
         slow: "500ms ease",
-        ...overrides.transitions,
+        ...overrides.transition,
       },
-      breakpoints: {
+      breakpoint: {
         xs: "0px",
         sm: "640px",
         md: "768px",
         lg: "1024px",
         xl: "1280px",
         "2xl": "1536px",
-        ...overrides.breakpoints,
+        ...overrides.breakpoint,
       },
     };
 
@@ -563,7 +570,7 @@ export const themeUtils = {
    */
   createDarkTheme(overrides: Partial<ThemeTokens> = {}): ThemeTokens {
     const baseTheme = this.createLightTheme({
-      colors: {
+      color: {
         primary: "#60a5fa",
         secondary: "#818cf8",
         background: "#0f172a",
@@ -571,7 +578,7 @@ export const themeUtils = {
         text: "#f1f5f9",
         textSecondary: "#cbd5e1",
         border: "#334155",
-        ...overrides.colors,
+        ...overrides.color,
       },
     });
 
@@ -586,13 +593,13 @@ export const themeUtils = {
       light: this.createLightTheme(),
       dark: this.createDarkTheme(),
       blue: this.createLightTheme({
-        colors: { primary: "#2563eb", secondary: "#3b82f6" },
+        color: { primary: "#2563eb", secondary: "#3b82f6" },
       }),
       green: this.createLightTheme({
-        colors: { primary: "#059669", secondary: "#10b981" },
+        color: { primary: "#059669", secondary: "#10b981" },
       }),
       purple: this.createLightTheme({
-        colors: { primary: "#7c3aed", secondary: "#8b5cf6" },
+        color: { primary: "#7c3aed", secondary: "#8b5cf6" },
       }),
     };
   },
@@ -601,7 +608,16 @@ export const themeUtils = {
    * 验证主题令牌
    */
   validateTheme(tokens: ThemeTokens): boolean {
-    const requiredKeys = ["colors", "fontSizes", "spacings"];
+    const requiredKeys = [
+      "color",
+      "fontSize",
+      "spacing",
+      "borderRadius",
+      "shadow",
+      "zIndex",
+      "transition",
+      "breakpoint",
+    ];
 
     for (const key of requiredKeys) {
       if (!(key in tokens) || typeof tokens[key as keyof ThemeTokens] !== "object") {

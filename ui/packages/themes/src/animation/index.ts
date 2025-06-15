@@ -8,3 +8,4 @@ export * from "./spring";
 export * from "./scroll";
 export * from "./svg";
 export * from "./sequence";
+export * from "./ripple";

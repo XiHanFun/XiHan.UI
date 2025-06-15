@@ -4,7 +4,8 @@
  */
 
 import type { CompiledStyle, StyleCache } from "../foundation/types";
-import { generateHash } from "../foundation/utils";
+import { generateHash, deepClone } from "../foundation/utils";
+import { globalEvents } from "../foundation/events";
 
 /**
  * 缓存节点接口
@@ -62,9 +63,9 @@ export class LRUStyleCache implements StyleCache {
   constructor(config: Partial<CacheConfig> = {}) {
     this.config = {
       maxSize: 1000,
-      ttl: 5 * 60 * 1000, // 5分钟
+      ttl: 300000, // 5分钟
       enableAccessCount: true,
-      cleanupInterval: 60 * 1000, // 1分钟
+      cleanupInterval: 60000, // 1分钟
       ...config,
     };
 
@@ -100,42 +101,32 @@ export class LRUStyleCache implements StyleCache {
     // 移动到头部（最近使用）
     this.moveToHead(node);
 
-    return node.value;
+    // 触发缓存命中事件
+    globalEvents.emit("cache-hit", { key, value: deepClone(node.value) });
+
+    return deepClone(node.value);
   }
 
   /**
    * 设置缓存项
    */
   set(key: string, value: CompiledStyle): void {
-    const existingNode = this.cache.get(key);
-
-    if (existingNode) {
-      // 更新现有节点
-      existingNode.value = value;
-      existingNode.timestamp = Date.now();
-      if (this.config.enableAccessCount) {
-        existingNode.accessCount++;
-      }
-      this.moveToHead(existingNode);
-      return;
-    }
-
-    // 创建新节点
-    const newNode: CacheNode = {
+    const node: CacheNode = {
       key,
-      value,
+      value: deepClone(value),
       timestamp: Date.now(),
-      accessCount: 1,
+      accessCount: 0,
     };
 
-    // 检查缓存大小限制
     if (this.cache.size >= this.config.maxSize) {
       this.evictLRU();
     }
 
-    // 添加到缓存
-    this.cache.set(key, newNode);
-    this.addToHead(newNode);
+    this.cache.set(key, node);
+    this.addToHead(node);
+
+    // 触发缓存设置事件
+    globalEvents.emit("cache-set", { key, value: deepClone(value) });
   }
 
   /**

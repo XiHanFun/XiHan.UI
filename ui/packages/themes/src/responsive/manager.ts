@@ -5,7 +5,8 @@
 
 import type { Breakpoints, ResponsiveValue, MediaQueryConfig, StyleObject } from "../foundation/types";
 import { createEventEmitter } from "../foundation/events";
-import { debounce } from "../foundation/utils";
+import { debounce, generateId, deepClone, mergeStyleObjects } from "../foundation/utils";
+import { globalEvents } from "../foundation/events";
 
 /**
  * 响应式配置
@@ -78,7 +79,7 @@ export class ResponsiveManager {
       ...config,
     };
 
-    this.currentBreakpoint = this.getCurrentBreakpoint();
+    this.currentBreakpoint = this.config.defaultBreakpoint;
     this.setupBreakpointMonitoring();
   }
 
@@ -196,52 +197,47 @@ export class ResponsiveManager {
    * 解析响应式值
    */
   resolveResponsiveValue<T>(value: ResponsiveValue<T>): T {
-    if (typeof value !== "object" || value === null || Array.isArray(value)) {
-      return value as T;
+    if (typeof value !== "object" || value === null) {
+      return value;
     }
 
-    const responsiveValue = value as Partial<Record<keyof Breakpoints, T>>;
-    const currentBreakpoint = this.getCurrentBreakpoint();
+    const breakpoint = this.getCurrentBreakpoint();
+    const breakpoints = Object.keys(this.config.breakpoints) as Array<keyof Breakpoints>;
+    const currentIndex = breakpoints.indexOf(breakpoint);
 
-    // 首先检查当前断点
-    if (responsiveValue[currentBreakpoint] !== undefined) {
-      return responsiveValue[currentBreakpoint] as T;
-    }
-
-    // 向下查找最近的断点值
-    const breakpointOrder: (keyof Breakpoints)[] = ["2xl", "xl", "lg", "md", "sm", "xs"];
-    const currentIndex = breakpointOrder.indexOf(currentBreakpoint);
-
-    for (let i = currentIndex + 1; i < breakpointOrder.length; i++) {
-      const breakpoint = breakpointOrder[i];
-      if (responsiveValue[breakpoint] !== undefined) {
-        return responsiveValue[breakpoint] as T;
+    // 从当前断点开始向上查找
+    for (let i = currentIndex; i >= 0; i--) {
+      const bp = breakpoints[i];
+      if (bp in value && typeof value === "object") {
+        return deepClone((value as Record<keyof Breakpoints, T>)[bp]);
       }
     }
 
-    // 如果没有找到，返回第一个可用值
-    const firstValue = Object.values(responsiveValue)[0];
-    return firstValue as T;
+    // 如果没有找到匹配的值，返回默认值
+    return deepClone((value as Record<keyof Breakpoints, T>)[breakpoints[0]]);
   }
 
   /**
    * 创建响应式样式
    */
   createResponsiveStyles(values: ResponsiveValue<StyleObject>): StyleObject {
-    if (typeof values !== "object" || values === null || Array.isArray(values)) {
-      return values as StyleObject;
+    if (typeof values !== "object" || values === null) {
+      return {};
     }
 
     const result: StyleObject = {};
+    const breakpoints = Object.entries(this.config.breakpoints);
 
-    for (const [breakpoint, styles] of Object.entries(values)) {
-      if (breakpoint in this.config.breakpoints && styles) {
-        const mediaQuery = this.getMediaQuery(breakpoint as keyof Breakpoints, "up");
-        result[`@media ${mediaQuery}`] = styles;
+    for (const [breakpoint, query] of breakpoints) {
+      if (breakpoint in values) {
+        const styles = values[breakpoint as keyof typeof values];
+        if (styles) {
+          result[`@media ${query}`] = deepClone(styles);
+        }
       }
     }
 
-    return result;
+    return mergeStyleObjects(result);
   }
 
   /**
