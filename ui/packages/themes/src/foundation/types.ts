@@ -42,14 +42,14 @@ export interface CompiledStyle {
  * 主题令牌接口
  */
 export interface ThemeTokens {
-  colors: Record<string, string>;
-  fontSizes: Record<string, string>;
-  spacings: Record<string, string>;
+  color: Record<string, string>;
+  fontSize: Record<string, string>;
+  spacing: Record<string, string>;
   borderRadius: Record<string, string>;
-  shadows: Record<string, string>;
-  zIndexes: Record<string, number>;
-  transitions: Record<string, string>;
-  breakpoints: Record<string, string>;
+  shadow: Record<string, string>;
+  zIndex: Record<string, number>;
+  transition: Record<string, string>;
+  breakpoint: Record<string, string>;
 }
 
 /**
@@ -184,6 +184,7 @@ export interface StyleEngine {
   remove: (id: string) => boolean;
   clear: () => void;
   getConfig: () => StyleEngineConfig;
+  compileAndInject: (styles: StyleObject, id?: string) => { className: ClassName; element: HTMLStyleElement };
 }
 
 /**
@@ -282,10 +283,13 @@ export type EventListener<T = any> = (event: T) => void;
  * 事件映射接口
  */
 export interface EventMap {
-  "theme-changed": ThemeConfig;
+  "cache-hit": { key: string; value: any };
+  "cache-set": { key: string; value: any };
+  "theme-changed": { theme: string; tokens: any; previousTheme: string };
+  "theme-registered": { name: string; tokens: any };
   "style-injected": { id: string; css: string };
   "style-removed": { id: string };
-  "breakpoint-changed": { current: string; previous: string };
+  "breakpoint-changed": { current: string; previous: string; width: number; height: number };
   "animation-start": { id: string };
   "animation-end": { id: string };
   "performance-warning": PerformanceReport;
