@@ -1,5 +1,5 @@
 import type { App } from "vue";
-import { createLogger, type LoggerOptions } from "./logger";
+import { createLogger, type LoggerOptions } from "@xihan-ui/utils/core";
 
 export interface LoggerPluginOptions extends LoggerOptions {
   /** 是否在开发环境启用 */
