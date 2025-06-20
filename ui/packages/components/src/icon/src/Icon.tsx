@@ -11,12 +11,9 @@ import {
 import { IconBase, addIcons, listIcons } from "@xihan-ui/icons";
 import { isString, isNumber, isObject, generateId, createLogger, assert, tryCatch } from "@xihan-ui/utils/core";
 import { debounceFn, throttleFn } from "@xihan-ui/utils/core";
-import { style } from "@xihan-ui/themes/core";
-import { preloadImage } from "@xihan-ui/utils/file";
 
 // 创建日志记录器
 const logger = createLogger({ prefix: "[XhIcon]" });
-const { addClass, removeClass } = style;
 
 // 图标缓存实现
 class IconCacheImpl implements IconCache {
@@ -163,54 +160,23 @@ export default defineComponent({
       return sizeMap[props.size as keyof typeof sizeMap] || props.size;
     });
 
+    // 使用主题系统的样式工具函数生成类名
     const iconClasses = computed(() => {
-      const classes = [props.prefix];
-
-      if (isString(props.size) && ["tiny", "small", "medium", "large", "huge"].includes(props.size)) {
-        classes.push(`${props.prefix}--${props.size}`);
-      }
-
-      if (props.type && props.type !== "default") {
-        classes.push(`${props.prefix}--${props.type}`);
-      }
-
-      if (props.animation) {
-        classes.push(`${props.prefix}--${props.animation}`);
-      }
-
-      if (props.speed && props.speed !== "normal") {
-        classes.push(`${props.prefix}--${props.speed}`);
-      }
-
-      if (props.flip) {
-        classes.push(`${props.prefix}--flip-${props.flip}`);
-      }
-
-      if (props.disabled) {
-        classes.push(`${props.prefix}--disabled`);
-      }
-
-      if (props.clickable) {
-        classes.push(`${props.prefix}--clickable`);
-      }
-
-      if (props.hover) {
-        classes.push(`${props.prefix}--hover`);
-      }
-
-      if (props.inverse) {
-        classes.push(`${props.prefix}--inverse`);
-      }
-
-      if (loading.value) {
-        classes.push(`${props.prefix}--loading`);
-      }
-
-      if (error.value) {
-        classes.push(`${props.prefix}--error`);
-      }
-
-      return classes;
+      return [
+        "xh-icon",
+        props.disabled && "xh-icon--disabled",
+        props.clickable && "xh-icon--clickable",
+        props.hover && "xh-icon--hover",
+        props.inverse && "xh-icon--inverse",
+        loading.value && "xh-icon--loading",
+        error.value && "xh-icon--error",
+        props.type && `xh-icon--${props.type}`,
+        props.size && `xh-icon--${props.size}`,
+        props.animation && `xh-icon--${props.animation}`,
+        props.speed && `xh-icon--speed-${props.speed}`,
+        props.flip && `xh-icon--flip-${props.flip}`,
+        props.class,
+      ].filter(Boolean);
     });
 
     const iconStyles = computed(() => {
@@ -233,17 +199,6 @@ export default defineComponent({
       if (props.color) {
         styles.color = props.color;
         styles.fill = props.color;
-      }
-
-      // 旋转
-      if (props.rotate && props.rotate !== 0) {
-        styles.transform = `rotate(${props.rotate}deg)`;
-      }
-
-      // 缩放
-      if (props.scale && props.scale !== 1) {
-        const currentTransform = styles.transform || "";
-        styles.transform = `${currentTransform} scale(${props.scale})`.trim();
       }
 
       // 合并用户自定义样式
@@ -366,7 +321,8 @@ export default defineComponent({
       if (!elementRef.value) return;
 
       currentAnimation.value = animation;
-      addClass(elementRef.value as HTMLElement, `${props.prefix}--${animation}`);
+      const animationClass = `xh-icon--${animation}`;
+      elementRef.value.classList.add(animationClass);
       emit("animation-start", animation);
 
       if (duration) {
@@ -379,7 +335,8 @@ export default defineComponent({
     const stopAnimation = () => {
       if (!elementRef.value || !currentAnimation.value) return;
 
-      removeClass(elementRef.value as HTMLElement, `${props.prefix}--${currentAnimation.value}`);
+      const animationClass = `xh-icon--${currentAnimation.value}`;
+      elementRef.value.classList.remove(animationClass);
       emit("animation-end", currentAnimation.value);
       currentAnimation.value = null;
 
@@ -462,8 +419,8 @@ export default defineComponent({
         return slots.loading();
       }
       return (
-        <div class={`${props.prefix}__loading`}>
-          <svg class={`${props.prefix}__spinner`} viewBox="0 0 24 24" style={iconStyles.value}>
+        <div class="xh-icon__loading">
+          <svg class="xh-icon__spinner" viewBox="0 0 24 24" style={iconStyles.value}>
             <circle
               cx="12"
               cy="12"
@@ -484,7 +441,7 @@ export default defineComponent({
         return slots.error();
       }
       return (
-        <div class={`${props.prefix}__error`}>
+        <div class="xh-icon__error">
           <svg viewBox="0 0 24 24" style={iconStyles.value}>
             <path
               d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
@@ -500,7 +457,7 @@ export default defineComponent({
         return slots.placeholder();
       }
       if (props.placeholder) {
-        return <div class={`${props.prefix}__placeholder`}>{props.placeholder}</div>;
+        return <div class="xh-icon__placeholder">{props.placeholder}</div>;
       }
       return null;
     };
@@ -583,7 +540,7 @@ export default defineComponent({
         <Tag
           ref="iconRef"
           id={iconId}
-          class={[iconClasses.value, props.class]}
+          class={iconClasses.value}
           style={iconStyles.value}
           role={props.clickable ? "button" : "img"}
           aria-label={props.title || props.description}

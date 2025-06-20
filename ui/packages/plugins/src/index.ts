@@ -5,25 +5,25 @@ export * from "./utils/plugin";
 export * from "./event-bus";
 
 // 主题插件
-export * from "./theme";
+// export * from "./theme";
 
-// 国际化插件
-export * from "./i18n";
+// // 国际化插件
+// export * from "./i18n";
 
-// 权限插件
-export * from "./permission";
+// // 权限插件
+// export * from "./permission";
 
-// 错误处理插件
-export * from "./error-handler";
+// // 错误处理插件
+// export * from "./error-handler";
 
-// 日志插件
-export * from "./logger";
+// // 日志插件
+// export * from "./logger";
 
-// 性能监控插件
-export * from "./performance";
+// // 性能监控插件
+// export * from "./performance";
 
-// 路由插件
-export * from "./router";
+// // 路由插件
+// export * from "./router";
 
-// 状态管理插件
-export * from "./store";
+// // 状态管理插件
+// export * from "./store";

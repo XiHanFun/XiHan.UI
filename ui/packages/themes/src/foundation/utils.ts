@@ -158,7 +158,19 @@ export function styleObjectToCSS(styles: StyleObject, selector?: string): string
 
     if (typeof value === "object") {
       // 处理嵌套规则
-      const nestedSelector = selector ? `${selector} ${property}` : property;
+      let nestedSelector: string;
+
+      if (property.startsWith("&")) {
+        // 处理 & 符号：替换为父选择器
+        nestedSelector = selector ? property.replace("&", selector) : property.substring(1);
+      } else if (property.startsWith("@")) {
+        // 处理 @media, @keyframes 等 @ 规则
+        nestedSelector = property;
+      } else {
+        // 普通嵌套选择器
+        nestedSelector = selector ? `${selector} ${property}` : property;
+      }
+
       nestedRules.push(styleObjectToCSS(value, nestedSelector));
     } else {
       // 处理普通属性

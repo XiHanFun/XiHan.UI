@@ -1,5 +1,5 @@
 // 描述列表组件国际化
-import type { DeepPartial } from "../types";
+import type { DeepPartial } from "@xihan-ui/utils";
 
 export interface DescriptionsLocale {
   expand: string;
