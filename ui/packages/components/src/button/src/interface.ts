@@ -1,4 +1,4 @@
-import type { ExtractPropTypes, PropType } from "vue";
+import type { ExtractPropTypes, PropType, Ref } from "vue";
 import type { ThemeTokens } from "@xihan-ui/themes";
 
 /**
@@ -9,12 +9,7 @@ export type ButtonSize = "small" | "medium" | "large";
 /**
  * Button 组件的主题类型
  */
-export type ButtonType = "default" | "primary" | "success" | "warning" | "error";
-
-/**
- * Button 组件的动作类型
- */
-export type ButtonAction = "confirm" | "cancel" | "submit" | "reset" | "ok" | null;
+export type ButtonType = "default" | "primary" | "success" | "warning" | "error" | "info" | "submit";
 
 /**
  * Button 组件的形状类型
@@ -30,110 +25,108 @@ export type ButtonStatus = "normal" | "loading" | "disabled";
  * Button 组件的 Props 定义
  */
 export const buttonProps = {
-  /**
-   * 组件类型
-   */
   type: {
     type: String as PropType<ButtonType>,
     default: "default",
   },
-  /**
-   * 组件尺寸
-   */
   size: {
     type: String as PropType<ButtonSize>,
     default: "medium",
   },
-  /**
-   * 组件形状
-   */
   shape: {
     type: String as PropType<ButtonShape>,
     default: "square",
   },
-  /**
-   * 组件状态
-   */
-  status: {
-    type: String as PropType<ButtonStatus>,
-    default: "normal",
-  },
-  /**
-   * 是否禁用
-   */
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
-  /**
-   * 是否处于加载状态
-   */
-  loading: {
-    type: Boolean,
-    default: false,
-  },
-  /**
-   * 是否为文本按钮
-   */
-  text: {
-    type: Boolean,
-    default: false,
-  },
-  /**
-   * 是否为幽灵按钮
-   */
-  ghost: {
-    type: Boolean,
-    default: false,
-  },
-  /**
-   * 是否为块级按钮
-   */
-  block: {
-    type: Boolean,
-    default: false,
-  },
-  /**
-   * 动作类型
-   */
-  action: {
-    type: String as PropType<ButtonAction>,
-    default: null,
-  },
-  /**
-   * 主题相关
-   */
-  theme: {
-    type: Object as PropType<Partial<ThemeTokens>>,
-    default: () => ({}),
-  },
-  /**
-   * 是否启用动画
-   */
-  animation: {
+  color: { type: String as PropType<string>, default: "" },
+  textColor: { type: String as PropType<string>, default: "" },
+  text: Boolean,
+  block: Boolean,
+  loading: Boolean,
+  disabled: Boolean,
+  ghost: Boolean,
+  round: Boolean,
+  circle: Boolean,
+  dashed: Boolean,
+  strong: Boolean,
+  bordered: {
     type: Boolean,
     default: true,
   },
-  /**
-   * 是否启用波纹效果
-   */
-  ripple: {
+  focusable: {
     type: Boolean,
     default: true,
   },
+  keyboard: {
+    type: Boolean,
+    default: true,
+  },
+  tag: {
+    type: String as PropType<keyof HTMLElementTagNameMap>,
+    default: "button",
+  },
+  attrType: {
+    type: String as PropType<"button" | "submit" | "reset">,
+    default: "button",
+  },
   /**
-   * 自定义类名
+   * 按钮的 aria-label
    */
-  class: {
+  ariaLabel: {
     type: String,
     default: "",
   },
   /**
-   * 自定义样式
+   * 按钮的 aria-describedby
    */
-  style: {
-    type: [String, Object] as PropType<string | Record<string, any>>,
+  ariaDescribedby: {
+    type: String,
     default: "",
+  },
+  /**
+   * 按钮的 aria-pressed
+   */
+  ariaPressed: {
+    type: [Boolean, String] as PropType<boolean | "true" | "false" | "mixed">,
+    default: undefined,
+  },
+  /**
+   * 按钮的 aria-expanded
+   */
+  ariaExpanded: {
+    type: [Boolean, String] as PropType<boolean | "true" | "false">,
+    default: undefined,
+  },
+  /**
+   * 按钮的 aria-controls
+   */
+  ariaControls: {
+    type: String,
+    default: "",
+  },
+  /**
+   * 按钮的 aria-haspopup
+   */
+  ariaHaspopup: {
+    type: [Boolean, String] as PropType<boolean | "true" | "false" | "menu" | "listbox" | "tree" | "grid" | "dialog">,
+    default: undefined,
+  },
+  /**
+   * 按钮的 role
+   */
+  role: {
+    type: String,
+    default: "",
+  },
+  /**
+   * 按钮的 tabindex
+   */
+  tabindex: {
+    type: [String, Number] as PropType<string | number>,
+    default: 0,
+  },
+  ripple: {
+    type: Boolean as PropType<boolean>,
+    default: true,
   },
 } as const;
 
@@ -149,23 +142,27 @@ export interface ButtonInstance {
   /**
    * 组件的 DOM 元素
    */
-  $el: HTMLElement;
+  $el: Ref<HTMLElement | null>;
   /**
    * 获取组件的当前状态
    */
-  getState(): Record<string, any>;
+  getState: () => {
+    isPressed: boolean;
+    isFocused: boolean;
+    status: ButtonStatus;
+  };
   /**
    * 重置组件状态
    */
-  reset(): void;
+  reset: () => void;
   /**
    * 设置加载状态
    */
-  setLoading(loading: boolean): void;
+  setLoading: (loading: boolean) => void;
   /**
    * 设置禁用状态
    */
-  setDisabled(disabled: boolean): void;
+  setDisabled: (disabled: boolean) => void;
 }
 
 /**

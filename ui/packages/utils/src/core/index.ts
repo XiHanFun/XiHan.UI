@@ -156,9 +156,23 @@ export {
   isDataView,
 } from "./types";
 
+// 工具类型
+export type {
+  DeepPartial,
+  DeepReadonly,
+  DeepRequired,
+  ValueOf,
+  ArrayElement,
+  Awaited,
+  NonNullable,
+  Nullable,
+  Optional,
+  Brand,
+} from "./types";
+
 // 日志工具
 export { createLogger } from "./logger";
-export type { LoggerOptions, LogLevel, LogStyles } from "./logger";
+export type { LoggerOptions, LogLevel, LogStyles, LogEntry } from "./logger";
 
 // 事件发射器
 export { createEmitter, Emitter } from "./emitter";
