@@ -246,3 +246,64 @@ export function isArrayBuffer(val: unknown): val is ArrayBuffer {
 export function isDataView(val: unknown): val is DataView {
   return val instanceof DataView;
 }
+
+// ============================== 工具类型 ==============================
+
+/**
+ * 深度可选类型
+ * 将类型 T 的所有属性（包括嵌套属性）变为可选
+ */
+export type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+};
+
+/**
+ * 深度只读类型
+ * 将类型 T 的所有属性（包括嵌套属性）变为只读
+ */
+export type DeepReadonly<T> = {
+  readonly [P in keyof T]: T[P] extends object ? DeepReadonly<T[P]> : T[P];
+};
+
+/**
+ * 深度必需类型
+ * 将类型 T 的所有属性（包括嵌套属性）变为必需
+ */
+export type DeepRequired<T> = {
+  [P in keyof T]-?: T[P] extends object ? DeepRequired<T[P]> : T[P];
+};
+
+/**
+ * 获取对象的值类型
+ */
+export type ValueOf<T> = T[keyof T];
+
+/**
+ * 获取数组元素类型
+ */
+export type ArrayElement<T> = T extends readonly (infer U)[] ? U : never;
+
+/**
+ * 获取Promise的解析类型
+ */
+export type Awaited<T> = T extends PromiseLike<infer U> ? U : T;
+
+/**
+ * 非空类型
+ */
+export type NonNullable<T> = T extends null | undefined ? never : T;
+
+/**
+ * 可空类型
+ */
+export type Nullable<T> = T | null;
+
+/**
+ * 可选类型
+ */
+export type Optional<T> = T | undefined;
+
+/**
+ * 品牌类型 - 用于类型安全
+ */
+export type Brand<K, T> = K & { __brand: T };

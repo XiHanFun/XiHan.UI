@@ -1,5 +1,5 @@
 // 排版组件国际化
-import type { DeepPartial } from "../types";
+import type { DeepPartial } from "@xihan-ui/utils";
 
 export interface TypographyLocale {
   loading: string;

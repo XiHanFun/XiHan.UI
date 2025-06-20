@@ -168,7 +168,7 @@ export class ThemeManager {
     }
 
     const cssVars = this.generateCSSVariables(tokens);
-    const scope = this.config.cssVariableScope;
+    const scope = this.config.cssVariableScope === "root" ? ":root" : this.config.cssVariableScope;
 
     return `${scope} {\n${cssVars}\n}`;
   }
@@ -362,7 +362,9 @@ export class ThemeManager {
     const cssVars: string[] = [];
 
     for (const [path, value] of Object.entries(flattenTokens)) {
-      const cssVarName = `--${this.config.prefix}-${toKebabCase(path)}`;
+      // 正确处理嵌套路径：将点号替换为连字符
+      const normalizedPath = path.replace(/\./g, "-");
+      const cssVarName = `--${this.config.prefix}-${toKebabCase(normalizedPath)}`;
       cssVars.push(`  ${cssVarName}: ${value};`);
     }
 

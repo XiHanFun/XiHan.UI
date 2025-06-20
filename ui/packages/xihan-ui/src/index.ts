@@ -11,7 +11,7 @@ export * from "@xihan-ui/themes";
 
 // 在导出子包后，导入需要使用的函数
 import { createLogger, assert, throwError } from "@xihan-ui/utils";
-import { Button, ButtonGroup, Icon } from "@xihan-ui/components";
+import { Button, ButtonGroup, Icon, initTheme } from "@xihan-ui/components";
 
 // 引入样式 - 使用别名
 import { XiHan } from "@xihan-ui/constants";
@@ -30,6 +30,11 @@ export const install = (app: App) => {
     logger.group("XiHan", true);
     logger.info(XiHan.SayHello());
     logger.groupEnd();
+
+    // ============ 初始化主题系统 ============
+    logger.info("初始化主题系统...");
+    initTheme();
+    logger.success("主题系统初始化完成");
 
     // ============ 加载组件 ============
     logger.group("XiHan Load", true);
