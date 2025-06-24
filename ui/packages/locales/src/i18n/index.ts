@@ -1,78 +1,73 @@
+import { useLocale } from "../locales/useLocale";
+import type { Locale } from "../types";
+import { mergeLocales } from "../locales/locale";
+
 /**
- * 国际化工具集
+ * i18n 适配器
+ * 提供与 vue-i18n 和 react-i18next 类似的 API
  */
+export const i18n = {
+  /**
+   * 获取当前语言
+   */
+  locale: useLocale().locale,
 
-// 货币国际化工具导出
-export {
-  formatCurrency as formatCurrencyI18n,
-  parseCurrency as parseCurrencyI18n,
-  getCurrencyInfo as getCurrencyInfoI18n,
-  getCurrencySymbol as getCurrencySymbolI18n,
-  convertCurrency as convertCurrencyI18n,
-  getLocaleCurrency as getLocaleCurrencyI18n,
-  COMMON_CURRENCIES as COMMON_CURRENCIES_I18N,
-} from "./currency";
-export type { CurrencyFormatOptions, CurrencyInfo } from "./currency";
+  /**
+   * 切换语言
+   * @param locale 语言代码
+   */
+  setLocale(locale: Locale) {
+    useLocale().changeLocale(locale);
+  },
 
-// 日期国际化工具导出
-export {
-  formatDate as formatDateI18n,
-  formatDateByTemplate as formatDateByTemplateI18n,
-  parseDate as parseDateI18n,
-  formatRelativeTime as formatRelativeTimeI18n,
-  getDateParts as getDatePartsI18n,
-  getLocaleDateNames as getLocaleDateNamesI18n,
-  isSameDay as isSameDayI18n,
-  simpleDateFormat as simpleDateFormatI18n,
-  DATE_FORMAT_TEMPLATES as DATE_FORMAT_TEMPLATES_I18N,
-  LOCALE_DATE_FORMATS as LOCALE_DATE_FORMATS_I18N,
-} from "./date";
-export type { DateFormatOptions as DateFormatOptionsI18n, LocaleDateFormat as LocaleDateFormatI18n } from "./date";
+  /**
+   * 获取文本
+   * @param key 文本键值
+   * @param args 替换参数
+   */
+  t(key: string, ...args: any[]) {
+    return useLocale().t(key, ...args);
+  },
 
-// 数字国际化工具导出
-export {
-  formatNumber as formatNumberI18n,
-  formatPercent as formatPercentI18n,
-  formatWithUnit as formatWithUnitI18n,
-  parseNumber as parseNumberI18n,
-  getNumberFormatInfo as getNumberFormatInfoI18n,
-  roundNumber as roundNumberI18n,
-  padNumber as padNumberI18n,
-  formatFileSize as formatFileSizeI18n,
-  COMMON_UNITS as COMMON_UNITS_I18N,
-} from "./number";
-export type { NumberFormatOptions as NumberFormatOptionsI18n, UnitInfo as UnitInfoI18n } from "./number";
+  /**
+   * 获取当前语言包
+   */
+  get messages() {
+    return useLocale().messages;
+  },
 
-// 复数形式处理工具导出
-export {
-  getPluralRule,
-  getPluralFormIndex,
-  getPluralFormName,
-  selectPluralForm,
-  formatPlural,
-  createPluralTranslator,
-  PLURAL_RULES,
-  PLURAL_FORM_INDICES,
-} from "./pluralization";
-export type { PluralRuleFunction, PluralRuleConfig, PluralForm } from "./pluralization";
+  /**
+   * 合并语言包
+   * @param messages 要合并的语言包
+   */
+  mergeLocaleMessage(locale: Locale, messages: Record<string, any>) {
+    mergeLocales(useLocale().messages, { [locale]: messages });
+  },
+};
 
-// RTL 支持工具导出
-export {
-  isRTL,
-  getDirection,
-  getRTLConfig,
-  flipValue,
-  flipPositionValues,
-  flipBoxValues,
-  flipBorderRadius,
-  flipTransformOrigin,
-  flipProperty,
-  flipAngle,
-  flipTranslate,
-  getRTLClassName,
-  getRTLHtmlAttributes,
-  createRTLStyles,
-  autoFlipStyles,
-  RTL_LOCALES,
-} from "./rtl";
-export type { RTLConfig } from "./rtl";
+/**
+ * 创建 i18n 实例
+ * 提供与 vue-i18n 和 react-i18next 类似的 API
+ */
+export function createI18n(options: { locale?: Locale; messages?: Record<string, any> } = {}) {
+  const { locale, messages } = options;
+  const instance = useLocale();
+
+  if (locale) {
+    instance.changeLocale(locale);
+  }
+
+  if (messages) {
+    mergeLocales(instance.messages, messages);
+  }
+
+  return {
+    locale: instance.locale,
+    messages: instance.messages,
+    t: instance.t,
+    setLocale: instance.changeLocale,
+    mergeLocaleMessage: (locale: Locale, messages: Record<string, any>) => {
+      mergeLocales(instance.messages, { [locale]: messages });
+    },
+  };
+}

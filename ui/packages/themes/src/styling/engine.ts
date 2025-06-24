@@ -3,6 +3,7 @@
  * 专注于样式编译、优化和注入功能
  */
 
+import { XH_PREFIX } from "@xihan-ui/constants";
 import type {
   StyleObject,
   CompiledStyle,
@@ -11,7 +12,17 @@ import type {
   StyleCache,
   ClassName,
 } from "../foundation/types";
-import { generateStyleHash, styleObjectToCSS, generateId, toKebabCase, normalizeCSSValue } from "../foundation/utils";
+import {
+  generateStyleHash,
+  styleObjectToCSS,
+  generateId,
+  toKebabCase,
+  normalizeCSSValue,
+  createBEMClassName,
+  combineClassNames,
+  mergeStyleObjects,
+  styleObjectToString,
+} from "../foundation/utils";
 import { globalEvents } from "../foundation/events";
 import { createStyleCache } from "./cache";
 
@@ -217,7 +228,7 @@ export class StyleCompiler {
     const generatedClassName = className || generateStyleHash(styles);
     const selector = `.${generatedClassName}`;
 
-    // 转换为CSS
+    // 使用 styleObjectToCSS 转换样式
     let css = styleObjectToCSS(styles, selector);
 
     // 优化CSS
@@ -268,7 +279,7 @@ export class CoreStyleEngine implements StyleEngine {
 
   constructor(config: Partial<StyleEngineConfig> = {}) {
     this.config = {
-      prefix: "xh",
+      prefix: XH_PREFIX,
       hashLength: 8,
       enableCache: true,
       enableMinification: true,
@@ -498,7 +509,7 @@ export const engineUtils = {
    */
   createDevEngine(): StyleEngine {
     return createStyleEngine({
-      prefix: "xh-dev",
+      prefix: `${XH_PREFIX}-dev`,
       enableMinification: false,
       enableSourceMap: true,
     });
@@ -509,7 +520,7 @@ export const engineUtils = {
    */
   createProdEngine(): StyleEngine {
     return createStyleEngine({
-      prefix: "xh",
+      prefix: XH_PREFIX,
       enableMinification: true,
       enableSourceMap: false,
     });
@@ -523,3 +534,128 @@ export const engineUtils = {
     return isDev ? this.createDevEngine() : this.createProdEngine();
   },
 };
+
+/**
+ * BEM 风格的样式工具函数
+ */
+
+/**
+ * 创建基础样式
+ * @param styles 样式对象或字符串
+ * @param children 子样式数组
+ */
+export function c(styles: StyleObject | string, children: StyleObject[] = []): StyleObject {
+  if (typeof styles === "string") {
+    return {
+      "&": styles,
+      ...children.reduce((acc, child) => mergeStyleObjects(acc, child), {}),
+    };
+  }
+  return mergeStyleObjects(styles, ...children);
+}
+
+/**
+ * 创建块级样式
+ * @param block 块名
+ * @param styles 样式对象或字符串
+ * @param children 子样式数组
+ * @param extraClassNames 额外的类名
+ */
+export function cB(
+  block: string,
+  styles: StyleObject | string,
+  children: StyleObject[] = [],
+  extraClassNames?: (string | undefined | null | false)[],
+): StyleObject {
+  const styleObj = typeof styles === "string" ? { "&": styles } : styles;
+  const className = createBEMClassName(block);
+  const finalClassName = extraClassNames ? combineClassNames(className, ...extraClassNames) : className;
+
+  return {
+    [`.${finalClassName}`]: mergeStyleObjects(styleObj, ...children),
+  };
+}
+
+/**
+ * 创建元素样式 使用 &__element 语法
+ * @param element 元素名
+ * @param styles 样式对象
+ * @param children 子样式数组
+ * @param extraClassNames 额外的类名
+ */
+export function cE(
+  element: string,
+  styles: StyleObject | string,
+  children: StyleObject[] = [],
+  extraClassNames?: (string | undefined | null | false)[],
+): StyleObject {
+  const styleObj = typeof styles === "string" ? { "&": styles } : styles;
+  const className = createBEMClassName("", element);
+  const finalClassName = extraClassNames ? combineClassNames(className, ...extraClassNames) : className;
+
+  return {
+    [`&${finalClassName}`]: mergeStyleObjects(styleObj, ...children),
+  };
+}
+
+/**
+ * 创建修饰符样式 使用 &--modifier 语法
+ * @param modifier 修饰符名
+ * @param styles 样式对象
+ * @param children 子样式数组
+ * @param extraClassNames 额外的类名
+ */
+export function cM(
+  modifier: string,
+  styles: StyleObject | string,
+  children: StyleObject[] = [],
+  extraClassNames?: (string | undefined | null | false)[],
+): StyleObject {
+  const styleObj = typeof styles === "string" ? { "&": styles } : styles;
+  const className = createBEMClassName("", "", modifier);
+  const finalClassName = extraClassNames ? combineClassNames(className, ...extraClassNames) : className;
+
+  return {
+    [`&${finalClassName}`]: mergeStyleObjects(styleObj, ...children),
+  };
+}
+
+/**
+ * 创建非修饰符样式 使用 &:not(&--modifier) 语法
+ * @param modifier 修饰符名
+ * @param children 子样式数组
+ * @param extraClassNames 额外的类名
+ */
+export function cNotM(
+  modifier: string,
+  children: StyleObject[] = [],
+  extraClassNames?: (string | undefined | null | false)[],
+): StyleObject {
+  const className = createBEMClassName("", "", modifier);
+  const finalClassName = extraClassNames ? combineClassNames(className, ...extraClassNames) : className;
+
+  return {
+    [`&:not(&${finalClassName})`]: mergeStyleObjects(...children),
+  };
+}
+
+/**
+ * 创建子元素样式 使用 & selector 语法
+ * @param selector 选择器
+ * @param styles 样式对象
+ * @param children 子样式数组
+ * @param extraClassNames 额外的类名
+ */
+export function cS(
+  selector: string,
+  styles: StyleObject | string,
+  children: StyleObject[] = [],
+  extraClassNames?: (string | undefined | null | false)[],
+): StyleObject {
+  const styleObj = typeof styles === "string" ? { "&": styles } : styles;
+  const finalSelector = extraClassNames ? combineClassNames(selector, ...extraClassNames) : selector;
+
+  return {
+    [`& ${finalSelector}`]: mergeStyleObjects(styleObj, ...children),
+  };
+}
