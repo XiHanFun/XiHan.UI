@@ -1,9 +1,26 @@
-import { c } from "@xihan-ui/themes/core";
+import { cB, cM } from "@xihan-ui/themes";
 
-export default c(".xh-icon", {
-  // 在这里添加 RTL 样式
-}, [
-  c('&.xh-rtl', {
-    // RTL 特定样式
-  })
-])
+export default cB(
+  "icon",
+  {
+    // 基础 RTL 样式
+    "&.xh-rtl": {
+      direction: "rtl",
+    },
+  },
+  [
+    // 动画 RTL 样式
+    cM("spin", {
+      "&.xh-rtl": {
+        animationDirection: "reverse",
+      },
+    }),
+
+    // 翻转 RTL 样式
+    cM("flip-horizontal", {
+      "&.xh-rtl": {
+        transform: "scaleX(-1)",
+      },
+    }),
+  ],
+);

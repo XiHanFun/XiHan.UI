@@ -1,4 +1,5 @@
 import type { App, Component, Directive, Plugin } from "vue";
+import { XH_CAMELCASE_PREFIX } from "@xihan-ui/constants";
 
 /**
  * 安装选项
@@ -18,7 +19,7 @@ export interface InstallOptions {
  * @param components - 组件列表
  * @param prefix - 组件前缀
  */
-export function registerComponents(app: App, components: Record<string, Component>, prefix = "Xh") {
+export function registerComponents(app: App, components: Record<string, Component>, prefix = XH_CAMELCASE_PREFIX) {
   for (const [name, component] of Object.entries(components)) {
     const componentName = prefix + name;
     app.component(componentName, component);
@@ -50,7 +51,14 @@ export function registerPlugins(app: App, plugins: Plugin[]) {
  * @param options - 安装选项
  */
 export function makeInstaller(options: InstallOptions = {}) {
-  const { prefix = "Xh", components = {}, directives = {}, plugins = [], zIndex = 2000, locale = "zh-CN" } = options;
+  const {
+    prefix = XH_CAMELCASE_PREFIX,
+    components = {},
+    directives = {},
+    plugins = [],
+    zIndex = 2000,
+    locale = "zh-CN",
+  } = options;
 
   const install: Plugin["install"] = (app: App) => {
     // 注册组件
@@ -87,7 +95,7 @@ export function makeInstaller(options: InstallOptions = {}) {
     };
 
     // 性能追踪（开发模式）
-    if (import.meta.env.DEV) {
+    if (process.env.NODE_ENV === "development") {
       app.config.performance = true;
     }
   };

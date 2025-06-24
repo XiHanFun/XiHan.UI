@@ -15,13 +15,6 @@ export default defineConfig(({ mode }) => {
     // 插件配置
     plugins: [vue(), vueJsx()],
 
-    // CSS 处理
-    css: {
-      preprocessorOptions: {
-        scss: {},
-      },
-    },
-
     // 路径解析
     resolve: {
       alias: [

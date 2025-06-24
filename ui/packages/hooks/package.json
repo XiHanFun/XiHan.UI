@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/hooks",
   "version": "0.9.8",
-  "description": "Hooks for XiHan UI",
+  "description": "Vue 3 Composition API Hooks Collection for XiHan UI",
   "license": "MIT",
   "homepage": "https://ui.xihanfun.com",
   "repository": {
@@ -15,7 +15,10 @@
   "keywords": [
     "xihan",
     "ui",
-    "hooks"
+    "hooks",
+    "vue3",
+    "composition-api",
+    "typescript"
   ],
   "author": {
     "name": "zhaifanhua",
@@ -24,7 +27,8 @@
   },
   "type": "module",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "sideEffects": false,
   "main": "./dist/index.cjs",
@@ -32,21 +36,36 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
-    }
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
-    "build": "unbuild"
+    "build": "unbuild",
+    "dev": "unbuild --stub",
+    "clean": "rimraf .turbo node_modules dist",
+    "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "vue": "3.5.14"
+    "vue": "^3.5.14",
+    "pinia": "^3.0.3"
+  },
+  "peerDependenciesMeta": {
+    "pinia": {
+      "optional": true
+    }
   },
   "dependencies": {
-    "@xihan-ui/utils": "workspace:*"
+    "@xihan-ui/utils": "workspace:*",
+    "pinia": "^3.0.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
