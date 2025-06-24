@@ -1,5 +1,5 @@
-import { c } from '@xihan-ui/utils'
+import { c } from "@xihan-ui/themes";
 
-export default c('.xh-divider', {
+export default c(".xh-divider", {
   // 在这里添加组件的样式
-})
+});

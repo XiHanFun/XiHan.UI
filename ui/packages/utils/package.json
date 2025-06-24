@@ -105,6 +105,9 @@
   "scripts": {
     "build": "unbuild"
   },
+  "dependencies": {
+    "@xihan-ui/constants": "workspace:*"
+  },
   "peerDependencies": {
     "vue": "3.5.14"
   }

@@ -1,8 +1,15 @@
-// 国际化工具
+/**
+ * XiHan UI 国际化模块
+ */
+
+// 导出类型
+export * from "./types";
+
+// 导出语言包和工具
+export * from "./locales";
+
+// 导出i18n适配器
 export * from "./i18n";
 
-// 中文语言包
-export * from "./lang/zh-CN";
-
-// 英文语言包
-export * from "./lang/en-US";
+// 导出组件文案
+export * from "./components";
