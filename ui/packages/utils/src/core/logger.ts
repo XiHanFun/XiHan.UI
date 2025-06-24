@@ -9,12 +9,25 @@
 export type LogLevel = "debug" | "info" | "warn" | "success" | "error";
 
 /**
+ * 日志条目接口
+ */
+export interface LogEntry {
+  level: LogLevel;
+  message: string;
+  data?: any[];
+  timestamp: Date;
+  namespace: string;
+}
+
+/**
  * 日志配置
  * @param level 日志级别
  * @param prefix 日志前缀
  * @param showTime 是否显示时间
  * @param showLevel 是否显示日志级别
  * @param disabled 是否禁用日志
+ * @param enableStorage 是否启用日志存储
+ * @param maxLogs 最大日志存储数量
  */
 export interface LoggerOptions {
   level?: LogLevel;
@@ -22,6 +35,8 @@ export interface LoggerOptions {
   showTime?: boolean;
   showLevel?: boolean;
   disabled?: boolean;
+  enableStorage?: boolean;
+  maxLogs?: number;
 }
 
 /**
@@ -69,7 +84,40 @@ export type LogLevelWeight = typeof levelWeight;
  * @returns 日志记录器
  */
 export function createLogger(options: LoggerOptions = {}) {
-  const { level = "info", prefix = "", showTime = true, showLevel = true, disabled = false } = options;
+  const {
+    level = "info",
+    prefix = "",
+    showTime = true,
+    showLevel = true,
+    disabled = false,
+    enableStorage = false,
+    maxLogs = 1000,
+  } = options;
+
+  // 日志存储
+  const logs: LogEntry[] = [];
+
+  /**
+   * 添加日志到存储
+   */
+  const addLogEntry = (logLevel: LogLevel, message: string, data?: any[]): void => {
+    if (!enableStorage) return;
+
+    const entry: LogEntry = {
+      level: logLevel,
+      message,
+      data,
+      timestamp: new Date(),
+      namespace: prefix,
+    };
+
+    logs.push(entry);
+
+    // 限制日志数量
+    if (logs.length > maxLogs) {
+      logs.splice(0, logs.length - maxLogs);
+    }
+  };
 
   /**
    * 检查是否应该记录该级别的日志
@@ -123,8 +171,9 @@ export function createLogger(options: LoggerOptions = {}) {
      */
     debug(...args: any[]) {
       if (!shouldLog("debug")) return;
-      const [prefix, styles] = buildPrefix("debug");
-      console.debug(`%c${prefix}`, styles.join(";"), ...args);
+      const [prefixText, styles] = buildPrefix("debug");
+      console.debug(`%c${prefixText}`, styles.join(";"), ...args);
+      addLogEntry("debug", args.length > 0 ? String(args[0]) : "", args.slice(1));
     },
 
     /**
@@ -133,8 +182,9 @@ export function createLogger(options: LoggerOptions = {}) {
      */
     info(...args: any[]) {
       if (!shouldLog("info")) return;
-      const [prefix, styles] = buildPrefix("info");
-      console.info(`%c${prefix}`, styles.join(";"), ...args);
+      const [prefixText, styles] = buildPrefix("info");
+      console.info(`%c${prefixText}`, styles.join(";"), ...args);
+      addLogEntry("info", args.length > 0 ? String(args[0]) : "", args.slice(1));
     },
 
     /**
@@ -143,8 +193,9 @@ export function createLogger(options: LoggerOptions = {}) {
      */
     warn(...args: any[]) {
       if (!shouldLog("warn")) return;
-      const [prefix, styles] = buildPrefix("warn");
-      console.warn(`%c${prefix}`, styles.join(";"), ...args);
+      const [prefixText, styles] = buildPrefix("warn");
+      console.warn(`%c${prefixText}`, styles.join(";"), ...args);
+      addLogEntry("warn", args.length > 0 ? String(args[0]) : "", args.slice(1));
     },
 
     /**
@@ -153,8 +204,9 @@ export function createLogger(options: LoggerOptions = {}) {
      */
     success(...args: any[]) {
       if (!shouldLog("success")) return;
-      const [prefix, styles] = buildPrefix("success");
-      console.log(`%c${prefix}`, styles.join(";"), ...args);
+      const [prefixText, styles] = buildPrefix("success");
+      console.log(`%c${prefixText}`, styles.join(";"), ...args);
+      addLogEntry("success", args.length > 0 ? String(args[0]) : "", args.slice(1));
     },
 
     /**
@@ -163,8 +215,9 @@ export function createLogger(options: LoggerOptions = {}) {
      */
     error(...args: any[]) {
       if (!shouldLog("error")) return;
-      const [prefix, styles] = buildPrefix("error");
-      console.error(`%c${prefix}`, styles.join(";"), ...args);
+      const [prefixText, styles] = buildPrefix("error");
+      console.error(`%c${prefixText}`, styles.join(";"), ...args);
+      addLogEntry("error", args.length > 0 ? String(args[0]) : "", args.slice(1));
     },
 
     /**
@@ -218,6 +271,108 @@ export function createLogger(options: LoggerOptions = {}) {
     clear() {
       if (disabled) return;
       console.clear();
+    },
+
+    /**
+     * 获取日志列表
+     * @param filterLevel 可选的日志级别过滤
+     * @returns 日志条目列表
+     */
+    getLogs(filterLevel?: LogLevel): LogEntry[] {
+      if (!enableStorage) {
+        console.warn("日志存储未启用，无法获取日志列表");
+        return [];
+      }
+
+      if (filterLevel) {
+        return logs.filter(log => log.level === filterLevel);
+      }
+
+      return [...logs];
+    },
+
+    /**
+     * 清除存储的日志
+     */
+    clearLogs() {
+      logs.length = 0;
+    },
+
+    /**
+     * 导出日志为 JSON 字符串
+     * @returns JSON 格式的日志字符串
+     */
+    exportLogs(): string {
+      if (!enableStorage) {
+        console.warn("日志存储未启用，无法导出日志");
+        return "[]";
+      }
+
+      return JSON.stringify(logs, null, 2);
+    },
+
+    /**
+     * 获取日志统计信息
+     * @returns 日志统计信息
+     */
+    getLogStats() {
+      if (!enableStorage) {
+        return {
+          total: 0,
+          debug: 0,
+          info: 0,
+          warn: 0,
+          success: 0,
+          error: 0,
+        };
+      }
+
+      const stats = {
+        total: logs.length,
+        debug: 0,
+        info: 0,
+        warn: 0,
+        success: 0,
+        error: 0,
+      };
+
+      logs.forEach(log => {
+        stats[log.level]++;
+      });
+
+      return stats;
+    },
+
+    /**
+     * 设置最大日志存储数量
+     * @param max 最大数量
+     */
+    setMaxLogs(max: number) {
+      if (max > 0 && logs.length > max) {
+        logs.splice(0, logs.length - max);
+      }
+    },
+
+    /**
+     * 检查是否启用了日志存储
+     */
+    get storageEnabled(): boolean {
+      return enableStorage;
+    },
+
+    /**
+     * 获取当前配置
+     */
+    get config(): LoggerOptions {
+      return {
+        level,
+        prefix,
+        showTime,
+        showLevel,
+        disabled,
+        enableStorage,
+        maxLogs,
+      };
     },
   };
 }

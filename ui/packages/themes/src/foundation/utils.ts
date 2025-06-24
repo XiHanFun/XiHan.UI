@@ -3,6 +3,7 @@
  * 统一整个样式系统的通用工具函数
  */
 
+import { XH_PREFIX } from "@xihan-ui/constants";
 import type { CSSValue, StyleObject, ClassName, CSSVarName } from "./types";
 
 // =============================================
@@ -24,7 +25,7 @@ export function generateHash(input: string, length: number = 8): string {
 /**
  * 为样式对象生成唯一哈希
  */
-export function generateStyleHash(styles: StyleObject, prefix: string = "xh"): string {
+export function generateStyleHash(styles: StyleObject, prefix: string = XH_PREFIX): string {
   const styleString = styleObjectToString(styles);
   const hash = generateHash(styleString);
   return `${prefix}-${hash}`;
@@ -62,7 +63,7 @@ export function toPascalCase(str: string): string {
  * 生成唯一 ID
  */
 export function generateId(prefix: string = "id"): string {
-  return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).substr(2, 9)}`;
+  return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 9)}`;
 }
 
 // =============================================
@@ -114,7 +115,7 @@ function needsUnit(property: string): boolean {
 /**
  * 创建 CSS 变量名
  */
-export function createCSSVar(name: string, prefix: string = "xh"): CSSVarName {
+export function createCSSVar(name: string, prefix: string = XH_PREFIX): CSSVarName {
   const varName = `--${prefix}-${toKebabCase(name)}`;
   return varName as CSSVarName;
 }
@@ -157,7 +158,19 @@ export function styleObjectToCSS(styles: StyleObject, selector?: string): string
 
     if (typeof value === "object") {
       // 处理嵌套规则
-      const nestedSelector = selector ? `${selector} ${property}` : property;
+      let nestedSelector: string;
+
+      if (property.startsWith("&")) {
+        // 处理 & 符号：替换为父选择器
+        nestedSelector = selector ? property.replace("&", selector) : property.substring(1);
+      } else if (property.startsWith("@")) {
+        // 处理 @media, @keyframes 等 @ 规则
+        nestedSelector = property;
+      } else {
+        // 普通嵌套选择器
+        nestedSelector = selector ? `${selector} ${property}` : property;
+      }
+
       nestedRules.push(styleObjectToCSS(value, nestedSelector));
     } else {
       // 处理普通属性

@@ -1,5 +1,5 @@
 import type { App, Component, DefineComponent } from "vue";
-import { XiHan } from "@xihan-ui/constants";
+import { XiHan, XH_CAMELCASE_PREFIX } from "@xihan-ui/constants";
 
 type ComponentType = any;
 
@@ -14,7 +14,7 @@ interface XiHanCreateOptions {
   componentPrefix?: string;
 }
 
-function create({ componentPrefix = "N", components = [] }: XiHanCreateOptions = {}): XiHanInstance {
+function create({ componentPrefix = XH_CAMELCASE_PREFIX, components = [] }: XiHanCreateOptions = {}): XiHanInstance {
   const installTargets: App[] = [];
   function registerComponent(app: App, name: string, component: ComponentType): void {
     const registered = app.component(componentPrefix + name);
