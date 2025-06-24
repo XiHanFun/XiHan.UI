@@ -1,5 +1,5 @@
-import { c } from '@xihan-ui/utils'
+import { c } from "@xihan-ui/themes";
 
-export default c('.xh-cascader', {
+export default c(".xh-cascader", {
   // 在这里添加组件的样式
-})
+});

@@ -32,15 +32,16 @@ const routes: RouteRecordRaw[] = [
           component: "ButtonGroup",
         },
       },
+      {
+        path: "icon",
+        name: "Icon",
+        component: () => import("../components/Icons.vue"),
+        meta: {
+          title: "图标 Icon",
+          component: "Icon",
+        },
+      },
     ],
-  },
-  {
-    path: "/icons",
-    name: "Icons",
-    component: () => import("../views/Icons.vue"),
-    meta: {
-      title: "图标库",
-    },
   },
   // 404 路由
   {
