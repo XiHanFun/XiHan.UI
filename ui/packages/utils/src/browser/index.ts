@@ -39,8 +39,9 @@ export {
   remove as removeStorage,
   clear as clearStorage,
   getAll as getAllStorage,
+  StorageType,
 } from "./storage";
-export type { StorageType, StorageOptions } from "./storage";
+export type { StorageOptions } from "./storage";
 
 // Share 导出
 export {
