@@ -173,7 +173,6 @@ export class CSSOptimizer {
   private minify(css: string): string {
     return css
       .replace(/\s+/g, " ")
-      .replace(/;\s*}/g, "}")
       .replace(/\s*{\s*/g, "{")
       .replace(/\s*}\s*/g, "}")
       .replace(/\s*,\s*/g, ",")
@@ -183,34 +182,89 @@ export class CSSOptimizer {
   }
 
   private sortProperties(css: string): string {
-    // 简单的属性排序实现
-    return css.replace(/\{([^}]+)\}/g, (match, properties) => {
-      const props = properties
+    // 改进的属性排序实现，避免破坏 @keyframes 等嵌套规则
+    return css.replace(/([^@][^{]*)\{([^{}]*(?:\{[^}]*\}[^{}]*)*)\}/g, (match, selector, content) => {
+      // 跳过 @ 规则（@keyframes, @media 等）
+      if (selector.trim().startsWith("@")) {
+        return match;
+      }
+
+      // 检查内容是否包含嵌套的 {} - 如果有，跳过排序
+      if (content.includes("{") || content.includes("}")) {
+        return match;
+      }
+
+      // 只对简单的属性列表进行排序
+      const props = content
         .split(";")
         .filter((prop: string) => prop.trim())
         .map((prop: string) => prop.trim())
         .sort();
-      return `{${props.join(";")}}`;
+
+      return `${selector}{${props.join(";")}}`;
     });
   }
 
   private removeDuplicateRules(css: string): string {
+    // 改进的重复规则移除，正确处理嵌套结构
     const rules = new Set<string>();
     const uniqueRules: string[] = [];
 
-    // 简单的重复规则移除
-    const ruleRegex = /([^{]+)\{([^}]+)\}/g;
-    let match;
+    // 使用更智能的CSS解析，支持嵌套规则
+    const parsedRules = this.parseNestedCSS(css);
 
-    while ((match = ruleRegex.exec(css)) !== null) {
-      const ruleString = match[0];
-      if (!rules.has(ruleString)) {
-        rules.add(ruleString);
-        uniqueRules.push(ruleString);
+    for (const rule of parsedRules) {
+      if (!rules.has(rule)) {
+        rules.add(rule);
+        uniqueRules.push(rule);
       }
     }
 
     return uniqueRules.join("");
+  }
+
+  /**
+   * 解析嵌套的CSS规则
+   */
+  private parseNestedCSS(css: string): string[] {
+    const rules: string[] = [];
+    let i = 0;
+    let current = "";
+    let braceLevel = 0;
+
+    while (i < css.length) {
+      const char = css[i];
+      current += char;
+
+      if (char === "{") {
+        braceLevel++;
+      } else if (char === "}") {
+        braceLevel--;
+
+        // 当括号平衡时，我们找到了一个完整的规则
+        if (braceLevel === 0 && current.trim()) {
+          // 在添加规则时进行基本的空白符规范化
+          const normalizedRule = current
+            .replace(/\s+/g, " ")
+            .replace(/\s*{\s*/g, "{")
+            .replace(/\s*}\s*/g, "}")
+            .replace(/\s*;\s*/g, ";")
+            .replace(/\s*:\s*/g, ":")
+            .trim();
+          rules.push(normalizedRule);
+          current = "";
+        }
+      }
+
+      i++;
+    }
+
+    // 处理可能剩余的内容
+    if (current.trim()) {
+      rules.push(current.trim());
+    }
+
+    return rules;
   }
 }
 
