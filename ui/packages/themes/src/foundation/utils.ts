@@ -157,21 +157,18 @@ export function styleObjectToCSS(styles: StyleObject, selector?: string): string
     if (value === undefined) continue;
 
     if (typeof value === "object") {
-      // 处理嵌套规则
-      let nestedSelector: string;
-
       if (property.startsWith("&")) {
         // 处理 & 符号：替换为父选择器
-        nestedSelector = selector ? property.replace("&", selector) : property.substring(1);
+        const nestedSelector = selector ? property.replace("&", selector) : property.substring(1);
+        nestedRules.push(styleObjectToCSS(value, nestedSelector));
       } else if (property.startsWith("@")) {
-        // 处理 @media, @keyframes 等 @ 规则
-        nestedSelector = property;
+        // 处理 @ 规则
+        nestedRules.push(handleAtRule(property, value, selector));
       } else {
-        // 普通嵌套选择器
-        nestedSelector = selector ? `${selector} ${property}` : property;
+        // 普通同级选择器
+        const nestedSelector = selector ? `${selector}${property}` : property;
+        nestedRules.push(styleObjectToCSS(value, nestedSelector));
       }
-
-      nestedRules.push(styleObjectToCSS(value, nestedSelector));
     } else {
       // 处理普通属性
       const cssProperty = toKebabCase(property);
@@ -191,6 +188,98 @@ export function styleObjectToCSS(styles: StyleObject, selector?: string): string
   result.push(...nestedRules);
 
   return result.join("\n");
+}
+
+/**
+ * 类型保护：检查值是否为 CSS 值
+ */
+function isCSSValue(value: any): value is CSSValue {
+  return (typeof value === "string" || typeof value === "number") && value !== null && value !== undefined;
+}
+
+/**
+ * 处理 @ 规则（@media, @keyframes, @supports 等）
+ */
+function handleAtRule(atRule: string, value: StyleObject, parentSelector?: string): string {
+  // 检测 @ 规则类型
+  const atRuleType = atRule.split(/[\s(]/)[0].toLowerCase();
+
+  switch (atRuleType) {
+    case "@keyframes": {
+      // @keyframes 规则：@keyframes name { 0% { ... } 100% { ... } }
+      const keyframesContent: string[] = [];
+
+      for (const [keyframe, keyframeStyles] of Object.entries(value)) {
+        if (typeof keyframeStyles === "object") {
+          const rules: string[] = [];
+          for (const [prop, val] of Object.entries(keyframeStyles)) {
+            if (isCSSValue(val)) {
+              const cssProperty = toKebabCase(prop);
+              const cssValue = normalizeCSSValue(prop, val);
+              rules.push(`    ${cssProperty}: ${cssValue};`);
+            }
+          }
+          if (rules.length > 0) {
+            keyframesContent.push(`  ${keyframe} {\n${rules.join("\n")}\n  }`);
+          }
+        }
+      }
+
+      return `${atRule} {\n${keyframesContent.join("\n")}\n}`;
+    }
+
+    case "@media":
+    case "@supports":
+    case "@container": {
+      // 容器规则：@media query { selector { ... } }
+      const innerContent: string[] = [];
+
+      for (const [prop, val] of Object.entries(value)) {
+        if (typeof val === "object") {
+          // 嵌套选择器
+          let nestedSelector: string;
+          if (prop.startsWith("&")) {
+            nestedSelector = parentSelector ? prop.replace("&", parentSelector) : prop.substring(1);
+          } else {
+            nestedSelector = parentSelector ? `${parentSelector}${prop}` : prop;
+          }
+          innerContent.push(styleObjectToCSS(val, nestedSelector));
+        } else if (isCSSValue(val)) {
+          // 直接样式属性（用于当前选择器）
+          const cssProperty = toKebabCase(prop);
+          const cssValue = normalizeCSSValue(prop, val);
+          if (parentSelector) {
+            innerContent.push(`${parentSelector} {\n    ${cssProperty}: ${cssValue};\n  }`);
+          }
+        }
+      }
+
+      if (innerContent.length > 0) {
+        return `${atRule} {\n  ${innerContent.join("\n  ")}\n}`;
+      }
+      return "";
+    }
+
+    default: {
+      // 其他 @ 规则的通用处理
+      const innerRules: string[] = [];
+
+      for (const [prop, val] of Object.entries(value)) {
+        if (typeof val === "object") {
+          innerRules.push(styleObjectToCSS(val, prop));
+        } else if (isCSSValue(val)) {
+          const cssProperty = toKebabCase(prop);
+          const cssValue = normalizeCSSValue(prop, val);
+          innerRules.push(`  ${cssProperty}: ${cssValue};`);
+        }
+      }
+
+      if (innerRules.length > 0) {
+        return `${atRule} {\n${innerRules.join("\n")}\n}`;
+      }
+      return "";
+    }
+  }
 }
 
 /**
