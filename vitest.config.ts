@@ -36,8 +36,8 @@ export default defineConfig({
     
     // 包含的测试文件
     include: [
-      'ui/packages/**/tests/**/*.spec.{ts,tsx}',
-      'ui/packages/**/__tests__/**/*.{test,spec}.{ts,tsx}'
+      'packages/**/tests/**/*.spec.{ts,tsx}',
+      'packages/**/__tests__/**/*.{test,spec}.{ts,tsx}'
     ],
     
     // 排除的文件
