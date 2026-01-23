@@ -40,7 +40,12 @@
     "dev": "turbo dev",
     "preview": "turbo preview",
     "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
     "format": "prettier --write \"*.{js,mjs,jsx,ts,mts,tsx,vue,css,scss,less,json,md}\"",
     "lint:fix": "eslint --fix",
     "clean:lock": "node scripts/clean-lock.mjs",
@@ -51,7 +56,8 @@
     "update:pkg": "pnpm dlx taze -w -r",
     "reinstall": "pnpm run clean:node && pnpm run bootstrap",
     "rebuild": "pnpm run clean:build && pnpm run build",
-    "publish-packages": "turbo build && pnpm -r publish --no-git-checks"
+    "publish-packages": "turbo build && pnpm -r publish --no-git-checks",
+    "ci": "pnpm lint && pnpm typecheck && pnpm test:run && pnpm build"
   },
   "peerDependencies": {
     "typescript": "5.8.3",
