@@ -653,20 +653,20 @@ export function cE(
 }
 
 /**
- * 创建修饰符样式 使用 &--modifier 语法
- * @param modifier 修饰符名
+ * 创建修饰符样式 使用 &--modifiedBy 语法
+ * @param modifiedBy 修饰符名
  * @param styles 样式对象
  * @param children 子样式数组
  * @param extraClassNames 额外的类名
  */
 export function cM(
-  modifier: string,
+  modifiedBy: string,
   styles: StyleObject | string,
   children: StyleObject[] = [],
   extraClassNames?: (string | undefined | null | false)[],
 ): StyleObject {
   const styleObj = typeof styles === "string" ? { "&": styles } : styles;
-  const className = createBEMClassName("", "", modifier);
+  const className = createBEMClassName("", "", modifiedBy);
   const finalClassName = extraClassNames ? combineClassNames(className, ...extraClassNames) : className;
 
   return {
@@ -675,17 +675,17 @@ export function cM(
 }
 
 /**
- * 创建非修饰符样式 使用 &:not(&--modifier) 语法
- * @param modifier 修饰符名
+ * 创建非修饰符样式 使用 &:not(&--modifiedBy) 语法
+ * @param modifiedBy 修饰符名
  * @param children 子样式数组
  * @param extraClassNames 额外的类名
  */
 export function cNotM(
-  modifier: string,
+  modifiedBy: string,
   children: StyleObject[] = [],
   extraClassNames?: (string | undefined | null | false)[],
 ): StyleObject {
-  const className = createBEMClassName("", "", modifier);
+  const className = createBEMClassName("", "", modifiedBy);
   const finalClassName = extraClassNames ? combineClassNames(className, ...extraClassNames) : className;
 
   return {

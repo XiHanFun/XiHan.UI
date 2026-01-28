@@ -331,7 +331,7 @@ export function combineClassNames(...classNames: (string | undefined | null | fa
 export function createBEMClassName(
   block: string,
   element?: string,
-  modifier?: string,
+  modifiedBy?: string,
   options: { elementSeparator?: string; modifierSeparator?: string } = {},
 ): ClassName {
   const { elementSeparator = "__", modifierSeparator = "--" } = options;
@@ -342,8 +342,8 @@ export function createBEMClassName(
     className += `${elementSeparator}${element}`;
   }
 
-  if (modifier) {
-    className += `${modifierSeparator}${modifier}`;
+  if (modifiedBy) {
+    className += `${modifierSeparator}${modifiedBy}`;
   }
 
   return className as ClassName;
