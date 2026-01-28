@@ -28,7 +28,7 @@
     "internal/*",
     "playground"
   ],
-  "packageManager": "pnpm@10.12.1",
+  "packageManager": "pnpm@10.26.2",
   "preinstall": "npx only-allow pnpm",
   "engines": {
     "node": "^24.0.2",
@@ -87,6 +87,6 @@
     "tsx": "4.19.4",
     "turbo": "2.5.3",
     "unbuild": "3.5.0",
-    "vitest": "^3.2.3"
+    "vitest": "^3.2.4"
   }
 }
