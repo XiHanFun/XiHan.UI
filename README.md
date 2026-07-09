@@ -1,10 +1,11 @@
 ![logo](./assets/logo.png)
 
+[![GitHub Star](https://img.shields.io/github/stars/XiHanFun/XiHan.UI?style=flat&logo=github)](https://github.com/XiHanFun/XiHan.UI) | [![Gitee Star](https://gitee.com/XiHanFun/XiHan.UI/badge/star.svg)](https://gitee.com/XiHanFun/XiHan.UI) | [![AtomGit Star](https://atomgit.com/XiHanFun/XiHan.UI/star/badge.svg)](https://atomgit.com/XiHanFun/XiHan.UI)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/XiHanFun/XiHan.UI)
 
-[曦寒懿官方交流群](https://qm.qq.com/q/qYp1Urv3z2) 462371834
+[曦寒懿官方交流群](https://qm.qq.com/q/qYp1Urv3z2) 462371834 | [在线文档](https://docs.xihanfun.com)
 
-# XiHan.UI
+# XiHan.UI（实验性）
 
 曦寒界面存储库。快速、轻量、高效、用心的组件库，基于 Vue 构建。
 
