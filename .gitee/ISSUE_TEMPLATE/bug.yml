@@ -1,0 +1,132 @@
+name: 🐛 反馈 Bug
+description: 报告一个组件缺陷或异常行为，帮助我们修复问题
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈！请尽量提供**最小可复现示例**（在线 Playground / 代码片段），这能帮助我们更快地定位并修复问题。
+        > ⭐ 本仓库为镜像，GitHub 主仓库优先处理，建议优先前往 https://github.com/XiHanFun/XiHan.UI/issues 提交。
+        > 🔒 安全漏洞请勿公开提交，请前往 GitHub 主仓库私密报告：https://github.com/XiHanFun/XiHan.UI/security/advisories/new
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: 前置确认
+      description: 提交前请逐项确认
+      options:
+        - label: 我已搜索过 [现有 Issue](https://gitee.com/XiHanFun/XiHan.UI/issues)，确认这不是重复问题
+          required: true
+        - label: 我已升级到最新版本，问题依旧存在
+          required: true
+        - label: 我确认这是一个 Bug，而非使用方式问题
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 问题描述
+      description: 清晰、简洁地描述这个 Bug 是什么
+      placeholder: 例如：Button 组件在 disabled 状态下仍能触发 click 事件…
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤 / 最小可复现示例
+      description: 请提供可稳定复现的步骤，并尽量附上在线复现链接或最小代码片段
+      placeholder: |
+        1. 使用 <XButton disabled> 组件
+        2. 点击按钮
+        3. click 事件被触发…
+
+        在线复现（可选）：
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望行为
+      description: 你期望正确的结果应该是什么
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际行为
+      description: 实际发生了什么（如有报错，请附控制台完整信息）
+    validations:
+      required: false
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: 影响范围
+      description: 该问题主要涉及的包 / 领域
+      options:
+        - 组件（components）
+        - 主题 / 样式（themes）
+        - Hooks（hooks）
+        - 指令（directives）
+        - 图标（icons）
+        - 国际化（locales）
+        - 工具 / 常量（utils / constants）
+        - 插件（plugins）
+        - 脚手架（cli）
+        - 构建 / 工程（internal / turbo / vite）
+        - 文档
+        - 其他 / 不确定
+    validations:
+      required: true
+
+  - type: input
+    id: component
+    attributes:
+      label: 相关组件 / 包名
+      description: 具体的组件或包名，便于精确定位
+      placeholder: "@xihan-ui/components · XButton"
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      description: 出现问题的 npm 包版本或 commit
+      placeholder: 0.0.x
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 运行环境
+      description: 请填写相关的环境信息（未涉及的可留空）
+      value: |
+        - 操作系统：
+        - Node.js / pnpm：
+        - 浏览器及版本：
+        - Vue 版本：
+        - 构建工具（Vite / 其他）：
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志 / 截图
+      description: 粘贴相关的浏览器控制台报错或截图。日志请用代码块包裹。
+    validations:
+      required: false
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: 补充说明
+      description: 任何有助于我们理解问题的额外信息（临时规避方法、影响面等）
+    validations:
+      required: false
