@@ -20,9 +20,7 @@
   ],
   "type": "module",
   "author": {
-    "name": "zhaifanhua",
-    "email": "me@zhaifanhua.com",
-    "url": "https://www.zhaifanhua.com"
+    "name": "XiHanFun"
   },
   "scripts": {
     "dev": "vite dev",
