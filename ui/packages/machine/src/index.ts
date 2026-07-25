@@ -7,8 +7,10 @@ export { MachineError } from './errors'
 export type { MachineErrorCode } from './errors'
 export { COMBINATOR, createGuards, isCombinator } from './guards'
 export type { GuardCombinators } from './guards'
+export { createService } from './service'
 export { setup } from './setup'
 export { appendStatePath, ensureStateIndex } from './state'
+export { findTransition, getExitEnterStates, getStateChain, resolveStateValue, resolveToLeaf } from './transitions'
 
 // 全部类型（import type，零运行时）
 export type {
