@@ -69,6 +69,8 @@ export function createService<T extends MachineSchema>(
   let previousState: T['state'] | undefined
   let currentEvent: T['event'] = { type: '__init__' } as T['event']
   let previousEvent: T['event'] | null = null
+  // 状态用 runtime cell 承载，宿主读 state.get() 即建立依赖 → 状态转移触发重渲
+  const stateCell = runtime.cell<string>(() => ({ defaultValue: initialStateValue }))
 
   // —— context cells ——
   const contextBindables = (machine.context?.({ prop, scope, cell: runtime.cell }) ?? {}) as Record<string, Bindable<unknown>>
@@ -94,15 +96,16 @@ export function createService<T extends MachineSchema>(
     return fn?.(paramsFor(currentEvent)) as never
   }
 
-  // —— state 门面 ——
+  // —— state 门面（读经 stateCell，建立宿主依赖）——
   function matches(...values: Array<T['state']>): boolean {
-    return values.some(v => currentState === v || currentState.startsWith(`${v}.`))
+    const s = stateCell.get()
+    return values.some(v => s === v || s.startsWith(`${v}.`))
   }
   function hasTag(tag: Slice<T, 'tag'> & string): boolean {
-    return getStateChain(machine, currentState).some(item => item.node.tags?.includes(tag as never))
+    return getStateChain(machine, stateCell.get()).some(item => item.node.tags?.includes(tag as never))
   }
   const stateFacade: StateFacade<T> = {
-    get: () => currentState as T['state'],
+    get: () => stateCell.get() as T['state'],
     previous: () => previousState,
     initial: initialStateValue,
     matches,
@@ -216,6 +219,7 @@ export function createService<T extends MachineSchema>(
       for (const item of entering) runActions(item.node.entry, currentEvent)
       previousState = from === INIT_STATE ? undefined : (from as T['state'])
       currentState = to
+      stateCell.set(to)
     }
     catch (err) {
       stop(new MachineError('MACHINE_CRASHED', `choreograph ${from}→${to} threw: ${(err as Error).message}`, machine.name))
