@@ -255,5 +255,7 @@ export interface ServiceOptions<T extends MachineSchema> {
   /** 用户 props 的 getter（必须是 getter，否则失去响应性）。 */
   props: () => Partial<Slice<T, 'props'>> & { id?: string, ids?: Dict, getRootNode?: () => Node }
   runtime: ReactiveRuntime
+  /** 宿主 DOM 环境；不传则内部用计数器 id 生成器建一个（无 DOM 场景/测试）。 */
+  scope?: Scope
   inspect?: (event: InspectionEvent<T>) => void
 }

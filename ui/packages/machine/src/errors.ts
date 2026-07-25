@@ -16,13 +16,24 @@ export type MachineErrorCode
     | 'TRACK_UNSTABLE_DEP'
     | 'IMPURE_COMPUTED'
     | 'WATCH_SIDE_EFFECT'
-    | 'EVENT_LOOP_LIMIT'
+    | 'EVENT_LOOP'
+    | 'SEND_BEFORE_MOUNT'
+    | 'SEND_AFTER_STOP'
+    | 'MISSING_SCOPE_ID'
+    | 'MACHINE_CRASHED'
+    | 'MISSING_ACTION'
+    | 'MISSING_GUARD'
+    | 'MISSING_EFFECT'
+    | 'UNSTABLE_PROPS'
+    | 'BAD_TARGET'
 
 export class MachineError extends Error {
   readonly code: MachineErrorCode
-  constructor(code: MachineErrorCode, message: string) {
-    super(`[xh:machine:${code}] ${message}`)
+  readonly machineName?: string
+  constructor(code: MachineErrorCode, message: string, machineName?: string) {
+    super(`[xh:machine:${code}]${machineName ? ` (${machineName})` : ''} ${message}`)
     this.name = 'MachineError'
     this.code = code
+    this.machineName = machineName
   }
 }
