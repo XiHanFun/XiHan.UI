@@ -15,7 +15,8 @@ async function load(name) {
 function flatten(obj, path = []) {
   const out = []
   if (obj && typeof obj === 'object' && '$value' in obj) {
-    out.push({ name: `--xh-${path.join('-')}`, value: obj.$value, type: obj.$type })
+    // 段内的小数点（如刻度 0.5）在 CSS 自定义属性名里非法，替换为下划线
+    out.push({ name: `--xh-${path.join('-').replace(/\./g, '_')}`, value: obj.$value, type: obj.$type })
     return out
   }
   for (const [key, child] of Object.entries(obj ?? {})) {

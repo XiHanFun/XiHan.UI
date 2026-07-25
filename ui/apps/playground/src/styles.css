@@ -1,0 +1,26 @@
+/* 页面基础样式，消费设计令牌。 */
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--xh-bg-canvas);
+  color: var(--xh-fg-default);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: var(--xh-text-body-size);
+}
+
+main {
+  max-inline-size: 640px;
+  margin-block: 48px;
+  margin-inline: auto;
+  padding-inline: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}

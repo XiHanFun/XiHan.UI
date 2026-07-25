@@ -10,6 +10,9 @@
     "typecheck": "vue-tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
+    "@xihan-ui/styled": "workspace:*",
+    "@xihan-ui/system": "workspace:*",
+    "@xihan-ui/vue": "workspace:*",
     "vue": "catalog:"
   },
   "devDependencies": {

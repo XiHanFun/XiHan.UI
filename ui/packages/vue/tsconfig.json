@@ -1,0 +1,8 @@
+{
+  "extends": "@xihan-ui/tsconfig/lib.json",
+  "compilerOptions": {
+    "types": ["vue"],
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts"]
+}
