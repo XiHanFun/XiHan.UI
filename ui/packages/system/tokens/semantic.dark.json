@@ -1,0 +1,30 @@
+{
+  "bg": {
+    "canvas": { "$type": "color", "$value": "{color.neutral.950}" },
+    "surface": { "$type": "color", "$value": "{color.neutral.900}" },
+    "surface-raised": { "$type": "color", "$value": "{color.neutral.800}" },
+    "subtle": { "$type": "color", "$value": "{color.neutral.800}" },
+    "subtle-hover": { "$type": "color", "$value": "{color.neutral.700}" },
+    "subtle-active": { "$type": "color", "$value": "{color.neutral.600}" },
+    "muted": { "$type": "color", "$value": "{color.neutral.800}" },
+    "brand": { "$type": "color", "$value": "{color.brand.500}" },
+    "brand-hover": { "$type": "color", "$value": "{color.brand.400}" },
+    "brand-active": { "$type": "color", "$value": "{color.brand.300}" },
+    "overlay": { "$type": "color", "$value": "oklch(0 0 0 / 0.6)" }
+  },
+  "fg": {
+    "default": { "$type": "color", "$value": "{color.neutral.50}" },
+    "muted": { "$type": "color", "$value": "{color.neutral.400}" },
+    "subtle": { "$type": "color", "$value": "{color.neutral.500}" },
+    "disabled": { "$type": "color", "$value": "{color.neutral.600}" },
+    "on-brand": { "$type": "color", "$value": "{color.neutral.950}" }
+  },
+  "border": {
+    "default": { "$type": "color", "$value": "{color.neutral.700}" },
+    "subtle": { "$type": "color", "$value": "{color.neutral.800}" },
+    "strong": { "$type": "color", "$value": "{color.neutral.600}" }
+  },
+  "ring": {
+    "focus": { "$type": "color", "$value": "{color.brand.400}" }
+  }
+}
