@@ -1,0 +1,13 @@
+{
+  "name": "@xihan-ui/eslint-config",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.js",
+    "./layers.json": "./src/layers.json"
+  },
+  "dependencies": {
+    "@antfu/eslint-config": "catalog:"
+  }
+}

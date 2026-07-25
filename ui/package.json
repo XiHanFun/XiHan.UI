@@ -1,90 +1,52 @@
 {
   "name": "xihan-ui-monorepo",
-  "private": true,
-  "version": "0.9.8",
-  "description": "Fast, lightweight, efficient, and dedicated component library.Built on Vue.",
-  "license": "MIT",
-  "homepage": "https://ui.xihanfun.com",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/XiHanFun/XiHan.UI"
-  },
-  "bugs": {
-    "url": "https://github.com/XiHanFun/XiHan.UI/issues"
-  },
-  "keywords": [
-    "xihan",
-    "ui",
-    "monorepo"
-  ],
-  "author": {
-    "name": "XiHanFun"
-  },
   "type": "module",
-  "workspaces": [
-    "packages/*",
-    "internal/*",
-    "playground"
-  ],
-  "packageManager": "pnpm@10.26.2",
-  "preinstall": "npx only-allow pnpm",
+  "private": true,
+  "packageManager": "pnpm@11.7.0",
   "engines": {
-    "node": "^24.0.2",
-    "pnpm": "^10.11.0"
+    "node": ">=24.0.0",
+    "pnpm": ">=11.0.0"
   },
   "scripts": {
-    "bootstrap": "pnpm -r install",
-    "build": "turbo build",
-    "dev": "turbo dev",
-    "preview": "turbo preview",
-    "test": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "format": "prettier --write \"*.{js,mjs,jsx,ts,mts,tsx,vue,css,scss,less,json,md}\"",
-    "lint:fix": "eslint --fix",
-    "clean:lock": "node scripts/clean-lock.mjs",
-    "clean:modules": "node scripts/clean-modules.mjs",
-    "clean:node": "pnpm run clean:lock && pnpm run clean:modules",
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "lint": "oxlint . && eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{json,css,scss,md,yaml,yml}\"",
+    "size": "turbo run size",
+    "boundaries": "depcruise packages tooling apps",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "turbo run build && changeset publish",
     "clean:build": "node scripts/clean-dist.mjs",
-    "gen:version": "node scripts/gen-version.mjs",
-    "update:pkg": "pnpm dlx taze -w -r",
-    "reinstall": "pnpm run clean:node && pnpm run bootstrap",
-    "rebuild": "pnpm run clean:build && pnpm run build",
-    "publish-packages": "turbo build && pnpm -r publish --no-git-checks"
-  },
-  "peerDependencies": {
-    "typescript": "5.8.3",
-    "vue": "3.5.14"
-  },
-  "dependencies": {
-    "@xihan-ui/cli": "workspace:*",
-    "@xihan-ui/components": "workspace:*",
-    "@xihan-ui/constants": "workspace:*",
-    "@xihan-ui/directives": "workspace:*",
-    "@xihan-ui/hooks": "workspace:*",
-    "@xihan-ui/icons": "workspace:*",
-    "@xihan-ui/locales": "workspace:*",
-    "@xihan-ui/plugins": "workspace:*",
-    "@xihan-ui/themes": "workspace:*",
-    "@xihan-ui/utils": "workspace:*",
-    "xihan-ui": "workspace:*"
+    "clean:modules": "node scripts/clean-modules.mjs",
+    "clean:lock": "node scripts/clean-lock.mjs"
   },
   "devDependencies": {
-    "@types/node": "22.15.21",
-    "@vitejs/plugin-vue": "5.2.4",
-    "@vitejs/plugin-vue-jsx": "4.2.0",
-    "@vue/test-utils": "^2.4.6",
-    "@xihan-ui/build": "workspace:*",
-    "@xihan-ui/dev": "workspace:*",
-    "cross-env": "7.0.3",
-    "eslint": "9.27.0",
-    "eslint-config-prettier": "10.1.5",
-    "eslint-plugin-prettier": "5.4.0",
-    "eslint-plugin-vue": "10.1.0",
-    "prettier": "3.5.3",
-    "rollup": "4.41.0",
-    "tsx": "4.19.4",
-    "turbo": "2.5.3",
-    "unbuild": "3.5.0",
-    "vitest": "^3.2.4"
+    "@arethetypeswrong/cli": "catalog:",
+    "@changesets/cli": "catalog:",
+    "@commitlint/cli": "catalog:",
+    "@commitlint/config-conventional": "catalog:",
+    "@types/node": "catalog:",
+    "@xihan-ui/eslint-config": "workspace:*",
+    "@xihan-ui/stylelint-config": "workspace:*",
+    "@xihan-ui/tsconfig": "workspace:*",
+    "dependency-cruiser": "catalog:",
+    "eslint": "catalog:",
+    "oxlint": "catalog:",
+    "prettier": "catalog:",
+    "publint": "catalog:",
+    "simple-git-hooks": "catalog:",
+    "size-limit": "catalog:",
+    "stylelint": "catalog:",
+    "tsdown": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
+    "vue-tsc": "catalog:"
+  },
+  "simple-git-hooks": {
+    "commit-msg": "npx --no -- commitlint --edit $1"
   }
 }

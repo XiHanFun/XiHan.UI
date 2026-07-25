@@ -1,0 +1,6 @@
+{
+  "name": "@xihan-ui/tsconfig",
+  "version": "0.0.0",
+  "private": true,
+  "files": ["app.json", "base.json", "lib.json", "node.json"]
+}

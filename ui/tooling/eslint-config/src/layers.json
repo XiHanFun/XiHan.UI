@@ -1,0 +1,17 @@
+{
+  "$comment": "分层依赖拓扑单一事实源。被 .dependency-cruiser.cjs 消费；见 §2 依赖矩阵。层级越低越基础，只能向下依赖。",
+  "layers": {
+    "core": { "level": 1, "canDependOn": [] },
+    "machine": { "level": 1, "canDependOn": ["core"] },
+    "system": { "level": 1, "canDependOn": [] },
+    "behavior": { "level": 2, "canDependOn": ["core", "machine"] },
+    "headless": { "level": 3, "canDependOn": ["core", "machine", "behavior", "system"] },
+    "styled": { "level": 3, "canDependOn": [] },
+    "vue": { "level": 4, "canDependOn": ["core", "machine", "behavior", "headless", "system"] },
+    "ai": { "level": 2, "canDependOn": ["core"] },
+    "markdown": { "level": 2, "canDependOn": ["core"] },
+    "i18n": { "level": 1, "canDependOn": [] },
+    "icons": { "level": 1, "canDependOn": [] },
+    "pro": { "level": 5, "canDependOn": ["core", "machine", "behavior", "headless", "styled", "system", "vue", "ai", "markdown", "i18n", "icons"] }
+  }
+}
