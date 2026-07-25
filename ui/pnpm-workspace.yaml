@@ -51,5 +51,3 @@ catalog:
   turbo: ^2.10.0
   typescript: ^6.0.3
   vite: ^8.1.5
-  # —— 文档站 ——
-  vitepress: ^1.6.4
