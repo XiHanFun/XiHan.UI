@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
 
 // 直连 packages/*/src：playground 对库源码热更新，无需先 build。
-// M1 起各包落地后在此登记别名（当前占位）。
+// 各包在此登记别名。
 function pkg(name: string) {
   return fileURLToPath(new URL(`../../packages/${name}/src`, import.meta.url))
 }

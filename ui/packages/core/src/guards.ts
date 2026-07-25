@@ -1,4 +1,4 @@
-// 类型守卫与环境探测（§19.3.3 guards.ts；§4.3.1 Env 的收窄版）。
+// 类型守卫与环境探测。
 
 export function isSSR(): boolean {
   return typeof document === 'undefined' || typeof window === 'undefined'

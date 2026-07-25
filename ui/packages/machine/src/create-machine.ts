@@ -8,7 +8,7 @@ import type {
   Transition,
   TransitionMap,
 } from './types'
-// createMachine：恒等函数 + 状态索引构建 + 静态校验 + __DEV__ 数据自检（§3.4.1 / §3.4.6）。
+// createMachine：恒等函数 + 状态索引构建 + 静态校验 + __DEV__ 数据自检。
 import { isDev } from '@xihan-ui/core'
 import { MachineError } from './errors'
 import { isCombinator } from './guards'
@@ -27,14 +27,14 @@ function collectEffects(v: EffectsOrFn<any> | undefined, into: Set<string>): voi
   }
 }
 
-/** 遍历一个 transition：校验 guard（D2）并收集 action 名。 */
+/** 遍历一个 transition：校验 guard 并收集 action 名。 */
 function walkTransition(t: Transition<any>, actions: Set<string>, guards: Set<string>): void {
   collectActions(t.actions, actions)
   const g: GuardExpr<any> | undefined = t.guard
   if (typeof g === 'string')
     guards.add(g)
   else if (typeof g === 'function' && !isCombinator(g))
-    // D2：states 里唯一允许的内联函数是组合子产物；裸箭头函数破坏"可序列化"。
+    // states 里唯一允许的内联函数是组合子产物；裸箭头函数破坏"可序列化"。
     throw new MachineError('INLINE_IMPL', 'inline guard function in states must be a combinator (and/or/not); use a named guard')
 }
 
@@ -61,7 +61,7 @@ function walkNode(node: StateNode<any>, actions: Set<string>, guards: Set<string
   }
 }
 
-/** __DEV__ 数据自检（§3.4.6）。D2 内联守卫、D3 未知 action/guard/effect、D5 冗余 tag。 */
+/** __DEV__ 数据自检：内联守卫、未知 action/guard/effect、冗余 tag。 */
 function auditMachine<T extends MachineSchema>(config: MachineConfig<T>): void {
   const actions = new Set<string>()
   const guards = new Set<string>()
@@ -76,7 +76,7 @@ function auditMachine<T extends MachineSchema>(config: MachineConfig<T>): void {
   for (const node of roots) walkNode(node, actions, guards, effects, tags)
 
   const impl = config.implementations ?? {}
-  // D3：引用名必须在 implementations 里存在。
+  // 引用名必须在 implementations 里存在。
   for (const name of actions) {
     if (!impl.actions || !(name in impl.actions))
       throw new MachineError('UNKNOWN_ACTION', `action "${name}" is referenced but not implemented in "${config.name}"`)
@@ -89,7 +89,7 @@ function auditMachine<T extends MachineSchema>(config: MachineConfig<T>): void {
     if (!impl.effects || !(name in impl.effects))
       throw new MachineError('UNKNOWN_EFFECT', `effect "${name}" is referenced but not implemented in "${config.name}"`)
   }
-  // D5：与状态名一一对应的 tag 应改用 matches()（仅当 tag 只覆盖一个状态时告警级别放宽为不检，避免误报）。
+  // 与状态名一一对应的 tag 应改用 matches()（仅当 tag 只覆盖一个状态时告警级别放宽为不检，避免误报）。
 }
 
 export function createMachine<T extends MachineSchema>(config: MachineConfig<T>): MachineConfig<T> {

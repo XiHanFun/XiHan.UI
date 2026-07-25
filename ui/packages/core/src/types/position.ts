@@ -1,4 +1,4 @@
-// PositionEnginePort：浮层定位端口（§4.3.11）。M1 只落类型，实现在 @xihan-ui/position-floating-ui（M3）。
+// PositionEnginePort：浮层定位端口（只落类型契约，实现在 @xihan-ui/position-floating-ui）。
 // core 零运行时依赖，因此这里只有契约、没有 @floating-ui/dom。
 
 export type Side = 'top' | 'right' | 'bottom' | 'left'

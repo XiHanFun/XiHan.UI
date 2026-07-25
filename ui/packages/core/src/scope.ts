@@ -1,4 +1,4 @@
-// Scope：宿主 DOM 环境抽象（§4.2.2）。
+// Scope：宿主 DOM 环境抽象。
 // core 里禁止直接写 document/window/getComputedStyle；一切经 Scope。
 import type { IdGenerator } from './id-generator'
 import { isDocument } from './guards'
@@ -11,7 +11,7 @@ export interface Scope {
   getWin: () => Window & typeof globalThis
   /** 在正确的 root 内按 id 查找，而非全局 document.getElementById。 */
   getById: <T extends Element = HTMLElement>(id: string) => T | null
-  /** 由 scope.id 派生 part id（§4.2.4 转发）。 */
+  /** 由 scope.id 派生 part id。 */
   partId: (component: string, part: string) => string
   /** 一次性派生一组 part id 只读表。 */
   ids: <K extends string>(component: string, ...parts: K[]) => Readonly<Record<K, string>>
@@ -32,7 +32,7 @@ export function getActiveElementDeep(root: Document | ShadowRoot): HTMLElement |
 }
 
 /**
- * 创建 scope。node 为空时回退到全局 document（仅 CSR；SSR 期不应实例化，见 §4.5.3）。
+ * 创建 scope。node 为空时回退到全局 document（仅 CSR；SSR 期不应实例化）。
  */
 export function createScope(node: Element | null | undefined, idGenerator: IdGenerator): Scope {
   const id = idGenerator.scopeId()

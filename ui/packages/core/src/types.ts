@@ -1,9 +1,9 @@
-// 生命周期与通用类型契约（§4.2.1）。
+// 生命周期与通用类型契约。
 
 /** 任意字符串键字典。 */
 export type Dict<T = unknown> = Record<string, T>
 
-/** 可释放资源。dispose 必须幂等（§4.2.1 硬规则 2）。 */
+/** 可释放资源。dispose 必须幂等。 */
 export interface Disposable {
   /** 幂等：重复调用无副作用、不抛错。 */
   dispose: () => void
@@ -11,7 +11,7 @@ export interface Disposable {
   readonly disposed?: boolean
 }
 
-/** 与 machine effects 的实现签名兼容（§3：effects 返回 cleanup）。 */
+/** 与 machine effects 的实现签名兼容（effects 返回 cleanup）。 */
 export type Cleanup = () => void
 
 /** 把 Disposable 适配成 machine effect 期望的 Cleanup。 */

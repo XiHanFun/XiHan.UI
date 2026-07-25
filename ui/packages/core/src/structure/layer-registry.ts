@@ -1,4 +1,4 @@
-// LayerRegistry：逻辑层栈（§4.4.1）。
+// LayerRegistry：逻辑层栈。
 // 不是 z-index 分配器 —— 视觉堆叠交给浏览器 top layer。本表回答：谁是栈顶、
 // outside 交互关到第几层、某节点属于哪一层（含 branch/surface 归属）。
 import type { Cleanup } from '../types'
@@ -55,7 +55,7 @@ export function createLayerRegistry(_doc: Document): LayerRegistry {
       disposed = true
       const idx = layers.indexOf(layer)
       if (idx !== -1) {
-        // 双栈一致性 dev 断言（§4.4.1）：dispose 的不是栈顶时告警。
+        // 双栈一致性 dev 断言：dispose 的不是栈顶时告警。
         if (isDev() && idx !== layers.length - 1)
           console.error(`[xh:layer] dispose 的层不是栈顶（可能与 top layer 顺序不一致）: ${layer.id}`)
         layers.splice(idx, 1)

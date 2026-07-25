@@ -1,10 +1,10 @@
-// hideOutside：让背景失活（§4.3.9(b)）。M1 一等件 —— Dialog topLayer:false 模态唯一的背景失活手段。
+// hideOutside：让背景失活。Dialog topLayer:false 模态唯一的背景失活手段。
 // 只走 inert：给所有非目标、非豁免的 body 直接子元素设 inert。
 import type { Scope } from '../../scope'
 import type { Cleanup } from '../../types'
 import { DATA_INERT_EXEMPT } from '../../constants'
 
-/** 默认豁免选择器。迁移期共存的 naive 三容器在 M8 naive 下线时随之删除（§4.3.9(b)）。 */
+/** 默认豁免选择器（迁移期共存的 naive 三容器一并豁免）。 */
 const DEFAULT_EXEMPT_SELECTORS = [
   `[${DATA_INERT_EXEMPT}]`,
   '.n-modal-container',

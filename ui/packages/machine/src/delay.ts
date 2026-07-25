@@ -1,4 +1,4 @@
-// 定时副作用工具（§3.3.9）。用在 implementations.effects 里，返回值天然就是 cleanup。
+// 定时副作用工具。用在 implementations.effects 里，返回值天然就是 cleanup。
 // 延时事件命名约定：由定时器发出的事件必须命名为 after.<delayName>，delayName 与 prop 名一致。
 import { isDev } from '@xihan-ui/core'
 import { MachineError } from './errors'

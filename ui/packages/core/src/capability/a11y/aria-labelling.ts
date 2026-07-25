@@ -1,4 +1,4 @@
-// resolveLabelling：只在 title/description 真被渲染时才输出 id（§4.3.9(c)）。
+// resolveLabelling：只在 title/description 真被渲染时才输出 id。
 // 用计数器而非布尔：退出动画期间可能短暂同时存在两个 Title 实例。
 
 export interface LabellingInput {

@@ -1,4 +1,4 @@
-// data-* / aria-* 值归一化（§19.3.3 attrs.ts）。
+// data-* / aria-* 值归一化。
 // 约定：假值一律省略属性（返回 undefined），避免 data-disabled="false" 这类反直觉输出。
 
 /** 真时返回 ''（属性存在即真），假时返回 undefined（不输出属性）。 */

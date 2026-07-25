@@ -1,4 +1,4 @@
-// 状态索引构建与静态校验（§3.4.1）。四条校验全部 throw、不 warn（fail-closed）。
+// 状态索引构建与静态校验。四条校验全部 throw、不 warn（fail-closed）。
 import type { MachineConfig, MachineSchema, StateIndex, StateNode } from './types'
 import { MachineError } from './errors'
 
@@ -22,7 +22,7 @@ function buildStateIndex<T extends MachineSchema>(machine: MachineConfig<T>): St
       idIndex.set(node.id, basePath)
     }
     if (!node.states) {
-      // ② 叶子状态不得声明 initial（比 Zag 多加：抓笔误）
+      // ② 叶子状态不得声明 initial（抓笔误）
       if (node.initial != null)
         throw new MachineError('ORPHAN_INITIAL', `leaf state "${basePath}" must not declare "initial"`)
       leaves.push(basePath)

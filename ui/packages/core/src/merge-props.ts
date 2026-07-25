@@ -1,4 +1,4 @@
-// 合并多份 props（§19.3.3 merge-props.ts）。语义：
+// 合并多份 props。语义：
 // - class / className：空格拼接
 // - style：对象浅合并
 // - onXxx 事件处理器：顺序组合（前者先执行）

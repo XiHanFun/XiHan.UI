@@ -1,6 +1,5 @@
 // @xihan-ui/machine —— 薄 FSM 运行时。
-// M1 定义层：类型 + createMachine + setup + guards + delay + errors。
-// 解释器（createService）、vanilla runtime（./vanilla）、connect（§3.9）在后续提交落地。
+// 定义层：类型 + createMachine + setup + guards + delay + errors。
 
 export { createMachine } from './create-machine'
 export { setIntervalEffect, setTimeoutEffect } from './delay'

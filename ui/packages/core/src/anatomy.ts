@@ -1,5 +1,4 @@
 // 组件解剖（Anatomy）：把组件拆成具名 part，产出 data-scope/data-part 属性与选择器。
-// 照搬 Zag/@zag-js/anatomy 的设计（§9.7 全局 anatomy 约定）。
 import { DATA_PART, DATA_SCOPE } from './constants'
 
 export interface AnatomyPart {
