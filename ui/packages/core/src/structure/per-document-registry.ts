@@ -1,4 +1,4 @@
-// per-document 注册表工厂（§4.2.6）。
+// per-document 注册表工厂。
 // 避免模块级裸单例：微前端 / 多 window / iframe / SSR streaming 下的隔离由此保证。
 
 export interface PerDocumentRegistry<T> {

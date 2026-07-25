@@ -39,7 +39,7 @@ export default function xihanUi(options = {}, ...userConfigs) {
       },
     },
     {
-      // catalog 有意按类别分组注释（非字母序）且前瞻声明整套栈（M1/M2 用）
+      // catalog 有意按类别分组注释（非字母序）且前瞻声明整套依赖栈
       files: ['pnpm-workspace.yaml'],
       rules: {
         'yaml/sort-keys': 'off',

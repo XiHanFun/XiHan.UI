@@ -2,7 +2,7 @@ import type { MachineConfig, MachineSchema } from '../src'
 import { describe, expect, expectTypeOf, it } from 'vitest'
 import { createMachine, MachineError, setup } from '../src'
 
-// 一个最小 toggle schema（§3.12 样板的定义层部分）。
+// 一个最小 toggle schema。
 interface ToggleSchema extends MachineSchema {
   props: { defaultPressed?: boolean }
   context: { pressed: boolean }
@@ -38,7 +38,7 @@ describe('createMachine', () => {
     expect(typeof m.initialState).toBe('function')
   })
 
-  it('d3：引用未实现的 action 时 throw', () => {
+  it('引用未实现的 action 时抛错', () => {
     expect(() => createMachine<ToggleSchema>({
       name: 'bad',
       initialState: () => 'off',
@@ -50,7 +50,7 @@ describe('createMachine', () => {
     })).toThrow(MachineError)
   })
 
-  it('④ initial 不是子状态时 throw', () => {
+  it('initial 不是子状态时抛错', () => {
     expect(() => createMachine<ToggleSchema>({
       name: 'bad-initial',
       initialState: () => 'off',

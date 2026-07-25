@@ -1,5 +1,5 @@
-// 机器类型系统（§3.3）。语义规范；实现以本文件为准。
-// Dict 用 any 是有意的：FSM 泛型内核需要它做 slice 索引（与 Zag/XState 同源）。
+// 机器类型系统。语义规范；实现以本文件为准。
+// Dict 用 any 是有意的：FSM 泛型内核需要它做 slice 索引。
 import type { Scope } from '@xihan-ui/core'
 
 export type Dict = Record<string, any>
@@ -88,7 +88,7 @@ export type EffectsOrFn<T extends MachineSchema>
   = | Array<Slice<T, 'effect'> & string>
     | ((params: Params<T>) => Array<Slice<T, 'effect'> & string> | undefined)
 
-/** 交给每个 action/guard/effect 的统一上下文（§3.3.5）。 */
+/** 交给每个 action/guard/effect 的统一上下文。 */
 export interface Params<T extends MachineSchema> {
   prop: PropFn<T>
   context: ContextFacade<T>
@@ -105,7 +105,7 @@ export interface Params<T extends MachineSchema> {
   flush: (fn: () => void) => void
 }
 
-/** effect params 与 action 的唯一区别：event 冻结为挂载时刻的快照（§3.5.8）。 */
+/** effect params 与 action 的唯一区别：event 冻结为挂载时刻的快照。 */
 export type EffectParams<T extends MachineSchema> = Params<T>
 
 // —— 转移 ——
@@ -194,7 +194,7 @@ export interface MachineConfig<T extends MachineSchema> {
   }
 }
 
-// —— 响应式契约（框架无关的唯一收口点，§3.3.6）——
+// —— 响应式契约（框架无关的唯一收口点）——
 export interface Bindable<V> {
   readonly initial: V | undefined
   get: () => V

@@ -1,4 +1,4 @@
-// props-getter 归一化协议（§3.9.3 NormalizeProps）。
+// props-getter 归一化协议。
 // headless connect() 产出「框架无关的 prop 字典」，适配器提供 NormalizeProps 把它映射到
 // 各自框架的 VNode props（如 Vue 的 class/onClick，React 的 className/onClick）。
 import type { Dict } from './types'

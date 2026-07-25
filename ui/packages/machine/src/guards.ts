@@ -1,5 +1,5 @@
-// 守卫布尔组合子（§3.4.3）。组合子产物带 COMBINATOR 标记 → 可序列化/运行时可还原，
-// 是 states 里唯一允许出现内联函数的场景（createMachine 的 D2 自检据此放行）。
+// 守卫布尔组合子。组合子产物带 COMBINATOR 标记 → 可序列化/运行时可还原，
+// 是 states 里唯一允许出现内联函数的场景（createMachine 的自检据此放行）。
 import type { GuardExpr, GuardFn, MachineSchema } from './types'
 
 /** 组合子标记键：一个属性键，非注册表；enumerable:false 保证不进 JSON.stringify。 */

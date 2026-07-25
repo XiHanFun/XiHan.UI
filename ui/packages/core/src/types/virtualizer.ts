@@ -1,4 +1,4 @@
-// VirtualizerPort：虚拟滚动端口（§4.3.11）。M1 只落类型，实现在 M5.5。
+// VirtualizerPort：虚拟滚动端口（只落类型契约，实现由各适配器提供）。
 // core 只承诺契约，DataTable / VirtualList 在各自适配器接线。
 
 export interface VirtualItem {

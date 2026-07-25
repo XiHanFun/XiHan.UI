@@ -1,5 +1,5 @@
-// 引用、事件处理器、函数的组合工具（§19.3.3 compose.ts）。
-// 注意（§14.2 依赖矩阵）：这些是纯计算、无 DOM，可被 headless connect 与适配器共用。
+// 引用、事件处理器、函数的组合工具。
+// 注意：这些是纯计算、无 DOM，可被 headless connect 与适配器共用。
 import type { Dict } from './types'
 import { isFunction } from './guards'
 
