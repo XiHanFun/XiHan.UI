@@ -34,6 +34,8 @@ export default function xihanUi(options = {}, ...userConfigs) {
         'node/prefer-global/process': 'off',
         'style/max-statements-per-line': 'off',
         'ts/explicit-function-return-type': 'off',
+        'jsdoc/require-returns-description': 'off',
+        'jsdoc/require-property-description': 'off',
       },
     },
     {
