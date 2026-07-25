@@ -1,4 +1,55 @@
+shellEmulator: true
+
+trustPolicy: no-downgrade
+
+# XiHan.UI monorepo 工作区
+# 三段 glob：库包 / 工程工具 / 应用（无 internal/*，见 §2）
 packages:
-  - packages/*
-  - internal/*
-  - playground
+  - 'packages/*'
+  - 'tooling/*'
+  - 'apps/*'
+
+allowBuilds:
+  esbuild: true
+  simple-git-hooks: false
+
+# 依赖目录（单一版本事实源）。包内一律用 catalog: 引用，升级只改这里一处。
+# 版本基线截至 2026-07，与消费方 XiHan.BasicApp/frontend 已验证组合对齐；
+# 详见 开发设计/UI.Rearchitect/附录/技术选型/LATEST-TECH.md
+catalog:
+  '@antfu/eslint-config': ^9.2.0
+  '@arethetypeswrong/cli': ^0.18.0
+  # —— 发布 / 门禁 ——
+  '@changesets/cli': ^2.31.0
+  # —— 提交规范 ——
+  '@commitlint/cli': ^19.8.0
+  '@commitlint/config-conventional': ^19.8.0
+  # —— Web Components 端（只取 ReactiveElement/ReactiveController，不引完整 lit）——
+  '@lit/reactive-element': 2.1.2
+  '@size-limit/preset-small-lib': ^12.1.0
+  '@types/node': ^24.10.0
+  # —— 框架适配器 ——
+  vue: ^3.5.40
+  '@vue/test-utils': ^2.4.6
+  vue-tsc: ^3.3.7
+  # —— 构建 ——
+  tsdown: ~0.22.0
+  '@vitejs/plugin-vue': ^6.0.8
+  # —— 质量 ——
+  eslint: ^10.7.0
+  oxlint: ^1.75.0
+  dependency-cruiser: ^18.1.0
+  prettier: ^3.9.0
+  # —— 测试 ——
+  vitest: ^4.1.10
+  '@vitest/coverage-v8': ^4.1.10
+  publint: ^0.3.21
+  simple-git-hooks: ^2.13.0
+  size-limit: ^12.1.0
+  stylelint: ^16.19.0
+  # —— 语言 / 运行时（Vue 侧锁 TS 6：TS 7 无公开编译器 API，vue-tsc 暂不可用）——
+  turbo: ^2.10.0
+  typescript: ^6.0.3
+  vite: ^8.1.5
+  # —— 文档站 ——
+  vitepress: ^1.6.4

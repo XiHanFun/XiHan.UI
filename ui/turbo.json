@@ -1,22 +1,30 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["tsconfig.base.json", "tsconfig.lib.json"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", "dist.zip"]
-    },
-    "preview": {
-      "dependsOn": ["^build"],
+      "inputs": ["src/**", "tokens/**", "build/**", "tsdown.config.ts", "package.json"],
       "outputs": ["dist/**"]
     },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "*.vue", "tsconfig*.json"],
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "tests/**", "spec/**"],
+      "outputs": ["coverage/**"]
+    },
+    "size": {
+      "dependsOn": ["build"],
+      "inputs": ["dist/**", ".size-limit.json"],
+      "outputs": []
+    },
     "dev": {
-      "dependsOn": [],
-      "outputs": [],
       "cache": false,
       "persistent": true
-    },
-    "typecheck": {
-      "outputs": []
     }
   }
 }
