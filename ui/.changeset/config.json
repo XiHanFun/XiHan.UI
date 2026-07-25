@@ -7,5 +7,5 @@
   "access": "public",
   "baseBranch": "dev",
   "updateInternalDependencies": "patch",
-  "ignore": ["@xihan-ui/playground", "@xihan-ui/docs"]
+  "ignore": ["@xihan-ui/playground"]
 }
