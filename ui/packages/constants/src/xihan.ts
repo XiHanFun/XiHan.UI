@@ -19,7 +19,7 @@ export class XiHan {
   /**
    * 曦寒版权
    */
-  static Copyright = `Copyright (C)2021-Present ZhaiFanhua All Rights Reserved.`;
+  static Copyright = `Copyright (c) 2021-Present XiHanFun and contributors.`;
 
   /**
    * 曦寒组织
