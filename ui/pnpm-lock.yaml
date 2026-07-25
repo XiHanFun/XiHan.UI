@@ -163,6 +163,15 @@ importers:
         specifier: 'catalog:'
         version: 3.3.8(typescript@6.0.3)
 
+  packages/core:
+    devDependencies:
+      '@xihan-ui/build':
+        specifier: workspace:*
+        version: link:../../tooling/build
+      '@xihan-ui/tsconfig':
+        specifier: workspace:*
+        version: link:../../tooling/tsconfig
+
   packages/icons: {}
 
   tooling/build:
