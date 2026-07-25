@@ -1,0 +1,22 @@
+{
+  "name": "@xihan-ui/styled",
+  "version": "0.0.0",
+  "description": "XiHan.UI styled layer — pure CSS skins driven by data-attributes and design tokens.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": ["**/*.css"],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "exports": {
+    ".": "./index.css",
+    "./index.css": "./index.css",
+    "./layers.css": "./styles/layers.css",
+    "./motion.css": "./styles/motion.css",
+    "./button.css": "./styles/button.css",
+    "./dialog.css": "./styles/dialog.css",
+    "./visually-hidden.css": "./styles/visually-hidden.css"
+  },
+  "files": ["index.css", "styles"]
+}

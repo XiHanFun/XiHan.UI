@@ -1,0 +1,2 @@
+/* 库层序单一真源：级联顺序由首次声明决定，与 @import 顺序解耦。 */
+@layer xihan.reset, xihan.tokens, xihan.motion, xihan.components, xihan.overrides;
