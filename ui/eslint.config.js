@@ -6,6 +6,7 @@ export default xihanUi(
       '**/dist/**',
       '**/node_modules/**',
       '**/.turbo/**',
+      '**/generated/**',
       'packages/icons/**',
       'pnpm-lock.yaml',
     ],

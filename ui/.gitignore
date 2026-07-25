@@ -1,8 +1,6 @@
 node_modules
 .DS_Store
 dist
-# 令牌产物必须入库（check-tokens-dist 门禁），例外放行
-!packages/system/dist/
 .cache
 .turbo
 .local

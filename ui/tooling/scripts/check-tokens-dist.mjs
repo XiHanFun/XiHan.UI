@@ -1,31 +1,34 @@
 #!/usr/bin/env node
-// 门禁：packages/system 的令牌产物（dist/tokens.{css,js,json}）必须入库且与源 tokens/ 一致。
-// M0：packages/system 尚不存在，脚本跳过并通过（M1 令牌落地后生效）。
-import { readdir, stat } from 'node:fs/promises'
+// 门禁：packages/system 的令牌产物必须入库（tokens.css / tokens.json / src/generated/tokens.ts）。
+// 令牌源改动后忘了跑 gen 会被此门禁拦下（产物与源不同步的更严格校验在 CI 里重跑 gen 后比对）。
+import { stat } from 'node:fs/promises'
 import { join } from 'node:path'
 
 const SYSTEM_DIR = 'packages/system'
-const REQUIRED = ['tokens.css', 'tokens.js', 'tokens.json']
+const REQUIRED = ['tokens.css', 'tokens.json', 'src/generated/tokens.ts']
 
 async function exists(p) {
-  try { await stat(p); return true }
-  catch { return false }
+  try {
+    await stat(p)
+    return true
+  }
+  catch {
+    return false
+  }
 }
 
 if (!(await exists(SYSTEM_DIR))) {
-  console.log('[check-tokens-dist] 跳过：packages/system 尚未建立（M1 交付）')
+  console.log('[check-tokens-dist] 跳过：packages/system 尚未建立')
   process.exit(0)
 }
 
-const distDir = join(SYSTEM_DIR, 'dist')
-if (!(await exists(distDir))) {
-  console.error('[check-tokens-dist] ✗ packages/system/dist 缺失，令牌产物必须入库')
-  process.exit(1)
+const missing = []
+for (const f of REQUIRED) {
+  if (!(await exists(join(SYSTEM_DIR, f))))
+    missing.push(f)
 }
-const files = new Set(await readdir(distDir))
-const missing = REQUIRED.filter(f => !files.has(f))
 if (missing.length) {
-  console.error(`[check-tokens-dist] ✗ 缺少令牌产物：${missing.join(', ')}`)
+  console.error(`[check-tokens-dist] ✗ 缺少令牌产物：${missing.join(', ')}（跑 pnpm --filter @xihan-ui/system gen）`)
   process.exit(1)
 }
 console.log('[check-tokens-dist] 通过：令牌产物齐全')
