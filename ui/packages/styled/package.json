@@ -1,9 +1,9 @@
 {
   "name": "@xihan-ui/styled",
+  "type": "module",
   "version": "0.0.0",
   "description": "XiHan.UI styled layer — pure CSS skins driven by data-attributes and design tokens.",
   "license": "MIT",
-  "type": "module",
   "sideEffects": ["**/*.css"],
   "publishConfig": {
     "access": "public",
@@ -16,6 +16,7 @@
     "./motion.css": "./styles/motion.css",
     "./button.css": "./styles/button.css",
     "./dialog.css": "./styles/dialog.css",
+    "./switch.css": "./styles/switch.css",
     "./visually-hidden.css": "./styles/visually-hidden.css"
   },
   "files": ["index.css", "styles"]

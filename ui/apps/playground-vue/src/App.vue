@@ -8,6 +8,7 @@ import {
   XhDialogRoot,
   XhDialogTitle,
   XhDialogTrigger,
+  XhSwitch,
 } from '@xihan-ui/vue'
 import { ref } from 'vue'
 
@@ -18,6 +19,8 @@ function toggleTheme() {
   theme.setPreference({ mode: next })
   mode.value = next
 }
+
+const wifi = ref(true)
 </script>
 
 <template>
@@ -76,6 +79,24 @@ function toggleTheme() {
             <XhDialogCloseTrigger>✕</XhDialogCloseTrigger>
           </XhDialogContent>
         </XhDialogRoot>
+      </div>
+    </section>
+
+    <section>
+      <h2>Switch</h2>
+      <div class="row" style="gap: 16px;">
+        <label class="row" style="gap: 8px;">
+          <XhSwitch v-model:checked="wifi" aria-label="Wi-Fi" />
+          <span>Wi-Fi {{ wifi ? '开' : '关' }}</span>
+        </label>
+        <label class="row" style="gap: 8px;">
+          <XhSwitch :default-checked="false" aria-label="非受控开关" />
+          <span>非受控</span>
+        </label>
+        <label class="row" style="gap: 8px;">
+          <XhSwitch disabled aria-label="禁用开关" />
+          <span>禁用</span>
+        </label>
       </div>
     </section>
   </main>

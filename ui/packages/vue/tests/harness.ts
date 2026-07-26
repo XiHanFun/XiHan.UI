@@ -60,6 +60,7 @@ export function createVueHarness(): AdapterHarness {
       // 语法糖、不入跨适配器事件流。无关组件忽略这些监听器。
       const listeners = {
         onOpenChange: (detail: unknown) => events.push({ type: 'open-change', detail }),
+        onCheckedChange: (detail: unknown) => events.push({ type: 'checked-change', detail }),
       }
       app = createApp({
         setup: () => () =>
