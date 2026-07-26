@@ -413,6 +413,137 @@
           }
         }
       ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/switch.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-switch>` —— Light-DOM 行为宿主：用户写 root(button)/thumb 角色节点，元素跑 switch 机器\n并把 connect 产出打上去。无副作用（不挂 DOM effect），比 dialog 简单。",
+          "name": "XhSwitchElement",
+          "cssParts": [
+            {
+              "description": "role=switch 的按钮（承载 aria-checked / data-state）",
+              "name": "root"
+            },
+            {
+              "description": "滑块",
+              "name": "thumb"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "checked",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "checked"
+            },
+            {
+              "kind": "field",
+              "name": "defaultChecked",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-checked"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<SwitchSchema>(this, switchMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<SwitchSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "checked 状态变化；detail 为 `{ checked: boolean }`",
+              "name": "checked-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控开合；缺省该属性即非受控",
+              "name": "checked",
+              "fieldName": "checked"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始为选中",
+              "name": "default-checked",
+              "fieldName": "defaultChecked"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用",
+              "name": "disabled",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-switch",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhSwitchElement",
+          "declaration": {
+            "name": "XhSwitchElement",
+            "module": "src/elements/switch.ts"
+          }
+        }
+      ]
     }
   ]
 }

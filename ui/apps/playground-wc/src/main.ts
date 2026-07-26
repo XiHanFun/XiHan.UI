@@ -51,6 +51,24 @@ app.innerHTML = `
       </div>
     </xh-dialog>
   </section>
+
+  <section>
+    <h2>Switch</h2>
+    <div class="row" style="gap: 16px;">
+      <label class="row" style="gap: 8px;">
+        <xh-switch default-checked aria-label="Wi-Fi"><button data-xh-part="root"><span data-xh-part="thumb"></span></button></xh-switch>
+        <span>Wi-Fi</span>
+      </label>
+      <label class="row" style="gap: 8px;">
+        <xh-switch aria-label="非受控开关"><button data-xh-part="root"><span data-xh-part="thumb"></span></button></xh-switch>
+        <span>非受控</span>
+      </label>
+      <label class="row" style="gap: 8px;">
+        <xh-switch disabled aria-label="禁用开关"><button data-xh-part="root"><span data-xh-part="thumb"></span></button></xh-switch>
+        <span>禁用</span>
+      </label>
+    </div>
+  </section>
 </main>
 `
 

@@ -1,5 +1,6 @@
 import { XhButtonElement } from './elements/button'
 import { XhDialogElement } from './elements/dialog'
+import { XhSwitchElement } from './elements/switch'
 import { defineElement } from './runtime/registry'
 
 const VERSION = '0.0.0'
@@ -8,6 +9,7 @@ const VERSION = '0.0.0'
 export function defineXhElements(): void {
   defineElement('xh-button', XhButtonElement, VERSION)
   defineElement('xh-dialog', XhDialogElement, VERSION)
+  defineElement('xh-switch', XhSwitchElement, VERSION)
 }
 
-export { XhButtonElement, XhDialogElement }
+export { XhButtonElement, XhDialogElement, XhSwitchElement }

@@ -11,11 +11,12 @@ export interface MachineControllerOptions<T extends MachineSchema> {
   onBuilt?: (service: Service<T>) => void
 }
 
-// 一台机器一个 controller：hostConnected→mount、hostUpdate→runTrackers、hostDisconnected→unmount。
+// 一台机器一个 controller：hostConnected→build+mount、hostUpdate→runTrackers、hostDisconnected→unmount。
 // 复用唯一解释器 createService，不重造 FSM。
 export class MachineController<T extends MachineSchema> implements ReactiveController {
-  service: Service<T>
-  private runtime: LitRuntime
+  service!: Service<T>
+  private runtime: LitRuntime | undefined
+  private started = false
 
   constructor(
     private readonly host: ReactiveControllerHost,
@@ -23,35 +24,32 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
     private readonly props: () => Partial<T['props']>,
     private readonly opts: MachineControllerOptions<T> = {},
   ) {
-    const built = this.build()
-    this.service = built.service
-    this.runtime = built.runtime
     host.addController(this)
+    // 刻意不在构造期 build：此刻 attribute 尚未反射到 reactive property，
+    // initialState 会读到 undefined（如 default-checked / default-open 失效）。延到 hostConnected。
   }
 
-  private build(): { service: Service<T>, runtime: LitRuntime } {
-    const runtime = createLitRuntime(this.host)
-    const service = createService(this.machine, { props: this.props, runtime, scope: this.opts.scope })
-    this.opts.onBuilt?.(service)
-    return { service, runtime }
+  private build(): void {
+    this.runtime = createLitRuntime(this.host)
+    this.service = createService(this.machine, { props: this.props, runtime: this.runtime, scope: this.opts.scope })
+    this.opts.onBuilt?.(this.service)
   }
 
   hostConnected(): void {
-    // 重连（元素在 DOM 中被移动）：解释器 stop 后不可复活，重建一台从 initialState 起。
-    // 状态不跨移动保留、context 一并重置——符合 W2 的"再装配"语义。
-    if (this.service.getStatus() === 'Stopped') {
-      const built = this.build()
-      this.service = built.service
-      this.runtime = built.runtime
+    // 首次连接时 attribute 已反射到 property，initialState 读得到；
+    // 重连（元素在 DOM 中被移动）时旧机器 stop 不可复活 → 重建从 initialState 起（状态不跨移动保留）。
+    if (!this.started || this.service.getStatus() === 'Stopped') {
+      this.build()
+      this.started = true
     }
-    this.runtime.mount()
+    this.runtime!.mount()
   }
 
   hostUpdate(): void {
-    this.runtime.runTrackers()
+    this.runtime?.runTrackers()
   }
 
   hostDisconnected(): void {
-    this.runtime.unmount()
+    this.runtime?.unmount()
   }
 }
