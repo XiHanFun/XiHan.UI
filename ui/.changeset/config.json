@@ -2,10 +2,19 @@
   "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
-  "fixed": [["@xihan-ui/*"]],
+  "fixed": [[
+    "@xihan-ui/core",
+    "@xihan-ui/machine",
+    "@xihan-ui/behavior",
+    "@xihan-ui/system",
+    "@xihan-ui/headless",
+    "@xihan-ui/styled",
+    "@xihan-ui/vue",
+    "@xihan-ui/wc"
+  ]],
   "linked": [],
   "access": "public",
   "baseBranch": "dev",
   "updateInternalDependencies": "patch",
-  "ignore": ["@xihan-ui/playground"]
+  "ignore": ["@xihan-ui/testing", "@xihan-ui/playground-vue", "@xihan-ui/playground-wc"]
 }
