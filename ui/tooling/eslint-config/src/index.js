@@ -46,6 +46,39 @@ export default function xihanUi(options = {}, ...userConfigs) {
         'pnpm/yaml-no-unused-catalog-item': 'off',
       },
     },
+    {
+      // foundation 层必须框架无关：core/machine/behavior/headless/system 不得 import 任何框架库
+      // （含 import type——框架特定代码一律放各适配器包 vue/wc/...）。这是"框架无关"的机读门禁。
+      files: ['packages/{core,machine,behavior,headless,system}/src/**/*.ts'],
+      rules: {
+        'no-restricted-imports': ['error', {
+          patterns: [{
+            group: [
+              'vue',
+              '@vue/*',
+              'react',
+              'react-dom',
+              'react/*',
+              'react-dom/*',
+              'preact',
+              'preact/*',
+              'svelte',
+              'svelte/*',
+              'solid-js',
+              'solid-js/*',
+              'lit',
+              'lit/*',
+              'lit-html',
+              'lit-element',
+              '@lit/*',
+              '@lit-labs/*',
+              '@angular/*',
+            ],
+            message: 'foundation 层必须框架无关：不得 import 框架库；框架特定代码放对应适配器包（@xihan-ui/vue、@xihan-ui/wc 等）。',
+          }],
+        }],
+      },
+    },
     ...userConfigs,
   )
 }
