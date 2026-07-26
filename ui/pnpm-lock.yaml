@@ -147,7 +147,7 @@ importers:
         specifier: 'catalog:'
         version: 3.3.8(typescript@6.0.3)
 
-  apps/playground:
+  apps/playground-vue:
     dependencies:
       '@xihan-ui/styled':
         specifier: workspace:*
