@@ -30,13 +30,10 @@ export function createLitRuntime(host: ReactiveControllerHost): LitRuntime {
     const eq = p0.isEqual ?? Object.is
     const initial = (p0.defaultValue ?? p0.value) as V
     let inner = initial
+    let lastSeen = initial
     let version = 0
     const isControlled = (): boolean => params().value !== undefined
     const read = (): V => (isControlled() ? (params().value as V) : inner)
-    const schedule = (): void => {
-      version += 1
-      host.requestUpdate()
-    }
     return {
       initial,
       get: read,
@@ -48,10 +45,19 @@ export function createLitRuntime(host: ReactiveControllerHost): LitRuntime {
         if (!isControlled())
           inner = value
         params().onChange?.(value, prev)
-        schedule()
+        host.requestUpdate()
       },
-      notify: () => schedule(),
-      version: () => version,
+      notify: () => host.requestUpdate(),
+      // 版本号按值拉取比对：受控值由外部写入时不经过 set，推送式计数会漏掉，
+      // 导致 track([context.dep(k)]) 在本适配器静默不触发。与 Vue 运行时同语义。
+      version: () => {
+        const cur = read()
+        if (!eq(cur, lastSeen)) {
+          lastSeen = cur
+          version += 1
+        }
+        return version
+      },
     }
   }
 

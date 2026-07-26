@@ -1,0 +1,50 @@
+import type { TogglePressedChangeDetails, ToggleSchema } from '@xihan-ui/headless'
+import { connectToggle, toggleMachine } from '@xihan-ui/headless'
+import { wcNormalize } from '../dom/normalize'
+import { XhElement } from '../element-base'
+import { MachineController } from '../runtime/machine-controller'
+
+/**
+ * `<xh-toggle>` —— Light-DOM 行为宿主：用户写 root(button) 角色节点，元素跑 toggle 机器
+ * 并把 connect 产出打上去。无副作用（不挂 DOM effect），只有 root 一个角色节点。
+ *
+ * @customElement xh-toggle
+ * @attr {boolean} pressed - 受控按下态；缺省该属性即非受控
+ * @attr {boolean} default-pressed - 非受控初始为按下
+ * @attr {boolean} disabled - 禁用
+ * @fires pressed-change - pressed 状态变化；detail 为 `{ pressed: boolean }`
+ * @csspart root - role=button 的按钮（承载 aria-pressed / data-state）
+ */
+export class XhToggleElement extends XhElement {
+  static override properties = {
+    pressed: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
+    defaultPressed: { type: Boolean, attribute: 'default-pressed' },
+    disabled: { type: Boolean },
+  }
+
+  declare pressed?: boolean
+  declare defaultPressed?: boolean
+  declare disabled?: boolean
+
+  private readonly notify = (details: TogglePressedChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('pressed-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly ctrl = new MachineController<ToggleSchema>(this, toggleMachine, () => this.machineProps())
+
+  private machineProps(): Partial<ToggleSchema['props']> {
+    return {
+      pressed: this.pressed,
+      defaultPressed: this.defaultPressed ?? false,
+      disabled: this.disabled ?? false,
+      onPressedChange: this.notify,
+    }
+  }
+
+  protected wire(): void {
+    const api = connectToggle(this.ctrl.service, wcNormalize)
+    const root = this.getPart('root')
+    if (root)
+      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+  }
+}

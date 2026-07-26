@@ -4,6 +4,70 @@
   "modules": [
     {
       "kind": "javascript-module",
+      "path": "src/elements/badge.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-badge>` —— Light-DOM 行为宿主，无状态机：纯展示，外观全部来自 variant 属性，\nwire 时算 connectBadge 打到 `[data-xh-part=\"root\"]` 角色节点。",
+          "name": "XhBadgeElement",
+          "cssParts": [
+            {
+              "description": "承载 data-scope/data-part/data-variant 的展示节点",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "视觉变体",
+              "name": "variant",
+              "fieldName": "variant"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-badge",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhBadgeElement",
+          "declaration": {
+            "name": "XhBadgeElement",
+            "module": "src/elements/badge.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/button.ts",
       "declarations": [
         {
@@ -682,6 +746,95 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/progress.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-progress>` —— Light-DOM 行为宿主，无状态机：宿主属性即 progress props，\nwire 时算 connectProgress 打到 root/track/range 三个角色节点。",
+          "name": "XhProgressElement",
+          "cssParts": [
+            {
+              "description": "role=progressbar 的容器（承载 aria-valuenow/aria-valuemax/data-state）",
+              "name": "root"
+            },
+            {
+              "description": "进度轨道（满长背景）",
+              "name": "track"
+            },
+            {
+              "description": "已完成区段，长度按百分比写成内联 inline-size",
+              "name": "range"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "max",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "当前进度值，越界会被夹到 [0, max]，默认 0",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "满值上限，默认 100",
+              "name": "max",
+              "fieldName": "max"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-progress",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhProgressElement",
+          "declaration": {
+            "name": "XhProgressElement",
+            "module": "src/elements/progress.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/separator.ts",
       "declarations": [
         {
@@ -888,6 +1041,133 @@
           "declaration": {
             "name": "XhSwitchElement",
             "module": "src/elements/switch.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/toggle.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-toggle>` —— Light-DOM 行为宿主：用户写 root(button) 角色节点，元素跑 toggle 机器\n并把 connect 产出打上去。无副作用（不挂 DOM effect），只有 root 一个角色节点。",
+          "name": "XhToggleElement",
+          "cssParts": [
+            {
+              "description": "role=button 的按钮（承载 aria-pressed / data-state）",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "pressed",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "pressed"
+            },
+            {
+              "kind": "field",
+              "name": "defaultPressed",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-pressed"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<ToggleSchema>(this, toggleMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<ToggleSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "pressed 状态变化；detail 为 `{ pressed: boolean }`",
+              "name": "pressed-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控按下态；缺省该属性即非受控",
+              "name": "pressed",
+              "fieldName": "pressed"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始为按下",
+              "name": "default-pressed",
+              "fieldName": "defaultPressed"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用",
+              "name": "disabled",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-toggle",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhToggleElement",
+          "declaration": {
+            "name": "XhToggleElement",
+            "module": "src/elements/toggle.ts"
           }
         }
       ]
