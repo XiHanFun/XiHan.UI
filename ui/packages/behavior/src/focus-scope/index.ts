@@ -44,32 +44,36 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
   }
 
   // —— 挂载自动聚焦 ——
-  // 容器可能晚一拍才由适配器渲染出来（如 Dialog 内容在状态进入 open 后才挂载）；
-  // 此刻容器为 null 就下一帧重试一次，否则焦点永远进不去。
+  // 容器可能晚一拍才就位（Vue：content 进 open 后才挂载；WC：content 常驻但先 hidden、
+  // 同一拍才变可见）。返回焦点是否真的落进 scope；没落进就下一帧重试，否则焦点永远进不去。
   function attemptMountFocus(): boolean {
     const el = container()
     if (!el)
       return false
-    if (!isInScope(scope.getActiveElement())) {
-      const proceed = dispatchCancelable(el, EV_MOUNT_AUTO_FOCUS, {})
-      // onMountAutoFocus 里可 preventDefault 改写默认聚焦
-      o.onMountAutoFocus?.(new CustomEvent(EV_MOUNT_AUTO_FOCUS))
-      if (proceed) {
-        const target = o.initialFocus?.() ?? null
-        if (target)
-          focusSafely(target, { select: true })
-        else if (!focusFirst(removeLinks(getTabbables(el)), { select: true }))
-          focusSafely(el)
-      }
+    if (isInScope(scope.getActiveElement()))
+      return true
+    const proceed = dispatchCancelable(el, EV_MOUNT_AUTO_FOCUS, {})
+    // onMountAutoFocus 里可 preventDefault 改写默认聚焦
+    o.onMountAutoFocus?.(new CustomEvent(EV_MOUNT_AUTO_FOCUS))
+    if (proceed) {
+      const target = o.initialFocus?.() ?? null
+      if (target)
+        focusSafely(target, { select: true })
+      else if (!focusFirst(removeLinks(getTabbables(el)), { select: true }))
+        focusSafely(el)
     }
-    return true
+    return isInScope(scope.getActiveElement())
   }
-  if (!attemptMountFocus()) {
+  function scheduleFocus(attempts: number): void {
     win.requestAnimationFrame(() => {
-      if (!disposed)
-        attemptMountFocus()
+      if (disposed)
+        return
+      if (!attemptMountFocus() && attempts > 1)
+        scheduleFocus(attempts - 1)
     })
   }
+  if (!attemptMountFocus())
+    scheduleFocus(3)
 
   // —— 逃逸抢回 ——
   function onFocusIn(e: FocusEvent): void {

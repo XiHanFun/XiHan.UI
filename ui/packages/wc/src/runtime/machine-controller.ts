@@ -5,6 +5,12 @@ import type { LitRuntime } from './lit-runtime'
 import { createService } from '@xihan-ui/machine'
 import { createLitRuntime } from './lit-runtime'
 
+export interface MachineControllerOptions<T extends MachineSchema> {
+  scope?: Scope
+  /** 每次(重)建机器后回调，用于注入 refs：初次 + 重连重建都会触发。 */
+  onBuilt?: (service: Service<T>) => void
+}
+
 // 一台机器一个 controller：hostConnected→mount、hostUpdate→runTrackers、hostDisconnected→unmount。
 // 复用唯一解释器 createService，不重造 FSM。
 export class MachineController<T extends MachineSchema> implements ReactiveController {
@@ -15,7 +21,7 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
     private readonly host: ReactiveControllerHost,
     private readonly machine: MachineConfig<T>,
     private readonly props: () => Partial<T['props']>,
-    private readonly scope?: Scope,
+    private readonly opts: MachineControllerOptions<T> = {},
   ) {
     const built = this.build()
     this.service = built.service
@@ -25,7 +31,8 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
 
   private build(): { service: Service<T>, runtime: LitRuntime } {
     const runtime = createLitRuntime(this.host)
-    const service = createService(this.machine, { props: this.props, runtime, scope: this.scope })
+    const service = createService(this.machine, { props: this.props, runtime, scope: this.opts.scope })
+    this.opts.onBuilt?.(service)
     return { service, runtime }
   }
 
