@@ -97,6 +97,66 @@ describe('createService（toggle 端到端）', () => {
   })
 })
 
+describe('watch 受控回写', () => {
+  interface CtrlSchema extends MachineSchema {
+    props: { open?: boolean }
+    context: Record<string, never>
+    computed: Record<string, never>
+    refs: Record<string, never>
+    state: 'closed' | 'open'
+    event: { type: 'CONTROLLED.OPEN' } | { type: 'CONTROLLED.CLOSE' }
+    tag: never
+    guard: never
+    action: 'syncOpen'
+    effect: never
+  }
+
+  function makeCtrl(): MachineConfig<CtrlSchema> {
+    const { createMachine } = setup<CtrlSchema>()
+    return createMachine({
+      name: 'ctrl',
+      initialState: ({ prop }) => (prop('open') ? 'open' : 'closed'),
+      watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),
+      states: {
+        closed: { on: { 'CONTROLLED.OPEN': { target: 'open' } } },
+        open: { on: { 'CONTROLLED.CLOSE': { target: 'closed' } } },
+      },
+      implementations: {
+        actions: {
+          syncOpen: ({ prop, send }) => {
+            const open = prop('open')
+            if (open === undefined)
+              return
+            send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
+          },
+        },
+      },
+    })
+  }
+
+  it('挂载前翻转受控 prop：不撞 SEND_BEFORE_MOUNT，挂载后状态跟随', () => {
+    const runtime = createVanillaRuntime()
+    const open = runtime.signal(false)
+    const service = createService(makeCtrl(), { props: () => ({ open: open.get() }), runtime })
+    expect(service.getStatus()).toBe('NotStarted')
+    expect(() => open.set(true)).not.toThrow()
+    runtime.start()
+    expect(service.state.get()).toBe('open')
+  })
+
+  it('挂载后翻转受控 prop：状态跟随', () => {
+    const runtime = createVanillaRuntime()
+    const open = runtime.signal(false)
+    const service = createService(makeCtrl(), { props: () => ({ open: open.get() }), runtime })
+    runtime.start()
+    expect(service.state.get()).toBe('closed')
+    open.set(true)
+    expect(service.state.get()).toBe('open')
+    open.set(false)
+    expect(service.state.get()).toBe('closed')
+  })
+})
+
 describe('effects 生命周期', () => {
   interface LampSchema extends MachineSchema {
     props: Record<string, never>

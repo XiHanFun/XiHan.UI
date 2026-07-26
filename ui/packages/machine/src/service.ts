@@ -292,7 +292,9 @@ export function createService<T extends MachineSchema>(
   }
   function enqueueTracker(tracker: Tracker): void {
     pendingTrackers.add(tracker)
-    if (!draining)
+    // 挂载前不冲刷：宿主可能在 setup→mount 窗口里改 prop，此时 send 会撞 NotStarted。
+    // 累积到 onMount 的 resync + drain 里统一消费。
+    if (!draining && status === 'Started')
       drainTrackers()
   }
   function drainTrackers(): void {
@@ -311,11 +313,11 @@ export function createService<T extends MachineSchema>(
       drain()
   }
   function resyncTrackers(): void {
+    // 只标记待处理，不推进 last：变化的检出与 last 推进都交给随后的 drainTrackers，
+    // 否则这里先推进 last，drainTrackers 便检不出变化、挂载前的 prop 漂移被吞掉。
     for (const tracker of trackers) {
       const next = tracker.deps.map(d => d())
-      const changed = next.some((v, i) => !Object.is(v, tracker.last[i]))
-      tracker.last = next
-      if (changed)
+      if (next.some((v, i) => !Object.is(v, tracker.last[i])))
         pendingTrackers.add(tracker)
     }
   }

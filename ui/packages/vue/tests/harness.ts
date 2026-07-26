@@ -56,9 +56,14 @@ export function createVueHarness(): AdapterHarness {
       for (const k of Object.keys(props)) delete props[k]
       Object.assign(props, fixture.props)
       const Root = resolveRoot(fixture.component)
+      // 捕获对外语义事件（跨适配器一致的 emit）；v-model 的 update:open 是 Vue 特化
+      // 语法糖、不入跨适配器事件流。无关组件忽略这些监听器。
+      const listeners = {
+        onOpenChange: (detail: unknown) => events.push({ type: 'open-change', detail }),
+      }
       app = createApp({
         setup: () => () =>
-          h(Root, { ...props }, {
+          h(Root, { ...props, ...listeners }, {
             default: () => fixture.tree.children?.map(c => render(c, fixture.component)) ?? [],
           }),
       })

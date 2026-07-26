@@ -16,6 +16,8 @@ export interface FocusScopeOptions {
   onMountAutoFocus?: (e: CustomEvent) => void
   onUnmountAutoFocus?: (e: CustomEvent) => void
   initialFocus?: () => HTMLElement | null
+  /** 卸载时是否把焦点归还给创建前的元素；默认 true。 */
+  restoreFocus?: () => boolean
 }
 
 export function createFocusScope(o: FocusScopeOptions): Disposable {
@@ -42,19 +44,31 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
   }
 
   // —— 挂载自动聚焦 ——
-  const el = container()
-  if (el && !isInScope(scope.getActiveElement())) {
-    const proceed = dispatchCancelable(el, EV_MOUNT_AUTO_FOCUS, {})
-    // onMountAutoFocus 里可 preventDefault 改写默认聚焦
-    const evNotPrevented = proceed
-    o.onMountAutoFocus?.(new CustomEvent(EV_MOUNT_AUTO_FOCUS))
-    if (evNotPrevented) {
-      const target = o.initialFocus?.() ?? null
-      if (target)
-        focusSafely(target, { select: true })
-      else if (!focusFirst(removeLinks(getTabbables(el)), { select: true }))
-        focusSafely(el)
+  // 容器可能晚一拍才由适配器渲染出来（如 Dialog 内容在状态进入 open 后才挂载）；
+  // 此刻容器为 null 就下一帧重试一次，否则焦点永远进不去。
+  function attemptMountFocus(): boolean {
+    const el = container()
+    if (!el)
+      return false
+    if (!isInScope(scope.getActiveElement())) {
+      const proceed = dispatchCancelable(el, EV_MOUNT_AUTO_FOCUS, {})
+      // onMountAutoFocus 里可 preventDefault 改写默认聚焦
+      o.onMountAutoFocus?.(new CustomEvent(EV_MOUNT_AUTO_FOCUS))
+      if (proceed) {
+        const target = o.initialFocus?.() ?? null
+        if (target)
+          focusSafely(target, { select: true })
+        else if (!focusFirst(removeLinks(getTabbables(el)), { select: true }))
+          focusSafely(el)
+      }
     }
+    return true
+  }
+  if (!attemptMountFocus()) {
+    win.requestAnimationFrame(() => {
+      if (!disposed)
+        attemptMountFocus()
+    })
   }
 
   // —— 逃逸抢回 ——
@@ -122,6 +136,8 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
       guardsCleanup()
       // 焦点返还延后一拍，避免被后续 DOM 操作覆盖
       win.requestAnimationFrame(() => {
+        if (!(o.restoreFocus?.() ?? true))
+          return
         const anchor = container() ?? doc.body
         if (dispatchCancelable(anchor, EV_UNMOUNT_AUTO_FOCUS, {})) {
           o.onUnmountAutoFocus?.(new CustomEvent(EV_UNMOUNT_AUTO_FOCUS))

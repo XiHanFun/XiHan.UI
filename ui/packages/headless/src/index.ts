@@ -5,6 +5,6 @@ export { buttonAnatomy, buttonKeyboard, buttonMeta, connectButton } from './butt
 export type { ButtonApi, ButtonProps } from './button'
 export { connectDialog, dialogAnatomy, dialogKeyboard, dialogMachine, dialogMeta } from './dialog'
 
-export type { DialogApi, DialogRefs, DialogSchema, DialogTranslations } from './dialog'
+export type { DialogApi, DialogOpenChangeDetails, DialogRefs, DialogSchema, DialogTranslations } from './dialog'
 export type { ComponentMeta, KeyboardRow, KeyboardTable } from './spec'
 export type { HeadlessComponent, NormalizeProps, PropTypes } from './types'

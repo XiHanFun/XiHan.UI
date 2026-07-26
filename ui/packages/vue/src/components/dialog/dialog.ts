@@ -18,8 +18,14 @@ export const XhDialogRoot = defineComponent({
     restoreFocus: { type: Boolean, default: true },
     translations: { type: Object as PropType<DialogProps['translations']>, default: undefined },
   },
-  setup(props, { slots }) {
-    const ctx = useDialog(props as DialogProps)
+  // open-change 携带 { open }；update:open 携带裸布尔，支持 v-model:open
+  emits: ['open-change', 'update:open'],
+  setup(props, { slots, emit }) {
+    const notify: DialogProps['onOpenChange'] = (details) => {
+      emit('open-change', details)
+      emit('update:open', details.open)
+    }
+    const ctx = useDialog(props as DialogProps, notify)
     provideDialog(ctx)
     return () => slots.default?.({ open: ctx.api.value.open, setOpen: ctx.api.value.setOpen })
   },
