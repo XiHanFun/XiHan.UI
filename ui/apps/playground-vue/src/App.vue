@@ -2,12 +2,17 @@
 import { createThemeController } from '@xihan-ui/system/runtime'
 import {
   XhButton,
+  XhCheckbox,
+  XhCollapsibleContent,
+  XhCollapsibleRoot,
+  XhCollapsibleTrigger,
   XhDialogCloseTrigger,
   XhDialogContent,
   XhDialogDescription,
   XhDialogRoot,
   XhDialogTitle,
   XhDialogTrigger,
+  XhSeparator,
   XhSwitch,
 } from '@xihan-ui/vue'
 import { ref } from 'vue'
@@ -21,6 +26,7 @@ function toggleTheme() {
 }
 
 const wifi = ref(true)
+const agree = ref(false)
 </script>
 
 <template>
@@ -101,6 +107,49 @@ const wifi = ref(true)
           <span>禁用</span>
         </label>
       </div>
+    </section>
+
+    <section>
+      <h2>Checkbox</h2>
+      <div class="row" style="gap: 16px;">
+        <label class="row" style="gap: 8px;">
+          <XhCheckbox v-model:checked="agree" aria-label="同意条款" />
+          <span>同意条款（{{ agree ? '已勾选' : '未勾选' }}）</span>
+        </label>
+        <label class="row" style="gap: 8px;">
+          <XhCheckbox default-checked aria-label="默认勾选" />
+          <span>默认勾选</span>
+        </label>
+        <label class="row" style="gap: 8px;">
+          <XhCheckbox disabled aria-label="禁用" />
+          <span>禁用</span>
+        </label>
+      </div>
+    </section>
+
+    <section>
+      <h2>Collapsible</h2>
+      <XhCollapsibleRoot>
+        <XhCollapsibleTrigger>展开详情 ▾</XhCollapsibleTrigger>
+        <XhCollapsibleContent>
+          <p class="lead" style="margin: 8px 0 0;">
+            折叠面板由 open/closed 状态机驱动，支持受控 v-model:open；收起时内容以 hidden 移出无障碍树。
+          </p>
+        </XhCollapsibleContent>
+      </XhCollapsibleRoot>
+    </section>
+
+    <section>
+      <h2>Separator</h2>
+      <div class="row" style="gap: 0;">
+        <span>左</span>
+        <XhSeparator orientation="vertical" style="block-size: 16px; margin-inline: 12px;" />
+        <span>中</span>
+        <XhSeparator orientation="vertical" style="block-size: 16px; margin-inline: 12px;" />
+        <span>右</span>
+      </div>
+      <XhSeparator style="margin-block: 16px;" />
+      <span class="lead">上面是水平分隔线。</span>
     </section>
   </main>
 </template>

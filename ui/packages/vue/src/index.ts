@@ -1,6 +1,16 @@
 // @xihan-ui/vue —— Vue 适配器（组件 + 组合式函数 + machine 运行时）。
 
 export { XhButton } from './components/button'
+export { XhCheckbox } from './components/checkbox/checkbox'
+export { useCheckbox } from './components/checkbox/use-checkbox'
+export type { CheckboxContext } from './components/checkbox/use-checkbox'
+export {
+  XhCollapsibleContent,
+  XhCollapsibleRoot,
+  XhCollapsibleTrigger,
+} from './components/collapsible/collapsible'
+export { useCollapsible } from './components/collapsible/use-collapsible'
+export type { CollapsibleContext } from './components/collapsible/use-collapsible'
 export {
   XhDialogCloseTrigger,
   XhDialogContent,
@@ -11,6 +21,7 @@ export {
 } from './components/dialog/dialog'
 export { useDialog } from './components/dialog/use-dialog'
 export type { DialogContext } from './components/dialog/use-dialog'
+export { XhSeparator } from './components/separator/separator'
 export { XhSwitch } from './components/switch/switch'
 export { useSwitch } from './components/switch/use-switch'
 export type { SwitchContext } from './components/switch/use-switch'
