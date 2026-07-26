@@ -201,6 +201,49 @@ export const accordionSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'orientation=horizontal：左右键沿轴走，dir 翻转后左右键语义互换，上下键始终不归导航管',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['accordion.kbd.next', 'accordion.kbd.prev'],
+      props: { orientation: 'horizontal' },
+      initial: { parts: { root: { 'data-orientation': 'horizontal' } } },
+      steps: [
+        { kind: 'focus', part: 'trigger[1]', expect: { activeElement: { part: 'trigger[1]', exact: true } } },
+        // dir 缺省即 ltr：左键往前、右键往后
+        { kind: 'key', key: 'ArrowLeft', expect: { activeElement: { part: 'trigger[0]', exact: true } } },
+        { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'trigger[1]', exact: true } } },
+        { kind: 'setProps', props: { dir: 'rtl' } },
+        // rtl：同样两个键，落点整个翻过来
+        { kind: 'key', key: 'ArrowLeft', expect: { activeElement: { part: 'trigger[2]', exact: true } } },
+        { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'trigger[1]', exact: true } } },
+        {
+          // 轴向为 horizontal，上下键返回 null：焦点原地不动，也不吞掉页面滚动
+          kind: 'key',
+          key: 'ArrowUp',
+          expect: {
+            activeElement: { part: 'trigger[1]', exact: true },
+            parts: {
+              'content[0]': { hidden: '' },
+              'content[1]': { hidden: '' },
+              'content[2]': { hidden: '' },
+            },
+            events: [],
+          },
+        },
+      ],
+    },
+    {
+      name: '带修饰键的方向键/Home 不归导航管：焦点不动，组合键交还浏览器与读屏',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      steps: [
+        { kind: 'focus', part: 'trigger[1]', expect: { activeElement: { part: 'trigger[1]', exact: true } } },
+        { kind: 'key', key: 'Home', modifiers: ['Control'], expect: { activeElement: { part: 'trigger[1]', exact: true } } },
+        { kind: 'key', key: 'End', modifiers: ['Meta'], expect: { activeElement: { part: 'trigger[1]', exact: true } } },
+        { kind: 'key', key: 'ArrowDown', modifiers: ['Shift'], expect: { activeElement: { part: 'trigger[1]', exact: true } } },
+        // 同一个键不带修饰键就该动：上面三条不是空断言
+        { kind: 'key', key: 'Home', expect: { activeElement: { part: 'trigger[0]', exact: true } } },
+      ],
+    },
+    {
       name: '受控 value：点击只发 value-change 不自改 DOM，父写回 value 后才展开',
       spec: { adr: 'controlled-uncontrolled' },
       props: { value: ['one'] },

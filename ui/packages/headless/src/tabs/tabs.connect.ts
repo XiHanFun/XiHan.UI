@@ -22,13 +22,14 @@ export function connectTabs<T extends PropTypes>(
   // roving tabindex 的唯一锚点：焦点在组内时跟着焦点光标走，否则落在选中项
   const anchor = focusedValue ?? value
   const orientation = prop('orientation') ?? 'horizontal'
+  const dir = prop('dir')
   const loop = prop('loop') ?? true
 
   const triggerId = (target: string): string => scope.partId(tabsAnatomy.name, `trigger:${target}`)
   const contentId = (target: string): string => scope.partId(tabsAnatomy.name, `content:${target}`)
   const stateAttr = (target: string): 'active' | 'inactive' => (target === value ? 'active' : 'inactive')
 
-  const setValue = (next: string): void => {
+  const setValue = (next: string | null): void => {
     send({ type: 'VALUE.SET', value: next })
   }
 
@@ -76,8 +77,9 @@ export function connectTabs<T extends PropTypes>(
       'tabindex': focusedValue == null ? 0 : -1,
       'onKeydown': (event: KeyboardEvent) => {
         // 轴跟随 orientation：横向 tablist 里的上下键返回 null，
-        // 不归导航管就绝不 preventDefault，放行给页面滚动与读屏
-        const intent = navIntentFromKey(event, { axis: orientation })
+        // 不归导航管就绝不 preventDefault，放行给页面滚动与读屏。
+        // dir 只作用于水平轴：rtl 下 ArrowRight 走上一个，纵向 tablist 不受影响
+        const intent = navIntentFromKey(event, { axis: orientation, dir })
         if (intent) {
           event.preventDefault()
           navigate(event.currentTarget as HTMLElement, intent)
@@ -135,11 +137,6 @@ export function connectTabs<T extends PropTypes>(
       'tabindex': 0,
       'hidden': item.value !== value || undefined,
       'data-state': stateAttr(item.value),
-    }),
-    getIndicatorProps: () => normalize.element({
-      ...parts.indicator.attrs,
-      'aria-hidden': 'true',
-      'data-orientation': orientation,
     }),
   }
 }

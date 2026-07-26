@@ -70,27 +70,6 @@
     opacity: 0.5;
   }
 
-  /* 选中条的滑块：定位与尺寸由作者按 trigger 盒子写，这里只给外观 */
-  [data-scope='tabs'][data-part='indicator'] {
-    position: absolute;
-    background: var(--xh-tabs-indicator-bg, var(--xh-bg-brand));
-    border-radius: var(--xh-tabs-indicator-radius, var(--xh-shape-pill));
-    transition:
-      translate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
-      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
-      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  [data-scope='tabs'][data-part='indicator'][data-orientation='horizontal'] {
-    inset-block-end: 0;
-    block-size: var(--xh-tabs-indicator-thickness, 2px);
-  }
-
-  [data-scope='tabs'][data-part='indicator'][data-orientation='vertical'] {
-    inset-inline-end: 0;
-    inline-size: var(--xh-tabs-indicator-thickness, 2px);
-  }
-
   [data-scope='tabs'][data-part='content'] {
     padding-block: var(--xh-tabs-content-py, var(--xh-stack-gap-md));
     color: var(--xh-tabs-content-fg, var(--xh-fg-default));

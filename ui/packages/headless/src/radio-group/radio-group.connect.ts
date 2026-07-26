@@ -11,15 +11,31 @@ const parts = radioGroupAnatomy.build()
 // 条目集合只在事件处理器里查活 DOM：那一刻两个适配器看到的是同一份文档，顺序即文档序。
 const ITEM_QUERY: ItemQuery = { scope: radioGroupAnatomy.name, part: 'item' }
 
+// 隐藏输入要留在布局与表单里，不能 display:none——原生校验提示需要一个可定位的框。
+const HIDDEN_INPUT_STYLE = {
+  position: 'absolute',
+  inlineSize: '1px',
+  blockSize: '1px',
+  margin: '-1px',
+  padding: '0',
+  border: '0',
+  overflow: 'hidden',
+  clipPath: 'inset(50%)',
+  whiteSpace: 'nowrap',
+}
+
 export function connectRadioGroup<T extends PropTypes>(
   service: Service<RadioGroupSchema>,
   normalize: NormalizeProps<T>,
 ): RadioGroupApi<T> {
   const { context, prop, send, scope } = service
-  const value = context.get('value')
-  const focusedValue = context.get('focusedValue')
+  // value 与 defaultValue 皆缺省时 cell 初值是 undefined，这里归一成 null
+  const value = context.get('value') ?? null
+  const focusedValue = context.get('focusedValue') ?? null
   const groupDisabled = !!prop('disabled')
   const orientation = prop('orientation') ?? 'vertical'
+  const dir = prop('dir') ?? 'ltr'
+  const name = prop('name')
   const ids = scope.ids('radio-group', 'label')
 
   // roving tabindex 的唯一锚点：焦点在组内跟焦点走，否则跟选中值走
@@ -29,7 +45,7 @@ export function connectRadioGroup<T extends PropTypes>(
   // 组禁用向下传导到每个条目；条目也能单独禁用
   const isDisabled = (item: RadioGroupItemProps): boolean => groupDisabled || !!item.disabled
 
-  // item / item-text / indicator 共用同一份状态标记，样式层三处一致
+  // item / item-text / indicator / hidden-input 共用同一份状态标记，样式层各处一致
   const stateAttrs = (item: RadioGroupItemProps): Record<string, string | undefined> => ({
     'data-state': isChecked(item) ? 'checked' : 'unchecked',
     'data-disabled': dataAttr(isDisabled(item)),
@@ -75,8 +91,9 @@ export function connectRadioGroup<T extends PropTypes>(
       'onKeyDown': (e: KeyboardEvent) => {
         if (groupDisabled)
           return
-        // axis 'both'：四个方向键都要响应，横排组的上下键同样切换；规范未要求 Home/End
-        const intent = navIntentFromKey(e, { axis: 'both', home: false })
+        // axis 'both'：四个方向键都要响应，横排组的上下键同样切换；规范未要求 Home/End。
+        // dir 只对调左右键，上下键在 rtl 下语义不变
+        const intent = navIntentFromKey(e, { axis: 'both', dir, home: false })
         // 返回 null 表示该键不归导航管，此时绝不 preventDefault（页面滚动与读屏要用）
         if (!intent)
           return
@@ -109,7 +126,8 @@ export function connectRadioGroup<T extends PropTypes>(
       // 焦点是事实不是许可：禁用条目被点到也记锚点，方向键才知道从哪儿起步
       'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
       'onKeyDown': (e: KeyboardEvent) => {
-        if (e.key !== ' ')
+        // 禁用条目不认这个键，因此也不能吞掉它：Space 必须放行给页面滚动
+        if (e.key !== ' ' || isDisabled(item))
           return
         e.preventDefault()
         select(item)
@@ -123,6 +141,23 @@ export function connectRadioGroup<T extends PropTypes>(
       ...parts.indicator.attrs,
       ...stateAttrs(item),
       'aria-hidden': 'true',
+    }),
+    // 表单出口：整组的选中值靠这份原生输入随表单提交。它对键盘与读屏都不存在
+    // （tabindex=-1 + aria-hidden），交互全部由 item 承担，两者不会各说各话。
+    getHiddenInputProps: item => normalize.input({
+      ...parts['hidden-input'].attrs,
+      ...stateAttrs(item),
+      // type 先于 checked 写入：改 type 会重置输入的选中态
+      'type': 'radio',
+      // name 缺省即不产出该属性，此时这份输入不参与提交
+      'name': name,
+      'value': item.value,
+      'checked': isChecked(item),
+      // 单体输入用原生 disabled（与 item 的 aria-disabled 相反）：禁用组不该提交出值
+      'disabled': isDisabled(item) || undefined,
+      'tabindex': -1,
+      'aria-hidden': 'true',
+      'style': HIDDEN_INPUT_STYLE,
     }),
   }
 }

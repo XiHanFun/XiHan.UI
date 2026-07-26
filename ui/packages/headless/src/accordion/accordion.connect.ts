@@ -8,25 +8,9 @@ import { accordionAnatomy } from './accordion.anatomy'
 
 const parts = accordionAnatomy.build()
 
-const ITEM_QUERY: ItemQuery = { scope: accordionAnatomy.name, part: 'item' }
-
-/**
- * 取同一台手风琴内全部 trigger，文档序。**只在事件处理器里调用**：
- * 那一刻两个适配器看到的是同一份活 DOM，顺序天然一致，也无需记账。
- *
- * 查 item 而不是直接查 trigger：trigger 最近的 data-scope 祖先是 header，
- * 按归属过滤会把集合切成每组一个；item 直属 root，归属判断才成立。
- */
-function collectTriggers(root: HTMLElement | null): HTMLElement[] {
-  const out: HTMLElement[] = []
-  for (const item of queryItems(root, ITEM_QUERY)) {
-    const trigger = item.querySelector<HTMLElement>(parts.trigger.selector)
-    // 嵌套手风琴：只认归属本条目的 trigger
-    if (trigger && trigger.closest(parts.item.selector) === item)
-      out.push(trigger)
-  }
-  return out
-}
+// 导航集合就是 trigger 本身：queryItems 的归属判据取容器自己的 data-part，
+// trigger 与 root 之间隔着 item/header 也照样只收本台手风琴的 trigger（嵌套互不吞并）。
+const TRIGGER_QUERY: ItemQuery = { scope: accordionAnatomy.name, part: 'trigger' }
 
 export function connectAccordion<T extends PropTypes>(
   service: Service<AccordionSchema>,
@@ -35,6 +19,7 @@ export function connectAccordion<T extends PropTypes>(
   const { context, prop, send, scope } = service
   const value = context.get('value')
   const orientation = prop('orientation') ?? 'vertical'
+  const dir = prop('dir')
 
   const isOpen = (target: string): boolean => value.includes(target)
   const stateAttr = (item: AccordionItemProps): 'open' | 'closed' => (isOpen(item.value) ? 'open' : 'closed')
@@ -48,14 +33,17 @@ export function connectAccordion<T extends PropTypes>(
   // 方向键：只在 header 之间搬焦点，永不进 content，也不改展开集合。
   // 起点用条目自报的 value（无需反查 DOM），终点用事件那一刻的活 DOM 算。
   const onTriggerKeydown = (item: AccordionItemProps) => (event: KeyboardEvent): void => {
-    const intent = navIntentFromKey(event, { axis: orientation })
+    // 整个事件对象喂进去：带 Ctrl/Meta/Alt/Shift 的组合一律不归导航管，
+    // 否则 Ctrl+Home 之类的浏览器/读屏组合会被这一组吞掉
+    const intent = navIntentFromKey(event, { axis: orientation, dir })
     // null = 这个键不归导航管，必须放行给页面滚动与读屏，绝不能 preventDefault
     if (!intent)
       return
     event.preventDefault()
     const root = (event.currentTarget as HTMLElement).closest<HTMLElement>(parts.root.selector)
+    // 集合只在事件那一刻读活 DOM，顺序天然是文档序，增删无需记账；
     // loop 默认 false：首尾不回绕；禁用条目按集合默认策略跳过
-    focusItem(navigateItems(collectTriggers(root), item.value, intent, { loop: false }))
+    focusItem(navigateItems(queryItems(root, TRIGGER_QUERY), item.value, intent, { loop: false }))
   }
 
   return {

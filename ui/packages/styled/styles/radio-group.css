@@ -20,7 +20,9 @@
     line-height: 1;
   }
 
+  /* position 是给条目内那份视觉隐藏的原生输入做定位基准，别去掉 */
   [data-scope='radio-group'][data-part='item'] {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: var(--xh-radio-group-item-gap, var(--xh-control-gap-md));

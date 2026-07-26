@@ -42,11 +42,16 @@ export const accordionMachine = createMachine({
         // multiple=false 时展开一项即收起其余，集合恒为长度 1
         context.set('value', prop('multiple') ? [...current, e.value] : [e.value])
       },
-      setValue: ({ context, event }) => {
+      setValue: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'VALUE.SET')
           return
-        context.set('value', [...e.value])
+        // 与 toggleItem 同一套不变量：公开 API 不得造出 UI 造不出的展开集合
+        // （multiple=false 两项同开、collapsible=false 全收起）
+        const next = prop('multiple') ? [...e.value] : e.value.slice(0, 1)
+        if (!next.length && !prop('collapsible'))
+          return
+        context.set('value', next)
       },
     },
   },

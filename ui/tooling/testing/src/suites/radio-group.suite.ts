@@ -3,7 +3,16 @@ import { radioGroupAnatomy, radioGroupKeyboard } from '@xihan-ui/headless'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/radio/'
 
-// indicator 由 item 内部装配，不作为独立 fixture 节点；采集器仍会抓到它。
+const HIDDEN_INPUT = '[data-scope="radio-group"][data-part="hidden-input"]'
+
+/** name/value/checked 都不进归一化快照（后两者只落 DOM property），表单出口只能直接读 DOM。 */
+function assertHiddenInputs(doc: Document, expected: readonly (readonly [string, string, boolean])[]): void {
+  const actual = [...doc.querySelectorAll<HTMLInputElement>(HIDDEN_INPUT)].map(el => [el.name, el.value, el.checked] as const)
+  if (JSON.stringify(actual) !== JSON.stringify(expected))
+    throw new Error(`隐藏输入的 name/value/checked 不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
+}
+
+// indicator 与 hidden-input 都由 item 内部装配，不作为独立 fixture 节点；采集器仍会抓到它们。
 // 条目 b 用 aria-disabled 表达禁用（不是原生 disabled），导航时被跳过但仍可聚焦。
 export const radioGroupSuite: ConformanceSuite = {
   component: 'radio-group',
@@ -27,16 +36,19 @@ export const radioGroupSuite: ConformanceSuite = {
           'root',
           'label',
           'item[0]',
+          'hidden-input[0]',
           'indicator[0]',
           'item-text[0]',
           'item[1]',
+          'hidden-input[1]',
           'indicator[1]',
           'item-text[1]',
           'item[2]',
+          'hidden-input[2]',
           'indicator[2]',
           'item-text[2]',
         ],
-        counts: { 'root': 1, 'label': 1, 'item': 3, 'item-text': 3, 'indicator': 3 },
+        counts: { 'root': 1, 'label': 1, 'item': 3, 'item-text': 3, 'indicator': 3, 'hidden-input': 3 },
         parts: {
           'root': {
             'role': 'radiogroup',
@@ -87,6 +99,12 @@ export const radioGroupSuite: ConformanceSuite = {
             { 'data-state': 'unchecked' },
             { 'data-state': 'unchecked', 'data-disabled': '' },
             { 'data-state': 'unchecked' },
+          ],
+          // 隐藏输入与 item 相反：单体输入用原生 disabled，禁用组不该提交出值
+          'hidden-input': [
+            { 'type': 'radio', 'aria-hidden': 'true', 'tabindex': '-1', 'data-state': 'unchecked', 'data-disabled': null, 'disabled': null },
+            { 'type': 'radio', 'aria-hidden': 'true', 'tabindex': '-1', 'data-state': 'unchecked', 'data-disabled': '', 'disabled': '' },
+            { 'type': 'radio', 'aria-hidden': 'true', 'tabindex': '-1', 'data-state': 'unchecked', 'data-disabled': null, 'disabled': null },
           ],
         },
         activeElement: null,
@@ -260,7 +278,7 @@ export const radioGroupSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '禁用条目：点击不选中不派发，焦点仍可落上去并成为导航起点',
+      name: '禁用条目：点击与 Space 都不选中，Space 还要放行给页面滚动；焦点仍可落上去并成为导航起点',
       spec: { apg: `${APG}#roles_states_properties` },
       steps: [
         {
@@ -275,6 +293,17 @@ export const radioGroupSuite: ConformanceSuite = {
               ],
             },
             events: [],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '归一化快照没有 defaultPrevented 通道，只能直接看事件对象：禁用条目吞掉 Space 会连页面滚动一起吞掉',
+          run: ({ doc }) => {
+            const item = doc.querySelectorAll<HTMLElement>('[data-scope="radio-group"][data-part="item"]')[1]!
+            const e = new KeyboardEvent('keydown', { key: ' ', code: 'Space', bubbles: true, cancelable: true })
+            item.dispatchEvent(e)
+            if (e.defaultPrevented)
+              throw new Error('禁用条目上的 Space 被 preventDefault')
           },
         },
         {
@@ -364,6 +393,125 @@ export const radioGroupSuite: ConformanceSuite = {
             },
             events: [{ type: 'value-change', detail: { value: 'a' } }],
           },
+        },
+      ],
+    },
+    {
+      name: 'dir=rtl：左右键语义对调，上下键不受影响',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['radio-group.kbd.next', 'radio-group.kbd.prev'],
+      // 默认 fixture 的 b 禁用，从 a 出发 next 与 prev 都落到 c，分不出左右键各走哪边；
+      // 这里把 b 放开，三个条目都可停留
+      fixture: base => ({
+        ...base,
+        children: base.children?.map(node =>
+          node.part === 'item' && node.attrs?.value === 'b' ? { ...node, attrs: { value: 'b' } } : node,
+        ),
+      }),
+      props: { dir: 'rtl', orientation: 'horizontal' },
+      steps: [
+        { kind: 'click', part: 'item[0]' },
+        {
+          kind: 'key',
+          key: 'ArrowLeft',
+          expect: {
+            parts: {
+              item: [
+                { 'aria-checked': 'false', 'tabindex': '-1' },
+                { 'aria-checked': 'true', 'data-state': 'checked', 'tabindex': '0' },
+                { 'aria-checked': 'false', 'tabindex': '-1' },
+              ],
+            },
+            activeElement: { part: 'item[1]', exact: true },
+            events: [{ type: 'value-change', detail: { value: 'b' } }],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          expect: {
+            parts: {
+              item: [
+                { 'aria-checked': 'true', 'data-state': 'checked', 'tabindex': '0' },
+                { 'aria-checked': 'false', 'tabindex': '-1' },
+                { 'aria-checked': 'false', 'tabindex': '-1' },
+              ],
+            },
+            activeElement: { part: 'item[0]', exact: true },
+            events: [{ type: 'value-change', detail: { value: 'a' } }],
+          },
+        },
+        // 上下键走的是竖轴，rtl 不参与，仍是 ArrowDown=下一项 / ArrowUp=上一项
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          expect: {
+            parts: {
+              item: [
+                { 'aria-checked': 'false' },
+                { 'aria-checked': 'true', 'data-state': 'checked' },
+                { 'aria-checked': 'false' },
+              ],
+            },
+            activeElement: { part: 'item[1]', exact: true },
+            events: [{ type: 'value-change', detail: { value: 'b' } }],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowUp',
+          expect: {
+            parts: {
+              item: [
+                { 'aria-checked': 'true', 'data-state': 'checked' },
+                { 'aria-checked': 'false' },
+                { 'aria-checked': 'false' },
+              ],
+            },
+            activeElement: { part: 'item[0]', exact: true },
+            events: [{ type: 'value-change', detail: { value: 'a' } }],
+          },
+        },
+      ],
+    },
+    {
+      name: 'name 给定：每个条目内一份隐藏原生 radio，checked 跟着选中值走',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: { name: 'size', defaultValue: 'a' },
+      initial: {
+        counts: { 'hidden-input': 3 },
+        parts: {
+          'hidden-input': [
+            { 'type': 'radio', 'aria-hidden': 'true', 'tabindex': '-1', 'data-state': 'checked' },
+            { 'type': 'radio', 'aria-hidden': 'true', 'tabindex': '-1', 'data-state': 'unchecked', 'disabled': '' },
+            { 'type': 'radio', 'aria-hidden': 'true', 'tabindex': '-1', 'data-state': 'unchecked' },
+          ],
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'name/value/checked 是表单出口却都不进归一化快照（后两者只落 DOM property），只能直接读 DOM',
+          run: ({ doc }) => assertHiddenInputs(doc, [['size', 'a', true], ['size', 'b', false], ['size', 'c', false]]),
+        },
+        {
+          kind: 'click',
+          part: 'item[2]',
+          expect: {
+            parts: {
+              'hidden-input': [
+                { 'data-state': 'unchecked' },
+                { 'data-state': 'unchecked' },
+                { 'data-state': 'checked' },
+              ],
+            },
+            events: [{ type: 'value-change', detail: { value: 'c' } }],
+          },
+        },
+        {
+          kind: 'raw',
+          why: 'checked 只落 DOM property，选中值迁移后要直接读 DOM 才验得到表单提交的是新值',
+          run: ({ doc }) => assertHiddenInputs(doc, [['size', 'a', false], ['size', 'b', false], ['size', 'c', true]]),
         },
       ],
     },

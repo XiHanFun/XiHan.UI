@@ -1,4 +1,4 @@
-import type { Orientation } from '@xihan-ui/core'
+import type { Direction, Orientation } from '@xihan-ui/core'
 import type { AccordionSchema } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
@@ -15,6 +15,8 @@ export const XhAccordionRoot = defineComponent({
     multiple: Boolean,
     collapsible: Boolean,
     orientation: { type: String as PropType<Orientation>, default: undefined },
+    // 只改水平轴上左右键的语义，不写进 DOM：视觉方向由页面的 dir 继承决定
+    dir: { type: String as PropType<Direction>, default: undefined },
   },
   // value-change 携带 { value }；update:value 携带裸数组，支持 v-model:value
   emits: ['value-change', 'update:value'],
