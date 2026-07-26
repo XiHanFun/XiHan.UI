@@ -158,6 +158,9 @@ importers:
       '@xihan-ui/vue':
         specifier: workspace:*
         version: link:../../packages/vue
+      '@xihan-ui/wc':
+        specifier: workspace:*
+        version: link:../../packages/wc
       vue:
         specifier: 'catalog:'
         version: 3.5.40(typescript@6.0.3)

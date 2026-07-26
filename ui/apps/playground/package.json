@@ -13,6 +13,7 @@
     "@xihan-ui/styled": "workspace:*",
     "@xihan-ui/system": "workspace:*",
     "@xihan-ui/vue": "workspace:*",
+    "@xihan-ui/wc": "workspace:*",
     "vue": "catalog:"
   },
   "devDependencies": {
