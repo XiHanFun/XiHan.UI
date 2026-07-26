@@ -24,7 +24,7 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "customElements": "custom-elements.json",
-  "files": ["dist", "custom-elements.json"],
+  "files": ["custom-elements.json", "dist"],
   "scripts": {
     "build": "tsdown",
     "cem": "cem analyze",
