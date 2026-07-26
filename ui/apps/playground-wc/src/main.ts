@@ -20,7 +20,7 @@ app.innerHTML = `
   </p>
 
   <section>
-    <h2>xh-button</h2>
+    <h2>Button</h2>
     <div class="row">
       <xh-button variant="solid"><button data-xh-part="root">Solid</button></xh-button>
       <xh-button><button data-xh-part="root">Subtle</button></xh-button>
@@ -33,7 +33,7 @@ app.innerHTML = `
   </section>
 
   <section>
-    <h2>xh-dialog</h2>
+    <h2>Dialog</h2>
     <p class="lead">点击打开：焦点陷入内容、Esc 或点遮罩关闭、关闭后焦点回到触发按钮。</p>
     <xh-dialog>
       <button data-xh-part="trigger">打开对话框</button>
