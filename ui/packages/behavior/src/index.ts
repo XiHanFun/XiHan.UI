@@ -1,5 +1,9 @@
 // @xihan-ui/behavior —— 交互行为原语（依赖 core）。
 
+export { focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from './collection/items'
+export type { ItemQuery, NavigateOptions } from './collection/items'
+export { navIntentFromKey, stepIndex } from './collection/navigate'
+export type { NavAxis, NavIntent, NavKeyOptions, StepOptions } from './collection/navigate'
 export { createDismissLayer } from './dismissable-layer'
 export type { DismissLayerOptions, DismissReason } from './dismissable-layer'
 export { isInside, shouldDismiss } from './dismissable-layer/layer-stack'
