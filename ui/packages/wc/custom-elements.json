@@ -4,6 +4,205 @@
   "modules": [
     {
       "kind": "javascript-module",
+      "path": "src/elements/accordion.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-accordion>` —— Light-DOM 行为宿主：用户写 root/item/header/trigger/content/indicator 角色节点，\n元素跑 accordion 机器并把 connect 产出逐个打上去。条目身份写在 item 节点的 value 属性上。",
+          "name": "XhAccordionElement",
+          "cssParts": [
+            {
+              "description": "手风琴根容器（承载 data-orientation）",
+              "name": "root"
+            },
+            {
+              "description": "单个条目容器；作者在此写 value（身份）与可选 disabled",
+              "name": "item"
+            },
+            {
+              "description": "条目标题（role=heading + aria-level）",
+              "name": "header"
+            },
+            {
+              "description": "展开/收起按钮（aria-expanded/aria-controls 所在，无 roving tabindex）",
+              "name": "trigger"
+            },
+            {
+              "description": "条目面板（role=region，收起时带 hidden）",
+              "name": "content"
+            },
+            {
+              "description": "展开方向指示符（aria-hidden）",
+              "name": "indicator"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "multiple",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "multiple"
+            },
+            {
+              "kind": "field",
+              "name": "collapsible",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "collapsible"
+            },
+            {
+              "kind": "field",
+              "name": "orientation",
+              "privacy": "public",
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "attribute": "orientation"
+            },
+            {
+              "kind": "field",
+              "name": "textDir",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<AccordionSchema>( this, accordionMachine, () => this.machineProps(), )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<AccordionSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "itemProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "AccordionItemProps"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "取角色节点所属条目的身份：value 与 disabled 都写在 item 节点上，\nheader/trigger/content/indicator 向上找自己的 item（item 自身 closest 命中的就是它自己）。\n没有 item 包裹层时退回读节点自身，扁平结构也能用。\n越出本宿主的 item 不算数——嵌套手风琴的内层节点不会认外层条目。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "展开集合变化；detail 为 `{ value: string[] }`",
+              "name": "value-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向；只改水平轴上左右键的语义，不写进角色节点",
+              "name": "dir",
+              "fieldName": "textDir"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "允许多项同时展开；缺省时展开一项即收起其余",
+              "name": "multiple",
+              "fieldName": "multiple"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "允许把最后一个展开项收起；缺省时面板恒有内容",
+              "name": "collapsible",
+              "fieldName": "collapsible"
+            },
+            {
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "description": "方向键轴向，默认 vertical",
+              "name": "orientation",
+              "fieldName": "orientation"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-accordion",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhAccordionElement",
+          "declaration": {
+            "name": "XhAccordionElement",
+            "module": "src/elements/accordion.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/badge.ts",
       "declarations": [
         {
@@ -835,6 +1034,277 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/radio-group.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-radio-group>` —— Light-DOM 行为宿主：用户写 root/label 与若干 item 角色节点，\n每个 item 内自带 hidden-input/indicator/item-text，元素跑 radio-group 机器并把 connect 产出打上去。\n条目身份取自条目节点上的 value 属性；导航与选中在事件那一刻按 data-scope+data-part 查活 DOM，\n依赖 connect 回写的 data-value，因此 wire 必须先于交互跑过（基类 updated 已保证）。",
+          "name": "XhRadioGroupElement",
+          "cssParts": [
+            {
+              "description": "role=radiogroup 容器（承载 roving tabindex 的兜底位）",
+              "name": "root"
+            },
+            {
+              "description": "组标题（aria-labelledby 目标）",
+              "name": "label"
+            },
+            {
+              "description": "role=radio 条目，作者用 value 属性声明身份",
+              "name": "item"
+            },
+            {
+              "description": "条目文本",
+              "name": "item-text"
+            },
+            {
+              "description": "条目选中标记",
+              "name": "indicator"
+            },
+            {
+              "description": "条目的表单影子输入（必须是原生 input）",
+              "name": "hidden-input"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "default-value"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "orientation",
+              "privacy": "public",
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "attribute": "orientation"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "declaredDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<RadioGroupSchema>(this, radioGroupMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<RadioGroupSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "itemProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "RadioGroupItemProps"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "partsIn",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "item",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "spreadHiddenInput",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "input",
+                  "type": {
+                    "text": "HTMLInputElement"
+                  }
+                },
+                {
+                  "name": "props",
+                  "type": {
+                    "text": "Record<string, unknown>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "选中值变化；detail 为 `{ value: string | null }`",
+              "name": "value-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "受控选中值；缺省该属性即非受控",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "非受控初始选中值",
+              "name": "default-value",
+              "fieldName": "defaultValue"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "整组禁用",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "description": "视觉排布，默认 vertical",
+              "name": "orientation",
+              "fieldName": "orientation"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，只改写左右方向键语义，默认 ltr",
+              "name": "dir",
+              "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "表单字段名；给定后隐藏输入才带 name 并参与提交",
+              "name": "name",
+              "fieldName": "name"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-radio-group",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhRadioGroupElement",
+          "declaration": {
+            "name": "XhRadioGroupElement",
+            "module": "src/elements/radio-group.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/separator.ts",
       "declarations": [
         {
@@ -1041,6 +1511,196 @@
           "declaration": {
             "name": "XhSwitchElement",
             "module": "src/elements/switch.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/tabs.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-tabs>` —— Light-DOM 行为宿主：用户写 root/list/trigger/content 角色节点，\n元素跑 tabs 机器并把 connect 产出打上去。条目身份取用户写在 trigger/content 上的 value 属性，\ntrigger 的禁用由部件自报（aria-disabled）。",
+          "name": "XhTabsElement",
+          "cssParts": [
+            {
+              "description": "组件根容器（承载 data-orientation）",
+              "name": "root"
+            },
+            {
+              "description": "role=tablist 容器（方向键与 Tab 序列在此收口）",
+              "name": "list"
+            },
+            {
+              "description": "role=tab 的标签按钮，须自带 value 属性标识身份",
+              "name": "trigger"
+            },
+            {
+              "description": "role=tabpanel 的面板，须自带 value 属性与 trigger 配对；未选中时 hidden",
+              "name": "content"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "default-value"
+            },
+            {
+              "kind": "field",
+              "name": "orientation",
+              "privacy": "public",
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "attribute": "orientation"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "activationMode",
+              "privacy": "public",
+              "type": {
+                "text": "TabsActivationMode | undefined"
+              },
+              "attribute": "activation-mode"
+            },
+            {
+              "kind": "field",
+              "name": "loop",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<TabsSchema>(this, tabsMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<TabsSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "选中值变化；detail 为 `{ value: string | null }`",
+              "name": "value-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "受控选中值；缺省该属性即非受控",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "非受控的初始选中值",
+              "name": "default-value",
+              "fieldName": "defaultValue"
+            },
+            {
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "description": "方向键轴向，默认 horizontal",
+              "name": "orientation",
+              "fieldName": "orientation"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，只影响水平轴上 ArrowLeft/ArrowRight 的前后语义，默认 ltr",
+              "name": "dir",
+              "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "TabsActivationMode | undefined"
+              },
+              "description": "方向键移动焦点是否顺带切换选中，默认 automatic",
+              "name": "activation-mode",
+              "fieldName": "activationMode"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "方向键走到尽头回绕，默认开启",
+              "name": "loop",
+              "fieldName": "loop"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-tabs",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhTabsElement",
+          "declaration": {
+            "name": "XhTabsElement",
+            "module": "src/elements/tabs.ts"
           }
         }
       ]

@@ -1,4 +1,4 @@
-import type { Orientation, PropTypes } from '@xihan-ui/core'
+import type { Direction, Orientation, PropTypes } from '@xihan-ui/core'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface RadioGroupValueChangeDetails {
@@ -22,7 +22,12 @@ export interface RadioGroupSchema extends MachineSchema {
     defaultValue?: string | null
     disabled?: boolean
     orientation?: Orientation
-    /** 表单字段名，交由宿主自行渲染隐藏输入时使用。 */
+    /**
+     * 文字方向，缺省 'ltr'。只改写左右方向键的语义（rtl 下 ArrowLeft 走下一项），
+     * 上下方向键与之无关。
+     */
+    dir?: Direction
+    /** 表单字段名。给定后隐藏输入才带 name，整组的值随表单一并提交。 */
     name?: string
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: RadioGroupValueChangeDetails) => void
@@ -57,4 +62,10 @@ export interface RadioGroupApi<T extends PropTypes = PropTypes> {
   getItemProps: (props: RadioGroupItemProps) => T['element']
   getItemTextProps: (props: RadioGroupItemProps) => T['element']
   getIndicatorProps: (props: RadioGroupItemProps) => T['element']
+  /**
+   * 条目的表单影子：一份视觉隐藏的原生 radio 输入，由条目内部渲染。
+   * 与其它条目 getter 一样按条目取值——name 全组共用，value/checked 逐条目不同，
+   * 零参签名产不出这些差异。
+   */
+  getHiddenInputProps: (props: RadioGroupItemProps) => T['input']
 }

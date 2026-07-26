@@ -147,6 +147,69 @@ app.innerHTML = `
       <xh-badge variant="outline"><span data-xh-part="root">Outline</span></xh-badge>
     </div>
   </section>
+
+  <section>
+    <h2>RadioGroup</h2>
+    <p class="lead">四个方向键都能切换；组内只有一个 Tab 停靠点，方向键跳过禁用项。</p>
+    <xh-radio-group default-value="standard" name="plan">
+      <div data-xh-part="root">
+        <span data-xh-part="label">套餐</span>
+        <label data-xh-part="item" value="free">
+          <input data-xh-part="hidden-input" />
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="item-text">免费版</span>
+        </label>
+        <label data-xh-part="item" value="standard">
+          <input data-xh-part="hidden-input" />
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="item-text">标准版</span>
+        </label>
+        <label data-xh-part="item" value="pro" aria-disabled="true">
+          <input data-xh-part="hidden-input" />
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="item-text">专业版（禁用）</span>
+        </label>
+      </div>
+    </xh-radio-group>
+  </section>
+
+  <section>
+    <h2>Tabs</h2>
+    <p class="lead">automatic 模式：方向键移动焦点并顺带切换；横排时上下键放行给页面。</p>
+    <xh-tabs default-value="overview">
+      <div data-xh-part="root">
+        <div data-xh-part="list">
+          <button data-xh-part="trigger" value="overview">概览</button>
+          <button data-xh-part="trigger" value="usage">用法</button>
+          <button data-xh-part="trigger" value="api" aria-disabled="true">API（禁用）</button>
+        </div>
+        <div data-xh-part="content" value="overview">概览面板：与 Vue 版共用同一份 tabs 机器。</div>
+        <div data-xh-part="content" value="usage">用法面板：面板常挂，靠 hidden 显隐。</div>
+        <div data-xh-part="content" value="api">API 面板。</div>
+      </div>
+    </xh-tabs>
+  </section>
+
+  <section>
+    <h2>Accordion</h2>
+    <p class="lead">不用 roving：每个标题都是正常 Tab 停靠点，方向键额外在标题间移动焦点。</p>
+    <xh-accordion multiple>
+      <div data-xh-part="root">
+        <div data-xh-part="item" value="a">
+          <h3 data-xh-part="header"><button data-xh-part="trigger">第一节</button></h3>
+          <div data-xh-part="content">展开集合是 string[]，multiple 时可并存。</div>
+        </div>
+        <div data-xh-part="item" value="b">
+          <h3 data-xh-part="header"><button data-xh-part="trigger">第二节</button></h3>
+          <div data-xh-part="content">方向键只在标题间搬焦点，永不进内容区。</div>
+        </div>
+        <div data-xh-part="item" value="c">
+          <h3 data-xh-part="header"><button data-xh-part="trigger">第三节</button></h3>
+          <div data-xh-part="content">首尾不回绕。</div>
+        </div>
+      </div>
+    </xh-accordion>
+  </section>
 </main>
 `
 

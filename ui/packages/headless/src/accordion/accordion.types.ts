@@ -1,4 +1,4 @@
-import type { Orientation, PropTypes } from '@xihan-ui/core'
+import type { Direction, Orientation, PropTypes } from '@xihan-ui/core'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface AccordionValueChangeDetails {
@@ -27,6 +27,8 @@ export interface AccordionSchema extends MachineSchema {
     collapsible?: boolean
     /** 方向键轴向，默认 vertical。 */
     orientation?: Orientation
+    /** 文字方向，默认 ltr；只影响水平轴上 ArrowLeft/ArrowRight 的语义。 */
+    dir?: Direction
     /** 展开集合变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: AccordionValueChangeDetails) => void
   }

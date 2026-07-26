@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import type { ConformanceSuite } from '@xihan-ui/testing'
-import { badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, progressSuite, runConformance, separatorSuite, switchSuite, toggleSuite } from '@xihan-ui/testing'
+import type { ConformanceSuite, FixtureNode } from '@xihan-ui/testing'
+import { accordionSuite, badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, progressSuite, radioGroupSuite, runConformance, separatorSuite, switchSuite, tabsSuite, toggleSuite } from '@xihan-ui/testing'
 import { afterEach, beforeEach, describe, it, vi } from 'vitest'
 import { createWcHarness } from './harness'
 
@@ -50,10 +50,78 @@ const wcProgressSuite: ConformanceSuite = {
   fixture: { part: 'root', tag: 'div', children: [{ part: 'track', children: [{ part: 'range' }] }] },
 }
 
+// 集合类组件的作者侧禁用声明一律用 aria-disabled，不用原生 disabled：
+// 原生 disabled 会留在 DOM 里进快照（BASE_ATTRS 恒采集），顶掉共享期望里的 'disabled': null
+// ——那条期望正是"集合条目绝不输出原生 disabled"的守卫；而且原生禁用的按钮不可聚焦，
+// 会让"禁用条目仍可聚焦、仍是方向键起点"的规格在 WC 上直接不成立。
+// Vue 侧 disabled 是组件 prop、不落 DOM，所以只有 WC 侧的 fixture 需要改写这一处。
+function ariaDisable(node: FixtureNode): FixtureNode {
+  if (!node.attrs || !('disabled' in node.attrs))
+    return node
+  const attrs: Record<string, string> = { ...node.attrs, 'aria-disabled': 'true' }
+  delete attrs.disabled
+  return { ...node, attrs }
+}
+
+function mapTree(node: FixtureNode, fn: (n: FixtureNode) => FixtureNode): FixtureNode {
+  const mapped = fn(node)
+  return mapped.children ? { ...mapped, children: mapped.children.map(c => mapTree(c, fn)) } : mapped
+}
+
+function authorDisabled(suite: ConformanceSuite): ConformanceSuite {
+  return {
+    ...suite,
+    fixture: mapTree(suite.fixture, ariaDisable),
+    // 用例级 fixture 是"从默认树派生"的函数，且常整棵重建（忽略入参），故要改写它的产出
+    cases: suite.cases.map((c) => {
+      const derive = c.fixture
+      return derive ? { ...c, fixture: (base: FixtureNode) => mapTree(derive(base), ariaDisable) } : c
+    }),
+  }
+}
+
+// radio-group：Vue 版由 XhRadioGroupItem 内部装配 hidden-input 与 indicator，
+// WC 版要作者手写，且顺序须与 Vue 的渲染顺序一致（order 断言逐字比对）。
+const wcRadioGroupSuite: ConformanceSuite = authorDisabled({
+  ...radioGroupSuite,
+  fixture: {
+    part: 'root',
+    children: [
+      { part: 'label', tag: 'span', text: '尺寸' },
+      ...(['a', 'b', 'c'] as const).map((value): FixtureNode => ({
+        part: 'item',
+        attrs: value === 'b' ? { value, disabled: '' } : { value },
+        children: [
+          { part: 'hidden-input', tag: 'input' },
+          { part: 'indicator', tag: 'span' },
+          { part: 'item-text', tag: 'span', text: value.toUpperCase() },
+        ],
+      })),
+    ],
+  },
+})
+
+// tabs / accordion 的 part 本就全由作者显式写，两侧同构，只改禁用声明的写法。
+const wcTabsSuite = authorDisabled(tabsSuite)
+const wcAccordionSuite = authorDisabled(accordionSuite)
+
 // 同一份规格喂给 WC 适配器实现，逐帧核对。separator/badge 无状态无受控，整份复用。
+// 三个集合类组件的受控值是字符串/数组（不像布尔那样表达不了 undefined），受控用例可原样跑。
 runConformance(
   createWcHarness(),
-  [badgeSuite, buttonSuite, wcCheckboxSuite, wcCollapsibleSuite, wcProgressSuite, separatorSuite, wcSwitchSuite, wcToggleSuite],
+  [
+    wcAccordionSuite,
+    badgeSuite,
+    buttonSuite,
+    wcCheckboxSuite,
+    wcCollapsibleSuite,
+    wcProgressSuite,
+    wcRadioGroupSuite,
+    separatorSuite,
+    wcSwitchSuite,
+    wcTabsSuite,
+    wcToggleSuite,
+  ],
   { describe, it },
   { enforceKeyboardCoverage: false },
 )

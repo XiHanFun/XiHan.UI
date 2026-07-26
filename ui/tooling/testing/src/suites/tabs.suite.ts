@@ -295,6 +295,44 @@ export const tabsSuite: ConformanceSuite = {
       ],
     },
     {
+      // 水平轴按文字方向镜像：rtl 下视觉上的"右"就是序列上的"前一个"
+      name: '横排 + dir=rtl：ArrowRight 走上一个、ArrowLeft 走下一个',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['tabs.kbd.prev', 'tabs.kbd.next'],
+      props: { defaultValue: 'two', dir: 'rtl' },
+      steps: [
+        { kind: 'focus', part: 'trigger[1]' },
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          expect: {
+            activeElement: { part: 'trigger[0]', exact: true },
+            parts: {
+              'trigger[0]': { 'aria-selected': 'true', 'tabindex': '0', 'data-state': 'active' },
+              'trigger[1]': { 'aria-selected': 'false', 'tabindex': '-1', 'data-state': 'inactive' },
+              'content[0]': { hidden: null },
+              'content[1]': { hidden: '' },
+            },
+            events: [{ type: 'value-change', detail: { value: 'one' } }],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowLeft',
+          expect: {
+            activeElement: { part: 'trigger[1]', exact: true },
+            parts: {
+              'trigger[0]': { 'aria-selected': 'false', 'tabindex': '-1', 'data-state': 'inactive' },
+              'trigger[1]': { 'aria-selected': 'true', 'tabindex': '0', 'data-state': 'active' },
+              'content[0]': { hidden: '' },
+              'content[1]': { hidden: null },
+            },
+            events: [{ type: 'value-change', detail: { value: 'two' } }],
+          },
+        },
+      ],
+    },
+    {
       name: '横向 tablist 里 ArrowDown 不归导航管：焦点与选中都不动',
       spec: { apg: `${APG}#keyboardinteraction` },
       props: { defaultValue: 'one' },

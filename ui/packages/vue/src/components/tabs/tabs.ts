@@ -1,4 +1,4 @@
-import type { Orientation } from '@xihan-ui/core'
+import type { Direction, Orientation } from '@xihan-ui/core'
 import type { TabsActivationMode, TabsSchema } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
@@ -15,6 +15,7 @@ export const XhTabsRoot = defineComponent({
     value: { type: String as PropType<string | null>, default: undefined },
     defaultValue: { type: String as PropType<string | null>, default: undefined },
     orientation: { type: String as PropType<Orientation>, default: undefined },
+    dir: { type: String as PropType<Direction>, default: undefined },
     activationMode: { type: String as PropType<TabsActivationMode>, default: undefined },
     loop: { type: Boolean, default: undefined },
   },

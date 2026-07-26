@@ -1,4 +1,4 @@
-import type { Orientation, PropTypes } from '@xihan-ui/core'
+import type { Direction, Orientation, PropTypes } from '@xihan-ui/core'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface TabsValueChangeDetails {
@@ -30,6 +30,8 @@ export interface TabsSchema extends MachineSchema {
     defaultValue?: string | null
     /** 方向键轴向，默认 horizontal；不同轴的方向键放行给页面滚动与读屏。 */
     orientation?: Orientation
+    /** 文字方向，默认 ltr；只影响水平轴上 ArrowLeft/ArrowRight 的前后语义。 */
+    dir?: Direction
     /** 方向键移动焦点时是否顺带切换选中，默认 automatic。 */
     activationMode?: TabsActivationMode
     /** 方向键走到尽头是否回绕，默认 true。 */
@@ -47,7 +49,7 @@ export interface TabsSchema extends MachineSchema {
   refs: Record<string, never>
   state: 'idle'
   event:
-    | { type: 'VALUE.SET', value: string }
+    | { type: 'VALUE.SET', value: string | null }
     | { type: 'TRIGGER.SELECT', value: string }
     | { type: 'TRIGGER.FOCUS', value: string }
     | { type: 'TRIGGER.NAVIGATE', value: string }
@@ -62,10 +64,10 @@ export interface TabsApi<T extends PropTypes = PropTypes> {
   value: string | null
   /** 焦点在组外时为 null。 */
   focusedValue: string | null
-  setValue: (next: string) => void
+  /** 传 null 清空选中：context.value 与受控 value 都能表达"无选中"，写入侧同样收得下。 */
+  setValue: (next: string | null) => void
   getRootProps: () => T['element']
   getListProps: () => T['element']
   getTriggerProps: (props: TabsTriggerProps) => T['button']
   getContentProps: (props: TabsContentProps) => T['element']
-  getIndicatorProps: () => T['element']
 }

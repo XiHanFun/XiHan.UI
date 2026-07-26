@@ -7,8 +7,8 @@ export const accordionKeyboard: KeyboardTable = {
   source: APG,
   rows: [
     { id: 'accordion.kbd.toggle', keys: ['Space', 'Enter'], when: 'focus in trigger, not disabled', does: '展开/收起该条目的 content' },
-    { id: 'accordion.kbd.next', keys: ['ArrowDown'], when: 'focus in trigger, orientation=vertical', does: '焦点移到下一个 trigger，末条不回绕' },
-    { id: 'accordion.kbd.prev', keys: ['ArrowUp'], when: 'focus in trigger, orientation=vertical', does: '焦点移到上一个 trigger，首条不回绕' },
+    { id: 'accordion.kbd.next', keys: ['ArrowDown', 'ArrowRight'], when: 'focus in trigger, 按键与 orientation 同轴（dir=rtl 时左右键语义互换）', does: '焦点移到下一个 trigger，末条不回绕' },
+    { id: 'accordion.kbd.prev', keys: ['ArrowUp', 'ArrowLeft'], when: 'focus in trigger, 按键与 orientation 同轴（dir=rtl 时左右键语义互换）', does: '焦点移到上一个 trigger，首条不回绕' },
     { id: 'accordion.kbd.first', keys: ['Home'], when: 'focus in trigger', does: '焦点移到首个 trigger' },
     { id: 'accordion.kbd.last', keys: ['End'], when: 'focus in trigger', does: '焦点移到末个 trigger' },
     { id: 'accordion.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'focus in trigger', does: '按文档序进出：每个 trigger 都是独立 Tab 停靠点，无 roving tabindex' },
