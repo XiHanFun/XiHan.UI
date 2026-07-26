@@ -106,13 +106,15 @@ export class XhDialogElement extends XhElement {
     put('description', api.getDescriptionProps() as Record<string, unknown>)
     put('close-trigger', api.getCloseTriggerProps() as Record<string, unknown>)
 
-    // Light DOM content 常驻，WC 自管可见性：关闭时隐藏浮层子树（Vue 靠卸载，故 styled 不改、
-    // 退场动画不受影响）。焦点窗口内先隐后显由 focus-scope 的重试兜住。
+    // Light DOM content 常驻，WC 自管可见性：关闭时隐藏浮层子树。
+    // 用内联 style.display 而非 hidden——styled 的 [data-part=positioner]{display:flex}
+    // （author 层）优先级高于 UA 的 [hidden]{display:none}，hidden 压不住；内联样式才压得住。
+    // Vue 靠卸载不走这条路，styled 不改，其退场动画不受影响。
     const positioner = this.getPart('positioner')
     if (positioner)
-      positioner.hidden = !open
+      positioner.style.display = open ? '' : 'none'
     if (this.backdropNode)
-      this.backdropNode.hidden = !open
+      this.backdropNode.style.display = open ? '' : 'none'
   }
 
   override disconnectedCallback(): void {
