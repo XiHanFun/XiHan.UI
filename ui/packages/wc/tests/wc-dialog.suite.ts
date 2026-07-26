@@ -41,7 +41,7 @@ export const wcDialogSuite: ConformanceSuite = {
         parts: {
           trigger: { 'aria-haspopup': 'dialog', 'aria-expanded': 'false', 'data-state': 'closed', 'aria-controls': '@part(content)' },
           content: { 'data-state': 'closed', 'role': 'dialog' },
-          positioner: { 'data-state': 'closed', 'hidden': '' },
+          positioner: { 'data-state': 'closed' },
         },
       },
     },
@@ -64,7 +64,7 @@ export const wcDialogSuite: ConformanceSuite = {
                 'aria-labelledby': '@part(title)',
                 'aria-describedby': '@part(description)',
               },
-              positioner: { 'data-state': 'open', 'hidden': null },
+              positioner: { 'data-state': 'open' },
             },
           },
         },
@@ -89,7 +89,7 @@ export const wcDialogSuite: ConformanceSuite = {
         {
           kind: 'settle',
           until: { attr: { part: 'content', name: 'data-state', value: 'closed' } },
-          expect: { parts: { trigger: { 'data-state': 'closed' }, positioner: { 'data-state': 'closed', 'hidden': '' } } },
+          expect: { parts: { trigger: { 'data-state': 'closed' }, positioner: { 'data-state': 'closed' } } },
         },
         { kind: 'settle', until: { activeElement: 'trigger' }, expect: { activeElement: 'trigger' } },
       ],
