@@ -18,7 +18,16 @@ Web Components 适配器：把框架无关的 headless（anatomy + machine + con
   Dialog 暂用各自 conformance（Dialog 全量 parity 需 presence 容差，留待后续）。
 - **顶层/Portal**：真机可给 content 加 Popover API 上顶层；jsdom 无 Popover，当前只靠
   `data-state` + focus-scope + dismiss-layer，不搬运 DOM。
-- **重连（元素在 DOM 中移动，W2）**：解释器 stop 后不可复活，`MachineController` 在 stop 后
+- **重连（元素在 DOM 中移动）**：解释器 stop 后不可复活，`MachineController` 在 stop 后
   重建机器（从 `initialState`、context 重置）——状态不跨移动保留。
+  重建后的状态与重建前相同，cell 不会 bump 版本，因此**不会**自动排更新；
+  `connectedCallback` 显式 `requestUpdate()` 重跑一次 `wire()`，否则角色节点上仍挂着
+  指向已停机器的处理器（送事件在 dev 下抛 `SEND_AFTER_STOP`）。
+- **运行期增删角色节点（已抹平的差异）**：Vue 侧条目是组件，增删自带整套 props 渲染；
+  WC 侧作者直接改 Light DOM，元素若不看着点就会留下"死条目"（没有 `data-scope`/`data-part`/
+  `data-value` 与事件处理器，集合查询也看不见它）。`XhElement` 用 `MutationObserver`
+  观察 `childList`（**不观察 attributes**——`wire()` 正是往角色节点写属性，一并观察会自触发成死循环），
+  命中即重新发现 part 并接线。两道过滤：增删里得真有元素节点；目标与宿主之间隔着别的
+  `xh-*` 元素则跳过（内层子树归内层元素自己管）。
 - **受控 open**：HTML 布尔属性表达不了 `undefined`，`open` 用自定义 converter（属性缺省→
   `undefined`=非受控，`open="false"`→受控关）。受控 open 的跨适配器一致性留待后续。
