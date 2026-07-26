@@ -85,12 +85,40 @@ export const dialogSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'Escape 关闭：content 卸载',
+      name: '普通 dialog 打开：焦点落在 content 内首个可聚焦元素（非 content 容器本身）',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        {
+          kind: 'settle',
+          until: { activeElement: 'content' },
+          expect: { activeElement: { part: 'content', exact: false } },
+        },
+      ],
+    },
+    {
+      name: 'alertdialog 打开：焦点落在 content 容器本身（不预选按钮）',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/alertdialog/' },
+      props: { role: 'alertdialog' },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        {
+          kind: 'settle',
+          until: { activeElement: 'content' },
+          expect: {
+            activeElement: { part: 'content', exact: true },
+            parts: { content: { role: 'alertdialog' } },
+          },
+        },
+      ],
+    },
+    {
+      name: 'Escape 关闭：content 卸载且焦点归还 trigger',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['dialog.kbd.escape'],
       steps: [
         { kind: 'click', part: 'trigger' },
-        { kind: 'settle', until: { present: 'content' } },
+        { kind: 'settle', until: { activeElement: 'content' } },
         { kind: 'key', key: 'Escape' },
         {
           kind: 'settle',
@@ -98,6 +126,35 @@ export const dialogSuite: ConformanceSuite = {
           expect: {
             counts: { content: 0 },
             parts: { trigger: { 'data-state': 'closed' } },
+          },
+        },
+        {
+          kind: 'settle',
+          until: { activeElement: 'trigger' },
+          expect: { activeElement: 'trigger' },
+        },
+      ],
+    },
+    {
+      name: '受控 open：点击只发 open-change 不自改 DOM，父写回 open 后才打开',
+      spec: { adr: 'controlled-uncontrolled' },
+      props: { open: false },
+      steps: [
+        {
+          kind: 'click',
+          part: 'trigger',
+          expect: {
+            counts: { content: 0 },
+            events: [{ type: 'open-change', detail: { open: true } }],
+          },
+        },
+        { kind: 'setProps', props: { open: true } },
+        {
+          kind: 'settle',
+          until: { present: 'content' },
+          expect: {
+            counts: { content: 1 },
+            parts: { content: { 'data-state': 'open' } },
           },
         },
       ],

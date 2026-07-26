@@ -68,11 +68,19 @@ export interface DomSnapshot {
 /** 单个 part 的属性期望；null 表示断言该属性缺失。 */
 export type AttrExpectation = Readonly<Record<string, string | null>>
 
+/**
+ * 焦点落点期望：
+ *  - 字符串 = 焦点在该 part 之内（含该 part 元素自身或其后代）
+ *  - { part, exact: true } = 焦点恰为该 part 元素本身
+ *  - { part, exact: false } = 焦点在该 part 内部但不是元素本身（后代）
+ */
+export type ActiveElementExpectation = PartRef | { readonly part: PartRef, readonly exact?: boolean }
+
 /** 断言：深度子集匹配，只写关心的 part 与属性，其余忽略。 */
 export interface SnapshotExpectation {
   readonly parts?: Readonly<Record<PartRef, AttrExpectation | readonly AttrExpectation[]>>
   readonly order?: readonly string[]
-  readonly activeElement?: PartRef | null
+  readonly activeElement?: ActiveElementExpectation | null
   /** 每个 part 的实例数量。 */
   readonly counts?: Readonly<Record<string, number>>
   /** 期望自上一步以来派发的事件序列；空数组 = 断言没派发任何事件。 */

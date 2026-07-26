@@ -1,4 +1,4 @@
-import type { ActiveElementRef, AttrExpectation, DomSnapshot, SnapshotExpectation } from './types'
+import type { ActiveElementExpectation, ActiveElementRef, AttrExpectation, DomSnapshot, SnapshotExpectation } from './types'
 
 function parseRef(ref: string): { part: string, index: number, hasIndex: boolean } {
   const m = /^(.+?)\[(\d+)\]$/.exec(ref)
@@ -44,15 +44,21 @@ function checkParts(actual: DomSnapshot, parts: NonNullable<SnapshotExpectation[
   return errs
 }
 
-function checkActive(expected: string | null | undefined, actual: ActiveElementRef | null): string[] {
+function checkActive(expected: ActiveElementExpectation | null | undefined, actual: ActiveElementRef | null): string[] {
   if (expected === undefined)
     return []
   const fmt = (a: ActiveElementRef | null): string => (a ? `${a.part}[${a.index}]${a.exact ? '' : '(内)'}` : 'null')
   if (expected === null)
     return actual === null ? [] : [`activeElement: 期望不在任何 part，实际 ${fmt(actual)}`]
-  const { part, index, hasIndex } = parseRef(expected)
+  const ref = typeof expected === 'string' ? expected : expected.part
+  const wantExact = typeof expected === 'object' ? expected.exact : undefined
+  const { part, index, hasIndex } = parseRef(ref)
   if (!actual || actual.part !== part || (hasIndex && actual.index !== index))
-    return [`activeElement: 期望 ${expected}，实际 ${fmt(actual)}`]
+    return [`activeElement: 期望 ${ref}，实际 ${fmt(actual)}`]
+  if (wantExact === true && !actual.exact)
+    return [`activeElement: 期望恰为 ${ref} 元素本身，实际焦点在其内部`]
+  if (wantExact === false && actual.exact)
+    return [`activeElement: 期望焦点在 ${ref} 内部，实际恰为该元素本身`]
   return []
 }
 

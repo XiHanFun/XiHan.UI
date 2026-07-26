@@ -16,6 +16,10 @@ export interface DialogRefs {
   branches: () => Element[]
 }
 
+export interface DialogOpenChangeDetails {
+  open: boolean
+}
+
 export interface DialogSchema extends MachineSchema {
   props: {
     open?: boolean
@@ -26,6 +30,8 @@ export interface DialogSchema extends MachineSchema {
     closeOnInteractOutside?: boolean
     restoreFocus?: boolean
     translations?: Partial<DialogTranslations>
+    /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
+    onOpenChange?: (details: DialogOpenChangeDetails) => void
   }
   context: Record<string, never>
   computed: Record<string, never>
@@ -35,9 +41,12 @@ export interface DialogSchema extends MachineSchema {
     | { type: 'OPEN' }
     | { type: 'TOGGLE' }
     | { type: 'CLOSE', src?: 'esc' | 'close-trigger' | 'interact-outside' }
+    // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
+    | { type: 'CONTROLLED.OPEN' }
+    | { type: 'CONTROLLED.CLOSE' }
   tag: never
-  guard: never
-  action: never
+  guard: 'isOpenControlled'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen'
   effect: 'trackOverlay'
 }
 

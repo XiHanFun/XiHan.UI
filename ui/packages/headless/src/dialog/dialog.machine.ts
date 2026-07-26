@@ -16,23 +16,55 @@ export const dialogMachine = createMachine({
     branches: () => [],
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  // 受控（open prop 给定）时，用户事件只发意图回调、不自改状态；宿主写回 open 后
+  // 由此 watch 追踪 open 变化，派发影子事件 CONTROLLED.* 无条件回写状态。
+  watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),
   states: {
     closed: {
       on: {
-        OPEN: { target: 'open' },
-        TOGGLE: { target: 'open' },
+        // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
+        'OPEN': [
+          { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
+          { target: 'open', actions: ['invokeOnOpen'] },
+        ],
+        'TOGGLE': [
+          { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
+          { target: 'open', actions: ['invokeOnOpen'] },
+        ],
+        'CONTROLLED.OPEN': { target: 'open' },
       },
     },
     open: {
       // 进入 open：按固定顺序装配 dismiss → focus → scroll → hideOutside。
       effects: ['trackOverlay'],
       on: {
-        CLOSE: { target: 'closed' },
-        TOGGLE: { target: 'closed' },
+        'CLOSE': [
+          { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
+          { target: 'closed', actions: ['invokeOnClose'] },
+        ],
+        'TOGGLE': [
+          { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
+          { target: 'closed', actions: ['invokeOnClose'] },
+        ],
+        'CONTROLLED.CLOSE': { target: 'closed' },
       },
     },
   },
   implementations: {
+    guards: {
+      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+    },
+    actions: {
+      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
+      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
+      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
+      syncOpen: ({ prop, send }) => {
+        const open = prop('open')
+        if (open === undefined)
+          return
+        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
+      },
+    },
     effects: {
       trackOverlay: ({ refs, prop, send }) => {
         const config = refs.get('config')
@@ -73,7 +105,10 @@ export const dialogMachine = createMachine({
             container: getContentEl,
             trapped: () => true,
             loop: true,
-            initialFocus: getContentEl,
+            // alertdialog 焦点落在 content 容器本身（不预选按钮，避免误触发破坏性操作）；
+            // 普通 dialog 交给 tabbable 探测选首个可聚焦元素（content 自身 tabindex=-1）。
+            initialFocus: () => (role === 'alertdialog' ? getContentEl() : null),
+            restoreFocus: () => prop('restoreFocus') ?? true,
           })
           disposers.push(() => focus.dispose())
 

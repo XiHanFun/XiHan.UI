@@ -6,6 +6,7 @@ export { checkExpectation } from './conformance/match'
 export { recordTrace, runConformance } from './conformance/run'
 export type { RunOptions } from './conformance/run'
 export type {
+  ActiveElementExpectation,
   ActiveElementRef,
   AdapterEvent,
   AdapterHarness,

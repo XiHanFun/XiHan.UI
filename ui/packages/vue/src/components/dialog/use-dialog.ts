@@ -3,7 +3,7 @@ import type { Layer, RuntimeConfig } from '@xihan-ui/core'
 import type { DialogApi, DialogSchema } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef, Ref } from 'vue'
-import { createPresence } from '@xihan-ui/behavior/presence'
+import { attachCssExit, createPresence } from '@xihan-ui/behavior/presence'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectDialog, dialogMachine } from '@xihan-ui/headless'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
@@ -19,14 +19,18 @@ export interface DialogContext {
   backdropRef: Ref<HTMLElement | null>
 }
 
-export function useDialog(props: DialogSchema['props']): DialogContext {
+export function useDialog(
+  props: DialogSchema['props'],
+  onOpenChange?: DialogSchema['props']['onOpenChange'],
+): DialogContext {
   const contentRef = ref<HTMLElement | null>(null)
   const backdropRef = ref<HTMLElement | null>(null)
   const rendered = ref(false)
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(dialogMachine, () => props, scope)
+  // onOpenChange 由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
+  const service = useMachine(dialogMachine, () => ({ ...props, onOpenChange }), scope)
 
   if (typeof document !== 'undefined') {
     const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
@@ -57,7 +61,16 @@ export function useDialog(props: DialogSchema['props']): DialogContext {
     // data-state 提交到 DOM 之后再驱动 presence（保证退场探测读到正确 animationName）
     watch(() => service.state.get() === 'open', open => presence.update(open), { flush: 'post' })
 
+    // content 就位后把它的 CSS 退场动画接到 presence 退出租约：关闭时先播动画再卸载。
+    // 无退场动画的环境（含无布局的测试环境）自动短路，关闭即卸载。
+    let detachExit: (() => void) | undefined
+    watch(contentRef, (el) => {
+      detachExit?.()
+      detachExit = el ? attachCssExit(el, presence) : undefined
+    }, { flush: 'post' })
+
     onBeforeUnmount(() => {
+      detachExit?.()
       presence.dispose()
       disposeLayer()
     })
