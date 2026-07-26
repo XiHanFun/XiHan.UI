@@ -1,5 +1,5 @@
 {
-  "name": "@xihan-ui/playground",
+  "name": "@xihan-ui/playground-wc",
   "type": "module",
   "version": "0.0.0",
   "private": true,
@@ -7,17 +7,15 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "typecheck": "vue-tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "@xihan-ui/styled": "workspace:*",
     "@xihan-ui/system": "workspace:*",
-    "@xihan-ui/vue": "workspace:*",
-    "vue": "catalog:"
+    "@xihan-ui/wc": "workspace:*"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "catalog:",
-    "vite": "catalog:",
-    "vue-tsc": "catalog:"
+    "typescript": "catalog:",
+    "vite": "catalog:"
   }
 }
