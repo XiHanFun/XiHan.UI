@@ -278,6 +278,9 @@ importers:
       '@xihan-ui/build':
         specifier: workspace:*
         version: link:../../tooling/build
+      '@xihan-ui/testing':
+        specifier: workspace:*
+        version: link:../../tooling/testing
       '@xihan-ui/tsconfig':
         specifier: workspace:*
         version: link:../../tooling/tsconfig
@@ -306,6 +309,28 @@ importers:
   tooling/scripts: {}
 
   tooling/stylelint-config: {}
+
+  tooling/testing:
+    dependencies:
+      '@xihan-ui/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@xihan-ui/headless':
+        specifier: workspace:*
+        version: link:../../packages/headless
+    devDependencies:
+      '@xihan-ui/build':
+        specifier: workspace:*
+        version: link:../build
+      '@xihan-ui/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      jsdom:
+        specifier: 'catalog:'
+        version: 27.4.0
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.10(@types/node@24.13.3)(jsdom@27.4.0)(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0))
 
   tooling/tsconfig: {}
 

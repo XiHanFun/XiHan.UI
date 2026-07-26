@@ -1,0 +1,34 @@
+{
+  "name": "@xihan-ui/testing",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "description": "XiHan.UI cross-adapter conformance harness — spec-driven DOM snapshot, declarative steps, keyboard coverage. Not published.",
+  "license": "MIT",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@xihan-ui/core": "workspace:*",
+    "@xihan-ui/headless": "workspace:*"
+  },
+  "devDependencies": {
+    "@xihan-ui/build": "workspace:*",
+    "@xihan-ui/tsconfig": "workspace:*",
+    "jsdom": "catalog:",
+    "vitest": "catalog:"
+  }
+}
