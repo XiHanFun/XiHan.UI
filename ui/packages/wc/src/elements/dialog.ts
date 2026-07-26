@@ -7,9 +7,26 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-// <xh-dialog> —— Light-DOM 行为宿主：用户写 trigger/backdrop/positioner/content/... 角色节点，
-// 元素跑 dialog 机器并把 connect 产出打上去。presence 用 hidden 切换（Light DOM 不能删用户节点；
-// 真机顶层可另加 Popover，jsdom 用 hidden 即可）。
+/**
+ * `<xh-dialog>` —— Light-DOM 行为宿主：用户写 trigger/backdrop/positioner/content/... 角色节点，
+ * 元素跑 dialog 机器并把 connect 产出打上去。关闭时用内联 style.display 隐藏浮层子树。
+ *
+ * @customElement xh-dialog
+ * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} default-open - 非受控初始为打开
+ * @attr {boolean} modal - 模态（陷焦点、锁滚动、遮罩交互外关闭），默认 true
+ * @attr {'dialog'|'alertdialog'} role - 语义角色，默认 dialog
+ * @attr {boolean} close-on-escape - Esc 关闭，默认 true
+ * @attr {boolean} restore-focus - 关闭后把焦点归还触发元素，默认 true
+ * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
+ * @csspart trigger - 触发按钮
+ * @csspart backdrop - 遮罩层
+ * @csspart positioner - 浮层定位容器
+ * @csspart content - 对话框内容（role/aria-modal/焦点陷阱所在）
+ * @csspart title - 标题（aria-labelledby 目标）
+ * @csspart description - 描述（aria-describedby 目标）
+ * @csspart close-trigger - 关闭按钮
+ */
 export class XhDialogElement extends XhElement {
   // role 不声明为响应式属性——复用 HTMLElement 原生的 role 属性反射（避免类型冲突），
   // 在 machineProps 里经 getAttribute 读取。

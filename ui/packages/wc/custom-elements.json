@@ -1,0 +1,418 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/button.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-button>` —— Light-DOM 行为宿主，无状态机：宿主属性即 button props，\nwire 时算 connectButton 打到 `[data-xh-part=\"root\"]` 角色节点。",
+          "name": "XhButtonElement",
+          "cssParts": [
+            {
+              "description": "承载 data-scope/data-part/data-* 的原生 button",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "type",
+              "privacy": "public",
+              "type": {
+                "text": "'button' | 'submit' | 'reset' | undefined"
+              },
+              "attribute": "type"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loading"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "'button' | 'submit' | 'reset' | undefined"
+              },
+              "description": "原生按钮类型，默认 button",
+              "name": "type",
+              "fieldName": "type"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用（原生 disabled，丢焦点）",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "加载中（aria-disabled，保留焦点并拦截点击）",
+              "name": "loading",
+              "fieldName": "loading"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "视觉变体",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-button",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhButtonElement",
+          "declaration": {
+            "name": "XhButtonElement",
+            "module": "src/elements/button.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/dialog.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-dialog>` —— Light-DOM 行为宿主：用户写 trigger/backdrop/positioner/content/... 角色节点，\n元素跑 dialog 机器并把 connect 产出打上去。关闭时用内联 style.display 隐藏浮层子树。",
+          "name": "XhDialogElement",
+          "cssParts": [
+            {
+              "description": "触发按钮",
+              "name": "trigger"
+            },
+            {
+              "description": "遮罩层",
+              "name": "backdrop"
+            },
+            {
+              "description": "浮层定位容器",
+              "name": "positioner"
+            },
+            {
+              "description": "对话框内容（role/aria-modal/焦点陷阱所在）",
+              "name": "content"
+            },
+            {
+              "description": "标题（aria-labelledby 目标）",
+              "name": "title"
+            },
+            {
+              "description": "描述（aria-describedby 目标）",
+              "name": "description"
+            },
+            {
+              "description": "关闭按钮",
+              "name": "close-trigger"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "defaultOpen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-open"
+            },
+            {
+              "kind": "field",
+              "name": "modal",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "modal"
+            },
+            {
+              "kind": "field",
+              "name": "closeOnEscape",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "close-on-escape"
+            },
+            {
+              "kind": "field",
+              "name": "restoreFocus",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "restore-focus"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "dialogScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "layer",
+              "type": {
+                "text": "Layer | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "disposeLayer",
+              "type": {
+                "text": "(() => void) | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "contentNode",
+              "type": {
+                "text": "HTMLElement | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "backdropNode",
+              "type": {
+                "text": "HTMLElement | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<DialogSchema>( this, dialogMachine, () => this.machineProps(), { scope: this.dialogScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<DialogSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<DialogSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "open 状态变化；detail 为 `{ open: boolean }`",
+              "name": "open-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控开合；缺省该属性即非受控",
+              "name": "open",
+              "fieldName": "open"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始为打开",
+              "name": "default-open",
+              "fieldName": "defaultOpen"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "模态（陷焦点、锁滚动、遮罩交互外关闭），默认 true",
+              "name": "modal",
+              "fieldName": "modal"
+            },
+            {
+              "type": {
+                "text": "'dialog'|'alertdialog'"
+              },
+              "description": "语义角色，默认 dialog",
+              "name": "role"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "Esc 关闭，默认 true",
+              "name": "close-on-escape",
+              "fieldName": "closeOnEscape"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "关闭后把焦点归还触发元素，默认 true",
+              "name": "restore-focus",
+              "fieldName": "restoreFocus"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-dialog",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhDialogElement",
+          "declaration": {
+            "name": "XhDialogElement",
+            "module": "src/elements/dialog.ts"
+          }
+        }
+      ]
+    }
+  ]
+}
