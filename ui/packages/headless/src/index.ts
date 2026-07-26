@@ -7,4 +7,6 @@ export { connectDialog, dialogAnatomy, dialogKeyboard, dialogMachine, dialogMeta
 
 export type { DialogApi, DialogOpenChangeDetails, DialogRefs, DialogSchema, DialogTranslations } from './dialog'
 export type { ComponentMeta, KeyboardRow, KeyboardTable } from './spec'
+export { connectSwitch, switchAnatomy, switchKeyboard, switchMachine, switchMeta } from './switch'
+export type { SwitchApi, SwitchCheckedChangeDetails, SwitchSchema } from './switch'
 export type { HeadlessComponent, NormalizeProps, PropTypes } from './types'

@@ -1,0 +1,6 @@
+export { switchAnatomy } from './switch.anatomy'
+export { connectSwitch } from './switch.connect'
+export { switchKeyboard } from './switch.keyboard'
+export { switchMachine } from './switch.machine'
+export { switchMeta } from './switch.meta'
+export type { SwitchApi, SwitchCheckedChangeDetails, SwitchSchema } from './switch.types'
