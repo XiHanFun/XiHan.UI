@@ -136,6 +136,272 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/checkbox.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-checkbox>` —— Light-DOM 行为宿主：用户写 root(button)/indicator 角色节点，元素跑 checkbox 机器\n并把 connect 产出打上去。无副作用（不挂 DOM effect）。",
+          "name": "XhCheckboxElement",
+          "cssParts": [
+            {
+              "description": "role=checkbox 的按钮（承载 aria-checked / data-state）",
+              "name": "root"
+            },
+            {
+              "description": "选中标记",
+              "name": "indicator"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "checked",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "checked"
+            },
+            {
+              "kind": "field",
+              "name": "defaultChecked",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-checked"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<CheckboxSchema>(this, checkboxMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<CheckboxSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "checked 状态变化；detail 为 `{ checked: boolean }`",
+              "name": "checked-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控选中；缺省该属性即非受控",
+              "name": "checked",
+              "fieldName": "checked"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始为选中",
+              "name": "default-checked",
+              "fieldName": "defaultChecked"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用",
+              "name": "disabled",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-checkbox",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhCheckboxElement",
+          "declaration": {
+            "name": "XhCheckboxElement",
+            "module": "src/elements/checkbox.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/collapsible.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-collapsible>` —— Light-DOM 行为宿主：用户写 trigger/content 角色节点，\n元素跑 collapsible 机器并把 connect 产出打上去。收起时用内联 style.display 隐藏 content。",
+          "name": "XhCollapsibleElement",
+          "cssParts": [
+            {
+              "description": "披露根容器",
+              "name": "root"
+            },
+            {
+              "description": "触发按钮（aria-expanded/aria-controls 所在）",
+              "name": "trigger"
+            },
+            {
+              "description": "可折叠内容（收起时隐藏）",
+              "name": "content"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "defaultOpen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-open"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<CollapsibleSchema>( this, collapsibleMachine, () => this.machineProps(), )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<CollapsibleSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "open 状态变化；detail 为 `{ open: boolean }`",
+              "name": "open-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控开合；缺省该属性即非受控",
+              "name": "open",
+              "fieldName": "open"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始为展开",
+              "name": "default-open",
+              "fieldName": "defaultOpen"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用 trigger 切换",
+              "name": "disabled",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-collapsible",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhCollapsibleElement",
+          "declaration": {
+            "name": "XhCollapsibleElement",
+            "module": "src/elements/collapsible.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/dialog.ts",
       "declarations": [
         {
@@ -410,6 +676,87 @@
           "declaration": {
             "name": "XhDialogElement",
             "module": "src/elements/dialog.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/separator.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-separator>` —— Light-DOM 行为宿主，无状态机：朝向与语义直接来自宿主属性，\nwire 时算 connectSeparator 打到 `[data-xh-part=\"root\"]` 角色节点。",
+          "name": "XhSeparatorElement",
+          "cssParts": [
+            {
+              "description": "承载 role/aria-orientation/data-orientation 的分隔节点",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "orientation",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "orientation"
+            },
+            {
+              "kind": "field",
+              "name": "decorative",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "decorative"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "朝向，默认 horizontal",
+              "name": "orientation",
+              "fieldName": "orientation"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "装饰性分隔，仅视觉分组（role=none，退出无障碍树）",
+              "name": "decorative",
+              "fieldName": "decorative"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-separator",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhSeparatorElement",
+          "declaration": {
+            "name": "XhSeparatorElement",
+            "module": "src/elements/separator.ts"
           }
         }
       ]

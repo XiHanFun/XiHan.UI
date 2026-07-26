@@ -69,6 +69,51 @@ app.innerHTML = `
       </label>
     </div>
   </section>
+
+  <section>
+    <h2>Checkbox</h2>
+    <div class="row" style="gap: 16px;">
+      <label class="row" style="gap: 8px;">
+        <xh-checkbox aria-label="同意条款"><button data-xh-part="root"><span data-xh-part="indicator"></span></button></xh-checkbox>
+        <span>同意条款</span>
+      </label>
+      <label class="row" style="gap: 8px;">
+        <xh-checkbox default-checked aria-label="默认勾选"><button data-xh-part="root"><span data-xh-part="indicator"></span></button></xh-checkbox>
+        <span>默认勾选</span>
+      </label>
+      <label class="row" style="gap: 8px;">
+        <xh-checkbox disabled aria-label="禁用"><button data-xh-part="root"><span data-xh-part="indicator"></span></button></xh-checkbox>
+        <span>禁用</span>
+      </label>
+    </div>
+  </section>
+
+  <section>
+    <h2>Collapsible</h2>
+    <xh-collapsible>
+      <div data-xh-part="root">
+        <button data-xh-part="trigger">展开详情 ▾</button>
+        <div data-xh-part="content">
+          <p class="lead" style="margin: 8px 0 0;">
+            折叠面板跑的是与 Vue 版同一份 collapsible 机器；收起时 content 带 hidden 属性并由元素内联隐藏。
+          </p>
+        </div>
+      </div>
+    </xh-collapsible>
+  </section>
+
+  <section>
+    <h2>Separator</h2>
+    <div class="row" style="gap: 0;">
+      <span>左</span>
+      <xh-separator orientation="vertical"><div data-xh-part="root" style="block-size: 16px; margin-inline: 12px;"></div></xh-separator>
+      <span>中</span>
+      <xh-separator orientation="vertical"><div data-xh-part="root" style="block-size: 16px; margin-inline: 12px;"></div></xh-separator>
+      <span>右</span>
+    </div>
+    <xh-separator><div data-xh-part="root" style="margin-block: 16px;"></div></xh-separator>
+    <span class="lead">上面是水平分隔线。</span>
+  </section>
 </main>
 `
 

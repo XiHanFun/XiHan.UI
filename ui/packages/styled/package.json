@@ -14,12 +14,15 @@
     "./index.css": "./index.css",
     "./layers.css": "./styles/layers.css",
     "./motion.css": "./styles/motion.css",
+    "./badge.css": "./styles/badge.css",
     "./button.css": "./styles/button.css",
     "./checkbox.css": "./styles/checkbox.css",
     "./collapsible.css": "./styles/collapsible.css",
     "./dialog.css": "./styles/dialog.css",
+    "./progress.css": "./styles/progress.css",
     "./separator.css": "./styles/separator.css",
     "./switch.css": "./styles/switch.css",
+    "./toggle.css": "./styles/toggle.css",
     "./visually-hidden.css": "./styles/visually-hidden.css"
   },
   "files": ["index.css", "styles"]

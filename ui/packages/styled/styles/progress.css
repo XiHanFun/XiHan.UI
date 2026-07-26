@@ -1,0 +1,21 @@
+@layer xihan.components {
+  [data-scope='progress'][data-part='root'] {
+    display: inline-block;
+    inline-size: 100%;
+  }
+
+  [data-scope='progress'][data-part='track'] {
+    overflow: hidden;
+    inline-size: 100%;
+    block-size: var(--xh-progress-thickness, 6px);
+    border-radius: var(--xh-shape-pill, 9999px);
+    background: var(--xh-progress-track, var(--xh-bg-subtle-active));
+  }
+
+  [data-scope='progress'][data-part='range'] {
+    block-size: 100%;
+    border-radius: var(--xh-shape-pill, 9999px);
+    background: var(--xh-progress-range, var(--xh-bg-brand));
+    transition: inline-size var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+}

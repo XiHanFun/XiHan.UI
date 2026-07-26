@@ -1,0 +1,56 @@
+import type { ConformanceSuite } from '../conformance/types'
+import { progressAnatomy, progressKeyboard } from '@xihan-ui/headless'
+
+const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/meter/'
+
+export const progressSuite: ConformanceSuite = {
+  component: 'progress',
+  anatomy: progressAnatomy,
+  keyboard: progressKeyboard,
+  fixture: { part: 'root', tag: 'div' },
+  cases: [
+    {
+      name: '进行中：role=progressbar，aria-valuenow=50、aria-valuemax=100，data-state=loading',
+      spec: { apg: APG },
+      props: { value: 50 },
+      initial: {
+        parts: {
+          root: {
+            'role': 'progressbar',
+            'aria-valuemin': '0',
+            'aria-valuemax': '100',
+            'aria-valuenow': '50',
+            'data-state': 'loading',
+          },
+        },
+      },
+    },
+    {
+      name: '满值：value=max=100 时 aria-valuenow=100、data-state=complete',
+      spec: { apg: APG },
+      props: { value: 100 },
+      initial: {
+        parts: {
+          root: {
+            'aria-valuenow': '100',
+            'aria-valuemax': '100',
+            'data-state': 'complete',
+          },
+        },
+      },
+    },
+    {
+      name: '零值：value=0 时 aria-valuenow=0、data-state=loading',
+      spec: { apg: APG },
+      props: { value: 0 },
+      initial: {
+        parts: {
+          root: {
+            'aria-valuenow': '0',
+            'data-state': 'loading',
+          },
+        },
+      },
+    },
+  ],
+}

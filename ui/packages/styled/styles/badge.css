@@ -1,0 +1,33 @@
+@layer xihan.components {
+  [data-scope='badge'][data-part='root'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-space-1);
+    padding-inline: var(--xh-space-2);
+    padding-block: var(--xh-space-0_5);
+    border: var(--xh-stroke-thin) solid transparent;
+    border-radius: var(--xh-shape-pill, 9999px);
+    background: var(--xh-badge-bg, var(--xh-bg-subtle));
+    color: var(--xh-badge-fg, var(--xh-fg-default));
+    font-size: var(--xh-badge-font-size, var(--xh-font-size-xs));
+    font-weight: var(--xh-badge-font-weight, var(--xh-font-weight-medium));
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  [data-scope='badge'][data-part='root'][data-variant='solid'] {
+    background: var(--xh-bg-brand);
+    color: var(--xh-fg-on-brand);
+  }
+
+  [data-scope='badge'][data-part='root'][data-variant='subtle'] {
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-default);
+  }
+
+  [data-scope='badge'][data-part='root'][data-variant='outline'] {
+    border-color: var(--xh-border-default);
+    background: transparent;
+    color: var(--xh-fg-default);
+  }
+}
