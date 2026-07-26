@@ -15,6 +15,19 @@ function eventName(key: string): string | null {
   return null
 }
 
+// 写属性前先比一次：setAttribute 即便值没变也会触发 attributeChangedCallback 与变更记录。
+// 角色节点若本身是个会在属性变化时改写自己子节点的自定义元素，无条件写就会
+// 经由"宿主观察子节点变动 → 重新接线 → 又写属性"闭成死循环。
+function setAttr(node: HTMLElement, key: string, value: string): void {
+  if (node.getAttribute(key) !== value)
+    node.setAttribute(key, value)
+}
+
+function removeAttr(node: HTMLElement, key: string): void {
+  if (node.hasAttribute(key))
+    node.removeAttribute(key)
+}
+
 export interface Spreader {
   spread: (node: HTMLElement, props: Record<string, unknown>) => void
   release: (node: HTMLElement) => void
@@ -49,7 +62,7 @@ export function createSpreader(): Spreader {
         continue
       }
       if (value === undefined || value === null || value === false) {
-        node.removeAttribute(key)
+        removeAttr(node, key)
         continue
       }
       nextAttrs.add(key)
@@ -58,16 +71,17 @@ export function createSpreader(): Spreader {
         continue
       }
       if (BOOLEAN_ATTRS.has(key)) {
+        // toggleAttribute 在值无变化时本就不产生变更记录
         node.toggleAttribute(key, Boolean(value))
         continue
       }
-      node.setAttribute(key, String(value))
+      setAttr(node, key, String(value))
     }
 
     // 移除上一帧本机器写过、这一帧不再写的属性与事件监听器（与属性对称，防泄漏）
     for (const key of s.attrs) {
       if (!nextAttrs.has(key))
-        node.removeAttribute(key)
+        removeAttr(node, key)
     }
     for (const [ev, fn] of [...s.listeners]) {
       if (!nextEvents.has(ev)) {
