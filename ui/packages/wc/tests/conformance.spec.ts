@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { ConformanceSuite } from '@xihan-ui/testing'
-import { buttonSuite, checkboxSuite, collapsibleSuite, runConformance, separatorSuite, switchSuite } from '@xihan-ui/testing'
+import { badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, progressSuite, runConformance, separatorSuite, switchSuite, toggleSuite } from '@xihan-ui/testing'
 import { afterEach, beforeEach, describe, it, vi } from 'vitest'
 import { createWcHarness } from './harness'
 
@@ -37,10 +37,23 @@ const wcCollapsibleSuite: ConformanceSuite = {
   cases: collapsibleSuite.cases.filter(c => !(c.props && 'open' in c.props)),
 }
 
-// 同一份规格喂给 WC 适配器实现，逐帧核对。separator 无状态无受控，整份复用。
+// toggle 与 switch 同因：受控用例排除；fixture 只有 root 一个 part，两侧同构。
+const wcToggleSuite: ConformanceSuite = {
+  ...toggleSuite,
+  cases: toggleSuite.cases.filter(c => !(c.props && 'pressed' in c.props)),
+}
+
+// progress 的 track/range 在 Vue 版由组件内部渲染，WC 版由作者手写，故只换 fixture；
+// 用例断言全在 root 上，两侧同一份。
+const wcProgressSuite: ConformanceSuite = {
+  ...progressSuite,
+  fixture: { part: 'root', tag: 'div', children: [{ part: 'track', children: [{ part: 'range' }] }] },
+}
+
+// 同一份规格喂给 WC 适配器实现，逐帧核对。separator/badge 无状态无受控，整份复用。
 runConformance(
   createWcHarness(),
-  [buttonSuite, wcCheckboxSuite, wcCollapsibleSuite, separatorSuite, wcSwitchSuite],
+  [badgeSuite, buttonSuite, wcCheckboxSuite, wcCollapsibleSuite, wcProgressSuite, separatorSuite, wcSwitchSuite, wcToggleSuite],
   { describe, it },
   { enforceKeyboardCoverage: false },
 )

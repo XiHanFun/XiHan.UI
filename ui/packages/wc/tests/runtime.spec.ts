@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
+import type { ReactiveControllerHost } from '@lit/reactive-element'
 import type { MachineSchema } from '@xihan-ui/machine'
 import { ReactiveElement } from '@lit/reactive-element'
 import { setup } from '@xihan-ui/machine'
 import { describe, expect, it } from 'vitest'
+import { createLitRuntime } from '../src/runtime/lit-runtime'
 import { MachineController } from '../src/runtime/machine-controller'
 
 interface ToggleSchema extends MachineSchema {
@@ -90,5 +92,55 @@ describe('machineController + createLitRuntime', () => {
     // 二次断开：正确停机（BUG 回归——旧实现会卡在 Started）
     el.remove()
     expect(el.ctrl.service.getStatus()).toBe('Stopped')
+  })
+})
+
+function fakeHost(): ReactiveControllerHost {
+  return {
+    addController: () => {},
+    removeController: () => {},
+    requestUpdate: () => {},
+    updateComplete: Promise.resolve(true),
+  }
+}
+
+// 受控值由宿主直接写入，不经过 cell.set；版本号必须按值拉取比对才察觉得到。
+// 推送式计数（只在 set/notify 自增）会让 track 在本适配器静默失效，
+// 而 Vue 运行时是拉取式——两端语义必须一致，否则同一台机器跨适配器行为分叉。
+describe('createLitRuntime cell 版本号', () => {
+  it('受控值被外部改写时 version 递增', () => {
+    const runtime = createLitRuntime(fakeHost())
+    let controlled = 'a'
+    const c = runtime.cell<string>(() => ({ value: controlled }))
+    const v0 = c.version()
+    controlled = 'b'
+    expect(c.get()).toBe('b')
+    expect(c.version()).not.toBe(v0)
+  })
+
+  it('值未变时 version 不动，track 不误触发', () => {
+    const runtime = createLitRuntime(fakeHost())
+    const c = runtime.cell<string>(() => ({ defaultValue: 'a' }))
+    expect(c.version()).toBe(c.version())
+  })
+
+  it('外部改写受控值后 runTrackers 触发依赖该 cell 的 tracker', () => {
+    const runtime = createLitRuntime(fakeHost())
+    let controlled = 'a'
+    const c = runtime.cell<string>(() => ({ value: controlled }))
+    let fired = 0
+    runtime.track([() => c.version()], () => {
+      fired += 1
+    })
+
+    runtime.runTrackers()
+    expect(fired).toBe(0)
+
+    controlled = 'b'
+    runtime.runTrackers()
+    expect(fired).toBe(1)
+
+    runtime.runTrackers()
+    expect(fired).toBe(1)
   })
 })

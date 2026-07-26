@@ -114,12 +114,57 @@ app.innerHTML = `
     <xh-separator><div data-xh-part="root" style="margin-block: 16px;"></div></xh-separator>
     <span class="lead">上面是水平分隔线。</span>
   </section>
+
+  <section>
+    <h2>Toggle</h2>
+    <div class="row" style="gap: 16px;">
+      <xh-toggle aria-label="加粗"><button data-xh-part="root">B</button></xh-toggle>
+      <xh-toggle default-pressed aria-label="默认按下"><button data-xh-part="root">I</button></xh-toggle>
+      <xh-toggle disabled aria-label="禁用"><button data-xh-part="root">U</button></xh-toggle>
+      <span class="lead">aria-pressed 驱动</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Progress</h2>
+    <xh-progress id="wc-progress" value="40">
+      <div data-xh-part="root">
+        <div data-xh-part="track"><div data-xh-part="range"></div></div>
+      </div>
+    </xh-progress>
+    <div class="row" style="margin-block-start: 12px;">
+      <xh-button variant="subtle"><button data-xh-part="root" data-progress="-20">−20</button></xh-button>
+      <xh-button variant="subtle"><button data-xh-part="root" data-progress="20">+20</button></xh-button>
+      <span class="lead" id="wc-progress-label">40 / 100</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Badge</h2>
+    <div class="row">
+      <xh-badge variant="solid"><span data-xh-part="root">Solid</span></xh-badge>
+      <xh-badge variant="subtle"><span data-xh-part="root">Subtle</span></xh-badge>
+      <xh-badge variant="outline"><span data-xh-part="root">Outline</span></xh-badge>
+    </div>
+  </section>
 </main>
 `
 
 document.getElementById('theme')!.addEventListener('click', () => {
   theme.setPreference({ mode: theme.getState().mode === 'light' ? 'dark' : 'light' })
 })
+
+// 进度条加减：直接改宿主元素的 value 属性，元素自行重连接
+const progressEl = document.getElementById('wc-progress')!
+const progressLabel = document.getElementById('wc-progress-label')!
+for (const btn of Array.from(document.querySelectorAll('[data-progress]'))) {
+  btn.addEventListener('click', () => {
+    const delta = Number((btn as HTMLElement).dataset.progress)
+    const next = Math.min(100, Math.max(0, Number(progressEl.getAttribute('value')) + delta))
+    progressEl.setAttribute('value', String(next))
+    progressLabel.textContent = `${next} / 100`
+  })
+}
 
 // 取消/确定：复用 close-trigger 关闭对话框
 for (const btn of Array.from(document.querySelectorAll('[data-close]'))) {
