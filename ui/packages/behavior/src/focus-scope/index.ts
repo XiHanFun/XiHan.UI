@@ -45,34 +45,55 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
 
   // —— 挂载自动聚焦 ——
   // 容器可能晚一拍才就位（Vue：content 进 open 后才挂载；WC：content 常驻但先 hidden、
-  // 同一拍才变可见）。返回焦点是否真的落进 scope；没落进就下一帧重试，否则焦点永远进不去。
-  function attemptMountFocus(): boolean {
+  // 同一拍才变可见）。首选 initialFocus/首个可聚焦元素；容器兜底只在最后一帧才用，
+  // 否则"焦点落在容器本身"会被当作已完成、错过之后才出现的可聚焦元素。
+  let focusSettled = false
+  function tryMountFocus(lastChance: boolean): void {
+    if (focusSettled || disposed)
+      return
     const el = container()
     if (!el)
-      return false
-    if (isInScope(scope.getActiveElement()))
-      return true
+      return // 容器还没就位，留待重试
+    const active = scope.getActiveElement()
+    // 焦点已落在容器的某个后代（真正可聚焦元素）→ 完成；落在容器本身则不算，继续找
+    if (isInScope(active) && active !== el) {
+      focusSettled = true
+      return
+    }
     const proceed = dispatchCancelable(el, EV_MOUNT_AUTO_FOCUS, {})
     // onMountAutoFocus 里可 preventDefault 改写默认聚焦
     o.onMountAutoFocus?.(new CustomEvent(EV_MOUNT_AUTO_FOCUS))
-    if (proceed) {
-      const target = o.initialFocus?.() ?? null
-      if (target)
-        focusSafely(target, { select: true })
-      else if (!focusFirst(removeLinks(getTabbables(el)), { select: true }))
-        focusSafely(el)
+    if (!proceed) {
+      focusSettled = true
+      return
     }
-    return isInScope(scope.getActiveElement())
+    const target = o.initialFocus?.() ?? null
+    if (target) {
+      focusSafely(target, { select: true })
+      focusSettled = true
+      return
+    }
+    if (focusFirst(removeLinks(getTabbables(el)), { select: true })) {
+      focusSettled = true
+      return
+    }
+    // 尚无可聚焦元素（容器可能仍隐藏）：最后一帧才兜底聚焦容器，否则留待重试
+    if (lastChance) {
+      focusSafely(el)
+      focusSettled = true
+    }
   }
-  function scheduleFocus(attempts: number): void {
+  function scheduleFocus(remaining: number): void {
     win.requestAnimationFrame(() => {
-      if (disposed)
+      if (focusSettled || disposed)
         return
-      if (!attemptMountFocus() && attempts > 1)
-        scheduleFocus(attempts - 1)
+      tryMountFocus(remaining <= 1)
+      if (!focusSettled && remaining > 1)
+        scheduleFocus(remaining - 1)
     })
   }
-  if (!attemptMountFocus())
+  tryMountFocus(false)
+  if (!focusSettled)
     scheduleFocus(3)
 
   // —— 逃逸抢回 ——

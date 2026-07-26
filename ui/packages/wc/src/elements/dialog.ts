@@ -88,6 +88,7 @@ export class XhDialogElement extends XhElement {
   protected wire(): void {
     const svc = this.ctrl.service
     const api = connectDialog(svc, wcNormalize)
+    const open = svc.state.get() === 'open'
 
     this.contentNode = this.getPart('content')
     this.backdropNode = this.getPart('backdrop')
@@ -104,7 +105,14 @@ export class XhDialogElement extends XhElement {
     put('title', api.getTitleProps() as Record<string, unknown>)
     put('description', api.getDescriptionProps() as Record<string, unknown>)
     put('close-trigger', api.getCloseTriggerProps() as Record<string, unknown>)
-    // 视觉隐藏交给 styled 层的 [data-state='closed']{display:none}；行为宿主只设 data-state。
+
+    // Light DOM content 常驻，WC 自管可见性：关闭时隐藏浮层子树（Vue 靠卸载，故 styled 不改、
+    // 退场动画不受影响）。焦点窗口内先隐后显由 focus-scope 的重试兜住。
+    const positioner = this.getPart('positioner')
+    if (positioner)
+      positioner.hidden = !open
+    if (this.backdropNode)
+      this.backdropNode.hidden = !open
   }
 
   override disconnectedCallback(): void {
