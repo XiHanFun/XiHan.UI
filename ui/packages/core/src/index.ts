@@ -39,7 +39,7 @@ export { createLayerRegistry, getLayerRegistry } from './structure/layer-registr
 export type { PerDocumentRegistry } from './structure/per-document-registry'
 export { createPerDocumentRegistry } from './structure/per-document-registry'
 // 类型与生命周期
-export type { Cleanup, Dict, Direction, Disposable, MaybeBooleanish } from './types'
+export type { Cleanup, Dict, Direction, Disposable, MaybeBooleanish, Orientation } from './types'
 export { toCleanup } from './types'
 
 // 端口类型（实现在别处）

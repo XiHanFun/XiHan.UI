@@ -22,5 +22,8 @@ export function toCleanup(d: Disposable): Cleanup {
 /** 方向。 */
 export type Direction = 'ltr' | 'rtl'
 
+/** 朝向。注意与"导航轴"区分：RadioGroup 视觉横排但四个方向键都要响应。 */
+export type Orientation = 'horizontal' | 'vertical'
+
 /** ARIA 布尔值：真时输出 'true'，假时省略（返回 undefined）。 */
 export type MaybeBooleanish = boolean | undefined
