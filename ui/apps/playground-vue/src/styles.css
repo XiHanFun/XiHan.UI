@@ -1,26 +1,78 @@
-/* 页面基础样式，消费设计令牌。 */
+/* 页面基础样式，消费设计令牌。与 playground-wc 保持一致（仅标题不同）。 */
 body {
   margin: 0;
-  padding: 0;
   background: var(--xh-bg-canvas);
   color: var(--xh-fg-default);
-  font-family: system-ui, -apple-system, sans-serif;
-  font-size: var(--xh-text-body-size);
+  font-family: system-ui, sans-serif;
 }
 
-main {
-  max-inline-size: 640px;
-  margin-block: 48px;
-  margin-inline: auto;
-  padding-inline: 24px;
+.wrap {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+  display: grid;
+  gap: 28px;
+}
+
+header {
   display: flex;
-  flex-direction: column;
-  gap: 24px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+h1 {
+  font-size: 22px;
+  margin: 0;
+}
+
+h2 {
+  font-size: 15px;
+  margin: 0 0 12px;
+  color: var(--xh-fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.lead {
+  color: var(--xh-fg-muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0 0 12px;
+}
+
+code {
+  background: var(--xh-bg-subtle);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 12px;
 }
 
 .row {
   display: flex;
-  gap: 12px;
-  align-items: center;
+  gap: 10px;
   flex-wrap: wrap;
+  align-items: center;
+}
+
+.row.end {
+  justify-content: flex-end;
+  margin-block-start: 12px;
+}
+
+section {
+  border: 1px solid var(--xh-border-subtle);
+  border-radius: 10px;
+  padding: 20px;
+  background: var(--xh-bg-surface);
+}
+
+#theme {
+  border: 1px solid var(--xh-border-default);
+  background: var(--xh-bg-subtle);
+  color: var(--xh-fg-default);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 13px;
 }

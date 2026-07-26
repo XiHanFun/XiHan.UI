@@ -24,8 +24,16 @@ const wifi = ref(true)
 </script>
 
 <template>
-  <main>
-    <h1>XiHan.UI Playground</h1>
+  <main class="wrap">
+    <header>
+      <h1>XiHan.UI · Vue</h1>
+      <button id="theme" @click="toggleTheme">
+        切换主题
+      </button>
+    </header>
+    <p class="lead">
+      这些是 Vue 组件，和 Web Components 版共用同一套 headless（machine + connect）。
+    </p>
 
     <section>
       <h2>Button</h2>
@@ -46,40 +54,35 @@ const wifi = ref(true)
         <XhButton loading>
           Loading
         </XhButton>
-        <XhButton size="sm">
-          Small
-        </XhButton>
         <XhButton size="lg">
           Large
-        </XhButton>
-        <XhButton variant="outline" @click="toggleTheme">
-          切换 {{ mode === 'light' ? '深色' : '浅色' }}
         </XhButton>
       </div>
     </section>
 
     <section>
       <h2>Dialog</h2>
-      <div class="row">
-        <XhDialogRoot v-slot="{ setOpen }">
-          <XhDialogTrigger>打开对话框</XhDialogTrigger>
-          <XhDialogContent>
-            <XhDialogTitle>确认操作</XhDialogTitle>
-            <XhDialogDescription>
-              这是一个模态对话框：焦点被陷入、背景滚动被锁定、Esc 或点击遮罩可关闭。
-            </XhDialogDescription>
-            <div class="row" style="justify-content: flex-end; margin-block-start: 8px;">
-              <XhButton variant="ghost" @click="setOpen(false)">
-                取消
-              </XhButton>
-              <XhButton variant="solid" @click="setOpen(false)">
-                确定
-              </XhButton>
-            </div>
-            <XhDialogCloseTrigger>✕</XhDialogCloseTrigger>
-          </XhDialogContent>
-        </XhDialogRoot>
-      </div>
+      <p class="lead">
+        点击打开：焦点陷入内容、Esc 或点遮罩关闭、关闭后焦点回到触发按钮。
+      </p>
+      <XhDialogRoot v-slot="{ setOpen }">
+        <XhDialogTrigger>打开对话框</XhDialogTrigger>
+        <XhDialogContent>
+          <XhDialogTitle>确认操作</XhDialogTitle>
+          <XhDialogDescription>
+            由 dialog 状态机驱动的模态框——与 Web Components 版是同一套 headless 逻辑，仅适配器不同。
+          </XhDialogDescription>
+          <div class="row end">
+            <XhButton variant="ghost" @click="setOpen(false)">
+              取消
+            </XhButton>
+            <XhButton variant="solid" @click="setOpen(false)">
+              确定
+            </XhButton>
+          </div>
+          <XhDialogCloseTrigger>✕</XhDialogCloseTrigger>
+        </XhDialogContent>
+      </XhDialogRoot>
     </section>
 
     <section>
