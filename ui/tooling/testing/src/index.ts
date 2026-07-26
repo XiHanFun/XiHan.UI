@@ -3,7 +3,7 @@
 export { applyStep } from './conformance/apply-step'
 export type { ApplyContext } from './conformance/apply-step'
 export { checkExpectation } from './conformance/match'
-export { recordTrace, runConformance } from './conformance/run'
+export { recordTrace, runConformance, runParity } from './conformance/run'
 export type { RunOptions } from './conformance/run'
 export type {
   ActiveElementExpectation,

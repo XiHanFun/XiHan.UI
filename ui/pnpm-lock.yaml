@@ -21,6 +21,9 @@ catalogs:
     '@commitlint/config-conventional':
       specifier: ^19.8.0
       version: 19.8.0
+    '@lit/reactive-element':
+      specifier: 2.1.2
+      version: 2.1.2
     '@types/node':
       specifier: ^24.10.0
       version: 24.13.3
@@ -293,6 +296,40 @@ importers:
       vue:
         specifier: 'catalog:'
         version: 3.5.40(typescript@6.0.3)
+
+  packages/wc:
+    dependencies:
+      '@lit/reactive-element':
+        specifier: 'catalog:'
+        version: 2.1.2
+      '@xihan-ui/behavior':
+        specifier: workspace:*
+        version: link:../behavior
+      '@xihan-ui/core':
+        specifier: workspace:*
+        version: link:../core
+      '@xihan-ui/headless':
+        specifier: workspace:*
+        version: link:../headless
+      '@xihan-ui/machine':
+        specifier: workspace:*
+        version: link:../machine
+    devDependencies:
+      '@xihan-ui/build':
+        specifier: workspace:*
+        version: link:../../tooling/build
+      '@xihan-ui/testing':
+        specifier: workspace:*
+        version: link:../../tooling/testing
+      '@xihan-ui/tsconfig':
+        specifier: workspace:*
+        version: link:../../tooling/tsconfig
+      jsdom:
+        specifier: 'catalog:'
+        version: 27.4.0
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.10(@types/node@24.13.3)(jsdom@27.4.0)(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0))
 
   tooling/build:
     dependencies:
@@ -1114,6 +1151,12 @@ packages:
 
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
+
+  '@lit-labs/ssr-dom-shim@1.6.0':
+    resolution: {integrity: sha512-VHb0ALPMTlgKjM6yIxxoQNnpKyUKLD04VzeQdsiXkMqkvYlAHxq9glGLmgbb889/1GsohSOAjvQYoiBppXFqrQ==}
+
+  '@lit/reactive-element@2.1.2':
+    resolution: {integrity: sha512-pbCDiVMnne1lYUIaYNN5wrwQXDtHaYtg7YEFPeW+hws6U47WeFvISGUWekPGKWOP1ygrs0ef0o1VJMk1exos5A==}
 
   '@loaderkit/resolve@1.0.6':
     resolution: {integrity: sha512-G8FdIoF5CypfwmD9rl8BXod5HDn8JqB0CCNBXDTaRZ+yRYhARrrSToX1zg1zy9jX3zLqigsELwhT4gNtkdQAUg==}
@@ -5206,6 +5249,12 @@ snapshots:
       keyv: 5.6.0
 
   '@keyv/serialize@1.1.1': {}
+
+  '@lit-labs/ssr-dom-shim@1.6.0': {}
+
+  '@lit/reactive-element@2.1.2':
+    dependencies:
+      '@lit-labs/ssr-dom-shim': 1.6.0
 
   '@loaderkit/resolve@1.0.6':
     dependencies:
