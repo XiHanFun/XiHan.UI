@@ -1,3 +1,5 @@
 export { buttonAnatomy } from './button.anatomy'
 export { connectButton } from './button.connect'
+export { buttonKeyboard } from './button.keyboard'
+export { buttonMeta } from './button.meta'
 export type { ButtonApi, ButtonProps } from './button.types'

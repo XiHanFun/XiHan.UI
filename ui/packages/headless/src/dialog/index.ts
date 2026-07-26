@@ -1,4 +1,6 @@
 export { dialogAnatomy } from './dialog.anatomy'
 export { connectDialog } from './dialog.connect'
+export { dialogKeyboard } from './dialog.keyboard'
 export { dialogMachine } from './dialog.machine'
+export { dialogMeta } from './dialog.meta'
 export type { DialogApi, DialogRefs, DialogSchema, DialogTranslations } from './dialog.types'

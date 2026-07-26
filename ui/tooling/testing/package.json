@@ -1,14 +1,11 @@
 {
-  "name": "@xihan-ui/vue",
+  "name": "@xihan-ui/testing",
   "type": "module",
   "version": "0.0.0",
-  "description": "XiHan.UI Vue adapter — components, composables, machine runtime.",
+  "private": true,
+  "description": "XiHan.UI cross-adapter conformance harness — spec-driven DOM snapshot, declarative steps, keyboard coverage. Not published.",
   "license": "MIT",
   "sideEffects": false,
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -24,22 +21,14 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run"
   },
-  "peerDependencies": {
-    "vue": "catalog:"
-  },
   "dependencies": {
-    "@xihan-ui/behavior": "workspace:*",
     "@xihan-ui/core": "workspace:*",
-    "@xihan-ui/headless": "workspace:*",
-    "@xihan-ui/machine": "workspace:*"
+    "@xihan-ui/headless": "workspace:*"
   },
   "devDependencies": {
-    "@vue/test-utils": "catalog:",
     "@xihan-ui/build": "workspace:*",
-    "@xihan-ui/testing": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",
     "jsdom": "catalog:",
-    "vitest": "catalog:",
-    "vue": "catalog:"
+    "vitest": "catalog:"
   }
 }
