@@ -140,6 +140,51 @@ describe('queryItems', () => {
   it('容器为空时返回空数组，不抛', () => {
     expect(queryItems(null, { scope: 'tabs', part: 'trigger' })).toEqual([])
   })
+
+  // 条目与容器之间隔着同 scope 的其它 part（Accordion 的 item/header）：
+  // 归属判据若取"任意同 scope 祖先"，最近的会是 header，条目会被全部过滤掉。
+  it('条目与容器之间隔着同 scope 的其它 part 时照样取得到', () => {
+    const host = mount(`
+      <div data-scope="accordion" data-part="root" id="root">
+        <div data-scope="accordion" data-part="item">
+          <h3 data-scope="accordion" data-part="header">
+            <button data-scope="accordion" data-part="trigger" data-value="a"></button>
+          </h3>
+        </div>
+        <div data-scope="accordion" data-part="item">
+          <h3 data-scope="accordion" data-part="header">
+            <button data-scope="accordion" data-part="trigger" data-value="b"></button>
+          </h3>
+        </div>
+      </div>`)
+    const root = host.querySelector<HTMLElement>('#root')
+    expect(queryItems(root, { scope: 'accordion', part: 'trigger' }).map(el => el.dataset.value)).toEqual(['a', 'b'])
+    host.remove()
+  })
+
+  it('多层嵌套下仍按最近的同 part 容器归属', () => {
+    const host = mount(`
+      <div data-scope="accordion" data-part="root" id="outer">
+        <div data-scope="accordion" data-part="item">
+          <h3 data-scope="accordion" data-part="header">
+            <button data-scope="accordion" data-part="trigger" data-value="outer-a"></button>
+          </h3>
+          <div data-scope="accordion" data-part="content">
+            <div data-scope="accordion" data-part="root" id="inner">
+              <div data-scope="accordion" data-part="item">
+                <h3 data-scope="accordion" data-part="header">
+                  <button data-scope="accordion" data-part="trigger" data-value="inner-a"></button>
+                </h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`)
+    const q = { scope: 'accordion', part: 'trigger' }
+    expect(queryItems(host.querySelector('#outer'), q).map(el => el.dataset.value)).toEqual(['outer-a'])
+    expect(queryItems(host.querySelector('#inner'), q).map(el => el.dataset.value)).toEqual(['inner-a'])
+    host.remove()
+  })
 })
 
 describe('条目禁用与按值导航', () => {
