@@ -1,0 +1,5 @@
+export { separatorAnatomy } from './separator.anatomy'
+export { connectSeparator } from './separator.connect'
+export { separatorKeyboard } from './separator.keyboard'
+export { separatorMeta } from './separator.meta'
+export type { SeparatorApi, SeparatorProps } from './separator.types'

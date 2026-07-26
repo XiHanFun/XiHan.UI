@@ -1,0 +1,17 @@
+@layer xihan.components {
+  [data-scope='separator'][data-part='root'] {
+    border: 0;
+    background: var(--xh-separator-color, var(--xh-border-default));
+  }
+
+  [data-scope='separator'][data-part='root'][data-orientation='horizontal'] {
+    inline-size: 100%;
+    block-size: var(--xh-separator-thickness, 1px);
+  }
+
+  [data-scope='separator'][data-part='root'][data-orientation='vertical'] {
+    align-self: stretch;
+    inline-size: var(--xh-separator-thickness, 1px);
+    block-size: 100%;
+  }
+}

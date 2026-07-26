@@ -15,7 +15,10 @@
     "./layers.css": "./styles/layers.css",
     "./motion.css": "./styles/motion.css",
     "./button.css": "./styles/button.css",
+    "./checkbox.css": "./styles/checkbox.css",
+    "./collapsible.css": "./styles/collapsible.css",
     "./dialog.css": "./styles/dialog.css",
+    "./separator.css": "./styles/separator.css",
     "./switch.css": "./styles/switch.css",
     "./visually-hidden.css": "./styles/visually-hidden.css"
   },
