@@ -19,11 +19,28 @@ export interface NavKeyOptions {
   home?: boolean
 }
 
+/** 只需要读修饰键，形状放宽以便直接传 KeyboardEvent。 */
+export interface NavKeyEventLike {
+  key: string
+  ctrlKey?: boolean
+  metaKey?: boolean
+  altKey?: boolean
+  shiftKey?: boolean
+}
+
 /**
  * 按键 → 导航意图。返回 null 表示这个键不归导航管，调用方**不得** preventDefault
  * （横向列表里的上下键必须放行给页面滚动与读屏）。
+ *
+ * 传入事件对象时会先看修饰键：带 Ctrl/Meta/Alt/Shift 的组合一律不归导航管，
+ * 否则 Ctrl+Home（跳到文档顶部）之类的浏览器/读屏组合会被集合吞掉。
  */
-export function navIntentFromKey(key: string, options: NavKeyOptions = {}): NavIntent | null {
+export function navIntentFromKey(key: string | NavKeyEventLike, options: NavKeyOptions = {}): NavIntent | null {
+  if (typeof key !== 'string') {
+    if (key.ctrlKey || key.metaKey || key.altKey || key.shiftKey)
+      return null
+    return navIntentFromKey(key.key, options)
+  }
   const { axis = 'both', dir = 'ltr', home = true } = options
   const horizontal = axis === 'horizontal' || axis === 'both'
   const vertical = axis === 'vertical' || axis === 'both'

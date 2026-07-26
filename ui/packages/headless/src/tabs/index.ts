@@ -1,0 +1,6 @@
+export { tabsAnatomy } from './tabs.anatomy'
+export { connectTabs } from './tabs.connect'
+export { tabsKeyboard } from './tabs.keyboard'
+export { tabsMachine } from './tabs.machine'
+export { tabsMeta } from './tabs.meta'
+export type { TabsActivationMode, TabsApi, TabsContentProps, TabsSchema, TabsTriggerProps, TabsValueChangeDetails } from './tabs.types'

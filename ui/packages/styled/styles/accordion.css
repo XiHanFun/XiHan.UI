@@ -1,0 +1,77 @@
+@layer xihan.components {
+  [data-scope='accordion'][data-part='root'] {
+    display: flex;
+    flex-direction: column;
+    inline-size: 100%;
+  }
+
+  [data-scope='accordion'][data-part='root'][data-orientation='horizontal'] {
+    flex-direction: row;
+  }
+
+  [data-scope='accordion'][data-part='item'] {
+    border-block-end: 1px solid var(--xh-accordion-item-border, var(--xh-border-default));
+    min-inline-size: 0;
+  }
+
+  [data-scope='accordion'][data-part='header'] {
+    margin: 0;
+    font: inherit;
+  }
+
+  [data-scope='accordion'][data-part='trigger'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    inline-size: 100%;
+    gap: var(--xh-accordion-trigger-gap, var(--xh-control-gap-md));
+    block-size: var(--xh-accordion-trigger-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-accordion-trigger-px, var(--xh-control-px-md));
+    border: 0;
+    border-radius: var(--xh-accordion-trigger-radius, var(--xh-shape-control));
+    background: var(--xh-accordion-trigger-bg, transparent);
+    color: var(--xh-accordion-trigger-fg, var(--xh-fg-default));
+    font-size: var(--xh-accordion-trigger-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-accordion-trigger-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  [data-scope='accordion'][data-part='trigger']:hover {
+    background: var(--xh-accordion-trigger-bg-hover, var(--xh-bg-subtle));
+  }
+
+  [data-scope='accordion'][data-part='trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 禁用条目走 aria-disabled，仍留在 Tab 序里，只是不可操作 */
+  [data-scope='accordion'][data-part='trigger'][data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  [data-scope='accordion'][data-part='indicator'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    line-height: 1;
+    transition: rotate var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  [data-scope='accordion'][data-part='indicator']::before {
+    content: '⌄';
+  }
+
+  [data-scope='accordion'][data-part='indicator'][data-state='open'] {
+    rotate: 180deg;
+  }
+
+  [data-scope='accordion'][data-part='content'] {
+    padding-block: var(--xh-accordion-content-py, var(--xh-stack-gap-md));
+    padding-inline: var(--xh-accordion-content-px, var(--xh-control-px-md));
+    color: var(--xh-accordion-content-fg, var(--xh-fg-default));
+  }
+}

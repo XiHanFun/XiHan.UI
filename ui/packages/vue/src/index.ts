@@ -1,5 +1,15 @@
 // @xihan-ui/vue —— Vue 适配器（组件 + 组合式函数 + machine 运行时）。
 
+export {
+  XhAccordionContent,
+  XhAccordionHeader,
+  XhAccordionIndicator,
+  XhAccordionItem,
+  XhAccordionRoot,
+  XhAccordionTrigger,
+} from './components/accordion/accordion'
+export { useAccordion } from './components/accordion/use-accordion'
+export type { AccordionContext } from './components/accordion/use-accordion'
 export { XhBadge } from './components/badge/badge'
 export { XhButton } from './components/button'
 export { XhCheckbox } from './components/checkbox/checkbox'
@@ -23,10 +33,26 @@ export {
 export { useDialog } from './components/dialog/use-dialog'
 export type { DialogContext } from './components/dialog/use-dialog'
 export { XhProgress } from './components/progress/progress'
+export {
+  XhRadioGroupItem,
+  XhRadioGroupItemText,
+  XhRadioGroupLabel,
+  XhRadioGroupRoot,
+} from './components/radio-group/radio-group'
+export { useRadioGroup } from './components/radio-group/use-radio-group'
+export type { RadioGroupContext } from './components/radio-group/use-radio-group'
 export { XhSeparator } from './components/separator/separator'
 export { XhSwitch } from './components/switch/switch'
 export { useSwitch } from './components/switch/use-switch'
 export type { SwitchContext } from './components/switch/use-switch'
+export {
+  XhTabsContent,
+  XhTabsList,
+  XhTabsRoot,
+  XhTabsTrigger,
+} from './components/tabs/tabs'
+export { useTabs } from './components/tabs/use-tabs'
+export type { TabsContext } from './components/tabs/use-tabs'
 export { XhToggle } from './components/toggle/toggle'
 export { useToggle } from './components/toggle/use-toggle'
 export type { ToggleContext } from './components/toggle/use-toggle'
