@@ -8,6 +8,7 @@
     "headless": { "level": 3, "canDependOn": ["core", "machine", "behavior", "system"] },
     "styled": { "level": 3, "canDependOn": [] },
     "vue": { "level": 4, "canDependOn": ["core", "machine", "behavior", "headless", "system"] },
+    "wc": { "level": 4, "canDependOn": ["core", "machine", "behavior", "headless", "system"] },
     "ai": { "level": 2, "canDependOn": ["core"] },
     "markdown": { "level": 2, "canDependOn": ["core"] },
     "i18n": { "level": 1, "canDependOn": [] },

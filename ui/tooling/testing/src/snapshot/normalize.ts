@@ -16,7 +16,8 @@ const IDREF_ATTRS = new Set([
 ])
 
 /** 适配器噪音与结构标记：不进快照（part 身份已由快照的键表达）。 */
-const ADAPTER_NOISE = /^data-(?:v-[0-9a-f]{6,8}|server-rendered|defer-hydration|lit-|reactroot$|scope$|part$)/
+// xh- 前缀是 WC 适配器的角色标记/状态通道（data-xh-part 等），跨适配器不可比，剔除。
+const ADAPTER_NOISE = /^data-(?:v-[0-9a-f]{6,8}|server-rendered|defer-hydration|lit-|reactroot$|scope$|part$|xh-)/
 
 function collectedNames(el: Element): string[] {
   const names = new Set<string>(BASE_ATTRS)

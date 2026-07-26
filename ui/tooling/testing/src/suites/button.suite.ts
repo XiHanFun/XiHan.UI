@@ -7,7 +7,7 @@ export const buttonSuite: ConformanceSuite = {
   component: 'button',
   anatomy: buttonAnatomy,
   keyboard: buttonKeyboard,
-  fixture: { part: 'root', children: [{ text: '按钮' }] },
+  fixture: { part: 'root', tag: 'button', children: [{ text: '按钮' }] },
   cases: [
     {
       name: '默认：type=button，单一 root，无禁用/加载态',

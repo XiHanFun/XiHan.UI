@@ -1,0 +1,45 @@
+{
+  "name": "@xihan-ui/wc",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "XiHan.UI Web Components adapter — Light-DOM behavior hosts on ReactiveElement.",
+  "license": "MIT",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./define": {
+      "types": "./dist/define.d.ts",
+      "import": "./dist/define.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@lit/reactive-element": "catalog:",
+    "@xihan-ui/behavior": "workspace:*",
+    "@xihan-ui/core": "workspace:*",
+    "@xihan-ui/headless": "workspace:*",
+    "@xihan-ui/machine": "workspace:*"
+  },
+  "devDependencies": {
+    "@xihan-ui/build": "workspace:*",
+    "@xihan-ui/testing": "workspace:*",
+    "@xihan-ui/tsconfig": "workspace:*",
+    "jsdom": "catalog:",
+    "vitest": "catalog:"
+  }
+}

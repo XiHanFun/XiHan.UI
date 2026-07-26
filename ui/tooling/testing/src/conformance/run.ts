@@ -71,6 +71,60 @@ function assertCaseFrames(c: ConformanceCase, frames: readonly DomSnapshot[]): v
     throw new Error(`\n  ${errs.join('\n  ')}`)
 }
 
+/** 两个快照按结构字段深比；返回差异描述，空即一致。 */
+function diffSnapshot(a: DomSnapshot, b: DomSnapshot): string[] {
+  const diffs: string[] = []
+  const j = (x: unknown): string => JSON.stringify(x)
+  if (j(a.parts) !== j(b.parts))
+    diffs.push(`parts:\n    A=${j(a.parts)}\n    B=${j(b.parts)}`)
+  if (j(a.order) !== j(b.order))
+    diffs.push(`order: A=${j(a.order)} B=${j(b.order)}`)
+  if (j(a.activeElement) !== j(b.activeElement))
+    diffs.push(`activeElement: A=${j(a.activeElement)} B=${j(b.activeElement)}`)
+  if (j(a.events) !== j(b.events))
+    diffs.push(`events: A=${j(a.events)} B=${j(b.events)}`)
+  if (j(a.strayParts) !== j(b.strayParts))
+    diffs.push(`strayParts: A=${j(a.strayParts)} B=${j(b.strayParts)}`)
+  return diffs
+}
+
+/**
+ * 跨适配器轨迹比对：同一份规格在多个 harness 上各自独占文档串行录制，逐帧结构比对。
+ * 无人写期望值——只要两端有任一 part 属性/焦点/事件/顺序不一致就在那一帧炸并打印结构 diff。
+ */
+export function runParity(
+  harnesses: readonly AdapterHarness[],
+  suites: readonly ConformanceSuite[],
+  hooks: TestHooks,
+): void {
+  for (const suite of suites) {
+    const names = harnesses.map(h => h.adapterName).join(' vs ')
+    hooks.describe(`parity: ${suite.component} (${names})`, () => {
+      for (const c of suite.cases) {
+        hooks.it(c.name, async () => {
+          // 串行：同一时刻文档内只有一个 harness 的实例
+          const traces: Array<[string, DomSnapshot[]]> = []
+          for (const h of harnesses)
+            traces.push([h.adapterName, await recordTrace(h, suite, c)])
+
+          const [baseName, baseTrace] = traces[0]!
+          for (const [name, trace] of traces.slice(1)) {
+            if (trace.length !== baseTrace.length)
+              throw new Error(`parity ${name} vs ${baseName}：轨迹帧数 ${trace.length} ≠ ${baseTrace.length}`)
+            for (let i = 0; i < baseTrace.length; i++) {
+              const diff = diffSnapshot(baseTrace[i]!, trace[i]!)
+              if (diff.length) {
+                const label = i === 0 ? 'mount' : `step#${i - 1} (${c.steps![i - 1]!.kind})`
+                throw new Error(`parity ${name} vs ${baseName} @ ${label}:\n  ${diff.join('\n  ')}`)
+              }
+            }
+          }
+        })
+      }
+    })
+  }
+}
+
 /** 把一份规格喂给某个 harness，逐帧断言实现是否符合规格。 */
 export function runConformance(
   harness: AdapterHarness,
