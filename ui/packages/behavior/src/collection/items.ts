@@ -23,18 +23,20 @@ function selector(q: ItemQuery): string {
 
 /**
  * 取容器内的条目元素，文档序。
- * 用 closest 归属过滤，保证嵌套同类集合（Tabs 套 Tabs）互不吞并。
+ * 归属过滤保证嵌套同类集合（Tabs 套 Tabs、Accordion 套 Accordion）互不吞并。
  */
 export function queryItems(container: HTMLElement | null, q: ItemQuery): HTMLElement[] {
   if (!container)
     return []
-  const sel = selector(q)
-  return [...container.querySelectorAll<HTMLElement>(sel)].filter(el => el.closest(sel) === el && nearestContainer(el, q) === container)
-}
-
-// 条目往上找到自己所属的容器：跳过自身后，最近的同 scope 容器。
-function nearestContainer(el: HTMLElement, q: ItemQuery): HTMLElement | null {
-  return el.parentElement?.closest<HTMLElement>(`[${DATA_SCOPE}="${q.scope}"]`) ?? null
+  const items = [...container.querySelectorAll<HTMLElement>(selector(q))]
+  // 归属判据取"容器自己的 part"，而不是"任意同 scope 祖先"：
+  // 条目与容器之间常隔着同 scope 的其它 part（Accordion 的 item/header），
+  // 用任意同 scope 祖先做判据会把条目全部过滤掉。
+  const part = container.getAttribute(DATA_PART)
+  if (part == null)
+    return items
+  const containerSel = `[${DATA_SCOPE}="${q.scope}"][${DATA_PART}="${part}"]`
+  return items.filter(el => el.parentElement?.closest(containerSel) === container)
 }
 
 export function itemValue(el: HTMLElement | null): string | null {
