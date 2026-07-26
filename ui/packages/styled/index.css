@@ -2,9 +2,12 @@
 @import './styles/layers.css';
 @import './styles/motion.css';
 @import './styles/visually-hidden.css';
+@import './styles/badge.css';
 @import './styles/button.css';
 @import './styles/checkbox.css';
 @import './styles/collapsible.css';
 @import './styles/dialog.css';
+@import './styles/progress.css';
 @import './styles/separator.css';
 @import './styles/switch.css';
+@import './styles/toggle.css';

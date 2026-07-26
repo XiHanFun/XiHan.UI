@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { createThemeController } from '@xihan-ui/system/runtime'
 import {
+  XhBadge,
   XhButton,
   XhCheckbox,
   XhCollapsibleContent,
@@ -12,8 +13,10 @@ import {
   XhDialogRoot,
   XhDialogTitle,
   XhDialogTrigger,
+  XhProgress,
   XhSeparator,
   XhSwitch,
+  XhToggle,
 } from '@xihan-ui/vue'
 import { ref } from 'vue'
 
@@ -27,6 +30,8 @@ function toggleTheme() {
 
 const wifi = ref(true)
 const agree = ref(false)
+const bold = ref(false)
+const progress = ref(40)
 </script>
 
 <template>
@@ -150,6 +155,51 @@ const agree = ref(false)
       </div>
       <XhSeparator style="margin-block: 16px;" />
       <span class="lead">上面是水平分隔线。</span>
+    </section>
+
+    <section>
+      <h2>Toggle</h2>
+      <div class="row" style="gap: 16px;">
+        <XhToggle v-model:pressed="bold" aria-label="加粗">
+          B
+        </XhToggle>
+        <span class="lead">{{ bold ? '已按下' : '未按下' }}（aria-pressed 驱动）</span>
+        <XhToggle default-pressed aria-label="默认按下">
+          I
+        </XhToggle>
+        <XhToggle disabled aria-label="禁用">
+          U
+        </XhToggle>
+      </div>
+    </section>
+
+    <section>
+      <h2>Progress</h2>
+      <XhProgress :value="progress" />
+      <div class="row" style="margin-block-start: 12px;">
+        <XhButton variant="subtle" @click="progress = Math.max(0, progress - 20)">
+          −20
+        </XhButton>
+        <XhButton variant="subtle" @click="progress = Math.min(100, progress + 20)">
+          +20
+        </XhButton>
+        <span class="lead">{{ progress }} / 100</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>Badge</h2>
+      <div class="row">
+        <XhBadge variant="solid">
+          Solid
+        </XhBadge>
+        <XhBadge variant="subtle">
+          Subtle
+        </XhBadge>
+        <XhBadge variant="outline">
+          Outline
+        </XhBadge>
+      </div>
     </section>
   </main>
 </template>

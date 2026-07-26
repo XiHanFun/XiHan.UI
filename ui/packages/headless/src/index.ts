@@ -1,5 +1,7 @@
 // @xihan-ui/headless —— 无头组件（anatomy + machine + connect，无样式）。
 
+export { badgeAnatomy, badgeKeyboard, badgeMeta, connectBadge } from './badge'
+export type { BadgeApi, BadgeProps } from './badge'
 export { buttonAnatomy, buttonKeyboard, buttonMeta, connectButton } from './button'
 
 export type { ButtonApi, ButtonProps } from './button'
@@ -10,9 +12,13 @@ export type { CollapsibleApi, CollapsibleOpenChangeDetails, CollapsibleSchema } 
 export { connectDialog, dialogAnatomy, dialogKeyboard, dialogMachine, dialogMeta } from './dialog'
 
 export type { DialogApi, DialogOpenChangeDetails, DialogRefs, DialogSchema, DialogTranslations } from './dialog'
-export type { ComponentMeta, KeyboardRow, KeyboardTable } from './spec'
+export { connectProgress, progressAnatomy, progressKeyboard, progressMeta } from './progress'
+export type { ProgressApi, ProgressProps } from './progress'
 export { connectSeparator, separatorAnatomy, separatorKeyboard, separatorMeta } from './separator'
 export type { SeparatorApi, SeparatorProps } from './separator'
+export type { ComponentMeta, KeyboardRow, KeyboardTable } from './spec'
 export { connectSwitch, switchAnatomy, switchKeyboard, switchMachine, switchMeta } from './switch'
 export type { SwitchApi, SwitchCheckedChangeDetails, SwitchSchema } from './switch'
+export { connectToggle, toggleAnatomy, toggleKeyboard, toggleMachine, toggleMeta } from './toggle'
+export type { ToggleApi, TogglePressedChangeDetails, ToggleSchema } from './toggle'
 export type { HeadlessComponent, NormalizeProps, PropTypes } from './types'

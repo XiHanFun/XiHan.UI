@@ -1,0 +1,48 @@
+@layer xihan.components {
+  [data-scope='toggle'][data-part='root'] {
+    /* 私有槽位：组件令牌 → 语义令牌两级回退 */
+    --xh-_bg: var(--xh-toggle-bg, transparent);
+    --xh-_bg-hover: var(--xh-toggle-bg-hover, var(--xh-bg-subtle-hover));
+    --xh-_fg: var(--xh-toggle-fg, var(--xh-fg-default));
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-toggle-gap, var(--xh-control-gap-md));
+    block-size: var(--xh-toggle-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-toggle-px, var(--xh-control-px-md));
+    border: var(--xh-stroke-thin) solid transparent;
+    border-radius: var(--xh-toggle-radius, var(--xh-shape-control));
+    background: var(--xh-_bg);
+    color: var(--xh-_fg);
+    font-size: var(--xh-toggle-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-toggle-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='toggle'][data-part='root']:hover {
+    background: var(--xh-_bg-hover);
+  }
+
+  /* 按下态：brand 前景 + subtle-active 底 */
+  [data-scope='toggle'][data-part='root'][data-state='on'] {
+    --xh-_bg: var(--xh-toggle-bg-pressed, var(--xh-bg-subtle-active));
+    --xh-_bg-hover: var(--xh-toggle-bg-pressed, var(--xh-bg-subtle-active));
+
+    color: var(--xh-toggle-fg-pressed, var(--xh-fg-brand));
+  }
+
+  [data-scope='toggle'][data-part='root'][data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  [data-scope='toggle'][data-part='root']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+}
