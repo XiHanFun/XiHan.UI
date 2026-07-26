@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { createThemeController } from '@xihan-ui/system/runtime'
 import {
+  XhAccordionContent,
+  XhAccordionHeader,
+  XhAccordionItem,
+  XhAccordionRoot,
+  XhAccordionTrigger,
   XhBadge,
   XhButton,
   XhCheckbox,
@@ -14,8 +19,16 @@ import {
   XhDialogTitle,
   XhDialogTrigger,
   XhProgress,
+  XhRadioGroupItem,
+  XhRadioGroupItemText,
+  XhRadioGroupLabel,
+  XhRadioGroupRoot,
   XhSeparator,
   XhSwitch,
+  XhTabsContent,
+  XhTabsList,
+  XhTabsRoot,
+  XhTabsTrigger,
   XhToggle,
 } from '@xihan-ui/vue'
 import { ref } from 'vue'
@@ -32,6 +45,9 @@ const wifi = ref(true)
 const agree = ref(false)
 const bold = ref(false)
 const progress = ref(40)
+const plan = ref('standard')
+const tab = ref('overview')
+const panels = ref<string[]>(['a'])
 </script>
 
 <template>
@@ -200,6 +216,83 @@ const progress = ref(40)
           Outline
         </XhBadge>
       </div>
+    </section>
+
+    <section>
+      <h2>RadioGroup</h2>
+      <p class="lead">
+        四个方向键都能切换（与横竖排无关）；组内只有一个 Tab 停靠点，方向键跳过禁用项。
+      </p>
+      <XhRadioGroupRoot v-model:value="plan">
+        <XhRadioGroupLabel>套餐</XhRadioGroupLabel>
+        <XhRadioGroupItem value="free">
+          <XhRadioGroupItemText>免费版</XhRadioGroupItemText>
+        </XhRadioGroupItem>
+        <XhRadioGroupItem value="standard">
+          <XhRadioGroupItemText>标准版</XhRadioGroupItemText>
+        </XhRadioGroupItem>
+        <XhRadioGroupItem value="pro" disabled>
+          <XhRadioGroupItemText>专业版（禁用）</XhRadioGroupItemText>
+        </XhRadioGroupItem>
+      </XhRadioGroupRoot>
+      <span class="lead">当前：{{ plan }}</span>
+    </section>
+
+    <section>
+      <h2>Tabs</h2>
+      <p class="lead">
+        automatic 模式：方向键移动焦点并顺带切换；横排时上下键放行给页面。
+      </p>
+      <XhTabsRoot v-model:value="tab">
+        <XhTabsList>
+          <XhTabsTrigger value="overview">
+            概览
+          </XhTabsTrigger>
+          <XhTabsTrigger value="usage">
+            用法
+          </XhTabsTrigger>
+          <XhTabsTrigger value="api" disabled>
+            API（禁用）
+          </XhTabsTrigger>
+        </XhTabsList>
+        <XhTabsContent value="overview">
+          概览面板：与 Vue/WC 共用同一份 tabs 机器。
+        </XhTabsContent>
+        <XhTabsContent value="usage">
+          用法面板：面板常挂，靠 hidden 显隐，滚动位置与表单态留得住。
+        </XhTabsContent>
+        <XhTabsContent value="api">
+          API 面板。
+        </XhTabsContent>
+      </XhTabsRoot>
+    </section>
+
+    <section>
+      <h2>Accordion</h2>
+      <p class="lead">
+        不用 roving：每个标题都是正常 Tab 停靠点，方向键额外在标题间移动焦点。
+      </p>
+      <XhAccordionRoot v-model:value="panels" multiple>
+        <XhAccordionItem value="a">
+          <XhAccordionHeader>
+            <XhAccordionTrigger>第一节</XhAccordionTrigger>
+          </XhAccordionHeader>
+          <XhAccordionContent>展开集合是 string[]，multiple 时可并存。</XhAccordionContent>
+        </XhAccordionItem>
+        <XhAccordionItem value="b">
+          <XhAccordionHeader>
+            <XhAccordionTrigger>第二节</XhAccordionTrigger>
+          </XhAccordionHeader>
+          <XhAccordionContent>方向键只在标题间搬焦点，永不进内容区。</XhAccordionContent>
+        </XhAccordionItem>
+        <XhAccordionItem value="c">
+          <XhAccordionHeader>
+            <XhAccordionTrigger>第三节</XhAccordionTrigger>
+          </XhAccordionHeader>
+          <XhAccordionContent>首尾不回绕。</XhAccordionContent>
+        </XhAccordionItem>
+      </XhAccordionRoot>
+      <span class="lead">展开：{{ panels.join(', ') || '（无）' }}</span>
     </section>
   </main>
 </template>

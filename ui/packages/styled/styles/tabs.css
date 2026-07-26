@@ -1,0 +1,103 @@
+@layer xihan.components {
+  [data-scope='tabs'][data-part='root'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-tabs-gap, var(--xh-stack-gap-md));
+  }
+
+  /* 纵向：list 与 panel 并排 */
+  [data-scope='tabs'][data-part='root'][data-orientation='vertical'] {
+    flex-direction: row;
+  }
+
+  [data-scope='tabs'][data-part='list'] {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--xh-tabs-list-gap, var(--xh-control-gap-md));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-tabs-list-border, var(--xh-border-default));
+  }
+
+  [data-scope='tabs'][data-part='list'][aria-orientation='vertical'] {
+    flex-direction: column;
+    align-items: stretch;
+    border-block-end: 0;
+    border-inline-end: var(--xh-stroke-thin) solid var(--xh-tabs-list-border, var(--xh-border-default));
+  }
+
+  /* 组内无锚点时 list 自己在 Tab 序列里，落焦要看得见 */
+  [data-scope='tabs'][data-part='list']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  [data-scope='tabs'][data-part='trigger'] {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-tabs-trigger-gap, var(--xh-control-gap-md));
+    block-size: var(--xh-tabs-trigger-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-tabs-trigger-px, var(--xh-control-px-md));
+    border: 0;
+    border-radius: var(--xh-tabs-trigger-radius, var(--xh-shape-control));
+    background: var(--xh-tabs-trigger-bg, transparent);
+    color: var(--xh-tabs-trigger-fg, var(--xh-fg-muted));
+    font-size: var(--xh-tabs-trigger-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-tabs-trigger-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='tabs'][data-part='trigger']:hover {
+    background: var(--xh-tabs-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='tabs'][data-part='trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  [data-scope='tabs'][data-part='trigger'][data-state='active'] {
+    color: var(--xh-tabs-trigger-fg-active, var(--xh-fg-default));
+  }
+
+  [data-scope='tabs'][data-part='trigger'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  /* 选中条的滑块：定位与尺寸由作者按 trigger 盒子写，这里只给外观 */
+  [data-scope='tabs'][data-part='indicator'] {
+    position: absolute;
+    background: var(--xh-tabs-indicator-bg, var(--xh-bg-brand));
+    border-radius: var(--xh-tabs-indicator-radius, var(--xh-shape-pill));
+    transition:
+      translate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
+      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
+      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='tabs'][data-part='indicator'][data-orientation='horizontal'] {
+    inset-block-end: 0;
+    block-size: var(--xh-tabs-indicator-thickness, 2px);
+  }
+
+  [data-scope='tabs'][data-part='indicator'][data-orientation='vertical'] {
+    inset-inline-end: 0;
+    inline-size: var(--xh-tabs-indicator-thickness, 2px);
+  }
+
+  [data-scope='tabs'][data-part='content'] {
+    padding-block: var(--xh-tabs-content-py, var(--xh-stack-gap-md));
+    color: var(--xh-tabs-content-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='tabs'][data-part='content']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+}

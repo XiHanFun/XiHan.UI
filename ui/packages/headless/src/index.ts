@@ -1,5 +1,7 @@
 // @xihan-ui/headless —— 无头组件（anatomy + machine + connect，无样式）。
 
+export { accordionAnatomy, accordionKeyboard, accordionMachine, accordionMeta, connectAccordion } from './accordion'
+export type { AccordionApi, AccordionItemProps, AccordionSchema, AccordionValueChangeDetails } from './accordion'
 export { badgeAnatomy, badgeKeyboard, badgeMeta, connectBadge } from './badge'
 export type { BadgeApi, BadgeProps } from './badge'
 export { buttonAnatomy, buttonKeyboard, buttonMeta, connectButton } from './button'
@@ -14,11 +16,15 @@ export { connectDialog, dialogAnatomy, dialogKeyboard, dialogMachine, dialogMeta
 export type { DialogApi, DialogOpenChangeDetails, DialogRefs, DialogSchema, DialogTranslations } from './dialog'
 export { connectProgress, progressAnatomy, progressKeyboard, progressMeta } from './progress'
 export type { ProgressApi, ProgressProps } from './progress'
+export { connectRadioGroup, radioGroupAnatomy, radioGroupKeyboard, radioGroupMachine, radioGroupMeta } from './radio-group'
+export type { RadioGroupApi, RadioGroupItemProps, RadioGroupSchema, RadioGroupValueChangeDetails } from './radio-group'
 export { connectSeparator, separatorAnatomy, separatorKeyboard, separatorMeta } from './separator'
 export type { SeparatorApi, SeparatorProps } from './separator'
 export type { ComponentMeta, KeyboardRow, KeyboardTable } from './spec'
 export { connectSwitch, switchAnatomy, switchKeyboard, switchMachine, switchMeta } from './switch'
 export type { SwitchApi, SwitchCheckedChangeDetails, SwitchSchema } from './switch'
+export { connectTabs, tabsAnatomy, tabsKeyboard, tabsMachine, tabsMeta } from './tabs'
+export type { TabsActivationMode, TabsApi, TabsContentProps, TabsSchema, TabsTriggerProps, TabsValueChangeDetails } from './tabs'
 export { connectToggle, toggleAnatomy, toggleKeyboard, toggleMachine, toggleMeta } from './toggle'
 export type { ToggleApi, TogglePressedChangeDetails, ToggleSchema } from './toggle'
 export type { HeadlessComponent, NormalizeProps, PropTypes } from './types'

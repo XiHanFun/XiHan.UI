@@ -37,6 +37,19 @@ describe('navIntentFromKey', () => {
     for (const key of ['a', 'Enter', ' ', 'Tab', 'PageDown'])
       expect(navIntentFromKey(key)).toBeNull()
   })
+
+  it('带修饰键的组合不归导航管（否则 Ctrl+Home 等浏览器/读屏组合被吞）', () => {
+    expect(navIntentFromKey({ key: 'Home' })).toBe('first')
+    for (const mod of ['ctrlKey', 'metaKey', 'altKey', 'shiftKey'] as const) {
+      expect(navIntentFromKey({ key: 'Home', [mod]: true })).toBeNull()
+      expect(navIntentFromKey({ key: 'ArrowDown', [mod]: true })).toBeNull()
+    }
+  })
+
+  it('传事件对象与传裸键名对无修饰键的情形结果一致', () => {
+    for (const key of ['ArrowDown', 'ArrowUp', 'Home', 'End', 'x'])
+      expect(navIntentFromKey({ key })).toBe(navIntentFromKey(key))
+  })
 })
 
 describe('stepIndex', () => {
