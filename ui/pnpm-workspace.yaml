@@ -11,6 +11,7 @@ packages:
 
 allowBuilds:
   esbuild: true
+  rs-module-lexer: true
   simple-git-hooks: false
 
 # 依赖目录（单一版本事实源）。包内一律用 catalog: 引用，升级只改这里一处。
@@ -26,6 +27,7 @@ catalog:
   '@commitlint/config-conventional': ^19.8.0
   # —— Web Components 端（只取 ReactiveElement/ReactiveController，不引完整 lit）——
   '@lit/reactive-element': 2.1.2
+  '@custom-elements-manifest/analyzer': ^0.11.0
   '@size-limit/preset-small-lib': ^12.1.0
   '@types/node': ^24.10.0
   # —— 框架适配器 ——
