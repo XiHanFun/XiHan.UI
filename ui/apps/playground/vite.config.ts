@@ -18,7 +18,6 @@ export default defineConfig({
       '@xihan-ui/behavior': pkg('behavior'),
       '@xihan-ui/headless': pkg('headless'),
       '@xihan-ui/vue': pkg('vue'),
-      '@xihan-ui/wc': pkg('wc'),
     },
   },
   server: { port: 5199 },

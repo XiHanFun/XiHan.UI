@@ -158,9 +158,6 @@ importers:
       '@xihan-ui/vue':
         specifier: workspace:*
         version: link:../../packages/vue
-      '@xihan-ui/wc':
-        specifier: workspace:*
-        version: link:../../packages/wc
       vue:
         specifier: 'catalog:'
         version: 3.5.40(typescript@6.0.3)
@@ -174,6 +171,25 @@ importers:
       vue-tsc:
         specifier: 'catalog:'
         version: 3.3.8(typescript@6.0.3)
+
+  apps/playground-wc:
+    dependencies:
+      '@xihan-ui/styled':
+        specifier: workspace:*
+        version: link:../../packages/styled
+      '@xihan-ui/system':
+        specifier: workspace:*
+        version: link:../../packages/system
+      '@xihan-ui/wc':
+        specifier: workspace:*
+        version: link:../../packages/wc
+    devDependencies:
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+      vite:
+        specifier: 'catalog:'
+        version: 8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0)
 
   packages/behavior:
     dependencies:
