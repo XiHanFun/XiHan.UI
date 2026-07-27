@@ -18,5 +18,14 @@ runConformance(
   createVueHarness(),
   [accordionSuite, avatarSuite, badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, dialogSuite, fieldSuite, menuSuite, numberFieldSuite, popoverSuite, progressSuite, radioGroupSuite, selectSuite, separatorSuite, switchSuite, tabsSuite, toggleSuite, tooltipSuite],
   { describe, it },
-  { enforceKeyboardCoverage: false },
+  {
+    // 焦点环绕要真实的 Tab 焦点移动，jsdom 按 Tab 不移动焦点，这四行在这里演不出来。
+    // 陷阱本身（trapped/loop 的装配）由 focus-scope 的单测覆盖，环绕效果待真机验证。
+    keyboardCoverageExempt: {
+      'dialog.kbd.tab': 'jsdom 按 Tab 不移动焦点，焦点环绕演不出来',
+      'dialog.kbd.shift-tab': 'jsdom 按 Tab 不移动焦点，焦点环绕演不出来',
+      'popover.kbd.tab': 'jsdom 按 Tab 不移动焦点，焦点环绕演不出来',
+      'popover.kbd.shift-tab': 'jsdom 按 Tab 不移动焦点，焦点环绕演不出来',
+    },
+  },
 )

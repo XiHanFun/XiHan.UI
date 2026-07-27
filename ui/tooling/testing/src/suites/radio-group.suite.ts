@@ -1,5 +1,6 @@
 import type { ConformanceSuite } from '../conformance/types'
 import { radioGroupAnatomy, radioGroupKeyboard } from '@xihan-ui/headless'
+import { singleTabStop } from './shared/native-activation'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/radio/'
 
@@ -28,6 +29,14 @@ export const radioGroupSuite: ConformanceSuite = {
     ],
   },
   cases: [
+    {
+      // 整组只占一个 Tab 位：多一个会让用户按 Tab 在组内反复停留，
+      // 一个都没有则键盘再也进不来（无锚点时须由容器兜底）
+      name: 'roving tabindex：整组只有一个 Tab 停靠点，无锚点时容器兜底',
+      spec: { apg: APG },
+      covers: ['radio-group.kbd.tab'],
+      steps: [singleTabStop('radio-group', 'item', 'root')],
+    },
     {
       name: '初始无选中：容器 tabindex=0 兜底进 Tab 序列，条目全 -1 且 aria-checked 显式 false',
       spec: { apg: `${APG}#roles_states_properties` },

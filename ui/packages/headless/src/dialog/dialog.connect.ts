@@ -48,7 +48,9 @@ export function connectDialog<T extends PropTypes>(
       'id': ids.content,
       'role': role,
       'tabindex': -1,
-      'aria-modal': modal ? 'true' : undefined,
+      // 显式写 false，不省略：省略与 aria-modal="false" 在读屏那里不是一回事——
+      // 前者是"没说"，后者是"明确说了不是模态"，非模态浮层要的是后者
+      'aria-modal': modal ? 'true' : 'false',
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
       'data-state': stateAttr,

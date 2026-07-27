@@ -10,6 +10,9 @@ import { MachineController } from '../runtime/machine-controller'
 // Lit 默认转换器会在属性被移除时把值落成 null，那样 value 就再也表达不了"非受控"。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
+// 缺省为真的开关得能被 ="false" 关掉；三态：缺席 = undefined（用默认值），="false" = false，其余 = true
+const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
+
 /**
  * `<xh-tabs>` —— Light-DOM 行为宿主：用户写 root/list/trigger/content 角色节点，
  * 元素跑 tabs 机器并把 connect 产出打上去。条目身份取用户写在 trigger/content 上的 value 属性，
@@ -38,7 +41,7 @@ export class XhTabsElement extends XhElement {
     orientation: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     activationMode: { converter: STRING_CONVERTER, attribute: 'activation-mode' },
-    loop: { type: Boolean },
+    loop: { converter: BOOLEAN_CONVERTER },
   }
 
   declare value?: string
@@ -63,7 +66,7 @@ export class XhTabsElement extends XhElement {
       dir: this.direction,
       activationMode: this.activationMode,
       // 布尔属性只有在/不在两态：不在即 undefined，把缺省交回 connect（回绕默认开）
-      loop: this.hasAttribute('loop') ? this.loop : undefined,
+      loop: this.loop,
       onValueChange: this.notify,
     }
   }

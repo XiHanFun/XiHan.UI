@@ -1,5 +1,7 @@
 import type { ConformanceSuite } from '../conformance/types'
 import { checkboxAnatomy, checkboxKeyboard } from '@xihan-ui/headless'
+import { dispatchClickOnDisabled } from './shared/disabled-press'
+import { nativeActivation } from './shared/native-activation'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/'
 
@@ -9,6 +11,14 @@ export const checkboxSuite: ConformanceSuite = {
   keyboard: checkboxKeyboard,
   fixture: { part: 'root', tag: 'button' },
   cases: [
+    {
+      // Space / Enter 切换由平台的按钮激活行为负责，我们不自己接这两个键。
+      // 该守的就是"它确实是原生 <button type=button>"——不是的话平台不会替我们翻键。
+      name: 'Space / Enter 切换：角色节点是原生 <button type="button">，激活交给平台',
+      spec: { apg: APG },
+      covers: ['checkbox.kbd.toggle'],
+      steps: [nativeActivation('checkbox', 'root')],
+    },
     {
       name: '初始未选中：role=checkbox、aria-checked=false、data-state=unchecked',
       spec: { apg: APG },
@@ -70,14 +80,11 @@ export const checkboxSuite: ConformanceSuite = {
       spec: { apg: APG },
       props: { disabled: true },
       steps: [
-        {
-          kind: 'click',
-          part: 'root',
-          expect: {
-            parts: { root: { 'disabled': '', 'data-disabled': '', 'aria-checked': 'false', 'data-state': 'unchecked' } },
-            events: [],
-          },
-        },
+        { kind: 'click', part: 'root' },
+        dispatchClickOnDisabled('checkbox', 'root', {
+          parts: { root: { 'disabled': '', 'data-disabled': '', 'aria-checked': 'false', 'data-state': 'unchecked' } },
+          events: [],
+        }),
       ],
     },
   ],

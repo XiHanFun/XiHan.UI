@@ -118,3 +118,73 @@ describe('radio-group 条目禁用声明的读取', () => {
     el.parentElement?.remove()
   })
 })
+
+// 缺省为真的开关（modal / close-on-escape / restore-focus / loop）必须用三态转换器：
+// Lit 默认的 Boolean 转换器把 fromAttribute 定义成 `v !== null`，属性写 ="false" 一样得 true，
+// 于是"我要非模态"这句话在 HTML 里根本说不出口——只能靠整个不写属性。
+// 而"不写"表达的是"用默认值"，默认值恰好就是 true，两条路都通向开着。
+describe('缺省为真的布尔开关，写 ="false" 关得掉', () => {
+  it('xh-dialog：modal="false" 不陷焦点、不给背景打 inert', async () => {
+    const outside = document.createElement('p')
+    outside.textContent = '背景内容'
+    document.body.appendChild(outside)
+
+    const el = mount(`
+      <xh-dialog modal="false" default-open>
+        <button data-xh-part="trigger">开</button>
+        <div data-xh-part="positioner">
+          <div data-xh-part="content">
+            <h2 data-xh-part="title">标题</h2>
+            <button data-xh-part="close-trigger">关</button>
+          </div>
+        </div>
+      </xh-dialog>
+    `)
+    await settle(el)
+
+    const content = el.querySelector('[data-xh-part="content"]')!
+    expect(content.getAttribute('aria-modal')).toBe('false')
+    expect(outside.hasAttribute('inert')).toBe(false)
+    outside.remove()
+  })
+
+  it('xh-dialog：close-on-escape="false" 时 Escape 关不掉', async () => {
+    const el = mount(`
+      <xh-dialog close-on-escape="false" default-open>
+        <button data-xh-part="trigger">开</button>
+        <div data-xh-part="positioner">
+          <div data-xh-part="content"><h2 data-xh-part="title">标题</h2></div>
+        </div>
+      </xh-dialog>
+    `)
+    await settle(el)
+    const content = el.querySelector('[data-xh-part="content"]')!
+    expect(content.getAttribute('data-state')).toBe('open')
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    await settle(el)
+    expect(content.getAttribute('data-state')).toBe('open')
+  })
+
+  it('xh-tabs：loop="false" 时末项右方向键不回绕到首项', async () => {
+    const el = mount(`
+      <xh-tabs loop="false" default-value="c">
+        <div data-xh-part="list">
+          <button data-xh-part="trigger" value="a">A</button>
+          <button data-xh-part="trigger" value="b">B</button>
+          <button data-xh-part="trigger" value="c">C</button>
+        </div>
+        <div data-xh-part="content" value="a">甲</div>
+        <div data-xh-part="content" value="b">乙</div>
+        <div data-xh-part="content" value="c">丙</div>
+      </xh-tabs>
+    `)
+    await settle(el)
+    const triggers = [...el.querySelectorAll<HTMLElement>('[data-xh-part="trigger"]')]
+    triggers[2]!.focus()
+    triggers[2]!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }))
+    await settle(el)
+    // 不回绕：焦点该留在末项，而不是跳回首项
+    expect(document.activeElement).toBe(triggers[2])
+  })
+})

@@ -6,8 +6,16 @@ import { applyStep } from './apply-step'
 import { checkExpectation } from './match'
 
 export interface RunOptions {
-  /** 键盘表未全覆盖是否判失败。默认 true；浏览器态之外的键盘/焦点行只能在真机验证时置 false。 */
-  readonly enforceKeyboardCoverage?: boolean
+  /**
+   * 逐行豁免：键盘行 id → 豁免理由。只给"在这个运行时里根本演不出来"的行用，
+   * 比如需要真实焦点移动的 Tab 环绕（jsdom 按 Tab 不会移动焦点）。
+   *
+   * 刻意做成逐行而不是一个总开关：总开关一关，整张表就再也没人守，
+   * 后来新增的行漏了也没人知道。豁免写在这里，谁被放过、为什么，一眼看得见。
+   *
+   * 豁免了却其实已经覆盖的行会判失败——理由过期了就该删掉，不留在这儿骗人。
+   */
+  readonly keyboardCoverageExempt?: Readonly<Record<string, string>>
 }
 
 function snap(ctx: ApplyContext, harness: AdapterHarness): DomSnapshot {
@@ -132,17 +140,27 @@ export function runConformance(
   hooks: TestHooks,
   opts: RunOptions = {},
 ): void {
-  const enforce = opts.enforceKeyboardCoverage ?? true
+  const exempt = opts.keyboardCoverageExempt ?? {}
   for (const suite of suites) {
     hooks.describe(`conformance: ${suite.component} (${harness.adapterName})`, () => {
       const missing = missingKeyboardRows(suite)
       const total = suite.keyboard.rows.length
-      hooks.it(`键盘表覆盖 ${total - missing.length}/${total}`, () => {
+      const unmet = missing.filter(r => !(r.id in exempt))
+      const excused = missing.filter(r => r.id in exempt)
+      const suffix = excused.length ? `（豁免 ${excused.length}）` : ''
+      hooks.it(`键盘表覆盖 ${total - missing.length}/${total}${suffix}`, () => {
         const dangling = danglingCovers(suite)
         if (dangling.length)
           throw new Error(`covers 指向不存在的键盘行：${dangling.join(', ')}`)
-        if (enforce && missing.length)
-          throw new Error(`键盘表未覆盖：${missing.map(r => r.id).join(', ')}`)
+        // 豁免过期了就得删：留着会让人以为这行至今演不出来
+        const ids = new Set(suite.keyboard.rows.map(r => r.id))
+        const stale = Object.keys(exempt)
+          .filter(id => ids.has(id) && !missing.some(r => r.id === id))
+          .map(id => `${id}（已被覆盖）`)
+        if (stale.length)
+          throw new Error(`豁免已过期，请删掉：${stale.join(', ')}`)
+        if (unmet.length)
+          throw new Error(`键盘表未覆盖：${unmet.map(r => r.id).join(', ')}`)
       })
       for (const c of suite.cases) {
         hooks.it(c.name, async () => {

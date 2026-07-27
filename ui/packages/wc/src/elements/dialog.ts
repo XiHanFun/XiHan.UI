@@ -7,6 +7,11 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
+// 缺省为真的开关得能被 ="false" 关掉：Lit 默认的 Boolean 转换器把 fromAttribute 定义成
+// `v !== null`，属性一写上去就是 true，"我要非模态"这句话在 HTML 里根本说不出口。
+// 三态：缺席 = undefined（用默认值），="false" = false，其余 = true。
+const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
+
 /**
  * `<xh-dialog>` —— Light-DOM 行为宿主：用户写 trigger/backdrop/positioner/content/... 角色节点，
  * 元素跑 dialog 机器并把 connect 产出打上去。关闭时用内联 style.display 隐藏浮层子树。
@@ -31,11 +36,11 @@ export class XhDialogElement extends XhElement {
   // role 不声明为响应式属性——复用 HTMLElement 原生的 role 属性反射（避免类型冲突），
   // 在 machineProps 里经 getAttribute 读取。
   static override properties = {
-    open: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
+    open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
-    modal: { type: Boolean },
-    closeOnEscape: { type: Boolean, attribute: 'close-on-escape' },
-    restoreFocus: { type: Boolean, attribute: 'restore-focus' },
+    modal: { converter: BOOLEAN_CONVERTER },
+    closeOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-escape' },
+    restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
   }
 
   declare open?: boolean
@@ -65,10 +70,10 @@ export class XhDialogElement extends XhElement {
     return {
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
-      modal: this.hasAttribute('modal') ? this.modal : undefined,
+      modal: this.modal,
       role: (this.getAttribute('role') as DialogSchema['props']['role']) ?? undefined,
-      closeOnEscape: this.hasAttribute('close-on-escape') ? this.closeOnEscape : undefined,
-      restoreFocus: this.hasAttribute('restore-focus') ? this.restoreFocus : undefined,
+      closeOnEscape: this.closeOnEscape,
+      restoreFocus: this.restoreFocus,
       onOpenChange: this.notify,
     }
   }

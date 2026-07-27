@@ -1,5 +1,4 @@
 import type { Disposable, Layer, RuntimeConfig } from '@xihan-ui/core'
-import { dispatchCancelable } from '../dispatch'
 import { isInside, shouldDismiss } from './layer-stack'
 
 export type DismissReason = 'escape-key' | 'pointer-down-outside' | 'focus-outside' | 'programmatic'
@@ -8,7 +7,8 @@ export interface DismissLayerOptions {
   config: RuntimeConfig
   layer: Layer
   onDismiss: (reason: DismissReason) => void
-  onEscapeKeyDown?: (e: KeyboardEvent) => void
+  /** 收到 Escape 时的表决票：preventDefault 即这次别关。原生 keydown 在 detail.originalEvent 里。 */
+  onEscapeKeyDown?: (e: CustomEvent<{ originalEvent: KeyboardEvent }>) => void
   onPointerDownOutside?: (e: CustomEvent) => void
   onFocusOutside?: (e: CustomEvent) => void
   /** 上面两者任一发生时也派发一次，用于「两种都不关」的统一写法。 */
@@ -38,11 +38,16 @@ export function createDismissLayer(o: DismissLayerOptions): Disposable {
     if (registry.top() !== layer)
       return
     const el = node()
-    if (el && !dispatchCancelable(el, EV_ESCAPE, {})) {
-      o.onEscapeKeyDown?.(e)
+    // 用一个自建的可取消事件来表决"这次关不关"，作者层（DOM 监听）与机器层（回调）
+    // 投同一张票，与外部交互那两路同构。
+    // 不拿原生 keydown 当票据：合成的 KeyboardEvent 默认 cancelable=false，
+    // 在它身上调 preventDefault 是空操作，closeOnEscape=false 就成了一句空话。
+    // 原生事件仍带在 detail 里，回调要看 key / 修饰键时取得到。
+    const vote = new CustomEvent(EV_ESCAPE, { bubbles: false, cancelable: true, detail: { originalEvent: e } })
+    el?.dispatchEvent(vote)
+    o.onEscapeKeyDown?.(vote)
+    if (vote.defaultPrevented)
       return
-    }
-    o.onEscapeKeyDown?.(e)
     onDismiss('escape-key')
   }
 

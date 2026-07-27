@@ -35,6 +35,10 @@ export function connectCollapsible<T extends PropTypes>(
       'type': 'button',
       'aria-controls': ids.content,
       'aria-expanded': open ? 'true' : 'false',
+      // 披露按钮是单体控件，用原生 disabled（与 Switch/Checkbox/Toggle 同）：
+      // 只留 data-disabled 的话禁用态就只是样式，读屏照念"可展开"、键盘照聚焦，
+      // 按下去却什么都不发生
+      'disabled': disabled || undefined,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'onClick': () => {
