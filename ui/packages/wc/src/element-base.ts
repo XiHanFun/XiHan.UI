@@ -47,17 +47,30 @@ export abstract class XhElement extends ReactiveElement {
     for (const els of next.values()) {
       for (const el of els) live.add(el)
     }
-    // 离开本宿主的角色节点要交还：否则它带着本机器的属性与监听器走，
-    // 被挪进另一台同类元素后会同时挂上两台机器的处理器（一次点击驱动两台）；
-    // 单纯被移除的节点也仍能派事件、改本组状态。
+    const gone: HTMLElement[] = []
     for (const els of this.partMap.values()) {
       for (const el of els) {
         if (!live.has(el))
-          this.spreader.release(el)
+          gone.push(el)
       }
     }
+    // 先知会子类再交还：release 会撤掉本机器写过的属性，身份标记（data-value 等）
+    // 一并消失，之后就认不出离场的是哪个条目了。
+    if (gone.length)
+      this.onPartsReleased(gone)
+    // 离开本宿主的角色节点要交还：否则它带着本机器的属性与监听器走，
+    // 被挪进另一台同类元素后会同时挂上两台机器的处理器（一次点击驱动两台）；
+    // 单纯被移除的节点也仍能派事件、改本组状态。
+    for (const el of gone) this.spreader.release(el)
     this.partMap = next
   }
+
+  /**
+   * 角色节点即将离开本宿主时的回调，交还前调用（节点上还带着本机器写的标记）。
+   * 焦点是 DOM 事实：承载焦点的节点被移除时浏览器不派 focusout（Chrome 如此），
+   * 机器读不到这件事，需要焦点语义的子类在此如实上报。
+   */
+  protected onPartsReleased(_nodes: readonly HTMLElement[]): void {}
 
   override connectedCallback(): void {
     super.connectedCallback()

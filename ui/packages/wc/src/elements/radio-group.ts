@@ -1,6 +1,6 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
 import type { RadioGroupItemProps, RadioGroupSchema, RadioGroupValueChangeDetails } from '@xihan-ui/headless'
-import { isItemDisabled } from '@xihan-ui/behavior'
+import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectRadioGroup, radioGroupMachine } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -68,6 +68,25 @@ export class XhRadioGroupElement extends XhElement {
       name: this.name,
       onValueChange: this.notify,
     }
+  }
+
+  /**
+   * 承载焦点的条目被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：
+   * 容器判自己"焦点在组内"退出 Tab 序列，又没有条目认领得了这个锚点，
+   * 整组零个 Tab 停靠点，键盘用户再也进不来。这里替 DOM 把焦点离场如实上报。
+   */
+  protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
+    const { context, getStatus, send } = this.ctrl.service
+    // 宿主断开时机器已停机，此刻无焦点可言（送事件还会在 dev 下抛）
+    if (getStatus() !== 'Started')
+      return
+    const focusedValue = context.get('focusedValue')
+    if (focusedValue == null)
+      return
+    // data-value 只写在 item 上，条目内的隐藏输入与标记离场不会误判；
+    // 只有走的正是持有焦点的那个条目才报，否则删任一无关条目都会清掉方向键起点
+    if (nodes.some(el => el.getAttribute(ITEM_VALUE_ATTR) === focusedValue))
+      send({ type: 'GROUP.BLUR' })
   }
 
   private itemProps(el: HTMLElement): RadioGroupItemProps {
