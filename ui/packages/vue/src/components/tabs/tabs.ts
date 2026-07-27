@@ -1,7 +1,7 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
 import type { TabsActivationMode, TabsSchema } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, onBeforeUnmount } from 'vue'
 import { provideTabs, useTabsContext } from './context'
 import { useTabs } from './use-tabs'
 
@@ -48,6 +48,17 @@ export const XhTabsTrigger = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useTabsContext()
+    // 承载焦点的条目被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：
+    // 容器判自己"焦点在组内"退出 Tab 序列，又没有条目认领得了这个锚点，
+    // 整组零个 Tab 停靠点，键盘用户再也进不来。卸载前把焦点离场如实上报，
+    // 且只有自己正持有焦点时才报——否则删掉任一无关条目都会把光标一并清掉。
+    onBeforeUnmount(() => {
+      // 整组一起卸载时根的钩子先跑、机器已停机，此刻既无须也不能再送事件
+      if (ctx.service.getStatus() !== 'Started')
+        return
+      if (ctx.service.context.get('focusedValue') === props.value)
+        ctx.service.send({ type: 'LIST.BLUR' })
+    })
     return () => h(
       'button',
       ctx.api.value.getTriggerProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>,
