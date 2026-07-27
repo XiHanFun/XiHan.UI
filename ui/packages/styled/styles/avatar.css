@@ -1,0 +1,41 @@
+@layer xihan.components {
+  [data-scope='avatar'][data-part='root'] {
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    inline-size: var(--xh-avatar-size, var(--xh-control-h-md));
+    block-size: var(--xh-avatar-size, var(--xh-control-h-md));
+    border-radius: var(--xh-avatar-radius, var(--xh-shape-pill, 9999px));
+    background: var(--xh-avatar-bg, var(--xh-bg-subtle));
+    color: var(--xh-avatar-fg, var(--xh-fg-muted));
+    font-size: var(--xh-avatar-font-size, var(--xh-font-size-sm));
+    font-weight: var(--xh-avatar-font-weight, var(--xh-font-weight-medium));
+    line-height: 1;
+    user-select: none;
+  }
+
+  /* 不声明 display，加载完成前的 hidden 直接交给浏览器的 [hidden] 规则收起 */
+  [data-scope='avatar'][data-part='image'] {
+    inline-size: 100%;
+    block-size: 100%;
+    border-radius: inherit;
+    object-fit: cover;
+  }
+
+  [data-scope='avatar'][data-part='fallback'] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 100%;
+    block-size: 100%;
+    text-transform: uppercase;
+  }
+
+  /* display 会盖掉 hidden 属性的 UA 规则，加载完成后显式让位给图片 */
+  [data-scope='avatar'][data-part='fallback'][hidden] {
+    display: none;
+  }
+}

@@ -1,0 +1,179 @@
+@layer xihan.components {
+  [data-scope='select'][data-part='root'] {
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--xh-select-gap, var(--xh-stack-gap-md));
+    /* 隐藏 select 以此为定位基准：它必须留在布局里，原生校验提示要有处可贴 */
+    position: relative;
+  }
+
+  [data-scope='select'][data-part='label'] {
+    color: var(--xh-select-label-fg, var(--xh-fg-muted));
+    font-size: var(--xh-select-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-select-label-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+  }
+
+  [data-scope='select'][data-part='label'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  [data-scope='select'][data-part='trigger'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--xh-select-trigger-gap, var(--xh-control-gap-md));
+    min-inline-size: var(--xh-select-trigger-min-w, 10rem);
+    block-size: var(--xh-select-trigger-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-select-trigger-px, var(--xh-control-px-md));
+    border: var(--xh-stroke-thin) solid var(--xh-select-trigger-border, var(--xh-border-default));
+    border-radius: var(--xh-select-trigger-radius, var(--xh-shape-control));
+    background: var(--xh-select-trigger-bg, var(--xh-bg-canvas));
+    color: var(--xh-select-trigger-fg, var(--xh-fg-default));
+    font-size: var(--xh-select-trigger-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  [data-scope='select'][data-part='trigger']:hover:not(:disabled) {
+    border-color: var(--xh-select-trigger-border-hover, var(--xh-border-strong));
+  }
+
+  [data-scope='select'][data-part='trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* trigger 是单体控件，用原生 disabled（条目那边一律 aria-disabled） */
+  [data-scope='select'][data-part='trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  [data-scope='select'][data-part='value-text'] {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* 无选中：显示的是 placeholder，画淡一档 */
+  [data-scope='select'][data-part='value-text'][data-placeholder] {
+    color: var(--xh-select-placeholder-fg, var(--xh-fg-subtle));
+  }
+
+  [data-scope='select'][data-part='indicator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    color: var(--xh-select-indicator-fg, var(--xh-fg-muted));
+    transition: rotate var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  [data-scope='select'][data-part='indicator'][data-state='open'] {
+    rotate: 180deg;
+  }
+
+  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+  [data-scope='select'][data-part='positioner'] {
+    position: absolute;
+    z-index: var(--xh-layer-popover);
+    /* 空壳不吃指针，交互只发生在 content 上 */
+    pointer-events: none;
+  }
+
+  /* 锚点被滚出可视区：整个浮层随之收起 */
+  [data-scope='select'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  [data-scope='select'][data-part='content'] {
+    display: flex;
+    flex-direction: column;
+    min-inline-size: var(--xh-select-content-min-w, 10rem);
+    max-inline-size: var(--xh-select-content-max-w, 20rem);
+    max-block-size: var(--xh-select-content-max-h, 16rem);
+    padding-block: var(--xh-select-content-py, var(--xh-space-1));
+    padding-inline: var(--xh-select-content-px, var(--xh-space-1));
+    border: var(--xh-stroke-thin) solid var(--xh-select-content-border, var(--xh-border-default));
+    border-radius: var(--xh-select-content-radius, var(--xh-shape-surface));
+    background: var(--xh-select-content-bg, var(--xh-bg-surface));
+    color: var(--xh-select-content-fg, var(--xh-fg-default));
+    box-shadow: var(--xh-select-content-shadow, var(--xh-elevation-2));
+    overflow-y: auto;
+    pointer-events: auto;
+  }
+
+  /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位 */
+  [data-scope='select'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  /* 容器只是焦点域兜底落点，落焦不画环：高亮永远长在条目上 */
+  [data-scope='select'][data-part='content']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='select'][data-part='content'][data-state='open'] {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='select'][data-part='item'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-select-item-gap, var(--xh-control-gap-md));
+    padding-block: var(--xh-select-item-py, var(--xh-space-2));
+    padding-inline: var(--xh-select-item-px, var(--xh-control-px-sm));
+    border-radius: var(--xh-select-item-radius, var(--xh-shape-control));
+    color: var(--xh-select-item-fg, var(--xh-fg-default));
+    font-size: var(--xh-select-item-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* 键盘高亮与指针高亮共用一套底色：条目本身承载焦点，不另画描边 */
+  [data-scope='select'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
+    background: var(--xh-select-item-bg-highlight, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='select'][data-part='item']:focus {
+    outline: none;
+  }
+
+  /* 禁用走 aria-disabled 而非原生 disabled，条目仍可聚焦，样式由 data-disabled 表达 */
+  [data-scope='select'][data-part='item'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='select'][data-part='item-text'] {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* 勾选标记只在选中项上出现；未选中时占位不塌，切换选中不引起行宽抖动 */
+  [data-scope='select'][data-part='item-indicator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-select-item-indicator-size, 1rem);
+    color: var(--xh-select-item-indicator-fg, var(--xh-bg-brand));
+    visibility: hidden;
+  }
+
+  [data-scope='select'][data-part='item-indicator'][data-state='checked'] {
+    visibility: visible;
+  }
+
+  /* 表单影子：视觉隐藏但留在布局与表单里，原生校验提示需要一个可定位的框 */
+  [data-scope='select'][data-part='hidden-select'] {
+    pointer-events: none;
+  }
+}

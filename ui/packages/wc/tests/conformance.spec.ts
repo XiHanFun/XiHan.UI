@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { ConformanceSuite, FixtureNode } from '@xihan-ui/testing'
-import { accordionSuite, badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, menuSuite, popoverSuite, progressSuite, radioGroupSuite, runConformance, separatorSuite, switchSuite, tabsSuite, toggleSuite, tooltipSuite } from '@xihan-ui/testing'
+import { accordionSuite, avatarSuite, badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, fieldSuite, menuSuite, popoverSuite, progressSuite, radioGroupSuite, runConformance, selectSuite, separatorSuite, switchSuite, tabsSuite, toggleSuite, tooltipSuite } from '@xihan-ui/testing'
 import { afterEach, beforeEach, describe, it, vi } from 'vitest'
 import { createWcHarness } from './harness'
 
@@ -112,6 +112,26 @@ const wcTooltipSuite: ConformanceSuite = {
 }
 
 // 条目禁用同样改用 aria-disabled 声明；受控 open 与 switch 等同因排除。
+// select 的表单影子 select 在 Vue 侧由根部件自行装配、且排在 root 的第一个子节点；
+// WC 侧要作者手写这个空壳（元素只按当前值补选项），位置也得对齐，order 断言逐字比对。
+function withHiddenSelect(node: FixtureNode): FixtureNode {
+  if (node.part !== 'root')
+    return node
+  return { ...node, children: [{ part: 'hidden-select', tag: 'select' }, ...(node.children ?? [])] }
+}
+
+// 条目禁用同样改用 aria-disabled 声明；受控 open 与 switch 等同因排除。
+const wcSelectSuite: ConformanceSuite = authorDisabled({
+  ...selectSuite,
+  fixture: withHiddenSelect(selectSuite.fixture),
+  cases: selectSuite.cases
+    .filter(c => !(c.props && 'open' in c.props))
+    .map((c) => {
+      const derive = c.fixture
+      return derive ? { ...c, fixture: (base: FixtureNode) => withHiddenSelect(derive(base)) } : c
+    }),
+})
+
 const wcMenuSuite: ConformanceSuite = authorDisabled({
   ...menuSuite,
   cases: menuSuite.cases.filter(c => !(c.props && 'open' in c.props)),
@@ -128,14 +148,17 @@ runConformance(
   createWcHarness(),
   [
     wcAccordionSuite,
+    avatarSuite,
     badgeSuite,
     buttonSuite,
     wcCheckboxSuite,
     wcCollapsibleSuite,
+    fieldSuite,
     wcMenuSuite,
     wcPopoverSuite,
     wcProgressSuite,
     wcRadioGroupSuite,
+    wcSelectSuite,
     separatorSuite,
     wcSwitchSuite,
     wcTabsSuite,

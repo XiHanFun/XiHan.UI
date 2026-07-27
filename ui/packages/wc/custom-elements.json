@@ -203,6 +203,143 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/avatar.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-avatar>` —— Light-DOM 行为宿主：用户写 root/image/fallback 角色节点，\n元素跑 avatar 机器并把 connect 产出打上去。图片来源由宿主的 src/alt 写进 image 节点，\n加载成败经 image 自己的 load/error 回送给机器；两个节点都常挂，靠 hidden 互斥显隐，\n加载完成前一直是 fallback 在台前（不闪白）。",
+          "name": "XhAvatarElement",
+          "cssParts": [
+            {
+              "description": "头像根容器（承载 data-status）",
+              "name": "root"
+            },
+            {
+              "description": "图片节点，必须是原生 img；src/alt 由宿主写入（作者别自己写，会被覆盖或清掉），未就绪时带 hidden",
+              "name": "image"
+            },
+            {
+              "description": "图片之外的回退内容（首字母、图标），图片就绪后带 hidden",
+              "name": "fallback"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "src",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "src"
+            },
+            {
+              "kind": "field",
+              "name": "alt",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "alt"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<AvatarSchema>(this, avatarMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<AvatarSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "syncSettledImage",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "status",
+                  "type": {
+                    "text": "AvatarStatus"
+                  }
+                }
+              ],
+              "description": "图片早在监听器挂上之前就已就绪时补一次上报：load 已经派发完，机器再也等不到，\n状态会永远停在 loading——图片明明在手边，台前却一直是回退内容。两处会撞上：\n作者把同一个 src 也写进了 img 标记（升级前浏览器就加载完了），\n以及元素在 DOM 中被移动导致机器重建（状态从头走一遍，而 src 没变的 img 不会重新加载）。\n\n三个条件缺一不可：complete 排除还在路上的请求；naturalWidth 排除加载失败——失败与\n\"压根没发起请求\"在这里分不开，不去猜，留在 loading 上照样只显示回退内容；\ncurrentSrc 与 src 相等排除换图那一瞬，此刻旧图仍是 complete 的，误报会把旧图当新图显出来。\n\n只在 loading 补报：idle 期间补会被随后落地的来源决议一脚踢回 loading。\n报完即进 loaded，下一帧不再命中，不会闭成回路。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "加载状态变化；detail 为 `{ status: 'loading' | 'loaded' | 'error' }`",
+              "name": "status-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "图片地址；缺省该属性即没有来源，直接落回退态",
+              "name": "src",
+              "fieldName": "src"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "图片替代文本，原样写到 image 节点上",
+              "name": "alt",
+              "fieldName": "alt"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-avatar",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhAvatarElement",
+          "declaration": {
+            "name": "XhAvatarElement",
+            "module": "src/elements/avatar.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/badge.ts",
       "declarations": [
         {
@@ -933,6 +1070,146 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/field.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-field>` —— Light-DOM 行为宿主，无状态机：作者写 label/control/description/error-text\n角色节点，元素把 connectField 产出的 id 与 aria-* 打上去，`for` 与描述链由此自动对齐，\n表单页不必再逐个手写 aria-describedby。控件本身（input / select / textarea / 自定义控件）\n由作者渲染，宿主只把属性合并上去、不替他建节点。\n\n每个实例自带一份 scope 派生 part id：同页多个 field 各出各的 id，\naria-describedby 才不会按 IDREF 串到别的实例的描述节点上。",
+          "name": "XhFieldElement",
+          "cssParts": [
+            {
+              "description": "承载 data-disabled/data-invalid/data-required 的容器",
+              "name": "root"
+            },
+            {
+              "description": "标题；`for` 恒写向控件，故须是原生 `<label>` 才点得动控件",
+              "name": "label"
+            },
+            {
+              "description": "真正的输入控件本身（id 与 aria-* 落在这里，别标在外层包裹节点上）",
+              "name": "control"
+            },
+            {
+              "description": "常驻说明文案，恒在控件的描述链里",
+              "name": "description"
+            },
+            {
+              "description": "错误文案（role=alert）；非 invalid 时带 hidden 收起，节点不卸载",
+              "name": "error-text"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "controlId",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "control-id"
+            },
+            {
+              "kind": "field",
+              "name": "fieldScope",
+              "type": {
+                "text": "Scope"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败态：控件 aria-invalid=true，错误文案接入描述链并显出",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填：控件 aria-required=true",
+              "name": "required",
+              "fieldName": "required"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用标注，只落 data-disabled，不代作者写原生 disabled",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "接管控件 id；缺省该属性即由 scope 派生。刻意不叫 id： 宿主的 id 是 `<xh-field>` 自己的 DOM id，挪去当控件 id 会让两个节点撞同一个 id",
+              "name": "control-id",
+              "fieldName": "controlId"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-field",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhFieldElement",
+          "declaration": {
+            "name": "XhFieldElement",
+            "module": "src/elements/field.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/menu.ts",
       "declarations": [
         {
@@ -1115,6 +1392,25 @@
                   }
                 }
               ]
+            },
+            {
+              "kind": "method",
+              "name": "onPartsReleased",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "nodes",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
+                  }
+                }
+              ],
+              "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，锚点会停在一个已消失的值上：\n没有条目认领 tabindex=0、方向键也失去起点。这里替 DOM 把焦点离场如实上报，\n机器就地按当前活条目重挑锚点。"
             },
             {
               "kind": "method",
@@ -1886,6 +2182,518 @@
           "declaration": {
             "name": "XhRadioGroupElement",
             "module": "src/elements/radio-group.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/select.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-select>` —— Light-DOM 行为宿主：用户写 root/trigger/value-text/positioner/content/item/...\n角色节点，元素跑 select 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger、被定位的浮层取 positioner；机器只认端口，不认识具体引擎。\n条目身份取用户写在 item 上的 value 属性，禁用由部件自报（aria-disabled）。\n\n两处内容由元素代填，作者只需给出空节点：value-text 的显示文字（选中项的文本住在列表里，\n作者写不出来）与表单影子 hidden-select 的选项。value-text 里作者写了内容就归作者，元素不再改写。",
+          "name": "XhSelectElement",
+          "cssParts": [
+            {
+              "description": "组件根容器（承载 data-state/data-disabled，也是表单影子的定位基准）",
+              "name": "root"
+            },
+            {
+              "description": "组标题（aria-labelledby 目标）",
+              "name": "label"
+            },
+            {
+              "description": "触发按钮（aria-haspopup=listbox/aria-expanded/aria-controls 所在），同时是定位锚点，须是原生 button",
+              "name": "trigger"
+            },
+            {
+              "description": "选中项文本的显示位；留空即由元素填入 displayText，作者写了内容则归作者",
+              "name": "value-text"
+            },
+            {
+              "description": "展开指示符（aria-hidden，data-state 随开合）",
+              "name": "indicator"
+            },
+            {
+              "description": "浮层定位容器，坐标由引擎写成内联样式",
+              "name": "positioner"
+            },
+            {
+              "description": "role=listbox 容器（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden",
+              "name": "content"
+            },
+            {
+              "description": "role=option 条目，须自带 value 属性标识身份；禁用写 aria-disabled=\"true\"",
+              "name": "item"
+            },
+            {
+              "description": "条目文本（连打检索与 value-text 的取字处）",
+              "name": "item-text"
+            },
+            {
+              "description": "条目选中标记（aria-hidden）",
+              "name": "item-indicator"
+            },
+            {
+              "description": "表单影子，须是原生 select 空壳；选项由元素按当前值补齐，省略该节点即不参与表单",
+              "name": "hidden-select"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "default-value"
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "defaultOpen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-open"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "placeholder",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "placement",
+              "privacy": "public",
+              "type": {
+                "text": "Placement | undefined"
+              },
+              "attribute": "placement"
+            },
+            {
+              "kind": "field",
+              "name": "offset",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "offset"
+            },
+            {
+              "kind": "field",
+              "name": "loop",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "selectScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "positionEngine",
+              "type": {
+                "text": "PositionEnginePort"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "ownsValueText",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()",
+              "description": "value-text 是否归元素填：首次见到该节点时定，之后不再回读（读到的会是自己写的字）。"
+            },
+            {
+              "kind": "field",
+              "name": "hiddenOptionKey",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, string>()",
+              "description": "表单影子当前这批选项对应的值与文字，同一份不重建，免得每帧空转拆装 DOM。"
+            },
+            {
+              "kind": "field",
+              "name": "notifyValue",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyOpen",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<SelectSchema>( this, selectMachine, () => this.machineProps(), { scope: this.selectScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<SelectSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "registerLayer",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<SelectSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "onPartsReleased",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "nodes",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
+                  }
+                }
+              ],
+              "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，高亮锚点会停在一个已消失的值上：\n没有条目认领 tabindex=0、方向键也失去起点。这里替 DOM 把焦点离场如实上报，\n机器就地按当前活条目重挑锚点。\n\n判据是焦点确实跟着这个节点走了。节点此刻已不在文档里，activeElement 不可能还等于它\n（浏览器把焦点退还给了 body），于是改判等价事实\"焦点已不在列表内\"，\n再要求离场的正是持有锚点的那个条目——只按值比对，会把\"焦点在别处时删掉同值条目\"也算成离场。"
+            },
+            {
+              "kind": "method",
+              "name": "partsIn",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "item",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "fillValueText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "选中项的文字只有列表里才有，作者在 trigger 上写不出来，由元素填。\n作者若自己写了内容（自定义渲染），首次见到时就定为归作者，之后一概不碰——\n每帧回读分不清\"作者写的\"还是\"上一帧自己写的\"，一旦写过就再也让不回去。"
+            },
+            {
+              "kind": "method",
+              "name": "syncHiddenOptions",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string | null"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "表单影子的选项由元素补齐（作者只写空壳 select）：\n空串选项是无选中时的落点，required 才判得出\"没选\"；另一个承载当前值。\n必须先于属性写入落地——spread 把 value 当 DOM property 写，目标 option 不在时赋值会被丢掉。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "选中值变化；detail 为 `{ value: string | null }`",
+              "name": "value-change"
+            },
+            {
+              "description": "open 状态变化；detail 为 `{ open: boolean }`",
+              "name": "open-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "受控选中值；缺省该属性即非受控",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "非受控初始选中值",
+              "name": "default-value",
+              "fieldName": "defaultValue"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控开合；缺省该属性即非受控",
+              "name": "open",
+              "fieldName": "open"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始为展开",
+              "name": "default-open",
+              "fieldName": "defaultOpen"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "整个控件禁用：trigger 用原生 disabled，表单影子不参与提交",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "原生表单校验：无选中值时提交被拦下",
+              "name": "required",
+              "fieldName": "required"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "表单字段名；给定后表单影子才带 name 并参与提交",
+              "name": "name",
+              "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "无选中时 value-text 显示的占位文字",
+              "name": "placeholder",
+              "fieldName": "placeholder"
+            },
+            {
+              "type": {
+                "text": "Placement | undefined"
+              },
+              "description": "首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上",
+              "name": "placement",
+              "fieldName": "placement"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "浮层与锚点的间距（px）",
+              "name": "offset",
+              "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "方向键走到尽头回绕，默认 true；写 loop=\"false\" 关掉",
+              "name": "loop",
+              "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，默认 ltr",
+              "name": "dir",
+              "fieldName": "direction"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-select",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhSelectElement",
+          "declaration": {
+            "name": "XhSelectElement",
+            "module": "src/elements/select.ts"
           }
         }
       ]

@@ -10,6 +10,9 @@ export {
 } from './components/accordion/accordion'
 export { useAccordion } from './components/accordion/use-accordion'
 export type { AccordionContext } from './components/accordion/use-accordion'
+export { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from './components/avatar/avatar'
+export { useAvatar } from './components/avatar/use-avatar'
+export type { AvatarContext } from './components/avatar/use-avatar'
 export { XhBadge } from './components/badge/badge'
 export { XhButton } from './components/button'
 export { XhCheckbox } from './components/checkbox/checkbox'
@@ -32,6 +35,9 @@ export {
 } from './components/dialog/dialog'
 export { useDialog } from './components/dialog/use-dialog'
 export type { DialogContext } from './components/dialog/use-dialog'
+export { XhFieldControl, XhFieldDescription, XhFieldErrorText, XhFieldLabel, XhFieldRoot } from './components/field/field'
+export { useField } from './components/field/use-field'
+export type { FieldContext } from './components/field/use-field'
 export {
   XhMenuArrow,
   XhMenuContent,
@@ -64,6 +70,20 @@ export {
 } from './components/radio-group/radio-group'
 export { useRadioGroup } from './components/radio-group/use-radio-group'
 export type { RadioGroupContext } from './components/radio-group/use-radio-group'
+export {
+  XhSelectContent,
+  XhSelectIndicator,
+  XhSelectItem,
+  XhSelectItemIndicator,
+  XhSelectItemText,
+  XhSelectLabel,
+  XhSelectPositioner,
+  XhSelectRoot,
+  XhSelectTrigger,
+  XhSelectValueText,
+} from './components/select/select'
+export { useSelect } from './components/select/use-select'
+export type { SelectContext } from './components/select/use-select'
 export { XhSeparator } from './components/separator/separator'
 export { XhSwitch } from './components/switch/switch'
 export { useSwitch } from './components/switch/use-switch'

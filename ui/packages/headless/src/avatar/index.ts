@@ -1,0 +1,6 @@
+export { avatarAnatomy } from './avatar.anatomy'
+export { connectAvatar } from './avatar.connect'
+export { avatarKeyboard } from './avatar.keyboard'
+export { avatarMachine } from './avatar.machine'
+export { avatarMeta } from './avatar.meta'
+export type { AvatarApi, AvatarSchema, AvatarStatus, AvatarStatusChangeDetails } from './avatar.types'
