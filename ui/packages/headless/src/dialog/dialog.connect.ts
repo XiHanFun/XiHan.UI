@@ -54,6 +54,11 @@ export function connectDialog<T extends PropTypes>(
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
       'data-state': stateAttr,
+      // 收起态自己也带 hidden，与 popover / tooltip / collapsible 一致。
+      // 此前只靠 positioner 与 backdrop 兜，而 meta 里 positioner 并非必需部件——
+      // 按最小合规结构写（只有 trigger + content）时，收起的对话框就一直显示在页面上。
+      // Vue 侧关闭后会把 content 卸掉、看不出来；WC 侧 content 常驻，一眼就见。
+      'hidden': !open || undefined,
     }),
     getTitleProps: () => normalize.element({ ...parts.title.attrs, id: ids.title }),
     getDescriptionProps: () => normalize.element({ ...parts.description.attrs, id: ids.description }),

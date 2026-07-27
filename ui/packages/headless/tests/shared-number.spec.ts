@@ -6,7 +6,7 @@ import {
   parseValue,
   snapDecimals,
   stepValue,
-} from '../src/number-field/number-field.number'
+} from '../src/shared/number'
 
 describe('parseValue', () => {
   it('空串与纯空白算"没有值"，不是 0', () => {

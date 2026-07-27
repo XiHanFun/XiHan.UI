@@ -139,6 +139,10 @@ export class XhDialogElement extends XhElement {
       this.setPartHidden(positioner, !open)
     if (this.backdropNode)
       this.setPartHidden(this.backdropNode, !open)
+    // content 自己也要兜：positioner 不是必需部件（见 dialogMeta），
+    // 作者按最小合规结构只写 trigger + content 时，上面两句一句都命中不了，
+    // 收起的对话框就一直显示在页面上、点关闭也收不起来。
+    this.setPartHidden(this.contentNode, !open)
   }
 
   override disconnectedCallback(): void {

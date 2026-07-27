@@ -1,3 +1,4 @@
+export { clamp, isValidValue, normalizeValue, parseValue, snapDecimals, stepValue } from '../shared/number'
 export { numberFieldAnatomy } from './number-field.anatomy'
 export { connectNumberField } from './number-field.connect'
 export { numberFieldKeyboard } from './number-field.keyboard'
@@ -8,5 +9,4 @@ export {
   numberFieldMachine,
 } from './number-field.machine'
 export { numberFieldMeta } from './number-field.meta'
-export { clamp, isValidValue, normalizeValue, parseValue, snapDecimals, stepValue } from './number-field.number'
 export type { NumberFieldApi, NumberFieldSchema, NumberFieldValueChangeDetails } from './number-field.types'
