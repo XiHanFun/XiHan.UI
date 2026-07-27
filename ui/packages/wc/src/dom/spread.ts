@@ -61,6 +61,12 @@ export function createSpreader(): Spreader {
         }
         continue
       }
+      // style 传对象时逐条写内联样式。整体 setAttribute 会写成 "[object Object]"，
+      // 而浮层定位、进度条宽度这类产出本来就是对象形态。
+      if (key === 'style' && value !== null && typeof value === 'object') {
+        Object.assign(node.style, value as Record<string, string>)
+        continue
+      }
       if (value === undefined || value === null || value === false) {
         removeAttr(node, key)
         continue
