@@ -1,0 +1,299 @@
+@layer xihan.components {
+  /* root 只负责纵向堆叠：标题一行、控件一行。可见的那个"框"长在 control 上，
+     因为标签、输入框、清空按钮都在它里面，边框必须把三者一起圈住 */
+  [data-scope='tags-input'][data-part='root'] {
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--xh-tags-input-gap, var(--xh-space-1));
+    inline-size: 100%;
+  }
+
+  /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+  [data-scope='tags-input'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='tags-input'][data-part='label'] {
+    color: var(--xh-tags-input-label-fg, var(--xh-fg-default));
+    font-size: var(--xh-tags-input-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-tags-input-label-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+  }
+
+  [data-scope='tags-input'][data-part='label'][data-disabled] {
+    color: var(--xh-tags-input-label-fg-disabled, var(--xh-fg-disabled));
+  }
+
+  /* 标签换行排，输入框跟在最后一个标签后面。最小高度对齐单行输入框，
+     只有一个标签时看起来仍是一个普通输入框，而不是塌成一条缝 */
+  [data-scope='tags-input'][data-part='control'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--xh-tags-input-control-gap, var(--xh-control-gap-sm));
+    min-block-size: var(--xh-tags-input-control-h, var(--xh-control-h-md));
+    padding-block: var(--xh-tags-input-control-py, var(--xh-space-1));
+    padding-inline: var(--xh-tags-input-control-px, var(--xh-control-px-md));
+    border: var(--xh-stroke-thin) solid var(--xh-tags-input-control-border, var(--xh-border-default));
+    border-radius: var(--xh-tags-input-control-radius, var(--xh-shape-control));
+    background: var(--xh-tags-input-control-bg, var(--xh-bg-canvas));
+    color: var(--xh-tags-input-control-fg, var(--xh-fg-default));
+    cursor: text;
+    transition: border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  [data-scope='tags-input'][data-part='control'][hidden] {
+    display: none;
+  }
+
+  /* hover 只在中性态换描边：invalid 与 at-max 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+  [data-scope='tags-input'][data-part='control']:hover:not([data-disabled], [data-invalid], [data-at-max]) {
+    border-color: var(--xh-tags-input-control-border-hover, var(--xh-border-strong));
+  }
+
+  /* 焦点环画在这个框上：用户眼里"被聚焦的控件"就是整个框，
+     而真正持有焦点的是里面的 input（它自己那圈环因此让位，见下） */
+  [data-scope='tags-input'][data-part='control']:focus-within {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 顶到上限：再加进不去，边框先给个提示。放在 invalid 之前，
+     两者同时成立时按源序让 invalid 赢——真出错比"装满了"要紧 */
+  [data-scope='tags-input'][data-part='control'][data-at-max] {
+    border-color: var(--xh-tags-input-control-border-at-max, var(--xh-color-warning-600));
+  }
+
+  [data-scope='tags-input'][data-part='control'][data-invalid] {
+    border-color: var(--xh-tags-input-control-border-invalid, var(--xh-color-danger-500));
+  }
+
+  /* 只读仍可聚焦、可复制，所以不置灰，只把底色压下去表示"改不动" */
+  [data-scope='tags-input'][data-part='control'][data-readonly] {
+    background: var(--xh-tags-input-control-bg-readonly, var(--xh-bg-subtle));
+    cursor: default;
+  }
+
+  /* control 是容器不是原生控件，禁用只能靠 data-disabled 表达，写 :disabled 永远不命中 */
+  [data-scope='tags-input'][data-part='control'][data-disabled] {
+    background: var(--xh-tags-input-control-bg-disabled, var(--xh-bg-subtle));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 输入框贴着标签排，自己不画边框与底色——那两样归 control。
+     min-inline-size 保证标签占满一行后它还能换到下一行继续输入，而不是被挤成零宽 */
+  [data-scope='tags-input'][data-part='input'] {
+    flex: 1 1 var(--xh-tags-input-input-basis, 6rem);
+    min-inline-size: var(--xh-tags-input-input-min-w, 4rem);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
+    font-family: inherit;
+    font-size: var(--xh-tags-input-input-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-leading-normal);
+  }
+
+  [data-scope='tags-input'][data-part='input']::placeholder {
+    color: var(--xh-tags-input-placeholder-fg, var(--xh-fg-subtle));
+  }
+
+  /* 焦点环由 control 统一画（见上）：这里再画一圈会在框里套框，两条环互相压着 */
+  [data-scope='tags-input'][data-part='input']:focus-visible {
+    outline: none;
+  }
+
+  /* input 是单体表单控件，禁用走原生 disabled */
+  [data-scope='tags-input'][data-part='input']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 一个标签一颗胶囊。inline-size 交给内容决定，长标签由 item-text 截断 */
+  [data-scope='tags-input'][data-part='item'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    max-inline-size: 100%;
+    border-radius: var(--xh-tags-input-item-radius, var(--xh-shape-pill));
+    background: var(--xh-tags-input-item-bg, var(--xh-bg-subtle));
+    color: var(--xh-tags-input-item-fg, var(--xh-fg-default));
+    font-size: var(--xh-tags-input-item-font-size, var(--xh-font-size-sm));
+    line-height: 1;
+    transition:
+      background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease),
+      color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  [data-scope='tags-input'][data-part='item'][hidden] {
+    display: none;
+  }
+
+  /* 光标走到这颗标签上（退格第一下、方向键）：整颗反白，与"删掉它"这件事对得上。
+     禁用态下不给高亮：那时候本来就走不进标签 */
+  [data-scope='tags-input'][data-part='item'][data-highlighted]:not([data-disabled]) {
+    background: var(--xh-tags-input-item-bg-highlight, var(--xh-bg-brand));
+    color: var(--xh-tags-input-item-fg-highlight, var(--xh-fg-on-brand));
+  }
+
+  /* 标签不是原生控件，禁用同样只能靠 data-disabled */
+  [data-scope='tags-input'][data-part='item'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 就地编辑时整颗胶囊让位给编辑框：底色撤掉，免得输入框外面套一圈灰底 */
+  [data-scope='tags-input'][data-part='item'][data-editing] {
+    background: transparent;
+  }
+
+  [data-scope='tags-input'][data-part='item-preview'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-tags-input-item-gap, var(--xh-space-1));
+    max-inline-size: 100%;
+    padding-block: var(--xh-tags-input-item-py, var(--xh-space-1));
+    padding-inline: var(--xh-tags-input-item-px, var(--xh-space-2));
+    user-select: none;
+  }
+
+  /* 就地编辑时连接层给的是 hidden 属性；上面那条 display 会把 UA 规则盖掉，
+     少了这条预览会和编辑框叠在一起 */
+  [data-scope='tags-input'][data-part='item-preview'][hidden] {
+    display: none;
+  }
+
+  /* 长标签截断而不是把整行撑开：胶囊挤爆一行会把输入框顶到看不见的地方 */
+  [data-scope='tags-input'][data-part='item-text'] {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* 删除按钮画成胶囊里的小圆钮，与文字同一行、不撑高胶囊 */
+  [data-scope='tags-input'][data-part='item-delete-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-tags-input-delete-size, 1rem);
+    block-size: var(--xh-tags-input-delete-size, 1rem);
+    padding: 0;
+    border: 0;
+    border-radius: var(--xh-radius-full);
+    background: var(--xh-tags-input-delete-bg, transparent);
+    color: var(--xh-tags-input-delete-fg, var(--xh-fg-muted));
+    font-family: inherit;
+    font-size: var(--xh-tags-input-delete-font-size, var(--xh-font-size-xs));
+    line-height: 1;
+    cursor: pointer;
+    transition: background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  [data-scope='tags-input'][data-part='item-delete-trigger'][hidden] {
+    display: none;
+  }
+
+  /* 整颗标签反白时按钮跟着改色，否则灰字压在品牌底色上会看不清 */
+  [data-scope='tags-input'][data-part='item-delete-trigger'][data-highlighted]:not(:disabled) {
+    color: var(--xh-tags-input-delete-fg-highlight, var(--xh-fg-on-brand));
+  }
+
+  [data-scope='tags-input'][data-part='item-delete-trigger']:hover:not(:disabled) {
+    background: var(--xh-tags-input-delete-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-tags-input-delete-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='tags-input'][data-part='item-delete-trigger']:active:not(:disabled) {
+    background: var(--xh-tags-input-delete-bg-active, var(--xh-bg-subtle-active));
+  }
+
+  /* 按钮不占 Tab 位（tabindex=-1），正常操作走不到这里；
+     留着焦点环是给程序化聚焦兜底——删完把焦点交回输入框之前，它确实短暂持有过焦点 */
+  [data-scope='tags-input'][data-part='item-delete-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 1px;
+  }
+
+  /* 按钮是单体控件，禁用走原生 disabled */
+  [data-scope='tags-input'][data-part='item-delete-trigger']:disabled {
+    background: transparent;
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 就地编辑框：尺寸对齐胶囊，看起来像是在原地把标签改了，而不是另开一个框。
+     不声明 display —— 收起态靠 UA 的 [hidden]{display:none} 就够，
+     自己加一条 display 反而要再补一条 [hidden] 规则去抵消它 */
+  [data-scope='tags-input'][data-part='item-input'] {
+    max-inline-size: 100%;
+    padding-block: var(--xh-tags-input-item-py, var(--xh-space-1));
+    padding-inline: var(--xh-tags-input-item-px, var(--xh-space-2));
+    border: var(--xh-stroke-thin) solid var(--xh-tags-input-item-input-border, var(--xh-border-strong));
+    border-radius: var(--xh-tags-input-item-radius, var(--xh-shape-pill));
+    background: var(--xh-tags-input-item-input-bg, var(--xh-bg-canvas));
+    color: var(--xh-tags-input-item-input-fg, var(--xh-fg-default));
+    font-family: inherit;
+    font-size: var(--xh-tags-input-item-font-size, var(--xh-font-size-sm));
+    line-height: 1;
+  }
+
+  /* 它是真正持有焦点的那个节点，环画在自己身上；
+     外层 control 的 :focus-within 环同时亮着也合理——焦点确实在框内 */
+  [data-scope='tags-input'][data-part='item-input']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 1px;
+  }
+
+  [data-scope='tags-input'][data-part='item-input']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 清空按钮贴在框的末端，与输入框同一行 */
+  [data-scope='tags-input'][data-part='clear-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-tags-input-clear-size, 1.25rem);
+    block-size: var(--xh-tags-input-clear-size, 1.25rem);
+    padding: 0;
+    border: 0;
+    border-radius: var(--xh-radius-full);
+    background: var(--xh-tags-input-clear-bg, transparent);
+    color: var(--xh-tags-input-clear-fg, var(--xh-fg-muted));
+    font-family: inherit;
+    font-size: var(--xh-tags-input-clear-font-size, var(--xh-font-size-sm));
+    line-height: 1;
+    cursor: pointer;
+    transition: background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  [data-scope='tags-input'][data-part='clear-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='tags-input'][data-part='clear-trigger']:hover:not(:disabled) {
+    background: var(--xh-tags-input-clear-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-tags-input-clear-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='tags-input'][data-part='clear-trigger']:active:not(:disabled) {
+    background: var(--xh-tags-input-clear-bg-active, var(--xh-bg-subtle-active));
+  }
+
+  [data-scope='tags-input'][data-part='clear-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 1px;
+  }
+
+  /* 没东西可清、只读或禁用时按钮转灰但不收起：位置留着，加进第一个标签就亮 */
+  [data-scope='tags-input'][data-part='clear-trigger']:disabled {
+    background: transparent;
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+}

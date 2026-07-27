@@ -1,0 +1,234 @@
+@layer xihan.components {
+  /* 根只是把触发区与浮层圈在一起做作用域，不该在作者布局里多插一层盒子 */
+  [data-scope='context-menu'][data-part='root'] {
+    display: contents;
+  }
+
+  [data-scope='context-menu'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 触发区是作者自己的一块内容，尺寸与排布归他；这里只管交互观感：
+     长按会先选中区域内的文字，长按菜单弹出时手指底下是一片高亮，很难看 */
+  [data-scope='context-menu'][data-part='trigger'] {
+    user-select: none;
+  }
+
+  /* 触发区自带 Tab 位（Shift+F10 / 菜单键的落点），必须画得出焦点 */
+  [data-scope='context-menu'][data-part='trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+  [data-scope='context-menu'][data-part='positioner'] {
+    position: absolute;
+    z-index: var(--xh-layer-popover);
+    /* 空壳不吃指针，交互只发生在 content 上 */
+    pointer-events: none;
+  }
+
+  /* 锚点被滚出可视区：整个浮层随之收起 */
+  [data-scope='context-menu'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  [data-scope='context-menu'][data-part='content'] {
+    display: flex;
+    flex-direction: column;
+    min-inline-size: var(--xh-context-menu-min-w, 10rem);
+    max-inline-size: var(--xh-context-menu-max-w, 20rem);
+    padding-block: var(--xh-context-menu-py, var(--xh-space-1));
+    padding-inline: var(--xh-context-menu-px, var(--xh-space-1));
+    border: var(--xh-stroke-thin) solid var(--xh-context-menu-border, var(--xh-border-default));
+    border-radius: var(--xh-context-menu-radius, var(--xh-shape-surface));
+    background: var(--xh-context-menu-bg, var(--xh-bg-surface));
+    color: var(--xh-context-menu-fg, var(--xh-fg-default));
+    box-shadow: var(--xh-context-menu-shadow, var(--xh-elevation-2));
+    pointer-events: auto;
+  }
+
+  /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位 */
+  [data-scope='context-menu'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  /* 容器只是焦点域兜底落点，落焦不画环：高亮永远长在条目上 */
+  [data-scope='context-menu'][data-part='content']:focus-visible {
+    outline: none;
+  }
+
+  /* 展开时轻微涨开：菜单是被光标"点出来"的，纯淡入显得它一直都在
+     （不设 transform-origin：那个属性没有逻辑关键字，写死方向会在 RTL 下反着涨） */
+  [data-scope='context-menu'][data-part='content'][data-state='open'] {
+    animation: xh-context-menu-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 关掉动效的用户不该被涨开动画晃一下；这里只管本组件，公共那份不动 */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='context-menu'][data-part='content'][data-state='open'] {
+      animation-duration: 0.01ms;
+    }
+  }
+
+  [data-scope='context-menu'][data-part='group'] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  [data-scope='context-menu'][data-part='group'][hidden] {
+    display: none;
+  }
+
+  /* 分组标题不是条目、进不了导航，画成小号次要文字，
+     内缩与条目对齐（同一个 padding-inline），标题与条目文字才在一条竖线上 */
+  [data-scope='context-menu'][data-part='group-label'] {
+    display: block;
+    padding-block: var(--xh-context-menu-group-label-py, var(--xh-space-1));
+    padding-inline: var(--xh-context-menu-group-label-px, var(--xh-control-px-sm));
+    color: var(--xh-context-menu-group-label-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-context-menu-group-label-font-size, var(--xh-font-size-xs));
+    font-weight: var(--xh-context-menu-group-label-font-weight, var(--xh-font-weight-medium));
+    line-height: 1;
+    user-select: none;
+  }
+
+  [data-scope='context-menu'][data-part='group-label'][hidden] {
+    display: none;
+  }
+
+  [data-scope='context-menu'][data-part='item'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-context-menu-item-gap, var(--xh-control-gap-md));
+    padding-block: var(--xh-context-menu-item-py, var(--xh-space-2));
+    padding-inline: var(--xh-context-menu-item-px, var(--xh-control-px-sm));
+    border-radius: var(--xh-context-menu-item-radius, var(--xh-shape-control));
+    color: var(--xh-context-menu-item-fg, var(--xh-fg-default));
+    font-size: var(--xh-context-menu-item-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* 条目可以按需收起（按上下文过滤掉的命令），有 display 就得补这条 */
+  [data-scope='context-menu'][data-part='item'][hidden] {
+    display: none;
+  }
+
+  /* 键盘高亮与指针高亮共用一套底色：条目本身承载焦点，不另画描边。
+     data-highlighted 跟的是连接层记的焦点条目，与 :focus 说的是同一件事，
+     子部件够不着那个伪类，只能读这个标记 */
+  [data-scope='context-menu'][data-part='item']:not([data-disabled]):is(:hover, :focus, [data-highlighted]) {
+    background: var(--xh-context-menu-item-bg-highlight, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='context-menu'][data-part='item']:focus {
+    outline: none;
+  }
+
+  /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
+     所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
+  [data-scope='context-menu'][data-part='item'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='context-menu'][data-part='item-text'] {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  [data-scope='context-menu'][data-part='item-text'][hidden] {
+    display: none;
+  }
+
+  /* 标记位（勾选符号 / 图标 / 快捷键提示）：定宽占位，切换内容不引起行宽抖动 */
+  [data-scope='context-menu'][data-part='item-indicator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-context-menu-item-indicator-size, 1rem);
+    color: var(--xh-context-menu-item-indicator-fg, var(--xh-fg-subtle));
+  }
+
+  [data-scope='context-menu'][data-part='item-indicator'][hidden] {
+    display: none;
+  }
+
+  [data-scope='context-menu'][data-part='item-indicator'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  [data-scope='context-menu'][data-part='separator'] {
+    block-size: var(--xh-context-menu-separator-thickness, 1px);
+    margin-block: var(--xh-context-menu-separator-my, var(--xh-space-1));
+    background: var(--xh-context-menu-separator-color, var(--xh-border-default));
+  }
+
+  [data-scope='context-menu'][data-part='separator'][hidden] {
+    display: none;
+  }
+
+  /* 箭头是旋转 45° 的方块，只保留朝向锚点那两条边的描边；
+     引擎不产出箭头偏移，因此沿交叉轴固定居中 */
+  [data-scope='context-menu'][data-part='arrow'] {
+    position: absolute;
+    inline-size: var(--xh-context-menu-arrow-size, 8px);
+    block-size: var(--xh-context-menu-arrow-size, 8px);
+    background: var(--xh-context-menu-bg, var(--xh-bg-surface));
+    border: var(--xh-stroke-thin) solid var(--xh-context-menu-border, var(--xh-border-default));
+    rotate: 45deg;
+  }
+
+  [data-scope='context-menu'][data-part='arrow'][hidden] {
+    display: none;
+  }
+
+  [data-scope='context-menu'][data-part='arrow'][data-placement^='bottom'] {
+    inset-block-start: calc(var(--xh-context-menu-arrow-size, 8px) / -2);
+    inset-inline-start: calc(50% - var(--xh-context-menu-arrow-size, 8px) / 2);
+    border-block-end: 0;
+    border-inline-end: 0;
+  }
+
+  [data-scope='context-menu'][data-part='arrow'][data-placement^='top'] {
+    inset-block-end: calc(var(--xh-context-menu-arrow-size, 8px) / -2);
+    inset-inline-start: calc(50% - var(--xh-context-menu-arrow-size, 8px) / 2);
+    border-block-start: 0;
+    border-inline-start: 0;
+  }
+
+  [data-scope='context-menu'][data-part='arrow'][data-placement^='right'] {
+    inset-inline-start: calc(var(--xh-context-menu-arrow-size, 8px) / -2);
+    inset-block-start: calc(50% - var(--xh-context-menu-arrow-size, 8px) / 2);
+    border-block-start: 0;
+    border-inline-end: 0;
+  }
+
+  [data-scope='context-menu'][data-part='arrow'][data-placement^='left'] {
+    inset-inline-end: calc(var(--xh-context-menu-arrow-size, 8px) / -2);
+    inset-block-start: calc(50% - var(--xh-context-menu-arrow-size, 8px) / 2);
+    border-block-end: 0;
+    border-inline-start: 0;
+  }
+}
+
+@layer xihan.motion {
+  /* 自带前缀独占一个名字，不动公共的那份关键帧 */
+  @keyframes xh-context-menu-in {
+    from {
+      opacity: 0;
+      scale: 0.96;
+    }
+
+    to {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+}

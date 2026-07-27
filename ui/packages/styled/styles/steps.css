@@ -1,0 +1,224 @@
+@layer xihan.components {
+  [data-scope='steps'][data-part='root'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-steps-gap, var(--xh-stack-gap-md));
+  }
+
+  [data-scope='steps'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 纵向：步骤列与面板并排 */
+  [data-scope='steps'][data-part='root'][data-orientation='vertical'] {
+    flex-direction: row;
+  }
+
+  [data-scope='steps'][data-part='list'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-steps-list-gap, var(--xh-space-2));
+  }
+
+  [data-scope='steps'][data-part='list'][hidden] {
+    display: none;
+  }
+
+  [data-scope='steps'][data-part='list'][data-orientation='vertical'] {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* 组内无锚点时 list 自己在 Tab 序列里（走到完成位就是这种情形），落焦要看得见 */
+  [data-scope='steps'][data-part='list']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 每一步与它后面那截连接线一起占一格，等分整行；min-inline-size 允许被压缩，
+     标题里的省略号才有生效的余地 */
+  [data-scope='steps'][data-part='item'] {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: var(--xh-steps-item-gap, var(--xh-space-2));
+    min-inline-size: 0;
+  }
+
+  [data-scope='steps'][data-part='item'][hidden] {
+    display: none;
+  }
+
+  /* 末步后面没有"下一步"，那截连接线不该占地方；作者不写它也一样，写了就替他收掉 */
+  [data-scope='steps'][data-part='item']:last-child {
+    flex: none;
+  }
+
+  [data-scope='steps'][data-part='item']:last-child [data-scope='steps'][data-part='separator'] {
+    display: none;
+  }
+
+  [data-scope='steps'][data-part='item'][data-orientation='vertical'] {
+    flex-direction: column;
+    flex: none;
+    align-items: flex-start;
+  }
+
+  /* 触发器排成两列：序号占左列并跨两行，标题与说明各占右列一行。
+     用 grid 而不是再包一层节点——解剖里没有那个包裹层，作者也不该被逼着多写一个 div。
+     只有说明缺席时右列的第二行是零高，不会留白 */
+  [data-scope='steps'][data-part='trigger'] {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: var(--xh-steps-trigger-gap, var(--xh-control-gap-md));
+    padding: var(--xh-steps-trigger-p, var(--xh-space-1));
+    border: 0;
+    border-radius: var(--xh-steps-trigger-radius, var(--xh-shape-control));
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  [data-scope='steps'][data-part='trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='steps'][data-part='trigger']:hover:not([data-disabled]) {
+    background: var(--xh-steps-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='steps'][data-part='trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
+     所以只能挂 data-disabled，写 :disabled 永远不命中 */
+  [data-scope='steps'][data-part='trigger'][data-disabled] {
+    cursor: not-allowed;
+  }
+
+  [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='title'],
+  [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='description'] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 序号圆点：跨两行贴着左侧，未走到时是一圈描边，走过了才填实 */
+  [data-scope='steps'][data-part='indicator'] {
+    display: inline-flex;
+    grid-row: 1 / span 2;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-steps-indicator-size, var(--xh-control-h-sm));
+    block-size: var(--xh-steps-indicator-size, var(--xh-control-h-sm));
+    border: var(--xh-stroke-thin) solid var(--xh-steps-indicator-border, var(--xh-border-strong));
+    border-radius: var(--xh-radius-full);
+    background: var(--xh-steps-indicator-bg, transparent);
+    color: var(--xh-steps-indicator-fg, var(--xh-fg-muted));
+    font-size: var(--xh-steps-indicator-font-size, var(--xh-font-size-xs));
+    font-weight: var(--xh-font-weight-medium);
+    /* 等宽数字：1 与 7 的字形宽度在比例字体里并不相同，不定住会让序号左右抖一格 */
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='steps'][data-part='indicator'][hidden] {
+    display: none;
+  }
+
+  /* 当前步是空心的品牌色描边，走过的那些是实心——两者一眼分得开，
+     光靠"都填成品牌色"会让人看不出自己停在哪儿 */
+  [data-scope='steps'][data-part='indicator'][data-state='current'] {
+    border-color: var(--xh-steps-indicator-border-current, var(--xh-bg-brand));
+    color: var(--xh-steps-indicator-fg-current, var(--xh-bg-brand));
+  }
+
+  [data-scope='steps'][data-part='indicator'][data-state='completed'] {
+    border-color: var(--xh-steps-indicator-border-completed, var(--xh-bg-brand));
+    background: var(--xh-steps-indicator-bg-completed, var(--xh-bg-brand));
+    color: var(--xh-steps-indicator-fg-completed, var(--xh-fg-on-brand));
+  }
+
+  [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator'] {
+    border-color: var(--xh-fg-disabled);
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 标题与说明都在右列：不给 display，网格布局会替它们块级化，
+     [hidden] 时 UA 的 display:none 仍然压得住 */
+  [data-scope='steps'][data-part='title'] {
+    grid-column: 2;
+    color: var(--xh-steps-title-fg, var(--xh-fg-muted));
+    font-size: var(--xh-steps-title-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-steps-title-font-weight, var(--xh-text-label-weight));
+    line-height: var(--xh-leading-tight);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  [data-scope='steps'][data-part='title']:is([data-state='current'], [data-state='completed']) {
+    color: var(--xh-steps-title-fg-active, var(--xh-fg-default));
+  }
+
+  [data-scope='steps'][data-part='description'] {
+    grid-column: 2;
+    color: var(--xh-steps-description-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-steps-description-font-size, var(--xh-font-size-xs));
+    line-height: var(--xh-leading-tight);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* 连接线属于它前面那一步：那一步走过了就整条点亮，进度因此是连续的一条线 */
+  [data-scope='steps'][data-part='separator'] {
+    flex: 1;
+    min-inline-size: var(--xh-steps-separator-min-length, var(--xh-space-4));
+    block-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thick));
+    border-radius: var(--xh-radius-full);
+    background: var(--xh-steps-separator-bg, var(--xh-border-default));
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='steps'][data-part='separator'][hidden] {
+    display: none;
+  }
+
+  [data-scope='steps'][data-part='separator'][data-state='completed'] {
+    background: var(--xh-steps-separator-bg-completed, var(--xh-bg-brand));
+  }
+
+  /* 纵向时连接线转成竖的一条，缩进到与序号圆点同一条竖线上 */
+  [data-scope='steps'][data-part='separator'][data-orientation='vertical'] {
+    flex: none;
+    inline-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thick));
+    block-size: var(--xh-steps-separator-min-length, var(--xh-space-4));
+    /* 圆点半径减去线宽的一半：calc 里的除法要写成乘 0.5，除号在这儿是无效语法 */
+    margin-inline-start: calc(
+      var(--xh-steps-indicator-size, var(--xh-control-h-sm)) * 0.5
+      + var(--xh-steps-trigger-p, var(--xh-space-1))
+      - var(--xh-steps-separator-thickness, var(--xh-stroke-thick)) * 0.5
+    );
+  }
+
+  /* 面板刻意不给 display：连接层用 hidden 收起，UA 的 [hidden]{display:none} 压得住，
+     不必再拿内联样式去盖 */
+  [data-scope='steps'][data-part='content'] {
+    padding-block: var(--xh-steps-content-py, var(--xh-stack-gap-md));
+    color: var(--xh-steps-content-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='steps'][data-part='content']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+}

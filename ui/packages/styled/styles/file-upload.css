@@ -1,0 +1,298 @@
+@layer xihan.components {
+  [data-scope='file-upload'][data-part='root'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-file-upload-gap, var(--xh-space-3));
+  }
+
+  /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+  [data-scope='file-upload'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='file-upload'][data-part='label'] {
+    color: var(--xh-file-upload-label-fg, var(--xh-fg-default));
+    font-size: var(--xh-file-upload-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-file-upload-label-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+  }
+
+  [data-scope='file-upload'][data-part='label'][data-disabled] {
+    color: var(--xh-file-upload-label-fg-disabled, var(--xh-fg-disabled));
+  }
+
+  /* 虚线框是"这里能放东西"的通用说法，实线框看起来只是一个普通面板。
+     整块可点、可聚焦（连接层给了 role=button 与 tabindex），所以指针形状用 pointer */
+  [data-scope='file-upload'][data-part='dropzone'] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-file-upload-dropzone-gap, var(--xh-space-2));
+    min-block-size: var(--xh-file-upload-dropzone-min-h, 8rem);
+    padding-block: var(--xh-file-upload-dropzone-py, var(--xh-space-5));
+    padding-inline: var(--xh-file-upload-dropzone-px, var(--xh-space-4));
+    border: var(--xh-stroke-thick) dashed var(--xh-file-upload-dropzone-border, var(--xh-border-default));
+    border-radius: var(--xh-file-upload-dropzone-radius, var(--xh-shape-surface));
+    background: var(--xh-file-upload-dropzone-bg, var(--xh-bg-canvas));
+    color: var(--xh-file-upload-dropzone-fg, var(--xh-fg-muted));
+    font-size: var(--xh-file-upload-dropzone-font-size, var(--xh-text-body-size));
+    text-align: center;
+    cursor: pointer;
+    /* 拖着文件经过时颜色要立刻跟上：这是"松手就能放下"的唯一提示 */
+    transition:
+      border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease),
+      background-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  [data-scope='file-upload'][data-part='dropzone'][hidden] {
+    display: none;
+  }
+
+  /* hover 只在中性态换描边：invalid 与 dragging 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+  [data-scope='file-upload'][data-part='dropzone']:hover:not([data-disabled], [data-invalid], [data-dragging]) {
+    border-color: var(--xh-file-upload-dropzone-border-hover, var(--xh-border-strong));
+  }
+
+  /* 投放区自己承载焦点（它就是那个大按钮），所以画环而不是 outline:none */
+  [data-scope='file-upload'][data-part='dropzone']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 悬停在上方：整块换成品牌色描边加浅底，比只换边框显眼得多 */
+  [data-scope='file-upload'][data-part='dropzone'][data-dragging] {
+    border-color: var(--xh-file-upload-dropzone-border-dragging, var(--xh-bg-brand));
+    background: var(--xh-file-upload-dropzone-bg-dragging, var(--xh-bg-subtle));
+  }
+
+  [data-scope='file-upload'][data-part='dropzone'][data-invalid] {
+    border-color: var(--xh-file-upload-dropzone-border-invalid, var(--xh-color-danger-500));
+  }
+
+  /* 投放区是 div，没有原生 disabled 可用，禁用态只能靠 data-disabled 表达，写 :disabled 永远不命中 */
+  [data-scope='file-upload'][data-part='dropzone'][data-disabled] {
+    border-color: var(--xh-border-subtle);
+    background: var(--xh-file-upload-dropzone-bg-disabled, var(--xh-bg-subtle));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='file-upload'][data-part='trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-file-upload-trigger-gap, var(--xh-control-gap-md));
+    block-size: var(--xh-file-upload-trigger-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-file-upload-trigger-px, var(--xh-control-px-md));
+    border: var(--xh-stroke-thin) solid var(--xh-file-upload-trigger-border, var(--xh-border-default));
+    border-radius: var(--xh-file-upload-trigger-radius, var(--xh-shape-control));
+    background: var(--xh-file-upload-trigger-bg, var(--xh-bg-surface));
+    color: var(--xh-file-upload-trigger-fg, var(--xh-fg-default));
+    /* 表单控件不继承页面字体，只给字号会让按钮用 UA 默认字族 */
+    font-family: inherit;
+    font-size: var(--xh-file-upload-trigger-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  [data-scope='file-upload'][data-part='trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='file-upload'][data-part='trigger']:hover:not(:disabled) {
+    background: var(--xh-file-upload-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='file-upload'][data-part='trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 单体控件走原生 disabled（与集合条目的 aria-disabled 相反），因此用 :disabled */
+  [data-scope='file-upload'][data-part='trigger']:disabled {
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 连接层已经把这一套视觉隐藏写进了内联 style，这里是给元素升级前那一瞬兜底
+     （作者手写的是一个普通 file input，接线完成前它是可见的）。
+     刻意不写 display：藏起来的输入仍要留在布局里，原生表单校验的气泡才有可指的锚点 */
+  [data-scope='file-upload'][data-part='hidden-input'] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  [data-scope='file-upload'][data-part='item-group'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-file-upload-item-gap, var(--xh-space-2));
+  }
+
+  [data-scope='file-upload'][data-part='item-group'][hidden] {
+    display: none;
+  }
+
+  [data-scope='file-upload'][data-part='item'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-file-upload-item-inner-gap, var(--xh-control-gap-md));
+    padding-block: var(--xh-file-upload-item-py, var(--xh-space-2));
+    padding-inline: var(--xh-file-upload-item-px, var(--xh-space-3));
+    border: var(--xh-stroke-thin) solid var(--xh-file-upload-item-border, var(--xh-border-subtle));
+    border-radius: var(--xh-file-upload-item-radius, var(--xh-shape-control));
+    background: var(--xh-file-upload-item-bg, var(--xh-bg-surface));
+    color: var(--xh-file-upload-item-fg, var(--xh-fg-default));
+    font-size: var(--xh-file-upload-item-font-size, var(--xh-text-body-size));
+  }
+
+  [data-scope='file-upload'][data-part='item'][hidden] {
+    display: none;
+  }
+
+  [data-scope='file-upload'][data-part='item'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 缩略图占位：作者往里塞图标或真缩略图，尺寸由这里定死，一行行的图标才对得齐 */
+  [data-scope='file-upload'][data-part='item-preview'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-file-upload-preview-size, var(--xh-control-h-md));
+    block-size: var(--xh-file-upload-preview-size, var(--xh-control-h-md));
+    border-radius: var(--xh-file-upload-preview-radius, var(--xh-shape-control));
+    background: var(--xh-file-upload-preview-bg, var(--xh-bg-subtle));
+    color: var(--xh-file-upload-preview-fg, var(--xh-fg-muted));
+    overflow: hidden;
+  }
+
+  [data-scope='file-upload'][data-part='item-preview'][hidden] {
+    display: none;
+  }
+
+  /* data-file-type 是完整 MIME，按前缀分档即可；系统给不出类型时是 unknown，落回上面的中性底。
+     只挑图标色不换底色：底色一换，一列文件里图片那几行会跳出来抢戏。
+     取语义 token 而不是品牌色阶原值，深色主题才跟着走 */
+  [data-scope='file-upload'][data-part='item-preview'][data-file-type^='image/'] {
+    color: var(--xh-file-upload-preview-fg-image, var(--xh-bg-brand));
+  }
+
+  /* 塞进来的真缩略图撑满这个方框，长宽比不对就裁掉，不许把格子顶变形 */
+  [data-scope='file-upload'][data-part='item-preview'] img {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  /* 文件名占满中间那段并用省略号收口：不写 min-inline-size 的话，
+     flex 项的最小尺寸是内容宽度，长文件名会把整行顶宽而不是被截断 */
+  [data-scope='file-upload'][data-part='item-name'] {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* 大小是次要信息：画淡、缩小，并用等宽数字——各位字宽不一时，
+     一列文件的大小读起来会左右参差 */
+  [data-scope='file-upload'][data-part='item-size-text'] {
+    flex: none;
+    color: var(--xh-file-upload-size-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-file-upload-size-font-size, var(--xh-font-size-xs));
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  [data-scope='file-upload'][data-part='item-size-text'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 删除是一行里的小图标按钮：正方形、无边框，靠底色表达 hover */
+  [data-scope='file-upload'][data-part='item-delete-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-file-upload-delete-size, var(--xh-control-h-sm));
+    block-size: var(--xh-file-upload-delete-size, var(--xh-control-h-sm));
+    padding: 0;
+    border: 0;
+    border-radius: var(--xh-file-upload-delete-radius, var(--xh-shape-control));
+    background: transparent;
+    color: var(--xh-file-upload-delete-fg, var(--xh-fg-muted));
+    font-family: inherit;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  [data-scope='file-upload'][data-part='item-delete-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='file-upload'][data-part='item-delete-trigger']:hover:not(:disabled) {
+    background: var(--xh-file-upload-delete-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-file-upload-delete-fg-hover, var(--xh-color-danger-600));
+  }
+
+  [data-scope='file-upload'][data-part='item-delete-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  [data-scope='file-upload'][data-part='item-delete-trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 清空是收尾动作，画成不带底色的文字按钮：它比"选择文件"次要，
+     且列表为空时连接层会给原生 disabled，那时它本就该看着点不动 */
+  [data-scope='file-upload'][data-part='clear-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-self: flex-start;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-file-upload-clear-gap, var(--xh-control-gap-sm));
+    block-size: var(--xh-file-upload-clear-h, var(--xh-control-h-sm));
+    padding-inline: var(--xh-file-upload-clear-px, var(--xh-control-px-sm));
+    border: 0;
+    border-radius: var(--xh-file-upload-clear-radius, var(--xh-shape-control));
+    background: transparent;
+    color: var(--xh-file-upload-clear-fg, var(--xh-fg-muted));
+    font-family: inherit;
+    font-size: var(--xh-file-upload-clear-font-size, var(--xh-font-size-xs));
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  [data-scope='file-upload'][data-part='clear-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='file-upload'][data-part='clear-trigger']:hover:not(:disabled) {
+    background: var(--xh-file-upload-clear-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-file-upload-clear-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='file-upload'][data-part='clear-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  [data-scope='file-upload'][data-part='clear-trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+}

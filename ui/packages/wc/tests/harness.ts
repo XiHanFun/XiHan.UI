@@ -70,7 +70,12 @@ export function createWcHarness(): AdapterHarness {
   let host: Updatable | null = null
   let events: AdapterEvent[] = []
   const onEvent = (e: Event): void => {
-    events.push({ type: e.type, detail: (e as CustomEvent).detail })
+    // 语义事件一律是 CustomEvent；同名的原生事件要挡掉。
+    // 具体撞上的是 select：焦点域把焦点送进输入框时会连带 .select() 全选，
+    // 那个原生 select 事件是冒泡的，会一路冒到宿主上冒充成组件的选中事件。
+    if (!(e instanceof CustomEvent))
+      return
+    events.push({ type: e.type, detail: e.detail })
   }
 
   return {

@@ -1,0 +1,200 @@
+@layer xihan.components {
+  [data-scope='tree'][data-part='root'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-tree-gap, var(--xh-space-2));
+  }
+
+  [data-scope='tree'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='tree'][data-part='label'] {
+    color: var(--xh-tree-label-fg, var(--xh-fg-muted));
+    font-size: var(--xh-tree-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-tree-label-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+  }
+
+  /* 整棵树禁用会把 data-disabled 一路打到 label / tree 上，各处观感保持一致 */
+  [data-scope='tree'][data-part='label'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 常驻容器不是浮层：留边框与底色，但不投影、不脱离文档流，滚动发生在容器自身 */
+  [data-scope='tree'][data-part='tree'] {
+    display: flex;
+    flex-direction: column;
+    max-block-size: var(--xh-tree-max-h, 20rem);
+    padding-block: var(--xh-tree-py, var(--xh-space-1));
+    padding-inline: var(--xh-tree-px, var(--xh-space-1));
+    border: var(--xh-stroke-thin) solid var(--xh-tree-border, var(--xh-border-default));
+    border-radius: var(--xh-tree-radius, var(--xh-shape-surface));
+    background: var(--xh-tree-bg, var(--xh-bg-surface));
+    color: var(--xh-tree-fg, var(--xh-fg-default));
+    /* 两轴一起给：深层节点靠缩进往右推，横向溢出是常态，得够得着 */
+    overflow: auto;
+  }
+
+  /* display 会盖掉 hidden 属性的 UA 规则，作者手动收起时要显式让位 */
+  [data-scope='tree'][data-part='tree'][hidden] {
+    display: none;
+  }
+
+  /* 焦点在树外时容器自己进 Tab 序列兜底，落焦不画环：高亮永远长在行上 */
+  [data-scope='tree'][data-part='tree']:focus-visible {
+    outline: none;
+  }
+
+  /* 分支只是"这一行 + 它的子层"的外壳，不自带行距与内边距：
+     真正长成一行的是 branch-control，子层缩进归 branch-content */
+  [data-scope='tree'][data-part='branch'][hidden] {
+    display: none;
+  }
+
+  /* 焦点落在 branch 上（它才是 treeitem），但环画在它自己那一行上：
+     整棵子树套一圈描边会把展开的层级全框进去 */
+  [data-scope='tree'][data-part='branch']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='tree'][data-part='branch']:focus-visible > [data-scope='tree'][data-part='branch-control'] {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    /* 往内收：行是撑满宽度的，环画在外沿会被容器裁掉 */
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  /* 行：叶子与分支共用同一套盒子，两种行在视觉上必须齐平 */
+  [data-scope='tree'][data-part='item'],
+  [data-scope='tree'][data-part='branch-control'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-tree-row-gap, var(--xh-control-gap-md));
+    padding-block: var(--xh-tree-row-py, var(--xh-space-2));
+    padding-inline: var(--xh-tree-row-px, var(--xh-control-px-sm));
+    border-radius: var(--xh-tree-row-radius, var(--xh-shape-control));
+    color: var(--xh-tree-row-fg, var(--xh-fg-default));
+    font-size: var(--xh-tree-row-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  [data-scope='tree'][data-part='item'][hidden],
+  [data-scope='tree'][data-part='branch-control'][hidden] {
+    display: none;
+  }
+
+  /* 键盘高亮与指针高亮共用一套底色。data-highlighted 跟的是连接层记的焦点行，
+     与选中互相独立：可以停在一个没被选中的节点上 */
+  [data-scope='tree'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]),
+  [data-scope='tree'][data-part='branch-control']:not([data-disabled]):is(:hover, [data-highlighted]) {
+    background: var(--xh-tree-row-bg-highlight, var(--xh-bg-subtle-hover));
+  }
+
+  /* 选中比高亮更"实"：它表达的是数据状态，翻页回来还在 */
+  [data-scope='tree'][data-part='item'][data-selected],
+  [data-scope='tree'][data-part='branch-control'][data-selected] {
+    background: var(--xh-tree-row-bg-selected, var(--xh-bg-subtle-active));
+    font-weight: var(--xh-tree-row-selected-font-weight, var(--xh-font-weight-medium));
+  }
+
+  /* 叶子自己就是 treeitem，环直接画在它身上 */
+  [data-scope='tree'][data-part='item']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  /* 禁用走 aria-disabled 而非原生 disabled：节点仍要可聚焦（它还得当方向键的起点），
+     所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
+  [data-scope='tree'][data-part='item'][data-disabled],
+  [data-scope='tree'][data-part='branch-control'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='tree'][data-part='item-text'],
+  [data-scope='tree'][data-part='branch-text'] {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* 勾选标记只在选中项上出现；未选中时占位不塌，切换选中不引起行宽抖动 */
+  [data-scope='tree'][data-part='item-indicator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-tree-indicator-size, 1rem);
+    color: var(--xh-tree-indicator-fg, var(--xh-bg-brand));
+    visibility: hidden;
+  }
+
+  [data-scope='tree'][data-part='item-indicator'][hidden] {
+    display: none;
+  }
+
+  [data-scope='tree'][data-part='item-indicator'][data-selected] {
+    visibility: visible;
+  }
+
+  [data-scope='tree'][data-part='item-indicator'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 展开箭头与方向指示符：两者都可能被作者用作"点这里展开"的把手，
+     所以尺寸与叶子的勾选标记一致，两种行的文字起点才对得齐 */
+  [data-scope='tree'][data-part='branch-trigger'],
+  [data-scope='tree'][data-part='branch-indicator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-tree-indicator-size, 1rem);
+    color: var(--xh-tree-branch-indicator-fg, var(--xh-fg-subtle));
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='tree'][data-part='branch-trigger'][hidden],
+  [data-scope='tree'][data-part='branch-indicator'][hidden] {
+    display: none;
+  }
+
+  /* 收起时朝向行首、展开时转向下方，与逻辑书写方向一致：
+     rtl 下 inline-start 在右侧，箭头因此要反着转 */
+  [data-scope='tree'][data-part='branch-trigger'][data-state='open'],
+  [data-scope='tree'][data-part='branch-indicator'][data-state='open'] {
+    rotate: 90deg;
+  }
+
+  [dir='rtl'] [data-scope='tree'][data-part='branch-trigger'],
+  [dir='rtl'] [data-scope='tree'][data-part='branch-indicator'] {
+    rotate: 180deg;
+  }
+
+  [dir='rtl'] [data-scope='tree'][data-part='branch-trigger'][data-state='open'],
+  [dir='rtl'] [data-scope='tree'][data-part='branch-indicator'][data-state='open'] {
+    rotate: 90deg;
+  }
+
+  [data-scope='tree'][data-part='branch-trigger'][data-disabled],
+  [data-scope='tree'][data-part='branch-indicator'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 层级缩进靠子层容器自己顶：分支物理嵌套着子层，每深一层就多缩一格，
+     无需把层级号写进内联样式，也就不必在两个适配器里各写一遍 */
+  [data-scope='tree'][data-part='branch-content'] {
+    display: flex;
+    flex-direction: column;
+    padding-inline-start: var(--xh-tree-indent, var(--xh-space-4));
+  }
+
+  /* 收起态的唯一开关：display 会盖掉 hidden 属性的 UA 规则，漏了这条整棵子树就收不起来 */
+  [data-scope='tree'][data-part='branch-content'][hidden] {
+    display: none;
+  }
+}

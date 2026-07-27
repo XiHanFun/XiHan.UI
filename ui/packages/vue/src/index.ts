@@ -14,6 +14,16 @@ export { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from './components/avat
 export { useAvatar } from './components/avatar/use-avatar'
 export type { AvatarContext } from './components/avatar/use-avatar'
 export { XhBadge } from './components/badge/badge'
+export {
+  XhBreadcrumbEllipsis,
+  XhBreadcrumbItem,
+  XhBreadcrumbLink,
+  XhBreadcrumbList,
+  XhBreadcrumbRoot,
+  XhBreadcrumbSeparator,
+} from './components/breadcrumb/breadcrumb'
+export { useBreadcrumb } from './components/breadcrumb/use-breadcrumb'
+export type { BreadcrumbContext } from './components/breadcrumb/use-breadcrumb'
 export { XhButton } from './components/button'
 export {
   XhCheckboxGroupItem,
@@ -29,12 +39,55 @@ export { XhCheckbox } from './components/checkbox/checkbox'
 export { useCheckbox } from './components/checkbox/use-checkbox'
 export type { CheckboxContext } from './components/checkbox/use-checkbox'
 export {
+  XhClipboardControl,
+  XhClipboardIndicator,
+  XhClipboardInput,
+  XhClipboardLabel,
+  XhClipboardRoot,
+  XhClipboardTrigger,
+} from './components/clipboard/clipboard'
+export { useClipboard } from './components/clipboard/use-clipboard'
+export type { ClipboardContext } from './components/clipboard/use-clipboard'
+export {
   XhCollapsibleContent,
   XhCollapsibleRoot,
   XhCollapsibleTrigger,
 } from './components/collapsible/collapsible'
 export { useCollapsible } from './components/collapsible/use-collapsible'
 export type { CollapsibleContext } from './components/collapsible/use-collapsible'
+export {
+  XhComboboxClearTrigger,
+  XhComboboxContent,
+  XhComboboxControl,
+  XhComboboxEmpty,
+  XhComboboxInput,
+  XhComboboxItem,
+  XhComboboxItemGroup,
+  XhComboboxItemGroupLabel,
+  XhComboboxItemIndicator,
+  XhComboboxItemText,
+  XhComboboxLabel,
+  XhComboboxPositioner,
+  XhComboboxRoot,
+  XhComboboxTrigger,
+} from './components/combobox/combobox'
+export { useCombobox } from './components/combobox/use-combobox'
+export type { ComboboxContext } from './components/combobox/use-combobox'
+export {
+  XhContextMenuArrow,
+  XhContextMenuContent,
+  XhContextMenuGroup,
+  XhContextMenuGroupLabel,
+  XhContextMenuItem,
+  XhContextMenuItemIndicator,
+  XhContextMenuItemText,
+  XhContextMenuPositioner,
+  XhContextMenuRoot,
+  XhContextMenuSeparator,
+  XhContextMenuTrigger,
+} from './components/context-menu/context-menu'
+export { useContextMenu } from './components/context-menu/use-context-menu'
+export type { ContextMenuContext } from './components/context-menu/use-context-menu'
 export {
   XhDialogCloseTrigger,
   XhDialogContent,
@@ -55,9 +108,54 @@ export {
 } from './components/drawer/drawer'
 export { useDrawer } from './components/drawer/use-drawer'
 export type { DrawerContext } from './components/drawer/use-drawer'
+export {
+  XhEditableArea,
+  XhEditableCancelTrigger,
+  XhEditableControl,
+  XhEditableEditTrigger,
+  XhEditableInput,
+  XhEditableLabel,
+  XhEditablePreview,
+  XhEditableRoot,
+  XhEditableSubmitTrigger,
+} from './components/editable/editable'
+export { useEditable } from './components/editable/use-editable'
+export type { EditableCallbacks, EditableContext } from './components/editable/use-editable'
 export { XhFieldControl, XhFieldDescription, XhFieldErrorText, XhFieldLabel, XhFieldRoot } from './components/field/field'
 export { useField } from './components/field/use-field'
 export type { FieldContext } from './components/field/use-field'
+export {
+  XhFileUploadClearTrigger,
+  XhFileUploadDropzone,
+  XhFileUploadHiddenInput,
+  XhFileUploadItem,
+  XhFileUploadItemDeleteTrigger,
+  XhFileUploadItemGroup,
+  XhFileUploadItemName,
+  XhFileUploadItemPreview,
+  XhFileUploadItemSizeText,
+  XhFileUploadLabel,
+  XhFileUploadRoot,
+  XhFileUploadTrigger,
+} from './components/file-upload/file-upload'
+export { useFileUpload } from './components/file-upload/use-file-upload'
+export type { FileUploadContext } from './components/file-upload/use-file-upload'
+export {
+  XhHoverCardArrow,
+  XhHoverCardContent,
+  XhHoverCardPositioner,
+  XhHoverCardRoot,
+  XhHoverCardTrigger,
+} from './components/hover-card/hover-card'
+export { useHoverCard } from './components/hover-card/use-hover-card'
+export type { HoverCardContext } from './components/hover-card/use-hover-card'
+export {
+  XhImageFallback,
+  XhImageImage,
+  XhImageRoot,
+} from './components/image/image'
+export { useImage } from './components/image/use-image'
+export type { ImageContext } from './components/image/use-image'
 export {
   XhListboxContent,
   XhListboxItem,
@@ -163,6 +261,19 @@ export {
 } from './components/slider/slider'
 export { useSlider } from './components/slider/use-slider'
 export type { SliderContext } from './components/slider/use-slider'
+export {
+  XhStepsContent,
+  XhStepsDescription,
+  XhStepsIndicator,
+  XhStepsItem,
+  XhStepsList,
+  XhStepsRoot,
+  XhStepsSeparator,
+  XhStepsTitle,
+  XhStepsTrigger,
+} from './components/steps/steps'
+export { useSteps } from './components/steps/use-steps'
+export type { StepsContext } from './components/steps/use-steps'
 export { XhSwitch } from './components/switch/switch'
 export { useSwitch } from './components/switch/use-switch'
 export type { SwitchContext } from './components/switch/use-switch'
@@ -174,6 +285,21 @@ export {
 } from './components/tabs/tabs'
 export { useTabs } from './components/tabs/use-tabs'
 export type { TabsContext } from './components/tabs/use-tabs'
+export {
+  XhTagsInputClearTrigger,
+  XhTagsInputControl,
+  XhTagsInputHiddenInput,
+  XhTagsInputInput,
+  XhTagsInputItem,
+  XhTagsInputItemDeleteTrigger,
+  XhTagsInputItemInput,
+  XhTagsInputItemPreview,
+  XhTagsInputItemText,
+  XhTagsInputLabel,
+  XhTagsInputRoot,
+} from './components/tags-input/tags-input'
+export { useTagsInput } from './components/tags-input/use-tags-input'
+export type { TagsInputContext } from './components/tags-input/use-tags-input'
 export {
   XhTextFieldClearTrigger,
   XhTextFieldInput,
@@ -207,6 +333,14 @@ export { XhToggle } from './components/toggle/toggle'
 export { useToggle } from './components/toggle/use-toggle'
 export type { ToggleContext } from './components/toggle/use-toggle'
 export {
+  XhToolbarGroup,
+  XhToolbarItem,
+  XhToolbarRoot,
+  XhToolbarSeparator,
+} from './components/toolbar/toolbar'
+export { useToolbar } from './components/toolbar/use-toolbar'
+export type { ToolbarContext } from './components/toolbar/use-toolbar'
+export {
   XhTooltipArrow,
   XhTooltipContent,
   XhTooltipPositioner,
@@ -216,6 +350,22 @@ export {
 export { useTooltip } from './components/tooltip/use-tooltip'
 export type { TooltipContext } from './components/tooltip/use-tooltip'
 
+export {
+  XhTreeBranch,
+  XhTreeBranchContent,
+  XhTreeBranchControl,
+  XhTreeBranchIndicator,
+  XhTreeBranchText,
+  XhTreeBranchTrigger,
+  XhTreeItem,
+  XhTreeItemIndicator,
+  XhTreeItemText,
+  XhTreeLabel,
+  XhTreeRoot,
+  XhTreeTree,
+} from './components/tree/tree'
+export { useTree } from './components/tree/use-tree'
+export type { TreeContext } from './components/tree/use-tree'
 export { createVueRuntime } from './runtime/create-vue-runtime'
 export { vueNormalize } from './runtime/normalize-props'
 export { useMachine } from './runtime/use-machine'

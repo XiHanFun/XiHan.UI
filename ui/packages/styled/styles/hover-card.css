@@ -1,0 +1,125 @@
+@layer xihan.components {
+  /* 根节点只把 trigger 与浮层收在一处，不参与定位（坐标系仍由祖先的定位上下文决定） */
+  [data-scope='hover-card'][data-part='root'] {
+    display: inline-block;
+  }
+
+  [data-scope='hover-card'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='hover-card'][data-part='trigger'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-hover-card-trigger-gap, var(--xh-control-gap-sm));
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: inherit;
+  }
+
+  [data-scope='hover-card'][data-part='trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='hover-card'][data-part='trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+  [data-scope='hover-card'][data-part='positioner'] {
+    position: absolute;
+    z-index: var(--xh-layer-popover);
+    /* 空壳不吃指针：trigger 与 content 之间那段间隙要能点得穿，
+       指针穿行的判定全靠 content 自己的进出事件 */
+    pointer-events: none;
+  }
+
+  /* 锚点被滚出可视区：整个浮层随之收起 */
+  [data-scope='hover-card'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  /* 与 tooltip 不同：卡片本体承载交互，必须吃指针——
+     指针停在卡片上就不该收起，里面的链接与按钮也要点得到 */
+  [data-scope='hover-card'][data-part='content'] {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-hover-card-gap, var(--xh-space-2));
+    inline-size: max-content;
+    max-inline-size: var(--xh-hover-card-max-w, 20rem);
+    padding-block: var(--xh-hover-card-py, var(--xh-space-3));
+    padding-inline: var(--xh-hover-card-px, var(--xh-control-px-md));
+    border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-border-default));
+    border-radius: var(--xh-hover-card-radius, var(--xh-shape-surface));
+    background: var(--xh-hover-card-bg, var(--xh-bg-surface));
+    color: var(--xh-hover-card-fg, var(--xh-fg-default));
+    font-size: var(--xh-hover-card-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-leading-normal);
+    box-shadow: var(--xh-hover-card-shadow, var(--xh-elevation-2));
+    pointer-events: auto;
+  }
+
+  /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位 */
+  [data-scope='hover-card'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  /* 卡片是可编程聚焦的容器（tabindex=-1），焦点环留给里面真正的可聚焦元素 */
+  [data-scope='hover-card'][data-part='content']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='hover-card'][data-part='content'][data-state='open'] {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 箭头是旋转 45° 的方块，只保留朝向锚点那两条边的描边；
+     引擎不产出箭头偏移，因此沿交叉轴固定居中 */
+  [data-scope='hover-card'][data-part='arrow'] {
+    position: absolute;
+    inline-size: var(--xh-hover-card-arrow-size, 8px);
+    block-size: var(--xh-hover-card-arrow-size, 8px);
+    border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-border-default));
+    background: var(--xh-hover-card-bg, var(--xh-bg-surface));
+    rotate: 45deg;
+  }
+
+  [data-scope='hover-card'][data-part='arrow'][data-placement^='bottom'] {
+    inset-block-start: calc(var(--xh-hover-card-arrow-size, 8px) / -2);
+    inset-inline-start: calc(50% - var(--xh-hover-card-arrow-size, 8px) / 2);
+    border-block-end: 0;
+    border-inline-end: 0;
+  }
+
+  [data-scope='hover-card'][data-part='arrow'][data-placement^='top'] {
+    inset-block-end: calc(var(--xh-hover-card-arrow-size, 8px) / -2);
+    inset-inline-start: calc(50% - var(--xh-hover-card-arrow-size, 8px) / 2);
+    border-block-start: 0;
+    border-inline-start: 0;
+  }
+
+  [data-scope='hover-card'][data-part='arrow'][data-placement^='right'] {
+    inset-inline-start: calc(var(--xh-hover-card-arrow-size, 8px) / -2);
+    inset-block-start: calc(50% - var(--xh-hover-card-arrow-size, 8px) / 2);
+    border-block-start: 0;
+    border-inline-end: 0;
+  }
+
+  [data-scope='hover-card'][data-part='arrow'][data-placement^='left'] {
+    inset-inline-end: calc(var(--xh-hover-card-arrow-size, 8px) / -2);
+    inset-block-start: calc(50% - var(--xh-hover-card-arrow-size, 8px) / 2);
+    border-block-end: 0;
+    border-inline-start: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='hover-card'][data-part='content'] {
+      animation-duration: 0.01ms !important;
+    }
+  }
+}

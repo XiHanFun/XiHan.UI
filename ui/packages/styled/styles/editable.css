@@ -1,0 +1,249 @@
+@layer xihan.components {
+  /* 就地编辑是"一行文字里的一处可改内容"：标题、显示区与按钮天然同行，
+     所以根是一条横向的行，而不是文本框那种"标题一行、控件一行"的竖排。
+     要竖排的作者把 flex-direction 覆盖掉即可，其余尺寸都长在各自的角色节点上 */
+  [data-scope='editable'][data-part='root'] {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--xh-editable-gap, var(--xh-space-2));
+  }
+
+  /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+  [data-scope='editable'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='editable'][data-part='label'] {
+    color: var(--xh-editable-label-fg, var(--xh-fg-default));
+    font-size: var(--xh-editable-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-editable-label-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+    /* 点标题会把人送进编辑态（预览态下 for 指着的输入框是收起的，点了没反应），
+       所以光标要说明它可点 */
+    cursor: pointer;
+  }
+
+  [data-scope='editable'][data-part='label'][data-disabled] {
+    color: var(--xh-editable-label-fg-disabled, var(--xh-fg-disabled));
+    cursor: not-allowed;
+  }
+
+  /* 预览区与输入框轮流上场，两者在同一处落脚：
+     area 定死最小宽高，切换形态时这一块不会忽大忽小地跳 */
+  [data-scope='editable'][data-part='area'] {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--xh-editable-area-min-h, var(--xh-control-h-md));
+    min-inline-size: var(--xh-editable-area-min-w, 6ch);
+  }
+
+  [data-scope='editable'][data-part='area'][hidden] {
+    display: none;
+  }
+
+  /* 预览区的内边距与边框要和输入框对齐：只有描边是透明的，
+     否则从预览切到编辑时文字会左右挪一下 */
+  [data-scope='editable'][data-part='preview'] {
+    display: inline-block;
+    inline-size: 100%;
+    padding-inline: var(--xh-editable-preview-px, var(--xh-control-px-md));
+    padding-block: 0;
+    border: var(--xh-stroke-thin) solid transparent;
+    border-radius: var(--xh-editable-preview-radius, var(--xh-shape-control));
+    color: var(--xh-editable-preview-fg, var(--xh-fg-default));
+    font-size: var(--xh-editable-preview-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-editable-preview-line-height, var(--xh-control-h-md));
+    /* 值里的换行与连续空格照原样显示，但过长的行仍要能断开 */
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+  }
+
+  /* 编辑态由连接层给 hidden；上面那条 display 会盖掉 UA 规则，少了这条就收不起来 */
+  [data-scope='editable'][data-part='preview'][hidden] {
+    display: none;
+  }
+
+  /* 认交互的预览区才给文字光标与悬停底色：
+     activation-mode=none 或整块不可编辑时，它就只是一段文字，别装成能点 */
+  [data-scope='editable'][data-part='preview']:not(
+    [data-activation-mode='none'],
+    [data-disabled],
+    [data-readonly]
+  ) {
+    cursor: text;
+  }
+
+  [data-scope='editable'][data-part='preview']:not(
+    [data-activation-mode='none'],
+    [data-disabled],
+    [data-readonly]
+  ):hover {
+    background: var(--xh-editable-preview-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  /* 显示的是占位文字而不是真值，压淡以示区别 */
+  [data-scope='editable'][data-part='preview'][data-placeholder] {
+    color: var(--xh-editable-placeholder-fg, var(--xh-fg-subtle));
+  }
+
+  [data-scope='editable'][data-part='preview'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 预览区是可聚焦节点（focus 模式下还占 Tab 位），焦点环不能省 */
+  [data-scope='editable'][data-part='preview']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  [data-scope='editable'][data-part='input'] {
+    inline-size: 100%;
+    block-size: var(--xh-editable-input-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-editable-input-px, var(--xh-control-px-md));
+    padding-block: 0;
+    border: var(--xh-stroke-thin) solid var(--xh-editable-input-border, var(--xh-border-default));
+    border-radius: var(--xh-editable-input-radius, var(--xh-shape-control));
+    background: var(--xh-editable-input-bg, var(--xh-bg-canvas));
+    color: var(--xh-editable-input-fg, var(--xh-fg-default));
+    /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与预览区的文字对不上 */
+    font-family: inherit;
+    font-size: var(--xh-editable-input-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-leading-normal);
+    transition: border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  /* 预览态由连接层给 hidden；上面给了 inline-size 与 block-size 但没给 display，
+     UA 的 [hidden]{display:none} 仍然管用——这里补一条是防作者层另给 display */
+  [data-scope='editable'][data-part='input'][hidden] {
+    display: none;
+  }
+
+  /* 宽度跟着内容走时交给原生 size 说了算，别再用 100% 把它撑满 */
+  [data-scope='editable'][data-part='input'][data-auto-resize] {
+    inline-size: auto;
+  }
+
+  [data-scope='editable'][data-part='input']::placeholder {
+    color: var(--xh-editable-placeholder-fg, var(--xh-fg-subtle));
+  }
+
+  /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+  [data-scope='editable'][data-part='input']:hover:not(:disabled, [data-invalid]) {
+    border-color: var(--xh-editable-input-border-hover, var(--xh-border-strong));
+  }
+
+  [data-scope='editable'][data-part='input']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  [data-scope='editable'][data-part='input'][data-invalid] {
+    border-color: var(--xh-editable-input-border-invalid, var(--xh-color-danger-500));
+  }
+
+  /* 只读仍可聚焦、可复制，不置灰，只把底色压下去表示"改不动" */
+  [data-scope='editable'][data-part='input'][readonly] {
+    background: var(--xh-editable-input-bg-readonly, var(--xh-bg-subtle));
+  }
+
+  /* 输入框是单体表单控件，禁用走原生 disabled */
+  [data-scope='editable'][data-part='input']:disabled {
+    background: var(--xh-editable-input-bg-disabled, var(--xh-bg-subtle));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='editable'][data-part='control'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--xh-editable-control-gap, var(--xh-space-1));
+  }
+
+  [data-scope='editable'][data-part='control'][hidden] {
+    display: none;
+  }
+
+  /* 三颗按钮共用一份皮肤：它们是同一种东西，只是干的活不同，
+     分开写迟早会改了一颗忘了另外两颗 */
+  [data-scope='editable'][data-part='edit-trigger'],
+  [data-scope='editable'][data-part='submit-trigger'],
+  [data-scope='editable'][data-part='cancel-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    block-size: var(--xh-editable-trigger-h, var(--xh-control-h-sm));
+    padding-inline: var(--xh-editable-trigger-px, var(--xh-control-px-sm));
+    padding-block: 0;
+    border: var(--xh-stroke-thin) solid var(--xh-editable-trigger-border, var(--xh-border-default));
+    border-radius: var(--xh-editable-trigger-radius, var(--xh-shape-control));
+    background: var(--xh-editable-trigger-bg, var(--xh-bg-subtle));
+    color: var(--xh-editable-trigger-fg, var(--xh-fg-default));
+    font-family: inherit;
+    font-size: var(--xh-editable-trigger-font-size, var(--xh-font-size-sm));
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  /* 三颗按钮按形态轮流收起，连接层给的是 hidden 属性；
+     上面那条 display 已把 UA 规则盖掉，少了这里三条按钮就一直杵着 */
+  [data-scope='editable'][data-part='edit-trigger'][hidden],
+  [data-scope='editable'][data-part='submit-trigger'][hidden],
+  [data-scope='editable'][data-part='cancel-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='editable'][data-part='edit-trigger']:hover:not(:disabled),
+  [data-scope='editable'][data-part='submit-trigger']:hover:not(:disabled),
+  [data-scope='editable'][data-part='cancel-trigger']:hover:not(:disabled) {
+    border-color: var(--xh-editable-trigger-border-hover, var(--xh-border-strong));
+    background: var(--xh-editable-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='editable'][data-part='edit-trigger']:active:not(:disabled),
+  [data-scope='editable'][data-part='submit-trigger']:active:not(:disabled),
+  [data-scope='editable'][data-part='cancel-trigger']:active:not(:disabled) {
+    background: var(--xh-editable-trigger-bg-active, var(--xh-bg-subtle-active));
+  }
+
+  [data-scope='editable'][data-part='edit-trigger']:focus-visible,
+  [data-scope='editable'][data-part='submit-trigger']:focus-visible,
+  [data-scope='editable'][data-part='cancel-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 单体控件用 :disabled（不是集合条目那套 [data-disabled]）：
+     禁用与只读时编辑钮置灰，收起态的提交/取消也一并落到这条上 */
+  [data-scope='editable'][data-part='edit-trigger']:disabled,
+  [data-scope='editable'][data-part='submit-trigger']:disabled,
+  [data-scope='editable'][data-part='cancel-trigger']:disabled {
+    border-color: var(--xh-editable-trigger-border-disabled, var(--xh-border-subtle));
+    background: var(--xh-editable-trigger-bg-disabled, var(--xh-bg-muted));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 提交按钮是这一组里的主操作，给它一层实心底色区分开 */
+  [data-scope='editable'][data-part='submit-trigger']:not(:disabled) {
+    border-color: var(--xh-editable-submit-border, var(--xh-bg-brand));
+    background: var(--xh-editable-submit-bg, var(--xh-bg-brand));
+    color: var(--xh-editable-submit-fg, var(--xh-fg-on-brand));
+  }
+
+  [data-scope='editable'][data-part='submit-trigger']:hover:not(:disabled) {
+    border-color: var(--xh-editable-submit-bg-hover, var(--xh-bg-brand-hover));
+    background: var(--xh-editable-submit-bg-hover, var(--xh-bg-brand-hover));
+  }
+
+  [data-scope='editable'][data-part='submit-trigger']:active:not(:disabled) {
+    border-color: var(--xh-editable-submit-bg-active, var(--xh-bg-brand-active));
+    background: var(--xh-editable-submit-bg-active, var(--xh-bg-brand-active));
+  }
+}

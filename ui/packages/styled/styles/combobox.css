@@ -1,0 +1,334 @@
+@layer xihan.components {
+  [data-scope='combobox'][data-part='root'] {
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--xh-combobox-gap, var(--xh-stack-gap-md));
+  }
+
+  /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+  [data-scope='combobox'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='combobox'][data-part='label'] {
+    color: var(--xh-combobox-label-fg, var(--xh-fg-muted));
+    font-size: var(--xh-combobox-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-combobox-label-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+  }
+
+  [data-scope='combobox'][data-part='label'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 画成一个框的是 control 而不是 input：输入框、展开按钮、清空按钮三者要看起来是一体的，
+     边框长在里面任何一个身上都会把另外两个割在框外 */
+  [data-scope='combobox'][data-part='control'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-combobox-control-gap, var(--xh-control-gap-md));
+    min-inline-size: var(--xh-combobox-control-min-w, 12rem);
+    block-size: var(--xh-combobox-control-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-combobox-control-px, var(--xh-control-px-md));
+    border: var(--xh-stroke-thin) solid var(--xh-combobox-control-border, var(--xh-border-default));
+    border-radius: var(--xh-combobox-control-radius, var(--xh-shape-control));
+    background: var(--xh-combobox-control-bg, var(--xh-bg-canvas));
+    color: var(--xh-combobox-control-fg, var(--xh-fg-default));
+    transition: border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  [data-scope='combobox'][data-part='control'][hidden] {
+    display: none;
+  }
+
+  /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+  [data-scope='combobox'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
+    border-color: var(--xh-combobox-control-border-hover, var(--xh-border-strong));
+  }
+
+  /* 焦点环画在 control 上而不是 input 上：视觉上的「框」是 control，
+     环若长在里面那个透明的 input 身上，就会缩在文字区里、与框错开一圈。
+     input 是这里唯一可聚焦的常规节点，:focus-within 与它的 :focus-visible 等价 */
+  [data-scope='combobox'][data-part='control']:focus-within {
+    border-color: var(--xh-combobox-control-border-focus, var(--xh-ring-focus));
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  [data-scope='combobox'][data-part='control'][data-invalid] {
+    border-color: var(--xh-combobox-control-border-invalid, var(--xh-color-danger-500));
+  }
+
+  /* 只读仍可聚焦、可复制，所以不置灰，只把底色压下去表示"改不动" */
+  [data-scope='combobox'][data-part='control'][data-readonly] {
+    background: var(--xh-combobox-control-bg-readonly, var(--xh-bg-subtle));
+  }
+
+  [data-scope='combobox'][data-part='control'][data-disabled] {
+    background: var(--xh-combobox-control-bg-disabled, var(--xh-bg-subtle));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* input 是单体表单控件，禁用走原生 disabled（候选那边一律 aria-disabled）。
+     它自己不画框也不画环，两者都归 control */
+  [data-scope='combobox'][data-part='input'] {
+    flex: 1;
+    min-inline-size: 0;
+    block-size: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
+    font-family: inherit;
+    font-size: var(--xh-combobox-input-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-leading-normal);
+  }
+
+  [data-scope='combobox'][data-part='input'][hidden] {
+    display: none;
+  }
+
+  [data-scope='combobox'][data-part='input']::placeholder {
+    color: var(--xh-combobox-placeholder-fg, var(--xh-fg-subtle));
+  }
+
+  /* 焦点环已由 control 的 :focus-within 画好，这里再画一圈会套成两层 */
+  [data-scope='combobox'][data-part='input']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='combobox'][data-part='input']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 两个按钮同一副长相：贴在框内右侧的小方钮，不占宽度也不撑高 control */
+  [data-scope='combobox'][data-part='trigger'],
+  [data-scope='combobox'][data-part='clear-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-combobox-action-size, 1.5rem);
+    block-size: var(--xh-combobox-action-size, 1.5rem);
+    padding: 0;
+    border: 0;
+    border-radius: var(--xh-combobox-action-radius, var(--xh-shape-control));
+    background: var(--xh-combobox-action-bg, transparent);
+    color: var(--xh-combobox-action-fg, var(--xh-fg-muted));
+    font-family: inherit;
+    font-size: var(--xh-combobox-action-font-size, var(--xh-font-size-sm));
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  [data-scope='combobox'][data-part='trigger'][hidden],
+  [data-scope='combobox'][data-part='clear-trigger'][hidden] {
+    display: none;
+  }
+
+  /* 展开时箭头翻个面，指向与列表的去向一致；transition 要重写全份，只补一条会覆盖掉上面那条 */
+  [data-scope='combobox'][data-part='trigger'] {
+    transition:
+      background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease),
+      rotate var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  [data-scope='combobox'][data-part='trigger'][data-state='open'] {
+    rotate: 180deg;
+  }
+
+  [data-scope='combobox'][data-part='trigger']:hover:not(:disabled),
+  [data-scope='combobox'][data-part='clear-trigger']:hover:not(:disabled) {
+    background: var(--xh-combobox-action-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-combobox-action-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='combobox'][data-part='trigger']:active:not(:disabled),
+  [data-scope='combobox'][data-part='clear-trigger']:active:not(:disabled) {
+    background: var(--xh-combobox-action-bg-active, var(--xh-bg-subtle-active));
+  }
+
+  /* 两个按钮都退出了 Tab 序列（tabindex=-1），正常操作走不到这里；
+     留着是给程序化聚焦兜底，落焦时得看得见 */
+  [data-scope='combobox'][data-part='trigger']:focus-visible,
+  [data-scope='combobox'][data-part='clear-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  [data-scope='combobox'][data-part='trigger']:disabled,
+  [data-scope='combobox'][data-part='clear-trigger']:disabled {
+    background: var(--xh-combobox-action-bg, transparent);
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+  [data-scope='combobox'][data-part='positioner'] {
+    position: absolute;
+    z-index: var(--xh-layer-popover);
+    /* 空壳不吃指针，交互只发生在 content 与 empty 上 */
+    pointer-events: none;
+  }
+
+  /* 锚点被滚出可视区：整个浮层随之收起 */
+  [data-scope='combobox'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  [data-scope='combobox'][data-part='content'] {
+    display: flex;
+    flex-direction: column;
+    min-inline-size: var(--xh-combobox-content-min-w, 12rem);
+    max-inline-size: var(--xh-combobox-content-max-w, 24rem);
+    max-block-size: var(--xh-combobox-content-max-h, 16rem);
+    padding-block: var(--xh-combobox-content-py, var(--xh-space-1));
+    padding-inline: var(--xh-combobox-content-px, var(--xh-space-1));
+    border: var(--xh-stroke-thin) solid var(--xh-combobox-content-border, var(--xh-border-default));
+    border-radius: var(--xh-combobox-content-radius, var(--xh-shape-surface));
+    background: var(--xh-combobox-content-bg, var(--xh-bg-surface));
+    color: var(--xh-combobox-content-fg, var(--xh-fg-default));
+    box-shadow: var(--xh-combobox-content-shadow, var(--xh-elevation-2));
+    overflow-y: auto;
+    pointer-events: auto;
+  }
+
+  /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位 */
+  [data-scope='combobox'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  /* 列表从不承载焦点（焦点恒在输入框，高亮走 aria-activedescendant），
+     可滚动容器在某些浏览器里会被自动塞进 Tab 序列，落焦时不画环 */
+  [data-scope='combobox'][data-part='content']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='combobox'][data-part='content'][data-state='open'] {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='combobox'][data-part='item-group'] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  [data-scope='combobox'][data-part='item-group'][hidden] {
+    display: none;
+  }
+
+  /* 组间留白只加在后继分组上：首组顶上已经有 content 的内边距，再加一层会显得头重 */
+  [data-scope='combobox'][data-part='item-group'] + [data-scope='combobox'][data-part='item-group'] {
+    margin-block-start: var(--xh-combobox-group-gap, var(--xh-space-2));
+  }
+
+  /* 分组标题不是候选、进不了导航，画成小号次要文字，内缩与候选对齐（同一个 padding-inline） */
+  [data-scope='combobox'][data-part='item-group-label'] {
+    display: block;
+    padding-block: var(--xh-combobox-group-label-py, var(--xh-space-1));
+    padding-inline: var(--xh-combobox-group-label-px, var(--xh-control-px-sm));
+    color: var(--xh-combobox-group-label-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-combobox-group-label-font-size, var(--xh-font-size-xs));
+    font-weight: var(--xh-combobox-group-label-font-weight, var(--xh-font-weight-medium));
+    line-height: 1;
+    user-select: none;
+  }
+
+  [data-scope='combobox'][data-part='item-group-label'][hidden] {
+    display: none;
+  }
+
+  [data-scope='combobox'][data-part='item'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-combobox-item-gap, var(--xh-control-gap-md));
+    padding-block: var(--xh-combobox-item-py, var(--xh-space-2));
+    padding-inline: var(--xh-combobox-item-px, var(--xh-control-px-sm));
+    border-radius: var(--xh-combobox-item-radius, var(--xh-shape-control));
+    color: var(--xh-combobox-item-fg, var(--xh-fg-default));
+    font-size: var(--xh-combobox-item-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* 候选按需收起（作者自己藏掉某几条）时要让位，有 display 就得补这条 */
+  [data-scope='combobox'][data-part='item'][hidden] {
+    display: none;
+  }
+
+  /* 只认 data-highlighted，不写 :hover：指针划过时连接层已经把高亮搬过来了，
+     两套底色各画各的会出现"鼠标停在 A 上、回车提交的却是 B" */
+  [data-scope='combobox'][data-part='item'][data-highlighted]:not([data-disabled]) {
+    background: var(--xh-combobox-item-bg-highlight, var(--xh-bg-subtle-hover));
+  }
+
+  /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），
+     所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
+  [data-scope='combobox'][data-part='item'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='combobox'][data-part='item-text'] {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  [data-scope='combobox'][data-part='item-text'][hidden] {
+    display: none;
+  }
+
+  /* 勾选标记只在选中项上出现；未选中时占位不塌，切换选中不引起行宽抖动 */
+  [data-scope='combobox'][data-part='item-indicator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-combobox-item-indicator-size, 1rem);
+    color: var(--xh-combobox-item-indicator-fg, var(--xh-bg-brand));
+    visibility: hidden;
+  }
+
+  [data-scope='combobox'][data-part='item-indicator'][hidden] {
+    display: none;
+  }
+
+  [data-scope='combobox'][data-part='item-indicator'][data-state='checked'] {
+    visibility: visible;
+  }
+
+  [data-scope='combobox'][data-part='item-indicator'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 空态提示是列表之外的一句状态播报（role=status），不进 role=listbox。
+     它与 content 是兄弟，因此要自带浮层的那身皮，否则会光秃秃地飘在页面上 */
+  [data-scope='combobox'][data-part='empty'] {
+    display: block;
+    padding-block: var(--xh-combobox-empty-py, var(--xh-space-3));
+    padding-inline: var(--xh-combobox-empty-px, var(--xh-control-px-md));
+    border: var(--xh-stroke-thin) solid var(--xh-combobox-empty-border, var(--xh-border-default));
+    border-radius: var(--xh-combobox-empty-radius, var(--xh-shape-surface));
+    background: var(--xh-combobox-empty-bg, var(--xh-bg-surface));
+    color: var(--xh-combobox-empty-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-combobox-empty-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    box-shadow: var(--xh-combobox-empty-shadow, var(--xh-elevation-2));
+    text-align: center;
+    pointer-events: auto;
+  }
+
+  /* 漏了这条，候选一有结果空态提示就永远撤不下去（上面那条 display 盖掉了 UA 的 [hidden] 规则） */
+  [data-scope='combobox'][data-part='empty'][hidden] {
+    display: none;
+  }
+}

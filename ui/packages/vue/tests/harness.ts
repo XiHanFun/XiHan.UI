@@ -85,13 +85,21 @@ export function createVueHarness(): AdapterHarness {
       const Root = resolveRoot(fixture.component)
       // 捕获对外语义事件（跨适配器一致的 emit）；v-model 的 update:open 是 Vue 特化
       // 语法糖、不入跨适配器事件流。无关组件忽略这些监听器。
+      // 组件没把某个名字声明进 emits 时，Vue 会把这里的 onX 当普通透传属性
+      // 绑成根元素上的**原生**监听器（onSelect → 原生 select 事件就是这么混进来的）。
+      // 语义事件的载荷一律是普通对象，原生事件对象一概不是，据此挡掉。
+      const record = (type: string) => (detail: unknown) => {
+        if (detail instanceof Event)
+          return
+        events.push({ type, detail })
+      }
       const listeners = {
-        onOpenChange: (detail: unknown) => events.push({ type: 'open-change', detail }),
-        onCheckedChange: (detail: unknown) => events.push({ type: 'checked-change', detail }),
-        onPressedChange: (detail: unknown) => events.push({ type: 'pressed-change', detail }),
-        onValueChange: (detail: unknown) => events.push({ type: 'value-change', detail }),
-        onSelect: (detail: unknown) => events.push({ type: 'select', detail }),
-        onStatusChange: (detail: unknown) => events.push({ type: 'status-change', detail }),
+        onOpenChange: record('open-change'),
+        onCheckedChange: record('checked-change'),
+        onPressedChange: record('pressed-change'),
+        onValueChange: record('value-change'),
+        onSelect: record('select'),
+        onStatusChange: record('status-change'),
       }
       app = createApp({
         setup: () => () =>
