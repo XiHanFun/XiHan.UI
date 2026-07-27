@@ -6,6 +6,9 @@ import {
   XhAccordionItem,
   XhAccordionRoot,
   XhAccordionTrigger,
+  XhAvatarFallback,
+  XhAvatarImage,
+  XhAvatarRoot,
   XhBadge,
   XhButton,
   XhCheckbox,
@@ -18,6 +21,11 @@ import {
   XhDialogRoot,
   XhDialogTitle,
   XhDialogTrigger,
+  XhFieldControl,
+  XhFieldDescription,
+  XhFieldErrorText,
+  XhFieldLabel,
+  XhFieldRoot,
   XhMenuArrow,
   XhMenuContent,
   XhMenuItem,
@@ -38,6 +46,16 @@ import {
   XhRadioGroupItemText,
   XhRadioGroupLabel,
   XhRadioGroupRoot,
+  XhSelectContent,
+  XhSelectIndicator,
+  XhSelectItem,
+  XhSelectItemIndicator,
+  XhSelectItemText,
+  XhSelectLabel,
+  XhSelectPositioner,
+  XhSelectRoot,
+  XhSelectTrigger,
+  XhSelectValueText,
   XhSeparator,
   XhSwitch,
   XhTabsContent,
@@ -72,6 +90,16 @@ const picked = ref('')
 function onMenuSelect(details: { value: string }) {
   picked.value = details.value
 }
+
+const fruit = ref<string | null>(null)
+const fruits = [
+  { value: 'apple', label: '苹果' },
+  { value: 'banana', label: '香蕉' },
+  { value: 'blueberry', label: '蓝莓' },
+  { value: 'cherry', label: '樱桃（缺货）', disabled: true },
+  { value: 'durian', label: '榴莲' },
+]
+const invalid = ref(false)
 </script>
 
 <template>
@@ -394,6 +422,71 @@ function onMenuSelect(details: { value: string }) {
           </XhPopoverContent>
         </XhPopoverPositioner>
       </XhPopoverRoot>
+    </section>
+
+    <section>
+      <h2>Select</h2>
+      <p class="lead">
+        Enter / Space / 方向键展开，展开后方向键与 Home / End 移高亮、连打字母检索、Enter 选中；
+        收起时直接连打字母即可就地换值。列表用的是与 Popover 同一个定位引擎。
+      </p>
+      <XhSelectRoot v-model:value="fruit" name="fruit" placeholder="请选择">
+        <XhSelectLabel>水果</XhSelectLabel>
+        <XhSelectTrigger>
+          <XhSelectValueText />
+          <XhSelectIndicator>▾</XhSelectIndicator>
+        </XhSelectTrigger>
+        <XhSelectPositioner>
+          <XhSelectContent>
+            <XhSelectItem v-for="f in fruits" :key="f.value" :value="f.value" :disabled="f.disabled">
+              <XhSelectItemText>{{ f.label }}</XhSelectItemText>
+              <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+            </XhSelectItem>
+          </XhSelectContent>
+        </XhSelectPositioner>
+      </XhSelectRoot>
+      <span class="lead">当前值：{{ fruit || '（未选）' }}</span>
+    </section>
+
+    <section>
+      <h2>Avatar</h2>
+      <p class="lead">
+        图片取回成功才显图，失败或没有 src 则显回退内容——两者始终只有一个可见，不会闪一下再换。
+        第二个的地址故意写坏，用来看回退。
+      </p>
+      <div class="row">
+        <XhAvatarRoot src="https://avatars.githubusercontent.com/u/1?v=4" alt="ok">
+          <XhAvatarImage />
+          <XhAvatarFallback>XH</XhAvatarFallback>
+        </XhAvatarRoot>
+        <XhAvatarRoot src="https://example.invalid/404.png" alt="broken">
+          <XhAvatarImage />
+          <XhAvatarFallback>失败</XhAvatarFallback>
+        </XhAvatarRoot>
+        <XhAvatarRoot>
+          <XhAvatarImage />
+          <XhAvatarFallback>无</XhAvatarFallback>
+        </XhAvatarRoot>
+      </div>
+    </section>
+
+    <section>
+      <h2>Field</h2>
+      <p class="lead">
+        标题的 for、控件的 id 与描述链（aria-describedby）自动对齐：点标题聚焦到输入框，
+        勾上"标记为无效"后错误文案接入描述链并显出。控件由你自己写，Field 只把属性并上去。
+      </p>
+      <XhFieldRoot :invalid="invalid" required>
+        <XhFieldLabel>邮箱</XhFieldLabel>
+        <XhFieldControl>
+          <input type="email" placeholder="you@example.com">
+        </XhFieldControl>
+        <XhFieldDescription>用于接收账单与安全提醒</XhFieldDescription>
+        <XhFieldErrorText>邮箱格式不正确</XhFieldErrorText>
+      </XhFieldRoot>
+      <label class="row">
+        <input v-model="invalid" type="checkbox"> 标记为无效
+      </label>
     </section>
   </main>
 </template>

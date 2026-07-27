@@ -132,6 +132,31 @@ const wcSelectSuite: ConformanceSuite = authorDisabled({
     }),
 })
 
+// field 两个 part 的标签名在 Vue 侧由组件定死（label 渲染 <label>，control 无渲染、
+// 把属性并到作者写的那个 <input> 上），WC 侧则是作者标 data-xh-part 标到哪算哪。
+// 照抄共享 fixture 会得到 <div part=label> 与 <div part=control>：for 从一个非 label
+// 指向一个不可标注的元素，两头都断，点标题不聚焦、读屏也念不出控件的名字。
+// 这里把标签名补成元素文档要求作者写的那两个。
+const FIELD_TAGS: Record<string, string> = { label: 'label', control: 'input' }
+
+function nativeFieldTags(node: FixtureNode): FixtureNode {
+  const tag = node.part ? FIELD_TAGS[node.part] : undefined
+  if (tag)
+    return { part: node.part, tag, text: node.text, attrs: node.attrs }
+  if (!node.children)
+    return node
+  return { ...node, children: node.children.map(nativeFieldTags) }
+}
+
+const wcFieldSuite: ConformanceSuite = {
+  ...fieldSuite,
+  fixture: nativeFieldTags(fieldSuite.fixture),
+  cases: fieldSuite.cases.map((c) => {
+    const derive = c.fixture
+    return derive ? { ...c, fixture: (base: FixtureNode) => nativeFieldTags(derive(base)) } : c
+  }),
+}
+
 const wcMenuSuite: ConformanceSuite = authorDisabled({
   ...menuSuite,
   cases: menuSuite.cases.filter(c => !(c.props && 'open' in c.props)),
@@ -153,7 +178,7 @@ runConformance(
     buttonSuite,
     wcCheckboxSuite,
     wcCollapsibleSuite,
-    fieldSuite,
+    wcFieldSuite,
     wcMenuSuite,
     wcPopoverSuite,
     wcProgressSuite,

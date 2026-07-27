@@ -51,6 +51,24 @@ export const fieldSuite: ConformanceSuite = {
           },
         },
       },
+      steps: [
+        {
+          kind: 'raw',
+          // 快照把 for 归一成 '@part(control)'，只要两头对得上就算过——可 for 指向一个
+          // 不可标注的元素（比如外面包的那层 div）时，它同样"对得上"，而点标题不聚焦、
+          // 读屏也念不出名字。label.control 走的是浏览器自己的关联算法，非它验不出来。
+          why: 'for 指向的必须是可标注控件，这件事归一化快照看不见',
+          run: ({ doc }) => {
+            const label = doc.querySelector('[data-scope="field"][data-part="label"]')
+            const control = doc.querySelector('[data-scope="field"][data-part="control"]')
+            const linked = (label as HTMLLabelElement | null)?.control ?? null
+            if (linked !== control) {
+              const tag = control?.tagName.toLowerCase() ?? '(无)'
+              throw new Error(`label 的 for 没能关联到 control：control 是 <${tag}>，label.control = ${linked?.tagName.toLowerCase() ?? 'null'}`)
+            }
+          },
+        },
+      ],
     },
     {
       name: 'invalid：描述链追加 error-text，错误文案显出，aria-invalid 显式 true',

@@ -429,6 +429,43 @@ export const selectSuite: ConformanceSuite = {
       ],
     },
     {
+      // 这条守着两件事：Tab 不被吞（要让焦点按序列自然离开），以及关闭后不把焦点
+      // 从用户刚 Tab 过去的控件上抢回 trigger（setReturnFocus 的 tab 分支）
+      name: 'Tab 关闭：列表收起但焦点不归还 trigger',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['select.kbd.tab'],
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'ArrowDown' },
+        { kind: 'settle', until: { activeElement: 'item[0]' } },
+        {
+          kind: 'key',
+          key: 'Tab',
+          expect: { events: [{ type: 'open-change', detail: { open: false } }] },
+        },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'content', name: 'hidden', value: '' } },
+          expect: {
+            parts: {
+              trigger: { 'aria-expanded': 'false' },
+              content: { hidden: '' },
+            },
+          },
+        },
+        {
+          kind: 'raw',
+          why: '「焦点没被抢回」是个否定断言，只能直读 activeElement；且归还焦点排在关闭之后的微任务里，要等过那一拍才算数',
+          run: async ({ doc }) => {
+            await new Promise(r => setTimeout(r, 40))
+            const trigger = doc.querySelector('[data-scope="select"][data-part="trigger"]')
+            if (doc.activeElement === trigger)
+              throw new Error('Tab 关闭后焦点被抢回了 trigger')
+          },
+        },
+      ],
+    },
+    {
       name: 'Escape 关闭：content 复位 hidden、选中值不变、焦点归还 trigger',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['select.kbd.escape'],
