@@ -1,0 +1,103 @@
+@layer xihan.components {
+  /* 根节点是 nav 地标，不参与排版：整条路径的行为全在 list 上，
+     这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
+  [data-scope='breadcrumb'][data-part='root'] {
+    color: var(--xh-breadcrumb-fg, var(--xh-fg-muted));
+    font-size: var(--xh-breadcrumb-font-size, var(--xh-text-label-size));
+    line-height: var(--xh-breadcrumb-leading, var(--xh-leading-tight));
+  }
+
+  /* ol 的项目符号与内外边距是 UA 给的，库里没有全局 preflight，只能在这儿自己抹平 */
+  [data-scope='breadcrumb'][data-part='list'] {
+    display: flex;
+    align-items: center;
+    /* 层级多到一行放不下就换行：宁可折行，也不要把路径压扁或撑出横向滚动 */
+    flex-wrap: wrap;
+    gap: var(--xh-breadcrumb-gap, var(--xh-space-2));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  [data-scope='breadcrumb'][data-part='list'][hidden] {
+    display: none;
+  }
+
+  [data-scope='breadcrumb'][data-part='item'] {
+    display: inline-flex;
+    align-items: center;
+    /* 允许被压缩，链接内部的省略号才有生效的余地 */
+    min-inline-size: 0;
+  }
+
+  [data-scope='breadcrumb'][data-part='item'][hidden] {
+    display: none;
+  }
+
+  [data-scope='breadcrumb'][data-part='link'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-breadcrumb-link-gap, var(--xh-space-1));
+    /* 一层的名字可能很长（文档标题、订单号），压不住会把整条路径撑开 */
+    max-inline-size: var(--xh-breadcrumb-link-max-w, 12rem);
+    padding-inline: var(--xh-breadcrumb-link-px, var(--xh-space-1));
+    border-radius: var(--xh-breadcrumb-link-radius, var(--xh-shape-control));
+    color: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition:
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='breadcrumb'][data-part='link'][hidden] {
+    display: none;
+  }
+
+  /* 当前页那条不再是"可去的地方"：不给悬停反馈，指针也不摆出可点的样子。
+     连接层同时拦下了它的点击并把它移出了 Tab 序列，这里只负责说清楚这件事 */
+  [data-scope='breadcrumb'][data-part='link']:not([data-current]):hover {
+    background: var(--xh-breadcrumb-link-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-breadcrumb-link-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='breadcrumb'][data-part='link']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 当前页用字重与前景色区分，不加下划线：下划线是"可点"的信号，而它点不动 */
+  [data-scope='breadcrumb'][data-part='link'][data-current] {
+    color: var(--xh-breadcrumb-current-fg, var(--xh-fg-default));
+    font-weight: var(--xh-breadcrumb-current-font-weight, var(--xh-font-weight-medium));
+    cursor: default;
+  }
+
+  /* 分隔符与省略号都是纯视觉占位，读屏那边已被 aria-hidden 摘掉 */
+  [data-scope='breadcrumb'][data-part='separator'],
+  [data-scope='breadcrumb'][data-part='ellipsis'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    color: var(--xh-breadcrumb-separator-fg, var(--xh-fg-subtle));
+    user-select: none;
+  }
+
+  [data-scope='breadcrumb'][data-part='separator'][hidden],
+  [data-scope='breadcrumb'][data-part='ellipsis'][hidden] {
+    display: none;
+  }
+
+  /* 分隔符常常是个图标：给一个跟着字号走的方框，斜杠与图标混用时基线才不跳 */
+  [data-scope='breadcrumb'][data-part='separator'] {
+    inline-size: var(--xh-breadcrumb-separator-size, 1em);
+  }
+
+  [data-scope='breadcrumb'][data-part='ellipsis'] {
+    inline-size: var(--xh-breadcrumb-ellipsis-size, var(--xh-space-5));
+    cursor: default;
+  }
+}

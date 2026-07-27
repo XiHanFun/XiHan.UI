@@ -1,0 +1,133 @@
+@layer xihan.components {
+  /* 与文本框同一套堆叠：标签一行、输入行一行 */
+  [data-scope='clipboard'][data-part='root'] {
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--xh-clipboard-gap, var(--xh-space-1));
+  }
+
+  /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+  [data-scope='clipboard'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='clipboard'][data-part='label'] {
+    color: var(--xh-clipboard-label-fg, var(--xh-fg-default));
+    font-size: var(--xh-clipboard-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-clipboard-label-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+  }
+
+  [data-scope='clipboard'][data-part='label'][hidden] {
+    display: none;
+  }
+
+  /* 输入框与按钮并排，两者各自把高度对齐即可成一体 */
+  [data-scope='clipboard'][data-part='control'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-clipboard-control-gap, var(--xh-control-gap-md));
+  }
+
+  [data-scope='clipboard'][data-part='control'][hidden] {
+    display: none;
+  }
+
+  [data-scope='clipboard'][data-part='input'] {
+    min-inline-size: var(--xh-clipboard-input-min-w, 12rem);
+    block-size: var(--xh-clipboard-input-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-clipboard-input-px, var(--xh-control-px-md));
+    padding-block: 0;
+    border: var(--xh-stroke-thin) solid var(--xh-clipboard-input-border, var(--xh-border-default));
+    border-radius: var(--xh-clipboard-input-radius, var(--xh-shape-control));
+    /* 只读态压低底色表示"改不动"，但仍可聚焦、可选中复制 */
+    background: var(--xh-clipboard-input-bg, var(--xh-bg-subtle));
+    color: var(--xh-clipboard-input-fg, var(--xh-fg-default));
+    /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族 */
+    font-family: inherit;
+    font-size: var(--xh-clipboard-input-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-leading-normal);
+    /* 密钥、哈希这类内容一律等宽：截断与换行处对得齐，也更好逐字核对 */
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+  }
+
+  [data-scope='clipboard'][data-part='input']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  [data-scope='clipboard'][data-part='trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-clipboard-trigger-gap, var(--xh-control-gap-sm));
+    block-size: var(--xh-clipboard-trigger-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-clipboard-trigger-px, var(--xh-control-px-md));
+    padding-block: 0;
+    border: var(--xh-stroke-thin) solid var(--xh-clipboard-trigger-border, var(--xh-border-default));
+    border-radius: var(--xh-clipboard-trigger-radius, var(--xh-shape-control));
+    background: var(--xh-clipboard-trigger-bg, var(--xh-bg-canvas));
+    color: var(--xh-clipboard-trigger-fg, var(--xh-fg-default));
+    font-family: inherit;
+    font-size: var(--xh-clipboard-trigger-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    /* 复制按钮常被连点，触屏上默认会当成双击缩放 */
+    user-select: none;
+    touch-action: manipulation;
+    transition:
+      background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease),
+      border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
+  [data-scope='clipboard'][data-part='trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='clipboard'][data-part='trigger']:hover {
+    border-color: var(--xh-clipboard-trigger-border-hover, var(--xh-border-strong));
+    background: var(--xh-clipboard-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='clipboard'][data-part='trigger']:active {
+    background: var(--xh-clipboard-trigger-bg-active, var(--xh-bg-subtle-active));
+  }
+
+  [data-scope='clipboard'][data-part='trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 写入在途：按钮还在原地不动，只把它压暗一点，免得连点 */
+  [data-scope='clipboard'][data-part='trigger'][data-state='copying'] {
+    cursor: progress;
+    opacity: 0.7;
+  }
+
+  /* 复制成功那一段换成成功色，撑住"这次真的写进去了"这句话 */
+  [data-scope='clipboard'][data-part='trigger'][data-copied] {
+    border-color: var(--xh-clipboard-trigger-border-copied, var(--xh-color-success-600));
+    color: var(--xh-clipboard-trigger-fg-copied, var(--xh-color-success-600));
+  }
+
+  [data-scope='clipboard'][data-part='indicator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 两个指示器靠 hidden 互斥显隐；上面给了 display，这条不补的话收起态当场失效 */
+  [data-scope='clipboard'][data-part='indicator'][hidden] {
+    display: none;
+  }
+
+  /* 成功那一侧的图标用成功色；平时那侧跟着按钮的文字色走 */
+  [data-scope='clipboard'][data-part='indicator'][data-copied] {
+    color: var(--xh-clipboard-indicator-fg-copied, var(--xh-color-success-600));
+  }
+}

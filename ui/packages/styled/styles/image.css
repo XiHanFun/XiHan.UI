@@ -1,0 +1,45 @@
+@layer xihan.components {
+  /* 尺寸交给三个变量而不是写死：这个组件既要能当封面图，也要能当头图与缩略图。
+     给了 --xh-image-ratio 才有确定高度，回退内容与图片在同一个盒子里换人时不会跳。 */
+  [data-scope='image'][data-part='root'] {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    inline-size: var(--xh-image-w, 100%);
+    block-size: var(--xh-image-h, auto);
+    aspect-ratio: var(--xh-image-ratio, auto);
+    border-radius: var(--xh-image-radius, var(--xh-radius-md));
+    background: var(--xh-image-bg, var(--xh-bg-subtle));
+  }
+
+  /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+  [data-scope='image'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 不声明 display：加载完成前的 hidden 直接交给浏览器的 [hidden] 规则收起 */
+  [data-scope='image'][data-part='image'] {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: var(--xh-image-fit, cover);
+  }
+
+  [data-scope='image'][data-part='fallback'] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 100%;
+    block-size: 100%;
+    /* 没给 ratio 时根盒子高度是 auto，回退内容自己撑出一个不塌的高度 */
+    min-block-size: var(--xh-image-fallback-min-h, var(--xh-control-h-lg));
+    color: var(--xh-image-fallback-fg, var(--xh-fg-muted));
+    font-size: var(--xh-image-fallback-font-size, var(--xh-font-size-sm));
+    line-height: 1;
+    user-select: none;
+  }
+
+  /* display 会盖掉 hidden 属性的 UA 规则：延迟窗口内与加载完成后都靠这条收起 */
+  [data-scope='image'][data-part='fallback'][hidden] {
+    display: none;
+  }
+}

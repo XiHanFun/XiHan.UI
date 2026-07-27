@@ -1,0 +1,280 @@
+import type { Cleanup, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/core'
+import type {
+  ComboboxInputBehavior,
+  ComboboxInputValueChangeDetails,
+  ComboboxItemProps,
+  ComboboxOpenChangeDetails,
+  ComboboxSchema,
+  ComboboxValueChangeDetails,
+} from '@xihan-ui/headless'
+import type { Service } from '@xihan-ui/machine'
+import { isItemDisabled } from '@xihan-ui/behavior'
+import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { comboboxMachine, connectCombobox } from '@xihan-ui/headless'
+import { createFloatingUiPositionEngine } from '@xihan-ui/position-floating-ui'
+import { wcNormalize } from '../dom/normalize'
+import { XhElement } from '../element-base'
+import { MachineController } from '../runtime/machine-controller'
+
+// 属性缺席一律翻成 undefined：缺省值的唯一事实源留在机器与 connect 里。
+// Lit 自带的转换器会把缺席落成 null / false，那样属性就再也表达不了"未指定"
+// （value 与 input-value 尤其：落成 null 就分不出"非受控"与"受控且当前为空"）。
+const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
+const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
+// 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
+// 缺省为真的开关（方向键回绕）只有三态才关得掉——
+// Lit 默认的 Boolean 转换器是 v !== null，写 loop="false" 照样是真。
+const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
+
+/**
+ * `<xh-combobox>` —— Light-DOM 行为宿主：作者写 root/label/control/input/trigger/positioner/content/item/...
+ * 角色节点，元素跑 combobox 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，
+ * 锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。
+ *
+ * 焦点自始至终在 input 上：候选不可聚焦、也不进 Tab 序列，高亮经 aria-activedescendant 报给读屏。
+ * 这是组合框的规格要求——焦点一旦离开输入框，用户就打不了字了。
+ *
+ * 过滤不由本元素做：输入串变化时派发 input-value-change，作者据此增删 item 节点；
+ * 元素每次接线完都会把当前候选条数与悬空高亮重新结算一遍，空态节点（empty）据此显形。
+ *
+ * @customElement xh-combobox
+ * @attr {string} value - 受控选中值（单选简写）；缺省该属性即非受控，多选请用 property 传数组
+ * @attr {string} default-value - 非受控初始选中值
+ * @attr {string} input-value - 受控输入串；缺省该属性即非受控
+ * @attr {string} default-input-value - 非受控初始输入串
+ * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} default-open - 非受控初始为展开
+ * @attr {boolean} multiple - 多选：选中后列表不收起、输入串清空以便接着筛
+ * @attr {boolean} disabled - 整个控件禁用：输入框与两个按钮都用原生 disabled
+ * @attr {boolean} read-only - 只读：文字可选可复制，但展开、选中、清空一概不发生
+ * @attr {boolean} invalid - 校验失败标注
+ * @attr {boolean} loop - 方向键走到尽头回绕，默认 true；写 loop="false" 关掉
+ * @attr {string} placeholder - 输入框占位文字
+ * @attr {boolean} allow-custom-value - 允许提交候选列表里没有的值
+ * @attr {boolean} open-on-click - 点输入框即展开，默认 false
+ * @attr {'none'|'autohighlight'|'autocomplete'} input-behavior - 输入行为，默认 none
+ * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
+ * @attr {number} offset - 浮层与锚点的间距（px）
+ * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
+ * @fires input-value-change - 输入串变化；detail 为 `{ inputValue: string }`，作者据此过滤候选
+ * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
+ * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid）
+ * @csspart label - 标题，须是原生 label（connect 给的 for 只在它身上生效）
+ * @csspart control - 输入行容器，同时是浮层的定位锚点
+ * @csspart input - role=combobox 的原生 input，整个组合框唯一的 Tab 停靠点
+ * @csspart trigger - 展开/收起按钮，须是原生 button；不占 Tab 位，可及名字由作者给
+ * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位且对读屏隐藏
+ * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
+ * @csspart content - role=listbox 容器（消解层的根节点），收起时带 hidden
+ * @csspart item - role=option 候选，须自带 value 属性标识身份；禁用写 aria-disabled="true"
+ * @csspart item-text - 候选文本（选中后回填输入框的取字处）
+ * @csspart item-indicator - 候选选中标记（aria-hidden）
+ * @csspart item-group - role=group 分组容器，须自带 value 属性标识身份
+ * @csspart item-group-label - 分组标题（本组 aria-labelledby 的目标）
+ * @csspart empty - 无匹配项提示；须放在 positioner 里当 content 的兄弟（列表内只允许 option 与 group）
+ */
+export class XhComboboxElement extends XhElement {
+  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
+  static override properties = {
+    value: { converter: STRING_CONVERTER },
+    defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
+    inputValue: { converter: STRING_CONVERTER, attribute: 'input-value' },
+    defaultInputValue: { converter: STRING_CONVERTER, attribute: 'default-input-value' },
+    open: { converter: BOOLEAN_CONVERTER },
+    defaultOpen: { type: Boolean, attribute: 'default-open' },
+    multiple: { type: Boolean },
+    disabled: { type: Boolean },
+    readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    invalid: { converter: BOOLEAN_CONVERTER },
+    loop: { converter: BOOLEAN_CONVERTER },
+    placeholder: { converter: STRING_CONVERTER },
+    allowCustomValue: { type: Boolean, attribute: 'allow-custom-value' },
+    openOnClick: { type: Boolean, attribute: 'open-on-click' },
+    inputBehavior: { converter: STRING_CONVERTER, attribute: 'input-behavior' },
+    placement: { converter: STRING_CONVERTER },
+    offset: { converter: NUMBER_CONVERTER },
+  }
+
+  declare value?: string | string[]
+  declare defaultValue?: string | string[]
+  declare inputValue?: string
+  declare defaultInputValue?: string
+  declare open?: boolean
+  declare defaultOpen?: boolean
+  declare multiple?: boolean
+  declare disabled?: boolean
+  declare readOnly?: boolean
+  declare invalid?: boolean
+  declare loop?: boolean
+  declare placeholder?: string
+  declare allowCustomValue?: boolean
+  declare openOnClick?: boolean
+  declare inputBehavior?: ComboboxInputBehavior
+  declare placement?: Placement
+  declare offset?: number
+
+  private readonly idGen: IdGenerator = createCounterIdGenerator()
+  private readonly comboboxScope = createScope(null, this.idGen)
+  private readonly positionEngine: PositionEnginePort = createFloatingUiPositionEngine()
+  private config: RuntimeConfig | null = null
+
+  private readonly notifyValue = (details: ComboboxValueChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyInputValue = (details: ComboboxInputValueChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('input-value-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyOpen = (details: ComboboxOpenChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly ctrl = new MachineController<ComboboxSchema>(
+    this,
+    comboboxMachine,
+    () => this.machineProps(),
+    { scope: this.comboboxScope, onBuilt: svc => this.injectRefs(svc) },
+  )
+
+  private machineProps(): Partial<ComboboxSchema['props']> {
+    return {
+      value: this.value,
+      defaultValue: this.defaultValue,
+      inputValue: this.inputValue,
+      defaultInputValue: this.defaultInputValue,
+      open: this.open,
+      defaultOpen: this.defaultOpen ?? false,
+      multiple: this.multiple ?? false,
+      disabled: this.disabled ?? false,
+      readOnly: this.readOnly ?? false,
+      invalid: this.invalid ?? false,
+      loop: this.loop,
+      placeholder: this.placeholder,
+      allowCustomValue: this.allowCustomValue ?? false,
+      openOnClick: this.openOnClick ?? false,
+      inputBehavior: this.inputBehavior,
+      placement: this.placement,
+      offset: this.offset,
+      onValueChange: this.notifyValue,
+      onInputValueChange: this.notifyInputValue,
+      onOpenChange: this.notifyOpen,
+    }
+  }
+
+  private ensureConfig(): void {
+    if (this.config)
+      return
+    this.config = createRuntimeConfig({ scope: this.comboboxScope, idGenerator: this.idGen })
+  }
+
+  // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
+  // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
+  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
+    this.ensureConfig()
+    return this.config!.layerRegistry.register({
+      kind: 'popover',
+      node: () => this.getPart('content'),
+      // 整个输入行记为本层分支：点输入框或触发按钮算层内交互，开合交给它们自己切换。
+      // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，列表等于关不掉。
+      branches: () => [this.getPart('control')].filter(Boolean) as Element[],
+      isModal: () => false,
+      setModal: () => {},
+      // 列表不带遮罩，没有"点它就该关本层"的表面
+      surfaces: () => [],
+    })
+  }
+
+  // onBuilt 在 ctrl 构造期就跑（此刻 this.ctrl 尚未赋值），故 service 由参数传入。
+  private injectRefs(svc: Service<ComboboxSchema>): void {
+    this.ensureConfig()
+    svc.refs.set('config', this.config)
+    svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('position', this.positionEngine)
+    svc.refs.set('getAnchorEl', () => this.getPart('control'))
+    svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
+    svc.refs.set('getContentEl', () => this.getPart('content'))
+    svc.refs.set('getInputEl', () => this.getPart('input') as HTMLInputElement | null)
+  }
+
+  /**
+   * 角色节点提前发现一次：机器在 hostConnected 当场跑挂载动作，要按选中值去 content 里
+   * 现查显示文本、据此把输入框填成选中项的文字；default-open 时还要同场挑出高亮。
+   * 而常规发现要等首次 updated，那一刻 partMap 还空着，content 取不到。
+   */
+  override connectedCallback(): void {
+    this.refreshParts()
+    super.connectedCallback()
+  }
+
+  // 条目/分组内的子部件：getParts 收的是整个元素范围，按子树过滤才归得对。
+  private partsIn(owner: HTMLElement, name: string): HTMLElement[] {
+    return this.getParts(name).filter(el => owner.contains(el))
+  }
+
+  protected wire(): void {
+    const api = connectCombobox(this.ctrl.service, wcNormalize)
+
+    const put = (name: string, props: Record<string, unknown>): void => {
+      const el = this.getPart(name)
+      if (el)
+        this.spreader.spread(el, props)
+    }
+    put('root', api.getRootProps() as Record<string, unknown>)
+    put('label', api.getLabelProps() as Record<string, unknown>)
+    put('control', api.getControlProps() as Record<string, unknown>)
+    put('input', api.getInputProps() as Record<string, unknown>)
+    put('trigger', api.getTriggerProps() as Record<string, unknown>)
+    put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
+    // positioner 的 style 是对象（position/insetInlineStart/insetBlockStart），
+    // spreader 见对象 style 会逐条写内联样式，直接 spread 即可。
+    put('positioner', api.getPositionerProps() as Record<string, unknown>)
+    put('content', api.getContentProps() as Record<string, unknown>)
+    put('empty', api.getEmptyProps() as Record<string, unknown>)
+
+    for (const el of this.getParts('item-group')) {
+      const group = { value: el.getAttribute('value') ?? '' }
+      this.spreader.spread(el, api.getItemGroupProps(group) as Record<string, unknown>)
+      for (const label of this.partsIn(el, 'item-group-label'))
+        this.spreader.spread(label, api.getItemGroupLabelProps(group) as Record<string, unknown>)
+    }
+
+    // 候选是多实例 part，逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled
+    // （集合条目一律 aria-disabled，原生 disabled 不派 click，禁用候选的点击就走不到守卫里）。
+    // 回读是安全的：整控件禁用不会向下传导到候选，connect 写回的就是作者自己的那份声明。
+    // 打上去的 data-scope/data-part/data-value 正是方向键在事件那一刻查 DOM 的依据，
+    // 所以 wire 必须先于事件跑过——updated() 已保证。
+    for (const el of this.getParts('item')) {
+      const item: ComboboxItemProps = {
+        value: el.getAttribute('value') ?? '',
+        disabled: isItemDisabled(el),
+      }
+      this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      for (const text of this.partsIn(el, 'item-text'))
+        this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
+      for (const indicator of this.partsIn(el, 'item-indicator'))
+        this.spreader.spread(indicator, api.getItemIndicatorProps(item) as Record<string, unknown>)
+    }
+
+    // Light DOM 常驻，WC 自管可见性：作者层若给这两个 part 声明了 display，
+    // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来。
+    // 本包的样式自带 [hidden]{display:none} 压得住，但宿主不能指望作者装了这份样式。
+    this.setPartHidden(this.getPart('content'), !api.open)
+    this.setPartHidden(this.getPart('empty'), !api.empty)
+
+    /**
+     * 每次接线完就如实上报一次候选集合：过滤是作者按 input-value-change 自己做的，
+     * 机器无从预知何时变。少了这一条，空态节点永远不显形，被筛掉的候选还会留着一个悬空高亮，
+     * aria-activedescendant 就指向了一个不存在的 id。
+     * 条数没变时 cell 不 bump，不会自己把自己排成死循环。
+     */
+    if (this.ctrl.service.getStatus() === 'Started')
+      this.ctrl.service.send({ type: 'ITEMS.SYNC' })
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback()
+    // 层由展开态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
+    this.config = null // 重连时 ensureConfig 重建
+  }
+}

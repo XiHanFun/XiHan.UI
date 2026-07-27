@@ -1,13 +1,21 @@
 import { XhAccordionElement } from './elements/accordion'
 import { XhAvatarElement } from './elements/avatar'
 import { XhBadgeElement } from './elements/badge'
+import { XhBreadcrumbElement } from './elements/breadcrumb'
 import { XhButtonElement } from './elements/button'
 import { XhCheckboxElement } from './elements/checkbox'
 import { XhCheckboxGroupElement } from './elements/checkbox-group'
+import { XhClipboardElement } from './elements/clipboard'
 import { XhCollapsibleElement } from './elements/collapsible'
+import { XhComboboxElement } from './elements/combobox'
+import { XhContextMenuElement } from './elements/context-menu'
 import { XhDialogElement } from './elements/dialog'
 import { XhDrawerElement } from './elements/drawer'
+import { XhEditableElement } from './elements/editable'
 import { XhFieldElement } from './elements/field'
+import { XhFileUploadElement } from './elements/file-upload'
+import { XhHoverCardElement } from './elements/hover-card'
+import { XhImageElement } from './elements/image'
 import { XhListboxElement } from './elements/listbox'
 import { XhMenuElement } from './elements/menu'
 import { XhNumberFieldElement } from './elements/number-field'
@@ -20,14 +28,18 @@ import { XhRatingElement } from './elements/rating'
 import { XhSelectElement } from './elements/select'
 import { XhSeparatorElement } from './elements/separator'
 import { XhSliderElement } from './elements/slider'
+import { XhStepsElement } from './elements/steps'
 import { XhSwitchElement } from './elements/switch'
 import { XhTabsElement } from './elements/tabs'
+import { XhTagsInputElement } from './elements/tags-input'
 import { XhTextFieldElement } from './elements/text-field'
 import { XhToastElement } from './elements/toast'
 import { XhToasterElement } from './elements/toaster'
 import { XhToggleElement } from './elements/toggle'
 import { XhToggleGroupElement } from './elements/toggle-group'
+import { XhToolbarElement } from './elements/toolbar'
 import { XhTooltipElement } from './elements/tooltip'
+import { XhTreeElement } from './elements/tree'
 import { defineElement } from './runtime/registry'
 
 const VERSION = '0.0.0'
@@ -37,13 +49,21 @@ export function defineXhElements(): void {
   defineElement('xh-accordion', XhAccordionElement, VERSION)
   defineElement('xh-avatar', XhAvatarElement, VERSION)
   defineElement('xh-badge', XhBadgeElement, VERSION)
+  defineElement('xh-breadcrumb', XhBreadcrumbElement, VERSION)
   defineElement('xh-button', XhButtonElement, VERSION)
   defineElement('xh-checkbox', XhCheckboxElement, VERSION)
   defineElement('xh-checkbox-group', XhCheckboxGroupElement, VERSION)
+  defineElement('xh-clipboard', XhClipboardElement, VERSION)
   defineElement('xh-collapsible', XhCollapsibleElement, VERSION)
+  defineElement('xh-combobox', XhComboboxElement, VERSION)
+  defineElement('xh-context-menu', XhContextMenuElement, VERSION)
   defineElement('xh-dialog', XhDialogElement, VERSION)
   defineElement('xh-drawer', XhDrawerElement, VERSION)
+  defineElement('xh-editable', XhEditableElement, VERSION)
   defineElement('xh-field', XhFieldElement, VERSION)
+  defineElement('xh-file-upload', XhFileUploadElement, VERSION)
+  defineElement('xh-hover-card', XhHoverCardElement, VERSION)
+  defineElement('xh-image', XhImageElement, VERSION)
   defineElement('xh-listbox', XhListboxElement, VERSION)
   defineElement('xh-menu', XhMenuElement, VERSION)
   defineElement('xh-pagination', XhPaginationElement, VERSION)
@@ -56,27 +76,39 @@ export function defineXhElements(): void {
   defineElement('xh-select', XhSelectElement, VERSION)
   defineElement('xh-separator', XhSeparatorElement, VERSION)
   defineElement('xh-slider', XhSliderElement, VERSION)
+  defineElement('xh-steps', XhStepsElement, VERSION)
   defineElement('xh-switch', XhSwitchElement, VERSION)
   defineElement('xh-tabs', XhTabsElement, VERSION)
+  defineElement('xh-tags-input', XhTagsInputElement, VERSION)
   defineElement('xh-text-field', XhTextFieldElement, VERSION)
   defineElement('xh-toast', XhToastElement, VERSION)
   defineElement('xh-toaster', XhToasterElement, VERSION)
   defineElement('xh-toggle', XhToggleElement, VERSION)
   defineElement('xh-toggle-group', XhToggleGroupElement, VERSION)
+  defineElement('xh-toolbar', XhToolbarElement, VERSION)
   defineElement('xh-tooltip', XhTooltipElement, VERSION)
+  defineElement('xh-tree', XhTreeElement, VERSION)
 }
 
 export {
   XhAccordionElement,
   XhAvatarElement,
   XhBadgeElement,
+  XhBreadcrumbElement,
   XhButtonElement,
   XhCheckboxElement,
   XhCheckboxGroupElement,
+  XhClipboardElement,
   XhCollapsibleElement,
+  XhComboboxElement,
+  XhContextMenuElement,
   XhDialogElement,
   XhDrawerElement,
+  XhEditableElement,
   XhFieldElement,
+  XhFileUploadElement,
+  XhHoverCardElement,
+  XhImageElement,
   XhListboxElement,
   XhMenuElement,
   XhPaginationElement,
@@ -88,12 +120,16 @@ export {
   XhSelectElement,
   XhSeparatorElement,
   XhSliderElement,
+  XhStepsElement,
   XhSwitchElement,
   XhTabsElement,
+  XhTagsInputElement,
   XhTextFieldElement,
   XhToastElement,
   XhToasterElement,
   XhToggleElement,
   XhToggleGroupElement,
+  XhToolbarElement,
   XhTooltipElement,
+  XhTreeElement,
 }

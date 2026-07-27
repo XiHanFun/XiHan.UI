@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { ConformanceSuite, FixtureNode } from '@xihan-ui/testing'
-import { accordionSuite, avatarSuite, badgeSuite, buttonSuite, checkboxGroupSuite, checkboxSuite, collapsibleSuite, fieldSuite, listboxSuite, menuSuite, numberFieldSuite, paginationSuite, pinInputSuite, popoverSuite, progressSuite, radioGroupSuite, ratingSuite, runConformance, selectSuite, separatorSuite, sliderSuite, switchSuite, tabsSuite, textFieldSuite, toasterSuite, toastSuite, toggleGroupSuite, toggleSuite, tooltipSuite } from '@xihan-ui/testing'
+import { accordionSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, collapsibleSuite, comboboxSuite, contextMenuSuite, editableSuite, fieldSuite, fileUploadSuite, hoverCardSuite, imageSuite, listboxSuite, menuSuite, numberFieldSuite, paginationSuite, pinInputSuite, popoverSuite, progressSuite, radioGroupSuite, ratingSuite, runConformance, selectSuite, separatorSuite, sliderSuite, stepsSuite, switchSuite, tabsSuite, tagsInputSuite, textFieldSuite, toasterSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, tooltipSuite, treeSuite } from '@xihan-ui/testing'
 import { afterEach, beforeEach, describe, it, vi } from 'vitest'
 import { createWcHarness } from './harness'
 
@@ -200,6 +200,26 @@ const wcToastSuite: ConformanceSuite = {
   cases: toastSuite.cases.filter(c => !(c.props && 'closable' in c.props)),
 }
 
+// 本批集合类与既有 tabs/accordion 同因：条目禁用改用 aria-disabled 声明。
+const wcToolbarSuite = authorDisabled(toolbarSuite)
+const wcTreeSuite = authorDisabled(treeSuite)
+
+// 这两个既是集合、又是浮层：条目禁用改声明之外，受控 open 与 switch 等同因排除。
+const wcComboboxSuite = authorDisabled({
+  ...comboboxSuite,
+  cases: comboboxSuite.cases.filter(c => !(c.props && 'open' in c.props)),
+})
+
+const wcContextMenuSuite = authorDisabled({
+  ...contextMenuSuite,
+  cases: contextMenuSuite.cases.filter(c => !(c.props && 'open' in c.props)),
+})
+
+const wcHoverCardSuite: ConformanceSuite = {
+  ...hoverCardSuite,
+  cases: hoverCardSuite.cases.filter(c => !(c.props && 'open' in c.props)),
+}
+
 // 同一份规格喂给 WC 适配器实现，逐帧核对。separator/badge 无状态无受控，整份复用。
 // 三个集合类组件的受控值是字符串/数组（不像布尔那样表达不了 undefined），受控用例可原样跑。
 runConformance(
@@ -226,6 +246,18 @@ runConformance(
     toasterSuite,
     wcToggleSuite,
     wcTooltipSuite,
+    breadcrumbSuite,
+    clipboardSuite,
+    wcComboboxSuite,
+    wcContextMenuSuite,
+    editableSuite,
+    fileUploadSuite,
+    wcHoverCardSuite,
+    imageSuite,
+    stepsSuite,
+    tagsInputSuite,
+    wcToolbarSuite,
+    wcTreeSuite,
     wcCheckboxGroupSuite,
     listboxSuiteWc,
     paginationSuite,

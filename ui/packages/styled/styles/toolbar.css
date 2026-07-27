@@ -1,0 +1,97 @@
+@layer xihan.components {
+  /* 一条控件带：条目之间留固定间距，分隔线再把它们切成语义上的几段。
+     排布只能读 data-orientation——它与 aria-orientation 同源，但样式不该去读 ARIA */
+  [data-scope='toolbar'][data-part='root'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-toolbar-gap, var(--xh-space-1));
+    padding-block: var(--xh-toolbar-py, var(--xh-space-1));
+    padding-inline: var(--xh-toolbar-px, var(--xh-space-1));
+    border: var(--xh-stroke-thin) solid var(--xh-toolbar-border, var(--xh-border-default));
+    border-radius: var(--xh-toolbar-radius, var(--xh-shape-surface));
+    background: var(--xh-toolbar-bg, var(--xh-bg-surface));
+    color: var(--xh-toolbar-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='toolbar'][data-part='root'][data-orientation='horizontal'] {
+    flex-direction: row;
+  }
+
+  /* 竖排时交叉轴改为拉伸：竖着的一条里每个条目该一样宽，居中会让它们参差不齐 */
+  [data-scope='toolbar'][data-part='root'][data-orientation='vertical'] {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* root 会在焦点进条前短暂拿到 tabindex=0，但它的 onFocus 立刻把焦点转投给条目，
+     在它身上画环只会闪一下就跳走，高亮要长在条目上 */
+  [data-scope='toolbar'][data-part='root']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='toolbar'][data-part='root'][data-disabled] {
+    background: var(--xh-toolbar-bg-disabled, var(--xh-bg-muted));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
+     不补的话作者给节点加 hidden 后它照样显示 */
+  [data-scope='toolbar'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 分组把一串相关控件收得更紧：组内间距比条上的总间距小，
+     "这几个是一伙的"才看得出来 */
+  [data-scope='toolbar'][data-part='group'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-toolbar-group-gap, var(--xh-space-0_5));
+  }
+
+  [data-scope='toolbar'][data-part='group'][data-orientation='vertical'] {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  [data-scope='toolbar'][data-part='group'][hidden] {
+    display: none;
+  }
+
+  /* 条目是作者自己的控件（按钮、切换钮、下拉触发器），观感归它自己的皮肤。
+     这里只补两件与导航直接相关的事：焦点环与禁用光标。
+     刻意不给 display——给了会把条目自身皮肤里的排布盖掉，也就不必补 [hidden] 那条 */
+  [data-scope='toolbar'][data-part='item']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 集合条目一律 aria-disabled 而非原生 disabled（禁用项仍要能当方向键的起点），
+     所以这里读 data-disabled，写 :disabled 永远不命中 */
+  [data-scope='toolbar'][data-part='item'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 分隔线画的是它自己的朝向：横排工具条里它是竖线，连接层给的就是 vertical。
+     粗的那一维写死描边宽度，长的那一维交给 align-self 拉伸，
+     沿长边再内缩一点，线才不会顶到工具条的上下边 */
+  [data-scope='toolbar'][data-part='separator'] {
+    flex: none;
+    align-self: stretch;
+    border-radius: var(--xh-toolbar-separator-radius, var(--xh-radius-full));
+    background: var(--xh-toolbar-separator-color, var(--xh-border-default));
+  }
+
+  [data-scope='toolbar'][data-part='separator'][data-orientation='vertical'] {
+    inline-size: var(--xh-toolbar-separator-thickness, var(--xh-stroke-thin));
+    margin-block: var(--xh-toolbar-separator-inset, var(--xh-space-1));
+    margin-inline: var(--xh-toolbar-separator-gap, var(--xh-space-1));
+  }
+
+  [data-scope='toolbar'][data-part='separator'][data-orientation='horizontal'] {
+    block-size: var(--xh-toolbar-separator-thickness, var(--xh-stroke-thin));
+    margin-block: var(--xh-toolbar-separator-gap, var(--xh-space-1));
+    margin-inline: var(--xh-toolbar-separator-inset, var(--xh-space-1));
+  }
+}
