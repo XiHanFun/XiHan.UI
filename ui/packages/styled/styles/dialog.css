@@ -43,6 +43,13 @@
     box-shadow: var(--xh-dialog-shadow, var(--xh-elevation-3));
   }
 
+  /* 收起态：connect 会给 content 打 hidden，但上面那条 display 会盖掉 UA 的
+     [hidden]{display:none}。meta 里 positioner 并非必需部件，按最小合规结构
+     （只有 trigger + content）写时，没有这一条收起的对话框就一直摊在页面上。 */
+  [data-scope='dialog'][data-part='content'][hidden] {
+    display: none;
+  }
+
   [data-scope='dialog'][data-part='content']:focus-visible {
     outline: none;
   }

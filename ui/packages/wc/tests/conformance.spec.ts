@@ -201,6 +201,7 @@ const wcToastSuite: ConformanceSuite = {
 }
 
 // 本批集合类与既有 tabs/accordion 同因：条目禁用改用 aria-disabled 声明。
+const wcStepsSuite = authorDisabled(stepsSuite)
 const wcToolbarSuite = authorDisabled(toolbarSuite)
 const wcTreeSuite = authorDisabled(treeSuite)
 
@@ -254,7 +255,7 @@ runConformance(
     fileUploadSuite,
     wcHoverCardSuite,
     imageSuite,
-    stepsSuite,
+    wcStepsSuite,
     tagsInputSuite,
     wcToolbarSuite,
     wcTreeSuite,
