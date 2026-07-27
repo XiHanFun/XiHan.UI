@@ -15,6 +15,16 @@ export { useAvatar } from './components/avatar/use-avatar'
 export type { AvatarContext } from './components/avatar/use-avatar'
 export { XhBadge } from './components/badge/badge'
 export { XhButton } from './components/button'
+export {
+  XhCheckboxGroupItem,
+  XhCheckboxGroupItemControl,
+  XhCheckboxGroupItemText,
+  XhCheckboxGroupLabel,
+  XhCheckboxGroupRoot,
+  XhCheckboxGroupTrigger,
+} from './components/checkbox-group/checkbox-group'
+export { useCheckboxGroup } from './components/checkbox-group/use-checkbox-group'
+export type { CheckboxGroupContext } from './components/checkbox-group/use-checkbox-group'
 export { XhCheckbox } from './components/checkbox/checkbox'
 export { useCheckbox } from './components/checkbox/use-checkbox'
 export type { CheckboxContext } from './components/checkbox/use-checkbox'
@@ -35,9 +45,31 @@ export {
 } from './components/dialog/dialog'
 export { useDialog } from './components/dialog/use-dialog'
 export type { DialogContext } from './components/dialog/use-dialog'
+export {
+  XhDrawerCloseTrigger,
+  XhDrawerContent,
+  XhDrawerDescription,
+  XhDrawerRoot,
+  XhDrawerTitle,
+  XhDrawerTrigger,
+} from './components/drawer/drawer'
+export { useDrawer } from './components/drawer/use-drawer'
+export type { DrawerContext } from './components/drawer/use-drawer'
 export { XhFieldControl, XhFieldDescription, XhFieldErrorText, XhFieldLabel, XhFieldRoot } from './components/field/field'
 export { useField } from './components/field/use-field'
 export type { FieldContext } from './components/field/use-field'
+export {
+  XhListboxContent,
+  XhListboxItem,
+  XhListboxItemGroup,
+  XhListboxItemGroupLabel,
+  XhListboxItemIndicator,
+  XhListboxItemText,
+  XhListboxLabel,
+  XhListboxRoot,
+} from './components/listbox/listbox'
+export { useListbox } from './components/listbox/use-listbox'
+export type { ListboxContext } from './components/listbox/use-listbox'
 export {
   XhMenuArrow,
   XhMenuContent,
@@ -58,6 +90,23 @@ export {
 } from './components/number-field/number-field'
 export { useNumberField } from './components/number-field/use-number-field'
 export type { NumberFieldContext } from './components/number-field/use-number-field'
+export {
+  XhPaginationEllipsis,
+  XhPaginationItem,
+  XhPaginationNextTrigger,
+  XhPaginationPrevTrigger,
+  XhPaginationRoot,
+} from './components/pagination/pagination'
+export { usePagination } from './components/pagination/use-pagination'
+export type { PaginationContext } from './components/pagination/use-pagination'
+export {
+  XhPinInputHiddenInput,
+  XhPinInputInput,
+  XhPinInputLabel,
+  XhPinInputRoot,
+} from './components/pin-input/pin-input'
+export { usePinInput } from './components/pin-input/use-pin-input'
+export type { PinInputContext } from './components/pin-input/use-pin-input'
 export {
   XhPopoverArrow,
   XhPopoverCloseTrigger,
@@ -80,6 +129,15 @@ export {
 export { useRadioGroup } from './components/radio-group/use-radio-group'
 export type { RadioGroupContext } from './components/radio-group/use-radio-group'
 export {
+  XhRatingControl,
+  XhRatingHiddenInput,
+  XhRatingItem,
+  XhRatingLabel,
+  XhRatingRoot,
+} from './components/rating/rating'
+export { useRating } from './components/rating/use-rating'
+export type { RatingContext } from './components/rating/use-rating'
+export {
   XhSelectContent,
   XhSelectIndicator,
   XhSelectItem,
@@ -94,6 +152,17 @@ export {
 export { useSelect } from './components/select/use-select'
 export type { SelectContext } from './components/select/use-select'
 export { XhSeparator } from './components/separator/separator'
+export {
+  XhSliderControl,
+  XhSliderHiddenInput,
+  XhSliderLabel,
+  XhSliderRange,
+  XhSliderRoot,
+  XhSliderThumb,
+  XhSliderTrack,
+} from './components/slider/slider'
+export { useSlider } from './components/slider/use-slider'
+export type { SliderContext } from './components/slider/use-slider'
 export { XhSwitch } from './components/switch/switch'
 export { useSwitch } from './components/switch/use-switch'
 export type { SwitchContext } from './components/switch/use-switch'
@@ -105,6 +174,35 @@ export {
 } from './components/tabs/tabs'
 export { useTabs } from './components/tabs/use-tabs'
 export type { TabsContext } from './components/tabs/use-tabs'
+export {
+  XhTextFieldClearTrigger,
+  XhTextFieldInput,
+  XhTextFieldLabel,
+  XhTextFieldRoot,
+} from './components/text-field/text-field'
+export { useTextField } from './components/text-field/use-text-field'
+export type { TextFieldContext } from './components/text-field/use-text-field'
+export {
+  XhToastActionTrigger,
+  XhToastCloseTrigger,
+  XhToastDescription,
+  XhToastRoot,
+  XhToastTitle,
+} from './components/toast/toast'
+export { useToast } from './components/toast/use-toast'
+export type { ToastContext } from './components/toast/use-toast'
+export {
+  XhToasterGroup,
+  XhToasterRoot,
+} from './components/toaster/toaster'
+export { useToaster } from './components/toaster/use-toaster'
+export type { ToasterContext } from './components/toaster/use-toaster'
+export {
+  XhToggleGroupItem,
+  XhToggleGroupRoot,
+} from './components/toggle-group/toggle-group'
+export { useToggleGroup } from './components/toggle-group/use-toggle-group'
+export type { ToggleGroupContext } from './components/toggle-group/use-toggle-group'
 export { XhToggle } from './components/toggle/toggle'
 export { useToggle } from './components/toggle/use-toggle'
 export type { ToggleContext } from './components/toggle/use-toggle'

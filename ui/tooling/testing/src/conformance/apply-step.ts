@@ -101,16 +101,19 @@ export async function applyStep(ctx: ApplyContext, step: Step): Promise<void> {
       el.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }))
       break
     }
+    // 每一下都重新取当下持有焦点的元素，不能在循环外取一次：
+    // 方向键往往会把焦点挪到别的节点上，而把处理器挂在条目自己身上的组件
+    // （pin-input 的每一格就是）是从 currentTarget 推下标的。
+    // 循环外取一次的话，第 2 下往后全打在那个已经失焦的旧节点上，
+    // 连按 N 次只等于按了一次——用例看着在测连按，其实什么都没测到。
     case 'key': {
-      const target = ctx.doc.activeElement ?? ctx.doc.body
       for (let i = 0; i < (step.repeat ?? 1); i++)
-        dispatchKey(target, step.key, step.modifiers)
+        dispatchKey(ctx.doc.activeElement ?? ctx.doc.body, step.key, step.modifiers)
       break
     }
     case 'type': {
-      const target = ctx.doc.activeElement ?? ctx.doc.body
       for (const ch of step.text)
-        dispatchKey(target, ch)
+        dispatchKey(ctx.doc.activeElement ?? ctx.doc.body, ch)
       break
     }
     case 'focus': {
@@ -144,7 +147,12 @@ export async function applyStep(ctx: ApplyContext, step: Step): Promise<void> {
       break
     }
     case 'raw': {
-      await step.run({ root: ctx.root, doc: ctx.doc, adapterName: ctx.harness.adapterName })
+      await step.run({
+        root: ctx.root,
+        doc: ctx.doc,
+        adapterName: ctx.harness.adapterName,
+        flush: () => ctx.harness.flush(),
+      })
       break
     }
   }

@@ -43,9 +43,36 @@ export function createVueHarness(): AdapterHarness {
   // 适配器开始 emit 时在此登记各组件的对外事件清单即可。
   let events: AdapterEvent[] = []
 
+  /**
+   * 一路刷到 DOM 不再动为止。
+   *
+   * 固定刷几拍是靠不住的：从"派事件"到"属性落到节点上"要经过
+   * 机器写 context → Vue 依赖失效 → 重渲 这条链，中间还可能夹着机器自己的 flush 效应，
+   * 需要几拍取决于组件。少刷一拍，快照就停在上一帧，断言会假红（组件明明对了）
+   * 或假绿（期望值恰好等于旧值）。
+   *
+   * 改成"看 DOM 还动不动"：动就再刷一拍。上限只是防死循环用的保险，
+   * 正常组件一两拍就静下来了。
+   */
   const tick = async (): Promise<void> => {
-    await nextTick()
-    await nextTick()
+    let mutated = false
+    const observer = new MutationObserver(() => {
+      mutated = true
+    })
+    if (host)
+      observer.observe(host, { attributes: true, childList: true, subtree: true, characterData: true })
+    try {
+      for (let round = 0; round < 10; round++) {
+        mutated = false
+        await nextTick()
+        await nextTick()
+        if (!mutated)
+          return
+      }
+    }
+    finally {
+      observer.disconnect()
+    }
   }
 
   return {
