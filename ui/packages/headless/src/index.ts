@@ -2,6 +2,8 @@
 
 export { accordionAnatomy, accordionKeyboard, accordionMachine, accordionMeta, connectAccordion } from './accordion'
 export type { AccordionApi, AccordionItemProps, AccordionSchema, AccordionValueChangeDetails } from './accordion'
+export { avatarAnatomy, avatarKeyboard, avatarMachine, avatarMeta, connectAvatar } from './avatar'
+export type { AvatarApi, AvatarSchema, AvatarStatus, AvatarStatusChangeDetails } from './avatar'
 export { badgeAnatomy, badgeKeyboard, badgeMeta, connectBadge } from './badge'
 export type { BadgeApi, BadgeProps } from './badge'
 export { buttonAnatomy, buttonKeyboard, buttonMeta, connectButton } from './button'
@@ -14,6 +16,8 @@ export type { CollapsibleApi, CollapsibleOpenChangeDetails, CollapsibleSchema } 
 export { connectDialog, dialogAnatomy, dialogKeyboard, dialogMachine, dialogMeta } from './dialog'
 
 export type { DialogApi, DialogOpenChangeDetails, DialogRefs, DialogSchema, DialogTranslations } from './dialog'
+export { connectField, fieldAnatomy, fieldKeyboard, fieldMeta } from './field'
+export type { FieldApi, FieldProps } from './field'
 export { connectMenu, menuAnatomy, menuKeyboard, menuMachine, menuMeta } from './menu'
 export type { MenuApi, MenuFocusIntent, MenuItemProps, MenuOpenChangeDetails, MenuRefs, MenuSchema, MenuSelectDetails } from './menu'
 export { connectPopover, popoverAnatomy, popoverKeyboard, popoverMachine, popoverMeta } from './popover'
@@ -22,6 +26,8 @@ export { connectProgress, progressAnatomy, progressKeyboard, progressMeta } from
 export type { ProgressApi, ProgressProps } from './progress'
 export { connectRadioGroup, radioGroupAnatomy, radioGroupKeyboard, radioGroupMachine, radioGroupMeta } from './radio-group'
 export type { RadioGroupApi, RadioGroupItemProps, RadioGroupSchema, RadioGroupValueChangeDetails } from './radio-group'
+export { connectSelect, SELECT_DEFAULT_PLACEMENT, selectAnatomy, selectItemQuery, selectItemText, selectKeyboard, selectMachine, selectMeta } from './select'
+export type { SelectApi, SelectFocusIntent, SelectItemProps, SelectOpenChangeDetails, SelectRefs, SelectSchema, SelectValueChangeDetails } from './select'
 export { connectSeparator, separatorAnatomy, separatorKeyboard, separatorMeta } from './separator'
 export type { SeparatorApi, SeparatorProps } from './separator'
 export type { ComponentMeta, KeyboardRow, KeyboardTable } from './spec'

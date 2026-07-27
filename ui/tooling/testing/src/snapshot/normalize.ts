@@ -1,7 +1,7 @@
 // 属性采集与归一化：抹掉适配器痕迹、把 IDREF 翻译成 part 引用，让快照适配器无关。
 
 /** 恒采集的结构/状态属性；缺失时显式为 null。 */
-const BASE_ATTRS = ['role', 'tabindex', 'type', 'disabled', 'hidden', 'inert', 'popover', 'dir'] as const
+const BASE_ATTRS = ['role', 'tabindex', 'type', 'disabled', 'hidden', 'inert', 'popover', 'dir', 'for'] as const
 
 /** IDREF 类属性：值是 id，需翻译成 @part(...) 才能适配器无关。 */
 const IDREF_ATTRS = new Set([

@@ -1,0 +1,65 @@
+@layer xihan.components {
+  [data-scope='field'][data-part='root'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-field-gap, var(--xh-space-1));
+  }
+
+  [data-scope='field'][data-part='label'] {
+    color: var(--xh-field-label-fg, var(--xh-fg-default));
+    font-size: var(--xh-field-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-field-label-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+  }
+
+  [data-scope='field'][data-part='label'][data-disabled] {
+    color: var(--xh-field-label-fg-disabled, var(--xh-fg-disabled));
+  }
+
+  /* control 是作者自己的输入控件，这里只给一套可被覆盖的基础皮肤 */
+  [data-scope='field'][data-part='control'] {
+    inline-size: 100%;
+    block-size: var(--xh-field-control-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-field-control-px, var(--xh-control-px-md));
+    border: var(--xh-stroke-thin) solid var(--xh-field-control-border, var(--xh-border-default));
+    border-radius: var(--xh-field-control-radius, var(--xh-shape-control));
+    background: var(--xh-field-control-bg, var(--xh-bg-canvas));
+    color: var(--xh-field-control-fg, var(--xh-fg-default));
+    font-size: var(--xh-field-control-font-size, var(--xh-text-body-size));
+  }
+
+  [data-scope='field'][data-part='control']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  [data-scope='field'][data-part='control'][data-invalid] {
+    border-color: var(--xh-field-control-border-invalid, var(--xh-color-danger-500));
+  }
+
+  /* 禁用由作者在控件上落原生 disabled，样式统一走 data-disabled */
+  [data-scope='field'][data-part='control'][data-disabled] {
+    background: var(--xh-field-control-bg-disabled, var(--xh-bg-subtle));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='field'][data-part='description'] {
+    margin: 0;
+    color: var(--xh-field-description-fg, var(--xh-fg-muted));
+    font-size: var(--xh-field-description-font-size, var(--xh-font-size-sm));
+    line-height: var(--xh-leading-normal);
+  }
+
+  [data-scope='field'][data-part='description'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 不 invalid 时节点带 hidden：此处不声明 display，交给浏览器的 [hidden] 规则收起 */
+  [data-scope='field'][data-part='error-text'] {
+    margin: 0;
+    color: var(--xh-field-error-fg, var(--xh-color-danger-600));
+    font-size: var(--xh-field-error-font-size, var(--xh-font-size-sm));
+    line-height: var(--xh-leading-normal);
+  }
+}
