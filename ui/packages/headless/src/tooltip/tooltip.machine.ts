@@ -1,0 +1,164 @@
+import type { PositionResult } from '@xihan-ui/core'
+import type { Transition } from '@xihan-ui/machine'
+import type { TooltipSchema } from './tooltip.types'
+import { setTimeoutEffect, setup } from '@xihan-ui/machine'
+
+const { createMachine } = setup<TooltipSchema>()
+
+/** 悬停进入到展开的默认等待毫秒。 */
+const OPEN_DELAY = 700
+/** 悬停移出到收起的默认等待毫秒。 */
+const CLOSE_DELAY = 300
+
+// 展开态收起：受控只发意图、停在原地等宿主写回；非受控直接落到 closed 并一并通知。
+const CLOSE_FROM_OPEN: Array<Transition<TooltipSchema>> = [
+  { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
+  { target: 'closed', actions: ['invokeOnClose'] },
+]
+
+// 收起等待态被立即打断：受控退回 open（浮层保持可见）等宿主写回，非受控直接落到 closed。
+const CLOSE_FROM_CLOSING: Array<Transition<TooltipSchema>> = [
+  { guard: 'isOpenControlled', target: 'open', actions: ['invokeOnClose'] },
+  { target: 'closed', actions: ['invokeOnClose'] },
+]
+
+// 立即展开：disabled 落回 closed（顺带撤销正在跑的展开等待）；受控只发意图并落回 closed，
+// 等宿主写回 open；非受控直接落到 open 并一并通知。
+// 展开来源要记进 context：聚焦打开的提示不该被一次纯鼠标移出收走。
+function openNow(mark: 'markFocusOpened' | 'clearFocusOpened'): Array<Transition<TooltipSchema>> {
+  return [
+    { guard: 'isDisabled', target: 'closed' },
+    { guard: 'isOpenControlled', target: 'closed', actions: [mark, 'invokeOnOpen'] },
+    { target: 'open', actions: [mark, 'invokeOnOpen'] },
+  ]
+}
+
+const OPEN_FROM_FOCUS = openNow('markFocusOpened')
+const OPEN_FROM_POINTER = openNow('clearFocusOpened')
+
+// 受控与 dialog/collapsible 同构：用户事件只发意图、不自改状态；宿主写回 open 后
+// 由 watch 派发影子事件 CONTROLLED.* 无条件回写。延时与定位是本机器独有的副作用。
+export const tooltipMachine = createMachine({
+  name: 'tooltip',
+  context: ({ cell }) => ({
+    position: cell<PositionResult | null>(() => ({ defaultValue: null })),
+    // 记住这次是被聚焦打开的：聚焦态的提示不该被一次纯鼠标移出收走
+    focusOpened: cell<boolean>(() => ({ defaultValue: false })),
+  }),
+  refs: () => ({
+    position: null,
+    getAnchorEl: () => null,
+    getFloatingEl: () => null,
+  }),
+  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),
+  states: {
+    closed: {
+      on: {
+        // 悬停先进等待态，到点才展开：防的是指针路过就闪一堆提示
+        'POINTER.ENTER': [
+          { guard: 'isDisabled' },
+          { target: 'opening' },
+        ],
+        // 键盘可达优先于防误触：聚焦与命令式展开都不走延时
+        'FOCUS': OPEN_FROM_FOCUS,
+        'OPEN': OPEN_FROM_POINTER,
+        'CONTROLLED.OPEN': { target: 'open' },
+      },
+    },
+    opening: {
+      effects: ['waitForOpenDelay'],
+      on: {
+        'after.openDelay': OPEN_FROM_POINTER,
+        'FOCUS': OPEN_FROM_FOCUS,
+        // 等待期内的命令式展开同样不该被吞：与 closed 态一致立即展开
+        'OPEN': OPEN_FROM_POINTER,
+        // 等待期内离开/按下/Escape/命令关闭只是撤销等待：对外从未展开过，不发通知
+        'POINTER.LEAVE': { target: 'closed' },
+        'POINTER.DOWN': { target: 'closed' },
+        'ESCAPE': { target: 'closed' },
+        'CLOSE': { target: 'closed' },
+        'CONTROLLED.OPEN': { target: 'open' },
+        'CONTROLLED.CLOSE': { target: 'closed' },
+      },
+    },
+    open: {
+      effects: ['trackPosition'],
+      on: {
+        // 移出先进等待态：指针在 trigger 与浮层之间穿行时不该闪断。
+        // 聚焦打开的提示例外——鼠标恰好路过再移开不该把键盘用户的描述收走，
+        // 该由 BLUR 负责收起（无 target 即消费掉事件、原地不动）
+        'POINTER.LEAVE': [
+          { guard: 'isFocusOpened' },
+          { target: 'closing' },
+        ],
+        'BLUR': CLOSE_FROM_OPEN,
+        'ESCAPE': CLOSE_FROM_OPEN,
+        'POINTER.DOWN': CLOSE_FROM_OPEN,
+        'CLOSE': CLOSE_FROM_OPEN,
+        'CONTROLLED.CLOSE': { target: 'closed' },
+      },
+    },
+    closing: {
+      // 收起等待期内浮层仍可见，定位继续跟随
+      effects: ['trackPosition', 'waitForCloseDelay'],
+      on: {
+        'after.closeDelay': CLOSE_FROM_CLOSING,
+        // 等待期内回到锚点即撤销收起
+        'POINTER.ENTER': { target: 'open' },
+        'FOCUS': { target: 'open' },
+        'BLUR': CLOSE_FROM_CLOSING,
+        'ESCAPE': CLOSE_FROM_CLOSING,
+        'POINTER.DOWN': CLOSE_FROM_CLOSING,
+        'CLOSE': CLOSE_FROM_CLOSING,
+        'CONTROLLED.OPEN': { target: 'open' },
+        'CONTROLLED.CLOSE': { target: 'closed' },
+      },
+    },
+  },
+  implementations: {
+    guards: {
+      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      isDisabled: ({ prop }) => !!prop('disabled'),
+      isFocusOpened: ({ context }) => context.get('focusOpened'),
+    },
+    actions: {
+      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
+      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
+      markFocusOpened: ({ context }) => context.set('focusOpened', true),
+      clearFocusOpened: ({ context }) => context.set('focusOpened', false),
+      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制收起
+      syncOpen: ({ prop, send }) => {
+        const open = prop('open')
+        if (open === undefined)
+          return
+        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
+      },
+    },
+    effects: {
+      waitForOpenDelay: ({ prop, send }) =>
+        setTimeoutEffect(() => send({ type: 'after.openDelay' }), prop('openDelay') ?? OPEN_DELAY),
+      waitForCloseDelay: ({ prop, send }) =>
+        setTimeoutEffect(() => send({ type: 'after.closeDelay' }), prop('closeDelay') ?? CLOSE_DELAY),
+      // 引擎经 refs 注入；缺引擎或缺元素时静默跳过，状态转移不受影响
+      trackPosition: ({ refs, prop, context }) => {
+        const engine = refs.get('position')
+        if (!engine)
+          return undefined
+
+        const anchor = refs.get('getAnchorEl')()
+        const floating = refs.get('getFloatingEl')()
+        if (!anchor || !floating)
+          return undefined
+
+        // attach 的返回值即停止跟随，直接当 cleanup 交回
+        return engine.attach(
+          anchor,
+          floating,
+          { placement: prop('placement'), offset: prop('offset') },
+          result => context.set('position', result),
+        )
+      },
+    },
+  },
+})

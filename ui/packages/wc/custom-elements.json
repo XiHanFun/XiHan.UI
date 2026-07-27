@@ -945,6 +945,313 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/popover.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-popover>` —— Light-DOM 行为宿主：用户写 trigger/positioner/content/... 角色节点，\n元素跑 popover 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger、被定位的浮层取 positioner；机器只认端口，不认识具体引擎。",
+          "name": "XhPopoverElement",
+          "cssParts": [
+            {
+              "description": "触发按钮（aria-haspopup/aria-expanded/aria-controls 所在），同时是定位锚点",
+              "name": "trigger"
+            },
+            {
+              "description": "浮层定位容器，坐标由引擎写成内联样式",
+              "name": "positioner"
+            },
+            {
+              "description": "浮层内容（role=dialog；焦点域与消解层的根节点），收起时带 hidden",
+              "name": "content"
+            },
+            {
+              "description": "标题（aria-labelledby 目标）",
+              "name": "title"
+            },
+            {
+              "description": "描述（aria-describedby 目标）",
+              "name": "description"
+            },
+            {
+              "description": "关闭按钮",
+              "name": "close-trigger"
+            },
+            {
+              "description": "指向锚点的箭头（aria-hidden，data-placement 随实际放置位翻转）",
+              "name": "arrow"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "defaultOpen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-open"
+            },
+            {
+              "kind": "field",
+              "name": "placement",
+              "privacy": "public",
+              "type": {
+                "text": "Placement | undefined"
+              },
+              "attribute": "placement"
+            },
+            {
+              "kind": "field",
+              "name": "offset",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "offset"
+            },
+            {
+              "kind": "field",
+              "name": "modal",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "modal"
+            },
+            {
+              "kind": "field",
+              "name": "closeOnEscape",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "close-on-escape"
+            },
+            {
+              "kind": "field",
+              "name": "closeOnInteractOutside",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "close-on-interact-outside"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<PopoverTranslations> | undefined"
+              },
+              "description": "关闭按钮的无障碍名；connect 每帧重写 aria-label，作者自己写在节点上会被盖掉，只能从这里给。"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "popoverScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "positionEngine",
+              "type": {
+                "text": "PositionEnginePort"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "layer",
+              "type": {
+                "text": "Layer | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "disposeLayer",
+              "type": {
+                "text": "(() => void) | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<PopoverSchema>( this, popoverMachine, () => this.machineProps(), { scope: this.popoverScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<PopoverSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<PopoverSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "open 状态变化；detail 为 `{ open: boolean }`",
+              "name": "open-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控开合；缺省该属性即非受控",
+              "name": "open",
+              "fieldName": "open"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始为展开",
+              "name": "default-open",
+              "fieldName": "defaultOpen"
+            },
+            {
+              "type": {
+                "text": "Placement | undefined"
+              },
+              "description": "首选放置位，默认 bottom；避让后的实际位写在 data-placement 上",
+              "name": "placement",
+              "fieldName": "placement"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "浮层与锚点的间距（px），默认 8",
+              "name": "offset",
+              "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "模态浮层陷住焦点并回绕 Tab，默认 false",
+              "name": "modal",
+              "fieldName": "modal"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "Esc 关闭，默认 true；写 close-on-escape=\"false\" 关掉",
+              "name": "close-on-escape",
+              "fieldName": "closeOnEscape"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "层外交互关闭，默认 true；写 \"false\" 关掉",
+              "name": "close-on-interact-outside",
+              "fieldName": "closeOnInteractOutside"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-popover",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhPopoverElement",
+          "declaration": {
+            "name": "XhPopoverElement",
+            "module": "src/elements/popover.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/progress.ts",
       "declarations": [
         {
@@ -1150,6 +1457,25 @@
                   "text": "Partial<RadioGroupSchema['props']>"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "onPartsReleased",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "nodes",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
+                  }
+                }
+              ],
+              "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：\n容器判自己\"焦点在组内\"退出 Tab 序列，又没有条目认领得了这个锚点，\n整组零个 Tab 停靠点，键盘用户再也进不来。这里替 DOM 把焦点离场如实上报。"
             },
             {
               "kind": "method",
@@ -1621,6 +1947,25 @@
             },
             {
               "kind": "method",
+              "name": "onPartsReleased",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "nodes",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
+                  }
+                }
+              ],
+              "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：\n容器判自己\"焦点在组内\"退出 Tab 序列，又没有条目认领得了这个锚点，\n整组零个 Tab 停靠点，键盘用户再也进不来。这里替 DOM 把焦点离场如实上报。"
+            },
+            {
+              "kind": "method",
               "name": "wire",
               "privacy": "protected",
               "return": {
@@ -1828,6 +2173,240 @@
           "declaration": {
             "name": "XhToggleElement",
             "module": "src/elements/toggle.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/tooltip.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-tooltip>` —— Light-DOM 行为宿主：用户写 trigger/positioner/content/arrow 角色节点，\n元素跑 tooltip 机器并把 connect 产出打上去。浮层坐标由本元素建的定位引擎算出，\n经 refs 交给机器的定位效应；引擎或角色节点缺席时机器照常转移，只是不产出坐标。",
+          "name": "XhTooltipElement",
+          "cssParts": [
+            {
+              "description": "悬停/聚焦的锚点按钮（aria-describedby 指向 content）",
+              "name": "trigger"
+            },
+            {
+              "description": "浮层定位容器（坐标写成内联样式，落定朝向在 data-placement）",
+              "name": "positioner"
+            },
+            {
+              "description": "role=tooltip 的提示内容（收起时 hidden）",
+              "name": "content"
+            },
+            {
+              "description": "指向锚点的箭头，装饰性",
+              "name": "arrow"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "defaultOpen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-open"
+            },
+            {
+              "kind": "field",
+              "name": "placement",
+              "privacy": "public",
+              "type": {
+                "text": "Placement | undefined"
+              },
+              "attribute": "placement"
+            },
+            {
+              "kind": "field",
+              "name": "offset",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "offset"
+            },
+            {
+              "kind": "field",
+              "name": "openDelay",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "open-delay"
+            },
+            {
+              "kind": "field",
+              "name": "closeDelay",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "close-delay"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "engine",
+              "type": {
+                "text": "PositionEnginePort | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<TooltipSchema>( this, tooltipMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<TooltipSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<TooltipSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "open 状态变化；detail 为 `{ open: boolean }`",
+              "name": "open-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控开合；缺省该属性即非受控",
+              "name": "open",
+              "fieldName": "open"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始为展开",
+              "name": "default-open",
+              "fieldName": "defaultOpen"
+            },
+            {
+              "type": {
+                "text": "Placement | undefined"
+              },
+              "description": "请求的浮层朝向（top/right/bottom/left，可带 -start/-end 后缀），默认 bottom；空间不足时由引擎避让",
+              "name": "placement",
+              "fieldName": "placement"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "浮层与锚点的间距（px），默认 8",
+              "name": "offset",
+              "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "悬停进入到展开的等待毫秒，默认 700",
+              "name": "open-delay",
+              "fieldName": "openDelay"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "悬停移出到收起的等待毫秒，默认 300",
+              "name": "close-delay",
+              "fieldName": "closeDelay"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只关掉提示，被包裹的控件仍可用",
+              "name": "disabled",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-tooltip",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhTooltipElement",
+          "declaration": {
+            "name": "XhTooltipElement",
+            "module": "src/elements/tooltip.ts"
           }
         }
       ]

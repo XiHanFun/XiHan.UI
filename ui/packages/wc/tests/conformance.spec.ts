@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { ConformanceSuite, FixtureNode } from '@xihan-ui/testing'
-import { accordionSuite, badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, progressSuite, radioGroupSuite, runConformance, separatorSuite, switchSuite, tabsSuite, toggleSuite } from '@xihan-ui/testing'
+import { accordionSuite, badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, popoverSuite, progressSuite, radioGroupSuite, runConformance, separatorSuite, switchSuite, tabsSuite, toggleSuite, tooltipSuite } from '@xihan-ui/testing'
 import { afterEach, beforeEach, describe, it, vi } from 'vitest'
 import { createWcHarness } from './harness'
 
@@ -105,6 +105,17 @@ const wcRadioGroupSuite: ConformanceSuite = authorDisabled({
 const wcTabsSuite = authorDisabled(tabsSuite)
 const wcAccordionSuite = authorDisabled(accordionSuite)
 
+// tooltip / popover 的受控 open 与 switch 等同因排除：HTML 布尔属性表达不了 undefined。
+const wcTooltipSuite: ConformanceSuite = {
+  ...tooltipSuite,
+  cases: tooltipSuite.cases.filter(c => !(c.props && 'open' in c.props)),
+}
+
+const wcPopoverSuite: ConformanceSuite = {
+  ...popoverSuite,
+  cases: popoverSuite.cases.filter(c => !(c.props && 'open' in c.props)),
+}
+
 // 同一份规格喂给 WC 适配器实现，逐帧核对。separator/badge 无状态无受控，整份复用。
 // 三个集合类组件的受控值是字符串/数组（不像布尔那样表达不了 undefined），受控用例可原样跑。
 runConformance(
@@ -115,12 +126,14 @@ runConformance(
     buttonSuite,
     wcCheckboxSuite,
     wcCollapsibleSuite,
+    wcPopoverSuite,
     wcProgressSuite,
     wcRadioGroupSuite,
     separatorSuite,
     wcSwitchSuite,
     wcTabsSuite,
     wcToggleSuite,
+    wcTooltipSuite,
   ],
   { describe, it },
   { enforceKeyboardCoverage: false },

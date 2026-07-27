@@ -1,0 +1,87 @@
+@layer xihan.components {
+  [data-scope='tooltip'][data-part='trigger'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-tooltip-trigger-gap, var(--xh-control-gap-sm));
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: inherit;
+  }
+
+  [data-scope='tooltip'][data-part='trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 坐标由定位引擎写在行内 style 上，这里只兜底 SSR 首帧 */
+  [data-scope='tooltip'][data-part='positioner'] {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    z-index: var(--xh-layer-tooltip);
+    /* 浮层不承载交互：指针必须能穿过去点到底下的东西 */
+    pointer-events: none;
+  }
+
+  /* 锚点滚出可视区时连浮层一起隐藏 */
+  [data-scope='tooltip'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  [data-scope='tooltip'][data-part='content'] {
+    /* 与 positioner 相反：浮层本体要能接指针，指针停在提示上就不该收起
+       （长文案需要停留细看）。positioner 仍是 none，空白区域照样点得穿。 */
+    pointer-events: auto;
+    max-inline-size: var(--xh-tooltip-max-w, 20rem);
+    padding-block: var(--xh-tooltip-py, var(--xh-space-1));
+    padding-inline: var(--xh-tooltip-px, var(--xh-space-2));
+    border-radius: var(--xh-tooltip-radius, var(--xh-shape-control));
+    background: var(--xh-tooltip-bg, var(--xh-fg-default));
+    color: var(--xh-tooltip-fg, var(--xh-bg-surface));
+    font-size: var(--xh-tooltip-font-size, var(--xh-font-size-sm));
+    line-height: var(--xh-leading-normal);
+    box-shadow: var(--xh-tooltip-shadow, var(--xh-elevation-2));
+  }
+
+  [data-scope='tooltip'][data-part='content'][data-state='open'] {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 箭头是旋转 45° 的方块，按落定朝向贴在 content 对侧边的中点 */
+  [data-scope='tooltip'][data-part='arrow'] {
+    position: absolute;
+    inline-size: var(--xh-tooltip-arrow-size, 8px);
+    block-size: var(--xh-tooltip-arrow-size, 8px);
+    background: var(--xh-tooltip-bg, var(--xh-fg-default));
+    transform: rotate(45deg);
+  }
+
+  [data-scope='tooltip'][data-part='positioner'][data-placement^='bottom'] [data-scope='tooltip'][data-part='arrow'] {
+    inset-block-start: calc(var(--xh-tooltip-arrow-size, 8px) / -2);
+    inset-inline-start: calc(50% - var(--xh-tooltip-arrow-size, 8px) / 2);
+  }
+
+  [data-scope='tooltip'][data-part='positioner'][data-placement^='top'] [data-scope='tooltip'][data-part='arrow'] {
+    inset-block-end: calc(var(--xh-tooltip-arrow-size, 8px) / -2);
+    inset-inline-start: calc(50% - var(--xh-tooltip-arrow-size, 8px) / 2);
+  }
+
+  [data-scope='tooltip'][data-part='positioner'][data-placement^='left'] [data-scope='tooltip'][data-part='arrow'] {
+    inset-block-start: calc(50% - var(--xh-tooltip-arrow-size, 8px) / 2);
+    inset-inline-end: calc(var(--xh-tooltip-arrow-size, 8px) / -2);
+  }
+
+  [data-scope='tooltip'][data-part='positioner'][data-placement^='right'] [data-scope='tooltip'][data-part='arrow'] {
+    inset-block-start: calc(50% - var(--xh-tooltip-arrow-size, 8px) / 2);
+    inset-inline-start: calc(var(--xh-tooltip-arrow-size, 8px) / -2);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='tooltip'][data-part='content'] {
+      animation-duration: 0.01ms !important;
+    }
+  }
+}
