@@ -71,21 +71,36 @@ export const popoverMachine = createMachine({
     },
     effects: {
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读。
-      trackPosition: ({ refs, prop, context }) => {
+      trackPosition: ({ refs, prop, context, flush }) => {
         const engine = refs.get('position')
         // 无引擎（纯逻辑测试 / 无布局环境 / SSR）：不定位，其余照常
         if (!engine)
           return undefined
-        const anchor = refs.get('getAnchorEl')()
-        const floating = refs.get('getFloatingEl')()
-        if (!anchor || !floating)
-          return undefined
-        return engine.attach(
-          anchor,
-          floating,
-          { placement: prop('placement'), offset: prop('offset') },
-          result => context.set('position', result),
-        )
+
+        let stop: (() => void) | undefined
+        let disposed = false
+
+        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带着 hidden（高度为 0），
+        // 此时算出的坐标会少掉浮层自身的尺寸——placement=top 会正好错位一个浮层高度。
+        flush(() => {
+          if (disposed)
+            return
+          const anchor = refs.get('getAnchorEl')()
+          const floating = refs.get('getFloatingEl')()
+          if (!anchor || !floating)
+            return
+          stop = engine.attach(
+            anchor,
+            floating,
+            { placement: prop('placement'), offset: prop('offset') },
+            result => context.set('position', result),
+          )
+        })
+
+        return () => {
+          disposed = true
+          stop?.()
+        }
       },
       trackDismiss: ({ refs, prop, send }) => {
         const config = refs.get('config')
