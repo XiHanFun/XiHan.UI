@@ -1,5 +1,5 @@
 import type { PresenceHandle } from '@xihan-ui/behavior/presence'
-import type { Layer, RuntimeConfig } from '@xihan-ui/core'
+import type { Cleanup, Layer, RuntimeConfig } from '@xihan-ui/core'
 import type { DialogApi, DialogSchema } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef, Ref } from 'vue'
@@ -34,7 +34,9 @@ export function useDialog(
 
   if (typeof document !== 'undefined') {
     const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
-    const { layer, dispose: disposeLayer } = config.layerRegistry.register({
+    // 只给注册函数、不在这里注册：层的入栈出栈跟着展开态走（机器的 trackOverlay 效应负责）。
+    // 挂载期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
+    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
       kind: 'modal',
       node: () => contentRef.value,
       branches: () => [],
@@ -52,7 +54,7 @@ export function useDialog(
     rendered.value = presence.rendered
 
     service.refs.set('config', config)
-    service.refs.set('layer', layer as Layer)
+    service.refs.set('registerLayer', registerLayer)
     service.refs.set('presence', presence)
     service.refs.set('getContentEl', () => contentRef.value)
     service.refs.set('getTriggerEl', () => null)
@@ -72,7 +74,6 @@ export function useDialog(
     onBeforeUnmount(() => {
       detachExit?.()
       presence.dispose()
-      disposeLayer()
     })
   }
 

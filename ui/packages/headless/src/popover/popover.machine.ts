@@ -13,7 +13,7 @@ export const popoverMachine = createMachine({
   }),
   refs: () => ({
     config: null,
-    layer: null,
+    registerLayer: null,
     position: null,
     getAnchorEl: () => null,
     getFloatingEl: () => null,
@@ -40,7 +40,7 @@ export const popoverMachine = createMachine({
     },
     open: {
       // 进入 open：定位 → 消解 → 焦点。退出 open 时按同序清理，焦点归还发生在消解层撤销之后。
-      effects: ['trackPosition', 'trackDismiss', 'trackFocus'],
+      effects: ['trackPosition', 'trackLayer'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
@@ -102,12 +102,17 @@ export const popoverMachine = createMachine({
           stop?.()
         }
       },
-      trackDismiss: ({ refs, prop, send }) => {
+      // 层的入栈出栈与消解层、焦点域绑在同一个效应里：三者生命周期必须完全一致。
+      // 层只在展开期间入栈——消解层只让栈顶响应 Escape，若层在挂载期就注册、与开合无关地
+      // 常驻栈里，同页后挂载的那个会永久占着栈顶，把它下面每一层的 Escape 都堵死。
+      trackLayer: ({ refs, prop, send }) => {
         const config = refs.get('config')
-        const layer = refs.get('layer')
+        const registerLayer = refs.get('registerLayer')
         // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
-        if (!config || !layer)
+        if (!config || !registerLayer)
           return undefined
+
+        const { layer, dispose: disposeLayer } = registerLayer()
 
         const dismiss = createDismissLayer({
           config,
@@ -123,13 +128,6 @@ export const popoverMachine = createMachine({
             send({ type: 'CLOSE', src: escape ? 'esc' : 'interact-outside' })
           },
         })
-        return () => dismiss.dispose()
-      },
-      trackFocus: ({ refs, prop }) => {
-        const config = refs.get('config')
-        const layer = refs.get('layer')
-        if (!config || !layer)
-          return undefined
 
         const focus = createFocusScope({
           config,
@@ -141,7 +139,13 @@ export const popoverMachine = createMachine({
           loop: prop('modal') ?? false,
           restoreFocus: () => true,
         })
-        return () => focus.dispose()
+
+        // 逆序拆：先撤依赖层的两个订阅，最后才把层本身移出栈
+        return () => {
+          focus.dispose()
+          dismiss.dispose()
+          disposeLayer()
+        }
       },
     },
   },
