@@ -1,7 +1,7 @@
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/core'
 import type { MenuOpenChangeDetails, MenuSchema, MenuSelectDetails } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
-import { isItemDisabled } from '@xihan-ui/behavior'
+import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectMenu, menuMachine } from '@xihan-ui/headless'
 import { createFloatingUiPositionEngine } from '@xihan-ui/position-floating-ui'
@@ -137,6 +137,24 @@ export class XhMenuElement extends XhElement {
     super.connectedCallback()
   }
 
+  /**
+   * 承载焦点的条目被移出 DOM 时浏览器不派 focusout，锚点会停在一个已消失的值上：
+   * 没有条目认领 tabindex=0、方向键也失去起点。这里替 DOM 把焦点离场如实上报，
+   * 机器就地按当前活条目重挑锚点。
+   */
+  protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
+    const { context, getStatus, send } = this.ctrl.service
+    // 宿主断开时机器已停机，此刻无焦点可言（送事件还会在 dev 下抛）
+    if (getStatus() !== 'Started')
+      return
+    const focusedValue = context.get('focusedValue')
+    if (focusedValue == null)
+      return
+    // data-value 只写在 item 上，separator 与 arrow 离场不会误判
+    if (nodes.some(el => el.getAttribute(ITEM_VALUE_ATTR) === focusedValue))
+      send({ type: 'ITEM.LOST' })
+  }
+
   protected wire(): void {
     const api = connectMenu(this.ctrl.service, wcNormalize)
 
@@ -176,7 +194,7 @@ export class XhMenuElement extends XhElement {
     // [hidden]{display:none}，只有内联 style.display 压得住。展开时置空串即撤掉内联声明。
     const content = this.getPart('content')
     if (content)
-      content.style.display = api.open ? '' : 'none'
+      this.setPartHidden(content, !api.open)
   }
 
   override disconnectedCallback(): void {

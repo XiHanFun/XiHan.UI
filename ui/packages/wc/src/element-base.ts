@@ -41,6 +41,24 @@ export abstract class XhElement extends ReactiveElement {
     return this.partMap.get(name) ?? []
   }
 
+  /** 作者自己写在角色节点上的内联 display，接管前先记下来。 */
+  private readonly authorDisplay = new WeakMap<HTMLElement, string>()
+
+  /**
+   * 用内联 display 兜住收起态：作者层若给这个 part 声明了 display，
+   * 会盖过 UA 的 `[hidden]{display:none}`，光靠 hidden 属性收不起来。
+   *
+   * 展开时还回作者原本写的内联值而不是直接清成 ''——后者会把作者写在该节点上的
+   * `style="display:grid"` 一并抹掉，且再也回不来。
+   */
+  protected setPartHidden(el: HTMLElement | null, hidden: boolean): void {
+    if (!el)
+      return
+    if (!this.authorDisplay.has(el))
+      this.authorDisplay.set(el, el.style.display)
+    el.style.display = hidden ? 'none' : (this.authorDisplay.get(el) ?? '')
+  }
+
   protected refreshParts(): void {
     const next = discoverParts(this as unknown as HTMLElement)
     const live = new Set<HTMLElement>()

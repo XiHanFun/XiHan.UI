@@ -66,6 +66,6 @@ export class XhCollapsibleElement extends XhElement {
     // UA 的 [hidden]{display:none}；内联 style.display 优先级更高，压得住。
     const content = this.getPart('content')
     if (content)
-      content.style.display = this.ctrl.service.state.get() === 'open' ? '' : 'none'
+      this.setPartHidden(content, this.ctrl.service.state.get() !== 'open')
   }
 }

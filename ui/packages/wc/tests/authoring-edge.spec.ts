@@ -41,6 +41,30 @@ describe('浮层收起态不依赖样式表', () => {
     style.remove()
     el.parentElement?.remove()
   })
+
+  // 宿主接管 display 是为了兜住收起态，不该顺手抹掉作者写在同一节点上的内联 display。
+  it('接管收起态不会吃掉作者写在该节点上的内联 display', async () => {
+    const el = mount(`
+      <xh-popover>
+        <button data-xh-part="trigger">开</button>
+        <div data-xh-part="positioner">
+          <div data-xh-part="content" style="display: grid; gap: 4px;">内容</div>
+        </div>
+      </xh-popover>`)
+    await settle(el)
+
+    const content = el.querySelector<HTMLElement>('[data-xh-part="content"]')!
+    // 收起态由宿主接管
+    expect(content.style.display).toBe('none')
+
+    el.querySelector<HTMLElement>('[data-xh-part="trigger"]')!.click()
+    await settle(el)
+    // 展开后还回作者原本写的值，而不是清成空
+    expect(content.style.display).toBe('grid')
+    expect(content.style.gap).toBe('4px')
+
+    el.parentElement?.remove()
+  })
 })
 
 // connect 每帧把 aria-disabled 写回条目，整组禁用更是写满每一个。
