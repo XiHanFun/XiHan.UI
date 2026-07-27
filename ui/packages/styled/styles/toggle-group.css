@@ -1,0 +1,160 @@
+@layer xihan.components {
+  /* 分段控件：段与段之间不留缝，靠共边连成一体，所以 root 不设 gap。
+     排布只能读 data-orientation——aria-orientation 在多选模式下连接层根本不输出（role=group 不收） */
+  [data-scope='toggle-group'][data-part='root'] {
+    display: inline-flex;
+    align-items: stretch;
+  }
+
+  [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal'] {
+    flex-direction: row;
+  }
+
+  [data-scope='toggle-group'][data-part='root'][data-orientation='vertical'] {
+    flex-direction: column;
+  }
+
+  /* root 会短暂拿到 tabindex=0，但它的 onFocus 立刻把焦点转投给条目，
+     在它身上画环只会闪一下就跳走，高亮要长在条目上 */
+  [data-scope='toggle-group'][data-part='root']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='toggle-group'][data-part='root'][data-disabled] {
+    cursor: not-allowed;
+  }
+
+  [data-scope='toggle-group'][data-part='item'] {
+    /* 私有槽位：组件令牌 → 语义令牌两级回退。状态规则只改写槽位，
+       底色/描边/前景三者永远同步换，不会出现选中了底色却没跟上描边 */
+    --xh-_bg: var(--xh-toggle-group-item-bg, var(--xh-bg-canvas));
+    --xh-_bg-hover: var(--xh-toggle-group-item-bg-hover, var(--xh-bg-subtle-hover));
+    --xh-_bg-active: var(--xh-toggle-group-item-bg-active, var(--xh-bg-subtle-active));
+    --xh-_fg: var(--xh-toggle-group-item-fg, var(--xh-fg-default));
+    --xh-_border: var(--xh-toggle-group-item-border, var(--xh-border-default));
+
+    /* 相邻两段靠负外边距压掉一条重边，谁的描边浮在上面必须能指定，
+       因此条目必须是定位元素——静态元素的 z-index 不生效 */
+    position: relative;
+    z-index: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-toggle-group-item-gap, var(--xh-control-gap-md));
+    block-size: var(--xh-toggle-group-item-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-toggle-group-item-px, var(--xh-control-px-md));
+    border: var(--xh-stroke-thin) solid var(--xh-_border);
+    /* 中间段一律直角，圆角只由首末两端补回来 */
+    border-radius: 0;
+    background: var(--xh-_bg);
+    color: var(--xh-_fg);
+    font-size: var(--xh-toggle-group-item-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-toggle-group-item-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition:
+      background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease),
+      border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease),
+      color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  /* 共边：后一段往回挪一个描边宽度，两条相邻的边重合成一条。
+     方向跟着 data-orientation 走，横排收 inline 轴、竖排收 block 轴 */
+  [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal']
+    > [data-scope='toggle-group'][data-part='item']
+    + [data-scope='toggle-group'][data-part='item'] {
+    margin-inline-start: calc(-1 * var(--xh-stroke-thin));
+  }
+
+  [data-scope='toggle-group'][data-part='root'][data-orientation='vertical']
+    > [data-scope='toggle-group'][data-part='item']
+    + [data-scope='toggle-group'][data-part='item'] {
+    margin-block-start: calc(-1 * var(--xh-stroke-thin));
+  }
+
+  /* 两端圆角用逻辑角属性写，rtl 与竖排都跟着换边，不必另写一套。
+     只认 root 的直接子节点：条目之间插了别的节点时宁可退化成直角，也不要圆错位置 */
+  [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal']
+    > [data-scope='toggle-group'][data-part='item']:first-child {
+    border-start-start-radius: var(--xh-toggle-group-radius, var(--xh-shape-control));
+    border-end-start-radius: var(--xh-toggle-group-radius, var(--xh-shape-control));
+  }
+
+  [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal']
+    > [data-scope='toggle-group'][data-part='item']:last-child {
+    border-start-end-radius: var(--xh-toggle-group-radius, var(--xh-shape-control));
+    border-end-end-radius: var(--xh-toggle-group-radius, var(--xh-shape-control));
+  }
+
+  [data-scope='toggle-group'][data-part='root'][data-orientation='vertical']
+    > [data-scope='toggle-group'][data-part='item']:first-child {
+    border-start-start-radius: var(--xh-toggle-group-radius, var(--xh-shape-control));
+    border-start-end-radius: var(--xh-toggle-group-radius, var(--xh-shape-control));
+  }
+
+  [data-scope='toggle-group'][data-part='root'][data-orientation='vertical']
+    > [data-scope='toggle-group'][data-part='item']:last-child {
+    border-end-start-radius: var(--xh-toggle-group-radius, var(--xh-shape-control));
+    border-end-end-radius: var(--xh-toggle-group-radius, var(--xh-shape-control));
+  }
+
+  [data-scope='toggle-group'][data-part='item']:not([data-disabled]):hover {
+    background: var(--xh-_bg-hover);
+  }
+
+  [data-scope='toggle-group'][data-part='item']:not([data-disabled]):active {
+    background: var(--xh-_bg-active);
+  }
+
+  /* 选中态：单选是 role=radio + aria-checked，多选是原生按钮 + aria-pressed，
+     两套 ARIA 各出一半，样式一条都对不上——只有 data-state 是两种模式共同的出口 */
+  [data-scope='toggle-group'][data-part='item'][data-state='on'] {
+    --xh-_bg: var(--xh-toggle-group-item-bg-on, var(--xh-bg-brand));
+    --xh-_bg-hover: var(--xh-toggle-group-item-bg-on-hover, var(--xh-bg-brand-hover));
+    --xh-_bg-active: var(--xh-toggle-group-item-bg-on-active, var(--xh-bg-brand-active));
+    --xh-_fg: var(--xh-toggle-group-item-fg-on, var(--xh-fg-on-brand));
+    --xh-_border: var(--xh-toggle-group-item-border-on, var(--xh-bg-brand));
+
+    /* 抬一层，让 brand 描边压住邻居的灰边。共边处两条边重合在同一像素上，
+       不抬层就由文档序决定谁在上，选中段的左右两侧会一边有色一边灰 */
+    z-index: 1;
+  }
+
+  /* 集合条目一律 aria-disabled 而非原生 disabled（禁用项仍要能当方向键的起点），
+     所以这里读 data-disabled，写 :disabled 永远不命中。
+     另外禁用不能用 opacity 变淡：半透明会把压在下面那条边透出来，共边处当场变成两条线 */
+  [data-scope='toggle-group'][data-part='item'][data-disabled] {
+    --xh-_bg: var(--xh-toggle-group-item-bg-disabled, var(--xh-bg-muted));
+    --xh-_fg: var(--xh-toggle-group-item-fg-disabled, var(--xh-fg-disabled));
+    --xh-_border: var(--xh-toggle-group-item-border-disabled, var(--xh-border-subtle));
+
+    cursor: not-allowed;
+  }
+
+  /* 禁用且选中：底色不能一路退回 muted，那样"这一段是当前值"的信息就整个没了。
+     掺一半 muted 进 brand，既看得出选中，也看得出改不动 */
+  [data-scope='toggle-group'][data-part='item'][data-disabled][data-state='on'] {
+    --xh-_bg: var(
+      --xh-toggle-group-item-bg-on-disabled,
+      color-mix(in oklab, var(--xh-bg-brand) 50%, var(--xh-bg-muted))
+    );
+    --xh-_fg: var(--xh-toggle-group-item-fg-on-disabled, var(--xh-fg-on-brand));
+    --xh-_border: var(--xh-toggle-group-item-border-on-disabled, var(--xh-bg-brand));
+  }
+
+  /* 焦点环要浮在共边之上：outline 画在元素外侧，不抬层就会被后一段的底色与描边盖掉一半 */
+  [data-scope='toggle-group'][data-part='item']:focus-visible {
+    z-index: 2;
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
+     不补的话作者给节点加 hidden 后它照样显示 */
+  [data-scope='toggle-group'][data-part='root'][hidden],
+  [data-scope='toggle-group'][data-part='item'][hidden] {
+    display: none;
+  }
+}

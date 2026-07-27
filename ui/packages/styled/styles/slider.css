@@ -1,0 +1,177 @@
+@layer xihan.components {
+  /* 定位分工：已选区间与拇指在**主轴**上的起点与长度，由连接层每帧写进内联样式——
+     水平是 inset-inline-start / inline-size，竖直是 inset-block-end / block-size。
+     这份皮肤一个都不碰：内联优先级高于样式表，写了不但是死声明，
+     切换 orientation 的那一帧还会跟连接层清空另一轴的动作抢位置，把拇指钉在两轴都被约束的地方。
+     皮肤只管另一条轴（交叉轴）的尺寸、颜色、圆角与状态表现。 */
+
+  [data-scope='slider'][data-part='root'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-slider-gap, var(--xh-stack-gap-md));
+  }
+
+  /* 竖排时整条控件收成一块，不再撑满一行：宽度由拇指直径决定 */
+  [data-scope='slider'][data-part='root'][data-orientation='vertical'] {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* 禁用的整体压暗只做一次，落在最外层：track / range / thumb 各自再叠一层 opacity 会越叠越黑 */
+  [data-scope='slider'][data-part='root'][data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  [data-scope='slider'][data-part='label'] {
+    color: var(--xh-slider-label-fg, var(--xh-fg-muted));
+    font-size: var(--xh-slider-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-slider-label-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+  }
+
+  [data-scope='slider'][data-part='label'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 拇指以它为定位上下文（拇指常常浮出轨道，挂在 track 上会被轨道的盒子束住）。
+     厚度取拇指直径：轨道只有几个像素，控件若按轨道高，浮出来的拇指会顶到上下相邻的元素。
+     touch-action 由连接层内联给（拖动要接管手势），这里不写。 */
+  [data-scope='slider'][data-part='control'] {
+    position: relative;
+    display: flex;
+    align-items: center;
+    block-size: var(--xh-slider-thumb-size, 18px);
+    cursor: pointer;
+  }
+
+  [data-scope='slider'][data-part='control'][data-orientation='vertical'] {
+    flex-direction: column;
+    justify-content: center;
+    inline-size: var(--xh-slider-thumb-size, 18px);
+    block-size: var(--xh-slider-vertical-length, 10rem);
+  }
+
+  /* 按下轨道即跳，拖动中光标换成"抓着"的样子，手感与拇指一致 */
+  [data-scope='slider'][data-part='control'][data-dragging] {
+    cursor: grabbing;
+  }
+
+  [data-scope='slider'][data-part='control'][data-readonly] {
+    cursor: default;
+  }
+
+  [data-scope='slider'][data-part='control'][data-disabled] {
+    cursor: not-allowed;
+  }
+
+  /* 已选区间以它为定位上下文。不写 overflow: hidden：作者把拇指写进轨道里也是合法结构，
+     一裁就把拇指切掉半个；区间的圆角由它自己那条 border-radius 兜住，本就不靠轨道来裁。 */
+  [data-scope='slider'][data-part='track'] {
+    position: relative;
+    border-radius: var(--xh-slider-track-radius, var(--xh-shape-pill));
+    background: var(--xh-slider-track-bg, var(--xh-bg-subtle-active));
+  }
+
+  [data-scope='slider'][data-part='track'][data-orientation='horizontal'] {
+    inline-size: 100%;
+    block-size: var(--xh-slider-track-thickness, 6px);
+  }
+
+  [data-scope='slider'][data-part='track'][data-orientation='vertical'] {
+    block-size: 100%;
+    inline-size: var(--xh-slider-track-thickness, 6px);
+  }
+
+  /* 主轴（起点 + 长度）来自内联样式，这里只给定位模式与配色。
+     绝不给 inset / size 加过渡：拖拽时这两个值每帧都在变，一加过渡区间就永远追在指针后面。 */
+  [data-scope='slider'][data-part='range'] {
+    position: absolute;
+    border-radius: var(--xh-slider-range-radius, var(--xh-shape-pill));
+    background: var(--xh-slider-range-bg, var(--xh-bg-brand));
+  }
+
+  /* 交叉轴铺满轨道。这一侧的 inset 连接层每帧写成空串（即不设），样式表接手才有确定值；
+     不写的话绝对定位会退回"静态位置"，作者一给轨道加内边距就对不齐了。 */
+  [data-scope='slider'][data-part='range'][data-orientation='horizontal'] {
+    inset-block-start: 0;
+    block-size: 100%;
+  }
+
+  [data-scope='slider'][data-part='range'][data-orientation='vertical'] {
+    inset-inline-start: 0;
+    inline-size: 100%;
+  }
+
+  [data-scope='slider'][data-part='range'][data-invalid] {
+    background: var(--xh-slider-range-bg-invalid, var(--xh-color-danger-500));
+  }
+
+  /* 圆点浮在轨道之上：轨道是流内的，拇指是绝对定位的，天然后来居上，不必再堆 z-index。
+     box-sizing 必须显式写：描边要吃进直径里，否则实际盒子比 --xh-slider-thumb-size 宽两条边，
+     下面按半个直径回拉的负外边距就对不上圆心。 */
+  [data-scope='slider'][data-part='thumb'] {
+    position: absolute;
+    box-sizing: border-box;
+    inline-size: var(--xh-slider-thumb-size, 18px);
+    block-size: var(--xh-slider-thumb-size, 18px);
+    border: var(--xh-stroke-thick) solid var(--xh-slider-thumb-border, var(--xh-bg-surface));
+    border-radius: var(--xh-slider-thumb-radius, var(--xh-shape-pill));
+    background: var(--xh-slider-thumb-bg, var(--xh-bg-brand));
+    box-shadow: var(--xh-slider-thumb-shadow, var(--xh-elevation-1));
+    cursor: grab;
+    transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 内联样式把 inset-inline-start 定在值所在的比例上，那是拇指的**起始边**不是圆心；
+     用负的逻辑外边距回拉半个直径，圆心才落在比例点上。
+     这里刻意不用 translate(-50%)：rtl 下 inset-inline-start 映射到 right，
+     位移量是物理方向的，会把拇指推向错误的一侧；负的逻辑外边距自己就跟着换向。
+     交叉轴同理：inset-block-start 是连接层不写的那条轴，样式表接管即可。 */
+  [data-scope='slider'][data-part='thumb'][data-orientation='horizontal'] {
+    inset-block-start: 50%;
+    margin-block-start: calc(var(--xh-slider-thumb-size, 18px) / -2);
+    margin-inline-start: calc(var(--xh-slider-thumb-size, 18px) / -2);
+  }
+
+  /* 竖排的主轴是 inset-block-end（值向上增大），回拉也就换到 block-end 那侧 */
+  [data-scope='slider'][data-part='thumb'][data-orientation='vertical'] {
+    inset-inline-start: 50%;
+    margin-inline-start: calc(var(--xh-slider-thumb-size, 18px) / -2);
+    margin-block-end: calc(var(--xh-slider-thumb-size, 18px) / -2);
+  }
+
+  [data-scope='slider'][data-part='thumb']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 多拇指时只有手真正推着的那一个带 data-dragging，放大与光标因此不会全组一起变。
+     放大用 scale 而不是改尺寸：变换绕自身中心发生，圆心不动，负外边距的算式也不用跟着改。 */
+  [data-scope='slider'][data-part='thumb'][data-dragging] {
+    scale: var(--xh-slider-thumb-scale-dragging, 1.12);
+    cursor: grabbing;
+    box-shadow: var(--xh-slider-thumb-shadow-dragging, var(--xh-elevation-2));
+  }
+
+  [data-scope='slider'][data-part='thumb'][data-invalid] {
+    background: var(--xh-slider-thumb-bg-invalid, var(--xh-color-danger-500));
+  }
+
+  [data-scope='slider'][data-part='thumb'][data-readonly] {
+    cursor: default;
+  }
+
+  [data-scope='slider'][data-part='thumb'][data-disabled] {
+    cursor: not-allowed;
+  }
+
+  /* display 会盖掉 UA 的 [hidden]{display:none}，凡是被赋了 display 的角色节点都要显式让位 */
+  [data-scope='slider'][data-part='root'][hidden],
+  [data-scope='slider'][data-part='control'][hidden] {
+    display: none;
+  }
+
+  /* hidden-input 是 type=hidden 的原生输入，浏览器本就不渲染它，
+     这里一条声明都不给：给了 display / 尺寸反而会把它拽回布局里，在拇指内部撑出一块空白。 */
+}

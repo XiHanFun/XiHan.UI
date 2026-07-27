@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "description": "XiHan.UI styled layer — pure CSS skins driven by data-attributes and design tokens.",
   "license": "MIT",
-  "sideEffects": ["**/*.css"],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
@@ -18,21 +20,36 @@
     "./avatar.css": "./styles/avatar.css",
     "./badge.css": "./styles/badge.css",
     "./button.css": "./styles/button.css",
+    "./checkbox-group.css": "./styles/checkbox-group.css",
     "./checkbox.css": "./styles/checkbox.css",
     "./collapsible.css": "./styles/collapsible.css",
     "./dialog.css": "./styles/dialog.css",
+    "./drawer.css": "./styles/drawer.css",
     "./field.css": "./styles/field.css",
+    "./listbox.css": "./styles/listbox.css",
     "./menu.css": "./styles/menu.css",
+    "./number-field.css": "./styles/number-field.css",
+    "./pagination.css": "./styles/pagination.css",
+    "./pin-input.css": "./styles/pin-input.css",
     "./popover.css": "./styles/popover.css",
     "./progress.css": "./styles/progress.css",
     "./radio-group.css": "./styles/radio-group.css",
+    "./rating.css": "./styles/rating.css",
     "./select.css": "./styles/select.css",
     "./separator.css": "./styles/separator.css",
+    "./slider.css": "./styles/slider.css",
     "./switch.css": "./styles/switch.css",
     "./tabs.css": "./styles/tabs.css",
+    "./text-field.css": "./styles/text-field.css",
+    "./toast.css": "./styles/toast.css",
+    "./toaster.css": "./styles/toaster.css",
+    "./toggle-group.css": "./styles/toggle-group.css",
     "./toggle.css": "./styles/toggle.css",
     "./tooltip.css": "./styles/tooltip.css",
     "./visually-hidden.css": "./styles/visually-hidden.css"
   },
-  "files": ["index.css", "styles"]
+  "files": [
+    "index.css",
+    "styles"
+  ]
 }

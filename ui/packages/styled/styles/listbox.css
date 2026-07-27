@@ -1,0 +1,159 @@
+@layer xihan.components {
+  [data-scope='listbox'][data-part='root'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-listbox-gap, var(--xh-space-2));
+  }
+
+  [data-scope='listbox'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='listbox'][data-part='label'] {
+    color: var(--xh-listbox-label-fg, var(--xh-fg-muted));
+    font-size: var(--xh-listbox-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-listbox-label-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+  }
+
+  /* 整组禁用会把 data-disabled 一路打到 label / content / item-group 上，各处观感保持一致 */
+  [data-scope='listbox'][data-part='label'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 常驻列表不是浮层：容器留边框与底色，但不投影、不脱离文档流，
+     因此这里既不写 position 也不写 z-index，滚动发生在容器自身 */
+  [data-scope='listbox'][data-part='content'] {
+    display: flex;
+    flex-direction: column;
+    max-block-size: var(--xh-listbox-content-max-h, 16rem);
+    padding-block: var(--xh-listbox-content-py, var(--xh-space-1));
+    padding-inline: var(--xh-listbox-content-px, var(--xh-space-1));
+    border: var(--xh-stroke-thin) solid var(--xh-listbox-content-border, var(--xh-border-default));
+    border-radius: var(--xh-listbox-content-radius, var(--xh-shape-surface));
+    background: var(--xh-listbox-content-bg, var(--xh-bg-surface));
+    color: var(--xh-listbox-content-fg, var(--xh-fg-default));
+    /* 两轴一起给：条目文字用省略号收口，正常不会横向溢出，
+       但作者塞进宽内容时至少还够得着，而不是被裁掉 */
+    overflow: auto;
+  }
+
+  /* display 会盖掉 hidden 属性的 UA 规则，作者手动收起时要显式让位 */
+  [data-scope='listbox'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  /* 横向列表沿主轴排，此时高度由内容决定，再压最大高度只会白留一条滚动条 */
+  [data-scope='listbox'][data-part='content'][data-orientation='horizontal'] {
+    flex-direction: row;
+    align-items: center;
+    max-block-size: none;
+  }
+
+  /* 焦点在列表外时容器自己进 Tab 序列兜底，落焦不画环：高亮永远长在条目上 */
+  [data-scope='listbox'][data-part='content']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='listbox'][data-part='item-group'] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  [data-scope='listbox'][data-part='item-group'][hidden] {
+    display: none;
+  }
+
+  /* 组间留白只加在后继分组上：首组顶上已经有 content 的内边距，再加一层会显得头重 */
+  [data-scope='listbox'][data-part='item-group'] + [data-scope='listbox'][data-part='item-group'] {
+    margin-block-start: var(--xh-listbox-group-gap, var(--xh-space-2));
+  }
+
+  /* 分组标题不是选项、进不了导航，画成小号次要文字，
+     内缩与条目对齐（同一个 padding-inline），标题与条目文字才在一条竖线上 */
+  [data-scope='listbox'][data-part='item-group-label'] {
+    display: block;
+    padding-block: var(--xh-listbox-group-label-py, var(--xh-space-1));
+    padding-inline: var(--xh-listbox-group-label-px, var(--xh-control-px-sm));
+    color: var(--xh-listbox-group-label-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-listbox-group-label-font-size, var(--xh-font-size-xs));
+    font-weight: var(--xh-listbox-group-label-font-weight, var(--xh-font-weight-medium));
+    line-height: 1;
+    user-select: none;
+  }
+
+  [data-scope='listbox'][data-part='item-group-label'][hidden] {
+    display: none;
+  }
+
+  [data-scope='listbox'][data-part='item-group-label'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  [data-scope='listbox'][data-part='item'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-listbox-item-gap, var(--xh-control-gap-md));
+    padding-block: var(--xh-listbox-item-py, var(--xh-space-2));
+    padding-inline: var(--xh-listbox-item-px, var(--xh-control-px-sm));
+    border-radius: var(--xh-listbox-item-radius, var(--xh-shape-control));
+    color: var(--xh-listbox-item-fg, var(--xh-fg-default));
+    font-size: var(--xh-listbox-item-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* 条目可以按需收起（过滤掉的选项），有 display 就得补这条 */
+  [data-scope='listbox'][data-part='item'][hidden] {
+    display: none;
+  }
+
+  /* 键盘高亮与指针高亮共用一套底色：条目本身承载焦点，不另画描边。
+     data-highlighted 跟的是连接层记的焦点条目，与选中互相独立 */
+  [data-scope='listbox'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
+    background: var(--xh-listbox-item-bg-highlight, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='listbox'][data-part='item']:focus {
+    outline: none;
+  }
+
+  /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
+     所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
+  [data-scope='listbox'][data-part='item'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='listbox'][data-part='item-text'] {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* 勾选标记只在选中项上出现；未选中时占位不塌，切换选中不引起行宽抖动 */
+  [data-scope='listbox'][data-part='item-indicator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-listbox-item-indicator-size, 1rem);
+    color: var(--xh-listbox-item-indicator-fg, var(--xh-bg-brand));
+    visibility: hidden;
+  }
+
+  [data-scope='listbox'][data-part='item-indicator'][hidden] {
+    display: none;
+  }
+
+  [data-scope='listbox'][data-part='item-indicator'][data-state='checked'] {
+    visibility: visible;
+  }
+
+  [data-scope='listbox'][data-part='item-indicator'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+}

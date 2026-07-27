@@ -1,0 +1,105 @@
+@layer xihan.components {
+  /* 与文本框、数字框同一套堆叠：标签一行、格子一行 */
+  [data-scope='pin-input'][data-part='root'] {
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--xh-pin-input-gap, var(--xh-space-1));
+  }
+
+  /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+  [data-scope='pin-input'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='pin-input'][data-part='label'] {
+    color: var(--xh-pin-input-label-fg, var(--xh-fg-default));
+    font-size: var(--xh-pin-input-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-pin-input-label-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+  }
+
+  [data-scope='pin-input'][data-part='label'][data-disabled] {
+    color: var(--xh-pin-input-label-fg-disabled, var(--xh-fg-disabled));
+  }
+
+  /* 每格是等宽方框：宽高同取一个尺寸，内边距归零。
+     留了内边距，单字符居中后可用宽度不足，中文与全角字符会被挤出框外 */
+  [data-scope='pin-input'][data-part='input'] {
+    flex: none;
+    inline-size: var(--xh-pin-input-box-size, var(--xh-control-h-lg));
+    block-size: var(--xh-pin-input-box-size, var(--xh-control-h-lg));
+    padding: 0;
+    border: var(--xh-stroke-thin) solid var(--xh-pin-input-box-border, var(--xh-border-default));
+    border-radius: var(--xh-pin-input-box-radius, var(--xh-shape-control));
+    background: var(--xh-pin-input-box-bg, var(--xh-bg-canvas));
+    color: var(--xh-pin-input-box-fg, var(--xh-fg-default));
+    /* 表单控件不继承页面字体，只给字号会让格子用 UA 默认字族 */
+    font-family: inherit;
+    font-size: var(--xh-pin-input-box-font-size, var(--xh-font-size-xl));
+    /* 等宽数字：各位字宽不一时逐格填入会让每格里的字符左右跳 */
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    text-align: center;
+    transition: border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  /* 格间距只能长在格子自己身上：包住这一行的容器是作者写的，不在角色表里，
+     指望它给 gap 就等于把间距交给了皮肤管不着的地方。
+     用相邻兄弟而不是给每格加外边距，是为了不在首尾多出两段空白 */
+  [data-scope='pin-input'][data-part='input'] + [data-scope='pin-input'][data-part='input'] {
+    margin-inline-start: var(--xh-pin-input-box-gap, var(--xh-space-2));
+  }
+
+  [data-scope='pin-input'][data-part='input']::placeholder {
+    color: var(--xh-pin-input-placeholder-fg, var(--xh-fg-subtle));
+  }
+
+  /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+  [data-scope='pin-input'][data-part='input']:hover:not(:disabled, [data-invalid]) {
+    border-color: var(--xh-pin-input-box-border-hover, var(--xh-border-strong));
+  }
+
+  /* 一行格子长得一模一样，光标那道竖线太细，看不出正在填哪一格：
+     当前格必须有明显的环。data-focus 由机器给（它知道谁是当前格），
+     :focus-visible 兜住机器状态还没回流的那一帧，两条同时写不冲突 */
+  [data-scope='pin-input'][data-part='input'][data-focus],
+  [data-scope='pin-input'][data-part='input']:focus-visible {
+    border-color: var(--xh-pin-input-box-border-focus, var(--xh-ring-focus));
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  [data-scope='pin-input'][data-part='input'][data-invalid] {
+    border-color: var(--xh-pin-input-box-border-invalid, var(--xh-color-danger-500));
+  }
+
+  /* 每格都是原生 disabled 的单体控件（禁用的格子不该能聚焦），所以用 :disabled */
+  [data-scope='pin-input'][data-part='input']:disabled {
+    background: var(--xh-pin-input-box-bg-disabled, var(--xh-bg-subtle));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 填满只代表"格子都有字"，不代表"验证码对"，所以用品牌色而不是成功色收个尾。
+     已经标了 invalid 的不在此列——那是明确说了不对 */
+  [data-scope='pin-input'][data-part='root'][data-complete]
+    [data-scope='pin-input'][data-part='input']:not([data-invalid], :disabled) {
+    border-color: var(--xh-pin-input-box-border-complete, var(--xh-bg-brand));
+  }
+
+  /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底
+     （作者手写的是一个普通 input，升级完成前它是可见的文本框）。
+     刻意不写 display：写了反而会盖掉 UA 对 type=hidden 的收起，把它显出来 */
+  [data-scope='pin-input'][data-part='hidden-input'] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+}

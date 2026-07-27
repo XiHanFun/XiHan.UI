@@ -1,0 +1,121 @@
+@layer xihan.components {
+  /* position 是给表单影子做定位基准的：那份输入被连接层内联写成绝对定位，
+     根上不留基准它就会贴到更外层的定位祖先上，原生校验提示跟着飘到页面别处。 */
+  [data-scope='rating'][data-part='root'] {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--xh-rating-gap, var(--xh-stack-gap-md));
+  }
+
+  /* 整体压暗只做一次，落在最外层：星星逐颗再叠 opacity 会越叠越黑 */
+  [data-scope='rating'][data-part='root'][data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  [data-scope='rating'][data-part='label'] {
+    color: var(--xh-rating-label-fg, var(--xh-fg-muted));
+    font-size: var(--xh-rating-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-rating-label-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+  }
+
+  [data-scope='rating'][data-part='label'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  [data-scope='rating'][data-part='control'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-rating-item-gap, var(--xh-space-1));
+  }
+
+  /* 容器只是焦点域的兜底落点（焦点从带外进来先落在它身上，随即被转投给某颗星），
+     落焦不画环：高亮永远长在星星上，容器再画一圈只是重影。 */
+  [data-scope='rating'][data-part='control']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='rating'][data-part='control'][data-readonly] {
+    cursor: default;
+  }
+
+  [data-scope='rating'][data-part='control'][data-disabled] {
+    cursor: not-allowed;
+  }
+
+  /* 星星字符由作者写，皮肤只负责上色与盒子。
+     inline-block 是判定"点在左半边还是右半边"的前提：连接层拿 offsetX / clientWidth 算比例，
+     行内盒会把字符两侧的换行空白算进宽度，半颗的分界线就偏了。 */
+  [data-scope='rating'][data-part='item'] {
+    display: inline-block;
+    border-radius: var(--xh-rating-item-radius, var(--xh-shape-control));
+    color: var(--xh-rating-item-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-rating-item-font-size, var(--xh-font-size-2xl));
+    line-height: 1;
+    cursor: pointer;
+    /* 从一颗星划到另一颗会把中间的字符连着选中，星带看上去像被刷蓝了 */
+    user-select: none;
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 点亮的判据是 data-highlighted，不是 aria-checked：
+     aria-checked 只认落定的值，而悬停预览要求手划过去当场就亮。
+     两者共用同一档颜色，预览与选中因此看不出差别——这正是"预览"该有的样子。 */
+  [data-scope='rating'][data-part='item'][data-highlighted] {
+    color: var(--xh-rating-item-fg-highlighted, var(--xh-color-warning-500));
+  }
+
+  /* 半颗：一道 50% 硬边渐变裁到字形上，左半亮右半灰。
+     必须排在 data-highlighted 之后：半颗那颗星同时带着 data-highlighted，两条选择器特异度相同，
+     顺序一反 color 就把 transparent 覆盖回实色，渐变整个看不见。 */
+  [data-scope='rating'][data-part='item'][data-half] {
+    background-image: linear-gradient(
+      to right,
+      var(--xh-rating-item-fg-highlighted, var(--xh-color-warning-500)) 50%,
+      var(--xh-rating-item-fg, var(--xh-fg-subtle)) 50%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* rtl 下"半颗"落在星的右半边（连接层按 1 - offsetX/width 判），亮的那半得跟着掉头。
+     渐变方向没有逻辑关键字可用，只能靠 :dir() 分流，不能指望逻辑属性自动换向。 */
+  [data-scope='rating'][data-part='item'][data-half]:dir(rtl) {
+    background-image: linear-gradient(
+      to left,
+      var(--xh-rating-item-fg-highlighted, var(--xh-color-warning-500)) 50%,
+      var(--xh-rating-item-fg, var(--xh-fg-subtle)) 50%
+    );
+  }
+
+  [data-scope='rating'][data-part='item']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 只读仍进得了 Tab 序列、读屏也念得出，只是改不动：收掉手型，别暗示"点这儿能改" */
+  [data-scope='rating'][data-part='item'][data-readonly] {
+    cursor: default;
+  }
+
+  /* 集合条目一律 aria-disabled、没有原生 disabled，:disabled 永远命不中，只能认 data-disabled */
+  [data-scope='rating'][data-part='item'][data-disabled] {
+    cursor: not-allowed;
+  }
+
+  /* 表单影子的视觉隐藏（绝对定位 + 1px + clip-path）连接层内联给全了，这里不重复也不覆盖，
+     只掐掉指针命中：那个 1px 的框压在星带上会截走本该落到星星上的点击。 */
+  [data-scope='rating'][data-part='hidden-input'] {
+    pointer-events: none;
+  }
+
+  /* display 会盖掉 UA 的 [hidden]{display:none}，凡是被赋了 display 的角色节点都要显式让位 */
+  [data-scope='rating'][data-part='root'][hidden],
+  [data-scope='rating'][data-part='control'][hidden],
+  [data-scope='rating'][data-part='item'][hidden] {
+    display: none;
+  }
+}
