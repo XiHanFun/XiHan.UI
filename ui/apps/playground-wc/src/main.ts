@@ -829,6 +829,612 @@ app.innerHTML = `
       </div>
     </xh-toaster>
   </section>
+
+  <section>
+    <h2>Combobox</h2>
+    <p class="lead">
+      打字即展开并就地过滤——筛出哪几条是本页自己算的（脚本按输入串匹配整条文本再增删候选节点），
+      元素只管高亮、选中与空态：打 be 只剩 Beijing / Berlin，打 北 一样筛得动。
+      焦点自始至终在输入框上，方向键移的是高亮而不是焦点，长列表里高亮会自己滚进可视区；
+      Home / End 跳首尾，禁用的 Busan 一路被跳过（打 bu 只剩它一条时，方向键无处可落、Enter 也不落值）。
+      Enter 落值并收起；Escape 分两拍——先摘掉高亮，再按一次才收起列表。
+      打一串谁也接不上的字（比如 zz），列表让位给“无匹配城市”那条空态，它是列表的兄弟而不是列表里的一项。
+      这一个开了 <code>open-on-click</code>，点输入框即展开；缺省不开，键盘与 ▾ 才是入口。
+      选中之后输入框被回填成候选文本，列表因此只剩它自己——过滤权在调用方手里就是这个后果，按 ✕ 清空即回到全集。
+    </p>
+    <div class="row">
+      <xh-combobox id="wc-combobox" open-on-click placeholder="输入城市名筛选">
+        <!-- root 这层要自己写：开合、禁用、只读、校验四种状态都打在它身上 -->
+        <div data-xh-part="root">
+          <!-- 必须是 label：元素写上去的 for 只在原生 label 上生效，点标题聚焦输入框靠它 -->
+          <label data-xh-part="label">城市</label>
+          <!-- 画成一个框的是 control：输入框与两颗按钮看起来是一体的，它同时是浮层的定位锚点 -->
+          <div data-xh-part="control">
+            <!-- 必须是 input：换成 div 就既不可聚焦也没有 value，整个组合框演不出来 -->
+            <input data-xh-part="input">
+            <!-- 两颗都要是 button：它们不占 Tab 位，但得点得动、按得下 -->
+            <button data-xh-part="trigger">▾</button>
+            <button data-xh-part="clear-trigger">✕</button>
+          </div>
+          <div data-xh-part="positioner">
+            <!-- 候选由脚本按输入串填进来。这里不写 id：content 的 id 归元素自己写（输入框要 aria-controls 指它），
+                 作者挂上去的会被盖掉，所以脚本按 data-xh-part 找它 -->
+            <div data-xh-part="content"></div>
+            <!-- 空态摆在 positioner 里当 content 的兄弟：列表里只放候选 -->
+            <div data-xh-part="empty">无匹配城市</div>
+          </div>
+        </div>
+      </xh-combobox>
+      <span class="lead" id="wc-combobox-value">当前值：（未选）</span>
+    </div>
+    <p class="lead" style="margin-block-start: 20px;">
+      多选的差别全在选完之后：列表不收起、输入串自动清空，候选立刻回到全集，接着挑下一个；
+      再点一次已选项就是取消。输入框空着时按退格删掉最后一个已选项（框里有字则照常删字）。
+      已选项怎么显示由本页决定，这里就回显成一行文字。
+    </p>
+    <div class="row">
+      <xh-combobox id="wc-combobox-multi" multiple placeholder="挑几个城市">
+        <div data-xh-part="root">
+          <label data-xh-part="label">常去城市</label>
+          <div data-xh-part="control">
+            <input data-xh-part="input">
+            <button data-xh-part="trigger">▾</button>
+            <button data-xh-part="clear-trigger">✕</button>
+          </div>
+          <div data-xh-part="positioner">
+            <div data-xh-part="content"></div>
+            <div data-xh-part="empty">无匹配城市</div>
+          </div>
+        </div>
+      </xh-combobox>
+      <span class="lead" id="wc-combobox-multi-value">已选：（无）</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>TagsInput</h2>
+    <p class="lead">
+      三个标签是预置的。框里打字后按 Enter 落一个；直接打逗号也断词——一口气打 <code>React,Svelte</code> 会一次进两个，
+      最后没打完的那一段留在框里接着打。
+      框里空着时退格分两步：头一下只把最后一个标签反白（这一下什么都不删），再按一下才真删掉；
+      左右方向键在标签之间走，Home / End 跳到头尾，Escape 把光标交回输入框。
+      粘一段 <code>a,b,c</code> 试试：开着 <code>add-on-paste</code> 就按分隔符拆成三个标签，而不是整串塞进框里。
+      上限是 5——顶满后框的描边转成警示色，再打再粘都进不去，但已经打进去的字不会被悄悄吃掉，原样留在框里。
+      双击任一标签就地改写它：Enter 提交、Escape 撤销回原样，改成空白等于把这个标签删了。
+      标签节点归作者按当前值渲染，元素只打属性、不建节点——下面 control 里只写死了输入框与清空钮，标签由脚本插在输入框之前。
+    </p>
+    <xh-tags-input id="wc-tags" default-value="Vue,TypeScript,Vite" max="5" add-on-paste editable name="stack" placeholder="回车落一个">
+      <!-- label 与两个输入框都写成原生标签：label 的 for 恒写向 input 的 id，任一边换成 div 这条关联当场作废。
+           hidden-input 是表单出口，值是按分隔符拼好的整串 -->
+      <div data-xh-part="root" style="max-inline-size: 420px;">
+        <label data-xh-part="label">技术栈</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input">
+          <button data-xh-part="clear-trigger">⨯</button>
+        </div>
+        <input data-xh-part="hidden-input">
+      </div>
+    </xh-tags-input>
+    <span class="lead" id="wc-tags-value"></span>
+  </section>
+
+  <section>
+    <h2>Editable</h2>
+    <p class="lead">
+      预览与编辑两态轮流上场：点预览区（或按“编辑”）进编辑态，进去就把整段选中；退出时焦点回到预览区，不会掉进 body。
+      两态的文字左右位置对齐，来回切文字不挪一下。
+      上面这个 <code>submit-mode</code> 走 blur——点到页面别处或 Tab 走开就落定，Enter 不接管（这一页没有外层表单，按下去看着像没反应，值也确实还没提交）；
+      下面这个走 enter——Enter 才落定，失焦与 Tab 反过来是撤销，没提交过的值不会留在界面上。
+      两个都认 Escape：撤销回的是上一次提交的那个值，不是刚进编辑态时看到的那一屏——改一次存下，再改一次按 Escape 就看得出区别。
+      “保存 / 取消”只在编辑态露面，按下时不抢焦点：下面那个失焦即撤销的模式里点“保存”仍然存得下。
+      预览与输入框是互斥收起而不是卸载，两个节点始终都在文档里，DevTools 里看得到收起的那个。
+    </p>
+    <div class="row">
+      <xh-editable id="wc-editable-blur" default-value="阿旺" placeholder="未填写" submit-mode="blur">
+        <!-- label 与 input 都写成原生标签：label 的 for 恒写向 input 的 id。
+             preview 留空——显示什么由元素填（值，或值为空时的占位），写死了就再也刷不动 -->
+        <div data-xh-part="root">
+          <label data-xh-part="label">昵称</label>
+          <div data-xh-part="area">
+            <span data-xh-part="preview"></span>
+            <input data-xh-part="input">
+          </div>
+          <div data-xh-part="control">
+            <button data-xh-part="edit-trigger">编辑</button>
+            <button data-xh-part="submit-trigger">保存</button>
+            <button data-xh-part="cancel-trigger">取消</button>
+          </div>
+        </div>
+      </xh-editable>
+      <span class="lead" id="wc-editable-blur-value"></span>
+    </div>
+    <div class="row" style="margin-block-start: 12px;">
+      <xh-editable id="wc-editable-enter" default-value="且将新火试新茶" placeholder="未填写" submit-mode="enter">
+        <div data-xh-part="root">
+          <label data-xh-part="label">签名</label>
+          <div data-xh-part="area">
+            <span data-xh-part="preview"></span>
+            <input data-xh-part="input">
+          </div>
+          <div data-xh-part="control">
+            <button data-xh-part="edit-trigger">编辑</button>
+            <button data-xh-part="submit-trigger">保存</button>
+            <button data-xh-part="cancel-trigger">取消</button>
+          </div>
+        </div>
+      </xh-editable>
+      <span class="lead" id="wc-editable-enter-value"></span>
+    </div>
+  </section>
+
+  <section>
+    <h2>FileUpload</h2>
+    <p class="lead">
+      拖着文件经过投放区，边框与底色当场换成品牌色，指针在区内几个子节点之间挪动不会让它闪——
+      这是“现在松手就放得下”的唯一提示。投放区自己就是一个大按钮：Tab 停得上去，
+      Enter 或空格都打得开系统选择框（空格顺带被拦下、不滚屏），点标题“附件”同样打得开。
+      最多 3 个、单个不超过 512 KB，越界的当场被拒并说清是哪一条——一次拖十个进来，前 3 个收下、其余报“放不下”；
+      而已经因为太大出局的文件不占名额，也不会再多背一条“太多了”。
+      每行的删除按钮读屏念的是“删除 具体文件名”而不是一串“删除”；列表为空时“清空”带原生 disabled，Tab 停都停不上去。
+      缩略图占位上挂着 data-file-type（系统给不出 MIME 时是 unknown），皮肤按它挑颜色。
+    </p>
+    <xh-file-upload id="wc-file-upload" max-files="3" max-file-size="524288">
+      <!-- label 必须是原生 label（for 恒写向隐藏输入），hidden-input 必须是原生 input（type=file 由元素写）；
+           trigger 刻意放在投放区之外：按钮里再套按钮，读屏只念得出外面那一个。
+           条目节点归作者建，下面那个空列表由脚本按已选文件数增删，文件名与大小由元素代填 -->
+      <div data-xh-part="root">
+        <label data-xh-part="label">附件</label>
+        <div data-xh-part="dropzone">
+          <span>把文件拖到这里</span>
+          <span>最多 3 个，单个不超过 512 KB</span>
+        </div>
+        <!-- 这层行容器是本页自己的排版，不是角色节点：root 是纵向 flex，按钮不套一层会被拉满整行 -->
+        <div class="row">
+          <button data-xh-part="trigger">选择文件</button>
+        </div>
+        <input data-xh-part="hidden-input">
+        <div data-xh-part="item-group" id="wc-file-upload-items"></div>
+        <button data-xh-part="clear-trigger">清空</button>
+      </div>
+    </xh-file-upload>
+    <span class="lead" id="wc-file-upload-state"></span>
+  </section>
+
+  <section>
+    <h2>Tree</h2>
+    <p class="lead">
+      三层目录树：src 默认展开，docs、dist 与 components / utils 都收着。上下键走的是可见行——
+      src 收起时它底下那三行一并退出序列，展开了才回来；禁用的 pnpm-lock.yaml 被上下键与连打一并跳过，
+      点上去仍能当方向键的起点，只是确认键不认它。右键在收起的分支上就地展开、已展开则进首个子节点，叶子上不吞键；
+      左键反过来：展开的分支就地收起，收起的分支与叶子跳回父层，根层的行什么也不做。Home / End 落在首末可见行。
+      连打字母只在可见行上检索——连按 d 在 docs 与 dist 之间轮转，藏在收起分支里的 Dialog.vue 与 dom.ts 一次也走不到。
+      停在 components 上按 * 只展开它同一层的分支（components 与 utils），docs 与 dist 不动。
+      点分支行连选带展开，点箭头只切展开、不动选中；整棵树只占一个 Tab 位，焦点从外面进来先落在已选中的那行上。
+      每深一层的缩进由子层容器自己顶着，本页一行样式都不写；dist 的子层是空数组，它照样是分支——展得开，只是里头没有行。
+    </p>
+    <xh-tree id="wc-tree">
+      <!-- 层级三件套、禁用与检索用的名字全查树数据（它只能按 property 交，数组表达不了属性），
+           标记与它必须同源：标记里有、树数据里没有的节点报不出层级，也进不了导航。
+           节点身份写在自己的 value 属性上，行内的文本与箭头向上找最近的 item / branch -->
+      <div data-xh-part="root" style="max-inline-size: 360px;">
+        <span data-xh-part="label">项目文件</span>
+        <div data-xh-part="tree">
+          <div data-xh-part="branch" value="src">
+            <div data-xh-part="branch-control">
+              <!-- 箭头写成 span 不是 button：它 aria-hidden 且不占 Tab 位，焦点该落在 branch 上。
+                   分支行只放这一个图标位，与叶子的勾选标记同宽，两种行的文字起点才对得齐 -->
+              <span data-xh-part="branch-trigger">▸</span>
+              <span data-xh-part="branch-text">src</span>
+            </div>
+            <div data-xh-part="branch-content">
+              <div data-xh-part="branch" value="components">
+                <div data-xh-part="branch-control">
+                  <span data-xh-part="branch-trigger">▸</span>
+                  <span data-xh-part="branch-text">components</span>
+                </div>
+                <div data-xh-part="branch-content">
+                  <div data-xh-part="item" value="button">
+                    <span data-xh-part="item-indicator">✓</span>
+                    <span data-xh-part="item-text">Button.vue</span>
+                  </div>
+                  <div data-xh-part="item" value="dialog">
+                    <span data-xh-part="item-indicator">✓</span>
+                    <span data-xh-part="item-text">Dialog.vue</span>
+                  </div>
+                  <div data-xh-part="item" value="field">
+                    <span data-xh-part="item-indicator">✓</span>
+                    <span data-xh-part="item-text">Field.vue</span>
+                  </div>
+                </div>
+              </div>
+              <div data-xh-part="branch" value="utils">
+                <div data-xh-part="branch-control">
+                  <span data-xh-part="branch-trigger">▸</span>
+                  <span data-xh-part="branch-text">utils</span>
+                </div>
+                <div data-xh-part="branch-content">
+                  <div data-xh-part="item" value="dom">
+                    <span data-xh-part="item-indicator">✓</span>
+                    <span data-xh-part="item-text">dom.ts</span>
+                  </div>
+                  <div data-xh-part="item" value="format">
+                    <span data-xh-part="item-indicator">✓</span>
+                    <span data-xh-part="item-text">format.ts</span>
+                  </div>
+                </div>
+              </div>
+              <div data-xh-part="item" value="main">
+                <span data-xh-part="item-indicator">✓</span>
+                <span data-xh-part="item-text">main.ts</span>
+              </div>
+            </div>
+          </div>
+          <div data-xh-part="branch" value="docs">
+            <div data-xh-part="branch-control">
+              <span data-xh-part="branch-trigger">▸</span>
+              <span data-xh-part="branch-text">docs</span>
+            </div>
+            <div data-xh-part="branch-content">
+              <div data-xh-part="item" value="guide">
+                <span data-xh-part="item-indicator">✓</span>
+                <span data-xh-part="item-text">guide.md</span>
+              </div>
+              <div data-xh-part="item" value="api">
+                <span data-xh-part="item-indicator">✓</span>
+                <span data-xh-part="item-text">api.md</span>
+              </div>
+            </div>
+          </div>
+          <div data-xh-part="branch" value="dist">
+            <div data-xh-part="branch-control">
+              <span data-xh-part="branch-trigger">▸</span>
+              <span data-xh-part="branch-text">dist</span>
+            </div>
+            <!-- 空目录的子层容器照写：它展得开，只是里头没有行 -->
+            <div data-xh-part="branch-content"></div>
+          </div>
+          <!-- 禁用不写在标记上：元素照树数据给这一行打 aria-disabled，
+               绝不打原生 disabled——那样它就不可聚焦，也当不成方向键的起点 -->
+          <div data-xh-part="item" value="lockfile">
+            <span data-xh-part="item-indicator">✓</span>
+            <span data-xh-part="item-text">pnpm-lock.yaml（禁用）</span>
+          </div>
+          <div data-xh-part="item" value="readme">
+            <span data-xh-part="item-indicator">✓</span>
+            <span data-xh-part="item-text">README.md</span>
+          </div>
+        </div>
+      </div>
+    </xh-tree>
+    <span class="lead" id="wc-tree-state"></span>
+  </section>
+
+  <section>
+    <h2>Toolbar</h2>
+    <p class="lead">
+      整条在 Tab 序列里只占一个位子：从上一个控件按 Tab 进来会落在其中一个条目上，再按一次 Tab 就整条离开，
+      条内改用方向键走。横排那条收左右键、把上下键原样放行给页面滚动，竖排那条正相反——两条摆在一起，
+      按方向键就看得出 orientation 换掉的是哪一对键，分隔线也跟着转向（它的朝向恒与主轴垂直）。
+      方向键跨得过分隔线、也走得进分组（分组只是把一伙控件收紧，不是导航里多出来的一层），到尽头回绕；
+      斜体是禁用项，方向键路过时直接跳过，但拿鼠标点它焦点仍落得上去、Tab 位也归它，再按方向键就从它这儿起步。
+      Home / End 取的是首尾两个可用条目，分隔线与分组容器都不算端点。
+      勾上「整条禁用」条目全转 aria-disabled、方向键当场不再接管（焦点进来就停在容器上）；
+      取消勾选后禁用的仍然只有斜体那一项。
+      条目是作者自己的按钮：工具条不覆盖它的 role、也不接管它的点击，下面那行回显是按钮自己的 click 记的。
+    </p>
+    <div class="row" style="gap: 24px; align-items: flex-start;">
+      <!-- root / item / group / separator 全由作者写：条目身份取自身的 value 属性，
+           禁用一律写 aria-disabled——原生 disabled 不可聚焦，禁用项就当不成方向键的起点。
+           条目落成 button，它的角色、按下态与点击行为都归它自己，元素只打导航要用的那几样 -->
+      <xh-toolbar id="wc-toolbar">
+        <div data-xh-part="root">
+          <button data-xh-part="item" value="bold">粗体</button>
+          <button data-xh-part="item" value="italic" aria-disabled="true">斜体（禁用）</button>
+          <button data-xh-part="item" value="underline">下划线</button>
+          <div data-xh-part="separator"></div>
+          <div data-xh-part="group">
+            <button data-xh-part="item" value="align-left">左对齐</button>
+            <button data-xh-part="item" value="align-center">居中</button>
+            <button data-xh-part="item" value="align-right">右对齐</button>
+          </div>
+        </div>
+      </xh-toolbar>
+      <xh-toolbar orientation="vertical">
+        <div data-xh-part="root">
+          <button data-xh-part="item" value="undo">撤销</button>
+          <button data-xh-part="item" value="redo">重做</button>
+          <div data-xh-part="separator"></div>
+          <button data-xh-part="item" value="clear">清除格式</button>
+        </div>
+      </xh-toolbar>
+    </div>
+    <label class="row">
+      <input type="checkbox" id="wc-toolbar-disabled"> 整条禁用（横排那条）
+    </label>
+    <span class="lead" id="wc-toolbar-command">最近点击：（无）</span>
+  </section>
+
+  <section>
+    <h2>Breadcrumb</h2>
+    <p class="lead">
+      最后那一级是当前页：它照样是个 <code>&lt;a&gt;</code>、照样写着 href，
+      但连接层给它打上 aria-current="page" 并把点击拦了下来——点前面几条地址栏跟着变，点它什么都不会发生。
+      它也不占 Tab 位（tabindex="-1"）：Tab 一路走过去只停在前面那几条上，
+      停在一个点了也没去处的链接上，只会让人每次都多按一下。
+      中间那个省略号是被折叠掉的一层，和几个斜杠一样只是视觉占位，读屏那边一并被 aria-hidden 摘掉，
+      念出来仍是“列表，共 3 项”——层级关系由 ol / li 自己给。
+      要让折叠掉的那几层可达，得在省略号那儿另放一个菜单，那是另一个组件的事。
+    </p>
+    <xh-breadcrumb>
+      <!-- 标签由作者写，且必须写对：root 是 nav（地标语义只有标签给得了），list 是 ol，
+           item / separator / ellipsis 都是 li（ol 里只放得下 li），link 是 a。
+           href 同样归作者写——那是路由的事，元素只在当前页那条上拦住点击 -->
+      <nav data-xh-part="root">
+        <ol data-xh-part="list">
+          <li data-xh-part="item"><a data-xh-part="link" href="#/">首页</a></li>
+          <li data-xh-part="separator">/</li>
+          <li data-xh-part="item"><a data-xh-part="link" href="#/components">组件</a></li>
+          <li data-xh-part="separator">/</li>
+          <li data-xh-part="ellipsis">…</li>
+          <li data-xh-part="separator">/</li>
+          <!-- 当前页那条只多一个 current 声明，其余与前面几条一模一样 -->
+          <li data-xh-part="item"><a data-xh-part="link" href="#/components/breadcrumb" current>面包屑</a></li>
+        </ol>
+      </nav>
+    </xh-breadcrumb>
+  </section>
+
+  <section>
+    <h2>Steps</h2>
+    <p class="lead">
+      四步下单流程，进退由下面那两颗按钮驱动。方向键在一排 trigger 之间走（横排认 ArrowLeft / ArrowRight，两端不回绕），
+      但它只搬焦点、不切步——走到想去的那一步还得按 Enter 或空格才真的切过去：
+      切一步往往要跑校验、发请求，不能跟着焦点自动发生。
+      整条步骤条只占一个 Tab 位，Tab 进来落在当前步上，再按一次就整组离开。
+      面板不做懒挂载，五块一直挂着、只按当前步 hidden 显隐——第 1 步里勾上的那个复选框，走到第 4 步再退回来还在。
+      走完最后一步还有一格“全部完成”：那时没有任何一步是当前步，四块步骤面板全收起、完成页显出来，下一步随之禁用；
+      此刻也没有条目认领得了那个 Tab 位，于是整条 list 自己进 Tab 序列兜底（落焦有一圈 focus 环），不然键盘就再也进不来了。
+      下面第二台只多了一个 linear：还没走到的那几步一律禁用，走的是 aria-disabled 而不是原生 disabled——
+      它们仍聚焦得上、仍能当方向键的起点，只是点不动、方向键也跳过，所以停在第 1 步按 ArrowRight 会原地不动，
+      往前只能靠“下一步”一格格推；已走过的与当前这一步照常点得动（回头看是允许的），但一退回去，后面那几步立刻重新锁上。
+    </p>
+    <!-- 步骤序列归作者渲染（元素不替作者建节点，否则图标、自定义序号、i18n 文案都再塞不进来）：
+         身份写在 item 的 value 上（第几步，0 起），trigger / indicator / title / description / separator
+         向上找自己的 item；content 挂在 list 之外够不到 item，因此自带 value 与 trigger 配对。
+         元素不暴露命令式接口：写了 step 属性即受控，点 trigger 只发 step-change 意图，
+         由脚本写回属性才真的切步——下面那两颗按钮走的也是这条路 -->
+    <xh-steps id="wc-steps" count="4" step="0">
+      <div data-xh-part="root">
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="0">
+            <button data-xh-part="trigger">
+              <span data-xh-part="indicator">1</span>
+              <span data-xh-part="title">收货信息</span>
+              <span data-xh-part="description">收货人与地址</span>
+            </button>
+            <div data-xh-part="separator"></div>
+          </div>
+          <div data-xh-part="item" value="1">
+            <button data-xh-part="trigger">
+              <span data-xh-part="indicator">2</span>
+              <span data-xh-part="title">支付方式</span>
+              <span data-xh-part="description">在线支付或货到付款</span>
+            </button>
+            <div data-xh-part="separator"></div>
+          </div>
+          <div data-xh-part="item" value="2">
+            <button data-xh-part="trigger">
+              <span data-xh-part="indicator">3</span>
+              <span data-xh-part="title">开具发票</span>
+              <span data-xh-part="description">抬头与税号</span>
+            </button>
+            <div data-xh-part="separator"></div>
+          </div>
+          <div data-xh-part="item" value="3">
+            <button data-xh-part="trigger">
+              <span data-xh-part="indicator">4</span>
+              <span data-xh-part="title">确认下单</span>
+              <span data-xh-part="description">核对金额与优惠</span>
+            </button>
+            <div data-xh-part="separator"></div>
+          </div>
+        </div>
+        <div data-xh-part="content" value="0">
+          <label class="row"><input type="checkbox"> 保存为默认地址（勾上，切到别的步再切回来看看）</label>
+        </div>
+        <div data-xh-part="content" value="1">面板 2：选支付方式。</div>
+        <div data-xh-part="content" value="2">面板 3：填发票抬头与税号。</div>
+        <div data-xh-part="content" value="3">面板 4：核对金额，按“下一步”提交。</div>
+        <!-- value 等于 count 的这块是完成页：走完最后一步之后的那一格 -->
+        <div data-xh-part="content" value="4">全部完成：订单已提交。按“上一步”可以退回最后一步。</div>
+        <!-- 进退按钮通常长在步骤条外面（真实表单里它们在页面底部），这里只是把它们放在同一块里 -->
+        <div class="row">
+          <xh-button id="wc-steps-prev" variant="subtle"><button data-xh-part="root">上一步</button></xh-button>
+          <xh-button id="wc-steps-next" variant="solid"><button data-xh-part="root">下一步</button></xh-button>
+          <span class="lead" id="wc-steps-value"></span>
+        </div>
+      </div>
+    </xh-steps>
+    <!-- 同一台机器，只多了一个 linear。margin 写在 root 上而不是宿主上：
+         自定义元素默认是 inline，纵向外边距在它身上不生效 -->
+    <xh-steps id="wc-steps-linear" count="3" step="0" linear>
+      <div data-xh-part="root" style="margin-block-start: 20px;">
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="0">
+            <button data-xh-part="trigger">
+              <span data-xh-part="indicator">1</span>
+              <span data-xh-part="title">上传资料</span>
+            </button>
+            <div data-xh-part="separator"></div>
+          </div>
+          <div data-xh-part="item" value="1">
+            <button data-xh-part="trigger">
+              <span data-xh-part="indicator">2</span>
+              <span data-xh-part="title">人工审核</span>
+            </button>
+            <div data-xh-part="separator"></div>
+          </div>
+          <div data-xh-part="item" value="2">
+            <button data-xh-part="trigger">
+              <span data-xh-part="indicator">3</span>
+              <span data-xh-part="title">开通服务</span>
+            </button>
+            <div data-xh-part="separator"></div>
+          </div>
+        </div>
+        <div data-xh-part="content" value="0">面板 1：上传营业执照与法人身份证。</div>
+        <div data-xh-part="content" value="1">面板 2：等待人工审核。</div>
+        <div data-xh-part="content" value="2">面板 3：签署协议并开通。</div>
+        <div data-xh-part="content" value="3">全部完成：服务已开通。</div>
+        <div class="row">
+          <xh-button id="wc-steps-linear-prev" variant="subtle"><button data-xh-part="root">上一步</button></xh-button>
+          <xh-button id="wc-steps-linear-next" variant="solid"><button data-xh-part="root">下一步</button></xh-button>
+          <span class="lead" id="wc-steps-linear-value"></span>
+        </div>
+      </div>
+    </xh-steps>
+  </section>
+
+  <section>
+    <h2>HoverCard</h2>
+    <p class="lead">
+      悬停停够 700ms 才展开、移开 300ms 才收起——那段收起等待正是留给指针从触发器走到卡片上的通行时间，
+      中间隔着一段间距也走得过去，途中卡片不会消失。与 Tooltip 的分界就在卡片本体是可交互的：
+      指针停在卡片上一直不收，里面的“主页”链接与“关注”按钮都点得到、Tab 也走得进去（点“关注”卡片不会关）。
+      键盘把焦点落到触发器上是立刻展开、不走那 700ms；焦点离开卡片即收起，Escape 当场收起、不等那 300ms。
+      卡片从不抢焦点、不锁滚动，触发器本身是透明按钮，颜色与字体都随行文走，所以它在正文里读起来就是个普通用户名。
+    </p>
+    <div>
+      最近这批组件由
+      <xh-hover-card id="wc-hover-card" placement="bottom-start">
+        <!-- root 这层要自己写：data-state 落在它上面，trigger 与浮层也都要收在它里面。
+             卡片里嵌 xh-button 不会串味：角色节点发现遇到 xh-* 子树就止步，内层的 part 归内层自己 -->
+        <div data-xh-part="root">
+          <button data-xh-part="trigger">@xihan</button>
+          <div data-xh-part="positioner">
+            <div data-xh-part="content">
+              <div data-xh-part="arrow"></div>
+              <strong>XiHan.UI</strong>
+              <span>框架无关的设计系统运行时，Vue 与 Web Components 共用同一套 headless。</span>
+              <!-- 这层行容器是本页自己的排版，不是角色节点 -->
+              <div class="row">
+                <a href="#profile">主页</a>
+                <xh-button variant="subtle"><button data-xh-part="root" id="wc-hover-card-follow">关注</button></xh-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </xh-hover-card>
+      推上来。
+    </div>
+    <span class="lead" id="wc-hover-card-state"></span>
+  </section>
+
+  <section>
+    <h2>ContextMenu</h2>
+    <p class="lead">
+      这一段必须拿真浏览器试：在下面那块区域上点右键，浏览器自带的那张菜单会被拦掉，换成这一张，
+      而且它钉在鼠标点下去的那一点上——不是贴着区域某条边。换个角落再点一次，菜单就跟着坐标走；
+      区域之外右键仍是浏览器自带的那张，正好对照着看接管到哪儿为止。
+      已经开着的时候在别处再右键，它只是挪到新坐标，不先关再开，也不多发一对开合回调。
+      触摸端在区域上按住 700ms 同样弹得出来，中途手指滑开或提前抬手就取消（鼠标按住不动不算长按）。
+      区域自带一个 Tab 位，键盘按 ContextMenu 键或 Shift+F10 打开（裸 F10 不归它管），此时锚点取区域的起始角。
+      展开后方向键跳过禁用的粘贴、Home / End 越过分隔线取首尾、连打 d 直接落到 Delete；
+      Enter 与鼠标点击走同一条出口——选中、关闭、焦点还回区域，Escape 与在菜单外按左键同样关得掉。
+    </p>
+    <xh-context-menu id="wc-context-menu">
+      <!-- root / trigger / positioner / content 与每个条目都由作者写：条目身份取自身的 value 属性，
+           禁用用 aria-disabled 声明——原生 disabled 不可聚焦，禁用项就当不成方向键的起点。
+           触发区是一块普通内容区域、不是按钮，它的 Tab 位与那套 ARIA 由元素打上去；
+           content 常挂在 DOM 里，收起靠 hidden，作者节点不卸载 -->
+      <div data-xh-part="root">
+        <!-- 皮肤只管触发区的交互观感，尺寸与排布归作者：这里只写一条把区域撑开的版面约束 -->
+        <div data-xh-part="trigger" style="display: grid; place-items: center; min-block-size: 120px;">
+          <span>在这块区域上右键（触摸端长按）</span>
+        </div>
+        <div data-xh-part="positioner">
+          <div data-xh-part="content">
+            <div data-xh-part="item" value="copy">
+              <span data-xh-part="item-text">Copy 复制</span>
+            </div>
+            <div data-xh-part="item" value="paste" aria-disabled="true">
+              <span data-xh-part="item-text">Paste 粘贴（剪贴板是空的）</span>
+            </div>
+            <div data-xh-part="item" value="rename">
+              <span data-xh-part="item-text">Rename 重命名</span>
+            </div>
+            <div data-xh-part="separator"></div>
+            <div data-xh-part="item" value="delete">
+              <span data-xh-part="item-text">Delete 删除</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </xh-context-menu>
+    <span class="lead" id="wc-context-menu-picked">最近选中：（无）</span>
+  </section>
+
+  <section>
+    <h2>Clipboard</h2>
+    <p class="lead">
+      写入是异步的，也真的会失败：按下去先进 copying（按钮压暗，此刻连点也只发一次写请求），
+      写成功才翻成“已复制”，2 秒后自己回落。失败一律退回初始态并把原因报出来——
+      用 http 打开这个页面（非安全上下文）、或权限被拒都会走到这条路上，界面上绝不会留下“已复制”的假象。
+      展示框是只读而不是禁用：聚焦即全选，键盘用户照样能用 Ctrl / Cmd + C 自己带走；
+      点标题“接口密钥”会聚焦到框里（for 指的就是那个 input）。
+      两个指示器都常挂在 DOM 里、靠 hidden 互斥显隐，来回切按钮不抖宽。
+    </p>
+    <xh-clipboard id="wc-clipboard" value="xh_live_9f2c7a41b6d84e05" timeout="2000">
+      <!-- label 必须是原生 label（for 恒写向下面那个 input），input 必须是原生 input（值、只读与全选都落在它身上），
+           trigger 必须是原生 button（Enter / Space 的激活归平台）。两个指示器各用 copied 属性声明自己属于哪一侧 -->
+      <div data-xh-part="root">
+        <label data-xh-part="label">接口密钥</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input">
+          <button data-xh-part="trigger">
+            <span data-xh-part="indicator">复制</span>
+            <span data-xh-part="indicator" copied>✓ 已复制</span>
+          </button>
+        </div>
+      </div>
+    </xh-clipboard>
+    <span class="lead" id="wc-clipboard-state"></span>
+  </section>
+
+  <section>
+    <h2>Image</h2>
+    <p class="lead">
+      比 Avatar 通用：不预设圆形、也不预设首字母兜底，尺寸由 <code>--xh-image-w</code> 与 <code>--xh-image-ratio</code>
+      说了算，同一个组件既当封面图也当缩略图。图片与回退内容始终同时挂在 DOM 里、靠 hidden 互斥，换人时盒子不塌也不跳。
+      三个例子分别是正常加载、地址写坏走回退、压根没有 src——后两者是同一个落点，
+      DevTools 里看 root 上的 data-status 一眼分得清三态（loaded / error）。
+      加载途中回退内容要不要立刻露面由 fallback-delay 决定，默认 0 就是立刻；给它一个值，走缓存的快图就不会先闪一下占位。
+    </p>
+    <div class="row">
+      <!-- image 必须是原生 img，src / alt 由宿主写入，作者别自己往上写；
+           root 上那两条自定义属性是皮肤留给作者的尺寸接口（不给就是满宽、高度 auto），不是在覆盖皮肤。
+           第一张是内嵌 SVG：不联网也看得到加载成功那一态 -->
+      <xh-image id="wc-image-ok" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23475569%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E" alt="示例封面图">
+        <div data-xh-part="root" style="--xh-image-w: 200px; --xh-image-ratio: 16 / 9;">
+          <img data-xh-part="image">
+          <div data-xh-part="fallback">加载中</div>
+        </div>
+      </xh-image>
+      <xh-image id="wc-image-broken" src="https://example.invalid/broken.png" alt="地址写坏的图">
+        <div data-xh-part="root" style="--xh-image-w: 200px; --xh-image-ratio: 16 / 9;">
+          <img data-xh-part="image">
+          <div data-xh-part="fallback">图挂了</div>
+        </div>
+      </xh-image>
+      <xh-image id="wc-image-none">
+        <div data-xh-part="root" style="--xh-image-w: 200px; --xh-image-ratio: 16 / 9;">
+          <img data-xh-part="image">
+          <div data-xh-part="fallback">没有来源</div>
+        </div>
+      </xh-image>
+    </div>
+    <span class="lead" id="wc-image-state"></span>
+  </section>
 </main>
 `
 
@@ -1120,5 +1726,417 @@ for (const btn of Array.from(document.querySelectorAll('[data-toast]'))) {
       toasterEl.dismissAll()
     else
       startUpload()
+  })
+}
+
+// 组合框的候选由本页现渲：过滤是调用方的活儿，元素只管高亮、选中与空态。
+// 条目节点一改，元素就会重新接线并重新结算候选条数，空态节点据此显形。
+// 禁用一律写 aria-disabled：原生 disabled 不派 click，禁用候选的点击就走不到守卫里
+const wcComboCities: { value: string, label: string, disabled?: boolean }[] = [
+  { value: 'amsterdam', label: 'Amsterdam 阿姆斯特丹' },
+  { value: 'bangkok', label: 'Bangkok 曼谷' },
+  { value: 'barcelona', label: 'Barcelona 巴塞罗那' },
+  { value: 'beijing', label: 'Beijing 北京' },
+  { value: 'berlin', label: 'Berlin 柏林' },
+  { value: 'busan', label: 'Busan 釜山（禁用）', disabled: true },
+  { value: 'chengdu', label: 'Chengdu 成都' },
+  { value: 'chicago', label: 'Chicago 芝加哥' },
+  { value: 'dubai', label: 'Dubai 迪拜' },
+  { value: 'hangzhou', label: 'Hangzhou 杭州' },
+  { value: 'istanbul', label: 'Istanbul 伊斯坦布尔' },
+  { value: 'london', label: 'London 伦敦' },
+  { value: 'melbourne', label: 'Melbourne 墨尔本' },
+  { value: 'osaka', label: 'Osaka 大阪' },
+  { value: 'paris', label: 'Paris 巴黎' },
+  { value: 'seattle', label: 'Seattle 西雅图' },
+  { value: 'shanghai', label: 'Shanghai 上海' },
+  { value: 'toronto', label: 'Toronto 多伦多' },
+]
+
+function wcComboItemsHtml(query: string): string {
+  const q = query.trim().toLowerCase()
+  return wcComboCities
+    .filter(city => q === '' || city.label.toLowerCase().includes(q))
+    .map(city => `<div data-xh-part="item" value="${city.value}"${city.disabled ? ' aria-disabled="true"' : ''}>`
+      + `<span data-xh-part="item-text">${city.label}</span>`
+      // 勾选标记恒在，显不显由选中态驱动皮肤；未选中时它仍占着宽度，切换不抖行
+      + `<span data-xh-part="item-indicator">✓</span></div>`)
+    .join('')
+}
+
+// 两个组合框的接线一模一样，只有已选项怎么显示归各自决定
+function wireWcCombobox(hostId: string, paintValue: (value: readonly string[]) => void): void {
+  const host = document.getElementById(hostId)!
+  // 列表按 data-xh-part 找：content 的 id 由元素写成输入框 aria-controls 指向的那个，作者写的 id 挂不住
+  const list = host.querySelector<HTMLElement>('[data-xh-part="content"]')!
+  let painted = ''
+
+  const paintItems = (query: string): void => {
+    const html = wcComboItemsHtml(query)
+    // 筛出来还是同一批就不重建：白换一批 DOM 只会让元素多接一次线
+    if (html === painted)
+      return
+    painted = html
+    list.innerHTML = html
+  }
+
+  paintItems('')
+
+  // 输入串一变就重筛。多选选完后元素会把输入串清空，这条事件同样会到，候选因此自动回到全集
+  host.addEventListener('input-value-change', (e) => {
+    paintItems((e as CustomEvent<{ inputValue: string }>).detail.inputValue)
+  })
+  host.addEventListener('value-change', (e) => {
+    paintValue((e as CustomEvent<{ value: string[] }>).detail.value)
+  })
+}
+
+wireWcCombobox('wc-combobox', (value) => {
+  document.getElementById('wc-combobox-value')!.textContent = `当前值：${value[0] ?? '（未选）'}`
+})
+wireWcCombobox('wc-combobox-multi', (value) => {
+  document.getElementById('wc-combobox-multi-value')!.textContent = `已选：${value.length ? value.join('、') : '（无）'}`
+})
+
+// 标签节点归作者按当前值渲染（元素只打属性、不建节点）：这里按 value-change 增删，
+// 新节点由基类的变动观察器接住，下一帧照常接线
+const wcTagsMax = 5
+const wcTags = document.getElementById('wc-tags')!
+const wcTagsControl = wcTags.querySelector<HTMLElement>('[data-xh-part="control"]')!
+const wcTagsInput = wcTagsControl.querySelector<HTMLInputElement>('[data-xh-part="input"]')!
+const wcTagsOut = document.getElementById('wc-tags-value')!
+let wcTagsKey = ''
+
+function renderWcTags(values: readonly string[]): void {
+  // 标签没变就不重建节点：白换一批 DOM 会把焦点从正在就地编辑的那个框上抖掉
+  const key = values.join(' ')
+  if (key !== wcTagsKey) {
+    wcTagsKey = key
+    for (const gone of Array.from(wcTagsControl.querySelectorAll('[data-xh-part="item"]')))
+      gone.remove()
+    for (const value of values) {
+      const item = document.createElement('span')
+      item.setAttribute('data-xh-part', 'item')
+      // 身份取节点自带的 value 属性，元素照它认领这一个标签
+      item.setAttribute('value', value)
+      const preview = document.createElement('span')
+      preview.setAttribute('data-xh-part', 'item-preview')
+      const text = document.createElement('span')
+      text.setAttribute('data-xh-part', 'item-text')
+      text.textContent = value
+      // 删除钮要能被激活，写成原生 button（它不占 Tab 位，可及名由元素写成 aria-label）
+      const remove = document.createElement('button')
+      remove.setAttribute('data-xh-part', 'item-delete-trigger')
+      remove.textContent = '×'
+      preview.append(text, remove)
+      // 就地编辑框常挂不卸载，不编辑时由元素收起
+      const edit = document.createElement('input')
+      edit.setAttribute('data-xh-part', 'item-input')
+      item.append(preview, edit)
+      // 标签一律排在输入框之前：输入框永远跟在最后一个标签后面
+      wcTagsControl.insertBefore(item, wcTagsInput)
+    }
+  }
+  const atMax = values.length >= wcTagsMax
+  wcTagsOut.textContent = `${values.length} / ${wcTagsMax} 个标签${atMax ? ' · 已到上限' : ''}：${values.length ? values.join('、') : '（无）'}`
+}
+
+// 属性形式的初始值按逗号拆，与元素自己的转换器同一套
+renderWcTags((wcTags.getAttribute('default-value') ?? '').split(',').filter(v => v !== ''))
+
+wcTags.addEventListener('value-change', (e) => {
+  const { value } = (e as CustomEvent<{ value: string[] }>).detail
+  // 增删推到微任务里：这条回调是机器在转移途中报上来的，当场抽走节点等于在它自己的收尾里把节点拆了
+  queueMicrotask(() => renderWcTags(value))
+})
+
+// 就地编辑：当前值随每次敲键变（value-change），“上次提交”只在提交时变（value-commit）——
+// Escape 撤销回的正是后面这个。提交即便没改动值也照发一条，故两行会同时对齐
+function wireWcEditable(hostId: string, outId: string): void {
+  const host = document.getElementById(hostId)!
+  const out = document.getElementById(outId)!
+  const mode = host.getAttribute('submit-mode') ?? 'both'
+  let current = host.getAttribute('default-value') ?? ''
+  let committed = current
+  const paint = (): void => {
+    out.textContent = `submitMode=${mode} · 当前：${current || '（空）'} · 上次提交：${committed || '（空）'}`
+  }
+  host.addEventListener('value-change', (e) => {
+    current = (e as CustomEvent<{ value: string }>).detail.value
+    paint()
+  })
+  host.addEventListener('value-commit', (e) => {
+    committed = (e as CustomEvent<{ value: string, previousValue: string }>).detail.value
+    paint()
+  })
+  paint()
+}
+
+wireWcEditable('wc-editable-blur', 'wc-editable-blur-value')
+wireWcEditable('wc-editable-enter', 'wc-editable-enter-value')
+
+// 上传：条目节点归作者建（元素只按文档序把文件绑上去，并代填文件名与大小），列表变了照数量增删即可。
+// 增删而不是整块重建：整块重建会把焦点从刚按下的那颗删除按钮上抖掉。
+// 新插进来的节点由基类的变动观察器接住，下一帧照常接线
+const wcUploadItems = document.getElementById('wc-file-upload-items')!
+const wcUploadOut = document.getElementById('wc-file-upload-state')!
+const WC_UPLOAD_ITEM = '<div data-xh-part="item"><span data-xh-part="item-preview"></span><span data-xh-part="item-name"></span><span data-xh-part="item-size-text"></span><button data-xh-part="item-delete-trigger">✕</button></div>'
+const wcUploadRejectText: Record<string, string> = {
+  'type': '类型不在允许范围内',
+  'size-too-large': '超过单个 512 KB 的上限',
+  'size-too-small': '小于下限',
+  'too-many-files': '列表最多只放得下 3 个',
+}
+let wcUploadCount = 0
+let wcUploadReject = ''
+
+function renderWcUpload(): void {
+  while (wcUploadItems.children.length > wcUploadCount)
+    wcUploadItems.lastElementChild!.remove()
+  while (wcUploadItems.children.length < wcUploadCount)
+    wcUploadItems.insertAdjacentHTML('beforeend', WC_UPLOAD_ITEM)
+  wcUploadOut.textContent = `已选 ${wcUploadCount} / 3${wcUploadReject ? ` · 被拒：${wcUploadReject}` : ''}`
+}
+
+renderWcUpload()
+
+const wcUpload = document.getElementById('wc-file-upload')! as HTMLElement & {
+  translations?: { dropzone: string, deleteFile: (file: File) => string, clearFiles: string }
+}
+// 文案里有函数，走不了 HTML 属性，只能作为 property 交过去；写在按钮上的 aria-label 会被元素每帧盖掉
+wcUpload.translations = {
+  dropzone: '把文件拖到这里，或点开系统选择框',
+  deleteFile: (file: File) => `删除 ${file.name}`,
+  clearFiles: '清空全部文件',
+}
+wcUpload.addEventListener('files-change', (e) => {
+  wcUploadCount = (e as CustomEvent<{ files: File[] }>).detail.files.length
+  renderWcUpload()
+})
+// 一批里同时有收下的和被拒的是常态，accept 先到：先把上一次的原因清掉，随后那条 reject 再写新的
+wcUpload.addEventListener('file-accept', () => {
+  wcUploadReject = ''
+  renderWcUpload()
+})
+wcUpload.addEventListener('file-reject', (e) => {
+  const { files } = (e as CustomEvent<{ files: { file: File, reasons: string[] }[] }>).detail
+  wcUploadReject = files
+    .map(item => `${item.file.name}（${item.reasons.map(r => wcUploadRejectText[r] ?? r).join('、')}）`)
+    .join('；')
+  renderWcUpload()
+})
+
+// Tree：层级三件套（aria-level / aria-posinset / aria-setsize）、禁用与检索用的名字全取自树数据，
+// 它只能按 property 交——数组表达不了属性。标记与它必须同源，标记里有、这份数据里没有的节点报不出层级
+interface WcTreeNode {
+  value: string
+  label?: string
+  disabled?: boolean
+  children?: WcTreeNode[]
+}
+
+const wcTree = document.getElementById('wc-tree')! as HTMLElement & {
+  collection?: WcTreeNode[]
+  expandedValue?: string[]
+  selectedValue?: string[]
+}
+
+// 连打检索按 label 首字母匹配，文件名因此都以拉丁字母开头（两个 d 开头的才轮转得出来）
+wcTree.collection = [
+  {
+    value: 'src',
+    label: 'src',
+    children: [
+      {
+        value: 'components',
+        label: 'components',
+        children: [
+          { value: 'button', label: 'Button.vue' },
+          { value: 'dialog', label: 'Dialog.vue' },
+          { value: 'field', label: 'Field.vue' },
+        ],
+      },
+      {
+        value: 'utils',
+        label: 'utils',
+        children: [
+          { value: 'dom', label: 'dom.ts' },
+          { value: 'format', label: 'format.ts' },
+        ],
+      },
+      { value: 'main', label: 'main.ts' },
+    ],
+  },
+  {
+    value: 'docs',
+    label: 'docs',
+    children: [
+      { value: 'guide', label: 'guide.md' },
+      { value: 'api', label: 'api.md' },
+    ],
+  },
+  // children 给了空数组照样算分支：「暂时没有子项的目录」与文件在 ARIA 上不是一回事，前者要报 aria-expanded
+  { value: 'dist', label: 'dist', children: [] },
+  // 禁用只声明在这里，标记里不必再抄一遍
+  { value: 'lockfile', label: 'pnpm-lock.yaml（禁用）', disabled: true },
+  { value: 'readme', label: 'README.md' },
+]
+
+// 展开与选中都走受控。元素连上那一刻就把机器建起来了，default-* 一类初值只在那一刻读一次，
+// 而集合只能按 property 给、这几行又跑在 innerHTML 之后——追不上；受控值则是每次读都回头问 property，
+// 所以下面两个监听必须把新集合写回来，不写回点开的分支会立刻弹回去
+wcTree.expandedValue = ['src']
+wcTree.selectedValue = []
+
+const wcTreeState = document.getElementById('wc-tree-state')!
+
+function paintWcTree(): void {
+  const expanded = wcTree.expandedValue ?? []
+  const selected = wcTree.selectedValue ?? []
+  wcTreeState.textContent = `展开：${expanded.join('、') || '（无）'} · 选中：${selected.join('、') || '（无）'}`
+}
+
+paintWcTree()
+
+wcTree.addEventListener('expanded-change', (e) => {
+  wcTree.expandedValue = (e as CustomEvent<{ value: string[] }>).detail.value
+  paintWcTree()
+})
+
+wcTree.addEventListener('selection-change', (e) => {
+  wcTree.selectedValue = (e as CustomEvent<{ value: string[] }>).detail.value
+  paintWcTree()
+})
+
+// 工具条不接管条目的点击：回显由按钮自己的 click 记。
+// 禁用同样归条目自报——单项 aria-disabled 与整条 disabled 在这里读到的是同一件事，
+// 整条禁用期间元素会把每个条目都写成 aria-disabled
+const wcToolbarCommand = document.getElementById('wc-toolbar-command')!
+for (const el of Array.from(document.querySelectorAll('xh-toolbar'))) {
+  el.addEventListener('click', (e) => {
+    const item = (e.target as HTMLElement).closest<HTMLElement>('[data-xh-part="item"]')
+    if (!item || item.getAttribute('aria-disabled') === 'true')
+      return
+    wcToolbarCommand.textContent = `最近点击：${item.getAttribute('value')}`
+  })
+}
+
+// 整条禁用：改宿主属性，元素自行重接线（解禁后单项声明照旧，元素留了作者声明的快照）
+document.getElementById('wc-toolbar-disabled')!.addEventListener('change', (e) => {
+  document.getElementById('wc-toolbar')!.toggleAttribute('disabled', (e.target as HTMLInputElement).checked)
+})
+
+// 步骤条：元素不暴露命令式接口，写了 step 属性即受控——点 trigger 只发 step-change 意图，
+// 由这里写回属性才真的切步，外面那两颗按钮同样只是改这一个属性。
+// 两台步骤条共用这段接线，差别全在 HTML 上写的 count 与 linear。
+function wireWcSteps(id: string, count: number): void {
+  const host = document.getElementById(id)!
+  const prev = document.getElementById(`${id}-prev`)!
+  const next = document.getElementById(`${id}-next`)!
+  const out = document.getElementById(`${id}-value`)!
+  const readStep = (): number => Number(host.getAttribute('step'))
+
+  // 圆点里的字符是作者内容：皮肤只按 data-state 管描边与填充，走过的那几步换成对勾得自己写。
+  // 禁用写在 xh-button 宿主上，元素自会往里面那颗原生 button 打 disabled
+  function paint(step: number): void {
+    for (const item of Array.from(host.querySelectorAll<HTMLElement>('[data-xh-part="item"]'))) {
+      const index = Number(item.getAttribute('value'))
+      const indicator = item.querySelector<HTMLElement>('[data-xh-part="indicator"]')
+      if (indicator)
+        indicator.textContent = index < step ? '✓' : String(index + 1)
+    }
+    prev.toggleAttribute('disabled', step === 0)
+    next.toggleAttribute('disabled', step === count)
+    out.textContent = step === count ? '当前：全部完成' : `当前：第 ${step + 1} / ${count} 步`
+  }
+
+  function setStep(step: number): void {
+    host.setAttribute('step', String(step))
+    paint(step)
+  }
+
+  host.addEventListener('step-change', (e) => {
+    setStep((e as CustomEvent<{ step: number }>).detail.step)
+  })
+  // 上界取 count 而不是 count - 1：最后一步走完之后还有一格“全部完成”
+  prev.addEventListener('click', () => setStep(Math.max(0, readStep() - 1)))
+  next.addEventListener('click', () => setStep(Math.min(count, readStep() + 1)))
+  paint(readStep())
+}
+
+wireWcSteps('wc-steps', 4)
+wireWcSteps('wc-steps-linear', 3)
+
+// 悬停卡片：开合与“关注”两件事贴在同一行回显，好一眼看出点卡片里的按钮并不会把卡片关掉
+const hoverCardOut = document.getElementById('wc-hover-card-state')!
+const hoverCardFollow = document.getElementById('wc-hover-card-follow')!
+let hoverCardOpen = false
+let hoverCardFollowing = false
+
+function renderWcHoverCard(): void {
+  hoverCardOut.textContent = `卡片：${hoverCardOpen ? '展开' : '收起'} · ${hoverCardFollowing ? '已关注' : '未关注'}`
+}
+
+renderWcHoverCard()
+
+document.getElementById('wc-hover-card')!.addEventListener('open-change', (e) => {
+  hoverCardOpen = (e as CustomEvent<{ open: boolean }>).detail.open
+  renderWcHoverCard()
+})
+
+hoverCardFollow.addEventListener('click', () => {
+  hoverCardFollowing = !hoverCardFollowing
+  hoverCardFollow.textContent = hoverCardFollowing ? '已关注' : '关注'
+  renderWcHoverCard()
+})
+
+// 右键菜单选中回显：select 从宿主冒泡出来，detail 只带 value
+document.getElementById('wc-context-menu')!.addEventListener('select', (e) => {
+  document.getElementById('wc-context-menu-picked')!.textContent
+    = `最近选中：${(e as CustomEvent<{ value: string }>).detail.value}`
+})
+
+// 剪贴板：失败时 copy-error 先到、随后那条回 idle 的 status-change 才来，
+// 状态与原因分开存，否则刚报出来的原因会被后一条当场冲掉
+const clipboardOut = document.getElementById('wc-clipboard-state')!
+const clipboardStatusText: Record<string, string> = { idle: '待命', copying: '写入中', copied: '已复制' }
+let clipboardStatus = 'idle'
+let clipboardError = ''
+
+function renderWcClipboard(): void {
+  const label = clipboardStatusText[clipboardStatus] ?? clipboardStatus
+  clipboardOut.textContent = `状态：${label}${clipboardError ? ` · 上次失败：${clipboardError}` : ''}`
+}
+
+renderWcClipboard()
+
+const wcClipboard = document.getElementById('wc-clipboard')!
+wcClipboard.addEventListener('status-change', (e) => {
+  const { status } = (e as CustomEvent<{ status: 'idle' | 'copying' | 'copied' }>).detail
+  if (status === 'copying')
+    clipboardError = ''
+  clipboardStatus = status
+  renderWcClipboard()
+})
+wcClipboard.addEventListener('copy-error', (e) => {
+  const { error } = (e as CustomEvent<{ error: unknown, value: string }>).detail
+  clipboardError = error instanceof Error ? error.message : String(error)
+  renderWcClipboard()
+})
+
+// 三张图各报各的状态：加载成功、取回失败、压根没有来源——后两者落在同一个 error 上
+const wcImageOut = document.getElementById('wc-image-state')!
+const wcImageState = { ok: '—', broken: '—', none: '—' }
+
+function renderWcImageState(): void {
+  wcImageOut.textContent = `状态：正常 ${wcImageState.ok} · 坏地址 ${wcImageState.broken} · 无 src ${wcImageState.none}`
+}
+
+renderWcImageState()
+
+for (const key of ['ok', 'broken', 'none'] as const) {
+  document.getElementById(`wc-image-${key}`)!.addEventListener('status-change', (e) => {
+    wcImageState[key] = (e as CustomEvent<{ status: string }>).detail.status
+    renderWcImageState()
   })
 }
