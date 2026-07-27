@@ -141,23 +141,36 @@ export const tooltipMachine = createMachine({
       waitForCloseDelay: ({ prop, send }) =>
         setTimeoutEffect(() => send({ type: 'after.closeDelay' }), prop('closeDelay') ?? CLOSE_DELAY),
       // 引擎经 refs 注入；缺引擎或缺元素时静默跳过，状态转移不受影响
-      trackPosition: ({ refs, prop, context }) => {
+      trackPosition: ({ refs, prop, context, flush }) => {
         const engine = refs.get('position')
         if (!engine)
           return undefined
 
-        const anchor = refs.get('getAnchorEl')()
-        const floating = refs.get('getFloatingEl')()
-        if (!anchor || !floating)
-          return undefined
+        let stop: (() => void) | undefined
+        let disposed = false
 
-        // attach 的返回值即停止跟随，直接当 cleanup 交回
-        return engine.attach(
-          anchor,
-          floating,
-          { placement: prop('placement'), offset: prop('offset') },
-          result => context.set('position', result),
-        )
+        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带着 hidden（高度为 0），
+        // 此时算出的坐标会少掉浮层自身的尺寸——placement=top 会正好错位一个浮层高度，
+        // 浮层压在锚点上。flush 等的就是适配器把这一帧渲染出去。
+        flush(() => {
+          if (disposed)
+            return
+          const anchor = refs.get('getAnchorEl')()
+          const floating = refs.get('getFloatingEl')()
+          if (!anchor || !floating)
+            return
+          stop = engine.attach(
+            anchor,
+            floating,
+            { placement: prop('placement'), offset: prop('offset') },
+            result => context.set('position', result),
+          )
+        })
+
+        return () => {
+          disposed = true
+          stop?.()
+        }
       },
     },
   },

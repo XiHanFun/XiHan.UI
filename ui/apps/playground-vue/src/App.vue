@@ -18,6 +18,14 @@ import {
   XhDialogRoot,
   XhDialogTitle,
   XhDialogTrigger,
+  XhPopoverArrow,
+  XhPopoverCloseTrigger,
+  XhPopoverContent,
+  XhPopoverDescription,
+  XhPopoverPositioner,
+  XhPopoverRoot,
+  XhPopoverTitle,
+  XhPopoverTrigger,
   XhProgress,
   XhRadioGroupItem,
   XhRadioGroupItemText,
@@ -30,6 +38,11 @@ import {
   XhTabsRoot,
   XhTabsTrigger,
   XhToggle,
+  XhTooltipArrow,
+  XhTooltipContent,
+  XhTooltipPositioner,
+  XhTooltipRoot,
+  XhTooltipTrigger,
 } from '@xihan-ui/vue'
 import { ref } from 'vue'
 
@@ -293,6 +306,55 @@ const panels = ref<string[]>(['a'])
         </XhAccordionItem>
       </XhAccordionRoot>
       <span class="lead">展开：{{ panels.join(', ') || '（无）' }}</span>
+    </section>
+
+    <section>
+      <h2>Tooltip</h2>
+      <p class="lead">
+        悬停等 700ms 才出（防误触）；聚焦立即出，且此时鼠标移出不会收走它。指针停在提示上也不收起。
+      </p>
+      <div class="row" style="gap: 24px;">
+        <XhTooltipRoot placement="top">
+          <XhTooltipTrigger>上方（默认延时）</XhTooltipTrigger>
+          <XhTooltipPositioner>
+            <XhTooltipContent>
+              提示走的是同一份 tooltip 机器
+              <XhTooltipArrow />
+            </XhTooltipContent>
+          </XhTooltipPositioner>
+        </XhTooltipRoot>
+        <XhTooltipRoot placement="right" :open-delay="0">
+          <XhTooltipTrigger>右侧（无延时）</XhTooltipTrigger>
+          <XhTooltipPositioner>
+            <XhTooltipContent>
+              placement 由定位引擎落定，空间不够会自动翻面
+              <XhTooltipArrow />
+            </XhTooltipContent>
+          </XhTooltipPositioner>
+        </XhTooltipRoot>
+      </div>
+    </section>
+
+    <section>
+      <h2>Popover</h2>
+      <p class="lead">
+        点击展开、Escape 或点外部关闭；展开时焦点进入内容，关闭后回到触发按钮。非模态不陷焦点。
+      </p>
+      <XhPopoverRoot placement="bottom-start">
+        <XhPopoverTrigger>打开浮层</XhPopoverTrigger>
+        <XhPopoverPositioner>
+          <XhPopoverContent>
+            <XhPopoverTitle>订阅设置</XhPopoverTitle>
+            <XhPopoverDescription>
+              role=dialog，四处 ARIA 互指；定位与 Tooltip 共用同一个引擎。
+            </XhPopoverDescription>
+            <div class="row end">
+              <XhPopoverCloseTrigger>知道了</XhPopoverCloseTrigger>
+            </div>
+            <XhPopoverArrow />
+          </XhPopoverContent>
+        </XhPopoverPositioner>
+      </XhPopoverRoot>
     </section>
   </main>
 </template>

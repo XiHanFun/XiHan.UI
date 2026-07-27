@@ -210,6 +210,49 @@ app.innerHTML = `
       </div>
     </xh-accordion>
   </section>
+
+  <section>
+    <h2>Tooltip</h2>
+    <p class="lead">悬停等 700ms 才出；聚焦立即出，且此时鼠标移出不会收走它。指针停在提示上也不收起。</p>
+    <div class="row" style="gap: 24px;">
+      <xh-tooltip placement="top">
+        <button data-xh-part="trigger">上方（默认延时）</button>
+        <div data-xh-part="positioner">
+          <div data-xh-part="content">
+            与 Vue 版共用同一份 tooltip 机器
+            <div data-xh-part="arrow"></div>
+          </div>
+        </div>
+      </xh-tooltip>
+      <xh-tooltip placement="right" open-delay="0">
+        <button data-xh-part="trigger">右侧（无延时）</button>
+        <div data-xh-part="positioner">
+          <div data-xh-part="content">
+            placement 由定位引擎落定，空间不够会自动翻面
+            <div data-xh-part="arrow"></div>
+          </div>
+        </div>
+      </xh-tooltip>
+    </div>
+  </section>
+
+  <section>
+    <h2>Popover</h2>
+    <p class="lead">点击展开、Escape 或点外部关闭；展开时焦点进入内容，关闭后回到触发按钮。</p>
+    <xh-popover placement="bottom-start">
+      <button data-xh-part="trigger">打开浮层</button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <h2 data-xh-part="title">订阅设置</h2>
+          <p data-xh-part="description">role=dialog，四处 ARIA 互指；定位与 Tooltip 共用同一个引擎。</p>
+          <div class="row end">
+            <button data-xh-part="close-trigger">知道了</button>
+          </div>
+          <div data-xh-part="arrow"></div>
+        </div>
+      </div>
+    </xh-popover>
+  </section>
 </main>
 `
 
