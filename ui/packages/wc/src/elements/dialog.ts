@@ -131,9 +131,9 @@ export class XhDialogElement extends XhElement {
     // Vue 靠卸载不走这条路，styled 不改，其退场动画不受影响。
     const positioner = this.getPart('positioner')
     if (positioner)
-      positioner.style.display = open ? '' : 'none'
+      this.setPartHidden(positioner, !open)
     if (this.backdropNode)
-      this.backdropNode.style.display = open ? '' : 'none'
+      this.setPartHidden(this.backdropNode, !open)
   }
 
   override disconnectedCallback(): void {

@@ -132,6 +132,6 @@ export class XhTooltipElement extends XhElement {
     // 与 dialog/collapsible/popover 一致，用内联样式兜底。
     const content = this.getPart('content')
     if (content)
-      content.style.display = api.open ? '' : 'none'
+      this.setPartHidden(content, !api.open)
   }
 }

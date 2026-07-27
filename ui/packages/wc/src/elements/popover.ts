@@ -163,7 +163,7 @@ export class XhPopoverElement extends XhElement {
     // [hidden]{display:none}，只有内联 style.display 压得住。open 时置空串即撤掉内联声明。
     const content = this.getPart('content')
     if (content)
-      content.style.display = api.open ? '' : 'none'
+      this.setPartHidden(content, !api.open)
   }
 
   override disconnectedCallback(): void {

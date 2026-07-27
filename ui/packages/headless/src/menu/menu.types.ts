@@ -76,6 +76,8 @@ export interface MenuSchema extends MachineSchema {
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
     | { type: 'ITEM.FOCUS', value: string }
+    /** 持有焦点的条目离开了 DOM：浏览器不派 focusout，由适配器如实上报。 */
+    | { type: 'ITEM.LOST' }
     | { type: 'ITEM.SELECT', value: string }
   tag: never
   guard: 'isOpenControlled'

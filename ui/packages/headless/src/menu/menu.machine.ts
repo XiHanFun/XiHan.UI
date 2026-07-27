@@ -70,6 +70,9 @@ export const menuMachine = createMachine({
           { target: 'closed', actions: ['invokeOnSelect', 'setReturnFocus', 'invokeOnClose'] },
         ],
         'ITEM.FOCUS': { actions: ['setFocusedValue'] },
+        // 焦点条目被移出 DOM：锚点已悬空，就地按当前活条目重挑一个，
+        // 否则没有条目认领 tabindex=0、方向键也失去起点
+        'ITEM.LOST': { actions: ['clearFocusedValue', 'setInitialFocusedValue'] },
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
     },
@@ -112,14 +115,24 @@ export const menuMachine = createMachine({
         if (e.type === 'ITEM.FOCUS')
           context.set('focusedValue', e.value)
       },
-      setInitialFocusedValue: ({ refs, context }) => {
-        const content = refs.get('getContentEl')()
-        // 无 DOM 环境（纯逻辑测试）：锚点留空，状态转移不受影响
-        if (!content)
-          return
-        const items = queryItems(content, menuItemQuery)
-        // first/last 都从边界起步找第一个可停留条目，禁用项自动跳过，与 loop 无关
-        context.set('focusedValue', itemValue(navigateItems(items, null, context.get('focusIntent'))))
+      setInitialFocusedValue: ({ refs, context, state, flush }) => {
+        const pick = (): void => {
+          const content = refs.get('getContentEl')()
+          // 无 DOM 环境（纯逻辑测试）：锚点留空，状态转移不受影响
+          if (!content)
+            return
+          const items = queryItems(content, menuItemQuery)
+          // first/last 都从边界起步找第一个可停留条目，禁用项自动跳过，与 loop 无关
+          context.set('focusedValue', itemValue(navigateItems(items, null, context.get('focusIntent'))))
+        }
+        pick()
+        // 初始即展开时，WC 侧条目的身份标记要等首次 wire() 才写上，这一刻查不到任何条目、
+        // 锚点会落空（Vue 侧首帧就带这些属性，不补这一手两个适配器就分叉）。
+        // 已经挑到就不再挑；挑的过程中若菜单已收起也不补。
+        flush(() => {
+          if (state.get() === 'open' && context.get('focusedValue') == null)
+            pick()
+        })
       },
       clearFocusedValue: ({ context }) => context.set('focusedValue', null),
     },
@@ -183,8 +196,17 @@ export const menuMachine = createMachine({
           // 菜单不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
           trapped: () => false,
           loop: false,
-          // 落焦交给 Tab 序列探测：锚点条目是容器里唯一 tabindex=0 的元素，
-          // content 仍带 hidden 的那一帧探不到可聚焦元素，焦点域会自行重试到 DOM 就位。
+          // 显式指定落焦点为锚点条目，不交给 Tab 序列探测：探测走的是
+          // focusFirst(removeLinks(...))，条目写成 <a> 时会被整体过滤掉，
+          // 落焦就会掉到 content 容器上而不是首个条目。
+          // 这里每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位。
+          initialFocus: () => {
+            const content = refs.get('getContentEl')()
+            const anchor = context.get('focusedValue')
+            if (!content || anchor == null)
+              return null
+            return queryItems(content, menuItemQuery).find(el => itemValue(el) === anchor) ?? null
+          },
           restoreFocus: () => context.get('returnFocus'),
         })
 
