@@ -5,7 +5,7 @@ export type { Anatomy, AnatomyPart } from './anatomy'
 export { createAnatomy } from './anatomy'
 
 // 属性归一化
-export { ariaAttr, dataAttr, dataState } from './attrs'
+export { dataAttr, dataState } from './attrs'
 
 export type { LabellingInput, LabellingResult } from './capability/a11y/aria-labelling'
 

@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
 
-// M2-A6：主入口在无 DOM 的 Node 下必须可 import 且不注册元素、不崩。
+// 主入口在无 DOM 的 Node 下必须可 import 且不注册元素、不崩。
 describe('node import smoke（无 DOM 惰性注册）', () => {
   it('主入口可 import，导出运行时原语，不触碰 HTMLElement', async () => {
     const mod = await import('../src/index')
