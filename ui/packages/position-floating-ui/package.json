@@ -1,0 +1,37 @@
+{
+  "name": "@xihan-ui/position-floating-ui",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "XiHan.UI position engine — PositionEnginePort implemented on @floating-ui/dom.",
+  "license": "MIT",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@floating-ui/dom": "catalog:",
+    "@xihan-ui/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@xihan-ui/build": "workspace:*",
+    "@xihan-ui/tsconfig": "workspace:*",
+    "jsdom": "catalog:",
+    "vitest": "catalog:"
+  }
+}
