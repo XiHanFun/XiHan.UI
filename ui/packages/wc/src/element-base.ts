@@ -22,6 +22,22 @@ function touchesParts(record: MutationRecord): boolean {
   return false
 }
 
+/**
+ * 作者写在角色节点上的"声明"，与机器写上去的"状态"分属两侧：
+ * 这几个是作者说了算的，改了就等于换了一个条目，必须重新接线。
+ *
+ * 只盯这几个而不是所有属性：wire() 每帧都往角色节点写 aria- 与 data- 属性，
+ * 全量观察等于自己触发自己。
+ */
+const AUTHORED_ATTRS = ['value', 'disabled', 'aria-disabled'] as const
+
+function rewritesDeclaration(record: MutationRecord): boolean {
+  if (record.type !== 'attributes' || !record.attributeName)
+    return false
+  const el = record.target as Element
+  return containsPart(el) && (AUTHORED_ATTRS as readonly string[]).includes(record.attributeName)
+}
+
 // Light-DOM 行为宿主基类：不渲染结构，发现用户写的 data-xh-part 角色节点并往上打属性/事件。
 export abstract class XhElement extends ReactiveElement {
   protected readonly spreader: Spreader = createSpreader()
@@ -106,21 +122,37 @@ export abstract class XhElement extends ReactiveElement {
     this.partObserver = undefined
   }
 
+  /** wire() 自己写属性的那一小段：期间的属性变动是本机器写的，不是作者改的。 */
+  private wiring = false
+
   /**
-   * 作者在运行期往 Light DOM 增删角色节点后重新接线。
-   * Vue 侧条目是组件，增删即带全套 props 渲染；WC 侧不看着点就会留下"死条目"——
-   * 没有 data-scope/data-part/data-value 与事件处理器，集合查询也看不见它。
+   * 作者在运行期改动 Light DOM 后重新接线，两类改动都要接住：
    *
-   * **只观察 childList**：wire() 会往角色节点写属性，一并观察 attributes 就会自触发成死循环。
+   * 1. 增删角色节点。Vue 侧条目是组件，增删即带全套 props 渲染；
+   *    WC 侧不看着点就会留下"死条目"——没有 data-scope/data-part/data-value
+   *    与事件处理器，集合查询也看不见它。
+   * 2. 原地改写角色节点上的声明（value / disabled）。列表换了一批数据、节点被复用时
+   *    就是这个形状。漏掉它，节点上会留着上一轮写的 aria-selected="true" 与 tabindex="0"，
+   *    而它自称的 value 已经变了——DOM 就此开始说谎：读屏念出的选中项并不是真的选中项。
+   *
+   * 属性只盯作者那几个、且跳过 wire() 自己写的那一段：全量观察属性会自己触发自己。
    */
   private observeParts(): void {
     if (this.partObserver)
       return
     this.partObserver = new MutationObserver((records) => {
-      if (records.some(r => touchesParts(r) && this.ownsSubtree(r.target)))
+      if (this.wiring)
+        return
+      const hit = records.some(r => (touchesParts(r) || rewritesDeclaration(r)) && this.ownsSubtree(r.target))
+      if (hit)
         this.requestUpdate()
     })
-    this.partObserver.observe(this, { childList: true, subtree: true })
+    this.partObserver.observe(this, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: [...AUTHORED_ATTRS],
+    })
   }
 
   /** 嵌套 xh-* 子树归内层元素自己管，外层不替它重跑 wire（discoverParts 本来也跳过它们）。 */
@@ -138,7 +170,17 @@ export abstract class XhElement extends ReactiveElement {
   protected override updated(changed: Map<PropertyKey, unknown>): void {
     super.updated(changed)
     this.refreshParts()
-    this.wire()
+    // 观察器与 wire() 写的是同一批节点：不圈出这一段，写属性会把自己再排一轮更新。
+    // 观察器的回调是微任务，所以圈到微任务队列排空为止，不能只圈同步这一段。
+    this.wiring = true
+    try {
+      this.wire()
+    }
+    finally {
+      queueMicrotask(() => {
+        this.wiring = false
+      })
+    }
   }
 
   /** 子类实现：把 connect 产出打到角色节点上。 */
