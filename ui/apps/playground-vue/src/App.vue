@@ -10,6 +10,12 @@ import {
   XhAvatarImage,
   XhAvatarRoot,
   XhBadge,
+  XhBreadcrumbEllipsis,
+  XhBreadcrumbItem,
+  XhBreadcrumbLink,
+  XhBreadcrumbList,
+  XhBreadcrumbRoot,
+  XhBreadcrumbSeparator,
   XhButton,
   XhCheckbox,
   XhCheckboxGroupItem,
@@ -18,9 +24,34 @@ import {
   XhCheckboxGroupLabel,
   XhCheckboxGroupRoot,
   XhCheckboxGroupTrigger,
+  XhClipboardControl,
+  XhClipboardIndicator,
+  XhClipboardInput,
+  XhClipboardLabel,
+  XhClipboardRoot,
+  XhClipboardTrigger,
   XhCollapsibleContent,
   XhCollapsibleRoot,
   XhCollapsibleTrigger,
+  XhComboboxClearTrigger,
+  XhComboboxContent,
+  XhComboboxControl,
+  XhComboboxEmpty,
+  XhComboboxInput,
+  XhComboboxItem,
+  XhComboboxItemIndicator,
+  XhComboboxItemText,
+  XhComboboxLabel,
+  XhComboboxPositioner,
+  XhComboboxRoot,
+  XhComboboxTrigger,
+  XhContextMenuContent,
+  XhContextMenuItem,
+  XhContextMenuItemText,
+  XhContextMenuPositioner,
+  XhContextMenuRoot,
+  XhContextMenuSeparator,
+  XhContextMenuTrigger,
   XhDialogCloseTrigger,
   XhDialogContent,
   XhDialogDescription,
@@ -33,11 +64,40 @@ import {
   XhDrawerRoot,
   XhDrawerTitle,
   XhDrawerTrigger,
+  XhEditableArea,
+  XhEditableCancelTrigger,
+  XhEditableControl,
+  XhEditableEditTrigger,
+  XhEditableInput,
+  XhEditableLabel,
+  XhEditablePreview,
+  XhEditableRoot,
+  XhEditableSubmitTrigger,
   XhFieldControl,
   XhFieldDescription,
   XhFieldErrorText,
   XhFieldLabel,
   XhFieldRoot,
+  XhFileUploadClearTrigger,
+  XhFileUploadDropzone,
+  XhFileUploadHiddenInput,
+  XhFileUploadItem,
+  XhFileUploadItemDeleteTrigger,
+  XhFileUploadItemGroup,
+  XhFileUploadItemName,
+  XhFileUploadItemPreview,
+  XhFileUploadItemSizeText,
+  XhFileUploadLabel,
+  XhFileUploadRoot,
+  XhFileUploadTrigger,
+  XhHoverCardArrow,
+  XhHoverCardContent,
+  XhHoverCardPositioner,
+  XhHoverCardRoot,
+  XhHoverCardTrigger,
+  XhImageFallback,
+  XhImageImage,
+  XhImageRoot,
   XhListboxContent,
   XhListboxItem,
   XhListboxItemGroup,
@@ -103,11 +163,31 @@ import {
   XhSliderRoot,
   XhSliderThumb,
   XhSliderTrack,
+  XhStepsContent,
+  XhStepsDescription,
+  XhStepsIndicator,
+  XhStepsItem,
+  XhStepsList,
+  XhStepsRoot,
+  XhStepsSeparator,
+  XhStepsTitle,
+  XhStepsTrigger,
   XhSwitch,
   XhTabsContent,
   XhTabsList,
   XhTabsRoot,
   XhTabsTrigger,
+  XhTagsInputClearTrigger,
+  XhTagsInputControl,
+  XhTagsInputHiddenInput,
+  XhTagsInputInput,
+  XhTagsInputItem,
+  XhTagsInputItemDeleteTrigger,
+  XhTagsInputItemInput,
+  XhTagsInputItemPreview,
+  XhTagsInputItemText,
+  XhTagsInputLabel,
+  XhTagsInputRoot,
   XhTextFieldClearTrigger,
   XhTextFieldInput,
   XhTextFieldLabel,
@@ -122,13 +202,28 @@ import {
   XhToggle,
   XhToggleGroupItem,
   XhToggleGroupRoot,
+  XhToolbarGroup,
+  XhToolbarItem,
+  XhToolbarRoot,
+  XhToolbarSeparator,
   XhTooltipArrow,
   XhTooltipContent,
   XhTooltipPositioner,
   XhTooltipRoot,
   XhTooltipTrigger,
+  XhTreeBranch,
+  XhTreeBranchContent,
+  XhTreeBranchControl,
+  XhTreeBranchText,
+  XhTreeBranchTrigger,
+  XhTreeItem,
+  XhTreeItemIndicator,
+  XhTreeItemText,
+  XhTreeLabel,
+  XhTreeRoot,
+  XhTreeTree,
 } from '@xihan-ui/vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const theme = createThemeController()
 const mode = ref(theme.getState().mode)
@@ -258,6 +353,199 @@ function startUpload(
   window.setTimeout(update, 1200, 'upload', { description: '已传 2 / 3' })
   // 同一个 id 再 create 一次同样是就地改写，位置不动
   window.setTimeout(create, 2400, { id: 'upload', type: 'success', title: '上传完成', description: '3 个文件已入库' })
+}
+
+// 城市文本里拉丁词与中文各写一份：本页匹配的是整条文本，两边都筛得动。
+// 条目给足十几条，浮层的滚动与检索才试得出来
+const comboCities: { value: string, label: string, disabled?: boolean }[] = [
+  { value: 'amsterdam', label: 'Amsterdam 阿姆斯特丹' },
+  { value: 'bangkok', label: 'Bangkok 曼谷' },
+  { value: 'barcelona', label: 'Barcelona 巴塞罗那' },
+  { value: 'beijing', label: 'Beijing 北京' },
+  { value: 'berlin', label: 'Berlin 柏林' },
+  { value: 'busan', label: 'Busan 釜山（禁用）', disabled: true },
+  { value: 'chengdu', label: 'Chengdu 成都' },
+  { value: 'chicago', label: 'Chicago 芝加哥' },
+  { value: 'dubai', label: 'Dubai 迪拜' },
+  { value: 'hangzhou', label: 'Hangzhou 杭州' },
+  { value: 'istanbul', label: 'Istanbul 伊斯坦布尔' },
+  { value: 'london', label: 'London 伦敦' },
+  { value: 'melbourne', label: 'Melbourne 墨尔本' },
+  { value: 'osaka', label: 'Osaka 大阪' },
+  { value: 'paris', label: 'Paris 巴黎' },
+  { value: 'seattle', label: 'Seattle 西雅图' },
+  { value: 'shanghai', label: 'Shanghai 上海' },
+  { value: 'toronto', label: 'Toronto 多伦多' },
+]
+
+// 筛掉哪些条目是本页自己算的：组件只管高亮、选中与空态，它不认识“筛”这件事
+function filterComboCities(query: string) {
+  const q = query.trim().toLowerCase()
+  return q === '' ? comboCities : comboCities.filter(c => c.label.toLowerCase().includes(q))
+}
+
+// 值一律按数组接：单选走的是同一条回调，选中集合恒为至多一条
+const comboValue = ref<string[]>([])
+const comboQuery = ref('')
+const comboFiltered = computed(() => filterComboCities(comboQuery.value))
+
+const comboMultiValue = ref<string[]>([])
+const comboMultiQuery = ref('')
+const comboMultiFiltered = computed(() => filterComboCities(comboMultiQuery.value))
+
+const stack = ref<string[]>(['Vue', 'TypeScript', 'Vite'])
+
+const editableName = ref('阿旺')
+const editableNameCommitted = ref(editableName.value)
+const signature = ref('且将新火试新茶')
+const signatureCommitted = ref(signature.value)
+function onNicknameCommit(details: { value: string }): void {
+  editableNameCommitted.value = details.value
+}
+function onSignatureCommit(details: { value: string }): void {
+  signatureCommitted.value = details.value
+}
+
+// 文案里有函数（删除按钮的可及名要带上文件名），提到外面存一份：
+// 写在模板里每渲染一次都是个新对象，白白惊动一轮 props
+const uploadTranslations = {
+  dropzone: '把文件拖到这里，或点开系统选择框',
+  deleteFile: (file: File) => `删除 ${file.name}`,
+  clearFiles: '清空全部文件',
+}
+const uploadRejectText: Record<string, string> = {
+  'type': '类型不在允许范围内',
+  'size-too-large': '超过单个 512 KB 的上限',
+  'size-too-small': '小于下限',
+  'too-many-files': '列表最多只放得下 3 个',
+}
+const uploadCount = ref(0)
+const uploadReject = ref('')
+function onUploadFilesChange(details: { files: File[] }): void {
+  uploadCount.value = details.files.length
+}
+// 一批里同时有收下的和被拒的是常态，accept 先到：先把上一次的原因清掉，随后那条 reject 再写新的
+function onUploadAccept(): void {
+  uploadReject.value = ''
+}
+function onUploadReject(details: { files: { file: File, reasons: string[] }[] }): void {
+  uploadReject.value = details.files
+    .map(item => `${item.file.name}（${item.reasons.map(r => uploadRejectText[r] ?? r).join('、')}）`)
+    .join('；')
+}
+
+// 树数据是层级元信息（aria-level / aria-posinset / aria-setsize）与检索用名字的唯一事实源，
+// 下面的标记只管长相，两者必须同源：标记里有、这份数据里没有的节点报不出层级，也进不了导航。
+// 连打检索按 label 首字母匹配，文件名因此都以拉丁字母开头（两个 d 开头的才轮转得出来）
+const projectTree = [
+  {
+    value: 'src',
+    label: 'src',
+    children: [
+      {
+        value: 'components',
+        label: 'components',
+        children: [
+          { value: 'button', label: 'Button.vue' },
+          { value: 'dialog', label: 'Dialog.vue' },
+          { value: 'field', label: 'Field.vue' },
+        ],
+      },
+      {
+        value: 'utils',
+        label: 'utils',
+        children: [
+          { value: 'dom', label: 'dom.ts' },
+          { value: 'format', label: 'format.ts' },
+        ],
+      },
+      { value: 'main', label: 'main.ts' },
+    ],
+  },
+  {
+    value: 'docs',
+    label: 'docs',
+    children: [
+      { value: 'guide', label: 'guide.md' },
+      { value: 'api', label: 'api.md' },
+    ],
+  },
+  // children 给了空数组照样算分支：「暂时没有子项的目录」与文件在 ARIA 上不是一回事，前者要报 aria-expanded
+  { value: 'dist', label: 'dist', children: [] },
+  // 禁用只声明在这里，标记里不必再抄一遍：组件据此打 aria-disabled（不是原生 disabled，禁用行仍要能当方向键的起点）
+  { value: 'lockfile', label: 'pnpm-lock.yaml（禁用）', disabled: true },
+  { value: 'readme', label: 'README.md' },
+]
+const treeExpanded = ref<string[]>(['src'])
+const treeSelected = ref<string[]>([])
+function onTreeExpandedChange(details: { value: string[] }): void {
+  treeExpanded.value = details.value
+}
+function onTreeSelectionChange(details: { value: string[] }): void {
+  treeSelected.value = details.value
+}
+
+const toolbarLocked = ref(false)
+const toolbarCommand = ref('（无）')
+// 工具条不接管条目的点击：这条回显是按钮自己记的。
+// 整条禁用时也由作者自己不响应——工具条只负责把 aria-disabled 与导航停掉
+function runToolbarCommand(name: string): void {
+  if (toolbarLocked.value)
+    return
+  toolbarCommand.value = name
+}
+
+const orderStep = ref(0)
+const orderSteps = [
+  { title: '收货信息', description: '收货人与地址' },
+  { title: '支付方式', description: '在线支付或货到付款' },
+  { title: '开具发票', description: '抬头与税号' },
+  { title: '确认下单', description: '核对金额与优惠' },
+]
+
+// linear 那台只写标题不写说明：触发器是两列网格，说明缺席时右列的第二行是零高，不会留白
+const auditStep = ref(0)
+const auditSteps = [
+  { title: '上传资料' },
+  { title: '人工审核' },
+  { title: '开通服务' },
+]
+
+// HoverCard：卡片本体承载交互，"关注"这颗按钮就在卡片里——点它卡片不收起，这正是它与 Tooltip 的分界
+const hoverCardOpen = ref(false)
+const hoverCardFollowing = ref(false)
+function onHoverCardOpenChange(details: { open: boolean }): void {
+  hoverCardOpen.value = details.open
+}
+
+const contextPicked = ref('')
+function onContextMenuSelect(details: { value: string }): void {
+  contextPicked.value = details.value
+}
+
+// Clipboard：状态与失败原因分开存。失败时 copy-error 先到、随后那条回 idle 的 status-change 才来，
+// 合在一处会把刚报出来的原因当场冲掉
+const apiToken = 'xh_live_9f2c7a41b6d84e05'
+const clipboardStatus = ref('idle')
+const clipboardError = ref('')
+const clipboardStatusText: Record<string, string> = { idle: '待命', copying: '写入中', copied: '已复制' }
+function clipboardStatusLabel(): string {
+  return clipboardStatusText[clipboardStatus.value] ?? clipboardStatus.value
+}
+function onClipboardStatus(details: { status: string }): void {
+  if (details.status === 'copying')
+    clipboardError.value = ''
+  clipboardStatus.value = details.status
+}
+function onClipboardError(details: { error: unknown }): void {
+  clipboardError.value = details.error instanceof Error ? details.error.message : String(details.error)
+}
+
+// 内嵌一张 SVG 当“正常加载”那一例：演示页不联网也看得到加载成功那一态
+const demoImageSrc = 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23475569%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E'
+const imageStatus = ref({ ok: '—', broken: '—', none: '—' })
+function onImageStatus(key: 'ok' | 'broken' | 'none', details: { status: string }): void {
+  imageStatus.value[key] = details.status
 }
 </script>
 
@@ -1010,6 +1298,644 @@ function startUpload(
           </template>
         </XhToasterGroup>
       </XhToasterRoot>
+    </section>
+
+    <section>
+      <h2>Combobox</h2>
+      <p class="lead">
+        打字即展开并就地过滤——筛出哪几条是本页自己算的（一个 computed 按输入串匹配整条文本），
+        组件只管高亮、选中与空态：打 be 只剩 Beijing / Berlin，打 北 一样筛得动。
+        焦点自始至终在输入框上，方向键移的是高亮而不是焦点，长列表里高亮会自己滚进可视区；
+        Home / End 跳首尾，禁用的 Busan 一路被跳过（打 bu 只剩它一条时，方向键无处可落、Enter 也不落值）。
+        Enter 落值并收起；Escape 分两拍——先摘掉高亮，再按一次才收起列表。
+        打一串谁也接不上的字（比如 zz），列表让位给“无匹配城市”那条空态，它是列表的兄弟而不是列表里的一项。
+        这一个开了 open-on-click，点输入框即展开；缺省不开，键盘与 ▾ 才是入口。
+        选中之后输入框被回填成候选文本，列表因此只剩它自己——过滤权在调用方手里就是这个后果，按 ✕ 清空即回到全集。
+      </p>
+      <div class="row">
+        <XhComboboxRoot v-model:value="comboValue" v-model:input-value="comboQuery" open-on-click placeholder="输入城市名筛选">
+          <XhComboboxLabel>城市</XhComboboxLabel>
+          <XhComboboxControl>
+            <XhComboboxInput />
+            <XhComboboxTrigger>▾</XhComboboxTrigger>
+            <XhComboboxClearTrigger>✕</XhComboboxClearTrigger>
+          </XhComboboxControl>
+          <XhComboboxPositioner>
+            <XhComboboxContent>
+              <!-- v-for 必带 key：就地复用会让 aria-activedescendant 指着一个已经换了身份的条目 -->
+              <XhComboboxItem v-for="c in comboFiltered" :key="c.value" :value="c.value" :disabled="c.disabled">
+                <XhComboboxItemText>{{ c.label }}</XhComboboxItemText>
+                <!-- 勾选标记恒在，显不显由选中态驱动皮肤；未选中时它仍占着宽度，切换不抖行 -->
+                <XhComboboxItemIndicator>✓</XhComboboxItemIndicator>
+              </XhComboboxItem>
+            </XhComboboxContent>
+            <!-- 空态摆在 positioner 里当 content 的兄弟：列表里只放候选 -->
+            <XhComboboxEmpty>无匹配城市</XhComboboxEmpty>
+          </XhComboboxPositioner>
+        </XhComboboxRoot>
+        <span class="lead">当前值：{{ comboValue[0] ?? '（未选）' }}</span>
+      </div>
+      <p class="lead" style="margin-block-start: 20px;">
+        多选的差别全在选完之后：列表不收起、输入串自动清空，候选立刻回到全集，接着挑下一个；
+        再点一次已选项就是取消。输入框空着时按退格删掉最后一个已选项（框里有字则照常删字）。
+        已选项怎么显示由本页决定，这里就回显成一行文字。
+      </p>
+      <div class="row">
+        <XhComboboxRoot v-model:value="comboMultiValue" v-model:input-value="comboMultiQuery" multiple placeholder="挑几个城市">
+          <XhComboboxLabel>常去城市</XhComboboxLabel>
+          <XhComboboxControl>
+            <XhComboboxInput />
+            <XhComboboxTrigger>▾</XhComboboxTrigger>
+            <XhComboboxClearTrigger>✕</XhComboboxClearTrigger>
+          </XhComboboxControl>
+          <XhComboboxPositioner>
+            <XhComboboxContent>
+              <XhComboboxItem v-for="c in comboMultiFiltered" :key="c.value" :value="c.value" :disabled="c.disabled">
+                <XhComboboxItemText>{{ c.label }}</XhComboboxItemText>
+                <XhComboboxItemIndicator>✓</XhComboboxItemIndicator>
+              </XhComboboxItem>
+            </XhComboboxContent>
+            <XhComboboxEmpty>无匹配城市</XhComboboxEmpty>
+          </XhComboboxPositioner>
+        </XhComboboxRoot>
+        <span class="lead">已选：{{ comboMultiValue.length ? comboMultiValue.join('、') : '（无）' }}</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>TagsInput</h2>
+      <p class="lead">
+        三个标签是预置的。框里打字后按 Enter 落一个；直接打逗号也断词——一口气打 <code>React,Svelte</code> 会一次进两个，
+        最后没打完的那一段留在框里接着打。
+        框里空着时退格分两步：头一下只把最后一个标签反白（这一下什么都不删），再按一下才真删掉；
+        左右方向键在标签之间走，Home / End 跳到头尾，Escape 把光标交回输入框。
+        粘一段 <code>a,b,c</code> 试试：开着 addOnPaste 就按分隔符拆成三个标签，而不是整串塞进框里。
+        上限是 5——顶满后框的描边转成警示色，再打再粘都进不去，但已经打进去的字不会被悄悄吃掉，原样留在框里。
+        双击任一标签就地改写它：Enter 提交、Escape 撤销回原样，改成空白等于把这个标签删了。
+        右端的清空钮把标签与没提交的文本一起倒掉，清完自己转灰而不是收起；提交给表单的是按分隔符拼好的一整串，落在末尾那个 hidden-input 上。
+      </p>
+      <XhTagsInputRoot
+        v-slot="{ value, count, atMax }"
+        v-model:value="stack"
+        :max="5"
+        add-on-paste
+        editable
+        name="stack"
+        placeholder="回车落一个"
+        style="max-inline-size: 420px;"
+      >
+        <XhTagsInputLabel>技术栈</XhTagsInputLabel>
+        <XhTagsInputControl>
+          <!-- 标签由作者按当前值渲染。key 必须给：就地复用会让正被编辑的那个节点换了身份，光标锚点随之悬空 -->
+          <XhTagsInputItem v-for="t in value" :key="t" :value="t">
+            <XhTagsInputItemPreview>
+              <XhTagsInputItemText>{{ t }}</XhTagsInputItemText>
+              <XhTagsInputItemDeleteTrigger>×</XhTagsInputItemDeleteTrigger>
+            </XhTagsInputItemPreview>
+            <!-- 就地编辑框常挂不卸载，不编辑时由组件收起 -->
+            <XhTagsInputItemInput />
+          </XhTagsInputItem>
+          <XhTagsInputInput />
+          <XhTagsInputClearTrigger>⨯</XhTagsInputClearTrigger>
+        </XhTagsInputControl>
+        <XhTagsInputHiddenInput />
+        <span class="lead">{{ count }} / 5 个标签{{ atMax ? ' · 已到上限' : '' }}：{{ value.length ? value.join('、') : '（无）' }}</span>
+      </XhTagsInputRoot>
+    </section>
+
+    <section>
+      <h2>Editable</h2>
+      <p class="lead">
+        预览与编辑两态轮流上场：点预览区（或按“编辑”）进编辑态，进去就把整段选中；退出时焦点回到预览区，不会掉进 body。
+        两态的文字左右位置对齐，来回切文字不挪一下。
+        上面这个 submitMode 走 blur——点到页面别处或 Tab 走开就落定，Enter 不接管（这一页没有外层表单，按下去看着像没反应，值也确实还没提交）；
+        下面这个走 enter——Enter 才落定，失焦与 Tab 反过来是撤销，没提交过的值不会留在界面上。
+        两个都认 Escape：撤销回的是上一次提交的那个值，不是刚进编辑态时看到的那一屏——改一次存下，再改一次按 Escape 就看得出区别。
+        “保存 / 取消”只在编辑态露面，按下时不抢焦点：下面那个失焦即撤销的模式里点“保存”仍然存得下。
+        把值删空退出，预览区退回压淡的占位文字。
+      </p>
+      <div class="row">
+        <XhEditableRoot
+          v-model:value="editableName"
+          placeholder="未填写"
+          submit-mode="blur"
+          @value-commit="onNicknameCommit"
+        >
+          <XhEditableLabel>昵称</XhEditableLabel>
+          <XhEditableArea>
+            <!-- preview 不写内容：显示什么由组件填（值，或值为空时的占位）；写死了就再也刷不动 -->
+            <XhEditablePreview />
+            <XhEditableInput />
+          </XhEditableArea>
+          <XhEditableControl>
+            <XhEditableEditTrigger>编辑</XhEditableEditTrigger>
+            <XhEditableSubmitTrigger>保存</XhEditableSubmitTrigger>
+            <XhEditableCancelTrigger>取消</XhEditableCancelTrigger>
+          </XhEditableControl>
+        </XhEditableRoot>
+        <span class="lead">submitMode=blur · 当前：{{ editableName || '（空）' }} · 上次提交：{{ editableNameCommitted || '（空）' }}</span>
+      </div>
+      <div class="row" style="margin-block-start: 12px;">
+        <XhEditableRoot
+          v-model:value="signature"
+          placeholder="未填写"
+          submit-mode="enter"
+          @value-commit="onSignatureCommit"
+        >
+          <XhEditableLabel>签名</XhEditableLabel>
+          <XhEditableArea>
+            <XhEditablePreview />
+            <XhEditableInput />
+          </XhEditableArea>
+          <XhEditableControl>
+            <XhEditableEditTrigger>编辑</XhEditableEditTrigger>
+            <XhEditableSubmitTrigger>保存</XhEditableSubmitTrigger>
+            <XhEditableCancelTrigger>取消</XhEditableCancelTrigger>
+          </XhEditableControl>
+        </XhEditableRoot>
+        <span class="lead">submitMode=enter · 当前：{{ signature || '（空）' }} · 上次提交：{{ signatureCommitted || '（空）' }}</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>FileUpload</h2>
+      <p class="lead">
+        拖着文件经过投放区，边框与底色当场换成品牌色，指针在区内几个子节点之间挪动不会让它闪——
+        这是“现在松手就放得下”的唯一提示。投放区自己就是一个大按钮：Tab 停得上去，
+        Enter 或空格都打得开系统选择框（空格顺带被拦下、不滚屏），点标题“附件”同样打得开。
+        最多 3 个、单个不超过 512 KB，越界的当场被拒并说清是哪一条——一次拖十个进来，前 3 个收下、其余报“放不下”；
+        而已经因为太大出局的文件不占名额，也不会再多背一条“太多了”。
+        每行的删除按钮读屏念的是“删除 具体文件名”而不是一串“删除”；列表为空时“清空”带原生 disabled，Tab 停都停不上去。
+        缩略图占位上挂着 data-file-type（系统给不出 MIME 时是 unknown），皮肤按它挑颜色。
+      </p>
+      <XhFileUploadRoot
+        v-slot="{ acceptedFiles }"
+        :max-files="3"
+        :max-file-size="512 * 1024"
+        :translations="uploadTranslations"
+        @files-change="onUploadFilesChange"
+        @file-accept="onUploadAccept"
+        @file-reject="onUploadReject"
+      >
+        <XhFileUploadLabel>附件</XhFileUploadLabel>
+        <XhFileUploadDropzone>
+          <span>把文件拖到这里</span>
+          <span>最多 3 个，单个不超过 512 KB</span>
+        </XhFileUploadDropzone>
+        <!-- 这层行容器是本页自己的排版，不是角色节点：root 是纵向 flex，按钮不套一层会被拉满整行 -->
+        <div class="row">
+          <XhFileUploadTrigger>选择文件</XhFileUploadTrigger>
+        </div>
+        <XhFileUploadHiddenInput />
+        <XhFileUploadItemGroup>
+          <!-- key 取 File 本身：同名同大小的两个文件是两份不同的文件，拿文件名当 key 会撞 -->
+          <XhFileUploadItem v-for="f in acceptedFiles" :key="f" :file="f">
+            <XhFileUploadItemPreview />
+            <XhFileUploadItemName />
+            <XhFileUploadItemSizeText />
+            <XhFileUploadItemDeleteTrigger>✕</XhFileUploadItemDeleteTrigger>
+          </XhFileUploadItem>
+        </XhFileUploadItemGroup>
+        <XhFileUploadClearTrigger>清空</XhFileUploadClearTrigger>
+      </XhFileUploadRoot>
+      <span class="lead">已选 {{ uploadCount }} / 3<template v-if="uploadReject"> · 被拒：{{ uploadReject }}</template></span>
+    </section>
+
+    <section>
+      <h2>Tree</h2>
+      <p class="lead">
+        三层目录树：src 默认展开，docs、dist 与 components / utils 都收着。上下键走的是可见行——
+        src 收起时它底下那三行一并退出序列，展开了才回来；禁用的 pnpm-lock.yaml 被上下键与连打一并跳过，
+        点上去仍能当方向键的起点，只是确认键不认它。右键在收起的分支上就地展开、已展开则进首个子节点，叶子上不吞键；
+        左键反过来：展开的分支就地收起，收起的分支与叶子跳回父层，根层的行什么也不做。Home / End 落在首末可见行。
+        连打字母只在可见行上检索——连按 d 在 docs 与 dist 之间轮转，藏在收起分支里的 Dialog.vue 与 dom.ts 一次也走不到。
+        停在 components 上按 * 只展开它同一层的分支（components 与 utils），docs 与 dist 不动。
+        点分支行连选带展开，点箭头只切展开、不动选中；整棵树只占一个 Tab 位，焦点从外面进来先落在已选中的那行上。
+        每深一层的缩进由子层容器自己顶着，本页一行样式都不写；dist 的子层是空数组，它照样是分支——展得开，只是里头没有行。
+      </p>
+      <!-- 展开与选中都走受控：组件只发事件、不落内部值，宿主写回它才动，回显的就是写回的那两份集合 -->
+      <XhTreeRoot
+        :collection="projectTree"
+        :expanded-value="treeExpanded"
+        :selected-value="treeSelected"
+        style="max-inline-size: 360px;"
+        @expanded-change="onTreeExpandedChange"
+        @selection-change="onTreeSelectionChange"
+      >
+        <XhTreeLabel>项目文件</XhTreeLabel>
+        <XhTreeTree>
+          <!-- 分支行只放一个箭头、叶子行只放一个勾选标记，两者同宽（皮肤给的图标位），
+               两种行的文字起点才对得齐；箭头的朝向由 data-state 驱动，本页不写旋转 -->
+          <XhTreeBranch value="src">
+            <XhTreeBranchControl>
+              <XhTreeBranchTrigger>▸</XhTreeBranchTrigger>
+              <XhTreeBranchText>src</XhTreeBranchText>
+            </XhTreeBranchControl>
+            <XhTreeBranchContent>
+              <XhTreeBranch value="components">
+                <XhTreeBranchControl>
+                  <XhTreeBranchTrigger>▸</XhTreeBranchTrigger>
+                  <XhTreeBranchText>components</XhTreeBranchText>
+                </XhTreeBranchControl>
+                <XhTreeBranchContent>
+                  <XhTreeItem value="button">
+                    <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+                    <XhTreeItemText>Button.vue</XhTreeItemText>
+                  </XhTreeItem>
+                  <XhTreeItem value="dialog">
+                    <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+                    <XhTreeItemText>Dialog.vue</XhTreeItemText>
+                  </XhTreeItem>
+                  <XhTreeItem value="field">
+                    <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+                    <XhTreeItemText>Field.vue</XhTreeItemText>
+                  </XhTreeItem>
+                </XhTreeBranchContent>
+              </XhTreeBranch>
+              <XhTreeBranch value="utils">
+                <XhTreeBranchControl>
+                  <XhTreeBranchTrigger>▸</XhTreeBranchTrigger>
+                  <XhTreeBranchText>utils</XhTreeBranchText>
+                </XhTreeBranchControl>
+                <XhTreeBranchContent>
+                  <XhTreeItem value="dom">
+                    <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+                    <XhTreeItemText>dom.ts</XhTreeItemText>
+                  </XhTreeItem>
+                  <XhTreeItem value="format">
+                    <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+                    <XhTreeItemText>format.ts</XhTreeItemText>
+                  </XhTreeItem>
+                </XhTreeBranchContent>
+              </XhTreeBranch>
+              <XhTreeItem value="main">
+                <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+                <XhTreeItemText>main.ts</XhTreeItemText>
+              </XhTreeItem>
+            </XhTreeBranchContent>
+          </XhTreeBranch>
+          <XhTreeBranch value="docs">
+            <XhTreeBranchControl>
+              <XhTreeBranchTrigger>▸</XhTreeBranchTrigger>
+              <XhTreeBranchText>docs</XhTreeBranchText>
+            </XhTreeBranchControl>
+            <XhTreeBranchContent>
+              <XhTreeItem value="guide">
+                <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+                <XhTreeItemText>guide.md</XhTreeItemText>
+              </XhTreeItem>
+              <XhTreeItem value="api">
+                <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+                <XhTreeItemText>api.md</XhTreeItemText>
+              </XhTreeItem>
+            </XhTreeBranchContent>
+          </XhTreeBranch>
+          <XhTreeBranch value="dist">
+            <XhTreeBranchControl>
+              <XhTreeBranchTrigger>▸</XhTreeBranchTrigger>
+              <XhTreeBranchText>dist</XhTreeBranchText>
+            </XhTreeBranchControl>
+            <!-- 空目录的子层容器照写：它展得开，只是里头没有行 -->
+            <XhTreeBranchContent />
+          </XhTreeBranch>
+          <XhTreeItem value="lockfile">
+            <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+            <XhTreeItemText>pnpm-lock.yaml（禁用）</XhTreeItemText>
+          </XhTreeItem>
+          <XhTreeItem value="readme">
+            <XhTreeItemIndicator>✓</XhTreeItemIndicator>
+            <XhTreeItemText>README.md</XhTreeItemText>
+          </XhTreeItem>
+        </XhTreeTree>
+      </XhTreeRoot>
+      <span class="lead">展开：{{ treeExpanded.length ? treeExpanded.join('、') : '（无）' }} · 选中：{{ treeSelected.length ? treeSelected.join('、') : '（无）' }}</span>
+    </section>
+
+    <section>
+      <h2>Toolbar</h2>
+      <p class="lead">
+        整条在 Tab 序列里只占一个位子：从上一个控件按 Tab 进来会落在其中一个条目上，再按一次 Tab 就整条离开，
+        条内改用方向键走。横排那条收左右键、把上下键原样放行给页面滚动，竖排那条正相反——两条摆在一起，
+        按方向键就看得出 orientation 换掉的是哪一对键，分隔线也跟着转向（它的朝向恒与主轴垂直）。
+        方向键跨得过分隔线、也走得进分组（分组只是把一伙控件收紧，不是导航里多出来的一层），到尽头回绕；
+        斜体是禁用项，方向键路过时直接跳过，但拿鼠标点它焦点仍落得上去、Tab 位也归它，再按方向键就从它这儿起步。
+        Home / End 取的是首尾两个可用条目，分隔线与分组容器都不算端点。
+        勾上「整条禁用」条目全转 aria-disabled、方向键当场不再接管（焦点进来就停在容器上）；
+        取消勾选后禁用的仍然只有斜体那一项。
+        条目是作者自己的按钮：工具条不覆盖它的 role、也不接管它的点击，下面那行回显是按钮自己的 click 记的。
+      </p>
+      <div class="row" style="gap: 24px; align-items: flex-start;">
+        <XhToolbarRoot :disabled="toolbarLocked">
+          <XhToolbarItem value="bold" @click="runToolbarCommand('bold')">
+            粗体
+          </XhToolbarItem>
+          <XhToolbarItem value="italic" disabled>
+            斜体（禁用）
+          </XhToolbarItem>
+          <XhToolbarItem value="underline" @click="runToolbarCommand('underline')">
+            下划线
+          </XhToolbarItem>
+          <XhToolbarSeparator />
+          <XhToolbarGroup>
+            <XhToolbarItem value="align-left" @click="runToolbarCommand('align-left')">
+              左对齐
+            </XhToolbarItem>
+            <XhToolbarItem value="align-center" @click="runToolbarCommand('align-center')">
+              居中
+            </XhToolbarItem>
+            <XhToolbarItem value="align-right" @click="runToolbarCommand('align-right')">
+              右对齐
+            </XhToolbarItem>
+          </XhToolbarGroup>
+        </XhToolbarRoot>
+        <XhToolbarRoot orientation="vertical">
+          <XhToolbarItem value="undo" @click="runToolbarCommand('undo')">
+            撤销
+          </XhToolbarItem>
+          <XhToolbarItem value="redo" @click="runToolbarCommand('redo')">
+            重做
+          </XhToolbarItem>
+          <XhToolbarSeparator />
+          <XhToolbarItem value="clear" @click="runToolbarCommand('clear')">
+            清除格式
+          </XhToolbarItem>
+        </XhToolbarRoot>
+      </div>
+      <label class="row">
+        <input v-model="toolbarLocked" type="checkbox"> 整条禁用（横排那条）
+      </label>
+      <span class="lead">最近点击：{{ toolbarCommand }}</span>
+    </section>
+
+    <section>
+      <h2>Breadcrumb</h2>
+      <p class="lead">
+        最后那一级是当前页：它照样是个 <code>&lt;a&gt;</code>、照样写着 href，
+        但连接层给它打上 aria-current="page" 并把点击拦了下来——点前面几条地址栏跟着变，点它什么都不会发生。
+        它也不占 Tab 位（tabindex="-1"）：Tab 一路走过去只停在前面那几条上，
+        停在一个点了也没去处的链接上，只会让人每次都多按一下。
+        中间那个省略号是被折叠掉的一层，和几个斜杠一样只是视觉占位，读屏那边一并被 aria-hidden 摘掉，
+        念出来仍是“列表，共 3 项”——层级关系由 ol / li 自己给。
+        要让折叠掉的那几层可达，得在省略号那儿另放一个菜单，那是另一个组件的事。
+      </p>
+      <XhBreadcrumbRoot>
+        <XhBreadcrumbList>
+          <XhBreadcrumbItem>
+            <XhBreadcrumbLink href="#/">
+              首页
+            </XhBreadcrumbLink>
+          </XhBreadcrumbItem>
+          <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
+          <XhBreadcrumbItem>
+            <XhBreadcrumbLink href="#/components">
+              组件
+            </XhBreadcrumbLink>
+          </XhBreadcrumbItem>
+          <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
+          <!-- 省略号与分隔符都是 ol 的直接子 li（ol 里只放得下 li），两者都不参与列表项计数 -->
+          <XhBreadcrumbEllipsis>…</XhBreadcrumbEllipsis>
+          <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
+          <XhBreadcrumbItem>
+            <!-- href 归作者写（那是路由的事），当前页那条只多一个 current 声明 -->
+            <XhBreadcrumbLink href="#/components/breadcrumb" current>
+              面包屑
+            </XhBreadcrumbLink>
+          </XhBreadcrumbItem>
+        </XhBreadcrumbList>
+      </XhBreadcrumbRoot>
+    </section>
+
+    <section>
+      <h2>Steps</h2>
+      <p class="lead">
+        四步下单流程，进退由下面那两颗按钮驱动。方向键在一排 trigger 之间走（横排认 ArrowLeft / ArrowRight，两端不回绕），
+        但它只搬焦点、不切步——走到想去的那一步还得按 Enter 或空格才真的切过去：
+        切一步往往要跑校验、发请求，不能跟着焦点自动发生。
+        整条步骤条只占一个 Tab 位，Tab 进来落在当前步上，再按一次就整组离开。
+        面板不做懒挂载，五块一直挂着、只按当前步 hidden 显隐——第 1 步里勾上的那个复选框，走到第 4 步再退回来还在。
+        走完最后一步还有一格“全部完成”：那时没有任何一步是当前步，四块步骤面板全收起、完成页显出来，下一步随之禁用；
+        此刻也没有条目认领得了那个 Tab 位，于是整条 list 自己进 Tab 序列兜底（落焦有一圈 focus 环），不然键盘就再也进不来了。
+        下面第二台只多了一个 linear：还没走到的那几步一律禁用，走的是 aria-disabled 而不是原生 disabled——
+        它们仍聚焦得上、仍能当方向键的起点，只是点不动、方向键也跳过，所以停在第 1 步按 ArrowRight 会原地不动，
+        往前只能靠“下一步”一格格推；已走过的与当前这一步照常点得动（回头看是允许的），但一退回去，后面那几步立刻重新锁上。
+      </p>
+      <XhStepsRoot v-slot="{ step, count, complete, goToPrevStep, goToNextStep }" v-model:step="orderStep" :count="orderSteps.length">
+        <XhStepsList>
+          <XhStepsItem v-for="(s, i) in orderSteps" :key="s.title" :value="i">
+            <XhStepsTrigger>
+              <!-- 圆点里的字符是作者内容：皮肤只按 data-state 管描边与填充，换成对勾得自己写 -->
+              <XhStepsIndicator>{{ step > i ? '✓' : i + 1 }}</XhStepsIndicator>
+              <XhStepsTitle>{{ s.title }}</XhStepsTitle>
+              <XhStepsDescription>{{ s.description }}</XhStepsDescription>
+            </XhStepsTrigger>
+            <XhStepsSeparator />
+          </XhStepsItem>
+        </XhStepsList>
+        <XhStepsContent :value="0">
+          <label class="row"><input type="checkbox"> 保存为默认地址（勾上，切到别的步再切回来看看）</label>
+        </XhStepsContent>
+        <XhStepsContent :value="1">
+          面板 2：选支付方式。
+        </XhStepsContent>
+        <XhStepsContent :value="2">
+          面板 3：填发票抬头与税号。
+        </XhStepsContent>
+        <XhStepsContent :value="3">
+          面板 4：核对金额，按“下一步”提交。
+        </XhStepsContent>
+        <!-- value 等于 count 的这块是完成页：走完最后一步之后的那一格 -->
+        <XhStepsContent :value="orderSteps.length">
+          全部完成：订单已提交。按“上一步”可以退回最后一步。
+        </XhStepsContent>
+        <!-- 进退按钮通常长在步骤条外面（真实表单里它们在页面底部），出口由 root 的插槽交出来 -->
+        <div class="row">
+          <XhButton variant="subtle" :disabled="step === 0" @click="goToPrevStep()">
+            上一步
+          </XhButton>
+          <XhButton variant="solid" :disabled="complete" @click="goToNextStep()">
+            下一步
+          </XhButton>
+          <span class="lead">{{ complete ? '当前：全部完成' : `当前：第 ${step + 1} / ${count} 步` }}</span>
+        </div>
+      </XhStepsRoot>
+
+      <!-- margin 只是两台之间的留白，属于本页排版，皮肤不管 -->
+      <XhStepsRoot v-slot="{ step, count, complete, goToPrevStep, goToNextStep }" v-model:step="auditStep" :count="auditSteps.length" linear style="margin-block-start: 20px;">
+        <XhStepsList>
+          <XhStepsItem v-for="(s, i) in auditSteps" :key="s.title" :value="i">
+            <XhStepsTrigger>
+              <XhStepsIndicator>{{ step > i ? '✓' : i + 1 }}</XhStepsIndicator>
+              <XhStepsTitle>{{ s.title }}</XhStepsTitle>
+            </XhStepsTrigger>
+            <XhStepsSeparator />
+          </XhStepsItem>
+        </XhStepsList>
+        <XhStepsContent :value="0">
+          面板 1：上传营业执照与法人身份证。
+        </XhStepsContent>
+        <XhStepsContent :value="1">
+          面板 2：等待人工审核。
+        </XhStepsContent>
+        <XhStepsContent :value="2">
+          面板 3：签署协议并开通。
+        </XhStepsContent>
+        <XhStepsContent :value="auditSteps.length">
+          全部完成：服务已开通。
+        </XhStepsContent>
+        <div class="row">
+          <XhButton variant="subtle" :disabled="step === 0" @click="goToPrevStep()">
+            上一步
+          </XhButton>
+          <XhButton variant="solid" :disabled="complete" @click="goToNextStep()">
+            下一步
+          </XhButton>
+          <span class="lead">{{ complete ? '当前：全部完成' : `当前：第 ${step + 1} / ${count} 步（linear）` }}</span>
+        </div>
+      </XhStepsRoot>
+    </section>
+
+    <section>
+      <h2>HoverCard</h2>
+      <p class="lead">
+        悬停停够 700ms 才展开、移开 300ms 才收起——那段收起等待正是留给指针从触发器走到卡片上的通行时间，
+        中间隔着一段间距也走得过去，途中卡片不会消失。与 Tooltip 的分界就在卡片本体是可交互的：
+        指针停在卡片上一直不收，里面的“主页”链接与“关注”按钮都点得到、Tab 也走得进去（点“关注”卡片不会关）。
+        键盘把焦点落到触发器上是立刻展开、不走那 700ms；焦点离开卡片即收起，Escape 当场收起、不等那 300ms。
+        卡片从不抢焦点、不锁滚动，触发器本身是透明按钮，颜色与字体都随行文走，所以它在正文里读起来就是个普通用户名。
+      </p>
+      <div>
+        最近这批组件由
+        <XhHoverCardRoot placement="bottom-start" @open-change="onHoverCardOpenChange">
+          <XhHoverCardTrigger>@xihan</XhHoverCardTrigger>
+          <XhHoverCardPositioner>
+            <XhHoverCardContent>
+              <XhHoverCardArrow />
+              <strong>XiHan.UI</strong>
+              <span>框架无关的设计系统运行时，Vue 与 Web Components 共用同一套 headless。</span>
+              <!-- 这层行容器是本页自己的排版，不是角色节点 -->
+              <div class="row">
+                <a href="#profile">主页</a>
+                <XhButton variant="subtle" @click="hoverCardFollowing = !hoverCardFollowing">
+                  {{ hoverCardFollowing ? '已关注' : '关注' }}
+                </XhButton>
+              </div>
+            </XhHoverCardContent>
+          </XhHoverCardPositioner>
+        </XhHoverCardRoot>
+        推上来。
+      </div>
+      <span class="lead">卡片：{{ hoverCardOpen ? '展开' : '收起' }} · {{ hoverCardFollowing ? '已关注' : '未关注' }}</span>
+    </section>
+
+    <section>
+      <h2>ContextMenu</h2>
+      <p class="lead">
+        这一段必须拿真浏览器试：在下面那块区域上点右键，浏览器自带的那张菜单会被拦掉，换成这一张，
+        而且它钉在鼠标点下去的那一点上——不是贴着区域某条边。换个角落再点一次，菜单就跟着坐标走；
+        区域之外右键仍是浏览器自带的那张，正好对照着看接管到哪儿为止。
+        已经开着的时候在别处再右键，它只是挪到新坐标，不先关再开，也不多发一对开合回调。
+        触摸端在区域上按住 700ms 同样弹得出来，中途手指滑开或提前抬手就取消（鼠标按住不动不算长按）。
+        区域自带一个 Tab 位，键盘按 ContextMenu 键或 Shift+F10 打开（裸 F10 不归它管），此时锚点取区域的起始角。
+        展开后方向键跳过禁用的粘贴、Home / End 越过分隔线取首尾、连打 d 直接落到 Delete；
+        Enter 与鼠标点击走同一条出口——选中、关闭、焦点还回区域，Escape 与在菜单外按左键同样关得掉。
+      </p>
+      <XhContextMenuRoot @select="onContextMenuSelect">
+        <!-- 触发区是作者自己的一块内容：皮肤只管它的交互观感，尺寸与排布归这里，
+               所以只写一条把区域撑开的版面约束，观感一概不碰 -->
+        <XhContextMenuTrigger style="display: grid; place-items: center; min-block-size: 120px;">
+          <span>在这块区域上右键（触摸端长按）</span>
+        </XhContextMenuTrigger>
+        <XhContextMenuPositioner>
+          <XhContextMenuContent>
+            <XhContextMenuItem value="copy">
+              <XhContextMenuItemText>Copy 复制</XhContextMenuItemText>
+            </XhContextMenuItem>
+            <XhContextMenuItem value="paste" disabled>
+              <XhContextMenuItemText>Paste 粘贴（剪贴板是空的）</XhContextMenuItemText>
+            </XhContextMenuItem>
+            <XhContextMenuItem value="rename">
+              <XhContextMenuItemText>Rename 重命名</XhContextMenuItemText>
+            </XhContextMenuItem>
+            <XhContextMenuSeparator />
+            <XhContextMenuItem value="delete">
+              <XhContextMenuItemText>Delete 删除</XhContextMenuItemText>
+            </XhContextMenuItem>
+          </XhContextMenuContent>
+        </XhContextMenuPositioner>
+      </XhContextMenuRoot>
+      <span class="lead">最近选中：{{ contextPicked || '（无）' }}</span>
+    </section>
+
+    <section>
+      <h2>Clipboard</h2>
+      <p class="lead">
+        写入是异步的，也真的会失败：按下去先进 copying（按钮压暗，此刻连点也只发一次写请求），
+        写成功才翻成“已复制”，2 秒后自己回落。失败一律退回初始态并把原因报出来——
+        用 http 打开这个页面（非安全上下文）、或权限被拒都会走到这条路上，界面上绝不会留下“已复制”的假象。
+        展示框是只读而不是禁用：聚焦即全选，键盘用户照样能用 Ctrl / Cmd + C 自己带走；
+        点标题“接口密钥”会聚焦到框里（for 指的就是那个 input）。
+        两个指示器都常挂在 DOM 里、靠 hidden 互斥显隐，来回切按钮不抖宽。
+      </p>
+      <XhClipboardRoot
+        :value="apiToken"
+        :timeout="2000"
+        @status-change="onClipboardStatus"
+        @copy-error="onClipboardError"
+      >
+        <XhClipboardLabel>接口密钥</XhClipboardLabel>
+        <XhClipboardControl>
+          <XhClipboardInput />
+          <XhClipboardTrigger>
+            <XhClipboardIndicator>复制</XhClipboardIndicator>
+            <XhClipboardIndicator copied>
+              ✓ 已复制
+            </XhClipboardIndicator>
+          </XhClipboardTrigger>
+        </XhClipboardControl>
+      </XhClipboardRoot>
+      <span class="lead">
+        状态：{{ clipboardStatusLabel() }}<template v-if="clipboardError"> · 上次失败：{{ clipboardError }}</template>
+      </span>
+    </section>
+
+    <section>
+      <h2>Image</h2>
+      <p class="lead">
+        比 Avatar 通用：不预设圆形、也不预设首字母兜底，尺寸由 <code>--xh-image-w</code> 与 <code>--xh-image-ratio</code>
+        说了算，同一个组件既当封面图也当缩略图。图片与回退内容始终同时挂在 DOM 里、靠 hidden 互斥，换人时盒子不塌也不跳。
+        三个例子分别是正常加载、地址写坏走回退、压根没有 src——后两者是同一个落点，
+        DevTools 里看 root 上的 data-status 一眼分得清三态（loaded / error）。
+        加载途中回退内容要不要立刻露面由 fallback-delay 决定，默认 0 就是立刻；给它一个值，走缓存的快图就不会先闪一下占位。
+      </p>
+      <div class="row">
+        <!-- 这两条自定义属性是皮肤留给作者的尺寸接口（不给就是满宽、高度 auto），不是在覆盖皮肤 -->
+        <XhImageRoot
+          :src="demoImageSrc"
+          alt="示例封面图"
+          style="--xh-image-w: 200px; --xh-image-ratio: 16 / 9;"
+          @status-change="(d: { status: string }) => onImageStatus('ok', d)"
+        >
+          <XhImageImage />
+          <XhImageFallback>加载中</XhImageFallback>
+        </XhImageRoot>
+        <XhImageRoot
+          src="https://example.invalid/broken.png"
+          alt="地址写坏的图"
+          style="--xh-image-w: 200px; --xh-image-ratio: 16 / 9;"
+          @status-change="(d: { status: string }) => onImageStatus('broken', d)"
+        >
+          <XhImageImage />
+          <XhImageFallback>图挂了</XhImageFallback>
+        </XhImageRoot>
+        <XhImageRoot
+          style="--xh-image-w: 200px; --xh-image-ratio: 16 / 9;"
+          @status-change="(d: { status: string }) => onImageStatus('none', d)"
+        >
+          <XhImageImage />
+          <XhImageFallback>没有来源</XhImageFallback>
+        </XhImageRoot>
+      </div>
+      <span class="lead">状态：正常 {{ imageStatus.ok }} · 坏地址 {{ imageStatus.broken }} · 无 src {{ imageStatus.none }}</span>
     </section>
   </main>
 </template>
