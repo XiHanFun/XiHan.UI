@@ -96,13 +96,21 @@ export class XhRadioGroupElement extends XhElement {
     // 只有「本帧与上一帧都没整组禁用」时，节点上的 aria-disabled 才等于作者声明：
     // 整组禁用那几帧 connect 把每个条目都写成了 true，解禁当帧 DOM 上还留着这些写回值，
     // 此刻现读会把机器自己的产物误当声明、条目再也解不开。
+    // 头一回见到这个条目时，DOM 上还只有作者写的东西（本帧的写回尚未发生），
+    // 此刻无论整组禁没禁用都记得下真声明。少了这一条，「挂载那刻就整组禁用」
+    // 会一路没有快照，解禁时退回现读、读到机器自己写的 true，整组就此永久锁死。
+    if (!this.declaredDisabled.has(el)) {
+      const own = isItemDisabled(el)
+      this.declaredDisabled.set(el, own)
+      return { value, disabled: own }
+    }
     if (!groupDisabled && !this.wasGroupDisabled) {
       const own = isItemDisabled(el)
       this.declaredDisabled.set(el, own)
       return { value, disabled: own }
     }
-    // 用进入禁用前的快照；没有快照（挂载时就整组禁用）才退回现读
-    return { value, disabled: this.declaredDisabled.get(el) ?? isItemDisabled(el) }
+    // 整组禁用那几帧（以及解禁当帧）DOM 上留着机器的写回值，只认快照
+    return { value, disabled: this.declaredDisabled.get(el)! }
   }
 
   // 条目内的子部件：getParts 收的是整个元素范围，按 item 子树过滤才归得对条目。

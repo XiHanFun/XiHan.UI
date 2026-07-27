@@ -13,8 +13,9 @@ import { XhElement } from '../element-base'
  * @csspart root - 承载 role/aria-orientation/data-orientation 的分隔节点
  */
 export class XhSeparatorElement extends XhElement {
+  // 属性缺席翻成 undefined，让 connect 那边的缺省只有一份
   static override properties = {
-    orientation: {},
+    orientation: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     decorative: { type: Boolean },
   }
 
@@ -22,9 +23,11 @@ export class XhSeparatorElement extends XhElement {
   declare decorative?: boolean
 
   protected wire(): void {
+    // 读声明好的响应式属性，不回读 DOM 特性：作者与框架绑定（Vue 的 :prop、Lit 的 .prop）
+    // 走的都是 property 这条路，回读特性会让那条路完全空转——赋值只排一轮更新、产出不变。
     const api = connectSeparator({
-      orientation: (this.getAttribute('orientation') ?? undefined) as SeparatorProps['orientation'],
-      decorative: this.hasAttribute('decorative'),
+      orientation: this.orientation as SeparatorProps['orientation'],
+      decorative: this.decorative ?? false,
     }, wcNormalize)
     const root = this.getPart('root')
     if (root)

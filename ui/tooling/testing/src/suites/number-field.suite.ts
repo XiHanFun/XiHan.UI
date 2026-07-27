@@ -215,10 +215,81 @@ export const numberFieldSuite: ConformanceSuite = {
         },
       },
       steps: [
-        { kind: 'focus', part: 'input' },
-        { kind: 'key', key: 'ArrowUp' },
-        { kind: 'click', part: 'increment-trigger' },
+        {
+          kind: 'raw',
+          // 照常规写法这三步全是空转：focus 落不到禁用的 input 上、按键因此派到 body、
+          // 禁用按钮上的 el.click() 被激活行为短路根本不派事件。
+          // 把守卫整个删掉用例照样绿——必须直接往节点上派事件，才碰得到守卫。
+          why: '禁用控件上 focus/click 都被浏览器短路，只有直接派发才碰得到守卫',
+          run: ({ doc }) => {
+            const input = doc.querySelector<HTMLInputElement>('[data-scope="number-field"][data-part="input"]')!
+            const inc = doc.querySelector<HTMLElement>('[data-scope="number-field"][data-part="increment-trigger"]')!
+            input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true, cancelable: true }))
+            input.dispatchEvent(new KeyboardEvent('keydown', { key: 'PageUp', bubbles: true, cancelable: true }))
+            inc.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+            inc.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, button: 0 }))
+            inc.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
+          },
+        },
         { kind: 'raw', why: '"值没动"只能直接比对', run: ({ doc }) => expectValue(doc, '3', 'disabled 下值不该动') },
+      ],
+    },
+    {
+      // 按住不放连发是这个组件唯一需要状态机的地方，此前整条路零覆盖：
+      // 唯一碰按钮的用例只走了 event.detail === 0（键盘激活）那一支，
+      // 而真实浏览器里用指针点按钮走的是 pointerdown 那一支。
+      name: '按住加号：先走一步，越过 changeDelay 才连发，松手即停',
+      spec: { apg: APG },
+      skipParity: '一次按住里跑几拍取决于当时的调度，两侧帧序对不齐',
+      props: { defaultValue: '0', step: 1, min: 0, max: 1000, changeDelay: 60, changeInterval: 20 },
+      steps: [
+        {
+          kind: 'raw',
+          why: '"按下—等—松手"是时间相关的，harness 的步骤表达不了',
+          run: async ({ doc }) => {
+            const inc = doc.querySelector<HTMLElement>('[data-scope="number-field"][data-part="increment-trigger"]')!
+            inc.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, button: 0 }))
+
+            // 还没越过 changeDelay：只该走按下那一步（轻点一下也得有反应）
+            await new Promise(r => setTimeout(r, 25))
+            expectValue(doc, '1', '按下先走一步')
+
+            await new Promise(r => setTimeout(r, 150))
+            const during = readValue(doc)
+            if (Number(during) <= 1)
+              throw new Error(`按住不放应当连发，实际停在 "${during}"`)
+
+            inc.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
+            const atRelease = readValue(doc)
+            await new Promise(r => setTimeout(r, 120))
+            const after = readValue(doc)
+            if (after !== atRelease)
+              throw new Error(`松手后仍在涨：松手时 "${atRelease}"，120ms 后 "${after}"`)
+          },
+        },
+      ],
+    },
+    {
+      name: '按住后指针移出：同样收尾，数字不会自己一直涨',
+      spec: { apg: APG },
+      skipParity: '同上，按住的拍数不确定',
+      props: { defaultValue: '0', step: 1, changeDelay: 40, changeInterval: 20 },
+      steps: [
+        {
+          kind: 'raw',
+          why: '指针移出是三条收尾出口之一，少一条就会出现"手已经松了数字还在涨"',
+          run: async ({ doc }) => {
+            const inc = doc.querySelector<HTMLElement>('[data-scope="number-field"][data-part="increment-trigger"]')!
+            inc.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, button: 0 }))
+            await new Promise(r => setTimeout(r, 120))
+            inc.dispatchEvent(new PointerEvent('pointerleave', { bubbles: false }))
+            const atLeave = readValue(doc)
+            await new Promise(r => setTimeout(r, 120))
+            const after = readValue(doc)
+            if (after !== atLeave)
+              throw new Error(`指针移出后仍在涨：移出时 "${atLeave}"，120ms 后 "${after}"`)
+          },
+        },
       ],
     },
     {
