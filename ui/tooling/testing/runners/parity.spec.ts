@@ -6,11 +6,21 @@ import { createWcHarness } from '../../../packages/wc/tests/harness'
 import {
   avatarSuite,
   badgeSuite,
+  breadcrumbSuite,
   buttonSuite,
+  clipboardSuite,
   collapsibleSuite,
+  editableSuite,
+  imageSuite,
   numberFieldSuite,
+  paginationSuite,
+  pinInputSuite,
   runParity,
   separatorSuite,
+  sliderSuite,
+  tagsInputSuite,
+  textFieldSuite,
+  toasterSuite,
   tooltipSuite,
 } from '../src'
 
@@ -38,6 +48,13 @@ function withoutControlled(suite: ConformanceSuite, key: string): ConformanceSui
   return { ...suite, cases: suite.cases.filter(c => !(c.props && key in c.props)) }
 }
 
+// 第二、三批里两侧共用同一棵 fixture 的组件（WC 侧没改写过角色节点、也没把 disabled
+// 换成 aria-disabled 的那些），逐帧比对对它们成立，一并收进来。
+//
+// file-upload 暂不收：删掉持有焦点的那一条之后，两侧焦点落点不一致——
+// Vue 把条目整棵卸掉，浏览器把焦点退回 body；WC 的节点常驻、焦点留在条目组内。
+// 两边都不是有意为之（headless 与两个适配器都没写删除后的焦点去处），
+// 得先定下"删完焦点该去哪"再统一，不该顺手挑一边的现状焊死。
 const SUITES: readonly ConformanceSuite[] = [
   buttonSuite,
   badgeSuite,
@@ -46,6 +63,16 @@ const SUITES: readonly ConformanceSuite[] = [
   numberFieldSuite,
   withoutControlled(collapsibleSuite, 'open'),
   withoutControlled(tooltipSuite, 'open'),
+  breadcrumbSuite,
+  clipboardSuite,
+  editableSuite,
+  imageSuite,
+  paginationSuite,
+  pinInputSuite,
+  sliderSuite,
+  tagsInputSuite,
+  textFieldSuite,
+  toasterSuite,
 ]
 
 runParity([createVueHarness(), createWcHarness()], SUITES, { describe, it })
