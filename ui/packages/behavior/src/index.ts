@@ -4,6 +4,8 @@ export { focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, na
 export type { ItemQuery, NavigateOptions } from './collection/items'
 export { navIntentFromKey, stepIndex } from './collection/navigate'
 export type { NavAxis, NavIntent, NavKeyOptions, StepOptions } from './collection/navigate'
+export { createTypeahead, matchTypeahead } from './collection/typeahead'
+export type { ItemTextFn, Typeahead, TypeaheadMatchOptions, TypeaheadOptions } from './collection/typeahead'
 export { createDismissLayer } from './dismissable-layer'
 export type { DismissLayerOptions, DismissReason } from './dismissable-layer'
 export { isInside, shouldDismiss } from './dismissable-layer/layer-stack'
