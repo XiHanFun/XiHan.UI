@@ -29,6 +29,18 @@ describe('xhButton', () => {
     const onClick = vi.fn()
     const w = mount(XhButton, { props: { loading: true }, attrs: { onClick } })
     expect(w.get('button').attributes('aria-disabled')).toBe('true')
+    // 真点一下：只断言属性的话，把拦截整个删掉这条用例照样绿。
+    // 走的是 @click 这条路（Vue 把两个处理器并成数组按序调用），
+    // 与共享套件里 addEventListener 那条互补
+    await w.get('button').trigger('click')
+    expect(onClick).not.toHaveBeenCalled()
+  })
+
+  it('非 loading 时点击照常触达作者的处理器', async () => {
+    const onClick = vi.fn()
+    const w = mount(XhButton, { attrs: { onClick } })
+    await w.get('button').trigger('click')
+    expect(onClick).toHaveBeenCalledTimes(1)
   })
 })
 

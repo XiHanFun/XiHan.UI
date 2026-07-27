@@ -2,6 +2,11 @@ import { normalizeProps } from '@xihan-ui/core'
 import { describe, expect, it, vi } from 'vitest'
 import { connectButton } from '../src'
 
+/** 桩事件要把 connect 真正会调的方法都备齐，缺一个就变成"实现一改就崩"而不是"行为一变就红"。 */
+function fakeEvent(): { preventDefault: ReturnType<typeof vi.fn>, stopPropagation: ReturnType<typeof vi.fn>, stopImmediatePropagation: ReturnType<typeof vi.fn> } {
+  return { preventDefault: vi.fn(), stopPropagation: vi.fn(), stopImmediatePropagation: vi.fn() }
+}
+
 describe('connectButton', () => {
   it('getRootProps 带 anatomy 属性与类型', () => {
     const root = connectButton({ type: 'submit', variant: 'solid', size: 'md' }, normalizeProps).getRootProps() as Record<string, unknown>
@@ -28,19 +33,21 @@ describe('connectButton', () => {
     expect(api.loading).toBe(true)
   })
 
-  it('loading/disabled 时 onClick 拦截默认行为', () => {
+  it('loading/disabled 时 onClick 拦截默认行为，并挡掉同节点上的后续处理器', () => {
     const root = connectButton({ loading: true }, normalizeProps).getRootProps() as Record<string, unknown>
-    const preventDefault = vi.fn()
-    const e = { preventDefault, stopPropagation: vi.fn() }
+    const e = fakeEvent()
     ;(root.onClick as (e: unknown) => void)(e)
-    expect(preventDefault).toHaveBeenCalled()
+    expect(e.preventDefault).toHaveBeenCalled()
+    // 挡的是同一个节点上作者自己的处理器，不是往祖先的冒泡：
+    // 只 stopPropagation 的话，"提交中"的按钮还会被点第二次提交出去
+    expect(e.stopImmediatePropagation).toHaveBeenCalled()
   })
 
   it('可交互时 onClick 不拦截', () => {
     const root = connectButton({}, normalizeProps).getRootProps() as Record<string, unknown>
-    const preventDefault = vi.fn()
-    const e = { preventDefault, stopPropagation: vi.fn() }
+    const e = fakeEvent()
     ;(root.onClick as (e: unknown) => void)(e)
-    expect(preventDefault).not.toHaveBeenCalled()
+    expect(e.preventDefault).not.toHaveBeenCalled()
+    expect(e.stopImmediatePropagation).not.toHaveBeenCalled()
   })
 })

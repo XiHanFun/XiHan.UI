@@ -30,10 +30,14 @@ export function connectButton<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
       'data-loading': dataAttr(loading),
       'onClick': (e: Event) => {
-        if (!interactive) {
-          e.preventDefault()
-          e.stopPropagation()
-        }
+        if (interactive)
+          return
+        e.preventDefault()
+        // stopImmediatePropagation 而不是 stopPropagation：后者只挡往祖先冒泡，
+        // 作者挂在同一个节点上的处理器照跑不误——一个"提交中"的按钮会被点第二次提交出去。
+        // 前提是本处理器先注册：Vue 把 connect 的 props 排在透传属性之前，
+        // WC 侧 spreader 在作者补监听器之前就接好了线。
+        e.stopImmediatePropagation()
       },
     }),
     getLabelProps: () => normalize.element({ ...parts.label.attrs }),
