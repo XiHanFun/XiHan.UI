@@ -49,7 +49,7 @@ export const menuMachine = createMachine({
       },
     },
     open: {
-      // 键盘入口的锚点在进入展开态时就位：条目常挂（收起时只是 hidden），此刻查到的顺序即最终顺序。
+      // 锚点在进入展开态时就位：条目常挂（收起时只是 hidden），此刻查到的顺序即最终顺序。
       // 锚点定了才有条目认领 tabindex=0，焦点域随后按 Tab 序列把焦点交给它。
       entry: ['setInitialFocusedValue'],
       exit: ['clearFocusedValue'],
@@ -117,19 +117,13 @@ export const menuMachine = createMachine({
       },
       setInitialFocusedValue: ({ refs, context, state, flush }) => {
         const pick = (): void => {
-          const intent = context.get('focusIntent')
-          // 指针与命令式入口不预先落焦：菜单没有选中态，展开那一刻若有条目带着焦点底色，
-          // 看上去就像已经替用户选好了。锚点留空，焦点由焦点域兜底落到 content 上，
-          // 之后第一下 ArrowDown/ArrowUp 从空锚点起步，正好落到首/末个可用条目。
-          if (intent === 'none')
-            return
           const content = refs.get('getContentEl')()
           // 无 DOM 环境（纯逻辑测试）：锚点留空，状态转移不受影响
           if (!content)
             return
           const items = queryItems(content, menuItemQuery)
           // first/last 都从边界起步找第一个可停留条目，禁用项自动跳过，与 loop 无关
-          context.set('focusedValue', itemValue(navigateItems(items, null, intent)))
+          context.set('focusedValue', itemValue(navigateItems(items, null, context.get('focusIntent'))))
         }
         pick()
         // 初始即展开时，WC 侧条目的身份标记要等首次 wire() 才写上，这一刻查不到任何条目、

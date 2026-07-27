@@ -109,6 +109,12 @@ export function runParity(
     const names = harnesses.map(h => h.adapterName).join(' vs ')
     hooks.describe(`parity: ${suite.component} (${names})`, () => {
       for (const c of suite.cases) {
+        // 计时相关的用例帧序天然对不齐（同一次按住在两侧跑的拍数不一定相同），
+        // 逐帧比对对它们没有意义。跳过要写理由，且用例名里标出来，别让人以为它跑过了。
+        if (c.skipParity) {
+          hooks.it(`${c.name}（不做逐帧比对：${c.skipParity}）`, () => {})
+          continue
+        }
         hooks.it(c.name, async () => {
           // 串行：同一时刻文档内只有一个 harness 的实例
           const traces: Array<[string, DomSnapshot[]]> = []

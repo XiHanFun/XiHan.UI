@@ -135,6 +135,13 @@ export interface ConformanceCase {
   readonly expect?: SnapshotExpectation
   /** 本用例覆盖的键盘表行 id（用于覆盖率反查）。 */
   readonly covers?: readonly string[]
+  /**
+   * 不参与跨适配器逐帧比对，并写明理由。
+   * 只给结果本身不确定的用例用——典型是按住连发这类计时相关的：
+   * 两侧行为一致，但一次按住里跑了几拍取决于机器当时的调度，帧序天然对不齐。
+   * 一致性套件仍然照跑，缺的只是"逐帧一模一样"这条更强的保证。
+   */
+  readonly skipParity?: string
 }
 
 export interface ConformanceSuite {

@@ -20,8 +20,7 @@ export function connectMenu<T extends PropTypes>(
   // 位置由引擎写进 context；这里只读结果，不量 DOM、不调引擎，保持纯函数
   const position = context.get('position')
   const placement = position?.placement ?? prop('placement') ?? MENU_DEFAULT_PLACEMENT
-  // roving tabindex 与方向键起点共用这一个锚点；收起时为 null（条目此刻不可达），
-  // 指针展开后同样为 null，直到第一下方向键把焦点送进条目
+  // roving tabindex 与方向键起点共用这一个锚点；收起时为 null（条目此刻不可达）
   const anchor = context.get('focusedValue') ?? null
   const loop = prop('loop') ?? true
   const dir = prop('dir')
