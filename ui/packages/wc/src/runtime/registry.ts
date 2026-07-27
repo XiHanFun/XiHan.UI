@@ -12,7 +12,7 @@ function registry(): Map<string, Entry> {
 }
 
 export function defineElement(tag: string, ctor: CustomElementConstructor, version: string): void {
-  // 无 customElements（DOM-less Node）：静默跳过，主入口 import 才能不崩（M2-A6）
+  // 无 customElements（DOM-less Node）：静默跳过，主入口 import 才能不崩
   if (typeof customElements === 'undefined')
     return
   const reg = registry()
