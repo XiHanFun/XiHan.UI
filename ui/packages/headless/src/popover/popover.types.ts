@@ -1,4 +1,4 @@
-import type { Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/core'
+import type { Cleanup, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/core'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface PopoverTranslations {
@@ -9,7 +9,8 @@ export interface PopoverTranslations {
 // 此时副作用一律短路（机器状态照常转移，只是不定位、不挂消解层与焦点域）。
 export interface PopoverRefs {
   config: RuntimeConfig | null
-  layer: Layer | null
+  /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
+  registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
   /** 浮层定位引擎；缺省即不产出位置结果。 */
   position: PositionEnginePort | null
   /** 定位锚点，通常是 trigger。 */
@@ -55,7 +56,7 @@ export interface PopoverSchema extends MachineSchema {
   tag: never
   guard: 'isOpenControlled'
   action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen'
-  effect: 'trackPosition' | 'trackDismiss' | 'trackFocus'
+  effect: 'trackPosition' | 'trackLayer'
 }
 
 export interface PopoverApi<T extends PropTypes = PropTypes> {

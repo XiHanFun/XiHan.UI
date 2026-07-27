@@ -1,4 +1,4 @@
-import type { IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/core'
+import type { Cleanup, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/core'
 import type { PopoverOpenChangeDetails, PopoverSchema, PopoverTranslations } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
@@ -66,8 +66,6 @@ export class XhPopoverElement extends XhElement {
   private readonly popoverScope = createScope(null, this.idGen)
   private readonly positionEngine: PositionEnginePort = createFloatingUiPositionEngine()
   private config: RuntimeConfig | null = null
-  private layer: Layer | null = null
-  private disposeLayer: (() => void) | null = null
 
   private readonly notify = (details: PopoverOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
@@ -98,7 +96,13 @@ export class XhPopoverElement extends XhElement {
     if (this.config)
       return
     this.config = createRuntimeConfig({ scope: this.popoverScope, idGenerator: this.idGen })
-    const reg = this.config.layerRegistry.register({
+  }
+
+  // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
+  // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
+  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
+    this.ensureConfig()
+    return this.config!.layerRegistry.register({
       kind: 'popover',
       node: () => this.getPart('content'),
       // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。
@@ -109,15 +113,13 @@ export class XhPopoverElement extends XhElement {
       // 非模态浮层不自带遮罩，没有"点它就该关本层"的表面
       surfaces: () => [],
     })
-    this.layer = reg.layer
-    this.disposeLayer = reg.dispose
   }
 
   // onBuilt 在 ctrl 构造期就跑（此刻 this.ctrl 尚未赋值），故 service 由参数传入。
   private injectRefs(svc: Service<PopoverSchema>): void {
     this.ensureConfig()
     svc.refs.set('config', this.config)
-    svc.refs.set('layer', this.layer)
+    svc.refs.set('registerLayer', this.registerLayer)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
@@ -166,9 +168,7 @@ export class XhPopoverElement extends XhElement {
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
-    this.disposeLayer?.()
-    this.disposeLayer = null
-    this.layer = null
+    // 层由展开态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
     this.config = null // 重连时 ensureConfig 重建
   }
 }

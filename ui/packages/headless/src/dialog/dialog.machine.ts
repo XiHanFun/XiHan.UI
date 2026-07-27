@@ -9,7 +9,7 @@ export const dialogMachine = createMachine({
   name: 'dialog',
   refs: () => ({
     config: null,
-    layer: null,
+    registerLayer: null,
     presence: null,
     getContentEl: () => null,
     getTriggerEl: () => null,
@@ -68,10 +68,14 @@ export const dialogMachine = createMachine({
     effects: {
       trackOverlay: ({ refs, prop, send }) => {
         const config = refs.get('config')
-        const layer = refs.get('layer')
+        const registerLayer = refs.get('registerLayer')
         // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
-        if (!config || !layer)
+        if (!config || !registerLayer)
           return undefined
+
+        // 层只在展开期间入栈：消解层只让栈顶响应 Escape，常驻的层会占着栈顶，
+        // 把它下面每一层的 Escape 都堵死（同页两个 dialog 就会互相锁死）。
+        const { layer, dispose: disposeLayer } = registerLayer()
 
         const modal = prop('modal') ?? true
         const role = prop('role') ?? 'dialog'
@@ -120,8 +124,10 @@ export const dialogMachine = createMachine({
             disposers.push(hideOutside(targets, config.scope))
         }
 
+        // 逆序拆：先撤依赖层的订阅，最后才把层本身移出栈
         return () => {
-          for (const d of disposers) d()
+          for (let i = disposers.length - 1; i >= 0; i--) disposers[i]!()
+          disposeLayer()
         }
       },
     },

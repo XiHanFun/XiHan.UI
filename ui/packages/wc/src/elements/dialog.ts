@@ -1,4 +1,4 @@
-import type { IdGenerator, Layer, RuntimeConfig } from '@xihan-ui/core'
+import type { Cleanup, IdGenerator, Layer, RuntimeConfig } from '@xihan-ui/core'
 import type { DialogOpenChangeDetails, DialogSchema } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
@@ -47,8 +47,6 @@ export class XhDialogElement extends XhElement {
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly dialogScope = createScope(null, this.idGen)
   private config: RuntimeConfig | null = null
-  private layer: Layer | null = null
-  private disposeLayer: (() => void) | null = null
   private contentNode: HTMLElement | null = null
   private backdropNode: HTMLElement | null = null
 
@@ -79,7 +77,13 @@ export class XhDialogElement extends XhElement {
     if (this.config)
       return
     this.config = createRuntimeConfig({ scope: this.dialogScope, idGenerator: this.idGen })
-    const reg = this.config.layerRegistry.register({
+  }
+
+  // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackOverlay 效应负责）。
+  // 连接期就注册会让层常驻栈里占着栈顶，把同页其它层的 Escape 堵死。
+  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
+    this.ensureConfig()
+    return this.config!.layerRegistry.register({
       kind: 'modal',
       node: () => this.contentNode,
       branches: () => [],
@@ -87,15 +91,13 @@ export class XhDialogElement extends XhElement {
       setModal: () => {},
       surfaces: () => [this.backdropNode].filter(Boolean) as Element[],
     })
-    this.layer = reg.layer
-    this.disposeLayer = reg.dispose
   }
 
   // onBuilt 在 ctrl 构造期就跑（此刻 this.ctrl 尚未赋值），故 service 由参数传入。
   private injectRefs(svc: Service<DialogSchema>): void {
     this.ensureConfig()
     svc.refs.set('config', this.config)
-    svc.refs.set('layer', this.layer)
+    svc.refs.set('registerLayer', this.registerLayer)
     svc.refs.set('presence', null)
     svc.refs.set('getContentEl', () => this.contentNode)
     svc.refs.set('getTriggerEl', () => this.getPart('trigger'))
@@ -136,9 +138,7 @@ export class XhDialogElement extends XhElement {
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
-    this.disposeLayer?.()
-    this.disposeLayer = null
-    this.layer = null
+    // 层由展开态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
     this.config = null // 重连时 ensureConfig 重建
   }
 }

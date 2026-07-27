@@ -1,5 +1,5 @@
 import type { PresenceHandle } from '@xihan-ui/behavior/presence'
-import type { Layer, PropTypes, RuntimeConfig } from '@xihan-ui/core'
+import type { Cleanup, Layer, PropTypes, RuntimeConfig } from '@xihan-ui/core'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface DialogTranslations {
@@ -9,7 +9,8 @@ export interface DialogTranslations {
 // 适配器在挂载前填入 DOM 环境与元素 getter；纯逻辑测试下保持缺省（副作用不挂）。
 export interface DialogRefs {
   config: RuntimeConfig | null
-  layer: Layer | null
+  /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
+  registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
   presence: PresenceHandle | null
   getContentEl: () => HTMLElement | null
   getTriggerEl: () => HTMLElement | null
