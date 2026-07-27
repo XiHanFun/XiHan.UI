@@ -1,5 +1,6 @@
 import type { ConformanceSuite } from '../conformance/types'
 import { collapsibleAnatomy, collapsibleKeyboard } from '@xihan-ui/headless'
+import { dispatchClickOnDisabled } from './shared/disabled-press'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/'
 
@@ -78,21 +79,20 @@ export const collapsibleSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'disabled：点击 trigger 不展开、不派发',
+      name: 'disabled：原生 disabled + data-disabled，点击不展开、不派发',
       spec: { apg: APG },
       props: { disabled: true },
       steps: [
-        {
-          kind: 'click',
-          part: 'trigger',
-          expect: {
-            parts: {
-              trigger: { 'data-disabled': '', 'aria-expanded': 'false', 'data-state': 'closed' },
-              content: { 'data-state': 'closed', 'hidden': '' },
-            },
-            events: [],
+        { kind: 'click', part: 'trigger' },
+        dispatchClickOnDisabled('collapsible', 'trigger', {
+          parts: {
+            // 披露按钮是单体控件：光有 data-disabled 只是样式，读屏照念"可展开"、
+            // 键盘照聚焦，按下去却什么都不发生。原生 disabled 才是说给辅助技术听的
+            trigger: { 'disabled': '', 'data-disabled': '', 'aria-expanded': 'false', 'data-state': 'closed' },
+            content: { 'data-state': 'closed', 'hidden': '' },
           },
-        },
+          events: [],
+        }),
       ],
     },
   ],

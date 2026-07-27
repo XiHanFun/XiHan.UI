@@ -1,5 +1,6 @@
 import type { ConformanceSuite } from '../conformance/types'
 import { buttonAnatomy, buttonKeyboard } from '@xihan-ui/headless'
+import { nativeActivation } from './shared/native-activation'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/button/'
 
@@ -9,6 +10,14 @@ export const buttonSuite: ConformanceSuite = {
   keyboard: buttonKeyboard,
   fixture: { part: 'root', tag: 'button', children: [{ text: '按钮' }] },
   cases: [
+    {
+      // Enter / Space 激活由平台的按钮激活行为负责，我们不自己接这两个键。
+      // 该守的就是"它确实是原生 <button type=button>"——不是的话平台不会替我们翻键。
+      name: 'Enter / Space 激活：角色节点是原生 <button type="button">，激活交给平台',
+      spec: { apg: APG },
+      covers: ['button.kbd.activate'],
+      steps: [nativeActivation('button', 'root')],
+    },
     {
       name: '默认：type=button，单一 root，无禁用/加载态',
       spec: { apg: APG },

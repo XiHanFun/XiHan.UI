@@ -1,5 +1,6 @@
 import type { ConformanceSuite } from '../conformance/types'
 import { popoverAnatomy, popoverKeyboard } from '@xihan-ui/headless'
+import { nativeActivation } from './shared/native-activation'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/'
 
@@ -33,6 +34,14 @@ export const popoverSuite: ConformanceSuite = {
     ],
   },
   cases: [
+    {
+      // Enter / Space 由平台的按钮激活行为翻成 click，我们不自己接这两个键；
+      // "click 后开合并把焦点移入 content"由本套件其它用例验
+      name: 'Enter / Space 开合：trigger 是原生 <button type="button">，激活交给平台',
+      spec: { apg: APG },
+      covers: ['popover.kbd.toggle-on-trigger'],
+      steps: [nativeActivation('popover', 'trigger')],
+    },
     {
       name: '初始收起：trigger aria-expanded=false，content 带 hidden 属性',
       spec: { apg: APG },

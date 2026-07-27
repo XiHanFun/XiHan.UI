@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { tabsAnatomy, tabsKeyboard } from '@xihan-ui/headless'
+import { singleTabStop } from './shared/native-activation'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/tabs/'
 
@@ -37,6 +38,14 @@ export const tabsSuite: ConformanceSuite = {
   keyboard: tabsKeyboard,
   fixture: tabsTree(),
   cases: [
+    {
+      // 整组只占一个 Tab 位：多一个会让用户按 Tab 在组内反复停留，
+      // 一个都没有则键盘再也进不来（无锚点时须由容器兜底）
+      name: 'roving tabindex：整组只有一个 Tab 停靠点，无锚点时容器兜底',
+      spec: { apg: APG },
+      covers: ['tabs.kbd.tab'],
+      steps: [singleTabStop('tabs', 'trigger', 'list')],
+    },
     {
       name: '初始无选中：panel 常挂且全部 hidden，list 兜底进 Tab 序列',
       spec: { apg: APG },

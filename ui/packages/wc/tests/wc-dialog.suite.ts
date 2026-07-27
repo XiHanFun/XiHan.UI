@@ -1,5 +1,6 @@
 import type { ConformanceSuite } from '@xihan-ui/testing'
 import { dialogAnatomy, dialogKeyboard } from '@xihan-ui/headless'
+import { nativeActivation } from '@xihan-ui/testing'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/'
 
@@ -33,6 +34,14 @@ export const wcDialogSuite: ConformanceSuite = {
     ],
   },
   cases: [
+    {
+      // Enter / Space 由平台的按钮激活行为翻成 click，我们不自己接这两个键；
+      // "click 后打开并把焦点移入 content"由本套件其它用例验
+      name: 'Enter / Space 打开：trigger 是原生 <button type="button">，激活交给平台',
+      spec: { apg: APG },
+      covers: ['dialog.kbd.open-on-trigger'],
+      steps: [nativeActivation('dialog', 'trigger')],
+    },
     {
       name: '初始关闭：content 常驻、data-state=closed、positioner 隐藏',
       spec: { apg: APG },

@@ -43,10 +43,11 @@ describe('connectDialog', () => {
     expect(typeof content['aria-labelledby']).toBe('string')
   })
 
-  it('alertdialog role + 非模态无 aria-modal', () => {
+  it('alertdialog role + 非模态显式 aria-modal="false"', () => {
     const content = connectDialog(makeService({ role: 'alertdialog', modal: false }), normalizeProps).getContentProps() as Record<string, unknown>
     expect(content.role).toBe('alertdialog')
-    expect(content['aria-modal']).toBeUndefined()
+    // 省略与显式 false 在读屏那里不是一回事：前者是"没说"，后者是"明确说了不是模态"
+    expect(content['aria-modal']).toBe('false')
   })
 
   it('trigger 的 aria-haspopup / aria-expanded / aria-controls', () => {
