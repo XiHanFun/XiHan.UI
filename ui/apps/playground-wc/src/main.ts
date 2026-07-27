@@ -273,6 +273,102 @@ app.innerHTML = `
       </div>
     </xh-popover>
   </section>
+
+  <section>
+    <h2>Select</h2>
+    <p class="lead">
+      Enter / Space / 方向键展开，展开后方向键与 Home / End 移高亮、连打字母检索、Enter 选中；
+      收起时直接连打字母即可就地换值。列表用的是与 Popover 同一个定位引擎。
+    </p>
+    <xh-select id="wc-select" name="fruit" placeholder="请选择">
+      <!-- 表单影子控件由作者写这个空壳，元素只按当前值往里补选项 -->
+      <select data-xh-part="hidden-select"></select>
+      <span data-xh-part="label">水果</span>
+      <!-- 必须是 button：div 不可聚焦，"关闭后焦点归还 trigger"就永远等不到 -->
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator">▾</span>
+      </button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="item" value="apple">
+            <span data-xh-part="item-text">苹果</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+          <div data-xh-part="item" value="banana">
+            <span data-xh-part="item-text">香蕉</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+          <div data-xh-part="item" value="blueberry">
+            <span data-xh-part="item-text">蓝莓</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+          <!-- 条目禁用用 aria-disabled 声明：原生 disabled 会让它不可聚焦，
+               而规格要求禁用条目仍可作为方向键的起点 -->
+          <div data-xh-part="item" value="cherry" aria-disabled="true">
+            <span data-xh-part="item-text">樱桃（缺货）</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+          <div data-xh-part="item" value="durian">
+            <span data-xh-part="item-text">榴莲</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+        </div>
+      </div>
+    </xh-select>
+    <span class="lead" id="wc-select-value">当前值：（未选）</span>
+  </section>
+
+  <section>
+    <h2>Avatar</h2>
+    <p class="lead">
+      图片取回成功才显图，失败或没有 src 则显回退内容——两者始终只有一个可见，不会闪一下再换。
+      第二个的地址故意写坏，用来看回退。
+    </p>
+    <div class="row">
+      <!-- root 这层要自己写：data-status 落在它上面，样式按状态切换靠的就是它 -->
+      <xh-avatar src="https://avatars.githubusercontent.com/u/1?v=4" alt="ok">
+        <span data-xh-part="root">
+          <img data-xh-part="image">
+          <span data-xh-part="fallback">XH</span>
+        </span>
+      </xh-avatar>
+      <xh-avatar src="https://example.invalid/404.png" alt="broken">
+        <span data-xh-part="root">
+          <img data-xh-part="image">
+          <span data-xh-part="fallback">失败</span>
+        </span>
+      </xh-avatar>
+      <xh-avatar>
+        <span data-xh-part="root">
+          <img data-xh-part="image">
+          <span data-xh-part="fallback">无</span>
+        </span>
+      </xh-avatar>
+    </div>
+  </section>
+
+  <section>
+    <h2>Field</h2>
+    <p class="lead">
+      标题的 for、控件的 id 与描述链（aria-describedby）自动对齐：点标题聚焦到输入框，
+      勾上“标记为无效”后错误文案接入描述链并显出。控件由你自己写，Field 只把属性并上去。
+    </p>
+    <xh-field id="wc-field" required>
+      <!-- root 这层要自己写：data-invalid / data-required / data-disabled 落在它上面。
+           label 须是原生 &lt;label&gt;、control 须标在真正的输入控件上：
+           for 指向一个不可标注的元素时点标题不聚焦，读屏也念不出控件的名字 -->
+      <div data-xh-part="root">
+        <label data-xh-part="label">邮箱</label>
+        <input data-xh-part="control" type="email" placeholder="you@example.com">
+        <p data-xh-part="description">用于接收账单与安全提醒</p>
+        <p data-xh-part="error-text">邮箱格式不正确</p>
+      </div>
+    </xh-field>
+    <label class="row">
+      <input type="checkbox" id="wc-field-invalid"> 标记为无效
+    </label>
+  </section>
 </main>
 `
 
@@ -296,6 +392,17 @@ for (const btn of Array.from(document.querySelectorAll('[data-progress]'))) {
     progressLabel.textContent = `${next} / 100`
   })
 }
+
+// 选中值回显
+document.getElementById('wc-select')!.addEventListener('value-change', (e) => {
+  const { value } = (e as CustomEvent<{ value: string | null }>).detail
+  document.getElementById('wc-select-value')!.textContent = `当前值：${value ?? '（未选）'}`
+})
+
+// 无效态开关：改宿主元素的属性，元素自行重接线
+document.getElementById('wc-field-invalid')!.addEventListener('change', (e) => {
+  document.getElementById('wc-field')!.toggleAttribute('invalid', (e.target as HTMLInputElement).checked)
+})
 
 // 取消/确定：复用 close-trigger 关闭对话框
 for (const btn of Array.from(document.querySelectorAll('[data-close]'))) {
