@@ -6,7 +6,10 @@ import { createTypeahead, matchTypeahead } from '../src/collection/typeahead'
 /** 可控时钟：缓冲区过期是时间相关的，别让用例去睡。 */
 function clock(): { now: () => number, advance: (ms: number) => void } {
   let t = 1000
-  return { now: () => t, advance: (ms) => { t += ms } }
+  const advance = (ms: number): void => {
+    t += ms
+  }
+  return { now: () => t, advance }
 }
 
 describe('createTypeahead 缓冲', () => {
