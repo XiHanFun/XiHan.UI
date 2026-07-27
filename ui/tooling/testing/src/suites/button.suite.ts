@@ -4,6 +4,9 @@ import { nativeActivation } from './shared/native-activation'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/button/'
 
+// 用例内挂的作者处理器调用次数；每条用例挂监听器时清零，两个适配器各跑各的不互相干扰
+let authorClicks = 0
+
 export const buttonSuite: ConformanceSuite = {
   component: 'button',
   anatomy: buttonAnatomy,
@@ -74,6 +77,66 @@ export const buttonSuite: ConformanceSuite = {
           },
         },
       },
+    },
+    {
+      // loading 走的是 aria-disabled + 拦事件（保留焦点），不是原生 disabled，
+      // 所以点击照样派发到节点上——拦不住的话，一个"提交中"的按钮会被点第二次提交出去。
+      // 只 stopPropagation 是拦不住的：它挡的是往祖先冒泡，同一个节点上作者自己的
+      // 处理器照跑不误。
+      name: 'loading：点击不触达作者挂在同一节点上的处理器',
+      spec: { apg: APG },
+      props: { loading: true },
+      steps: [
+        {
+          kind: 'raw',
+          why: '"作者的处理器没被调用"要真挂一个上去才验得到',
+          run: ({ doc }) => {
+            authorClicks = 0
+            const el = doc.querySelector<HTMLElement>('[data-scope="button"][data-part="root"]')
+            if (!el)
+              throw new Error('找不到 button 的 root 部件')
+            el.addEventListener('click', () => {
+              authorClicks++
+            })
+          },
+        },
+        { kind: 'click', part: 'root' },
+        {
+          kind: 'raw',
+          why: '同上',
+          run: () => {
+            if (authorClicks !== 0)
+              throw new Error(`loading 时作者的 click 处理器被调用了 ${authorClicks} 次，应当一次都不调用`)
+          },
+        },
+      ],
+    },
+    {
+      // 反面对照：不是 loading 时照常触达，别把正常按钮也拦了
+      name: '非 loading：点击照常触达作者的处理器',
+      spec: { apg: APG },
+      steps: [
+        {
+          kind: 'raw',
+          why: '与上一条成对，验拦截没有误伤',
+          run: ({ doc }) => {
+            authorClicks = 0
+            doc.querySelector<HTMLElement>('[data-scope="button"][data-part="root"]')!
+              .addEventListener('click', () => {
+                authorClicks++
+              })
+          },
+        },
+        { kind: 'click', part: 'root' },
+        {
+          kind: 'raw',
+          why: '同上',
+          run: () => {
+            if (authorClicks !== 1)
+              throw new Error(`正常按钮的 click 处理器被调用了 ${authorClicks} 次，应当恰好一次`)
+          },
+        },
+      ],
     },
   ],
 }
