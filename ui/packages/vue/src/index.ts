@@ -33,6 +33,17 @@ export {
 export { useDialog } from './components/dialog/use-dialog'
 export type { DialogContext } from './components/dialog/use-dialog'
 export {
+  XhMenuArrow,
+  XhMenuContent,
+  XhMenuItem,
+  XhMenuPositioner,
+  XhMenuRoot,
+  XhMenuSeparator,
+  XhMenuTrigger,
+} from './components/menu/menu'
+export { useMenu } from './components/menu/use-menu'
+export type { MenuContext } from './components/menu/use-menu'
+export {
   XhPopoverArrow,
   XhPopoverCloseTrigger,
   XhPopoverContent,

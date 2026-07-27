@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { ConformanceSuite, FixtureNode } from '@xihan-ui/testing'
-import { accordionSuite, badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, popoverSuite, progressSuite, radioGroupSuite, runConformance, separatorSuite, switchSuite, tabsSuite, toggleSuite, tooltipSuite } from '@xihan-ui/testing'
+import { accordionSuite, badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, menuSuite, popoverSuite, progressSuite, radioGroupSuite, runConformance, separatorSuite, switchSuite, tabsSuite, toggleSuite, tooltipSuite } from '@xihan-ui/testing'
 import { afterEach, beforeEach, describe, it, vi } from 'vitest'
 import { createWcHarness } from './harness'
 
@@ -111,6 +111,12 @@ const wcTooltipSuite: ConformanceSuite = {
   cases: tooltipSuite.cases.filter(c => !(c.props && 'open' in c.props)),
 }
 
+// 条目禁用同样改用 aria-disabled 声明；受控 open 与 switch 等同因排除。
+const wcMenuSuite: ConformanceSuite = authorDisabled({
+  ...menuSuite,
+  cases: menuSuite.cases.filter(c => !(c.props && 'open' in c.props)),
+})
+
 const wcPopoverSuite: ConformanceSuite = {
   ...popoverSuite,
   cases: popoverSuite.cases.filter(c => !(c.props && 'open' in c.props)),
@@ -126,6 +132,7 @@ runConformance(
     buttonSuite,
     wcCheckboxSuite,
     wcCollapsibleSuite,
+    wcMenuSuite,
     wcPopoverSuite,
     wcProgressSuite,
     wcRadioGroupSuite,

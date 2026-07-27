@@ -1,0 +1,117 @@
+@layer xihan.components {
+  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+  [data-scope='menu'][data-part='positioner'] {
+    position: absolute;
+    z-index: var(--xh-layer-popover);
+    /* 空壳不吃指针，交互只发生在 content 上 */
+    pointer-events: none;
+  }
+
+  /* 锚点被滚出可视区：整个浮层随之收起 */
+  [data-scope='menu'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  [data-scope='menu'][data-part='content'] {
+    display: flex;
+    flex-direction: column;
+    min-inline-size: var(--xh-menu-min-w, 10rem);
+    max-inline-size: var(--xh-menu-max-w, 20rem);
+    padding-block: var(--xh-menu-py, var(--xh-space-1));
+    padding-inline: var(--xh-menu-px, var(--xh-space-1));
+    border: var(--xh-stroke-thin) solid var(--xh-menu-border, var(--xh-border-default));
+    border-radius: var(--xh-menu-radius, var(--xh-shape-surface));
+    background: var(--xh-menu-bg, var(--xh-bg-surface));
+    color: var(--xh-menu-fg, var(--xh-fg-default));
+    box-shadow: var(--xh-menu-shadow, var(--xh-elevation-2));
+    pointer-events: auto;
+  }
+
+  /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位 */
+  [data-scope='menu'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  /* 容器只是焦点域兜底落点，落焦不画环：高亮永远长在条目上 */
+  [data-scope='menu'][data-part='content']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='menu'][data-part='content'][data-state='open'] {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='menu'][data-part='item'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-menu-item-gap, var(--xh-control-gap-md));
+    padding-block: var(--xh-menu-item-py, var(--xh-space-2));
+    padding-inline: var(--xh-menu-item-px, var(--xh-control-px-sm));
+    border-radius: var(--xh-menu-item-radius, var(--xh-shape-control));
+    color: var(--xh-menu-item-fg, var(--xh-fg-default));
+    font-size: var(--xh-menu-item-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* 键盘高亮与指针高亮共用一套底色：条目本身承载焦点，不另画描边 */
+  [data-scope='menu'][data-part='item']:not([data-disabled]):is(:hover, :focus) {
+    background: var(--xh-menu-item-bg-highlight, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='menu'][data-part='item']:focus {
+    outline: none;
+  }
+
+  [data-scope='menu'][data-part='item'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='menu'][data-part='separator'] {
+    block-size: var(--xh-menu-separator-thickness, 1px);
+    margin-block: var(--xh-menu-separator-my, var(--xh-space-1));
+    background: var(--xh-menu-separator-color, var(--xh-border-default));
+  }
+
+  /* 箭头是旋转 45° 的方块，只保留朝向锚点那两条边的描边；
+     引擎不产出箭头偏移，因此沿交叉轴固定居中 */
+  [data-scope='menu'][data-part='arrow'] {
+    position: absolute;
+    inline-size: var(--xh-menu-arrow-size, 8px);
+    block-size: var(--xh-menu-arrow-size, 8px);
+    background: var(--xh-menu-bg, var(--xh-bg-surface));
+    border: var(--xh-stroke-thin) solid var(--xh-menu-border, var(--xh-border-default));
+    rotate: 45deg;
+  }
+
+  [data-scope='menu'][data-part='arrow'][data-placement^='bottom'] {
+    inset-block-start: calc(var(--xh-menu-arrow-size, 8px) / -2);
+    inset-inline-start: calc(50% - var(--xh-menu-arrow-size, 8px) / 2);
+    border-block-end: 0;
+    border-inline-end: 0;
+  }
+
+  [data-scope='menu'][data-part='arrow'][data-placement^='top'] {
+    inset-block-end: calc(var(--xh-menu-arrow-size, 8px) / -2);
+    inset-inline-start: calc(50% - var(--xh-menu-arrow-size, 8px) / 2);
+    border-block-start: 0;
+    border-inline-start: 0;
+  }
+
+  [data-scope='menu'][data-part='arrow'][data-placement^='right'] {
+    inset-inline-start: calc(var(--xh-menu-arrow-size, 8px) / -2);
+    inset-block-start: calc(50% - var(--xh-menu-arrow-size, 8px) / 2);
+    border-block-start: 0;
+    border-inline-end: 0;
+  }
+
+  [data-scope='menu'][data-part='arrow'][data-placement^='left'] {
+    inset-inline-end: calc(var(--xh-menu-arrow-size, 8px) / -2);
+    inset-block-start: calc(50% - var(--xh-menu-arrow-size, 8px) / 2);
+    border-block-end: 0;
+    border-inline-start: 0;
+  }
+}

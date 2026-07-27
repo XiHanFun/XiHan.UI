@@ -14,6 +14,8 @@ export type { CollapsibleApi, CollapsibleOpenChangeDetails, CollapsibleSchema } 
 export { connectDialog, dialogAnatomy, dialogKeyboard, dialogMachine, dialogMeta } from './dialog'
 
 export type { DialogApi, DialogOpenChangeDetails, DialogRefs, DialogSchema, DialogTranslations } from './dialog'
+export { connectMenu, menuAnatomy, menuKeyboard, menuMachine, menuMeta } from './menu'
+export type { MenuApi, MenuFocusIntent, MenuItemProps, MenuOpenChangeDetails, MenuRefs, MenuSchema, MenuSelectDetails } from './menu'
 export { connectPopover, popoverAnatomy, popoverKeyboard, popoverMachine, popoverMeta } from './popover'
 export type { PopoverApi, PopoverOpenChangeDetails, PopoverRefs, PopoverSchema, PopoverTranslations } from './popover'
 export { connectProgress, progressAnatomy, progressKeyboard, progressMeta } from './progress'
