@@ -1,0 +1,122 @@
+@layer xihan.components {
+  /* 根节点是 nav 地标，只负责把上一页 / 页码 / 下一页排成一行。
+     页数为 0 时连接层会打 data-empty，这里不拿它做隐藏：作者常把「第 x-y 条」这类
+     区间回显也写在 nav 里，整块藏掉会连那行字一起吞了，是否隐藏交给作者决定 */
+  [data-scope='pagination'][data-part='root'] {
+    display: flex;
+    align-items: center;
+    /* 页码多到一行放不下就换行，宁可折行也不要把按钮压扁或撑出横向滚动 */
+    flex-wrap: wrap;
+    gap: var(--xh-pagination-gap, var(--xh-space-1));
+  }
+
+  [data-scope='pagination'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 三类格子共用同一副骨架，行高与间距一致，切页时基线不会跳 */
+  [data-scope='pagination'][data-part='prev-trigger'],
+  [data-scope='pagination'][data-part='next-trigger'],
+  [data-scope='pagination'][data-part='item'],
+  [data-scope='pagination'][data-part='ellipsis'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    /* 等宽的关键：1 与 10 的内容宽度不同，靠最小宽度把它们撑到同一格，
+       行宽才不会随当前页左右抖动。三位数超过最小宽度时才自然变宽 */
+    min-inline-size: var(--xh-pagination-item-min-size, var(--xh-control-h-md));
+    block-size: var(--xh-pagination-item-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-pagination-item-px, var(--xh-space-2));
+    /* 省略号也占一条透明描边：库里没有全局 box-sizing 兜底，
+       只给按钮描边的话它会比按钮矮两像素，一行里就对不齐 */
+    border: var(--xh-stroke-thin) solid transparent;
+    border-radius: var(--xh-pagination-item-radius, var(--xh-shape-control));
+    font-size: var(--xh-pagination-font-size, var(--xh-text-label-size));
+    line-height: 1;
+    /* 等宽数字：1 与 7 的字形宽度在比例字体里并不相同，不定住会让同位数页码抖一格 */
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  [data-scope='pagination'][data-part='prev-trigger'][hidden],
+  [data-scope='pagination'][data-part='next-trigger'][hidden],
+  [data-scope='pagination'][data-part='item'][hidden],
+  [data-scope='pagination'][data-part='ellipsis'][hidden] {
+    display: none;
+  }
+
+  /* 三个按钮共用的可点观感：默认透明底，只有交互与当前页才上色 */
+  [data-scope='pagination'][data-part='prev-trigger'],
+  [data-scope='pagination'][data-part='next-trigger'],
+  [data-scope='pagination'][data-part='item'] {
+    background: var(--xh-pagination-item-bg, transparent);
+    color: var(--xh-pagination-item-fg, var(--xh-fg-default));
+    font-weight: var(--xh-pagination-item-font-weight, var(--xh-text-label-weight));
+    cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 悬停这条选择器比当前页那条多一节（:hover），同层里权重更高、会反过来压住它，
+     所以悬停一路显式把当前页排除：指针停在当前页上不该把品牌底色洗成灰底。
+     页码条目从不禁用（连接层只给上一页/下一页发原生 disabled），故这边不必再排除 :disabled */
+  [data-scope='pagination'][data-part='prev-trigger']:hover:not(:disabled),
+  [data-scope='pagination'][data-part='next-trigger']:hover:not(:disabled),
+  [data-scope='pagination'][data-part='item']:not([data-selected]):hover {
+    background: var(--xh-pagination-item-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='pagination'][data-part='prev-trigger']:active:not(:disabled),
+  [data-scope='pagination'][data-part='next-trigger']:active:not(:disabled),
+  [data-scope='pagination'][data-part='item']:not([data-selected]):active {
+    background: var(--xh-pagination-item-bg-active, var(--xh-bg-subtle-active));
+  }
+
+  [data-scope='pagination'][data-part='prev-trigger']:focus-visible,
+  [data-scope='pagination'][data-part='next-trigger']:focus-visible,
+  [data-scope='pagination'][data-part='item']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 首末页的上一页 / 下一页是原生 disabled（不可聚焦、进不了 Tab 序列），
+     所以这里必须用 :disabled；连接层同时给的 data-disabled 只是留给作者的钩子。
+     分页条目从不禁用，那边也就没有对应规则 */
+  [data-scope='pagination'][data-part='prev-trigger']:disabled,
+  [data-scope='pagination'][data-part='next-trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  /* 当前页：data-selected 与 aria-current='page' 由连接层成对给出，
+     样式挂在 data 钩子上，无障碍语义留给 aria，两边各司其职。
+     只换底色不加粗——字重一变字形就变宽，页码格子会跟着长一点，正是这里要避免的抖动 */
+  [data-scope='pagination'][data-part='item'][data-selected] {
+    border-color: var(--xh-pagination-item-border-selected, var(--xh-bg-brand));
+    background: var(--xh-pagination-item-bg-selected, var(--xh-bg-brand));
+    color: var(--xh-pagination-item-fg-selected, var(--xh-fg-on-brand));
+  }
+
+  [data-scope='pagination'][data-part='item'][data-selected]:hover {
+    border-color: var(--xh-pagination-item-border-selected-hover, var(--xh-bg-brand-hover));
+    background: var(--xh-pagination-item-bg-selected-hover, var(--xh-bg-brand-hover));
+  }
+
+  [data-scope='pagination'][data-part='item'][data-selected]:active {
+    border-color: var(--xh-pagination-item-border-selected-active, var(--xh-bg-brand-active));
+    background: var(--xh-pagination-item-bg-selected-active, var(--xh-bg-brand-active));
+  }
+
+  /* 省略号是纯视觉占位，读屏那边已被 aria-hidden 摘掉：
+     吞掉指针事件，免得它出现悬停反馈、看起来像一颗点得动的按钮 */
+  [data-scope='pagination'][data-part='ellipsis'] {
+    color: var(--xh-pagination-ellipsis-fg, var(--xh-fg-subtle));
+    cursor: default;
+    pointer-events: none;
+  }
+}

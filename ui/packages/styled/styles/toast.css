@@ -1,0 +1,210 @@
+@layer xihan.motion {
+  /*
+   * 九个位共用同一条进出场，位移不跟着落位走：要按位置分方向，就得从 toaster 的
+   * data-placement 反向选到卡片上，等于把一个组件的动效写进另一个组件的选择器里，
+   * 两边任意一侧改名都会静默失效。竖向一小段位移在九个位上都说得通。
+   */
+  @keyframes xh-toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes xh-toast-out {
+    from {
+      opacity: 1;
+      transform: none;
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(4px) scale(0.96);
+    }
+  }
+
+  /* 通知是自己冒出来的，用户没按任何键：减弱动效的诉求在这里比别处更硬。
+     !important 在低层里反而更强（重要声明的层序是反的），足以压住组件层的动画。 */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='toast'][data-part] {
+      animation-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer xihan.components {
+  [data-scope='toast'][data-part='root'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-toast-gap, var(--xh-space-1));
+    inline-size: var(--xh-toast-w, 20rem);
+    /* 摞是整面视口宽的定位面且带内边距，取 100% 就等于自动让出两侧留白，
+       窄屏上不必再算一遍 viewport 减法 */
+    max-inline-size: 100%;
+    padding-block: var(--xh-toast-py, var(--xh-space-3));
+    padding-inline: var(--xh-toast-px, var(--xh-space-4));
+    border: var(--xh-stroke-thin) solid var(--xh-toast-border, var(--xh-border-default));
+    /* 类型色条做成起始侧的粗边，而不是伪元素：圆角与阴影都不用再对第二遍。
+       两条必须排在 border 简写之后，否则被简写重置回细边与常规描边色 */
+    border-inline-start-width: var(--xh-toast-accent-width, 4px);
+    border-inline-start-color: var(--xh-toast-accent, var(--xh-color-info-500));
+    border-radius: var(--xh-toast-radius, var(--xh-shape-surface));
+    background: var(--xh-toast-bg, var(--xh-bg-surface-raised));
+    color: var(--xh-toast-fg, var(--xh-fg-default));
+    box-shadow: var(--xh-toast-shadow, var(--xh-elevation-3));
+    font-size: var(--xh-toast-font-size, var(--xh-font-size-sm));
+    line-height: var(--xh-toast-leading, var(--xh-leading-normal));
+    /* 摞的定位面整面铺开且不吃指针，卡片必须自己吃回来：
+       悬停按住计时、按钮可点、焦点进出，全指着这一条 */
+    pointer-events: auto;
+  }
+
+  /* 退场窗口走完连接层给的是 hidden 属性，而上面声明了 display——
+     漏掉这条，已经"卸载"的通知会一直杵在屏幕上，且再也没人来收 */
+  [data-scope='toast'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 五种语气各认一个色阶，共用同一个覆盖钩子：作者写一次 --xh-toast-accent
+     就能把某一条整体改色，不必按类型逐个改 */
+  [data-scope='toast'][data-part='root'][data-type='info'] {
+    border-inline-start-color: var(--xh-toast-accent, var(--xh-color-info-500));
+  }
+
+  [data-scope='toast'][data-part='root'][data-type='success'] {
+    border-inline-start-color: var(--xh-toast-accent, var(--xh-color-success-500));
+  }
+
+  [data-scope='toast'][data-part='root'][data-type='warning'] {
+    border-inline-start-color: var(--xh-toast-accent, var(--xh-color-warning-500));
+  }
+
+  [data-scope='toast'][data-part='root'][data-type='error'] {
+    border-inline-start-color: var(--xh-toast-accent, var(--xh-color-danger-500));
+  }
+
+  /* loading 说的是"事情还没完"，不是好消息也不是坏消息，走中性灰 */
+  [data-scope='toast'][data-part='root'][data-type='loading'] {
+    border-inline-start-color: var(--xh-toast-accent, var(--xh-fg-muted));
+  }
+
+  /* 生命周期只有三段，unmounted 那段由上面的 [hidden] 收走，这里只管前两段 */
+  [data-scope='toast'][data-part='root'][data-state='visible'] {
+    animation: xh-toast-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* forwards 不能省：退场窗口（removeDelay 默认 200ms）比退场动画长，
+     不定住末帧的话动画跑完会弹回全不透明，卡片在被收起前先闪一下 */
+  [data-scope='toast'][data-part='root'][data-state='dismissing'] {
+    animation: xh-toast-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
+  [data-scope='toast'][data-part='title'] {
+    /* 作者可能把它写成 h2/p，外边距得先归零，否则卡片内的行距对不上 */
+    margin: 0;
+    color: var(--xh-toast-title-fg, var(--xh-fg-default));
+    font-size: var(--xh-toast-title-font-size, var(--xh-font-size-md));
+    font-weight: var(--xh-toast-title-font-weight, var(--xh-font-weight-semibold));
+    line-height: var(--xh-toast-title-leading, var(--xh-leading-tight));
+  }
+
+  [data-scope='toast'][data-part='description'] {
+    margin: 0;
+    color: var(--xh-toast-description-fg, var(--xh-fg-muted));
+    font-size: var(--xh-toast-description-font-size, var(--xh-font-size-sm));
+  }
+
+  /* 没给文案的那一个仍然要留在 DOM 里（aria-labelledby / aria-describedby 指着它），
+     但空盒子会照吃一份 gap，卡片看着就多出一截莫名的留白 */
+  [data-scope='toast'][data-part='title']:empty,
+  [data-scope='toast'][data-part='description']:empty {
+    display: none;
+  }
+
+  [data-scope='toast'][data-part='title'][hidden],
+  [data-scope='toast'][data-part='description'][hidden] {
+    display: none;
+  }
+
+  [data-scope='toast'][data-part='action-trigger'] {
+    /* 作为卡片直接子元素时不跟着拉满整行；被作者包进一行里时它只影响交叉轴，无副作用 */
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    block-size: var(--xh-toast-action-h, var(--xh-control-h-sm));
+    padding-inline: var(--xh-toast-action-px, var(--xh-control-px-sm));
+    border: var(--xh-stroke-thin) solid var(--xh-toast-action-border, var(--xh-border-default));
+    border-radius: var(--xh-toast-action-radius, var(--xh-shape-control));
+    background: var(--xh-toast-action-bg, var(--xh-bg-subtle));
+    color: var(--xh-toast-action-fg, var(--xh-fg-default));
+    /* 按钮不继承字族字号，不接回来的话卡片里会突然冒出一段系统 UI 字体 */
+    font: inherit;
+    font-weight: var(--xh-toast-action-font-weight, var(--xh-font-weight-medium));
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  [data-scope='toast'][data-part='action-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='toast'][data-part='action-trigger']:hover:not(:disabled) {
+    background: var(--xh-toast-action-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='toast'][data-part='action-trigger']:active:not(:disabled) {
+    background: var(--xh-toast-action-bg-active, var(--xh-bg-subtle-active));
+  }
+
+  [data-scope='toast'][data-part='action-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  [data-scope='toast'][data-part='close-trigger'] {
+    align-self: flex-start;
+    /* 和操作按钮同处一行时把叉推到行尾；单独作为卡片子元素时则贴到行内末侧 */
+    margin-inline-start: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    block-size: var(--xh-toast-close-size, var(--xh-control-h-sm));
+    inline-size: var(--xh-toast-close-size, var(--xh-control-h-sm));
+    border: 0;
+    border-radius: var(--xh-toast-close-radius, var(--xh-shape-control));
+    background: transparent;
+    color: var(--xh-toast-close-fg, var(--xh-fg-muted));
+    font: inherit;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半：
+     上面声明了 display，不补回来就会留下一个按不动的叉，比压根没有叉更让人困惑 */
+  [data-scope='toast'][data-part='close-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='toast'][data-part='close-trigger']:hover:not(:disabled) {
+    background: var(--xh-toast-close-bg-hover, var(--xh-bg-subtle));
+    color: var(--xh-toast-close-fg-hover, var(--xh-fg-default));
+  }
+
+  /* 单体控件用原生 disabled。常规路径下它与 hidden 同时出现看不见，
+     但作者若在覆盖层把收起改了回来，至少还能看出这颗叉是按不动的 */
+  [data-scope='toast'][data-part='close-trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='toast'][data-part='close-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+}

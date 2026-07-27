@@ -1,0 +1,185 @@
+@layer xihan.components {
+  /* 组容器：label、trigger、条目都是它的直接子节点，排布方式只能读 data-orientation——
+     连接层明说了 role=group 不接受 aria-orientation，那个属性它根本没输出 */
+  [data-scope='checkbox-group'][data-part='root'] {
+    display: flex;
+    gap: var(--xh-checkbox-group-gap, var(--xh-stack-gap-md));
+  }
+
+  /* 两种取值各写一条：连接层缺省给的是 vertical，但受控写 horizontal 时不能靠默认值兜底 */
+  [data-scope='checkbox-group'][data-part='root'][data-orientation='vertical'] {
+    flex-direction: column;
+    /* 条目按内容收宽。竖排下 flex 子项默认拉伸，点击区会一路延伸到文字右侧的空白处，
+       用户点在离文字很远的地方也能翻转选项 */
+    align-items: flex-start;
+  }
+
+  [data-scope='checkbox-group'][data-part='root'][data-orientation='horizontal'] {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  [data-scope='checkbox-group'][data-part='label'] {
+    color: var(--xh-checkbox-group-label-fg, var(--xh-fg-muted));
+    font-size: var(--xh-checkbox-group-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-checkbox-group-label-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+  }
+
+  /* label 自己不带任何状态属性，整组禁用只写在 root 上，只能从 root 往下够 */
+  [data-scope='checkbox-group'][data-part='root'][data-disabled]
+    [data-scope='checkbox-group'][data-part='label'] {
+    color: var(--xh-checkbox-group-label-fg-disabled, var(--xh-fg-disabled));
+  }
+
+  /* position 是给条目内那份视觉隐藏的原生输入当定位基准：连接层给它写死了 position:absolute，
+     这里不立基准的话，原生校验气泡会飘到页面上离该条目很远的地方 */
+  [data-scope='checkbox-group'][data-part='item'] {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-checkbox-group-item-gap, var(--xh-control-gap-md));
+    border-radius: var(--xh-checkbox-group-item-radius, var(--xh-shape-control));
+    color: var(--xh-checkbox-group-item-fg, var(--xh-fg-default));
+    font-size: var(--xh-checkbox-group-item-font-size, var(--xh-text-label-size));
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  [data-scope='checkbox-group'][data-part='item']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 条目禁用一律走 aria-disabled（原生 disabled 会让它从键盘用户眼里消失），
+     所以样式只能读 data-disabled，写 :disabled 永远不命中 */
+  [data-scope='checkbox-group'][data-part='item'][data-disabled] {
+    color: var(--xh-checkbox-group-item-fg-disabled, var(--xh-fg-disabled));
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  /* 只读整组都改不动，但不是禁用：颜色照常，只把"可点"这个暗示收回来。
+     排掉禁用项是因为这条选择器权重高过上面那条，不排就会把 not-allowed 覆盖回 default */
+  [data-scope='checkbox-group'][data-part='root'][data-readonly]
+    [data-scope='checkbox-group'][data-part='item']:not([data-disabled]) {
+    cursor: default;
+  }
+
+  /* 全选格与条目格共用同一套盒子，并成一条规则写：分开写迟早只改到一半，两个方框就此走形。
+     尺寸与选中态照 checkbox 的 root 搬，同一份视觉语言在单体与集合里必须一致。
+     trigger 那格没有对应的角色节点（anatomy 到 trigger 为止），只能由伪元素补出来 */
+  [data-scope='checkbox-group'][data-part='item-control'],
+  [data-scope='checkbox-group'][data-part='trigger']::before {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-checkbox-group-control-size, 16px);
+    block-size: var(--xh-checkbox-group-control-size, 16px);
+    border: var(--xh-stroke-thin) solid var(--xh-checkbox-group-control-border, var(--xh-border-default));
+    border-radius: var(--xh-checkbox-group-control-radius, var(--xh-radius-sm));
+    background: var(--xh-checkbox-group-control-bg, var(--xh-bg-canvas));
+    color: var(--xh-checkbox-group-control-fg, var(--xh-fg-on-brand));
+    font-size: var(--xh-checkbox-group-control-font-size, 12px);
+    line-height: 1;
+    transition:
+      background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease),
+      border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  /* content 只能给伪元素，绝不能并进上面那条：content 落在普通元素上会顶掉它的全部子节点，
+     item-control 里作者写的图标就此消失 */
+  [data-scope='checkbox-group'][data-part='trigger']::before {
+    content: '';
+  }
+
+  /* 悬停只加深空方框的描边。已选中的那一格必须排除：这条选择器的权重高过下面那条填色规则，
+     不排除就会在悬停时把 brand 描边换回灰色，方框看起来"缺了一圈" */
+  [data-scope='checkbox-group'][data-part='item']:not([data-disabled]):hover
+    [data-scope='checkbox-group'][data-part='item-control']:not([data-state='checked']) {
+    border-color: var(--xh-checkbox-group-control-border-hover, var(--xh-border-strong));
+  }
+
+  /* 选中即填色：条目是二态，全选格三态里 all 与 some 都算"有值"，共用同一副填色 */
+  [data-scope='checkbox-group'][data-part='item-control'][data-state='checked'],
+  [data-scope='checkbox-group'][data-part='trigger']:is([data-state='all'], [data-state='some'])::before {
+    border-color: var(--xh-checkbox-group-control-border-checked, var(--xh-bg-brand));
+    background: var(--xh-checkbox-group-control-bg-checked, var(--xh-bg-brand));
+  }
+
+  /* 勾号由皮肤补，作者不必自己往 item-control 里塞字符 */
+  [data-scope='checkbox-group'][data-part='item-control'][data-state='checked']::before {
+    content: '✓';
+  }
+
+  /* 全选格的三态：all 打勾、some 打横杠、none 留空。
+     some 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state */
+  [data-scope='checkbox-group'][data-part='trigger'][data-state='all']::before {
+    content: '✓';
+  }
+
+  [data-scope='checkbox-group'][data-part='trigger'][data-state='some']::before {
+    content: '−';
+  }
+
+  /* 校验失败标在每个方框上：root 上的 data-invalid 是唯一出处，条目自己不带这个属性 */
+  [data-scope='checkbox-group'][data-part='root'][data-invalid]
+    [data-scope='checkbox-group'][data-part='item-control'] {
+    border-color: var(--xh-checkbox-group-control-border-invalid, var(--xh-color-danger-500));
+  }
+
+  [data-scope='checkbox-group'][data-part='item-text'] {
+    color: inherit;
+    user-select: none;
+  }
+
+  /* 全选格与条目同形，但字重加一档，读起来才不像又一个普通选项。
+     它是普通元素而非原生控件（三态只有非原生控件表达得出），禁用态同样只能读 data-disabled */
+  [data-scope='checkbox-group'][data-part='trigger'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-checkbox-group-trigger-gap, var(--xh-control-gap-md));
+    border-radius: var(--xh-checkbox-group-trigger-radius, var(--xh-shape-control));
+    color: var(--xh-checkbox-group-trigger-fg, var(--xh-fg-default));
+    font-size: var(--xh-checkbox-group-trigger-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-checkbox-group-trigger-font-weight, var(--xh-font-weight-medium));
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  [data-scope='checkbox-group'][data-part='trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  [data-scope='checkbox-group'][data-part='trigger'][data-disabled] {
+    color: var(--xh-checkbox-group-trigger-fg-disabled, var(--xh-fg-disabled));
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  /* 只读与禁用会同时出现在 trigger 上（连接层两个属性各写各的），
+     同权重下后写的赢，所以这里必须显式排掉禁用，否则禁用的手势指示被只读盖掉 */
+  [data-scope='checkbox-group'][data-part='trigger'][data-readonly]:not([data-disabled]) {
+    cursor: default;
+  }
+
+  /* 表单出口：连接层已经把整套视觉隐藏写进内联 style（absolute + 1px + clip-path），
+     这里绝不能再补 display:none——那份输入必须留在布局里，原生校验提示要有处可贴。
+     只补一条不吃指针，免得它挡住条目的点击 */
+  [data-scope='checkbox-group'][data-part='item-hidden-input'] {
+    pointer-events: none;
+  }
+
+  /* 上面凡是给了 display 的角色节点都要补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
+     不补的话作者给节点加 hidden 后它照样显示 */
+  [data-scope='checkbox-group'][data-part='root'][hidden],
+  [data-scope='checkbox-group'][data-part='item'][hidden],
+  [data-scope='checkbox-group'][data-part='item-control'][hidden],
+  [data-scope='checkbox-group'][data-part='trigger'][hidden] {
+    display: none;
+  }
+}

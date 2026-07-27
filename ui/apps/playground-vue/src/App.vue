@@ -198,34 +198,10 @@ const volume = ref([60])
 const price = ref([200, 800])
 const brightness = [30]
 
-// 滑块的角色节点没有默认皮肤，可见的部分全靠这几串声明。
-// range 与 thumb 的位置由连接层写进 inset-inline-start / inline-size，这里只补尺寸与配色；
-// 横向轨道每帧会把 block-size / inline-size 写成空串（那条轴用不到），
-// 所以这两处的宽高只能用 width / height / top 这类物理属性，写逻辑属性会被清掉。
-const sliderLabelStyle = 'display: block; font-size: 13px; margin-block-end: 8px;'
-const sliderControlStyle = 'position: relative; block-size: 24px; display: flex; align-items: center;'
-const sliderTrackStyle = 'position: relative; inline-size: 100%; block-size: 6px; border-radius: 9999px; background: var(--xh-bg-subtle-active);'
-const sliderRangeStyle = 'position: absolute; top: 0; height: 100%; border-radius: 9999px; background: var(--xh-bg-brand);'
-const sliderThumbStyle = 'position: absolute; top: 50%; box-sizing: border-box; width: 18px; height: 18px; margin-top: -9px; margin-inline-start: -9px; border-radius: 50%; background: var(--xh-bg-brand); border: 2px solid var(--xh-bg-surface); box-shadow: var(--xh-shadow-sm); cursor: grab;'
-
 const score = ref(3)
 const scoreHover = ref<number | null>(null)
 function onScoreHover(details: { value: number | null }) {
   scoreHover.value = details.value
-}
-
-const ratingLabelStyle = 'display: block; font-size: 13px; margin-block-end: 6px;'
-
-// 五颗星写的是同一个字符，点亮与半亮全靠颜色：半颗用一道 50% 的渐变裁到字形上。
-// display: inline-block 让每颗星自成一行盒，字符两侧的换行空白不会算进宽度——
-// 指针落在左半边还是右半边就是按这个宽度判的。
-function starStyle(state: { highlighted: boolean, half: boolean }, cursor = 'pointer') {
-  const on = 'var(--xh-color-warning-500)'
-  const off = 'var(--xh-fg-subtle)'
-  const base = `display: inline-block; font-size: 26px; line-height: 1; user-select: none; cursor: ${cursor};`
-  if (state.half)
-    return `${base} background: linear-gradient(90deg, ${on} 50%, ${off} 50%); -webkit-background-clip: text; background-clip: text; color: transparent;`
-  return `${base} color: ${state.highlighted ? on : off};`
 }
 
 // 连打检索按 item-text 的首字母匹配，条目文本因此都以拉丁词开头（多给几个 B 开头的才轮转得出来）
@@ -263,18 +239,6 @@ const drawerLabels: Record<(typeof drawerSides)[number], string> = {
   bottom: '从下方',
   left: '从左侧',
 }
-const drawerEdge: Record<(typeof drawerSides)[number], string> = {
-  top: 'inset-block-start: 0; inset-inline: 0; block-size: min(240px, 40vh);',
-  right: 'inset-block: 0; inset-inline-end: 0; inline-size: min(320px, 82vw);',
-  bottom: 'inset-block-end: 0; inset-inline: 0; block-size: min(240px, 40vh);',
-  left: 'inset-block: 0; inset-inline-start: 0; inline-size: min(320px, 82vw);',
-}
-// 抽屉没有配套皮肤，贴边定位得自己写；backdrop 与 positioner 由 XhDrawerContent 内部渲染
-// 并 portal 到 body，模板里够不着，所以遮罩用面板自身那圈铺满视口的投影顶上
-// （投影不参与命中测试，点"遮罩"照样算 outside，关闭逻辑不受影响）。
-function drawerPanelStyle(side: (typeof drawerSides)[number]): string {
-  return `position: fixed; ${drawerEdge[side]} z-index: var(--xh-layer-modal); box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; padding: 20px; overflow: auto; background: var(--xh-bg-surface); color: var(--xh-fg-default); box-shadow: 0 0 0 100vmax var(--xh-bg-overlay), var(--xh-elevation-3);`
-}
 const drawerTranslations = { close: '关闭' }
 const drawerOpened = ref('')
 function onDrawerOpenChange(side: (typeof drawerSides)[number], open: boolean): void {
@@ -283,18 +247,6 @@ function onDrawerOpenChange(side: (typeof drawerSides)[number], open: boolean): 
 
 // 关闭按钮的文案。提到外面存一份：写在模板里每渲染一次都是个新对象，白白惊动一轮 props
 const toastTranslations = { close: '关闭' }
-
-function toastAccent(type: string): string {
-  if (type === 'success')
-    return 'var(--xh-color-success-600)'
-  if (type === 'warning')
-    return 'var(--xh-color-warning-600)'
-  if (type === 'error')
-    return 'var(--xh-color-danger-600)'
-  if (type === 'loading')
-    return 'var(--xh-fg-muted)'
-  return 'var(--xh-color-info-600)'
-}
 
 // 命令由 XhToasterRoot 的插槽作用域交下来，就是 useToaster 摊出来的那几个
 function startUpload(
@@ -746,13 +698,10 @@ function startUpload(
       </p>
       <XhPinInputRoot v-model:value="pinCode" :length="6" type="numeric" otp name="code" placeholder="·">
         <XhPinInputLabel>验证码</XhPinInputLabel>
-        <div class="row" style="gap: 6px;">
-          <XhPinInputInput
-            v-for="i in 6"
-            :key="i"
-            :index="i - 1"
-            style="inline-size: 36px; text-align: center; font-size: 18px;"
-          />
+        <!-- 格间距由皮肤长在格子自己身上（相邻兄弟 + margin-inline-start），
+             这层包裹不在角色表里，得把 .row 自带的 gap 归零，免得两份间距叠加 -->
+        <div class="row" style="gap: 0;">
+          <XhPinInputInput v-for="i in 6" :key="i" :index="i - 1" />
         </div>
         <XhPinInputHiddenInput />
       </XhPinInputRoot>
@@ -770,17 +719,14 @@ function startUpload(
         分得清"全选"与"半选"的前提是把全部条目的值交给 item-values，不给就只会诚实地停在 some。
       </p>
       <XhCheckboxGroupRoot
-        v-slot="{ isChecked, checkedState }"
+        v-slot="{ checkedState }"
         v-model:value="toppings"
         :item-values="toppingValues"
         name="topping"
-        style="display: grid; justify-items: start; gap: 10px;"
       >
-        <XhCheckboxGroupLabel style="color: var(--xh-fg-muted); font-size: 13px;">
-          配料
-        </XhCheckboxGroupLabel>
-        <XhCheckboxGroupTrigger style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
-          <span aria-hidden="true" style="display: inline-flex; align-items: center; justify-content: center; inline-size: 16px; block-size: 16px; border: 1px solid var(--xh-border-default); border-radius: 4px; font-size: 12px; line-height: 1;">{{ checkedState === 'all' ? '✓' : checkedState === 'some' ? '−' : '' }}</span>
+        <XhCheckboxGroupLabel>配料</XhCheckboxGroupLabel>
+        <!-- 方框与勾号／横杠由皮肤的 trigger::before 画，这里只写文案 -->
+        <XhCheckboxGroupTrigger>
           <span>全选（{{ checkedState }}）</span>
         </XhCheckboxGroupTrigger>
         <XhCheckboxGroupItem
@@ -788,11 +734,8 @@ function startUpload(
           :key="t.value"
           :value="t.value"
           :disabled="t.disabled"
-          style="position: relative; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;"
         >
-          <XhCheckboxGroupItemControl style="display: inline-flex; align-items: center; justify-content: center; inline-size: 16px; block-size: 16px; border: 1px solid var(--xh-border-default); border-radius: 4px; font-size: 12px; line-height: 1;">
-            {{ isChecked(t.value) ? '✓' : '' }}
-          </XhCheckboxGroupItemControl>
+          <XhCheckboxGroupItemControl />
           <XhCheckboxGroupItemText>{{ t.label }}</XhCheckboxGroupItemText>
         </XhCheckboxGroupItem>
       </XhCheckboxGroupRoot>
@@ -808,30 +751,35 @@ function startUpload(
         而且只搬焦点不改选中：路过不算数，要按 Enter 或 Space 才切（条目是原生 button，这一路交给平台）。
         禁用项点不动，但焦点落得上去、仍能当方向键的起点。单选组里再点一次当前项就清空，回调给 null。
       </p>
-      <XhToggleGroupRoot v-model:value="align" style="display: flex; gap: 6px;">
-        <XhToggleGroupItem
-          v-for="a in alignItems"
-          :key="a.value"
-          :value="a.value"
-          :disabled="a.disabled"
-          style="padding: 4px 10px; border: 1px solid var(--xh-border-default); border-radius: 6px; background: var(--xh-bg-subtle); color: var(--xh-fg-default);"
-        >
-          {{ a.label }}
-        </XhToggleGroupItem>
-      </XhToggleGroupRoot>
-      <span class="lead">对齐（单选）：{{ align ?? '（无）' }}</span>
-      <XhToggleGroupRoot v-model:value="marks" multiple style="display: flex; gap: 6px; margin-block-start: 12px;">
-        <XhToggleGroupItem
-          v-for="m in markItems"
-          :key="m.value"
-          :value="m.value"
-          :disabled="m.disabled"
-          style="padding: 4px 10px; border: 1px solid var(--xh-border-default); border-radius: 6px; background: var(--xh-bg-subtle); color: var(--xh-fg-default);"
-        >
-          {{ m.label }}
-        </XhToggleGroupItem>
-      </XhToggleGroupRoot>
-      <span class="lead">样式（多选）：{{ marks.join('、') || '（无）' }}</span>
+      <!-- 分段控件的 root 是 inline-flex（不该撑满一行），所以每组各包一层块级容器：
+           否则两组连同后面的说明文字会挤进同一个行内格式化上下文，组间距也撑不开 -->
+      <div class="row">
+        <XhToggleGroupRoot v-model:value="align">
+          <XhToggleGroupItem
+            v-for="a in alignItems"
+            :key="a.value"
+            :value="a.value"
+            :disabled="a.disabled"
+          >
+            {{ a.label }}
+          </XhToggleGroupItem>
+        </XhToggleGroupRoot>
+        <span class="lead">对齐（单选）：{{ align ?? '（无）' }}</span>
+      </div>
+      <!-- margin 只是两组之间的留白，属于本页排版，皮肤不管 -->
+      <div class="row" style="margin-block-start: 12px;">
+        <XhToggleGroupRoot v-model:value="marks" multiple>
+          <XhToggleGroupItem
+            v-for="m in markItems"
+            :key="m.value"
+            :value="m.value"
+            :disabled="m.disabled"
+          >
+            {{ m.label }}
+          </XhToggleGroupItem>
+        </XhToggleGroupRoot>
+        <span class="lead">样式（多选）：{{ marks.join('、') || '（无）' }}</span>
+      </div>
     </section>
 
     <section>
@@ -843,15 +791,15 @@ function startUpload(
         区间滑块的两个拇指互为对方的边界，永不交叉——按 End 也只走到邻居让出的位置为止。
         禁用那条的拇指退出 Tab 序列，值也不再随表单提交。
       </p>
+      <!-- root 上的宽度／间距是本页的排版约束；轨道、区间、拇指的观感全归皮肤，
+           区间与拇指在主轴上的位置由连接层每帧写进内联 style，这里一概不碰 -->
       <XhSliderRoot v-model:value="volume" :min="0" :max="100" :step="1" :large-step="10" name="volume" style="max-inline-size: 360px;">
-        <XhSliderLabel :style="sliderLabelStyle">
-          音量
-        </XhSliderLabel>
-        <XhSliderControl :style="sliderControlStyle">
-          <XhSliderTrack :style="sliderTrackStyle">
-            <XhSliderRange :style="sliderRangeStyle" />
+        <XhSliderLabel>音量</XhSliderLabel>
+        <XhSliderControl>
+          <XhSliderTrack>
+            <XhSliderRange />
           </XhSliderTrack>
-          <XhSliderThumb :style="sliderThumbStyle">
+          <XhSliderThumb>
             <XhSliderHiddenInput />
           </XhSliderThumb>
         </XhSliderControl>
@@ -859,32 +807,28 @@ function startUpload(
       <span class="lead">音量：{{ volume[0] }}</span>
 
       <XhSliderRoot v-model:value="price" :min="0" :max="1000" :step="10" :min-steps-between-thumbs="2" name="price" style="max-inline-size: 360px; margin-block-start: 20px;">
-        <XhSliderLabel :style="sliderLabelStyle">
-          价格区间（两个拇指至少隔 2 格）
-        </XhSliderLabel>
-        <XhSliderControl :style="sliderControlStyle">
-          <XhSliderTrack :style="sliderTrackStyle">
-            <XhSliderRange :style="sliderRangeStyle" />
+        <XhSliderLabel>价格区间（两个拇指至少隔 2 格）</XhSliderLabel>
+        <XhSliderControl>
+          <XhSliderTrack>
+            <XhSliderRange />
           </XhSliderTrack>
-          <XhSliderThumb :index="0" :style="sliderThumbStyle">
+          <XhSliderThumb :index="0">
             <XhSliderHiddenInput />
           </XhSliderThumb>
-          <XhSliderThumb :index="1" :style="sliderThumbStyle">
+          <XhSliderThumb :index="1">
             <XhSliderHiddenInput />
           </XhSliderThumb>
         </XhSliderControl>
       </XhSliderRoot>
       <span class="lead">价格：¥{{ price[0] }} – ¥{{ price[1] }}</span>
 
-      <XhSliderRoot :default-value="brightness" disabled name="brightness" style="max-inline-size: 360px; margin-block-start: 20px; opacity: 0.55;">
-        <XhSliderLabel :style="sliderLabelStyle">
-          亮度（已锁定）
-        </XhSliderLabel>
-        <XhSliderControl :style="sliderControlStyle">
-          <XhSliderTrack :style="sliderTrackStyle">
-            <XhSliderRange :style="sliderRangeStyle" />
+      <XhSliderRoot :default-value="brightness" disabled name="brightness" style="max-inline-size: 360px; margin-block-start: 20px;">
+        <XhSliderLabel>亮度（已锁定）</XhSliderLabel>
+        <XhSliderControl>
+          <XhSliderTrack>
+            <XhSliderRange />
           </XhSliderTrack>
-          <XhSliderThumb :style="[sliderThumbStyle, 'cursor: not-allowed;']">
+          <XhSliderThumb>
             <XhSliderHiddenInput />
           </XhSliderThumb>
         </XhSliderControl>
@@ -900,12 +844,12 @@ function startUpload(
         只读那条仍进得了 Tab 序列、读屏也念得出，但改不动、也不给悬停预览；
         禁用那条整条退出 Tab 序列，值不再随表单提交。
       </p>
-      <XhRatingRoot v-slot="{ items, getItemState }" v-model:value="score" allow-half name="score" style="position: relative;" @hover-change="onScoreHover">
-        <XhRatingLabel :style="ratingLabelStyle">
-          整体满意度
-        </XhRatingLabel>
-        <XhRatingControl style="display: inline-flex; gap: 4px;">
-          <XhRatingItem v-for="i in items" :key="i" :value="i" :style="starStyle(getItemState({ value: i }))">
+      <!-- 星字符归作者，点亮／半亮／灰与手势全由 data-highlighted、data-half、
+           data-readonly、data-disabled 驱动皮肤，模板里不再自己配色 -->
+      <XhRatingRoot v-slot="{ items }" v-model:value="score" allow-half name="score" @hover-change="onScoreHover">
+        <XhRatingLabel>整体满意度</XhRatingLabel>
+        <XhRatingControl>
+          <XhRatingItem v-for="i in items" :key="i" :value="i">
             ★
           </XhRatingItem>
         </XhRatingControl>
@@ -914,22 +858,18 @@ function startUpload(
       <span class="lead">评分：{{ score }} · 悬停预览：{{ scoreHover ?? '（无）' }}</span>
 
       <div class="row" style="gap: 32px; margin-block-start: 20px;">
-        <XhRatingRoot v-slot="{ items, getItemState }" :default-value="4" read-only>
-          <XhRatingLabel :style="ratingLabelStyle">
-            只读（4 星）
-          </XhRatingLabel>
-          <XhRatingControl style="display: inline-flex; gap: 4px;">
-            <XhRatingItem v-for="i in items" :key="i" :value="i" :style="starStyle(getItemState({ value: i }), 'default')">
+        <XhRatingRoot v-slot="{ items }" :default-value="4" read-only>
+          <XhRatingLabel>只读（4 星）</XhRatingLabel>
+          <XhRatingControl>
+            <XhRatingItem v-for="i in items" :key="i" :value="i">
               ★
             </XhRatingItem>
           </XhRatingControl>
         </XhRatingRoot>
-        <XhRatingRoot v-slot="{ items, getItemState }" :default-value="2" disabled style="opacity: 0.55;">
-          <XhRatingLabel :style="ratingLabelStyle">
-            禁用（2 星）
-          </XhRatingLabel>
-          <XhRatingControl style="display: inline-flex; gap: 4px;">
-            <XhRatingItem v-for="i in items" :key="i" :value="i" :style="starStyle(getItemState({ value: i }), 'not-allowed')">
+        <XhRatingRoot v-slot="{ items }" :default-value="2" disabled>
+          <XhRatingLabel>禁用（2 星）</XhRatingLabel>
+          <XhRatingControl>
+            <XhRatingItem v-for="i in items" :key="i" :value="i">
               ★
             </XhRatingItem>
           </XhRatingControl>
@@ -947,15 +887,11 @@ function startUpload(
         勾上多选后空格改成切换，Shift + 方向键顺手扩选，Ctrl / Cmd + A 全选或全不选。
       </p>
       <XhListboxRoot v-slot="{ isSelected }" v-model:value="cities" :multiple="citiesMultiple" style="max-inline-size: 320px;">
-        <XhListboxLabel style="display: block; margin-block-end: 6px;">
-          城市
-        </XhListboxLabel>
-        <XhListboxContent style="border: 1px solid var(--xh-border-subtle); border-radius: 8px; padding: 4px;">
+        <XhListboxLabel>城市</XhListboxLabel>
+        <XhListboxContent>
           <XhListboxItemGroup v-for="g in cityGroups" :key="g.value" :value="g.value">
-            <XhListboxItemGroupLabel style="display: block; padding: 4px 8px; color: var(--xh-fg-muted); font-size: 12px;">
-              {{ g.label }}
-            </XhListboxItemGroupLabel>
-            <XhListboxItem v-for="c in g.items" :key="c.value" :value="c.value" :disabled="c.disabled" class="row" style="padding: 4px 8px;">
+            <XhListboxItemGroupLabel>{{ g.label }}</XhListboxItemGroupLabel>
+            <XhListboxItem v-for="c in g.items" :key="c.value" :value="c.value" :disabled="c.disabled">
               <XhListboxItemText>{{ c.label }}</XhListboxItemText>
               <XhListboxItemIndicator>{{ isSelected(c.value) ? '✓' : '' }}</XhListboxItemIndicator>
             </XhListboxItem>
@@ -976,20 +912,20 @@ function startUpload(
         首页的上一页与末页的下一页转成原生 disabled，Tab 都停不上去。
         末页只有 6 条，区间回显跟着收窄。
       </p>
+      <!-- root 自己就是会换行的横排 flex，页码不必再套一层；
+           区间回显与它同在 nav 里，占满一行把自己挤到下一行去（纯本页版式） -->
       <XhPaginationRoot v-slot="{ pages, pageRange, count, totalPages }" v-model:page="pageNo" :count="196" :page-size="10" :sibling-count="1">
-        <div class="row" style="gap: 6px;">
-          <XhPaginationPrevTrigger>上一页</XhPaginationPrevTrigger>
-          <template v-for="(p, i) in pages" :key="`${p}-${i}`">
-            <XhPaginationEllipsis v-if="p === 'ellipsis'">
-              …
-            </XhPaginationEllipsis>
-            <XhPaginationItem v-else :value="p" :style="p === pageNo ? 'font-weight: 700;' : undefined">
-              {{ p }}
-            </XhPaginationItem>
-          </template>
-          <XhPaginationNextTrigger>下一页</XhPaginationNextTrigger>
-        </div>
-        <span class="lead">第 {{ pageRange.start }}-{{ pageRange.end }} 条，共 {{ count }} 条 · 第 {{ pageNo }} / {{ totalPages }} 页</span>
+        <XhPaginationPrevTrigger>上一页</XhPaginationPrevTrigger>
+        <template v-for="(p, i) in pages" :key="`${p}-${i}`">
+          <XhPaginationEllipsis v-if="p === 'ellipsis'">
+            …
+          </XhPaginationEllipsis>
+          <XhPaginationItem v-else :value="p">
+            {{ p }}
+          </XhPaginationItem>
+        </template>
+        <XhPaginationNextTrigger>下一页</XhPaginationNextTrigger>
+        <span class="lead" style="flex-basis: 100%;">第 {{ pageRange.start }}-{{ pageRange.end }} 条，共 {{ count }} 条 · 第 {{ pageNo }} / {{ totalPages }} 页</span>
       </XhPaginationRoot>
     </section>
 
@@ -1012,18 +948,13 @@ function startUpload(
         >
           <XhDrawerTrigger>{{ drawerLabels[s] }}</XhDrawerTrigger>
           <XhDrawerContent>
-            <!-- 面板样式按 api 报出的 side 现算，它就是打在 root 与 content 上的那个 data-side -->
-            <div :style="drawerPanelStyle(side)">
-              <XhDrawerTitle style="margin: 0; font-size: 16px;">
-                {{ drawerLabels[s] }}
-              </XhDrawerTitle>
-              <XhDrawerDescription class="lead" style="margin: 0;">
-                data-side 是 {{ side }}：面板压在哪条边上，跟 DevTools 里 root 与 content 的这个值对一眼。
-              </XhDrawerDescription>
-              <XhDrawerCloseTrigger style="margin-block-start: auto; align-self: flex-start;">
-                关闭
-              </XhDrawerCloseTrigger>
-            </div>
+            <XhDrawerTitle>{{ drawerLabels[s] }}</XhDrawerTitle>
+            <XhDrawerDescription>
+              data-side 是 {{ side }}：面板压在哪条边上，跟 DevTools 里 root 与 content 的这个值对一眼。
+            </XhDrawerDescription>
+            <!-- close-trigger 是右上角的图标按钮（定宽定高），放图标而非文案；
+                 可及名由 translations.close 经 connect 写成 aria-label -->
+            <XhDrawerCloseTrigger>✕</XhDrawerCloseTrigger>
           </XhDrawerContent>
         </XhDrawerRoot>
       </div>
@@ -1038,7 +969,7 @@ function startUpload(
         （它说的是事情还没完，不自动消失），中途 update 改一次说明文字，最后原地换成 success 才开始倒计时。
         把鼠标停在通知上倒计时会被按住，移开是接着走剩下那一段而不是从头重来；Tab 进撤销 / ✕ 同样按住，焦点离开才放。
         error 那条走 alert + assertive，读屏会打断当前朗读。“全部清空”是把队列直接倒掉，不走退场窗口。
-        队列只交摞内间距，往哪个角贴、朝哪边堆叠是样式层的事，写在下面 group 的内联样式里。
+        队列只交摞内间距，往哪个角贴由 placement 打在 group 上的 data-placement 驱动皮肤，改一处属性就换角。
       </p>
       <XhToasterRoot v-slot="{ create, update, dismissAll, count }" placement="bottom-end" :max="4" :gap="12">
         <div class="row">
@@ -1056,9 +987,7 @@ function startUpload(
           </XhButton>
           <span class="lead">队列：{{ count }} 条</span>
         </div>
-        <XhToasterGroup
-          style="position: fixed; inset-block-end: 24px; inset-inline-end: 24px; z-index: var(--xh-z-toast); display: flex; flex-direction: column; inline-size: 320px; max-inline-size: calc(100vw - 48px);"
-        >
+        <XhToasterGroup>
           <template #default="{ toast }">
             <XhToastRoot
               :id="toast.id"
@@ -1069,18 +998,13 @@ function startUpload(
               :remove-delay="toast.removeDelay"
               :closable="toast.closable"
               :translations="toastTranslations"
-              style="display: grid; gap: 4px; padding: 12px 14px; border: 1px solid var(--xh-border-default); border-inline-start-width: 4px; border-radius: 10px; background: var(--xh-bg-surface-raised); box-shadow: var(--xh-shadow-lg); font-size: 13px; line-height: 1.5;"
-              :style="{ borderInlineStartColor: toastAccent(toast.type) }"
             >
-              <XhToastTitle style="font-weight: 600;" />
-              <XhToastDescription style="color: var(--xh-fg-muted);" />
+              <XhToastTitle />
+              <XhToastDescription />
+              <!-- 这层行容器是本页自己的排版，不是角色节点 -->
               <div class="row" style="gap: 8px; margin-block-start: 6px;">
-                <XhToastActionTrigger style="font: inherit; padding: 2px 10px; border: 1px solid var(--xh-border-default); border-radius: 6px; background: var(--xh-bg-subtle); color: inherit; cursor: pointer;">
-                  撤销
-                </XhToastActionTrigger>
-                <XhToastCloseTrigger style="font: inherit; margin-inline-start: auto; padding: 2px 8px; border: 0; border-radius: 6px; background: transparent; color: var(--xh-fg-muted); cursor: pointer;">
-                  ✕
-                </XhToastCloseTrigger>
+                <XhToastActionTrigger>撤销</XhToastActionTrigger>
+                <XhToastCloseTrigger>✕</XhToastCloseTrigger>
               </div>
             </XhToastRoot>
           </template>

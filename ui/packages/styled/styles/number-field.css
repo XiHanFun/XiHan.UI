@@ -1,0 +1,133 @@
+@layer xihan.components {
+  /* 与文本框同一套堆叠：标签一行、输入行一行。
+     加减钮与输入框中间那层包裹归作者，这里不碰，三者各自把高度对齐即可成一体 */
+  [data-scope='number-field'][data-part='root'] {
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--xh-number-field-gap, var(--xh-space-1));
+  }
+
+  /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+  [data-scope='number-field'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='number-field'][data-part='label'] {
+    color: var(--xh-number-field-label-fg, var(--xh-fg-default));
+    font-size: var(--xh-number-field-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-number-field-label-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+  }
+
+  [data-scope='number-field'][data-part='label'][data-disabled] {
+    color: var(--xh-number-field-label-fg-disabled, var(--xh-fg-disabled));
+  }
+
+  [data-scope='number-field'][data-part='input'] {
+    block-size: var(--xh-number-field-input-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-number-field-input-px, var(--xh-control-px-md));
+    padding-block: 0;
+    border: var(--xh-stroke-thin) solid var(--xh-number-field-input-border, var(--xh-border-default));
+    border-radius: var(--xh-number-field-input-radius, var(--xh-shape-control));
+    background: var(--xh-number-field-input-bg, var(--xh-bg-canvas));
+    color: var(--xh-number-field-input-fg, var(--xh-fg-default));
+    /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族 */
+    font-family: inherit;
+    font-size: var(--xh-number-field-input-font-size, var(--xh-text-body-size));
+    /* 等宽数字：按住加减钮连发时字宽一变，框里的数字就会左右抖 */
+    font-variant-numeric: tabular-nums;
+    line-height: var(--xh-leading-normal);
+    transition: border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  [data-scope='number-field'][data-part='input']::placeholder {
+    color: var(--xh-number-field-placeholder-fg, var(--xh-fg-subtle));
+  }
+
+  /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+  [data-scope='number-field'][data-part='input']:hover:not(:disabled, [data-invalid]) {
+    border-color: var(--xh-number-field-input-border-hover, var(--xh-border-strong));
+  }
+
+  [data-scope='number-field'][data-part='input']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  [data-scope='number-field'][data-part='input'][data-invalid] {
+    border-color: var(--xh-number-field-input-border-invalid, var(--xh-color-danger-500));
+  }
+
+  /* 只读仍可聚焦、可复制，不置灰，只把底色压下去表示"改不动" */
+  [data-scope='number-field'][data-part='input'][readonly] {
+    background: var(--xh-number-field-input-bg-readonly, var(--xh-bg-subtle));
+  }
+
+  /* input 是单体表单控件，禁用走原生 disabled */
+  [data-scope='number-field'][data-part='input']:disabled {
+    background: var(--xh-number-field-input-bg-disabled, var(--xh-bg-subtle));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 两个方向共用一份皮肤：加减钮是同一种东西，只是朝向不同，
+     分开写迟早会一边改了另一边忘了 */
+  [data-scope='number-field'][data-part='increment-trigger'],
+  [data-scope='number-field'][data-part='decrement-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-number-field-trigger-size, var(--xh-control-h-md));
+    block-size: var(--xh-number-field-trigger-size, var(--xh-control-h-md));
+    padding: 0;
+    border: var(--xh-stroke-thin) solid var(--xh-number-field-trigger-border, var(--xh-border-default));
+    border-radius: var(--xh-number-field-trigger-radius, var(--xh-shape-control));
+    background: var(--xh-number-field-trigger-bg, var(--xh-bg-subtle));
+    color: var(--xh-number-field-trigger-fg, var(--xh-fg-default));
+    font-family: inherit;
+    font-size: var(--xh-number-field-trigger-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    cursor: pointer;
+    /* 按住不放会连发，长按期间浏览器默认会去选中按钮里的符号、
+       触屏上还会当成双击缩放，两条都得先掐掉 */
+    user-select: none;
+    touch-action: manipulation;
+    transition: background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
+  [data-scope='number-field'][data-part='increment-trigger'][hidden],
+  [data-scope='number-field'][data-part='decrement-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='number-field'][data-part='increment-trigger']:hover:not(:disabled),
+  [data-scope='number-field'][data-part='decrement-trigger']:hover:not(:disabled) {
+    border-color: var(--xh-number-field-trigger-border-hover, var(--xh-border-strong));
+    background: var(--xh-number-field-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  /* 连发期间按钮一直是按下态：:active 在指针没松开时始终成立，正好对上 */
+  [data-scope='number-field'][data-part='increment-trigger']:active:not(:disabled),
+  [data-scope='number-field'][data-part='decrement-trigger']:active:not(:disabled) {
+    background: var(--xh-number-field-trigger-bg-active, var(--xh-bg-subtle-active));
+  }
+
+  /* 按钮不占 Tab 位（tabindex=-1），留这条是给程序化聚焦兜底 */
+  [data-scope='number-field'][data-part='increment-trigger']:focus-visible,
+  [data-scope='number-field'][data-part='decrement-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 贴到 min / max 时连接层给对应那一侧落原生 disabled：单体控件用 :disabled，
+     不是集合条目那套 aria-disabled */
+  [data-scope='number-field'][data-part='increment-trigger']:disabled,
+  [data-scope='number-field'][data-part='decrement-trigger']:disabled {
+    border-color: var(--xh-number-field-trigger-border-disabled, var(--xh-border-subtle));
+    background: var(--xh-number-field-trigger-bg-disabled, var(--xh-bg-muted));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+}
