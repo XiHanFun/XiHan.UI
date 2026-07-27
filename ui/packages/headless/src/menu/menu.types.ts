@@ -1,8 +1,11 @@
 import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/core'
 import type { MachineSchema } from '@xihan-ui/machine'
 
-/** 展开时焦点落在集合的哪一端：ArrowUp 从末尾进，其余入口一律从首个可用条目进。 */
-export type MenuFocusIntent = 'first' | 'last'
+/**
+ * 展开时焦点落在集合的哪一端：ArrowUp 从末尾进，其余键盘入口从首个可用条目进。
+ * 'none' 是指针与命令式入口的落点——不预先挑锚点，展开那一刻一个条目都不带高亮。
+ */
+export type MenuFocusIntent = 'first' | 'last' | 'none'
 
 // 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；纯逻辑测试与 SSR 下保持缺省，
 // 此时副作用一律短路（机器状态照常转移，只是不定位、不挂消解层与焦点域）。
@@ -60,7 +63,7 @@ export interface MenuSchema extends MachineSchema {
     position: PositionResult | null
     /** roving tabindex 的锚点，同时是方向键的起点；收起即清空。 */
     focusedValue: string | null
-    /** 本次展开的落焦端；受控回写走 CONTROLLED.OPEN 时也读得到。 */
+    /** 本次展开的落焦端；受控回写走 CONTROLLED.OPEN 时也读得到。'none' 即不落焦。 */
     focusIntent: MenuFocusIntent
     /** 关闭时是否把焦点归还 trigger；Tab 关闭时为 false，让焦点自然离开。 */
     returnFocus: boolean
