@@ -238,16 +238,18 @@ app.innerHTML = `
 
   <section>
     <h2>Popover</h2>
-    <p class="lead">点击展开、Escape 或点外部关闭；展开时焦点进入内容，关闭后回到触发按钮。</p>
+    <p class="lead">
+      点击展开、Escape 或点外部关闭；展开时焦点进入内容，关闭后回到触发按钮。
+      下方空间不够时引擎会自动翻到上方（flip）。
+    </p>
     <xh-popover placement="bottom-start">
       <button data-xh-part="trigger">打开浮层</button>
       <div data-xh-part="positioner">
         <div data-xh-part="content">
           <h2 data-xh-part="title">订阅设置</h2>
           <p data-xh-part="description">role=dialog，四处 ARIA 互指；定位与 Tooltip 共用同一个引擎。</p>
-          <div class="row end">
-            <button data-xh-part="close-trigger">知道了</button>
-          </div>
+          <!-- close-trigger 是右上角的图标按钮（定宽定高），放图标而非文案 -->
+          <button data-xh-part="close-trigger" aria-label="关闭">✕</button>
           <div data-xh-part="arrow"></div>
         </div>
       </div>

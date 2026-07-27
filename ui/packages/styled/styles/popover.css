@@ -55,6 +55,13 @@
     color: var(--xh-popover-description-fg, var(--xh-fg-muted));
   }
 
+  /* 关闭按钮是绝对定位的，不占流内宽度：标题得自己让出右上角那块，
+     否则长标题会直接钻到按钮底下。只在真有关闭按钮时让位。 */
+  [data-scope='popover'][data-part='content']:has([data-scope='popover'][data-part='close-trigger'])
+    [data-scope='popover'][data-part='title'] {
+    padding-inline-end: calc(var(--xh-control-h-sm) + var(--xh-space-2));
+  }
+
   [data-scope='popover'][data-part='close-trigger'] {
     position: absolute;
     inset-block-start: var(--xh-space-2);
