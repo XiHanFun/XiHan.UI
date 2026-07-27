@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { ConformanceSuite, FixtureNode } from '@xihan-ui/testing'
-import { accordionSuite, avatarSuite, badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, fieldSuite, menuSuite, popoverSuite, progressSuite, radioGroupSuite, runConformance, selectSuite, separatorSuite, switchSuite, tabsSuite, toggleSuite, tooltipSuite } from '@xihan-ui/testing'
+import { accordionSuite, avatarSuite, badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, fieldSuite, menuSuite, numberFieldSuite, popoverSuite, progressSuite, radioGroupSuite, runConformance, selectSuite, separatorSuite, switchSuite, tabsSuite, toggleSuite, tooltipSuite } from '@xihan-ui/testing'
 import { afterEach, beforeEach, describe, it, vi } from 'vitest'
 import { createWcHarness } from './harness'
 
@@ -180,6 +180,7 @@ runConformance(
     wcCollapsibleSuite,
     wcFieldSuite,
     wcMenuSuite,
+    numberFieldSuite,
     wcPopoverSuite,
     wcProgressSuite,
     wcRadioGroupSuite,

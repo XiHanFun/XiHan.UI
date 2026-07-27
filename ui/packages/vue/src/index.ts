@@ -50,6 +50,15 @@ export {
 export { useMenu } from './components/menu/use-menu'
 export type { MenuContext } from './components/menu/use-menu'
 export {
+  XhNumberFieldDecrementTrigger,
+  XhNumberFieldIncrementTrigger,
+  XhNumberFieldInput,
+  XhNumberFieldLabel,
+  XhNumberFieldRoot,
+} from './components/number-field/number-field'
+export { useNumberField } from './components/number-field/use-number-field'
+export type { NumberFieldContext } from './components/number-field/use-number-field'
+export {
   XhPopoverArrow,
   XhPopoverCloseTrigger,
   XhPopoverContent,

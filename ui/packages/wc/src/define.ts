@@ -7,6 +7,7 @@ import { XhCollapsibleElement } from './elements/collapsible'
 import { XhDialogElement } from './elements/dialog'
 import { XhFieldElement } from './elements/field'
 import { XhMenuElement } from './elements/menu'
+import { XhNumberFieldElement } from './elements/number-field'
 import { XhPopoverElement } from './elements/popover'
 import { XhProgressElement } from './elements/progress'
 import { XhRadioGroupElement } from './elements/radio-group'
@@ -34,6 +35,7 @@ export function defineXhElements(): void {
   defineElement('xh-popover', XhPopoverElement, VERSION)
   defineElement('xh-progress', XhProgressElement, VERSION)
   defineElement('xh-radio-group', XhRadioGroupElement, VERSION)
+  defineElement('xh-number-field', XhNumberFieldElement, VERSION)
   defineElement('xh-select', XhSelectElement, VERSION)
   defineElement('xh-separator', XhSeparatorElement, VERSION)
   defineElement('xh-switch', XhSwitchElement, VERSION)
