@@ -125,5 +125,13 @@ export class XhTooltipElement extends XhElement {
     // 才必须用内联样式盖过）。
     put('content', api.getContentProps() as Record<string, unknown>)
     put('arrow', api.getArrowProps() as Record<string, unknown>)
+
+    // 本仓自带的 tooltip.css 确实没给 content 设 display，但宿主不该指望作者装了这份样式：
+    // 作者层只要给 content 来一句 display（Tailwind 的 flex/block 也算），
+    // 就会盖过 UA 的 [hidden]{display:none}，收起态的提示框会永久悬在页面上。
+    // 与 dialog/collapsible/popover 一致，用内联样式兜底。
+    const content = this.getPart('content')
+    if (content)
+      content.style.display = api.open ? '' : 'none'
   }
 }

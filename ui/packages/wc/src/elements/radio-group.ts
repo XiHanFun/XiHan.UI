@@ -47,10 +47,11 @@ export class XhRadioGroupElement extends XhElement {
   declare direction?: Direction
   declare name?: string
 
-  // 条目的禁用声明只在首次见到该节点时读一次并记住：connect 每帧都会把 aria-disabled 写回条目
-  // （整组 disabled 更是写满每个条目），再回读就分不清是作者声明还是自己上一帧的产物，
-  // 组解禁后条目会永远解不开。
+  // 整组禁用期间的条目自身声明快照。connect 每帧都把 aria-disabled 写回条目，整组禁用更是写满每一个，
+  // 此时回读分不清「作者声明的」还是「自己上一帧写的」，组解禁后条目就永远解不开。
   private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
+  /** 上一帧是否整组禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。 */
+  private wasGroupDisabled = false
 
   private readonly notify = (details: RadioGroupValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -90,12 +91,18 @@ export class XhRadioGroupElement extends XhElement {
   }
 
   private itemProps(el: HTMLElement): RadioGroupItemProps {
-    let disabled = this.declaredDisabled.get(el)
-    if (disabled === undefined) {
-      disabled = isItemDisabled(el)
-      this.declaredDisabled.set(el, disabled)
+    const value = el.getAttribute('value') ?? ''
+    const groupDisabled = !!this.disabled
+    // 只有「本帧与上一帧都没整组禁用」时，节点上的 aria-disabled 才等于作者声明：
+    // 整组禁用那几帧 connect 把每个条目都写成了 true，解禁当帧 DOM 上还留着这些写回值，
+    // 此刻现读会把机器自己的产物误当声明、条目再也解不开。
+    if (!groupDisabled && !this.wasGroupDisabled) {
+      const own = isItemDisabled(el)
+      this.declaredDisabled.set(el, own)
+      return { value, disabled: own }
     }
-    return { value: el.getAttribute('value') ?? '', disabled }
+    // 用进入禁用前的快照；没有快照（挂载时就整组禁用）才退回现读
+    return { value, disabled: this.declaredDisabled.get(el) ?? isItemDisabled(el) }
   }
 
   // 条目内的子部件：getParts 收的是整个元素范围，按 item 子树过滤才归得对条目。
@@ -134,5 +141,8 @@ export class XhRadioGroupElement extends XhElement {
       for (const text of this.partsIn(el, 'item-text'))
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
     }
+
+    // 本帧的写回已落地，下一帧才知道 DOM 上的 aria-disabled 可不可信
+    this.wasGroupDisabled = !!this.disabled
   }
 }
