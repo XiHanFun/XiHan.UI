@@ -1,0 +1,111 @@
+import type { PropTypes } from '@xihan-ui/core'
+import type { MachineSchema } from '@xihan-ui/machine'
+
+/** 通知的语气。loading 例外：它表达"事情还没完"，不自动消失。 */
+export type ToastType = 'info' | 'success' | 'warning' | 'error' | 'loading'
+
+/**
+ * 对外的三段式生命周期。
+ * visible 在机器内部再分 running / paused 两个子态（计时器挂在 running 上），对外不区分——
+ * 暂停与否是同一条通知的同一段人生，读屏与样式层要的只是"它还在台上"。
+ */
+export type ToastStatus = 'visible' | 'dismissing' | 'unmounted'
+
+/** 暂停来源。可同时有多个按住计时，最后一个松开才继续走。 */
+export type ToastPauseSource = 'pointer' | 'focus' | 'page-idle' | 'api'
+
+export interface ToastStatusChangeDetails {
+  /** 队列身份；未指定 id 时回落到实例 scope id。 */
+  id: string
+  status: ToastStatus
+}
+
+export interface ToastActionDetails {
+  id: string
+}
+
+export interface ToastTranslations {
+  close: string
+}
+
+export interface ToastSchema extends MachineSchema {
+  props: {
+    /** 队列身份。toaster 用它做 create/update/dismiss 的寻址键。 */
+    id?: string
+    /** 标题文本；作者没在 title 部件里写内容时由适配器填入。 */
+    title?: string
+    /** 补充说明；作者没在 description 部件里写内容时由适配器填入。 */
+    description?: string
+    /** 语气，默认 info。error 走 alert + assertive，loading 不自动消失。 */
+    type?: ToastType
+    /** 停留毫秒，默认 5000。<=0 或非有限数即不自动消失。 */
+    duration?: number
+    /** 退场窗口毫秒，默认 200：进入 dismissing 后停留这么久再转 unmounted，留给退场动画。 */
+    removeDelay?: number
+    /** 是否显示可用的关闭按钮，默认 true。 */
+    closable?: boolean
+    /** 页面切到后台时暂停计时，默认 false。由 toaster 统一下发。 */
+    pauseOnPageIdle?: boolean
+    translations?: Partial<ToastTranslations>
+    /** 生命周期落位时通知：dismissing 与 unmounted 各一次。宿主据此把条目移出队列。 */
+    onStatusChange?: (details: ToastStatusChangeDetails) => void
+    /** 操作按钮被按下。 */
+    onAction?: (details: ToastActionDetails) => void
+  }
+  context: {
+    /**
+     * 还剩多少毫秒要走。暂停时把已经跑掉的一段扣掉，恢复时接着走剩下的——
+     * 不记这笔账的话，指针从通知上扫过一下就等于给它续了整整一轮命。
+     * Infinity 表示不自动消失。
+     */
+    remaining: number
+    /** 当前按住计时的来源集合，空集即计时在走。 */
+    pausedBy: ToastPauseSource[]
+  }
+  computed: Record<string, never>
+  refs: Record<string, never>
+  state: 'visible' | 'visible.running' | 'visible.paused' | 'dismissing' | 'unmounted'
+  event:
+    /** 立即进入退场（关闭按钮、宿主命令）。 */
+    | { type: 'TOAST.DISMISS' }
+    /** 操作按钮被按下：先发 onAction，再进入退场。 */
+    | { type: 'TOAST.ACTION' }
+    | { type: 'TOAST.PAUSE', src: ToastPauseSource }
+    | { type: 'TOAST.RESUME', src: ToastPauseSource }
+    /** 时长预算被改写（type / duration 变了），重算并重起计时器。 */
+    | { type: 'TOAST.RESET' }
+    | { type: 'after.duration' }
+    | { type: 'after.removeDelay' }
+  tag: never
+  guard: 'isLastPauseSource'
+  action:
+    | 'addPauseSource'
+    | 'removePauseSource'
+    | 'resetDuration'
+    | 'syncDuration'
+    | 'invokeAction'
+    | 'invokeDismissing'
+    | 'invokeUnmounted'
+  effect: 'trackDuration' | 'waitForRemoveDelay' | 'trackPageIdle'
+}
+
+export interface ToastApi<T extends PropTypes = PropTypes> {
+  id: string
+  status: ToastStatus
+  type: ToastType
+  title: string | undefined
+  description: string | undefined
+  /** 计时被按住中。样式层据此暂停进度条动画。 */
+  paused: boolean
+  closable: boolean
+  /** 剩余毫秒；不自动消失时为 Infinity。 */
+  remaining: number
+  dismiss: () => void
+  pause: () => void
+  resume: () => void
+  getRootProps: () => T['element']
+  getTitleProps: () => T['element']
+  getDescriptionProps: () => T['element']
+  getActionTriggerProps: () => T['button']
+  getCloseTriggerProps: () => T['button']
+}

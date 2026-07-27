@@ -35,6 +35,12 @@ function kebab(s: string): string {
   return s.replace(/[A-Z]/g, m => `-${m.toLowerCase()}`)
 }
 
+/** 这个属性是不是配了自定义转换器。Lit 定稿后把声明摊在类上的 elementProperties 里。 */
+function hasCustomConverter(host: HTMLElement, key: string): boolean {
+  const declared = (host.constructor as { elementProperties?: Map<string, { converter?: unknown }> }).elementProperties
+  return typeof declared?.get(key)?.converter === 'object'
+}
+
 // 标量 → 属性，对象/函数 → 属性(property)
 function applyInputs(host: HTMLElement, props: Record<string, unknown>): void {
   for (const [k, v] of Object.entries(props)) {
@@ -45,7 +51,15 @@ function applyInputs(host: HTMLElement, props: Record<string, unknown>): void {
       continue
     }
     if (typeof v === 'boolean') {
-      host.toggleAttribute(kebab(k), v)
+      // false 分两种写法，取决于元素怎么声明这个属性：
+      // · 声明了自定义转换器（本仓的三态转换器）的，写 name="false"——
+      //   摘掉属性在三态语义里是"没指定"，会落回默认值，缺省为真的开关因此永远关不掉；
+      // · 用 Lit 自带 Boolean 转换器的，只能摘掉属性——它判的是 v !== null，
+      //   写 "false" 反而成了真。
+      if (v === false && hasCustomConverter(host, k))
+        host.setAttribute(kebab(k), 'false')
+      else
+        host.toggleAttribute(kebab(k), v)
       continue
     }
     host.setAttribute(kebab(k), String(v))

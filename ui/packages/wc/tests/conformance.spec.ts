@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { ConformanceSuite, FixtureNode } from '@xihan-ui/testing'
-import { accordionSuite, avatarSuite, badgeSuite, buttonSuite, checkboxSuite, collapsibleSuite, fieldSuite, menuSuite, numberFieldSuite, popoverSuite, progressSuite, radioGroupSuite, runConformance, selectSuite, separatorSuite, switchSuite, tabsSuite, toggleSuite, tooltipSuite } from '@xihan-ui/testing'
+import { accordionSuite, avatarSuite, badgeSuite, buttonSuite, checkboxGroupSuite, checkboxSuite, collapsibleSuite, fieldSuite, listboxSuite, menuSuite, numberFieldSuite, paginationSuite, pinInputSuite, popoverSuite, progressSuite, radioGroupSuite, ratingSuite, runConformance, selectSuite, separatorSuite, sliderSuite, switchSuite, tabsSuite, textFieldSuite, toasterSuite, toastSuite, toggleGroupSuite, toggleSuite, tooltipSuite } from '@xihan-ui/testing'
 import { afterEach, beforeEach, describe, it, vi } from 'vitest'
 import { createWcHarness } from './harness'
 
@@ -167,6 +167,39 @@ const wcPopoverSuite: ConformanceSuite = {
   cases: popoverSuite.cases.filter(c => !(c.props && 'open' in c.props)),
 }
 
+// rating 的星档是集合条目，禁用声明同样改 aria-disabled。
+const wcRatingSuite = authorDisabled(ratingSuite)
+
+// 三个集合类新件与既有的 tabs/accordion 同因：条目禁用改用 aria-disabled 声明。
+// checkbox-group 另有一处与 radio-group 相同的分歧：每个条目里那份随表单提交的隐藏
+// checkbox，Vue 版由 XhCheckboxGroupItem 自己装配，WC 版要作者手写；位置也得对齐到
+// 条目的第一个子节点，因为 order 断言是逐字比对的。
+function withItemHiddenInput(node: FixtureNode): FixtureNode {
+  if (node.part === 'item')
+    return { ...node, children: [{ part: 'item-hidden-input', tag: 'input' }, ...(node.children ?? [])] }
+  if (!node.children)
+    return node
+  return { ...node, children: node.children.map(withItemHiddenInput) }
+}
+
+const wcCheckboxGroupSuite = authorDisabled({
+  ...checkboxGroupSuite,
+  fixture: withItemHiddenInput(checkboxGroupSuite.fixture),
+  cases: checkboxGroupSuite.cases.map((c) => {
+    const derive = c.fixture
+    return derive ? { ...c, fixture: (base: FixtureNode) => withItemHiddenInput(derive(base)) } : c
+  }),
+})
+const listboxSuiteWc = authorDisabled(listboxSuite)
+const wcToggleGroupSuite = authorDisabled(toggleGroupSuite)
+
+// closable 缺省为真，而 HTML 布尔属性表达不了 false：harness 摘掉属性等于"没指定"，
+// 元素会退回缺省。与 switch/checkbox 同因，这一条用例在 WC 侧排除。
+const wcToastSuite: ConformanceSuite = {
+  ...toastSuite,
+  cases: toastSuite.cases.filter(c => !(c.props && 'closable' in c.props)),
+}
+
 // 同一份规格喂给 WC 适配器实现，逐帧核对。separator/badge 无状态无受控，整份复用。
 // 三个集合类组件的受控值是字符串/数组（不像布尔那样表达不了 undefined），受控用例可原样跑。
 runConformance(
@@ -183,13 +216,23 @@ runConformance(
     numberFieldSuite,
     wcPopoverSuite,
     wcProgressSuite,
+    wcRatingSuite,
     wcRadioGroupSuite,
     wcSelectSuite,
     separatorSuite,
     wcSwitchSuite,
     wcTabsSuite,
+    wcToastSuite,
+    toasterSuite,
     wcToggleSuite,
     wcTooltipSuite,
+    wcCheckboxGroupSuite,
+    listboxSuiteWc,
+    paginationSuite,
+    pinInputSuite,
+    sliderSuite,
+    textFieldSuite,
+    wcToggleGroupSuite,
   ],
   { describe, it },
   {

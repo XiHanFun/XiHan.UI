@@ -100,6 +100,14 @@ export interface RawStepContext {
   readonly root: HTMLElement
   readonly doc: Document
   readonly adapterName: AdapterName
+  /**
+   * 等适配器把这一轮改动提交到 DOM。
+   *
+   * 两个适配器的重渲都是异步的（Vue 排微任务，Lit 等 updateComplete），
+   * 所以在 raw 里派完事件**必须** await 这个再去读 DOM——否则读到的是上一帧，
+   * 断言要么假绿（期望值恰好等于旧值），要么像组件坏了一样假红。
+   */
+  readonly flush: () => Promise<void>
 }
 
 export type Step
