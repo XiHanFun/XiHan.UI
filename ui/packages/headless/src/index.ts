@@ -26,6 +26,8 @@ export { connectProgress, progressAnatomy, progressKeyboard, progressMeta } from
 export type { ProgressApi, ProgressProps } from './progress'
 export { connectRadioGroup, radioGroupAnatomy, radioGroupKeyboard, radioGroupMachine, radioGroupMeta } from './radio-group'
 export type { RadioGroupApi, RadioGroupItemProps, RadioGroupSchema, RadioGroupValueChangeDetails } from './radio-group'
+export { connectNumberField, NUMBER_FIELD_CHANGE_DELAY, NUMBER_FIELD_CHANGE_INTERVAL, NUMBER_FIELD_STEP, numberFieldAnatomy, numberFieldKeyboard, numberFieldMachine, numberFieldMeta } from './number-field'
+export type { NumberFieldApi, NumberFieldSchema, NumberFieldValueChangeDetails } from './number-field'
 export { connectSelect, SELECT_DEFAULT_PLACEMENT, selectAnatomy, selectItemQuery, selectItemText, selectKeyboard, selectMachine, selectMeta } from './select'
 export type { SelectApi, SelectFocusIntent, SelectItemProps, SelectOpenChangeDetails, SelectRefs, SelectSchema, SelectValueChangeDetails } from './select'
 export { connectSeparator, separatorAnatomy, separatorKeyboard, separatorMeta } from './separator'

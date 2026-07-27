@@ -33,6 +33,11 @@ import {
   XhMenuRoot,
   XhMenuSeparator,
   XhMenuTrigger,
+  XhNumberFieldDecrementTrigger,
+  XhNumberFieldIncrementTrigger,
+  XhNumberFieldInput,
+  XhNumberFieldLabel,
+  XhNumberFieldRoot,
   XhPopoverArrow,
   XhPopoverCloseTrigger,
   XhPopoverContent,
@@ -100,6 +105,7 @@ const fruits = [
   { value: 'durian', label: '榴莲' },
 ]
 const invalid = ref(false)
+const qty = ref('3')
 </script>
 
 <template>
@@ -487,6 +493,24 @@ const invalid = ref(false)
       <label class="row">
         <input v-model="invalid" type="checkbox"> 标记为无效
       </label>
+    </section>
+
+    <section>
+      <h2>NumberField</h2>
+      <p class="lead">
+        键盘全在输入框上：ArrowUp / ArrowDown 走 step，PageUp / PageDown 走 largeStep，
+        Home / End 取端点。加减按钮按住不放会连发；贴住边界时对应按钮自动转灰。
+        失焦时把 12.50 收成 12.5、把越界值夹回区间，输入途中不打断。
+      </p>
+      <XhNumberFieldRoot v-model:value="qty" :min="0" :max="20" :step="1" name="qty">
+        <XhNumberFieldLabel>数量</XhNumberFieldLabel>
+        <div class="row" style="gap: 4px;">
+          <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+          <XhNumberFieldInput style="inline-size: 80px; text-align: center;" />
+          <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
+        </div>
+      </XhNumberFieldRoot>
+      <span class="lead">当前值：{{ qty === '' ? '（空）' : qty }}</span>
     </section>
   </main>
 </template>

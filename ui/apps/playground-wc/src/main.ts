@@ -369,6 +369,26 @@ app.innerHTML = `
       <input type="checkbox" id="wc-field-invalid"> 标记为无效
     </label>
   </section>
+
+  <section>
+    <h2>NumberField</h2>
+    <p class="lead">
+      键盘全在输入框上：ArrowUp / ArrowDown 走 step，PageUp / PageDown 走 largeStep，
+      Home / End 取端点。加减按钮按住不放会连发；贴住边界时对应按钮自动转灰。
+      失焦时把 12.50 收成 12.5、把越界值夹回区间，输入途中不打断。
+    </p>
+    <xh-number-field id="wc-number" default-value="3" min="0" max="20" step="1" name="qty">
+      <div data-xh-part="root">
+        <label data-xh-part="label">数量</label>
+        <div class="row" style="gap: 4px;">
+          <button data-xh-part="decrement-trigger">−</button>
+          <input data-xh-part="input" style="inline-size: 80px; text-align: center;">
+          <button data-xh-part="increment-trigger">+</button>
+        </div>
+      </div>
+    </xh-number-field>
+    <span class="lead" id="wc-number-value">当前值：3</span>
+  </section>
 </main>
 `
 
@@ -397,6 +417,12 @@ for (const btn of Array.from(document.querySelectorAll('[data-progress]'))) {
 document.getElementById('wc-select')!.addEventListener('value-change', (e) => {
   const { value } = (e as CustomEvent<{ value: string | null }>).detail
   document.getElementById('wc-select-value')!.textContent = `当前值：${value ?? '（未选）'}`
+})
+
+// 数字框值回显
+document.getElementById('wc-number')!.addEventListener('value-change', (e) => {
+  const { value } = (e as CustomEvent<{ value: string }>).detail
+  document.getElementById('wc-number-value')!.textContent = `当前值：${value === '' ? '（空）' : value}`
 })
 
 // 无效态开关：改宿主元素的属性，元素自行重接线
