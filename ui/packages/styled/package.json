@@ -20,6 +20,7 @@
     "./checkbox.css": "./styles/checkbox.css",
     "./collapsible.css": "./styles/collapsible.css",
     "./dialog.css": "./styles/dialog.css",
+    "./menu.css": "./styles/menu.css",
     "./popover.css": "./styles/popover.css",
     "./progress.css": "./styles/progress.css",
     "./radio-group.css": "./styles/radio-group.css",

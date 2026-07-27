@@ -237,6 +237,24 @@ app.innerHTML = `
   </section>
 
   <section>
+    <h2>Menu</h2>
+    <p class="lead">Enter / Space / ArrowDown 展开并落到首项，ArrowUp 落到末项；方向键跳过禁用项，Escape 关闭并归还焦点。</p>
+    <xh-menu id="wc-menu">
+      <button data-xh-part="trigger">操作</button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="item" value="copy">复制</div>
+          <div data-xh-part="item" value="paste">粘贴</div>
+          <div data-xh-part="separator"></div>
+          <div data-xh-part="item" value="delete" aria-disabled="true">删除（禁用）</div>
+        </div>
+        <div data-xh-part="arrow"></div>
+      </div>
+    </xh-menu>
+    <span class="lead" id="wc-menu-picked">最近选中：（无）</span>
+  </section>
+
+  <section>
     <h2>Popover</h2>
     <p class="lead">
       点击展开、Escape 或点外部关闭；展开时焦点进入内容，关闭后回到触发按钮。
@@ -260,6 +278,11 @@ app.innerHTML = `
 
 document.getElementById('theme')!.addEventListener('click', () => {
   theme.setPreference({ mode: theme.getState().mode === 'light' ? 'dark' : 'light' })
+})
+
+// 菜单选中回显
+document.getElementById('wc-menu')!.addEventListener('select', (e) => {
+  document.getElementById('wc-menu-picked')!.textContent = `最近选中：${(e as CustomEvent<{ value: string }>).detail.value}`
 })
 
 // 进度条加减：直接改宿主元素的 value 属性，元素自行重连接

@@ -63,6 +63,7 @@ export function createVueHarness(): AdapterHarness {
         onCheckedChange: (detail: unknown) => events.push({ type: 'checked-change', detail }),
         onPressedChange: (detail: unknown) => events.push({ type: 'pressed-change', detail }),
         onValueChange: (detail: unknown) => events.push({ type: 'value-change', detail }),
+        onSelect: (detail: unknown) => events.push({ type: 'select', detail }),
       }
       app = createApp({
         setup: () => () =>

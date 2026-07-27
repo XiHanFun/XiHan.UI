@@ -773,24 +773,6 @@
             },
             {
               "kind": "field",
-              "name": "layer",
-              "type": {
-                "text": "Layer | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "disposeLayer",
-              "type": {
-                "text": "(() => void) | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
               "name": "contentNode",
               "type": {
                 "text": "HTMLElement | null"
@@ -839,6 +821,12 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "field",
+              "name": "registerLayer",
+              "privacy": "private",
+              "readonly": true
             },
             {
               "kind": "method",
@@ -939,6 +927,281 @@
           "declaration": {
             "name": "XhDialogElement",
             "module": "src/elements/dialog.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/menu.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-menu>` —— Light-DOM 行为宿主：用户写 trigger/positioner/content/item/... 角色节点，\n元素跑 menu 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger、被定位的浮层取 positioner；机器只认端口，不认识具体引擎。\n条目身份取用户写在 item 上的 value 属性，禁用由部件自报（aria-disabled）。",
+          "name": "XhMenuElement",
+          "cssParts": [
+            {
+              "description": "触发按钮（aria-haspopup/aria-expanded/aria-controls 所在），同时是定位锚点",
+              "name": "trigger"
+            },
+            {
+              "description": "浮层定位容器，坐标由引擎写成内联样式",
+              "name": "positioner"
+            },
+            {
+              "description": "role=menu 容器（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden",
+              "name": "content"
+            },
+            {
+              "description": "role=menuitem 条目，须自带 value 属性标识身份；禁用写 aria-disabled=\"true\"",
+              "name": "item"
+            },
+            {
+              "description": "分隔线（role=separator，不入方向键导航）",
+              "name": "separator"
+            },
+            {
+              "description": "指向锚点的箭头（aria-hidden，data-placement 随实际放置位翻转）",
+              "name": "arrow"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "defaultOpen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-open"
+            },
+            {
+              "kind": "field",
+              "name": "placement",
+              "privacy": "public",
+              "type": {
+                "text": "Placement | undefined"
+              },
+              "attribute": "placement"
+            },
+            {
+              "kind": "field",
+              "name": "offset",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "offset"
+            },
+            {
+              "kind": "field",
+              "name": "loop",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "menuScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "positionEngine",
+              "type": {
+                "text": "PositionEnginePort"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "notifyOpen",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifySelect",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<MenuSchema>( this, menuMachine, () => this.machineProps(), { scope: this.menuScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<MenuSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "registerLayer",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<MenuSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "open 状态变化；detail 为 `{ open: boolean }`",
+              "name": "open-change"
+            },
+            {
+              "description": "条目被选中（菜单随之关闭）；detail 为 `{ value: string }`",
+              "name": "select"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控开合；缺省该属性即非受控",
+              "name": "open",
+              "fieldName": "open"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始为展开",
+              "name": "default-open",
+              "fieldName": "defaultOpen"
+            },
+            {
+              "type": {
+                "text": "Placement | undefined"
+              },
+              "description": "首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上",
+              "name": "placement",
+              "fieldName": "placement"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "浮层与锚点的间距（px）",
+              "name": "offset",
+              "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "方向键走到尽头回绕，默认 true；写 loop=\"false\" 关掉",
+              "name": "loop",
+              "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，默认 ltr",
+              "name": "dir",
+              "fieldName": "direction"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-menu",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhMenuElement",
+          "declaration": {
+            "name": "XhMenuElement",
+            "module": "src/elements/menu.ts"
           }
         }
       ]
@@ -1089,24 +1352,6 @@
             },
             {
               "kind": "field",
-              "name": "layer",
-              "type": {
-                "text": "Layer | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "disposeLayer",
-              "type": {
-                "text": "(() => void) | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -1137,6 +1382,12 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "field",
+              "name": "registerLayer",
+              "privacy": "private",
+              "readonly": true
             },
             {
               "kind": "method",
@@ -1434,6 +1685,16 @@
               "privacy": "private",
               "readonly": true,
               "default": "new WeakMap<HTMLElement, boolean>()"
+            },
+            {
+              "kind": "field",
+              "name": "wasGroupDisabled",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false",
+              "description": "上一帧是否整组禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。"
             },
             {
               "kind": "field",

@@ -18,6 +18,13 @@ import {
   XhDialogRoot,
   XhDialogTitle,
   XhDialogTrigger,
+  XhMenuArrow,
+  XhMenuContent,
+  XhMenuItem,
+  XhMenuPositioner,
+  XhMenuRoot,
+  XhMenuSeparator,
+  XhMenuTrigger,
   XhPopoverArrow,
   XhPopoverCloseTrigger,
   XhPopoverContent,
@@ -61,6 +68,10 @@ const progress = ref(40)
 const plan = ref('standard')
 const tab = ref('overview')
 const panels = ref<string[]>(['a'])
+const picked = ref('')
+function onMenuSelect(details: { value: string }) {
+  picked.value = details.value
+}
 </script>
 
 <template>
@@ -333,6 +344,32 @@ const panels = ref<string[]>(['a'])
           </XhTooltipPositioner>
         </XhTooltipRoot>
       </div>
+    </section>
+
+    <section>
+      <h2>Menu</h2>
+      <p class="lead">
+        Enter / Space / ArrowDown 展开并落到首项，ArrowUp 落到末项；方向键跳过禁用项，Escape 关闭并归还焦点。
+      </p>
+      <XhMenuRoot @select="onMenuSelect">
+        <XhMenuTrigger>操作</XhMenuTrigger>
+        <XhMenuPositioner>
+          <XhMenuContent>
+            <XhMenuItem value="copy">
+              复制
+            </XhMenuItem>
+            <XhMenuItem value="paste">
+              粘贴
+            </XhMenuItem>
+            <XhMenuSeparator />
+            <XhMenuItem value="delete" disabled>
+              删除（禁用）
+            </XhMenuItem>
+          </XhMenuContent>
+          <XhMenuArrow />
+        </XhMenuPositioner>
+      </XhMenuRoot>
+      <span class="lead">最近选中：{{ picked || '（无）' }}</span>
     </section>
 
     <section>
