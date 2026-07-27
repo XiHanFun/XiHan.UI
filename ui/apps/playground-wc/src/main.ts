@@ -389,6 +389,443 @@ app.innerHTML = `
     </xh-number-field>
     <span class="lead" id="wc-number-value">当前值：3</span>
   </section>
+
+  <section>
+    <h2>TextField</h2>
+    <p class="lead">
+      清空按钮只是指针用户的快捷方式：框里没字时它是灰的，敲进第一个字才亮起来，清完当场再转灰；
+      它不占 Tab 位、也不抢焦点，清完能接着打字。键盘那一路走 Escape——有值时清空并把这一下吃掉，
+      没值时原样交回去，套在弹层里时 Esc 仍然关得掉弹层。上限 10 个字符，顶满后再敲进不去，
+      root 与 input 一起挂上 data-at-limit；勾上下面的复选框看 aria-invalid 翻成 true。
+    </p>
+    <xh-text-field id="wc-text-field" clearable max-length="10" name="nickname" placeholder="请输入昵称">
+      <!-- root 这层要自己写：data-empty / data-at-limit / data-invalid 落在它上面。
+           label 须是原生 &lt;label&gt;、输入框须是原生 &lt;input&gt;：for 恒写向 input 的 id，
+           指到不可标注的元素上点标题不聚焦，读屏也念不出控件的名字 -->
+      <div data-xh-part="root">
+        <label data-xh-part="label">昵称</label>
+        <div class="row" style="gap: 4px;">
+          <input data-xh-part="input" style="inline-size: 200px;">
+          <!-- 清空按钮须是 button：要能被点、被置灰；没开 clearable 时元素会把它整个收起来 -->
+          <button data-xh-part="clear-trigger">✕</button>
+        </div>
+      </div>
+    </xh-text-field>
+    <span class="lead" id="wc-text-field-value">当前值：（空） · 0 / 10</span>
+    <label class="row">
+      <input type="checkbox" id="wc-text-field-invalid"> 标记为无效
+    </label>
+  </section>
+
+  <section>
+    <h2>PinInput</h2>
+    <p class="lead">
+      每格都是原生输入框：敲一个数字自动跳下一格；退格在有值的格上清本格、在空格上退回上一格并把它清掉；
+      左右键与 Home / End 在格间移动，两端停住不回绕。numeric 下字母根本进不来，敲了既不进值也不会赖在框里。
+      粘贴这条务必真试一次：复制 123456，聚焦任意一格按 Ctrl+V，整串会从落点那一格起按格铺开，
+      而不是整串挤进一格（从第三格粘 345 就只填后三格）。六格填满时 root 挂上 data-complete，
+      隐藏输入同时拿到拼好的整串，那才是随表单提交的值。
+    </p>
+    <xh-pin-input id="wc-pin-input" length="6" type="numeric" otp name="code" placeholder="·">
+      <!-- 标签须是原生 &lt;label&gt;：for 恒写向首格，点标题落到第一个待填的格子。
+           每格自带 index 声明下标，不写就按文档序 -->
+      <div data-xh-part="root">
+        <label data-xh-part="label">验证码</label>
+        <div class="row" style="gap: 6px;">
+          <input data-xh-part="input" index="0" style="inline-size: 36px; text-align: center; font-size: 18px;">
+          <input data-xh-part="input" index="1" style="inline-size: 36px; text-align: center; font-size: 18px;">
+          <input data-xh-part="input" index="2" style="inline-size: 36px; text-align: center; font-size: 18px;">
+          <input data-xh-part="input" index="3" style="inline-size: 36px; text-align: center; font-size: 18px;">
+          <input data-xh-part="input" index="4" style="inline-size: 36px; text-align: center; font-size: 18px;">
+          <input data-xh-part="input" index="5" style="inline-size: 36px; text-align: center; font-size: 18px;">
+        </div>
+        <!-- 整份验证码的表单出口，与逐格的输入框分开：元素会把它转成 type=hidden -->
+        <input data-xh-part="hidden-input">
+      </div>
+    </xh-pin-input>
+    <span class="lead" id="wc-pin-input-value">当前值：（空） · 未填满</span>
+  </section>
+
+  <section>
+    <h2>CheckboxGroup</h2>
+    <p class="lead">
+      数组值：各选各的，多项能同时选中，再点一次即取消。与单选组正相反——组内有几项就有几个 Tab 停靠点，
+      容器自己不占位，禁用项也留着位子（点不动，但焦点落得上去、读屏念得出来）。
+      Space 翻转聚焦的那一项；改不动的条目不吞这个键，Space 照样把页面往下滚。
+      “全选”那一格是第三种状态：勾了一部分时它的 aria-checked 是 mixed，全勾上才转 true；
+      半选时再按一次是整批取消而不是补齐。松露是禁用项，全选勾不上它、整批取消也摘不掉它已有的那一份。
+    </p>
+    <xh-checkbox-group id="wc-checkbox-group" default-value="cheese,truffle" item-values="cheese,bacon,truffle,basil" name="topping">
+      <div data-xh-part="root" style="display: grid; justify-items: start; gap: 10px;">
+        <!-- label 是组标题、由 aria-labelledby 指过来，不是 for 指向控件的原生 label，写 span 即可 -->
+        <span data-xh-part="label" style="color: var(--xh-fg-muted); font-size: 13px;">配料</span>
+        <!-- trigger 必须写在 root 之内：全选那一步是顺祖先链找回本组、再现查条目的。
+             它与条目同形是 div 不是 button——三态的 aria-checked=mixed 只有非原生控件表达得出，
+             Space 也由 connect 自己接管 -->
+        <div data-xh-part="trigger" style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
+          <span id="wc-checkbox-group-mark" aria-hidden="true" style="display: inline-flex; align-items: center; justify-content: center; inline-size: 16px; block-size: 16px; border: 1px solid var(--xh-border-default); border-radius: 4px; font-size: 12px; line-height: 1;">−</span>
+          <span>全选</span>
+        </div>
+        <!-- 条目内那份随表单提交的隐藏 checkbox 要作者手写，且排在条目的第一个子节点 -->
+        <div data-xh-part="item" value="cheese" style="position: relative; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
+          <input data-xh-part="item-hidden-input" />
+          <span data-xh-part="item-control" style="display: inline-flex; align-items: center; justify-content: center; inline-size: 16px; block-size: 16px; border: 1px solid var(--xh-border-default); border-radius: 4px; font-size: 12px; line-height: 1;">✓</span>
+          <span data-xh-part="item-text">芝士</span>
+        </div>
+        <div data-xh-part="item" value="bacon" style="position: relative; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
+          <input data-xh-part="item-hidden-input" />
+          <span data-xh-part="item-control" style="display: inline-flex; align-items: center; justify-content: center; inline-size: 16px; block-size: 16px; border: 1px solid var(--xh-border-default); border-radius: 4px; font-size: 12px; line-height: 1;"></span>
+          <span data-xh-part="item-text">培根</span>
+        </div>
+        <!-- 条目禁用用 aria-disabled 声明：原生 disabled 不可聚焦，而规格要求禁用条目仍占一个 Tab 位 -->
+        <div data-xh-part="item" value="truffle" aria-disabled="true" style="position: relative; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
+          <input data-xh-part="item-hidden-input" />
+          <span data-xh-part="item-control" style="display: inline-flex; align-items: center; justify-content: center; inline-size: 16px; block-size: 16px; border: 1px solid var(--xh-border-default); border-radius: 4px; font-size: 12px; line-height: 1;">✓</span>
+          <span data-xh-part="item-text">松露（套餐自带，改不动）</span>
+        </div>
+        <div data-xh-part="item" value="basil" style="position: relative; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
+          <input data-xh-part="item-hidden-input" />
+          <span data-xh-part="item-control" style="display: inline-flex; align-items: center; justify-content: center; inline-size: 16px; block-size: 16px; border: 1px solid var(--xh-border-default); border-radius: 4px; font-size: 12px; line-height: 1;"></span>
+          <span data-xh-part="item-text">罗勒</span>
+        </div>
+      </div>
+    </xh-checkbox-group>
+    <span class="lead" id="wc-checkbox-group-value">当前值：cheese、truffle</span>
+  </section>
+
+  <section>
+    <h2>ToggleGroup</h2>
+    <p class="lead">
+      单选与多选是两套 ARIA，任何时候只出现一套：单选 root=radiogroup、条目 role=radio + aria-checked；
+      多选 root=group、条目退回原生按钮 + aria-pressed。
+      两组都只占一个 Tab 位，进组后改用方向键走——四个方向键都响应（与横竖排无关），跳过禁用项、到头回绕，
+      而且只搬焦点不改选中：路过不算数，要按 Enter 或 Space 才切（条目是原生 button，这一路交给平台）。
+      禁用项点不动，但焦点落得上去、仍能当方向键的起点。单选组里再点一次当前项就清空，回调给 null。
+    </p>
+    <!-- 条目必须是原生 button：Enter/Space 的激活交给平台，组件不自己实现这一路。
+         禁用一律用 aria-disabled 声明——原生 disabled 不可聚焦，禁用项就当不成方向键的起点了 -->
+    <xh-toggle-group id="wc-toggle-group-single" default-value="left">
+      <div data-xh-part="root" style="display: flex; gap: 6px;">
+        <button data-xh-part="item" value="left" style="padding: 4px 10px; border: 1px solid var(--xh-border-default); border-radius: 6px; background: var(--xh-bg-subtle); color: var(--xh-fg-default);">左对齐</button>
+        <button data-xh-part="item" value="center" aria-disabled="true" style="padding: 4px 10px; border: 1px solid var(--xh-border-default); border-radius: 6px; background: var(--xh-bg-subtle); color: var(--xh-fg-default);">居中（禁用）</button>
+        <button data-xh-part="item" value="right" style="padding: 4px 10px; border: 1px solid var(--xh-border-default); border-radius: 6px; background: var(--xh-bg-subtle); color: var(--xh-fg-default);">右对齐</button>
+      </div>
+    </xh-toggle-group>
+    <span class="lead" id="wc-toggle-group-single-value">对齐（单选）：left</span>
+    <xh-toggle-group id="wc-toggle-group-multi" multiple default-value="bold">
+      <div data-xh-part="root" style="display: flex; gap: 6px; margin-block-start: 12px;">
+        <button data-xh-part="item" value="bold" style="padding: 4px 10px; border: 1px solid var(--xh-border-default); border-radius: 6px; background: var(--xh-bg-subtle); color: var(--xh-fg-default);">B</button>
+        <button data-xh-part="item" value="italic" style="padding: 4px 10px; border: 1px solid var(--xh-border-default); border-radius: 6px; background: var(--xh-bg-subtle); color: var(--xh-fg-default);">I</button>
+        <button data-xh-part="item" value="underline" aria-disabled="true" style="padding: 4px 10px; border: 1px solid var(--xh-border-default); border-radius: 6px; background: var(--xh-bg-subtle); color: var(--xh-fg-default);">U（禁用）</button>
+      </div>
+    </xh-toggle-group>
+    <span class="lead" id="wc-toggle-group-multi-value">样式（多选）：bold</span>
+  </section>
+
+  <section>
+    <h2>Slider</h2>
+    <p class="lead">
+      键盘全在拇指上：方向键走一格 step，PageUp / PageDown 走 largeStep（这里是 10），
+      Home / End 直接贴到端点。按下轨道任意位置，最近的那个拇指当场跳过来并接着能拖；
+      松手后焦点留在它身上，方向键可以继续微调。
+      区间滑块的两个拇指互为对方的边界，永不交叉——按 End 也只走到邻居让出的位置为止。
+      禁用那条的拇指退出 Tab 序列，值也不再随表单提交。
+    </p>
+    <xh-slider id="wc-slider-volume" default-value="60" min="0" max="100" step="1" large-step="10" name="volume">
+      <div data-xh-part="root" style="max-inline-size: 360px;">
+        <!-- 拇指是 div、不是可被 label 关联的表单控件，所以这里不写 for；
+             名字经拇指上的 aria-labelledby 反向挂过去 -->
+        <label data-xh-part="label" style="display: block; font-size: 13px; margin-block-end: 8px;">音量</label>
+        <div data-xh-part="control" style="position: relative; block-size: 24px; display: flex; align-items: center;">
+          <div data-xh-part="track" style="position: relative; inline-size: 100%; block-size: 6px; border-radius: 9999px; background: var(--xh-bg-subtle-active);">
+            <!-- 起止由元素写进 inset-inline-start / inline-size；高度只能用物理属性写：
+                 横向轨道每帧会把 block-size 写成空串，写 block-size 会被清掉 -->
+            <div data-xh-part="range" style="position: absolute; top: 0; height: 100%; border-radius: 9999px; background: var(--xh-bg-brand);"></div>
+          </div>
+          <div data-xh-part="thumb" style="position: absolute; top: 50%; box-sizing: border-box; width: 18px; height: 18px; margin-top: -9px; margin-inline-start: -9px; border-radius: 50%; background: var(--xh-bg-brand); border: 2px solid var(--xh-bg-surface); box-shadow: var(--xh-shadow-sm); cursor: grab;">
+            <input data-xh-part="hidden-input" />
+          </div>
+        </div>
+      </div>
+    </xh-slider>
+    <span class="lead" id="wc-slider-volume-value">音量：60</span>
+
+    <xh-slider id="wc-slider-price" default-value="200,800" min="0" max="1000" step="10" min-steps-between-thumbs="2" name="price">
+      <div data-xh-part="root" style="max-inline-size: 360px; margin-block-start: 20px;">
+        <label data-xh-part="label" style="display: block; font-size: 13px; margin-block-end: 8px;">价格区间（两个拇指至少隔 2 格）</label>
+        <div data-xh-part="control" style="position: relative; block-size: 24px; display: flex; align-items: center;">
+          <div data-xh-part="track" style="position: relative; inline-size: 100%; block-size: 6px; border-radius: 9999px; background: var(--xh-bg-subtle-active);">
+            <div data-xh-part="range" style="position: absolute; top: 0; height: 100%; border-radius: 9999px; background: var(--xh-bg-brand);"></div>
+          </div>
+          <!-- 多拇指时每个都要用 index 写明自己是第几个；拇指内的表单影子跟着所在拇指走 -->
+          <div data-xh-part="thumb" index="0" style="position: absolute; top: 50%; box-sizing: border-box; width: 18px; height: 18px; margin-top: -9px; margin-inline-start: -9px; border-radius: 50%; background: var(--xh-bg-brand); border: 2px solid var(--xh-bg-surface); box-shadow: var(--xh-shadow-sm); cursor: grab;">
+            <input data-xh-part="hidden-input" />
+          </div>
+          <div data-xh-part="thumb" index="1" style="position: absolute; top: 50%; box-sizing: border-box; width: 18px; height: 18px; margin-top: -9px; margin-inline-start: -9px; border-radius: 50%; background: var(--xh-bg-brand); border: 2px solid var(--xh-bg-surface); box-shadow: var(--xh-shadow-sm); cursor: grab;">
+            <input data-xh-part="hidden-input" />
+          </div>
+        </div>
+      </div>
+    </xh-slider>
+    <span class="lead" id="wc-slider-price-value">价格：¥200 – ¥800</span>
+
+    <xh-slider default-value="30" disabled name="brightness">
+      <div data-xh-part="root" style="max-inline-size: 360px; margin-block-start: 20px; opacity: 0.55;">
+        <label data-xh-part="label" style="display: block; font-size: 13px; margin-block-end: 8px;">亮度（已锁定）</label>
+        <div data-xh-part="control" style="position: relative; block-size: 24px; display: flex; align-items: center;">
+          <div data-xh-part="track" style="position: relative; inline-size: 100%; block-size: 6px; border-radius: 9999px; background: var(--xh-bg-subtle-active);">
+            <div data-xh-part="range" style="position: absolute; top: 0; height: 100%; border-radius: 9999px; background: var(--xh-bg-brand);"></div>
+          </div>
+          <div data-xh-part="thumb" style="position: absolute; top: 50%; box-sizing: border-box; width: 18px; height: 18px; margin-top: -9px; margin-inline-start: -9px; border-radius: 50%; background: var(--xh-bg-brand); border: 2px solid var(--xh-bg-surface); box-shadow: var(--xh-shadow-sm); cursor: not-allowed;">
+            <input data-xh-part="hidden-input" />
+          </div>
+        </div>
+      </div>
+    </xh-slider>
+  </section>
+
+  <section>
+    <h2>Rating</h2>
+    <p class="lead">
+      划过星星只是预览：回显里的“评分”纹丝不动，只有“悬停预览”跟着指针走，指针一离开预览立刻收起，
+      点下去才算真的落值。允许半颗时，落点在一颗星的左半边给半颗、右半边给整颗；
+      方向键按半档走，Home / End 取最低一档与满分。
+      只读那条仍进得了 Tab 序列、读屏也念得出，但改不动、也不给悬停预览；
+      禁用那条整条退出 Tab 序列，值不再随表单提交。
+    </p>
+    <!-- 星星是作者写死的字符，元素只往上打属性、不改文本，
+         所以点亮与半亮只能靠 data-highlighted / data-half 选择器上色。
+         inline-block 让字符两侧的换行空白不算进宽度：左右半边的判定用的正是这个宽度。 -->
+    <style>
+      [data-scope="rating"][data-part="item"] { display: inline-block; font-size: 26px; line-height: 1; user-select: none; cursor: pointer; color: var(--xh-fg-subtle); }
+      [data-scope="rating"][data-part="item"][data-highlighted] { color: var(--xh-color-warning-500); }
+      [data-scope="rating"][data-part="item"][data-half] { background: linear-gradient(90deg, var(--xh-color-warning-500) 50%, var(--xh-fg-subtle) 50%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+      [data-scope="rating"][data-part="item"][data-readonly] { cursor: default; }
+      [data-scope="rating"][data-part="item"][data-disabled] { cursor: not-allowed; }
+      [data-scope="rating"][data-part="root"][data-disabled] { opacity: 0.55; }
+    </style>
+    <xh-rating id="wc-rating" allow-half default-value="3" name="score">
+      <!-- 表单影子是根下的兄弟节点，它只管提交；键盘与朗读全在 control 那条星星带上 -->
+      <div data-xh-part="root" style="position: relative;">
+        <span data-xh-part="label" style="display: block; font-size: 13px; margin-block-end: 6px;">整体满意度</span>
+        <div data-xh-part="control" style="display: inline-flex; gap: 4px;">
+          <span data-xh-part="item" value="1">★</span>
+          <span data-xh-part="item" value="2">★</span>
+          <span data-xh-part="item" value="3">★</span>
+          <span data-xh-part="item" value="4">★</span>
+          <span data-xh-part="item" value="5">★</span>
+        </div>
+        <input data-xh-part="hidden-input" />
+      </div>
+    </xh-rating>
+    <span class="lead" id="wc-rating-value">评分：3 · 悬停预览：（无）</span>
+
+    <div class="row" style="gap: 32px; margin-block-start: 20px;">
+      <xh-rating read-only default-value="4">
+        <div data-xh-part="root">
+          <span data-xh-part="label" style="display: block; font-size: 13px; margin-block-end: 6px;">只读（4 星）</span>
+          <div data-xh-part="control" style="display: inline-flex; gap: 4px;">
+            <span data-xh-part="item" value="1">★</span>
+            <span data-xh-part="item" value="2">★</span>
+            <span data-xh-part="item" value="3">★</span>
+            <span data-xh-part="item" value="4">★</span>
+            <span data-xh-part="item" value="5">★</span>
+          </div>
+        </div>
+      </xh-rating>
+      <xh-rating disabled default-value="2">
+        <div data-xh-part="root">
+          <span data-xh-part="label" style="display: block; font-size: 13px; margin-block-end: 6px;">禁用（2 星）</span>
+          <div data-xh-part="control" style="display: inline-flex; gap: 4px;">
+            <span data-xh-part="item" value="1">★</span>
+            <span data-xh-part="item" value="2">★</span>
+            <span data-xh-part="item" value="3">★</span>
+            <span data-xh-part="item" value="4">★</span>
+            <span data-xh-part="item" value="5">★</span>
+          </div>
+        </div>
+      </xh-rating>
+    </div>
+  </section>
+
+  <section>
+    <h2>Listbox</h2>
+    <p class="lead">
+      焦点与选中是两条线：方向键与 Home / End 只搬焦点，Enter 或空格才落值。
+      连打字母就地检索——连按 b 在几个 B 开头的城市间轮转，打 ber 落到 Berlin、再补一个 n 走到 Bern。
+      禁用的 Busan 被方向键与检索一并跳过，但它仍点得中、仍是方向键的起点。
+      整组只占一个 Tab 位，焦点从外面进来先落在已选中的那条上。
+      勾上多选后空格改成切换，Shift + 方向键顺手扩选，Ctrl / Cmd + A 全选或全不选。
+    </p>
+    <xh-listbox id="wc-listbox" default-value="beijing">
+      <!-- root / label / content 与每个条目都由作者写：条目身份取自身的 value 属性，
+           禁用一律用 aria-disabled 声明——原生 disabled 不可聚焦，禁用项就当不成方向键的起点。
+           分组同样用 value 声明身份，分组标题的 id 由它派生 -->
+      <div data-xh-part="root" style="max-inline-size: 320px;">
+        <span data-xh-part="label" style="display: block; margin-block-end: 6px;">城市</span>
+        <div data-xh-part="content" style="border: 1px solid var(--xh-border-subtle); border-radius: 8px; padding: 4px;">
+          <div data-xh-part="item-group" value="asia">
+            <span data-xh-part="item-group-label" style="display: block; padding: 4px 8px; color: var(--xh-fg-muted); font-size: 12px;">亚洲</span>
+            <div data-xh-part="item" value="bangkok" class="row" style="padding: 4px 8px;">
+              <span data-xh-part="item-text">Bangkok 曼谷</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+            <div data-xh-part="item" value="beijing" class="row" style="padding: 4px 8px;">
+              <span data-xh-part="item-text">Beijing 北京</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+            <div data-xh-part="item" value="busan" aria-disabled="true" class="row" style="padding: 4px 8px;">
+              <span data-xh-part="item-text">Busan 釜山（禁用）</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+            <div data-xh-part="item" value="chengdu" class="row" style="padding: 4px 8px;">
+              <span data-xh-part="item-text">Chengdu 成都</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+          </div>
+          <div data-xh-part="item-group" value="europe">
+            <span data-xh-part="item-group-label" style="display: block; padding: 4px 8px; color: var(--xh-fg-muted); font-size: 12px;">欧洲</span>
+            <div data-xh-part="item" value="barcelona" class="row" style="padding: 4px 8px;">
+              <span data-xh-part="item-text">Barcelona 巴塞罗那</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+            <div data-xh-part="item" value="berlin" class="row" style="padding: 4px 8px;">
+              <span data-xh-part="item-text">Berlin 柏林</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+            <div data-xh-part="item" value="bern" class="row" style="padding: 4px 8px;">
+              <span data-xh-part="item-text">Bern 伯尔尼</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+            <div data-xh-part="item" value="london" class="row" style="padding: 4px 8px;">
+              <span data-xh-part="item-text">London 伦敦</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </xh-listbox>
+    <label class="row">
+      <input type="checkbox" id="wc-listbox-multiple"> 多选（multiple）
+    </label>
+    <span class="lead" id="wc-listbox-value"></span>
+  </section>
+
+  <section>
+    <h2>Pagination</h2>
+    <p class="lead">
+      196 条、每页 10 条，正好 20 页，当前页两侧各留一页：序列长度恒为 7，切页时省略号左右挪、按钮不左右抖动；
+      贴到两端时省略位让给页码（只隔一页就把那页直接显出来，不折成省略号）。
+      首页的上一页与末页的下一页转成原生 disabled，Tab 都停不上去。
+      末页只有 6 条，区间回显跟着收窄。
+    </p>
+    <xh-pagination id="wc-pagination" count="196" page-size="10" sibling-count="1">
+      <!-- root 必须是 nav：地标语义由标签自己给，元素只往上打 aria-label。
+           页码节点也归作者建（元素不替作者生成，否则外层壳与图标就再塞不进来），
+           下面那个空容器由脚本按当前页填 -->
+      <nav data-xh-part="root">
+        <div class="row" style="gap: 6px;">
+          <button data-xh-part="prev-trigger">上一页</button>
+          <span id="wc-pagination-pages" class="row" style="gap: 6px;"></span>
+          <button data-xh-part="next-trigger">下一页</button>
+        </div>
+        <span class="lead" id="wc-pagination-range"></span>
+      </nav>
+    </xh-pagination>
+  </section>
+
+  <section>
+    <h2>Drawer</h2>
+    <p class="lead">
+      贴边渲染的对话框：Escape 关闭、Tab 与 Shift+Tab 在面板里循环出不去、点遮罩关闭，
+      关掉后焦点回到刚按下的那个触发按钮；展开期间页面滚不动。
+      四个按钮各走一条边——面板到底贴住哪边，看的是 root 与 content 上那个 data-side。
+      抽屉没有配套皮肤：遮罩与贴边定位全写成内联样式，不写就是打开了也看不见。
+    </p>
+    <div class="row">
+      <xh-drawer side="top">
+        <!-- root 这层要自己写：content 会被 portal 走/隐藏，而 data-side 在收起态也得有个落点 -->
+        <div data-xh-part="root">
+          <button data-xh-part="trigger">从上方</button>
+          <div data-xh-part="backdrop" style="position: fixed; inset: 0; z-index: var(--xh-layer-modal); background: var(--xh-bg-overlay);"></div>
+          <div data-xh-part="positioner" style="position: fixed; inset-block-start: 0; inset-inline: 0; z-index: var(--xh-layer-modal);">
+            <div data-xh-part="content" style="box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; block-size: min(240px, 40vh); padding: 20px; overflow: auto; background: var(--xh-bg-surface); color: var(--xh-fg-default); box-shadow: var(--xh-elevation-3);">
+              <h3 data-xh-part="title" style="margin: 0; font-size: 16px;">从上方</h3>
+              <p data-xh-part="description" class="lead" style="margin: 0;">data-side 是 top，面板就该压在视口顶边。</p>
+              <button data-xh-part="close-trigger" style="margin-block-start: auto; align-self: flex-start;">关闭</button>
+            </div>
+          </div>
+        </div>
+      </xh-drawer>
+      <xh-drawer side="right">
+        <div data-xh-part="root">
+          <button data-xh-part="trigger">从右侧</button>
+          <div data-xh-part="backdrop" style="position: fixed; inset: 0; z-index: var(--xh-layer-modal); background: var(--xh-bg-overlay);"></div>
+          <div data-xh-part="positioner" style="position: fixed; inset-block: 0; inset-inline-end: 0; z-index: var(--xh-layer-modal);">
+            <div data-xh-part="content" style="box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; block-size: 100%; inline-size: min(320px, 82vw); padding: 20px; overflow: auto; background: var(--xh-bg-surface); color: var(--xh-fg-default); box-shadow: var(--xh-elevation-3);">
+              <h3 data-xh-part="title" style="margin: 0; font-size: 16px;">从右侧</h3>
+              <p data-xh-part="description" class="lead" style="margin: 0;">side 缺省就是 right，这一个把它显式写出来。</p>
+              <button data-xh-part="close-trigger" style="margin-block-start: auto; align-self: flex-start;">关闭</button>
+            </div>
+          </div>
+        </div>
+      </xh-drawer>
+      <xh-drawer side="bottom">
+        <div data-xh-part="root">
+          <button data-xh-part="trigger">从下方</button>
+          <div data-xh-part="backdrop" style="position: fixed; inset: 0; z-index: var(--xh-layer-modal); background: var(--xh-bg-overlay);"></div>
+          <div data-xh-part="positioner" style="position: fixed; inset-block-end: 0; inset-inline: 0; z-index: var(--xh-layer-modal);">
+            <div data-xh-part="content" style="box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; block-size: min(240px, 40vh); padding: 20px; overflow: auto; background: var(--xh-bg-surface); color: var(--xh-fg-default); box-shadow: var(--xh-elevation-3);">
+              <h3 data-xh-part="title" style="margin: 0; font-size: 16px;">从下方</h3>
+              <p data-xh-part="description" class="lead" style="margin: 0;">遮罩铺满视口，positioner 只贴住底边，面板的高度由它自己给。</p>
+              <button data-xh-part="close-trigger" style="margin-block-start: auto; align-self: flex-start;">关闭</button>
+            </div>
+          </div>
+        </div>
+      </xh-drawer>
+      <xh-drawer side="left">
+        <div data-xh-part="root">
+          <button data-xh-part="trigger">从左侧</button>
+          <div data-xh-part="backdrop" style="position: fixed; inset: 0; z-index: var(--xh-layer-modal); background: var(--xh-bg-overlay);"></div>
+          <div data-xh-part="positioner" style="position: fixed; inset-block: 0; inset-inline-start: 0; z-index: var(--xh-layer-modal);">
+            <div data-xh-part="content" style="box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; block-size: 100%; inline-size: min(320px, 82vw); padding: 20px; overflow: auto; background: var(--xh-bg-surface); color: var(--xh-fg-default); box-shadow: var(--xh-elevation-3);">
+              <h3 data-xh-part="title" style="margin: 0; font-size: 16px;">从左侧</h3>
+              <p data-xh-part="description" class="lead" style="margin: 0;">四个抽屉共用一份机器，换的只有 side 这一个属性。</p>
+              <button data-xh-part="close-trigger" style="margin-block-start: auto; align-self: flex-start;">关闭</button>
+            </div>
+          </div>
+        </div>
+      </xh-drawer>
+    </div>
+    <span class="lead" id="wc-drawer-state">当前展开：（无）</span>
+  </section>
+
+  <section>
+    <h2>Toaster / Toast</h2>
+    <p class="lead">
+      toaster 是队列，toast 是队列里的一条，四颗按钮走的都是元素自己的命令式接口。
+      create 入队并返回 id；同一个 id 再 create 一次就是就地改写、位置不动——“上传”那颗先挂一条 loading
+      （它说的是事情还没完，不自动消失），中途用 <code>updateToast</code> 改一次说明文字，最后原地换成 success 才开始倒计时。
+      改写队列的方法叫 <code>updateToast</code> 而不是 update：后者是 Lit 自己的渲染钩子，占用它组件当场不工作。
+      把鼠标停在通知上倒计时会被按住，移开是接着走剩下那一段而不是从头重来；Tab 进撤销 / ✕ 同样按住。
+      error 那条走 alert + assertive，读屏会打断当前朗读。“全部清空”是把队列直接倒掉，不走退场窗口。
+      条目由作者按队列渲染，元素不替你生成——下面 group 是空的，通知节点全由脚本按 visibleToasts 增删。
+    </p>
+    <div class="row">
+      <xh-button variant="subtle"><button data-xh-part="root" data-toast="info">弹一条 info</button></xh-button>
+      <xh-button variant="subtle"><button data-xh-part="root" data-toast="error">弹一条 error</button></xh-button>
+      <xh-button variant="solid"><button data-xh-part="root" data-toast="upload">上传（loading → success）</button></xh-button>
+      <xh-button variant="ghost"><button data-xh-part="root" data-toast="clear">全部清空</button></xh-button>
+      <span class="lead" id="wc-toaster-count">队列：0 条</span>
+    </div>
+    <!-- root 是 role=region 的地标容器，本身不定位：贴哪个角、朝哪边堆叠全写在 group 上，
+         队列只往 group 上打一条摞内间距 -->
+    <xh-toaster id="wc-toaster" placement="bottom-end" max="4" gap="12">
+      <div data-xh-part="root">
+        <div data-xh-part="group" id="wc-toast-stack" style="position: fixed; inset-block-end: 24px; inset-inline-end: 24px; z-index: var(--xh-z-toast); display: flex; flex-direction: column; inline-size: 320px; max-inline-size: calc(100vw - 48px);"></div>
+      </div>
+    </xh-toaster>
+  </section>
 </main>
 `
 
@@ -434,5 +871,277 @@ document.getElementById('wc-field-invalid')!.addEventListener('change', (e) => {
 for (const btn of Array.from(document.querySelectorAll('[data-close]'))) {
   btn.addEventListener('click', () => {
     (document.querySelector('xh-dialog [data-xh-part="close-trigger"]') as HTMLElement | null)?.click()
+  })
+}
+
+// 文本框值回显：顺带把字数贴出来，好对照 data-at-limit 是什么时候挂上的
+document.getElementById('wc-text-field')!.addEventListener('value-change', (e) => {
+  const { value } = (e as CustomEvent<{ value: string }>).detail
+  document.getElementById('wc-text-field-value')!.textContent = `当前值：${value === '' ? '（空）' : value} · ${value.length} / 10`
+})
+
+// 无效态开关：改宿主元素的属性，元素自行重接线
+document.getElementById('wc-text-field-invalid')!.addEventListener('change', (e) => {
+  document.getElementById('wc-text-field')!.toggleAttribute('invalid', (e.target as HTMLInputElement).checked)
+})
+
+// 验证码值回显：填满与否由整份值当场算，value-complete 只在刚好填满那一下派，退格后不会再来一条
+document.getElementById('wc-pin-input')!.addEventListener('value-change', (e) => {
+  const { value, valueAsString } = (e as CustomEvent<{ value: string[], valueAsString: string }>).detail
+  const complete = value.every(char => char !== '')
+  document.getElementById('wc-pin-input-value')!.textContent = `当前值：${valueAsString === '' ? '（空）' : valueAsString} · ${complete ? '已填满' : '未填满'}`
+})
+
+// 复选框组回显：方框与全选态都按事件带来的那份集合重画。
+// 不去读 DOM 上的 data-state——事件是在点击那一刻同步派出来的，元素的属性写回还没轮到。
+const cbGroup = document.getElementById('wc-checkbox-group')!
+const cbAll = (cbGroup.getAttribute('item-values') ?? '').split(',')
+cbGroup.addEventListener('value-change', (e) => {
+  const { value } = (e as CustomEvent<{ value: string[] }>).detail
+  for (const item of Array.from(cbGroup.querySelectorAll<HTMLElement>('[data-xh-part="item"]'))) {
+    const control = item.querySelector<HTMLElement>('[data-xh-part="item-control"]')!
+    control.textContent = value.includes(item.getAttribute('value') ?? '') ? '✓' : ''
+  }
+  const hit = cbAll.filter(v => value.includes(v)).length
+  document.getElementById('wc-checkbox-group-mark')!.textContent = hit === 0 ? '' : hit === cbAll.length ? '✓' : '−'
+  document.getElementById('wc-checkbox-group-value')!.textContent = `当前值：${value.join('、') || '（无）'}`
+})
+
+// 开关组回显：值的形态跟着 multiple 走——单选给裸值（无选中为 null），多选给数组
+document.getElementById('wc-toggle-group-single')!.addEventListener('value-change', (e) => {
+  const { value } = (e as CustomEvent<{ value: string | null }>).detail
+  document.getElementById('wc-toggle-group-single-value')!.textContent = `对齐（单选）：${value ?? '（无）'}`
+})
+document.getElementById('wc-toggle-group-multi')!.addEventListener('value-change', (e) => {
+  const { value } = (e as CustomEvent<{ value: string[] }>).detail
+  document.getElementById('wc-toggle-group-multi-value')!.textContent = `样式（多选）：${value.join('、') || '（无）'}`
+})
+
+// 滑块值回显：value-change 在拖动途中会连发，照单更新即可
+const volumeOut = document.getElementById('wc-slider-volume-value')!
+document.getElementById('wc-slider-volume')!.addEventListener('value-change', (e) => {
+  const { value } = (e as CustomEvent<{ value: number[] }>).detail
+  volumeOut.textContent = `音量：${value[0]}`
+})
+
+const priceOut = document.getElementById('wc-slider-price-value')!
+document.getElementById('wc-slider-price')!.addEventListener('value-change', (e) => {
+  const { value } = (e as CustomEvent<{ value: number[] }>).detail
+  priceOut.textContent = `价格：¥${value[0]} – ¥${value[1]}`
+})
+
+// 评分回显：value-change 是真的落了值，hover-change 只是预览（指针离开时带 null）
+const ratingOut = document.getElementById('wc-rating-value')!
+let ratingScore = 3
+let ratingHover: number | null = null
+function renderRating(): void {
+  ratingOut.textContent = `评分：${ratingScore} · 悬停预览：${ratingHover ?? '（无）'}`
+}
+const ratingEl = document.getElementById('wc-rating')!
+ratingEl.addEventListener('value-change', (e) => {
+  ratingScore = (e as CustomEvent<{ value: number }>).detail.value
+  renderRating()
+})
+ratingEl.addEventListener('hover-change', (e) => {
+  ratingHover = (e as CustomEvent<{ value: number | null }>).detail.value
+  renderRating()
+})
+
+// 选中标记的显隐本该由样式层按 data-state 决定，本页没有 listbox 样式表，
+// 于是直接按事件里的选中集合改文本，效果与 Vue 侧一致
+const wcListbox = document.getElementById('wc-listbox')!
+
+function paintWcListbox(values: readonly string[]): void {
+  for (const item of Array.from(wcListbox.querySelectorAll<HTMLElement>('[data-xh-part="item"]'))) {
+    const indicator = item.querySelector<HTMLElement>('[data-xh-part="item-indicator"]')
+    if (indicator)
+      indicator.textContent = values.includes(item.getAttribute('value') ?? '') ? '✓' : ''
+  }
+  document.getElementById('wc-listbox-value')!.textContent = `已选：${values.length ? values.join('、') : '（无）'}`
+}
+
+// 属性形式的初始值只表达得了单选，多选得走 property（el.value = ['a', 'b']）
+const wcListboxInitial = wcListbox.getAttribute('default-value')
+paintWcListbox(wcListboxInitial ? [wcListboxInitial] : [])
+
+wcListbox.addEventListener('value-change', (e) => {
+  paintWcListbox((e as CustomEvent<{ value: string[] }>).detail.value)
+})
+
+// 单选 / 多选切换：改宿主属性，元素自行重接线（content 的 aria-multiselectable 跟着翻）
+document.getElementById('wc-listbox-multiple')!.addEventListener('change', (e) => {
+  wcListbox.toggleAttribute('multiple', (e.target as HTMLInputElement).checked)
+})
+
+// 页码序列由作者渲染（Vue 侧由 root 插槽的 pages 直接给出；WC 侧元素只打属性、不建节点）。
+// 窗口规则与 headless 一致：贴首页 / 贴末页时把省略位让给页码，中间时当前页两侧各留一页，
+// 序列长度恒为 7（siblingCount=1 且总页数装不下时的形状），切页时分页器不会左右抖动。
+const wcPaginationCount = 196
+const wcPaginationSize = 10
+const wcPaginationTotal = Math.ceil(wcPaginationCount / wcPaginationSize)
+const wcPaginationPages = document.getElementById('wc-pagination-pages')!
+const wcPaginationRange = document.getElementById('wc-pagination-range')!
+let wcPaginationSequenceKey = ''
+
+function wcPageSequence(page: number): (number | 'ellipsis')[] {
+  const last = wcPaginationTotal
+  if (page <= 4)
+    return [1, 2, 3, 4, 5, 'ellipsis', last]
+  if (page >= last - 3)
+    return [1, 'ellipsis', last - 4, last - 3, last - 2, last - 1, last]
+  return [1, 'ellipsis', page - 1, page, page + 1, 'ellipsis', last]
+}
+
+function renderWcPagination(page: number): void {
+  const sequence = wcPageSequence(page)
+  const key = sequence.join(',')
+  // 序列没变就不重建节点：白换一批 DOM 会把焦点从刚按下的那颗页码上抖掉。
+  // 重建后新节点由基类的变动观察器接住，下一帧照常接线
+  if (key !== wcPaginationSequenceKey) {
+    wcPaginationSequenceKey = key
+    wcPaginationPages.innerHTML = sequence.map((p) => {
+      if (p === 'ellipsis')
+        return '<span data-xh-part="ellipsis">…</span>'
+      return `<button data-xh-part="item" value="${p}">${p}</button>`
+    }).join('')
+  }
+  // 当前页只有 aria-current / data-selected，没有样式表接着，就地加粗免得看不出停在哪一页
+  for (const btn of Array.from(wcPaginationPages.querySelectorAll<HTMLElement>('[data-xh-part="item"]')))
+    btn.style.fontWeight = btn.getAttribute('value') === String(page) ? '700' : ''
+  const start = (page - 1) * wcPaginationSize + 1
+  const end = Math.min(page * wcPaginationSize, wcPaginationCount)
+  wcPaginationRange.textContent = `第 ${start}-${end} 条，共 ${wcPaginationCount} 条 · 第 ${page} / ${wcPaginationTotal} 页`
+}
+
+renderWcPagination(1)
+
+document.getElementById('wc-pagination')!.addEventListener('page-change', (e) => {
+  renderWcPagination((e as CustomEvent<{ page: number, pageSize: number }>).detail.page)
+})
+
+// 抽屉：关闭按钮的可及名走 translations（对象属性，走不了 HTML 属性，
+// 写在按钮上的 aria-label 会被 connect 覆写），顺带把开合回显接上
+const drawerState = document.getElementById('wc-drawer-state')!
+for (const el of Array.from(document.querySelectorAll('xh-drawer'))) {
+  const host = el as HTMLElement & { translations?: { close: string } }
+  const side = host.getAttribute('side') ?? 'right'
+  host.translations = { close: '关闭' }
+  host.addEventListener('open-change', (e) => {
+    const { open } = (e as CustomEvent<{ open: boolean }>).detail
+    drawerState.textContent = `当前展开：${open ? side : '（无）'}`
+  })
+}
+
+// Toaster / Toast：队列容器不替作者生成条目，队列变了由作者照 visibleToasts 增删 <xh-toast>。
+// 改写队列的方法叫 updateToast，不叫 update——update 是 Lit 自己的渲染钩子，占用它组件当场不工作
+const toasterEl = document.getElementById('wc-toaster')! as HTMLElement & {
+  create: (options: { id?: string, type?: string, title?: string, description?: string }) => string
+  updateToast: (id: string, options: { type?: string, title?: string, description?: string }) => void
+  dismissAll: () => void
+  visibleToasts: Array<{
+    id: string
+    type: string
+    title?: string
+    description?: string
+    duration: number
+    removeDelay: number
+    closable: boolean
+  }>
+}
+const toastStack = document.getElementById('wc-toast-stack')!
+const toastCount = document.getElementById('wc-toaster-count')!
+const toastNodes = new Map<string, HTMLElement>()
+
+function toastAccent(type: string): string {
+  if (type === 'success')
+    return 'var(--xh-color-success-600)'
+  if (type === 'warning')
+    return 'var(--xh-color-warning-600)'
+  if (type === 'error')
+    return 'var(--xh-color-danger-600)'
+  if (type === 'loading')
+    return 'var(--xh-fg-muted)'
+  return 'var(--xh-color-info-600)'
+}
+
+// title / description 两个部件留空：元素只在作者没写内容时才替他填，
+// 一旦写死，loading 转 success 时那两行文案就再也刷不动了
+const TOAST_CARD = `
+  <div data-xh-part="root" style="display: grid; gap: 4px; padding: 12px 14px; border: 1px solid var(--xh-border-default); border-inline-start-width: 4px; border-radius: 10px; background: var(--xh-bg-surface-raised); box-shadow: var(--xh-shadow-lg); font-size: 13px; line-height: 1.5;">
+    <div data-xh-part="title" style="font-weight: 600;"></div>
+    <div data-xh-part="description" style="color: var(--xh-fg-muted);"></div>
+    <div class="row" style="gap: 8px; margin-block-start: 6px;">
+      <button data-xh-part="action-trigger" style="font: inherit; padding: 2px 10px; border: 1px solid var(--xh-border-default); border-radius: 6px; background: var(--xh-bg-subtle); color: inherit; cursor: pointer;">撤销</button>
+      <button data-xh-part="close-trigger" style="font: inherit; margin-inline-start: auto; padding: 2px 8px; border: 0; border-radius: 6px; background: transparent; color: var(--xh-fg-muted); cursor: pointer;">✕</button>
+    </div>
+  </div>
+`
+
+function syncToasts(): void {
+  const list = toasterEl.visibleToasts
+  const alive = new Set<string>()
+  for (const toast of list) {
+    alive.add(toast.id)
+    let node = toastNodes.get(toast.id)
+    if (!node) {
+      const created = document.createElement('xh-toast') as HTMLElement & { translations?: { close: string } }
+      created.innerHTML = TOAST_CARD
+      // id 是队列身份，元素按它认领自己那条记录
+      created.setAttribute('id', toast.id)
+      // 文案是对象，走不了属性，只能作为 property 交过去；写在 HTML 上的 aria-label 会被元素每帧盖掉
+      created.translations = { close: '关闭' }
+      node = created
+      toastNodes.set(toast.id, node)
+      toastStack.append(node)
+    }
+    // 条目已由队列补齐默认值，照原样摊上去即可，不在这边再兜一遍缺省
+    node.setAttribute('type', toast.type)
+    node.setAttribute('title', toast.title ?? '')
+    node.setAttribute('description', toast.description ?? '')
+    node.setAttribute('duration', String(toast.duration))
+    node.setAttribute('remove-delay', String(toast.removeDelay))
+    node.setAttribute('closable', String(toast.closable))
+    const card = node.querySelector('[data-xh-part="root"]')
+    if (card instanceof HTMLElement)
+      card.style.borderInlineStartColor = toastAccent(toast.type)
+  }
+  for (const [id, node] of Array.from(toastNodes)) {
+    if (alive.has(id))
+      continue
+    node.remove()
+    toastNodes.delete(id)
+  }
+  toastCount.textContent = `队列：${list.length} 条`
+}
+
+function startUpload(): void {
+  toasterEl.create({ id: 'wc-upload', type: 'loading', title: '正在上传', description: '3 个文件排队中' })
+  // 改一条已经在队列里的
+  window.setTimeout(() => {
+    toasterEl.updateToast('wc-upload', { description: '已传 2 / 3' })
+  }, 1200)
+  // 同一个 id 再 create 一次同样是就地改写，位置不动
+  window.setTimeout(() => {
+    toasterEl.create({ id: 'wc-upload', type: 'success', title: '上传完成', description: '3 个文件已入库' })
+  }, 2400)
+}
+
+// 队列变了才重排条目。改 DOM 推到微任务里：unmounted 是 toast 机器在转移途中报上来的，
+// 当场把节点摘走等于在它自己的转移里把它停掉
+toasterEl.addEventListener('toasts-change', () => {
+  queueMicrotask(syncToasts)
+})
+
+for (const btn of Array.from(document.querySelectorAll('[data-toast]'))) {
+  btn.addEventListener('click', () => {
+    const kind = (btn as HTMLElement).dataset.toast
+    if (kind === 'info')
+      toasterEl.create({ title: '草稿已保存', description: '内容已同步到云端' })
+    else if (kind === 'error')
+      toasterEl.create({ type: 'error', title: '同步失败', description: '网络中断，稍后自动重试' })
+    else if (kind === 'clear')
+      toasterEl.dismissAll()
+    else
+      startUpload()
   })
 }
