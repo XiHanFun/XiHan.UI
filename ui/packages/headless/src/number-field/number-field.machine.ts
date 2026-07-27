@@ -1,6 +1,6 @@
 import type { NumberFieldSchema } from './number-field.types'
 import { setIntervalEffect, setTimeoutEffect, setup } from '@xihan-ui/machine'
-import { normalizeValue, parseValue, stepValue } from './number-field.number'
+import { normalizeValue, parseValue, stepValue } from '../shared/number'
 
 const { createMachine } = setup<NumberFieldSchema>()
 

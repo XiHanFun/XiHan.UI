@@ -2,8 +2,8 @@ import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
 import type { NumberFieldApi, NumberFieldSchema } from './number-field.types'
 import { dataAttr } from '@xihan-ui/core'
+import { parseValue } from '../shared/number'
 import { numberFieldAnatomy } from './number-field.anatomy'
-import { parseValue } from './number-field.number'
 
 const parts = numberFieldAnatomy.build()
 

@@ -35,7 +35,7 @@ export const dialogMachine = createMachine({
       },
     },
     open: {
-      // 进入 open：按固定顺序装配 dismiss → focus → scroll → hideOutside。
+      // 进入 open：按固定顺序装配 dismiss → focus → scroll，最后推迟一帧挂背景失活。
       effects: ['trackOverlay'],
       on: {
         'CLOSE': [
@@ -66,7 +66,7 @@ export const dialogMachine = createMachine({
       },
     },
     effects: {
-      trackOverlay: ({ refs, prop, send }) => {
+      trackOverlay: ({ refs, prop, send, flush }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
         // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
@@ -102,26 +102,45 @@ export const dialogMachine = createMachine({
         })
         disposers.push(() => dismiss.dispose())
 
-        if (modal) {
-          const focus = createFocusScope({
-            config,
-            layer,
-            container: getContentEl,
-            trapped: () => true,
-            loop: true,
-            // alertdialog 焦点落在 content 容器本身（不预选按钮，避免误触发破坏性操作）；
-            // 普通 dialog 交给 tabbable 探测选首个可聚焦元素（content 自身 tabindex=-1）。
-            initialFocus: () => (role === 'alertdialog' ? getContentEl() : null),
-            restoreFocus: () => prop('restoreFocus') ?? true,
-          })
-          disposers.push(() => focus.dispose())
+        // 焦点域无条件建，只用 modal 决定陷不陷焦点——与 popover 同。
+        // 塞进 if (modal) 的话，非模态 dialog 打开后焦点根本不进 content、关闭也不归还，
+        // restoreFocus 这个 prop 写什么都没用。
+        const focus = createFocusScope({
+          config,
+          layer,
+          container: getContentEl,
+          trapped: () => modal,
+          loop: modal,
+          // alertdialog 焦点落在 content 容器本身（不预选按钮，避免误触发破坏性操作）；
+          // 普通 dialog 交给 tabbable 探测选首个可聚焦元素（content 自身 tabindex=-1）。
+          initialFocus: () => (role === 'alertdialog' ? getContentEl() : null),
+          restoreFocus: () => prop('restoreFocus') ?? true,
+        })
+        disposers.push(() => focus.dispose())
 
+        if (modal) {
           const lock = acquireScrollLock({ config })
           disposers.push(() => lock.dispose())
 
-          const targets = [getContentEl(), ...refs.get('branches')()].filter(Boolean) as Element[]
-          if (targets.length)
-            disposers.push(hideOutside(targets, config.scope))
+          // 背景失活推迟到宿主提交那一帧之后再挂：进入 open 的这一刻 content 还没渲染
+          // （Vue 要等 presence 的 post 观察者、WC 要等首次 wire 认出角色节点），
+          // 此刻现取 targets 会得到空数组、直接跳过——背景就此永远不 inert。
+          // 与 popover / tooltip 的定位同一套推迟写法。
+          let hidden: (() => void) | undefined
+          let alive = true
+          flush(() => {
+            if (!alive)
+              return
+            const targets = [getContentEl(), ...refs.get('branches')()].filter(Boolean) as Element[]
+            if (targets.length)
+              hidden = hideOutside(targets, config.scope)
+          })
+          // 开关得快时 flush 回调可能排在效应拆掉之后才跑，用存活标志挡住，
+          // 别让它给一个已经关上的对话框补挂背景失活
+          disposers.push(() => {
+            alive = false
+            hidden?.()
+          })
         }
 
         // 逆序拆：先撤依赖层的订阅，最后才把层本身移出栈
