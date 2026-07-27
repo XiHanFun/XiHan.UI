@@ -4,12 +4,14 @@ import { XhButtonElement } from './elements/button'
 import { XhCheckboxElement } from './elements/checkbox'
 import { XhCollapsibleElement } from './elements/collapsible'
 import { XhDialogElement } from './elements/dialog'
+import { XhPopoverElement } from './elements/popover'
 import { XhProgressElement } from './elements/progress'
 import { XhRadioGroupElement } from './elements/radio-group'
 import { XhSeparatorElement } from './elements/separator'
 import { XhSwitchElement } from './elements/switch'
 import { XhTabsElement } from './elements/tabs'
 import { XhToggleElement } from './elements/toggle'
+import { XhTooltipElement } from './elements/tooltip'
 import { defineElement } from './runtime/registry'
 
 const VERSION = '0.0.0'
@@ -22,12 +24,14 @@ export function defineXhElements(): void {
   defineElement('xh-checkbox', XhCheckboxElement, VERSION)
   defineElement('xh-collapsible', XhCollapsibleElement, VERSION)
   defineElement('xh-dialog', XhDialogElement, VERSION)
+  defineElement('xh-popover', XhPopoverElement, VERSION)
   defineElement('xh-progress', XhProgressElement, VERSION)
   defineElement('xh-radio-group', XhRadioGroupElement, VERSION)
   defineElement('xh-separator', XhSeparatorElement, VERSION)
   defineElement('xh-switch', XhSwitchElement, VERSION)
   defineElement('xh-tabs', XhTabsElement, VERSION)
   defineElement('xh-toggle', XhToggleElement, VERSION)
+  defineElement('xh-tooltip', XhTooltipElement, VERSION)
 }
 
 export {
@@ -37,10 +41,12 @@ export {
   XhCheckboxElement,
   XhCollapsibleElement,
   XhDialogElement,
+  XhPopoverElement,
   XhProgressElement,
   XhRadioGroupElement,
   XhSeparatorElement,
   XhSwitchElement,
   XhTabsElement,
   XhToggleElement,
+  XhTooltipElement,
 }

@@ -1,0 +1,122 @@
+@layer xihan.components {
+  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+  [data-scope='popover'][data-part='positioner'] {
+    position: absolute;
+    z-index: var(--xh-layer-popover);
+    /* 空壳不吃指针，交互只发生在 content 上 */
+    pointer-events: none;
+  }
+
+  /* 锚点被滚出可视区：整个浮层随之收起 */
+  [data-scope='popover'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  [data-scope='popover'][data-part='content'] {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-popover-gap, var(--xh-space-2));
+    inline-size: max-content;
+    max-inline-size: var(--xh-popover-max-w, 20rem);
+    padding-block: var(--xh-popover-py, var(--xh-space-3));
+    padding-inline: var(--xh-popover-px, var(--xh-control-px-md));
+    border: var(--xh-stroke-thin) solid var(--xh-popover-border, var(--xh-border-default));
+    border-radius: var(--xh-popover-radius, var(--xh-shape-surface));
+    background: var(--xh-popover-bg, var(--xh-bg-surface));
+    color: var(--xh-popover-fg, var(--xh-fg-default));
+    box-shadow: var(--xh-popover-shadow, var(--xh-elevation-2));
+    pointer-events: auto;
+  }
+
+  /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位 */
+  [data-scope='popover'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  [data-scope='popover'][data-part='content']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='popover'][data-part='content'][data-state='open'] {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='popover'][data-part='title'] {
+    margin: 0;
+    font-size: var(--xh-popover-title-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-popover-title-font-weight, var(--xh-font-weight-semibold));
+    color: var(--xh-popover-title-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='popover'][data-part='description'] {
+    margin: 0;
+    font-size: var(--xh-text-body-size);
+    color: var(--xh-popover-description-fg, var(--xh-fg-muted));
+  }
+
+  [data-scope='popover'][data-part='close-trigger'] {
+    position: absolute;
+    inset-block-start: var(--xh-space-2);
+    inset-inline-end: var(--xh-space-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    block-size: var(--xh-control-h-sm);
+    inline-size: var(--xh-control-h-sm);
+    border: 0;
+    border-radius: var(--xh-shape-control);
+    background: transparent;
+    color: var(--xh-fg-muted);
+    cursor: pointer;
+  }
+
+  [data-scope='popover'][data-part='close-trigger']:hover {
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-default);
+  }
+
+  [data-scope='popover'][data-part='close-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 箭头是旋转 45° 的方块，只保留朝向锚点那两条边的描边；
+     引擎不产出箭头偏移，因此沿交叉轴固定居中 */
+  [data-scope='popover'][data-part='arrow'] {
+    position: absolute;
+    inline-size: var(--xh-popover-arrow-size, 8px);
+    block-size: var(--xh-popover-arrow-size, 8px);
+    background: var(--xh-popover-bg, var(--xh-bg-surface));
+    border: var(--xh-stroke-thin) solid var(--xh-popover-border, var(--xh-border-default));
+    rotate: 45deg;
+  }
+
+  [data-scope='popover'][data-part='arrow'][data-placement^='bottom'] {
+    inset-block-start: calc(var(--xh-popover-arrow-size, 8px) / -2);
+    inset-inline-start: calc(50% - var(--xh-popover-arrow-size, 8px) / 2);
+    border-block-end: 0;
+    border-inline-end: 0;
+  }
+
+  [data-scope='popover'][data-part='arrow'][data-placement^='top'] {
+    inset-block-end: calc(var(--xh-popover-arrow-size, 8px) / -2);
+    inset-inline-start: calc(50% - var(--xh-popover-arrow-size, 8px) / 2);
+    border-block-start: 0;
+    border-inline-start: 0;
+  }
+
+  [data-scope='popover'][data-part='arrow'][data-placement^='right'] {
+    inset-inline-start: calc(var(--xh-popover-arrow-size, 8px) / -2);
+    inset-block-start: calc(50% - var(--xh-popover-arrow-size, 8px) / 2);
+    border-block-start: 0;
+    border-inline-end: 0;
+  }
+
+  [data-scope='popover'][data-part='arrow'][data-placement^='left'] {
+    inset-inline-end: calc(var(--xh-popover-arrow-size, 8px) / -2);
+    inset-block-start: calc(50% - var(--xh-popover-arrow-size, 8px) / 2);
+    border-block-end: 0;
+    border-inline-start: 0;
+  }
+}

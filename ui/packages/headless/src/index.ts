@@ -14,6 +14,8 @@ export type { CollapsibleApi, CollapsibleOpenChangeDetails, CollapsibleSchema } 
 export { connectDialog, dialogAnatomy, dialogKeyboard, dialogMachine, dialogMeta } from './dialog'
 
 export type { DialogApi, DialogOpenChangeDetails, DialogRefs, DialogSchema, DialogTranslations } from './dialog'
+export { connectPopover, popoverAnatomy, popoverKeyboard, popoverMachine, popoverMeta } from './popover'
+export type { PopoverApi, PopoverOpenChangeDetails, PopoverRefs, PopoverSchema, PopoverTranslations } from './popover'
 export { connectProgress, progressAnatomy, progressKeyboard, progressMeta } from './progress'
 export type { ProgressApi, ProgressProps } from './progress'
 export { connectRadioGroup, radioGroupAnatomy, radioGroupKeyboard, radioGroupMachine, radioGroupMeta } from './radio-group'
@@ -27,4 +29,6 @@ export { connectTabs, tabsAnatomy, tabsKeyboard, tabsMachine, tabsMeta } from '.
 export type { TabsActivationMode, TabsApi, TabsContentProps, TabsSchema, TabsTriggerProps, TabsValueChangeDetails } from './tabs'
 export { connectToggle, toggleAnatomy, toggleKeyboard, toggleMachine, toggleMeta } from './toggle'
 export type { ToggleApi, TogglePressedChangeDetails, ToggleSchema } from './toggle'
+export { connectTooltip, tooltipAnatomy, tooltipKeyboard, tooltipMachine, tooltipMeta } from './tooltip'
+export type { TooltipApi, TooltipOpenChangeDetails, TooltipRefs, TooltipSchema } from './tooltip'
 export type { HeadlessComponent, NormalizeProps, PropTypes } from './types'

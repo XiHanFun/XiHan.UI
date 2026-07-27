@@ -20,12 +20,14 @@
     "./checkbox.css": "./styles/checkbox.css",
     "./collapsible.css": "./styles/collapsible.css",
     "./dialog.css": "./styles/dialog.css",
+    "./popover.css": "./styles/popover.css",
     "./progress.css": "./styles/progress.css",
     "./radio-group.css": "./styles/radio-group.css",
     "./separator.css": "./styles/separator.css",
     "./switch.css": "./styles/switch.css",
     "./tabs.css": "./styles/tabs.css",
     "./toggle.css": "./styles/toggle.css",
+    "./tooltip.css": "./styles/tooltip.css",
     "./visually-hidden.css": "./styles/visually-hidden.css"
   },
   "files": ["index.css", "styles"]

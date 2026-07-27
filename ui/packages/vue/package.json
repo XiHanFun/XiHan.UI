@@ -31,7 +31,8 @@
     "@xihan-ui/behavior": "workspace:*",
     "@xihan-ui/core": "workspace:*",
     "@xihan-ui/headless": "workspace:*",
-    "@xihan-ui/machine": "workspace:*"
+    "@xihan-ui/machine": "workspace:*",
+    "@xihan-ui/position-floating-ui": "workspace:*"
   },
   "devDependencies": {
     "@vue/test-utils": "catalog:",

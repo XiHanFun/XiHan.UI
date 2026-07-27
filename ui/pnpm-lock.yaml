@@ -321,6 +321,9 @@ importers:
       '@xihan-ui/machine':
         specifier: workspace:*
         version: link:../machine
+      '@xihan-ui/position-floating-ui':
+        specifier: workspace:*
+        version: link:../position-floating-ui
     devDependencies:
       '@vue/test-utils':
         specifier: 'catalog:'
@@ -361,6 +364,9 @@ importers:
       '@xihan-ui/machine':
         specifier: workspace:*
         version: link:../machine
+      '@xihan-ui/position-floating-ui':
+        specifier: workspace:*
+        version: link:../position-floating-ui
     devDependencies:
       '@custom-elements-manifest/analyzer':
         specifier: 'catalog:'

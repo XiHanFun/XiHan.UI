@@ -32,6 +32,18 @@ export {
 } from './components/dialog/dialog'
 export { useDialog } from './components/dialog/use-dialog'
 export type { DialogContext } from './components/dialog/use-dialog'
+export {
+  XhPopoverArrow,
+  XhPopoverCloseTrigger,
+  XhPopoverContent,
+  XhPopoverDescription,
+  XhPopoverPositioner,
+  XhPopoverRoot,
+  XhPopoverTitle,
+  XhPopoverTrigger,
+} from './components/popover/popover'
+export { usePopover } from './components/popover/use-popover'
+export type { PopoverContext } from './components/popover/use-popover'
 export { XhProgress } from './components/progress/progress'
 export {
   XhRadioGroupItem,
@@ -56,6 +68,15 @@ export type { TabsContext } from './components/tabs/use-tabs'
 export { XhToggle } from './components/toggle/toggle'
 export { useToggle } from './components/toggle/use-toggle'
 export type { ToggleContext } from './components/toggle/use-toggle'
+export {
+  XhTooltipArrow,
+  XhTooltipContent,
+  XhTooltipPositioner,
+  XhTooltipRoot,
+  XhTooltipTrigger,
+} from './components/tooltip/tooltip'
+export { useTooltip } from './components/tooltip/use-tooltip'
+export type { TooltipContext } from './components/tooltip/use-tooltip'
 
 export { createVueRuntime } from './runtime/create-vue-runtime'
 export { vueNormalize } from './runtime/normalize-props'
