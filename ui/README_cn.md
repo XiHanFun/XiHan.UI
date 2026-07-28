@@ -1,125 +1,63 @@
-![logo](./assets/logo.png)
+![logo](../assets/logo.png)
 
 [English](README.md)
 
 # XiHan.UI
 
-曦寒界面存储库。快速、轻量、高效、用心的组件库，基于 Vue 构建。
+框架无关的组件库：状态机与无障碍逻辑沉在无头内核，各框架只写一层薄适配器。
 
+62 个组件，每个都有 headless 内核、Vue 组件、自定义元素与默认皮肤。
 
+> **实验阶段**：尚未发布到 npm，尚无文档站，无障碍断言目前跑在 jsdom 而非真实浏览器。请勿在生产环境依赖。
 
-affix
+## 包一览
 
-alert
+| 包 | 职责 |
+| --- | --- |
+| `@xihan-ui/core` | 结构原语：anatomy、`mergeProps`、`normalizeProps`、Scope、context、id |
+| `@xihan-ui/machine` | 状态机运行时：`createMachine`、解释器契约、受控值绑定 |
+| `@xihan-ui/behavior` | 行为原语：dismissable layer、焦点域、滚动锁、进出场、集合、typeahead |
+| `@xihan-ui/headless` | 62 个组件的 anatomy + machine + `connect`，无样式、无框架 |
+| `@xihan-ui/vue` | Vue 3 适配器 |
+| `@xihan-ui/wc` | Web Components 适配器（基于 `@lit/reactive-element`） |
+| `@xihan-ui/styled` | 默认皮肤，按 `@layer` 分层的 CSS |
+| `@xihan-ui/system` | 设计令牌（源自 DTCG）与主题运行时（明暗 / 密度 / 书写方向） |
+| `@xihan-ui/position-floating-ui` | 浮层定位，唯一允许依赖 `@floating-ui/dom` 的包 |
+| `@xihan-ui/icons` | 图标集 |
 
-anchor
+`tooling/*` 放构建、lint、tsconfig、测试与脚本等内部包，不对外发布。
 
-avatar
+## 目录结构
 
-back-top
+```
+ui/
+├── packages/     # 对外发布的库包
+├── tooling/      # 内部构建与质量工具
+└── apps/
+    ├── playground-vue   # Vue 适配器演示
+    └── playground-wc    # Web Components 适配器演示
+```
 
-breadcrumb
+两个 playground 覆盖同一批组件，便于逐帧对照两套适配器的行为。
 
-button
+## 本地开发
 
-calendar
+要求 Node ≥ 24、pnpm ≥ 11。
 
-card
+```bash
+pnpm install --frozen-lockfile
+pnpm dev          # 启动 playground
+pnpm test         # 单元测试与跨适配器一致性测试
+pnpm typecheck
+pnpm lint
+pnpm boundaries   # 分层依赖门禁（dependency-cruiser）
+pnpm build
+pnpm size         # 体积棘轮
+```
 
-carousel
+## 约定
 
-cascader
-
-checkbox
-
-col
-
-collapse
-
-color-picker
-
-config-provider
-
-date-picker
-
-descriptions
-
-divider
-
-drawer
-
-dropdown
-
-empty
-
-form
-
-icon
-
-image
-
-input
-
-input-number
-
-menu
-
-message
-
-notification
-
-pagination
-
-popconfirm
-
-popover
-
-progress
-
-radio
-
-rate
-
-result
-
-row
-
-segmented
-
-select
-
-skeleton
-
-slider
-
-space
-
-statistic
-
-steps
-
-switch
-
-table
-
-tabs
-
-tag
-
-time-picker
-
-timeline
-
-tooltip
-
-tour
-
-transfer
-
-tree
-
-tree-select
-
-upload
-
-watermark
+- 内部依赖一律 `workspace:*`；第三方版本只从 workspace catalog 取。
+- `packages/core` 与 `packages/machine` 运行时零依赖。
+- 分层顺序由 dependency-cruiser 强制，不靠自觉。
+- 提交遵循 conventional commits；发布走 changesets，所有库包同属一个 fixed 版本组。
