@@ -43,11 +43,6 @@ afterEach(() => {
  * 这里收的是"同一份 fixture 两侧都能直接跑"的组件。
  */
 
-/** 受控用例在 WC 上被布尔属性挡住（见两侧 conformance.spec 的说明），取两端都跑得了的交集。 */
-function withoutControlled(suite: ConformanceSuite, key: string): ConformanceSuite {
-  return { ...suite, cases: suite.cases.filter(c => !(c.props && key in c.props)) }
-}
-
 // 第二、三批里两侧共用同一棵 fixture 的组件（WC 侧没改写过角色节点、也没把 disabled
 // 换成 aria-disabled 的那些），逐帧比对对它们成立，一并收进来。
 //
@@ -61,8 +56,8 @@ const SUITES: readonly ConformanceSuite[] = [
   separatorSuite,
   avatarSuite,
   numberFieldSuite,
-  withoutControlled(collapsibleSuite, 'open'),
-  withoutControlled(tooltipSuite, 'open'),
+  collapsibleSuite,
+  tooltipSuite,
   breadcrumbSuite,
   clipboardSuite,
   editableSuite,

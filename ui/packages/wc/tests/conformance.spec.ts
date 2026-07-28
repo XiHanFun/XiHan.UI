@@ -20,27 +20,23 @@ afterEach(() => {
 const wcSwitchSuite: ConformanceSuite = {
   ...switchSuite,
   fixture: { part: 'root', tag: 'button', children: [{ part: 'thumb', tag: 'span' }] },
-  cases: switchSuite.cases.filter(c => !(c.props && 'checked' in c.props)),
 }
 
 // checkbox 与 switch 同因：受控用例排除，fixture 换成行为宿主形态（indicator 由用户显式写）。
 const wcCheckboxSuite: ConformanceSuite = {
   ...checkboxSuite,
   fixture: { part: 'root', tag: 'button', children: [{ part: 'indicator', tag: 'span' }] },
-  cases: checkboxSuite.cases.filter(c => !(c.props && 'checked' in c.props)),
 }
 
 // collapsible 的 fixture 三个 part 本就由用户显式写，两侧同构、整份复用；
 // 只排除受控 open（布尔属性表达不了 undefined，与 switch/dialog 同因）。
 const wcCollapsibleSuite: ConformanceSuite = {
   ...collapsibleSuite,
-  cases: collapsibleSuite.cases.filter(c => !(c.props && 'open' in c.props)),
 }
 
 // toggle 与 switch 同因：受控用例排除；fixture 只有 root 一个 part，两侧同构。
 const wcToggleSuite: ConformanceSuite = {
   ...toggleSuite,
-  cases: toggleSuite.cases.filter(c => !(c.props && 'pressed' in c.props)),
 }
 
 // progress 的 track/range 在 Vue 版由组件内部渲染，WC 版由作者手写，故只换 fixture；
@@ -108,7 +104,6 @@ const wcAccordionSuite = authorDisabled(accordionSuite)
 // tooltip / popover 的受控 open 与 switch 等同因排除：HTML 布尔属性表达不了 undefined。
 const wcTooltipSuite: ConformanceSuite = {
   ...tooltipSuite,
-  cases: tooltipSuite.cases.filter(c => !(c.props && 'open' in c.props)),
 }
 
 // 条目禁用同样改用 aria-disabled 声明；受控 open 与 switch 等同因排除。
@@ -125,7 +120,6 @@ const wcSelectSuite: ConformanceSuite = authorDisabled({
   ...selectSuite,
   fixture: withHiddenSelect(selectSuite.fixture),
   cases: selectSuite.cases
-    .filter(c => !(c.props && 'open' in c.props))
     .map((c) => {
       const derive = c.fixture
       return derive ? { ...c, fixture: (base: FixtureNode) => withHiddenSelect(derive(base)) } : c
@@ -159,12 +153,10 @@ const wcFieldSuite: ConformanceSuite = {
 
 const wcMenuSuite: ConformanceSuite = authorDisabled({
   ...menuSuite,
-  cases: menuSuite.cases.filter(c => !(c.props && 'open' in c.props)),
 })
 
 const wcPopoverSuite: ConformanceSuite = {
   ...popoverSuite,
-  cases: popoverSuite.cases.filter(c => !(c.props && 'open' in c.props)),
 }
 
 // rating 的星档是集合条目，禁用声明同样改 aria-disabled。
@@ -197,7 +189,6 @@ const wcToggleGroupSuite = authorDisabled(toggleGroupSuite)
 // 元素会退回缺省。与 switch/checkbox 同因，这一条用例在 WC 侧排除。
 const wcToastSuite: ConformanceSuite = {
   ...toastSuite,
-  cases: toastSuite.cases.filter(c => !(c.props && 'closable' in c.props)),
 }
 
 // 本批集合类与既有 tabs/accordion 同因：条目禁用改用 aria-disabled 声明。
@@ -208,17 +199,14 @@ const wcTreeSuite = authorDisabled(treeSuite)
 // 这两个既是集合、又是浮层：条目禁用改声明之外，受控 open 与 switch 等同因排除。
 const wcComboboxSuite = authorDisabled({
   ...comboboxSuite,
-  cases: comboboxSuite.cases.filter(c => !(c.props && 'open' in c.props)),
 })
 
 const wcContextMenuSuite = authorDisabled({
   ...contextMenuSuite,
-  cases: contextMenuSuite.cases.filter(c => !(c.props && 'open' in c.props)),
 })
 
 const wcHoverCardSuite: ConformanceSuite = {
   ...hoverCardSuite,
-  cases: hoverCardSuite.cases.filter(c => !(c.props && 'open' in c.props)),
 }
 
 // 同一份规格喂给 WC 适配器实现，逐帧核对。separator/badge 无状态无受控，整份复用。
