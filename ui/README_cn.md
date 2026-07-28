@@ -8,7 +8,7 @@
 
 62 个组件，每个都有 headless 内核、Vue 组件、自定义元素与默认皮肤。
 
-> **实验阶段**：尚未发布到 npm，尚无文档站，无障碍断言目前跑在 jsdom 而非真实浏览器。请勿在生产环境依赖。
+> **实验阶段**：尚未发布到 npm，尚无文档站；无障碍扫描已跑在真实 Chromium 上，但首轮扫出的存量问题尚未修完。请勿在生产环境依赖。
 
 ## 包一览
 
@@ -47,7 +47,8 @@ ui/
 ```bash
 pnpm install --frozen-lockfile
 pnpm dev          # 启动 playground
-pnpm test         # 单元测试与跨适配器一致性测试
+pnpm test         # 单元测试与跨适配器一致性测试（jsdom）
+pnpm test:browser # 真实 Chromium 里的无障碍扫描（需先 pnpm exec playwright install chromium）
 pnpm typecheck
 pnpm lint
 pnpm boundaries   # 分层依赖门禁（dependency-cruiser）

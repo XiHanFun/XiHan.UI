@@ -46,7 +46,7 @@
 
 </div>
 
-> **实验性项目**：62 个组件的内核、Vue 适配器、Web Components 适配器与默认皮肤均已实现，但**尚未发布到 npm、尚无文档站**，且无障碍断言目前跑在 jsdom 而非真实浏览器。请勿在生产环境依赖。
+> **实验性项目**：62 个组件的内核、Vue 适配器、Web Components 适配器与默认皮肤均已实现，无障碍扫描跑在真实 Chromium 上，但**尚未发布到 npm、尚无文档站**，且首轮扫出的存量无障碍问题尚未修完。请勿在生产环境依赖。
 
 ## 📋 项目概况
 
@@ -106,7 +106,8 @@ XiHan.UI 是一个框架无关的组件库：状态与无障碍逻辑沉在无�
 cd ui
 pnpm install --frozen-lockfile
 pnpm dev          # 启动 playground
-pnpm test         # 单元测试与一致性测试
+pnpm test         # 单元测试与一致性测试（jsdom）
+pnpm test:browser # 真实 Chromium 里的无障碍扫描（需先 pnpm exec playwright install chromium）
 pnpm typecheck
 pnpm lint
 pnpm boundaries   # 分层依赖门禁
@@ -138,7 +139,8 @@ pnpm build
 - **oxlint + ESLint**: 代码检查
 - **Stylelint / Prettier**: 样式与格式化
 - **dependency-cruiser**: 分层依赖门禁（唯一权威）
-- **Vitest**: 单元测试与跨适配器一致性测试
+- **Vitest**: 单元测试与跨适配器一致性测试（jsdom）
+- **@vitest/browser + Playwright + axe-core**: 真实 Chromium 里的无障碍扫描
 - **size-limit**: 体积棘轮
 
 ### 发布流程
