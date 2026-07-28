@@ -1,0 +1,62 @@
+@layer xihan.components {
+  /*
+   * 贴在视口顶边的一条细带。厚度那条轴（block-size）由连接层写进内联样式——
+   * height 这个 prop 的缺省值在 connect 里收口，这里再声明一次只会被内联盖掉，
+   * 还会让人误以为厚度归样式层管。
+   *
+   * fixed 认的是视口，祖先上一旦出现 transform / filter / backdrop-filter / contain
+   * 就会把包含块抢走，条子立刻贴错位置——覆盖钩子里别加这几个属性。
+   */
+  [data-scope='loading-bar'][data-part='root'] {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 0;
+    z-index: var(--xh-loading-bar-layer, var(--xh-z-sticky));
+
+    /* 它只报进度，不吃点击：盖在顶栏上的一条带子若拦住指针，页面顶部就点不动了 */
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity var(--xh-loading-bar-fade, var(--xh-motion-duration-exit)) var(--xh-motion-ease-exit, ease);
+  }
+
+  /* 只要声明过任何 display，就盖掉了 UA 的 [hidden]{display:none}；
+     这里虽然没声明，作者层随手给一条 display 也会盖掉，所以补齐这条兜住收起态。
+     连接层只会给 root 写 hidden，track / range 不需要同样的兜底 */
+  [data-scope='loading-bar'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 冲到 100 之后进入淡出：机器会在淡出窗口走完之前一直停在 finishing，
+     这段过渡才有时间跑完；窗口与时长两处默认值都是 200ms，改一处记得对齐另一处 */
+  [data-scope='loading-bar'][data-part='root'][data-state='finishing'] {
+    opacity: 0;
+  }
+
+  /* 背景槽。默认透明：顶部加载条通常直接压在页面顶边上，一条贯穿整屏的浅色底
+     在视觉上等于凭空多出一道分隔线 */
+  [data-scope='loading-bar'][data-part='track'] {
+    overflow: hidden;
+    inline-size: 100%;
+    block-size: 100%;
+    background: var(--xh-loading-bar-track, transparent);
+  }
+
+  /*
+   * 进度段。宽度那条轴（inline-size）由连接层写进内联样式，这里绝不重复写。
+   * 背景色同理：给了 color 就走内联，这里只提供缺省的品牌色。
+   */
+  [data-scope='loading-bar'][data-part='range'] {
+    block-size: 100%;
+    background: var(--xh-loading-bar-range, var(--xh-bg-brand));
+    transition: inline-size var(--xh-loading-bar-speed, var(--xh-motion-duration-enter)) var(--xh-motion-ease-enter, ease);
+  }
+
+  /* 减少动效：宽度与淡出都立刻到位。进度本身照常推进，只是不再有过渡的过程——
+     一条按 200ms 一拍持续变宽的带子正是最容易引发不适的那种动效 */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='loading-bar'][data-part='root'],
+    [data-scope='loading-bar'][data-part='range'] {
+      transition: none;
+    }
+  }
+}

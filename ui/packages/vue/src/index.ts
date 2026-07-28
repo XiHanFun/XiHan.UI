@@ -63,6 +63,22 @@ export {
 export { useCarousel } from './components/carousel/use-carousel'
 export type { CarouselContext } from './components/carousel/use-carousel'
 export {
+  XhCascaderClearTrigger,
+  XhCascaderColumn,
+  XhCascaderContent,
+  XhCascaderIndicator,
+  XhCascaderItem,
+  XhCascaderItemIndicator,
+  XhCascaderItemText,
+  XhCascaderLabel,
+  XhCascaderPositioner,
+  XhCascaderRoot,
+  XhCascaderTrigger,
+  XhCascaderValueText,
+} from './components/cascader/cascader'
+export { useCascader } from './components/cascader/use-cascader'
+export type { CascaderContext } from './components/cascader/use-cascader'
+export {
   XhCheckboxGroupItem,
   XhCheckboxGroupItemControl,
   XhCheckboxGroupItemText,
@@ -92,6 +108,26 @@ export {
 } from './components/collapsible/collapsible'
 export { useCollapsible } from './components/collapsible/use-collapsible'
 export type { CollapsibleContext } from './components/collapsible/use-collapsible'
+export {
+  XhColorPickerArea,
+  XhColorPickerAreaThumb,
+  XhColorPickerChannelInput,
+  XhColorPickerChannelSlider,
+  XhColorPickerChannelSliderThumb,
+  XhColorPickerChannelSliderTrack,
+  XhColorPickerContent,
+  XhColorPickerEyeDropperTrigger,
+  XhColorPickerLabel,
+  XhColorPickerPositioner,
+  XhColorPickerRoot,
+  XhColorPickerSwatch,
+  XhColorPickerSwatchGroup,
+  XhColorPickerSwatchItem,
+  XhColorPickerTrigger,
+  XhColorPickerValueText,
+} from './components/color-picker/color-picker'
+export { useColorPicker } from './components/color-picker/use-color-picker'
+export type { ColorPickerContext } from './components/color-picker/use-color-picker'
 export {
   XhComboboxClearTrigger,
   XhComboboxContent,
@@ -213,6 +249,16 @@ export {
 export { useFileUpload } from './components/file-upload/use-file-upload'
 export type { FileUploadContext } from './components/file-upload/use-file-upload'
 export {
+  XhFormErrorSummary,
+  XhFormErrorSummaryItem,
+  XhFormFieldGroup,
+  XhFormResetTrigger,
+  XhFormRoot,
+  XhFormSubmitTrigger,
+} from './components/form/form'
+export { useForm } from './components/form/use-form'
+export type { FormCallbacks, FormContext } from './components/form/use-form'
+export {
   XhHoverCardArrow,
   XhHoverCardContent,
   XhHoverCardPositioner,
@@ -241,6 +287,13 @@ export {
 export { useListbox } from './components/listbox/use-listbox'
 export type { ListboxContext } from './components/listbox/use-listbox'
 export {
+  XhLoadingBarRange,
+  XhLoadingBarRoot,
+  XhLoadingBarTrack,
+} from './components/loading-bar/loading-bar'
+export { useLoadingBar } from './components/loading-bar/use-loading-bar'
+export type { LoadingBarContext } from './components/loading-bar/use-loading-bar'
+export {
   XhMenuArrow,
   XhMenuContent,
   XhMenuItem,
@@ -251,6 +304,20 @@ export {
 } from './components/menu/menu'
 export { useMenu } from './components/menu/use-menu'
 export type { MenuContext } from './components/menu/use-menu'
+export {
+  XhMenubarContent,
+  XhMenubarGroup,
+  XhMenubarGroupLabel,
+  XhMenubarItem,
+  XhMenubarItemIndicator,
+  XhMenubarItemText,
+  XhMenubarPositioner,
+  XhMenubarRoot,
+  XhMenubarSeparator,
+  XhMenubarTrigger,
+} from './components/menubar/menubar'
+export { useMenubar } from './components/menubar/use-menubar'
+export type { MenubarContext, MenubarPartRegistry } from './components/menubar/use-menubar'
 export {
   XhNavigationMenuContent,
   XhNavigationMenuIndicator,
@@ -379,6 +446,25 @@ export { XhSwitch } from './components/switch/switch'
 export { useSwitch } from './components/switch/use-switch'
 export type { SwitchContext } from './components/switch/use-switch'
 export {
+  XhTableBody,
+  XhTableCaption,
+  XhTableCell,
+  XhTableColumnHeader,
+  XhTableEmptyState,
+  XhTableExpandedRow,
+  XhTableExpandTrigger,
+  XhTableFooter,
+  XhTableHeader,
+  XhTableLoadingState,
+  XhTableRoot,
+  XhTableRow,
+  XhTableRowSelectTrigger,
+  XhTableSelectAllTrigger,
+  XhTableSortTrigger,
+} from './components/table/table'
+export { useTable } from './components/table/use-table'
+export type { TableContext } from './components/table/use-table'
+export {
   XhTabsContent,
   XhTabsList,
   XhTabsRoot,
@@ -476,6 +562,41 @@ export { useTooltip } from './components/tooltip/use-tooltip'
 export type { TooltipContext } from './components/tooltip/use-tooltip'
 
 export {
+  XhTourArrow,
+  XhTourBackdrop,
+  XhTourCloseTrigger,
+  XhTourContent,
+  XhTourDescription,
+  XhTourNextTrigger,
+  XhTourPositioner,
+  XhTourPrevTrigger,
+  XhTourProgressText,
+  XhTourRoot,
+  XhTourSkipTrigger,
+  XhTourSpotlight,
+  XhTourTitle,
+} from './components/tour/tour'
+export { useTour } from './components/tour/use-tour'
+export type { TourContext } from './components/tour/use-tour'
+export {
+  XhTransferItem,
+  XhTransferItemCheckbox,
+  XhTransferItemText,
+  XhTransferList,
+  XhTransferPanelCount,
+  XhTransferPanelHeader,
+  XhTransferPanelTitle,
+  XhTransferRoot,
+  XhTransferSearch,
+  XhTransferSelectAllTrigger,
+  XhTransferSourcePanel,
+  XhTransferTargetPanel,
+  XhTransferToSourceTrigger,
+  XhTransferToTargetTrigger,
+} from './components/transfer/transfer'
+export { useTransfer } from './components/transfer/use-transfer'
+export type { TransferContext } from './components/transfer/use-transfer'
+export {
   XhTreeSelectBranch,
   XhTreeSelectBranchContent,
   XhTreeSelectBranchControl,
@@ -514,6 +635,14 @@ export {
 } from './components/tree/tree'
 export { useTree } from './components/tree/use-tree'
 export type { TreeContext } from './components/tree/use-tree'
+export { useVirtualizer } from './components/virtualizer/use-virtualizer'
+export type { VirtualizerContext } from './components/virtualizer/use-virtualizer'
+export {
+  XhVirtualizerContent,
+  XhVirtualizerItem,
+  XhVirtualizerRoot,
+  XhVirtualizerViewport,
+} from './components/virtualizer/virtualizer'
 export { createVueRuntime } from './runtime/create-vue-runtime'
 export { vueNormalize } from './runtime/normalize-props'
 export { useMachine } from './runtime/use-machine'

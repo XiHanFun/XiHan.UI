@@ -1,0 +1,104 @@
+@layer xihan.components {
+  /* 定位分工：条目在**主轴**上的位移、以及 content 在主轴上的总长，
+     由连接层每帧写进内联样式（竖向是 inset-block-start / block-size，横向是
+     inset-inline-start / inline-size）。这份皮肤一个都不碰：内联优先级高于样式表，
+     写了不但是死声明，换向的那一帧还会跟连接层清空另一轴的动作抢位置。
+     皮肤只管另一条轴（交叉轴）、滚动能力与焦点表现。
+
+     刻意不写任何过渡与动画：条目的位移每帧都在变，一加过渡整列就永远追在滚动后面；
+     条目的进出走的是 [hidden]（display:none），也没有退场动画可言。
+
+     主轴尺寸这里同样不给：给了就把动态测量钉死在这个值上——量到的永远等于钉上去的，
+     measureElement 再也收敛不了。等高列表由作者按 api 给出的 size 自己写。 */
+
+  [data-scope='virtualizer'][data-part='root'] {
+    display: block;
+    /* 作者给 root 定了尺寸后，长列表不该漫出这个框 */
+    overflow: hidden;
+  }
+
+  /* 真正滚动的那层。滚动能力一点不减——键盘（PageUp/PageDown、方向键、Home/End）
+     与滚轮走的都还是浏览器原生通路，组件只是跟着滚动量换一批该渲的下标。 */
+  [data-scope='virtualizer'][data-part='viewport'] {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    /* 逻辑等价物 overflow-inline / overflow-block 至今只有个别引擎实现，
+       这两条是本文件里仅有的物理属性，换成逻辑写法会在多数浏览器上直接失效 */
+    overflow-x: auto;
+    overflow-y: auto;
+    /* 滚到尽头时不把剩余的滚动传给外层：长列表嵌在页面里时，
+       滚到底还继续带着整页走会让人找不着北 */
+    overscroll-behavior: contain;
+  }
+
+  /* 单向列表把另一条轴关掉：那一向既没有内容也没有位移，能滚就成了滚不回来的暗格 */
+  [data-scope='virtualizer'][data-part='viewport'][data-orientation='vertical'] {
+    overflow-x: hidden;
+  }
+
+  [data-scope='virtualizer'][data-part='viewport'][data-orientation='horizontal'] {
+    overflow-y: hidden;
+  }
+
+  /* 视口带 tabindex=0（长列表里可能一个可聚焦元素都没有），因此要有焦点环。
+     偏移取负：环画在视口内侧，否则会被 root 的 overflow:hidden 裁掉半圈 */
+  [data-scope='virtualizer'][data-part='viewport']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  /* 撑出总长的那层，同时是条目的定位上下文——条目是绝对定位的，
+     没有它就会以最近的定位祖先（多半是页面某处）为参照，整列飘走。 */
+  [data-scope='virtualizer'][data-part='content'] {
+    position: relative;
+    display: block;
+    inline-size: 100%;
+  }
+
+  /* 主轴长度来自内联样式，交叉轴铺满视口 */
+  [data-scope='virtualizer'][data-part='content'][data-orientation='horizontal'] {
+    inline-size: auto;
+    block-size: 100%;
+  }
+
+  /* 条目。主轴位移来自内联样式，这里只给定位模式与单列时的交叉轴。
+     多列（lanes > 1）时交叉轴改由连接层写进内联样式，会盖过下面这两条。 */
+  [data-scope='virtualizer'][data-part='item'] {
+    position: absolute;
+    display: block;
+    box-sizing: border-box;
+  }
+
+  [data-scope='virtualizer'][data-part='item'][data-orientation='vertical'] {
+    inset-inline-start: 0;
+    inline-size: 100%;
+  }
+
+  [data-scope='virtualizer'][data-part='item'][data-orientation='horizontal'] {
+    inset-block-start: 0;
+    block-size: 100%;
+  }
+
+  /* 除视口外全是纯容器：既不进 Tab 序列也不承载焦点，作者若给它们加了 tabindex，
+     该显形的也该是视口那圈环，不是这里再多画一圈。
+     条目内部的可聚焦内容（按钮、链接）有它们自己的焦点环，不受这条影响。 */
+  [data-scope='virtualizer'][data-part='root']:focus-visible,
+  [data-scope='virtualizer'][data-part='content']:focus-visible,
+  [data-scope='virtualizer'][data-part='item']:focus-visible {
+    outline: none;
+  }
+
+  /* root 上还有一个 data-scrolling 标记（手正在滚时在场）。这份皮肤刻意不用它：
+     滚动期间关掉 pointer-events 之类的常见招数会让"滚一下就点"落空，
+     留给作者按自己的取舍去接。 */
+
+  /* display 会盖掉 UA 的 [hidden]{display:none}，凡是被赋了 display 的角色节点都要显式让位。
+     连接层只在条目上写 hidden（不在窗口里的那些），其余三个是防作者自己写 hidden */
+  [data-scope='virtualizer'][data-part='root'][hidden],
+  [data-scope='virtualizer'][data-part='viewport'][hidden],
+  [data-scope='virtualizer'][data-part='content'][hidden],
+  [data-scope='virtualizer'][data-part='item'][hidden] {
+    display: none;
+  }
+}

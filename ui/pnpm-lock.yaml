@@ -33,6 +33,9 @@ catalogs:
     '@lit/reactive-element':
       specifier: 2.1.2
       version: 2.1.2
+    '@tanstack/virtual-core':
+      specifier: ^3.17.0
+      version: 3.17.6
     '@types/node':
       specifier: ^24.10.0
       version: 24.13.3
@@ -233,6 +236,9 @@ importers:
       '@internationalized/date':
         specifier: 'catalog:'
         version: 3.12.2
+      '@tanstack/virtual-core':
+        specifier: 'catalog:'
+        version: 3.17.6
       '@xihan-ui/behavior':
         specifier: workspace:*
         version: link:../behavior
@@ -1734,6 +1740,9 @@ packages:
 
   '@swc/helpers@0.5.23':
     resolution: {integrity: sha512-5lSsMOTXURePglDfvuAQUqkGek9Hg2kksOYay2m0+XR++b2NWYL/4sWyuvVBIs8oKnJaxkdi9whaL/sqN13afw==}
+
+  '@tanstack/virtual-core@3.17.6':
+    resolution: {integrity: sha512-h0/Ebo18CkOrChlQIhNtQkM5ySUnh/GumQ/D1st3hG2HWUPEF+ILUc2k29UtivCi/9G7w7G3/f7Xyd5cCFbKBw==}
 
   '@turbo/darwin-64@2.10.6':
     resolution: {integrity: sha512-S+yIyZkmjYBQbIM7sTqMAwnLeMjSK60Q9grUDPbTWvkRjbsn5k1Rt5sPvTX80M4PnlYQBwLiYsjlu6tHsuIqQQ==}
@@ -5909,6 +5918,8 @@ snapshots:
   '@swc/helpers@0.5.23':
     dependencies:
       tslib: 2.8.1
+
+  '@tanstack/virtual-core@3.17.6': {}
 
   '@turbo/darwin-64@2.10.6':
     optional: true

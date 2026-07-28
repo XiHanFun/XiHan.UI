@@ -1,0 +1,239 @@
+@layer xihan.components {
+  /* 一排 trigger。主轴跟着 data-orientation 走：菜单栏本身可以横排也可以竖排 */
+  [data-scope='menubar'][data-part='root'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-menubar-gap, var(--xh-space-1));
+    padding-block: var(--xh-menubar-py, var(--xh-space-1));
+    padding-inline: var(--xh-menubar-px, var(--xh-space-1));
+    border-radius: var(--xh-menubar-radius, var(--xh-shape-control));
+    background: var(--xh-menubar-bg, transparent);
+    color: var(--xh-menubar-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='menubar'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='menubar'][data-part='root'][data-orientation='vertical'] {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* root 只是 roving tabindex 的兜底落点，焦点转投给 trigger 之后就不再停留，不画环 */
+  [data-scope='menubar'][data-part='root']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='menubar'][data-part='root'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  [data-scope='menubar'][data-part='trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--xh-menubar-trigger-gap, var(--xh-control-gap-sm));
+    padding-block: var(--xh-menubar-trigger-py, var(--xh-space-1));
+    padding-inline: var(--xh-menubar-trigger-px, var(--xh-control-px-sm));
+    border: none;
+    border-radius: var(--xh-menubar-trigger-radius, var(--xh-shape-control));
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: var(--xh-menubar-trigger-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  [data-scope='menubar'][data-part='trigger'][hidden] {
+    display: none;
+  }
+
+  /* 展开着的那一项与指针悬停共用一套底色：菜单栏里"哪一张开着"必须一眼看得出来 */
+  [data-scope='menubar'][data-part='trigger']:not([data-disabled]):is(:hover, [data-state='open']) {
+    background: var(--xh-menubar-trigger-bg-active, var(--xh-bg-subtle-hover));
+  }
+
+  /* trigger 自带 Tab 位（整条菜单栏唯一的那个），必须画得出焦点 */
+  [data-scope='menubar'][data-part='trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 禁用走 aria-disabled 而非原生 disabled：trigger 仍要可聚焦（它还得当方向键的起点），
+     所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
+  [data-scope='menubar'][data-part='trigger'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+  [data-scope='menubar'][data-part='positioner'] {
+    position: absolute;
+    z-index: var(--xh-layer-popover);
+    /* 空壳不吃指针，交互只发生在 content 上 */
+    pointer-events: none;
+  }
+
+  /* 锚点被滚出可视区：整个浮层随之收起 */
+  [data-scope='menubar'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  [data-scope='menubar'][data-part='content'] {
+    display: flex;
+    flex-direction: column;
+    min-inline-size: var(--xh-menubar-menu-min-w, 10rem);
+    max-inline-size: var(--xh-menubar-menu-max-w, 20rem);
+    padding-block: var(--xh-menubar-menu-py, var(--xh-space-1));
+    padding-inline: var(--xh-menubar-menu-px, var(--xh-space-1));
+    border: var(--xh-stroke-thin) solid var(--xh-menubar-menu-border, var(--xh-border-default));
+    border-radius: var(--xh-menubar-menu-radius, var(--xh-shape-surface));
+    background: var(--xh-menubar-menu-bg, var(--xh-bg-surface));
+    color: var(--xh-menubar-menu-fg, var(--xh-fg-default));
+    box-shadow: var(--xh-menubar-menu-shadow, var(--xh-elevation-2));
+    pointer-events: auto;
+  }
+
+  /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位。
+     连接层给 content 发 hidden，这一条漏了整张菜单就永远收不起来 */
+  [data-scope='menubar'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  /* 容器只是"没有条目锚点时"的 Tab 兜底落点，落焦不画环：高亮永远长在条目上 */
+  [data-scope='menubar'][data-part='content']:focus-visible {
+    outline: none;
+  }
+
+  /* 展开时轻微涨开。只在切换到别张菜单时不重播——那由 data-state 的翻转天然保证：
+     一张关一张开，动画各跑各的 */
+  [data-scope='menubar'][data-part='content'][data-state='open'] {
+    animation: xh-menubar-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 关掉动效的用户不该被涨开动画晃一下；这里只管本组件，公共那份不动 */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='menubar'][data-part='content'][data-state='open'] {
+      animation-duration: 0.01ms;
+    }
+  }
+
+  [data-scope='menubar'][data-part='group'] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  [data-scope='menubar'][data-part='group'][hidden] {
+    display: none;
+  }
+
+  /* 分组标题不是条目、进不了导航，画成小号次要文字，
+     内缩与条目对齐（同一个 padding-inline），标题与条目文字才在一条竖线上 */
+  [data-scope='menubar'][data-part='group-label'] {
+    display: block;
+    padding-block: var(--xh-menubar-group-label-py, var(--xh-space-1));
+    padding-inline: var(--xh-menubar-group-label-px, var(--xh-control-px-sm));
+    color: var(--xh-menubar-group-label-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-menubar-group-label-font-size, var(--xh-font-size-xs));
+    font-weight: var(--xh-menubar-group-label-font-weight, var(--xh-font-weight-medium));
+    line-height: 1;
+    user-select: none;
+  }
+
+  [data-scope='menubar'][data-part='group-label'][hidden] {
+    display: none;
+  }
+
+  [data-scope='menubar'][data-part='item'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-menubar-item-gap, var(--xh-control-gap-md));
+    padding-block: var(--xh-menubar-item-py, var(--xh-space-2));
+    padding-inline: var(--xh-menubar-item-px, var(--xh-control-px-sm));
+    border-radius: var(--xh-menubar-item-radius, var(--xh-shape-control));
+    color: var(--xh-menubar-item-fg, var(--xh-fg-default));
+    font-size: var(--xh-menubar-item-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* 条目可以按需收起（按上下文过滤掉的命令），有 display 就得补这条 */
+  [data-scope='menubar'][data-part='item'][hidden] {
+    display: none;
+  }
+
+  /* 键盘高亮与指针高亮共用一套底色：条目本身承载焦点，不另画描边。
+     data-highlighted 跟的是连接层记的焦点条目，与 :focus 说的是同一件事，
+     子部件够不着那个伪类，只能读这个标记 */
+  [data-scope='menubar'][data-part='item']:not([data-disabled]):is(:hover, :focus, [data-highlighted]) {
+    background: var(--xh-menubar-item-bg-highlight, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='menubar'][data-part='item']:focus {
+    outline: none;
+  }
+
+  [data-scope='menubar'][data-part='item'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='menubar'][data-part='item-text'] {
+    display: block;
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  [data-scope='menubar'][data-part='item-text'][hidden] {
+    display: none;
+  }
+
+  /* 标记位（勾选符号 / 图标 / 快捷键提示）：定宽占位，切换内容不引起行宽抖动 */
+  [data-scope='menubar'][data-part='item-indicator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-menubar-item-indicator-size, 1rem);
+    color: var(--xh-menubar-item-indicator-fg, var(--xh-fg-subtle));
+  }
+
+  [data-scope='menubar'][data-part='item-indicator'][hidden] {
+    display: none;
+  }
+
+  [data-scope='menubar'][data-part='item-indicator'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 分隔线横跨菜单，与菜单栏自身的 orientation 无关：菜单永远是一列条目。
+     不给 display，因此 UA 的 [hidden]{display:none} 自己就压得住 */
+  [data-scope='menubar'][data-part='separator'] {
+    block-size: var(--xh-menubar-separator-thickness, 1px);
+    margin-block: var(--xh-menubar-separator-my, var(--xh-space-1));
+    background: var(--xh-menubar-separator-color, var(--xh-border-default));
+  }
+}
+
+@layer xihan.motion {
+  /* 自带前缀独占一个名字，不动公共的那份关键帧 */
+  @keyframes xh-menubar-in {
+    from {
+      opacity: 0;
+      scale: 0.96;
+    }
+
+    to {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+}

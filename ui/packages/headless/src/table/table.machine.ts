@@ -1,0 +1,218 @@
+import type {
+  TableRowDef,
+  TableSchema,
+  TableSelection,
+  TableSelectionMode,
+  TableSortDescriptor,
+} from './table.types'
+import { setup } from '@xihan-ui/machine'
+import { tableSelectableRowIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
+import { tableNormalizeSort, tableToggleSort } from './table.sort'
+
+const { createMachine } = setup<TableSchema>()
+
+/**
+ * 生效的选择模式。缺省是 none：不声明就没有选择这回事。
+ *
+ * 反过来（缺省 multiple）会让每一张普通数据表都报出 aria-multiselectable=true、
+ * 每一行都报 aria-selected=false——读屏用户听见的是一张可多选的表，实际一行也选不动。
+ * 宁可让忘配 selectionMode 的作者看见把手点不动（一眼可见、当场能改），
+ * 也不让不需要选择的表默认撒谎。
+ */
+export function tableSelectionMode(mode: TableSelectionMode | undefined): TableSelectionMode {
+  return mode ?? 'none'
+}
+
+/** 去重且保序：展开集合是一个集合，重复元素没有意义。 */
+function unique(values: readonly string[]): string[] {
+  return [...new Set(values)]
+}
+
+/**
+ * 选中集合的不变量：单选恒为长度 ≤ 1，复选去重。
+ * 单选下的裸 'all' 自相矛盾（一次只中一行），落成空集合。
+ */
+function normalizeSelection(next: TableSelection, mode: TableSelectionMode): TableSelection {
+  if (next === 'all')
+    return mode === 'single' ? [] : 'all'
+  const uniq = unique(next)
+  return mode === 'single' ? uniq.slice(0, 1) : uniq
+}
+
+/**
+ * 数组按元素比。默认的 Object.is 在这里不成立：受控时 cell 每次读都要把 prop 归一成
+ * 新数组，引用恒不相等——版本号会每读一次自增一次（track 空转），
+ * 写入时又会把「值其实没变」判成变了，回调便会重复发。
+ */
+function sameValues(a: string[], b: string[] | undefined): boolean {
+  return !!b && a.length === b.length && a.every((v, i) => v === b[i])
+}
+
+/** 选中集合多一个裸 'all' 形态：它与「恰好列全了同一批 id」不是一回事，不能互判相等。 */
+function sameSelection(a: TableSelection, b: TableSelection | undefined): boolean {
+  if (b === undefined)
+    return false
+  if (a === 'all' || b === 'all')
+    return a === b
+  return sameValues(a, b)
+}
+
+/** 排序链按 id 与方向逐环比，顺序也算——链序就是排序优先级。 */
+function sameSort(a: TableSortDescriptor[], b: TableSortDescriptor[] | undefined): boolean {
+  return !!b && a.length === b.length
+    && a.every((item, i) => item.id === b[i]!.id && item.direction === b[i]!.direction)
+}
+
+/** 这一行能不能被用户展开：禁用行、不可展开的行、不在 rows 里的行都不行。 */
+function canExpand(rows: readonly TableRowDef[], id: string): boolean {
+  const row = rows.find(item => item.id === id)
+  return !!row?.expandable && !row.disabled
+}
+
+// 排序、选中与展开都住在 context 的 cell 里，不编码进 FSM 状态：cell 本身就是受控/非受控的
+// 收口点（prop 给定即受控，读直取 prop、写只发回调不落内部值），因此不需要影子事件与受控守卫。
+// 机器只有一个状态，逻辑全在 context + actions。
+export const tableMachine = createMachine({
+  name: 'table',
+  context: ({ prop, cell }) => ({
+    sort: cell<TableSortDescriptor[]>(() => ({
+      value: prop('sort'),
+      defaultValue: prop('defaultSort') ?? [],
+      isEqual: sameSort,
+      onChange: value => prop('onSortChange')?.({ value }),
+    })),
+    selection: cell<TableSelection>(() => ({
+      value: prop('selection'),
+      defaultValue: prop('defaultSelection') ?? [],
+      isEqual: sameSelection,
+      onChange: value => prop('onSelectionChange')?.({ value }),
+    })),
+    expanded: cell<string[]>(() => ({
+      value: prop('expanded'),
+      defaultValue: prop('defaultExpanded') ?? [],
+      isEqual: sameValues,
+      onChange: value => prop('onExpandedChange')?.({ value }),
+    })),
+    // 焦点锚点不受控、不对外通知：它只服务行级 roving tabindex 与方向键起点
+    focusedRow: cell<string | null>(() => ({ defaultValue: null })),
+  }),
+  initialState: () => 'idle',
+  states: {
+    idle: {
+      // 省略 target：只跑 actions，不换状态
+      on: {
+        'SORT.SET': { actions: ['setSort'] },
+        'SORT.TOGGLE': { actions: ['toggleSort'] },
+        'SELECTION.SET': { actions: ['setSelection'] },
+        'ROW.SELECT': { actions: ['selectRow'] },
+        'SELECTION.ALL_TOGGLE': { actions: ['toggleSelectAll'] },
+        'EXPANDED.SET': { actions: ['setExpanded'] },
+        'ROW.EXPAND': { actions: ['expandRow'] },
+        'ROW.COLLAPSE': { actions: ['collapseRow'] },
+        'ROW.EXPAND_TOGGLE': { actions: ['toggleExpandRow'] },
+        'ROW.FOCUS': { actions: ['setFocusedRow'] },
+        'TABLE.BLUR': { actions: ['clearFocusedRow'] },
+      },
+    },
+  },
+  implementations: {
+    actions: {
+      setSort: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'SORT.SET')
+          return
+        context.set('sort', tableNormalizeSort(e.value))
+      },
+      toggleSort: ({ context, prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'SORT.TOGGLE')
+          return
+        // 没声明 sortable 的列不进排序链：否则公开 API 能造出 UI 造不出的排序态，
+        // 而那一列的表头压根不报 aria-sort，用户看不见自己按什么排的
+        const column = (prop('columns') ?? []).find(item => item.id === e.value)
+        if (!column?.sortable)
+          return
+        context.set('sort', tableToggleSort(context.get('sort'), e.value, { append: e.append }))
+      },
+      setSelection: ({ context, prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'SELECTION.SET')
+          return
+        const mode = tableSelectionMode(prop('selectionMode'))
+        if (mode === 'none')
+          return
+        context.set('selection', normalizeSelection(e.value, mode))
+      },
+      selectRow: ({ context, prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'ROW.SELECT')
+          return
+        const mode = tableSelectionMode(prop('selectionMode'))
+        if (mode === 'none')
+          return
+        const rows = prop('rows') ?? []
+        const row = rows.find(item => item.id === e.value)
+        // 禁用行选不动；不在 rows 里的行也不认——作者标记与 rows 不同源时，
+        // 凭空造出的选中值既算不出行号，也不会有任何一行显示成选中
+        if (!row || row.disabled)
+          return
+        const ids = tableSelectableRowIds(rows)
+        context.set('selection', tableToggleRowSelection(context.get('selection'), e.value, mode, ids))
+      },
+      toggleSelectAll: ({ context, prop }) => {
+        // 全选只在复选下成立：单选一次只中一行，none 压根没有选择
+        if (tableSelectionMode(prop('selectionMode')) !== 'multiple')
+          return
+        const ids = tableSelectableRowIds(prop('rows') ?? [])
+        context.set('selection', tableToggleSelectAll(context.get('selection'), ids))
+      },
+      setExpanded: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'EXPANDED.SET')
+          return
+        // 只去重不筛「可不可展开」：数据晚到时先记下意愿，摊平那一步自会拦住不可展开的行
+        context.set('expanded', unique(e.value))
+      },
+      expandRow: ({ context, prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'ROW.EXPAND')
+          return
+        if (!canExpand(prop('rows') ?? [], e.value))
+          return
+        const current = context.get('expanded')
+        if (current.includes(e.value))
+          return
+        context.set('expanded', [...current, e.value])
+      },
+      collapseRow: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'ROW.COLLAPSE')
+          return
+        // 收起不查 rows：不可展开的行本来就不该在集合里，能摘就摘干净
+        context.set('expanded', context.get('expanded').filter(v => v !== e.value))
+      },
+      toggleExpandRow: ({ context, prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'ROW.EXPAND_TOGGLE')
+          return
+        const current = context.get('expanded')
+        if (current.includes(e.value)) {
+          context.set('expanded', current.filter(v => v !== e.value))
+          return
+        }
+        if (!canExpand(prop('rows') ?? [], e.value))
+          return
+        context.set('expanded', [...current, e.value])
+      },
+      setFocusedRow: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'ROW.FOCUS')
+          context.set('focusedRow', e.value)
+      },
+      // 焦点离场只清焦点锚点，排序、选中与展开留着：下次焦点回来还要从选中行起步
+      clearFocusedRow: ({ context }) => {
+        context.set('focusedRow', null)
+      },
+    },
+  },
+})

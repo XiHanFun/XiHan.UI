@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@internationalized/date": "catalog:",
+    "@tanstack/virtual-core": "catalog:",
     "@xihan-ui/behavior": "workspace:*",
     "@xihan-ui/core": "workspace:*",
     "@xihan-ui/machine": "workspace:*"
