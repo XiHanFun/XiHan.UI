@@ -51,15 +51,21 @@ function applyInputs(host: HTMLElement, props: Record<string, unknown>): void {
       continue
     }
     if (typeof v === 'boolean') {
-      // false 分两种写法，取决于元素怎么声明这个属性：
+      const name = kebab(k)
+      // 真值一律写成 name=""，不用 toggleAttribute：属性已经在场时
+      // toggleAttribute(name, true) 按规范是空操作，于是 name="false" → true
+      // 这一跳在标记那侧原地不动，property 不变、watch 不跳，受控开关永远推不开。
+      if (v)
+        host.setAttribute(name, '')
+      // 假值分两种写法，取决于元素怎么声明这个属性：
       // · 声明了自定义转换器（本仓的三态转换器）的，写 name="false"——
       //   摘掉属性在三态语义里是"没指定"，会落回默认值，缺省为真的开关因此永远关不掉；
       // · 用 Lit 自带 Boolean 转换器的，只能摘掉属性——它判的是 v !== null，
       //   写 "false" 反而成了真。
-      if (v === false && hasCustomConverter(host, k))
-        host.setAttribute(kebab(k), 'false')
+      else if (hasCustomConverter(host, k))
+        host.setAttribute(name, 'false')
       else
-        host.toggleAttribute(kebab(k), v)
+        host.removeAttribute(name)
       continue
     }
     host.setAttribute(kebab(k), String(v))
