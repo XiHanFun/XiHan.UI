@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { accordionSuite, anchorSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, calendarSuite, carouselSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, collapsibleSuite, comboboxSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, dialogSuite, drawerSuite, editableSuite, fieldSuite, fileUploadSuite, hoverCardSuite, imageSuite, listboxSuite, menuSuite, navigationMenuSuite, numberFieldSuite, paginationSuite, pinInputSuite, popoverSuite, progressSuite, radioGroupSuite, ratingSuite, runConformance, scrollAreaSuite, selectSuite, separatorSuite, sliderSuite, splitterSuite, stepsSuite, switchSuite, tabsSuite, tagsInputSuite, textFieldSuite, timeFieldSuite, timePickerSuite, toasterSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, tooltipSuite, treeSelectSuite, treeSuite } from '@xihan-ui/testing'
+import { accordionSuite, anchorSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, calendarSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, dialogSuite, drawerSuite, editableSuite, fieldSuite, fileUploadSuite, formSuite, hoverCardSuite, imageSuite, listboxSuite, loadingBarSuite, menubarSuite, menuSuite, navigationMenuSuite, numberFieldSuite, paginationSuite, pinInputSuite, popoverSuite, progressSuite, radioGroupSuite, ratingSuite, runConformance, scrollAreaSuite, selectSuite, separatorSuite, sliderSuite, splitterSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, textFieldSuite, timeFieldSuite, timePickerSuite, toasterSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, virtualizerSuite } from '@xihan-ui/testing'
 import { afterEach, beforeEach, describe, it, vi } from 'vitest'
 import { createVueHarness } from './harness'
 
@@ -68,6 +68,15 @@ runConformance(
     toggleSuite,
     toolbarSuite,
     tooltipSuite,
+    cascaderSuite,
+    colorPickerSuite,
+    formSuite,
+    loadingBarSuite,
+    menubarSuite,
+    tableSuite,
+    tourSuite,
+    transferSuite,
+    virtualizerSuite,
     treeSelectSuite,
     treeSuite,
   ],

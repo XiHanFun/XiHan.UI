@@ -10,10 +10,12 @@
 @import './styles/button.css';
 @import './styles/calendar.css';
 @import './styles/carousel.css';
+@import './styles/cascader.css';
 @import './styles/checkbox.css';
 @import './styles/checkbox-group.css';
 @import './styles/clipboard.css';
 @import './styles/collapsible.css';
+@import './styles/color-picker.css';
 @import './styles/combobox.css';
 @import './styles/context-menu.css';
 @import './styles/date-field.css';
@@ -23,10 +25,13 @@
 @import './styles/editable.css';
 @import './styles/field.css';
 @import './styles/file-upload.css';
+@import './styles/form.css';
 @import './styles/hover-card.css';
 @import './styles/image.css';
 @import './styles/listbox.css';
+@import './styles/loading-bar.css';
 @import './styles/menu.css';
+@import './styles/menubar.css';
 @import './styles/navigation-menu.css';
 @import './styles/number-field.css';
 @import './styles/pagination.css';
@@ -42,6 +47,7 @@
 @import './styles/splitter.css';
 @import './styles/steps.css';
 @import './styles/switch.css';
+@import './styles/table.css';
 @import './styles/tabs.css';
 @import './styles/tags-input.css';
 @import './styles/text-field.css';
@@ -53,5 +59,8 @@
 @import './styles/toggle-group.css';
 @import './styles/toolbar.css';
 @import './styles/tooltip.css';
+@import './styles/tour.css';
+@import './styles/transfer.css';
 @import './styles/tree.css';
 @import './styles/tree-select.css';
+@import './styles/virtualizer.css';

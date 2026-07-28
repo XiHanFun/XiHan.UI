@@ -1,0 +1,319 @@
+@layer xihan.components {
+  /* 三栏栅格：两侧面板各占一栏、跨两行，中间那栏上下各放一个搬运按钮，
+     两个按钮在中线处相遇。栅格的列号本身就是随书写方向走的（第 1 栏永远在行首侧），
+     dir=rtl 时整块自动镜像，不必另写一套。
+     中间那栏没有对应的角色节点（anatomy 里两个按钮是 root 的直接子节点），
+     所以只能按位置显式安放，不能靠自动流——自动流会把"往左搬"甩到右侧面板的位置上 */
+  [data-scope='transfer'][data-part='root'] {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: var(--xh-transfer-gap, var(--xh-space-3));
+    align-items: center;
+    color: var(--xh-transfer-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='transfer'][data-part='source-panel'] {
+    grid-row: 1 / 3;
+    grid-column: 1;
+  }
+
+  [data-scope='transfer'][data-part='target-panel'] {
+    grid-row: 1 / 3;
+    grid-column: 3;
+  }
+
+  /* 上格贴底、下格贴顶：两个按钮因此夹着中线成对出现，而不是各自漂在半栏中央 */
+  [data-scope='transfer'][data-part='to-target-trigger'] {
+    grid-row: 1;
+    grid-column: 2;
+    align-self: end;
+  }
+
+  [data-scope='transfer'][data-part='to-source-trigger'] {
+    grid-row: 2;
+    grid-column: 2;
+    align-self: start;
+  }
+
+  [data-scope='transfer'][data-part='source-panel'],
+  [data-scope='transfer'][data-part='target-panel'] {
+    display: flex;
+    flex-direction: column;
+    block-size: 100%;
+    min-inline-size: 0;
+    border: var(--xh-stroke-thin) solid var(--xh-transfer-panel-border, var(--xh-border-default));
+    border-radius: var(--xh-transfer-panel-radius, var(--xh-shape-surface));
+    background: var(--xh-transfer-panel-bg, var(--xh-bg-surface));
+    overflow: hidden;
+  }
+
+  /* 整体禁用只写在 root 与各角色节点上；面板自己也带 data-disabled，观感一处收口 */
+  [data-scope='transfer'][data-part='source-panel'][data-disabled],
+  [data-scope='transfer'][data-part='target-panel'][data-disabled] {
+    background: var(--xh-transfer-panel-bg-disabled, var(--xh-bg-muted));
+  }
+
+  [data-scope='transfer'][data-part='panel-header'] {
+    display: flex;
+    gap: var(--xh-transfer-header-gap, var(--xh-control-gap-md));
+    align-items: center;
+    padding-block: var(--xh-transfer-header-py, var(--xh-space-2));
+    padding-inline: var(--xh-transfer-header-px, var(--xh-control-px-sm));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-transfer-panel-border, var(--xh-border-default));
+  }
+
+  /* 标题占满剩余宽度，把计数挤到行尾侧 */
+  [data-scope='transfer'][data-part='panel-title'] {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    color: var(--xh-transfer-title-fg, var(--xh-fg-default));
+    font-size: var(--xh-transfer-title-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-transfer-title-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  [data-scope='transfer'][data-part='panel-count'] {
+    flex: none;
+    color: var(--xh-transfer-count-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-transfer-count-font-size, var(--xh-font-size-xs));
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 连接层只给数字（data-checked-count / data-count），文案是作者的事：
+     语言、量词、单复数都由他定。作者什么都不写时这里补出"勾中/可见"，
+     写了内容就用作者的（:empty 只命中空节点） */
+  [data-scope='transfer'][data-part='panel-count']:empty::after {
+    content: attr(data-checked-count) ' / ' attr(data-count);
+  }
+
+  [data-scope='transfer'][data-part='search'] {
+    display: block;
+    inline-size: 100%;
+    block-size: var(--xh-transfer-search-h, var(--xh-control-h-sm));
+    padding-inline: var(--xh-transfer-search-px, var(--xh-control-px-sm));
+    border: 0;
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-transfer-panel-border, var(--xh-border-default));
+    background: var(--xh-transfer-search-bg, transparent);
+    color: var(--xh-transfer-search-fg, var(--xh-fg-default));
+    font: inherit;
+    font-size: var(--xh-transfer-search-font-size, var(--xh-text-body-size));
+  }
+
+  [data-scope='transfer'][data-part='search']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(var(--xh-ring-offset) * -1);
+  }
+
+  /* 单体控件的禁用是原生 disabled，样式只能写 :disabled；集合条目才读 data-disabled */
+  [data-scope='transfer'][data-part='search']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='transfer'][data-part='list'] {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-block-size: var(--xh-transfer-list-min-h, 8rem);
+    max-block-size: var(--xh-transfer-list-max-h, 16rem);
+    padding-block: var(--xh-transfer-list-py, var(--xh-space-1));
+    padding-inline: var(--xh-transfer-list-px, var(--xh-space-1));
+    overflow: auto;
+  }
+
+  /* 焦点在列表外时容器自己进 Tab 序列兜底，落焦不画环：高亮永远长在条目上 */
+  [data-scope='transfer'][data-part='list']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='transfer'][data-part='item'] {
+    display: flex;
+    flex: none;
+    gap: var(--xh-transfer-item-gap, var(--xh-control-gap-md));
+    align-items: center;
+    padding-block: var(--xh-transfer-item-py, var(--xh-space-2));
+    padding-inline: var(--xh-transfer-item-px, var(--xh-control-px-sm));
+    border-radius: var(--xh-transfer-item-radius, var(--xh-shape-control));
+    color: var(--xh-transfer-item-fg, var(--xh-fg-default));
+    font-size: var(--xh-transfer-item-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 键盘高亮与指针悬停共用一套底色：条目本身承载焦点，不另画描边。
+     data-highlighted 跟的是连接层记的焦点条目，与勾选互相独立 */
+  [data-scope='transfer'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
+    background: var(--xh-transfer-item-bg-highlight, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='transfer'][data-part='item']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(var(--xh-ring-offset) * -1);
+  }
+
+  /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
+     所以样式只能读 data-disabled，写 :disabled 永远不命中 */
+  [data-scope='transfer'][data-part='item'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='transfer'][data-part='item-text'] {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* 条目的勾选格与全选格共用同一套盒子，并成一条规则写：分开写迟早只改到一半，
+     两个方框就此走形。全选格没有对应的角色节点（它自己就是按钮），由伪元素补出来 */
+  [data-scope='transfer'][data-part='item-checkbox'],
+  [data-scope='transfer'][data-part='select-all-trigger']::before {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-transfer-checkbox-size, 16px);
+    block-size: var(--xh-transfer-checkbox-size, 16px);
+    border: var(--xh-stroke-thin) solid var(--xh-transfer-checkbox-border, var(--xh-border-default));
+    border-radius: var(--xh-transfer-checkbox-radius, var(--xh-radius-sm));
+    background: var(--xh-transfer-checkbox-bg, var(--xh-bg-canvas));
+    color: var(--xh-transfer-checkbox-fg, var(--xh-fg-on-brand));
+    font-size: var(--xh-transfer-checkbox-font-size, 12px);
+    line-height: 1;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* content 只能给伪元素，绝不能并进上面那条：content 落在普通元素上会顶掉它的全部子节点，
+     item-checkbox 里作者写的图标就此消失 */
+  [data-scope='transfer'][data-part='select-all-trigger']::before {
+    content: '';
+  }
+
+  /* 勾中即填色。全选格三态里 all 与 some 都算"有值"，与条目共用同一副填色 */
+  [data-scope='transfer'][data-part='item-checkbox'][data-state='checked'],
+  [data-scope='transfer'][data-part='select-all-trigger']:is([data-state='all'], [data-state='some'])::before {
+    border-color: var(--xh-transfer-checkbox-border-checked, var(--xh-bg-brand));
+    background: var(--xh-transfer-checkbox-bg-checked, var(--xh-bg-brand));
+  }
+
+  /* 勾号由皮肤补，作者不必自己往格子里塞字符 */
+  [data-scope='transfer'][data-part='item-checkbox'][data-state='checked']::before {
+    content: '✓';
+  }
+
+  /* 全选格的三态：all 打勾、some 打横杠、none 留空。
+     some 就是读屏听到的 aria-checked=mixed，两者同源，样式只认 data-state */
+  [data-scope='transfer'][data-part='select-all-trigger'][data-state='all']::before {
+    content: '✓';
+  }
+
+  [data-scope='transfer'][data-part='select-all-trigger'][data-state='some']::before {
+    content: '−';
+  }
+
+  [data-scope='transfer'][data-part='item-checkbox'][data-disabled] {
+    border-color: var(--xh-transfer-checkbox-border-disabled, var(--xh-border-subtle));
+    background: var(--xh-transfer-checkbox-bg-disabled, var(--xh-bg-muted));
+  }
+
+  /* 全选格是原生按钮（三态经 aria-checked 上报，激活由平台负责），
+     禁用因此写 :disabled，不写 data-disabled */
+  [data-scope='transfer'][data-part='select-all-trigger'] {
+    display: inline-flex;
+    flex: none;
+    gap: var(--xh-transfer-select-all-gap, var(--xh-control-gap-sm));
+    align-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: var(--xh-transfer-select-all-radius, var(--xh-shape-control));
+    background: none;
+    color: var(--xh-transfer-select-all-fg, var(--xh-fg-muted));
+    font-size: var(--xh-transfer-select-all-font-size, var(--xh-font-size-xs));
+    font-weight: var(--xh-font-weight-medium);
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  [data-scope='transfer'][data-part='select-all-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  [data-scope='transfer'][data-part='select-all-trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  [data-scope='transfer'][data-part='to-target-trigger'],
+  [data-scope='transfer'][data-part='to-source-trigger'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: var(--xh-transfer-trigger-size, var(--xh-control-h-sm));
+    block-size: var(--xh-transfer-trigger-size, var(--xh-control-h-sm));
+    padding-inline: var(--xh-transfer-trigger-px, var(--xh-space-2));
+    border: var(--xh-stroke-thin) solid var(--xh-transfer-trigger-border, var(--xh-border-default));
+    border-radius: var(--xh-transfer-trigger-radius, var(--xh-shape-control));
+    background: var(--xh-transfer-trigger-bg, var(--xh-bg-subtle));
+    color: var(--xh-transfer-trigger-fg, var(--xh-fg-default));
+    font-size: var(--xh-transfer-trigger-font-size, var(--xh-text-label-size));
+    line-height: 1;
+    cursor: pointer;
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='transfer'][data-part='to-target-trigger']:hover:not(:disabled),
+  [data-scope='transfer'][data-part='to-source-trigger']:hover:not(:disabled) {
+    background: var(--xh-transfer-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='transfer'][data-part='to-target-trigger']:active:not(:disabled),
+  [data-scope='transfer'][data-part='to-source-trigger']:active:not(:disabled) {
+    background: var(--xh-transfer-trigger-bg-active, var(--xh-bg-subtle-active));
+  }
+
+  [data-scope='transfer'][data-part='to-target-trigger']:focus-visible,
+  [data-scope='transfer'][data-part='to-source-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 搬运按钮是单体控件，禁用走原生 disabled */
+  [data-scope='transfer'][data-part='to-target-trigger']:disabled,
+  [data-scope='transfer'][data-part='to-source-trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  /* 上面凡是给了 display 的角色节点都要补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
+     不补的话收起态整个失效。连接层真正会写 hidden 的是 search（searchable 关掉时）、
+     item（不属于本侧、或被搜索筛掉）、item-checkbox（oneWay 下的右侧），
+     其余几个是作者自己收起时的兜底 */
+  [data-scope='transfer'][data-part='root'][hidden],
+  [data-scope='transfer'][data-part='source-panel'][hidden],
+  [data-scope='transfer'][data-part='target-panel'][hidden],
+  [data-scope='transfer'][data-part='panel-header'][hidden],
+  [data-scope='transfer'][data-part='search'][hidden],
+  [data-scope='transfer'][data-part='list'][hidden],
+  [data-scope='transfer'][data-part='item'][hidden],
+  [data-scope='transfer'][data-part='item-checkbox'][hidden],
+  [data-scope='transfer'][data-part='select-all-trigger'][hidden],
+  [data-scope='transfer'][data-part='to-target-trigger'][hidden],
+  [data-scope='transfer'][data-part='to-source-trigger'][hidden] {
+    display: none;
+  }
+}

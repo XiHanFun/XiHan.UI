@@ -1,0 +1,305 @@
+@layer xihan.motion {
+  /* 气泡贴着目标探出来：纯淡入分不清它是从哪个元素长出来的 */
+  @keyframes xh-tour-content-in {
+    from {
+      opacity: 0;
+      translate: 0 4px;
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  /* 高亮框落定时那一下呼吸：换步时视线要跟着它走，纯位移太容易被漏看 */
+  @keyframes xh-tour-spotlight-in {
+    from {
+      opacity: 0;
+      scale: 1.04;
+    }
+
+    to {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='tour'] [data-part] {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer xihan.components {
+  /* 根节点只是几个浮层的归属容器，不参与排版。
+     这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
+  [data-scope='tour'][data-part='root'] {
+    color: var(--xh-tour-fg, var(--xh-fg-default));
+  }
+
+  /* 遮罩：整页压暗，把注意力逼到高亮框那一块上 */
+  [data-scope='tour'][data-part='backdrop'] {
+    position: fixed;
+    inset: 0;
+    z-index: var(--xh-tour-backdrop-z, var(--xh-layer-modal));
+    background: var(--xh-tour-backdrop-bg, var(--xh-bg-overlay));
+  }
+
+  [data-scope='tour'][data-part='backdrop'][hidden] {
+    display: none;
+  }
+
+  [data-scope='tour'][data-part='backdrop'][data-state='open'] {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='tour'][data-part='backdrop'][data-state='closed'] {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit);
+  }
+
+  /* 挖洞的高亮框。位置与尺寸由连接层量出来写进内联 style（position/inset/尺寸那几条轴归它），
+     这里只管长相：一圈描边 + 一片铺满视口的投影当暗幕，中间那块因此是亮的——
+     这就是"洞"。不吃指针：它盖在目标上面，吃了的话目标就再也点不动了 */
+  [data-scope='tour'][data-part='spotlight'] {
+    z-index: var(--xh-tour-spotlight-z, var(--xh-layer-modal));
+    pointer-events: none;
+    border-radius: var(--xh-tour-spotlight-radius, var(--xh-shape-surface));
+    box-shadow:
+      0 0 0 var(--xh-stroke-thick) var(--xh-tour-spotlight-ring, var(--xh-ring-focus)),
+      0 0 0 100vmax var(--xh-tour-spotlight-shroud, var(--xh-bg-overlay));
+    /* 换步时框自己滑过去，用户的视线跟得上；逻辑属性照样可过渡 */
+    transition:
+      inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
+      inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
+      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
+      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='tour'][data-part='spotlight'][hidden] {
+    display: none;
+  }
+
+  [data-scope='tour'][data-part='spotlight'][data-state='open'] {
+    animation: xh-tour-spotlight-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 高亮框在场时遮罩让位：暗幕已经由那圈铺满视口的投影负责，
+     两层叠加会把页面压得过暗，而且洞里也会跟着变暗——洞就白挖了。
+     居中步的高亮框带 hidden，此时遮罩照常压暗（那一步本来就没有要突出的元素） */
+  [data-scope='tour'][data-part='root']:has([data-scope='tour'][data-part='spotlight']:not([hidden]))
+    [data-scope='tour'][data-part='backdrop'] {
+    background: transparent;
+  }
+
+  /* 空壳不吃指针，交互只发生在 content 上。
+     锚定步的坐标由定位引擎写进内联 style，这里不碰那两条轴 */
+  [data-scope='tour'][data-part='positioner'] {
+    z-index: var(--xh-tour-positioner-z, var(--xh-layer-popover));
+    pointer-events: none;
+  }
+
+  /* 居中步：没有锚点，铺满视口把气泡摆中间 */
+  [data-scope='tour'][data-part='positioner'][data-position='center'] {
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--xh-space-4);
+  }
+
+  /* 必须排在 data-position='center' 之后：两条选择器的特指度相同（都是三个属性），
+     写在前面会被那条 display:flex 盖掉，收起态的居中步就一直摊在屏幕上 */
+  [data-scope='tour'][data-part='positioner'][hidden] {
+    display: none;
+  }
+
+  [data-scope='tour'][data-part='content'] {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-tour-gap, var(--xh-space-2));
+    inline-size: max-content;
+    max-inline-size: var(--xh-tour-max-w, 22rem);
+    padding-block: var(--xh-tour-py, var(--xh-space-4));
+    padding-inline: var(--xh-tour-px, var(--xh-control-px-lg));
+    border: var(--xh-stroke-thin) solid var(--xh-tour-border, var(--xh-border-default));
+    border-radius: var(--xh-tour-radius, var(--xh-shape-surface));
+    background: var(--xh-tour-bg, var(--xh-bg-surface));
+    color: var(--xh-tour-fg, var(--xh-fg-default));
+    box-shadow: var(--xh-tour-shadow, var(--xh-elevation-3));
+    pointer-events: auto;
+  }
+
+  /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位 */
+  [data-scope='tour'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  /* 焦点落在气泡本身（Enter/Space 归"下一步"管），但它是纯容器，不画焦点环 */
+  [data-scope='tour'][data-part='content']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='tour'][data-part='content'][data-state='open'] {
+    animation: xh-tour-content-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='tour'][data-part='title'] {
+    margin: 0;
+    font-size: var(--xh-tour-title-font-size, var(--xh-text-heading-3-size));
+    font-weight: var(--xh-tour-title-font-weight, var(--xh-text-heading-3-weight));
+    color: var(--xh-tour-title-fg, var(--xh-fg-default));
+  }
+
+  /* 关闭按钮是绝对定位的，不占流内宽度：标题得自己让出右上角那块，
+     否则长标题会直接钻到按钮底下。只在真有关闭按钮时让位。 */
+  [data-scope='tour'][data-part='content']:has([data-scope='tour'][data-part='close-trigger'])
+    [data-scope='tour'][data-part='title'] {
+    padding-inline-end: calc(var(--xh-control-h-sm) + var(--xh-space-2));
+  }
+
+  [data-scope='tour'][data-part='description'] {
+    margin: 0;
+    font-size: var(--xh-text-body-size);
+    line-height: var(--xh-text-body-leading);
+    color: var(--xh-tour-description-fg, var(--xh-fg-muted));
+  }
+
+  /* "第 m 步，共 n 步"：辅助信息，字号压一档，与按钮排在同一行的两端 */
+  [data-scope='tour'][data-part='progress-text'] {
+    font-size: var(--xh-tour-progress-font-size, var(--xh-font-size-xs));
+    color: var(--xh-tour-progress-fg, var(--xh-fg-subtle));
+  }
+
+  [data-scope='tour'][data-part='prev-trigger'],
+  [data-scope='tour'][data-part='next-trigger'],
+  [data-scope='tour'][data-part='skip-trigger'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    block-size: var(--xh-control-h-sm);
+    padding-inline: var(--xh-control-px-md);
+    border: var(--xh-stroke-thin) solid transparent;
+    border-radius: var(--xh-shape-control);
+    font-size: var(--xh-font-size-sm);
+    cursor: pointer;
+  }
+
+  [data-scope='tour'][data-part='prev-trigger'][hidden],
+  [data-scope='tour'][data-part='next-trigger'][hidden],
+  [data-scope='tour'][data-part='skip-trigger'][hidden] {
+    display: none;
+  }
+
+  /* 主按钮：整条引导的主线动作 */
+  [data-scope='tour'][data-part='next-trigger'] {
+    background: var(--xh-tour-next-bg, var(--xh-bg-brand));
+    color: var(--xh-tour-next-fg, var(--xh-fg-on-brand));
+  }
+
+  [data-scope='tour'][data-part='next-trigger']:hover {
+    background: var(--xh-tour-next-bg-hover, var(--xh-bg-brand-hover));
+  }
+
+  [data-scope='tour'][data-part='prev-trigger'],
+  [data-scope='tour'][data-part='skip-trigger'] {
+    background: transparent;
+    color: var(--xh-fg-muted);
+  }
+
+  [data-scope='tour'][data-part='prev-trigger'] {
+    border-color: var(--xh-border-default);
+    color: var(--xh-fg-default);
+  }
+
+  [data-scope='tour'][data-part='prev-trigger']:hover:not(:disabled),
+  [data-scope='tour'][data-part='skip-trigger']:hover {
+    background: var(--xh-bg-subtle);
+  }
+
+  /* 单体控件用原生 disabled（集合条目才用 [data-disabled]）：首步的上一步就是这个形态 */
+  [data-scope='tour'][data-part='prev-trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    border-color: var(--xh-border-subtle);
+    cursor: not-allowed;
+  }
+
+  [data-scope='tour'][data-part='close-trigger'] {
+    position: absolute;
+    inset-block-start: var(--xh-space-2);
+    inset-inline-end: var(--xh-space-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    block-size: var(--xh-control-h-sm);
+    inline-size: var(--xh-control-h-sm);
+    border: 0;
+    border-radius: var(--xh-shape-control);
+    background: transparent;
+    color: var(--xh-fg-muted);
+    cursor: pointer;
+  }
+
+  [data-scope='tour'][data-part='close-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='tour'][data-part='close-trigger']:hover {
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-default);
+  }
+
+  [data-scope='tour'][data-part='prev-trigger']:focus-visible,
+  [data-scope='tour'][data-part='next-trigger']:focus-visible,
+  [data-scope='tour'][data-part='skip-trigger']:focus-visible,
+  [data-scope='tour'][data-part='close-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 箭头是旋转 45° 的方块，只保留朝向目标那两条边的描边；
+     引擎不产出箭头偏移，因此沿交叉轴固定居中。居中步没有锚点，连接层会给它发 hidden */
+  [data-scope='tour'][data-part='arrow'] {
+    position: absolute;
+    inline-size: var(--xh-tour-arrow-size, 8px);
+    block-size: var(--xh-tour-arrow-size, 8px);
+    background: var(--xh-tour-bg, var(--xh-bg-surface));
+    border: var(--xh-stroke-thin) solid var(--xh-tour-border, var(--xh-border-default));
+    rotate: 45deg;
+  }
+
+  [data-scope='tour'][data-part='arrow'][hidden] {
+    display: none;
+  }
+
+  [data-scope='tour'][data-part='arrow'][data-placement^='bottom'] {
+    inset-block-start: calc(var(--xh-tour-arrow-size, 8px) / -2);
+    inset-inline-start: calc(50% - var(--xh-tour-arrow-size, 8px) / 2);
+    border-block-end: 0;
+    border-inline-end: 0;
+  }
+
+  [data-scope='tour'][data-part='arrow'][data-placement^='top'] {
+    inset-block-end: calc(var(--xh-tour-arrow-size, 8px) / -2);
+    inset-inline-start: calc(50% - var(--xh-tour-arrow-size, 8px) / 2);
+    border-block-start: 0;
+    border-inline-start: 0;
+  }
+
+  [data-scope='tour'][data-part='arrow'][data-placement^='right'] {
+    inset-inline-start: calc(var(--xh-tour-arrow-size, 8px) / -2);
+    inset-block-start: calc(50% - var(--xh-tour-arrow-size, 8px) / 2);
+    border-block-start: 0;
+    border-inline-end: 0;
+  }
+
+  [data-scope='tour'][data-part='arrow'][data-placement^='left'] {
+    inset-inline-end: calc(var(--xh-tour-arrow-size, 8px) / -2);
+    inset-block-start: calc(50% - var(--xh-tour-arrow-size, 8px) / 2);
+    border-block-end: 0;
+    border-inline-start: 0;
+  }
+}

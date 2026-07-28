@@ -1,0 +1,343 @@
+@layer xihan.components {
+  /* 解剖里没有把「触发器 + 清空按钮」裹在一起的 control 部件，一行是靠 flex-wrap 分出来的：
+     标签占满整行把后面的挤到下一行，触发器与清空按钮就并排落在同一行上。
+     这样作者少写标签、少写清空按钮，剩下的部件也不会塌 */
+  [data-scope='cascader'][data-part='root'] {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--xh-cascader-gap, var(--xh-space-1));
+  }
+
+  /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，作者手动收起时要自己还回去 */
+  [data-scope='cascader'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='cascader'][data-part='label'] {
+    /* 占满整行，把触发器那一行挤下去 */
+    flex-basis: 100%;
+    color: var(--xh-cascader-label-fg, var(--xh-fg-muted));
+    font-size: var(--xh-cascader-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-cascader-label-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+  }
+
+  /* 整个控件禁用会把 data-disabled 一路打到 label / value-text / indicator 上，各处观感保持一致 */
+  [data-scope='cascader'][data-part='label'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 画成一个框的就是 trigger 自己：整条路径的回显与展开箭头都长在它里面，
+     清空按钮贴在框外与它并排 */
+  [data-scope='cascader'][data-part='trigger'] {
+    display: inline-flex;
+    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--xh-cascader-trigger-gap, var(--xh-control-gap-md));
+    min-inline-size: var(--xh-cascader-trigger-min-w, 14rem);
+    block-size: var(--xh-cascader-trigger-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-cascader-trigger-px, var(--xh-control-px-md));
+    border: var(--xh-stroke-thin) solid var(--xh-cascader-trigger-border, var(--xh-border-default));
+    border-radius: var(--xh-cascader-trigger-radius, var(--xh-shape-control));
+    background: var(--xh-cascader-trigger-bg, var(--xh-bg-canvas));
+    color: var(--xh-cascader-trigger-fg, var(--xh-fg-default));
+    font-family: inherit;
+    font-size: var(--xh-cascader-trigger-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    text-align: start;
+    cursor: pointer;
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='cascader'][data-part='trigger'][hidden] {
+    display: none;
+  }
+
+  /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+  [data-scope='cascader'][data-part='trigger']:hover:not(:disabled, [data-invalid]) {
+    border-color: var(--xh-cascader-trigger-border-hover, var(--xh-border-strong));
+  }
+
+  /* trigger 是整个控件唯一的 Tab 停靠点（展开后停靠点才移进列里），落焦必须看得见 */
+  [data-scope='cascader'][data-part='trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  [data-scope='cascader'][data-part='trigger'][data-invalid] {
+    border-color: var(--xh-cascader-trigger-border-invalid, var(--xh-color-danger-500));
+  }
+
+  /* 只读仍可聚焦、浮层仍展得开、列仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */
+  [data-scope='cascader'][data-part='trigger'][data-readonly] {
+    background: var(--xh-cascader-trigger-bg-readonly, var(--xh-bg-subtle));
+  }
+
+  /* trigger 是单体控件，用原生 disabled（列里的集合条目一律 aria-disabled，写 :disabled 永不命中） */
+  [data-scope='cascader'][data-part='trigger']:disabled {
+    background: var(--xh-cascader-trigger-bg-disabled, var(--xh-bg-subtle));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 路径连起来会很长，必须能截断；框宽由 trigger 定，这里得允许自己被压缩 */
+  [data-scope='cascader'][data-part='value-text'] {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* 无选中：显示的是 placeholder，画淡一档 */
+  [data-scope='cascader'][data-part='value-text'][data-placeholder] {
+    color: var(--xh-cascader-placeholder-fg, var(--xh-fg-subtle));
+  }
+
+  [data-scope='cascader'][data-part='value-text'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  [data-scope='cascader'][data-part='indicator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    color: var(--xh-cascader-indicator-fg, var(--xh-fg-muted));
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='cascader'][data-part='indicator'][hidden] {
+    display: none;
+  }
+
+  [data-scope='cascader'][data-part='indicator'][data-state='open'] {
+    rotate: 180deg;
+  }
+
+  [data-scope='cascader'][data-part='indicator'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 贴在触发框旁边的小方钮，不撑高那一行 */
+  [data-scope='cascader'][data-part='clear-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-cascader-action-size, 1.5rem);
+    block-size: var(--xh-cascader-action-size, 1.5rem);
+    padding: 0;
+    border: 0;
+    border-radius: var(--xh-cascader-action-radius, var(--xh-shape-control));
+    background: var(--xh-cascader-action-bg, transparent);
+    color: var(--xh-cascader-action-fg, var(--xh-fg-muted));
+    font-family: inherit;
+    font-size: var(--xh-cascader-action-font-size, var(--xh-font-size-sm));
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='cascader'][data-part='clear-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='cascader'][data-part='clear-trigger']:hover:not(:disabled) {
+    background: var(--xh-cascader-action-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-cascader-action-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='cascader'][data-part='clear-trigger']:active:not(:disabled) {
+    background: var(--xh-cascader-action-bg-active, var(--xh-bg-subtle-active));
+  }
+
+  /* 清空按钮退出了 Tab 序列（tabindex=-1），正常操作走不到这里；
+     留着是给程序化聚焦兜底，落焦时得看得见 */
+  [data-scope='cascader'][data-part='clear-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 无选中、只读、整控件禁用三种情况下都按不动，用的是原生 disabled */
+  [data-scope='cascader'][data-part='clear-trigger']:disabled {
+    background: var(--xh-cascader-action-bg, transparent);
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+  [data-scope='cascader'][data-part='positioner'] {
+    position: absolute;
+    z-index: var(--xh-layer-popover);
+    /* 空壳不吃指针，交互只发生在 content 里 */
+    pointer-events: none;
+  }
+
+  /* 锚点被滚出可视区：整个浮层随之收起 */
+  [data-scope='cascader'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  /* 级联的骨架就在这一条上：列沿书写方向并排，一层一列。
+     横向随列数增减，因此不设固定宽度，只给每列自己的宽度 */
+  [data-scope='cascader'][data-part='content'] {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    max-inline-size: var(--xh-cascader-content-max-w, 48rem);
+    border: var(--xh-stroke-thin) solid var(--xh-cascader-content-border, var(--xh-border-default));
+    border-radius: var(--xh-cascader-content-radius, var(--xh-shape-surface));
+    background: var(--xh-cascader-content-bg, var(--xh-bg-surface));
+    color: var(--xh-cascader-content-fg, var(--xh-fg-default));
+    box-shadow: var(--xh-cascader-content-shadow, var(--xh-elevation-2));
+    /* 列多到放不下时整体横向滚动；纵向溢出归每一列自己 */
+    overflow-x: auto;
+    pointer-events: auto;
+  }
+
+  /* 收起态的唯一开关：display 盖掉了 UA 的 [hidden]{display:none}，漏了这条浮层就收不起来 */
+  [data-scope='cascader'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  /* 容器只是焦点域的兜底落点，落焦不画环：高亮永远长在条目上 */
+  [data-scope='cascader'][data-part='content']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='cascader'][data-part='content'][data-state='open'] {
+    animation: xh-cascader-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 一列：自己定宽、自己滚。列与列之间用一条分隔线，比留白更能说明「这是下一级」 */
+  [data-scope='cascader'][data-part='column'] {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    inline-size: var(--xh-cascader-column-w, 11rem);
+    max-block-size: var(--xh-cascader-column-max-h, 16rem);
+    padding-block: var(--xh-cascader-column-py, var(--xh-space-1));
+    padding-inline: var(--xh-cascader-column-px, var(--xh-space-1));
+    overflow-y: auto;
+  }
+
+  /* 展开路径砍短了这一列就收起来。display 盖掉了 UA 的 [hidden]{display:none}，
+     漏了这条「选了靠左的一列就把右边的列砍掉」在视觉上根本不会发生 */
+  [data-scope='cascader'][data-part='column'][hidden] {
+    display: none;
+  }
+
+  /* 分隔线画在列的起始缘，且第一列不画：这样列数增减时线永远只出现在列与列之间。
+     用逻辑属性，rtl 下自动跑到另一侧 */
+  [data-scope='cascader'][data-part='column'] + [data-scope='cascader'][data-part='column'] {
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-cascader-column-divider, var(--xh-border-subtle));
+  }
+
+  /* 列不进 Tab 序列也不承载焦点，落焦不画环：高亮永远长在条目上 */
+  [data-scope='cascader'][data-part='column']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='cascader'][data-part='item'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-cascader-row-gap, var(--xh-control-gap-md));
+    padding-block: var(--xh-cascader-row-py, var(--xh-space-2));
+    padding-inline: var(--xh-cascader-row-px, var(--xh-control-px-sm));
+    border-radius: var(--xh-cascader-row-radius, var(--xh-shape-control));
+    color: var(--xh-cascader-row-fg, var(--xh-fg-default));
+    font-size: var(--xh-cascader-row-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* 条目常挂不卸载：不属于当前这一列的那些靠 hidden 收起。
+     display 盖掉了 UA 的 [hidden]{display:none}，漏了这条列换了内容旧条目还留在那儿 */
+  [data-scope='cascader'][data-part='item'][hidden] {
+    display: none;
+  }
+
+  /* 键盘高亮与指针高亮共用一套底色。data-highlighted 跟的是连接层记的焦点条目，
+     与选中互相独立：可以停在一个没被选中的条目上 */
+  [data-scope='cascader'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
+    background: var(--xh-cascader-row-bg-highlight, var(--xh-bg-subtle-hover));
+  }
+
+  /* 展开路径上的那一串：让用户一眼看出「是从这几条一路点进来的」。
+     比高亮淡、比选中轻——它表达的是浏览痕迹，不是数据状态 */
+  [data-scope='cascader'][data-part='item'][data-active] {
+    background: var(--xh-cascader-row-bg-active, var(--xh-bg-subtle));
+  }
+
+  /* 选中最「实」：它表达的是数据状态，收起再展开还在 */
+  [data-scope='cascader'][data-part='item'][data-selected] {
+    background: var(--xh-cascader-row-bg-selected, var(--xh-bg-subtle-active));
+    font-weight: var(--xh-cascader-row-selected-font-weight, var(--xh-font-weight-medium));
+  }
+
+  /* 条目自己就是 option，环直接画在它身上；往内收，行是撑满列宽的，环画在外沿会被裁掉 */
+  [data-scope='cascader'][data-part='item']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
+     所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
+  [data-scope='cascader'][data-part='item'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='cascader'][data-part='item-text'] {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* 勾选标记只在选中项上出现；未选中时占位不塌，切换选中不引起行宽抖动 */
+  [data-scope='cascader'][data-part='item-indicator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-cascader-indicator-size, 1rem);
+    color: var(--xh-cascader-item-indicator-fg, var(--xh-bg-brand));
+    visibility: hidden;
+  }
+
+  [data-scope='cascader'][data-part='item-indicator'][hidden] {
+    display: none;
+  }
+
+  [data-scope='cascader'][data-part='item-indicator'][data-selected] {
+    visibility: visible;
+  }
+
+  [data-scope='cascader'][data-part='item-indicator'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+}
+
+@layer xihan.motion {
+  /* 浮层是横向长出来的：淡入之外再沿书写方向起始缘推一小段，观感上像列被「拉开」。
+     关键帧写在本文件里、名字带组件前缀，不动公共的那一份 */
+  @keyframes xh-cascader-in {
+    from {
+      opacity: 0;
+      translate: -0.25rem 0;
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+}

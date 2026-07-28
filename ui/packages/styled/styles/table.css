@@ -1,0 +1,380 @@
+@layer xihan.motion {
+  /* 加载态自己冒出来，用户没按任何键：一段极轻的呼吸就够，别抢走正在读表的注意力 */
+  @keyframes xh-table-loading-pulse {
+    from {
+      opacity: 0.5;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='table'][data-part='loading-state'] {
+      animation-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer xihan.components {
+  /* 表格自己滚动：吸顶表头与横向吸附列都要一个确定的滚动容器才钉得住 */
+  [data-scope='table'][data-part='root'] {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    max-block-size: var(--xh-table-max-h, 24rem);
+    border: var(--xh-stroke-thin) solid var(--xh-table-border, var(--xh-border-default));
+    border-radius: var(--xh-table-radius, var(--xh-shape-surface));
+    background: var(--xh-table-bg, var(--xh-bg-surface));
+    color: var(--xh-table-fg, var(--xh-fg-default));
+    font-size: var(--xh-table-font-size, var(--xh-text-body-size));
+    /* 两轴一起给：列多了横向溢出是常态，得够得着 */
+    overflow: auto;
+  }
+
+  [data-scope='table'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 纯容器：焦点落它身上不画环，高亮永远长在行上 */
+  [data-scope='table'][data-part='root']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='table'][data-part='caption'] {
+    display: block;
+    padding-block: var(--xh-table-caption-py, var(--xh-space-2));
+    padding-inline: var(--xh-table-caption-px, var(--xh-space-3));
+    color: var(--xh-table-caption-fg, var(--xh-fg-muted));
+    font-size: var(--xh-table-caption-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-table-caption-font-weight, var(--xh-text-label-weight));
+    text-align: start;
+  }
+
+  [data-scope='table'][data-part='caption'][hidden] {
+    display: none;
+  }
+
+  /* 三个区段都是竖着排行的块。min-inline-size: max-content 让它们跟着最宽的一行一起横向溢出，
+     否则横向滚动时右半边的行会在容器边缘被切断 */
+  [data-scope='table'][data-part='header'],
+  [data-scope='table'][data-part='body'],
+  [data-scope='table'][data-part='footer'] {
+    display: flex;
+    flex-direction: column;
+    min-inline-size: max-content;
+  }
+
+  [data-scope='table'][data-part='header'][hidden],
+  [data-scope='table'][data-part='body'][hidden],
+  [data-scope='table'][data-part='footer'][hidden] {
+    display: none;
+  }
+
+  /* 表体是行级 roving 的兜底 Tab 位：落焦不画环，环归行 */
+  [data-scope='table'][data-part='body']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='table'][data-part='header'] {
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-table-border, var(--xh-border-default));
+    background: var(--xh-table-header-bg, var(--xh-bg-subtle));
+  }
+
+  /* 吸顶：滚动容器是 root，表头钉在它的上沿。背景必须是实色——
+     透明的表头会让底下滚过的行透出来 */
+  [data-scope='table'][data-part='header'][data-sticky] {
+    position: sticky;
+    z-index: var(--xh-table-sticky-header-z, var(--xh-z-sticky));
+    inset-block-start: 0;
+  }
+
+  [data-scope='table'][data-part='footer'] {
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-table-border, var(--xh-border-default));
+    background: var(--xh-table-footer-bg, var(--xh-bg-subtle));
+    font-weight: var(--xh-table-footer-font-weight, var(--xh-font-weight-medium));
+  }
+
+  [data-scope='table'][data-part='row'] {
+    display: flex;
+    align-items: stretch;
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-table-row-border, var(--xh-border-subtle));
+    /* 背景要实色：横向吸附的单元格靠 inherit 取它，透明会让滚过的内容透出来 */
+    background: var(--xh-table-row-bg, var(--xh-bg-surface));
+  }
+
+  [data-scope='table'][data-part='row'][hidden] {
+    display: none;
+  }
+
+  [data-scope='table'][data-part='header'] > [data-scope='table'][data-part='row'],
+  [data-scope='table'][data-part='footer'] > [data-scope='table'][data-part='row'] {
+    background: transparent;
+  }
+
+  /* 末行不画分隔线：容器自己有边框，两条叠在一起会显出一道粗边 */
+  [data-scope='table'][data-part='body'] > [data-scope='table'][data-part='row']:last-child {
+    border-block-end: none;
+  }
+
+  /* 键盘高亮与指针高亮共用一套底色。data-highlighted 跟的是连接层记的焦点行，
+     与选中互相独立：可以停在一个没被选中的行上 */
+  [data-scope='table'][data-part='body'] > [data-scope='table'][data-part='row']:not([data-disabled]):is(:hover, [data-highlighted]) {
+    background: var(--xh-table-row-bg-highlight, var(--xh-bg-subtle-hover));
+  }
+
+  /* 选中比高亮更"实"：它表达的是数据状态，翻页回来还在 */
+  [data-scope='table'][data-part='row'][data-selected] {
+    background: var(--xh-table-row-bg-selected, var(--xh-bg-subtle-active));
+  }
+
+  [data-scope='table'][data-part='row'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 行才是 Tab 停靠点，环画在整行上 */
+  [data-scope='table'][data-part='row']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    /* 往内收：行是撑满宽度的，环画在外沿会被滚动容器裁掉 */
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  /* 列宽由连接层写进内联 inline-size，因此 flex-basis 取 auto：
+     写成 0 会把那条内联值整个盖掉，作者给的列宽就此失效 */
+  [data-scope='table'][data-part='column-header'],
+  [data-scope='table'][data-part='cell'] {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--xh-table-cell-gap, var(--xh-control-gap-md));
+    min-inline-size: var(--xh-table-cell-min-w, 3rem);
+    padding-block: var(--xh-table-cell-py, var(--xh-space-2));
+    padding-inline: var(--xh-table-cell-px, var(--xh-control-px-sm));
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [data-scope='table'][data-part='column-header'][hidden],
+  [data-scope='table'][data-part='cell'][hidden] {
+    display: none;
+  }
+
+  [data-scope='table'][data-part='column-header'] {
+    color: var(--xh-table-column-fg, var(--xh-fg-muted));
+    font-weight: var(--xh-table-column-font-weight, var(--xh-text-label-weight));
+    text-align: start;
+    user-select: none;
+  }
+
+  /* 横向吸附：钉在滚动容器的行首侧。背景继承自行，跟着选中/高亮一起变，
+     滚过去时不会露出一块与所在行不同色的补丁 */
+  [data-scope='table'][data-part='column-header'][data-sticky],
+  [data-scope='table'][data-part='cell'][data-sticky] {
+    position: sticky;
+    z-index: var(--xh-table-sticky-column-z, 1);
+    inset-inline-start: 0;
+    background: inherit;
+  }
+
+  [data-scope='table'][data-part='cell'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 三个把手共用一副方形盒子，两种行的文字起点才对得齐 */
+  [data-scope='table'][data-part='select-all-trigger'],
+  [data-scope='table'][data-part='row-select-trigger'],
+  [data-scope='table'][data-part='expand-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-table-trigger-size, 1rem);
+    block-size: var(--xh-table-trigger-size, 1rem);
+    border-radius: var(--xh-table-trigger-radius, var(--xh-shape-control));
+    cursor: pointer;
+  }
+
+  [data-scope='table'][data-part='select-all-trigger'][hidden],
+  [data-scope='table'][data-part='row-select-trigger'][hidden],
+  [data-scope='table'][data-part='expand-trigger'][hidden] {
+    display: none;
+  }
+
+  /* 两个选择把手：未选中时只剩一个空框，勾选标记靠 visibility 显隐，
+     切换选中不引起行宽抖动 */
+  [data-scope='table'][data-part='select-all-trigger'],
+  [data-scope='table'][data-part='row-select-trigger'] {
+    border: var(--xh-stroke-thin) solid var(--xh-table-trigger-border, var(--xh-border-strong));
+    color: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
+    visibility: visible;
+  }
+
+  [data-scope='table'][data-part='select-all-trigger']:is([data-state='all'], [data-state='some']),
+  [data-scope='table'][data-part='row-select-trigger'][data-selected] {
+    border-color: var(--xh-table-trigger-bg-checked, var(--xh-bg-brand));
+    background: var(--xh-table-trigger-bg-checked, var(--xh-bg-brand));
+  }
+
+  /* 未选中时勾不出现，但盒子还在：它是边框画出来的空框 */
+  [data-scope='table'][data-part='select-all-trigger'][data-state='none'],
+  [data-scope='table'][data-part='row-select-trigger']:not([data-selected]) {
+    color: transparent;
+  }
+
+  /* 半选画一条横杠盖住勾：aria-checked=mixed 在视觉上也得与"全选"分得开 */
+  [data-scope='table'][data-part='select-all-trigger'][data-state='some'] {
+    position: relative;
+    color: transparent;
+  }
+
+  [data-scope='table'][data-part='select-all-trigger'][data-state='some']::after {
+    position: absolute;
+    inline-size: 60%;
+    block-size: var(--xh-stroke-thick);
+    border-radius: var(--xh-radius-full);
+    background: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
+    content: '';
+  }
+
+  [data-scope='table'][data-part='select-all-trigger'][data-disabled],
+  [data-scope='table'][data-part='row-select-trigger'][data-disabled] {
+    border-color: var(--xh-border-subtle);
+    background: var(--xh-bg-muted);
+    color: transparent;
+    cursor: not-allowed;
+  }
+
+  /* 全选把手是表头里独立的 Tab 停靠点，环得画在它自己身上 */
+  [data-scope='table'][data-part='select-all-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 行选择把手不占 Tab 位（键盘那一路走 Space），只服务指针 */
+  [data-scope='table'][data-part='row-select-trigger']:focus-visible {
+    outline: none;
+  }
+
+  /* 展开箭头：收起时朝向行首、展开时转向下方，与逻辑书写方向一致 */
+  [data-scope='table'][data-part='expand-trigger'] {
+    color: var(--xh-table-expand-fg, var(--xh-fg-subtle));
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='table'][data-part='expand-trigger'][data-state='open'] {
+    rotate: 90deg;
+  }
+
+  /* rtl 下 inline-start 在右侧，箭头因此要反着转 */
+  [dir='rtl'] [data-scope='table'][data-part='expand-trigger'] {
+    rotate: 180deg;
+  }
+
+  [dir='rtl'] [data-scope='table'][data-part='expand-trigger'][data-state='open'] {
+    rotate: 90deg;
+  }
+
+  [data-scope='table'][data-part='expand-trigger'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='table'][data-part='expand-trigger']:focus-visible {
+    outline: none;
+  }
+
+  /* 排序把手撑满列标题：整块列标题都点得动，而不是只有那一小截文字 */
+  [data-scope='table'][data-part='sort-trigger'] {
+    display: inline-flex;
+    flex: 1;
+    align-items: center;
+    gap: var(--xh-table-sort-gap, var(--xh-space-1));
+    min-inline-size: 0;
+    border-radius: var(--xh-table-trigger-radius, var(--xh-shape-control));
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  [data-scope='table'][data-part='sort-trigger'][hidden] {
+    display: none;
+  }
+
+  /* 排序方向用箭头字形表出来：aria-sort 只报给读屏，视觉侧也得有对应的东西 */
+  [data-scope='table'][data-part='sort-trigger']::after {
+    color: var(--xh-table-sort-fg, var(--xh-fg-subtle));
+    content: '↕';
+  }
+
+  [data-scope='table'][data-part='sort-trigger'][data-sort='asc']::after {
+    color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
+    content: '↑';
+  }
+
+  [data-scope='table'][data-part='sort-trigger'][data-sort='desc']::after {
+    color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
+    content: '↓';
+  }
+
+  /* 多字段排序的优先级角标：链里第几环就显几，只在参与排序时才有 data-sort-index */
+  [data-scope='table'][data-part='sort-trigger'][data-sort-index]::before {
+    order: 1;
+    color: var(--xh-table-sort-fg-active, var(--xh-fg-default));
+    font-size: var(--xh-font-size-xs);
+    content: attr(data-sort-index);
+  }
+
+  [data-scope='table'][data-part='sort-trigger'][data-disabled] {
+    cursor: default;
+  }
+
+  [data-scope='table'][data-part='sort-trigger'][data-disabled]::after {
+    content: none;
+  }
+
+  [data-scope='table'][data-part='sort-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  /* 详情行：靠 hidden 收起，不卸载作者节点 */
+  [data-scope='table'][data-part='expanded-row'] {
+    display: block;
+    padding-block: var(--xh-table-detail-py, var(--xh-space-3));
+    padding-inline: var(--xh-table-detail-px, var(--xh-space-4));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-table-row-border, var(--xh-border-subtle));
+    background: var(--xh-table-detail-bg, var(--xh-bg-subtle));
+  }
+
+  /* 收起态的唯一开关：display 会盖掉 hidden 属性的 UA 规则，漏了这条详情行就收不起来 */
+  [data-scope='table'][data-part='expanded-row'][hidden] {
+    display: none;
+  }
+
+  /* 两个状态节点常挂，只在表体为空时才显形 */
+  [data-scope='table'][data-part='empty-state'],
+  [data-scope='table'][data-part='loading-state'] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-table-state-gap, var(--xh-space-2));
+    min-block-size: var(--xh-table-state-min-h, 8rem);
+    padding-block: var(--xh-table-state-py, var(--xh-space-6));
+    padding-inline: var(--xh-table-state-px, var(--xh-space-4));
+    color: var(--xh-table-state-fg, var(--xh-fg-muted));
+    text-align: center;
+  }
+
+  [data-scope='table'][data-part='empty-state'][hidden],
+  [data-scope='table'][data-part='loading-state'][hidden] {
+    display: none;
+  }
+
+  [data-scope='table'][data-part='loading-state'] {
+    animation: xh-table-loading-pulse var(--xh-duration-slow) var(--xh-ease-standard) infinite alternate;
+  }
+}

@@ -1,0 +1,185 @@
+@layer xihan.components {
+  /* 表单是一列字段：竖排、字段之间留一档间距。root 就是那个原生 <form> */
+  [data-scope='form'][data-part='root'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-form-gap, var(--xh-stack-gap-md));
+    margin: 0;
+  }
+
+  /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+  [data-scope='form'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 字段容器只管排版与状态标记：标题、控件、描述、错误文案都是里面那个 Field 的活儿 */
+  [data-scope='form'][data-part='field-group'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-form-field-gap, var(--xh-space-1));
+  }
+
+  [data-scope='form'][data-part='field-group'][hidden] {
+    display: none;
+  }
+
+  /* 出错的字段在起始缘竖一条色带：读屏之外还得有一眼看得见的定位标记。
+     用逻辑属性，RTL 下自动换到右侧 */
+  [data-scope='form'][data-part='field-group'][data-invalid] {
+    padding-inline-start: var(--xh-form-field-invalid-px, var(--xh-space-2));
+    border-inline-start: var(--xh-stroke-thick) solid var(--xh-form-field-invalid-border, var(--xh-color-danger-500));
+  }
+
+  /* 容器带着 tabindex=-1：控件全禁用时焦点会落在它自己身上，
+     那一刻必须画环，否则键盘用户看不出自己被送到了哪儿 */
+  [data-scope='form'][data-part='field-group']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 提交失败后的错误汇总。role=alert 常挂，靠 hidden 显隐 */
+  [data-scope='form'][data-part='error-summary'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-form-summary-gap, var(--xh-space-1_5));
+    padding-block: var(--xh-form-summary-py, var(--xh-space-3));
+    padding-inline: var(--xh-form-summary-px, var(--xh-control-px-md));
+    border: var(--xh-stroke-thin) solid var(--xh-form-summary-border, var(--xh-color-danger-500));
+    border-radius: var(--xh-form-summary-radius, var(--xh-shape-surface));
+    background: var(--xh-form-summary-bg, var(--xh-bg-surface));
+    color: var(--xh-form-summary-fg, var(--xh-color-danger-600));
+    font-size: var(--xh-form-summary-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-leading-normal);
+    box-shadow: var(--xh-form-summary-shadow, var(--xh-elevation-1));
+  }
+
+  /* 漏了这条，摘要一旦出现过就再也撤不下去（上面那条 display 盖掉了 UA 的 [hidden] 规则） */
+  [data-scope='form'][data-part='error-summary'][hidden] {
+    display: none;
+  }
+
+  /* 摘要不承载焦点（焦点直接送去出错的字段），它只是一段播报，落焦时不画环 */
+  [data-scope='form'][data-part='error-summary']:focus-visible {
+    outline: none;
+  }
+
+  /* 从收起翻成显出的那一下给一小段入场：读屏靠 role=alert 播报，
+     视觉这边也得有个"它是刚冒出来的"的交代，否则像一直杵在那儿 */
+  [data-scope='form'][data-part='error-summary'][data-state='invalid'] {
+    animation: xh-form-summary-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 摘要里的每一条是一个真链接，指向对应字段容器 */
+  [data-scope='form'][data-part='error-summary-item'] {
+    display: block;
+    color: inherit;
+    font-size: var(--xh-form-summary-item-font-size, var(--xh-font-size-sm));
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+  }
+
+  /* 没有对应错误的条目由连接层给 hidden；上面那条 display 已把 UA 规则盖掉 */
+  [data-scope='form'][data-part='error-summary-item'][hidden] {
+    display: none;
+  }
+
+  [data-scope='form'][data-part='error-summary-item']:hover {
+    color: var(--xh-form-summary-item-fg-hover, var(--xh-color-danger-500));
+  }
+
+  [data-scope='form'][data-part='error-summary-item']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 两颗按钮共用一份底子：它们是同一种东西，只是干的活不同，
+     分开写迟早会改了一颗忘了另一颗 */
+  [data-scope='form'][data-part='submit-trigger'],
+  [data-scope='form'][data-part='reset-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    block-size: var(--xh-form-trigger-h, var(--xh-control-h-md));
+    padding-block: 0;
+    padding-inline: var(--xh-form-trigger-px, var(--xh-control-px-md));
+    border: var(--xh-stroke-thin) solid var(--xh-form-trigger-border, var(--xh-border-default));
+    border-radius: var(--xh-form-trigger-radius, var(--xh-shape-control));
+    background: var(--xh-form-trigger-bg, var(--xh-bg-subtle));
+    color: var(--xh-form-trigger-fg, var(--xh-fg-default));
+    /* 表单控件不继承页面字体，只给字号会让按钮用 UA 默认字族，与周围文本对不上 */
+    font-family: inherit;
+    font-size: var(--xh-form-trigger-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  [data-scope='form'][data-part='submit-trigger'][hidden],
+  [data-scope='form'][data-part='reset-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='form'][data-part='submit-trigger']:hover:not(:disabled),
+  [data-scope='form'][data-part='reset-trigger']:hover:not(:disabled) {
+    border-color: var(--xh-form-trigger-border-hover, var(--xh-border-strong));
+    background: var(--xh-form-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='form'][data-part='submit-trigger']:active:not(:disabled),
+  [data-scope='form'][data-part='reset-trigger']:active:not(:disabled) {
+    background: var(--xh-form-trigger-bg-active, var(--xh-bg-subtle-active));
+  }
+
+  [data-scope='form'][data-part='submit-trigger']:focus-visible,
+  [data-scope='form'][data-part='reset-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 单体控件用 :disabled（集合条目才用 [data-disabled]）：
+     整表禁用时提交键置灰，只读时重置键也一并落到这条上 */
+  [data-scope='form'][data-part='submit-trigger']:disabled,
+  [data-scope='form'][data-part='reset-trigger']:disabled {
+    border-color: var(--xh-form-trigger-border-disabled, var(--xh-border-subtle));
+    background: var(--xh-form-trigger-bg-disabled, var(--xh-bg-muted));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 提交是这一组里的主操作，给它一层实心底色区分开 */
+  [data-scope='form'][data-part='submit-trigger']:not(:disabled) {
+    border-color: var(--xh-form-submit-bg, var(--xh-bg-brand));
+    background: var(--xh-form-submit-bg, var(--xh-bg-brand));
+    color: var(--xh-form-submit-fg, var(--xh-fg-on-brand));
+  }
+
+  [data-scope='form'][data-part='submit-trigger']:hover:not(:disabled) {
+    border-color: var(--xh-form-submit-bg-hover, var(--xh-bg-brand-hover));
+    background: var(--xh-form-submit-bg-hover, var(--xh-bg-brand-hover));
+  }
+
+  [data-scope='form'][data-part='submit-trigger']:active:not(:disabled) {
+    border-color: var(--xh-form-submit-bg-active, var(--xh-bg-brand-active));
+    background: var(--xh-form-submit-bg-active, var(--xh-bg-brand-active));
+  }
+}
+
+@layer xihan.motion {
+  /* 关键帧写在自己文件里、名字带组件前缀：motion.css 是公共的，
+     往那儿加一条只服务本组件的动画会让所有组件都得跟着重下载 */
+  @keyframes xh-form-summary-enter {
+    from {
+      opacity: 0;
+      translate: 0 calc(-1 * var(--xh-space-1));
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+}

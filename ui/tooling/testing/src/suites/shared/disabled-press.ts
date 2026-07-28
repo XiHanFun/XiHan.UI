@@ -14,7 +14,12 @@ export function dispatchClickOnDisabled(scope: string, part: string, expect: Ste
     kind: 'raw',
     why: '禁用控件上 el.click() 会被激活行为短路、事件不派发，断言恒成立；必须直接派发才验得到守卫',
     run: ({ doc }) => {
-      const el = doc.querySelector<HTMLElement>(`[data-scope="${scope}"][data-part="${part}"]`)
+      // 认 name[i] 这种带下标的写法：套件其余地方引用重复部件都是这个形状，
+      // 直接把它拼进选择器会得到 [data-part="swatch-item[1]"] 这种永远选不中的东西
+      const matched = /^([a-z-]+)\[(\d+)\]$/.exec(part)
+      const name = matched ? matched[1]! : part
+      const index = matched ? Number(matched[2]) : 0
+      const el = doc.querySelectorAll<HTMLElement>(`[data-scope="${scope}"][data-part="${name}"]`)[index]
       if (!el)
         throw new Error(`找不到 ${scope} 的 ${part} 部件`)
       el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))

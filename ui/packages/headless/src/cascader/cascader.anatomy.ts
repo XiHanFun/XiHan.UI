@@ -1,0 +1,30 @@
+import type { ItemQuery } from '@xihan-ui/behavior'
+import { createAnatomy } from '@xihan-ui/core'
+
+// data-part 直接用 kebab-case，与 CSS 选择器一致。
+// 前半截（trigger/value-text/indicator/positioner/content）是浮层那一套；
+// column 与三个条目部件是级联自己那一套——每一级一列，列在 content 里并排。
+export const cascaderAnatomy = createAnatomy('cascader', [
+  'root',
+  'label',
+  'trigger',
+  'value-text',
+  'indicator',
+  'clear-trigger',
+  'positioner',
+  'content',
+  'column',
+  'item',
+  'item-text',
+  'item-indicator',
+])
+
+/**
+ * 集合只认 item：item-text / item-indicator 同样带 data-scope，但不入导航，
+ * 方向键不会停在它们身上。
+ *
+ * 查询容器一律传 content 而不是某一列：条目要跨列按值取（右方向键进的是**下一列**的条目），
+ * 逐列查等于把这件事拆成两步。queryItems 的归属判据是「父链上最近的 content 是不是本容器」，
+ * 中间隔着 column 不影响，而嵌套的另一个级联会被切开，各认各的条目。
+ */
+export const cascaderItemQuery: ItemQuery = { scope: cascaderAnatomy.name, part: 'item' }
