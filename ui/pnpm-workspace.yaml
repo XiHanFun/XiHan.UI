@@ -52,6 +52,11 @@ catalog:
   vitest: ^4.1.10
   '@vitest/coverage-v8': ^4.1.10
   jsdom: ^27.0.0
+  # —— 真实浏览器测试：无障碍与视觉时序断言只在 Chromium 里跑，jsdom 不参与 ——
+  '@vitest/browser': ^4.1.10
+  '@vitest/browser-playwright': ^4.1.10
+  playwright: ^1.62.0
+  axe-core: ^4.12.1
   publint: ^0.3.21
   simple-git-hooks: ^2.13.0
   size-limit: ^12.1.0

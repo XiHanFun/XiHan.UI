@@ -15,7 +15,10 @@ const layerRules = names
       name: `layer-${from}`,
       severity: 'error',
       comment: `packages/${from} 只能依赖 [${[...allowed].join(', ')}]`,
-      from: { path: `^packages/${from}/` },
+      // 只管 src：分层约束的是发出去的那份实现。
+      // 测试要跨层取材（浏览器态无障碍扫描必须加载 styled 的皮肤才量得到对比度），
+      // 把 tests 一起管住只会逼人把跨层依赖藏进别处。
+      from: { path: `^packages/${from}/src/` },
       to: { path: `^packages/(${forbidden.join('|')})/` },
     }
   })

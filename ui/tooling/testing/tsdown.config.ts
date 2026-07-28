@@ -1,3 +1,5 @@
 import { defineXihanPackage } from '@xihan-ui/build'
 
-export default defineXihanPackage()
+export default defineXihanPackage({
+  entry: { index: 'src/index.ts', a11y: 'src/a11y/index.ts' },
+})

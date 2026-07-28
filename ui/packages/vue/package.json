@@ -18,11 +18,14 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:browser": "vitest run --config vitest.browser.config.ts"
   },
   "peerDependencies": {
     "vue": "catalog:"
@@ -35,11 +38,16 @@
     "@xihan-ui/position-floating-ui": "workspace:*"
   },
   "devDependencies": {
+    "@vitest/browser": "catalog:",
+    "@vitest/browser-playwright": "catalog:",
     "@vue/test-utils": "catalog:",
     "@xihan-ui/build": "workspace:*",
+    "@xihan-ui/styled": "workspace:*",
+    "@xihan-ui/system": "workspace:*",
     "@xihan-ui/testing": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",
     "jsdom": "catalog:",
+    "playwright": "catalog:",
     "vitest": "catalog:",
     "vue": "catalog:"
   }

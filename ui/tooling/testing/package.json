@@ -10,12 +10,18 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./a11y": {
+      "types": "./dist/a11y.d.ts",
+      "import": "./dist/a11y.js"
     }
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc --noEmit -p tsconfig.json",
@@ -23,7 +29,8 @@
   },
   "dependencies": {
     "@xihan-ui/core": "workspace:*",
-    "@xihan-ui/headless": "workspace:*"
+    "@xihan-ui/headless": "workspace:*",
+    "axe-core": "catalog:"
   },
   "devDependencies": {
     "@xihan-ui/build": "workspace:*",
