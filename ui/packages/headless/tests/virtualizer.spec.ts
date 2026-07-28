@@ -689,7 +689,7 @@ describe('停机', () => {
     r.stop()
     rigs.pop()
     // 内核那只 150ms 的停手防抖计时器在停机后仍会走完并回调一次；
-    // 少了"这台内核还在任吗"的判据，这一下会往停掉的机器上送 SCROLL.END
+    // 少了"这台内核还在任吗"的判据，这一下会去写已经作废的 context
     expect(() => vi.advanceTimersByTime(500)).not.toThrow()
     expect(r.service.context.get('snapshot')).toBe(snapshot)
   })

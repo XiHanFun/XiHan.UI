@@ -254,11 +254,14 @@ export function createService<T extends MachineSchema>(
         throw new MachineError('SEND_BEFORE_MOUNT', `send("${event.type}") before mount`, machine.name)
       return
     }
-    if (status === 'Stopped') {
-      if (isDev())
-        throw new MachineError('SEND_AFTER_STOP', `send("${event.type}") after stop`, machine.name)
+    // 停机后一律丢弃，dev 也不抛。
+    //
+    // 抛的本意是抓"作者在卸载后还往机器里发事件"，但浏览器在拆 DOM 的过程中
+    // 本来就会派发 focusout / blur / error，定时器与图片加载的回调也可能落在停机之后——
+    // 这些都不是谁写错了，是拆卸期绕不开的。真机上二十多个组件同时踩中，
+    // 说明这条诊断的假阳性远多于真阳性。丢弃与生产行为一致，状态不会被改脏。
+    if (status === 'Stopped')
       return
-    }
     queue.push(event)
     if (!draining)
       drain()

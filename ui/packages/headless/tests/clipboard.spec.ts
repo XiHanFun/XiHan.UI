@@ -260,7 +260,7 @@ describe('clipboardMachine 复制流程', () => {
   })
 
   it('写入途中卸载：兑现后不再往停机的机器里送事件', async () => {
-    // 停机后送事件在 dev 下会抛，而抛在 promise 回调里只会变成未处理拒绝，
+    // 兑现回调里若还有别的抛错，落在 promise 里只会变成未处理拒绝，
     // 不会让断言变红——所以这里自己盯着未处理拒绝
     const rejections: unknown[] = []
     const onUnhandled = (reason: unknown): void => {
