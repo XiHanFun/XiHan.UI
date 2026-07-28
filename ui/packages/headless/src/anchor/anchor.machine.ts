@@ -88,10 +88,14 @@ function isScrolledToEnd(container: HTMLElement | null, win: Window): boolean {
       return false
     return container.scrollTop + container.clientHeight >= container.scrollHeight - EDGE_TOLERANCE
   }
+  // 视口高度取 documentElement.clientHeight 而不是 win.innerHeight：
+  // 后者把横向滚动条那条也算进高度里，而 scrollHeight 不含它，
+  // 两个口径一混，页面一旦出现横向滚动条就会提前十几像素判成"到底"，末条锚点提早点亮。
   const doc = win.document.documentElement
-  if (doc.scrollHeight <= win.innerHeight)
+  const viewport = doc.clientHeight
+  if (doc.scrollHeight <= viewport)
     return false
-  return win.scrollY + win.innerHeight >= doc.scrollHeight - EDGE_TOLERANCE
+  return win.scrollY + viewport >= doc.scrollHeight - EDGE_TOLERANCE
 }
 
 // 激活值住在 context 的 cell 里、不编进状态：cell 本身就是受控/非受控的收口点

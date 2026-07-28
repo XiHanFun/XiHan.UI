@@ -56,10 +56,68 @@ function stubRect(el: HTMLElement, box: { top: number, left?: number, width?: nu
 }
 
 /**
+ * 钉住一个只读的布局量，并记下怎么还原。
+ * 直接 delete 还不回去：jsdom 把 scrollY 这些定义成 window 自己的取值器，删掉就再也读不出数。
+ */
+const stubbedMetrics: Array<() => void> = []
+function stubMetric(target: object, key: string, value: number): void {
+  const original = Object.getOwnPropertyDescriptor(target, key)
+  Object.defineProperty(target, key, { value, configurable: true })
+  stubbedMetrics.push(() => {
+    if (original)
+      Object.defineProperty(target, key, original)
+    else
+      delete (target as Record<string, unknown>)[key]
+  })
+}
+function restoreMetrics(): void {
+  for (const undo of stubbedMetrics.splice(0)) undo()
+}
+
+/**
+ * 把窗口摆成"整页已经滚到底"。jsdom 不排版，这三个量恒为默认值，
+ * 到底判据（scrollY + 视口高 >= scrollHeight）永远不成立，末条强制点亮那一路便无从验起。
+ *
+ * 视口高摆的是 documentElement.clientHeight，与实现读的口径一致：
+ * innerHeight 含横向滚动条那条、scrollHeight 不含，两个口径一混就会提前判成到底。
+ * 这里顺带把 innerHeight 摆成比它大 15，页面有横向滚动条时就是这个形状——
+ * 实现若退回去读 innerHeight，下面那条"还差一点没到底"的用例就会变红。
+ */
+function stubViewportAtEnd(): void {
+  stubMetric(document.documentElement, 'scrollHeight', 3000)
+  stubMetric(document.documentElement, 'clientHeight', 800)
+  stubMetric(window, 'innerHeight', 815)
+  stubMetric(window, 'scrollY', 2200)
+}
+
+/**
+ * 差一点点到底：按 clientHeight 算还差 14 像素（EDGE_TOLERANCE 之外），不该判成到底；
+ * 但按 innerHeight 算就正好越过阈值——横向滚动条造成的那十几像素误差就长这样。
+ */
+function stubViewportNearEnd(): void {
+  stubMetric(document.documentElement, 'scrollHeight', 3000)
+  stubMetric(document.documentElement, 'clientHeight', 800)
+  stubMetric(window, 'innerHeight', 815)
+  stubMetric(window, 'scrollY', 2186)
+}
+
+/** 把容器摆成"自己已经滚到底"：容器分支读的是这三个量，不是窗口那三个。 */
+function stubContainerAtEnd(el: HTMLElement): void {
+  stubMetric(el, 'scrollHeight', 2000)
+  stubMetric(el, 'clientHeight', 400)
+  stubMetric(el, 'scrollTop', 1600)
+}
+
+interface AnchorFixtureOptions {
+  /** 判定线所依附的滚动容器；不给即挂在窗口上（整页滚动的常规情形）。 */
+  scrollEl?: HTMLElement
+}
+
+/**
  * 一整套活 DOM：nav > ul > li > a 三条目录，外加三个带 id 的目标区块。
  * 区块的位置由 stubRect 摆布，滚动就靠"改盒子 + 派 scroll 事件"模拟。
  */
-function makeAnchor(initial: Props = {}) {
+function makeAnchor(initial: Props = {}, options: AnchorFixtureOptions = {}) {
   const runtime = createVanillaRuntime()
   const props = runtime.signal<Props>(initial)
   const service = createService(anchorMachine, { props: () => props.get(), runtime })
@@ -85,10 +143,12 @@ function makeAnchor(initial: Props = {}) {
   const indicator = document.createElement('div')
   list.appendChild(indicator)
   root.appendChild(list)
-  document.body.append(root, ...sections)
+  document.body.append(root)
+  // 区块住在滚动容器里（没给容器就是整页）：与真实版式同构，取数走的仍是各自的 rect
+  ;(options.scrollEl ?? document.body).append(...sections)
 
   service.refs.set('getListEl', () => list)
-  service.refs.set('getScrollEl', () => null)
+  service.refs.set('getScrollEl', () => options.scrollEl ?? null)
 
   runtime.start()
 
@@ -116,6 +176,10 @@ function makeAnchor(initial: Props = {}) {
     // 两者皆缺省时 cell 初值是 undefined，归一成 null 再断言（连接层也是这么归一的）
     value: () => service.context.get('value') ?? null,
     api: () => connectAnchor(service, normalizeProps),
+    /** 只摆位置、不派事件：验"是谁把结算顶起来的"时要把这两件事分开。 */
+    place: (tops: readonly number[]) => {
+      sections.forEach((el, i) => stubRect(el, { top: tops[i]! }))
+    },
     /** 摆好区块位置再派一次滚动，模拟"用户滚到了这里"。 */
     scrollTo: (tops: readonly number[]) => {
       sections.forEach((el, i) => stubRect(el, { top: tops[i]! }))
@@ -150,6 +214,7 @@ beforeEach(() => {
 afterEach(() => {
   vi.useRealTimers()
   vi.unstubAllGlobals()
+  restoreMetrics()
   document.body.innerHTML = ''
 })
 
@@ -371,6 +436,83 @@ describe('anchor 滚动观察', () => {
     await settle()
     expect(c.value()).toBe('usage')
     window.dispatchEvent(new Event('scroll'))
+    expect(c.value()).toBe('usage')
+  })
+
+  // 浏览器为视口滚动派发的事件目标是 document、bubbles 为真，靠冒泡才走到 window。
+  // 监听只要挂在这条传播路径之外（body、list、root 之类），页面滚一整天也收不到一次，
+  // 而"派在 window 上的合成事件"照样能把它叫醒——那种断言咬不动这条路。
+  it('接得住浏览器真正派发的那种滚动事件：目标是 document，冒泡到 window', async () => {
+    const c = makeAnchor()
+    await settle()
+    c.place([-10, 500, 900])
+    document.dispatchEvent(new Event('scroll', { bubbles: true }))
+    expect(c.value()).toBe('intro')
+  })
+
+  it('整页滚到底：位置上谁都没越过判定线，末条仍要强制点亮', async () => {
+    const c = makeAnchor()
+    await settle()
+    // 三节顶边都还在判定线下方，单看位置一条都不该亮
+    c.scrollTo([200, 400, 600])
+    expect(c.value()).toBeNull()
+    // 但整页已经到底、再也滚不动了：用户此刻看的就是末节
+    stubViewportAtEnd()
+    window.dispatchEvent(new Event('scroll'))
+    expect(c.value()).toBe('usage')
+  })
+
+  it('差一点到底就不算到底：视口高按 clientHeight 算，不掺横向滚动条那条', async () => {
+    const c = makeAnchor()
+    await settle()
+    c.scrollTo([200, 400, 600])
+    expect(c.value()).toBeNull()
+    // 按 documentElement.clientHeight 算还差 14 像素（EDGE_TOLERANCE 之外），不该判成到底；
+    // 若实现拿 win.innerHeight 去比（它含横向滚动条那 15 像素），这里会正好越过阈值、
+    // 把末条提前点亮——页面一有横向滚动条就是这个形状
+    stubViewportNearEnd()
+    window.dispatchEvent(new Event('scroll'))
+    expect(c.value()).toBeNull()
+  })
+
+  it('交了滚动容器：监听挂在容器上，判定原点也换成容器顶边', async () => {
+    const box = document.createElement('div')
+    document.body.appendChild(box)
+    stubRect(box, { top: 100, height: 400 })
+    const c = makeAnchor({}, { scrollEl: box })
+    await settle()
+
+    // 顶边 120 在视口坐标里早就过了 0，但相对容器顶边（100）还差 20：判定线是容器自己的顶边
+    c.place([120, 500, 900])
+    box.dispatchEvent(new Event('scroll'))
+    expect(c.value()).toBeNull()
+
+    // 顶边 80 相对容器是 -20，这才算越过
+    c.place([80, 500, 900])
+    box.dispatchEvent(new Event('scroll'))
+    expect(c.value()).toBe('intro')
+
+    // 监听挂在容器上、不在窗口上：整页没滚，窗口那边的滚动不该把结算顶起来
+    c.place([-500, -20, 400])
+    window.dispatchEvent(new Event('scroll'))
+    expect(c.value()).toBe('intro')
+    box.dispatchEvent(new Event('scroll'))
+    expect(c.value()).toBe('install')
+  })
+
+  it('容器滚到底：到底判据读的是容器自己的三个量，不是窗口的', async () => {
+    const box = document.createElement('div')
+    document.body.appendChild(box)
+    stubRect(box, { top: 0, height: 400 })
+    const c = makeAnchor({}, { scrollEl: box })
+    await settle()
+
+    c.place([200, 400, 600])
+    box.dispatchEvent(new Event('scroll'))
+    expect(c.value()).toBeNull()
+
+    stubContainerAtEnd(box)
+    box.dispatchEvent(new Event('scroll'))
     expect(c.value()).toBe('usage')
   })
 
