@@ -111,7 +111,7 @@ export abstract class XhElement extends ReactiveElement {
     this.observeParts()
     // 重连（元素在 DOM 中被移动）时 controller 会重建机器，但重建后的状态与重建前相同，
     // cell 不 bump 版本，于是不会自动排更新——wire 不再跑，角色节点上仍挂着指向
-    // 已停机器的处理器（送事件在 dev 下抛 SEND_AFTER_STOP、生产下被静默吞掉）。
+    // 已停机器的处理器（往停机的机器送事件会被静默丢弃，等于这些处理器全是死的）。
     // 这里显式排一次更新把处理器换成新机器的；首帧与 Lit 自己的初次更新合并，不多跑一帧。
     this.requestUpdate()
   }

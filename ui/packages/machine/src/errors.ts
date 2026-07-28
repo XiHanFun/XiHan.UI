@@ -18,7 +18,6 @@ export type MachineErrorCode
     | 'WATCH_SIDE_EFFECT'
     | 'EVENT_LOOP'
     | 'SEND_BEFORE_MOUNT'
-    | 'SEND_AFTER_STOP'
     | 'MISSING_SCOPE_ID'
     | 'MACHINE_CRASHED'
     | 'MISSING_ACTION'
