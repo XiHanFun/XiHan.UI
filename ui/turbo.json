@@ -25,6 +25,11 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "test:browser": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "tests/**", "vitest.browser.config.ts", "package.json"],
+      "outputs": []
     }
   }
 }
