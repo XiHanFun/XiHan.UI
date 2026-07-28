@@ -1,0 +1,127 @@
+@layer xihan.components {
+  /* 分工：**面板在排布轴上的尺寸**由连接层每帧写进内联样式（flex-basis / flex-grow / flex-shrink）。
+     这份皮肤一条都不碰——内联优先级高于样式表，写了不但是死声明，
+     还会在切换 orientation 的那一帧跟连接层抢位置。皮肤只管排布方向、跨轴尺寸、
+     配色、光标与状态表现。
+
+     三个角色节点上的 data-orientation 说的都是**面板怎么排**（与 root 上那条同源）；
+     分隔条自身的横竖与它垂直，那件事写在 aria-orientation 上，样式不去读 ARIA。 */
+
+  [data-scope='splitter'][data-part='root'] {
+    display: flex;
+    /* 跨轴尺寸由作者给：竖排的分栏必须先有确定的高度，才谈得上把它分成几份 */
+    align-items: stretch;
+    overflow: hidden;
+    border-radius: var(--xh-splitter-radius, var(--xh-shape-surface));
+  }
+
+  [data-scope='splitter'][data-part='root'][data-orientation='horizontal'] {
+    flex-direction: row;
+  }
+
+  [data-scope='splitter'][data-part='root'][data-orientation='vertical'] {
+    flex-direction: column;
+  }
+
+  /* 纯容器，焦点长在分隔条上，这里画环只会闪一下 */
+  [data-scope='splitter'][data-part='root']:focus-visible {
+    outline: none;
+  }
+
+  /* 禁用的整体压暗只做一次，落在最外层：面板与分隔条各自再叠一层 opacity 会越叠越黑 */
+  [data-scope='splitter'][data-part='root'][data-disabled] {
+    opacity: 0.6;
+  }
+
+  /* 拖动期间整块不许选中文字：手在分隔条上来回蹭时会顺带把两侧的正文刷成高亮 */
+  [data-scope='splitter'][data-part='root'][data-dragging] {
+    user-select: none;
+  }
+
+  /* 拖动中的光标写在容器上而不是分隔条上：那条线只有几像素宽，
+     手一快指针就跑到面板上去了，光标随即变回箭头，看着像拖拽断了 */
+  [data-scope='splitter'][data-part='root'][data-orientation='horizontal'][data-dragging] {
+    cursor: col-resize;
+  }
+
+  [data-scope='splitter'][data-part='root'][data-orientation='vertical'][data-dragging] {
+    cursor: row-resize;
+  }
+
+  /* 面板自己不许把容器撑破：内容再宽也只能溢出自己这一格，
+     否则连接层算好的比例会被一段长文本顶开 */
+  [data-scope='splitter'][data-part='panel'] {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* flex 项目的自动最小尺寸默认是内容宽，比 flex-basis 更硬——
+     不把它挪开，连接层内联写的 basis / shrink 在内容超宽时会被静默架空。
+     这两条给的不是尺寸，是"允许收到多小"的地板，因此不与内联样式冲突 */
+  [data-scope='splitter'][data-part='panel'][data-orientation='horizontal'] {
+    min-inline-size: 0;
+  }
+
+  [data-scope='splitter'][data-part='panel'][data-orientation='vertical'] {
+    min-block-size: 0;
+  }
+
+  [data-scope='splitter'][data-part='panel']:focus-visible {
+    outline: none;
+  }
+
+  /* 折叠到 0 时连边框都不该露出来：留一条缝比留一块面板更像坏了 */
+  [data-scope='splitter'][data-part='panel'][data-collapsed] {
+    border: none;
+  }
+
+  /* 分隔条自己的粗细归皮肤（连接层不碰它这条轴）。
+     flex: none 是必须的：它若跟着一起伸缩，面板的百分比就再也对不上了 */
+  [data-scope='splitter'][data-part='resize-trigger'] {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    background: var(--xh-splitter-trigger-bg, var(--xh-border-default));
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='splitter'][data-part='resize-trigger'][data-orientation='horizontal'] {
+    inline-size: var(--xh-splitter-trigger-thickness, var(--xh-space-1));
+    cursor: col-resize;
+  }
+
+  [data-scope='splitter'][data-part='resize-trigger'][data-orientation='vertical'] {
+    block-size: var(--xh-splitter-trigger-thickness, var(--xh-space-1));
+    cursor: row-resize;
+  }
+
+  [data-scope='splitter'][data-part='resize-trigger']:hover {
+    background: var(--xh-splitter-trigger-bg-hover, var(--xh-bg-subtle-active));
+  }
+
+  /* 只有正被拖的那条带 data-dragging：多条分隔条时全高亮就分不出手在哪一条上 */
+  [data-scope='splitter'][data-part='resize-trigger'][data-dragging] {
+    background: var(--xh-splitter-trigger-bg-dragging, var(--xh-bg-brand));
+  }
+
+  /* 焦点环往里画：分隔条只有几像素粗，往外画的那圈会被 root 的 overflow: hidden 切掉 */
+  [data-scope='splitter'][data-part='resize-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(var(--xh-ring-offset) * -1);
+  }
+
+  /* 分隔条是 div、role=separator，原生 disabled 在它身上不生效，
+     禁用只表达成 aria-disabled 与 data-disabled，写 :disabled 永远不命中 */
+  [data-scope='splitter'][data-part='resize-trigger'][data-disabled] {
+    background: var(--xh-splitter-trigger-bg-disabled, var(--xh-border-subtle));
+    cursor: not-allowed;
+  }
+
+  /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
+     不补的话作者给节点加 hidden 后它照样显示 */
+  [data-scope='splitter'][data-part='root'][hidden],
+  [data-scope='splitter'][data-part='resize-trigger'][hidden] {
+    display: none;
+  }
+}

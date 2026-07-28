@@ -1,0 +1,339 @@
+@layer xihan.components {
+  /* 与文本框、时间输入同一套堆叠：标签一行、控件一行 */
+  [data-scope='time-picker'][data-part='root'] {
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--xh-time-picker-gap, var(--xh-space-1));
+  }
+
+  /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+  [data-scope='time-picker'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='time-picker'][data-part='label'] {
+    color: var(--xh-time-picker-label-fg, var(--xh-fg-default));
+    font-size: var(--xh-time-picker-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-time-picker-label-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+    /* 点标题会把焦点送到第一段（段不是能被 for 指向的原生控件，这条由连接层接管），
+       指针得如实反映它可点 */
+    cursor: pointer;
+  }
+
+  [data-scope='time-picker'][data-part='label'][data-disabled] {
+    color: var(--xh-time-picker-label-fg-disabled, var(--xh-fg-disabled));
+    cursor: not-allowed;
+  }
+
+  /* 画成一个框的是 control：几段文字、展开按钮、清空按钮要看起来是一体的，
+     边框长在其中任何一个身上都会把另外几个割在框外 */
+  [data-scope='time-picker'][data-part='control'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-time-picker-control-gap, var(--xh-control-gap-md));
+    block-size: var(--xh-time-picker-control-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-time-picker-control-px, var(--xh-control-px-md));
+    padding-block: 0;
+    border: var(--xh-stroke-thin) solid var(--xh-time-picker-control-border, var(--xh-border-default));
+    border-radius: var(--xh-time-picker-control-radius, var(--xh-shape-control));
+    background: var(--xh-time-picker-control-bg, var(--xh-bg-canvas));
+    color: var(--xh-time-picker-control-fg, var(--xh-fg-default));
+    /* 表单控件不继承页面字体，只给字号会让它用 UA 默认字族，与周围文本对不上 */
+    font-family: inherit;
+    font-size: var(--xh-time-picker-font-size, var(--xh-text-body-size));
+    /* 等宽数字：各位字宽不一时逐段填入会让整行左右跳 */
+    font-variant-numeric: tabular-nums;
+    line-height: var(--xh-leading-normal);
+    transition: border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  [data-scope='time-picker'][data-part='control'][hidden] {
+    display: none;
+  }
+
+  /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+  [data-scope='time-picker'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
+    border-color: var(--xh-time-picker-control-border-hover, var(--xh-border-strong));
+  }
+
+  /* 焦点真正落在段或按钮上，但整块看起来才是一个控件：内部有焦点时整框亮起来。
+     control 自己不占 Tab 位，所以这里写的是 focus-within 而不是 focus-visible */
+  [data-scope='time-picker'][data-part='control']:focus-within:not([data-disabled]) {
+    border-color: var(--xh-time-picker-control-border-focus, var(--xh-ring-focus));
+  }
+
+  [data-scope='time-picker'][data-part='control'][data-invalid] {
+    border-color: var(--xh-time-picker-control-border-invalid, var(--xh-color-danger-500));
+  }
+
+  /* 只读仍可聚焦、可换段，所以不置灰，只把底色压下去表示"改不动" */
+  [data-scope='time-picker'][data-part='control'][data-readonly] {
+    background: var(--xh-time-picker-control-bg-readonly, var(--xh-bg-subtle));
+  }
+
+  /* control 是个 div，没有 :disabled 可用；禁用态由连接层的 data-disabled 表达 */
+  [data-scope='time-picker'][data-part='control'][data-disabled] {
+    background: var(--xh-time-picker-control-bg-disabled, var(--xh-bg-subtle));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 每一段是一小块可聚焦区，紧挨着排；分隔符由作者写在段与段之间的普通节点里，
+     不在角色表内，所以间距只能长在段自己身上 */
+  [data-scope='time-picker'][data-part='input'] {
+    display: inline-block;
+    padding-inline: var(--xh-time-picker-segment-px, var(--xh-space-0_5));
+    padding-block: 0;
+    border-radius: var(--xh-time-picker-segment-radius, var(--xh-radius-sm));
+    color: inherit;
+    font-variant-numeric: inherit;
+    text-align: center;
+    /* 段是 role=spinbutton 的展示节点，双击选中一段文字只会碍事 */
+    user-select: none;
+    transition:
+      background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease),
+      color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  /* granularity / hourCycle 关掉的段由连接层打 hidden；上面那条 display 会把 UA 规则盖掉，
+     少了这条，收起的段会一直杵在那儿 */
+  [data-scope='time-picker'][data-part='input'][hidden] {
+    display: none;
+  }
+
+  /* 还没填的段压成弱色：一行里哪几段是占位符，一眼要看得出来 */
+  [data-scope='time-picker'][data-part='input'][data-placeholder] {
+    color: var(--xh-time-picker-segment-fg-placeholder, var(--xh-fg-subtle));
+  }
+
+  /* 一行段长得差不多，光有边框亮起来看不出正在改哪一段：当前段必须自己有底色。
+     data-focus 由机器给（它知道谁是当前段），:focus-visible 兜住机器状态还没回流的那一帧 */
+  [data-scope='time-picker'][data-part='input'][data-focus]:not([data-disabled]),
+  [data-scope='time-picker'][data-part='input']:focus-visible {
+    background: var(--xh-time-picker-segment-bg-focus, var(--xh-bg-brand));
+    color: var(--xh-time-picker-segment-fg-focus, var(--xh-fg-on-brand));
+    outline: none;
+  }
+
+  /* 焦点态用了品牌底色之后，占位符那条弱色会被它盖住，这里明确让位给焦点态 */
+  [data-scope='time-picker'][data-part='input'][data-focus][data-placeholder]:not([data-disabled]) {
+    color: var(--xh-time-picker-segment-fg-focus, var(--xh-fg-on-brand));
+  }
+
+  [data-scope='time-picker'][data-part='input']:hover:not([data-focus], [data-disabled]) {
+    background: var(--xh-time-picker-segment-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  /* 段是集合条目形态（role=spinbutton 的 span），禁用走 data-disabled 而不是 :disabled */
+  [data-scope='time-picker'][data-part='input'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 两个按钮同一副长相：贴在框内的小方钮，不占宽度也不撑高 control */
+  [data-scope='time-picker'][data-part='trigger'],
+  [data-scope='time-picker'][data-part='clear-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-time-picker-action-size, 1.5rem);
+    block-size: var(--xh-time-picker-action-size, 1.5rem);
+    padding: 0;
+    border: 0;
+    border-radius: var(--xh-time-picker-action-radius, var(--xh-shape-control));
+    background: var(--xh-time-picker-action-bg, transparent);
+    color: var(--xh-time-picker-action-fg, var(--xh-fg-muted));
+    font-family: inherit;
+    font-size: var(--xh-time-picker-action-font-size, var(--xh-font-size-sm));
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  [data-scope='time-picker'][data-part='trigger'][hidden],
+  [data-scope='time-picker'][data-part='clear-trigger'][hidden] {
+    display: none;
+  }
+
+  /* 触发器把整行推到最右：它与清空按钮之间不留缝，两者一起靠框内末端 */
+  [data-scope='time-picker'][data-part='trigger'] {
+    margin-inline-start: auto;
+  }
+
+  [data-scope='time-picker'][data-part='trigger']:hover:not(:disabled),
+  [data-scope='time-picker'][data-part='clear-trigger']:hover:not(:disabled) {
+    background: var(--xh-time-picker-action-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-time-picker-action-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='time-picker'][data-part='trigger']:active:not(:disabled),
+  [data-scope='time-picker'][data-part='clear-trigger']:active:not(:disabled) {
+    background: var(--xh-time-picker-action-bg-active, var(--xh-bg-subtle-active));
+  }
+
+  /* 触发器是常规 Tab 停靠点，落焦必须看得见；清空按钮退出了 Tab 序列，
+     这条是给程序化聚焦兜底 */
+  [data-scope='time-picker'][data-part='trigger']:focus-visible,
+  [data-scope='time-picker'][data-part='clear-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 两个按钮都是单体控件，禁用走原生 :disabled（列里的格一律 data-disabled） */
+  [data-scope='time-picker'][data-part='trigger']:disabled,
+  [data-scope='time-picker'][data-part='clear-trigger']:disabled {
+    background: var(--xh-time-picker-action-bg, transparent);
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+  [data-scope='time-picker'][data-part='positioner'] {
+    position: absolute;
+    z-index: var(--xh-layer-popover);
+    /* 空壳不吃指针，交互只发生在 content 里 */
+    pointer-events: none;
+  }
+
+  /* 锚点被滚出可视区：整个浮层随之收起 */
+  [data-scope='time-picker'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  /* 几列并排：整体高度由列自己撑，滚动发生在列里而不是整个面板上——
+     整面板滚会让时列与分列一起走，挑分的时候时就看不见了 */
+  [data-scope='time-picker'][data-part='content'] {
+    display: flex;
+    align-items: stretch;
+    padding: var(--xh-time-picker-content-p, var(--xh-space-1));
+    border: var(--xh-stroke-thin) solid var(--xh-time-picker-content-border, var(--xh-border-default));
+    border-radius: var(--xh-time-picker-content-radius, var(--xh-shape-surface));
+    background: var(--xh-time-picker-content-bg, var(--xh-bg-surface));
+    color: var(--xh-time-picker-content-fg, var(--xh-fg-default));
+    font-variant-numeric: tabular-nums;
+    box-shadow: var(--xh-time-picker-content-shadow, var(--xh-elevation-2));
+    pointer-events: auto;
+  }
+
+  /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位 */
+  [data-scope='time-picker'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  /* 面板本身不承载焦点（焦点在某一列的某一格上），落焦时不画环 */
+  [data-scope='time-picker'][data-part='content']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='time-picker'][data-part='content'][data-state='open'] {
+    animation: xh-time-picker-panel-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 一列一个滚动区：列与列之间用细分隔线，视觉上"时 | 分 | 秒"三栏分明 */
+  [data-scope='time-picker'][data-part='column'] {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: var(--xh-time-picker-column-gap, var(--xh-space-0_5));
+    min-inline-size: var(--xh-time-picker-column-min-w, 3.5rem);
+    max-block-size: var(--xh-time-picker-column-max-h, 12rem);
+    padding-inline: var(--xh-time-picker-column-px, var(--xh-space-1));
+    overflow-y: auto;
+    /* 滚动容器在某些浏览器里会被自动塞进 Tab 序列，落焦时不画环——
+       焦点该落在格上，列只在整列被界卡空时才兜底占一个 Tab 位 */
+    scrollbar-width: thin;
+  }
+
+  /* granularity 关掉的列（精度不到秒时的秒列）由连接层打 hidden */
+  [data-scope='time-picker'][data-part='column'][hidden] {
+    display: none;
+  }
+
+  [data-scope='time-picker'][data-part='column'] + [data-scope='time-picker'][data-part='column'] {
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-time-picker-column-divider, var(--xh-border-subtle));
+  }
+
+  [data-scope='time-picker'][data-part='column']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='time-picker'][data-part='option'] {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    padding-block: var(--xh-time-picker-option-py, var(--xh-space-1));
+    padding-inline: var(--xh-time-picker-option-px, var(--xh-space-2));
+    border-radius: var(--xh-time-picker-option-radius, var(--xh-shape-control));
+    color: var(--xh-time-picker-option-fg, var(--xh-fg-default));
+    font-size: var(--xh-time-picker-option-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* 作者自己藏掉某几格时要让位，有 display 就得补这条 */
+  [data-scope='time-picker'][data-part='option'][hidden] {
+    display: none;
+  }
+
+  /* 焦点所在与选中互相独立：可以停在一个没被选中的格上 */
+  [data-scope='time-picker'][data-part='option'][data-highlighted]:not([data-disabled]),
+  [data-scope='time-picker'][data-part='option']:hover:not([data-disabled]) {
+    background: var(--xh-time-picker-option-bg-highlight, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='time-picker'][data-part='option'][data-state='checked'] {
+    background: var(--xh-time-picker-option-bg-checked, var(--xh-bg-brand));
+    color: var(--xh-time-picker-option-fg-checked, var(--xh-fg-on-brand));
+    font-weight: var(--xh-time-picker-option-weight-checked, var(--xh-font-weight-medium));
+  }
+
+  [data-scope='time-picker'][data-part='option']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: -2px;
+  }
+
+  /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），
+     所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
+  [data-scope='time-picker'][data-part='option'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底
+     （作者手写的是一个普通 input，升级完成前它是可见的文本框）。
+     刻意不写 display：写了反而会盖掉 UA 对 type=hidden 的收起，把它显出来 */
+  [data-scope='time-picker'][data-part='hidden-input'] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+}
+
+@layer xihan.motion {
+  /* 浮层进场：淡入 + 轻微上浮，方向与它从输入行下方展开一致。
+     关键帧写在自己文件里并带组件前缀，不去动共享的 motion.css */
+  @keyframes xh-time-picker-panel-in {
+    from {
+      opacity: 0;
+      translate: 0 calc(-1 * var(--xh-space-1));
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+}

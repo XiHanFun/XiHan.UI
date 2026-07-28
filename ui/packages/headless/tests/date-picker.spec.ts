@@ -1,0 +1,762 @@
+// @vitest-environment jsdom
+import type { RuntimeConfig } from '@xihan-ui/core'
+import type { VanillaRuntime } from '@xihan-ui/machine/vanilla'
+import type { DatePickerApi, DatePickerSchema, DatePickerServices } from '../src/date-picker'
+import { createCounterIdGenerator, createRuntimeConfig, createScope, normalizeProps } from '@xihan-ui/core'
+import { createService } from '@xihan-ui/machine'
+import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { calendarMachine } from '../src/calendar'
+import { dateFieldMachine } from '../src/date-field'
+import {
+  connectDatePicker,
+  datePickerCalendarProps,
+  datePickerFieldProps,
+  datePickerMachine,
+  findDatePickerCellEl,
+} from '../src/date-picker'
+
+type Props = DatePickerSchema['props']
+
+/** 段位节点数：作者写足六个，精度用不上的那几个由连接层收起、不卸载。 */
+const SEGMENT_NODES = 6
+
+const listeners = new WeakMap<HTMLElement, Map<string, EventListener>>()
+const BOOLEAN_ATTRS = new Set(['disabled', 'hidden', 'readonly', 'required'])
+// 隐藏输入的 value 只能走 DOM property：与 WC 侧的 spreader 同一套规则
+const PROP_KEYS = new Set(['value'])
+
+/**
+ * 最小 spread：与 WC 侧同一套翻译规则（on 之后全小写做事件名，布尔属性 toggle，value 落 property）。
+ * 有它才跑得到真实事件流——纯粹比对 connect 的返回值只能验静态属性，
+ * 「敲满一段之后焦点落在哪一格」这类事实必须有活 DOM 才立得住。
+ */
+function spread(el: HTMLElement, props: Record<string, unknown>): void {
+  for (const [key, raw] of Object.entries(props)) {
+    if (key.length > 2 && key.startsWith('on') && key[2]! >= 'A' && key[2]! <= 'Z') {
+      const type = key.slice(2).toLowerCase()
+      const map = listeners.get(el) ?? new Map<string, EventListener>()
+      listeners.set(el, map)
+      const prev = map.get(type)
+      if (prev)
+        el.removeEventListener(type, prev)
+      if (typeof raw === 'function') {
+        el.addEventListener(type, raw as EventListener)
+        map.set(type, raw as EventListener)
+      }
+      continue
+    }
+    if (key === 'style')
+      continue
+    if (raw === undefined || raw === null || raw === false) {
+      el.removeAttribute(key)
+      continue
+    }
+    if (PROP_KEYS.has(key)) {
+      (el as unknown as Record<string, unknown>)[key] = raw
+      continue
+    }
+    if (BOOLEAN_ATTRS.has(key)) {
+      el.toggleAttribute(key, Boolean(raw))
+      continue
+    }
+    el.setAttribute(key, String(raw))
+  }
+}
+
+interface Harness {
+  api: () => DatePickerApi
+  root: HTMLElement
+  label: HTMLElement
+  control: HTMLElement
+  input: HTMLElement
+  trigger: HTMLButtonElement
+  clear: HTMLButtonElement
+  content: HTMLElement
+  calendarEl: HTMLElement
+  grid: HTMLElement
+  heading: HTMLElement
+  prev: HTMLButtonElement
+  next: HTMLButtonElement
+  hiddenInput: HTMLInputElement
+  segments: () => HTMLElement[]
+  /** 段位的可见文字，文档序。 */
+  segmentTexts: () => string[]
+  /** 当前渲染出来的某一天的 cell-trigger；不在这个月的网格里就抛。 */
+  cell: (value: string) => HTMLElement
+  /** 网格里全部日期的 ISO 串，文档序。 */
+  rendered: () => string[]
+  setProps: (next: Partial<Props>) => void
+  state: () => string
+  value: () => string[]
+  focusedValue: () => string | null
+  returnFocus: () => boolean
+}
+
+const runtimes: VanillaRuntime[] = []
+
+/**
+ * 挂载一台完整的日期选择器：编排机 + 内嵌日历 + 内嵌分段输入三台机器共用一个运行时与一份 scope，
+ * 网格随聚焦日重画——这正是作者该做的事（连接层只给数据，不生成节点）。
+ * 重画只在「这个月的日期集合真的换了」时发生，与 Vue 的 keyed diff 同语义。
+ */
+function mount(initial: Partial<Props> = {}): Harness {
+  const doc = document
+  const runtime = createVanillaRuntime()
+  runtimes.push(runtime)
+  // props 挂在 signal 上：布尔态受控（open）靠 watch 里的 track 回写，
+  // 而 track 只在有值真的变过时才复查——直接改一个普通对象，宿主的写回就被静默吞掉了
+  const props = runtime.signal<Partial<Props>>({ locale: 'zh-CN', timeZone: 'UTC', ...initial })
+
+  const idGen = createCounterIdGenerator()
+  const scope = createScope(null, idGen)
+
+  const root = doc.createElement('div')
+  const label = doc.createElement('span')
+  label.textContent = '截止日期'
+  const control = doc.createElement('div')
+  const input = doc.createElement('div')
+  const segmentEls = Array.from({ length: SEGMENT_NODES }, () => doc.createElement('div'))
+  input.append(...segmentEls)
+  const clear = doc.createElement('button')
+  const trigger = doc.createElement('button')
+  control.append(input, clear, trigger)
+  const hiddenInput = doc.createElement('input')
+  const positioner = doc.createElement('div')
+  const content = doc.createElement('div')
+  const calendarEl = doc.createElement('div')
+  const header = doc.createElement('div')
+  const prev = doc.createElement('button')
+  const heading = doc.createElement('div')
+  const next = doc.createElement('button')
+  header.append(prev, heading, next)
+  const grid = doc.createElement('div')
+  const gridHead = doc.createElement('div')
+  const headRow = doc.createElement('div')
+  const weekDayEls = Array.from({ length: 7 }, () => doc.createElement('span'))
+  headRow.append(...weekDayEls)
+  gridHead.appendChild(headRow)
+  const gridBody = doc.createElement('div')
+  grid.append(gridHead, gridBody)
+  calendarEl.append(header, grid)
+  content.appendChild(calendarEl)
+  positioner.appendChild(content)
+  root.append(label, control, hiddenInput, positioner)
+  doc.body.appendChild(root)
+
+  // 顺序要紧：两台内嵌机器的 props 都从编排机现读，编排机必须先立起来
+  const rootService = createService(datePickerMachine, { props: () => props.get(), runtime, scope })
+  const calendarService = createService(calendarMachine, {
+    props: () => datePickerCalendarProps(rootService),
+    runtime,
+    scope,
+  })
+  const fieldService = createService(dateFieldMachine, {
+    props: () => datePickerFieldProps(rootService),
+    runtime,
+    scope,
+  })
+  const services: DatePickerServices = { root: rootService, calendar: calendarService, field: fieldService }
+
+  const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
+  rootService.refs.set('config', config)
+  rootService.refs.set('registerLayer', () => config.layerRegistry.register({
+    kind: 'popover',
+    node: () => content,
+    // 整个输入行记为本层分支：点 trigger 算层内交互，开合交给它自己切换。
+    // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，等于关不掉
+    branches: () => [control],
+    isModal: () => false,
+    setModal: () => {},
+    surfaces: () => [],
+  }))
+  rootService.refs.set('getAnchorEl', () => control)
+  rootService.refs.set('getFloatingEl', () => positioner)
+  rootService.refs.set('getContentEl', () => content)
+  calendarService.refs.set('getGridEl', () => grid)
+
+  const triggers = new Map<string, HTMLElement>()
+  const cells = new Map<string, HTMLElement>()
+  let painted = ''
+
+  const rebuild = (weeks: readonly (readonly { value: string }[])[]): void => {
+    gridBody.textContent = ''
+    triggers.clear()
+    cells.clear()
+    for (const week of weeks) {
+      const row = doc.createElement('div')
+      for (const day of week) {
+        const cell = doc.createElement('div')
+        const cellTrigger = doc.createElement('div')
+        cellTrigger.textContent = day.value.slice(-2)
+        cell.appendChild(cellTrigger)
+        row.appendChild(cell)
+        cells.set(day.value, cell)
+        triggers.set(day.value, cellTrigger)
+      }
+      gridBody.appendChild(row)
+    }
+  }
+
+  const render = (): void => {
+    const api = connectDatePicker(services, normalizeProps)
+    const key = api.calendar.weeks.map(w => w.map(d => d.value).join()).join('|')
+    if (key !== painted) {
+      painted = key
+      rebuild(api.calendar.weeks)
+    }
+    spread(root, api.getRootProps() as Record<string, unknown>)
+    spread(label, api.getLabelProps() as Record<string, unknown>)
+    spread(control, api.getControlProps() as Record<string, unknown>)
+    spread(input, api.getInputProps() as Record<string, unknown>)
+    spread(clear, api.getClearTriggerProps() as Record<string, unknown>)
+    spread(trigger, api.getTriggerProps() as Record<string, unknown>)
+    spread(hiddenInput, api.field.getHiddenInputProps() as Record<string, unknown>)
+    segmentEls.forEach((el, index) => {
+      spread(el, api.field.getSegmentProps({ index }) as Record<string, unknown>)
+      // 段位的文字归适配器写：连接层只管属性与事件
+      el.textContent = api.field.segments[index]?.text ?? ''
+    })
+    spread(positioner, api.getPositionerProps() as Record<string, unknown>)
+    spread(content, api.getContentProps() as Record<string, unknown>)
+    spread(calendarEl, api.getCalendarProps() as Record<string, unknown>)
+    spread(header, api.calendar.getHeaderProps() as Record<string, unknown>)
+    spread(prev, api.calendar.getPrevTriggerProps() as Record<string, unknown>)
+    spread(heading, api.calendar.getHeadingProps() as Record<string, unknown>)
+    heading.textContent = api.calendar.headingLabel
+    spread(next, api.calendar.getNextTriggerProps() as Record<string, unknown>)
+    spread(grid, api.calendar.getGridProps() as Record<string, unknown>)
+    spread(gridHead, api.calendar.getGridHeadProps() as Record<string, unknown>)
+    spread(headRow, api.calendar.getWeekRowProps() as Record<string, unknown>)
+    weekDayEls.forEach((el, i) => spread(el, api.calendar.getWeekDayProps({ value: i }) as Record<string, unknown>))
+    spread(gridBody, api.calendar.getGridBodyProps() as Record<string, unknown>)
+    for (const row of Array.from(gridBody.children))
+      spread(row as HTMLElement, api.calendar.getWeekRowProps() as Record<string, unknown>)
+    for (const [value, cell] of cells)
+      spread(cell, api.calendar.getCellProps({ value }) as Record<string, unknown>)
+    for (const [value, cellTrigger] of triggers)
+      spread(cellTrigger, api.calendar.getCellTriggerProps({ value }) as Record<string, unknown>)
+  }
+
+  runtime.start()
+  // 任一 cell 变化即重渲，与两个适配器同语义（受控时内部不写值，因此也不会重渲——
+  // 那一路要宿主自己写回 props，由 setProps 承担）
+  runtime.subscribe(render)
+  render()
+
+  return {
+    api: () => connectDatePicker(services, normalizeProps),
+    root,
+    label,
+    control,
+    input,
+    trigger: trigger as HTMLButtonElement,
+    clear: clear as HTMLButtonElement,
+    content,
+    calendarEl,
+    grid,
+    heading,
+    prev: prev as HTMLButtonElement,
+    next: next as HTMLButtonElement,
+    hiddenInput: hiddenInput as HTMLInputElement,
+    segments: () => segmentEls,
+    segmentTexts: () => segmentEls.map(el => el.textContent ?? ''),
+    cell: (value) => {
+      const el = triggers.get(value)
+      if (!el)
+        throw new Error(`网格里没有 ${value} 这一格（当前展示 ${heading.textContent}）`)
+      return el
+    },
+    rendered: () => [...triggers.keys()],
+    setProps: (next2) => {
+      props.set({ ...props.get(), ...next2 })
+      render()
+    },
+    state: () => rootService.state.get(),
+    value: () => rootService.context.get('value'),
+    focusedValue: () => rootService.context.get('focusedValue'),
+    returnFocus: () => rootService.context.get('returnFocus'),
+  }
+}
+
+/** 合成事件默认 cancelable=false，那样 preventDefault 是空操作、defaultPrevented 永远为假。 */
+function press(el: HTMLElement, key: string, init: KeyboardEventInit = {}): KeyboardEvent {
+  const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...init })
+  el.dispatchEvent(event)
+  return event
+}
+
+function click(el: HTMLElement, init: MouseEventInit = {}): void {
+  el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, ...init }))
+}
+
+function active(): HTMLElement {
+  return (document.activeElement as HTMLElement | null) ?? document.body
+}
+
+/** flush 在 vanilla 运行时是 queueMicrotask；消解层的监听器注册还要过一个 setTimeout。 */
+function tick(): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, 0))
+}
+
+/** 焦点域的挂载聚焦排在 requestAnimationFrame 上，最多重试三帧。 */
+function settle(): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, 80))
+}
+
+/** 展开浮层并等到焦点落定：trigger 先聚焦，焦点归还才有去处。 */
+async function open(initial: Partial<Props> = {}): Promise<Harness> {
+  const h = mount(initial)
+  h.trigger.focus()
+  click(h.trigger)
+  await settle()
+  await tick()
+  return h
+}
+
+afterEach(() => {
+  for (const runtime of runtimes.splice(0)) runtime.stop()
+  document.body.innerHTML = ''
+})
+
+describe('开合与受控', () => {
+  it('默认收起，defaultOpen 决定初态；收起态 content 带 hidden', () => {
+    const closed = mount()
+    expect(closed.state()).toBe('closed')
+    expect(closed.content.hasAttribute('hidden')).toBe(true)
+    expect(mount({ defaultOpen: true }).state()).toBe('open')
+  })
+
+  it('trigger 自报浮层是对话框，开合切 aria-expanded 并通知', () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ onOpenChange })
+    expect(h.trigger.getAttribute('aria-haspopup')).toBe('dialog')
+    expect(h.trigger.getAttribute('aria-expanded')).toBe('false')
+    expect(h.content.getAttribute('role')).toBe('dialog')
+    expect(h.content.getAttribute('aria-modal')).toBe('false')
+    // aria-controls 指得到真的 content
+    expect(h.trigger.getAttribute('aria-controls')).toBe(h.content.getAttribute('id'))
+
+    click(h.trigger)
+    expect(h.state()).toBe('open')
+    expect(h.trigger.getAttribute('aria-expanded')).toBe('true')
+    expect(h.content.hasAttribute('hidden')).toBe(false)
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: true })
+
+    click(h.trigger)
+    expect(h.state()).toBe('closed')
+    expect(h.content.hasAttribute('hidden')).toBe(true)
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false })
+  })
+
+  it('受控 open：点 trigger 只发意图不自改状态，宿主写回后才转移', () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ open: false, onOpenChange })
+    click(h.trigger)
+    expect(h.state()).toBe('closed')
+    expect(onOpenChange).toHaveBeenCalledWith({ open: true })
+
+    h.setProps({ open: true })
+    expect(h.state()).toBe('open')
+    // 宿主写回不是新的用户意图，不再发一次
+    expect(onOpenChange).toHaveBeenCalledTimes(1)
+  })
+
+  it('禁用：trigger 转原生 disabled，程序化点击也推不动开合', () => {
+    const h = mount({ disabled: true })
+    expect(h.trigger.disabled).toBe(true)
+    expect(h.root.getAttribute('data-disabled')).toBe('')
+    // 禁用的按钮上 el.click() 会被激活行为短路，只有直接派事件才碰得到守卫
+    click(h.trigger)
+    expect(h.state()).toBe('closed')
+  })
+
+  it('只读：浮层照常展得开（改不动值不等于看不了日历）', () => {
+    const h = mount({ readOnly: true })
+    expect(h.trigger.disabled).toBe(false)
+    click(h.trigger)
+    expect(h.state()).toBe('open')
+  })
+})
+
+describe('选中值的三个入口', () => {
+  it('裸串是单选简写，内部一律归一成数组', () => {
+    expect(mount({ defaultValue: '2026-07-28' }).value()).toEqual(['2026-07-28'])
+    expect(mount({ defaultValue: ['2026-07-01', '2026-07-09'], selectionMode: 'range' }).value())
+      .toEqual(['2026-07-01', '2026-07-09'])
+    expect(mount().value()).toEqual([])
+  })
+
+  it('setValue 单选截断到一个；区间去重并按先后排好', () => {
+    const single = mount()
+    single.api().setValue(['2026-07-28', '2026-08-01'])
+    expect(single.value()).toEqual(['2026-07-28'])
+
+    const range = mount({ selectionMode: 'range' })
+    range.api().setValue(['2026-07-30', '2026-07-02', '2026-07-02'])
+    expect(range.value()).toEqual(['2026-07-02', '2026-07-30'])
+  })
+
+  it('点日历里的一天：值落进编排机，段位与隐藏输入跟着对齐', () => {
+    const onValueChange = vi.fn()
+    const h = mount({ defaultOpen: true, defaultValue: '2026-07-28', onValueChange })
+    click(h.cell('2026-07-15'))
+    expect(h.value()).toEqual(['2026-07-15'])
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['2026-07-15'] })
+    // 值同步的落点：分段输入是被编排机受控的，日历一选中它就得跟着改口
+    expect(h.segmentTexts().slice(0, 3)).toEqual(['2026', '07', '15'])
+    expect(h.hiddenInput.value).toBe('2026-07-15')
+  })
+
+  it('在段位里敲日期：值回到编排机，日历翻到那一天所在的月并把它标成选中', () => {
+    const h = mount({ defaultOpen: true, defaultValue: '2026-07-28' })
+    expect(h.rendered()).toContain('2026-07-01')
+    const [year, month, day] = h.segments()
+    year!.focus()
+    press(year!, 'ArrowUp')
+    expect(h.value()).toEqual(['2027-07-28'])
+    expect(h.focusedValue()).toBe('2027-07-28')
+    // 网格真的翻过去了：2026 年 7 月的日子已经不在了
+    expect(h.rendered()).not.toContain('2026-07-15')
+    expect(h.cell('2027-07-28').getAttribute('aria-selected')).toBe('true')
+    expect(month!.getAttribute('data-segment')).toBe('month')
+    expect(day!.getAttribute('data-segment')).toBe('day')
+  })
+
+  it('清空：按钮不可按 → 有值才可按，点完值清空、焦点回首段', () => {
+    const empty = mount()
+    expect(empty.clear.disabled).toBe(true)
+
+    const h = mount({ defaultValue: '2026-07-28' })
+    expect(h.clear.disabled).toBe(false)
+    click(h.clear)
+    expect(h.value()).toEqual([])
+    expect(h.hiddenInput.value).toBe('')
+    expect(h.segmentTexts().slice(0, 3)).toEqual(['yyyy', 'mm', 'dd'])
+    expect(active()).toBe(h.segments()[0])
+  })
+
+  it('受控 value：宿主不写回则两侧都纹丝不动，回调照发；写回才跟着走', () => {
+    const onValueChange = vi.fn()
+    const h = mount({ value: '2026-07-28', defaultOpen: true, onValueChange })
+    click(h.cell('2026-07-15'))
+    expect(onValueChange).toHaveBeenCalledWith({ value: ['2026-07-15'] })
+    expect(h.value()).toEqual(['2026-07-28'])
+    expect(h.segmentTexts().slice(0, 3)).toEqual(['2026', '07', '28'])
+
+    h.setProps({ value: '2026-07-15' })
+    expect(h.value()).toEqual(['2026-07-15'])
+    expect(h.segmentTexts().slice(0, 3)).toEqual(['2026', '07', '15'])
+  })
+
+  it('只读：日历点不动值，段位也改不动', () => {
+    const h = mount({ readOnly: true, defaultOpen: true, defaultValue: '2026-07-28' })
+    click(h.cell('2026-07-15'))
+    expect(h.value()).toEqual(['2026-07-28'])
+    const year = h.segments()[0]!
+    year.focus()
+    press(year, 'ArrowUp')
+    expect(h.value()).toEqual(['2026-07-28'])
+  })
+})
+
+describe('closeOnSelect', () => {
+  it('单选：选中即收起', () => {
+    const h = mount({ defaultOpen: true })
+    click(h.cell(h.rendered()[10]!))
+    expect(h.state()).toBe('closed')
+  })
+
+  it('closeOnSelect=false：选完留在展开态，接着挑', () => {
+    const h = mount({ defaultOpen: true, closeOnSelect: false })
+    click(h.cell(h.rendered()[10]!))
+    expect(h.value()).toHaveLength(1)
+    expect(h.state()).toBe('open')
+  })
+
+  it('区间：只落起点不收起，两端都落定才收起', () => {
+    const h = mount({ defaultOpen: true, selectionMode: 'range' })
+    const days = h.rendered()
+    click(h.cell(days[10]!))
+    expect(h.value()).toEqual([days[10]])
+    expect(h.state()).toBe('open')
+
+    click(h.cell(days[14]!))
+    expect(h.value()).toEqual([days[10], days[14]])
+    expect(h.state()).toBe('closed')
+  })
+
+  it('多选：选多少次都不收起', () => {
+    const h = mount({ defaultOpen: true, selectionMode: 'multiple' })
+    const days = h.rendered()
+    click(h.cell(days[10]!))
+    click(h.cell(days[12]!))
+    expect(h.value()).toHaveLength(2)
+    expect(h.state()).toBe('open')
+  })
+
+  it('段位里敲出完整日期不会把浮层收起——那时用户还在打字', () => {
+    const h = mount({ defaultOpen: true, defaultValue: '2026-07-28' })
+    const year = h.segments()[0]!
+    year.focus()
+    press(year, 'ArrowUp')
+    expect(h.value()).toEqual(['2027-07-28'])
+    expect(h.state()).toBe('open')
+  })
+
+  it('受控 open 下选中日期：只发关闭意图，状态等宿主写回', () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ open: true, onOpenChange })
+    click(h.cell(h.rendered()[10]!))
+    expect(h.state()).toBe('open')
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false })
+    // 值这一路不受 open 受控影响，照落不误
+    expect(h.value()).toHaveLength(1)
+  })
+})
+
+describe('段位之间的移动（编排机自己接管的那一段）', () => {
+  it('左右键换段，两端停住不回绕；收起的段不算一站', () => {
+    const h = mount()
+    const seg = h.segments()
+    seg[0]!.focus()
+    press(seg[0]!, 'ArrowLeft')
+    expect(active()).toBe(seg[0])
+
+    press(seg[0]!, 'ArrowRight')
+    expect(active()).toBe(seg[1])
+    press(seg[1]!, 'ArrowRight')
+    expect(active()).toBe(seg[2])
+    // 精度只到天：第四段起是收起的，末段再往右也不许绕过去
+    press(seg[2]!, 'ArrowRight')
+    expect(active()).toBe(seg[2])
+    expect(seg[3]!.hasAttribute('hidden')).toBe(true)
+  })
+
+  it('home / End 到首末段', () => {
+    const h = mount()
+    const seg = h.segments()
+    seg[1]!.focus()
+    press(seg[1]!, 'End')
+    expect(active()).toBe(seg[2])
+    press(seg[2]!, 'Home')
+    expect(active()).toBe(seg[0])
+  })
+
+  it('数字敲满一段就跳下一段，值由分段输入自己算', () => {
+    const h = mount({ locale: 'en-US' })
+    const seg = h.segments()
+    // en-US 段序是月、日、年
+    seg[0]!.focus()
+    press(seg[0]!, '1')
+    // 还能再接一位（10/11/12），先留在本段
+    expect(active()).toBe(seg[0])
+    expect(seg[0]!.getAttribute('aria-valuenow')).toBe('1')
+    press(seg[0]!, '2')
+    expect(seg[0]!.getAttribute('aria-valuenow')).toBe('12')
+    expect(active()).toBe(seg[1])
+  })
+
+  it('禁用与只读都不跳段：值都改不动，光标更没有理由自己跑', () => {
+    const readOnly = mount({ readOnly: true })
+    const seg = readOnly.segments()
+    seg[0]!.focus()
+    press(seg[0]!, '2')
+    expect(active()).toBe(seg[0])
+
+    const disabled = mount({ disabled: true })
+    const seg2 = disabled.segments()
+    // 禁用时段位没有 tabindex，焦点落不上去，只有直接派事件才碰得到守卫
+    press(seg2[0]!, 'ArrowRight')
+    expect(active()).not.toBe(seg2[1])
+  })
+
+  it('带 Ctrl/Cmd 的组合不归段位管（Ctrl+Home 之类归浏览器与读屏）', () => {
+    const h = mount()
+    const seg = h.segments()
+    seg[0]!.focus()
+    press(seg[0]!, 'End', { ctrlKey: true })
+    expect(active()).toBe(seg[0])
+  })
+
+  it('点标题把焦点送进首段；禁用时不送', () => {
+    const h = mount()
+    click(h.label)
+    expect(active()).toBe(h.segments()[0])
+
+    const off = mount({ disabled: true })
+    off.label.focus()
+    click(off.label)
+    expect(active()).not.toBe(off.segments()[0])
+  })
+})
+
+describe('浮层：焦点、消解与归还', () => {
+  it('展开后焦点落到聚焦日那一格，不是浮层里第一个可聚焦元素', async () => {
+    const h = await open({ defaultValue: '2026-07-28' })
+    expect(active()).toBe(h.cell('2026-07-28'))
+    expect(active()).not.toBe(h.prev)
+  })
+
+  it('无选中时展开：聚焦日落到今天', async () => {
+    const h = await open()
+    const todayValue = h.focusedValue()!
+    expect(todayValue).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+    expect(active()).toBe(h.cell(todayValue))
+  })
+
+  it('escape 收起并把焦点还给 trigger，选中值不变', async () => {
+    const h = await open({ defaultValue: '2026-07-28' })
+    press(active(), 'Escape')
+    expect(h.state()).toBe('closed')
+    expect(h.value()).toEqual(['2026-07-28'])
+    expect(h.returnFocus()).toBe(true)
+    await settle()
+    expect(active()).toBe(h.trigger)
+  })
+
+  it('层外交互关闭时不抢回焦点：用户已经点中别的东西了', async () => {
+    const h = await open()
+    const outside = document.createElement('button')
+    document.body.appendChild(outside)
+    outside.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
+    await tick()
+    expect(h.state()).toBe('closed')
+    expect(h.returnFocus()).toBe(false)
+  })
+
+  it('层只在展开期间待在栈里', async () => {
+    const h = mount()
+    h.trigger.focus()
+    click(h.trigger)
+    await settle()
+    await tick()
+    press(active(), 'Escape')
+    expect(h.state()).toBe('closed')
+    // 收起之后 Escape 不再有人接：再按一次不会抛，也不会把状态推乱
+    press(document.body, 'Escape')
+    expect(h.state()).toBe('closed')
+  })
+
+  it('重新展开会把聚焦日拉回当前选中值：上一轮翻到别处的月份不留到下一次', async () => {
+    const h = await open({ defaultValue: '2026-07-28' })
+    press(active(), 'PageDown')
+    expect(h.focusedValue()).toBe('2026-08-28')
+    press(active(), 'Escape')
+    await settle()
+
+    click(h.trigger)
+    await settle()
+    expect(h.focusedValue()).toBe('2026-07-28')
+    expect(h.heading.textContent).toContain('7')
+  })
+})
+
+describe('内嵌日历原样复用，不重写一条', () => {
+  it('翻月按钮与方向键都归日历，编排机只是跟着记聚焦日', () => {
+    const h = mount({ defaultOpen: true, defaultValue: '2026-07-28' })
+    click(h.next)
+    expect(h.focusedValue()).toBe('2026-08-28')
+    expect(h.rendered()).toContain('2026-08-15')
+    // 值一动没动：翻月不是选日期
+    expect(h.value()).toEqual(['2026-07-28'])
+
+    const cell = h.cell('2026-08-28')
+    cell.focus()
+    press(cell, 'ArrowRight')
+    expect(h.focusedValue()).toBe('2026-08-29')
+  })
+
+  it('聚焦日变化对外播报：网格是作者渲染的，这是「该重画了」的唯一信号', () => {
+    const onFocusedValueChange = vi.fn()
+    const h = mount({ defaultValue: '2026-07-28', onFocusedValueChange })
+    // 展开那一刻把聚焦日拉到选中值
+    click(h.trigger)
+    expect(onFocusedValueChange).toHaveBeenLastCalledWith({ focusedValue: '2026-07-28' })
+
+    click(h.next)
+    expect(onFocusedValueChange).toHaveBeenLastCalledWith({ focusedValue: '2026-08-28' })
+
+    const before = onFocusedValueChange.mock.calls.length
+    // 落回同一天：值没变就不重复发
+    h.cell('2026-08-28').focus()
+    expect(onFocusedValueChange).toHaveBeenCalledTimes(before)
+  })
+
+  it('min / max 与 isDateUnavailable 一并转给日历', () => {
+    const h = mount({
+      defaultOpen: true,
+      defaultValue: '2026-07-15',
+      min: '2026-07-10',
+      isDateUnavailable: (value: string) => value === '2026-07-20',
+    })
+    expect(h.cell('2026-07-09').getAttribute('aria-disabled')).toBe('true')
+    expect(h.cell('2026-07-11').getAttribute('aria-disabled')).toBe('false')
+    expect(h.cell('2026-07-20').getAttribute('aria-disabled')).toBe('true')
+    click(h.cell('2026-07-20'))
+    expect(h.value()).toEqual(['2026-07-15'])
+  })
+
+  it('locale 同时决定周首日与段序：同一份标记换个 locale 就换一副面孔', () => {
+    const zh = mount({ defaultValue: '2026-07-28' })
+    expect(zh.segments()[0]!.getAttribute('data-segment')).toBe('year')
+    const en = mount({ locale: 'en-US', defaultValue: '2026-07-28' })
+    expect(en.segments()[0]!.getAttribute('data-segment')).toBe('month')
+  })
+
+  it('calendar 挂载点自己戴本组件的标记，日历那套 part 挂在它里面', () => {
+    const h = mount({ defaultOpen: true })
+    expect(h.calendarEl.getAttribute('data-scope')).toBe('date-picker')
+    expect(h.calendarEl.getAttribute('data-part')).toBe('calendar')
+    expect(h.grid.getAttribute('data-scope')).toBe('calendar')
+    expect(h.grid.getAttribute('role')).toBe('grid')
+    // 段位同理：input 是本组件的挂载点，里面是分段输入那一份解剖
+    expect(h.input.getAttribute('data-part')).toBe('input')
+    expect(h.input.getAttribute('role')).toBe('group')
+    expect(h.segments()[0]!.getAttribute('data-scope')).toBe('date-field')
+  })
+})
+
+describe('无障碍与表单出口', () => {
+  it('分段容器由标题命名，禁用态显式报出来', () => {
+    const h = mount({ disabled: true })
+    expect(h.input.getAttribute('aria-labelledby')).toBe(h.label.getAttribute('id'))
+    expect(h.input.getAttribute('aria-disabled')).toBe('true')
+    expect(h.segments()[0]!.getAttribute('aria-disabled')).toBe('true')
+  })
+
+  it('invalid / required 一路传到段位', () => {
+    const h = mount({ invalid: true, required: true })
+    expect(h.root.getAttribute('data-invalid')).toBe('')
+    expect(h.segments()[0]!.getAttribute('aria-invalid')).toBe('true')
+    expect(h.segments()[0]!.getAttribute('aria-required')).toBe('true')
+  })
+
+  it('name 缺省即不参与提交；禁用的控件也不提交', () => {
+    const anonymous = mount({ defaultValue: '2026-07-28' })
+    expect(anonymous.hiddenInput.hasAttribute('name')).toBe(false)
+
+    const named = mount({ defaultValue: '2026-07-28', name: 'due' })
+    expect(named.hiddenInput.getAttribute('name')).toBe('due')
+    expect(named.hiddenInput.value).toBe('2026-07-28')
+
+    const off = mount({ defaultValue: '2026-07-28', name: 'due', disabled: true })
+    expect(off.hiddenInput.disabled).toBe(true)
+  })
+
+  it('清空按钮不占 Tab 位也不报给读屏：同一个能力不报两遍', () => {
+    const h = mount({ defaultValue: '2026-07-28' })
+    expect(h.clear.getAttribute('tabindex')).toBe('-1')
+    expect(h.clear.getAttribute('aria-hidden')).toBe('true')
+  })
+})
+
+describe('findDatePickerCellEl', () => {
+  it('按 ISO 串在浮层里找到那一格；找不到与空值都给 null', () => {
+    const h = mount({ defaultOpen: true, defaultValue: '2026-07-28' })
+    expect(findDatePickerCellEl(h.content, '2026-07-28')).toBe(h.cell('2026-07-28'))
+    expect(findDatePickerCellEl(h.content, '1999-01-01')).toBeNull()
+    expect(findDatePickerCellEl(h.content, null)).toBeNull()
+    expect(findDatePickerCellEl(null, '2026-07-28')).toBeNull()
+  })
+})

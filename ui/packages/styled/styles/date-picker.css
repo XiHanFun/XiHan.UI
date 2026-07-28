@@ -1,0 +1,231 @@
+@layer xihan.components {
+  /* 与文本框、分段日期同一套堆叠：标签一行、输入行一行 */
+  [data-scope='date-picker'][data-part='root'] {
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--xh-date-picker-gap, var(--xh-space-1));
+  }
+
+  /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+  [data-scope='date-picker'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='date-picker'][data-part='label'] {
+    color: var(--xh-date-picker-label-fg, var(--xh-fg-default));
+    font-size: var(--xh-date-picker-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-date-picker-label-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+    /* 点标题会把焦点送进首段，指针得说明这件事 */
+    cursor: default;
+  }
+
+  [data-scope='date-picker'][data-part='label'][hidden] {
+    display: none;
+  }
+
+  [data-scope='date-picker'][data-part='label'][data-disabled] {
+    color: var(--xh-date-picker-label-fg-disabled, var(--xh-fg-disabled));
+    cursor: not-allowed;
+  }
+
+  /* 画成一个框的是 control 而不是 input：段位、清空按钮、日历按钮三者要看起来是一体的，
+     边框长在里面任何一个身上都会把另外两个割在框外 */
+  [data-scope='date-picker'][data-part='control'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-date-picker-control-gap, var(--xh-control-gap-md));
+    min-inline-size: var(--xh-date-picker-control-min-w, 12rem);
+    block-size: var(--xh-date-picker-control-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-date-picker-control-px, var(--xh-control-px-md));
+    padding-block: 0;
+    border: var(--xh-stroke-thin) solid var(--xh-date-picker-control-border, var(--xh-border-default));
+    border-radius: var(--xh-date-picker-control-radius, var(--xh-shape-control));
+    background: var(--xh-date-picker-control-bg, var(--xh-bg-canvas));
+    color: var(--xh-date-picker-control-fg, var(--xh-fg-default));
+    transition: border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  [data-scope='date-picker'][data-part='control'][hidden] {
+    display: none;
+  }
+
+  /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+  [data-scope='date-picker'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
+    border-color: var(--xh-date-picker-control-border-hover, var(--xh-border-strong));
+  }
+
+  /* 焦点落在某一段或某个按钮上，而边框长在 control 上：焦点环得由内向外借一层。
+     control 自己不占 Tab 位，:focus-within 是它唯一能感知组内焦点的方式 */
+  [data-scope='date-picker'][data-part='control']:focus-within {
+    border-color: var(--xh-date-picker-control-border-focus, var(--xh-ring-focus));
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  [data-scope='date-picker'][data-part='control'][data-invalid] {
+    border-color: var(--xh-date-picker-control-border-invalid, var(--xh-color-danger-500));
+  }
+
+  /* 只读仍可聚焦、日历仍能展开来看，不置灰，只把底色压下去表示"改不动" */
+  [data-scope='date-picker'][data-part='control'][data-readonly] {
+    background: var(--xh-date-picker-control-bg-readonly, var(--xh-bg-subtle));
+  }
+
+  [data-scope='date-picker'][data-part='control'][data-disabled] {
+    background: var(--xh-date-picker-control-bg-disabled, var(--xh-bg-subtle));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 分段容器：段位自己那身皮由 date-field 那份样式负责（它们戴的是那一份解剖的标记），
+     这里只管把一排段位横过来、占满输入行剩下的宽度 */
+  [data-scope='date-picker'][data-part='input'] {
+    display: inline-flex;
+    flex: 1;
+    align-items: center;
+    min-inline-size: 0;
+    block-size: 100%;
+    color: inherit;
+    /* 表单控件不继承页面字体，只给字号会让段位用 UA 默认字族，与周围文本对不上 */
+    font-family: inherit;
+    font-size: var(--xh-date-picker-font-size, var(--xh-text-body-size));
+    line-height: 1;
+  }
+
+  [data-scope='date-picker'][data-part='input'][hidden] {
+    display: none;
+  }
+
+  /* 容器自己不占 Tab 位、也不承载焦点，环由 control 画，这里不再套一圈 */
+  [data-scope='date-picker'][data-part='input']:focus-visible {
+    outline: none;
+  }
+
+  /* 两个按钮同一副长相：贴在框内末端的小方钮，不占宽度也不撑高 control */
+  [data-scope='date-picker'][data-part='trigger'],
+  [data-scope='date-picker'][data-part='clear-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-date-picker-action-size, 1.5rem);
+    block-size: var(--xh-date-picker-action-size, 1.5rem);
+    padding: 0;
+    border: 0;
+    border-radius: var(--xh-date-picker-action-radius, var(--xh-shape-control));
+    background: var(--xh-date-picker-action-bg, transparent);
+    color: var(--xh-date-picker-action-fg, var(--xh-fg-muted));
+    font-family: inherit;
+    font-size: var(--xh-date-picker-action-font-size, var(--xh-font-size-sm));
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  [data-scope='date-picker'][data-part='trigger'][hidden],
+  [data-scope='date-picker'][data-part='clear-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='date-picker'][data-part='trigger']:hover:not(:disabled),
+  [data-scope='date-picker'][data-part='clear-trigger']:hover:not(:disabled) {
+    background: var(--xh-date-picker-action-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-date-picker-action-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='date-picker'][data-part='trigger']:active:not(:disabled),
+  [data-scope='date-picker'][data-part='clear-trigger']:active:not(:disabled) {
+    background: var(--xh-date-picker-action-bg-active, var(--xh-bg-subtle-active));
+  }
+
+  /* 展开时按钮压一层底色，与浮层的存在互相印证 */
+  [data-scope='date-picker'][data-part='trigger'][data-state='open'] {
+    background: var(--xh-date-picker-action-bg-active, var(--xh-bg-subtle-active));
+    color: var(--xh-date-picker-action-fg-hover, var(--xh-fg-default));
+  }
+
+  /* trigger 在 Tab 序列里（清空按钮不在，它是 tabindex=-1 的兜底），落焦时必须看得见 */
+  [data-scope='date-picker'][data-part='trigger']:focus-visible,
+  [data-scope='date-picker'][data-part='clear-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  [data-scope='date-picker'][data-part='trigger']:disabled,
+  [data-scope='date-picker'][data-part='clear-trigger']:disabled {
+    background: var(--xh-date-picker-action-bg, transparent);
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+  [data-scope='date-picker'][data-part='positioner'] {
+    position: absolute;
+    z-index: var(--xh-layer-popover);
+    /* 空壳不吃指针，交互只发生在 content 里 */
+    pointer-events: none;
+  }
+
+  /* 锚点被滚出可视区：整个浮层随之收起 */
+  [data-scope='date-picker'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  [data-scope='date-picker'][data-part='content'] {
+    display: block;
+    padding: var(--xh-date-picker-content-p, var(--xh-space-3));
+    border: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-border-default));
+    border-radius: var(--xh-date-picker-content-radius, var(--xh-shape-surface));
+    background: var(--xh-date-picker-content-bg, var(--xh-bg-surface));
+    color: var(--xh-date-picker-content-fg, var(--xh-fg-default));
+    box-shadow: var(--xh-date-picker-content-shadow, var(--xh-elevation-2));
+    pointer-events: auto;
+  }
+
+  /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位 */
+  [data-scope='date-picker'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  /* 浮层壳不承载焦点（焦点直接落到聚焦日那一格），但它写着 tabindex=-1，
+     程序化落焦时不该再画一圈环 */
+  [data-scope='date-picker'][data-part='content']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='date-picker'][data-part='content'][data-state='open'] {
+    animation: xh-date-picker-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 内嵌日历的挂载点同时充当日历的根节点：日历那份样式的 root 规则落在
+     [data-scope='calendar'][data-part='root'] 上，而这里没有那个节点，
+     所以网格外层该有的排布得在这儿补齐（网格内部的皮仍归 calendar 那一份） */
+  [data-scope='date-picker'][data-part='calendar'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-date-picker-calendar-gap, var(--xh-space-3));
+    /* 数字等宽：1 与 7 的字形宽度在比例字体里并不相同，不定住会让整张网格随月份抖动 */
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-scope='date-picker'][data-part='calendar'][hidden] {
+    display: none;
+  }
+}
+
+@layer xihan.motion {
+  /* 浮层进场：淡入 + 轻微上浮。名字带组件前缀，不与公共关键帧抢名 */
+  @keyframes xh-date-picker-in {
+    from {
+      opacity: 0;
+      translate: 0 -4px;
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+}

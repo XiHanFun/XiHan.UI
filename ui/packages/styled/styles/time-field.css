@@ -1,0 +1,149 @@
+@layer xihan.components {
+  /* 与文本框、数字框同一套堆叠：标签一行、控件一行 */
+  [data-scope='time-field'][data-part='root'] {
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--xh-time-field-gap, var(--xh-space-1));
+  }
+
+  /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+  [data-scope='time-field'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='time-field'][data-part='label'] {
+    color: var(--xh-time-field-label-fg, var(--xh-fg-default));
+    font-size: var(--xh-time-field-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-time-field-label-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+    /* 点标题会把焦点送到第一段（段不是能被 for 指向的原生控件，这条由连接层接管），
+       指针得如实反映它可点 */
+    cursor: pointer;
+  }
+
+  [data-scope='time-field'][data-part='label'][data-disabled] {
+    color: var(--xh-time-field-label-fg-disabled, var(--xh-fg-disabled));
+    cursor: not-allowed;
+  }
+
+  /* 几段合起来看着像一个输入框：边框、高度、内边距全长在 control 上，
+     段自己只管一小块可聚焦的高亮区 */
+  [data-scope='time-field'][data-part='control'] {
+    display: inline-flex;
+    align-items: center;
+    block-size: var(--xh-time-field-control-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-time-field-control-px, var(--xh-control-px-md));
+    padding-block: 0;
+    border: var(--xh-stroke-thin) solid var(--xh-time-field-control-border, var(--xh-border-default));
+    border-radius: var(--xh-time-field-control-radius, var(--xh-shape-control));
+    background: var(--xh-time-field-control-bg, var(--xh-bg-canvas));
+    color: var(--xh-time-field-control-fg, var(--xh-fg-default));
+    /* 表单控件不继承页面字体，只给字号会让它用 UA 默认字族，与周围文本对不上 */
+    font-family: inherit;
+    font-size: var(--xh-time-field-font-size, var(--xh-text-body-size));
+    /* 等宽数字：各位字宽不一时逐段填入会让整行左右跳 */
+    font-variant-numeric: tabular-nums;
+    line-height: var(--xh-leading-normal);
+    transition: border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  [data-scope='time-field'][data-part='control'][hidden] {
+    display: none;
+  }
+
+  /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+  [data-scope='time-field'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
+    border-color: var(--xh-time-field-control-border-hover, var(--xh-border-strong));
+  }
+
+  /* 焦点真正落在段上，但整块看起来才是一个控件：段内有焦点时整框亮起来。
+     control 自己不占 Tab 位，所以这里写的是 focus-within 而不是 focus-visible */
+  [data-scope='time-field'][data-part='control']:focus-within:not([data-disabled]) {
+    border-color: var(--xh-time-field-control-border-focus, var(--xh-ring-focus));
+  }
+
+  [data-scope='time-field'][data-part='control'][data-invalid] {
+    border-color: var(--xh-time-field-control-border-invalid, var(--xh-color-danger-500));
+  }
+
+  /* 只读仍可聚焦、可换段，所以不置灰，只把底色压下去表示"改不动" */
+  [data-scope='time-field'][data-part='control'][data-readonly] {
+    background: var(--xh-time-field-control-bg-readonly, var(--xh-bg-subtle));
+  }
+
+  /* control 是个 div，没有 :disabled 可用；禁用态由连接层的 data-disabled 表达 */
+  [data-scope='time-field'][data-part='control'][data-disabled] {
+    background: var(--xh-time-field-control-bg-disabled, var(--xh-bg-subtle));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 段是一小块可聚焦区，紧挨着排；分隔符由作者写在段与段之间的普通节点里，
+     不在角色表内，所以间距只能长在段自己身上 */
+  [data-scope='time-field'][data-part='segment'] {
+    display: inline-block;
+    padding-inline: var(--xh-time-field-segment-px, var(--xh-space-0_5));
+    padding-block: 0;
+    border-radius: var(--xh-time-field-segment-radius, var(--xh-radius-sm));
+    color: inherit;
+    font-variant-numeric: inherit;
+    text-align: center;
+    /* 段是 role=spinbutton 的展示节点，双击选中一段文字只会碍事 */
+    user-select: none;
+    transition:
+      background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease),
+      color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  /* granularity / hourCycle 关掉的段由连接层打 hidden；上面那条 display 会把 UA 规则盖掉，
+     少了这条，收起的段会一直杵在那儿 */
+  [data-scope='time-field'][data-part='segment'][hidden] {
+    display: none;
+  }
+
+  /* 还没填的段压成弱色：一行里哪几段是占位符，一眼要看得出来 */
+  [data-scope='time-field'][data-part='segment'][data-placeholder] {
+    color: var(--xh-time-field-segment-fg-placeholder, var(--xh-fg-subtle));
+  }
+
+  /* 一行段长得差不多，光有边框亮起来看不出正在改哪一段：当前段必须自己有底色。
+     data-focus 由机器给（它知道谁是当前段），:focus-visible 兜住机器状态还没回流的那一帧，
+     两条同时写不冲突 */
+  [data-scope='time-field'][data-part='segment'][data-focus]:not([data-disabled]),
+  [data-scope='time-field'][data-part='segment']:focus-visible {
+    background: var(--xh-time-field-segment-bg-focus, var(--xh-bg-brand));
+    color: var(--xh-time-field-segment-fg-focus, var(--xh-fg-on-brand));
+    outline: none;
+  }
+
+  /* 选中态用了品牌底色之后，占位符那条弱色会被它盖住，这里明确让位给焦点态 */
+  [data-scope='time-field'][data-part='segment'][data-focus][data-placeholder]:not([data-disabled]) {
+    color: var(--xh-time-field-segment-fg-focus, var(--xh-fg-on-brand));
+  }
+
+  [data-scope='time-field'][data-part='segment']:hover:not([data-focus], [data-disabled]) {
+    background: var(--xh-time-field-segment-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  /* 段是集合条目形态（role=spinbutton 的 span），禁用走 data-disabled 而不是 :disabled */
+  [data-scope='time-field'][data-part='segment'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底
+     （作者手写的是一个普通 input，升级完成前它是可见的文本框）。
+     刻意不写 display：写了反而会盖掉 UA 对 type=hidden 的收起，把它显出来 */
+  [data-scope='time-field'][data-part='hidden-input'] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+}

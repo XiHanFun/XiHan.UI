@@ -10,6 +10,15 @@ export {
 } from './components/accordion/accordion'
 export { useAccordion } from './components/accordion/use-accordion'
 export type { AccordionContext } from './components/accordion/use-accordion'
+export {
+  XhAnchorIndicator,
+  XhAnchorItem,
+  XhAnchorLink,
+  XhAnchorList,
+  XhAnchorRoot,
+} from './components/anchor/anchor'
+export { useAnchor } from './components/anchor/use-anchor'
+export type { AnchorContext } from './components/anchor/use-anchor'
 export { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from './components/avatar/avatar'
 export { useAvatar } from './components/avatar/use-avatar'
 export type { AvatarContext } from './components/avatar/use-avatar'
@@ -25,6 +34,34 @@ export {
 export { useBreadcrumb } from './components/breadcrumb/use-breadcrumb'
 export type { BreadcrumbContext } from './components/breadcrumb/use-breadcrumb'
 export { XhButton } from './components/button'
+export {
+  XhCalendarCell,
+  XhCalendarCellTrigger,
+  XhCalendarGrid,
+  XhCalendarGridBody,
+  XhCalendarGridHead,
+  XhCalendarHeader,
+  XhCalendarHeading,
+  XhCalendarNextTrigger,
+  XhCalendarPrevTrigger,
+  XhCalendarRoot,
+  XhCalendarWeekDay,
+  XhCalendarWeekRow,
+} from './components/calendar/calendar'
+export { useCalendar } from './components/calendar/use-calendar'
+export type { CalendarContext } from './components/calendar/use-calendar'
+export {
+  XhCarouselIndicator,
+  XhCarouselIndicatorGroup,
+  XhCarouselItem,
+  XhCarouselItemGroup,
+  XhCarouselNextTrigger,
+  XhCarouselPrevTrigger,
+  XhCarouselRoot,
+  XhCarouselViewport,
+} from './components/carousel/carousel'
+export { useCarousel } from './components/carousel/use-carousel'
+export type { CarouselContext } from './components/carousel/use-carousel'
 export {
   XhCheckboxGroupItem,
   XhCheckboxGroupItemControl,
@@ -88,6 +125,41 @@ export {
 } from './components/context-menu/context-menu'
 export { useContextMenu } from './components/context-menu/use-context-menu'
 export type { ContextMenuContext } from './components/context-menu/use-context-menu'
+export {
+  XhDateFieldControl,
+  XhDateFieldHiddenInput,
+  XhDateFieldLabel,
+  XhDateFieldRoot,
+  XhDateFieldSegment,
+} from './components/date-field/date-field'
+export { useDateField } from './components/date-field/use-date-field'
+export type { DateFieldContext } from './components/date-field/use-date-field'
+export {
+  XhDatePickerCalendar,
+  XhDatePickerCell,
+  XhDatePickerCellTrigger,
+  XhDatePickerClearTrigger,
+  XhDatePickerContent,
+  XhDatePickerControl,
+  XhDatePickerGrid,
+  XhDatePickerGridBody,
+  XhDatePickerGridHead,
+  XhDatePickerHeader,
+  XhDatePickerHeading,
+  XhDatePickerHiddenInput,
+  XhDatePickerInput,
+  XhDatePickerLabel,
+  XhDatePickerNextTrigger,
+  XhDatePickerPositioner,
+  XhDatePickerPrevTrigger,
+  XhDatePickerRoot,
+  XhDatePickerSegment,
+  XhDatePickerTrigger,
+  XhDatePickerWeekDay,
+  XhDatePickerWeekRow,
+} from './components/date-picker/date-picker'
+export { useDatePicker } from './components/date-picker/use-date-picker'
+export type { DatePickerContext } from './components/date-picker/use-date-picker'
 export {
   XhDialogCloseTrigger,
   XhDialogContent,
@@ -180,6 +252,18 @@ export {
 export { useMenu } from './components/menu/use-menu'
 export type { MenuContext } from './components/menu/use-menu'
 export {
+  XhNavigationMenuContent,
+  XhNavigationMenuIndicator,
+  XhNavigationMenuItem,
+  XhNavigationMenuLink,
+  XhNavigationMenuList,
+  XhNavigationMenuRoot,
+  XhNavigationMenuTrigger,
+  XhNavigationMenuViewport,
+} from './components/navigation-menu/navigation-menu'
+export { useNavigationMenu } from './components/navigation-menu/use-navigation-menu'
+export type { NavigationMenuContext } from './components/navigation-menu/use-navigation-menu'
+export {
   XhNumberFieldDecrementTrigger,
   XhNumberFieldIncrementTrigger,
   XhNumberFieldInput,
@@ -236,6 +320,16 @@ export {
 export { useRating } from './components/rating/use-rating'
 export type { RatingContext } from './components/rating/use-rating'
 export {
+  XhScrollAreaContent,
+  XhScrollAreaCorner,
+  XhScrollAreaRoot,
+  XhScrollAreaScrollbar,
+  XhScrollAreaThumb,
+  XhScrollAreaViewport,
+} from './components/scroll-area/scroll-area'
+export { useScrollArea } from './components/scroll-area/use-scroll-area'
+export type { ScrollAreaContext } from './components/scroll-area/use-scroll-area'
+export {
   XhSelectContent,
   XhSelectIndicator,
   XhSelectItem,
@@ -261,6 +355,13 @@ export {
 } from './components/slider/slider'
 export { useSlider } from './components/slider/use-slider'
 export type { SliderContext } from './components/slider/use-slider'
+export {
+  XhSplitterPanel,
+  XhSplitterResizeTrigger,
+  XhSplitterRoot,
+} from './components/splitter/splitter'
+export { useSplitter } from './components/splitter/use-splitter'
+export type { SplitterContext } from './components/splitter/use-splitter'
 export {
   XhStepsContent,
   XhStepsDescription,
@@ -309,6 +410,30 @@ export {
 export { useTextField } from './components/text-field/use-text-field'
 export type { TextFieldContext } from './components/text-field/use-text-field'
 export {
+  XhTimeFieldControl,
+  XhTimeFieldHiddenInput,
+  XhTimeFieldLabel,
+  XhTimeFieldRoot,
+  XhTimeFieldSegment,
+} from './components/time-field/time-field'
+export { useTimeField } from './components/time-field/use-time-field'
+export type { TimeFieldContext } from './components/time-field/use-time-field'
+export {
+  XhTimePickerClearTrigger,
+  XhTimePickerColumn,
+  XhTimePickerContent,
+  XhTimePickerControl,
+  XhTimePickerHiddenInput,
+  XhTimePickerInput,
+  XhTimePickerLabel,
+  XhTimePickerOption,
+  XhTimePickerPositioner,
+  XhTimePickerRoot,
+  XhTimePickerTrigger,
+} from './components/time-picker/time-picker'
+export { useTimePicker } from './components/time-picker/use-time-picker'
+export type { TimePickerContext } from './components/time-picker/use-time-picker'
+export {
   XhToastActionTrigger,
   XhToastCloseTrigger,
   XhToastDescription,
@@ -350,6 +475,29 @@ export {
 export { useTooltip } from './components/tooltip/use-tooltip'
 export type { TooltipContext } from './components/tooltip/use-tooltip'
 
+export {
+  XhTreeSelectBranch,
+  XhTreeSelectBranchContent,
+  XhTreeSelectBranchControl,
+  XhTreeSelectBranchIndicator,
+  XhTreeSelectBranchText,
+  XhTreeSelectBranchTrigger,
+  XhTreeSelectClearTrigger,
+  XhTreeSelectContent,
+  XhTreeSelectHiddenInput,
+  XhTreeSelectIndicator,
+  XhTreeSelectItem,
+  XhTreeSelectItemIndicator,
+  XhTreeSelectItemText,
+  XhTreeSelectLabel,
+  XhTreeSelectPositioner,
+  XhTreeSelectRoot,
+  XhTreeSelectTree,
+  XhTreeSelectTrigger,
+  XhTreeSelectValueText,
+} from './components/tree-select/tree-select'
+export { useTreeSelect } from './components/tree-select/use-tree-select'
+export type { TreeSelectContext } from './components/tree-select/use-tree-select'
 export {
   XhTreeBranch,
   XhTreeBranchContent,

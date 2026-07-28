@@ -18,13 +18,16 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run"
   },
   "dependencies": {
+    "@internationalized/date": "catalog:",
     "@xihan-ui/behavior": "workspace:*",
     "@xihan-ui/core": "workspace:*",
     "@xihan-ui/machine": "workspace:*"
