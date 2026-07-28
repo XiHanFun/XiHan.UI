@@ -1,0 +1,219 @@
+@layer xihan.components {
+  [data-scope='calendar'][data-part='root'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-calendar-gap, var(--xh-space-3));
+    /* 数字等宽：1 与 7 的字形宽度在比例字体里并不相同，不定住会让整张网格随月份抖动 */
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-scope='calendar'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='calendar'][data-part='header'] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--xh-calendar-header-gap, var(--xh-space-2));
+  }
+
+  [data-scope='calendar'][data-part='header'][hidden] {
+    display: none;
+  }
+
+  [data-scope='calendar'][data-part='heading'] {
+    flex: 1;
+    text-align: center;
+    color: var(--xh-calendar-heading-fg, var(--xh-fg-default));
+    font-size: var(--xh-calendar-heading-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-calendar-heading-font-weight, var(--xh-font-weight-semibold));
+    line-height: 1;
+    user-select: none;
+  }
+
+  [data-scope='calendar'][data-part='prev-trigger'],
+  [data-scope='calendar'][data-part='next-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-calendar-nav-size, var(--xh-control-h-sm));
+    block-size: var(--xh-calendar-nav-size, var(--xh-control-h-sm));
+    border: var(--xh-stroke-thin) solid transparent;
+    border-radius: var(--xh-calendar-nav-radius, var(--xh-shape-control));
+    background: var(--xh-calendar-nav-bg, transparent);
+    color: var(--xh-calendar-nav-fg, var(--xh-fg-muted));
+    cursor: pointer;
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='calendar'][data-part='prev-trigger'][hidden],
+  [data-scope='calendar'][data-part='next-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='calendar'][data-part='prev-trigger']:hover:not(:disabled),
+  [data-scope='calendar'][data-part='next-trigger']:hover:not(:disabled) {
+    background: var(--xh-calendar-nav-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-fg-default);
+  }
+
+  /* 翻月是单体控件，禁用走原生 :disabled（连接层输出的正是原生 disabled） */
+  [data-scope='calendar'][data-part='prev-trigger']:disabled,
+  [data-scope='calendar'][data-part='next-trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='calendar'][data-part='prev-trigger']:focus-visible,
+  [data-scope='calendar'][data-part='next-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  [data-scope='calendar'][data-part='grid'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-calendar-grid-gap, var(--xh-space-1));
+  }
+
+  [data-scope='calendar'][data-part='grid'][hidden] {
+    display: none;
+  }
+
+  /* 网格自己不落焦（焦点永远在某一格上），这里不画环 */
+  [data-scope='calendar'][data-part='grid']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='calendar'][data-part='grid-head'],
+  [data-scope='calendar'][data-part='grid-body'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-calendar-row-gap, var(--xh-space-0));
+  }
+
+  [data-scope='calendar'][data-part='grid-head'][hidden],
+  [data-scope='calendar'][data-part='grid-body'][hidden] {
+    display: none;
+  }
+
+  /* 七等分：表头行与日期行共用同一条轨道定义，列才对得齐 */
+  [data-scope='calendar'][data-part='week-row'] {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  [data-scope='calendar'][data-part='week-row'][hidden] {
+    display: none;
+  }
+
+  [data-scope='calendar'][data-part='week-day'] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    block-size: var(--xh-calendar-week-day-h, var(--xh-control-h-sm));
+    color: var(--xh-calendar-week-day-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-calendar-week-day-font-size, var(--xh-font-size-xs));
+    font-weight: var(--xh-calendar-week-day-font-weight, var(--xh-font-weight-medium));
+    line-height: 1;
+    user-select: none;
+  }
+
+  [data-scope='calendar'][data-part='week-day'][hidden] {
+    display: none;
+  }
+
+  /* 格子是区间底色的画布：连续背景铺在这一层，圆角的选中片留给 trigger。
+     铺在 trigger 上会被格间空隙切断，区间看起来就是一串断开的圆点 */
+  [data-scope='calendar'][data-part='cell'] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--xh-calendar-cell-gap, 2px);
+  }
+
+  [data-scope='calendar'][data-part='cell'][hidden] {
+    display: none;
+  }
+
+  [data-scope='calendar'][data-part='cell'][data-in-range] {
+    background: var(--xh-calendar-range-bg, var(--xh-color-brand-100));
+  }
+
+  /* 区间两端各自收圆：中间那些格子保持直角，底色才连成一条 */
+  [data-scope='calendar'][data-part='cell'][data-range-start] {
+    border-start-start-radius: var(--xh-calendar-cell-radius, var(--xh-shape-pill));
+    border-end-start-radius: var(--xh-calendar-cell-radius, var(--xh-shape-pill));
+  }
+
+  [data-scope='calendar'][data-part='cell'][data-range-end] {
+    border-start-end-radius: var(--xh-calendar-cell-radius, var(--xh-shape-pill));
+    border-end-end-radius: var(--xh-calendar-cell-radius, var(--xh-shape-pill));
+  }
+
+  [data-scope='calendar'][data-part='cell-trigger'] {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    /* 正方格：宽度由 week-row 的等分轨道给，高度跟着走，日历才不会被长月份拉扁 */
+    aspect-ratio: 1;
+    min-inline-size: var(--xh-calendar-cell-size, var(--xh-control-h-sm));
+    border: var(--xh-stroke-thin) solid transparent;
+    border-radius: var(--xh-calendar-cell-radius, var(--xh-shape-pill));
+    color: var(--xh-calendar-cell-fg, var(--xh-fg-default));
+    font-size: var(--xh-calendar-cell-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='calendar'][data-part='cell-trigger'][hidden] {
+    display: none;
+  }
+
+  /* 邻月的日子照样可点，只是压暗——它们不是占位符 */
+  [data-scope='calendar'][data-part='cell-trigger'][data-outside-month] {
+    color: var(--xh-calendar-cell-fg-outside, var(--xh-fg-subtle));
+  }
+
+  [data-scope='calendar'][data-part='cell-trigger']:not([data-disabled]):not([data-selected]):hover {
+    background: var(--xh-calendar-cell-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  /* 今天：只描一圈边，不占用选中色——今天与被选中是两件事，得能同时看得出来 */
+  [data-scope='calendar'][data-part='cell-trigger'][data-today] {
+    border-color: var(--xh-calendar-today-border, var(--xh-border-strong));
+  }
+
+  [data-scope='calendar'][data-part='cell-trigger'][data-selected] {
+    border-color: transparent;
+    background: var(--xh-calendar-cell-bg-selected, var(--xh-bg-brand));
+    color: var(--xh-calendar-cell-fg-selected, var(--xh-fg-on-brand));
+    font-weight: var(--xh-font-weight-medium);
+  }
+
+  /* 不可用走 aria-disabled 而非原生 disabled：格子仍要可聚焦（它还得当方向键的起点），
+     所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
+  [data-scope='calendar'][data-part='cell-trigger'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='calendar'][data-part='cell-trigger'][data-disabled][data-selected] {
+    background: var(--xh-bg-muted);
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 焦点环画在格子上：整张网格只有一格在 Tab 序列里，落焦点必须一眼看得见。
+     往内收一像素，免得被相邻格子的底色盖住 */
+  [data-scope='calendar'][data-part='cell-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+}

@@ -1,0 +1,149 @@
+@layer xihan.components {
+  /* 与文本框、数字框同一套堆叠：标签一行、分段框一行 */
+  [data-scope='date-field'][data-part='root'] {
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--xh-date-field-gap, var(--xh-space-1));
+  }
+
+  /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+  [data-scope='date-field'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='date-field'][data-part='label'] {
+    color: var(--xh-date-field-label-fg, var(--xh-fg-default));
+    font-size: var(--xh-date-field-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-date-field-label-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+    /* 点标题会把焦点送进首段，指针得说明这件事 */
+    cursor: default;
+  }
+
+  [data-scope='date-field'][data-part='label'][hidden] {
+    display: none;
+  }
+
+  [data-scope='date-field'][data-part='label'][data-disabled] {
+    color: var(--xh-date-field-label-fg-disabled, var(--xh-fg-disabled));
+    cursor: not-allowed;
+  }
+
+  /* 分段框整体长得像一个输入框：边框与背景长在 control 上，各段只是里面的文字。
+     段与段之间的分隔符（'/'、'年'）由作者自己写在段之间，不在角色表里 */
+  [data-scope='date-field'][data-part='control'] {
+    display: inline-flex;
+    align-items: center;
+    block-size: var(--xh-date-field-control-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-date-field-control-px, var(--xh-control-px-md));
+    padding-block: 0;
+    border: var(--xh-stroke-thin) solid var(--xh-date-field-control-border, var(--xh-border-default));
+    border-radius: var(--xh-date-field-control-radius, var(--xh-shape-control));
+    background: var(--xh-date-field-control-bg, var(--xh-bg-canvas));
+    color: var(--xh-date-field-control-fg, var(--xh-fg-default));
+    /* 表单控件不继承页面字体，只给字号会让分段框用 UA 默认字族 */
+    font-family: inherit;
+    font-size: var(--xh-date-field-font-size, var(--xh-text-body-size));
+    line-height: 1;
+    transition: border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+  }
+
+  [data-scope='date-field'][data-part='control'][hidden] {
+    display: none;
+  }
+
+  /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+  [data-scope='date-field'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
+    border-color: var(--xh-date-field-control-border-hover, var(--xh-border-strong));
+  }
+
+  /* 焦点落在某一段上，而边框长在 control 上：焦点环得由内向外借一层。
+     control 自己不占 Tab 位，:focus-within 是它唯一能感知组内焦点的方式 */
+  [data-scope='date-field'][data-part='control']:focus-within {
+    border-color: var(--xh-date-field-control-border-focus, var(--xh-ring-focus));
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  [data-scope='date-field'][data-part='control'][data-invalid] {
+    border-color: var(--xh-date-field-control-border-invalid, var(--xh-color-danger-500));
+  }
+
+  /* 只读仍可聚焦、可换段，不置灰，只把底色压下去表示"改不动" */
+  [data-scope='date-field'][data-part='control'][data-readonly] {
+    background: var(--xh-date-field-control-bg-readonly, var(--xh-bg-subtle));
+  }
+
+  /* 整组禁用：段位是 div 而非原生控件，禁用只表达得成 data-disabled */
+  [data-scope='date-field'][data-part='control'][data-disabled] {
+    background: var(--xh-date-field-control-bg-disabled, var(--xh-bg-subtle));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 每一段是一块可聚焦的文字：宽度随内容走，两侧留一点让选中底色不贴着数字 */
+  [data-scope='date-field'][data-part='segment'] {
+    display: inline-block;
+    padding-inline: var(--xh-date-field-segment-px, var(--xh-space-1));
+    padding-block: var(--xh-date-field-segment-py, var(--xh-space-0));
+    border-radius: var(--xh-date-field-segment-radius, var(--xh-radius-sm));
+    color: inherit;
+    font: inherit;
+    /* 等宽数字：各位字宽不一时，上下键连按会让整行数字左右跳 */
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    text-align: center;
+    /* 段位靠键盘编辑，不是文本：让它被选中只会在拖选时选出半截日期 */
+    user-select: none;
+    /* 触屏上连点两下不该被当成缩放手势 */
+    touch-action: manipulation;
+  }
+
+  /* granularity 用不上的段带 hidden 留在文档里（不卸载作者节点）。
+     上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
+  [data-scope='date-field'][data-part='segment'][hidden] {
+    display: none;
+  }
+
+  /* 未填的段用弱色显示占位串，和填好的数字拉开差别 */
+  [data-scope='date-field'][data-part='segment'][data-placeholder] {
+    color: var(--xh-date-field-placeholder-fg, var(--xh-fg-subtle));
+  }
+
+  /* 段位是集合里的条目，用 data-* 而不是 :disabled —— 它是 div，没有原生禁用态 */
+  [data-scope='date-field'][data-part='segment'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 正在编辑的那一段要看得出来：整行数字长得一模一样，光标那道线这里根本没有。
+     data-focus 由机器给（它知道当前是哪一段），:focus-visible 兜住机器状态还没回流的那一帧。
+     焦点环画在 control 上，段位这里只反白，两层各管各的不打架 */
+  [data-scope='date-field'][data-part='segment'][data-focus],
+  [data-scope='date-field'][data-part='segment']:focus-visible {
+    background: var(--xh-date-field-segment-bg-focus, var(--xh-bg-brand));
+    color: var(--xh-date-field-segment-fg-focus, var(--xh-fg-on-brand));
+    outline: none;
+  }
+
+  /* 反白之后占位串那条弱色规则会被盖掉，专门再压一遍才看得清 */
+  [data-scope='date-field'][data-part='segment'][data-focus][data-placeholder] {
+    color: var(--xh-date-field-segment-fg-focus, var(--xh-fg-on-brand));
+  }
+
+  /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底
+     （作者手写的是一个普通 input，升级完成前它是可见的文本框）。
+     刻意不写 display：写了反而会盖掉 UA 对 type=hidden 的收起，把它显出来 */
+  [data-scope='date-field'][data-part='hidden-input'] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+}

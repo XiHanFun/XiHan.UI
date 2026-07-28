@@ -1,0 +1,38 @@
+import type { ItemQuery } from '@xihan-ui/behavior'
+import { createAnatomy } from '@xihan-ui/core'
+
+// data-part 直接用 kebab-case，与 CSS 选择器一致。
+// 前半截（trigger/value-text/indicator/positioner/content）是浮层那一套，
+// 后半截（tree 与两类节点部件）是树那一套，两者在 content 里接上。
+export const treeSelectAnatomy = createAnatomy('tree-select', [
+  'root',
+  'label',
+  'trigger',
+  'value-text',
+  'indicator',
+  'clear-trigger',
+  'positioner',
+  'content',
+  'tree',
+  'item',
+  'item-text',
+  'item-indicator',
+  'branch',
+  'branch-control',
+  'branch-trigger',
+  'branch-indicator',
+  'branch-text',
+  'branch-content',
+  'hidden-input',
+])
+
+/**
+ * 两类节点部件都是 role=treeitem，都自报 data-value，因此都要进导航集合：
+ * item 是叶子，branch 是分支（它还裹着自己的 branch-content 子树）。
+ *
+ * queryItems 的归属判据是「父链上最近的同名部件是不是本容器」，因此容器传 content
+ * 还是 tree 都成立：节点与两者之间隔着多少层 branch/branch-content 都不影响，
+ * 而嵌套的另一个 tree-select 会被切开，各认各的节点。
+ */
+export const treeSelectItemQuery: ItemQuery = { scope: treeSelectAnatomy.name, part: 'item' }
+export const treeSelectBranchQuery: ItemQuery = { scope: treeSelectAnatomy.name, part: 'branch' }

@@ -1,0 +1,164 @@
+@layer xihan.motion {
+  /* 滚动条从收起到露出的淡入。收起走的是 [hidden]（display:none），没有退场动画可言——
+     display:none 是瞬时的，硬挂 fade-out 只会看到一帧都不播。
+     元素从 display:none 变回可见时动画会重新开始，这一条因此每次露面都播一遍。 */
+  @keyframes xh-scroll-area-bar-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='scroll-area'] [data-part] {
+      animation-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer xihan.components {
+  /* 定位分工：滑块在**主轴**上的起点与长度由连接层每帧写进内联样式——
+     竖向是 inset-block-start / block-size，横向是 inset-inline-start / inline-size。
+     这份皮肤一个都不碰：内联优先级高于样式表，写了不但是死声明，
+     换轴的那一帧还会跟连接层清空另一轴的动作抢位置，把滑块钉在两轴都被约束的地方。
+     皮肤只管另一条轴（交叉轴）的尺寸、颜色、圆角与状态表现。 */
+
+  /* 滚动条与右下角补丁都是绝对定位的，以它为参照，因此它必须自己建定位上下文。
+     overflow:hidden 管的是溢出边界：作者给 root 定了尺寸后，内容与滚动条都不该漫出这个框。 */
+  [data-scope='scroll-area'][data-part='root'] {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 真正滚动的那层。原生滚动条藏起来，滚动能力一点不减——
+     键盘（PageUp/PageDown、方向键、Home/End）与滚轮走的都还是浏览器原生通路。 */
+  [data-scope='scroll-area'][data-part='viewport'] {
+    inline-size: 100%;
+    block-size: 100%;
+    /* 逻辑等价物 overflow-inline / overflow-block 至今只有个别引擎实现，
+       这两条是本文件里仅有的物理属性，换成逻辑写法会在多数浏览器上直接失效 */
+    overflow-x: auto;
+    overflow-y: auto;
+    /* 藏原生滚动条的标准写法；下面那条 ::-webkit-scrollbar 兜住还没实现它的引擎。
+       只藏外观，滚动能力一点不动：这里刻意不写 overscroll-behavior，
+       滚到尽头要不要把滚动传给外层，仍然按浏览器的默认来 */
+    scrollbar-width: none;
+  }
+
+  [data-scope='scroll-area'][data-part='viewport']::-webkit-scrollbar {
+    /* 这里不是角色节点而是伪元素，不涉及 [hidden] 那条规矩 */
+    display: none;
+  }
+
+  /* orientation 关掉的那条轴不该滚：滚动条已经不显形了，再能滚就成了滚不回来的暗格 */
+  [data-scope='scroll-area'][data-part='viewport'][data-orientation='vertical'] {
+    overflow-x: hidden;
+  }
+
+  [data-scope='scroll-area'][data-part='viewport'][data-orientation='horizontal'] {
+    overflow-y: hidden;
+  }
+
+  /* 视口带 tabindex=0（滚动区里可能一个可聚焦元素都没有），因此要有焦点环。
+     偏移取负：环画在视口内侧，否则会被 root 的 overflow:hidden 裁掉半圈 */
+  [data-scope='scroll-area'][data-part='viewport']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  /* 横向溢出全靠它撑：内容若跟着视口一起收成 100% 宽，横轴永远量不出溢出，
+     横向滚动条也就永远不显形。 */
+  [data-scope='scroll-area'][data-part='content'] {
+    min-inline-size: fit-content;
+  }
+
+  /* 轨道。touch-action 关掉浏览器自己的手势：不关的话手指一按滑块页面就跟着滚，
+     指针随即被系统收走（pointercancel），拖到一半的滑块停在原地。
+     user-select 同理——拖动时选中页面文字会让滑块"粘"住。 */
+  [data-scope='scroll-area'][data-part='scrollbar'] {
+    position: absolute;
+    display: flex;
+    padding: var(--xh-scroll-area-bar-padding, 2px);
+    background: var(--xh-scroll-area-bar-bg, var(--xh-bg-subtle));
+    touch-action: none;
+    user-select: none;
+  }
+
+  [data-scope='scroll-area'][data-part='scrollbar'][data-orientation='vertical'] {
+    inset-block: 0;
+    inset-inline-end: 0;
+    inline-size: var(--xh-scroll-area-bar-size, 10px);
+  }
+
+  [data-scope='scroll-area'][data-part='scrollbar'][data-orientation='horizontal'] {
+    inset-inline: 0;
+    inset-block-end: 0;
+    block-size: var(--xh-scroll-area-bar-size, 10px);
+  }
+
+  [data-scope='scroll-area'][data-part='scrollbar'][data-state='visible'] {
+    animation: xh-scroll-area-bar-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 除视口外全是纯容器：既不进 Tab 序列也不承载焦点，作者若给它们加了 tabindex，
+     该显形的也该是视口那圈环，不是这里再多画一圈 */
+  [data-scope='scroll-area'][data-part='root']:focus-visible,
+  [data-scope='scroll-area'][data-part='content']:focus-visible,
+  [data-scope='scroll-area'][data-part='scrollbar']:focus-visible,
+  [data-scope='scroll-area'][data-part='corner']:focus-visible {
+    outline: none;
+  }
+
+  /* 滑块。主轴（起点 + 长度）来自内联样式，这里只给定位模式、交叉轴与配色。
+     绝不给 inset / size 加过渡：滚动时这两个值每帧都在变，一加过渡滑块就永远追在内容后面。
+     也刻意不写 min-block-size / min-inline-size：滑块的最短长度由几何层的常量算进内联尺寸里，
+     样式表再给一个下限就成了两个事实源，两者一旦不一致，滑块的实际长度与它能走的距离就对不上。 */
+  [data-scope='scroll-area'][data-part='thumb'] {
+    position: absolute;
+    border-radius: var(--xh-scroll-area-thumb-radius, var(--xh-shape-pill));
+    background: var(--xh-scroll-area-thumb-bg, var(--xh-color-neutral-400));
+    cursor: default;
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 交叉轴铺满轨道。这一侧的 inset 连接层每帧写成空串（即不设），样式表接手才有确定值；
+     不写的话绝对定位会退回"静态位置"，作者一给轨道加内边距就对不齐了。 */
+  [data-scope='scroll-area'][data-part='thumb'][data-orientation='vertical'] {
+    inset-inline: 0;
+  }
+
+  [data-scope='scroll-area'][data-part='thumb'][data-orientation='horizontal'] {
+    inset-block: 0;
+  }
+
+  [data-scope='scroll-area'][data-part='thumb']:hover {
+    background: var(--xh-scroll-area-thumb-bg-hover, var(--xh-color-neutral-500));
+  }
+
+  /* 手正按在这条轴的滑块上时才变深：两条轴各有一个滑块，全打上标记就分不出手在哪一个上 */
+  [data-scope='scroll-area'][data-part='thumb'][data-dragging] {
+    background: var(--xh-scroll-area-thumb-bg-dragging, var(--xh-color-neutral-600));
+  }
+
+  /* 两条滚动条同时在场时，右下角那个交叉口谁都盖不住，留着会露出底下的内容。
+     z-index 只是为了不依赖作者把 corner 写在两条滚动条之后 */
+  [data-scope='scroll-area'][data-part='corner'] {
+    position: absolute;
+    z-index: 1;
+    display: block;
+    inset-block-end: 0;
+    inset-inline-end: 0;
+    inline-size: var(--xh-scroll-area-bar-size, 10px);
+    block-size: var(--xh-scroll-area-bar-size, 10px);
+    background: var(--xh-scroll-area-corner-bg, var(--xh-bg-subtle));
+  }
+
+  /* display 会盖掉 UA 的 [hidden]{display:none}，凡是被赋了 display 的角色节点都要显式让位 */
+  [data-scope='scroll-area'][data-part='scrollbar'][hidden],
+  [data-scope='scroll-area'][data-part='corner'][hidden] {
+    display: none;
+  }
+}

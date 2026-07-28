@@ -1,0 +1,194 @@
+@layer xihan.components {
+  /* 根节点是 region 地标：把上一张 / 视口 / 下一张排成一行，指示点另起一行。
+     两端按钮浮在视口上还是排在两侧由作者定，这里只给最朴素的一版排布 */
+  [data-scope='carousel'][data-part='root'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--xh-carousel-gap, var(--xh-space-2));
+  }
+
+  [data-scope='carousel'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 纵轨时按钮在上下两端，整条竖着排 */
+  [data-scope='carousel'][data-part='root'][data-orientation='vertical'] {
+    flex-direction: column;
+  }
+
+  /* 视口是裁切窗口：轨道比它宽（高），露在外面的那些张全靠它切掉。
+     min-inline-size: 0 是关键——弹性子项的默认最小尺寸是内容尺寸，
+     不压成 0 的话视口会被整条轨道撑开，什么都切不掉 */
+  [data-scope='carousel'][data-part='viewport'] {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    overflow: hidden;
+    border-radius: var(--xh-carousel-viewport-radius, var(--xh-shape-surface));
+  }
+
+  [data-scope='carousel'][data-part='viewport'][hidden] {
+    display: none;
+  }
+
+  /* 被位移的那条轨道。
+     transform 归连接层：整页位移与拖拽中的像素偏移都写在它的内联 style 上，
+     样式层再碰这条轴就会把两个位移互相覆盖，画面当场错位。
+     这里只负责排布与过渡 */
+  [data-scope='carousel'][data-part='item-group'] {
+    display: flex;
+    flex-direction: row;
+    block-size: 100%;
+    transition: transform var(--xh-carousel-duration, var(--xh-motion-duration-enter))
+      var(--xh-carousel-ease, var(--xh-motion-ease-enter));
+  }
+
+  [data-scope='carousel'][data-part='item-group'][hidden] {
+    display: none;
+  }
+
+  [data-scope='carousel'][data-part='item-group'][data-orientation='vertical'] {
+    flex-direction: column;
+  }
+
+  /* 拖拽期间关掉过渡：留着的话画面会拖着手指慢半拍，像在拉一根皮筋 */
+  [data-scope='carousel'][data-part='item-group'][data-dragging] {
+    transition: none;
+  }
+
+  /* 一张幻灯片。
+     尺寸（flex-basis）与间距（padding）同样归连接层：一屏放几张只有它知道，
+     CSS 拿不到那个数（属性值参与不了计算）。这里只补三件配套的事：
+     · box-sizing —— 库里没有全局兜底，不设的话内联的 padding 会把这张撑出格子；
+     · flex-grow/shrink 归零 —— 弹性布局默认会把不满一屏的那几张拉伸，位移就对不上了；
+     · min-inline-size: 0 —— 同视口，防止长内容把这张顶宽 */
+  [data-scope='carousel'][data-part='item'] {
+    box-sizing: border-box;
+    flex-grow: 0;
+    flex-shrink: 0;
+    min-inline-size: 0;
+  }
+
+  [data-scope='carousel'][data-part='item'][hidden] {
+    display: none;
+  }
+
+  /* 两端按钮：圆形、与控件同高，禁用时靠原生 :disabled 变灰 */
+  [data-scope='carousel'][data-part='prev-trigger'],
+  [data-scope='carousel'][data-part='next-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-carousel-trigger-size, var(--xh-control-h-md));
+    block-size: var(--xh-carousel-trigger-size, var(--xh-control-h-md));
+    border: var(--xh-stroke-thin) solid var(--xh-carousel-trigger-border, var(--xh-border-default));
+    border-radius: var(--xh-carousel-trigger-radius, var(--xh-shape-pill));
+    background: var(--xh-carousel-trigger-bg, var(--xh-bg-surface));
+    color: var(--xh-carousel-trigger-fg, var(--xh-fg-default));
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='carousel'][data-part='prev-trigger'][hidden],
+  [data-scope='carousel'][data-part='next-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='carousel'][data-part='prev-trigger']:hover:not(:disabled),
+  [data-scope='carousel'][data-part='next-trigger']:hover:not(:disabled) {
+    background: var(--xh-carousel-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='carousel'][data-part='prev-trigger']:active:not(:disabled),
+  [data-scope='carousel'][data-part='next-trigger']:active:not(:disabled) {
+    background: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-active));
+  }
+
+  [data-scope='carousel'][data-part='prev-trigger']:focus-visible,
+  [data-scope='carousel'][data-part='next-trigger']:focus-visible,
+  [data-scope='carousel'][data-part='indicator']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 两端到头时按钮是原生 disabled（不可聚焦、进不了 Tab 序列），所以这里必须用 :disabled；
+     连接层同时给的 data-disabled 只是留给作者的钩子 */
+  [data-scope='carousel'][data-part='prev-trigger']:disabled,
+  [data-scope='carousel'][data-part='next-trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  /* 视口与指示点都不是可聚焦节点，落焦只会是浏览器兜底行为，别画焦点环 */
+  [data-scope='carousel'][data-part='viewport']:focus-visible,
+  [data-scope='carousel'][data-part='item-group']:focus-visible,
+  [data-scope='carousel'][data-part='indicator-group']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='carousel'][data-part='indicator-group'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-carousel-indicator-gap, var(--xh-space-1));
+  }
+
+  [data-scope='carousel'][data-part='indicator-group'][hidden] {
+    display: none;
+  }
+
+  [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical'] {
+    flex-direction: column;
+  }
+
+  /* 横轨时指示点另起一行占满整宽（根节点开了 flex-wrap），不跟两端按钮挤在同一行 */
+  [data-scope='carousel'][data-part='indicator-group'][data-orientation='horizontal'] {
+    flex-basis: 100%;
+  }
+
+  /* 指示点：一颗小圆点。点得动的东西必须够大才点得中，
+     所以圆点本身小、可点区域靠内边距撑到最小触达尺寸 */
+  [data-scope='carousel'][data-part='indicator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
+    block-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
+    /* 圆点本身没有文字，按钮里的文案（页码）交给作者，默认不显示 */
+    padding: 0;
+    border: 0;
+    border-radius: var(--xh-carousel-indicator-radius, var(--xh-radius-full));
+    background: var(--xh-carousel-indicator-bg, var(--xh-border-strong));
+    font-size: 0;
+    cursor: pointer;
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='carousel'][data-part='indicator'][hidden] {
+    display: none;
+  }
+
+  [data-scope='carousel'][data-part='indicator']:hover:not([data-selected]) {
+    background: var(--xh-carousel-indicator-bg-hover, var(--xh-fg-subtle));
+  }
+
+  /* 当前页：data-selected 与 aria-current='true' 由连接层成对给出，
+     样式挂在 data 钩子上，无障碍语义留给 aria，两边各司其职 */
+  [data-scope='carousel'][data-part='indicator'][data-selected] {
+    background: var(--xh-carousel-indicator-bg-selected, var(--xh-bg-brand));
+  }
+
+  /* 减少动效：位移立刻到位。翻页本身照常发生，只是不再有滑动的过程 */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='carousel'][data-part='item-group'] {
+      transition: none;
+    }
+  }
+}

@@ -1,0 +1,112 @@
+@layer xihan.components {
+  /* 根节点是 nav 地标，不参与排版：整条目录的布局全在 list 上，
+     这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
+  [data-scope='anchor'][data-part='root'] {
+    color: var(--xh-anchor-fg, var(--xh-fg-muted));
+    font-size: var(--xh-anchor-font-size, var(--xh-text-label-size));
+    line-height: var(--xh-anchor-leading, var(--xh-leading-normal));
+  }
+
+  /* 指示条的定位参照系（它是 absolute，量出来的偏移就是相对这里的）。
+     ul 的项目符号与内外边距是 UA 给的，库里没有全局 preflight，只能在这儿自己抹平 */
+  [data-scope='anchor'][data-part='list'] {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-anchor-gap, var(--xh-space-1));
+    margin: 0;
+    padding: 0;
+    /* 起始缘的那条轨道：指示条就在它上面滑 */
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-anchor-track, var(--xh-border-default));
+    list-style: none;
+  }
+
+  [data-scope='anchor'][data-part='list'][hidden] {
+    display: none;
+  }
+
+  /* 横排：轨道从起始缘挪到底边，条目改成一行 */
+  [data-scope='anchor'][data-part='list'][data-orientation='horizontal'] {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--xh-anchor-gap-horizontal, var(--xh-space-2));
+    border-inline-start: 0;
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-anchor-track, var(--xh-border-default));
+  }
+
+  [data-scope='anchor'][data-part='item'] {
+    display: flex;
+    /* 允许被压缩，链接内部的省略号才有生效的余地 */
+    min-inline-size: 0;
+  }
+
+  [data-scope='anchor'][data-part='item'][hidden] {
+    display: none;
+  }
+
+  [data-scope='anchor'][data-part='link'] {
+    display: inline-flex;
+    align-items: center;
+    /* 一节的标题可能很长，压不住会把整列撑开 */
+    max-inline-size: var(--xh-anchor-link-max-w, 14rem);
+    padding-block: var(--xh-anchor-link-py, var(--xh-space-1));
+    padding-inline: var(--xh-anchor-link-px, var(--xh-space-3));
+    border-radius: var(--xh-anchor-link-radius, var(--xh-shape-control));
+    color: inherit;
+    white-space: nowrap;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='anchor'][data-part='link'][hidden] {
+    display: none;
+  }
+
+  [data-scope='anchor'][data-part='link']:hover {
+    color: var(--xh-anchor-link-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='anchor'][data-part='link']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 当前那一节：颜色与字重都跟着变，不只靠指示条——
+     指示条是可选部件，作者不渲染它时"当前在哪"仍然要看得出来 */
+  [data-scope='anchor'][data-part='link'][data-active] {
+    color: var(--xh-anchor-link-fg-active, var(--xh-color-brand-600));
+    font-weight: var(--xh-anchor-link-font-weight-active, var(--xh-font-weight-medium));
+  }
+
+  /* 主轴上的位置与长度由连接层写成内联样式（它量得到，样式表量不到）；
+     这里只管交叉轴的贴边与粗细，以及长什么样 */
+  [data-scope='anchor'][data-part='indicator'] {
+    position: absolute;
+    display: block;
+    inset-inline-start: calc(var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick)) * -1);
+    inline-size: var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick));
+    border-radius: var(--xh-anchor-indicator-radius, var(--xh-radius-full));
+    background: var(--xh-anchor-indicator-color, var(--xh-color-brand-600));
+    transition:
+      inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
+      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* display 会盖掉 hidden 属性的 UA 规则，无激活项时显式让位 */
+  [data-scope='anchor'][data-part='indicator'][hidden] {
+    display: none;
+  }
+
+  /* 横排：指示条改躺在底边的轨道上，交叉轴换成块轴 */
+  [data-scope='anchor'][data-part='indicator'][data-orientation='horizontal'] {
+    inset-inline-start: auto;
+    inset-block-end: calc(var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick)) * -1);
+    inline-size: auto;
+    block-size: var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick));
+    transition:
+      inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
+      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+}

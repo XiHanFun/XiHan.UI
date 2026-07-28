@@ -1,0 +1,216 @@
+@layer xihan.motion {
+  /* 面板往下探一小截再落位：纯淡入看不出它是从哪条 trigger 长出来的 */
+  @keyframes xh-navigation-menu-in {
+    from {
+      opacity: 0;
+      translate: 0 -4px;
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+}
+
+@layer xihan.components {
+  /* 根节点是 nav 地标，不参与排版；给 relative 是为了让共享外壳（viewport）有个定位参照系。
+     这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
+  [data-scope='navigation-menu'][data-part='root'] {
+    position: relative;
+    color: var(--xh-navigation-menu-fg, var(--xh-fg-default));
+    font-size: var(--xh-navigation-menu-font-size, var(--xh-text-label-size));
+  }
+
+  /* 指示条的定位参照系（它是 absolute，量出来的偏移就是相对这里的）。
+     ul 的项目符号与内外边距是 UA 给的，库里没有全局 preflight，只能在这儿自己抹平 */
+  [data-scope='navigation-menu'][data-part='list'] {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--xh-navigation-menu-gap, var(--xh-space-1));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  [data-scope='navigation-menu'][data-part='list'][hidden] {
+    display: none;
+  }
+
+  [data-scope='navigation-menu'][data-part='list'][data-orientation='vertical'] {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* 一项一个 li，面板就住在里面：给 relative 让面板贴着自己这一项落位 */
+  [data-scope='navigation-menu'][data-part='item'] {
+    position: relative;
+    display: flex;
+  }
+
+  [data-scope='navigation-menu'][data-part='item'][hidden] {
+    display: none;
+  }
+
+  [data-scope='navigation-menu'][data-part='trigger'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-navigation-menu-trigger-gap, var(--xh-control-gap-md));
+    block-size: var(--xh-navigation-menu-trigger-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-navigation-menu-trigger-px, var(--xh-control-px-md));
+    border: 0;
+    border-radius: var(--xh-navigation-menu-trigger-radius, var(--xh-shape-control));
+    background: transparent;
+    color: var(--xh-navigation-menu-trigger-fg, var(--xh-fg-muted));
+    font: inherit;
+    font-weight: var(--xh-navigation-menu-trigger-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='navigation-menu'][data-part='trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='navigation-menu'][data-part='trigger']:hover {
+    background: var(--xh-navigation-menu-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='navigation-menu'][data-part='trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  [data-scope='navigation-menu'][data-part='trigger'][data-state='open'] {
+    color: var(--xh-navigation-menu-trigger-fg-open, var(--xh-fg-default));
+  }
+
+  /* 集合条目用 data-disabled，不用 :disabled：它带的是 aria-disabled，
+     仍可聚焦、仍是方向键的起点 */
+  [data-scope='navigation-menu'][data-part='trigger'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 面板贴着自己那一项落位：横排从 trigger 底下长出来 */
+  [data-scope='navigation-menu'][data-part='content'] {
+    position: absolute;
+    z-index: var(--xh-layer-popover);
+    inset-block-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
+    inset-inline-start: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-navigation-menu-content-gap, var(--xh-space-1));
+    min-inline-size: var(--xh-navigation-menu-content-min-w, 12rem);
+    padding: var(--xh-navigation-menu-content-p, var(--xh-space-2));
+    border: var(--xh-stroke-thin) solid var(--xh-navigation-menu-content-border, var(--xh-border-default));
+    border-radius: var(--xh-navigation-menu-content-radius, var(--xh-shape-surface));
+    background: var(--xh-navigation-menu-content-bg, var(--xh-bg-surface));
+    box-shadow: var(--xh-navigation-menu-content-shadow, var(--xh-elevation-2));
+  }
+
+  /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位 */
+  [data-scope='navigation-menu'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  /* 竖排导航：面板改从侧边长出来 */
+  [data-scope='navigation-menu'][data-part='content'][data-orientation='vertical'] {
+    inset-block-start: 0;
+    inset-inline-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
+  }
+
+  [data-scope='navigation-menu'][data-part='content'][data-state='open'] {
+    animation: xh-navigation-menu-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 面板整批塞进共享外壳时，落位归外壳管，面板自己回到静态流里——
+     不还原的话它会以外壳为参照再往下掉一整个身位 */
+  [data-scope='navigation-menu'][data-part='viewport'] [data-scope='navigation-menu'][data-part='content'] {
+    position: static;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  [data-scope='navigation-menu'][data-part='link'] {
+    display: flex;
+    align-items: center;
+    padding-block: var(--xh-navigation-menu-link-py, var(--xh-space-2));
+    padding-inline: var(--xh-navigation-menu-link-px, var(--xh-space-2));
+    border-radius: var(--xh-navigation-menu-link-radius, var(--xh-shape-control));
+    color: var(--xh-navigation-menu-link-fg, var(--xh-fg-default));
+    font-size: var(--xh-navigation-menu-link-font-size, var(--xh-text-body-size));
+    text-decoration: none;
+  }
+
+  [data-scope='navigation-menu'][data-part='link'][hidden] {
+    display: none;
+  }
+
+  [data-scope='navigation-menu'][data-part='link']:hover {
+    background: var(--xh-navigation-menu-link-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='navigation-menu'][data-part='link']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 指向当前页面的那一条：颜色与字重都变，不加下划线（下划线是"可点"的信号，它已经在这儿了） */
+  [data-scope='navigation-menu'][data-part='link'][data-current] {
+    color: var(--xh-navigation-menu-link-fg-current, var(--xh-color-brand-600));
+    font-weight: var(--xh-navigation-menu-link-font-weight-current, var(--xh-font-weight-medium));
+  }
+
+  /* 主轴上的位置与长度由连接层写成内联样式（它量得到，样式表量不到）；
+     这里只管交叉轴的贴边与粗细，以及长什么样 */
+  [data-scope='navigation-menu'][data-part='indicator'] {
+    position: absolute;
+    display: block;
+    inset-block-end: calc(var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick)) * -1);
+    block-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
+    border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-radius-full));
+    background: var(--xh-navigation-menu-indicator-color, var(--xh-color-brand-600));
+    transition:
+      inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
+      inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='navigation-menu'][data-part='indicator'][hidden] {
+    display: none;
+  }
+
+  /* 竖排：指示条改贴在起始缘，交叉轴换成内联轴 */
+  [data-scope='navigation-menu'][data-part='indicator'][data-orientation='vertical'] {
+    inset-block-end: auto;
+    inset-inline-start: calc(var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick)) * -1);
+    inline-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
+    block-size: auto;
+    transition:
+      inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
+      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 共享面板外壳：只管落位与统一的面板外观，里面装哪一份内容归 content */
+  [data-scope='navigation-menu'][data-part='viewport'] {
+    position: absolute;
+    z-index: var(--xh-layer-popover);
+    inset-block-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
+    inset-inline-start: 0;
+    display: block;
+    padding: var(--xh-navigation-menu-content-p, var(--xh-space-2));
+    border: var(--xh-stroke-thin) solid var(--xh-navigation-menu-content-border, var(--xh-border-default));
+    border-radius: var(--xh-navigation-menu-content-radius, var(--xh-shape-surface));
+    background: var(--xh-navigation-menu-content-bg, var(--xh-bg-surface));
+    box-shadow: var(--xh-navigation-menu-content-shadow, var(--xh-elevation-2));
+  }
+
+  [data-scope='navigation-menu'][data-part='viewport'][hidden] {
+    display: none;
+  }
+}
