@@ -4,14 +4,14 @@
 
 <h1>XiHan.UI</h1>
 
-<p><b>快速、轻量、高效、用心的 Vue 组件库</b></p>
+<p><b>快速、轻量、高效、用心的跨框架组件库</b></p>
 
-<p>曦寒界面存储库 · 基于 Vue 3 + TypeScript · Monorepo 架构</p>
+<p>曦寒界面存储库 · 无头内核 + Vue / Web Components 双适配器 · TypeScript Monorepo</p>
 
 <p>
   <img alt="Status" src="https://img.shields.io/badge/Status-Experimental-orange?style=flat-square" />
-  <img alt="Version" src="https://img.shields.io/badge/Version-0.9.8-orange?style=flat-square" />
-  <img alt="Components" src="https://img.shields.io/badge/Components-2%2F60-orange?style=flat-square" />
+  <img alt="Version" src="https://img.shields.io/badge/Version-unpublished-orange?style=flat-square" />
+  <img alt="Components" src="https://img.shields.io/badge/Components-62-1f6feb?style=flat-square" />
 </p>
 
 <p>
@@ -46,25 +46,74 @@
 
 </div>
 
-> **实验性项目**：当前 v0.9.8，60 个组件中仅 Button、Icon 已完整实现，其余为占位重写中，请勿在生产环境依赖。
+> **实验性项目**：62 个组件的内核、Vue 适配器、Web Components 适配器与默认皮肤均已实现，但**尚未发布到 npm、尚无文档站**，且无障碍断言目前跑在 jsdom 而非真实浏览器。请勿在生产环境依赖。
 
 ## 📋 项目概况
 
-XiHan.UI 是一个基于 Vue 3 的企业级组件库，致力于提供快速、轻量、高效的组件解决方案。
+XiHan.UI 是一个框架无关的组件库：状态与无障碍逻辑沉在无头内核，各框架只写一层薄适配器。
 
-- **技术栈**: Vue 3 + TypeScript + Vite + Turbo
-- **架构**: Monorepo 架构（pnpm workspace，`packages/*` + `internal/*` + `playground`）
-- **当前版本**: v0.9.8（实验阶段，尚未正式发布至 npm）
-- **workspace 包**: cli / components / constants / directives / hooks / icons / locales / plugins / themes / utils / xihan-ui，共 11 个
+- **内核**：自研有限状态机 + 行为原语（焦点域、滚动锁、层栈、进出场），不依赖任何框架
+- **适配器**：Vue 3 与 Web Components（基于 `@lit/reactive-element`）两套，共用同一份内核与同一份一致性测试
+- **样式**：`@xihan-ui/styled` 提供构建期 CSS 皮肤，令牌由 `@xihan-ui/system` 从 DTCG 源产出
+- **架构**：pnpm workspace，`packages/*` + `tooling/*` + `apps/*` 三段
+- **当前状态**：库包版本 `0.0.0`，尚未发布至 npm
+
+### workspace 包（10 个）
+
+| 包 | 职责 |
+| --- | --- |
+| `@xihan-ui/core` | 结构原语：anatomy / mergeProps / normalizeProps / Scope / context / id |
+| `@xihan-ui/machine` | 状态机运行时：`createMachine` + 解释器契约 + 受控值绑定 |
+| `@xihan-ui/behavior` | 行为原语：dismissable layer / focus scope / scroll lock / presence / collection / typeahead |
+| `@xihan-ui/headless` | 62 个组件的 anatomy + machine + connect（无样式、无框架） |
+| `@xihan-ui/vue` | Vue 3 适配器 |
+| `@xihan-ui/wc` | Web Components 适配器 |
+| `@xihan-ui/styled` | 默认皮肤（CSS，按 `@layer` 分层） |
+| `@xihan-ui/system` | 设计令牌产物 + 主题运行时（明暗 / 密度 / 书写方向） |
+| `@xihan-ui/position-floating-ui` | 浮层定位实现（唯一允许依赖 `@floating-ui/dom` 的包） |
+| `@xihan-ui/icons` | 图标集 |
 
 ## 🧩 组件现状
 
-`packages/components` 目前收录 60 个组件目录，整体仍处于早期重写阶段，请勿在生产环境中依赖：
+62 个组件，每个都有 headless 内核 + Vue 组件 + 自定义元素 + 默认皮肤：
 
-- **已完整实现**: Button、Icon（含完整交互逻辑与样式）
-- **接口占位/重写中（58 个）**: 其余组件（如 Table、Form、Select、DatePicker、Tree 等）目前仅有 props/interface 类型定义与占位渲染骨架（渲染为空的 `<div>` 包裹 `slot`），尚未实现真实交互逻辑与样式
+| 组 | 组件 |
+| --- | --- |
+| 浮层 | dialog · drawer · popover · tooltip · hover-card · tour |
+| 导航 | menu · context-menu · menubar · navigation-menu · tabs · breadcrumb · pagination · steps · anchor · toolbar |
+| 表单 | field · form · text-field · number-field · pin-input · tags-input · editable · file-upload |
+| 选择 | checkbox · checkbox-group · radio-group · switch · toggle · toggle-group · select · combobox · listbox · cascader · transfer |
+| 日期时间 | calendar · date-field · date-picker · time-field · time-picker |
+| 取值 | slider · rating · color-picker |
+| 数据 | table · tree · tree-select · virtualizer |
+| 展示 | avatar · badge · image · carousel · accordion · collapsible · separator |
+| 反馈 | toast · toaster · progress · loading-bar |
+| 其他 | button · scroll-area · splitter · clipboard |
 
-后续将按组件逐个补齐实现与测试后再发布，欢迎关注仓库进展或参与共建。
+两个 playground 逐组件对照两套适配器的行为：`apps/playground-vue` 与 `apps/playground-wc`。
+
+### 还没做的
+
+- **文档站**：无（API 表、状态图、键盘表、令牌浏览器均未产出）
+- **npm 发布**：未发布，本地用 `pnpm pack` 验证
+- **组件文案国际化**：未落地，面向用户的字符串目前内置英文
+- **令牌产物格式**：仅 CSS / JSON / TS 三种
+- **企业业务组件与 AI 组件**：未开始
+
+## 📦 本地开发
+
+```bash
+cd ui
+pnpm install --frozen-lockfile
+pnpm dev          # 启动 playground
+pnpm test         # 单元测试与一致性测试
+pnpm typecheck
+pnpm lint
+pnpm boundaries   # 分层依赖门禁
+pnpm build
+```
+
+要求 Node ≥ 24、pnpm ≥ 11。
 
 ## 🎯 项目目标
 
@@ -80,23 +129,24 @@ XiHan.UI 是一个基于 Vue 3 的企业级组件库，致力于提供快速、�
 ### 构建工具
 
 - **Turborepo**: Monorepo 任务编排与增量构建
-- **Unbuild**: 组件包构建（`packages/components` 等使用）
-- **Rollup**: 底层打包工具（经 `@xihan-ui/build` 封装）
-- **Vite**: playground 预览/开发服务器
+- **tsdown**: 库包打包（经 `@xihan-ui/build` 统一配置）
+- **Vite**: playground 开发服务器
 
 ### 开发工具
 
-- **TypeScript**: 类型系统
-- **ESLint**: 代码检查
-- **Prettier**: 代码格式化
-- **Vitest**: 单元测试
-- **Vue Test Utils**: 组件测试
+- **TypeScript**: 类型系统，四层 tsconfig + project references
+- **oxlint + ESLint**: 代码检查
+- **Stylelint / Prettier**: 样式与格式化
+- **dependency-cruiser**: 分层依赖门禁（唯一权威）
+- **Vitest**: 单元测试与跨适配器一致性测试
+- **size-limit**: 体积棘轮
 
 ### 发布流程
 
-- **pnpm workspace**: 包管理与 `workspace:*` 版本关联
-- **npm**: 包发布（规划中，当前 v0.9.8 处于实验阶段，尚未正式发布）
-- **changesets / GitHub Actions CI-CD**: 尚未接入，规划中
+- **pnpm workspace**: 包管理，内部依赖一律 `workspace:*`，第三方版本统一走 catalog
+- **changesets**: 已接入，`fixed` 版本组同步发布
+- **GitHub Actions**: 已接入（lint → typecheck → boundaries → build → test → size）
+- **npm**: 尚未发布
 
 ## 🤝 贡献指南
 
