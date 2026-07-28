@@ -6,6 +6,11 @@ import {
   XhAccordionItem,
   XhAccordionRoot,
   XhAccordionTrigger,
+  XhAnchorIndicator,
+  XhAnchorItem,
+  XhAnchorLink,
+  XhAnchorList,
+  XhAnchorRoot,
   XhAvatarFallback,
   XhAvatarImage,
   XhAvatarRoot,
@@ -17,6 +22,26 @@ import {
   XhBreadcrumbRoot,
   XhBreadcrumbSeparator,
   XhButton,
+  XhCalendarCell,
+  XhCalendarCellTrigger,
+  XhCalendarGrid,
+  XhCalendarGridBody,
+  XhCalendarGridHead,
+  XhCalendarHeader,
+  XhCalendarHeading,
+  XhCalendarNextTrigger,
+  XhCalendarPrevTrigger,
+  XhCalendarRoot,
+  XhCalendarWeekDay,
+  XhCalendarWeekRow,
+  XhCarouselIndicator,
+  XhCarouselIndicatorGroup,
+  XhCarouselItem,
+  XhCarouselItemGroup,
+  XhCarouselNextTrigger,
+  XhCarouselPrevTrigger,
+  XhCarouselRoot,
+  XhCarouselViewport,
   XhCheckbox,
   XhCheckboxGroupItem,
   XhCheckboxGroupItemControl,
@@ -52,6 +77,33 @@ import {
   XhContextMenuRoot,
   XhContextMenuSeparator,
   XhContextMenuTrigger,
+  XhDateFieldControl,
+  XhDateFieldHiddenInput,
+  XhDateFieldLabel,
+  XhDateFieldRoot,
+  XhDateFieldSegment,
+  XhDatePickerCalendar,
+  XhDatePickerCell,
+  XhDatePickerCellTrigger,
+  XhDatePickerClearTrigger,
+  XhDatePickerContent,
+  XhDatePickerControl,
+  XhDatePickerGrid,
+  XhDatePickerGridBody,
+  XhDatePickerGridHead,
+  XhDatePickerHeader,
+  XhDatePickerHeading,
+  XhDatePickerHiddenInput,
+  XhDatePickerInput,
+  XhDatePickerLabel,
+  XhDatePickerNextTrigger,
+  XhDatePickerPositioner,
+  XhDatePickerPrevTrigger,
+  XhDatePickerRoot,
+  XhDatePickerSegment,
+  XhDatePickerTrigger,
+  XhDatePickerWeekDay,
+  XhDatePickerWeekRow,
   XhDialogCloseTrigger,
   XhDialogContent,
   XhDialogDescription,
@@ -113,6 +165,13 @@ import {
   XhMenuRoot,
   XhMenuSeparator,
   XhMenuTrigger,
+  XhNavigationMenuContent,
+  XhNavigationMenuIndicator,
+  XhNavigationMenuItem,
+  XhNavigationMenuLink,
+  XhNavigationMenuList,
+  XhNavigationMenuRoot,
+  XhNavigationMenuTrigger,
   XhNumberFieldDecrementTrigger,
   XhNumberFieldIncrementTrigger,
   XhNumberFieldInput,
@@ -145,6 +204,12 @@ import {
   XhRatingItem,
   XhRatingLabel,
   XhRatingRoot,
+  XhScrollAreaContent,
+  XhScrollAreaCorner,
+  XhScrollAreaRoot,
+  XhScrollAreaScrollbar,
+  XhScrollAreaThumb,
+  XhScrollAreaViewport,
   XhSelectContent,
   XhSelectIndicator,
   XhSelectItem,
@@ -163,6 +228,9 @@ import {
   XhSliderRoot,
   XhSliderThumb,
   XhSliderTrack,
+  XhSplitterPanel,
+  XhSplitterResizeTrigger,
+  XhSplitterRoot,
   XhStepsContent,
   XhStepsDescription,
   XhStepsIndicator,
@@ -192,6 +260,22 @@ import {
   XhTextFieldInput,
   XhTextFieldLabel,
   XhTextFieldRoot,
+  XhTimeFieldControl,
+  XhTimeFieldHiddenInput,
+  XhTimeFieldLabel,
+  XhTimeFieldRoot,
+  XhTimeFieldSegment,
+  XhTimePickerClearTrigger,
+  XhTimePickerColumn,
+  XhTimePickerContent,
+  XhTimePickerControl,
+  XhTimePickerHiddenInput,
+  XhTimePickerInput,
+  XhTimePickerLabel,
+  XhTimePickerOption,
+  XhTimePickerPositioner,
+  XhTimePickerRoot,
+  XhTimePickerTrigger,
   XhToastActionTrigger,
   XhToastCloseTrigger,
   XhToastDescription,
@@ -221,6 +305,24 @@ import {
   XhTreeItemText,
   XhTreeLabel,
   XhTreeRoot,
+  XhTreeSelectBranch,
+  XhTreeSelectBranchContent,
+  XhTreeSelectBranchControl,
+  XhTreeSelectBranchText,
+  XhTreeSelectBranchTrigger,
+  XhTreeSelectClearTrigger,
+  XhTreeSelectContent,
+  XhTreeSelectHiddenInput,
+  XhTreeSelectIndicator,
+  XhTreeSelectItem,
+  XhTreeSelectItemIndicator,
+  XhTreeSelectItemText,
+  XhTreeSelectLabel,
+  XhTreeSelectPositioner,
+  XhTreeSelectRoot,
+  XhTreeSelectTree,
+  XhTreeSelectTrigger,
+  XhTreeSelectValueText,
   XhTreeTree,
 } from '@xihan-ui/vue'
 import { computed, ref } from 'vue'
@@ -547,6 +649,197 @@ const imageStatus = ref({ ok: '—', broken: '—', none: '—' })
 function onImageStatus(key: 'ok' | 'broken' | 'none', details: { status: string }): void {
   imageStatus.value[key] = details.status
 }
+
+// 三张日历都不给 defaultFocusedValue：聚焦日退回今天，可选窗口也按今天算。
+// 直接取本地年月日拼串，不走 toISOString——那个会先折算成 UTC，东八区的傍晚会差出一天
+function calendarIsoFromToday(offsetDays: number): string {
+  const date = new Date()
+  date.setDate(date.getDate() + offsetDays)
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${date.getFullYear()}-${month}-${day}`
+}
+
+const calendarMin = calendarIsoFromToday(-7)
+const calendarMax = calendarIsoFromToday(7)
+const calendarSingleValue = ref<string[]>([])
+
+// 区间挑到一半时选中集合只有起点一个值，回显要如实把这个半成品显出来
+const calendarRangeValue = ref<string[]>([])
+const calendarRangeText = computed(() => {
+  const [start, end] = calendarRangeValue.value
+  if (!start)
+    return '（未选）'
+  return `${start} → ${end ?? '（待落终点）'}`
+})
+
+// ISO 日期串按 UTC 零点解析，取 UTC 的星期几才不会被本地时区偏移带偏一天
+function calendarIsWeekend(value: string): boolean {
+  const weekday = new Date(value).getUTCDay()
+  return weekday === 0 || weekday === 6
+}
+const calendarWeekendValue = ref<string[]>([])
+const calendarWeekendFocused = ref('')
+function onCalendarWeekendFocusChange(details: { focusedValue: string }): void {
+  calendarWeekendFocused.value = details.focusedValue
+}
+
+// 分段日期：三段填齐才算一份值，没填齐时对外就是 null（v-model 收到的正是 null）
+const dateFieldDue = ref<string | null>(null)
+const dateFieldUs = ref<string | null>('2026-07-28')
+
+// 分段时间：段没填齐时值是空串（不是 null），与日期那组的约定不同
+const timeFieldStart = ref('09:30')
+const timeFieldMeeting = ref('13:45')
+const timeFieldTimer = ref('00:05:30')
+
+// 不可用日的判定归调用方：组件只按它给格子打标，那些天仍可聚焦（还得当方向键的起点），只是落不了值
+function datePickerIsWeekend(value: string): boolean {
+  const weekday = new Date(`${value}T00:00:00`).getDay()
+  return weekday === 0 || weekday === 6
+}
+const datePickerValue = ref<string[]>([])
+const datePickerRange = ref<string[]>([])
+const datePickerRangeText = computed(() => {
+  const [start, end] = datePickerRange.value
+  if (!start)
+    return '（未选）'
+  return end ? `${start} → ${end}` : `${start} → 待定`
+})
+
+const timePickerStep = ref('')
+const timePickerHour12 = ref('')
+
+// 层级、显示文本与节点禁用都查这份树数据（标记只管长相，两者必须同源）；
+// 连打检索按 label 首字母走，文件名因此都以拉丁字母开头
+const treeSelectFiles = [
+  {
+    value: 'docs',
+    label: 'docs',
+    children: [
+      { value: 'guide', label: 'guide.md' },
+      { value: 'api', label: 'api.md' },
+      // 禁用只声明在这里：组件据此打 aria-disabled（不是原生 disabled，禁用行仍要能当方向键的起点）
+      { value: 'draft', label: 'draft.md（禁用）', disabled: true },
+      {
+        value: 'i18n',
+        label: 'i18n',
+        children: [
+          { value: 'zh', label: 'zh-CN.md' },
+          { value: 'en', label: 'en-US.md' },
+        ],
+      },
+    ],
+  },
+  {
+    value: 'assets',
+    label: 'assets',
+    children: [
+      { value: 'logo', label: 'logo.svg' },
+      { value: 'cover', label: 'cover.png' },
+    ],
+  },
+  { value: 'readme', label: 'README.md' },
+]
+const treeSelectValue = ref<string[]>([])
+const treeSelectExpanded = ref<string[]>(['docs'])
+
+// 两栏：侧栏 20-60%，正文最少留 25%。约束数组的长度同时决定面板块数
+const splitterRowPanels = [
+  { id: 'side', min: 20, max: 60 },
+  { id: 'main', min: 25 },
+]
+const splitterRowSize = ref([35, 65])
+const splitterRowDisabled = ref(false)
+const splitterRowEnd = ref('（还没拖过）')
+
+// 竖排三栏：中间那栏可折叠，上下两栏各留 10% 的地板
+const splitterColPanels = [
+  { id: 'head', min: 10 },
+  { id: 'body', min: 15, collapsible: true },
+  { id: 'foot', min: 10 },
+]
+const splitterColSize = ref([30, 40, 30])
+
+function formatSplitterSize(size: readonly number[]): string {
+  return size.map(n => `${n.toFixed(1)}%`).join(' / ')
+}
+
+// 收尾只在松手那一下来一次，键盘推动不走这条路
+function onSplitterRowEnd(details: { size: number[], index: number }): void {
+  splitterRowEnd.value = `第 ${details.index} 条 → ${formatSplitterSize(details.size)}`
+}
+
+// 三十行只为把内容撑得比视口长；每行文本各不相同，v-for 的 key 直接用它
+const scrollAreaLines = Array.from(
+  { length: 30 },
+  (_, i) => `第 ${i + 1} 行 · 视口只有 180px 高，这一行是被挤到框外的那一批之一`,
+)
+const scrollAreaProgress = ref(0)
+const scrollAreaBothX = ref(0)
+const scrollAreaBothY = ref(0)
+
+function scrollAreaRatio(offset: number, room: number): number {
+  return room > 0 ? Math.round(offset / room * 100) : 0
+}
+
+// 组件不对外报滚动：滚动是原生的，要听就直接在视口上监听
+function onScrollAreaScroll(event: Event): void {
+  const el = event.target as HTMLElement
+  scrollAreaProgress.value = scrollAreaRatio(el.scrollTop, el.scrollHeight - el.clientHeight)
+}
+
+function onScrollAreaBothScroll(event: Event): void {
+  const el = event.target as HTMLElement
+  scrollAreaBothX.value = scrollAreaRatio(el.scrollLeft, el.scrollWidth - el.clientWidth)
+  scrollAreaBothY.value = scrollAreaRatio(el.scrollTop, el.scrollHeight - el.clientHeight)
+}
+
+const carouselPage = ref(0)
+const carouselSlides = ['雪山', '海岸', '沙漠']
+const carouselWidePage = ref(0)
+const carouselWideSlides = ['一月', '二月', '三月', '四月', '五月', '六月']
+
+// 链接的 value 就是目标区块的 id：href 由组件按它派生，作者不必再写一遍
+const anchorSections = [
+  { value: 'anchor-brief', label: '这是什么' },
+  { value: 'anchor-keyboard', label: '键盘怎么走' },
+  { value: 'anchor-edge', label: '边界在哪' },
+  { value: 'anchor-tokens', label: '主题与令牌' },
+]
+const anchorActive = ref<string | null>(null)
+
+// 指向当前页面的那条链接：拿它比对即可，不必在数据里逐条写一个布尔
+const navMenuCurrentHref = '#nav-docs-guide'
+const navMenuGroups = [
+  {
+    value: 'products',
+    label: '产品',
+    links: [
+      { href: '#nav-products-runtime', label: '运行时内核' },
+      { href: '#nav-products-vue', label: 'Vue 适配器' },
+      { href: '#nav-products-wc', label: 'Web Components 适配器' },
+    ],
+  },
+  {
+    value: 'docs',
+    label: '文档',
+    links: [
+      { href: '#nav-docs-guide', label: '上手指南' },
+      { href: '#nav-docs-anatomy', label: '部件解剖' },
+      { href: '#nav-docs-keyboard', label: '键盘规格' },
+    ],
+  },
+  {
+    value: 'company',
+    label: '关于',
+    links: [
+      { href: '#nav-company-team', label: '团队' },
+      { href: '#nav-company-contact', label: '联系我们' },
+    ],
+  },
+]
+const navMenuValue = ref<string | null>(null)
 </script>
 
 <template>
@@ -1936,6 +2229,901 @@ function onImageStatus(key: 'ok' | 'broken' | 'none', details: { status: string 
         </XhImageRoot>
       </div>
       <span class="lead">状态：正常 {{ imageStatus.ok }} · 坏地址 {{ imageStatus.broken }} · 无 src {{ imageStatus.none }}</span>
+    </section>
+
+    <section>
+      <h2>Calendar</h2>
+      <p class="lead">
+        网格是作者照 weeks 自己渲染的，键盘全在 grid 上收口：左右方向键走一天、上下走一周，
+        Home / End 落到本周首末（zh-CN 从周一起算，Home 落的是周一而不是周日），
+        PageUp / PageDown 翻一个月，按住 Shift 再翻就是翻一年，Enter 或空格选中当前聚焦的那天。
+        走到月末再按一下右键就直接跨进下个月——展示月跟着聚焦日翻，焦点也跟着落进新月份的那一格，
+        不会掉回页面；首尾两行那些邻月的日子是真日子，点上去照样翻月。
+        三张都开着 fixed-weeks：恒六行，翻月时网格高度不跳。
+        今天那格只描一圈边、不占选中色，被选中时两件事仍分得开。
+        第一张的可选窗口是今天前后各七天：窗口外的日子转 aria-disabled，仍聚焦得上、仍是方向键的起点，
+        只是 Enter 落不了值；整个上一月都够不着时，上一月按钮转成原生 disabled，Tab 都停不上去。
+      </p>
+      <!-- 表头与日期格都照 weeks / weekDays 写：组件不替作者生成节点，农历副标题、节假日角标才塞得进来。
+           日期身份只写在 cell 上，cell-trigger 跟着它所在的 cell 走 -->
+      <XhCalendarRoot
+        v-slot="{ weeks, weekDays }"
+        v-model:value="calendarSingleValue"
+        :min="calendarMin"
+        :max="calendarMax"
+        fixed-weeks
+        style="max-inline-size: 280px;"
+      >
+        <XhCalendarHeader>
+          <!-- 箭头字符念不出「上个月」，可及名字得作者自己给 -->
+          <XhCalendarPrevTrigger aria-label="上个月">
+            ‹
+          </XhCalendarPrevTrigger>
+          <XhCalendarHeading />
+          <XhCalendarNextTrigger aria-label="下个月">
+            ›
+          </XhCalendarNextTrigger>
+        </XhCalendarHeader>
+        <XhCalendarGrid>
+          <XhCalendarGridHead>
+            <!-- 列头得待在一行里：columnheader 直接挂在 rowgroup 下，行列语义从表头就断了 -->
+            <XhCalendarWeekRow>
+              <XhCalendarWeekDay v-for="d in weekDays" :key="d.value" :value="d.value" />
+            </XhCalendarWeekRow>
+          </XhCalendarGridHead>
+          <XhCalendarGridBody>
+            <!-- 格子按日期做 key：翻月时前后两月共有的那几天会被原地复用，
+                 指针底下那一格不被抽走，点邻月的日子才既翻得了月也落得下值 -->
+            <XhCalendarWeekRow v-for="(week, weekIndex) in weeks" :key="weekIndex">
+              <XhCalendarCell v-for="day in week" :key="day.value" :value="day.value">
+                <XhCalendarCellTrigger>{{ day.day }}</XhCalendarCellTrigger>
+              </XhCalendarCell>
+            </XhCalendarWeekRow>
+          </XhCalendarGridBody>
+        </XhCalendarGrid>
+      </XhCalendarRoot>
+      <span class="lead">选中：{{ calendarSingleValue[0] ?? '（未选）' }} · 可选窗口：{{ calendarMin }} ~ {{ calendarMax }}</span>
+
+      <p class="lead" style="margin-block-start: 20px;">
+        区间：第一下落起点，第二下落终点，中间那些天铺着一条连续底色——底色画在格子这一层、不是画在圆角的选中片上，
+        所以它在格与格之间不断开，只有两端各自收圆。起点落下之后，指针划过哪天就预览到哪天；
+        不摸鼠标也一样，方向键走的同时区间跟着长。指针要移出整张网格预览才收，格与格之间挪动不会闪。
+        挑到一半时回显里只有起点一个值，区间已经完整时再点一下就是重开一段。
+        起点落在本月、翻到下个月再落终点也接得上，只是当前展示月里只看得到那一段。
+      </p>
+      <XhCalendarRoot
+        v-slot="{ weeks, weekDays }"
+        v-model:value="calendarRangeValue"
+        selection-mode="range"
+        fixed-weeks
+        style="max-inline-size: 280px;"
+      >
+        <XhCalendarHeader>
+          <XhCalendarPrevTrigger aria-label="上个月">
+            ‹
+          </XhCalendarPrevTrigger>
+          <XhCalendarHeading />
+          <XhCalendarNextTrigger aria-label="下个月">
+            ›
+          </XhCalendarNextTrigger>
+        </XhCalendarHeader>
+        <XhCalendarGrid>
+          <XhCalendarGridHead>
+            <XhCalendarWeekRow>
+              <XhCalendarWeekDay v-for="d in weekDays" :key="d.value" :value="d.value" />
+            </XhCalendarWeekRow>
+          </XhCalendarGridHead>
+          <XhCalendarGridBody>
+            <XhCalendarWeekRow v-for="(week, weekIndex) in weeks" :key="weekIndex">
+              <XhCalendarCell v-for="day in week" :key="day.value" :value="day.value">
+                <XhCalendarCellTrigger>{{ day.day }}</XhCalendarCellTrigger>
+              </XhCalendarCell>
+            </XhCalendarWeekRow>
+          </XhCalendarGridBody>
+        </XhCalendarGrid>
+      </XhCalendarRoot>
+      <span class="lead">区间：{{ calendarRangeText }}</span>
+
+      <p class="lead" style="margin-block-start: 20px;">
+        这张用 isDateUnavailable 把周六周日全判成不可用，要试的正是「不可用不等于走不到」：
+        用方向键横着走过一整周，焦点在周末那两格照样停得住（回显里的聚焦日会走到它们身上），
+        从周末那格接着按方向键也照常起步，只是 Enter 落不下去、点它也只挪焦点不落值。
+        这跟翻月按钮那种原生 disabled 是两码事——后者根本进不了 Tab 序列，焦点压根停不上去。
+        表头这张用 narrow 的单字缩写，另两张是默认的 short，对着看就是 weekdayFormat 的差别。
+      </p>
+      <XhCalendarRoot
+        v-slot="{ weeks, weekDays }"
+        v-model:value="calendarWeekendValue"
+        :is-date-unavailable="calendarIsWeekend"
+        weekday-format="narrow"
+        fixed-weeks
+        style="max-inline-size: 280px;"
+        @focused-value-change="onCalendarWeekendFocusChange"
+      >
+        <XhCalendarHeader>
+          <XhCalendarPrevTrigger aria-label="上个月">
+            ‹
+          </XhCalendarPrevTrigger>
+          <XhCalendarHeading />
+          <XhCalendarNextTrigger aria-label="下个月">
+            ›
+          </XhCalendarNextTrigger>
+        </XhCalendarHeader>
+        <XhCalendarGrid>
+          <XhCalendarGridHead>
+            <XhCalendarWeekRow>
+              <XhCalendarWeekDay v-for="d in weekDays" :key="d.value" :value="d.value" />
+            </XhCalendarWeekRow>
+          </XhCalendarGridHead>
+          <XhCalendarGridBody>
+            <XhCalendarWeekRow v-for="(week, weekIndex) in weeks" :key="weekIndex">
+              <XhCalendarCell v-for="day in week" :key="day.value" :value="day.value">
+                <XhCalendarCellTrigger>{{ day.day }}</XhCalendarCellTrigger>
+              </XhCalendarCell>
+            </XhCalendarWeekRow>
+          </XhCalendarGridBody>
+        </XhCalendarGrid>
+      </XhCalendarRoot>
+      <span class="lead">选中：{{ calendarWeekendValue[0] ?? '（未选）' }} · 聚焦日：{{ calendarWeekendFocused || '（今天）' }}</span>
+    </section>
+
+    <section>
+      <h2>DateField</h2>
+      <p class="lead">
+        三段各是一个可加减的数：上下键给当前段加一减一，到区间两端回绕——月份停在 12 再按上键回到 1，不是卡住。
+        左右键与 Home / End 在段之间走，两端停住不回绕；整组只占一个 Tab 位，换段时那个 Tab 位跟着焦点挪。
+        数字直接敲：月份先打 1 还留在本段等第二位，接着打 2 就成 12 并当场跳下一段；
+        打 7 那一下没有第二位可接（70 早越过 12），当场就跳。年份只打两位不会立刻当成 19xx，走开那一下才补全。
+        Backspace 只清当前段，另外两段一个不动；三段没填齐整份值就是 null，隐藏输入随之空着——
+        一路敲到最后一位落定，才第一次报出值来。
+        日的上界跟着年月走：把月推到 2 月，31 日会被收敛到 28（闰年 29）。
+        上面这个给了 2020-01-01 到 2030-12-31 的边界，年份段的上下键因此只在这十一年里转。
+        两个只差一个 locale：上面按年月日排，下面 en-US 排成月日年——同一份标记，段序换了副面孔。
+        段之间的“年 / 月 / 日”与“/”是本页自己写的普通节点，不在角色表里，换段时不会被当成一站。
+      </p>
+      <div class="row">
+        <XhDateFieldRoot v-model:value="dateFieldDue" locale="zh-CN" min="2020-01-01" max="2030-12-31" name="due">
+          <XhDateFieldLabel>截止日期</XhDateFieldLabel>
+          <XhDateFieldControl>
+            <!-- 段只声明下标：是年是月由 locale 与 granularity 算出来，不由作者指定 -->
+            <XhDateFieldSegment :index="0" />
+            <span>年</span>
+            <XhDateFieldSegment :index="1" />
+            <span>月</span>
+            <XhDateFieldSegment :index="2" />
+            <span>日</span>
+          </XhDateFieldControl>
+          <!-- 表单出口：值是 ISO 串，没填齐时它就是空的 -->
+          <XhDateFieldHiddenInput />
+        </XhDateFieldRoot>
+        <span class="lead">当前值：{{ dateFieldDue ?? '（未填齐）' }}</span>
+      </div>
+      <div class="row" style="margin-block-start: 12px;">
+        <XhDateFieldRoot v-model:value="dateFieldUs" locale="en-US">
+          <XhDateFieldLabel>Due date（en-US）</XhDateFieldLabel>
+          <XhDateFieldControl>
+            <XhDateFieldSegment :index="0" />
+            <span>/</span>
+            <XhDateFieldSegment :index="1" />
+            <span>/</span>
+            <XhDateFieldSegment :index="2" />
+          </XhDateFieldControl>
+        </XhDateFieldRoot>
+        <span class="lead">当前值：{{ dateFieldUs ?? '（未填齐）' }}</span>
+      </div>
+      <p class="lead" style="margin-block-start: 20px;">
+        三种状态摆在一起对着看：禁用的那个段位连 tabindex 都没有，整组从 Tab 序里消失，键盘推不动值，隐藏输入也退出提交；
+        显式 invalid 的边框转成危险色，每段的 aria-invalid 一并翻真；
+        值落在 min / max 之外则是第三回事——root 挂上 data-out-of-range、段的 aria-invalid 照样翻真，
+        但边框不动（那条颜色留给显式 invalid），值本身更不会被悄悄改回区间里，年份段的下界倒是当场收窄到 2020。
+      </p>
+      <div class="row" style="gap: 32px;">
+        <XhDateFieldRoot default-value="2026-07-28" locale="zh-CN" disabled>
+          <XhDateFieldLabel>禁用</XhDateFieldLabel>
+          <XhDateFieldControl>
+            <XhDateFieldSegment :index="0" />
+            <span>年</span>
+            <XhDateFieldSegment :index="1" />
+            <span>月</span>
+            <XhDateFieldSegment :index="2" />
+            <span>日</span>
+          </XhDateFieldControl>
+        </XhDateFieldRoot>
+        <XhDateFieldRoot default-value="2026-07-28" locale="zh-CN" invalid>
+          <XhDateFieldLabel>invalid</XhDateFieldLabel>
+          <XhDateFieldControl>
+            <XhDateFieldSegment :index="0" />
+            <span>年</span>
+            <XhDateFieldSegment :index="1" />
+            <span>月</span>
+            <XhDateFieldSegment :index="2" />
+            <span>日</span>
+          </XhDateFieldControl>
+        </XhDateFieldRoot>
+        <XhDateFieldRoot default-value="2019-05-01" locale="zh-CN" min="2020-01-01">
+          <XhDateFieldLabel>越界（min 2020-01-01）</XhDateFieldLabel>
+          <XhDateFieldControl>
+            <XhDateFieldSegment :index="0" />
+            <span>年</span>
+            <XhDateFieldSegment :index="1" />
+            <span>月</span>
+            <XhDateFieldSegment :index="2" />
+            <span>日</span>
+          </XhDateFieldControl>
+        </XhDateFieldRoot>
+      </div>
+    </section>
+
+    <section>
+      <h2>TimeField</h2>
+      <p class="lead">
+        与日期那组同一套键盘：上下键加减当前段并在段区间里回绕（23 时再按上键回到 0 点），
+        左右键与 Home / End 换段、两端停住不回绕，整组只占一个 Tab 位，Backspace 或 Delete 清掉当前段。
+        数字直接敲：时段打 1 还留在本段等第二位，接着打 3 成 13 并跳到分段；打 5 那一下当场跳（50 早越过 23）；
+        先打 2 再打 5 拼不成 25，落下来的是 5 并跳段。
+        清掉一段整份值就退回空串，隐藏输入随之空着；点标题会把焦点送到第一段。
+        上面这个是 24 小时制。中间那个 hourCycle=12，多出一个上午/下午段——上下键翻面，或者直接按 a / p 指定，
+        13:45 在它那儿显示成 01:45 PM，把时段推到 0 点则显示 12 AM。
+        下面那个精度到秒，秒段显出来并参与值；空段按上下键从该段的边界起步（分段从 0 起，时段按下键从 23 起）。
+        段之间的“:”是本页自己写的普通节点，不在角色表里，换段时不会被当成一站。
+      </p>
+      <div class="row">
+        <XhTimeFieldRoot v-model:value="timeFieldStart" name="start">
+          <XhTimeFieldLabel>开始时间</XhTimeFieldLabel>
+          <XhTimeFieldControl>
+            <XhTimeFieldSegment segment="hour" />
+            <span>:</span>
+            <XhTimeFieldSegment segment="minute" />
+          </XhTimeFieldControl>
+          <!-- 表单出口：值是完整的 ISO 时间串，缺段时它就是空的 -->
+          <XhTimeFieldHiddenInput />
+        </XhTimeFieldRoot>
+        <span class="lead">24 小时制 · 当前值：{{ timeFieldStart || '（未填齐）' }}</span>
+      </div>
+      <div class="row" style="margin-block-start: 12px;">
+        <XhTimeFieldRoot v-model:value="timeFieldMeeting" :hour-cycle="12">
+          <XhTimeFieldLabel>会议时间</XhTimeFieldLabel>
+          <XhTimeFieldControl>
+            <XhTimeFieldSegment segment="hour" />
+            <span>:</span>
+            <XhTimeFieldSegment segment="minute" />
+            <span>&nbsp;</span>
+            <XhTimeFieldSegment segment="dayPeriod" />
+          </XhTimeFieldControl>
+        </XhTimeFieldRoot>
+        <span class="lead">12 小时制 · 值仍是 24 小时的串：{{ timeFieldMeeting || '（未填齐）' }}</span>
+      </div>
+      <div class="row" style="margin-block-start: 12px;">
+        <XhTimeFieldRoot v-model:value="timeFieldTimer" granularity="second">
+          <XhTimeFieldLabel>定时（到秒）</XhTimeFieldLabel>
+          <XhTimeFieldControl>
+            <XhTimeFieldSegment segment="hour" />
+            <span>:</span>
+            <XhTimeFieldSegment segment="minute" />
+            <span>:</span>
+            <XhTimeFieldSegment segment="second" />
+          </XhTimeFieldControl>
+        </XhTimeFieldRoot>
+        <span class="lead">granularity=second · 当前值：{{ timeFieldTimer || '（未填齐）' }}</span>
+      </div>
+      <p class="lead" style="margin-block-start: 20px;">
+        左边禁用：段位连 tabindex 都没有，整组退出 Tab 序，键盘推不动值，隐藏输入也不参与提交。
+        右边给了 09:00 到 18:00 的区间而值是 08:00——越界只做标注、不改写值：
+        root 与 control 一起挂上 data-invalid、边框转成危险色，每段的 aria-invalid 翻真，08:00 原样留着。
+      </p>
+      <div class="row" style="gap: 32px;">
+        <XhTimeFieldRoot default-value="13:45" disabled>
+          <XhTimeFieldLabel>禁用</XhTimeFieldLabel>
+          <XhTimeFieldControl>
+            <XhTimeFieldSegment segment="hour" />
+            <span>:</span>
+            <XhTimeFieldSegment segment="minute" />
+          </XhTimeFieldControl>
+        </XhTimeFieldRoot>
+        <XhTimeFieldRoot default-value="08:00" min="09:00" max="18:00">
+          <XhTimeFieldLabel>越界（09:00 – 18:00）</XhTimeFieldLabel>
+          <XhTimeFieldControl>
+            <XhTimeFieldSegment segment="hour" />
+            <span>:</span>
+            <XhTimeFieldSegment segment="minute" />
+          </XhTimeFieldControl>
+        </XhTimeFieldRoot>
+      </div>
+    </section>
+
+    <section>
+      <h2>DatePicker</h2>
+      <p class="lead">
+        点右端那颗按钮展开日历，焦点直接落到聚焦日那一格——有选中值就是它、没有就是今天，而不是浮层里第一个能聚焦的东西。
+        网格里左右键走天、上下键走周、PageUp / PageDown 换月（按住 Shift 是换年），Home / End 落在本周首末天；
+        左右键越过月界就翻到相邻月，整张网格重画，焦点仍稳稳落在该落的那天上。
+        段位与日历写的是同一个值：在段位上按上下键改日、或在网格里点一天，另一边当场跟着改口，末尾那个表单出口也一起。
+        Escape 收起并把焦点还给触发按钮，值一点不动；Tab 不被拦下——焦点顺着序列走出浮层，浮层随即收起，且不把焦点抢回来。
+        上面这个是单选，选完即收起；周末由本页判定为不可用，那些格子转 aria-disabled，方向键照样走得过去，只是落不了值、点也不动。
+        今天只描一圈边：今天与被选中是两件事，同一天上两者要能同时看得出来。
+        网格与表头都是本页照 weeks / weekDays 渲染的，组件一个节点都不替作者生成。
+      </p>
+      <div class="row">
+        <XhDatePickerRoot
+          v-slot="{ weeks, weekDays, headingLabel }"
+          v-model:value="datePickerValue"
+          :is-date-unavailable="datePickerIsWeekend"
+          locale="zh-CN"
+          name="due"
+        >
+          <!-- 刻意不是原生 label：段位是 div，不是能被 for 指向的控件，点标题聚焦首段由组件接管 -->
+          <XhDatePickerLabel>交付日期</XhDatePickerLabel>
+          <XhDatePickerControl>
+            <XhDatePickerInput>
+              <!-- 段位不写内容：显示什么由组件按当前值填。分隔符是普通节点，不在角色表里 -->
+              <XhDatePickerSegment :index="0" />
+              <span>-</span>
+              <XhDatePickerSegment :index="1" />
+              <span>-</span>
+              <XhDatePickerSegment :index="2" />
+            </XhDatePickerInput>
+            <XhDatePickerClearTrigger>✕</XhDatePickerClearTrigger>
+            <XhDatePickerTrigger>▾</XhDatePickerTrigger>
+          </XhDatePickerControl>
+          <!-- 表单出口：随表单提交的是 ISO 串，给了 name 才带 name -->
+          <XhDatePickerHiddenInput />
+          <XhDatePickerPositioner>
+            <XhDatePickerContent>
+              <XhDatePickerCalendar>
+                <XhDatePickerHeader>
+                  <XhDatePickerPrevTrigger>‹</XhDatePickerPrevTrigger>
+                  <XhDatePickerHeading>{{ headingLabel }}</XhDatePickerHeading>
+                  <XhDatePickerNextTrigger>›</XhDatePickerNextTrigger>
+                </XhDatePickerHeader>
+                <XhDatePickerGrid>
+                  <XhDatePickerGridHead>
+                    <!-- 列头得待在一行里：columnheader 直接挂在 rowgroup 下，行列语义从表头这一层就断了 -->
+                    <XhDatePickerWeekRow>
+                      <XhDatePickerWeekDay v-for="d in weekDays" :key="d.value" :value="d.value">
+                        {{ d.label }}
+                      </XhDatePickerWeekDay>
+                    </XhDatePickerWeekRow>
+                  </XhDatePickerGridHead>
+                  <XhDatePickerGridBody>
+                    <!-- v-for 必带 key：就地复用会让承载焦点的那一格换了身份，翻月后焦点无处可落 -->
+                    <XhDatePickerWeekRow v-for="week in weeks" :key="week[0].value">
+                      <XhDatePickerCell v-for="day in week" :key="day.value" :value="day.value">
+                        <XhDatePickerCellTrigger>{{ day.day }}</XhDatePickerCellTrigger>
+                      </XhDatePickerCell>
+                    </XhDatePickerWeekRow>
+                  </XhDatePickerGridBody>
+                </XhDatePickerGrid>
+              </XhDatePickerCalendar>
+            </XhDatePickerContent>
+          </XhDatePickerPositioner>
+        </XhDatePickerRoot>
+        <span class="lead">当前值：{{ datePickerValue[0] ?? '（未选）' }}</span>
+      </div>
+      <p class="lead" style="margin-block-start: 20px;">
+        下面这个是区间：先落起点再落终点，只落了起点浮层不收——“选完了”的判据是两端都在，收起那一路整个不起跳。
+        挑到一半时把指针在网格上移开，起点到指针之间先铺一层预览底色；底色铺在格子上而不是格子里那个圆角块上，中间那些天才连得成一条。
+        段位只显示起点：一排段位表达不出两个日期，在段位上改日改的就是起点，终点原样留着。
+        这一个没写表单出口，理由同上。
+      </p>
+      <div class="row">
+        <XhDatePickerRoot
+          v-slot="{ weeks, weekDays, headingLabel }"
+          v-model:value="datePickerRange"
+          locale="zh-CN"
+          selection-mode="range"
+        >
+          <XhDatePickerLabel>起止日期</XhDatePickerLabel>
+          <XhDatePickerControl>
+            <XhDatePickerInput>
+              <XhDatePickerSegment :index="0" />
+              <span>-</span>
+              <XhDatePickerSegment :index="1" />
+              <span>-</span>
+              <XhDatePickerSegment :index="2" />
+            </XhDatePickerInput>
+            <XhDatePickerClearTrigger>✕</XhDatePickerClearTrigger>
+            <XhDatePickerTrigger>▾</XhDatePickerTrigger>
+          </XhDatePickerControl>
+          <XhDatePickerPositioner>
+            <XhDatePickerContent>
+              <XhDatePickerCalendar>
+                <XhDatePickerHeader>
+                  <XhDatePickerPrevTrigger>‹</XhDatePickerPrevTrigger>
+                  <XhDatePickerHeading>{{ headingLabel }}</XhDatePickerHeading>
+                  <XhDatePickerNextTrigger>›</XhDatePickerNextTrigger>
+                </XhDatePickerHeader>
+                <XhDatePickerGrid>
+                  <XhDatePickerGridHead>
+                    <XhDatePickerWeekRow>
+                      <XhDatePickerWeekDay v-for="d in weekDays" :key="d.value" :value="d.value">
+                        {{ d.label }}
+                      </XhDatePickerWeekDay>
+                    </XhDatePickerWeekRow>
+                  </XhDatePickerGridHead>
+                  <XhDatePickerGridBody>
+                    <XhDatePickerWeekRow v-for="week in weeks" :key="week[0].value">
+                      <XhDatePickerCell v-for="day in week" :key="day.value" :value="day.value">
+                        <XhDatePickerCellTrigger>{{ day.day }}</XhDatePickerCellTrigger>
+                      </XhDatePickerCell>
+                    </XhDatePickerWeekRow>
+                  </XhDatePickerGridBody>
+                </XhDatePickerGrid>
+              </XhDatePickerCalendar>
+            </XhDatePickerContent>
+          </XhDatePickerPositioner>
+        </XhDatePickerRoot>
+        <span class="lead">已选区间：{{ datePickerRangeText }}</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>TimePicker</h2>
+      <p class="lead">
+        改值有两条路，写的是同一个值：输入行里逐段敲——每段是一个可加减的数，上下键加减、数字直接输、
+        一段填满自动跳下一段、退格清掉本段；浮层里按列挑——上下键在列内走（到头到尾都回绕），
+        左右键换列并落到目标列的锚点上（两端停住，不回绕），Home / End 到本列首末格，Enter 选中焦点所在那一格。
+        改哪边另一边都跟着走：在段上敲 0930，浮层里 09 与 30 两格当场变成选中；在列里挑一格，段上的数字同时改口。
+        选一格不收起浮层——其余列还要接着挑，两列都挑完才凑得成一个值（只挑了时，回显仍是空的）。
+        触发按钮上按上下键也能展开，焦点直接交给时列的锚点那一格；Escape 收起并把焦点归还它，值不变；Tab 同样收起且不抢回焦点。
+        右端的清空钮把值倒掉、各段退回占位符，按完焦点回到首段——它不占 Tab 位也不报给读屏，键盘用户在段上按退格是同一个能力。
+        上面这个 step=15，分列因此只剩 00 / 15 / 30 / 45 四格；时列 24 格装不下，方向键走到列尾它自己滚起来（滚的是那一列，不是整个面板）。
+      </p>
+      <div class="row">
+        <XhTimePickerRoot v-model:value="timePickerStep" :step="15" name="start">
+          <XhTimePickerLabel>会议开始</XhTimePickerLabel>
+          <XhTimePickerControl>
+            <!-- 段不写内容：显示什么由组件按当前值填（空段是占位串）。
+                 分隔符是段与段之间的普通节点，不在角色表里 -->
+            <XhTimePickerInput segment="hour" />
+            <span>:</span>
+            <XhTimePickerInput segment="minute" />
+            <XhTimePickerTrigger>▾</XhTimePickerTrigger>
+            <XhTimePickerClearTrigger>✕</XhTimePickerClearTrigger>
+          </XhTimePickerControl>
+          <!-- 表单出口：随表单提交的是完整 ISO 串 -->
+          <XhTimePickerHiddenInput />
+          <XhTimePickerPositioner>
+            <XhTimePickerContent>
+              <!-- 可选值由 step 与小时制算出来，作者照它渲染；v-for 必带 key，
+                   就地复用会让承载焦点的那一格换了身份 -->
+              <XhTimePickerColumn v-slot="{ options }" unit="hour">
+                <XhTimePickerOption v-for="o in options" :key="o" :value="o" />
+              </XhTimePickerColumn>
+              <XhTimePickerColumn v-slot="{ options }" unit="minute">
+                <XhTimePickerOption v-for="o in options" :key="o" :value="o" />
+              </XhTimePickerColumn>
+            </XhTimePickerContent>
+          </XhTimePickerPositioner>
+        </XhTimePickerRoot>
+        <span class="lead">当前值：{{ timePickerStep || '（空）' }}</span>
+      </div>
+      <p class="lead" style="margin-block-start: 20px;">
+        下面这个是 12 小时制：时列写的是显示值 01-12，落到哪个真实小时上由上下午段说了算——
+        在那一段上按 a / p 直接指定（认的是键不是那两个字，所以显示成“上午 / 下午”也照样管用），
+        翻一次面段上的数字一动不动，值却从 09:30 变成了 21:30。
+        浮层里没有上下午这一列，它只在输入行里改。分列这次是逐分钟的 60 格，正好看看列自己的滚动。
+      </p>
+      <div class="row">
+        <XhTimePickerRoot v-model:value="timePickerHour12" :hour-cycle="12" locale="zh-CN">
+          <XhTimePickerLabel>提醒时间</XhTimePickerLabel>
+          <XhTimePickerControl>
+            <XhTimePickerInput segment="hour" />
+            <span>:</span>
+            <XhTimePickerInput segment="minute" />
+            <XhTimePickerInput segment="dayPeriod" />
+            <XhTimePickerTrigger>▾</XhTimePickerTrigger>
+            <XhTimePickerClearTrigger>✕</XhTimePickerClearTrigger>
+          </XhTimePickerControl>
+          <XhTimePickerPositioner>
+            <XhTimePickerContent>
+              <XhTimePickerColumn v-slot="{ options }" unit="hour">
+                <XhTimePickerOption v-for="o in options" :key="o" :value="o" />
+              </XhTimePickerColumn>
+              <XhTimePickerColumn v-slot="{ options }" unit="minute">
+                <XhTimePickerOption v-for="o in options" :key="o" :value="o" />
+              </XhTimePickerColumn>
+            </XhTimePickerContent>
+          </XhTimePickerPositioner>
+        </XhTimePickerRoot>
+        <span class="lead">当前值：{{ timePickerHour12 || '（空）' }}</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>TreeSelect</h2>
+      <p class="lead">
+        收起时整个控件只占一个 Tab 位（就是那个触发按钮）：Enter、空格与上下键都展开，
+        展开那一刻焦点真的进树、落在已选中的那行上（没选过就落首个可停留行），Tab 停靠点随之移进树里。
+        上下键走的是可见行——docs 默认展开，它底下那几行才在序列里；收起的子树一行不算。
+        右键在收起的分支上就地展开、已展开则进首个子节点；左键反过来：展开的分支就地收起，
+        收起的分支与叶子跳回父层，根层的行什么也不做。Home / End 落首末可见行，连打字母只在可见行里检索。
+        Enter 选中并收起浮层、焦点归还触发按钮；Escape 也收起，但选中值与展开集合一个都不变。
+        draft.md 是禁用叶子：方向键与检索跳过它，它仍点得中、仍能当方向键的起点，只是确认键不认它。
+        点分支那一行只改选中值、不切展开（单选选完浮层就收起了，顺手切一下你根本看不见），
+        展开归行首那个箭头与左右方向键；每深一层的缩进由子层容器自己顶着，本页一行样式都没写。
+      </p>
+      <!-- 选中与展开都走受控：组件只发事件，宿主写回它才动，回显的就是写回的那两份集合 -->
+      <XhTreeSelectRoot
+        v-model:value="treeSelectValue"
+        v-model:expanded-value="treeSelectExpanded"
+        :collection="treeSelectFiles"
+        name="doc"
+        placeholder="选一个文件"
+        style="max-inline-size: 320px;"
+      >
+        <XhTreeSelectLabel>文档</XhTreeSelectLabel>
+        <XhTreeSelectTrigger>
+          <!-- 不写内容即由组件填当前值的文本，无选中时填 placeholder -->
+          <XhTreeSelectValueText />
+          <XhTreeSelectIndicator>▾</XhTreeSelectIndicator>
+        </XhTreeSelectTrigger>
+        <XhTreeSelectClearTrigger>✕</XhTreeSelectClearTrigger>
+        <XhTreeSelectPositioner>
+          <XhTreeSelectContent>
+            <XhTreeSelectTree>
+              <XhTreeSelectBranch value="docs">
+                <XhTreeSelectBranchControl>
+                  <!-- 箭头 aria-hidden 且不占 Tab 位，焦点该落在分支自己身上；
+                       它与叶子的勾选标记同宽，两种行的文字起点才对得齐 -->
+                  <XhTreeSelectBranchTrigger>▸</XhTreeSelectBranchTrigger>
+                  <XhTreeSelectBranchText>docs</XhTreeSelectBranchText>
+                </XhTreeSelectBranchControl>
+                <XhTreeSelectBranchContent>
+                  <XhTreeSelectItem value="guide">
+                    <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                    <XhTreeSelectItemText>guide.md</XhTreeSelectItemText>
+                  </XhTreeSelectItem>
+                  <XhTreeSelectItem value="api">
+                    <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                    <XhTreeSelectItemText>api.md</XhTreeSelectItemText>
+                  </XhTreeSelectItem>
+                  <XhTreeSelectItem value="draft">
+                    <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                    <XhTreeSelectItemText>draft.md（禁用）</XhTreeSelectItemText>
+                  </XhTreeSelectItem>
+                  <XhTreeSelectBranch value="i18n">
+                    <XhTreeSelectBranchControl>
+                      <XhTreeSelectBranchTrigger>▸</XhTreeSelectBranchTrigger>
+                      <XhTreeSelectBranchText>i18n</XhTreeSelectBranchText>
+                    </XhTreeSelectBranchControl>
+                    <XhTreeSelectBranchContent>
+                      <XhTreeSelectItem value="zh">
+                        <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                        <XhTreeSelectItemText>zh-CN.md</XhTreeSelectItemText>
+                      </XhTreeSelectItem>
+                      <XhTreeSelectItem value="en">
+                        <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                        <XhTreeSelectItemText>en-US.md</XhTreeSelectItemText>
+                      </XhTreeSelectItem>
+                    </XhTreeSelectBranchContent>
+                  </XhTreeSelectBranch>
+                </XhTreeSelectBranchContent>
+              </XhTreeSelectBranch>
+              <XhTreeSelectBranch value="assets">
+                <XhTreeSelectBranchControl>
+                  <XhTreeSelectBranchTrigger>▸</XhTreeSelectBranchTrigger>
+                  <XhTreeSelectBranchText>assets</XhTreeSelectBranchText>
+                </XhTreeSelectBranchControl>
+                <XhTreeSelectBranchContent>
+                  <XhTreeSelectItem value="logo">
+                    <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                    <XhTreeSelectItemText>logo.svg</XhTreeSelectItemText>
+                  </XhTreeSelectItem>
+                  <XhTreeSelectItem value="cover">
+                    <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                    <XhTreeSelectItemText>cover.png</XhTreeSelectItemText>
+                  </XhTreeSelectItem>
+                </XhTreeSelectBranchContent>
+              </XhTreeSelectBranch>
+              <XhTreeSelectItem value="readme">
+                <XhTreeSelectItemIndicator>✓</XhTreeSelectItemIndicator>
+                <XhTreeSelectItemText>README.md</XhTreeSelectItemText>
+              </XhTreeSelectItem>
+            </XhTreeSelectTree>
+          </XhTreeSelectContent>
+        </XhTreeSelectPositioner>
+        <!-- 表单出口：写了这个节点才随表单提交，多选按逗号拼成一串 -->
+        <XhTreeSelectHiddenInput />
+      </XhTreeSelectRoot>
+      <span class="lead">已选：{{ treeSelectValue.length ? treeSelectValue.join('、') : '（无）' }} · 展开：{{ treeSelectExpanded.length ? treeSelectExpanded.join('、') : '（无）' }}</span>
+    </section>
+
+    <section>
+      <h2>Splitter</h2>
+      <p class="lead">
+        两栏并排，拖分隔条改的是百分比而不是绝对宽度——面板在排布轴上的尺寸由连接层每帧写成 flex-basis，
+        总和恒为 100，容器变宽变窄比例不动。每条分隔条各占一个 Tab 位（不是一组只留一个），
+        焦点落上去后方向键按 step 推一格，Shift + 方向键按 largeStep 一次走 10%；
+        水平排布只认左右两键，上下键原样放行给页面滚动，按下去滚的是页面。
+        Home 把侧栏收到 20%、End 撑到 60%，那是它眼下真走得到的两端，越不过去也不回绕。
+        拖动途中 size-change 连着发，松开手才发一次 size-change-end——键盘推动只发前者，
+        下面两行回显的正是这两件不一样的事（“上次收尾”要拖过才会变）。
+        勾上禁用后拖不动也推不动，分隔条整个退出 Tab 序列；方向键此刻不被拦下，该滚页面还是滚页面。
+      </p>
+      <!-- v-model:size 即受控：组件只发意图，宿主写回它才动。
+           root 的高度是本页给的——分栏不给容器一个确定的跨轴尺寸就没什么可看的 -->
+      <XhSplitterRoot
+        v-model:size="splitterRowSize"
+        :panels="splitterRowPanels"
+        :disabled="splitterRowDisabled"
+        style="block-size: 140px;"
+        @size-change-end="onSplitterRowEnd"
+      >
+        <XhSplitterPanel :index="0">
+          <p class="lead">
+            侧栏：写着 min 20% / max 60%，一路往左拖到底也留得住 20%，往右撑到 60% 就再也推不动了。
+          </p>
+        </XhSplitterPanel>
+        <XhSplitterResizeTrigger :index="0" />
+        <XhSplitterPanel :index="1">
+          <p class="lead">
+            正文：写着 min 25%，侧栏再怎么撑也吃不掉它这一份；面板自己 overflow 收着，长文本顶不开算好的比例。
+          </p>
+        </XhSplitterPanel>
+      </XhSplitterRoot>
+      <label class="row">
+        <input v-model="splitterRowDisabled" type="checkbox"> 禁用（disabled）
+      </label>
+      <div class="row">
+        <span class="lead">当前比例：{{ formatSplitterSize(splitterRowSize) }}</span>
+        <span class="lead">上次收尾：{{ splitterRowEnd }}</span>
+      </div>
+      <p class="lead" style="margin-block-start: 20px;">
+        竖排三栏，方向键跟着换轴：这里只认上下两键，左右两键放行。
+        每条分隔条调的都是它前面那一块，aria-controls 指的也是前一块——所以中间那栏归第 1 条（它下面那条）管。
+        停在第 1 条上按 Enter 折叠中间那栏，腾出来的地方先给底栏；再按一次展开，回到折叠前的尺寸而不是某个默认值。
+        同一颗 Enter 落在上面那条分隔条上什么也不做：它管的是顶栏，顶栏没写 collapsible，这一键就留给页面。
+        从 30/40/30 出发在第 1 条上按 End，中间那栏停在 60% 而不是纸面上的 100%——底栏至少要留 10%，
+        分隔条报的 aria-valuemax 恒是眼下真走得到的那个数。
+      </p>
+      <XhSplitterRoot
+        v-model:size="splitterColSize"
+        :panels="splitterColPanels"
+        orientation="vertical"
+        style="block-size: 220px;"
+      >
+        <XhSplitterPanel :index="0">
+          <p class="lead">
+            顶栏：min 10%，不可折叠。
+          </p>
+        </XhSplitterPanel>
+        <XhSplitterResizeTrigger :index="0" />
+        <XhSplitterPanel :index="1">
+          <p class="lead">
+            中间这栏写着 collapsible：折叠后带上 data-collapsed，连边框都不留。
+          </p>
+        </XhSplitterPanel>
+        <XhSplitterResizeTrigger :index="1" />
+        <XhSplitterPanel :index="2">
+          <p class="lead">
+            底栏：min 10%，中间那栏能撑到多大由它这条地板说了算。
+          </p>
+        </XhSplitterPanel>
+      </XhSplitterRoot>
+      <span class="lead">当前比例：{{ formatSplitterSize(splitterColSize) }}</span>
+    </section>
+
+    <section>
+      <h2>ScrollArea</h2>
+      <p class="lead">
+        三十行文字塞进一个 180px 高的框：右边那条滚动条是自绘的，原生那条只是被藏了外观，滚动能力一点没动。
+        滚轮、触控板、以及 PageUp / PageDown、方向键、Home / End、空格走的全是浏览器原生通路——
+        组件一个按键都不监听，也一个 preventDefault 都不写。
+        视口自己占一个 Tab 位：滚动区里可能一个可聚焦元素都没有，不给 Tab 位键盘用户根本落不进来，
+        Tab 停上去再按 PageDown 就试得出来。滑块按住能拖，手拖出滚动条甚至拖出窗口都还跟着走；
+        点轨道空白处滑块中心跳到落点，而按在滑块上的那一下不会跳（它本来就在指针底下）。
+        这一台是 <code>type="hover"</code>：指针进入才露出，离开后要等满 scroll-hide-delay（这里放宽到 800ms）
+        才收起——擦一下边就闪没了很难看，所以离开的那一刻它还露着；光滚动不算数，指针不进来它一直收着。
+        下面那行回显挂的是视口自己的原生 scroll 事件。
+      </p>
+      <!-- root 的高度与宽度是本页给的：滚动区不给一个确定的框，内容就永远不溢出，滚动条也就永远不显形 -->
+      <XhScrollAreaRoot
+        type="hover"
+        :scroll-hide-delay="800"
+        orientation="vertical"
+        style="block-size: 180px; max-inline-size: 420px;"
+      >
+        <XhScrollAreaViewport @scroll="onScrollAreaScroll">
+          <XhScrollAreaContent>
+            <p v-for="line in scrollAreaLines" :key="line" class="lead">
+              {{ line }}
+            </p>
+          </XhScrollAreaContent>
+        </XhScrollAreaViewport>
+        <XhScrollAreaScrollbar orientation="vertical">
+          <XhScrollAreaThumb />
+        </XhScrollAreaScrollbar>
+      </XhScrollAreaRoot>
+      <span class="lead">已滚过 {{ scrollAreaProgress }}%</span>
+      <p class="lead" style="margin-block-start: 20px;">
+        这一台两条轴都溢出，且 <code>type="always"</code> 让滚动条恒露着——内容不溢出时也留着槽位，
+        布局不会因为内容长短而抖一下。右下角那块补丁只在两条滚动条同时在场时才有它的位置：
+        把 orientation 改成 vertical，横轴那条与补丁会一并带上 hidden 让位，视口那一向也随即不滚了。
+        横轴的滑块用的全是逻辑属性（inset-inline-start / inline-size），root 上标一个 dir="rtl" 整条就反过来，
+        本页一个定位声明都没写。内容那层的宽度倒是本页给的：横向不给内容一个比视口宽的尺寸，
+        就永远量不出溢出，横条也永远不显形。
+      </p>
+      <XhScrollAreaRoot type="always" style="block-size: 120px; max-inline-size: 420px;">
+        <XhScrollAreaViewport @scroll="onScrollAreaBothScroll">
+          <XhScrollAreaContent style="inline-size: 760px;">
+            <p class="lead">
+              这一层被本页写死成 760px 宽，比视口宽出去的那截就是横向要滚的量。
+            </p>
+            <p class="lead">
+              竖向也溢出：五段文字加起来比 120px 高的框长，两条滚动条因此同时在场。
+            </p>
+            <p class="lead">
+              按住横轴的滑块左右拖，视口的 scrollLeft 跟着走；松手后再动指针就不跟了。
+            </p>
+            <p class="lead">
+              点横轨空白处，滑块中心跳到落点；两条轨道各认各的轴，手按在哪条上只有那条变深。
+            </p>
+            <p class="lead">
+              右下角那块补丁盖住的正是两条轨道交叉的那个缺口，少了它会露出底下的内容。
+            </p>
+          </XhScrollAreaContent>
+        </XhScrollAreaViewport>
+        <XhScrollAreaScrollbar orientation="vertical">
+          <XhScrollAreaThumb />
+        </XhScrollAreaScrollbar>
+        <XhScrollAreaScrollbar orientation="horizontal">
+          <XhScrollAreaThumb />
+        </XhScrollAreaScrollbar>
+        <XhScrollAreaCorner />
+      </XhScrollAreaRoot>
+      <span class="lead">横向已滚过 {{ scrollAreaBothX }}% · 纵向 {{ scrollAreaBothY }}%</span>
+    </section>
+
+    <section>
+      <h2>Carousel</h2>
+      <p class="lead">
+        键盘落在两端按钮或指示点上就能翻页：横轨认左右键（上下键不归它管，原样放行给页面滚动），
+        Home / End 直接跳首末页。指示点一页一个，各自留在 Tab 序列里，点一下即跳到那一页。
+        这一条开着自动播放：鼠标停上去、或焦点走进来都会把计时按住，两个来源各记一笔——
+        鼠标移开时若焦点还留在里面，画面仍不会自己翻，两笔都撤了才继续走（下面那行状态会跟着变）。
+        手动翻一页会重新计满一整个间隔，不会刚点完就被上一轮的余数接着翻走。
+        它开了回绕，末页的下一张回到首页。视口不给高度就没有可裁的窗口，什么也看不见，高度是本页给的。
+      </p>
+      <XhCarouselRoot
+        v-slot="{ totalPages, autoplaying, paused }"
+        v-model:page="carouselPage"
+        :slide-count="carouselSlides.length"
+        :autoplay="2500"
+        loop
+      >
+        <XhCarouselPrevTrigger>‹</XhCarouselPrevTrigger>
+        <!-- 皮肤只给视口 overflow: hidden，尺寸归本页：不给高度轨道就没有高度可裁 -->
+        <XhCarouselViewport style="block-size: 140px;">
+          <XhCarouselItemGroup>
+            <!-- v-for 必带 key：就地复用会让下标与节点对不上，位移与 aria 标签一起错位 -->
+            <XhCarouselItem v-for="(text, i) in carouselSlides" :key="text" :index="i">
+              <!-- 幻灯片里装什么归作者，皮肤一概不碰；这一层只把字撑到整张中间 -->
+              <div style="display: grid; place-items: center; block-size: 100%;">
+                {{ text }}
+              </div>
+            </XhCarouselItem>
+          </XhCarouselItemGroup>
+        </XhCarouselViewport>
+        <XhCarouselNextTrigger>›</XhCarouselNextTrigger>
+        <XhCarouselIndicatorGroup>
+          <!-- 页数由 slideCount 与 slidesPerPage 算出，作者照着渲染；元素不替作者建节点 -->
+          <XhCarouselIndicator v-for="p in totalPages" :key="p" :index="p - 1" />
+        </XhCarouselIndicatorGroup>
+        <!-- root 自己就是会换行的横排 flex，回显想独占一行只能自己占满（纯本页版式） -->
+        <span class="lead" style="flex-basis: 100%;">
+          第 {{ carouselPage + 1 }} / {{ totalPages }} 页 · {{ autoplaying ? '自动播放中' : paused ? '被按住（鼠标停着或焦点在内）' : '已停' }}
+        </span>
+      </XhCarouselRoot>
+      <p class="lead" style="margin-block-start: 20px;">
+        一屏两张、六张共三页：一次翻几张缺省跟随一屏几张，所以仍是整屏翻。
+        这一条不回绕，首页的上一张与末页的下一张转成原生 disabled，Tab 都停不上去。
+        张与张的间距走 spacing，它落成每张自己的内边距而不是轨道的 gap——
+        用 gap 的话「一张 = 100%/2」这条位移前提就不成立，越翻越偏。
+      </p>
+      <XhCarouselRoot
+        v-slot="{ totalPages }"
+        v-model:page="carouselWidePage"
+        :slide-count="carouselWideSlides.length"
+        :slides-per-page="2"
+        spacing="12px"
+      >
+        <XhCarouselPrevTrigger>‹</XhCarouselPrevTrigger>
+        <XhCarouselViewport style="block-size: 120px;">
+          <XhCarouselItemGroup>
+            <XhCarouselItem v-for="(text, i) in carouselWideSlides" :key="text" :index="i">
+              <div style="display: grid; place-items: center; block-size: 100%;">
+                {{ text }}
+              </div>
+            </XhCarouselItem>
+          </XhCarouselItemGroup>
+        </XhCarouselViewport>
+        <XhCarouselNextTrigger>›</XhCarouselNextTrigger>
+        <XhCarouselIndicatorGroup>
+          <XhCarouselIndicator v-for="p in totalPages" :key="p" :index="p - 1" />
+        </XhCarouselIndicatorGroup>
+        <span class="lead" style="flex-basis: 100%;">
+          第 {{ carouselWidePage + 1 }} / {{ totalPages }} 页
+        </span>
+      </XhCarouselRoot>
+    </section>
+
+    <section>
+      <h2>Anchor</h2>
+      <p class="lead">
+        这一段是活的：往下滚页面，左边目录里高亮的那条会自己跟着换。
+        判定线贴着视口顶边（offset 默认 0，页面有吸顶栏就把栏高填进去），越过它的最后一节即当前节，
+        那条链接拿到 aria-current="location"——location 说的是「本页面里的这个位置」，page 说的是「这就是当前页面」，用在这儿不对。
+        四节都还在判定线下方时谁都不亮、指示条也整条收起：此时硬把首条点亮就是让「当前位置」说谎。
+        反过来，把整页拉到最底会强制点亮末条——末几节都很短时谁也越不过判定线，不特判它就永远亮不了。
+        这一条开了 smooth：点链接不走原生片段跳转，而是拦下来自己平滑滚过去，且高亮当场就切到点中的那条，
+        途中扫过的那几节不抢（滚到目标之前观察器说的都不算数）。
+        目录本身是 nav 地标加一个 ul，指示条的位置由组件量好、写成它自己的内联样式。
+      </p>
+      <!-- 纯本页版式：左目录右正文分两栏，目录吸在视口上，不然滚到正文里就看不见高亮在动了 -->
+      <div style="display: grid; grid-template-columns: 180px 1fr; gap: 20px; align-items: start;">
+        <XhAnchorRoot v-model:value="anchorActive" smooth style="position: sticky; inset-block-start: 12px;">
+          <XhAnchorList>
+            <XhAnchorItem v-for="s in anchorSections" :key="s.value">
+              <XhAnchorLink :value="s.value">
+                {{ s.label }}
+              </XhAnchorLink>
+            </XhAnchorItem>
+            <!-- 指示条必须住在 list 里：它以 list 为定位参照系，而 ul 里只放得下 li -->
+            <XhAnchorIndicator />
+          </XhAnchorList>
+        </XhAnchorRoot>
+        <div>
+          <!-- 目标区块是页面内容、不是组件的部件；组件按链接的 value 现查 id -->
+          <div v-for="s in anchorSections" :id="s.value" :key="s.value" style="block-size: 200px;">
+            <strong>{{ s.label }}</strong>
+            <p class="lead">
+              滚动页面，看左边这一条什么时候亮起来、什么时候交给下一条。
+            </p>
+          </div>
+        </div>
+      </div>
+      <span class="lead">当前：{{ anchorActive ?? '（还没有一节越过判定线）' }}</span>
+    </section>
+
+    <section>
+      <h2>NavigationMenu</h2>
+      <p class="lead">
+        鼠标停在某个入口上、或用 Tab 把焦点送上去，都要等一小会儿面板才展开（这一条把延时调到 400ms，
+        肉眼看得出那段等待）——防的是指针横穿导航栏时一路闪出三个面板。
+        等待期间划到隔壁入口不重新计时：横穿本来就是一次连续的动作，每换一个就把秒表归零的话，慢慢划过去一个也等不出来。
+        已经有面板开着时再碰别的入口是当场换项、不再等——人已经在这套导航里了。
+        Enter 与空格立即展开，不走延时；自动弹出来的那一项被点中时不会当场关掉，再按一次才收起。
+        Escape 收起并把焦点还给对应入口，且刚还回去的这一下不会把面板重新弹出来；
+        收起之后的一小段静默窗口内，再碰任意入口都是直接展开。
+        指针移出整块导航或焦点走出去，面板一并收起；但鼠标扫出去时若焦点还留在里面就不收——键盘用户正读的东西不该被鼠标带走。
+        面板里的条目是链接不是命令，这正是它与 Menu 的分野：点了就跳走，组件不拦，只顺手把面板收起；
+        指向当前页的那条写了 current，拿到 aria-current="page"。
+        每个面板都紧跟在自己的入口之后，展开时按 Tab 就走得进去，收起的那些带 hidden、整个被跳过。
+      </p>
+      <XhNavigationMenuRoot v-model:value="navMenuValue" :delay-duration="400">
+        <XhNavigationMenuList>
+          <!-- 一项 = 一个 li，面板就写在同一个 li 里、紧跟 trigger 之后：
+               「Tab 从入口走进展开的面板」靠的正是这个位置关系 -->
+          <XhNavigationMenuItem v-for="g in navMenuGroups" :key="g.value">
+            <XhNavigationMenuTrigger :value="g.value">
+              {{ g.label }}
+            </XhNavigationMenuTrigger>
+            <XhNavigationMenuContent :value="g.value">
+              <XhNavigationMenuLink
+                v-for="l in g.links"
+                :key="l.href"
+                :href="l.href"
+                :current="l.href === navMenuCurrentHref"
+              >
+                {{ l.label }}
+              </XhNavigationMenuLink>
+            </XhNavigationMenuContent>
+          </XhNavigationMenuItem>
+          <!-- 指示条必须住在 list 里：它以 list 为定位参照系，而 ul 里只放得下 li -->
+          <XhNavigationMenuIndicator />
+        </XhNavigationMenuList>
+      </XhNavigationMenuRoot>
+      <span class="lead">展开的面板：{{ navMenuValue ?? '（都收着）' }}</span>
     </section>
   </main>
 </template>

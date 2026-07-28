@@ -1435,6 +1435,876 @@ app.innerHTML = `
     </div>
     <span class="lead" id="wc-image-state"></span>
   </section>
+
+  <section>
+    <h2>Calendar</h2>
+    <p class="lead">
+      网格是作者照 weeks 自己渲染的，键盘全在 grid 上收口：左右方向键走一天、上下走一周，
+      Home / End 落到本周首末（zh-CN 从周一起算，Home 落的是周一而不是周日），
+      PageUp / PageDown 翻一个月，按住 Shift 再翻就是翻一年，Enter 或空格选中当前聚焦的那天。
+      走到月末再按一下右键就直接跨进下个月——展示月跟着聚焦日翻，焦点也跟着落进新月份的那一格，
+      不会掉回页面；首尾两行那些邻月的日子是真日子，点上去照样翻月。
+      三张都开着 fixed-weeks：恒六行，翻月时网格高度不跳。
+      今天那格只描一圈边、不占选中色，被选中时两件事仍分得开。
+      第一张的可选窗口是今天前后各七天：窗口外的日子转 aria-disabled，仍聚焦得上、仍是方向键的起点，
+      只是 Enter 落不了值；整个上一月都够不着时，上一月按钮转成原生 disabled，Tab 都停不上去。
+    </p>
+    <xh-calendar id="wc-calendar-single" fixed-weeks>
+      <!-- 元素只交 weeks / weekDays / headingLabel 三份数据，一个节点都不生成：
+           表头行与日期行这两个容器留空，由脚本一次建好骨架（恒六行四十二格），
+           翻月时只改每格的 value 与文字、不重建节点。标题文案也归作者写进 heading -->
+      <div data-xh-part="root" style="max-inline-size: 280px;">
+        <div data-xh-part="header">
+          <!-- 翻月是单体控件，必须是原生 button（越界时元素给它打原生 disabled）；
+               箭头字符念不出「上个月」，可及名字得作者自己给 -->
+          <button data-xh-part="prev-trigger" aria-label="上个月">‹</button>
+          <div data-xh-part="heading"></div>
+          <button data-xh-part="next-trigger" aria-label="下个月">›</button>
+        </div>
+        <div data-xh-part="grid">
+          <div data-xh-part="grid-head">
+            <!-- 列头得待在一行里：columnheader 直接挂在 rowgroup 下，行列语义从表头就断了 -->
+            <div data-xh-part="week-row"></div>
+          </div>
+          <div data-xh-part="grid-body"></div>
+        </div>
+      </div>
+    </xh-calendar>
+    <span class="lead" id="wc-calendar-single-value"></span>
+
+    <p class="lead" style="margin-block-start: 20px;">
+      区间：第一下落起点，第二下落终点，中间那些天铺着一条连续底色——底色画在格子这一层、不是画在圆角的选中片上，
+      所以它在格与格之间不断开，只有两端各自收圆。起点落下之后，指针划过哪天就预览到哪天；
+      不摸鼠标也一样，方向键走的同时区间跟着长。指针要移出整张网格预览才收，格与格之间挪动不会闪。
+      挑到一半时回显里只有起点一个值，区间已经完整时再点一下就是重开一段。
+      起点落在本月、翻到下个月再落终点也接得上，只是当前展示月里只看得到那一段。
+    </p>
+    <xh-calendar id="wc-calendar-range" selection-mode="range" fixed-weeks>
+      <div data-xh-part="root" style="max-inline-size: 280px;">
+        <div data-xh-part="header">
+          <button data-xh-part="prev-trigger" aria-label="上个月">‹</button>
+          <div data-xh-part="heading"></div>
+          <button data-xh-part="next-trigger" aria-label="下个月">›</button>
+        </div>
+        <div data-xh-part="grid">
+          <div data-xh-part="grid-head">
+            <div data-xh-part="week-row"></div>
+          </div>
+          <div data-xh-part="grid-body"></div>
+        </div>
+      </div>
+    </xh-calendar>
+    <span class="lead" id="wc-calendar-range-value"></span>
+
+    <p class="lead" style="margin-block-start: 20px;">
+      这张用 isDateUnavailable 把周六周日全判成不可用，要试的正是「不可用不等于走不到」：
+      用方向键横着走过一整周，焦点在周末那两格照样停得住（回显里的聚焦日会走到它们身上），
+      从周末那格接着按方向键也照常起步，只是 Enter 落不下去、点它也只挪焦点不落值。
+      这跟翻月按钮那种原生 disabled 是两码事——后者根本进不了 Tab 序列，焦点压根停不上去。
+      表头这张用 narrow 的单字缩写，另两张是默认的 short，对着看就是 weekday-format 的差别。
+    </p>
+    <!-- 判定函数是函数，走不了 HTML 属性，只能在脚本里作为 property 交过去 -->
+    <xh-calendar id="wc-calendar-weekend" weekday-format="narrow" fixed-weeks>
+      <div data-xh-part="root" style="max-inline-size: 280px;">
+        <div data-xh-part="header">
+          <button data-xh-part="prev-trigger" aria-label="上个月">‹</button>
+          <div data-xh-part="heading"></div>
+          <button data-xh-part="next-trigger" aria-label="下个月">›</button>
+        </div>
+        <div data-xh-part="grid">
+          <div data-xh-part="grid-head">
+            <div data-xh-part="week-row"></div>
+          </div>
+          <div data-xh-part="grid-body"></div>
+        </div>
+      </div>
+    </xh-calendar>
+    <span class="lead" id="wc-calendar-weekend-value"></span>
+  </section>
+
+  <section>
+    <h2>DateField</h2>
+    <p class="lead">
+      三段各是一个可加减的数：上下键给当前段加一减一，到区间两端回绕——月份停在 12 再按上键回到 1，不是卡住。
+      左右键与 Home / End 在段之间走，两端停住不回绕；整组只占一个 Tab 位，换段时那个 Tab 位跟着焦点挪。
+      数字直接敲：月份先打 1 还留在本段等第二位，接着打 2 就成 12 并当场跳下一段；
+      打 7 那一下没有第二位可接（70 早越过 12），当场就跳。年份只打两位不会立刻当成 19xx，走开那一下才补全。
+      Backspace 只清当前段，另外两段一个不动；三段没填齐整份值就是 null，隐藏输入随之空着——
+      一路敲到最后一位落定，才第一次报出值来。
+      日的上界跟着年月走：把月推到 2 月，31 日会被收敛到 28（闰年 29）。
+      上面这个给了 2020-01-01 到 2030-12-31 的边界，年份段的上下键因此只在这十一年里转。
+      两个只差一个 <code>locale</code>：上面按年月日排，下面 en-US 排成月日年——同一份标记，段序换了副面孔。
+      段之间的“年 / 月 / 日”与“/”是本页自己写的普通节点，不在角色表里，换段时不会被当成一站。
+    </p>
+    <div class="row">
+      <xh-date-field id="wc-date-field-cn" locale="zh-CN" min="2020-01-01" max="2030-12-31" name="due">
+        <!-- root / label / control / 每一段 / hidden-input 全由作者写。
+             标题须是 span 而不是 label：段位是 div，&lt;label for&gt; 指不到它，写成 label 只会给出一个点了没反应的标题，
+             “点标题聚焦首段”由元素自己接管。
+             段位写 div，只声明下标（index），是年是月由 locale 与 granularity 算出来 -->
+        <div data-xh-part="root">
+          <span data-xh-part="label">截止日期</span>
+          <div data-xh-part="control">
+            <!-- 段里不写文字：显示什么由元素每帧填，写死了就再也刷不动 -->
+            <div data-xh-part="segment" index="0"></div>
+            <!-- 分隔符没有 data-xh-part，换段时不会被当成一站 -->
+            <span>年</span>
+            <div data-xh-part="segment" index="1"></div>
+            <span>月</span>
+            <div data-xh-part="segment" index="2"></div>
+            <span>日</span>
+          </div>
+          <!-- 表单出口：元素把它改写成 type=hidden，值是 ISO 串，没填齐时是空的 -->
+          <input data-xh-part="hidden-input">
+        </div>
+      </xh-date-field>
+      <span class="lead" id="wc-date-field-cn-value">当前值：（未填齐）</span>
+    </div>
+    <div class="row" style="margin-block-start: 12px;">
+      <xh-date-field id="wc-date-field-us" locale="en-US" default-value="2026-07-28">
+        <div data-xh-part="root">
+          <span data-xh-part="label">Due date（en-US）</span>
+          <div data-xh-part="control">
+            <div data-xh-part="segment" index="0"></div>
+            <span>/</span>
+            <div data-xh-part="segment" index="1"></div>
+            <span>/</span>
+            <div data-xh-part="segment" index="2"></div>
+          </div>
+        </div>
+      </xh-date-field>
+      <span class="lead" id="wc-date-field-us-value">当前值：2026-07-28</span>
+    </div>
+    <p class="lead" style="margin-block-start: 20px;">
+      三种状态摆在一起对着看：禁用的那个段位连 tabindex 都没有，整组从 Tab 序里消失，键盘推不动值，隐藏输入也退出提交；
+      显式 <code>invalid</code> 的边框转成危险色，每段的 aria-invalid 一并翻真；
+      值落在 <code>min</code> / <code>max</code> 之外则是第三回事——root 挂上 data-out-of-range、段的 aria-invalid 照样翻真，
+      但边框不动（那条颜色留给显式 invalid），值本身更不会被悄悄改回区间里，年份段的下界倒是当场收窄到 2020。
+    </p>
+    <div class="row" style="gap: 32px;">
+      <xh-date-field locale="zh-CN" default-value="2026-07-28" disabled>
+        <div data-xh-part="root">
+          <span data-xh-part="label">禁用</span>
+          <div data-xh-part="control">
+            <div data-xh-part="segment" index="0"></div>
+            <span>年</span>
+            <div data-xh-part="segment" index="1"></div>
+            <span>月</span>
+            <div data-xh-part="segment" index="2"></div>
+            <span>日</span>
+          </div>
+        </div>
+      </xh-date-field>
+      <xh-date-field locale="zh-CN" default-value="2026-07-28" invalid>
+        <div data-xh-part="root">
+          <span data-xh-part="label">invalid</span>
+          <div data-xh-part="control">
+            <div data-xh-part="segment" index="0"></div>
+            <span>年</span>
+            <div data-xh-part="segment" index="1"></div>
+            <span>月</span>
+            <div data-xh-part="segment" index="2"></div>
+            <span>日</span>
+          </div>
+        </div>
+      </xh-date-field>
+      <xh-date-field locale="zh-CN" default-value="2019-05-01" min="2020-01-01">
+        <div data-xh-part="root">
+          <span data-xh-part="label">越界（min 2020-01-01）</span>
+          <div data-xh-part="control">
+            <div data-xh-part="segment" index="0"></div>
+            <span>年</span>
+            <div data-xh-part="segment" index="1"></div>
+            <span>月</span>
+            <div data-xh-part="segment" index="2"></div>
+            <span>日</span>
+          </div>
+        </div>
+      </xh-date-field>
+    </div>
+  </section>
+
+  <section>
+    <h2>TimeField</h2>
+    <p class="lead">
+      与日期那组同一套键盘：上下键加减当前段并在段区间里回绕（23 时再按上键回到 0 点），
+      左右键与 Home / End 换段、两端停住不回绕，整组只占一个 Tab 位，Backspace 或 Delete 清掉当前段。
+      数字直接敲：时段打 1 还留在本段等第二位，接着打 3 成 13 并跳到分段；打 5 那一下当场跳（50 早越过 23）；
+      先打 2 再打 5 拼不成 25，落下来的是 5 并跳段。
+      清掉一段整份值就退回空串，隐藏输入随之空着；点标题会把焦点送到第一段。
+      上面这个是 24 小时制。中间那个 <code>hour-cycle="12"</code>，多出一个上午/下午段——上下键翻面，或者直接按 a / p 指定，
+      13:45 在它那儿显示成 01:45 PM，把时段推到 0 点则显示 12 AM。
+      下面那个精度到秒，秒段显出来并参与值；空段按上下键从该段的边界起步（分段从 0 起，时段按下键从 23 起）。
+      段之间的“:”是本页自己写的普通节点，不在角色表里，换段时不会被当成一站。
+    </p>
+    <div class="row">
+      <xh-time-field id="wc-time-field-24" default-value="09:30" name="start">
+        <!-- root / label / control / 每一段 / hidden-input 全由作者写。
+             标题写原生 label：它在表单里的语义与样式照旧，只是 for 无处可指（段是 span），
+             “点标题聚焦第一段”由元素接管。
+             段写 span，身份由 segment 属性声明；段里不写文字——显示什么由元素每帧填，
+             作者一旦写了内容元素就再也不碰它 -->
+        <div data-xh-part="root">
+          <label data-xh-part="label">开始时间</label>
+          <div data-xh-part="control">
+            <span data-xh-part="segment" segment="hour"></span>
+            <!-- 分隔符没有 data-xh-part，换段时不会被当成一站 -->
+            <span>:</span>
+            <span data-xh-part="segment" segment="minute"></span>
+          </div>
+          <!-- 表单出口：元素把它改写成 type=hidden，值是完整 ISO 串，缺段时是空的 -->
+          <input data-xh-part="hidden-input">
+        </div>
+      </xh-time-field>
+      <span class="lead" id="wc-time-field-24-value">24 小时制 · 当前值：09:30</span>
+    </div>
+    <div class="row" style="margin-block-start: 12px;">
+      <xh-time-field id="wc-time-field-12" hour-cycle="12" default-value="13:45">
+        <div data-xh-part="root">
+          <label data-xh-part="label">会议时间</label>
+          <div data-xh-part="control">
+            <span data-xh-part="segment" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="segment" segment="minute"></span>
+            <span>&nbsp;</span>
+            <!-- 属性值大小写敏感：段名就是 dayPeriod，写成 dayperiod 会退回按文档序认段 -->
+            <span data-xh-part="segment" segment="dayPeriod"></span>
+          </div>
+        </div>
+      </xh-time-field>
+      <span class="lead" id="wc-time-field-12-value">12 小时制 · 值仍是 24 小时的串：13:45</span>
+    </div>
+    <div class="row" style="margin-block-start: 12px;">
+      <xh-time-field id="wc-time-field-sec" granularity="second" default-value="00:05:30">
+        <div data-xh-part="root">
+          <label data-xh-part="label">定时（到秒）</label>
+          <div data-xh-part="control">
+            <span data-xh-part="segment" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="segment" segment="minute"></span>
+            <span>:</span>
+            <span data-xh-part="segment" segment="second"></span>
+          </div>
+        </div>
+      </xh-time-field>
+      <span class="lead" id="wc-time-field-sec-value">granularity=second · 当前值：00:05:30</span>
+    </div>
+    <p class="lead" style="margin-block-start: 20px;">
+      左边禁用：段位连 tabindex 都没有，整组退出 Tab 序，键盘推不动值，隐藏输入也不参与提交。
+      右边给了 09:00 到 18:00 的区间而值是 08:00——越界只做标注、不改写值：
+      root 与 control 一起挂上 data-invalid、边框转成危险色，每段的 aria-invalid 翻真，08:00 原样留着。
+    </p>
+    <div class="row" style="gap: 32px;">
+      <xh-time-field default-value="13:45" disabled>
+        <div data-xh-part="root">
+          <label data-xh-part="label">禁用</label>
+          <div data-xh-part="control">
+            <span data-xh-part="segment" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="segment" segment="minute"></span>
+          </div>
+        </div>
+      </xh-time-field>
+      <xh-time-field default-value="08:00" min="09:00" max="18:00">
+        <div data-xh-part="root">
+          <label data-xh-part="label">越界（09:00 – 18:00）</label>
+          <div data-xh-part="control">
+            <span data-xh-part="segment" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="segment" segment="minute"></span>
+          </div>
+        </div>
+      </xh-time-field>
+    </div>
+  </section>
+
+  <section>
+    <h2>DatePicker</h2>
+    <p class="lead">
+      点右端那颗按钮展开日历，焦点直接落到聚焦日那一格——有选中值就是它、没有就是今天，而不是浮层里第一个能聚焦的东西。
+      网格里左右键走天、上下键走周、PageUp / PageDown 换月（按住 Shift 是换年），Home / End 落在本周首末天；
+      左右键越过月界就翻到相邻月，整张网格重画，焦点仍稳稳落在该落的那天上。
+      段位与日历写的是同一个值：在段位上按上下键改日、或在网格里点一天，另一边当场跟着改口，末尾那个表单出口也一起。
+      Escape 收起并把焦点还给触发按钮，值一点不动；Tab 不被拦下——焦点顺着序列走出浮层，浮层随即收起，且不把焦点抢回来。
+      上面这个是单选，选完即收起；周末由本页判定为不可用，那些格子转 aria-disabled，方向键照样走得过去，只是落不了值、点也不动。
+      今天只描一圈边：今天与被选中是两件事，同一天上两者要能同时看得出来。
+      网格与表头归脚本按元素给的 <code>weeks</code> / <code>weekDays</code> 渲染，元素一个节点都不建；
+      <code>focused-value-change</code> 是“该重画了”的唯一信号，不听它日历就永远停在首帧那个月。
+    </p>
+    <div class="row">
+      <xh-date-picker id="wc-date-picker" locale="zh-CN" name="due">
+        <!-- label 刻意不是原生 label：段位是 div，不是能被 for 指向的控件，点标题聚焦首段由元素接管。
+             三颗按钮必须是 button——要能聚焦，也要接得住 Enter / Space -->
+        <div data-xh-part="root">
+          <span data-xh-part="label">交付日期</span>
+          <div data-xh-part="control">
+            <div data-xh-part="input">
+              <!-- 段位留空：显示什么由元素按当前值填。index 声明它是第几段（缺省按文档序），
+                   分隔符是普通节点，不在角色表里 -->
+              <div data-xh-part="segment" index="0"></div>
+              <span>-</span>
+              <div data-xh-part="segment" index="1"></div>
+              <span>-</span>
+              <div data-xh-part="segment" index="2"></div>
+            </div>
+            <button data-xh-part="clear-trigger">✕</button>
+            <button data-xh-part="trigger">▾</button>
+          </div>
+          <!-- 表单出口：随表单提交的是 ISO 串，给了 name 才带 name -->
+          <input data-xh-part="hidden-input">
+          <div data-xh-part="positioner">
+            <div data-xh-part="content">
+              <div data-xh-part="calendar">
+                <div data-xh-part="header">
+                  <button data-xh-part="prev-trigger">‹</button>
+                  <!-- 标题文字与网格都由脚本填：元素只交数据，不写内容 -->
+                  <div data-xh-part="heading"></div>
+                  <button data-xh-part="next-trigger">›</button>
+                </div>
+                <div data-xh-part="grid">
+                  <div data-xh-part="grid-head">
+                    <!-- 列头得待在一行里：columnheader 直接挂在 rowgroup 下，行列语义从表头这一层就断了 -->
+                    <div data-xh-part="week-row" id="wc-date-picker-week-days"></div>
+                  </div>
+                  <div data-xh-part="grid-body" id="wc-date-picker-grid"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </xh-date-picker>
+      <span class="lead" id="wc-date-picker-value">当前值：（未选）</span>
+    </div>
+    <p class="lead" style="margin-block-start: 20px;">
+      下面这个是区间：先落起点再落终点，只落了起点浮层不收——“选完了”的判据是两端都在，收起那一路整个不起跳。
+      挑到一半时把指针在网格上移开，起点到指针之间先铺一层预览底色；底色铺在格子上而不是格子里那个圆角块上，中间那些天才连得成一条。
+      段位只显示起点：一排段位表达不出两个日期，在段位上改日改的就是起点，终点原样留着。
+      这一个没写表单出口，理由同上。
+    </p>
+    <div class="row">
+      <xh-date-picker id="wc-date-picker-range" locale="zh-CN" selection-mode="range">
+        <div data-xh-part="root">
+          <span data-xh-part="label">起止日期</span>
+          <div data-xh-part="control">
+            <div data-xh-part="input">
+              <div data-xh-part="segment" index="0"></div>
+              <span>-</span>
+              <div data-xh-part="segment" index="1"></div>
+              <span>-</span>
+              <div data-xh-part="segment" index="2"></div>
+            </div>
+            <button data-xh-part="clear-trigger">✕</button>
+            <button data-xh-part="trigger">▾</button>
+          </div>
+          <div data-xh-part="positioner">
+            <div data-xh-part="content">
+              <div data-xh-part="calendar">
+                <div data-xh-part="header">
+                  <button data-xh-part="prev-trigger">‹</button>
+                  <div data-xh-part="heading"></div>
+                  <button data-xh-part="next-trigger">›</button>
+                </div>
+                <div data-xh-part="grid">
+                  <div data-xh-part="grid-head">
+                    <div data-xh-part="week-row" id="wc-date-picker-range-week-days"></div>
+                  </div>
+                  <div data-xh-part="grid-body" id="wc-date-picker-range-grid"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </xh-date-picker>
+      <span class="lead" id="wc-date-picker-range-value">已选区间：（未选）</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>TimePicker</h2>
+    <p class="lead">
+      改值有两条路，写的是同一个值：输入行里逐段敲——每段是一个可加减的数，上下键加减、数字直接输、
+      一段填满自动跳下一段、退格清掉本段；浮层里按列挑——上下键在列内走（到头到尾都回绕），
+      左右键换列并落到目标列的锚点上（两端停住，不回绕），Home / End 到本列首末格，Enter 选中焦点所在那一格。
+      改哪边另一边都跟着走：在段上敲 0930，浮层里 09 与 30 两格当场变成选中；在列里挑一格，段上的数字同时改口。
+      选一格不收起浮层——其余列还要接着挑，两列都挑完才凑得成一个值（只挑了时，回显仍是空的）。
+      触发按钮上按上下键也能展开，焦点直接交给时列的锚点那一格；Escape 收起并把焦点归还它，值不变；Tab 同样收起且不抢回焦点。
+      右端的清空钮把值倒掉、各段退回占位符，按完焦点回到首段——它不占 Tab 位也不报给读屏，键盘用户在段上按退格是同一个能力。
+      上面这个 <code>step=15</code>，分列因此只剩 00 / 15 / 30 / 45 四格；时列 24 格装不下，方向键走到列尾它自己滚起来（滚的是那一列，不是整个面板）。
+      列里的格归脚本按同一份规则生成，元素只打属性、不建节点。
+    </p>
+    <div class="row">
+      <xh-time-picker id="wc-time-picker" step="15" name="start">
+        <!-- label 必须是原生 label：段不是能被 for 指向的控件，点标题聚焦首段由元素接管，
+             写成 label 是为了让它在表单里保持惯常的语义。两颗按钮必须是 button -->
+        <div data-xh-part="root">
+          <label data-xh-part="label">会议开始</label>
+          <div data-xh-part="control">
+            <!-- 段留空：显示什么由元素按当前值填（空段是占位串）。segment 声明它是哪一段（缺省按文档序），
+                 分隔符是普通节点，不在角色表里 -->
+            <span data-xh-part="input" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="input" segment="minute"></span>
+            <button data-xh-part="trigger">▾</button>
+            <button data-xh-part="clear-trigger">✕</button>
+          </div>
+          <div data-xh-part="positioner">
+            <!-- 每列一个 listbox，格由脚本填；格上的文字同样归元素写 -->
+            <div data-xh-part="content">
+              <div data-xh-part="column" unit="hour" id="wc-time-picker-hours"></div>
+              <div data-xh-part="column" unit="minute" id="wc-time-picker-minutes"></div>
+            </div>
+          </div>
+          <!-- 表单出口：随表单提交的是完整 ISO 串 -->
+          <input data-xh-part="hidden-input">
+        </div>
+      </xh-time-picker>
+      <span class="lead" id="wc-time-picker-value">当前值：（空）</span>
+    </div>
+    <p class="lead" style="margin-block-start: 20px;">
+      下面这个是 12 小时制：时列写的是显示值 01-12，落到哪个真实小时上由上下午段说了算——
+      在那一段上按 a / p 直接指定（认的是键不是那两个字，所以显示成“上午 / 下午”也照样管用），
+      翻一次面段上的数字一动不动，隐藏输入里的整串却从 09:30 变成了 21:30。
+      浮层里没有上下午这一列，它只在输入行里改。分列这次是逐分钟的 60 格，正好看看列自己的滚动。
+    </p>
+    <div class="row">
+      <xh-time-picker id="wc-time-picker-12" hour-cycle="12" locale="zh-CN">
+        <div data-xh-part="root">
+          <label data-xh-part="label">提醒时间</label>
+          <div data-xh-part="control">
+            <span data-xh-part="input" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="input" segment="minute"></span>
+            <span data-xh-part="input" segment="dayPeriod"></span>
+            <button data-xh-part="trigger">▾</button>
+            <button data-xh-part="clear-trigger">✕</button>
+          </div>
+          <div data-xh-part="positioner">
+            <div data-xh-part="content">
+              <div data-xh-part="column" unit="hour" id="wc-time-picker-12-hours"></div>
+              <div data-xh-part="column" unit="minute" id="wc-time-picker-12-minutes"></div>
+            </div>
+          </div>
+        </div>
+      </xh-time-picker>
+      <span class="lead" id="wc-time-picker-12-value">当前值：（空）</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>TreeSelect</h2>
+    <p class="lead">
+      收起时整个控件只占一个 Tab 位（就是那个触发按钮）：Enter、空格与上下键都展开，
+      展开那一刻焦点真的进树、落在已选中的那行上（没选过就落首个可停留行），Tab 停靠点随之移进树里。
+      上下键走的是可见行——docs 默认展开，它底下那几行才在序列里；收起的子树一行不算。
+      右键在收起的分支上就地展开、已展开则进首个子节点；左键反过来：展开的分支就地收起，
+      收起的分支与叶子跳回父层，根层的行什么也不做。Home / End 落首末可见行，连打字母只在可见行里检索。
+      Enter 选中并收起浮层、焦点归还触发按钮；Escape 也收起，但选中值与展开集合一个都不变。
+      draft.md 是禁用叶子：方向键与检索跳过它，它仍点得中、仍能当方向键的起点，只是确认键不认它。
+      点分支那一行只改选中值、不切展开（单选选完浮层就收起了，顺手切一下你根本看不见），
+      展开归行首那个箭头与左右方向键；每深一层的缩进由子层容器自己顶着，本页一行样式都没写。
+    </p>
+    <xh-tree-select id="wc-tree-select" name="doc" placeholder="选一个文件">
+      <!-- 层级三件套、禁用与显示文本全查树数据（数组表达不了属性，只能按 property 交），
+           标记与它必须同源：标记里有、树数据里没有的节点报不出层级，也进不了导航。
+           节点身份写在自己的 value 属性上，行内的文本、箭头与子层容器向上找最近的 item / branch -->
+      <div data-xh-part="root" style="max-inline-size: 320px;">
+        <span data-xh-part="label">文档</span>
+        <!-- 必须是原生 button：div 不可聚焦，「收起后焦点归还触发按钮」就永远等不到 -->
+        <button data-xh-part="trigger">
+          <!-- 留空即由元素填当前值的文本（名字住在树数据里，作者写不出来）；写了内容就归作者 -->
+          <span data-xh-part="value-text"></span>
+          <span data-xh-part="indicator">▾</span>
+        </button>
+        <button data-xh-part="clear-trigger">✕</button>
+        <div data-xh-part="positioner">
+          <div data-xh-part="content">
+            <div data-xh-part="tree">
+              <div data-xh-part="branch" value="docs">
+                <div data-xh-part="branch-control">
+                  <!-- 箭头写成 span 不是 button：它 aria-hidden 且不占 Tab 位，焦点该落在分支上 -->
+                  <span data-xh-part="branch-trigger">▸</span>
+                  <span data-xh-part="branch-text">docs</span>
+                </div>
+                <div data-xh-part="branch-content">
+                  <div data-xh-part="item" value="guide">
+                    <span data-xh-part="item-indicator">✓</span>
+                    <span data-xh-part="item-text">guide.md</span>
+                  </div>
+                  <div data-xh-part="item" value="api">
+                    <span data-xh-part="item-indicator">✓</span>
+                    <span data-xh-part="item-text">api.md</span>
+                  </div>
+                  <!-- 禁用不写在标记上：元素照树数据给这一行打 aria-disabled，
+                       绝不打原生 disabled——那样它就不可聚焦，也当不成方向键的起点 -->
+                  <div data-xh-part="item" value="draft">
+                    <span data-xh-part="item-indicator">✓</span>
+                    <span data-xh-part="item-text">draft.md（禁用）</span>
+                  </div>
+                  <div data-xh-part="branch" value="i18n">
+                    <div data-xh-part="branch-control">
+                      <span data-xh-part="branch-trigger">▸</span>
+                      <span data-xh-part="branch-text">i18n</span>
+                    </div>
+                    <div data-xh-part="branch-content">
+                      <div data-xh-part="item" value="zh">
+                        <span data-xh-part="item-indicator">✓</span>
+                        <span data-xh-part="item-text">zh-CN.md</span>
+                      </div>
+                      <div data-xh-part="item" value="en">
+                        <span data-xh-part="item-indicator">✓</span>
+                        <span data-xh-part="item-text">en-US.md</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div data-xh-part="branch" value="assets">
+                <div data-xh-part="branch-control">
+                  <span data-xh-part="branch-trigger">▸</span>
+                  <span data-xh-part="branch-text">assets</span>
+                </div>
+                <div data-xh-part="branch-content">
+                  <div data-xh-part="item" value="logo">
+                    <span data-xh-part="item-indicator">✓</span>
+                    <span data-xh-part="item-text">logo.svg</span>
+                  </div>
+                  <div data-xh-part="item" value="cover">
+                    <span data-xh-part="item-indicator">✓</span>
+                    <span data-xh-part="item-text">cover.png</span>
+                  </div>
+                </div>
+              </div>
+              <div data-xh-part="item" value="readme">
+                <span data-xh-part="item-indicator">✓</span>
+                <span data-xh-part="item-text">README.md</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 表单出口：写了这个节点才随表单提交，元素自己把它置成 type=hidden -->
+        <input data-xh-part="hidden-input">
+      </div>
+    </xh-tree-select>
+    <span class="lead" id="wc-tree-select-state"></span>
+  </section>
+
+  <section>
+    <h2>Splitter</h2>
+    <p class="lead">
+      两栏并排，拖分隔条改的是百分比而不是绝对宽度——面板在排布轴上的尺寸由元素每帧写成 flex-basis，
+      总和恒为 100，容器变宽变窄比例不动。每条分隔条各占一个 Tab 位（不是一组只留一个），
+      焦点落上去后方向键按 step 推一格，Shift + 方向键按 large-step 一次走 10%；
+      水平排布只认左右两键，上下键原样放行给页面滚动，按下去滚的是页面。
+      Home 把侧栏收到 20%、End 撑到 60%，那是它眼下真走得到的两端，越不过去也不回绕。
+      拖动途中 size-change 连着发，松开手才发一次 size-change-end——键盘推动只发前者，
+      下面两行回显的正是这两件不一样的事（“上次收尾”要拖过才会变）。
+      勾上禁用后拖不动也推不动，分隔条整个退出 Tab 序列；方向键此刻不被拦下，该滚页面还是滚页面。
+    </p>
+    <!-- root / panel / resize-trigger 全由作者写：面板与分隔条都要用 index 属性写明自己是第几个。
+         分隔条落成 div——元素给它 role="separator" 与 tabindex，原生 disabled 在它身上不生效，
+         禁用只表达成 aria-disabled 与 data-disabled。逐块约束走 panels 那份 JSON。
+         root 的高度是本页给的：分栏不给容器一个确定的跨轴尺寸就没什么可看的 -->
+    <xh-splitter id="wc-splitter-row" default-size="35,65" panels='[{"id":"side","min":20,"max":60},{"id":"main","min":25}]'>
+      <div data-xh-part="root" style="block-size: 140px;">
+        <div data-xh-part="panel" index="0">
+          <p class="lead">
+            侧栏：写着 min 20% / max 60%，一路往左拖到底也留得住 20%，往右撑到 60% 就再也推不动了。
+          </p>
+        </div>
+        <div data-xh-part="resize-trigger" index="0"></div>
+        <div data-xh-part="panel" index="1">
+          <p class="lead">
+            正文：写着 min 25%，侧栏再怎么撑也吃不掉它这一份；面板自己 overflow 收着，长文本顶不开算好的比例。
+          </p>
+        </div>
+      </div>
+    </xh-splitter>
+    <label class="row">
+      <input type="checkbox" id="wc-splitter-row-disabled"> 禁用（disabled）
+    </label>
+    <div class="row">
+      <span class="lead" id="wc-splitter-row-size"></span>
+      <span class="lead" id="wc-splitter-row-end">上次收尾：（还没拖过）</span>
+    </div>
+    <p class="lead" style="margin-block-start: 20px;">
+      竖排三栏，方向键跟着换轴：这里只认上下两键，左右两键放行。
+      每条分隔条调的都是它前面那一块，aria-controls 指的也是前一块——所以中间那栏归第 1 条（它下面那条）管。
+      停在第 1 条上按 Enter 折叠中间那栏，腾出来的地方先给底栏；再按一次展开，回到折叠前的尺寸而不是某个默认值。
+      同一颗 Enter 落在上面那条分隔条上什么也不做：它管的是顶栏，顶栏没写 collapsible，这一键就留给页面。
+      从 30/40/30 出发在第 1 条上按 End，中间那栏停在 60% 而不是纸面上的 100%——底栏至少要留 10%，
+      分隔条报的 aria-valuemax 恒是眼下真走得到的那个数。
+    </p>
+    <xh-splitter id="wc-splitter-col" orientation="vertical" default-size="30,40,30" panels='[{"id":"head","min":10},{"id":"body","min":15,"collapsible":true},{"id":"foot","min":10}]'>
+      <div data-xh-part="root" style="block-size: 220px;">
+        <div data-xh-part="panel" index="0">
+          <p class="lead">顶栏：min 10%，不可折叠。</p>
+        </div>
+        <div data-xh-part="resize-trigger" index="0"></div>
+        <div data-xh-part="panel" index="1">
+          <p class="lead">中间这栏写着 collapsible：折叠后带上 data-collapsed，连边框都不留。</p>
+        </div>
+        <div data-xh-part="resize-trigger" index="1"></div>
+        <div data-xh-part="panel" index="2">
+          <p class="lead">底栏：min 10%，中间那栏能撑到多大由它这条地板说了算。</p>
+        </div>
+      </div>
+    </xh-splitter>
+    <span class="lead" id="wc-splitter-col-size"></span>
+  </section>
+
+  <section>
+    <h2>ScrollArea</h2>
+    <p class="lead">
+      三十行文字塞进一个 180px 高的框：右边那条滚动条是自绘的，原生那条只是被藏了外观，滚动能力一点没动。
+      滚轮、触控板、以及 PageUp / PageDown、方向键、Home / End、空格走的全是浏览器原生通路——
+      元素一个按键都不监听，也一个 preventDefault 都不写。
+      视口自己占一个 Tab 位：滚动区里可能一个可聚焦元素都没有，不给 Tab 位键盘用户根本落不进来，
+      Tab 停上去再按 PageDown 就试得出来。滑块按住能拖，手拖出滚动条甚至拖出窗口都还跟着走；
+      点轨道空白处滑块中心跳到落点，而按在滑块上的那一下不会跳（它本来就在指针底下）。
+      这一台是 <code>type="hover"</code>：指针进入才露出，离开后要等满 scroll-hide-delay（这里放宽到 800ms）
+      才收起——擦一下边就闪没了很难看，所以离开的那一刻它还露着；光滚动不算数，指针不进来它一直收着。
+      下面那行回显挂的是视口自己的原生 scroll 事件。
+    </p>
+    <!-- root / viewport / content / scrollbar / thumb / corner 全由作者写：
+         每条滚动条用 orientation 属性写明自己管哪条轴（不写即 vertical），滑块住在自己那条滚动条里，
+         元素按子树把它归到对应的轴上。这三十行由脚本填进 content，省得在这儿摊三十行标签。
+         root 的高度与宽度是本页给的：滚动区不给一个确定的框，内容就永远不溢出 -->
+    <xh-scroll-area id="wc-scroll-area" type="hover" scroll-hide-delay="800" orientation="vertical">
+      <div data-xh-part="root" style="block-size: 180px; max-inline-size: 420px;">
+        <div data-xh-part="viewport">
+          <div data-xh-part="content" id="wc-scroll-area-lines"></div>
+        </div>
+        <div data-xh-part="scrollbar" orientation="vertical">
+          <div data-xh-part="thumb"></div>
+        </div>
+      </div>
+    </xh-scroll-area>
+    <span class="lead" id="wc-scroll-area-progress">已滚过 0%</span>
+    <p class="lead" style="margin-block-start: 20px;">
+      这一台两条轴都溢出，且 <code>type="always"</code> 让滚动条恒露着——内容不溢出时也留着槽位，
+      布局不会因为内容长短而抖一下。右下角那块补丁只在两条滚动条同时在场时才有它的位置：
+      把 orientation 改成 vertical，横轴那条与补丁会一并带上 hidden 让位，视口那一向也随即不滚了。
+      横轴的滑块用的全是逻辑属性（inset-inline-start / inline-size），root 上标一个 dir="rtl" 整条就反过来，
+      本页一个定位声明都没写。内容那层的宽度倒是本页给的：横向不给内容一个比视口宽的尺寸，
+      就永远量不出溢出，横条也永远不显形。
+    </p>
+    <xh-scroll-area id="wc-scroll-area-both" type="always">
+      <div data-xh-part="root" style="block-size: 120px; max-inline-size: 420px;">
+        <div data-xh-part="viewport">
+          <div data-xh-part="content" style="inline-size: 760px;">
+            <p class="lead">这一层被本页写死成 760px 宽，比视口宽出去的那截就是横向要滚的量。</p>
+            <p class="lead">竖向也溢出：五段文字加起来比 120px 高的框长，两条滚动条因此同时在场。</p>
+            <p class="lead">按住横轴的滑块左右拖，视口的 scrollLeft 跟着走；松手后再动指针就不跟了。</p>
+            <p class="lead">点横轨空白处，滑块中心跳到落点；两条轨道各认各的轴，手按在哪条上只有那条变深。</p>
+            <p class="lead">右下角那块补丁盖住的正是两条轨道交叉的那个缺口，少了它会露出底下的内容。</p>
+          </div>
+        </div>
+        <div data-xh-part="scrollbar" orientation="vertical">
+          <div data-xh-part="thumb"></div>
+        </div>
+        <div data-xh-part="scrollbar" orientation="horizontal">
+          <div data-xh-part="thumb"></div>
+        </div>
+        <div data-xh-part="corner"></div>
+      </div>
+    </xh-scroll-area>
+    <span class="lead" id="wc-scroll-area-both-progress">横向已滚过 0% · 纵向 0%</span>
+  </section>
+
+  <section>
+    <h2>Carousel</h2>
+    <p class="lead">
+      键盘落在两端按钮或指示点上就能翻页：横轨认左右键（上下键不归它管，原样放行给页面滚动），
+      Home / End 直接跳首末页。指示点一页一个，各自留在 Tab 序列里，点一下即跳到那一页。
+      这一条开着自动播放：鼠标停上去、或焦点走进来都会把计时按住，两个来源各记一笔——
+      鼠标移开时若焦点还留在里面，画面仍不会自己翻，两笔都撤了才继续走（根节点上的 data-paused 同步亮灭）。
+      手动翻一页会重新计满一整个间隔，不会刚点完就被上一轮的余数接着翻走。
+      它开了回绕，末页的下一张回到首页。视口不给高度就没有可裁的窗口，什么也看不见，高度是本页给的。
+    </p>
+    <xh-carousel id="wc-carousel" slide-count="3" autoplay="2500" loop>
+      <!-- 角色节点全归作者写，元素只往上打属性：两端按钮与指示点必须是原生 button，
+           它们要能聚焦、要能被 Enter / 空格激活；到头时转的也是原生 disabled -->
+      <div data-xh-part="root">
+        <button data-xh-part="prev-trigger">‹</button>
+        <!-- 皮肤只给视口 overflow: hidden，尺寸归本页：不给高度轨道就没有高度可裁 -->
+        <div data-xh-part="viewport" style="block-size: 140px;">
+          <div data-xh-part="item-group">
+            <!-- 下标写在自己的 index 属性上；漏写则按文档序，把节点排好本身就是声明 -->
+            <div data-xh-part="item" index="0">
+              <!-- 幻灯片里装什么归作者，皮肤一概不碰；这一层只把字撑到整张中间 -->
+              <div style="display: grid; place-items: center; block-size: 100%;">雪山</div>
+            </div>
+            <div data-xh-part="item" index="1">
+              <div style="display: grid; place-items: center; block-size: 100%;">海岸</div>
+            </div>
+            <div data-xh-part="item" index="2">
+              <div style="display: grid; place-items: center; block-size: 100%;">沙漠</div>
+            </div>
+          </div>
+        </div>
+        <button data-xh-part="next-trigger">›</button>
+        <!-- 一页一个指示点：页数由 slide-count 与 slides-per-page 算出，作者照着渲染 -->
+        <div data-xh-part="indicator-group">
+          <button data-xh-part="indicator" index="0"></button>
+          <button data-xh-part="indicator" index="1"></button>
+          <button data-xh-part="indicator" index="2"></button>
+        </div>
+        <!-- root 自己就是会换行的横排 flex，回显想独占一行只能自己占满（纯本页版式） -->
+        <span class="lead" id="wc-carousel-page" style="flex-basis: 100%;"></span>
+      </div>
+    </xh-carousel>
+    <p class="lead" style="margin-block-start: 20px;">
+      一屏两张、六张共三页：一次翻几张缺省跟随一屏几张，所以仍是整屏翻。
+      这一条不回绕，首页的上一张与末页的下一张转成原生 disabled，Tab 都停不上去。
+      张与张的间距走 spacing，它落成每张自己的内边距而不是轨道的 gap——
+      用 gap 的话「一张 = 100%/2」这条位移前提就不成立，越翻越偏。
+    </p>
+    <xh-carousel id="wc-carousel-wide" slide-count="6" slides-per-page="2" spacing="12px">
+      <div data-xh-part="root">
+        <button data-xh-part="prev-trigger">‹</button>
+        <div data-xh-part="viewport" style="block-size: 120px;">
+          <div data-xh-part="item-group">
+            <div data-xh-part="item" index="0">
+              <div style="display: grid; place-items: center; block-size: 100%;">一月</div>
+            </div>
+            <div data-xh-part="item" index="1">
+              <div style="display: grid; place-items: center; block-size: 100%;">二月</div>
+            </div>
+            <div data-xh-part="item" index="2">
+              <div style="display: grid; place-items: center; block-size: 100%;">三月</div>
+            </div>
+            <div data-xh-part="item" index="3">
+              <div style="display: grid; place-items: center; block-size: 100%;">四月</div>
+            </div>
+            <div data-xh-part="item" index="4">
+              <div style="display: grid; place-items: center; block-size: 100%;">五月</div>
+            </div>
+            <div data-xh-part="item" index="5">
+              <div style="display: grid; place-items: center; block-size: 100%;">六月</div>
+            </div>
+          </div>
+        </div>
+        <button data-xh-part="next-trigger">›</button>
+        <div data-xh-part="indicator-group">
+          <button data-xh-part="indicator" index="0"></button>
+          <button data-xh-part="indicator" index="1"></button>
+          <button data-xh-part="indicator" index="2"></button>
+        </div>
+        <span class="lead" id="wc-carousel-wide-page" style="flex-basis: 100%;"></span>
+      </div>
+    </xh-carousel>
+  </section>
+
+  <section>
+    <h2>Anchor</h2>
+    <p class="lead">
+      这一段是活的：往下滚页面，左边目录里高亮的那条会自己跟着换。
+      判定线贴着视口顶边（offset 默认 0，页面有吸顶栏就把栏高填进去），越过它的最后一节即当前节，
+      那条链接拿到 aria-current="location"——location 说的是「本页面里的这个位置」，page 说的是「这就是当前页面」，用在这儿不对。
+      四节都还在判定线下方时谁都不亮、指示条也整条收起：此时硬把首条点亮就是让「当前位置」说谎。
+      反过来，把整页拉到最底会强制点亮末条——末几节都很短时谁也越不过判定线，不特判它就永远亮不了。
+      这一条开了 smooth：点链接不走原生片段跳转，而是拦下来自己平滑滚过去，且高亮当场就切到点中的那条，
+      途中扫过的那几节不抢（滚到目标之前观察器说的都不算数）。
+      目录本身是 nav 地标加一个 ul，指示条的位置由元素量好、写成它自己的内联样式。
+    </p>
+    <!-- 纯本页版式：左目录右正文分两栏，目录吸在视口上，不然滚到正文里就看不见高亮在动了。
+         吸顶写在宿主元素上（它才是那一栏），写在里面的 nav 上是吸不住的 -->
+    <div style="display: grid; grid-template-columns: 180px 1fr; gap: 20px; align-items: start;">
+      <xh-anchor id="wc-anchor" smooth style="position: sticky; inset-block-start: 12px;">
+        <!-- 标签必须写对：root 是 nav（地标语义只有标签给得了），list 是 ul，item 与指示条都是 li，
+             link 是 a——Enter 跟随链接一行代码都没写，全靠平台。href 反过来由元素按 value 派生 -->
+        <nav data-xh-part="root">
+          <ul data-xh-part="list">
+            <li data-xh-part="item">
+              <a data-xh-part="link" value="wc-anchor-brief">这是什么</a>
+            </li>
+            <li data-xh-part="item">
+              <a data-xh-part="link" value="wc-anchor-keyboard">键盘怎么走</a>
+            </li>
+            <li data-xh-part="item">
+              <a data-xh-part="link" value="wc-anchor-edge">边界在哪</a>
+            </li>
+            <li data-xh-part="item">
+              <a data-xh-part="link" value="wc-anchor-tokens">主题与令牌</a>
+            </li>
+            <li data-xh-part="indicator"></li>
+          </ul>
+        </nav>
+      </xh-anchor>
+      <div>
+        <!-- 目标区块是页面内容、不是元素的部件；元素按链接的 value 现查 id -->
+        <div id="wc-anchor-brief" style="block-size: 200px;">
+          <strong>这是什么</strong>
+          <p class="lead">滚动页面，看左边这一条什么时候亮起来、什么时候交给下一条。</p>
+        </div>
+        <div id="wc-anchor-keyboard" style="block-size: 200px;">
+          <strong>键盘怎么走</strong>
+          <p class="lead">滚动页面，看左边这一条什么时候亮起来、什么时候交给下一条。</p>
+        </div>
+        <div id="wc-anchor-edge" style="block-size: 200px;">
+          <strong>边界在哪</strong>
+          <p class="lead">滚动页面，看左边这一条什么时候亮起来、什么时候交给下一条。</p>
+        </div>
+        <div id="wc-anchor-tokens" style="block-size: 200px;">
+          <strong>主题与令牌</strong>
+          <p class="lead">滚动页面，看左边这一条什么时候亮起来、什么时候交给下一条。</p>
+        </div>
+      </div>
+    </div>
+    <span class="lead" id="wc-anchor-value"></span>
+  </section>
+
+  <section>
+    <h2>NavigationMenu</h2>
+    <p class="lead">
+      鼠标停在某个入口上、或用 Tab 把焦点送上去，都要等一小会儿面板才展开（这一条把延时调到 400ms，
+      肉眼看得出那段等待）——防的是指针横穿导航栏时一路闪出三个面板。
+      等待期间划到隔壁入口不重新计时：横穿本来就是一次连续的动作，每换一个就把秒表归零的话，慢慢划过去一个也等不出来。
+      已经有面板开着时再碰别的入口是当场换项、不再等——人已经在这套导航里了。
+      Enter 与空格立即展开，不走延时；自动弹出来的那一项被点中时不会当场关掉，再按一次才收起。
+      Escape 收起并把焦点还给对应入口，且刚还回去的这一下不会把面板重新弹出来；
+      收起之后的一小段静默窗口内，再碰任意入口都是直接展开。
+      指针移出整块导航或焦点走出去，面板一并收起；但鼠标扫出去时若焦点还留在里面就不收——键盘用户正读的东西不该被鼠标带走。
+      面板里的条目是链接不是命令，这正是它与 Menu 的分野：点了就跳走，元素不拦，只顺手把面板收起；
+      指向当前页的那条写了 current，拿到 aria-current="page"。
+      每个面板都紧跟在自己的入口之后，展开时按 Tab 就走得进去，收起的那些带 hidden、整个被跳过。
+    </p>
+    <xh-navigation-menu id="wc-nav-menu" delay-duration="400">
+      <!-- 标签必须写对：root 是 nav（地标语义只有标签给得了），list 是 ul，
+           item 与指示条都是 li，入口是 button，面板里的条目是 a。
+           入口与面板各自带 value 属性配对，元素据此把 aria-controls / aria-labelledby 互指 -->
+      <nav data-xh-part="root">
+        <ul data-xh-part="list">
+          <li data-xh-part="item">
+            <button data-xh-part="trigger" value="products">产品</button>
+            <div data-xh-part="content" value="products">
+              <a data-xh-part="link" href="#nav-products-runtime">运行时内核</a>
+              <a data-xh-part="link" href="#nav-products-vue">Vue 适配器</a>
+              <a data-xh-part="link" href="#nav-products-wc">Web Components 适配器</a>
+            </div>
+          </li>
+          <li data-xh-part="item">
+            <button data-xh-part="trigger" value="docs">文档</button>
+            <div data-xh-part="content" value="docs">
+              <!-- 指向当前页面的那一条：写 current 即得 aria-current="page" -->
+              <a data-xh-part="link" href="#nav-docs-guide" current>上手指南</a>
+              <a data-xh-part="link" href="#nav-docs-anatomy">部件解剖</a>
+              <a data-xh-part="link" href="#nav-docs-keyboard">键盘规格</a>
+            </div>
+          </li>
+          <li data-xh-part="item">
+            <button data-xh-part="trigger" value="company">关于</button>
+            <div data-xh-part="content" value="company">
+              <a data-xh-part="link" href="#nav-company-team">团队</a>
+              <a data-xh-part="link" href="#nav-company-contact">联系我们</a>
+            </div>
+          </li>
+          <li data-xh-part="indicator"></li>
+        </ul>
+      </nav>
+    </xh-navigation-menu>
+    <span class="lead" id="wc-nav-menu-value"></span>
+  </section>
 </main>
 `
 
@@ -2140,3 +3010,420 @@ for (const key of ['ok', 'broken', 'none'] as const) {
     renderWcImageState()
   })
 }
+
+// 日历的网格归作者渲染：元素只交 weeks / weekDays / headingLabel 三份数据，一个节点都不生成。
+// 三张都开着 fixed-weeks，网格恒是六行四十二格——骨架一次建好，翻月只改每格的 value 与文字。
+// 不走 innerHTML 重建：那会把指针底下那一格抽走，点邻月的日子就只翻得了月、落不下值了
+interface WcCalendarHost extends HTMLElement {
+  readonly weeks: { value: string, day: number }[][]
+  readonly weekDays: { value: number, label: string }[]
+  readonly headingLabel: string
+  isDateUnavailable?: (value: string) => boolean
+}
+
+// 直接取本地年月日拼串，不走 toISOString——那个会先折算成 UTC，东八区的傍晚会差出一天
+function wcCalendarIsoFromToday(offsetDays: number): string {
+  const date = new Date()
+  date.setDate(date.getDate() + offsetDays)
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${date.getFullYear()}-${month}-${day}`
+}
+
+// ISO 日期串按 UTC 零点解析，取 UTC 的星期几才不会被本地时区偏移带偏一天
+function wcCalendarIsWeekend(value: string): boolean {
+  const weekday = new Date(value).getUTCDay()
+  return weekday === 0 || weekday === 6
+}
+
+function buildWcCalendarSkeleton(host: WcCalendarHost): void {
+  // 列的身份是列序 0-6，写在自己的 value 上；可见文本是缩写，全称由元素补成 aria-label
+  const headRow = host.querySelector<HTMLElement>('[data-xh-part="grid-head"] [data-xh-part="week-row"]')!
+  headRow.innerHTML = host.weekDays
+    .map(d => `<span data-xh-part="week-day" value="${d.value}">${d.label}</span>`)
+    .join('')
+  const cells = '<div data-xh-part="cell"><div data-xh-part="cell-trigger"></div></div>'.repeat(7)
+  host.querySelector<HTMLElement>('[data-xh-part="grid-body"]')!.innerHTML
+    = `<div data-xh-part="week-row">${cells}</div>`.repeat(6)
+}
+
+function paintWcCalendar(host: WcCalendarHost): void {
+  host.querySelector<HTMLElement>('[data-xh-part="heading"]')!.textContent = host.headingLabel
+  const cells = Array.from(host.querySelectorAll<HTMLElement>('[data-xh-part="grid-body"] [data-xh-part="cell"]'))
+  host.weeks.flat().forEach((day, index) => {
+    const cell = cells[index]
+    if (!cell)
+      return
+    // 日期身份只写在 cell 上，格里的 cell-trigger 跟着它走；
+    // 改 value 就等于换了一天，元素据此重新接线（选中、禁用、roving tabindex 一并重算）
+    cell.setAttribute('value', day.value)
+    const trigger = cell.querySelector<HTMLElement>('[data-xh-part="cell-trigger"]')
+    if (trigger)
+      trigger.textContent = String(day.day)
+  })
+}
+
+const wcCalendarSingle = document.getElementById('wc-calendar-single')! as WcCalendarHost
+const wcCalendarRange = document.getElementById('wc-calendar-range')! as WcCalendarHost
+const wcCalendarWeekend = document.getElementById('wc-calendar-weekend')! as WcCalendarHost
+
+// 可选窗口按今天算，只能在脚本里写；判定函数走不了属性，同样只能作为 property 交过去
+const wcCalendarMin = wcCalendarIsoFromToday(-7)
+const wcCalendarMax = wcCalendarIsoFromToday(7)
+wcCalendarSingle.setAttribute('min', wcCalendarMin)
+wcCalendarSingle.setAttribute('max', wcCalendarMax)
+wcCalendarWeekend.isDateUnavailable = wcCalendarIsWeekend
+
+for (const host of [wcCalendarSingle, wcCalendarRange, wcCalendarWeekend]) {
+  buildWcCalendarSkeleton(host)
+  paintWcCalendar(host)
+  // 重画必须发生在收到这条事件的这一拍里：元素把焦点送回落点是推迟到本帧提交之后做的，
+  // 晚一步那一格还没换成新月份的日子，焦点就掉回 body 了
+  host.addEventListener('focused-value-change', () => paintWcCalendar(host))
+}
+
+const wcCalendarSingleOut = document.getElementById('wc-calendar-single-value')!
+function paintWcCalendarSingleValue(values: readonly string[]): void {
+  wcCalendarSingleOut.textContent = `选中：${values[0] ?? '（未选）'} · 可选窗口：${wcCalendarMin} ~ ${wcCalendarMax}`
+}
+paintWcCalendarSingleValue([])
+wcCalendarSingle.addEventListener('value-change', (e) => {
+  paintWcCalendarSingleValue((e as CustomEvent<{ value: string[] }>).detail.value)
+})
+
+// 区间挑到一半时集合里只有起点一个值，回显要如实把这个半成品显出来
+const wcCalendarRangeOut = document.getElementById('wc-calendar-range-value')!
+function paintWcCalendarRangeValue(values: readonly string[]): void {
+  const [start, end] = values
+  wcCalendarRangeOut.textContent = start ? `区间：${start} → ${end ?? '（待落终点）'}` : '区间：（未选）'
+}
+paintWcCalendarRangeValue([])
+wcCalendarRange.addEventListener('value-change', (e) => {
+  paintWcCalendarRangeValue((e as CustomEvent<{ value: string[] }>).detail.value)
+})
+
+// 选中与聚焦日分两条线回显：方向键走到周末那两格时聚焦日照样跟着动，选中却纹丝不动
+const wcCalendarWeekendOut = document.getElementById('wc-calendar-weekend-value')!
+let wcCalendarWeekendPicked = '（未选）'
+let wcCalendarWeekendFocused = '（今天）'
+function paintWcCalendarWeekendState(): void {
+  wcCalendarWeekendOut.textContent = `选中：${wcCalendarWeekendPicked} · 聚焦日：${wcCalendarWeekendFocused}`
+}
+paintWcCalendarWeekendState()
+wcCalendarWeekend.addEventListener('value-change', (e) => {
+  wcCalendarWeekendPicked = (e as CustomEvent<{ value: string[] }>).detail.value[0] ?? '（未选）'
+  paintWcCalendarWeekendState()
+})
+wcCalendarWeekend.addEventListener('focused-value-change', (e) => {
+  wcCalendarWeekendFocused = (e as CustomEvent<{ focusedValue: string }>).detail.focusedValue
+  paintWcCalendarWeekendState()
+})
+
+// 分段日期的回显：三段填齐才产出 ISO 串，没填齐时载荷里是 null
+function wireWcDateField(hostId: string, outId: string): void {
+  const out = document.getElementById(outId)!
+  document.getElementById(hostId)!.addEventListener('value-change', (e) => {
+    const { value } = (e as CustomEvent<{ value: string | null }>).detail
+    out.textContent = `当前值：${value ?? '（未填齐）'}`
+  })
+}
+
+wireWcDateField('wc-date-field-cn', 'wc-date-field-cn-value')
+wireWcDateField('wc-date-field-us', 'wc-date-field-us-value')
+
+// 分段时间的回显：缺段时载荷里是空串（不是 null），与日期那组的约定不同
+function wireWcTimeField(hostId: string, outId: string, prefix: string): void {
+  const out = document.getElementById(outId)!
+  document.getElementById(hostId)!.addEventListener('value-change', (e) => {
+    const { value } = (e as CustomEvent<{ value: string }>).detail
+    out.textContent = `${prefix}${value === '' ? '（未填齐）' : value}`
+  })
+}
+
+wireWcTimeField('wc-time-field-24', 'wc-time-field-24-value', '24 小时制 · 当前值：')
+wireWcTimeField('wc-time-field-12', 'wc-time-field-12-value', '12 小时制 · 值仍是 24 小时的串：')
+wireWcTimeField('wc-time-field-sec', 'wc-time-field-sec-value', 'granularity=second · 当前值：')
+
+// 网格归作者渲染：元素只交 weeks / weekDays / headingLabel 三份只读数据，一个节点都不替作者建。
+// 日期身份写在 cell 的 value 属性上（格子里的 trigger 跟着它所在的 cell 走），列头身份写在 week-day 的 value 上
+interface WcCalendarDay {
+  value: string
+  day: number
+}
+
+type WcDatePickerHost = HTMLElement & {
+  weeks: WcCalendarDay[][]
+  weekDays: { value: number, label: string }[]
+  headingLabel: string
+  isDateUnavailable?: (value: string) => boolean
+}
+
+// 不可用日的判定归调用方，元素只按它给格子打 aria-disabled（那些天仍可聚焦，还得当方向键的起点）。
+// 判定是函数，走不了 HTML 属性，只能按 property 交
+function wcDateIsWeekend(value: string): boolean {
+  const weekday = new Date(`${value}T00:00:00`).getDay()
+  return weekday === 0 || weekday === 6
+}
+
+function wcDateRangeText(value: readonly string[]): string {
+  const [start, end] = value
+  if (!start)
+    return '（未选）'
+  return end ? `${start} → ${end}` : `${start} → 待定`
+}
+
+// 每台日期选择器当下画的是哪个月，用来判断要不要重建网格
+const wcDatePickerMonths = new Map<string, string>()
+
+function renderWcDatePicker(id: string): void {
+  const host = document.getElementById(id)! as WcDatePickerHost
+  const weeks = host.weeks
+  if (weeks.length === 0)
+    return
+  const heading = host.querySelector<HTMLElement>('[data-xh-part="heading"]')
+  if (heading)
+    heading.textContent = host.headingLabel
+  // 表头只跟 locale 走，建一次就够
+  const head = document.getElementById(`${id}-week-days`)!
+  if (head.childElementCount === 0) {
+    head.innerHTML = host.weekDays
+      .map(day => `<span data-xh-part="week-day" value="${day.value}">${day.label}</span>`)
+      .join('')
+  }
+  // 换了月才重建：白换一批 DOM 会把焦点从格子上抖掉，元素也白接一次线。
+  // 重建后的新节点由基类的变动观察器接住，下一帧照常接线
+  const key = `${weeks[0]?.[0]?.value ?? ''}+${weeks.length}`
+  if (wcDatePickerMonths.get(id) === key)
+    return
+  wcDatePickerMonths.set(id, key)
+  const rows = weeks.map((week) => {
+    const cells = week
+      .map(day => `<div data-xh-part="cell" value="${day.value}"><div data-xh-part="cell-trigger">${day.day}</div></div>`)
+      .join('')
+    return `<div data-xh-part="week-row">${cells}</div>`
+  })
+  document.getElementById(`${id}-grid`)!.innerHTML = rows.join('')
+}
+
+// 两台日期选择器的接线一样，只有值怎么回显归各自决定
+function wireWcDatePicker(id: string, paint: (value: readonly string[]) => void): void {
+  renderWcDatePicker(id)
+  paint([])
+  // 聚焦日一变就照新的 weeks 重画：翻月按钮、方向键跨月、每次展开都会到这条
+  document.getElementById(id)!.addEventListener('focused-value-change', () => {
+    renderWcDatePicker(id)
+  })
+  document.getElementById(id)!.addEventListener('value-change', (e) => {
+    paint((e as CustomEvent<{ value: string[] }>).detail.value)
+  })
+}
+
+// 周末不可用只给上面这一个
+const wcDatePickerSingle = document.getElementById('wc-date-picker')! as WcDatePickerHost
+wcDatePickerSingle.isDateUnavailable = wcDateIsWeekend
+
+wireWcDatePicker('wc-date-picker', (value) => {
+  document.getElementById('wc-date-picker-value')!.textContent = `当前值：${value[0] ?? '（未选）'}`
+})
+
+wireWcDatePicker('wc-date-picker-range', (value) => {
+  document.getElementById('wc-date-picker-range-value')!.textContent = `已选区间：${wcDateRangeText(value)}`
+})
+
+// 列里的格归作者渲染（元素只打属性、不建节点）：可选值由 step 与小时制决定，
+// 这里照同一份规则生成，两个适配器看到的列因此逐格一致。格上留空，文字由元素填
+function wcTimeOptionsHtml(from: number, count: number, step: number): string {
+  const cells: string[] = []
+  for (let i = 0; i < count; i += step)
+    cells.push(`<div data-xh-part="option" value="${String(from + i).padStart(2, '0')}"></div>`)
+  return cells.join('')
+}
+
+// 两台时间选择器的接线一样，差别全在时列从几起、分列多大步进
+function wireWcTimePicker(id: string, firstHour: number, hourCount: number, minuteStep: number): void {
+  document.getElementById(`${id}-hours`)!.innerHTML = wcTimeOptionsHtml(firstHour, hourCount, 1)
+  document.getElementById(`${id}-minutes`)!.innerHTML = wcTimeOptionsHtml(0, 60, minuteStep)
+  const out = document.getElementById(`${id}-value`)!
+  document.getElementById(id)!.addEventListener('value-change', (e) => {
+    const { value } = (e as CustomEvent<{ value: string }>).detail
+    out.textContent = `当前值：${value === '' ? '（空）' : value}`
+  })
+}
+
+// 24 小时制：时列 00-23；step=15 的分列只剩四格
+wireWcTimePicker('wc-time-picker', 0, 24, 15)
+// 12 小时制：时列写的是显示值 01-12，分列逐分钟排满 60 格，正好演列自己的滚动
+wireWcTimePicker('wc-time-picker-12', 1, 12, 1)
+
+// 树数据是层级元信息、显示文本与节点禁用的唯一事实源，
+// 它只能按 property 交——数组表达不了属性。标记与它必须同源
+interface WcTreeSelectNode {
+  value: string
+  label?: string
+  disabled?: boolean
+  children?: WcTreeSelectNode[]
+}
+
+const wcTreeSelect = document.getElementById('wc-tree-select')! as HTMLElement & {
+  collection?: WcTreeSelectNode[]
+  expandedValue?: string[]
+}
+
+// 连打检索按 label 首字母匹配，文件名因此都以拉丁字母开头
+wcTreeSelect.collection = [
+  {
+    value: 'docs',
+    label: 'docs',
+    children: [
+      { value: 'guide', label: 'guide.md' },
+      { value: 'api', label: 'api.md' },
+      // 禁用只声明在这里，标记里不必再抄一遍
+      { value: 'draft', label: 'draft.md（禁用）', disabled: true },
+      {
+        value: 'i18n',
+        label: 'i18n',
+        children: [
+          { value: 'zh', label: 'zh-CN.md' },
+          { value: 'en', label: 'en-US.md' },
+        ],
+      },
+    ],
+  },
+  {
+    value: 'assets',
+    label: 'assets',
+    children: [
+      { value: 'logo', label: 'logo.svg' },
+      { value: 'cover', label: 'cover.png' },
+    ],
+  },
+  { value: 'readme', label: 'README.md' },
+]
+
+// 展开集合走受控。元素连上那一刻就把机器建起来了，default-* 一类初值只在那一刻读一次，
+// 而集合只能按 property 给、这几行又跑在 innerHTML 之后——追不上；受控值则是每次读都回头问 property，
+// 所以下面那个监听必须把新集合写回来，不写回点开的分支会立刻弹回去。
+// 选中值刻意留作非受控：元素自己记，本页只按事件回显
+wcTreeSelect.expandedValue = ['docs']
+
+const wcTreeSelectState = document.getElementById('wc-tree-select-state')!
+let wcTreeSelectValue: readonly string[] = []
+
+function paintWcTreeSelect(): void {
+  const expanded = wcTreeSelect.expandedValue ?? []
+  wcTreeSelectState.textContent = `已选：${wcTreeSelectValue.join('、') || '（无）'} · 展开：${expanded.join('、') || '（无）'}`
+}
+
+paintWcTreeSelect()
+
+wcTreeSelect.addEventListener('value-change', (e) => {
+  wcTreeSelectValue = (e as CustomEvent<{ value: string[] }>).detail.value
+  paintWcTreeSelect()
+})
+
+wcTreeSelect.addEventListener('expanded-change', (e) => {
+  wcTreeSelect.expandedValue = (e as CustomEvent<{ value: string[] }>).detail.value
+  paintWcTreeSelect()
+})
+
+// 两组分栏都走非受控（写的是 default-size）：拖动与按键就地改布局，脚本只负责回显
+function formatWcSplitterSize(size: readonly number[]): string {
+  return size.map(n => `${n.toFixed(1)}%`).join(' / ')
+}
+
+function wireWcSplitterSize(hostId: string, outId: string): void {
+  const host = document.getElementById(hostId)!
+  const out = document.getElementById(outId)!
+  const paint = (size: readonly number[]): void => {
+    out.textContent = `当前比例：${formatWcSplitterSize(size)}`
+  }
+  // 属性形式的初值按逗号拆，与元素自己的转换器同一套
+  paint((host.getAttribute('default-size') ?? '').split(',').map(Number))
+  // 拖动途中这条会连着发很多次
+  host.addEventListener('size-change', (e) => {
+    paint((e as CustomEvent<{ size: number[] }>).detail.size)
+  })
+}
+
+wireWcSplitterSize('wc-splitter-row', 'wc-splitter-row-size')
+wireWcSplitterSize('wc-splitter-col', 'wc-splitter-col-size')
+
+const wcSplitterRow = document.getElementById('wc-splitter-row')!
+const wcSplitterRowEnd = document.getElementById('wc-splitter-row-end')!
+// 收尾只在松手那一下来一次（键盘推动不走这条路），存布局那类活儿要的正是它
+wcSplitterRow.addEventListener('size-change-end', (e) => {
+  const { size, index } = (e as CustomEvent<{ size: number[], index: number }>).detail
+  wcSplitterRowEnd.textContent = `上次收尾：第 ${index} 条 → ${formatWcSplitterSize(size)}`
+})
+
+document.getElementById('wc-splitter-row-disabled')!.addEventListener('change', (e) => {
+  wcSplitterRow.toggleAttribute('disabled', (e.target as HTMLInputElement).checked)
+})
+
+// 三十行由脚本填：省得在模板里摊三十行标签。新节点由基类的变动观察器接住，尺寸随即被重新量一遍
+const wcScrollAreaLines = document.getElementById('wc-scroll-area-lines')!
+wcScrollAreaLines.innerHTML = Array.from(
+  { length: 30 },
+  (_, i) => `<p class="lead">第 ${i + 1} 行 · 视口只有 180px 高，这一行是被挤到框外的那一批之一</p>`,
+).join('')
+
+// 元素不对外报滚动：滚动是原生的，要听就直接在视口上监听
+function wireWcScrollAreaProgress(
+  hostId: string,
+  outId: string,
+  paint: (x: number, y: number) => string,
+): void {
+  const viewport = document.getElementById(hostId)!.querySelector<HTMLElement>('[data-xh-part="viewport"]')!
+  const out = document.getElementById(outId)!
+  const ratio = (offset: number, room: number): number => (room > 0 ? Math.round(offset / room * 100) : 0)
+  viewport.addEventListener('scroll', () => {
+    out.textContent = paint(
+      ratio(viewport.scrollLeft, viewport.scrollWidth - viewport.clientWidth),
+      ratio(viewport.scrollTop, viewport.scrollHeight - viewport.clientHeight),
+    )
+  })
+}
+
+wireWcScrollAreaProgress('wc-scroll-area', 'wc-scroll-area-progress', (_x, y) => `已滚过 ${y}%`)
+wireWcScrollAreaProgress('wc-scroll-area-both', 'wc-scroll-area-both-progress', (x, y) => `横向已滚过 ${x}% · 纵向 ${y}%`)
+
+// 页码回显：元素只发 page-change（页码 0 基），两条轮播的接线一模一样
+function wireWcCarousel(hostId: string, outId: string, totalPages: number): void {
+  const out = document.getElementById(outId)!
+  const paint = (page: number): void => {
+    out.textContent = `第 ${page + 1} / ${totalPages} 页`
+  }
+  paint(0)
+  document.getElementById(hostId)!.addEventListener('page-change', (e) => {
+    paint((e as CustomEvent<{ page: number }>).detail.page)
+  })
+}
+
+wireWcCarousel('wc-carousel', 'wc-carousel-page', 3)
+wireWcCarousel('wc-carousel-wide', 'wc-carousel-wide-page', 3)
+
+// 激活项留作非受控：哪一节算当前是滚动位置这件 DOM 事实，元素自己结算，本页只按事件回显
+const wcAnchorValue = document.getElementById('wc-anchor-value')!
+
+function paintWcAnchor(value: string | null): void {
+  wcAnchorValue.textContent = `当前：${value ?? '（还没有一节越过判定线）'}`
+}
+
+paintWcAnchor(null)
+
+document.getElementById('wc-anchor')!.addEventListener('value-change', (e) => {
+  paintWcAnchor((e as CustomEvent<{ value: string | null }>).detail.value)
+})
+
+// 展开项留作非受控：元素自己记，本页只按事件回显
+const wcNavMenuValue = document.getElementById('wc-nav-menu-value')!
+
+function paintWcNavMenu(value: string | null): void {
+  wcNavMenuValue.textContent = `展开的面板：${value ?? '（都收着）'}`
+}
+
+paintWcNavMenu(null)
+
+document.getElementById('wc-nav-menu')!.addEventListener('value-change', (e) => {
+  paintWcNavMenu((e as CustomEvent<{ value: string | null }>).detail.value)
+})
