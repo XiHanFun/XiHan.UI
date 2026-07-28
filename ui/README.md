@@ -8,7 +8,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 
 62 components, each shipping a headless core, a Vue component, a custom element, and a default skin.
 
-> **Experimental.** Not published to npm, no documentation site yet, and accessibility assertions currently run in jsdom rather than a real browser. Do not depend on it in production.
+> **Experimental.** Not published to npm and no documentation site yet. Accessibility is scanned in real Chromium, but the first sweep left a backlog of recorded issues. Do not depend on it in production.
 
 ## Packages
 
@@ -47,7 +47,8 @@ Requires Node ≥ 24 and pnpm ≥ 11.
 ```bash
 pnpm install --frozen-lockfile
 pnpm dev          # start the playgrounds
-pnpm test         # unit + cross-adapter conformance tests
+pnpm test         # unit + cross-adapter conformance tests (jsdom)
+pnpm test:browser # accessibility sweep in real Chromium (run `pnpm exec playwright install chromium` first)
 pnpm typecheck
 pnpm lint
 pnpm boundaries   # layered dependency gate (dependency-cruiser)
