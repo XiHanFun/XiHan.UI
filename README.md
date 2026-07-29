@@ -58,7 +58,7 @@ XiHan.UI 是一个框架无关的组件库：状态与无障碍逻辑沉在无�
 - **架构**：pnpm workspace，`packages/*` + `tooling/*` + `apps/*` 三段
 - **当前状态**：库包版本 `0.0.0`，尚未发布至 npm
 
-### workspace 包（10 个）
+### workspace 包（12 个）
 
 | 包 | 职责 |
 | --- | --- |
@@ -71,6 +71,8 @@ XiHan.UI 是一个框架无关的组件库：状态与无障碍逻辑沉在无�
 | `@xihan-ui/styled` | 默认皮肤（CSS，按 `@layer` 分层） |
 | `@xihan-ui/system` | 设计令牌产物 + 主题运行时（明暗 / 密度 / 书写方向） |
 | `@xihan-ui/position-floating-ui` | 浮层定位实现（唯一允许依赖 `@floating-ui/dom` 的包） |
+| `@xihan-ui/ai` | AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store（零 DOM、零框架） |
+| `@xihan-ui/markdown` | 流式 Markdown 渲染内核：增量切块 + 稳定 key + 消毒 |
 | `@xihan-ui/icons` | 图标集 |
 
 ## 🧩 组件现状
@@ -98,7 +100,9 @@ XiHan.UI 是一个框架无关的组件库：状态与无障碍逻辑沉在无�
 - **npm 发布**：未发布，本地用 `pnpm pack` 验证
 - **组件文案国际化**：未落地，面向用户的字符串目前内置英文
 - **令牌产物格式**：仅 CSS / JSON / TS 三种
-- **企业业务组件与 AI 组件**：未开始
+- **AI 组件族**：协议内核与渲染内核已落地，Thread / Composer / CodeBlock 三件可用；
+  MarkdownStream、Reasoning / ToolCall 折叠、工具审批、代码高亮精渲仍在做
+- **企业业务组件**：未开始
 
 ## 📦 本地开发
 
