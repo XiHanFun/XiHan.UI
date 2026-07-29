@@ -11,9 +11,11 @@ import { cascaderSuite } from './cascader.suite'
 import { checkboxGroupSuite } from './checkbox-group.suite'
 import { checkboxSuite } from './checkbox.suite'
 import { clipboardSuite } from './clipboard.suite'
+import { codeBlockSuite } from './code-block.suite'
 import { collapsibleSuite } from './collapsible.suite'
 import { colorPickerSuite } from './color-picker.suite'
 import { comboboxSuite } from './combobox.suite'
+import { composerSuite } from './composer.suite'
 import { contextMenuSuite } from './context-menu.suite'
 import { dateFieldSuite } from './date-field.suite'
 import { datePickerSuite } from './date-picker.suite'
@@ -48,6 +50,7 @@ import { tableSuite } from './table.suite'
 import { tabsSuite } from './tabs.suite'
 import { tagsInputSuite } from './tags-input.suite'
 import { textFieldSuite } from './text-field.suite'
+import { threadSuite } from './thread.suite'
 import { timeFieldSuite } from './time-field.suite'
 import { timePickerSuite } from './time-picker.suite'
 import { toastSuite } from './toast.suite'
@@ -76,9 +79,11 @@ export const allSuites: readonly ConformanceSuite[] = [
   checkboxGroupSuite,
   checkboxSuite,
   clipboardSuite,
+  codeBlockSuite,
   collapsibleSuite,
   colorPickerSuite,
   comboboxSuite,
+  composerSuite,
   contextMenuSuite,
   dateFieldSuite,
   datePickerSuite,
@@ -113,6 +118,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   tabsSuite,
   tagsInputSuite,
   textFieldSuite,
+  threadSuite,
   timeFieldSuite,
   timePickerSuite,
   toastSuite,

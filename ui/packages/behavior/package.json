@@ -2,7 +2,7 @@
   "name": "@xihan-ui/behavior",
   "type": "module",
   "version": "0.0.0",
-  "description": "XiHan.UI interaction behaviors — dismissable layer, focus scope, scroll lock, presence.",
+  "description": "XiHan.UI interaction behaviors — dismissable layer, focus scope, scroll lock, stick to bottom, presence.",
   "license": "MIT",
   "sideEffects": false,
   "publishConfig": {
@@ -22,7 +22,9 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc --noEmit -p tsconfig.json",

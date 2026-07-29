@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { accordionSuite, anchorSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, calendarSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, dialogSuite, drawerSuite, editableSuite, fieldSuite, fileUploadSuite, formSuite, hoverCardSuite, imageSuite, listboxSuite, loadingBarSuite, menubarSuite, menuSuite, navigationMenuSuite, numberFieldSuite, paginationSuite, pinInputSuite, popoverSuite, progressSuite, radioGroupSuite, ratingSuite, runConformance, scrollAreaSuite, selectSuite, separatorSuite, sliderSuite, splitterSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, textFieldSuite, timeFieldSuite, timePickerSuite, toasterSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, virtualizerSuite } from '@xihan-ui/testing'
+import { accordionSuite, anchorSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, calendarSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, codeBlockSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, composerSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, dialogSuite, drawerSuite, editableSuite, fieldSuite, fileUploadSuite, formSuite, hoverCardSuite, imageSuite, listboxSuite, loadingBarSuite, menubarSuite, menuSuite, navigationMenuSuite, numberFieldSuite, paginationSuite, pinInputSuite, popoverSuite, progressSuite, radioGroupSuite, ratingSuite, runConformance, scrollAreaSuite, selectSuite, separatorSuite, sliderSuite, splitterSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, textFieldSuite, threadSuite, timeFieldSuite, timePickerSuite, toasterSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, virtualizerSuite } from '@xihan-ui/testing'
 import { afterEach, beforeEach, describe, it, vi } from 'vitest'
 import { createVueHarness } from './harness'
 
@@ -28,8 +28,10 @@ runConformance(
     checkboxGroupSuite,
     checkboxSuite,
     clipboardSuite,
+    codeBlockSuite,
     collapsibleSuite,
     comboboxSuite,
+    composerSuite,
     contextMenuSuite,
     dateFieldSuite,
     datePickerSuite,
@@ -60,6 +62,7 @@ runConformance(
     tabsSuite,
     tagsInputSuite,
     textFieldSuite,
+    threadSuite,
     timeFieldSuite,
     timePickerSuite,
     toastSuite,
@@ -91,6 +94,11 @@ runConformance(
       'popover.kbd.shift-tab': 'jsdom 按 Tab 不移动焦点，焦点环绕演不出来',
       'drawer.kbd.tab': 'jsdom 按 Tab 不移动焦点，焦点环绕演不出来',
       'drawer.kbd.shift-tab': 'jsdom 按 Tab 不移动焦点，焦点环绕演不出来',
+      // 输入法那两行不是"暂时演不出来"，是运行时根本给不出信号：
+      // 合成 KeyboardEvent 的 isComposing 恒 false（且 keyCode 恒 0），
+      // 换行则是浏览器的默认行为、组件刻意不接管，于是连个可断言的属性都没有。
+      'composer.kbd.ime-enter': 'jsdom 与浏览器都无法合成真实 IME 组合态，isComposing 恒 false',
+      'composer.kbd.shift-enter': '换行是浏览器默认行为，组件不接管也就无属性可断言',
     },
   },
 )

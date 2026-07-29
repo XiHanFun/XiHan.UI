@@ -100,6 +100,9 @@ export function createVueHarness(): AdapterHarness {
         onValueChange: record('value-change'),
         onSelect: record('select'),
         onStatusChange: record('status-change'),
+        onStickChange: record('stick-change'),
+        onStop: record('stop'),
+        onSubmit: record('submit'),
       }
       app = createApp({
         setup: () => () =>

@@ -101,6 +101,7 @@ export {
 } from './components/clipboard/clipboard'
 export { useClipboard } from './components/clipboard/use-clipboard'
 export type { ClipboardContext } from './components/clipboard/use-clipboard'
+export { XhCodeBlock } from './components/code-block/code-block'
 export {
   XhCollapsibleContent,
   XhCollapsibleRoot,
@@ -146,6 +147,13 @@ export {
 } from './components/combobox/combobox'
 export { useCombobox } from './components/combobox/use-combobox'
 export type { ComboboxContext } from './components/combobox/use-combobox'
+export {
+  XhComposerInput,
+  XhComposerRoot,
+  XhComposerSubmitTrigger,
+} from './components/composer/composer'
+export { useComposer } from './components/composer/use-composer'
+export type { ComposerCallbacks, ComposerContext } from './components/composer/use-composer'
 export {
   XhContextMenuArrow,
   XhContextMenuContent,
@@ -495,6 +503,15 @@ export {
 } from './components/text-field/text-field'
 export { useTextField } from './components/text-field/use-text-field'
 export type { TextFieldContext } from './components/text-field/use-text-field'
+export {
+  XhThreadContent,
+  XhThreadLiveRegion,
+  XhThreadRoot,
+  XhThreadScrollButton,
+  XhThreadViewport,
+} from './components/thread/thread'
+export { useThread } from './components/thread/use-thread'
+export type { ThreadContext } from './components/thread/use-thread'
 export {
   XhTimeFieldControl,
   XhTimeFieldHiddenInput,

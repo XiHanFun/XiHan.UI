@@ -1,0 +1,37 @@
+{
+  "name": "@xihan-ui/ai",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "XiHan.UI AI protocol core — SSE transport, protocol normalize, parts reducer, thread store.",
+  "license": "MIT",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@xihan-ui/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@xihan-ui/build": "workspace:*",
+    "@xihan-ui/tsconfig": "workspace:*",
+    "vitest": "catalog:"
+  }
+}
