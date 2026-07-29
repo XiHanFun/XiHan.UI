@@ -424,7 +424,17 @@ export const ratingSuite: ConformanceSuite = {
             events: [{ type: 'value-change', detail: { value: 0.5 } }],
           },
         },
-        // 指针半档预览暂未覆盖：在一致性夹具里 data-half 读到 null，原因待查；键盘走半档已覆盖。
+        {
+          kind: 'raw',
+          why: 'apply-step 没有 hover 步骤类型，指针划过只能直接派发',
+          // 落在第 5 颗左半边：宽 20 的星，落点 4 即前半
+          run: ({ doc }) => hoverStar(doc, 4, { offsetX: 4, width: 20 }),
+          expect: {
+            // 预览到 4.5：前四颗全亮，第 5 颗半亮；aria-checked 仍跟着真实值 0.5
+            parts: { item: stars('●●●●◐', 1) },
+            events: [],
+          },
+        },
       ],
     },
     {
