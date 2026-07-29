@@ -72,7 +72,7 @@ describe('normalizeDataStreamV1 映射表', () => {
       toolName: 'search',
       receivedTime: TIME,
     })
-    // 线格式的字段名是 inputTextDelta，内部统一叫 delta
+    // 线格式字段 inputTextDelta 归一为 delta
     expect(normalizeDataStreamV1(frame({ type: 'tool-input-delta', toolCallId: 't1', inputTextDelta: '{"q' }))).toEqual({
       kind: 'tool-input-delta',
       toolCallId: 't1',
@@ -170,7 +170,7 @@ describe('normalizeDataStreamV1 映射表', () => {
 describe('normalizeDataStreamV1 哨兵与丢弃', () => {
   it('[DONE] 哨兵在 JSON 解析之前就被认掉', () => {
     expect(normalizeDataStreamV1(raw(DATA_STREAM_DONE))).toEqual({ kind: 'finish', receivedTime: TIME })
-    // 两侧空白照样认
+    // 两侧带空白也认
     expect(normalizeDataStreamV1(raw(`  ${DATA_STREAM_DONE}  `))).toMatchObject({ kind: 'finish' })
   })
 

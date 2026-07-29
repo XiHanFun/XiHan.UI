@@ -25,7 +25,7 @@ function okResponse(payload: string): Response {
   })
 }
 
-/** 只在需要 res.body 保持同一对象引用（好装 spy）时用，其余一律走真 Response。 */
+/** 构造假 Response，使 res.body 保持传入的流对象引用，便于装 spy。 */
 function fakeResponse(init: {
   status: number
   headers: Record<string, string>
@@ -39,7 +39,7 @@ function fakeResponse(init: {
   } as unknown as Response
 }
 
-/** 收全事件。stream() 契约上永不 throw，所以这里不套 try。 */
+/** 收全 stream() 产出的事件。 */
 async function drain(
   transport: { stream: (req: ChatRequest, signal: AbortSignal) => AsyncIterable<NormalizedEvent> },
   signal: AbortSignal = new AbortController().signal,
@@ -140,14 +140,13 @@ describe('createHttpSseTransport 失败路径', () => {
     expect((rateLimited[0] as { errorText: string }).errorText).toContain('429')
 
     expect(await drain(make(503))).toMatchObject([{ kind: 'error', retryable: true }])
-    // 400 是请求本身有问题，重试也是同样结果
+    // 4xx（429 除外）不可重试
     expect(await drain(make(400))).toMatchObject([{ kind: 'error', retryable: false }])
     expect(await drain(make(401))).toMatchObject([{ kind: 'error', retryable: false }])
   })
 
   it('缺协议版本响应头 → error 且一个字节都不读 body', async () => {
-    // 用假 Response 是为了让 res.body 就是这个流本身，真 Response 会把流包一层，spy 装不上去。
-    // 判据取"有没有拿过 reader"：ReadableStream 自己就会主动 pull，拿 pull 当判据会误报。
+    // 用假 Response 让 res.body 就是这个流本身，并以 getReader 是否被调用作为判据
     const body = new ReadableStream<Uint8Array>({
       start(controller) {
         controller.enqueue(new TextEncoder().encode('data: {"type":"finish"}\n\n'))
@@ -167,7 +166,7 @@ describe('createHttpSseTransport 失败路径', () => {
     expect(events[0]).toMatchObject({ kind: 'error', retryable: false })
     expect((events[0] as { errorText: string }).errorText).toContain(DATA_STREAM_HEADER)
     expect(getReader).not.toHaveBeenCalled()
-    // 不读不代表可以放着不管，连接得关掉
+    // 不读 body 也要关掉连接
     expect(cancel).toHaveBeenCalledOnce()
   })
 
@@ -236,13 +235,13 @@ describe('createHttpSseTransport 失败路径', () => {
     })
     const events = await drain(transport)
     expect(events).toMatchObject([{ kind: 'abort' }])
-    // 非字符串 reason 不往外带
+    // 非字符串 reason 不带出
     expect((events[0] as { reason?: string }).reason).toBeUndefined()
   })
 
   it('读流途中炸掉 → 前面已产出的事件保留，末尾补一条 error', async () => {
     const encoder = new TextEncoder()
-    // 必须分两次 pull：controller.error() 会清空队列，先 enqueue 再同步 error 的话那块数据根本到不了消费方
+    // 分两次 pull，先投递数据再报错，避免 controller.error() 清空队列
     let pulled = 0
     const body = new ReadableStream<Uint8Array>({
       pull(controller) {

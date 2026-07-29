@@ -24,11 +24,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run"
   },
-  "dependencies": {
-    "markdown-it": "catalog:"
-  },
   "devDependencies": {
-    "@types/markdown-it": "catalog:",
     "@xihan-ui/build": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",
     "vitest": "catalog:"

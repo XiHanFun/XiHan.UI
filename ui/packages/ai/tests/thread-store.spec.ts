@@ -8,12 +8,12 @@ import { createThreadStore } from '../src/store/thread-store'
 
 const T = 1000
 
-/** 让出微任务队列，等 store 内部的 for await 推进一轮。 */
+/** 让出事件循环，等 store 内部的 for await 推进一轮。 */
 function tick(): Promise<void> {
   return new Promise<void>(resolve => setTimeout(resolve, 0))
 }
 
-/** 手动驱动的帧调度：不跑 run()，批处理里的发布就不会发生。 */
+/** 手动驱动的帧调度，只有调用 run() 才会执行排队的帧。 */
 function manualFrames(): {
   options: { requestFrame: (fn: () => void) => number, cancelFrame: (handle: number) => void }
   run: () => void
@@ -47,11 +47,7 @@ interface Run {
   readonly signal: AbortSignal
 }
 
-/**
- * 由测试逐个投喂事件的传输，模拟真实的"边到边处理"。
- * 每次 stream() 都开一条独立的通道：共用一个缓冲区的话，被顶掉的旧轮次与新轮次会抢同一批事件，
- * 测出来的就不是 store 的行为而是假传输的行为。
- */
+/** 由测试逐个投喂事件的传输，每次 stream() 开一条独立通道。 */
 function channelTransport(): { transport: Transport, runs: Run[], latest: () => Run } {
   const runs: Run[] = []
 
@@ -128,8 +124,6 @@ describe('createThreadStore 提交与状态流转', () => {
   })
 
   it('服务端不发终止帧直接关流，开着的块照样被收尾', async () => {
-    // 这条最容易被漏：状态一路走到 idle 看着挺正常，但 TextPart.streaming 还停在 true，
-    // 界面永远顶着生长态光标，而且这份 parts 会原样上行给下一次请求
     const chan = channelTransport()
     const frames = manualFrames()
     const store = createThreadStore({ transport: chan.transport, frame: frames.options })
@@ -233,7 +227,7 @@ describe('createThreadStore 瞬态数据', () => {
     chan.latest().close()
     await tick()
 
-    // 全程只有瞬态帧 → 没有任何 part 落盘，助手消息也就不该被创建
+    // 全程只有瞬态帧，不创建助手消息
     expect(store.getSnapshot().messages).toHaveLength(1)
   })
 })
@@ -276,7 +270,7 @@ describe('createThreadStore 错误与取消', () => {
     const afterStop = listener.mock.calls.length
     expect(afterStop).toBe(before + 1)
 
-    // 停下那一刻 b1 还开着。传输还在往外吐，但本轮已被顶掉：内容一律不落盘
+    // 停止时 b1 仍开着，此后传输吐出的事件不再写入
     expect((store.getSnapshot().messages[1]!.parts[0] as TextPart).streaming).toBe(true)
     chan.latest().push(textDelta('b1', '不该出现'))
     chan.latest().push({ kind: 'finish', receivedTime: T })
@@ -285,8 +279,7 @@ describe('createThreadStore 错误与取消', () => {
     frames.run()
 
     expect((store.getSnapshot().messages[1]!.parts[0] as TextPart).text).toBe('')
-    // 但开着的块必须被收尾并发出去：留着 streaming=true 的话，用户按了停止，
-    // 界面上那条消息会永远顶着生长态光标，而且原样上行给下一次请求
+    // 开着的块仍被收尾并发布
     expect((store.getSnapshot().messages[1]!.parts[0] as TextPart).streaming).toBe(false)
     expect(listener.mock.calls.length).toBe(afterStop + 1)
   })
@@ -316,7 +309,7 @@ describe('createThreadStore 错误与取消', () => {
     expect(chan.runs).toHaveLength(2)
     expect(firstRun.signal.aborted).toBe(true)
 
-    // 旧轮次还在往外吐（服务端还没反应过来），这些事件一个都不该落盘
+    // 旧轮次后续吐出的事件不再写入
     firstRun.push(textDelta('b1', '旧的'))
     firstRun.push({ kind: 'finish', receivedTime: T })
     firstRun.close()
@@ -324,10 +317,10 @@ describe('createThreadStore 错误与取消', () => {
     frames.run()
 
     const { messages } = store.getSnapshot()
-    // 第一问 / 第一轮助手 / 第二问
+    // 第一问、第一轮助手、第二问
     expect(messages.map(m => m.role)).toEqual(['user', 'assistant', 'user'])
     expect((messages[1]!.parts[0] as TextPart).text).toBe('')
-    // 旧轮次的收尾也不该把新一轮的 submitted 打回 idle
+    // 旧轮次收尾不改动新一轮的状态
     expect(store.getSnapshot().status).toBe('submitted')
   })
 
@@ -462,7 +455,7 @@ describe('createThreadStore 帧批处理', () => {
     chan.latest().push(textDelta('b1', '三'))
     await tick()
 
-    // 事件都消费完了，但帧还没跑：一次都不该发布
+    // 事件已消费但帧未执行，尚未发布
     expect(listener.mock.calls.length).toBe(afterSubmit)
     expect(frames.pending()).toBe(1)
 
@@ -487,10 +480,10 @@ describe('createThreadStore 帧批处理', () => {
     chan.latest().close()
     await tick()
 
-    // 没跑任何帧，但流结束的结算是同步发布的
+    // 未执行任何帧，流结束的结算已同步发布
     expect(store.getSnapshot().status).toBe('idle')
     expect((store.getSnapshot().messages[1]!.parts[0] as TextPart).text).toBe('完整内容')
-    // 结算已把待处理帧取消，跑帧不该再多发一次
+    // 结算已取消待处理帧，再执行帧不会重复发布
     const settled = listener.mock.calls.length
     frames.run()
     expect(listener.mock.calls.length).toBe(settled)

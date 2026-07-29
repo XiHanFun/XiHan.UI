@@ -8,16 +8,15 @@ export const XhCodeBlock = defineComponent({
   props: {
     code: { type: String, default: '' },
     lang: { type: String, default: undefined },
-    // 三态：undefined 表示"作者没说"，与显式 false 一样不落 data-complete，
-    // 但保留给上游区分"还没吐完"与"确认未闭合"
+    // 三态，undefined 与 false 同样不落 data-complete
     complete: { type: Boolean, default: undefined },
   },
   setup(props) {
-    // 流式吐字期间 props 每帧都在变，connect 本身无状态无副作用，重算即可
+    // connect 无状态，props 变了直接重算
     const api = computed(() => connectCodeBlock(props as CodeBlockProps, vueNormalize))
     return () => h('div', api.value.getRootProps() as Record<string, unknown>, [
       h('span', api.value.getLangLabelProps() as Record<string, unknown>, api.value.lang),
-      // <pre> 与 <code> 是硬要求：代码里的空白与换行只有它们会原样保留
+      // 用 pre 与 code 保留代码里的空白与换行
       h('pre', api.value.getPreProps() as Record<string, unknown>, [
         h('code', api.value.getCodeProps() as Record<string, unknown>, props.code),
       ]),

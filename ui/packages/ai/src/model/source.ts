@@ -1,11 +1,11 @@
-// 引用来源模型。内核只搬运不解释：来源的打开方式是宿主的事。
+// 引用来源模型。
 
 export interface CitationAnchor {
   readonly sourceId: string
   readonly quote: string
-  /** 字符区间。后端切片只有序号没有偏移，当前恒为 undefined。 */
+  /** 引文在原文中的字符区间。 */
   readonly offset?: { readonly start: number, readonly end: number }
-  /** 文档定位符。内核只透传、绝不解释，交给宿主注册的打开器。 */
+  /** 文档定位符，原样透传给宿主。 */
   readonly locator?: unknown
 }
 

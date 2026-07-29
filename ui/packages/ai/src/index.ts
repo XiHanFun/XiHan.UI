@@ -1,6 +1,4 @@
-// @xihan-ui/ai —— AI 协议内核（框架无关，只依赖 core）。
-// SSE 行解析 → Data Stream v1 归一 → parts 归约 → 会话容器，一条单向管道。
-// 全包不碰 DOM：rAF 与 fetch 都从选项注入，缺席时才退化到 globalThis。
+// @xihan-ui/ai 的公开出口：消息模型、Data Stream v1 归一、parts 归约、会话容器与 SSE 传输。
 
 export type { ChatRequest, Role, UIMessage } from './model/message'
 export {

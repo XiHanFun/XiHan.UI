@@ -1,8 +1,5 @@
-// AI SDK Data Stream v1 线格式 → 内部事件的归一。
-//
-// 单帧纯函数，不持状态、不读时钟：receivedTime 一律从帧上原样搬运。
-// 失败策略分两档——坏 JSON / 缺 type 说明流已损坏，必须让用户看见，产一条 error 事件；
-// 而"格式没问题但 type 不认识"只是协议向前扩展，丢弃即可（返回 null）。
+// 把 Data Stream v1 线格式的帧归一成内部事件：坏 JSON 与缺 type 产出 error 事件，
+// 不认识的 type 返回 null。
 import type { FilePart } from '../model/part-kinds'
 import type { SourceDocumentPart, SourceUrlPart } from '../model/source'
 import type { MessageMetadata } from '../model/usage'
@@ -23,11 +20,11 @@ function parseFailure(receivedTime: number): NormalizedEvent {
   return { kind: 'error', errorText: 'AI 流数据帧无法解析', retryable: false, receivedTime }
 }
 
-/** 单帧纯函数。返回 null = 该帧无对应内部事件，丢弃。 */
+/** 归一单个原始帧，返回 null 表示该帧不对应任何内部事件。 */
 export function normalizeDataStreamV1(frame: RawFrame): NormalizedEvent | null {
   const { receivedTime } = frame
 
-  // 结束哨兵不是 JSON，得在解析之前认掉
+  // 结束哨兵不是 JSON，在解析之前先认掉
   if (frame.data.trim() === DATA_STREAM_DONE)
     return { kind: 'finish', receivedTime }
 
@@ -92,7 +89,7 @@ export function normalizeDataStreamV1(frame: RawFrame): NormalizedEvent | null {
       return {
         kind: 'tool-input-available',
         toolCallId: readString(raw.toolCallId) ?? '',
-        // 不流式吐入参时这是该工具的第一帧，工具名只有这儿有
+        // 未流式吐入参时该帧是工具的首帧，工具名只在此出现
         toolName: readString(raw.toolName),
         input: raw.input,
         receivedTime,
@@ -152,7 +149,7 @@ export function normalizeDataStreamV1(frame: RawFrame): NormalizedEvent | null {
       return { kind: 'message-metadata', metadata, receivedTime }
     }
 
-    // retryable 留空：内核只按线格式搬运，重试与否由 transport 按 HTTP 语义标
+    // retryable 留空，由 transport 填
     case 'error':
       return { kind: 'error', errorText: readString(raw.errorText) ?? '', receivedTime }
 
@@ -162,7 +159,7 @@ export function normalizeDataStreamV1(frame: RawFrame): NormalizedEvent | null {
     case 'finish':
       return { kind: 'finish', receivedTime }
 
-    // 分步收尾当前没有消费方，认得但不映射
+    // 认得但无对应事件
     case 'finish-step':
       return null
 

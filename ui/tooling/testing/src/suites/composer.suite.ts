@@ -3,8 +3,7 @@ import { composerAnatomy, composerKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
 
-// APG 没有"聊天输入框"这个模式：键盘交互绝大部分归浏览器，组件只额外接一个 Enter。
-// 出处因此指向模式总览页，而不是某一章。
+// 组件只额外接管 Enter，其余按键交给浏览器，故出处指向 APG 模式总览页。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/'
 
 const INPUT = '[data-scope="composer"][data-part="input"]'
@@ -16,12 +15,7 @@ function inputEl(doc: Document): HTMLTextAreaElement {
   return el
 }
 
-/**
- * 直接改 DOM 值再派发 input：`type` 步骤只发按键，落不到输入框的 value 上。
- *
- * 派完必须 flush：两个适配器的重渲都是异步的，同一个 raw 步骤里紧接着读 DOM
- * 会读到上一帧，断言要么假红要么假绿。
- */
+/** 直接改 DOM 值再派发 input（`type` 步骤只发按键，写不进 value），随后 flush 等待重渲。 */
 async function typeInto(ctx: RawStepContext, text: string): Promise<void> {
   const input = inputEl(ctx.doc)
   input.value = text
@@ -36,12 +30,9 @@ function expectValue(doc: Document, want: string, why: string): void {
 }
 
 /**
- * 输入框只有 root / input / submit-trigger 三个部件，没有独立的停止按钮——
- * 流式期间发送按钮**原位**换身份，只改 data-mode 与 aria-label。用例因此反复盯着
- * 同一个 submit-trigger：它换没换身份、该不该置灰、按下去发的是提交还是停止。
- *
- * 清空发生在提交回调之后，所以每次提交都会连带一条 value-change（值被清成空串）。
- * 那条不是噪音，正是"提交完输入框真的空了"的证据，事件断言里逐条写出来。
+ * composer 的一致性套件：只有 root / input / submit-trigger 三个部件，
+ * 流式期间 submit-trigger 原位换 data-mode 与 aria-label。
+ * 清空发生在提交回调之后，故每次提交都连带一条值为空串的 value-change。
  */
 export const composerSuite: ConformanceSuite = {
   component: 'composer',
@@ -50,7 +41,7 @@ export const composerSuite: ConformanceSuite = {
   fixture: {
     part: 'root',
     children: [
-      // 必须是原生 <textarea>：Shift+Enter 的换行、光标位置与撤销栈全靠它自己
+      // 输入框须是原生 <textarea>
       { part: 'input', tag: 'textarea' },
       { part: 'submit-trigger', tag: 'button', text: '发送' },
     ],
@@ -66,15 +57,14 @@ export const composerSuite: ConformanceSuite = {
           'root': { 'data-status': 'ready', 'data-disabled': null },
           'input': {
             'disabled': null,
-            // 输入框常常没有可见标签，名字只能从这里来
+            // 输入框的无障碍名由 connect 给出
             'aria-label': 'Message',
             'data-state': 'empty',
           },
           'submit-trigger': {
-            // 漏了 type 的话，落在 form 里它会变成 submit，Enter 直接提交整张表单
+            // 显式 type=button，避免落在 form 里被当成提交按钮
             'type': 'button',
-            // 单体控件用原生 disabled：光有 data-disabled 只是样式，
-            // 读屏照念"发送"、键盘照聚焦，按下去却什么都不发生
+            // 单体控件用原生 disabled，而非只给 data-disabled
             'disabled': '',
             'data-mode': 'send',
             'aria-label': 'Send',
@@ -121,9 +111,9 @@ export const composerSuite: ConformanceSuite = {
               'input': { 'data-state': 'empty' },
               'submit-trigger': { 'disabled': '', 'data-mode': 'send' },
             },
-            // 焦点不许被提交挪走：连着说两句话的人不该每句都重新点一次输入框
+            // 提交后焦点仍留在输入框
             activeElement: { part: 'input', exact: true },
-            // 先报提交、再报清空：反过来的话宿主收到的就是被清掉的空串
+            // 先派 submit 再派值为空串的 value-change
             events: [
               { type: 'submit', detail: { value: '你好' } },
               { type: 'value-change', detail: { value: '' } },
@@ -143,7 +133,7 @@ export const composerSuite: ConformanceSuite = {
           'submit-trigger': {
             'data-mode': 'stop',
             'aria-label': 'Stop generating',
-            // 此刻它是"停止"，能不能按跟输入框里有没有字没关系
+            // 停止模式下按钮恒可用，与输入框是否有值无关
             'disabled': null,
           },
         },
@@ -154,7 +144,7 @@ export const composerSuite: ConformanceSuite = {
           kind: 'click',
           part: 'submit-trigger',
           expect: {
-            // 身份一动不动：正按着它的用户不会按空
+            // data-mode 与 aria-label 保持不变
             parts: { 'submit-trigger': { 'data-mode': 'stop', 'disabled': null } },
             events: [{ type: 'stop' }],
           },
@@ -171,10 +161,8 @@ export const composerSuite: ConformanceSuite = {
           kind: 'raw',
           why: 'type 步骤落不到 value 上；受控下要的是"用户真敲了字"这一路',
           run: ctx => typeInto(ctx, '你好'),
-          // 受控值仍是 'a'，所以状态与按钮一动不动；通知里带的是用户敲的那串，
-          // 宿主拿它去决定要不要写回。
-          // 这一帧刻意不比 input.value：受控且宿主没写回时，框里显示什么取决于
-          // 宿主有没有因此重渲，那是适配器运行时的事，不是这份规格要定的
+          // 受控值仍是 'a'，状态与按钮不变，通知里带的是用户敲入的串；
+          // 此处不断言 input.value，宿主未写回时它取决于适配器是否重渲
           expect: {
             parts: {
               'input': { 'data-state': 'editing' },

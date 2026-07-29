@@ -1,6 +1,5 @@
 // @vitest-environment jsdom
-// 一致性套件只在单个宿主元素内挂 fixture，两个自定义元素套在一起的场景从来没被覆盖过。
-// 事件名与属性名撞上 HTML 全局名的问题正是从这个洞里漏出去的，这里逐个钉住。
+// 覆盖宿主元素嵌套在其他元素内的场景，以及事件名与属性名和 HTML 全局名的冲突。
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { defineXhElements } from '../src/define'
 
@@ -16,9 +15,7 @@ beforeEach(() => {
 
 describe('xh-composer 套在表单里', () => {
   it('提交事件不冒泡，外层 form 不会被真的提交', async () => {
-    // submit 与原生表单提交同名。冒泡出去的话，祖先链上任意 <form> 会把它当成
-    // 自己的提交跑一遍校验与导航；而表单组件为了自己的事件秩序做的 stopPropagation
-    // 又会反过来把 composer 这条吞掉——用户消息就这么静默丢了
+    // submit 与原生表单提交同名，故不冒泡
     const form = document.createElement('form')
     const composer = document.createElement('xh-composer')
     composer.innerHTML = '<textarea data-xh-part="input"></textarea><button data-xh-part="submit-trigger">发送</button>'
@@ -45,7 +42,7 @@ describe('xh-composer 套在表单里', () => {
   })
 
   it('value-change 与 stop 照常冒泡', async () => {
-    // 只有 submit 因为撞名而不冒泡，别的事件不该跟着一起收窄
+    // 只有 submit 不冒泡
     const wrap = document.createElement('div')
     const composer = document.createElement('xh-composer')
     composer.innerHTML = '<textarea data-xh-part="input"></textarea><button data-xh-part="submit-trigger">发送</button>'
@@ -67,8 +64,7 @@ describe('xh-composer 套在表单里', () => {
 
 describe('宿主元素不占用 HTML 全局属性', () => {
   it('xh-code-block 用 code-lang 而不是 lang', async () => {
-    // lang 是 HTML 全局属性，写上去等于声明整块内容的自然语言：
-    // lang="cs"（C#）会让读屏按捷克语把整段代码念一遍
+    // lang 是 HTML 全局属性，用它会改变整块内容的自然语言标注
     const el = document.createElement('xh-code-block')
     el.setAttribute('code-lang', 'cs')
     el.setAttribute('code', 'var a = 1;')

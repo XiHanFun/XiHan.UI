@@ -5,13 +5,13 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope, normalizePr
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-// 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
+// 直接从组件目录导入，不经包主入口
 import { connectThread, threadAnatomy, threadMachine, threadMeta } from '../src/thread'
 
 type Props = ThreadSchema['props']
 type Dict = Record<string, unknown>
 
-/** 视口 100、内容 400：可滚 300px，距底 64px 内算在底。 */
+/** 视口 100、内容 400，可滚 300px，距底 64px 内算在底。 */
 const VIEWPORT = 100
 const CONTENT = 400
 
@@ -19,7 +19,7 @@ interface Rig {
   service: Service<ThreadSchema>
   viewport: HTMLElement
   content: HTMLElement
-  /** 记下每一次程序化归位，验"按钮真的打到了句柄上"。 */
+  /** 记录每一次程序化归位调用。 */
   scrollTo: ReturnType<typeof vi.fn>
   api: () => ThreadApi
   root: () => Dict
@@ -29,12 +29,7 @@ interface Rig {
   stop: () => void
 }
 
-/**
- * jsdom 不做布局，scrollHeight/clientHeight 恒是 0——粘底句柄会一直算出"在底"，
- * 按钮永远不显形，这条线一个用例都验不到。这里把三个尺寸桩在真实节点上，
- * 滚动量做成可读可写并在两端夹住，scrollTo 也照浏览器那样真把位置挪过去
- * （只当 spy 不挪位的话，归位之后的"重新在底"就验不出来了）。
- */
+/** 在节点上桩出 clientHeight / scrollHeight / scrollTop 与 scrollTo，滚动量在两端夹住。 */
 function stubBox(el: HTMLElement, scrollTo: (top: number) => void): void {
   let top = 0
   const maxTop = CONTENT - VIEWPORT
@@ -72,7 +67,7 @@ function mount(initial: Props = {}, options: { config?: boolean } = {}): Rig {
   stubBox(viewport, scrollTo)
 
   if (options.config !== false) {
-    // reducedMotion 必须显式给：默认实现要读 matchMedia，jsdom 没实现，一调就抛
+    // 显式给出 reducedMotion，默认实现要读 jsdom 未实现的 matchMedia
     service.refs.set('config', createRuntimeConfig({ scope, idGenerator: idGen, reducedMotion: () => false }))
   }
   service.refs.set('getViewportEl', () => viewport)
@@ -98,7 +93,7 @@ function mount(initial: Props = {}, options: { config?: boolean } = {}): Rig {
   }
 }
 
-/** 粘底句柄推迟一拍才建（挂载这一刻内容还在渲，量到的高度全是 0），等它落地再断言。 */
+/** 等粘底句柄创建完成，它推迟一拍才建。 */
 async function settle(): Promise<void> {
   await new Promise<void>(resolve => queueMicrotask(resolve))
   await new Promise<void>(resolve => queueMicrotask(resolve))
@@ -111,7 +106,7 @@ function rig(initial?: Props, options?: { config?: boolean }): Rig {
   return created
 }
 
-/** 原生滚动：改滚动量再派事件，与浏览器同序。 */
+/** 模拟原生滚动：先改滚动量再派发 scroll 事件。 */
 function scrollViewport(r: Rig, top: number): void {
   r.viewport.scrollTop = top
   r.viewport.dispatchEvent(new Event('scroll'))
@@ -127,8 +122,7 @@ const ALL_STATUS: ThreadStatus[] = ['idle', 'submitted', 'streaming', 'error']
 
 describe('播报接线', () => {
   it('viewport 恒 role=log 且 aria-live=off，任何运行态都不例外', () => {
-    // role=log 隐含 polite：逐 token 追加时读屏会把每一小段各念一遍，整段话被念成碎片。
-    // 所以显式关掉，播报改由 live-region 在流结束时一次性完成
+    // role=log 隐含 polite，这里显式关掉，播报交给 live-region
     for (const status of ALL_STATUS) {
       const props = rig({ status }).viewportProps()
       expect(props.role).toBe('log')
@@ -141,7 +135,7 @@ describe('播报接线', () => {
       const props = rig({ status }).liveRegion()
       expect(props.role).toBe('status')
       expect(props['aria-live']).toBe('polite')
-      // 宿主只在一轮流结束时写一次；aria-atomic 下中途写就等于把同一段话越念越长
+      // aria-atomic 为 true，每次变动重念整块
       expect(props['aria-atomic']).toBe('true')
     }
   })
@@ -172,7 +166,7 @@ describe('播报接线', () => {
 
     const zh = rig({ translations: { scrollToBottom: '回到底部' } })
     expect(zh.button()['aria-label']).toBe('回到底部')
-    // 只覆盖一条时其余仍回落英文
+    // 未覆盖的那条仍回落英文
     expect(zh.viewportProps()['aria-label']).toBe('Conversation')
   })
 })
@@ -191,7 +185,6 @@ describe('回到底部按钮', () => {
     r.service.send({ type: 'STICK.CHANGE', atBottom: false, sticking: false })
     expect(r.api().showScrollButton).toBe(true)
     expect(r.button()['data-state']).toBe('visible')
-    // 收起时只隐藏不卸载：作者可能在按钮里放了自己的图标与过渡
     expect(r.button().hidden).toBeUndefined()
 
     r.service.send({ type: 'STICK.CHANGE', atBottom: true, sticking: true })
@@ -208,7 +201,6 @@ describe('回到底部按钮', () => {
   })
 
   it('粘底跃迁原样转发给宿主，机器不再去重', () => {
-    // 句柄只在值真变时才回报，机器里再判一次只会让两处判等逻辑各自漂移
     const onStickChange = vi.fn()
     const r = rig({ onStickChange })
     r.service.send({ type: 'STICK.CHANGE', atBottom: false, sticking: false })
@@ -231,7 +223,7 @@ describe('粘底句柄', () => {
     const r = rig()
     await settle()
     scrollViewport(r, 0)
-    // 向上滚轮脱锚，模拟用户翻看历史
+    // 向上滚轮解除粘附
     r.viewport.dispatchEvent(new WheelEvent('wheel', { deltaY: -50 }))
     expect(r.api().sticking).toBe(false)
 
@@ -266,7 +258,6 @@ describe('粘底句柄', () => {
     r.stop()
     rigs.pop()
     await settle()
-    // 否则句柄会挂到一台已经停掉的机器上，再没人去 dispose 它
     expect(r.service.refs.get('stick')).toBeNull()
     expect(r.scrollTo).not.toHaveBeenCalled()
   })
@@ -277,7 +268,7 @@ describe('没有 DOM 环境', () => {
     const r = rig({}, { config: false })
     await settle()
     expect(r.service.refs.get('stick')).toBeNull()
-    // 半挂一个量不到东西的句柄比不挂更糟：状态在跑、监听却没挂
+    // 没挂监听，滚动不改变 atBottom
     scrollViewport(r, 0)
     expect(r.api().atBottom).toBe(true)
   })

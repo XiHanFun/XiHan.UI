@@ -1,4 +1,4 @@
-// 会话状态容器：把事件流收敛成"一组消息 + 一个状态"，订阅式、零框架依赖。
+// 会话状态容器：把事件流收敛成一组消息与一个运行状态，对外提供订阅。
 import type { Cleanup } from '@xihan-ui/core'
 import type { ChatRequest, UIMessage } from '../model/message'
 import type { ReduceState } from '../reduce/parts-reducer'
@@ -17,7 +17,7 @@ export interface ThreadSnapshot {
 
 export interface ThreadStoreOptions {
   readonly transport: Transport
-  /** 瞬态通道：transient data 只走这里，不进 parts、不污染历史。 */
+  /** 瞬态 data 帧的回调，这类帧不进 parts。 */
   readonly onData?: (name: string, data: unknown) => void
   readonly generateId?: () => string
   readonly frame?: FrameBatcherOptions
@@ -25,9 +25,9 @@ export interface ThreadStoreOptions {
 
 export interface ThreadStore {
   getSnapshot: () => ThreadSnapshot
-  /** 订阅式、无框架。返回退订函数。 */
+  /** 订阅快照变化，返回退订函数。 */
   subscribe: (fn: (snapshot: ThreadSnapshot) => void) => Cleanup
-  /** 追加一条 user 消息并发起一次运行；已有运行在跑时先 stop。 */
+  /** 追加一条 user 消息并发起一次运行，已有运行会先被取消。 */
   submit: (text: string, extra?: { readonly body?: Readonly<Record<string, unknown>> }) => void
   /** 取消当前运行，保留已产出的 parts。 */
   stop: () => void
@@ -45,17 +45,17 @@ export function createThreadStore(options: ThreadStoreOptions): ThreadStore {
   let seq = 0
 
   const listeners = new Set<(snapshot: ThreadSnapshot) => void>()
-  // 不引 uuid：store 内唯一就够了，跨端唯一的 id 由服务端的 message-start 覆盖进来
+  // 默认 id 只保证 store 内唯一，服务端的 message-start 会覆盖它
   const nextId = options.generateId ?? ((): string => `xh-msg-${++seq}`)
 
-  // 快照对象在两次发布之间保持同一个引用，框架层才能靠引用比对判断"变没变"
+  // 快照对象在两次发布之间保持同一引用，供宿主做引用比对
   let current: ThreadSnapshot = { messages, status, error }
 
   const publish = (): void => {
     if (disposed)
       return
     current = { messages, status, error }
-    // 先拷贝再遍历：回调里退订是常态
+    // 先拷贝再遍历，允许回调内退订
     for (const fn of [...listeners]) fn(current)
   }
 
@@ -79,12 +79,12 @@ export function createThreadStore(options: ThreadStoreOptions): ThreadStore {
 
   const run = async (req: ChatRequest, ac: AbortController): Promise<void> => {
     let pending: ReduceState | null = null
-    // 收尾事件要带时间戳，但本包承诺整条管道不读时钟，所以借用最后一帧的
+    // 收尾事件的时间戳沿用最后一帧的 receivedTime
     let lastReceivedTime = 0
     try {
       for await (const ev of options.transport.stream(req, ac.signal)) {
         lastReceivedTime = ev.receivedTime
-        // 本轮已被 stop / 新一轮 submit 顶掉，剩下的事件不再落盘
+        // 本轮已被 stop 或新一轮 submit 顶掉，剩余事件不再写入
         if (controller !== ac)
           return
 
@@ -102,7 +102,7 @@ export function createThreadStore(options: ThreadStoreOptions): ThreadStore {
         pending = reduceEvent(pending, ev)
         messages = [...messages.slice(0, -1), pending.message]
 
-        // 错误不中断消费：后端可能在 error 之后还补 finish 与结算信息
+        // 记录错误但继续消费后续事件
         if (ev.kind === 'error') {
           error = ev.errorText
           status = 'error'
@@ -112,17 +112,12 @@ export function createThreadStore(options: ThreadStoreOptions): ThreadStore {
       }
     }
     catch (err) {
-      // transport 契约上不会抛，这里兜的是 onData 之类宿主回调里漏出来的异常：
-      // 与其变成一条无人处理的 rejection，不如落进 error 让用户看见
+      // 兜住宿主回调抛出的异常，落进 error 状态
       error = String(err)
       status = 'error'
     }
     finally {
-      // 三条路都不会有 finish/abort 进 reducer：stop 顶掉本轮（上面直接 return）、
-      // 服务端不发终止帧直接关流、中途异常。不补的话 TextPart.streaming 永远停在 true、
-      // 工具永远停在 input-streaming，而且会随下一次请求原样上行给后端。
-      // 这段要放在 controller === ac 判定之外：被顶掉的陈旧轮次同样得收尾，
-      // 而那时它的消息未必还是数组最后一条，只能按 id 回写
+      // 无论本轮是否被顶掉都补一次收尾，并按 id 回写（此时消息未必是数组最后一条）
       if (pending !== null) {
         const closed = reduceEvent(pending, { kind: 'abort', receivedTime: lastReceivedTime }).message
         messages = messages.map(m => (m.id === closed.id ? closed : m))
@@ -133,7 +128,7 @@ export function createThreadStore(options: ThreadStoreOptions): ThreadStore {
         settle(status === 'error' ? 'error' : 'idle')
       }
       else {
-        // 陈旧轮次：状态归新一轮管，但收尾后的消息得发出去
+        // 已被顶掉的轮次不改状态，只发布收尾后的消息
         publish()
       }
     }
@@ -166,8 +161,7 @@ export function createThreadStore(options: ThreadStoreOptions): ThreadStore {
   const dispose = (): void => {
     if (disposed)
       return
-    // 先置位再 stop：stop 内部的结算会走 publish，晚一步就等于朝正在拆卸的宿主再发一次快照。
-    // 置位后 publish 自己会短路，abort 与状态收尾照常发生。
+    // 先置位再 stop，让 stop 内部的 publish 短路
     disposed = true
     stop()
     batcher.cancel()

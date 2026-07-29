@@ -9,32 +9,11 @@ import { formatViolations, runAxe } from './axe'
 export type KnownViolations = Readonly<Record<string, Readonly<Record<string, string>>>>
 
 export interface A11yRunOptions extends AxeCheckOptions {
-  /**
-   * 已登记的存量违规：命中不判失败，但**必须仍然命中**。
-   *
-   * 做成逐条登记而不是关规则，是为了让每一条都带着组件名、规则 id 和理由摆在明面上；
-   * 修好了就得从表里删掉，否则判"登记过期"失败——不然表会变成一张没人再看的免死金牌。
-   */
+  /** 逐组件登记的存量违规，命中不判失败，但一条都不再命中时判登记过期。 */
   readonly known?: KnownViolations
-  /**
-   * 全组件通用的登记：规则 id → 理由。
-   *
-   * 给那些"命中哪几个组件取决于浮层当帧渲染到哪一步"的规则用（典型是 color-contrast）。
-   * 逐组件登记会随机漂移，登记表天天要改。这里只要求整轮至少命中一次，
-   * 一次都不命中同样判过期。
-   */
+  /** 全组件通用的登记，规则 id → 理由，整轮至少命中一次，否则判登记过期。 */
   readonly knownEverywhere?: Readonly<Record<string, string>>
-  /**
-   * 步骤在浏览器里放不出来的组件：组件名 → 理由。
-   *
-   * 一致性套件的步骤是照 jsdom 写的，少数组件到真实浏览器里前提就不成立
-   * （退场动画真的要走完、真实选区行为不同、焦点时序不同）。
-   * 这类用例只是推不到终态，扫不到那个形态而已，本身该由浏览器态一致性去追，
-   * 不是无障碍问题——但要写明是哪个组件、为什么，且它一旦能放出来就得删。
-   *
-   * 按组件而不是按用例登记：同一个根因常常同时打掉同组件的六七个用例，
-   * 逐用例登记只会把同一句理由抄六遍，还会被用例改名冲掉。
-   */
+  /** 步骤在浏览器里放不完的组件，组件名 → 理由；步骤能放完时判豁免过期。 */
   readonly replayExempt?: Readonly<Record<string, string>>
 }
 
@@ -43,24 +22,14 @@ async function mount(harness: AdapterHarness, suite: ConformanceSuite, props: Re
   return { harness, root, doc: root.ownerDocument, component: suite.component, anatomy: suite.anatomy }
 }
 
-/**
- * 挡掉真实导航。
- *
- * jsdom 里表单提交与链接点击都是空操作，浏览器里它们会真的把页面导航走——
- * 测试宿主的 iframe 一旦跳走，整个文件剩下的用例全部失联。
- *
- * 挂在冒泡阶段而不是捕获阶段：捕获阶段就 preventDefault 会让归一化层的
- * `defaultPrevented` 守卫提前短路，组件自己的处理器根本轮不到，测的就不是真实行为了。
- * 冒泡阶段拿到事件时组件已经处理完，此时取消默认动作只挡导航。
- */
+/** 挡掉表单提交与跨文档链接引发的真实导航；挂在冒泡阶段，不影响组件自身的处理器。 */
 function blockNavigation(doc: Document): void {
   doc.addEventListener('submit', e => e.preventDefault())
   doc.addEventListener('click', (e) => {
     const a = (e.target as Element | null)?.closest?.('a[href]') as HTMLAnchorElement | null
     if (!a)
       return
-    // 只拦跨文档跳转。片段跳转（#id）留着——锚点组件的降级路径正是靠它，
-    // 一律拦下会把"没有 JS 时链接还能用"这条断言直接判死。
+    // 只拦跨文档跳转，片段跳转（#id）放行
     const url = new URL(a.href, doc.baseURI)
     const sameDocument = url.origin === doc.location.origin && url.pathname === doc.location.pathname && url.search === doc.location.search
     if (!sameDocument)
@@ -68,19 +37,15 @@ function blockNavigation(doc: Document): void {
   })
 }
 
-/** 归一化快照签名：id 已被抹成 @self、IDREF 已翻成 part 引用，同一形态多次挂载得到同一串。 */
+/** 由归一化 DOM 快照算出的形态签名，同一形态多次挂载得到同一串。 */
 function signature(ctx: ApplyContext, harness: AdapterHarness): string {
   const snap = collectDomSnapshot({ doc: ctx.doc, component: ctx.component, anatomy: ctx.anatomy, events: harness.drainEvents() })
   return JSON.stringify({ parts: snap.parts, order: snap.order })
 }
 
 /**
- * 无障碍扫描：把一致性套件的 fixture 挂进真实浏览器，对初始态与各用例终态跑 axe。
- *
- * 扫的是 `document.body` 而不是宿主根元素——浮层组件的内容挂在 portal 里，在根之外。
- *
- * 终态按归一化快照去重：大量用例走不同路径收敛到同一个 DOM 形态，
- * 逐个重扫只是把同一份结果算 N 次。
+ * 把一致性套件的 fixture 挂进浏览器，对初始态与各用例终态跑 axe。
+ * 扫描目标是 `document.body`，以覆盖 portal 里的浮层内容；终态按形态签名去重。
  */
 export function runA11y(
   harness: AdapterHarness,
@@ -107,11 +72,7 @@ export function runA11y(
     const replayReason = replayExempt[suite.component]
     let replayFailures = 0
 
-    /**
-     * 扫一次；已登记的规则记账后放行，其余攒进 report。
-     * 攒而不是当场抛：一次跑完能看到该组件全部未登记的违规，
-     * 当场抛的话每跑一轮只露出第一条，得来回跑十几遍才能把账对齐。
-     */
+    /** 扫一次：已登记的规则记账后放行，其余攒进 report 由调用方统一抛出。 */
     const scan = async (ctx: ApplyContext, label: string, report: string[]): Promise<void> => {
       const { violations } = await runAxe(ctx.doc.body, axeOptions)
       const fresh = violations.filter((v) => {
@@ -176,7 +137,7 @@ export function runA11y(
         })
       }
 
-      // 放在最后：前面几条跑完，命中账才记全
+      // 放在最后，等前面几条跑完命中账才记全
       if (Object.keys(knownRules).length > 0) {
         hooks.it('已登记的违规仍然存在', () => {
           const stale = Object.keys(knownRules).filter(id => !hitRules.has(id))
@@ -194,7 +155,7 @@ export function runA11y(
   }
 
   if (Object.keys(knownEverywhere).length > 0) {
-    // 登记在最后：整轮扫完才知道通用登记有没有命中过
+    // 放在最后，整轮扫完才知道通用登记有没有命中过
     hooks.describe(`a11y 通用登记 (${harness.adapterName})`, () => {
       hooks.it('通用登记的规则整轮至少命中一次', () => {
         const stale = Object.keys(knownEverywhere).filter(id => !hitEverywhere.has(id))

@@ -5,7 +5,7 @@ import { normalizeProps } from '@xihan-ui/core'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { describe, expect, it, vi } from 'vitest'
-// 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
+// 直接从组件目录导入，不经包主入口
 import { composerAnatomy, composerMachine, composerMeta, connectComposer } from '../src/composer'
 
 type Props = ComposerSchema['props']
@@ -17,17 +17,13 @@ interface Rig {
   input: () => Dict
   trigger: () => Dict
   root: () => Dict
-  /** 运行期改 props：受控值回写与 disabled 翻转都走它。 */
+  /** 运行期改 props，受控值回写与 disabled 翻转都走它。 */
   setProps: (next: Props) => void
   state: () => ComposerState
   value: () => string
 }
 
-/**
- * props 挂在 signal 上而不是普通对象：disabled 是编进 FSM 状态的受控位，
- * 靠 watch 里的 track 回写，而 track 只在有信号真的动过时才复查——
- * 直接改一个普通对象，宿主的写回会被静默吞掉，`disabled` 那几条用例会假绿。
- */
+/** 把 props 挂在 signal 上，使 watch 里的 track 能收到运行期改动。 */
 function mount(initial: Props = {}): Rig {
   const runtime = createVanillaRuntime()
   const props = runtime.signal<Props>({ ...initial })
@@ -51,16 +47,12 @@ function fire(props: Dict, key: string, event: unknown = {}): void {
   (props[key] as (e: unknown) => void)(event)
 }
 
-/** 输入事件桩：连接层只读 target.value。 */
+/** 输入事件桩，连接层只读 target.value。 */
 function inputEvent(value: string): unknown {
   return { target: { value } }
 }
 
-/**
- * 按键桩。isComposing / keyCode 必须能自由伪造：jsdom（浏览器里也一样）合成出来的
- * KeyboardEvent 的 isComposing 恒为 false，真实 IME 组合态在自动化里演不出来，
- * 只有桩才验得到那道守卫。preventDefault 是 spy——"这个键组件接不接管"全靠它作证。
- */
+/** 按键桩，isComposing 与 keyCode 可自由伪造，preventDefault 是 spy。 */
 function keyEvent(key: string, extra: { shiftKey?: boolean, isComposing?: boolean, keyCode?: number } = {}) {
   return { key, shiftKey: false, isComposing: false, keyCode: 0, ...extra, preventDefault: vi.fn() }
 }
@@ -72,7 +64,7 @@ describe('初始状态', () => {
   })
 
   it('只含空白的初值仍算空：与 canSubmit 的 trim 是同一把尺子', () => {
-    // 两处判空不一致的话，"禁用再启用"会跳到跟初始不同的状态
+    // 纯空白的 defaultValue 按空处理
     expect(mount({ defaultValue: '   ' }).state()).toBe('empty')
   })
 
@@ -88,7 +80,7 @@ describe('初始状态', () => {
 
 describe('提交按钮', () => {
   it('空值时带原生 disabled，而不是只置个 data 位', () => {
-    // 只给样式的话，按钮看着能按、按下去却什么都不发生，键盘用户还得白按一次
+    // 不可提交时按钮带原生 disabled
     const r = mount()
     expect(r.api().canSubmit).toBe(false)
     expect(r.trigger().disabled).toBe(true)
@@ -116,7 +108,7 @@ describe('提交按钮', () => {
     const onSubmit = vi.fn()
     const r = mount({ defaultValue: '你好', onSubmit })
     fire(r.trigger(), 'onClick')
-    // clearValue 若排在 invokeSubmit 前面，这里收到的就是空串
+    // 回调收到的是清空前的值
     expect(onSubmit).toHaveBeenCalledWith({ value: '你好' })
     expect(r.value()).toBe('')
     expect(r.state()).toBe('empty')
@@ -160,13 +152,12 @@ describe('回车提交', () => {
   })
 
   it('输入法组合态下的回车是"确认选词"，一个字都不许发出去', () => {
-    // 漏判这一条，用户每选一次词就把半截话发出去——本组件最容易翻车的一处
     const onSubmit = vi.fn()
     const r = mount({ defaultValue: '你好', onSubmit })
     const event = keyEvent('Enter', { isComposing: true })
     fire(r.input(), 'onKeyDown', event)
     expect(onSubmit).not.toHaveBeenCalled()
-    // 连默认行为都不拦：这一下本就该原样交还给输入法
+    // 默认行为也不拦截
     expect(event.preventDefault).not.toHaveBeenCalled()
   })
 
@@ -185,7 +176,7 @@ describe('回车提交', () => {
     expect(r.api().canSubmit).toBe(false)
     expect(r.trigger().disabled).toBe(true)
 
-    // 事件本身没带 isComposing 也拦得住：守卫读的是 context
+    // 事件本身没带 isComposing，守卫读的是 context
     fire(r.input(), 'onKeyDown', keyEvent('Enter'))
     fire(r.trigger(), 'onClick')
     expect(onSubmit).not.toHaveBeenCalled()
@@ -226,7 +217,7 @@ describe('流式运行态', () => {
     fire(r.trigger(), 'onClick')
     expect(onStop).toHaveBeenCalledTimes(1)
     expect(onSubmit).not.toHaveBeenCalled()
-    // 停止不动值：这一轮的输入还留在框里，用户可能只是想改两个字重发
+    // 停止不清空输入
     expect(r.value()).toBe('你好')
   })
 
@@ -288,7 +279,7 @@ describe('禁用位翻转', () => {
     r.setProps({ disabled: true })
     expect(r.state()).toBe('disabled')
     expect(r.api().disabled).toBe(true)
-    // 只留 data-disabled 的话，禁用态就只是样式：读屏照念、键盘照聚焦，敲进去的字却进不了状态
+    // 输入框带原生 disabled，root 上另有 data-disabled
     expect(r.input().disabled).toBe(true)
     expect(r.root()['data-disabled']).toBe('')
   })
@@ -322,21 +313,20 @@ describe('禁用位翻转', () => {
     expect(r.value()).toBe('你好')
     expect(r.state()).toBe('disabled')
     expect(onSubmit).not.toHaveBeenCalled()
-    // 根级 on 里挂着 STOP 与组合事件，disabled 态必须显式吃掉，否则禁用了照样能停
+    // 根级 on 上的 STOP 与组合事件被 disabled 态吃掉
     expect(onStop).not.toHaveBeenCalled()
     expect(r.api().isComposing).toBe(false)
   })
 
   it('禁用叠流式：按钮外观仍是停止且不置灰，按下去却不发 STOP', () => {
-    // 「流式期间按钮恒可用」那条规则不看 disabled，两条叠在一起就是这个样子：
-    // 看得见按得动、但事件被禁用态吃掉。宿主要么别在流式期间禁用，要么自己把按钮藏了
+    // 流式期间按钮不置灰的规则不看 disabled，但事件仍被禁用态吃掉
     const onStop = vi.fn()
     const r = mount({ defaultValue: '你好', runStatus: 'streaming', disabled: true, onStop })
     expect(r.trigger()['data-mode']).toBe('stop')
     expect(r.trigger().disabled).toBeUndefined()
     fire(r.trigger(), 'onClick')
     expect(onStop).not.toHaveBeenCalled()
-    // 输入框那一侧是真禁用，字敲不进来
+    // 输入框侧仍是原生禁用
     expect(r.input().disabled).toBe(true)
     expect(r.api().canSubmit).toBe(false)
   })
@@ -381,8 +371,7 @@ describe('结构与文案', () => {
 
 describe('受控 value 的回写通道', () => {
   it('宿主直接写入 value 后状态跟着走，提交路径立刻可用', () => {
-    // 受控写入不产生 VALUE.SET（恢复草稿、点一条建议提示词都是这样）。
-    // 状态不跟着同步的话机器一直停在 empty，按钮亮着却怎么点都不发
+    // 受控写入不产生 VALUE.SET，状态由 watch 补同步
     const onSubmit = vi.fn()
     const r = mount({ value: '', onSubmit })
     expect(r.state()).toBe('empty')
@@ -396,7 +385,7 @@ describe('受控 value 的回写通道', () => {
   })
 
   it('受控且宿主不写回时，回车照样发得出去', () => {
-    // 这一路 value 压根没变过，watch 不会触发；提交只挂在 editing 上的话就永远发不出
+    // 这一路 value 未变，watch 不触发
     const onSubmit = vi.fn()
     const r = mount({ value: '你好', onSubmit })
     r.service.send({ type: 'KEY.ENTER' })
@@ -420,8 +409,7 @@ describe('受控 value 的回写通道', () => {
 
 describe('iME 组合态不会被禁用闩死', () => {
   it('组合期间被禁用、启用后仍能提交', () => {
-    // 组合中途被禁用时，compositionend 要么被禁用态吃掉、要么浏览器压根不发。
-    // isComposing 停在 true 的话，canSubmit 与所有提交路径会一起永久锁死
+    // 组合中途被禁用时收不到 compositionend，由 disabled 的 entry 复位 isComposing
     const onSubmit = vi.fn()
     const r = mount({ onSubmit })
     r.service.send({ type: 'COMPOSITION.START' })

@@ -1,17 +1,12 @@
 import type { ConformanceSuite, RawStepContext } from '../conformance/types'
 import { codeBlockAnatomy, codeBlockKeyboard } from '@xihan-ui/headless'
 
-// 代码块没有对应的 APG 模式：它不是控件，只是一块会横向溢出的静态内容。
-// 能核对的规格是"内容滚得动就得有键盘通路"这条 WCAG 技术。
+// 代码块不是控件而是可横向溢出的静态内容，出处指向「可滚动内容须有键盘通路」这条 WCAG 技术。
 const WCAG = 'https://www.w3.org/WAI/WCAG21/Techniques/general/G202'
 
 const PRE = '[data-scope="code-block"][data-part="pre"]'
 
-/**
- * 这块内容一个按键都不该被组件吃掉：`pre` 只提供落脚点，方向键的横向滚动、
- * Home/End 的行首行尾全归浏览器。谁哪天在 `pre` 上挂了 keydown 并 preventDefault，
- * 这里当场变红——横滚是键盘用户看到溢出代码的唯一路径，吞掉就等于看不见。
- */
+/** 逐个按键核对组件没有拦截：`pre` 只提供落脚点，滚动按键全部交给浏览器。 */
 function expectKeysNotSwallowed({ doc }: RawStepContext): void {
   const el = doc.querySelector<HTMLElement>(PRE)
   if (!el)
@@ -25,11 +20,8 @@ function expectKeysNotSwallowed({ doc }: RawStepContext): void {
 }
 
 /**
- * 代码块没有状态机：语言、行数、闭合与否全由调用方逐帧递进来，用例守的就是
- * 这三样各自落成什么属性。
- *
- * 两侧的部件来源不同——Vue 版由组件自己渲染 root/lang-label/pre/code，压根不吃这棵
- * fixture 的子节点；WC 版要作者手写。但两边产出的 part 集合与文档序一致，故共用同一份。
+ * code-block 的一致性套件：核对语言、行数与闭合标记各自落成什么属性。
+ * Vue 版自行渲染四个部件，WC 版由作者手写，两边的 part 集合与文档序一致，故共用同一份 fixture。
  */
 export const codeBlockSuite: ConformanceSuite = {
   component: 'code-block',
@@ -39,7 +31,7 @@ export const codeBlockSuite: ConformanceSuite = {
     part: 'root',
     children: [
       { part: 'lang-label' },
-      // <pre> / <code> 是硬要求：代码里的空白与换行只有它们会原样保留
+      // 用 pre 与 code 保留代码里的空白与换行
       { part: 'pre', tag: 'pre', children: [{ part: 'code', tag: 'code', text: 'const a = 1' }] },
     ],
   },
@@ -53,15 +45,15 @@ export const codeBlockSuite: ConformanceSuite = {
         counts: { 'root': 1, 'lang-label': 1, 'pre': 1, 'code': 1 },
         parts: {
           'root': {
-            // 半截、空白、不认识的语言标注一律落到这里，下游拿到的永远是个非空串
+            // 空白或缺席的语言标注落到 plaintext
             'data-lang': 'plaintext',
-            // 没说闭合就是没闭合：属性缺席，皮肤据此显示还在吐字
+            // 未标闭合时 data-complete 属性缺席
             'data-complete': null,
           },
-          // 语言名在代码里、在 data-lang 上都有，读屏再念一遍只是噪音
+          // 语言角标是纯装饰，对读屏隐藏
           'lang-label': { 'aria-hidden': 'true' },
           'pre': {
-            // 溢出的代码只有指针够得着滚动条，键盘用户得先落得进来
+            // 让键盘用户能聚焦并滚动溢出的代码
             'tabindex': '0',
             'data-complete': null,
           },
@@ -98,7 +90,7 @@ export const codeBlockSuite: ConformanceSuite = {
           kind: 'raw',
           why: '归一化快照没有 defaultPrevented 通道，只能直接看事件对象',
           run: expectKeysNotSwallowed,
-          // 按键既没被吃掉，也不该把焦点挪走
+          // 按键未被拦截，焦点也未被挪走
           expect: { activeElement: { part: 'pre', exact: true }, events: [] },
         },
       ],

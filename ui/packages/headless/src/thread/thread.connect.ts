@@ -14,7 +14,7 @@ export function connectThread<T extends PropTypes>(
   const status: ThreadStatus = prop('status') ?? 'idle'
   const atBottom = context.get('atBottom')
   const sticking = context.get('sticking')
-  // 判据只看几何、不看粘附意图：粘着但内容还没追上时按钮不该冒出来
+  // 只按 atBottom 判定，不看粘附意图
   const showScrollButton = !atBottom
 
   const translations = prop('translations')
@@ -35,14 +35,8 @@ export function connectThread<T extends PropTypes>(
       'data-status': status,
     }),
 
-    /**
-     * role=log 让读屏知道这是一块"新内容追加在末尾"的区域，但它隐含 aria-live=polite——
-     * 逐 token 追加时读屏会把每一小段都念一遍，整段话被念成碎片。所以显式关掉，
-     * 播报改由 live-region 在流结束时一次性完成。
-     *
-     * tabindex=0 是必需的：消息区里常常一个可聚焦元素都没有，键盘用户落不进来就
-     * 按不动方向键/PageUp/PageDown，整块内容对他们等于不可滚。滚动本身不接管。
-     */
+    // role=log 标记追加型区域，显式关掉其隐含的 aria-live，播报交给 live-region；
+    // tabindex=0 让键盘用户能聚焦并用原生按键滚动。
     getViewportProps: () => normalize.element({
       ...parts.viewport.attrs,
       'role': 'log',
@@ -56,7 +50,7 @@ export function connectThread<T extends PropTypes>(
       ...parts.content.attrs,
     }),
 
-    // 收起时只隐藏、不卸载：作者可能在按钮里放了自己的图标与过渡
+    // 收起时置 hidden，不卸载节点
     getScrollButtonProps: () => normalize.button({
       ...parts['scroll-button'].attrs,
       'type': 'button',
@@ -66,10 +60,7 @@ export function connectThread<T extends PropTypes>(
       'onClick': () => send({ type: 'SCROLL_TO_BOTTOM' }),
     }),
 
-    /**
-     * 播报区。宿主只在一轮流结束时把整段最终文本写进来，中途一个字都不写：
-     * aria-atomic=true 意味着每次变动都重念整块，中途写就等于把同一段话越念越长。
-     */
+    /** 播报区，aria-atomic 为 true，宿主在一轮流结束时写入整段最终文本。 */
     getLiveRegionProps: () => normalize.element({
       ...parts['live-region'].attrs,
       'role': 'status',
