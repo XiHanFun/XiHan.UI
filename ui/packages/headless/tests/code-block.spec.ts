@@ -2,12 +2,12 @@
 import type { CodeBlockApi, CodeBlockProps } from '../src/code-block'
 import { normalizeProps } from '@xihan-ui/core'
 import { describe, expect, it } from 'vitest'
-// 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
+// 直接从组件目录导入，不经包主入口
 import { CODE_BLOCK_FALLBACK_LANG, codeBlockAnatomy, codeBlockMeta, connectCodeBlock, countCodeLines } from '../src/code-block'
 
 type Dict = Record<string, unknown>
 
-/** 没有状态机，连接层就是一次纯投影：给什么 props 就地算出属性。 */
+/** 用给定 props 调一次连接层，返回其 API。 */
 function api(props: Partial<CodeBlockProps> = {}): CodeBlockApi {
   return connectCodeBlock({ code: '', ...props }, normalizeProps)
 }
@@ -91,7 +91,7 @@ describe('连接层结构与标注', () => {
 
     const done = api({ complete: true })
     expect((done.getRootProps() as Dict)['data-complete']).toBe('')
-    // pre 也要带一份：撑高那层自己就得知道还该不该按预估高度兜着
+    // pre 上同样带一份
     expect((done.getPreProps() as Dict)['data-complete']).toBe('')
   })
 })

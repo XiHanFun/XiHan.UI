@@ -6,7 +6,7 @@ describe('visibleLength', () => {
     expect(visibleLength(120, 0, { mode: 'off' })).toBe(120)
     expect(visibleLength(120, 5, { mode: 'off' })).toBe(120)
     expect(visibleLength(120, 1e9, { mode: 'off' })).toBe(120)
-    // off 模式连 charsPerSec 都不该看
+    // off 模式忽略 charsPerSec
     expect(visibleLength(120, 0, { mode: 'off', charsPerSec: 1 })).toBe(120)
   })
 

@@ -9,9 +9,9 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface ThreadContext {
   api: ComputedRef<ThreadApi>
-  /** 真正 overflow:auto 的那层：滚动位置、监听与归位都落在它身上。 */
+  /** overflow:auto 的滚动容器节点。 */
   viewportRef: Ref<HTMLElement | null>
-  /** 内容包裹层：消息一段段长出来就是它在变高，尺寸变化观察它。 */
+  /** 内容包裹层节点，尺寸变化的观察目标。 */
   contentRef: Ref<HTMLElement | null>
 }
 
@@ -24,22 +24,18 @@ export function useThread(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  // onStickChange 由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
+  // onStickChange 由组件外壳或调用方提供，随 props 一并传给机器
   const service = useMachine(threadMachine, () => ({ ...props, onStickChange }), scope)
 
-  // 无 DOM 环境就不装 config：createRuntimeConfig 要取 document 与层注册表，SSR 期调它直接抛。
-  // config 缺席时粘底效应整套不挂，机器照常转移——滚动本来就归浏览器，少一个句柄而已
+  // 无 DOM 环境不装 config，此时粘底效应整套不挂载
   if (typeof document !== 'undefined')
     service.refs.set('config', createRuntimeConfig({ scope, idGenerator: idGen }))
 
-  // 懒读而不是把节点直接塞进去：ref 在挂载后才有值，机器建起来的那一刻还是 null。
-  // 量几何、挂 scroll 与 ResizeObserver 全在粘底句柄里进行，连接层一行 DOM 都不碰
+  // 传 getter 而非节点本身，ref 在挂载后才有值
   service.refs.set('getViewportEl', () => viewportRef.value)
   service.refs.set('getContentEl', () => contentRef.value)
 
-  // 节点晚一拍才出现是常态：视口套在 v-if 里等接口回来、或者整块 Suspense 之后才渲。
-  // 句柄是在效应挂载那一刻取的节点，不跟着换的话它会一直绑在 null 上——
-  // 状态照转、ARIA 照对，就是自动吸底和"回到底部"按钮全不动，最难查的那种坏法
+  // 节点变化后让句柄重绑
   watch([viewportRef, contentRef], () => {
     service.refs.get('stick')?.retarget()
   })

@@ -1,7 +1,6 @@
 import type { KeyboardTable } from '../spec/types'
 
-// APG 没有"聊天输入框"这个模式，能对上的只有多行文本域的通用约定：
-// 键盘交互绝大部分归浏览器，组件只额外接一个 Enter。故出处指向模式总览页而非某一章。
+// 组件只额外接管 Enter，其余按键交给浏览器，故出处指向 APG 模式总览页。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/'
 
 export const composerKeyboard: KeyboardTable = {

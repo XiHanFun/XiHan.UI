@@ -5,8 +5,7 @@ import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createStickToBottom, STICK_TO_BOTTOM_THRESHOLD } from '../src/stick-to-bottom'
 
-// jsdom 没有 ResizeObserver，也没有布局。这里塞一个只记回调、由测试手动触发的假实现，
-// 几何（scrollTop / scrollHeight / clientHeight / offsetTop）全部用 defineProperty 伪造。
+// 假 ResizeObserver：只记录回调，由测试手动触发；几何量全部用 defineProperty 伪造。
 const roCallbacks = new Set<() => void>()
 
 class FakeResizeObserver {
@@ -48,7 +47,7 @@ interface Box {
   clientHeight: number
 }
 
-/** 伪造滚动几何。写 scrollTop 时按浏览器语义夹取——「内容变矮」这条正靠夹取复现。 */
+/** 伪造滚动几何，写 scrollTop 时按浏览器语义夹取到合法区间。 */
 function defineBox(el: HTMLElement, init: Box): Box {
   const box = { ...init }
   Object.defineProperty(el, 'scrollTop', {
@@ -67,9 +66,9 @@ interface Harness {
   scrollEl: HTMLElement
   contentEl: HTMLElement
   box: Box
-  /** 子节点的 offsetTop，可就地改写以模拟「上方内容变高」。 */
+  /** 子节点的 offsetTop，可就地改写以模拟上方内容变高。 */
   offsets: number[]
-  /** 被标为隐藏（offsetParent 为 null）的子节点下标，可就地增删以模拟 v-show 切换。 */
+  /** 被标为隐藏（offsetParent 为 null）的子节点下标，可就地增删。 */
   hidden: Set<number>
   changes: StickToBottomState[]
   handle: StickToBottomHandle
@@ -92,13 +91,12 @@ function harness(o: {
   document.body.appendChild(scrollEl)
 
   const offsets = [...(o.offsets ?? [])]
-  // 哪些下标算「隐藏」（offsetParent 为 null）。可在用例里就地改写来模拟 v-show 切换。
+  // 记录哪些下标的子节点算隐藏
   const hidden = new Set<number>(o.hidden ?? [])
   offsets.forEach((_, i) => {
     const child = document.createElement('div')
     Object.defineProperty(child, 'offsetTop', { configurable: true, get: () => offsets[i] })
-    // jsdom 不做布局，offsetParent 恒为 null——那正是浏览器里「display:none」的信号。
-    // 不伪造的话所有子节点都会被当成隐藏，锚点永远选不出来
+    // jsdom 下 offsetParent 恒为 null，按 hidden 集合伪造可见性
     Object.defineProperty(child, 'offsetParent', {
       configurable: true,
       get: () => (hidden.has(i) ? null : contentEl),
@@ -176,9 +174,7 @@ describe('createStickToBottom（初值与判底）', () => {
   })
 
   it('拖滚动条一类只产生 scroll 的上滚同样脱锚', () => {
-    // 拖滚动条、中键自动滚、Ctrl+F 跳转、scrollIntoView、焦点跳转引发的滚动都只有 scroll 事件，
-    // wheel/touchmove/keydown 一个都收不到。只认那三个输入的话，桌面端最常用的上滚方式就不脱锚，
-    // 下一次内容增长会把正在读历史的用户直接拽回底部
+    // 只派发 scroll，不派发 wheel / touchmove / keydown
     const h = harness()
     h.scrollTo(100)
     expect(h.handle.state()).toEqual({ atBottom: false, sticking: false })
@@ -239,7 +235,7 @@ describe('尺寸变化', () => {
     h.box.scrollHeight = 500
     triggerResize()
     expect(h.box.scrollTop).toBe(200)
-    // 浏览器夹小 scrollTop 后补发的那一次 scroll
+    // 模拟浏览器夹小 scrollTop 后补发的 scroll
     h.scrollEl.dispatchEvent(new Event('scroll'))
     expect(h.handle.state()).toEqual({ atBottom: true, sticking: true })
     await nextFrame()
@@ -260,7 +256,7 @@ describe('尺寸变化', () => {
     const h = harness({ offsets: [0, 100, 200, 300] })
     h.wheelUp()
     h.scrollTo(250)
-    // 锚点应是最后一个 offsetTop <= 250 的子节点（200），delta = 50
+    // 锚点为最后一个 offsetTop <= 250 的子节点（200），delta = 50
     h.offsets[2] = 240
     h.offsets[3] = 340
     h.box.scrollHeight = 1040
@@ -273,7 +269,7 @@ describe('尺寸变化', () => {
     h.wheelUp()
     h.scrollTo(300)
     expect(h.handle.state()).toEqual({ atBottom: false, sticking: false })
-    // 锚元素被上方新内容推到 700：补偿写回后几何上已在底，但这是我们自己写的，不算用户意图
+    // 锚元素被推到 700，补偿写回后几何上已在底
     h.offsets[3] = 700
     triggerResize()
     expect(h.box.scrollTop).toBe(700)
@@ -299,12 +295,10 @@ describe('尺寸变化', () => {
   })
 
   it('隐藏子节点不被选作锚点', () => {
-    // display:none 的子节点 offsetTop 恒为 0（聊天里 v-show 的「思考中」气泡就是这么写的）。
-    // 选中它的话补偿会把 scrollTop 写成 delta，视口直接被甩走
     const h = harness({ offsets: [0, 100, 200, 300], hidden: [2] })
     h.wheelUp()
     h.scrollTo(250)
-    // 可见候选里最后一个 offsetTop <= 250 的是下标 1（100），delta = 150
+    // 可见子节点中最后一个 offsetTop <= 250 的是下标 1（100），delta = 150
     h.offsets[1] = 160
     h.box.scrollHeight = 1060
     triggerResize()
@@ -406,9 +400,7 @@ describe('onChange 与 dispose', () => {
   })
 
   it('节点晚一拍出现时 retarget 能把监听补挂上', () => {
-    // 视口套在 v-if 里等接口回来、或者空壳先插入内容随后补齐，都是常见写法。
-    // 构造那一刻取到 null 就绑死的话，状态照转、ARIA 照对，
-    // 唯独自动吸底和"回到底部"按钮全不动——最难查的那种坏法
+    // 构造时 scrollEl 为 null，节点补齐后调 retarget
     let scrollEl: HTMLElement | null = null
     const contentEl = document.createElement('div')
     const changes: StickToBottomState[] = []
@@ -439,7 +431,7 @@ describe('onChange 与 dispose', () => {
     h.wheelUp()
     expect(h.handle.state().sticking).toBe(false)
     h.handle.retarget()
-    // 重绑会连锚点带监听一起重来；节点没换却重绑，等于把用户刚表达的意图抹掉一遍
+    // 节点未变，粘附状态与锚点保持不变
     expect(h.handle.state().sticking).toBe(false)
     h.box.scrollHeight = 1600
     triggerResize()

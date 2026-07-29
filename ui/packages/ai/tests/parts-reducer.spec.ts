@@ -109,7 +109,7 @@ describe('不变量 2：工具入参守卫', () => {
     const part = state.message.parts[0] as ToolPart
     expect(part.input).toEqual({ q: 'x' })
     expect(part.state).toBe('input-available')
-    // 原文保留，渲染层要展示"模型当时打了什么"
+    // 结构化入参写入后 rawInput 原文仍保留
     expect(part.rawInput).toBe('{"q":"x"}')
   })
 
@@ -163,8 +163,7 @@ describe('不变量 2：工具入参守卫', () => {
 
 describe('非流式工具调用', () => {
   it('没有前导 tool-input-start 时按帧上的 toolName 现场补建', () => {
-    // tool-input-start 只是可选前导帧。服务端一次性给出入参时压根不发它，
-    // 查不到就丢弃的话，整条工具调用连同后面的 output 会在消息里彻底消失
+    // 服务端一次性给出入参时不发 tool-input-start
     const state = apply(
       createReduceState('m1'),
       { kind: 'tool-input-available', toolCallId: 't9', toolName: 'search', input: { q: 'x' }, receivedTime: T },
@@ -182,7 +181,6 @@ describe('非流式工具调用', () => {
   })
 
   it('既不在调用表里、又没带 toolName 时仍旧丢弃', () => {
-    // 补不出名字的工具不如不建：界面上出现一条叫不出名字的调用比缺一条更难排查
     silenceWarnings()
     const state = reduceEvent(createReduceState('m1'), {
       kind: 'tool-input-available',
@@ -205,8 +203,7 @@ describe('终止事件收尾', () => {
       { kind: 'finish', receivedTime: T },
     )
     expect((state.message.parts[0] as TextPart).streaming).toBe(false)
-    // 入参没吐完就断了，这条调用不可能再有结果。留在 input-streaming
-    // 会让界面一直转圈等一个永远不来的回包
+    // 入参未吐完的调用被置为 output-error
     expect(state.message.parts[1]).toMatchObject({ type: 'tool', state: 'output-error' })
     expect((state.message.parts[1] as ToolPart).errorText).toBeUndefined()
     expect(state.openBlocks.size).toBe(0)

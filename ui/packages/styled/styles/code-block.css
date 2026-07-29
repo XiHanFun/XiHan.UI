@@ -1,16 +1,12 @@
 @layer xihan.components {
-  /* overflow: hidden 是给圆角收边用的：真正横向滚动的是里面的 <pre>，
-     不裁的话滚动内容会从四个圆角的缺口里探出来，看着像贴歪了。
-     这里不设 display —— 让作者用什么元素就是什么排布，也就不必再写 [hidden] 让位。 */
+  /* overflow: hidden 让内部 <pre> 的滚动内容沿圆角收边；不设 display，排布由作者决定 */
   [data-scope='code-block'][data-part='root'] {
     overflow: hidden;
     border-radius: var(--xh-code-block-radius, var(--xh-shape-surface));
     background: var(--xh-code-block-bg, var(--xh-bg-subtle));
   }
 
-  /* 语言标注是装饰性的（连接层给了 aria-hidden），排版上要能撑开内边距，
-     所以显式 block —— 作者用 <span> 时行内盒吃不进 padding-block。
-     user-select: none —— 框选代码去复制时，不该把「typescript」这行也框走。 */
+  /* 显式 block 使作者用 <span> 时也能吃进 padding-block；user-select: none 让它不被框选带走 */
   [data-scope='code-block'][data-part='lang-label'] {
     display: block;
     padding-inline: var(--xh-code-block-label-px, var(--xh-space-3));
@@ -21,35 +17,29 @@
     user-select: none;
   }
 
-  /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，得自己还回去 */
+  /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
   [data-scope='code-block'][data-part='lang-label'][hidden] {
     display: none;
   }
 
-  /* margin: 0 —— UA 给 <pre> 的默认外边距会在圆角背景里留出两道白边。
-
-     --xh-code-block-line-height 的兜底值必须与连接层保持一致：那边给 <pre> 写了内联的
-     min-block-size: calc(var(--xh-code-block-line-height, 1.5rem) * 行数)，
-     用行数预估撑住未闭合代码块的高度。两处兜底一旦对不上，块从「流式中」变「已闭合」的
-     那一刻高度会跳一下，正在读的人被滚动位移带走。
-     也正因为要参与 calc 乘法，这个值必须是长度（1.5rem）而不能是无单位倍数。 */
+  /* margin: 0 去掉 UA 给 <pre> 的默认外边距。
+     --xh-code-block-line-height 的兜底值须与连接层内联 min-block-size 用的一致，
+     且因参与 calc 乘法必须是长度而非无单位倍数。 */
   [data-scope='code-block'][data-part='pre'] {
-    /* 逻辑等价物 overflow-inline 至今没有可用实现，这里只能写物理轴 */
+    /* 逻辑属性 overflow-inline 尚无可用实现，写物理轴 */
     overflow-x: auto;
     padding: var(--xh-code-block-p, var(--xh-space-3));
     margin: 0;
     line-height: var(--xh-code-block-line-height, 1.5rem);
   }
 
-  /* <pre> 带 tabindex=0：长代码要能横向滚，键盘用户得先落焦。
-     偏移取负画在内侧，否则被 root 的 overflow: hidden 裁掉半圈 */
+  /* <pre> 带 tabindex=0，需要焦点环；偏移取负画在内侧，避免被 root 的 overflow: hidden 裁掉 */
   [data-scope='code-block'][data-part='pre']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: calc(-1 * var(--xh-ring-width));
   }
 
-  /* white-space: pre 而不是 pre-wrap：代码靠缩进表达结构，自动换行会把层级揉烂，
-     长行宁可横着滚。等宽字族兜底写死在 var 的第二级，作者只需覆盖一个令牌。 */
+  /* white-space: pre 保留缩进不自动换行，长行改为横向滚动；等宽字族作为令牌的兜底值 */
   [data-scope='code-block'][data-part='code'] {
     font-family: var(--xh-code-block-font, ui-monospace, monospace);
     white-space: pre;

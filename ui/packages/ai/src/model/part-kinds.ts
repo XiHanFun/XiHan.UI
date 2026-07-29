@@ -1,11 +1,10 @@
-// 消息内容块的各种形态，以及它们的判别守卫。
-// 判别键统一是 `type`，联合类型自身就是那张"有哪些块"的表，所以不再另存一份常量表。
+// 消息内容块的各种形态及其判别守卫，判别键统一为 `type`。
 import type { SourceDocumentPart, SourceUrlPart } from './source'
 
 export interface TextPart {
   readonly type: 'text'
   readonly text: string
-  /** 仍在生长：渲染层据此走"只重渲最后一块"的路径。 */
+  /** 该块是否仍在流式增长。 */
   readonly streaming?: boolean
 }
 
@@ -13,15 +12,15 @@ export interface ReasoningPart {
   readonly type: 'reasoning'
   readonly text: string
   readonly streaming?: boolean
-  /** 思考起止（毫秒时间戳），差值即"思考了多久"。由帧到达时刻推得，不在 reducer 内读时钟。 */
+  /** 思考起止的毫秒时间戳，取自帧到达时刻。 */
   readonly startTime?: number
   readonly endTime?: number
 }
 
-/** 工具调用四态是外部驱动的受控投影，不是本地状态机。 */
+/** 工具调用的四种外部状态。 */
 export type ToolState = 'input-streaming' | 'input-available' | 'output-available' | 'output-error'
 
-/** 审批的外部事实态。提交中（approving/denying）是 UI 本地态，不进消息模型。 */
+/** 工具审批状态。 */
 export type ToolApprovalStatus = 'pending' | 'approved' | 'denied' | 'expired'
 
 export interface ToolApprovalState {
@@ -36,9 +35,9 @@ export interface ToolPart {
   readonly toolCallId: string
   readonly toolName: string
   readonly state: ToolState
-  /** 流式期的破碎 JSON 原文。渲染层只当字符串显示，绝不 JSON.parse。 */
+  /** 流式期累积的入参 JSON 原文。 */
   readonly rawInput: string
-  /** 仅当 state !== 'input-streaming' 才有值。 */
+  /** 解析后的入参，仅当 state !== 'input-streaming' 时有值。 */
   readonly input?: unknown
   readonly output?: unknown
   readonly errorText?: string
@@ -52,7 +51,7 @@ export interface FilePart {
   readonly filename?: string
 }
 
-/** Generative UI 与业务态载体。name 对齐协议的 data-<name>。 */
+/** 自定义数据块，name 对应协议的 data-<name>。 */
 export interface DataPart {
   readonly type: 'data'
   readonly name: string
@@ -63,7 +62,7 @@ export interface StepStartPart {
   readonly type: 'step-start'
 }
 
-/** 流内错误。retryable 由宿主的 transport 映射填入，内核不自行判定。 */
+/** 流内错误块，retryable 由传输层填入。 */
 export interface ErrorPart {
   readonly type: 'error'
   readonly errorText: string

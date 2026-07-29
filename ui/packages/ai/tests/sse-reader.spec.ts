@@ -2,7 +2,7 @@ import type { RawFrame, SseReaderOptions } from '../src/transport/sse-reader'
 import { describe, expect, it } from 'vitest'
 import { createSseReader } from '../src/transport/sse-reader'
 
-/** 把若干字符串块拼成一条可读流，块边界即网络分包边界。 */
+/** 把若干字符串块拼成一条可读流，每块对应一个分包。 */
 function streamOf(...chunks: string[]): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder()
   return new ReadableStream<Uint8Array>({
@@ -34,7 +34,7 @@ describe('createSseReader 行协议', () => {
   })
 
   it('行尾 CRLF 被切在两个分包之间时不会误判成两个行尾', async () => {
-    // 第一块以孤立 \r 结束，它是歧义的：必须等下一块到了才知道是 \r\n 还是单独的 \r
+    // 第一块以孤立 \r 结束，行尾要等第二块到达才能判定
     const frames = await collect(['data: a\r', '\n\r\n'])
     expect(frames).toHaveLength(1)
     expect(frames[0]!.data).toBe('a')
@@ -106,8 +106,7 @@ describe('createSseReader 行协议', () => {
         cancelled = true
       },
     })
-    // 直接走迭代器协议：return() 就是 for-await 里 break 编译出来的东西，
-    // 但不会写成一个"永远只跑一轮"的循环让 no-unreachable-loop 判死。
+    // 直接调迭代器的 return()，等价于 for-await 中的 break
     const frames = createSseReader(stream)
     const first = await frames.next()
     expect(first.value?.data).toBe('a')

@@ -1,12 +1,4 @@
-// 事件 → 消息的归约。
-//
-// 三条不变量决定了这里的每一处写法：
-//   1. 单调追加：parts 只增不改序；已收尾的块永不被后续增量触及。
-//   2. 工具入参守卫：流式期只碰 rawInput，只有 input-available 才写结构化 input。
-//   3. transient 隔离：瞬态 data 不进 parts（store 已提前分流，这里只兜底）。
-//
-// 纯函数：不读时钟（时间戳一律来自事件的 receivedTime）、不做 IO、不抛。
-// 任何异常态都走 dev 警告 + 丢弃，绝不让一帧坏数据打挂整条会话。
+// 把归一事件归约成一条消息：parts 只追加不改序，异常事件走警告并丢弃。
 import type { Role, UIMessage } from '../model/message'
 import type { ReasoningPart, TextPart, ToolPart, UIMessagePart } from '../model/part-kinds'
 import type { BlockIndex, ToolIndex } from './block-registry'
@@ -28,7 +20,7 @@ export function createReduceState(id: string, role: Role = 'assistant'): ReduceS
   }
 }
 
-/** 文本与推理共用同一套"生长中的块"读写路径，判别只差一个 type 字面量。 */
+/** 判断 part 是否为指定种类的生长中块。 */
 function isGrowingPart(part: UIMessagePart | undefined, kind: 'text' | 'reasoning'): part is ReasoningPart | TextPart {
   return part !== undefined && part.type === kind
 }
@@ -63,7 +55,7 @@ function growBlock(state: ReduceState, block: BlockKey, kind: 'text' | 'reasonin
   return replacePart(state, index, { ...part, text: part.text + delta })
 }
 
-/** endTime 只对推理块有意义；文本块不记时间。未命中静默——重复的 end 帧不值得报警。 */
+/** 收尾一个块并从开放表移除；endTime 仅写入推理块，块不存在时静默返回。 */
 function closeBlock(state: ReduceState, block: BlockKey, endTime?: number): ReduceState {
   const index = state.openBlocks.get(block)
   if (index === undefined)
@@ -98,7 +90,7 @@ function patchTool(
   return close ? { ...next, openTools: withoutEntry(next.openTools, toolCallId) } : next
 }
 
-/** 收尾所有还开着的块。流正常结束与被取消走同一条路：都只是"别再长了"。 */
+/** 收尾所有开着的块与工具调用，并清空两张开放表。 */
 function closeAllBlocks(state: ReduceState): ReduceState {
   if (state.openBlocks.size === 0 && state.openTools.size === 0)
     return state
@@ -108,10 +100,7 @@ function closeAllBlocks(state: ReduceState): ReduceState {
     if (part !== undefined && (part.type === 'text' || part.type === 'reasoning'))
       parts[index] = { ...part, streaming: false }
   }
-  // 流断在工具调用中间：入参没吐完，这条调用不可能再有结果了。
-  // 留在 input-streaming 会让界面一直转圈等一个永远不来的回包。
-  // 不塞 errorText——措辞归渲染层，这里只如实标出「它没走完」，
-  // errorText 为空正好把「流断了」与「服务端明确报的错」区分开
+  // 入参未吐完的工具调用标成 output-error，且不写 errorText
   for (const index of state.openTools.values()) {
     const part = parts[index]
     if (part !== undefined && part.type === 'tool' && part.state === 'input-streaming')
@@ -125,7 +114,7 @@ function closeAllBlocks(state: ReduceState): ReduceState {
   }
 }
 
-/** 纯函数。不读时钟、不做 IO、不抛（异常态 → dev 警告 + 丢弃，fail-closed）。 */
+/** 把一条归一事件归约进状态，返回新状态。 */
 export function reduceEvent(state: ReduceState, ev: NormalizedEvent): ReduceState {
   switch (ev.kind) {
     case 'message-start':
@@ -157,12 +146,10 @@ export function reduceEvent(state: ReduceState, ev: NormalizedEvent): ReduceStat
       return { ...next, openTools: withEntry(next.openTools, ev.toolCallId, index) }
     }
     case 'tool-input-delta':
-      // 只碰 rawInput：流式期的 JSON 是破碎的，parse 一定失败，parse 成功更可怕（半个对象）
+      // 流式期只累积 rawInput，不解析
       return patchTool(state, ev.toolCallId, part => ({ ...part, rawInput: part.rawInput + ev.delta }))
     case 'tool-input-available': {
-      // tool-input-start 是可选前导帧。服务端一次性给出入参时只发这一帧，
-      // 调用表里自然查不到——此时按帧上带的 toolName 现场补建，否则整条工具调用连同它的输出会全部消失。
-      // 没有 toolName 就补不出来，仍旧走 patchTool 的丢弃路径（fail-closed，不造一个叫不出名字的工具）
+      // 调用表里没有且帧上带了 toolName 时补建工具块；缺 toolName 则交由 patchTool 丢弃
       if (state.openTools.get(ev.toolCallId) === undefined && ev.toolName !== undefined) {
         const index = state.message.parts.length
         const next = appendPart(state, {
@@ -194,7 +181,7 @@ export function reduceEvent(state: ReduceState, ev: NormalizedEvent): ReduceStat
 
     case 'data':
       if (ev.transient) {
-        // store 会提前把瞬态数据分流到 onData，走到这里说明接线漏了
+        // 瞬态数据由 store 分流到 onData，不进 parts
         warn(false, `ai: 瞬态 data 帧 ${ev.name} 不该进 reducer，已丢弃`)
         return state
       }
@@ -209,13 +196,13 @@ export function reduceEvent(state: ReduceState, ev: NormalizedEvent): ReduceStat
     case 'error':
       return appendPart(state, { type: 'error', errorText: ev.errorText, retryable: ev.retryable })
 
-    // 取消是用户意图不是错误，所以不追加 ErrorPart，只把开着的块收尾
+    // 结束与取消都只收尾开着的块，不追加 ErrorPart
     case 'finish':
     case 'abort':
       return closeAllBlocks(state)
 
     default:
-      // 类型上到不了这里；协议将来加了新 kind 时原样放行，别让旧客户端崩
+      // 未知 kind 原样返回
       return state
   }
 }

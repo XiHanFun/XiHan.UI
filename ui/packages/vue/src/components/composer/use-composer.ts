@@ -22,8 +22,7 @@ export interface ComposerContext {
 export function useComposer(props: Props, callbacks: ComposerCallbacks = {}): ComposerContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  // 三个回调由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器。
-  // 组件不碰 DOM，也不需要 RuntimeConfig：IME 与回车都走 textarea 自己的事件
+  // 回调由组件外壳或调用方提供，随 props 一并传给机器；不需要 RuntimeConfig
   const service = useMachine(composerMachine, () => ({ ...props, ...callbacks }), scope)
   const api = computed(() => connectComposer(service, vueNormalize))
   return { api }
