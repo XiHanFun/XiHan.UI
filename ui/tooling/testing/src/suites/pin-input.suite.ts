@@ -178,8 +178,7 @@ export const pinInputSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'raw',
-          // 值没变宿主就不会重渲，那个字符只能由 connect 自己拨回去；
-          // 这一条正是"框里显示的与值里存的对不上"的守卫
+          // 值没变宿主不会重渲，那个字符只能由 connect 自己拨回去
           why: '被丢弃的字符留没留在框里，只能直接读 value property',
           run: async (ctx) => {
             const { doc } = ctx
@@ -442,8 +441,7 @@ export const pinInputSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'raw',
-          // 照常规写法这几步全是空转：焦点落不到禁用的输入框上、按键因此派到 body。
-          // 把守卫整个删掉用例照样绿——必须直接往节点上派事件，才碰得到守卫。
+          // 焦点落不到禁用的输入框上，必须直接往节点上派事件才碰得到守卫
           why: '禁用控件上 focus 被浏览器短路，只有直接派发才碰得到守卫',
           run: async (ctx) => {
             const { doc } = ctx

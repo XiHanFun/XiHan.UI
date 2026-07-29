@@ -31,20 +31,17 @@ export function connectCombobox<T extends PropTypes>(
   const inputBehavior = prop('inputBehavior') ?? 'none'
   // 只读与禁用都不改值也不展开；两者的区别只在输入框可不可聚焦、文字能不能选
   const interactive = !disabled && !readOnly
-  // itemCount 为 null 表示还没结算过（首帧、无 DOM），此时不判空——否则空态会闪一下
+  // itemCount 为 null 表示还没结算过，此时不判空，否则空态会闪一下
   const empty = open && itemCount === 0
   const canClear = interactive && (inputValue !== '' || value.length > 0)
   const stateAttr = open ? 'open' : 'closed'
-  // 位置由引擎写进 context；这里只读结果，不量 DOM、不调引擎，保持纯函数
+  // 位置由引擎写进 context，这里只读结果，不量 DOM、不调引擎
   const position = context.get('position')
   const placement = position?.placement ?? prop('placement') ?? COMBOBOX_DEFAULT_PLACEMENT
 
   const isSelected = (v: string): boolean => value.includes(v)
 
-  /**
-   * 条目 id：aria-activedescendant 只认单个 IDREF，值里带空格会把它劈成两截，
-   * 所以先编码再拼。编码是单射的，两个不同的值不会撞到同一个 id。
-   */
+  /** 条目 id。aria-activedescendant 只认单个 IDREF，值里带空格会把它劈成两截，所以先编码再拼。 */
   const itemId = (v: string): string => scope.partId(comboboxAnatomy.name, `item:${encodeURIComponent(v)}`)
   const groupLabelId = (group: string): string => scope.partId(comboboxAnatomy.name, `item-group-label:${group}`)
 
@@ -57,15 +54,12 @@ export function connectCombobox<T extends PropTypes>(
   })
 
   /**
-   * 候选集合只在事件那一刻读，两个适配器此时看到的是同一份活 DOM，顺序即文档序。
-   * 渲染期不得调用——那里 Vue 读到的是上一帧、WC 读到的是本帧，两侧会分叉。
+   * 候选集合只在事件那一刻读，顺序即文档序。
+   * 渲染期不得调用：那里 Vue 读到上一帧、WC 读到本帧。
    */
   const items = (): HTMLElement[] => queryItems(refs.get('getContentEl')(), comboboxItemQuery)
 
-  /**
-   * 移高亮。焦点不动（这是 combobox 与 listbox 的分水岭：焦点恒在输入框，
-   * 高亮只是报给读屏的一个 id），但列表要跟着滚，否则长列表里高亮会跑出可视区。
-   */
+  /** 移高亮。焦点不动，但列表要跟着滚，否则长列表里高亮会跑出可视区。 */
   const highlightEl = (el: HTMLElement | null): void => {
     const next = itemValue(el)
     if (next == null)
@@ -86,7 +80,7 @@ export function connectCombobox<T extends PropTypes>(
     const el = items().find(item => itemValue(item) === highlighted)
     if (!el || isItemDisabled(el))
       return false
-    // 文本在事件这一刻取好带给机器：选中后调用方多半立刻重新过滤，届时这个条目可能已经不在了
+    // 文本在事件这一刻取好带给机器，选中后条目可能立刻被过滤掉
     send({ type: 'ITEM.SELECT', value: highlighted, label: comboboxItemText(el) })
     return true
   }
@@ -132,12 +126,12 @@ export function connectCombobox<T extends PropTypes>(
     getLabelProps: () => normalize.label({
       ...parts.label.attrs,
       'id': ids.label,
-      // for 指向真正的 input：指到外层包裹节点上，点标题不会聚焦、读屏也拿不到名字
+      // for 须指向真正的 input，指到外层包裹会丢掉名字与聚焦
       'for': ids.input,
       'data-disabled': dataAttr(disabled),
     }),
 
-    // 输入行整体：定位锚点取它，浮层因此与整个输入框对齐而不是只贴着文字框
+    // 定位锚点取整个输入行，浮层因此与输入框对齐
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
       'data-state': stateAttr,
@@ -152,7 +146,7 @@ export function connectCombobox<T extends PropTypes>(
       'type': 'text',
       // 焦点自始至终在这里：列表展开也不交出去，高亮改由 aria-activedescendant 报给读屏
       'role': 'combobox',
-      // 关掉浏览器自带的历史补全：它会盖在候选列表上，两套补全各说各话
+      // 关掉浏览器自带的历史补全，它会盖在候选列表上
       'autocomplete': 'off',
       'autocapitalize': 'none',
       'placeholder': prop('placeholder'),
@@ -175,7 +169,7 @@ export function connectCombobox<T extends PropTypes>(
       'data-invalid': dataAttr(invalid),
       'onInput': (event: Event) => {
         const el = event.target as HTMLInputElement
-        // 删字标记在这里判最准：机器里 setInputValue 已经把新值落下去了，那时比不出方向
+        // 删字标记必须在这里判：机器里 setInputValue 已落下新值，那时比不出方向
         send({ type: 'INPUT.CHANGE', value: el.value, deleting: el.value.length < inputValue.length })
       },
       'onClick': () => {
@@ -195,8 +189,7 @@ export function connectCombobox<T extends PropTypes>(
           return
         const key = event.key
 
-        // 带修饰键的组合基本归浏览器与读屏（Ctrl+A 全选文字、Cmd+← 跳行首……），
-        // 只截 APG 明确指派给组合框的两条 Alt 组合
+        // 带修饰键的组合归浏览器与读屏，只截 APG 指派给组合框的两条 Alt 组合
         if (event.ctrlKey || event.metaKey || event.altKey) {
           if (!event.altKey || event.ctrlKey || event.metaKey)
             return
@@ -228,14 +221,14 @@ export function connectCombobox<T extends PropTypes>(
             send({ type: 'OPEN', focus: 'last' })
           return
         }
-        // 收起态的 Home/End 是光标跳行首行尾，绝不能吞——展开着才归候选导航
+        // 收起态的 Home/End 是光标跳行首行尾，不能吞
         if (open && (key === 'Home' || key === 'End')) {
           event.preventDefault()
           highlightBy(key === 'Home' ? 'first' : 'last')
           return
         }
         if (key === 'Enter') {
-          // 收起态放行：Enter 在表单里是提交，组合框没展开就没有理由拦它
+          // 收起态放行，Enter 在表单里是提交
           if (!open)
             return
           event.preventDefault()
@@ -254,13 +247,12 @@ export function connectCombobox<T extends PropTypes>(
         if (key === 'Escape') {
           if (!open)
             return
-          // 状态归消解层收口（只有栈顶层响应，嵌套浮层才逐层关闭）；
-          // 这里只拦下浏览器自己那套 Escape 行为，免得输入框被回滚成默认值
+          // 收起由消解层收口；这里只拦掉浏览器把输入框回滚成默认值的行为
           event.preventDefault()
           return
         }
         if (key === 'Backspace') {
-          // 多选且输入串已空：退格改删最后一个已选项（此时框里没字可删，不拦也是白按一下）
+          // 多选且输入串已空时，退格改删最后一个已选项
           if (!multiple || inputValue !== '' || value.length === 0)
             return
           event.preventDefault()
@@ -272,8 +264,7 @@ export function connectCombobox<T extends PropTypes>(
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
       'type': 'button',
-      // 整个组合框只占一个 Tab 位（就是输入框），按钮退出 Tab 序列：
-      // 键盘用户按方向键即可展开，多一站只会让人反复停在同一个控件上
+      // 整个组合框只占一个 Tab 位（输入框），按钮退出 Tab 序列
       'tabindex': -1,
       // 单体控件用原生 disabled（与候选条目的 aria-disabled 相反）
       'disabled': !interactive || undefined,
@@ -293,8 +284,7 @@ export function connectCombobox<T extends PropTypes>(
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
       'type': 'button',
-      // 与数字框、文本框的辅助按钮同一套取舍：键盘用户走退格与 Escape，
-      // 暴露给读屏等于把同一个能力报两遍，还会在 Tab 序里多出一站
+      // 键盘用户走退格与 Escape，这个按钮不进 Tab 序列也不暴露给读屏
       'tabindex': -1,
       'aria-hidden': true,
       'disabled': !canClear || undefined,
@@ -326,18 +316,16 @@ export function connectCombobox<T extends PropTypes>(
       'id': ids.content,
       'role': 'listbox',
       'aria-labelledby': ids.label,
-      // 多选与否必须显式说：省略只是「没说」，读屏无从区分单选列表与「作者忘了标」
+      // 单选也显式写 'false'，不省略
       'aria-multiselectable': multiple ? 'true' : 'false',
-      // 列表永远不进 Tab 序列，也不承载焦点。写 -1 而不是整个不给：
-      // 它是可滚动容器，某些浏览器会把可滚动区域自动塞进 Tab 序列
+      // tabindex 写 -1 不能省：可滚动容器会被某些浏览器自动塞进 Tab 序列
       'tabindex': -1,
       'data-state': stateAttr,
       'data-placement': placement,
       // 收起时留在 DOM 只隐藏，不卸载作者节点
       'hidden': !open || undefined,
       'onPointerDown': (event: PointerEvent) => {
-        // 候选不可聚焦，按下去浏览器会把焦点退还给 body，输入框当场失焦、列表随即收起。
-        // 在冒泡途中拦同样有效：默认行为是在派发结束后才执行的
+        // 不拦的话按下候选会让输入框失焦、列表随即收起；在冒泡途中拦同样有效
         event.preventDefault()
       },
     }),
@@ -345,7 +333,7 @@ export function connectCombobox<T extends PropTypes>(
     getItemGroupProps: group => normalize.element({
       ...parts['item-group'].attrs,
       'role': 'group',
-      // 分组标题不是候选，只能靠 aria-labelledby 挂上来；读屏据此播报「第 N 组，常见」
+      // 分组标题不是候选，只能靠 aria-labelledby 挂上来
       'aria-labelledby': groupLabelId(group.value),
     }),
 
@@ -362,16 +350,13 @@ export function connectCombobox<T extends PropTypes>(
       // aria-activedescendant 要指得到它，所以每个候选都得有个稳定 id
       'id': itemId(item.value),
       'role': 'option',
-      // listbox 的选中语义是 aria-selected（不是 aria-checked）；未选中必须显式输出 false，
-      // 省略会让读屏无从区分「未选中」与「不是选项」
+      // listbox 的选中语义是 aria-selected；未选中也显式写 'false'
       'aria-selected': isSelected(item.value) ? 'true' : 'false',
-      // 集合条目一律 aria-disabled，绝不输出原生 disabled：原生 disabled 不派发 click，
-      // 禁用候选的点击就再也走不到守卫里，样式与行为也会就此分裂
+      // 集合条目一律 aria-disabled，原生 disabled 不派发 click，点击就走不到守卫里
       'aria-disabled': item.disabled ? 'true' : 'false',
-      // 刻意不给 tabindex：焦点恒在输入框，候选既不该被 Tab 停靠，也不该被点击带走焦点
+      // 不给 tabindex：焦点恒在输入框
       'onClick': (event: MouseEvent) => {
-        // 只读/禁用时列表本就展不开，但候选仍在文档里（只是随 content 一起 hidden），
-        // 程序化的点击照样送得到；守卫写在这儿，值才真的改不动
+        // 候选常挂在文档里（只是随 content 一起 hidden），程序化点击照样送得到，守卫必须写在这儿
         if (!interactive || item.disabled)
           return
         send({ type: 'ITEM.SELECT', value: item.value, label: comboboxItemText(event.currentTarget as HTMLElement) })
@@ -396,8 +381,8 @@ export function connectCombobox<T extends PropTypes>(
 
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
-      // 空态是一句状态播报而不是候选：它必须待在 role=listbox 之外（列表里只允许 option 与 group），
-      // 放 positioner 里当 content 的兄弟。role=status 自带 polite 活区，结果空掉时读屏会念一次
+      // 空态节点必须待在 role=listbox 之外（列表里只允许 option 与 group），放 positioner 里当 content 的兄弟；
+      // role=status 自带 polite 活区
       'role': 'status',
       'data-state': stateAttr,
       'hidden': !empty || undefined,

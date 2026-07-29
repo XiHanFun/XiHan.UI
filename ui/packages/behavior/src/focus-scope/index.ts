@@ -44,9 +44,8 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
   }
 
   // —— 挂载自动聚焦 ——
-  // 容器可能晚一拍才就位（Vue：content 进 open 后才挂载；WC：content 常驻但先 hidden、
-  // 同一拍才变可见）。首选 initialFocus/首个可聚焦元素；容器兜底只在最后一帧才用，
-  // 否则"焦点落在容器本身"会被当作已完成、错过之后才出现的可聚焦元素。
+  // 容器可能晚一拍才就位，按 initialFocus → 首个可聚焦元素 → 容器 的顺序取焦点，
+  // 容器兜底只在最后一帧使用。
   let focusSettled = false
   function tryMountFocus(lastChance: boolean): void {
     if (focusSettled || disposed)
@@ -55,7 +54,7 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
     if (!el)
       return // 容器还没就位，留待重试
     const active = scope.getActiveElement()
-    // 焦点已落在容器的某个后代（真正可聚焦元素）→ 完成；落在容器本身则不算，继续找
+    // 焦点已落在容器后代则视为完成，落在容器本身不算
     if (isInScope(active) && active !== el) {
       focusSettled = true
       return
@@ -77,7 +76,7 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
       focusSettled = true
       return
     }
-    // 尚无可聚焦元素（容器可能仍隐藏）：最后一帧才兜底聚焦容器，否则留待重试
+    // 无可聚焦元素时，仅在最后一帧兜底聚焦容器
     if (lastChance) {
       focusSafely(el)
       focusSettled = true
@@ -111,7 +110,7 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
     if (disposed || paused || !o.trapped())
       return
     const related = e.relatedTarget as HTMLElement | null
-    // relatedTarget 为 null 一律放行（切 tab / 元素被移除），插手会错乱或打满 CPU
+    // relatedTarget 为 null 一律放行（切 tab / 元素被移除）
     if (related === null)
       return
     if (!isInScope(related))
@@ -159,7 +158,7 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
       doc.removeEventListener('keydown', onKeyDown, { capture: true })
       unsub()
       guardsCleanup()
-      // 焦点返还延后一拍，避免被后续 DOM 操作覆盖
+      // 焦点返还延后一帧
       win.requestAnimationFrame(() => {
         if (!(o.restoreFocus?.() ?? true))
           return

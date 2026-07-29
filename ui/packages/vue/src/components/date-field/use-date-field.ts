@@ -15,8 +15,7 @@ export function useDateField(
   props: DateFieldSchema['props'],
   handlers: Pick<DateFieldSchema['props'], 'onValueChange'> = {},
 ): DateFieldContext {
-  // scope id 走 Vue 的 useId：control 的 aria-labelledby 是 IDREF，
-  // 同页多个实例若拿到同一份 id，读屏会把别人的标题念成自己的
+  // scope id 走 Vue 的 useId，保证同页多实例的 IDREF 不相撞
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const service = useMachine(dateFieldMachine, () => ({ ...props, ...handlers }), scope)

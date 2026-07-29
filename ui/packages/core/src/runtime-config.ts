@@ -1,7 +1,7 @@
 import type { IdGenerator } from './id-generator'
 import type { Scope } from './scope'
 import type { LayerRegistry } from './structure/layer-registry'
-// RuntimeConfig：环境包。适配器解析后以纯对象传入；core 不关心它怎么来的。
+// RuntimeConfig：环境包，由适配器解析后以纯对象传入。
 import type { Direction } from './types'
 import { isSSR } from './guards'
 import { createCounterIdGenerator } from './id-generator'
@@ -20,10 +20,7 @@ export interface RuntimeConfig {
   readonly layerRegistry: LayerRegistry
 }
 
-/**
- * 构造 RuntimeConfig，未提供的字段用 CSR 默认值补全。
- * SSR 期不应调用（依赖 document/window）；适配器负责时机。
- */
+/** 构造 RuntimeConfig，未提供的字段用 CSR 默认值补全（依赖 document/window，勿在 SSR 期调用）。 */
 export function createRuntimeConfig(partial: Partial<RuntimeConfig> = {}): RuntimeConfig {
   const idGenerator = partial.idGenerator ?? createCounterIdGenerator()
   const doc = isSSR() ? undefined : document

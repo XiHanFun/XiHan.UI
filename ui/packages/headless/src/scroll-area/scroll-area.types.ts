@@ -4,8 +4,8 @@ import type { ScrollAreaAxisMetrics } from './scroll-area.geometry'
 
 /**
  * 滚动条什么时候露面：
- * - auto 溢出就一直露着（原生 overflow:auto 的观感）；
- * - always 恒露，即便内容根本不溢出（留出固定的槽位，布局不会因为内容长短而抖）；
+ * - auto 溢出就一直露着；
+ * - always 恒露，即便内容不溢出；
  * - scroll 滚动时露出，停手 scrollHideDelay 毫秒后收起；
  * - hover 指针进入组件时露出，离开后 scrollHideDelay 毫秒收起。
  */
@@ -14,13 +14,13 @@ export type ScrollAreaType = 'auto' | 'always' | 'scroll' | 'hover'
 /** 哪几条轴归本组件管。被关掉的那条轴滚动条恒不显形，视口那一向也不滚。 */
 export type ScrollAreaOrientation = Orientation | 'both'
 
-/** 指针位置。只取两个坐标，不把整个事件对象拖进机器。 */
+/** 指针位置，只取两个坐标。 */
 export interface ScrollAreaPoint {
   clientX: number
   clientY: number
 }
 
-/** 一次滑块拖动的起点快照：位移是相对它算的，中途重新量尺寸也不会让内容跳一下。 */
+/** 一次滑块拖动的起点快照，位移相对它计算。 */
 export interface ScrollAreaDragSession {
   axis: Orientation
   /** 按下那一刻指针在该轴上的客户端坐标。 */
@@ -29,8 +29,7 @@ export interface ScrollAreaDragSession {
   startScroll: number
 }
 
-// 适配器在挂载前填入元素 getter；纯逻辑测试与 SSR 下保持缺省，
-// 此时副作用一律短路（机器状态照常转移，只是量不到尺寸、也不挂监听器）。
+// 适配器挂载前填入；保持缺省时副作用短路，机器状态照常转移但量不到尺寸、也不挂监听器。
 export interface ScrollAreaRefs {
   /** 真正 overflow:auto 的那层：尺寸、滚动量、scroll 事件与写回滚动位置都落在它身上。 */
   getViewportEl: () => HTMLElement | null
@@ -67,12 +66,12 @@ export interface ScrollAreaSchema extends MachineSchema {
     orientation?: ScrollAreaOrientation
     /**
      * 排版方向，默认随文档。只影响横轴：RTL 下滚动量的正负、指针位移的方向都要翻一次。
-     * 必须显式给——组件不去读计算样式，从 RTL 祖先继承来的方向它看不见。
+     * 必须显式给：组件不读计算样式，看不见从 RTL 祖先继承来的方向。
      */
     dir?: Direction
   }
   context: {
-    /** 竖轴量到的尺寸。connect 只读它，一行 DOM 都不碰。 */
+    /** 竖轴量到的尺寸；connect 只读它，不碰 DOM。 */
     vertical: ScrollAreaAxisMetrics
     /** 横轴量到的尺寸。 */
     horizontal: ScrollAreaAxisMetrics
@@ -84,9 +83,7 @@ export interface ScrollAreaSchema extends MachineSchema {
   computed: Record<string, never>
   refs: ScrollAreaRefs
   /**
-   * 只有 hover / scroll 两种 type 真的会在这四个状态间走动：
-   * auto / always 的可见性与状态无关（connect 直接按 type 判），
-   * 因此运行期改 type 立刻生效，不需要影子事件回写。
+   * 只有 hover / scroll 两种 type 会在这四个状态间走动，auto / always 的可见性由 connect 直接按 type 判。
    * hidden 收着；visible 露着且没有倒计时；hiding 露着且倒计时在跑；dragging 手正按在滑块上。
    */
   state: 'hidden' | 'visible' | 'hiding' | 'dragging'

@@ -12,9 +12,9 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 export interface ScrollAreaContext {
   service: Service<ScrollAreaSchema>
   api: ComputedRef<ScrollAreaApi>
-  /** 真正 overflow:auto 的那层：尺寸、滚动量与 scroll 事件都取自它。 */
+  /** overflow:auto 的那层，尺寸、滚动量与 scroll 事件都取自它。 */
   viewportRef: Ref<HTMLElement | null>
-  /** 内容包裹层：只用于跟随尺寸变化。 */
+  /** 内容包裹层，用于跟随尺寸变化。 */
   contentRef: Ref<HTMLElement | null>
   /** 两条轴各自的滚动条节点，轨道长度按轴现量。 */
   scrollbarRefs: Record<Orientation, Ref<HTMLElement | null>>
@@ -32,8 +32,7 @@ export function useScrollArea(props: ScrollAreaSchema['props']): ScrollAreaConte
   const scope = createScope(null, idGen)
   const service = useMachine(scrollAreaMachine, () => ({ ...props }), scope)
 
-  // 懒读而不是把节点直接塞进去：ref 在挂载后才有值，机器建起来的那一刻还是 null。
-  // 量尺寸与挂 scroll 监听全在机器的效应里进行，连接层一行 DOM 都不碰
+  // 传 getter 而非节点，ref 在挂载后才有值；量尺寸与挂监听都在机器的效应里进行
   service.refs.set('getViewportEl', () => viewportRef.value)
   service.refs.set('getContentEl', () => contentRef.value)
   service.refs.set('getScrollbarEl', (axis: Orientation) => scrollbarRefs[axis].value)

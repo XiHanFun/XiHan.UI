@@ -6,8 +6,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-// 属性缺席一律翻成 undefined：缺省值的唯一事实源留在机器与 connect 里。
-// Lit 自带的转换器会把缺席落成 null，那样属性就再也表达不了"未指定"。
+// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
 // 缺省为真的开关（点行展开、连打检索）只有三态才关得掉——
@@ -55,7 +54,7 @@ export class XhTreeElement extends XhElement {
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名声明既与基类类型冲突，也会盖掉原生反射。别名保留原生行为，
   // 同时让 dir 进 observedAttributes——运行期改 dir 才会重跑 wire 换掉按键处理器。
-  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     collection: { attribute: false },
     expandedValue: { attribute: false },

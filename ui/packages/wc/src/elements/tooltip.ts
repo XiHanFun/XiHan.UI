@@ -41,7 +41,7 @@ const NUMBER_CONVERTER = {
  * @csspart arrow - 指向锚点的箭头，装饰性
  */
 export class XhTooltipElement extends XhElement {
-  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     open: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
     defaultOpen: { type: Boolean, attribute: 'default-open' },

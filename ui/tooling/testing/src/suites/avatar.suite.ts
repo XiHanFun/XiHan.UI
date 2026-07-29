@@ -21,7 +21,7 @@ function dispatchOnImage(type: string): (ctx: RawStepContext) => void {
   }
 }
 
-/** src / alt 不进归一化快照（只采 aria- / data- 与结构属性），只能直接读 DOM。 */
+/** src / alt 不进归一化快照，直接读 DOM 比对。 */
 function assertImageSource(src: string | null, alt: string | null): (ctx: RawStepContext) => void {
   return ({ doc }) => {
     const image = requireImage(doc)

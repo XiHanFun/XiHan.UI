@@ -5,8 +5,7 @@ import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 /**
- * `<xh-toggle>` —— Light-DOM 行为宿主：用户写 root(button) 角色节点，元素跑 toggle 机器
- * 并把 connect 产出打上去。无副作用（不挂 DOM effect），只有 root 一个角色节点。
+ * `<xh-toggle>` —— Light-DOM 行为宿主，跑 toggle 机器并把 connect 产出打到 root 角色节点。
  *
  * @customElement xh-toggle
  * @attr {boolean} pressed - 受控按下态；缺省该属性即非受控

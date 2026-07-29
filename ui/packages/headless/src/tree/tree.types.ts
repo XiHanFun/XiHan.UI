@@ -4,15 +4,11 @@ import type { MachineSchema } from '@xihan-ui/machine'
 
 /**
  * 焦点模型：roving tabindex，不做 aria-activedescendant 变体。
- *
- * 焦点真的落在 role=treeitem 的节点上（item 或 branch），整棵树只留一个 Tab 停靠点：
- * 锚点 = focusedValue ?? 首个「可见的」选中值，认领 tabindex=0，其余一律 -1；
+ * 焦点真的落在 role=treeitem 的节点上，整棵树只留一个 Tab 停靠点：
+ * 锚点 = focusedValue ?? 首个可见的选中值，认领 tabindex=0，其余一律 -1；
  * 焦点不在树内时由 tree 容器兜底进 Tab 序列，它的 onFocus 再把焦点转投给锚点节点。
- *
- * 「可见」这层过滤是树独有的：选中值可能落在一条收起的分支里，那个节点仍在 DOM 中
- * （内容常挂 + hidden，不卸载作者节点），但 hidden 元素不可聚焦。若让它认领 tabindex=0，
- * 容器又判自己「焦点在树内」让了位，整棵树对键盘用户就一个停靠点都没有了。
- * 同理 focusedValue 指向已隐藏的节点时（收起了它的祖先分支）连接层也把它投影成 null。
+ * 可见这层过滤不能省：收起分支里的节点仍在 DOM 中但 hidden 不可聚焦，
+ * 让它认领 tabindex=0 会让整棵树没有停靠点；focusedValue 指向已隐藏节点时同样投影成 null。
  */
 export type TreeFocusModel = 'roving-tabindex'
 
@@ -24,11 +20,9 @@ export type TreeFocusModel = 'roving-tabindex'
 export type TreeSelectionMode = 'single' | 'multiple'
 
 /**
- * 作者给的树数据。它是层级元信息（层级号、同层序号、同层总数、父子关系）的唯一事实源：
+ * 作者给的树数据，是层级元信息（层级号、同层序号、同层总数、父子关系）的唯一事实源：
  * 连接层据此产出 aria-level / aria-posinset / aria-setsize，作者的标记只管长相。
- *
- * value 必须全树唯一：它同时是 DOM 身份（data-value）、选中/展开集合的元素、
- * 以及连接层查节点的键。重复的 value 会让「按值找节点」变得不确定。
+ * value 必须全树唯一：它同时是 DOM 身份（data-value）、选中/展开集合的元素与查节点的键。
  */
 export interface TreeNode {
   value: string
@@ -37,8 +31,7 @@ export interface TreeNode {
   /** 节点禁用：方向键与连打检索跳过它，但它仍可聚焦、仍是导航起点。不向下传导给子节点。 */
   disabled?: boolean
   /**
-   * 子节点。**给了数组即判定为分支**，哪怕是空数组——
-   * 「暂时没有子项的目录」与「文件」在 ARIA 上不是一回事：前者要报 aria-expanded。
+   * 子节点。给了数组即判定为分支，空数组也算：暂时没有子项的目录仍要报 aria-expanded。
    */
   children?: TreeNode[]
 }
@@ -78,8 +71,7 @@ export interface TreeSelectionChangeDetails {
 }
 
 /**
- * 节点自报家门：只报值。层级、禁用、标签一律回 collection 里查——
- * 那是唯一事实源，作者不必把同一份元信息在标记里再抄一遍，两个适配器也就不会各抄各的。
+ * 节点自报家门：只报值。层级、禁用、标签一律回 collection 里查，那是唯一事实源。
  */
 export interface TreeNodeProps {
   value: string
@@ -87,8 +79,8 @@ export interface TreeNodeProps {
 
 export interface TreeRefs {
   /**
-   * 连打检索缓冲。随服务存活：停顿够久自行重开一轮，
-   * 放模块变量会让同页两棵树共用一个缓冲、互相把对方的查询串接上去。
+   * 连打检索缓冲，随服务存活，停顿够久自行重开一轮。
+   * 放模块变量会让同页两棵树共用一个缓冲。
    */
   typeahead: Typeahead
 }
@@ -109,7 +101,7 @@ export interface TreeSchema extends MachineSchema {
     expandOnClick?: boolean
     /** 整棵树禁用：所有节点转 aria-disabled，键盘与点击都不再改展开/选中。 */
     disabled?: boolean
-    /** 上下键走到首尾是否回绕，默认 false（树不像列表那样天然成环）。 */
+    /** 上下键走到首尾是否回绕，默认 false。 */
     loop?: boolean
     /** 连打检索，默认开。关掉后可打印字符一律放行给页面。 */
     typeahead?: boolean

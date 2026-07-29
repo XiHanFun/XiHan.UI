@@ -3,14 +3,10 @@ import type { AttrExpectation, ConformanceSuite, FixtureNode, StepWithExpect } f
 import { transferAnatomy, transferKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
 
-// Transfer 不是 APG 的一个模式：它是两个多选 listbox 加中间的搬运按钮，
-// 列表那一半逐条对齐 listbox 的规格。
+// Transfer 无对应 APG 模式，列表部分对齐 listbox 规格。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/listbox/'
 
-/**
- * 条目全集。banana 禁用（导航跳过它、勾不动、也搬不动，但它仍可聚焦、仍是方向键起点）。
- * 标签用拉丁字母，搜索按子串匹配得上。
- */
+/** 条目全集。banana 禁用：导航跳过、勾不动、搬不动，但仍可聚焦、仍是方向键起点。 */
 const ITEMS: readonly TransferItem[] = [
   { value: 'apple', label: 'Apple' },
   { value: 'banana', label: 'Banana', disabled: true },
@@ -20,7 +16,7 @@ const ITEMS: readonly TransferItem[] = [
 
 const VALUES = ITEMS.map(i => i.value)
 
-/** 一侧的条目节点：**两侧各挂一份全集**，不属于本侧的那一份由组件打上 hidden。 */
+/** 一侧的条目节点：两侧各挂一份全集，不属于本侧的那一份由组件打上 hidden。 */
 function itemNodes(): FixtureNode[] {
   return ITEMS.map(spec => ({
     part: 'item',
@@ -60,13 +56,10 @@ const FIXTURE: FixtureNode = {
   ],
 }
 
-/** 每个用例都要给全集：条目的标签与禁用只有 items 说了算，标记里没有第二份。 */
+/** 条目的标签与禁用只由 items 决定，标记里没有第二份，每个用例都要给全集。 */
 const BASE = { items: ITEMS }
 
-/**
- * 八个条目节点（左四右四）的期望，逐个写全——只写关心的那个会漏掉
- * "另一侧那份同值节点也跟着亮了"。
- */
+/** 八个条目节点（左四右四）的期望；逐个写全才咬得住另一侧同值节点。 */
 function itemsOn(right: readonly string[], checked: readonly string[]): readonly AttrExpectation[] {
   const out: AttrExpectation[] = []
   for (const side of ['source', 'target'] as const) {
@@ -86,11 +79,7 @@ function itemsOn(right: readonly string[], checked: readonly string[]): readonly
   return out
 }
 
-/**
- * roving tabindex：**每一侧各是一组**，各自只留一个 Tab 停靠点。
- * 共享的 singleTabStop 在这里不能用——它按 scope 数全文档的条目，
- * 两侧各有一个锚点时会被判成"多了一个"。
- */
+/** 每一侧各是一组 roving tabindex，各留一个 Tab 停靠点；共享的 singleTabStop 按 scope 数全文档条目，这里用不了。 */
 function sideTabStop(side: TransferSide): StepWithExpect {
   return {
     kind: 'raw',
@@ -132,11 +121,7 @@ function typeSearch(index: number, text: string, expect?: StepWithExpect['expect
   }
 }
 
-/**
- * 禁用控件上的点击守卫。`el.click()` 在禁用的表单控件上被激活行为短路、事件压根不派发，
- * 断言会恒成立；直接派发才验得到守卫。共享的 dispatchClickOnDisabled 只取同名 part 的第一个，
- * 这里两侧同名，得能指定下标。
- */
+/** 往禁用控件直接派发 click（el.click() 在禁用表单控件上不派发事件）；共享的 dispatchClickOnDisabled 指定不了下标。 */
 function clickDisabled(part: string, index: number, expect: StepWithExpect['expect']): StepWithExpect {
   return {
     kind: 'raw',
@@ -230,7 +215,7 @@ export const transferSuite: ConformanceSuite = {
             'id': '@self',
             'role': 'listbox',
             'aria-labelledby': '@part(panel-title[0])',
-            // 省略与显式 false 不是一回事：前者是"没说"，后者是"明确说了不是多选"
+            // 显式写出，不靠省略
             'aria-multiselectable': 'true',
             'aria-disabled': 'false',
             'data-side': 'source',
@@ -481,8 +466,7 @@ export const transferSuite: ConformanceSuite = {
           },
         },
         {
-          // click 步骤会先把焦点放到按钮上，正是键盘用户按 Enter 时的形状：
-          // 搬完按钮随即变禁用、不可聚焦，焦点必须有去处
+          // click 步骤先把焦点放到按钮上，搬完按钮随即禁用，焦点必须另有去处
           kind: 'click',
           part: 'to-target-trigger',
           expect: {
@@ -566,8 +550,7 @@ export const transferSuite: ConformanceSuite = {
         },
         typeSearch(0, 'ch', {
           parts: {
-            // 左栏只剩 cherry。apple 的勾还在勾选集合里，但它此刻既不显形、
-            // 也不再报自己勾着——一个隐去的节点声称"已选中"只会骗读屏
+            // 左栏只剩 cherry；apple 的勾还在集合里，但隐去的节点不再报自己勾着
             'item[0]': { 'hidden': '', 'aria-selected': 'false' },
             'item[2]': { hidden: null },
             'panel-count[0]': { 'data-count': '1', 'data-checked-count': '0' },
@@ -625,7 +608,7 @@ export const transferSuite: ConformanceSuite = {
         parts: {
           'root': { 'data-one-way': '' },
           'list[0]': { 'aria-multiselectable': 'true' },
-          // 右侧真的选不了，此时报 true 是在骗读屏
+          // 右侧选不了，不报 true
           'list[1]': { 'aria-multiselectable': 'false' },
           'to-source-trigger': { 'disabled': '', 'data-disabled': '' },
           'select-all-trigger[1]': { disabled: '' },

@@ -11,7 +11,7 @@ export function useMachine<T extends MachineSchema>(
   scope?: Scope,
 ): Service<T> {
   return createService(machine, {
-    // 展开成新快照：Vue props 对象身份稳定但字段会变，展开让 machine 的身份缓存正确失效
+    // 每次展开成新对象，让 machine 的身份缓存失效
     props: () => ({ ...toValue(userProps) }) as never,
     runtime: createVueRuntime(),
     scope,

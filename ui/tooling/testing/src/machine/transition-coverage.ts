@@ -11,7 +11,7 @@ export function coveredRows(suite: ConformanceSuite): Set<string> {
   return covered
 }
 
-/** 用例 covers 里指向不存在行的 id（拼写错/规格漂移）。 */
+/** 用例 covers 里指向不存在行的 id。 */
 export function danglingCovers(suite: ConformanceSuite): string[] {
   const rowIds = new Set(suite.keyboard.rows.map(r => r.id))
   const bad = new Set<string>()

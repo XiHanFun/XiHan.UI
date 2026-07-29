@@ -12,12 +12,8 @@ import { tableNormalizeSort, tableToggleSort } from './table.sort'
 const { createMachine } = setup<TableSchema>()
 
 /**
- * 生效的选择模式。缺省是 none：不声明就没有选择这回事。
- *
- * 反过来（缺省 multiple）会让每一张普通数据表都报出 aria-multiselectable=true、
- * 每一行都报 aria-selected=false——读屏用户听见的是一张可多选的表，实际一行也选不动。
- * 宁可让忘配 selectionMode 的作者看见把手点不动（一眼可见、当场能改），
- * 也不让不需要选择的表默认撒谎。
+ * 生效的选择模式，缺省 none：不声明就没有选择这回事。
+ * 缺省 multiple 会让普通数据表都报出 aria-multiselectable=true 而实际一行也选不动。
  */
 export function tableSelectionMode(mode: TableSelectionMode | undefined): TableSelectionMode {
   return mode ?? 'none'
@@ -39,11 +35,7 @@ function normalizeSelection(next: TableSelection, mode: TableSelectionMode): Tab
   return mode === 'single' ? uniq.slice(0, 1) : uniq
 }
 
-/**
- * 数组按元素比。默认的 Object.is 在这里不成立：受控时 cell 每次读都要把 prop 归一成
- * 新数组，引用恒不相等——版本号会每读一次自增一次（track 空转），
- * 写入时又会把「值其实没变」判成变了，回调便会重复发。
- */
+/** 数组按元素比：受控时 cell 每次读都产出新数组，默认的 Object.is 恒不相等。 */
 function sameValues(a: string[], b: string[] | undefined): boolean {
   return !!b && a.length === b.length && a.every((v, i) => v === b[i])
 }
@@ -69,9 +61,8 @@ function canExpand(rows: readonly TableRowDef[], id: string): boolean {
   return !!row?.expandable && !row.disabled
 }
 
-// 排序、选中与展开都住在 context 的 cell 里，不编码进 FSM 状态：cell 本身就是受控/非受控的
-// 收口点（prop 给定即受控，读直取 prop、写只发回调不落内部值），因此不需要影子事件与受控守卫。
-// 机器只有一个状态，逻辑全在 context + actions。
+// 排序、选中与展开都住在 context 的 cell 里，受控/非受控在 cell 收口，
+// 不需要影子事件与受控守卫。
 export const tableMachine = createMachine({
   name: 'table',
   context: ({ prop, cell }) => ({
@@ -127,8 +118,7 @@ export const tableMachine = createMachine({
         const e = event.current()
         if (e.type !== 'SORT.TOGGLE')
           return
-        // 没声明 sortable 的列不进排序链：否则公开 API 能造出 UI 造不出的排序态，
-        // 而那一列的表头压根不报 aria-sort，用户看不见自己按什么排的
+        // 没声明 sortable 的列不进排序链，否则那一列的表头不报 aria-sort
         const column = (prop('columns') ?? []).find(item => item.id === e.value)
         if (!column?.sortable)
           return
@@ -152,15 +142,14 @@ export const tableMachine = createMachine({
           return
         const rows = prop('rows') ?? []
         const row = rows.find(item => item.id === e.value)
-        // 禁用行选不动；不在 rows 里的行也不认——作者标记与 rows 不同源时，
-        // 凭空造出的选中值既算不出行号，也不会有任何一行显示成选中
+        // 禁用行选不动；不在 rows 里的行也不认，那种选中值算不出行号
         if (!row || row.disabled)
           return
         const ids = tableSelectableRowIds(rows)
         context.set('selection', tableToggleRowSelection(context.get('selection'), e.value, mode, ids))
       },
       toggleSelectAll: ({ context, prop }) => {
-        // 全选只在复选下成立：单选一次只中一行，none 压根没有选择
+        // 全选只在复选下成立
         if (tableSelectionMode(prop('selectionMode')) !== 'multiple')
           return
         const ids = tableSelectableRowIds(prop('rows') ?? [])
@@ -170,7 +159,7 @@ export const tableMachine = createMachine({
         const e = event.current()
         if (e.type !== 'EXPANDED.SET')
           return
-        // 只去重不筛「可不可展开」：数据晚到时先记下意愿，摊平那一步自会拦住不可展开的行
+        // 只去重不筛可不可展开：数据晚到时先记下意愿，摊平那一步会拦住不可展开的行
         context.set('expanded', unique(e.value))
       },
       expandRow: ({ context, prop, event }) => {
@@ -188,7 +177,7 @@ export const tableMachine = createMachine({
         const e = event.current()
         if (e.type !== 'ROW.COLLAPSE')
           return
-        // 收起不查 rows：不可展开的行本来就不该在集合里，能摘就摘干净
+        // 收起不查 rows，能摘就摘干净
         context.set('expanded', context.get('expanded').filter(v => v !== e.value))
       },
       toggleExpandRow: ({ context, prop, event }) => {
@@ -209,7 +198,7 @@ export const tableMachine = createMachine({
         if (e.type === 'ROW.FOCUS')
           context.set('focusedRow', e.value)
       },
-      // 焦点离场只清焦点锚点，排序、选中与展开留着：下次焦点回来还要从选中行起步
+      // 焦点离场只清焦点锚点，排序、选中与展开留着
       clearFocusedRow: ({ context }) => {
         context.set('focusedRow', null)
       },

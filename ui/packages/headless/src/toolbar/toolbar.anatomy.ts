@@ -9,8 +9,6 @@ export const toolbarAnatomy = createAnatomy('toolbar', [
   'separator',
 ])
 
-// 集合只认 item：group 与 separator 同样带 data-scope，但不入导航——
-// 方向键不会停在分组容器或分隔线上，Home/End 也不会把端点算到它们头上。
-// 分组里的条目照样查得到：queryItems 的归属判据是「父链上最近的 root 是不是本容器」，
-// 中间隔着 group 不影响，嵌套的另一条工具条才会被切开。
+// 集合只认 item：group 与 separator 虽带 data-scope 但不入导航。
+// 分组里的条目照样查得到，queryItems 按最近的 root 归属过滤，只有嵌套的另一条工具条会被切开。
 export const toolbarItemQuery: ItemQuery = { scope: toolbarAnatomy.name, part: 'item' }

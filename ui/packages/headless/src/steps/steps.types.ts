@@ -6,17 +6,13 @@ export interface StepsStepChangeDetails {
   step: number
 }
 
-/** 单步的三态。completed 在前、incomplete 在后，正是走过的方向。 */
+/** 单步的三态。 */
 export type StepStatus = 'completed' | 'current' | 'incomplete'
 
 /**
  * 条目自报家门：这是第几步（0 起）、作者有没有把它标成不可点。
- * connect 因此是 (context, 本条目声明) 的纯函数，不反查 DOM——
- * Vue 侧 connect 在 render 期求值（本帧 DOM 还不存在），WC 侧在 updated 后求值（DOM 已就位），
- * 连接期读 DOM 会让两个适配器的首帧快照分叉。
- *
- * item 之下的 trigger / indicator / title / description / separator 全部共用这一份声明：
- * 它们描述的是同一步，各自再报一遍只会给出两个可能对不上的答案。
+ * connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得反查 DOM。
+ * item 之下的 trigger / indicator / title / description / separator 共用这一份声明。
  */
 export interface StepsItemProps {
   /** 第几步，0 起。 */
@@ -25,7 +21,7 @@ export interface StepsItemProps {
   disabled?: boolean
 }
 
-/** 单步的呈现状态。作者要自绘图标（对勾 / 序号 / 圆点）时按它取图案，不必自己比大小。 */
+/** 单步的呈现状态；自绘图标时按它取图案。 */
 export interface StepsItemState {
   index: number
   status: StepStatus
@@ -44,16 +40,15 @@ export interface StepsSchema extends MachineSchema {
     /** 非受控初值，默认 0。 */
     defaultStep?: number
     /**
-     * 总步数。作者渲染几个 item 就给几，必填——它是步序的上界，也是读屏"第 k 步，共 n 步"的分母。
+     * 总步数，是步序的上界与读屏"第 k 步，共 n 步"的分母。
      * 缺省按 0 处理：此时 root 带 data-empty，步序被夹死在 0。
      */
     count?: number
     /** 方向键轴向，默认 horizontal；不同轴的方向键放行给页面滚动与读屏。 */
     orientation?: Orientation
     /**
-     * 线性模式：只能回头看走过的步，跳不到还没走到的步。
-     * 未解锁（index > step）的 trigger 一律禁用，点击与方向键都不认。
-     * 它只管"跳"，不管"走"——goToNextStep 逐步前进照常可用。
+     * 线性模式：只能回头看走过的步。未解锁（index > step）的 trigger 一律禁用。
+     * 只拦跳转，goToNextStep 逐步前进照常可用。
      */
     linear?: boolean
     /** 整组不可交互：trigger 全部退出 Tab 序列，指针与键盘都不认。 */
@@ -96,8 +91,7 @@ export interface StepsApi<T extends PropTypes = PropTypes> {
   getItemState: (props: StepsItemProps) => StepsItemState
   /**
    * 直接跳到某一步；越界会被夹回 [0, count]。
-   * 刻意不认 linear：linear 拦的是用户在界面上乱跳，作者自己的代码（表单校验通过后放行）
-   * 不该被同一道锁挡住——真要拦，作者手上有 step 与 complete，判起来比这里更清楚。
+   * 不认 linear：linear 只拦界面上的乱跳，不拦作者的命令式调用。
    */
   setStep: (next: number) => void
   goToNextStep: () => void

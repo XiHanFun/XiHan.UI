@@ -1,8 +1,7 @@
-// 守卫布尔组合子。组合子产物带 COMBINATOR 标记 → 可序列化/运行时可还原，
-// 是 states 里唯一允许出现内联函数的场景（createMachine 的自检据此放行）。
+// 守卫布尔组合子。产物带 COMBINATOR 标记，createMachine 的自检据此放行。
 import type { GuardExpr, GuardFn, MachineSchema } from './types'
 
-/** 组合子标记键：一个属性键，非注册表；enumerable:false 保证不进 JSON.stringify。 */
+/** 组合子标记键，以 enumerable:false 挂在函数上。 */
 export const COMBINATOR = Symbol.for('xihan-ui.guard-combinator')
 
 export interface GuardCombinators<T extends MachineSchema> {
@@ -15,7 +14,7 @@ function mark<T extends MachineSchema>(fn: GuardFn<T>, op: string, args: unknown
   return Object.defineProperty(fn, COMBINATOR, { value: { op, args }, enumerable: false })
 }
 
-/** 某个 guard 值是否是组合子产物（vs 裸内联函数）。 */
+/** 某个 guard 值是否是组合子产物。 */
 export function isCombinator(v: unknown): boolean {
   return typeof v === 'function' && COMBINATOR in (v as object)
 }

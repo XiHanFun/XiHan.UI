@@ -28,7 +28,7 @@ import {
 
 const parts = dateFieldAnatomy.build()
 
-// 段位集合只在事件处理器里查活 DOM：那一刻两个适配器看到的是同一份文档，顺序即文档序。
+// 段位集合只在事件处理器里查活 DOM，顺序即文档序。
 const SEGMENT_QUERY: ItemQuery = { scope: dateFieldAnatomy.name, part: 'segment' }
 
 const DIGIT = /^\d$/
@@ -88,10 +88,8 @@ export function connectDateField<T extends PropTypes>(
 
   const segmentStates = order.map(state)
 
-  // 焦点锚点：焦点在组内就是它，否则退回首段。整组只占一个 Tab 位——
-  // 一个日期要按三次 Tab 才能走完，Tab 序里就再也没人愿意走了。
-  // 锚点落在已经不属于当前 granularity 的段上时（精度从 second 改成 day）要回到首段，
-  // 否则整组一个 Tab 位都不剩。
+  // 焦点锚点：焦点在组内就是它，否则退回首段；整组只占一个 Tab 位。
+  // 锚点落在已不属于当前 granularity 的段上时要回到首段，否则整组一个 Tab 位都不剩
   const anchor = focusedSegment != null && order.includes(focusedSegment) ? focusedSegment : order[0]
 
   /** 事件那一刻现查同组段位：文档序即段序，不缓存节点数组。 */
@@ -108,7 +106,7 @@ export function connectDateField<T extends PropTypes>(
 
   const moveFrom = (el: HTMLElement, intent: 'next' | 'prev' | 'first' | 'last'): void => {
     const nodes = nodesOf(el)
-    // 两端停住不回绕：末段再按右键该停下，绕回首段会让人以为值被重置了
+    // 两端停住不回绕
     focusAt(nodes, stepIndex(nodes.length, nodes.indexOf(el), intent, {
       loop: false,
       skip: i => isSpare(nodes[i]!),
@@ -144,8 +142,7 @@ export function connectDateField<T extends PropTypes>(
     getLabelProps: () => normalize.element({
       ...parts.label.attrs,
       'id': ids.label,
-      // 段位是 div，不是可被 <label for> 标注的控件，所以不产出 for；
-      // 点标题该落到首段这件事只能自己接管
+      // 段位是 div，不是可被 <label for> 标注的控件，所以不产出 for，点标题落到首段自己接管
       'data-disabled': dataAttr(disabled),
       'onClick': (event: MouseEvent) => {
         if (disabled)
@@ -171,9 +168,8 @@ export function connectDateField<T extends PropTypes>(
     getSegmentProps: ({ index }) => {
       const type = order[index]
       const item = type ? state(type, index) : null
-      // 作者写的段位节点比当前精度需要的多：多出来的收起而不是卸载——节点是作者写的，
-      // 替他删掉他就再也拿不回来了。键一个不少地照出，只是取值为空：
-      // 精度改小时那几个键要能被适配器当成"这一帧不再写"从而撤掉，漏写键就撤不掉
+      // 多余的段位收起而不是卸载。键一个不少地照出、只是取值为空：
+      // 漏写键的话适配器撤不掉上一帧写下的那些属性
       const spare = item == null
       return normalize.element({
         ...parts.segment.attrs,
@@ -185,13 +181,12 @@ export function connectDateField<T extends PropTypes>(
         'data-invalid': dataAttr(!spare && (invalid || outOfRange)),
         'data-focus': dataAttr(!!item?.focused),
         'hidden': spare || undefined,
-        // role=spinbutton 让读屏念出当前值与区间；三个 aria-value* 显式给，
-        // 省略时读屏只念得出节点里的那串数字，念不出这一段能取到哪儿
+        // role=spinbutton 让读屏念出当前值与区间，三个 aria-value* 必须显式给
         'role': spare ? undefined : 'spinbutton',
         'aria-label': item?.label,
         'aria-valuemin': item?.min,
         'aria-valuemax': item?.max,
-        // 未填时不给 valuenow：给 0 会被念成"值是 0"，那和"还没填"是两回事
+        // 未填时不给 valuenow，给 0 会被念成「值是 0」
         'aria-valuenow': item?.value ?? undefined,
         'aria-valuetext': item?.text,
         'aria-disabled': spare ? undefined : (disabled ? 'true' : 'false'),
@@ -204,9 +199,7 @@ export function connectDateField<T extends PropTypes>(
         'onBlur': spare
           ? undefined
           : () => {
-              // 判据是"本段当下正持有锚点"，不是"有 blur 就清"：
-              // 焦点在段之间移动时浏览器先派旧段的 blur、再派新段的 focus，
-              // 两条都无条件生效的话，顺序稍有出入就会把刚记下的锚点抹掉
+              // 只在本段当下持有锚点时才清：段间移动时旧段 blur 与新段 focus 的先后会把刚记下的锚点抹掉
               if (context.get('focusedSegment') === item.type)
                 send({ type: 'SEGMENT.BLUR' })
             },
@@ -240,8 +233,7 @@ export function connectDateField<T extends PropTypes>(
                 if (!editable)
                   return
                 event.preventDefault()
-                // 跳不跳段要在写之前算：写完缓冲就被清了，事后问不出"这一段是不是刚敲满"。
-                // 与机器里用的是同一个纯函数、同一份活值，两处算出来的结论必然一致
+                // 跳不跳段要在写之前算，写完缓冲就被清了；与机器用的是同一个纯函数与同一份活值
                 const live = context.get('segments')
                 const buffer = context.get('typing')
                 const result = applySegmentDigit(
@@ -255,7 +247,7 @@ export function connectDateField<T extends PropTypes>(
                 return
               }
 
-              // 只认水平轴与 Home/End：上下键已在前面接走，别让导航再抢一次
+              // 只认水平轴与 Home/End，上下键已在前面接走
               const intent = navIntentFromKey(event, { axis: 'horizontal' })
               if (!intent)
                 return

@@ -1,9 +1,6 @@
 import type { ItemQuery } from '@xihan-ui/behavior'
 import { createAnatomy } from '@xihan-ui/core'
 
-// data-part 直接用 kebab-case，与 CSS 选择器一致。
-// 前半截（trigger/value-text/indicator/positioner/content）是浮层那一套；
-// column 与三个条目部件是级联自己那一套——每一级一列，列在 content 里并排。
 export const cascaderAnatomy = createAnatomy('cascader', [
   'root',
   'label',

@@ -21,10 +21,8 @@ export function useNavigationMenu(
 ): NavigationMenuContext {
   const listRef = ref<HTMLElement | null>(null)
   const idGen = createVueIdGenerator()
-  // trigger 与 content 要按 value 逐对互指（aria-controls / aria-labelledby），
-  // 那些 id 由 scope 派生，因此这里必须自己建一个
+  // trigger 与 content 要按 value 逐对互指，那些 id 由 scope 派生，故自建一个
   const scope = createScope(null, idGen)
-  // onValueChange 由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const service = useMachine(navigationMenuMachine, () => ({ ...props, onValueChange }), scope)
 
   // 指示条的量测在机器的 action 里跑，参照系经 refs 交进去

@@ -7,19 +7,16 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-// 缺省为真的开关得能被 ="false" 关掉：Lit 默认的 Boolean 转换器把 fromAttribute 定义成
-// `v !== null`，属性一写上去就是 true，"我要非模态"这句话在 HTML 里根本说不出口。
-// 三态：缺席 = undefined（用默认值），="false" = false，其余 = true。
+// 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
-// 属性缺席翻成 undefined：缺省值只在 connect 里定义一次，这里不能落成 null 顶掉它。
+// 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
- * `<xh-drawer>` —— Light-DOM 行为宿主：作者写 root/trigger/backdrop/positioner/content/... 角色节点，
- * 元素跑 drawer 机器并把 connect 产出打上去。关闭时用内联 style.display 隐藏浮层子树。
+ * `<xh-drawer>` —— Light-DOM 行为宿主，跑 drawer 机器并把 connect 产出打到角色节点上，
+ * 关闭时用内联 style.display 隐藏浮层子树。
  *
- * 它就是贴边渲染的对话框：键盘与 ARIA 契约逐条相同，side 只决定滑入方向，
- * 以 data-side 落在 root 与 content 上供样式取用。
+ * 键盘与 ARIA 契约同 dialog；side 决定滑入方向，以 data-side 落在 root 与 content 上供样式取用。
  *
  * @customElement xh-drawer
  * @attr {boolean} open - 受控开合；缺省该属性即非受控
@@ -41,9 +38,8 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart close-trigger - 关闭按钮
  */
 export class XhDrawerElement extends XhElement {
-  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
-  // role 不声明为响应式属性——复用 HTMLElement 原生的 role 属性反射（避免类型冲突），
-  // 在 machineProps 里经 getAttribute 读取。
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
+  // role 不声明为响应式属性，复用 HTMLElement 原生反射，在 machineProps 里经 getAttribute 读取。
   static override properties = {
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
@@ -52,7 +48,7 @@ export class XhDrawerElement extends XhElement {
     closeOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-escape' },
     closeOnInteractOutside: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-interact-outside' },
     restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
-    // 文案是对象，走不了属性；只作为 property 暴露，与 Vue 侧的 translations prop 对齐
+    // 文案是对象，只走 property
     translations: { attribute: false },
   }
 
@@ -103,8 +99,7 @@ export class XhDrawerElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.drawerScope, idGenerator: this.idGen })
   }
 
-  // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackOverlay 效应负责）。
-  // 连接期就注册会让层常驻栈里占着栈顶，把同页其它层的 Escape 堵死。
+  // 只交注册函数，层的入栈出栈由机器的 trackOverlay 效应跟着展开态做。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
     return this.config!.layerRegistry.register({
@@ -117,7 +112,7 @@ export class XhDrawerElement extends XhElement {
     })
   }
 
-  // onBuilt 在 ctrl 构造期就跑（此刻 this.ctrl 尚未赋值），故 service 由参数传入。
+  // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<DrawerSchema>): void {
     this.ensureConfig()
     svc.refs.set('config', this.config)
@@ -150,24 +145,18 @@ export class XhDrawerElement extends XhElement {
     put('description', api.getDescriptionProps() as Record<string, unknown>)
     put('close-trigger', api.getCloseTriggerProps() as Record<string, unknown>)
 
-    // Light DOM content 常驻，WC 自管可见性：关闭时隐藏浮层子树。
-    // 用内联 style.display 而非 hidden——抽屉的贴边布局（作者层）通常给 positioner
-    // 声明了 display，优先级高于 UA 的 [hidden]{display:none}，hidden 压不住；内联样式才压得住。
-    // Vue 靠卸载不走这条路，其退场动画不受影响。
+    // 关闭时用内联 display 隐藏浮层子树，优先级高于样式表对 [hidden] 的覆盖
     const positioner = this.getPart('positioner')
     if (positioner)
       this.setPartHidden(positioner, !open)
     if (this.backdropNode)
       this.setPartHidden(this.backdropNode, !open)
-    // content 自己也要兜：positioner 不是必需部件（见 drawerMeta），
-    // 作者按最小合规结构只写 root + content 时，上面两句一句都命中不了，
-    // 收起的抽屉就一直摊在页面上、点关闭也收不起来。
+    // positioner 不是必需部件，content 自己也要收起
     this.setPartHidden(this.contentNode, !open)
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
-    // 层由展开态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
     this.config = null // 重连时 ensureConfig 重建
   }
 }

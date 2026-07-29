@@ -8,16 +8,12 @@ import type {
 } from '@xihan-ui/core'
 import { autoUpdate, computePosition, flip, hide, offset, shift } from '@floating-ui/dom'
 
-// PositionEnginePort 的 @floating-ui/dom 实现。core 只持有端口契约、零运行时依赖，
-// 具体引擎装在本包里，换引擎不动上层。
+// PositionEnginePort 的 @floating-ui/dom 实现。
 
 /** 与端口默认值一致：底部对齐、8px 间距、开启避让。 */
 const DEFAULTS = { placement: 'bottom' as const, offset: 8, flip: true, shift: true }
 
-/**
- * 端口的虚拟锚点只承诺 x/y/width/height，floating-ui 还要四条边。
- * 阻抗匹配放在本包，端口契约就不必被具体引擎的形状污染。
- */
+/** 把端口的虚拟锚点（只有 x/y/width/height）补齐成 floating-ui 需要的四条边。 */
 function toReference(anchor: Anchor): ReferenceElement {
   if ((anchor as Element).nodeType === 1)
     return anchor as Element
@@ -36,7 +32,7 @@ function buildMiddleware(options: PositionOptions): Middleware[] {
     list.push(flip())
   if (options.shift ?? DEFAULTS.shift)
     list.push(shift({ padding: 4 }))
-  // hide 必须排在最后：它读的是前面 middleware 落定后的位置
+  // hide 必须排在最后，它读的是前面 middleware 落定后的位置
   list.push(hide())
   return list
 }
@@ -55,13 +51,13 @@ export function createFloatingUiPositionEngine(): PositionEnginePort {
               x,
               y,
               placement: resolved,
-              // referenceHidden 为真 = 锚点被滚出可视区，浮层应一并隐藏
+              // referenceHidden 为真表示锚点已滚出可视区
               hidden: middlewareData.hide?.referenceHidden ?? false,
             })
           })
       }
 
-      // autoUpdate 会在滚动/缩放/尺寸变化时重算，返回值即停止跟随
+      // 滚动/缩放/尺寸变化时重算，返回值即停止跟随
       return autoUpdate(reference, floating, update)
     },
   }

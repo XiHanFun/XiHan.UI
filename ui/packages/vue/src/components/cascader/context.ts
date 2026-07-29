@@ -3,10 +3,7 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { CascaderContext } from './use-cascader'
 import { inject, provide } from 'vue'
 
-/**
- * 条目自报的值，供 item-text / item-indicator 复用同一份声明。
- * 只报值：所在列、整条路径、禁用与标签都回 collection 里查，作者不必在标记里抄第二遍。
- */
+/** 条目自报的值，供 item-text / item-indicator 复用同一份声明；所在列、路径、禁用与标签回 collection 里查。 */
 export interface CascaderItemContext {
   item: ComputedRef<CascaderItemProps>
 }

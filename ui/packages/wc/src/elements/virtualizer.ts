@@ -12,8 +12,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-// 属性缺席一律翻成 undefined：缺省值的唯一事实源留在机器与 connect 里。
-// Lit 自带的转换器会把缺席落成 null，那样属性就再也表达不了"未指定"。
+// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 // 三态：缺席 = undefined（用默认值），="false" = false，其余（含空串）= true。
 // Lit 自带的 Boolean 转换器是 v !== null，缺省为真的开关用它会永远关不掉
@@ -61,7 +60,7 @@ function wantsMeasure(el: HTMLElement): boolean {
  * @csspart item - 条目，须自带 value 属性写明下标；位移由内联逻辑属性给出，不在窗口里时带 hidden
  */
 export class XhVirtualizerElement extends XhElement {
-  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     count: { converter: NUMBER_CONVERTER },
     estimateSize: { converter: NUMBER_CONVERTER, attribute: 'estimate-size' },

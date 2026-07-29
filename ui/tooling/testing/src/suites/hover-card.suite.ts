@@ -34,8 +34,7 @@ export const hoverCardSuite: ConformanceSuite = {
   fixture: {
     part: 'root',
     children: [
-      // 必须是 button：Vue 侧组件自己渲染成 button，WC 侧由 fixture 的 tag 决定，
-      // 渲染成 div 就不可聚焦，聚焦展开那一路在 WC 上永远演不出来
+      // 必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦
       { part: 'trigger', tag: 'button', text: '@xihan' },
       {
         part: 'positioner',
@@ -119,8 +118,7 @@ export const hoverCardSuite: ConformanceSuite = {
       ],
     },
     {
-      // 本组件的核心：trigger 与 content 之间隔着 offset，指针必须走得过去。
-      // 途中两端都没有指针，全靠收起等待期把卡片留在屏幕上。
+      // trigger 与 content 之间隔着 offset，途中两端都没有指针，全靠收起等待期留住卡片。
       name: '指针从 trigger 走到 content：中间隔着间隙也不收起',
       spec: { apg: APG, zag: 'hover-card.machine#visible.closing' },
       props: { openDelay: 20, closeDelay: 300 },
@@ -223,8 +221,7 @@ export const hoverCardSuite: ConformanceSuite = {
       ],
     },
     {
-      // 与 tooltip 的分界线：内容可聚焦、可交互。焦点从 trigger 走进 content
-      // 不算离场——判据是焦点这一下落到了哪儿，落点仍在卡片内就当无事发生。
+      // 焦点从 trigger 走进 content 不算离场：判据是落点还在不在卡片内。
       name: '焦点走进 content：卡片留着，也不多派一条通知',
       spec: { apg: `${APG}#keyboardinteraction` },
       props: { closeDelay: 5000 },
@@ -243,8 +240,7 @@ export const hoverCardSuite: ConformanceSuite = {
           expect: {
             parts: { content: { 'data-state': 'open', 'hidden': null } },
             activeElement: { part: 'content', exact: false },
-            // 焦点若被判成离场，卡片会先收起再被 content 的 focusin 重开，
-            // 终态照样是 open——破绽只在通知序列上
+            // 焦点若被判成离场，终态照样是 open，破绽只在通知序列上
             events: [],
           },
         },

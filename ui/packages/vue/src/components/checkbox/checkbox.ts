@@ -11,7 +11,7 @@ export const XhCheckbox = defineComponent({
     defaultChecked: Boolean,
     disabled: Boolean,
   },
-  // checked-change 携带 { checked }；update:checked 携带裸布尔，支持 v-model:checked
+  // checked-change 携带 { checked }，update:checked 携带裸布尔
   emits: ['checked-change', 'update:checked'],
   setup(props, { emit }) {
     const notify: CheckboxProps['onCheckedChange'] = (details) => {

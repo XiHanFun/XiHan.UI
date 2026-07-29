@@ -9,8 +9,7 @@ type DatePickerProps = DatePickerSchema['props']
 
 export const XhDatePickerRoot = defineComponent({
   name: 'XhDatePickerRoot',
-  // 缺省值的唯一事实源在 connect / machine —— 凡是那儿有兜底的一律 default: undefined
-  // （closeOnSelect 尤其：裸 Boolean 声明会把缺省压成 false，选完就再也不收起了）
+  // 有 connect / machine 兜底的 prop 一律 default: undefined
   props: {
     value: { type: [String, Array] as PropType<string | string[]>, default: undefined },
     defaultValue: { type: [String, Array] as PropType<string | string[]>, default: undefined },
@@ -31,8 +30,7 @@ export const XhDatePickerRoot = defineComponent({
     offset: { type: Number, default: undefined },
     closeOnSelect: { type: Boolean, default: undefined },
   },
-  // *-change 携带 details 对象；update:* 携带裸值，支持 v-model:value / v-model:open。
-  // 选中值回传的恒是数组（单选也是长度 ≤ 1 的数组），形状不随模式变
+  // *-change 携带 details 对象，update:* 携带裸值；选中值恒为数组，单选时长度 ≤ 1
   emits: ['value-change', 'open-change', 'focused-value-change', 'update:value', 'update:open'],
   setup(props, { slots, emit }) {
     const notifyValue: DatePickerProps['onValueChange'] = (details) => {
@@ -43,7 +41,7 @@ export const XhDatePickerRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    // 聚焦日只对外播报、不做 v-model：它是内部同步出来的结果，宿主写回没有意义
+    // 聚焦日只对外播报，不提供 v-model
     const notifyFocus: DatePickerProps['onFocusedValueChange'] = details => emit('focused-value-change', details)
     const ctx = useDatePicker(props as DatePickerProps, {
       onValueChange: notifyValue,
@@ -51,8 +49,7 @@ export const XhDatePickerRoot = defineComponent({
       onFocusedValueChange: notifyFocus,
     })
     provideDatePicker(ctx)
-    // 网格与段位都由作者照 weeks / segments 渲染：组件不替作者生成节点，
-    // 否则外层壳、图标、节假日角标这类东西再也塞不进来
+    // 网格与段位由作者照插槽里的 weeks / segments 自行渲染
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       open: ctx.api.value.open,
       value: ctx.api.value.value,
@@ -77,8 +74,7 @@ export const XhDatePickerLabel = defineComponent({
   name: 'XhDatePickerLabel',
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
-    // 刻意不是 <label>：段位是 div，不是可被 for 标注的控件，
-    // 写成 label 只会给出一个点了没反应的标题。点标题聚焦由连接层自己接管
+    // 渲染为 span 而非 label，点击聚焦由连接层接管
     return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -98,7 +94,7 @@ export const XhDatePickerInput = defineComponent({
   name: 'XhDatePickerInput',
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
-    // role=group 的分段容器：段位挂在它里面，换段时也以它为查询边界
+    // role=group 的分段容器，也是换段时的查询边界
     return () => h('div', ctx.api.value.getInputProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -106,8 +102,7 @@ export const XhDatePickerInput = defineComponent({
 export const XhDatePickerSegment = defineComponent({
   name: 'XhDatePickerSegment',
   props: {
-    // 下标由作者声明，是哪一段由 locale 算出来。也收字符串：
-    // 模板里写 index="0"（不带冒号）拿到的就是字符串，Vue 只对 Boolean 型 prop 做属性转型
+    // 段位下标，兼收字符串以支持模板里写 index="0"
     index: { type: [Number, String] as PropType<number | string>, required: true },
   },
   setup(props, { slots }) {
@@ -116,7 +111,7 @@ export const XhDatePickerSegment = defineComponent({
       const index = Math.trunc(Number(props.index))
       const api = ctx.api.value
       const state = api.field.segments[index]
-      // 作者可以自己接管文字（比如给数字套一层 span），没接管就渲染连接层算好的那串
+      // 有插槽用插槽，否则渲染连接层算好的段位文本
       return h(
         'div',
         api.field.getSegmentProps({ index }) as Record<string, unknown>,
@@ -164,14 +159,13 @@ export const XhDatePickerContent = defineComponent({
   },
 })
 
-// ── 以下是内嵌日历的角色节点：DOM 上戴的是 data-scope="calendar"，
-// 行为直接取自本组件持有的那台日历机器，日期选择器一条都不重写 ──
+// 以下是内嵌日历的角色节点，DOM 上带 data-scope="calendar"，行为取自本组件持有的日历机器
 
 export const XhDatePickerCalendar = defineComponent({
   name: 'XhDatePickerCalendar',
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
-    // 内嵌日历的挂载点，同时充当日历的根节点
+    // 内嵌日历的挂载点，同时是日历的根节点
     return () => h('div', ctx.api.value.getCalendarProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -204,7 +198,7 @@ export const XhDatePickerHeading = defineComponent({
   name: 'XhDatePickerHeading',
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
-    // 文案由作者写（默认插槽为空时退回 headingLabel），组件不劫持内容
+    // 有插槽用插槽，否则渲染 headingLabel
     return () => h(
       'div',
       ctx.api.value.calendar.getHeadingProps() as Record<string, unknown>,
@@ -241,8 +235,7 @@ export const XhDatePickerGridBody = defineComponent({
   },
 })
 
-// 表头行与日期行是同一个 role=row：columnheader 必须待在行里，
-// 否则 grid 的行列语义从表头这一层就断了
+// 表头行与日期行共用同一个 role=row
 export const XhDatePickerWeekRow = defineComponent({
   name: 'XhDatePickerWeekRow',
   setup(_, { slots }) {
@@ -254,7 +247,7 @@ export const XhDatePickerWeekRow = defineComponent({
 export const XhDatePickerWeekDay = defineComponent({
   name: 'XhDatePickerWeekDay',
   props: {
-    // 列序 0-6。fixture 与 HTML 属性传进来的是字符串，统一收成数字
+    // 列序 0-6，兼收字符串
     value: { type: [Number, String] as PropType<number | string>, required: true },
   },
   setup(props, { slots }) {
@@ -278,8 +271,7 @@ export const XhDatePickerCell = defineComponent({
     const ctx = useDatePickerContext()
     const cell = computed<CalendarCellProps>(() => ({ value: props.value }))
     provideDatePickerCell({ cell })
-    // 这里不补报「承载焦点的格子被卸载」：聚焦日不因格子消失而作废——它正是展示月的来源，
-    // 翻月时旧格子必然整批卸载。焦点由日历机器在重渲后按聚焦日现查落点补回来
+    // 不上报格子卸载，翻月后由日历机器按聚焦日重新落点
     return () => h('div', ctx.api.value.calendar.getCellProps(cell.value) as Record<string, unknown>, slots.default?.())
   },
 })

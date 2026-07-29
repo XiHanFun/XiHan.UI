@@ -1,6 +1,6 @@
 // 已解析的色彩模式：值域封闭，不含 'system'。
 export type ColorMode = 'light' | 'dark'
-// 密度档位。comfortable 是基线（等于不写属性时的表现）。
+// 密度档位。comfortable 是基线。
 export type Density = 'comfortable' | 'compact'
 export type Direction = 'ltr' | 'rtl'
 export type Contrast = 'base' | 'more'

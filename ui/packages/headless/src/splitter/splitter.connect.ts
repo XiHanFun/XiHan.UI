@@ -32,17 +32,15 @@ export function connectSplitter<T extends PropTypes>(
   const lastPanel = Math.max(0, sizes.length - 1)
 
   /**
-   * 把作者报来的下标收成一个真实存在的位置。下标是作者写在部件上的声明
-   * （Vue 的 :index、WC 的 index 属性），面板节点数量与 size 长度对不上、写成小数或干脆写错
-   * 都是可能的；不收的话 sizes[index] 是 undefined，会一路变成 aria-valuenow="NaN"。
+   * 把作者报来的下标收成一个真实存在的位置：下标是作者在部件上的声明，可能越界或是小数，
+   * 不收会让 sizes[index] 变成 undefined 并写出 aria-valuenow="NaN"。
    */
   const clampPanel = (index: number): number => clamp(Math.trunc(index) || 0, 0, lastPanel)
   // 分隔条比面板少一条：第 i 条坐在第 i 与第 i+1 块之间，因此上界再退一格
   const clampBoundary = (index: number): number => clamp(Math.trunc(index) || 0, 0, Math.max(0, lastPanel - 1))
 
   const panelKey = (index: number): string => specs?.[index]?.id ?? String(index)
-  // 经 scope 派生而不是直接用作者的名字：同一页上两组分栏用同一份 panels 声明是常事，
-  // 直接拿去当 DOM id 会撞车，分隔条的 aria-controls 就指到别人身上了
+  // 经 scope 派生而不是直接用作者的名字：同页两组分栏共用一份 panels 时 DOM id 会撞车
   const panelId = (index: number): string => scope.partId(splitterAnatomy.name, `panel:${panelKey(index)}`)
 
   const panels: SplitterPanelState[] = sizes.map((size, index) => {
@@ -84,8 +82,7 @@ export function connectSplitter<T extends PropTypes>(
     send({ type: panel.collapsed ? 'PANEL.EXPAND' : 'PANEL.COLLAPSE', index: panel.index })
   }
 
-  // 屏幕方向 → 语义方向。上下两键恒是"屏幕向下把前一块撑大"，与 dir 无关；
-  // 左右两键在 rtl 下对调，语义恒是"把分隔条前面那块撑大 / 压小"
+  // 屏幕方向转语义方向：上下两键与 dir 无关，左右两键在 rtl 下对调
   const growKey = vertical ? 'ArrowDown' : (flipHorizontal ? 'ArrowLeft' : 'ArrowRight')
   const shrinkKey = vertical ? 'ArrowUp' : (flipHorizontal ? 'ArrowRight' : 'ArrowLeft')
 
@@ -118,13 +115,9 @@ export function connectSplitter<T extends PropTypes>(
         'data-index': String(panel.index),
         'data-collapsed': dataAttr(panel.collapsed),
         /**
-         * 排布轴上的尺寸由这里每帧写死，皮肤一条都不许碰（内联优先级更高，写了也是死声明）。
-         *
-         * 用 flex-basis 的百分比而不是 inline-size：分隔条自身也占位置，
-         * 各块按 100% 硬分会正好超出容器一个分隔条的宽度。留着 flex-shrink: 1，
-         * 超出的那几像素按 basis 比例摊回各块，面板之间的比例分毫不差。
-         * flex-grow 显式写 0：作者若在自己的样式里给面板加过 flex: 1，
-         * 少写这一条就会被它盖掉，比例随即失效。
+         * 排布轴上的尺寸由这里每帧写死，皮肤不要再写。
+         * 用 flex-basis 百分比而非 inline-size：分隔条自身也占位置，配合 flex-shrink: 1
+         * 把超出的几像素按比例摊回各块；flex-grow 显式写 0，否则会被作者的 flex: 1 盖掉。
          */
         'style': { flexBasis: `${panel.size}%`, flexGrow: '0', flexShrink: '1' },
       })
@@ -141,43 +134,37 @@ export function connectSplitter<T extends PropTypes>(
         ...stateAttrs(),
         'role': 'separator',
         /**
-         * 分隔条自身的朝向与面板的排布轴垂直：并排的两块之间竖着一条，堆叠的两块之间横着一条。
-         * 与 root 上那条 aria-orientation 不同值是对的——那条说的是"这组面板怎么排"，
-         * 这条说的是"这根条子本身是横是竖"，读屏念的是后者。
+         * 分隔条自身的朝向与面板的排布轴垂直，与 root 上的 aria-orientation 取值不同是对的：
+         * 那条说的是面板怎么排，这条说的是条子本身是横是竖。
          */
         'aria-orientation': vertical ? 'horizontal' : 'vertical',
         'aria-valuenow': String(panel.size),
-        // 区间取这块面板眼下真能走到的范围：后面的面板已经顶到 min 时，
-        // 报它纸面上的 min/max 等于报了个到不了的数
+        // 区间取这块面板眼下真能走到的范围，纸面上的 min/max 可能走不到
         'aria-valuemin': String(panel.min),
         'aria-valuemax': String(panel.max),
         'aria-controls': panelId(panel.index),
-        // 分隔条是 div，原生 disabled 在它身上不生效，只能显式说明并抽掉 Tab 位
-        // （禁用即不可聚焦）。它不是"集合里的一条"，没有 roving tabindex 那套，
-        // 每条都各自留在 Tab 序列里
+        // 分隔条是 div，原生 disabled 不生效，用 aria-disabled 并抽掉 Tab 位；
+        // 没有 roving tabindex，每条都各自留在 Tab 序列里
         'aria-disabled': disabled ? 'true' : 'false',
         'tabindex': disabled ? undefined : 0,
         'data-index': String(boundary),
         // 只有正被拖的那条算 dragging：多条分隔条时全打上标记，样式层就分不出手在哪一条上
         'data-dragging': dataAttr(dragging && boundary === activeIndex),
-        // 触摸拖动要自己接管手势：不关掉浏览器的滚动/缩放手势，手指一动页面就跟着滚，
-        // 指针事件随即被系统收走（pointercancel），拖到一半的分隔条停在原地
+        // 触摸拖动要接管手势：不关掉浏览器滚动/缩放，指针事件会被系统收走（pointercancel）
         'style': { touchAction: 'none' },
         'onPointerDown': (event: PointerEvent) => {
           // 只认主键：右键会顺带弹出上下文菜单，中键是自动滚动
           if (disabled || event.button !== 0)
             return
-          // 挡掉文本选中与默认聚焦：拖动时选中页面文字会让分隔条"粘"住
+          // 挡掉文本选中与默认聚焦
           event.preventDefault()
           send({ type: 'DRAG.START', index: boundary, point: { clientX: event.clientX, clientY: event.clientY } })
-          // 上一句挡掉了浏览器自带的聚焦，这里补回来：松手就能接着用方向键微调
+          // 上一句挡掉了浏览器自带的聚焦，这里补回来
           focusSafely(event.currentTarget as HTMLElement)
         },
         'onFocus': () => send({ type: 'BOUNDARY.FOCUS', index: boundary }),
         'onKeyDown': (event: KeyboardEvent) => {
-          // 推不动的时候不吞键：禁用的分栏上按方向键该滚页面。
-          // Shift 要放行（它就是大步长的开关），带其余修饰键的组合一律不接
-          // （Ctrl+Home 是"跳到文档顶部"这类浏览器/读屏快捷键）
+          // 推不动时不吞键；Shift 是大步长开关要放行，带其余修饰键的组合一律不接
           if (disabled || event.ctrlKey || event.metaKey || event.altKey)
             return
           const run: Record<string, (() => void) | undefined> = {
@@ -185,12 +172,11 @@ export function connectSplitter<T extends PropTypes>(
             [shrinkKey]: () => stepBy(-1, event.shiftKey),
             Home: () => send({ type: 'BOUNDARY.TO_MIN', index: boundary }),
             End: () => send({ type: 'BOUNDARY.TO_MAX', index: boundary }),
-            // 面板不可折叠时这一条不接：Enter 该留给作者自己挂在分隔条上的东西
+            // 面板不可折叠时不接 Enter，留给作者自己挂的处理器
             Enter: panel.collapsible ? () => togglePanel(panel.index) : undefined,
           }
           const handler = run[event.key]
-          // 另一条轴上的方向键根本不在表里，因此既不动布局也不 preventDefault，
-          // 原样放行给页面滚动与读屏
+          // 不在表里的键既不动布局也不 preventDefault，原样放行
           if (!handler)
             return
           event.preventDefault()

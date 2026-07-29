@@ -42,7 +42,7 @@ export const drawerSuite: ConformanceSuite = {
         order: ['root', 'trigger'],
         counts: { content: 0, backdrop: 0 },
         parts: {
-          // side 缺省即 right；收起态就得说得出方向，样式才有得可写
+          // side 缺省即 right；收起态也要说得出方向
           root: { 'data-side': 'right', 'data-state': 'closed' },
           trigger: {
             'type': 'button',
@@ -149,8 +149,7 @@ export const drawerSuite: ConformanceSuite = {
     {
       name: '非模态抽屉：aria-modal 显式为 false，但焦点照样进 content',
       spec: { apg: `${APG}#roles_states_properties` },
-      // 焦点域是无条件建的，只有陷不陷焦点看 modal；
-      // 若把整个焦点域塞进 if (modal)，非模态抽屉打开后键盘用户根本进不去面板。
+      // 焦点域无条件建，只有陷不陷焦点看 modal
       props: { modal: false },
       steps: [
         { kind: 'click', part: 'trigger' },

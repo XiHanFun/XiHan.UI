@@ -10,8 +10,7 @@ import type { MachineSchema } from '@xihan-ui/machine'
  */
 export type SelectFocusIntent = 'selected' | 'first' | 'last' | 'next' | 'prev'
 
-// 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；纯逻辑测试与 SSR 下保持缺省，
-// 此时副作用一律短路（机器状态照常转移，只是不定位、不挂消解层与焦点域）。
+// 适配器挂载前填入；保持缺省时副作用短路，机器状态照常转移但不定位、不挂消解层与焦点域。
 export interface SelectRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
@@ -38,9 +37,7 @@ export interface SelectValueChangeDetails {
 
 /**
  * 条目自报家门：值与禁用由作者在部件上声明，connect 据此产出属性。
- * connect 因此是 (state/context/prop, 本条目声明) 的纯函数，不反查 DOM——
- * Vue 侧 connect 在 render 期求值（本帧 DOM 还不存在），WC 侧在 updated 后求值（DOM 已就位），
- * 连接期读 DOM 会让两个适配器的首帧快照分叉。
+ * connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得反查 DOM。
  */
 export interface SelectItemProps {
   value: string

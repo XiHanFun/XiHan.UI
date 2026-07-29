@@ -30,8 +30,7 @@ export function useTooltip(
   // onOpenChange 由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const service = useMachine(tooltipMachine, () => ({ ...props, onOpenChange }), scope)
 
-  // 定位引擎经 refs 注入，展开态由机器的 effect 驱动。无 DOM 环境（SSR）不建引擎：
-  // 机器照常转移，只是不产出坐标。
+  // 定位引擎经 refs 注入，展开态由机器的 effect 驱动；无 DOM 环境（SSR）不建引擎
   if (typeof document !== 'undefined')
     service.refs.set('position', createFloatingUiPositionEngine())
   service.refs.set('getAnchorEl', () => triggerRef.value)

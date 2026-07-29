@@ -11,13 +11,13 @@ import { setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<DateFieldSchema>()
 
-/** 不给 locale 时的排法。写死一个而不是跟着运行时走：跟运行时走会让同一份代码在不同机器上排出不同的段序。 */
+/** 不给 locale 时的排法；写死而不跟运行时走，否则同一份代码在不同机器上段序不同。 */
 export const DATE_FIELD_LOCALE = 'en-US'
 
 /** 不给 granularity 时只有年月日三段。 */
 export const DATE_FIELD_GRANULARITY: DateGranularity = 'day'
 
-/** 年份的天然区间。上界取四位数的顶：段位一共就四位，再大也敲不进去。 */
+/** 年份的天然区间，上界取四位数的顶。 */
 export const DATE_FIELD_YEAR_MIN = 1
 export const DATE_FIELD_YEAR_MAX = 9999
 
@@ -81,8 +81,8 @@ function isDateSegmentType(type: string): type is DateSegmentType {
 }
 
 /**
- * 年月日三段在该 locale 里的先后。zh-CN / ja-JP 是年月日，en-US 是月日年，de-DE / fr-FR 是日月年。
- * 顺序从 Intl 现问而不是自带一张表：语言远不止那几种，自带表迟早漏。
+ * 年月日三段在该 locale 里的先后：zh-CN / ja-JP 年月日，en-US 月日年，de-DE / fr-FR 日月年。
+ * 顺序从 Intl 现问，不自带一张表。
  */
 export function localeDateOrder(locale: string = DATE_FIELD_LOCALE): readonly DateSegmentType[] {
   const cached = ORDER_CACHE.get(locale)
@@ -94,12 +94,12 @@ export function localeDateOrder(locale: string = DATE_FIELD_LOCALE): readonly Da
       .formatToParts(ORDER_PROBE)
     // 去重：某些日历（和历之类）会额外产出 era / relatedYear，只认这三种类型
     const picked = [...new Set(parts.map(p => p.type).filter(isDateSegmentType))]
-    // 排不齐三段就整份作废，宁可退回兜底也不给一副缺段的面孔
+    // 排不齐三段就整份作废，退回兜底
     if (picked.length === DATE_SEGMENTS.length)
       order = picked
   }
   catch {
-    // 语言标记写坏了（Intl 直接抛）时退回兜底，不让整个组件塌掉
+    // 语言标记写坏了时 Intl 会抛，退回兜底
   }
   ORDER_CACHE.set(locale, order)
   return order
@@ -127,7 +127,7 @@ function pad(value: number, width: number): string {
   return String(value).padStart(width, '0')
 }
 
-/** 该月有多少天。年或月还没填时给 31——此时无从判断，放宽比卡死好。 */
+/** 该月有多少天；年或月还没填时给 31。 */
 function daysInMonth(year: number | undefined, month: number | undefined): number {
   if (year == null || month == null)
     return 31
@@ -186,8 +186,8 @@ export function parseIsoSegments(
 }
 
 /**
- * 逐段的值 → ISO 串。该精度要求的段少一个就是 null——半份日期不是日期。
- * 日期本身交给值对象构造：2 月 31 日这类越界组合由日历自己收敛，这里不自己算。
+ * 逐段的值 → ISO 串；该精度要求的段少一个就是 null。
+ * 日期本身交给值对象构造，2 月 31 日这类越界组合由日历自己收敛。
  */
 export function segmentsToIso(
   segments: DateSegments,
@@ -210,8 +210,7 @@ export function segmentsToIso(
 /**
  * 把年月日收敛成日历上真实存在的一天。
  *
- * 月份从 1 月翻到 2 月时，31 日不再成立。只在拼 ISO 串时收敛是不够的：
- * 段位里仍留着 31，界面就会显示 2 月 31 日、而值是 2 月 28 日，两边从此各说各的。
+ * 只在拼 ISO 串时收敛不够：段位里留着 31 会让界面显示 2 月 31 日而值是 2 月 28 日。
  * 收敛交给值对象，这里不自己算每月有多少天。
  */
 export function constrainSegments(segments: DateSegments): DateSegments {
@@ -235,9 +234,8 @@ export function parseBoundary(iso: string | undefined): DateSegments | null {
 /**
  * 某一段此刻的取值区间。
  *
- * 年月日三段会被 min/max 收窄，但只在"高位全都贴着边界"时才收：
- * min 是 2026-07-28 时，2026 年的月份下界才是 7；月份一旦选到 8，日的下界就该退回 1。
- * 少了这个条件，8 月 1 日会被判成越界。时分秒不收窄，用天然区间。
+ * 年月日三段会被 min/max 收窄，但只在高位全都贴着边界时才收：min 是 2026-07-28 时，
+ * 2026 年的月份下界才是 7；月份一旦选到 8，日的下界退回 1。时分秒不收窄，用天然区间。
  */
 export function dateSegmentRange(
   type: DateSegmentType,
@@ -304,7 +302,7 @@ export function wrapSegment(value: number, range: DateSegmentRange): number {
 
 /**
  * 上下键落到某一段上的结果。
- * 空段不是从 0 起步，而是落到参照日（今天）的对应位——从 0001 年开始按上键翻到今年是没人干的事。
+ * 空段不从 0 起步，而是落到参照日（今天）的对应位。
  */
 export function stepSegment(
   segments: DateSegments,
@@ -332,8 +330,7 @@ export interface DateDigitResult {
 /**
  * 往某段里再敲一位。返回 null 表示这一位无处可去（连单独成段都超上界），值与缓冲都不动。
  *
- * 接上一位会溢出时按"重新起一段"处理而不是丢弃：月份已经是 1，再敲 9 得到 19，
- * 19 不是月份，但用户十有八九是想改成 9 月。
+ * 接上一位会溢出时按重新起一段处理，不丢弃：月份已是 1 再敲 9，落成 9 月。
  */
 export function applySegmentDigit(
   digits: string,
@@ -379,9 +376,8 @@ export function dateSegmentText(
 /**
  * 对外的 null 与内部的空串互译。
  *
- * 内部一律用空串表示"没有值"：cell 的初值取的是 `defaultValue ?? value`，
- * 而 null 是 nullish——把 null 当默认值会被这一步吃掉，非受控实例的初值会变成 undefined。
- * 返回 undefined 是"没给这个 prop"，受控与否的分界就在它上面，必须原样透传。
+ * 内部一律用空串表示没有值：cell 初值取 `defaultValue ?? value`，null 是 nullish 会被这一步吃掉。
+ * 返回 undefined 表示没给这个 prop，受控与否的分界在它上面，必须原样透传。
  */
 export function toValueString(iso: string | null | undefined): string | undefined {
   return iso === undefined ? undefined : (iso ?? '')
@@ -408,12 +404,8 @@ function rangeOf(params: Params<DateFieldSchema>, type: DateSegmentType, segment
 /**
  * 段位的唯一写入口：真变了才落，落完把 ISO 串写回 value cell。
  *
- * 受控（给了 value prop）时 cell 只发回调、不落内部值，写完再读回来还是宿主给的那份。
- * 两者不一致就说明这次改动没被接受，段位与数字缓冲一并退回去——
- * 这是与其它组件一致的受控契约：宿主不写回，界面就纹丝不动。
- *
- * 反过来，段位不完整时算不出 ISO 串，那种半份日期宿主根本表达不了，
- * 也就无所谓接受不接受，留在段位缓冲里继续编辑。
+ * 受控时 cell 只发回调、不落内部值；写回来与预期不一致即这次改动没被接受，
+ * 段位与数字缓冲一并退回去。段位不完整时算不出 ISO 串，留在段位缓冲里继续编辑。
  */
 function commitSegments(params: Params<DateFieldSchema>, next: DateSegments): void {
   const { context } = params
@@ -469,18 +461,16 @@ export const dateFieldMachine = createMachine({
   }),
   initialState: () => 'idle',
   watch: ({ track, context, action }) => {
-    // 值这一路的 watch 兜的是宿主侧的写入（受控回写、外部改 value）：
-    // 自己写进去的那一次，段位算出来的串与 value 恰好相等，同步会自行让路
+    // 这条 watch 兜的是宿主侧的写入；自己写进去的那一次段位算出的串与 value 相等，同步自行让路
     track([context.dep('value')], () => action(['syncSegmentsFromValue']))
   },
-  // 只有一个状态，事件全挂根级：写进状态里读起来像"这个状态才收"，会误导后来人
   on: {
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.CLEAR': { actions: ['clearValue'] },
     'SEGMENT.STEP': { guard: 'canEdit', actions: ['stepSegment'] },
     'SEGMENT.TYPE': { guard: 'canEdit', actions: ['typeSegment'] },
     'SEGMENT.CLEAR': { guard: 'canEdit', actions: ['clearSegment'] },
-    // 换段先给上一段收尾：两位年份补全就挂在这一步，走开时才知道用户只打算写两位
+    // 换段先给上一段收尾，两位年份补全挂在这一步
     'SEGMENT.FOCUS': { actions: ['finalizeTyping', 'setFocusedSegment'] },
     'SEGMENT.BLUR': { actions: ['finalizeTyping', 'clearFocusedSegment'] },
   },
@@ -495,8 +485,7 @@ export const dateFieldMachine = createMachine({
     actions: {
       /**
        * 值变了就把段位对齐过去。
-       * 判据是"段位现在算出来的串"而不是"段位空不空"：
-       * 用户刚清掉日、值随之变成 null，这时按空判会把年月一并抹掉。
+       * 判据是段位现在算出来的串，不是段位空不空：按空判会在清掉日时把年月一并抹掉。
        */
       syncSegmentsFromValue: (params) => {
         const { context } = params
@@ -550,7 +539,7 @@ export const dateFieldMachine = createMachine({
         // 敲满即收尾：缓冲留着会让紧接着的补位数字接到上一段的尾巴上
         context.set('typing', result.complete ? null : { segment: e.segment, digits: result.digits })
         if (result.value == null) {
-          // 还凑不成合法值（月份敲了个 0）：先把这一段清空，别让旧值假装还在
+          // 还凑不成合法值（月份敲了个 0）时先把这一段清空
           if (segments[e.segment] != null)
             commitSegments(params, { ...segments, [e.segment]: undefined })
           return

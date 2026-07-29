@@ -161,8 +161,7 @@ export const composerSuite: ConformanceSuite = {
           kind: 'raw',
           why: 'type 步骤落不到 value 上；受控下要的是"用户真敲了字"这一路',
           run: ctx => typeInto(ctx, '你好'),
-          // 受控值仍是 'a'，状态与按钮不变，通知里带的是用户敲入的串；
-          // 此处不断言 input.value，宿主未写回时它取决于适配器是否重渲
+          // 受控值仍是 a；不断言 input.value，宿主未写回时它取决于适配器是否重渲
           expect: {
             parts: {
               'input': { 'data-state': 'editing' },

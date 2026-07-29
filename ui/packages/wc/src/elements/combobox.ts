@@ -16,14 +16,10 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-// 属性缺席一律翻成 undefined：缺省值的唯一事实源留在机器与 connect 里。
-// Lit 自带的转换器会把缺席落成 null / false，那样属性就再也表达不了"未指定"
-// （value 与 input-value 尤其：落成 null 就分不出"非受控"与"受控且当前为空"）。
+// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-// 缺省为真的开关（方向键回绕）只有三态才关得掉——
-// Lit 默认的 Boolean 转换器是 v !== null，写 loop="false" 照样是真。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
@@ -32,7 +28,6 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。
  *
  * 焦点自始至终在 input 上：候选不可聚焦、也不进 Tab 序列，高亮经 aria-activedescendant 报给读屏。
- * 这是组合框的规格要求——焦点一旦离开输入框，用户就打不了字了。
  *
  * 过滤不由本元素做：输入串变化时派发 input-value-change，作者据此增删 item 节点；
  * 元素每次接线完都会把当前候选条数与悬空高亮重新结算一遍，空态节点（empty）据此显形。
@@ -74,7 +69,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart empty - 无匹配项提示；须放在 positioner 里当 content 的兄弟（列表内只允许 option 与 group）
  */
 export class XhComboboxElement extends XhElement {
-  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
@@ -169,23 +164,21 @@ export class XhComboboxElement extends XhElement {
   }
 
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
-  // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
     return this.config!.layerRegistry.register({
       kind: 'popover',
       node: () => this.getPart('content'),
       // 整个输入行记为本层分支：点输入框或触发按钮算层内交互，开合交给它们自己切换。
-      // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，列表等于关不掉。
       branches: () => [this.getPart('control')].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
-      // 列表不带遮罩，没有"点它就该关本层"的表面
+      // 列表不带遮罩，无可点关闭的表面
       surfaces: () => [],
     })
   }
 
-  // onBuilt 在 ctrl 构造期就跑（此刻 this.ctrl 尚未赋值），故 service 由参数传入。
+  // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<ComboboxSchema>): void {
     this.ensureConfig()
     svc.refs.set('config', this.config)
@@ -198,16 +191,15 @@ export class XhComboboxElement extends XhElement {
   }
 
   /**
-   * 角色节点提前发现一次：机器在 hostConnected 当场跑挂载动作，要按选中值去 content 里
-   * 现查显示文本、据此把输入框填成选中项的文字；default-open 时还要同场挑出高亮。
-   * 而常规发现要等首次 updated，那一刻 partMap 还空着，content 取不到。
+   * 提前发现一次角色节点：机器在 hostConnected 当场要按选中值去 content 里现查显示文本并回填输入框，
+   * default-open 时还要同场挑出高亮。
    */
   override connectedCallback(): void {
     this.refreshParts()
     super.connectedCallback()
   }
 
-  // 条目/分组内的子部件：getParts 收的是整个元素范围，按子树过滤才归得对。
+  // 取 owner 子树内指定名字的角色节点。
   private partsIn(owner: HTMLElement, name: string): HTMLElement[] {
     return this.getParts(name).filter(el => owner.contains(el))
   }
@@ -226,8 +218,7 @@ export class XhComboboxElement extends XhElement {
     put('input', api.getInputProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
-    // positioner 的 style 是对象（position/insetInlineStart/insetBlockStart），
-    // spreader 见对象 style 会逐条写内联样式，直接 spread 即可。
+    // positioner 的 style 是对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
     put('empty', api.getEmptyProps() as Record<string, unknown>)
@@ -239,11 +230,9 @@ export class XhComboboxElement extends XhElement {
         this.spreader.spread(label, api.getItemGroupLabelProps(group) as Record<string, unknown>)
     }
 
-    // 候选是多实例 part，逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled
-    // （集合条目一律 aria-disabled，原生 disabled 不派 click，禁用候选的点击就走不到守卫里）。
-    // 回读是安全的：整控件禁用不会向下传导到候选，connect 写回的就是作者自己的那份声明。
-    // 打上去的 data-scope/data-part/data-value 正是方向键在事件那一刻查 DOM 的依据，
-    // 所以 wire 必须先于事件跑过——updated() 已保证。
+    // 候选逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled。
+    // 这里回读 aria-disabled 是安全的（整控件禁用不向下传导到候选，写回的就是作者那份声明）。
+    // wire 跑在事件之前，按键时 data-scope/data-part/data-value 已在 DOM 上供方向键现查。
     for (const el of this.getParts('item')) {
       const item: ComboboxItemProps = {
         value: el.getAttribute('value') ?? '',
@@ -256,25 +245,18 @@ export class XhComboboxElement extends XhElement {
         this.spreader.spread(indicator, api.getItemIndicatorProps(item) as Record<string, unknown>)
     }
 
-    // Light DOM 常驻，WC 自管可见性：作者层若给这两个 part 声明了 display，
-    // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来。
-    // 本包的样式自带 [hidden]{display:none} 压得住，但宿主不能指望作者装了这份样式。
+    // 节点常驻，用内联 display 收起（作者层的 display 声明会盖过 [hidden]）
     this.setPartHidden(this.getPart('content'), !api.open)
     this.setPartHidden(this.getPart('empty'), !api.empty)
 
-    /**
-     * 每次接线完就如实上报一次候选集合：过滤是作者按 input-value-change 自己做的，
-     * 机器无从预知何时变。少了这一条，空态节点永远不显形，被筛掉的候选还会留着一个悬空高亮，
-     * aria-activedescendant 就指向了一个不存在的 id。
-     * 条数没变时 cell 不 bump，不会自己把自己排成死循环。
-     */
+    // 每次接线完上报一次候选集合，让机器重算候选条数与悬空高亮
     if (this.ctrl.service.getStatus() === 'Started')
       this.ctrl.service.send({ type: 'ITEMS.SYNC' })
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
-    // 层由展开态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
+    // 层随机器停机一并撤掉，此处不再管
     this.config = null // 重连时 ensureConfig 重建
   }
 }

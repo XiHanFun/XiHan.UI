@@ -9,11 +9,10 @@ type PinInputProps = PinInputSchema['props']
 export const XhPinInputRoot = defineComponent({
   name: 'XhPinInputRoot',
   props: {
-    // 值是数组：给 default: undefined 才表达得了"非受控"，
-    // 落成空数组会被当作"受控且当前全空"，用户从此再也改不动
+    // default: undefined 表示非受控
     value: { type: Array as PropType<string[]>, default: undefined },
     defaultValue: { type: Array as PropType<string[]>, default: undefined },
-    // 缺省值的唯一事实源在 connect：这里一律 undefined，别在两侧各写一份默认
+    // 缺省值由 connect 给出，这里一律 default: undefined
     length: { type: Number, default: undefined },
     type: { type: String as PropType<PinInputType>, default: undefined },
     mask: Boolean,
@@ -24,7 +23,7 @@ export const XhPinInputRoot = defineComponent({
     blurOnComplete: Boolean,
     name: { type: String, default: undefined },
   },
-  // value-change 携带 { value, valueAsString }；update:value 携带裸数组，支持 v-model:value
+  // value-change 携带 { value, valueAsString }，update:value 携带裸数组
   emits: ['value-change', 'value-complete', 'update:value'],
   setup(props, { slots, emit }) {
     const onValueChange: PinInputProps['onValueChange'] = (details) => {
@@ -50,7 +49,7 @@ export const XhPinInputLabel = defineComponent({
   name: 'XhPinInputLabel',
   setup(_, { slots }) {
     const ctx = usePinInputContext()
-    // 必须是原生 label：getLabelProps 的 for 恒写向首格，别的标签点不动
+    // 必须是原生 label，getLabelProps 的 for 恒写向首格
     return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -58,8 +57,7 @@ export const XhPinInputLabel = defineComponent({
 export const XhPinInputInput = defineComponent({
   name: 'XhPinInputInput',
   props: {
-    // 下标由作者声明。也收字符串：模板里写 index="0"（不带冒号）拿到的就是字符串，
-    // Vue 只对 Boolean 型 prop 做属性转型，数字得自己收口
+    // 下标由作者声明，兼收字符串以支持模板里写 index="0"
     index: { type: [Number, String] as PropType<number | string>, required: true },
   },
   setup(props) {

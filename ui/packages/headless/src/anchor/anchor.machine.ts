@@ -9,24 +9,16 @@ const { createMachine } = setup<AnchorSchema>()
 /** 判定线默认贴着滚动容器视口的顶边。 */
 export const ANCHOR_DEFAULT_OFFSET = 0
 
-/**
- * 压线判定的容差（px）。布局尺寸是小数：平滑滚动停稳时目标顶边常落在 offset + 0.34
- * 这种位置上，严格比较会判成"还没到"，高亮就卡在上一节不动。
- */
+/** 压线判定的容差（px）。布局尺寸带小数，平滑滚动停稳时目标顶边常落在 offset+0.34 这类位置，严格比较会判成还没到。 */
 const EDGE_TOLERANCE = 1
 
-/**
- * 平滑滚动期间不采信观察器结果的兜底时长（ms）。
- * 正常情况下滚到目标那一刻观察器自己报出目标 id，锁当场解开；
- * 这个计时器只兜住"永远滚不到"的那几种（目标被删、容器已经到底、用户中途反向滚）。
- */
+/** 平滑滚动期间不采信观察器结果的兜底时长（ms）。 */
 const SCROLL_LOCK_MS = 1000
 
 /**
- * 判定哪一节算"当前"。纯函数：调用方把量好的位置递进来，这里不碰 DOM，
- * 因此可以被逐条断言（观察器那一层只负责取数）。
+ * 判定哪一节算"当前"。
  *
- * @param targets 按文档序排好的目标区块；顺序错了结果就错，取的是"最后一个越过判定线的"
+ * @param targets 按文档序排好的目标区块，取最后一个越过判定线的
  * @param offset 判定线距容器视口顶边的距离
  * @param atEnd 滚动容器是否已经到底
  */
@@ -37,8 +29,7 @@ export function resolveActiveAnchor(
 ): string | null {
   if (targets.length === 0)
     return null
-  // 已经滚到底：末尾那几节可能都很短，谁也越不过判定线。
-  // 不特判的话末条永远高亮不了——用户明明正看着它。
+  // 已滚到底：末尾几节可能都很短，谁也越不过判定线，不特判则末条永远高亮不了
   if (atEnd)
     return targets[targets.length - 1]!.value
   let active: string | null = null
@@ -46,12 +37,11 @@ export function resolveActiveAnchor(
     if (target.top - offset <= EDGE_TOLERANCE)
       active = target.value
   }
-  // 一节都没越过 = 还停在首节上方的内容里（大图、简介）。
-  // 此时硬把首条点亮就是让"当前位置"说谎，宁可谁都不亮。
+  // 一节都没越过 = 还停在首节上方（大图、简介），此时宁可谁都不亮
   return active
 }
 
-/** 两次量测是否一样。不给 isEqual 的话每次量测都换一个新对象，版本号会一直空转自增。 */
+/** 两次量测是否一样。作 cell 的 isEqual 用：不给的话每次量测都是新对象，版本号会一直空转自增。 */
 function sameRect(a: AnchorIndicatorRect | null, b: AnchorIndicatorRect | null | undefined): boolean {
   if (a == null || b == null)
     return a === b
@@ -60,15 +50,14 @@ function sameRect(a: AnchorIndicatorRect | null, b: AnchorIndicatorRect | null |
 }
 
 /**
- * 按 id 取目标区块。走 getRootNode().getElementById 而不是 scope.getById：
- * 后者拿 CSS.escape 拼属性选择器，而 CSS 这个全局在无头 DOM 环境里常常缺席（缺了当场抛）。
- * 这条路同样经 Scope 拿 root（shadow 里照样找得到），还省掉一次转义。
+ * 按 id 取目标区块。用 getRootNode().getElementById 而不是 scope.getById：
+ * 后者拿 CSS.escape 拼选择器，而 CSS 这个全局在无头 DOM 环境里常常缺席（缺了当场抛）。
  */
 function findTargetEl(scope: Scope, id: string): HTMLElement | null {
   return scope.getRootNode().getElementById(id)
 }
 
-/** 目标 id 清单：作者给了就用作者的，没给就按渲染出来的链接现查（不缓存节点数组）。 */
+/** 目标 id 清单：优先用作者给的，否则按渲染出来的链接现查。 */
 function collectTargetIds(targets: readonly string[] | undefined, list: HTMLElement | null): string[] {
   if (targets && targets.length > 0)
     return [...targets]
@@ -77,20 +66,15 @@ function collectTargetIds(targets: readonly string[] | undefined, list: HTMLElem
     .filter((v): v is string => v != null)
 }
 
-/**
- * 滚动容器是否已经到底。
- * 先问"能不能滚"：内容撑不满容器时 scrollHeight 与 clientHeight 相等，
- * 不先挡一道的话空页面会恒判为"到底了"，末条锚点便一直亮着。
- */
+/** 滚动容器是否已经到底；内容撑不满容器时（scrollHeight == clientHeight）视为未到底，否则空页面会恒判到底。 */
 function isScrolledToEnd(container: HTMLElement | null, win: Window): boolean {
   if (container) {
     if (container.scrollHeight <= container.clientHeight)
       return false
     return container.scrollTop + container.clientHeight >= container.scrollHeight - EDGE_TOLERANCE
   }
-  // 视口高度取 documentElement.clientHeight 而不是 win.innerHeight：
-  // 后者把横向滚动条那条也算进高度里，而 scrollHeight 不含它，
-  // 两个口径一混，页面一旦出现横向滚动条就会提前十几像素判成"到底"，末条锚点提早点亮。
+  // 视口高度取 documentElement.clientHeight 而非 win.innerHeight：后者把横向滚动条那条也算进高度，
+  // 而 scrollHeight 不含它，口径一混、页面一出横向滚动条就会提前十几像素判成到底
   const doc = win.document.documentElement
   const viewport = doc.clientHeight
   if (doc.scrollHeight <= viewport)
@@ -98,10 +82,6 @@ function isScrolledToEnd(container: HTMLElement | null, win: Window): boolean {
   return win.scrollY + viewport >= doc.scrollHeight - EDGE_TOLERANCE
 }
 
-// 激活值住在 context 的 cell 里、不编进状态：cell 本身就是受控/非受控的收口点
-// （value prop 给定即受控，读直取 prop，写只发 onValueChange 不落内部值），
-// 因此这一路不需要影子事件与受控守卫。
-// 状态只管一件事：平滑滚动途中要不要采信观察器。
 export const anchorMachine = createMachine({
   name: 'anchor',
   context: ({ prop, cell }) => ({
@@ -110,7 +90,7 @@ export const anchorMachine = createMachine({
       defaultValue: prop('defaultValue') ?? null,
       onChange: value => prop('onValueChange')?.({ value }),
     })),
-    // 量测结果不受控、不对外通知：它只服务指示条的内联样式
+    // 量测结果不受控、不对外通知
     indicator: cell<AnchorIndicatorRect | null>(() => ({ defaultValue: null, isEqual: sameRect })),
   }),
   refs: () => ({
@@ -118,20 +98,18 @@ export const anchorMachine = createMachine({
     getListEl: () => null,
   }),
   initialState: () => 'idle',
-  // 挂载即量一次：defaultValue 给了初始激活项时，指示条首帧就该在位
+  // 挂载即量一次指示条
   entry: ['measureIndicator'],
-  // 观察器与组件同生共死：它不随激活值开合，收起态无从谈起
   effects: ['trackScroll'],
   watch: ({ track, context, action }) => {
-    // 内部结算与宿主受控回写都要重量一次：指示条钉在"当前那条"上，值一变它就得跟着搬
+    // 激活值一变就重量指示条
     track([context.dep('value')], () => action(['measureIndicator']))
   },
   states: {
     idle: {
       on: {
         'SPY.RESOLVE': { actions: ['setValue'] },
-        // 点了就当场切过去，不等观察器：平滑滚动要几百毫秒才到位，
-        // 那段时间里高亮若还留在原处，看上去就像"点了没反应"
+        // 点击当场切换激活值，不等观察器
         'LINK.CLICK': [
           { guard: 'isSmooth', target: 'scrolling', actions: ['setValue', 'scrollToTarget'] },
           { actions: ['setValue'] },
@@ -142,15 +120,15 @@ export const anchorMachine = createMachine({
     scrolling: {
       effects: ['waitForScrollLock'],
       on: {
-        // 滚到目标了才解锁；途中扫过的那些节说的不是用户的意图
+        // 滚到目标才解锁，途中扫过的区块不采信
         'SPY.RESOLVE': { guard: 'isTargetReached', target: 'idle' },
-        // 锁着的时候又点了别处：换目标重新滚，计时器跟着重开（reenter 才会重挂效应）
+        // 锁定期间再点别处：换目标重新滚，reenter 重挂计时器
         'LINK.CLICK': [
           { guard: 'isSmooth', target: 'scrolling', reenter: true, actions: ['setValue', 'scrollToTarget'] },
           { target: 'idle', actions: ['setValue'] },
         ],
         'after.scrollLock': { target: 'idle' },
-        // 程序化改写是明确的意图，比这把锁优先
+        // 程序化改写优先于滚动锁
         'VALUE.SET': { target: 'idle', actions: ['setValue'] },
       },
     },
@@ -161,7 +139,7 @@ export const anchorMachine = createMachine({
       isTargetReached: ({ context, event }) => {
         const e = event.current()
         // value 与 defaultValue 皆缺省时 cell 初值是 undefined，先归一成 null 再比：
-        // 不归一的话"观察器报 null、当前也没有激活项"这一路永远判不成立，锁只能等兜底计时器
+        // 不归一则"观察器报 null、当前也没有激活项"这一路永远判不成立，锁只能等兜底计时器
         return e.type === 'SPY.RESOLVE' && e.value === (context.get('value') ?? null)
       },
     },
@@ -172,12 +150,7 @@ export const anchorMachine = createMachine({
           context.set('value', e.value)
       },
 
-      /**
-       * 滚到目标区块。跑在点击那一刻——此时布局已经稳定，两个适配器看到的是同一份活 DOM，
-       * 所以这里的量测不必推迟（推迟反而会错过"用户点的是当时那个位置"）。
-       *
-       * 不走 scrollIntoView：它没法把吸顶栏的高度让出来，目标会正好被栏压住。
-       */
+      /** 滚到目标区块，按 offset 让出吸顶高度。不走 scrollIntoView：它没法让出吸顶栏，目标会正好被栏压住。 */
       scrollToTarget: ({ refs, prop, scope, event }) => {
         const e = event.current()
         if (e.type !== 'LINK.CLICK')
@@ -198,9 +171,8 @@ export const anchorMachine = createMachine({
       },
 
       /**
-       * 量指示条。量两遍：同步那遍照顾"链接早就在 DOM 里"的常规情形，
-       * 推迟那遍照顾首帧（WC 侧的身份标记要等首次 wire 才写上，这一刻一条链接都查不到）。
-       * cell 带 isEqual，两遍量到同一个结果不会多推一次更新。
+       * 量指示条。必须量两遍：同步那遍照顾"链接早就在 DOM 里"的常规情形，推迟那遍照顾首帧
+       * （WC 侧的身份标记要等首次 wire 才写上，这一刻一条链接都查不到）。cell 带 isEqual，量到同一结果不会多推更新。
        */
       measureIndicator: ({ refs, prop, context, flush }) => {
         const run = (): void => {
@@ -220,7 +192,7 @@ export const anchorMachine = createMachine({
           context.set('indicator', {
             blockStart: rect.top - listRect.top,
             blockSize: rect.height,
-            // 起始缘按逻辑方向算：RTL 下"起始"在右边，用左边缘量的话指示条会跑到列的另一侧
+            // 起始缘按逻辑方向算，RTL 下从右边缘量起
             inlineStart: (prop('dir') ?? 'ltr') === 'rtl'
               ? listRect.right - rect.right
               : rect.left - listRect.left,
@@ -234,15 +206,7 @@ export const anchorMachine = createMachine({
     effects: {
       waitForScrollLock: ({ send }) => setTimeoutEffect(() => send({ type: 'after.scrollLock' }), SCROLL_LOCK_MS),
 
-      /**
-       * 滚动观察器。"哪一条算当前"是 DOM 事实，只有这里量得到——
-       * 连接层是 (state, context, prop, 部件声明) 的纯函数，读不了滚动位置。
-       *
-       * 用滚动监听而不是 IntersectionObserver：判定线是一条线，要的是
-       * "最后一个越过它的区块"这个全局结论，而交叉观察器只在穿越那一刻给出单个区块的进出，
-       * 想还原成全局结论仍得把所有区块的位置摆在一起算——那就绕回来了。
-       * 现代浏览器本就把 scroll 事件合并到每帧一次，每帧读几个 rect 的代价可以接受。
-       */
+      /** 滚动观察器：每次滚动重量各区块顶边，结算出当前是哪一节。 */
       trackScroll: ({ refs, prop, scope, send, action, flush }) => {
         let disposed = false
         let detach: (() => void) | undefined
@@ -260,12 +224,10 @@ export const anchorMachine = createMachine({
           const offsets: AnchorTargetOffset[] = []
           for (const id of ids) {
             const el = findTargetEl(scope, id)
-            // 目标还没渲染出来就跳过：清单里多写一个 id 不该让整条判定失效
             if (el)
               offsets.push({ value: id, top: el.getBoundingClientRect().top - originTop })
           }
-          // 一个目标都没找到 = 区块还没渲染出来（异步内容、路由刚切过来）。
-          // 这时报 null 会把作者给的初值当场抹掉，宁可什么都不说
+          // 一个目标都没找到 = 区块还没渲染出来，此时报 null 会把作者给的初值抹掉
           if (offsets.length === 0)
             return
           send({
@@ -274,16 +236,13 @@ export const anchorMachine = createMachine({
           })
         }
 
-        // 推迟一拍再挂：这一刻链接与目标区块都还没进 DOM（WC 侧要等首次 wire），
-        // 滚动容器的 ref 也可能还没回填，现在挂就会永远挂在窗口上。
+        // 推迟一拍再挂，等链接、目标区块与滚动容器 ref 就位
         flush(() => {
           if (disposed)
             return
           const source: EventTarget = refs.get('getScrollEl')() ?? win
           const onScroll = (): void => resolve()
-          // 窗口尺寸变了两件事都得重来：区块重排会改判定线两侧的归属，
-          // 目录自己换行也会让指示条量到的那个盒子失效——只重算归属的话，
-          // 激活项没变就没人去重量，指示条会一直停在旧位置上
+          // 窗口尺寸变化后归属与指示条位置都要重算
           const onResize = (): void => {
             if (disposed)
               return

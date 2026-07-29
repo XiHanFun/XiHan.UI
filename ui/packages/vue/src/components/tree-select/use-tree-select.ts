@@ -11,7 +11,7 @@ import { useMachine } from '../../runtime/use-machine'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface TreeSelectContext {
-  /** 部件要上报 DOM 侧的事实（如节点卸载带走了焦点），得直接够到机器。 */
+  /** 机器实例，供部件上报 DOM 侧的事实（如节点卸载带走了焦点）。 */
   service: Service<TreeSelectSchema>
   api: ComputedRef<TreeSelectApi>
   triggerRef: Ref<HTMLElement | null>
@@ -35,21 +35,18 @@ export function useTreeSelect(
   if (typeof document !== 'undefined') {
     const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
 
-    // 只给注册函数、不在这里注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
-    // 挂载期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
+    // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按展开态驱动
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
       kind: 'popover',
       node: () => contentRef.value,
-      // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。
-      // 否则同一次点击先被判为外部交互关一次、再被 click 打开一次，等于关不掉。
+      // trigger 记为本层分支，点它算层内交互，开合由 trigger 自己切换
       branches: () => [triggerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
       surfaces: () => [],
     })
 
-    // 定位引擎由适配器建好注入；机器只经端口驱动，不认识具体引擎。
-    // 锚点取 trigger：清空按钮按完也把焦点还给它
+    // 定位引擎由适配器注入，机器只经端口驱动；锚点取 trigger
     service.refs.set('config', config)
     service.refs.set('registerLayer', registerLayer)
     service.refs.set('position', createFloatingUiPositionEngine())

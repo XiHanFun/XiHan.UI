@@ -30,7 +30,7 @@ export function getTabbables(container: HTMLElement): HTMLElement[] {
   return els.filter(el => el.tabIndex >= 0 && isVisible(el))
 }
 
-/** 去掉 <a>：文档里第一个可聚焦元素常是链接，作为初始焦点体验差。 */
+/** 过滤掉 <a> 元素。 */
 export function removeLinks(els: HTMLElement[]): HTMLElement[] {
   return els.filter(el => el.tagName !== 'A')
 }

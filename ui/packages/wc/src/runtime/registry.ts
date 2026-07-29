@@ -1,4 +1,4 @@
-// 自定义元素注册表：幂等 + fail-closed，且惰性——无 DOM 环境（Node）直接跳过，不崩。
+// 自定义元素注册表：幂等注册，重复标签或版本冲突时抛错，无 DOM 环境跳过。
 const REGISTRY_KEY = '__XIHAN_UI_WC__'
 
 interface Entry {
@@ -12,7 +12,7 @@ function registry(): Map<string, Entry> {
 }
 
 export function defineElement(tag: string, ctor: CustomElementConstructor, version: string): void {
-  // 无 customElements（DOM-less Node）：静默跳过，主入口 import 才能不崩
+  // 无 customElements 的环境静默跳过。
   if (typeof customElements === 'undefined')
     return
   const reg = registry()

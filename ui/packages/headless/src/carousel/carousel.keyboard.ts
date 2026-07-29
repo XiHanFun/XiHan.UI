@@ -2,9 +2,7 @@ import type { KeyboardTable } from '../spec/types'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/carousel/#keyboardinteraction'
 
-// 键盘全在根节点上收口：两端按钮与指示点都在它之内，焦点落在其中任何一个上，
-// 方向键都该翻页。轮播不做 roving tabindex——每个按钮各占一个 Tab 位，
-// 用户要能直接 Tab 到某个指示点再按 Enter 跳过去。
+// 键盘在根节点收口；不做 roving tabindex，每个按钮各占一个 Tab 位。
 export const carouselKeyboard: KeyboardTable = {
   component: 'carousel',
   source: APG,

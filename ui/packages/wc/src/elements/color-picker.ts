@@ -15,15 +15,12 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-// 属性缺席一律翻成 undefined：缺省值的唯一事实源留在机器与 connect 里。
-// Lit 自带的转换器会把缺席落成 null / false，那样属性就再也表达不了"未指定"
-// （value 尤其：落成 null 就分不出"非受控"与"受控且当前为空"）。
+// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-// Lit 默认的 Boolean 转换器是 v !== null，缺省为真的开关会因此永远关不掉。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
-/** 预设色板写成逗号分隔（swatches="#ff0000,#00ff00"）；空串当没写，免得渲出一排空格子。 */
+/** 预设色板写成逗号分隔（swatches="#ff0000,#00ff00"），空串当没写。 */
 const STRING_LIST_CONVERTER = {
   fromAttribute: (v: string | null) => {
     if (v == null || v.trim() === '')
@@ -39,11 +36,11 @@ const STRING_LIST_CONVERTER = {
  * 元素跑 color-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，
  * 锚点取 trigger，被定位的浮层取 positioner。
  *
- * 工作色恒是 HSVA：二维取色区的两条轴就是饱和度与明度；对外的值串按 format 序列化。
- * 取色区与两条通道滑杆的矩形只在指针事件那一刻才量——连接期一律不碰 DOM。
+ * 工作色恒是 HSVA（取色区两轴为饱和度与明度），对外的值串按 format 序列化。
+ * 取色区与通道滑杆的矩形只在指针事件那一刻才量。
  *
- * 通道滑杆与数值框都用 channel 属性写明自己调哪一路（`channel="hue"` / `channel="r"`），
- * 滑杆内的轨道与拇指按所在滑杆的通道取值，不必另写；预设色板每格用 value 属性写明颜色。
+ * 通道滑杆与数值框用 channel 属性写明自己调哪一路（`channel="hue"` / `channel="r"`），
+ * 滑杆内的轨道与拇指跟随所在滑杆的通道；预设色板每格用 value 属性写明颜色。
  *
  * @customElement xh-color-picker
  * @attr {string} value - 受控颜色值串；缺省该属性即非受控
@@ -78,9 +75,8 @@ const STRING_LIST_CONVERTER = {
  * @csspart swatch-item - 预设色板一格，须是原生 button 且自带 value 属性
  */
 export class XhColorPickerElement extends XhElement {
-  // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
-  // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
-  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
+  // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
@@ -94,7 +90,7 @@ export class XhColorPickerElement extends XhElement {
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
-    // 文案表只能按 property 给（属性表达不了函数），与 Vue 的同名 prop 是同一件事
+    // 文案表是对象，只走 property
     translations: { attribute: false },
   }
 
@@ -159,18 +155,16 @@ export class XhColorPickerElement extends XhElement {
   }
 
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
-  // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
     return this.config!.layerRegistry.register({
       kind: 'popover',
       node: () => this.getPart('content'),
       // 触发器记为本层分支：点它算层内交互，开合交给它自己切换。
-      // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，浮层等于关不掉。
       branches: () => [this.getPart('trigger')].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
-      // 浮层不带遮罩，没有"点它就该关本层"的表面
+      // 浮层不带遮罩，无可点关闭的表面
       surfaces: () => [],
     })
   }
@@ -184,8 +178,7 @@ export class XhColorPickerElement extends XhElement {
     return this.getParts('channel-slider-track').find(el => slider.contains(el)) ?? null
   }
 
-  // onBuilt 在 ctrl 构造期就跑（此刻 this.ctrl 尚未赋值），故 service 由参数传入。
-  // 节点一律懒读：角色节点要等首次 updated 才发现得到，机器建起来的那一刻 partMap 还空着。
+  // onBuilt 在 ctrl 构造期就跑，service 由参数传入；节点一律懒读，建机器时 partMap 还空着。
   private injectRefs(svc: Service<ColorPickerSchema>): void {
     this.ensureConfig()
     svc.refs.set('config', this.config)
@@ -198,10 +191,7 @@ export class XhColorPickerElement extends XhElement {
     svc.refs.set('getChannelTrackEl', channel => this.channelTrack(channel))
   }
 
-  /**
-   * 角色节点提前发现一次：default-open 时机器在 hostConnected 当场进入展开态，
-   * 焦点域与消解层要立刻拿到 content。而常规发现要等首次 updated，那一刻 partMap 还空着。
-   */
+  /** 提前发现一次角色节点，让 default-open 时机器在 hostConnected 里就取得到 content。 */
   override connectedCallback(): void {
     this.refreshParts()
     super.connectedCallback()

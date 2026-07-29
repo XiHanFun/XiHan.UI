@@ -10,8 +10,7 @@ type SliderProps = SliderSchema['props']
 export const XhSliderRoot = defineComponent({
   name: 'XhSliderRoot',
   props: {
-    // 值恒是数组（单滑块就是长度 1），给 default: undefined 才表达得了"非受控"：
-    // 落成 [] 会被当作"受控且当前为空"，用户从此再也推不动
+    // 值恒是数组，单滑块即长度 1；default: undefined 表示非受控
     value: { type: Array as PropType<number[]>, default: undefined },
     defaultValue: { type: Array as PropType<number[]>, default: undefined },
     min: { type: Number, default: undefined },
@@ -30,8 +29,7 @@ export const XhSliderRoot = defineComponent({
       default: undefined,
     },
   },
-  // value-change 携带 { value }；update:value 携带裸数组，支持 v-model:value。
-  // value-change-end 只在一次操作收尾时发一次，适合拿来发请求
+  // value-change 携带 { value }，update:value 携带裸数组；value-change-end 只在操作收尾时发一次
   emits: ['value-change', 'update:value', 'value-change-end'],
   setup(props, { slots, emit }) {
     const notify: SliderProps['onValueChange'] = (details) => {
@@ -74,7 +72,7 @@ export const XhSliderTrack = defineComponent({
   name: 'XhSliderTrack',
   setup(_, { slots }) {
     const ctx = useSliderContext()
-    // 轨道节点交给机器：矩形只在指针事件那一刻现量，连接期一律不碰 DOM
+    // 轨道节点交给机器，矩形在指针事件里现量
     return () => h('div', {
       ...ctx.api.value.getTrackProps() as Record<string, unknown>,
       ref: ctx.trackRef,
@@ -93,11 +91,7 @@ export const XhSliderRange = defineComponent({
 export const XhSliderThumb = defineComponent({
   name: 'XhSliderThumb',
   props: {
-    /**
-     * 第几个滑块，多滑块时必须逐个写明（`:index="i"`）。
-     * 同时收 String 是因为 HTML 属性只有字符串一种形态，WC 侧作者写的是 index="1"，
-     * 两个适配器要认同一份声明。
-     */
+    /** 第几个滑块，多滑块时必须逐个写明（`:index="i"`）；兼收字符串。 */
     index: { type: [Number, String] as PropType<number | string>, default: 0 },
   },
   setup(props, { slots }) {

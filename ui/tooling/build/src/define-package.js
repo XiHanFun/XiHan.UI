@@ -9,8 +9,7 @@ import { defineConfig } from 'tsdown'
  */
 
 /**
- * XiHan.UI 库包统一 tsdown 配置工厂。
- * ESM only、平台中立、保留 tree-shaking 边界；workspace 内 @xihan-ui/* 与 vue/@lit/* 一律 external。
+ * XiHan.UI 库包统一 tsdown 配置工厂：ESM only，@xihan-ui/* 与 vue/@lit/* 一律 external。
  * @param {XihanPackageOptions} [options]
  */
 export function defineXihanPackage(options = {}) {

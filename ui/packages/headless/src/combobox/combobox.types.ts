@@ -3,9 +3,8 @@ import type { MachineSchema } from '@xihan-ui/machine'
 
 /**
  * 展开那一刻高亮落在哪里：
- * - none 不高亮（打字展开、点输入框展开都走这条：候选还没看过，不该替用户先选好）
- * - selected 停在当前选中项；它不在候选里就不高亮（与 Select 不同，Select 会退回首项——
- *   组合框的候选是作者过滤后的结果，替用户钉在首项上等于替他做了一次选择）
+ * - none 不高亮（打字展开、点输入框展开都走这条）
+ * - selected 停在当前选中项；它不在候选里就不高亮
  * - first / last 从集合两端进（收起态按上下键即走这条）
  */
 export type ComboboxFocusIntent = 'none' | 'selected' | 'first' | 'last'
@@ -14,13 +13,12 @@ export type ComboboxFocusIntent = 'none' | 'selected' | 'first' | 'last'
  * 输入行为：
  * - none 只展开列表，不替用户挑候选；
  * - autohighlight 每次输入串变化后把高亮落到首个可选候选，回车即提交它；
- * - autocomplete 在 autohighlight 之上再做内联补全——把输入框补成首个候选的文本，
- *   并把补出来的那一段设为选区，用户接着敲就会覆盖掉。删字（退格）时不补，否则删不动。
+ * - autocomplete 在 autohighlight 之上再做内联补全：把输入框补成首个候选的文本，
+ *   补出的那段设为选区；删字（退格）时不补，否则删不动。
  */
 export type ComboboxInputBehavior = 'none' | 'autohighlight' | 'autocomplete'
 
-// 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；纯逻辑测试与 SSR 下保持缺省，
-// 此时副作用一律短路（机器状态照常转移，只是不定位、不挂消解层）。
+// 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；缺省时副作用一律短路。
 export interface ComboboxRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
@@ -42,10 +40,7 @@ export interface ComboboxOpenChangeDetails {
 }
 
 export interface ComboboxValueChangeDetails {
-  /**
-   * 选中集合。单选模式下也是数组（长度 ≤ 1），形状不随模式变——
-   * 调用方不必为了读一个值先判断当前是不是多选。
-   */
+  /** 选中集合。单选模式下也是数组（长度 ≤ 1），形状不随模式变。 */
   value: string[]
 }
 
@@ -56,9 +51,7 @@ export interface ComboboxInputValueChangeDetails {
 
 /**
  * 条目自报家门：值与禁用由作者在部件上声明，connect 据此产出属性。
- * connect 因此是 (state/context/prop, 本条目声明) 的纯函数，不反查 DOM——
- * Vue 侧 connect 在 render 期求值（本帧 DOM 还不存在），WC 侧在 updated 后求值（DOM 已就位），
- * 连接期读 DOM 会让两个适配器的首帧快照分叉。
+ * connect 不得反查 DOM：Vue 侧在 render 期求值（此时 DOM 不存在），WC 侧在 updated 后求值。
  */
 export interface ComboboxItemProps {
   value: string
@@ -79,8 +72,8 @@ export interface ComboboxSchema extends MachineSchema {
     value?: string | string[]
     defaultValue?: string | string[]
     /**
-     * 输入框里的字符串。给定即受控，与选中值各自独立——
-     * 过滤不由组件做，调用方拿这个串去筛条目，把筛完的结果重新渲染进来。
+     * 输入框里的字符串。给定即受控，与选中值各自独立。
+     * 过滤不由组件做：调用方拿这个串去筛条目，把筛完的结果重新渲染进来。
      */
     inputValue?: string
     defaultInputValue?: string

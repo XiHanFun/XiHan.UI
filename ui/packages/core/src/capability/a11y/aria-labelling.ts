@@ -1,5 +1,4 @@
-// resolveLabelling：只在 title/description 真被渲染时才输出 id。
-// 用计数器而非布尔：退出动画期间可能短暂同时存在两个 Title 实例。
+// resolveLabelling：按 title/description 的渲染计数决定是否输出对应 id。
 
 export interface LabellingInput {
   labelId?: string

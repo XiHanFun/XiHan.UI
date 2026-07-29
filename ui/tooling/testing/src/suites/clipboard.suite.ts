@@ -138,7 +138,7 @@ export const clipboardSuite: ConformanceSuite = {
           kind: 'click',
           part: 'trigger',
           expect: {
-            // 关键：写入还在路上时绝不能先亮对钩，失败了就撤不回来
+            // 写入还在路上时不先亮对钩
             parts: {
               root: { 'data-state': 'copying', 'data-copied': null },
               trigger: { 'data-state': 'copying' },

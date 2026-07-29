@@ -22,7 +22,7 @@ import { colorPickerPointRatio } from './color-picker.geometry'
 
 const { createMachine } = setup<ColorPickerSchema>()
 
-/** 未指定 placement 时的落位：浮层沿触发器起始缘展开。定位引擎与 connect 共用这一个缺省。 */
+/** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
 export const COLOR_PICKER_DEFAULT_PLACEMENT: Placement = 'bottom-start'
 
 /** 屏幕取色接口的最小形状。DOM 类型库尚未收录它，这里只声明用得着的那一点。 */
@@ -43,15 +43,12 @@ function eyeDropperCtor(scope: Scope): EyeDropperCtor | null {
   }
 }
 
-/** 宿主环境有没有屏幕取色。取色按钮据此禁用，免得点了毫无反应。 */
+/** 宿主环境有没有屏幕取色；取色按钮据此禁用。 */
 export function colorPickerHasEyeDropper(scope: Scope): boolean {
   return eyeDropperCtor(scope) != null
 }
 
-/**
- * 唤起屏幕取色。用户按 Esc 放弃时接口以拒绝表达，这里原样传出去，
- * 调用方只需处理"没取到"这一种形态，不必再分"没有接口"与"取消了"。
- */
+/** 唤起屏幕取色。用户放弃与接口缺席一律以 promise 拒绝表达。 */
 export function colorPickerOpenEyeDropper(scope: Scope, signal?: AbortSignal): Promise<string> {
   const Ctor = eyeDropperCtor(scope)
   if (!Ctor)
@@ -73,11 +70,9 @@ function currentHsva(params: MachineParams): ColorPickerHsva {
 }
 
 /**
- * 落一个新的工作色。
+ * 落一个新的工作色。锚与值一起写。
  *
- * 锚与值一起写：受控（value 给定）时 context.set('value') 不落内部值、只发回调，
- * 于是锚记的串与当前值对不上，connect 便会退回按当前值反解——界面因此纹丝不动，
- * 这正是受控该有的样子。宿主写回之后两者又对上，色相接着由锚保住。
+ * 受控时 context.set('value') 只发回调不落内部值，锚与当前值对不上，connect 退回按当前值反解。
  */
 function applyHsva(params: MachineParams, next: ColorPickerHsva): void {
   const { context, prop } = params
@@ -88,7 +83,7 @@ function applyHsva(params: MachineParams, next: ColorPickerHsva): void {
   context.set('value', value)
 }
 
-/** 把一个外来的串收成工作色。解析不出就原地不动——绝不猜一个颜色出来。 */
+/** 把一个外来的串收成工作色；解析不出就原地不动。 */
 function applyValueString(params: MachineParams, raw: string): void {
   const rgba = colorPickerParse(raw)
   if (!rgba)
@@ -96,11 +91,11 @@ function applyValueString(params: MachineParams, raw: string): void {
   applyHsva(params, colorPickerRgbaToHsva(rgba, currentHsva(params).h))
 }
 
-/** 拖动落点 → 工作色。矩形在事件那一刻现量：connect 不许读 DOM，量尺子这件事只能落在这里。 */
+/** 拖动落点 → 工作色。矩形在事件那一刻现量，connect 不得读 DOM。 */
 function applyPoint(params: MachineParams, target: ColorPickerDragTarget, point: ColorPickerPoint): void {
   const { refs, prop } = params
   const el = target === 'area' ? refs.get('getAreaEl')() : refs.get('getChannelTrackEl')(target)
-  // 节点还没就位（纯逻辑测试、或浮层还带着 hidden）时不猜，原地不动
+  // 节点还没就位时原地不动
   if (!el)
     return
   const ratio = colorPickerPointRatio(point, el.getBoundingClientRect(), prop('dir'))
@@ -121,11 +116,9 @@ function stepSize(channel: ColorPickerChannel | 'area', large: boolean): number 
   return large ? range.largeStep : range.step
 }
 
-// 值住在 context 的 cell 里，走 cell 原生受控（value prop 给定即受控，读直取 prop，
-// 写只发 onValueChange 不落内部值），因此不需要影子事件。
-// 开合是布尔态、编进 FSM 状态，走「守卫对 + CONTROLLED.* 影子事件 + watch」那一套。
-// 展开态下再分三段：闲置、指针拖动、屏幕取色——后两者各自要挂拆一份副作用，
-// 只有编成状态才拿得到确定的拆卸时机。
+// 值走 cell 原生受控（value 给定即受控），不需要影子事件；
+// 开合编进 FSM 状态，走守卫对 + CONTROLLED.* 影子事件 + watch。
+// 展开态下再分闲置、指针拖动、屏幕取色三段，后两者各挂一份副作用。
 export const colorPickerMachine = createMachine({
   name: 'color-picker',
   context: ({ prop, cell }) => ({
@@ -151,12 +144,11 @@ export const colorPickerMachine = createMachine({
     getChannelTrackEl: () => null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
-  // 挂载即问一次环境有没有屏幕取色：没有的话那个按钮从首帧起就该是禁用的，
-  // 而不是等用户点下去才发现什么都没发生
+  // 挂载即问一次环境有没有屏幕取色，按钮从首帧起就要正确禁用
   entry: ['syncEyeDropperSupport'],
   // 开合受控时用户事件只发意图、不自改状态；宿主写回 open 后由这里派发影子事件无条件回写
   watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),
-  // 改值这一路与开合无关：收起态下作者仍可能用 api.setValue 改色，两个状态里都得认
+  // 改值与开合无关，收起态下 api.setValue 同样要认
   on: {
     'VALUE.SET': { guard: 'canInteract', actions: ['setValue'] },
     'AREA.SET': { guard: 'canInteract', actions: ['setArea'] },
@@ -165,8 +157,7 @@ export const colorPickerMachine = createMachine({
     'CHANNEL.SET': { guard: 'canInteract', actions: ['setChannel'] },
     'CHANNEL.STEP': { guard: 'canInteract', actions: ['stepChannel'] },
     'CHANNEL.TO_EDGE': { guard: 'canInteract', actions: ['channelToEdge'] },
-    // 打字这一路不设守卫：只读/禁用时输入框本就带着原生 readonly/disabled，打不进字；
-    // 草稿是纯显示状态，落值那一步在 commitDraft 里另有守卫
+    // 打字不设守卫：草稿是纯显示状态，落值那一步在 setDraft / commitDraft 内另有守卫
     'INPUT.CHANGE': { actions: ['setDraft'] },
     'INPUT.COMMIT': { actions: ['commitDraft'] },
   },
@@ -189,7 +180,7 @@ export const colorPickerMachine = createMachine({
       initial: 'idle',
       // 进入 open：定位 → 消解 + 焦点。退出时逆序拆
       effects: ['trackPosition', 'trackLayer'],
-      // 收起时把没收下的草稿丢掉：再展开时输入框该显示当前颜色，而不是上一轮打了一半的字
+      // 收起时丢掉没收下的草稿，再展开时输入框显示当前颜色
       exit: ['clearDraft'],
       on: {
         'CLOSE': [
@@ -205,7 +196,7 @@ export const colorPickerMachine = createMachine({
       states: {
         idle: {
           on: {
-            // 按下即跳：点取色区或轨道任意位置，颜色当场跟过来（随后的拖动由 trackPointer 接手）
+            // 按下即跳，随后的拖动由 trackPointer 接手
             'DRAG.START': { guard: 'canInteract', target: 'open.dragging', actions: ['startDrag'] },
             'EYE_DROPPER.OPEN': { guard: 'canPick', target: 'open.picking' },
           },
@@ -221,7 +212,7 @@ export const colorPickerMachine = createMachine({
           effects: ['runEyeDropper'],
           on: {
             'EYE_DROPPER.RESULT': { target: 'open.idle', actions: ['setValueFromEyeDropper'] },
-            // 放弃取色与接口报错走同一条：界面上都该只是"什么也没发生"
+            // 放弃取色与接口报错走同一条
             'EYE_DROPPER.CANCEL': { target: 'open.idle' },
           },
         },
@@ -305,10 +296,7 @@ export const colorPickerMachine = createMachine({
         applyHsva(params, colorPickerWithChannel(currentHsva(params), e.channel, e.edge === 'min' ? range.min : range.max))
       },
 
-      /**
-       * 打字：先留下草稿（框里的字不能被规范化冲掉，否则打 `#3b8` 的第三个字符时
-       * 前面的会被改写），能收下就顺手落值——所见即所得，不必等回车。
-       */
+      /** 打字：先留下草稿（框里的字不能被规范文本冲掉），能收下就顺手落值。 */
       setDraft: (params) => {
         const e = params.event.current()
         if (e.type !== 'INPUT.CHANGE')
@@ -321,10 +309,7 @@ export const colorPickerMachine = createMachine({
           applyHsva(params, next)
       },
 
-      /**
-       * 收下（回车或失焦）：收得了就落值，收不了就把草稿丢掉——
-       * 框里那串半截字随即被规范文本顶替，用户看到的与实际值重新对上。
-       */
+      /** 收下（回车或失焦）：收得了就落值，收不了就丢掉草稿复原成规范文本。 */
       commitDraft: (params) => {
         const e = params.event.current()
         if (e.type !== 'INPUT.COMMIT')
@@ -368,15 +353,14 @@ export const colorPickerMachine = createMachine({
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读
       trackPosition: ({ refs, prop, context, flush }) => {
         const engine = refs.get('position')
-        // 无引擎（纯逻辑测试 / 无布局环境 / SSR）：不定位，其余照常
+        // 无引擎时不定位，其余照常
         if (!engine)
           return undefined
 
         let stop: (() => void) | undefined
         let disposed = false
 
-        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带着 hidden（高度为 0），
-        // 此时算出的坐标会少掉浮层自身的尺寸——placement=top 会正好错位一个浮层高度
+        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带着 hidden，此时量出的浮层尺寸为 0
         flush(() => {
           if (disposed)
             return
@@ -398,12 +382,11 @@ export const colorPickerMachine = createMachine({
         }
       },
 
-      // 层只在展开期间入栈——消解层只让栈顶层响应 Escape，若层在挂载期就注册、与开合无关地
-      // 常驻栈里，同页后挂载的那个会永久占着栈顶，把它下面每一层的 Escape 都堵死
+      // 层只在展开期间入栈；常驻栈会让后挂载的层永久占着栈顶，堵死它下面每一层的 Escape
       trackLayer: ({ refs, send }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
-        // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
+        // 无 DOM 环境不挂副作用，状态机照常转移
         if (!config || !registerLayer)
           return undefined
 
@@ -415,8 +398,7 @@ export const colorPickerMachine = createMachine({
           onDismiss: () => send({ type: 'CLOSE' }),
         })
 
-        // 浮层里全是可聚焦控件（取色区、两条滑杆、数值框），展开即把焦点送进去，
-        // 键盘用户才够得着。非模态：Tab 走得出去，走出去即由消解层判定是否收起
+        // 展开即把焦点送进浮层；非模态，Tab 走得出去后由消解层判定是否收起
         const focus = createFocusScope({
           config,
           layer,
@@ -434,9 +416,7 @@ export const colorPickerMachine = createMachine({
         }
       },
 
-      // 监听器挂在文档上而不是取色区上：指针拖出区域甚至拖出窗口时仍要跟手，
-      // 挂在区域上会在指针离开的那一刻断掉，颜色就停在半路。
-      // pointercancel 也要收：系统手势抢走指针时不收会让状态永远停在 dragging
+      // 监听器必须挂在文档上，挂在取色区上指针一离开就断；pointercancel 不收会永久卡在 dragging
       trackPointer: ({ send, refs }) => {
         const area = refs.get('getAreaEl')()
         const doc = area?.ownerDocument ?? (typeof document === 'undefined' ? null : document)
@@ -456,11 +436,7 @@ export const colorPickerMachine = createMachine({
         }
       },
 
-      /**
-       * 屏幕取色。异步活儿必须住在状态副作用里才拿得到拆卸钩子：
-       * 取色途中组件被卸载、或浮层被收起时，兑现的 promise 会被 disposed 标记挡住，
-       * 不会往已经停机或已经走远的机器里送事件；顺带把接口那边也取消掉。
-       */
+      /** 屏幕取色。拆卸时用 disposed 标记挡掉已过期的 promise 回送，并 abort 接口。 */
       runEyeDropper: ({ scope, send }) => {
         let disposed = false
         let controller: AbortController | null = null

@@ -4,8 +4,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-// 属性缺席翻成 undefined：受控与非受控的分界就在这个 undefined 上。
-// Lit 自带的转换器会把缺席落成 null，那样 value="" 与"没写 value"就分不开了
+// 属性缺席翻成 undefined，以此区分受控与非受控。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
 // Lit 默认的 Boolean 转换器是 v !== null，缺省为真的开关会因此永远关不掉
@@ -57,7 +56,7 @@ function declaredSegment(el: HTMLElement, position: number): TimeSegmentType {
  * @csspart hidden-input - type=hidden 的表单出口，值是完整 ISO 串
  */
 export class XhTimeFieldElement extends XhElement {
-  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },

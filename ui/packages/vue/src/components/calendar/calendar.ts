@@ -8,7 +8,7 @@ type CalendarProps = CalendarSchema['props']
 
 export const XhCalendarRoot = defineComponent({
   name: 'XhCalendarRoot',
-  // 缺省值的唯一事实源在 connect / machine —— 凡是那儿有兜底的一律 default: undefined
+  // 缺省值由 connect 与机器给出，这里一律 default: undefined
   props: {
     value: { type: [String, Array] as PropType<string | string[]>, default: undefined },
     defaultValue: { type: [String, Array] as PropType<string | string[]>, default: undefined },
@@ -25,8 +25,7 @@ export const XhCalendarRoot = defineComponent({
     weekdayFormat: { type: String as PropType<CalendarWeekdayFormat>, default: undefined },
     fixedWeeks: Boolean,
   },
-  // value-change / focused-value-change 携带 details；update:* 携带裸值，支持 v-model。
-  // 选中值回传的恒是数组（单选也是长度 ≤ 1 的数组），形状不随模式变
+  // *-change 携带 details 对象，update:* 携带裸值；选中值恒为数组，单选时长度 ≤ 1
   emits: ['value-change', 'update:value', 'focused-value-change', 'update:focusedValue'],
   setup(props, { slots, emit }) {
     const notifyValue: CalendarProps['onValueChange'] = (details) => {
@@ -39,8 +38,7 @@ export const XhCalendarRoot = defineComponent({
     }
     const ctx = useCalendar(props as CalendarProps, notifyValue, notifyFocus)
     provideCalendar(ctx)
-    // 网格与表头都由作者照 weeks / weekDays 渲染：组件不替作者生成节点，
-    // 否则外层壳、图标、农历副标题这类东西再也塞不进来
+    // 网格与表头由作者照插槽里的 weeks / weekDays 自行渲染
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,
       focusedValue: ctx.api.value.focusedValue,
@@ -89,7 +87,7 @@ export const XhCalendarHeading = defineComponent({
   name: 'XhCalendarHeading',
   setup(_, { slots }) {
     const ctx = useCalendarContext()
-    // 文案由作者写（默认插槽为空时退回 headingLabel），组件不劫持内容
+    // 有插槽用插槽，否则渲染 headingLabel
     return () => h(
       'div',
       ctx.api.value.getHeadingProps() as Record<string, unknown>,
@@ -126,8 +124,7 @@ export const XhCalendarGridBody = defineComponent({
   },
 })
 
-// 表头行与日期行是同一个 role=row：columnheader 必须待在行里，
-// 否则 grid 的行列语义从表头这一层就断了
+// 表头行与日期行共用同一个 role=row
 export const XhCalendarWeekRow = defineComponent({
   name: 'XhCalendarWeekRow',
   setup(_, { slots }) {
@@ -139,7 +136,7 @@ export const XhCalendarWeekRow = defineComponent({
 export const XhCalendarWeekDay = defineComponent({
   name: 'XhCalendarWeekDay',
   props: {
-    // 列序 0-6。fixture 与 HTML 属性传进来的是字符串，统一收成数字
+    // 列序 0-6，兼收字符串
     value: { type: [Number, String] as PropType<number | string>, required: true },
   },
   setup(props, { slots }) {
@@ -163,9 +160,7 @@ export const XhCalendarCell = defineComponent({
     const ctx = useCalendarContext()
     const cell = computed<CalendarCellProps>(() => ({ value: props.value }))
     provideCalendarCell({ cell })
-    // 这里不补报「承载焦点的格子被卸载」：与 Listbox 不同，聚焦日不因格子消失而作废
-    // ——它正是展示月的来源，翻月时旧格子必然整批卸载。焦点由机器在重渲后按聚焦日
-    // 现查落点补回来，清掉锚点反而会把展示月一起打空
+    // 不上报格子卸载，翻月后由机器按聚焦日重新落点
     return () => h('div', ctx.api.value.getCellProps(cell.value) as Record<string, unknown>, slots.default?.())
   },
 })

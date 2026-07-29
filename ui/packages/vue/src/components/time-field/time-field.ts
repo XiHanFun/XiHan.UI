@@ -9,14 +9,13 @@ type TimeFieldProps = TimeFieldSchema['props']
 export const XhTimeFieldRoot = defineComponent({
   name: 'XhTimeFieldRoot',
   props: {
-    // 给 default: undefined 才表达得了"非受控"；落成空串会被当作"受控且当前为空"，
-    // 用户从此再也改不动
+    // default: undefined 表示非受控
     value: { type: String, default: undefined },
     defaultValue: { type: String, default: undefined },
     min: { type: String, default: undefined },
     max: { type: String, default: undefined },
     locale: { type: String, default: undefined },
-    // 缺省值的唯一事实源在 connect：这里一律 undefined，别在两侧各写一份默认
+    // 缺省值由 connect 给出，这里一律 default: undefined
     hourCycle: { type: Number as PropType<TimeHourCycle>, default: undefined },
     granularity: { type: String as PropType<TimeGranularity>, default: undefined },
     disabled: Boolean,
@@ -26,7 +25,7 @@ export const XhTimeFieldRoot = defineComponent({
     name: { type: String, default: undefined },
     placeholder: { type: String, default: undefined },
   },
-  // value-change 携带 { value }；update:value 携带裸串，支持 v-model:value
+  // value-change 携带 { value }，update:value 携带裸串
   emits: ['value-change', 'update:value'],
   setup(props, { slots, emit }) {
     const onValueChange: TimeFieldProps['onValueChange'] = (details) => {
@@ -53,8 +52,7 @@ export const XhTimeFieldLabel = defineComponent({
   name: 'XhTimeFieldLabel',
   setup(_, { slots }) {
     const ctx = useTimeFieldContext()
-    // 段不是能被 <label for> 指向的原生控件，"点标题聚焦到第一段"由连接层的 click 接管；
-    // 仍写成原生 label 是为了让它在表单里保持惯常的语义与样式
+    // 仍用原生 label 保持表单语义，点标题聚焦第一段由连接层的 click 接管
     return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -70,13 +68,12 @@ export const XhTimeFieldControl = defineComponent({
 export const XhTimeFieldSegment = defineComponent({
   name: 'XhTimeFieldSegment',
   props: {
-    // 段的身份由作者声明。刻意不叫 type：那个名字会被快照当成表单控件的 type 采集，
-    // 而 Vue 这侧声明成 prop 之后并不会落成属性，两个适配器的快照会就此分叉
+    // 段的身份由作者声明
     segment: { type: String as PropType<TimeSegmentType>, required: true },
   },
   setup(props, { slots }) {
     const ctx = useTimeFieldContext()
-    // 作者写了插槽就听作者的，否则显示这一段该显示的文字（空段是占位串）
+    // 有插槽用插槽，否则显示该段的文字，空段为占位串
     return () => h(
       'span',
       ctx.api.value.getSegmentProps({ segment: props.segment }) as Record<string, unknown>,

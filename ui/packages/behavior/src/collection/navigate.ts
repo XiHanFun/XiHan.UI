@@ -1,11 +1,8 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
 
-// 集合导航的纯数学：不碰 DOM、不认识条目，只把按键翻译成意图、把意图翻译成下标。
+// 集合导航的纯计算：把按键翻译成意图，把意图翻译成下标；不碰 DOM。
 
-/**
- * 导航轴。与 Orientation 刻意分开：RadioGroup 视觉上横排（aria-orientation=horizontal），
- * 但按规范四个方向键都必须移动选中项，此时传 'both'。
- */
+/** 导航轴。'both' 表示四个方向键都参与导航，与 Orientation 分开取值。 */
 export type NavAxis = Orientation | 'both'
 
 export type NavIntent = 'next' | 'prev' | 'first' | 'last'
@@ -19,7 +16,7 @@ export interface NavKeyOptions {
   home?: boolean
 }
 
-/** 只需要读修饰键，形状放宽以便直接传 KeyboardEvent。 */
+/** 修饰键读取所需的最小事件形状，可直接传 KeyboardEvent。 */
 export interface NavKeyEventLike {
   key: string
   ctrlKey?: boolean
@@ -29,11 +26,8 @@ export interface NavKeyEventLike {
 }
 
 /**
- * 按键 → 导航意图。返回 null 表示这个键不归导航管，调用方**不得** preventDefault
- * （横向列表里的上下键必须放行给页面滚动与读屏）。
- *
- * 传入事件对象时会先看修饰键：带 Ctrl/Meta/Alt/Shift 的组合一律不归导航管，
- * 否则 Ctrl+Home（跳到文档顶部）之类的浏览器/读屏组合会被集合吞掉。
+ * 按键 → 导航意图。返回 null 表示该键不归导航管，调用方不得 preventDefault。
+ * 传入事件对象时，带 Ctrl/Meta/Alt/Shift 的组合一律返回 null。
  */
 export function navIntentFromKey(key: string | NavKeyEventLike, options: NavKeyOptions = {}): NavIntent | null {
   if (typeof key !== 'string') {

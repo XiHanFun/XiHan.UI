@@ -273,8 +273,7 @@ export const sliderSuite: ConformanceSuite = {
             movePointer(doc, 20)
             assertHiddenInputs(doc, [['', '75', false]])
           },
-          // 上面那句是同步读，适配器还没重渲，泄漏的监听器不一定露馅；
-          // 这条期望在本步冲刷之后才比，值真被拖走了就在这里炸
+          // 上一句是同步读，适配器还没重渲；这条期望在本步冲刷之后才比
           expect: { parts: { thumb: { 'aria-valuenow': '75' } } },
         },
       ],
@@ -293,8 +292,7 @@ export const sliderSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'raw',
-          // 照常规写法这一步是空转：focus 落不到没有 tabindex 的节点上，
-          // 按键因此派到 body，把守卫整个删掉用例照样绿。只有直接往拇指上派事件才碰得到。
+          // 焦点落不到没有 tabindex 的节点上，必须直接往拇指上派事件才碰得到守卫
           why: '禁用的拇指不可聚焦，focus/key 步骤都会落空，必须直接派发',
           run: ({ doc }) => {
             const thumb = findPart(doc, 'thumb')
@@ -349,7 +347,6 @@ export const sliderSuite: ConformanceSuite = {
           kind: 'key',
           key: 'ArrowRight',
           expect: {
-            // 受控下"界面没有自作主张"正是要验的东西
             parts: { thumb: { 'aria-valuenow': '20' } },
             events: [{ type: 'value-change', detail: { value: [21] } }],
           },
@@ -381,7 +378,7 @@ export const sliderSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'End',
-          // 顶到邻居身上就停住：越过去会让"第 0 个滑块"突然变成右边那个，焦点与值就此错位
+          // 顶到邻居身上就停住，不越过去
           expect: { parts: { thumb: [{ 'aria-valuenow': '80' }, { 'aria-valuenow': '80' }] } },
         },
         {

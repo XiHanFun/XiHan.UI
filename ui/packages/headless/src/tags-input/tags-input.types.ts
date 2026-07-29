@@ -17,7 +17,7 @@ export interface TagsInputInputValueChangeDetails {
  */
 export type TagsInputBlurBehavior = 'add' | 'clear'
 
-/** 读屏用的文案。默认英文，与 dialog / pagination 的 translations 同一套写法。 */
+/** 读屏用的文案，默认英文。 */
 export interface TagsInputTranslations {
   /** 删除按钮的 aria-label：按钮里通常只有一个叉，读屏念不出删的是哪一个标签。 */
   deleteTagTrigger: (value: string) => string
@@ -27,9 +27,8 @@ export interface TagsInputTranslations {
 }
 
 /**
- * 条目自报家门：标签值由作者在部件上声明，connect 据此产出属性，不反查 DOM——
- * Vue 侧 connect 在 render 期求值（本帧 DOM 还不存在），WC 侧在 updated 后求值（DOM 已就位），
- * 连接期读 DOM 会让两个适配器的首帧快照分叉。
+ * 条目自报家门：标签值由作者在部件上声明，connect 据此产出属性。
+ * connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得反查 DOM。
  */
 export interface TagsInputItemProps {
   value: string
@@ -93,7 +92,7 @@ export interface TagsInputSchema extends MachineSchema {
    */
   state: 'idle' | 'navigating' | 'editing'
   event:
-    /** 整份替换标签集合（公开 API）；会去重去空白，但不受 max 约束——作者说了算。 */
+    /** 整份替换标签集合（公开 API）；会去重去空白，但不受 max 约束。 */
     | { type: 'VALUE.SET', value: string[] }
     /** 追加一批标签，不动输入框（粘贴与公开 API 走它）。 */
     | { type: 'TAG.ADD', values: string[] }

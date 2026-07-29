@@ -2,14 +2,14 @@ import type { ReactiveControllerHost } from '@lit/reactive-element'
 import type { Bindable, CellParams, Dep, ReactiveRuntime } from '@xihan-ui/machine'
 
 // 把机器的 ReactiveRuntime 契约桥到 ReactiveElement 的 controller 生命周期。
-// 只 import type @lit，值层零依赖，让 @xihan-ui/wc 主入口在无 DOM 的 Node 下可安全 import。
+// 仅 import type @lit，值层零依赖。
 
 export interface LitRuntime extends ReactiveRuntime {
-  /** hostConnected 调用：跑排队的 onMount（一台机器一生命周期；重连由 controller 重建机器处理）。 */
+  /** hostConnected 调用，跑排队的 onMount。 */
   mount: () => void
-  /** hostDisconnected 调用：逆序跑一次 cleanup。 */
+  /** hostDisconnected 调用，逆序跑一次 cleanup。 */
   unmount: () => void
-  /** hostUpdate 调用：单一调度源，逐 tracker 比对依赖、变则触发。 */
+  /** hostUpdate 调用，逐 tracker 比对依赖、变则触发。 */
   runTrackers: () => void
 }
 
@@ -48,8 +48,7 @@ export function createLitRuntime(host: ReactiveControllerHost): LitRuntime {
         host.requestUpdate()
       },
       notify: () => host.requestUpdate(),
-      // 版本号按值拉取比对：受控值由外部写入时不经过 set，推送式计数会漏掉，
-      // 导致 track([context.dep(k)]) 在本适配器静默不触发。与 Vue 运行时同语义。
+      // 版本号按值拉取比对，受控值不经过 set。
       version: () => {
         const cur = read()
         if (!eq(cur, lastSeen)) {

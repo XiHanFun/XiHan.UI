@@ -1,5 +1,4 @@
-// 机器类型系统。语义规范；实现以本文件为准。
-// Dict 用 any 是有意的：FSM 泛型内核需要它做 slice 索引。
+// 机器类型系统的类型契约。
 import type { Scope } from '@xihan-ui/core'
 
 export type Dict = Record<string, any>
@@ -8,7 +7,7 @@ export interface EventObject {
   type: string
   /** 触发来源标记（如 "interact-outside" / "keyboard"）。 */
   src?: string
-  /** 影子事件保留的原始用户事件，用于受控闭环溯源（因果链，非时间序）。 */
+  /** 影子事件保留的原始用户事件。 */
   previousEvent?: EventObject
   [key: string]: any
 }
@@ -30,7 +29,7 @@ export interface MachineSchema {
 
 export interface BaseSchema extends MachineSchema {}
 
-/** 取 schema 的某一片（无条件分支）。 */
+/** 取 schema 的某一片。 */
 export type Slice<T extends MachineSchema, K extends keyof MachineSchema> = T[K]
 
 /** "closed" | "open" | "open.interacting" → "closed" | "open"。 */
@@ -61,7 +60,7 @@ export interface RefsFacade<T extends MachineSchema> {
   set: <K extends keyof Slice<T, 'refs'>>(key: K, value: Slice<T, 'refs'>[K]) => void
 }
 
-/** 事件门面。不与 T['event'] 求交叉（会摊平判别联合）。 */
+/** 事件门面。 */
 export interface EventFacade<T extends MachineSchema> {
   current: () => T['event']
   previous: () => T['event'] | null
@@ -194,14 +193,14 @@ export interface MachineConfig<T extends MachineSchema> {
   }
 }
 
-// —— 响应式契约（框架无关的唯一收口点）——
+// —— 响应式契约 ——
 export interface Bindable<V> {
   readonly initial: V | undefined
   get: () => V
   set: (value: V | ((prev: V) => V)) => void
   /** 强制通知订阅者，不改值（用于 reenter 与强制刷新）。 */
   notify: () => void
-  /** 版本号：真变（isEqual 判定）才自增。track 对对象型 context 的正确依赖项。 */
+  /** 版本号：真变（isEqual 判定）才自增。 */
   version: () => number
 }
 
@@ -252,7 +251,7 @@ export interface InspectionEvent<T extends MachineSchema> {
 }
 
 export interface ServiceOptions<T extends MachineSchema> {
-  /** 用户 props 的 getter（必须是 getter，否则失去响应性）。 */
+  /** 用户 props 的 getter，必须保持 getter 形态以维持响应性。 */
   props: () => Partial<Slice<T, 'props'>> & { id?: string, ids?: Dict, getRootNode?: () => Node }
   runtime: ReactiveRuntime
   /** 宿主 DOM 环境；不传则内部用计数器 id 生成器建一个（无 DOM 场景/测试）。 */

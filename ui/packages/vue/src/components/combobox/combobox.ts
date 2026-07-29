@@ -16,8 +16,7 @@ type ComboboxProps = ComboboxSchema['props']
 
 export const XhComboboxRoot = defineComponent({
   name: 'XhComboboxRoot',
-  // 缺省值的唯一事实源在 connect —— 凡是 connect 有兜底的一律 default: undefined
-  // （loop 尤其：裸 Boolean 声明会把缺省压成 false，回绕就默默关掉了）
+  // 有 connect 兜底的 prop 一律 default: undefined
   props: {
     value: { type: [String, Array] as PropType<string | string[]>, default: undefined },
     defaultValue: { type: [String, Array] as PropType<string | string[]>, default: undefined },
@@ -37,7 +36,7 @@ export const XhComboboxRoot = defineComponent({
     placement: { type: String as PropType<Placement>, default: undefined },
     offset: { type: Number, default: undefined },
   },
-  // *-change 携带 details 对象；update:* 携带裸值，支持 v-model:value / v-model:inputValue / v-model:open
+  // *-change 携带 details 对象，update:* 携带裸值
   emits: ['value-change', 'input-value-change', 'open-change', 'update:value', 'update:inputValue', 'update:open'],
   setup(props, { slots, emit }) {
     const notifyValue: ComboboxProps['onValueChange'] = (details) => {
@@ -59,10 +58,7 @@ export const XhComboboxRoot = defineComponent({
     })
     provideCombobox(ctx)
 
-    // 首帧先结算一次候选条数（空态节点据此显形）。
-    // 之后的增删由条目自己上报——候选多半住在插槽里，那份 v-for 的响应式依赖记在
-    // 渲染它的那个组件身上，根部件可能压根不重渲，onUpdated 在这儿是靠不住的信号。
-    // 这里仍挂一个 onUpdated：条目原地改写（v-for 复用节点）时数量不变，聊胜于无。
+    // 首帧结算一次候选条数供空态节点判断，之后的增删由条目自己上报
     onMounted(ctx.syncItems)
     onUpdated(ctx.syncItems)
 
@@ -85,7 +81,7 @@ export const XhComboboxLabel = defineComponent({
   name: 'XhComboboxLabel',
   setup(_, { slots }) {
     const ctx = useComboboxContext()
-    // 必须是 <label>：connect 给的 for 只在原生 label 上生效，点标题聚焦输入框靠它
+    // 用原生 label，connect 给的 for 指向输入框
     return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -182,16 +178,11 @@ export const XhComboboxItem = defineComponent({
     const ctx = useComboboxContext()
     const item = computed<ComboboxItemProps>(() => ({ value: props.value, disabled: props.disabled }))
     provideComboboxItem({ item })
-    // 候选进出与改名都由条目自己上报：这是唯一可靠的信号——候选多半住在插槽里，
-    // 那份 v-for 的响应式依赖记在渲染它的那个组件身上，根部件可能压根不重渲。
-    // 机器据此结算候选条数（空态节点靠它显形），并摘掉指向已消失候选的悬空高亮
-    // （不摘的话 aria-activedescendant 会指着一个不存在的 id，读屏当场哑掉）。
-    // 卸载用 onUnmounted 而不是 onBeforeUnmount：后者跑在节点还在文档里的时候，现查会多数出一条。
+    // 候选的进出与改名由条目自己上报，机器据此结算条数并摘掉悬空高亮
     onMounted(ctx.syncItems)
     onUnmounted(ctx.syncItems)
-    // v-for 不带 key 时 Vue 就地复用节点：数量没变、身份却换了，只看增删会漏掉
+    // 节点就地复用时数量不变但身份换了，需按 value 另行上报
     watch(() => props.value, ctx.syncItems)
-    // 候选不承载焦点（焦点恒在输入框），因此不必像 Listbox 那样另行补报焦点离场
     return () => h('div', ctx.api.value.getItemProps(item.value) as Record<string, unknown>, slots.default?.())
   },
 })
@@ -218,8 +209,7 @@ export const XhComboboxEmpty = defineComponent({
   name: 'XhComboboxEmpty',
   setup(_, { slots }) {
     const ctx = useComboboxContext()
-    // 摆在 positioner 里当 content 的兄弟：role=listbox 内只允许 option 与 group，
-    // 空态提示挤进列表会把无障碍树弄坏
+    // 放在 positioner 里作 content 的兄弟节点，不进 role=listbox
     return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
   },
 })

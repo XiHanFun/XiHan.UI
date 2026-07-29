@@ -13,17 +13,14 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-// 属性缺席一律翻成 undefined：缺省值的唯一事实源留在机器与 connect 里。
-// Lit 自带的转换器会把缺席落成 null，那样属性就再也表达不了"未指定"。
+// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 空串也当缺席：max-files="" 经 Number() 会变成 0，那等于"一个都不收"
+// 空串也当缺席，避免 Number('') 落成 0
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-// 缺省为真的开关（拖拽投放）只有三态才关得掉——
-// Lit 默认的 Boolean 转换器是 v !== null，写 allow-drop="false" 照样是真。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
-/** 作者写在条目上的下标。缺席或写坏了就退回文档序——把条目按列表顺序排下来本身就是声明。 */
+/** 取作者写在条目上的 index，缺席或写坏了退回文档序。 */
 function declaredIndex(el: HTMLElement, position: number): number {
   const raw = el.getAttribute('index')
   if (raw == null || raw.trim() === '')
@@ -41,10 +38,9 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * 收进来的文件先过校验（类型/大小/数量），收下的进列表并派 file-accept，
  * 被拒的连同原因派 file-reject。
  *
- * 条目节点由作者按 `acceptedFiles` 渲染（听 files-change 重渲），元素不替作者生成：
- * 生成节点就等于收走模板控制权，图标、进度条、i18n 文案都再塞不进来。
+ * 条目节点由作者按 `acceptedFiles` 渲染（听 files-change 重渲），元素不生成节点。
  * 条目按文档序对上列表里的文件，也可以自带 `index` 属性显式声明。
- * item-name 与 item-size-text 的文字由元素填（作者自己写了内容就一概不碰）。
+ * item-name 与 item-size-text 的文字由元素填（作者自己写了内容则不碰）。
  *
  * @customElement xh-file-upload
  * @attr {string} accept - 允许的类型，写法同原生 input：'image/*'、'.png'、精确 MIME，逗号分隔；数组形态请走 property
@@ -74,10 +70,9 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart clear-trigger - 清空整份列表；列表为空时带原生 disabled
  */
 export class XhFileUploadElement extends XhElement {
-  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
-    // 文件与文案都是对象，走不了属性；只作为 property 暴露，与 Vue 侧的同名 prop 对齐。
-    // files 给了即受控：元素内部的写入只发 files-change，等宿主自己写回
+    // 文件与文案是对象，只走 property；files 给了即受控，内部写入只发 files-change
     files: { attribute: false },
     defaultFiles: { attribute: false },
     accept: { converter: STRING_CONVERTER },
@@ -107,9 +102,7 @@ export class XhFileUploadElement extends XhElement {
   declare capture?: 'user' | 'environment'
   declare translations?: Partial<FileUploadTranslations>
 
-  // scope 绑在本元素上而不是给 null：打开选择框要按 id 把隐藏输入找回来，
-  // 而 id 查找是在 scope 的 root 里做的。给 null 会一路回退到 document，
-  // 本元素若落在某个 shadow root 里就再也找不到自己的输入框（点了没反应）。
+  // scope 绑在本元素上：打开选择框要在 scope 的 root 里按 id 找回隐藏输入
   private readonly uploadScope: Scope = createScope(this, createCounterIdGenerator())
 
   private readonly notifyChange = (details: FileUploadFilesChangeDetails): void => {
@@ -124,8 +117,7 @@ export class XhFileUploadElement extends XhElement {
     this.dispatchEvent(new CustomEvent('file-reject', { detail: details, bubbles: true, composed: true }))
   }
 
-  // file-upload 机器无副作用（打开选择框是一次性的 DOM 操作，不是常驻效应），
-  // 不需要 config/layer/定位引擎，故 controller 只带 props 与 scope。
+  // file-upload 机器无常驻副作用，controller 只带 props 与 scope。
   private readonly ctrl = new MachineController<FileUploadSchema>(
     this,
     fileUploadMachine,
@@ -154,10 +146,7 @@ export class XhFileUploadElement extends XhElement {
     }
   }
 
-  /**
-   * 命令式入口共用的取法。机器要到进文档（hostConnected）才建：
-   * 还没进文档就下命令是调用方的时序问题，明说好过静默吞掉。
-   */
+  /** 命令式入口共用的取法；机器要到进文档（hostConnected）才建，未建则抛。 */
   private commands(): FileUploadApi {
     if (!this.ctrl.service)
       throw new Error('[xh] <xh-file-upload> 还没进文档，命令式接口此时不可用')
@@ -193,11 +182,7 @@ export class XhFileUploadElement extends XhElement {
     this.commands().clearFiles()
   }
 
-  /**
-   * 文件名与大小只有机器手里才有，作者在空节点上写不出来，由元素填。
-   * 作者若自己写了内容（自定义渲染），首次见到时就定为归作者，之后一概不碰——
-   * 每帧回读分不清"作者写的"还是"上一帧自己写的"，一旦写过就再也让不回去。
-   */
+  /** 文本是否归元素填：节点非空即判为作者自定义渲染。首次见到时定死，之后不再回读——回读分不出内容是作者写的还是上一帧自己写的。 */
   private readonly ownsText = new WeakMap<HTMLElement, boolean>()
 
   private fillText(el: HTMLElement, text: string): void {
@@ -211,7 +196,7 @@ export class XhFileUploadElement extends XhElement {
     el.textContent = text
   }
 
-  /** 条目内的子部件：getParts 收的是整个元素范围，按子树过滤才归得对条目。 */
+  /** 取 owner 子树内指定名字的角色节点。 */
   private partsIn(owner: HTMLElement, name: string): HTMLElement[] {
     return this.getParts(name).filter(el => owner.contains(el))
   }
@@ -219,12 +204,7 @@ export class XhFileUploadElement extends XhElement {
   /** 条目内的子部件名，交还与逐个打属性都按这一份走。 */
   private static readonly ITEM_PARTS = ['item-preview', 'item-name', 'item-size-text', 'item-delete-trigger'] as const
 
-  /**
-   * 位子比文件多（作者用 index 固定了几个上传位、或列表刚被删短）：
-   * 把上一帧写上去的属性与处理器整条交还，代填的文字也一并抹掉。
-   * 不交还的话这一行会带着一个已经不存在的文件名继续躺在 DOM 里，
-   * 读屏照旧念得出来、删除按钮照旧点得动——DOM 就此开始说谎。
-   */
+  /** 位子比文件多时整条交还：撤掉上一帧写的属性与处理器，代填的文字一并抹掉。 */
   private releaseItem(el: HTMLElement): void {
     this.spreader.release(el)
     for (const name of XhFileUploadElement.ITEM_PARTS) {
@@ -252,7 +232,7 @@ export class XhFileUploadElement extends XhElement {
     put('item-group', api.getItemGroupProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
 
-    // 条目是多实例 part，逐个打：身份取列表里对应位置的那个文件（作者也可用 index 属性显式声明）
+    // 条目逐个打，身份取列表里对应位置的那个文件
     const files = api.acceptedFiles
     this.getParts('item').forEach((el, position) => {
       const file = files[declaredIndex(el, position)]

@@ -1,8 +1,7 @@
 import type { KeyboardTable } from '../spec/types'
 
-// APG 没有 tour 模式：引导浮层的形态就是一个锚定到页面元素的模态对话框，
-// 键盘约定因此照 dialog 模式来（Escape 退出 + 焦点陷在浮层里），
-// 多出来的只有"Enter/Space 推进一步"——那是引导独有的主线动作。
+// APG 没有 tour 模式，键盘约定照 dialog 模式来（Escape 退出 + 焦点陷在浮层里），
+// 多出来的只有 Enter/Space 推进一步。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/#keyboardinteraction'
 
 export const tourKeyboard: KeyboardTable = {

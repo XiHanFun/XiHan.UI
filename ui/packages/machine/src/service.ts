@@ -19,8 +19,8 @@ import type {
   StateFacade,
   Transition,
 } from './types'
-// 解释器：把纯数据的 machine 定义与注入的响应式宿主黏合成一台可运行的 service。
-// 事件走同步 FIFO 队列 + run-to-completion；转移走六阶段编排；context 通知延到编排结束后统一冲刷。
+// 解释器：把 machine 定义与注入的响应式宿主组合成可运行的 service。
+// 事件走同步 FIFO 队列 + run-to-completion，转移走六阶段编排。
 import { callAll, createCounterIdGenerator, createScope, isDev } from '@xihan-ui/core'
 import { MachineError } from './errors'
 import {
@@ -69,7 +69,7 @@ export function createService<T extends MachineSchema>(
   let previousState: T['state'] | undefined
   let currentEvent: T['event'] = { type: '__init__' } as T['event']
   let previousEvent: T['event'] | null = null
-  // 状态用 runtime cell 承载，宿主读 state.get() 即建立依赖 → 状态转移触发重渲
+  // 状态用 runtime cell 承载，宿主读 state.get() 即建立依赖
   const stateCell = runtime.cell<string>(() => ({ defaultValue: initialStateValue }))
 
   // —— context cells ——
@@ -254,12 +254,7 @@ export function createService<T extends MachineSchema>(
         throw new MachineError('SEND_BEFORE_MOUNT', `send("${event.type}") before mount`, machine.name)
       return
     }
-    // 停机后一律丢弃，dev 也不抛。
-    //
-    // 抛的本意是抓"作者在卸载后还往机器里发事件"，但浏览器在拆 DOM 的过程中
-    // 本来就会派发 focusout / blur / error，定时器与图片加载的回调也可能落在停机之后——
-    // 这些都不是谁写错了，是拆卸期绕不开的。真机上二十多个组件同时踩中，
-    // 说明这条诊断的假阳性远多于真阳性。丢弃与生产行为一致，状态不会被改脏。
+    // 停机后一律丢弃事件，dev 也不抛
     if (status === 'Stopped')
       return
     queue.push(event)
@@ -295,8 +290,7 @@ export function createService<T extends MachineSchema>(
   }
   function enqueueTracker(tracker: Tracker): void {
     pendingTrackers.add(tracker)
-    // 挂载前不冲刷：宿主可能在 setup→mount 窗口里改 prop，此时 send 会撞 NotStarted。
-    // 累积到 onMount 的 resync + drain 里统一消费。
+    // 挂载前不冲刷，累积到 onMount 的 resync + drain 里统一消费
     if (!draining && status === 'Started')
       drainTrackers()
   }
@@ -316,8 +310,7 @@ export function createService<T extends MachineSchema>(
       drain()
   }
   function resyncTrackers(): void {
-    // 只标记待处理，不推进 last：变化的检出与 last 推进都交给随后的 drainTrackers，
-    // 否则这里先推进 last，drainTrackers 便检不出变化、挂载前的 prop 漂移被吞掉。
+    // 只标记待处理，不推进 last，由随后的 drainTrackers 检出变化并推进
     for (const tracker of trackers) {
       const next = tracker.deps.map(d => d())
       if (next.some((v, i) => !Object.is(v, tracker.last[i])))

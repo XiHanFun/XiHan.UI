@@ -13,19 +13,13 @@ export interface AnchorContext {
   listRef: Ref<HTMLElement | null>
 }
 
-/**
- * Anchor 不派生任何 part id（没有 IDREF 要串），因此不建 scope——
- * 机器只需要一个能拿到 document / window 的 Scope，交给 createService 建的那个就够了。
- *
- * getScrollEl 交的是判定线所依附的滚动容器；返回 null 即挂在窗口上。
- */
+/** Anchor 不派生 part id，故不另建 scope；getScrollEl 返回判定线所依附的滚动容器，null 即挂在窗口上。 */
 export function useAnchor(
   props: AnchorSchema['props'],
   onValueChange?: AnchorSchema['props']['onValueChange'],
   getScrollEl: () => HTMLElement | null = () => null,
 ): AnchorContext {
   const listRef = ref<HTMLElement | null>(null)
-  // onValueChange 由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const service = useMachine(anchorMachine, () => ({ ...props, onValueChange }))
 
   // 观察器与量测都在机器的 effect 里跑，DOM 侧的取值口经 refs 交进去

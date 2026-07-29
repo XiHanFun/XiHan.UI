@@ -8,8 +8,7 @@ export interface BreadcrumbContext {
   api: ComputedRef<BreadcrumbApi>
 }
 
-// Breadcrumb 无状态机，也不派生 part id（没有任何 IDREF 要串），
-// 因此连 scope 都不需要：props 变了由 computed 重算属性。
+// Breadcrumb 无状态机也不派生 part id，props 变了由 computed 重算属性
 export function useBreadcrumb(props: BreadcrumbProps): BreadcrumbContext {
   const api = computed(() => connectBreadcrumb(props, vueNormalize))
   return { api }

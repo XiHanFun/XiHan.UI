@@ -68,8 +68,7 @@ async function pressTrigger(ctx: RawStepContext, part: string): Promise<void> {
   if (!el)
     throw new Error(`找不到 ${part} 部件`)
   const down = new PointerEvent('pointerdown', { bubbles: true, cancelable: true })
-  // dispatchEvent 返回 false 即有人调过 preventDefault。合成事件必须显式 cancelable，
-  // 否则 preventDefault 是空操作，这条断言会永远为真
+  // dispatchEvent 返回 false 即有人调过 preventDefault；合成事件必须显式 cancelable
   if (el.dispatchEvent(down))
     throw new Error(`${part} 没在 pointerdown 上拦下焦点转移：按钮抢走焦点后这一下 click 会落空`)
   el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
@@ -140,7 +139,7 @@ export const editableSuite: ConformanceSuite = {
             'data-state': 'preview',
           },
           'edit-trigger': { 'hidden': null, 'disabled': null, 'aria-controls': '@part(input)', 'type': 'button' },
-          // 收起而不是卸载：节点是作者写的，替他删掉他就再也拿不回来
+          // 收起而不是卸载：节点是作者写的
           'submit-trigger': { hidden: '', disabled: '', type: 'button' },
           'cancel-trigger': { hidden: '', disabled: '', type: 'button' },
         },
@@ -189,7 +188,7 @@ export const editableSuite: ConformanceSuite = {
               'submit-trigger': { hidden: null, disabled: null },
               'cancel-trigger': { hidden: null, disabled: null },
             },
-            // 进编辑态却不把焦点搬进去，键盘用户就只能看着框干瞪眼
+            // 进编辑态时焦点搬进输入框
             activeElement: { part: 'input', exact: true },
           },
         },
@@ -223,7 +222,7 @@ export const editableSuite: ConformanceSuite = {
           key: 'Enter',
           expect: {
             parts: { root: { 'data-state': 'preview' }, preview: { hidden: null }, input: { hidden: '' } },
-            // 输入框一收起，焦点没人接就会掉进 body，键盘用户从此原地失联
+            // 输入框收起时焦点要有人接，不能掉进 body
             activeElement: { part: 'preview', exact: true },
             // 提交本身不改值，因此不该再冒出一条值变化
             events: [],
@@ -317,8 +316,7 @@ export const editableSuite: ConformanceSuite = {
           kind: 'blur',
           expect: {
             parts: { root: { 'data-state': 'preview' } },
-            // 焦点已经离开输入框（用户点去了别处），这时候抢回预览区
-            // 等于把光标从他刚到达的地方拽走
+            // 焦点已经离开输入框，不再抢回预览区
             activeElement: null,
             events: [],
           },
@@ -339,8 +337,7 @@ export const editableSuite: ConformanceSuite = {
         { kind: 'raw', why: 'type 步骤落不到 value 上', run: async ctx => typeInto(ctx, '小黑') },
         {
           kind: 'raw',
-          // submitMode=none 下这条尤其要紧：按钮若抢走焦点，先到的 blur 走的是撤销，
-          // 用户点的明明是"保存"，值却被丢了
+          // submitMode=none 下按钮若抢走焦点，先到的 blur 会走撤销
           why: 'harness 的 click 步骤会先 focus 目标，恰好绕过了这里要验的那条路',
           run: async ctx => pressTrigger(ctx, 'submit-trigger'),
           expect: {
@@ -426,7 +423,6 @@ export const editableSuite: ConformanceSuite = {
       initial: {
         parts: {
           'root': { 'data-disabled': '', 'data-state': 'preview' },
-          // 停下来什么都做不了的 Tab 位只会碍事
           'preview': { 'tabindex': null, 'aria-disabled': 'true' },
           'input': { 'disabled': '', 'data-disabled': '' },
           'edit-trigger': { disabled: '' },
@@ -435,8 +431,7 @@ export const editableSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'raw',
-          // 照常规写法这几步全是空转：禁用按钮上的 el.click() 被激活行为短路，
-          // 事件压根不派发。只有直接往节点上派，才碰得到守卫
+          // 禁用按钮上 el.click() 被激活行为短路不派事件，必须直接往节点上派才碰得到守卫
           why: '禁用控件上 click 被浏览器短路，只有直接派发才碰得到守卫',
           run: async (ctx) => {
             const { doc } = ctx
@@ -495,8 +490,7 @@ export const editableSuite: ConformanceSuite = {
           kind: 'key',
           key: 'Escape',
           expect: {
-            // 意图已发给宿主（edit-change），但编辑态归宿主管，这里一动不动；
-            // 值该撤的还是撤了——两件事分属两条线
+            // 意图已发给宿主（edit-change），编辑态归宿主管，值仍照撤
             parts: { root: { 'data-state': 'edit' }, input: { hidden: null } },
             events: [{ type: 'value-change', detail: { value: '阿旺' } }],
           },
@@ -506,7 +500,7 @@ export const editableSuite: ConformanceSuite = {
           props: { edit: false },
           expect: {
             parts: { root: { 'data-state': 'preview' }, preview: { hidden: null }, input: { hidden: '' } },
-            // 宿主收回编辑态时同样要把焦点还给预览区，否则焦点跟着收起的输入框一起消失
+            // 宿主收回编辑态时同样要把焦点还给预览区
             activeElement: { part: 'preview', exact: true },
           },
         },
@@ -522,8 +516,7 @@ export const editableSuite: ConformanceSuite = {
           kind: 'raw',
           why: 'type 步骤落不到 value 上；受控下要的是"用户真敲了字"这一路',
           run: async ctx => typeInto(ctx, '小黑'),
-          // 受控值没变，预览区仍显示宿主给的那串；通知里带用户敲的那串，
-          // 宿主拿它去决定要不要写回
+          // 受控值没变，预览区仍显示宿主给的那串；通知里带用户敲的那串
           expect: { events: [{ type: 'value-change', detail: { value: '小黑' } }] },
         },
         {
@@ -550,7 +543,7 @@ export const editableSuite: ConformanceSuite = {
         { kind: 'click', part: 'preview' },
         {
           kind: 'raw',
-          // 原生 maxlength 只拦住"从键盘敲进来"这一路，机器侧的截断才是兜底那道
+          // 原生 maxlength 只拦从键盘敲进来这一路，机器侧的截断是兜底那道
           why: 'maxlength 不在快照的采集清单里；且 jsdom 不对程序写入的 value 施加 maxlength',
           run: async (ctx) => {
             const { doc } = ctx

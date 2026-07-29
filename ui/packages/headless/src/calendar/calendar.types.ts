@@ -4,14 +4,7 @@ import type { CalendarDay, CalendarWeekDay } from './calendar.grid'
 
 /**
  * 焦点模型：roving tabindex，不做 aria-activedescendant 变体。
- *
- * 焦点真的落在 cell-trigger 上，整张网格只留一个 Tab 停靠点：聚焦日那一格认领 tabindex=0，
- * 其余一律 -1。这里不需要 listbox 那样的「容器兜底」——聚焦日经三路收口后恒非空
- * （focusedValue → 首个选中值 → 今天），而展示月正是由它反推出来的，
- * 因此只要作者照着 weeks 渲染，聚焦日必然是网格里的某一格，绝不会出现零个停靠点。
- *
- * 反过来说，作者渲染的月份与聚焦日不一致（自己写死一个月不跟着翻）就会失去 Tab 位——
- * 那是渲染契约被破坏，不是本组件能在状态里补救的事。
+ * 焦点落在 cell-trigger 上，聚焦日那一格 tabindex=0，其余为 -1。
  */
 export type CalendarFocusModel = 'roving-tabindex'
 
@@ -41,9 +34,7 @@ export interface CalendarFocusChangeDetails {
 
 /**
  * 格子自报家门：哪一天由作者在部件上声明，connect 据此产出属性。
- * connect 因此是 (context/prop, 本格子声明) 的纯函数，不反查 DOM——
- * Vue 侧 connect 在 render 期求值（本帧 DOM 还不存在），WC 侧在 updated 后求值（DOM 已就位），
- * 连接期读 DOM 会让两个适配器的首帧快照分叉。
+ * connect 在 render 期求值，此时 DOM 尚不存在，不得读 DOM。
  */
 export interface CalendarCellProps {
   /** ISO 日期串。 */
@@ -56,16 +47,9 @@ export interface CalendarWeekDayProps {
 }
 
 export interface CalendarRefs {
-  /**
-   * 网格容器。翻月之后要把焦点送进新月份的那一格，得有个查得到活 DOM 的入口；
-   * 由适配器注入，无 DOM 环境（纯逻辑测试）返回 null，机器照常跑、只是不搬焦点。
-   */
+  /** 网格容器，由适配器注入；无 DOM 环境返回 null，机器照常跑、只是不搬焦点。 */
   getGridEl: () => HTMLElement | null
-  /**
-   * 机器是否还活着。搬焦点必须推迟到宿主提交完这一帧（新月份的格子那时才存在），
-   * 而 flush 在三个运行时里都撤不回；组件在这中间被卸载的话，回调仍会跑。
-   * 根级效应挂载时置真、清理时置假，回调据此自己认账。
-   */
+  /** 机器是否还活着：搬焦点的延迟回调撤不回，卸载后仍会跑，据此认账。 */
   alive: boolean
 }
 
@@ -112,17 +96,14 @@ export interface CalendarSchema extends MachineSchema {
     value: string[]
     /** 聚焦日。受控（focusedValue 给定）时 cell 直读 prop；为空时由 connect 兜底。 */
     focusedValue: string | null
-    /**
-     * 区间挑选的起点：已落下起点、还没落终点时非空。
-     * 与 focusedValue 分开：挑区间期间焦点一路跟着走，起点却必须钉住不动。
-     */
+    /** 区间挑选的起点：已落下起点、还没落终点时非空。 */
     rangeAnchor: string | null
     /** 指针悬停的那天，只在挑区间时用来预览；不受控、不对外通知。 */
     hoveredValue: string | null
   }
   computed: Record<string, never>
   refs: CalendarRefs
-  /** 选中值与聚焦日都不编码进状态，机器因此只有一个状态，逻辑全在 context 与 actions。 */
+  /** 选中值与聚焦日不编码进状态，机器只有一个状态，逻辑全在 context 与 actions。 */
   state: 'idle'
   event:
     /** 整体改写选中集合（外部 setValue 走它），不动区间起点。 */
@@ -131,12 +112,9 @@ export interface CalendarSchema extends MachineSchema {
     | { type: 'CELL.SELECT', value: string }
     /**
      * 聚焦日改写（方向键、翻页、点格子、格子获得焦点都会发）。
-     *
-     * restoreFocus 表示「这一下是网格内的键盘操作」，机器据此把 DOM 焦点搬到落点那一格。
-     * 用事件自带的意图、而不是事后回读 activeElement：跨月要重渲网格，承载焦点的旧格子
-     * 那时已被摘掉，焦点早就退回 body；而重渲发生在机器读 DOM 之前还是之后，
-     * 取决于宿主的调度（三个运行时各不相同），回读得到的答案根本不稳定。
-     * 键盘事件是从网格里冒上来的，它本身就是「焦点在网格内」的证据。
+     * restoreFocus 表示这一下是网格内的键盘操作，机器据此把 DOM 焦点搬到落点那一格。
+     * 只能用事件自带的这个意图，不能事后回读 activeElement：跨月重渲后旧格子已被摘掉、焦点早退回 body，
+     * 而重渲发生在读 DOM 之前还是之后取决于宿主调度。
      */
     | { type: 'FOCUS.SET', value: string, restoreFocus?: boolean }
     | { type: 'HOVER.SET', value: string }

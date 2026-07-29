@@ -1,6 +1,6 @@
 import type { KeyboardTable } from '../spec/types'
 
-// 一组带 roving tabindex 的开关按钮，键盘手感取自 APG 的工具条：
+// 一组带 roving tabindex 的开关按钮，键盘约定取自 APG 的工具条：
 // 整组一个 Tab 位、组内方向键走、Enter/Space 由原生按钮激活。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/#keyboardinteraction'
 

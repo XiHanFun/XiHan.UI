@@ -1,15 +1,14 @@
-// Scope：宿主 DOM 环境抽象。
-// core 里禁止直接写 document/window/getComputedStyle；一切经 Scope。
+// Scope：宿主 DOM 环境抽象，core 对 document/window 的访问统一经此。
 import type { IdGenerator } from './id-generator'
 import { isDocument } from './guards'
 
 export interface Scope {
-  /** 本 scope 的实例级唯一 id（构造时求值一次并缓存，SSR/CSR 一致）。 */
+  /** 本 scope 的实例级唯一 id，构造时求值一次。 */
   readonly id: string
   getRootNode: () => Document | ShadowRoot
   getDoc: () => Document
   getWin: () => Window & typeof globalThis
-  /** 在正确的 root 内按 id 查找，而非全局 document.getElementById。 */
+  /** 在所属 root 内按 id 查找。 */
   getById: <T extends Element = HTMLElement>(id: string) => T | null
   /** 由 scope.id 派生 part id。 */
   partId: (component: string, part: string) => string
@@ -17,13 +16,13 @@ export interface Scope {
   ids: <K extends string>(component: string, ...parts: K[]) => Readonly<Record<K, string>>
   /** 递归穿透 shadow root，返回真正被聚焦的元素。 */
   getActiveElement: () => HTMLElement | null
-  /** 必须经此取，不得用全局 getComputedStyle（跨 iframe 解析不同）。 */
+  /** 取计算样式，绑定到本 scope 所在的 window。 */
   getComputedStyle: (el: Element, pseudo?: string) => CSSStyleDeclaration
   /** shadow root 内为 true。 */
   isShadow: () => boolean
 }
 
-/** 跨 shadow 深挖真正聚焦的元素（document.activeElement 在 shadow 场景返回 host）。 */
+/** 跨 shadow root 深挖真正聚焦的元素。 */
 export function getActiveElementDeep(root: Document | ShadowRoot): HTMLElement | null {
   let active = root.activeElement as HTMLElement | null
   while (active?.shadowRoot?.activeElement)
@@ -31,9 +30,7 @@ export function getActiveElementDeep(root: Document | ShadowRoot): HTMLElement |
   return active
 }
 
-/**
- * 创建 scope。node 为空时回退到全局 document（仅 CSR；SSR 期不应实例化）。
- */
+/** 创建 scope。node 为空时回退到全局 document。 */
 export function createScope(node: Element | null | undefined, idGenerator: IdGenerator): Scope {
   const id = idGenerator.scopeId()
 

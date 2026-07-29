@@ -1,4 +1,4 @@
-// 不变式断言。dev 下抛错，prod 下静默（供 tree-shake）。
+// 不变式断言。dev 下抛错/告警，prod 下静默。
 import { isDev } from './dev'
 
 export function invariant(condition: unknown, message: string): asserts condition {

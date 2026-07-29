@@ -8,8 +8,7 @@ import { toggleGroupAnatomy } from './toggle-group.anatomy'
 
 const parts = toggleGroupAnatomy.build()
 
-// 条目集合只在事件处理器里查活 DOM：那一刻两个适配器看到的是同一份文档，顺序即文档序。
-// 归属过滤保证嵌套的两组开关互不吞并。
+// 条目集合只在事件处理器里查活 DOM，顺序即文档序；归属过滤保证嵌套的两组开关互不吞并。
 const ITEM_QUERY: ItemQuery = { scope: toggleGroupAnatomy.name, part: 'item' }
 
 export function connectToggleGroup<T extends PropTypes>(
@@ -31,7 +30,6 @@ export function connectToggleGroup<T extends PropTypes>(
   const isDisabled = (item: ToggleGroupItemProps): boolean => groupDisabled || !!item.disabled
 
   // roving tabindex 的唯一锚点：焦点在组内跟焦点走，否则跟第一个选中值走。
-  // 多选时后选中的那些不参与——一组里只能有一个 Tab 停靠点。
   const anchor = focusedValue ?? value[0] ?? null
 
   /** 条目的 Tab 停靠位。关掉 roving 后每个条目都自成一个停靠点。 */
@@ -43,12 +41,9 @@ export function connectToggleGroup<T extends PropTypes>(
 
   /**
    * 容器的 Tab 停靠位。
-   *
-   * 判据是 focusedValue == null 而不是 anchor == null：anchor 可能指向一个已被删掉、
-   * 或受控值根本不在选项里的条目，那时没有任何条目会认领 tabindex=0，容器若也退出
-   * Tab 序列，整组对键盘用户就永久不可达了。焦点已在组内时容器让位，Tab 才能正常离开本组。
-   *
-   * 关掉 roving 时条目自己全在 Tab 序列里，容器不需要也不该再占一位。
+   * 判据是 focusedValue == null 而不是 anchor == null：anchor 可能指向已删掉或不在选项里的条目，
+   * 那时无人认领 tabindex=0。焦点已在组内时容器让位，Tab 才能正常离开本组。
+   * 关掉 roving 时条目自己全在 Tab 序列里，容器不再占位。
    */
   const rootTabIndex = (): number => {
     if (!rovingFocus)
@@ -58,8 +53,7 @@ export function connectToggleGroup<T extends PropTypes>(
 
   /** 方向键落点：起点用锚点（作者声明的值），终点用事件那一刻的活 DOM 算。 */
   const navigate = (container: HTMLElement, event: KeyboardEvent): void => {
-    // axis 'both'：四个方向键都搬焦点，与 orientation 无关——横排的一条工具条里
-    // 按上下键同样该走，orientation 只描述视觉排布。
+    // axis 'both'：四个方向键都搬焦点，orientation 只描述视觉排布。
     // dir 只对调左右键，上下键在 rtl 下语义不变
     const intent = navIntentFromKey(event, { axis: 'both', dir })
     // 返回 null 表示该键不归导航管，此时绝不 preventDefault（页面滚动与读屏要用）
@@ -70,8 +64,7 @@ export function connectToggleGroup<T extends PropTypes>(
     const next = itemValue(target)
     if (next == null)
       return
-    // 方向键只搬焦点、不改选中：条目是可反复开关的按钮，路过就改值会让"取消选中"
-    // 无从表达——用户想把焦点挪到别处再取消，光是路过就已经把值改掉了
+    // 方向键只搬焦点、不改选中，切换要靠确认键
     focusItem(target)
     send({ type: 'ITEM.FOCUS', value: next })
   }
@@ -86,12 +79,11 @@ export function connectToggleGroup<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
-      // 单选借 radiogroup 语义，多选是一堆各自独立的开关按钮，只需要一个中性的分组容器。
-      // 两套语义不混用：radiogroup 里放 aria-pressed、group 里放 aria-checked，
-      // 读屏都会念出自相矛盾的东西
+      // 单选借 radiogroup 语义，多选用中性的 group 容器。
+      // 两套语义不混用：radiogroup 配 aria-checked、group 配 aria-pressed。
       'role': multiple ? 'group' : 'radiogroup',
-      // aria-orientation 只有 radiogroup 收，role=group 不在它的支持列表里，给了就是无效 ARIA。
-      // 样式层要的排布信息一律走 data-orientation，两种模式都给
+      // aria-orientation 只有 radiogroup 收，role=group 给了是无效 ARIA；
+      // 排布信息一律走 data-orientation
       'aria-orientation': multiple ? undefined : orientation,
       'data-orientation': orientation,
       'data-disabled': dataAttr(groupDisabled),
@@ -110,7 +102,7 @@ export function connectToggleGroup<T extends PropTypes>(
         if (contains(container, event.relatedTarget as Node | null))
           return
         const items = queryItems(container, ITEM_QUERY)
-        // 转投给锚点条目，兑现 tabindex=0 的承诺；锚点悬空或已禁用时退回首个可停留条目。
+        // 转投给锚点条目；锚点悬空或已禁用时退回首个可停留条目。
         // 落点条目自己的 onFocus 会把锚点接过去
         const target = items.find(el => itemValue(el) === anchor && !isItemDisabled(el))
           ?? navigateItems(items, null, 'first', { loop })
@@ -131,17 +123,14 @@ export function connectToggleGroup<T extends PropTypes>(
         ...parts.item.attrs,
         // 导航与选中都以此为条目身份
         [ITEM_VALUE_ATTR]: item.value,
-        // 原生按钮：Enter/Space 的激活由平台负责，这里不自己实现。
-        // 少了 type，按钮落在 form 里会变成 submit，Enter 直接提交表单
+        // 原生按钮的 Enter/Space 激活由平台负责；少了 type，按钮落在 form 里会变成 submit
         'type': 'button',
-        // 单选：radio + aria-checked；多选：不覆盖 role（原生按钮）+ aria-pressed。
-        // 两个属性任何时候都只出现一个
+        // 单选用 radio + aria-checked，多选保留原生按钮 role + aria-pressed，两者只出现一个
         'role': multiple ? undefined : 'radio',
         'aria-checked': multiple ? undefined : (selected ? 'true' : 'false'),
         'aria-pressed': multiple ? (selected ? 'true' : 'false') : undefined,
-        // 集合条目一律 aria-disabled，绝不输出原生 disabled（与 Switch/Checkbox 相反）：
-        // 原生 disabled 不可聚焦也不派发 click，禁用条目就没法再当方向键的起点，
-        // 禁用策略与样式也会就此分裂
+        // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、不派 click，
+        // 禁用条目就当不成方向键的起点
         'aria-disabled': disabled ? 'true' : 'false',
         'tabindex': itemTabIndex(item),
         'data-state': selected ? 'on' : 'off',

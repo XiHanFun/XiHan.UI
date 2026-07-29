@@ -11,7 +11,7 @@ export interface DismissLayerOptions {
   onEscapeKeyDown?: (e: CustomEvent<{ originalEvent: KeyboardEvent }>) => void
   onPointerDownOutside?: (e: CustomEvent) => void
   onFocusOutside?: (e: CustomEvent) => void
-  /** 上面两者任一发生时也派发一次，用于「两种都不关」的统一写法。 */
+  /** 上面两者任一发生时也派发一次。 */
   onInteractOutside?: (e: CustomEvent) => void
 }
 
@@ -28,21 +28,16 @@ export function createDismissLayer(o: DismissLayerOptions): Disposable {
   const node = (): HTMLElement | null => layer.node()
 
   let disposed = false
-  // 消解后短暂忽略随之而来的 focusin，避免同一次外部交互触发两次
+  // 消解后短暂忽略随之而来的 focusin
   let justDismissed = false
 
   function onEscape(e: KeyboardEvent): void {
     if (disposed || e.key !== 'Escape')
       return
-    // 只有栈顶层响应，天然逐层关闭
+    // 只有栈顶层响应 Escape
     if (registry.top() !== layer)
       return
     const el = node()
-    // 用一个自建的可取消事件来表决"这次关不关"，作者层（DOM 监听）与机器层（回调）
-    // 投同一张票，与外部交互那两路同构。
-    // 不拿原生 keydown 当票据：合成的 KeyboardEvent 默认 cancelable=false，
-    // 在它身上调 preventDefault 是空操作，closeOnEscape=false 就成了一句空话。
-    // 原生事件仍带在 detail 里，回调要看 key / 修饰键时取得到。
     const vote = new CustomEvent(EV_ESCAPE, { bubbles: false, cancelable: true, detail: { originalEvent: e } })
     el?.dispatchEvent(vote)
     o.onEscapeKeyDown?.(vote)
@@ -90,7 +85,7 @@ export function createDismissLayer(o: DismissLayerOptions): Disposable {
       onDismiss('focus-outside')
   }
 
-  // 延后注册：避免打开自己的那次 pointerdown 立刻把自己关掉
+  // 延后注册，跳过打开自己的那次 pointerdown
   let registered = false
   function register(): void {
     if (disposed || registered)

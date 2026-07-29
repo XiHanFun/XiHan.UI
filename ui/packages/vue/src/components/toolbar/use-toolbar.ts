@@ -8,12 +8,11 @@ import { useMachine } from '../../runtime/use-machine'
 
 export interface ToolbarContext {
   api: ComputedRef<ToolbarApi>
-  /** 条目要上报 DOM 侧的事实（卸载带走了焦点），得直接够到机器。 */
+  /** 机器实例，供条目上报 DOM 侧的事实（卸载带走了焦点）。 */
   service: Service<ToolbarSchema>
 }
 
-// 不建 scope：这个组件的 connect 不派生任何 id（没有 label/panel 一类要互指的部件），
-// 建了也只是白占一个 useId。
+// 不建 scope：connect 不派生任何 id
 export function useToolbar(props: ToolbarSchema['props']): ToolbarContext {
   const service = useMachine(toolbarMachine, () => ({ ...props }))
   const api = computed(() => connectToolbar(service, vueNormalize))

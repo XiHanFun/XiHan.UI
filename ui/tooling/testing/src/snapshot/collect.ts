@@ -9,11 +9,11 @@ export interface CollectOptions {
   events: readonly AdapterEvent[]
 }
 
-/** 从整个 document 采集某组件的归一化快照（portal 出去的内容也能拿到）。 */
+/** 从整个 document 采集某组件的归一化快照。 */
 export function collectDomSnapshot(opts: CollectOptions): DomSnapshot {
   const { doc, component, anatomy, events } = opts
   const partSet = new Set<string>(anatomy.parts)
-  // 整文档查询：portal/teleport 出去的 part 不在挂载根内，必须从 document 找
+  // 从 document 查，以覆盖 portal/teleport 出去的 part
   const nodes = [...doc.querySelectorAll<HTMLElement>(`[data-scope="${component}"][data-part]`)]
 
   const buckets = new Map<string, HTMLElement[]>()
@@ -70,7 +70,7 @@ function orderByDocument(
   return order
 }
 
-/** 焦点落点语义定死为：activeElement 最近的 part 祖先（含自身）。 */
+/** 焦点落点 = activeElement 最近的 part 祖先（含自身）。 */
 function resolveActiveElement(
   doc: Document,
   indexOf: Map<HTMLElement, { part: string, index: number }>,

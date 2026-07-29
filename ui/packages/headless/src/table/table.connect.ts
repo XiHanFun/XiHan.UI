@@ -50,12 +50,11 @@ export function connectTable<T extends PropTypes>(
   const stickyHeader = !!prop('stickyHeader')
   const hasFooter = !!prop('footer')
   const dir = prop('dir') ?? 'ltr'
-  // 表格不像列表那样天然成环：上键停在首行、下键停在末行才符合"一屏数据有上下文"的直觉
+  // 表格不回绕：上键停在首行、下键停在末行
   const loop = prop('loop') ?? false
   const ids = scope.ids('table', 'caption')
 
-  // 摊平与索引都是 (rows, 展开集合) 的纯函数，一行 DOM 都不碰：
-  // Vue 在 render 期求值 connect，那一刻 DOM 还不存在。
+  // 摊平与索引都是 (rows, 展开集合) 的纯函数；connect 在 Vue 的 render 期求值，此时 DOM 尚不存在。
   const visibleRows = flattenTableRows(rows, expandedValue)
   const dataRows = visibleRows.filter(row => row.kind === 'data')
   const metaIndex = new Map<string, TableVisibleRow>()
@@ -85,11 +84,10 @@ export function connectTable<T extends PropTypes>(
 
   const selectableIds = tableSelectableRowIds(rows)
   const selectionState = tableSelectionState(selection, selectableIds)
-  // 全选把手只在复选下生效：单选一次只中一行，none 压根没有选择这回事
+  // 全选把手只在复选下生效
   const canSelectAll = mode === 'multiple'
   const isEmpty = prop('empty') ?? dataRows.length === 0
-  // 两个状态节点都常挂，只在表体为空时才轮到它们显形，且互斥：
-  // 已经有数据还盖一层"加载中"会把用户正在读的表遮掉
+  // 两个状态节点常挂且互斥，只在表体为空时显形
   const showLoading = loading && isEmpty
   const showEmpty = !loading && isEmpty
   const rowCount = HEADER_ROW_COUNT + visibleRows.length + (hasFooter ? 1 : 0)
@@ -102,16 +100,13 @@ export function connectTable<T extends PropTypes>(
   const sortDirection = (value: string): 'asc' | 'desc' | null => tableSortDirectionOf(sort, value)
   const sortPriority = (value: string): number => tableSortIndexOf(sort, value)
 
-  // 行级 roving tabindex 的唯一锚点：焦点在表体里跟焦点走，否则落在首个选中的数据行上。
-  // 取可见序里的第一个而不是选中集合里的第一个：后者可能是一个压根不在本页的 id
-  // （跨页全选、受控值超前于数据），认领了 tabindex=0 也等于没有停靠点。
+  // 行级 roving 的唯一锚点：焦点在表体里跟焦点走，否则落在可见序里首个选中的数据行。
+  // 取可见序而非选中集合的第一个，后者可能是不在本页的 id
   const anchor = focusedRow ?? dataRows.find(row => isSelected(row.id))?.id ?? null
 
   /**
-   * 数据行元素，按**可见序**排列。只在事件那一刻读活 DOM。
-   *
-   * 容器取 body 而不是 root：表头行与脚注行同样写成 row 部件，
-   * 以 root 为容器一查会把它们也算进方向键序列，焦点就会停到一行标题上。
+   * 数据行元素，按可见序排列，只在事件那一刻读活 DOM。
+   * 容器取 body 而不是 root：表头行与脚注行同样写成 row 部件，以 root 为容器会把它们也算进来。
    */
   const rowEls = (body: HTMLElement): HTMLElement[] => {
     const byValue = new Map<string, HTMLElement>()
@@ -208,16 +203,15 @@ export function connectTable<T extends PropTypes>(
     collapseRow: value => send({ type: 'ROW.COLLAPSE', value }),
     toggleExpandRow: value => send({ type: 'ROW.EXPAND_TOGGLE', value }),
 
-    // root 是 role=grid 而不是 table：行可选、可展开，还要报行列总数——
-    // role=table 不接受 aria-selected / aria-expanded 这类交互语义
+    // root 用 role=grid 而不是 table：role=table 不接受 aria-selected / aria-expanded 这类交互语义
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'role': 'grid',
       'aria-labelledby': ids.caption,
       'aria-rowcount': rowCount,
-      // 一列都没声明时不报列数：0 列的表格不是"列数为 0"，而是作者还没给列定义
+      // 一列都没声明时不报列数
       'aria-colcount': columns.length || undefined,
-      // 复选与否必须显式说：省略只是"没说"，读屏无从区分单选表与"作者忘了标"
+      // 复选与否必须显式说，省略只是没说
       'aria-multiselectable': mode === 'multiple' ? 'true' : 'false',
       // 加载态的播报归它：两个状态节点自己不带 role，见 getLoadingStateProps
       'aria-busy': loading ? 'true' : 'false',
@@ -234,20 +228,17 @@ export function connectTable<T extends PropTypes>(
     getHeaderProps: () => normalize.element({
       ...parts.header.attrs,
       'role': 'rowgroup',
-      // 吸顶只落标记，钉住的实现（position / inset / 层级）归皮肤：
-      // 连接层不量 DOM，也就算不出该钉在哪
+      // 吸顶只落标记，钉住的实现归皮肤
       'data-sticky': dataAttr(stickyHeader),
     }),
 
-    // 键盘全在 body 上收口：行只管声明自己，一次冒泡一个处理器。
-    // 收口点选 body 而不是 root，是为了让表头里的排序把手排在表体之前进 Tab 序列——
-    // root 若占着兜底的 Tab 位，Tab 一进来就被转投到某一行，表头的把手全被跳过。
+    // 键盘全在 body 上收口，行只管声明自己。
+    // 收口点选 body 而不是 root，否则 root 的兜底 Tab 位会让表头把手被跳过。
     getBodyProps: () => normalize.element({
       ...parts.body.attrs,
       'role': 'rowgroup',
       // 焦点在表体外时容器兜底进 Tab 序列，由 onFocus 转投给行。
-      // 判据用 focusedRow 而非 anchor：anchor 可能指向一个已删掉或压根不在本页的行，
-      // 那时没有任何行认领 tabindex=0，容器再一让位，整张表对键盘用户永久不可达
+      // 判据用 focusedRow 而非 anchor：anchor 可能指向已删掉或不在本页的行，那时无人认领 tabindex=0
       'tabindex': focusedRow == null ? 0 : -1,
       'data-empty': dataAttr(isEmpty),
       'onKeyDown': (event: KeyboardEvent) => {
@@ -256,8 +247,7 @@ export function connectTable<T extends PropTypes>(
         if (event.ctrlKey || event.metaKey || event.altKey)
           return
 
-        // 上下键与 Home/End 走可见数据行。轴固定 vertical：左右键在这里另有展开/收起的语义，
-        // 不能被当成同轴导航吃掉
+        // 上下键与 Home/End 走可见数据行；轴固定 vertical，左右键另有展开/收起语义
         const intent = navIntentFromKey(event, { axis: 'vertical' })
         if (intent) {
           event.preventDefault()
@@ -273,7 +263,7 @@ export function connectTable<T extends PropTypes>(
         const backward = dir === 'rtl' ? 'ArrowRight' : 'ArrowLeft'
 
         if (event.key === forward) {
-          // 不可展开、已展开、或禁用的行都改不了展开态，这个键也就不归表格管，放行给页面
+          // 不可展开、已展开或禁用的行改不了展开态，这个键放行给页面
           if (!row.expandable || row.expanded || row.disabled)
             return
           event.preventDefault()
@@ -303,8 +293,7 @@ export function connectTable<T extends PropTypes>(
         if (contains(body, event.relatedTarget as Node | null))
           return
         const list = rowEls(body)
-        // 焦点进入表体应当落在选中行上；它不可停留（禁用、或压根不在本页）时退回首个可停留的行。
-        // 全表禁用时两路都取不到，焦点就留在容器上
+        // 焦点进入表体落在选中行上；不可停留时退回首个可停留行，两路都取不到则留在容器上
         const selected = list.find((el) => {
           const value = itemValue(el)
           return value != null && isSelected(value) && !isItemDisabled(el)
@@ -325,8 +314,7 @@ export function connectTable<T extends PropTypes>(
       role: 'rowgroup',
     }),
 
-    // 表头行不进方向键序列（它不是数据行），因此也不认领 Tab 位：
-    // 表头里真正要够得着的是排序与全选把手，它们各自占位
+    // 表头行不进方向键序列，也不认领 Tab 位；表头里的排序与全选把手各自占位
     getHeaderRowProps: () => normalize.element({
       ...parts.row.attrs,
       'role': 'row',
@@ -337,8 +325,7 @@ export function connectTable<T extends PropTypes>(
     getFooterRowProps: () => normalize.element({
       ...parts.row.attrs,
       'role': 'row',
-      // 脚注排在行号空间的最后一行；作者渲染了脚注却没给 footer 声明时这个号会越界，
-      // 与 rows/columns 不同源是同一类作者错误
+      // 脚注排在行号空间的最后一行
       'aria-rowindex': rowCount,
       'data-section': 'footer',
     }),
@@ -352,17 +339,14 @@ export function connectTable<T extends PropTypes>(
         // 导航、选中与展开都以此为行身份
         [ITEM_VALUE_ATTR]: row.value,
         'role': 'row',
-        // 行号的事实源是 rows + 展开集合，不是 DOM 顺序：
-        // 不在 rows 里的行没有行号可言，宁可不报，也不能报一个编出来的数
+        // 行号的事实源是 rows 加展开集合，不是 DOM 顺序；不在 rows 里的行不报行号
         'aria-rowindex': dataRowIndex.get(row.value),
-        // 选择关停时一个字都不提：省略表达的是"这不是可选行"，
-        // 而 aria-selected="false" 说的是"可选，只是没选中"，两者不能混
+        // 选择关停时不写 aria-selected：省略是不可选，false 是可选但没选中
         'aria-selected': selectable ? (isSelected(row.value) ? 'true' : 'false') : undefined,
-        // 同理：不可展开的行不报 aria-expanded，那是"能展开却没展开"的意思
+        // 不可展开的行不报 aria-expanded，那是能展开却没展开的意思
         'aria-expanded': meta?.expandable ? (meta.expanded ? 'true' : 'false') : undefined,
         'aria-controls': meta?.expandable ? detailId(row.value) : undefined,
-        // 集合条目一律 aria-disabled，绝不输出原生 disabled：原生 disabled 不可聚焦、
-        // 也不派发 click，禁用行就再也当不成方向键的起点
+        // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、不派 click
         'aria-disabled': isRowDisabled(row.value) ? 'true' : 'false',
         // 行级 roving tabindex：整张表只有锚点行留在 Tab 序列内
         'tabindex': anchor === row.value ? 0 : -1,
@@ -383,8 +367,7 @@ export function connectTable<T extends PropTypes>(
         [ITEM_VALUE_ATTR]: column.value,
         'role': 'columnheader',
         'aria-colindex': columnIndex.get(column.value),
-        // 只有参与排序的列才报方向；可排序但没在排的列报 none（"能排，此刻没排"），
-        // 不可排序的列一个字都不提
+        // 可排序但没在排的列报 none，不可排序的列不写 aria-sort
         'aria-sort': sortable
           ? (direction === 'asc' ? 'ascending' : direction === 'desc' ? 'descending' : 'none')
           : undefined,
@@ -410,15 +393,12 @@ export function connectTable<T extends PropTypes>(
       })
     },
 
-    // 全选把手是三态的唯一载体：勾了一部分时读屏要念"部分选中"，
-    // 而不是在 true/false 里二选一硬凑。它长在表头里、不属于 roving 行组，
-    // 所以自己占一个 Tab 位——否则键盘用户永远够不着"全选"
+    // 全选把手是三态的唯一载体；它不属于 roving 行组，自己占一个 Tab 位
     getSelectAllTriggerProps: () => normalize.element({
       ...parts['select-all-trigger'].attrs,
       'role': 'checkbox',
       'aria-checked': selectionState === 'all' ? 'true' : selectionState === 'some' ? 'mixed' : 'false',
-      // 与集合条目同形：角色节点是普通元素而非原生控件，禁用后仍要能被聚焦，
-      // 读屏才读得到这一列当前是"半选"
+      // 角色节点是普通元素而非原生控件，禁用后仍要能被聚焦
       'aria-disabled': canSelectAll ? 'false' : 'true',
       'tabindex': 0,
       'data-state': selectionState,
@@ -430,16 +410,14 @@ export function connectTable<T extends PropTypes>(
       'onKeyDown': (event: KeyboardEvent) => {
         if (!isCommitKey(event) || !canSelectAll)
           return
-        // 作者写成 <button> 时按键会被浏览器再合成一次 click：拦下默认行为，
-        // 否则同一次按键把全选切两回，等于没切。Space 不拦还会把页面滚一屏
+        // 作者写成 <button> 时按键会被再合成一次 click，拦下默认行为，否则同一次按键切两回
         event.preventDefault()
         send({ type: 'SELECTION.ALL_TOGGLE' })
       },
     }),
 
-    // 行内的两个把手都退出可及树、也不占 Tab 位：行自己已经报了 aria-selected 与
-    // aria-expanded，把手再报一遍对读屏是纯噪音；更要紧的是每行多一个 Tab 位会让
-    // "一行一个 Tab 位"的行级 roving 当场失效。键盘那一路由 Space 与左右方向键承担
+    // 行内的两个把手退出可及树、不占 Tab 位：行自己已报 aria-selected 与 aria-expanded，
+    // 每行多一个 Tab 位会让行级 roving 失效；键盘那一路由 Space 与左右方向键承担
     getRowSelectTriggerProps: row => normalize.element({
       ...parts['row-select-trigger'].attrs,
       ...rowState(row.value),
@@ -459,12 +437,10 @@ export function connectTable<T extends PropTypes>(
       return normalize.element({
         ...parts['sort-trigger'].attrs,
         ...sortState(column.value),
-        // 显式给角色：作者常把它写成 <span>，那样读屏只念得到一段文字，
-        // 听不出这里能按。写成 <button> 时这个角色与原生一致，不产生第二种说法。
-        // 当前排序方向由祖先 column-header 的 aria-sort 报出，不在这儿重复一遍
+        // 显式给角色：作者常写成 <span>，读屏听不出能按。
+        // 当前排序方向由祖先 column-header 的 aria-sort 报出，不在这儿重复
         'role': 'button',
-        // 排序把手长在表头里、不属于 roving 行组，自己占一个 Tab 位；
-        // 不可排序的列上它只是个装饰，退出 Tab 序列
+        // 排序把手不属于 roving 行组，自己占一个 Tab 位；不可排序的列退出 Tab 序列
         'tabindex': sortable ? 0 : -1,
         'aria-disabled': sortable ? 'false' : 'true',
         'data-disabled': dataAttr(!sortable),
@@ -504,14 +480,13 @@ export function connectTable<T extends PropTypes>(
         // 详情行占一个真实行号：展开一行会把它后面所有行整体后移一位
         'aria-rowindex': detailRowIndex.get(row.value),
         'data-state': meta?.expanded ? 'open' : 'closed',
-        // 收起只加 hidden，不卸载作者节点：详情里的业务 DOM（输入框、滚动位置）得留着
+        // 收起只加 hidden，不卸载作者节点，详情里的输入框与滚动位置得留着
         'hidden': !meta?.expanded || undefined,
       })
     },
 
-    // 两个状态节点刻意不带 role：role=grid 的子节点只能是 row 与 rowgroup，
-    // 凭空给它们一个角色反而让 grid 的结构失效；加载态的播报由 root 的 aria-busy 承担。
-    // 节点常挂、只靠 hidden 显隐，作者写在里面的插图与按钮不会被反复建了又拆
+    // 两个状态节点不带 role：role=grid 的子节点只能是 row 与 rowgroup；
+    // 加载态的播报由 root 的 aria-busy 承担。节点常挂，只靠 hidden 显隐。
     getEmptyStateProps: () => normalize.element({
       ...parts['empty-state'].attrs,
       hidden: !showEmpty || undefined,

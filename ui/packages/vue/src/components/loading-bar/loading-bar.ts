@@ -8,8 +8,7 @@ type LoadingBarProps = LoadingBarSchema['props']
 
 export const XhLoadingBarRoot = defineComponent({
   name: 'XhLoadingBarRoot',
-  // 全部 default: undefined —— 缺省值的唯一事实源在机器与 connect。
-  // trickle 尤其：裸 Boolean 声明会把缺省压成 false，于是"默认自己往前爬"这条整个失效
+  // 缺省值由机器与 connect 给出，这里一律 default: undefined
   props: {
     value: { type: Number, default: undefined },
     defaultValue: { type: Number, default: undefined },
@@ -22,7 +21,7 @@ export const XhLoadingBarRoot = defineComponent({
     fadeDuration: { type: Number, default: undefined },
     translations: { type: Object as PropType<Partial<LoadingBarTranslations>>, default: undefined },
   },
-  // value-change 携带 { value }；update:value 携带裸数值，支持 v-model:value
+  // value-change 携带 { value }，update:value 携带裸数值
   emits: ['value-change', 'update:value'],
   setup(props, { slots, emit }) {
     const notify: LoadingBarProps['onValueChange'] = (details) => {
@@ -52,7 +51,7 @@ export const XhLoadingBarRange = defineComponent({
   name: 'XhLoadingBarRange',
   setup(_, { slots }) {
     const ctx = useLoadingBarContext()
-    // 宽度由 connect 写进内联样式，这个组件自己不算任何几何
+    // 宽度由 connect 写进内联样式
     return () => h('div', ctx.api.value.getRangeProps() as Record<string, unknown>, slots.default?.())
   },
 })

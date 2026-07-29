@@ -293,10 +293,7 @@ export const carouselSuite: ConformanceSuite = {
       ],
     },
     {
-      // 幻灯片里放输入框是常见用法（搜索框、报名表）。轮播照吞方向键的话，
-      // 用户既编辑不了文字、画面还会莫名其妙翻走。
-      // defaultPage 取 1：左右两边都还有页可去，"页码没动"才是真断言——
-      // 停在首页的话 ArrowLeft 本来就走不动，那一步吞不吞都一样绿
+      // defaultPage 取 1：两边都还有页可去，页码没动才有判别力
       name: '幻灯片内的输入框：方向键交还给它做光标移动，轮播不接管也不翻页',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['carousel.kbd.editable'],
@@ -324,8 +321,7 @@ export const carouselSuite: ConformanceSuite = {
             parts: { 'item[1]': { 'data-inview': '' }, 'indicator[1]': { 'aria-current': 'true' } },
           },
         ),
-        // 对照组：同一条派发路径落在按钮上就必须被接管。
-        // 少了这一步，整个 keydown 处理器坏掉（谁都不接管）也能让上面两步一路绿过去
+        // 对照组：少了这一步，keydown 处理器整个坏掉也能让上面两步绿过去
         arrowKeyFrom(
           doc => q(doc, 'next-trigger'),
           'ArrowRight',
@@ -348,8 +344,7 @@ export const carouselSuite: ConformanceSuite = {
       covers: ['carousel.kbd.first', 'carousel.kbd.last'],
       props: { slideCount: 4, defaultPage: 1 },
       steps: [
-        // 焦点落在指示点而不是两端按钮上：这一段会走到首末两个端点，
-        // 端点上的按钮转原生 disabled，焦点会被浏览器收走，后面的按键就送不到轮播里了
+        // 焦点落在指示点而不是两端按钮上：端点按钮转原生 disabled 后焦点会被浏览器收走
         { kind: 'focus', part: 'indicator[1]' },
         {
           kind: 'key',
@@ -455,8 +450,7 @@ export const carouselSuite: ConformanceSuite = {
       ],
     },
     {
-      // 守的是"不回绕时首页再往回还是首页"。走 dispatchEvent 而不是 click 步骤——
-      // 禁用按钮上的 el.click() 被激活行为短路，事件压根不派发，那样边界逻辑碰都碰不到
+      // 走 dispatchEvent 而不是 click：禁用按钮上 el.click() 被激活行为短路，事件不派发
       name: '首页时上一张推不动：合成 click 也不会绕到末页',
       spec: { apg: APG },
       props: { slideCount: 4 },
@@ -525,8 +519,7 @@ export const carouselSuite: ConformanceSuite = {
       initial: { parts: { 'item[3]': { 'data-inview': '' } } },
       steps: [
         {
-          // 图片被撤掉一批之后，停在第 4 张的轮播必须自己退回第 2 张，
-          // 否则轨道会位移到空白处，指示点也没有一个能自称当前项
+          // 图片被撤掉一批后，停在第 4 张的轮播自己退回第 2 张
           kind: 'setProps',
           props: { slideCount: 2 },
           expect: {
@@ -552,7 +545,6 @@ export const carouselSuite: ConformanceSuite = {
         {
           kind: 'click',
           part: 'next-trigger',
-          // 受控下"界面没有自作主张"正是要验的东西
           expect: {
             parts: {
               'item[1]': { 'data-inview': '' },
@@ -577,7 +569,7 @@ export const carouselSuite: ConformanceSuite = {
     {
       name: '自动播放：视口活区闭麦；指针停上去即按住，移开又接着播',
       spec: { apg: `${APG}#accessibilityfeatures` },
-      // 间隔取大值：这条用例验的是"按住/放开"的标记与活区，不验计时（计时由 headless 单测按假计时器守）
+      // 间隔取大值：这条验的是按住/放开的标记与活区，不验计时
       props: { slideCount: 4, autoplay: 60_000 },
       initial: {
         parts: {
@@ -647,8 +639,7 @@ export const carouselSuite: ConformanceSuite = {
             if (nodes.length !== 6)
               throw new Error(`预期 6 个可点部件，实际 ${nodes.length}`)
             for (const el of nodes) {
-              // 出现 tabindex 就说明有人给轮播套了 roving tabindex：
-              // 那会让用户按一次 Tab 只能进组，再也没法直接 Tab 到某一颗指示点
+              // 出现 tabindex 就说明有人给指示点套了 roving tabindex
               if (el.hasAttribute('tabindex'))
                 throw new Error(`${el.dataset.part} 上出现了 tabindex="${el.getAttribute('tabindex')}"，轮播不做 roving tabindex`)
             }

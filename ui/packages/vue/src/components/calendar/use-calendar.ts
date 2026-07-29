@@ -10,7 +10,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface CalendarContext {
   api: ComputedRef<CalendarApi>
-  /** 部件要上报 DOM 侧的事实时得直接够到机器。 */
+  /** 机器实例，供部件上报 DOM 侧的事实。 */
   service: Service<CalendarSchema>
   gridRef: Ref<HTMLElement | null>
 }
@@ -25,8 +25,7 @@ export function useCalendar(
   const scope = createScope(null, idGen)
   const service = useMachine(calendarMachine, () => ({ ...props, onValueChange, onFocusedValueChange }), scope)
 
-  // 键盘跨月时要把焦点送进新月份的那一格，而那一格是本帧重渲之后才存在的：
-  // 机器推迟一拍再从这里拿到网格、现查落点。不注入的话状态照常流转，只是焦点搬不动。
+  // 跨月后的焦点落点要等重渲，机器推迟一拍再从这里取网格现查
   service.refs.set('getGridEl', () => gridRef.value)
 
   const api = computed(() => connectCalendar(service, vueNormalize))

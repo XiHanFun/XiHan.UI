@@ -2,9 +2,8 @@ import type { KeyboardTable } from '../spec/types'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/#keyboardinteraction'
 
-// 工具条的全部价值就在这张表：一条工具条只占一个 Tab 位，条内靠方向键走。
-// 条目自己的激活键（按钮的 Enter/Space、下拉触发器的展开键）不在表里——
-// 那是条目各自的规格，工具条不接管、也不该替它们承诺。
+// 一条工具条只占一个 Tab 位，条内靠方向键走。
+// 条目自己的激活键不在表里，那是条目各自的规格，工具条不接管。
 export const toolbarKeyboard: KeyboardTable = {
   component: 'toolbar',
   source: APG,

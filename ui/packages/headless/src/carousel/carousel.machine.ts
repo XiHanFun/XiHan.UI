@@ -8,11 +8,7 @@ const { createMachine } = setup<CarouselSchema>()
 /** autoplay 写 true 时用的默认间隔毫秒。 */
 export const CAROUSEL_AUTOPLAY_INTERVAL = 4000
 
-/**
- * 拖拽翻页的位移阈值（像素）。
- * 做成常量而不是可配项：它要挡的是"点一下"和"想选中文字"这两种误触，
- * 这个界线与视口多宽无关，几十像素在哪块屏上都是同一个手感。
- */
+/** 拖拽翻页的位移阈值（像素）。 */
 export const CAROUSEL_DRAG_THRESHOLD = 40
 
 /**
@@ -27,7 +23,7 @@ export function resolveAutoplayInterval(autoplay: boolean | number | undefined):
   return Number.isFinite(autoplay) && autoplay > 0 ? autoplay : 0
 }
 
-/** 总页数由 props 现算：slideCount 与两个 perX 随时会被宿主改，缓存下来只会拿到过期的页数。 */
+/** 总页数由 props 现算，不缓存（slideCount 与两个 perX 随时会被宿主改）。 */
 function pageCount(prop: PropFn<CarouselSchema>): number {
   return carouselPageCount(prop('slideCount'), prop('slidesPerPage'), prop('slidesPerMove'))
 }
@@ -38,17 +34,15 @@ function isFlipped(prop: PropFn<CarouselSchema>): boolean {
 }
 
 /**
- * 走一步。先把当前页夹回合法区间再加减：slideCount 变小之后内部值可能停在一个已不存在的页上，
- * 而界面显示的是夹过的页（connect 同样夹）。此时按"上一张"该从看得见的那一页往回走，
- * 从那个越界的旧值往回走的话，用户得连点好几下才看得到反应。
+ * 走一步。先把当前页夹回合法区间再加减：slideCount 变小后内部值可能停在已不存在的页上，
+ * 而界面显示的是夹过的页（connect 同样夹）。
  */
 function step(current: number, direction: 1 | -1, totalPages: number, loop: boolean): number {
   return clampCarouselPage(clampCarouselPage(current, totalPages) + direction, totalPages, loop)
 }
 
-// 页码住在 context 的 cell 里，不编码进状态：cell 本身就是受控/非受控的收口点
-// （page prop 给定即受控，读直取 prop，写只发 onPageChange 不落内部值），因此不需要影子事件。
-// 编进状态的只有自动播放：它是"跑 / 被按住 / 没开"三段真状态，计时器必须跟着状态挂拆。
+// 页码住在 context 的 cell 里（page prop 给定即受控），不编码进状态。
+// 编进状态的只有自动播放："跑 / 被按住 / 没开"三段，计时器跟着状态挂拆。
 export const carouselMachine = createMachine({
   name: 'carousel',
   context: ({ prop, cell }) => ({
@@ -57,16 +51,14 @@ export const carouselMachine = createMachine({
       defaultValue: prop('defaultPage') ?? 0,
       onChange: page => prop('onPageChange')?.({ page }),
     })),
-    // 按住来源做成集合而不是一个布尔：指针悬停与焦点停留会同时按住计时，
-    // 只记布尔的话鼠标一移开就把仍用键盘停在这条轮播里的人的计时放开了
+    // 按住来源做成集合而不是布尔：指针悬停与焦点停留会同时按住计时
     pausedBy: cell<CarouselPauseSource[]>(() => ({ defaultValue: [] })),
     dragStart: cell<number | null>(() => ({ defaultValue: null })),
     dragOffset: cell<number>(() => ({ defaultValue: 0 })),
   }),
-  // 间隔为 0（没开自动播放）时压根不进 playing：进去也只是挂一个不会响的计时器
+  // 间隔为 0（没开自动播放）时不进 playing
   initialState: ({ prop }) => (resolveAutoplayInterval(prop('autoplay')) > 0 ? 'playing' : 'idle'),
-  // autoplay 被改写（关掉、打开、换间隔）都要重挂计时器。最常见的一次是宿主按"减少动效"
-  // 偏好把它关掉：不重挂的话画面还会自己接着翻。
+  // autoplay 被改写（关掉、打开、换间隔）都要重挂计时器
   watch: ({ track, prop, action }) => track([() => prop('autoplay')], () => action(['syncAutoplay'])),
   on: {
     // 翻页与拖拽在三个状态里都得认；自动播放没开时它们同样要工作
@@ -78,7 +70,7 @@ export const carouselMachine = createMachine({
     'DRAG.END': { actions: ['endDrag'] },
   },
   states: {
-    // 没开自动播放。PAUSE / RESUME 在这里无事可做：没有计时可按住
+    // 没开自动播放：没有计时可按住，PAUSE / RESUME 在这里无事可做
     idle: {
       on: {
         'AUTOPLAY.START': [{ guard: 'hasAutoplay', target: 'playing' }],
@@ -87,7 +79,7 @@ export const carouselMachine = createMachine({
     playing: {
       initial: 'running',
       on: {
-        // 停掉时一并清空按住来源：下次开播是全新一轮，不该背着上一轮遗留的"指针还悬着"
+        // 停掉时一并清空按住来源，下次开播是全新一轮
         'AUTOPLAY.STOP': { target: 'idle', actions: ['clearPauseSources'] },
       },
       states: {
@@ -97,14 +89,12 @@ export const carouselMachine = createMachine({
             'AUTOPLAY.PAUSE': { target: 'playing.paused', actions: ['addPauseSource'] },
             // 间隔被改写：重入把 trackAutoplay 拆掉再挂，新间隔当场生效
             'AUTOPLAY.START': [{ guard: 'hasAutoplay', target: 'playing.running', reenter: true }],
-            // 手动翻页要重新计满一整个间隔。不重挂的话，用户刚点完"下一张"，
-            // 上一轮残余的那一小截会立刻把画面又翻走一屏
+            // 手动翻页重入，重新计满一整个间隔
             'PAGE.SET': { target: 'playing.running', reenter: true, actions: ['setPage'] },
             'PAGE.PREV': { target: 'playing.running', reenter: true, actions: ['goPrev'] },
             'PAGE.NEXT': { target: 'playing.running', reenter: true, actions: ['goNext'] },
-            // 到点：还走得动就走一格并重起计时；走不动（不回绕且已在末页）就收摊回 idle——
-            // 留在 running 只会挂一个永远把画面停在原地的计时器。
-            // 守卫在动作之前求值，所以末页是"露面之后再拿满一个间隔"才停，不是一到就断
+            // 到点：还走得动就走一格并重起计时；走不动（不回绕且已在末页）回 idle。
+            // 守卫在动作之前求值，末页是拿满一个间隔之后才停
             'after.autoplay': [
               { guard: 'canAdvance', target: 'playing.running', reenter: true, actions: ['goNext'] },
               { target: 'idle' },
@@ -113,7 +103,7 @@ export const carouselMachine = createMachine({
         },
         paused: {
           on: {
-            // 已经按住时再来一个来源只是登记，不必重入（重入会白白拆装一遍效应）
+            // 已经按住时再来一个来源只是登记，不重入
             'AUTOPLAY.PAUSE': { actions: ['addPauseSource'] },
             'AUTOPLAY.RESUME': [
               { guard: 'isLastPauseSource', target: 'playing.running', actions: ['removePauseSource'] },

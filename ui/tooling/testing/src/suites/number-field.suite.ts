@@ -217,9 +217,7 @@ export const numberFieldSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'raw',
-          // 照常规写法这三步全是空转：focus 落不到禁用的 input 上、按键因此派到 body、
-          // 禁用按钮上的 el.click() 被激活行为短路根本不派事件。
-          // 把守卫整个删掉用例照样绿——必须直接往节点上派事件，才碰得到守卫。
+          // 焦点落不到禁用的 input 上、禁用按钮的 click 被短路，必须直接往节点上派事件
           why: '禁用控件上 focus/click 都被浏览器短路，只有直接派发才碰得到守卫',
           run: ({ doc }) => {
             const input = doc.querySelector<HTMLInputElement>('[data-scope="number-field"][data-part="input"]')!
@@ -235,9 +233,7 @@ export const numberFieldSuite: ConformanceSuite = {
       ],
     },
     {
-      // 按住不放连发是这个组件唯一需要状态机的地方，此前整条路零覆盖：
-      // 唯一碰按钮的用例只走了 event.detail === 0（键盘激活）那一支，
-      // 而真实浏览器里用指针点按钮走的是 pointerdown 那一支。
+      // 指针点按钮走 pointerdown 那一支，键盘激活走 event.detail === 0 那一支
       name: '按住加号：先走一步，越过 changeDelay 才连发，松手即停',
       spec: { apg: APG },
       skipParity: '一次按住里跑几拍取决于当时的调度，两侧帧序对不齐',

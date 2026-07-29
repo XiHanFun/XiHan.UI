@@ -12,7 +12,7 @@ const registry = createPerDocumentRegistry<GuardState>(() => ({ count: 0 }))
 function createGuard(doc: Document): HTMLSpanElement {
   const el = doc.createElement('span')
   el.setAttribute(DATA_FOCUS_GUARD, '')
-  // 可 Tab 到达但对屏幕阅读器隐藏，避免读出一个空白可聚焦项
+  // 可 Tab 到达但对屏幕阅读器隐藏
   el.setAttribute('aria-hidden', 'true')
   el.tabIndex = 0
   el.style.cssText = 'outline:none;opacity:0;position:fixed;pointer-events:none'

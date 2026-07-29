@@ -47,8 +47,7 @@ function expectAttr(doc: Document, sel: string, name: string, want: string | nul
 /** 往 input 上派一次可取消的 Escape，回报"这一下有没有被组件吃掉"。 */
 async function pressEscape(ctx: RawStepContext): Promise<{ consumed: boolean }> {
   const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
-  // dispatchEvent 返回 false 即有人调过 preventDefault。合成事件必须显式 cancelable，
-  // 否则 preventDefault 是空操作，这条断言会永远为真
+  // dispatchEvent 返回 false 即有人调过 preventDefault；合成事件必须显式 cancelable
   const notPrevented = inputEl(ctx.doc).dispatchEvent(event)
   await ctx.flush()
   return { consumed: !notPrevented }
@@ -61,8 +60,7 @@ export const textFieldSuite: ConformanceSuite = {
   fixture: {
     part: 'root',
     children: [
-      // 标签与输入框都写成原生标签：for 指向不可标注的元素时这条关联当场作废，
-      // 点标题不聚焦、读屏也念不出名字。两个适配器都得是真的 <label> / <input>
+      // 标签与输入框都写成原生 label / input：for 指向不可标注的元素时关联当场作废
       { part: 'label', tag: 'label', text: '昵称' },
       { part: 'input', tag: 'input' },
       { part: 'clear-trigger', tag: 'button', text: '×' },
@@ -93,7 +91,7 @@ export const textFieldSuite: ConformanceSuite = {
             'readonly': null,
             'data-at-limit': null,
           },
-          // 没开 clearable：按钮收起而不是卸载，节点是作者写的，替他删掉他就再也拿不回来
+          // 没开 clearable：按钮收起而不是卸载，节点是作者写的
           'clear-trigger': { 'hidden': '', 'disabled': '', 'aria-hidden': 'true', 'tabindex': '-1', 'type': 'button' },
         },
       },
@@ -223,7 +221,7 @@ export const textFieldSuite: ConformanceSuite = {
         { kind: 'focus', part: 'input' },
         {
           kind: 'raw',
-          // 原生 maxlength 只拦住"从键盘敲进来"这一路，机器侧的截断才是兜底那道
+          // 原生 maxlength 只拦从键盘敲进来这一路，机器侧的截断是兜底那道
           why: 'maxlength 不在快照的采集清单里；且 jsdom 不对程序写入的 value 施加 maxlength',
           run: async (ctx) => {
             const { doc } = ctx
@@ -258,9 +256,7 @@ export const textFieldSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'raw',
-          // 照常规写法这几步全是空转：focus 落不到禁用的 input 上、按键因此派到 body、
-          // 禁用按钮上的 el.click() 被激活行为短路根本不派事件。
-          // 把守卫整个删掉用例照样绿——必须直接往节点上派事件，才碰得到守卫。
+          // 焦点落不到禁用的 input 上、禁用按钮的 click 被短路，必须直接往节点上派事件
           why: '禁用控件上 focus/click 都被浏览器短路，只有直接派发才碰得到守卫',
           run: async (ctx) => {
             const { doc } = ctx
@@ -269,9 +265,7 @@ export const textFieldSuite: ConformanceSuite = {
               throw new Error('禁用时 Escape 不该被拦下')
             doc.querySelector(CLEAR)!.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
           },
-          // 值有没有真的挡住，看的是"一条变更通知都没派出去"：
-          // 守卫被删掉的话这里会冒出一条 value-change，用例当场变红。
-          // 刻意不比 input.value——上一句直接写过它，那不是组件的产出
+          // 判据是一条变更通知都没派出去；不比 input.value，上一句直接写过它
           expect: { parts: { root: { 'data-empty': null } }, events: [] },
         },
       ],
@@ -324,10 +318,9 @@ export const textFieldSuite: ConformanceSuite = {
           kind: 'raw',
           why: 'type 步骤落不到 value 上；受控下要的是"用户真敲了字"这一路',
           run: async ctx => typeInto(ctx, '换个名字'),
-          // 受控值仍是空串，所以 data-empty 一动不动、清空按钮也仍不可用；
-          // 通知里带的是用户敲的那串，宿主拿它去决定要不要写回。
-          // 这一帧刻意不比 input.value：受控且宿主没写回时，框里显示什么取决于
-          // 宿主有没有因此重渲，那是适配器运行时的事，不是这份规格要定的
+          // 受控值仍是空串，data-empty 与清空按钮不动；
+          // 通知里带的是用户敲的那串。
+          // 不比 input.value：宿主没写回时框里显示什么取决于适配器是否重渲。
           expect: {
             parts: { 'root': { 'data-empty': '' }, 'clear-trigger': { disabled: '' } },
             events: [{ type: 'value-change', detail: { value: '换个名字' } }],

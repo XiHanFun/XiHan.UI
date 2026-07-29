@@ -11,5 +11,5 @@ export const menuAnatomy = createAnatomy('menu', [
   'arrow',
 ])
 
-// 集合只认 item：separator 同样带 data-scope，但不入导航，方向键不会停在分隔线上。
+// 导航集合只认 item。
 export const menuItemQuery: ItemQuery = { scope: menuAnatomy.name, part: 'item' }

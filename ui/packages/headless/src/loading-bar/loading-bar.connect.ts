@@ -24,7 +24,6 @@ export function connectLoadingBar<T extends PropTypes>(
   const phase = state.get()
   const visible = phase !== 'idle'
   const determinate = isLoadingBarDeterminate(prop('value'))
-  // 受控时 cell 直读 prop，非受控时读内部值：两种模式在这里已经收成同一个数
   const value = clampLoadingBarValue(context.get('value'))
   const color = prop('color')
 
@@ -37,18 +36,17 @@ export function connectLoadingBar<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'role': 'progressbar',
-      // progressbar 没有可见标题，名字只能由这里给；不给的话读屏只念得出"进度条"
+      // progressbar 没有可见标题，可及名字只能由这里给
       'aria-label': prop('translations')?.root ?? 'Loading',
       'aria-valuemin': '0',
       'aria-valuemax': String(LOADING_BAR_MAX),
-      // 不确定进度按规范省略 aria-valuenow：报一个自己编出来的数等于对读屏撒谎，
-      // "这个属性缺席"本身才是"进度未知"的表达
+      // 不确定进度按规范省略 aria-valuenow
       'aria-valuenow': determinate ? String(value) : undefined,
       'data-state': phase,
       'data-indeterminate': dataAttr(!determinate),
-      // 收起时留着节点、只加 hidden：卸载掉的是作者写的结构，替他删了他就再也拿不回来
+      // 收起时留着节点，只加 hidden
       'hidden': !visible || undefined,
-      // 厚度这条轴归连接层：缺省值在这里收口，皮肤不再声明 block-size
+      // 厚度由连接层写内联样式
       'style': { blockSize: toBlockSize(prop('height')) },
     }),
 
@@ -60,8 +58,7 @@ export function connectLoadingBar<T extends PropTypes>(
     getRangeProps: () => normalize.element({
       ...parts.range.attrs,
       'data-state': phase,
-      // 宽度这条轴归连接层。两个键每帧都写全（用不上的写空串清掉）：
-      // WC 侧是 Object.assign 到 style 上，这一帧漏掉的键会留着上一帧的值
+      // 两个样式键每帧都写全，用不上的写空串清掉
       'style': { inlineSize: `${value}%`, background: color ?? '' },
     }),
   }

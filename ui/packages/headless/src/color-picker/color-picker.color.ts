@@ -1,10 +1,5 @@
-// 颜色换算这一路的纯函数：不碰 DOM、不认识状态机，单独测。
-// 之所以整块拎出来，是因为取色器的坑几乎全在这里——三/四/六/八位十六进制的写法差异、
-// 用户在输入框里打到一半的半截串、灰度色算不出色相、格式往返后的舍入误差——
-// 放进机器会被状态转移淹没，也就没法逐条钉死。
-//
-// 内部工作色一律用 HSVA：二维取色区的两条轴正是饱和度与明度，
-// 用 RGB 表达的话每挪一格都要反解一次，且灰度处会把色相丢光。
+// 颜色换算的纯函数层：不碰 DOM、不认识状态机。
+// 内部工作色一律用 HSVA，取色区的两条轴就是饱和度与明度。
 import { clamp } from '../shared/number'
 
 export type ColorPickerFormat = 'hex' | 'rgba' | 'hsla'
@@ -18,13 +13,7 @@ export type ColorPickerInputChannel = 'hex' | 'r' | 'g' | 'b' | 'a'
 const CHANNELS: readonly ColorPickerChannel[] = ['hue', 'alpha']
 const INPUT_CHANNELS: readonly ColorPickerInputChannel[] = ['hex', 'r', 'g', 'b', 'a']
 
-/**
- * 把作者写在部件上的声明收成一条真实存在的通道。
- *
- * 声明是字符串（Vue 的 :channel、WC 的 channel 属性），漏写、写错都是可能的；
- * 不收的话会一路变成 aria-label="undefined" 与一条谁也调不动的滑杆。
- * 两个适配器共用这一份归一，同样的作者标记才产出同样的结果。
- */
+/** 把作者写在部件上的通道声明收成一条真实存在的通道；漏写或写错时退到 hue。 */
 export function colorPickerToChannel(raw: string | undefined): ColorPickerChannel {
   return CHANNELS.find(channel => channel === raw) ?? 'hue'
 }
@@ -69,9 +58,7 @@ export interface ColorPickerHsla {
 /**
  * 工作色的锚：某个 HSVA 与它序列化出来的那个串。
  *
- * 灰度与纯黑处色相是算不出来的（r=g=b 时色相无定义），只按当前值反解的话，
- * 用户把取色区拖到最下沿再拖回来，色相就变成了 0（红），这是取色器最常见的塌陷。
- * 锚记住"这个串是由哪个 HSVA 产出的"，串没变就沿用原来的色相。
+ * 灰度与纯黑处色相无定义，锚记住串由哪个 HSVA 产出，串没变就沿用原色相。
  */
 export interface ColorPickerAnchor {
   value: string
@@ -101,7 +88,7 @@ function toPercent(n: number): number {
   return Number.isFinite(n) ? clamp(n, 0, 100) : 0
 }
 
-/** 各通道夹回合法区间并把 r/g/b 取整。比较两个颜色前必须先过这一道，否则 254.6 与 255 会被判成不同色。 */
+/** 各通道夹回合法区间并把 r/g/b 取整。比较两个颜色前必须先过这一道。 */
 export function colorPickerNormalizeRgba(rgba: ColorPickerRgba): ColorPickerRgba {
   return {
     r: toChannel255(rgba.r),
@@ -121,8 +108,8 @@ export function colorPickerNormalizeHsva(hsva: ColorPickerHsva): ColorPickerHsva
 }
 
 /**
- * 十六进制串 → RGBA。接受 3/4/6/8 位，`#` 可省（输入框里用户多半不打它）。
- * 位数不对（打了一半的 `#3b8`… 之类）一律返回 null，让调用方决定是保留草稿还是复原。
+ * 十六进制串 → RGBA。接受 3/4/6/8 位，`#` 可省。
+ * 位数不对一律返回 null，由调用方决定保留草稿还是复原。
  */
 export function colorPickerHexToRgba(input: string): ColorPickerRgba | null {
   const matched = /^#?([0-9a-f]+)$/i.exec(input.trim())
@@ -166,8 +153,7 @@ function hueOf(r: number, g: number, b: number, max: number, delta: number, hint
 
 /**
  * RGBA → HSVA。
- * hueHint 是灰度色的色相兜底：纯黑、纯白、任何灰都算不出色相，
- * 不给兜底就会一律落到 0（红），用户在取色区里往下拖一下再拖回来，颜色就换了个色系。
+ * hueHint 是灰度色的色相兜底：灰度处色相算不出来，不给兜底会一律落到 0。
  */
 export function colorPickerRgbaToHsva(rgba: ColorPickerRgba, hueHint = 0): ColorPickerHsva {
   const { r, g, b, a } = colorPickerNormalizeRgba(rgba)
@@ -219,7 +205,7 @@ export function colorPickerRgbaToHsla(rgba: ColorPickerRgba, hueHint = 0): Color
   const min = Math.min(rr, gg, bb)
   const delta = max - min
   const l = (max + min) / 2
-  // 分母在纯黑/纯白处趋近 0，此时饱和度无定义，直接取 0（不能除下去，会得到 Infinity）
+  // 分母在纯黑/纯白处为 0，除下去会得到 Infinity，此时饱和度取 0
   const denominator = 1 - Math.abs(2 * l - 1)
   return {
     h: hueOf(rr, gg, bb, max, delta, hueHint),
@@ -272,8 +258,7 @@ function splitArgs(body: string): string[] {
 /**
  * 任意受支持写法 → RGBA；解析不出返回 null。
  * 支持 `#rgb` / `#rgba` / `#rrggbb` / `#rrggbbaa`、`rgb()` / `rgba()`、`hsl()` / `hsla()`。
- * 刻意不认颜色关键字（`red`、`transparent`）：那需要一张随浏览器版本走的名字表，
- * 而取色器的取值口径必须是确定的。
+ * 不认颜色关键字（`red`、`transparent`）。
  */
 export function colorPickerParse(input: string): ColorPickerRgba | null {
   const raw = input.trim().toLowerCase()
@@ -309,15 +294,12 @@ export function colorPickerParse(input: string): ColorPickerRgba | null {
   return colorPickerHslaToRgba({ h, s, l, a: alpha })
 }
 
-/** 小数尾巴留三位就够：alpha 再精细人眼也分不出，而尾巴会让两次相同的操作产出不同的串。 */
+/** alpha 文本保留三位小数，避免浮点尾巴让相同操作产出不同的串。 */
 function alphaText(a: number): string {
   return String(Math.round(toAlpha01(a) * 1000) / 1000)
 }
 
-/**
- * RGBA → 对外的值串。alpha 关掉时透明度恒按 1 输出：
- * 组件不带透明度却吐出一个半透明值，调用方拿去用会莫名其妙。
- */
+/** RGBA → 对外的值串。alpha 关掉时透明度恒按 1 输出。 */
 export function colorPickerToString(rgba: ColorPickerRgba, format: ColorPickerFormat, alpha: boolean): string {
   const color = colorPickerNormalizeRgba({ ...rgba, a: alpha ? rgba.a : 1 })
   if (format === 'rgba')
@@ -326,11 +308,11 @@ export function colorPickerToString(rgba: ColorPickerRgba, format: ColorPickerFo
     const hsla = colorPickerRgbaToHsla(color)
     return `hsla(${Math.round(hsla.h)}, ${Math.round(hsla.s)}%, ${Math.round(hsla.l)}%, ${alphaText(color.a)})`
   }
-  // 十六进制：不透明时只写六位，八位写法在不少地方（老浏览器、设计稿）反而认不出来
+  // 十六进制：不透明时只写六位
   return colorPickerRgbaToHex(color, alpha && color.a < 1)
 }
 
-/** 画在色块上的 CSS 颜色。恒用 rgba()：十六进制不带透明度时色块会显得比实际值更实。 */
+/** 画在色块上的 CSS 颜色，恒用 rgba() 以保留透明度。 */
 export function colorPickerCss(rgba: ColorPickerRgba): string {
   const color = colorPickerNormalizeRgba(rgba)
   return `rgba(${color.r}, ${color.g}, ${color.b}, ${alphaText(color.a)})`
@@ -356,12 +338,9 @@ export function colorPickerSameColor(a: string, b: string): boolean {
 }
 
 /**
- * 由当前值串结算出工作色。
- * 锚记的串与当前值逐字相同 = 这个串正是那次操作产出的，沿用锚里的 HSVA（色相因此不丢）；
- * 否则说明值是从外面写进来的，老老实实反解。
+ * 由当前值串结算出工作色：与锚记的串逐字相同就沿用锚里的 HSVA，否则反解。
  *
- * 逐字比而不是比颜色：hsla 写法会把百分数舍进整数，往返一趟颜色就差了一点点，
- * 按颜色比会在拖动途中随机失配，色相跟着一跳一跳。
+ * 必须逐字比而非比颜色，hsla 往返有舍入误差，按颜色比会在拖动途中随机失配。
  */
 export function colorPickerResolveHsva(value: string, anchor: ColorPickerAnchor | null): ColorPickerHsva {
   if (anchor && anchor.value === value)
@@ -370,19 +349,14 @@ export function colorPickerResolveHsva(value: string, anchor: ColorPickerAnchor 
 }
 
 /**
- * 解析值串，解析不出就退到兜底色。
- * 展示用途（色块背景、预设色板）走这条：一个写错的串不该让整块颜色消失，
- * 而改值那条路必须走 colorPickerParse 自己判 null——那里猜一个颜色出来就是篡改用户的值。
+ * 解析值串，解析不出就退到兜底色。仅供展示用途；
+ * 改值那条路必须走 colorPickerParse 自己判 null。
  */
 export function colorPickerToRgba(value: string): ColorPickerRgba {
   return colorPickerParse(value) ?? colorPickerParse(COLOR_PICKER_FALLBACK)!
 }
 
-/**
- * 两条通道的区间。
- * 透明度对外一律按 0-100 走（而不是内部那个 0-1 的小数）：读屏念 "80" 比念 "0.8" 好懂，
- * 方向键一格也才有个确定的手感——按 0-1 算的话一格要么大得离谱要么小得没反应。
- */
+/** 两条通道的区间。透明度对外按 0-100 走，不是内部那个 0-1 的小数。 */
 export function colorPickerChannelRange(channel: ColorPickerChannel): ColorPickerChannelRange {
   return channel === 'hue'
     ? { min: 0, max: 360, step: 1, largeStep: 10 }
@@ -417,10 +391,7 @@ export function colorPickerInputText(hsva: ColorPickerHsva, channel: ColorPicker
   return String(rgba[channel])
 }
 
-/**
- * 把输入框里的一串字收成新的工作色；收不了（打了一半、打了非法字符）返回 null，
- * 由调用方决定是留着草稿还是复原——绝不能猜一个颜色出来，那会在用户打字途中乱跳。
- */
+/** 把输入框里的一串字收成新的工作色；收不了返回 null，由调用方决定留草稿还是复原。 */
 export function colorPickerApplyInput(
   hsva: ColorPickerHsva,
   channel: ColorPickerInputChannel,
@@ -435,7 +406,7 @@ export function colorPickerApplyInput(
     const rgba = colorPickerHexToRgba(raw)
     if (!rgba)
       return null
-    // 六位写法不带透明度：保留当前透明度，别把用户刚调好的半透明冲成不透明
+    // 六位写法不带透明度，此时保留当前透明度
     const hasAlpha = /^#?(?:[0-9a-f]{4}|[0-9a-f]{8})$/i.test(raw)
     return colorPickerRgbaToHsva({ ...rgba, a: hasAlpha && alpha ? rgba.a : hsva.a }, hsva.h)
   }
@@ -447,6 +418,6 @@ export function colorPickerApplyInput(
     return colorPickerWithChannel(hsva, 'alpha', n)
 
   const rgba = colorPickerHsvaToRgba(hsva)
-  // 色相经 hint 带过去：把某个分量调到与另两个相等（灰）时，色相本来会塌成红
+  // 色相经 hint 带过去，调成灰时色相会塌成 0
   return colorPickerRgbaToHsva({ ...rgba, [channel]: clamp(n, 0, 255) }, hsva.h)
 }

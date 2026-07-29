@@ -15,7 +15,7 @@ export function connectPopover<T extends PropTypes>(
   const modal = prop('modal') ?? false
   const ids = scope.ids('popover', 'trigger', 'content', 'title', 'description')
   const stateAttr = open ? 'open' : 'closed'
-  // 位置由引擎写进 context；这里只读结果，不量 DOM、不调引擎，保持纯函数
+  // 位置由引擎写进 context，这里只读结果，不量 DOM、不调引擎
   const position = context.get('position')
   const placement = position?.placement ?? prop('placement') ?? 'bottom'
 

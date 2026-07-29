@@ -8,11 +8,9 @@ type FileUploadProps = FileUploadSchema['props']
 
 export const XhFileUploadRoot = defineComponent({
   name: 'XhFileUploadRoot',
-  // 缺省值的唯一事实源在 connect 与机器 —— 凡是那边有兜底的一律 default: undefined。
-  // allowDrop 尤其：裸 Boolean 声明会把缺省压成 false，拖拽就默默关掉了
+  // 有 connect 与机器兜底的 prop 一律 default: undefined
   props: {
-    // 文件列表是数组：给 default: undefined 才表达得了"非受控"，
-    // 落成空数组会被当作"受控且当前一个文件都没有"，用户从此再也选不进去
+    // default: undefined 表示非受控
     files: { type: Array as PropType<File[]>, default: undefined },
     defaultFiles: { type: Array as PropType<File[]>, default: undefined },
     accept: { type: [String, Array] as PropType<string | string[]>, default: undefined },
@@ -27,8 +25,7 @@ export const XhFileUploadRoot = defineComponent({
     capture: { type: String as PropType<'user' | 'environment'>, default: undefined },
     translations: { type: Object as PropType<Partial<FileUploadTranslations>>, default: undefined },
   },
-  // files-change 携带 { files }；update:files 携带裸数组，支持 v-model:files。
-  // file-accept / file-reject 是另外两条线：宿主据此发起上传、或提示用户为什么没收下
+  // files-change 携带 { files }，update:files 携带裸数组；file-accept / file-reject 逐个文件报告
   emits: ['files-change', 'update:files', 'file-accept', 'file-reject'],
   setup(props, { slots, emit }) {
     const onFilesChange: FileUploadProps['onFilesChange'] = (details) => {
@@ -59,7 +56,7 @@ export const XhFileUploadLabel = defineComponent({
   name: 'XhFileUploadLabel',
   setup(_, { slots }) {
     const ctx = useFileUploadContext()
-    // 必须是原生 label：getLabelProps 的 for 恒写向隐藏输入，别的标签点不开选择框
+    // 用原生 label，getLabelProps 的 for 指向隐藏输入
     return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -99,13 +96,9 @@ export const XhFileUploadItemGroup = defineComponent({
 export const XhFileUploadItem = defineComponent({
   name: 'XhFileUploadItem',
   props: {
-    /** 这一行显示哪个文件。v-for 遍历 acceptedFiles 时直接把元素传进来即可。 */
+    /** 这一行显示哪个文件。 */
     file: { type: Object as PropType<File>, default: undefined },
-    /**
-     * 也可以只声明下标，由列表里取（与 WC 侧条目上的 index 属性同义）。
-     * 固定几个上传位、位置与文件一一对应的界面用这个写法更顺手。
-     * 也收字符串：模板里写 index="0"（不带冒号）拿到的就是字符串。
-     */
+    /** 改用下标从 acceptedFiles 里取文件，兼收字符串以支持模板里写 index="0"。 */
     index: { type: [Number, String] as PropType<number | string>, default: undefined },
   },
   setup(props, { slots }) {
@@ -117,12 +110,11 @@ export const XhFileUploadItem = defineComponent({
         return undefined
       return ctx.api.value.acceptedFiles[Math.trunc(Number(props.index))]
     })
-    // file 恒有值时才建条目上下文；子部件全靠它拿文件，没有文件就没什么可描述的
+    // 条目上下文，子部件从中取文件
     const item = computed<FileUploadItemProps>(() => ({ file: file.value as File }))
     provideFileUploadItem({ item })
     return () => {
-      // 下标指向一个还不存在的文件（列表比位子短）：留一个空壳，不打任何组件属性，
-      // 子部件也不渲染——照 file 是 undefined 往下走会当场炸在 file.name 上
+      // 下标指向的文件不存在时只渲染空壳，不打组件属性也不渲染子部件
       if (!file.value)
         return h('div')
       return h('div', ctx.api.value.getItemProps(item.value) as Record<string, unknown>, slots.default?.())
@@ -135,7 +127,7 @@ export const XhFileUploadItemName = defineComponent({
   setup(_, { slots }) {
     const ctx = useFileUploadContext()
     const { item } = useFileUploadItemContext()
-    // 作者写了插槽就听作者的（要加图标、要截断中段），否则显示文件名
+    // 有插槽用插槽，否则显示文件名
     return () => h(
       'span',
       ctx.api.value.getItemNameProps(item.value) as Record<string, unknown>,
@@ -149,7 +141,7 @@ export const XhFileUploadItemSizeText = defineComponent({
   setup(_, { slots }) {
     const ctx = useFileUploadContext()
     const { item } = useFileUploadItemContext()
-    // 字节数格式化成人读的形式；作者要换单位或换语言就自己写插槽
+    // 有插槽用插槽，否则显示格式化后的文件大小
     return () => h(
       'span',
       ctx.api.value.getItemSizeTextProps(item.value) as Record<string, unknown>,

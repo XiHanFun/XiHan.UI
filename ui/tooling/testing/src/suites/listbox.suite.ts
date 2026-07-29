@@ -140,8 +140,7 @@ export const listboxSuite: ConformanceSuite = {
       },
     },
     {
-      // 整组只占一个 Tab 位：多一个会让用户按 Tab 在列表里反复停留，
-      // 一个都没有则键盘再也进不来（无锚点时须由容器兜底）
+      // 整组只占一个 Tab 位；无锚点时须由容器兜底
       name: 'roving tabindex：整个列表只有一个 Tab 停靠点，焦点进来后容器让位',
       spec: { apg: APG },
       covers: ['listbox.kbd.tab'],
@@ -346,8 +345,7 @@ export const listboxSuite: ConformanceSuite = {
       ],
     },
     {
-      // 这里一律用 Enter 而不是 Space：连打缓冲是有时效的，同一用例里先敲过字母再按空格，
-      // 空格会被当成词中间的字符收进查询串，确认键那一路根本走不到——断言看着绿，守卫却没被碰过
+      // 一律用 Enter 而不是 Space：先敲过字母时空格会被连打缓冲当成查询串里的字符
       name: '禁用条目仍可聚焦、仍是方向键起点，但确认键不认它',
       spec: { apg: `${APG}#keyboardinteraction` },
       steps: [
@@ -369,8 +367,7 @@ export const listboxSuite: ConformanceSuite = {
             events: [{ type: 'value-change', detail: { value: ['apple'] } }],
           },
         },
-        // 条目用 aria-disabled 表达禁用，click 不会被激活行为短路，事件真派得出去，
-        // 因此这一步碰得到 connect 里的禁用守卫
+        // 条目用 aria-disabled 表达禁用，click 不被短路，事件派得出去才碰得到 connect 的守卫
         { kind: 'click', part: 'item[1]', expect: { parts: { item: selected('apple') }, events: [] } },
         {
           kind: 'click',

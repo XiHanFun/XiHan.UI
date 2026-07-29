@@ -7,15 +7,12 @@ export type FormValues = Record<string, unknown>
 
 /**
  * 什么时候跑校验：
- * - submit：只在提交时跑，整表替换（默认）。用户没提交过就不该看见红字。
+ * - submit：只在提交时跑，整表替换（默认）。
  * - blur：字段失去焦点时跑一次，只更新这一个字段的错误。
  * - change：字段值改动后跑一次，同样只更新这一个字段的错误。
  *
- * blur / change 两种模式下 validate 仍然是整表跑（校验常有跨字段规则，
- * 比如"确认密码要和密码一致"），但只把当事字段那一条写回错误表——
- * 整表写回会把用户还没填到的字段全部当场标红。
- *
- * 提交这一路永远整表跑、整表替换，与 validateOn 无关。
+ * blur / change 两种模式下 validate 仍是整表跑（校验可能带跨字段规则），
+ * 但只把当事字段那一条写回错误表。提交这一路永远整表替换，与 validateOn 无关。
  */
 export type FormValidateOn = 'submit' | 'blur' | 'change'
 
@@ -41,9 +38,8 @@ export interface FormInvalidDetails {
 
 /**
  * 字段容器自报家门：名字由作者声明，connect 据此产出 id、data-name 与失焦上报。
- * connect 因此是 (state/context/prop, 本容器声明) 的纯函数，不反查 DOM——
- * Vue 侧 connect 在 render 期求值（本帧 DOM 还不存在），WC 侧在 updated 后求值，
- * 连接期读 DOM 会让两个适配器的首帧快照分叉。
+ * connect 不得反查 DOM：Vue 侧在 render 期求值（本帧 DOM 还不存在）、WC 侧在 updated 后求值，
+ * 读 DOM 会让两个适配器的首帧快照分叉。
  */
 export interface FormFieldGroupProps {
   /** 字段名，与 values / errors 表里的键一致。 */
@@ -72,21 +68,21 @@ export interface FormSchema extends MachineSchema {
     errors?: FormErrorPatch
     defaultErrors?: FormErrorPatch
     /**
-     * 校验函数，由作者给。同步返回「字段名 → 错误文案」，没错的字段给空串或干脆不写。
-     * 不给这个函数就等于没有校验，提交时沿用当下的错误表（作者可以自己往里写）。
+     * 校验函数。同步返回「字段名 → 错误文案」，没错的字段给空串或干脆不写。
+     * 不给这个函数即没有校验，提交时沿用当下的错误表。
      */
     validate?: (values: FormValues) => FormErrorPatch
     /** 校验时机，默认 submit。 */
     validateOn?: FormValidateOn
     /** 整个表单禁用：提交、重置、写值一概不发生，两颗按钮带原生 disabled。 */
     disabled?: boolean
-    /** 只读：写值与重置不发生，但仍可提交（用户仍能确认这份内容）。 */
+    /** 只读：写值与重置不发生，但仍可提交。 */
     readOnly?: boolean
     /** 值表变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValuesChange?: (details: FormValuesChangeDetails) => void
     /** 错误表变化意图回调；受控时是唯一出口。 */
     onErrorsChange?: (details: FormErrorsChangeDetails) => void
-    /** 校验通过才调。校验不通过时一次也不会调到它。 */
+    /** 校验通过才调。 */
     onSubmit?: (details: FormSubmitDetails) => void
     /** 校验不通过时调，带上拦下来的整张错误表。 */
     onInvalid?: (details: FormInvalidDetails) => void
@@ -101,8 +97,7 @@ export interface FormSchema extends MachineSchema {
   refs: FormRefs
   /**
    * idle = 还没提交失败过（错误摘要不显形，哪怕错误表非空）；
-   * invalid = 上一次提交被拦下了。摘要是"提交失败"的回执，不是"字段有错"的实时镜子——
-   * 用户刚打开表单就看见一片红字，只会以为自己已经填错了。
+   * invalid = 上一次提交被拦下了。
    */
   state: 'idle' | 'invalid'
   event:
@@ -113,7 +108,7 @@ export interface FormSchema extends MachineSchema {
     /** 校验跑完且全过：带上这一拍的值，回调直接用它，不再回头读 context。 */
     | { type: 'VALIDATION.PASS', errors: FormErrors, values: FormValues }
     /**
-     * 校验跑完有错。errors 随事件带走而不是从 context 现读——
+     * 校验跑完有错。errors 随事件带走而不从 context 现读：
      * 错误表受控时 context.set 只发回调、不落值，那一刻回头读到的还是宿主的旧表。
      */
     | { type: 'VALIDATION.FAIL', errors: FormErrors, values: FormValues }
@@ -152,7 +147,7 @@ export interface FormApi<T extends PropTypes = PropTypes> {
   /** 出错的字段名，插入顺序。 */
   errorNames: string[]
   errorCount: number
-  /** 错误表非空。与"提交失败过"无关，刚挂载时作者塞进来的错误也算。 */
+  /** 错误表非空。与"提交失败过"无关，挂载时作者塞进来的错误也算。 */
   invalid: boolean
   /** 上一次提交被拦下了：错误摘要据此显形。 */
   submitFailed: boolean
@@ -170,7 +165,7 @@ export interface FormApi<T extends PropTypes = PropTypes> {
   /** 写一个字段的错误；不给文案（或给空串）即清掉这一条。 */
   setFieldError: (name: string, message?: string) => void
   clearErrors: () => void
-  /** 走完整的校验与提交流程，与用户按提交键完全同一条路。 */
+  /** 走完整的校验与提交流程，与用户按提交键同一条路。 */
   submit: () => void
   /** 值与错误都回到初始；禁用或只读时不动。 */
   reset: () => void

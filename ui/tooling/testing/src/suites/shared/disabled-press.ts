@@ -1,21 +1,15 @@
 import type { StepWithExpect } from '../../conformance/types'
 
 /**
- * 「禁用后点不动」这条断言不能靠 `click` 步骤：它走的是 `el.click()`，
- * 而 jsdom 与浏览器对禁用的表单控件都会在激活行为里直接短路——事件压根不派发。
- * 于是无论 connect 里有没有那道禁用守卫，用例都恒绿：删掉守卫照样全过。
- *
- * 改为直接 dispatchEvent：程序化派发不走激活行为的短路，监听器真会跑到，
- * 守卫这才被验到。这同时也是真实存在的一路——作者可能把 props 摊到非按钮节点上
- * （那时原生 disabled 根本不生效），或者代码里直接派发合成事件。
+ * 在禁用部件上直接派发 click 事件，用于验 connect 里的禁用守卫。
+ * 不能用 `click` 步骤：`el.click()` 在禁用控件上被激活行为短路、事件不派发，断言恒绿。
  */
 export function dispatchClickOnDisabled(scope: string, part: string, expect: StepWithExpect['expect']): StepWithExpect {
   return {
     kind: 'raw',
     why: '禁用控件上 el.click() 会被激活行为短路、事件不派发，断言恒成立；必须直接派发才验得到守卫',
     run: ({ doc }) => {
-      // 认 name[i] 这种带下标的写法：套件其余地方引用重复部件都是这个形状，
-      // 直接把它拼进选择器会得到 [data-part="swatch-item[1]"] 这种永远选不中的东西
+      // part 可写成 name[i]，下标须拆出来，拼进选择器会永远选不中
       const matched = /^([a-z-]+)\[(\d+)\]$/.exec(part)
       const name = matched ? matched[1]! : part
       const index = matched ? Number(matched[2]) : 0

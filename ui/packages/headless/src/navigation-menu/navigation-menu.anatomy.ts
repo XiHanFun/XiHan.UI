@@ -13,7 +13,5 @@ export const navigationMenuAnatomy = createAnatomy('navigation-menu', [
   'viewport',
 ])
 
-// 方向键的集合只认 trigger：link 同样带 data-scope，但它住在展开的面板里，
-// 不该被顶层的方向键当成兄弟节点收进来。
-// 归属过滤保证嵌套的另一套导航菜单不会被外层吞并。
+// 方向键的集合只认 trigger，归属过滤隔开嵌套的另一套导航菜单。
 export const navigationMenuTriggerQuery: ItemQuery = { scope: navigationMenuAnatomy.name, part: 'trigger' }

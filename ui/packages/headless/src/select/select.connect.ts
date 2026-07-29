@@ -30,19 +30,16 @@ export function connectSelect<T extends PropTypes>(
   const open = state.get() === 'open'
   const ids = scope.ids('select', 'label', 'trigger', 'content', 'value-text')
 
-  // 带 Ctrl/Meta/Alt 的组合一律不归连打检索管：navIntentFromKey 早就立了这条规矩
-  // （它对这类组合返回 null），检索这一侧若不跟上，Ctrl+A / Ctrl+F / Cmd+R 会被
-  // preventDefault 吞掉，收起态还会顺手把选中值悄悄改掉。
-  // Shift 不算——Shift+字母就是大写字母，本来就该参与检索。
+  // 带 Ctrl/Meta/Alt 的组合不归连打检索管，否则 Ctrl+A / Cmd+R 会被 preventDefault 吞掉；
+  // Shift+字母是大写字母，仍参与检索。
   const isTypeaheadEvent = (event: KeyboardEvent): boolean =>
     !event.ctrlKey && !event.metaKey && !event.altKey
   const stateAttr = open ? 'open' : 'closed'
-  // 位置由引擎写进 context；这里只读结果，不量 DOM、不调引擎，保持纯函数
+  // 位置由引擎写进 context，这里只读结果，不量 DOM、不调引擎
   const position = context.get('position')
   const placement = position?.placement ?? prop('placement') ?? SELECT_DEFAULT_PLACEMENT
   const value = context.get('value') ?? null
-  // 文本由机器在 DOM 就位后回填；还没结算出来（SSR、条目尚未挂载）时退回值本身，
-  // 至少不会把有选中的控件显示成占位符
+  // 文本由机器在 DOM 就位后回填；还没结算出来时退回值本身
   const valueText = context.get('valueText') ?? value
   const placeholder = prop('placeholder') ?? null
   const displayText = valueText ?? placeholder ?? ''
@@ -59,9 +56,8 @@ export function connectSelect<T extends PropTypes>(
   })
 
   /**
-   * 条目集合只在事件那一刻读，两个适配器此时看到的是同一份活 DOM，顺序即文档序。
-   * 收起态条目连同 content 一起 hidden，但仍在文档里，查询照样命中——
-   * 收起态的连打检索正是靠这一点工作。
+   * 条目集合只在事件那一刻读活 DOM，顺序即文档序。
+   * 收起态条目虽 hidden 但仍在文档里，查询照样命中，收起态连打靠这一点。
    */
   const items = (): HTMLElement[] => queryItems(refs.get('getContentEl')(), selectItemQuery)
 
@@ -123,39 +119,34 @@ export function connectSelect<T extends PropTypes>(
       ...parts.trigger.attrs,
       'id': ids.trigger,
       'type': 'button',
-      // trigger 是单体控件（与集合条目相反）：用原生 disabled，不可聚焦也不派 click，
-      // 禁用的下拉本就不该有任何键盘入口
+      // trigger 是单体控件：用原生 disabled，不可聚焦也不派 click
       'disabled': disabled || undefined,
       // 展开的是 listbox 不是 menu：读屏据此播报「折叠列表框」而不是「菜单按钮」
       'aria-haspopup': 'listbox',
       'aria-expanded': open ? 'true' : 'false',
       'aria-controls': ids.content,
-      // 名字 = 标签 + 当前值。只指 label 的话读屏永远念不出用户选了什么——
-      // accname 里 aria-labelledby 的优先级高于元素内容，会把内嵌的 value-text 挤掉。
-      // 作者没写 label 时那一段是悬空 IDREF，按 accname 规则跳过，名字回落成当前值。
+      // 名字 = 标签 + 当前值：aria-labelledby 优先级高于元素内容，只指 label 会挤掉 value-text。
+      // 作者没写 label 时那段是悬空 IDREF，按 accname 规则跳过。
       'aria-labelledby': `${ids.label} ${ids['value-text']}`,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-placeholder': dataAttr(value == null),
       'onClick': () => send({ type: 'TOGGLE', focus: 'selected' }),
       'onKeydown': (event: KeyboardEvent) => {
-        // 纵向轴 + 不收 Home/End：收起态的上下键既展开又把高亮落到选中项的相邻项；
-        // 返回 null（左右键、带修饰键的组合）不归导航管，此时绝不 preventDefault
+        // 纵向轴且不收 Home/End；返回 null 的按键不归导航管，不得 preventDefault
         const intent = navIntentFromKey(event, { axis: 'vertical', home: false })
         if (intent) {
           event.preventDefault()
           send({ type: 'OPEN', focus: intent })
           return
         }
-        // Enter 必须吞掉：按钮的默认激活会再合成一次 click，
-        // 展开随即被那次 TOGGLE 关掉，看起来就是「按了没反应」
+        // Enter 必须吞掉：按钮默认激活会再合成一次 click，展开会被那次 TOGGLE 关掉
         if (event.key === 'Enter') {
           event.preventDefault()
           send({ type: 'OPEN', focus: 'selected' })
           return
         }
-        // 收起态连打直接改选中值，不展开。缓冲区空时空格不算字符（push 返回 null），
-        // 落到下面按「展开」处理；缓冲区非空时它是词中间的空格，归检索
+        // 收起态连打直接改选中值，不展开；缓冲区空时空格不算字符，落到下面按展开处理
         const query = isTypeaheadEvent(event) ? refs.get('typeahead').push(event.key) : null
         if (query != null) {
           event.preventDefault()
@@ -196,16 +187,15 @@ export function connectSelect<T extends PropTypes>(
         insetBlockStart: `${position?.y ?? 0}px`,
       },
     }),
-    // 键盘全在 content 上收口：条目只管声明自己，一次冒泡一个处理器。
-    // Escape 不在这里收——它归消解层管（只有栈顶层响应，嵌套浮层才能逐层关闭）。
+    // 键盘全在 content 上收口，条目只管声明自己。
+    // Escape 归消解层管，只有栈顶层响应。
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
       'id': ids.content,
       'role': 'listbox',
       'aria-labelledby': ids.label,
-      // 有锚点时 Tab 位归高亮条目；展开着却没有锚点（条目被删、或首帧还没挑出锚点）时
-      // 由容器兜底，否则整个列表一个 Tab 停靠点都没有、键盘再也进不去。
-      // 收起态不需要兜底：content 此时是 hidden。
+      // 有锚点时 Tab 位归高亮条目；展开却无锚点时由容器兜底，否则列表没有任何 Tab 停靠点。
+      // 收起态不需要兜底，content 此时是 hidden。
       'tabindex': open && highlighted == null ? 0 : -1,
       'data-state': stateAttr,
       'data-placement': placement,
@@ -228,8 +218,7 @@ export function connectSelect<T extends PropTypes>(
           activate(event)
           return
         }
-        // 连打只移高亮不选中。这个键已经被检索吞掉，一律拦下默认行为——
-        // 词中间的空格若放行，页面会跟着滚一屏
+        // 连打只移高亮不选中；键已被检索吞掉，一律拦下默认行为，否则空格会滚页
         const query = isTypeaheadEvent(event) ? refs.get('typeahead').push(event.key) : null
         if (query != null) {
           event.preventDefault()
@@ -249,13 +238,11 @@ export function connectSelect<T extends PropTypes>(
       // listbox 的选中语义是 aria-selected（不是 aria-checked）；未选中必须显式输出 false，
       // 省略会让读屏无从区分「未选中」与「不是选项」
       'aria-selected': value === item.value ? 'true' : 'false',
-      // 集合条目一律 aria-disabled，绝不输出原生 disabled：原生 disabled 不可聚焦、
-      // 也不派发 click，禁用策略与样式会就此分裂。与 trigger 相反——那是单体控件。
+      // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、也不派 click
       'aria-disabled': item.disabled ? 'true' : 'false',
       // 高亮是键盘焦点所在，与选中互相独立：可以高亮着未选中的条目
       'data-highlighted': dataAttr(highlighted === item.value),
-      // roving tabindex：整组只有高亮条目留在 Tab 序列内。锚点在展开那一刻由机器落位，
-      // 收起态无锚点——此时条目连同 content 一起 hidden，本就不可达。
+      // roving tabindex：整组只有高亮条目留在 Tab 序列内；收起态无锚点
       'tabindex': highlighted === item.value ? 0 : -1,
       'onClick': () => {
         if (!item.disabled)
@@ -273,8 +260,7 @@ export function connectSelect<T extends PropTypes>(
       ...itemStateAttrs(item),
       'aria-hidden': 'true',
     }),
-    // 表单出口：选中值靠这份原生 select 随表单提交、被 required 校验看见。
-    // 它对键盘与读屏都不存在（tabindex=-1 + aria-hidden），交互全部由 trigger 与条目承担。
+    // 表单出口：选中值靠这份原生 select 提交并被 required 校验看见，对键盘与读屏不存在。
     getHiddenSelectProps: () => normalize.select({
       ...parts['hidden-select'].attrs,
       // name 缺省即不产出该属性，此时这份 select 不参与提交

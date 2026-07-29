@@ -16,18 +16,18 @@ const { createMachine } = setup<ScrollAreaSchema>()
 
 /** 收起前的默认等待毫秒。 */
 export const SCROLL_AREA_HIDE_DELAY = 600
-/** 未指定 type 时的露面时机：指针进入才露出，与桌面端的常见观感一致。 */
+/** 未指定 type 时的露面时机。 */
 export const SCROLL_AREA_DEFAULT_TYPE: ScrollAreaType = 'hover'
 
 const AXES: readonly Orientation[] = ['vertical', 'horizontal']
 const EMPTY_METRICS: ScrollAreaAxisMetrics = { viewport: 0, content: 0, scroll: 0, track: 0 }
 
-/** 逐字段比。默认的 Object.is 在这里不成立：每次量尺寸都产出一个新对象，引用恒不相等。 */
+/** 逐字段比：每次量尺寸都产出新对象，默认的 Object.is 恒不相等。 */
 function sameMetrics(a: ScrollAreaAxisMetrics, b: ScrollAreaAxisMetrics | undefined): boolean {
   return !!b && a.viewport === b.viewport && a.content === b.content && a.scroll === b.scroll && a.track === b.track
 }
 
-/** 量尺子与写回滚动位置只用得到这三样，单独拎出来给 action 与推迟一拍的那一路共用。 */
+/** 量尺寸与写回滚动位置用到的参数子集。 */
 type MeasureParams = Pick<Params<ScrollAreaSchema>, 'refs' | 'prop' | 'context'>
 
 function measureAxis(
@@ -46,13 +46,10 @@ function measureAxis(
   }
 }
 
-/**
- * 两条轴一起量。值没变就不写：滚动一次就换一批新对象的话，
- * 没动的那条轴也会被判成变了，两个适配器每帧都要白重渲一遍。
- */
+/** 两条轴一起量，值没变就不写回 context。 */
 function runMeasure(p: MeasureParams): void {
   const viewport = p.refs.get('getViewportEl')()
-  // 无 DOM 环境（纯逻辑测试 / SSR）：尺寸全留在初值，状态转移不受影响
+  // 无 DOM 环境：尺寸留在初值，状态转移不受影响
   if (!viewport)
     return
   const dir = p.prop('dir')
@@ -64,7 +61,7 @@ function runMeasure(p: MeasureParams): void {
   }
 }
 
-/** 写回滚动位置。RTL 横轴要翻回负数，否则内容会往反方向跳。 */
+/** 写回滚动位置；RTL 横轴要翻回负数。 */
 function applyScroll(viewport: HTMLElement, axis: Orientation, offset: number, dir: Direction | undefined): void {
   const raw = toDomScroll(offset, { axis, dir })
   if (axis === 'vertical')
@@ -73,8 +70,7 @@ function applyScroll(viewport: HTMLElement, axis: Orientation, offset: number, d
     viewport.scrollLeft = raw
 }
 
-// 指针进出组件在四个状态里的分工不同，逐个写清楚而不是共用一份：
-// 收起态收到 POINTER.LEAVE 只该记账（此时若跳去 hiding，滚动条反而会冒出来）。
+// 指针进出在四个状态里的分工不同，逐个声明。
 const ENTER_SHOWS: Array<Transition<ScrollAreaSchema>> = [
   { guard: 'isHoverType', target: 'visible', actions: ['markPointerInside', 'measureSoon'] },
   { actions: ['markPointerInside'] },
@@ -87,7 +83,7 @@ const SCROLL_KEEPS_ALIVE: Array<Transition<ScrollAreaSchema>> = [
 export const scrollAreaMachine = createMachine({
   name: 'scroll-area',
   context: ({ cell }) => ({
-    // 尺寸是量出来的事实，不受控、也不对外通知：宿主没有"正确答案"可以写回来
+    // 尺寸是量出来的，不受控、不对外通知
     vertical: cell<ScrollAreaAxisMetrics>(() => ({ defaultValue: EMPTY_METRICS, isEqual: sameMetrics })),
     horizontal: cell<ScrollAreaAxisMetrics>(() => ({ defaultValue: EMPTY_METRICS, isEqual: sameMetrics })),
     pointerInside: cell<boolean>(() => ({ defaultValue: false })),
@@ -98,12 +94,12 @@ export const scrollAreaMachine = createMachine({
     getContentEl: () => null,
     getScrollbarEl: () => null,
   }),
-  // auto / always 的可见性压根不看状态，起点落在 visible 只是让状态名读起来不自相矛盾
+  // auto / always 的可见性不看状态，起点落在 visible
   initialState: ({ prop }) => {
     const type = prop('type') ?? SCROLL_AREA_DEFAULT_TYPE
     return type === 'hover' || type === 'scroll' ? 'hidden' : 'visible'
   },
-  // 尺寸监听与首帧测量全程挂着：滚动是原生的，组件只是跟着它重画滑块
+  // 尺寸监听与首帧测量全程挂着
   effects: ['trackViewport'],
   on: {
     'MEASURE': { actions: ['measure'] },
@@ -114,7 +110,7 @@ export const scrollAreaMachine = createMachine({
     hidden: {
       on: {
         'POINTER.ENTER': ENTER_SHOWS,
-        // 没露过面就谈不上收起：这里只记账，跳去 hiding 会让滚动条凭空冒出来
+        // 收起态只记账，跳去 hiding 会让滚动条凭空冒出来
         'POINTER.LEAVE': { actions: ['clearPointerInside'] },
         'SCROLL': SCROLL_KEEPS_ALIVE,
         'DRAG.START': { target: 'dragging', actions: ['startDrag'] },
@@ -139,8 +135,7 @@ export const scrollAreaMachine = createMachine({
         'after.scrollHideDelay': { target: 'hidden' },
         'POINTER.ENTER': ENTER_SHOWS,
         'POINTER.LEAVE': { actions: ['clearPointerInside'] },
-        // 每滚一下就把倒计时推倒重来：reenter 强制重挂计时器，否则第一次滚动
-        // 起的那只计时器会照常走完，手还在滚滚动条就先没了
+        // reenter 强制重挂计时器，把倒计时推倒重来
         'SCROLL': [
           { guard: 'isScrollType', target: 'hiding', reenter: true, actions: ['measure'] },
           { actions: ['measure'] },
@@ -178,10 +173,7 @@ export const scrollAreaMachine = createMachine({
     actions: {
       measure: params => runMeasure(params),
 
-      /**
-       * 推迟一拍再量。滚动条收着的时候 clientHeight 是 0，量不到轨道长度；
-       * 而"该露出来了"这件事要等适配器把这一帧提交完才在 DOM 上成立。
-       */
+      /** 推迟一拍再量：滚动条收着时 clientHeight 是 0，要等这一帧提交后才量得到轨道长度。 */
       measureSoon: params => params.flush(() => runMeasure(params)),
 
       markPointerInside: ({ context }) => context.set('pointerInside', true),
@@ -214,8 +206,7 @@ export const scrollAreaMachine = createMachine({
         const delta = pointerDelta(drag.origin, current, { axis: drag.axis, dir })
         const next = scrollFromThumbDrag(drag.startScroll, delta, params.context.get(drag.axis))
         applyScroll(viewport, drag.axis, next, dir)
-        // 立刻回读：原生 scroll 事件要等下一帧才派发，不回读的话滑块整整慢一帧，
-        // 而且浏览器可能把值夹过（拖出边界时），以它实际落到的位置为准
+        // 立刻回读：原生 scroll 事件要等下一帧派发，且浏览器可能把值夹过
         runMeasure(params)
       },
 
@@ -238,12 +229,9 @@ export const scrollAreaMachine = createMachine({
     },
     effects: {
       /**
-       * 视口的 scroll 事件与尺寸变化。两件事都只能在 DOM 上观察，因此整块落在效应里，
-       * 连接层一行 DOM 都不碰。
-       *
-       * 推迟一拍再挂：挂载这一刻角色节点未必都就位（作者的内容还在渲），
-       * 此时量到的尺寸全是 0，首帧会闪一下"没有溢出"。disposed 标记兜住
-       * "还没挂上就被卸载"那一路——不然监听器会挂到一台已经停掉的机器上。
+       * 视口的 scroll 事件与尺寸变化，只能在 DOM 上观察，因此落在效应里。
+       * 推迟一拍再挂：挂载这一刻角色节点未必就位，量到的尺寸会全是 0；
+       * disposed 兜住还没挂上就被卸载那一路，否则监听器会挂到已停掉的机器上。
        */
       trackViewport: ({ refs, send, scope, flush }) => {
         let disposed = false
@@ -257,11 +245,10 @@ export const scrollAreaMachine = createMachine({
             return
 
           const onScroll = (): void => send({ type: 'SCROLL' })
-          // 不拦滚动、也不打算 preventDefault：滚动本身全归浏览器，passive 让它不必等我们
+          // 不拦滚动、不 preventDefault，用 passive 监听
           viewport.addEventListener('scroll', onScroll, { passive: true })
 
-          // 无布局环境（SSR / jsdom）里没有 ResizeObserver。缺了照样能用，
-          // 只是不再跟随尺寸变化——滚动与显式的 MEASURE 仍会把数字重新量一遍
+          // 无布局环境没有 ResizeObserver：不再跟随尺寸变化，滚动与显式 MEASURE 仍会重量
           const win = scope.getWin()
           const observer = typeof win.ResizeObserver === 'function'
             ? new win.ResizeObserver(() => send({ type: 'MEASURE' }))
@@ -288,8 +275,7 @@ export const scrollAreaMachine = createMachine({
       waitForHideDelay: ({ prop, send }) =>
         setTimeoutEffect(() => send({ type: 'after.scrollHideDelay' }), prop('scrollHideDelay') ?? SCROLL_AREA_HIDE_DELAY),
 
-      // 监听器挂在文档上而不是滑块上：指针可以拖出滚动条甚至拖出窗口，仍要跟手。
-      // pointercancel 也要收：系统手势抢走指针时不收会让状态永远停在 dragging
+      // 监听器挂在文档上，指针拖出滚动条仍要跟手；pointercancel 不收会让状态永远停在 dragging
       trackPointer: ({ refs, send }) => {
         const viewport = refs.get('getViewportEl')()
         const doc = viewport?.ownerDocument ?? (typeof document === 'undefined' ? null : document)

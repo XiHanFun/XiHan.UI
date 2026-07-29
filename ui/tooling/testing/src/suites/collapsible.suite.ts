@@ -86,8 +86,7 @@ export const collapsibleSuite: ConformanceSuite = {
         { kind: 'click', part: 'trigger' },
         dispatchClickOnDisabled('collapsible', 'trigger', {
           parts: {
-            // 披露按钮是单体控件：光有 data-disabled 只是样式，读屏照念"可展开"、
-            // 键盘照聚焦，按下去却什么都不发生。原生 disabled 才是说给辅助技术听的
+            // 披露按钮是单体控件：用原生 disabled，data-disabled 只是样式
             trigger: { 'disabled': '', 'data-disabled': '', 'aria-expanded': 'false', 'data-state': 'closed' },
             content: { 'data-state': 'closed', 'hidden': '' },
           },

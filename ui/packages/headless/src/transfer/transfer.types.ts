@@ -2,7 +2,7 @@ import type { Direction, PropTypes } from '@xihan-ui/core'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /**
- * 哪一侧。source 是"还没选进来的"，target 是"已经选进来的"——
+ * 哪一侧。source 是还没选进来的，target 是已经选进来的；
  * value 这个 prop 说的就是 target 侧那一批，与两侧的勾选（selected）是两回事。
  */
 export type TransferSide = 'source' | 'target'
@@ -11,10 +11,7 @@ export type TransferSide = 'source' | 'target'
 export type TransferCheckState = 'all' | 'some' | 'none'
 
 /**
- * 条目全集里的一条。**这是元信息的唯一事实源**：标签与禁用都从这里读，
- * 作者的标记只管长相，不必把同一份声明在两侧的标记里各抄一遍
- * （抄两份就会出现"左边说禁用、右边说不禁用"这种自相矛盾的 DOM）。
- *
+ * 条目全集里的一条，是元信息的唯一事实源：标签与禁用都从这里读，作者的标记只管长相。
  * value 必须全集唯一：它同时是 DOM 身份（data-value）、value / selected 集合的元素，
  * 以及连接层按值找节点的键。
  */
@@ -27,14 +24,9 @@ export interface TransferItem {
 }
 
 /**
- * 搜索过滤谓词。**过滤由组件做，不是作者做**：组件手里已经有 items、有每侧的搜索串，
- * 作者只给"怎么算匹配"这一条规则，剩下的（哪些条目该隐去、隐去之后方向键怎么走、
- * 全选算哪些、搬运搬哪些）全部由组件收口。
- *
- * 反过来把过滤交给作者是行不通的：作者只能改自己渲染的那份列表，
- * 而组件仍要按 items 推导两侧集合，两份"当前可见"随即分叉。
- *
- * query 传进来时已 trim 过，且保证非空串（空搜索根本不调用谓词）。
+ * 搜索过滤谓词。过滤由组件做：作者只给怎么算匹配这一条规则，
+ * 哪些条目隐去、方向键怎么走、全选与搬运算哪些全部由组件收口。
+ * query 传进来时已 trim 过，且保证非空串（空搜索不调用谓词）。
  */
 export type TransferFilter = (item: TransferItem, query: string) => boolean
 
@@ -54,12 +46,9 @@ export interface TransferPanelProps {
 }
 
 /**
- * 条目自报家门：值 + 它挂在哪一侧的面板里。禁用与标签一律回 items 里查——
- * 那是唯一事实源。
- *
- * 两侧面板各挂一份全集：不属于本侧的条目由连接层打上 hidden，节点不卸载
- * （作者节点常挂，两个适配器才产得出同构 DOM）。所以同一个 value 会有两个节点，
- * side 就是它们各自的身份。
+ * 条目自报家门：值 + 它挂在哪一侧的面板里；禁用与标签一律回 items 里查。
+ * 两侧面板各挂一份全集，不属于本侧的条目由连接层打上 hidden 而非卸载，
+ * 所以同一个 value 会有两个节点，side 就是它们各自的身份。
  */
 export interface TransferItemProps {
   value: string
@@ -166,7 +155,7 @@ export interface TransferApi<T extends PropTypes = PropTypes> {
   setQuery: (side: TransferSide, query: string) => void
   toggle: (value: string) => void
   toggleAll: (side: TransferSide) => void
-  /** 程序化搬运。焦点安排不在这里做——那要知道是哪个节点触发的。 */
+  /** 程序化搬运；焦点安排不在这里做，那要知道是哪个节点触发的。 */
   move: (to: TransferSide) => void
   getRootProps: () => T['element']
   getPanelProps: (props: TransferPanelProps) => T['element']

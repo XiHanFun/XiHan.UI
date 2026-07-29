@@ -67,7 +67,7 @@ import { defineElement } from './runtime/registry'
 
 const VERSION = '0.0.0'
 
-// 显式注册（惰性）：只有在 DOM 环境显式调用才 customElements.define，主入口 import 不注册。
+// 注册全部 xh-* 元素，需显式调用，主入口 import 不注册。
 export function defineXhElements(): void {
   defineElement('xh-accordion', XhAccordionElement, VERSION)
   defineElement('xh-anchor', XhAnchorElement, VERSION)

@@ -5,13 +5,9 @@ import { nativeActivation } from './shared/native-activation'
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/examples/datepicker-dialog/'
 
 /**
- * 固定挑 2024 年 2 月：闰年（29 天）、zh-CN 下从 1 月 29 日起算，首尾两行都带着邻月的日子。
- * 用例一律显式给 defaultValue 与 timeZone，「今天」因此永远落在这个月之外，
- * 断言不会随运行日期改口。
- *
- * fixture 是静态的（作者照 weeks 写出来的那一棵树），所以本套件不做任何会翻月的操作——
- * 翻月之后作者该重画网格，而 fixture 重画不了，格子会停在上个月的日期上。
- * 翻月与网格内的键盘导航由 calendar 自己的套件保证。
+ * 固定挑 2024 年 2 月：闰年，zh-CN 下从 1 月 29 日起算，首尾两行带邻月的日子。
+ * 用例一律显式给 defaultValue 与 timeZone，断言不随运行日期改口。
+ * fixture 是静态的，本套件不做翻月操作；翻月与网格内键盘导航由 calendar 套件覆盖。
  */
 const ANCHOR = '2024-02-15'
 const LOCALE = 'zh-CN'
@@ -20,7 +16,7 @@ const BASE_PROPS = { defaultValue: ANCHOR, locale: LOCALE, timeZone: 'UTC' } as 
 const GRID = buildMonthGrid(ANCHOR, { locale: LOCALE })
 const WEEK_DAYS = buildWeekDays({ reference: GRID.monthStart, locale: LOCALE, timeZone: 'UTC' })
 
-/** 作者写足六个段位节点：精度只到天，用不上的那几个由连接层收起、不卸载。 */
+/** 作者写足六个段位节点，用不上的由连接层收起、不卸载。 */
 const SEGMENT_NODES = 6
 
 const CALENDAR = '[data-scope="calendar"]'
@@ -53,13 +49,13 @@ function expectHidden(doc: Document, want: string, why: string): void {
     throw new Error(`${why}：隐藏输入期望 "${want}"，实际 "${got}"`)
 }
 
-/** 点某一天。格子是内嵌日历那一份解剖的部件，声明式步骤按本组件的 scope 找不到它。 */
+/** 点某一天；格子属于内嵌日历那份解剖。 */
 async function pickDay(ctx: RawStepContext, value: string): Promise<void> {
   cellTrigger(ctx.doc, value).click()
   await ctx.flush()
 }
 
-/** 往某一段上直接派按键。禁用时段位没有 tabindex，焦点落不上去，只有直接派发才碰得到守卫。 */
+/** 往某一段上直接派按键。 */
 async function pressOnSegment(ctx: RawStepContext, index: number, keys: readonly string[]): Promise<void> {
   const el = segments(ctx.doc)[index]
   if (!el)
@@ -79,14 +75,13 @@ function expectFocusedSegment(doc: Document, index: number, why: string): void {
 }
 
 /**
- * 网格由作者渲染（连接层只给数据、不生成节点），fixture 因此就是「作者照 weeks 写出来的那棵树」。
- * 日期身份只写在 cell 上，cell-trigger 跟着它所在的 cell 走。
- * 段位与格子分别落在 input / calendar 两个挂载点里，戴的是内嵌那两份解剖的 scope。
+ * 网格由作者按 weeks 渲染，日期身份写在 cell 上，cell-trigger 跟着所在的 cell 走。
+ * 段位与格子分别落在 input / calendar 两个挂载点里，戴内嵌那两份解剖的 scope。
  */
 const FIXTURE: FixtureNode = {
   part: 'root',
   children: [
-    // 刻意是 span 不是 label：段位是 div，不是可被 <label for> 标注的控件
+    // 用 span 不用 label：段位是 div，不是 <label for> 能标注的控件
     { part: 'label', tag: 'span', text: '截止日期' },
     {
       part: 'control',
@@ -125,7 +120,7 @@ const FIXTURE: FixtureNode = {
                 {
                   part: 'grid-head',
                   children: [{
-                    // 列头得待在一行里：columnheader 直接挂在 rowgroup 下，grid 的行列语义从表头就断了
+                    // 列头包一层行：columnheader 不直接挂在 rowgroup 下
                     part: 'week-row',
                     children: WEEK_DAYS.map(d => ({
                       part: 'week-day',
@@ -202,7 +197,7 @@ export const datePickerSuite: ConformanceSuite = {
             'disabled': null,
           },
           'clear-trigger': {
-            // 有值时可按；不占 Tab 位也不报给读屏（退格清段是同一个能力）
+            // 有值时可按；不占 Tab 位也不报给读屏
             'type': 'button',
             'tabindex': '-1',
             'aria-hidden': 'true',
@@ -270,8 +265,7 @@ export const datePickerSuite: ConformanceSuite = {
       props: BASE_PROPS,
       steps: [
         { kind: 'click', part: 'trigger' },
-        // 快照里的 activeElement 只认本组件 scope 的部件，格子戴的是日历那一份，
-        // 因此这里不写快照期望，落点交给下面那条 raw 直接比对节点
+        // 快照的 activeElement 只认本组件 scope，落点交给下面那条 raw 比对
         { kind: 'settle', until: { activeElement: 'calendar' } },
         {
           kind: 'raw',
@@ -313,14 +307,7 @@ export const datePickerSuite: ConformanceSuite = {
       ],
     },
     {
-      /**
-       * 这一条同时守三件事，任一件塌了都会红：
-       *  ① Tab 不被吞 —— 浮层不陷焦点，按键原样交给平台；
-       *  ② 焦点真的走出浮层之后，消解层把浮层收起；
-       *  ③ 收起时不把焦点从用户刚 Tab 过去的那个控件上抢回来。
-       * jsdom 不实现 Tab 的焦点移动，第二步因此得手动把焦点挪到层外的下一站——
-       * 浏览器替我们做的就只有这一下，其余全是组件自己的反应。
-       */
+      // jsdom 不移动 Tab 焦点，用例手动把焦点挪到层外的下一站
       name: 'Tab 不拦按键：焦点走出浮层后随即收起，且不抢回焦点',
       spec: { apg: `${APG}#kbd_label` },
       covers: ['date-picker.kbd.tab'],
@@ -333,27 +320,26 @@ export const datePickerSuite: ConformanceSuite = {
           kind: 'raw',
           why: 'jsdom 按 Tab 不移动焦点，「走出浮层」这一下只能手动补；且「焦点没被抢回」是否定断言，只能直读 activeElement',
           run: async (ctx) => {
-            // 合成事件默认 cancelable=false，那样 preventDefault 是空操作、拦没拦根本看不出来
+            // 显式 cancelable，否则 preventDefault 是空操作
             const tab = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true })
             cellTrigger(ctx.doc, ANCHOR).dispatchEvent(tab)
             await ctx.flush()
             if (tab.defaultPrevented)
               throw new Error('Tab 被拦下了，焦点走不出浮层')
 
-            // 浏览器接着会把焦点送到 Tab 序列的下一站。整个输入行记在本层的分支里
-            // （点 trigger、点段位都算层内交互），所以下一站必须取一个层外的节点
+            // 模拟 Tab 的下一站，取一个层外的节点
             const next = ctx.doc.createElement('button')
             ctx.doc.body.append(next)
             try {
               next.focus()
               await ctx.flush()
-              // 焦点归还排在收起之后的一帧里，要等过那一拍才算数
+              // 焦点归还排在收起之后的一帧，等过那一拍再断言
               await new Promise(r => setTimeout(r, 50))
               if (ctx.doc.activeElement !== next)
                 throw new Error('让位式关闭不该把焦点从用户刚 Tab 过去的控件上抢回来')
             }
             finally {
-              // 留在文档里会把下一个用例的焦点断言带偏；移除后焦点自然落回 body
+              // 移除后焦点落回 body，不影响下一个用例
               next.remove()
             }
           },
@@ -418,8 +404,7 @@ export const datePickerSuite: ConformanceSuite = {
           run: ctx => pickDay(ctx, '2024-02-10'),
           expect: {
             parts: { content: { hidden: null } },
-            // 只有 value-change 一条：区间只落了起点，「选完了」的判据（两端都在）还不成立，
-            // closeOnSelect 这一路整个不起跳，自然也没有 open-change
+            // 区间只落了起点，closeOnSelect 不起跳，没有 open-change
             events: [{ type: 'value-change', detail: { value: ['2024-02-10'] } }],
           },
         },
@@ -429,8 +414,7 @@ export const datePickerSuite: ConformanceSuite = {
           run: ctx => pickDay(ctx, '2024-02-20'),
           expect: {
             parts: { content: { hidden: '' } },
-            // 这一步两条事件：落终点让区间凑满两端，closeOnSelect（缺省 true）随即把浮层收起。
-            // 值与开合是各自独立的两条线，同一次转移里各发各的；顺序照动作次序——先写值，后收起
+            // 落终点凑满区间，closeOnSelect（缺省 true）随即收起：先值后开合
             events: [
               { type: 'value-change', detail: { value: ['2024-02-10', '2024-02-20'] } },
               { type: 'open-change', detail: { open: false } },
@@ -486,7 +470,7 @@ export const datePickerSuite: ConformanceSuite = {
               throw new Error('旧值那一格该让出选中态')
           },
           expect: {
-            // 段位里敲日期不该把浮层收起——那时用户还在打字
+            // 段位里敲日期不收起浮层
             parts: { content: { hidden: null } },
             events: [{ type: 'value-change', detail: { value: ['2024-02-16'] } }],
           },
@@ -547,8 +531,6 @@ export const datePickerSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'raw',
-          // 照常规写法这几步全是空转：禁用的按钮上 click 被激活行为短路，
-          // 禁用的段位没有 tabindex、焦点落不上去。必须直接往节点上派事件
           why: '禁用时点击与按键都到不了守卫，只有直接派发才碰得到',
           run: async (ctx) => {
             const seg = segments(ctx.doc)[2]!
@@ -619,17 +601,12 @@ export const datePickerSuite: ConformanceSuite = {
       ],
     },
     {
-      /**
-       * 开局给展开态、写回走「收起」这一向：HTML 的布尔属性只有在场/不在场两档，
-       * 一个已经写着 open="false" 的属性再被置真时属性值原地不动，标记那一侧收不到任何变化；
-       * 真→假则两个适配器都表达得出来。规格只有一份，得挑两边都演得出的那个方向。
-       * 收起态那一侧的守卫由末尾那次点击接着守——两个方向都只发意图、都不自改 DOM。
-       */
+      // 开局给展开态、写回走「收起」这一向：布尔属性真→假两个适配器都表达得出来
       name: '受控 open：点 trigger 只发意图不自改状态，宿主写回后才跟着走',
       spec: { apg: APG },
       props: { ...BASE_PROPS, open: true },
       steps: [
-        // 焦点域要过一拍才把焦点送进聚焦日那一格，先等它落定，后面每一帧的落点才是确定的
+        // 焦点域过一拍才把焦点送进聚焦日那一格，先等它落定
         { kind: 'settle', until: { activeElement: 'calendar' } },
         {
           kind: 'click',
@@ -674,9 +651,7 @@ export const datePickerSuite: ConformanceSuite = {
             expectHidden(ctx.doc, ANCHOR, '受控且宿主未写回：值不该动')
           },
           expect: {
-            // 这一步两条事件：受控的只有值，开合这边给的是 defaultOpen（非受控），
-            // 所以选完一天 closeOnSelect（缺省 true）照常把浮层收起，open-change 跟着发。
-            // 「受控」要守的是不自作主张改**值**，不是什么都不做——意图照发、开合照走
+            // 只有值受控；开合走 defaultOpen，closeOnSelect 照常收起并发 open-change
             parts: { content: { hidden: '' } },
             events: [
               { type: 'value-change', detail: { value: ['2024-02-20'] } },

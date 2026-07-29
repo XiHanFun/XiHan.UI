@@ -26,12 +26,10 @@ export function useVirtualizer(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  // onChange 由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器；
-  // props 必须整个传进 getter 里展开，先展开成快照会让运行期改 count 收不到
+  // onChange 由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器；props 在 getter 内展开以跟随运行期变更
   const service = useMachine(virtualizerMachine, () => ({ ...props, onChange }), scope)
 
-  // 懒读而不是把节点直接塞进去：ref 在挂载后才有值，机器建起来的那一刻还是 null。
-  // 计算内核的建立、尺寸观察与滚动监听全在机器的效应里进行，连接层一行 DOM 都不碰
+  // 传 getter 而非节点，ref 在挂载后才有值；内核建立、尺寸观察与滚动监听都在机器的效应里进行
   service.refs.set('getViewportEl', () => viewportRef.value)
   service.refs.set('getContentEl', () => contentRef.value)
 

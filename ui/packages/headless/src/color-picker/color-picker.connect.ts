@@ -82,16 +82,15 @@ export function connectColorPicker<T extends PropTypes>(
   const label = resolveTranslations(prop('translations'))
   // 只读与禁用都不改值；区别在于浮层还开不开得了、控件还聚不聚得上焦
   const interactive = !disabled && !readOnly
-  // 左右两键的屏幕方向与值方向相反：横轴（取色区的饱和度、通道滑杆）跟着 dir 掉头，
-  // 上下两键恒是"屏幕向上 = 变大"，与 dir 无关
+  // 横轴（取色区的饱和度、通道滑杆）跟着 dir 掉头；上下两键恒是屏幕向上变大，与 dir 无关
   const flipHorizontal = dir === 'rtl'
 
-  // 工作色由值串加锚结算；锚保住灰度处的色相，connect 因此仍是纯函数
+  // 工作色由值串加锚结算，锚保住灰度处的色相
   const hsva = colorPickerResolveHsva(value, context.get('anchor'))
   const rgba = colorPickerHsvaToRgba(hsva)
 
   const stateAttr = open ? 'open' : 'closed'
-  // 位置由引擎写进 context；这里只读结果，不量 DOM、不调引擎，保持纯函数
+  // 位置由引擎写进 context，这里只读结果，不量 DOM、不调引擎
   const position = context.get('position')
   const placement = position?.placement ?? prop('placement') ?? COLOR_PICKER_DEFAULT_PLACEMENT
 
@@ -103,10 +102,9 @@ export function connectColorPicker<T extends PropTypes>(
   })
 
   /**
-   * 透明度关掉时，那条滑杆与那个透明度输入框整条不可用：留着能动只会产出一个不会生效的值。
+   * 透明度关掉时，那条滑杆与透明度输入框整条不可用。
    *
-   * "不可用"与"改不动"要分开：只读只是改不动（仍可聚焦、仍被读屏念得到），
-   * 禁用与"这条通道压根没开"才是不可用（抽掉 Tab 位、报 aria-disabled）。
+   * 只读只是改不动（仍可聚焦）；禁用与通道没开才是不可用（抽 Tab 位、报 aria-disabled）。
    */
   const channelInert = (channel: ColorPickerChannel): boolean => disabled || (channel === 'alpha' && !alpha)
   const channelEditable = (channel: ColorPickerChannel): boolean => interactive && !channelInert(channel)
@@ -127,14 +125,13 @@ export function connectColorPicker<T extends PropTypes>(
   const inputText = (channel: ColorPickerInputChannel): string =>
     draft?.channel === channel ? draft.text : colorPickerInputText(hsva, channel, alpha)
 
-  /** 草稿收不下来（打到一半）时给输入框打上 aria-invalid，读屏与样式都能据此提示。 */
+  /** 草稿收不下来时给输入框打上 aria-invalid。 */
   const inputInvalid = (channel: ColorPickerInputChannel): boolean =>
     draft?.channel === channel && colorPickerApplyInput(hsva, channel, draft.text, alpha) == null
 
   /**
-   * 按下之后把焦点转投到对应的拇指上：松手就能接着用方向键微调。
-   * 这一步在事件那一刻现查活 DOM（两个适配器此时看到的是同一份文档），
-   * 渲染期一律不查——那里 Vue 读到的是上一帧、WC 读到的是本帧，两侧会分叉。
+   * 按下之后把焦点转投到对应的拇指上。
+   * 只在事件那一刻现查 DOM，渲染期不得查：那里 Vue 读到上一帧、WC 读到本帧。
    */
   const focusThumb = (host: HTMLElement, selector: string): void => {
     host.querySelector<HTMLElement>(selector)?.focus()
@@ -142,8 +139,7 @@ export function connectColorPicker<T extends PropTypes>(
 
   /** 认下的键都要拦住：方向键滚页面、Home/End 跳到文档两端。 */
   const runKey = (event: KeyboardEvent, table: Record<string, (() => void) | undefined>): void => {
-    // 带修饰键的组合一律放行（Ctrl+Home 是"跳到文档顶部"这类浏览器/读屏快捷键）；
-    // Shift 是本组件自己的大步进，不算修饰组合
+    // 带修饰键的组合一律放行；Shift 是本组件自己的大步进，不算修饰组合
     if (event.ctrlKey || event.metaKey || event.altKey)
       return
     const handler = table[event.key]
@@ -183,7 +179,7 @@ export function connectColorPicker<T extends PropTypes>(
     getLabelProps: () => normalize.label({
       ...parts.label.attrs,
       ...stateAttrs(),
-      // 不写 for：触发器是按钮而不是可被 label 关联到的输入，名字经 trigger 的 aria-labelledby 挂过去
+      // 不写 for：触发器是按钮，名字经 trigger 的 aria-labelledby 挂过去
       id: ids.label,
     }),
 
@@ -192,11 +188,11 @@ export function connectColorPicker<T extends PropTypes>(
       ...stateAttrs(),
       'id': ids.trigger,
       'type': 'button',
-      // 浮层里是一整组控件（取色区、两条滑杆、数值框），语义上是个对话框而不是列表
+      // 浮层是一整组控件，语义上是对话框
       'aria-haspopup': 'dialog',
       'aria-expanded': open ? 'true' : 'false',
       'aria-controls': ids.content,
-      // 名字由标题加当前值合成：只报标题的话，一排取色器读起来全都一模一样
+      // 名字由标题加当前值合成
       'aria-labelledby': `${ids.label} ${ids['value-text']}`,
       // 单体控件走原生 disabled。只读不禁用：浮层照开，进去只是改不动
       'disabled': disabled || undefined,
@@ -215,7 +211,7 @@ export function connectColorPicker<T extends PropTypes>(
     getSwatchProps: () => normalize.element({
       ...parts.swatch.attrs,
       ...stateAttrs(),
-      // 纯装饰：颜色本身已经由 value-text 念出来了，色块再报一遍只是噪音
+      // 纯装饰：颜色已由 value-text 念出
       'aria-hidden': 'true',
       'data-value': value,
       'style': { background: colorPickerCss(rgba) },
@@ -242,8 +238,7 @@ export function connectColorPicker<T extends PropTypes>(
       // 非模态：Tab 走得出去，走出去即由消解层判定是否收起
       'aria-modal': 'false',
       'aria-labelledby': ids.label,
-      // 浮层本身不进 Tab 序列（里面的控件才进），写 -1 而不是整个不给：
-      // 焦点域在里面一个可聚焦控件都没有时会退回聚焦容器本身，没有 tabindex 就退无可退
+      // tabindex 写 -1 不能省：焦点域在无可聚焦子控件时会退回聚焦容器本身
       'tabindex': -1,
       'data-placement': placement,
       // 收起时留在 DOM 只隐藏，不卸载作者节点
@@ -256,13 +251,12 @@ export function connectColorPicker<T extends PropTypes>(
       'data-dragging': dataAttr(dragging && dragTarget === 'area'),
       // 底色是当前色相的纯色，两层渐变（饱和度、明度）由皮肤盖在上面
       'style': { backgroundColor: colorPickerHueCss(hsva.h), touchAction: 'none' },
-      // 按下即跳：点区域任意位置颜色当场跟过来，随后的拖动由机器的 trackPointer 效应接手。
-      // 挂在区域而不是拇指上，是因为拇指只有十几个像素，够不着的地方占了绝大多数
+      // 按下即跳，随后的拖动由机器的 trackPointer 接手；挂在区域而不是拇指上
       'onPointerDown': (event: PointerEvent) => {
-        // 只认主键：右键会顺带弹出上下文菜单，中键是自动滚动
+        // 只认主键：右键弹上下文菜单、中键是自动滚动
         if (!interactive || event.button !== 0)
           return
-        // 挡掉文本选中与默认聚焦：拖动时选中页面文字会让区域"粘"住
+        // 挡掉文本选中与默认聚焦
         event.preventDefault()
         send({ type: 'DRAG.START', target: 'area', point: { clientX: event.clientX, clientY: event.clientY } })
         focusThumb(event.currentTarget as HTMLElement, parts['area-thumb'].selector)
@@ -273,26 +267,23 @@ export function connectColorPicker<T extends PropTypes>(
       ...parts['area-thumb'].attrs,
       ...stateAttrs(),
       'role': 'slider',
-      // 二维控件只报得出一个 aria-valuenow：取横轴（饱和度），
-      // 另一条轴写进 aria-valuetext，读屏因此两条都念得到
+      // 二维控件只报得出一个 aria-valuenow，取横轴饱和度；另一条轴写进 aria-valuetext
       'aria-valuemin': '0',
       'aria-valuemax': '100',
       'aria-valuenow': String(Math.round(hsva.s)),
       'aria-valuetext': label.areaValueText(Math.round(hsva.s), Math.round(hsva.v)),
       'aria-label': label.area,
-      // div 上原生 disabled 不生效，只能显式说明，并抽掉 Tab 位
-      // （与原生 input[type=range] 一致：禁用即不可聚焦）。
-      // readOnly 不抽 Tab 位——只读控件仍要能聚焦、被读屏念出来
+      // div 上原生 disabled 不生效，禁用须显式写 aria-disabled 并抽掉 Tab 位；readOnly 不抽
       'aria-disabled': disabled ? 'true' : 'false',
       'tabindex': disabled ? undefined : 0,
       'data-dragging': dataAttr(dragging && dragTarget === 'area'),
-      // 两条轴都由连接层写死：横轴是饱和度，纵轴是明度（向下变暗，所以取补数）
+      // 横轴是饱和度，纵轴是明度（向下变暗，取补数）
       'style': {
         insetInlineStart: colorPickerPercent(hsva.s / 100),
         insetBlockStart: colorPickerPercent(1 - hsva.v / 100),
       },
       'onKeyDown': (event: KeyboardEvent) => {
-        // 推不动的时候不吞键：禁用/只读的取色区上按方向键该滚页面
+        // 推不动时不吞键，放行给页面滚动
         if (!interactive)
           return
         const large = event.shiftKey
@@ -303,7 +294,7 @@ export function connectColorPicker<T extends PropTypes>(
           ArrowLeft: () => stepX(flipHorizontal ? 1 : -1),
           ArrowUp: () => stepY(1),
           ArrowDown: () => stepY(-1),
-          // 端点取横轴（饱和度）：与 aria-valuenow 报的是同一条轴，读屏用户才对得上
+          // 端点取横轴，与 aria-valuenow 报的是同一条轴
           Home: () => send({ type: 'AREA.TO_EDGE', axis: 'x', edge: 'min' }),
           End: () => send({ type: 'AREA.TO_EDGE', axis: 'x', edge: 'max' }),
         })
@@ -316,10 +307,9 @@ export function connectColorPicker<T extends PropTypes>(
       'data-channel': channel,
       'data-disabled': dataAttr(channelInert(channel)),
       'data-dragging': dataAttr(dragging && dragTarget === channel),
-      // 触摸拖动要自己接管手势：不关掉浏览器的滚动/缩放手势，手指一动页面就跟着滚，
-      // 指针事件随即被系统收走（pointercancel），拖到一半的滑杆停在原地
+      // 不关掉默认手势，指针会被 pointercancel 收走
       'style': { touchAction: 'none' },
-      // 按下挂在整条滑杆而不是轨道上：拇指常常浮出轨道，只挂轨道会抓不住拇指本身
+      // 按下挂在整条滑杆而不是轨道上，拇指常常浮出轨道
       'onPointerDown': (event: PointerEvent) => {
         if (!channelEditable(channel) || event.button !== 0)
           return
@@ -334,12 +324,8 @@ export function connectColorPicker<T extends PropTypes>(
       ...stateAttrs(),
       'data-channel': channel,
       'data-disabled': dataAttr(channelInert(channel)),
-      // 色相轨道是固定的彩虹（皮肤画），透明度轨道要从全透明渐变到当前颜色，
-      // 那个"当前颜色"只有这里知道，因此由连接层写成内联渐变。
-      // 渐变方向没有逻辑关键字可用，只能按 dir 分流——拇指走的是 inset-inline-start，
-      // 会自动换向，渐变不跟着换的话 rtl 下"越往那头越透明"就反了。
-      // 色相那条写空串把内联声明清掉（而不是整个键不写）：WC 侧是 Object.assign 到 style 上，
-      // 只写新键不会撤掉上一帧的旧键，两个适配器的内联样式必须逐帧一致
+      // 透明度轨道的渐变由连接层写成内联；渐变方向没有逻辑关键字可用，只能按 dir 分流。
+      // 色相那条写空串清掉内联声明而不是不写键：WC 侧 Object.assign 不会撤掉上一帧旧键
       'style': {
         backgroundImage: channel === 'alpha'
           ? `linear-gradient(to ${flipHorizontal ? 'left' : 'right'}, transparent, ${colorPickerCss({ ...rgba, a: 1 })})`
@@ -357,12 +343,12 @@ export function connectColorPicker<T extends PropTypes>(
         'aria-valuemin': String(info.min),
         'aria-valuemax': String(info.max),
         'aria-valuenow': String(info.value),
-        // 光念数字说不清"210 是角度还是百分数"，单位必须补上
+        // 单位必须补上，光念数字分不清角度与百分数
         'aria-valuetext': label.channelValueText(channel, info.value),
         'aria-label': label.channel(channel),
         'aria-orientation': 'horizontal',
         'aria-disabled': inert ? 'true' : 'false',
-        // 只读仍可聚焦（与取色区同一条规矩）；禁用与"透明度整条关掉"才抽 Tab 位
+        // 只读仍可聚焦；禁用与透明度整条关掉才抽 Tab 位
         'tabindex': inert ? undefined : 0,
         'data-channel': channel,
         'data-disabled': dataAttr(inert),
@@ -416,8 +402,7 @@ export function connectColorPicker<T extends PropTypes>(
           event.preventDefault()
           send({ type: 'INPUT.COMMIT', channel })
         },
-        // 失焦同样收下：打了一半就切走时，框里那串字必须被规范文本顶替，
-        // 否则界面显示的与实际值长期对不上
+        // 失焦同样收下，否则框里的半截字与实际值长期对不上
         'onBlur': () => send({ type: 'INPUT.COMMIT', channel }),
       })
     },
@@ -427,7 +412,7 @@ export function connectColorPicker<T extends PropTypes>(
       ...stateAttrs(),
       'type': 'button',
       'aria-label': label.eyeDropperTrigger,
-      // 环境没有这个接口时按钮就该是禁用的，而不是点下去毫无反应
+      // 环境没有这个接口时按钮禁用
       'disabled': !interactive || !eyeDropperSupported || undefined,
       'data-disabled': dataAttr(!interactive || !eyeDropperSupported),
       'data-state': picking ? 'picking' : stateAttr,
@@ -451,10 +436,9 @@ export function connectColorPicker<T extends PropTypes>(
         // 身份写在 data-value 上：测试与样式都靠它认这一格是哪个颜色
         [ITEM_VALUE_ATTR]: swatch,
         'type': 'button',
-        // 每格都是原生按钮、各占一个 Tab 位：色板本身没有方向键导航，
-        // 用 roving 反而会让用户在一格里按上下键却什么都不发生
+        // 每格各占一个 Tab 位，色板没有方向键导航，不做 roving
         'aria-label': label.swatch(swatch),
-        // 选中与否必须显式说：省略只是"没说"，读屏无从区分未选中与"这按钮不表达选中"
+        // 未选中也显式写 'false'，不省略
         'aria-pressed': selected ? 'true' : 'false',
         'disabled': !interactive || undefined,
         'data-state': selected ? 'checked' : 'unchecked',

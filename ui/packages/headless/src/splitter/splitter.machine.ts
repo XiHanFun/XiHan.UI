@@ -20,29 +20,25 @@ const { createMachine } = setup<SplitterSchema>()
 export const SPLITTER_STEP = 1
 /** Shift + 方向键每下走多少个百分点。 */
 export const SPLITTER_LARGE_STEP = 10
-/** 三处声明都没给时的面板块数：两栏是这个组件最常见的形态。 */
+/** 三处声明都没给时的面板块数。 */
 export const SPLITTER_DEFAULT_PANELS = 2
 
 type Props = SplitterSchema['props']
 type PropReader = <K extends keyof Props>(key: K) => Props[K]
 
-/**
- * 面板块数的唯一判据：panels / size / defaultSize 谁先给就听谁的，都没给就是两栏。
- * 收在一处而不是各处 ?? 一遍——三者对不上时至少全机器看到的是同一个数。
- */
+/** 面板块数的唯一判据：panels / size / defaultSize 谁先给就听谁的，都没给就是两栏。 */
 export function panelCount(prop: PropReader): number {
   const declared = prop('panels')?.length ?? prop('size')?.length ?? prop('defaultSize')?.length
   return Math.max(1, declared ?? SPLITTER_DEFAULT_PANELS)
 }
 
-/** 逐块约束。connect 与机器读的是同一份，免得两边对"这块能收到多小"各有一套说法。 */
+/** 逐块约束，connect 与机器读的是同一份。 */
 export function splitterConstraints(prop: PropReader): PanelConstraint[] {
   return panelConstraints(prop('panels'), panelCount(prop))
 }
 
 /**
- * 展开时回到哪：优先用折叠前记下的尺寸；从没折叠过（一上来就是折叠态）时回到 min，
- * min 是 0 就退到等分——总得给出一个看得见的宽度，展开却什么都没发生是最糟的结果。
+ * 展开时回到哪：优先用折叠前记下的尺寸；从没折叠过时回到 min，min 是 0 则退到等分。
  */
 function restoreSizeOf(
   restore: Map<number, number>,
@@ -64,8 +60,7 @@ export const splitterMachine = createMachine({
       const controlled = prop('size')
       const constraints = splitterConstraints(prop)
       return {
-        // 受控值也要过一遍归位：布局的前提是总和为 100，
-        // 宿主写回一份凑不齐的数组时界面不该跟着塌
+        // 受控值也要过一遍归位：总和必须为 100
         value: controlled == null ? undefined : normalizeSizes(controlled, constraints),
         defaultValue: normalizeSizes(prop('defaultSize') ?? equalSizes(panelCount(prop)), constraints),
         // 数组每帧都是新引用，默认的 Object.is 会把"没变"也判成变了
@@ -96,7 +91,7 @@ export const splitterMachine = createMachine({
   states: {
     idle: {
       on: {
-        // 按下不改布局：分隔条本来就在指针底下，跳一下反而是错的（这一点与滑块相反）
+        // 按下不改布局：分隔条本来就在指针底下
         'DRAG.START': { guard: 'canResize', target: 'dragging', actions: ['setActiveIndex'] },
       },
     },
@@ -104,8 +99,7 @@ export const splitterMachine = createMachine({
       effects: ['trackPointer'],
       on: {
         'DRAG.MOVE': { actions: ['dragBoundary'] },
-        // 收尾通知只在这里发一次：拖动途中 onSizeChange 已经连着发了很多次，
-        // 存布局那类活儿要的是"手松了"这一下
+        // 收尾通知只在这里发一次，拖动途中 onSizeChange 已连发多次
         'DRAG.END': { target: 'idle', actions: ['invokeChangeEnd'] },
       },
     },
@@ -135,8 +129,7 @@ export const splitterMachine = createMachine({
           : (prop('step') ?? SPLITTER_STEP)
         context.set('size', resizePanels(context.get('size'), e.index, e.direction * size, splitterConstraints(prop)))
       },
-      // 端点取的是"眼下真能走到"的区间，不是这块面板纸面上的 min/max：
-      // 后面的面板已经顶满时，Home 该停在走得到的地方，而不是把总和推歪
+      // 端点取眼下真能走到的区间，不是纸面上的 min/max
       boundaryToMin: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'BOUNDARY.TO_MIN')
@@ -170,7 +163,7 @@ export const splitterMachine = createMachine({
         const size = sizes[e.index]
         if (!c?.collapsible || size == null || isCollapsed(size, c))
           return
-        // 折叠前记住当前尺寸：展开时要回到用户自己调过的那个位置，而不是一个凭空的默认值
+        // 折叠前记住当前尺寸，展开时照它还原
         refs.get('restore').set(e.index, size)
         context.set('size', collapsePanel(sizes, e.index, constraints))
       },
@@ -214,15 +207,10 @@ export const splitterMachine = createMachine({
     },
     effects: {
       /**
-       * 一场拖拽只量一次容器：换算只要"排布轴上有多长"，而拖拽途中容器尺寸不会变，
-       * 每次移动都去 getBoundingClientRect 只是白白逼浏览器重排。
-       *
-       * 量在效应里而不是 connect 里：connect 是纯函数，且 Vue 侧它在渲染期求值，那时 DOM 还不存在。
-       * 效应挂载发生在 DRAG.START 这一下的转移里，此刻节点已在文档上（用户刚按在它上面），
-       * 因此不必推迟到下一帧——推迟反而会把手按下去之后最前面几像素的位移丢掉。
-       *
-       * 监听器挂在文档上而不是分隔条上：指针拖出容器甚至拖出窗口时仍要跟手。
-       * pointercancel 也要收：系统手势抢走指针时不收会让状态永远停在 dragging。
+       * 一场拖拽只量一次容器，拖拽途中容器尺寸不会变。
+       * 量在效应里：connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得读 DOM；
+       * 效应挂载发生在 DRAG.START 的转移里，节点已在文档上，不必推迟到下一帧。
+       * 监听器挂在文档上，指针拖出容器仍要跟手；pointercancel 不收会让状态永远停在 dragging。
        */
       trackPointer: ({ context, prop, refs, event, send }) => {
         const start = event.current()

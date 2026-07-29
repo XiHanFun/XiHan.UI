@@ -20,9 +20,7 @@ export function useToaster(
 ): ToasterContext {
   const service = useMachine(toasterMachine, () => ({ ...props, onToastsChange }))
   const api = computed(() => connectToaster(service, vueNormalize))
-  // 四个命令在顶层再摊一层：函数身份稳定，作者可以在 setup 里解构出来存进模块作用域、
-  // 在任意时刻（请求回调、路由守卫）调用。让调用方自己写 api.value.create 的话，
-  // 每个调用点都会顺手把整份队列读成响应式依赖，改一条就重跑一遍。
+  // 四个命令在顶层摊平，函数身份稳定，可解构后随时调用且不读取队列
   return {
     api,
     create: options => api.value.create(options),

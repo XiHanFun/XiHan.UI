@@ -6,18 +6,16 @@ export interface CheckboxGroupValueChangeDetails {
 }
 
 /**
- * 全选态：作者拿它去驱动一个 indeterminate 的父复选框。
+ * 全选态，用于驱动一个 indeterminate 的父复选框。
  * - all  组内声明的条目全部选中
- * - some 选中了一部分（读屏侧对应 aria-checked="mixed"）
+ * - some 选中了一部分（对应 aria-checked="mixed"）
  * - none 一个都没选中
  */
 export type CheckboxGroupCheckedState = 'all' | 'some' | 'none'
 
 /**
- * 条目自报家门：值与禁用由作者在部件上声明，connect 据此产出属性。
- * connect 因此是 (context, 本条目声明) 的纯函数，不反查 DOM——
- * Vue 侧 connect 在 render 期求值（本帧 DOM 还不存在），WC 侧在 updated 后求值（DOM 已就位），
- * 连接期读 DOM 会让两个适配器的首帧快照分叉。
+ * 条目自报值与禁用，connect 据此产出属性。
+ * connect 不反查 DOM：它在 Vue 的 render 期求值，此时 DOM 尚不存在。
  */
 export interface CheckboxGroupItemProps {
   value: string
@@ -29,18 +27,11 @@ export interface CheckboxGroupSchema extends MachineSchema {
     /** 选中值集合。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 */
     value?: string[]
     defaultValue?: string[]
-    /**
-     * 组内全部条目的值，按书写顺序声明。
-     *
-     * 渲染期算不出这份集合：connect 不许读 DOM，而条目是作者写在子树里的节点，
-     * 根部件的 props 里看不见它们。checkedState 要分得清 all 与 some 就必须有一份"全集"，
-     * 所以让作者显式说出来。不给也能用，只是 checkedState 退化成 none / some 两态
-     * ——trigger 的全选动作不依赖它（那一步在事件发生时现查活 DOM）。
-     */
+    /** 组内全部条目的值，按书写顺序声明；不给时 checkedState 退化成 none / some 两态。 */
     itemValues?: string[]
     /** 整组禁用：每一项都跟着禁用，且隐藏输入不参与提交。 */
     disabled?: boolean
-    /** 只读：仍可聚焦与朗读，但改不动。 */
+    /** 只读：仍可聚焦与朗读，但用户改不动。 */
     readOnly?: boolean
     /** 校验失败标注，落到每个条目的 aria-invalid 上。 */
     invalid?: boolean
@@ -61,7 +52,7 @@ export interface CheckboxGroupSchema extends MachineSchema {
   event:
     | { type: 'VALUE.SET', value: string[] }
     | { type: 'ITEM.TOGGLE', value: string }
-    /** values 是事件发生那一刻现查到的可用条目值，机器自己不记账。 */
+    /** values 是事件发生那一刻现查到的可用条目值。 */
     | { type: 'ALL.TOGGLE', values: string[] }
   tag: never
   guard: 'editable'
@@ -85,11 +76,7 @@ export interface CheckboxGroupApi<T extends PropTypes = PropTypes> {
   getItemProps: (props: CheckboxGroupItemProps) => T['element']
   getItemControlProps: (props: CheckboxGroupItemProps) => T['element']
   getItemTextProps: (props: CheckboxGroupItemProps) => T['element']
-  /**
-   * 条目的表单影子：一份视觉隐藏的原生 checkbox，由条目内部渲染。
-   * 与其它条目 getter 一样按条目取值——name 全组共用，value/checked 逐条目不同，
-   * 零参签名产不出这些差异。
-   */
+  /** 条目的表单影子：一份视觉隐藏的原生 checkbox，由条目内部渲染。 */
   getItemHiddenInputProps: (props: CheckboxGroupItemProps) => T['input']
   /** 全选/半选的父复选框。必须写在 root 之内，它靠祖先链找到本组。 */
   getTriggerProps: () => T['element']

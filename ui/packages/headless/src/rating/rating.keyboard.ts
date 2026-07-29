@@ -1,7 +1,6 @@
 import type { KeyboardTable } from '../spec/types'
 
-// 评分带对外报的是 radiogroup，键盘契约因此对齐 radio 模式；
-// 只有"一档"的大小是评分自己的事：allowHalf 打开时一档是半颗星。
+// 键盘契约对齐 radio 模式；allowHalf 打开时一档是半颗星。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/radio/#keyboardinteraction'
 
 export const ratingKeyboard: KeyboardTable = {

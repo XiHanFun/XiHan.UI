@@ -34,8 +34,7 @@ export function useTour(
   if (typeof document !== 'undefined') {
     const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
 
-    // 只给注册函数、不在这里注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
-    // 挂载期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
+    // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按展开态驱动
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
       // 引导是模态的：遮罩盖住整页，焦点陷在浮层里
       kind: 'modal',
@@ -43,12 +42,11 @@ export function useTour(
       branches: () => [],
       isModal: () => true,
       setModal: () => {},
-      // 遮罩是"点它就该关本层"的表面；关不关仍由 closeOnInteractOutside 说了算（缺省不关）
+      // 遮罩登记为可点关闭的表面，是否真关由 closeOnInteractOutside 决定
       surfaces: () => [backdropRef.value].filter(Boolean) as Element[],
     })
 
-    // 定位引擎由适配器建好注入；机器只经端口驱动，不认识具体引擎。
-    // 锚点不在这里给——它是每一步 target 选择器查出来的节点，由机器自己解析
+    // 定位引擎由适配器注入，机器只经端口驱动；锚点由机器按每步 target 自行解析
     service.refs.set('config', config)
     service.refs.set('registerLayer', registerLayer)
     service.refs.set('position', createFloatingUiPositionEngine())

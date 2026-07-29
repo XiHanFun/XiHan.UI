@@ -20,8 +20,7 @@ function menuTree(disabled?: string): FixtureNode {
   return {
     part: 'root',
     children: [
-      // 必须是 button：Vue 侧组件自己渲染成 button，WC 侧由 fixture 的 tag 决定，
-      // 渲染成 div 就不可聚焦，"关闭后焦点归还 trigger"在 WC 上永远等不到
+      // 必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦
       { part: 'trigger', tag: 'button', text: '操作' },
       {
         part: 'positioner',
@@ -75,7 +74,7 @@ export const menuSuite: ConformanceSuite = {
             'data-state': 'closed',
             'data-placement': 'bottom-start',
           },
-          // 收起态没有锚点：条目连同 content 一起 hidden，本就不可达
+          // 收起态没有锚点：条目连同 content 一起 hidden
           'item[0]': {
             'role': 'menuitem',
             'aria-disabled': 'false',

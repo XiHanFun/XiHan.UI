@@ -23,8 +23,7 @@ type TransferProps = TransferSchema['props']
 
 export const XhTransferRoot = defineComponent({
   name: 'XhTransferRoot',
-  // 缺省值的唯一事实源在 connect —— 凡是 connect 有兜底的一律 default: undefined
-  // （loop 尤其：裸 Boolean 声明会把缺省压成 false，方向键回绕就默默关掉了）
+  // 有 connect 兜底的 prop 一律 default: undefined
   props: {
     items: { type: Array as PropType<TransferItem[]>, default: undefined },
     value: { type: Array as PropType<string[]>, default: undefined },
@@ -38,7 +37,7 @@ export const XhTransferRoot = defineComponent({
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
   },
-  // *-change 携带 details 对象；update:* 携带裸集合，支持 v-model:value / v-model:selected
+  // *-change 携带 details 对象，update:* 携带裸集合以支持 v-model
   emits: ['value-change', 'selected-change', 'update:value', 'update:selected'],
   setup(props, { slots, emit }) {
     const notifyValue: TransferProps['onValueChange'] = (details) => {
@@ -71,11 +70,7 @@ export const XhTransferRoot = defineComponent({
   },
 })
 
-/**
- * 面板 setup 的共用体：两侧只在 side 上不同，结构与插槽完全一样。
- * 组件本身仍逐个声明（Vue 的组件名要是字面量，工厂产出的类型也难看），
- * 但"面板做什么"只写这一份。
- */
+/** 生成源/目标面板共用的 setup，两侧只在 side 上不同 */
 function panelSetup(side: TransferSide): (props: unknown, ctx: { slots: Slots }) => () => VNode {
   return (_: unknown, { slots }: { slots: Slots }) => {
     const ctx = useTransferContext()
@@ -123,8 +118,7 @@ export const XhTransferPanelCount = defineComponent({
   setup(_, { slots }) {
     const ctx = useTransferContext()
     const { panel } = useTransferPanelContext()
-    // 计数节点只带数字属性，文案由作者写（语言与量词都是他的事）；
-    // 留空时皮肤层会用 ::after 把 data-checked-count / data-count 补出来
+    // 只带 data-checked-count / data-count 属性，文案由作者或皮肤层提供
     return () => h('span', ctx.api.value.getPanelCountProps(panel.value) as Record<string, unknown>, slots.default?.())
   },
 })
@@ -152,7 +146,7 @@ export const XhTransferSelectAllTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useTransferContext()
     const { panel } = useTransferPanelContext()
-    // 必须是原生 <button>：三态格的 Enter/Space 激活由平台负责，禁用也只有原生 disabled 拦得住
+    // 用原生 button，激活与禁用交给平台
     return () => h('button', ctx.api.value.getSelectAllTriggerProps(panel.value) as Record<string, unknown>, slots.default?.())
   },
 })
@@ -165,17 +159,10 @@ export const XhTransferItem = defineComponent({
   setup(props, { slots }) {
     const ctx = useTransferContext()
     const { panel } = useTransferPanelContext()
-    // 禁用与标签一律回 items 里查，条目自己只报值与所属面板：
-    // 两侧各挂一份全集，同一个 value 的两个节点靠 side 分身份
+    // 条目只报值与所属面板，禁用与标签回 items 里查；同一 value 的两侧节点靠 side 分身份
     const item = computed<TransferItemProps>(() => ({ value: props.value, side: panel.value.side }))
     provideTransferItem({ item })
-    // 承载焦点的条目被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：
-    // 列表容器判自己"焦点在组内"退出 Tab 序列，又没有条目认领得了这个锚点，
-    // 这一侧零个 Tab 停靠点，键盘用户再也进不来。卸载前把焦点离场如实上报，
-    // 且只有自己正持有焦点时才报——否则删掉任一无关条目都会把光标一并清掉。
-    // v-for 不带 key 时 Vue 会就地复用节点：被删的是"最后一个组件实例"，
-    // 而持有焦点的那个 DOM 节点还在、value 却被改成了别的条目。此时锚点仍指着旧值、
-    // 已无人认领，键盘就此失灵。自己正持有焦点且 value 变了，就按新值重报一次。
+    // 本条目持有焦点时，value 变更重报焦点条目，卸载时上报列表失焦
     const itemEl = ref<HTMLElement | null>(null)
     watch(() => props.value, (next, prev) => {
       if (next === prev)
@@ -188,11 +175,10 @@ export const XhTransferItem = defineComponent({
     })
     onBeforeUnmount(() => {
       const { service } = ctx
-      // 整个组件一起卸载时根部件先停机，此刻无焦点可言（送事件还会在 dev 下抛）
+      // 整组一起卸载时根部件先停机，此刻送事件会在 dev 下抛
       if (service.getStatus() !== 'Started')
         return
-      // 判据是「本节点当下正持有焦点」，不是「值对得上」：v-for 就地复用时
-      // 被卸载的是末位实例、它的 value 可能恰好等于刚纠正过的锚点，按值判会把好端端的锚点清掉
+      // 按「本节点当下正持有焦点」判定，不按 value 比对
       if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
         service.send({ type: 'LIST.BLUR', side: panel.value.side })
     })
@@ -226,8 +212,7 @@ export const XhTransferToTargetTrigger = defineComponent({
   name: 'XhTransferToTargetTrigger',
   setup(_, { slots }) {
     const ctx = useTransferContext()
-    // 必须是原生 <button>：Enter/Space 的激活由平台负责，禁用态也只有原生 disabled
-    // 才能真的把它移出 Tab 序列
+    // 用原生 button，激活与禁用交给平台
     return () => h('button', ctx.api.value.getToTargetTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })

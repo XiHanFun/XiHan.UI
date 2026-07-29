@@ -12,8 +12,7 @@ export const checkboxSuite: ConformanceSuite = {
   fixture: { part: 'root', tag: 'button' },
   cases: [
     {
-      // Space / Enter 切换由平台的按钮激活行为负责，我们不自己接这两个键。
-      // 该守的就是"它确实是原生 <button type=button>"——不是的话平台不会替我们翻键。
+      // Space / Enter 由平台的按钮激活行为翻成 click，组件不自己接这两个键；这里守它确实是原生 button[type=button]
       name: 'Space / Enter 切换：角色节点是原生 <button type="button">，激活交给平台',
       spec: { apg: APG },
       covers: ['checkbox.kbd.toggle'],

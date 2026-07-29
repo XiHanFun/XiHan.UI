@@ -21,7 +21,7 @@ interface Bounds {
 
 type AxisBounds = Bounds & Pick<Props, 'orientation' | 'dir'>
 
-/** 区间与步长的缺省收在一处：省得每个 action 各写一遍 ?? 0 / ?? 100。 */
+/** 区间与步长的缺省收在一处。 */
 function bounds(prop: PropReader): Bounds {
   return {
     min: prop('min') ?? SLIDER_MIN,
@@ -37,11 +37,8 @@ function axis(prop: PropReader): AxisBounds {
 }
 
 /**
- * 整组赋值前先归位：逐个吸到 step 网格并夹进区间，再从左往右把后一个顶到前一个之后
- * （含 minStepsBetweenThumbs 的间隔）。
- *
- * 交互路径上"不越过邻居"由 setThumbValue 保证，命令式赋值也得守住同一条不变量：
- * 值一旦交叉，thumbBounds 会给出上下颠倒的区间，那两个滑块从此谁也推不动。
+ * 整组赋值前先归位：逐个吸到 step 网格并夹进区间，再从左往右按 minStepsBetweenThumbs 顶开。
+ * 值一旦交叉，thumbBounds 会给出上下颠倒的区间，那两个滑块从此推不动。
  */
 function normalizeValues(values: readonly number[], o: Bounds): number[] {
   const gap = (o.minStepsBetweenThumbs ?? 0) * o.step
@@ -74,8 +71,7 @@ export const sliderMachine = createMachine({
   initialState: () => 'idle',
   // 键盘推动从哪个状态发出都一样（拖动期间也可能有键盘事件），因此挂根级
   on: {
-    // 命令式赋值与用户推动共用同一道守卫：禁用/只读期间界面不该出现"值自己变了"，
-    // 无论这一下来自方向键还是来自 api.setValue
+    // 命令式赋值与用户推动共用同一道守卫，禁用/只读期间值不变
     'VALUE.SET': { guard: 'canDrag', actions: ['setValue'] },
     'THUMB.STEP': { guard: 'canDrag', actions: ['setActiveIndex', 'stepThumb'] },
     'THUMB.TO_MIN': { guard: 'canDrag', actions: ['setActiveIndex', 'thumbToMin'] },
@@ -94,8 +90,7 @@ export const sliderMachine = createMachine({
       effects: ['trackPointer'],
       on: {
         'DRAG.MOVE': { actions: ['dragThumb'] },
-        // 收尾通知只在这里发一次：拖动途中 onValueChange 已经连着发了很多次，
-        // 发请求那类活儿要的是"手松了"这一下
+        // 收尾通知只在这里发一次，拖动途中 onValueChange 已连发多次
         'DRAG.END': { target: 'idle', actions: ['invokeChangeEnd'] },
       },
     },
@@ -178,9 +173,7 @@ export const sliderMachine = createMachine({
       },
     },
     effects: {
-      // 监听器挂在文档上而不是滑块上：指针拖出轨道甚至拖出窗口时仍要跟手，
-      // 挂在滑块上会在指针离开的那一刻断掉，滑块就卡在半路。
-      // pointercancel 也要收：系统手势抢走指针时不收会让状态永远停在 dragging。
+      // 监听器挂在文档上，指针拖出轨道仍要跟手；pointercancel 不收会让状态永远停在 dragging。
       trackPointer: ({ send, refs }) => {
         const track = refs.get('getTrackEl')()
         const doc = track?.ownerDocument ?? (typeof document === 'undefined' ? null : document)

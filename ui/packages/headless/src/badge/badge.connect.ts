@@ -4,7 +4,7 @@ import { badgeAnatomy } from './badge.anatomy'
 
 const parts = badgeAnatomy.build()
 
-// Badge 无状态机：纯展示，外观全部来自 variant prop。
+// Badge 无状态机，外观由 variant 决定。
 export function connectBadge<T extends PropTypes>(
   props: BadgeProps,
   normalize: NormalizeProps<T>,

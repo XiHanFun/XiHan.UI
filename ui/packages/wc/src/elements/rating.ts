@@ -6,8 +6,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-// 属性缺席翻成 undefined：受控与非受控的分界就在这个 undefined 上。
-// Lit 自带的转换器会把缺席落成 null，那样 value="0" 与"没写 value"就分不开了
+// 属性缺席翻成 undefined，以此区分受控与非受控。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 // 三态布尔：属性缺席 = undefined（用默认值）、="false" = false、其余 = true。
@@ -41,7 +40,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart hidden-input - 表单影子输入（必须是原生 input）
  */
 export class XhRatingElement extends XhElement {
-  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
   // dir 占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名声明既与基类类型冲突，也会盖掉原生反射。别名保留原生行为，
   // 同时让 dir 进 observedAttributes——运行期改 dir 才会重跑 wire 换掉按键处理器。

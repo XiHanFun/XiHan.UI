@@ -12,7 +12,7 @@ export type KeyName
 /** part 引用：单例直接用 part 名，集合类用 'item[2]' 下标寻址。 */
 export type PartRef = string
 
-// ── 结构描述：与框架无关的 fixture 树，每适配器写一个递归渲染器即可 ──
+// ── 结构描述：与框架无关的 fixture 树 ──
 
 export interface FixtureNode {
   /** anatomy part 名（与 data-part 逐字相同）。省略 = 纯结构/业务节点。 */
@@ -20,7 +20,7 @@ export interface FixtureNode {
   /** 标签名。纯结构节点默认 'div'。 */
   readonly tag?: string
   readonly text?: string
-  /** 仅承载业务属性（如 data-testid），不放 aria-、data-scope、data-part 这些组件职责的属性。 */
+  /** 业务属性（如 data-testid），不含 aria-、data-scope、data-part。 */
   readonly attrs?: Readonly<Record<string, string>>
   readonly children?: readonly FixtureNode[]
 }
@@ -36,7 +36,7 @@ export interface Fixture {
 export interface PartSnapshot {
   /** 归一化属性表；键已排序，缺失属性显式为 null。 */
   readonly attrs: Readonly<Record<string, string | null>>
-  /** class 列表，已排序去重；只参与轨迹深度比对，不进单适配器断言。 */
+  /** class 列表，已排序去重。 */
   readonly classNames: readonly string[]
 }
 
@@ -52,7 +52,7 @@ export interface AdapterEvent {
   readonly detail: unknown
 }
 
-/** 归一化后的 DOM 快照 —— 唯一允许的断言对象。 */
+/** 归一化后的 DOM 快照。 */
 export interface DomSnapshot {
   /** part 名 → 该 part 的全部实例（文档序）。单例即长度 1 的数组。 */
   readonly parts: Readonly<Record<string, readonly PartSnapshot[]>>
@@ -61,7 +61,7 @@ export interface DomSnapshot {
   readonly activeElement: ActiveElementRef | null
   /** 自上一帧以来适配器对外派发的事件。 */
   readonly events: readonly AdapterEvent[]
-  /** 带 data-scope 但不属于任何声明 part 的元素（应恒为空；非空即 anatomy 泄漏）。 */
+  /** 带 data-scope 但不属于任何声明 part 的元素。 */
   readonly strayParts: readonly string[]
 }
 
@@ -69,14 +69,12 @@ export interface DomSnapshot {
 export type AttrExpectation = Readonly<Record<string, string | null>>
 
 /**
- * 焦点落点期望：
- *  - 字符串 = 焦点在该 part 之内（含该 part 元素自身或其后代）
- *  - { part, exact: true } = 焦点恰为该 part 元素本身
- *  - { part, exact: false } = 焦点在该 part 内部但不是元素本身（后代）
+ * 焦点落点期望：字符串 = 焦点在该 part 之内；
+ * { part, exact: true } = 焦点恰为该 part 元素本身；exact: false = 焦点在其后代上。
  */
 export type ActiveElementExpectation = PartRef | { readonly part: PartRef, readonly exact?: boolean }
 
-/** 断言：深度子集匹配，只写关心的 part 与属性，其余忽略。 */
+/** 断言：深度子集匹配，未列出的 part 与属性忽略。 */
 export interface SnapshotExpectation {
   readonly parts?: Readonly<Record<PartRef, AttrExpectation | readonly AttrExpectation[]>>
   readonly order?: readonly string[]
@@ -89,7 +87,7 @@ export interface SnapshotExpectation {
 
 // ── 步骤 ──
 
-/** 等待条件：只允许等到某个可观察的 DOM 事实成立，禁止裸 sleep。 */
+/** 等待条件：等到某个可观察的 DOM 事实成立。 */
 export type SettleCondition
   = | { readonly attr: { readonly part: PartRef, readonly name: string, readonly value: string | null } }
     | { readonly present: PartRef }
@@ -100,13 +98,7 @@ export interface RawStepContext {
   readonly root: HTMLElement
   readonly doc: Document
   readonly adapterName: AdapterName
-  /**
-   * 等适配器把这一轮改动提交到 DOM。
-   *
-   * 两个适配器的重渲都是异步的（Vue 排微任务，Lit 等 updateComplete），
-   * 所以在 raw 里派完事件**必须** await 这个再去读 DOM——否则读到的是上一帧，
-   * 断言要么假绿（期望值恰好等于旧值），要么像组件坏了一样假红。
-   */
+  /** 等适配器把这一轮改动提交到 DOM。 */
   readonly flush: () => Promise<void>
 }
 
@@ -122,7 +114,7 @@ export type Step
   /** 由宿主驱动的 prop 变更（受控模式）。 */
     | { readonly kind: 'setProps', readonly props: Readonly<Record<string, unknown>> }
     | { readonly kind: 'settle', readonly until: SettleCondition, readonly timeoutMs?: number }
-  /** 逃生舱口：必须写 why。 */
+  /** 逃生舱口：需写明 why。 */
     | { readonly kind: 'raw', readonly why: string, readonly run: (ctx: RawStepContext) => void | Promise<void> }
 
 export type StepWithExpect = Step & { readonly expect?: SnapshotExpectation }
@@ -131,9 +123,9 @@ export type StepWithExpect = Step & { readonly expect?: SnapshotExpectation }
 
 export interface ConformanceCase {
   readonly name: string
-  /** 规格出处：APG 锚点、machine 源码位置或 ADR。 */
+  /** 规格出处。 */
   readonly spec: { readonly apg?: string, readonly zag?: string, readonly adr?: string }
-  /** 派生结构变体；省略则用套件默认 fixture。 */
+  /** 派生结构变体，省略则用套件默认 fixture。 */
   readonly fixture?: (base: FixtureNode) => FixtureNode
   readonly props?: Readonly<Record<string, unknown>>
   readonly steps?: readonly StepWithExpect[]
@@ -143,22 +135,17 @@ export interface ConformanceCase {
   readonly expect?: SnapshotExpectation
   /** 本用例覆盖的键盘表行 id（用于覆盖率反查）。 */
   readonly covers?: readonly string[]
-  /**
-   * 不参与跨适配器逐帧比对，并写明理由。
-   * 只给结果本身不确定的用例用——典型是按住连发这类计时相关的：
-   * 两侧行为一致，但一次按住里跑了几拍取决于机器当时的调度，帧序天然对不齐。
-   * 一致性套件仍然照跑，缺的只是"逐帧一模一样"这条更强的保证。
-   */
+  /** 跳过跨适配器逐帧比对的理由。 */
   readonly skipParity?: string
 }
 
 export interface ConformanceSuite {
   readonly component: string
-  /** 直接吃 headless 的 anatomy 对象，不手抄 part 清单。 */
+  /** headless 导出的 anatomy 对象。 */
   readonly anatomy: Anatomy<string>
   /** 键盘表：覆盖率的分母。 */
   readonly keyboard: KeyboardTable
-  /** 默认 fixture 结构树（铺齐可挂载的 part + 业务节点）。 */
+  /** 默认 fixture 结构树。 */
   readonly fixture: FixtureNode
   readonly cases: readonly ConformanceCase[]
 }
@@ -167,7 +154,7 @@ export interface ConformanceSuite {
 
 export interface AdapterHarness {
   readonly adapterName: AdapterName
-  /** 挂载 fixture 树，返回宿主根元素（portal 内容可能在其外，采集器另行从 document 查找）。 */
+  /** 挂载 fixture 树，返回宿主根元素。 */
   mount: (fixture: Fixture) => Promise<{ root: HTMLElement }>
   setProps: (next: Readonly<Record<string, unknown>>) => Promise<void>
   /** 等待适配器自己的更新队列排空。 */
@@ -177,7 +164,7 @@ export interface AdapterHarness {
   unmount: () => Promise<void>
 }
 
-/** 注入测试运行钩子，避免运行时耦合具体测试框架。断言以抛错表达失败。 */
+/** 注入测试运行钩子，避免耦合具体测试框架。 */
 export interface TestHooks {
   describe: (name: string, fn: () => void) => void
   it: (name: string, fn: () => void | Promise<void>) => void

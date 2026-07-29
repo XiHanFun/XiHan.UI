@@ -7,12 +7,11 @@ import { createLitRuntime } from './lit-runtime'
 
 export interface MachineControllerOptions<T extends MachineSchema> {
   scope?: Scope
-  /** 每次(重)建机器后回调，用于注入 refs：初次 + 重连重建都会触发。 */
+  /** 每次建机器后回调，用于注入 refs。 */
   onBuilt?: (service: Service<T>) => void
 }
 
-// 一台机器一个 controller：hostConnected→build+mount、hostUpdate→runTrackers、hostDisconnected→unmount。
-// 复用唯一解释器 createService，不重造 FSM。
+// 一台机器一个 controller：hostConnected 建机器并 mount、hostUpdate 跑 trackers、hostDisconnected unmount。
 export class MachineController<T extends MachineSchema> implements ReactiveController {
   service!: Service<T>
   private runtime: LitRuntime | undefined
@@ -25,8 +24,7 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
     private readonly opts: MachineControllerOptions<T> = {},
   ) {
     host.addController(this)
-    // 刻意不在构造期 build：此刻 attribute 尚未反射到 reactive property，
-    // initialState 会读到 undefined（如 default-checked / default-open 失效）。延到 hostConnected。
+    // 延到 hostConnected 再 build，构造期 attribute 尚未反射到 reactive property。
   }
 
   private build(): void {
@@ -36,8 +34,7 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
   }
 
   hostConnected(): void {
-    // 首次连接时 attribute 已反射到 property，initialState 读得到；
-    // 重连（元素在 DOM 中被移动）时旧机器 stop 不可复活 → 重建从 initialState 起（状态不跨移动保留）。
+    // 首次或旧机器已停止时重建，从 initialState 起。
     if (!this.started || this.service.getStatus() === 'Stopped') {
       this.build()
       this.started = true

@@ -19,7 +19,7 @@ import { CONTEXT_MENU_DEFAULT_PLACEMENT } from './context-menu.machine'
 
 const parts = contextMenuAnatomy.build()
 
-/** 右键那一下的 button 值。它不算"点到别处"——紧随其后的 contextmenu 才是这次交互的正文。 */
+/** 右键那一下的 button 值；它不算「点到别处」。 */
 const SECONDARY_BUTTON = 2
 
 export function connectContextMenu<T extends PropTypes>(
@@ -31,12 +31,11 @@ export function connectContextMenu<T extends PropTypes>(
   const pressing = state.get() === 'pressing'
   const ids = scope.ids('context-menu', 'trigger', 'content')
   const stateAttr = open ? 'open' : 'closed'
-  // 位置由引擎写进 context；这里只读结果，不量 DOM、不调引擎，保持纯函数
+  // 位置由引擎写进 context，这里只读结果，不量 DOM、不调引擎
   const position = context.get('position')
   const point = context.get('point')
   const placement = position?.placement ?? prop('placement') ?? CONTEXT_MENU_DEFAULT_PLACEMENT
-  // roving tabindex 与方向键起点共用这一个锚点。菜单没有选中态，锚点就只由焦点决定；
-  // 收起时为 null（条目此刻不可达）。
+  // roving tabindex 与方向键起点共用这一个锚点，菜单没有选中态；收起时为 null
   const anchor = context.get('focusedValue') ?? null
   const loop = prop('loop') ?? true
   const dir = prop('dir')
@@ -48,14 +47,11 @@ export function connectContextMenu<T extends PropTypes>(
   // item / item-text / item-indicator 共用同一份状态标记，样式层各处一致
   const itemStateAttrs = (item: ContextMenuItemProps): Record<string, string | undefined> => ({
     'data-disabled': dataAttr(item.disabled),
-    // 焦点真的落在条目上，条目自己用 :focus 也画得出来；子部件够不着那个伪类，只能读这个标记
+    // 子部件够不着条目的 :focus 伪类，只能读这个标记
     'data-highlighted': dataAttr(anchor === item.value),
   })
 
-  /**
-   * 方向键落点：条目集合只在事件那一刻读，两个适配器此时看到的是同一份活 DOM，
-   * 顺序即文档序。起点用锚点，终点用活 DOM 算，禁用条目自动跳过。
-   */
+  /** 方向键落点：条目集合只在事件那一刻读，顺序即文档序；起点用锚点，禁用条目自动跳过。 */
   const navigate = (content: HTMLElement, intent: NavIntent): void => {
     const target = navigateItems(queryItems(content, contextMenuItemQuery), anchor, intent, { loop })
     const next = itemValue(target)
@@ -101,8 +97,7 @@ export function connectContextMenu<T extends PropTypes>(
         send({ type: 'CLOSE' })
         return
       }
-      // 命令式展开没有光标坐标，落回最近一次锚点；一次都没打开过就是原点。
-      // 焦点端给 'none'：不是用户按出来的，展开那一刻不该有条目带着高亮
+      // 命令式展开没有光标坐标，落回最近一次锚点（从未打开过则是原点）；焦点端给 'none'
       send({ type: 'OPEN', x: point?.x ?? 0, y: point?.y ?? 0, focus: 'none' })
     },
     openAt: (x, y) => send({ type: 'OPEN', x, y, focus: 'none' }),
@@ -112,16 +107,14 @@ export function connectContextMenu<T extends PropTypes>(
       'data-state': stateAttr,
     }),
 
-    // 触发区是任意一块内容区域，不是按钮：
-    // aria-haspopup / aria-controls / aria-keyshortcuts 都是全局属性，落在普通元素上合法；
-    // aria-expanded 不是全局属性，只对特定 role 有定义，这里不输出。
+    // 触发区是普通元素不是按钮：aria-expanded 不是全局属性，只对特定 role 有定义，这里不输出
     getTriggerProps: () => normalize.element({
       ...parts.trigger.attrs,
       'id': ids.trigger,
       'aria-haspopup': 'menu',
       'aria-controls': ids.content,
       'aria-keyshortcuts': 'Shift+F10',
-      // 键盘用户也得开得出来：区域上没有 Tab 位，Shift+F10 与 ContextMenu 键就永远送不到这里
+      // 区域上没有 Tab 位，Shift+F10 与 ContextMenu 键就送不到这里
       'tabindex': 0,
       'data-state': stateAttr,
       'data-pressing': dataAttr(pressing),
@@ -134,13 +127,11 @@ export function connectContextMenu<T extends PropTypes>(
         // 浮层若被作者嵌在触发区内部，点条目会一路冒泡到这里；那是层内交互，不该关
         if ((event.target as HTMLElement | null)?.closest(parts.content.selector))
           return
-        // 右键那一下不算"点到别处"：紧随其后的 contextmenu 要把菜单挪到新坐标，
-        // 先关一次会白闪，还会多发一对开合回调
+        // 右键那一下不算「点到别处」，紧随其后的 contextmenu 会把菜单挪到新坐标
         if (event.button === SECONDARY_BUTTON)
           return
         if (open) {
-          // 触发区被登记为本层分支（右键要能就地换坐标），消解层因此不管它，
-          // "左键点在区域内也该关"这条只能在这里自己收口
+          // 触发区被登记为本层分支，消解层不管它，「左键点在区域内也该关」只能在这里收口
           send({ type: 'CLOSE', src: 'interact-outside' })
           return
         }
@@ -149,14 +140,12 @@ export function connectContextMenu<T extends PropTypes>(
           return
         send({ type: 'PRESS.START', x: event.clientX, y: event.clientY })
       },
-      // 只有计时窗口内才上报移动：区域上的每一次划过都送事件，等于给整块区域挂了个空转的高频回调
+      // 只有计时窗口内才上报移动，否则整块区域挂着一个空转的高频回调
       'onPointerMove': (event: PointerEvent) => {
         if (pressing)
           send({ type: 'PRESS.MOVE', x: event.clientX, y: event.clientY })
       },
-      // 抬手与系统打断不看 pressing 标记：那个标记是上一帧渲染时的快照，
-      // 若抬手来得比重渲还早就会被漏掉，计时接着跑，手指早已松开菜单却照样弹出来。
-      // 非计时窗口内的 PRESS.END 在机器里本就无人接管，多送一次不花什么。
+      // 抬手与系统打断不看 pressing 标记：它是上一帧的快照，抬手早于重渲就会被漏掉
       'onPointerUp': () => send({ type: 'PRESS.END' }),
       'onPointerCancel': () => send({ type: 'PRESS.END' }),
       'onKeyDown': (event: KeyboardEvent) => {
@@ -165,9 +154,7 @@ export function connectContextMenu<T extends PropTypes>(
         if (!menuKey)
           return
         event.preventDefault()
-        // 键盘没有光标坐标，锚点取触发区自身的起始角。
-        // 这一下读 DOM 发生在事件那一刻（两个适配器看到的是同一份活 DOM），
-        // 与"连接期不得读 DOM"不冲突。
+        // 键盘没有光标坐标，锚点取触发区自身的起始角；这一下读 DOM 发生在事件那一刻，不是连接期
         const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
         send({ type: 'CONTEXT.MENU', x: rect.x, y: rect.y, focus: 'first' })
       },
@@ -181,23 +168,19 @@ export function connectContextMenu<T extends PropTypes>(
       'data-hidden': dataAttr(position?.hidden),
       'style': {
         position: 'absolute',
-        // 引擎结果没回来之前先用光标坐标顶着：无引擎（SSR / 无布局环境）时它就是最终落位，
-        // 有引擎时也只是把第一帧从左上角挪到光标处，避让由引擎随后接管
+        // 引擎结果没回来之前先用光标坐标顶着；无引擎时它就是最终落位
         insetInlineStart: `${position?.x ?? point?.x ?? 0}px`,
         insetBlockStart: `${position?.y ?? point?.y ?? 0}px`,
       },
     }),
 
-    // 键盘全在 content 上收口：条目只管声明自己，一次冒泡一个处理器。
-    // Escape 不在这里收——它归消解层管（只有栈顶层响应，嵌套浮层才能逐层关闭）。
+    // 键盘全在 content 上收口；Escape 不在这里收，归消解层管（只有栈顶层响应）。
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
       'id': ids.content,
       'role': 'menu',
       'aria-labelledby': ids.trigger,
-      // 有锚点时 Tab 位归锚点条目；展开着却没有锚点（条目被删、或首帧还没挑出锚点）时
-      // 由容器兜底，否则整个菜单一个 Tab 停靠点都没有、键盘再也进不去。
-      // 收起态不需要兜底：content 此时是 hidden。
+      // 有锚点时 Tab 位归锚点条目；展开着却没有锚点时由容器兜底，否则整个菜单没有 Tab 停靠点
       'tabindex': open && anchor == null ? 0 : -1,
       'data-state': stateAttr,
       'data-placement': placement,
@@ -205,7 +188,7 @@ export function connectContextMenu<T extends PropTypes>(
       'hidden': !open || undefined,
       'onKeyDown': (event: KeyboardEvent) => {
         const content = event.currentTarget as HTMLElement
-        // 纵向菜单：左右键返回 null，放行给页面滚动与读屏（也留给将来的子菜单）
+        // 纵向菜单：左右键返回 null，放行给页面滚动
         const intent = navIntentFromKey(event, { axis: 'vertical', dir })
         if (intent) {
           event.preventDefault()
@@ -218,8 +201,7 @@ export function connectContextMenu<T extends PropTypes>(
           return
         }
         // 连打检索只搬焦点。缓冲区空时空格不算字符（push 返回 null），落到下面当确认键；
-        // 缓冲区非空时它是词中间的空格，归检索——既已被检索吞掉就一并拦下默认滚动。
-        // 带 Ctrl/Meta/Alt 的组合一律不归检索管，否则 Ctrl+F 之类会被吞掉。
+        // 缓冲区非空时归检索。带 Ctrl/Meta/Alt 的组合不归检索管，否则 Ctrl+F 之类会被吞掉
         const query = typeaheadOn && !event.ctrlKey && !event.metaKey && !event.altKey
           ? refs.get('typeahead').push(event.key)
           : null
@@ -239,17 +221,15 @@ export function connectContextMenu<T extends PropTypes>(
       // 导航、检索与选中都以此为条目身份
       [ITEM_VALUE_ATTR]: item.value,
       'role': 'menuitem',
-      // 集合条目一律 aria-disabled，绝不输出原生 disabled：原生 disabled 不可聚焦、
-      // 也不派发 click，禁用条目就再也当不成方向键的起点，样式与行为也会就此分裂。
+      // 集合条目一律 aria-disabled，原生 disabled 不可聚焦也不派发 click
       'aria-disabled': item.disabled ? 'true' : 'false',
-      // roving tabindex：整组只有锚点条目留在 Tab 序列内。锚点在展开那一刻由机器
-      // 落到首/末个可用条目，收起态无锚点——此时条目连同 content 一起 hidden，本就不可达。
+      // roving tabindex：整组只有锚点条目留在 Tab 序列内；收起态无锚点
       'tabindex': anchor === item.value ? 0 : -1,
       'onClick': () => {
         if (!item.disabled)
           send({ type: 'ITEM.SELECT', value: item.value })
       },
-      // 焦点是事实不是许可：禁用条目被点到也记锚点，方向键才知道从哪儿起步
+      // 禁用条目被聚焦也记锚点，方向键才有起点
       'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
     }),
 
@@ -261,7 +241,7 @@ export function connectContextMenu<T extends PropTypes>(
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,
       ...itemStateAttrs(item),
-      // 标记位是纯装饰（勾选符号、图标、快捷键提示），条目自己已经把语义说全了
+      // 标记位是纯装饰，语义由条目自己给出
       'aria-hidden': 'true',
     }),
 
@@ -274,7 +254,7 @@ export function connectContextMenu<T extends PropTypes>(
     getGroupProps: group => normalize.element({
       ...parts.group.attrs,
       'role': 'group',
-      // 分组标题不是条目，只能靠 aria-labelledby 挂上来；读屏据此播报「第 N 组，编辑」
+      // 分组标题不是条目，只能靠 aria-labelledby 挂上来
       'aria-labelledby': groupLabelId(group.value),
     }),
 

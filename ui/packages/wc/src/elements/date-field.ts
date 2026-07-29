@@ -4,8 +4,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-// 属性缺席一律翻成 undefined：缺省值的唯一事实源留在机器与 connect 里。
-// Lit 自带的转换器会把缺席落成 null，那样 value="" 与"没写 value"就分不开了
+// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
 // Lit 默认的 Boolean 转换器判的是 v !== null，写 disabled="false" 反而成了真
@@ -57,7 +56,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart hidden-input - type=hidden 的表单出口，值是 ISO 串
  */
 export class XhDateFieldElement extends XhElement {
-  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },

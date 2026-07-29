@@ -2,11 +2,8 @@ import type { Direction, Orientation } from '@xihan-ui/core'
 import { clamp, snapDecimals } from '../shared/number'
 
 /**
- * 值 ↔ 轨道坐标的换算。整块是纯函数：给定矩形与坐标算值、给定值算百分比，
- * 不碰 DOM、不认识状态机——矩形由调用方在事件发生的那一刻量好传进来。
- *
- * 坑几乎都在方向上：竖直轨道的屏幕坐标向下增大而值向上增大，RTL 下水平轨道
- * 也是反的。把这三件事揉进一个 invert 判定，别让每个调用点各判一次。
+ * 值 ↔ 轨道坐标的换算，纯函数：矩形由调用方在事件发生那一刻量好传入，不碰 DOM。
+ * 竖直轨道屏幕坐标向下增大而值向上增大，RTL 水平轨道同样反向，统一由 isInverted 判定。
  */
 
 export interface TrackRect {
@@ -58,8 +55,7 @@ export function pointToValue(
 ): number {
   const vertical = o.orientation === 'vertical'
   const size = vertical ? rect.height : rect.width
-  // 轨道被压成 0 宽/高（还没布局、或被隐藏）时不猜：原样返回下界，
-  // 除以 0 会得到 NaN 并一路写进 aria-valuenow
+  // 轨道被压成 0 宽/高时不猜，原样返回下界；除以 0 会得到 NaN 并写进 aria-valuenow
   if (size <= 0)
     return o.min
   const offset = vertical ? point.clientY - rect.y : point.clientX - rect.x

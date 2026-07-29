@@ -10,7 +10,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface TransferContext {
   api: ComputedRef<TransferApi>
-  /** 部件要上报 DOM 侧的事实（如条目卸载带走了焦点），得直接够到机器。 */
+  /** 机器实例，供部件上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
   service: Service<TransferSchema>
 }
 
@@ -20,8 +20,7 @@ export function useTransfer(
 ): TransferContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  // 机器没有副作用、也没有 refs：两侧集合全部从 items + value + 搜索串推导，
-  // 适配器不必注入任何东西
+  // 两侧集合全由 items + value + 搜索串推导，适配器不必注入 refs
   const service = useMachine(transferMachine, () => ({ ...props, ...handlers }), scope)
   const api = computed(() => connectTransfer(service, vueNormalize))
   return { api, service }

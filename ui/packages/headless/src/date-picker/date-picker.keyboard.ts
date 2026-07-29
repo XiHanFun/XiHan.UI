@@ -2,10 +2,8 @@ import type { KeyboardTable } from '../spec/types'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/examples/datepicker-dialog/#kbd_label'
 
-// 本表只列编排机自己接管的按键：浮层的开合、收起与焦点去处。
-// 展开之后网格里的方向键、翻页键与确认键全归内嵌日历（见 calendar 的键盘表），
-// 段位上的上下键、左右键与数字键全归内嵌分段输入（见 date-field 的键盘表）——
-// 那两份行为原样复用，不在这里重述，也就不会两处说法不一致。
+// 本表只列编排机接管的按键：浮层的开合、收起与焦点去处。
+// 网格内的方向键、翻页键与确认键见 calendar 键盘表，段位上的按键见 date-field 键盘表。
 export const datePickerKeyboard: KeyboardTable = {
   component: 'date-picker',
   source: APG,

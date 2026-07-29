@@ -4,7 +4,7 @@ import { nativeActivation } from './shared/native-activation'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/button/'
 
-// 用例内挂的作者处理器调用次数；每条用例挂监听器时清零，两个适配器各跑各的不互相干扰
+// 用例内挂的作者处理器调用次数，每条用例挂监听器时清零
 let authorClicks = 0
 
 export const buttonSuite: ConformanceSuite = {
@@ -14,8 +14,7 @@ export const buttonSuite: ConformanceSuite = {
   fixture: { part: 'root', tag: 'button', children: [{ text: '按钮' }] },
   cases: [
     {
-      // Enter / Space 激活由平台的按钮激活行为负责，我们不自己接这两个键。
-      // 该守的就是"它确实是原生 <button type=button>"——不是的话平台不会替我们翻键。
+      // Enter / Space 激活由平台负责，这里只验它是原生 <button type=button>
       name: 'Enter / Space 激活：角色节点是原生 <button type="button">，激活交给平台',
       spec: { apg: APG },
       covers: ['button.kbd.activate'],
@@ -79,10 +78,7 @@ export const buttonSuite: ConformanceSuite = {
       },
     },
     {
-      // loading 走的是 aria-disabled + 拦事件（保留焦点），不是原生 disabled，
-      // 所以点击照样派发到节点上——拦不住的话，一个"提交中"的按钮会被点第二次提交出去。
-      // 只 stopPropagation 是拦不住的：它挡的是往祖先冒泡，同一个节点上作者自己的
-      // 处理器照跑不误。
+      // loading 走 aria-disabled + 拦事件，点击仍派发到节点上，须在同一节点上拦掉
       name: 'loading：点击不触达作者挂在同一节点上的处理器',
       spec: { apg: APG },
       props: { loading: true },
@@ -112,7 +108,7 @@ export const buttonSuite: ConformanceSuite = {
       ],
     },
     {
-      // 反面对照：不是 loading 时照常触达，别把正常按钮也拦了
+      // 反面对照：非 loading 时照常触达
       name: '非 loading：点击照常触达作者的处理器',
       spec: { apg: APG },
       steps: [

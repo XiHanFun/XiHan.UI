@@ -8,7 +8,7 @@ export type DateSegmentType = 'year' | 'month' | 'day' | 'hour' | 'minute' | 'se
 export type DateGranularity = 'day' | 'hour' | 'minute' | 'second'
 
 /**
- * 各段的值。缺键即"这一段还没填"——不用 null 是为了让 `in` 与展开赋值都符合直觉。
+ * 各段的值，缺键即这一段还没填。
  * 只有当 granularity 要求的段全部填齐，才拼得出一个 ISO 串。
  */
 export type DateSegments = { readonly [K in DateSegmentType]?: number }
@@ -22,8 +22,8 @@ export interface DateSegmentRange {
 /**
  * 正在敲的那一段的数字缓冲。
  *
- * 只有值是不够的：连着敲 "0"、"7" 与直接敲 "7" 最终都是 7，但前者已经用掉两位、
- * 该收工跳段了，后者还能再接一位。位数只能靠原始数字串记着。
+ * 只有值是不够的：连着敲 "0"、"7" 与直接敲 "7" 都是 7，但前者已用掉两位该跳段。
+ * 位数只能靠原始数字串记着。
  */
 export interface DateTypingBuffer {
   segment: DateSegmentType
@@ -72,7 +72,7 @@ export interface DateFieldSchema extends MachineSchema {
     max?: string
     /** BCP 47 语言标记，决定年月日三段的先后。不给按 en-US（月日年）排。 */
     locale?: string
-    /** IANA 时区名，只用来取"今天"——空段上按上下键时从今天的对应位起步。 */
+    /** IANA 时区名，只用来取「今天」：空段上按上下键时从今天的对应位起步。 */
     timeZone?: string
     /** 精度，默认 day（只有年月日三段）。 */
     granularity?: DateGranularity
@@ -84,7 +84,7 @@ export interface DateFieldSchema extends MachineSchema {
     name?: string
     /** 各段未填时显示的占位串，逐段覆盖内置默认（yyyy / mm / dd / hh / mm / ss）。 */
     placeholder?: { readonly [K in DateSegmentType]?: string }
-    /** 各段的读屏名字，逐段覆盖内置默认。段是 spinbutton，没有名字就只剩一串数字。 */
+    /** 各段的读屏名字，逐段覆盖内置默认。段是 spinbutton，没有名字读屏只念得出一串数字。 */
     translations?: { readonly [K in DateSegmentType]?: string }
     onValueChange?: (details: DateFieldValueChangeDetails) => void
   }
@@ -95,8 +95,8 @@ export interface DateFieldSchema extends MachineSchema {
      */
     value: string
     /**
-     * 逐段的编辑缓冲。它不是 value 的镜像：段位允许不完整，而 ISO 串不允许，
-     * 少一段就没有值可言。值由段位算出来，段位则在 value 变化时反向对齐。
+     * 逐段的编辑缓冲。它不是 value 的镜像：段位允许不完整，而 ISO 串不允许。
+     * 值由段位算出来，段位则在 value 变化时反向对齐。
      */
     segments: DateSegments
     /** 正在敲的数字缓冲；换段、失焦、敲满都会收尾并清掉。 */
@@ -106,7 +106,7 @@ export interface DateFieldSchema extends MachineSchema {
   }
   computed: Record<string, never>
   refs: Record<string, never>
-  /** 单态：这个组件没有随时间推移的过程，全部状态都在 context 里。 */
+  /** 单态：全部状态都在 context 里。 */
   state: 'idle'
   event:
     /** 整份替换（外部 setValue）：段位随之重排。 */

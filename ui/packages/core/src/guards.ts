@@ -24,7 +24,7 @@ export function isElement(v: unknown): v is Element {
   return typeof Element !== 'undefined' && v instanceof Element
 }
 
-/** node 是否包含 target（含 shadow 边界的 composed 语义由调用方另行处理）。 */
+/** node 是否包含 target（不跨 shadow 边界）。 */
 export function contains(node: Node | null | undefined, target: Node | null | undefined): boolean {
   if (!node || !target)
     return false

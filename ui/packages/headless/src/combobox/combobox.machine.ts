@@ -6,7 +6,7 @@ import { comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 
 const { createMachine } = setup<ComboboxSchema>()
 
-/** 未指定 placement 时的落位：候选列表沿输入框起始缘展开。定位引擎与 connect 共用这一个缺省。 */
+/** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
 export const COMBOBOX_DEFAULT_PLACEMENT: Placement = 'bottom-start'
 
 /** 裸串是单选的简写，内部一律按数组处理；undefined 要原样透传，cell 靠它区分受控与否。 */
@@ -22,17 +22,15 @@ function normalizeSelection(next: readonly string[], multiple: boolean): string[
 }
 
 /**
- * 数组按元素比。默认的 Object.is 在这里不成立：受控时 cell 每次读都要把 prop 归一成
- * 新数组，引用恒不相等——版本号会每读一次自增一次（track 空转），
- * 写入时又会把「值其实没变」判成变了，onValueChange 便会重复发。
+ * 数组按元素比。受控时 cell 每次读都把 prop 归一成新数组，引用比恒不相等，
+ * 会导致版本号空转与 onValueChange 重复发。
  */
 function sameValues(a: string[], b: string[] | undefined): boolean {
   return !!b && a.length === b.length && a.every((v, i) => v === b[i])
 }
 
-// 选中值与输入串都住在 context 的 cell 里（cell 本身就是受控/非受控的收口点：给定 prop 即受控，
-// 读直取 prop、写只发回调不落内部值），因此这两路不需要影子事件。
-// 开合是布尔态、编进 FSM 状态，走「守卫对 + CONTROLLED.* 影子事件 + watch」那一套。
+// 选中值与输入串走 cell 原生受控（给定 prop 即受控），不需要影子事件；
+// 开合编进 FSM 状态，走守卫对 + CONTROLLED.* 影子事件 + watch。
 export const comboboxMachine = createMachine({
   name: 'combobox',
   context: ({ prop, cell }) => ({
@@ -71,7 +69,7 @@ export const comboboxMachine = createMachine({
   watch: ({ track, prop, context, action }) => {
     // 开合受控时用户事件只发意图、不自改状态；宿主写回 open 后由这里派发影子事件无条件回写
     track([() => prop('open')], () => action(['syncOpen']))
-    // 值这一路的 watch 只兜宿主侧的写入（受控回写、外部改 value）：内部选中当场就同步过文本了
+    // 这条 watch 只兜宿主侧的写入，内部选中当场就同步过文本
     track([context.dep('value')], () => action(['syncValueText']))
   },
   on: {
@@ -85,8 +83,7 @@ export const comboboxMachine = createMachine({
     closed: {
       on: {
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知。
-        // 落点意图先记进 context：受控时状态要等宿主写回 open 才转移，
-        // 那一拍走的是 CONTROLLED.OPEN，读不到当初那个按键事件。
+        // 落点意图先记进 context：受控时转移那一拍走 CONTROLLED.OPEN，读不到当初那个按键事件
         'OPEN': [
           { guard: 'isOpenControlled', actions: ['setFocusIntent', 'invokeOnOpen'] },
           { target: 'open', actions: ['setFocusIntent', 'invokeOnOpen'] },
@@ -95,7 +92,7 @@ export const comboboxMachine = createMachine({
           { guard: 'isOpenControlled', actions: ['setFocusIntent', 'invokeOnOpen'] },
           { target: 'open', actions: ['setFocusIntent', 'invokeOnOpen'] },
         ],
-        // 打字即展开：候选是随输入串筛出来的，不展开等于筛了也看不见
+        // 打字即展开
         'INPUT.CHANGE': [
           { guard: 'isOpenControlled', actions: ['setInputValue', 'setFocusIntent', 'invokeOnOpen', 'refreshAfterInput'] },
           { target: 'open', actions: ['setInputValue', 'setFocusIntent', 'invokeOnOpen', 'refreshAfterInput'] },
@@ -119,7 +116,7 @@ export const comboboxMachine = createMachine({
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
           { target: 'closed', actions: ['invokeOnClose'] },
         ],
-        // Escape 分两拍：先摘掉高亮（用户多半是想取消这次预选），高亮已空才收起列表
+        // Escape 分两拍：先摘掉高亮，高亮已空才收起列表
         'ESCAPE': [
           { guard: 'hasHighlight', actions: ['clearHighlightedValue'] },
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
@@ -184,13 +181,12 @@ export const comboboxMachine = createMachine({
             return
           }
           const content = refs.get('getContentEl')()
-          // 无 DOM 环境（纯逻辑测试）：锚点留空，状态转移不受影响
+          // 无 DOM 环境时锚点留空，状态转移不受影响
           if (!content)
             return
           const items = queryItems(content, comboboxItemQuery)
           if (intent === 'selected') {
-            // 选中项仍在候选里且可停留才高亮它；不在就不高亮——候选是作者筛过的，
-            // 退回首项等于替用户先选好了一个他没看过的东西
+            // 选中项仍在候选里且可停留才高亮它，不在就不高亮
             const selected = context.get('value')[0] ?? null
             const el = items.find(item => itemValue(item) === selected && !isItemDisabled(item))
             context.set('highlightedValue', itemValue(el ?? null))
@@ -199,8 +195,7 @@ export const comboboxMachine = createMachine({
           context.set('highlightedValue', itemValue(navigateItems(items, null, intent, { loop: prop('loop') ?? true })))
         }
         pick()
-        // 初始即展开时，条目的身份标记要等适配器首次写入才在，这一刻查不到任何条目、
-        // 锚点会落空。已经挑到就不再挑；挑的过程中若列表已收起也不补
+        // 初始即展开时条目的身份标记还没写入，这一刻查不到条目，推迟一拍再挑一次
         flush(() => {
           if (state.get() === 'open' && context.get('highlightedValue') == null)
             pick()
@@ -232,15 +227,12 @@ export const comboboxMachine = createMachine({
         const items = queryItems(content, comboboxItemQuery)
         context.set('itemCount', items.length)
         const highlighted = context.get('highlightedValue')
-        // 高亮项被筛掉了：再留着，aria-activedescendant 就指向一个不存在的 id，读屏当场哑掉
+        // 高亮项被筛掉时必须摘掉，否则 aria-activedescendant 指向一个不存在的 id
         if (highlighted != null && !items.some(el => itemValue(el) === highlighted))
           context.set('highlightedValue', null)
       },
 
-      /**
-       * 输入串变化后的收尾。必须推迟一拍：这一刻 DOM 里还是上一批候选——
-       * 调用方要等收到 onInputValueChange 才去过滤、重渲，此时查到的条目全是旧的。
-       */
+      /** 输入串变化后的收尾。必须推迟一拍：调用方要等收到 onInputValueChange 才重渲，此刻查到的是旧候选。 */
       refreshAfterInput: ({ refs, prop, context, state, event, flush }) => {
         const e = event.current()
         // 删字时不做内联补全，否则退格补回来、字永远删不掉
@@ -267,8 +259,8 @@ export const comboboxMachine = createMachine({
           if (behavior !== 'autocomplete' || !first || deleting)
             return
 
-          // 内联补全：把输入框补成首个候选的文本，补出来的那一段设为选区，接着敲就覆盖掉。
-          // 只在候选文本确实以已输入部分开头时补，否则会把用户打的字整段换掉
+          // 内联补全：把输入框补成首个候选的文本，补出的那段设为选区；
+          // 只在候选文本以已输入部分开头时补，否则会把用户打的字整段换掉
           const typed = context.get('inputValue')
           const text = comboboxItemText(first)
           if (typed === '' || text.length <= typed.length || !text.toLowerCase().startsWith(typed.toLowerCase()))
@@ -283,10 +275,7 @@ export const comboboxMachine = createMachine({
         })
       },
 
-      /**
-       * 单选选中项的显示文本，从活 DOM 现查：动作跑在事件（或挂载）那一刻，
-       * 两个适配器看到的是同一份文档。首帧条目可能还没挂上身份标记，查不到就推迟一拍再来一次。
-       */
+      /** 单选选中项的显示文本，从活 DOM 现查；首帧条目可能还没挂上身份标记，查不到就推迟一拍再来一次。 */
       syncValueText: ({ refs, context, flush }) => {
         const resolve = (): boolean => {
           const value = context.get('value')
@@ -311,10 +300,7 @@ export const comboboxMachine = createMachine({
         })
       },
 
-      /**
-       * 挂载时把输入框填成选中项的文字。只在调用方没管过输入串时代填——
-       * 给了 inputValue（受控）或 defaultInputValue 就归调用方，多选也不填（那儿的输入串是筛选草稿）。
-       */
+      /** 挂载时把输入框填成选中项的文字；给了 inputValue / defaultInputValue 或多选时不填。 */
       prefillInputValue: ({ prop, context, flush }) => {
         if (prop('multiple') || prop('inputValue') !== undefined || prop('defaultInputValue') !== undefined)
           return
@@ -341,7 +327,7 @@ export const comboboxMachine = createMachine({
           return
         }
         context.set('value', [e.value])
-        // 文本由调用方在事件那一刻从条目上取好带过来：条目随即可能被重新过滤掉，届时再查就查不到了
+        // 文本由调用方在事件那一刻取好带过来，条目随后可能被过滤掉就查不到了
         context.set('valueText', e.label ?? null)
         context.set('inputValue', e.label ?? e.value)
       },
@@ -359,8 +345,7 @@ export const comboboxMachine = createMachine({
           context.set('inputValue', '')
           return
         }
-        // 输入串正是当前选中项的显示文本 = 用户什么都没改。此时提交会把值换成标签
-        // （选中 value="cherry"、显示 "Cherry"，一提交值就变成了 "Cherry"），必须让开
+        // 输入串等于当前选中项的显示文本时不提交，否则值会被换成标签
         if (text === context.get('valueText'))
           return
         context.set('value', [text])
@@ -382,20 +367,18 @@ export const comboboxMachine = createMachine({
 
       /**
        * 焦点离场时让输入串与选中值对齐：
-       * 不许自定义值时，输入框里那串没提交的字必须收回去（否则显示的和实际选中的对不上）；
-       * 允许自定义值时反过来——所见即所得，输入串本身就是值。
+       * 不许自定义值时把没提交的字收回去；允许自定义值时输入串本身就是值。
        */
       reconcileInput: ({ context, prop }) => {
         const multiple = !!prop('multiple')
         const text = context.get('inputValue')
         if (prop('allowCustomValue')) {
-          // 多选下不擅自替用户造 token（他可能只是打了一半就切走了），只把残留清掉
+          // 多选下不替用户造 token，只把残留清掉
           if (multiple) {
             context.set('inputValue', '')
             return
           }
-          // 输入串正是当前选中项的显示文本 = 用户什么都没改，别把值换成标签
-          // （选中 value="cherry"、显示 "Cherry"，一失焦值就变成了 "Cherry"）
+          // 输入串等于当前选中项的显示文本时让开，否则值会被换成标签
           if (text === context.get('valueText'))
             return
           context.set('value', text === '' ? [] : [text])
@@ -409,15 +392,14 @@ export const comboboxMachine = createMachine({
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读
       trackPosition: ({ refs, prop, context, flush }) => {
         const engine = refs.get('position')
-        // 无引擎（纯逻辑测试 / 无布局环境 / SSR）：不定位，其余照常
+        // 无引擎时不定位，其余照常
         if (!engine)
           return undefined
 
         let stop: (() => void) | undefined
         let disposed = false
 
-        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带着 hidden（高度为 0），
-        // 此时算出的坐标会少掉浮层自身的尺寸——placement=top 会正好错位一个浮层高度
+        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带着 hidden，此时量出的浮层尺寸为 0
         flush(() => {
           if (disposed)
             return
@@ -439,12 +421,11 @@ export const comboboxMachine = createMachine({
         }
       },
 
-      // 层只在展开期间入栈——消解层只让栈顶层响应 Escape，若层在挂载期就注册、与开合无关地
-      // 常驻栈里，同页后挂载的那个会永久占着栈顶，把它下面每一层的 Escape 都堵死
+      // 层只在展开期间入栈；常驻栈会让后挂载的层永久占着栈顶，堵死它下面每一层的 Escape
       trackLayer: ({ refs, send }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
-        // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
+        // 无 DOM 环境不挂副作用，状态机照常转移
         if (!config || !registerLayer)
           return undefined
 
@@ -459,16 +440,15 @@ export const comboboxMachine = createMachine({
               send({ type: 'ESCAPE' })
               return
             }
-            // 焦点跑到层外与输入框自己的 blur 是同一件事，只认后者：
-            // 两处都收口的话，开合受控时状态不变、消解层还在，onOpenChange 会为同一次离场发两遍
+            // 焦点跑到层外与输入框自己的 blur 是同一件事，只认后者，
+            // 两处都收口时 onOpenChange 会为同一次离场发两遍
             if (reason === 'focus-outside')
               return
             send({ type: 'CLOSE' })
           },
         })
 
-        // 焦点始终在输入框上，列表不接管焦点，因此这里没有焦点域可挂；
-        // 焦点真的离开整个组件时由输入框的 blur 上报（INPUT.BLUR）
+        // 列表不接管焦点，因此没有焦点域可挂；焦点离开整个组件由输入框的 blur 上报（INPUT.BLUR）
         return () => {
           dismiss.dispose()
           disposeLayer()

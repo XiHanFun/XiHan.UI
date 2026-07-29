@@ -16,8 +16,7 @@ export const dialogMachine = createMachine({
     branches: () => [],
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
-  // 受控（open prop 给定）时，用户事件只发意图回调、不自改状态；宿主写回 open 后
-  // 由此 watch 追踪 open 变化，派发影子事件 CONTROLLED.* 无条件回写状态。
+  // 受控时用户事件只发意图回调；宿主写回 open 后由这条 watch 派发 CONTROLLED.* 回写状态。
   watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),
   states: {
     closed: {
@@ -73,8 +72,7 @@ export const dialogMachine = createMachine({
         if (!config || !registerLayer)
           return undefined
 
-        // 层只在展开期间入栈：消解层只让栈顶响应 Escape，常驻的层会占着栈顶，
-        // 把它下面每一层的 Escape 都堵死（同页两个 dialog 就会互相锁死）。
+        // 层只在展开期间入栈：只有栈顶响应 Escape，常驻的层会堵死其下各层
         const { layer, dispose: disposeLayer } = registerLayer()
 
         const modal = prop('modal') ?? true
@@ -102,17 +100,16 @@ export const dialogMachine = createMachine({
         })
         disposers.push(() => dismiss.dispose())
 
-        // 焦点域无条件建，只用 modal 决定陷不陷焦点——与 popover 同。
-        // 塞进 if (modal) 的话，非模态 dialog 打开后焦点根本不进 content、关闭也不归还，
-        // restoreFocus 这个 prop 写什么都没用。
+        // 焦点域无条件建，modal 只决定陷不陷焦点；放进 if (modal) 会让非模态
+        // 既不初始聚焦也不归还焦点，restoreFocus 失效
         const focus = createFocusScope({
           config,
           layer,
           container: getContentEl,
           trapped: () => modal,
           loop: modal,
-          // alertdialog 焦点落在 content 容器本身（不预选按钮，避免误触发破坏性操作）；
-          // 普通 dialog 交给 tabbable 探测选首个可聚焦元素（content 自身 tabindex=-1）。
+          // alertdialog 焦点落在 content 容器本身，不预选按钮；
+          // 普通 dialog 交给 tabbable 探测选首个可聚焦元素
           initialFocus: () => (role === 'alertdialog' ? getContentEl() : null),
           restoreFocus: () => prop('restoreFocus') ?? true,
         })
@@ -122,10 +119,8 @@ export const dialogMachine = createMachine({
           const lock = acquireScrollLock({ config })
           disposers.push(() => lock.dispose())
 
-          // 背景失活推迟到宿主提交那一帧之后再挂：进入 open 的这一刻 content 还没渲染
-          // （Vue 要等 presence 的 post 观察者、WC 要等首次 wire 认出角色节点），
-          // 此刻现取 targets 会得到空数组、直接跳过——背景就此永远不 inert。
-          // 与 popover / tooltip 的定位同一套推迟写法。
+          // 背景失活推迟到宿主提交那一帧之后：进入 open 时 content 尚未渲染，
+          // 此刻 targets 为空会导致背景永不 inert
           let hidden: (() => void) | undefined
           let alive = true
           flush(() => {
@@ -135,8 +130,7 @@ export const dialogMachine = createMachine({
             if (targets.length)
               hidden = hideOutside(targets, config.scope)
           })
-          // 开关得快时 flush 回调可能排在效应拆掉之后才跑，用存活标志挡住，
-          // 别让它给一个已经关上的对话框补挂背景失活
+          // flush 回调可能在效应拆除之后才跑，用存活标志挡住
           disposers.push(() => {
             alive = false
             hidden?.()

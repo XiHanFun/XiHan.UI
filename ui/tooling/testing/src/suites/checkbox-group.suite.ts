@@ -211,7 +211,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
           },
         },
         {
-          // 第二项不会顶掉第一项——这正是复选框组与单选组的分野
+          // 第二项不会顶掉第一项
           kind: 'click',
           part: 'item[2]',
           expect: {
@@ -453,8 +453,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
           },
         },
         {
-          // 半选态下再点一次要能整批取消：若判据写成"全集是否都勾上了"，
-          // 这一步会又执行一次全选、什么都不变，用户从此清不掉
+          // 半选态下再点一次整批取消：判据不是全集是否都勾上了
           kind: 'click',
           part: 'trigger',
           expect: {
@@ -519,8 +518,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
       fixture: allEnabled,
       steps: [
         {
-          // 渲染期算不出"组里一共有哪些条目"（connect 不许读 DOM），
-          // 作者没给 itemValues 时就只能诚实地停在 mixed
+          // connect 在渲染期不许读 DOM，作者没给 itemValues 时只能停在 mixed
           kind: 'click',
           part: 'trigger',
           expect: {

@@ -9,8 +9,7 @@ type PaginationProps = PaginationSchema['props']
 
 export const XhPaginationRoot = defineComponent({
   name: 'XhPaginationRoot',
-  // 全部 default: undefined —— 缺省值的唯一事实源在 connect（pageSize 与 siblingCount 尤其：
-  // 在这里补默认值，两个适配器就有了两份默认，改一处另一处不动）
+  // 缺省值由 connect 给出，这里一律 default: undefined
   props: {
     count: { type: Number, default: undefined },
     pageSize: { type: Number, default: undefined },
@@ -20,7 +19,7 @@ export const XhPaginationRoot = defineComponent({
     dir: { type: String as PropType<Direction>, default: undefined },
     translations: { type: Object as PropType<Partial<PaginationTranslations>>, default: undefined },
   },
-  // page-change 携带 { page, pageSize }；update:page 携带裸页码，支持 v-model:page
+  // page-change 携带 { page, pageSize }，update:page 携带裸页码
   emits: ['page-change', 'update:page'],
   setup(props, { slots, emit }) {
     const notify: PaginationProps['onPageChange'] = (details) => {
@@ -29,8 +28,7 @@ export const XhPaginationRoot = defineComponent({
     }
     const ctx = usePagination(props as PaginationProps, notify)
     providePagination(ctx)
-    // 根节点是 nav 地标：分页器是"跳到某一页"的导航，不是一堆散落的按钮。
-    // 换成 div 的话 aria-label 无处安放，读屏也不再把它当成可跳转的地标。
+    // 根节点渲染为 nav 地标
     return () => h('nav', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       page: ctx.api.value.page,
       pageSize: ctx.api.value.pageSize,
@@ -67,9 +65,7 @@ export const XhPaginationNextTrigger = defineComponent({
 export const XhPaginationItem = defineComponent({
   name: 'XhPaginationItem',
   props: {
-    // 身份声明叫 value 而不是 page：与本仓其余集合类部件同名（tabs/select/radio-group），
-    // WC 侧也只观察 value 这一个作者属性，改名会让运行期改写页码在 WC 上静默不生效。
-    // 收 String 是因为它常常来自模板里的属性字面量（以及 WC 侧的 DOM 属性）
+    // 这一项对应的页码，兼收字符串
     value: { type: [Number, String] as PropType<number | string>, required: true },
   },
   setup(props, { slots }) {

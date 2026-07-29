@@ -2,24 +2,15 @@ import type { TreeNode } from '@xihan-ui/headless'
 import type { AttrExpectation, ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { treeSelectAnatomy, treeSelectKeyboard } from '@xihan-ui/headless'
 
-// 触发器扮演 combobox（收起态的键盘入口、展开收起、值回显都照这一份），
-// 展开之后焦点进的是一棵 role=tree，行内导航照 treeview 那一份。
+// 触发器照 combobox 规格，展开后的树照 treeview 规格。
 const APG_COMBOBOX = 'https://www.w3.org/WAI/ARIA/apg/patterns/combobox/'
 const APG_TREE = 'https://www.w3.org/WAI/ARIA/apg/patterns/treeview/'
 
 const SCOPE = '[data-scope="tree-select"]'
 
 /**
- * 树数据是层级元信息、显示文本与节点禁用的唯一事实源，作者标记只管长相，两者必须同源。
- *
- * src 下面还套着 utils（两层嵌套才验得出 aria-level 逐层重算）；readme 禁用
- * （方向键与连打都跳过它，但它仍可聚焦、仍是导航起点）；docs 的 children 是空数组——
- * 「暂时没有子项的目录」也得算分支，否则它报不出 aria-expanded。
- * label 用拉丁字母，连打检索按首字母匹配得上。
- *
- * 禁用写在这份数据里而不是写成标记上的属性：连接层判禁用只查 collection，
- * 标记上补一个原生 disabled 既不会被读到，又会留在 DOM 里顶掉「集合条目绝不输出原生
- * disabled」那条守卫，还让禁用行变得聚不了焦（它还得当方向键的起点）。
+ * 树数据：层级元信息、显示文本与节点禁用的事实源。
+ * src 下嵌 utils（两层嵌套）；readme 禁用；docs 的 children 是空数组，仍算分支。
  */
 const COLLECTION: TreeNode[] = [
   {
@@ -35,7 +26,7 @@ const COLLECTION: TreeNode[] = [
   { value: 'license', label: 'License' },
 ]
 
-/** 每个用例都得带上同一份 collection：没有它，标记里的节点一个也报不出层级与文本。 */
+/** 给用例补上同一份 collection。 */
 function props(extra: Readonly<Record<string, unknown>> = {}): Readonly<Record<string, unknown>> {
   return { collection: COLLECTION, ...extra }
 }
@@ -70,10 +61,7 @@ function branchNode(value: string, text: string, children: readonly FixtureNode[
 }
 
 /**
- * 触发器必须是原生 button：Vue 侧组件自己渲染成 button，WC 侧由 fixture 的 tag 决定，
- * 渲染成 div 就不可聚焦，「收起后焦点归还 trigger」在 WC 上永远等不到。
- * 清空按钮同理——它虽退出了 Tab 序列，清完仍要靠原生禁用把自己关掉。
- *
+ * 触发器与清空按钮都用原生 button：WC 侧的标签由 fixture 决定。
  * 文档序下标：branch = [src, utils, docs]，item = [index, dom, readme, license]。
  */
 const FIXTURE: FixtureNode = {
@@ -115,7 +103,7 @@ const FIXTURE: FixtureNode = {
   ],
 }
 
-/** 四个叶子的选中期望，逐个写全——只写关心的那个会漏掉「另一个也被选中了」。 */
+/** 四个叶子的选中期望，逐个写全。 */
 function itemsSelected(...values: readonly string[]): readonly AttrExpectation[] {
   return ['index', 'dom', 'readme', 'license'].map(v => ({
     'aria-selected': values.includes(v) ? 'true' : 'false',
@@ -130,7 +118,7 @@ function branchesSelected(...values: readonly string[]): readonly AttrExpectatio
   }))
 }
 
-/** 三个分支的展开期望；子层容器的 hidden 与它逐一对应，一起写才拦得住「标了开却没露出来」。 */
+/** 三个分支的展开期望；子层容器的 hidden 与它逐一对应。 */
 function branchesExpanded(...values: readonly string[]): readonly AttrExpectation[] {
   return ['src', 'utils', 'docs'].map(v => ({
     'aria-expanded': values.includes(v) ? 'true' : 'false',
@@ -142,14 +130,14 @@ function branchContentsShown(...values: readonly string[]): readonly AttrExpecta
   return ['src', 'utils', 'docs'].map(v => ({ hidden: values.includes(v) ? null : '' }))
 }
 
-/** 显示文字不进归一化快照（快照只采属性），只能直接读 DOM。 */
+/** 快照只采属性，显示文字直接读 DOM。 */
 function assertValueText(doc: Document, expected: string): void {
   const actual = doc.querySelector<HTMLElement>(`${SCOPE}[data-part="value-text"]`)?.textContent?.trim() ?? null
   if (actual !== expected)
     throw new Error(`value-text 文本不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
 }
 
-/** name 会反射成属性，value 只落 DOM property；表单出口的两个值一起读才说得清它提交出去的是什么。 */
+/** 一起读表单出口的 name 与 value：name 反射成属性，value 只落 DOM property。 */
 function assertHiddenInput(doc: Document, name: string, value: string): void {
   const el = doc.querySelector<HTMLInputElement>(`${SCOPE}[data-part="hidden-input"]`)
   const actual = el ? ([el.name, el.value] as const) : null
@@ -158,10 +146,7 @@ function assertHiddenInput(doc: Document, name: string, value: string): void {
     throw new Error(`表单出口的 name/value 不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
 }
 
-/**
- * 整个控件在 Tab 序列里的停靠点数目。
- * 多一个会让用户按 Tab 在树里反复停留，展开着却一个都没有则键盘再也进不来。
- */
+/** 断言整个控件在 Tab 序列里的停靠点数目。 */
 function expectTabStops(expected: number): StepWithExpect {
   return {
     kind: 'raw',
@@ -176,10 +161,8 @@ function expectTabStops(expected: number): StepWithExpect {
   }
 }
 
-// content 与 branch-content 始终在 DOM，显隐靠 hidden 属性，不卸载作者节点。
-// 浮层坐标由定位引擎异步回填，快照不采 style；data-placement / data-hidden 只在
-// 「从没展开过」的那一帧才确定得下来（收起不会把上一次的定位结果清回 null），
-// 因此这两个属性只在初始帧断言。
+// content 与 branch-content 始终在 DOM，显隐靠 hidden 属性。
+// 浮层坐标异步回填且快照不采 style，data-placement / data-hidden 只在初始帧断言。
 export const treeSelectSuite: ConformanceSuite = {
   component: 'tree-select',
   anatomy: treeSelectAnatomy,
@@ -264,13 +247,12 @@ export const treeSelectSuite: ConformanceSuite = {
           'label': { 'id': '@self', 'data-disabled': null },
           'trigger': {
             'type': 'button',
-            // 按钮扮演 combobox，展开的是一棵树，读屏据此播报「折叠的树」而不是「按钮」
             'role': 'combobox',
             'aria-haspopup': 'tree',
             'aria-expanded': 'false',
-            // 指向真正被展开的那个部件（role=tree），不是它外面那层浮层壳
+            // 指向 role=tree 的部件，而不是外面那层浮层壳
             'aria-controls': '@part(tree)',
-            // 名字 = 标签 + 当前值：只指 label 的话读屏永远念不出用户选了什么
+            // 名字 = 标签 + 当前值
             'aria-labelledby': '@part(label) @part(value-text)',
             'aria-invalid': 'false',
             'aria-readonly': 'false',
@@ -280,13 +262,12 @@ export const treeSelectSuite: ConformanceSuite = {
             'data-readonly': null,
             'data-invalid': null,
             'disabled': null,
-            // 原生 button 本就在 Tab 序列里，不靠 tabindex 表达
+            // 原生 button 已在 Tab 序列内，不写 tabindex
             'tabindex': null,
           },
           'value-text': { 'id': '@self', 'data-placeholder': '', 'data-disabled': null },
           'indicator': { 'aria-hidden': 'true', 'data-state': 'closed' },
-          // 整个控件只占一个 Tab 位（就是 trigger）：清空按钮既不进 Tab 序列也不进可及树；
-          // 无选中时它按不动，用的是原生 disabled（单体控件，与集合条目相反）
+          // 清空按钮不进 Tab 序列与可及树，无选中时用原生 disabled
           'clear-trigger': {
             'type': 'button',
             'tabindex': '-1',
@@ -297,7 +278,7 @@ export const treeSelectSuite: ConformanceSuite = {
           'positioner': { 'data-state': 'closed', 'data-placement': 'bottom-start', 'data-hidden': null },
           'content': {
             'id': '@self',
-            // 浮层壳既不是 tree 也不是 listbox，只是焦点域与消解层的根节点
+            // 浮层壳不带 role，只是焦点域与消解层的根节点
             'role': null,
             'tabindex': '-1',
             'hidden': '',
@@ -308,10 +289,10 @@ export const treeSelectSuite: ConformanceSuite = {
             'id': '@self',
             'role': 'tree',
             'aria-labelledby': '@part(label)',
-            // 省略与显式 false 不是一回事：前者是「没说」，后者是「明确说了不是多选」
+            // 显式 false，不省略
             'aria-multiselectable': 'false',
             'aria-disabled': 'false',
-            // 收起态没有锚点，容器也不该占 Tab 位：节点连同 content 一起 hidden，本就不可达
+            // 收起态没有锚点，容器不占 Tab 位
             'tabindex': '-1',
             'data-state': 'closed',
             'data-disabled': null,
@@ -324,7 +305,7 @@ export const treeSelectSuite: ConformanceSuite = {
             'aria-expanded': 'false',
             'aria-selected': 'false',
             'aria-disabled': 'false',
-            // 分支裹着整棵子树，名字从内容算会把所有子孙的文字念进去，必须显式给
+            // 分支显式给名字
             'aria-label': 'Source',
             'data-value': 'src',
             'data-state': 'closed',
@@ -332,10 +313,10 @@ export const treeSelectSuite: ConformanceSuite = {
             'data-disabled': null,
             'data-highlighted': null,
             'tabindex': '-1',
-            // 集合条目绝不输出原生 disabled：那样就不可聚焦、也不派 click
+            // 集合条目不输出原生 disabled
             'disabled': null,
           },
-          // 嵌在 src 里的分支：层级号与同层序号都按它自己那一层算
+          // 嵌在 src 里的分支，层级与同层序号按它自己那一层算
           'branch[1]': {
             'aria-level': '2',
             'aria-posinset': '2',
@@ -351,7 +332,7 @@ export const treeSelectSuite: ConformanceSuite = {
             'data-value': 'docs',
           },
           'branch-content[0]': { 'role': 'group', 'hidden': '', 'data-state': 'closed' },
-          // 展开箭头只重复了分支自己的左右方向键语义：退出可及树，也不占 Tab 位
+          // 展开箭头与分支的左右方向键同义，退出可及树且不占 Tab 位
           'branch-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1' },
           'item[0]': {
             'role': 'treeitem',
@@ -360,18 +341,18 @@ export const treeSelectSuite: ConformanceSuite = {
             'aria-setsize': '3',
             'aria-selected': 'false',
             'aria-disabled': 'false',
-            // 叶子不报 aria-expanded：那是「能展开却没展开」的意思
+            // 叶子不报 aria-expanded
             'aria-expanded': null,
             'data-value': 'index',
             'tabindex': '-1',
             'disabled': null,
           },
-          // 收起分支里的节点只是 hidden，没被卸载，层级属性照发
+          // 收起分支里的节点只是 hidden，层级属性照发
           'item[1]': { 'aria-level': '3', 'aria-posinset': '1', 'aria-setsize': '1', 'data-value': 'dom' },
           'item[2]': { 'aria-disabled': 'true', 'data-disabled': '', 'data-value': 'readme', 'disabled': null },
           'item[3]': { 'aria-level': '1', 'aria-posinset': '3', 'aria-setsize': '3', 'data-value': 'license' },
           'item-indicator[0]': { 'aria-hidden': 'true', 'data-selected': null },
-          // 表单出口对键盘与读屏都不存在，交互全由 trigger 与节点承担
+          // 表单出口对键盘与读屏都不存在
           'hidden-input': { type: 'hidden', name: 'dir', disabled: null },
         },
         activeElement: null,
@@ -405,7 +386,7 @@ export const treeSelectSuite: ConformanceSuite = {
               'tree': { tabindex: '-1' },
               'branch[0]': { 'tabindex': '0', 'data-highlighted': '' },
               'branch[2]': { 'tabindex': '-1', 'data-highlighted': null },
-              // src 还收着：它的子树一行不出，也不该有谁认领 Tab 位
+              // src 还收着，子树内没有节点认领 Tab 位
               'item[0]': { 'tabindex': '-1', 'data-highlighted': null },
             },
             events: [{ type: 'open-change', detail: { open: true } }],
@@ -505,7 +486,7 @@ export const treeSelectSuite: ConformanceSuite = {
               'branch[2]': { 'tabindex': '0', 'data-highlighted': '' },
               'branch[1]': { 'tabindex': '-1', 'data-highlighted': null },
             },
-            // 移焦点不改选中值，一个事件也不发
+            // 移焦点不改选中值，不发事件
             events: [],
           },
         },
@@ -521,7 +502,7 @@ export const treeSelectSuite: ConformanceSuite = {
           key: 'End',
           expect: {
             activeElement: { part: 'item[3]', exact: true },
-            // 走了这么一圈，展开与选中都不该动
+            // 展开与选中都没变
             parts: {
               'branch': branchesExpanded('src'),
               'branch-content': branchContentsShown('src'),
@@ -568,7 +549,7 @@ export const treeSelectSuite: ConformanceSuite = {
           key: 'ArrowLeft',
           expect: {
             activeElement: { part: 'branch[0]', exact: true },
-            // 一路走下来浮层没被关掉，选中值也没被碰过
+            // 浮层未关闭，选中值未变
             parts: { content: { hidden: null }, item: itemsSelected() },
             events: [],
           },
@@ -606,7 +587,7 @@ export const treeSelectSuite: ConformanceSuite = {
           kind: 'key',
           key: '*',
           expect: {
-            // 根层的 src 与 docs 一起开；utils 在下一层，不归这一下管
+            // 根层的 src 与 docs 一起展开，下一层的 utils 不受影响
             parts: {
               'branch': branchesExpanded('src', 'docs'),
               'branch-content': branchContentsShown('src', 'docs'),
@@ -635,7 +616,7 @@ export const treeSelectSuite: ConformanceSuite = {
               'value-text': { 'data-placeholder': null },
               'content': { 'hidden': '', 'data-state': 'closed' },
               'item': itemsSelected('index'),
-              // 收起即丢焦点锚点：没有节点该继续认领 Tab 位
+              // 收起后没有节点认领 Tab 位
               'item[0]': { 'tabindex': '-1', 'data-highlighted': null },
               // 选中不改展开集合
               'branch': branchesExpanded('src'),
@@ -724,8 +705,7 @@ export const treeSelectSuite: ConformanceSuite = {
           kind: 'type',
           text: 'd',
           expect: {
-            // Dom 在文档序里排在 Docs 前面，但 utils 收着、它不是可见行；
-            // 按文档序检索会落到 item[1]（Dom）上
+            // utils 收着，Dom 不是可见行；按文档序检索会落到 item[1]（Dom）上
             activeElement: { part: 'branch[2]', exact: true },
             parts: {
               'branch[2]': { 'data-highlighted': '' },
@@ -772,8 +752,6 @@ export const treeSelectSuite: ConformanceSuite = {
       ],
     },
     {
-      // 这条守着两件事：Tab 不被吞（要让焦点按序列自然离开），以及收起后不把焦点
-      // 从用户刚 Tab 过去的控件上抢回 trigger
       name: 'Tab 收起：浮层让开但焦点不归还 trigger',
       spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
       props: props(),
@@ -815,17 +793,16 @@ export const treeSelectSuite: ConformanceSuite = {
       steps: [
         { kind: 'click', part: 'trigger' },
         { kind: 'settle', until: { activeElement: 'branch[0]' } },
-        // 先把焦点挪开：branch-control 自己不占 tabindex，点它时浏览器不会移动焦点，
-        // 焦点若本来就停在 branch[0] 上，下一步那条落点断言无论实现改不改焦点都成立
+        // 先把焦点挪开：branch-control 不占 tabindex
         { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'branch[2]', exact: true } } },
         {
           kind: 'click',
           part: 'branch-control[0]',
           expect: {
-            // 分支行只是 treeitem 里的一层内容，焦点该落在 branch 上
+            // 焦点落在 branch 上，而不是 branch-control
             activeElement: { part: 'branch[0]', exact: true },
             parts: {
-              // 点行只选中不展开：单选选完浮层就收起了，顺带切一下展开态用户根本看不见
+              // 点行只选中不展开
               'branch': branchesSelected('src'),
               'branch-content': branchContentsShown(),
             },
@@ -836,8 +813,7 @@ export const treeSelectSuite: ConformanceSuite = {
           kind: 'click',
           part: 'branch-trigger[0]',
           expect: {
-            // 箭头长在 branch-control 里：不掐断冒泡就会再跑一遍「点行」，
-            // 一次点击既展开又把选中切掉
+            // 箭头掐断冒泡，不再触发一遍「点行」
             activeElement: { part: 'branch[0]', exact: true },
             parts: {
               'branch-content': branchContentsShown('src'),
@@ -864,8 +840,7 @@ export const treeSelectSuite: ConformanceSuite = {
       steps: [
         { kind: 'click', part: 'trigger' },
         { kind: 'settle', until: { activeElement: 'item[0]' } },
-        // 节点用 aria-disabled 表达禁用，click 不会被激活行为短路，事件真派得出去，
-        // 因此这一步碰得到连接层里的禁用守卫
+        // 节点用 aria-disabled 表达禁用，click 仍派得出去，这一步走到连接层的禁用守卫
         {
           kind: 'click',
           part: 'item[2]',
@@ -888,7 +863,7 @@ export const treeSelectSuite: ConformanceSuite = {
           'trigger': { 'disabled': '', 'data-disabled': '' },
           'label': { 'data-disabled': '' },
           'tree': { 'aria-disabled': 'true', 'data-disabled': '' },
-          // 集合条目绝不输出原生 disabled：那样就不可聚焦、也不派 click
+          // 集合条目不输出原生 disabled
           'branch[0]': { 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null },
           'item[0]': { 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null },
           // 禁用的控件不该提交出值
@@ -931,7 +906,7 @@ export const treeSelectSuite: ConformanceSuite = {
       initial: {
         parts: {
           'root': { 'data-readonly': '', 'data-disabled': null },
-          // 只读与禁用的分界就在这里：禁用连键盘入口都没有，只读仍可聚焦、仍能展开来看
+          // 只读仍可聚焦、仍能展开，禁用则没有键盘入口
           'trigger': { 'disabled': null, 'aria-readonly': 'true', 'data-readonly': '' },
           'clear-trigger': { 'disabled': '', 'data-disabled': '' },
         },
@@ -1000,7 +975,7 @@ export const treeSelectSuite: ConformanceSuite = {
           kind: 'click',
           part: 'clear-trigger',
           expect: {
-            // pointerdown 那条只挡指针，键盘与程序化激活这一路要主动把焦点送回 trigger
+            // 键盘与程序化激活须主动把焦点送回 trigger
             activeElement: 'trigger',
             parts: {
               'item': itemsSelected(),
@@ -1056,7 +1031,7 @@ export const treeSelectSuite: ConformanceSuite = {
           until: { attr: { part: 'item[3]', name: 'aria-selected', value: 'true' } },
           expect: {
             parts: { branch: branchesSelected(), item: itemsSelected('license') },
-            // 宿主写回不是新的用户意图，不再发一次
+            // 宿主写回不再发事件
             events: [],
           },
         },
@@ -1126,8 +1101,7 @@ export const treeSelectSuite: ConformanceSuite = {
           expect: {
             activeElement: { part: 'branch[0]', exact: true },
             parts: {
-              // 锚点若落在 hidden 的节点上，它认领了 tabindex=0 却聚不了焦，
-              // 而树容器又判自己「焦点在树内」让了位——整棵树零个停靠点
+              // 锚点不落在 hidden 的节点上
               'item[1]': { 'aria-selected': 'true', 'tabindex': '-1' },
               'branch[0]': { 'tabindex': '0', 'aria-selected': 'false' },
               'tree': { tabindex: '-1' },

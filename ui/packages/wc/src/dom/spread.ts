@@ -1,5 +1,4 @@
-// 把 connect 产出的 prop 字典命令式地打到一个 Light-DOM 角色节点上（无 lit-html 指令）。
-// 事件用 addEventListener（每帧移旧加新，避免重复）；class 不碰（Light DOM 归用户）。
+// 把 connect 产出的 prop 字典打到 Light-DOM 角色节点上；事件每帧移旧加新，不碰 class。
 
 const BOOLEAN_ATTRS = new Set(['disabled', 'hidden', 'inert', 'readonly', 'required', 'checked', 'selected', 'open', 'multiple'])
 const PROP_KEYS = new Set(['value', 'checked', 'selected'])
@@ -15,9 +14,7 @@ function eventName(key: string): string | null {
   return null
 }
 
-// 写属性前先比一次：setAttribute 即便值没变也会触发 attributeChangedCallback 与变更记录。
-// 角色节点若本身是个会在属性变化时改写自己子节点的自定义元素，无条件写就会
-// 经由"宿主观察子节点变动 → 重新接线 → 又写属性"闭成死循环。
+// 值相同则不写，避免多余的属性变更记录。
 function setAttr(node: HTMLElement, key: string, value: string): void {
   if (node.getAttribute(key) !== value)
     node.setAttribute(key, value)
@@ -61,8 +58,7 @@ export function createSpreader(): Spreader {
         }
         continue
       }
-      // style 传对象时逐条写内联样式。整体 setAttribute 会写成 "[object Object]"，
-      // 而浮层定位、进度条宽度这类产出本来就是对象形态。
+      // style 传对象时逐条写内联样式。
       if (key === 'style' && value !== null && typeof value === 'object') {
         Object.assign(node.style, value as Record<string, string>)
         continue
@@ -77,14 +73,13 @@ export function createSpreader(): Spreader {
         continue
       }
       if (BOOLEAN_ATTRS.has(key)) {
-        // toggleAttribute 在值无变化时本就不产生变更记录
         node.toggleAttribute(key, Boolean(value))
         continue
       }
       setAttr(node, key, String(value))
     }
 
-    // 移除上一帧本机器写过、这一帧不再写的属性与事件监听器（与属性对称，防泄漏）
+    // 移除上一帧写过、这一帧不再写的属性与事件监听器。
     for (const key of s.attrs) {
       if (!nextAttrs.has(key))
         removeAttr(node, key)

@@ -69,7 +69,7 @@ export function createThemeController(opts: ThemeControllerOptions = {}): ThemeC
 
   function recompute(): void {
     const next = resolveTheme(preference, env)
-    // 五维全等则不触发（避免系统信号变化但结果不变的空转）
+    // 五维全等则不触发
     if (
       next.mode === state.mode && next.brand === state.brand
       && next.density === state.density && next.dir === state.dir && next.contrast === state.contrast

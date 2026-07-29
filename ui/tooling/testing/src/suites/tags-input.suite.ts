@@ -195,10 +195,10 @@ export const tagsInputSuite: ConformanceSuite = {
           'root': { 'data-empty': null },
           'item[0]': { 'data-value': 'vue', 'data-highlighted': null, 'data-editing': null },
           'item[1]': { 'data-value': 'react' },
-          // 标签一多，每个标签一个 Tab 停靠点会让 Tab 变得没法用；键盘那一路走方向键 + 退格
+          // 标签不各占 Tab 停靠点；键盘那一路走方向键 + 退格
           'item-delete-trigger[0]': { 'type': 'button', 'tabindex': '-1', 'aria-label': 'Delete vue', 'disabled': null },
           'item-delete-trigger[1]': { 'aria-label': 'Delete react' },
-          // 不编辑时编辑框收起（收起而不是卸载：作者写的节点不该被替他删掉），预览露出
+          // 不编辑时编辑框收起（不卸载），预览露出
           'item-input[0]': { 'hidden': '', 'aria-label': 'Edit vue', 'id': '@self' },
           'item-preview[0]': { hidden: null },
           'hidden-input': { name: 'stack' },
@@ -291,7 +291,7 @@ export const tagsInputSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'Backspace',
-          // 头一下什么都不该删：手滑一次就少一个标签、且没有任何提示，是这条要挡住的
+          // 头一下什么都不该删
           expect: { ...highlighted('react'), events: [] },
         },
         {
@@ -346,7 +346,7 @@ export const tagsInputSuite: ConformanceSuite = {
         },
         { kind: 'key', key: 'ArrowLeft', expect: highlighted('react') },
         { kind: 'key', key: 'ArrowLeft', expect: highlighted('vue') },
-        // 到头停住：回绕会让人以为标签顺序变了
+        // 到头停住，不回绕
         { kind: 'key', key: 'ArrowLeft', expect: highlighted('vue') },
         { kind: 'key', key: 'End', expect: highlighted(null) },
         { kind: 'key', key: 'ArrowLeft', expect: highlighted('react') },
@@ -407,8 +407,7 @@ export const tagsInputSuite: ConformanceSuite = {
       props: { defaultValue: ['vue', 'react'] },
       steps: [
         {
-          // click 步骤会先 focus 再 click：按钮因此真的持有过焦点，
-          // 删完不把焦点交回去它就会掉到 body 上，键盘用户被踢出组件
+          // click 步骤会先 focus 再 click：按钮持有过焦点，删完必须把焦点交回去
           kind: 'click',
           part: 'item-delete-trigger[1]',
           expect: {
@@ -626,8 +625,7 @@ export const tagsInputSuite: ConformanceSuite = {
         },
       },
       steps: [
-        // 禁用按钮上 el.click() 会被激活行为短路、事件压根不派发，断言恒成立；
-        // 直接派发才碰得到 connect 里的守卫
+        // 禁用按钮上 el.click() 被激活行为短路不派事件，直接派发才碰得到 connect 的守卫
         dispatchClickOnDisabled('tags-input', 'item-delete-trigger', { events: [] }),
         dispatchClickOnDisabled('tags-input', 'clear-trigger', { events: [] }),
       ],

@@ -17,13 +17,7 @@ import { useMenubar } from './use-menubar'
 
 type MenubarProps = MenubarSchema['props']
 
-/**
- * 把一个角色节点按 value 登记进菜单栏的取值表。
- *
- * 登记发生在 ref 回调里（挂载补丁期同步跑完，早于 onMounted），
- * 挂载即展开时机器的 entry 才查得到 content——晚一拍登记就只能靠 flush 重试兜。
- * value 改了要把登记挪到新键上：表是按 value 取的，留在旧键上等于换了名字就找不到了。
- */
+/** 在 ref 回调里把节点按 value 登记进菜单栏取值表，value 变更时迁移到新键，卸载时注销 */
 function useMenubarPart(register: MenubarPartRegistry, value: () => string): (el: HTMLElement | null) => void {
   const node = ref<HTMLElement | null>(null)
   watch(value, (next, prev) => {
@@ -39,14 +33,10 @@ function useMenubarPart(register: MenubarPartRegistry, value: () => string): (el
   }
 }
 
-/**
- * 根是 role=menubar：一排 trigger 的 roving tabindex 作用域，
- * 每张菜单的浮层也住在它里面（层与焦点离场都以它为界）。
- */
+/** role=menubar 根节点：trigger 的 roving tabindex 作用域，各菜单浮层也挂在其内 */
 export const XhMenubarRoot = defineComponent({
   name: 'XhMenubarRoot',
-  // 全部 default: undefined —— 缺省值的唯一事实源在机器与 connect（loop / typeahead 尤其：
-  // 裸 Boolean 声明会把缺省压成 false，回绕与连打就默默关掉了）
+  // 全部 default: undefined，缺省值由机器与 connect 决定
   props: {
     value: { type: String as PropType<string | null>, default: undefined },
     defaultValue: { type: String as PropType<string | null>, default: undefined },
@@ -58,7 +48,7 @@ export const XhMenubarRoot = defineComponent({
     placement: { type: String as PropType<Placement>, default: undefined },
     offset: { type: Number, default: undefined },
   },
-  // value-change 携带 { value }、select 携带 { menu, value }；update:value 携带裸值，支持 v-model:value
+  // value-change 携带 { value }、select 携带 { menu, value }，update:value 携带裸值
   emits: ['value-change', 'select', 'update:value'],
   setup(props, { slots, emit }) {
     const notifyValue: MenubarProps['onValueChange'] = (details) => {
@@ -87,7 +77,7 @@ export const XhMenubarTrigger = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useMenubarContext()
-    // trigger 同时是定位锚点与焦点归还目标，两处都按 value 取
+    // trigger 同时作为定位锚点与焦点归还目标
     const setEl = useMenubarPart(ctx.registerTrigger, () => props.value)
     return () => h('button', {
       ...ctx.api.value.getTriggerProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>,
@@ -104,7 +94,7 @@ export const XhMenubarPositioner = defineComponent({
   setup(props, { slots }) {
     const ctx = useMenubarContext()
     const menu = computed<MenubarContentProps>(() => ({ value: props.value }))
-    // 内部的 content 因此可以不重复写 value
+    // 供内部 content 继承 value
     provideMenubarMenu({ menu })
     const setEl = useMenubarPart(ctx.registerPositioner, () => props.value)
     return () => h('div', {
@@ -117,7 +107,7 @@ export const XhMenubarPositioner = defineComponent({
 export const XhMenubarContent = defineComponent({
   name: 'XhMenubarContent',
   props: {
-    // 缺省即沿用外层 positioner 提供的身份；positioner 可缺省，那时必须自己写
+    // 缺省时沿用外层 positioner 提供的身份，无 positioner 时必填
     value: { type: String, default: undefined },
   },
   setup(props, { slots }) {
@@ -166,11 +156,7 @@ export const XhMenubarItem = defineComponent({
     const ctx = useMenubarContext()
     const item = computed<MenubarItemProps>(() => ({ value: props.value, disabled: props.disabled }))
     provideMenubarItem({ item })
-    // 承载焦点的条目被移出 DOM 时浏览器不派 focusout，锚点会停在一个已消失的值上：
-    // 没有条目认领 tabindex=0、方向键也失去起点。卸载前如实上报，机器就地重挑锚点。
-    // v-for 不带 key 时 Vue 会就地复用节点：被删的是"最后一个组件实例"，
-    // 而持有焦点的那个 DOM 节点还在、value 却被改成了别的条目。此时锚点仍指着旧值、
-    // 已无人认领，键盘就此失灵。自己正持有焦点且 value 变了，就按新值重报一次。
+    // 本条目持有焦点时，value 变更重报焦点条目，卸载时上报焦点丢失
     const itemEl = ref<HTMLElement | null>(null)
     watch(() => props.value, (next, prev) => {
       if (next === prev)
@@ -183,11 +169,10 @@ export const XhMenubarItem = defineComponent({
     })
     onBeforeUnmount(() => {
       const { service } = ctx
-      // 整组一起卸载时根先停机，此刻无焦点可言（送事件还会在 dev 下抛）
+      // 整组一起卸载时根部件先停机，此刻送事件会在 dev 下抛
       if (service.getStatus() !== 'Started')
         return
-      // 判据是「本节点当下正持有焦点」，不是「值对得上」：v-for 就地复用时
-      // 被卸载的是末位实例、它的 value 可能恰好等于刚纠正过的锚点，按值判会把好端端的锚点清掉
+      // 按「本节点当下正持有焦点」判定，不按 value 比对
       if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
         service.send({ type: 'ITEM.LOST' })
     })

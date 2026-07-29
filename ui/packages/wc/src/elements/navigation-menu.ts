@@ -8,8 +8,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-// 属性缺席一律翻成 undefined：缺省值的唯一事实源留在机器与 connect。
-// Lit 自带的转换器会把缺席落成 null / false，那样属性就再也表达不了"未指定"。
+// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
@@ -72,7 +71,7 @@ function authorDisabled(el: HTMLElement): boolean {
 export class XhNavigationMenuElement extends XhElement {
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
-  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },

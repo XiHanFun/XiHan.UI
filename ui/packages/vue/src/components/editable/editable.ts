@@ -8,8 +8,7 @@ type EditableProps = EditableSchema['props']
 
 export const XhEditableRoot = defineComponent({
   name: 'XhEditableRoot',
-  // 缺省值的唯一事实源在 connect 与机器里 —— 凡是那边有兜底的一律 default: undefined。
-  // selectOnFocus 尤其：裸 Boolean 声明会把缺省压成 false，进编辑态就再也不全选了
+  // 缺省值由 connect 与机器给出，这里一律 default: undefined
   props: {
     value: { type: String, default: undefined },
     defaultValue: { type: String, default: undefined },
@@ -26,8 +25,7 @@ export const XhEditableRoot = defineComponent({
     selectOnFocus: { type: Boolean, default: undefined },
     autoResize: Boolean,
   },
-  // value-change 携带 { value }；update:value 携带裸串，支持 v-model:value。
-  // 编辑态同理走 update:edit。提交与撤销只有语义事件，没有 v-model 对应物
+  // value-change / edit-change 携带 details，update:* 携带裸值；提交与撤销只有语义事件
   emits: ['value-change', 'update:value', 'value-commit', 'value-revert', 'edit-change', 'update:edit'],
   setup(props, { slots, emit }) {
     const ctx = useEditable(props as EditableProps, {
@@ -76,7 +74,7 @@ export const XhEditablePreview = defineComponent({
   name: 'XhEditablePreview',
   setup(_, { slots }) {
     const ctx = useEditableContext()
-    // 作者写了插槽就听作者的，否则显示当下的值，值为空时显示 placeholder
+    // 有插槽用插槽，否则显示当前值，值为空时显示 placeholder
     return () => h(
       'span',
       { ...ctx.api.value.getPreviewProps() as Record<string, unknown>, ref: ctx.previewRef },

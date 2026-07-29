@@ -9,8 +9,8 @@ export type ToastPlacement
     | 'bottom-start' | 'bottom' | 'bottom-end'
 
 /**
- * 队列里存的一条通知。刻意只放可搬运的纯数据（无回调、无 DOM）：
- * 受控队列要能被宿主整份替换、序列化、比对。
+ * 队列里存的一条通知，只放可搬运的纯数据（无回调、无 DOM），
+ * 受控队列因此可以被宿主整份替换、序列化、比对。
  */
 export interface ToastRecord {
   id: string

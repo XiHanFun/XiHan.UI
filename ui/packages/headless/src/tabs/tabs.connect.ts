@@ -33,10 +33,7 @@ export function connectTabs<T extends PropTypes>(
     send({ type: 'VALUE.SET', value: next })
   }
 
-  /**
-   * 方向键落点：条目集合只在事件那一刻读，两个适配器此时看到的是同一份活 DOM，
-   * 顺序即文档序。起点用锚点（作者声明的 value），终点用活 DOM 算。
-   */
+  /** 方向键落点：条目集合只在事件那一刻读活 DOM，顺序即文档序；起点用锚点。 */
   const navigate = (list: HTMLElement, intent: NavIntent): void => {
     const target = navigateItems(queryItems(list, ITEM_QUERY), anchor, intent, { loop })
     const next = itemValue(target)
@@ -69,16 +66,12 @@ export function connectTabs<T extends PropTypes>(
       ...parts.list.attrs,
       'role': 'tablist',
       'aria-orientation': orientation,
-      // 焦点在组外时容器一律兜底进 Tab 序列，由 onFocus 转投给条目。
-      // 判据用 focusedValue 而非 anchor：anchor 可能指向一个已不存在的值
-      // （受控值不在选项里、或 tab 被关掉），那时没有任何条目会认领 tabindex=0，
-      // 若容器也退出 Tab 序列，整组对键盘用户永久不可达（panel 此时也全是 hidden）。
+      // 焦点在组外时容器兜底进 Tab 序列，由 onFocus 转投给条目。
+      // 判据用 focusedValue 而非 anchor：anchor 可能指向已不存在的值，那时无人认领 tabindex=0。
       // 焦点已在组内时容器让位（-1），Tab 才能正常离开本组。
       'tabindex': focusedValue == null ? 0 : -1,
       'onKeydown': (event: KeyboardEvent) => {
-        // 轴跟随 orientation：横向 tablist 里的上下键返回 null，
-        // 不归导航管就绝不 preventDefault，放行给页面滚动与读屏。
-        // dir 只作用于水平轴：rtl 下 ArrowRight 走上一个，纵向 tablist 不受影响
+        // 轴跟随 orientation；不归导航管的键绝不 preventDefault。dir 只作用于水平轴
         const intent = navIntentFromKey(event, { axis: orientation, dir })
         if (intent) {
           event.preventDefault()
@@ -114,9 +107,7 @@ export function connectTabs<T extends PropTypes>(
       'role': 'tab',
       'aria-selected': item.value === value ? 'true' : 'false',
       'aria-controls': contentId(item.value),
-      // 集合条目一律 aria-disabled，绝不输出原生 disabled：原生 disabled 不可聚焦、
-      // 也不派发 click，禁用策略与样式会就此分裂。与 Switch/Checkbox 相反——
-      // 那两个是单体控件，用原生 disabled。
+      // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、不派 click
       'aria-disabled': item.disabled ? 'true' : 'false',
       // roving tabindex：整组只有锚点条目留在 Tab 序列内
       'tabindex': anchor === item.value ? 0 : -1,

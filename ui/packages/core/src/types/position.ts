@@ -1,5 +1,4 @@
-// PositionEnginePort：浮层定位端口（只落类型契约，实现在 @xihan-ui/position-floating-ui）。
-// core 零运行时依赖，因此这里只有契约、没有 @floating-ui/dom。
+// PositionEnginePort：浮层定位端口的类型契约，实现在 @xihan-ui/position-floating-ui。
 
 export type Side = 'top' | 'right' | 'bottom' | 'left'
 export type Align = 'start' | 'center' | 'end'
@@ -36,10 +35,7 @@ export interface VirtualAnchor {
 export type Anchor = Element | VirtualAnchor
 
 export interface PositionEnginePort {
-  /**
-   * 计算并持续更新浮层位置。返回 Cleanup 停止跟随。
-   * 实现内部封装 computePosition + autoUpdate（middleware 管线）。
-   */
+  /** 计算并持续更新浮层位置，返回值调用后停止跟随。 */
   attach: (
     anchor: Anchor,
     floating: HTMLElement,

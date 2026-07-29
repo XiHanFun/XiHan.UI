@@ -179,8 +179,7 @@ export const stepsSuite: ConformanceSuite = {
       },
     },
     {
-      // 走完最后一步之后还有一格"全部完成"：此时没有任何一步是 current，
-      // 也就没有条目认领 tabindex=0——容器不兜底整组就对键盘用户不可达
+      // 走完最后一步后没有任何一步是 current，也没有条目认领 tabindex=0，容器须兜底
       name: '走到完成位：每一步都 completed，面板全收起，list 兜底进 Tab 序列',
       spec: { apg: APG },
       props: { count: COUNT, defaultStep: COUNT },
@@ -455,9 +454,9 @@ export const stepsSuite: ConformanceSuite = {
       initial: {
         parts: {
           'root': { 'data-disabled': '' },
-          // 容器不可聚焦：这正是原生禁用控件该有的表现（整块脱出 Tab 序列）
+          // 容器不可聚焦：整块脱出 Tab 序列
           'list': { 'tabindex': null, 'aria-disabled': 'true' },
-          // trigger 是原生 button，不写 tabindex 它照样可聚焦——必须显式给 -1
+          // trigger 是原生 button，不写 tabindex 照样可聚焦，必须显式给 -1
           'trigger[0]': { 'aria-disabled': 'true', 'tabindex': '-1', 'disabled': null },
           'trigger[1]': { 'aria-disabled': 'true', 'tabindex': '-1' },
           'trigger[2]': { 'aria-disabled': 'true', 'tabindex': '-1' },

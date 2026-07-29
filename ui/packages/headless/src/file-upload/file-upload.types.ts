@@ -1,10 +1,7 @@
 import type { PropTypes } from '@xihan-ui/core'
 import type { MachineSchema } from '@xihan-ui/machine'
 
-/**
- * 被拒的缘由。逐条分开而不是笼统一个 'invalid'：界面上要能说清"这个文件为什么没收下"，
- * 「格式不对」与「太大了」对用户是完全不同的两件事，前者该换文件、后者该压缩。
- */
+/** 被拒的缘由。 */
 export type FileRejectReason
   /** 与 accept 声明的类型/扩展名都对不上。 */
   = | 'type'
@@ -12,12 +9,12 @@ export type FileRejectReason
     | 'size-too-large'
   /** 小于 minFileSize。 */
     | 'size-too-small'
-  /** 本身没毛病，但列表已经放不下了（maxFiles）。 */
+  /** 其余校验都通过，但超过 maxFiles。 */
     | 'too-many-files'
 
 export interface FileUploadRejection {
   file: File
-  /** 可能同时成立（既不是允许的类型、又超大），一并给出。 */
+  /** 可能同时命中多条。 */
   reasons: FileRejectReason[]
 }
 

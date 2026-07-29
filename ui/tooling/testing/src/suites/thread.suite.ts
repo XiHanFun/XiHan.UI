@@ -109,7 +109,6 @@ export const threadSuite: ConformanceSuite = {
       name: '离底后按钮露头，按下去归位到底并重新粘附',
       spec: { apg: APG },
       covers: ['thread.kbd.scroll-button'],
-      // 由伪造几何驱动，两个适配器的回调时机不同步，故跳过逐帧比对
       skipParity: 'jsdom 无布局，粘底状态由伪造几何驱动，两适配器的 RO 回调时机天然不同步',
       steps: [
         {
@@ -118,7 +117,6 @@ export const threadSuite: ConformanceSuite = {
           run: scrollAwayFromBottom,
           expect: {
             parts: { 'scroll-button': { 'hidden': null, 'data-state': 'visible' } },
-            // 只有 atBottom 变化，sticking 不动
             events: [{ type: 'stick-change', detail: { atBottom: false, sticking: true } }],
           },
         },

@@ -13,7 +13,6 @@ export function useSwitch(
   props: SwitchSchema['props'],
   onCheckedChange?: SwitchSchema['props']['onCheckedChange'],
 ): SwitchContext {
-  // onCheckedChange 由外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const service = useMachine(switchMachine, () => ({ ...props, onCheckedChange }))
   const api = computed(() => connectSwitch(service, vueNormalize))
   return { api }

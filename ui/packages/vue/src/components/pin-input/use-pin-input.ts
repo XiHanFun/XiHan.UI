@@ -15,8 +15,7 @@ export function usePinInput(
   props: PinInputSchema['props'],
   handlers: Pick<PinInputSchema['props'], 'onValueChange' | 'onValueComplete'> = {},
 ): PinInputContext {
-  // scope id 走 Vue 的 useId：label 的 for 与 root 的 aria-labelledby 都是 IDREF，
-  // 同页多个实例若拿到同一份 id，点标题会跳到别人的格子上
+  // scope id 走 Vue 的 useId，保证同页多实例的 IDREF 不相撞
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const service = useMachine(pinInputMachine, () => ({ ...props, ...handlers }), scope)

@@ -41,8 +41,7 @@ function menubarTree(options: TreeOptions = {}): FixtureNode {
     const attrs: Record<string, string> = { value: decl.value }
     if (decl.value === disabledItem)
       attrs.disabled = ''
-    // 标签必须写死：Vue 侧组件渲染成 span，WC 侧由 fixture 的 tag 决定，
-    // 不写就默认 div，两个适配器产出的 DOM 当场分叉
+    // 标签必须写死：Vue 侧渲染成 span，WC 侧由 fixture 的 tag 决定，不写就默认 div
     const children: FixtureNode[] = [{ part: 'item-text', tag: 'span', text: decl.text }]
     if (withIndicator)
       children.push({ part: 'item-indicator', tag: 'span', text: '✓' })
@@ -70,8 +69,7 @@ function menubarTree(options: TreeOptions = {}): FixtureNode {
         ]
       : menu.items.map(i => item(i))
     return [
-      // 必须是 button：Vue 侧组件自己渲染成 button，WC 侧由 fixture 的 tag 决定，
-      // 渲染成 div 就不可聚焦，"收起后焦点归还 trigger"在 WC 上永远等不到
+      // 必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦
       { part: 'trigger', tag: 'button', text: menu.text, attrs: triggerAttrs },
       {
         part: 'positioner',
@@ -93,8 +91,7 @@ function hover(index: number): StepWithExpect {
       const el = doc.querySelectorAll<HTMLElement>(TRIGGER)[index]
       if (!el)
         throw new Error(`找不到第 ${index} 个 trigger`)
-      // 派裸事件而不是 PointerEvent：无头 DOM 里指针事件没有默认构造语义，
-      // 连接层也只看事件类型
+      // 派裸事件而不是 PointerEvent：无头 DOM 里指针事件没有默认构造语义，连接层只看事件类型
       el.dispatchEvent(new Event('pointerenter'))
       await flush()
     },
@@ -784,8 +781,7 @@ export const menubarSuite: ConformanceSuite = {
       ],
     },
     {
-      // 受控初值刻意给一个真实的项而不是 null：null 在 WC 那边表达不出来
-      // （属性只有在/不在两态，harness 遇到 null 会整个跳过，元素就变回非受控了）
+      // 受控初值给一个真实的项而不是 null：属性只有在/不在两态，harness 遇到 null 会整个跳过
       name: '受控 value：点击只发意图不自改 DOM，宿主写回后才换项',
       spec: { adr: 'controlled-uncontrolled' },
       props: { value: 'file' },

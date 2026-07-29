@@ -30,8 +30,7 @@ export const radioGroupSuite: ConformanceSuite = {
   },
   cases: [
     {
-      // 整组只占一个 Tab 位：多一个会让用户按 Tab 在组内反复停留，
-      // 一个都没有则键盘再也进不来（无锚点时须由容器兜底）
+      // 整组只占一个 Tab 位；无锚点时须由容器兜底
       name: 'roving tabindex：整组只有一个 Tab 停靠点，无锚点时容器兜底',
       spec: { apg: APG },
       covers: ['radio-group.kbd.tab'],
@@ -126,8 +125,7 @@ export const radioGroupSuite: ConformanceSuite = {
       initial: {
         parts: {
           // 容器的 tabindex 只看焦点在不在组内，不看有没有选中：
-          // 受控值不在选项里/条目被删时没有条目会认领 0，容器必须兜底，否则整组键盘不可达。
-          // 焦点进组后容器让位 -1（见"焦点从组外落到容器"用例）。
+          // 没有条目认领 0 时由容器兜底，焦点进组后容器让位 -1。
           'root': { tabindex: '0' },
           'item': [
             { 'aria-checked': 'true', 'data-state': 'checked', 'tabindex': '0' },

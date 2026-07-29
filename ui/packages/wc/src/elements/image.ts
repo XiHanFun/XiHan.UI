@@ -4,8 +4,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-// 属性缺席一律翻成 undefined：缺省值的唯一事实源留在机器与 connect 里。
-// Lit 自带的转换器会把缺席落成 null，那样属性就再也表达不了"未指定"。
+// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
@@ -27,7 +26,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart fallback - 回退内容（占位图、骨架屏、图标）；加载失败恒显，加载途中要看延迟门槛
  */
 export class XhImageElement extends XhElement {
-  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     src: { converter: STRING_CONVERTER },
     alt: { converter: STRING_CONVERTER },

@@ -15,8 +15,7 @@ type CheckboxGroupProps = CheckboxGroupSchema['props']
 export const XhCheckboxGroupRoot = defineComponent({
   name: 'XhCheckboxGroupRoot',
   props: {
-    // 数组值给 default: undefined 才表达得了"非受控"；
-    // 落成 () => [] 会被当作"受控且当前为空"，用户从此再也勾不动
+    // default: undefined 表示非受控
     value: { type: Array as PropType<string[]>, default: undefined },
     defaultValue: { type: Array as PropType<string[]>, default: undefined },
     itemValues: { type: Array as PropType<string[]>, default: undefined },
@@ -26,7 +25,7 @@ export const XhCheckboxGroupRoot = defineComponent({
     name: { type: String, default: undefined },
     orientation: { type: String as PropType<Orientation>, default: undefined },
   },
-  // value-change 携带 { value }；update:value 携带裸数组，支持 v-model:value
+  // value-change 携带 { value }，update:value 携带裸数组
   emits: ['value-change', 'update:value'],
   setup(props, { slots, emit }) {
     const notify: CheckboxGroupProps['onValueChange'] = (details) => {
@@ -63,8 +62,7 @@ export const XhCheckboxGroupItem = defineComponent({
     const ctx = useCheckboxGroupContext()
     const item = computed<CheckboxGroupItemProps>(() => ({ value: props.value, disabled: props.disabled }))
     provideCheckboxGroupItem({ item })
-    // 表单影子由条目自行装配，作者只写方框与文本；
-    // 不暴露成独立组件，避免这份原生输入脱离条目单独出现、或被写成非 input 标签
+    // 表单影子由条目自行装配，不暴露成独立组件，作者只写方框与文本
     return () => h('div', ctx.api.value.getItemProps(item.value) as Record<string, unknown>, [
       h('input', ctx.api.value.getItemHiddenInputProps(item.value) as Record<string, unknown>),
       ...(slots.default?.() ?? []),
@@ -77,7 +75,7 @@ export const XhCheckboxGroupItemControl = defineComponent({
   setup(_, { slots }) {
     const ctx = useCheckboxGroupContext()
     const { item } = useCheckboxGroupItemContext()
-    // 插槽留给作者放对勾图形：方框本身对读屏隐藏，里面塞什么都不会被念出来
+    // 插槽留给作者放对勾图形，方框本身对读屏隐藏
     return () => h('span', ctx.api.value.getItemControlProps(item.value) as Record<string, unknown>, slots.default?.())
   },
 })
@@ -95,8 +93,7 @@ export const XhCheckboxGroupTrigger = defineComponent({
   name: 'XhCheckboxGroupTrigger',
   setup(_, { slots }) {
     const ctx = useCheckboxGroupContext()
-    // 与条目同形的 role=checkbox 节点（div 而非 button）：Space 由 connect 自己接管，
-    // 三态 aria-checked 也只有非原生控件才表达得出 mixed
+    // 与条目同形的 role=checkbox 节点，渲染为 div，Space 由 connect 接管
     return () => h('div', ctx.api.value.getTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })

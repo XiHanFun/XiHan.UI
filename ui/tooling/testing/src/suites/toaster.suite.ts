@@ -99,7 +99,7 @@ export const toasterSuite: ConformanceSuite = {
       },
       initial: {
         parts: {
-          // 三条进队、只留两条：不落这一刀的话超窗的条目永远等不到自己的计时器把它带走
+          // 三条进队、只留两条
           'root': { 'data-count': '2' },
           'group[1]': { 'data-count': '2' },
         },

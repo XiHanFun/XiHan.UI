@@ -65,7 +65,7 @@ import { treeSelectSuite } from './tree-select.suite'
 import { treeSuite } from './tree.suite'
 import { virtualizerSuite } from './virtualizer.suite'
 
-/** 全部一致性套件。新增组件时只需在此登记一次，跨适配器的运行方各自照单全跑。 */
+/** 全部一致性套件；新增组件在此登记一次。 */
 export const allSuites: readonly ConformanceSuite[] = [
   accordionSuite,
   anchorSuite,

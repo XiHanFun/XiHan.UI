@@ -1,7 +1,6 @@
 import type { KeyboardTable } from '../spec/types'
 
-// APG 没有取色器这一条模式；两条可交互的轴（取色区、通道滑杆）都按滑杆模式办，
-// 浮层部分按对话框模式办，因此出处指到这两处。
+// APG 无取色器模式：两条可交互的轴按滑杆模式办，浮层部分按对话框模式办。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/slider/#keyboardinteraction'
 
 export const colorPickerKeyboard: KeyboardTable = {

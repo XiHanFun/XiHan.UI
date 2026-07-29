@@ -48,16 +48,12 @@ export function connectDialog<T extends PropTypes>(
       'id': ids.content,
       'role': role,
       'tabindex': -1,
-      // 显式写 false，不省略：省略与 aria-modal="false" 在读屏那里不是一回事——
-      // 前者是"没说"，后者是"明确说了不是模态"，非模态浮层要的是后者
+      // 显式写 false 而非省略：读屏对未声明与声明为非模态处理不同
       'aria-modal': modal ? 'true' : 'false',
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
       'data-state': stateAttr,
-      // 收起态自己也带 hidden，与 popover / tooltip / collapsible 一致。
-      // 此前只靠 positioner 与 backdrop 兜，而 meta 里 positioner 并非必需部件——
-      // 按最小合规结构写（只有 trigger + content）时，收起的对话框就一直显示在页面上。
-      // Vue 侧关闭后会把 content 卸掉、看不出来；WC 侧 content 常驻，一眼就见。
+      // 收起态自带 hidden：positioner 非必需部件，最小结构下没有别的节点兜底
       'hidden': !open || undefined,
     }),
     getTitleProps: () => normalize.element({ ...parts.title.attrs, id: ids.title }),

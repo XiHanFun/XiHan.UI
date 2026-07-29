@@ -10,7 +10,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface RadioGroupContext {
   api: ComputedRef<RadioGroupApi>
-  /** 部件要上报 DOM 侧的事实（如条目卸载带走了焦点），得直接够到机器。 */
+  /** 机器实例，供部件上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
   service: Service<RadioGroupSchema>
 }
 
@@ -20,7 +20,6 @@ export function useRadioGroup(
 ): RadioGroupContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  // onValueChange 由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const service = useMachine(radioGroupMachine, () => ({ ...props, onValueChange }), scope)
   const api = computed(() => connectRadioGroup(service, vueNormalize))
   return { api, service }

@@ -40,8 +40,7 @@ export const formSuite: ConformanceSuite = {
   keyboard: formKeyboard,
   // root 必须是原生 <form>：回车的隐式提交与 type=submit 按钮都长在它身上。
   // 摘要条目写成原生 <a>，字段名由作者用 value 属性自报（与集合条目同一套写法）。
-  // 刻意不用 name：那是原生表单控件的属性，会进归一化快照——
-  // WC 侧它留在 DOM 上、Vue 侧被声明成 prop 而不落进 DOM，两个适配器当场分叉。
+  // 不用 name：它会进归一化快照，WC 侧留在 DOM、Vue 侧落成 prop，两个适配器分叉。
   fixture: {
     part: 'root',
     tag: 'form',
@@ -123,8 +122,7 @@ export const formSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'raw',
-          // href 不进归一化快照（它不是 IDREF 属性），只能直读 DOM 比对字面量。
-          // 两头对不上的话，摘要里的链接会指向一个不存在的锚点——点了什么都不会发生
+          // href 不进归一化快照（不是 IDREF 属性），只能直读 DOM 比对字面量
           why: '摘要链接的 href 必须正好指向对应字段容器的 id',
           run: ({ doc }: RawStepContext) => {
             for (const [i, field] of ['email', 'password'].entries()) {
@@ -164,8 +162,7 @@ export const formSuite: ConformanceSuite = {
               'field-group[0]': { 'data-invalid': '' },
               'field-group[1]': { 'data-invalid': '' },
             },
-            // 校验函数把 password 写在前面，屏幕上却是 email 在上面：
-            // 焦点必须按文档序走，否则用户会被拽到页面下方再自己往回找
+            // 校验函数把 password 写在前面，屏幕上是 email 在上面：焦点按文档序走
             activeElement: { part: 'field-group[0]', exact: false },
           },
         },
@@ -226,8 +223,7 @@ export const formSuite: ConformanceSuite = {
         },
         {
           kind: 'raw',
-          // 合成事件默认 cancelable=false，在它身上 preventDefault 是空操作——
-          // 不显式打开的话这条断言永远为真
+          // 合成事件默认 cancelable=false，不显式打开的话 preventDefault 是空操作
           why: '锚点跳转必须被拦下：它只滚动不搬焦点，还会往历史里塞一条哈希记录',
           run: async ({ doc, flush }: RawStepContext) => {
             const item = query(doc, 'error-summary-item', 1)
@@ -282,13 +278,11 @@ export const formSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'raw',
-          // 禁用按钮上 el.click() 被激活行为短路，事件压根不派发——
-          // 走 click 步骤等于什么都没测。直接对着 <form> 派一条 submit 才碰得到守卫
+          // 禁用按钮上 el.click() 被激活行为短路不派事件，直接对 form 派 submit 才碰得到守卫
           why: '禁用时的提交只能直接派 submit 事件才验得到',
           run: async ({ doc, flush }: RawStepContext) => {
             const form = query(doc, 'root')
             const submitted = form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
-            // 不拦的话，一个"禁用"的表单反而会把整页导航掉
             if (submitted)
               throw new Error('禁用状态下的 submit 没被 preventDefault')
             await flush()

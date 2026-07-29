@@ -1,7 +1,7 @@
 import type { Bindable, CellParams, Dep, ReactiveRuntime } from '@xihan-ui/machine'
 import { getCurrentInstance, nextTick, onBeforeUnmount, onMounted, shallowRef, triggerRef, watch } from 'vue'
 
-// 用 Vue 响应式承载 machine 的 ReactiveRuntime 契约。
+// 用 Vue 响应式实现 machine 的 ReactiveRuntime
 export function createVueRuntime(): ReactiveRuntime {
   return {
     name: 'vue',
@@ -43,7 +43,6 @@ export function createVueRuntime(): ReactiveRuntime {
       }
     },
 
-    // flush:'pre'：渲染前完成且天然合批
     track(deps: Dep[], fn) {
       watch(deps, fn, { flush: 'pre' })
     },

@@ -6,23 +6,16 @@ import { contextMenuItemQuery } from './context-menu.anatomy'
 
 const { createMachine } = setup<ContextMenuSchema>()
 
-/** 未指定 placement 时的落位：菜单自光标处向右下展开。定位引擎与 connect 共用这一个缺省。 */
+/** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
 export const CONTEXT_MENU_DEFAULT_PLACEMENT: Placement = 'bottom-start'
-/**
- * 锚点是光标那一点，浮层要贴着它。
- * 不能把 offset 留空交给引擎：引擎缺省是 8px（那是给"贴着一个触发按钮"准备的），
- * 落到零尺寸锚点上就成了菜单与光标之间平白空出一段。
- */
+/** 菜单贴着光标。offset 不能留空交给引擎，引擎缺省是 8px。 */
 export const CONTEXT_MENU_DEFAULT_OFFSET = 0
 /** 触摸端长按多久算触发。 */
 export const CONTEXT_MENU_LONG_PRESS_DELAY = 700
-/**
- * 长按期间允许的手指抖动像素。
- * 不写成"动一下就取消"：触摸屏上手指按住不动也会有几像素漂移，零容差等于长按永远触发不了。
- */
+/** 长按期间允许的手指抖动像素；触摸屏上按住不动也有几像素漂移，零容差长按永远触发不了。 */
 export const CONTEXT_MENU_MOVE_TOLERANCE = 10
 
-/** 坐标按分量比。默认的 Object.is 比引用，同一坐标重复写入也会被判成变了，定位便会白重挂一次。 */
+/** 坐标按分量比；按引用比会把同一坐标的重复写入判成变了，定位白重挂一次。 */
 function samePoint(a: ContextMenuPoint | null, b: ContextMenuPoint | null | undefined): boolean {
   if (a === b)
     return true
@@ -54,8 +47,7 @@ export const contextMenuMachine = createMachine({
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
   watch: ({ track, prop, context, action }) => {
-    // 受控（open prop 给定）时，用户事件只发意图回调、不自改状态；宿主写回 open 后
-    // 由这条 track 追踪 open 变化，派发影子事件 CONTROLLED.* 无条件回写状态。
+    // 受控（open 给定）时用户事件只发意图、不自改状态，由这条 track 派发 CONTROLLED.* 回写
     track([() => prop('open')], () => action(['syncOpen']))
     // 展开期间坐标还会变（在别处再右键）：定位跟着坐标重挂，而层与焦点域原地不动。
     track([context.dep('point')], () => action(['reanchor']))
@@ -64,8 +56,7 @@ export const contextMenuMachine = createMachine({
     closed: {
       on: {
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知。
-        // 坐标、落焦端与焦点归还策略三条都先记进 context：受控时状态要等宿主写回 open 才转移，
-        // 那一拍走的是 CONTROLLED.OPEN，读不到当初那个指针事件。
+        // 坐标、落焦端、焦点归还策略先记进 context：受控时转移那一拍走 CONTROLLED.OPEN，读不到原事件
         'CONTEXT.MENU': [
           { guard: 'isOpenControlled', actions: ['setPoint', 'setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
           { target: 'open', actions: ['setPoint', 'setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
@@ -100,16 +91,14 @@ export const contextMenuMachine = createMachine({
       },
     },
     open: {
-      // 键盘入口的锚点在进入展开态时就位：条目常挂（收起时只是 hidden），此刻查到的顺序即最终顺序。
-      // 锚点定了才有条目认领 tabindex=0，焦点域随后按 Tab 序列把焦点交给它。
+      // 锚点在进入展开态时就位（条目常挂，收起时只是 hidden）；锚点定了才有条目认领 tabindex=0
       entry: ['setInitialFocusedValue'],
       exit: ['clearFocusedValue', 'clearTypeahead'],
       // 进入 open：定位 → 消解 → 焦点。退出 open 时按同序清理，焦点归还发生在消解层撤销之后。
       effects: ['trackPosition', 'trackLayer'],
       on: {
-        // 已经展开时在别处再右键：只把锚点挪过去，不先关再开——
-        // 后者要多发一对开合回调，浮层还会闪一下、焦点被归还又抢回。
-        // 定位由 watch 追着坐标重挂，层与焦点域全程不动。
+        // 已展开时在别处再右键：只挪锚点，不先关再开。
+        // 定位由 watch 追着坐标重挂，层与焦点域全程不动
         'CONTEXT.MENU': { actions: ['setPoint'] },
         'OPEN': { actions: ['setPoint'] },
         'CLOSE': [
@@ -122,8 +111,7 @@ export const contextMenuMachine = createMachine({
           { target: 'closed', actions: ['invokeOnSelect', 'setReturnFocus', 'invokeOnClose'] },
         ],
         'ITEM.FOCUS': { actions: ['setFocusedValue'] },
-        // 焦点条目被移出 DOM：锚点已悬空，就地按当前活条目重挑一个，
-        // 否则没有条目认领 tabindex=0、方向键也失去起点
+        // 焦点条目被移出 DOM 时锚点悬空，重挑一个，否则没有条目认领 tabindex=0、方向键也没有起点
         'ITEM.LOST': { actions: ['clearFocusedValue', 'setInitialFocusedValue'] },
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
@@ -137,7 +125,7 @@ export const contextMenuMachine = createMachine({
         if (e.type !== 'PRESS.MOVE')
           return false
         const from = context.get('pressPoint')
-        // 起点丢了就当作已经滑走：宁可不弹菜单，也不要在一个不知道哪儿的坐标上弹
+        // 起点丢了当作已经滑走
         if (!from)
           return true
         return Math.abs(e.x - from.x) > CONTEXT_MENU_MOVE_TOLERANCE
@@ -184,10 +172,7 @@ export const contextMenuMachine = createMachine({
         else
           context.set('focusIntent', 'first')
       },
-      // 每次开合都重算：Tab 关闭要把焦点让给 Tab 序列的下一个元素，其余出口一律归还触发区。
-      // 只有「用户主动收起」才把焦点还回去：Escape、选中条目。
-      // Tab 是要去下一个控件，层外指针交互是用户已经点中了别的东西——这两种情况下抢回焦点，
-      // 会把光标从他刚点的输入框里拽走、后续敲的第一个字符直接丢掉。
+      // Tab 与层外交互关闭时不归还焦点（用户已经去了别处），其余出口一律归还触发区
       setReturnFocus: ({ context, event }) => {
         const e = event.current()
         const handedOff = e.type === 'CLOSE' && (e.src === 'tab' || e.src === 'interact-outside')
@@ -201,12 +186,11 @@ export const contextMenuMachine = createMachine({
       setInitialFocusedValue: ({ refs, context, state, flush }) => {
         const pick = (): void => {
           const intent = context.get('focusIntent')
-          // 命令式入口可以要求不预先落焦：锚点留空，焦点由焦点域兜底落到 content 上，
-          // 之后第一下 ArrowDown/ArrowUp 从空锚点起步，正好落到首/末个可用条目。
+          // intent 为 none 时锚点留空，焦点由焦点域兜底落到 content 上
           if (intent === 'none')
             return
           const content = refs.get('getContentEl')()
-          // 无 DOM 环境（纯逻辑测试）：锚点留空，状态转移不受影响
+          // 无 DOM 环境时锚点留空，状态转移不受影响
           if (!content)
             return
           const items = queryItems(content, contextMenuItemQuery)
@@ -214,9 +198,7 @@ export const contextMenuMachine = createMachine({
           context.set('focusedValue', itemValue(navigateItems(items, null, intent)))
         }
         pick()
-        // 初始即展开时，WC 侧条目的身份标记要等首次 wire() 才写上，这一刻查不到任何条目、
-        // 锚点会落空（Vue 侧首帧就带这些属性，不补这一手两个适配器就分叉）。
-        // 已经挑到就不再挑；挑的过程中若菜单已收起也不补。
+        // 初始即展开时 WC 侧条目的身份标记要等首次 wire() 才写上，这一刻查不到条目，推迟一拍再挑一次
         flush(() => {
           if (state.get() === 'open' && context.get('focusedValue') == null)
             pick()
@@ -236,7 +218,7 @@ export const contextMenuMachine = createMachine({
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读。
       trackPosition: ({ refs, prop, context, flush }) => {
         const engine = refs.get('position')
-        // 无引擎（纯逻辑测试 / 无布局环境 / SSR）：不定位，其余照常
+        // 无引擎时不定位，其余照常
         if (!engine)
           return undefined
 
@@ -255,8 +237,7 @@ export const contextMenuMachine = createMachine({
           const point = context.get('point')
           if (!floating || !point)
             return
-          // 虚拟锚点：右键菜单钉在光标那一点上，没有可测量的锚点元素。
-          // 零尺寸矩形 + offset 0 即"菜单角贴着光标"。
+          // 虚拟锚点：菜单钉在光标那一点上，零尺寸矩形 + offset 0 即菜单角贴着光标
           const anchor: VirtualAnchor = {
             getBoundingClientRect: () => ({ x: point.x, y: point.y, width: 0, height: 0 }),
           }
@@ -271,9 +252,8 @@ export const contextMenuMachine = createMachine({
           )
         }
 
-        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带着 hidden（高度为 0），
-        // 此时算出的坐标会少掉浮层自身的尺寸——placement=top 会正好错位一个浮层高度。
-        // 同一拍里的多次请求合并成一次：展开那一下坐标与状态是一起变的，否则要白挂两回。
+        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带着 hidden，此时量出的浮层尺寸为 0。
+        // 同一拍里的多次请求合并成一次
         const schedule = (): void => {
           if (queued || disposed)
             return
@@ -290,13 +270,12 @@ export const contextMenuMachine = createMachine({
           stop?.()
         }
       },
-      // 层的入栈出栈与消解层、焦点域绑在同一个效应里：三者生命周期必须完全一致。
-      // 层只在展开期间入栈——消解层只让栈顶响应 Escape，若层在挂载期就注册、与开合无关地
-      // 常驻栈里，同页后挂载的那个会永久占着栈顶，把它下面每一层的 Escape 都堵死。
+      // 层与消解层、焦点域绑在同一个效应里，三者生命周期必须一致。
+      // 层只在展开期间入栈；常驻栈会让后挂载的层永久占着栈顶，堵死它下面每一层的 Escape
       trackLayer: ({ refs, context, send }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
-        // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
+        // 无 DOM 环境不挂副作用，状态机照常转移
         if (!config || !registerLayer)
           return undefined
 
@@ -317,10 +296,8 @@ export const contextMenuMachine = createMachine({
           // 菜单不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
           trapped: () => false,
           loop: false,
-          // 显式指定落焦点为锚点条目，不交给 Tab 序列探测：探测走的是
-          // focusFirst(removeLinks(...))，条目写成 <a> 时会被整体过滤掉，
-          // 落焦就会掉到 content 容器上而不是首个条目。
-          // 这里每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位。
+          // 显式指定落焦点为锚点条目：Tab 序列探测走 focusFirst(removeLinks(...))，条目写成 <a> 会被整体过滤掉。
+          // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位
           initialFocus: () => {
             const content = refs.get('getContentEl')()
             const anchor = context.get('focusedValue')

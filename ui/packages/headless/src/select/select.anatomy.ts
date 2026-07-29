@@ -18,14 +18,12 @@ export const selectAnatomy = createAnatomy('select', [
 
 const parts = selectAnatomy.build()
 
-// 集合只认 item：item-text / item-indicator 同样带 data-scope，但不入导航，
-// 方向键与连打检索都不会停在它们身上。
+// 集合只认 item：item-text / item-indicator 虽带 data-scope 但不入导航。
 export const selectItemQuery: ItemQuery = { scope: selectAnatomy.name, part: 'item' }
 
 /**
  * 条目用于显示与检索的文本：优先取 item-text 部件，缺省退回条目自身文本。
- * 条目内常挂着 item-indicator 这类装饰节点，直接取 textContent 会把勾选符号一并算进来，
- * 连打检索便再也匹配不上首字母。
+ * 直接取条目 textContent 会把 item-indicator 的勾选符号一并算进来。
  */
 export function selectItemText(el: HTMLElement): string {
   const text = el.querySelector<HTMLElement>(parts['item-text'].selector)

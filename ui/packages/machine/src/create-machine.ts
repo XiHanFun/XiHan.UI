@@ -8,7 +8,7 @@ import type {
   Transition,
   TransitionMap,
 } from './types'
-// createMachine：恒等函数 + 状态索引构建 + 静态校验 + __DEV__ 数据自检。
+// createMachine：构建状态索引、跑静态校验，原样返回配置。
 import { isDev } from '@xihan-ui/core'
 import { MachineError } from './errors'
 import { isCombinator } from './guards'
@@ -18,7 +18,7 @@ function collectActions(v: ActionsOrFn<any> | undefined, into: Set<string>): voi
   if (Array.isArray(v)) {
     for (const a of v) into.add(a)
   }
-  // 函数形态（动态 actions）无法静态检查，跳过。
+  // 函数形态的动态 actions 跳过，无法静态检查。
 }
 
 function collectEffects(v: EffectsOrFn<any> | undefined, into: Set<string>): void {
@@ -34,7 +34,7 @@ function walkTransition(t: Transition<any>, actions: Set<string>, guards: Set<st
   if (typeof g === 'string')
     guards.add(g)
   else if (typeof g === 'function' && !isCombinator(g))
-    // states 里唯一允许的内联函数是组合子产物；裸箭头函数破坏"可序列化"。
+    // states 里只放行组合子产物，裸内联函数直接报错。
     throw new MachineError('INLINE_IMPL', 'inline guard function in states must be a combinator (and/or/not); use a named guard')
 }
 
@@ -61,7 +61,7 @@ function walkNode(node: StateNode<any>, actions: Set<string>, guards: Set<string
   }
 }
 
-/** __DEV__ 数据自检：内联守卫、未知 action/guard/effect、冗余 tag。 */
+/** dev 期自检：内联守卫、未知 action/guard/effect。 */
 function auditMachine<T extends MachineSchema>(config: MachineConfig<T>): void {
   const actions = new Set<string>()
   const guards = new Set<string>()
@@ -89,12 +89,11 @@ function auditMachine<T extends MachineSchema>(config: MachineConfig<T>): void {
     if (!impl.effects || !(name in impl.effects))
       throw new MachineError('UNKNOWN_EFFECT', `effect "${name}" is referenced but not implemented in "${config.name}"`)
   }
-  // 与状态名一一对应的 tag 应改用 matches()（仅当 tag 只覆盖一个状态时告警级别放宽为不检，避免误报）。
 }
 
 export function createMachine<T extends MachineSchema>(config: MachineConfig<T>): MachineConfig<T> {
-  ensureStateIndex(config) // 构建索引 + 4 条静态校验
+  ensureStateIndex(config)
   if (isDev())
-    auditMachine(config) // 6 条数据自检的静态子集
+    auditMachine(config)
   return config
 }

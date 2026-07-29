@@ -48,10 +48,7 @@ export function connectCalendar<T extends PropTypes>(
   const min = parseCalendarDate(prop('min'))
   const max = parseCalendarDate(prop('max'))
 
-  /**
-   * 聚焦日三路收口：宿主设过的 → 首个选中值 → 今天。恒非空，展示月由它反推。
-   * 解析不了的串一路往后退，绝不让脏值把整棵组件树打空。
-   */
+  /** 聚焦日三路收口：宿主设过的 → 首个选中值 → 今天。恒非空，展示月由它反推。 */
   const anchor = parseCalendarDate(context.get('focusedValue'))
     ?? parseCalendarDate(value[0])
     ?? today(timeZone)
@@ -76,10 +73,7 @@ export function connectCalendar<T extends PropTypes>(
     timeZone,
   })
 
-  /**
-   * 生效区间的两端。挑到一半时用「起点 + 悬停落点」预览，悬停为空就跟着聚焦日走——
-   * 键盘用户按方向键同样看得见区间在长，不必先摸到鼠标。
-   */
+  /** 生效区间的两端。挑到一半时用「起点 + 悬停落点」预览，悬停为空就跟着聚焦日走。 */
   const rangeAnchor = parseCalendarDate(context.get('rangeAnchor'))
   const hovered = parseCalendarDate(context.get('hoveredValue'))
   const rangeEnds = ((): [CalendarDate, CalendarDate] | null => {
@@ -99,7 +93,7 @@ export function connectCalendar<T extends PropTypes>(
     if (calendarDisabled)
       return true
     const date = parseCalendarDate(v)
-    // 解析不了的格子一律当不可用：它既不该被选中，也不该被确认键当成落点
+    // 解析不了的格子一律当不可用
     if (!date)
       return true
     if (min && date.compare(min) < 0)
@@ -117,12 +111,12 @@ export function connectCalendar<T extends PropTypes>(
       date,
       selected: isSelected(item.value),
       disabled: isUnavailable(item.value),
-      // 邻月的日子照样是真日子，只是标出来好让皮肤画淡
+      // 邻月的日子照样可点可聚焦，标出来供皮肤区分
       outsideMonth: !date || date.year !== grid.year || date.month !== grid.month,
       isToday: item.value === todayValue,
       focused: item.value === focusedValue,
       inRange,
-      // 两端也算 in-range：皮肤要靠这一条画连续底色，端点缺一格底色就断了
+      // 两端也算 in-range
       rangeStart: !!(rangeEnds && date && date.compare(rangeEnds[0]) === 0),
       rangeEnd: !!(rangeEnds && date && date.compare(rangeEnds[1]) === 0),
     }
@@ -140,9 +134,8 @@ export function connectCalendar<T extends PropTypes>(
     'data-range-end': dataAttr(state.rangeEnd),
   })
 
-  // 上/下一月按不按得动只看边界：整月都落在 min 之前（或 max 之后）就再没有可看的日子。
-  // 用相邻月的月末/月首判，而不是拿聚焦日加减一个月去判——1 月 31 日退一月会被夹成
-  // 12 月 31 日，按聚焦日判会把整个 12 月误判成够不着
+  // 上/下一月按不按得动只看边界：整月都落在 min 之前（或 max 之后）即不可用。
+  // 用相邻月的月末/月首判，不拿聚焦日加减一个月（1 月 31 日退一月会被夹成 12 月 31 日）
   const prevMonthEnd = endOfMonth(visibleStart.subtract({ months: 1 }))
   const nextMonthStart = startOfMonth(visibleStart.add({ months: 1 }))
   const canGoPrev = !calendarDisabled && (min == null || prevMonthEnd.compare(min) >= 0)
@@ -151,9 +144,7 @@ export function connectCalendar<T extends PropTypes>(
   const focusAt = (next: string): void => send({ type: 'FOCUS.SET', value: next })
   /**
    * 网格内的用户操作（方向键、翻页键、点格子）专用：连带把 DOM 焦点搬到落点那一格。
-   *
-   * 点击也走这一路，不只是键盘：点邻月的日子会翻月，作者随即重画网格，
-   * 用户刚点中的那个节点被换掉，焦点掉回 body——值选上了，键盘却从此接不上。
+   * 点击也走这一路，否则翻月重画后原节点被换掉、焦点掉回 body。
    */
   const focusInGrid = (next: string): void => send({ type: 'FOCUS.SET', value: next, restoreFocus: true })
   const stepMonth = (amount: 1 | -1): void => {
@@ -197,10 +188,8 @@ export function connectCalendar<T extends PropTypes>(
       ...parts.header.attrs,
     }),
 
-    // 翻月是单体控件，用原生 disabled：不可聚焦、也进不了 Tab 序列，
-    // 这正是「这条路走不通」该有的表现。日期格子才用 aria-disabled（禁用后仍要可聚焦）。
-    // 可及名字由作者写在按钮里（文案或 aria-label）：这里编不出正确的本地化文案，
-    // 硬塞一句英文只会让中文界面的读屏念出一句英文
+    // 翻月是单体控件，用原生 disabled（不可聚焦、不进 Tab 序列）；日期格子才用 aria-disabled。
+    // 可及名字由作者写在按钮里（文案或 aria-label）
     getPrevTriggerProps: () => normalize.button({
       ...parts['prev-trigger'].attrs,
       'type': 'button',
@@ -217,18 +206,18 @@ export function connectCalendar<T extends PropTypes>(
       'onClick': () => stepMonth(1),
     }),
 
-    // 标题是网格的可及名字来源：读屏进网格先念「2024年2月」，否则一堆数字没有上下文
+    // 标题是网格的可及名字来源
     getHeadingProps: () => normalize.element({
       ...parts.heading.attrs,
       id: ids.heading,
     }),
 
-    // 键盘全在 grid 上收口：格子只管声明自己，一次冒泡一个处理器
+    // 键盘全在 grid 上收口，格子只管声明自己
     getGridProps: () => normalize.element({
       ...parts.grid.attrs,
       'role': 'grid',
       'aria-labelledby': ids.heading,
-      // 三条状态都显式给：省略只是「没说」，读屏无从区分「不是多选」与「作者忘了标」
+      // 三条状态都显式给，不省略
       'aria-multiselectable': mode === 'single' ? 'false' : 'true',
       'aria-disabled': calendarDisabled ? 'true' : 'false',
       'aria-readonly': readOnly ? 'true' : 'false',
@@ -237,7 +226,7 @@ export function connectCalendar<T extends PropTypes>(
       'onKeyDown': (event: KeyboardEvent) => {
         if (calendarDisabled)
           return
-        // 返回 null 表示这个键不归日历管，此时绝不 preventDefault（页面滚动与读屏要用）
+        // 返回 null 表示这个键不归日历管，此时不得 preventDefault
         const intent = calendarNavFromKey(event)
         if (intent) {
           event.preventDefault()
@@ -249,8 +238,7 @@ export function connectCalendar<T extends PropTypes>(
           commit()
         }
       },
-      // 指针离开整张网格才算不再预览：格子之间挪动时 pointerleave 与 pointerenter 成对发，
-      // 挂在格子上会让区间预览在缝隙里闪一下
+      // 挂在网格上而非格子上：格子间挪动会成对发 pointerleave/pointerenter，预览会闪
       'onPointerLeave': () => {
         if (mode === 'range')
           send({ type: 'HOVER.CLEAR' })
@@ -277,7 +265,7 @@ export function connectCalendar<T extends PropTypes>(
       return normalize.element({
         ...parts['week-day'].attrs,
         'role': 'columnheader',
-        // 可见文本是缩写，读屏得念全称：单独一个「一」既可能是星期一也可能是一号
+        // 可见文本是缩写，读屏念全称
         'aria-label': meta?.long,
         [ITEM_VALUE_ATTR]: day.value,
       })
@@ -302,28 +290,24 @@ export function connectCalendar<T extends PropTypes>(
         // 导航与选中都以此为格子身份；翻月后靠它在活 DOM 里找回落点
         [ITEM_VALUE_ATTR]: item.value,
         'role': 'button',
-        // 选中与禁用都标在 trigger 上，因为焦点落的是它：读屏播报的是当下持有焦点那个
-        // 节点的状态，标在外层 gridcell 上等于把状态说给一个用户永远停不到的节点听
+        // 选中与禁用标在 trigger 上，焦点落的是它
         'aria-selected': state.selected ? 'true' : 'false',
-        // 集合条目一律 aria-disabled，绝不输出原生 disabled：原生 disabled 不可聚焦，
-        // 不可用的日子就再也当不成方向键的起点，用户会在网格里撞上一堵看不见的墙
+        // 一律 aria-disabled 不用原生 disabled：不可用的日子仍要能当方向键起点
         'aria-disabled': state.disabled ? 'true' : 'false',
-        // 格子上只有一个数字，读屏念「15」毫无上下文，必须补一句完整日期。
-        // 声明解析不出日期时宁可不写：编一句别的日子出来比没有名字更糟
+        // 补一句完整日期给读屏；解析不出日期时不写
         'aria-label': state.date ? cellLabelFormatter.format(state.date.toDate(timeZone)) : undefined,
         // roving tabindex：整张网格只有聚焦日那一格留在 Tab 序列内
         'tabindex': state.focused ? 0 : -1,
         'onClick': () => {
           if (calendarDisabled)
             return
-          // 焦点锚点无条件跟着点击走（点了邻月的日子就翻到那个月），
-          // 但选中要过只读与可用性这两道；两件事分开判，不可用的日子仍是方向键起点
+          // 焦点锚点无条件跟着点击走（点了邻月的日子就翻到那个月），选中另过只读与可用性两道
           focusInGrid(item.value)
           if (readOnly || state.disabled)
             return
           send({ type: 'CELL.SELECT', value: item.value })
         },
-        // 焦点是事实不是许可：不可用的格子被点到也记锚点，方向键才知道从哪儿起步
+        // 不可用的格子获得焦点也记锚点，方向键据此起步
         'onFocus': () => focusAt(item.value),
         'onPointerEnter': () => {
           if (mode === 'range' && !calendarDisabled)
