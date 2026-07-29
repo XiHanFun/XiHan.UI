@@ -1,0 +1,136 @@
+@layer xihan.components {
+  /* 整个框看起来是「一个输入框」，实际是边框长在 root 上、textarea 无边框浮在里面。
+     align-items: flex-end —— 输入框会随内容长高，按钮得贴着底边跟下去；
+     用 center 的话多行输入时按钮吊在半空，跟发送这个动作的落点对不上。 */
+  [data-scope='composer'][data-part='root'] {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--xh-composer-gap, var(--xh-control-gap-md));
+    padding: var(--xh-composer-p, var(--xh-space-2));
+    border: var(--xh-stroke-thin) solid var(--xh-composer-border, var(--xh-border-default));
+    border-radius: var(--xh-composer-radius, var(--xh-shape-surface));
+    background: var(--xh-composer-bg, var(--xh-bg-surface));
+  }
+
+  /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，得自己还回去 */
+  [data-scope='composer'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 焦点环画在整个框上：视觉上这一圈边框才是用户认知里的输入框，
+     环长在无边框的 textarea 身上会缩成框内一小圈，像画歪了。
+     用 focus-within 而不是 focus-visible，是因为焦点也可能落在发送按钮上，
+     那时整个框仍然是「活跃」的。 */
+  [data-scope='composer'][data-part='root']:focus-within {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 禁用态压在 root 上一次性罩住全框；里面的 textarea 与按钮各自还有原生 disabled，
+     那管的是交互能力，这里管的是看得出来「整块不能用」 */
+  [data-scope='composer'][data-part='root'][data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  /* 无边框、透明底，视觉上完全化进 root 那个框里。
+     min-inline-size: 0 —— 弹性子项默认最小尺寸是内容尺寸，
+     不归零的话一条长 URL 就能把整个框顶得比容器还宽。 */
+  [data-scope='composer'][data-part='input'] {
+    flex: 1;
+    min-inline-size: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--xh-composer-input-fg, var(--xh-fg-default));
+    /* 表单控件不继承页面字体，只给字号会让它用 UA 默认字族，与消息区的正文对不上 */
+    font-family: inherit;
+    font-size: var(--xh-composer-input-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-leading-normal);
+    /* 高度交给 field-sizing 随内容长；不支持的引擎退化成 rows 定下的固定行数，
+       本批不上 JS autosize——量高度再回写 style 那套在流式场景每帧都要触发重排。
+       resize: none 是配套的：拖拽手柄写死的高度会盖掉 field-sizing 算出来的高度，
+       从此输入框再也不跟着内容长。 */
+    field-sizing: content;
+    resize: none;
+  }
+
+  /* 环已经画在 root 上了，这里再来一圈就是双环 */
+  [data-scope='composer'][data-part='input']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='composer'][data-part='input']::placeholder {
+    color: var(--xh-composer-placeholder-fg, var(--xh-fg-subtle));
+  }
+
+  /* textarea 是单体表单控件，禁用走原生 disabled */
+  [data-scope='composer'][data-part='input']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 私有槽位：send 与 stop 两个模式只换这三个值，尺寸与位置一动不动 */
+  [data-scope='composer'][data-part='submit-trigger'] {
+    --xh-_bg: var(--xh-composer-send-bg, var(--xh-bg-brand));
+    --xh-_bg-hover: var(--xh-composer-send-bg-hover, var(--xh-bg-brand-hover));
+    --xh-_bg-active: var(--xh-composer-send-bg-active, var(--xh-bg-brand-active));
+    --xh-_fg: var(--xh-composer-send-fg, var(--xh-fg-on-brand));
+
+    display: inline-flex;
+    /* flex: none —— 按钮不参与伸缩，否则输入框一长它就被压扁 */
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: var(--xh-composer-submit-h, var(--xh-control-h-md));
+    block-size: var(--xh-composer-submit-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-composer-submit-px, var(--xh-control-px-md));
+    border: 0;
+    border-radius: var(--xh-composer-submit-radius, var(--xh-shape-control));
+    background: var(--xh-_bg);
+    color: var(--xh-_fg);
+    font-family: inherit;
+    font-size: var(--xh-composer-submit-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-composer-submit-font-weight, var(--xh-text-label-weight));
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='composer'][data-part='submit-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='composer'][data-part='submit-trigger']:hover:not(:disabled) {
+    background: var(--xh-_bg-hover);
+  }
+
+  [data-scope='composer'][data-part='submit-trigger']:active:not(:disabled) {
+    background: var(--xh-_bg-active);
+  }
+
+  [data-scope='composer'][data-part='submit-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* 流式中原位变「停止」：还是同一个按钮、同一个位置，只换配色（文案与可访问名由连接层切）。
+     换位置或另起一个按钮，会让刚点完发送、手指还停在原处的人扑空。
+     配色从主色降到中性：停止是退路不是主行动，抢眼过头会诱导误点。 */
+  [data-scope='composer'][data-part='submit-trigger'][data-mode='stop'] {
+    --xh-_bg: var(--xh-composer-stop-bg, var(--xh-bg-subtle));
+    --xh-_bg-hover: var(--xh-composer-stop-bg-hover, var(--xh-bg-subtle-hover));
+    --xh-_bg-active: var(--xh-composer-stop-bg-active, var(--xh-bg-subtle-active));
+    --xh-_fg: var(--xh-composer-stop-fg, var(--xh-fg-default));
+  }
+
+  /* 按钮是单体控件，禁用走原生 disabled。输入为空时它就是这副样子——
+     不收起、只转灰：位置留着，敲进第一个非空白字符就亮 */
+  [data-scope='composer'][data-part='submit-trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}

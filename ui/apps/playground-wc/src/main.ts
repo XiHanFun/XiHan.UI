@@ -2305,6 +2305,116 @@ app.innerHTML = `
     </xh-navigation-menu>
     <span class="lead" id="wc-nav-menu-value"></span>
   </section>
+
+  <section>
+    <h2>Thread</h2>
+    <p class="lead">
+      点「追加一条消息」看粘底：内容变高的那一刻滚动位置被同步补到底，所以不会先闪一帧旧位置再跳。
+      粘附是意图不是几何——滚轮往上拨一下，或按 ArrowUp / PageUp / Home，当场撒手；
+      此后再追加多少条都停在原处不跟，右下角那颗「回到底部」随即露出来（在底时它带 hidden，Tab 都停不上去）。
+      手滚回底部阈值内（默认 64px，留的是一行多的余量，免得最后一行没露全就被判成不在底）自动重新粘上，
+      不必去点那颗按钮。拖滚动条滑块往上不算脱锚：那条路上浏览器既不派 wheel 也不派 keydown，方向判不出来，
+      这是眼下的边界。
+      视口自己占一个 Tab 位，且恒 <code>aria-live="off"</code>——role="log" 隐含 polite，不显式关掉的话
+      逐段长出来的文字会被读屏一路念下去。播报只发生在下面那个视觉隐藏的 live-region 里，
+      一轮结束时把整段最终文本一次性写进去。
+      root 的高度是本页给的：不给一个确定的框，内容永远不溢出，粘底也就无从谈起。
+      这里不接后端，消息由脚本往 content 里插。
+    </p>
+    <!-- root / viewport / content / scroll-button / live-region 全由作者写，元素只往上打属性。
+         「回到底部」必须是原生 button：它要能聚焦、要能被 Enter / 空格激活。
+         插进 content 的消息是普通段落、不是角色节点，不会引发重新接线；
+         但内容变高会被粘底那边的尺寸观察接住，滚动位置随即补回底部 -->
+    <xh-thread id="wc-thread" status="idle">
+      <div data-xh-part="root" style="block-size: 260px;">
+        <div data-xh-part="viewport">
+          <div data-xh-part="content" id="wc-thread-messages"></div>
+        </div>
+        <button data-xh-part="scroll-button">↓ 回到底部</button>
+        <div data-xh-part="live-region" id="wc-thread-live"></div>
+      </div>
+    </xh-thread>
+    <div class="row" style="margin-block-start: 12px;">
+      <xh-button variant="subtle"><button data-xh-part="root" id="wc-thread-append">追加一条消息</button></xh-button>
+      <span class="lead" id="wc-thread-stick"></span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Composer</h2>
+    <p class="lead">
+      勾上「流式中」，发送按钮原位变「停止」：同一个节点、同一个位置，只换 data-mode 与 aria-label。
+      拆成两个按钮就意味着一个卸载、另一个挂载，刚点完发送、手指还停在原处的人会扑空。
+      运行态的真源在宿主，元素既不猜也不改——这里发一次就自动勾上，按停止再解开。
+      Enter 直接提交、Shift+Enter 换行；IME 组合态里的那颗 Enter 一律放行，拼音选词的回车不是发送的回车。
+      输入为空或只有空白时发送按钮转成原生 disabled，但位置留着不收起，敲进第一个非空白字符就亮。
+      清空发生在 submit 派发之后，所以下面回显里拿到的是提交那一刻的原文。
+      按钮上那两个字归作者换：元素只切 data-mode 与 aria-label，两处得一起改，
+      否则读屏念的是「停止」、眼睛看到的还是「发送」。
+    </p>
+    <!-- input 角色节点必须是原生 textarea：值经 property 写、禁用走原生 disabled，
+         换成 div contenteditable 这两条都落空。换行、光标位置与撤销栈也全靠它自己 -->
+    <xh-composer id="wc-composer">
+      <div data-xh-part="root">
+        <textarea data-xh-part="input" rows="1" placeholder="说点什么…"></textarea>
+        <button data-xh-part="submit-trigger" id="wc-composer-submit">发送</button>
+      </div>
+    </xh-composer>
+    <div class="row" style="margin-block-start: 12px;">
+      <label class="row">
+        <input type="checkbox" id="wc-composer-streaming"> 流式中（run-status="streaming"）
+      </label>
+      <label class="row">
+        <input type="checkbox" id="wc-composer-disabled"> 禁用（disabled）
+      </label>
+      <span class="lead" id="wc-composer-log">（还没发过）</span>
+    </div>
+    <p class="lead" style="margin-block-start: 20px;">
+      这一台写了 <code>submit-on-enter="false"</code>：Enter 老老实实换行，只剩按钮一条发送的路。
+      长表单里回车键的默认预期本来就是换行不是提交，这类场景把它关掉比教用户改习惯划算。
+      缺省为真的开关也只能这么关：布尔属性「写了即真、不写即假」那套在这儿反着，
+      所以它走三态转换器——不写=用缺省、写 false=关、其余=开。
+    </p>
+    <xh-composer submit-on-enter="false">
+      <div data-xh-part="root">
+        <textarea data-xh-part="input" rows="2" placeholder="Enter 在这里只换行"></textarea>
+        <button data-xh-part="submit-trigger">发送</button>
+      </div>
+    </xh-composer>
+  </section>
+
+  <section>
+    <h2>CodeBlock</h2>
+    <p class="lead">
+      没有状态机：语言、行数、闭合与否全由属性逐帧递进来算一遍，连接函数不留缓存也不带副作用。
+      <code>&lt;pre&gt;</code> 自己占一个 Tab 位，横向溢出的长行靠浏览器原生滚动，元素一个按键都不监听。
+      最小高度按行数写进内联样式（calc 引的是行高令牌，行高本身仍归皮肤管）：流式吐字时代码一行行长出来，
+      不预撑的话下方内容会被一行行顶着往下跑。
+      语言角标带 aria-hidden，是纯装饰——语言名在 data-lang 上也有一份，读屏再念一遍只是噪音；
+      它还写了 user-select: none，框选代码去复制时不会把「typescript」这行一起框走。
+      这里没有复制按钮：复制是一段带「已复制」反馈的状态机，要它就把上面的 Clipboard 组合进来，别在这儿再造一套。
+    </p>
+    <!-- 元素不改角色节点的子节点：语言角标那几个字与代码原文都由作者写。
+         Vue 那侧是组件自己渲染这两段文本，差的只是适配器的分工，行为一模一样。
+         代码原文由脚本填：摊在这段模板里的话，pre 会把这份 HTML 自身的缩进也当成代码的缩进渲染出来 -->
+    <xh-code-block id="wc-code-block" lang="typescript" complete>
+      <div data-xh-part="root">
+        <span data-xh-part="lang-label">typescript</span>
+        <pre data-xh-part="pre"><code data-xh-part="code"></code></pre>
+      </div>
+    </xh-code-block>
+    <p class="lead" style="margin-block-start: 20px;">
+      这一台是吐到一半的样子：最后一行断在半个表达式上，围栏也还没闭合，所以写的是 <code>complete="false"</code>，
+      root 与 pre 上都不挂 data-complete（皮肤没给未闭合态另画样子，去 DevTools 里看这个属性的有无）。
+      语言标注同样没吐出来：空白、半截、不认识的一律落到 plaintext，下游拿到的永远是个非空串，不必各自再兜一遍空值。
+    </p>
+    <xh-code-block id="wc-code-block-partial" complete="false">
+      <div data-xh-part="root">
+        <span data-xh-part="lang-label">plaintext</span>
+        <pre data-xh-part="pre"><code data-xh-part="code"></code></pre>
+      </div>
+    </xh-code-block>
+  </section>
 </main>
 `
 
@@ -3427,3 +3537,118 @@ paintWcNavMenu(null)
 document.getElementById('wc-nav-menu')!.addEventListener('value-change', (e) => {
   paintWcNavMenu((e as CustomEvent<{ value: string | null }>).detail.value)
 })
+
+// 消息由脚本插：插进去的是普通段落而不是角色节点，重新接线不会被触发；
+// 但内容变高会被粘底那边的尺寸观察接住，粘着就把滚动位置补到底
+const wcThreadMessages = document.getElementById('wc-thread-messages')!
+const wcThreadLive = document.getElementById('wc-thread-live')!
+const wcThreadStick = document.getElementById('wc-thread-stick')!
+
+function appendWcThreadMessage(role: string, text: string): void {
+  const p = document.createElement('p')
+  p.className = 'lead'
+  // 消息之间的间距归皮肤的 content 管，段落自带的外边距会跟它叠成两份
+  p.style.margin = '0'
+  const who = document.createElement('strong')
+  who.textContent = `${role}：`
+  p.append(who, text)
+  wcThreadMessages.append(p)
+}
+
+// 头几条只为把 260px 的框先撑溢出：首屏「挂上就在底」得有溢出才看得出来
+const wcThreadSeed: [string, string][] = [
+  ['用户', '粘底到底是按什么判的？'],
+  ['助手', '按滚动位置离底还差多少像素。差值落在阈值内就算在底，默认阈值 64px。'],
+  ['用户', '那我自己往上滚一段呢？'],
+  ['助手', '当场撒手：此后再长多少都不跟，右下角那颗按钮露出来给你一条回去的路。'],
+  ['用户', '滚回去要不要再点一下按钮？'],
+  ['助手', '不用。滚进阈值内的那一下自动重新粘上，按钮跟着收起来。'],
+  ['用户', '这几条先把框撑溢出，好让首屏就看得出「挂上就在底」。'],
+]
+
+for (const [role, text] of wcThreadSeed) appendWcThreadMessage(role, text)
+
+let wcThreadNextId = wcThreadSeed.length
+
+document.getElementById('wc-thread-append')!.addEventListener('click', () => {
+  wcThreadNextId += 1
+  const text = `第 ${wcThreadNextId} 条 · 这条是刚追加的，粘着就跟到底，撒手了就停在原处等你回来。`
+  appendWcThreadMessage('助手', text)
+  // 播报只在这一处发生，且只写整段最终文本：这个节点带 aria-atomic，写一次就重念一整块
+  wcThreadLive.textContent = text
+})
+
+function paintWcThreadStick(atBottom: boolean, sticking: boolean): void {
+  wcThreadStick.textContent = `在底：${atBottom ? '是' : '否'} · 粘附：${sticking ? '是' : '否'}`
+}
+
+paintWcThreadStick(true, true)
+
+document.getElementById('wc-thread')!.addEventListener('stick-change', (e) => {
+  const { atBottom, sticking } = (e as CustomEvent<{ atBottom: boolean, sticking: boolean }>).detail
+  paintWcThreadStick(atBottom, sticking)
+})
+
+const wcComposer = document.getElementById('wc-composer')!
+const wcComposerSubmit = document.getElementById('wc-composer-submit')!
+const wcComposerLog = document.getElementById('wc-composer-log')!
+const wcComposerStreaming = document.getElementById('wc-composer-streaming') as HTMLInputElement
+
+// 运行态的真源在本页：元素只按 run-status 切 data-mode 与 aria-label，按钮上的字归作者换。
+// 复选框、属性、按钮文字三处必须一起走，勾选与「发一条自动进流式」都汇到这一个入口
+function paintWcComposerRun(streaming: boolean): void {
+  wcComposerStreaming.checked = streaming
+  wcComposer.setAttribute('run-status', streaming ? 'streaming' : 'ready')
+  wcComposerSubmit.textContent = streaming ? '停止' : '发送'
+}
+
+paintWcComposerRun(false)
+
+wcComposerStreaming.addEventListener('change', () => {
+  paintWcComposerRun(wcComposerStreaming.checked)
+})
+
+document.getElementById('wc-composer-disabled')!.addEventListener('change', (e) => {
+  wcComposer.toggleAttribute('disabled', (e.target as HTMLInputElement).checked)
+})
+
+wcComposer.addEventListener('submit', (e) => {
+  // 先过一手 Event 再断言：submit 撞上了表单那个同名事件，DOM 类型把回调参数认成 SubmitEvent，
+  // 与 CustomEvent 没有交集，直接断言过不去。派上来的确实是元素自己造的 CustomEvent
+  const { value } = (e as Event as CustomEvent<{ value: string }>).detail
+  // 清空发生在派发之后，拿到的是提交那一刻的原文
+  wcComposerLog.textContent = `提交：${value}`
+  paintWcComposerRun(true)
+})
+
+wcComposer.addEventListener('stop', () => {
+  wcComposerLog.textContent = '已按下停止'
+  paintWcComposerRun(false)
+})
+
+// 代码原文写进 code 角色节点，同一份再喂给 code 属性——元素只拿它数行数把最小高度先撑住，
+// 显示什么始终是 code 节点里的文本说了算，两者不写成同一份就会出现「高度按 A 撑、显示的是 B」
+function fillWcCodeBlock(hostId: string, source: string): void {
+  const host = document.getElementById(hostId)!
+  host.querySelector('[data-xh-part="code"]')!.textContent = source
+  host.setAttribute('code', source)
+}
+
+fillWcCodeBlock('wc-code-block', `export function createTicker(intervalTime: number) {
+  let handle = 0
+  return {
+    start(onTick: () => void) {
+      handle = setInterval(onTick, intervalTime)
+    },
+    stop() {
+      clearInterval(handle)
+    },
+  }
+}`)
+
+// 吐到一半被截断的样子：既没吐完这一行，也还没吐出闭合围栏
+fillWcCodeBlock('wc-code-block-partial', `const stream = await client.chat({
+  model: 'demo',
+  messages,
+  onToken(token) {
+    buffer +=`)

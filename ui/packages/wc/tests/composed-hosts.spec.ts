@@ -1,0 +1,82 @@
+// @vitest-environment jsdom
+// 一致性套件只在单个宿主元素内挂 fixture，两个自定义元素套在一起的场景从来没被覆盖过。
+// 事件名与属性名撞上 HTML 全局名的问题正是从这个洞里漏出去的，这里逐个钉住。
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { defineXhElements } from '../src/define'
+
+defineXhElements()
+
+async function settle(el: HTMLElement): Promise<void> {
+  await (el as HTMLElement & { updateComplete: Promise<unknown> }).updateComplete
+}
+
+beforeEach(() => {
+  document.body.innerHTML = ''
+})
+
+describe('xh-composer 套在表单里', () => {
+  it('提交事件不冒泡，外层 form 不会被真的提交', async () => {
+    // submit 与原生表单提交同名。冒泡出去的话，祖先链上任意 <form> 会把它当成
+    // 自己的提交跑一遍校验与导航；而表单组件为了自己的事件秩序做的 stopPropagation
+    // 又会反过来把 composer 这条吞掉——用户消息就这么静默丢了
+    const form = document.createElement('form')
+    const composer = document.createElement('xh-composer')
+    composer.innerHTML = '<textarea data-xh-part="input"></textarea><button data-xh-part="submit-trigger">发送</button>'
+    form.appendChild(composer)
+    document.body.appendChild(form)
+    await settle(composer)
+
+    const onFormSubmit = vi.fn((e: Event) => e.preventDefault())
+    const onComposerSubmit = vi.fn()
+    form.addEventListener('submit', onFormSubmit)
+    composer.addEventListener('submit', onComposerSubmit)
+
+    const input = composer.querySelector('textarea')!
+    input.value = '你好'
+    input.dispatchEvent(new Event('input', { bubbles: true }))
+    await settle(composer)
+
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+    await settle(composer)
+
+    expect(onComposerSubmit).toHaveBeenCalledTimes(1)
+    expect((onComposerSubmit.mock.calls[0]![0] as CustomEvent).detail).toEqual({ value: '你好' })
+    expect(onFormSubmit).not.toHaveBeenCalled()
+  })
+
+  it('value-change 与 stop 照常冒泡', async () => {
+    // 只有 submit 因为撞名而不冒泡，别的事件不该跟着一起收窄
+    const wrap = document.createElement('div')
+    const composer = document.createElement('xh-composer')
+    composer.innerHTML = '<textarea data-xh-part="input"></textarea><button data-xh-part="submit-trigger">发送</button>'
+    wrap.appendChild(composer)
+    document.body.appendChild(wrap)
+    await settle(composer)
+
+    const onValueChange = vi.fn()
+    wrap.addEventListener('value-change', onValueChange)
+
+    const input = composer.querySelector('textarea')!
+    input.value = '嗨'
+    input.dispatchEvent(new Event('input', { bubbles: true }))
+    await settle(composer)
+
+    expect(onValueChange).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('宿主元素不占用 HTML 全局属性', () => {
+  it('xh-code-block 用 code-lang 而不是 lang', async () => {
+    // lang 是 HTML 全局属性，写上去等于声明整块内容的自然语言：
+    // lang="cs"（C#）会让读屏按捷克语把整段代码念一遍
+    const el = document.createElement('xh-code-block')
+    el.setAttribute('code-lang', 'cs')
+    el.setAttribute('code', 'var a = 1;')
+    el.innerHTML = '<span data-xh-part="lang-label"></span><pre data-xh-part="pre"><code data-xh-part="code"></code></pre>'
+    document.body.appendChild(el)
+    await settle(el)
+
+    expect(el.hasAttribute('lang')).toBe(false)
+    expect(el.querySelector('[data-xh-part="code"]')?.getAttribute('data-lang')).toBe('cs')
+  })
+})

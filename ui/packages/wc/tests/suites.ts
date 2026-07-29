@@ -2,7 +2,7 @@
 // 若干组件的 fixture 与 Vue 侧不同构，需在此改写后再喂给运行方。
 // jsdom 一致性与浏览器无障碍扫描共用这一份，两边跑的是同一批组件。
 import type { ConformanceSuite, FixtureNode } from '@xihan-ui/testing'
-import { accordionSuite, anchorSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, calendarSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, editableSuite, fieldSuite, fileUploadSuite, formSuite, hoverCardSuite, imageSuite, listboxSuite, loadingBarSuite, menubarSuite, menuSuite, navigationMenuSuite, numberFieldSuite, paginationSuite, pinInputSuite, popoverSuite, progressSuite, radioGroupSuite, ratingSuite, scrollAreaSuite, selectSuite, separatorSuite, sliderSuite, splitterSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, textFieldSuite, timeFieldSuite, timePickerSuite, toasterSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, virtualizerSuite } from '@xihan-ui/testing'
+import { accordionSuite, anchorSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, calendarSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, codeBlockSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, composerSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, editableSuite, fieldSuite, fileUploadSuite, formSuite, hoverCardSuite, imageSuite, listboxSuite, loadingBarSuite, menubarSuite, menuSuite, navigationMenuSuite, numberFieldSuite, paginationSuite, pinInputSuite, popoverSuite, progressSuite, radioGroupSuite, ratingSuite, scrollAreaSuite, selectSuite, separatorSuite, sliderSuite, splitterSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, textFieldSuite, threadSuite, timeFieldSuite, timePickerSuite, toasterSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, virtualizerSuite } from '@xihan-ui/testing'
 
 // switch 无 portal/presence 分歧，复用共享用例、只把 fixture 换成 WC 行为宿主形态
 // （用户显式写 root/thumb 角色节点，Vue 版 XhSwitch 是内部渲染 thumb）。
@@ -35,6 +35,21 @@ const wcToggleSuite: ConformanceSuite = {
 const wcProgressSuite: ConformanceSuite = {
   ...progressSuite,
   fixture: { part: 'root', tag: 'div', children: [{ part: 'track', children: [{ part: 'range' }] }] },
+}
+
+// code-block 的语言标注在 headless 侧叫 lang，WC 侧的属性必须叫 code-lang——
+// lang 是 HTML 全局属性，写上去等于声明整块内容的自然语言，`lang="cs"`（C#）
+// 会让读屏按捷克语念代码。harness 按 kebab 把 prop 名落成属性名，所以这里改 prop 键。
+function renameLangProp(props: Readonly<Record<string, unknown>> | undefined): Record<string, unknown> | undefined {
+  if (!props || !('lang' in props))
+    return props as Record<string, unknown> | undefined
+  const { lang, ...rest } = props
+  return { ...rest, codeLang: lang }
+}
+
+const wcCodeBlockSuite: ConformanceSuite = {
+  ...codeBlockSuite,
+  cases: codeBlockSuite.cases.map(c => ({ ...c, props: renameLangProp(c.props) })),
 }
 
 // 集合类组件的作者侧禁用声明一律用 aria-disabled，不用原生 disabled：
@@ -213,6 +228,8 @@ export const wcSuites: readonly ConformanceSuite[]
     calendarSuite,
     carouselSuite,
     clipboardSuite,
+    wcCodeBlockSuite,
+    composerSuite,
     dateFieldSuite,
     datePickerSuite,
     editableSuite,
@@ -229,6 +246,7 @@ export const wcSuites: readonly ConformanceSuite[]
     splitterSuite,
     tagsInputSuite,
     textFieldSuite,
+    threadSuite,
     timeFieldSuite,
     timePickerSuite,
     toasterSuite,

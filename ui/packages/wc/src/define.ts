@@ -10,9 +10,11 @@ import { XhCascaderElement } from './elements/cascader'
 import { XhCheckboxElement } from './elements/checkbox'
 import { XhCheckboxGroupElement } from './elements/checkbox-group'
 import { XhClipboardElement } from './elements/clipboard'
+import { XhCodeBlockElement } from './elements/code-block'
 import { XhCollapsibleElement } from './elements/collapsible'
 import { XhColorPickerElement } from './elements/color-picker'
 import { XhComboboxElement } from './elements/combobox'
+import { XhComposerElement } from './elements/composer'
 import { XhContextMenuElement } from './elements/context-menu'
 import { XhDateFieldElement } from './elements/date-field'
 import { XhDatePickerElement } from './elements/date-picker'
@@ -47,6 +49,7 @@ import { XhTableElement } from './elements/table'
 import { XhTabsElement } from './elements/tabs'
 import { XhTagsInputElement } from './elements/tags-input'
 import { XhTextFieldElement } from './elements/text-field'
+import { XhThreadElement } from './elements/thread'
 import { XhTimeFieldElement } from './elements/time-field'
 import { XhTimePickerElement } from './elements/time-picker'
 import { XhToastElement } from './elements/toast'
@@ -78,9 +81,11 @@ export function defineXhElements(): void {
   defineElement('xh-checkbox', XhCheckboxElement, VERSION)
   defineElement('xh-checkbox-group', XhCheckboxGroupElement, VERSION)
   defineElement('xh-clipboard', XhClipboardElement, VERSION)
+  defineElement('xh-code-block', XhCodeBlockElement, VERSION)
   defineElement('xh-collapsible', XhCollapsibleElement, VERSION)
   defineElement('xh-color-picker', XhColorPickerElement, VERSION)
   defineElement('xh-combobox', XhComboboxElement, VERSION)
+  defineElement('xh-composer', XhComposerElement, VERSION)
   defineElement('xh-context-menu', XhContextMenuElement, VERSION)
   defineElement('xh-date-field', XhDateFieldElement, VERSION)
   defineElement('xh-date-picker', XhDatePickerElement, VERSION)
@@ -115,6 +120,7 @@ export function defineXhElements(): void {
   defineElement('xh-tabs', XhTabsElement, VERSION)
   defineElement('xh-tags-input', XhTagsInputElement, VERSION)
   defineElement('xh-text-field', XhTextFieldElement, VERSION)
+  defineElement('xh-thread', XhThreadElement, VERSION)
   defineElement('xh-time-field', XhTimeFieldElement, VERSION)
   defineElement('xh-time-picker', XhTimePickerElement, VERSION)
   defineElement('xh-toast', XhToastElement, VERSION)
@@ -143,9 +149,11 @@ export {
   XhCheckboxElement,
   XhCheckboxGroupElement,
   XhClipboardElement,
+  XhCodeBlockElement,
   XhCollapsibleElement,
   XhColorPickerElement,
   XhComboboxElement,
+  XhComposerElement,
   XhContextMenuElement,
   XhDateFieldElement,
   XhDatePickerElement,
@@ -179,6 +187,7 @@ export {
   XhTabsElement,
   XhTagsInputElement,
   XhTextFieldElement,
+  XhThreadElement,
   XhTimeFieldElement,
   XhTimePickerElement,
   XhToastElement,

@@ -2,16 +2,19 @@
   "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
-  "fixed": [[
-    "@xihan-ui/core",
-    "@xihan-ui/machine",
-    "@xihan-ui/behavior",
-    "@xihan-ui/system",
-    "@xihan-ui/headless",
-    "@xihan-ui/styled",
-    "@xihan-ui/vue",
-    "@xihan-ui/wc"
-  ]],
+  "fixed": [
+    [
+      "@xihan-ui/core",
+      "@xihan-ui/machine",
+      "@xihan-ui/behavior",
+      "@xihan-ui/system",
+      "@xihan-ui/headless",
+      "@xihan-ui/styled",
+      "@xihan-ui/vue",
+      "@xihan-ui/wc",
+      "@xihan-ui/ai"
+    ]
+  ],
   "linked": [],
   "access": "public",
   "baseBranch": "dev",

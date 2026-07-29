@@ -55,6 +55,7 @@ import {
   XhClipboardLabel,
   XhClipboardRoot,
   XhClipboardTrigger,
+  XhCodeBlock,
   XhCollapsibleContent,
   XhCollapsibleRoot,
   XhCollapsibleTrigger,
@@ -70,6 +71,9 @@ import {
   XhComboboxPositioner,
   XhComboboxRoot,
   XhComboboxTrigger,
+  XhComposerInput,
+  XhComposerRoot,
+  XhComposerSubmitTrigger,
   XhContextMenuContent,
   XhContextMenuItem,
   XhContextMenuItemText,
@@ -260,6 +264,11 @@ import {
   XhTextFieldInput,
   XhTextFieldLabel,
   XhTextFieldRoot,
+  XhThreadContent,
+  XhThreadLiveRegion,
+  XhThreadRoot,
+  XhThreadScrollButton,
+  XhThreadViewport,
   XhTimeFieldControl,
   XhTimeFieldHiddenInput,
   XhTimeFieldLabel,
@@ -840,6 +849,74 @@ const navMenuGroups = [
   },
 ]
 const navMenuValue = ref<string | null>(null)
+
+// 消息就是本页的一个数组，不接任何后端：粘底判的是「内容长高时滚动位置怎么走」，
+// 长高的原因是流式吐字还是点按钮追加，判定里一个字都不差
+const threadMessages = ref([
+  { id: 1, role: '用户', text: '粘底到底是按什么判的？' },
+  { id: 2, role: '助手', text: '按滚动位置离底还差多少像素。差值落在阈值内就算在底，默认阈值 64px。' },
+  { id: 3, role: '用户', text: '那我自己往上滚一段呢？' },
+  { id: 4, role: '助手', text: '当场撒手：此后再长多少都不跟，右下角那颗按钮露出来给你一条回去的路。' },
+  { id: 5, role: '用户', text: '滚回去要不要再点一下按钮？' },
+  { id: 6, role: '助手', text: '不用。滚进阈值内的那一下自动重新粘上，按钮跟着收起来。' },
+  { id: 7, role: '用户', text: '这几条先把框撑溢出，好让首屏就看得出「挂上就在底」。' },
+])
+let threadNextId = threadMessages.value.length
+const threadAtBottom = ref(true)
+const threadSticking = ref(true)
+// 播报只在这一处发生，且只写整段最终文本；中途逐字写等于让读屏把同一段话越念越长
+const threadLiveText = ref('')
+
+function appendThreadMessage(): void {
+  threadNextId += 1
+  const text = `第 ${threadNextId} 条 · 这条是刚追加的，粘着就跟到底，撒手了就停在原处等你回来。`
+  threadMessages.value.push({ id: threadNextId, role: '助手', text })
+  threadLiveText.value = text
+}
+
+function onThreadStickChange(details: { atBottom: boolean, sticking: boolean }): void {
+  threadAtBottom.value = details.atBottom
+  threadSticking.value = details.sticking
+}
+
+const composerValue = ref('')
+// 运行态的真源在宿主：组件既不猜也不改它，这里就用一个复选框冒充「一轮流式正在跑」
+const composerStreaming = ref(false)
+const composerDisabled = ref(false)
+const composerLog = ref('（还没发过）')
+
+function onComposerSubmit(details: { value: string }): void {
+  // 清空发生在事件派发之后，所以这里拿到的是提交那一刻的原文
+  composerLog.value = `提交：${details.value}`
+  composerStreaming.value = true
+}
+
+function onComposerStop(): void {
+  composerLog.value = '已按下停止'
+  composerStreaming.value = false
+}
+
+const composerPlainValue = ref('')
+
+// 代码原文由本页给：组件只拿它数行数、把 <pre> 的最小高度先撑住，语法高亮不归它管
+const codeBlockSample = `export function createTicker(intervalTime: number) {
+  let handle = 0
+  return {
+    start(onTick: () => void) {
+      handle = setInterval(onTick, intervalTime)
+    },
+    stop() {
+      clearInterval(handle)
+    },
+  }
+}`
+
+// 吐到一半被截断的样子：既没吐完这一行，也还没吐出闭合围栏
+const codeBlockPartial = `const stream = await client.chat({
+  model: 'demo',
+  messages,
+  onToken(token) {
+    buffer +=`
 </script>
 
 <template>
@@ -3124,6 +3201,100 @@ const navMenuValue = ref<string | null>(null)
         </XhNavigationMenuList>
       </XhNavigationMenuRoot>
       <span class="lead">展开的面板：{{ navMenuValue ?? '（都收着）' }}</span>
+    </section>
+
+    <section>
+      <h2>Thread</h2>
+      <p class="lead">
+        点「追加一条消息」看粘底：内容变高的那一刻滚动位置被同步补到底，所以不会先闪一帧旧位置再跳。
+        粘附是意图不是几何——滚轮往上拨一下，或按 ArrowUp / PageUp / Home，当场撒手；
+        此后再追加多少条都停在原处不跟，右下角那颗「回到底部」随即露出来（在底时它带 hidden，Tab 都停不上去）。
+        手滚回底部阈值内（默认 64px，留的是一行多的余量，免得最后一行没露全就被判成不在底）自动重新粘上，
+        不必去点那颗按钮。拖滚动条滑块往上不算脱锚：那条路上浏览器既不派 wheel 也不派 keydown，方向判不出来，
+        这是眼下的边界。
+        视口自己占一个 Tab 位，且恒 <code>aria-live="off"</code>——role="log" 隐含 polite，不显式关掉的话
+        逐段长出来的文字会被读屏一路念下去。播报只发生在下面那个视觉隐藏的 live-region 里，
+        一轮结束时把整段最终文本一次性写进去。
+        root 的高度是本页给的：不给一个确定的框，内容永远不溢出，粘底也就无从谈起。
+        这里不接后端，消息是本页的一个数组。
+      </p>
+      <XhThreadRoot status="idle" style="block-size: 260px;" @stick-change="onThreadStickChange">
+        <XhThreadViewport>
+          <XhThreadContent>
+            <p v-for="m in threadMessages" :key="m.id" class="lead" style="margin: 0;">
+              <strong>{{ m.role }}：</strong>{{ m.text }}
+            </p>
+          </XhThreadContent>
+        </XhThreadViewport>
+        <XhThreadScrollButton>↓ 回到底部</XhThreadScrollButton>
+        <XhThreadLiveRegion>{{ threadLiveText }}</XhThreadLiveRegion>
+      </XhThreadRoot>
+      <div class="row" style="margin-block-start: 12px;">
+        <XhButton variant="subtle" @click="appendThreadMessage">
+          追加一条消息
+        </XhButton>
+        <span class="lead">在底：{{ threadAtBottom ? '是' : '否' }} · 粘附：{{ threadSticking ? '是' : '否' }}</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>Composer</h2>
+      <p class="lead">
+        勾上「流式中」，发送按钮原位变「停止」：同一个节点、同一个位置，只换 data-mode 与 aria-label。
+        拆成两个按钮就意味着一个卸载、另一个挂载，刚点完发送、手指还停在原处的人会扑空。
+        运行态的真源在宿主，组件既不猜也不改——这里发一次就自动勾上，按停止再解开。
+        Enter 直接提交、Shift+Enter 换行；IME 组合态里的那颗 Enter 一律放行，拼音选词的回车不是发送的回车。
+        输入为空或只有空白时发送按钮转成原生 disabled，但位置留着不收起，敲进第一个非空白字符就亮。
+        清空发生在 submit 派发之后，所以下面回显里拿到的是提交那一刻的原文。
+        输入框必须是原生 textarea：换行、光标位置与撤销栈全靠它自己，组件一概不接管。
+      </p>
+      <XhComposerRoot
+        v-model:value="composerValue"
+        :run-status="composerStreaming ? 'streaming' : 'ready'"
+        :disabled="composerDisabled"
+        @submit="onComposerSubmit"
+        @stop="onComposerStop"
+      >
+        <XhComposerInput placeholder="说点什么…" rows="1" />
+        <XhComposerSubmitTrigger>{{ composerStreaming ? '停止' : '发送' }}</XhComposerSubmitTrigger>
+      </XhComposerRoot>
+      <div class="row" style="margin-block-start: 12px;">
+        <label class="row">
+          <input v-model="composerStreaming" type="checkbox"> 流式中（run-status="streaming"）
+        </label>
+        <label class="row">
+          <input v-model="composerDisabled" type="checkbox"> 禁用（disabled）
+        </label>
+        <span class="lead">{{ composerLog }}</span>
+      </div>
+      <p class="lead" style="margin-block-start: 20px;">
+        这一台写了 <code>:submit-on-enter="false"</code>：Enter 老老实实换行，只剩按钮一条发送的路。
+        长表单里回车键的默认预期是换行不是提交，这类场景把它关掉比教用户改习惯划算。
+      </p>
+      <XhComposerRoot v-model:value="composerPlainValue" :submit-on-enter="false">
+        <XhComposerInput placeholder="Enter 在这里只换行" rows="2" />
+        <XhComposerSubmitTrigger>发送</XhComposerSubmitTrigger>
+      </XhComposerRoot>
+    </section>
+
+    <section>
+      <h2>CodeBlock</h2>
+      <p class="lead">
+        没有状态机：语言、行数、闭合与否全由 props 逐帧递进来算一遍，连接函数不留缓存也不带副作用。
+        <code>&lt;pre&gt;</code> 自己占一个 Tab 位，横向溢出的长行靠浏览器原生滚动，组件一个按键都不监听。
+        最小高度按行数写进内联样式（calc 引的是行高令牌，行高本身仍归皮肤管）：流式吐字时代码一行行长出来，
+        不预撑的话下方内容会被一行行顶着往下跑。
+        语言角标带 aria-hidden，是纯装饰——语言名在 data-lang 上也有一份，读屏再念一遍只是噪音；
+        它还写了 user-select: none，框选代码去复制时不会把「typescript」这行一起框走。
+        这里没有复制按钮：复制是一段带「已复制」反馈的状态机，要它就把上面的 Clipboard 组合进来，别在这儿再造一套。
+      </p>
+      <XhCodeBlock :code="codeBlockSample" lang="typescript" complete />
+      <p class="lead" style="margin-block-start: 20px;">
+        这一台是吐到一半的样子：最后一行断在半个表达式上，围栏也还没闭合，所以 <code>complete</code> 写的是 false，
+        root 与 pre 上都不挂 data-complete（皮肤没给未闭合态另画样子，去 DevTools 里看这个属性的有无）。
+        语言标注同样没吐出来：空白、半截、不认识的一律落到 plaintext，下游拿到的永远是个非空串，不必各自再兜一遍空值。
+      </p>
+      <XhCodeBlock :code="codeBlockPartial" :complete="false" />
     </section>
   </main>
 </template>

@@ -9,7 +9,7 @@ interface Updatable extends HTMLElement {
 }
 
 // 对外语义事件（跨适配器一致的 CustomEvent），无关组件忽略
-const PUBLIC_EVENTS = ['open-change', 'checked-change', 'pressed-change', 'value-change', 'select', 'status-change']
+const PUBLIC_EVENTS = ['open-change', 'checked-change', 'pressed-change', 'value-change', 'select', 'status-change', 'submit', 'stop', 'stick-change']
 
 // FixtureNode → Light-DOM 元素：part 节点打 data-xh-part，纯文本子节点建文本节点
 function renderNode(node: FixtureNode, doc: Document): HTMLElement {
