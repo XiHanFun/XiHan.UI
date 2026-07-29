@@ -176,4 +176,19 @@ export function runConformance(
       }
     })
   }
+
+  // 上面那条过期检查是逐套件跑的，只敢管"这个套件里认得的 id"——
+  // 豁免表是全局的，别的套件的行落到这儿必须放过。代价是：**一条拼错组件名或行号的豁免
+  // 在每个套件里都被放过，于是永远静默生效**，既不挡什么也没人发现它已经是死条目。
+  // 全部套件登记完再统一兜一次底：一次都没对上任何行的豁免键，一定是写错了。
+  if (Object.keys(exempt).length > 0) {
+    hooks.describe(`conformance 豁免表 (${harness.adapterName})`, () => {
+      hooks.it('每条豁免都对得上某个套件的键盘行', () => {
+        const known = new Set(suites.flatMap(s => s.keyboard.rows.map(r => r.id)))
+        const orphan = Object.keys(exempt).filter(id => !known.has(id))
+        if (orphan.length)
+          throw new Error(`豁免指向不存在的键盘行（多半是拼错了），请修正或删掉：${orphan.join(', ')}`)
+      })
+    })
+  }
 }
