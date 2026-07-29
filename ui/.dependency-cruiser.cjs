@@ -35,6 +35,15 @@ module.exports = {
       to: { circular: true },
     },
     {
+      name: 'no-unresolvable',
+      severity: 'error',
+      comment: '解析不出来的 import。最常见的成因正是"伸手够了邻层却没在 package.json 里声明依赖"',
+      // icons 是冻结的遗留包：不进构建图、不发布，源码里还引着早已删除的 @xihan-ui/utils
+      // 与一批没声明的第三方。它重建之前放它一马，否则这条规则天天红，红久了就没人看了
+      from: { path: '^packages/', pathNot: '^packages/icons/' },
+      to: { couldNotResolve: true },
+    },
+    {
       name: 'styled-no-js-deps',
       severity: 'error',
       comment: 'packages/styled 是纯 CSS，不得依赖任何 JS 包',
@@ -51,6 +60,9 @@ module.exports = {
       exportsFields: ['exports'],
       conditionNames: ['import', 'types'],
     },
-    includeOnly: '^packages/',
+    // 不用 includeOnly 收窄图：它会把"解析不出来"的边整条滤掉，
+    // 于是最该拦的那种越界——伸手够了邻层却没在 package.json 里声明依赖——反而报绿。
+    // 改成把第三方摘掉，解析失败的边留在图里交给 no-unresolvable 咬。
+    exclude: { path: 'node_modules' },
   },
 }

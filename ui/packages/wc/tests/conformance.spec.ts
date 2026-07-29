@@ -21,8 +21,7 @@ runConformance(
     // 焦点环绕要真实的 Tab 焦点移动，jsdom 按 Tab 不移动焦点，这四行在这里演不出来。
     // 陷阱本身（trapped/loop 的装配）由 focus-scope 的单测覆盖，环绕效果待真机验证。
     keyboardCoverageExempt: {
-      'dialog.kbd.tab': 'jsdom 按 Tab 不移动焦点，焦点环绕演不出来',
-      'dialog.kbd.shift-tab': 'jsdom 按 Tab 不移动焦点，焦点环绕演不出来',
+      // dialog 与 drawer 不在这份清单里，它们连同各自的豁免一起住在 dialog-conformance.spec.ts
       'popover.kbd.tab': 'jsdom 按 Tab 不移动焦点，焦点环绕演不出来',
       'popover.kbd.shift-tab': 'jsdom 按 Tab 不移动焦点，焦点环绕演不出来',
       // 输入法那两行不是"暂时演不出来"，是运行时根本给不出信号：
