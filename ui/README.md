@@ -24,6 +24,8 @@ Framework-agnostic component library. State machines and accessibility live in a
 | `@xihan-ui/system` | Design tokens (from DTCG sources) + theme runtime (color scheme / density / direction) |
 | `@xihan-ui/position-floating-ui` | Floating layer positioning — the only package allowed to depend on `@floating-ui/dom` |
 | `@xihan-ui/ai` | AI protocol core: SSE transport, Data Stream v1 normalize, parts reducer, thread store |
+| `@xihan-ui/ai` | AI protocol core: SSE reading → protocol normalization → parts reduction → thread store (no DOM, no framework) |
+| `@xihan-ui/markdown` | Streaming markdown renderer: incremental block splitting, stable keys, sanitization |
 | `@xihan-ui/icons` | Icon set |
 
 `tooling/*` holds internal build, lint, tsconfig, testing and script packages; they are never published.

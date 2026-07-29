@@ -12,7 +12,8 @@
       "@xihan-ui/styled",
       "@xihan-ui/vue",
       "@xihan-ui/wc",
-      "@xihan-ui/ai"
+      "@xihan-ui/ai",
+      "@xihan-ui/markdown"
     ]
   ],
   "linked": [],
