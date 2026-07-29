@@ -4,8 +4,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-// 属性缺席翻成 undefined：缺省值的唯一事实源留在机器与 connect 里。
-// Lit 自带的转换器会把缺席落成 null，那样属性就再也表达不了"未指定"
+// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 空串也当缺席：duration="" 经 Number() 会变成 0，而 0 在这里是"关掉自动消失"的意思
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
@@ -45,7 +44,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 export class XhToastElement extends XhElement {
   // 字段名与属性名分家的两处都是躲原生访问器：HTMLElement 的 id 与 title 都是原生反射属性，
   // 同名声明会盖掉它们（`el.id` 从此不再是 DOM id）。属性名保持与 Vue 侧的 prop 同名。
-  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     toastId: { converter: STRING_CONVERTER, attribute: 'id' },
     titleText: { converter: STRING_CONVERTER, attribute: 'title' },

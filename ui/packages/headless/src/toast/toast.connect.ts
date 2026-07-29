@@ -44,27 +44,24 @@ export function connectToast<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       // 出错要打断当前朗读（alert + assertive），其余排队等空隙（status + polite）。
-      // 两者都显式写：role 隐含的 live 值各家读屏并不一致，写死才有确定行为。
+      // 两者都显式写：role 隐含的 live 值各家读屏并不一致。
       'role': type === 'error' ? 'alert' : 'status',
       'aria-live': type === 'error' ? 'assertive' : 'polite',
-      // 整条一起念：只念变化的那一小块，用户会听到半截话
+      // 整条一起念，否则用户会听到半截话
       'aria-atomic': 'true',
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
       'data-type': type,
       'data-state': status,
       'data-paused': dataAttr(paused),
-      // 退场窗口走完只收起、不卸载：作者写在里面的内容归作者，
-      // 什么时候把这条从队列里删掉是宿主的决定
+      // 退场窗口走完只收起、不卸载，何时把这条从队列里删掉是宿主的决定
       'hidden': unmounted || undefined,
-      // 指针停在通知上就把计时按住：用户正在读的东西不该从眼皮底下溜走。
-      // pointerenter / pointerleave 不冒泡，正好只认本条通知这一块区域。
+      // 指针停在通知上就把计时按住；pointerenter / pointerleave 不冒泡，只认本条通知这块区域。
       'onPointerEnter': () => send({ type: 'TOAST.PAUSE', src: 'pointer' }),
       'onPointerLeave': () => send({ type: 'TOAST.RESUME', src: 'pointer' }),
       'onFocusIn': () => send({ type: 'TOAST.PAUSE', src: 'focus' }),
       'onFocusOut': (event: FocusEvent) => {
-        // 焦点在本条内部换节点（从操作按钮 Tab 到关闭按钮）也会派 focusout，
-        // 判据取"焦点是不是真的离开了本条"，否则中间会漏出一拍没人按着计时
+        // 焦点在本条内部换节点也会派 focusout，判据取焦点是不是真的离开了本条
         const next = event.relatedTarget as Node | null
         const root = event.currentTarget as Element | null
         if (next && root?.contains(next))
@@ -97,7 +94,7 @@ export function connectToast<T extends PropTypes>(
       // 单体控件用原生 disabled：不可聚焦、也不占 Tab 位
       'disabled': !closable || undefined,
       'data-disabled': dataAttr(!closable),
-      // 不可关闭时连按钮一起收起：留一个按不动的叉，比压根没有叉更让人困惑
+      // 不可关闭时连按钮一起收起，不留一个按不动的叉
       'hidden': !closable || undefined,
       'onClick': () => {
         // 作者把这份 props 摊到非按钮节点上时原生 disabled 不生效，守卫得自己带

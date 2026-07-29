@@ -6,15 +6,7 @@ import { applyStep } from './apply-step'
 import { checkExpectation } from './match'
 
 export interface RunOptions {
-  /**
-   * 逐行豁免：键盘行 id → 豁免理由。只给"在这个运行时里根本演不出来"的行用，
-   * 比如需要真实焦点移动的 Tab 环绕（jsdom 按 Tab 不会移动焦点）。
-   *
-   * 刻意做成逐行而不是一个总开关：总开关一关，整张表就再也没人守，
-   * 后来新增的行漏了也没人知道。豁免写在这里，谁被放过、为什么，一眼看得见。
-   *
-   * 豁免了却其实已经覆盖的行会判失败——理由过期了就该删掉，不留在这儿骗人。
-   */
+  /** 逐行豁免：键盘行 id → 理由。 */
   readonly keyboardCoverageExempt?: Readonly<Record<string, string>>
 }
 
@@ -96,10 +88,7 @@ function diffSnapshot(a: DomSnapshot, b: DomSnapshot): string[] {
   return diffs
 }
 
-/**
- * 跨适配器轨迹比对：同一份规格在多个 harness 上各自独占文档串行录制，逐帧结构比对。
- * 无人写期望值——只要两端有任一 part 属性/焦点/事件/顺序不一致就在那一帧炸并打印结构 diff。
- */
+/** 跨适配器轨迹比对：同一份规格在多个 harness 上串行录制，逐帧结构比对并打印 diff。 */
 export function runParity(
   harnesses: readonly AdapterHarness[],
   suites: readonly ConformanceSuite[],
@@ -109,14 +98,13 @@ export function runParity(
     const names = harnesses.map(h => h.adapterName).join(' vs ')
     hooks.describe(`parity: ${suite.component} (${names})`, () => {
       for (const c of suite.cases) {
-        // 计时相关的用例帧序天然对不齐（同一次按住在两侧跑的拍数不一定相同），
-        // 逐帧比对对它们没有意义。跳过要写理由，且用例名里标出来，别让人以为它跑过了。
+        // skipParity 的用例只登记一条占位测试
         if (c.skipParity) {
           hooks.it(`${c.name}（不做逐帧比对：${c.skipParity}）`, () => {})
           continue
         }
         hooks.it(c.name, async () => {
-          // 串行：同一时刻文档内只有一个 harness 的实例
+          // 串行录制各 harness 的轨迹
           const traces: Array<[string, DomSnapshot[]]> = []
           for (const h of harnesses)
             traces.push([h.adapterName, await recordTrace(h, suite, c)])
@@ -158,7 +146,7 @@ export function runConformance(
         const dangling = danglingCovers(suite)
         if (dangling.length)
           throw new Error(`covers 指向不存在的键盘行：${dangling.join(', ')}`)
-        // 豁免过期了就得删：留着会让人以为这行至今演不出来
+        // 已被覆盖的豁免视为过期
         const ids = new Set(suite.keyboard.rows.map(r => r.id))
         const stale = Object.keys(exempt)
           .filter(id => ids.has(id) && !missing.some(r => r.id === id))
@@ -177,10 +165,7 @@ export function runConformance(
     })
   }
 
-  // 上面那条过期检查是逐套件跑的，只敢管"这个套件里认得的 id"——
-  // 豁免表是全局的，别的套件的行落到这儿必须放过。代价是：**一条拼错组件名或行号的豁免
-  // 在每个套件里都被放过，于是永远静默生效**，既不挡什么也没人发现它已经是死条目。
-  // 全部套件登记完再统一兜一次底：一次都没对上任何行的豁免键，一定是写错了。
+  // 全局兜底：对不上任何套件的豁免键判失败
   if (Object.keys(exempt).length > 0) {
     hooks.describe(`conformance 豁免表 (${harness.adapterName})`, () => {
       hooks.it('每条豁免都对得上某个套件的键盘行', () => {

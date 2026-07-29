@@ -3,8 +3,6 @@ import type { KeyboardTable } from '../spec/types'
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/combobox/#keyboardinteraction'
 
 // 焦点自始至终在输入框上：方向键移的是 aria-activedescendant 指向的高亮，不是 DOM 焦点。
-// 这与 Listbox 的 roving tabindex 是两条路线，也是组合框的规格要求——
-// 焦点一旦离开输入框，用户就打不了字了。
 export const comboboxKeyboard: KeyboardTable = {
   component: 'combobox',
   source: APG,

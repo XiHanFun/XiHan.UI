@@ -1,12 +1,12 @@
 import type { ConformanceSuite, RawStepContext } from '../conformance/types'
 import { codeBlockAnatomy, codeBlockKeyboard } from '@xihan-ui/headless'
 
-// 代码块不是控件而是可横向溢出的静态内容，出处指向「可滚动内容须有键盘通路」这条 WCAG 技术。
+// 出处：可滚动内容须有键盘通路。
 const WCAG = 'https://www.w3.org/WAI/WCAG21/Techniques/general/G202'
 
 const PRE = '[data-scope="code-block"][data-part="pre"]'
 
-/** 逐个按键核对组件没有拦截：`pre` 只提供落脚点，滚动按键全部交给浏览器。 */
+/** 逐个按键核对组件没有拦截，滚动按键全部交给浏览器。 */
 function expectKeysNotSwallowed({ doc }: RawStepContext): void {
   const el = doc.querySelector<HTMLElement>(PRE)
   if (!el)
@@ -19,10 +19,7 @@ function expectKeysNotSwallowed({ doc }: RawStepContext): void {
   }
 }
 
-/**
- * code-block 的一致性套件：核对语言、行数与闭合标记各自落成什么属性。
- * Vue 版自行渲染四个部件，WC 版由作者手写，两边的 part 集合与文档序一致，故共用同一份 fixture。
- */
+/** code-block 的一致性套件：核对语言、行数与闭合标记各自落成什么属性。 */
 export const codeBlockSuite: ConformanceSuite = {
   component: 'code-block',
   anatomy: codeBlockAnatomy,
@@ -90,7 +87,6 @@ export const codeBlockSuite: ConformanceSuite = {
           kind: 'raw',
           why: '归一化快照没有 defaultPrevented 通道，只能直接看事件对象',
           run: expectKeysNotSwallowed,
-          // 按键未被拦截，焦点也未被挪走
           expect: { activeElement: { part: 'pre', exact: true }, events: [] },
         },
       ],

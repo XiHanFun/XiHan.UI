@@ -22,7 +22,7 @@ function buildStateIndex<T extends MachineSchema>(machine: MachineConfig<T>): St
       idIndex.set(node.id, basePath)
     }
     if (!node.states) {
-      // ② 叶子状态不得声明 initial（抓笔误）
+      // ② 叶子状态不得声明 initial
       if (node.initial != null)
         throw new MachineError('ORPHAN_INITIAL', `leaf state "${basePath}" must not declare "initial"`)
       leaves.push(basePath)

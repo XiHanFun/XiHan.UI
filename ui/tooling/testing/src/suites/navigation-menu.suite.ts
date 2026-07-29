@@ -60,8 +60,7 @@ function hover(index: number): StepWithExpect {
       const el = doc.querySelectorAll<HTMLElement>(TRIGGER)[index]
       if (!el)
         throw new Error(`找不到第 ${index} 个 trigger`)
-      // 派裸事件而不是 PointerEvent：无头 DOM 里指针事件没有默认构造语义，
-      // 连接层也只看事件类型
+      // 派裸事件而不是 PointerEvent：无头 DOM 里指针事件没有默认构造语义，连接层只看事件类型
       el.dispatchEvent(new Event('pointerenter'))
       await flush()
     },
@@ -411,8 +410,7 @@ export const navigationMenuSuite: ConformanceSuite = {
       },
     },
     {
-      // 受控初值刻意给一个真实的项而不是 null：null 在 WC 那边表达不出来
-      // （属性只有在/不在两态，harness 遇到 null 会整个跳过，元素就变回非受控了）
+      // 受控初值给一个真实的项而不是 null：属性只有在/不在两态，harness 遇到 null 会整个跳过
       name: '受控 value：点击只发意图不自改 DOM，宿主写回 value 后才换项',
       spec: { adr: 'controlled-uncontrolled' },
       props: { value: 'products' },
@@ -458,7 +456,7 @@ export const navigationMenuSuite: ConformanceSuite = {
             const contents = [...doc.querySelectorAll<HTMLElement>('[data-scope="navigation-menu"][data-part="content"]')]
             if (contents.length !== 3)
               throw new Error(`预期 3 个面板，实际 ${contents.length}`)
-            // 展开的那个必须真的没 hidden——否则里面的链接连 Tab 都够不着
+            // 展开的那个必须真的没 hidden
             if (contents[0]!.hasAttribute('hidden'))
               throw new Error('展开的面板不该带 hidden：带着的话里面的链接根本进不了 Tab 序列')
             for (const el of contents.slice(1)) {

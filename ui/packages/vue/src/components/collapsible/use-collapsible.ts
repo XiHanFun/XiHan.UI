@@ -17,7 +17,6 @@ export function useCollapsible(
 ): CollapsibleContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  // onOpenChange 由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const service = useMachine(collapsibleMachine, () => ({ ...props, onOpenChange }), scope)
   const api = computed(() => connectCollapsible(service, vueNormalize))
   return { api }

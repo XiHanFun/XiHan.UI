@@ -19,15 +19,11 @@ export interface ColorPickerDraft {
   text: string
 }
 
-/**
- * 读屏用的文案。默认英文，与 dialog / pagination 的 translations 同一套写法。
- * 取色区与两条通道滑杆都没有可见的文字标题，名字只能从这里来——缺了它们，
- * 读屏念出来的就是三个光秃秃的 "slider"。
- */
+/** 读屏用的文案，默认英文。取色区与两条通道滑杆没有可见标题，名字只能从这里来。 */
 export interface ColorPickerTranslations {
   /** 二维取色区的名字。 */
   area: string
-  /** 取色区的播报文本：数字本身说不清"饱和度 40、明度 90"这件事。 */
+  /** 取色区的播报文本。 */
   areaValueText: (saturation: number, brightness: number) => string
   /** 通道滑杆的名字。 */
   channel: (channel: ColorPickerChannel) => string
@@ -43,8 +39,7 @@ export interface ColorPickerTranslations {
   eyeDropperTrigger: string
 }
 
-// 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；纯逻辑测试与 SSR 下保持缺省，
-// 此时副作用一律短路（机器状态照常转移，只是不定位、不挂消解层与焦点域）。
+// 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；缺省时副作用一律短路。
 export interface ColorPickerRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
@@ -126,7 +121,7 @@ export interface ColorPickerSchema extends MachineSchema {
     draft: ColorPickerDraft | null
     /** 指针正拖着哪一处；拖动结束即清空。 */
     dragTarget: ColorPickerDragTarget | null
-    /** 宿主环境有没有 EyeDropper。取色按钮据此禁用，免得点了毫无反应。 */
+    /** 宿主环境有没有 EyeDropper；取色按钮据此禁用。 */
     eyeDropperSupported: boolean
   }
   computed: Record<string, never>

@@ -14,14 +14,14 @@ type ScrollAreaProps = ScrollAreaSchema['props']
 
 export const XhScrollAreaRoot = defineComponent({
   name: 'XhScrollAreaRoot',
-  // 缺省值的唯一事实源在机器与 connect —— 凡是那边有兜底的一律 default: undefined
+  // 缺省值由机器与 connect 给出，这里一律 default: undefined
   props: {
     type: { type: String as PropType<ScrollAreaType>, default: undefined },
     scrollHideDelay: { type: Number, default: undefined },
     orientation: { type: String as PropType<ScrollAreaOrientation>, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
   },
-  // 组件不对外报事件：滚动是原生的，宿主要听滚动直接在视口上监听即可
+  // 组件不对外报事件，滚动是原生的，宿主直接在视口上监听
   setup(props, { slots }) {
     const ctx = useScrollArea(props as ScrollAreaProps)
     provideScrollArea(ctx)
@@ -38,7 +38,7 @@ export const XhScrollAreaViewport = defineComponent({
   name: 'XhScrollAreaViewport',
   setup(_, { slots }) {
     const ctx = useScrollAreaContext()
-    // 视口节点交给机器：尺寸与滚动量只在效应/事件那一刻现量，连接期一律不碰 DOM
+    // 视口节点交给机器，尺寸与滚动量在效应与事件里现量
     return () => h('div', {
       ...ctx.api.value.getViewportProps() as Record<string, unknown>,
       ref: ctx.viewportRef,
@@ -60,7 +60,7 @@ export const XhScrollAreaContent = defineComponent({
 export const XhScrollAreaScrollbar = defineComponent({
   name: 'XhScrollAreaScrollbar',
   props: {
-    /** 这条滚动条管哪条轴。与 WC 侧作者写的 orientation 属性是同一份声明。 */
+    /** 这条滚动条管哪条轴。 */
     orientation: { type: String as PropType<Orientation>, default: 'vertical' },
   },
   setup(props, { slots }) {
@@ -69,7 +69,7 @@ export const XhScrollAreaScrollbar = defineComponent({
     provideScrollAreaScrollbar({ scrollbar })
     return () => h('div', {
       ...ctx.api.value.getScrollbarProps(scrollbar.value) as Record<string, unknown>,
-      // 轨道长度按下滑块那一刻才量，所以节点要留给机器
+      // 轨道节点交给机器，长度在按下滑块时现量
       ref: ctx.scrollbarRefs[props.orientation],
     }, slots.default?.())
   },

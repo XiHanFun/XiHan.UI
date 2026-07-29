@@ -42,9 +42,8 @@ import {
 const parts = timePickerAnatomy.build()
 
 /**
- * 段与列的读屏名字。刻意写死英文语义名，不走 Intl.DisplayNames：
- * 那条路要么依赖运行环境的默认 locale（同一份代码在不同机器上产出不同 DOM），
- * 要么依赖运行时的 ICU 数据完整度，两者都会让两个适配器之外再多一个变量。
+ * 段与列的读屏名字。写死英文语义名，不走 Intl.DisplayNames：
+ * 后者依赖运行环境的默认 locale 与 ICU 数据完整度，同一份代码会产出不同 DOM。
  */
 const SEGMENT_LABELS: Record<TimeSegmentType, string> = {
   hour: 'hour',
@@ -80,12 +79,12 @@ export function connectTimePicker<T extends PropTypes>(
   const outOfRange = isTimeOutOfRange(value, prop('min'), prop('max'))
   // 越界与显式 invalid 在读屏那里是同一件事：这份输入现在不合法
   const flagged = invalid || outOfRange
-  // 值还凑不成一个时间时也可能已经填了几段，清空按钮此时就该能按
+  // 值还凑不成一个时间时也可能已经填了几段，清空按钮此时就能按
   const dirty = value !== '' || draft.hour != null || draft.minute != null
     || draft.second != null || draft.dayPeriod != null
   const canClear = editable && dirty
 
-  // 位置由引擎写进 context；这里只读结果，不量 DOM、不调引擎，保持纯函数
+  // 位置由引擎写进 context，这里只读结果，不量 DOM、不调引擎
   const position = context.get('position')
   const placement = position?.placement ?? prop('placement') ?? TIME_PICKER_DEFAULT_PLACEMENT
 
@@ -95,8 +94,7 @@ export function connectTimePicker<T extends PropTypes>(
 
   /**
    * 段间 roving tabindex 的唯一锚点：焦点在组内跟焦点走，否则落在第一段。
-   * 判据先过一遍"这一段此刻还在不在"——granularity 或 hourCycle 变小时，
-   * 焦点记着的那一段可能已经被收起，锚点若还指着它，整组就一个 Tab 位都没有了。
+   * 判据先过一遍这一段此刻还在不在：granularity 或 hourCycle 变小时它可能已被收起。
    */
   const segmentAnchor: TimeSegmentType = focusedSegment != null && segments.includes(focusedSegment)
     ? focusedSegment
@@ -121,9 +119,8 @@ export function connectTimePicker<T extends PropTypes>(
   }
 
   /**
-   * 每列各自的 roving 锚点：焦点在本列就跟焦点走，否则停在本列选中的那一格，
-   * 再没有就停在首格。三条都拿生成出来的列核对过——
-   * 锚点若指向一个被 min/max 裁掉的值，这一列就一个 Tab 位都没有了。
+   * 每列各自的 roving 锚点：焦点在本列就跟焦点走，否则停在本列选中的那一格，再没有就停首格。
+   * 三条都拿生成出来的列核对过，锚点指向被 min/max 裁掉的值会让这一列没有 Tab 位。
    */
   const anchorOf = (unit: TimePickerColumnUnit): string | null => {
     const options = optionsOf(unit)
@@ -152,14 +149,13 @@ export function connectTimePicker<T extends PropTypes>(
       .filter(el => !el.hasAttribute('hidden'))
 
   /**
-   * 段间移动。不回绕：末段再按右键该停住，绕回首段会让人以为自己走错了方向。
-   * 也不跳过任何一段——段与段之间没有"个别禁用"这回事，禁用是整份控件的事。
+   * 段间移动，不回绕也不跳过任何一段；禁用是整份控件的事。
    */
   const moveSegment = (from: HTMLElement, current: TimeSegmentType, intent: NavIntent): void => {
     focusSafely(navigateItems(liveSegments(from), current, intent, { loop: false, focusDisabled: true }))
   }
 
-  /** 把焦点送到首段。从组件内任一节点出发都找得到：往上找到 root，再往下取第一段。 */
+  /** 把焦点送到首段：从组件内任一节点往上找到 root，再往下取第一段。 */
   const focusFirstSegment = (from: HTMLElement): void => {
     const root = from.closest<HTMLElement>(parts.root.selector)
     focusSafely(queryItems(root, timePickerInputQuery).find(el => !el.hasAttribute('hidden')))
@@ -170,7 +166,7 @@ export function connectTimePicker<T extends PropTypes>(
   const optionsIn = (column: HTMLElement | null): HTMLElement[] =>
     queryItems(column, timePickerOptionQuery)
 
-  /** 列内移动。时分秒天生成环，走到尽头回绕；被裁掉的那些格自报 aria-disabled，自动跳过。 */
+  /** 列内移动，走到尽头回绕；被裁掉的那些格自报 aria-disabled，自动跳过。 */
   const moveInColumn = (content: HTMLElement, intent: NavIntent): void => {
     const unit = focusedColumn ?? columns[0]?.unit ?? null
     if (unit == null)
@@ -243,8 +239,7 @@ export function connectTimePicker<T extends PropTypes>(
       ...parts.label.attrs,
       'id': ids.label,
       'data-disabled': dataAttr(disabled),
-      // 段不是可被 <label for> 指向的原生控件（它们是 span），for 无处可写；
-      // "点标题聚焦到第一段"这条只能由这里接管
+      // 段是 span 而非原生控件，<label for> 无处可写，点标题聚焦第一段只能在这里接管
       'onClick': (event: MouseEvent) => {
         if (disabled)
           return
@@ -256,10 +251,10 @@ export function connectTimePicker<T extends PropTypes>(
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
       'id': ids.control,
-      // 几段合起来才是一个控件，靠 group 把它们兜住，名字由 label 提供
+      // 几段合起来才是一个控件，靠 group 兜住，名字由 label 提供
       'role': 'group',
       'aria-labelledby': ids.label,
-      // 四个 aria 布尔显式写 true/false：省略是"没说"，显式 false 是"明确说了不是"
+      // 四个 aria 布尔显式写 true/false：省略是没说，显式 false 是明确说了不是
       'aria-disabled': disabled ? 'true' : 'false',
       'aria-readonly': readOnly ? 'true' : 'false',
       'aria-required': required ? 'true' : 'false',
@@ -272,21 +267,20 @@ export function connectTimePicker<T extends PropTypes>(
     }),
 
     getInputProps: ({ segment }) => {
-      // 这一段此刻参不参与显示。不参与的收起而不是让作者删掉：节点是作者写的，
-      // 替他删了他就再也拿不回来；granularity 改回去时它得原地复现
+      // 这一段此刻参不参与显示；不参与的收起而不是卸载，granularity 改回去时要原地复现
       const active = segments.includes(segment)
       const range = segmentRange(segment, hourCycle)
       const num = segmentNumber(draft, segment, hourCycle)
       return normalize.element({
         ...parts.input.attrs,
-        // 每一段都是一个可加减的数，spinbutton 是读屏唯一认得的形态
+        // 每一段都是一个可加减的数，用 spinbutton
         'role': 'spinbutton',
         // 导航与聚焦都以此为段的身份（事件那一刻现查 DOM 时按它定位）
         [ITEM_VALUE_ATTR]: segment,
         'aria-label': SEGMENT_LABELS[segment],
         'aria-valuemin': range.min,
         'aria-valuemax': range.max,
-        // 空段没有"当前值"，此时不写 aria-valuenow：写个 0 会被念成"零点"
+        // 空段没有当前值，此时不写 aria-valuenow，写 0 会被念成零点
         'aria-valuenow': num ?? undefined,
         // 读屏念出的与眼睛看到的是同一串，空段念的是占位符
         'aria-valuetext': segmentTextOf(segment),
@@ -299,14 +293,12 @@ export function connectTimePicker<T extends PropTypes>(
         'data-readonly': dataAttr(readOnly),
         'data-invalid': dataAttr(flagged),
         'hidden': !active || undefined,
-        // 整组只占一个 Tab 位：段之间靠左右键走。禁用时连 -1 都不给，
-        // 与原生 disabled 控件一致——整份控件退出 Tab 序列
+        // 整组只占一个 Tab 位，段之间靠左右键走；禁用时连 -1 都不给，整份控件退出 Tab 序列
         'tabindex': disabled || !active ? undefined : (segmentAnchor === segment ? 0 : -1),
         'onFocus': () => send({ type: 'SEGMENT.FOCUS', segment }),
         'onBlur': () => {
-          // 判据是"本段当下正持有焦点锚点"，不是"有 blur 就清"：
-          // 焦点在段之间移动时浏览器先派旧段的 blur、再派新段的 focus，
-          // 若两条都无条件生效，顺序稍有出入就会把刚记下的锚点抹掉
+          // 判据是本段当下正持有焦点锚点：段间移动时旧段的 blur 先于新段的 focus 派发，
+          // 无条件清会把刚记下的锚点抹掉
           if (context.get('focusedSegment') === segment)
             send({ type: 'SEGMENT.BLUR' })
         },
@@ -316,17 +308,17 @@ export function connectTimePicker<T extends PropTypes>(
           const el = event.currentTarget as HTMLElement
           const key = event.key
 
-          // 段间移动只认水平轴与 Home/End：上下键归加减，在这里被吃掉就没得加减了
+          // 段间移动只认水平轴与 Home/End，上下键归加减
           const intent = navIntentFromKey(event, { axis: 'horizontal' })
           if (intent) {
-            // 左右键在可聚焦元素上默认可能滚动页面，必须拦下
+            // 左右键在可聚焦元素上可能滚动页面，必须拦下
             event.preventDefault()
             moveSegment(el, segment, intent)
             return
           }
 
           if (key === 'ArrowUp' || key === 'ArrowDown') {
-            // 改不动的时候不拦：上下键还要留给页面滚动
+            // 改不动的时候不拦，上下键还要留给页面滚动
             if (!editable)
               return
             event.preventDefault()
@@ -343,7 +335,7 @@ export function connectTimePicker<T extends PropTypes>(
           }
 
           if (segment === 'dayPeriod') {
-            // 上下午段收 a/p 直接指定，与上下键的翻面并行；别的键一概不归它管
+            // 上下午段收 a/p 直接指定，与上下键的翻面并行
             const period = key === 'a' || key === 'A' ? 'am' : key === 'p' || key === 'P' ? 'pm' : null
             if (!period || !editable)
               return
@@ -356,15 +348,14 @@ export function connectTimePicker<T extends PropTypes>(
             if (!editable)
               return
             event.preventDefault()
-            // 这一段还吃不吃得下第二位，由同一个纯函数说了算——机器里跑的是同一句，
-            // 入参也是同一份（缓冲现读、区间同算），因此两边的判断不会分家
+            // 这一段还吃不吃得下第二位，与机器里跑的是同一个纯函数、同一份入参
             const result = appendSegmentDigit(
               context.get('typeBuffer'),
               key,
               segmentRange(segment, hourCycle),
             )
             send({ type: 'SEGMENT.DIGIT', segment, digit: key })
-            // 填满即跳下一段，与逐格验证码同一套手感
+            // 填满即跳下一段
             if (result.done)
               moveSegment(el, segment, 'next')
           }
@@ -376,10 +367,9 @@ export function connectTimePicker<T extends PropTypes>(
       ...parts.trigger.attrs,
       'id': ids.trigger,
       'type': 'button',
-      // 单体控件用原生 disabled（与列里的选项相反）：禁用的控件不该有任何键盘入口。
-      // 只读不禁用——浮层仍可展开供查看，只是选不动
+      // 单体控件用原生 disabled：禁用的控件不该有键盘入口；只读不禁用，浮层仍可展开查看
       'disabled': disabled || undefined,
-      // 展开的是几列并排的选择面板，不是一份列表；读屏据此播报"打开对话框"
+      // 展开的是几列并排的选择面板而不是列表，故报 dialog
       'aria-haspopup': 'dialog',
       'aria-expanded': open ? 'true' : 'false',
       'aria-controls': ids.content,
@@ -387,15 +377,13 @@ export function connectTimePicker<T extends PropTypes>(
       'aria-labelledby': ids.label,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
-      // 原生 disabled 的按钮不派 click，正常操作走不到这里；程序化派发的 click 照样送得到，
-      // 守卫写在这儿开合才真的推不动
+      // 原生 disabled 的按钮不派 click，但程序化派发的 click 照样送得到，故这里再守一次
       'onClick': () => {
         if (!disabled)
           send({ type: 'TOGGLE' })
       },
       'onKeyDown': (event: KeyboardEvent) => {
-        // 上下键展开。Enter / Space 不在这里接：按钮的默认激活会再合成一次 click，
-        // 两处都收就会一开一关，看起来像"按了没反应"
+        // 上下键展开；Enter / Space 不在这里接，按钮默认激活会再合成一次 click，两处都收会一开一关
         const intent = navIntentFromKey(event, { axis: 'vertical', home: false })
         if (!intent || open || disabled)
           return
@@ -407,8 +395,7 @@ export function connectTimePicker<T extends PropTypes>(
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
       'type': 'button',
-      // 与数字框、文本框的辅助按钮同一套取舍：键盘用户在段上按退格即可清，
-      // 暴露给读屏等于把同一个能力报两遍，还会在 Tab 序里多出一站
+      // 不占 Tab 位、不暴露给读屏：键盘用户在段上按退格即可清
       'tabindex': -1,
       'aria-hidden': true,
       'disabled': !canClear || undefined,
@@ -440,17 +427,17 @@ export function connectTimePicker<T extends PropTypes>(
       },
     }),
 
-    // 键盘全在 content 上收口：选项只管声明自己，一次冒泡一个处理器。
-    // Escape 不在这里收——它归消解层管（只有栈顶层响应，嵌套浮层才能逐层关闭）
+    // 键盘全在 content 上收口，选项只管声明自己。
+    // Escape 归消解层管，只有栈顶层响应。
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
       'id': ids.content,
-      // 浮层是个非模态对话框：trigger 那边报的是 aria-haspopup="dialog"，两处得对上。
-      // 里面几列各自是 listbox，浮层本身只是装它们的壳。模态与否显式说，省略只是"没说"
+      // 浮层是非模态对话框，与 trigger 上的 aria-haspopup="dialog" 对上；
+      // 里面几列各自是 listbox。模态与否显式说，省略只是没说
       'role': 'dialog',
       'aria-modal': 'false',
       'aria-labelledby': ids.label,
-      // 写 -1 而不是整个不给：它是可滚动容器，某些浏览器会把可滚动区域自动塞进 Tab 序列
+      // 写 -1 而不是整个不给：某些浏览器会把可滚动区域自动塞进 Tab 序列
       'tabindex': -1,
       'data-state': stateAttr,
       'data-placement': placement,
@@ -494,15 +481,14 @@ export function connectTimePicker<T extends PropTypes>(
         'role': 'listbox',
         'aria-label': SEGMENT_LABELS[unit],
         'aria-orientation': 'vertical',
-        // 单选与否必须显式说：省略只是"没说"，读屏无从区分单选列表与"作者忘了标"
+        // 单选与否必须显式说，省略只是没说
         'aria-multiselectable': 'false',
         'aria-disabled': disabled ? 'true' : 'false',
-        // 有锚点时 Tab 位归那一格；整列被裁空（min/max 卡死）时由列本身兜底，
-        // 否则这一列一个 Tab 停靠点都没有、键盘再也进不去
+        // 有锚点时 Tab 位归那一格；整列被 min/max 裁空时由列本身兜底，否则这一列没有 Tab 停靠点
         'tabindex': active && anchorOf(unit) == null ? 0 : -1,
         'data-state': stateAttr,
         'data-disabled': dataAttr(disabled),
-        // granularity 关掉的列（精度不到秒时的秒列）收起，同样不删作者节点
+        // granularity 关掉的列收起，不删作者节点
         'hidden': !active || undefined,
       })
     },
@@ -515,11 +501,9 @@ export function connectTimePicker<T extends PropTypes>(
         // 导航与选中都以此为选项身份
         [ITEM_VALUE_ATTR]: option,
         'role': 'option',
-        // listbox 的选中语义是 aria-selected（不是 aria-checked）；未选中必须显式输出 false，
-        // 省略会让读屏无从区分"未选中"与"不是选项"
+        // listbox 的选中语义是 aria-selected 而非 aria-checked；未选中必须显式输出 false
         'aria-selected': selected ? 'true' : 'false',
-        // 集合条目一律 aria-disabled，绝不输出原生 disabled：原生 disabled 不可聚焦、
-        // 也不派发 click，禁用策略与样式会就此分裂。与 trigger 相反——那是单体控件
+        // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、不派 click
         'aria-disabled': optionDisabled ? 'true' : 'false',
         'data-state': selected ? 'checked' : 'unchecked',
         'data-disabled': dataAttr(optionDisabled),

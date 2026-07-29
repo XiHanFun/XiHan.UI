@@ -80,8 +80,7 @@ export const popoverMachine = createMachine({
         let stop: (() => void) | undefined
         let disposed = false
 
-        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带着 hidden（高度为 0），
-        // 此时算出的坐标会少掉浮层自身的尺寸——placement=top 会正好错位一个浮层高度。
+        // 必须等 DOM 落定再挂：进入展开态这一刻 content 仍带 hidden，量到的浮层尺寸为 0。
         flush(() => {
           if (disposed)
             return
@@ -102,9 +101,7 @@ export const popoverMachine = createMachine({
           stop?.()
         }
       },
-      // 层的入栈出栈与消解层、焦点域绑在同一个效应里：三者生命周期必须完全一致。
-      // 层只在展开期间入栈——消解层只让栈顶响应 Escape，若层在挂载期就注册、与开合无关地
-      // 常驻栈里，同页后挂载的那个会永久占着栈顶，把它下面每一层的 Escape 都堵死。
+      // 层与消解层、焦点域同生命周期；层只在展开期间入栈，常驻栈会占死栈顶、堵掉下层 Escape。
       trackLayer: ({ refs, prop, send }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')

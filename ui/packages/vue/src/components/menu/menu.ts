@@ -9,8 +9,7 @@ type MenuProps = MenuSchema['props']
 
 export const XhMenuRoot = defineComponent({
   name: 'XhMenuRoot',
-  // 全部 default: undefined —— 缺省值的唯一事实源在 connect（loop 尤其：
-  // 裸 Boolean 声明会把缺省压成 false，回绕就默默关掉了）
+  // 缺省值由 connect 给出，这里一律 default: undefined
   props: {
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
@@ -19,7 +18,7 @@ export const XhMenuRoot = defineComponent({
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
   },
-  // open-change 携带 { open }、select 携带 { value }；update:open 携带裸布尔，支持 v-model:open
+  // open-change 携带 { open }、select 携带 { value }，update:open 携带裸布尔
   emits: ['open-change', 'select', 'update:open'],
   setup(props, { slots, emit }) {
     const notifyOpen: MenuProps['onOpenChange'] = (details) => {
@@ -74,11 +73,7 @@ export const XhMenuItem = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useMenuContext()
-    // 承载焦点的条目被移出 DOM 时浏览器不派 focusout，锚点会停在一个已消失的值上：
-    // 没有条目认领 tabindex=0、方向键也失去起点。卸载前如实上报，机器就地重挑锚点。
-    // v-for 不带 key 时 Vue 会就地复用节点：被删的是"最后一个组件实例"，
-    // 而持有焦点的那个 DOM 节点还在、value 却被改成了别的条目。此时锚点仍指着旧值、
-    // 已无人认领，键盘就此失灵。自己正持有焦点且 value 变了，就按新值重报一次。
+    // 本条目持有焦点时，value 变更按新值重报焦点条目，卸载时上报焦点丢失
     const itemEl = ref<HTMLElement | null>(null)
     watch(() => props.value, (next, prev) => {
       if (next === prev)
@@ -91,11 +86,10 @@ export const XhMenuItem = defineComponent({
     })
     onBeforeUnmount(() => {
       const { service } = ctx
-      // 整组一起卸载时根先停机，此刻无焦点可言（送事件还会在 dev 下抛）
+      // 根已停机时不再送事件
       if (service.getStatus() !== 'Started')
         return
-      // 判据是「本节点当下正持有焦点」，不是「值对得上」：v-for 就地复用时
-      // 被卸载的是末位实例、它的 value 可能恰好等于刚纠正过的锚点，按值判会把好端端的锚点清掉
+      // 按「本节点当下正持有焦点」判定，不按 value 比对
       if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
         service.send({ type: 'ITEM.LOST' })
     })

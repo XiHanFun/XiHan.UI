@@ -16,13 +16,11 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-// 属性缺席一律翻成 undefined：缺省值的唯一事实源留在机器与 connect 里。
-// Lit 自带的转换器会把缺席落成 null / false，那样属性就再也表达不了"未指定"
-// （value 尤其：落成 null 就分不出"非受控"与"受控且当前无选中"）。
+// 属性缺席翻成 undefined，缺省值由机器与 connect 决定；Lit 自带转换器把缺席落成 null/false，
+// value 落成 null 就分不出"非受控"与"受控且当前无选中"。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-// 缺省值将来若改成真，只有三态才关得掉——
 // Lit 默认的 Boolean 转换器是 v !== null，写 loop="false" 照样是真。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
@@ -35,18 +33,15 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * `<xh-tree-select>` —— Light-DOM 行为宿主：作者写 root/trigger/positioner/content/tree
  * 与若干 item / branch 角色节点，元素跑 tree-select 机器并把 connect 产出打上去。
  * 浮层定位引擎在本元素里建好、经 refs 注入机器，锚点取 trigger、被定位的浮层取 positioner；
- * 机器只认端口，不认识具体引擎。节点身份取节点上的 value 属性。
+ * 节点身份取节点上的 value 属性。
  *
- * 层级（aria-level / aria-posinset / aria-setsize）、禁用与显示文本都不从 DOM 反推，
- * 而是查 `collection` 这份树数据——它是元信息的唯一事实源，作者的标记只管长相，
- * 两个适配器也就不会各推各的。因此 collection 必须与标记同源：标记里有、collection 里没有的
- * 节点报不出层级，也进不了导航。
+ * 层级（aria-level / aria-posinset / aria-setsize）、禁用与显示文本都查 `collection` 这份树数据，
+ * 不从 DOM 反推，故 collection 必须与标记同源。
  *
- * value-text 的显示文字由元素代填（选中项的名字住在树数据里，作者写不出来）；
- * 作者在那个节点里写了内容就归作者，元素不再改写。
+ * value-text 的显示文字由元素代填；作者在该节点里写了内容就归作者，元素不再改写。
  *
- * 树数据与展开/选中集合都是数组，属性表达不了，只能走 property（`el.collection = [...]`）；
- * 单选的选中值可以用 value 属性写成裸串。
+ * 树数据与展开/选中集合都是数组，只走 property（`el.collection = [...]`）；
+ * 单选的选中值可用 value 属性写成裸串。
  *
  * @customElement xh-tree-select
  * @attr {string} value - 受控选中值（单选简写）；缺省该属性即非受控，多选请用 property 传数组
@@ -87,10 +82,8 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @csspart hidden-input - type=hidden 的表单出口，省略该节点即不参与表单
  */
 export class XhTreeSelectElement extends XhElement {
-  // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
-  // 同名声明既与基类类型冲突，也会盖掉原生反射。别名保留原生行为，
-  // 同时让 dir 进 observedAttributes——运行期改 dir 才会重跑 wire 换掉按键处理器。
-  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
+  // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     collection: { attribute: false },
     value: { converter: STRING_CONVERTER },
@@ -134,7 +127,7 @@ export class XhTreeSelectElement extends XhElement {
   private readonly positionEngine: PositionEnginePort = createFloatingUiPositionEngine()
   private config: RuntimeConfig | null = null
 
-  /** value-text 是否归元素填：首次见到该节点时定，之后不再回读（读到的会是自己写的字）。 */
+  /** value-text 是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */
   private readonly ownsValueText = new WeakMap<HTMLElement, boolean>()
 
   private readonly notifyValue = (details: TreeSelectValueChangeDetails): void => {
@@ -162,7 +155,7 @@ export class XhTreeSelectElement extends XhElement {
       value: this.value,
       defaultValue: this.defaultValue,
       expandedValue: this.expandedValue,
-      // 机器自己兜 undefined，这里不补 []：props 每次读都新建数组会造成无谓的引用变动
+      // 不补 []，缺省由机器兜
       defaultExpandedValue: this.defaultExpandedValue,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
@@ -189,23 +182,21 @@ export class XhTreeSelectElement extends XhElement {
   }
 
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
-  // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
     return this.config!.layerRegistry.register({
       kind: 'popover',
       node: () => this.getPart('content'),
       // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。
-      // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，浮层等于关不掉。
       branches: () => [this.getPart('trigger')].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
-      // 浮层不带遮罩，没有"点它就该关本层"的表面
+      // 浮层不带遮罩，无可点关闭的表面
       surfaces: () => [],
     })
   }
 
-  // onBuilt 在 ctrl 构造期就跑（此刻 this.ctrl 尚未赋值），故 service 由参数传入。
+  // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<TreeSelectSchema>): void {
     this.ensureConfig()
     svc.refs.set('config', this.config)
@@ -216,32 +207,22 @@ export class XhTreeSelectElement extends XhElement {
     svc.refs.set('getContentEl', () => this.getPart('content'))
   }
 
-  /**
-   * 角色节点提前发现一次：default-open 时机器在 hostConnected 当场跑进入展开态的动作，
-   * 要去 content 里现查节点、挑出焦点锚点。而常规发现要等首次 updated，
-   * 那一刻 partMap 还空着，content 取不到。定位是 flush 推迟的（那时 partMap 已就位），
-   * 这里只为挑锚点这件事补上时机。
-   */
+  /** 提前发现一次角色节点：default-open 时机器在 hostConnected 当场要去 content 里挑焦点锚点。 */
   override connectedCallback(): void {
     this.refreshParts()
     super.connectedCallback()
   }
 
   /**
-   * 承载焦点的节点被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：
-   * 没有节点认领 tabindex=0、方向键也失去起点。这里替 DOM 把焦点离场如实上报，
-   * 机器就地按当前活节点重挑锚点。
-   *
-   * 判据是焦点确实跟着这个节点走了。节点此刻已不在文档里，activeElement 不可能还等于它
-   * （浏览器把焦点退还给了 body），于是改判等价事实"焦点已不在浮层内"，
-   * 再要求离场的正是持有锚点的那个节点——只按值比对，会把"焦点在别处时删掉同值节点"也算成离场。
+   * 承载焦点的节点被移出 DOM 时上报 NODE.LOST，让机器按当前数据重挑锚点。
+   * 判据是「焦点已不在浮层内」且离场的正是持有锚点的那个节点。
    */
   protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
     const { context, getStatus, scope, send } = this.ctrl.service
-    // 宿主断开时机器已停机，此刻无焦点可言（送事件还会在 dev 下抛）
+    // 机器已停机则跳过
     if (getStatus() !== 'Started')
       return
-    // 收起态无锚点：节点连同 content 一起 hidden，本就不承载焦点
+    // 收起态无焦点锚点
     const focusedValue = context.get('focusedValue')
     if (focusedValue == null)
       return
@@ -256,9 +237,7 @@ export class XhTreeSelectElement extends XhElement {
 
   /**
    * 取角色节点所属的节点身份：value 写在 item / branch 上，行内的文本、标记、箭头与子层容器
-   * 向上找最近的那个（item / branch 自身 closest 命中的就是它自己）。
-   * 没有包裹层时退回读节点自身，扁平写法也能用。
-   * 越出本宿主的容器不算数——嵌套 xh-tree-select 的内层节点不会认外层的分支。
+   * 向上找本宿主内最近的那个，没有则读节点自身。
    */
   private nodeOf(el: HTMLElement, selector: string): TreeSelectNodeProps {
     const owner = el.closest<HTMLElement>(selector)
@@ -266,11 +245,7 @@ export class XhTreeSelectElement extends XhElement {
     return { value: source.getAttribute('value') ?? '' }
   }
 
-  /**
-   * 选中项的文字只有树数据里才有，作者在 trigger 上写不出来，由元素填。
-   * 作者若自己写了内容（自定义渲染），首次见到时就定为归作者，之后一概不碰——
-   * 每帧回读分不清"作者写的"还是"上一帧自己写的"，一旦写过就再也让不回去。
-   */
+  /** 填入选中项显示文字；首次见到该节点时若已有内容则归作者，之后不再改写。 */
   private fillValueText(el: HTMLElement, text: string): void {
     let owned = this.ownsValueText.get(el)
     if (owned === undefined) {
@@ -295,24 +270,22 @@ export class XhTreeSelectElement extends XhElement {
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     put('indicator', api.getIndicatorProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
-    // positioner 的 style 是对象（position/insetInlineStart/insetBlockStart），
-    // spreader 见对象 style 会逐条写内联样式，直接 spread 即可。
+    // positioner 的 style 是对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
     put('tree', api.getTreeProps() as Record<string, unknown>)
-    // 表单出口可缺省：不写这个节点就是不参与表单提交
+    // 表单出口可缺省
     put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
 
-    // 属性与文字打在同一个节点上：属性先落，显示文字随后（作者写了内容则不填）
+    // 属性先落，再填显示文字
     const valueText = this.getPart('value-text')
     if (valueText) {
       this.spreader.spread(valueText, api.getValueTextProps() as Record<string, unknown>)
       this.fillValueText(valueText, api.displayText)
     }
 
-    // 集合类 part 逐个 spread：身份由节点自报，不依赖下标，节点增删无需记账。
-    // wire 跑在事件之前（element-base 的 updated），因此按键那一刻 data-scope/data-part/data-value
-    // 已经在 DOM 上，连接层查得到本棵树的节点集合。
+    // 集合类 part 逐个 spread，身份由节点自报，不依赖下标。
+    // wire 跑在事件之前，按键时 data-scope/data-part/data-value 已在 DOM 上供连接层现查。
     const putAll = (name: string, selector: string, get: (node: TreeSelectNodeProps) => unknown): void => {
       for (const el of this.getParts(name))
         this.spreader.spread(el, get(this.nodeOf(el, selector)) as Record<string, unknown>)
@@ -327,9 +300,7 @@ export class XhTreeSelectElement extends XhElement {
     putAll('branch-text', BRANCH_SELECTOR, node => api.getBranchTextProps(node))
     putAll('branch-content', BRANCH_SELECTOR, node => api.getBranchContentProps(node))
 
-    // Light DOM 常驻，WC 自管可见性：作者层若给这两个 part 声明了 display，
-    // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来。
-    // 本包的样式自带 [hidden]{display:none} 压得住，但宿主不能指望作者装了这份样式。
+    // 节点常驻，用内联 display 收起（作者层的 display 声明会盖过 [hidden]）
     this.setPartHidden(this.getPart('content'), !api.open)
     for (const el of this.getParts('branch-content'))
       this.setPartHidden(el, !api.isExpanded(this.nodeOf(el, BRANCH_SELECTOR).value))
@@ -337,7 +308,7 @@ export class XhTreeSelectElement extends XhElement {
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
-    // 层由展开态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
+    // 层随机器停机一并撤掉，此处不再管
     this.config = null // 重连时 ensureConfig 重建
   }
 }

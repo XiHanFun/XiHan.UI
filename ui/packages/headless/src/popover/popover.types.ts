@@ -5,8 +5,7 @@ export interface PopoverTranslations {
   close: string
 }
 
-// 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；纯逻辑测试与 SSR 下保持缺省，
-// 此时副作用一律短路（机器状态照常转移，只是不定位、不挂消解层与焦点域）。
+// 适配器挂载前填入；保持缺省时副作用短路，机器状态照常转移但不定位、不挂消解层与焦点域。
 export interface PopoverRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */

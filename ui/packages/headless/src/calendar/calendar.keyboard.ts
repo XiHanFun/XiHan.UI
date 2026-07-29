@@ -2,9 +2,8 @@ import type { KeyboardTable } from '../spec/types'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/examples/datepicker-dialog/#kbd_label'
 
-// 方向键只搬焦点、不落值：日期网格与 Listbox 同属「选中不跟随焦点」那一路，
-// 用户要能逐格浏览整个月而不在每一格上留下一次选中。
-// 跨月不是特例：落点越过月界时展示月跟着落点走，焦点再落进新月份的那一天。
+// 方向键只搬焦点、不落值（选中不跟随焦点）。
+// 落点越过月界时展示月跟着落点走，焦点再落进新月份的那一天。
 export const calendarKeyboard: KeyboardTable = {
   component: 'calendar',
   source: APG,

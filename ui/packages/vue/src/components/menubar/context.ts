@@ -38,10 +38,7 @@ export function provideMenubarMenu(ctx: MenubarMenuContext): void {
   provide(MENU_KEY, ctx)
 }
 
-/**
- * 取所属那一项的身份；不在 positioner 内时返回 null。
- * positioner 本身可缺省（作者直接把 content 挂在 root 下），那种写法要求 content 自带 value。
- */
+/** 取所属那一项的身份，不在 positioner 内时返回 null（此时 content 须自带 value）。 */
 export function useMenubarMenuContext(): MenubarMenuContext | null {
   return inject(MENU_KEY, null)
 }

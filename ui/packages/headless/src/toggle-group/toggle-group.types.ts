@@ -3,9 +3,7 @@ import type { MachineSchema } from '@xihan-ui/machine'
 
 /**
  * 作者那一侧的值形态：单个值、值集合，或 null（无选中）。
- *
- * 内部一律归一成 string[]，对外回调再变回作者那一侧的形态。不这么做的话，
- * 单选模式下把 ['a'] 塞回作者绑的 v-model，会把他的字符串变量悄悄改成数组。
+ * 内部一律归一成 string[]，对外回调再变回作者那一侧的形态。
  */
 export type ToggleGroupValue = string | readonly string[] | null
 
@@ -16,9 +14,7 @@ export interface ToggleGroupValueChangeDetails {
 
 /**
  * 条目自报家门：值与禁用由作者在部件上声明，connect 据此产出属性。
- * connect 因此是 (context, 本条目声明) 的纯函数，不反查 DOM——
- * Vue 侧 connect 在 render 期求值（本帧 DOM 还不存在），WC 侧在 updated 后求值（DOM 已就位），
- * 连接期读 DOM 会让两个适配器的首帧快照分叉。
+ * connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得反查 DOM。
  */
 export interface ToggleGroupItemProps {
   value: string
@@ -47,8 +43,7 @@ export interface ToggleGroupSchema extends MachineSchema {
     loop?: boolean
     /**
      * roving tabindex，默认开启：整组只占一个 Tab 位，组内靠方向键走。
-     * 关掉后每个条目自成一个 Tab 停靠点、方向键不再接管——工具条被拆散嵌进
-     * 一串普通表单控件里时要的就是这种"逐个 Tab"的手感。
+     * 关掉后每个条目自成一个 Tab 停靠点，方向键不再接管。
      */
     rovingFocus?: boolean
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
@@ -56,8 +51,7 @@ export interface ToggleGroupSchema extends MachineSchema {
   }
   context: {
     /**
-     * 选中集合。内部恒为数组（单选时长度 ≤ 1），不随 multiple 变类型——
-     * 变类型会让 connect 里每处读值都得先分支一次。
+     * 选中集合。内部恒为数组（单选时长度 ≤ 1），不随 multiple 变类型。
      * 受控（value 给定）时 cell 直读 prop，写只发 onValueChange 不改内部值。
      */
     value: string[]

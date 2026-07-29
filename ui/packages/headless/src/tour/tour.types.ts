@@ -6,8 +6,8 @@ export interface TourStep {
   /** 稳定标识，写进 data-step-id；作者据此对号入座（埋点、按步定制渲染）。 */
   id: string
   /**
-   * 高亮目标的 CSS 选择器。null / 省略 / 查不到节点都视为"这一步不锚定任何元素"：
-   * 浮层居中、不画高亮框、不出箭头——开场白与收尾页就是这个形态。
+   * 高亮目标的 CSS 选择器。null / 省略 / 查不到节点都视为这一步不锚定任何元素：
+   * 浮层居中、不画高亮框、不出箭头。
    */
   target?: string | null
   title?: string
@@ -30,8 +30,7 @@ export interface TourSpotlightRect {
   height: number
 }
 
-// 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；纯逻辑测试与 SSR 下保持缺省，
-// 此时副作用一律短路（机器状态照常转移，只是不定位、不量高亮框、不挂消解层与焦点域）。
+// 适配器挂载前填入；保持缺省时副作用短路，机器状态照常转移但不定位、不量高亮框、不挂消解层与焦点域。
 export interface TourRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
@@ -44,7 +43,7 @@ export interface TourRefs {
   getContentEl: () => HTMLElement | null
   /**
    * 换锚点的入口，由展开态的定位效应装上、退出时卸掉。
-   * 步序变了要把引擎从上一步的目标上摘下来重挂——留着旧订阅就是两套坐标轮流写。
+   * 步序变了要把引擎从上一步的目标上摘下来重挂，留着旧订阅会让两套坐标轮流写。
    */
   reanchor: (() => void) | null
 }
@@ -84,9 +83,7 @@ export interface TourSchema extends MachineSchema {
     offset?: number
     closeOnEscape?: boolean
     /**
-     * 层外交互关闭，默认 false。
-     * 与浮层类组件刻意相反：引导是一条有始有终的流程，点一下页面别处就整条没了，
-     * 用户既回不去也不知道发生了什么——要退出得走 skip 或 close 这两个明确出口。
+     * 层外交互关闭，默认 false：引导要退出得走 skip 或 close 这两个明确出口。
      */
     closeOnInteractOutside?: boolean
     /** 画遮罩，默认 true。 */

@@ -236,8 +236,7 @@ export const splitterSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'raw',
-          // 照常规写法这一步是空转：focus 落不到没有 tabindex 的节点上，
-          // 按键因此派到 body，把守卫整个删掉用例照样绿。只有直接往分隔条上派事件才碰得到。
+          // 焦点落不到没有 tabindex 的节点上，必须直接往分隔条上派事件才碰得到守卫
           why: '禁用的分隔条不可聚焦，focus/key 步骤都会落空，必须直接派发',
           run: ({ doc }) => {
             const trigger = findPart(doc, 'resize-trigger')
@@ -263,7 +262,6 @@ export const splitterSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'ArrowRight',
-          // 受控下"界面没有自作主张"正是要验的东西
           expect: { parts: { 'resize-trigger': { 'aria-valuenow': '20' } } },
         },
         {

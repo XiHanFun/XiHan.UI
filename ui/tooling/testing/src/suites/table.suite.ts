@@ -5,9 +5,8 @@ import { tableAnatomy, tableKeyboard } from '@xihan-ui/headless'
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/grid/'
 
 /**
- * 列定义是列号与列总数的唯一事实源，作者标记只管长相，两者必须同源。
- * select 列只放把手也得声明一条——没有它，选择那一格算不出列号，右边两列会整体串位。
- * name 可排序且横向吸附；size 可排序。
+ * 列定义：列号与列总数的事实源。
+ * select 列只放把手也声明一条；name 可排序且横向吸附；size 可排序。
  */
 const COLUMNS: TableColumnDef[] = [
   { id: 'select', label: 'Select', width: 40 },
@@ -16,8 +15,8 @@ const COLUMNS: TableColumnDef[] = [
 ]
 
 /**
- * 行定义同理。a/c/d 可展开，b 是普通行（它不该报 aria-expanded）；
- * c 禁用——方向键跳过它，选不动也展不开，但它仍可聚焦、仍是导航起点，也不算进全选基数。
+ * 行定义：a/c/d 可展开，b 是普通行；
+ * c 禁用（方向键跳过但仍可聚焦，也不算进全选基数）。
  */
 const ROWS: TableRowDef[] = [
   { id: 'a', expandable: true },
@@ -26,7 +25,7 @@ const ROWS: TableRowDef[] = [
   { id: 'd', expandable: true },
 ]
 
-/** 每个用例都得带上同一份定义与 footer 声明：没有它们，标记里的行与列一个也报不出编号。 */
+/** 给用例补上同一份行列定义与 footer 声明。 */
 function props(extra: Readonly<Record<string, unknown>> = {}): Readonly<Record<string, unknown>> {
   return { columns: COLUMNS, rows: ROWS, footer: true, ...extra }
 }
@@ -122,10 +121,7 @@ const DATA_ROWS = ['a', 'b', 'c', 'd'] as const
 const EXPANDABLE = ['a', 'c', 'd']
 const DETAIL_ROWS = ['a', 'c', 'd']
 
-/**
- * 四个数据行的选中期望，逐个写全——只写关心的那个会漏掉「另一行也被选中了」。
- * 头尾各补一个空期望：row[0] 是表头行、row[5] 是脚注行，它们不是数据行，没有选中可言。
- */
+/** 四个数据行的选中期望，逐个写全；头尾补空期望对应表头行与脚注行。 */
 function rowsSelected(...values: readonly string[]): readonly AttrExpectation[] {
   return [
     {},
@@ -137,7 +133,7 @@ function rowsSelected(...values: readonly string[]): readonly AttrExpectation[] 
   ]
 }
 
-/** 展开期望；不可展开的行必须一个字都不提（aria-expanded 说的是「能展开却没展开」）。 */
+/** 展开期望；不可展开的行一个展开属性都不提。 */
 function rowsExpanded(...values: readonly string[]): readonly AttrExpectation[] {
   return [
     {},
@@ -151,16 +147,16 @@ function rowsExpanded(...values: readonly string[]): readonly AttrExpectation[] 
   ]
 }
 
-/** 详情行的显隐与展开态逐一对应，一起写才拦得住「标了开却没露出来」。 */
+/** 详情行的显隐，与展开态逐一对应。 */
 function detailsShown(...values: readonly string[]): readonly AttrExpectation[] {
   return DETAIL_ROWS.map(v => ({ hidden: values.includes(v) ? null : '' }))
 }
 
-/** 三列的排序期望，逐列写全——只写关心的那列会漏掉「另一列也在排」。 */
+/** 三列的排序期望，逐列写全。 */
 function columnsSorted(...entries: readonly (readonly [string, 'ascending' | 'descending'])[]): readonly AttrExpectation[] {
   const at = (id: string): number => entries.findIndex(e => e[0] === id)
   return ['select', 'name', 'size'].map((id) => {
-    // select 列没声明 sortable：它一个排序属性都不该有
+    // select 列没声明 sortable
     if (id === 'select')
       return { 'aria-sort': null, 'data-sort': null, 'data-sort-index': null }
     const i = at(id)
@@ -174,10 +170,7 @@ function columnsSorted(...entries: readonly (readonly [string, 'ascending' | 'de
   })
 }
 
-/**
- * 行级 roving：整个表体只留一个 Tab 停靠点，没有锚点时由 body 兜底。
- * 共用助手只数一种 part，而这里要同时看数据行与容器，只好就地写一个。
- */
+/** 行级 roving：断言整个表体只留一个 Tab 停靠点，没有锚点时由 body 兜底。 */
 function singleBodyTabStop(): StepWithExpect {
   return {
     kind: 'raw',
@@ -232,7 +225,7 @@ export const tableSuite: ConformanceSuite = {
             // 表头 1 行 + 四个数据行 + 脚注 1 行
             'aria-rowcount': '6',
             'aria-colcount': '3',
-            // 省略与显式 false 不是一回事：前者是"没说"，后者是"明确说了不是多选"
+            // 显式 false，不省略
             'aria-multiselectable': 'false',
             'aria-busy': 'false',
             'data-empty': null,
@@ -261,14 +254,14 @@ export const tableSuite: ConformanceSuite = {
             'aria-rowindex': '2',
             'data-value': 'a',
             'data-section': 'body',
-            // selectionMode 默认 none：一个字都不提，"不是可选行"就该这么表达
+            // selectionMode 默认 none：选中属性一个都不出
             'aria-selected': null,
             'aria-expanded': 'false',
             'aria-controls': '@part(expanded-row[0])',
             'aria-disabled': 'false',
             'tabindex': '-1',
             'data-state': 'closed',
-            // 集合条目绝不输出原生 disabled：那样就不可聚焦、也不派 click
+            // 集合条目不输出原生 disabled
             'disabled': null,
           },
           // b 不可展开：aria-expanded / aria-controls / data-state 一个都不出
@@ -293,7 +286,7 @@ export const tableSuite: ConformanceSuite = {
             'role': 'columnheader',
             'aria-colindex': '1',
             'data-value': 'select',
-            // 没声明 sortable 的列一个排序属性都不该有
+            // 没声明 sortable 的列一个排序属性都不出
             'aria-sort': null,
             'data-sortable': null,
             'data-sticky': null,
@@ -301,7 +294,7 @@ export const tableSuite: ConformanceSuite = {
           'column-header[1]': {
             'aria-colindex': '2',
             'data-value': 'name',
-            // 可排序但没在排：报 none（"能排，此刻没排"）
+            // 可排序但没在排：报 none
             'aria-sort': 'none',
             'data-sortable': '',
             'data-sticky': '',
@@ -315,12 +308,12 @@ export const tableSuite: ConformanceSuite = {
           'select-all-trigger': {
             'role': 'checkbox',
             'aria-checked': 'false',
-            // 默认 none：全选无从谈起，但仍可聚焦，读屏才读得到它是关着的
+            // 默认 none：全选把手仍可聚焦
             'aria-disabled': 'true',
             'tabindex': '0',
             'data-state': 'none',
           },
-          // 行内两个把手退出可及树与 Tab 序列：行自己已经报过选中与展开
+          // 行内两个把手退出可及树与 Tab 序列
           'row-select-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1' },
           'expand-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1' },
           'sort-trigger[0]': { 'role': 'button', 'tabindex': '0', 'aria-disabled': 'false' },
@@ -333,7 +326,6 @@ export const tableSuite: ConformanceSuite = {
       },
     },
     {
-      // 多一个会让用户按 Tab 在表体里反复停留，一个都没有则键盘再也进不来
       name: 'roving tabindex：表体只有一个 Tab 停靠点，焦点进来后容器让位',
       spec: { apg: APG },
       props: props(),
@@ -387,7 +379,7 @@ export const tableSuite: ConformanceSuite = {
           key: 'End',
           expect: {
             activeElement: { part: 'row[4]', exact: true },
-            // 走了这么一圈，选中与展开都不该动
+            // 走完一圈，选中与展开都没动
             parts: { row: rowsExpanded('a') },
           },
         },
@@ -496,7 +488,7 @@ export const tableSuite: ConformanceSuite = {
           kind: 'click',
           part: 'expand-trigger[0]',
           expect: {
-            // 把手自己 tabindex=-1，点它该把焦点交给这一行
+            // 把手自己 tabindex=-1，点它把焦点交给这一行
             activeElement: { part: 'row[1]', exact: true },
             parts: {
               'root': { 'aria-rowcount': '7' },
@@ -562,7 +554,7 @@ export const tableSuite: ConformanceSuite = {
             parts: { 'column-header': columnsSorted(['name', 'ascending'], ['size', 'ascending']) },
           },
         },
-        // 追加时改方向不挪位置：优先级是用户先后点出来的
+        // 追加时改方向不挪位置
         {
           kind: 'click',
           part: 'sort-trigger[0]',
@@ -623,7 +615,7 @@ export const tableSuite: ConformanceSuite = {
           kind: 'click',
           part: 'select-all-trigger',
           expect: {
-            // c 禁用，选不上；全选把手照样报"全选"——它的基数只算可选行
+            // c 禁用选不上；全选把手的基数只算可选行，仍报全选
             parts: {
               'row': rowsSelected('a', 'b', 'd'),
               'select-all-trigger': { 'aria-checked': 'true', 'data-state': 'all' },
@@ -704,7 +696,6 @@ export const tableSuite: ConformanceSuite = {
           },
         },
         {
-          // 已经有数据还盖一层"加载中"会把用户正在读的表遮掉
           kind: 'setProps',
           props: { rows: ROWS },
           expect: {

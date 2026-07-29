@@ -1,12 +1,9 @@
-// 属性采集与归一化：抹掉适配器痕迹、把 IDREF 翻译成 part 引用，让快照适配器无关。
+// 属性采集与归一化：抹掉适配器痕迹，把 IDREF 翻译成 part 引用。
 
-/** 恒采集的结构/状态属性；缺失时显式为 null。 */
-// 恒采集：这些属性没有与有同样是断言的一部分，元素上没写也要记成 null。
-// readonly 与 disabled 成对（只读仍可聚焦、禁用不可），inputmode 决定移动端弹哪种键盘、
-// name 决定是否参与表单提交——三者都属于缺了就是缺陷，不能靠元素恰好写了才收。
+/** 恒采集的结构/状态属性；元素上没写也记为 null。 */
 const BASE_ATTRS = ['role', 'tabindex', 'type', 'disabled', 'readonly', 'inputmode', 'name', 'hidden', 'inert', 'popover', 'dir', 'for'] as const
 
-/** IDREF 类属性：值是 id，需翻译成 @part(...) 才能适配器无关。 */
+/** IDREF 类属性：值是 id，翻译成 @part(...)。 */
 const IDREF_ATTRS = new Set([
   'aria-labelledby',
   'aria-describedby',
@@ -18,8 +15,7 @@ const IDREF_ATTRS = new Set([
   'for',
 ])
 
-/** 适配器噪音与结构标记：不进快照（part 身份已由快照的键表达）。 */
-// xh- 前缀是 WC 适配器的角色标记/状态通道（data-xh-part 等），跨适配器不可比，剔除。
+/** 适配器噪音与结构标记（含 WC 的 data-xh-*）：不进快照。 */
 const ADAPTER_NOISE = /^data-(?:v-[0-9a-f]{6,8}|server-rendered|defer-hydration|lit-|reactroot$|scope$|part$|xh-)/
 
 function collectedNames(el: Element): string[] {

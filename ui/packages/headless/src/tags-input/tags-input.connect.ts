@@ -10,8 +10,7 @@ const parts = tagsInputAnatomy.build()
 
 /**
  * 光标是不是贴着输入框最左端、且没有选区。
- * 取不到选区（个别输入类型不支持 selectionStart）时按"在最左"处理：
- * 那种框本来就没有光标可言，一律不接管反而让方向键彻底走不通。
+ * 取不到选区（个别输入类型不支持 selectionStart）时按在最左处理。
  */
 function atInputStart(el: HTMLInputElement): boolean {
   const start = el.selectionStart
@@ -49,8 +48,7 @@ export function connectTagsInput<T extends PropTypes>(
     clearTrigger: translations?.clearTrigger ?? 'Clear all',
   }
 
-  // 锚点可能被外部改掉的 value 甩掉（宿主整份换了标签集合）：读侧一律夹回集合内，
-  // 否则 data-highlighted 会长在一个已经不存在的标签上，而真正在列表里的那些一个都不亮
+  // 宿主整份换掉 value 时锚点可能悬空：读侧一律夹回集合内
   const anchor = context.get('focusedValue')
   const focusedValue = anchor != null && value.includes(anchor) ? anchor : null
   const highlightedValue = state.matches('navigating') ? focusedValue : null
@@ -58,20 +56,20 @@ export function connectTagsInput<T extends PropTypes>(
 
   /**
    * 事件那一刻现查本组件的主输入框。
-   * 连接期不得调用——Vue 侧那时 DOM 还不存在，WC 侧读到的是本帧，两侧会分叉。
+   * 连接期不得调用：connect 在 Vue 的 render 期求值，此时 DOM 尚不存在。
    */
   const inputOf = (from: HTMLElement): HTMLInputElement | null => {
     const owner = from.closest<HTMLElement>(parts.root.selector) ?? from.closest<HTMLElement>(parts.control.selector)
     return owner?.querySelector<HTMLInputElement>(parts.input.selector) ?? null
   }
 
-  /** 本节点当下是不是正持有焦点（含它的后代）。删掉它之前要据此决定焦点该不该另找去处。 */
+  /** 本节点当下是不是正持有焦点（含它的后代）；删掉它之前据此决定焦点去处。 */
   const holdsFocus = (el: HTMLElement): boolean => {
     const active = scope.getActiveElement()
     return !!active && contains(el, active)
   }
 
-  /** 往左走一格；已经在第一个就停住（回绕会让人以为标签顺序变了）。 */
+  /** 往左走一格；已经在第一个就停住，不回绕。 */
   const prevTag = (from: string | null): string | null => {
     if (count === 0)
       return null
@@ -136,8 +134,7 @@ export function connectTagsInput<T extends PropTypes>(
     getLabelProps: () => normalize.label({
       ...parts.label.attrs,
       'id': ids.label,
-      // for 指向真正的输入框，不是外层包裹：指到不可标注的元素上，
-      // 点标题不会聚焦、读屏也拿不到控件的名字，两头都断
+      // for 指向真正的输入框，不是外层包裹：指到不可标注的元素上，点标题不会聚焦
       'for': ids.input,
       'data-disabled': dataAttr(disabled),
     }),
@@ -145,13 +142,13 @@ export function connectTagsInput<T extends PropTypes>(
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
       ...surfaceAttrs(),
-      // 一排标签加一个输入框，在读屏那里是一个整体，靠 group 兜住，名字由 label 提供
+      // 一排标签加一个输入框在读屏那里是一个整体，靠 group 兜住，名字由 label 提供
       'role': 'group',
       'aria-labelledby': ids.label,
-      // 显式 true/false：省略是"没说"，显式 false 是"明确说了不是"，读屏对两者处理不同
+      // 显式 true/false：省略是没说，显式 false 是明确说了不是
       'aria-disabled': disabled ? 'true' : 'false',
       'onPointerDown': (event: PointerEvent) => {
-        // 只认容器自己的空白处：点在标签、删除按钮、输入框上时，那些节点各有各的事要做
+        // 只认容器自己的空白处，点在标签、删除按钮、输入框上时各归各的处理器
         if (event.currentTarget !== event.target || event.button !== 0 || disabled)
           return
         const input = inputOf(event.currentTarget as HTMLElement)
@@ -167,11 +164,11 @@ export function connectTagsInput<T extends PropTypes>(
       ...parts.input.attrs,
       'id': ids.input,
       'type': 'text',
-      // 表单出口是 hidden-input：主输入框带上 name 会把"还没成为标签的半截文本"一并提交出去
+      // 表单出口是 hidden-input：主输入框带上 name 会把还没成为标签的半截文本一并提交
       'autocomplete': 'off',
       'value': inputValue,
       'placeholder': prop('placeholder'),
-      // 单体表单控件用原生 disabled（与集合条目的 aria-disabled 相反）：禁用的框不该能聚焦
+      // 单体表单控件用原生 disabled：禁用的框不该能聚焦
       'disabled': disabled || undefined,
       'readonly': readOnly || undefined,
       // 作者把 label 换成非 <label> 元素时 for 会失效，这条兜住名字
@@ -183,8 +180,8 @@ export function connectTagsInput<T extends PropTypes>(
       'onInput': (event: Event) => {
         const el = event.currentTarget as HTMLInputElement
         send({ type: 'INPUT.CHANGE', value: el.value })
-        // 机器可能把这一次输入改写掉（断词、只剩空白、受控宿主不写回）。
-        // 值若没变宿主就不会重渲，那段文本会一直留在框里——界面显示的和值里存的从此对不上
+        // 机器可能把这一次输入改写掉（断词、只剩空白、受控宿主不写回）；
+        // 值若没变宿主不会重渲，须手动把框里的文本对回来
         const next = context.get('inputValue')
         if (el.value !== next)
           el.value = next
@@ -196,8 +193,7 @@ export function connectTagsInput<T extends PropTypes>(
         // 剪贴板里没有能成标签的内容：交给浏览器照常粘进框里
         if (tags.length === 0)
           return
-        // 顶到上限时也不接管：拦下来又加不进去，等于把用户的内容凭空吃掉。
-        // 让它粘进框里，用户至少看得见自己粘了什么
+        // 顶到上限时也不接管：拦下来又加不进去，让它照常粘进框里
         if (appendTags(value, tags, { max, allowOverflow }).rejected.length > 0)
           return
         event.preventDefault()
@@ -206,8 +202,7 @@ export function connectTagsInput<T extends PropTypes>(
       'onBlur': (event: FocusEvent) => {
         if (!editable)
           return
-        // 只有焦点真的离开整个组件才算失焦：点自己的删除按钮、跳进就地编辑框都还在组件里，
-        // 那时按 blurBehavior 处置文本会把用户正打的字吃掉
+        // 只有焦点真的离开整个组件才算失焦；点删除按钮、跳进就地编辑框都还在组件里
         const el = event.currentTarget as HTMLElement
         const owner = el.closest<HTMLElement>(parts.root.selector) ?? el.closest<HTMLElement>(parts.control.selector)
         if (contains(owner, event.relatedTarget as Node | null))
@@ -215,19 +210,19 @@ export function connectTagsInput<T extends PropTypes>(
         send({ type: 'INPUT.BLUR' })
       },
       'onKeyDown': (event: KeyboardEvent) => {
-        // 带 Ctrl/Meta/Alt 的组合归浏览器与读屏（Ctrl+A 全选文本之类），一律不接
+        // 带 Ctrl/Meta/Alt 的组合归浏览器与读屏，一律不接
         if (!editable || event.ctrlKey || event.metaKey || event.altKey)
           return
         const el = event.currentTarget as HTMLInputElement
 
         if (event.key === 'Enter') {
-          // 光标停在某个标签上且开了就地编辑：Enter 是"改这一个"，不是"再加一个"
+          // 光标停在某个标签上且开了就地编辑时，Enter 是改这一个而不是再加一个
           if (highlightedValue != null && canEditTags) {
             event.preventDefault()
             send({ type: 'TAG.EDIT', value: highlightedValue })
             return
           }
-          // 框里没有能成标签的内容就不接这个键：表单里的 Enter 还要用来提交
+          // 框里没有能成标签的内容就不接这个键，Enter 还要用来提交表单
           if (splitTags(el.value, delimiter).length === 0)
             return
           event.preventDefault()
@@ -236,7 +231,7 @@ export function connectTagsInput<T extends PropTypes>(
         }
 
         if (event.key === 'Escape') {
-          // 没在标签间走就不吞：Escape 还要留给外层浮层的消解与输入法候选框的收起
+          // 没在标签间走就不吞 Escape，它还要留给外层浮层与输入法候选框
           if (highlightedValue == null)
             return
           event.preventDefault()
@@ -255,7 +250,7 @@ export function connectTagsInput<T extends PropTypes>(
           }
           if (count === 0)
             return
-          // 头一下只高亮最后一个：直接删掉的话手滑一次就少一个标签，而且没有任何提示
+          // 头一下只高亮最后一个，不直接删
           event.preventDefault()
           send({ type: 'TAG.HIGHLIGHT', value: value[count - 1]! })
           return
@@ -269,7 +264,7 @@ export function connectTagsInput<T extends PropTypes>(
           return
         }
 
-        // 左键只在光标贴着最左端、且没有选区时才接管，否则会把"光标往左挪一格"吞掉
+        // 左键只在光标贴着最左端且没有选区时才接管，否则会把光标左移吞掉
         if (event.key === 'ArrowLeft') {
           if (count === 0 || !atInputStart(el))
             return
@@ -278,7 +273,7 @@ export function connectTagsInput<T extends PropTypes>(
           return
         }
 
-        // 右键、Home、End 只在已经走进标签时才接管：光标还在框里时它们全归浏览器
+        // 右键、Home、End 只在已经走进标签时才接管，光标还在框里时全归浏览器
         if (highlightedValue == null)
           return
         if (event.key === 'ArrowRight') {
@@ -301,14 +296,14 @@ export function connectTagsInput<T extends PropTypes>(
     getItemProps: item => normalize.element({
       ...parts.item.attrs,
       ...stateAttrs(item),
-      // 标签身份。适配器与测试据此认出"离场的是哪一个标签"
+      // 标签身份，适配器与测试据此认出离场的是哪一个标签
       [ITEM_VALUE_ATTR]: item.value,
     }),
 
     getItemPreviewProps: item => normalize.element({
       ...parts['item-preview'].attrs,
       ...stateAttrs(item),
-      // 就地编辑时让位给编辑框：收起而不是卸载，作者写的节点不该被替他删掉
+      // 就地编辑时让位给编辑框，收起而不是卸载
       hidden: editedValue === item.value || undefined,
       onDblclick: () => {
         if (canEditTags)
@@ -326,27 +321,23 @@ export function connectTagsInput<T extends PropTypes>(
       'type': 'button',
       // 按钮里通常只有一个叉，不给名字读屏念不出删的是哪一个
       'aria-label': label.deleteTagTrigger(item.value),
-      // 不占 Tab 位：标签一多，每个标签一个停靠点会让 Tab 变得没法用。
-      // 键盘那一路走的是方向键 + Backspace/Delete
+      // 不占 Tab 位：标签一多每个都占停靠点会让 Tab 没法用，键盘那一路走方向键与 Backspace/Delete
       'tabindex': -1,
-      // 单体按钮用原生 disabled（与集合条目相反）：改不动的时候它就不该能被激活
+      // 单体按钮用原生 disabled：改不动的时候不该能被激活
       'disabled': !editable || undefined,
       'onPointerDown': (event: PointerEvent) => {
-        // 只认主键：右键要留给上下文菜单
+        // 只认主键，右键留给上下文菜单
         if (event.button !== 0)
           return
-        // 焦点留在输入框：按钮抢走焦点后，用户删完还想接着打字就得再点回去
+        // 焦点留在输入框，删完还能接着打字
         event.preventDefault()
       },
       'onClick': (event: MouseEvent) => {
         if (!editable)
           return
         const el = event.currentTarget as HTMLElement
-        // 判据是"本节点当下正持有焦点"，不是"删的是不是它"：
-        // 删完这个按钮就没了，它若正拿着焦点，焦点会掉到 body 上，键盘用户就此被踢出组件；
-        // 而指针点击那一路焦点本来就还在输入框里，无条件抢过来反而会打断用户正在打的字。
-        // 输入框必须在送事件之前先拿到：删完这个标签整块节点就离开文档了，
-        // 那时再从它往上找 root 只会找到 null，焦点就再也交不回去
+        // 判据是本节点当下正持有焦点：删完按钮就没了，焦点会掉到 body 上。
+        // 输入框必须在送事件之前先拿到，删完整块节点离开文档后就找不到 root 了
         const restore = holdsFocus(el) ? inputOf(el) : null
         send({ type: 'TAG.DELETE', value: item.value })
         restore?.focus()
@@ -356,17 +347,17 @@ export function connectTagsInput<T extends PropTypes>(
     getItemInputProps: item => normalize.input({
       ...parts['item-input'].attrs,
       ...stateAttrs(item),
-      // id 是机器的聚焦副作用捞节点的唯一依据，两处算法必须逐字一致
+      // id 是机器的聚焦副作用捞节点的唯一依据，两处算法必须一致
       'id': tagsInputEditInputId(scope, item.value),
       'type': 'text',
       'autocomplete': 'off',
-      // 不编辑这个标签时收起而不是卸载（与 item-preview 正好互斥）
+      // 不编辑这个标签时收起而不是卸载，与 item-preview 互斥
       'hidden': editedValue === item.value ? undefined : true,
-      // 缓冲只在编辑本标签时才是权威值；别的标签的编辑框照原值显示，免得串台
+      // 缓冲只在编辑本标签时才是权威值，别的标签的编辑框照原值显示
       'value': editedValue === item.value ? context.get('editedValue') : item.value,
       'disabled': disabled || undefined,
       'readonly': readOnly || undefined,
-      // 编辑框没有可见标题，不给名字读屏只会念"编辑框"
+      // 编辑框没有可见标题，不给名字读屏只会念编辑框
       'aria-label': label.editTagInput(item.value),
       'onInput': (event: Event) => {
         if (editedValue !== item.value)
@@ -378,17 +369,15 @@ export function connectTagsInput<T extends PropTypes>(
           return
         if (event.key !== 'Enter' && event.key !== 'Escape')
           return
-        // 输入框先拿到再送事件：改成空白等于删掉这个标签，整块节点会随之离开文档，
-        // 那时再从编辑框往上找 root 只会找到 null
+        // 输入框先拿到再送事件：改成空白等于删掉标签，整块节点会随之离开文档
         const back = inputOf(event.currentTarget as HTMLElement)
         event.preventDefault()
         send({ type: event.key === 'Enter' ? 'EDIT.SUBMIT' : 'EDIT.CANCEL' })
-        // 编辑框马上就要收起来：焦点先交回输入框，否则它会掉到 body 上
+        // 编辑框马上收起，焦点先交回输入框，否则会掉到 body 上
         back?.focus()
       },
       'onBlur': () => {
-        // 判据是"本节点正是当下在编辑的那一个"：别的编辑框迟到的失焦不该把这次编辑提交掉。
-        // Enter/Escape 那两路走到这里时机器已经退出编辑态，EDIT.SUBMIT 无人接收，天然是空转
+        // 判据是本节点正是当下在编辑的那一个，别的编辑框迟到的失焦不该提交这次编辑
         if (editedValue !== item.value)
           return
         send({ type: 'EDIT.SUBMIT' })
@@ -399,21 +388,21 @@ export function connectTagsInput<T extends PropTypes>(
       ...parts['clear-trigger'].attrs,
       'type': 'button',
       'aria-label': label.clearTrigger,
-      // 与删除按钮同一套取舍：键盘用户走 Backspace 逐个删，按钮只是指针用户的快捷方式
+      // 不占 Tab 位，键盘用户走 Backspace 逐个删
       'tabindex': -1,
       'disabled': !canClear || undefined,
       'data-disabled': dataAttr(!canClear),
       'onPointerDown': (event: PointerEvent) => {
         if (event.button !== 0)
           return
-        // 焦点留在输入框：清完还要接着打字
+        // 焦点留在输入框，清完还能接着打字
         event.preventDefault()
       },
       'onClick': (event: MouseEvent) => {
         if (!canClear)
           return
         const el = event.currentTarget as HTMLElement
-        // 清完这个按钮会转成 disabled，禁用元素持不住焦点：判据同样是"它此刻正拿着焦点"
+        // 清完这个按钮会转成 disabled，禁用元素持不住焦点，须先把焦点交回输入框
         const restore = holdsFocus(el) ? inputOf(el) : null
         send({ type: 'VALUE.CLEAR' })
         restore?.focus()
@@ -426,7 +415,7 @@ export function connectTagsInput<T extends PropTypes>(
       type: 'hidden',
       // name 缺省即不产出该属性，此时这份输入不参与提交
       name: prop('name'),
-      // 按断词符拼成一串：标签本来就是按它拆出来的，拼回去后端再拆一次就还原了
+      // 按断词符拼成一串，后端按同一个符号拆回
       value: value.join(delimiter),
       // 禁用的控件不该提交出值
       disabled: disabled || undefined,

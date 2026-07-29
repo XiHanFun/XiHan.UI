@@ -3,8 +3,7 @@ import { setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<CollapsibleSchema>()
 
-// 受控（open 给定）与 dialog 同构：用户事件只发意图、不自改状态；宿主写回 open 后
-// 由 watch 派发影子事件 CONTROLLED.* 无条件回写。纯披露语义，无 DOM 副作用。
+// 受控（open 给定）时用户事件只发意图、不自改状态，由 watch 派发 CONTROLLED.* 回写。
 export const collapsibleMachine = createMachine({
   name: 'collapsible',
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),

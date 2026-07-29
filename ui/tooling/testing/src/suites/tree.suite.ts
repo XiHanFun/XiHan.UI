@@ -264,7 +264,7 @@ export const treeSuite: ConformanceSuite = {
       },
     },
     {
-      // 多一个会让用户按 Tab 在树里反复停留，一个都没有则键盘再也进不来
+      // 整棵树只占一个 Tab 位
       name: 'roving tabindex：整棵树只有一个 Tab 停靠点，焦点进来后容器让位',
       spec: { apg: APG },
       props: props(),
@@ -299,8 +299,7 @@ export const treeSuite: ConformanceSuite = {
       spec: { apg: APG },
       props: props({ defaultSelectedValue: ['dom'] }),
       initial: {
-        // 锚点若落在 hidden 的节点上，它认领了 tabindex=0 却聚不了焦，
-        // 容器又判自己"焦点在树内"让了位 —— 整棵树零个停靠点
+        // 锚点落在 hidden 节点上时它认领了 tabindex=0 却聚不了焦，容器须兜底
         parts: { 'item[1]': { tabindex: '-1' }, 'tree': { tabindex: '0' } },
       },
       steps: [
@@ -518,8 +517,7 @@ export const treeSuite: ConformanceSuite = {
           kind: 'click',
           part: 'branch-trigger[0]',
           expect: {
-            // 箭头长在 branch-control 里：不掐断冒泡就会再跑一遍"点行"，
-            // 展开态一次点击被切两回等于没切
+            // 箭头长在 branch-control 里：不掐断冒泡会再跑一遍点行，展开态被切两回
             activeElement: { part: 'branch[0]', exact: true },
             parts: { 'branch-content': contentsShown(), 'branch': branchesSelected('src') },
           },
@@ -539,8 +537,7 @@ export const treeSuite: ConformanceSuite = {
       spec: { apg: APG },
       props: props({ defaultExpandedValue: ['src'], defaultSelectedValue: ['index'] }),
       steps: [
-        // 节点用 aria-disabled 表达禁用，click 不会被激活行为短路，事件真派得出去，
-        // 因此这一步碰得到 connect 里的禁用守卫
+        // 节点用 aria-disabled 表达禁用，click 不被短路，事件派得出去才碰得到 connect 的守卫
         { kind: 'click', part: 'item[2]', expect: { parts: { item: itemsSelected('index') } } },
       ],
     },

@@ -2,23 +2,15 @@ import type { CascaderNode } from '@xihan-ui/headless'
 import type { AttrExpectation, ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { cascaderAnatomy, cascaderKeyboard } from '@xihan-ui/headless'
 
-// 触发器扮演 combobox（收起态的键盘入口、展开收起、值回显都照这一份）；
-// 展开之后是并排的若干列，每一列都是一个 listbox，列内导航照 listbox 那一份。
-// APG 没有级联这个模式，两端各取其一。
+// 触发器照 combobox 规格，展开后的每一列照 listbox 规格（APG 没有级联模式）。
 const APG_COMBOBOX = 'https://www.w3.org/WAI/ARIA/apg/patterns/combobox/'
 const APG_LISTBOX = 'https://www.w3.org/WAI/ARIA/apg/patterns/listbox/'
 
 const SCOPE = '[data-scope="cascader"]'
 
 /**
- * 树数据是所在列、整条路径、显示文本与条目禁用的唯一事实源，作者标记只管长相，两者必须同源。
- *
- * 三层深（zhejiang/hangzhou/xihu 走得到底）；wenzhou 禁用（方向键跳过它，但它仍可聚焦、
- * 仍是导航起点）；taiwan 的 children 是空数组——级联里那算叶子（右边开一列空的没有意义），
- * 这一条与 Tree 刚好相反。
- *
- * 禁用写在这份数据里而不是写成标记上的属性：连接层判禁用只查 collection，
- * 标记上补一个原生 disabled 既不会被读到，又会让禁用条目变得聚不了焦（它还得当方向键的起点）。
+ * 树数据：所在列、整条路径、显示文本与条目禁用的事实源。
+ * 三层深；wenzhou 禁用（方向键跳过但仍可聚焦）；taiwan 的 children 是空数组，级联里算叶子。
  */
 const COLLECTION: CascaderNode[] = [
   {
@@ -46,15 +38,14 @@ const COLLECTION: CascaderNode[] = [
   { value: 'macau', label: 'Macau' },
 ]
 
-/** 每个用例都得带上同一份 collection：没有它，标记里的条目一个也报不出路径与文本。 */
+/** 给用例补上同一份 collection。 */
 function props(extra: Readonly<Record<string, unknown>> = {}): Readonly<Record<string, unknown>> {
   return { collection: COLLECTION, ...extra }
 }
 
 /**
  * 条目在标记里的文档序，与下面 fixture 逐字对应。
- * 列是按树的深度写死的静态结构（第 L 列装第 L 层的全部节点），
- * 当下露哪些由连接层加 hidden 收口——因此下标从头到尾稳定，用例可以直接按位寻址。
+ * 第 L 列装第 L 层的全部节点，露哪些由连接层加 hidden 决定，下标稳定可按位寻址。
  */
 const ITEM_ORDER = [
   'zhejiang',
@@ -82,11 +73,7 @@ function item(value: string, text: string): FixtureNode {
   }
 }
 
-/**
- * 触发器必须是原生 button：Vue 侧组件自己渲染成 button，WC 侧由 fixture 的 tag 决定，
- * 渲染成 div 就不可聚焦，「收起后焦点归还 trigger」在 WC 上永远等不到。
- * 清空按钮同理——它虽退出了 Tab 序列，清完仍要靠原生禁用把自己关掉。
- */
+/** 触发器与清空按钮都用原生 button：WC 侧的标签由 fixture 决定。 */
 const FIXTURE: FixtureNode = {
   part: 'root',
   children: [
@@ -143,7 +130,7 @@ const FIXTURE: FixtureNode = {
   ],
 }
 
-/** 十二个条目的选中期望，逐个写全——只写关心的那个会漏掉「另一个也被选中了」。 */
+/** 十二个条目的选中期望，逐个写全。 */
 function itemsSelected(...values: readonly string[]): readonly AttrExpectation[] {
   return ITEM_ORDER.map(v => ({
     'aria-selected': values.includes(v) ? 'true' : 'false',
@@ -151,10 +138,7 @@ function itemsSelected(...values: readonly string[]): readonly AttrExpectation[]
   }))
 }
 
-/**
- * 当下露着面的条目。级联的核心就在这一条上：选了靠左的一列，它右边原有的列里的条目
- * 必须整批消失。逐个写全才拦得住「新的露出来了，旧的也还在」。
- */
+/** 当下露着面的条目，逐个写全。 */
 function itemsShown(...values: readonly string[]): readonly AttrExpectation[] {
   return ITEM_ORDER.map(v => ({ hidden: values.includes(v) ? null : '' }))
 }
@@ -169,17 +153,14 @@ function columnsShown(count: number): readonly AttrExpectation[] {
   return [0, 1, 2].map(level => ({ hidden: level < count ? null : '' }))
 }
 
-/** 显示文字不进归一化快照（快照只采属性），只能直接读 DOM。 */
+/** 快照只采属性，显示文字直接读 DOM。 */
 function assertValueText(doc: Document, expected: string): void {
   const actual = doc.querySelector<HTMLElement>(`${SCOPE}[data-part="value-text"]`)?.textContent?.trim() ?? null
   if (actual !== expected)
     throw new Error(`value-text 文本不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
 }
 
-/**
- * 整个控件在 Tab 序列里的停靠点数目。
- * 多一个会让用户按 Tab 在列里反复停留，展开着却一个都没有则键盘再也进不来。
- */
+/** 断言整个控件在 Tab 序列里的停靠点数目。 */
 function expectTabStops(expected: number): StepWithExpect {
   return {
     kind: 'raw',
@@ -194,10 +175,8 @@ function expectTabStops(expected: number): StepWithExpect {
   }
 }
 
-// content、column 与 item 始终在 DOM，显隐靠 hidden 属性，不卸载作者节点。
-// 浮层坐标由定位引擎异步回填，快照不采 style；data-placement / data-hidden 只在
-// 「从没展开过」的那一帧才确定得下来（收起不会把上一次的定位结果清回 null），
-// 因此这两个属性只在初始帧断言。
+// content、column 与 item 始终在 DOM，显隐靠 hidden 属性。
+// 浮层坐标异步回填且快照不采 style，data-placement / data-hidden 只在初始帧断言。
 export const cascaderSuite: ConformanceSuite = {
   component: 'cascader',
   anatomy: cascaderAnatomy,
@@ -220,26 +199,24 @@ export const cascaderSuite: ConformanceSuite = {
           'label': { 'id': '@self', 'data-disabled': null },
           'trigger': {
             'type': 'button',
-            // 按钮扮演 combobox，展开的是若干并排的列表框
             'role': 'combobox',
             'aria-haspopup': 'listbox',
             'aria-expanded': 'false',
-            // 指向浮层壳而不是某一列：列是随展开路径增减的，指着其中一列会时不时悬空
+            // 指向浮层壳而不是某一列，列随展开路径增减
             'aria-controls': '@part(content)',
-            // 名字 = 标签 + 当前值：只指 label 的话读屏永远念不出用户选了什么
+            // 名字 = 标签 + 当前值
             'aria-labelledby': '@part(label) @part(value-text)',
             'aria-invalid': 'false',
             'aria-readonly': 'false',
             'data-state': 'closed',
             'data-placeholder': '',
             'disabled': null,
-            // 原生 button 本就在 Tab 序列里，不靠 tabindex 表达
+            // 原生 button 已在 Tab 序列内，不写 tabindex
             'tabindex': null,
           },
           'value-text': { 'id': '@self', 'data-placeholder': '', 'data-disabled': null },
           'indicator': { 'aria-hidden': 'true', 'data-state': 'closed' },
-          // 整个控件只占一个 Tab 位（就是 trigger）：清空按钮既不进 Tab 序列也不进可及树；
-          // 无选中时它按不动，用的是原生 disabled（单体控件，与集合条目相反）
+          // 清空按钮不进 Tab 序列与可及树，无选中时用原生 disabled
           'clear-trigger': {
             'type': 'button',
             'tabindex': '-1',
@@ -250,7 +227,7 @@ export const cascaderSuite: ConformanceSuite = {
           'positioner': { 'data-state': 'closed', 'data-placement': 'bottom-start', 'data-hidden': null },
           'content': {
             'id': '@self',
-            // 浮层壳自身没有集合语义（列表框语义在每一列上），只是焦点域与消解层的根节点
+            // 浮层壳不带 role，列表框语义在每一列上
             'role': null,
             'tabindex': '-1',
             'hidden': '',
@@ -260,7 +237,7 @@ export const cascaderSuite: ConformanceSuite = {
           'column[0]': {
             'role': 'listbox',
             'aria-orientation': 'vertical',
-            // 省略与显式 false 不是一回事：前者是「没说」，后者是「明确说了不是多选」
+            // 显式 false，不省略
             'aria-multiselectable': 'false',
             'aria-disabled': 'false',
             'aria-labelledby': '@part(label)',
@@ -268,28 +245,28 @@ export const cascaderSuite: ConformanceSuite = {
             'tabindex': '-1',
             'hidden': null,
           },
-          // 展开路径是空的，右边两列都还没有父条目，名字退回组件标题（不能指一个不存在的 id）
+          // 展开路径为空，右边两列没有父条目，名字退回组件标题
           'column[1]': { 'hidden': '', 'aria-labelledby': '@part(label)', 'data-level': '1' },
           'column[2]': { 'hidden': '', 'aria-labelledby': '@part(label)', 'data-level': '2' },
           'item[0]': {
             'role': 'option',
             'aria-selected': 'false',
             'aria-disabled': 'false',
-            // 分支报展开态；此刻它的子列没开
+            // 分支报展开态，此刻子列没开
             'aria-expanded': 'false',
             'data-value': 'zhejiang',
             'data-level': '0',
             'data-active': null,
             'data-highlighted': null,
             'tabindex': '-1',
-            // 集合条目绝不输出原生 disabled：那样就不可聚焦、也不派 click
+            // 集合条目不输出原生 disabled
             'disabled': null,
             'hidden': null,
           },
-          // children 是空数组的 taiwan 与没有 children 的 macau 都是叶子：不报 aria-expanded
+          // taiwan（children 为空数组）与 macau（无 children）都是叶子，不报 aria-expanded
           'item[2]': { 'aria-expanded': null, 'data-value': 'taiwan' },
           'item[3]': { 'aria-expanded': null, 'data-value': 'macau' },
-          // 第 1、2 层的条目常挂在 DOM 里，只是随它们的列一起收着
+          // 第 1、2 层的条目常挂在 DOM 里，随所在列一起收着
           'item[4]': { 'hidden': '', 'data-level': '1', 'data-value': 'hangzhou' },
           'item[6]': { 'hidden': '', 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null },
           'item[8]': { 'hidden': '', 'data-level': '2', 'data-value': 'xihu' },
@@ -321,11 +298,11 @@ export const cascaderSuite: ConformanceSuite = {
               'indicator': { 'data-state': 'open' },
               'content': { 'hidden': null, 'data-state': 'open' },
               'column': columnsShown(2),
-              // 第 1 列的名字改指展开它的那个条目，读屏才播报得出「Zhejiang，列表」
+              // 第 1 列的名字改指展开它的那个条目
               'column[1]': { 'aria-labelledby': '@part(item[0])' },
               'item[0]': { 'tabindex': '0', 'data-highlighted': '', 'data-active': '', 'aria-expanded': 'true' },
               'item[1]': { 'tabindex': '-1', 'data-highlighted': null, 'data-active': null },
-              // jiangsu 的子节点 nanjing 不属于当前这一列，照样收着
+              // jiangsu 的子节点 nanjing 不属于当前列，仍收着
               'item': itemsShown('zhejiang', 'jiangsu', 'taiwan', 'macau', 'hangzhou', 'ningbo', 'wenzhou'),
             },
             events: [{ type: 'open-change', detail: { open: true } }],
@@ -357,7 +334,7 @@ export const cascaderSuite: ConformanceSuite = {
               'item': itemsShown('zhejiang', 'jiangsu', 'taiwan', 'macau', 'hangzhou', 'ningbo', 'wenzhou', 'xihu', 'yuhang'),
               'item[4]': { 'data-active': '', 'aria-expanded': 'true' },
             },
-            // 分支不落值（changeOnSelect 关着），一个事件也不发
+            // changeOnSelect 关着，分支不落值也不发事件
             events: [],
           },
         },
@@ -397,7 +374,7 @@ export const cascaderSuite: ConformanceSuite = {
             },
           },
         },
-        // 叶子右边不开列：taiwan 的 children 是空数组，级联里那算叶子
+        // taiwan 的 children 是空数组，算叶子，右边不开列
         {
           kind: 'click',
           part: 'item[2]',
@@ -506,9 +483,6 @@ export const cascaderSuite: ConformanceSuite = {
       ],
     },
     {
-      // 收起态的上下键既要展开、又要把焦点落到根列里选中项的相邻条目上，
-      // 与 select 的同名两行是一套语义。只验"展开了且焦点落在根列的哪一格"，
-      // 具体落哪一格随 defaultValue 而定，这里不给初值，落点就是首/末个可用条目
       name: 'ArrowDown 从 trigger 展开并把焦点落到根列首个可用条目',
       spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
       props: props(),
@@ -571,7 +545,7 @@ export const cascaderSuite: ConformanceSuite = {
               'value-text': { 'data-placeholder': null },
               'content': { hidden: '' },
               'item': itemsSelected('xihu'),
-              // 收起即丢焦点锚点：没有条目该继续认领 Tab 位
+              // 收起后没有条目认领 Tab 位
               'item[8]': { 'tabindex': '-1', 'data-highlighted': null },
             },
             // 先值后开合
@@ -641,7 +615,7 @@ export const cascaderSuite: ConformanceSuite = {
           expect: {
             parts: {
               item: itemsSelected('jiangsu'),
-              // 还要接着往右挑，浮层不收起
+              // 还能接着往右挑，浮层不收起
               content: { hidden: null },
             },
             events: [{ type: 'value-change', detail: { value: [['jiangsu']] } }],
@@ -674,7 +648,7 @@ export const cascaderSuite: ConformanceSuite = {
             const nanjing = ctx.doc.querySelectorAll<HTMLElement>(`${SCOPE}[data-part="item"]`)[7]
             if (nanjing?.hasAttribute('hidden'))
               throw new Error('悬停没有把子列换成 jiangsu 的子节点')
-            // 焦点仍在 zhejiang 上：鼠标划过不该把键盘焦点抢走
+            // 焦点仍在 zhejiang 上，鼠标划过不改焦点
             const first = ctx.doc.querySelectorAll<HTMLElement>(`${SCOPE}[data-part="item"]`)[0]
             if (ctx.doc.activeElement !== first)
               throw new Error('悬停把键盘焦点抢走了')
@@ -753,8 +727,6 @@ export const cascaderSuite: ConformanceSuite = {
       ],
     },
     {
-      // 这条守着两件事：Tab 不被吞（要让焦点按序列自然离开），以及收起后不把焦点
-      // 从用户刚 Tab 过去的控件上抢回 trigger
       name: 'Tab 收起：浮层让开但焦点不归还 trigger',
       spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
       props: props(),
@@ -791,8 +763,7 @@ export const cascaderSuite: ConformanceSuite = {
       steps: [
         { kind: 'click', part: 'trigger' },
         { kind: 'settle', until: { activeElement: 'item[0]' } },
-        // 条目用 aria-disabled 表达禁用，click 不会被激活行为短路，事件真派得出去，
-        // 因此这一步碰得到连接层里的禁用守卫
+        // 条目用 aria-disabled 表达禁用，click 仍派得出去，这一步走到连接层的禁用守卫
         {
           kind: 'click',
           part: 'item[6]',
@@ -802,7 +773,7 @@ export const cascaderSuite: ConformanceSuite = {
             events: [],
           },
         },
-        // 焦点是事实不是许可：停上去之后方向键从它起步
+        // 焦点停在禁用条目上后，方向键从它起步
         { kind: 'key', key: 'ArrowUp', expect: { activeElement: { part: 'item[5]', exact: true } } },
       ],
     },
@@ -816,7 +787,7 @@ export const cascaderSuite: ConformanceSuite = {
           'trigger': { 'disabled': '', 'data-disabled': '' },
           'label': { 'data-disabled': '' },
           'column[0]': { 'aria-disabled': 'true' },
-          // 集合条目绝不输出原生 disabled：那样就不可聚焦、也不派 click
+          // 集合条目不输出原生 disabled
           'item[0]': { 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null },
           'clear-trigger': { disabled: '' },
         },
@@ -851,7 +822,7 @@ export const cascaderSuite: ConformanceSuite = {
       initial: {
         parts: {
           'root': { 'data-readonly': '', 'data-disabled': null },
-          // 只读与禁用的分界就在这里：禁用连键盘入口都没有，只读仍可聚焦、仍能展开来看
+          // 只读仍可聚焦、仍能展开，禁用则没有键盘入口
           'trigger': { 'disabled': null, 'aria-readonly': 'true', 'data-readonly': '' },
           'clear-trigger': { 'disabled': '', 'data-disabled': '' },
         },
@@ -866,7 +837,7 @@ export const cascaderSuite: ConformanceSuite = {
           },
         },
         { kind: 'settle', until: { activeElement: 'item[3]' } },
-        // 浏览不受影响：列照样跟着焦点走
+        // 只读下浏览不受影响，列照样跟着焦点走
         {
           kind: 'key',
           key: 'Home',
@@ -914,7 +885,7 @@ export const cascaderSuite: ConformanceSuite = {
           kind: 'click',
           part: 'clear-trigger',
           expect: {
-            // pointerdown 那条只挡指针，键盘与程序化激活这一路要主动把焦点送回 trigger
+            // 键盘与程序化激活须主动把焦点送回 trigger
             activeElement: 'trigger',
             parts: {
               'item': itemsSelected(),
@@ -966,7 +937,7 @@ export const cascaderSuite: ConformanceSuite = {
           until: { attr: { part: 'item[2]', name: 'aria-selected', value: 'true' } },
           expect: {
             parts: { item: itemsSelected('taiwan') },
-            // 宿主写回不是新的用户意图，不再发一次
+            // 宿主写回不再发事件
             events: [],
           },
         },

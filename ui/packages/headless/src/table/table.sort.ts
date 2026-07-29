@@ -2,8 +2,7 @@ import type { TableSortDescriptor, TableSortDirection } from './table.types'
 
 /**
  * 多字段排序链的纯算法。链是有序的：下标即优先级，第一个是主排序字段。
- * 同一列在链里只允许出现一次——出现两次的话「按它升序再按它降序」自相矛盾，
- * 而 aria-sort 也只报得出一个方向。
+ * 同一列在链里只允许出现一次，aria-sort 也只报得出一个方向。
  */
 
 /** 按 id 去重且保序，先出现的那条为准。公开写入与外部传入都经这里收口。 */
@@ -35,17 +34,14 @@ export function tableSortIndexOf(sort: readonly TableSortDescriptor[], id: strin
 export interface TableToggleSortOptions {
   /**
    * 追加到链尾而不是替换整条链（按住 Shift 点表头就是这一路）。
-   * 该列已在链里时只改它自己的方向，位置不动——排序优先级是用户先后点出来的，
-   * 换个方向不该把它挪到链尾去。
+   * 该列已在链里时只改它自己的方向，位置不动。
    */
   append?: boolean
 }
 
 /**
  * 点一次排序把手：升序 → 降序 → 不排序，三态循环。
- *
- * 不追加时整条链被这一列替换掉（循环回「不排序」即清空链）：
- * 单列排序是默认心智，先点 A 再点 B 应当只按 B 排，而不是悄悄按 A、B 排。
+ * 不追加时整条链被这一列替换掉，循环回不排序即清空链。
  */
 export function tableToggleSort(
   sort: readonly TableSortDescriptor[],

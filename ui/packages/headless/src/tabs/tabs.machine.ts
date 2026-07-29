@@ -3,9 +3,7 @@ import { setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<TabsSchema>()
 
-// 选中值住在 context 的 cell 里，不编码进状态：cell 本身就是受控/非受控的收口点
-// （value prop 给定即受控，读直取 prop，写只发 onValueChange 不落内部值），
-// 因此不需要影子事件与受控守卫。机器只有一个状态，逻辑全在 context + actions。
+// 选中值住在 context 的 cell 里，受控/非受控在 cell 收口，不需要影子事件与受控守卫。
 export const tabsMachine = createMachine({
   name: 'tabs',
   context: ({ prop, cell }) => ({

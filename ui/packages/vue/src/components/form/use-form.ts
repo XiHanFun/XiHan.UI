@@ -19,9 +19,9 @@ export interface FormCallbacks {
 
 export interface FormContext {
   api: ComputedRef<FormApi>
-  /** 部件要上报 DOM 侧的事实，得直接够到机器。 */
+  /** 机器实例，供部件上报 DOM 侧的事实。 */
   service: Service<FormSchema>
-  /** 那个 `<form>` 节点：字段容器的现查范围与落焦的起点。 */
+  /** `<form>` 节点，字段容器的查询范围与落焦起点。 */
   rootRef: Ref<HTMLElement | null>
   setFieldValue: (name: string, value: unknown) => void
   setFieldError: (name: string, message?: string) => void
@@ -35,17 +35,13 @@ export function useForm(props: Props, callbacks: FormCallbacks = {}): FormContex
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  // 四个回调由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const service = useMachine(formMachine, () => ({ ...props, ...callbacks }), scope)
 
-  // getter 而不是当下的节点：提交失败落焦、点摘要跳字段都是事件那一刻现取，
-  // 取到的才是这一帧真在 DOM 里的那个表单
+  // 传 getter 而非节点，提交落焦与跳字段时由机器现取
   service.refs.set('getRootEl', () => rootRef.value)
 
   const api = computed(() => connectForm(service, vueNormalize))
-  // 五个命令在顶层再摊一层：函数身份稳定，作者可以在 setup 里解构出来存进模块作用域、
-  // 在任意时刻（请求回调、路由守卫）调用。让调用方自己写 api.value.submit 的话，
-  // 每个调用点都会顺手把整张值表读成响应式依赖，改一个字段就重跑一遍
+  // 五个命令在顶层摊平，函数身份稳定，可解构后随时调用且不读取值表
   return {
     api,
     service,

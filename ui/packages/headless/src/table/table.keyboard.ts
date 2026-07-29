@@ -2,9 +2,9 @@ import type { KeyboardTable } from '../spec/types'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/grid/#keyboardinteraction'
 
-// 焦点粒度是**一整行**：表体里只有锚点行占 Tab 位，方向键在可见数据行上走。
-// 单元格级导航与 F2 编辑模式不做——左右方向键在这里另有语义（展开/收起当前行）。
-// 表头里的排序把手与全选把手不在 roving 行组内，各自占一个 Tab 位，Tab 就够得着。
+// 焦点粒度是一整行：表体里只有锚点行占 Tab 位，方向键在可见数据行上走。
+// 不做单元格级导航与 F2 编辑模式，左右方向键另有语义（展开/收起当前行）。
+// 表头里的排序把手与全选把手不在 roving 行组内，各自占一个 Tab 位。
 export const tableKeyboard: KeyboardTable = {
   component: 'table',
   source: APG,

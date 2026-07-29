@@ -3,10 +3,7 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { TreeSelectContext } from './use-tree-select'
 import { inject, provide } from 'vue'
 
-/**
- * 节点自报的值，供 item / branch 的子部件复用同一份声明。
- * 只报值：层级、禁用与标签都回 collection 里查，作者不必在标记里抄第二遍。
- */
+/** 节点自报的值，供 item / branch 的子部件复用同一份声明；层级、禁用与标签回 collection 里查。 */
 export interface TreeSelectNodeContext {
   node: ComputedRef<TreeSelectNodeProps>
 }

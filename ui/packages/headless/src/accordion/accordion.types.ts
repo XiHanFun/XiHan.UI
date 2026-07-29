@@ -5,20 +5,16 @@ export interface AccordionValueChangeDetails {
   value: string[]
 }
 
-/**
- * 条目自报的身份与可用性。
- * connect 的每个条目级 getter 都是 (机器上下文, 这份入参) 的纯函数：
- * 条目是第几个、谁是第一个都不需要，也就不必反查 DOM。
- */
+/** 条目自报的身份与可用性。 */
 export interface AccordionItemProps {
-  /** 条目身份，落到 data-value；选中与方向键导航都以它为准。 */
+  /** 条目身份，落到 data-value。 */
   value: string
   disabled?: boolean
 }
 
 export interface AccordionSchema extends MachineSchema {
   props: {
-    /** 展开集合。给定即受控：内部不再自改，只发 onValueChange。 */
+    /** 展开集合，给定即受控。 */
     value?: string[]
     defaultValue?: string[]
     /** 允许多项同时展开；false 时展开一项即收起其余。 */
@@ -27,16 +23,14 @@ export interface AccordionSchema extends MachineSchema {
     collapsible?: boolean
     /** 方向键轴向，默认 vertical。 */
     orientation?: Orientation
-    /** 文字方向，默认 ltr；只影响水平轴上 ArrowLeft/ArrowRight 的语义。 */
+    /** 文字方向，默认 ltr；影响水平轴上 ArrowLeft/ArrowRight 的语义。 */
     dir?: Direction
-    /** 展开集合变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
+    /** 展开集合变化回调。 */
     onValueChange?: (details: AccordionValueChangeDetails) => void
   }
-  /** 展开集合住在 cell 里：cell 自带受控语义（value 给定就直读 prop、set 只发回调）。 */
   context: { value: string[] }
   computed: Record<string, never>
   refs: Record<string, never>
-  /** 选中值不编码进状态，机器因此只有一个状态，逻辑全在 context 与 actions。 */
   state: 'idle'
   event:
     | { type: 'ITEM.TOGGLE', value: string }
@@ -48,7 +42,7 @@ export interface AccordionSchema extends MachineSchema {
 }
 
 export interface AccordionApi<T extends PropTypes = PropTypes> {
-  /** 当前展开集合。单开模式下也是数组（长度 ≤ 1），不随 multiple 变类型。 */
+  /** 当前展开集合，单开模式下长度 ≤ 1。 */
   value: string[]
   setValue: (next: string[]) => void
   isOpen: (value: string) => boolean

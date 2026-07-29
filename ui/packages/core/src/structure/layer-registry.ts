@@ -1,6 +1,4 @@
-// LayerRegistry：逻辑层栈。
-// 不是 z-index 分配器 —— 视觉堆叠交给浏览器 top layer。本表回答：谁是栈顶、
-// outside 交互关到第几层、某节点属于哪一层（含 branch/surface 归属）。
+// LayerRegistry：逻辑层栈，记录栈顶、层序，以及节点的层归属（node/branch/surface）。
 import type { Cleanup } from '../types'
 import { contains } from '../guards'
 import { isDev } from '../utils/dev'
@@ -15,10 +13,10 @@ export interface Layer {
   node: () => HTMLElement | null
   /** 逻辑上属于本层、但 DOM 在别处的节点（嵌套 portal）。 */
   branches: () => Element[]
-  /** 模态性可在生命周期内变化（退出动画中应降级为 false）。 */
+  /** 模态性，生命周期内可变。 */
   isModal: () => boolean
   setModal: (v: boolean) => void
-  /** 「点它就该关本层」的表面（Dialog 自渲染的 backdrop）。 */
+  /** 点击即应关闭本层的表面，如 backdrop。 */
   surfaces: () => Element[]
 }
 
@@ -30,7 +28,7 @@ export interface LayerRegistry {
   indexOf: (layer: Layer) => number
   /** 给定 DOM 节点，返回它归属的最高层。 */
   layerOf: (node: Node) => { layer: Layer, via: 'node' | 'branch' | 'surface' } | undefined
-  /** 订阅栈变化（FocusScope 用它做 pause/resume）。 */
+  /** 订阅栈变化。 */
   subscribe: (fn: (layers: readonly Layer[]) => void) => Cleanup
 }
 
@@ -55,7 +53,6 @@ export function createLayerRegistry(_doc: Document): LayerRegistry {
       disposed = true
       const idx = layers.indexOf(layer)
       if (idx !== -1) {
-        // 双栈一致性 dev 断言：dispose 的不是栈顶时告警。
         if (isDev() && idx !== layers.length - 1)
           console.error(`[xh:layer] dispose 的层不是栈顶（可能与 top layer 顺序不一致）: ${layer.id}`)
         layers.splice(idx, 1)
@@ -93,7 +90,7 @@ export function createLayerRegistry(_doc: Document): LayerRegistry {
 
 const registry = createPerDocumentRegistry(createLayerRegistry)
 
-/** 取该 document 的共享 LayerRegistry。测试隔离用 createLayerRegistry 显式建。 */
+/** 取该 document 的共享 LayerRegistry。 */
 export function getLayerRegistry(doc: Document): LayerRegistry {
   return registry.get(doc)
 }

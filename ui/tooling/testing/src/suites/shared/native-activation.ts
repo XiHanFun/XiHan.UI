@@ -1,11 +1,9 @@
 import type { StepWithExpect } from '../../conformance/types'
 
 /**
- * Enter / Space 激活这一路我们不自己实现：角色节点是原生 `<button type="button">`，
- * 由平台把这两个键翻成 click。jsdom 不做这层翻译，所以直接发按键什么都不会发生——
- * 真正该守的也不是"我们处理了按键"，而是"这个节点确实是原生按钮，平台才会替我们处理"。
- *
- * 一并验 type="button"：漏了它，按钮落在 form 里会变成 submit，Enter 直接提交表单。
+ * 核对部件确实是原生 `<button type="button">`。
+ * Enter/Space 的激活由平台完成，jsdom 不做这层翻译，直接发按键验不到东西；漏了 type
+ * 则按钮落在 form 里会变成 submit。
  */
 export function nativeActivation(scope: string, part: string): StepWithExpect {
   return {
@@ -23,10 +21,7 @@ export function nativeActivation(scope: string, part: string): StepWithExpect {
   }
 }
 
-/**
- * roving tabindex：整组只留一个 Tab 停靠点。
- * 没有锚点时由容器兜底（tabindex=0），否则键盘再也进不去这一组。
- */
+/** roving tabindex：整组只留一个 Tab 停靠点，没有锚点条目时由容器兜底（tabindex=0）。 */
 export function singleTabStop(scope: string, itemPart: string, containerPart: string): StepWithExpect {
   return {
     kind: 'raw',

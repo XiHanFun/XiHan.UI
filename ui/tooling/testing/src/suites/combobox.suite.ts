@@ -73,8 +73,7 @@ function tree(items: readonly FixtureNode[] = ITEMS, grouped = false): FixtureNo
       {
         part: 'control',
         children: [
-          // 必须是 input：Vue 侧组件自己渲染成 input，WC 侧由 fixture 的 tag 决定，
-          // 渲染成 div 就既不可聚焦也没有 value，整个组合框演不出来
+          // 必须是 input：WC 侧由 fixture 的 tag 决定，div 既不可聚焦也没有 value
           { part: 'input', tag: 'input' },
           { part: 'trigger', tag: 'button', text: '▾' },
           { part: 'clear-trigger', tag: 'button', text: '×' },
@@ -93,8 +92,7 @@ function tree(items: readonly FixtureNode[] = ITEMS, grouped = false): FixtureNo
 
 // content 始终在 DOM，展开态靠 hidden 属性显隐，不卸载作者节点。
 // 位置由引擎异步回填，快照不采集 style，因此这里只断言 data-placement 这类语义属性。
-// 刻意不用 defaultOpen：WC 侧首帧的候选还没被打上身份标记（wire 尚未跑过），
-// 展开态的落点意图要等一拍才结算得出来，帧序与 Vue 对不齐；一律用交互把列表打开。
+// 不用 defaultOpen：WC 侧首帧候选还没被 wire 打上身份标记，帧序与 Vue 对不齐。
 export const comboboxSuite: ConformanceSuite = {
   component: 'combobox',
   anatomy: comboboxAnatomy,
@@ -160,7 +158,7 @@ export const comboboxSuite: ConformanceSuite = {
             'disabled': null,
             'readonly': null,
           },
-          // 两个按钮都退出 Tab 序列：能力在输入框上都够得着，多一站只会让人反复停在同一个控件上
+          // 两个按钮都退出 Tab 序列：能力在输入框上都够得着
           'trigger': { 'type': 'button', 'tabindex': '-1', 'aria-controls': '@part(content)', 'data-state': 'closed' },
           'clear-trigger': { 'type': 'button', 'tabindex': '-1', 'aria-hidden': 'true', 'disabled': '', 'data-disabled': '' },
           'positioner': { 'data-state': 'closed', 'data-placement': 'bottom-start' },
@@ -208,7 +206,7 @@ export const comboboxSuite: ConformanceSuite = {
               content: { 'hidden': null, 'data-state': 'open' },
               trigger: { 'data-state': 'open' },
             },
-            // 焦点恒在输入框：按钮抢到焦点后必须还回去，否则用户接着打字就得再点一次
+            // 焦点恒在输入框：按钮抢到焦点后要还回去
             activeElement: { part: 'input', exact: true },
             events: [{ type: 'open-change', detail: { open: true } }],
           },
@@ -370,8 +368,7 @@ export const comboboxSuite: ConformanceSuite = {
       steps: [
         { kind: 'click', part: 'trigger' },
         {
-          // 候选用 aria-disabled 表达禁用，click 不会被激活行为短路，事件真派得出去，
-          // 因此这一步碰得到 connect 里的禁用守卫
+          // 候选用 aria-disabled 表达禁用，click 不被短路，事件派得出去才碰得到 connect 的守卫
           kind: 'click',
           part: 'item[1]',
           expect: {

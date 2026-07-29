@@ -7,7 +7,7 @@ import { useSplitter } from './use-splitter'
 
 type SplitterProps = SplitterSchema['props']
 
-/** 作者写在部件上的下标声明。HTML 属性只有字符串一种形态，WC 侧写的是 index="1"，两个适配器要认同一份声明。 */
+/** 部件上的下标声明，兼收字符串以支持 DOM 属性写法。 */
 const INDEX_PROP = { index: { type: [Number, String] as PropType<number | string>, default: 0 } }
 
 function toIndex(raw: number | string): number {
@@ -18,8 +18,7 @@ function toIndex(raw: number | string): number {
 export const XhSplitterRoot = defineComponent({
   name: 'XhSplitterRoot',
   props: {
-    // 布局恒是数组，给 default: undefined 才表达得了"非受控"：
-    // 落成 [] 会被当作"受控且当前为空"，用户从此再也拖不动
+    // 布局恒是数组；default: undefined 表示非受控
     size: { type: Array as PropType<number[]>, default: undefined },
     defaultSize: { type: Array as PropType<number[]>, default: undefined },
     panels: { type: Array as PropType<SplitterPanelProps[]>, default: undefined },
@@ -29,8 +28,7 @@ export const XhSplitterRoot = defineComponent({
     step: { type: Number, default: undefined },
     largeStep: { type: Number, default: undefined },
   },
-  // size-change 携带 { size }；update:size 携带裸数组，支持 v-model:size。
-  // size-change-end 只在一次操作收尾时发一次，适合拿来存布局
+  // size-change 携带 { size }，update:size 携带裸数组；size-change-end 只在操作收尾时发一次
   emits: ['size-change', 'update:size', 'size-change-end'],
   setup(props, { slots, emit }) {
     const notify: SplitterProps['onSizeChange'] = (details) => {
@@ -42,7 +40,7 @@ export const XhSplitterRoot = defineComponent({
     }
     const ctx = useSplitter(props as SplitterProps, notify, notifyEnd)
     provideSplitter(ctx)
-    // 容器节点交给机器：矩形只在拖拽开始那一刻现量，连接期一律不碰 DOM
+    // 容器节点交给机器，矩形在拖拽开始时现量
     return () => h('div', {
       ...ctx.api.value.getRootProps() as Record<string, unknown>,
       ref: ctx.rootRef,

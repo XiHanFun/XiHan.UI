@@ -39,8 +39,7 @@ export const tabsSuite: ConformanceSuite = {
   fixture: tabsTree(),
   cases: [
     {
-      // 整组只占一个 Tab 位：多一个会让用户按 Tab 在组内反复停留，
-      // 一个都没有则键盘再也进不来（无锚点时须由容器兜底）
+      // 整组只占一个 Tab 位；无锚点时须由容器兜底
       name: 'roving tabindex：整组只有一个 Tab 停靠点，无锚点时容器兜底',
       spec: { apg: APG },
       covers: ['tabs.kbd.tab'],
@@ -86,9 +85,8 @@ export const tabsSuite: ConformanceSuite = {
       },
     },
     {
-      // 回归：锚点指向一个不存在的值（受控值不在选项里、或该 tab 被关掉）时，
-      // 没有任何 trigger 会认领 tabindex=0，且所有 panel 都是 hidden。
-      // 若容器此时也退出 Tab 序列，整组对键盘用户永久不可达——只能用鼠标。
+      // 锚点指向一个不存在的值时没有 trigger 认领 tabindex=0、所有 panel 都 hidden，
+      // 容器必须兜底。
       name: '锚点值不存在：无 trigger 认领 tabindex，list 必须仍是 Tab 停靠点（整组不脱序）',
       spec: { apg: APG },
       props: { defaultValue: '不存在的值' },
@@ -110,8 +108,7 @@ export const tabsSuite: ConformanceSuite = {
       props: { defaultValue: 'two' },
       initial: {
         parts: {
-          // list 的 tabindex 只看焦点在不在组内：受控值不在选项里/tab 被关掉时，
-          // 没有 trigger 会认领 0 且所有 panel 都 hidden，容器不兜底整组就键盘不可达。
+          // list 的 tabindex 只看焦点在不在组内：没有 trigger 认领 0 时由容器兜底
           'list': { tabindex: '0' },
           'trigger[0]': { 'aria-selected': 'false', 'tabindex': '-1', 'data-state': 'inactive' },
           'trigger[1]': { 'aria-selected': 'true', 'tabindex': '0', 'data-state': 'active' },

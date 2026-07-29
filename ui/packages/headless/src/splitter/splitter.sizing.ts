@@ -2,21 +2,17 @@ import type { SplitterPanelProps } from './splitter.types'
 import { clamp } from '../shared/number'
 
 /**
- * 百分比布局的重分配。整块是纯函数：给一份布局与一次意图，算出新的一份布局，
- * 不碰 DOM、不认识状态机——像素与百分比的换算由调用方在事件那一刻量好后传进来。
- *
- * 一条贯穿全文的不变量：**总和恒为 100**。面板尺寸是分数不是绝对长度，
- * 某一块顶到 min 时多出来的那部分必须让给别人，不能凭空消失——
- * 一旦总和漂了，容器上就会冒出一条填不满的缝，或者最后一块被挤出可视区。
+ * 百分比布局的重分配，纯函数：像素与百分比的换算由调用方在事件那一刻量好传入，不碰 DOM。
+ * 不变量：总和恒为 100，某块顶到 min 时多出来的部分必须让给别人。
  */
 
-/** 百分比布局的总量。面板尺寸全部以它为分母，别处不再出现这个字面量。 */
+/** 百分比布局的总量，面板尺寸全部以它为分母。 */
 export const SPLITTER_TOTAL = 100
 
-/** 保留两位小数：拖拽换算出来的是任意小数，不收一下会让内联样式与 aria-valuenow 拖着一长串尾巴。 */
+/** 保留两位小数，避免内联样式与 aria-valuenow 拖出长尾巴。 */
 const PRECISION = 100
 
-/** 比这更小的差额当作 0：浮点减法的残渣不该让面板抖一下，也不该让分摊多绕一圈。 */
+/** 比这更小的差额当作 0，滤掉浮点减法的残渣。 */
 const EPSILON = 1e-9
 
 export interface PanelConstraint {
@@ -32,10 +28,8 @@ export function roundSize(value: number): number {
 
 /**
  * 这块面板真正能被压到多小。
- *
- * 可折叠的面板在连续调整里允许一路走到 collapsedSize，不做"低于 min 就吸附折叠"那一跳：
- * 吸附会让拖拽在 min 附近跳变，指针明明在往回走、面板却先塌下去；
- * 需要一个确定的折叠入口时用 collapsePanel（键盘 Enter 走的就是它）。
+ * 可折叠的面板在连续调整里允许一路走到 collapsedSize，不做低于 min 即吸附折叠那一跳；
+ * 确定的折叠入口是 collapsePanel。
  */
 function floorOf(c: PanelConstraint): number {
   return c.collapsible ? Math.min(c.collapsedSize, c.min) : c.min
@@ -52,8 +46,7 @@ function shrinkRoom(size: number, c: PanelConstraint): number {
 /** 逐块补齐缺省。作者只给了一部分（甚至一块都没给）时，其余按"0-100 随便走、不可折叠"处理。 */
 export function panelConstraint(spec: SplitterPanelProps | undefined): PanelConstraint {
   const min = clamp(spec?.min ?? 0, 0, SPLITTER_TOTAL)
-  // max 不许低于 min：两者写反时区间上下颠倒，此后每次 clamp 都会给出第三个数，
-  // 面板会在两个端点之间来回弹
+  // max 不许低于 min：写反时区间上下颠倒，clamp 会给出第三个数
   const max = clamp(spec?.max ?? SPLITTER_TOTAL, min, SPLITTER_TOTAL)
   return {
     min,
@@ -87,8 +80,8 @@ export function isCollapsed(size: number, c: PanelConstraint): boolean {
 
 /**
  * 把 amount 百分比按 order 给的顺序摊到各面板上（正=撑大、负=压缩）。
- * 每块只吃自己剩下的余量，吃不下的往后传——这就是"撞到 min/max 时余量让给谁"的唯一出口。
- * 返回真正摊出去的量：谁都吃不下时它会小于 amount，调用方据此收敛自己那一侧。
+ * 每块只吃自己剩下的余量，吃不下的往后传。
+ * 返回真正摊出去的量；谁都吃不下时它会小于 amount。
  */
 function spread(
   out: number[],
@@ -114,10 +107,7 @@ function spread(
 
 /**
  * 收尾：逐块取两位小数，再把四舍五入攒出来的零头补回去，总和恒是 100。
- *
- * 零头只补给放得下它的那一块——补给正卡在 max（或 min）上的面板等于当场把它的约束毁掉。
- * 约束本身就凑不出 100（比如唯一一块面板 max=50）时保持原样，不硬凑：
- * 硬凑出来的那一份是谁都没要求过的布局。
+ * 零头只补给放得下它的那一块；约束本身凑不出 100 时保持原样，不硬凑。
  */
 function settle(sizes: readonly number[], cs: readonly PanelConstraint[]): number[] {
   const out = sizes.map(roundSize)
@@ -153,10 +143,7 @@ function neighbours(index: number, count: number): number[] {
 
 /**
  * 把第 index 块调到 next，缺口由 donors 依次填补（近的先）。
- *
- * 自己先被夹进 [floor, max]，随后**只认 donors 真的配合了多少**：
- * 若后面的面板全顶在 min 上，这一块就一步也长不了。先斩后奏地把自己改掉、
- * 再指望别人凑数，正是总和漂掉的经典写法。
+ * 自己先夹进 [floor, max]，随后只认 donors 真的配合了多少，否则总和会漂掉。
  */
 function applyPanelSize(
   sizes: readonly number[],
@@ -178,14 +165,12 @@ function applyPanelSize(
 
 /**
  * 任意一份输入归位成合法布局：逐块夹进约束，再把与 100 的差额摊出去。
- * 受控值与作者的命令式赋值都走这里——布局的正确性不该指望调用方自觉。
+ * 受控值与命令式赋值都走这里。
  */
 export function normalizeSizes(sizes: readonly number[], cs: readonly PanelConstraint[]): number[] {
   const raw = cs.map((_, i) => Math.max(0, sizes[i] ?? 0))
   const sum = raw.reduce((a, b) => a + b, 0)
-  // 作者手里的常是比例而不是百分比（[1, 2]、[200, 300] 都很常见），先按比例缩到 100 再夹约束。
-  // 少了这一步，[1, 2] 会被当成"两块各 1 和 2、余下 97 全塞给第一块"，
-  // 而这恰恰是最不像作者本意的那份布局。全是 0 时无从缩放，退到等分
+  // 输入常是比例而非百分比，先按比例缩到 100 再夹约束；全是 0 时无从缩放，退到等分
   const scaled = sum > EPSILON
     ? raw.map(v => v / sum * SPLITTER_TOTAL)
     : equalSizes(raw.length)
@@ -203,8 +188,8 @@ export function normalizeSizes(sizes: readonly number[], cs: readonly PanelConst
 }
 
 /**
- * 第 index 块当前真正能走到的百分比区间——分隔条的 aria-valuemin/valuemax 就是它。
- * 报自己的 min/max 是不诚实的：后面的面板已经顶到 min 时，那个区间读屏也走不到。
+ * 第 index 块当前真正能走到的百分比区间，分隔条的 aria-valuemin/valuemax 取自它。
+ * 不报自己的 min/max：后面的面板顶到 min 时那段区间走不到。
  */
 export function panelRange(
   sizes: readonly number[],
@@ -232,10 +217,7 @@ export function panelRange(
   }
 }
 
-/**
- * 把第 boundary 条分隔条挪动 delta 个百分点。
- * 只惊动它后面的面板：前面的那些归更前面的分隔条管，被这一下推着走就等于一次拖拽改了两处布局。
- */
+/** 把第 boundary 条分隔条挪动 delta 个百分点，只惊动它后面的面板。 */
 export function resizePanels(
   sizes: readonly number[],
   boundary: number,
@@ -262,7 +244,7 @@ export function collapsePanel(
   cs: readonly PanelConstraint[],
 ): number[] {
   const c = cs[index]
-  // 不可折叠就一动不动：这条路径是"用户按了 Enter"，不是"随便调个尺寸"
+  // 不可折叠就一动不动
   if (!c?.collapsible)
     return settle([...sizes], cs)
   return applyPanelSize(sizes, index, c.collapsedSize, cs, neighbours(index, sizes.length))

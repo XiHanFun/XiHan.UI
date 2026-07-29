@@ -1,6 +1,6 @@
 // @xihan-ui/core —— Foundation 原语（框架无关，零运行时依赖）。
 
-// props-getter 机制
+// 组件解剖
 export type { Anatomy, AnatomyPart } from './anatomy'
 export { createAnatomy } from './anatomy'
 
@@ -16,7 +16,7 @@ export type { HideOutsideOptions } from './capability/a11y/hide-outside'
 export { hideOutside } from './capability/a11y/hide-outside'
 export type { ComposeEventHandlerOptions, PossibleRef } from './compose'
 export { callAll, composeEventHandlers, composeRefs, isDict, isEventHandlerKey } from './compose'
-// 常量真源
+// 常量
 export * from './constants'
 // 守卫与探测
 export { contains, isDocument, isElement, isFunction, isHTMLElement, isShadowRoot, isSSR, isWindow } from './guards'
@@ -42,7 +42,7 @@ export { createPerDocumentRegistry } from './structure/per-document-registry'
 export type { Cleanup, Dict, Direction, Disposable, MaybeBooleanish, Orientation } from './types'
 export { toCleanup } from './types'
 
-// 端口类型（实现在别处）
+// 端口类型
 export type {
   Align,
   Anchor,

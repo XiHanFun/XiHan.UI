@@ -15,10 +15,7 @@ export function useToasterContext(): ToasterContext {
   return ctx
 }
 
-/**
- * 拿不到就返回 null 的注入口。单条通知既可以长在队列里，也可以被作者单独摆出来
- * （确认框里的一条提示、文档里的示例），那时外面本来就没有队列，不该因此抛。
- */
+/** 注入队列上下文，不在队列内时返回 null 而非抛错。 */
 export function useToasterContextOptional(): ToasterContext | null {
   return inject(KEY, null)
 }

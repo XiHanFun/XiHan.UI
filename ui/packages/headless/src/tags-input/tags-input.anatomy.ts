@@ -19,8 +19,7 @@ export const tagsInputAnatomy = createAnatomy('tags-input', [
 ])
 
 /**
- * 就地编辑框的 id。机器的聚焦副作用与 connect 各自算一次，两处必须逐字一致——
- * 副作用是靠这个 id 从 scope 里把节点捞出来的，算歪了焦点就永远进不了编辑框。
+ * 就地编辑框的 id。机器的聚焦副作用靠它从 scope 里捞节点，与 connect 两处算法必须逐字一致。
  */
 export function tagsInputEditInputId(scope: Scope, value: string): string {
   return scope.partId(tagsInputAnatomy.name, `item-input:${value}`)

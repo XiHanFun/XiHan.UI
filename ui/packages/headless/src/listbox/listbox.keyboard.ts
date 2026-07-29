@@ -2,8 +2,7 @@ import type { KeyboardTable } from '../spec/types'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/listbox/#keyboardinteraction'
 
-// 方向键只搬焦点、不落值：这是"选中跟随焦点"之外的另一条 APG 许可路线，
-// 也是做 Combobox 地基的必要形状——浮层里的候选项要能被逐个浏览而不当场提交。
+// 方向键只搬焦点、不落值。
 export const listboxKeyboard: KeyboardTable = {
   component: 'listbox',
   source: APG,

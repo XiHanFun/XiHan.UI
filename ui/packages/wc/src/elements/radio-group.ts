@@ -28,9 +28,7 @@ import { MachineController } from '../runtime/machine-controller'
  * @csspart hidden-input - 条目的表单影子输入（必须是原生 input）
  */
 export class XhRadioGroupElement extends XhElement {
-  // dir 占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
-  // 同名声明既与基类类型冲突，也会盖掉原生反射。别名保留原生行为，
-  // 同时让 dir 进 observedAttributes——运行期改 dir 才会重跑 wire 换掉按键处理器。
+  // dir 是 HTMLElement 原生访问器，同名声明会与基类冲突并盖掉原生反射，故字段叫 direction、属性名仍用 dir
   static override properties = {
     value: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     defaultValue: { attribute: 'default-value' },
@@ -47,8 +45,7 @@ export class XhRadioGroupElement extends XhElement {
   declare direction?: Direction
   declare name?: string
 
-  // 整组禁用期间的条目自身声明快照。connect 每帧都把 aria-disabled 写回条目，整组禁用更是写满每一个，
-  // 此时回读分不清「作者声明的」还是「自己上一帧写的」，组解禁后条目就永远解不开。
+  // 整组禁用期间的条目自身声明快照：connect 每帧把 aria-disabled 写回条目，回读分不清作者声明与自己的写回
   private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
   /** 上一帧是否整组禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。 */
   private wasGroupDisabled = false
@@ -71,11 +68,7 @@ export class XhRadioGroupElement extends XhElement {
     }
   }
 
-  /**
-   * 承载焦点的条目被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：
-   * 容器判自己"焦点在组内"退出 Tab 序列，又没有条目认领得了这个锚点，
-   * 整组零个 Tab 停靠点，键盘用户再也进不来。这里替 DOM 把焦点离场如实上报。
-   */
+  /** 承载焦点的条目被移出 DOM 时浏览器不派 focusout，这里替 DOM 上报焦点离场，免得焦点锚点停在已消失的值上。 */
   protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
     const { context, getStatus, send } = this.ctrl.service
     // 宿主断开时机器已停机，此刻无焦点可言（送事件还会在 dev 下抛）
@@ -84,8 +77,7 @@ export class XhRadioGroupElement extends XhElement {
     const focusedValue = context.get('focusedValue')
     if (focusedValue == null)
       return
-    // data-value 只写在 item 上，条目内的隐藏输入与标记离场不会误判；
-    // 只有走的正是持有焦点的那个条目才报，否则删任一无关条目都会清掉方向键起点
+    // data-value 只写在 item 上：只有持有焦点的那个条目离场才上报
     if (nodes.some(el => el.getAttribute(ITEM_VALUE_ATTR) === focusedValue))
       send({ type: 'GROUP.BLUR' })
   }
@@ -93,17 +85,13 @@ export class XhRadioGroupElement extends XhElement {
   private itemProps(el: HTMLElement): RadioGroupItemProps {
     const value = el.getAttribute('value') ?? ''
     const groupDisabled = !!this.disabled
-    // 只有「本帧与上一帧都没整组禁用」时，节点上的 aria-disabled 才等于作者声明：
-    // 整组禁用那几帧 connect 把每个条目都写成了 true，解禁当帧 DOM 上还留着这些写回值，
-    // 此刻现读会把机器自己的产物误当声明、条目再也解不开。
-    // 头一回见到这个条目时，DOM 上还只有作者写的东西（本帧的写回尚未发生），
-    // 此刻无论整组禁没禁用都记得下真声明。少了这一条，「挂载那刻就整组禁用」
-    // 会一路没有快照，解禁时退回现读、读到机器自己写的 true，整组就此永久锁死。
+    // 头一回见到这个条目：本帧的写回尚未发生，DOM 上还只有作者声明，此刻无论禁没禁用都要记下快照
     if (!this.declaredDisabled.has(el)) {
       const own = isItemDisabled(el)
       this.declaredDisabled.set(el, own)
       return { value, disabled: own }
     }
+    // 只有本帧与上一帧都没整组禁用时，节点上的 aria-disabled 才等于作者声明
     if (!groupDisabled && !this.wasGroupDisabled) {
       const own = isItemDisabled(el)
       this.declaredDisabled.set(el, own)
@@ -118,9 +106,7 @@ export class XhRadioGroupElement extends XhElement {
     return this.getParts(name).filter(el => item.contains(el))
   }
 
-  // hidden-input 的 style 是对象、checked 只认 DOM property：前者经 spread 会写成
-  // "[object Object]"，后者 spread 用 removeAttribute 关不掉（property 写过之后属性
-  // 不再决定选中态），两者都绕开 spread 单独落。
+  // hidden-input 的 style 是对象、checked 只认 DOM property，走 spread 都会写坏，两者绕开 spread 单独落
   private spreadHiddenInput(input: HTMLInputElement, props: Record<string, unknown>): void {
     const { style, checked, ...attrs } = props
     this.spreader.spread(input, attrs)

@@ -5,8 +5,8 @@ import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 /**
- * `<xh-collapsible>` —— Light-DOM 行为宿主：用户写 trigger/content 角色节点，
- * 元素跑 collapsible 机器并把 connect 产出打上去。收起时用内联 style.display 隐藏 content。
+ * `<xh-collapsible>` —— Light-DOM 行为宿主，跑 collapsible 机器打到 root/trigger/content 角色节点，
+ * 收起时用内联 style.display 隐藏 content。
  *
  * @customElement xh-collapsible
  * @attr {boolean} open - 受控开合；缺省该属性即非受控
@@ -32,7 +32,6 @@ export class XhCollapsibleElement extends XhElement {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  // collapsible 机器无副作用：不需要 config/layer/refs/scope，故 controller 只带 props。
   private readonly ctrl = new MachineController<CollapsibleSchema>(
     this,
     collapsibleMachine,
@@ -61,9 +60,7 @@ export class XhCollapsibleElement extends XhElement {
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
 
-    // Light DOM content 常驻，WC 自管可见性：收起时隐藏 content。
-    // connect 已置 hidden，但 styled 若给 [data-part=content] 设 display 会盖过
-    // UA 的 [hidden]{display:none}；内联 style.display 优先级更高，压得住。
+    // 收起时用内联 display 隐藏 content
     const content = this.getPart('content')
     if (content)
       this.setPartHidden(content, this.ctrl.service.state.get() !== 'open')

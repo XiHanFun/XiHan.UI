@@ -26,17 +26,13 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-// 属性缺席一律翻成 undefined：缺省值的唯一事实源留在机器与 connect 里。
-// Lit 自带的转换器会把缺席落成 null / false，那样属性就再也表达不了"未指定"
-// （value 尤其：落成 null 就分不出"非受控"与"受控且当前无选中"）。
+// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
-// 缺省为真的开关（选完即收起）只有三态才关得掉——
-// Lit 默认的 Boolean 转换器是 v !== null，写 close-on-select="false" 照样是真。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
-/** 作者写在段位上的下标。缺席或写坏了就退回文档序——手写 HTML 时把段位按顺序排下来本身就是声明。 */
+/** 取作者写在段位上的 index，缺席或写坏了退回文档序。 */
 function declaredIndex(el: HTMLElement, position: number): number {
   const raw = el.getAttribute('index')
   if (raw == null || raw.trim() === '')
@@ -50,14 +46,12 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * clear-trigger/positioner/content/calendar 角色节点，calendar 之内再照日历那套写
  * header/prev-trigger/next-trigger/heading/grid/grid-head/week-day/grid-body/week-row/cell/cell-trigger。
  *
- * 本元素是编排机：自己只持有开合与「分段输入 ↔ 日历」之间的值同步，
- * 选日期、翻月、网格里的键盘导航全部委派给内嵌日历，分段输入委派给内嵌分段输入——
- * 两者的机器原样跑在同一个元素里，行为与单用 `<xh-calendar>` / `<xh-date-field>` 逐条一致。
- * 因此 input 与 calendar 两个部件之内的 DOM 戴的是各自的 data-scope，皮肤也照各自那份写。
+ * 本元素是编排机，只持有开合与「分段输入 ↔ 日历」之间的值同步；选日期、翻月、网格键盘导航
+ * 委派给内嵌日历，分段输入委派给内嵌分段输入，两部件之内的 DOM 各戴各自的 data-scope。
  *
- * **网格由作者渲染，元素不生成节点**：读 `weeks` / `weekDays` / `headingLabel` 三个只读属性，
- * 听 `focused-value-change` 重画。日期身份取 cell 节点上的 `value` 属性（ISO 串），
- * cell-trigger 跟着它所在的 cell 走；表头列取 week-day 上的 `value`（列序 0-6）；
+ * 网格由作者渲染，元素不生成节点：读 `weeks` / `weekDays` / `headingLabel` 三个只读属性，
+ * 听 `focused-value-change` 重画。日期身份取 cell 节点上的 `value`（ISO 串），
+ * cell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）；
  * 段位可自带 `index` 属性声明下标，缺省按文档序。
  *
  * @customElement xh-date-picker
@@ -105,7 +99,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart hidden-input - type=hidden 的表单出口，值是 ISO 串
  */
 export class XhDatePickerElement extends XhElement {
-  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
@@ -124,7 +118,7 @@ export class XhDatePickerElement extends XhElement {
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
     closeOnSelect: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-select' },
-    // 判定函数是函数，走不了属性；只作为 property 暴露，与 Vue 侧同名 prop 对齐
+    // 判定函数只走 property
     isDateUnavailable: { attribute: false },
   }
 
@@ -148,8 +142,7 @@ export class XhDatePickerElement extends XhElement {
   declare isDateUnavailable?: (value: string) => boolean
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  // 三台机器共用一份 scope：part id 里带组件名（date-picker / calendar / date-field），
-  // 同一个 scope 也撞不到一起
+  // 三台机器共用一份 scope，part id 里带组件名故不相撞
   private readonly pickerScope = createScope(null, this.idGen)
   private readonly positionEngine: PositionEnginePort = createFloatingUiPositionEngine()
   private config: RuntimeConfig | null = null
@@ -162,13 +155,12 @@ export class XhDatePickerElement extends XhElement {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  // 网格由作者渲染，这条是「该重画了」的唯一信号：不发它，日历就永远停在首帧那个月
+  // 网格由作者渲染，这条是「该重画了」的信号
   private readonly notifyFocus = (details: DatePickerFocusChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('focused-value-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  // 声明顺序即 controller 的挂载顺序：两台内嵌机器的 props 都从编排机现读，
-  // 编排机必须先建起来（build 发生在各自的 hostConnected 里，按 addController 的顺序走）
+  // 声明顺序即 controller 挂载顺序：两台内嵌机器的 props 从编排机现读，编排机须先建
   private readonly rootCtrl = new MachineController<DatePickerSchema>(
     this,
     datePickerMachine,
@@ -182,8 +174,7 @@ export class XhDatePickerElement extends XhElement {
     () => datePickerCalendarProps(this.rootCtrl.service),
     {
       scope: this.pickerScope,
-      // 跨月要把焦点送进重画之后才存在的那一格，日历机器得有个查活 DOM 的入口。
-      // 重连时 controller 会重建机器，这个注入必须跟着重建走
+      // 机器跨月后靠它把焦点送进重画出来的格子
       onBuilt: (service) => {
         service.refs.set('getGridEl', () => this.getPart('grid'))
       },
@@ -234,23 +225,21 @@ export class XhDatePickerElement extends XhElement {
   }
 
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
-  // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
     return this.config!.layerRegistry.register({
       kind: 'popover',
       node: () => this.getPart('content'),
       // 整个输入行记为本层分支：点 trigger 或段位算层内交互，开合交给它们自己切换。
-      // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，浮层等于关不掉。
       branches: () => [this.getPart('control')].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
-      // 浮层不带遮罩，没有"点它就该关本层"的表面
+      // 浮层不带遮罩，无可点关闭的表面
       surfaces: () => [],
     })
   }
 
-  // onBuilt 在 ctrl 构造期就跑（此刻 this.rootCtrl 尚未赋值），故 service 由参数传入。
+  // onBuilt 在 ctrl 构造期就跑，service 由参数传入。
   private injectRefs(svc: Service<DatePickerSchema>): void {
     this.ensureConfig()
     svc.refs.set('config', this.config)
@@ -261,10 +250,7 @@ export class XhDatePickerElement extends XhElement {
     svc.refs.set('getContentEl', () => this.getPart('content'))
   }
 
-  /**
-   * 角色节点提前发现一次：default-open 时机器在 hostConnected 当场进展开态，
-   * 焦点域随即要去 content 里找聚焦日那一格。而常规发现要等首次 updated，那一刻 partMap 还空着。
-   */
+  /** 提前发现一次角色节点：default-open 时焦点域在 hostConnected 当场要去 content 里找聚焦日那一格。 */
   override connectedCallback(): void {
     this.refreshParts()
     super.connectedCallback()
@@ -285,7 +271,7 @@ export class XhDatePickerElement extends XhElement {
     return this.rootCtrl.service ? connectDatePicker(this.services(), wcNormalize).calendar.headingLabel : ''
   }
 
-  /** 格子内的子部件：getParts 收的是整个元素范围，按子树过滤才归得对。 */
+  /** 取 owner 子树内指定名字的角色节点。 */
   private partsIn(owner: HTMLElement, name: string): HTMLElement[] {
     return this.getParts(name).filter(el => owner.contains(el))
   }
@@ -304,26 +290,22 @@ export class XhDatePickerElement extends XhElement {
     put('input', api.getInputProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
-    // positioner 的 style 是对象（position/insetInlineStart/insetBlockStart），
-    // spreader 见对象 style 会逐条写内联样式，直接 spread 即可。
+    // positioner 的 style 是对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
     put('calendar', api.getCalendarProps() as Record<string, unknown>)
     put('hidden-input', api.field.getHiddenInputProps() as Record<string, unknown>)
 
-    // 段位是多实例 part，逐个打。打上去的 data-scope/data-part 正是换段在事件那一刻
-    // 现查 DOM 的依据，所以 wire 必须先于事件跑过——updated() 已保证。
+    // 段位逐个打；wire 跑在事件之前，换段时 data-scope/data-part 已在 DOM 上供现查
     this.getParts('segment').forEach((el, position) => {
       const index = declaredIndex(el, position)
       this.spreader.spread(el, api.field.getSegmentProps({ index }) as Record<string, unknown>)
       const state = api.field.segments[index]
-      // 段位的文字归元素写：spreader 只管属性与事件，写不了文本。
-      // 比一次再写：无谓的赋值会清掉这个节点里的选区，还会白白惊动一次变更记录
+      // 段位文字归元素写，比对后再赋值
       const text = state?.text ?? ''
       if (el.textContent !== text)
         el.textContent = text
-      // connect 已置 hidden，但作者若给段位设了 display 就会盖过 UA 的 [hidden]{display:none}；
-      // 内联 style.display 优先级更高，压得住
+      // 用内联 display 收起（作者层的 display 声明会盖过 [hidden]）
       this.setPartHidden(el, state == null)
     })
 
@@ -340,16 +322,14 @@ export class XhDatePickerElement extends XhElement {
     for (const el of this.getParts('week-row'))
       this.spreader.spread(el, api.calendar.getWeekRowProps() as Record<string, unknown>)
 
-    // 列头身份取作者写的 value（列序 0-6）；漏写给 NaN，取不到全称就不写 aria-label，
-    // 绝不冒充成第 0 列——那会让所有漏写的列头都自称"星期一"
+    // 列头身份取作者写的 value（列序 0-6）；漏写给 NaN，不写 aria-label
     for (const el of this.getParts('week-day')) {
       const raw = el.getAttribute('value')
       const index = raw == null || raw === '' ? Number.NaN : Number(raw)
       this.spreader.spread(el, api.calendar.getWeekDayProps({ value: index }) as Record<string, unknown>)
     }
 
-    // 日期格是多实例 part，逐个打：身份取 cell 上的 value，格子内的 trigger 跟着同一份声明走，
-    // 作者因此只需在 cell 上写一次日期
+    // 日期格逐个打，身份取 cell 上的 value，格内 trigger 跟着同一份声明走
     for (const el of this.getParts('cell')) {
       const cell = { value: el.getAttribute('value') ?? '' }
       this.spreader.spread(el, api.calendar.getCellProps(cell) as Record<string, unknown>)
@@ -357,15 +337,13 @@ export class XhDatePickerElement extends XhElement {
         this.spreader.spread(trigger, api.calendar.getCellTriggerProps(cell) as Record<string, unknown>)
     }
 
-    // Light DOM 常驻，WC 自管可见性：作者层若给 content 声明了 display，
-    // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来。
-    // 本包的样式自带 [hidden]{display:none} 压得住，但宿主不能指望作者装了这份样式。
+    // 节点常驻，用内联 display 收起（作者层的 display 声明会盖过 [hidden]）
     this.setPartHidden(this.getPart('content'), !api.open)
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
-    // 层由展开态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
+    // 层随机器停机一并撤掉，此处不再管
     this.config = null // 重连时 ensureConfig 重建
   }
 }

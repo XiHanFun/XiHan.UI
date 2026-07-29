@@ -142,7 +142,7 @@ export const calendarSuite: ConformanceSuite = {
             'data-value': ANCHOR,
             'data-focused': '',
             'data-outside-month': null,
-            // 选中与禁用不标在 gridcell 上：用户停不到这一层，标在这儿等于说给没人听
+            // 选中与禁用不标在 gridcell 上：用户停不到这一层
             'aria-selected': null,
             'aria-disabled': null,
           },
@@ -181,7 +181,7 @@ export const calendarSuite: ConformanceSuite = {
       ],
     },
     {
-      // 多一个 Tab 位会让用户在网格里反复停留；一个都没有则键盘再也进不来
+      // 整张网格只占一个 Tab 位
       name: 'roving tabindex：整张网格只有聚焦日那一格占 Tab 位，方向键把它整个搬走',
       spec: { apg: APG },
       props: BASE_PROPS,
@@ -257,8 +257,7 @@ export const calendarSuite: ConformanceSuite = {
       ],
     },
     {
-      // 作者手上的网格永远跟着聚焦日走；这份 fixture 是钉死的二月，正好拿来验
-      // "展示月真的换了"——二月的格子集体转成邻月，一月的尾巴反过来变成本月
+      // fixture 钉死在二月：换月后二月的格子转成邻月，一月的尾巴变成本月
       name: 'PageUp/PageDown 翻月：展示月跟着聚焦日走，邻月标记整体翻面',
       spec: { apg: `${APG}#kbd_label` },
       props: BASE_PROPS,
@@ -447,8 +446,7 @@ export const calendarSuite: ConformanceSuite = {
         },
       },
       steps: [
-        // 用 aria-disabled 表达禁用，click 不会被激活行为短路，事件真派得出去，
-        // 因此这一步碰得到连接层的守卫
+        // 用 aria-disabled 表达禁用，click 不被激活行为短路，事件派得出去才碰得到连接层守卫
         {
           kind: 'click',
           part: `cell-trigger[${at('2024-02-01')}]`,

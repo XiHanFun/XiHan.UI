@@ -28,23 +28,15 @@ export function connectEditable<T extends PropTypes>(
   const invalid = !!prop('invalid')
   const interactive = !disabled && !readOnly
   const placeholder = prop('placeholder')
-  // 值为空时预览区显示占位文字；占位也没给就是空字符串（作者自己决定要不要留位）
   const displayValue = empty ? (placeholder ?? '') : value
   const submitMode = prop('submitMode') ?? EDITABLE_DEFAULT_SUBMIT_MODE
   const activationMode: EditableActivationMode = prop('activationMode') ?? EDITABLE_DEFAULT_ACTIVATION_MODE
   const autoResize = !!prop('autoResize')
   const maxLength = prop('maxLength')
   const stateAttr = editing ? 'edit' : 'preview'
-  // 预览区认不认交互：模式为 none、或整个控件不可编辑时，它就只是一段文字
   const previewActivates = interactive && activationMode !== 'none'
 
-  /**
-   * 预览区的 Tab 位：
-   * - focus 模式下它是进编辑态的入口，必须占一个 Tab 位；
-   * - 其余可编辑的模式给 -1：正常的键盘入口是 edit-trigger 那颗按钮，
-   *   但退出编辑态时焦点要还回预览区，没有 tabindex 就 focus 不上去，焦点会掉进 body；
-   * - 不可编辑时干脆不给：一个停下来什么都做不了的 Tab 位只会碍事。
-   */
+  // -1 这档不能删：退出编辑态要把焦点还回预览区，没有 tabindex 就 focus 不上去
   const previewTabIndex = !interactive ? undefined : activationMode === 'focus' ? 0 : -1
 
   const startEdit = (src: 'preview' | 'edit-trigger' | 'label'): void => {
@@ -52,11 +44,10 @@ export function connectEditable<T extends PropTypes>(
       send({ type: 'EDIT.START', src })
   }
 
-  // 提交/取消按钮按下时把焦点摁在输入框里：按钮一旦抢走焦点，输入框先派 blur、
-  // 机器当场按 submitMode 收尾并把按钮收起，随后那一下 click 就再也落不到按钮上
-  // （submitMode=none 时更糟：blur 走的是撤销，用户点的明明是"保存"）
+  // 提交/取消按钮按下时把焦点摁在输入框里：按钮抢走焦点会让输入框先派 blur、机器按
+  // submitMode 收尾并把按钮收起，那一下 click 就落不到按钮上了
   const holdFocus = (event: { button?: number, preventDefault: () => void }): void => {
-    // 只认主键：右键要留给上下文菜单
+    // 只认主键，右键留给上下文菜单
     if (event.button != null && event.button !== 0)
       return
     event.preventDefault()
@@ -79,7 +70,6 @@ export function connectEditable<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
-      // 预览区、输入框与三颗按钮在读屏那里是一件东西，靠 group 兜住，名字由 label 提供
       'role': 'group',
       'aria-labelledby': ids.label,
       'data-state': stateAttr,
@@ -92,8 +82,7 @@ export function connectEditable<T extends PropTypes>(
     getLabelProps: () => normalize.label({
       ...parts.label.attrs,
       'id': ids.label,
-      // for 指向真正的输入框：预览态它是收起的，点标题不会有任何反应，
-      // 所以另接一条 onClick 把人送进编辑态——否则这块标题在预览态形同虚设
+      // 预览态输入框是收起的，点 label 不会触发原生行为，靠下面的 onClick 进编辑态
       'for': ids.input,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
@@ -113,19 +102,18 @@ export function connectEditable<T extends PropTypes>(
     getPreviewProps: () => normalize.element({
       ...parts.preview.attrs,
       'id': ids.preview,
-      // 编辑态收起而不是卸载：预览区是作者写的节点，替他删掉他就再也拿不回来
+      // 用 hidden 收起而非卸载：节点由作者提供，卸载后拿不回来
       'hidden': editing || undefined,
       'tabindex': previewTabIndex,
-      // 预览区是个普通节点、挂不了原生 disabled，只能显式说明；
-      // 省略是"没说"，显式 false 是"明确说了不是"，读屏对两者处理不同
+      // 预览区挂不了原生 disabled；这里必须显式 'false' 而非省略，读屏对两者处理不同
       'aria-disabled': disabled ? 'true' : 'false',
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
-      // 显示的是占位文字而不是真值，皮肤据此把颜色压淡
+      // 供皮肤区分"显示的是占位文字"与"显示的是真值"
       'data-placeholder': dataAttr(empty),
-      // 皮肤据此决定光标形状：认交互的才给 text 光标
+      // 供皮肤决定光标形状
       'data-activation-mode': activationMode,
       'onClick': () => {
         if (activationMode === 'click')
@@ -138,9 +126,7 @@ export function connectEditable<T extends PropTypes>(
       'onFocus': (event: FocusEvent) => {
         if (activationMode !== 'focus')
           return
-        // 退出编辑态时焦点是从自己那个输入框还回来的，这一下不能再把人送回编辑态，
-        // 否则 focus 模式下一提交就被拽回去，永远出不来。
-        // 判据用输入框的 id（每个实例各不相同），同页两个 editable 不会互相误伤
+        // 焦点从本实例输入框还回来的这一下不得再进编辑态，否则 focus 模式一提交就被拽回去
         const from = event.relatedTarget as { id?: string } | null
         if (from?.id === ids.input)
           return
@@ -155,52 +141,46 @@ export function connectEditable<T extends PropTypes>(
       'name': prop('name'),
       'value': value,
       'placeholder': placeholder,
-      // 原生 maxlength 负责挡住键盘输入（还带来输入法与粘贴的正确行为），
-      // 机器侧的截断负责挡住绕过键盘的那一路，两道并存不是重复
+      // 原生 maxlength 挡键盘输入这一路，机器侧截断挡绕过键盘的那一路，两道并存
       'maxlength': maxLength,
-      // 宽度跟着内容走：size 是纯粹由值算出来的，连接层因此不必去量 DOM
+      // connect 在 render 期求值、不得读 DOM，宽度只能用由值算出的原生 size
       'size': autoResize ? editableInputSize(value, placeholder) : undefined,
       'disabled': disabled || undefined,
       'readonly': readOnly || undefined,
-      // 作者把 label 换成非 <label> 元素时 for 会失效，这条兜住名字
+      // label 部件若不是 <label> 元素，for 会失效，靠这条兜住可访问名
       'aria-labelledby': ids.label,
       'aria-invalid': invalid ? 'true' : 'false',
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-invalid': dataAttr(invalid),
       'data-auto-resize': dataAttr(autoResize),
-      // 预览态收起而不是卸载：常挂着才留得住输入法状态与作者挂在它身上的东西
+      // 用 hidden 收起而非卸载：常挂着才留得住输入法状态与作者挂在节点上的东西
       'hidden': !editing || undefined,
       'onInput': (event: Event) => {
         send({ type: 'VALUE.SET', value: (event.target as HTMLInputElement).value })
       },
-      // 失焦的收尾归机器判（EDIT.LEAVE 只在编辑态被接住）：
-      // 退出编辑态时我们会主动把焦点还给预览区，输入框随之派一条 blur，
-      // 那一条落在预览态上无人接管，正是想要的结果
+      // 收尾归机器判：EDIT.LEAVE 只在编辑态被接住，退出时还焦点带出的那条 blur 无人接管
       'onBlur': () => send({ type: 'EDIT.LEAVE', src: 'blur' }),
       'onKeyDown': (event: KeyboardEvent) => {
         if (!editing || event.ctrlKey || event.metaKey || event.altKey)
           return
         if (event.key === 'Escape') {
-          // 拦下浏览器自己那套 Escape（部分浏览器会把输入框回滚到默认值），
-          // 免得两套撤销各撤各的
+          // 拦下浏览器自带的 Escape 回滚（部分浏览器会把输入框还原到默认值），免得两套撤销打架
           event.preventDefault()
           send({ type: 'EDIT.CANCEL', src: 'escape' })
           return
         }
         if (event.key === 'Enter') {
-          // 这个模式下回车不算提交就把键原样交回去：多行输入靠它换行，
-          // 外层表单靠它提交，吞掉等于把这两条路一起堵死
+          // 回车不算提交时把键原样交回去：多行输入靠它换行、外层表单靠它提交
           if (!submitsOnEnter(submitMode))
             return
-          // 拦下的是"顺带提交外层 form"这条默认行为：提交由组件自己收口
+          // 拦下"顺带提交外层 form"的默认行为，提交由组件收口
           event.preventDefault()
           send({ type: 'EDIT.SUBMIT', src: 'enter' })
           return
         }
         if (event.key === 'Tab') {
-          // 不拦默认行为：Tab 得照常把焦点送到下一个控件去，
-          // 这里只决定这次编辑怎么收尾（提交还是撤销，由 submitMode 说了算）
+          // 不拦默认行为，Tab 照常移焦；这里只决定这次编辑按 submitMode 提交还是撤销
           send({ type: 'EDIT.LEAVE', src: 'tab' })
         }
       },
@@ -210,11 +190,9 @@ export function connectEditable<T extends PropTypes>(
       ...parts['edit-trigger'].attrs,
       'type': 'button',
       'aria-controls': ids.input,
-      // 单体控件用原生 disabled（不是集合条目那套 aria-disabled）：
-      // 只给 data-disabled 的话按钮照样可聚焦、读屏照念"可点"，按下去却什么都不发生
+      // 用原生 disabled 而非 aria-disabled：只给 data-disabled 的话按钮仍可聚焦、读屏仍念"可点"
       'disabled': !interactive || undefined,
       'data-disabled': dataAttr(!interactive),
-      // 编辑态里它没有活儿干，收起而不是卸载
       'hidden': editing || undefined,
       'data-state': stateAttr,
       'onClick': () => startEdit('edit-trigger'),

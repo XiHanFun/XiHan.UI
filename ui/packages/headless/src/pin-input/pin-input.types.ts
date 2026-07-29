@@ -1,10 +1,7 @@
 import type { PropTypes } from '@xihan-ui/core'
 import type { MachineSchema } from '@xihan-ui/machine'
 
-/**
- * 每格接受的字符类别。同时决定两件事：
- * 过滤规则（不接受的字符直接丢弃，既不进值也不留在框里）与移动端弹哪种键盘。
- */
+/** 每格接受的字符类别：决定字符过滤规则与移动端键盘类型。 */
 export type PinInputType = 'numeric' | 'alphanumeric' | 'alphabetic'
 
 export interface PinInputValueChangeDetails {
@@ -16,9 +13,7 @@ export interface PinInputValueChangeDetails {
 
 /**
  * 格子自报家门：下标由作者在部件上声明，connect 据此产出属性。
- * connect 因此是 (context/prop, 本格声明) 的纯函数，不在连接期反查 DOM——
- * Vue 侧 connect 在 render 期求值（本帧 DOM 还不存在），WC 侧在 updated 后求值（DOM 已就位），
- * 连接期读 DOM 会让两个适配器的首帧快照分叉。
+ * connect 在 render 期求值，此时 DOM 尚不存在，不得读 DOM。
  */
 export interface PinInputInputProps {
   index: number

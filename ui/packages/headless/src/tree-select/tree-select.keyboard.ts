@@ -3,7 +3,7 @@ import type { KeyboardTable } from '../spec/types'
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/combobox/#keyboardinteraction'
 
 // 收起态的键盘入口与 Select 同构（trigger 上一个 Tab 位，方向键与确认键都展开浮层）；
-// 展开之后焦点真的进树，所有「走一行」的键都在**可见行序列**上走，收起分支的子树一行不算。
+// 展开之后焦点真的进树，所有走一行的键都在可见行序列上走，收起分支的子树一行不算。
 // 左右键在树里不是同轴导航，而是层级操作（展开/收起、进子层/回父层）。
 export const treeSelectKeyboard: KeyboardTable = {
   component: 'tree-select',

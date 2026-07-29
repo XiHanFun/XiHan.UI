@@ -3,7 +3,7 @@ import { DATA_PART, DATA_SCOPE } from './constants'
 
 export interface AnatomyPart {
   readonly attrs: Readonly<Record<string, string>>
-  /** CSS 属性选择器，用于文档/测试，不用于运行时查节点。 */
+  /** CSS 属性选择器。 */
   readonly selector: string
 }
 

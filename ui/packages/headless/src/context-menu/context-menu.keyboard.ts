@@ -1,7 +1,6 @@
 import type { KeyboardTable } from '../spec/types'
 
-// 右键菜单没有独立的 APG 模式：浮层展开后的键盘行为逐条对齐 menu，
-// 差别只在入口——指针端是右键/长按，键盘端是菜单键与 Shift+F10。
+// APG 无右键菜单模式：展开后的键盘行为对齐 menu，差别只在入口。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/menu/#keyboardinteraction'
 
 export const contextMenuKeyboard: KeyboardTable = {

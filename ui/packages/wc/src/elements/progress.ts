@@ -3,8 +3,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
 /**
- * `<xh-progress>` —— Light-DOM 行为宿主，无状态机：宿主属性即 progress props，
- * wire 时算 connectProgress 打到 root/track/range 三个角色节点。
+ * `<xh-progress>` —— Light-DOM 行为宿主，无状态机，把 connectProgress 产出打到 root/track/range 角色节点。
  *
  * @customElement xh-progress
  * @attr {number} value - 当前进度值，越界会被夹到 [0, max]，默认 0
@@ -33,9 +32,7 @@ export class XhProgressElement extends XhElement {
     const range = this.getPart('range')
     if (!range)
       return
-    // getRangeProps 的 style 是对象（{ inlineSize: 'NN%' }），而 spreader 对非事件键一律
-    // setAttribute(key, String(value))，直接 spread 会写出 style="[object Object]"。
-    // 故把 style 摘出来写成内联样式，其余键照常 spread。
+    // style 是对象，摘出来单独写成内联样式，其余键照常 spread。
     const { style, ...attrs } = api.getRangeProps() as Record<string, unknown> & { style?: { inlineSize?: string } }
     this.spreader.spread(range, attrs)
     range.style.inlineSize = style?.inlineSize ?? ''

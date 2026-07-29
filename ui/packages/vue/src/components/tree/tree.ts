@@ -8,16 +8,7 @@ import { useTree } from './use-tree'
 
 type TreeProps = TreeSchema['props']
 
-/**
- * 承载焦点的节点被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：
- * 容器判自己"焦点在树内"退出 Tab 序列，又没有节点认领得了这个锚点，
- * 整棵树零个 Tab 停靠点，键盘用户再也进不来。卸载前把焦点离场如实上报，
- * 且只有自己正持有焦点时才报——否则删掉任一无关节点都会把光标一并清掉。
- *
- * v-for 不带 key 时 Vue 会就地复用节点：被删的是"最后一个组件实例"，
- * 而持有焦点的那个 DOM 节点还在、value 却被改成了别的节点。此时锚点仍指着旧值、
- * 已无人认领，键盘就此失灵。自己正持有焦点且 value 变了，就按新值重报一次。
- */
+/** 本节点持有焦点时，value 变更重报焦点节点，卸载时上报整树失焦 */
 function reportNodeFocus(ctx: TreeContext, el: Ref<HTMLElement | null>, value: () => string): void {
   watch(value, (next, prev) => {
     if (next === prev)
@@ -30,11 +21,10 @@ function reportNodeFocus(ctx: TreeContext, el: Ref<HTMLElement | null>, value: (
   })
   onBeforeUnmount(() => {
     const { service } = ctx
-    // 整棵树一起卸载时根部件先停机，此刻无焦点可言（送事件还会在 dev 下抛）
+    // 整组一起卸载时根部件先停机，此刻送事件会在 dev 下抛
     if (service.getStatus() !== 'Started')
       return
-    // 判据是「本节点当下正持有焦点」，不是「值对得上」：v-for 就地复用时
-    // 被卸载的是末位实例、它的 value 可能恰好等于刚纠正过的锚点，按值判会把好端端的锚点清掉
+    // 按「本节点当下正持有焦点」判定，不按 value 比对
     if (el.value && service.scope.getActiveElement() === el.value)
       service.send({ type: 'TREE.BLUR' })
   })
@@ -42,9 +32,7 @@ function reportNodeFocus(ctx: TreeContext, el: Ref<HTMLElement | null>, value: (
 
 export const XhTreeRoot = defineComponent({
   name: 'XhTreeRoot',
-  // 缺省值的唯一事实源在 connect —— 凡是 connect 有兜底的一律 default: undefined
-  // （expandOnClick 与 typeahead 尤其：裸 Boolean 声明会把缺省压成 false，
-  // 点行展开与连打检索就默默关掉了）
+  // 有 connect 兜底的 prop 一律 default: undefined
   props: {
     collection: { type: Array as PropType<TreeNode[]>, default: undefined },
     expandedValue: { type: Array as PropType<string[]>, default: undefined },
@@ -58,8 +46,7 @@ export const XhTreeRoot = defineComponent({
     typeahead: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
   },
-  // expanded-change / selection-change 携带 { value }；update:* 携带裸集合，支持 v-model。
-  // 回传的恒是数组（单选也是长度 ≤ 1 的数组），形状不随模式变
+  // *-change 携带 { value }，update:* 携带裸集合；回传值恒为数组，单选时长度 ≤ 1
   emits: ['expanded-change', 'update:expandedValue', 'selection-change', 'update:selectedValue'],
   setup(props, { slots, emit }) {
     const onExpandedChange: TreeProps['onExpandedChange'] = (details) => {
@@ -147,8 +134,7 @@ export const XhTreeBranch = defineComponent({
   setup(props, { slots }) {
     const ctx = useTreeContext()
     const node = computed<TreeNodeProps>(() => ({ value: props.value }))
-    // 分支自己也是 treeitem：它的子部件（control/trigger/text/indicator/content）
-    // 认这一份声明，而长在 branch-content 里的子节点会各自再 provide 一层，互不串味
+    // 分支自身也是 treeitem，供其子部件读取；子节点各自再 provide 一层
     provideTreeNode({ node })
     const el = ref<HTMLElement | null>(null)
     reportNodeFocus(ctx, el, () => props.value)
@@ -201,7 +187,7 @@ export const XhTreeBranchContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeContext()
     const { node } = useTreeNodeContext()
-    // 收起只加 hidden，不卸载作者节点：子树里的业务 DOM 与滚动位置都得留着
+    // 收起只加 hidden，不卸载子树节点
     return () => h('div', ctx.api.value.getBranchContentProps(node.value) as Record<string, unknown>, slots.default?.())
   },
 })

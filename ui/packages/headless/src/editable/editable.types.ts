@@ -9,7 +9,6 @@ import type { MachineSchema } from '@xihan-ui/machine'
  * - none：只有提交按钮与 api.submit() 算提交
  *
  * 不算提交的那些出口（离焦、Tab）一律按撤销处理：把值还回上一次提交的那个。
- * 留着未提交的编辑值回到预览态，界面就会显示一个宿主从没收到过的值。
  */
 export type EditableSubmitMode = 'blur' | 'enter' | 'both' | 'none'
 
@@ -20,12 +19,12 @@ export type EditableSubmitMode = 'blur' | 'enter' | 'both' | 'none'
  * - focus：焦点落到预览区即进（预览区因此占一个 Tab 位）
  * - none：预览区不认任何交互，只能走编辑按钮
  *
- * 无论哪种模式，edit-trigger 与 api.edit() 都能进编辑态：它是键盘用户的正门。
+ * 无论哪种模式，edit-trigger 与 api.edit() 都能进编辑态。
  */
 export type EditableActivationMode = 'click' | 'dblclick' | 'focus' | 'none'
 
 export interface EditableValueChangeDetails {
-  /** 输入框里的当下值；编辑途中每敲一下都会来一条，未必是最终提交的那个。 */
+  /** 输入框里的当下值；编辑途中每敲一下都会来一条。 */
   value: string
 }
 
@@ -47,8 +46,7 @@ export interface EditableEditChangeDetails {
   edit: boolean
 }
 
-// 适配器在挂载前填入元素 getter；纯逻辑测试与 SSR 下保持缺省，
-// 此时焦点副作用一律短路（状态照常转移，只是不搬焦点）。
+// 适配器在挂载前填入元素 getter；纯逻辑测试与 SSR 下保持缺省，此时焦点副作用一律短路。
 export interface EditableRefs {
   /** 编辑态的输入框；进编辑态后焦点搬进它。 */
   getInputEl: () => HTMLElement | null
@@ -74,7 +72,7 @@ export interface EditableSchema extends MachineSchema {
     readOnly?: boolean
     /** 校验失败标注。 */
     invalid?: boolean
-    /** 字符数上限。同时落成原生 maxlength 与机器侧的截断，两道都要。 */
+    /** 字符数上限；同时落成原生 maxlength 与机器侧截断。 */
     maxLength?: number
     /** 表单字段名；给了输入框才参与提交。 */
     name?: string
@@ -108,7 +106,7 @@ export interface EditableSchema extends MachineSchema {
   event:
     /** 进编辑态意图（预览区激活、编辑按钮、api.edit）。禁用/只读时整条被吃掉。 */
     | { type: 'EDIT.START', src?: 'preview' | 'edit-trigger' | 'label' }
-    /** 提交意图。进得来就出得去，不再看 disabled/readOnly。 */
+    /** 提交意图；不看 disabled/readOnly。 */
     | { type: 'EDIT.SUBMIT', src?: 'enter' | 'submit-trigger' }
     /** 撤销意图：值还回上一次提交的那个。 */
     | { type: 'EDIT.CANCEL', src?: 'escape' | 'cancel-trigger' }

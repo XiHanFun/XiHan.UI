@@ -11,7 +11,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 export interface SplitterContext {
   api: ComputedRef<SplitterApi>
   service: Service<SplitterSchema>
-  /** 容器节点。机器在拖拽开始那一刻拿它量矩形，connect 一律不碰 DOM。 */
+  /** 容器节点，机器在拖拽开始时拿它量矩形。 */
   rootRef: Ref<HTMLElement | null>
 }
 
@@ -24,10 +24,9 @@ export function useSplitter(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  // 两个回调由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const service = useMachine(splitterMachine, () => ({ ...props, onSizeChange, onSizeChangeEnd }), scope)
 
-  // 懒读而不是把节点直接塞进去：ref 在挂载后才有值，机器建起来的那一刻还是 null
+  // 传 getter 而非节点，ref 在挂载后才有值
   service.refs.set('getRootEl', () => rootRef.value)
 
   const api = computed(() => connectSplitter(service, vueNormalize))

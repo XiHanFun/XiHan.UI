@@ -2,10 +2,7 @@ import type { KeyboardTable } from '../spec/types'
 
 const APG = 'https://www.w3.org/WAI/WCAG21/Techniques/general/G202'
 
-// 组件不监听任何按键：滚动条被藏起来另画了一套，滚动本身仍是浏览器的。
-// 这张表因此记的是"平台替我们做了什么"，以及我们唯一动过的那一处（视口占一个 Tab 位）。
-// 每一行都对应一条"不许接管"的约束——哪天有人在视口上加了 keydown 处理器并 preventDefault，
-// 一致性用例会当场变红。
+// 组件不监听任何按键，滚动仍归浏览器；表里记的是平台行为，以及唯一动过的视口 Tab 位。
 export const scrollAreaKeyboard: KeyboardTable = {
   component: 'scroll-area',
   source: APG,

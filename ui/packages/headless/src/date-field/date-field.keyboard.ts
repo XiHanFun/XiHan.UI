@@ -1,8 +1,7 @@
 import type { KeyboardTable } from '../spec/types'
 
-// 分段日期不在 APG 的模式清单里，最接近的规范面是 spinbutton：
-// 每一段都是一个 role=spinbutton 的节点，上下键加减、数字键直填，
-// 这里额外定义的只是"段与段之间怎么走"。
+// APG 无分段日期模式，最接近的是 spinbutton：每一段都是 role=spinbutton，
+// 这里额外定义的只是段与段之间怎么走。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/spinbutton/#keyboardinteraction'
 
 export const dateFieldKeyboard: KeyboardTable = {

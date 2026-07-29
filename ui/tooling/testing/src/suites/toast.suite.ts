@@ -101,9 +101,8 @@ export const toastSuite: ConformanceSuite = {
     {
       name: '到点自动退场：先转 dismissing，走完退场窗口转 unmounted，内容一个也不卸载',
       spec: { apg: APG },
-      // duration 给得比挂载耗时宽裕：太紧的话第一条 status-change 可能在挂载帧就已经发出，
-      // 事件断言会落到错的那一帧。removeDelay 同样给足——退场窗口太窄，
-      // 轮询式的等待会一步跨过 dismissing 直接看到 unmounted
+      // duration 与 removeDelay 都给足：太紧时事件断言会落到错的帧，
+      // 退场窗口太窄则轮询式等待会一步跨过 dismissing。
       props: { id: 't1', duration: 100, removeDelay: 300 },
       steps: [
         {
@@ -119,7 +118,7 @@ export const toastSuite: ConformanceSuite = {
           kind: 'settle',
           until: { attr: { part: 'root', name: 'data-state', value: 'unmounted' } },
           expect: {
-            // 收起而不是卸载：作者写在里面的节点归作者，删不删由队列说了算
+            // 收起而不是卸载：作者写在里面的节点归作者
             counts: { 'root': 1, 'title': 1, 'description': 1, 'action-trigger': 1, 'close-trigger': 1 },
             parts: { root: { 'data-state': 'unmounted', 'hidden': '' } },
             events: [{ type: 'status-change', detail: { id: 't1', status: 'unmounted' } }],
@@ -171,7 +170,6 @@ export const toastSuite: ConformanceSuite = {
           'close-trigger': {
             'disabled': '',
             'data-disabled': '',
-            // 留一个按不动的叉，比压根没有叉更让人困惑
             'hidden': '',
           },
         },
@@ -201,8 +199,7 @@ export const toastSuite: ConformanceSuite = {
 
             root.dispatchEvent(new Event('pointerenter'))
 
-            // 按住期间等 400ms —— 比剩下的 300ms 还长：暂停没生效的话这里就已经退场了。
-            // 属性要等适配器把这一帧提交到 DOM 才看得见，所以两条断言都放在等待之后
+            // 按住期间等 400ms，比剩下的 300ms 还长；属性要等适配器提交到 DOM 才看得见
             await sleep(400)
             expectState(doc, 'visible', '暂停期间不该消耗预算')
             if (root.getAttribute('data-paused') !== '')
@@ -225,7 +222,7 @@ export const toastSuite: ConformanceSuite = {
     {
       name: '焦点落进通知内部也按住计时，焦点离场才放开',
       spec: { apg: APG },
-      // duration=0 时没有计时器，但暂停来源照样记账：这里验的正是那本账
+      // duration=0 时没有计时器，但暂停来源照样记账
       props: { duration: 0 },
       steps: [
         {
@@ -287,7 +284,7 @@ export const toastSuite: ConformanceSuite = {
     {
       name: '作者没写文案时由适配器填入 title / description',
       spec: { apg: APG },
-      // 两个部件都空着：队列里的条目是纯数据，文案本来就来自那边
+      // 两个部件都空着：队列里的条目是纯数据，文案来自那边
       fixture: () => ({
         part: 'root',
         children: [

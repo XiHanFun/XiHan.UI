@@ -1,10 +1,7 @@
 import type { Direction, Orientation, PropTypes } from '@xihan-ui/core'
 import type { MachineSchema } from '@xihan-ui/machine'
 
-/**
- * 按住自动播放的来源。可同时有多个按住，最后一个松开才继续走——
- * 只记一个布尔的话，鼠标一移开就把仍用键盘停在轮播里的人的计时放开了。
- */
+/** 按住自动播放的来源。可同时有多个按住，最后一个松开才继续走。 */
 export type CarouselPauseSource = 'pointer' | 'focus' | 'api'
 
 export interface CarouselPageChangeDetails {
@@ -14,9 +11,7 @@ export interface CarouselPageChangeDetails {
 
 /**
  * 条目自报家门：下标由作者在部件上声明，connect 据此产出属性。
- * connect 因此是 (context/prop, 本条目声明) 的纯函数，不反查 DOM——
- * Vue 侧 connect 在 render 期求值（本帧 DOM 还不存在），WC 侧在 updated 后求值（DOM 已就位），
- * 连接期读 DOM 会让两个适配器的首帧快照分叉。
+ * connect 在 render 期求值，此时 DOM 尚不存在，不得读 DOM。
  */
 export interface CarouselItemProps {
   /** 条目下标，0 基。 */
@@ -30,18 +25,17 @@ export interface CarouselIndicatorProps {
 
 /** 读屏用的文案。默认英文，与 dialog / pagination 的 translations 同一套写法。 */
 export interface CarouselTranslations {
-  /** 根节点（region 地标）的名字：一页上可能有好几条轮播，不给名字读屏就分不出这是哪一条。 */
+  /** 根节点（region 地标）的名字。 */
   root: string
   prevTrigger: string
   nextTrigger: string
   /** 指示点容器的名字。 */
   indicatorGroup: string
-  /** 指示点按钮文案；只有一颗圆点的按钮读起来是空的。入参是 1 基页码。 */
+  /** 指示点按钮文案，入参是 1 基页码。 */
   indicator: (page: number) => string
   /**
    * 条目文案，入参是 1 基张号与总张数。
-   * 默认只给 "1 of 6" 这样一串：条目上已经有 aria-roledescription="slide"，
-   * 再在文案里写一遍 "slide" 会让读屏念出"幻灯片，幻灯片 1 之 6"。
+   * 默认只给 "1 of 6"：条目上已有 aria-roledescription="slide"，文案里不再重复。
    */
   item: (index: number, count: number) => string
 }
@@ -50,15 +44,12 @@ export interface CarouselSchema extends MachineSchema {
   props: {
     /**
      * 当前页，0 基。给定即受控：内部不再自改，只发 onPageChange。
-     * 页不是张——一页可能同时露出好几张（见 slidesPerPage）。
+     * 页不是张：一页可能同时露出好几张（见 slidesPerPage）。
      */
     page?: number
     /** 非受控初始页，默认 0。 */
     defaultPage?: number
-    /**
-     * 条目总数。作者声明，不从 DOM 数：数 DOM 就得让机器在每次增删后重新结算，
-     * 两个适配器的结算时机不同，首帧会分叉。
-     */
+    /** 条目总数，由作者声明，不从 DOM 数。 */
     slideCount?: number
     /** 一屏放几张，默认 1。 */
     slidesPerPage?: number
@@ -71,7 +62,7 @@ export interface CarouselSchema extends MachineSchema {
      * 轨道也要往正方向位移。纵向轨道不受它影响。
      */
     dir?: Direction
-    /** 走到尽头是否回绕，默认 false（轮播不同于列表导航，默认不该悄悄绕回开头）。 */
+    /** 走到尽头是否回绕，默认 false。 */
     loop?: boolean
     /**
      * 自动播放。true 用默认间隔，数值即毫秒间隔；缺省 / false / 非正数一律不自动播放。
@@ -146,7 +137,7 @@ export interface CarouselApi<T extends PropTypes = PropTypes> {
   pageSnapPoints: number[]
   canScrollPrev: boolean
   canScrollNext: boolean
-  /** 自动播放的计时正在走。样式层据此暂停指示器动画，读屏活区也据此闭麦。 */
+  /** 自动播放的计时正在走。 */
   autoplaying: boolean
   /** 自动播放开着但被按住（悬停 / 焦点 / 调用方）。 */
   paused: boolean
@@ -156,7 +147,7 @@ export interface CarouselApi<T extends PropTypes = PropTypes> {
   setPage: (page: number) => void
   goToPrev: () => void
   goToNext: () => void
-  /** 开始自动播放；autoplay prop 没给出正的间隔时无事发生（间隔的事实源只有 prop 一处）。 */
+  /** 开始自动播放；autoplay prop 没给出正的间隔时无事发生。 */
   play: () => void
   /** 按住计时（来源记为 api），与悬停 / 焦点叠加计数。 */
   pause: () => void

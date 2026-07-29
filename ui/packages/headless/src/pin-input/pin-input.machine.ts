@@ -4,7 +4,7 @@ import { setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<PinInputSchema>()
 
-/** 默认格数：短信验证码最常见的长度。 */
+/** 默认格数。 */
 export const PIN_INPUT_LENGTH = 6
 
 /**
@@ -17,16 +17,13 @@ const PIN_PATTERNS: Record<PinInputType, RegExp> = {
   alphanumeric: /^[a-z0-9]$/i,
 }
 
-/**
- * 按 type 过滤：不接受的字符直接丢弃（不是替换成占位、也不是整串作废），
- * 剩下的按原顺序拼回去。展开成码点再过滤，代理对不会被劈成两半留下半个字符。
- */
+/** 按 type 过滤字符：不接受的直接丢弃，按码点展开后保序拼回（代理对不会被劈成半个字符）。 */
 export function sanitizePin(raw: string, type: PinInputType = 'numeric'): string {
   const pattern = PIN_PATTERNS[type] ?? PIN_PATTERNS.numeric
   return [...raw].filter(char => pattern.test(char)).join('')
 }
 
-/** 格数归一：非正数与非整数都退回默认值，否则值的长度会跟着一起坏掉。 */
+/** 格数归一：非正数与非整数都退回默认值。 */
 export function pinLength(length: number | undefined): number {
   if (length == null || !Number.isFinite(length) || length < 1)
     return PIN_INPUT_LENGTH
@@ -34,8 +31,7 @@ export function pinLength(length: number | undefined): number {
 }
 
 /**
- * 值归一到 length：短了补空串、长了截断，且每格只留首字符。
- * 读侧与写侧都过这一道，"一格一个字符"因此不依赖调用方自觉。
+ * 值归一到 length：短了补空串、长了截断，且每格只留首字符（读写两侧都过这一道）。
  * 这里不按 type 过滤——受控值是宿主说了算的，读的时候擅自改写会让界面与宿主各说各话。
  */
 export function padPinValue(value: readonly string[] | undefined, length: number): string[] {
@@ -50,7 +46,7 @@ export function isPinComplete(value: readonly string[]): boolean {
   return value.length > 0 && value.every(char => char !== '')
 }
 
-/** 逐格比对。数组每次都是新引用，不比内容的话值没变也会通知一遍。 */
+/** 逐格比内容，供 cell 的 isEqual 用。数组每次都是新引用，不比内容的话值没变也会通知一遍。 */
 export function samePinValue(a: readonly string[], b: readonly string[] | undefined): boolean {
   return !!b && a.length === b.length && a.every((char, i) => char === b[i])
 }
@@ -60,10 +56,9 @@ function detailsOf(value: string[]): { value: string[], valueAsString: string } 
 }
 
 /**
- * 值的唯一写入口：真变了才落，落完再判是否刚好填满。
- * 完成回调挂在这里而不是单独一个动作，是为了拿得到"写之前"的值——
- * 没有它就分不清"这一次填满了"与"本来就满着又写了一遍同样的值"，
- * blurOnComplete 会因此在用户每敲一下末格时都把焦点抢走。
+ * 值的唯一写入口：与旧值不同才落，落完再判是否刚好填满。
+ * 完成回调挂在这里而不是单独一个动作，是为了拿得到"写之前"的值——没有它就分不清
+ * "这一次填满了"与"本来就满着又写了一遍同样的值"，blurOnComplete 会因此在用户每敲一下末格时都把焦点抢走。
  */
 function commitValue(params: Params<PinInputSchema>, next: string[]): void {
   const { context, prop } = params
@@ -76,23 +71,18 @@ function commitValue(params: Params<PinInputSchema>, next: string[]): void {
     prop('onValueComplete')?.(detailsOf(next))
 }
 
-/**
- * 值住在 context 的 cell 里，不编码进状态：cell 本身就是受控/非受控的收口点
- * （value prop 给定即受控，读直取 prop，写只发 onValueChange 不落内部值），
- * 因此不需要影子事件与受控守卫。机器只有一个状态，逻辑全在 context + actions。
- */
+/** 值存在 context 的 cell 里由其收口受控/非受控；机器只有一个状态，逻辑全在 context 与 actions。 */
 export const pinInputMachine = createMachine({
   name: 'pin-input',
   context: ({ prop, cell }) => ({
     value: cell<string[]>(() => ({
       value: prop('value'),
       defaultValue: prop('defaultValue') ?? [],
-      // 逐格比内容而不是比引用：不给 isEqual 的话，每次写入都产出新数组，
-      // 值原样不动也会通知宿主一遍，受控宿主会被自己的回写绕成死循环
+      // 逐格比内容而不是比引用，值原样不动时不通知宿主
       isEqual: samePinValue,
       onChange: value => prop('onValueChange')?.(detailsOf(value)),
     })),
-    // 焦点锚点：不受控、不对外通知，只服务 data-focus 标记
+    // 焦点锚点，只服务 data-focus 标记
     focusedIndex: cell<number>(() => ({ defaultValue: -1 })),
   }),
   initialState: () => 'idle',
@@ -111,7 +101,7 @@ export const pinInputMachine = createMachine({
   },
   implementations: {
     guards: {
-      // 禁用时原生 disabled 本就挡住了真实交互，这道守卫挡的是直接派事件那一路
+      // 挡住绕过原生 disabled、直接派事件那一路
       canEdit: ({ prop }) => !prop('disabled'),
     },
     actions: {
@@ -121,7 +111,7 @@ export const pinInputMachine = createMachine({
           return
         const length = pinLength(params.prop('length'))
         const type = params.prop('type') ?? 'numeric'
-        // 整份替换是一次彻底的写入，按 type 过滤：塞不进去的字符留下的是空格子，不是脏字符
+        // 整份替换按 type 过滤，不接受的字符留下空格子
         const next = padPinValue(e.value, length).map(char => sanitizePin(char, type))
         commitValue(params, next)
       },
@@ -132,7 +122,7 @@ export const pinInputMachine = createMachine({
         const length = pinLength(params.prop('length'))
         const type = params.prop('type') ?? 'numeric'
         const next = padPinValue(params.context.get('value'), length)
-        // 从落点起逐格铺开，铺到末格为止：多出来的字符丢掉，而不是绕回开头把已填的覆盖掉
+        // 从落点起逐格铺到末格，多出来的字符丢掉
         const chars = [...sanitizePin(e.value, type)]
         for (let i = 0; i < chars.length && e.index + i < length; i++)
           next[e.index + i] = chars[i]!

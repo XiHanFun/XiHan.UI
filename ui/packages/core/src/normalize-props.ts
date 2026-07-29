@@ -1,6 +1,4 @@
-// props-getter 归一化协议。
-// headless connect() 产出「框架无关的 prop 字典」，适配器提供 NormalizeProps 把它映射到
-// 各自框架的 VNode props（如 Vue 的 class/onClick，React 的 className/onClick）。
+// props-getter 归一化协议：把框架无关的 prop 字典映射为目标框架的 props。
 import type { Dict } from './types'
 
 /** 各类元素的 prop 类型占位（适配器泛型特化）。 */
@@ -16,10 +14,7 @@ export interface PropTypes<T = Dict> {
   style: Dict
 }
 
-/**
- * 归一化器：把 connect 产出的原始 prop 字典转换为目标框架 props。
- * 每种元素类型一个 getter；core 提供恒等实现，适配器覆盖。
- */
+/** 归一化器：把原始 prop 字典转换为目标框架 props，每种元素类型一个 getter。 */
 export type NormalizeProps<T extends PropTypes = PropTypes> = {
   [K in keyof Omit<T, 'style'>]: (props: Dict) => T[K]
 }
@@ -39,5 +34,5 @@ export function createNormalizer<T extends PropTypes>(transform: (props: Dict) =
   })
 }
 
-/** 恒等归一化器（vanilla / 测试用）：原样返回 prop 字典。 */
+/** 恒等归一化器：原样返回 prop 字典。 */
 export const normalizeProps: NormalizeProps = createNormalizer(props => props)

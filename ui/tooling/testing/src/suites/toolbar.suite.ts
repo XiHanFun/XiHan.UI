@@ -6,9 +6,8 @@ const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/'
 const KBD = `${APG}#keyboardinteraction`
 const ARIA = `${APG}#roles_states_properties`
 
-// 两种禁用声明都要摘：WC 侧的 conformance 会先把 fixture 里的 disabled 统一改写成
-// aria-disabled，再把这里当作"从改写后的树派生"的函数调用。只摘 disabled 的话，
-// 改写过的那条禁用会原样留下，条目照样被导航跳过——用例名说着"全部放开"，实际没放开。
+// 两种禁用声明都要摘：WC 侧 conformance 会先把 fixture 里的 disabled 改写成 aria-disabled，
+// 只摘 disabled 的话，改写过的那条会原样留下。
 function stripDisabled(node: FixtureNode): FixtureNode {
   const attrs = node.attrs ? { ...node.attrs } : undefined
   if (attrs) {
@@ -53,8 +52,7 @@ export const toolbarSuite: ConformanceSuite = {
   },
   cases: [
     {
-      // 多一个 Tab 位会让用户按 Tab 在条内反复停留，一个都没有则键盘再也进不来
-      // （无锚点时须由容器兜底）
+      // 整组只占一个 Tab 位；无锚点时须由容器兜底
       name: 'roving tabindex：整条只占一个 Tab 位，无锚点时容器兜底',
       spec: { apg: APG },
       covers: ['toolbar.kbd.tab'],
@@ -263,7 +261,7 @@ export const toolbarSuite: ConformanceSuite = {
           expect: {
             parts: {
               root: { tabindex: '-1' },
-              // 焦点是事实不是许可：禁用条目照样认领锚点与 Tab 位
+              // 禁用条目照样认领锚点与 Tab 位
               item: [{ tabindex: '-1' }, { 'aria-disabled': 'true', 'tabindex': '0' }, { tabindex: '-1' }],
             },
             activeElement: { part: 'item[1]', exact: true },

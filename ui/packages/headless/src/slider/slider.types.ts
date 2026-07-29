@@ -42,8 +42,7 @@ export interface SliderSchema extends MachineSchema {
     minStepsBetweenThumbs?: number
     /**
      * 把值翻成人话，产出写进拇指的 aria-valuetext。
-     * 不给就不写这个属性，读屏退回念 aria-valuenow——数字本身说得清时那就够了；
-     * 单位、档位名（"静音 / 低 / 高"）这类光念数字说不清的场合才需要它。
+     * 不给就不写这个属性，读屏退回念 aria-valuenow。
      */
     getValueText?: (details: SliderValueTextDetails) => string
     /** 每次推动都发；拖动过程中会连续发很多次。 */

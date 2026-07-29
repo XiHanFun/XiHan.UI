@@ -2,9 +2,7 @@ import type { KeyboardTable } from '../spec/types'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/navigation.html'
 
-// 锚点导航不接管任何按键：可点的部件是原生 <a href="#id">，激活与 Tab 序列全部由平台提供。
-// 刻意不做 roving tabindex——目录的每一条都是一个独立的去处，
-// 套上 roving 之后用户按一次 Tab 只能进组，再也没法直接 Tab 到某一节。
+// 锚点导航不接管按键：可点部件是原生 <a href="#id">，激活与 Tab 序列由平台提供，不做 roving tabindex
 export const anchorKeyboard: KeyboardTable = {
   component: 'anchor',
   source: APG,

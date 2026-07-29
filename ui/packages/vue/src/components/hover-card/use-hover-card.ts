@@ -17,7 +17,7 @@ export interface HoverCardContext {
   triggerRef: Ref<HTMLElement | null>
   /** 被定位的浮层。 */
   positionerRef: Ref<HTMLElement | null>
-  /** 消解层节点，同时是「焦点是否仍在卡片内」的判据之一。 */
+  /** 消解层节点，也是判定焦点是否仍在卡片内的依据。 */
   contentRef: Ref<HTMLElement | null>
 }
 
@@ -31,33 +31,31 @@ export function useHoverCard(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  // onOpenChange 由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const service = useMachine(hoverCardMachine, () => ({ ...props, onOpenChange }), scope)
 
-  // 无 DOM 环境（SSR）不建引擎与消解层：机器照常转移，只是不产出坐标、不入层栈
+  // 无 DOM 环境（SSR）不建引擎与消解层
   if (typeof document !== 'undefined') {
     const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
 
-    // 只给注册函数、不在这里注册：层的入栈出栈跟着可见态走（机器的 trackLayer 效应负责）。
-    // 挂载期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
+    // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按可见态驱动
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
       kind: 'popover',
       node: () => contentRef.value,
-      // trigger 记为本层分支：指针按在它上面算层内交互，不该把刚悬停出来的卡片关掉
+      // trigger 记为本层分支，指针按在它上面算层内交互
       branches: () => [triggerRef.value].filter(Boolean) as Element[],
-      // 悬停卡片从不模态：不陷焦点、不锁滚动、没有自带遮罩
+      // 悬停卡片非模态：不陷焦点、不锁滚动、无遮罩
       isModal: () => false,
       setModal: () => {},
       surfaces: () => [],
     })
 
-    // 定位引擎由适配器建好注入；机器只经端口驱动，不认识具体引擎
+    // 定位引擎由适配器注入，机器只经端口驱动
     service.refs.set('config', config)
     service.refs.set('registerLayer', registerLayer)
     service.refs.set('position', createFloatingUiPositionEngine())
   }
 
-  // 元素 getter 与 DOM 环境无关：连接层判定焦点去向时要经它们取活节点
+  // 元素 getter 在无 DOM 环境下也要设，连接层判定焦点去向时经它们取节点
   service.refs.set('getAnchorEl', () => triggerRef.value)
   service.refs.set('getFloatingEl', () => positionerRef.value)
   service.refs.set('getContentEl', () => contentRef.value)

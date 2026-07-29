@@ -8,8 +8,7 @@ type NumberFieldProps = NumberFieldSchema['props']
 export const XhNumberFieldRoot = defineComponent({
   name: 'XhNumberFieldRoot',
   props: {
-    // 值是原始输入串：给 default: undefined 才表达得了"非受控"，
-    // 落成空串会被当作"受控且当前为空"，用户从此再也改不动
+    // 值是原始输入串；default: undefined 表示非受控
     value: { type: String, default: undefined },
     defaultValue: { type: String, default: undefined },
     min: { type: Number, default: undefined },
@@ -24,7 +23,7 @@ export const XhNumberFieldRoot = defineComponent({
     changeDelay: { type: Number, default: undefined },
     changeInterval: { type: Number, default: undefined },
   },
-  // value-change 携带 { value, valueAsNumber }；update:value 携带裸串，支持 v-model:value
+  // value-change 携带 { value, valueAsNumber }，update:value 携带裸串
   emits: ['value-change', 'update:value'],
   setup(props, { slots, emit }) {
     const notify: NumberFieldProps['onValueChange'] = (details) => {

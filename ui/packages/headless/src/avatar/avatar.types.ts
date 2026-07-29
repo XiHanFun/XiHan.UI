@@ -1,7 +1,7 @@
 import type { PropTypes } from '@xihan-ui/core'
 import type { MachineSchema } from '@xihan-ui/machine'
 
-/** 图片加载状态。idle 是来源决议前的过渡态，其余三态对外稳定。 */
+/** 图片加载状态；idle 是来源决议前的过渡态。 */
 export type AvatarStatus = 'idle' | 'loading' | 'loaded' | 'error'
 
 export interface AvatarStatusChangeDetails {
@@ -12,7 +12,7 @@ export interface AvatarSchema extends MachineSchema {
   props: {
     src?: string
     alt?: string
-    /** 状态每次真正落位时通知一次；过渡态 idle 不通知。 */
+    /** 状态落位时通知，过渡态 idle 不通知。 */
     onStatusChange?: (details: AvatarStatusChangeDetails) => void
   }
   context: Record<string, never>
@@ -22,7 +22,7 @@ export interface AvatarSchema extends MachineSchema {
   event:
     // 来源决议：挂载后由效应发一次，之后每次 src 变化由 watch 再发
     | { type: 'SRC.CHANGE' }
-    // <img> 自己派发的 DOM 事件，由 connect 挂在 image 上回送
+    // <img> 的 DOM 事件，由 connect 挂在 image 上回送
     | { type: 'IMAGE.LOAD' }
     | { type: 'IMAGE.ERROR' }
   tag: never

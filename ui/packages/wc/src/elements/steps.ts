@@ -56,7 +56,7 @@ function stepIndexOf(el: HTMLElement): number {
 export class XhStepsElement extends XhElement {
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
-  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     step: { converter: NUMBER_CONVERTER },
     defaultStep: { converter: NUMBER_CONVERTER, attribute: 'default-step' },

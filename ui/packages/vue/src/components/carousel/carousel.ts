@@ -9,8 +9,7 @@ type CarouselProps = CarouselSchema['props']
 
 export const XhCarouselRoot = defineComponent({
   name: 'XhCarouselRoot',
-  // 全部 default: undefined —— 缺省值的唯一事实源在 connect（loop / allowMouseDrag 尤其：
-  // 裸 Boolean 声明会把缺省压成 false，两个适配器就各有一份默认，改一处另一处不动）
+  // 缺省值由 connect 给出，这里一律 default: undefined
   props: {
     page: { type: Number, default: undefined },
     defaultPage: { type: Number, default: undefined },
@@ -26,7 +25,7 @@ export const XhCarouselRoot = defineComponent({
     spacing: { type: String, default: undefined },
     translations: { type: Object as PropType<Partial<CarouselTranslations>>, default: undefined },
   },
-  // page-change 携带 { page }；update:page 携带裸页码，支持 v-model:page
+  // page-change 携带 { page }，update:page 携带裸页码
   emits: ['page-change', 'update:page'],
   setup(props, { slots, emit }) {
     const notify: CarouselProps['onPageChange'] = (details) => {
@@ -76,8 +75,7 @@ export const XhCarouselItemGroup = defineComponent({
 export const XhCarouselItem = defineComponent({
   name: 'XhCarouselItem',
   props: {
-    // 下标由作者声明。也收字符串：模板里写 index="0"（不带冒号）拿到的就是字符串，
-    // Vue 只对 Boolean 型 prop 做属性转型，数字得自己收口
+    // 下标由作者声明，兼收字符串以支持模板里写 index="0"
     index: { type: [Number, String] as PropType<number | string>, required: true },
   },
   setup(props, { slots }) {
@@ -117,7 +115,7 @@ export const XhCarouselIndicatorGroup = defineComponent({
 export const XhCarouselIndicator = defineComponent({
   name: 'XhCarouselIndicator',
   props: {
-    // 指示点对应的页码，0 基；同样收字符串（模板里的属性字面量）
+    // 指示点对应的页码，0 基；兼收字符串
     index: { type: [Number, String] as PropType<number | string>, required: true },
   },
   setup(props, { slots }) {

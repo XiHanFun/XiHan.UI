@@ -3,8 +3,7 @@ import { setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<CheckboxSchema>()
 
-// 受控（checked 给定）与 dialog 同构：用户事件只发意图、不自改状态；宿主写回 checked 后
-// 由 watch 派发影子事件 CONTROLLED.* 无条件回写。无副作用（checkbox 不挂 DOM effect）。
+// 受控（checked 给定）时用户事件只发意图，宿主写回 checked 后由 watch 派发 CONTROLLED.* 回写。
 export const checkboxMachine = createMachine({
   name: 'checkbox',
   initialState: ({ prop }) => ((prop('checked') ?? prop('defaultChecked')) ? 'on' : 'off'),

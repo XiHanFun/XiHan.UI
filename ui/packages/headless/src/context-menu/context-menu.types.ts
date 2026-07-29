@@ -14,8 +14,7 @@ export interface ContextMenuPoint {
   y: number
 }
 
-// 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；纯逻辑测试与 SSR 下保持缺省，
-// 此时副作用一律短路（机器状态照常转移，只是不定位、不挂消解层与焦点域）。
+// 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；缺省时副作用一律短路。
 export interface ContextMenuRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
@@ -26,17 +25,12 @@ export interface ContextMenuRefs {
   getFloatingEl: () => HTMLElement | null
   /** 焦点域容器、消解层节点，同时是条目集合的查询容器。 */
   getContentEl: () => HTMLElement | null
-  /**
-   * 连打检索缓冲。随服务存活：停顿够久自行重开一轮，
-   * 放模块变量会让同页两个菜单共用一个缓冲、互相把对方的查询串接上去。
-   */
+  /** 连打检索缓冲，随服务存活；放模块变量会让同页两个菜单共用一个缓冲。 */
   typeahead: Typeahead
   /**
-   * 把定位重新挂到当前坐标上的钩子，由定位效应装填、坐标变化时由 watch 调用；
-   * 展开期外恒为 null。
+   * 把定位重新挂到当前坐标上的钩子，由定位效应装填、坐标变化时由 watch 调用；展开期外恒为 null。
    *
-   * 走钩子而不是让效应跟着坐标重挂：效应挂在展开态上，重挂会连带把层、消解层与焦点域
-   * 一起拆掉重建——焦点会被归还一次再抢回来，用户看到的是一次闪跳。
+   * 走钩子而不是让效应跟着坐标重挂：重挂会连带把层、消解层与焦点域一起拆掉重建。
    */
   reanchor: (() => void) | null
 }
@@ -51,9 +45,7 @@ export interface ContextMenuSelectDetails {
 
 /**
  * 条目自报家门：值与禁用由作者在部件上声明，connect 据此产出属性。
- * connect 因此是 (state/context/prop, 本条目声明) 的纯函数，不反查 DOM——
- * Vue 侧 connect 在 render 期求值（本帧 DOM 还不存在），WC 侧在 updated 后求值（DOM 已就位），
- * 连接期读 DOM 会让两个适配器的首帧快照分叉。
+ * connect 不得反查 DOM：Vue 侧在 render 期求值（此时 DOM 不存在），WC 侧在 updated 后求值。
  */
 export interface ContextMenuItemProps {
   value: string

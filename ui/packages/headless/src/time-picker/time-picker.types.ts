@@ -11,7 +11,7 @@ export interface TimePickerColumn {
   readonly options: readonly string[]
 }
 
-/** 生成可选值列表的入参。全是值，不碰 DOM 也不读机器——这份逻辑单独可测。 */
+/** 生成可选值列表的入参，全是值，不碰 DOM 也不读机器。 */
 export interface TimePickerColumnsOptions {
   /** 精度：hour 只出时列，minute 出时分两列，second 再多一列秒。 */
   granularity?: TimeGranularity
@@ -31,8 +31,7 @@ export interface TimePickerColumnsOptions {
   dayPeriod?: TimeDayPeriod
 }
 
-// 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；纯逻辑测试与 SSR 下保持缺省，
-// 此时副作用一律短路（机器状态照常转移，只是不定位、不挂消解层与焦点域）。
+// 适配器挂载前填入；保持缺省时副作用短路，机器状态照常转移但不定位、不挂消解层与焦点域。
 export interface TimePickerRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
@@ -58,9 +57,7 @@ export interface TimePickerValueChangeDetails {
 
 /**
  * 段自报家门：身份由作者在部件上声明，connect 据此产出属性。
- * connect 因此是 (state/context/prop, 本段声明) 的纯函数，不在连接期反查 DOM——
- * Vue 侧 connect 在 render 期求值（本帧 DOM 还不存在），WC 侧在 updated 后求值（DOM 已就位），
- * 连接期读 DOM 会让两个适配器的首帧快照分叉。
+ * connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得反查 DOM。
  */
 export interface TimePickerInputProps {
   segment: TimeSegmentType
@@ -120,8 +117,8 @@ export interface TimePickerSchema extends MachineSchema {
     /** ISO 时间串；任一必填段为空时是空串。受控（value 给定）时 cell 直读 prop。 */
     value: string
     /**
-     * 逐段编辑缓冲。分段输入与浮层选中写的是同一份，因此两条路天然同步。
-     * 只在 value 不是一个可解析的时间时才拿它显示——value 能解析时它说了算。
+     * 逐段编辑缓冲，分段输入与浮层选中写的是同一份。
+     * 只在 value 不是可解析的时间时才拿它显示。
      */
     draft: TimeDraft
     /** 焦点所在段；焦点在分段输入之外时为 null。同时是段间 roving tabindex 的锚点。 */

@@ -68,8 +68,7 @@ const BASE: FixtureNode = {
   part: 'root',
   children: [
     { part: 'label', tag: 'label', text: '附件' },
-    // 投放区里放一个纯装饰的文字节点：真实用法就是这个形状，
-    // 事件从子节点冒上来也得照常工作——点这个节点同样该打开选择框
+    // 投放区里放一个纯装饰的文字节点：点它同样该打开选择框（事件从子节点冒上来）
     { part: 'dropzone', children: [{ tag: 'span', text: '拖到这里' }] },
     // trigger 刻意放在投放区之外：按钮里再套按钮，读屏只念得出外面那一个
     { part: 'trigger', tag: 'button', text: '选择文件' },
@@ -234,8 +233,7 @@ export const fileUploadSuite: ConformanceSuite = {
           kind: 'click',
           part: 'item-delete-trigger[0]',
           expect: {
-            // 位子还是两个，接上线的只剩一个：多出来的那个若还留着上一帧的属性，
-            // 这里就会数出 2 个，读屏也照旧念得出一个已经不存在的文件
+            // 位子还是两个，接上线的只剩一个：多出来的那个不能留着上一帧的属性
             counts: { 'item': 1, 'item-delete-trigger': 1 },
             parts: { 'item[0]': { 'data-file-name': 'notes.txt' } },
           },
@@ -401,13 +399,11 @@ export const fileUploadSuite: ConformanceSuite = {
       },
       steps: [
         stubPicker([PHOTO]),
-        // 投放区用 aria-disabled 表达禁用，click 不会被激活行为短路，事件真派得出去，
-        // 因此这一步碰得到连接层的禁用守卫
+        // 投放区用 aria-disabled 表达禁用，click 不被短路，事件派得出去才碰得到禁用守卫
         { kind: 'click', part: 'dropzone', expect: { counts: { item: 0 }, parts: { root: { 'data-empty': '' } } } },
         { kind: 'focus', part: 'dropzone' },
         { kind: 'key', key: 'Enter', expect: { counts: { item: 0 } } },
-        // 拖拽同样被挡下：禁用的控件不该因为换了个入口就又能收文件。
-        // 禁用时刻意不拦默认行为——拦了等于对浏览器说"这儿能放"，放下去却什么都没发生
+        // 拖拽同样被挡下；禁用时不拦默认行为，拦了等于对浏览器说这儿能放
         {
           kind: 'raw',
           why: '禁用时不拦默认行为这条契约，只有直接看 defaultPrevented 才验得到',

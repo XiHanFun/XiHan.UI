@@ -14,7 +14,7 @@ function item(value: string, label: string): FixtureNode {
   }
 }
 
-// 三个条目：单实例 part 用裸名寻址，集合 part 一律 item[i]/trigger[i] 下标寻址。
+// 三个条目的文档序；集合 part 用下标寻址。
 const ORDER = [
   'root',
   'item[0]',
@@ -77,9 +77,9 @@ export const accordionSuite: ConformanceSuite = {
       initial: {
         counts: { trigger: 3 },
         parts: {
-          // 不是 tabindex=0，是根本不输出，让作者的 <button> 保持原生行为
+          // 不输出 tabindex，保留作者 <button> 的原生行为
           trigger: [{ tabindex: null }, { tabindex: null }, { tabindex: null }],
-          // 没有锚点概念，容器也不兜底接管 Tab
+          // 容器不接管 Tab
           root: { tabindex: null },
         },
       },
@@ -212,11 +212,11 @@ export const accordionSuite: ConformanceSuite = {
         { kind: 'key', key: 'ArrowLeft', expect: { activeElement: { part: 'trigger[0]', exact: true } } },
         { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'trigger[1]', exact: true } } },
         { kind: 'setProps', props: { dir: 'rtl' } },
-        // rtl：同样两个键，落点整个翻过来
+        // rtl 下左右键落点互换
         { kind: 'key', key: 'ArrowLeft', expect: { activeElement: { part: 'trigger[2]', exact: true } } },
         { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'trigger[1]', exact: true } } },
         {
-          // 轴向为 horizontal，上下键返回 null：焦点原地不动，也不吞掉页面滚动
+          // 轴向为 horizontal 时上下键不参与导航
           kind: 'key',
           key: 'ArrowUp',
           expect: {
@@ -239,7 +239,7 @@ export const accordionSuite: ConformanceSuite = {
         { kind: 'key', key: 'Home', modifiers: ['Control'], expect: { activeElement: { part: 'trigger[1]', exact: true } } },
         { kind: 'key', key: 'End', modifiers: ['Meta'], expect: { activeElement: { part: 'trigger[1]', exact: true } } },
         { kind: 'key', key: 'ArrowDown', modifiers: ['Shift'], expect: { activeElement: { part: 'trigger[1]', exact: true } } },
-        // 同一个键不带修饰键就该动：上面三条不是空断言
+        // 同一个键不带修饰键时焦点应移动
         { kind: 'key', key: 'Home', expect: { activeElement: { part: 'trigger[0]', exact: true } } },
       ],
     },
@@ -289,7 +289,7 @@ export const accordionSuite: ConformanceSuite = {
           expect: {
             parts: {
               'trigger[2]': {
-                // 原生 disabled 会让条目脱离 Tab 序，集合条目一律不用它
+                // 集合条目不输出原生 disabled
                 'disabled': null,
                 'tabindex': null,
                 'aria-disabled': 'true',
@@ -303,7 +303,7 @@ export const accordionSuite: ConformanceSuite = {
           },
         },
         { kind: 'focus', part: 'trigger[1]', expect: { activeElement: { part: 'trigger[1]', exact: true } } },
-        // 末条被禁用且不回绕，焦点无处可去，原地不动
+        // 末条被禁用且不回绕，焦点原地不动
         { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'trigger[1]', exact: true } } },
         { kind: 'key', key: 'End', expect: { activeElement: { part: 'trigger[1]', exact: true } } },
       ],

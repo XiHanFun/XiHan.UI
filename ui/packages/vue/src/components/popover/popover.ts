@@ -19,7 +19,7 @@ export const XhPopoverRoot = defineComponent({
     closeOnInteractOutside: { type: Boolean, default: true },
     translations: { type: Object as PropType<PopoverProps['translations']>, default: undefined },
   },
-  // open-change 携带 { open }；update:open 携带裸布尔，支持 v-model:open
+  // open-change 携带 { open }，update:open 携带裸布尔
   emits: ['open-change', 'update:open'],
   setup(props, { slots, emit }) {
     const notify: PopoverProps['onOpenChange'] = (details) => {

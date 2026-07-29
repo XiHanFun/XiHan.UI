@@ -88,9 +88,7 @@ export function createVanillaRuntime(opts: { isServer?: boolean } = {}): Vanilla
           params().onChange?.(value, prev)
       },
       notify: () => flushGlobal(),
-      // 版本号按值拉取比对，不数 set 调用次数：受控值是宿主从外面写进来的，
-      // 根本不经过 set，推送式计数会永远停在 0，track([context.dep(k)]) 于是静默不触发。
-      // 与 Vue / WC 两个运行时同语义——同一份 headless 换运行时不该换行为。
+      // 版本号按值拉取比对，不数 set 调用次数（受控值不经过 set）
       version: () => {
         const cur = read()
         if (!eq(cur, lastSeen)) {

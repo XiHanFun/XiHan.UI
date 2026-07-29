@@ -40,8 +40,7 @@ export const XhTourRoot = defineComponent({
       onSkip: details => emit('skip', details),
     })
     provideTour(ctx)
-    // 走步、放弃这几个出口经插槽交出去：引导的按钮未必都在浮层里
-    // （"再看一遍"往往长在页面上），作者不必再自己接一份状态
+    // 经插槽暴露状态与走步、放弃等命令，供浮层外的按钮使用
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       open: ctx.api.value.open,
       step: ctx.api.value.step,
@@ -100,7 +99,7 @@ export const XhTourContent = defineComponent({
   },
 })
 
-// 标题与描述的文字就住在步骤声明里；作者写了插槽就听作者的
+// 标题与描述的文字取自步骤声明，有插槽则用插槽
 export const XhTourTitle = defineComponent({
   name: 'XhTourTitle',
   setup(_, { slots }) {

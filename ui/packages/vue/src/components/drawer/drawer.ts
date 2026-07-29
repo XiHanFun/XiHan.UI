@@ -9,9 +9,7 @@ type DrawerProps = DrawerSchema['props']
 export const XhDrawerRoot = defineComponent({
   name: 'XhDrawerRoot',
   props: {
-    // 一律 default: undefined，缺省值只在 connect 里定义一次：
-    // 这边再写一份默认值，两处一旦不同步，同一份标记在 Vue 与 WC 上就会产出不同的 DOM。
-    // （Vue 的 Boolean prop 不给 default 会被强转成 false，那就再也表达不了"没写"。）
+    // 缺省值由 connect 给出，这里一律 default: undefined
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     modal: { type: Boolean, default: undefined },
@@ -22,7 +20,7 @@ export const XhDrawerRoot = defineComponent({
     restoreFocus: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<DrawerProps['translations']>, default: undefined },
   },
-  // open-change 携带 { open }；update:open 携带裸布尔，支持 v-model:open
+  // open-change 携带 { open }，update:open 携带裸布尔
   emits: ['open-change', 'update:open'],
   setup(props, { slots, emit }) {
     const notify: DrawerProps['onOpenChange'] = (details) => {
@@ -31,8 +29,7 @@ export const XhDrawerRoot = defineComponent({
     }
     const ctx = useDrawer(props as DrawerProps, notify)
     provideDrawer(ctx)
-    // root 是真实节点：content 会被 portal 到 body，data-side 若只挂在浮层上，
-    // 留在页面里的那半边（trigger 及作者的容器样式）就无从知道抽屉朝哪边开。
+    // root 是真实节点，content 会被 portal 到 body，data-side 挂在这里供页面内的部分读取
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       open: ctx.api.value.open,
       side: ctx.api.value.side,
@@ -54,7 +51,7 @@ export const XhDrawerContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useDrawerContext()
     return () => {
-      // presence 说不必在场就整棵不渲染：退场动画播完才会翻假
+      // presence 判定不在场则整棵不渲染，退场动画播完才翻假
       if (!ctx.rendered.value)
         return null
       const api = ctx.api.value

@@ -1,6 +1,4 @@
-// 数值这一路的纯函数：不碰 DOM、不认识状态机，单独测。
-// 之所以整块拎出来，是因为数字输入的坑几乎全在这里——浮点步进的尾巴、
-// 边界回绕、空串与非法串的区分——放在机器里会被状态转移淹没。
+// 数值处理的纯函数：不碰 DOM、不认识状态机。
 
 /** 空串与纯空白视为"没有值"，返回 NaN；不合法的输入同样是 NaN。 */
 export function parseValue(raw: string): number {
@@ -23,15 +21,11 @@ export function clamp(value: number, min?: number, max?: number): number {
   return value
 }
 
-/**
- * 步进后消掉浮点尾巴：0.1 + 0.2 直接算是 0.30000000000000004，
- * 用户看到的框里就会冒出一串 0。按"步长与基准里最长的那个小数位数"回舍。
- */
+/** 步进后消掉浮点尾巴：按步长与基准里最长的小数位数回舍。 */
 export function snapDecimals(value: number, ...refs: number[]): number {
   const digits = Math.max(...refs.map(decimalsOf), 0)
   if (digits === 0)
     return value
-  // toFixed 再转回数值：只为了截掉尾巴，不改变量级
   return Number(value.toFixed(Math.min(digits, 20)))
 }
 
@@ -52,14 +46,11 @@ export interface StepOptions {
   step: number
 }
 
-/**
- * 从当前串走一步。空串/非法串时从 min（没有 min 则从 0）起步，
- * 这样一个空输入框按 ArrowUp 也有确定的落点，而不是变成 NaN。
- */
+/** 从当前串走一步；空串或非法串时从 min（没有 min 则从 0）起步。 */
 export function stepValue(raw: string, direction: 1 | -1, o: StepOptions): number {
   const current = parseValue(raw)
   const base = Number.isFinite(current) ? current : (o.min ?? 0)
-  // 起步那一下不再叠步长：空框按 ArrowUp 应停在 min 本身，而不是 min + step
+  // 起步那一下不叠步长，空框按 ArrowUp 停在 min 本身
   const next = Number.isFinite(current) ? base + direction * o.step : base
   return clamp(snapDecimals(next, o.step, base), o.min, o.max)
 }

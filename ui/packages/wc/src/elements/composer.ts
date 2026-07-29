@@ -61,17 +61,14 @@ export class XhComposerElement extends XhElement {
   private readonly notifyValue = (details: ComposerValueChangeDetails): void => this.emit('value-change', details)
   // submit 与原生表单提交同名，故不冒泡，避免被祖先 <form> 当成自己的提交
   private readonly notifySubmit = (details: ComposerSubmitDetails): void => this.emit('submit', details, false)
-  // 停止事件无载荷
   private readonly notifyStop = (): void => this.emit('stop', null)
 
-  // composer 机器没有效应，controller 只带 props，不需要 config 与 refs
   private readonly ctrl = new MachineController<ComposerSchema>(this, composerMachine, () => this.machineProps())
 
   private machineProps(): Partial<ComposerSchema['props']> {
     return {
       value: this.value,
       defaultValue: this.defaultValue,
-      // 三态布尔，undefined 表示未指定，缺省值交回机器
       disabled: this.disabled,
       runStatus: this.runStatus,
       submitOnEnter: this.submitOnEnter,

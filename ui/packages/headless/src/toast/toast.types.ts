@@ -6,8 +6,7 @@ export type ToastType = 'info' | 'success' | 'warning' | 'error' | 'loading'
 
 /**
  * 对外的三段式生命周期。
- * visible 在机器内部再分 running / paused 两个子态（计时器挂在 running 上），对外不区分——
- * 暂停与否是同一条通知的同一段人生，读屏与样式层要的只是"它还在台上"。
+ * visible 在机器内部再分 running / paused 两个子态（计时器挂在 running 上），对外不区分。
  */
 export type ToastStatus = 'visible' | 'dismissing' | 'unmounted'
 
@@ -54,8 +53,7 @@ export interface ToastSchema extends MachineSchema {
   }
   context: {
     /**
-     * 还剩多少毫秒要走。暂停时把已经跑掉的一段扣掉，恢复时接着走剩下的——
-     * 不记这笔账的话，指针从通知上扫过一下就等于给它续了整整一轮命。
+     * 还剩多少毫秒要走。暂停时把已经跑掉的一段扣掉，恢复时接着走剩下的。
      * Infinity 表示不自动消失。
      */
     remaining: number

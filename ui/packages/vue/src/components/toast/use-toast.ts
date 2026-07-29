@@ -15,10 +15,7 @@ export function useToast(
   onStatusChange?: ToastSchema['props']['onStatusChange'],
   onAction?: ToastSchema['props']['onAction'],
 ): ToastContext {
-  // 退场窗口走完只是把节点收起，记录还在队列里；删记录归队列管。
-  // 这根线由适配器自己接上：作者每写一条通知都要记得手动摘一次的话，
-  // 漏掉的那条会永远占着队列的名额（贴着 max 时新通知直接进不来）。
-  // 外面没有队列时注入拿到 null，单条使用的行为一点不变。
+  // 退场后由适配器回队列删记录；外层无队列时注入为 null
   const toaster = useToasterContextOptional()
   const notifyStatus: ToastSchema['props']['onStatusChange'] = (details) => {
     onStatusChange?.(details)

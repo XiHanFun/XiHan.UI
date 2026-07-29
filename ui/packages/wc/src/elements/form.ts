@@ -14,7 +14,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-// 属性缺席一律翻成 undefined：缺省值的唯一事实源留在机器与 connect 里。
+// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
 // Lit 自带的 Boolean 转换器判的是 v !== null，写 disabled="false" 反而成了真
@@ -64,7 +64,7 @@ function fieldNameOf(el: HTMLElement): string {
  * @csspart reset-trigger - 重置键，须是原生 button（连接层写成 type=reset）
  */
 export class XhFormElement extends XhElement {
-  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     // 四张表与校验函数都是对象/函数，走不了属性；只作为 property 暴露，与 Vue 侧的同名 prop 对齐。
     // values / errors 给了即受控：元素内部的写入只发事件，等宿主自己写回

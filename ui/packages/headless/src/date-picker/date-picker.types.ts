@@ -3,10 +3,7 @@ import type { MachineSchema, Service } from '@xihan-ui/machine'
 import type { CalendarApi, CalendarSchema, CalendarSelectionMode } from '../calendar'
 import type { DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState } from '../date-field'
 
-/**
- * 值的来源。选中值可以从三处进来，而「选完了该不该收起」只对日历那一路成立：
- * 在段位里敲日期时浮层多半根本没开着，敲到一半就收起更是灾难。
- */
+/** 值的来源；只有 calendar 一路参与「选完即收起」判定。 */
 export type DatePickerValueSource = 'calendar' | 'field' | 'api'
 
 export interface DatePickerOpenChangeDetails {
@@ -14,10 +11,7 @@ export interface DatePickerOpenChangeDetails {
 }
 
 export interface DatePickerValueChangeDetails {
-  /**
-   * 选中日期集合，ISO 串。单选模式下也是数组（长度 ≤ 1），形状不随模式变；
-   * range 挑到一半时长度为 1（只有起点）。
-   */
+  /** 选中日期集合，ISO 串。单选模式下也是数组（长度 ≤ 1），range 挑到一半时长度为 1。 */
   value: string[]
 }
 
@@ -26,15 +20,14 @@ export interface DatePickerFocusChangeDetails {
   focusedValue: string
 }
 
-// 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；纯逻辑测试与 SSR 下保持缺省，
-// 此时副作用一律短路（机器状态照常转移，只是不定位、不挂消解层与焦点域）。
+// 适配器挂载前填入；保持缺省时副作用一律短路，机器状态照常转移。
 export interface DatePickerRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
   /** 浮层定位引擎；缺省即不产出位置结果。 */
   position: PositionEnginePort | null
-  /** 定位锚点，取整个输入行（control），浮层因此与输入框对齐而不是只贴着图标按钮。 */
+  /** 定位锚点，取整个输入行（control）。 */
   getAnchorEl: () => HTMLElement | null
   /** 被定位的浮层容器，通常是 positioner。 */
   getFloatingEl: () => HTMLElement | null
@@ -46,7 +39,7 @@ export interface DatePickerSchema extends MachineSchema {
   props: {
     /**
      * 选中值，ISO 串。给定即受控：读直取 prop，写只发 onValueChange 不落内部值。
-     * 单选写成裸串是简写，内部一律归一成数组。
+     * 单选可写裸串，内部一律归一成数组。
      */
     value?: string | string[]
     defaultValue?: string | string[]
@@ -61,9 +54,9 @@ export interface DatePickerSchema extends MachineSchema {
     locale?: string
     /** 判定「今天」与格式化文案用的时区，默认取宿主本地时区。 */
     timeZone?: string
-    /** 选择模式，默认 single。它同时决定「选完了没有」——区间要两端都落定。 */
+    /** 选择模式，默认 single；区间模式下两端都落定才算选完。 */
     selectionMode?: CalendarSelectionMode
-    /** 作者给的不可用判定，收 ISO 串。界外与它判真的日子同等对待。 */
+    /** 不可用判定，收 ISO 串。界外与它判真的日子同等对待。 */
     isDateUnavailable?: (value: string) => boolean
     /** 整个控件禁用：trigger 转原生 disabled，段位退出 Tab 序，日历格子全转 aria-disabled。 */
     disabled?: boolean
@@ -84,8 +77,8 @@ export interface DatePickerSchema extends MachineSchema {
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: DatePickerOpenChangeDetails) => void
     /**
-     * 聚焦日变化（方向键、翻月、展开、在段位里敲出新日期都会发）。
-     * 网格由作者渲染，这条是「该重画了」的唯一信号——不听它，日历就永远停在首帧那个月。
+     * 聚焦日变化（方向键、翻月、展开、段位输入都会发）。
+     * 网格由外部渲染，不监听这条日历不会换月。
      */
     onFocusedValueChange?: (details: DatePickerFocusChangeDetails) => void
   }
@@ -95,9 +88,8 @@ export interface DatePickerSchema extends MachineSchema {
     /** 选中集合，恒为数组。受控（value 给定）时直读 prop。 */
     value: string[]
     /**
-     * 聚焦日，ISO 串；它同时决定日历展示哪个月。
-     * 内嵌日历的聚焦日恒由这里受控——「输入框敲了个新日期，日历要跟着翻过去」这条同步
-     * 只有把唯一事实源收在编排机手里才成立。null 表示还没定过，由连接层退回选中值或今天。
+     * 聚焦日，ISO 串；同时决定日历展示哪个月。内嵌日历的聚焦日恒由这里受控。
+     * null 表示还没定过，由连接层退回选中值或今天。
      */
     focusedValue: string | null
     /** 收起时是否把焦点归还给展开前那个控件；Tab 与层外交互关闭时为 false。 */
@@ -134,7 +126,7 @@ export interface DatePickerSchema extends MachineSchema {
 }
 
 /**
- * 三台机器的把手。编排机自己只管开合与两侧的值同步，
+ * 三台机器的把手。编排机管开合与两侧值同步，
  * 选日期/翻月/键盘导航归 calendar，分段输入归 date-field。
  */
 export interface DatePickerServices {
@@ -146,9 +138,8 @@ export interface DatePickerServices {
 /**
  * 内嵌分段输入对外露出的那一面。
  *
- * 刻意不是整份 DateFieldApi：它的 root / label / control 三个部件在这里由日期选择器
- * 自己的角色节点承担（input 就是那个 role=group 的分段容器），把它们一并露出去，
- * 作者就会在同一棵树里挂出第二个 date-field 根节点。
+ * 不含 DateFieldApi 的 root / label / control：这三个部件由日期选择器自己的角色节点承担
+ * （input 即 role=group 的分段容器）。
  */
 export interface DatePickerFieldApi<T extends PropTypes = PropTypes> {
   /** ISO 串；段位没填齐时是 null。 */
@@ -183,7 +174,7 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   setOpen: (next: boolean) => void
   setValue: (next: string[]) => void
   clear: () => void
-  /** 内嵌日历：选日期、翻月、键盘导航全在它身上，本组件一条都不重写。 */
+  /** 内嵌日历：选日期、翻月、键盘导航都在它身上。 */
   calendar: CalendarApi<T>
   /** 内嵌分段输入。 */
   field: DatePickerFieldApi<T>

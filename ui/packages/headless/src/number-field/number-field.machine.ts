@@ -11,18 +11,17 @@ export const NUMBER_FIELD_CHANGE_INTERVAL = 50
 export const numberFieldMachine = createMachine({
   name: 'number-field',
   context: ({ prop, cell }) => ({
-    // 值住在 cell 里：受控/非受控的收口点就是它，因此不需要 CONTROLLED.* 影子事件
+    // 值住在 cell 里，由 cell 收口受控/非受控
     value: cell<string>(() => ({
       value: prop('value'),
       defaultValue: prop('defaultValue') ?? '',
       onChange: value => prop('onValueChange')?.({ value, valueAsNumber: parseValue(value) }),
     })),
-    // 按住时的方向。放 context 而不是模块变量：同页两个数字框各按各的，
-    // 共用一个模块变量会让后按下的那个把先按下的方向改掉。
+    // 按住时的方向，逐实例存在 context 里
     pressDirection: cell<1 | -1>(() => ({ defaultValue: 1 })),
   }),
   initialState: () => 'idle',
-  // 步进与取端点从哪个状态发出都一样（键盘在 idle、连发在 spinning），因此挂根级
+  // 步进与取端点在 idle 与 spinning 下行为一致，挂根级
   on: {
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.STEP': { guard: 'canStep', actions: ['stepValue'] },
@@ -33,7 +32,7 @@ export const numberFieldMachine = createMachine({
   states: {
     idle: {
       on: {
-        // 按下先走一步，随后进 spinning 等连发：不这样的话轻点一下什么都不会发生
+        // 按下先走一步，随后进 spinning 等连发
         'PRESS.START': { guard: 'canStep', target: 'spinning', actions: ['setDirection', 'stepValue'] },
       },
     },
@@ -84,7 +83,7 @@ export const numberFieldMachine = createMachine({
         if (max != null)
           context.set('value', String(max))
       },
-      // 只在失焦时规范化：输入途中把 "1." 收成 "1" 会把用户正在打的小数点吃掉
+      // 只在失焦时规范化，避免打断输入途中的中间态（如 "1."）
       normalize: ({ context, prop }) => {
         const next = normalizeValue(context.get('value'), { min: prop('min'), max: prop('max') })
         if (next !== context.get('value'))
@@ -92,8 +91,7 @@ export const numberFieldMachine = createMachine({
       },
     },
     effects: {
-      // 先等一段再连发：轻点一下只走一步（那一步在 PRESS.START 上已经走过），
-      // 按住不放才进入连发。两个定时器同属一个副作用，出 spinning 一并撤掉。
+      // 先等 changeDelay 再按 changeInterval 连发；两个定时器同属一个副作用，出 spinning 一并撤掉
       spin: ({ send, prop }) => {
         let stopInterval: VoidFunction | null = null
         const stopDelay = setTimeoutEffect(() => {

@@ -68,8 +68,7 @@ export const tourSuite: ConformanceSuite = {
               { part: 'title' },
               { part: 'description' },
               { part: 'progress-text' },
-              // 必须是 button：Vue 侧组件自己渲染成 button，WC 侧由 fixture 的 tag 决定，
-              // 渲染成 div 就不可聚焦、原生 disabled 也拦不住点击
+              // 必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦、原生 disabled 也拦不住点击
               { part: 'prev-trigger', tag: 'button', text: '上一步' },
               { part: 'next-trigger', tag: 'button', text: '下一步' },
               { part: 'skip-trigger', tag: 'button', text: '跳过' },
@@ -219,8 +218,7 @@ export const tourSuite: ConformanceSuite = {
       props: { ...PROPS, defaultOpen: true },
       steps: [
         { kind: 'settle', until: { activeElement: 'content' } },
-        // 事件按帧结算：Escape 那一下就已经派发，断言必须落在同一帧上，
-        // 挂到后面的 settle 上会因为事件早被取走而永远读到空
+        // 事件按帧结算：断言必须落在 Escape 那一帧，挂到后面的 settle 上会读到空
         {
           kind: 'key',
           key: 'Escape',

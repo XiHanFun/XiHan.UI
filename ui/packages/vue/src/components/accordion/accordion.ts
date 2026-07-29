@@ -15,10 +15,10 @@ export const XhAccordionRoot = defineComponent({
     multiple: Boolean,
     collapsible: Boolean,
     orientation: { type: String as PropType<Orientation>, default: undefined },
-    // 只改水平轴上左右键的语义，不写进 DOM：视觉方向由页面的 dir 继承决定
+    // 只改水平轴上左右键的语义，不写进 DOM
     dir: { type: String as PropType<Direction>, default: undefined },
   },
-  // value-change 携带 { value }；update:value 携带裸数组，支持 v-model:value
+  // value-change 携带 { value }，update:value 携带裸数组
   emits: ['value-change', 'update:value'],
   setup(props, { slots, emit }) {
     const notify: AccordionProps['onValueChange'] = (details) => {
@@ -48,7 +48,7 @@ export const XhAccordionItem = defineComponent({
   },
 })
 
-// h3 是常见页面层级下的默认标题级别，与 connect 给出的 aria-level 对齐。
+// 渲染为 h3，与 connect 给出的 aria-level 对齐
 export const XhAccordionHeader = defineComponent({
   name: 'XhAccordionHeader',
   setup(_, { slots }) {

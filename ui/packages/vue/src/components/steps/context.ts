@@ -4,10 +4,7 @@ import type { StepsContext } from './use-steps'
 import { inject, provide } from 'vue'
 
 const KEY: InjectionKey<StepsContext> = Symbol('xh-steps')
-/**
- * 条目身份下传给 trigger/indicator/title/description/separator。
- * 用 getter 而非快照，条目改 value/disabled 时才跟得上。
- */
+/** 条目身份下传给 trigger/indicator/title/description/separator，用 getter 以跟随 value/disabled 变更。 */
 const ITEM_KEY: InjectionKey<() => StepsItemProps> = Symbol('xh-steps-item')
 
 export function provideSteps(ctx: StepsContext): void {

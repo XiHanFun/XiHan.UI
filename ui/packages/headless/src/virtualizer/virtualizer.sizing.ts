@@ -1,18 +1,13 @@
 /**
- * 快照形状与"把快照翻成内联样式"的纯函数层。
- *
- * 区间与尺寸的计算全部交给 @tanstack/virtual-core（测量缓存、二分定位、多列分道
- * 都在它那边），这里只做三件它不管的事：
- * ① 把内核的条目投影成组件自己的快照形状（并把 scrollMargin 折算掉）；
- * ② 判两次快照等不等——不判就会每个滚动事件都换一批新对象，两个适配器空转重渲；
- * ③ 把快照翻成内联样式串。
- *
- * 整块不碰 DOM、不认识状态机，因此能脱离布局单测。
+ * 快照形状与把快照翻成内联样式的纯函数层，不碰 DOM、不认识状态机。
+ * 区间与尺寸的计算交给 @tanstack/virtual-core，这里只做三件事：
+ * 把内核的条目投影成组件自己的快照形状（并折算掉 scrollMargin）、判两次快照等不等、
+ * 把快照翻成内联样式串。
  */
 
 /**
  * 默认过扫描条数：可视区前后各多渲这么多条。
- * 给 0 的话快速滚动时边缘会露白（滚动事件到重渲之间隔着一帧）。
+ * 给 0 的话快速滚动时边缘会露白。
  */
 export const VIRTUALIZER_DEFAULT_OVERSCAN = 5
 
@@ -62,8 +57,7 @@ function sameItem(a: VirtualizerItemState, b: VirtualizerItemState): boolean {
 }
 
 /**
- * 两份快照等不等。默认的 Object.is 在这里恒为 false：内核每被问一次就产出一批新对象，
- * 于是"滚了一点点但可见区间没变"也会被判成变了，两个适配器每个滚动事件都白重渲一遍。
+ * 两份快照等不等。内核每被问一次就产出一批新对象，默认的 Object.is 恒为 false。
  */
 export function virtualizerSnapshotEqual(a: VirtualizerSnapshot, b: VirtualizerSnapshot | undefined): boolean {
   if (!b)
@@ -78,8 +72,7 @@ export function virtualizerSnapshotEqual(a: VirtualizerSnapshot, b: VirtualizerS
 }
 
 /**
- * 按下标取条目。窗口里通常只有几十条且按下标升序，线性找足够；
- * 找不到即"这条此刻不在窗口里"，连接层据此把它收起来。
+ * 按下标取条目。找不到即这条此刻不在窗口里，连接层据此把它收起来。
  */
 export function findVirtualizerItem(
   items: readonly VirtualizerItemState[],
@@ -88,10 +81,7 @@ export function findVirtualizerItem(
   return items.find(item => item.index === index)
 }
 
-/**
- * 像素长度转 CSS 串。留两位小数：实测尺寸是浮点数，不截尾巴会拼出
- * 33.333333333333336px 这种串，两个适配器的内联样式也会对不上。
- */
+/** 像素长度转 CSS 串，留两位小数。 */
 function px(value: number): string {
   return `${Math.round(value * 100) / 100}px`
 }
@@ -103,7 +93,7 @@ export function resolveVirtualizerOverscan(overscan: number | undefined): number
   return Math.max(0, Math.trunc(overscan))
 }
 
-/** 分道数：至少 1。给 0 或负数会让内核的分道数组长度为 0，整份列表算不出区间。 */
+/** 分道数：至少 1；给 0 或负数会让内核的分道数组长度为 0，整份列表算不出区间。 */
 export function resolveVirtualizerLanes(lanes: number | undefined): number {
   if (lanes == null || !Number.isFinite(lanes))
     return 1
@@ -111,10 +101,9 @@ export function resolveVirtualizerLanes(lanes: number | undefined): number {
 }
 
 /**
- * 估算尺寸归一成函数形态。允许直接给一个数字：Web Components 侧属性只能是字符串，
- * 等高列表若非写个函数不可，作者就得为一个常量去写 property。
- * 两边都没给按 0 算（即"尺寸未知"）——此时所有条目都会落进窗口，
- * 先整份渲出来、再靠 measureElement 把真实尺寸回喂给内核，而不是白屏。
+ * 估算尺寸归一成函数形态，也允许直接给一个数字。
+ * 两边都没给按 0 算（尺寸未知）：此时所有条目都会落进窗口，
+ * 先整份渲出来再靠 measureElement 把真实尺寸回喂给内核。
  */
 export function resolveVirtualizerEstimate(
   estimateSize: number | ((index: number) => number) | undefined,
@@ -127,10 +116,8 @@ export function resolveVirtualizerEstimate(
 
 /**
  * content 的内联样式：主轴写总长，交叉轴清空交还给样式表。
- *
- * 两条轴的键每帧都写全（用不上的那条写空串）：WC 侧是 Object.assign 到 style 上，
- * 只写新键不会撤掉上一帧的旧键，运行期把 horizontal 翻过来时会同时留着
- * block-size 与 inline-size，滚动行程就此被两轴一起钉死。
+ * 两条轴的键每帧都写全（用不上的写空串）：WC 侧 Object.assign 到 style 上不会撤掉旧键，
+ * 翻转 horizontal 时两轴会同时被钉死。
  */
 export function virtualizerContentStyle(totalSize: number, horizontal: boolean): Record<string, string> {
   return horizontal
@@ -139,12 +126,9 @@ export function virtualizerContentStyle(totalSize: number, horizontal: boolean):
 }
 
 /**
- * 比例转百分比。留两位小数：不截尾巴会拼出 33.333333333333336% 这种串，
- * 两个适配器的内联样式也会对不上。
- *
- * 刻意不用 calc(100% / N) 那种"更精确"的写法：CSS 解析器会把它归一化
- * （不同实现归一化的结果还不一样），同一份产出经不同引擎落到 DOM 上就成了不同的串。
- * 三道时末尾差的那 0.01% 在任何屏幕上都不足一个像素。
+ * 比例转百分比，留两位小数。
+ * 不用 calc(100% / N)：CSS 解析器会归一化它，且各实现归一化的结果不一样，
+ * 同一份产出落到不同引擎的 DOM 上会成为不同的串。
  */
 function pct(ratio: number): string {
   return `${Math.round(ratio * 10000) / 100}%`
@@ -157,15 +141,9 @@ function laneSpan(lane: number, lanes: number): { start: string, size: string } 
 
 /**
  * 一条条目的内联样式。
- *
- * 只写位移、不写主轴尺寸：写了就等于把测量钉死在估算值上——量到的永远等于钉上去的那个数，
- * measureElement 于是永远收敛不了。等高列表由作者按 api 给出的 size 自己写。
- *
- * 交叉轴只在多列（lanes > 1）时归连接层，单列时写空串交还给样式表，
- * 这样作者能在自己的样式里改条目宽度。
- *
- * item 为 undefined 即"这条此刻不在窗口里"：四个键全清空，
- * 否则被复用的节点会带着上一轮的位移停在半空。
+ * 只写位移、不写主轴尺寸：写了会把测量钉死在估算值上，measureElement 永远收敛不了。
+ * 交叉轴只在多列（lanes > 1）时归连接层，单列写空串交还给样式表。
+ * item 为 undefined 即这条此刻不在窗口里，四个键全清空，否则复用的节点会带着上一轮的位移。
  */
 export function virtualizerItemStyle(
   item: VirtualizerItemState | undefined,

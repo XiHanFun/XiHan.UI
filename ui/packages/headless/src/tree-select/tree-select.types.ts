@@ -11,8 +11,7 @@ import type { TreeNode, TreeVisibleNode } from '../tree'
  */
 export type TreeSelectFocusIntent = 'selected' | 'first' | 'last' | 'next' | 'prev'
 
-// 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；纯逻辑测试与 SSR 下保持缺省，
-// 此时副作用一律短路（机器状态照常转移，只是不定位、不挂消解层与焦点域）。
+// 适配器挂载前填入；保持缺省时副作用短路，机器状态照常转移但不定位、不挂消解层与焦点域。
 export interface TreeSelectRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
@@ -26,8 +25,8 @@ export interface TreeSelectRefs {
   /** 焦点域容器、消解层节点，同时是节点集合的查询容器。 */
   getContentEl: () => HTMLElement | null
   /**
-   * 连打检索缓冲。随服务存活：停顿够久自行重开一轮，
-   * 放模块变量会让同页两个选择器共用一个缓冲、互相把对方的查询串接上去。
+   * 连打检索缓冲，随服务存活，停顿够久自行重开一轮。
+   * 放模块变量会让同页两个选择器共用一个缓冲。
    */
   typeahead: Typeahead
 }
@@ -37,10 +36,7 @@ export interface TreeSelectOpenChangeDetails {
 }
 
 export interface TreeSelectValueChangeDetails {
-  /**
-   * 选中集合。单选下也是数组（长度 ≤ 1），形状不随模式变——
-   * 调用方不必为了读一个值先判断当前是不是多选。
-   */
+  /** 选中集合。单选下也是数组（长度 ≤ 1），形状不随模式变。 */
   value: string[]
 }
 
@@ -49,8 +45,7 @@ export interface TreeSelectExpandedChangeDetails {
 }
 
 /**
- * 节点自报家门：只报值。层级、禁用、标签一律回 collection 里查——
- * 那是唯一事实源，作者不必把同一份元信息在标记里再抄一遍，两个适配器也就不会各抄各的。
+ * 节点自报家门：只报值。层级、禁用、标签一律回 collection 里查，那是唯一事实源。
  */
 export interface TreeSelectNodeProps {
   value: string
@@ -78,7 +73,7 @@ export interface TreeSelectSchema extends MachineSchema {
     disabled?: boolean
     /**
      * 只读：浮层照常展开、树照常浏览与展开收起，但选中值改不动、也清不掉。
-     * 与 disabled 的分界就在这里——禁用连键盘入口都没有。
+     * disabled 则连键盘入口都没有。
      */
     readOnly?: boolean
     /** 校验失败：trigger 报 aria-invalid，各角色节点带 data-invalid。 */
@@ -87,7 +82,7 @@ export interface TreeSelectSchema extends MachineSchema {
     placeholder?: string
     placement?: Placement
     offset?: number
-    /** 上下键走到首尾是否回绕，默认 false（树不像列表那样天然成环）。 */
+    /** 上下键走到首尾是否回绕，默认 false。 */
     loop?: boolean
     /** 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 */
     dir?: Direction

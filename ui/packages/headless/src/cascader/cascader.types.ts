@@ -2,14 +2,12 @@ import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, Position
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /**
- * 作者给的树数据。它是层级、显示文本与条目禁用的唯一事实源，作者的标记只管长相。
+ * 树数据，层级、显示文本与条目禁用的唯一事实源。
  *
- * value 必须全树唯一：它同时是 DOM 身份（data-value）、条目查询的键、
- * 以及连接层反查「这个条目属于哪一列、完整路径是什么」的入口。重复的 value 会让这层反查
- * 变得不确定（以先出现的为准）。
+ * value 必须全树唯一：它同时是 DOM 身份（data-value）、条目查询的键，以及反查
+ * 条目所属列与完整路径的入口。重复的 value 会让反查以先出现的为准。
  *
- * 与 Tree 的分野在 children 的空数组：那边空数组算分支（「暂时没有子项的目录」仍要报
- * aria-expanded），这边算叶子——级联的右边一列是实打实的一列，开一列空的没有意义。
+ * children 为空数组算叶子，右边不再开新列。
  */
 export interface CascaderNode {
   value: string
@@ -31,7 +29,7 @@ export interface CascaderNodeMeta {
   branch: boolean
   /** 所在列序号，0 起算。 */
   level: number
-  /** 从根到它（含自身）的完整路径，即它被选中时落进 value 的那一条。 */
+  /** 从根到它（含自身）的完整路径，选中时落进 value。 */
   path: readonly string[]
 }
 
@@ -46,9 +44,7 @@ export interface CascaderColumn {
 
 /**
  * 按深度摊开的静态列：第 L 层的全部节点，与展开路径无关。
- *
- * 作者据此写标记（每层一个 column 部件，层内全部节点各写一个 item），
- * 当下哪些条目该露面由连接层用 hidden 收口——内容常挂不卸载，两个适配器因此写法相同。
+ * 作者据此写标记（每层一个 column，层内节点各一个 item），当下哪些条目露面由连接层用 hidden 收口。
  */
 export interface CascaderLevel {
   level: number
@@ -59,7 +55,7 @@ export interface CascaderLevel {
  * 展开那一刻焦点落在哪一个条目：
  * - selected 停在选中路径的末项（无选中、或它已禁用时退回所在列的首个可停留条目）
  * - first / last 从根列两端进
- * - next / prev 从选中路径的末项在它自己那一列里走一步（收起态在 trigger 上按上下键即走这条）
+ * - next / prev 从选中路径的末项在它自己那一列里走一步
  */
 export type CascaderFocusIntent = 'selected' | 'first' | 'last' | 'next' | 'prev'
 
@@ -68,13 +64,11 @@ export type CascaderExpandTrigger = 'click' | 'hover'
 
 /**
  * 选中路径。单条路径（`['zhejiang','hangzhou']`）是简写，内部一律归一成路径集合
- * （`[['zhejiang','hangzhou']]`）——调用方不必为了读一个值先判断当前是不是多选。
- * 空数组即无选中，两种写法在这一点上不冲突。
+ * （`[['zhejiang','hangzhou']]`）。空数组即无选中。
  */
 export type CascaderValue = readonly string[] | readonly (readonly string[])[]
 
-// 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；纯逻辑测试与 SSR 下保持缺省，
-// 此时副作用一律短路（机器状态照常转移，只是不定位、不挂消解层与焦点域）。
+// 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；缺省时副作用短路，机器状态照常转移。
 export interface CascaderRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
@@ -98,10 +92,7 @@ export interface CascaderValueChangeDetails {
   value: string[][]
 }
 
-/**
- * 条目自报家门：只报值。所在列、完整路径、禁用与标签一律回 collection 里查——
- * 那是唯一事实源，作者不必把同一份元信息在标记里再抄一遍，两个适配器也就不会各抄各的。
- */
+/** 条目自报家门：只报值。所在列、完整路径、禁用与标签一律回 collection 里查。 */
 export interface CascaderItemProps {
   value: string
 }
@@ -132,10 +123,7 @@ export interface CascaderSchema extends MachineSchema {
     multiple?: boolean
     /** 整个控件禁用：trigger 用原生 disabled，浮层展不开。 */
     disabled?: boolean
-    /**
-     * 只读：浮层照常展开、各列照常浏览与展开，但选中值改不动、也清不掉。
-     * 与 disabled 的分界就在这里——禁用连键盘入口都没有。
-     */
+    /** 只读：浮层照常展开与浏览，但选中值改不动、也清不掉。 */
     readOnly?: boolean
     /** 校验失败：trigger 报 aria-invalid，各角色节点带 data-invalid。 */
     invalid?: boolean
@@ -145,7 +133,7 @@ export interface CascaderSchema extends MachineSchema {
     separator?: string
     placement?: Placement
     offset?: number
-    /** 列内上下键走到首尾是否回绕，默认 true（一列就是一个列表框）。 */
+    /** 列内上下键走到首尾是否回绕，默认 true。 */
     loop?: boolean
     /** 文字方向，默认 ltr；只对调左右方向键的「进子列/回上一列」语义。 */
     dir?: Direction
@@ -160,10 +148,8 @@ export interface CascaderSchema extends MachineSchema {
     /** 选中路径集合，恒为数组的数组。受控（value 给定）时 cell 直读 prop。 */
     value: string[][]
     /**
-     * 展开路径：并排开着哪几列全由它决定（列数 = 它走得通的段数 + 1）。
-     * 与选中值互相独立——浏览到哪儿是一回事，落值是另一回事。
-     *
-     * 键盘导航下它恒等于焦点路径；指针悬停展开时只有它动（鼠标不该把键盘焦点抢走）。
+     * 展开路径：并排开着哪几列由它决定（列数 = 它走得通的段数 + 1），与选中值互相独立。
+     * 键盘导航下恒等于焦点路径；指针悬停展开时只有它动，不碰焦点。
      */
     activePath: string[]
     /** roving tabindex 的锚点，同时是方向键与确认键的起点；收起即清空。 */
@@ -184,19 +170,13 @@ export interface CascaderSchema extends MachineSchema {
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
     /**
-     * 焦点落到第 level 列的 value 上。展开路径随之被截到第 level 段并换成它——
-     * 它的子列开着，它右边原有的列一律砍掉。
+     * 焦点落到第 level 列的 value 上。展开路径随之被截到第 level 段并换成它，
+     * 它的子列开着，右边原有的列一律砍掉。
      *
-     * 只报「第几列的哪一个」而不报整条路径：截断是级联唯一的路径写法，
-     * 让机器就地算才只有一处能把列改错。条目必须是当下露着面的那些之一（连接层保证），
-     * 否则截出来的路径接不回它真正的祖先。
-     *
-     * 焦点与展开绑死是有意的：键盘的落点因此永远是「这一帧已经露着面」的条目。
-     * 若让展开慢焦点一步（先展开、下一拍再进），右方向键要落进的那一列此刻还带着 hidden，
-     * 焦点会当场掉回 body。
+     * 条目必须是当下露着面的那些之一（连接层保证），否则截出来的路径接不回它的祖先。
      */
     | { type: 'ITEM.FOCUS', level: number, value: string }
-    /** 只展开不移焦点：指针划过条目走这条（鼠标不该把键盘焦点抢走）。 */
+    /** 只展开不移焦点：指针划过条目走这条。 */
     | { type: 'ITEM.EXPAND', level: number, value: string }
     /** 持有焦点的条目离开了 DOM：浏览器此时不派 focusout，由适配器如实上报。 */
     | { type: 'ITEM.LOST' }
@@ -230,15 +210,9 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   open: boolean
   /** 作者给的原始树数据。 */
   collection: readonly CascaderNode[]
-  /**
-   * 当下并排开着的列（含每列的条目）。这是级联的核心投影：
-   * 列数 = 展开路径走得通的段数 + 1，选了靠左的一列就把它右边的列全砍掉。
-   */
+  /** 当下并排开着的列（含每列的条目）：列数 = 展开路径走得通的段数 + 1。 */
   columns: readonly CascaderColumn[]
-  /**
-   * 按深度摊开的静态列，与展开路径无关。作者据此写标记：每层一个 column、层内节点各一个 item，
-   * 当下不该露面的条目由连接层加 hidden 收起，不卸载作者节点。
-   */
+  /** 按深度摊开的静态列，与展开路径无关；不该露面的条目由连接层加 hidden 收起。 */
   levels: readonly CascaderLevel[]
   /** 选中路径集合；单选下长度 ≤ 1，形状不随模式变。 */
   value: string[][]
@@ -262,7 +236,7 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   isSelected: (value: string) => boolean
   /** 该条目是否落在展开路径上（它的子列开着，或它自己就是最后一站）。 */
   isActive: (value: string) => boolean
-  /** 该条目此刻是否落在某个可见列里。作者节点常挂，不可见的只是被 hidden 收起。 */
+  /** 该条目此刻是否落在某个可见列里。 */
   isVisible: (value: string) => boolean
   setOpen: (next: boolean) => void
   setValue: (next: string[][]) => void

@@ -2,9 +2,7 @@ import type { KeyboardTable } from '../spec/types'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/combobox/#keyboardinteraction'
 
-// 收起态的键盘入口与 Select 同构（trigger 上一个 Tab 位，方向键与确认键都展开浮层）；
-// 展开之后焦点真的进条目，上下键只在**当前这一列**里走，左右键则是列与列之间的层级操作。
-// 焦点与展开绑死：停在哪个条目上，它的子列就开着——右方向键因此永远进得去一列已经露着面的条目。
+// 展开后焦点进入条目：上下键在当前列内走，左右键做列间层级操作；焦点与展开绑死。
 export const cascaderKeyboard: KeyboardTable = {
   component: 'cascader',
   source: APG,

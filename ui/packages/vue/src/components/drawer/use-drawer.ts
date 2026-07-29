@@ -29,13 +29,11 @@ export function useDrawer(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  // onOpenChange 由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const service = useMachine(drawerMachine, () => ({ ...props, onOpenChange }), scope)
 
   if (typeof document !== 'undefined') {
     const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
-    // 只给注册函数、不在这里注册：层的入栈出栈跟着展开态走（机器的 trackOverlay 效应负责）。
-    // 挂载期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
+    // 只提供注册函数，入栈出栈由机器的 trackOverlay 效应按展开态驱动
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
       kind: 'modal',
       node: () => contentRef.value,
@@ -60,11 +58,10 @@ export function useDrawer(
     service.refs.set('getTriggerEl', () => null)
     service.refs.set('branches', () => [])
 
-    // data-state 提交到 DOM 之后再驱动 presence（保证退场探测读到正确 animationName）
+    // data-state 提交到 DOM 之后再驱动 presence，让退场探测读到正确的 animationName
     watch(() => service.state.get() === 'open', open => presence.update(open), { flush: 'post' })
 
-    // content 就位后把它的 CSS 退场动画接到 presence 退出租约：关闭时先播滑出动画再卸载。
-    // 无退场动画的环境（含无布局的测试环境）自动短路，关闭即卸载。
+    // content 就位后把它的 CSS 退场动画接到 presence 退出租约，无动画时关闭即卸载
     let detachExit: (() => void) | undefined
     watch(contentRef, (el) => {
       detachExit?.()

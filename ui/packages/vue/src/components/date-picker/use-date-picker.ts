@@ -18,7 +18,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface DatePickerContext {
   api: ComputedRef<DatePickerApi>
-  /** 三台机器的把手：部件要上报 DOM 侧的事实时得直接够到对应那台。 */
+  /** 三台机器的把手，供部件上报 DOM 侧的事实。 */
   services: DatePickerServices
   controlRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
@@ -35,12 +35,11 @@ export function useDatePicker(
   const contentRef = ref<HTMLElement | null>(null)
   const gridRef = ref<HTMLElement | null>(null)
 
-  // 三台机器共用一份 scope：part id 里带组件名（date-picker / calendar / date-field），
-  // 同一个 scope 也撞不到一起，而共用能让日历的 heading id 与本组件的 content id 出自同源
+  // 三台机器共用一份 scope，part id 里带组件名区分
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
 
-  // 顺序要紧：两台内嵌机器的 props 都从编排机现读，编排机必须先立起来
+  // 两台内嵌机器的 props 都从编排机现读，编排机须先建立
   const root = useMachine(datePickerMachine, () => ({ ...props, ...handlers }), scope)
   const calendar = useMachine<CalendarSchema>(calendarMachine, () => datePickerCalendarProps(root), scope)
   const field = useMachine<DateFieldSchema>(dateFieldMachine, () => datePickerFieldProps(root), scope)
@@ -49,21 +48,18 @@ export function useDatePicker(
   if (typeof document !== 'undefined') {
     const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
 
-    // 只给注册函数、不在这里注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
-    // 挂载期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
+    // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按展开态驱动
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
       kind: 'popover',
       node: () => contentRef.value,
-      // 整个输入行记为本层分支：点 trigger 或段位算层内交互，开合交给它们自己切换。
-      // 否则同一次点击先被判为层外交互关一次、再被 click 打开一次，等于关不掉。
+      // 整个输入行记为本层分支，点 trigger 或段位算层内交互
       branches: () => [controlRef.value].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
       surfaces: () => [],
     })
 
-    // 定位引擎由适配器建好注入；机器只经端口驱动，不认识具体引擎。
-    // 锚点取整个输入行，浮层因此与输入框对齐而不是只贴着图标按钮。
+    // 定位引擎由适配器注入，机器只经端口驱动；锚点取整个输入行
     root.refs.set('config', config)
     root.refs.set('registerLayer', registerLayer)
     root.refs.set('position', createFloatingUiPositionEngine())
@@ -72,8 +68,7 @@ export function useDatePicker(
     root.refs.set('getContentEl', () => contentRef.value)
   }
 
-  // 键盘跨月时要把焦点送进新月份的那一格，而那一格是本帧重渲之后才存在的：
-  // 日历机器推迟一拍再从这里拿到网格、现查落点。不注入的话状态照常流转，只是焦点搬不动。
+  // 跨月后的焦点落点要等重渲，日历机器推迟一拍再从这里取网格现查
   calendar.refs.set('getGridEl', () => gridRef.value)
 
   const api = computed(() => connectDatePicker(services, vueNormalize))

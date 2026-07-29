@@ -42,7 +42,7 @@ function applyLock(doc: Document, state: LockState): void {
   body.style.width = '100%'
   body.style.overflow = 'hidden'
 
-  // 旋屏 / 视口变化时重算负 top，避免内容被推出屏外
+  // 旋屏 / 视口变化时重算负 top
   const recalc = (): void => {
     body.style.top = `-${state.savedScrollY}px`
   }

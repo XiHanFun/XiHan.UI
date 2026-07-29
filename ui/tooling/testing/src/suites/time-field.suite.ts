@@ -36,8 +36,7 @@ export const timeFieldSuite: ConformanceSuite = {
   component: 'time-field',
   anatomy: timeFieldAnatomy,
   keyboard: timeFieldKeyboard,
-  // 四段全写出来：granularity / hourCycle 关掉的那些由连接层打 hidden 收起，
-  // 而不是让作者按配置去增删节点——节点是作者写的，替他删了他就再也拿不回来
+  // 四段全写出来：granularity / hourCycle 关掉的那些由连接层打 hidden 收起，不删作者节点
   fixture: {
     part: 'root',
     children: [
@@ -437,8 +436,7 @@ export const timeFieldSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'raw',
-          // 段上没有 tabindex，焦点根本落不进去，按键会派到 body 上；
-          // 照常规写法这几步全是空转，必须直接往节点上派事件才碰得到守卫
+          // 段上没有 tabindex，焦点落不进去，必须直接往节点上派事件才碰得到守卫
           why: '禁用时段不可聚焦，只有直接派发才碰得到守卫',
           run: async (ctx) => {
             const hour = ctx.doc.querySelector<HTMLElement>(`${SCOPE}[data-part="segment"]`)!

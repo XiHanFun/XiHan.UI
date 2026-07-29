@@ -5,8 +5,7 @@ import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 /**
- * `<xh-checkbox>` —— Light-DOM 行为宿主：用户写 root(button)/indicator 角色节点，元素跑 checkbox 机器
- * 并把 connect 产出打上去。无副作用（不挂 DOM effect）。
+ * `<xh-checkbox>` —— Light-DOM 行为宿主，跑 checkbox 机器并把 connect 产出打到 root/indicator 角色节点。
  *
  * @customElement xh-checkbox
  * @attr {boolean} checked - 受控选中；缺省该属性即非受控

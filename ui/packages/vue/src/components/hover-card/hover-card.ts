@@ -9,7 +9,7 @@ type HoverCardProps = HoverCardSchema['props']
 
 export const XhHoverCardRoot = defineComponent({
   name: 'XhHoverCardRoot',
-  // 缺省值的唯一事实源在机器与 connect —— 凡是那边有兜底的一律 default: undefined
+  // 缺省值由机器与 connect 给出，这里一律 default: undefined
   props: {
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
@@ -20,7 +20,7 @@ export const XhHoverCardRoot = defineComponent({
     dir: { type: String as PropType<Direction>, default: undefined },
     disabled: Boolean,
   },
-  // open-change 携带 { open }；update:open 携带裸布尔，支持 v-model:open
+  // open-change 携带 { open }，update:open 携带裸布尔
   emits: ['open-change', 'update:open'],
   setup(props, { slots, emit }) {
     const notify: HoverCardProps['onOpenChange'] = (details) => {

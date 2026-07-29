@@ -14,7 +14,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-// 属性缺席翻成 undefined：缺省值的唯一事实源留在机器与 connect 里。
+// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 空串也当缺席：max="" 经 Number() 会变成 0，那等于"一条都不显示"
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
@@ -53,7 +53,7 @@ function groupPlacement(el: HTMLElement): ToastPlacement | undefined {
  * @csspart group - 某一个位置上的那一摞，可自带 placement 属性；承载 data-placement / data-count / data-empty 与间距
  */
 export class XhToasterElement extends XhElement {
-  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     // 队列与文案都是对象，走不了属性；只作为 property 暴露，与 Vue 侧的同名 prop 对齐。
     // toasts 给了即受控：元素内部的写入只发 toasts-change，等宿主自己写回

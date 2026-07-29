@@ -31,8 +31,7 @@ export const toggleGroupSuite: ConformanceSuite = {
   },
   cases: [
     {
-      // 整组只占一个 Tab 位：多一个会让用户按 Tab 在组内反复停留，
-      // 一个都没有则键盘再也进不来（无锚点时须由容器兜底）
+      // 整组只占一个 Tab 位；无锚点时须由容器兜底
       name: 'roving tabindex：整组只有一个 Tab 停靠点，无选中时容器兜底',
       spec: { apg: APG },
       covers: ['toggle-group.kbd.tab'],
@@ -230,8 +229,7 @@ export const toggleGroupSuite: ConformanceSuite = {
       props: { multiple: true, defaultValue: ['left', 'right'] },
       initial: {
         parts: {
-          // 容器的 tabindex 只看焦点在不在组内，不看有没有选中：
-          // 受控值不在选项里、或条目被删时没有条目认领 0，容器必须兜底，否则整组键盘不可达
+          // 容器的 tabindex 只看焦点在不在组内：没有条目认领 0 时由容器兜底
           root: { tabindex: '0' },
           item: [
             { 'aria-pressed': 'true', 'tabindex': '0' },
@@ -261,7 +259,7 @@ export const toggleGroupSuite: ConformanceSuite = {
               ],
             },
             activeElement: { part: 'item[2]', exact: true },
-            // 路过不改值：条目是可反复开关的按钮，走一趟就把值改了会让"取消"无从表达
+            // 路过不改值
             events: [],
           },
         },

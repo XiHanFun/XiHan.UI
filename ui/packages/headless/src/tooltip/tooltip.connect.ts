@@ -19,7 +19,7 @@ export function connectTooltip<T extends PropTypes>(
   const disabled = !!prop('disabled')
   const ids = scope.ids('tooltip', 'trigger', 'content')
   const stateAttr = open ? 'open' : 'closed'
-  // 定位结果由 trackPosition 效应写进 context：这里只读结果，不查 DOM、不调引擎
+  // 定位结果由 trackPosition 效应写进 context，这里只读结果，不查 DOM、不调引擎
   const position = context.get('position')
 
   const setOpen = (next: boolean): void => {
@@ -63,9 +63,8 @@ export function connectTooltip<T extends PropTypes>(
         insetBlockStart: `${position?.y ?? 0}px`,
       },
     }),
-    // 常挂 + hidden 显隐：不卸载作者写在 content 里的节点。content 自身不可聚焦
-    // （tooltip 不承载交互），但**必须可悬停**：指针移入浮层要能撤销收起等待，
-    // 否则文案长到需要停留细看时会在指针下方消失。
+    // 常挂 + hidden 显隐，不卸载作者写在 content 里的节点。
+    // content 自身不可聚焦，但必须可悬停：指针移入浮层要能撤销收起等待。
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
       'id': ids.content,

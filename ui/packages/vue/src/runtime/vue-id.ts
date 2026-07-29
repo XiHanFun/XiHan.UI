@@ -3,7 +3,7 @@ import { useId } from 'vue'
 
 let fallbackSeq = 0
 
-// 用 Vue 3.5 的 useId 提供 SSR 安全的 scope id。必须在 setup 期调用。
+// 基于 Vue useId 生成 scope id，须在 setup 期调用
 export function createVueIdGenerator(): IdGenerator {
   const base = useId() ?? `xh-f${++fallbackSeq}`
   return {

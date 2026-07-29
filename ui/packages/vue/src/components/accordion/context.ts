@@ -4,7 +4,7 @@ import type { AccordionContext } from './use-accordion'
 import { inject, provide } from 'vue'
 
 const KEY: InjectionKey<AccordionContext> = Symbol('xh-accordion')
-/** 条目身份下传给 header/trigger/content。用 getter 而非快照，条目改 value/disabled 时才跟得上。 */
+/** 条目身份下传给 header/trigger/content，用 getter 以跟随 value/disabled 变更。 */
 const ITEM_KEY: InjectionKey<() => AccordionItemProps> = Symbol('xh-accordion-item')
 
 export function provideAccordion(ctx: AccordionContext): void {

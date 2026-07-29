@@ -203,7 +203,7 @@ export const scrollAreaSuite: ConformanceSuite = {
           expect: { parts: { 'scrollbar[0]': { 'data-state': 'visible', 'hidden': null } } },
         },
         {
-          // 指针擦一下边就闪没了会很难看：离开的那一刻必须还露着
+          // 离开的那一刻滑块必须还露着
           ...pointerOnRoot('pointerleave'),
           expect: { parts: { 'scrollbar[0]': { 'data-state': 'visible', 'hidden': null } } },
         },

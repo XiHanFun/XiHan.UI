@@ -3,20 +3,14 @@ import { setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<CheckboxGroupSchema>()
 
-/**
- * 翻转单个值。新数组按"点击先后"追加，不按声明顺序重排：
- * 重排要知道全集，而全集是作者可给可不给的声明，缺它时排序规则就不成立了。
- */
+/** 翻转单个值；新值按点击先后追加，不按声明顺序重排。 */
 export function toggleItemValue(list: readonly string[], value: string): string[] {
   return list.includes(value) ? list.filter(v => v !== value) : [...list, value]
 }
 
 /**
- * 全选/全不选。判据只看传进来的这批值（调用方现查到的可用条目）：
- * "已全选"= 这批值一个不落都在选中集合里。
- *
- * 清空时只摘掉这批值、保留其它已选项——禁用条目本来就不在这批里，
- * 一刀切成空数组会把用户改不动的选项也一并抹掉。
+ * 全选/全不选，判据只看传进来的这批值：这批值一个不落都在选中集合里即"已全选"。
+ * 清空时只摘掉这批值，保留其它已选项。
  */
 export function toggleAllValues(list: readonly string[], values: readonly string[]): string[] {
   if (values.length === 0)

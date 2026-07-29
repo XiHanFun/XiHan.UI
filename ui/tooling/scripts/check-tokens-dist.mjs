@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // 门禁：packages/system 的令牌产物必须入库（tokens.css / tokens.json / src/generated/tokens.ts）。
-// 令牌源改动后忘了跑 gen 会被此门禁拦下（产物与源不同步的更严格校验在 CI 里重跑 gen 后比对）。
+// 只查产物是否存在，产物与源是否同步由 CI 重跑 gen 后比对。
 import { stat } from 'node:fs/promises'
 import { join } from 'node:path'
 

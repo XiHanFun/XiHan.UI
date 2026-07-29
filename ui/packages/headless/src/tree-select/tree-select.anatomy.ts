@@ -27,12 +27,10 @@ export const treeSelectAnatomy = createAnatomy('tree-select', [
 ])
 
 /**
- * 两类节点部件都是 role=treeitem，都自报 data-value，因此都要进导航集合：
- * item 是叶子，branch 是分支（它还裹着自己的 branch-content 子树）。
- *
- * queryItems 的归属判据是「父链上最近的同名部件是不是本容器」，因此容器传 content
- * 还是 tree 都成立：节点与两者之间隔着多少层 branch/branch-content 都不影响，
- * 而嵌套的另一个 tree-select 会被切开，各认各的节点。
+ * 两类节点部件都是 role=treeitem、都自报 data-value，因此都要进导航集合：
+ * item 是叶子，branch 是分支。
+ * queryItems 按最近的同名部件归属过滤，容器传 content 或 tree 都成立，
+ * 只有嵌套的另一个 tree-select 会被切开。
  */
 export const treeSelectItemQuery: ItemQuery = { scope: treeSelectAnatomy.name, part: 'item' }
 export const treeSelectBranchQuery: ItemQuery = { scope: treeSelectAnatomy.name, part: 'branch' }

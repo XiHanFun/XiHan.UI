@@ -14,10 +14,7 @@ export interface ImageSchema extends MachineSchema {
     alt?: string
     /**
      * 加载超过这么久（毫秒）才让回退内容露面，默认 0（立刻露面）。
-     *
-     * 图片走缓存时加载只有几毫秒，回退内容立刻显出再立刻收起就是一次闪烁；
-     * 给个一二百毫秒的门槛，快图直接从空位切到图片，慢图才落回退内容。
-     * Infinity 表示加载期间永不显示回退内容（只有失败才显）。
+     * Infinity 表示加载期间永不显示回退内容，只有失败才显。
      */
     fallbackDelay?: number
     /** 状态每次真正落位时通知一次；过渡态 idle 不通知。 */
@@ -36,7 +33,7 @@ export interface ImageSchema extends MachineSchema {
     // <img> 自己派发的 DOM 事件，由 connect 挂在 image 上回送
     | { type: 'IMAGE.LOAD' }
     | { type: 'IMAGE.ERROR' }
-    /** 回退延迟到点：图片还没来，该让回退内容顶上了。 */
+    /** 回退延迟到点，让回退内容顶上。 */
     | { type: 'after.fallbackDelay' }
   tag: never
   guard: 'hasSrc'

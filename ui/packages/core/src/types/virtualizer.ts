@@ -1,5 +1,4 @@
-// VirtualizerPort：虚拟滚动端口（只落类型契约，实现由各适配器提供）。
-// core 只承诺契约，DataTable / VirtualList 在各自适配器接线。
+// VirtualizerPort：虚拟滚动端口的类型契约，实现由各适配器提供。
 
 export interface VirtualItem {
   index: number

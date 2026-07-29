@@ -5,8 +5,7 @@ import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 /**
- * `<xh-switch>` —— Light-DOM 行为宿主：用户写 root(button)/thumb 角色节点，元素跑 switch 机器
- * 并把 connect 产出打上去。无副作用（不挂 DOM effect），比 dialog 简单。
+ * `<xh-switch>` —— Light-DOM 行为宿主，跑 switch 机器并把 connect 产出打到 root/thumb 角色节点。
  *
  * @customElement xh-switch
  * @attr {boolean} checked - 受控开合；缺省该属性即非受控

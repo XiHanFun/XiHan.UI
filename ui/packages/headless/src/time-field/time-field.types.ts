@@ -13,13 +13,9 @@ export type TimeHourCycle = 12 | 24
 export type TimeDayPeriod = 'am' | 'pm'
 
 /**
- * 逐段的编辑缓冲：每段可以单独为空（用户还没填），因此不能用一个时间对象表示。
- *
- * hour 一律以 24 小时制落存（0-23），12 小时制只是段上的显示形态；
- * 这样"12/24 换算"只发生在读写那一层，值本身永远只有一种形态。
- *
- * dayPeriod 只在 hour 为空时有意义——小时一旦填上，上午/下午就由它唯一决定。
- * 留这一格是为了记住用户在填小时之前就按下的 A/P。
+ * 逐段的编辑缓冲：每段可以单独为空，因此不能用一个时间对象表示。
+ * hour 一律以 24 小时制落存（0-23），12 小时制只是段上的显示形态。
+ * dayPeriod 只在 hour 为空时有意义，用来记住用户在填小时之前按下的 A/P。
  */
 export interface TimeDraft {
   hour: number | null
@@ -35,9 +31,7 @@ export interface TimeFieldValueChangeDetails {
 
 /**
  * 段自报家门：身份由作者在部件上声明，connect 据此产出属性。
- * connect 因此是 (context/prop, 本段声明) 的纯函数，不在连接期反查 DOM——
- * Vue 侧 connect 在 render 期求值（本帧 DOM 还不存在），WC 侧在 updated 后求值（DOM 已就位），
- * 连接期读 DOM 会让两个适配器的首帧快照分叉。
+ * connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得反查 DOM。
  */
 export interface TimeFieldSegmentProps {
   segment: TimeSegmentType
@@ -76,10 +70,7 @@ export interface TimeFieldSchema extends MachineSchema {
   context: {
     /** ISO 时间串；任一必填段为空时是空串。受控（value 给定）时 cell 直读 prop。 */
     value: string
-    /**
-     * 逐段编辑缓冲。只在 value 不是一个可解析的时间时才拿它显示——
-     * value 能解析时它说了算，受控宿主不写回，界面就纹丝不动。
-     */
+    /** 逐段编辑缓冲。只在 value 不是可解析的时间时才拿它显示。 */
     draft: TimeDraft
     /** 焦点所在段；焦点在整组之外时为 null。同时是 roving tabindex 的锚点。 */
     focusedSegment: TimeSegmentType | null

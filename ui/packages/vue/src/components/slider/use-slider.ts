@@ -11,7 +11,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 export interface SliderContext {
   api: ComputedRef<SliderApi>
   service: Service<SliderSchema>
-  /** 轨道节点。机器在指针事件发生的那一刻拿它量矩形，connect 一律不碰 DOM。 */
+  /** 轨道节点，机器在指针事件里拿它量矩形。 */
   trackRef: Ref<HTMLElement | null>
 }
 
@@ -24,10 +24,9 @@ export function useSlider(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  // 两个回调由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const service = useMachine(sliderMachine, () => ({ ...props, onValueChange, onValueChangeEnd }), scope)
 
-  // 懒读而不是把节点直接塞进去：ref 在挂载后才有值，机器建起来的那一刻还是 null
+  // 传 getter 而非节点，ref 在挂载后才有值
   service.refs.set('getTrackEl', () => trackRef.value)
 
   const api = computed(() => connectSlider(service, vueNormalize))

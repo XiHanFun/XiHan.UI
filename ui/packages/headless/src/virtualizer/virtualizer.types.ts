@@ -5,7 +5,7 @@ import type { VirtualizerItemState, VirtualizerSnapshot } from './virtualizer.si
 
 /**
  * 计算内核实例。区间、测量缓存、多列分道全在它那边，本组件只负责它的生死与接线。
- * 滚动容器与条目都是 HTMLElement（不支持以 window 为滚动容器的形态）。
+ * 滚动容器与条目都是 HTMLElement，不支持以 window 为滚动容器的形态。
  */
 export type VirtualizerCore = Virtualizer<HTMLElement, HTMLElement>
 
@@ -34,16 +34,15 @@ export interface VirtualizerItemProps {
   index: number
 }
 
-// 适配器在挂载前填入元素 getter；纯逻辑测试与 SSR 下保持缺省，
-// 此时效应短路（机器状态照常转移，只是建不出内核、快照恒为空）。
+// 适配器挂载前填入；保持缺省时效应短路，机器状态照常转移但建不出内核、快照恒为空。
 export interface VirtualizerRefs {
   /** 真正 overflow:auto 的那层：内核的尺寸观察、滚动监听与滚动写回全落在它身上。 */
   getViewportEl: () => HTMLElement | null
   /** 撑出总长的那层。只用于给条目做定位上下文，内核不认识它。 */
   getContentEl: () => HTMLElement | null
   /**
-   * 计算内核。由机器的效应在挂载后填入、退出时清空——因此它同时是"内核还活着吗"的判据：
-   * 停机后残留的回调拿它一比就知道自己该闭嘴了。
+   * 计算内核，由机器的效应在挂载后填入、退出时清空。
+   * 它同时是内核还活着吗的判据，停机后残留的回调拿它一比即可判断。
    */
   getVirtualizer: () => VirtualizerCore | null
 }
@@ -85,7 +84,7 @@ export interface VirtualizerSchema extends MachineSchema {
   computed: Record<string, never>
   refs: VirtualizerRefs
   /**
-   * 只有"手正在滚"这一件事值得进状态：区间与尺寸是算出来的数据，落在 context 里。
+   * 只有手正在滚这一件事进状态，区间与尺寸是算出来的数据、落在 context 里。
    * idle 停着；scrolling 滚动事件正在连着来（内核自己带停手判定）。
    */
   state: 'idle' | 'scrolling'

@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-// 门禁：库包（packages/*）的运行时 dependencies 必须用 catalog: 或 workspace: 引用，
-// 不得内联具体版本号（版本单一事实源 = pnpm-workspace.yaml 的 catalog）。
+// 门禁：库包（packages/*）的运行时 dependencies 只允许 catalog: 或 workspace: 引用，不得内联版本号。
 import { readdir, readFile, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 

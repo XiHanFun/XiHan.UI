@@ -4,20 +4,16 @@ import type { MachineSchema } from '@xihan-ui/machine'
 /**
  * 焦点模型：**行级** roving tabindex。
  *
- * 一个 Tab 位对应一整行（不是一个单元格）：表体里只有锚点行认领 tabindex=0，
- * 其余一律 -1；Tab 从表格外进来落在锚点行上，再按一次 Tab 就整体离开表体。
- * 锚点 = focusedRow ?? 首个选中的数据行；焦点不在表体里时由 body 兜底进 Tab 序列，
- * 它的 onFocus 再把焦点转投给某一行。
- *
- * 单元格级导航（左右键在同一行内换单元格）与 F2 编辑模式不做：
- * 左右方向键在这里另有语义——展开/收起当前行。
+ * 表体里只有锚点行 tabindex=0，其余一律 -1；锚点 = focusedRow ?? 首个选中的数据行。
+ * 焦点不在表体里时由 body 兜底进 Tab 序列，它的 onFocus 再把焦点转投给某一行。
+ * 左右方向键的语义是展开/收起当前行，因此不做单元格级导航与 F2 编辑模式。
  */
 export type TableFocusModel = 'row-roving-tabindex'
 
 /**
  * 选择模式：
- * - none：整套选择机制关停。行不报 aria-selected（省略表达的是「这不是可选行」），
- *   两个选择把手都转 aria-disabled，Space 也不再被表体吞掉；
+ * - none：整套选择机制关停。行不报 aria-selected，两个选择把手都转 aria-disabled，
+ *   Space 也不再被表体吞掉；
  * - single：一次只中一行，再点一次可取消（把手是复选框形态，不是单选钮）；
  * - multiple：复选，root 报 aria-multiselectable=true，全选把手才生效。
  */
@@ -32,9 +28,8 @@ export interface TableSortDescriptor {
 }
 
 /**
- * 选中集合。裸 'all' 是「全都选中」的声明式写法（服务端分页时表达的是跨页全选，
- * 因此不能用当前这一页的 id 数组代替）。用户一动手就会被摊成显式 id 数组——
- * 摊平的基准是**当前可选行**，跨页那部分选中随之丢失，这是 'all' 的固有代价。
+ * 选中集合。裸 'all' 表示全都选中，含服务端分页下的跨页全选。
+ * 用户一动手即摊成显式 id 数组，基准是**当前可选行**，跨页那部分选中随之丢失。
  */
 export type TableSelection = string[] | 'all'
 
@@ -42,16 +37,13 @@ export type TableSelection = string[] | 'all'
 export type TableSelectionState = 'none' | 'some' | 'all'
 
 /**
- * 列定义。它是列号（aria-colindex）与列总数（aria-colcount）的唯一事实源：
- * 作者的标记只管长相，两个适配器都不从 DOM 反推列号。
- *
- * 选择列、展开列这类「没有数据只有把手」的列同样要在这里声明一条，
- * 否则它们占着的那一格算不出列号，右边所有列的列号都会串位。
+ * 列定义。列号（aria-colindex）与列总数（aria-colcount）的唯一事实源，不从 DOM 反推。
+ * 选择列、展开列这类只有把手的列也必须在此声明一条，否则右侧所有列的列号串位。
  */
 export interface TableColumnDef {
   /** 全表唯一：既是 DOM 身份（data-value），也是排序链与列号索引的键。 */
   id: string
-  /** 展示名。连接层不拿它当可及名字用（列标题的名字来自作者写的文本），只供调用方渲染。 */
+  /** 展示名。只供调用方渲染，不作为可及名字。 */
   label?: string
   /** 可排序：给了才产出 aria-sort，排序把手也才认按键与点击。 */
   sortable?: boolean
@@ -62,8 +54,8 @@ export interface TableColumnDef {
 }
 
 /**
- * 行定义。它是行序、行号（aria-rowindex）与行总数（aria-rowcount）的唯一事实源。
- * 与列定义同理：作者标记里有、rows 里没有的行报不出行号，也进不了方向键序列。
+ * 行定义。行序、行号（aria-rowindex）与行总数（aria-rowcount）的唯一事实源；
+ * 标记里有而 rows 里没有的行报不出行号，也进不了方向键序列。
  */
 export interface TableRowDef {
   /** 全表唯一：DOM 身份（data-value）、选中/展开集合的元素、连接层查行的键。 */
@@ -76,7 +68,7 @@ export interface TableRowDef {
 
 /** 可见行序列的元素。展开摊平的产物，数据行与详情行都在其中。 */
 export interface TableVisibleRow {
-  /** 数据行与它的详情行共用同一个 id（两者是同一行的两副面孔）。 */
+  /** 数据行与它的详情行共用同一个 id。 */
   id: string
   /** data = 数据行；expanded = 紧跟其后的详情行，只在展开时出现。 */
   kind: 'data' | 'expanded'
@@ -100,10 +92,7 @@ export interface TableExpandedChangeDetails {
   value: string[]
 }
 
-/**
- * 行系部件自报家门：只报行 id。禁用、可展开与行号一律回 rows 里查——
- * 那是唯一事实源，作者不必把同一份元信息在标记里再抄一遍。
- */
+/** 行系部件自报家门：只报行 id，禁用、可展开与行号一律回 rows 里查。 */
 export interface TableRowProps {
   value: string
 }
@@ -137,7 +126,7 @@ export interface TableSchema extends MachineSchema {
     /** 展开集合。给定即受控，语义同上。 */
     expanded?: string[]
     defaultExpanded?: string[]
-    /** 默认 none：不声明就没有选择这回事，行也不会凭空报出 aria-selected。 */
+    /** 默认 none：不声明则没有选择机制，行也不报 aria-selected。 */
     selectionMode?: TableSelectionMode
     /** 数据在路上：root 报 aria-busy，表体为空时加载态节点显形。 */
     loading?: boolean
@@ -147,7 +136,7 @@ export interface TableSchema extends MachineSchema {
     stickyHeader?: boolean
     /** 表格带脚注行。行号空间的最后一行留给它，aria-rowcount 也把它算进去。 */
     footer?: boolean
-    /** 上下键走到首尾是否回绕，默认 false（表格不像列表那样天然成环）。 */
+    /** 上下键走到首尾是否回绕，默认 false。 */
     loop?: boolean
     /** 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 */
     dir?: Direction
@@ -167,7 +156,7 @@ export interface TableSchema extends MachineSchema {
   }
   computed: Record<string, never>
   refs: Record<string, never>
-  /** 排序、选中与展开都不编码进状态，机器因此只有一个状态，逻辑全在 context 与 actions。 */
+  /** 排序、选中与展开都不编码进状态，机器只有一个状态。 */
   state: 'idle'
   event:
     /** 整体改写排序链（外部 setSort 走它）。 */
@@ -186,7 +175,7 @@ export interface TableSchema extends MachineSchema {
     | { type: 'ROW.COLLAPSE', value: string }
     | { type: 'ROW.EXPAND_TOGGLE', value: string }
     | { type: 'ROW.FOCUS', value: string }
-    /** 焦点离开表体，或持有焦点的行被移出 DOM（浏览器此时不派 focusout，由适配器如实上报）。 */
+    /** 焦点离开表体，或持有焦点的行被移出 DOM（此时浏览器不派 focusout，由适配器上报）。 */
     | { type: 'TABLE.BLUR' }
   tag: never
   guard: never

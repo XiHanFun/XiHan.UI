@@ -11,10 +11,8 @@ export function treeSelectionMode(mode: TreeSelectionMode | undefined): TreeSele
 
 /**
  * 深度优先走一遍 collection，按 shouldDescend 决定要不要下潜。
- *
- * 环路防护取「祖先链」而不是「见过的全部值」：同一个值出现在两条不相干的分支里
- * 只是作者写错了 value（两行都照样摊出来，各自算各自的层级），
- * 而一个节点出现在自己的祖先链上才是真环，再下潜就是无限递归。
+ * 环路防护取祖先链而不是见过的全部值：一个节点出现在自己的祖先链上才是真环，
+ * 同一个值出现在两条不相干的分支里只是作者写错了 value。
  */
 function collectNodes(
   collection: readonly TreeNode[],
@@ -31,7 +29,7 @@ function collectNodes(
   ): void => {
     const setSize = nodes.length
     nodes.forEach((node, i) => {
-      // children 给了数组即为分支，空数组也算：那是「暂时没有子项的目录」，仍要报 aria-expanded
+      // children 给了数组即为分支，空数组也算，仍要报 aria-expanded
       const branch = Array.isArray(node.children)
       const path = [...indexPath, i]
       out.push({
@@ -56,11 +54,9 @@ function collectNodes(
 }
 
 /**
- * 把树摊平成**可见行序列**：只有展开的分支才把子节点算进去，收起分支的整棵子树一行不出。
- *
- * 这是树的核心：方向键、Home/End、连打检索、'*' 展开同级，全部在这个序列上走，
- * 而不是在原始树上走。收起分支的子节点仍留在 DOM 里（内容常挂 + hidden，不卸载作者节点），
- * 光靠查 DOM 是分不清可见与否的。
+ * 把树摊平成可见行序列：只有展开的分支才把子节点算进去，收起分支的整棵子树一行不出。
+ * 方向键、Home/End、连打检索、'*' 展开同级全部在这个序列上走，而不是在原始树上走；
+ * 收起分支的子节点仍留在 DOM 里（只是 hidden），查 DOM 分不清可见与否。
  */
 export function flattenTree(
   collection: readonly TreeNode[],
@@ -73,10 +69,8 @@ export function flattenTree(
 
 /**
  * 全树索引：值 → 层级元信息，收起分支里的节点也在其中。
- *
- * 与摊平分开是必需的——收起分支的子节点仍要渲染（只是 hidden），
- * 连接层照样得给它们产出 aria-level / aria-posinset 这些属性。
- * value 重复时以先出现的为准，保证「按值取元信息」是确定的。
+ * 与摊平分开：收起分支的子节点仍要渲染，连接层照样得给它们产出 aria-level 这些属性。
+ * value 重复时以先出现的为准。
  */
 export function indexTree(collection: readonly TreeNode[]): Map<string, TreeNodeMeta> {
   const out = new Map<string, TreeNodeMeta>()
@@ -97,18 +91,13 @@ function normalizeSelection(next: readonly string[], mode: TreeSelectionMode): s
   return mode === 'single' ? next.slice(0, 1) : unique(next)
 }
 
-/**
- * 数组按元素比。默认的 Object.is 在这里不成立：受控时 cell 每次读都要把 prop 归一成
- * 新数组，引用恒不相等——版本号会每读一次自增一次（track 空转），
- * 写入时又会把「值其实没变」判成变了，回调便会重复发。
- */
+/** 数组按元素比：受控时 cell 每次读都产出新数组，默认的 Object.is 恒不相等。 */
 function sameValues(a: string[], b: string[] | undefined): boolean {
   return !!b && a.length === b.length && a.every((v, i) => v === b[i])
 }
 
-// 展开集合与选中集合都住在 context 的 cell 里，不编码进 FSM 状态：cell 本身就是受控/非受控的
-// 收口点（prop 给定即受控，读直取 prop、写只发回调不落内部值），因此不需要影子事件与受控守卫。
-// 机器只有一个状态，逻辑全在 context + actions。
+// 展开集合与选中集合都住在 context 的 cell 里，受控/非受控在 cell 收口，
+// 不需要影子事件与受控守卫。
 export const treeMachine = createMachine({
   name: 'tree',
   context: ({ prop, cell }) => ({
@@ -190,7 +179,7 @@ export const treeMachine = createMachine({
         if (e.type !== 'NODE.SELECT')
           return
         const current = context.get('selectedValue')
-        // 单选没有「取消选中」这回事：点两下就把树点空了不是任何人期望的
+        // 单选没有取消选中这回事，点两下不会把树点空
         if (treeSelectionMode(prop('selectionMode')) === 'single') {
           context.set('selectedValue', [e.value])
           return
@@ -205,10 +194,10 @@ export const treeMachine = createMachine({
         if (e.type === 'NODE.FOCUS')
           context.set('focusedValue', e.value)
       },
-      // 焦点离场只清焦点锚点，展开与选中留着：下次焦点回来还要从选中值起步
+      // 焦点离场只清焦点锚点，展开与选中留着
       clearFocusedValue: ({ context, refs }) => {
         context.set('focusedValue', null)
-        // 焦点走了缓冲也得丢：否则下次进来第一个字母会被拼进上一轮的查询串
+        // 焦点走了缓冲也得丢，否则下次进来首字母会拼进上一轮查询串
         refs.get('typeahead').clear()
       },
     },

@@ -5,8 +5,8 @@ import type { TourSpotlightRect } from './tour.types'
 export const TOUR_DEFAULT_SPOTLIGHT_PADDING = 8
 
 /**
- * 留白落地：负数会把框缩到目标里面（甚至反向），小数会让边缘发虚，NaN 直接毁掉整条 style。
- * 这个值来自作者的 props，进算术之前必须先收成非负数。
+ * 留白落地：负数会把框缩到目标里面，小数会让边缘发虚，NaN 会毁掉整条 style，
+ * 因此进算术前先收成非负整数。
  */
 function normalizePadding(padding: number | undefined): number {
   if (padding == null || !Number.isFinite(padding))
@@ -16,25 +16,22 @@ function normalizePadding(padding: number | undefined): number {
 
 /**
  * 由目标矩形算出高亮框：四周各外扩一圈留白。
- *
- * 纯函数，输入是量好的矩形而不是元素——量 DOM 是效应的事，
- * 这样"框该多大"这条规则单独就能验，不必先造一棵活 DOM。
+ * 纯函数，输入是量好的矩形而不是元素，量 DOM 是效应的事。
  */
 export function tourSpotlightBox(rect: PositionRect, padding: number | undefined): TourSpotlightRect {
   const pad = normalizePadding(padding)
   return {
     x: rect.x - pad,
     y: rect.y - pad,
-    // 目标尺寸恒非负，但矩形可能来自虚拟锚点或退化的布局，兜一下比信它强
+    // 矩形可能来自虚拟锚点或退化的布局，兜一次非负
     width: Math.max(0, rect.width) + pad * 2,
     height: Math.max(0, rect.height) + pad * 2,
   }
 }
 
 /**
- * 两个高亮框是否等价。cell 的 isEqual 用它：
- * 每次量都会产出一个新对象，默认的 Object.is 会把"量到同一个结果"判成变了，
- * 于是窗口每动一像素就推一轮无谓的重渲。
+ * 两个高亮框是否等价，供 cell 的 isEqual 用：
+ * 每次量都产出新对象，默认的 Object.is 会把量到同一个结果判成变了。
  */
 export function sameTourSpotlight(a: TourSpotlightRect | null, b: TourSpotlightRect | null | undefined): boolean {
   if (a == null || b == null)

@@ -4,10 +4,7 @@ import { setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<ListboxSchema>()
 
-/**
- * 生效的选择模式。multiple 只是 selectionMode='multiple' 的简写，
- * 两者同时给时以 selectionMode 为准——它表达得更细（还能是 extended）。
- */
+/** 生效的选择模式；selectionMode 优先于 multiple 简写。 */
 export function listboxSelectionMode(
   mode: ListboxSelectionMode | undefined,
   multiple: boolean | undefined,
@@ -15,33 +12,24 @@ export function listboxSelectionMode(
   return mode ?? (multiple ? 'multiple' : 'single')
 }
 
-/** 裸串是单选的简写，内部一律按数组处理；undefined 要原样透传，cell 靠它区分受控与否。 */
+/** 裸串归一为单元素数组；undefined 原样透传。 */
 function toValues(input: string | string[] | undefined): string[] | undefined {
   if (input === undefined)
     return undefined
   return typeof input === 'string' ? [input] : [...input]
 }
 
-/**
- * 选中集合的不变量：单选恒为长度 ≤ 1，复选去重。
- * 公开 API 与区间连选都经这里收口，免得造出 UI 自己造不出的选中集合。
- */
+/** 选中集合归一：单选截到长度 ≤ 1，复选去重。 */
 function normalizeSelection(next: readonly string[], mode: ListboxSelectionMode): string[] {
   return mode === 'single' ? next.slice(0, 1) : [...new Set(next)]
 }
 
-/**
- * 数组按元素比。默认的 Object.is 在这里不成立：受控时 cell 每次读都要把 prop 归一成
- * 新数组，引用恒不相等——版本号会每读一次自增一次（track 空转），
- * 写入时又会把「值其实没变」判成变了，onValueChange 便会重复发。
- */
+/** 数组按元素逐项比较：受控时 cell 每次读都把 prop 归一成新数组，引用比会误判成变更。 */
 function sameValues(a: string[], b: string[] | undefined): boolean {
   return !!b && a.length === b.length && a.every((v, i) => v === b[i])
 }
 
-// 选中集合住在 context 的 cell 里，不编码进 FSM 状态：cell 本身就是受控/非受控的收口点
-// （value 给定即受控，读直取 prop、写只发 onValueChange 不落内部值），
-// 因此不需要影子事件与受控守卫。机器只有一个状态，逻辑全在 context + actions。
+// 选中集合存放在 context cell，受控/非受控由 cell 收口；机器只有 idle 一个状态。
 export const listboxMachine = createMachine({
   name: 'listbox',
   context: ({ prop, cell }) => ({
@@ -51,8 +39,7 @@ export const listboxMachine = createMachine({
       isEqual: sameValues,
       onChange: value => prop('onValueChange')?.({ value }),
     })),
-    // 焦点锚点与区间起点都不受控、不对外通知：前者服务 roving tabindex 与方向键起点，
-    // 后者只在 Shift 连选时用得上
+    // 焦点锚点与区间起点都不受控、不对外通知
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
     anchorValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
@@ -74,7 +61,7 @@ export const listboxMachine = createMachine({
   },
   implementations: {
     actions: {
-      // 整体改写不动区间起点：Shift 连选正是靠起点钉住不动才能来回收窄
+      // 整体改写不动区间起点
       setValue: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'VALUE.SET')
@@ -94,7 +81,7 @@ export const listboxMachine = createMachine({
         if (e.type !== 'ITEM.TOGGLE')
           return
         const current = context.get('value')
-        // 单选没有「取消选中」这回事：切换退化成选中，否则用户点两下就把列表点空了
+        // 单选下切换退化成选中，不做取消
         if (listboxSelectionMode(prop('selectionMode'), prop('multiple')) === 'single')
           context.set('value', [e.value])
         else
@@ -107,10 +94,9 @@ export const listboxMachine = createMachine({
         if (e.type === 'ITEM.FOCUS')
           context.set('focusedValue', e.value)
       },
-      // 焦点离场只清焦点锚点，选中值与区间起点留着：下次焦点回来还要从它们起步
+      // 焦点离场只清焦点锚点与连打缓冲，选中值与区间起点留着
       clearFocusedValue: ({ context, refs }) => {
         context.set('focusedValue', null)
-        // 焦点走了缓冲也得丢：否则下次进来第一个字母会被拼进上一轮的查询串
         refs.get('typeahead').clear()
       },
     },

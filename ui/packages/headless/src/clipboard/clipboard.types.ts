@@ -4,9 +4,7 @@ import type { MachineSchema } from '@xihan-ui/machine'
 /**
  * 复制状态。
  *
- * copying 是"写入还在路上"的过渡态：往系统剪贴板写是异步的，而且真的会失败
- * （非安全上下文、权限被拒、环境根本没有这个接口）。乐观地一点就跳 copied，
- * 失败时界面已经说了"复制好了"，撤不回来。
+ * copying = 写入在途；写入是异步且会失败的，不能点了就直接跳 copied。
  */
 export type ClipboardStatus = 'idle' | 'copying' | 'copied'
 
@@ -35,7 +33,7 @@ export interface ClipboardSchema extends MachineSchema {
     timeout?: number
     /** 状态每次落位时通知一次；挂载那一刻的 idle 是初始态，不通知。 */
     onStatusChange?: (details: ClipboardStatusChangeDetails) => void
-    /** 写入失败时通知；此时状态已经回到 idle，界面上不会留下"复制成功"的假象。 */
+    /** 写入失败时通知；此时状态已经回到 idle。 */
     onCopyError?: (details: ClipboardCopyErrorDetails) => void
   }
   context: Record<string, never>

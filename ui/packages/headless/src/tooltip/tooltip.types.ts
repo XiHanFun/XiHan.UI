@@ -7,7 +7,7 @@ export interface TooltipOpenChangeDetails {
 
 /**
  * 适配器在挂载前填入定位引擎与元素 getter。
- * 三项皆可缺省（SSR / 无布局的纯逻辑测试）：缺省时机器照常转移，只是不定位。
+ * 三项皆可缺省，缺省时机器照常转移，只是不定位。
  */
 export interface TooltipRefs {
   position: PositionEnginePort | null

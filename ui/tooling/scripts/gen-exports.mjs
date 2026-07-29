@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-// 构建后按各包 dist 产物回写 package.json 的 exports 字段。
-// M0：packages 下只有 icons（冻结）与暂未构建的包，脚本对缺失 dist 的包跳过、不报错。
+// 构建后按各包 dist 产物回写 package.json 的 exports 字段；缺 dist 的包跳过。
 import { readdir, readFile, stat, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 

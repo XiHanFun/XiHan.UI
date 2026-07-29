@@ -5,12 +5,11 @@ import { tagsInputEditInputId } from './tags-input.anatomy'
 
 const { createMachine } = setup<TagsInputSchema>()
 
-/** 默认断词符。逗号是标签输入最通行的写法（也是 hidden-input 拼串时的连接符）。 */
+/** 默认断词符，同时是 hidden-input 拼串时的连接符。 */
 export const TAGS_INPUT_DELIMITER = ','
 
 /**
- * 生效的断词符。显式给空串是"关掉断词"，因此只能用 ?? 兜底，不能用 ||——
- * 后者会把空串当没给，作者就再也关不掉断词了。
+ * 生效的断词符。显式给空串是关掉断词，因此只能用 ?? 兜底：|| 会把空串当没给。
  */
 export function tagsDelimiter(delimiter: string | undefined): string {
   return delimiter ?? TAGS_INPUT_DELIMITER
@@ -23,14 +22,14 @@ export function normalizeTag(raw: string): string {
 
 /**
  * 按断词符把一段文本拆成若干标签，丢掉空白段。
- * 断词符为空串时整串当一个标签——按空串 split 会把文本劈成一个个字符。
+ * 断词符为空串时整串当一个标签，按空串 split 会把文本劈成单个字符。
  */
 export function splitTags(raw: string, delimiter: string): string[] {
   const chunks = delimiter === '' ? [raw] : raw.split(delimiter)
   return chunks.map(normalizeTag).filter(tag => tag !== '')
 }
 
-/** 逐项比对。数组每次都是新引用，不比内容的话值没变也会通知一遍。 */
+/** 逐项比对：数组每次都是新引用，不比内容的话值没变也会通知一遍。 */
 export function sameTags(a: readonly string[], b: readonly string[] | undefined): boolean {
   return !!b && a.length === b.length && a.every((tag, i) => tag === b[i])
 }
@@ -74,10 +73,7 @@ export interface TagsAppendResult {
 }
 
 /**
- * 往集合尾部追加一批标签。
- *
- * 空白项直接丢弃、重复项跳过（列表里已经有了，用户的意图已经达成，不算被拒）；
- * 只有真的被上限挡住的才进 rejected，调用方据此决定这一次要不要整体作废。
+ * 往集合尾部追加一批标签：空白项丢弃、重复项跳过，只有被上限挡住的才进 rejected。
  */
 export function appendTags(
   current: readonly string[],
@@ -102,9 +98,7 @@ export function appendTags(
 
 /**
  * 追加的唯一写入口：有一个标签因上限进不去就整体不生效。
- *
- * 宁可什么都不做，也不要"进去一半"——用户看着框里的文本被吃掉、列表却只多了几个，
- * 根本分不清哪几个没进去。返回值告诉调用方"这一次算不算数"，输入框该不该清由它决定。
+ * 返回这一次算不算数，输入框该不该清由调用方据此决定。
  */
 function commitTags(params: Params<TagsInputSchema>, incoming: readonly string[]): boolean {
   const { context, prop } = params
@@ -121,9 +115,8 @@ function commitTags(params: Params<TagsInputSchema>, incoming: readonly string[]
 }
 
 /**
- * 标签集合与输入文本各住在自己的 cell 里：cell 本身就是受控/非受控的收口点
- * （prop 给定即受控，读直取 prop，写只发回调不落内部值），因此不需要影子事件与受控守卫。
- * FSM 只表达"光标此刻在哪儿"这件随时间推移的事：在输入框、在标签之间、还是在改某个标签。
+ * 标签集合与输入文本各住在自己的 cell 里，受控/非受控在 cell 收口，不需要影子事件与受控守卫。
+ * FSM 只表达光标此刻在哪儿：在输入框、在标签之间、还是在改某个标签。
  */
 export const tagsInputMachine = createMachine({
   name: 'tags-input',
@@ -131,8 +124,7 @@ export const tagsInputMachine = createMachine({
     value: cell<string[]>(() => ({
       value: prop('value'),
       defaultValue: prop('defaultValue') ?? [],
-      // 逐项比内容而不是比引用：每次写入都产出新数组，不给 isEqual 的话
-      // 值原样不动也会通知宿主一遍，受控宿主会被自己的回写绕成死循环
+      // 逐项比内容而不是比引用：每次写入都产出新数组，不给 isEqual 会重复通知宿主
       isEqual: sameTags,
       onChange: value => prop('onValueChange')?.({ value }),
     })),
@@ -146,12 +138,12 @@ export const tagsInputMachine = createMachine({
     editedValue: cell<string>(() => ({ defaultValue: '' })),
   }),
   initialState: () => 'idle',
-  // 这几条从哪个状态发出都一样，挂根级；写进每个状态里读起来像"这个状态才收"，会误导后来人
+  // 这几条从哪个状态发出都一样，挂根级
   on: {
     'VALUE.SET': { actions: ['setValue'] },
     'TAG.ADD': { guard: 'canEdit', actions: ['addTags'] },
     'VALUE.CLEAR': { guard: 'canEdit', target: 'idle', actions: ['clearAll'] },
-    // 承载焦点的标签节点没了：编辑与高亮都无从谈起，一律退回输入框
+    // 承载焦点的标签节点没了，一律退回输入框
     'ITEM.FOCUS_LOST': { target: 'idle', actions: ['cancelEdit'] },
   },
   states: {
@@ -167,7 +159,7 @@ export const tagsInputMachine = createMachine({
     },
     navigating: {
       on: {
-        // 一开始打字就把光标交回输入框：高亮着某个标签又同时在打字，两件事会互相说谎
+        // 一开始打字就把光标交回输入框
         'INPUT.CHANGE': { guard: 'canEdit', target: 'idle', actions: ['clearFocusedValue', 'setInputValue'] },
         'INPUT.COMMIT': { guard: 'canEdit', target: 'idle', actions: ['clearFocusedValue', 'commitInput'] },
         'INPUT.BLUR': { guard: 'canEdit', target: 'idle', actions: ['clearFocusedValue', 'applyBlurBehavior'] },
@@ -191,7 +183,7 @@ export const tagsInputMachine = createMachine({
         'EDIT.CHANGE': { actions: ['setEditedValue'] },
         'EDIT.SUBMIT': { target: 'idle', actions: ['commitEdit'] },
         'EDIT.CANCEL': { target: 'idle', actions: ['cancelEdit'] },
-        // 编辑途中把这个标签删掉：编辑缓冲一并丢弃，别留着一个指向已消失标签的锚点
+        // 编辑途中把这个标签删掉：编辑缓冲一并丢弃，别留下指向已消失标签的锚点
         'TAG.DELETE': { guard: 'canEdit', target: 'idle', actions: ['deleteTag', 'cancelEdit'] },
       },
     },
@@ -218,7 +210,7 @@ export const tagsInputMachine = createMachine({
       },
     },
     actions: {
-      // 作者的整份替换：只做去重去空白，不夹 max —— 他说列表就是这样，机器不该替他删掉几个
+      // 作者的整份替换：只做去重去空白，不夹 max
       setValue: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'VALUE.SET')
@@ -251,11 +243,11 @@ export const tagsInputMachine = createMachine({
         const trailing = parts.pop() ?? ''
         const tags = parts.map(normalizeTag).filter(tag => tag !== '')
         if (tags.length === 0) {
-          // 连打两个断词符这类空白段：吃掉它们，只留最后一段
+          // 连打两个断词符这类空白段全部吃掉，只留最后一段
           context.set('inputValue', trailing)
           return
         }
-        // 顶到上限：这一次输入整体不生效，文本原样留在框里，用户看得见自己打了什么
+        // 顶到上限时这一次输入整体不生效，文本原样留在框里
         context.set('inputValue', commitTags(params, tags) ? trailing : raw)
       },
       commitInput: (params) => {
@@ -263,7 +255,7 @@ export const tagsInputMachine = createMachine({
         const raw = context.get('inputValue')
         const tags = splitTags(raw, tagsDelimiter(prop('delimiter')))
         if (tags.length === 0) {
-          // 框里只有空白：留着没有意义
+          // 框里只有空白，清掉
           if (raw !== '')
             context.set('inputValue', '')
           return
@@ -297,7 +289,7 @@ export const tagsInputMachine = createMachine({
         const next = [...current]
         next.splice(index, 1)
         context.set('value', next)
-        // 光标落到前一个标签上；删的是第一个就交回输入框（配套的转移会同时回 idle）
+        // 光标落到前一个标签上；删的是第一个就交回输入框
         context.set('focusedValue', index > 0 ? current[index - 1]! : null)
       },
       startEdit: ({ context, event }) => {
@@ -305,7 +297,7 @@ export const tagsInputMachine = createMachine({
         if (e.type !== 'TAG.EDIT')
           return
         context.set('focusedValue', e.value)
-        // 缓冲从原值起步：编辑是改写不是重填，进来就空着的话按 Enter 会把标签删掉
+        // 缓冲从原值起步，进来就空着的话按 Enter 会把标签删掉
         context.set('editedValue', e.value)
       },
       setEditedValue: ({ context, event }) => {
@@ -321,10 +313,10 @@ export const tagsInputMachine = createMachine({
           const tag = normalizeTag(context.get('editedValue'))
           const next = [...current]
           if (tag === '')
-            // 改成空白等于把这个标签删掉：留一个空标签在列表里谁也用不上
+            // 改成空白等于把这个标签删掉
             next.splice(index, 1)
           else if (tag !== from && current.includes(tag))
-            // 改成了另一个已有标签：并成一个，不留两份一模一样的
+            // 改成了另一个已有标签，并成一个
             next.splice(index, 1)
           else
             next[index] = tag
@@ -342,10 +334,8 @@ export const tagsInputMachine = createMachine({
     effects: {
       /**
        * 进编辑态就把焦点送进编辑框。
-       *
-       * 必须等宿主把这一帧渲染完再动手：进入编辑态这一刻编辑框还带着 hidden，
-       * 聚焦一个隐藏元素是空操作，用户会看见框亮了却打不进字。
-       * disposed 标记挡住"还没轮到就已经退出编辑态"那一路——那时焦点该留在原处。
+       * 必须等宿主渲染完这一帧：进入编辑态这一刻编辑框还带着 hidden，聚焦隐藏元素是空操作。
+       * disposed 挡住还没轮到就已退出编辑态那一路。
        */
       focusEditInput: ({ scope, context, flush }) => {
         let disposed = false
@@ -355,14 +345,13 @@ export const tagsInputMachine = createMachine({
           const value = context.get('focusedValue')
           if (value == null)
             return
-          // 取节点走 getRootNode().getElementById 而不是 scope.getById：后者拿 CSS.escape 拼
-          // 属性选择器，而 CSS 这个全局在无头 DOM 环境里常常缺席（缺了当场抛）；
-          // 这条路同样经 Scope 拿 root（shadow 里照样找得到），还省掉一次转义
+          // 取节点走 getRootNode().getElementById 而不是 scope.getById：
+          // 后者依赖的 CSS.escape 在无头 DOM 环境里常常缺席，缺了当场抛
           const el = scope.getRootNode().getElementById(tagsInputEditInputId(scope, value)) as HTMLInputElement | null
           if (!el)
             return
           el.focus()
-          // 整段选中：双击进来的用户多半是要整个换掉，而不是在末尾补两个字
+          // 整段选中
           el.select?.()
         })
         return () => {

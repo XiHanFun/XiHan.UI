@@ -2,7 +2,7 @@ import type { PropTypes } from '@xihan-ui/core'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface NumberFieldValueChangeDetails {
-  /** 原始输入串：提交进 FormData 的就是它，不是格式化后的显示串。 */
+  /** 原始输入串，也是提交进 FormData 的值。 */
   value: string
   /** 同一个值的数值形态；空串或非法输入时是 NaN。 */
   valueAsNumber: number
@@ -57,7 +57,7 @@ export interface NumberFieldSchema extends MachineSchema {
 export interface NumberFieldApi<T extends PropTypes = PropTypes> {
   value: string
   valueAsNumber: number
-  /** 值为空或非法。作者据此显示"请输入数字"一类提示。 */
+  /** 值为空或非法。 */
   empty: boolean
   disabled: boolean
   readOnly: boolean

@@ -68,8 +68,7 @@ export const timePickerSuite: ConformanceSuite = {
   component: 'time-picker',
   anatomy: timePickerAnatomy,
   keyboard: timePickerKeyboard,
-  // 四段与三列全写出来：granularity / hourCycle 关掉的那些由连接层打 hidden 收起，
-  // 而不是让作者按配置去增删节点——节点是作者写的，替他删了他就再也拿不回来
+  // 四段与三列全写出来：granularity / hourCycle 关掉的那些由连接层打 hidden 收起，不删作者节点
   fixture: {
     part: 'root',
     children: [
@@ -81,8 +80,7 @@ export const timePickerSuite: ConformanceSuite = {
           segment('minute'),
           segment('second'),
           segment('dayPeriod'),
-          // 必须是 button：Vue 侧组件自己渲染成 button，WC 侧由 fixture 的 tag 决定，
-          // 渲染成 div 就不可聚焦，"关闭后焦点归还 trigger"在 WC 上永远等不到
+          // 必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦
           { part: 'trigger', tag: 'button', text: '选择' },
           { part: 'clear-trigger', tag: 'button', text: '清空' },
         ],
@@ -286,8 +284,7 @@ export const timePickerSuite: ConformanceSuite = {
             }
             await ctx.flush()
           },
-          // 按下的当口不该有任何动静：真正翻面的是平台随后合成的那一次 click（走 onClick 那一路）。
-          // 这里若翻了面，就说明按键被自己收了一遍，加上合成的 click 正好一开一关
+          // 按下的当口不该有动静：真正翻面的是平台随后合成的那次 click
           expect: {
             parts: { trigger: { 'aria-expanded': 'false' }, content: { hidden: '' } },
             events: [],
@@ -574,8 +571,7 @@ export const timePickerSuite: ConformanceSuite = {
               [HOUR_SEG]: { 'data-placeholder': '' },
               'clear-trigger': { disabled: '' },
             },
-            // 这个按钮对读屏隐身也不占 Tab 位，清完必须把焦点送回首段，
-            // 否则焦点会留在一个隐身节点里
+            // 这个按钮对读屏隐身也不占 Tab 位，清完必须把焦点送回首段
             activeElement: { part: HOUR_SEG, exact: true },
             events: [{ type: 'value-change', detail: { value: '' } }],
           },
@@ -650,7 +646,7 @@ export const timePickerSuite: ConformanceSuite = {
               [DAY_PERIOD_SEG]: { 'aria-valuenow': '1', 'aria-valuetext': 'PM' },
               // 时段显示的仍是 09（12 小时制写的是显示值），翻面动的是它背后的那个数
               [HOUR_SEG]: { 'aria-valuenow': '9' },
-              // 上界是 11:00，翻到下午即出界——这条正说明改的不只是那两个字母
+              // 上界是 11:00，翻到下午即出界
               root: { 'data-out-of-range': '' },
             },
             events: [{ type: 'value-change', detail: { value: '21:30' } }],
@@ -741,8 +737,7 @@ export const timePickerSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'raw',
-          // 段上没有 tabindex、按钮是原生 disabled，照常规写法这几步全是空转
-          // （禁用控件上的 click 被激活行为短路，事件压根不派发），必须直接往节点上派事件
+          // 段上没有 tabindex、按钮是原生 disabled，必须直接往节点上派事件才碰得到守卫
           why: '禁用时段不可聚焦、按钮不派 click，只有直接派发才碰得到守卫',
           run: async (ctx) => {
             const hour = ctx.doc.querySelector<HTMLElement>(`${SCOPE}[data-part="input"]`)!

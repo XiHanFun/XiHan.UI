@@ -1,7 +1,6 @@
 import type { KeyboardTable } from '../spec/types'
 
-// 分格验证码不在 APG 的模式清单里，最接近的规范面是文本输入框本身：
-// 每格都是一个原生 text input，这里只额外定义"格与格之间怎么走"。
+// 每格都是原生 text input，本表只定义格与格之间的移动。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/spinbutton/#textbox'
 
 export const pinInputKeyboard: KeyboardTable = {

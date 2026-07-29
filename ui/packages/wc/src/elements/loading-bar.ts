@@ -4,8 +4,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-// 属性缺席一律翻成 undefined：缺省值的唯一事实源留在机器与 connect 里。
-// Lit 自带的转换器会把缺席落成 null，那样属性就再也表达不了"未指定"。
+// 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 空串也当缺席：`value=""` 经 Number() 会变成 0，那是一个货真价实的进度值，不是"没写"
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
@@ -48,7 +47,7 @@ const HEIGHT_CONVERTER = {
  * @csspart range - 进度段；宽度由元素写进内联样式，样式层别碰那条轴
  */
 export class XhLoadingBarElement extends XhElement {
-  // 描述符逐个写全、不用对象展开：CEM 分析器的 lit 插件读不了展开元素的名字，会整个崩掉。
+  // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: NUMBER_CONVERTER },
     defaultValue: { converter: NUMBER_CONVERTER, attribute: 'default-value' },

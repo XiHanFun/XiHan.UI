@@ -8,11 +8,9 @@ type ToastProps = ToastSchema['props']
 
 export const XhToastRoot = defineComponent({
   name: 'XhToastRoot',
-  // 一律 default: undefined —— 缺省值的唯一事实源在 connect 与机器里
-  // （closable 尤其：裸 Boolean 声明会把缺省压成 false，关闭按钮当场消失）
+  // 缺省值由 connect 与机器给出，这里一律 default: undefined
   props: {
-    // 队列身份，不是 DOM id：队列按它寻址（同 id 再 create 即就地改写），
-    // 不给就回落到实例自己的 scope id。root 节点上不会出现这个值
+    // 队列身份，不是 DOM id；不给则回落到实例的 scope id
     id: { type: String, default: undefined },
     title: { type: String, default: undefined },
     description: { type: String, default: undefined },
@@ -23,8 +21,7 @@ export const XhToastRoot = defineComponent({
     pauseOnPageIdle: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<Partial<ToastTranslations>>, default: undefined },
   },
-  // status-change 携带 { id, status }，dismissing 与 unmounted 各一次；
-  // action 携带 { id }，操作按钮被按下时先于退场发出
+  // status-change 携带 { id, status }，action 携带 { id }
   emits: ['status-change', 'action'],
   setup(props, { slots, emit }) {
     const notifyStatus: ToastProps['onStatusChange'] = (details) => {
@@ -52,8 +49,7 @@ export const XhToastTitle = defineComponent({
   name: 'XhToastTitle',
   setup(_, { slots }) {
     const ctx = useToastContext()
-    // 不用标题标签：这条是转瞬即逝的播报，塞进文档大纲会让整页的标题层级凭空多出一层。
-    // 作者没写内容时用 title prop 兜底——队列里的条目是纯数据，文案本来就来自那边
+    // 渲染为 div 而非标题标签；无插槽内容时用 title prop 兜底
     return () => h(
       'div',
       ctx.api.value.getTitleProps() as Record<string, unknown>,
@@ -78,7 +74,7 @@ export const XhToastActionTrigger = defineComponent({
   name: 'XhToastActionTrigger',
   setup(_, { slots }) {
     const ctx = useToastContext()
-    // 原生 <button>：Enter / Space 的激活由平台负责，我们不自己接这两个键
+    // 原生 <button>，激活行为交给平台
     return () => h('button', ctx.api.value.getActionTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })

@@ -84,7 +84,7 @@ export const dateFieldSuite: ConformanceSuite = {
             'role': 'spinbutton',
             'data-segment': 'year',
             'data-index': '0',
-            // 整组只占一个 Tab 位：一个日期要按三次 Tab 才走得完，没人愿意走
+            // 整组只占一个 Tab 位
             'tabindex': '0',
             'aria-label': 'year',
             'aria-valuemin': '1',
@@ -424,8 +424,7 @@ export const dateFieldSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'raw',
-          // 照常规写法这几步全是空转：禁用的段位没有 tabindex，焦点落不上去、
-          // 按键因此派到 body。把守卫整个删掉用例照样绿——必须直接往节点上派事件
+          // 禁用的段位没有 tabindex，焦点落不上去，必须直接往节点上派事件才碰得到守卫
           why: '禁用时焦点落不到段位上，只有直接派发才碰得到守卫',
           run: async (ctx) => {
             await pressOn(ctx, 1, ['ArrowUp', '9', 'Backspace'])

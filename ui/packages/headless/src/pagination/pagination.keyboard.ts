@@ -1,7 +1,6 @@
 import type { KeyboardTable } from '../spec/types'
 
-// APG 没有 pagination 模式：分页器是一组各自独立的按钮放在 nav 地标里，
-// 键盘行为全部由原生按钮与 Tab 序列提供。源头因此指向 button 模式。
+// APG 没有 pagination 模式，键盘行为全部由原生按钮与 Tab 序列提供，源头指向 button 模式。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/button/#keyboardinteraction'
 
 export const paginationKeyboard: KeyboardTable = {

@@ -10,7 +10,7 @@ import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
-/** 按 value 登记角色节点：菜单栏有多张菜单，浮层三件套都要按"当前展开的那一项"取。 */
+/** 按 value 登记角色节点，浮层三件套据此取到当前展开那一项。 */
 export type MenubarPartRegistry = (value: string, el: HTMLElement | null) => void
 
 export interface MenubarContext {
@@ -28,15 +28,13 @@ export function useMenubar(
   onSelect?: MenubarSchema['props']['onSelect'],
 ): MenubarContext {
   const rootRef = ref<HTMLElement | null>(null)
-  // 普通 Map 就够：这三份表只被机器的 refs（惰性 getter）读，读的时机都在事件与效应里，
-  // 不参与渲染依赖。做成响应式反而会让每次登记都排一轮无意义的重渲。
+  // 普通 Map 而非响应式，这三份表只在事件与效应里被机器读
   const triggers = new Map<string, HTMLElement>()
   const positioners = new Map<string, HTMLElement>()
   const contents = new Map<string, HTMLElement>()
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  // 两个回调由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const service = useMachine(menubarMachine, () => ({ ...props, onValueChange, onSelect }), scope)
 
   const put = (table: Map<string, HTMLElement>): MenubarPartRegistry => (value, el) => {
@@ -53,22 +51,19 @@ export function useMenubar(
   if (typeof document !== 'undefined') {
     const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
 
-    // 只给注册函数、不在这里注册：层的入栈出栈跟着"有没有菜单展开"走（机器的 trackLayer 效应负责）。
-    // 挂载期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
+    // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按有无菜单展开驱动
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
       kind: 'popover',
       node: current(contents),
-      // 整条菜单栏记为本层分支：点 trigger、在 trigger 之间走、掠过换菜单都是层内交互，
-      // 开合归菜单栏自己切换。交给消解层判的话，一次点击会先被判成层外交互关一次、
-      // 再被 click 打开一次，菜单等于关不掉。
+      // 整条菜单栏记为本层分支，点 trigger 与掠过换菜单都算层内交互
       branches: () => [rootRef.value].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
-      // 菜单不带遮罩，没有"点它就该关本层"的表面
+      // 菜单不带遮罩，没有可点关闭的表面
       surfaces: () => [],
     })
 
-    // 定位引擎由适配器建好注入；机器只经端口驱动，不认识具体引擎
+    // 定位引擎由适配器注入，机器只经端口驱动
     service.refs.set('config', config)
     service.refs.set('registerLayer', registerLayer)
     service.refs.set('position', createFloatingUiPositionEngine())

@@ -1,6 +1,6 @@
 import type { KeyboardTable } from '../spec/types'
 
-// 无对应 APG 模式：卡片本体是非模态对话框，键盘语义按 dialog 的这一节对齐。
+// 无对应 APG 模式，键盘语义对齐非模态 dialog。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/#keyboardinteraction'
 
 export const hoverCardKeyboard: KeyboardTable = {

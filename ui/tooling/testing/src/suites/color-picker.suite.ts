@@ -50,8 +50,7 @@ export const colorPickerSuite: ConformanceSuite = {
     children: [
       { part: 'label', tag: 'label', text: '主题色' },
       {
-        // 必须是 button：Vue 侧组件自己渲染成 button，WC 侧由 fixture 的 tag 决定，
-        // 渲染成 div 就不可聚焦，"收起后焦点归还 trigger"在 WC 上永远等不到
+        // 必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦
         part: 'trigger',
         tag: 'button',
         children: [
@@ -472,8 +471,7 @@ export const colorPickerSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'raw',
-          // 照常规写法这一步是空转：focus 落不到没有 tabindex 的节点上，
-          // 按键因此派到 body，把守卫整个删掉用例照样绿。只有直接往拇指上派事件才碰得到
+          // 焦点落不到没有 tabindex 的节点上，必须直接往拇指上派事件才碰得到守卫
           why: '禁用的拇指不可聚焦，focus/key 步骤都会落空，必须直接派发',
           run: ({ doc }) => {
             const thumb = findPart(doc, 'area-thumb')
@@ -526,7 +524,6 @@ export const colorPickerSuite: ConformanceSuite = {
           kind: 'key',
           key: 'ArrowRight',
           expect: {
-            // 受控下"界面没有自作主张"正是要验的东西
             parts: { 'channel-slider-thumb[0]': { 'aria-valuenow': '0' } },
             events: [{ type: 'value-change', detail: { value: '#ff0400' } }],
           },
@@ -542,7 +539,7 @@ export const colorPickerSuite: ConformanceSuite = {
       name: '屏幕取色：环境不提供 EyeDropper 时按钮自始就是禁用的',
       spec: { apg: APG_DIALOG },
       props: { defaultValue: '#3b82f6', defaultOpen: true },
-      // jsdom 不提供 EyeDropper：这正是"环境不支持"那一路
+      // jsdom 不提供 EyeDropper，走的是环境不支持那一路
       initial: {
         parts: {
           'eye-dropper-trigger': {

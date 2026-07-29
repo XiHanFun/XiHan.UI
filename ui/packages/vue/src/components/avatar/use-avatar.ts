@@ -15,7 +15,6 @@ export function useAvatar(
   props: AvatarSchema['props'],
   onStatusChange?: AvatarSchema['props']['onStatusChange'],
 ): AvatarContext {
-  // onStatusChange 由外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const service = useMachine(avatarMachine, () => ({ ...props, onStatusChange }))
   const api = computed(() => connectAvatar(service, vueNormalize))
   return { service, api }

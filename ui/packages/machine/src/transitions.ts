@@ -137,7 +137,6 @@ export function getExitEnterStates<T extends MachineSchema>(
   return { exiting, entering }
 }
 
-/** 供内部工具复用。 */
 export function transitionsToArray<T>(v: T | T[]): T[] {
   return toArray(v)
 }

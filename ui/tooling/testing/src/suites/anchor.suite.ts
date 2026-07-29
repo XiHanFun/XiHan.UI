@@ -8,12 +8,10 @@ const LINK = '[data-scope="anchor"][data-part="link"]'
 const VALUES = ['intro', 'install', 'usage'] as const
 
 /**
- * 三条目录 + 一根指示条。
- * 指示条是 li——它得住在 list（ul）里才能以 list 为定位参照系，而 ul 里只放得下 li。
+ * 三条目录 + 一根指示条；指示条与条目同为 list（ul）的 li 子节点。
  *
- * 目标区块（`<section id=...>`）刻意不放进来：它们是页面内容、不是组件的部件，
- * 组件在这套 fixture 下量不到任何区块，于是滚动观察不会开口，
- * 激活项完全由 defaultValue / value / 点击决定——正好把"滚动"这条不确定的路隔离掉。
+ * 目标区块（`<section id=...>`）不放进来：组件量不到区块，滚动观察不开口，
+ * 激活项只由 defaultValue / value / 点击决定。
  */
 const anchorTree: FixtureNode = {
   part: 'root',
@@ -34,11 +32,7 @@ const anchorTree: FixtureNode = {
   ],
 }
 
-/**
- * 「smooth 开时拦下原生跳转」不能靠 click 步骤：它走的是 el.click()，
- * 而合成事件默认 cancelable=false 时 preventDefault 是空操作、defaultPrevented 恒为 false，
- * 断言会恒绿——删掉那道拦截照样全过。必须自己建可取消的事件再读 defaultPrevented。
- */
+/** 派一个可取消的 click 事件，断言原生跳转是否被拦下。 */
 function clickIsPrevented(index: number, expected: boolean): StepWithExpect {
   return {
     kind: 'raw',
@@ -84,17 +78,17 @@ export const anchorSuite: ConformanceSuite = {
         ],
         counts: { root: 1, list: 1, item: 3, link: 3, indicator: 1 },
         parts: {
-          // 写死 ltr 会切断从 RTL 祖先继承来的方向，作者没给就不该出现 dir
+          // 作者没给 dir 时不输出 dir
           'root': { 'aria-label': 'Anchor navigation', 'data-orientation': 'vertical', 'dir': null },
           'list': { 'data-orientation': 'vertical', 'role': null },
           'link[0]': {
             'data-value': 'intro',
-            // aria-current 的默认值就是 "false"，省略即"不是当前项"
+            // 省略 aria-current 即非当前项
             'aria-current': null,
             'data-active': null,
           },
           'link[2]': { 'data-value': 'usage' },
-          // 一节都没越过判定线时指示条整条收起
+          // 无激活项时指示条整条收起
           'indicator': { 'aria-hidden': 'true', 'hidden': '' },
         },
       },
@@ -106,26 +100,25 @@ export const anchorSuite: ConformanceSuite = {
       initial: {
         parts: {
           'link[0]': { 'aria-current': null, 'data-active': null },
-          // location 说的是"本页面里的这个位置"；page 是"这就是当前页面"，用在这儿不对
+          // 页内位置用 location，不用 page
           'link[1]': { 'aria-current': 'location', 'data-active': '' },
           'link[2]': { 'aria-current': null, 'data-active': null },
         },
       },
     },
     {
-      // 指示条量到的坐标写在内联 style 上，而 style 不进快照（它跨适配器不可比）；
-      // 那一段的数值由 headless 单测逐条验，这里只验"量出来了、于是它现身了"这件事
+      // 指示条坐标写在内联 style 上，不进快照；这里只验它现身
       name: '有激活项时指示条现身（量测推迟到 DOM 落定之后才做）',
       spec: { apg: APG },
       props: { defaultValue: 'install' },
       steps: [
-        // 量测是推迟到 DOM 落定之后才做的（连接期读不了 DOM），等它真的落下来
+        // 量测推迟到 DOM 落定之后，等它落下来
         {
           kind: 'settle',
           until: { attr: { part: 'indicator', name: 'hidden', value: null } },
           expect: {
             parts: {
-              // 读屏那边"当前在哪一节"已由 aria-current 说清楚，指示条只是视觉
+              // 指示条只是视觉，对读屏隐藏
               indicator: { 'aria-hidden': 'true', 'data-value': 'install', 'hidden': null },
             },
           },
@@ -220,16 +213,14 @@ export const anchorSuite: ConformanceSuite = {
             if (links.length !== 3)
               throw new Error(`预期 3 条 link，实际 ${links.length}`)
             links.forEach((el, i) => {
-              // 跟随链接这件事我们一行代码都没写，全靠平台——那它就必须真的是个 <a>
+              // 跟随链接由平台负责，必须是原生 <a>
               if (el.tagName !== 'A')
                 throw new Error(`link 必须是原生 <a>（Enter 的跟随由平台负责），实际是 <${el.tagName.toLowerCase()}>`)
-              // href 由目标 id 派生（作者只写了 value）。它不进快照（href 不是结构/状态属性），
-              // 只能在这儿直接读 DOM 验
+              // href 由 value 派生；href 不进快照，直接读 DOM 验
               const href = el.getAttribute('href')
               if (href !== `#${VALUES[i]}`)
                 throw new Error(`link 的 href 应由 value 派生成 "#${VALUES[i]}"，实际 ${JSON.stringify(href)}`)
-              // 出现 tabindex 就说明有人给目录套了 roving tabindex：
-              // 那会让用户按一次 Tab 只能进组，再也没法直接 Tab 到某一节
+              // 出现 tabindex 即说明套了 roving tabindex
               if (el.hasAttribute('tabindex'))
                 throw new Error('link 不该有 tabindex：锚点导航不做 roving tabindex')
             })

@@ -3,9 +3,7 @@ import { DATA_PART, DATA_SCOPE } from '@xihan-ui/core'
 import { focusSafely } from '../focus-scope/tabbable'
 import { stepIndex } from './navigate'
 
-// 条目集合的 DOM 只读侧。**只在事件处理器里调用**：那一刻两个适配器看到的是同一份活 DOM，
-// 顺序天然是文档序，增删无需记账。渲染期（Vue 的 computed / WC 的 wire）不得调用——
-// 那里 Vue 读到的是上一帧、WC 读到的是本帧，会让两个适配器分叉。
+// 条目集合的 DOM 只读侧。只在事件处理器里调用，渲染期（Vue 的 computed / WC 的 wire）不得调用。
 
 export interface ItemQuery {
   /** 组件名，对应 data-scope。 */
@@ -14,7 +12,7 @@ export interface ItemQuery {
   part: string
 }
 
-/** 条目身份属性：值由作者声明，connect 原样回写，导航与选中都以它为准。 */
+/** 条目身份属性，导航与选中都以它为准。 */
 export const ITEM_VALUE_ATTR = 'data-value'
 
 function selector(q: ItemQuery): string {
@@ -23,15 +21,13 @@ function selector(q: ItemQuery): string {
 
 /**
  * 取容器内的条目元素，文档序。
- * 归属过滤保证嵌套同类集合（Tabs 套 Tabs、Accordion 套 Accordion）互不吞并。
+ * 按归属过滤，嵌套的同类集合互不吞并。
  */
 export function queryItems(container: HTMLElement | null, q: ItemQuery): HTMLElement[] {
   if (!container)
     return []
   const items = [...container.querySelectorAll<HTMLElement>(selector(q))]
-  // 归属判据取"容器自己的 part"，而不是"任意同 scope 祖先"：
-  // 条目与容器之间常隔着同 scope 的其它 part（Accordion 的 item/header），
-  // 用任意同 scope 祖先做判据会把条目全部过滤掉。
+  // 归属判据取容器自己的 part，条目与容器间可能隔着同 scope 的其它 part
   const part = container.getAttribute(DATA_PART)
   if (part == null)
     return items
@@ -43,10 +39,7 @@ export function itemValue(el: HTMLElement | null): string | null {
   return el?.getAttribute(ITEM_VALUE_ATTR) ?? null
 }
 
-/**
- * 条目是否不可停留。集合条目一律用 aria-disabled 表达禁用
- * （原生 disabled 不可聚焦，会让"禁用项仍可被方向键跳过/停留"的策略失效）。
- */
+/** 条目是否不可停留。集合条目用 aria-disabled 表达禁用。 */
 export function isItemDisabled(el: HTMLElement): boolean {
   return el.getAttribute('aria-disabled') === 'true' || el.hasAttribute('disabled')
 }
@@ -77,10 +70,7 @@ export function navigateItems(
   return next < 0 ? null : items[next]!
 }
 
-/**
- * 聚焦条目并滚入可视区。
- * focusSafely 走的是 preventScroll，长列表里不补 scrollIntoView 焦点会跑出视口。
- */
+/** 聚焦条目并滚入可视区。 */
 export function focusItem(el: HTMLElement | null): void {
   if (!el)
     return

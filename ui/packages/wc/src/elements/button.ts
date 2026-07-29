@@ -4,8 +4,7 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
 /**
- * `<xh-button>` —— Light-DOM 行为宿主，无状态机：宿主属性即 button props，
- * wire 时算 connectButton 打到 `[data-xh-part="root"]` 角色节点。
+ * `<xh-button>` —— 按钮行为宿主，无状态机，宿主属性即 button props。
  *
  * @customElement xh-button
  * @attr {'button'|'submit'|'reset'} type - 原生按钮类型，默认 button

@@ -2,8 +2,6 @@ import type { KeyboardTable } from '../spec/types'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/'
 
-// 面包屑不接管任何按键：可点的部件是原生 <a href>，激活与 Tab 序列全部由平台提供。
-// 这张表因此只记"平台替我们做了什么"，以及我们唯一动过的那一处（当前页脱序）。
 export const breadcrumbKeyboard: KeyboardTable = {
   component: 'breadcrumb',
   source: APG,

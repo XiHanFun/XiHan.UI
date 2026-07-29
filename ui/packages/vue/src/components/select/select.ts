@@ -9,8 +9,7 @@ type SelectProps = SelectSchema['props']
 
 export const XhSelectRoot = defineComponent({
   name: 'XhSelectRoot',
-  // 缺省值的唯一事实源在 connect —— 凡是 connect 有兜底的一律 default: undefined
-  // （loop 尤其：裸 Boolean 声明会把缺省压成 false，回绕就默默关掉了）
+  // 有 connect 兜底的 prop 一律 default: undefined
   props: {
     value: { type: String as PropType<string | null>, default: undefined },
     defaultValue: { type: String as PropType<string | null>, default: undefined },
@@ -25,8 +24,7 @@ export const XhSelectRoot = defineComponent({
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
   },
-  // value-change 携带 { value }、open-change 携带 { open }；
-  // update:* 携带裸值，支持 v-model:value 与 v-model:open
+  // *-change 携带 details 对象，update:* 携带裸值
   emits: ['value-change', 'open-change', 'update:value', 'update:open'],
   setup(props, { slots, emit }) {
     const notifyValue: SelectProps['onValueChange'] = (details) => {
@@ -40,9 +38,7 @@ export const XhSelectRoot = defineComponent({
     const ctx = useSelect(props as SelectProps, notifyValue, notifyOpen)
     provideSelect(ctx)
 
-    // 表单影子由根部件自行装配，作者不必手写。选项只补当前值这一个：
-    // 值为空时落在空串选项上，required 才判得出「没选」。
-    // 子节点先于 props 挂载，因此 select 的 value 写下去时目标选项已经在了。
+    // 表单影子由根部件装配，只渲染空串选项与当前值选项，供 required 判定
     const hiddenSelect = (): VNode => {
       const api = ctx.api.value
       const options = [h('option', { value: '' })]
@@ -87,7 +83,7 @@ export const XhSelectValueText = defineComponent({
   name: 'XhSelectValueText',
   setup(_, { slots }) {
     const ctx = useSelectContext()
-    // 作者写了插槽就听作者的，否则显示选中项文本，无选中时显示 placeholder
+    // 有插槽用插槽，否则显示选中项文本或 placeholder
     return () => h(
       'span',
       ctx.api.value.getValueTextProps() as Record<string, unknown>,
@@ -136,11 +132,7 @@ export const XhSelectItem = defineComponent({
     const ctx = useSelectContext()
     const item = computed<SelectItemProps>(() => ({ value: props.value, disabled: props.disabled }))
     provideSelectItem({ item })
-    // 承载焦点的条目被移出 DOM 时浏览器不派 focusout，高亮锚点会停在一个已消失的值上：
-    // 没有条目认领 tabindex=0、方向键也失去起点。卸载前如实上报，机器就地重挑锚点。
-    // v-for 不带 key 时 Vue 会就地复用节点：被删的是「最后一个组件实例」，
-    // 而持有焦点的那个 DOM 节点还在、value 却被改成了别的条目。此时锚点仍指着旧值、
-    // 已无人认领，键盘就此失灵。自己正持有焦点且 value 变了，就按新值重报一次。
+    // 本条目持有焦点时，value 变更重报高亮条目，卸载时上报条目丢失
     const itemEl = ref<HTMLElement | null>(null)
     watch(() => props.value, (next, prev) => {
       if (next === prev)
@@ -153,11 +145,9 @@ export const XhSelectItem = defineComponent({
     })
     onBeforeUnmount(() => {
       const { service } = ctx
-      // 整组一起卸载时根先停机，此刻无焦点可言（送事件还会在 dev 下抛）
       if (service.getStatus() !== 'Started')
         return
-      // 判据是「本节点当下正持有焦点」，不是「值对得上」：v-for 就地复用时
-      // 被卸载的是末位实例、它的 value 可能恰好等于刚纠正过的锚点，按值判会把好端端的锚点清掉
+      // 按「本节点当下正持有焦点」判定，不按 value 比对
       if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
         service.send({ type: 'ITEM.LOST' })
     })

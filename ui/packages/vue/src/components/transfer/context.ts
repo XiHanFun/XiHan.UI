@@ -3,11 +3,7 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { TransferContext } from './use-transfer'
 import { inject, provide } from 'vue'
 
-/**
- * 面板自报的身份：它是哪一侧。
- * 面板内部的角色节点（标题、计数、搜索、列表、全选格、条目）两侧共用同一套组件，
- * 靠这一个值分开——否则每个部件都要写两遍。
- */
+/** 面板自报的身份，供面板内两侧共用的角色节点区分自己归哪一侧。 */
 export interface TransferPanelContext {
   panel: ComputedRef<TransferPanelProps>
 }

@@ -2,8 +2,7 @@ import type { KeyboardTable } from '../spec/types'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/examples/disclosure-navigation/'
 
-// 与 Menu 的分野：这里的条目是链接不是命令，因此不做 roving tabindex——
-// 每个 trigger 都留在 Tab 序列里，面板紧跟在它之后，Tab 才走得进去。
+// 条目是链接不是命令，因此不做 roving tabindex：每个 trigger 都留在 Tab 序列里。
 export const navigationMenuKeyboard: KeyboardTable = {
   component: 'navigation-menu',
   source: APG,

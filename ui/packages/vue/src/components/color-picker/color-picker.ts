@@ -21,8 +21,7 @@ type ColorPickerProps = ColorPickerSchema['props']
 
 export const XhColorPickerRoot = defineComponent({
   name: 'XhColorPickerRoot',
-  // 缺省值的唯一事实源在 connect / 机器 —— 凡是那边有兜底的一律 default: undefined
-  // （value 尤其：落成空串会被当作"受控且当前为空"，用户从此再也改不动）
+  // 缺省值由 connect 与机器给出，这里一律 default: undefined
   props: {
     value: { type: String, default: undefined },
     defaultValue: { type: String, default: undefined },
@@ -38,7 +37,7 @@ export const XhColorPickerRoot = defineComponent({
     offset: { type: Number, default: undefined },
     translations: { type: Object as PropType<Partial<ColorPickerTranslations>>, default: undefined },
   },
-  // *-change 携带 details 对象；update:* 携带裸值，支持 v-model:value / v-model:open
+  // *-change 携带 details 对象，update:* 携带裸值
   emits: ['value-change', 'open-change', 'update:value', 'update:open'],
   setup(props, { slots, emit }) {
     const notifyValue: ColorPickerProps['onValueChange'] = (details) => {
@@ -80,7 +79,7 @@ export const XhColorPickerTrigger = defineComponent({
   name: 'XhColorPickerTrigger',
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
-    // 必须是原生 button：Enter/Space 的激活由平台负责，浮层也以它为定位锚点
+    // 原生 button，激活交给平台；同时是浮层的定位锚点
     return () => h('button', {
       ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
@@ -92,7 +91,7 @@ export const XhColorPickerValueText = defineComponent({
   name: 'XhColorPickerValueText',
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
-    // 作者写了插槽就听作者的，否则显示当前值串
+    // 有插槽用插槽，否则显示当前值串
     return () => h(
       'span',
       ctx.api.value.getValueTextProps() as Record<string, unknown>,
@@ -135,7 +134,7 @@ export const XhColorPickerArea = defineComponent({
   name: 'XhColorPickerArea',
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
-    // 区域节点交给机器：矩形只在指针事件那一刻现量，连接期一律不碰 DOM
+    // 区域节点交给机器，矩形在指针事件里现量
     return () => h('div', {
       ...ctx.api.value.getAreaProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.areaRef.value = el as HTMLElement },
@@ -154,7 +153,7 @@ export const XhColorPickerAreaThumb = defineComponent({
 export const XhColorPickerChannelSlider = defineComponent({
   name: 'XhColorPickerChannelSlider',
   props: {
-    /** 这条滑杆调的是哪一路，与 WC 侧的 channel 属性是同一份声明；漏写或写错都退回色相。 */
+    /** 这条滑杆调的是哪一路，缺省或不识别时按色相处理。 */
     channel: { type: String as PropType<ColorPickerChannel>, default: undefined },
   },
   setup(props, { slots }) {
@@ -174,7 +173,7 @@ export const XhColorPickerChannelSliderTrack = defineComponent({
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
     const { channel } = useColorPickerChannelContext()
-    // 卸载时把登记撤掉：留着一个已经离开文档的节点，量出来的矩形恒是 0
+    // 卸载时撤掉登记，避免留下已离开文档的节点
     onUnmounted(() => ctx.setChannelTrack(channel.value, null))
     return () => h('div', {
       ...ctx.api.value.getChannelSliderTrackProps({ channel: channel.value }) as Record<string, unknown>,
@@ -199,13 +198,13 @@ export const XhColorPickerChannelSliderThumb = defineComponent({
 export const XhColorPickerChannelInput = defineComponent({
   name: 'XhColorPickerChannelInput',
   props: {
-    /** 这个框编辑的是哪一路：hex 是整串，r/g/b 是分量，a 是透明度百分数；漏写或写错都退回 hex。 */
+    /** 这个框编辑的是哪一路：hex 是整串，r/g/b 是分量，a 是透明度百分数；缺省或不识别时按 hex 处理。 */
     channel: { type: String as PropType<ColorPickerInputChannel>, default: undefined },
   },
   setup(props) {
     const ctx = useColorPickerContext()
     const channel = computed(() => colorPickerToInputChannel(props.channel))
-    // 数值框不必住在通道滑杆里（多半与滑杆各占一行），身份由它自己声明
+    // 通道身份由本部件自己声明，不必嵌在通道滑杆内
     return () => h('input', ctx.api.value.getChannelInputProps({ channel: channel.value }) as Record<string, unknown>)
   },
 })
@@ -229,7 +228,7 @@ export const XhColorPickerSwatchGroup = defineComponent({
 export const XhColorPickerSwatchItem = defineComponent({
   name: 'XhColorPickerSwatchItem',
   props: {
-    /** 这一格的颜色，与 WC 侧的 value 属性是同一份声明。 */
+    /** 这一格的颜色。 */
     value: { type: String, default: '' },
   },
   setup(props, { slots }) {

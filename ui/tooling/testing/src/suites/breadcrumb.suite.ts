@@ -8,7 +8,7 @@ const LINK = '[data-scope="breadcrumb"][data-part="link"]'
 /**
  * 一条四层的路径，中间折叠掉一层：
  * 首页 / … / 文档 / 面包屑（末条是当前页）。
- * separator 与 ellipsis 都是 ol 的直接子 li——ol 里只放得下 li。
+ * separator 与 ellipsis 都是 ol 的直接子 li。
  */
 const breadcrumbTree: FixtureNode = {
   part: 'root',
@@ -34,11 +34,7 @@ const breadcrumbTree: FixtureNode = {
   ],
 }
 
-/**
- * 「当前页那条点不动」不能靠 click 步骤：它走的是 el.click()，
- * 而合成事件默认 cancelable=false 时 preventDefault 是空操作、defaultPrevented 恒为 false，
- * 断言会恒绿——删掉那道守卫照样全过。必须自己建可取消的事件再读 defaultPrevented。
- */
+/** 派一个可取消的 click 事件，断言点击是否被拦下。 */
 function clickIsPrevented(index: number, expected: boolean): StepWithExpect {
   return {
     kind: 'raw',
@@ -86,7 +82,7 @@ export const breadcrumbSuite: ConformanceSuite = {
         ],
         counts: { root: 1, list: 1, item: 3, link: 3, separator: 3, ellipsis: 1 },
         parts: {
-          // 写死 ltr 会切断从 RTL 祖先继承来的方向，作者没给就不该出现 dir
+          // 作者没给 dir 时不输出 dir
           'root': { 'aria-label': 'Breadcrumb', 'dir': null },
           'list': { role: null },
           'item[0]': { role: null },
@@ -101,11 +97,11 @@ export const breadcrumbSuite: ConformanceSuite = {
       initial: {
         parts: {
           'link[0]': {
-            // aria-current 的默认值就是 "false"，省略即"不是当前项"
+            // 省略 aria-current 即非当前项
             'aria-current': null,
-            // 这个是布尔 aria：省略是"没说"，显式 false 是"明确说了不是"
+            // 布尔 aria 显式写 false，不省略
             'aria-disabled': 'false',
-            // <a href> 本来就在 Tab 序列里，补 tabindex 只会无谓地多一层
+            // <a href> 已在 Tab 序列里，不补 tabindex
             'tabindex': null,
             'data-current': null,
           },
@@ -148,15 +144,14 @@ export const breadcrumbSuite: ConformanceSuite = {
             if (links.length !== 3)
               throw new Error(`预期 3 条 link，实际 ${links.length}`)
             for (const el of links) {
-              // 跟随链接这件事我们一行代码都没写，全靠平台——那它就必须真的是个 <a>
+              // 跟随链接由平台负责，必须是原生 <a>
               if (el.tagName !== 'A')
                 throw new Error(`link 必须是原生 <a>（Enter 的跟随由平台负责），实际是 <${el.tagName.toLowerCase()}>`)
               const current = el.getAttribute('aria-current') === 'page'
               const tabindex = el.getAttribute('tabindex')
               if (current && tabindex !== '-1')
                 throw new Error(`当前页那条应带 tabindex="-1" 脱出 Tab 序列，实际 ${JSON.stringify(tabindex)}`)
-              // 出现 tabindex 就说明有人给面包屑套了 roving tabindex：
-              // 那会让用户按一次 Tab 只能进组，再也没法直接 Tab 到某一层
+              // 出现 tabindex 即说明套了 roving tabindex
               if (!current && tabindex !== null)
                 throw new Error(`非当前页那条不该有 tabindex（实际 ${JSON.stringify(tabindex)}）：面包屑不做 roving tabindex`)
             }

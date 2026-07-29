@@ -159,8 +159,7 @@ export const tooltipSuite: ConformanceSuite = {
       ],
     },
     {
-      // 键盘用户把焦点停在 trigger 上时，鼠标恰好路过再移开不该收走描述——
-      // 收起该由 BLUR 负责。收不回来的原因是焦点从未离开、不会再有 focus 事件。
+      // 焦点停在 trigger 上时，鼠标路过再移开不收走描述，收起由 BLUR 负责
       name: '聚焦打开后，指针移出不收起（收起归 BLUR 管）',
       spec: { apg: APG },
       props: { closeDelay: 20 },
@@ -174,7 +173,6 @@ export const tooltipSuite: ConformanceSuite = {
         {
           kind: 'raw',
           // 必须等过 closeDelay 才有判别力：收起等待期内 content 仍是 data-state=open
-          // （浮层可见），此刻断言"还开着"对有无守卫都成立、测不出东西。
           why: '等过 closeDelay，越过收起等待期再断言',
           run: () => new Promise<void>(resolve => setTimeout(resolve, 80)),
           expect: {
@@ -185,7 +183,7 @@ export const tooltipSuite: ConformanceSuite = {
       ],
     },
     {
-      // 悬停等待期内的命令式展开曾被静默丢弃（opening 态没有 OPEN 条目）
+      // 守的是悬停等待期内的命令式展开（opening 态收 OPEN）
       name: '悬停等待期内命令式展开：立即展开，不等 openDelay',
       spec: { apg: APG },
       props: { openDelay: 5000 },

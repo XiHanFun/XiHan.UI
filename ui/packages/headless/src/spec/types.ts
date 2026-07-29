@@ -1,5 +1,4 @@
 // 组件规格的纯类型（零运行时）：键盘交互表与组件元数据。
-// 一致性套件与文档从这里取"分母"，实现层无法自证完备。
 
 /** 键盘交互表的一行：一组按键在某条件下的可达性与副作用。 */
 export interface KeyboardRow {
@@ -13,7 +12,7 @@ export interface KeyboardRow {
   readonly does: string
 }
 
-/** 组件键盘交互表：一份数据，被测试、文档、DoD 校验三处消费。 */
+/** 组件键盘交互表，被测试、文档与校验共同消费。 */
 export interface KeyboardTable {
   readonly component: string
   /** 规格出处（APG 章节锚点）。 */

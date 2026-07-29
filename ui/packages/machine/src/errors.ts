@@ -1,5 +1,4 @@
 // 机器错误类型与错误码。
-// 每条错误含：错误码 + 具体位置（状态路径/名字）+ 便于程序匹配的 code。
 
 export type MachineErrorCode
   = | 'DUPLICATE_STATE_ID'

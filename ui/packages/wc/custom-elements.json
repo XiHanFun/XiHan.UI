@@ -8,31 +8,31 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-accordion>` —— Light-DOM 行为宿主：用户写 root/item/header/trigger/content/indicator 角色节点，\n元素跑 accordion 机器并把 connect 产出逐个打上去。条目身份写在 item 节点的 value 属性上。",
+          "description": "`<xh-accordion>` —— 手风琴行为宿主，条目身份写在 item 节点的 value 属性上。",
           "name": "XhAccordionElement",
           "cssParts": [
             {
-              "description": "手风琴根容器（承载 data-orientation）",
+              "description": "手风琴根容器",
               "name": "root"
             },
             {
-              "description": "单个条目容器；作者在此写 value（身份）与可选 disabled",
+              "description": "单个条目容器，作者在此写 value 与可选 disabled",
               "name": "item"
             },
             {
-              "description": "条目标题（role=heading + aria-level）",
+              "description": "条目标题",
               "name": "header"
             },
             {
-              "description": "展开/收起按钮（aria-expanded/aria-controls 所在，无 roving tabindex）",
+              "description": "展开/收起按钮",
               "name": "trigger"
             },
             {
-              "description": "条目面板（role=region，收起时带 hidden）",
+              "description": "条目面板，收起时带 hidden",
               "name": "content"
             },
             {
-              "description": "展开方向指示符（aria-hidden）",
+              "description": "展开方向指示符",
               "name": "indicator"
             }
           ],
@@ -129,7 +129,7 @@
                   }
                 }
               ],
-              "description": "取角色节点所属条目的身份：value 与 disabled 都写在 item 节点上，\nheader/trigger/content/indicator 向上找自己的 item（item 自身 closest 命中的就是它自己）。\n没有 item 包裹层时退回读节点自身，扁平结构也能用。\n越出本宿主的 item 不算数——嵌套手风琴的内层节点不会认外层条目。"
+              "description": "取角色节点所属条目的 value 与 disabled，向上找本宿主内的 item，没有则读节点自身。"
             },
             {
               "kind": "method",
@@ -153,7 +153,7 @@
               "type": {
                 "text": "Direction | undefined"
               },
-              "description": "文字方向；只改水平轴上左右键的语义，不写进角色节点",
+              "description": "文字方向，影响水平轴左右键语义",
               "name": "dir",
               "fieldName": "textDir"
             },
@@ -161,7 +161,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "允许多项同时展开；缺省时展开一项即收起其余",
+              "description": "允许多项同时展开",
               "name": "multiple",
               "fieldName": "multiple"
             },
@@ -169,7 +169,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "允许把最后一个展开项收起；缺省时面板恒有内容",
+              "description": "允许把最后一个展开项收起",
               "name": "collapsible",
               "fieldName": "collapsible"
             },
@@ -207,7 +207,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-anchor>` —— Light-DOM 行为宿主：作者写 root/list/item/link/indicator 角色节点，\n元素跑 anchor 机器并把 connect 产出打上去。\n\n\"哪一节算当前\"是滚动位置这件 DOM 事实，由机器的观察器 effect 结算后写进 context，\n连接层只读结论。目标区块按 link 上的 value 属性（或 targets 清单）里的 id 现查。\n\n标签由作者写，且必须写对：root 是 `<nav>`（地标语义只有标签给得了），list 是 `<ul>`，\nitem 是 `<li>`（`<ul>` 里只放得下 `<li>`），link 是 `<a>`——Enter 跟随链接这件事\n一行代码都没写，全靠平台。href 反过来由元素按 value 派生，作者不必写。",
+          "description": "`<xh-anchor>` —— 锚点导航行为宿主，激活项由机器的滚动观察器结算，\n目标区块按 link 上的 value 属性（或 targets 清单）里的 id 现查。\n\n作者须写对标签：root 是 `<nav>`，list 是 `<ul>`，item 是 `<li>`，link 是 `<a>`；\nhref 由元素按 value 派生。",
           "name": "XhAnchorElement",
           "cssParts": [
             {
@@ -227,7 +227,7 @@
               "name": "link"
             },
             {
-              "description": "指示条，须写成 `<li>` 并住在 list 里（定位参照系是 list，而 ul 里只放得下 li）； 对读屏隐藏，位置由机器量好写成内联样式，无激活项时 hidden",
+              "description": "指示条，须写成 `<li>` 并住在 list 里；对读屏隐藏， 位置由机器量好写成内联样式，无激活项时 hidden",
               "name": "indicator"
             }
           ],
@@ -389,7 +389,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "判定线距滚动容器视口顶边的距离（px），默认 0；页面有吸顶栏时设成栏高",
+              "description": "判定线距滚动容器视口顶边的距离（px），默认 0",
               "name": "offset",
               "fieldName": "offset"
             },
@@ -397,7 +397,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "点链接时平滑滚动到目标，默认关闭（走原生的瞬时跳转）",
+              "description": "点链接时平滑滚动到目标，默认关闭",
               "name": "smooth",
               "fieldName": "smooth"
             },
@@ -443,19 +443,19 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-avatar>` —— Light-DOM 行为宿主：用户写 root/image/fallback 角色节点，\n元素跑 avatar 机器并把 connect 产出打上去。图片来源由宿主的 src/alt 写进 image 节点，\n加载成败经 image 自己的 load/error 回送给机器；两个节点都常挂，靠 hidden 互斥显隐，\n加载完成前一直是 fallback 在台前（不闪白）。",
+          "description": "`<xh-avatar>` —— 头像行为宿主，src/alt 写进 image 节点，加载成败回送机器，image 与 fallback 互斥显隐。",
           "name": "XhAvatarElement",
           "cssParts": [
             {
-              "description": "头像根容器（承载 data-status）",
+              "description": "头像根容器",
               "name": "root"
             },
             {
-              "description": "图片节点，必须是原生 img；src/alt 由宿主写入（作者别自己写，会被覆盖或清掉），未就绪时带 hidden",
+              "description": "图片节点，必须是原生 img；src/alt 由宿主写入，未就绪时带 hidden",
               "name": "image"
             },
             {
-              "description": "图片之外的回退内容（首字母、图标），图片就绪后带 hidden",
+              "description": "图片之外的回退内容，图片就绪后带 hidden",
               "name": "fallback"
             }
           ],
@@ -518,7 +518,7 @@
                   }
                 }
               ],
-              "description": "图片早在监听器挂上之前就已就绪时补一次上报：load 已经派发完，机器再也等不到，\n状态会永远停在 loading——图片明明在手边，台前却一直是回退内容。两处会撞上：\n作者把同一个 src 也写进了 img 标记（升级前浏览器就加载完了），\n以及元素在 DOM 中被移动导致机器重建（状态从头走一遍，而 src 没变的 img 不会重新加载）。\n\n三个条件缺一不可：complete 排除还在路上的请求；naturalWidth 排除加载失败——失败与\n\"压根没发起请求\"在这里分不开，不去猜，留在 loading 上照样只显示回退内容；\ncurrentSrc 与 src 相等排除换图那一瞬，此刻旧图仍是 complete 的，误报会把旧图当新图显出来。\n\n只在 loading 补报：idle 期间补会被随后落地的来源决议一脚踢回 loading。\n报完即进 loaded，下一帧不再命中，不会闭成回路。"
+              "description": "图片在监听器挂上之前就已就绪时补报一次 IMAGE.LOAD。"
             },
             {
               "kind": "method",
@@ -542,7 +542,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "图片地址；缺省该属性即没有来源，直接落回退态",
+              "description": "图片地址；缺省即直接落回退态",
               "name": "src",
               "fieldName": "src"
             },
@@ -580,7 +580,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-badge>` —— Light-DOM 行为宿主，无状态机：纯展示，外观全部来自 variant 属性，\nwire 时算 connectBadge 打到 `[data-xh-part=\"root\"]` 角色节点。",
+          "description": "`<xh-badge>` —— 徽标展示宿主，无状态机，外观来自 variant 属性。",
           "name": "XhBadgeElement",
           "cssParts": [
             {
@@ -644,7 +644,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-breadcrumb>` —— Light-DOM 行为宿主，无状态机：作者写\nroot/list/item/link/separator/ellipsis 角色节点，元素把 connectBreadcrumb 产出的\naria-* 打上去。\n\n标签由作者写，且必须写对：root 是 `<nav>`（地标语义只有标签给得了），list 是 `<ol>`，\nitem / separator / ellipsis 都是 `<li>`（`<ol>` 里只放得下 `<li>`），link 是 `<a>`。\nhref 归作者写——那是路由的事，元素只在当前页那条上拦住点击。\n\n已知边界：作者在运行期原地改写 link 上的 `current` 属性时元素不会重新接线\n（基类只观察 value / disabled / aria-disabled 三个作者属性）。\n面包屑随路由变化时整条路径都会重建（那是 childList 变动，照常触发重接线），\n唯独\"DOM 不动、只翻一个属性\"这一路要作者自己 requestUpdate。",
+          "description": "`<xh-breadcrumb>` —— 面包屑行为宿主，无状态机，把 connectBreadcrumb 产出的 aria-* 打到角色节点上。\n\n标签要求：root 为 `<nav>`，list 为 `<ol>`，item / separator / ellipsis 为 `<li>`，link 为 `<a>`。\n运行期改写 link 上的 `current` 属性不触发重新接线，需作者自行 requestUpdate。",
           "name": "XhBreadcrumbElement",
           "cssParts": [
             {
@@ -652,7 +652,7 @@
               "name": "root"
             },
             {
-              "description": "ol 容器，层级顺序由标签自己给",
+              "description": "ol 容器",
               "name": "list"
             },
             {
@@ -660,7 +660,7 @@
               "name": "item"
             },
             {
-              "description": "a 链接；当前页那条写 current 属性，得到 aria-current=\"page\" 并被拦住点击",
+              "description": "a 链接；写 current 属性的那条得到 aria-current=\"page\" 并拦住点击",
               "name": "link"
             },
             {
@@ -706,7 +706,7 @@
               "type": {
                 "text": "Direction | undefined"
               },
-              "description": "文字方向，写到 root 上交给浏览器排版；不给则继承祖先",
+              "description": "文字方向，写到 root 上；不给则继承祖先",
               "name": "dir",
               "fieldName": "direction"
             }
@@ -736,7 +736,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-button>` —— Light-DOM 行为宿主，无状态机：宿主属性即 button props，\nwire 时算 connectButton 打到 `[data-xh-part=\"root\"]` 角色节点。",
+          "description": "`<xh-button>` —— 按钮行为宿主，无状态机，宿主属性即 button props。",
           "name": "XhButtonElement",
           "cssParts": [
             {
@@ -868,11 +868,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-calendar>` —— Light-DOM 行为宿主：作者写 root/header/prev-trigger/next-trigger/heading\n与 grid/grid-head/week-row/week-day/grid-body/cell/cell-trigger 角色节点，\n元素跑 calendar 机器并把 connect 产出打上去。\n\n**网格由作者渲染，元素不生成节点**：读 `weeks` / `weekDays` / `headingLabel` 三个只读属性，\n听 `focused-value-change` 重画。生成节点就等于收走模板控制权，外层壳、农历副标题、\n节假日角标都再塞不进来。日期身份取 cell 节点上的 `value` 属性（ISO 串），\ncell-trigger 跟着它所在的 cell 走，作者只写一次；表头列取 week-day 上的 `value`（列序 0-6）。\n\n键盘跨月时元素会在重画之后把焦点送回落点那一格：重画得发生在收到\n`focused-value-change` 的那一拍里，晚了焦点就掉回 body。\n\n翻月按钮的可及名字由作者给（按钮里的文案或 aria-label）：本地化文案元素编不出来。",
+          "description": "`<xh-calendar>` —— 日历行为宿主。\n\n网格由作者渲染，元素不生成节点：读 `weeks` / `weekDays` / `headingLabel` 三个只读属性，\n听 `focused-value-change` 重画（须在收到事件的同一拍内完成）。日期身份取 cell 上的\n`value`（ISO 串），cell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）。\n翻月按钮的可及名字由作者给。",
           "name": "XhCalendarElement",
           "cssParts": [
             {
-              "description": "组件根容器（承载 data-disabled/data-readonly）",
+              "description": "组件根容器",
               "name": "root"
             },
             {
@@ -916,7 +916,7 @@
               "name": "cell"
             },
             {
-              "description": "真正可点可聚焦的那一层，承载 aria-selected/aria-disabled 与 roving tabindex",
+              "description": "可点可聚焦层，承载 aria-selected/aria-disabled 与 roving tabindex",
               "name": "cell-trigger"
             }
           ],
@@ -1063,7 +1063,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<CalendarSchema>( this, calendarMachine, () => this.machineProps(), { // 跨月要把焦点送进重画之后才存在的那一格，机器得有个查活 DOM 的入口。 // 重连时 controller 会重建机器，这个注入必须跟着重建走，否则第二次连上来焦点就搬不动了 onBuilt: (service) => { service.refs.set('getGridEl', () => this.getPart('grid')) }, }, )"
+              "default": "new MachineController<CalendarSchema>( this, calendarMachine, () => this.machineProps(), { // 机器跨月后靠它把焦点送进重画出来的格子 onBuilt: (service) => { service.refs.set('getGridEl', () => this.getPart('grid')) }, }, )"
             },
             {
               "kind": "method",
@@ -1125,7 +1125,7 @@
                   }
                 }
               ],
-              "description": "格子内的子部件：getParts 收的是整个元素范围，按子树过滤才归得对。"
+              "description": "取指定角色节点在 owner 子树内的实例。"
             },
             {
               "kind": "method",
@@ -1144,7 +1144,7 @@
               "name": "value-change"
             },
             {
-              "description": "聚焦日变化（同时意味着展示月可能换了）；detail 为 `{ focusedValue: string }`",
+              "description": "聚焦日变化；detail 为 `{ focusedValue: string }`",
               "name": "focused-value-change"
             }
           ],
@@ -1153,7 +1153,7 @@
               "type": {
                 "text": "string | string[] | undefined"
               },
-              "description": "受控选中值（单选简写，ISO 串）；缺省该属性即非受控，多选/区间请用 property",
+              "description": "受控选中值（单选简写，ISO 串）；缺省即非受控，多选/区间用 property",
               "name": "value",
               "fieldName": "value"
             },
@@ -1217,7 +1217,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "判定\"今天\"与格式化用的时区，默认宿主本地时区",
+              "description": "判定今天与格式化用的时区，默认宿主本地时区",
               "name": "time-zone",
               "fieldName": "timeZone"
             },
@@ -1249,7 +1249,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "恒渲染六行，翻月时网格高度不跳",
+              "description": "恒渲染六行",
               "name": "fixed-weeks",
               "fieldName": "fixedWeeks"
             }
@@ -1279,7 +1279,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-carousel>` —— Light-DOM 行为宿主：作者写 root/viewport/item-group/item/\nprev-trigger/next-trigger/indicator-group/indicator 角色节点，\n元素跑 carousel 机器并把 connect 产出打上去。\n\n条目总数由 `slide-count` 声明，不从 DOM 数：数 DOM 就得让机器在每次增删后重新结算，\n两个适配器的结算时机不同，首帧会分叉。指示点一页一个，页数由 `slide-count` 与\n`slides-per-page` / `slides-per-move` 算出，作者照着渲染节点，元素不替作者生成节点——\n生成节点就等于收走模板控制权，图标、外层 `<li>` 壳、i18n 文案都再塞不进来。\n\n轨道位移写在 item-group 的内联 transform 上（样式层不得再碰那条轴）。",
+          "description": "`<xh-carousel>` —— 走马灯行为宿主。\n\n条目总数由 `slide-count` 声明，不从 DOM 数。指示点一页一个，页数由 `slide-count` 与\n`slides-per-page` / `slides-per-move` 算出，由作者照着渲染节点，元素不生成节点。\n轨道位移写在 item-group 的内联 transform 上，样式层不得再碰那条轴。",
           "name": "XhCarouselElement",
           "cssParts": [
             {
@@ -1287,11 +1287,11 @@
               "name": "root"
             },
             {
-              "description": "裁切窗口，兼作读屏活区（自动播放跑着时闭麦）",
+              "description": "裁切窗口，兼作读屏活区",
               "name": "viewport"
             },
             {
-              "description": "被位移的轨道；transform 由元素写死，样式层别碰",
+              "description": "被位移的轨道；transform 由元素写入，样式层别碰",
               "name": "item-group"
             },
             {
@@ -1578,7 +1578,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-cascader>` —— Light-DOM 行为宿主：作者写 root/trigger/positioner/content 与\n每一级一个 column、层内每个节点一个 item，元素跑 cascader 机器并把 connect 产出打上去。\n浮层定位引擎在本元素里建好、经 refs 注入机器，锚点取 trigger、被定位的浮层取 positioner；\n机器只认端口，不认识具体引擎。\n\n**标记是静态的**：列按树的深度写满（第 L 列装第 L 层的全部节点），当下该露面的是哪些\n由元素加 hidden 收口，作者节点一个都不卸载。要照着写可以先取 `cascaderBuildLevels(collection)`。\n\n所在列、整条路径、禁用与显示文本都不从 DOM 反推，而是查 `collection` 这份树数据——\n它是元信息的唯一事实源，作者的标记只管长相，两个适配器也就不会各推各的。\n因此 collection 必须与标记同源，且 value 全树唯一：标记里有、collection 里没有的条目\n报不出所在列，也进不了导航。\n\nvalue-text 的显示文字由元素代填（整条路径的名字住在树数据里，作者写不出来）；\n作者在那个节点里写了内容就归作者，元素不再改写。\n\n树数据与选中路径都是数组，属性表达不了，只能走 property（`el.collection = [...]`、\n`el.value = ['zhejiang','hangzhou']`）。",
+          "description": "`<xh-cascader>` —— Light-DOM 行为宿主：作者写 root/trigger/positioner/content 与\n每一级一个 column、层内每个节点一个 item，元素跑 cascader 机器并把 connect 产出打上去。\n浮层定位引擎在本元素里建好、经 refs 注入机器，锚点取 trigger、被定位的浮层取 positioner；\n机器只认端口，不认识具体引擎。\n\n标记是静态的：列按树的深度写满（第 L 列装第 L 层的全部节点），当下该露面的哪些\n由元素加 hidden 收口，作者节点一个都不卸载。可先取 `cascaderBuildLevels(collection)` 照着写。\n\n所在列、整条路径、禁用与显示文本都查 `collection` 这份树数据，不从 DOM 反推。\ncollection 必须与标记同源且 value 全树唯一。\n\nvalue-text 的显示文字由元素代填；作者在该节点里写了内容就归作者，元素不再改写。\n\n树数据与选中路径都是数组，只走 property（`el.collection = [...]`、\n`el.value = ['zhejiang','hangzhou']`）。",
           "name": "XhCascaderElement",
           "cssParts": [
             {
@@ -1820,7 +1820,7 @@
               "privacy": "private",
               "readonly": true,
               "default": "new WeakMap<HTMLElement, boolean>()",
-              "description": "value-text 是否归元素填：首次见到该节点时定，之后不再回读（读到的会是自己写的字）。"
+              "description": "value-text 是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。"
             },
             {
               "kind": "field",
@@ -1902,7 +1902,7 @@
                   }
                 }
               ],
-              "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的条目上：\n没有条目认领 tabindex=0、方向键也失去起点。这里替 DOM 把焦点离场如实上报，\n机器就地按当前数据重挑锚点。\n\n判据是焦点确实跟着这个节点走了。节点此刻已不在文档里，activeElement 不可能还等于它\n（浏览器把焦点退还给了 body），于是改判等价事实\"焦点已不在浮层内\"，\n再要求离场的正是持有锚点的那个条目——只按值比对，会把\"焦点在别处时删掉同值条目\"也算成离场。"
+              "description": "承载焦点的条目被移出 DOM 时上报 ITEM.LOST，让机器按当前数据重挑锚点。\n判据是「焦点已不在浮层内」且离场的正是持有锚点的那个条目。"
             },
             {
               "kind": "method",
@@ -1921,7 +1921,7 @@
                   }
                 }
               ],
-              "description": "取角色节点所属的条目身份：value 写在 item 上，行内的文本与勾选标记向上找最近的那个\n（item 自身 closest 命中的就是它自己）。没有包裹层时退回读节点自身，扁平写法也能用。\n越出本宿主的容器不算数——嵌套 xh-cascader 的内层条目不会认外层的条目。"
+              "description": "取角色节点所属的条目身份：value 写在 item 上，行内文本与勾选标记向上找本宿主内最近的 item，\n没有则读节点自身。"
             },
             {
               "kind": "method",
@@ -1946,7 +1946,7 @@
                   }
                 }
               ],
-              "description": "列自报的层号；没写或写歪了就按它在 column 序列里的位置兜底——\n列本来就是从左到右一层一列，文档序即层号。"
+              "description": "列自报的层号，没写或写歪了按它在 column 序列里的位置兜底。"
             },
             {
               "kind": "method",
@@ -1965,7 +1965,7 @@
                   }
                 }
               ],
-              "description": "摘掉作者写在条目上的原生 disabled。\n\n集合条目的禁用一律由 collection 说了算、由 aria-disabled 表达：原生禁用的元素不可聚焦、\n也收不到 click，「禁用条目仍是方向键起点、仍挡得住点击」这两条在原生 disabled 下根本\n无从成立（连点击都到不了处理器，挡住的是浏览器不是组件）。不摘掉，Vue 与 WC 就分叉了。"
+              "description": "摘掉作者写在条目上的原生 disabled，条目禁用一律由 collection 决定并以 aria-disabled 表达。"
             },
             {
               "kind": "method",
@@ -1990,7 +1990,7 @@
                   }
                 }
               ],
-              "description": "整条路径的文字只有树数据里才有，作者在 trigger 上写不出来，由元素填。\n作者若自己写了内容（自定义渲染），首次见到时就定为归作者，之后一概不碰——\n每帧回读分不清\"作者写的\"还是\"上一帧自己写的\"，一旦写过就再也让不回去。"
+              "description": "把整条路径的文字填进 value-text；首次见到该节点时若已有内容则判为归作者，之后一概不碰。"
             },
             {
               "kind": "method",
@@ -2152,7 +2152,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-checkbox-group>` —— Light-DOM 行为宿主：作者写 root/label 与若干 item 角色节点，\n每个 item 内自带 item-hidden-input/item-control/item-text，元素跑 checkbox-group 机器\n并把 connect 产出打上去。条目身份取自条目节点上的 value 属性。\n\n与 `<xh-radio-group>` 的关键分歧：这里**不做 roving tabindex**。\n组内每一项都是独立的 Tab 停靠点（禁用项也保留），容器自己不占位——\n复选框各选各的，跳过任何一项都等于让键盘用户够不着它。",
+          "description": "`<xh-checkbox-group>` —— Light-DOM 行为宿主：作者写 root/label 与若干 item 角色节点，\n每个 item 内自带 item-hidden-input/item-control/item-text，元素跑 checkbox-group 机器\n并把 connect 产出打上去。条目身份取自条目节点上的 value 属性。\n\n不做 roving tabindex：组内每一项都是独立的 Tab 停靠点（禁用项也保留），容器自己不占位。",
           "name": "XhCheckboxGroupElement",
           "cssParts": [
             {
@@ -2262,7 +2262,8 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "default": "new WeakMap<HTMLElement, boolean>()"
+              "default": "new WeakMap<HTMLElement, boolean>()",
+              "description": "条目自身 disabled 声明的快照，整组禁用期间 DOM 上的 aria-disabled 不可信。"
             },
             {
               "kind": "field",
@@ -2272,7 +2273,7 @@
               },
               "privacy": "private",
               "default": "false",
-              "description": "上一帧是否整组禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。"
+              "description": "上一帧是否整组禁用；解禁当帧 DOM 上仍留着机器写回的 aria-disabled。"
             },
             {
               "kind": "field",
@@ -2337,7 +2338,8 @@
                     "text": "string"
                   }
                 }
-              ]
+              ],
+              "description": "取指定角色节点在 item 子树内的实例。"
             },
             {
               "kind": "method",
@@ -2401,7 +2403,7 @@
               "type": {
                 "text": "string[] | undefined"
               },
-              "description": "组内全部条目的值，逗号分隔；给了 trigger 才分得清\"全选\"与\"半选\"",
+              "description": "组内全部条目的值，逗号分隔；trigger 据此分辨全选与半选",
               "name": "item-values",
               "fieldName": "itemValues"
             },
@@ -2471,7 +2473,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-checkbox>` —— Light-DOM 行为宿主：用户写 root(button)/indicator 角色节点，元素跑 checkbox 机器\n并把 connect 产出打上去。无副作用（不挂 DOM effect）。",
+          "description": "`<xh-checkbox>` —— Light-DOM 行为宿主，跑 checkbox 机器并把 connect 产出打到 root/indicator 角色节点。",
           "name": "XhCheckboxElement",
           "cssParts": [
             {
@@ -2602,7 +2604,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-clipboard>` —— Light-DOM 行为宿主：作者写 root/label/control/input/trigger/indicator\n角色节点，元素跑 clipboard 机器并把 connect 产出打上去。\n\n复制走 `navigator.clipboard.writeText`，它要求安全上下文（https / localhost）且可能被权限拒绝。\n写入在途期间状态是 copying，写成功才转 copied；失败一律回 idle 并派 `copy-error`，\n界面上绝不会留下\"已复制\"的假象。\n\n两个 indicator 都常挂，各自用 `copied` 属性声明自己属于哪一侧，由宿主按状态互斥收起。\n这个声明只在接线时读一次，运行期改它不会重新接线——它描述的是这个节点是什么，\n与条目的 value 不同，正常写法下不会变。",
+          "description": "`<xh-clipboard>` —— Light-DOM 行为宿主，跑 clipboard 机器并把 connect 产出打到角色节点上。\n\n复制走 `navigator.clipboard.writeText`（要求安全上下文）：在途为 copying，成功转 copied，\n失败回 idle 并派 `copy-error`。\n\n两个 indicator 都常挂，各自用 `copied` 属性声明属于哪一侧，由宿主按状态互斥收起。",
           "name": "XhClipboardElement",
           "cssParts": [
             {
@@ -2610,7 +2612,7 @@
               "name": "root"
             },
             {
-              "description": "标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动",
+              "description": "标题，须是原生 `<label>`；`for` 恒写向 input",
               "name": "label"
             },
             {
@@ -2622,7 +2624,7 @@
               "name": "input"
             },
             {
-              "description": "复制按钮，须是原生 `<button>`（Enter/Space 的激活归平台）",
+              "description": "复制按钮，须是原生 `<button>`",
               "name": "trigger"
             },
             {
@@ -2742,23 +2744,23 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-code-block>` —— Light-DOM 行为宿主，无状态机：代码块没有任何自有状态，\n语言、行数、闭合与否全由属性逐帧递进来，wire 时算 connectCodeBlock 打到四类角色节点上。\n\n`code` 属性只用来数行数、把 pre 的最小高度先撑住：流式吐字期间代码块一行行长出来，\n不预撑的话下方内容会被一行行顶着往下跑。真正显示的代码文本由作者写在 code 角色节点里，\n元素不去改它的子节点——这里的属性铺设与文本渲染是两件事。\n\n没有复制按钮：复制是一段带\"已复制\"反馈的状态机，本仓已有 headless clipboard，\n要复制按钮就把 `<xh-clipboard>` 组合进来，别在这儿再造一套。",
+          "description": "`<xh-code-block>` —— Light-DOM 行为宿主，无状态机：wire 时算出 connectCodeBlock 的产出，\n打到四类角色节点上。显示的代码文本由作者写在 code 角色节点里，元素不改其子节点。\n复制按钮由 `<xh-clipboard>` 组合提供。",
           "name": "XhCodeBlockElement",
           "cssParts": [
             {
-              "description": "外壳（承载 data-lang / data-complete）",
+              "description": "外壳，承载 data-lang / data-complete",
               "name": "root"
             },
             {
-              "description": "语言角标；纯装饰，对读屏隐藏",
+              "description": "语言角标，纯装饰且对读屏隐藏",
               "name": "lang-label"
             },
             {
-              "description": "真正 overflow-x:auto 的那层；tabindex=0 让键盘用户滚得动，最小高度按行数写进内联样式",
+              "description": "横向滚动容器；tabindex=0，最小高度按行数写进内联样式",
               "name": "pre"
             },
             {
-              "description": "代码文本本身（承载 data-lang）",
+              "description": "代码文本本身，承载 data-lang",
               "name": "code"
             }
           ],
@@ -2806,7 +2808,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "代码原文；只用于数行数预撑高度，缺省即不预撑（不影响显示）",
+              "description": "代码原文，只用于数行数预撑高度",
               "name": "code",
               "fieldName": "code"
             },
@@ -2814,7 +2816,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "围栏语言标注；空白、半截或不认识一律按 plaintext 处理",
+              "description": "围栏语言标注，空白时按 plaintext 处理",
               "name": "code-lang",
               "fieldName": "codeLang"
             },
@@ -2822,7 +2824,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "代码块是否已闭合；未闭合时皮肤可据此显示还在吐字",
+              "description": "代码块是否已闭合",
               "name": "complete",
               "fieldName": "complete"
             }
@@ -2852,7 +2854,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-collapsible>` —— Light-DOM 行为宿主：用户写 trigger/content 角色节点，\n元素跑 collapsible 机器并把 connect 产出打上去。收起时用内联 style.display 隐藏 content。",
+          "description": "`<xh-collapsible>` —— Light-DOM 行为宿主，跑 collapsible 机器打到 root/trigger/content 角色节点，\n收起时用内联 style.display 隐藏 content。",
           "name": "XhCollapsibleElement",
           "cssParts": [
             {
@@ -2987,7 +2989,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-color-picker>` —— Light-DOM 行为宿主：作者写 root/label/trigger/value-text/swatch/\npositioner/content/area/area-thumb/channel-slider/channel-input/swatch-item 等角色节点，\n元素跑 color-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger，被定位的浮层取 positioner。\n\n工作色恒是 HSVA：二维取色区的两条轴就是饱和度与明度；对外的值串按 format 序列化。\n取色区与两条通道滑杆的矩形只在指针事件那一刻才量——连接期一律不碰 DOM。\n\n通道滑杆与数值框都用 channel 属性写明自己调哪一路（`channel=\"hue\"` / `channel=\"r\"`），\n滑杆内的轨道与拇指按所在滑杆的通道取值，不必另写；预设色板每格用 value 属性写明颜色。",
+          "description": "`<xh-color-picker>` —— Light-DOM 行为宿主：作者写 root/label/trigger/value-text/swatch/\npositioner/content/area/area-thumb/channel-slider/channel-input/swatch-item 等角色节点，\n元素跑 color-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger，被定位的浮层取 positioner。\n\n工作色恒是 HSVA（取色区两轴为饱和度与明度），对外的值串按 format 序列化。\n取色区与通道滑杆的矩形只在指针事件那一刻才量。\n\n通道滑杆与数值框用 channel 属性写明自己调哪一路（`channel=\"hue\"` / `channel=\"r\"`），\n滑杆内的轨道与拇指跟随所在滑杆的通道；预设色板每格用 value 属性写明颜色。",
           "name": "XhColorPickerElement",
           "cssParts": [
             {
@@ -3487,7 +3489,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-combobox>` —— Light-DOM 行为宿主：作者写 root/label/control/input/trigger/positioner/content/item/...\n角色节点，元素跑 combobox 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。\n\n焦点自始至终在 input 上：候选不可聚焦、也不进 Tab 序列，高亮经 aria-activedescendant 报给读屏。\n这是组合框的规格要求——焦点一旦离开输入框，用户就打不了字了。\n\n过滤不由本元素做：输入串变化时派发 input-value-change，作者据此增删 item 节点；\n元素每次接线完都会把当前候选条数与悬空高亮重新结算一遍，空态节点（empty）据此显形。",
+          "description": "`<xh-combobox>` —— Light-DOM 行为宿主：作者写 root/label/control/input/trigger/positioner/content/item/...\n角色节点，元素跑 combobox 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。\n\n焦点自始至终在 input 上：候选不可聚焦、也不进 Tab 序列，高亮经 aria-activedescendant 报给读屏。\n\n过滤不由本元素做：输入串变化时派发 input-value-change，作者据此增删 item 节点；\n元素每次接线完都会把当前候选条数与悬空高亮重新结算一遍，空态节点（empty）据此显形。",
           "name": "XhComboboxElement",
           "cssParts": [
             {
@@ -4015,7 +4017,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-composer>` —— Light-DOM 行为宿主：作者写 root/input/submit-trigger 三类角色节点，\n元素跑 composer 机器并把 connect 产出打上去。\n\ninput 角色节点必须是原生 `<textarea>`：值经 property 写、禁用走原生 disabled，\n换成 `<div contenteditable>` 这两条都落空。\n\n发送按钮在流式期间**原位**变\"停止\"，只换 `data-mode` 与 `aria-label`，DOM 位置一动不动——\n拆成两个节点就意味着一个卸载、另一个挂载，正按着它的键盘用户会按空。\n什么时候算流式由宿主经 `run-status` 说了算，元素自己不猜。\n\nEnter 提交那一路的判定全在 connect 里：IME 组合态一律放行（拼音选词的回车不是发送的回车），\nShift+Enter 原样交给浏览器插换行。",
+          "description": "`<xh-composer>` —— Light-DOM 行为宿主：跑 composer 机器，把 connect 产出打到作者写的\nroot/input/submit-trigger 三类角色节点上。input 须是原生 `<textarea>`，值经 property 写、\n禁用走原生 disabled。流式期间发送按钮原位变停止，只换 `data-mode` 与 `aria-label`。",
           "name": "XhComposerElement",
           "cssParts": [
             {
@@ -4023,11 +4025,11 @@
               "name": "root"
             },
             {
-              "description": "真正的输入框，须是原生 `<textarea>`；IME 与 Enter 的判定都落在它身上",
+              "description": "输入框，须是原生 `<textarea>`",
               "name": "input"
             },
             {
-              "description": "发送 / 停止按钮（原位换身份，皮肤按 data-mode 换图标）",
+              "description": "发送 / 停止按钮，皮肤按 data-mode 换图标",
               "name": "submit-trigger"
             }
           ],
@@ -4084,7 +4086,7 @@
               "type": {
                 "text": "Partial<ComposerTranslations> | undefined"
               },
-              "description": "输入框与发送/停止按钮的无障碍名；connect 每帧重写，作者写在节点上会被盖掉，只能从这里给。"
+              "description": "输入框与发送/停止按钮的无障碍名，由 connect 写到节点上。"
             },
             {
               "kind": "field",
@@ -4144,7 +4146,7 @@
               "name": "value-change"
             },
             {
-              "description": "提交（Enter 或按下发送）；detail 为 `{ value: string }`，清空发生在派发之后。 与原生表单提交同名，故**不冒泡**：请直接在 `<xh-composer>` 元素上监听",
+              "description": "提交；detail 为 `{ value: string }`，清空发生在派发之后。 与原生表单提交同名，故不冒泡，请直接在 `<xh-composer>` 元素上监听",
               "name": "submit"
             },
             {
@@ -4157,7 +4159,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "受控值；缺省该属性即非受控",
+              "description": "受控值，缺省该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -4173,7 +4175,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "禁用：输入框带原生 disabled，发送与停止一并吃掉",
+              "description": "禁用，输入框带原生 disabled，发送与停止一并吃掉",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -4181,7 +4183,7 @@
               "type": {
                 "text": "ComposerRunStatus | undefined"
               },
-              "description": "宿主运行态的投影，默认 ready；streaming 时发送按钮原位变停止",
+              "description": "宿主运行态，默认 ready；streaming 时发送按钮原位变停止",
               "name": "run-status",
               "fieldName": "runStatus"
             },
@@ -4189,7 +4191,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "Enter 直接提交，默认 true；写 submit-on-enter=\"false\" 关掉，只留按钮",
+              "description": "Enter 直接提交，默认 true；写 submit-on-enter=\"false\" 关掉",
               "name": "submit-on-enter",
               "fieldName": "submitOnEnter"
             }
@@ -4903,7 +4905,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-date-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/input/segment/trigger/\nclear-trigger/positioner/content/calendar 角色节点，calendar 之内再照日历那套写\nheader/prev-trigger/next-trigger/heading/grid/grid-head/week-day/grid-body/week-row/cell/cell-trigger。\n\n本元素是编排机：自己只持有开合与「分段输入 ↔ 日历」之间的值同步，\n选日期、翻月、网格里的键盘导航全部委派给内嵌日历，分段输入委派给内嵌分段输入——\n两者的机器原样跑在同一个元素里，行为与单用 `<xh-calendar>` / `<xh-date-field>` 逐条一致。\n因此 input 与 calendar 两个部件之内的 DOM 戴的是各自的 data-scope，皮肤也照各自那份写。\n\n**网格由作者渲染，元素不生成节点**：读 `weeks` / `weekDays` / `headingLabel` 三个只读属性，\n听 `focused-value-change` 重画。日期身份取 cell 节点上的 `value` 属性（ISO 串），\ncell-trigger 跟着它所在的 cell 走；表头列取 week-day 上的 `value`（列序 0-6）；\n段位可自带 `index` 属性声明下标，缺省按文档序。",
+          "description": "`<xh-date-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/input/segment/trigger/\nclear-trigger/positioner/content/calendar 角色节点，calendar 之内再照日历那套写\nheader/prev-trigger/next-trigger/heading/grid/grid-head/week-day/grid-body/week-row/cell/cell-trigger。\n\n本元素是编排机，只持有开合与「分段输入 ↔ 日历」之间的值同步；选日期、翻月、网格键盘导航\n委派给内嵌日历，分段输入委派给内嵌分段输入，两部件之内的 DOM 各戴各自的 data-scope。\n\n网格由作者渲染，元素不生成节点：读 `weeks` / `weekDays` / `headingLabel` 三个只读属性，\n听 `focused-value-change` 重画。日期身份取 cell 节点上的 `value`（ISO 串），\ncell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）；\n段位可自带 `index` 属性声明下标，缺省按文档序。",
           "name": "XhDatePickerElement",
           "cssParts": [
             {
@@ -5220,7 +5222,7 @@
               "name": "calendarCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<CalendarSchema>( this, calendarMachine, () => datePickerCalendarProps(this.rootCtrl.service), { scope: this.pickerScope, // 跨月要把焦点送进重画之后才存在的那一格，日历机器得有个查活 DOM 的入口。 // 重连时 controller 会重建机器，这个注入必须跟着重建走 onBuilt: (service) => { service.refs.set('getGridEl', () => this.getPart('grid')) }, }, )"
+              "default": "new MachineController<CalendarSchema>( this, calendarMachine, () => datePickerCalendarProps(this.rootCtrl.service), { scope: this.pickerScope, // 机器跨月后靠它把焦点送进重画出来的格子 onBuilt: (service) => { service.refs.set('getGridEl', () => this.getPart('grid')) }, }, )"
             },
             {
               "kind": "field",
@@ -5333,7 +5335,7 @@
                   }
                 }
               ],
-              "description": "格子内的子部件：getParts 收的是整个元素范围，按子树过滤才归得对。"
+              "description": "取 owner 子树内指定名字的角色节点。"
             },
             {
               "kind": "method",
@@ -5523,7 +5525,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-dialog>` —— Light-DOM 行为宿主：用户写 trigger/backdrop/positioner/content/... 角色节点，\n元素跑 dialog 机器并把 connect 产出打上去。关闭时用内联 style.display 隐藏浮层子树。",
+          "description": "`<xh-dialog>` —— Light-DOM 行为宿主，跑 dialog 机器并把 connect 产出打到角色节点上，\n关闭时用内联 style.display 隐藏浮层子树。",
           "name": "XhDialogElement",
           "cssParts": [
             {
@@ -5791,7 +5793,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-drawer>` —— Light-DOM 行为宿主：作者写 root/trigger/backdrop/positioner/content/... 角色节点，\n元素跑 drawer 机器并把 connect 产出打上去。关闭时用内联 style.display 隐藏浮层子树。\n\n它就是贴边渲染的对话框：键盘与 ARIA 契约逐条相同，side 只决定滑入方向，\n以 data-side 落在 root 与 content 上供样式取用。",
+          "description": "`<xh-drawer>` —— Light-DOM 行为宿主，跑 drawer 机器并把 connect 产出打到角色节点上，\n关闭时用内联 style.display 隐藏浮层子树。\n\n键盘与 ARIA 契约同 dialog；side 决定滑入方向，以 data-side 落在 root 与 content 上供样式取用。",
           "name": "XhDrawerElement",
           "cssParts": [
             {
@@ -6532,7 +6534,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-field>` —— Light-DOM 行为宿主，无状态机：作者写 label/control/description/error-text\n角色节点，元素把 connectField 产出的 id 与 aria-* 打上去，`for` 与描述链由此自动对齐，\n表单页不必再逐个手写 aria-describedby。控件本身（input / select / textarea / 自定义控件）\n由作者渲染，宿主只把属性合并上去、不替他建节点。\n\n每个实例自带一份 scope 派生 part id：同页多个 field 各出各的 id，\naria-describedby 才不会按 IDREF 串到别的实例的描述节点上。",
+          "description": "`<xh-field>` —— Light-DOM 行为宿主，无状态机，把 connectField 产出的 id 与 aria-* 打到\nlabel/control/description/error-text 角色节点上，自动对齐 `for` 与描述链。控件本身由作者渲染。\n\n每个实例自带一份 scope 派生 part id，同页多个 field 各出各的 id。",
           "name": "XhFieldElement",
           "cssParts": [
             {
@@ -6672,7 +6674,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-file-upload>` —— Light-DOM 行为宿主：作者写 root/label/dropzone/trigger/hidden-input\n与列表若干角色节点，元素跑 file-upload 机器并把 connect 产出打上去。\n\n投放区收 dragover/dragleave/drop，悬停期间带 data-dragging；点投放区、点 trigger、\n或在投放区上按 Enter/Space 都打开系统文件选择框（走隐藏输入的 click）。\n收进来的文件先过校验（类型/大小/数量），收下的进列表并派 file-accept，\n被拒的连同原因派 file-reject。\n\n条目节点由作者按 `acceptedFiles` 渲染（听 files-change 重渲），元素不替作者生成：\n生成节点就等于收走模板控制权，图标、进度条、i18n 文案都再塞不进来。\n条目按文档序对上列表里的文件，也可以自带 `index` 属性显式声明。\nitem-name 与 item-size-text 的文字由元素填（作者自己写了内容就一概不碰）。",
+          "description": "`<xh-file-upload>` —— Light-DOM 行为宿主：作者写 root/label/dropzone/trigger/hidden-input\n与列表若干角色节点，元素跑 file-upload 机器并把 connect 产出打上去。\n\n投放区收 dragover/dragleave/drop，悬停期间带 data-dragging；点投放区、点 trigger、\n或在投放区上按 Enter/Space 都打开系统文件选择框（走隐藏输入的 click）。\n收进来的文件先过校验（类型/大小/数量），收下的进列表并派 file-accept，\n被拒的连同原因派 file-reject。\n\n条目节点由作者按 `acceptedFiles` 渲染（听 files-change 重渲），元素不生成节点。\n条目按文档序对上列表里的文件，也可以自带 `index` 属性显式声明。\nitem-name 与 item-size-text 的文字由元素填（作者自己写了内容则不碰）。",
           "name": "XhFileUploadElement",
           "cssParts": [
             {
@@ -6892,7 +6894,7 @@
                   "text": "FileUploadApi"
                 }
               },
-              "description": "命令式入口共用的取法。机器要到进文档（hostConnected）才建：\n还没进文档就下命令是调用方的时序问题，明说好过静默吞掉。"
+              "description": "命令式入口共用的取法；机器要到进文档（hostConnected）才建，未建则抛。"
             },
             {
               "kind": "field",
@@ -6982,7 +6984,7 @@
               "privacy": "private",
               "readonly": true,
               "default": "new WeakMap<HTMLElement, boolean>()",
-              "description": "文件名与大小只有机器手里才有，作者在空节点上写不出来，由元素填。\n作者若自己写了内容（自定义渲染），首次见到时就定为归作者，之后一概不碰——\n每帧回读分不清\"作者写的\"还是\"上一帧自己写的\"，一旦写过就再也让不回去。"
+              "description": "文本是否归元素填：节点非空即判为作者自定义渲染。首次见到时定死，之后不再回读——回读分不出内容是作者写的还是上一帧自己写的。"
             },
             {
               "kind": "method",
@@ -7031,7 +7033,7 @@
                   }
                 }
               ],
-              "description": "条目内的子部件：getParts 收的是整个元素范围，按子树过滤才归得对条目。"
+              "description": "取 owner 子树内指定名字的角色节点。"
             },
             {
               "kind": "field",
@@ -7062,7 +7064,7 @@
                   }
                 }
               ],
-              "description": "位子比文件多（作者用 index 固定了几个上传位、或列表刚被删短）：\n把上一帧写上去的属性与处理器整条交还，代填的文字也一并抹掉。\n不交还的话这一行会带着一个已经不存在的文件名继续躺在 DOM 里，\n读屏照旧念得出来、删除按钮照旧点得动——DOM 就此开始说谎。"
+              "description": "位子比文件多时整条交还：撤掉上一帧写的属性与处理器，代填的文字一并抹掉。"
             },
             {
               "kind": "method",
@@ -8918,7 +8920,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-menubar>` —— Light-DOM 行为宿主：作者写\nroot/trigger/positioner/content/item/item-text/item-indicator/separator/group/group-label 角色节点，\n元素跑 menubar 机器并把 connect 产出打上去。\n\n与 `<xh-menu>` 的分野：这里是一排菜单，同时只展开一张。展开之后指针**掠过**别的 trigger\n就直接切换过去（不用点、也不等延时）；一个都没展开时掠过不打扰。\n整条菜单栏只有一个 Tab 位（roving tabindex），进来之后靠方向键在 trigger 之间走。\n\n标签由作者写：trigger 必须是 `<button>`（不可聚焦的话\"焦点归还 trigger\"永远等不到）。\ntrigger / positioner / content 三者靠各自的 value 属性配对，同一项写同一个值。",
+          "description": "`<xh-menubar>` —— Light-DOM 行为宿主：作者写\nroot/trigger/positioner/content/item/item-text/item-indicator/separator/group/group-label 角色节点，\n元素跑 menubar 机器并把 connect 产出打上去。\n\n一排菜单同时只展开一张：已展开时指针掠过别的 trigger 直接切过去，未展开时掠过不响应。\n整条菜单栏只有一个 Tab 位（roving tabindex），进来之后靠方向键在 trigger 之间走。\n\n标签由作者写：trigger 必须是 `<button>`。\ntrigger / positioner / content 三者靠各自的 value 属性配对，同一项写同一个值。",
           "name": "XhMenubarElement",
           "cssParts": [
             {
@@ -9129,7 +9131,7 @@
                   }
                 }
               ],
-              "description": "按作者写的 value 取某一项的角色节点；菜单栏同时只展开一张，浮层三件套都靠它解析。"
+              "description": "按作者写的 value 取某一项的角色节点。"
             },
             {
               "kind": "method",
@@ -9192,7 +9194,7 @@
                   }
                 }
               ],
-              "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，锚点会停在一个已消失的值上：\n没有条目认领 tabindex=0、方向键也失去起点。这里替 DOM 把焦点离场如实上报，\n机器就地按当前活条目重挑锚点。"
+              "description": "承载焦点的条目被移出 DOM 时上报 ITEM.LOST，让机器按当前数据重挑焦点锚点。"
             },
             {
               "kind": "method",
@@ -10697,7 +10699,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-progress>` —— Light-DOM 行为宿主，无状态机：宿主属性即 progress props，\nwire 时算 connectProgress 打到 root/track/range 三个角色节点。",
+          "description": "`<xh-progress>` —— Light-DOM 行为宿主，无状态机，把 connectProgress 产出打到 root/track/range 角色节点。",
           "name": "XhProgressElement",
           "cssParts": [
             {
@@ -10926,7 +10928,7 @@
                   }
                 }
               ],
-              "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：\n容器判自己\"焦点在组内\"退出 Tab 序列，又没有条目认领得了这个锚点，\n整组零个 Tab 停靠点，键盘用户再也进不来。这里替 DOM 把焦点离场如实上报。"
+              "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，这里替 DOM 上报焦点离场，免得焦点锚点停在已消失的值上。"
             },
             {
               "kind": "method",
@@ -11607,7 +11609,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-select>` —— Light-DOM 行为宿主：用户写 root/trigger/value-text/positioner/content/item/...\n角色节点，元素跑 select 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger、被定位的浮层取 positioner；机器只认端口，不认识具体引擎。\n条目身份取用户写在 item 上的 value 属性，禁用由部件自报（aria-disabled）。\n\n两处内容由元素代填，作者只需给出空节点：value-text 的显示文字（选中项的文本住在列表里，\n作者写不出来）与表单影子 hidden-select 的选项。value-text 里作者写了内容就归作者，元素不再改写。",
+          "description": "`<xh-select>` —— Light-DOM 行为宿主：用户写 root/trigger/value-text/positioner/content/item/...\n角色节点，元素跑 select 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger、被定位的浮层取 positioner。\n条目身份取用户写在 item 上的 value 属性，禁用由部件自报（aria-disabled）。\n\nvalue-text 的显示文字与表单影子 hidden-select 的选项由元素代填，作者只需给出空节点；\nvalue-text 里作者写了内容就归作者，元素不再改写。",
           "name": "XhSelectElement",
           "cssParts": [
             {
@@ -11803,7 +11805,7 @@
               "privacy": "private",
               "readonly": true,
               "default": "new WeakMap<HTMLElement, boolean>()",
-              "description": "value-text 是否归元素填：首次见到该节点时定，之后不再回读（读到的会是自己写的字）。"
+              "description": "value-text 是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。"
             },
             {
               "kind": "field",
@@ -11811,7 +11813,7 @@
               "privacy": "private",
               "readonly": true,
               "default": "new WeakMap<HTMLElement, string>()",
-              "description": "表单影子当前这批选项对应的值与文字，同一份不重建，免得每帧空转拆装 DOM。"
+              "description": "表单影子当前这批选项对应的值与文字，同一份不重建。"
             },
             {
               "kind": "field",
@@ -11893,7 +11895,7 @@
                   }
                 }
               ],
-              "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，高亮锚点会停在一个已消失的值上：\n没有条目认领 tabindex=0、方向键也失去起点。这里替 DOM 把焦点离场如实上报，\n机器就地按当前活条目重挑锚点。\n\n判据是焦点确实跟着这个节点走了。节点此刻已不在文档里，activeElement 不可能还等于它\n（浏览器把焦点退还给了 body），于是改判等价事实\"焦点已不在列表内\"，\n再要求离场的正是持有锚点的那个条目——只按值比对，会把\"焦点在别处时删掉同值条目\"也算成离场。"
+              "description": "承载焦点的条目被移出 DOM 时上报 ITEM.LOST，让机器按当前数据重挑高亮锚点。\n判据是「焦点已不在列表内」且离场的正是持有锚点的那个条目。"
             },
             {
               "kind": "method",
@@ -11942,7 +11944,7 @@
                   }
                 }
               ],
-              "description": "选中项的文字只有列表里才有，作者在 trigger 上写不出来，由元素填。\n作者若自己写了内容（自定义渲染），首次见到时就定为归作者，之后一概不碰——\n每帧回读分不清\"作者写的\"还是\"上一帧自己写的\"，一旦写过就再也让不回去。"
+              "description": "填入选中项显示文字；首次见到该节点时若已有内容则归作者，之后不再改写。"
             },
             {
               "kind": "method",
@@ -11973,7 +11975,7 @@
                   }
                 }
               ],
-              "description": "表单影子的选项由元素补齐（作者只写空壳 select）：\n空串选项是无选中时的落点，required 才判得出\"没选\"；另一个承载当前值。\n必须先于属性写入落地——spread 把 value 当 DOM property 写，目标 option 不在时赋值会被丢掉。"
+              "description": "给表单影子补齐选项：空串选项是无选中时的落点，另一个承载当前值。\n须先于属性写入落地，否则 spread 写 value 这个 DOM property 时目标 option 还不在。"
             },
             {
               "kind": "method",
@@ -12119,7 +12121,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-separator>` —— Light-DOM 行为宿主，无状态机：朝向与语义直接来自宿主属性，\nwire 时算 connectSeparator 打到 `[data-xh-part=\"root\"]` 角色节点。",
+          "description": "`<xh-separator>` —— Light-DOM 行为宿主，无状态机，把 connectSeparator 产出打到 root 角色节点。",
           "name": "XhSeparatorElement",
           "cssParts": [
             {
@@ -13162,7 +13164,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-switch>` —— Light-DOM 行为宿主：用户写 root(button)/thumb 角色节点，元素跑 switch 机器\n并把 connect 产出打上去。无副作用（不挂 DOM effect），比 dialog 简单。",
+          "description": "`<xh-switch>` —— Light-DOM 行为宿主，跑 switch 机器并把 connect 产出打到 root/thumb 角色节点。",
           "name": "XhSwitchElement",
           "cssParts": [
             {
@@ -13293,7 +13295,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-table>` —— Light-DOM 行为宿主：作者写 root/caption/header/body/footer 与若干\nrow / column-header / cell 角色节点，元素跑 table 机器并把 connect 产出打上去。\n身份取自节点上的 value 属性：行系部件上是行 id，列系部件上是列 id。\n\n行号（aria-rowindex / aria-rowcount）与列号（aria-colindex / aria-colcount）都不从 DOM\n反推，而是查 `rows` 与 `columns` 这两份定义——它们是元信息的唯一事实源，作者的标记\n只管长相，两个适配器也就不会各推各的。因此两份定义必须与标记同源：标记里有、定义里\n没有的行与列报不出编号，行也进不了方向键序列。\n\n同一个 row 部件写在 header / body / footer 里语义不同（表头行、数据行、脚注行），\n元素按祖先链现查区段，作者无需换用别的部件名。\n\n两份定义与三个集合都是数组/对象，属性表达不了，只能走 property（`el.rows = [...]`）。",
+          "description": "`<xh-table>` —— Light-DOM 行为宿主：作者写 root/caption/header/body/footer 与若干\nrow / column-header / cell 角色节点，元素跑 table 机器并把 connect 产出打上去。\n身份取自节点上的 value 属性：行系部件上是行 id，列系部件上是列 id。\n\n行号（aria-rowindex / aria-rowcount）与列号（aria-colindex / aria-colcount）查 `rows` 与\n`columns` 两份定义，不从 DOM 反推，故两份定义必须与标记同源。\n\n同一个 row 部件写在 header / body / footer 里语义不同（表头行、数据行、脚注行），\n元素按祖先链现查区段，作者无需换用别的部件名。\n\n两份定义与三个集合都是数组/对象，只走 property（`el.rows = [...]`）。",
           "name": "XhTableElement",
           "cssParts": [
             {
@@ -13537,7 +13539,7 @@
                   }
                 }
               ],
-              "description": "承载焦点的行被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：\nbody 判自己\"焦点在表体里\"退出 Tab 序列，又没有行认领得了这个锚点，\n整张表零个 Tab 停靠点，键盘用户再也进不来。这里替 DOM 把焦点离场如实上报。"
+              "description": "承载焦点的行被移出 DOM 时上报 TABLE.BLUR，让机器重挑焦点锚点。"
             },
             {
               "kind": "method",
@@ -13562,7 +13564,7 @@
                   }
                 }
               ],
-              "description": "取角色节点自报的身份：行系部件上是行 id，列系部件上是列 id。\n行内的把手、格子里的装饰节点向上找最近的容器（容器自身 closest 命中的就是它自己）；\n没有包裹层时退回读节点自身，扁平写法也能用。\n越出本宿主的容器不算数——嵌套 xh-table 的内层节点不会认外层的行。"
+              "description": "取角色节点自报的身份：行系部件上是行 id，列系部件上是列 id。\n行内的把手与装饰节点向上找本宿主内最近的容器，没有则读节点自身。"
             },
             {
               "kind": "method",
@@ -13617,7 +13619,7 @@
                   }
                 }
               ],
-              "description": "行所在的区段：同一个 row 部件写在三处语义不同，靠祖先链现查，作者不必换部件名。"
+              "description": "按祖先链现查行所在的区段。"
             },
             {
               "kind": "method",
@@ -13727,7 +13729,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tabs>` —— Light-DOM 行为宿主：用户写 root/list/trigger/content 角色节点，\n元素跑 tabs 机器并把 connect 产出打上去。条目身份取用户写在 trigger/content 上的 value 属性，\ntrigger 的禁用由部件自报（aria-disabled）。",
+          "description": "`<xh-tabs>` —— Light-DOM 行为宿主，跑 tabs 机器并把 connect 产出打到 root/list/trigger/content\n角色节点上。条目身份取作者写在 trigger/content 上的 value 属性，trigger 的禁用由部件自报。",
           "name": "XhTabsElement",
           "cssParts": [
             {
@@ -13842,7 +13844,7 @@
                   }
                 }
               ],
-              "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：\n容器判自己\"焦点在组内\"退出 Tab 序列，又没有条目认领得了这个锚点，\n整组零个 Tab 停靠点，键盘用户再也进不来。这里替 DOM 把焦点离场如实上报。"
+              "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，这里替 DOM 上报焦点离场。"
             },
             {
               "kind": "method",
@@ -14618,23 +14620,23 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-thread>` —— Light-DOM 行为宿主：作者写 root/viewport/content/scroll-button/live-region\n角色节点，元素跑 thread 机器并把 connect 产出打上去。\n\n滚动本身不接管：viewport 是真正 overflow:auto 的那层，键盘（方向键、PageUp/PageDown）与滚轮\n全走浏览器原生通路。元素只多做一件事——内容长高时把滚动位置同步补回底部，用户一上滚就撒手，\n此后再长也不跟，直到他滚回底部阈值内或按下\"回到底部\"。这套判定全在粘底原语里，\n经 refs 注入的两个 getter 交给它去量。\n\n播报只发生在 live-region 一处：viewport 恒 `aria-live=\"off\"`，宿主在一轮流结束时把整段最终\n文本写进 live-region。中途一个字都别写——那个节点带 aria-atomic，每写一次就重念一整块。",
+          "description": "`<xh-thread>` —— Light-DOM 行为宿主：跑 thread 机器，把 connect 产出打到作者写的角色节点上。\n内容长高时跟随滚动到底部，用户上滚后解除粘附，滚回底部阈值内或按回到底部按钮时恢复。",
           "name": "XhThreadElement",
           "cssParts": [
             {
-              "description": "组件根容器（承载 data-status）",
+              "description": "组件根容器，承载 data-status",
               "name": "root"
             },
             {
-              "description": "真正 overflow:auto 的那层；role=log + aria-live=off + tabindex=0，键盘用户靠它落脚",
+              "description": "滚动容器；role=log + aria-live=off + tabindex=0",
               "name": "viewport"
             },
             {
-              "description": "内容包裹层；消息一段段长出来就是它在变高，尺寸变化观察的正是它",
+              "description": "内容包裹层，尺寸变化的观察目标",
               "name": "content"
             },
             {
-              "description": "\"回到底部\"；在底时收起（hidden + 内联 display）",
+              "description": "回到底部按钮，在底时收起（hidden + 内联 display）",
               "name": "scroll-button"
             },
             {
@@ -14668,7 +14670,7 @@
               "type": {
                 "text": "Partial<ThreadTranslations> | undefined"
               },
-              "description": "消息区与\"回到底部\"的无障碍名；connect 每帧重写，作者写在节点上会被盖掉，只能从这里给。"
+              "description": "消息区与回到底部按钮的无障碍名，由 connect 写到节点上。"
             },
             {
               "kind": "field",
@@ -14744,7 +14746,7 @@
                   }
                 }
               ],
-              "description": "onBuilt 在 ctrl 构造期就跑（此刻 this.ctrl 尚未赋值），故 service 由参数传入。\n\n两个 getter 都懒读：角色节点要等首次 updated 才发现得到，机器建起来的那一刻 partMap 还空着。\n粘底效应自己也推迟一拍才建句柄，两头对得上。"
+              "description": "装填 config 与两个节点 getter；onBuilt 在 ctrl 构造期就跑，故 service 由参数传入。"
             },
             {
               "kind": "method",
@@ -14759,7 +14761,7 @@
           ],
           "events": [
             {
-              "description": "粘底状态跃迁；detail 为 `{ atBottom: boolean, sticking: boolean }`",
+              "description": "粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }`",
               "name": "stick-change"
             }
           ],
@@ -14768,7 +14770,7 @@
               "type": {
                 "text": "ThreadStatus | undefined"
               },
-              "description": "这一轮的运行态，只透出成 data-status，组件行为一概不看它",
+              "description": "这一轮的运行态，只透出成 data-status",
               "name": "status",
               "fieldName": "status"
             },
@@ -15152,7 +15154,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-time-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/input（多个）/trigger/\nclear-trigger/positioner/content/column（多个）/option（多个）/hidden-input 角色节点，\n元素跑 time-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。\n\n两条改值的路：输入行里逐段敲（每段是 role=spinbutton，上下键加减、数字直输自动跳段），\n浮层里按列挑（每列是一个 listbox，上下键在列内走、左右键换列、Enter 选中）。\n两条写的是同一份值，因此永远对得上。\n\n段上的文字与格子上的文字由元素填（作者写不出\"此刻该显示几点\"）；作者自己写了内容的一概不碰。",
+          "description": "`<xh-time-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/input（多个）/trigger/\nclear-trigger/positioner/content/column（多个）/option（多个）/hidden-input 角色节点，\n元素跑 time-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。\n\n两条改值的路写同一份值：输入行里逐段敲（每段是 role=spinbutton，上下键加减、数字直输自动跳段），\n浮层里按列挑（每列是一个 listbox，上下键在列内走、左右键换列、Enter 选中）。\n\n段与格子上的文字由元素填；作者自己写了内容的不碰。",
           "name": "XhTimePickerElement",
           "cssParts": [
             {
@@ -15456,7 +15458,7 @@
               "privacy": "private",
               "readonly": true,
               "default": "new WeakMap<HTMLElement, boolean>()",
-              "description": "段与格子上的文字归谁写：作者首次被看到时就写了内容，之后一概不碰。"
+              "description": "段与格子上的文字是否归元素填，首次见到该节点时定。"
             },
             {
               "kind": "method",
@@ -15481,7 +15483,7 @@
                   }
                 }
               ],
-              "description": "填节点上的文字。每帧回读分不清\"作者写的\"还是\"上一帧自己写的\"，\n所以归属只在第一次见到这个节点时定一次，一旦写过就再也让不回去。"
+              "description": "填节点上的文字，归属只在第一次见到这个节点时定一次。"
             },
             {
               "kind": "method",
@@ -16569,7 +16571,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-toggle>` —— Light-DOM 行为宿主：用户写 root(button) 角色节点，元素跑 toggle 机器\n并把 connect 产出打上去。无副作用（不挂 DOM effect），只有 root 一个角色节点。",
+          "description": "`<xh-toggle>` —— Light-DOM 行为宿主，跑 toggle 机器并把 connect 产出打到 root 角色节点。",
           "name": "XhToggleElement",
           "cssParts": [
             {
@@ -17926,7 +17928,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tree-select>` —— Light-DOM 行为宿主：作者写 root/trigger/positioner/content/tree\n与若干 item / branch 角色节点，元素跑 tree-select 机器并把 connect 产出打上去。\n浮层定位引擎在本元素里建好、经 refs 注入机器，锚点取 trigger、被定位的浮层取 positioner；\n机器只认端口，不认识具体引擎。节点身份取节点上的 value 属性。\n\n层级（aria-level / aria-posinset / aria-setsize）、禁用与显示文本都不从 DOM 反推，\n而是查 `collection` 这份树数据——它是元信息的唯一事实源，作者的标记只管长相，\n两个适配器也就不会各推各的。因此 collection 必须与标记同源：标记里有、collection 里没有的\n节点报不出层级，也进不了导航。\n\nvalue-text 的显示文字由元素代填（选中项的名字住在树数据里，作者写不出来）；\n作者在那个节点里写了内容就归作者，元素不再改写。\n\n树数据与展开/选中集合都是数组，属性表达不了，只能走 property（`el.collection = [...]`）；\n单选的选中值可以用 value 属性写成裸串。",
+          "description": "`<xh-tree-select>` —— Light-DOM 行为宿主：作者写 root/trigger/positioner/content/tree\n与若干 item / branch 角色节点，元素跑 tree-select 机器并把 connect 产出打上去。\n浮层定位引擎在本元素里建好、经 refs 注入机器，锚点取 trigger、被定位的浮层取 positioner；\n节点身份取节点上的 value 属性。\n\n层级（aria-level / aria-posinset / aria-setsize）、禁用与显示文本都查 `collection` 这份树数据，\n不从 DOM 反推，故 collection 必须与标记同源。\n\nvalue-text 的显示文字由元素代填；作者在该节点里写了内容就归作者，元素不再改写。\n\n树数据与展开/选中集合都是数组，只走 property（`el.collection = [...]`）；\n单选的选中值可用 value 属性写成裸串。",
           "name": "XhTreeSelectElement",
           "cssParts": [
             {
@@ -18196,7 +18198,7 @@
               "privacy": "private",
               "readonly": true,
               "default": "new WeakMap<HTMLElement, boolean>()",
-              "description": "value-text 是否归元素填：首次见到该节点时定，之后不再回读（读到的会是自己写的字）。"
+              "description": "value-text 是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。"
             },
             {
               "kind": "field",
@@ -18284,7 +18286,7 @@
                   }
                 }
               ],
-              "description": "承载焦点的节点被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：\n没有节点认领 tabindex=0、方向键也失去起点。这里替 DOM 把焦点离场如实上报，\n机器就地按当前活节点重挑锚点。\n\n判据是焦点确实跟着这个节点走了。节点此刻已不在文档里，activeElement 不可能还等于它\n（浏览器把焦点退还给了 body），于是改判等价事实\"焦点已不在浮层内\"，\n再要求离场的正是持有锚点的那个节点——只按值比对，会把\"焦点在别处时删掉同值节点\"也算成离场。"
+              "description": "承载焦点的节点被移出 DOM 时上报 NODE.LOST，让机器按当前数据重挑锚点。\n判据是「焦点已不在浮层内」且离场的正是持有锚点的那个节点。"
             },
             {
               "kind": "method",
@@ -18309,7 +18311,7 @@
                   }
                 }
               ],
-              "description": "取角色节点所属的节点身份：value 写在 item / branch 上，行内的文本、标记、箭头与子层容器\n向上找最近的那个（item / branch 自身 closest 命中的就是它自己）。\n没有包裹层时退回读节点自身，扁平写法也能用。\n越出本宿主的容器不算数——嵌套 xh-tree-select 的内层节点不会认外层的分支。"
+              "description": "取角色节点所属的节点身份：value 写在 item / branch 上，行内的文本、标记、箭头与子层容器\n向上找本宿主内最近的那个，没有则读节点自身。"
             },
             {
               "kind": "method",
@@ -18334,7 +18336,7 @@
                   }
                 }
               ],
-              "description": "选中项的文字只有树数据里才有，作者在 trigger 上写不出来，由元素填。\n作者若自己写了内容（自定义渲染），首次见到时就定为归作者，之后一概不碰——\n每帧回读分不清\"作者写的\"还是\"上一帧自己写的\"，一旦写过就再也让不回去。"
+              "description": "填入选中项显示文字；首次见到该节点时若已有内容则归作者，之后不再改写。"
             },
             {
               "kind": "method",

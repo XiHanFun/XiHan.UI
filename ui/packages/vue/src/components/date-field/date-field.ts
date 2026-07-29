@@ -9,7 +9,7 @@ type SegmentTexts = { readonly [K in DateSegmentType]?: string }
 
 export const XhDateFieldRoot = defineComponent({
   name: 'XhDateFieldRoot',
-  // 缺省值的唯一事实源在 connect：这里一律 undefined，别在两侧各写一份默认
+  // 缺省值由 connect 给出，这里一律 default: undefined
   props: {
     value: { type: String as PropType<string | null>, default: undefined },
     defaultValue: { type: String as PropType<string | null>, default: undefined },
@@ -26,7 +26,7 @@ export const XhDateFieldRoot = defineComponent({
     placeholder: { type: Object as PropType<SegmentTexts>, default: undefined },
     translations: { type: Object as PropType<SegmentTexts>, default: undefined },
   },
-  // value-change 携带 { value }；update:value 携带裸串，支持 v-model:value
+  // value-change 携带 { value }，update:value 携带裸串
   emits: ['value-change', 'update:value'],
   setup(props, { slots, emit }) {
     const onValueChange: DateFieldProps['onValueChange'] = (details) => {
@@ -53,8 +53,7 @@ export const XhDateFieldLabel = defineComponent({
   name: 'XhDateFieldLabel',
   setup(_, { slots }) {
     const ctx = useDateFieldContext()
-    // 刻意不是 <label>：段位是 div，不是可被 for 标注的控件，
-    // 写成 label 只会给出一个点了没反应的标题。点标题聚焦由连接层自己接管
+    // 渲染为 span 而非 label，段位不是可被 for 标注的控件；点标题聚焦由连接层接管
     return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
   },
 })
@@ -70,8 +69,7 @@ export const XhDateFieldControl = defineComponent({
 export const XhDateFieldSegment = defineComponent({
   name: 'XhDateFieldSegment',
   props: {
-    // 下标由作者声明，是哪一段由 locale 与 granularity 算出来。也收字符串：
-    // 模板里写 index="0"（不带冒号）拿到的就是字符串，Vue 只对 Boolean 型 prop 做属性转型
+    // 下标由作者声明，是哪一段由 locale 与 granularity 算出；兼收字符串
     index: { type: [Number, String] as PropType<number | string>, required: true },
   },
   setup(props, { slots }) {
@@ -80,7 +78,7 @@ export const XhDateFieldSegment = defineComponent({
       const index = Math.trunc(Number(props.index))
       const api = ctx.api.value
       const state = api.segments[index]
-      // 作者可以自己接管文字（比如给数字套一层 span），没接管就渲染连接层算好的那串
+      // 有插槽用插槽，否则渲染连接层算好的段位文本
       return h(
         'div',
         api.getSegmentProps({ index }) as Record<string, unknown>,

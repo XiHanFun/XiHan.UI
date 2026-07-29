@@ -1,8 +1,7 @@
 import type { KeyboardTable } from '../spec/types'
 
-// 浮层里是几列并排的 listbox，方向键与确认键按 listbox 那一套；
-// 输入行里的分段则按 spinbutton 那一套（每段是一个可加减的数），
-// 两套在这一张表里合流，source 取占主导的那一份。
+// 浮层里几列并排的 listbox 按 listbox 那一套，输入行里的分段按 spinbutton 那一套；
+// 两套在这张表里合流，source 取占主导的那一份。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/listbox/#keyboardinteraction'
 
 export const timePickerKeyboard: KeyboardTable = {

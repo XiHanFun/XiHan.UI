@@ -35,7 +35,6 @@ export class XhCodeBlockElement extends XhElement {
   declare complete?: boolean
 
   protected wire(): void {
-    // 读响应式属性而非回读 DOM 特性，code 缺席按空串算
     const api = connectCodeBlock({ code: this.code ?? '', lang: this.codeLang, complete: this.complete }, wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {

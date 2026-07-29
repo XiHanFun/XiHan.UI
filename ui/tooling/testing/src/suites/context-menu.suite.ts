@@ -159,7 +159,7 @@ export const contextMenuSuite: ConformanceSuite = {
             'data-state': 'closed',
             'data-placement': 'bottom-start',
           },
-          // 收起态没有锚点：条目连同 content 一起 hidden，本就不可达
+          // 收起态没有锚点：条目连同 content 一起 hidden
           'item[0]': {
             'role': 'menuitem',
             'aria-disabled': 'false',
@@ -264,7 +264,7 @@ export const contextMenuSuite: ConformanceSuite = {
       name: '触摸端长按展开：按住够久才开，锚点取按下那一刻的坐标',
       spec: { apg: APG },
       props: { longPressDelay: PRESS_DELAY },
-      // 计时驱动的用例帧序天然对不齐：同一次长按在两侧跑的拍数取决于机器当时的调度
+      // 计时驱动的用例帧序对不齐：同一次长按在两侧跑的拍数取决于机器调度
       skipParity: '长按由定时器驱动，两侧跑到同一状态所用的帧数不固定',
       steps: [
         {

@@ -8,7 +8,7 @@ import { treeSelectBranchQuery, treeSelectItemQuery } from './tree-select.anatom
 
 const { createMachine } = setup<TreeSelectSchema>()
 
-/** 未指定 placement 时的落位：浮层沿触发器起始缘展开。定位引擎与 connect 共用这一个缺省。 */
+/** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
 export const TREE_SELECT_DEFAULT_PLACEMENT: Placement = 'bottom-start'
 
 /** 裸串是单选的简写，内部一律按数组处理；undefined 要原样透传，cell 靠它区分受控与否。 */
@@ -28,20 +28,14 @@ function unique(values: readonly string[]): string[] {
   return [...new Set(values)]
 }
 
-/**
- * 数组按元素比。默认的 Object.is 在这里不成立：受控时 cell 每次读都要把 prop 归一成
- * 新数组，引用恒不相等——版本号会每读一次自增一次（track 空转），
- * 写入时又会把「值其实没变」判成变了，回调便会重复发。
- */
+/** 数组按元素比：受控时 cell 每次读都产出新数组，默认的 Object.is 恒不相等。 */
 function sameValues(a: string[], b: string[] | undefined): boolean {
   return !!b && a.length === b.length && a.every((v, i) => v === b[i])
 }
 
 /**
- * 容器里的全部节点元素（叶子与分支），**按可见序**排列。只在事件那一刻读活 DOM。
- *
- * 顺序刻意不取文档序：收起分支的子节点仍留在文档里（内容常挂 + hidden，不卸载作者节点），
- * 按文档序走方向键会一头扎进看不见的子树。摊平序才是用户眼里的行序。
+ * 容器里的全部节点元素（叶子与分支），按可见序排列，只在事件那一刻读活 DOM。
+ * 顺序不取文档序：收起分支的子节点仍留在文档里，按文档序走会走进看不见的子树。
  */
 export function treeSelectNodeEls(
   container: HTMLElement | null,
@@ -72,9 +66,8 @@ export function findTreeSelectNodeEl(container: HTMLElement | null, value: strin
   return null
 }
 
-// 选中集合与展开集合都住在 context 的 cell 里（cell 本身就是受控/非受控的收口点：
-// 给定 prop 即受控，读直取 prop、写只发回调不落内部值），因此这两路不需要影子事件。
-// 开合是布尔态、编进 FSM 状态，走「守卫对 + CONTROLLED.* 影子事件 + watch」那一套。
+// 选中集合与展开集合都住在 context 的 cell 里，受控/非受控在 cell 收口，这两路不需要影子事件。
+// 开合编进 FSM 状态，走守卫对加 CONTROLLED.* 影子事件加 watch 那一套。
 export const treeSelectMachine = createMachine({
   name: 'tree-select',
   context: ({ prop, cell }) => ({
@@ -107,13 +100,12 @@ export const treeSelectMachine = createMachine({
     typeahead: createTypeahead(),
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
-  // 开合受控（open prop 给定）时用户事件只发意图、不自改状态；宿主写回 open 后由 watch
-  // 派发影子事件 CONTROLLED.* 无条件回写。值与展开集合受控走 cell，不需要这套。
+  // 开合受控时用户事件只发意图，宿主写回 open 后由 watch 派发 CONTROLLED.* 无条件回写；
+  // 值与展开集合受控走 cell。
   watch: ({ track, prop, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
   },
-  // 这几件事与开合无关，两个状态里都得认：程序化改值、改展开集合、以及记焦点锚点。
-  // 展开态另行声明的 NODE.SELECT 会盖过这里那一条（单选选完还要收起）。
+  // 这几件事与开合无关，两个状态里都得认；展开态另行声明的 NODE.SELECT 会盖过这里那一条。
   on: {
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.CLEAR': { actions: ['clearValue'] },
@@ -127,9 +119,8 @@ export const treeSelectMachine = createMachine({
   states: {
     closed: {
       on: {
-        // 受控命中 → 只发意图；非受控 → 落 target 并一并通知。
-        // 落点意图与焦点归还策略两条都先记进 context：受控时状态要等宿主写回 open 才转移，
-        // 那一拍走的是 CONTROLLED.OPEN，读不到当初那个按键事件。
+        // 受控只发意图，非受控落 target 并通知。
+        // 落点意图与焦点归还先记进 context：受控那一拍走 CONTROLLED.OPEN，读不到原按键事件。
         'OPEN': [
           { guard: 'isOpenControlled', actions: ['setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
           { target: 'open', actions: ['setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
@@ -142,10 +133,9 @@ export const treeSelectMachine = createMachine({
       },
     },
     open: {
-      // 锚点在进入展开态时就位：节点常挂（收起时只是随 content 一起 hidden），
-      // 此刻查到的顺序即最终顺序。锚点定了才有节点认领 tabindex=0，焦点域随后把焦点交给它。
+      // 锚点在进入展开态时就位；节点常挂，此刻查到的顺序即最终顺序。
       entry: ['setInitialFocusedValue'],
-      // 收起就丢缓冲：否则下次展开第一个字母会被拼进上一轮的查询串
+      // 收起就丢缓冲，否则下次展开首字母会拼进上一轮查询串
       exit: ['clearFocusedValue', 'clearTypeahead'],
       // 进入 open：定位 → 消解 → 焦点。退出 open 时按同序清理，焦点归还发生在消解层撤销之后。
       effects: ['trackPosition', 'trackLayer'],
@@ -158,15 +148,13 @@ export const treeSelectMachine = createMachine({
           { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnClose'] },
           { target: 'closed', actions: ['setReturnFocus', 'invokeOnClose'] },
         ],
-        // 多选选完接着挑：浮层不收起，焦点也留在树里。
-        // 单选选完即收起，走与 CLOSE 相同的收口（焦点随焦点域撤销归还 trigger）
+        // 多选选完接着挑，浮层不收起、焦点留在树里；单选选完即收起，走与 CLOSE 相同的收口
         'NODE.SELECT': [
           { guard: 'isMultiple', actions: ['selectNode'] },
           { guard: 'isOpenControlled', actions: ['selectNode', 'setReturnFocus', 'invokeOnClose'] },
           { target: 'closed', actions: ['selectNode', 'setReturnFocus', 'invokeOnClose'] },
         ],
-        // 持有焦点的节点被移出 DOM：锚点已悬空，就地按当前活节点重挑一个，
-        // 否则没有节点认领 tabindex=0、方向键也失去起点
+        // 持有焦点的节点被移出 DOM，锚点悬空，就地重挑一个，否则没有节点认领 tabindex=0
         'NODE.LOST': { actions: ['clearFocusedValue', 'setInitialFocusedValue'] },
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
@@ -195,9 +183,7 @@ export const treeSelectMachine = createMachine({
           context.set('focusIntent', e.focus ?? 'selected')
       },
 
-      // 每次开合都重算：Tab 关闭要把焦点让给 Tab 序列的下一个元素，其余出口一律归还 trigger。
-      // Tab 是要去下一个控件，层外指针交互是用户已经点中了别的东西——这两种情况下抢回焦点，
-      // 会把光标从他刚点的输入框里拽走、后续敲的第一个字符直接丢掉。
+      // Tab 与层外交互关闭时把焦点让出，其余出口一律归还 trigger
       setReturnFocus: ({ context, event }) => {
         const e = event.current()
         const handedOff = e.type === 'CLOSE' && (e.src === 'tab' || e.src === 'interact-outside')
@@ -205,14 +191,14 @@ export const treeSelectMachine = createMachine({
       },
 
       /**
-       * 展开那一刻挑焦点锚点。落点只在**可见行**里挑：选中值可能藏在一条收起的分支里，
-       * 那个节点仍在 DOM 中但已 hidden、聚不了焦，认领 tabindex=0 等于没有停靠点。
-       * 摊平在这里现算而不是复用 connect 的结果：动作跑在事件那一刻，connect 是渲染期求值的。
+       * 展开那一刻挑焦点锚点，落点只在可见行里挑：
+       * 藏在收起分支里的节点虽在 DOM 中但 hidden、聚不了焦。
+       * 摊平在这里现算而不复用 connect 的结果：动作跑在事件那一刻，connect 是渲染期求值的。
        */
       setInitialFocusedValue: ({ refs, prop, context, state, flush }) => {
         const pick = (): void => {
           const content = refs.get('getContentEl')()
-          // 无 DOM 环境（纯逻辑测试）：锚点留空，状态转移不受影响
+          // 无 DOM 环境：锚点留空，状态转移不受影响
           if (!content)
             return
           const rows = flattenTree(prop('collection') ?? [], context.get('expandedValue'))
@@ -233,8 +219,7 @@ export const treeSelectMachine = createMachine({
           context.set('focusedValue', itemValue(navigateItems(els, from, intent, { loop: prop('loop') ?? false })))
         }
         pick()
-        // 初始即展开时，节点的身份标记要等适配器首次写入才在，这一刻查不到任何节点、
-        // 锚点会落空。已经挑到就不再挑；挑的过程中若浮层已收起也不补
+        // 初始即展开时节点身份标记可能尚未写入，推迟一拍补挑；已挑到或已收起则不补
         flush(() => {
           if (state.get() === 'open' && context.get('focusedValue') == null)
             pick()
@@ -259,7 +244,7 @@ export const treeSelectMachine = createMachine({
           context.set('value', current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value])
           return
         }
-        // 单选没有「取消选中」这回事：选两下就把控件点空了不是任何人期望的
+        // 单选没有取消选中这回事，选两下不会把控件点空
         context.set('value', [e.value])
       },
 
@@ -311,15 +296,14 @@ export const treeSelectMachine = createMachine({
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读
       trackPosition: ({ refs, prop, context, flush }) => {
         const engine = refs.get('position')
-        // 无引擎（纯逻辑测试 / 无布局环境 / SSR）：不定位，其余照常
+        // 无引擎时不定位，其余照常
         if (!engine)
           return undefined
 
         let stop: (() => void) | undefined
         let disposed = false
 
-        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带着 hidden（高度为 0），
-        // 此时算出的坐标会少掉浮层自身的尺寸——placement=top 会正好错位一个浮层高度
+        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带 hidden、高度为 0，算出的坐标会错位
         flush(() => {
           if (disposed)
             return
@@ -341,13 +325,12 @@ export const treeSelectMachine = createMachine({
         }
       },
 
-      // 层的入栈出栈与消解层、焦点域绑在同一个效应里：三者生命周期必须完全一致。
-      // 层只在展开期间入栈——消解层只让栈顶响应 Escape，若层在挂载期就注册、与开合无关地
-      // 常驻栈里，同页后挂载的那个会永久占着栈顶，把它下面每一层的 Escape 都堵死。
+      // 层与消解层、焦点域绑在同一个效应里，三者生命周期必须一致；
+      // 层只在展开期间入栈，常驻会占死栈顶把下面各层的 Escape 堵死。
       trackLayer: ({ refs, context, send }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
-        // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
+        // 无 DOM 环境：状态机照常转移，不挂副作用
         if (!config || !registerLayer)
           return undefined
 
@@ -368,10 +351,8 @@ export const treeSelectMachine = createMachine({
           // 树不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
           trapped: () => false,
           loop: false,
-          // 显式指定落焦点为锚点节点，不交给 Tab 序列探测：探测走的是
-          // focusFirst(removeLinks(...))，节点写成 <a> 时会被整体过滤掉，
-          // 落焦就会掉到容器上而不是锚点节点。
-          // 这里每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位
+          // 显式指定落焦点为锚点节点：Tab 序列探测会过滤掉写成 <a> 的节点。
+          // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试。
           initialFocus: () => findTreeSelectNodeEl(refs.get('getContentEl')(), context.get('focusedValue')),
           restoreFocus: () => context.get('returnFocus'),
         })

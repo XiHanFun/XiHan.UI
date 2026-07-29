@@ -5,7 +5,7 @@ import { buttonAnatomy } from './button.anatomy'
 
 const parts = buttonAnatomy.build()
 
-// Button 无状态机：状态全部来自 props 与浏览器原生伪类。
+// Button 无状态机，状态来自 props 与原生伪类。
 export function connectButton<T extends PropTypes>(
   props: ButtonProps,
   normalize: NormalizeProps<T>,
@@ -33,10 +33,7 @@ export function connectButton<T extends PropTypes>(
         if (interactive)
           return
         e.preventDefault()
-        // stopImmediatePropagation 而不是 stopPropagation：后者只挡往祖先冒泡，
-        // 作者挂在同一个节点上的处理器照跑不误——一个"提交中"的按钮会被点第二次提交出去。
-        // 前提是本处理器先注册：Vue 把 connect 的 props 排在透传属性之前，
-        // WC 侧 spreader 在作者补监听器之前就接好了线。
+        // 用 stopImmediatePropagation，同节点上作者的处理器也一并拦下
         e.stopImmediatePropagation()
       },
     }),

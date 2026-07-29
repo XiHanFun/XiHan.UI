@@ -5,7 +5,7 @@ import { drawerAnatomy } from './drawer.anatomy'
 
 const parts = drawerAnatomy.build()
 
-/** side 缺省时的落点。右侧滑出是抽屉最常见的形态，也与 LTR 的阅读方向一致。 */
+/** side 缺省时的落点。 */
 export const DRAWER_DEFAULT_SIDE: DrawerSide = 'right'
 
 export function connectDrawer<T extends PropTypes>(
@@ -29,8 +29,7 @@ export function connectDrawer<T extends PropTypes>(
     open,
     side,
     setOpen,
-    // root 留在页面原地（content 会被 portal 走），滑出边在收起态也读得到：
-    // 要写"从右边推进来"的过渡，得先有一个开合之前就存在的钩子。
+    // root 留在页面原地（content 会被 portal 走），收起态也带 data-state / data-side
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': stateAttr,
@@ -59,18 +58,15 @@ export function connectDrawer<T extends PropTypes>(
       'id': ids.content,
       'role': role,
       'tabindex': -1,
-      // 显式写 false，不省略：省略与 aria-modal="false" 在读屏那里不是一回事——
-      // 前者是"没说"，后者是"明确说了不是模态"，非模态抽屉要的是后者
+      // 非模态时显式写 "false"，不能省略：读屏对"未声明"与"声明为非模态"处理不同
       'aria-modal': modal ? 'true' : 'false',
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
       'data-state': stateAttr,
-      // 面板自己也带滑出边：它被 portal 到 body 之后，写在 root 上的选择器够不着它
+      // content 被 portal 到 body 后 root 上的选择器够不着它，故自身也带 data-side
       'data-side': side,
-      // 收起态自己也带 hidden，不指望作者一定写了 positioner：
-      // meta 里 positioner 并非必需部件，按最小合规结构（只有 root + content）写时，
-      // 少了这一句，收起的抽屉会一直摊在页面上。
-      // Vue 侧关闭后会把 content 卸掉、看不出来；WC 侧 content 常驻，一眼就见。
+      // positioner 非必需部件，content 收起态必须自带 hidden，否则最小结构（root + content）
+      // 下抽屉关不掉（WC 侧 content 常驻，尤为明显）
       'hidden': !open || undefined,
     }),
     getTitleProps: () => normalize.element({ ...parts.title.attrs, id: ids.title }),

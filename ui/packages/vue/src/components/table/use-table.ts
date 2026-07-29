@@ -10,7 +10,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface TableContext {
   api: ComputedRef<TableApi>
-  /** 部件要上报 DOM 侧的事实（如行卸载带走了焦点），得直接够到机器。 */
+  /** 机器实例，供部件上报 DOM 侧的事实（如行卸载带走了焦点）。 */
   service: Service<TableSchema>
 }
 

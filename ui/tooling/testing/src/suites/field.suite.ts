@@ -54,9 +54,7 @@ export const fieldSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'raw',
-          // 快照把 for 归一成 '@part(control)'，只要两头对得上就算过——可 for 指向一个
-          // 不可标注的元素（比如外面包的那层 div）时，它同样"对得上"，而点标题不聚焦、
-          // 读屏也念不出名字。label.control 走的是浏览器自己的关联算法，非它验不出来。
+          // 快照只比 for 两头对不对得上；label.control 走浏览器的关联算法，非它验不出真关联
           why: 'for 指向的必须是可标注控件，这件事归一化快照看不见',
           run: ({ doc }) => {
             const label = doc.querySelector('[data-scope="field"][data-part="label"]')
@@ -104,8 +102,7 @@ export const fieldSuite: ConformanceSuite = {
       },
     },
     {
-      // 快照把任何 id 都归一成 '@self'、for 归一成 '@part(control)'，两者对作者值与派生值
-      // 一视同仁——光断言它们验不出「接管」有没有真生效，必须直读 DOM 比对字面量
+      // 快照把 id/for 都归一，验不出接管是否生效，必须直读 DOM 比对字面量
       name: '作者接管 controlId：控件真的用了作者给的 id，label 的 for 跟着指过去',
       spec: { apg: APG },
       props: { controlId: 'field-email' },

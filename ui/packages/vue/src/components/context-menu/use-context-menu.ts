@@ -29,27 +29,23 @@ export function useContextMenu(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  // 两个回调由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const service = useMachine(contextMenuMachine, () => ({ ...props, onOpenChange, onSelect }), scope)
 
   if (typeof document !== 'undefined') {
     const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
 
-    // 只给注册函数、不在这里注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
-    // 挂载期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
+    // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按展开态驱动
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
       kind: 'popover',
       node: () => contentRef.value,
-      // 触发区记为本层分支：展开着再右键要能就地换坐标，先被判成层外交互关一次就白闪了。
-      // 代价是"左键点在触发区内也该关"落不到消解层头上，那条由 connect 在 pointerdown 上自己收口。
+      // 触发区记为本层分支，展开着再右键可就地换坐标；左键关闭由 connect 在 pointerdown 上收口
       branches: () => [triggerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
       setModal: () => {},
       surfaces: () => [],
     })
 
-    // 定位引擎由适配器建好注入；机器只经端口驱动，不认识具体引擎。
-    // 锚点是光标坐标（虚拟锚点），因此这里没有 getAnchorEl。
+    // 定位引擎由适配器注入，机器只经端口驱动；锚点是光标坐标，故无 getAnchorEl
     service.refs.set('config', config)
     service.refs.set('registerLayer', registerLayer)
     service.refs.set('position', createFloatingUiPositionEngine())

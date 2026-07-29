@@ -8,16 +8,15 @@ import {
   startOfWeek,
 } from '@internationalized/date'
 
-// 月视图的纯数学与纯格式化：不碰 DOM、不认识状态机，只把「哪一天 + locale」翻成
+// 月视图的纯数学与纯格式化：不碰 DOM、不认识状态机，把「哪一天 + locale」翻成
 // 一张日期矩阵、一排星期几表头、一个方向键落点。日期运算全部委托给
-// @internationalized/date 的不可变值对象，这里一行手写的日期加减都没有——
-// 闰年、月末、跨年这些边界自己写必错。
+// @internationalized/date 的不可变值对象。
 
 /** 默认 locale。周首日（周日还是周一）就是由它决定的。 */
 export const CALENDAR_LOCALE = 'zh-CN'
 /** 一周恒七天：矩阵的列数。 */
 export const CALENDAR_WEEK_LENGTH = 7
-/** fixedWeeks 打开后固定渲染的周行数。六行能装下任何公历月份，月份切换时网格高度不跳。 */
+/** fixedWeeks 打开后固定渲染的周行数；六行能装下任何公历月份。 */
 export const CALENDAR_FIXED_WEEKS = 6
 
 /** 矩阵里的一格。 */
@@ -56,12 +55,12 @@ export interface CalendarWeekDay {
   value: number
   /** 可见文本（narrow/short），由 weekdayFormat 决定。 */
   label: string
-  /** 全称，给读屏用：只念「一」谁也不知道是星期一还是一号。 */
+  /** 全称，给读屏用。 */
   long: string
 }
 
 export interface CalendarWeekDaysOptions {
-  /** 参照日：取它所在那一周来产出七列，因此周首日与网格首列必然对齐。 */
+  /** 参照日：取它所在那一周产出七列，周首日与网格首列对齐。 */
   reference: string
   locale?: string
   weekdayFormat?: 'narrow' | 'short'
@@ -90,12 +89,7 @@ export interface CalendarNavKeyEventLike {
   shiftKey?: boolean
 }
 
-/**
- * ISO 串 → 日期值对象；解析不了一律给 null。
- *
- * 值是作者从远端拿来的字符串，不保证是合法 ISO 日期；parseDate 遇到脏值会抛，
- * 在连接层里抛出去就是整棵组件树白屏。判空由调用方就地处理成「这一格不可用」。
- */
+/** ISO 串 → 日期值对象；解析不了一律给 null（parseDate 遇脏值会抛）。 */
 export function parseCalendarDate(value: string | null | undefined): CalendarDate | null {
   if (!value)
     return null
@@ -110,11 +104,10 @@ export function parseCalendarDate(value: string | null | undefined): CalendarDat
 /**
  * 生成某个月的日期矩阵。
  *
- * 首行从「展示月首日所在那一周的周首日」起算，因此首尾两行必然带上邻月的日子——
- * 它们照样是可点可聚焦的真日子（点上去就翻到那个月），只是 inMonth 为 false。
+ * 首行从「展示月首日所在那一周的周首日」起算，首尾两行会带上邻月的日子，
+ * 它们照样可点可聚焦，只是 inMonth 为 false。
  *
- * anchor 必须是合法 ISO 日期串，否则原样抛出解析错误：这个函数是纯计算，
- * 兜底该发生在读 prop 的地方（parseCalendarDate），不该在这儿把脏值悄悄吃掉。
+ * anchor 必须是合法 ISO 日期串，否则原样抛出解析错误。
  */
 export function buildMonthGrid(anchor: string, options: CalendarMonthGridOptions = {}): CalendarMonthGrid {
   const { locale = CALENDAR_LOCALE, fixedWeeks = false } = options
@@ -131,8 +124,7 @@ export function buildMonthGrid(anchor: string, options: CalendarMonthGridOptions
         year: cursor.year,
         month: cursor.month,
         day: cursor.day,
-        // 逐字段比年月，不用 isSameMonth：那个函数按首参的历法折算，
-        // 这里两边本就是同一份公历日期，直接比更省事也更明白
+        // 逐字段比年月，不用 isSameMonth（它按首参的历法折算）
         inMonth: cursor.year === first.year && cursor.month === first.month,
       })
       cursor = cursor.add({ days: 1 })
@@ -143,10 +135,7 @@ export function buildMonthGrid(anchor: string, options: CalendarMonthGridOptions
   return { year: first.year, month: first.month, monthStart: first.toString(), weeks }
 }
 
-/**
- * 生成七列表头。取参照日所在那一周逐日格式化，列序与 buildMonthGrid 的列序天生一致——
- * 换个 locale 周首日从周日挪到周一，两边一起挪，不会错位。
- */
+/** 生成七列表头。取参照日所在那一周逐日格式化，列序与 buildMonthGrid 一致。 */
 export function buildWeekDays(options: CalendarWeekDaysOptions): CalendarWeekDay[] {
   const { reference, locale = CALENDAR_LOCALE, weekdayFormat = 'short', timeZone = 'UTC' } = options
   const start = startOfWeek(parseDate(reference), locale)
@@ -162,11 +151,8 @@ export function buildWeekDays(options: CalendarWeekDaysOptions): CalendarWeekDay
 }
 
 /**
- * 按键 → 落点意图。返回 null 表示这个键不归日历管，调用方**不得** preventDefault
- * （网格里的其它键要放行给页面滚动与读屏）。
- *
- * Ctrl/Meta/Alt 组合一律不接：Ctrl+Home 跳文档顶部之类是浏览器与读屏的键，
- * 被网格吞掉就再也按不出来。Shift 是唯一例外——翻页键上它把「一个月」放大成「一年」。
+ * 按键 → 落点意图。返回 null 表示这个键不归日历管，调用方**不得** preventDefault。
+ * Ctrl/Meta/Alt 组合一律不接；Shift 只在翻页键上把「一个月」放大成「一年」。
  */
 export function calendarNavFromKey(event: CalendarNavKeyEventLike): CalendarNavIntent | null {
   if (event.ctrlKey || event.metaKey || event.altKey)
@@ -195,11 +181,8 @@ export function calendarNavFromKey(event: CalendarNavKeyEventLike): CalendarNavI
 
 /**
  * 从某天出发按意图走一步，返回落点的 ISO 串。
- *
- * 跨月不特殊处理：日期值对象加减出来的结果自己就落在下个月，展示月由落点反推，
- * 于是「方向键走到下月 1 号」与「翻页」共用同一条路，不存在两套跨月逻辑。
- * 月/年这两步交给值对象的 add：1 月 31 日加一个月是 2 月 28/29 日，
- * 手写日期数学在这里必然写出 3 月 3 日。
+ * 跨月不特殊处理：结果自然落进邻月，展示月由落点反推。
+ * 月/年这两步必须交给值对象的 add/subtract（1 月 31 日加一个月是 2 月 28/29 日），手写日期数学会算错。
  */
 export function calendarNavTarget(anchor: string, intent: CalendarNavIntent, locale = CALENDAR_LOCALE): string {
   const date = parseDate(anchor)

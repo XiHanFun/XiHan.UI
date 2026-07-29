@@ -13,7 +13,6 @@ export function useCarousel(
   props: CarouselSchema['props'],
   onPageChange?: CarouselSchema['props']['onPageChange'],
 ): CarouselContext {
-  // onPageChange 由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const service = useMachine(carouselMachine, () => ({ ...props, onPageChange }))
   const api = computed(() => connectCarousel(service, vueNormalize))
   return { api }

@@ -3,13 +3,8 @@ import type { MachineSchema } from '@xihan-ui/machine'
 
 /**
  * 条目自报家门：值与禁用由作者在部件上声明，connect 据此产出属性。
- * connect 因此是 (context/prop, 本条目声明) 的纯函数，不反查 DOM——
- * Vue 侧 connect 在 render 期求值（本帧 DOM 还不存在），WC 侧在 updated 后求值（DOM 已就位），
- * 连接期读 DOM 会让两个适配器的首帧快照分叉。
- *
- * 条目自己是什么控件（按钮、切换钮、下拉触发器）与工具条无关：
- * 工具条只发身份标记、Tab 停靠位与 aria-disabled，条目的角色、按下态、点击行为
- * 一律归条目自己，绝不在这里覆盖 role 或接管 click。
+ * connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得反查 DOM。
+ * 工具条只发身份标记、Tab 停靠位与 aria-disabled，条目的角色、按下态与点击行为归条目自己。
  */
 export interface ToolbarItemProps {
   value: string
@@ -19,9 +14,8 @@ export interface ToolbarItemProps {
 export interface ToolbarSchema extends MachineSchema {
   props: {
     /**
-     * 主轴，默认 horizontal。它同时决定三件事：root 的 aria-orientation、
-     * 方向键收哪一对键（横排收左右、竖排收上下，另一轴原样放行给页面），
-     * 以及分隔线的朝向（恒与主轴垂直）。
+     * 主轴，默认 horizontal。它决定 root 的 aria-orientation、方向键收哪一对键
+     * （另一轴原样放行给页面），以及分隔线的朝向（恒与主轴垂直）。
      */
     orientation?: Orientation
     /** 文字方向，默认 ltr；只改写水平主轴上左右方向键的语义。 */
@@ -34,11 +28,8 @@ export interface ToolbarSchema extends MachineSchema {
   context: {
     /**
      * 焦点位于工具条内时的瞬态锚点，焦点离开即清空。
-     *
-     * 焦点模型是 roving tabindex（不做 aria-activedescendant 变体）：焦点真的落在条目上，
-     * 整条只留一个 Tab 停靠点。工具条没有「选中值」这条线，锚点就只有焦点这一个来源——
-     * 锚点为空时由 root 兜底进 Tab 序列，它的 onFocus 再把焦点转投给第一个可停留条目，
-     * 「第一个可用项」这层兜底是这样兑现的：connect 不读 DOM，渲染期不可能知道谁排第一。
+     * 焦点模型是 roving tabindex，整条只留一个 Tab 停靠点；锚点只有焦点这一个来源。
+     * 锚点为空时由 root 兜底进 Tab 序列，它的 onFocus 再把焦点转投给第一个可停留条目。
      */
     focusedValue: string | null
   }

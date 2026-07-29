@@ -1,8 +1,7 @@
 import type { KeyboardTable } from '../spec/types'
 
-// APG 没有"标签输入"这个模式：它是文本框加一串可删条目的组合件。
-// 可核对的规格只有文本输入本身的行为（光标、选区、撤销全归浏览器），
-// 以及"每个控件都要有可及的名字"这条实践，故出处指向后者。
+// APG 没有标签输入这个模式；文本输入本身的行为全归浏览器，
+// 出处指向"每个控件都要有可及的名字"这条实践。
 const SPEC = 'https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/'
 
 export const tagsInputKeyboard: KeyboardTable = {

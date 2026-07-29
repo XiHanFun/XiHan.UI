@@ -35,7 +35,7 @@ function assertImageSource(src: string | null, alt: string | null): (ctx: RawSte
 }
 
 // image 与 fallback 都常挂：image 只在 loaded 时显出，fallback 的显隐另有一套判据
-// （失败恒显、加载途中要等 fallbackDelay），两者并非严格互斥——延迟窗口里两个都是收着的。
+// （失败恒显、加载途中要等 fallbackDelay），延迟窗口里两个都是收着的。
 export const imageSuite: ConformanceSuite = {
   component: 'image',
   anatomy: imageAnatomy,

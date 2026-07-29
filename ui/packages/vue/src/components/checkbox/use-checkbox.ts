@@ -13,7 +13,6 @@ export function useCheckbox(
   props: CheckboxSchema['props'],
   onCheckedChange?: CheckboxSchema['props']['onCheckedChange'],
 ): CheckboxContext {
-  // onCheckedChange 由外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const service = useMachine(checkboxMachine, () => ({ ...props, onCheckedChange }))
   const api = computed(() => connectCheckbox(service, vueNormalize))
   return { api }

@@ -141,9 +141,7 @@ export const paginationSuite: ConformanceSuite = {
       },
     },
     {
-      // 守的是"首页再往回还是首页"：翻页不回绕。
-      // 走 dispatchEvent 而不是 click 步骤——禁用按钮上的 el.click() 被激活行为短路，
-      // 事件压根不派发，那样连边界逻辑都碰不到，回绕了也照样绿。
+      // 走 dispatchEvent 而不是 click：禁用按钮上 el.click() 被激活行为短路，事件不派发
       name: '首页时 prev 推不动：合成 click 也不会绕回末页',
       spec: { apg: APG },
       props: { count: 100, pageSize: 10 },
@@ -178,7 +176,6 @@ export const paginationSuite: ConformanceSuite = {
         {
           kind: 'click',
           part: 'item[2]',
-          // 受控下"界面没有自作主张"正是要验的东西
           expect: {
             parts: {
               'item[1]': { 'aria-current': 'page' },
@@ -205,8 +202,7 @@ export const paginationSuite: ConformanceSuite = {
       initial: { parts: { 'item[3]': { 'aria-current': 'page' } } },
       steps: [
         {
-          // 数据被筛掉一批之后，停在第 10 页的分页器必须自己退回第 3 页，
-          // 否则 aria-current 落在一个已不存在的页上，前后翻页也从看不见的位置起算
+          // 数据被筛掉一批后，停在第 10 页的分页器自己退回第 3 页
           kind: 'setProps',
           props: { count: 25 },
           expect: {
@@ -273,8 +269,7 @@ export const paginationSuite: ConformanceSuite = {
             if (nodes.length !== 6)
               throw new Error(`预期 6 个可点部件，实际 ${nodes.length}`)
             for (const el of nodes) {
-              // 出现 tabindex 就说明有人给分页器套了 roving tabindex：
-              // 那会让用户按一次 Tab 只能进组，再也没法直接 Tab 到某一页
+              // 出现 tabindex 就说明有人给分页器套了 roving tabindex
               if (el.hasAttribute('tabindex'))
                 throw new Error(`${el.dataset.part} 上出现了 tabindex="${el.getAttribute('tabindex')}"，分页器不做 roving tabindex`)
             }

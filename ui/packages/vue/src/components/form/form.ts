@@ -8,8 +8,7 @@ type FormProps = FormSchema['props']
 
 export const XhFormRoot = defineComponent({
   name: 'XhFormRoot',
-  // 缺省值的唯一事实源在 connect 与机器里 —— 凡是那边有兜底的一律 default: undefined。
-  // values / errors 尤其：落成 {} 等于宣称"受控且当前为空"，之后一个字段都写不进来
+  // 缺省值由 connect 与机器给出，这里一律 default: undefined
   props: {
     values: { type: Object as PropType<FormValues>, default: undefined },
     defaultValues: { type: Object as PropType<FormValues>, default: undefined },
@@ -20,8 +19,7 @@ export const XhFormRoot = defineComponent({
     disabled: Boolean,
     readOnly: Boolean,
   },
-  // *-change 携带 details 对象；update:* 携带裸表，支持 v-model:values / v-model:errors。
-  // submit 只在校验通过时派发，invalid 只在校验不通过时派发，两者互斥
+  // *-change 携带 details 对象，update:* 携带裸表；submit 与 invalid 按校验结果二选一
   emits: ['values-change', 'errors-change', 'submit', 'invalid', 'update:values', 'update:errors'],
   setup(props, { slots, emit }) {
     const ctx = useForm(props as FormProps, {
@@ -38,8 +36,7 @@ export const XhFormRoot = defineComponent({
     })
     provideForm(ctx)
 
-    // 根节点必须是 <form>：回车的隐式提交、type=submit 按钮、以及"提交时 preventDefault"
-    // 这三件事全长在原生表单元素上，换成 div 就得自己重造一套，且必然与原生行为漂移
+    // 根节点渲染为原生 form，隐式提交与 submit 事件都依赖它
     return () => h('form', {
       ...ctx.api.value.getRootProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
@@ -63,17 +60,12 @@ export const XhFormRoot = defineComponent({
 export const XhFormFieldGroup = defineComponent({
   name: 'XhFormFieldGroup',
   props: {
-    /**
-     * 字段名，与 values / errors 表里的键一致。
-     * 名字叫 value 是与 WC 侧对齐：那边作者写的是 `value` 属性（宿主基类只观察这几个
-     * 「作者声明」属性，换个名字，列表复用节点时的原地改名在 WC 侧就不会重新接线）。
-     */
+    /** 字段名，与 values / errors 表里的键一致。 */
     value: { type: String, required: true },
   },
   setup(props, { slots }) {
     const ctx = useFormContext()
-    // 作用域插槽把这个字段自己的错误交出去：作者据此给里面那个 Field 传 invalid 与错误文案，
-    // 不必再自己从整张表里挑一遍
+    // 作用域插槽暴露本字段的值、错误与写入方法
     return () => h(
       'div',
       ctx.api.value.getFieldGroupProps({ name: props.value }) as Record<string, unknown>,
@@ -104,13 +96,12 @@ export const XhFormErrorSummary = defineComponent({
 export const XhFormErrorSummaryItem = defineComponent({
   name: 'XhFormErrorSummaryItem',
   props: {
-    /** 这一条指向哪个字段。命名与 XhFormFieldGroup 的 value 同源。 */
+    /** 这一条指向哪个字段。 */
     value: { type: String, required: true },
   },
   setup(props, { slots }) {
     const ctx = useFormContext()
-    // 必须是 <a>：读屏会把它归进链接列表，用户因此能用链接导航直接跳到出错的地方；
-    // href 指向字段容器的 id，即便脚本没跑起来这条链接也仍然是可用的
+    // 渲染为原生 a，href 指向字段容器的 id
     return () => h(
       'a',
       ctx.api.value.getErrorSummaryItemProps({ name: props.value }) as Record<string, unknown>,
