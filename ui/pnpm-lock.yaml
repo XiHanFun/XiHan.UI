@@ -416,9 +416,6 @@ importers:
 
   packages/wc:
     dependencies:
-      '@lit/reactive-element':
-        specifier: 'catalog:'
-        version: 2.1.2
       '@xihan-ui/behavior':
         specifier: workspace:*
         version: link:../behavior
@@ -438,6 +435,9 @@ importers:
       '@custom-elements-manifest/analyzer':
         specifier: 'catalog:'
         version: 0.11.0
+      '@lit/reactive-element':
+        specifier: 'catalog:'
+        version: 2.1.2
       '@vitest/browser':
         specifier: 'catalog:'
         version: 4.1.10(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0))(vitest@4.1.10)

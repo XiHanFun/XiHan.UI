@@ -1,8 +1,7 @@
-import type { ReactiveControllerHost } from '@lit/reactive-element'
 import type { Bindable, CellParams, Dep, ReactiveRuntime } from '@xihan-ui/machine'
+import type { ReactiveControllerHost } from '../reactive'
 
-// 把机器的 ReactiveRuntime 契约桥到 ReactiveElement 的 controller 生命周期。
-// 仅 import type @lit，值层零依赖。
+// 把机器的 ReactiveRuntime 契约桥到自定义元素基类的 controller 生命周期。
 
 export interface LitRuntime extends ReactiveRuntime {
   /** hostConnected 调用，跑排队的 onMount。 */
@@ -18,6 +17,9 @@ interface Tracker {
   fn: () => void
   last: unknown[]
 }
+
+/** flush 最多等这么多轮更新；宿主一直自排新一轮时到此为止，回调照跑不吊死。 */
+const MAX_FLUSH_ROUNDS = 100
 
 export function createLitRuntime(host: ReactiveControllerHost): LitRuntime {
   const mounts: Array<() => void> = []
@@ -68,7 +70,13 @@ export function createLitRuntime(host: ReactiveControllerHost): LitRuntime {
       trackers.push({ deps, fn, last: deps.map(d => d()) })
     },
     flush(fn) {
-      void host.updateComplete.then(() => fn())
+      void (async () => {
+        // updateComplete resolve 成 false 表示更新途中又排了新一轮，DOM 还没落定，接着等下一轮。
+        let rounds = 0
+        while (!(await host.updateComplete) && rounds < MAX_FLUSH_ROUNDS)
+          rounds += 1
+        fn()
+      })()
     },
     onMount(fn) {
       mounts.push(fn)
@@ -92,13 +100,26 @@ export function createLitRuntime(host: ReactiveControllerHost): LitRuntime {
       cleanups.length = 0
     },
     runTrackers() {
+      let errors: unknown[] | undefined
       for (const t of trackers) {
         const next = t.deps.map(d => d())
-        if (next.some((v, i) => !Object.is(v, t.last[i]))) {
-          t.last = next
+        if (!next.some((v, i) => !Object.is(v, t.last[i])))
+          continue
+        const prev = t.last
+        // 跑之前先推进：fn 内部若又进到 runTrackers，不会拿同一次变化再触发一遍。
+        t.last = next
+        try {
           t.fn()
         }
+        catch (error) {
+          // 回滚到未消费，这次变化留给下一轮补跑；错误攒着，先把余下 tracker 跑完。
+          t.last = prev
+          errors ??= []
+          errors.push(error)
+        }
       }
+      if (errors !== undefined)
+        throw errors.length === 1 ? errors[0] : new AggregateError(errors, 'tracker 抛错')
     },
   }
 }

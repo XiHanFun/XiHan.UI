@@ -1,6 +1,6 @@
-import type { ReactiveController, ReactiveControllerHost } from '@lit/reactive-element'
 import type { Scope } from '@xihan-ui/core'
 import type { MachineConfig, MachineSchema, Service } from '@xihan-ui/machine'
+import type { ReactiveController, ReactiveControllerHost } from '../reactive'
 import type { LitRuntime } from './lit-runtime'
 import { createService } from '@xihan-ui/machine'
 import { createLitRuntime } from './lit-runtime'

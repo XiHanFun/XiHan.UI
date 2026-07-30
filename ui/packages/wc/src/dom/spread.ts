@@ -30,10 +30,18 @@ export interface Spreader {
   release: (node: HTMLElement) => void
 }
 
+/**
+ * 一个角色节点当前归哪台 spreader 管，最后写它的那台就是。
+ * 只有仍持有归属的那台交还时才撤属性：两台同类宿主写的属性完全同名，接管后原宿主再撤会把接管方的一起删掉。
+ */
+const owners = new WeakMap<Element, symbol>()
+
 export function createSpreader(): Spreader {
+  const owner = Symbol('spreader')
   const state = new WeakMap<Element, NodeState>()
 
   function spread(node: HTMLElement, props: Record<string, unknown>): void {
+    owners.set(node, owner)
     let s = state.get(node)
     if (!s) {
       s = { listeners: new Map(), attrs: new Set() }
@@ -98,7 +106,11 @@ export function createSpreader(): Spreader {
     if (!s)
       return
     for (const [ev, fn] of s.listeners) node.removeEventListener(ev, fn)
-    for (const key of s.attrs) node.removeAttribute(key)
+    // 节点已被另一台宿主接管时只摘监听器，属性归接管方
+    if (owners.get(node) === owner) {
+      for (const key of s.attrs) node.removeAttribute(key)
+      owners.delete(node)
+    }
     state.delete(node)
   }
 
