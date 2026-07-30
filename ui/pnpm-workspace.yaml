@@ -25,9 +25,10 @@ catalog:
   # —— 提交规范 ——
   '@commitlint/cli': ^19.8.0
   '@commitlint/config-conventional': ^19.8.0
-  # —— Web Components 端（只取 ReactiveElement/ReactiveController，不引完整 lit）——
-  '@lit/reactive-element': 2.1.2
+  # —— Web Components 端 ——
   '@custom-elements-manifest/analyzer': ^0.11.0
+  # 只供 @xihan-ui/wc 的差分判据对拍自研基类，不进任何包的运行时依赖
+  '@lit/reactive-element': 2.1.2
   '@size-limit/preset-small-lib': ^12.1.0
   '@types/node': ^24.10.0
   # —— 框架适配器 ——

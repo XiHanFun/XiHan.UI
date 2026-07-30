@@ -1,13 +1,15 @@
 # @xihan-ui/wc
 
 Web Components 适配器：把框架无关的 headless（anatomy + machine + connect）落在
-`ReactiveElement`（非 LitElement）上的 **Light-DOM 行为宿主**。
+自研基类 `XhReactiveElement` 上的 **Light-DOM 行为宿主**（零第三方运行时依赖）。
 
 - 元素不渲染结构；用户写带 `data-xh-part` 的 Light-DOM 子节点，元素发现后用
   `spreadProps` 把 `connect()` 产出命令式打上去。每个组件一个 `xh-*` 元素，part 不是各自的元素。
-- `MachineController` 把机器唯一解释器 `createService` 桥到 Lit controller 生命周期，
-  不重造 FSM。主入口只 `import type @lit`、零 `HTMLElement` 派生，Node 下可安全 import；
+- `MachineController` 把机器唯一解释器 `createService` 桥到 controller 生命周期，
+  不重造 FSM。主入口零 `HTMLElement` 派生，Node 下可安全 import；
   元素类只在 `@xihan-ui/wc/define` 子路径，`defineXhElements()` 显式惰性注册。
+- 基类在 `src/reactive/`：属性 → 字段的单向转换、批量异步更新、控制器生命周期。
+  `tests/reactive-parity.spec.ts` 是差分判据，逐条对拍 `@lit/reactive-element`（仅 devDependency）。
 
 ## 与 Vue 适配器的取舍记录（M2 写 WC 时发现的 core/adapter 差异）
 

@@ -19,11 +19,10 @@ Framework-agnostic component library. State machines and accessibility live in a
 | `@xihan-ui/behavior` | Behavior primitives: dismissable layer, focus scope, scroll lock, presence, collection, typeahead |
 | `@xihan-ui/headless` | 65 components as anatomy + machine + `connect` — no styles, no framework |
 | `@xihan-ui/vue` | Vue 3 adapter |
-| `@xihan-ui/wc` | Web Components adapter (built on `@lit/reactive-element`) |
+| `@xihan-ui/wc` | Web Components adapter (own reactive base, no third-party runtime dep) |
 | `@xihan-ui/styled` | Default skins, layered CSS |
 | `@xihan-ui/system` | Design tokens (from DTCG sources) + theme runtime (color scheme / density / direction) |
 | `@xihan-ui/position-floating-ui` | Floating layer positioning — the only package allowed to depend on `@floating-ui/dom` |
-| `@xihan-ui/ai` | AI protocol core: SSE transport, Data Stream v1 normalize, parts reducer, thread store |
 | `@xihan-ui/ai` | AI protocol core: SSE reading → protocol normalization → parts reduction → thread store (no DOM, no framework) |
 | `@xihan-ui/markdown` | Streaming markdown renderer: incremental block splitting, stable keys, sanitization |
 | `@xihan-ui/icons` | Icon set |

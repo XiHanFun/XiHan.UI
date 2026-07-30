@@ -2,7 +2,7 @@
   "name": "@xihan-ui/wc",
   "type": "module",
   "version": "0.0.0",
-  "description": "XiHan.UI Web Components adapter — Light-DOM behavior hosts on ReactiveElement.",
+  "description": "XiHan.UI Web Components adapter — Light-DOM behavior hosts on XhReactiveElement.",
   "license": "MIT",
   "sideEffects": false,
   "publishConfig": {
@@ -36,7 +36,6 @@
     "test:browser": "vitest run --config vitest.browser.config.ts"
   },
   "dependencies": {
-    "@lit/reactive-element": "catalog:",
     "@xihan-ui/behavior": "workspace:*",
     "@xihan-ui/core": "workspace:*",
     "@xihan-ui/headless": "workspace:*",
@@ -45,6 +44,7 @@
   },
   "devDependencies": {
     "@custom-elements-manifest/analyzer": "catalog:",
+    "@lit/reactive-element": "catalog:",
     "@vitest/browser": "catalog:",
     "@vitest/browser-playwright": "catalog:",
     "@xihan-ui/build": "workspace:*",

@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
-import type { ReactiveControllerHost } from '@lit/reactive-element'
 import type { MachineSchema } from '@xihan-ui/machine'
-import { ReactiveElement } from '@lit/reactive-element'
+import type { ReactiveControllerHost } from '../src/reactive'
 import { setup } from '@xihan-ui/machine'
 import { describe, expect, it } from 'vitest'
+import { XhReactiveElement } from '../src/reactive'
 import { createLitRuntime } from '../src/runtime/lit-runtime'
 import { MachineController } from '../src/runtime/machine-controller'
 
@@ -34,7 +34,7 @@ const toggleMachine = createMachine({
   },
 })
 
-class XhToggleTest extends ReactiveElement {
+class XhToggleTest extends XhReactiveElement {
   readonly ctrl = new MachineController(this, toggleMachine, () => ({}))
   protected createRenderRoot(): HTMLElement {
     return this

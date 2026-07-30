@@ -1,7 +1,7 @@
 import type { Spreader } from './dom/spread'
-import { ReactiveElement } from '@lit/reactive-element'
 import { containsPart, discoverParts } from './dom/parts'
 import { createSpreader } from './dom/spread'
+import { XhReactiveElement } from './reactive'
 
 /**
  * 变动里是否真有角色节点进出。只认"进出的元素自身是角色节点、或其子树里有角色节点"：
@@ -33,7 +33,7 @@ function rewritesDeclaration(record: MutationRecord): boolean {
 }
 
 // Light-DOM 行为宿主基类：不渲染结构，发现用户写的 data-xh-part 角色节点并往上打属性/事件。
-export abstract class XhElement extends ReactiveElement {
+export abstract class XhElement extends XhReactiveElement {
   protected readonly spreader: Spreader = createSpreader()
   protected partMap: Map<string, HTMLElement[]> = new Map()
   private partObserver: MutationObserver | undefined
@@ -100,14 +100,47 @@ export abstract class XhElement extends ReactiveElement {
     this.observeParts()
     // 重连（元素在 DOM 中被移动）时 controller 会重建机器，但重建前后状态相同、cell 不 bump 版本，
     // 于是不会自动排更新——wire 不再跑，角色节点上仍挂着指向已停机器的处理器（送事件会被静默丢弃，等于全是死的）。
-    // 这里显式排一次；首帧与 Lit 自己的初次更新合并，不多跑一帧
+    // 这里显式排一次；首帧与基类的初次更新合并，不多跑一帧
     this.requestUpdate()
   }
+
+  /** 已排了断开后的交还，还没跑到。 */
+  private releaseScheduled = false
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
     this.partObserver?.disconnect()
     this.partObserver = undefined
+    this.scheduleRelease()
+  }
+
+  /**
+   * 排一次断开后的交还，到微任务里再按 isConnected 决定跑不跑。
+   * 元素被移动（remove 后同步 append 到别处）走的也是 disconnect，延到微任务才分得清移动与真离场。
+   */
+  private scheduleRelease(): void {
+    if (this.releaseScheduled)
+      return
+    this.releaseScheduled = true
+    queueMicrotask(() => {
+      this.releaseScheduled = false
+      if (!this.isConnected)
+        this.releaseAllParts()
+    })
+  }
+
+  /**
+   * 交还全部角色节点并清空 partMap，重连时由 refreshParts 重新发现。
+   * 宿主离场后没有观察器再触发更新，refreshParts 那条交还路径够不着，没摘的监听器会经节点钉住整台宿主。
+   */
+  private releaseAllParts(): void {
+    const gone: HTMLElement[] = []
+    for (const els of this.partMap.values()) gone.push(...els)
+    if (!gone.length)
+      return
+    this.onPartsReleased(gone)
+    for (const el of gone) this.spreader.release(el)
+    this.partMap = new Map()
   }
 
   /** 标记 wire() 正在写属性。 */
@@ -150,6 +183,10 @@ export abstract class XhElement extends ReactiveElement {
 
   protected override updated(changed: Map<PropertyKey, unknown>): void {
     super.updated(changed)
+    // 断开的宿主机器已停机，再接线只会把指向死机器的监听器挂回去、覆盖已接管这些节点的存活宿主；
+    // 重连时 connectedCallback 会排一轮补上
+    if (!this.isConnected)
+      return
     this.refreshParts()
     // 观察器与 wire() 写的是同一批节点，不圈出本区间会自己触发自己；观察器回调是微任务，故圈到微任务排空为止。
     this.wiring = true
