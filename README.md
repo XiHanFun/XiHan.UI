@@ -177,17 +177,6 @@ pnpm build
 - 提供清晰的提交信息
 - 关联相关 Issue
 
-## Star History
-
-<div align="center">
-  <a href="https://star-history.com/#XiHanFun/XiHan.UI&Date" target="_blank">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=XiHanFun/XiHan.UI&type=Date&theme=dark" />
-      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=XiHanFun/XiHan.UI&type=Date" />
-      <img alt="XiHan.UI Star History Chart" src="https://api.star-history.com/svg?repos=XiHanFun/XiHan.UI&type=Date" width="640" />
-    </picture>
-  </a>
-</div>
 
 ## 支持&赞助
 
