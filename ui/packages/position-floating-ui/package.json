@@ -22,16 +22,21 @@
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:browser": "vitest run --config vitest.browser.config.ts"
   },
   "dependencies": {
     "@floating-ui/dom": "catalog:",
     "@xihan-ui/core": "workspace:*"
   },
   "devDependencies": {
+    "@vitest/browser": "catalog:",
+    "@vitest/browser-playwright": "catalog:",
     "@xihan-ui/build": "workspace:*",
+    "@xihan-ui/testing": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",
     "jsdom": "catalog:",
+    "playwright": "catalog:",
     "vitest": "catalog:"
   }
 }

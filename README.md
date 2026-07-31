@@ -111,7 +111,7 @@ cd ui
 pnpm install --frozen-lockfile
 pnpm dev          # 启动 playground
 pnpm test         # 单元测试与一致性测试（jsdom）
-pnpm test:browser # 真实 Chromium 里的无障碍扫描（需先 pnpm exec playwright install chromium）
+pnpm test:browser # 真实 Chromium 里的无障碍扫描与浮层定位契约（需先 pnpm exec playwright install chromium）
 pnpm typecheck
 pnpm lint
 pnpm boundaries   # 分层依赖门禁
@@ -144,7 +144,7 @@ pnpm build
 - **Stylelint / Prettier**: 样式与格式化
 - **dependency-cruiser**: 分层依赖门禁（唯一权威）
 - **Vitest**: 单元测试与跨适配器一致性测试（jsdom）
-- **@vitest/browser + Playwright + axe-core**: 真实 Chromium 里的无障碍扫描
+- **@vitest/browser + Playwright + axe-core**: 真实 Chromium 里的无障碍扫描与浮层定位契约
 - **size-limit**: 体积棘轮
 
 ### 发布流程
