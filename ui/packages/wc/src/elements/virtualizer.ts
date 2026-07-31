@@ -34,7 +34,7 @@ function wantsMeasure(el: HTMLElement): boolean {
  * `<xh-virtualizer>` —— Light-DOM 行为宿主：作者写 root/viewport/content/item 角色节点，
  * 元素跑 virtualizer 机器并把 connect 产出打上去。
  *
- * 区间与尺寸的计算走 @tanstack/virtual-core：它在机器的效应里建起来，挂着视口的
+ * 区间与尺寸的计算走 headless 的虚拟滚动内核：它在机器的效应里建起来，挂着视口的
  * ResizeObserver 与 scroll 监听，算出"此刻该渲哪些下标、各自落在哪儿"。
  * 滚动本身一概不接管：viewport 是原生的 overflow 容器，滚轮、方向键、PageUp/PageDown、
  * Home/End 全部走浏览器原生通路。

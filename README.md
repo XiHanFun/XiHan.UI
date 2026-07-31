@@ -53,7 +53,7 @@
 XiHan.UI 是一个框架无关的组件库：状态与无障碍逻辑沉在无头内核，各框架只写一层薄适配器。
 
 - **内核**：自研有限状态机 + 行为原语（焦点域、滚动锁、层栈、进出场），不依赖任何框架
-- **适配器**：Vue 3 与 Web Components（基于 `@lit/reactive-element`）两套，共用同一份内核与同一份一致性测试
+- **适配器**：Vue 3 与 Web Components（自研响应式基类）两套，共用同一份内核与同一份一致性测试
 - **样式**：`@xihan-ui/styled` 提供构建期 CSS 皮肤，令牌由 `@xihan-ui/system` 从 DTCG 源产出
 - **架构**：pnpm workspace，`packages/*` + `tooling/*` + `apps/*` 三段
 - **当前状态**：库包版本 `0.0.0`，尚未发布至 npm

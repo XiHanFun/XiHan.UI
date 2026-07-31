@@ -3,9 +3,9 @@ import type { Service } from '@xihan-ui/machine'
 import type { VirtualizerApi, VirtualizerCore, VirtualizerSchema } from './virtualizer.types'
 import { dataAttr } from '@xihan-ui/core'
 import { virtualizerAnatomy } from './virtualizer.anatomy'
+import { resolveVirtualizerLanes } from './virtualizer.geometry'
 import {
   findVirtualizerItem,
-  resolveVirtualizerLanes,
   virtualizerContentStyle,
   virtualizerItemStyle,
 } from './virtualizer.sizing'
@@ -40,7 +40,7 @@ export function connectVirtualizer<T extends PropTypes>(
     scrolling,
 
     scrollToIndex: (index, options) => {
-      kernel()?.scrollToIndex(index, { align: options?.align ?? 'start' })
+      kernel()?.scrollToIndex(index, options?.align ?? 'start')
     },
 
     /**
