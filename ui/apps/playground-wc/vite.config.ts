@@ -14,6 +14,7 @@ export default defineConfig({
       '@xihan-ui/machine': pkg('machine'),
       '@xihan-ui/behavior': pkg('behavior'),
       '@xihan-ui/headless': pkg('headless'),
+      '@xihan-ui/position': pkg('position'),
       '@xihan-ui/wc': pkg('wc'),
     },
   },
