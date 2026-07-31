@@ -1,15 +1,10 @@
 /**
  * 快照形状与把快照翻成内联样式的纯函数层，不碰 DOM、不认识状态机。
- * 区间与尺寸的计算交给 @tanstack/virtual-core，这里只做三件事：
- * 把内核的条目投影成组件自己的快照形状（并折算掉 scrollMargin）、判两次快照等不等、
- * 把快照翻成内联样式串。
+ * 区间与尺寸由 virtualizer.geometry 算，这里只做三件事：
+ * 定下快照形状、判两次快照等不等、把快照翻成内联样式串。
  */
 
-/**
- * 默认过扫描条数：可视区前后各多渲这么多条。
- * 给 0 的话快速滚动时边缘会露白。
- */
-export const VIRTUALIZER_DEFAULT_OVERSCAN = 5
+import { resolveVirtualizerLanes } from './virtualizer.geometry'
 
 /** 一条被渲出来的条目。位移已折算成"距 content 起点"，作者不必再减 scrollMargin。 */
 export interface VirtualizerItemState {
@@ -84,34 +79,6 @@ export function findVirtualizerItem(
 /** 像素长度转 CSS 串，留两位小数。 */
 function px(value: number): string {
   return `${Math.round(value * 100) / 100}px`
-}
-
-/** 过扫描条数：给了就用，没给用默认；负数按 0 收（内核不接受负数）。 */
-export function resolveVirtualizerOverscan(overscan: number | undefined): number {
-  if (overscan == null || !Number.isFinite(overscan))
-    return VIRTUALIZER_DEFAULT_OVERSCAN
-  return Math.max(0, Math.trunc(overscan))
-}
-
-/** 分道数：至少 1；给 0 或负数会让内核的分道数组长度为 0，整份列表算不出区间。 */
-export function resolveVirtualizerLanes(lanes: number | undefined): number {
-  if (lanes == null || !Number.isFinite(lanes))
-    return 1
-  return Math.max(1, Math.trunc(lanes))
-}
-
-/**
- * 估算尺寸归一成函数形态，也允许直接给一个数字。
- * 两边都没给按 0 算（尺寸未知）：此时所有条目都会落进窗口，
- * 先整份渲出来再靠 measureElement 把真实尺寸回喂给内核。
- */
-export function resolveVirtualizerEstimate(
-  estimateSize: number | ((index: number) => number) | undefined,
-): (index: number) => number {
-  if (typeof estimateSize === 'function')
-    return estimateSize
-  const fixed = typeof estimateSize === 'number' && Number.isFinite(estimateSize) ? estimateSize : 0
-  return () => fixed
 }
 
 /**

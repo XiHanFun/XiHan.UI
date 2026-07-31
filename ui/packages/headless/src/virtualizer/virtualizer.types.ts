@@ -1,20 +1,14 @@
-import type { Virtualizer } from '@tanstack/virtual-core'
 import type { PropTypes } from '@xihan-ui/core'
 import type { MachineSchema } from '@xihan-ui/machine'
+import type { VirtualizerAlign } from './virtualizer.geometry'
+import type { VirtualizerKernel } from './virtualizer.kernel'
 import type { VirtualizerItemState, VirtualizerSnapshot } from './virtualizer.sizing'
 
 /**
- * 计算内核实例。区间、测量缓存、多列分道全在它那边，本组件只负责它的生死与接线。
+ * 计算内核实例。区间、实测尺寸账本、多列分道全在它那边，本组件只负责它的生死与接线。
  * 滚动容器与条目都是 HTMLElement，不支持以 window 为滚动容器的形态。
  */
-export type VirtualizerCore = Virtualizer<HTMLElement, HTMLElement>
-
-/**
- * 滚过去时目标条目停在视口的哪一侧：
- * - start 贴视口起始缘；center 居中；end 贴结束缘；
- * - auto 只在目标不在视口里时才滚，且走最近的那一侧（已经看得见就不动）。
- */
-export type VirtualizerAlign = 'start' | 'center' | 'end' | 'auto'
+export type VirtualizerCore = VirtualizerKernel
 
 export interface VirtualizerScrollToOptions {
   /** 默认 start。 */
