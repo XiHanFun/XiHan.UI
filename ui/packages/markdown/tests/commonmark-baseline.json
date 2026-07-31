@@ -28,7 +28,7 @@
     "total": 27
   },
   "Indented code blocks": {
-    "pass": 9,
+    "pass": 11,
     "total": 12
   },
   "Fenced code blocks": {
@@ -56,11 +56,11 @@
     "total": 25
   },
   "List items": {
-    "pass": 15,
+    "pass": 35,
     "total": 48
   },
   "Lists": {
-    "pass": 6,
+    "pass": 19,
     "total": 26
   },
   "Inlines": {
