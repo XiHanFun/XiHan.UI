@@ -2,7 +2,7 @@ import type { Placement, PositionEnginePort } from '@xihan-ui/core'
 import type { TooltipOpenChangeDetails, TooltipSchema } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import { connectTooltip, tooltipMachine } from '@xihan-ui/headless'
-import { createFloatingUiPositionEngine } from '@xihan-ui/position-floating-ui'
+import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -91,7 +91,7 @@ export class XhTooltipElement extends XhElement {
   private injectRefs(svc: Service<TooltipSchema>): void {
     // 无 DOM（SSR / 纯逻辑测试）时不建引擎，机器读到 null 会跳过定位
     if (!this.engine && typeof document !== 'undefined')
-      this.engine = createFloatingUiPositionEngine()
+      this.engine = createPositionEngine()
     svc.refs.set('position', this.engine)
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))

@@ -35,8 +35,6 @@ catalog:
   vue: ^3.5.40
   '@vue/test-utils': ^2.4.6
   vue-tsc: ^3.3.7
-  # —— 浮层定位（只在 @xihan-ui/position-floating-ui 里用，core 只持有端口契约）——
-  '@floating-ui/dom': ^1.8.0
   # —— 日期运算（只在 @xihan-ui/headless 的日期族里用；零框架纯数据包，无副作用）——
   '@internationalized/date': ^3.12.0
   # —— 构建 ——

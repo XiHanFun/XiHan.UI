@@ -4,7 +4,7 @@ import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectHoverCard, hoverCardMachine } from '@xihan-ui/headless'
-import { createFloatingUiPositionEngine } from '@xihan-ui/position-floating-ui'
+import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
@@ -52,7 +52,7 @@ export function useHoverCard(
     // 定位引擎由适配器注入，机器只经端口驱动
     service.refs.set('config', config)
     service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createFloatingUiPositionEngine())
+    service.refs.set('position', createPositionEngine())
   }
 
   // 元素 getter 在无 DOM 环境下也要设，连接层判定焦点去向时经它们取节点

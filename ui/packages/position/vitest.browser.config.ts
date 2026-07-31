@@ -5,7 +5,7 @@ import { defineConfig } from 'vitest/config'
 // 与 vitest.config 缺省的 jsdom 单测互不覆盖，各跑各的目录。
 export default defineConfig({
   test: {
-    name: 'position-browser',
+    name: 'position-self-browser',
     include: ['tests/browser/**/*.spec.ts'],
     browser: {
       enabled: true,

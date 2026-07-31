@@ -3,7 +3,7 @@ import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef, Ref } from 'vue'
 import { createScope } from '@xihan-ui/core'
 import { connectTooltip, tooltipMachine } from '@xihan-ui/headless'
-import { createFloatingUiPositionEngine } from '@xihan-ui/position-floating-ui'
+import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
@@ -32,7 +32,7 @@ export function useTooltip(
 
   // 定位引擎经 refs 注入，展开态由机器的 effect 驱动；无 DOM 环境（SSR）不建引擎
   if (typeof document !== 'undefined')
-    service.refs.set('position', createFloatingUiPositionEngine())
+    service.refs.set('position', createPositionEngine())
   service.refs.set('getAnchorEl', () => triggerRef.value)
   service.refs.set('getFloatingEl', () => positionerRef.value)
 

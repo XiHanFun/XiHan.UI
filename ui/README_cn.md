@@ -22,7 +22,7 @@
 | `@xihan-ui/wc` | Web Components 适配器（自研响应式基类，无第三方运行时依赖） |
 | `@xihan-ui/styled` | 默认皮肤，按 `@layer` 分层的 CSS |
 | `@xihan-ui/system` | 设计令牌（源自 DTCG）与主题运行时（明暗 / 密度 / 书写方向） |
-| `@xihan-ui/position-floating-ui` | 浮层定位，唯一允许依赖 `@floating-ui/dom` 的包 |
+| `@xihan-ui/position` | 浮层定位，自研实现，无第三方运行时依赖 |
 | `@xihan-ui/ai` | AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store（零 DOM、零框架） |
 | `@xihan-ui/markdown` | 流式 Markdown 渲染内核：增量切块 + 稳定 key + 消毒 |
 | `@xihan-ui/icons` | 图标集 |

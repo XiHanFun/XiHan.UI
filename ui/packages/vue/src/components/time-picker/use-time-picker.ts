@@ -3,7 +3,7 @@ import type { TimePickerApi, TimePickerSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectTimePicker, timePickerMachine } from '@xihan-ui/headless'
-import { createFloatingUiPositionEngine } from '@xihan-ui/position-floating-ui'
+import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
@@ -46,7 +46,7 @@ export function useTimePicker(
     // 定位引擎由适配器注入，机器只经端口驱动；锚点取整个输入行
     service.refs.set('config', config)
     service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createFloatingUiPositionEngine())
+    service.refs.set('position', createPositionEngine())
     service.refs.set('getAnchorEl', () => controlRef.value)
     service.refs.set('getFloatingEl', () => positionerRef.value)
     service.refs.set('getContentEl', () => contentRef.value)

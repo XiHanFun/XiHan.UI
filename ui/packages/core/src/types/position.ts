@@ -1,4 +1,4 @@
-// PositionEnginePort：浮层定位端口的类型契约，实现在 @xihan-ui/position-floating-ui。
+// PositionEnginePort：浮层定位端口的类型契约，实现在 @xihan-ui/position。
 
 export type Side = 'top' | 'right' | 'bottom' | 'left'
 export type Align = 'start' | 'center' | 'end'

@@ -22,7 +22,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 | `@xihan-ui/wc` | Web Components adapter (own reactive base, no third-party runtime dep) |
 | `@xihan-ui/styled` | Default skins, layered CSS |
 | `@xihan-ui/system` | Design tokens (from DTCG sources) + theme runtime (color scheme / density / direction) |
-| `@xihan-ui/position-floating-ui` | Floating layer positioning — the only package allowed to depend on `@floating-ui/dom` |
+| `@xihan-ui/position` | Floating layer positioning — self-implemented, no third-party runtime dependency |
 | `@xihan-ui/ai` | AI protocol core: SSE reading → protocol normalization → parts reduction → thread store (no DOM, no framework) |
 | `@xihan-ui/markdown` | Streaming markdown renderer: incremental block splitting, stable keys, sanitization |
 | `@xihan-ui/icons` | Icon set |

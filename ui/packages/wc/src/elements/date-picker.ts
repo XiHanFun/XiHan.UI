@@ -21,7 +21,7 @@ import {
   datePickerFieldProps,
   datePickerMachine,
 } from '@xihan-ui/headless'
-import { createFloatingUiPositionEngine } from '@xihan-ui/position-floating-ui'
+import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -144,7 +144,7 @@ export class XhDatePickerElement extends XhElement {
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   // 三台机器共用一份 scope，part id 里带组件名故不相撞
   private readonly pickerScope = createScope(null, this.idGen)
-  private readonly positionEngine: PositionEnginePort = createFloatingUiPositionEngine()
+  private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
 
   private readonly notifyValue = (details: DatePickerValueChangeDetails): void => {

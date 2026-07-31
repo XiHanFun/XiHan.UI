@@ -13,7 +13,8 @@
       "@xihan-ui/vue",
       "@xihan-ui/wc",
       "@xihan-ui/ai",
-      "@xihan-ui/markdown"
+      "@xihan-ui/markdown",
+      "@xihan-ui/position"
     ]
   ],
   "linked": [],
