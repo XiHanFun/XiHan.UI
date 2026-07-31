@@ -69,21 +69,32 @@ function stripIndent(line: string, count: number): string {
   return line.slice(i)
 }
 
-/** 列表项内容：紧列表里的段落不包 p，别的块照常渲染。 */
+/**
+ * 一个列表项，连 `<li>` 一起产出。
+ * 松列表里内容整块排布，`<li>` 与内容之间要换行；紧列表里首段的文字紧跟 `<li>`，
+ * 其后若还有块（典型是嵌套列表）各自另起一行。收尾的 `</li>` 只要出现过块级内容就换行。
+ */
 function renderItem(src: string, defs: LinkDefs, depth: number, tight: boolean): string {
   if (src.trim() === '')
-    return ''
+    return '<li></li>'
   if (!tight)
-    return renderBlocks(src, defs, depth + 1)
+    return `<li>\n${renderBlocks(src, defs, depth + 1)}\n</li>`
+
   const lines = src.split('\n')
-  return topLevelRanges(src)
-    .map((range) => {
-      const block = lines.slice(range.startLine, range.endLine).join('\n')
-      return blockType(block) === 'paragraph'
-        ? renderInline(block.trim(), defs)
-        : renderBlockHtml(block, defs, depth + 1)
-    })
-    .join('\n')
+  const parts: string[] = []
+  let blocky = false
+  topLevelRanges(src).forEach((range, index) => {
+    const block = lines.slice(range.startLine, range.endLine).join('\n')
+    const paragraph = blockType(block) === 'paragraph'
+    const html = paragraph ? renderInline(block.trim(), defs) : renderBlockHtml(block, defs, depth + 1)
+    if (index === 0 && paragraph) {
+      parts.push(html)
+      return
+    }
+    blocky = true
+    parts.push(`\n${html}`)
+  })
+  return `<li>${parts.join('')}${blocky ? '\n' : ''}</li>`
 }
 
 /** 这一项里有没有不属于任何块的空行：项之间隔了空行，或项内部空行分块。 */
@@ -117,7 +128,7 @@ function renderList(src: string, defs: LinkDefs, depth: number): string {
       items[items.length - 1]!.push(stripIndent(line, indent))
   }
   const tight = !items.some((item, i) => itemIsLoose(item, i === items.length - 1))
-  const body = items.map(item => `<li>${renderItem(item.join('\n'), defs, depth, tight)}</li>`).join('\n')
+  const body = items.map(item => renderItem(item.join('\n'), defs, depth, tight)).join('\n')
   if (!ordered)
     return `<ul>\n${body}\n</ul>`
   const start = Number.parseInt(ORDERED_MARKER.exec(first[2]!)![1]!, 10)

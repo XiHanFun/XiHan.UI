@@ -230,12 +230,16 @@ function scanList(lines: readonly string[], start: number): number {
       i++
       continue
     }
-    const next = lines[i + 1]
-    if (next === undefined || BLANK_LINE.test(next) || breaksList(next))
+    // 连着几个空行都跳过，由空行之后的第一行非空行说了算：
+    // 「两个空行结束列表」那条规则规范早就删了，留着会把一张松列表拦腰切成两张
+    let j = i
+    while (j < lines.length && BLANK_LINE.test(lines[j]!)) j++
+    const next = lines[j]
+    if (next === undefined || breaksList(next))
       return i
     if (!LIST_ITEM.test(next) && !/^ {2,}\S/.test(next))
       return i
-    i += 2
+    i = j + 1
   }
   return i
 }
