@@ -1,5 +1,5 @@
 import type { LinkDefs } from './refs'
-import { escapeAttr, escapeText, safeUrl, unescapeBackslash } from './escape'
+import { encodeHref, escapeAttr, escapeText, safeUrl, unescapeBackslash } from './escape'
 import { NO_DEFS, normalizeLabel } from './refs'
 
 const ESCAPABLE = /[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/
@@ -258,14 +258,14 @@ function matchAutolink(sc: Scanner, start: number): Match | null {
     const href = safeUrl(uri[1]!)
     if (href === null)
       return null
-    return { html: `<a href="${escapeAttr(href)}">${escapeText(uri[1]!)}</a>`, end: start + uri[0]!.length }
+    return { html: `<a href="${escapeAttr(encodeHref(href))}">${escapeText(uri[1]!)}</a>`, end: start + uri[0]!.length }
   }
   const mail = AUTOLINK_EMAIL.exec(rest)
   if (mail) {
     const href = safeUrl(`mailto:${mail[1]!}`)
     if (href === null)
       return null
-    return { html: `<a href="${escapeAttr(href)}">${escapeText(mail[1]!)}</a>`, end: start + mail[0]!.length }
+    return { html: `<a href="${escapeAttr(encodeHref(href))}">${escapeText(mail[1]!)}</a>`, end: start + mail[0]!.length }
   }
   return null
 }
@@ -356,7 +356,7 @@ function renderImage(link: LinkParts): string | null {
   const src = safeUrl(link.dest)
   return src === null
     ? null
-    : `<img src="${escapeAttr(src)}" alt="${escapeAttr(unescapeBackslash(link.label))}"${titleAttr(link.title)}>`
+    : `<img src="${escapeAttr(encodeHref(src))}" alt="${escapeAttr(unescapeBackslash(link.label))}"${titleAttr(link.title)}>`
 }
 
 /** 数字字符引用转字面字符，越界与代理区码位一律转成替换符。 */
@@ -593,7 +593,7 @@ function parseInline(src: string, defs: LinkDefs, depth: number): Parsed {
           i = sc.labelClose(i) + 1
           continue
         }
-        emit(`<a href="${escapeAttr(href)}"${titleAttr(link.title)}>${inner.html}</a>`)
+        emit(`<a href="${escapeAttr(encodeHref(href))}"${titleAttr(link.title)}>${inner.html}</a>`)
         hasLink = true
         i = link.end
         continue

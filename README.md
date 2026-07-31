@@ -72,7 +72,7 @@ XiHan.UI 是一个框架无关的组件库：状态与无障碍逻辑沉在无�
 | `@xihan-ui/system` | 设计令牌产物 + 主题运行时（明暗 / 密度 / 书写方向） |
 | `@xihan-ui/position` | 浮层定位实现（自研，无第三方运行时依赖） |
 | `@xihan-ui/ai` | AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store（零 DOM、零框架） |
-| `@xihan-ui/markdown` | 流式 Markdown 渲染内核：增量切块 + 稳定 key + 消毒（CommonMark 子集，一致率 482/652） |
+| `@xihan-ui/markdown` | 流式 Markdown 渲染内核：增量切块 + 稳定 key + 消毒（CommonMark 子集，一致率 489/652） |
 | `@xihan-ui/icons` | 图标集 |
 
 ## 🧩 组件现状

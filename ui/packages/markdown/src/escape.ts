@@ -19,6 +19,30 @@ export function escapeAttr(value: string): string {
   return stripControl(escapeText(value).replace(/'/g, '&#39;'))
 }
 
+/**
+ * URL 里不必编码的字符：字母数字，加上这一串。
+ * 它同时包含"本来就安全"和"保留作分隔符"两类——地址里出现的保留字符按它的分隔含义处理，
+ * 编码掉反而会改变地址的意思。`%` 也在其中，已经编码过的地址不会被二次编码。
+ */
+const HREF_SAFE = new Set('-_.+!*\'(),%#@?=;:/&$~'.split(''))
+const HREF_ALNUM = /[a-z0-9]/i
+
+/**
+ * 把地址编成可放进 href / src 的形式：不安全字符按 UTF-8 逐字节百分号编码。
+ * 非 ASCII 一律走这条路，所以中文地址会被编成 %XX 串。
+ * 不碰 `&` 与 `'`，它们留给 {@link escapeAttr} 按 HTML 规矩转。
+ */
+export function encodeHref(url: string): string {
+  let out = ''
+  for (const byte of new TextEncoder().encode(url)) {
+    const ch = String.fromCharCode(byte)
+    out += byte < 0x80 && (HREF_ALNUM.test(ch) || HREF_SAFE.has(ch))
+      ? ch
+      : `%${byte.toString(16).toUpperCase().padStart(2, '0')}`
+  }
+  return out
+}
+
 const BACKSLASH_ESCAPE = /\\([!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~])/g
 
 /** 去掉反斜杠转义，还原被转义的字面字符。 */
