@@ -11,7 +11,7 @@ import {
   navIntentFromKey,
   queryItems,
 } from '@xihan-ui/behavior'
-import { contains, dataAttr } from '@xihan-ui/core'
+import { contains, dataAttr, warn } from '@xihan-ui/core'
 import { tableAnatomy, tableRowQuery } from './table.anatomy'
 import { tableSelectionMode } from './table.machine'
 import {
@@ -322,13 +322,18 @@ export function connectTable<T extends PropTypes>(
       'data-section': 'header',
     }),
 
-    getFooterRowProps: () => normalize.element({
-      ...parts.row.attrs,
-      'role': 'row',
-      // 脚注排在行号空间的最后一行
-      'aria-rowindex': rowCount,
-      'data-section': 'footer',
-    }),
+    getFooterRowProps: () => {
+      // 行号空间是按 footer prop 算的。渲了脚注行却没声明这个 prop，rowCount 就等于末行数据行的行号，
+      // 报出去会与它撞号；此时宁可不报行号，也不给一个错的
+      warn(hasFooter, 'table: 渲染了脚注行但没有设置 footer prop，脚注行不会报 aria-rowindex')
+      return normalize.element({
+        ...parts.row.attrs,
+        'role': 'row',
+        // 脚注排在行号空间的最后一行
+        'aria-rowindex': hasFooter ? rowCount : undefined,
+        'data-section': 'footer',
+      })
+    },
 
     getRowProps: (row) => {
       const meta = metaOf(row.value)

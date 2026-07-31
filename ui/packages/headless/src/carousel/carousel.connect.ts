@@ -37,7 +37,7 @@ export function connectCarousel<T extends PropTypes>(
   const loop = prop('loop') ?? false
   // 水平轴 + rtl 时轨道往正方向位移；纵轨与文字方向无关
   const flipped = horizontal && dir === 'rtl'
-  const allowMouseDrag = !!prop('allowMouseDrag')
+  const allowPointerDrag = !!prop('allowPointerDrag')
   // spacing 为空时写空串摘掉内联声明；恒写 calc(0px / 2) 会盖掉样式表里的 padding
   const spacing = prop('spacing')
   const gutter = spacing == null ? '' : `calc(${spacing} / 2)`
@@ -165,10 +165,10 @@ export function connectCarousel<T extends PropTypes>(
       'data-orientation': orientation,
       'data-dragging': dataAttr(dragging),
       // 不关掉沿轨道那一轴的默认滚动，指针会被 pointercancel 收走；另一轴留给页面滚动
-      'style': { touchAction: allowMouseDrag ? (horizontal ? 'pan-y' : 'pan-x') : '' },
+      'style': { touchAction: allowPointerDrag ? (horizontal ? 'pan-y' : 'pan-x') : '' },
       'onPointerDown': (event: PointerEvent) => {
         // 只认主键：右键弹上下文菜单、中键是自动滚动
-        if (!allowMouseDrag || event.button !== 0 || totalPages <= 1)
+        if (!allowPointerDrag || event.button !== 0 || totalPages <= 1)
           return
         const el = event.currentTarget as HTMLElement
         // 捕获指针，手滑出视口后的 move / up 仍送到这里

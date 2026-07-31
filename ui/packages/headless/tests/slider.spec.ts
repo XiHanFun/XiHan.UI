@@ -477,6 +477,27 @@ describe('connectSlider 属性输出', () => {
     expect(s.context.get('value')).toEqual([90])
   })
 
+  it('程序化送来的越界下标被夹住，不在值数组里凿洞', () => {
+    // connect 的 clampIndex 只护住 api 那条路；直接 send 的下标以前会一路走到 out[99] = x
+    const s = makeService({ defaultValue: [20, 80] })
+    s.send({ type: 'THUMB.SET', index: 99, value: 50 })
+    expect(s.context.get('value')).toEqual([20, 50])
+    expect(s.context.get('activeIndex')).toBe(1)
+
+    s.send({ type: 'THUMB.SET', index: -5, value: 10 })
+    expect(s.context.get('value')).toEqual([10, 50])
+
+    // 非有限下标按 0 处理：推的是第一个拇指，且照常被后一个拇指挡住不许越过
+    s.send({ type: 'THUMB.TO_MAX', index: Number.NaN })
+    expect(s.context.get('value')).toEqual([50, 50])
+  })
+
+  it('越界下标的步进也落在真实存在的那个拇指上', () => {
+    const s = makeService({ defaultValue: [20], step: 1 })
+    s.send({ type: 'THUMB.STEP', index: 42, direction: 1 })
+    expect(s.context.get('value')).toEqual([21])
+  })
+
   it('thumbs 与 range 把百分比算好交给作者', () => {
     const a = api(makeService({ defaultValue: [25, 75] }))
     expect(a.thumbs.map(t => t.percent)).toEqual([0.25, 0.75])

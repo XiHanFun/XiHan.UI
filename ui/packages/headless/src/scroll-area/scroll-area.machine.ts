@@ -16,6 +16,19 @@ const { createMachine } = setup<ScrollAreaSchema>()
 
 /** 收起前的默认等待毫秒。 */
 export const SCROLL_AREA_HIDE_DELAY = 600
+
+/**
+ * 收起延时。缺省用默认值，负数按立即收起。
+ * 非有限值（Infinity 就是"永不收起"的写法）返回 null，由调用方跳过排期——
+ * 直接喂给定时器会在 dev 下当场抛。
+ */
+function resolveHideDelay(ms: number | undefined): number | null {
+  if (ms == null)
+    return SCROLL_AREA_HIDE_DELAY
+  if (!Number.isFinite(ms))
+    return null
+  return Math.max(0, ms)
+}
 /** 未指定 type 时的露面时机。 */
 export const SCROLL_AREA_DEFAULT_TYPE: ScrollAreaType = 'hover'
 
@@ -272,8 +285,12 @@ export const scrollAreaMachine = createMachine({
         }
       },
 
-      waitForHideDelay: ({ prop, send }) =>
-        setTimeoutEffect(() => send({ type: 'after.scrollHideDelay' }), prop('scrollHideDelay') ?? SCROLL_AREA_HIDE_DELAY),
+      waitForHideDelay: ({ prop, send }) => {
+        const delay = resolveHideDelay(prop('scrollHideDelay'))
+        if (delay == null)
+          return undefined
+        return setTimeoutEffect(() => send({ type: 'after.scrollHideDelay' }), delay)
+      },
 
       // 监听器挂在文档上，指针拖出滚动条仍要跟手；pointercancel 不收会让状态永远停在 dragging
       trackPointer: ({ refs, send }) => {

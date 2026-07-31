@@ -154,6 +154,24 @@ describe('clipboardMachine 复制流程', () => {
     expect(onCopyError).toHaveBeenCalledWith({ error: reason, value: 'abc' })
   })
 
+  it('写入途中宿主改了 value，报出去的仍是实际写入的那一份', async () => {
+    const reason = new Error('permission denied')
+    let deny: (() => void) | undefined
+    teardowns.push(installClipboard(() => new Promise<void>((_, reject) => {
+      deny = () => reject(reason)
+    })))
+    const onCopyError = vi.fn<(d: ClipboardCopyErrorDetails) => void>()
+    const c = makeClipboard({ value: 'old', onCopyError })
+
+    c.service.send({ type: 'COPY.TRIGGER' })
+    // 请求在途时宿主换了值：报错说的必须是写进去的那份，不是此刻 prop 上的那份
+    c.setProps({ value: 'new' })
+    deny?.()
+    await settleWrite()
+
+    expect(onCopyError).toHaveBeenCalledWith({ error: reason, value: 'old' })
+  })
+
   it('环境根本没有剪贴板接口时同样落回 idle 并报错', async () => {
     // 不装 clipboard：非安全上下文（http 页面）里就是这个样子
     const onCopyError = vi.fn<(d: ClipboardCopyErrorDetails) => void>()
@@ -242,7 +260,7 @@ describe('clipboardMachine 复制流程', () => {
 
     c.service.send({ type: 'COPY.TRIGGER' })
     // 第一次失败（权限被拒），回 idle —— 此刻第一个 promise 还挂着没兑现
-    c.service.send({ type: 'COPY.ERROR', error: new Error('slow one denied') })
+    c.service.send({ type: 'COPY.ERROR', error: new Error('slow one denied'), value: 'abc' })
     expect(c.state()).toBe('idle')
 
     c.service.send({ type: 'COPY.TRIGGER' })

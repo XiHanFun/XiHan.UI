@@ -69,8 +69,11 @@ export interface CarouselSchema extends MachineSchema {
      * 指针悬停或轮播内任一节点获得焦点时按住计时，离开后从头计满一整个间隔再翻。
      */
     autoplay?: boolean | number
-    /** 允许指针拖拽切页，默认 false。 */
-    allowMouseDrag?: boolean
+    /**
+     * 允许指针拖拽切页，默认 false。鼠标、触摸、触控笔一并门控。
+     * 打开后沿轨道那一轴的原生滚动会让位给拖拽，关掉则完全没有拖拽、触摸走原生滚动。
+     */
+    allowPointerDrag?: boolean
     /** 张与张之间的间距，任意 CSS 长度（如 '12px'）。落成条目自身的内边距，不影响位移算术。 */
     spacing?: string
     translations?: Partial<CarouselTranslations>

@@ -468,6 +468,31 @@ describe('显隐时机', () => {
     expect(barProps(r)['data-state']).toBe('hidden')
   })
 
+  it('scrollHideDelay 给 Infinity 就一直露着，不该当场抛', async () => {
+    vi.useFakeTimers()
+    // Infinity 是"永不收起"的自然写法；直接喂给定时器会在 dev 下抛 INVALID_DELAY
+    const r = rig({ type: 'hover', scrollHideDelay: Number.POSITIVE_INFINITY })
+    await settle()
+    const root = (): Dict => r.api().getRootProps() as Dict
+    ;(root().onPointerEnter as () => void)()
+    expect(() => (root().onPointerLeave as () => void)()).not.toThrow()
+    vi.advanceTimersByTime(100_000)
+    expect(r.service.state.get()).toBe('hiding')
+    expect(barProps(r)['data-state']).toBe('visible')
+  })
+
+  it('scrollHideDelay 给 NaN 同样不排期，不会被当成 0 立刻收起', async () => {
+    vi.useFakeTimers()
+    // 与 toast 同一判据：非有限值一律不起计时器，而不是喂给 setTimeout 折算成 0
+    const r = rig({ type: 'hover', scrollHideDelay: Number.NaN })
+    await settle()
+    const root = (): Dict => r.api().getRootProps() as Dict
+    ;(root().onPointerEnter as () => void)()
+    ;(root().onPointerLeave as () => void)()
+    vi.advanceTimersByTime(100_000)
+    expect(r.service.state.get()).toBe('hiding')
+  })
+
   it('hover：收起倒计时里指针又回来即撤销', async () => {
     vi.useFakeTimers()
     const r = rig({ type: 'hover', scrollHideDelay: 300 })

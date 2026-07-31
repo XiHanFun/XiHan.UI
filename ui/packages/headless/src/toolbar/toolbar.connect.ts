@@ -66,7 +66,8 @@ export function connectToolbar<T extends PropTypes>(
       // 焦点在工具条外时容器兜底进 Tab 序列，由 onFocus 转投给条目。
       // 判据用 focusedValue 而非锚点：锚点可能指向已被删掉的条目，那时无人认领 tabindex=0。
       // 焦点已在条内时容器让位（-1），Tab 才能正常离开本条。
-      'tabindex': focusedValue == null ? 0 : -1,
+      // 整条禁用时不给兜底：转投取不到条目、方向键也一概不响应，留下的就是个什么都不通的 Tab 停靠点。
+      'tabindex': toolbarDisabled ? undefined : (focusedValue == null ? 0 : -1),
       // 键盘全在 root 上收口，条目只管声明自己。
       // 条目自己的键各自 stopPropagation 或由平台处理，工具条只认没人认领的方向键
       'onKeyDown': (event: KeyboardEvent) => {

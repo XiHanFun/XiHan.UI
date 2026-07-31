@@ -324,6 +324,13 @@ describe('connectCombobox 属性输出', () => {
     expect(h.root.querySelector('label')!.getAttribute('for')).toBe(h.input.id)
   })
 
+  it('清除按钮的 aria-hidden 产出的是字符串，不是布尔', () => {
+    // 落到 DOM 上都会被隐式转字符串，所以这条只能直接看 connect 的产出；
+    // 同文件其余各处一律是字符串，布尔在 WC 侧走的是另一条属性写入路径
+    const props = mount().api().getClearTriggerProps() as Record<string, unknown>
+    expect(props['aria-hidden']).toBe('true')
+  })
+
   it('inputBehavior=autocomplete 时 aria-autocomplete 报 both', () => {
     expect(mount({ inputBehavior: 'autocomplete' }).input.getAttribute('aria-autocomplete')).toBe('both')
     expect(mount({ inputBehavior: 'autohighlight' }).input.getAttribute('aria-autocomplete')).toBe('list')

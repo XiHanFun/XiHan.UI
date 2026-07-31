@@ -244,6 +244,11 @@ describe('connectToggleGroup ARIA 两套语义', () => {
     expect(changes).toEqual([])
   })
 
+  it('整组禁用时容器退出 Tab 序列：进去了方向键也不响应，那就是个死停靠点', () => {
+    expect(rootProps(makeService({ disabled: true }).service).tabindex).toBeUndefined()
+    expect(rootProps(makeService().service).tabindex).toBe(0)
+  })
+
   it('禁用条目点不动，但聚焦仍记锚点（它还得当方向键起点）', () => {
     const { service } = makeService()
     const item = itemProps(service, { value: 'b', disabled: true })

@@ -1,6 +1,6 @@
 import type { SliderPoint, SliderSchema } from './slider.types'
 import { setup } from '@xihan-ui/machine'
-import { clamp } from '../shared/number'
+import { clamp, clampIndex } from '../shared/number'
 import { closestThumb, pointToValue, setThumbValue, snapToStep } from './slider.geometry'
 
 const { createMachine } = setup<SliderSchema>()
@@ -106,10 +106,11 @@ export const sliderMachine = createMachine({
           return
         context.set('value', normalizeValues(e.value, bounds(prop)))
       },
+      // 带下标的事件一律先过这里，后面几个动作直接读 activeIndex，不再碰事件上的原值
       setActiveIndex: ({ context, event }) => {
         const e = event.current()
         if ('index' in e && typeof e.index === 'number')
-          context.set('activeIndex', e.index)
+          context.set('activeIndex', clampIndex(e.index, context.get('value').length))
       },
       stepThumb: ({ context, prop, event }) => {
         const e = event.current()
@@ -118,29 +119,30 @@ export const sliderMachine = createMachine({
         const o = bounds(prop)
         const size = e.large ? (prop('largeStep') ?? o.step * 10) : o.step
         const values = context.get('value')
-        const current = values[e.index] ?? o.min
-        context.set('value', setThumbValue(values, e.index, current + e.direction * size, o))
+        const index = context.get('activeIndex')
+        const current = values[index] ?? o.min
+        context.set('value', setThumbValue(values, index, current + e.direction * size, o))
       },
       thumbToMin: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'THUMB.TO_MIN')
           return
         const o = bounds(prop)
-        context.set('value', setThumbValue(context.get('value'), e.index, o.min, o))
+        context.set('value', setThumbValue(context.get('value'), context.get('activeIndex'), o.min, o))
       },
       thumbToMax: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'THUMB.TO_MAX')
           return
         const o = bounds(prop)
-        context.set('value', setThumbValue(context.get('value'), e.index, o.max, o))
+        context.set('value', setThumbValue(context.get('value'), context.get('activeIndex'), o.max, o))
       },
       setThumb: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'THUMB.SET')
           return
         const o = bounds(prop)
-        context.set('value', setThumbValue(context.get('value'), e.index, e.value, o))
+        context.set('value', setThumbValue(context.get('value'), context.get('activeIndex'), e.value, o))
       },
       // 轨道矩形在事件发生的那一刻现量：connect 不许读 DOM，量尺子这件事只能落在这里
       grabNearestThumb: ({ context, prop, refs, event }) => {

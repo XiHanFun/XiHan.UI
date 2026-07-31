@@ -96,6 +96,12 @@ describe('connectToolbar ARIA', () => {
     expect(item['data-disabled']).toBe('')
   })
 
+  it('整条禁用时容器退出 Tab 序列：进去了方向键也不响应，那就是个死停靠点', () => {
+    expect(rootProps(makeService({ disabled: true }).service).tabindex).toBeUndefined()
+    // 没禁用时照旧兜底
+    expect(rootProps(makeService().service).tabindex).toBe(0)
+  })
+
   it('group：role=group 且不给 aria-orientation（它不在 group 的支持列表里）', () => {
     const { service } = makeService({ orientation: 'vertical' })
     const group = api(service).getGroupProps() as Record<string, unknown>
@@ -498,13 +504,14 @@ describe('connectToolbar 单一 Tab 位与焦点进出', () => {
     expect(bar.focusedIndex()).toBe(0)
   })
 
-  it('整条禁用时无处可投，焦点留在容器上', () => {
+  it('整条禁用时容器压根不可聚焦，也就无所谓往哪儿投', () => {
     const { service } = makeService({ disabled: true })
     const bar = mountToolbar(service, BAR)
-    bar.root.focus()
     bar.render()
+    bar.root.focus()
+    // 没有 tabindex 的 div 聚不上焦；从前它是可聚焦的，进去之后方向键又一概不响应
+    expect(document.activeElement).not.toBe(bar.root)
     expect(bar.focusedIndex()).toBe(-1)
-    expect(document.activeElement).toBe(bar.root)
   })
 
   it('条内 Shift+Tab 往外退时容器不抢焦点，否则人被困在条里', () => {

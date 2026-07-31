@@ -1,6 +1,7 @@
 import type { PanelConstraint } from './splitter.sizing'
 import type { SplitterSchema } from './splitter.types'
 import { setup } from '@xihan-ui/machine'
+import { clampIndex } from '../shared/number'
 import {
   collapsePanel,
   equalSizes,
@@ -115,10 +116,14 @@ export const splitterMachine = createMachine({
           return
         context.set('size', normalizeSizes(e.size, splitterConstraints(prop)))
       },
+      /**
+       * 带下标的事件一律先过这里，后面几个动作直接读 activeIndex，不再碰事件上的原值。
+       * 分界线比面板少一条，因此夹在 [0, 面板数 - 2]。
+       */
       setActiveIndex: ({ context, event }) => {
         const e = event.current()
         if ('index' in e && typeof e.index === 'number')
-          context.set('activeIndex', e.index)
+          context.set('activeIndex', clampIndex(e.index, context.get('size').length - 1))
       },
       stepBoundary: ({ context, prop, event }) => {
         const e = event.current()
@@ -127,7 +132,7 @@ export const splitterMachine = createMachine({
         const size = e.large
           ? (prop('largeStep') ?? SPLITTER_LARGE_STEP)
           : (prop('step') ?? SPLITTER_STEP)
-        context.set('size', resizePanels(context.get('size'), e.index, e.direction * size, splitterConstraints(prop)))
+        context.set('size', resizePanels(context.get('size'), context.get('activeIndex'), e.direction * size, splitterConstraints(prop)))
       },
       // 端点取眼下真能走到的区间，不是纸面上的 min/max
       boundaryToMin: ({ context, prop, event }) => {
@@ -136,7 +141,8 @@ export const splitterMachine = createMachine({
           return
         const constraints = splitterConstraints(prop)
         const sizes = context.get('size')
-        context.set('size', setBoundarySize(sizes, e.index, panelRange(sizes, e.index, constraints).min, constraints))
+        const index = context.get('activeIndex')
+        context.set('size', setBoundarySize(sizes, index, panelRange(sizes, index, constraints).min, constraints))
       },
       boundaryToMax: ({ context, prop, event }) => {
         const e = event.current()
@@ -144,14 +150,15 @@ export const splitterMachine = createMachine({
           return
         const constraints = splitterConstraints(prop)
         const sizes = context.get('size')
-        context.set('size', setBoundarySize(sizes, e.index, panelRange(sizes, e.index, constraints).max, constraints))
+        const index = context.get('activeIndex')
+        context.set('size', setBoundarySize(sizes, index, panelRange(sizes, index, constraints).max, constraints))
       },
       setBoundary: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'BOUNDARY.SET')
           return
         const constraints = splitterConstraints(prop)
-        context.set('size', setBoundarySize(context.get('size'), e.index, e.size, constraints))
+        context.set('size', setBoundarySize(context.get('size'), context.get('activeIndex'), e.size, constraints))
       },
       collapse: ({ context, prop, refs, event }) => {
         const e = event.current()
@@ -218,7 +225,8 @@ export const splitterMachine = createMachine({
         if (start.type === 'DRAG.START' && root) {
           const rect = root.getBoundingClientRect()
           refs.set('drag', {
-            index: start.index,
+            // 取夹过的那个：setActiveIndex 在本效应挂载之前就跑完了
+            index: context.get('activeIndex'),
             origin: start.point,
             extent: prop('orientation') === 'vertical' ? rect.height : rect.width,
             size: [...context.get('size')],

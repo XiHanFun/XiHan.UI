@@ -76,7 +76,8 @@ export const clipboardMachine = createMachine({
         const e = event.current()
         if (e.type !== 'COPY.ERROR')
           return
-        prop('onCopyError')?.({ error: e.error, value: prop('value') ?? '' })
+        // 取事件带来的那份，不重读 prop：写入途中宿主改了 value，报出去的就不是实际写入的那一份
+        prop('onCopyError')?.({ error: e.error, value: e.value })
       },
     },
     effects: {
@@ -92,7 +93,7 @@ export const clipboardMachine = createMachine({
           },
           (error: unknown) => {
             if (!disposed)
-              send({ type: 'COPY.ERROR', error })
+              send({ type: 'COPY.ERROR', error, value })
           },
         )
 

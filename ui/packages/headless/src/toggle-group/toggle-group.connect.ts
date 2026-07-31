@@ -44,8 +44,11 @@ export function connectToggleGroup<T extends PropTypes>(
    * 判据是 focusedValue == null 而不是 anchor == null：anchor 可能指向已删掉或不在选项里的条目，
    * 那时无人认领 tabindex=0。焦点已在组内时容器让位，Tab 才能正常离开本组。
    * 关掉 roving 时条目自己全在 Tab 序列里，容器不再占位。
+   * 整组禁用时同样不占位：方向键一概不响应，留着就是个什么都不通的 Tab 停靠点。
    */
-  const rootTabIndex = (): number => {
+  const rootTabIndex = (): number | undefined => {
+    if (groupDisabled)
+      return undefined
     if (!rovingFocus)
       return -1
     return focusedValue == null ? 0 : -1
