@@ -173,11 +173,38 @@ function scanList(lines: readonly string[], start: number): number {
   return i
 }
 
+/**
+ * 列表项能不能打断一个段落。
+ * 只放行「标记后有内容」且「有序序号是 1」的那一种：否则段落里一句以「14.」开头的
+ * 续行就会被切成一张从 14 起算的有序列表，而它本来只是句子的一部分。
+ */
+export function listInterruptsParagraph(line: string): boolean {
+  const item = LIST_ITEM.exec(line)
+  if (item === null)
+    return false
+  // 标记后什么都没有的项不打断：单独一行 `-` 接在段落后面仍算段落续行
+  if (line.slice(item[0]!.length).trim() === '')
+    return false
+  const marker = item[2]!
+  const digits = marker.slice(0, -1)
+  // 无序标记没有序号这一说，一律放行
+  return digits === '' || /^0*1$/.test(digits)
+}
+
 /** 段落吃到空行或另一种块的起始行为止。 */
 function scanParagraph(lines: readonly string[], start: number): number {
   let i = start + 1
   while (i < lines.length) {
-    if (BLANK_LINE.test(lines[i]!) || typeAt(lines, i) !== 'paragraph')
+    const line = lines[i]!
+    if (BLANK_LINE.test(line))
+      return i
+    const type = typeAt(lines, i)
+    // 打断不了段落的列表项按续行处理，不在这儿收尾
+    if (type === 'list' && !listInterruptsParagraph(line)) {
+      i++
+      continue
+    }
+    if (type !== 'paragraph')
       return i
     i++
   }
