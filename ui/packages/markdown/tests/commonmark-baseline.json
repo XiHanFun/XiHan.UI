@@ -4,7 +4,7 @@
     "total": 11
   },
   "Backslash escapes": {
-    "pass": 9,
+    "pass": 10,
     "total": 13
   },
   "Entity and numeric character references": {
@@ -40,7 +40,7 @@
     "total": 44
   },
   "Link reference definitions": {
-    "pass": 12,
+    "pass": 17,
     "total": 27
   },
   "Paragraphs": {
@@ -76,7 +76,7 @@
     "total": 132
   },
   "Links": {
-    "pass": 64,
+    "pass": 65,
     "total": 90
   },
   "Images": {
@@ -88,7 +88,7 @@
     "total": 19
   },
   "Raw HTML": {
-    "pass": 5,
+    "pass": 7,
     "total": 20
   },
   "Hard line breaks": {
@@ -100,7 +100,7 @@
     "total": 2
   },
   "Textual content": {
-    "pass": 2,
+    "pass": 3,
     "total": 3
   }
 }

@@ -1,16 +1,22 @@
-/** 转义 HTML 文本内容里的 & < > " ' 五个字符。 */
+/**
+ * 转义 HTML 文本内容里的 & < > " 四个字符。
+ * 单引号不在其列：文本节点里它闭合不了任何东西，转了反而与规范的产出对不上。
+ * 属性值另有 {@link escapeAttr}，那里单引号必须转。
+ */
 export function escapeText(text: string): string {
   return text
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
 }
 
-/** 转义属性值，使其无法闭合当前属性或引入新属性。 */
+/**
+ * 转义属性值，使其无法闭合当前属性或引入新属性。
+ * 在文本那套之上补上单引号：属性值也可能是单引号括起来的。
+ */
 export function escapeAttr(value: string): string {
-  return stripControl(escapeText(value))
+  return stripControl(escapeText(value).replace(/'/g, '&#39;'))
 }
 
 const BACKSLASH_ESCAPE = /\\([!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~])/g
