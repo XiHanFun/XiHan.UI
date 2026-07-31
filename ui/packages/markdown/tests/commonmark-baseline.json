@@ -16,7 +16,7 @@
     "total": 1
   },
   "Thematic breaks": {
-    "pass": 16,
+    "pass": 17,
     "total": 19
   },
   "ATX headings": {
@@ -24,15 +24,15 @@
     "total": 18
   },
   "Setext headings": {
-    "pass": 13,
+    "pass": 25,
     "total": 27
   },
   "Indented code blocks": {
-    "pass": 11,
+    "pass": 12,
     "total": 12
   },
   "Fenced code blocks": {
-    "pass": 19,
+    "pass": 20,
     "total": 29
   },
   "HTML blocks": {
