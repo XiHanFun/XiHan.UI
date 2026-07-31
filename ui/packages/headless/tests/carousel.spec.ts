@@ -648,9 +648,9 @@ describe('connectCarousel 属性', () => {
 
   it('viewport 的 touch-action 只在允许拖拽时让出本轴，另一轴留给页面滚动', () => {
     expect((makeCarousel(SIX).api().getViewportProps() as Dict).style).toEqual({ touchAction: '' })
-    expect((makeCarousel({ ...SIX, allowMouseDrag: true }).api().getViewportProps() as Dict).style)
+    expect((makeCarousel({ ...SIX, allowPointerDrag: true }).api().getViewportProps() as Dict).style)
       .toEqual({ touchAction: 'pan-y' })
-    expect((makeCarousel({ ...SIX, allowMouseDrag: true, orientation: 'vertical' }).api().getViewportProps() as Dict).style)
+    expect((makeCarousel({ ...SIX, allowPointerDrag: true, orientation: 'vertical' }).api().getViewportProps() as Dict).style)
       .toEqual({ touchAction: 'pan-x' })
   })
 })
@@ -799,7 +799,7 @@ describe('connectCarousel 指针', () => {
   })
 
   it('拖拽过阈值翻一页，途中的位移实时叠进轨道', () => {
-    const c = makeCarousel({ ...SIX, allowMouseDrag: true })
+    const c = makeCarousel({ ...SIX, allowPointerDrag: true })
     const drag = (): Dict & {
       onPointerDown: (e: PointerEvent) => void
       onPointerMove: (e: PointerEvent) => void
@@ -823,7 +823,7 @@ describe('connectCarousel 指针', () => {
   })
 
   it('没过阈值就弹回原页；反向拖时位移用减号拼进 calc', () => {
-    const c = makeCarousel({ ...SIX, defaultPage: 2, allowMouseDrag: true })
+    const c = makeCarousel({ ...SIX, defaultPage: 2, allowPointerDrag: true })
     const view = (): Dict & { onPointerDown: (e: PointerEvent) => void, onPointerMove: (e: PointerEvent) => void, onPointerUp: () => void } =>
       c.api().getViewportProps() as never
     const at = (clientX: number): PointerEvent =>
@@ -840,14 +840,14 @@ describe('connectCarousel 指针', () => {
     expect(c.api().dragging).toBe(false)
   })
 
-  it('allowMouseDrag 关着时按下不进入拖拽；系统收走指针也要收尾', () => {
+  it('allowPointerDrag 关着时按下不进入拖拽；系统收走指针也要收尾', () => {
     const off = makeCarousel(SIX)
     const at = (clientX: number): PointerEvent =>
       ({ button: 0, pointerId: 1, clientX, clientY: 0, currentTarget: {} } as unknown as PointerEvent)
     ;((off.api().getViewportProps() as Dict).onPointerDown as (e: PointerEvent) => void)(at(300))
     expect(off.api().dragging).toBe(false)
 
-    const on = makeCarousel({ ...SIX, allowMouseDrag: true })
+    const on = makeCarousel({ ...SIX, allowPointerDrag: true })
     const view = (): Dict => on.api().getViewportProps() as Dict
     ;(view().onPointerDown as (e: PointerEvent) => void)(at(300))
     ;(view().onPointerMove as (e: PointerEvent) => void)(at(200))
@@ -858,7 +858,7 @@ describe('connectCarousel 指针', () => {
   })
 
   it('自动播放跑着时拖拽照样翻页，并把计时重起', () => {
-    const c = makeCarousel({ ...SIX, autoplay: 100, allowMouseDrag: true })
+    const c = makeCarousel({ ...SIX, autoplay: 100, allowPointerDrag: true })
     const view = (): Dict => c.api().getViewportProps() as Dict
     const at = (clientX: number): PointerEvent =>
       ({ button: 0, pointerId: 1, clientX, clientY: 0, currentTarget: {} } as unknown as PointerEvent)
@@ -878,7 +878,7 @@ describe('connectCarousel 指针', () => {
   })
 
   it('右键按下不开拖；单页时也不开', () => {
-    const c = makeCarousel({ ...SIX, allowMouseDrag: true })
+    const c = makeCarousel({ ...SIX, allowPointerDrag: true })
     const down = (init: Partial<PointerEvent>): void =>
       ((c.api().getViewportProps() as Dict).onPointerDown as (e: PointerEvent) => void)(
         { button: 2, pointerId: 1, clientX: 0, clientY: 0, currentTarget: {}, ...init } as unknown as PointerEvent,
@@ -886,7 +886,7 @@ describe('connectCarousel 指针', () => {
     down({})
     expect(c.api().dragging).toBe(false)
 
-    const single = makeCarousel({ slideCount: 1, allowMouseDrag: true })
+    const single = makeCarousel({ slideCount: 1, allowPointerDrag: true })
     ;((single.api().getViewportProps() as Dict).onPointerDown as (e: PointerEvent) => void)(
       { button: 0, pointerId: 1, clientX: 0, clientY: 0, currentTarget: {} } as unknown as PointerEvent,
     )

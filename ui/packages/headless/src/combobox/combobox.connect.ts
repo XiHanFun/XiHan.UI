@@ -286,7 +286,8 @@ export function connectCombobox<T extends PropTypes>(
       'type': 'button',
       // 键盘用户走退格与 Escape，这个按钮不进 Tab 序列也不暴露给读屏
       'tabindex': -1,
-      'aria-hidden': true,
+      // 字符串而非布尔：WC 侧把属性值原样往 setAttribute 送，本文件其余各处也一律是字符串
+      'aria-hidden': 'true',
       'disabled': !canClear || undefined,
       'data-disabled': dataAttr(!canClear),
       'onPointerDown': keepFocus,

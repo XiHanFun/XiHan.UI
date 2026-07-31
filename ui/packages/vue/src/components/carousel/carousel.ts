@@ -21,7 +21,7 @@ export const XhCarouselRoot = defineComponent({
     loop: { type: Boolean, default: undefined },
     // 布尔或毫秒：true 用默认间隔，数值即间隔
     autoplay: { type: [Boolean, Number] as PropType<boolean | number>, default: undefined },
-    allowMouseDrag: { type: Boolean, default: undefined },
+    allowPointerDrag: { type: Boolean, default: undefined },
     spacing: { type: String, default: undefined },
     translations: { type: Object as PropType<Partial<CarouselTranslations>>, default: undefined },
   },

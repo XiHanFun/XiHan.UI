@@ -804,6 +804,18 @@ describe('connectSplitter 属性输出', () => {
     expect(s.context.get('size')).toEqual([30, 70])
   })
 
+  it('程序化送来的越界分界线下标被夹住，不把尺寸数组撑长', () => {
+    // 分界线比面板少一条：三块面板只有 0、1 两条分界线
+    const s = makeService({ defaultSize: [30, 40, 30] })
+    s.send({ type: 'BOUNDARY.SET', index: 99, size: 10 })
+    expect(s.context.get('size')).toHaveLength(3)
+    expect(s.context.get('activeIndex')).toBe(1)
+
+    s.send({ type: 'BOUNDARY.SET', index: -3, size: 10 })
+    expect(s.context.get('size')).toHaveLength(3)
+    expect(s.context.get('size')[0]).toBe(10)
+  })
+
   it('panels 把每块的尺寸、可达区间与折叠态算好交给作者', () => {
     const a = api(makeService({ defaultSize: [30, 70], panels: [{ id: 'main', min: 20 }, { id: 'side', min: 10 }] }))
     expect(a.size).toEqual([30, 70])

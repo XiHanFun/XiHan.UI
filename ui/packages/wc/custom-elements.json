@@ -1399,12 +1399,12 @@
             },
             {
               "kind": "field",
-              "name": "allowMouseDrag",
+              "name": "allowPointerDrag",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "allow-mouse-drag"
+              "attribute": "allow-pointer-drag"
             },
             {
               "kind": "field",
@@ -1541,8 +1541,8 @@
                 "text": "boolean | undefined"
               },
               "description": "允许指针拖拽切页，默认关闭",
-              "name": "allow-mouse-drag",
-              "fieldName": "allowMouseDrag"
+              "name": "allow-pointer-drag",
+              "fieldName": "allowPointerDrag"
             },
             {
               "type": {
@@ -18818,7 +18818,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-virtualizer>` —— Light-DOM 行为宿主：作者写 root/viewport/content/item 角色节点，\n元素跑 virtualizer 机器并把 connect 产出打上去。\n\n区间与尺寸的计算走",
+          "description": "`<xh-virtualizer>` —— Light-DOM 行为宿主：作者写 root/viewport/content/item 角色节点，\n元素跑 virtualizer 机器并把 connect 产出打上去。\n\n区间与尺寸的计算走 headless 的虚拟滚动内核：它在机器的效应里建起来，挂着视口的\nResizeObserver 与 scroll 监听，算出\"此刻该渲哪些下标、各自落在哪儿\"。\n滚动本身一概不接管：viewport 是原生的 overflow 容器，滚轮、方向键、PageUp/PageDown、\nHome/End 全部走浏览器原生通路。\n\n条目节点不替作者生成：生成节点就等于收走模板控制权，外层结构、图标、业务内容都再塞不进来。\n作者监听 `change` 事件，按 `virtualItems` 渲出该渲的那几条，每条用 `value` 属性写明自己是第几条；\n元素据此把位移写进它的内联样式，并把不在窗口里的条目收起来。",
           "name": "XhVirtualizerElement",
           "cssParts": [
             {

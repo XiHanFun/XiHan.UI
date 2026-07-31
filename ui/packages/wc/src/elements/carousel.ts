@@ -55,7 +55,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {'ltr'|'rtl'} dir - 文字方向；水平轴上同时决定位移方向
  * @attr {boolean} loop - 走到尽头回绕，默认关闭
  * @attr {boolean|number} autoplay - 自动播放：属性在即开，写数值即间隔毫秒
- * @attr {boolean} allow-mouse-drag - 允许指针拖拽切页，默认关闭
+ * @attr {boolean} allow-pointer-drag - 允许指针拖拽切页，默认关闭
  * @attr {string} spacing - 张与张之间的间距（任意 CSS 长度）
  * @fires page-change - 页码变化；detail 为 `{ page: number }`
  * @csspart root - region 地标，承载 aria-roledescription="carousel" 与名字
@@ -80,7 +80,7 @@ export class XhCarouselElement extends XhElement {
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     loop: { converter: BOOLEAN_CONVERTER },
     autoplay: { converter: AUTOPLAY_CONVERTER },
-    allowMouseDrag: { converter: BOOLEAN_CONVERTER, attribute: 'allow-mouse-drag' },
+    allowPointerDrag: { converter: BOOLEAN_CONVERTER, attribute: 'allow-pointer-drag' },
     spacing: { converter: STRING_CONVERTER },
     // 文案是对象，只走 property
     translations: { attribute: false },
@@ -95,7 +95,7 @@ export class XhCarouselElement extends XhElement {
   declare direction?: Direction
   declare loop?: boolean
   declare autoplay?: boolean | number
-  declare allowMouseDrag?: boolean
+  declare allowPointerDrag?: boolean
   declare spacing?: string
   declare translations?: Partial<CarouselTranslations>
 
@@ -118,7 +118,7 @@ export class XhCarouselElement extends XhElement {
       // 布尔缺席即 undefined，缺省交回 connect
       loop: this.loop,
       autoplay: this.autoplay,
-      allowMouseDrag: this.allowMouseDrag,
+      allowPointerDrag: this.allowPointerDrag,
       spacing: this.spacing,
       translations: this.translations,
       onPageChange: this.notify,

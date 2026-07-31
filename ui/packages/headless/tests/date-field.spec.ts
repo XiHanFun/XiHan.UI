@@ -610,6 +610,16 @@ describe('connectDateField 结构与 ARIA', () => {
     expect(m.seg[1]!.getAttribute('data-placeholder')).toBe('')
   })
 
+  it('三个 aria-value* 产出的是字符串，不是数值', () => {
+    // 落到 DOM 上都会被隐式转字符串，所以这条只能直接看 connect 的产出；
+    // 本仓其余 ARIA 数值一律是字符串，数值形态在 WC 侧还要多走一次转换
+    const m = open({ locale: 'zh-CN', defaultValue: '2026-07-08' })
+    const seg = m.api().getSegmentProps({ index: 2 }) as Record<string, unknown>
+    expect(seg['aria-valuemin']).toBe('1')
+    expect(seg['aria-valuemax']).toBe('31')
+    expect(seg['aria-valuenow']).toBe('8')
+  })
+
   it('填好之后补零显示，valuenow / valuetext 跟着走', () => {
     const m = open({ locale: 'zh-CN', defaultValue: '2026-07-08' })
     expect(texts(m).slice(0, 3)).toEqual(['2026', '07', '08'])

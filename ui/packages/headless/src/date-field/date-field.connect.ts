@@ -184,10 +184,11 @@ export function connectDateField<T extends PropTypes>(
         // role=spinbutton 让读屏念出当前值与区间，三个 aria-value* 必须显式给
         'role': spare ? undefined : 'spinbutton',
         'aria-label': item?.label,
-        'aria-valuemin': item?.min,
-        'aria-valuemax': item?.max,
+        // 一律转字符串：本仓其余 ARIA 数值都是字符串，数值形态在 WC 侧还要多走一次隐式转换
+        'aria-valuemin': item == null ? undefined : String(item.min),
+        'aria-valuemax': item == null ? undefined : String(item.max),
         // 未填时不给 valuenow，给 0 会被念成「值是 0」
-        'aria-valuenow': item?.value ?? undefined,
+        'aria-valuenow': item?.value == null ? undefined : String(item.value),
         'aria-valuetext': item?.text,
         'aria-disabled': spare ? undefined : (disabled ? 'true' : 'false'),
         'aria-readonly': spare ? undefined : (readOnly ? 'true' : 'false'),

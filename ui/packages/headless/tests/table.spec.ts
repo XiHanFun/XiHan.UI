@@ -588,7 +588,14 @@ describe('connectTable 属性输出', () => {
     expect(h.root.getAttribute('aria-rowcount')).toBe('6')
     expect(h.headerRow.getAttribute('aria-rowindex')).toBe('1')
     expect(h.footerRow.getAttribute('aria-rowindex')).toBe('6')
-    expect(mount().footerRow.getAttribute('aria-rowindex')).toBe('5')
+  })
+
+  it('渲了脚注行却没声明 footer prop 时不报行号，宁可不报也不与末行数据行撞号', () => {
+    const h = mount()
+    // 行号空间按 footer prop 算：没声明时 rowcount 就等于末行数据行的行号
+    expect(h.root.getAttribute('aria-rowcount')).toBe('5')
+    expect(h.row('d').row.getAttribute('aria-rowindex')).toBe('5')
+    expect(h.footerRow.hasAttribute('aria-rowindex')).toBe(false)
   })
 
   it('展开一行会把它后面所有行的行号整体后移一位，详情行占的是真实行号', () => {

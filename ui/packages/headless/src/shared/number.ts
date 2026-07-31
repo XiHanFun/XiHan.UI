@@ -21,6 +21,18 @@ export function clamp(value: number, min?: number, max?: number): number {
   return value
 }
 
+/**
+ * 把外来的下标收成数组里真实存在的位置。
+ * 小数取整、非有限值按 0，越界夹到两端；长度为 0 时给 0。
+ * 不收的话 `out[index] = x` 会把数组撑长并在中间凿出空洞。
+ */
+export function clampIndex(index: number, length: number): number {
+  if (length <= 0)
+    return 0
+  const whole = Number.isFinite(index) ? Math.trunc(index) : 0
+  return Math.min(Math.max(whole, 0), length - 1)
+}
+
 /** 步进后消掉浮点尾巴：按步长与基准里最长的小数位数回舍。 */
 export function snapDecimals(value: number, ...refs: number[]): number {
   const digits = Math.max(...refs.map(decimalsOf), 0)

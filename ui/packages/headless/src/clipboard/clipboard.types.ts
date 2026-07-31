@@ -45,8 +45,12 @@ export interface ClipboardSchema extends MachineSchema {
     | { type: 'COPY.TRIGGER' }
     /** 写入 promise 兑现，由 copying 的副作用回送。 */
     | { type: 'COPY.SUCCESS' }
-    /** 写入 promise 拒绝，由 copying 的副作用回送，带上原始拒绝值。 */
-    | { type: 'COPY.ERROR', error: unknown }
+    /**
+     * 写入 promise 拒绝，由 copying 的副作用回送，带上原始拒绝值。
+     * value 是发起那一刻定死的那份，不是兑现时的 prop——写入途中宿主改了 value，
+     * 报出去的必须仍是实际写入的那一份。
+     */
+    | { type: 'COPY.ERROR', error: unknown, value: string }
     /** 停留计时到点，指示器该收回去了。 */
     | { type: 'after.timeout' }
   tag: never
