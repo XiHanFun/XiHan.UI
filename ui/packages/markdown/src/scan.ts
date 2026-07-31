@@ -4,7 +4,50 @@ export interface BlockRange {
   readonly endLine: number
 }
 
-export type BlockType = 'code' | 'math' | 'heading' | 'thematic' | 'quote' | 'list' | 'table' | 'paragraph'
+export type BlockType = 'code' | 'indented-code' | 'math' | 'heading' | 'thematic' | 'quote' | 'list' | 'table' | 'paragraph'
+
+/** 缩进到这么多列就是代码块。 */
+export const CODE_INDENT = 4
+
+/** 行首缩进占几列。制表符走 4 列制表位，不按一个字符算。 */
+export function indentWidth(line: string): number {
+  let width = 0
+  for (const ch of line) {
+    if (ch === ' ')
+      width += 1
+    else if (ch === '\t')
+      width += CODE_INDENT - (width % CODE_INDENT)
+    else
+      break
+  }
+  return width
+}
+
+/**
+ * 剥掉行首 count 列缩进。
+ * 制表符可能跨过要剥的边界（`  \tfoo` 剥 4 列时，那个制表符只该被吃掉一半），
+ * 跨过的部分补回等量空格，不能整个吞掉。
+ */
+export function stripColumns(line: string, count: number): string {
+  let width = 0
+  let i = 0
+  while (i < line.length && width < count) {
+    const ch = line[i]!
+    if (ch === ' ') {
+      width += 1
+      i += 1
+      continue
+    }
+    if (ch !== '\t')
+      break
+    const next = width + CODE_INDENT - (width % CODE_INDENT)
+    if (next > count)
+      return ' '.repeat(next - count) + line.slice(i + 1)
+    width = next
+    i += 1
+  }
+  return line.slice(i)
+}
 
 /** 围栏起始行：``` 或 ~~~ 起步，捕获围栏与信息串；反引号围栏后整行不得再有反引号。 */
 export const FENCE_OPEN = /^ {0,3}(?=(?:`{3,}[^`\n]*|~{3}[^\n]*)(?:\n|$))(`{3,}|~{3,})[ \t]*(\S*)/
@@ -63,6 +106,9 @@ function markerKey(item: RegExpExecArray): string {
 /** 判断某一行起头的块属于哪种类型。 */
 function typeAt(lines: readonly string[], index: number): BlockType {
   const line = lines[index]!
+  // 缩进够深就是代码，围栏、标题、引用、列表标记一律不再解释——它们自己都只认 0~3 列缩进
+  if (indentWidth(line) >= CODE_INDENT && !BLANK_LINE.test(line))
+    return 'indented-code'
   if (FENCE_OPEN.test(line))
     return 'code'
   if (MATH_FENCE.test(line))
@@ -107,6 +153,27 @@ function scanMath(lines: readonly string[], start: number): number {
       return i + 1
   }
   return lines.length
+}
+
+/**
+ * 缩进代码块吃到缩进不够深的非空行为止。
+ * 中间的空行算块的一部分，末尾的不算——它们不属于任何块。
+ */
+function scanIndentedCode(lines: readonly string[], start: number): number {
+  let i = start + 1
+  let end = start + 1
+  while (i < lines.length) {
+    const line = lines[i]!
+    if (BLANK_LINE.test(line)) {
+      i += 1
+      continue
+    }
+    if (indentWidth(line) < CODE_INDENT)
+      break
+    i += 1
+    end = i
+  }
+  return end
 }
 
 /** 一路吃到空行为止。 */
@@ -199,6 +266,11 @@ function scanParagraph(lines: readonly string[], start: number): number {
     if (BLANK_LINE.test(line))
       return i
     const type = typeAt(lines, i)
+    // 缩进代码块打断不了段落：段落续行随手缩进几格仍是这一段的正文
+    if (type === 'indented-code') {
+      i++
+      continue
+    }
     // 打断不了段落的列表项按续行处理，不在这儿收尾
     if (type === 'list' && !listInterruptsParagraph(line)) {
       i++
@@ -225,6 +297,9 @@ export function topLevelRanges(src: string): readonly BlockRange[] {
     switch (typeAt(lines, i)) {
       case 'code':
         i = scanFence(lines, i)
+        break
+      case 'indented-code':
+        i = scanIndentedCode(lines, i)
         break
       case 'math':
         i = scanMath(lines, i)

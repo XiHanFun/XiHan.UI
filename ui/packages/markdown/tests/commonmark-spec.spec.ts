@@ -25,7 +25,19 @@ interface SpecExample {
 
 type Baseline = Record<string, { pass: number, total: number }>
 
-const EXAMPLES = specExamples as unknown as SpecExample[]
+/**
+ * spec.txt 里用 `→` 这个字符表示制表符，官方 runner 读的时候会还原回去。
+ * 不还原的话喂进去的是字面箭头，整个 Tabs 一节注定全挂，量出来的数字是假的。
+ */
+function untab(text: string): string {
+  return text.replace(/→/g, '\t')
+}
+
+const EXAMPLES = (specExamples as unknown as SpecExample[]).map(example => ({
+  ...example,
+  markdown: untab(example.markdown),
+  html: untab(example.html),
+}))
 const BASELINE = baseline as Baseline
 
 /**
@@ -88,7 +100,26 @@ function sum(source: Baseline, field: 'pass' | 'total'): number {
   return Object.values(source).reduce((n, s) => n + s[field], 0)
 }
 
+/**
+ * 重记基线：`XH_UPDATE_BASELINE=1 pnpm --filter @xihan-ui/markdown test`。
+ * 这一趟只写文件、不做断言，并且**照样判失败**——省得有人把它当成"跑绿了"。
+ */
+const UPDATING = process.env.XH_UPDATE_BASELINE === '1'
+
 describe('官方用例一致率（CommonMark 0.31.2）', () => {
+  if (UPDATING) {
+    it('重记基线', async () => {
+      const fs = await import('node:fs')
+      const path = await import('node:path')
+      const file = path.join(import.meta.dirname, 'commonmark-baseline.json')
+      fs.writeFileSync(file, `${JSON.stringify(ACTUAL, null, 2)}\n`)
+      const pass = sum(ACTUAL, 'pass')
+      const total = sum(ACTUAL, 'total')
+      expect.fail(`基线已重写为 ${pass}/${total}（${(pass / total * 100).toFixed(1)}%）。去掉 XH_UPDATE_BASELINE 再跑一次确认全绿`)
+    })
+    return
+  }
+
   it('官方用例一条不落地跑到', () => {
     expect(sum(ACTUAL, 'total')).toBe(EXAMPLES.length)
     expect(EXAMPLES.length).toBe(652)

@@ -1,14 +1,14 @@
 {
   "Tabs": {
-    "pass": 0,
+    "pass": 6,
     "total": 11
   },
   "Backslash escapes": {
-    "pass": 8,
+    "pass": 9,
     "total": 13
   },
   "Entity and numeric character references": {
-    "pass": 10,
+    "pass": 12,
     "total": 17
   },
   "Precedence": {
@@ -16,23 +16,23 @@
     "total": 1
   },
   "Thematic breaks": {
-    "pass": 15,
+    "pass": 16,
     "total": 19
   },
   "ATX headings": {
-    "pass": 15,
+    "pass": 16,
     "total": 18
   },
   "Setext headings": {
-    "pass": 11,
+    "pass": 13,
     "total": 27
   },
   "Indented code blocks": {
-    "pass": 1,
+    "pass": 9,
     "total": 12
   },
   "Fenced code blocks": {
-    "pass": 18,
+    "pass": 19,
     "total": 29
   },
   "HTML blocks": {
@@ -40,11 +40,11 @@
     "total": 44
   },
   "Link reference definitions": {
-    "pass": 11,
+    "pass": 12,
     "total": 27
   },
   "Paragraphs": {
-    "pass": 6,
+    "pass": 7,
     "total": 8
   },
   "Blank lines": {
@@ -52,11 +52,11 @@
     "total": 1
   },
   "Block quotes": {
-    "pass": 16,
+    "pass": 19,
     "total": 25
   },
   "List items": {
-    "pass": 12,
+    "pass": 15,
     "total": 48
   },
   "Lists": {

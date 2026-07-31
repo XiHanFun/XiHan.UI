@@ -24,7 +24,7 @@
 | `@xihan-ui/system` | 设计令牌（源自 DTCG）与主题运行时（明暗 / 密度 / 书写方向） |
 | `@xihan-ui/position` | 浮层定位，自研实现，无第三方运行时依赖 |
 | `@xihan-ui/ai` | AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store（零 DOM、零框架） |
-| `@xihan-ui/markdown` | 流式 Markdown 渲染内核：增量切块 + 稳定 key + 消毒（CommonMark 子集，一致率 392/652） |
+| `@xihan-ui/markdown` | 流式 Markdown 渲染内核：增量切块 + 稳定 key + 消毒（CommonMark 子集，一致率 422/652） |
 | `@xihan-ui/icons` | 图标集 |
 
 `tooling/*` 放构建、lint、tsconfig、测试与脚本等内部包，不对外发布。

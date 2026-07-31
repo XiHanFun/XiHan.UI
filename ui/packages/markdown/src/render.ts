@@ -3,7 +3,7 @@ import { fenceLang } from './blocks'
 import { escapeAttr, escapeText } from './escape'
 import { renderInline } from './inline'
 import { NO_DEFS, splitDefinitions } from './refs'
-import { blockType, FENCE_OPEN, LIST_ITEM, splitRow, topLevelRanges } from './scan'
+import { blockType, CODE_INDENT, FENCE_OPEN, LIST_ITEM, splitRow, stripColumns, topLevelRanges } from './scan'
 
 const HEADING = /^ {0,3}(#{1,6})(?![^ \t])(.*)$/
 const CLOSING_HASHES = /\s+#+$/
@@ -34,6 +34,12 @@ function renderCode(src: string): string {
   const lang = fenceLang(src)
   const attr = lang === undefined ? '' : ` class="language-${escapeAttr(lang)}"`
   return `<pre><code${attr}>${escapeText(body.join('\n'))}\n</code></pre>`
+}
+
+/** 缩进代码块：剥掉四列缩进，剩下的整段照原样escape。没有语言标注。 */
+function renderIndentedCode(src: string): string {
+  const body = contentLines(src).map(line => stripColumns(line, CODE_INDENT)).join('\n')
+  return `<pre><code>${escapeText(body)}\n</code></pre>`
 }
 
 function renderMath(src: string): string {
@@ -171,6 +177,8 @@ export function renderBlockHtml(src: string, defs: LinkDefs = NO_DEFS, depth = 0
   switch (blockType(src)) {
     case 'code':
       return renderCode(src)
+    case 'indented-code':
+      return renderIndentedCode(src)
     case 'math':
       return renderMath(src)
     case 'heading':
