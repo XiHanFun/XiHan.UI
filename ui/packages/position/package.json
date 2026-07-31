@@ -1,8 +1,8 @@
 {
-  "name": "@xihan-ui/position-floating-ui",
+  "name": "@xihan-ui/position",
   "type": "module",
   "version": "0.0.0",
-  "description": "XiHan.UI position engine — PositionEnginePort implemented on @floating-ui/dom.",
+  "description": "XiHan.UI position engine — PositionEnginePort, no third-party runtime dependency.",
   "license": "MIT",
   "sideEffects": false,
   "publishConfig": {
@@ -26,7 +26,6 @@
     "test:browser": "vitest run --config vitest.browser.config.ts"
   },
   "dependencies": {
-    "@floating-ui/dom": "catalog:",
     "@xihan-ui/core": "workspace:*"
   },
   "devDependencies": {

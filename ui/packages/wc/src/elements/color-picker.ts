@@ -10,7 +10,7 @@ import type {
 import type { Service } from '@xihan-ui/machine'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { colorPickerMachine, colorPickerToChannel, colorPickerToInputChannel, connectColorPicker } from '@xihan-ui/headless'
-import { createFloatingUiPositionEngine } from '@xihan-ui/position-floating-ui'
+import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -110,7 +110,7 @@ export class XhColorPickerElement extends XhElement {
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly pickerScope = createScope(null, this.idGen)
-  private readonly positionEngine: PositionEnginePort = createFloatingUiPositionEngine()
+  private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
 
   private readonly notifyValue = (details: ColorPickerValueChangeDetails): void => {

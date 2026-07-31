@@ -12,7 +12,7 @@ import type { Service } from '@xihan-ui/machine'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { cascaderMachine, connectCascader } from '@xihan-ui/headless'
-import { createFloatingUiPositionEngine } from '@xihan-ui/position-floating-ui'
+import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -117,7 +117,7 @@ export class XhCascaderElement extends XhElement {
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly cascaderScope = createScope(null, this.idGen)
-  private readonly positionEngine: PositionEnginePort = createFloatingUiPositionEngine()
+  private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
 
   /** value-text 是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */

@@ -213,6 +213,59 @@ export function runPositionEngine(engine: PositionEnginePort, hooks: TestHooks, 
       }
     })
 
+    hooks.it('锚点被缩放时贴的是它缩放后的样子', async () => {
+      const stage = createStage()
+      try {
+        const scaled = document.createElement('div')
+        scaled.style.cssText = 'position:absolute;left:200px;top:200px;transform:scale(0.5);transform-origin:top left'
+        stage.root.appendChild(scaled)
+        const anchor = document.createElement('button')
+        anchor.type = 'button'
+        anchor.style.cssText = 'display:block;width:200px;height:80px;margin:0;padding:0;border:0'
+        scaled.appendChild(anchor)
+
+        const floating = stage.putFloating(40, 24, document.body)
+        const probe = attachProbe(engine, anchor, floating, { placement: 'bottom-start', offset: OFFSET })
+        await probe.settle()
+
+        const rect = anchor.getBoundingClientRect()
+        expectClose(rect.width, 100, '缩放后的锚点视觉宽度')
+        expectPlacedAt(rect, floating.getBoundingClientRect(), 'bottom-start', OFFSET)
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+
+    hooks.it('锚点与浮层同在缩放子树里：贴合关系与间距一起按比例缩', async () => {
+      const stage = createStage()
+      try {
+        // 缩放画布里开浮层：写进 left/top 的是布局像素，看到的是它乘上缩放比之后的样子
+        const scale = 0.5
+        const scaled = document.createElement('div')
+        scaled.style.cssText = `position:absolute;left:120px;top:100px;width:600px;height:400px;transform:scale(${scale});transform-origin:top left`
+        stage.root.appendChild(scaled)
+        const anchor = document.createElement('button')
+        anchor.type = 'button'
+        anchor.style.cssText = 'position:absolute;left:200px;top:150px;width:200px;height:80px;margin:0;padding:0;border:0'
+        scaled.appendChild(anchor)
+        const floating = stage.putFloating(80, 48, scaled)
+
+        const probe = attachProbe(engine, anchor, floating, { placement: 'bottom-start', offset: OFFSET, flip: false, shift: false })
+        await probe.settle()
+
+        const floatRect = floating.getBoundingClientRect()
+        expectClose(floatRect.width, 80 * scale, '缩放后的浮层视觉宽度')
+        // 子树里的 8px 间距，看到的就该是 4px
+        expectPlacedAt(anchor.getBoundingClientRect(), floatRect, 'bottom-start', OFFSET * scale)
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+
     hooks.it('浮层落在滚动容器里时按容器原点算，不跟着容器的滚动量漂移', async () => {
       const stage = createStage()
       try {
@@ -331,6 +384,34 @@ export function runPositionEngine(engine: PositionEnginePort, hooks: TestHooks, 
       }
     })
 
+    hooks.it('锚点没改尺寸、只是被上方内容挤走时也跟得上', async () => {
+      const stage = createStage()
+      try {
+        const column = document.createElement('div')
+        column.style.cssText = 'position:absolute;left:120px;top:60px;width:240px'
+        const spacer = document.createElement('div')
+        spacer.style.cssText = 'height:40px'
+        const anchor = document.createElement('button')
+        anchor.type = 'button'
+        anchor.style.cssText = 'display:block;width:100px;height:40px;margin:0;padding:0;border:0'
+        column.append(spacer, anchor)
+        stage.root.appendChild(column)
+
+        const floating = stage.putFloating()
+        const probe = attachProbe(engine, anchor, floating, { placement: 'bottom-start', offset: OFFSET })
+        await probe.settle()
+
+        // 锚点自身尺寸一点没变，变的是它在页面上的位置
+        spacer.style.height = '260px'
+        await probe.settle()
+        expectPlacedAt(anchor.getBoundingClientRect(), floating.getBoundingClientRect(), 'bottom-start', OFFSET)
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+
     hooks.it('锚点尺寸变了会重算', async () => {
       const stage = createStage()
       try {
@@ -343,6 +424,29 @@ export function runPositionEngine(engine: PositionEnginePort, hooks: TestHooks, 
         anchor.style.height = '120px'
         await probe.settle()
         expectPlacedAt(anchor.getBoundingClientRect(), floating.getBoundingClientRect(), 'bottom', OFFSET)
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+
+    hooks.it('静置时不空转：什么都没变就不该一帧一回调', async () => {
+      const stage = createStage()
+      try {
+        const center = viewportCenter()
+        const anchor = stage.putAnchor(center.x, center.y)
+        const floating = stage.putFloating()
+        const probe = attachProbe(engine, anchor, floating, { placement: 'bottom', offset: OFFSET })
+        await probe.settle()
+
+        const before = probe.count()
+        for (let frame = 0; frame < 30; frame++) await nextFrame()
+        const idle = probe.count() - before
+        // 落定后允许再补一次，逐帧刷就是跟随观察器自己在打转
+        if (idle > 1)
+          throw new Error(`静置 30 帧里回调了 ${idle} 次，跟随观察器在空转`)
+
         probe.stop()
       }
       finally {

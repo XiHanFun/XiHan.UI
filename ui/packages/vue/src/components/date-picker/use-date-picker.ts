@@ -10,7 +10,7 @@ import {
   datePickerFieldProps,
   datePickerMachine,
 } from '@xihan-ui/headless'
-import { createFloatingUiPositionEngine } from '@xihan-ui/position-floating-ui'
+import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
@@ -62,7 +62,7 @@ export function useDatePicker(
     // 定位引擎由适配器注入，机器只经端口驱动；锚点取整个输入行
     root.refs.set('config', config)
     root.refs.set('registerLayer', registerLayer)
-    root.refs.set('position', createFloatingUiPositionEngine())
+    root.refs.set('position', createPositionEngine())
     root.refs.set('getAnchorEl', () => controlRef.value)
     root.refs.set('getFloatingEl', () => positionerRef.value)
     root.refs.set('getContentEl', () => contentRef.value)

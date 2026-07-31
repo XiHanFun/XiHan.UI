@@ -4,7 +4,7 @@ import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { cascaderMachine, connectCascader } from '@xihan-ui/headless'
-import { createFloatingUiPositionEngine } from '@xihan-ui/position-floating-ui'
+import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
@@ -48,7 +48,7 @@ export function useCascader(
     // 定位引擎由适配器注入，机器只经端口驱动；锚点取 trigger
     service.refs.set('config', config)
     service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createFloatingUiPositionEngine())
+    service.refs.set('position', createPositionEngine())
     service.refs.set('getAnchorEl', () => triggerRef.value)
     service.refs.set('getFloatingEl', () => positionerRef.value)
     service.refs.set('getContentEl', () => contentRef.value)

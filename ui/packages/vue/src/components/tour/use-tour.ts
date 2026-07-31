@@ -4,7 +4,7 @@ import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectTour, tourMachine } from '@xihan-ui/headless'
-import { createFloatingUiPositionEngine } from '@xihan-ui/position-floating-ui'
+import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
@@ -49,7 +49,7 @@ export function useTour(
     // 定位引擎由适配器注入，机器只经端口驱动；锚点由机器按每步 target 自行解析
     service.refs.set('config', config)
     service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createFloatingUiPositionEngine())
+    service.refs.set('position', createPositionEngine())
     service.refs.set('getFloatingEl', () => positionerRef.value)
     service.refs.set('getContentEl', () => contentRef.value)
   }

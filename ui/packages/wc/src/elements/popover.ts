@@ -3,7 +3,7 @@ import type { PopoverOpenChangeDetails, PopoverSchema, PopoverTranslations } fro
 import type { Service } from '@xihan-ui/machine'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectPopover, popoverMachine } from '@xihan-ui/headless'
-import { createFloatingUiPositionEngine } from '@xihan-ui/position-floating-ui'
+import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -63,7 +63,7 @@ export class XhPopoverElement extends XhElement {
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly popoverScope = createScope(null, this.idGen)
-  private readonly positionEngine: PositionEnginePort = createFloatingUiPositionEngine()
+  private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
 
   private readonly notify = (details: PopoverOpenChangeDetails): void => {

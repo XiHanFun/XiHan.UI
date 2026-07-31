@@ -4,7 +4,7 @@ import type { Service } from '@xihan-ui/machine'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectMenubar, menubarMachine } from '@xihan-ui/headless'
-import { createFloatingUiPositionEngine } from '@xihan-ui/position-floating-ui'
+import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -85,7 +85,7 @@ export class XhMenubarElement extends XhElement {
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   // trigger 与 content 按 value 逐对互指的 id 由 scope 派生
   private readonly barScope = createScope(null, this.idGen)
-  private readonly positionEngine: PositionEnginePort = createFloatingUiPositionEngine()
+  private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
 
   private readonly notifyValue = (details: MenubarValueChangeDetails): void => {
