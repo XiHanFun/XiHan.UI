@@ -16,19 +16,19 @@
     "total": 1
   },
   "Thematic breaks": {
-    "pass": 13,
+    "pass": 15,
     "total": 19
   },
   "ATX headings": {
-    "pass": 14,
+    "pass": 15,
     "total": 18
   },
   "Setext headings": {
-    "pass": 10,
+    "pass": 11,
     "total": 27
   },
   "Indented code blocks": {
-    "pass": 0,
+    "pass": 1,
     "total": 12
   },
   "Fenced code blocks": {
@@ -44,7 +44,7 @@
     "total": 27
   },
   "Paragraphs": {
-    "pass": 3,
+    "pass": 6,
     "total": 8
   },
   "Blank lines": {
@@ -56,11 +56,11 @@
     "total": 25
   },
   "List items": {
-    "pass": 9,
+    "pass": 12,
     "total": 48
   },
   "Lists": {
-    "pass": 5,
+    "pass": 6,
     "total": 26
   },
   "Inlines": {
@@ -72,11 +72,11 @@
     "total": 22
   },
   "Emphasis and strong emphasis": {
-    "pass": 127,
+    "pass": 128,
     "total": 132
   },
   "Links": {
-    "pass": 63,
+    "pass": 64,
     "total": 90
   },
   "Images": {
@@ -92,11 +92,11 @@
     "total": 20
   },
   "Hard line breaks": {
-    "pass": 10,
+    "pass": 12,
     "total": 15
   },
   "Soft line breaks": {
-    "pass": 1,
+    "pass": 2,
     "total": 2
   },
   "Textual content": {

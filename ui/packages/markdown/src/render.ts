@@ -158,7 +158,8 @@ function renderTable(src: string, defs: LinkDefs): string {
 
 /** 段落转 HTML；顶层段落开头的引用定义行不进正文，只剩定义时不产出标签。 */
 function renderParagraph(src: string, defs: LinkDefs, depth: number): string {
-  const text = contentLines(src).join('\n')
+  // 逐行剥行首空白：段落续行的缩进不进正文。行尾空白留着，硬换行靠的就是它
+  const text = contentLines(src).map(line => line.replace(/^[ \t]+/, '')).join('\n')
   const body = depth === 0 ? splitDefinitions(text).rest : text
   return body === '' ? '' : `<p>${renderInline(body, defs)}</p>`
 }
