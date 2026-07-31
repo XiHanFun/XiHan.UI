@@ -1,0 +1,106 @@
+{
+  "Tabs": {
+    "pass": 0,
+    "total": 11
+  },
+  "Backslash escapes": {
+    "pass": 8,
+    "total": 13
+  },
+  "Entity and numeric character references": {
+    "pass": 10,
+    "total": 17
+  },
+  "Precedence": {
+    "pass": 1,
+    "total": 1
+  },
+  "Thematic breaks": {
+    "pass": 13,
+    "total": 19
+  },
+  "ATX headings": {
+    "pass": 14,
+    "total": 18
+  },
+  "Setext headings": {
+    "pass": 10,
+    "total": 27
+  },
+  "Indented code blocks": {
+    "pass": 0,
+    "total": 12
+  },
+  "Fenced code blocks": {
+    "pass": 18,
+    "total": 29
+  },
+  "HTML blocks": {
+    "pass": 0,
+    "total": 44
+  },
+  "Link reference definitions": {
+    "pass": 11,
+    "total": 27
+  },
+  "Paragraphs": {
+    "pass": 3,
+    "total": 8
+  },
+  "Blank lines": {
+    "pass": 1,
+    "total": 1
+  },
+  "Block quotes": {
+    "pass": 16,
+    "total": 25
+  },
+  "List items": {
+    "pass": 9,
+    "total": 48
+  },
+  "Lists": {
+    "pass": 5,
+    "total": 26
+  },
+  "Inlines": {
+    "pass": 1,
+    "total": 1
+  },
+  "Code spans": {
+    "pass": 19,
+    "total": 22
+  },
+  "Emphasis and strong emphasis": {
+    "pass": 127,
+    "total": 132
+  },
+  "Links": {
+    "pass": 63,
+    "total": 90
+  },
+  "Images": {
+    "pass": 15,
+    "total": 22
+  },
+  "Autolinks": {
+    "pass": 13,
+    "total": 19
+  },
+  "Raw HTML": {
+    "pass": 5,
+    "total": 20
+  },
+  "Hard line breaks": {
+    "pass": 10,
+    "total": 15
+  },
+  "Soft line breaks": {
+    "pass": 1,
+    "total": 2
+  },
+  "Textual content": {
+    "pass": 2,
+    "total": 3
+  }
+}
