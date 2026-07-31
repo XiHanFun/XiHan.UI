@@ -48,6 +48,9 @@ catalogs:
     axe-core:
       specifier: ^4.12.1
       version: 4.12.1
+    commonmark-spec:
+      specifier: 0.31.2
+      version: 0.31.2
     dependency-cruiser:
       specifier: ^18.1.0
       version: 18.1.0
@@ -307,6 +310,9 @@ importers:
       '@xihan-ui/tsconfig':
         specifier: workspace:*
         version: link:../../tooling/tsconfig
+      commonmark-spec:
+        specifier: 'catalog:'
+        version: 0.31.2
       vitest:
         specifier: 'catalog:'
         version: 4.1.10(@types/node@24.13.3)(@vitest/browser-playwright@4.1.10)(jsdom@27.4.0)(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0))
@@ -2530,6 +2536,9 @@ packages:
   comment-parser@1.4.7:
     resolution: {integrity: sha512-0h+uSNtQGW3D98eQt3jJ8L06Fves8hncB4V/PKdw/Qb8Hnk19VaKuTr55UNRYiSoVa7WwrFls+rh3ux9agmkeQ==}
     engines: {node: '>= 12.0.0'}
+
+  commonmark-spec@0.31.2:
+    resolution: {integrity: sha512-vXKxmclzJPymhOJYD26G0oBjVmIcKC8p5m2DvHIq1A1btr1m0r0dT/PzRA5/nwxUbCAPedMNPEoiQE+zvuOcOw==}
 
   compare-func@2.0.0:
     resolution: {integrity: sha512-zHig5N+tPWARooBnb0Zx1MFcdfpyJrfTJ3Y5L+IFvUm8rM74hHz66z0gw0x4tijh5CorKkKUCnW82R2vmpeCRA==}
@@ -6703,6 +6712,8 @@ snapshots:
   comment-parser@1.2.4: {}
 
   comment-parser@1.4.7: {}
+
+  commonmark-spec@0.31.2: {}
 
   compare-func@2.0.0:
     dependencies:

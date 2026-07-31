@@ -37,6 +37,8 @@ catalog:
   vue-tsc: ^3.3.7
   # —— 日期运算（只在 @xihan-ui/headless 的日期族里用；零框架纯数据包，无副作用）——
   '@internationalized/date': ^3.12.0
+  # 只供 @xihan-ui/markdown 的一致率棘轮读官方用例（CC-BY-SA-4.0），不进任何包的运行时依赖
+  'commonmark-spec': 0.31.2
   # —— 构建 ——
   tsdown: ~0.22.0
   '@vitejs/plugin-vue': ^6.0.8

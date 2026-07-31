@@ -18,7 +18,9 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc --noEmit -p tsconfig.json",
@@ -27,6 +29,7 @@
   "devDependencies": {
     "@xihan-ui/build": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",
+    "commonmark-spec": "catalog:",
     "vitest": "catalog:"
   }
 }
