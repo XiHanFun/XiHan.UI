@@ -46,6 +46,17 @@ function renderMath(src: string): string {
   return `<p>${escapeText(contentLines(src).join('\n'))}</p>`
 }
 
+/** Setext 标题：末行是下划线，等号一级、短横二级；标题正文是它上面那几行。 */
+function renderSetextHeading(src: string, defs: LinkDefs, depth: number): string {
+  const lines = contentLines(src)
+  const underline = lines.pop() ?? ''
+  const level = underline.trimStart().startsWith('=') ? 1 : 2
+  const body = lines.map(line => line.replace(/^[ \t]+/, '')).join('\n')
+  // 正文前面挂着的链接引用定义不算标题文字，与段落同一套规矩（只在顶层收）
+  const text = (depth === 0 ? splitDefinitions(body).rest : body).trim()
+  return `<h${level}>${renderInline(text, defs)}</h${level}>`
+}
+
 function renderHeading(src: string, defs: LinkDefs): string {
   const match = HEADING.exec(src.split('\n')[0]!)
   if (match === null)
@@ -194,6 +205,8 @@ export function renderBlockHtml(src: string, defs: LinkDefs = NO_DEFS, depth = 0
       return renderMath(src)
     case 'heading':
       return renderHeading(src, defs)
+    case 'setext':
+      return renderSetextHeading(src, defs, depth)
     case 'thematic':
       return '<hr>'
     case 'quote':

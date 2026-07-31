@@ -4,7 +4,20 @@ export interface BlockRange {
   readonly endLine: number
 }
 
-export type BlockType = 'code' | 'indented-code' | 'math' | 'heading' | 'thematic' | 'quote' | 'list' | 'table' | 'paragraph'
+export type BlockType = 'code' | 'indented-code' | 'math' | 'heading' | 'setext' | 'thematic' | 'quote' | 'list' | 'table' | 'paragraph'
+
+/**
+ * Setext 下划线：整行只有等号或只有短横。
+ * 缩进只认 0~3 列——第 4 列起是段落的续行，不是下划线。
+ */
+export const SETEXT_UNDERLINE = /^ {0,3}(?:=+|-+)[ \t]*$/
+
+/**
+ * 看着像链接引用定义的行。
+ * 判据**故意保守**：权威解析在 refs 那边（那边还要拿地址与标题），这里只回答
+ * 「下划线上面那几行算不算段落正文」。拿不准就按正文算，行为与从前一致。
+ */
+const LINK_DEF_LINE = /^ {0,3}\[[^\]\n]*\]:/
 
 /** 缩进到这么多列就是代码块。 */
 export const CODE_INDENT = 4
@@ -129,7 +142,14 @@ function typeAt(lines: readonly string[], index: number): BlockType {
 /** 判断一段块源文本属于哪种类型。 */
 export function blockType(src: string): BlockType {
   const lines = src.split('\n')
-  return lines.length === 0 ? 'paragraph' : typeAt(lines, 0)
+  if (lines.length === 0)
+    return 'paragraph'
+  const first = typeAt(lines, 0)
+  // 末行是下划线、且它上面确实是一段文字，整块才是 Setext 标题；
+  // 只有下划线一行时它就是分隔线，另一种块顺手以 `---` 收尾也不算
+  if (first === 'paragraph' && lines.length >= 2 && SETEXT_UNDERLINE.test(lines[lines.length - 1]!))
+    return 'setext'
+  return first
 }
 
 /** 找围栏的闭合行，返回其下一行的下标；没闭合则返回末尾。 */
@@ -262,13 +282,23 @@ export function listInterruptsParagraph(line: string): boolean {
   return digits === '' || /^0*1$/.test(digits)
 }
 
-/** 段落吃到空行或另一种块的起始行为止。 */
+/** 段落吃到空行或另一种块的起始行为止；撞上 Setext 下划线则连它一起收，整块升成标题。 */
 function scanParagraph(lines: readonly string[], start: number): number {
   let i = start + 1
   while (i < lines.length) {
     const line = lines[i]!
     if (BLANK_LINE.test(line))
       return i
+    // 下划线优先于分隔线与空列表项：`---` 接在段落后面是二级标题，不是一条横线。
+    // 但上面几行全是链接引用定义时没有段落可升级，那条下划线只是普通正文
+    if (SETEXT_UNDERLINE.test(line)) {
+      let onlyDefs = true
+      for (let k = start; k < i && onlyDefs; k++) onlyDefs = LINK_DEF_LINE.test(lines[k]!)
+      if (!onlyDefs)
+        return i + 1
+      i++
+      continue
+    }
     const type = typeAt(lines, i)
     // 缩进代码块打断不了段落：段落续行随手缩进几格仍是这一段的正文
     if (type === 'indented-code') {
