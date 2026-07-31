@@ -50,7 +50,7 @@ Requires Node ≥ 24 and pnpm ≥ 11.
 pnpm install --frozen-lockfile
 pnpm dev          # start the playgrounds
 pnpm test         # unit + cross-adapter conformance tests (jsdom)
-pnpm test:browser # accessibility sweep in real Chromium (run `pnpm exec playwright install chromium` first)
+pnpm test:browser # accessibility sweep + floating position contract in real Chromium (run `pnpm exec playwright install chromium` first)
 pnpm typecheck
 pnpm lint
 pnpm boundaries   # layered dependency gate (dependency-cruiser)

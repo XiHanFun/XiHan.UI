@@ -14,6 +14,10 @@
     "./a11y": {
       "types": "./dist/a11y.d.ts",
       "import": "./dist/a11y.js"
+    },
+    "./position": {
+      "types": "./dist/position.d.ts",
+      "import": "./dist/position.js"
     }
   },
   "main": "./dist/index.js",
