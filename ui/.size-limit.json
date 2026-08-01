@@ -1,1 +1,16 @@
-[]
+[
+  { "name": "core", "path": "packages/core/dist/index.js", "gzip": true, "limit": "3.3 kB" },
+  { "name": "machine", "path": "packages/machine/dist/index.js", "gzip": true, "limit": "5.5 kB" },
+  { "name": "system", "path": "packages/system/dist/index.js", "gzip": true, "limit": "2.4 kB" },
+  { "name": "system/tokens.css", "path": "packages/system/tokens.css", "gzip": true, "limit": "1.6 kB" },
+  { "name": "behavior", "path": "packages/behavior/dist/index.js", "gzip": true, "limit": "6 kB" },
+  { "name": "position", "path": "packages/position/dist/index.js", "gzip": true, "limit": "2.5 kB" },
+  { "name": "highlight", "path": "packages/highlight/dist/index.js", "gzip": true, "limit": "2.6 kB" },
+  { "name": "ai", "path": "packages/ai/dist/index.js", "gzip": true, "limit": "5.6 kB" },
+  { "name": "markdown", "path": "packages/markdown/dist/index.js", "gzip": true, "limit": "8.5 kB" },
+  { "name": "headless", "path": "packages/headless/dist/index.js", "gzip": true, "limit": "138 kB" },
+  { "name": "vue", "path": "packages/vue/dist/index.js", "gzip": true, "limit": "159 kB" },
+  { "name": "wc", "path": "packages/wc/dist/index.js", "gzip": true, "limit": "6.4 kB" },
+  { "name": "wc/define", "path": "packages/wc/dist/define.js", "gzip": true, "limit": "149 kB" },
+  { "name": "styled", "path": "packages/styled/styles/*.css", "gzip": true, "limit": "63 kB" }
+]

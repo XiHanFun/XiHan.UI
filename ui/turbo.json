@@ -22,11 +22,6 @@
       "inputs": ["src/**", "tests/**", "spec/**", "runners/**"],
       "outputs": ["coverage/**"]
     },
-    "size": {
-      "dependsOn": ["build"],
-      "inputs": ["dist/**", ".size-limit.json"],
-      "outputs": []
-    },
     "dev": {
       "cache": false,
       "persistent": true

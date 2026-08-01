@@ -22,6 +22,10 @@ jobs:
           cache: pnpm
           cache-dependency-path: ui/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
+      - name: Gate (运行时依赖 / 版本锁 / 令牌产物)
+        run: pnpm gate
+      - name: Token artifacts in sync
+        run: pnpm gate:tokens
       - name: Lint
         run: pnpm lint
       - name: Typecheck
@@ -34,6 +38,9 @@ jobs:
         run: pnpm test
       - name: Size limit
         run: pnpm size
+      - name: Commit message
+        if: github.event_name == 'pull_request'
+        run: pnpm exec commitlint --from origin/${{ github.base_ref }} --to HEAD
 
   # 单开一份：真实浏览器要下 ~300MB 的 Chromium，不该把上面那条快链路堵住
   browser:
