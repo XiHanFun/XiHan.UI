@@ -24,7 +24,7 @@ function textEnd(id: string, receivedTime = T): NormalizedEvent {
 }
 
 function silenceWarnings(): void {
-  vi.spyOn(console, 'error').mockImplementation(() => {})
+  vi.spyOn(console, 'warn').mockImplementation(() => {})
 }
 
 afterEach(() => {

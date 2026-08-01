@@ -68,7 +68,7 @@ describe('createHttpSseTransport 正常流', () => {
   })
 
   it('normalize 返回 null 的帧被跳过（finish-step 与未知类型）', async () => {
-    const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const spy = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const fetchMock = vi.fn(async () => okResponse(
       'data: {"type":"finish-step"}\n\n'
       + 'data: {"type":"brand-new-thing"}\n\n'

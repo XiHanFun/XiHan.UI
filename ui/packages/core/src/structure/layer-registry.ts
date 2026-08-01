@@ -1,7 +1,8 @@
 // LayerRegistry：逻辑层栈，记录栈顶、层序，以及节点的层归属（node/branch/surface）。
 import type { Cleanup } from '../types'
+import { reportDiagnostic } from '../diagnostics/channel'
+import { DIAGNOSTIC_CODES } from '../diagnostics/codes'
 import { contains } from '../guards'
-import { isDev } from '../utils/dev'
 import { createPerDocumentRegistry } from './per-document-registry'
 
 export type LayerKind = 'modal' | 'popover' | 'inline'
@@ -53,8 +54,14 @@ export function createLayerRegistry(_doc: Document): LayerRegistry {
       disposed = true
       const idx = layers.indexOf(layer)
       if (idx !== -1) {
-        if (isDev() && idx !== layers.length - 1)
-          console.error(`[xh:layer] dispose 的层不是栈顶（可能与 top layer 顺序不一致）: ${layer.id}`)
+        if (idx !== layers.length - 1) {
+          reportDiagnostic({
+            code: DIAGNOSTIC_CODES.layerDisposeNotTop,
+            level: 'error',
+            message: `dispose 的层不是栈顶（可能与 top layer 顺序不一致）: ${layer.id}`,
+            detail: { layerId: layer.id, index: idx, depth: layers.length },
+          })
+        }
         layers.splice(idx, 1)
         notify()
       }

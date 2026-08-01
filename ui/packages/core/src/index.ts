@@ -18,6 +18,25 @@ export type { ComposeEventHandlerOptions, PossibleRef } from './compose'
 export { callAll, composeEventHandlers, composeRefs, isDict, isEventHandlerKey } from './compose'
 // 常量
 export * from './constants'
+// 诊断通道
+export {
+  getDiagnostics,
+  onDiagnostic,
+  reportDiagnostic,
+  resetDiagnostics,
+  setDiagnosticsConsoleOutput,
+  setDiagnosticsDedupe,
+  setDiagnosticsLevel,
+} from './diagnostics/channel'
+export type { DiagnosticCode } from './diagnostics/codes'
+export { DIAGNOSTIC_CODES } from './diagnostics/codes'
+export type {
+  DiagnosticHandler,
+  DiagnosticLevel,
+  DiagnosticRecord,
+  Diagnostics,
+  DiagnosticThreshold,
+} from './diagnostics/types'
 // 守卫与探测
 export { contains, isDocument, isElement, isFunction, isHTMLElement, isShadowRoot, isSSR, isWindow } from './guards'
 // 环境抽象
