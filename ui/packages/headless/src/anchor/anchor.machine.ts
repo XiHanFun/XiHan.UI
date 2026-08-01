@@ -49,10 +49,7 @@ function sameRect(a: AnchorIndicatorRect | null, b: AnchorIndicatorRect | null |
     && a.inlineStart === b.inlineStart && a.inlineSize === b.inlineSize
 }
 
-/**
- * 按 id 取目标区块。用 getRootNode().getElementById 而不是 scope.getById：
- * 后者拿 CSS.escape 拼选择器，而 CSS 这个全局在无头 DOM 环境里常常缺席（缺了当场抛）。
- */
+/** 按 id 取目标区块。 */
 function findTargetEl(scope: Scope, id: string): HTMLElement | null {
   return scope.getRootNode().getElementById(id)
 }
