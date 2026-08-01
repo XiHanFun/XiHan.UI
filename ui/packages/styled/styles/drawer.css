@@ -201,8 +201,8 @@
     color: var(--xh-drawer-fg, var(--xh-fg-default));
     box-shadow: var(--xh-drawer-shadow, var(--xh-elevation-3));
     overflow: auto;
-    /* 库里没有全局 box-sizing 兜底：尺寸是照视口那条边算出来的，
-       padding 再往外顶就会把面板挤出屏幕、逼出一条横向滚动条 */
+    /* 尺寸是照视口那条边算出来的，padding 再往外顶就会把面板挤出屏幕、
+       逼出一条横向滚动条。reset 层已有同款兜底，这里显式写一遍表明尺寸算法依赖它 */
     box-sizing: border-box;
     /* positioner 整层不吃指针，面板得自己收回来 */
     pointer-events: auto;

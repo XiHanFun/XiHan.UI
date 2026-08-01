@@ -28,8 +28,7 @@
     min-inline-size: var(--xh-pagination-item-min-size, var(--xh-control-h-md));
     block-size: var(--xh-pagination-item-h, var(--xh-control-h-md));
     padding-inline: var(--xh-pagination-item-px, var(--xh-space-2));
-    /* 省略号也占一条透明描边：库里没有全局 box-sizing 兜底，
-       只给按钮描边的话它会比按钮矮两像素，一行里就对不齐 */
+    /* 省略号也占一条透明描边：只给按钮描边的话两者内容盒不等高，一行里就对不齐 */
     border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-pagination-item-radius, var(--xh-shape-control));
     font-size: var(--xh-pagination-font-size, var(--xh-text-label-size));

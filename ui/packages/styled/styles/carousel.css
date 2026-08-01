@@ -59,7 +59,7 @@
   /* 一张幻灯片。
      尺寸（flex-basis）与间距（padding）同样归连接层：一屏放几张只有它知道，
      CSS 拿不到那个数（属性值参与不了计算）。这里只补三件配套的事：
-     · box-sizing —— 库里没有全局兜底，不设的话内联的 padding 会把这张撑出格子；
+     · box-sizing —— 内联的 padding 不得把这张撑出格子（reset 层已有同款兜底）；
      · flex-grow/shrink 归零 —— 弹性布局默认会把不满一屏的那几张拉伸，位移就对不上了；
      · min-inline-size: 0 —— 同视口，防止长内容把这张顶宽 */
   [data-scope='carousel'][data-part='item'] {

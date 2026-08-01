@@ -55,6 +55,9 @@
     "xl": { "$type": "dimension", "$value": "12px" },
     "full": { "$type": "dimension", "$value": "9999px" }
   },
+  "font-family": {
+    "mono": { "$type": "fontFamily", "$value": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" }
+  },
   "font-size": {
     "xs": { "$type": "dimension", "$value": "12px" },
     "sm": { "$type": "dimension", "$value": "13px" },
