@@ -343,6 +343,31 @@ describe('tagsInputMachine 上限', () => {
     expect(h.value()).toEqual([])
     expect(h.root.getAttribute('data-at-max')).toBe('')
   })
+
+  it('输入法组合期间的 Enter 不提交：那一下是确认候选词', () => {
+    const h = mount()
+    typeInto(h.input, 'zhongwen')
+    const event = press(h.input, 'Enter', { isComposing: true })
+    expect(event.defaultPrevented).toBe(false)
+    expect(h.value()).toEqual([])
+    expect(h.inputValue()).toBe('zhongwen')
+  })
+
+  it('不上报 isComposing 的输入法按 keyCode 229 认', () => {
+    const h = mount()
+    typeInto(h.input, 'zhongwen')
+    const event = press(h.input, 'Enter', { keyCode: 229 })
+    expect(event.defaultPrevented).toBe(false)
+    expect(h.value()).toEqual([])
+  })
+
+  it('组合结束后的 Enter 照常提交', () => {
+    const h = mount()
+    typeInto(h.input, '中文')
+    const event = press(h.input, 'Enter')
+    expect(event.defaultPrevented).toBe(true)
+    expect(h.value()).toEqual(['中文'])
+  })
 })
 
 describe('connectTagsInput 属性输出', () => {

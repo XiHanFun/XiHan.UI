@@ -1,7 +1,7 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
 import type { NumberFieldApi, NumberFieldSchema } from './number-field.types'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { parseValue } from '../shared/number'
 import { numberFieldAnatomy } from './number-field.anatomy'
 
@@ -110,6 +110,9 @@ export function connectNumberField<T extends PropTypes>(
       'onBlur': () => send({ type: 'INPUT.BLUR' }),
       'onKeyDown': (event: KeyboardEvent) => {
         if (!editable || event.ctrlKey || event.metaKey || event.altKey)
+          return
+        // 组合期间的按键属于输入法候选框，组件一律不接
+        if (isComposingEvent(event))
           return
         // 没给 min/max 时 Home/End 不接，放行输入框的原生光标行为
         const handlers: Record<string, (() => void) | undefined> = {

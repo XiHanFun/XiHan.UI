@@ -11,7 +11,7 @@ import type {
   ColorPickerTranslations,
 } from './color-picker.types'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { colorPickerAnatomy } from './color-picker.anatomy'
 import {
   colorPickerApplyInput,
@@ -397,6 +397,9 @@ export function connectColorPicker<T extends PropTypes>(
         },
         'onKeyDown': (event: KeyboardEvent) => {
           // 回车即收下。不 preventDefault 的话，取色器落在表单里会顺手把表单提交掉
+          // 组合期间的按键属于输入法候选框，组件一律不接
+          if (isComposingEvent(event))
+            return
           if (event.key !== 'Enter' || event.ctrlKey || event.metaKey || event.altKey)
             return
           event.preventDefault()

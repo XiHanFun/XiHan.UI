@@ -1,7 +1,7 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
 import type { TextFieldApi, TextFieldSchema } from './text-field.types'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { textFieldAnatomy } from './text-field.anatomy'
 import { isAtLimit } from './text-field.machine'
 
@@ -78,6 +78,9 @@ export function connectTextField<T extends PropTypes>(
         send({ type: 'VALUE.SET', value: (event.target as HTMLInputElement).value })
       },
       'onKeyDown': (event: KeyboardEvent) => {
+        // 组合期间的按键属于输入法候选框，组件一律不接
+        if (isComposingEvent(event))
+          return
         if (event.key !== 'Escape' || event.ctrlKey || event.metaKey || event.altKey)
           return
         // 不可清空时不吞键：Escape 在输入框里还有外层浮层消解、输入法候选框收起等去处

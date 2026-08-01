@@ -105,7 +105,14 @@ export interface RawStepContext {
 export type Step
   = | { readonly kind: 'click', readonly part: PartRef, readonly modifiers?: readonly ModifierKey[] }
     | { readonly kind: 'dblclick', readonly part: PartRef }
-    | { readonly kind: 'key', readonly key: KeyName, readonly modifiers?: readonly ModifierKey[], readonly repeat?: number }
+    | {
+      readonly kind: 'key'
+      readonly key: KeyName
+      readonly modifiers?: readonly ModifierKey[]
+      readonly repeat?: number
+      /** 派发成输入法组合期间的按键（isComposing 为真，keyCode 229 兼容不上报的输入法）。 */
+      readonly composing?: boolean
+    }
     | { readonly kind: 'type', readonly text: string }
     | { readonly kind: 'focus', readonly part: PartRef }
     | { readonly kind: 'blur' }
