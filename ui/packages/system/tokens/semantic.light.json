@@ -15,7 +15,7 @@
   "fg": {
     "default": { "$type": "color", "$value": "{color.neutral.950}" },
     "muted": { "$type": "color", "$value": "{color.neutral.600}" },
-    "subtle": { "$type": "color", "$value": "{color.neutral.500}" },
+    "subtle": { "$type": "color", "$value": "{color.neutral.550}" },
     "disabled": { "$type": "color", "$value": "{color.neutral.400}" },
     "on-brand": { "$type": "color", "$value": "{color.neutral.0}" }
   },

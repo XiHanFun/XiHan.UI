@@ -19,7 +19,9 @@
     --xh-color-neutral-200: oklch(0.922 0.002 258);
     --xh-color-neutral-300: oklch(0.87 0.003 258);
     --xh-color-neutral-400: oklch(0.708 0.005 258);
+    --xh-color-neutral-450: oklch(0.65 0.006 258);
     --xh-color-neutral-500: oklch(0.556 0.006 258);
+    --xh-color-neutral-550: oklch(0.52 0.006 258);
     --xh-color-neutral-600: oklch(0.439 0.006 258);
     --xh-color-neutral-700: oklch(0.371 0.006 258);
     --xh-color-neutral-800: oklch(0.269 0.006 258);
@@ -143,7 +145,7 @@
     --xh-bg-overlay: oklch(0 0 0 / 0.45);
     --xh-fg-default: var(--xh-color-neutral-950);
     --xh-fg-muted: var(--xh-color-neutral-600);
-    --xh-fg-subtle: var(--xh-color-neutral-500);
+    --xh-fg-subtle: var(--xh-color-neutral-550);
     --xh-fg-disabled: var(--xh-color-neutral-400);
     --xh-fg-on-brand: var(--xh-color-neutral-0);
     --xh-border-default: var(--xh-color-neutral-200);
@@ -168,7 +170,7 @@
     --xh-bg-overlay: oklch(0 0 0 / 0.45);
     --xh-fg-default: var(--xh-color-neutral-950);
     --xh-fg-muted: var(--xh-color-neutral-600);
-    --xh-fg-subtle: var(--xh-color-neutral-500);
+    --xh-fg-subtle: var(--xh-color-neutral-550);
     --xh-fg-disabled: var(--xh-color-neutral-400);
     --xh-fg-on-brand: var(--xh-color-neutral-0);
     --xh-border-default: var(--xh-color-neutral-200);
@@ -193,7 +195,7 @@
     --xh-bg-overlay: oklch(0 0 0 / 0.6);
     --xh-fg-default: var(--xh-color-neutral-50);
     --xh-fg-muted: var(--xh-color-neutral-400);
-    --xh-fg-subtle: var(--xh-color-neutral-500);
+    --xh-fg-subtle: var(--xh-color-neutral-450);
     --xh-fg-disabled: var(--xh-color-neutral-600);
     --xh-fg-on-brand: var(--xh-color-neutral-950);
     --xh-border-default: var(--xh-color-neutral-700);
