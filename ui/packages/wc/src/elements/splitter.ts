@@ -2,7 +2,7 @@ import type { Direction, IdGenerator, Orientation } from '@xihan-ui/core'
 import type { SplitterPanelProps, SplitterSchema, SplitterSizeChangeDetails, SplitterSizeChangeEndDetails } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
-import { connectSplitter, splitterMachine } from '@xihan-ui/headless'
+import { connectSplitter, splitterAnatomy, splitterMachine, splitterMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -76,6 +76,8 @@ const PANELS_CONVERTER = {
  * @csspart resize-trigger - role=separator 的分隔条，指针与键盘交互全在它身上
  */
 export class XhSplitterElement extends XhElement {
+  static override partContract = { anatomy: splitterAnatomy, meta: splitterMeta }
+
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
   // 描述符逐个写全，CEM 分析器读不了对象展开。

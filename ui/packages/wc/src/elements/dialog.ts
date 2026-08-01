@@ -2,7 +2,7 @@ import type { Cleanup, IdGenerator, Layer, RuntimeConfig } from '@xihan-ui/core'
 import type { DialogOpenChangeDetails, DialogSchema } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectDialog, dialogMachine } from '@xihan-ui/headless'
+import { connectDialog, dialogAnatomy, dialogMachine, dialogMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -31,6 +31,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart close-trigger - 关闭按钮
  */
 export class XhDialogElement extends XhElement {
+  static override partContract = { anatomy: dialogAnatomy, meta: dialogMeta }
+
   // role 不声明为响应式属性，复用 HTMLElement 原生反射，在 machineProps 里经 getAttribute 读取。
   static override properties = {
     open: { converter: BOOLEAN_CONVERTER },

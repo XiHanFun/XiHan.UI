@@ -8,7 +8,7 @@ import type {
   TransferValueChangeDetails,
 } from '@xihan-ui/headless'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
-import { connectTransfer, transferFocusKey, transferMachine } from '@xihan-ui/headless'
+import { connectTransfer, transferAnatomy, transferFocusKey, transferMachine, transferMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -75,6 +75,8 @@ function stripNativeDisabled(el: HTMLElement): void {
  * @csspart to-source-trigger - 往左搬的按钮，须是原生 button；oneWay 下恒为禁用
  */
 export class XhTransferElement extends XhElement {
+  static override partContract = { anatomy: transferAnatomy, meta: transferMeta }
+
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名声明既与基类类型冲突，也会盖掉原生反射。
   // 描述符逐个写全，CEM 分析器读不了对象展开。

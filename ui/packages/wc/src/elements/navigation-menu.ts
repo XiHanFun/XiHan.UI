@@ -3,7 +3,7 @@ import type { NavigationMenuSchema, NavigationMenuTranslations, NavigationMenuVa
 import type { Service } from '@xihan-ui/machine'
 import { isItemDisabled } from '@xihan-ui/behavior'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
-import { connectNavigationMenu, navigationMenuMachine } from '@xihan-ui/headless'
+import { connectNavigationMenu, navigationMenuAnatomy, navigationMenuMachine, navigationMenuMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -69,6 +69,8 @@ function authorDisabled(el: HTMLElement): boolean {
  * @csspart viewport - 可选的共享面板外壳，放在 root 里；都收起时 hidden
  */
 export class XhNavigationMenuElement extends XhElement {
+  static override partContract = { anatomy: navigationMenuAnatomy, meta: navigationMenuMeta }
+
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
   // 描述符逐个写全，CEM 分析器读不了对象展开。

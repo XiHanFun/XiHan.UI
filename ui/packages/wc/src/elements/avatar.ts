@@ -1,5 +1,5 @@
 import type { AvatarSchema, AvatarStatus, AvatarStatusChangeDetails } from '@xihan-ui/headless'
-import { avatarMachine, connectAvatar } from '@xihan-ui/headless'
+import { avatarAnatomy, avatarMachine, avatarMeta, connectAvatar } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -19,6 +19,8 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart fallback - 图片之外的回退内容，图片就绪后带 hidden
  */
 export class XhAvatarElement extends XhElement {
+  static override partContract = { anatomy: avatarAnatomy, meta: avatarMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     src: { converter: STRING_CONVERTER },

@@ -1,7 +1,7 @@
 import type { Orientation } from '@xihan-ui/core'
 import type { CheckboxGroupItemProps, CheckboxGroupSchema, CheckboxGroupValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled } from '@xihan-ui/behavior'
-import { checkboxGroupMachine, connectCheckboxGroup } from '@xihan-ui/headless'
+import { checkboxGroupAnatomy, checkboxGroupMachine, checkboxGroupMeta, connectCheckboxGroup } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -44,6 +44,8 @@ const LIST_CONVERTER = {
  * @csspart trigger - 全选/半选的父复选框，须写在 root 之内
  */
 export class XhCheckboxGroupElement extends XhElement {
+  static override partContract = { anatomy: checkboxGroupAnatomy, meta: checkboxGroupMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: LIST_CONVERTER },

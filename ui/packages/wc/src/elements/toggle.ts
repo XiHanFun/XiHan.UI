@@ -1,5 +1,5 @@
 import type { TogglePressedChangeDetails, ToggleSchema } from '@xihan-ui/headless'
-import { connectToggle, toggleMachine } from '@xihan-ui/headless'
+import { connectToggle, toggleAnatomy, toggleMachine, toggleMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -15,6 +15,8 @@ import { MachineController } from '../runtime/machine-controller'
  * @csspart root - role=button 的按钮（承载 aria-pressed / data-state）
  */
 export class XhToggleElement extends XhElement {
+  static override partContract = { anatomy: toggleAnatomy, meta: toggleMeta }
+
   static override properties = {
     pressed: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
     defaultPressed: { type: Boolean, attribute: 'default-pressed' },

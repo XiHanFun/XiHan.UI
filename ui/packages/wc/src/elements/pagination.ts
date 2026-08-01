@@ -1,6 +1,6 @@
 import type { Direction } from '@xihan-ui/core'
 import type { PaginationPageChangeDetails, PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
-import { connectPagination, paginationMachine } from '@xihan-ui/headless'
+import { connectPagination, paginationAnatomy, paginationMachine, paginationMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -41,6 +41,8 @@ function itemPage(el: HTMLElement): number {
  * @csspart ellipsis - 折叠掉的那几页的占位，对读屏隐藏
  */
 export class XhPaginationElement extends XhElement {
+  static override partContract = { anatomy: paginationAnatomy, meta: paginationMeta }
+
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
   // 描述符逐个写全，CEM 分析器读不了对象展开。

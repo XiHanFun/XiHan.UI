@@ -7,7 +7,7 @@ import type {
   CalendarWeekDay,
   CalendarWeekdayFormat,
 } from '@xihan-ui/headless'
-import { calendarMachine, connectCalendar } from '@xihan-ui/headless'
+import { calendarAnatomy, calendarMachine, calendarMeta, connectCalendar } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -53,6 +53,8 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart cell-trigger - 可点可聚焦层，承载 aria-selected/aria-disabled 与 roving tabindex
  */
 export class XhCalendarElement extends XhElement {
+  static override partContract = { anatomy: calendarAnatomy, meta: calendarMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: STRING_CONVERTER },

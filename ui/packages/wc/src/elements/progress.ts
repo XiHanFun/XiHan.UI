@@ -1,4 +1,4 @@
-import { connectProgress } from '@xihan-ui/headless'
+import { connectProgress, progressAnatomy, progressMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -13,6 +13,8 @@ import { XhElement } from '../element-base'
  * @csspart range - 已完成区段，长度按百分比写成内联 inline-size
  */
 export class XhProgressElement extends XhElement {
+  static override partContract = { anatomy: progressAnatomy, meta: progressMeta }
+
   static override properties = {
     value: { type: Number },
     max: { type: Number },

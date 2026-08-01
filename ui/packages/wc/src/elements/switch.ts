@@ -1,5 +1,5 @@
 import type { SwitchCheckedChangeDetails, SwitchSchema } from '@xihan-ui/headless'
-import { connectSwitch, switchMachine } from '@xihan-ui/headless'
+import { connectSwitch, switchAnatomy, switchMachine, switchMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -16,6 +16,8 @@ import { MachineController } from '../runtime/machine-controller'
  * @csspart thumb - 滑块
  */
 export class XhSwitchElement extends XhElement {
+  static override partContract = { anatomy: switchAnatomy, meta: switchMeta }
+
   static override properties = {
     checked: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
     defaultChecked: { type: Boolean, attribute: 'default-checked' },

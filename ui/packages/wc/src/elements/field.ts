@@ -1,7 +1,7 @@
 import type { Scope } from '@xihan-ui/core'
 import type { FieldProps } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
-import { connectField } from '@xihan-ui/headless'
+import { connectField, fieldAnatomy, fieldMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -27,6 +27,8 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart error-text - 错误文案（role=alert）；非 invalid 时带 hidden 收起，节点不卸载
  */
 export class XhFieldElement extends XhElement {
+  static override partContract = { anatomy: fieldAnatomy, meta: fieldMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     invalid: { type: Boolean },

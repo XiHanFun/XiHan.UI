@@ -1,7 +1,7 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
 import type { ListboxItemProps, ListboxSchema, ListboxSelectionMode, ListboxValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
-import { connectListbox, listboxMachine } from '@xihan-ui/headless'
+import { connectListbox, listboxAnatomy, listboxMachine, listboxMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -47,6 +47,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart item-group-label - 分组标题（本组 aria-labelledby 的目标）
  */
 export class XhListboxElement extends XhElement {
+  static override partContract = { anatomy: listboxAnatomy, meta: listboxMeta }
+
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名声明既与基类类型冲突，也会盖掉原生反射。别名保留原生行为，
   // 同时让 dir 进 observedAttributes——运行期改 dir 才会重跑 wire 换掉按键处理器。

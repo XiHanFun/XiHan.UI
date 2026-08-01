@@ -8,7 +8,7 @@ import type {
   FileUploadTranslations,
 } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
-import { connectFileUpload, fileUploadMachine } from '@xihan-ui/headless'
+import { connectFileUpload, fileUploadAnatomy, fileUploadMachine, fileUploadMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -70,6 +70,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart clear-trigger - 清空整份列表；列表为空时带原生 disabled
  */
 export class XhFileUploadElement extends XhElement {
+  static override partContract = { anatomy: fileUploadAnatomy, meta: fileUploadMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     // 文件与文案是对象，只走 property；files 给了即受控，内部写入只发 files-change

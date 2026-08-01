@@ -8,7 +8,7 @@ import type {
   EditableValueRevertDetails,
 } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
-import { connectEditable, editableMachine } from '@xihan-ui/headless'
+import { connectEditable, editableAnatomy, editableMachine, editableMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -63,6 +63,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart cancel-trigger - 撤销按钮；预览态收起
  */
 export class XhEditableElement extends XhElement {
+  static override partContract = { anatomy: editableAnatomy, meta: editableMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: STRING_CONVERTER },

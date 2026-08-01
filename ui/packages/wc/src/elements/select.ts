@@ -3,7 +3,7 @@ import type { SelectItemProps, SelectOpenChangeDetails, SelectSchema, SelectValu
 import type { Service } from '@xihan-ui/machine'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectSelect, selectMachine } from '@xihan-ui/headless'
+import { connectSelect, selectAnatomy, selectMachine, selectMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -52,6 +52,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart hidden-select - 表单影子，须是原生 select 空壳；选项由元素按当前值补齐，省略该节点即不参与表单
  */
 export class XhSelectElement extends XhElement {
+  static override partContract = { anatomy: selectAnatomy, meta: selectMeta }
+
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {

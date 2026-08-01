@@ -1,5 +1,5 @@
 import type { BadgeProps } from '@xihan-ui/headless'
-import { connectBadge } from '@xihan-ui/headless'
+import { badgeAnatomy, badgeMeta, connectBadge } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -11,6 +11,8 @@ import { XhElement } from '../element-base'
  * @csspart root - 承载 data-scope/data-part/data-variant 的展示节点
  */
 export class XhBadgeElement extends XhElement {
+  static override partContract = { anatomy: badgeAnatomy, meta: badgeMeta }
+
   // 属性缺席翻成 undefined，缺省值由 connect 决定
   static override properties = {
     variant: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },

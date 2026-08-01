@@ -1,5 +1,5 @@
 import type { TimeFieldSchema, TimeFieldValueChangeDetails, TimeGranularity, TimeHourCycle, TimeSegmentType } from '@xihan-ui/headless'
-import { connectTimeField, timeFieldMachine } from '@xihan-ui/headless'
+import { connectTimeField, timeFieldAnatomy, timeFieldMachine, timeFieldMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -56,6 +56,8 @@ function declaredSegment(el: HTMLElement, position: number): TimeSegmentType {
  * @csspart hidden-input - type=hidden 的表单出口，值是完整 ISO 串
  */
 export class XhTimeFieldElement extends XhElement {
+  static override partContract = { anatomy: timeFieldAnatomy, meta: timeFieldMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: STRING_CONVERTER },

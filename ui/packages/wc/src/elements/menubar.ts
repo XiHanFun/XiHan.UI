@@ -3,7 +3,7 @@ import type { MenubarItemProps, MenubarSchema, MenubarSelectDetails, MenubarValu
 import type { Service } from '@xihan-ui/machine'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectMenubar, menubarMachine } from '@xihan-ui/headless'
+import { connectMenubar, menubarAnatomy, menubarMachine, menubarMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -58,6 +58,8 @@ function authorDisabled(el: HTMLElement): boolean {
  * @csspart group-label - 分组标题，靠 id 被同组 group 的 aria-labelledby 指着
  */
 export class XhMenubarElement extends XhElement {
+  static override partContract = { anatomy: menubarAnatomy, meta: menubarMeta }
+
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {

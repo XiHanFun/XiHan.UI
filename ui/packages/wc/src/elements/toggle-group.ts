@@ -1,7 +1,7 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
 import type { ToggleGroupItemProps, ToggleGroupSchema, ToggleGroupValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
-import { connectToggleGroup, toggleGroupMachine } from '@xihan-ui/headless'
+import { connectToggleGroup, toggleGroupAnatomy, toggleGroupMachine, toggleGroupMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -39,6 +39,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart item - 开关按钮，须是原生 `<button>` 并自带 value 属性标识身份
  */
 export class XhToggleGroupElement extends XhElement {
+  static override partContract = { anatomy: toggleGroupAnatomy, meta: toggleGroupMeta }
+
   // dir 占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名声明既与基类类型冲突，也会盖掉原生反射。别名保留原生行为，
   // 同时让 dir 进 observedAttributes——运行期改 dir 才会重跑 wire 换掉按键处理器。

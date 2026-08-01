@@ -2,7 +2,7 @@ import type { Direction, IdGenerator, Orientation } from '@xihan-ui/core'
 import type { ScrollAreaOrientation, ScrollAreaSchema, ScrollAreaScrollbarProps, ScrollAreaType } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
-import { connectScrollArea, scrollAreaMachine } from '@xihan-ui/headless'
+import { connectScrollArea, scrollAreaAnatomy, scrollAreaMachine, scrollAreaMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -39,6 +39,8 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart corner - 两条滚动条同时在场时右下角那块补丁；只有一条时带 hidden
  */
 export class XhScrollAreaElement extends XhElement {
+  static override partContract = { anatomy: scrollAreaAnatomy, meta: scrollAreaMeta }
+
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
   // 描述符逐个写全，CEM 分析器读不了对象展开。

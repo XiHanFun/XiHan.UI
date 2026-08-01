@@ -9,7 +9,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { colorPickerMachine, colorPickerToChannel, colorPickerToInputChannel, connectColorPicker } from '@xihan-ui/headless'
+import { colorPickerAnatomy, colorPickerMachine, colorPickerMeta, colorPickerToChannel, colorPickerToInputChannel, connectColorPicker } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -75,6 +75,8 @@ const STRING_LIST_CONVERTER = {
  * @csspart swatch-item - 预设色板一格，须是原生 button 且自带 value 属性
  */
 export class XhColorPickerElement extends XhElement {
+  static override partContract = { anatomy: colorPickerAnatomy, meta: colorPickerMeta }
+
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {

@@ -1,7 +1,7 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
 import type { RadioGroupItemProps, RadioGroupSchema, RadioGroupValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
-import { connectRadioGroup, radioGroupMachine } from '@xihan-ui/headless'
+import { connectRadioGroup, radioGroupAnatomy, radioGroupMachine, radioGroupMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -28,6 +28,8 @@ import { MachineController } from '../runtime/machine-controller'
  * @csspart hidden-input - 条目的表单影子输入（必须是原生 input）
  */
 export class XhRadioGroupElement extends XhElement {
+  static override partContract = { anatomy: radioGroupAnatomy, meta: radioGroupMeta }
+
   // dir 是 HTMLElement 原生访问器，同名声明会与基类冲突并盖掉原生反射，故字段叫 direction、属性名仍用 dir
   static override properties = {
     value: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
