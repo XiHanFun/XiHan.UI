@@ -1,0 +1,33 @@
+# 一律以 LF 存库并以 LF 检出，不随各人的 core.autocrlf 变化。
+# 构建工具写出的是 LF，Windows 上若按 CRLF 检出，生成产物每次构建后都会永久显示为
+# 已修改而 diff 为空；「重跑生成器后 git diff --exit-code」这类门禁也会只在 Windows 上误报。
+* text=auto eol=lf
+
+# 源码与配置一律按文本处理，不走二进制自动探测
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+*.vue text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.svg text eol=lf
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+
+# 锁文件不参与 diff 展示，冲突一律重装解决
+pnpm-lock.yaml -diff linguist-generated=true
