@@ -16,7 +16,7 @@ createHighlighter().highlight('const x = 1', 'ts')
 
 想要那个精度，把 Shiki 之类接到同一个端口上即可，组件侧一行不用改：
 
-```ts
+```vue
 <XhCodeBlock :highlighter="myShikiAdapter" />
 ```
 

@@ -34,8 +34,8 @@
     "@xihan-ui/behavior": "workspace:*",
     "@xihan-ui/core": "workspace:*",
     "@xihan-ui/headless": "workspace:*",
-    "@xihan-ui/machine": "workspace:*",
     "@xihan-ui/highlight": "workspace:*",
+    "@xihan-ui/machine": "workspace:*",
     "@xihan-ui/position": "workspace:*"
   },
   "devDependencies": {
