@@ -11,7 +11,7 @@
 <p>
   <img alt="Status" src="https://img.shields.io/badge/Status-Experimental-orange?style=flat-square" />
   <img alt="Version" src="https://img.shields.io/badge/Version-unpublished-orange?style=flat-square" />
-  <img alt="Components" src="https://img.shields.io/badge/Components-62-1f6feb?style=flat-square" />
+  <img alt="Components" src="https://img.shields.io/badge/Components-65-1f6feb?style=flat-square" />
 </p>
 
 <p>
@@ -23,7 +23,7 @@
 
 <p>
   <img alt="Vue" src="https://img.shields.io/badge/Vue-3-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white" />
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-6-3178C6?style=flat-square&logo=typescript&logoColor=white" />
   <img alt="Vite" src="https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white" />
   <img alt="Turborepo" src="https://img.shields.io/badge/Turborepo-EF4444?style=flat-square&logo=turborepo&logoColor=white" />
   <img alt="pnpm" src="https://img.shields.io/badge/pnpm-F69220?style=flat-square&logo=pnpm&logoColor=white" />
@@ -46,7 +46,7 @@
 
 </div>
 
-> **实验性项目**：62 个组件的内核、Vue 适配器、Web Components 适配器与默认皮肤均已实现，无障碍扫描跑在真实 Chromium 上，但**尚未发布到 npm、尚无文档站**，且首轮扫出的存量无障碍问题尚未修完。请勿在生产环境依赖。
+> **实验性项目**：65 个组件的内核、Vue 适配器、Web Components 适配器与默认皮肤均已实现，无障碍扫描跑在真实 Chromium 上，但**尚未发布到 npm、尚无文档站**，且首轮扫出的存量无障碍问题尚未修完（17 个组件登记在案，外加一条全局的对比度问题）。请勿在生产环境依赖。
 
 ## 📋 项目概况
 
@@ -65,7 +65,7 @@ XiHan.UI 是一个框架无关的组件库：状态与无障碍逻辑沉在无�
 | `@xihan-ui/core` | 结构原语：anatomy / mergeProps / normalizeProps / Scope / context / id |
 | `@xihan-ui/machine` | 状态机运行时：`createMachine` + 解释器契约 + 受控值绑定 |
 | `@xihan-ui/behavior` | 行为原语：dismissable layer / focus scope / scroll lock / presence / collection / typeahead |
-| `@xihan-ui/headless` | 62 个组件的 anatomy + machine + connect（无样式、无框架） |
+| `@xihan-ui/headless` | 65 个组件的 anatomy + machine + connect（无样式、无框架） |
 | `@xihan-ui/vue` | Vue 3 适配器 |
 | `@xihan-ui/wc` | Web Components 适配器 |
 | `@xihan-ui/styled` | 默认皮肤（CSS，按 `@layer` 分层） |
@@ -78,7 +78,7 @@ XiHan.UI 是一个框架无关的组件库：状态与无障碍逻辑沉在无�
 
 ## 🧩 组件现状
 
-62 个组件，每个都有 headless 内核 + Vue 组件 + 自定义元素 + 默认皮肤：
+65 个组件，每个都有 headless 内核 + Vue 组件 + 自定义元素 + 默认皮肤：
 
 | 组 | 组件 |
 | --- | --- |
@@ -91,6 +91,7 @@ XiHan.UI 是一个框架无关的组件库：状态与无障碍逻辑沉在无�
 | 数据 | table · tree · tree-select · virtualizer |
 | 展示 | avatar · badge · image · carousel · accordion · collapsible · separator |
 | 反馈 | toast · toaster · progress · loading-bar |
+| AI | thread · composer · code-block |
 | 其他 | button · scroll-area · splitter · clipboard |
 
 两个 playground 逐组件对照两套适配器的行为：`apps/playground-vue` 与 `apps/playground-wc`。
@@ -104,6 +105,7 @@ XiHan.UI 是一个框架无关的组件库：状态与无障碍逻辑沉在无�
 - **AI 组件族**：协议内核与渲染内核已落地，Thread / Composer / CodeBlock 三件可用，
   代码着色走端口（内置自研粗粒度词法器，可换 Shiki）；
   MarkdownStream、Reasoning / ToolCall 折叠、工具审批仍在做
+- **体积棘轮**：size-limit 装好了但 `.size-limit.json` 还是空表，`pnpm size` 眼下什么都不查
 - **企业业务组件**：未开始
 
 ## 📦 本地开发
@@ -141,19 +143,20 @@ pnpm build
 
 ### 开发工具
 
-- **TypeScript**: 类型系统，四层 tsconfig + project references
+- **TypeScript**: 类型系统，四层 tsconfig（不用 project references，类型检查由 turbo 逐包跑）
 - **oxlint + ESLint**: 代码检查
 - **Stylelint / Prettier**: 样式与格式化
 - **dependency-cruiser**: 分层依赖门禁（唯一权威）
 - **Vitest**: 单元测试与跨适配器一致性测试（jsdom）
 - **@vitest/browser + Playwright + axe-core**: 真实 Chromium 里的无障碍扫描与浮层定位契约
-- **size-limit**: 体积棘轮
+- **size-limit**: 已装好但**尚未接入**——`.size-limit.json` 还是空表，`pnpm size` 眼下什么都不查
 
 ### 发布流程
 
 - **pnpm workspace**: 包管理，内部依赖一律 `workspace:*`，第三方版本统一走 catalog
-- **changesets**: 已接入，`fixed` 版本组同步发布
-- **GitHub Actions**: 已接入（lint → typecheck → boundaries → build → test → size）
+- **changesets**: 已接入，12 个公开包同属一个 `fixed` 版本组、锁步同版（`icons` 是私有包，不计版）
+- **GitHub Actions**: 已接入。主流水线 lint → typecheck → boundaries → build → test → size，
+  浏览器态另起一路（装 Chromium → build → test:browser）
 - **npm**: 尚未发布
 
 ## 🤝 贡献指南
