@@ -1,7 +1,6 @@
 // 定时副作用工具，用在 implementations.effects 里，返回值即 cleanup。
 // 由定时器发出的事件命名为 after.<delayName>，delayName 与 prop 名一致。
-import { isDev } from '@xihan-ui/core'
-import { MachineError } from './errors'
+import { raiseMachineError } from './errors'
 
 function resolveDelay(ms: number | (() => number)): number {
   return typeof ms === 'function' ? ms() : ms
@@ -15,8 +14,7 @@ function resolveDelay(ms: number | (() => number)): number {
 export function setTimeoutEffect(fn: () => void, ms: number | (() => number)): VoidFunction {
   const delay = resolveDelay(ms)
   if (!Number.isFinite(delay) || delay < 0) {
-    if (isDev())
-      throw new MachineError('INVALID_DELAY', `delay must be a finite non-negative number, got ${delay}`)
+    raiseMachineError('INVALID_DELAY', `delay must be a finite non-negative number, got ${delay}`)
     return () => {}
   }
   const id = setTimeout(fn, delay)
@@ -27,8 +25,7 @@ export function setTimeoutEffect(fn: () => void, ms: number | (() => number)): V
 export function setIntervalEffect(fn: () => void, ms: number | (() => number)): VoidFunction {
   const delay = resolveDelay(ms)
   if (!Number.isFinite(delay) || delay < 0) {
-    if (isDev())
-      throw new MachineError('INVALID_DELAY', `delay must be a finite non-negative number, got ${delay}`)
+    raiseMachineError('INVALID_DELAY', `delay must be a finite non-negative number, got ${delay}`)
     return () => {}
   }
   const id = setInterval(fn, delay)

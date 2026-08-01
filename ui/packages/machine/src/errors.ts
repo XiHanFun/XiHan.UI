@@ -1,4 +1,5 @@
-// 机器错误类型与错误码。
+// 机器错误类型与错误码，以及投递进诊断通道的入口。
+import { DIAGNOSTIC_CODES, isDev, reportDiagnostic } from '@xihan-ui/core'
 
 export type MachineErrorCode
   = | 'DUPLICATE_STATE_ID'
@@ -34,4 +35,29 @@ export class MachineError extends Error {
     this.code = code
     this.machineName = machineName
   }
+}
+
+/** 投递进诊断通道，dev 下额外抛出；prod 下不抛，由订阅方决定怎么处置。 */
+export function raiseMachineError(code: MachineErrorCode, message: string, machineName?: string): void {
+  const error = new MachineError(code, message, machineName)
+  reportDiagnostic({
+    code: DIAGNOSTIC_CODES.machineError,
+    level: 'error',
+    message: error.message,
+    scope: machineName,
+    detail: { machineCode: code },
+  })
+  if (isDev())
+    throw error
+}
+
+/** 上报机器在停机时携带的崩溃原因。 */
+export function reportMachineCrash(reason: unknown, machineName?: string): void {
+  reportDiagnostic({
+    code: DIAGNOSTIC_CODES.machineError,
+    level: 'error',
+    message: reason instanceof Error ? reason.message : String(reason),
+    scope: machineName,
+    detail: { machineCode: 'MACHINE_CRASHED' satisfies MachineErrorCode },
+  })
 }
