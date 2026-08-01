@@ -244,8 +244,6 @@ export const fileUploadMachine = createMachine({
         context.set('acceptedFiles', [])
       },
       // 打开选择框要调 input.click()，属 DOM 操作，connect 是纯函数故落在这里。
-      // 取节点走 getRootNode().getElementById 而非 scope.getById：后者依赖的 CSS.escape
-      // 在无头 DOM 环境常缺席，缺了当场抛
       openFilePicker: ({ scope }) => {
         scope.getRootNode().getElementById(fileUploadHiddenInputId(scope))?.click()
       },

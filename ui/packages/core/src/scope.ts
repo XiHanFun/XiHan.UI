@@ -54,8 +54,10 @@ export function createScope(node: Element | null | undefined, idGenerator: IdGen
     getRootNode,
     getDoc,
     getWin,
+    // 走 getElementById 而不是拼选择器：Document 与 ShadowRoot 都实现了它，
+    // 既不需要转义，也不依赖 CSS 这个全局（无头 DOM 环境里它常常缺席）。
     getById: <T extends Element = HTMLElement>(elId: string): T | null =>
-      getRootNode().querySelector<T>(`[id="${CSS.escape(elId)}"]`),
+      getRootNode().getElementById(elId) as T | null,
     partId: (component, part) => idGenerator.partId(component, id, part),
     ids: <K extends string>(component: string, ...parts: K[]) => {
       const out = {} as Record<K, string>

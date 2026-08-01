@@ -345,8 +345,6 @@ export const tagsInputMachine = createMachine({
           const value = context.get('focusedValue')
           if (value == null)
             return
-          // 取节点走 getRootNode().getElementById 而不是 scope.getById：
-          // 后者依赖的 CSS.escape 在无头 DOM 环境里常常缺席，缺了当场抛
           const el = scope.getRootNode().getElementById(tagsInputEditInputId(scope, value)) as HTMLInputElement | null
           if (!el)
             return
