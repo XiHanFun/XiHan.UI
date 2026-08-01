@@ -39,9 +39,9 @@
     outline-offset: calc(-1 * var(--xh-ring-width));
   }
 
-  /* white-space: pre 保留缩进不自动换行，长行改为横向滚动；等宽字族作为令牌的兜底值 */
+  /* white-space: pre 保留缩进不自动换行，长行改为横向滚动 */
   [data-scope='code-block'][data-part='code'] {
-    font-family: var(--xh-code-block-font, ui-monospace, monospace);
+    font-family: var(--xh-code-block-font, var(--xh-font-family-mono));
     white-space: pre;
   }
 

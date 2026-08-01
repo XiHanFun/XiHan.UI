@@ -1,0 +1,22 @@
+/*
+ * 库自己的基线，只作用于带 data-scope 的库节点，不碰宿主页面的任何元素。
+ *
+ * 层序上 xihan.reset 在 xihan.components 之前，所以组件皮肤里的任何显式声明都盖得住这里。
+ */
+@layer xihan.reset {
+  /* 尺寸一律含边框：皮肤里的宽高都是照可见盒子写的。 */
+  [data-scope],
+  [data-scope]::before,
+  [data-scope]::after {
+    box-sizing: border-box;
+  }
+
+  /*
+   * UA 样式会把表单控件的字体锁成系统默认，不跟随页面。
+   * 这几个元素是 UA 唯一强制字体的地方，标题一类不在其中，故不做全局 font: inherit。
+   */
+  [data-scope]:where(button, input, optgroup, select, textarea) {
+    font: inherit;
+    letter-spacing: inherit;
+  }
+}

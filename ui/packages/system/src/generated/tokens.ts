@@ -51,6 +51,7 @@ export const tokens = {
   "--xh-radius-lg": "8px",
   "--xh-radius-xl": "12px",
   "--xh-radius-full": "9999px",
+  "--xh-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
   "--xh-font-size-xs": "12px",
   "--xh-font-size-sm": "13px",
   "--xh-font-size-md": "14px",
