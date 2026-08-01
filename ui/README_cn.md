@@ -8,7 +8,7 @@
 
 65 个组件，每个都有 headless 内核、Vue 组件、自定义元素与默认皮肤。
 
-> **实验阶段**：尚未发布到 npm，尚无文档站；无障碍扫描已跑在真实 Chromium 上，但首轮扫出的存量问题尚未修完。请勿在生产环境依赖。
+> **实验阶段**：尚未发布到 npm，尚无文档站；无障碍扫描已跑在真实 Chromium 上，但首轮扫出的存量问题尚未修完（17 个组件登记在案，外加一条全局的对比度问题）。请勿在生产环境依赖。
 
 ## 包一览
 
@@ -56,7 +56,7 @@ pnpm typecheck
 pnpm lint
 pnpm boundaries   # 分层依赖门禁（dependency-cruiser）
 pnpm build
-pnpm size         # 体积棘轮
+pnpm size         # 体积棘轮：装好了但还没接入（.size-limit.json 仍是空表）
 ```
 
 ## 约定

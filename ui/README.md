@@ -8,7 +8,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 
 65 components, each shipping a headless core, a Vue component, a custom element, and a default skin.
 
-> **Experimental.** Not published to npm and no documentation site yet. Accessibility is scanned in real Chromium, but the first sweep left a backlog of recorded issues. Do not depend on it in production.
+> **Experimental.** Not published to npm and no documentation site yet. Accessibility is scanned in real Chromium, but the first sweep left a backlog of recorded issues (17 components plus one global contrast problem). Do not depend on it in production.
 
 ## Packages
 
@@ -56,7 +56,7 @@ pnpm typecheck
 pnpm lint
 pnpm boundaries   # layered dependency gate (dependency-cruiser)
 pnpm build
-pnpm size         # bundle size ratchet
+pnpm size         # bundle size ratchet — installed but not wired yet (.size-limit.json is still empty)
 ```
 
 ## Conventions

@@ -11,7 +11,7 @@ Web Components 适配器：把框架无关的 headless（anatomy + machine + con
 - 基类在 `src/reactive/`：属性 → 字段的单向转换、批量异步更新、控制器生命周期。
   `tests/reactive-parity.spec.ts` 是差分判据，逐条对拍 `@lit/reactive-element`（仅 devDependency）。
 
-## 与 Vue 适配器的取舍记录（M2 写 WC 时发现的 core/adapter 差异）
+## 与 Vue 适配器的取舍记录（写 WC 适配器时发现的 core/adapter 差异）
 
 - **Presence 模型不同（已知差异，非缺陷）**：Vue 用 Presence 卸载 content（关闭即从 DOM 移除）；
   WC 是 Light DOM，不能删用户节点，content **常驻**，关闭态只由 `data-state="closed"` 标记，
