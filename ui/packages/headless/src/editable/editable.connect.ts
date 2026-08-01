@@ -1,7 +1,7 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
 import type { EditableActivationMode, EditableApi, EditableSchema } from './editable.types'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { editableAnatomy } from './editable.anatomy'
 import {
   EDITABLE_DEFAULT_ACTIVATION_MODE,
@@ -163,6 +163,9 @@ export function connectEditable<T extends PropTypes>(
       'onBlur': () => send({ type: 'EDIT.LEAVE', src: 'blur' }),
       'onKeyDown': (event: KeyboardEvent) => {
         if (!editing || event.ctrlKey || event.metaKey || event.altKey)
+          return
+        // 组合期间的按键属于输入法候选框，组件一律不接
+        if (isComposingEvent(event))
           return
         if (event.key === 'Escape') {
           // 拦下浏览器自带的 Escape 回滚（部分浏览器会把输入框还原到默认值），免得两套撤销打架

@@ -2,7 +2,7 @@ import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
 import type { TagsInputApi, TagsInputItemProps, TagsInputSchema } from './tags-input.types'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
-import { contains, dataAttr } from '@xihan-ui/core'
+import { contains, dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { tagsInputAnatomy, tagsInputEditInputId } from './tags-input.anatomy'
 import { appendTags, isAtMax, isOverflow, splitTags, tagsDelimiter } from './tags-input.machine'
 
@@ -212,6 +212,9 @@ export function connectTagsInput<T extends PropTypes>(
       'onKeyDown': (event: KeyboardEvent) => {
         // 带 Ctrl/Meta/Alt 的组合归浏览器与读屏，一律不接
         if (!editable || event.ctrlKey || event.metaKey || event.altKey)
+          return
+        // 组合期间的按键属于输入法候选框，组件一律不接
+        if (isComposingEvent(event))
           return
         const el = event.currentTarget as HTMLInputElement
 

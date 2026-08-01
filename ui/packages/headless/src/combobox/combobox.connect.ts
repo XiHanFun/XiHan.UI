@@ -3,7 +3,7 @@ import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
 import type { ComboboxApi, ComboboxItemProps, ComboboxSchema } from './combobox.types'
 import { isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
-import { contains, dataAttr } from '@xihan-ui/core'
+import { contains, dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { comboboxAnatomy, comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 import { COMBOBOX_DEFAULT_PLACEMENT } from './combobox.machine'
 
@@ -186,6 +186,9 @@ export function connectCombobox<T extends PropTypes>(
       },
       'onKeyDown': (event: KeyboardEvent) => {
         if (!interactive)
+          return
+        // 组合期间的按键属于输入法候选框，组件一律不接
+        if (isComposingEvent(event))
           return
         const key = event.key
 

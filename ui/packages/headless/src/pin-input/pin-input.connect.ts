@@ -3,7 +3,7 @@ import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
 import type { PinInputApi, PinInputSchema } from './pin-input.types'
 import { focusSafely, navIntentFromKey, queryItems, stepIndex } from '@xihan-ui/behavior'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { pinInputAnatomy } from './pin-input.anatomy'
 import { isPinComplete, padPinValue, pinLength, sanitizePin } from './pin-input.machine'
 
@@ -162,6 +162,9 @@ export function connectPinInput<T extends PropTypes>(
       },
       'onKeyDown': (event: KeyboardEvent) => {
         if (disabled || event.ctrlKey || event.metaKey || event.altKey)
+          return
+        // 组合期间的按键属于输入法候选框，组件一律不接
+        if (isComposingEvent(event))
           return
         const el = event.currentTarget as HTMLInputElement
         if (event.key === 'Backspace') {

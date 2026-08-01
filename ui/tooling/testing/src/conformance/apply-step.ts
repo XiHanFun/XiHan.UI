@@ -43,16 +43,20 @@ function modifierFlags(mods: readonly ModifierKey[] = []): Record<string, boolea
   }
 }
 
-function keyInit(key: string, mods?: readonly ModifierKey[]): KeyboardEventInit {
+function keyInit(key: string, mods?: readonly ModifierKey[], composing?: boolean): KeyboardEventInit {
   const value = key === 'Space' ? ' ' : key
   const code = key === 'Space' ? 'Space' : key.length === 1 ? `Key${key.toUpperCase()}` : key
-  return { key: value, code, bubbles: true, cancelable: true, ...modifierFlags(mods) }
+  const init: KeyboardEventInit = { key: value, code, bubbles: true, cancelable: true, ...modifierFlags(mods) }
+  // 两个信号都给：不上报 isComposing 的输入法只把 keyCode 打成 229
+  return composing ? { ...init, isComposing: true, keyCode: 229 } : init
 }
 
-function dispatchKey(target: EventTarget, key: string, mods?: readonly ModifierKey[]): void {
-  const init = keyInit(key, mods)
+function dispatchKey(target: EventTarget, key: string, mods?: readonly ModifierKey[], composing?: boolean): void {
+  const init = keyInit(key, mods, composing)
   target.dispatchEvent(new KeyboardEvent('keydown', init))
-  target.dispatchEvent(new KeyboardEvent('keyup', init))
+  // 组合期间浏览器不派 keyup，照实模拟
+  if (!composing)
+    target.dispatchEvent(new KeyboardEvent('keyup', init))
 }
 
 function checkSettle(ctx: ApplyContext, cond: SettleCondition): boolean {
@@ -104,7 +108,7 @@ export async function applyStep(ctx: ApplyContext, step: Step): Promise<void> {
     // 每一下都重新取当下持有焦点的元素
     case 'key': {
       for (let i = 0; i < (step.repeat ?? 1); i++)
-        dispatchKey(ctx.doc.activeElement ?? ctx.doc.body, step.key, step.modifiers)
+        dispatchKey(ctx.doc.activeElement ?? ctx.doc.body, step.key, step.modifiers, step.composing)
       break
     }
     case 'type': {

@@ -14,6 +14,9 @@ export { resolveLabelling } from './capability/a11y/aria-labelling'
 // 能力：无障碍
 export type { HideOutsideOptions } from './capability/a11y/hide-outside'
 export { hideOutside } from './capability/a11y/hide-outside'
+// 能力：输入法
+export type { ComposingLike } from './capability/ime'
+export { isComposingEvent } from './capability/ime'
 export type { ComposeEventHandlerOptions, PossibleRef } from './compose'
 export { callAll, composeEventHandlers, composeRefs, isDict, isEventHandlerKey } from './compose'
 // 常量
