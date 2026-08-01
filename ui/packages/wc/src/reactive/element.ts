@@ -91,10 +91,20 @@ function attributeNameFor(name: string, options: PropertyDeclaration): string | 
 }
 
 /**
+ * 无 DOM 时的基座替身。类定义式在模块求值那一刻就会取 HTMLElement，
+ * 而任何 meta-framework 都会在 Node 里把入口模块求值一次。
+ * 元素在没有 customElements 的环境里本就不会被注册，替身只需让定义式成立。
+ */
+const HostBase: typeof HTMLElement
+  = typeof HTMLElement === 'undefined'
+    ? (class {} as unknown as typeof HTMLElement)
+    : HTMLElement
+
+/**
  * 响应式自定义元素基类：属性 → 字段的单向转换、批量异步更新、控制器生命周期。
  * 不做 shadow DOM、不做样式、不做模板渲染、不回写属性。
  */
-export class XhReactiveElement extends HTMLElement implements ReactiveControllerHost {
+export class XhReactiveElement extends HostBase implements ReactiveControllerHost {
   /** 子类以 `static properties = { 字段名: 选项 }` 声明响应式属性。 */
   static properties: PropertyDeclarations = {}
 

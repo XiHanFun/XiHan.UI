@@ -1,3 +1,4 @@
+import { version as VERSION } from '../package.json'
 import { XhAccordionElement } from './elements/accordion'
 import { XhAnchorElement } from './elements/anchor'
 import { XhAvatarElement } from './elements/avatar'
@@ -64,8 +65,6 @@ import { XhTreeElement } from './elements/tree'
 import { XhTreeSelectElement } from './elements/tree-select'
 import { XhVirtualizerElement } from './elements/virtualizer'
 import { defineElement } from './runtime/registry'
-
-const VERSION = '0.0.0'
 
 // 注册全部 xh-* 元素，需显式调用，主入口 import 不注册。
 export function defineXhElements(): void {
