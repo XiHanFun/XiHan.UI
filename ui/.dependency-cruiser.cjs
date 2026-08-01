@@ -1,6 +1,9 @@
-// 分层依赖门禁的单一权威。规则由 tooling/eslint-config/src/layers.json 生成。
-// 见 §2 依赖矩阵：层级越低越基础，只能依赖其 canDependOn 列出的包。
+// 分层依赖门禁的单一权威。规则由 tooling/eslint-config/src/layers.json 生成：
+// 层级越低越基础，只能依赖其 canDependOn 列出的包。
 const { layers } = require('./tooling/eslint-config/src/layers.json')
+
+// 库包允许引用的第三方运行时依赖，与 tooling/scripts/check-runtime-deps.mjs 的 ALLOWLIST 对应。
+const RUNTIME_DEP_ALLOWLIST = ['@internationalized/date']
 
 const names = Object.keys(layers)
 
@@ -50,6 +53,19 @@ module.exports = {
       from: { path: '^packages/styled/' },
       to: { path: '^packages/' },
     },
+    {
+      name: 'no-external-in-packages',
+      severity: 'error',
+      comment: '库包的运行时代码不得引第三方；确需保留的登记进 RUNTIME_DEP_ALLOWLIST 与 check-runtime-deps.mjs',
+      // 只管 src，与分层规则同一道理：测试要引 vitest 与 jsdom，那是工具不是产物。
+      // icons 是冻结的遗留包，见 no-unresolvable 里的同款豁免
+      from: { path: '^packages/[^/]+/src/', pathNot: '^packages/icons/' },
+      to: {
+        // 只咬会随包发出去的与压根没声明的。peer 不算：适配器引宿主框架正是它的契约。
+        dependencyTypes: ['npm', 'npm-optional', 'npm-bundled', 'npm-no-pkg', 'npm-unknown'],
+        pathNot: RUNTIME_DEP_ALLOWLIST.map(d => `node_modules/${d}/`),
+      },
+    },
     ...layerRules,
   ],
   options: {
@@ -62,7 +78,7 @@ module.exports = {
     },
     // 不用 includeOnly 收窄图：它会把"解析不出来"的边整条滤掉，
     // 于是最该拦的那种越界——伸手够了邻层却没在 package.json 里声明依赖——反而报绿。
-    // 改成把第三方摘掉，解析失败的边留在图里交给 no-unresolvable 咬。
-    exclude: { path: 'node_modules' },
+    // 也不 exclude node_modules：那会在规则求值前就把第三方的边从图里删掉，
+    // no-external-in-packages 便看不见任何东西。doNotFollow 已经保证不往里遍历。
   },
 }
