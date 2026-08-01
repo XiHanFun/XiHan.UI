@@ -6,14 +6,15 @@
     "system": { "level": 1, "canDependOn": [] },
     "behavior": { "level": 2, "canDependOn": ["core", "machine"] },
     "position": { "level": 2, "canDependOn": ["core"] },
+    "highlight": { "level": 2, "canDependOn": ["core"] },
     "headless": { "level": 3, "canDependOn": ["core", "machine", "behavior", "system"] },
     "styled": { "level": 3, "canDependOn": [] },
-    "vue": { "level": 4, "canDependOn": ["core", "machine", "behavior", "headless", "position", "system"] },
-    "wc": { "level": 4, "canDependOn": ["core", "machine", "behavior", "headless", "position", "system"] },
+    "vue": { "level": 4, "canDependOn": ["core", "machine", "behavior", "headless", "position", "highlight", "system"] },
+    "wc": { "level": 4, "canDependOn": ["core", "machine", "behavior", "headless", "position", "highlight", "system"] },
     "ai": { "level": 2, "canDependOn": ["core"] },
     "markdown": { "level": 2, "canDependOn": ["core"] },
     "i18n": { "level": 1, "canDependOn": [] },
     "icons": { "level": 1, "canDependOn": [] },
-    "pro": { "level": 5, "canDependOn": ["core", "machine", "behavior", "headless", "position", "styled", "system", "vue", "ai", "markdown", "i18n", "icons"] }
+    "pro": { "level": 5, "canDependOn": ["core", "machine", "behavior", "headless", "position", "highlight", "styled", "system", "vue", "ai", "markdown", "i18n", "icons"] }
   }
 }

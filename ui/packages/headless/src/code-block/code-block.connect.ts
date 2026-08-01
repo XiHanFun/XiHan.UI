@@ -16,9 +16,16 @@ export function connectCodeBlock<T extends PropTypes>(
   const lineCount = countCodeLines(props.code)
   const complete = dataAttr(props.complete)
 
+  // 未闭合的块默认不着色；着色实现返回 null 时同样退回纯文本
+  const streaming = props.complete !== true
+  const tokens = props.highlighter && (!streaming || props.highlightWhileStreaming === true)
+    ? props.highlighter.highlight(props.code, lang) ?? []
+    : []
+
   return {
     lang,
     lineCount,
+    tokens,
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -44,6 +51,12 @@ export function connectCodeBlock<T extends PropTypes>(
     getCodeProps: () => normalize.element({
       ...parts.code.attrs,
       'data-lang': lang,
+    }),
+
+    // 记号只带种类，配色全交给皮肤按 data-kind 选择器给
+    getTokenProps: token => normalize.element({
+      ...parts.token.attrs,
+      'data-kind': token.kind,
     }),
   }
 }

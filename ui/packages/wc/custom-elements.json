@@ -2762,6 +2762,10 @@
             {
               "description": "代码文本本身，承载 data-lang",
               "name": "code"
+            },
+            {
+              "description": "着色生效时的一个记号，承载 data-kind",
+              "name": "token"
             }
           ],
           "members": [
@@ -2793,6 +2797,32 @@
               "attribute": "complete"
             },
             {
+              "kind": "field",
+              "name": "highlightWhileStreaming",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "highlight-while-streaming"
+            },
+            {
+              "kind": "field",
+              "name": "highlighter",
+              "type": {
+                "text": "HighlighterPort | null | undefined"
+              },
+              "description": "换一个着色实现（典型是接 Shiki）；置 null 关掉着色。只走 property，属性表达不了对象。"
+            },
+            {
+              "kind": "field",
+              "name": "#painted",
+              "privacy": "private",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "上一次铺进 code 部件的那串记号，用来判断要不要重铺。"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -2801,6 +2831,31 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "#paint",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "tokens",
+                  "type": {
+                    "text": "readonly CodeToken[]"
+                  }
+                },
+                {
+                  "name": "propsOf",
+                  "type": {
+                    "text": "(token: CodeToken) => Record<string, unknown>"
+                  }
+                }
+              ],
+              "description": "着色生效时接管 code 部件的内容。\n本元素其余各处都不替作者生成节点，这里是**唯一的例外**：记号是算出来的派生数据，\n作者没法自己写。没有记号时一个节点都不动，作者写的代码文本原样留着。\n内容没变就不重铺——每次更新都重建节点会把用户正在拖的选区弄没。"
             }
           ],
           "attributes": [
@@ -2827,6 +2882,13 @@
               "description": "代码块是否已闭合",
               "name": "complete",
               "fieldName": "complete"
+            },
+            {
+              "name": "highlight-while-streaming",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "fieldName": "highlightWhileStreaming"
             }
           ],
           "superclass": {
