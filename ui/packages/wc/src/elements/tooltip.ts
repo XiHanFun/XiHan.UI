@@ -1,7 +1,7 @@
 import type { Placement, PositionEnginePort } from '@xihan-ui/core'
 import type { TooltipOpenChangeDetails, TooltipSchema } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
-import { connectTooltip, tooltipMachine } from '@xihan-ui/headless'
+import { connectTooltip, tooltipAnatomy, tooltipMachine, tooltipMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -41,6 +41,8 @@ const NUMBER_CONVERTER = {
  * @csspart arrow - 指向锚点的箭头，装饰性
  */
 export class XhTooltipElement extends XhElement {
+  static override partContract = { anatomy: tooltipAnatomy, meta: tooltipMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     open: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },

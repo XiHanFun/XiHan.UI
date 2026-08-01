@@ -1,7 +1,7 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
 import type { ToolbarItemProps, ToolbarSchema } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
-import { connectToolbar, toolbarMachine } from '@xihan-ui/headless'
+import { connectToolbar, toolbarAnatomy, toolbarMachine, toolbarMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -39,6 +39,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart separator - role=separator 分隔线，朝向恒与主轴垂直
  */
 export class XhToolbarElement extends XhElement {
+  static override partContract = { anatomy: toolbarAnatomy, meta: toolbarMeta }
+
   // dir 占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名声明既与基类类型冲突，也会盖掉原生反射。别名保留原生行为，
   // 同时让 dir 进 observedAttributes——运行期改 dir 才会重跑 wire 换掉按键处理器。

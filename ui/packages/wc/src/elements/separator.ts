@@ -1,5 +1,5 @@
 import type { SeparatorProps } from '@xihan-ui/headless'
-import { connectSeparator } from '@xihan-ui/headless'
+import { connectSeparator, separatorAnatomy, separatorMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -12,6 +12,8 @@ import { XhElement } from '../element-base'
  * @csspart root - 承载 role/aria-orientation/data-orientation 的分隔节点
  */
 export class XhSeparatorElement extends XhElement {
+  static override partContract = { anatomy: separatorAnatomy, meta: separatorMeta }
+
   // 属性缺席翻成 undefined，缺省值由 connect 决定
   static override properties = {
     orientation: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },

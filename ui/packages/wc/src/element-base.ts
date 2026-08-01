@@ -1,7 +1,11 @@
+import type { PartContract } from './dom/part-contract'
 import type { Spreader } from './dom/spread'
+import { validatePartContract } from './dom/part-contract'
 import { containsPart, discoverParts } from './dom/parts'
 import { createSpreader } from './dom/spread'
 import { XhReactiveElement } from './reactive'
+
+let instanceSeq = 0
 
 /**
  * 变动里是否真有角色节点进出。只认"进出的元素自身是角色节点、或其子树里有角色节点"：
@@ -34,9 +38,13 @@ function rewritesDeclaration(record: MutationRecord): boolean {
 
 // Light-DOM 行为宿主基类：不渲染结构，发现用户写的 data-xh-part 角色节点并往上打属性/事件。
 export abstract class XhElement extends XhReactiveElement {
+  /** 子类声明所属组件的解剖与元数据，接线后据它校验作者写的角色节点。 */
+  static partContract?: PartContract
+
   protected readonly spreader: Spreader = createSpreader()
   protected partMap: Map<string, HTMLElement[]> = new Map()
   private partObserver: MutationObserver | undefined
+  private readonly instanceId = `${++instanceSeq}`
 
   protected override createRenderRoot(): HTMLElement | DocumentFragment {
     return this // Light DOM，不建 shadowRoot
@@ -188,6 +196,9 @@ export abstract class XhElement extends XhReactiveElement {
     if (!this.isConnected)
       return
     this.refreshParts()
+    const contract = (this.constructor as typeof XhElement).partContract
+    if (contract)
+      validatePartContract(contract, this.partMap, this as unknown as HTMLElement, this.instanceId)
     // 观察器与 wire() 写的是同一批节点，不圈出本区间会自己触发自己；观察器回调是微任务，故圈到微任务排空为止。
     this.wiring = true
     try {

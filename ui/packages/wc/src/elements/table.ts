@@ -13,7 +13,7 @@ import type {
   TableSortDescriptor,
 } from '@xihan-ui/headless'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
-import { connectTable, tableMachine } from '@xihan-ui/headless'
+import { connectTable, tableAnatomy, tableMachine, tableMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -71,6 +71,8 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @csspart loading-state - 加载态节点，表体为空且正在加载时显形
  */
 export class XhTableElement extends XhElement {
+  static override partContract = { anatomy: tableAnatomy, meta: tableMeta }
+
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {

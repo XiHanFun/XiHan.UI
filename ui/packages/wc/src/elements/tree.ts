@@ -1,7 +1,7 @@
 import type { Direction } from '@xihan-ui/core'
 import type { TreeExpandedChangeDetails, TreeNode, TreeNodeProps, TreeSchema, TreeSelectionChangeDetails, TreeSelectionMode } from '@xihan-ui/headless'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
-import { connectTree, treeMachine } from '@xihan-ui/headless'
+import { connectTree, treeAnatomy, treeMachine, treeMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -51,6 +51,8 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @csspart branch-content - role=group 子层容器，收起时隐藏
  */
 export class XhTreeElement extends XhElement {
+  static override partContract = { anatomy: treeAnatomy, meta: treeMeta }
+
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名声明既与基类类型冲突，也会盖掉原生反射。别名保留原生行为，
   // 同时让 dir 进 observedAttributes——运行期改 dir 才会重跑 wire 换掉按键处理器。

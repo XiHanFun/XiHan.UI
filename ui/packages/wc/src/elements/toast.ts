@@ -1,5 +1,5 @@
 import type { ToastActionDetails, ToastSchema, ToastStatusChangeDetails, ToastTranslations, ToastType } from '@xihan-ui/headless'
-import { connectToast, toastMachine } from '@xihan-ui/headless'
+import { connectToast, toastAnatomy, toastMachine, toastMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -42,6 +42,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart close-trigger - 关闭按钮；closable=false 时转原生 disabled 并收起
  */
 export class XhToastElement extends XhElement {
+  static override partContract = { anatomy: toastAnatomy, meta: toastMeta }
+
   // 字段名与属性名分家的两处都是躲原生访问器：HTMLElement 的 id 与 title 都是原生反射属性，
   // 同名声明会盖掉它们（`el.id` 从此不再是 DOM id）。属性名保持与 Vue 侧的 prop 同名。
   // 描述符逐个写全，CEM 分析器读不了对象展开。

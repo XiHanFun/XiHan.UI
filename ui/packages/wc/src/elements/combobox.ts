@@ -10,7 +10,7 @@ import type {
 import type { Service } from '@xihan-ui/machine'
 import { isItemDisabled } from '@xihan-ui/behavior'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { comboboxMachine, connectCombobox } from '@xihan-ui/headless'
+import { comboboxAnatomy, comboboxMachine, comboboxMeta, connectCombobox } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -69,6 +69,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart empty - 无匹配项提示；须放在 positioner 里当 content 的兄弟（列表内只允许 option 与 group）
  */
 export class XhComboboxElement extends XhElement {
+  static override partContract = { anatomy: comboboxAnatomy, meta: comboboxMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: STRING_CONVERTER },

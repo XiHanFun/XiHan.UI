@@ -1,5 +1,5 @@
 import type { ButtonProps } from '@xihan-ui/headless'
-import { connectButton } from '@xihan-ui/headless'
+import { buttonAnatomy, buttonMeta, connectButton } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -15,6 +15,8 @@ import { XhElement } from '../element-base'
  * @csspart root - 承载 data-scope/data-part/data-* 的原生 button
  */
 export class XhButtonElement extends XhElement {
+  static override partContract = { anatomy: buttonAnatomy, meta: buttonMeta }
+
   static override properties = {
     type: {},
     disabled: { type: Boolean },

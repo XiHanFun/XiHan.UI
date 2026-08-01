@@ -1,5 +1,5 @@
 import type { NumberFieldSchema, NumberFieldValueChangeDetails } from '@xihan-ui/headless'
-import { connectNumberField, numberFieldMachine } from '@xihan-ui/headless'
+import { connectNumberField, numberFieldAnatomy, numberFieldMachine, numberFieldMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -37,6 +37,8 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart decrement-trigger - 减一步；贴住 min 时转 disabled
  */
 export class XhNumberFieldElement extends XhElement {
+  static override partContract = { anatomy: numberFieldAnatomy, meta: numberFieldMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: STRING_CONVERTER },

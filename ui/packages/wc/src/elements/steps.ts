@@ -1,7 +1,7 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
 import type { StepsItemProps, StepsSchema, StepsStepChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
-import { connectSteps, stepsMachine } from '@xihan-ui/headless'
+import { connectSteps, stepsAnatomy, stepsMachine, stepsMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -54,6 +54,8 @@ function stepIndexOf(el: HTMLElement): number {
  * @csspart content - role=tabpanel 的面板，须自带 value 与 trigger 配对；非当前步带 hidden
  */
 export class XhStepsElement extends XhElement {
+  static override partContract = { anatomy: stepsAnatomy, meta: stepsMeta }
+
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
   // 描述符逐个写全，CEM 分析器读不了对象展开。

@@ -7,7 +7,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
-import { connectVirtualizer, virtualizerMachine } from '@xihan-ui/headless'
+import { connectVirtualizer, virtualizerAnatomy, virtualizerMachine, virtualizerMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -60,6 +60,8 @@ function wantsMeasure(el: HTMLElement): boolean {
  * @csspart item - 条目，须自带 value 属性写明下标；位移由内联逻辑属性给出，不在窗口里时带 hidden
  */
 export class XhVirtualizerElement extends XhElement {
+  static override partContract = { anatomy: virtualizerAnatomy, meta: virtualizerMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     count: { converter: NUMBER_CONVERTER },

@@ -1,5 +1,5 @@
 import type { ImageSchema, ImageStatus, ImageStatusChangeDetails } from '@xihan-ui/headless'
-import { connectImage, imageMachine } from '@xihan-ui/headless'
+import { connectImage, imageAnatomy, imageMachine, imageMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -26,6 +26,8 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart fallback - 回退内容（占位图、骨架屏、图标）；加载失败恒显，加载途中要看延迟门槛
  */
 export class XhImageElement extends XhElement {
+  static override partContract = { anatomy: imageAnatomy, meta: imageMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     src: { converter: STRING_CONVERTER },

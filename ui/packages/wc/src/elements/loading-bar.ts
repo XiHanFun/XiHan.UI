@@ -1,5 +1,5 @@
 import type { LoadingBarSchema, LoadingBarTranslations, LoadingBarValueChangeDetails } from '@xihan-ui/headless'
-import { connectLoadingBar, loadingBarMachine } from '@xihan-ui/headless'
+import { connectLoadingBar, loadingBarAnatomy, loadingBarMachine, loadingBarMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -47,6 +47,8 @@ const HEIGHT_CONVERTER = {
  * @csspart range - 进度段；宽度由元素写进内联样式，样式层别碰那条轴
  */
 export class XhLoadingBarElement extends XhElement {
+  static override partContract = { anatomy: loadingBarAnatomy, meta: loadingBarMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: NUMBER_CONVERTER },

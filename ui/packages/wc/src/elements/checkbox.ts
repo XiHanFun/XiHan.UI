@@ -1,5 +1,5 @@
 import type { CheckboxCheckedChangeDetails, CheckboxSchema } from '@xihan-ui/headless'
-import { checkboxMachine, connectCheckbox } from '@xihan-ui/headless'
+import { checkboxAnatomy, checkboxMachine, checkboxMeta, connectCheckbox } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -16,6 +16,8 @@ import { MachineController } from '../runtime/machine-controller'
  * @csspart indicator - 选中标记
  */
 export class XhCheckboxElement extends XhElement {
+  static override partContract = { anatomy: checkboxAnatomy, meta: checkboxMeta }
+
   static override properties = {
     checked: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
     defaultChecked: { type: Boolean, attribute: 'default-checked' },

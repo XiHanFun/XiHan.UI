@@ -6,7 +6,7 @@ import type {
   TagsInputValueChangeDetails,
 } from '@xihan-ui/headless'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
-import { connectTagsInput, tagsInputMachine } from '@xihan-ui/headless'
+import { connectTagsInput, tagsInputAnatomy, tagsInputMachine, tagsInputMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -64,6 +64,8 @@ const ARRAY_CONVERTER = {
  * @csspart hidden-input - type=hidden 的表单出口，值是按 delimiter 拼好的整串
  */
 export class XhTagsInputElement extends XhElement {
+  static override partContract = { anatomy: tagsInputAnatomy, meta: tagsInputMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: ARRAY_CONVERTER },

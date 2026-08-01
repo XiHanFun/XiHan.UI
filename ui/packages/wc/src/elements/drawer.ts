@@ -2,7 +2,7 @@ import type { Cleanup, IdGenerator, Layer, RuntimeConfig } from '@xihan-ui/core'
 import type { DrawerOpenChangeDetails, DrawerSchema } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectDrawer, drawerMachine } from '@xihan-ui/headless'
+import { connectDrawer, drawerAnatomy, drawerMachine, drawerMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -38,6 +38,8 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart close-trigger - 关闭按钮
  */
 export class XhDrawerElement extends XhElement {
+  static override partContract = { anatomy: drawerAnatomy, meta: drawerMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   // role 不声明为响应式属性，复用 HTMLElement 原生反射，在 machineProps 里经 getAttribute 读取。
   static override properties = {

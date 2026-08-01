@@ -10,7 +10,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectTimePicker, timePickerMachine } from '@xihan-ui/headless'
+import { connectTimePicker, timePickerAnatomy, timePickerMachine, timePickerMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -89,6 +89,8 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @csspart hidden-input - type=hidden 的表单出口，值是完整 ISO 串
  */
 export class XhTimePickerElement extends XhElement {
+  static override partContract = { anatomy: timePickerAnatomy, meta: timePickerMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: STRING_CONVERTER },

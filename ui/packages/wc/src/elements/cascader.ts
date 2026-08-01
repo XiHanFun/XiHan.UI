@@ -11,7 +11,7 @@ import type {
 import type { Service } from '@xihan-ui/machine'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { cascaderMachine, connectCascader } from '@xihan-ui/headless'
+import { cascaderAnatomy, cascaderMachine, cascaderMeta, connectCascader } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -75,6 +75,8 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @csspart item-indicator - 条目选中标记（aria-hidden）
  */
 export class XhCascaderElement extends XhElement {
+  static override partContract = { anatomy: cascaderAnatomy, meta: cascaderMeta }
+
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {

@@ -9,7 +9,7 @@ import type {
   ToastRecord,
   ToastStatusChangeDetails,
 } from '@xihan-ui/headless'
-import { connectToaster, toasterMachine } from '@xihan-ui/headless'
+import { connectToaster, toasterAnatomy, toasterMachine, toasterMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -53,6 +53,8 @@ function groupPlacement(el: HTMLElement): ToastPlacement | undefined {
  * @csspart group - 某一个位置上的那一摞，可自带 placement 属性；承载 data-placement / data-count / data-empty 与间距
  */
 export class XhToasterElement extends XhElement {
+  static override partContract = { anatomy: toasterAnatomy, meta: toasterMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     // 队列与文案都是对象，走不了属性；只作为 property 暴露，与 Vue 侧的同名 prop 对齐。

@@ -10,7 +10,7 @@ import type {
 import type { Service } from '@xihan-ui/machine'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectTreeSelect, treeSelectMachine } from '@xihan-ui/headless'
+import { connectTreeSelect, treeSelectAnatomy, treeSelectMachine, treeSelectMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -82,6 +82,8 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @csspart hidden-input - type=hidden 的表单出口，省略该节点即不参与表单
  */
 export class XhTreeSelectElement extends XhElement {
+  static override partContract = { anatomy: treeSelectAnatomy, meta: treeSelectMeta }
+
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {

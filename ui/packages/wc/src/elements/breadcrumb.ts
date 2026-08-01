@@ -1,6 +1,6 @@
 import type { Direction } from '@xihan-ui/core'
 import type { BreadcrumbProps, BreadcrumbTranslations } from '@xihan-ui/headless'
-import { connectBreadcrumb } from '@xihan-ui/headless'
+import { breadcrumbAnatomy, breadcrumbMeta, connectBreadcrumb } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -29,6 +29,8 @@ function authorFlag(el: HTMLElement, name: string): boolean {
  * @csspart ellipsis - li 折叠占位，对读屏隐藏
  */
 export class XhBreadcrumbElement extends XhElement {
+  static override partContract = { anatomy: breadcrumbAnatomy, meta: breadcrumbMeta }
+
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {

@@ -1,5 +1,5 @@
 import type { TextFieldSchema, TextFieldValueChangeDetails } from '@xihan-ui/headless'
-import { connectTextField, textFieldMachine } from '@xihan-ui/headless'
+import { connectTextField, textFieldAnatomy, textFieldMachine, textFieldMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -39,6 +39,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart clear-trigger - 清空按钮；未开 clearable 时收起，无值或不可编辑时置灰
  */
 export class XhTextFieldElement extends XhElement {
+  static override partContract = { anatomy: textFieldAnatomy, meta: textFieldMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: STRING_CONVERTER },

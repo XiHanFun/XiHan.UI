@@ -1,6 +1,6 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
 import type { CarouselPageChangeDetails, CarouselSchema, CarouselTranslations } from '@xihan-ui/headless'
-import { carouselMachine, connectCarousel } from '@xihan-ui/headless'
+import { carouselAnatomy, carouselMachine, carouselMeta, connectCarousel } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -68,6 +68,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart indicator - 一页一个的指示点，可自带 index 属性；当前页带 aria-current="true"
  */
 export class XhCarouselElement extends XhElement {
+  static override partContract = { anatomy: carouselAnatomy, meta: carouselMeta }
+
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {

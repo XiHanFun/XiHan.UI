@@ -1,5 +1,5 @@
 import type { ClipboardCopyErrorDetails, ClipboardSchema, ClipboardStatusChangeDetails } from '@xihan-ui/headless'
-import { clipboardMachine, connectClipboard } from '@xihan-ui/headless'
+import { clipboardAnatomy, clipboardMachine, clipboardMeta, connectClipboard } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -29,6 +29,8 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart indicator - 状态标记；写 `copied` 属性的那个是成功侧，不写的是平时那侧
  */
 export class XhClipboardElement extends XhElement {
+  static override partContract = { anatomy: clipboardAnatomy, meta: clipboardMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: STRING_CONVERTER },

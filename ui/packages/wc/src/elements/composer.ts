@@ -5,7 +5,7 @@ import type {
   ComposerTranslations,
   ComposerValueChangeDetails,
 } from '@xihan-ui/headless'
-import { composerMachine, connectComposer } from '@xihan-ui/headless'
+import { composerAnatomy, composerMachine, composerMeta, connectComposer } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -35,6 +35,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart submit-trigger - 发送 / 停止按钮，皮肤按 data-mode 换图标
  */
 export class XhComposerElement extends XhElement {
+  static override partContract = { anatomy: composerAnatomy, meta: composerMeta }
+
   // 描述符逐个写全，不用对象展开，CEM 分析器的 lit 插件读不了展开元素的名字
   static override properties = {
     value: { converter: STRING_CONVERTER },

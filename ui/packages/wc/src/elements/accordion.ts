@@ -1,7 +1,7 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
 import type { AccordionItemProps, AccordionSchema, AccordionValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled } from '@xihan-ui/behavior'
-import { accordionMachine, connectAccordion } from '@xihan-ui/headless'
+import { accordionAnatomy, accordionMachine, accordionMeta, connectAccordion } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -25,6 +25,8 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @csspart indicator - 展开方向指示符
  */
 export class XhAccordionElement extends XhElement {
+  static override partContract = { anatomy: accordionAnatomy, meta: accordionMeta }
+
   static override properties = {
     // 展开集合是字符串数组，只走 property
     value: { attribute: false },

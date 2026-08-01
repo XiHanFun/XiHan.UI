@@ -1,5 +1,5 @@
 import type { DateFieldSchema, DateFieldValueChangeDetails, DateGranularity, DateSegmentType } from '@xihan-ui/headless'
-import { connectDateField, dateFieldMachine } from '@xihan-ui/headless'
+import { connectDateField, dateFieldAnatomy, dateFieldMachine, dateFieldMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -56,6 +56,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart hidden-input - type=hidden 的表单出口，值是 ISO 串
  */
 export class XhDateFieldElement extends XhElement {
+  static override partContract = { anatomy: dateFieldAnatomy, meta: dateFieldMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     value: { converter: STRING_CONVERTER },

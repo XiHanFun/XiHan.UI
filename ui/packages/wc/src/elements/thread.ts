@@ -2,7 +2,7 @@ import type { IdGenerator, RuntimeConfig } from '@xihan-ui/core'
 import type { ThreadSchema, ThreadStatus, ThreadStickChangeDetails, ThreadTranslations } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectThread, threadMachine } from '@xihan-ui/headless'
+import { connectThread, threadAnatomy, threadMachine, threadMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -27,6 +27,8 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart live-region - 视觉隐藏的播报区（role=status + aria-live=polite + aria-atomic）
  */
 export class XhThreadElement extends XhElement {
+  static override partContract = { anatomy: threadAnatomy, meta: threadMeta }
+
   // 描述符逐个写全，不用对象展开，CEM 分析器的 lit 插件读不了展开元素的名字
   static override properties = {
     status: { converter: STRING_CONVERTER },

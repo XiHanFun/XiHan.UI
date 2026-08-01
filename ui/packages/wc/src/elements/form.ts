@@ -9,7 +9,7 @@ import type {
   FormValues,
   FormValuesChangeDetails,
 } from '@xihan-ui/headless'
-import { connectForm, formMachine } from '@xihan-ui/headless'
+import { connectForm, formAnatomy, formMachine, formMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -64,6 +64,8 @@ function fieldNameOf(el: HTMLElement): string {
  * @csspart reset-trigger - 重置键，须是原生 button（连接层写成 type=reset）
  */
 export class XhFormElement extends XhElement {
+  static override partContract = { anatomy: formAnatomy, meta: formMeta }
+
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     // 四张表与校验函数都是对象/函数，走不了属性；只作为 property 暴露，与 Vue 侧的同名 prop 对齐。

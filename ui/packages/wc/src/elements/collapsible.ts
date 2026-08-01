@@ -1,5 +1,5 @@
 import type { CollapsibleOpenChangeDetails, CollapsibleSchema } from '@xihan-ui/headless'
-import { collapsibleMachine, connectCollapsible } from '@xihan-ui/headless'
+import { collapsibleAnatomy, collapsibleMachine, collapsibleMeta, connectCollapsible } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -18,6 +18,8 @@ import { MachineController } from '../runtime/machine-controller'
  * @csspart content - 可折叠内容（收起时隐藏）
  */
 export class XhCollapsibleElement extends XhElement {
+  static override partContract = { anatomy: collapsibleAnatomy, meta: collapsibleMeta }
+
   static override properties = {
     open: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
