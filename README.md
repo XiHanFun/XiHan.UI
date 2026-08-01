@@ -1,7 +1,5 @@
 <div align="center">
-
-<img src="./assets/logo.png" alt="XiHan.UI" width="120" />
-
+<img src="./assets/banner.png" alt="XiHan.UI" />
 <h1>XiHan.UI</h1>
 
 <p><b>快速、轻量、高效、用心的跨框架组件库</b></p>
