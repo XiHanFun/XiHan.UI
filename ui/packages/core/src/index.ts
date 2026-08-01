@@ -43,6 +43,7 @@ export type { Cleanup, Dict, Direction, Disposable, MaybeBooleanish, Orientation
 export { toCleanup } from './types'
 
 // 端口类型
+export type { CodeToken, CodeTokenKind, HighlighterPort } from './types/highlighter'
 export type {
   Align,
   Anchor,

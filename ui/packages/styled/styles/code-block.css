@@ -44,4 +44,38 @@
     font-family: var(--xh-code-block-font, ui-monospace, monospace);
     white-space: pre;
   }
+
+  /* 语法配色。令牌集里没有语法色这一类，所以就地声明成可覆盖的变量：
+     注释与标点复用既有语义色，只有三种真需要色相的走 light-dark()。
+     浏览器不认 light-dark() 时这几条整体失效，退化成单色代码，读起来照常。 */
+  [data-scope='code-block'][data-part='root'] {
+    --xh-code-block-comment-fg: var(--xh-fg-muted);
+    --xh-code-block-punctuation-fg: var(--xh-fg-subtle);
+    --xh-code-block-string-fg: light-dark(#0a7f5f, #7ee2b8);
+    --xh-code-block-number-fg: light-dark(#9a5b00, #f0b866);
+    --xh-code-block-keyword-fg: light-dark(#8250df, #d2a8ff);
+  }
+
+  /* 记号本身不带任何布局，只上色：它是 <code> 里的行内片段，多一点盒模型都会破坏对齐 */
+  [data-scope='code-block'][data-part='token'][data-kind='comment'] {
+    color: var(--xh-code-block-comment-fg);
+    font-style: italic;
+  }
+
+  [data-scope='code-block'][data-part='token'][data-kind='string'] {
+    color: var(--xh-code-block-string-fg);
+  }
+
+  [data-scope='code-block'][data-part='token'][data-kind='number'] {
+    color: var(--xh-code-block-number-fg);
+  }
+
+  [data-scope='code-block'][data-part='token'][data-kind='keyword'] {
+    color: var(--xh-code-block-keyword-fg);
+    font-weight: var(--xh-code-block-keyword-weight, 600);
+  }
+
+  [data-scope='code-block'][data-part='token'][data-kind='punctuation'] {
+    color: var(--xh-code-block-punctuation-fg);
+  }
 }

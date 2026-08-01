@@ -24,6 +24,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 | `@xihan-ui/system` | Design tokens (from DTCG sources) + theme runtime (color scheme / density / direction) |
 | `@xihan-ui/position` | Floating layer positioning — self-implemented, no third-party runtime dependency |
 | `@xihan-ui/ai` | AI protocol core: SSE reading → protocol normalization → parts reduction → thread store (no DOM, no framework) |
+| `@xihan-ui/highlight` | Code highlighting — self-implemented coarse tokenizer, no third-party runtime dependency |
 | `@xihan-ui/markdown` | Streaming markdown renderer: incremental block splitting, stable keys, sanitization (CommonMark subset, 489/652) |
 | `@xihan-ui/icons` | Icon set |
 

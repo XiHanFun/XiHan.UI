@@ -3288,11 +3288,18 @@ const codeBlockPartial = `const stream = await client.chat({
         它还写了 user-select: none，框选代码去复制时不会把「typescript」这行一起框走。
         这里没有复制按钮：复制是一段带「已复制」反馈的状态机，要它就把上面的 Clipboard 组合进来，别在这儿再造一套。
       </p>
+      <p class="lead">
+        着色走端口：组件默认接上自研的粗粒度词法器，只分注释、字符串、数字、关键字、标点五类，
+        不分类型名与函数名——那要语法树才办得到。想要那个精度就把 Shiki 之类接到 <code>highlighter</code> 上，
+        组件侧一行不用改；传 <code>null</code> 则整个关掉。认不出的语言、超长代码一律退回纯文本，不着色是合法结果。
+      </p>
       <XhCodeBlock :code="codeBlockSample" lang="typescript" complete />
       <p class="lead" style="margin-block-start: 20px;">
         这一台是吐到一半的样子：最后一行断在半个表达式上，围栏也还没闭合，所以 <code>complete</code> 写的是 false，
         root 与 pre 上都不挂 data-complete（皮肤没给未闭合态另画样子，去 DevTools 里看这个属性的有无）。
         语言标注同样没吐出来：空白、半截、不认识的一律落到 plaintext，下游拿到的永远是个非空串，不必各自再兜一遍空值。
+        它也没上色：未闭合的块默认不着色，因为半截代码的词法本来就不稳——引号和括号随时会配上，
+        每来一个 token 整块变一次色，比不着色更难看。真想看流式着色就开 <code>highlight-while-streaming</code>。
       </p>
       <XhCodeBlock :code="codeBlockPartial" :complete="false" />
     </section>
