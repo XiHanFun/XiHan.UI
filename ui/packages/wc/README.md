@@ -6,8 +6,14 @@ Web Components 适配器：把框架无关的 headless（anatomy + machine + con
 - 元素不渲染结构；用户写带 `data-xh-part` 的 Light-DOM 子节点，元素发现后用
   `spreadProps` 把 `connect()` 产出命令式打上去。每个组件一个 `xh-*` 元素，part 不是各自的元素。
 - `MachineController` 把机器唯一解释器 `createService` 桥到 controller 生命周期，
-  不重造 FSM。主入口零 `HTMLElement` 派生，Node 下可安全 import；
-  元素类只在 `@xihan-ui/wc/define` 子路径，`defineXhElements()` 显式惰性注册。
+  不重造 FSM。元素类只在 `@xihan-ui/wc/define` 子路径，`defineXhElements()` 显式注册。
+- **两个入口在 Node 下都可安全 import**：基类无 DOM 时取一个替身基座（`src/reactive/element.ts`），
+  元素类的定义式不再在模块求值那一刻取 `HTMLElement`；`defineElement` 无 `customElements` 时静默跳过。
+  判据在 `tests/node-smoke.spec.ts`。
+- **升级前的形态**：收起态由元素在 `wire()` 里用内联 display 做，`data-scope` / `data-part` 也是
+  那一刻才打上，所以 JS 到达前浮层子树既没有皮肤也没有收起。styled 的 `styles/undefined.css`
+  按作者写的 `data-xh-part` 把浮层族的 backdrop / content / positioner / viewport 收起来，
+  SSR 直出的首屏不会把浮层内容倾泻进页面流。不引 styled 的宿主需自行处理这一段。
 - 基类在 `src/reactive/`：属性 → 字段的单向转换、批量异步更新、控制器生命周期。
   `tests/reactive-parity.spec.ts` 是差分判据，逐条对拍 `@lit/reactive-element`（仅 devDependency）。
 

@@ -17,3 +17,20 @@ describe('node import smoke（无 DOM 惰性注册）', () => {
     expect(() => defineElement('xh-nope', class {} as CustomElementConstructor, '0.0.0')).not.toThrow()
   })
 })
+
+// 任何 meta-framework 都会在 Node 里把入口模块求值一次，元素类的定义式不能在那一刻炸。
+describe('node import：元素入口', () => {
+  it('define 入口可 import', async () => {
+    await expect(import('../src/define')).resolves.toBeDefined()
+  })
+
+  it('无 customElements 时 defineXhElements 不抛', async () => {
+    const { defineXhElements } = await import('../src/define')
+    expect(() => defineXhElements()).not.toThrow()
+  })
+
+  it('元素基类在无 DOM 下也能取到', async () => {
+    const { XhReactiveElement } = await import('../src/reactive')
+    expect(typeof XhReactiveElement).toBe('function')
+  })
+})
