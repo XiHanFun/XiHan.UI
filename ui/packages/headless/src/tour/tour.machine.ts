@@ -248,6 +248,9 @@ export const tourMachine = createMachine({
             {
               placement: step?.placement ?? prop('placement') ?? TOUR_DEFAULT_PLACEMENT,
               offset: prop('offset') ?? TOUR_DEFAULT_OFFSET,
+              // positioner 渲染成 fixed（见 connect），坐标系必须跟着走视口系，
+              // 否则页面一滚气泡就整体偏掉一个 scrollY
+              strategy: 'fixed',
             },
             result => context.set('position', result),
           )
