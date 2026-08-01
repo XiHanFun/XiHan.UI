@@ -179,7 +179,7 @@ describe('normalizeDataStreamV1 哨兵与丢弃', () => {
   })
 
   it('不认识的 type 丢弃（协议向前扩展，不是错误）', () => {
-    const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const spy = vi.spyOn(console, 'warn').mockImplementation(() => {})
     expect(normalizeDataStreamV1(frame({ type: 'quantum-entangle' }))).toBeNull()
     expect(spy).toHaveBeenCalledOnce()
   })

@@ -21,11 +21,13 @@
   "files": ["dist"],
   "scripts": {
     "build": "tsdown",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
   },
   "dependencies": {},
   "devDependencies": {
     "@xihan-ui/build": "workspace:*",
-    "@xihan-ui/tsconfig": "workspace:*"
+    "@xihan-ui/tsconfig": "workspace:*",
+    "vitest": "catalog:"
   }
 }
