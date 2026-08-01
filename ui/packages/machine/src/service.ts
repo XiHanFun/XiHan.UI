@@ -22,7 +22,7 @@ import type {
 // 解释器：把 machine 定义与注入的响应式宿主组合成可运行的 service。
 // 事件走同步 FIFO 队列 + run-to-completion，转移走六阶段编排。
 import { callAll, createCounterIdGenerator, createScope, isDev } from '@xihan-ui/core'
-import { MachineError } from './errors'
+import { MachineError, raiseMachineError, reportMachineCrash } from './errors'
 import {
   choose,
   findTransition,
@@ -147,8 +147,7 @@ export function createService<T extends MachineSchema>(
   }
 
   function failClosed(code: 'MISSING_ACTION' | 'MISSING_GUARD' | 'MISSING_EFFECT', name: string): void {
-    if (isDev())
-      throw new MachineError(code, `"${name}" is not registered in implementations`, machine.name)
+    raiseMachineError(code, `"${name}" is not registered in implementations`, machine.name)
     inspect?.({ type: 'event', machineName: machine.name, state: currentState as T['state'], detail: `unhandled: ${name}` })
   }
 
@@ -250,8 +249,7 @@ export function createService<T extends MachineSchema>(
 
   function send(event: T['event']): void {
     if (status === 'NotStarted') {
-      if (isDev())
-        throw new MachineError('SEND_BEFORE_MOUNT', `send("${event.type}") before mount`, machine.name)
+      raiseMachineError('SEND_BEFORE_MOUNT', `send("${event.type}") before mount`, machine.name)
       return
     }
     // 停机后一律丢弃事件，dev 也不抛
@@ -336,8 +334,11 @@ export function createService<T extends MachineSchema>(
     teardownAllEffects()
     runActions(machine.exit, currentEvent)
     status = 'Stopped'
-    if (reason && isDev())
-      throw reason
+    if (reason) {
+      reportMachineCrash(reason, machine.name)
+      if (isDev())
+        throw reason
+    }
   }
 
   runtime.onMount(() => {
