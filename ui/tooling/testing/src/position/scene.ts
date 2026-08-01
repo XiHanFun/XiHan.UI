@@ -41,6 +41,9 @@ export function attachProbe(
   let last: PositionResult | null = null
   let count = 0
 
+  // 浮层自身的 position 必须与引擎用的坐标系一致，否则 fixed 用例量的还是个 absolute 元素
+  floating.style.position = options.strategy ?? 'absolute'
+
   const stop = engine.attach(anchor, floating, options, (result) => {
     last = result
     count += 1
@@ -80,7 +83,7 @@ export interface Stage {
   /** 铺满视口的定位容器，锚点与浮层都放在它里面。 */
   root: HTMLElement
   /** 放一个锚点到视口坐标 (x, y)。 */
-  putAnchor: (x: number, y: number, width?: number, height?: number) => HTMLElement
+  putAnchor: (x: number, y: number, width?: number, height?: number, host?: HTMLElement) => HTMLElement
   /** 放一个浮层，默认 40×24，够小以便四周都留得出空间。 */
   putFloating: (width?: number, height?: number, host?: HTMLElement) => HTMLElement
   cleanup: () => void
@@ -101,11 +104,14 @@ export function createStage(): Stage {
 
   return {
     root,
-    putAnchor: (x, y, width = 100, height = 40) => {
+    putAnchor: (x, y, width = 100, height = 40, host) => {
       const el = document.createElement('button')
       el.type = 'button'
       el.style.cssText = `position:absolute;left:${x}px;top:${y}px;width:${width}px;height:${height}px;margin:0;padding:0;border:0`
-      root.appendChild(el)
+      const parent = host ?? root
+      parent.appendChild(el)
+      if (host)
+        extra.push(el)
       return el
     },
     putFloating: (width = 40, height = 24, host) => {

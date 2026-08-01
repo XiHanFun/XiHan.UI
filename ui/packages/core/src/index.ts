@@ -74,6 +74,7 @@ export type {
   PositionOptions,
   PositionRect,
   PositionResult,
+  PositionStrategy,
   Side,
   VirtualAnchor,
 } from './types/position'

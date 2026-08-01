@@ -478,4 +478,141 @@ export function runPositionEngine(engine: PositionEnginePort, hooks: TestHooks, 
       }
     })
   })
+
+  hooks.describe(`定位引擎：fixed 坐标系（${engineName}）`, () => {
+    // 12 种 placement 在 fixed 下整套重跑。expectPlacedAt 断言的是两个视口矩形，天然跨策略通用。
+    for (const placement of PLACEMENTS) {
+      hooks.it(`${placement}：fixed 下同样贴合`, async () => {
+        const stage = createStage()
+        try {
+          const center = viewportCenter()
+          const anchor = stage.putAnchor(center.x, center.y)
+          const floating = stage.putFloating()
+          const probe = attachProbe(engine, anchor, floating, { placement, offset: OFFSET, strategy: 'fixed' })
+          await probe.settle()
+
+          expectSame(probe.last().placement, placement, '四周都有空间时不该改 placement')
+          expectPlacedAt(anchor.getBoundingClientRect(), floating.getBoundingClientRect(), placement, OFFSET)
+          probe.stop()
+        }
+        finally {
+          stage.cleanup()
+        }
+      })
+    }
+
+    // 本特性的正面判据：这一条在 absolute 下必然被裁
+    hooks.it('祖先 overflow:hidden 裁不住它，位置照旧贴合', async () => {
+      const stage = createStage()
+      try {
+        const box = document.createElement('div')
+        box.style.cssText = 'position:absolute;left:60px;top:60px;width:200px;height:120px;overflow:hidden'
+        stage.root.appendChild(box)
+        const anchor = stage.putAnchor(20, 40, 100, 40, box)
+        const floating = stage.putFloating(40, 24, box)
+
+        const probe = attachProbe(engine, anchor, floating, { placement: 'bottom', offset: OFFSET, strategy: 'fixed' })
+        await probe.settle()
+
+        expectPlacedAt(anchor.getBoundingClientRect(), floating.getBoundingClientRect(), 'bottom', OFFSET)
+        expectSame(probe.last().placement, 'bottom', '小容器的边界不该逼它翻面')
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+
+    // 裁剪链截断的判据：容器不劫持 fixed 的包含块，它的边界就不该参与避让
+    hooks.it('无 transform 的小滚动容器不该逼它翻面', async () => {
+      const stage = createStage()
+      try {
+        const box = document.createElement('div')
+        box.style.cssText = 'position:absolute;left:80px;top:80px;width:240px;height:160px;overflow:auto'
+        stage.root.appendChild(box)
+        const anchor = stage.putAnchor(20, 120, 100, 40, box)
+        const floating = stage.putFloating(40, 24, box)
+
+        const probe = attachProbe(engine, anchor, floating, { placement: 'bottom', offset: OFFSET, strategy: 'fixed' })
+        await probe.settle()
+
+        expectSame(probe.last().placement, 'bottom', 'fixed 不受该容器裁剪，不该因它翻面')
+        expectPlacedAt(anchor.getBoundingClientRect(), floating.getBoundingClientRect(), 'bottom', OFFSET)
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+
+    // 与上一条成对：transform 祖先确实劫持 fixed 的包含块，它的裁剪就仍然算数。
+    // 只写其中一条会把实现引到「一刀切成视口」的错误极端。
+    hooks.it('带 transform 的祖先仍然裁得住它', async () => {
+      const stage = createStage()
+      try {
+        const box = document.createElement('div')
+        box.style.cssText = 'position:absolute;left:80px;top:80px;width:240px;height:160px;overflow:hidden;transform:translateX(0px)'
+        stage.root.appendChild(box)
+        const anchor = stage.putAnchor(20, 120, 100, 40, box)
+        const floating = stage.putFloating(40, 24, box)
+
+        const probe = attachProbe(engine, anchor, floating, { placement: 'bottom', offset: OFFSET, strategy: 'fixed' })
+        await probe.settle()
+
+        expectSame(probe.last().placement, 'top', '被 transform 祖先裁住时，下方放不下就该翻上去')
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+
+    // transform 是 fixed 唯一逃不掉的一类祖先，坐标必须落在它的坐标系里
+    hooks.it('transform 祖先位移多少，浮层跟着走多少', async () => {
+      const stage = createStage()
+      try {
+        const box = document.createElement('div')
+        box.style.cssText = 'position:absolute;left:40px;top:40px;width:300px;height:200px;transform:translate(30px, 20px)'
+        stage.root.appendChild(box)
+        const anchor = stage.putAnchor(60, 60, 100, 40, box)
+        const floating = stage.putFloating(40, 24, box)
+
+        const probe = attachProbe(engine, anchor, floating, { placement: 'bottom', offset: OFFSET, strategy: 'fixed' })
+        await probe.settle()
+
+        expectPlacedAt(anchor.getBoundingClientRect(), floating.getBoundingClientRect(), 'bottom', OFFSET)
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+
+    // 视口系不许把文档滚动量叠进去。这条同时是 tour 那个偏移 bug 的回归锁。
+    hooks.it('页面滚动后仍贴合：视口系不叠 scrollY', async () => {
+      const stage = createStage()
+      const spacer = document.createElement('div')
+      spacer.style.cssText = 'height:3000px'
+      document.body.appendChild(spacer)
+      try {
+        const center = viewportCenter()
+        const anchor = stage.putAnchor(center.x, center.y)
+        const floating = stage.putFloating()
+        const probe = attachProbe(engine, anchor, floating, { placement: 'bottom', offset: OFFSET, strategy: 'fixed' })
+        await probe.settle()
+
+        window.scrollTo(0, 900)
+        for (let frame = 0; frame < 6; frame++) await nextFrame()
+        await probe.settle()
+
+        expectPlacedAt(anchor.getBoundingClientRect(), floating.getBoundingClientRect(), 'bottom', OFFSET)
+        probe.stop()
+      }
+      finally {
+        window.scrollTo(0, 0)
+        spacer.remove()
+        stage.cleanup()
+      }
+    })
+  })
 }

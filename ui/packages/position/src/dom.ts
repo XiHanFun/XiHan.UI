@@ -1,3 +1,4 @@
+import type { PositionStrategy } from '@xihan-ui/core'
 import type { PositionBox, PositionEdges } from './compute'
 
 /**
@@ -45,15 +46,18 @@ export function scaleOf(el: HTMLElement): { x: number, y: number } {
   }
 }
 
+/** 未设置的属性在部分无头 DOM 实现里回空串而不是 none，两者一并当没设。 */
+function isNone(value: string): boolean {
+  return !value || value === 'none'
+}
+
 /**
- * 这个元素会不会成为绝对定位后代的包含块。
- * 除了定位以外，transform / perspective / filter / contain / will-change 都会把包含块抢过去，
- * 哪怕它自己是 static。漏掉这几条，浮层就会整体偏掉容器的位移。
+ * 这个元素会不会连固定定位后代的包含块也抢过去。
+ * transform / perspective / filter / contain / will-change 对 fixed 与 absolute 一视同仁，
+ * 只有 position 本身不算——fixed 不认祖先的 relative。
  */
-function establishesContainingBlock(style: CSSStyleDeclaration): boolean {
-  if (style.position !== 'static')
-    return true
-  if (style.transform !== 'none' || style.perspective !== 'none' || style.filter !== 'none')
+function capturesFixed(style: CSSStyleDeclaration): boolean {
+  if (!isNone(style.transform) || !isNone(style.perspective) || !isNone(style.filter))
     return true
   if (style.containerType && style.containerType !== 'normal')
     return true
@@ -62,16 +66,43 @@ function establishesContainingBlock(style: CSSStyleDeclaration): boolean {
   return /transform|perspective|filter|contain/.test(style.willChange)
 }
 
-/** 绝对定位的浮层以谁为原点。返回 null 表示以文档原点（初始包含块）为准。 */
-export function getContainingBlock(el: HTMLElement): HTMLElement | null {
+/**
+ * 这个元素会不会成为绝对定位后代的包含块。
+ * 除了定位以外，transform / perspective / filter / contain / will-change 都会把包含块抢过去，
+ * 哪怕它自己是 static。漏掉这几条，浮层就会整体偏掉容器的位移。
+ */
+function establishesContainingBlock(style: CSSStyleDeclaration): boolean {
+  return (style.position !== '' && style.position !== 'static') || capturesFixed(style)
+}
+
+/**
+ * 浮层以谁为原点。返回 null 表示以初始包含块为准（absolute 是文档、fixed 是视口）。
+ * @param el 浮层元素。
+ * @param strategy 默认 absolute。
+ */
+export function getContainingBlock(el: HTMLElement, strategy: PositionStrategy = 'absolute'): HTMLElement | null {
+  const captures = strategy === 'fixed' ? capturesFixed : establishesContainingBlock
   const root = el.ownerDocument.documentElement
   let node = el.parentElement
   while (node && node !== root) {
-    if (establishesContainingBlock(styleOf(node)))
+    if (captures(styleOf(node)))
       return node
     node = node.parentElement
   }
   return null
+}
+
+/**
+ * 视口坐标系本身。fixed 且没有祖先劫持包含块时用它。
+ * 与 frameOf(null, win) 的区别只在滚动量：那个叠了 win.scrollX/scrollY，是文档系。
+ */
+export const VIEWPORT_FRAME: PositionFrame = {
+  originX: 0,
+  originY: 0,
+  scaleX: 1,
+  scaleY: 1,
+  scrollX: 0,
+  scrollY: 0,
 }
 
 /** 由包含块推出坐标系。包含块缺席时用文档滚动量。 */
@@ -121,8 +152,13 @@ export function isScrollable(el: HTMLElement): boolean {
   return /auto|scroll|overlay/.test(`${style.overflow}${style.overflowX}${style.overflowY}`)
 }
 
-/** 会把内容裁掉的祖先，从近到远。 */
-export function clippingAncestors(el: Element | null): HTMLElement[] {
+/**
+ * 会把内容裁掉的祖先，从近到远。
+ * @param el 起点元素。
+ * @param stopAt 给定时走到它为止（含它自己）。fixed 只被劫持了它包含块的那个祖先及其内层裁，
+ * 再往外的 overflow 对它无效——不截断的话浮层会躲一条已经不存在的边界。
+ */
+export function clippingAncestors(el: Element | null, stopAt?: HTMLElement): HTMLElement[] {
   const found: HTMLElement[] = []
   if (!el)
     return found
@@ -131,6 +167,8 @@ export function clippingAncestors(el: Element | null): HTMLElement[] {
   while (node && node !== root) {
     if (isClippingOverflow(styleOf(node)))
       found.push(node)
+    if (node === stopAt)
+      break
     node = node.parentElement
   }
   return found

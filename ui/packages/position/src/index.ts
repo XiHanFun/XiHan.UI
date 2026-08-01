@@ -10,6 +10,7 @@ import {
   getWindow,
   isHtmlElement,
   paddingEdgesOf,
+  VIEWPORT_FRAME,
   viewportEdges,
 } from './dom'
 import { observePosition } from './observe'
@@ -17,7 +18,7 @@ import { observePosition } from './observe'
 // PositionEnginePort 的自研实现，零第三方依赖。
 
 /** 与端口默认值一致：底部对齐、8px 间距、开启避让。 */
-const DEFAULTS = { placement: 'bottom' as const, offset: 8, flip: true, shift: true }
+const DEFAULTS = { placement: 'bottom' as const, offset: 8, flip: true, shift: true, strategy: 'absolute' as const }
 
 /** shift 贴边时留出的余量。 */
 const SHIFT_PADDING = 4
@@ -39,10 +40,17 @@ export function createPositionEngine(): PositionEnginePort {
         const anchorViewport = anchorBox(anchor)
 
         // 浮层写回 left/top 用的是包含块的布局坐标，锚点、可用区域、自身尺寸全换算到这套坐标里
-        const frame = frameOf(getContainingBlock(floating), win)
+        const strategy = options.strategy ?? DEFAULTS.strategy
+        const block = getContainingBlock(floating, strategy)
+        const frame = block ? frameOf(block, win) : (strategy === 'fixed' ? VIEWPORT_FRAME : frameOf(null, win))
         const floatingRect = floating.getBoundingClientRect()
 
-        const clipViewport = clippingAncestors(floating)
+        // fixed 只被劫持了它包含块的那个祖先及其内层裁；没有这样的祖先时只受视口约束。
+        // 不截断这条链，浮层会逃出裁剪却仍在躲一条已经不存在的边界，照样莫名翻面或被推回去
+        const clipChain = strategy === 'fixed'
+          ? (block ? clippingAncestors(floating, block) : [])
+          : clippingAncestors(floating)
+        const clipViewport = clipChain
           .reduce((edges, ancestor) => intersectEdges(edges, paddingEdgesOf(ancestor)), view)
 
         const { x, y, placement } = computePlacement({
