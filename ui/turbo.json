@@ -17,6 +17,11 @@
       "inputs": ["src/**", "tests/**", "spec/**", "runners/**"],
       "outputs": ["coverage/**"]
     },
+    "@xihan-ui/testing#test": {
+      "dependsOn": ["^build", "@xihan-ui/vue#build", "@xihan-ui/wc#build"],
+      "inputs": ["src/**", "tests/**", "spec/**", "runners/**"],
+      "outputs": ["coverage/**"]
+    },
     "size": {
       "dependsOn": ["build"],
       "inputs": ["dist/**", ".size-limit.json"],
