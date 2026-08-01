@@ -38,6 +38,9 @@ jobs:
         run: pnpm test
       - name: Size limit
         run: pnpm size
+      # cjs-resolves-to-esm 是 ESM-only 的刻意选择，node10 / node16-from-ESM / bundler 三列均绿
+      - name: Publish artifacts (publint + attw)
+        run: pnpm gate:publish
       - name: Commit message
         if: github.event_name == 'pull_request'
         run: pnpm exec commitlint --from origin/${{ github.base_ref }} --to HEAD

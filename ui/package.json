@@ -20,6 +20,7 @@
     "boundaries": "depcruise packages tooling apps",
     "gate": "node tooling/scripts/check-runtime-deps.mjs && node tooling/scripts/check-exact-pins.mjs && node tooling/scripts/check-tokens-dist.mjs",
     "gate:tokens": "pnpm --filter @xihan-ui/system gen && git diff --exit-code packages/system",
+    "gate:publish": "node tooling/scripts/check-publish.mjs",
     "changeset": "changeset",
     "version": "changeset version",
     "release": "turbo run build && changeset publish",
