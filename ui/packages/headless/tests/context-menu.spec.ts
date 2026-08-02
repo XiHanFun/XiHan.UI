@@ -692,8 +692,9 @@ describe('虚拟锚点定位', () => {
     await flushed()
     expect(h.engine.calls).toHaveLength(1)
     expect(h.engine.calls[0]!.rect).toEqual({ x: 120, y: 80, width: 0, height: 0 })
-    // 引擎缺省间距是 8px（那是给"贴着一个触发按钮"准备的），右键菜单必须显式压成 0
-    expect(h.engine.calls[0]!.options).toEqual({ placement: 'bottom-start', offset: 0 })
+    // 引擎缺省间距是 8px（那是给"贴着一个触发按钮"准备的），右键菜单必须显式压成 0。
+    // strategy 必须与 connect 产出的内联 position 同为 fixed：一处走岔就整族偏掉一个 scrollY。
+    expect(h.engine.calls[0]!.options).toEqual({ placement: 'bottom-start', offset: 0, strategy: 'fixed' })
   })
 
   it('展开期间换坐标：重挂到新的一点，且先撤掉旧订阅', async () => {

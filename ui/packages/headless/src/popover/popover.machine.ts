@@ -91,7 +91,12 @@ export const popoverMachine = createMachine({
           stop = engine.attach(
             anchor,
             floating,
-            { placement: prop('placement'), offset: prop('offset') },
+            {
+              placement: prop('placement'),
+              offset: prop('offset'),
+              // positioner 渲染成 fixed，坐标系必须跟着走视口系
+              strategy: 'fixed',
+            },
             result => context.set('position', result),
           )
         })

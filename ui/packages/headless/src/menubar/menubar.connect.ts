@@ -237,7 +237,7 @@ export function connectMenubar<T extends PropTypes>(
         'data-hidden': dataAttr(isOpen && position?.hidden),
         // 坐标只发给展开的那一张
         'style': {
-          position: 'absolute',
+          position: 'fixed',
           insetInlineStart: `${(isOpen ? position?.x : undefined) ?? 0}px`,
           insetBlockStart: `${(isOpen ? position?.y : undefined) ?? 0}px`,
         },

@@ -1,7 +1,7 @@
 @layer xihan.components {
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
   [data-scope='popover'][data-part='positioner'] {
-    position: absolute;
+    position: fixed;
     z-index: var(--xh-layer-popover);
     /* 空壳不吃指针，交互只发生在 content 上 */
     pointer-events: none;

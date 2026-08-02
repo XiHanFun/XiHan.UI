@@ -162,7 +162,7 @@
 
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
   [data-scope='date-picker'][data-part='positioner'] {
-    position: absolute;
+    position: fixed;
     z-index: var(--xh-layer-popover);
     /* 空壳不吃指针，交互只发生在 content 里 */
     pointer-events: none;

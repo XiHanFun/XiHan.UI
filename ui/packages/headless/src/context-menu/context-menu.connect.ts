@@ -167,7 +167,7 @@ export function connectContextMenu<T extends PropTypes>(
       // 锚点被滚出可视区时引擎会置 hidden，样式据此收起浮层
       'data-hidden': dataAttr(position?.hidden),
       'style': {
-        position: 'absolute',
+        position: 'fixed',
         // 引擎结果没回来之前先用光标坐标顶着；无引擎时它就是最终落位
         insetInlineStart: `${position?.x ?? point?.x ?? 0}px`,
         insetBlockStart: `${position?.y ?? point?.y ?? 0}px`,

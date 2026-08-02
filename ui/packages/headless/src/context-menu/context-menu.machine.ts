@@ -247,6 +247,8 @@ export const contextMenuMachine = createMachine({
             {
               placement: prop('placement') ?? CONTEXT_MENU_DEFAULT_PLACEMENT,
               offset: prop('offset') ?? CONTEXT_MENU_DEFAULT_OFFSET,
+              // positioner 渲染成 fixed，坐标系必须跟着走视口系
+              strategy: 'fixed',
             },
             result => context.set('position', result),
           )

@@ -371,7 +371,12 @@ export const colorPickerMachine = createMachine({
           stop = engine.attach(
             anchor,
             floating,
-            { placement: prop('placement') ?? COLOR_PICKER_DEFAULT_PLACEMENT, offset: prop('offset') },
+            {
+              placement: prop('placement') ?? COLOR_PICKER_DEFAULT_PLACEMENT,
+              offset: prop('offset'),
+              // positioner 渲染成 fixed，坐标系必须跟着走视口系
+              strategy: 'fixed',
+            },
             result => context.set('position', result),
           )
         })
