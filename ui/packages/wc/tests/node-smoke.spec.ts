@@ -19,15 +19,20 @@ describe('node import smoke（无 DOM 惰性注册）', () => {
 })
 
 // 任何 meta-framework 都会在 Node 里把入口模块求值一次，元素类的定义式不能在那一刻炸。
+//
+// 这两条的超时放到 30s：define 入口要冷启 65 个元素类连同整个 headless 依赖图，
+// 全仓并行跑时会超过默认的 5s，而那是机器负载不是缺陷。
+const COLD_IMPORT_TIMEOUT = 30_000
+
 describe('node import：元素入口', () => {
   it('define 入口可 import', async () => {
     await expect(import('../src/define')).resolves.toBeDefined()
-  })
+  }, COLD_IMPORT_TIMEOUT)
 
   it('无 customElements 时 defineXhElements 不抛', async () => {
     const { defineXhElements } = await import('../src/define')
     expect(() => defineXhElements()).not.toThrow()
-  })
+  }, COLD_IMPORT_TIMEOUT)
 
   it('元素基类在无 DOM 下也能取到', async () => {
     const { XhReactiveElement } = await import('../src/reactive')

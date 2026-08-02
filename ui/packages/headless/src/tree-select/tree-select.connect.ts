@@ -263,7 +263,7 @@ export function connectTreeSelect<T extends PropTypes>(
       // 锚点滚出可视区时引擎置 hidden
       'data-hidden': dataAttr(position?.hidden),
       'style': {
-        position: 'absolute',
+        position: 'fixed',
         insetInlineStart: `${position?.x ?? 0}px`,
         insetBlockStart: `${position?.y ?? 0}px`,
       },

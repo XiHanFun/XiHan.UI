@@ -84,7 +84,7 @@ export function connectMenu<T extends PropTypes>(
       // 锚点滚出可视区时由引擎置位
       'data-hidden': dataAttr(position?.hidden),
       'style': {
-        position: 'absolute',
+        position: 'fixed',
         insetInlineStart: `${position?.x ?? 0}px`,
         insetBlockStart: `${position?.y ?? 0}px`,
       },

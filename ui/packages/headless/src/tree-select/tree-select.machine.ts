@@ -314,7 +314,12 @@ export const treeSelectMachine = createMachine({
           stop = engine.attach(
             anchor,
             floating,
-            { placement: prop('placement') ?? TREE_SELECT_DEFAULT_PLACEMENT, offset: prop('offset') },
+            {
+              placement: prop('placement') ?? TREE_SELECT_DEFAULT_PLACEMENT,
+              offset: prop('offset'),
+              // positioner 渲染成 fixed，坐标系必须跟着走视口系
+              strategy: 'fixed',
+            },
             result => context.set('position', result),
           )
         })

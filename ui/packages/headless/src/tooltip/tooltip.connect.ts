@@ -58,7 +58,7 @@ export function connectTooltip<T extends PropTypes>(
       'data-hidden': dataAttr(position?.hidden),
       'data-state': stateAttr,
       'style': {
-        position: 'absolute',
+        position: 'fixed',
         insetInlineStart: `${position?.x ?? 0}px`,
         insetBlockStart: `${position?.y ?? 0}px`,
       },
