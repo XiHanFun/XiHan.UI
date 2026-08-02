@@ -1,28 +1,53 @@
 // @vitest-environment jsdom
 import type { ConformanceSuite } from '../src'
-import { afterEach, beforeEach, describe, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createVueHarness } from '../../../packages/vue/tests/harness'
 import { createWcHarness } from '../../../packages/wc/tests/harness'
 import {
+  allSuites,
+  anchorSuite,
   avatarSuite,
   badgeSuite,
   breadcrumbSuite,
   buttonSuite,
+  calendarSuite,
+  carouselSuite,
+  cascaderSuite,
   clipboardSuite,
   collapsibleSuite,
+  dateFieldSuite,
+  datePickerSuite,
   editableSuite,
+  formSuite,
+  hoverCardSuite,
   imageSuite,
+  loadingBarSuite,
+  menubarSuite,
+  navigationMenuSuite,
   numberFieldSuite,
   paginationSuite,
   pinInputSuite,
+  ratingSuite,
   runParity,
+  scrollAreaSuite,
   separatorSuite,
   sliderSuite,
+  splitterSuite,
+  tableSuite,
   tagsInputSuite,
   textFieldSuite,
   threadSuite,
+  timeFieldSuite,
+  timePickerSuite,
   toasterSuite,
+  toastSuite,
+  toggleSuite,
   tooltipSuite,
+  tourSuite,
+  transferSuite,
+  treeSelectSuite,
+  treeSuite,
+  virtualizerSuite,
 } from '../src'
 
 beforeEach(() => {
@@ -35,55 +60,97 @@ afterEach(() => {
 })
 
 /**
- * 逐帧比对只在两侧喂的是同一棵 fixture 时才成立。
- * WC 侧改写过 fixture 的那些组件（switch/checkbox/progress 换角色节点形态、
- * 集合类把 disabled 改写成 aria-disabled、select 要作者手写影子 select、
- * field 要把 label/control 换成原生标签），两端结构本就不同，逐帧比对没有意义——
- * 它们的跨适配器保证由两侧各自跑同一份 conformance 规格来提供。
+ * 逐帧比对只在两侧喂的是同一棵 fixture 时才成立，且两端行为已经统一。
+ * 收得进来的列在 SUITES，收不进来的必须在 EXCLUDED 里写明理由——
+ * 末尾那条门禁保证两者之和等于全部套件，新增组件不登记就红。
  *
- * 这里收的是"同一份 fixture 两侧都能直接跑"的组件。
+ * 排除理由分四类：fixture 不同构（WC 是行为宿主，若干部件由作者手写、
+ * 禁用声明用 aria-disabled）、入口名永久性差异、presence 模型不同、
+ * 以及真实分歧——最后一类是待办不是结论，逐条注明了差在哪。
  */
-
-// 第二、三批里两侧共用同一棵 fixture 的组件（WC 侧没改写过角色节点、也没把 disabled
-// 换成 aria-disabled 的那些），逐帧比对对它们成立，一并收进来。
-//
-// file-upload 暂不收：删掉持有焦点的那一条之后，两侧焦点落点不一致——
-// Vue 把条目整棵卸掉，浏览器把焦点退回 body；WC 的节点常驻、焦点留在条目组内。
-// 两边都不是有意为之（headless 与两个适配器都没写删除后的焦点去处），
-// 得先定下"删完焦点该去哪"再统一，不该顺手挑一边的现状焊死。
-//
-// composer 暂不收，同样是两侧未统一而不是计时问题：stop 是全仓唯一一个无载荷的语义事件，
-// Vue 那侧 `emit('stop')` 收到的 detail 是 undefined，WC 那侧 `new CustomEvent('stop', { detail: null })`
-// 收到的是 null，逐帧比对按 JSON 比就差在这一处。两边发的事件名与时机完全一致，
-// 差的只是"没有载荷"该怎么写；先把它定下来（要么 Vue 显式发 null，要么两侧都发 undefined）
-// 再收进来，不该在这里挑一边的现状焊死。六条用例仍由两个适配器各自跑同一份规格守着。
-//
-// code-block 暂不收，原因与上面两个不同：两侧行为完全一致，差的只是语言标注的入口名。
-// WC 侧的属性必须叫 code-lang——lang 是 HTML 全局属性，写上去等于声明整块内容的自然语言，
-// `lang="cs"`（C#）会让读屏按捷克语念代码。这是个永久性的合理差异，不是待统一项。
-// 眼下 runParity 只吃一份套件、两侧同喂，表达不了"同一份规格、两套入口名"。
-// 真要收回来，得让 harness 自己声明套件改写（WC 侧本就在 wcSuites 里做这件事），
-// 那是 harness 契约的改动，不该顺手塞进这次修复。
-// 两侧各自跑同一份 conformance 规格仍在守着它。
 const SUITES: readonly ConformanceSuite[] = [
-  buttonSuite,
-  badgeSuite,
-  separatorSuite,
+  anchorSuite,
   avatarSuite,
-  numberFieldSuite,
-  collapsibleSuite,
-  tooltipSuite,
+  badgeSuite,
   breadcrumbSuite,
+  buttonSuite,
+  calendarSuite,
+  carouselSuite,
+  cascaderSuite,
   clipboardSuite,
+  collapsibleSuite,
+  dateFieldSuite,
+  datePickerSuite,
   editableSuite,
+  formSuite,
+  hoverCardSuite,
   imageSuite,
+  loadingBarSuite,
+  menubarSuite,
+  navigationMenuSuite,
+  numberFieldSuite,
   paginationSuite,
   pinInputSuite,
+  ratingSuite,
+  scrollAreaSuite,
+  separatorSuite,
   sliderSuite,
+  splitterSuite,
+  tableSuite,
   tagsInputSuite,
   textFieldSuite,
-  toasterSuite,
   threadSuite,
+  timeFieldSuite,
+  timePickerSuite,
+  toastSuite,
+  toasterSuite,
+  toggleSuite,
+  tooltipSuite,
+  tourSuite,
+  transferSuite,
+  treeSuite,
+  treeSelectSuite,
+  virtualizerSuite,
 ]
 
+/** 暂不做逐帧比对的套件与理由。它们的跨适配器保证由两侧各自跑同一份 conformance 规格提供。 */
+const EXCLUDED: Readonly<Record<string, string>> = {
+  'accordion': 'WC 侧把作者禁用声明改写成 aria-disabled，两侧 fixture 不同构',
+  'checkbox': 'WC 侧 indicator 由作者手写，Vue 版组件内部渲染，fixture 不同构',
+  'checkbox-group': '同上，且集合条目的禁用声明经 aria-disabled 改写',
+  'code-block': '语言标注的入口名两侧永久不同（WC 必须叫 code-lang，lang 是 HTML 全局属性）',
+  'color-picker': '真实分歧：挂载时焦点落点不同（WC 在 area-thumb，Vue 在 channel-input），11/15 条同一根因',
+  'combobox': 'WC 侧集合条目经 aria-disabled 改写，两侧 fixture 不同构',
+  'composer': '真实分歧：stop 是全仓唯一无载荷的语义事件，Vue 发 undefined、WC 发 null',
+  'context-menu': 'WC 侧集合条目经 aria-disabled 改写，两侧 fixture 不同构',
+  'dialog': '两端 presence 模型不同：Vue 关闭即卸载 content，WC 是 Light DOM 不删作者节点',
+  'drawer': '同 dialog',
+  'field': '真实分歧：WC 侧 control 是 div，label 的 for 关联不上',
+  'file-upload': '真实分歧：删掉持有焦点的条目后两侧焦点落点不同，删完焦点该去哪尚未定规格',
+  'listbox': '真实分歧：两侧 DOM 全程不同，17 条无一通过，待逐条定位',
+  'menu': 'WC 侧集合条目经 aria-disabled 改写，两侧 fixture 不同构',
+  'popover': '真实分歧：点 close-trigger 关闭后焦点去处不同（WC 留在 close-trigger，Vue 回 trigger）',
+  'progress': 'WC 侧 track/range 由作者手写，Vue 版组件内部渲染，fixture 不同构',
+  'radio-group': 'WC 侧集合条目经 aria-disabled 改写，两侧 fixture 不同构',
+  'select': 'WC 侧要作者手写影子 select，且集合条目经 aria-disabled 改写',
+  'steps': 'WC 侧集合条目经 aria-disabled 改写，两侧 fixture 不同构',
+  'switch': 'WC 侧 thumb 由作者手写，Vue 版组件内部渲染，fixture 不同构',
+  'tabs': 'WC 侧集合条目经 aria-disabled 改写，两侧 fixture 不同构',
+  'toggle-group': '同上',
+  'toolbar': '同上',
+}
+
 runParity([createVueHarness(), createWcHarness()], SUITES, { describe, it })
+
+describe('parity 覆盖登记', () => {
+  it('每个套件要么在跑，要么写明了为什么不跑', () => {
+    const running = new Set(SUITES.map(s => s.component))
+    const excluded = new Set(Object.keys(EXCLUDED))
+    const all = allSuites.map(s => s.component)
+
+    expect(all.filter(c => !running.has(c) && !excluded.has(c))).toEqual([])
+    expect([...excluded].filter(c => !all.includes(c))).toEqual([])
+    expect([...running].filter(c => excluded.has(c))).toEqual([])
+    expect(running.size + excluded.size).toBe(all.length)
+  })
+})
