@@ -91,20 +91,32 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
         scheduleFocus(remaining - 1)
     })
   }
-  tryMountFocus(false)
-  if (!focusSettled)
-    scheduleFocus(3)
-
   // —— 逃逸抢回 ——
+  /**
+   * 把焦点拉回域内。lastFocused 可能已经离场（那一条被删掉了），或者压根没被记过，
+   * 此时退到域内第一个可聚焦元素——「抓不回来就放它走」等于陷阱漏了。
+   */
+  function pullBack(): void {
+    if (lastFocused?.isConnected && isInScope(lastFocused)) {
+      focusSafely(lastFocused)
+      return
+    }
+    const el = container()
+    if (el && !focusFirst(removeLinks(getTabbables(el)), { select: true }))
+      focusSafely(el)
+  }
   function onFocusIn(e: FocusEvent): void {
-    if (disposed || paused || !o.trapped())
+    if (disposed)
       return
     const target = e.target as HTMLElement | null
+    // 记账不看 trapped：它可以在生命周期内打开，那一刻要有个新鲜的落点可回
     if (isInScope(target)) {
       lastFocused = target
       return
     }
-    focusSafely(lastFocused)
+    if (paused || !o.trapped())
+      return
+    pullBack()
   }
   function onFocusOut(e: FocusEvent): void {
     if (disposed || paused || !o.trapped())
@@ -114,7 +126,7 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
     if (related === null)
       return
     if (!isInScope(related))
-      focusSafely(lastFocused)
+      pullBack()
   }
 
   // —— Tab 边界回绕 ——
@@ -140,9 +152,15 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
     }
   }
 
+  // 监听必须先于挂载聚焦装上：那一次聚焦同样要记进 lastFocused，
+  // 否则首次逃逸时手里只有创建前的旧值（通常是 body），一拉就拉了个空。
   doc.addEventListener('focusin', onFocusIn, { capture: true })
   doc.addEventListener('focusout', onFocusOut, { capture: true })
   doc.addEventListener('keydown', onKeyDown, { capture: true })
+
+  tryMountFocus(false)
+  if (!focusSettled)
+    scheduleFocus(3)
 
   const unsub = registry.subscribe((layers) => {
     paused = layers[layers.length - 1] !== layer
@@ -165,8 +183,15 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
         const anchor = container() ?? doc.body
         if (dispatchCancelable(anchor, EV_UNMOUNT_AUTO_FOCUS, {})) {
           o.onUnmountAutoFocus?.(new CustomEvent(EV_UNMOUNT_AUTO_FOCUS))
-          const back = previouslyFocused && previouslyFocused.isConnected ? previouslyFocused : doc.body
-          focusSafely(back, { select: true })
+          if (previouslyFocused?.isConnected) {
+            focusSafely(previouslyFocused, { select: true })
+            return
+          }
+          // 原持有者已离场。不能靠 body.focus()——body 不在各引擎一致的可聚焦集合里，
+          // 那样焦点会留在这个已经关掉的层里（WC 侧节点常驻，尤其明显）。显式松手。
+          const active = scope.getActiveElement()
+          if (active && isInScope(active))
+            active.blur()
         }
       })
     },
