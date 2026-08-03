@@ -6,6 +6,11 @@ import { DIAGNOSTIC_CODES, getDiagnostics, reportDiagnostic } from '@xihan-ui/co
 export interface PartContract {
   readonly anatomy: { readonly name: string, readonly parts: readonly string[] }
   readonly meta: ComponentMeta
+  /**
+   * 部件必须用的标签名。只登记「写错了会静默失效」的那些——
+   * 比如 field 的 label 不是原生 `<label>` 时，`for` 整条失效，点标签不再聚焦控件。
+   */
+  readonly tags?: Readonly<Record<string, readonly string[]>>
 }
 
 /**
@@ -52,5 +57,23 @@ export function validatePartContract(
       node: parts.get(part)?.[0] ?? host,
       detail: { tag: host.tagName.toLowerCase(), knownParts: contract.anatomy.parts },
     })
+  }
+
+  for (const [part, allowed] of Object.entries(contract.tags ?? {})) {
+    for (const el of parts.get(part) ?? []) {
+      const tag = el.tagName.toLowerCase()
+      if (allowed.includes(tag))
+        continue
+      reportDiagnostic({
+        code: DIAGNOSTIC_CODES.wcWrongPartTag,
+        level: 'warn',
+        message: `角色节点 data-xh-part="${part}" 是 <${tag}>，须是 ${allowed.map(t => `<${t}>`).join(' 或 ')}，否则原生语义静默失效`,
+        scope,
+        instanceId,
+        part,
+        node: el,
+        detail: { tag, allowed },
+      })
+    }
   }
 }

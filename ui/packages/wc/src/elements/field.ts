@@ -27,7 +27,13 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart error-text - 错误文案（role=alert）；非 invalid 时带 hidden 收起，节点不卸载
  */
 export class XhFieldElement extends XhElement {
-  static override partContract = { anatomy: fieldAnatomy, meta: fieldMeta }
+  // label 必须是原生 <label>：for 只在它身上有效，写成 div 则点标签不再聚焦控件
+  // （名字关联仍由 control 上的 aria-labelledby 兜住，丢的是点击行为）。
+  static override partContract = {
+    anatomy: fieldAnatomy,
+    meta: fieldMeta,
+    tags: { label: ['label'] },
+  }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
