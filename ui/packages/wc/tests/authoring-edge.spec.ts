@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../src/define'
 
 defineXhElements()
@@ -12,12 +12,21 @@ async function settle(el: Updatable): Promise<void> {
   await el.updateComplete
 }
 
+const hosts: HTMLElement[] = []
+
 function mount(html: string): Updatable {
   const host = document.createElement('div')
   host.innerHTML = html
   document.body.appendChild(host)
+  hosts.push(host)
   return host.firstElementChild as Updatable
 }
+
+// 这里的用例大多把浮层留在打开态就结束了。模态对话框的焦点域会一直活着，
+// 下一条用例往域外聚焦时会被它合法地抓回来——不卸载就是跨用例串味。
+afterEach(() => {
+  for (const host of hosts.splice(0)) host.remove()
+})
 
 // 作者层只要给 content 声明 display，就会盖过 UA 的 [hidden]{display:none}，
 // 收起态的浮层会永久留在页面上。宿主不能指望作者装了本仓的样式表，得自己兜底。
