@@ -65,8 +65,12 @@ afterEach(() => {
  * 收得进来的列在 SUITES，收不进来的必须在 EXCLUDED 里写明理由——
  * 末尾那条门禁保证两者之和等于全部套件，新增组件不登记就红。
  *
- * 排除理由分四类：fixture 不同构（WC 是行为宿主，若干部件由作者手写、
- * 禁用声明用 aria-disabled）、入口名永久性差异、presence 模型不同、
+ * 集合族占了排除项的大半，同一个根因：fixture 的 attrs 在两个 harness 里含义不同——
+ * Vue 侧 `h(组件, { ...attrs })` 让它变成组件 props（声明过的被消费、不落 DOM），
+ * WC 侧 `el.setAttribute` 让它变成 DOM 属性。禁用声明正落在这个差异上，
+ * 而那是两端作者侧 API 的真实区别，不是缺陷，逐帧比对本就不适用。
+ *
+ * 其余三类：部件形态不同构、入口名永久性差异、presence 模型不同，
  * 以及真实分歧——最后一类是待办不是结论，逐条注明了差在哪。
  */
 const SUITES: readonly ConformanceSuite[] = [
@@ -117,28 +121,28 @@ const SUITES: readonly ConformanceSuite[] = [
 
 /** 暂不做逐帧比对的套件与理由。它们的跨适配器保证由两侧各自跑同一份 conformance 规格提供。 */
 const EXCLUDED: Readonly<Record<string, string>> = {
-  'accordion': 'WC 侧把作者禁用声明改写成 aria-disabled，两侧 fixture 不同构',
+  'accordion': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
   'checkbox': 'WC 侧 indicator 由作者手写，Vue 版组件内部渲染，fixture 不同构',
   'checkbox-group': '同上，且集合条目的禁用声明经 aria-disabled 改写',
   'code-block': '语言标注的入口名两侧永久不同（WC 必须叫 code-lang，lang 是 HTML 全局属性）',
   'color-picker': '真实分歧：挂载时焦点落点不同（WC 在 area-thumb，Vue 在 channel-input），11/15 条同一根因',
-  'combobox': 'WC 侧集合条目经 aria-disabled 改写，两侧 fixture 不同构',
+  'combobox': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
   'composer': '真实分歧：stop 是全仓唯一无载荷的语义事件，Vue 发 undefined、WC 发 null',
-  'context-menu': 'WC 侧集合条目经 aria-disabled 改写，两侧 fixture 不同构',
+  'context-menu': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
   'dialog': '两端 presence 模型不同：Vue 关闭即卸载 content，WC 是 Light DOM 不删作者节点',
   'drawer': '同 dialog',
   'file-upload': '真实分歧：删掉持有焦点的条目后两侧焦点落点不同，删完焦点该去哪尚未定规格',
-  'listbox': '真实分歧：两侧 DOM 全程不同，17 条无一通过，待逐条定位',
-  'menu': 'WC 侧集合条目经 aria-disabled 改写，两侧 fixture 不同构',
+  'listbox': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
+  'menu': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
   'popover': '真实分歧：点 close-trigger 关闭后焦点去处不同（WC 留在 close-trigger，Vue 回 trigger）',
   'progress': 'WC 侧 track/range 由作者手写，Vue 版组件内部渲染，fixture 不同构',
-  'radio-group': 'WC 侧集合条目经 aria-disabled 改写，两侧 fixture 不同构',
-  'select': 'WC 侧要作者手写影子 select，且集合条目经 aria-disabled 改写',
-  'steps': 'WC 侧集合条目经 aria-disabled 改写，两侧 fixture 不同构',
+  'radio-group': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
+  'select': '同集合族，另加 WC 要作者手写影子 select',
+  'steps': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
   'switch': 'WC 侧 thumb 由作者手写，Vue 版组件内部渲染，fixture 不同构',
-  'tabs': 'WC 侧集合条目经 aria-disabled 改写，两侧 fixture 不同构',
-  'toggle-group': '同上',
-  'toolbar': '同上',
+  'tabs': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
+  'toggle-group': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
+  'toolbar': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
 }
 
 runParity([createVueHarness(), createWcHarness()], SUITES, { describe, it })
