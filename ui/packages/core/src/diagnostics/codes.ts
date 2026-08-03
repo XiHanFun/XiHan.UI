@@ -13,6 +13,8 @@ export const DIAGNOSTIC_CODES = {
   wcMissingPart: 'wc.missing-part',
   /** 角色节点的 part 名不在组件解剖内。 */
   wcUnknownPart: 'wc.unknown-part',
+  /** 角色节点用的标签不满足元素文档的要求，原生语义会静默失效。 */
+  wcWrongPartTag: 'wc.wrong-part-tag',
 } as const
 
 export type DiagnosticCode = (typeof DIAGNOSTIC_CODES)[keyof typeof DIAGNOSTIC_CODES]

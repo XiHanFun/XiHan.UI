@@ -39,6 +39,7 @@ export const fieldSuite: ConformanceSuite = {
           },
           'control': {
             'id': '@self',
+            'aria-labelledby': '@part(label)',
             'aria-describedby': '@part(description)',
             'aria-invalid': 'false',
             'aria-required': 'false',
@@ -55,14 +56,20 @@ export const fieldSuite: ConformanceSuite = {
         {
           kind: 'raw',
           // 快照只比 for 两头对不对得上；label.control 走浏览器的关联算法，非它验不出真关联
-          why: 'for 指向的必须是可标注控件，这件事归一化快照看不见',
+          why: '名字关联是否真的成立，归一化快照看不见——for 走浏览器的关联算法，labelledby 要比对 id',
           run: ({ doc }) => {
             const label = doc.querySelector('[data-scope="field"][data-part="label"]')
             const control = doc.querySelector('[data-scope="field"][data-part="control"]')
-            const linked = (label as HTMLLabelElement | null)?.control ?? null
-            if (linked !== control) {
-              const tag = control?.tagName.toLowerCase() ?? '(无)'
-              throw new Error(`label 的 for 没能关联到 control：control 是 <${tag}>，label.control = ${linked?.tagName.toLowerCase() ?? 'null'}`)
+            if (!label || !control)
+              throw new Error('label 或 control 没渲染出来')
+            // 两条路任意一条成立即可：for 只对可标注元素生效，作者把 control 标在 div 上时靠 labelledby
+            const byFor = (label as HTMLLabelElement).control === control
+            const byAria = control.getAttribute('aria-labelledby')
+              ?.split(/s+/)
+              .includes(label.id) ?? false
+            if (!byFor && !byAria) {
+              const tag = control.tagName.toLowerCase()
+              throw new Error(`label 关联不到 control：control 是 <${tag}>，for 不生效且 aria-labelledby 没指过来`)
             }
           },
         },
@@ -76,6 +83,7 @@ export const fieldSuite: ConformanceSuite = {
         parts: {
           'root': { 'data-invalid': '' },
           'control': {
+            'aria-labelledby': '@part(label)',
             'aria-describedby': '@part(description) @part(error-text)',
             'aria-invalid': 'true',
             'data-invalid': '',
@@ -148,6 +156,7 @@ export const fieldSuite: ConformanceSuite = {
       initial: {
         parts: {
           'control': {
+            'aria-labelledby': '@part(label)',
             'aria-describedby': '@part(description)',
             'aria-invalid': 'false',
           },
@@ -161,6 +170,7 @@ export const fieldSuite: ConformanceSuite = {
           expect: {
             parts: {
               'control': {
+                'aria-labelledby': '@part(label)',
                 'aria-describedby': '@part(description) @part(error-text)',
                 'aria-invalid': 'true',
               },
@@ -174,6 +184,7 @@ export const fieldSuite: ConformanceSuite = {
           expect: {
             parts: {
               'control': {
+                'aria-labelledby': '@part(label)',
                 'aria-describedby': '@part(description)',
                 'aria-invalid': 'false',
               },

@@ -102,4 +102,29 @@ describe('角色节点契约', () => {
     await mountDialog([part('trigger', 'button'), part('conten')])
     expect(seen).toEqual([])
   })
+
+  it('部件标签不符时报 warn 并指向那个节点', async () => {
+    const el = document.createElement('xh-field') as Updatable
+    const label = part('label', 'div')
+    const control = part('control', 'input')
+    el.append(label, control)
+    document.body.appendChild(el)
+    await el.updateComplete
+    await el.updateComplete
+
+    const hits = codes(DIAGNOSTIC_CODES.wcWrongPartTag)
+    expect(hits).toHaveLength(1)
+    expect(hits[0]).toMatchObject({ level: 'warn', scope: 'field', part: 'label' })
+    expect(hits[0]!.node).toBe(label)
+  })
+
+  it('部件标签合规时不报', async () => {
+    const el = document.createElement('xh-field') as Updatable
+    el.append(part('label', 'label'), part('control', 'input'))
+    document.body.appendChild(el)
+    await el.updateComplete
+    await el.updateComplete
+
+    expect(codes(DIAGNOSTIC_CODES.wcWrongPartTag)).toEqual([])
+  })
 })

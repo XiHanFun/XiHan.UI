@@ -41,6 +41,9 @@ export function connectField<T extends PropTypes>(
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
       'id': controlId,
+      // label 的 for 只对可标注元素生效，而作者把 control 标在 div 上是常态
+      // （包一层再放原生控件）。那种情形下 for 静默失效，靠这条把名字接回来。
+      'aria-labelledby': ids.label,
       'aria-describedby': describedBy,
       // 显式 true/false，不靠属性缺席表达
       'aria-invalid': invalid ? 'true' : 'false',
