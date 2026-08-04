@@ -49,6 +49,28 @@ export function connectFileUpload<T extends PropTypes>(
   const ids = scope.ids('file-upload', 'label', 'dropzone')
   const hiddenInputId = fileUploadHiddenInputId(scope)
 
+  /** 本节点当下是不是正持有焦点（含它的后代）；删掉它之前据此决定焦点去处。 */
+  const holdsFocus = (el: HTMLElement): boolean => {
+    const active = el.ownerDocument.activeElement
+    return contains(el, active)
+  }
+
+  /**
+   * 删掉某一条之后焦点落哪。焦点丢到 body 是 APG 在「Persistence of focus」里点名的
+   * 失败态，删列表项正是它举的例子，所以必须显式安排。
+   *
+   * 落点取恒在的投放区，而不是相邻那一条。相邻那条只能按删除前的 DOM 位置取，
+   * 而删完列表会上移：删第 i 条时手里攥着的是第 i+1 个节点，删完之后第 i+1 个位子
+   * 恰好空出来——Vue 卸载它、WC 释放并隐藏它，焦点当场又丢了。
+   * 要按「删完之后谁占了这个位子」取，就得有一个更新后的钩子，connect 这一层没有。
+   *
+   * 兜底也不取 clear-trigger：删空那一刻它带原生 disabled，禁用元素持不住焦点。
+   */
+  const focusAfterDelete = (from: HTMLElement): HTMLElement | null => {
+    const root = from.closest<HTMLElement>(parts.root.selector)
+    return root?.querySelector<HTMLElement>(parts.dropzone.selector) ?? null
+  }
+
   const translations = prop('translations')
   const label = {
     dropzone: translations?.dropzone ?? 'Drop files here',
@@ -230,7 +252,14 @@ export function connectFileUpload<T extends PropTypes>(
       'aria-label': label.deleteFile(file),
       'disabled': disabled || undefined,
       'data-disabled': dataAttr(disabled),
-      'onClick': () => send({ type: 'FILE.DELETE', file }),
+      'onClick': (event: MouseEvent) => {
+        const el = event.currentTarget as HTMLElement
+        // 判据是本节点当下正持有焦点：删完按钮就没了，焦点会掉到 body 上。
+        // 落点必须在送事件之前算好——那之后这棵子树可能已经离开文档，再也 closest 不到 root
+        const restore = holdsFocus(el) ? focusAfterDelete(el) : null
+        send({ type: 'FILE.DELETE', file })
+        restore?.focus()
+      },
     }),
 
     getClearTriggerProps: () => normalize.button({
