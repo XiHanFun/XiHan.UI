@@ -58,7 +58,7 @@
     justify-content: center;
     flex: none;
     line-height: 1;
-    transition: rotate var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='accordion'][data-part='indicator']::before {

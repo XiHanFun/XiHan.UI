@@ -29,6 +29,7 @@ for (const src of sources.values()) {
 }
 
 const orphans = []
+const fallbacks = []
 for (const [file, src] of sources) {
   const lines = src.split(/\r?\n/)
   lines.forEach((line, i) => {
@@ -41,6 +42,13 @@ for (const [file, src] of sources) {
         continue
       orphans.push(`${file}:${i + 1}  ${name}`)
     }
+    // 全局令牌不许带字面量兜底。styled 已显式 @import 令牌产物，缺席就是缺陷不是降级；
+    // 留着兜底等于同一个值有两处事实源，改令牌时兜底不会跟着走
+    for (const m of line.matchAll(/var\(\s*(--xh-[a-z0-9-]+)\s*,\s*([^;()]*?)\)/g)) {
+      const [, name, fb] = m
+      if (declared.has(name) && !fb.trim().startsWith('var('))
+        fallbacks.push(`${file}:${i + 1}  ${name} 的兜底「${fb.trim()}」`)
+    }
   })
 }
 
@@ -49,6 +57,14 @@ if (orphans.length) {
   for (const o of orphans)
     console.error(`  ${o}`)
   console.error('孤儿引用会让整条声明在计算值阶段失效，且不报任何错。')
-  process.exit(1)
 }
-console.log(`[check-token-refs] 通过：${files.length} 份皮肤引用的全局令牌都有声明`)
+if (fallbacks.length) {
+  console.error('[check-token-refs] ✗ 全局令牌带了字面量兜底：')
+  for (const f of fallbacks)
+    console.error(`  ${f}`)
+  console.error('删掉第二个参数即可——令牌是唯一事实源。')
+}
+if (orphans.length || fallbacks.length)
+  process.exit(1)
+
+console.log(`[check-token-refs] 通过：${files.length} 份皮肤的全局令牌都有声明、且都没有字面量兜底`)

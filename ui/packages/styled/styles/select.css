@@ -69,7 +69,7 @@
     align-items: center;
     justify-content: center;
     color: var(--xh-select-indicator-fg, var(--xh-fg-muted));
-    transition: rotate var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='select'][data-part='indicator'][data-state='open'] {

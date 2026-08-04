@@ -85,8 +85,8 @@
     font-size: var(--xh-checkbox-group-control-font-size, 12px);
     line-height: 1;
     transition:
-      background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease),
-      border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* content 只能给伪元素，绝不能并进上面那条：content 落在普通元素上会顶掉它的全部子节点，

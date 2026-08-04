@@ -37,7 +37,7 @@
     /* 等宽数字：按住加减钮连发时字宽一变，框里的数字就会左右抖 */
     font-variant-numeric: tabular-nums;
     line-height: var(--xh-leading-normal);
-    transition: border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='number-field'][data-part='input']::placeholder {
@@ -93,7 +93,7 @@
        触屏上还会当成双击缩放，两条都得先掐掉 */
     user-select: none;
     touch-action: manipulation;
-    transition: background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */

@@ -1,3 +1,7 @@
+/* 令牌先于一切：皮肤里不写兜底值，令牌缺席就是缺陷，不是降级。
+   tokens.css 自带 @layer xihan.tokens，层序由 layers.css 定。 */
+@import '@xihan-ui/system/tokens.css';
+
 /* 层序声明必须最先，其余按层归属排列。 */
 @import './styles/layers.css';
 @import './styles/reset.css';

@@ -8,7 +8,7 @@
     overflow: hidden;
     inline-size: var(--xh-avatar-size, var(--xh-control-h-md));
     block-size: var(--xh-avatar-size, var(--xh-control-h-md));
-    border-radius: var(--xh-avatar-radius, var(--xh-shape-pill, 9999px));
+    border-radius: var(--xh-avatar-radius, var(--xh-shape-pill));
     background: var(--xh-avatar-bg, var(--xh-bg-subtle));
     color: var(--xh-avatar-fg, var(--xh-fg-muted));
     font-size: var(--xh-avatar-font-size, var(--xh-font-size-sm));

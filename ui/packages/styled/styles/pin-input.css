@@ -40,7 +40,7 @@
     font-variant-numeric: tabular-nums;
     line-height: 1;
     text-align: center;
-    transition: border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 格间距只能长在格子自己身上：包住这一行的容器是作者写的，不在角色表里，

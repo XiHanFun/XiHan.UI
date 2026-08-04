@@ -43,7 +43,7 @@
     border-radius: var(--xh-date-picker-control-radius, var(--xh-shape-control));
     background: var(--xh-date-picker-control-bg, var(--xh-bg-canvas));
     color: var(--xh-date-picker-control-fg, var(--xh-fg-default));
-    transition: border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='date-picker'][data-part='control'][hidden] {
@@ -121,7 +121,7 @@
     line-height: 1;
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='date-picker'][data-part='trigger'][hidden],

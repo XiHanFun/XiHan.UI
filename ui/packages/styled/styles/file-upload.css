@@ -41,8 +41,8 @@
     cursor: pointer;
     /* 拖着文件经过时颜色要立刻跟上：这是"松手就能放下"的唯一提示 */
     transition:
-      border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease),
-      background-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='file-upload'][data-part='dropzone'][hidden] {
