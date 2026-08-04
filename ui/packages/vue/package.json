@@ -13,6 +13,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./visual": {
+      "types": "./dist/visual.d.ts",
+      "import": "./dist/visual.js"
     }
   },
   "main": "./dist/index.js",
@@ -28,7 +32,13 @@
     "test:browser": "vitest run --config vitest.browser.config.ts"
   },
   "peerDependencies": {
+    "@xihan-ui/visual": "workspace:*",
     "vue": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "@xihan-ui/visual": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@xihan-ui/behavior": "workspace:*",
@@ -47,6 +57,7 @@
     "@xihan-ui/system": "workspace:*",
     "@xihan-ui/testing": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",
+    "@xihan-ui/visual": "workspace:*",
     "jsdom": "catalog:",
     "playwright": "catalog:",
     "vitest": "catalog:",

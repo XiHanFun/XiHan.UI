@@ -335,6 +335,7 @@ import {
   XhTreeTree,
 } from '@xihan-ui/vue'
 import { computed, ref } from 'vue'
+import VisualShowcase from './VisualShowcase.vue'
 
 const theme = createThemeController()
 const mode = ref(theme.getState().mode)
@@ -930,6 +931,8 @@ const codeBlockPartial = `const stream = await client.chat({
     <p class="lead">
       这些是 Vue 组件，和 Web Components 版共用同一套 headless（machine + connect）。
     </p>
+
+    <VisualShowcase />
 
     <section>
       <h2>Button</h2>

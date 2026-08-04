@@ -12,6 +12,7 @@
   "dependencies": {
     "@xihan-ui/styled": "workspace:*",
     "@xihan-ui/system": "workspace:*",
+    "@xihan-ui/visual": "workspace:*",
     "@xihan-ui/wc": "workspace:*"
   },
   "devDependencies": {

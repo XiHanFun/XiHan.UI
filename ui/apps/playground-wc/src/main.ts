@@ -1,10 +1,14 @@
 import { createThemeController } from '@xihan-ui/system/runtime'
 import { defineXhElements } from '@xihan-ui/wc/define'
+import { defineXhVisual } from '@xihan-ui/wc/visual'
+import { mountVisualDemo, visualMarkup } from './visual-demo'
 import '@xihan-ui/system/tokens.css'
 import '@xihan-ui/styled'
 
 // 注册自定义元素（惰性），并应用主题到根元素
 defineXhElements()
+// 视觉层单独注册：@xihan-ui/visual 是可选 peer，不用就不必引这一行
+defineXhVisual()
 const theme = createThemeController({ storageKey: 'xh-wc-demo-theme' })
 
 const app = document.getElementById('app')!
@@ -18,6 +22,8 @@ app.innerHTML = `
     这些是原生自定义元素（Light-DOM 行为宿主），和 Vue 版共用同一套 headless（machine + connect）。
     打开 DevTools 看 <code>&lt;xh-button&gt;</code>/<code>&lt;xh-dialog&gt;</code> 内被打上的 data-* / aria-*。
   </p>
+
+  ${visualMarkup()}
 
   <section>
     <h2>Button</h2>
@@ -3653,3 +3659,6 @@ fillWcCodeBlock('wc-code-block-partial', `const stream = await client.chat({
   messages,
   onToken(token) {
     buffer +=`)
+
+// 视觉层示例的事件接线（模板串已在上面拼好）
+mountVisualDemo()

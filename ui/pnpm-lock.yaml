@@ -182,6 +182,9 @@ importers:
       '@xihan-ui/system':
         specifier: workspace:*
         version: link:../../packages/system
+      '@xihan-ui/visual':
+        specifier: workspace:*
+        version: link:../../packages/visual
       '@xihan-ui/vue':
         specifier: workspace:*
         version: link:../../packages/vue
@@ -207,6 +210,9 @@ importers:
       '@xihan-ui/system':
         specifier: workspace:*
         version: link:../../packages/system
+      '@xihan-ui/visual':
+        specifier: workspace:*
+        version: link:../../packages/visual
       '@xihan-ui/wc':
         specifier: workspace:*
         version: link:../../packages/wc
@@ -458,6 +464,9 @@ importers:
       '@xihan-ui/tsconfig':
         specifier: workspace:*
         version: link:../../tooling/tsconfig
+      '@xihan-ui/visual':
+        specifier: workspace:*
+        version: link:../visual
       jsdom:
         specifier: 'catalog:'
         version: 27.4.0
@@ -519,6 +528,9 @@ importers:
       '@xihan-ui/tsconfig':
         specifier: workspace:*
         version: link:../../tooling/tsconfig
+      '@xihan-ui/visual':
+        specifier: workspace:*
+        version: link:../visual
       jsdom:
         specifier: 'catalog:'
         version: 27.4.0
