@@ -18,6 +18,7 @@ export default defineConfig({
       '@xihan-ui/behavior': pkg('behavior'),
       '@xihan-ui/headless': pkg('headless'),
       '@xihan-ui/position': pkg('position'),
+      '@xihan-ui/visual': pkg('visual'),
       '@xihan-ui/vue': pkg('vue'),
     },
   },

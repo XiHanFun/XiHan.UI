@@ -5,6 +5,7 @@ import {
   defaultParams,
   imageToCloud,
   particlesEffect,
+  registerBuiltinEffects,
   SHAPE_NAMES,
   shapeCloud,
   textToCloud,
@@ -13,7 +14,16 @@ import { XhButton } from '@xihan-ui/vue'
 import { vVisual, XhVisual } from '@xihan-ui/vue/visual'
 import { computed, ref, shallowRef, watch } from 'vue'
 
+// 按名字取效果（如 v-visual="'mesh'"）要先把内置效果登记进注册表；
+// 直接传效果对象则不经过它
+registerBuiltinEffects()
+
 // —— 效果画廊 + 调参 ——
+
+// 画廊只放自成画面的效果。浏览器每页能同时持有的 WebGL 上下文有上限（各家在 16 上下），
+// 超了最早创建的会被丢弃变成白板，所以这页把活画面控制在十几个以内。
+// grain 是叠在别的内容之上的透明噪点，particles 要喂点云才有东西，单独一张小卡片都看不出所以然。
+const galleryEffects = builtinEffects.filter(e => e.name !== 'grain' && e.name !== 'particles')
 
 const selected = shallowRef<VisualEffect>(builtinEffects[0]!)
 const params = ref<Record<string, ParamValue>>(defaultParams(builtinEffects[0]!.params))
@@ -71,14 +81,16 @@ const buttonEffect = shallowRef<VisualEffect>(
   <section>
     <h2>Visual · 效果画廊</h2>
     <p class="lead">
-      十四个内置效果，点一张切到下面的调参台。每张卡片都是一个 <code>&lt;XhVisual&gt;</code>：
-      画布铺满根元素且 <code>pointer-events: none</code>，插槽内容浮在效果之上，不会被挡住。
-      卡片滚出视口会自动停绘，所有画面共用同一条 <code>requestAnimationFrame</code>。
+      内置十四个效果，这里列出自成画面的十二个（<code>grain</code> 是叠加用的透明噪点，
+      <code>particles</code> 要喂点云，见下面两节）。点一张切到调参台。
+      每张卡片都是一个 <code>&lt;XhVisual&gt;</code>：画布铺满根元素且 <code>pointer-events: none</code>，
+      插槽内容浮在效果之上不会被挡住。卡片滚出视口自动停绘，所有画面共用同一条
+      <code>requestAnimationFrame</code>。
     </p>
 
     <div class="gallery">
       <button
-        v-for="effect in builtinEffects"
+        v-for="effect in galleryEffects"
         :key="effect.name"
         type="button"
         class="tile"
@@ -182,11 +194,8 @@ const buttonEffect = shallowRef<VisualEffect>(
       <XhButton v-visual="{ effect: buttonEffect, params: { opacity: 0.85 } }" class="fancy">
         带流光的按钮
       </XhButton>
-      <XhButton v-visual="'mesh'" class="fancy">
-        按名字取效果
-      </XhButton>
       <select v-model="buttonEffect" class="picker">
-        <option v-for="effect in builtinEffects" :key="effect.name" :value="effect">
+        <option v-for="effect in galleryEffects" :key="effect.name" :value="effect">
           {{ effect.name }}
         </option>
       </select>

@@ -16,16 +16,14 @@ import type {
   VisualQuality,
   VisualSurface,
 } from '@xihan-ui/visual'
-import type { Directive, PropType, Ref, ShallowRef } from 'vue'
+import type { Directive, PropType, ShallowRef, VNodeRef } from 'vue'
 import { createVisualSurface } from '@xihan-ui/visual'
 import {
   defineComponent,
   getCurrentScope,
   h,
   onScopeDispose,
-  ref,
   shallowRef,
-  watch,
 } from 'vue'
 
 export interface UseVisualOptions {
@@ -44,6 +42,11 @@ export interface UseVisualOptions {
 
 export interface UseVisualReturn {
   readonly surface: ShallowRef<VisualSurface | null>
+  /**
+   * 挂载点。直接当模板 ref 用：`<div :ref="visual.attach">`，
+   * 渲染器会在元素进出 DOM 时把元素或 null 交进来。
+   */
+  attach: (element: Element | null) => void
   setEffect: (effect: VisualEffect | string) => void
   setParams: (patch: Record<string, ParamValue>) => void
   setCloud: (cloud: PointCloud, options?: MorphOptions) => void
@@ -53,24 +56,29 @@ export interface UseVisualReturn {
 }
 
 /**
- * 把一张视觉画面绑到 target 指向的元素上。
+ * 建一张受 Vue 生命周期管理的视觉画面。
  *
- * target 变成 null 会销毁画面，指向新元素会重建；组件卸载时自动销毁。
- * 在 setup 之外调用需自己接管销毁——那时没有活动的 effect scope，返回的 destroy 就是唯一出口。
+ * 用**函数式 ref** 而不是监听一个模板 ref：元素由渲染器直接交到手上，
+ * 不经过响应式与调度队列，因此不受 flush 时序影响，元素换了也一定收得到。
+ * 组件卸载时自动销毁；在 setup 之外调用则需自己调 destroy。
  */
-export function useVisual(
-  target: Ref<HTMLElement | null | undefined>,
-  options: UseVisualOptions,
-): UseVisualReturn {
+export function useVisual(options: UseVisualOptions): UseVisualReturn {
   const surface = shallowRef<VisualSurface | null>(null)
+  // 元素没换就不动画面：函数式 ref 每次 patch 都会被再调一遍，
+  // 不挡住的话每渲染一帧就销毁重建一次，画面永远停在创建时那份参数上
+  let attached: HTMLElement | null = null
 
-  const stopWatch = watch(target, (el) => {
+  function attach(element: Element | null): void {
+    const el = element instanceof HTMLElement ? element : null
+    if (el === attached)
+      return
+    attached = el
     surface.value?.destroy()
-    surface.value = el ? createVisualSurface(el, options) : null
-  }, { immediate: true, flush: 'post' })
+    surface.value = el === null ? null : createVisualSurface(el, options)
+  }
 
   function destroy(): void {
-    stopWatch()
+    attached = null
     surface.value?.destroy()
     surface.value = null
   }
@@ -80,6 +88,7 @@ export function useVisual(
 
   return {
     surface,
+    attach,
     setEffect: (effect): void => surface.value?.setEffect(effect),
     setParams: (patch): void => surface.value?.setParams(patch),
     setCloud: (cloud, morph): void => surface.value?.setCloud(cloud, morph),
@@ -111,8 +120,7 @@ export const XhVisual = defineComponent({
     as: { type: String, default: 'div' },
   },
   setup(props, { slots, expose }) {
-    const root = ref<HTMLElement | null>(null)
-    const api = useVisual(root, {
+    const api = useVisual({
       effect: props.effect,
       params: props.params,
       quality: props.quality,
@@ -122,32 +130,68 @@ export const XhVisual = defineComponent({
       pauseOffscreen: props.pauseOffscreen,
     })
 
-    watch(() => props.effect, effect => api.setEffect(effect))
-    watch(() => props.quality, (quality) => {
-      if (quality !== undefined)
-        api.surface.value?.setQuality(quality)
-    })
-    watch(() => props.params, (params) => {
-      if (params !== undefined)
-        api.setParams(params)
-    }, { deep: true })
-    watch(() => props.autoplay, (on) => {
-      if (on)
-        api.play()
-      else api.pause()
-    })
-    watch([() => props.cloud, api.surface], ([cloud]) => {
-      if (cloud)
-        api.setCloud(cloud, { duration: props.morphDuration })
-    }, { immediate: true, flush: 'post' })
+    let appliedEffect: VisualEffect | string | undefined
+    let appliedQuality: VisualQuality | undefined
+    let appliedCloud: PointCloud | null = null
+    let appliedAutoplay = props.autoplay
+
+    /**
+     * 把当前 props 推到画面上。在渲染函数里调用而不是挂 watcher：
+     * 渲染函数一定会随 props 变化重跑，且这里读到的参数值同时建立了依赖追踪，
+     * 调用方原地改参数对象里的某一项也收得到。
+     */
+    function sync(): void {
+      const surface = api.surface.value
+      if (surface === null)
+        return
+      if (props.effect !== appliedEffect) {
+        surface.setEffect(props.effect)
+        appliedEffect = props.effect
+      }
+      if (props.quality !== undefined && props.quality !== appliedQuality) {
+        surface.setQuality(props.quality)
+        appliedQuality = props.quality
+      }
+      if (props.params !== undefined)
+        surface.setParams(props.params)
+      if (props.cloud && props.cloud !== appliedCloud) {
+        // 第一份点云直接就位，之后的换形态才走过渡
+        surface.setCloud(props.cloud, { duration: appliedCloud === null ? 0 : props.morphDuration })
+        appliedCloud = props.cloud
+      }
+      if (props.autoplay !== appliedAutoplay) {
+        if (props.autoplay)
+          surface.play()
+        else surface.pause()
+        appliedAutoplay = props.autoplay
+      }
+    }
+
+    // 签名照 VNodeRef 的函数式 ref 写：渲染器在元素进出 DOM 时把元素或 null 交进来。
+    // 同一个元素会被反复交进来，attach 对此幂等；只有真换了画面才重置记账。
+    const mount: VNodeRef = (element): void => {
+      const previous = api.surface.value
+      api.attach(element instanceof HTMLElement ? element : null)
+      const current = api.surface.value
+      if (current === previous || current === null)
+        return
+      appliedEffect = props.effect
+      appliedQuality = props.quality
+      appliedCloud = null
+      appliedAutoplay = props.autoplay
+      sync()
+    }
 
     expose(api)
 
-    return () => h(
-      props.as,
-      { 'ref': root, 'data-scope': 'visual', 'data-part': 'root' },
-      slots.default?.(),
-    )
+    return () => {
+      sync()
+      return h(
+        props.as,
+        { 'ref': mount, 'data-scope': 'visual', 'data-part': 'root' },
+        slots.default?.(),
+      )
+    }
   },
 })
 

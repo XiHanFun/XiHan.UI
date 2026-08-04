@@ -95,7 +95,10 @@ export function createVisualSurface(
   if (ownsCanvas) {
     canvas.style.cssText
       = 'position:absolute;inset:0;display:block;width:100%;height:100%;pointer-events:none'
-    if (getComputedStyle(host).position === 'static')
+    // 空串要和 static 一样处理：宿主此刻可能还没进文档，那时 getComputedStyle 什么都算不出来，
+    // 只认 'static' 会让这行悄悄不执行，画布随后定位到更上层的祖先上，铺满半个页面
+    const position = host.style.position || getComputedStyle(host).position
+    if (position === '' || position === 'static')
       host.style.position = 'relative'
     host.appendChild(canvas)
   }
@@ -144,6 +147,7 @@ export function createVisualSurface(
   let visible = true
   let dirty = true
   let disposed = false
+  let contextLost = false
 
   const pointer: [number, number] = [0.5, 0.5]
   let pointerAmount = 0
@@ -323,8 +327,34 @@ export function createVisualSurface(
     context.disable(context.BLEND)
   }
 
+  /**
+   * 浏览器每个页面能同时持有的 WebGL 上下文有上限（各家在 16 上下），超了就把最早的那些丢掉。
+   * 不 preventDefault，浏览器根本不会尝试恢复；不重建程序，恢复回来的上下文里什么资源都没有。
+   */
+  function onContextLost(event: Event): void {
+    event.preventDefault()
+    contextLost = true
+    reportDiagnostic({
+      code: DIAGNOSTIC_CODES.warn,
+      level: 'warn',
+      message: `[visual] WebGL 上下文丢失（${effect.name}）。同一页面上的画面过多时最早创建的会被丢弃，用不到的请及时 destroy()`,
+    })
+  }
+
+  function onContextRestored(): void {
+    contextLost = false
+    backgroundProgram = null
+    particleProgram = null
+    disposeCloudBuffers()
+    cloudCount = 0
+    buildPrograms()
+    width = 0
+    height = 0
+    dirty = true
+  }
+
   function tick(dt: number): void {
-    if (disposed || !playing || !visible)
+    if (disposed || contextLost || !playing || !visible)
       return
 
     if (pointerAmount !== pointerTarget) {
@@ -364,6 +394,9 @@ export function createVisualSurface(
   }
 
   buildPrograms()
+
+  canvas.addEventListener('webglcontextlost', onContextLost)
+  canvas.addEventListener('webglcontextrestored', onContextRestored)
 
   if (options.pointer !== false) {
     host.addEventListener('pointermove', onPointerMove)
@@ -469,6 +502,8 @@ export function createVisualSurface(
       leaveScheduler()
       stopReducedMotion()
       observer?.disconnect()
+      canvas.removeEventListener('webglcontextlost', onContextLost)
+      canvas.removeEventListener('webglcontextrestored', onContextRestored)
       if (options.pointer !== false) {
         host.removeEventListener('pointermove', onPointerMove)
         host.removeEventListener('pointerdown', onPointerMove)
