@@ -18,7 +18,7 @@
     "format": "prettier --write \"**/*.{json,css,scss,md,yaml,yml}\"",
     "size": "turbo run build && size-limit",
     "boundaries": "depcruise packages tooling apps",
-    "gate": "node tooling/scripts/check-runtime-deps.mjs && node tooling/scripts/check-exact-pins.mjs && node tooling/scripts/check-tokens-dist.mjs && node tooling/scripts/check-overlay-strategy.mjs && node tooling/scripts/check-token-refs.mjs && node tooling/scripts/check-shared-slots.mjs",
+    "gate": "node tooling/scripts/check-runtime-deps.mjs && node tooling/scripts/check-exact-pins.mjs && node tooling/scripts/check-tokens-dist.mjs && node tooling/scripts/check-overlay-strategy.mjs && node tooling/scripts/check-token-refs.mjs && node tooling/scripts/check-shared-slots.mjs && node tooling/scripts/check-disabled-contrast.mjs",
     "gate:tokens": "pnpm --filter @xihan-ui/system gen && git diff --exit-code packages/system",
     "gate:publish": "node tooling/scripts/check-publish.mjs",
     "changeset": "changeset",

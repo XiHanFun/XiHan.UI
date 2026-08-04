@@ -254,7 +254,6 @@
   [data-scope='transfer'][data-part='select-all-trigger']:disabled {
     color: var(--xh-fg-disabled);
     cursor: not-allowed;
-    opacity: 0.5;
   }
 
   [data-scope='transfer'][data-part='to-target-trigger'],
@@ -296,7 +295,6 @@
   [data-scope='transfer'][data-part='to-source-trigger']:disabled {
     color: var(--xh-fg-disabled);
     cursor: not-allowed;
-    opacity: 0.5;
   }
 
   /* 上面凡是给了 display 的角色节点都要补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，

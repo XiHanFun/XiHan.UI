@@ -67,7 +67,6 @@
   [data-scope='tabs'][data-part='trigger'][data-disabled] {
     color: var(--xh-fg-disabled);
     cursor: not-allowed;
-    opacity: 0.5;
   }
 
   [data-scope='tabs'][data-part='content'] {

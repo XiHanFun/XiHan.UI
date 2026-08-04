@@ -151,7 +151,6 @@
   [data-scope='drawer'][data-part='trigger']:disabled {
     color: var(--xh-fg-disabled);
     cursor: not-allowed;
-    opacity: 0.5;
   }
 
   [data-scope='drawer'][data-part='backdrop'] {
