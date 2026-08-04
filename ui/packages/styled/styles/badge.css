@@ -6,7 +6,7 @@
     padding-inline: var(--xh-space-2);
     padding-block: var(--xh-space-0_5);
     border: var(--xh-stroke-thin) solid transparent;
-    border-radius: var(--xh-shape-pill, 9999px);
+    border-radius: var(--xh-shape-pill);
     background: var(--xh-badge-bg, var(--xh-bg-subtle));
     color: var(--xh-badge-fg, var(--xh-fg-default));
     font-size: var(--xh-badge-font-size, var(--xh-font-size-xs));

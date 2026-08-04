@@ -8,13 +8,13 @@
     block-size: 16px;
     padding: 0;
     border: 1px solid var(--xh-checkbox-border, var(--xh-border-default));
-    border-radius: var(--xh-radius-sm, 4px);
+    border-radius: var(--xh-radius-sm);
     background: var(--xh-checkbox-bg, var(--xh-bg-canvas));
     color: var(--xh-checkbox-fg, var(--xh-fg-on-brand));
     cursor: pointer;
     transition:
-      background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease),
-      border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='checkbox'][data-part='root'][data-state='checked'] {

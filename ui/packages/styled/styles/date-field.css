@@ -45,7 +45,7 @@
     font-family: inherit;
     font-size: var(--xh-date-field-font-size, var(--xh-text-body-size));
     line-height: 1;
-    transition: border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='date-field'][data-part='control'][hidden] {

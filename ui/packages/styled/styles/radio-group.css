@@ -53,9 +53,9 @@
     inline-size: 16px;
     block-size: 16px;
     border: var(--xh-stroke-thin) solid var(--xh-radio-group-indicator-border, var(--xh-border-default));
-    border-radius: var(--xh-shape-pill, 9999px);
+    border-radius: var(--xh-shape-pill);
     background: var(--xh-radio-group-indicator-bg, var(--xh-bg-canvas));
-    transition: border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='radio-group'][data-part='indicator'][data-state='checked'] {
@@ -67,10 +67,10 @@
     content: '';
     inline-size: 8px;
     block-size: 8px;
-    border-radius: var(--xh-shape-pill, 9999px);
+    border-radius: var(--xh-shape-pill);
     background: var(--xh-radio-group-indicator-dot, var(--xh-bg-brand));
     scale: 0;
-    transition: scale var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+    transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='radio-group'][data-part='indicator'][data-state='checked']::before {

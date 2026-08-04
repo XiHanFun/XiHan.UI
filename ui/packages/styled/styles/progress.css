@@ -8,14 +8,14 @@
     overflow: hidden;
     inline-size: 100%;
     block-size: var(--xh-progress-thickness, 6px);
-    border-radius: var(--xh-shape-pill, 9999px);
+    border-radius: var(--xh-shape-pill);
     background: var(--xh-progress-track, var(--xh-bg-subtle-active));
   }
 
   [data-scope='progress'][data-part='range'] {
     block-size: 100%;
-    border-radius: var(--xh-shape-pill, 9999px);
+    border-radius: var(--xh-shape-pill);
     background: var(--xh-progress-range, var(--xh-bg-brand));
-    transition: inline-size var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+    transition: inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 }

@@ -55,9 +55,9 @@
     cursor: pointer;
     user-select: none;
     transition:
-      background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease),
-      border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease),
-      color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 共边：后一段往回挪一个描边宽度，两条相邻的边重合成一条。

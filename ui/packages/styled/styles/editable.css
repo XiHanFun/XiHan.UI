@@ -111,7 +111,7 @@
     font-family: inherit;
     font-size: var(--xh-editable-input-font-size, var(--xh-text-body-size));
     line-height: var(--xh-leading-normal);
-    transition: border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 预览态由连接层给 hidden；上面给了 inline-size 与 block-size 但没给 display，
@@ -188,7 +188,7 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 三颗按钮按形态轮流收起，连接层给的是 hidden 属性；

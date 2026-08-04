@@ -36,7 +36,7 @@
     font-family: inherit;
     font-size: var(--xh-text-field-input-font-size, var(--xh-text-body-size));
     line-height: var(--xh-leading-normal);
-    transition: border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='text-field'][data-part='input']::placeholder {
@@ -95,7 +95,7 @@
     line-height: 1;
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 没开 clearable 时连接层给的是 hidden 属性；上面那条 display 会把 UA 规则盖掉，

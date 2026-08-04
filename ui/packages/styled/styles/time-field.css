@@ -44,7 +44,7 @@
     /* 等宽数字：各位字宽不一时逐段填入会让整行左右跳 */
     font-variant-numeric: tabular-nums;
     line-height: var(--xh-leading-normal);
-    transition: border-color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='time-field'][data-part='control'][hidden] {
@@ -91,8 +91,8 @@
     /* 段是 role=spinbutton 的展示节点，双击选中一段文字只会碍事 */
     user-select: none;
     transition:
-      background var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease),
-      color var(--xh-motion-duration-micro, 120ms) var(--xh-motion-ease-enter, ease);
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* granularity / hourCycle 关掉的段由连接层打 hidden；上面那条 display 会把 UA 规则盖掉，
