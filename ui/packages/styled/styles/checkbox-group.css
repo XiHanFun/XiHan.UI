@@ -24,7 +24,7 @@
     color: var(--xh-checkbox-group-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-checkbox-group-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-checkbox-group-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
   }
 
   /* label 自己不带任何状态属性，整组禁用只写在 root 上，只能从 root 往下够 */
@@ -43,7 +43,7 @@
     border-radius: var(--xh-checkbox-group-item-radius, var(--xh-shape-control));
     color: var(--xh-checkbox-group-item-fg, var(--xh-fg-default));
     font-size: var(--xh-checkbox-group-item-font-size, var(--xh-text-label-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
   }
 
@@ -83,7 +83,7 @@
     background: var(--xh-checkbox-group-control-bg, var(--xh-bg-canvas));
     color: var(--xh-checkbox-group-control-fg, var(--xh-fg-on-brand));
     font-size: var(--xh-checkbox-group-control-font-size, 12px);
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -145,7 +145,7 @@
     color: var(--xh-checkbox-group-trigger-fg, var(--xh-fg-default));
     font-size: var(--xh-checkbox-group-trigger-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-checkbox-group-trigger-font-weight, var(--xh-font-weight-medium));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
   }

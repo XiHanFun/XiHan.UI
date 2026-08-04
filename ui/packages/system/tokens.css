@@ -64,9 +64,9 @@
     --xh-font-weight-medium: 500;
     --xh-font-weight-semibold: 600;
     --xh-font-weight-bold: 700;
+    --xh-leading-none: 1;
     --xh-leading-tight: 1.25;
     --xh-leading-normal: 1.5;
-    --xh-leading-relaxed: 1.625;
     --xh-shadow-sm: 0 1px 2px 0 oklch(0 0 0 / 0.05);
     --xh-shadow-md: 0 4px 8px -2px oklch(0 0 0 / 0.1), 0 2px 4px -2px oklch(0 0 0 / 0.06);
     --xh-shadow-lg: 0 12px 24px -6px oklch(0 0 0 / 0.15), 0 4px 8px -4px oklch(0 0 0 / 0.08);
@@ -98,6 +98,8 @@
     --xh-control-gap-sm: var(--xh-space-1);
     --xh-control-gap-md: var(--xh-space-2);
     --xh-control-gap-lg: var(--xh-space-2);
+    --xh-control-action-size: 1.5rem;
+    --xh-control-indicator-size: 1rem;
     --xh-field-py: var(--xh-space-2);
     --xh-shape-control: var(--xh-radius-md);
     --xh-shape-surface: var(--xh-radius-lg);
@@ -121,6 +123,11 @@
     --xh-layer-tooltip: var(--xh-z-tooltip);
     --xh-section-py: var(--xh-space-5);
     --xh-stack-gap-md: var(--xh-space-4);
+    --xh-overlay-arrow-size: var(--xh-space-2);
+    --xh-overlay-min-w: 12rem;
+    --xh-overlay-menu-min-w: 10rem;
+    --xh-overlay-max-w: 20rem;
+    --xh-overlay-max-h: 16rem;
     --xh-text-label-size: var(--xh-font-size-md);
     --xh-text-label-weight: var(--xh-font-weight-medium);
     --xh-text-body-size: var(--xh-font-size-md);

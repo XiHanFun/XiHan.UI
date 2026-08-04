@@ -15,7 +15,7 @@
     color: var(--xh-time-field-label-fg, var(--xh-fg-default));
     font-size: var(--xh-time-field-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-time-field-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     /* 点标题会把焦点送到第一段（段不是能被 for 指向的原生控件，这条由连接层接管），
        指针得如实反映它可点 */
     cursor: pointer;

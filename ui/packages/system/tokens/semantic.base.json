@@ -8,7 +8,9 @@
     "px-lg": { "$type": "dimension", "$value": "{space.4}" },
     "gap-sm": { "$type": "dimension", "$value": "{space.1}" },
     "gap-md": { "$type": "dimension", "$value": "{space.2}" },
-    "gap-lg": { "$type": "dimension", "$value": "{space.2}" }
+    "gap-lg": { "$type": "dimension", "$value": "{space.2}" },
+    "action-size": { "$type": "dimension", "$value": "1.5rem" },
+    "indicator-size": { "$type": "dimension", "$value": "1rem" }
   },
   "field": {
     "py": { "$type": "dimension", "$value": "{space.2}" }
@@ -48,6 +50,13 @@
   },
   "stack": {
     "gap-md": { "$type": "dimension", "$value": "{space.4}" }
+  },
+  "overlay": {
+    "arrow-size": { "$type": "dimension", "$value": "{space.2}" },
+    "min-w": { "$type": "dimension", "$value": "12rem" },
+    "menu-min-w": { "$type": "dimension", "$value": "10rem" },
+    "max-w": { "$type": "dimension", "$value": "20rem" },
+    "max-h": { "$type": "dimension", "$value": "16rem" }
   },
   "text": {
     "label-size": { "$type": "dimension", "$value": "{font-size.md}" },

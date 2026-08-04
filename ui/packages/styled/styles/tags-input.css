@@ -17,7 +17,7 @@
     color: var(--xh-tags-input-label-fg, var(--xh-fg-default));
     font-size: var(--xh-tags-input-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-tags-input-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
   }
 
   [data-scope='tags-input'][data-part='label'][data-disabled] {
@@ -121,7 +121,7 @@
     background: var(--xh-tags-input-item-bg, var(--xh-bg-subtle));
     color: var(--xh-tags-input-item-fg, var(--xh-fg-default));
     font-size: var(--xh-tags-input-item-font-size, var(--xh-font-size-sm));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -187,7 +187,7 @@
     color: var(--xh-tags-input-delete-fg, var(--xh-fg-muted));
     font-family: inherit;
     font-size: var(--xh-tags-input-delete-font-size, var(--xh-font-size-xs));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -237,7 +237,7 @@
     color: var(--xh-tags-input-item-input-fg, var(--xh-fg-default));
     font-family: inherit;
     font-size: var(--xh-tags-input-item-font-size, var(--xh-font-size-sm));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
   }
 
   /* 它是真正持有焦点的那个节点，环画在自己身上；
@@ -267,7 +267,7 @@
     color: var(--xh-tags-input-clear-fg, var(--xh-fg-muted));
     font-family: inherit;
     font-size: var(--xh-tags-input-clear-font-size, var(--xh-font-size-sm));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }

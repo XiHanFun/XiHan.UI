@@ -15,7 +15,7 @@
     color: var(--xh-pin-input-label-fg, var(--xh-fg-default));
     font-size: var(--xh-pin-input-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-pin-input-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
   }
 
   [data-scope='pin-input'][data-part='label'][data-disabled] {
@@ -38,7 +38,7 @@
     font-size: var(--xh-pin-input-box-font-size, var(--xh-font-size-xl));
     /* 等宽数字：各位字宽不一时逐格填入会让每格里的字符左右跳 */
     font-variant-numeric: tabular-nums;
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     text-align: center;
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }

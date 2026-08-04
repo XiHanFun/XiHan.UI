@@ -65,7 +65,7 @@
     color: var(--xh-navigation-menu-trigger-fg, var(--xh-fg-muted));
     font: inherit;
     font-weight: var(--xh-navigation-menu-trigger-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
     transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -104,7 +104,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--xh-navigation-menu-content-gap, var(--xh-space-1));
-    min-inline-size: var(--xh-navigation-menu-content-min-w, 12rem);
+    min-inline-size: var(--xh-navigation-menu-content-min-w, var(--xh-overlay-min-w));
     padding: var(--xh-navigation-menu-content-p, var(--xh-space-2));
     border: var(--xh-stroke-thin) solid var(--xh-navigation-menu-content-border, var(--xh-border-default));
     border-radius: var(--xh-navigation-menu-content-radius, var(--xh-shape-surface));

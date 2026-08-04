@@ -11,7 +11,7 @@
     color: var(--xh-badge-fg, var(--xh-fg-default));
     font-size: var(--xh-badge-font-size, var(--xh-font-size-xs));
     font-weight: var(--xh-badge-font-weight, var(--xh-font-weight-medium));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     white-space: nowrap;
   }
 

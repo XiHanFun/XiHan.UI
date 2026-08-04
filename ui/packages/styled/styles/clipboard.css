@@ -15,7 +15,7 @@
     color: var(--xh-clipboard-label-fg, var(--xh-fg-default));
     font-size: var(--xh-clipboard-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-clipboard-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
   }
 
   [data-scope='clipboard'][data-part='label'][hidden] {
@@ -72,7 +72,7 @@
     color: var(--xh-clipboard-trigger-fg, var(--xh-fg-default));
     font-family: inherit;
     font-size: var(--xh-clipboard-trigger-font-size, var(--xh-text-body-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
     /* 复制按钮常被连点，触屏上默认会当成双击缩放 */

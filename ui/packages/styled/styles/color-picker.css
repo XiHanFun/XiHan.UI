@@ -28,7 +28,7 @@
     color: var(--xh-color-picker-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-color-picker-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-color-picker-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
   }
 
   [data-scope='color-picker'][data-part='label'][data-disabled] {
@@ -49,7 +49,7 @@
     color: var(--xh-color-picker-trigger-fg, var(--xh-fg-default));
     font-family: inherit;
     font-size: var(--xh-color-picker-trigger-font-size, var(--xh-text-body-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -346,7 +346,7 @@
     color: var(--xh-color-picker-action-fg, var(--xh-fg-muted));
     font-family: inherit;
     font-size: var(--xh-color-picker-action-font-size, var(--xh-font-size-sm));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
   }

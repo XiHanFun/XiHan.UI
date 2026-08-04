@@ -14,7 +14,7 @@
     color: var(--xh-file-upload-label-fg, var(--xh-fg-default));
     font-size: var(--xh-file-upload-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-file-upload-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
   }
 
   [data-scope='file-upload'][data-part='label'][data-disabled] {
@@ -93,7 +93,7 @@
     /* 表单控件不继承页面字体，只给字号会让按钮用 UA 默认字族 */
     font-family: inherit;
     font-size: var(--xh-file-upload-trigger-font-size, var(--xh-text-body-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
   }
 
@@ -233,7 +233,7 @@
     background: transparent;
     color: var(--xh-file-upload-delete-fg, var(--xh-fg-muted));
     font-family: inherit;
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
   }
 
@@ -273,7 +273,7 @@
     color: var(--xh-file-upload-clear-fg, var(--xh-fg-muted));
     font-family: inherit;
     font-size: var(--xh-file-upload-clear-font-size, var(--xh-font-size-xs));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
   }
 

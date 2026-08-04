@@ -15,7 +15,7 @@
     color: var(--xh-date-picker-label-fg, var(--xh-fg-default));
     font-size: var(--xh-date-picker-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-date-picker-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     /* 点标题会把焦点送进首段，指针得说明这件事 */
     cursor: default;
   }
@@ -35,7 +35,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--xh-date-picker-control-gap, var(--xh-control-gap-md));
-    min-inline-size: var(--xh-date-picker-control-min-w, 12rem);
+    min-inline-size: var(--xh-date-picker-control-min-w, var(--xh-overlay-min-w));
     block-size: var(--xh-date-picker-control-h, var(--xh-control-h-md));
     padding-inline: var(--xh-date-picker-control-px, var(--xh-control-px-md));
     padding-block: 0;
@@ -90,7 +90,7 @@
     /* 表单控件不继承页面字体，只给字号会让段位用 UA 默认字族，与周围文本对不上 */
     font-family: inherit;
     font-size: var(--xh-date-picker-font-size, var(--xh-text-body-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
   }
 
   [data-scope='date-picker'][data-part='input'][hidden] {
@@ -109,8 +109,8 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-date-picker-action-size, 1.5rem);
-    block-size: var(--xh-date-picker-action-size, 1.5rem);
+    inline-size: var(--xh-date-picker-action-size, var(--xh-control-action-size));
+    block-size: var(--xh-date-picker-action-size, var(--xh-control-action-size));
     padding: 0;
     border: 0;
     border-radius: var(--xh-date-picker-action-radius, var(--xh-shape-control));
@@ -118,7 +118,7 @@
     color: var(--xh-date-picker-action-fg, var(--xh-fg-muted));
     font-family: inherit;
     font-size: var(--xh-date-picker-action-font-size, var(--xh-font-size-sm));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);

@@ -32,7 +32,7 @@
     border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-pagination-item-radius, var(--xh-shape-control));
     font-size: var(--xh-pagination-font-size, var(--xh-text-label-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     /* 等宽数字：1 与 7 的字形宽度在比例字体里并不相同，不定住会让同位数页码抖一格 */
     font-variant-numeric: tabular-nums;
     white-space: nowrap;

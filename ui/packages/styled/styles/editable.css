@@ -18,7 +18,7 @@
     color: var(--xh-editable-label-fg, var(--xh-fg-default));
     font-size: var(--xh-editable-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-editable-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     /* 点标题会把人送进编辑态（预览态下 for 指着的输入框是收起的，点了没反应），
        所以光标要说明它可点 */
     cursor: pointer;
@@ -184,7 +184,7 @@
     color: var(--xh-editable-trigger-fg, var(--xh-fg-default));
     font-family: inherit;
     font-size: var(--xh-editable-trigger-font-size, var(--xh-font-size-sm));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;

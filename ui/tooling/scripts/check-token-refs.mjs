@@ -44,7 +44,7 @@ for (const [file, src] of sources) {
     }
     // 全局令牌不许带字面量兜底。styled 已显式 @import 令牌产物，缺席就是缺陷不是降级；
     // 留着兜底等于同一个值有两处事实源，改令牌时兜底不会跟着走
-    for (const m of line.matchAll(/var\(\s*(--xh-[a-z0-9-]+)\s*,\s*([^;()]*?)\)/g)) {
+    for (const m of line.matchAll(/var\(\s*(--xh-[a-z0-9-]+)\s*,([^;()]*)\)/g)) {
       const [, name, fb] = m
       if (declared.has(name) && !fb.trim().startsWith('var('))
         fallbacks.push(`${file}:${i + 1}  ${name} 的兜底「${fb.trim()}」`)

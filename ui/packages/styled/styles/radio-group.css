@@ -17,7 +17,7 @@
     color: var(--xh-radio-group-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-radio-group-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-radio-group-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
   }
 
   /* position 是给条目内那份视觉隐藏的原生输入做定位基准，别去掉 */
@@ -29,7 +29,7 @@
     border-radius: var(--xh-radio-group-item-radius, var(--xh-shape-control));
     color: var(--xh-radio-group-item-fg, var(--xh-fg-default));
     font-size: var(--xh-radio-group-item-font-size, var(--xh-text-label-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
   }
 

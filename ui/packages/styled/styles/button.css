@@ -18,7 +18,7 @@
     color: var(--xh-_fg);
     font-size: var(--xh-button-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-button-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;

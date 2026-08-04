@@ -15,7 +15,7 @@
     color: var(--xh-time-picker-label-fg, var(--xh-fg-default));
     font-size: var(--xh-time-picker-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-time-picker-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     /* 点标题会把焦点送到第一段（段不是能被 for 指向的原生控件，这条由连接层接管），
        指针得如实反映它可点 */
     cursor: pointer;
@@ -138,8 +138,8 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-time-picker-action-size, 1.5rem);
-    block-size: var(--xh-time-picker-action-size, 1.5rem);
+    inline-size: var(--xh-time-picker-action-size, var(--xh-control-action-size));
+    block-size: var(--xh-time-picker-action-size, var(--xh-control-action-size));
     padding: 0;
     border: 0;
     border-radius: var(--xh-time-picker-action-radius, var(--xh-shape-control));
@@ -147,7 +147,7 @@
     color: var(--xh-time-picker-action-fg, var(--xh-fg-muted));
     font-family: inherit;
     font-size: var(--xh-time-picker-action-font-size, var(--xh-font-size-sm));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -270,7 +270,7 @@
     border-radius: var(--xh-time-picker-option-radius, var(--xh-shape-control));
     color: var(--xh-time-picker-option-fg, var(--xh-fg-default));
     font-size: var(--xh-time-picker-option-font-size, var(--xh-text-body-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;

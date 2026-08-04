@@ -82,7 +82,7 @@
     font-family: inherit;
     font-size: var(--xh-composer-submit-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-composer-submit-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;

@@ -20,7 +20,7 @@
     color: var(--xh-cascader-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-cascader-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-cascader-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
   }
 
   /* 整个控件禁用会把 data-disabled 一路打到 label / value-text / indicator 上，各处观感保持一致 */
@@ -45,7 +45,7 @@
     color: var(--xh-cascader-trigger-fg, var(--xh-fg-default));
     font-family: inherit;
     font-size: var(--xh-cascader-trigger-font-size, var(--xh-text-body-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     text-align: start;
     cursor: pointer;
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -127,8 +127,8 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-cascader-action-size, 1.5rem);
-    block-size: var(--xh-cascader-action-size, 1.5rem);
+    inline-size: var(--xh-cascader-action-size, var(--xh-control-action-size));
+    block-size: var(--xh-cascader-action-size, var(--xh-control-action-size));
     padding: 0;
     border: 0;
     border-radius: var(--xh-cascader-action-radius, var(--xh-shape-control));
@@ -136,7 +136,7 @@
     color: var(--xh-cascader-action-fg, var(--xh-fg-muted));
     font-family: inherit;
     font-size: var(--xh-cascader-action-font-size, var(--xh-font-size-sm));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -251,7 +251,7 @@
     border-radius: var(--xh-cascader-row-radius, var(--xh-shape-control));
     color: var(--xh-cascader-row-fg, var(--xh-fg-default));
     font-size: var(--xh-cascader-row-font-size, var(--xh-text-body-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
@@ -308,7 +308,7 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-cascader-indicator-size, 1rem);
+    inline-size: var(--xh-cascader-indicator-size, var(--xh-control-indicator-size));
     color: var(--xh-cascader-item-indicator-fg, var(--xh-bg-brand));
     visibility: hidden;
   }
