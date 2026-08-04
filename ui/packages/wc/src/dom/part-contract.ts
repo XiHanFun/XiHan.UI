@@ -11,6 +11,14 @@ export interface PartContract {
    * 比如 field 的 label 不是原生 `<label>` 时，`for` 整条失效，点标签不再聚焦控件。
    */
   readonly tags?: Readonly<Record<string, readonly string[]>>
+  /**
+   * 委派出去的内嵌部件解剖。
+   *
+   * 有的宿主把内嵌部件的 DOM 摊在自己的 Light DOM 里接线（date-picker 之于 date-field 与
+   * calendar 就是这样），这些角色节点归内嵌部件的 scope 管，本就不该出现在宿主自己的解剖里。
+   * 不登记的话它们会被当成解剖外的野节点逐个报警，而它们恰恰是被正常接线的。
+   */
+  readonly delegates?: readonly { readonly name: string, readonly parts: readonly string[] }[]
 }
 
 /**
@@ -44,6 +52,10 @@ export function validatePartContract(
   }
 
   const known = new Set<string>(contract.anatomy.parts)
+  for (const delegate of contract.delegates ?? []) {
+    for (const part of delegate.parts)
+      known.add(part)
+  }
   for (const part of parts.keys()) {
     if (known.has(part))
       continue
