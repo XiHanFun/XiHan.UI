@@ -49,7 +49,6 @@
   [data-scope='select'][data-part='trigger']:disabled {
     color: var(--xh-fg-disabled);
     cursor: not-allowed;
-    opacity: 0.5;
   }
 
   [data-scope='select'][data-part='value-text'] {

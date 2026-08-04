@@ -89,7 +89,6 @@
   [data-scope='pagination'][data-part='next-trigger']:disabled {
     color: var(--xh-fg-disabled);
     cursor: not-allowed;
-    opacity: 0.5;
   }
 
   /* 当前页：data-selected 与 aria-current='page' 由连接层成对给出，

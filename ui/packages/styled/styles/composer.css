@@ -118,6 +118,5 @@
   [data-scope='composer'][data-part='submit-trigger']:disabled {
     color: var(--xh-fg-disabled);
     cursor: not-allowed;
-    opacity: 0.5;
   }
 }

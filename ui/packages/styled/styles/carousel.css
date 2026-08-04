@@ -121,7 +121,6 @@
   [data-scope='carousel'][data-part='next-trigger']:disabled {
     color: var(--xh-fg-disabled);
     cursor: not-allowed;
-    opacity: 0.5;
   }
 
   /* 视口与指示点都不是可聚焦节点，落焦只会是浏览器兜底行为，别画焦点环 */
