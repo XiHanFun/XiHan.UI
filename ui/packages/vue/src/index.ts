@@ -33,7 +33,7 @@ export {
 } from './components/breadcrumb/breadcrumb'
 export { useBreadcrumb } from './components/breadcrumb/use-breadcrumb'
 export type { BreadcrumbContext } from './components/breadcrumb/use-breadcrumb'
-export { XhButton } from './components/button'
+export { XhButton, XhButtonIndicator, XhButtonLabel, XhButtonPrefix, XhButtonSuffix } from './components/button'
 export {
   XhCalendarCell,
   XhCalendarCellTrigger,
