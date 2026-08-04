@@ -15,7 +15,8 @@
       "@xihan-ui/ai",
       "@xihan-ui/markdown",
       "@xihan-ui/highlight",
-      "@xihan-ui/position"
+      "@xihan-ui/position",
+      "@xihan-ui/visual"
     ]
   ],
   "linked": [],
