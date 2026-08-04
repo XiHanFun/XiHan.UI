@@ -25,7 +25,7 @@ export const popoverSuite: ConformanceSuite = {
               { part: 'title', text: '标题' },
               { part: 'description', text: '描述' },
               { tag: 'button', text: '确认', attrs: { 'data-testid': 'confirm' } },
-              { part: 'close-trigger', text: '关闭' },
+              { part: 'close-trigger', tag: 'button', text: '关闭' },
             ],
           },
         ],
@@ -138,7 +138,9 @@ export const popoverSuite: ConformanceSuite = {
       spec: { apg: `${APG}#keyboardinteraction` },
       steps: [
         { kind: 'click', part: 'trigger' },
-        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        // 等到焦点真进了 content 再点关闭。只等 hidden 消失是不够的——
+        // 那一帧焦点可能还没搬进去，后面的「归位」就成了从没离开过的假阳性
+        { kind: 'settle', until: { activeElement: 'content' } },
         { kind: 'click', part: 'close-trigger' },
         {
           kind: 'settle',
@@ -149,6 +151,12 @@ export const popoverSuite: ConformanceSuite = {
               content: { 'data-state': 'closed', 'hidden': '' },
             },
           },
+        },
+        // 用例名承诺「trigger 归位」，就得真断言焦点回没回去
+        {
+          kind: 'settle',
+          until: { activeElement: 'trigger' },
+          expect: { activeElement: 'trigger' },
         },
       ],
     },

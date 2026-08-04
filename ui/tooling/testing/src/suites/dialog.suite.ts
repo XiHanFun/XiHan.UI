@@ -20,7 +20,7 @@ export const dialogSuite: ConformanceSuite = {
           { part: 'title', text: '标题' },
           { part: 'description', text: '描述' },
           { tag: 'button', text: '确认', attrs: { 'data-testid': 'confirm' } },
-          { part: 'close-trigger', text: '关闭' },
+          { part: 'close-trigger', tag: 'button', text: '关闭' },
         ],
       },
     ],
