@@ -1,7 +1,7 @@
 import type { Placement, PositionResult, Scope } from '@xihan-ui/core'
 import type { PropFn } from '@xihan-ui/machine'
 import type { TourSchema, TourSpotlightRect, TourStep } from './tour.types'
-import { createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
+import { canTakeFocus, createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
 import { sameTourSpotlight, tourSpotlightBox } from './tour.spotlight'
 
@@ -60,24 +60,6 @@ function resolveTourTarget(scope: Scope, step: TourStep | null): HTMLElement | n
     // 作者手写的选择器可能非法；查不到就是不锚定，不让它抛出去
     return null
   }
-}
-
-/**
- * 这个节点此刻真的接得住焦点吗。
- * 焦点域的 initialFocus 一旦返回非空就当场认定焦点已安排好，不再重试，
- * 因此 content 还带着 hidden / display:none 或还没写上 tabindex 时必须回 null。
- * tabindex 既是能否聚焦的硬条件，也是适配器接线完成的信号。
- */
-function canTakeFocus(el: HTMLElement | null, scope: Scope): boolean {
-  if (!el || !el.hasAttribute('tabindex'))
-    return false
-  for (let node: HTMLElement | null = el; node; node = node.parentElement) {
-    if (node.hidden)
-      return false
-    if (scope.getComputedStyle(node).display === 'none')
-      return false
-  }
-  return true
 }
 
 // 步序住在 context 的 cell 里，受控/非受控在 cell 收口，这一路不需要影子事件。
