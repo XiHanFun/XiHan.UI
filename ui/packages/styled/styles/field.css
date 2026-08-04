@@ -9,7 +9,7 @@
     color: var(--xh-field-label-fg, var(--xh-fg-default));
     font-size: var(--xh-field-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-field-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
   }
 
   [data-scope='field'][data-part='label'][data-disabled] {

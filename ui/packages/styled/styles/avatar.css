@@ -13,7 +13,7 @@
     color: var(--xh-avatar-fg, var(--xh-fg-muted));
     font-size: var(--xh-avatar-font-size, var(--xh-font-size-sm));
     font-weight: var(--xh-avatar-font-weight, var(--xh-font-weight-medium));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     user-select: none;
   }
 

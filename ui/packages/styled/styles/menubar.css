@@ -42,7 +42,7 @@
     color: inherit;
     font: inherit;
     font-size: var(--xh-menubar-trigger-font-size, var(--xh-text-body-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
@@ -86,7 +86,7 @@
   [data-scope='menubar'][data-part='content'] {
     display: flex;
     flex-direction: column;
-    min-inline-size: var(--xh-menubar-menu-min-w, 10rem);
+    min-inline-size: var(--xh-menubar-menu-min-w, var(--xh-overlay-menu-min-w));
     max-inline-size: var(--xh-menubar-menu-max-w, 20rem);
     padding-block: var(--xh-menubar-menu-py, var(--xh-space-1));
     padding-inline: var(--xh-menubar-menu-px, var(--xh-space-1));
@@ -140,7 +140,7 @@
     color: var(--xh-menubar-group-label-fg, var(--xh-fg-subtle));
     font-size: var(--xh-menubar-group-label-font-size, var(--xh-font-size-xs));
     font-weight: var(--xh-menubar-group-label-font-weight, var(--xh-font-weight-medium));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     user-select: none;
   }
 
@@ -157,7 +157,7 @@
     border-radius: var(--xh-menubar-item-radius, var(--xh-shape-control));
     color: var(--xh-menubar-item-fg, var(--xh-fg-default));
     font-size: var(--xh-menubar-item-font-size, var(--xh-text-body-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
@@ -202,7 +202,7 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-menubar-item-indicator-size, 1rem);
+    inline-size: var(--xh-menubar-item-indicator-size, var(--xh-control-indicator-size));
     color: var(--xh-menubar-item-indicator-fg, var(--xh-fg-subtle));
   }
 
@@ -217,7 +217,7 @@
   /* 分隔线横跨菜单，与菜单栏自身的 orientation 无关：菜单永远是一列条目。
      不给 display，因此 UA 的 [hidden]{display:none} 自己就压得住 */
   [data-scope='menubar'][data-part='separator'] {
-    block-size: var(--xh-menubar-separator-thickness, 1px);
+    block-size: var(--xh-menubar-separator-thickness, var(--xh-stroke-thin));
     margin-block: var(--xh-menubar-separator-my, var(--xh-space-1));
     background: var(--xh-menubar-separator-color, var(--xh-border-default));
   }

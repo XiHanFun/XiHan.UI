@@ -28,7 +28,7 @@
     color: var(--xh-calendar-heading-fg, var(--xh-fg-default));
     font-size: var(--xh-calendar-heading-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-calendar-heading-font-weight, var(--xh-font-weight-semibold));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     user-select: none;
   }
 
@@ -117,7 +117,7 @@
     color: var(--xh-calendar-week-day-fg, var(--xh-fg-subtle));
     font-size: var(--xh-calendar-week-day-font-size, var(--xh-font-size-xs));
     font-weight: var(--xh-calendar-week-day-font-weight, var(--xh-font-weight-medium));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     user-select: none;
   }
 
@@ -165,7 +165,7 @@
     border-radius: var(--xh-calendar-cell-radius, var(--xh-shape-pill));
     color: var(--xh-calendar-cell-fg, var(--xh-fg-default));
     font-size: var(--xh-calendar-cell-font-size, var(--xh-text-body-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
     transition:

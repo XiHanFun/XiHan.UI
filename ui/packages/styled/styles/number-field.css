@@ -16,7 +16,7 @@
     color: var(--xh-number-field-label-fg, var(--xh-fg-default));
     font-size: var(--xh-number-field-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-number-field-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
   }
 
   [data-scope='number-field'][data-part='label'][data-disabled] {
@@ -87,7 +87,7 @@
     color: var(--xh-number-field-trigger-fg, var(--xh-fg-default));
     font-family: inherit;
     font-size: var(--xh-number-field-trigger-font-size, var(--xh-text-body-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
     /* 按住不放会连发，长按期间浏览器默认会去选中按钮里的符号、
        触屏上还会当成双击缩放，两条都得先掐掉 */

@@ -15,7 +15,7 @@
     color: var(--xh-date-field-label-fg, var(--xh-fg-default));
     font-size: var(--xh-date-field-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-date-field-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     /* 点标题会把焦点送进首段，指针得说明这件事 */
     cursor: default;
   }
@@ -44,7 +44,7 @@
     /* 表单控件不继承页面字体，只给字号会让分段框用 UA 默认字族 */
     font-family: inherit;
     font-size: var(--xh-date-field-font-size, var(--xh-text-body-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -91,7 +91,7 @@
     font: inherit;
     /* 等宽数字：各位字宽不一时，上下键连按会让整行数字左右跳 */
     font-variant-numeric: tabular-nums;
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     text-align: center;
     /* 段位靠键盘编辑，不是文本：让它被选中只会在拖选时选出半截日期 */
     user-select: none;

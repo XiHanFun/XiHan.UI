@@ -17,7 +17,7 @@
     color: var(--xh-text-field-label-fg, var(--xh-fg-default));
     font-size: var(--xh-text-field-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-text-field-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
   }
 
   [data-scope='text-field'][data-part='label'][data-disabled] {
@@ -92,7 +92,7 @@
     color: var(--xh-text-field-clear-fg, var(--xh-fg-muted));
     font-family: inherit;
     font-size: var(--xh-text-field-clear-font-size, var(--xh-font-size-sm));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);

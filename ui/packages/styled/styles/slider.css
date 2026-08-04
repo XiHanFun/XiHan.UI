@@ -27,7 +27,7 @@
     color: var(--xh-slider-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-slider-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-slider-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
   }
 
   [data-scope='slider'][data-part='label'][data-disabled] {

@@ -34,7 +34,7 @@
     min-block-size: var(--xh-image-fallback-min-h, var(--xh-control-h-lg));
     color: var(--xh-image-fallback-fg, var(--xh-fg-muted));
     font-size: var(--xh-image-fallback-font-size, var(--xh-font-size-sm));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     user-select: none;
   }
 

@@ -13,7 +13,7 @@
     padding-block: var(--xh-code-block-label-py, var(--xh-space-1));
     color: var(--xh-code-block-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-code-block-label-font-size, var(--xh-text-label-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     user-select: none;
   }
 

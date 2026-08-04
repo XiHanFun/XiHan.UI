@@ -33,7 +33,7 @@
     color: var(--xh-accordion-trigger-fg, var(--xh-fg-default));
     font-size: var(--xh-accordion-trigger-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-accordion-trigger-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
   }
 
@@ -57,7 +57,7 @@
     align-items: center;
     justify-content: center;
     flex: none;
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 

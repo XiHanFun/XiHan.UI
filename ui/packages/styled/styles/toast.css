@@ -146,7 +146,7 @@
     /* 按钮不继承字族字号，不接回来的话卡片里会突然冒出一段系统 UI 字体 */
     font: inherit;
     font-weight: var(--xh-toast-action-font-weight, var(--xh-font-weight-medium));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
   }
 
@@ -181,7 +181,7 @@
     background: transparent;
     color: var(--xh-toast-close-fg, var(--xh-fg-muted));
     font: inherit;
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
   }
 

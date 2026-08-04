@@ -74,9 +74,9 @@
     "bold": { "$type": "number", "$value": 700 }
   },
   "leading": {
+    "none": { "$type": "number", "$value": 1 },
     "tight": { "$type": "number", "$value": 1.25 },
-    "normal": { "$type": "number", "$value": 1.5 },
-    "relaxed": { "$type": "number", "$value": 1.625 }
+    "normal": { "$type": "number", "$value": 1.5 }
   },
   "shadow": {
     "sm": { "$type": "shadow", "$value": "0 1px 2px 0 oklch(0 0 0 / 0.05)" },

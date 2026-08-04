@@ -123,7 +123,7 @@
     font-weight: var(--xh-font-weight-medium);
     /* 等宽数字：1 与 7 的字形宽度在比例字体里并不相同，不定住会让序号左右抖一格 */
     font-variant-numeric: tabular-nums;
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),

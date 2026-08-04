@@ -111,7 +111,7 @@
     /* 表单控件不继承页面字体，只给字号会让按钮用 UA 默认字族，与周围文本对不上 */
     font-family: inherit;
     font-size: var(--xh-form-trigger-font-size, var(--xh-text-body-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;

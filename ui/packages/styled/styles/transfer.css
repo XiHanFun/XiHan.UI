@@ -71,7 +71,7 @@
     color: var(--xh-transfer-title-fg, var(--xh-fg-default));
     font-size: var(--xh-transfer-title-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-transfer-title-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     white-space: nowrap;
     text-overflow: ellipsis;
   }
@@ -80,7 +80,7 @@
     flex: none;
     color: var(--xh-transfer-count-fg, var(--xh-fg-subtle));
     font-size: var(--xh-transfer-count-font-size, var(--xh-font-size-xs));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     font-variant-numeric: tabular-nums;
   }
 
@@ -141,7 +141,7 @@
     border-radius: var(--xh-transfer-item-radius, var(--xh-shape-control));
     color: var(--xh-transfer-item-fg, var(--xh-fg-default));
     font-size: var(--xh-transfer-item-font-size, var(--xh-text-body-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
@@ -189,7 +189,7 @@
     background: var(--xh-transfer-checkbox-bg, var(--xh-bg-canvas));
     color: var(--xh-transfer-checkbox-fg, var(--xh-fg-on-brand));
     font-size: var(--xh-transfer-checkbox-font-size, 12px);
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -242,7 +242,7 @@
     color: var(--xh-transfer-select-all-fg, var(--xh-fg-muted));
     font-size: var(--xh-transfer-select-all-font-size, var(--xh-font-size-xs));
     font-weight: var(--xh-font-weight-medium);
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
   }
 
@@ -270,7 +270,7 @@
     background: var(--xh-transfer-trigger-bg, var(--xh-bg-subtle));
     color: var(--xh-transfer-trigger-fg, var(--xh-fg-default));
     font-size: var(--xh-transfer-trigger-font-size, var(--xh-text-label-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }

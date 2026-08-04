@@ -13,7 +13,7 @@
     color: var(--xh-listbox-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-listbox-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-listbox-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
   }
 
   /* 整组禁用会把 data-disabled 一路打到 label / content / item-group 上，各处观感保持一致 */
@@ -26,7 +26,7 @@
   [data-scope='listbox'][data-part='content'] {
     display: flex;
     flex-direction: column;
-    max-block-size: var(--xh-listbox-content-max-h, 16rem);
+    max-block-size: var(--xh-listbox-content-max-h, var(--xh-overlay-max-h));
     padding-block: var(--xh-listbox-content-py, var(--xh-space-1));
     padding-inline: var(--xh-listbox-content-px, var(--xh-space-1));
     border: var(--xh-stroke-thin) solid var(--xh-listbox-content-border, var(--xh-border-default));
@@ -78,7 +78,7 @@
     color: var(--xh-listbox-group-label-fg, var(--xh-fg-subtle));
     font-size: var(--xh-listbox-group-label-font-size, var(--xh-font-size-xs));
     font-weight: var(--xh-listbox-group-label-font-weight, var(--xh-font-weight-medium));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     user-select: none;
   }
 
@@ -99,7 +99,7 @@
     border-radius: var(--xh-listbox-item-radius, var(--xh-shape-control));
     color: var(--xh-listbox-item-fg, var(--xh-fg-default));
     font-size: var(--xh-listbox-item-font-size, var(--xh-text-body-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
@@ -140,7 +140,7 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-listbox-item-indicator-size, 1rem);
+    inline-size: var(--xh-listbox-item-indicator-size, var(--xh-control-indicator-size));
     color: var(--xh-listbox-item-indicator-fg, var(--xh-bg-brand));
     visibility: hidden;
   }

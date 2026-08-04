@@ -11,7 +11,7 @@
     color: var(--xh-select-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-select-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-select-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
   }
 
   [data-scope='select'][data-part='label'][data-disabled] {
@@ -31,7 +31,7 @@
     background: var(--xh-select-trigger-bg, var(--xh-bg-canvas));
     color: var(--xh-select-trigger-fg, var(--xh-fg-default));
     font-size: var(--xh-select-trigger-font-size, var(--xh-text-body-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     text-align: start;
     cursor: pointer;
   }
@@ -92,9 +92,9 @@
   [data-scope='select'][data-part='content'] {
     display: flex;
     flex-direction: column;
-    min-inline-size: var(--xh-select-content-min-w, 10rem);
-    max-inline-size: var(--xh-select-content-max-w, 20rem);
-    max-block-size: var(--xh-select-content-max-h, 16rem);
+    min-inline-size: var(--xh-select-content-min-w, var(--xh-overlay-min-w));
+    max-inline-size: var(--xh-select-content-max-w, var(--xh-overlay-max-w));
+    max-block-size: var(--xh-select-content-max-h, var(--xh-overlay-max-h));
     padding-block: var(--xh-select-content-py, var(--xh-space-1));
     padding-inline: var(--xh-select-content-px, var(--xh-space-1));
     border: var(--xh-stroke-thin) solid var(--xh-select-content-border, var(--xh-border-default));
@@ -129,7 +129,7 @@
     border-radius: var(--xh-select-item-radius, var(--xh-shape-control));
     color: var(--xh-select-item-fg, var(--xh-fg-default));
     font-size: var(--xh-select-item-font-size, var(--xh-text-body-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
@@ -163,7 +163,7 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-select-item-indicator-size, 1rem);
+    inline-size: var(--xh-select-item-indicator-size, var(--xh-control-indicator-size));
     color: var(--xh-select-item-indicator-fg, var(--xh-bg-brand));
     visibility: hidden;
   }

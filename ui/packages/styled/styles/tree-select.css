@@ -20,7 +20,7 @@
     color: var(--xh-tree-select-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-tree-select-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-tree-select-label-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
   }
 
   /* 整个控件禁用会把 data-disabled 一路打到 label / value-text / indicator 上，各处观感保持一致 */
@@ -45,7 +45,7 @@
     color: var(--xh-tree-select-trigger-fg, var(--xh-fg-default));
     font-family: inherit;
     font-size: var(--xh-tree-select-trigger-font-size, var(--xh-text-body-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     text-align: start;
     cursor: pointer;
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -127,8 +127,8 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-tree-select-action-size, 1.5rem);
-    block-size: var(--xh-tree-select-action-size, 1.5rem);
+    inline-size: var(--xh-tree-select-action-size, var(--xh-control-action-size));
+    block-size: var(--xh-tree-select-action-size, var(--xh-control-action-size));
     padding: 0;
     border: 0;
     border-radius: var(--xh-tree-select-action-radius, var(--xh-shape-control));
@@ -136,7 +136,7 @@
     color: var(--xh-tree-select-action-fg, var(--xh-fg-muted));
     font-family: inherit;
     font-size: var(--xh-tree-select-action-font-size, var(--xh-font-size-sm));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -185,9 +185,9 @@
   [data-scope='tree-select'][data-part='content'] {
     display: flex;
     flex-direction: column;
-    min-inline-size: var(--xh-tree-select-content-min-w, 12rem);
-    max-inline-size: var(--xh-tree-select-content-max-w, 20rem);
-    max-block-size: var(--xh-tree-select-content-max-h, 16rem);
+    min-inline-size: var(--xh-tree-select-content-min-w, var(--xh-overlay-min-w));
+    max-inline-size: var(--xh-tree-select-content-max-w, var(--xh-overlay-max-w));
+    max-block-size: var(--xh-tree-select-content-max-h, var(--xh-overlay-max-h));
     padding-block: var(--xh-tree-select-content-py, var(--xh-space-1));
     padding-inline: var(--xh-tree-select-content-px, var(--xh-space-1));
     border: var(--xh-stroke-thin) solid var(--xh-tree-select-content-border, var(--xh-border-default));
@@ -252,7 +252,7 @@
     border-radius: var(--xh-tree-select-row-radius, var(--xh-shape-control));
     color: var(--xh-tree-select-row-fg, var(--xh-fg-default));
     font-size: var(--xh-tree-select-row-font-size, var(--xh-text-body-size));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
@@ -306,7 +306,7 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-tree-select-indicator-size, 1rem);
+    inline-size: var(--xh-tree-select-indicator-size, var(--xh-control-indicator-size));
     color: var(--xh-tree-select-item-indicator-fg, var(--xh-bg-brand));
     visibility: hidden;
   }
@@ -331,7 +331,7 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-tree-select-indicator-size, 1rem);
+    inline-size: var(--xh-tree-select-indicator-size, var(--xh-control-indicator-size));
     color: var(--xh-tree-select-branch-indicator-fg, var(--xh-fg-subtle));
     transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }

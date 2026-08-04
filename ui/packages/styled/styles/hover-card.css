@@ -51,7 +51,7 @@
     flex-direction: column;
     gap: var(--xh-hover-card-gap, var(--xh-space-2));
     inline-size: max-content;
-    max-inline-size: var(--xh-hover-card-max-w, 20rem);
+    max-inline-size: var(--xh-hover-card-max-w, var(--xh-overlay-max-w));
     padding-block: var(--xh-hover-card-py, var(--xh-space-3));
     padding-inline: var(--xh-hover-card-px, var(--xh-control-px-md));
     border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-border-default));
@@ -82,37 +82,37 @@
      引擎不产出箭头偏移，因此沿交叉轴固定居中 */
   [data-scope='hover-card'][data-part='arrow'] {
     position: absolute;
-    inline-size: var(--xh-hover-card-arrow-size, 8px);
-    block-size: var(--xh-hover-card-arrow-size, 8px);
+    inline-size: var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size));
+    block-size: var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size));
     border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-border-default));
     background: var(--xh-hover-card-bg, var(--xh-bg-surface));
     rotate: 45deg;
   }
 
   [data-scope='hover-card'][data-part='arrow'][data-placement^='bottom'] {
-    inset-block-start: calc(var(--xh-hover-card-arrow-size, 8px) / -2);
-    inset-inline-start: calc(50% - var(--xh-hover-card-arrow-size, 8px) / 2);
+    inset-block-start: calc(var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size)) / -2);
+    inset-inline-start: calc(50% - var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size)) / 2);
     border-block-end: 0;
     border-inline-end: 0;
   }
 
   [data-scope='hover-card'][data-part='arrow'][data-placement^='top'] {
-    inset-block-end: calc(var(--xh-hover-card-arrow-size, 8px) / -2);
-    inset-inline-start: calc(50% - var(--xh-hover-card-arrow-size, 8px) / 2);
+    inset-block-end: calc(var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size)) / -2);
+    inset-inline-start: calc(50% - var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size)) / 2);
     border-block-start: 0;
     border-inline-start: 0;
   }
 
   [data-scope='hover-card'][data-part='arrow'][data-placement^='right'] {
-    inset-inline-start: calc(var(--xh-hover-card-arrow-size, 8px) / -2);
-    inset-block-start: calc(50% - var(--xh-hover-card-arrow-size, 8px) / 2);
+    inset-inline-start: calc(var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size)) / -2);
+    inset-block-start: calc(50% - var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size)) / 2);
     border-block-start: 0;
     border-inline-end: 0;
   }
 
   [data-scope='hover-card'][data-part='arrow'][data-placement^='left'] {
-    inset-inline-end: calc(var(--xh-hover-card-arrow-size, 8px) / -2);
-    inset-block-start: calc(50% - var(--xh-hover-card-arrow-size, 8px) / 2);
+    inset-inline-end: calc(var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size)) / -2);
+    inset-block-start: calc(50% - var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size)) / 2);
     border-block-end: 0;
     border-inline-start: 0;
   }

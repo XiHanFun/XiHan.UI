@@ -13,7 +13,7 @@
     color: var(--xh-collapsible-trigger-fg, var(--xh-fg-default));
     font-size: var(--xh-collapsible-trigger-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-collapsible-trigger-font-weight, var(--xh-text-label-weight));
-    line-height: 1;
+    line-height: var(--xh-leading-none);
     cursor: pointer;
   }
 
