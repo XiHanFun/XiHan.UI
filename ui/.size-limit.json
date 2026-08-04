@@ -11,7 +11,9 @@
   { "name": "visual", "path": "packages/visual/dist/index.js", "gzip": true, "limit": "21 kB" },
   { "name": "headless", "path": "packages/headless/dist/index.js", "gzip": true, "limit": "138 kB" },
   { "name": "vue", "path": "packages/vue/dist/index.js", "gzip": true, "limit": "159 kB" },
+  { "name": "vue/visual", "path": "packages/vue/dist/visual.js", "gzip": true, "limit": "27 kB" },
   { "name": "wc", "path": "packages/wc/dist/index.js", "gzip": true, "limit": "6.4 kB" },
   { "name": "wc/define", "path": "packages/wc/dist/define.js", "gzip": true, "limit": "149 kB" },
+  { "name": "wc/visual", "path": "packages/wc/dist/visual.js", "gzip": true, "limit": "19 kB" },
   { "name": "styled", "path": "packages/styled/styles/*.css", "gzip": true, "limit": "63 kB" }
 ]
