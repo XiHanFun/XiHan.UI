@@ -128,3 +128,54 @@ describe('角色节点契约', () => {
     expect(codes(DIAGNOSTIC_CODES.wcWrongPartTag)).toEqual([])
   })
 })
+
+describe('委派给内嵌部件的角色节点', () => {
+  /** 按 date-picker 的实际写法搭一棵：分段输入与日历的 DOM 摊在宿主自己的 Light DOM 里。 */
+  async function mountDatePicker(): Promise<HTMLElement> {
+    const el = document.createElement('xh-date-picker') as Updatable
+    const root = part('root')
+    const control = part('control')
+    const input = part('input')
+    input.append(part('segment'), part('segment'), part('segment'))
+    control.append(input, part('clear-trigger', 'button'), part('trigger', 'button'))
+
+    const calendar = part('calendar')
+    const header = part('header')
+    header.append(part('prev-trigger', 'button'), part('heading'), part('next-trigger', 'button'))
+    const grid = part('grid')
+    const gridHead = part('grid-head')
+    const weekRow = part('week-row')
+    weekRow.append(part('week-day', 'span'))
+    gridHead.append(weekRow)
+    grid.append(gridHead, part('grid-body'))
+    calendar.append(header, grid)
+
+    const content = part('content')
+    content.append(calendar)
+    const positioner = part('positioner')
+    positioner.append(content)
+
+    root.append(part('label', 'span'), control, part('hidden-input', 'input'), positioner)
+    el.append(root)
+    document.body.appendChild(el)
+    await el.updateComplete
+    await el.updateComplete
+    return el
+  }
+
+  it('内嵌部件的角色节点不再被当成解剖外的野节点', async () => {
+    await mountDatePicker()
+    expect(codes(DIAGNOSTIC_CODES.wcUnknownPart)).toEqual([])
+  })
+
+  it('真正不认识的名字照报不误', async () => {
+    const el = await mountDatePicker()
+    el.querySelector('[data-xh-part="root"]')!.append(part('并不存在的角色'))
+    await (el as Updatable).updateComplete
+    await (el as Updatable).updateComplete
+
+    const hits = codes(DIAGNOSTIC_CODES.wcUnknownPart)
+    expect(hits).toHaveLength(1)
+    expect(hits[0]).toMatchObject({ scope: 'date-picker', part: '并不存在的角色' })
+  })
+})

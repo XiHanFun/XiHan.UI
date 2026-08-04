@@ -13,7 +13,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { calendarMachine, connectDatePicker, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldProps, datePickerMachine, datePickerMeta } from '@xihan-ui/headless'
+import { calendarAnatomy, calendarMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldProps, datePickerMachine, datePickerMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -92,7 +92,12 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart hidden-input - type=hidden 的表单出口，值是 ISO 串
  */
 export class XhDatePickerElement extends XhElement {
-  static override partContract = { anatomy: datePickerAnatomy, meta: datePickerMeta }
+  // 分段输入与日历的 DOM 摊在本元素的 Light DOM 里由本元素接线，它们的角色节点归各自 scope 管
+  static override partContract = {
+    anatomy: datePickerAnatomy,
+    meta: datePickerMeta,
+    delegates: [dateFieldAnatomy, calendarAnatomy],
+  }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
