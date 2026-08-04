@@ -238,6 +238,15 @@ export const fileUploadSuite: ConformanceSuite = {
             parts: { 'item[0]': { 'data-file-name': 'notes.txt' } },
           },
         },
+        // 焦点交给恒在的投放区。掉到 body 是 APG 在「Persistence of focus」里点名的
+        // 失败态，而它举的例子正是删列表项。
+        // 不取相邻那一条：它只能按删除前的位置取，而删完列表会上移，攥在手里的那个
+        // 节点恰好变成空位，焦点当场又丢
+        {
+          kind: 'settle',
+          until: { activeElement: 'dropzone' },
+          expect: { activeElement: 'dropzone' },
+        },
         {
           kind: 'click',
           part: 'item-delete-trigger[0]',
@@ -245,6 +254,13 @@ export const fileUploadSuite: ConformanceSuite = {
             counts: { item: 0 },
             parts: { 'root': { 'data-empty': '' }, 'item-group': { 'data-empty': '' }, 'clear-trigger': { disabled: '' } },
           },
+        },
+        // 删空同样落投放区。不能退到 clear-trigger——它这一刻带原生 disabled，
+        // 禁用元素持不住焦点
+        {
+          kind: 'settle',
+          until: { activeElement: 'dropzone' },
+          expect: { activeElement: 'dropzone' },
         },
       ],
     },

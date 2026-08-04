@@ -216,6 +216,9 @@ export class XhFileUploadElement extends XhElement {
           child.textContent = ''
       }
     }
+    // 交还只摘属性与监听器，作者的 <button> 还在，仍占 Tab 位却已经按不动、
+    // 连 aria-label 都撤回了（图标按钮就此没有可访问名）。空位整条收起来。
+    this.setPartHidden(el, true)
   }
 
   protected wire(): void {
@@ -243,6 +246,7 @@ export class XhFileUploadElement extends XhElement {
         return
       }
       const item = { file }
+      this.setPartHidden(el, false)
       this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
       for (const preview of this.partsIn(el, 'item-preview'))
         this.spreader.spread(preview, api.getItemPreviewProps(item) as Record<string, unknown>)
