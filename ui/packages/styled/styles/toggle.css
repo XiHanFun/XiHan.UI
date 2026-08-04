@@ -28,12 +28,13 @@
     background: var(--xh-_bg-hover);
   }
 
-  /* 按下态：brand 前景 + subtle-active 底 */
+  /* 按下态：强调交给底色。前景不用品牌色——subtle-active 这一档底上任何品牌色都过不了
+     AA（浅色最好的 brand-700 只有 4.37），强调靠底、可读靠前景是更稳的分工 */
   [data-scope='toggle'][data-part='root'][data-state='on'] {
     --xh-_bg: var(--xh-toggle-bg-pressed, var(--xh-bg-subtle-active));
     --xh-_bg-hover: var(--xh-toggle-bg-pressed, var(--xh-bg-subtle-active));
 
-    color: var(--xh-toggle-fg-pressed, var(--xh-fg-brand));
+    color: var(--xh-toggle-fg-pressed, var(--xh-fg-default));
   }
 
   [data-scope='toggle'][data-part='root'][data-disabled] {
