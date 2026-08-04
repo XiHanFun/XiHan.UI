@@ -17,6 +17,7 @@ export type { EasingName } from './easing'
 export { createFocusScope } from './focus-scope'
 export type { FocusScopeOptions } from './focus-scope'
 
+export { canTakeFocus } from './focus-scope/can-take-focus'
 export { acquireFocusGuards } from './focus-scope/focus-guards'
 export { focusFirst, focusSafely, getTabbables, removeLinks } from './focus-scope/tabbable'
 
