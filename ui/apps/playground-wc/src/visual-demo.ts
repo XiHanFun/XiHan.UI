@@ -11,9 +11,14 @@ import {
   textToCloud,
 } from '@xihan-ui/visual'
 
+// 画廊只放自成画面的效果。浏览器每页能同时持有的 WebGL 上下文有上限（各家在 16 上下），
+// 超了最早创建的会被丢弃变成白板，所以这页把活画面控制在十几个以内。
+// grain 是叠在别的内容之上的透明噪点，particles 要喂点云才有东西，单独一张小卡片都看不出所以然。
+const galleryEffects = builtinEffects.filter(e => e.name !== 'grain' && e.name !== 'particles')
+
 /** 这一段的 HTML，拼进 main.ts 的模板串里。 */
 export function visualMarkup(): string {
-  const tiles = builtinEffects.map(effect => `
+  const tiles = galleryEffects.map(effect => `
       <button type="button" class="v-tile" data-effect="${effect.name}" aria-pressed="false">
         <xh-visual effect="${effect.name}" quality="eco" class="v-tile-canvas"></xh-visual>
         <span class="v-tile-name">${effect.name}</span>
@@ -26,6 +31,8 @@ export function visualMarkup(): string {
   <section>
     <h2>Visual · 效果画廊</h2>
     <p class="lead">
+      内置十四个效果，这里列出自成画面的十二个（<code>grain</code> 是叠加用的透明噪点，
+      <code>particles</code> 要喂点云，见下面两节）。
       <code>&lt;xh-visual&gt;</code> 元素自身就是画布的容器：内容照常写在里面，效果铺在内容底下，
       画布是 <code>pointer-events: none</code>，不挡里面的交互。效果名要先注册，
       <code>defineXhVisual()</code> 会把内置的十四个一并注册好。
@@ -165,7 +172,7 @@ export function mountVisualDemo(): void {
 
   for (const tile of document.querySelectorAll<HTMLButtonElement>('.v-tile')) {
     tile.addEventListener('click', () => {
-      const found = builtinEffects.find(e => e.name === tile.dataset.effect)
+      const found = galleryEffects.find(e => e.name === tile.dataset.effect)
       if (!found)
         return
       selected = found
