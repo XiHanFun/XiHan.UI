@@ -41,7 +41,6 @@ export const knownA11yViolationsEverywhere: Readonly<Record<string, string>> = {
 const replayExempt: Readonly<Record<string, string>> = {
   'breadcrumb': '扫描必须拦下跨文档跳转否则测试宿主被导航走，而用例断言的正是不拦下，同一文档里不可兼得',
   'context-menu': '真机里焦点没落到首个条目，jsdom 下落了；疑似真实焦点时序缺陷',
-  'dialog': '真机里退场动画走完后 content 一秒内仍未卸载，jsdom 无动画所以立刻卸载；疑似 presence 收尾缺陷',
   'editable': '真机里 selectOnFocus 的全选被随后的指针操作收掉，选区停在 2~2；疑似真实缺陷',
 }
 
@@ -56,9 +55,8 @@ export const vueA11yBaseline = {
 export const wcA11yBaseline = {
   known: {
     ...knownA11yViolations,
-    // 这两个组件的必需子节点由作者手写
-    'file-upload': { 'aria-required-children': 'WC 侧作者手写的部件缺角色要求的直接子节点' },
-    'steps': { 'aria-required-children': '同 file-upload' },
+    // 必需子节点由作者手写
+    steps: { 'aria-required-children': 'WC 侧作者手写的部件缺角色要求的直接子节点' },
   },
   knownEverywhere: knownA11yViolationsEverywhere,
   // tags-input 在 WC 侧步骤能放完，故不列入
