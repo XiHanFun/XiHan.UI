@@ -1,6 +1,6 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
-import type { CheckboxApi, CheckboxSchema } from './checkbox.types'
+import type { CheckboxApi, CheckboxCheckedState, CheckboxSchema } from './checkbox.types'
 import { dataAttr } from '@xihan-ui/core'
 import { checkboxAnatomy } from './checkbox.anatomy'
 
@@ -11,13 +11,15 @@ export function connectCheckbox<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): CheckboxApi<T> {
   const { state, prop, send } = service
-  const checked = state.get() === 'on'
+  const current = state.get()
+  const checked: CheckboxCheckedState = current === 'indeterminate' ? 'indeterminate' : current === 'on'
   const disabled = !!prop('disabled')
-  const stateAttr = checked ? 'checked' : 'unchecked'
+  const stateAttr = current === 'indeterminate' ? 'indeterminate' : current === 'on' ? 'checked' : 'unchecked'
 
+  // 半选态下 TOGGLE 只表达得了「走向全选」，所以命令式设值走 CHECK / UNCHECK
   const setChecked = (next: boolean): void => {
     if (next !== checked)
-      send({ type: 'TOGGLE' })
+      send({ type: next ? 'CHECK' : 'UNCHECK' })
   }
 
   return {
@@ -27,7 +29,8 @@ export function connectCheckbox<T extends PropTypes>(
       ...parts.root.attrs,
       'type': 'button',
       'role': 'checkbox',
-      'aria-checked': checked ? 'true' : 'false',
+      // 三态：勾了一部分的父项报 mixed，读屏才念得出「部分选中」
+      'aria-checked': checked === 'indeterminate' ? 'mixed' : checked ? 'true' : 'false',
       'disabled': disabled || undefined,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),

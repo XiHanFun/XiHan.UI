@@ -1,4 +1,4 @@
-import type { CheckboxCheckedChangeDetails, CheckboxSchema } from '@xihan-ui/headless'
+import type { CheckboxCheckedChangeDetails, CheckboxCheckedState, CheckboxSchema } from '@xihan-ui/headless'
 import { checkboxAnatomy, checkboxMachine, checkboxMeta, connectCheckbox } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -8,8 +8,8 @@ import { MachineController } from '../runtime/machine-controller'
  * `<xh-checkbox>` —— Light-DOM 行为宿主，跑 checkbox 机器并把 connect 产出打到 root/indicator 角色节点。
  *
  * @customElement xh-checkbox
- * @attr {boolean} checked - 受控选中；缺省该属性即非受控
- * @attr {boolean} default-checked - 非受控初始为选中
+ * @attr {boolean|'indeterminate'} checked - 受控选中；写 indeterminate 为半选，缺省该属性即非受控
+ * @attr {boolean|'indeterminate'} default-checked - 非受控初值
  * @attr {boolean} disabled - 禁用
  * @fires checked-change - checked 状态变化；detail 为 `{ checked: boolean }`
  * @csspart root - role=checkbox 的按钮（承载 aria-checked / data-state）
@@ -19,13 +19,14 @@ export class XhCheckboxElement extends XhElement {
   static override partContract = { anatomy: checkboxAnatomy, meta: checkboxMeta }
 
   static override properties = {
-    checked: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
-    defaultChecked: { type: Boolean, attribute: 'default-checked' },
+    // 三态：写 checked="indeterminate" 表示半选；缺席即非受控
+    checked: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v === 'indeterminate' ? 'indeterminate' : v !== 'false') } },
+    defaultChecked: { attribute: 'default-checked', converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v === 'indeterminate' ? 'indeterminate' : v !== 'false') } },
     disabled: { type: Boolean },
   }
 
-  declare checked?: boolean
-  declare defaultChecked?: boolean
+  declare checked?: CheckboxCheckedState
+  declare defaultChecked?: CheckboxCheckedState
   declare disabled?: boolean
 
   private readonly notify = (details: CheckboxCheckedChangeDetails): void => {
