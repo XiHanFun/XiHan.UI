@@ -39,6 +39,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: accordionAnatomy, meta: accordionMeta }"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -203,6 +212,183 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/alert.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-alert>` —— Light-DOM 行为宿主，把 alert 机器打到 root/icon/title/description/close-trigger\n角色节点，收起时用内联 style.display 隐藏 root。",
+          "name": "XhAlertElement",
+          "cssParts": [
+            {
+              "description": "提示根容器（实时区所在）",
+              "name": "root"
+            },
+            {
+              "description": "语气图标（对读屏隐藏）",
+              "name": "icon"
+            },
+            {
+              "description": "标题（root 的 aria-labelledby 指向它）",
+              "name": "title"
+            },
+            {
+              "description": "说明（root 的 aria-describedby 指向它）",
+              "name": "description"
+            },
+            {
+              "description": "关闭按钮",
+              "name": "close-trigger"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: alertAnatomy, meta: alertMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "closable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "closable"
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "defaultOpen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-open"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "AlertSchema['props']['translations'] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<AlertSchema>( this, alertMachine, () => this.machineProps(), )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<AlertSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "open 状态变化；detail 为 `{ open: boolean }`",
+              "name": "open-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气，决定实时区级别与配色",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "关闭按钮是否可用，缺省为真",
+              "name": "closable",
+              "fieldName": "closable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控显隐；缺省该属性即非受控",
+              "name": "open",
+              "fieldName": "open"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始显隐，缺省为显示",
+              "name": "default-open",
+              "fieldName": "defaultOpen"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-alert",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhAlertElement",
+          "declaration": {
+            "name": "XhAlertElement",
+            "module": "src/elements/alert.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/anchor.ts",
       "declarations": [
         {
@@ -232,6 +418,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: anchorAnatomy, meta: anchorMeta }"
+            },
             {
               "kind": "field",
               "name": "value",
@@ -462,6 +657,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: avatarAnatomy, meta: avatarMeta }"
+            },
+            {
+              "kind": "field",
               "name": "src",
               "privacy": "public",
               "type": {
@@ -591,6 +795,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: badgeAnatomy, meta: badgeMeta }"
+            },
+            {
+              "kind": "field",
               "name": "variant",
               "privacy": "public",
               "type": {
@@ -675,6 +888,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: breadcrumbAnatomy, meta: breadcrumbMeta }"
+            },
+            {
+              "kind": "field",
               "name": "direction",
               "privacy": "public",
               "type": {
@@ -745,6 +967,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: buttonAnatomy, meta: buttonMeta }"
+            },
             {
               "kind": "field",
               "name": "type",
@@ -921,6 +1152,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: calendarAnatomy, meta: calendarMeta }"
+            },
             {
               "kind": "field",
               "name": "value",
@@ -1318,6 +1558,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: carouselAnatomy, meta: carouselMeta }"
+            },
+            {
+              "kind": "field",
               "name": "page",
               "privacy": "public",
               "type": {
@@ -1631,6 +1880,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: cascaderAnatomy, meta: cascaderMeta }"
+            },
             {
               "kind": "field",
               "name": "collection",
@@ -2187,6 +2445,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: checkboxGroupAnatomy, meta: checkboxGroupMeta }"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -2488,10 +2755,19 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: checkboxAnatomy, meta: checkboxMeta }"
+            },
+            {
+              "kind": "field",
               "name": "checked",
               "privacy": "public",
               "type": {
-                "text": "boolean | undefined"
+                "text": "CheckboxCheckedState | undefined"
               },
               "attribute": "checked"
             },
@@ -2500,7 +2776,7 @@
               "name": "defaultChecked",
               "privacy": "public",
               "type": {
-                "text": "boolean | undefined"
+                "text": "CheckboxCheckedState | undefined"
               },
               "attribute": "default-checked"
             },
@@ -2556,17 +2832,17 @@
           "attributes": [
             {
               "type": {
-                "text": "boolean | undefined"
+                "text": "CheckboxCheckedState | undefined"
               },
-              "description": "受控选中；缺省该属性即非受控",
+              "description": "受控选中；写 indeterminate 为半选，缺省该属性即非受控",
               "name": "checked",
               "fieldName": "checked"
             },
             {
               "type": {
-                "text": "boolean | undefined"
+                "text": "CheckboxCheckedState | undefined"
               },
-              "description": "非受控初始为选中",
+              "description": "非受控初值",
               "name": "default-checked",
               "fieldName": "defaultChecked"
             },
@@ -2633,6 +2909,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: clipboardAnatomy, meta: clipboardMeta }"
+            },
             {
               "kind": "field",
               "name": "value",
@@ -2769,6 +3054,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: codeBlockAnatomy, meta: codeBlockMeta }"
+            },
             {
               "kind": "field",
               "name": "code",
@@ -2933,6 +3227,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: collapsibleAnatomy, meta: collapsibleMeta }"
+            },
             {
               "kind": "field",
               "name": "open",
@@ -3120,6 +3423,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: colorPickerAnatomy, meta: colorPickerMeta }"
+            },
             {
               "kind": "field",
               "name": "value",
@@ -3614,6 +3926,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: comboboxAnatomy, meta: comboboxMeta }"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -4098,6 +4419,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: composerAnatomy, meta: composerMeta }"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -4332,6 +4662,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: contextMenuAnatomy, meta: contextMenuMeta }"
+            },
             {
               "kind": "field",
               "name": "open",
@@ -4680,6 +5019,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: dateFieldAnatomy, meta: dateFieldMeta }"
+            },
             {
               "kind": "field",
               "name": "value",
@@ -5060,6 +5408,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: datePickerAnatomy, meta: datePickerMeta, delegates: [dateFieldAnatomy, calendarAnatomy], }"
+            },
             {
               "kind": "field",
               "name": "value",
@@ -5622,6 +5979,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: dialogAnatomy, meta: dialogMeta }"
+            },
+            {
+              "kind": "field",
               "name": "open",
               "privacy": "public",
               "type": {
@@ -5892,6 +6258,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: drawerAnatomy, meta: drawerMeta }"
+            },
             {
               "kind": "field",
               "name": "open",
@@ -6210,6 +6585,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: editableAnatomy, meta: editableMeta }"
+            },
             {
               "kind": "field",
               "name": "value",
@@ -6592,6 +6976,112 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/empty-state.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-empty-state>` —— 空状态行为宿主，无状态机，把 connectEmptyState 产出的属性打到角色节点上。\n\nroot 缺省是 role=status 的活区：节点应当常挂、用 hidden 收起，\n整块插进文档的活区读屏通常不播报。首屏静态占位写 live=\"off\"。",
+          "name": "XhEmptyStateElement",
+          "cssParts": [
+            {
+              "description": "承载 role 与 data-size 的容器",
+              "name": "root"
+            },
+            {
+              "description": "装饰图标，对读屏隐藏",
+              "name": "icon"
+            },
+            {
+              "description": "标题",
+              "name": "title"
+            },
+            {
+              "description": "说明",
+              "name": "description"
+            },
+            {
+              "description": "操作按钮槽",
+              "name": "action"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: emptyStateAnatomy, meta: emptyStateMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "'sm' | 'md' | 'lg' | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "live",
+              "privacy": "public",
+              "type": {
+                "text": "EmptyStateLive | undefined"
+              },
+              "attribute": "live"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "'sm' | 'md' | 'lg' | undefined"
+              },
+              "description": "尺寸档位，写到 root 的 data-size 上",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "EmptyStateLive | undefined"
+              },
+              "description": "播报方式，off 时 root 不带 role",
+              "name": "live",
+              "fieldName": "live"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-empty-state",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhEmptyStateElement",
+          "declaration": {
+            "name": "XhEmptyStateElement",
+            "module": "src/elements/empty-state.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/field.ts",
       "declarations": [
         {
@@ -6621,6 +7111,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: fieldAnatomy, meta: fieldMeta, tags: { label: ['label'] }, }"
+            },
             {
               "kind": "field",
               "name": "invalid",
@@ -6789,6 +7288,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: fileUploadAnatomy, meta: fileUploadMeta }"
+            },
             {
               "kind": "field",
               "name": "files",
@@ -7296,6 +7804,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: formAnatomy, meta: formMeta }"
+            },
+            {
+              "kind": "field",
               "name": "values",
               "privacy": "public",
               "type": {
@@ -7686,6 +8203,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: hoverCardAnatomy, meta: hoverCardMeta }"
+            },
+            {
+              "kind": "field",
               "name": "open",
               "privacy": "public",
               "type": {
@@ -7973,6 +8499,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: imageAnatomy, meta: imageMeta }"
+            },
+            {
+              "kind": "field",
               "name": "src",
               "privacy": "public",
               "type": {
@@ -8145,6 +8680,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: listboxAnatomy, meta: listboxMeta }"
+            },
             {
               "kind": "field",
               "name": "value",
@@ -8462,6 +9006,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: loadingBarAnatomy, meta: loadingBarMeta }"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -8717,6 +9270,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: menuAnatomy, meta: menuMeta }"
+            },
             {
               "kind": "field",
               "name": "open",
@@ -9027,6 +9589,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: menubarAnatomy, meta: menubarMeta }"
+            },
             {
               "kind": "field",
               "name": "value",
@@ -9441,6 +10012,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: navigationMenuAnatomy, meta: navigationMenuMeta }"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -9666,7 +10246,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-number-field>` —— Light-DOM 行为宿主：作者写 root/label/input/加减按钮四类角色节点，\r\n元素跑 number-field 机器并把 connect 产出打上去。\r\n\r\n键盘全在 input 上（ArrowUp/Down 步进、PageUp/Down 大步进、Home/End 取端点），\r\n两个按钮对读屏隐藏——它们只是指针用户的快捷方式，暴露出来等于把同一个控件报两遍。",
+          "description": "`<xh-number-field>` —— Light-DOM 行为宿主：作者写 root/label/input/加减按钮四类角色节点，\n元素跑 number-field 机器并把 connect 产出打上去。\n\n键盘全在 input 上（ArrowUp/Down 步进、PageUp/Down 大步进、Home/End 取端点），\n两个按钮对读屏隐藏——它们只是指针用户的快捷方式，暴露出来等于把同一个控件报两遍。",
           "name": "XhNumberFieldElement",
           "cssParts": [
             {
@@ -9691,6 +10271,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: numberFieldAnatomy, meta: numberFieldMeta }"
+            },
             {
               "kind": "field",
               "name": "value",
@@ -10006,6 +10595,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: paginationAnatomy, meta: paginationMeta }"
+            },
+            {
+              "kind": "field",
               "name": "count",
               "privacy": "public",
               "type": {
@@ -10202,6 +10800,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: pinInputAnatomy, meta: pinInputMeta }"
+            },
             {
               "kind": "field",
               "name": "value",
@@ -10501,6 +11108,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: popoverAnatomy, meta: popoverMeta }"
+            },
+            {
+              "kind": "field",
               "name": "open",
               "privacy": "public",
               "type": {
@@ -10780,6 +11396,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: progressAnatomy, meta: progressMeta }"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -10879,6 +11504,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: radioGroupAnatomy, meta: radioGroupMeta }"
+            },
             {
               "kind": "field",
               "name": "value",
@@ -11175,6 +11809,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: ratingAnatomy, meta: ratingMeta }"
+            },
             {
               "kind": "field",
               "name": "value",
@@ -11474,6 +12117,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: scrollAreaAnatomy, meta: scrollAreaMeta }"
+            },
+            {
+              "kind": "field",
               "name": "type",
               "privacy": "public",
               "type": {
@@ -11715,17 +12367,26 @@
               "name": "item-indicator"
             },
             {
-              "description": "表单影子，须是原生 select 空壳；选项由元素按当前值补齐，省略该节点即不参与表单",
+              "description": "表单影子，须是原生 select 空壳；选项由元素按当前值补齐（多选时开原生 multiple），省略该节点即不参与表单",
               "name": "hidden-select"
             }
           ],
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: selectAnatomy, meta: selectMeta }"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "string | string[] | undefined"
               },
               "attribute": "value"
             },
@@ -11734,7 +12395,7 @@
               "name": "defaultValue",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "string | string[] | undefined"
               },
               "attribute": "default-value"
             },
@@ -11818,6 +12479,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "multiple",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "multiple"
             },
             {
               "kind": "field",
@@ -12025,19 +12695,25 @@
                   }
                 },
                 {
-                  "name": "value",
+                  "name": "values",
                   "type": {
-                    "text": "string | null"
+                    "text": "string[]"
                   }
                 },
                 {
-                  "name": "text",
+                  "name": "texts",
                   "type": {
-                    "text": "string"
+                    "text": "string[]"
+                  }
+                },
+                {
+                  "name": "multiple",
+                  "type": {
+                    "text": "boolean"
                   }
                 }
               ],
-              "description": "给表单影子补齐选项：空串选项是无选中时的落点，另一个承载当前值。\n须先于属性写入落地，否则 spread 写 value 这个 DOM property 时目标 option 还不在。"
+              "description": "给表单影子补齐选项：空串选项是无选中时的落点，每个选中值一个 selected 选项。\n必须晚于属性写入：multiple 还没落到元素上时，单选 select 每收下一个 selected 选项\n就会跑一次原生「ask for a reset」，把前面的选中全撤掉。"
             },
             {
               "kind": "method",
@@ -12052,7 +12728,7 @@
           ],
           "events": [
             {
-              "description": "选中值变化；detail 为 `{ value: string | null }`",
+              "description": "选中值变化；detail 为 `{ value: string[] }`",
               "name": "value-change"
             },
             {
@@ -12063,17 +12739,17 @@
           "attributes": [
             {
               "type": {
-                "text": "string | undefined"
+                "text": "string | string[] | undefined"
               },
-              "description": "受控选中值；缺省该属性即非受控",
+              "description": "受控选中值；缺省该属性即非受控。多选集合请写 property，属性只递得进单值",
               "name": "value",
               "fieldName": "value"
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "string | string[] | undefined"
               },
-              "description": "非受控初始选中值",
+              "description": "非受控初始选中值。多选集合请写 property，属性只递得进单值",
               "name": "default-value",
               "fieldName": "defaultValue"
             },
@@ -12105,7 +12781,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "原生表单校验：无选中值时提交被拦下",
+              "description": "原生表单校验：无选中值时提交被拦下；多选下的门槛是至少选中一项",
               "name": "required",
               "fieldName": "required"
             },
@@ -12151,6 +12827,14 @@
             },
             {
               "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "多选：点中即在集合里增删该项，列表不收起；存在即开，关掉要摘属性（不同于 loop，写 multiple=\"false\" 仍是开）",
+              "name": "multiple",
+              "fieldName": "multiple"
+            },
+            {
+              "type": {
                 "text": "Direction | undefined"
               },
               "description": "文字方向，默认 ltr",
@@ -12192,6 +12876,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: separatorAnatomy, meta: separatorMeta }"
+            },
             {
               "kind": "field",
               "name": "orientation",
@@ -12260,6 +12953,100 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/skeleton.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-skeleton>` —— 骨架屏宿主，无状态机，把 connectSkeleton 产出的属性打到角色节点上。\n\n骨架条自报形状：在 bone 节点上写 `variant`。运行期改写这个属性不触发重新接线，\n需作者自行 requestUpdate。",
+          "name": "XhSkeletonElement",
+          "cssParts": [
+            {
+              "description": "骨架容器，加载期间带 aria-busy，结束后带 hidden",
+              "name": "root"
+            },
+            {
+              "description": "单根骨架条，加载期间带 aria-hidden，不进无障碍树",
+              "name": "bone"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: skeletonAnatomy, meta: skeletonMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loading"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "SkeletonVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "是否还在加载，写 \"false\" 结束加载态",
+              "name": "loading",
+              "fieldName": "loading"
+            },
+            {
+              "type": {
+                "text": "SkeletonVariant | undefined"
+              },
+              "description": "容器内骨架条的默认形状",
+              "name": "variant",
+              "fieldName": "variant"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-skeleton",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhSkeletonElement",
+          "declaration": {
+            "name": "XhSkeletonElement",
+            "module": "src/elements/skeleton.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/slider.ts",
       "declarations": [
         {
@@ -12297,6 +13084,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: sliderAnatomy, meta: sliderMeta }"
+            },
             {
               "kind": "field",
               "name": "value",
@@ -12675,6 +13471,108 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/spinner.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-spinner>` —— 加载指示器宿主，无状态机，把活区语义与可及名字打到角色节点上。\n转圈图形由皮肤画在 root 的伪元素上，元素不生成任何结构。",
+          "name": "XhSpinnerElement",
+          "cssParts": [
+            {
+              "description": "role=status 的活区容器，承载 aria-live/aria-label/data-size",
+              "name": "root"
+            },
+            {
+              "description": "可见文案节点，可省",
+              "name": "label"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: spinnerAnatomy, meta: spinnerMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "SpinnerSize | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<SpinnerTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "可及名字；label 角色节点显示的应当是同一段文案",
+              "name": "label",
+              "fieldName": "label"
+            },
+            {
+              "type": {
+                "text": "SpinnerSize | undefined"
+              },
+              "description": "直径档位，缺省 md",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-spinner",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhSpinnerElement",
+          "declaration": {
+            "name": "XhSpinnerElement",
+            "module": "src/elements/spinner.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/splitter.ts",
       "declarations": [
         {
@@ -12696,6 +13594,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: splitterAnatomy, meta: splitterMeta }"
+            },
             {
               "kind": "field",
               "name": "size",
@@ -13004,6 +13911,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: stepsAnatomy, meta: stepsMeta }"
+            },
+            {
+              "kind": "field",
               "name": "step",
               "privacy": "public",
               "type": {
@@ -13241,6 +14157,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: switchAnatomy, meta: switchMeta }"
+            },
+            {
+              "kind": "field",
               "name": "checked",
               "privacy": "public",
               "type": {
@@ -13422,6 +14347,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: tableAnatomy, meta: tableMeta }"
+            },
             {
               "kind": "field",
               "name": "columns",
@@ -13814,6 +14748,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: tabsAnatomy, meta: tabsMeta }"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -14049,6 +14992,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: tagsInputAnatomy, meta: tagsInputMeta }"
+            },
             {
               "kind": "field",
               "name": "value",
@@ -14447,6 +15399,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: textFieldAnatomy, meta: textFieldMeta }"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -14709,6 +15670,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: threadAnatomy, meta: threadMeta }"
+            },
+            {
+              "kind": "field",
               "name": "status",
               "privacy": "public",
               "type": {
@@ -14895,6 +15865,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: timeFieldAnatomy, meta: timeFieldMeta }"
+            },
             {
               "kind": "field",
               "name": "value",
@@ -15265,6 +16244,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: timePickerAnatomy, meta: timePickerMeta }"
+            },
             {
               "kind": "field",
               "name": "value",
@@ -15758,6 +16746,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: toastAnatomy, meta: toastMeta }"
+            },
+            {
+              "kind": "field",
               "name": "toastId",
               "privacy": "public",
               "type": {
@@ -16023,6 +17020,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: toasterAnatomy, meta: toasterMeta }"
+            },
             {
               "kind": "field",
               "name": "toasts",
@@ -16361,6 +17367,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: toggleGroupAnatomy, meta: toggleGroupMeta }"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -16644,6 +17659,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: toggleAnatomy, meta: toggleMeta }"
+            },
+            {
+              "kind": "field",
               "name": "pressed",
               "privacy": "public",
               "type": {
@@ -16781,6 +17805,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: toolbarAnatomy, meta: toolbarMeta }"
+            },
             {
               "kind": "field",
               "name": "orientation",
@@ -16979,6 +18012,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: tooltipAnatomy, meta: tooltipMeta }"
+            },
             {
               "kind": "field",
               "name": "open",
@@ -17249,6 +18291,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: tourAnatomy, meta: tourMeta }"
+            },
             {
               "kind": "field",
               "name": "open",
@@ -17739,6 +18790,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: transferAnatomy, meta: transferMeta }"
+            },
+            {
+              "kind": "field",
               "name": "items",
               "privacy": "public",
               "type": {
@@ -18071,6 +19131,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: treeSelectAnatomy, meta: treeSelectMeta }"
+            },
             {
               "kind": "field",
               "name": "collection",
@@ -18619,6 +19688,15 @@
           "members": [
             {
               "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: treeAnatomy, meta: treeMeta }"
+            },
+            {
+              "kind": "field",
               "name": "collection",
               "privacy": "public",
               "type": {
@@ -18901,6 +19979,15 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: virtualizerAnatomy, meta: virtualizerMeta }"
+            },
             {
               "kind": "field",
               "name": "count",

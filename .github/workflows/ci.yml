@@ -22,10 +22,12 @@ jobs:
           cache: pnpm
           cache-dependency-path: ui/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
-      - name: Gate (运行时依赖 / 版本锁 / 令牌产物)
+      - name: Gate (运行时依赖 / 版本锁 / 令牌产物 / 浮层 / 皮肤 / 部件接线)
         run: pnpm gate
       - name: Token artifacts in sync
         run: pnpm gate:tokens
+      - name: Custom elements manifest in sync
+        run: pnpm gate:cem
       - name: Lint
         run: pnpm lint
       - name: Typecheck
