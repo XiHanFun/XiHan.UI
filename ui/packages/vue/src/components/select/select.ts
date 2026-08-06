@@ -1,5 +1,5 @@
 import type { Direction, Placement } from '@xihan-ui/core'
-import type { SelectItemProps, SelectSchema } from '@xihan-ui/headless'
+import type { SelectItemProps, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideSelect, provideSelectItem, useSelectContext, useSelectItemContext } from './context'
@@ -11,8 +11,9 @@ export const XhSelectRoot = defineComponent({
   name: 'XhSelectRoot',
   // 有 connect 兜底的 prop 一律 default: undefined
   props: {
-    value: { type: String as PropType<string | null>, default: undefined },
-    defaultValue: { type: String as PropType<string | null>, default: undefined },
+    value: { type: [String, Array] as PropType<string | string[] | null>, default: undefined },
+    defaultValue: { type: [String, Array] as PropType<string | string[] | null>, default: undefined },
+    multiple: Boolean,
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     disabled: Boolean,
@@ -24,8 +25,14 @@ export const XhSelectRoot = defineComponent({
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
   },
-  // *-change 携带 details 对象，update:* 携带裸值
-  emits: ['value-change', 'open-change', 'update:value', 'update:open'],
+  // *-change 携带 details 对象，update:* 携带裸值。
+  // 校验函数恒真，只声明载荷类型：'update:value' 是 string[]，单选也是长度 1 的数组而非裸串。
+  emits: {
+    'value-change': (_details: SelectValueChangeDetails) => true,
+    'open-change': (_details: SelectOpenChangeDetails) => true,
+    'update:value': (_value: string[]) => true,
+    'update:open': (_open: boolean) => true,
+  },
   setup(props, { slots, emit }) {
     const notifyValue: SelectProps['onValueChange'] = (details) => {
       emit('value-change', details)
@@ -38,12 +45,13 @@ export const XhSelectRoot = defineComponent({
     const ctx = useSelect(props as SelectProps, notifyValue, notifyOpen)
     provideSelect(ctx)
 
-    // 表单影子由根部件装配，只渲染空串选项与当前值选项，供 required 判定
+    // 表单影子由根部件装配：空串选项打底，每个选中值一个 selected 选项，供 required 判定。
+    // 选中态一律靠选项的 selected 表达，多选下 select.value 表达不了集合。
     const hiddenSelect = (): VNode => {
       const api = ctx.api.value
       const options = [h('option', { value: '' })]
-      if (api.value != null)
-        options.push(h('option', { value: api.value }, api.valueText ?? api.value))
+      for (const [i, v] of api.value.entries())
+        options.push(h('option', { value: v, selected: true }, api.valueText[i] ?? v))
       return h('select', api.getHiddenSelectProps() as Record<string, unknown>, options)
     }
 

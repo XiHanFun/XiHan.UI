@@ -32,7 +32,7 @@ export interface SelectOpenChangeDetails {
 }
 
 export interface SelectValueChangeDetails {
-  value: string | null
+  value: string[]
 }
 
 /**
@@ -46,9 +46,15 @@ export interface SelectItemProps {
 
 export interface SelectSchema extends MachineSchema {
   props: {
-    /** 选中值。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 */
-    value?: string | null
-    defaultValue?: string | null
+    /**
+     * 选中值。裸串是单选的简写，null 是「受控且无选中」，缺省（undefined）才是非受控；内部一律按数组处理。
+     * 受控时 cell 直读 prop，写只发 onValueChange 不落内部值。
+     */
+    value?: string | string[] | null
+    /** 非受控初始选中值。与 value 同样接受裸串与 null。 */
+    defaultValue?: string | string[] | null
+    /** 允许选中多项。单选时选完即收起，多选时保持展开继续选。 */
+    multiple?: boolean
     /** 展开态。给定即受控：内部不再自改，只发 onOpenChange。 */
     open?: boolean
     defaultOpen?: boolean
@@ -74,10 +80,10 @@ export interface SelectSchema extends MachineSchema {
   context: {
     /** 定位引擎回填的最新结果；connect 只读它，不碰 DOM 也不调引擎。 */
     position: PositionResult | null
-    /** 选中值。受控（value 给定）时 cell 直读 prop。 */
-    value: string | null
-    /** 选中项的显示文本。由动作在 DOM 现查后回填，connect 只读。 */
-    valueText: string | null
+    /** 选中值。受控（value 给定）时 cell 直读 prop。单选恒为长度 ≤ 1。 */
+    value: string[]
+    /** 选中项的显示文本，与 value 逐项对应。由动作在 DOM 现查后回填，connect 只读。 */
+    valueText: string[]
     /** roving tabindex 的锚点，同时是方向键与确认键的起点；收起即清空。 */
     highlightedValue: string | null
     /** 本次展开的落点意图；受控回写走 CONTROLLED.OPEN 时也读得到。 */
@@ -98,18 +104,19 @@ export interface SelectSchema extends MachineSchema {
     | { type: 'ITEM.HIGHLIGHT', value: string }
     /** 持有焦点的条目离开了 DOM：浏览器不派 focusout，由适配器如实上报。 */
     | { type: 'ITEM.LOST' }
-    /** 选中条目并关闭。 */
+    /** 选中条目。单选选完即收起，多选保持展开并在集合里增删该项。 */
     | { type: 'ITEM.SELECT', value: string }
-    /** 只改值不动开合（收起态连打检索、外部 setValue）。 */
-    | { type: 'VALUE.SET', value: string }
+    /** 整体改写选中集合（收起态连打检索、外部 setValue 都走它）。裸串同 props 一样按单选简写处理。 */
+    | { type: 'VALUE.SET', value: string | string[] }
   tag: never
-  guard: 'isOpenControlled'
+  guard: 'isOpenControlled' | 'isMultiple'
   action:
     | 'invokeOnOpen'
     | 'invokeOnClose'
     | 'syncOpen'
     | 'syncValueText'
     | 'setValue'
+    | 'normalizeValue'
     | 'setFocusIntent'
     | 'setReturnFocus'
     | 'setHighlightedValue'
@@ -121,15 +128,18 @@ export interface SelectSchema extends MachineSchema {
 
 export interface SelectApi<T extends PropTypes = PropTypes> {
   open: boolean
-  value: string | null
-  /** 选中项的文本；无选中时为 null。 */
-  valueText: string | null
-  /** value-text 实际显示的文字：有选中取其文本，否则取 placeholder。 */
+  /** 选中集合，按选中先后排列而非文档顺序。单选恒为长度 ≤ 1。 */
+  value: string[]
+  /** 选中项的文本，与 value 逐项等长对应；某项在 DOM 里查不到条目时该项退回值本身。 */
+  valueText: string[]
+  /** value-text 实际显示的文字：有选中取其文本（多选按半角逗号加空格连起来），否则取 placeholder。 */
   displayText: string
+  /** 是否允许多选。 */
+  multiple: boolean
   /** 高亮锚点；收起时为 null。 */
   highlightedValue: string | null
   setOpen: (next: boolean) => void
-  setValue: (next: string) => void
+  setValue: (next: string | string[]) => void
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
   getTriggerProps: () => T['button']

@@ -15,13 +15,34 @@ function assertValueText(doc: Document, expected: string): void {
     throw new Error(`value-text 文本不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
 }
 
-/** name/value 只落 DOM property，同样不进快照；表单出口只能直接读 DOM。 */
+/**
+ * name/value 只落 DOM property，同样不进快照；表单出口只能直接读 DOM。
+ * 选中态由 option 的 selected 表达，单选下 select.value 即那一项的值，无选中时是空串选项。
+ */
 function assertHiddenSelect(doc: Document, name: string, value: string): void {
   const el = doc.querySelector<HTMLSelectElement>(HIDDEN_SELECT)
   const actual = el ? ([el.name, el.value] as const) : null
   const expected = [name, value] as const
   if (JSON.stringify(actual) !== JSON.stringify(expected))
     throw new Error(`隐藏 select 的 name/value 不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
+}
+
+/** 多选表单出口：读原生 multiple 与全部选中项的值，select.value 表达不了集合。 */
+function assertMultiHiddenSelect(doc: Document, name: string, values: readonly string[]): void {
+  const el = doc.querySelector<HTMLSelectElement>(HIDDEN_SELECT)
+  const actual = el ? ([el.name, el.multiple, Array.from(el.selectedOptions, o => o.value)] as const) : null
+  const expected = [name, true, values] as const
+  if (JSON.stringify(actual) !== JSON.stringify(expected))
+    throw new Error(`隐藏 select 的 name/multiple/选中项不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
+}
+
+/** 原生校验结论不进快照：checkValidity 是方法，选中项集合是 DOM property。 */
+function assertHiddenSelectValidity(doc: Document, valid: boolean, values: readonly string[]): void {
+  const el = doc.querySelector<HTMLSelectElement>(HIDDEN_SELECT)
+  const actual = el ? ([el.checkValidity(), Array.from(el.selectedOptions, o => o.value)] as const) : null
+  const expected = [valid, values] as const
+  if (JSON.stringify(actual) !== JSON.stringify(expected))
+    throw new Error(`隐藏 select 的 checkValidity/选中项不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
 }
 
 /**
@@ -136,6 +157,8 @@ export const selectSuite: ConformanceSuite = {
             'role': 'listbox',
             'tabindex': '-1',
             'aria-labelledby': '@part(label)',
+            // 单选的 listbox 显式报不可多选：读屏据此播报「单选」，不靠属性缺席去猜
+            'aria-multiselectable': 'false',
             'hidden': '',
             'data-state': 'closed',
           },
@@ -357,7 +380,7 @@ export const selectSuite: ConformanceSuite = {
             },
             // 先值后开合
             events: [
-              { type: 'value-change', detail: { value: 'banana' } },
+              { type: 'value-change', detail: { value: ['banana'] } },
               { type: 'open-change', detail: { open: false } },
             ],
           },
@@ -414,7 +437,7 @@ export const selectSuite: ConformanceSuite = {
               'content': { hidden: '' },
               'item[2]': { 'aria-selected': 'true', 'data-state': 'checked' },
             },
-            events: [{ type: 'value-change', detail: { value: 'cherry' } }],
+            events: [{ type: 'value-change', detail: { value: ['cherry'] } }],
           },
         },
         {
@@ -560,7 +583,7 @@ export const selectSuite: ConformanceSuite = {
               'content': { hidden: '' },
             },
             events: [
-              { type: 'value-change', detail: { value: 'cherry' } },
+              { type: 'value-change', detail: { value: ['cherry'] } },
               { type: 'open-change', detail: { open: false } },
             ],
           },
@@ -584,6 +607,193 @@ export const selectSuite: ConformanceSuite = {
           run: ({ doc }) => {
             assertValueText(doc, 'Cherry')
             assertHiddenSelect(doc, 'fruit', 'cherry')
+          },
+        },
+      ],
+    },
+    {
+      name: '多选：选中后列表不收起、再点已选项即取消，content 报 aria-multiselectable',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: { multiple: true, name: 'fruit', placeholder: '请选择' },
+      initial: { parts: { content: { 'aria-multiselectable': 'true' } } },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        {
+          kind: 'click',
+          part: 'item[0]',
+          expect: {
+            parts: {
+              'item[0]': { 'aria-selected': 'true', 'data-state': 'checked' },
+              // 接着选下一项：列表留在展开态
+              'content': { hidden: null },
+            },
+            events: [{ type: 'value-change', detail: { value: ['apple'] } }],
+          },
+        },
+        {
+          kind: 'click',
+          part: 'item[2]',
+          expect: {
+            parts: {
+              'item[0]': { 'aria-selected': 'true', 'data-state': 'checked' },
+              'item[2]': { 'aria-selected': 'true', 'data-state': 'checked' },
+              'content': { hidden: null },
+            },
+            events: [{ type: 'value-change', detail: { value: ['apple', 'cherry'] } }],
+          },
+        },
+        {
+          kind: 'click',
+          part: 'item[0]',
+          expect: {
+            parts: {
+              'item[0]': { 'aria-selected': 'false', 'data-state': 'unchecked' },
+              'item[2]': { 'aria-selected': 'true', 'data-state': 'checked' },
+              'content': { hidden: null },
+            },
+            events: [{ type: 'value-change', detail: { value: ['cherry'] } }],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '显示文字与表单值都不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => {
+            assertValueText(doc, 'Cherry')
+            assertMultiHiddenSelect(doc, 'fruit', ['cherry'])
+          },
+        },
+      ],
+    },
+    {
+      name: '多选 + defaultValue 数组：各选中项分别标 aria-selected，value-text 把文本连起来',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: { multiple: true, defaultValue: ['apple', 'cherry'], name: 'fruit' },
+      initial: {
+        parts: {
+          'trigger': { 'data-placeholder': null },
+          'value-text': { 'data-placeholder': null },
+          'item': [
+            { 'aria-selected': 'true', 'data-state': 'checked' },
+            { 'aria-selected': 'false', 'data-state': 'unchecked' },
+            { 'aria-selected': 'true', 'data-state': 'checked' },
+          ],
+          'item-indicator': [
+            { 'data-state': 'checked' },
+            { 'data-state': 'unchecked' },
+            { 'data-state': 'checked' },
+          ],
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '显示文字与表单值都不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => {
+            assertValueText(doc, 'Apple, Cherry')
+            assertMultiHiddenSelect(doc, 'fruit', ['apple', 'cherry'])
+          },
+        },
+      ],
+    },
+    {
+      // 多选下原生 select 不会替作者自动选中首项，无选中就该是无选中：
+      // 表单影子只要漏了 required 或把空串选项也标成选中，required 就永远满足，提交拦不住
+      name: '多选 + required + 无选中：隐藏 select 校验不通过，且一个选中项都没有',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: { multiple: true, required: true, name: 'fruit' },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'checkValidity 是方法、selectedOptions 是 DOM property，都不进属性快照',
+          run: ({ doc }) => assertHiddenSelectValidity(doc, false, []),
+        },
+        { kind: 'click', part: 'trigger' },
+        {
+          kind: 'click',
+          part: 'item[1]',
+          expect: {
+            parts: { 'item[1]': { 'aria-selected': 'true', 'data-state': 'checked' } },
+            events: [{ type: 'value-change', detail: { value: ['banana'] } }],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '选中一项后校验才该放行，同样只能直接读 DOM',
+          run: ({ doc }) => assertHiddenSelectValidity(doc, true, ['banana']),
+        },
+      ],
+    },
+    {
+      // 多选的键盘选中入口：Enter/Space 走 activate，与鼠标点条目是两条路
+      name: '多选键盘：Enter 切换高亮条目的选中态，列表不收起、焦点留在条目上；Space 同样能切换',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['select.kbd.multi-select'],
+      props: { multiple: true, name: 'fruit', placeholder: '请选择' },
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'ArrowDown' },
+        { kind: 'settle', until: { activeElement: 'item[0]' } },
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          expect: {
+            activeElement: { part: 'item[1]', exact: true },
+            events: [],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Enter',
+          expect: {
+            parts: {
+              'item[1]': { 'aria-selected': 'true', 'data-state': 'checked' },
+              'item-indicator[1]': { 'data-state': 'checked' },
+              // 多选下确认键不关列表，接着还能选下一项
+              'content': { 'hidden': null, 'data-state': 'open' },
+              'trigger': { 'aria-expanded': 'true' },
+            },
+            // 焦点留在条目上：不归还 trigger，roving tabindex 也停在这项
+            activeElement: { part: 'item[1]', exact: true },
+            events: [{ type: 'value-change', detail: { value: ['banana'] } }],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '表单值不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => assertMultiHiddenSelect(doc, 'fruit', ['banana']),
+        },
+        {
+          kind: 'key',
+          key: 'Enter',
+          expect: {
+            parts: {
+              'item[1]': { 'aria-selected': 'false', 'data-state': 'unchecked' },
+              'item-indicator[1]': { 'data-state': 'unchecked' },
+              'content': { hidden: null },
+            },
+            activeElement: { part: 'item[1]', exact: true },
+            events: [{ type: 'value-change', detail: { value: [] } }],
+          },
+        },
+        {
+          // 多选下 Space 是切换选中的首选键，不该被连打检索吃成移高亮
+          kind: 'key',
+          key: 'Space',
+          expect: {
+            parts: {
+              'item[1]': { 'aria-selected': 'true', 'data-state': 'checked' },
+              'content': { hidden: null },
+            },
+            activeElement: { part: 'item[1]', exact: true },
+            events: [{ type: 'value-change', detail: { value: ['banana'] } }],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '显示文字与表单值都不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => {
+            assertValueText(doc, 'Banana')
+            assertMultiHiddenSelect(doc, 'fruit', ['banana'])
           },
         },
       ],

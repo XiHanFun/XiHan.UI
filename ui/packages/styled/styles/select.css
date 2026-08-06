@@ -24,6 +24,8 @@
     justify-content: space-between;
     gap: var(--xh-select-trigger-gap, var(--xh-control-gap-md));
     min-inline-size: var(--xh-select-trigger-min-w, 10rem);
+    /* 多选会把 N 项的文本连成一串，框宽必须封顶；与浮层同一个上限，两半看着才是一件东西 */
+    max-inline-size: var(--xh-select-trigger-max-w, var(--xh-overlay-max-w));
     block-size: var(--xh-select-trigger-h, var(--xh-control-h-md));
     padding-inline: var(--xh-select-trigger-px, var(--xh-control-px-md));
     border: var(--xh-stroke-thin) solid var(--xh-select-trigger-border, var(--xh-border-default));
@@ -51,7 +53,11 @@
     cursor: not-allowed;
   }
 
+  /* 框宽由 trigger 定，这里得允许自己被压缩：弹性子项默认最小尺寸是内容尺寸，
+     不归零则长值把行撑破、省略号永远轮不到 */
   [data-scope='select'][data-part='value-text'] {
+    flex: 1;
+    min-inline-size: 0;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
