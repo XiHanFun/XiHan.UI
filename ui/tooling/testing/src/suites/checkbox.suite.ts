@@ -75,6 +75,50 @@ export const checkboxSuite: ConformanceSuite = {
       ],
     },
     {
+      // 一组子项勾了一部分时父项显示半选。半选是外部数据算出来的显示态，
+      // 用户切不进去——点它一律走向全选，这是 APG 对父项复选框的约定
+      name: '半选：aria-checked=mixed、data-state=indeterminate',
+      spec: { apg: APG },
+      props: { defaultChecked: 'indeterminate' },
+      initial: {
+        parts: {
+          root: { 'aria-checked': 'mixed', 'data-state': 'indeterminate' },
+          indicator: { 'data-state': 'indeterminate' },
+        },
+      },
+    },
+    {
+      name: '半选点一下走向全选，而不是全不选',
+      spec: { apg: APG },
+      props: { defaultChecked: 'indeterminate' },
+      steps: [
+        {
+          kind: 'click',
+          part: 'root',
+          expect: {
+            parts: {
+              root: { 'aria-checked': 'true', 'data-state': 'checked' },
+              indicator: { 'data-state': 'checked' },
+            },
+            events: [{ type: 'checked-change', detail: { checked: true } }],
+          },
+        },
+      ],
+    },
+    {
+      name: '受控半选：父写回 indeterminate 后显示半选',
+      spec: { adr: 'controlled-uncontrolled' },
+      props: { checked: false },
+      steps: [
+        { kind: 'setProps', props: { checked: 'indeterminate' } },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'root', name: 'data-state', value: 'indeterminate' } },
+          expect: { parts: { root: { 'aria-checked': 'mixed' } } },
+        },
+      ],
+    },
+    {
       name: 'disabled：原生 disabled + data-disabled，点击不切换、不派发',
       spec: { apg: APG },
       props: { disabled: true },

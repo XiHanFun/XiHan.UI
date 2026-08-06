@@ -49,4 +49,19 @@
   [data-scope='checkbox'][data-part='indicator'][data-state='unchecked'] {
     display: none;
   }
+
+  /* 半选画一条横杠盖住勾：aria-checked=mixed 在视觉上也得与「全选」分得开 */
+  [data-scope='checkbox'][data-part='indicator'][data-state='indeterminate'] {
+    position: relative;
+    color: transparent;
+  }
+
+  [data-scope='checkbox'][data-part='indicator'][data-state='indeterminate']::after {
+    position: absolute;
+    inline-size: 60%;
+    block-size: var(--xh-stroke-thick);
+    border-radius: var(--xh-radius-full);
+    background: var(--xh-checkbox-indicator-fg, var(--xh-fg-on-brand));
+    content: '';
+  }
 }

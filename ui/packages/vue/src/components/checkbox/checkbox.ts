@@ -1,4 +1,5 @@
-import type { CheckboxSchema } from '@xihan-ui/headless'
+import type { CheckboxCheckedState, CheckboxSchema } from '@xihan-ui/headless'
+import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { useCheckbox } from './use-checkbox'
 
@@ -7,8 +8,9 @@ type CheckboxProps = CheckboxSchema['props']
 export const XhCheckbox = defineComponent({
   name: 'XhCheckbox',
   props: {
-    checked: { type: Boolean, default: undefined },
-    defaultChecked: Boolean,
+    // 三态：true / false / 'indeterminate'。半选只能由外部给，点击不会切进去
+    checked: { type: [Boolean, String] as PropType<CheckboxCheckedState>, default: undefined },
+    defaultChecked: { type: [Boolean, String] as PropType<CheckboxCheckedState>, default: undefined },
     disabled: Boolean,
   },
   // checked-change 携带 { checked }，update:checked 携带裸布尔
