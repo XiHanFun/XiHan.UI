@@ -9,19 +9,44 @@ const { createMachine } = setup<SelectSchema>()
 /** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
 export const SELECT_DEFAULT_PLACEMENT: Placement = 'bottom-start'
 
+// 对外允许裸串与 null 两种单选简写，内部一律按数组处理；undefined 要原样透传给 cell 判非受控
+function toValues(input: string | string[] | null | undefined): string[] | undefined {
+  if (input === undefined)
+    return undefined
+  if (input === null)
+    return []
+  return typeof input === 'string' ? [input] : [...input]
+}
+
+/** 选中集合的不变量：单选恒为长度 ≤ 1，多选去重。公开 API 与受控入参都经这里收口。 */
+function normalizeSelection(next: readonly string[], multiple: boolean): string[] {
+  return multiple ? [...new Set(next)] : next.slice(0, 1)
+}
+
+// 受控缺席时原样透传 undefined，cell 据此判非受控
+function normalizeInput(next: string[] | undefined, multiple: boolean): string[] | undefined {
+  return next === undefined ? undefined : normalizeSelection(next, multiple)
+}
+
+// cell 默认按引用比，数组每帧新建会次次判变；按元素比才认得出「值没动」
+function sameValues(a: string[], b: string[] | undefined): boolean {
+  return !!b && a.length === b.length && a.every((v, i) => v === b[i])
+}
+
 export const selectMachine = createMachine({
   name: 'select',
   context: ({ prop, cell }) => ({
     // 位置结果由 trackPosition 里的引擎回填；connect 只读这里，不碰 DOM
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     // 值住在 cell 里，受控/非受控在此收口，不需要影子事件
-    value: cell<string | null>(() => ({
-      value: prop('value'),
-      defaultValue: prop('defaultValue') ?? null,
+    value: cell<string[]>(() => ({
+      value: normalizeInput(toValues(prop('value')), !!prop('multiple')),
+      defaultValue: normalizeSelection(toValues(prop('defaultValue')) ?? [], !!prop('multiple')),
+      isEqual: sameValues,
       onChange: value => prop('onValueChange')?.({ value }),
     })),
     // 显示文本只能从活 DOM 取：条目文本是作者写的插槽内容，prop 里没有
-    valueText: cell<string | null>(() => ({ defaultValue: null })),
+    valueText: cell<string[]>(() => ({ defaultValue: [], isEqual: sameValues })),
     // 高亮锚点：不受控、不对外通知，只服务 roving tabindex 与方向键起点
     highlightedValue: cell<string | null>(() => ({ defaultValue: null })),
     focusIntent: cell<SelectFocusIntent>(() => ({ defaultValue: 'selected' })),
@@ -45,6 +70,7 @@ export const selectMachine = createMachine({
   watch: ({ track, prop, context, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
     track([context.dep('value')], () => action(['syncValueText']))
+    track([() => prop('multiple')], () => action(['normalizeValue']))
   },
   // 只改值不动开合，收起态连打与外部 setValue 两个状态都认
   on: {
@@ -82,8 +108,10 @@ export const selectMachine = createMachine({
           { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnClose'] },
           { target: 'closed', actions: ['setReturnFocus', 'invokeOnClose'] },
         ],
-        // 选中即关闭：先落值（cell 随即发出 onValueChange），再走与 CLOSE 相同的收口
+        // 单选选中即关闭：先落值（cell 随即发出 onValueChange），再走与 CLOSE 相同的收口。
+        // 多选只增删集合、留在展开态，让作者接着点下一项。
         'ITEM.SELECT': [
+          { guard: 'isMultiple', actions: ['setValue', 'syncValueText'] },
           { guard: 'isOpenControlled', actions: ['setValue', 'syncValueText', 'setReturnFocus', 'invokeOnClose'] },
           { target: 'closed', actions: ['setValue', 'syncValueText', 'setReturnFocus', 'invokeOnClose'] },
         ],
@@ -97,14 +125,33 @@ export const selectMachine = createMachine({
   implementations: {
     guards: {
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      isMultiple: ({ prop }) => !!prop('multiple'),
     },
     actions: {
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
-      setValue: ({ context, event }) => {
+      setValue: ({ context, prop, event }) => {
         const e = event.current()
-        if (e.type === 'ITEM.SELECT' || e.type === 'VALUE.SET')
-          context.set('value', e.value)
+        if (e.type === 'VALUE.SET') {
+          context.set('value', normalizeSelection(toValues(e.value) ?? [], !!prop('multiple')))
+          return
+        }
+        if (e.type !== 'ITEM.SELECT')
+          return
+        const current = context.get('value')
+        // 多选点已选中的项即取消选中，是列表多选的通行手势
+        if (prop('multiple')) {
+          context.set('value', current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value])
+          return
+        }
+        context.set('value', [e.value])
+      },
+      // 多选关掉时把集合截回单选的不变量，顺带把这次收缩通知出去
+      normalizeValue: ({ context, prop }) => {
+        const current = context.get('value')
+        const next = normalizeSelection(current, !!prop('multiple'))
+        if (!sameValues(current, next))
+          context.set('value', next)
       },
       // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
       syncOpen: ({ prop, send }) => {
@@ -120,15 +167,25 @@ export const selectMachine = createMachine({
           if (!content)
             return false
           const value = context.get('value')
-          if (value == null) {
-            context.set('valueText', null)
+          if (value.length === 0) {
+            if (context.get('valueText').length > 0)
+              context.set('valueText', [])
             return true
           }
-          const el = queryItems(content, selectItemQuery).find(item => itemValue(item) === value)
-          if (!el)
-            return false
-          context.set('valueText', selectItemText(el))
-          return true
+          const items = queryItems(content, selectItemQuery)
+          let complete = true
+          // 查不到条目的那一项退回值本身：文本数组必须与 value 逐项等长对齐，
+          // 否则读屏会把上一批的文字念在这一批的值上
+          const texts = value.map((v) => {
+            const el = items.find(item => itemValue(item) === v)
+            if (el)
+              return selectItemText(el)
+            complete = false
+            return v
+          })
+          if (!sameValues(texts, context.get('valueText')))
+            context.set('valueText', texts)
+          return complete
         }
         if (resolve())
           return
@@ -160,10 +217,16 @@ export const selectMachine = createMachine({
             return
           const items = queryItems(content, selectItemQuery)
           const intent = context.get('focusIntent')
-          const selected = context.get('value')
+          // 集合按点击先后排列，锚点要的是「列表里第一个选中项」，所以按文档序现挑
+          const selection = context.get('value')
+          const firstSelected = items.find((el) => {
+            const v = itemValue(el)
+            return v != null && selection.includes(v)
+          })
+          const selected = itemValue(firstSelected ?? null)
           if (intent === 'selected') {
             // 选中项仍在集合里且可停留就停在它上面，否则退回首个可停留条目
-            const current = items.find(el => itemValue(el) === selected && !isItemDisabled(el))
+            const current = firstSelected && !isItemDisabled(firstSelected) ? firstSelected : null
             context.set('highlightedValue', itemValue(current ?? navigateItems(items, null, 'first')))
             return
           }

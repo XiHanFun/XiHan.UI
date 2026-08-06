@@ -38,11 +38,13 @@ export function connectSelect<T extends PropTypes>(
   // 位置由引擎写进 context，这里只读结果，不量 DOM、不调引擎
   const position = context.get('position')
   const placement = position?.placement ?? prop('placement') ?? SELECT_DEFAULT_PLACEMENT
-  const value = context.get('value') ?? null
-  // 文本由机器在 DOM 就位后回填；还没结算出来时退回值本身
-  const valueText = context.get('valueText') ?? value
+  const multiple = !!prop('multiple')
+  const value = context.get('value')
+  // 机器保证与 value 逐项等长对齐，查不到条目的那一项已退回值本身
+  const valueText = context.get('valueText')
   const placeholder = prop('placeholder') ?? null
-  const displayText = valueText ?? placeholder ?? ''
+  // 多选把各项文本连起来显示；分隔符固定，作者要别的排版就自己渲染 valueText
+  const displayText = valueText.length > 0 ? valueText.join(', ') : placeholder ?? ''
   // roving tabindex 与方向键起点共用这一个锚点；收起时为 null（条目此刻不可达）
   const highlighted = context.get('highlightedValue') ?? null
   const disabled = !!prop('disabled')
@@ -51,7 +53,7 @@ export function connectSelect<T extends PropTypes>(
 
   // item / item-text / item-indicator 共用同一份状态标记，样式层各处一致
   const itemStateAttrs = (item: SelectItemProps): Record<string, string | undefined> => ({
-    'data-state': value === item.value ? 'checked' : 'unchecked',
+    'data-state': value.includes(item.value) ? 'checked' : 'unchecked',
     'data-disabled': dataAttr(item.disabled),
   })
 
@@ -99,6 +101,7 @@ export function connectSelect<T extends PropTypes>(
     value,
     valueText,
     displayText,
+    multiple,
     highlightedValue: highlighted,
     setOpen: (next) => {
       if (next !== open)
@@ -130,7 +133,7 @@ export function connectSelect<T extends PropTypes>(
       'aria-labelledby': `${ids.label} ${ids['value-text']}`,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
-      'data-placeholder': dataAttr(value == null),
+      'data-placeholder': dataAttr(value.length === 0),
       'onClick': () => send({ type: 'TOGGLE', focus: 'selected' }),
       'onKeydown': (event: KeyboardEvent) => {
         // 纵向轴且不收 Home/End；返回 null 的按键不归导航管，不得 preventDefault
@@ -150,9 +153,9 @@ export function connectSelect<T extends PropTypes>(
         const query = isTypeaheadEvent(event) ? refs.get('typeahead').push(event.key) : null
         if (query != null) {
           event.preventDefault()
-          const next = itemValue(match(query, value))
+          const next = itemValue(match(query, value.at(-1) ?? null))
           if (next != null)
-            send({ type: 'VALUE.SET', value: next })
+            send({ type: 'VALUE.SET', value: multiple ? (value.includes(next) ? value : [...value, next]) : [next] })
           return
         }
         if (event.key === ' ') {
@@ -166,7 +169,7 @@ export function connectSelect<T extends PropTypes>(
       // trigger 的 aria-labelledby 指过来，当前值才进得了可及名字
       'id': ids['value-text'],
       // 无选中：样式据此把占位文字画淡
-      'data-placeholder': dataAttr(value == null),
+      'data-placeholder': dataAttr(value.length === 0),
       'data-disabled': dataAttr(disabled),
     }),
     getIndicatorProps: () => normalize.element({
@@ -194,6 +197,8 @@ export function connectSelect<T extends PropTypes>(
       'id': ids.content,
       'role': 'listbox',
       'aria-labelledby': ids.label,
+      // 多选语义显式报出，读屏据此播报「可多选」
+      'aria-multiselectable': multiple ? 'true' : 'false',
       // 有锚点时 Tab 位归高亮条目；展开却无锚点时由容器兜底，否则列表没有任何 Tab 停靠点。
       // 收起态不需要兜底，content 此时是 hidden。
       'tabindex': open && highlighted == null ? 0 : -1,
@@ -218,6 +223,11 @@ export function connectSelect<T extends PropTypes>(
           activate(event)
           return
         }
+        // 多选下 Space 是切换选中的首选键，不让连打检索把它吃掉
+        if (multiple && event.key === ' ') {
+          activate(event)
+          return
+        }
         // 连打只移高亮不选中；键已被检索吞掉，一律拦下默认行为，否则空格会滚页
         const query = isTypeaheadEvent(event) ? refs.get('typeahead').push(event.key) : null
         if (query != null) {
@@ -237,7 +247,7 @@ export function connectSelect<T extends PropTypes>(
       'role': 'option',
       // listbox 的选中语义是 aria-selected（不是 aria-checked）；未选中必须显式输出 false，
       // 省略会让读屏无从区分「未选中」与「不是选项」
-      'aria-selected': value === item.value ? 'true' : 'false',
+      'aria-selected': value.includes(item.value) ? 'true' : 'false',
       // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、也不派 click
       'aria-disabled': item.disabled ? 'true' : 'false',
       // 高亮是键盘焦点所在，与选中互相独立：可以高亮着未选中的条目
@@ -265,8 +275,8 @@ export function connectSelect<T extends PropTypes>(
       ...parts['hidden-select'].attrs,
       // name 缺省即不产出该属性，此时这份 select 不参与提交
       'name': prop('name'),
-      // 无选中时落到值为空串的那个选项上，required 才判得出「没选」
-      'value': value ?? '',
+      // 多选提交要 name 带 [] 之外的语义由作者定，这里只如实开原生多选
+      'multiple': multiple || undefined,
       'required': prop('required') || undefined,
       // 单体控件用原生 disabled（与条目的 aria-disabled 相反）：禁用的控件不该提交出值
       'disabled': disabled || undefined,

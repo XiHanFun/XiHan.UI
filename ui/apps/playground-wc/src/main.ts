@@ -323,6 +323,44 @@ app.innerHTML = `
       </div>
     </xh-select>
     <span class="lead" id="wc-select-value">当前值：（未选）</span>
+
+    <p class="lead">
+      多选下点中即在集合里增删该项，列表不收起；trigger 上的文本把选中项连起来显示，
+      表单影子的原生 select 也跟着开 multiple。
+    </p>
+    <xh-select id="wc-select-multi" multiple name="fruits" placeholder="请选择">
+      <select data-xh-part="hidden-select"></select>
+      <span data-xh-part="label">水果（多选）</span>
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator">▾</span>
+      </button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="item" value="apple">
+            <span data-xh-part="item-text">苹果</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+          <div data-xh-part="item" value="banana">
+            <span data-xh-part="item-text">香蕉</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+          <div data-xh-part="item" value="blueberry">
+            <span data-xh-part="item-text">蓝莓</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+          <div data-xh-part="item" value="cherry" aria-disabled="true">
+            <span data-xh-part="item-text">樱桃（缺货）</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+          <div data-xh-part="item" value="durian">
+            <span data-xh-part="item-text">榴莲</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+        </div>
+      </div>
+    </xh-select>
+    <span class="lead" id="wc-select-multi-value">已选：（无）</span>
   </section>
 
   <section>
@@ -2446,10 +2484,15 @@ for (const btn of Array.from(document.querySelectorAll('[data-progress]'))) {
   })
 }
 
-// 选中值回显
+// 选中值回显：value 恒为集合，单选也是零或一个元素的数组
 document.getElementById('wc-select')!.addEventListener('value-change', (e) => {
-  const { value } = (e as CustomEvent<{ value: string | null }>).detail
-  document.getElementById('wc-select-value')!.textContent = `当前值：${value ?? '（未选）'}`
+  const { value } = (e as CustomEvent<{ value: string[] }>).detail
+  document.getElementById('wc-select-value')!.textContent = `当前值：${value.length ? value.join('、') : '（未选）'}`
+})
+
+document.getElementById('wc-select-multi')!.addEventListener('value-change', (e) => {
+  const { value } = (e as CustomEvent<{ value: string[] }>).detail
+  document.getElementById('wc-select-multi-value')!.textContent = `已选：${value.length ? value.join('、') : '（无）'}`
 })
 
 // 数字框值回显

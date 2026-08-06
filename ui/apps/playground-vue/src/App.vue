@@ -357,7 +357,8 @@ function onMenuSelect(details: { value: string }) {
   picked.value = details.value
 }
 
-const fruit = ref<string | null>(null)
+const fruit = ref<string[]>([])
+const fruitsMulti = ref<string[]>(['apple'])
 const fruits = [
   { value: 'apple', label: '苹果' },
   { value: 'banana', label: '香蕉' },
@@ -1265,7 +1266,27 @@ const codeBlockPartial = `const stream = await client.chat({
           </XhSelectContent>
         </XhSelectPositioner>
       </XhSelectRoot>
-      <span class="lead">当前值：{{ fruit || '（未选）' }}</span>
+      <span class="lead">当前值：{{ fruit.length ? fruit.join('、') : '（未选）' }}</span>
+
+      <p class="lead">
+        多选下点中即在集合里增删该项，列表不收起；trigger 上的文本把选中项连起来显示。
+      </p>
+      <XhSelectRoot v-model:value="fruitsMulti" multiple name="fruits" placeholder="请选择">
+        <XhSelectLabel>水果（多选）</XhSelectLabel>
+        <XhSelectTrigger>
+          <XhSelectValueText />
+          <XhSelectIndicator>▾</XhSelectIndicator>
+        </XhSelectTrigger>
+        <XhSelectPositioner>
+          <XhSelectContent>
+            <XhSelectItem v-for="f in fruits" :key="f.value" :value="f.value" :disabled="f.disabled">
+              <XhSelectItemText>{{ f.label }}</XhSelectItemText>
+              <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+            </XhSelectItem>
+          </XhSelectContent>
+        </XhSelectPositioner>
+      </XhSelectRoot>
+      <span class="lead">已选：{{ fruitsMulti.length ? fruitsMulti.join('、') : '（无）' }}</span>
     </section>
 
     <section>

@@ -25,19 +25,20 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * value-text 里作者写了内容就归作者，元素不再改写。
  *
  * @customElement xh-select
- * @attr {string} value - 受控选中值；缺省该属性即非受控
- * @attr {string} default-value - 非受控初始选中值
+ * @attr {string} value - 受控选中值；缺省该属性即非受控。多选集合请写 property，属性只递得进单值
+ * @attr {string} default-value - 非受控初始选中值。多选集合请写 property，属性只递得进单值
  * @attr {boolean} open - 受控开合；缺省该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {boolean} disabled - 整个控件禁用：trigger 用原生 disabled，表单影子不参与提交
- * @attr {boolean} required - 原生表单校验：无选中值时提交被拦下
+ * @attr {boolean} required - 原生表单校验：无选中值时提交被拦下；多选下的门槛是至少选中一项
  * @attr {string} name - 表单字段名；给定后表单影子才带 name 并参与提交
  * @attr {string} placeholder - 无选中时 value-text 显示的占位文字
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
  * @attr {boolean} loop - 方向键走到尽头回绕，默认 true；写 loop="false" 关掉
+ * @attr {boolean} multiple - 多选：点中即在集合里增删该项，列表不收起；存在即开，关掉要摘属性（不同于 loop，写 multiple="false" 仍是开）
  * @attr {'ltr'|'rtl'} dir - 文字方向，默认 ltr
- * @fires value-change - 选中值变化；detail 为 `{ value: string | null }`
+ * @fires value-change - 选中值变化；detail 为 `{ value: string[] }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 组件根容器（承载 data-state/data-disabled，也是表单影子的定位基准）
  * @csspart label - 组标题（aria-labelledby 目标）
@@ -49,7 +50,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart item - role=option 条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
  * @csspart item-text - 条目文本（连打检索与 value-text 的取字处）
  * @csspart item-indicator - 条目选中标记（aria-hidden）
- * @csspart hidden-select - 表单影子，须是原生 select 空壳；选项由元素按当前值补齐，省略该节点即不参与表单
+ * @csspart hidden-select - 表单影子，须是原生 select 空壳；选项由元素按当前值补齐（多选时开原生 multiple），省略该节点即不参与表单
  */
 export class XhSelectElement extends XhElement {
   static override partContract = { anatomy: selectAnatomy, meta: selectMeta }
@@ -68,11 +69,13 @@ export class XhSelectElement extends XhElement {
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
+    multiple: { type: Boolean },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
   }
 
-  declare value?: string
-  declare defaultValue?: string
+  // 属性只递得进单值，多选集合走 property
+  declare value?: string | string[]
+  declare defaultValue?: string | string[]
   declare open?: boolean
   declare defaultOpen?: boolean
   declare disabled?: boolean
@@ -82,6 +85,7 @@ export class XhSelectElement extends XhElement {
   declare placement?: Placement
   declare offset?: number
   declare loop?: boolean
+  declare multiple?: boolean
   declare direction?: Direction
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
@@ -122,6 +126,7 @@ export class XhSelectElement extends XhElement {
       placement: this.placement,
       offset: this.offset,
       loop: this.loop,
+      multiple: this.multiple ?? false,
       dir: this.direction,
       onValueChange: this.notifyValue,
       onOpenChange: this.notifyOpen,
@@ -209,11 +214,14 @@ export class XhSelectElement extends XhElement {
   }
 
   /**
-   * 给表单影子补齐选项：空串选项是无选中时的落点，另一个承载当前值。
-   * 须先于属性写入落地，否则 spread 写 value 这个 DOM property 时目标 option 还不在。
+   * 给表单影子补齐选项：空串选项是无选中时的落点，每个选中值一个 selected 选项。
+   * 必须晚于属性写入：multiple 还没落到元素上时，单选 select 每收下一个 selected 选项
+   * 就会跑一次原生「ask for a reset」，把前面的选中全撤掉。
    */
-  private syncHiddenOptions(el: HTMLElement, value: string | null, text: string): void {
-    const key = value == null ? '' : `${value}\n${text}`
+  private syncHiddenOptions(el: HTMLElement, values: string[], texts: string[], multiple: boolean): void {
+    // 键要能无歧义还原这一批选项：值里带分隔符时拼接式键会碰撞，选项就不会重建。
+    // multiple 也算进键里，否则运行期翻转多选而值不变时选项不重建，选中态会停在旧模式上。
+    const key = JSON.stringify([values, texts, multiple])
     if (this.hiddenOptionKey.get(el) === key)
       return
     this.hiddenOptionKey.set(el, key)
@@ -221,12 +229,14 @@ export class XhSelectElement extends XhElement {
     const blank = this.ownerDocument.createElement('option')
     blank.value = ''
     el.appendChild(blank)
-    if (value == null)
-      return
-    const option = this.ownerDocument.createElement('option')
-    option.value = value
-    option.textContent = text
-    el.appendChild(option)
+    // 选中态一律靠选项的 selected 表达，多选下 select.value 表达不了集合
+    for (const [i, v] of values.entries()) {
+      const option = this.ownerDocument.createElement('option')
+      option.value = v
+      option.textContent = texts[i] ?? v
+      option.selected = true
+      el.appendChild(option)
+    }
   }
 
   protected wire(): void {
@@ -255,8 +265,8 @@ export class XhSelectElement extends XhElement {
     // 表单影子可缺省
     const hiddenSelect = this.getPart('hidden-select')
     if (hiddenSelect) {
-      this.syncHiddenOptions(hiddenSelect, api.value, api.valueText ?? api.value ?? '')
       this.spreader.spread(hiddenSelect, api.getHiddenSelectProps() as Record<string, unknown>)
+      this.syncHiddenOptions(hiddenSelect, api.value, api.valueText, api.multiple)
     }
 
     // 条目逐个打：身份取作者写的 value，禁用取部件自报的 aria-disabled。
