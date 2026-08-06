@@ -39,14 +39,6 @@
     "test": "vitest run",
     "test:browser": "vitest run --config vitest.browser.config.ts"
   },
-  "dependencies": {
-    "@xihan-ui/behavior": "workspace:*",
-    "@xihan-ui/core": "workspace:*",
-    "@xihan-ui/headless": "workspace:*",
-    "@xihan-ui/highlight": "workspace:*",
-    "@xihan-ui/machine": "workspace:*",
-    "@xihan-ui/position": "workspace:*"
-  },
   "peerDependencies": {
     "@xihan-ui/visual": "workspace:*"
   },
@@ -54,6 +46,14 @@
     "@xihan-ui/visual": {
       "optional": true
     }
+  },
+  "dependencies": {
+    "@xihan-ui/behavior": "workspace:*",
+    "@xihan-ui/core": "workspace:*",
+    "@xihan-ui/headless": "workspace:*",
+    "@xihan-ui/highlight": "workspace:*",
+    "@xihan-ui/machine": "workspace:*",
+    "@xihan-ui/position": "workspace:*"
   },
   "devDependencies": {
     "@custom-elements-manifest/analyzer": "catalog:",
