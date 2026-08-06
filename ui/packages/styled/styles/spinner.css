@@ -1,0 +1,61 @@
+@layer xihan.components {
+  /* 转圈的关键帧定义在本文件里。皮肤可以按需单独引入，
+     引用别处文件里的动画名时那份文件不一定在场，动画会静默地整个不跑 */
+  @keyframes xh-spinner-rotate {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  /* 圆环画在伪元素上，root 自身不转：转的只是图形，同一行里的文案要留在原地读得动 */
+  [data-scope='spinner'][data-part='root'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-spinner-gap, var(--xh-control-gap-md));
+    line-height: var(--xh-leading-none);
+    vertical-align: middle;
+  }
+
+  [data-scope='spinner'][data-part='root']::before {
+    content: '';
+
+    /* 边框算进直径，换厚度不会把圆环撑大 */
+    box-sizing: border-box;
+    flex: none;
+    inline-size: var(--xh-spinner-size, var(--xh-control-action-size));
+    block-size: var(--xh-spinner-size, var(--xh-control-action-size));
+    border: var(--xh-spinner-thickness, var(--xh-stroke-thick)) solid var(--xh-spinner-track, var(--xh-border-default));
+
+    /* 一整圈是轨道色，只有起始边换成前景色，转起来才看得出方向 */
+    border-block-start-color: var(--xh-spinner-fg, var(--xh-bg-brand));
+    border-radius: var(--xh-spinner-radius, var(--xh-shape-pill));
+    animation: xh-spinner-rotate var(--xh-spinner-duration, calc(var(--xh-duration-slow) * 2)) linear infinite;
+  }
+
+  /* 三档直径对齐控件档位，缺省档写在上面的基础规则里 */
+  [data-scope='spinner'][data-part='root'][data-size='sm']::before {
+    inline-size: var(--xh-control-indicator-size);
+    block-size: var(--xh-control-indicator-size);
+  }
+
+  [data-scope='spinner'][data-part='root'][data-size='lg']::before {
+    inline-size: var(--xh-control-h-md);
+    block-size: var(--xh-control-h-md);
+  }
+
+  [data-scope='spinner'][data-part='label'] {
+    color: var(--xh-spinner-label-fg, var(--xh-fg-muted));
+    font-size: var(--xh-spinner-label-size, var(--xh-font-size-sm));
+    line-height: var(--xh-leading-none);
+  }
+
+  /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"这里还没好"；
+     "在等什么"由 role=status 上的名字与可见文案继续承担 */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='spinner'][data-part='root']::before {
+      border-style: dotted;
+      border-color: var(--xh-spinner-fg, var(--xh-bg-brand));
+      animation: none;
+    }
+  }
+}

@@ -10,6 +10,7 @@ export {
 } from './components/accordion/accordion'
 export { useAccordion } from './components/accordion/use-accordion'
 export type { AccordionContext } from './components/accordion/use-accordion'
+export { XhAlertCloseTrigger, XhAlertDescription, XhAlertIcon, XhAlertRoot, XhAlertTitle } from './components/alert/alert'
 export {
   XhAnchorIndicator,
   XhAnchorItem,
@@ -237,6 +238,7 @@ export {
 } from './components/editable/editable'
 export { useEditable } from './components/editable/use-editable'
 export type { EditableCallbacks, EditableContext } from './components/editable/use-editable'
+export { XhEmptyStateAction, XhEmptyStateDescription, XhEmptyStateIcon, XhEmptyStateRoot, XhEmptyStateTitle } from './components/empty-state/empty-state'
 export { XhFieldControl, XhFieldDescription, XhFieldErrorText, XhFieldLabel, XhFieldRoot } from './components/field/field'
 export { useField } from './components/field/use-field'
 export type { FieldContext } from './components/field/use-field'
@@ -419,6 +421,7 @@ export {
 export { useSelect } from './components/select/use-select'
 export type { SelectContext } from './components/select/use-select'
 export { XhSeparator } from './components/separator/separator'
+export { XhSkeletonBone, XhSkeletonRoot } from './components/skeleton/skeleton'
 export {
   XhSliderControl,
   XhSliderHiddenInput,
@@ -430,6 +433,7 @@ export {
 } from './components/slider/slider'
 export { useSlider } from './components/slider/use-slider'
 export type { SliderContext } from './components/slider/use-slider'
+export { XhSpinner, XhSpinnerLabel } from './components/spinner/spinner'
 export {
   XhSplitterPanel,
   XhSplitterResizeTrigger,
@@ -567,6 +571,7 @@ export {
   XhToolbarSeparator,
 } from './components/toolbar/toolbar'
 export { useToolbar } from './components/toolbar/use-toolbar'
+
 export type { ToolbarContext } from './components/toolbar/use-toolbar'
 export {
   XhTooltipArrow,
@@ -577,7 +582,6 @@ export {
 } from './components/tooltip/tooltip'
 export { useTooltip } from './components/tooltip/use-tooltip'
 export type { TooltipContext } from './components/tooltip/use-tooltip'
-
 export {
   XhTourArrow,
   XhTourBackdrop,
@@ -660,6 +664,7 @@ export {
   XhVirtualizerRoot,
   XhVirtualizerViewport,
 } from './components/virtualizer/virtualizer'
+
 export { createVueRuntime } from './runtime/create-vue-runtime'
 export { vueNormalize } from './runtime/normalize-props'
 export { useMachine } from './runtime/use-machine'

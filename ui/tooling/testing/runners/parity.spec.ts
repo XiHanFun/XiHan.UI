@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createVueHarness } from '../../../packages/vue/tests/harness'
 import { createWcHarness } from '../../../packages/wc/tests/harness'
 import {
+  alertSuite,
   allSuites,
   anchorSuite,
   avatarSuite,
@@ -18,6 +19,7 @@ import {
   dateFieldSuite,
   datePickerSuite,
   editableSuite,
+  emptyStateSuite,
   fieldSuite,
   fileUploadSuite,
   formSuite,
@@ -30,12 +32,14 @@ import {
   paginationSuite,
   pinInputSuite,
   popoverSuite,
-
   ratingSuite,
   runParity,
+
   scrollAreaSuite,
   separatorSuite,
+  skeletonSuite,
   sliderSuite,
+  spinnerSuite,
   splitterSuite,
   tableSuite,
   tagsInputSuite,
@@ -77,6 +81,10 @@ afterEach(() => {
  * 以及真实分歧——最后一类是待办不是结论，逐条注明了差在哪。
  */
 const SUITES: readonly ConformanceSuite[] = [
+  alertSuite,
+  emptyStateSuite,
+  skeletonSuite,
+  spinnerSuite,
   anchorSuite,
   avatarSuite,
   badgeSuite,

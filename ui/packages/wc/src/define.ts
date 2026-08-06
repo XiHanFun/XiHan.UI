@@ -1,5 +1,6 @@
 import { version as VERSION } from '../package.json'
 import { XhAccordionElement } from './elements/accordion'
+import { XhAlertElement } from './elements/alert'
 import { XhAnchorElement } from './elements/anchor'
 import { XhAvatarElement } from './elements/avatar'
 import { XhBadgeElement } from './elements/badge'
@@ -22,6 +23,7 @@ import { XhDatePickerElement } from './elements/date-picker'
 import { XhDialogElement } from './elements/dialog'
 import { XhDrawerElement } from './elements/drawer'
 import { XhEditableElement } from './elements/editable'
+import { XhEmptyStateElement } from './elements/empty-state'
 import { XhFieldElement } from './elements/field'
 import { XhFileUploadElement } from './elements/file-upload'
 import { XhFormElement } from './elements/form'
@@ -42,7 +44,9 @@ import { XhRatingElement } from './elements/rating'
 import { XhScrollAreaElement } from './elements/scroll-area'
 import { XhSelectElement } from './elements/select'
 import { XhSeparatorElement } from './elements/separator'
+import { XhSkeletonElement } from './elements/skeleton'
 import { XhSliderElement } from './elements/slider'
+import { XhSpinnerElement } from './elements/spinner'
 import { XhSplitterElement } from './elements/splitter'
 import { XhStepsElement } from './elements/steps'
 import { XhSwitchElement } from './elements/switch'
@@ -68,6 +72,10 @@ import { defineElement } from './runtime/registry'
 
 // 注册全部 xh-* 元素，需显式调用，主入口 import 不注册。
 export function defineXhElements(): void {
+  defineElement('xh-alert', XhAlertElement, VERSION)
+  defineElement('xh-empty-state', XhEmptyStateElement, VERSION)
+  defineElement('xh-skeleton', XhSkeletonElement, VERSION)
+  defineElement('xh-spinner', XhSpinnerElement, VERSION)
   defineElement('xh-accordion', XhAccordionElement, VERSION)
   defineElement('xh-anchor', XhAnchorElement, VERSION)
   defineElement('xh-avatar', XhAvatarElement, VERSION)
