@@ -1,0 +1,5 @@
+export { skeletonAnatomy } from './skeleton.anatomy'
+export { connectSkeleton } from './skeleton.connect'
+export { skeletonKeyboard } from './skeleton.keyboard'
+export { skeletonMeta } from './skeleton.meta'
+export type { SkeletonApi, SkeletonBoneProps, SkeletonProps, SkeletonVariant } from './skeleton.types'

@@ -1,5 +1,6 @@
 import type { ConformanceSuite } from '../conformance/types'
 import { accordionSuite } from './accordion.suite'
+import { alertSuite } from './alert.suite'
 import { anchorSuite } from './anchor.suite'
 import { avatarSuite } from './avatar.suite'
 import { badgeSuite } from './badge.suite'
@@ -22,6 +23,7 @@ import { datePickerSuite } from './date-picker.suite'
 import { dialogSuite } from './dialog.suite'
 import { drawerSuite } from './drawer.suite'
 import { editableSuite } from './editable.suite'
+import { emptyStateSuite } from './empty-state.suite'
 import { fieldSuite } from './field.suite'
 import { fileUploadSuite } from './file-upload.suite'
 import { formSuite } from './form.suite'
@@ -42,7 +44,9 @@ import { ratingSuite } from './rating.suite'
 import { scrollAreaSuite } from './scroll-area.suite'
 import { selectSuite } from './select.suite'
 import { separatorSuite } from './separator.suite'
+import { skeletonSuite } from './skeleton.suite'
 import { sliderSuite } from './slider.suite'
+import { spinnerSuite } from './spinner.suite'
 import { splitterSuite } from './splitter.suite'
 import { stepsSuite } from './steps.suite'
 import { switchSuite } from './switch.suite'
@@ -67,6 +71,14 @@ import { virtualizerSuite } from './virtualizer.suite'
 
 /** 全部一致性套件；新增组件在此登记一次。 */
 export const allSuites: readonly ConformanceSuite[] = [
+  alertSuite,
+
+  emptyStateSuite,
+
+  skeletonSuite,
+
+  spinnerSuite,
+
   accordionSuite,
   anchorSuite,
   avatarSuite,

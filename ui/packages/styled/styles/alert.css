@@ -1,0 +1,118 @@
+@layer xihan.components {
+  [data-scope='alert'][data-part='root'] {
+    /* 四个语气只换这一个私有槽，底色/描边/图标色都由它推导出来，
+       换语气不必逐条属性各写一遍 */
+    --xh-_alert-accent: var(--xh-color-info-500);
+    /* 底色与描边由语气色兑进当前表面色得到：表面色本身跟着深浅模式翻，
+       兑出来的淡底也就跟着翻，不必为深色再写一套选择器 */
+    --xh-_alert-tint: color-mix(in oklab, var(--xh-_alert-accent) 12%, var(--xh-bg-surface));
+    --xh-_alert-edge: color-mix(in oklab, var(--xh-_alert-accent) 32%, var(--xh-bg-surface));
+
+    display: flex;
+    align-items: flex-start;
+    gap: var(--xh-alert-gap, var(--xh-space-3));
+    padding-block: var(--xh-alert-py, var(--xh-space-3));
+    padding-inline: var(--xh-alert-px, var(--xh-space-4));
+    border: var(--xh-stroke-thin) solid var(--xh-alert-border, var(--xh-_alert-edge));
+    border-radius: var(--xh-alert-radius, var(--xh-shape-surface));
+    background: var(--xh-alert-bg, var(--xh-_alert-tint));
+    color: var(--xh-alert-fg, var(--xh-fg-default));
+    font-size: var(--xh-alert-font-size, var(--xh-font-size-md));
+    line-height: var(--xh-alert-leading, var(--xh-leading-normal));
+  }
+
+  /* 收起态连接层给的是 hidden 属性，而上面声明了 display——
+     漏掉这条，关掉的提示还会一直摊在页面上 */
+  [data-scope='alert'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='alert'][data-part='root'][data-variant='success'] {
+    --xh-_alert-accent: var(--xh-color-success-500);
+  }
+
+  [data-scope='alert'][data-part='root'][data-variant='warning'] {
+    --xh-_alert-accent: var(--xh-color-warning-500);
+  }
+
+  [data-scope='alert'][data-part='root'][data-variant='danger'] {
+    --xh-_alert-accent: var(--xh-color-danger-500);
+  }
+
+  [data-scope='alert'][data-part='icon'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    /* 与首行文字对齐：图标框高取一行正文的行高 */
+    block-size: calc(var(--xh-font-size-md) * var(--xh-leading-normal));
+    inline-size: var(--xh-alert-icon-size, var(--xh-control-indicator-size));
+    color: var(--xh-alert-icon-fg, var(--xh-_alert-accent));
+  }
+
+  /* 标题与说明摞成一列，占满 root 剩下的横向空间，
+     关闭按钮才推得到行尾 */
+  [data-scope='alert'][data-part='title'],
+  [data-scope='alert'][data-part='description'] {
+    margin: 0;
+    min-inline-size: 0;
+  }
+
+  [data-scope='alert'][data-part='title'] {
+    flex: 1 1 auto;
+    color: var(--xh-alert-title-fg, var(--xh-fg-default));
+    font-size: var(--xh-alert-title-font-size, var(--xh-font-size-md));
+    font-weight: var(--xh-alert-title-font-weight, var(--xh-font-weight-semibold));
+    line-height: var(--xh-alert-title-leading, var(--xh-leading-tight));
+  }
+
+  [data-scope='alert'][data-part='description'] {
+    flex: 1 1 100%;
+    color: var(--xh-alert-description-fg, var(--xh-fg-muted));
+    font-size: var(--xh-alert-description-font-size, var(--xh-font-size-sm));
+  }
+
+  /* 没写标题时说明自己占满这一行，否则它会挤在标题旁边 */
+  [data-scope='alert'][data-part='title']:empty {
+    display: none;
+  }
+
+  [data-scope='alert'][data-part='close-trigger'] {
+    flex: none;
+    /* 前面没有标题时也把叉推到行尾 */
+    margin-inline-start: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    block-size: var(--xh-alert-close-size, var(--xh-control-h-sm));
+    inline-size: var(--xh-alert-close-size, var(--xh-control-h-sm));
+    border: 0;
+    border-radius: var(--xh-alert-close-radius, var(--xh-shape-control));
+    background: transparent;
+    color: var(--xh-alert-close-fg, var(--xh-fg-muted));
+    /* 按钮不继承字族字号，不接回来的话提示里会突然冒出一段系统 UI 字体 */
+    font: inherit;
+    line-height: var(--xh-leading-none);
+    cursor: pointer;
+  }
+
+  /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半 */
+  [data-scope='alert'][data-part='close-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='alert'][data-part='close-trigger']:hover:not(:disabled) {
+    background: color-mix(in oklab, var(--xh-_alert-accent) 16%, transparent);
+    color: var(--xh-alert-close-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='alert'][data-part='close-trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='alert'][data-part='close-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+}

@@ -1,0 +1,78 @@
+@layer xihan.motion {
+  /* 一条比底色略亮的窄带从头扫到尾。背景图比自身宽一倍，靠移动背景位置扫过去，
+     不动 transform 也不动布局，整段动画只在合成层上跑 */
+  @keyframes xh-skeleton-shimmer {
+    from {
+      background-position: 200% 0;
+    }
+
+    to {
+      background-position: -200% 0;
+    }
+  }
+}
+
+@layer xihan.components {
+  /* 骨架容器：竖着码放各根骨架条 */
+  [data-scope='skeleton'][data-part='root'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-skeleton-gap, var(--xh-space-2));
+  }
+
+  /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，补这条兜住加载结束后的收起态 */
+  [data-scope='skeleton'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /*
+   * 单根骨架条。底色与微光两层叠在一起：
+   * background-color 是静止时看到的那层，background-image 是扫过去的那道光。
+   */
+  [data-scope='skeleton'][data-part='bone'] {
+    inline-size: 100%;
+    border-radius: var(--xh-skeleton-radius, var(--xh-shape-control));
+    background-color: var(--xh-skeleton-bg, var(--xh-bg-subtle));
+    background-image: linear-gradient(
+      90deg,
+      transparent 20%,
+      var(--xh-skeleton-sheen, var(--xh-bg-subtle-hover)) 50%,
+      transparent 80%
+    );
+    background-repeat: no-repeat;
+    background-size: 200% 100%;
+    animation: xh-skeleton-shimmer var(--xh-skeleton-duration, calc(var(--xh-duration-slow) * 5)) var(--xh-ease-standard) infinite;
+  }
+
+  /* 一行文字的高度取正文字号，圆角拉满，看起来就是一行还没排出来的字 */
+  [data-scope='skeleton'][data-part='bone'][data-variant='text'] {
+    block-size: var(--xh-skeleton-text-block-size, var(--xh-text-body-size));
+    border-radius: var(--xh-skeleton-text-radius, var(--xh-shape-pill));
+  }
+
+  /* 头像位：正方形加满圆角。宽度定死不跟着容器拉长，高度也不许被主轴压扁 */
+  [data-scope='skeleton'][data-part='bone'][data-variant='circle'] {
+    flex: none;
+    inline-size: var(--xh-skeleton-circle-size, var(--xh-control-h-lg));
+    aspect-ratio: 1;
+    border-radius: var(--xh-skeleton-circle-radius, var(--xh-shape-pill));
+  }
+
+  /* 图片、卡片这类成块的占位：给个最小高度，撑开由作者决定 */
+  [data-scope='skeleton'][data-part='bone'][data-variant='rect'] {
+    min-block-size: var(--xh-skeleton-rect-block-size, var(--xh-control-h-lg));
+    border-radius: var(--xh-skeleton-rect-radius, var(--xh-shape-surface));
+  }
+
+  /*
+   * 减少动效：撤掉微光那层，只留静态底色。
+   * 骨架屏是自己冒出来、会一直循环到数据回来为止的动效，正是最容易引发不适的那一类；
+   * 这里不能只把时长压到接近零——那样光带会停在某一帧上，留下一道说不清的渐变。
+   */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='skeleton'][data-part='bone'] {
+      background-image: none;
+      animation: none;
+    }
+  }
+}

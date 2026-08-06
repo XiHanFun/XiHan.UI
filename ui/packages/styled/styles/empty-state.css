@@ -1,0 +1,78 @@
+@layer xihan.components {
+  [data-scope='empty-state'][data-part='root'] {
+    /* 三个尺寸档只换这几个私有槽，图标与标题都从 root 继承它们，
+       换档不必给每个部件各写一条选择器 */
+    --xh-_empty-state-gap: var(--xh-stack-gap-md);
+    --xh-_empty-state-py: var(--xh-section-py);
+    --xh-_empty-state-icon-size: 2.5rem;
+    --xh-_empty-state-title-size: var(--xh-font-size-lg);
+    /* 说明的读行宽度：整句话不收窄就会拉成一条难读的长行 */
+    --xh-_empty-state-measure: 32rem;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-empty-state-gap, var(--xh-_empty-state-gap));
+    padding-block: var(--xh-empty-state-py, var(--xh-_empty-state-py));
+    padding-inline: var(--xh-empty-state-px, var(--xh-space-6));
+    color: var(--xh-empty-state-fg, var(--xh-fg-default));
+    text-align: center;
+  }
+
+  /* 活区节点常挂、靠 hidden 收起，上面声明了 display 会盖掉 UA 的 [hidden] 规则 */
+  [data-scope='empty-state'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='empty-state'][data-part='root'][data-size='sm'] {
+    --xh-_empty-state-gap: var(--xh-space-2);
+    --xh-_empty-state-py: var(--xh-space-4);
+    --xh-_empty-state-icon-size: 2rem;
+    --xh-_empty-state-title-size: var(--xh-font-size-md);
+  }
+
+  [data-scope='empty-state'][data-part='root'][data-size='lg'] {
+    --xh-_empty-state-gap: var(--xh-space-6);
+    --xh-_empty-state-py: var(--xh-space-8);
+    --xh-_empty-state-icon-size: 3.5rem;
+    --xh-_empty-state-title-size: var(--xh-font-size-xl);
+  }
+
+  [data-scope='empty-state'][data-part='icon'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    block-size: var(--xh-empty-state-icon-size, var(--xh-_empty-state-icon-size));
+    inline-size: var(--xh-empty-state-icon-size, var(--xh-_empty-state-icon-size));
+    color: var(--xh-empty-state-icon-fg, var(--xh-fg-subtle));
+    /* 图标常是一个字形，字号跟着图标框走，line-height 不再另占高度 */
+    font-size: var(--xh-empty-state-icon-font-size, var(--xh-font-size-3xl));
+    line-height: var(--xh-leading-none);
+  }
+
+  [data-scope='empty-state'][data-part='title'] {
+    margin: 0;
+    color: var(--xh-empty-state-title-fg, var(--xh-fg-default));
+    font-size: var(--xh-empty-state-title-font-size, var(--xh-_empty-state-title-size));
+    font-weight: var(--xh-empty-state-title-font-weight, var(--xh-font-weight-semibold));
+    line-height: var(--xh-empty-state-title-leading, var(--xh-leading-tight));
+  }
+
+  [data-scope='empty-state'][data-part='description'] {
+    margin: 0;
+    max-inline-size: var(--xh-empty-state-description-max-w, var(--xh-_empty-state-measure));
+    color: var(--xh-empty-state-description-fg, var(--xh-fg-muted));
+    font-size: var(--xh-empty-state-description-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-empty-state-description-leading, var(--xh-text-body-leading));
+  }
+
+  [data-scope='empty-state'][data-part='action'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-empty-state-action-gap, var(--xh-space-2));
+  }
+}

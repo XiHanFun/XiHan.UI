@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { accordionSuite, anchorSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, calendarSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, codeBlockSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, composerSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, dialogSuite, drawerSuite, editableSuite, fieldSuite, fileUploadSuite, formSuite, hoverCardSuite, imageSuite, listboxSuite, loadingBarSuite, menubarSuite, menuSuite, navigationMenuSuite, numberFieldSuite, paginationSuite, pinInputSuite, popoverSuite, progressSuite, radioGroupSuite, ratingSuite, runConformance, scrollAreaSuite, selectSuite, separatorSuite, sliderSuite, splitterSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, textFieldSuite, threadSuite, timeFieldSuite, timePickerSuite, toasterSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, virtualizerSuite } from '@xihan-ui/testing'
+import { accordionSuite, alertSuite, anchorSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, calendarSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, codeBlockSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, composerSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, dialogSuite, drawerSuite, editableSuite, emptyStateSuite, fieldSuite, fileUploadSuite, formSuite, hoverCardSuite, imageSuite, listboxSuite, loadingBarSuite, menubarSuite, menuSuite, navigationMenuSuite, numberFieldSuite, paginationSuite, pinInputSuite, popoverSuite, progressSuite, radioGroupSuite, ratingSuite, runConformance, scrollAreaSuite, selectSuite, separatorSuite, skeletonSuite, sliderSuite, spinnerSuite, splitterSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, textFieldSuite, threadSuite, timeFieldSuite, timePickerSuite, toasterSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, virtualizerSuite } from '@xihan-ui/testing'
 import { afterEach, beforeEach, describe, it, vi } from 'vitest'
 import { createVueHarness } from './harness'
 
@@ -17,6 +17,14 @@ afterEach(() => {
 runConformance(
   createVueHarness(),
   [
+    alertSuite,
+
+    emptyStateSuite,
+
+    skeletonSuite,
+
+    spinnerSuite,
+
     accordionSuite,
     anchorSuite,
     avatarSuite,
