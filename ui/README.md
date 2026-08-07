@@ -6,7 +6,7 @@
 
 Framework-agnostic component library. State machines and accessibility live in a headless core; each framework only gets a thin adapter.
 
-65 components, each shipping a headless core, a Vue component, a custom element, and a default skin.
+69 components, each shipping a headless core, a Vue component, a custom element, and a default skin.
 
 > **Experimental.** Not published to npm and no documentation site yet. Accessibility is scanned in real Chromium, but the first sweep left a backlog of recorded issues (17 components plus one global contrast problem). Do not depend on it in production.
 
@@ -17,7 +17,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 | `@xihan-ui/core` | Structural primitives: anatomy, `mergeProps`, `normalizeProps`, scope, context, ids |
 | `@xihan-ui/machine` | State machine runtime: `createMachine`, interpreter contract, controlled bindings |
 | `@xihan-ui/behavior` | Behavior primitives: dismissable layer, focus scope, scroll lock, presence, collection, typeahead |
-| `@xihan-ui/headless` | 65 components as anatomy + machine + `connect` — no styles, no framework |
+| `@xihan-ui/headless` | 69 components as anatomy + machine + `connect` — no styles, no framework |
 | `@xihan-ui/vue` | Vue 3 adapter |
 | `@xihan-ui/wc` | Web Components adapter (own reactive base, no third-party runtime dep) |
 | `@xihan-ui/styled` | Default skins, layered CSS |
@@ -56,7 +56,7 @@ pnpm typecheck
 pnpm lint
 pnpm boundaries   # layered dependency gate (dependency-cruiser)
 pnpm build
-pnpm size         # bundle size ratchet — installed but not wired yet (.size-limit.json is still empty)
+pnpm size         # bundle size ratchet — builds, then checks the 17 budgets in .size-limit.json
 ```
 
 ## Conventions
