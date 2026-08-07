@@ -6,7 +6,7 @@
 
 框架无关的组件库：状态机与无障碍逻辑沉在无头内核，各框架只写一层薄适配器。
 
-65 个组件，每个都有 headless 内核、Vue 组件、自定义元素与默认皮肤。
+69 个组件，每个都有 headless 内核、Vue 组件、自定义元素与默认皮肤。
 
 > **实验阶段**：尚未发布到 npm，尚无文档站；无障碍扫描已跑在真实 Chromium 上，但首轮扫出的存量问题尚未修完（17 个组件登记在案，外加一条全局的对比度问题）。请勿在生产环境依赖。
 
@@ -17,7 +17,7 @@
 | `@xihan-ui/core` | 结构原语：anatomy、`mergeProps`、`normalizeProps`、Scope、context、id |
 | `@xihan-ui/machine` | 状态机运行时：`createMachine`、解释器契约、受控值绑定 |
 | `@xihan-ui/behavior` | 行为原语：dismissable layer、焦点域、滚动锁、进出场、集合、typeahead |
-| `@xihan-ui/headless` | 65 个组件的 anatomy + machine + `connect`，无样式、无框架 |
+| `@xihan-ui/headless` | 69 个组件的 anatomy + machine + `connect`，无样式、无框架 |
 | `@xihan-ui/vue` | Vue 3 适配器 |
 | `@xihan-ui/wc` | Web Components 适配器（自研响应式基类，无第三方运行时依赖） |
 | `@xihan-ui/styled` | 默认皮肤，按 `@layer` 分层的 CSS |
@@ -56,7 +56,7 @@ pnpm typecheck
 pnpm lint
 pnpm boundaries   # 分层依赖门禁（dependency-cruiser）
 pnpm build
-pnpm size         # 体积棘轮：装好了但还没接入（.size-limit.json 仍是空表）
+pnpm size         # 体积棘轮：先构建，再核对 .size-limit.json 里的 17 条产物限额
 ```
 
 ## 约定
