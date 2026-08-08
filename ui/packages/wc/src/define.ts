@@ -145,6 +145,7 @@ export function defineXhElements(): void {
 
 export {
   XhAccordionElement,
+  XhAlertElement,
   XhAnchorElement,
   XhAvatarElement,
   XhBadgeElement,
@@ -167,6 +168,7 @@ export {
   XhDialogElement,
   XhDrawerElement,
   XhEditableElement,
+  XhEmptyStateElement,
   XhFieldElement,
   XhFileUploadElement,
   XhFormElement,
@@ -177,6 +179,7 @@ export {
   XhMenubarElement,
   XhMenuElement,
   XhNavigationMenuElement,
+  XhNumberFieldElement,
   XhPaginationElement,
   XhPinInputElement,
   XhPopoverElement,
@@ -186,7 +189,9 @@ export {
   XhScrollAreaElement,
   XhSelectElement,
   XhSeparatorElement,
+  XhSkeletonElement,
   XhSliderElement,
+  XhSpinnerElement,
   XhSplitterElement,
   XhStepsElement,
   XhSwitchElement,

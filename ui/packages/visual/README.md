@@ -102,7 +102,12 @@ setTimeout(async () => surface.setCloud(textToCloud('曦寒', { count: 20000 }))
 自己造点云也行，`PointCloud` 就是三个定长数组：
 
 ```ts
-{ count, positions: Float32Array /* xyz */, colors: Float32Array /* rgb 0~1 */, sizes?: Float32Array }
+interface PointCloud {
+  count: number
+  positions: Float32Array // xyz
+  colors: Float32Array // rgb 0~1
+  sizes?: Float32Array
+}
 ```
 
 ## 性能与降级
