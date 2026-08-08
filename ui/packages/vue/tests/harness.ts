@@ -5,6 +5,18 @@ import * as X from '../src'
 
 const registry = X as unknown as Record<string, Component>
 
+const PUBLIC_EVENTS = {
+  'checked-change': 'onCheckedChange',
+  'open-change': 'onOpenChange',
+  'pressed-change': 'onPressedChange',
+  'select': 'onSelect',
+  'status-change': 'onStatusChange',
+  'stick-change': 'onStickChange',
+  'stop': 'onStop',
+  'submit': 'onSubmit',
+  'value-change': 'onValueChange',
+} as const
+
 function pascal(s: string): string {
   return s.split(/[-_]/).filter(Boolean).map(w => w[0]!.toUpperCase() + w.slice(1)).join('')
 }
@@ -22,6 +34,11 @@ function resolvePart(component: string, part: string): Component {
   if (!comp)
     throw new Error(`vue 适配器缺组件：Xh${pascal(component)}${pascal(part)}`)
   return comp
+}
+
+function declaredEvents(component: Component): Set<string> {
+  const emits = (component as { emits?: readonly string[] | Record<string, unknown> }).emits
+  return new Set(Array.isArray(emits) ? emits : Object.keys(emits ?? {}))
 }
 
 // FixtureNode → VNode。part 节点解析成对应组件，纯结构节点直接建元素；组件数增加时零改动。
@@ -84,25 +101,18 @@ export function createVueHarness(): AdapterHarness {
       Object.assign(props, fixture.props)
       const Root = resolveRoot(fixture.component)
       // 捕获对外语义事件（跨适配器一致的 emit）；v-model 的 update:open 是 Vue 特化
-      // 语法糖、不入跨适配器事件流。无关组件忽略这些监听器。
-      // 组件没把某个名字声明进 emits 时，Vue 会把这里的 onX 当普通透传属性
-      // 绑成根元素上的**原生**监听器（onSelect → 原生 select 事件就是这么混进来的）。
-      // 语义事件的载荷一律是普通对象，原生事件对象一概不是，据此挡掉。
+      // 语法糖、不入跨适配器事件流。只传 Root 明确声明的监听器；未声明的 onX 会被
+      // Vue 当普通属性透传到根元素，Fragment 根还会产生 Extraneous non-emits warning。
       const record = (type: string) => (detail: unknown) => {
         if (detail instanceof Event)
           return
         events.push({ type, detail })
       }
-      const listeners = {
-        onOpenChange: record('open-change'),
-        onCheckedChange: record('checked-change'),
-        onPressedChange: record('pressed-change'),
-        onValueChange: record('value-change'),
-        onSelect: record('select'),
-        onStatusChange: record('status-change'),
-        onStickChange: record('stick-change'),
-        onStop: record('stop'),
-        onSubmit: record('submit'),
+      const declared = declaredEvents(Root)
+      const listeners: Record<string, (detail: unknown) => void> = {}
+      for (const [event, listener] of Object.entries(PUBLIC_EVENTS)) {
+        if (declared.has(event))
+          listeners[listener] = record(event)
       }
       app = createApp({
         setup: () => () =>
@@ -110,6 +120,9 @@ export function createVueHarness(): AdapterHarness {
             default: () => fixture.tree.children?.map(c => render(c, fixture.component)) ?? [],
           }),
       })
+      app.config.warnHandler = (message) => {
+        throw new Error(`[Vue warn]: ${message}`)
+      }
       app.mount(host)
       await tick()
       return { root: host }
