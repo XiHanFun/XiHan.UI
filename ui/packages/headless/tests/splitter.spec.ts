@@ -699,10 +699,11 @@ describe('connectSplitter 键盘', () => {
 })
 
 describe('connectSplitter 属性输出', () => {
-  it('root 是一组：role=group 并带排布轴', () => {
+  it('root 是一组，排布轴只作为 data 属性输出', () => {
     const root = api(makeService()).getRootProps() as Dict
     expect(root.role).toBe('group')
-    expect(root['aria-orientation']).toBe('horizontal')
+    expect(root['aria-orientation']).toBeUndefined()
+    expect(root['data-orientation']).toBe('horizontal')
     expect(root['data-scope']).toBe('splitter')
     expect(root['data-part']).toBe('root')
   })

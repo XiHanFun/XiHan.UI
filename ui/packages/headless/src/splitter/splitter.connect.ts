@@ -101,8 +101,7 @@ export function connectSplitter<T extends PropTypes>(
       ...parts.root.attrs,
       ...stateAttrs(),
       // 一组彼此关联的面板与分隔条，读屏据此知道它们是一伙的
-      'role': 'group',
-      'aria-orientation': orientation,
+      role: 'group',
     }),
 
     getPanelProps: (index) => {
@@ -134,8 +133,8 @@ export function connectSplitter<T extends PropTypes>(
         ...stateAttrs(),
         'role': 'separator',
         /**
-         * 分隔条自身的朝向与面板的排布轴垂直，与 root 上的 aria-orientation 取值不同是对的：
-         * 那条说的是面板怎么排，这条说的是条子本身是横是竖。
+         * 分隔条自身的朝向与面板的排布轴垂直；面板排布轴只放在 data-orientation，
+         * 因为 aria-orientation 不适用于 root 的 group 角色。
          */
         'aria-orientation': vertical ? 'horizontal' : 'vertical',
         'aria-valuenow': String(panel.size),

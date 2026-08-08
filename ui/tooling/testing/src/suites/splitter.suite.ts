@@ -92,7 +92,7 @@ export const splitterSuite: ConformanceSuite = {
         parts: {
           'root': {
             'role': 'group',
-            'aria-orientation': 'horizontal',
+            'aria-orientation': null,
             'data-orientation': 'horizontal',
             'data-disabled': null,
             'data-dragging': null,
@@ -200,7 +200,7 @@ export const splitterSuite: ConformanceSuite = {
       props: { defaultSize: [50, 50], orientation: 'vertical' },
       initial: {
         parts: {
-          'root': { 'aria-orientation': 'vertical', 'data-orientation': 'vertical' },
+          'root': { 'aria-orientation': null, 'data-orientation': 'vertical' },
           'resize-trigger': { 'aria-orientation': 'horizontal' },
         },
       },
