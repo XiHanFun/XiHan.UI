@@ -43,16 +43,22 @@ body:
       label: 影响范围
       description: 该建议主要涉及的包 / 领域
       options:
-        - 组件（components）
-        - 主题 / 样式（themes）
-        - Hooks（hooks）
-        - 指令（directives）
+        - 结构原语（core）
+        - 状态机运行时（machine）
+        - 设计令牌 / 主题（system）
+        - 交互行为（behavior）
+        - 浮层定位（position）
+        - 代码着色（highlight）
+        - 流式 Markdown（markdown）
+        - AI 协议内核（ai）
+        - 视觉效果（visual）
+        - 无头组件内核（headless）
+        - 默认皮肤（styled）
+        - Vue 适配器（vue）
+        - Web Components 适配器（wc）
         - 图标（icons）
-        - 国际化（locales）
-        - 工具 / 常量（utils / constants）
-        - 插件（plugins）
-        - 脚手架（cli）
-        - 构建 / 工程（internal / turbo / vite）
+        - 构建 / 工程（tooling / turbo / vite）
+        - 演示应用（playground-vue / playground-wc）
         - 文档
         - 其他 / 不确定
     validations:
@@ -63,7 +69,7 @@ body:
     attributes:
       label: 相关组件 / 包名
       description: 具体的组件或包名（如为全新组件可留空）
-      placeholder: "@xihan-ui/components · XVirtualList"
+      placeholder: "@xihan-ui/headless · 组件名"
     validations:
       required: false
 
