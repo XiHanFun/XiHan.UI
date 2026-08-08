@@ -52,8 +52,9 @@ export const formSuite: ConformanceSuite = {
           { part: 'error-summary-item', tag: 'a', attrs: { value: 'password' }, text: '密码至少 8 位' },
         ],
       },
-      { part: 'field-group', attrs: { value: 'email' }, children: [{ tag: 'input' }] },
-      { part: 'field-group', attrs: { value: 'password' }, children: [{ tag: 'input' }] },
+      // 字段容器不是控件、不给控件命名，两个输入框各自带上自己的名字
+      { part: 'field-group', attrs: { value: 'email' }, children: [{ tag: 'input', attrs: { 'aria-label': '邮箱' } }] },
+      { part: 'field-group', attrs: { value: 'password' }, children: [{ tag: 'input', attrs: { 'aria-label': '密码' } }] },
       { part: 'submit-trigger', tag: 'button', text: '提交' },
       { part: 'reset-trigger', tag: 'button', text: '重置' },
     ],

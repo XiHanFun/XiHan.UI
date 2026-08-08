@@ -22,7 +22,7 @@
   }
 
   [data-scope='time-field'][data-part='label'][data-disabled] {
-    color: var(--xh-time-field-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-time-field-label-fg-disabled, var(--xh-fg-subtle));
     cursor: not-allowed;
   }
 

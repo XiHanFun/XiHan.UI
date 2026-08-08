@@ -30,7 +30,7 @@
   /* label 自己不带任何状态属性，整组禁用只写在 root 上，只能从 root 往下够 */
   [data-scope='checkbox-group'][data-part='root'][data-disabled]
     [data-scope='checkbox-group'][data-part='label'] {
-    color: var(--xh-checkbox-group-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-checkbox-group-label-fg-disabled, var(--xh-fg-subtle));
   }
 
   /* position 是给条目内那份视觉隐藏的原生输入当定位基准：连接层给它写死了 position:absolute，

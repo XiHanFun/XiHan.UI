@@ -18,7 +18,7 @@
 
   /* 整棵树禁用会把 data-disabled 一路打到 label / tree 上，各处观感保持一致 */
   [data-scope='tree'][data-part='label'][data-disabled] {
-    color: var(--xh-fg-disabled);
+    color: var(--xh-fg-subtle);
   }
 
   /* 常驻容器不是浮层：留边框与底色，但不投影、不脱离文档流，滚动发生在容器自身 */

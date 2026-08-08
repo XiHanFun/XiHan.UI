@@ -40,6 +40,10 @@ export function connectPinInput<T extends PropTypes>(
   const valueAsString = value.join('')
   const complete = isPinComplete(value)
   const focusedIndex = context.get('focusedIndex') ?? -1
+  const translations = prop('translations')
+  const label = {
+    input: translations?.input ?? ((index: number, count: number) => `Character ${index} of ${count}`),
+  }
   const ids = scope.ids('pin-input', 'label')
   const inputId = (index: number): string => scope.partId('pin-input', `input-${index}`)
 
@@ -116,6 +120,9 @@ export function connectPinInput<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
       'data-invalid': dataAttr(invalid),
       'data-focus': dataAttr(focusedIndex === index),
+      // 每格自带名字，读屏念得出这是第几格、一共几格；
+      // label 部件命名的是整组（root 的 aria-labelledby），单格的名字只能由这里给
+      'aria-label': label.input(index + 1, length),
       // 遮蔽走原生 password，读屏与密码管理器才认得
       'type': mask ? 'password' : 'text',
       // 移动端弹哪种键盘由 type 决定，与 otp 无关

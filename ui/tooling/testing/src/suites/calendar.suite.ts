@@ -79,13 +79,21 @@ function buildFixture(fixedWeeks = false): FixtureNode {
 
 const FIXTURE = buildFixture()
 
-/** 逐格写全某几天的选中态：只写关心的那一格会漏掉"另一天也被选中了"。 */
-function selection(...values: readonly string[]): Record<string, { 'aria-selected': string, 'data-selected': string | null }> {
-  const out: Record<string, { 'aria-selected': string, 'data-selected': string | null }> = {}
+/**
+ * 逐格写全某几天的选中态：只写关心的那一格会漏掉"另一天也被选中了"。
+ * aria-selected 报在 gridcell 那一层，cell-trigger 只留 data-selected 供皮肤挂钩。
+ */
+function selection(...values: readonly string[]): Record<string, Record<string, string | null>> {
+  const out: Record<string, Record<string, string | null>> = {}
   for (const day of [...new Set([...values, '2024-02-15', '2024-02-16', '2024-02-18'])]) {
+    const selected = values.includes(day)
+    out[`cell[${at(day)}]`] = {
+      'aria-selected': selected ? 'true' : 'false',
+      'data-selected': selected ? '' : null,
+    }
     out[`cell-trigger[${at(day)}]`] = {
-      'aria-selected': values.includes(day) ? 'true' : 'false',
-      'data-selected': values.includes(day) ? '' : null,
+      'aria-selected': null,
+      'data-selected': selected ? '' : null,
     }
   }
   return out
@@ -98,7 +106,7 @@ export const calendarSuite: ConformanceSuite = {
   fixture: FIXTURE,
   cases: [
     {
-      name: '初始：grid 是 grid 且三态显式给出，cell 只担 gridcell，选中/禁用标在 cell-trigger 上',
+      name: '初始：grid 是 grid 且三态显式给出，选中标在 gridcell 上，禁用与 roving tabindex 标在 cell-trigger 上',
       spec: { apg: `${APG}#rps_label` },
       props: BASE_PROPS,
       initial: {
@@ -142,14 +150,16 @@ export const calendarSuite: ConformanceSuite = {
             'data-value': ANCHOR,
             'data-focused': '',
             'data-outside-month': null,
-            // 选中与禁用不标在 gridcell 上：用户停不到这一层
-            'aria-selected': null,
+            // aria-selected 是 gridcell 的属性，选中态报在这一层
+            'aria-selected': 'false',
+            // 禁用不标在 gridcell 上：用户停不到这一层
             'aria-disabled': null,
           },
           [`cell-trigger[${at(ANCHOR)}]`]: {
             'role': 'button',
             'data-value': ANCHOR,
-            'aria-selected': 'false',
+            // role=button 不许带 aria-selected
+            'aria-selected': null,
             'aria-disabled': 'false',
             'data-focused': '',
             'data-today': null,
@@ -358,7 +368,8 @@ export const calendarSuite: ConformanceSuite = {
           expect: {
             // 点了一月 29 日：选中换成它，展示月一并翻到一月（二月的格子转成邻月）
             parts: {
-              'cell-trigger[0]': { 'aria-selected': 'true', 'data-outside-month': null, 'tabindex': '0' },
+              'cell[0]': { 'aria-selected': 'true' },
+              'cell-trigger[0]': { 'data-selected': '', 'data-outside-month': null, 'tabindex': '0' },
               [`cell[${at('2024-02-01')}]`]: { 'data-outside-month': '' },
             },
             events: [{ type: 'value-change', detail: { value: ['2024-01-29'] } }],

@@ -19,7 +19,7 @@
   }
 
   [data-scope='pin-input'][data-part='label'][data-disabled] {
-    color: var(--xh-pin-input-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-pin-input-label-fg-disabled, var(--xh-fg-subtle));
   }
 
   /* 每格是等宽方框：宽高同取一个尺寸，内边距归零。

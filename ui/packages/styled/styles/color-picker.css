@@ -32,7 +32,7 @@
   }
 
   [data-scope='color-picker'][data-part='label'][data-disabled] {
-    color: var(--xh-fg-disabled);
+    color: var(--xh-fg-subtle);
   }
 
   /* 画成一个框的是 trigger：里面的色块与值文本要看起来是一体的 */

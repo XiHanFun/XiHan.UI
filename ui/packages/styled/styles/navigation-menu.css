@@ -163,7 +163,7 @@
 
   /* 指向当前页面的那一条：颜色与字重都变，不加下划线（下划线是"可点"的信号，它已经在这儿了） */
   [data-scope='navigation-menu'][data-part='link'][data-current] {
-    color: var(--xh-navigation-menu-link-fg-current, var(--xh-color-brand-600));
+    color: var(--xh-navigation-menu-link-fg-current, var(--xh-fg-brand));
     font-weight: var(--xh-navigation-menu-link-font-weight-current, var(--xh-font-weight-medium));
   }
 
@@ -175,7 +175,7 @@
     inset-block-end: calc(var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick)) * -1);
     block-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
     border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-radius-full));
-    background: var(--xh-navigation-menu-indicator-color, var(--xh-color-brand-600));
+    background: var(--xh-navigation-menu-indicator-color, var(--xh-fg-brand));
     transition:
       inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
       inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);

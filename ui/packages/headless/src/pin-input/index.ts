@@ -15,6 +15,7 @@ export type {
   PinInputApi,
   PinInputInputProps,
   PinInputSchema,
+  PinInputTranslations,
   PinInputType,
   PinInputValueChangeDetails,
 } from './pin-input.types'

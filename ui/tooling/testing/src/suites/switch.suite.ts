@@ -9,7 +9,8 @@ export const switchSuite: ConformanceSuite = {
   component: 'switch',
   anatomy: switchAnatomy,
   keyboard: switchKeyboard,
-  fixture: { part: 'root', tag: 'button' },
+  // 开关的名字由作者写在角色节点上：组件不生成文案，也没有承载文案的部件
+  fixture: { part: 'root', tag: 'button', attrs: { 'aria-label': '静音' } },
   cases: [
     {
       // Space / Enter 由平台的按钮激活行为翻成 click，组件不自己接这两个键；这里守它确实是原生 button[type=button]

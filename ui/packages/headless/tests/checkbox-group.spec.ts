@@ -257,6 +257,8 @@ describe('connectCheckboxGroup：条目的表单影子与装饰件', () => {
     expect(on.checked).toBe(true)
     expect(on.tabindex).toBe(-1)
     expect(on['aria-hidden']).toBe('true')
+    // 条目是 role=checkbox，后代里不能留下可聚焦的控件
+    expect(on.inert).toBe(true)
     // type 必须排在 checked 前面：改 type 会把选中态重置掉
     const keys = Object.keys(on)
     expect(keys.indexOf('type')).toBeLessThan(keys.indexOf('checked'))
@@ -300,6 +302,13 @@ describe('connectCheckboxGroup：全选/半选的 trigger', () => {
     const s = makeService({ itemValues: ALL, defaultValue: ['a', 'b'] })
     expect(api(s).checkedState).toBe('some')
     expect((api(s).getTriggerProps() as Record<string, unknown>)['data-state']).toBe('some')
+  })
+
+  it('可及名两段：组标题在前，全选格自己的文本在后（自指那段落在它自己的 id 上）', () => {
+    const a = api(makeService({}))
+    const trigger = a.getTriggerProps() as Record<string, unknown>
+    const labelId = (a.getLabelProps() as Record<string, unknown>).id
+    expect(trigger['aria-labelledby']).toBe(`${labelId} ${trigger.id}`)
   })
 
   it('禁用/只读时用 aria-disabled 表达，且仍占 Tab 位', () => {

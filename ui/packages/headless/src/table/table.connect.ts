@@ -72,6 +72,13 @@ export function connectTable<T extends PropTypes>(
     }
   }
 
+  // 行能展开出另一行，这正是 treegrid 与 grid 的分界；一行都展不开的表格是平的，仍报 grid
+  const hierarchical = rows.some(row => row.expandable)
+  // 层级序号：数据行都是第一层，序号按可见的数据行排
+  const rowPosition = new Map<string, number>()
+  dataRows.forEach((row, i) => rowPosition.set(row.id, i + 1))
+  const rowSetSize = dataRows.length
+
   const columnIndex = new Map<string, number>()
   const columnIndexDefs = new Map<string, TableColumnDef>()
   columns.forEach((column, i) => {
@@ -203,10 +210,12 @@ export function connectTable<T extends PropTypes>(
     collapseRow: value => send({ type: 'ROW.COLLAPSE', value }),
     toggleExpandRow: value => send({ type: 'ROW.EXPAND_TOGGLE', value }),
 
-    // root 用 role=grid 而不是 table：role=table 不接受 aria-selected / aria-expanded 这类交互语义
+    // root 用 grid 系而不是 role=table：role=table 不接受 aria-selected 这类交互语义。
+    // 有可展开的行时报 treegrid：行上的 aria-expanded 只在 treegrid 里成立，
+    // 展开出来的详情行也正是这一行的下一层行
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
-      'role': 'grid',
+      'role': hierarchical ? 'treegrid' : 'grid',
       'aria-labelledby': ids.caption,
       'aria-rowcount': rowCount,
       // 一列都没声明时不报列数
@@ -351,6 +360,10 @@ export function connectTable<T extends PropTypes>(
         // 不可展开的行不报 aria-expanded，那是能展开却没展开的意思
         'aria-expanded': meta?.expandable ? (meta.expanded ? 'true' : 'false') : undefined,
         'aria-controls': meta?.expandable ? detailId(row.value) : undefined,
+        // treegrid 的层级不体现在 DOM 嵌套上，只能逐行报出来：数据行都在第一层
+        'aria-level': hierarchical ? 1 : undefined,
+        'aria-posinset': hierarchical ? rowPosition.get(row.value) : undefined,
+        'aria-setsize': hierarchical ? rowSetSize : undefined,
         // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、不派 click
         'aria-disabled': isRowDisabled(row.value) ? 'true' : 'false',
         // 行级 roving tabindex：整张表只有锚点行留在 Tab 序列内
@@ -386,10 +399,13 @@ export function connectTable<T extends PropTypes>(
     getCellProps: (cell) => {
       const def = columnOf(cell.value)
       const size = columnSize(def?.width)
+      // 跨列数只在真的跨了列时报，1 是默认值
+      const colSpan = cell.colSpan != null && cell.colSpan > 1 ? cell.colSpan : undefined
       return normalize.element({
         ...parts.cell.attrs,
         'role': 'gridcell',
         'aria-colindex': columnIndex.get(cell.value),
+        'aria-colspan': colSpan,
         // 表头与脚注的格子不给 row，也就没有选中/禁用可言
         'data-selected': cell.row != null ? dataAttr(isSelected(cell.row)) : undefined,
         'data-disabled': cell.row != null ? dataAttr(isRowDisabled(cell.row)) : undefined,
@@ -484,13 +500,17 @@ export function connectTable<T extends PropTypes>(
         'role': 'row',
         // 详情行占一个真实行号：展开一行会把它后面所有行整体后移一位
         'aria-rowindex': detailRowIndex.get(row.value),
+        // 详情行是所属数据行的下一层，且那一层只有它自己
+        'aria-level': hierarchical ? 2 : undefined,
+        'aria-posinset': hierarchical ? 1 : undefined,
+        'aria-setsize': hierarchical ? 1 : undefined,
         'data-state': meta?.expanded ? 'open' : 'closed',
         // 收起只加 hidden，不卸载作者节点，详情里的输入框与滚动位置得留着
         'hidden': !meta?.expanded || undefined,
       })
     },
 
-    // 两个状态节点不带 role：role=grid 的子节点只能是 row 与 rowgroup；
+    // 两个状态节点不带 role：grid 系角色的子节点只能是 row 与 rowgroup；
     // 加载态的播报由 root 的 aria-busy 承担。节点常挂，只靠 hidden 显隐。
     getEmptyStateProps: () => normalize.element({
       ...parts['empty-state'].attrs,

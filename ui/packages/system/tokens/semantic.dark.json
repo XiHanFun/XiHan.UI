@@ -10,6 +10,7 @@
     "brand": { "$type": "color", "$value": "{color.brand.500}" },
     "brand-hover": { "$type": "color", "$value": "{color.brand.400}" },
     "brand-active": { "$type": "color", "$value": "{color.brand.300}" },
+    "brand-subtle": { "$type": "color", "$value": "{color.brand.950}" },
     "overlay": { "$type": "color", "$value": "oklch(0 0 0 / 0.6)" }
   },
   "fg": {
@@ -17,7 +18,11 @@
     "muted": { "$type": "color", "$value": "{color.neutral.400}" },
     "subtle": { "$type": "color", "$value": "{color.neutral.450}" },
     "disabled": { "$type": "color", "$value": "{color.neutral.600}" },
-    "on-brand": { "$type": "color", "$value": "{color.neutral.950}" }
+    "on-brand": { "$type": "color", "$value": "{color.neutral.950}" },
+    "brand": { "$type": "color", "$value": "{color.brand.400}" },
+    "success": { "$type": "color", "$value": "{color.success.500}" },
+    "danger": { "$type": "color", "$value": "{color.danger.500}" },
+    "danger-hover": { "$type": "color", "$value": "{color.danger.400}" }
   },
   "border": {
     "default": { "$type": "color", "$value": "{color.neutral.700}" },

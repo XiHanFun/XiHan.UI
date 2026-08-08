@@ -2,7 +2,7 @@
   { "name": "core", "path": "packages/core/dist/index.js", "gzip": true, "limit": "3.3 kB" },
   { "name": "machine", "path": "packages/machine/dist/index.js", "gzip": true, "limit": "5.5 kB" },
   { "name": "system", "path": "packages/system/dist/index.js", "gzip": true, "limit": "2.4 kB" },
-  { "name": "system/tokens.css", "path": "packages/system/tokens.css", "gzip": true, "limit": "1.6 kB" },
+  { "name": "system/tokens.css", "path": "packages/system/tokens.css", "gzip": true, "limit": "1.8 kB" },
   { "name": "behavior", "path": "packages/behavior/dist/index.js", "gzip": true, "limit": "6 kB" },
   { "name": "position", "path": "packages/position/dist/index.js", "gzip": true, "limit": "2.5 kB" },
   { "name": "highlight", "path": "packages/highlight/dist/index.js", "gzip": true, "limit": "2.6 kB" },

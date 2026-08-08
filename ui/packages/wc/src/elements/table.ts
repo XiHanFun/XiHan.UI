@@ -54,19 +54,19 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @fires sort-change - 排序链变化；detail 为 `{ value: { id, direction }[] }`
  * @fires selection-change - 选中集合变化；detail 为 `{ value: string[] | 'all' }`
  * @fires expanded-change - 展开集合变化；detail 为 `{ value: string[] }`
- * @csspart root - role=grid 容器，报行列总数与多选声明
+ * @csspart root - role=grid 容器（rows 里有可展开的行时为 treegrid），报行列总数与多选声明
  * @csspart caption - 表格标题（aria-labelledby 目标）
  * @csspart header - role=rowgroup 表头区
  * @csspart body - role=rowgroup 表体区，键盘在此收口，也是行级 roving 的兜底 Tab 位
  * @csspart footer - role=rowgroup 脚注区
  * @csspart row - role=row；写在 body 里的须自带 value 属性标识行身份
  * @csspart column-header - role=columnheader，须自带 value 属性标识列身份；承载 aria-sort
- * @csspart cell - role=gridcell，须自带 value 属性标识列身份
+ * @csspart cell - role=gridcell，须自带 value 属性标识列身份；可写 colspan 属性声明跨列数
  * @csspart select-all-trigger - 全选把手，三态（aria-checked 半选为 mixed），自占一个 Tab 位
  * @csspart row-select-trigger - 行选择把手（aria-hidden 且不占 Tab 位，键盘那一路由 Space 承担）
  * @csspart sort-trigger - 排序把手，自占一个 Tab 位；按住 Shift 点是追加到排序链
  * @csspart expand-trigger - 展开把手（aria-hidden 且不占 Tab 位，键盘那一路由左右方向键承担）
- * @csspart expanded-row - role=row 详情行，须自带 value 属性与它所属的数据行配对；收起时 hidden
+ * @csspart expanded-row - role=row 详情行，须自带 value 属性与它所属的数据行配对，内部须放一个 cell 承载详情；收起时 hidden
  * @csspart empty-state - 空态节点，表体为空且不在加载时显形
  * @csspart loading-state - 加载态节点，表体为空且正在加载时显形
  */
@@ -229,9 +229,11 @@ export class XhTableElement extends XhElement {
     putAll('cell', (el) => {
       const row = el.closest<HTMLElement>(ROW_SELECTOR)
       const inBody = !!row && this.contains(row) && this.sectionOf(el) === 'body'
+      const colspan = el.getAttribute('colspan')
       return api.getCellProps({
         value: el.getAttribute('value') ?? '',
         row: inBody ? (row.getAttribute('value') ?? '') : undefined,
+        colSpan: colspan == null ? undefined : Number(colspan),
       })
     })
     putAll('select-all-trigger', () => api.getSelectAllTriggerProps())

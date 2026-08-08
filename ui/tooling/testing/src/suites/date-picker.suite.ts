@@ -29,6 +29,14 @@ function cellTrigger(doc: Document, value: string): HTMLElement {
   return el
 }
 
+/** 某一天的 gridcell，选中态报在这一层。 */
+function gridCell(doc: Document, value: string): HTMLElement {
+  const el = doc.querySelector<HTMLElement>(`${CALENDAR}[data-part="cell"][data-value="${value}"]`)
+  if (!el)
+    throw new Error(`网格里没有 ${value} 这一格`)
+  return el
+}
+
 function segments(doc: Document): HTMLElement[] {
   return [...doc.querySelectorAll<HTMLElement>(`${FIELD}[data-part="segment"]`)]
 }
@@ -464,9 +472,9 @@ export const datePickerSuite: ConformanceSuite = {
             await pressOnSegment(ctx, 2, ['ArrowUp'])
             expectTexts(ctx.doc, ['2024', '02', '16'], '上键应把日推进一天')
             expectHidden(ctx.doc, '2024-02-16', '段位改完值要同步出去')
-            if (cellTrigger(ctx.doc, '2024-02-16').getAttribute('aria-selected') !== 'true')
+            if (gridCell(ctx.doc, '2024-02-16').getAttribute('aria-selected') !== 'true')
               throw new Error('日历应把新值那一格标成选中')
-            if (cellTrigger(ctx.doc, ANCHOR).getAttribute('aria-selected') !== 'false')
+            if (gridCell(ctx.doc, ANCHOR).getAttribute('aria-selected') !== 'false')
               throw new Error('旧值那一格该让出选中态')
           },
           expect: {

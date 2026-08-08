@@ -18,7 +18,7 @@
   }
 
   [data-scope='file-upload'][data-part='label'][data-disabled] {
-    color: var(--xh-file-upload-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-file-upload-label-fg-disabled, var(--xh-fg-subtle));
   }
 
   /* 虚线框是"这里能放东西"的通用说法，实线框看起来只是一个普通面板。
@@ -243,7 +243,7 @@
 
   [data-scope='file-upload'][data-part='item-delete-trigger']:hover:not(:disabled) {
     background: var(--xh-file-upload-delete-bg-hover, var(--xh-bg-subtle-hover));
-    color: var(--xh-file-upload-delete-fg-hover, var(--xh-color-danger-600));
+    color: var(--xh-file-upload-delete-fg-hover, var(--xh-fg-danger-hover));
   }
 
   [data-scope='file-upload'][data-part='item-delete-trigger']:focus-visible {

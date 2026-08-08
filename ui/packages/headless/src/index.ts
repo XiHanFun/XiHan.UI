@@ -79,7 +79,7 @@ export type { NumberFieldApi, NumberFieldSchema, NumberFieldValueChangeDetails }
 export { buildPageSequence, clampPage, connectPagination, normalizeCount, normalizePageSize, pageRangeOf, PAGINATION_PAGE_SIZE, PAGINATION_SIBLING_COUNT, paginationAnatomy, paginationKeyboard, paginationMachine, paginationMeta, totalPagesOf } from './pagination'
 export type { PaginationApi, PaginationEntryRange, PaginationItemProps, PaginationPage, PaginationPageChangeDetails, PaginationSchema, PaginationTranslations } from './pagination'
 export { connectPinInput, isPinComplete, padPinValue, PIN_INPUT_LENGTH, pinInputAnatomy, pinInputKeyboard, pinInputMachine, pinInputMeta, pinLength, samePinValue, sanitizePin } from './pin-input'
-export type { PinInputApi, PinInputInputProps, PinInputSchema, PinInputType, PinInputValueChangeDetails } from './pin-input'
+export type { PinInputApi, PinInputInputProps, PinInputSchema, PinInputTranslations, PinInputType, PinInputValueChangeDetails } from './pin-input'
 export { connectPopover, popoverAnatomy, popoverKeyboard, popoverMachine, popoverMeta } from './popover'
 export type { PopoverApi, PopoverOpenChangeDetails, PopoverRefs, PopoverSchema, PopoverTranslations } from './popover'
 export { connectProgress, progressAnatomy, progressKeyboard, progressMeta } from './progress'

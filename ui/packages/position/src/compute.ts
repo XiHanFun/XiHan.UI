@@ -160,10 +160,18 @@ export function intersectEdges(a: PositionEdges, b: PositionEdges): PositionEdge
   }
 }
 
+/**
+ * 一根轴上锚点是否完全落在可用区间之外。
+ * 零长度的锚点（光标这类点锚点）按点判：压在边界上仍算在区间内。
+ */
+function clippedOnAxis(start: number, size: number, min: number, max: number): boolean {
+  if (size <= 0)
+    return start < min || start > max
+  return start + size <= min || start >= max
+}
+
 /** 锚点是否被可用区域整个挡住了。任意一侧完全出界即算。 */
 export function isFullyClipped(anchor: PositionBox, clip: PositionEdges): boolean {
-  return anchor.y + anchor.height <= clip.top
-    || anchor.y >= clip.bottom
-    || anchor.x + anchor.width <= clip.left
-    || anchor.x >= clip.right
+  return clippedOnAxis(anchor.y, anchor.height, clip.top, clip.bottom)
+    || clippedOnAxis(anchor.x, anchor.width, clip.left, clip.right)
 }

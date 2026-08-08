@@ -37,6 +37,30 @@ function blockNavigation(doc: Document): void {
   })
 }
 
+/** 等动画的上限，超过就按当前帧扫。 */
+const SETTLE_TIMEOUT_MS = 1000
+
+/**
+ * 等有限时长的动画跑完再往下走。
+ * 进场淡入期间 getComputedStyle 读到的是插值后的半透明色，色彩对比按那一帧算出来的比值
+ * 不是用户最终看到的比值。无限循环的动画（转圈）不等，另加上限防某条动画永远不兑现。
+ */
+async function settleAnimations(doc: Document): Promise<void> {
+  const finite = doc.getAnimations().filter((a) => {
+    if (a.playState !== 'running')
+      return false
+    const timing = a.effect?.getComputedTiming()
+    return timing != null && Number.isFinite(timing.endTime as number)
+  })
+  if (finite.length === 0)
+    return
+  await Promise.race([
+    Promise.all(finite.map(a => a.finished.catch(() => undefined))),
+    new Promise(resolve => setTimeout(resolve, SETTLE_TIMEOUT_MS)),
+  ])
+  await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)))
+}
+
 /** 由归一化 DOM 快照算出的形态签名，同一形态多次挂载得到同一串。 */
 function signature(ctx: ApplyContext, harness: AdapterHarness): string {
   const snap = collectDomSnapshot({ doc: ctx.doc, component: ctx.component, anatomy: ctx.anatomy, events: harness.drainEvents() })
@@ -74,6 +98,7 @@ export function runA11y(
 
     /** 扫一次：已登记的规则记账后放行，其余攒进 report 由调用方统一抛出。 */
     const scan = async (ctx: ApplyContext, label: string, report: string[]): Promise<void> => {
+      await settleAnimations(ctx.doc)
       const { violations } = await runAxe(ctx.doc.body, axeOptions)
       const fresh = violations.filter((v) => {
         if (v.id in knownEverywhere) {

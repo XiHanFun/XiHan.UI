@@ -589,10 +589,18 @@ describe('connectTimeField 属性输出', () => {
     const m = open()
     for (const el of [m.control, m.seg('hour')]) {
       expect(el.getAttribute('aria-disabled')).toBe('false')
-      expect(el.getAttribute('aria-readonly')).toBe('false')
       expect(el.getAttribute('aria-invalid')).toBe('false')
     }
-    expect(m.control.getAttribute('aria-required')).toBe('false')
+    expect(m.seg('hour').getAttribute('aria-readonly')).toBe('false')
+    expect(m.seg('hour').getAttribute('aria-required')).toBe('false')
+  })
+
+  it('group 只带全局属性，只读与必填落在段上', () => {
+    const m = open({ readOnly: true, required: true })
+    expect(m.control.hasAttribute('aria-readonly')).toBe(false)
+    expect(m.control.hasAttribute('aria-required')).toBe(false)
+    expect(m.seg('hour').getAttribute('aria-readonly')).toBe('true')
+    expect(m.seg('hour').getAttribute('aria-required')).toBe('true')
   })
 
   it('段上带取值域；空段不写 aria-valuenow', () => {

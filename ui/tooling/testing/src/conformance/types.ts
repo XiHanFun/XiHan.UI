@@ -20,7 +20,7 @@ export interface FixtureNode {
   /** 标签名。纯结构节点默认 'div'。 */
   readonly tag?: string
   readonly text?: string
-  /** 业务属性（如 data-testid），不含 aria-、data-scope、data-part。 */
+  /** 作者写在节点上的属性：业务标记（data-testid）与标注（aria-label 之类）；不含 data-scope、data-part。 */
   readonly attrs?: Readonly<Record<string, string>>
   readonly children?: readonly FixtureNode[]
 }

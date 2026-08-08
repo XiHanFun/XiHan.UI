@@ -295,6 +295,23 @@ describe('connectPinInput 属性输出', () => {
     expect(m.root.getAttribute('data-invalid')).toBe('')
   })
 
+  it('每格带内置的可访问名，念得出序号与总数', () => {
+    const m = open({ length: 3 })
+    expect(m.boxes.map(b => b.getAttribute('aria-label'))).toEqual([
+      'Character 1 of 3',
+      'Character 2 of 3',
+      'Character 3 of 3',
+    ])
+  })
+
+  it('translations.input 覆盖内置文案', () => {
+    const m = open({
+      length: 2,
+      translations: { input: (index, count) => `第 ${index} 格，共 ${count} 格` },
+    })
+    expect(m.boxes.map(b => b.getAttribute('aria-label'))).toEqual(['第 1 格，共 2 格', '第 2 格，共 2 格'])
+  })
+
   it('disabled 落成原生 disabled，隐藏输入一并不参与提交', () => {
     const m = open({ length: 2, disabled: true })
     expect(m.boxes[0]!.hasAttribute('disabled')).toBe(true)

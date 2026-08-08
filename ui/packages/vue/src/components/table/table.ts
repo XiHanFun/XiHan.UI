@@ -203,6 +203,8 @@ export const XhTableCell = defineComponent({
   props: {
     /** 列 id。 */
     value: { type: String, required: true },
+    /** 跨列数，从 value 那一列往后算。 */
+    colspan: { type: [String, Number] as PropType<string | number>, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useTableContext()
@@ -213,6 +215,7 @@ export const XhTableCell = defineComponent({
       ctx.api.value.getCellProps({
         value: props.value,
         row: rowCtx?.row.value.value,
+        colSpan: props.colspan == null ? undefined : Number(props.colspan),
       }) as Record<string, unknown>,
       slots.default?.(),
     )

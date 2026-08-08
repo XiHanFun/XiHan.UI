@@ -78,6 +78,9 @@ function applyInputs(host: HTMLElement, props: Record<string, unknown>): void {
   }
 }
 
+/** settle 最多刷这么多轮；宿主一直自排新一轮时到此为止，不吊死。 */
+const MAX_SETTLE_ROUNDS = 10
+
 export function createWcHarness(): AdapterHarness {
   let host: Updatable | null = null
   let events: AdapterEvent[] = []
@@ -88,6 +91,38 @@ export function createWcHarness(): AdapterHarness {
     if (!(e instanceof CustomEvent))
       return
     events.push({ type: e.type, detail: e.detail })
+  }
+
+  /**
+   * 一路刷到 DOM 不再动为止。
+   *
+   * 单等一次 updateComplete 只覆盖当下排着的那一轮。机器的 flush 效应要等这一轮渲染完才跑，
+   * 跑完写回 context 又排下一轮，需要几轮取决于组件。停在中间那一轮，快照就少了后面几轮
+   * 才写上去的属性。
+   *
+   * 改成看 DOM 还动不动：动就再等一轮。观察 document.body 是为了连传送到宿主外面的浮层
+   * 一起看住。上限只是防死循环用的保险。
+   */
+  const settle = async (): Promise<void> => {
+    const el = host
+    if (el === null)
+      return
+    const observer = new MutationObserver(() => {})
+    observer.observe(document.body, { attributes: true, childList: true, subtree: true, characterData: true })
+    try {
+      for (let round = 0; round < MAX_SETTLE_ROUNDS; round++) {
+        // 让出一次微任务，等这一拍派出去的效应先把新一轮更新排上队
+        await null
+        // resolve 成 false 表示更新途中又排了新一轮，接着等下一轮
+        for (let self = 0; self < MAX_SETTLE_ROUNDS && !(await el.updateComplete); self++) { /* 等到不再自排新一轮 */ }
+        await null
+        if (observer.takeRecords().length === 0)
+          return
+      }
+    }
+    finally {
+      observer.disconnect()
+    }
   }
 
   return {
@@ -104,10 +139,10 @@ export function createWcHarness(): AdapterHarness {
     },
     async setProps(next) {
       applyInputs(host!, next as Record<string, unknown>)
-      await host!.updateComplete
+      await settle()
     },
     async flush() {
-      await host?.updateComplete
+      await settle()
     },
     drainEvents() {
       const e = events

@@ -252,9 +252,11 @@ export const cascaderSuite: ConformanceSuite = {
             'role': 'option',
             'aria-selected': 'false',
             'aria-disabled': 'false',
-            // 分支报展开态，此刻子列没开
-            'aria-expanded': 'false',
+            // 分支报「激活它会露出一个列表框」；option 不收 aria-expanded，展开与否只在 data-active 上
+            'aria-haspopup': 'listbox',
+            'aria-expanded': null,
             'data-value': 'zhejiang',
+            'data-branch': '',
             'data-level': '0',
             'data-active': null,
             'data-highlighted': null,
@@ -263,9 +265,9 @@ export const cascaderSuite: ConformanceSuite = {
             'disabled': null,
             'hidden': null,
           },
-          // taiwan（children 为空数组）与 macau（无 children）都是叶子，不报 aria-expanded
-          'item[2]': { 'aria-expanded': null, 'data-value': 'taiwan' },
-          'item[3]': { 'aria-expanded': null, 'data-value': 'macau' },
+          // taiwan（children 为空数组）与 macau（无 children）都是叶子，右边不会长出列
+          'item[2]': { 'aria-haspopup': null, 'data-branch': null, 'data-value': 'taiwan' },
+          'item[3]': { 'aria-haspopup': null, 'data-branch': null, 'data-value': 'macau' },
           // 第 1、2 层的条目常挂在 DOM 里，随所在列一起收着
           'item[4]': { 'hidden': '', 'data-level': '1', 'data-value': 'hangzhou' },
           'item[6]': { 'hidden': '', 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null },
@@ -300,7 +302,7 @@ export const cascaderSuite: ConformanceSuite = {
               'column': columnsShown(2),
               // 第 1 列的名字改指展开它的那个条目
               'column[1]': { 'aria-labelledby': '@part(item[0])' },
-              'item[0]': { 'tabindex': '0', 'data-highlighted': '', 'data-active': '', 'aria-expanded': 'true' },
+              'item[0]': { 'tabindex': '0', 'data-highlighted': '', 'data-active': '' },
               'item[1]': { 'tabindex': '-1', 'data-highlighted': null, 'data-active': null },
               // jiangsu 的子节点 nanjing 不属于当前列，仍收着
               'item': itemsShown('zhejiang', 'jiangsu', 'taiwan', 'macau', 'hangzhou', 'ningbo', 'wenzhou'),
@@ -332,7 +334,7 @@ export const cascaderSuite: ConformanceSuite = {
               'column': columnsShown(3),
               'column[2]': { 'aria-labelledby': '@part(item[4])' },
               'item': itemsShown('zhejiang', 'jiangsu', 'taiwan', 'macau', 'hangzhou', 'ningbo', 'wenzhou', 'xihu', 'yuhang'),
-              'item[4]': { 'data-active': '', 'aria-expanded': 'true' },
+              'item[4]': { 'data-active': '' },
             },
             // changeOnSelect 关着，分支不落值也不发事件
             events: [],
@@ -346,8 +348,8 @@ export const cascaderSuite: ConformanceSuite = {
             parts: {
               'column': columnsShown(3),
               'item': itemsShown('zhejiang', 'jiangsu', 'taiwan', 'macau', 'hangzhou', 'ningbo', 'wenzhou', 'jiangbei'),
-              'item[4]': { 'data-active': null, 'aria-expanded': 'false' },
-              'item[5]': { 'data-active': '', 'aria-expanded': 'true' },
+              'item[4]': { 'data-active': null },
+              'item[5]': { 'data-active': '' },
             },
             events: [],
           },

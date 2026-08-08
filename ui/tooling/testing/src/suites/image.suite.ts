@@ -90,7 +90,8 @@ export const imageSuite: ConformanceSuite = {
     {
       name: '图片就绪：image 显出、fallback 收起',
       spec: { apg: APG, zag: 'image.machine#loading' },
-      props: { src: SRC },
+      // 图显出来了就得有替代文本，alt 由作者给
+      props: { src: SRC, alt: '一张示例图' },
       steps: [
         {
           kind: 'raw',
@@ -128,7 +129,7 @@ export const imageSuite: ConformanceSuite = {
     {
       name: 'status-change：来源决议后先通知 loading，图片就绪再通知 loaded',
       spec: { zag: 'image.machine#invokeLoading' },
-      props: { src: SRC },
+      props: { src: SRC, alt: '一张示例图' },
       initial: {
         events: [{ type: 'status-change', detail: { status: 'loading' } }],
       },

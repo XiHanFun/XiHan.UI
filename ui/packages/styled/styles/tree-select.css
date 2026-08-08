@@ -25,7 +25,7 @@
 
   /* 整个控件禁用会把 data-disabled 一路打到 label / value-text / indicator 上，各处观感保持一致 */
   [data-scope='tree-select'][data-part='label'][data-disabled] {
-    color: var(--xh-fg-disabled);
+    color: var(--xh-fg-subtle);
   }
 
   /* 画成一个框的就是 trigger 自己（不像 combobox 那样另有 control）：

@@ -25,7 +25,7 @@
   }
 
   [data-scope='date-picker'][data-part='label'][data-disabled] {
-    color: var(--xh-date-picker-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-date-picker-label-fg-disabled, var(--xh-fg-subtle));
     cursor: not-allowed;
   }
 

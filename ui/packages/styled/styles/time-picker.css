@@ -22,7 +22,7 @@
   }
 
   [data-scope='time-picker'][data-part='label'][data-disabled] {
-    color: var(--xh-time-picker-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-time-picker-label-fg-disabled, var(--xh-fg-subtle));
     cursor: not-allowed;
   }
 
@@ -291,6 +291,13 @@
     background: var(--xh-time-picker-option-bg-checked, var(--xh-bg-brand));
     color: var(--xh-time-picker-option-fg-checked, var(--xh-fg-on-brand));
     font-weight: var(--xh-time-picker-option-weight-checked, var(--xh-font-weight-medium));
+  }
+
+  /* 选中格上再落焦点或悬停时，底色留在品牌色一侧：上面那条中性高亮的选择器更具体，
+     不写这条就只有底色被换走、文字仍是品牌底上的反白色 */
+  [data-scope='time-picker'][data-part='option'][data-state='checked'][data-highlighted]:not([data-disabled]),
+  [data-scope='time-picker'][data-part='option'][data-state='checked']:hover:not([data-disabled]) {
+    background: var(--xh-time-picker-option-bg-checked-highlight, var(--xh-bg-brand-hover));
   }
 
   [data-scope='time-picker'][data-part='option']:focus-visible {

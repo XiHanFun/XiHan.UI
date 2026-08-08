@@ -49,8 +49,8 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart week-day - role=columnheader 列头，须自带 value 属性标明列序 0-6
  * @csspart grid-body - role=rowgroup 日期组
  * @csspart week-row - role=row 周行，表头与日期行共用
- * @csspart cell - role=gridcell 日期格，须自带 value 属性（ISO 串）标明是哪一天
- * @csspart cell-trigger - 可点可聚焦层，承载 aria-selected/aria-disabled 与 roving tabindex
+ * @csspart cell - role=gridcell 日期格，承载 aria-selected；须自带 value 属性（ISO 串）标明是哪一天
+ * @csspart cell-trigger - 可点可聚焦层，承载 aria-disabled 与 roving tabindex
  */
 export class XhCalendarElement extends XhElement {
   static override partContract = { anatomy: calendarAnatomy, meta: calendarMeta }

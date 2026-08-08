@@ -55,7 +55,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
     part: 'root',
     children: [
       { part: 'label', text: '配料' },
-      { part: 'trigger' },
+      { part: 'trigger', text: '全选' },
       {
         part: 'item',
         attrs: { value: 'a' },
@@ -126,6 +126,9 @@ export const checkboxGroupSuite: ConformanceSuite = {
           },
           'trigger': {
             'role': 'checkbox',
+            // 名字两段：组标题在前，全选格自己的文本在后（自指）
+            'id': '@self',
+            'aria-labelledby': '@part(label) @part(trigger)',
             'aria-checked': 'false',
             'aria-disabled': 'false',
             'aria-readonly': 'false',

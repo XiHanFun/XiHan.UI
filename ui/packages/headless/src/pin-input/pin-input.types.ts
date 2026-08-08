@@ -4,6 +4,12 @@ import type { MachineSchema } from '@xihan-ui/machine'
 /** 每格接受的字符类别：决定字符过滤规则与移动端键盘类型。 */
 export type PinInputType = 'numeric' | 'alphanumeric' | 'alphabetic'
 
+/** 读屏用的文案，默认英文。 */
+export interface PinInputTranslations {
+  /** 单格的可及名，入参是 1 基格号与总格数。 */
+  input: (index: number, length: number) => string
+}
+
 export interface PinInputValueChangeDetails {
   /** 逐格的值。长度恒等于 length，未填的格子是空串，每格至多一个字符。 */
   value: string[]
@@ -42,6 +48,7 @@ export interface PinInputSchema extends MachineSchema {
     blurOnComplete?: boolean
     /** 表单字段名；给了隐藏输入才带 name，整串值随表单一并提交。 */
     name?: string
+    translations?: Partial<PinInputTranslations>
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: PinInputValueChangeDetails) => void
     /** 每格都填满的那一刻触发；值没真变时不重复触发。 */

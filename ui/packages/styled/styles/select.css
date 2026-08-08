@@ -15,7 +15,7 @@
   }
 
   [data-scope='select'][data-part='label'][data-disabled] {
-    color: var(--xh-fg-disabled);
+    color: var(--xh-fg-subtle);
   }
 
   [data-scope='select'][data-part='trigger'] {

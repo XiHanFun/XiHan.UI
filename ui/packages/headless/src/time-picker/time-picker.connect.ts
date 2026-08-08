@@ -254,10 +254,8 @@ export function connectTimePicker<T extends PropTypes>(
       // 几段合起来才是一个控件，靠 group 兜住，名字由 label 提供
       'role': 'group',
       'aria-labelledby': ids.label,
-      // 四个 aria 布尔显式写 true/false：省略是没说，显式 false 是明确说了不是
+      // group 只支持全局属性，只读与必填不在其列，那两位由各段自己报
       'aria-disabled': disabled ? 'true' : 'false',
-      'aria-readonly': readOnly ? 'true' : 'false',
-      'aria-required': required ? 'true' : 'false',
       'aria-invalid': flagged ? 'true' : 'false',
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
@@ -286,6 +284,7 @@ export function connectTimePicker<T extends PropTypes>(
         'aria-valuetext': segmentTextOf(segment),
         'aria-disabled': disabled ? 'true' : 'false',
         'aria-readonly': readOnly ? 'true' : 'false',
+        'aria-required': required ? 'true' : 'false',
         'aria-invalid': flagged ? 'true' : 'false',
         'data-placeholder': dataAttr(num == null),
         'data-focus': dataAttr(focusedSegment === segment),

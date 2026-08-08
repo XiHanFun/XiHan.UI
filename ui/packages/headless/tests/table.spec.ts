@@ -571,9 +571,9 @@ describe('tableMachine 排序 / 选择 / 展开', () => {
 })
 
 describe('connectTable 属性输出', () => {
-  it('root 是 role=grid，行列总数与多选声明都显式给出', () => {
+  it('root 是 role=treegrid，行列总数与多选声明都显式给出', () => {
     const h = mount({ selectionMode: 'multiple' })
-    expect(h.root.getAttribute('role')).toBe('grid')
+    expect(h.root.getAttribute('role')).toBe('treegrid')
     // 表头 1 行 + 四个数据行；脚注没声明就不算
     expect(h.root.getAttribute('aria-rowcount')).toBe('5')
     expect(h.root.getAttribute('aria-colcount')).toBe('3')
@@ -581,6 +581,40 @@ describe('connectTable 属性输出', () => {
     expect(h.root.getAttribute('aria-busy')).toBe('false')
     expect(h.root.getAttribute('aria-labelledby')).toBe(h.caption.id)
     expect(mount().root.getAttribute('aria-multiselectable')).toBe('false')
+  })
+
+  it('一行都展不开时 root 退回 role=grid，也不报层级', () => {
+    const h = mount({ rows: [{ id: 'a' }, { id: 'b' }] })
+    expect(h.root.getAttribute('role')).toBe('grid')
+    expect(h.row('a').row.hasAttribute('aria-level')).toBe(false)
+    expect(h.row('a').row.hasAttribute('aria-posinset')).toBe(false)
+    expect(h.row('a').row.hasAttribute('aria-setsize')).toBe(false)
+  })
+
+  it('treegrid 的层级逐行报出：数据行第一层，详情行是它的下一层', () => {
+    const h = mount()
+    const a = h.row('a')
+    expect(a.row.getAttribute('aria-level')).toBe('1')
+    expect(a.row.getAttribute('aria-posinset')).toBe('1')
+    expect(a.row.getAttribute('aria-setsize')).toBe('4')
+    expect(h.row('d').row.getAttribute('aria-posinset')).toBe('4')
+    expect(a.expandedRow.getAttribute('aria-level')).toBe('2')
+    expect(a.expandedRow.getAttribute('aria-posinset')).toBe('1')
+    expect(a.expandedRow.getAttribute('aria-setsize')).toBe('1')
+    // 层级不写在表头行与脚注行上
+    expect(h.headerRow.hasAttribute('aria-level')).toBe(false)
+    expect(h.footerRow.hasAttribute('aria-level')).toBe(false)
+  })
+
+  it('单元格跨列数只在真跨列时报，1 与省略同义', () => {
+    const h = mount()
+    const el = document.createElement('div')
+    spread(el, h.api().getCellProps({ value: 'name' }) as Record<string, unknown>)
+    expect(el.hasAttribute('aria-colspan')).toBe(false)
+    spread(el, h.api().getCellProps({ value: 'name', colSpan: 1 }) as Record<string, unknown>)
+    expect(el.hasAttribute('aria-colspan')).toBe(false)
+    spread(el, h.api().getCellProps({ value: 'name', colSpan: 3 }) as Record<string, unknown>)
+    expect(el.getAttribute('aria-colspan')).toBe('3')
   })
 
   it('脚注声明后进行号空间：总数多一行，脚注行号排在最后', () => {

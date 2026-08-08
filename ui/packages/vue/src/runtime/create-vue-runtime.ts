@@ -47,7 +47,8 @@ export function createVueRuntime(): ReactiveRuntime {
       watch(deps, fn, { flush: 'pre' })
     },
     flush(fn) {
-      void nextTick(fn)
+      // 先让出一次微任务，等这次转移把渲染排上队，再等那一轮渲染跑完才回调
+      void nextTick(() => nextTick(fn))
     },
     onMount(fn) {
       if (getCurrentInstance())
