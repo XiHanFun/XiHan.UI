@@ -26,7 +26,8 @@
 | `@xihan-ui/ai` | AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store（零 DOM、零框架） |
 | `@xihan-ui/highlight` | 代码着色，自研粗粒度词法器，无第三方运行时依赖 |
 | `@xihan-ui/markdown` | 流式 Markdown 渲染内核：增量切块 + 稳定 key + 消毒（CommonMark 子集，一致率 489/652） |
-| `@xihan-ui/icons` | 图标集 |
+| `@xihan-ui/visual` | 视觉层：WebGL2 背景效果与数据驱动的粒子云，框架无关 |
+| `@xihan-ui/icons` | 首方图标集：`IconRecord` 结构化记录，渲染端逐节点建元素，运行期不解析 SVG 字符串 |
 
 `tooling/*` 放构建、lint、tsconfig、测试与脚本等内部包，不对外发布。
 

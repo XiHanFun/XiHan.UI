@@ -26,7 +26,8 @@ Framework-agnostic component library. State machines and accessibility live in a
 | `@xihan-ui/ai` | AI protocol core: SSE reading → protocol normalization → parts reduction → thread store (no DOM, no framework) |
 | `@xihan-ui/highlight` | Code highlighting — self-implemented coarse tokenizer, no third-party runtime dependency |
 | `@xihan-ui/markdown` | Streaming markdown renderer: incremental block splitting, stable keys, sanitization (CommonMark subset, 489/652) |
-| `@xihan-ui/icons` | Icon set |
+| `@xihan-ui/visual` | Visual layer: WebGL2 background effects and data-driven particle clouds, framework agnostic |
+| `@xihan-ui/icons` | First-party icon set: structured `IconRecord` data, rendered node by node, no runtime SVG string parsing |
 
 `tooling/*` holds internal build, lint, tsconfig, testing and script packages; they are never published.
 

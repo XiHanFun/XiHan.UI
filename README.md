@@ -4,7 +4,7 @@
 
 <p><b>快速、轻量、高效、用心的跨框架组件库</b></p>
 
-<p>无头内核 + Vue / Web Components 双适配器 · 69 个组件 · 13 个 workspace 包 · TypeScript Monorepo</p>
+<p>无头内核 + Vue / Web Components 双适配器 · 69 个组件 · 14 个 workspace 包 · TypeScript Monorepo</p>
 
 <p>
   <a href="https://github.com/XiHanFun/XiHan.UI/stargazers"><img alt="GitHub Stars" src="https://img.shields.io/github/stars/XiHanFun/XiHan.UI?style=flat-square&logo=github&label=Stars&color=1f6feb" /></a>
@@ -87,11 +87,11 @@ XiHan.UI 是面向跨框架场景的组件库：一个组件的状态、交互�
 │  styled   (默认皮肤，纯 CSS，不依赖任何 JS 包)                  │
 ├─────────────────────────────────────────────────────────────────┤
 │                        2. 能力层                                │
-│  behavior   position   highlight   ai   markdown                │
+│  behavior  position  highlight  ai  markdown  visual            │
 ├─────────────────────────────────────────────────────────────────┤
 │                        1. 基础层                                │
 │  core (结构原语与端口契约)      machine (FSM 运行时)            │
-│  system (设计令牌与主题运行时)  icons                           │
+│  system (设计令牌与主题运行时)  icons (首方图标集)              │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -111,7 +111,7 @@ XiHan.UI 是面向跨框架场景的组件库：一个组件的状态、交互�
 | `core` | 结构原语：anatomy、`mergeProps`、`normalizeProps`、Scope、context、id 生成；以及浮层定位、虚拟滚动、代码着色三个端口的类型契约 |
 | `machine` | 自研薄 FSM 运行时：`createMachine`、解释器契约、受控值绑定、效应生命周期 |
 | `system` | 设计令牌产物（DTCG 源 → CSS / JSON / TS 三种形态）与主题运行时（明暗 / 品牌 / 密度 / 对比度 / 书写方向） |
-| `icons` | 图标集（冻结中，不进构建图） |
+| `icons` | 首方图标集：`IconRecord` 结构化记录，渲染端逐节点建元素，运行期不解析 SVG 字符串 |
 
 ### 能力层
 
@@ -122,6 +122,7 @@ XiHan.UI 是面向跨框架场景的组件库：一个组件的状态、交互�
 | `highlight` | 代码着色实现：单趟扫描的粗粒度词法器，十来种语言。自研，零第三方 |
 | `ai` | AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store。零 DOM、零框架 |
 | `markdown` | 流式 Markdown 渲染内核：增量切块 + 稳定 key + 消毒。CommonMark 子集，一致率 489/652 |
+| `visual` | 视觉层：WebGL2 背景效果与数据驱动的粒子云，框架无关 |
 
 ### 组件与适配器
 
@@ -234,7 +235,7 @@ pnpm size         # 体积棘轮：先构建，再核对 .size-limit.json 里的
 ```text
 XiHan.UI/
 ├── ui/
-│   ├── packages/                    # 对外发布的库包（13 个）
+│   ├── packages/                    # 对外发布的库包（14 个）
 │   │   ├── core/                    #   结构原语与端口契约
 │   │   ├── machine/                 #   FSM 运行时
 │   │   ├── system/                  #   设计令牌与主题运行时
@@ -243,11 +244,12 @@ XiHan.UI/
 │   │   ├── highlight/               #   代码着色（自研）
 │   │   ├── ai/                      #   AI 协议内核
 │   │   ├── markdown/                #   流式 Markdown 内核（自研）
+│   │   ├── visual/                  #   WebGL2 视觉层
 │   │   ├── headless/                #   69 个组件的无头实现
 │   │   ├── styled/                  #   默认皮肤
 │   │   ├── vue/                     #   Vue 适配器
 │   │   ├── wc/                      #   Web Components 适配器
-│   │   └── icons/                   #   图标集（冻结）
+│   │   └── icons/                   #   首方图标集
 │   ├── tooling/                     # 内部工具，不发布
 │   │   ├── build/                   #   tsdown 统一配置
 │   │   ├── eslint-config/           #   lint 配置与分层拓扑事实源
@@ -270,9 +272,10 @@ core (零依赖)
   ├── position     (端口在 core，实现在此)
   ├── highlight    (端口在 core，实现在此)
   ├── ai
-  └── markdown
+  ├── markdown
+  └── visual       (另依赖 behavior)
 system (零依赖)
-icons  (冻结)
+icons  (零依赖，纯数据)
 
 headless  ── core / machine / behavior / system
 styled    ── 零 JS 依赖，纯 CSS

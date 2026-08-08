@@ -37,11 +37,14 @@ labels: bug
 
 ## 影响范围
 
-<!-- 组件 components / 主题 themes / hooks / 指令 directives / 图标 icons / 国际化 locales / 工具 utils / 插件 plugins / 脚手架 cli / 构建 / 文档 -->
+<!-- 结构原语 core / 状态机 machine / 设计令牌与主题 system / 交互行为 behavior / 浮层定位 position /
+     代码着色 highlight / 流式 Markdown markdown / AI 协议内核 ai / 视觉效果 visual /
+     无头组件内核 headless / 默认皮肤 styled / Vue 适配器 vue / Web Components 适配器 wc / 图标 icons /
+     构建工程 tooling / 演示应用 playground-* / 文档 -->
 
 ## 相关组件 / 包名
 
-<!-- 如 @xihan-ui/components 的 XButton -->
+<!-- 如 @xihan-ui/vue 的 XhButton -->
 
 ## 版本
 

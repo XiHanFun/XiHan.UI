@@ -26,8 +26,9 @@
 
 ## 影响范围
 
-<!-- 包 / 领域：components / themes / hooks / directives / icons / locales / utils / plugins / cli / 构建 / 文档 -->
-<!-- 相关组件 / 包名：如 @xihan-ui/components 的 XButton -->
+<!-- 包 / 领域：core / machine / system / behavior / position / highlight / markdown / ai / visual /
+     headless / styled / vue / wc / icons / tooling（构建工程）/ playground-*（演示应用）/ 文档 -->
+<!-- 相关组件 / 包名：如 @xihan-ui/vue 的 XhButton -->
 
 ## 自测清单
 
