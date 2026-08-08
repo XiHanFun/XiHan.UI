@@ -1,0 +1,9 @@
+{
+  "extends": "@xihan-ui/tsconfig/lib.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "allowJs": true,
+    "noEmit": true
+  },
+  "include": ["build/**/*.mjs", "tests/**/*.ts"]
+}

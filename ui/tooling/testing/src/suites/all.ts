@@ -28,6 +28,7 @@ import { fieldSuite } from './field.suite'
 import { fileUploadSuite } from './file-upload.suite'
 import { formSuite } from './form.suite'
 import { hoverCardSuite } from './hover-card.suite'
+import { iconSuite } from './icon.suite'
 import { imageSuite } from './image.suite'
 import { listboxSuite } from './listbox.suite'
 import { loadingBarSuite } from './loading-bar.suite'
@@ -106,6 +107,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   fileUploadSuite,
   formSuite,
   hoverCardSuite,
+  iconSuite,
   imageSuite,
   listboxSuite,
   loadingBarSuite,

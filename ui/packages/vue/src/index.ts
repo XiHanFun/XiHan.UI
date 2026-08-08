@@ -277,6 +277,9 @@ export {
 } from './components/hover-card/hover-card'
 export { useHoverCard } from './components/hover-card/use-hover-card'
 export type { HoverCardContext } from './components/hover-card/use-hover-card'
+export { XhIcon } from './components/icon/icon'
+export { useIcon } from './components/icon/use-icon'
+export type { IconContext } from './components/icon/use-icon'
 export {
   XhImageFallback,
   XhImageImage,

@@ -41,9 +41,7 @@ module.exports = {
       name: 'no-unresolvable',
       severity: 'error',
       comment: '解析不出来的 import。最常见的成因正是"伸手够了邻层却没在 package.json 里声明依赖"',
-      // icons 是冻结的遗留包：不进构建图、不发布，源码里还引着早已删除的 @xihan-ui/utils
-      // 与一批没声明的第三方。它重建之前放它一马，否则这条规则天天红，红久了就没人看了
-      from: { path: '^packages/', pathNot: '^packages/icons/' },
+      from: { path: '^packages/' },
       to: { couldNotResolve: true },
     },
     {
@@ -58,8 +56,7 @@ module.exports = {
       severity: 'error',
       comment: '库包的运行时代码不得引第三方；确需保留的登记进 RUNTIME_DEP_ALLOWLIST 与 check-runtime-deps.mjs',
       // 只管 src，与分层规则同一道理：测试要引 vitest 与 jsdom，那是工具不是产物。
-      // icons 是冻结的遗留包，见 no-unresolvable 里的同款豁免
-      from: { path: '^packages/[^/]+/src/', pathNot: '^packages/icons/' },
+      from: { path: '^packages/[^/]+/src/' },
       to: {
         // 只咬会随包发出去的与压根没声明的。peer 不算：适配器引宿主框架正是它的契约。
         dependencyTypes: ['npm', 'npm-optional', 'npm-bundled', 'npm-no-pkg', 'npm-unknown'],

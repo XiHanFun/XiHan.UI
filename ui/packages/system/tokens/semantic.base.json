@@ -12,6 +12,15 @@
     "action-size": { "$type": "dimension", "$value": "1.5rem" },
     "indicator-size": { "$type": "dimension", "$value": "1rem" }
   },
+  "glyph": {
+    "size-sm": { "$type": "dimension", "$value": "1rem" },
+    "size-md": { "$type": "dimension", "$value": "1.25rem" },
+    "size-lg": { "$type": "dimension", "$value": "1.5rem" },
+    "stroke-light": { "$type": "dimension", "$value": "1.5px" },
+    "stroke-regular": { "$type": "dimension", "$value": "2px" },
+    "stroke-bold": { "$type": "dimension", "$value": "2.5px" },
+    "baseline-shift": { "$type": "dimension", "$value": "-0.125em" }
+  },
   "field": {
     "py": { "$type": "dimension", "$value": "{space.2}" }
   },

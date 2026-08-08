@@ -60,6 +60,8 @@ export { connectForm, firstFormErrorName, focusFormField, FORM_DEFAULT_VALIDATE_
 export type { FormApi, FormErrorPatch, FormErrors, FormErrorsChangeDetails, FormErrorSummaryItemProps, FormFieldGroupProps, FormInvalidDetails, FormRefs, FormSchema, FormSubmitDetails, FormValidateOn, FormValues, FormValuesChangeDetails } from './form'
 export { connectHoverCard, hoverCardAnatomy, hoverCardKeyboard, hoverCardMachine, hoverCardMeta } from './hover-card'
 export type { HoverCardApi, HoverCardOpenChangeDetails, HoverCardRefs, HoverCardSchema } from './hover-card'
+export { connectIcon, iconAnatomy, iconKeyboard, iconMeta } from './icon'
+export type { IconApi, IconProps, IconSize, IconWeight } from './icon'
 export { connectImage, imageAnatomy, imageKeyboard, imageMachine, imageMeta, resolveFallbackDelay } from './image'
 export type { ImageApi, ImageSchema, ImageStatus, ImageStatusChangeDetails } from './image'
 export { connectListbox, listboxAnatomy, listboxItemQuery, listboxItemText, listboxKeyboard, listboxMachine, listboxMeta, listboxSelectionMode } from './listbox'

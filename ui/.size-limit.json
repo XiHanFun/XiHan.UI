@@ -15,5 +15,6 @@
   { "name": "wc", "path": "packages/wc/dist/index.js", "gzip": true, "limit": "6.4 kB" },
   { "name": "wc/define", "path": "packages/wc/dist/define.js", "gzip": true, "limit": "149 kB" },
   { "name": "wc/visual", "path": "packages/wc/dist/visual.js", "gzip": true, "limit": "19 kB" },
-  { "name": "styled", "path": "packages/styled/styles/*.css", "gzip": true, "limit": "63 kB" }
+  { "name": "styled", "path": "packages/styled/styles/*.css", "gzip": true, "limit": "63 kB" },
+  { "name": "icons", "path": "packages/icons/dist/index.mjs", "gzip": true, "limit": "1.4 kB" }
 ]

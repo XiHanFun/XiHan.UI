@@ -1,0 +1,5 @@
+export { iconAnatomy } from './icon.anatomy'
+export { connectIcon } from './icon.connect'
+export { iconKeyboard } from './icon.keyboard'
+export { iconMeta } from './icon.meta'
+export type { IconApi, IconProps, IconSize, IconWeight } from './icon.types'
