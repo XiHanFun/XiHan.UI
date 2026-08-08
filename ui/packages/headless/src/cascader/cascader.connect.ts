@@ -407,8 +407,12 @@ export function connectCascader<T extends PropTypes>(
         'aria-selected': isSelected(item.value) ? 'true' : 'false',
         // 集合条目用 aria-disabled 而非原生 disabled，禁用条目仍要能当方向键的起点
         'aria-disabled': meta && isDisabled(meta) ? 'true' : 'false',
-        // 只有分支报展开态
-        'aria-expanded': meta?.branch ? (isActive(item.value) ? 'true' : 'false') : undefined,
+        // 分支报「激活它会露出一个列表框」：子列是右边另起的一列，不长在条目里面，
+        // 因此走 aria-haspopup 而不是 aria-expanded（option 不收 aria-expanded）。
+        // 反向的那半边由子列的 aria-labelledby 指回本条目给出
+        'aria-haspopup': meta?.branch ? 'listbox' : undefined,
+        // 分支与否只驱动样式，不再进可及树
+        'data-branch': dataAttr(!!meta?.branch),
         // roving tabindex：整个浮层只有锚点条目留在 Tab 序列内
         'tabindex': focused ? 0 : -1,
         // 这一轮不属于任何一列，常挂在 DOM 里只收起不占位

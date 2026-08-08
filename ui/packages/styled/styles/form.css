@@ -47,7 +47,7 @@
     border: var(--xh-stroke-thin) solid var(--xh-form-summary-border, var(--xh-color-danger-500));
     border-radius: var(--xh-form-summary-radius, var(--xh-shape-surface));
     background: var(--xh-form-summary-bg, var(--xh-bg-surface));
-    color: var(--xh-form-summary-fg, var(--xh-color-danger-600));
+    color: var(--xh-form-summary-fg, var(--xh-fg-danger));
     font-size: var(--xh-form-summary-font-size, var(--xh-text-body-size));
     line-height: var(--xh-leading-normal);
     box-shadow: var(--xh-form-summary-shadow, var(--xh-elevation-1));
@@ -85,7 +85,7 @@
   }
 
   [data-scope='form'][data-part='error-summary-item']:hover {
-    color: var(--xh-form-summary-item-fg-hover, var(--xh-color-danger-500));
+    color: var(--xh-form-summary-item-fg-hover, var(--xh-fg-danger-hover));
   }
 
   [data-scope='form'][data-part='error-summary-item']:focus-visible {

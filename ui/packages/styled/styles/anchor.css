@@ -76,7 +76,7 @@
   /* 当前那一节：颜色与字重都跟着变，不只靠指示条——
      指示条是可选部件，作者不渲染它时"当前在哪"仍然要看得出来 */
   [data-scope='anchor'][data-part='link'][data-active] {
-    color: var(--xh-anchor-link-fg-active, var(--xh-color-brand-600));
+    color: var(--xh-anchor-link-fg-active, var(--xh-fg-brand));
     font-weight: var(--xh-anchor-link-font-weight-active, var(--xh-font-weight-medium));
   }
 
@@ -88,7 +88,7 @@
     inset-inline-start: calc(var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick)) * -1);
     inline-size: var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick));
     border-radius: var(--xh-anchor-indicator-radius, var(--xh-radius-full));
-    background: var(--xh-anchor-indicator-color, var(--xh-color-brand-600));
+    background: var(--xh-anchor-indicator-color, var(--xh-fg-brand));
     transition:
       inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
       block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);

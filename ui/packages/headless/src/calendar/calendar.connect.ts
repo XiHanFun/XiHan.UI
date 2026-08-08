@@ -278,7 +278,9 @@ export function connectCalendar<T extends PropTypes>(
         ...stateAttrs(state),
         [ITEM_VALUE_ATTR]: item.value,
         // 表格语义留在 cell 上；能点能聚焦的是它里面的 cell-trigger
-        role: 'gridcell',
+        'role': 'gridcell',
+        // aria-selected 是 gridcell 的属性，选中态标在这一层
+        'aria-selected': state.selected ? 'true' : 'false',
       })
     },
 
@@ -290,8 +292,7 @@ export function connectCalendar<T extends PropTypes>(
         // 导航与选中都以此为格子身份；翻月后靠它在活 DOM 里找回落点
         [ITEM_VALUE_ATTR]: item.value,
         'role': 'button',
-        // 选中与禁用标在 trigger 上，焦点落的是它
-        'aria-selected': state.selected ? 'true' : 'false',
+        // 禁用标在 trigger 上，焦点落的是它；选中态由外层 gridcell 报
         // 一律 aria-disabled 不用原生 disabled：不可用的日子仍要能当方向键起点
         'aria-disabled': state.disabled ? 'true' : 'false',
         // 补一句完整日期给读屏；解析不出日期时不写

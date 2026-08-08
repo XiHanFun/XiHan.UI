@@ -18,7 +18,7 @@
 
   /* 整组禁用会把 data-disabled 一路打到 label / content / item-group 上，各处观感保持一致 */
   [data-scope='listbox'][data-part='label'][data-disabled] {
-    color: var(--xh-fg-disabled);
+    color: var(--xh-fg-subtle);
   }
 
   /* 常驻列表不是浮层：容器留边框与底色，但不投影、不脱离文档流，

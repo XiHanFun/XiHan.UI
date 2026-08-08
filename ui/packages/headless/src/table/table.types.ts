@@ -62,7 +62,10 @@ export interface TableRowDef {
   id: string
   /** 行禁用：选不动也展不开，但仍可聚焦、仍是方向键的起点，也不算进全选基数。 */
   disabled?: boolean
-  /** 可展开：给了才报 aria-expanded，左右方向键与展开把手也才认这一行。 */
+  /**
+   * 可展开：给了才报 aria-expanded，左右方向键与展开把手也才认这一行。
+   * 只要有一行给了，root 就从 role=grid 换成 role=treegrid。
+   */
   expandable?: boolean
 }
 
@@ -109,6 +112,8 @@ export interface TableColumnProps {
 export interface TableCellProps {
   value: string
   row?: string
+  /** 跨列数，从 value 那一列往后算；详情行里那格整行铺开就靠它。1 与省略同义。 */
+  colSpan?: number
 }
 
 export interface TableSchema extends MachineSchema {

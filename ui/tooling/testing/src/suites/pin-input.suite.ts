@@ -97,6 +97,8 @@ export const pinInputSuite: ConformanceSuite = {
           'label': { for: '@part(input[0])' },
           'input': Array.from({ length: LENGTH }, (_, i) => ({
             'data-index': String(i),
+            // 每格自带名字：label 部件命名的是整组，读屏在单格上只能听到这一段
+            'aria-label': `Character ${i + 1} of ${LENGTH}`,
             'type': 'text',
             // 只收数字就只弹数字键盘
             'inputmode': 'numeric',
@@ -415,6 +417,18 @@ export const pinInputSuite: ConformanceSuite = {
           run: ({ doc }) => expectAttr(doc, 'input', 'placeholder', '·', '给了 placeholder 时'),
         },
       ],
+    },
+    {
+      name: 'translations：作者给的文案盖过内置文案，逐格生效',
+      spec: { apg: APG },
+      props: {
+        translations: { input: (index: number, count: number) => `第 ${index} 格，共 ${count} 格` },
+      },
+      initial: {
+        parts: {
+          input: Array.from({ length: LENGTH }, (_, i) => ({ 'aria-label': `第 ${i + 1} 格，共 ${LENGTH} 格` })),
+        },
+      },
     },
     {
       name: 'invalid：每格与 root 一并标注',

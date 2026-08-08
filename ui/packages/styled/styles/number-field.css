@@ -20,7 +20,7 @@
   }
 
   [data-scope='number-field'][data-part='label'][data-disabled] {
-    color: var(--xh-number-field-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-number-field-label-fg-disabled, var(--xh-fg-subtle));
   }
 
   [data-scope='number-field'][data-part='input'] {

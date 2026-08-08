@@ -1143,11 +1143,11 @@
               "name": "week-row"
             },
             {
-              "description": "role=gridcell 日期格，须自带 value 属性（ISO 串）标明是哪一天",
+              "description": "role=gridcell 日期格，承载 aria-selected；须自带 value 属性（ISO 串）标明是哪一天",
               "name": "cell"
             },
             {
-              "description": "可点可聚焦层，承载 aria-selected/aria-disabled 与 roving tabindex",
+              "description": "可点可聚焦层，承载 aria-disabled 与 roving tabindex",
               "name": "cell-trigger"
             }
           ],
@@ -5395,11 +5395,11 @@
               "name": "week-row"
             },
             {
-              "description": "role=gridcell 日期格，须自带 value 属性（ISO 串）",
+              "description": "role=gridcell 日期格，承载 aria-selected；须自带 value 属性（ISO 串）",
               "name": "cell"
             },
             {
-              "description": "真正可点可聚焦的那一层，承载 aria-selected 与 roving tabindex",
+              "description": "真正可点可聚焦的那一层，承载 aria-disabled 与 roving tabindex",
               "name": "cell-trigger"
             },
             {
@@ -11020,7 +11020,7 @@
               "name": "label"
             },
             {
-              "description": "一格一个的输入框，可自带 index 属性声明下标，缺省按文档序",
+              "description": "一格一个的输入框，可自带 index 属性声明下标，缺省按文档序；aria-label 由内置文案给出",
               "name": "input"
             },
             {
@@ -11136,6 +11136,14 @@
                 "text": "string | undefined"
               },
               "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<PinInputTranslations> | undefined"
+              }
             },
             {
               "kind": "field",
@@ -14515,7 +14523,7 @@
           "name": "XhTableElement",
           "cssParts": [
             {
-              "description": "role=grid 容器，报行列总数与多选声明",
+              "description": "role=grid 容器（rows 里有可展开的行时为 treegrid），报行列总数与多选声明",
               "name": "root"
             },
             {
@@ -14543,7 +14551,7 @@
               "name": "column-header"
             },
             {
-              "description": "role=gridcell，须自带 value 属性标识列身份",
+              "description": "role=gridcell，须自带 value 属性标识列身份；可写 colspan 属性声明跨列数",
               "name": "cell"
             },
             {
@@ -14563,7 +14571,7 @@
               "name": "expand-trigger"
             },
             {
-              "description": "role=row 详情行，须自带 value 属性与它所属的数据行配对；收起时 hidden",
+              "description": "role=row 详情行，须自带 value 属性与它所属的数据行配对，内部须放一个 cell 承载详情；收起时 hidden",
               "name": "expanded-row"
             },
             {
@@ -16378,7 +16386,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "必填标注",
+              "description": "必填标注，落到每段的 aria-required 上",
               "name": "required",
               "fieldName": "required"
             },
@@ -16894,7 +16902,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "必填标注",
+              "description": "必填标注，落到每段的 aria-required 上",
               "name": "required",
               "fieldName": "required"
             },

@@ -101,6 +101,16 @@ const TEXT_PAIRS: ReadonlyArray<[keyof typeof themes, string, string]> = [
   ['light', 'fg.subtle', 'bg.surface'],
   ['light', 'fg.subtle', 'bg.subtle'],
   ['light', 'fg.on-brand', 'bg.brand'],
+  ['light', 'fg.on-brand', 'bg.brand-hover'],
+  ['light', 'fg.brand', 'bg.canvas'],
+  ['light', 'fg.brand', 'bg.surface'],
+  ['light', 'fg.success', 'bg.canvas'],
+  ['light', 'fg.success', 'bg.surface'],
+  ['light', 'fg.danger', 'bg.canvas'],
+  ['light', 'fg.danger', 'bg.surface'],
+  ['light', 'fg.danger-hover', 'bg.canvas'],
+  ['light', 'fg.danger-hover', 'bg.subtle-hover'],
+  ['light', 'fg.default', 'bg.brand-subtle'],
   ['dark', 'fg.default', 'bg.canvas'],
   ['dark', 'fg.default', 'bg.surface'],
   ['dark', 'fg.default', 'bg.subtle'],
@@ -111,6 +121,26 @@ const TEXT_PAIRS: ReadonlyArray<[keyof typeof themes, string, string]> = [
   ['dark', 'fg.subtle', 'bg.surface'],
   ['dark', 'fg.subtle', 'bg.subtle'],
   ['dark', 'fg.on-brand', 'bg.brand'],
+  ['dark', 'fg.on-brand', 'bg.brand-hover'],
+  ['dark', 'fg.brand', 'bg.canvas'],
+  ['dark', 'fg.brand', 'bg.surface'],
+  ['dark', 'fg.success', 'bg.canvas'],
+  ['dark', 'fg.success', 'bg.surface'],
+  ['dark', 'fg.danger', 'bg.canvas'],
+  ['dark', 'fg.danger', 'bg.surface'],
+  ['dark', 'fg.danger-hover', 'bg.canvas'],
+  ['dark', 'fg.danger-hover', 'bg.surface'],
+  ['dark', 'fg.default', 'bg.brand-subtle'],
+]
+
+// fg.subtle 是"控件之外的说明文字"（label / description）在禁用态用的那一档：
+// 它不在 1.4.3 的失效控件豁免里，必须自己达标。
+const OUTSIDE_CONTROL_PAIRS: ReadonlyArray<[keyof typeof themes, string, string]> = [
+  ['light', 'fg.subtle', 'bg.canvas'],
+  ['light', 'fg.subtle', 'bg.subtle'],
+  ['dark', 'fg.subtle', 'bg.canvas'],
+  ['dark', 'fg.subtle', 'bg.surface'],
+  ['dark', 'fg.subtle', 'bg.surface-raised'],
 ]
 
 // 控件边界，WCAG 1.4.11 要求 3:1。当前一条都不达标，先按棘轮钉住不许更差；
@@ -128,6 +158,14 @@ const BORDER_RATCHET: ReadonlyArray<[keyof typeof themes, string, string, number
 
 describe('文字对比度（WCAG 1.4.3 AA，4.5:1）', () => {
   for (const [theme, fg, bg] of TEXT_PAIRS) {
+    it(`${theme} ${fg} / ${bg}`, () => {
+      expect(round(contrast(theme, fg, bg))).toBeGreaterThanOrEqual(4.5)
+    })
+  }
+})
+
+describe('控件之外的说明文字（WCAG 1.4.3 AA，4.5:1）', () => {
+  for (const [theme, fg, bg] of OUTSIDE_CONTROL_PAIRS) {
     it(`${theme} ${fg} / ${bg}`, () => {
       expect(round(contrast(theme, fg, bg))).toBeGreaterThanOrEqual(4.5)
     })

@@ -49,8 +49,13 @@ function dataRow(value: string): FixtureNode {
   }
 }
 
+// 详情行也是一条 row，行里必须有格子；这一格从第一列起铺满三列
 function detailRow(value: string): FixtureNode {
-  return { part: 'expanded-row', attrs: { value }, text: `${value} 详情` }
+  return {
+    part: 'expanded-row',
+    attrs: { value },
+    children: [{ part: 'cell', attrs: { value: 'select', colspan: '3' }, text: `${value} 详情` }],
+  }
 }
 
 function columnHeader(value: string, text: string): FixtureNode {
@@ -63,7 +68,7 @@ function columnHeader(value: string, text: string): FixtureNode {
 
 // 文档序下标：
 // row      = [表头, a, b, c, d, 脚注]
-// cell     = [a×3, b×3, c×3, d×3, 脚注×3]
+// cell     = [a×3, a 详情×1, b×3, c×3, c 详情×1, d×3, d 详情×1, 脚注×3]
 // 其余集合 = column-header [select, name, size]、sort-trigger [name, size]、
 //            expand-trigger / row-select-trigger [a, b, c, d]、expanded-row [a, c, d]
 const FIXTURE: FixtureNode = {
@@ -197,7 +202,7 @@ export const tableSuite: ConformanceSuite = {
   fixture: FIXTURE,
   cases: [
     {
-      name: '初始：root 是 role=grid，行列总数与行号列号都取自 rows/columns',
+      name: '初始：有可展开的行时 root 是 role=treegrid，行列总数与行号列号都取自 rows/columns',
       spec: { apg: `${APG}#roles_states_properties` },
       props: props(),
       initial: {
@@ -209,7 +214,8 @@ export const tableSuite: ConformanceSuite = {
           'footer': 1,
           'row': 6,
           'column-header': 3,
-          'cell': 15,
+          // 四行数据 ×3 + 三条详情行各 1 格 + 脚注 ×3
+          'cell': 18,
           'select-all-trigger': 1,
           'row-select-trigger': 4,
           'sort-trigger': 2,
@@ -220,7 +226,8 @@ export const tableSuite: ConformanceSuite = {
         },
         parts: {
           'root': {
-            'role': 'grid',
+            // a/c/d 可展开：整张表是 treegrid
+            'role': 'treegrid',
             'aria-labelledby': '@part(caption)',
             // 表头 1 行 + 四个数据行 + 脚注 1 行
             'aria-rowcount': '6',
@@ -248,6 +255,9 @@ export const tableSuite: ConformanceSuite = {
             'data-value': null,
             'data-section': 'header',
             'aria-selected': null,
+            // 层级只报给数据行，表头行不在那棵树里
+            'aria-level': null,
+            'aria-posinset': null,
           },
           'row[1]': {
             'role': 'row',
@@ -261,6 +271,10 @@ export const tableSuite: ConformanceSuite = {
             'aria-disabled': 'false',
             'tabindex': '-1',
             'data-state': 'closed',
+            // 数据行都在第一层，序号按四行数据算
+            'aria-level': '1',
+            'aria-posinset': '1',
+            'aria-setsize': '4',
             // 集合条目不输出原生 disabled
             'disabled': null,
           },
@@ -279,7 +293,7 @@ export const tableSuite: ConformanceSuite = {
             'data-disabled': '',
             'disabled': null,
           },
-          'row[4]': { 'aria-rowindex': '5', 'data-value': 'd' },
+          'row[4]': { 'aria-rowindex': '5', 'data-value': 'd', 'aria-posinset': '4', 'aria-setsize': '4' },
           // 脚注排在行号空间的最后一行
           'row[5]': { 'aria-rowindex': '6', 'data-section': 'footer', 'data-value': null },
           'column-header[0]': {
@@ -300,11 +314,13 @@ export const tableSuite: ConformanceSuite = {
             'data-sticky': '',
           },
           'column-header[2]': { 'aria-colindex': '3', 'data-value': 'size', 'aria-sort': 'none' },
-          'cell[0]': { 'role': 'gridcell', 'aria-colindex': '1', 'data-sticky': null },
+          'cell[0]': { 'role': 'gridcell', 'aria-colindex': '1', 'data-sticky': null, 'aria-colspan': null },
           'cell[1]': { 'aria-colindex': '2', 'data-sticky': '' },
           'cell[2]': { 'aria-colindex': '3' },
+          // 详情行那一格从第一列起铺满三列
+          'cell[3]': { 'aria-colindex': '1', 'aria-colspan': '3' },
           // 脚注的格子不属于任何数据行，没有选中/禁用可言
-          'cell[12]': { 'aria-colindex': '1', 'data-selected': null, 'data-disabled': null },
+          'cell[15]': { 'aria-colindex': '1', 'data-selected': null, 'data-disabled': null },
           'select-all-trigger': {
             'role': 'checkbox',
             'aria-checked': 'false',
@@ -318,7 +334,16 @@ export const tableSuite: ConformanceSuite = {
           'expand-trigger[0]': { 'aria-hidden': 'true', 'tabindex': '-1' },
           'sort-trigger[0]': { 'role': 'button', 'tabindex': '0', 'aria-disabled': 'false' },
           'expanded-row': detailsShown(),
-          'expanded-row[0]': { 'role': 'row', 'id': '@self', 'aria-rowindex': null, 'data-state': 'closed' },
+          // 详情行是所属数据行的下一层，那一层只有它自己
+          'expanded-row[0]': {
+            'role': 'row',
+            'id': '@self',
+            'aria-rowindex': null,
+            'data-state': 'closed',
+            'aria-level': '2',
+            'aria-posinset': '1',
+            'aria-setsize': '1',
+          },
           // 表体有数据：两个状态节点都收着
           'empty-state': { hidden: '' },
           'loading-state': { hidden: '' },
@@ -677,7 +702,8 @@ export const tableSuite: ConformanceSuite = {
       props: props({ rows: [] }),
       initial: {
         parts: {
-          'root': { 'data-empty': '', 'aria-busy': 'false', 'aria-rowcount': '2' },
+          // 一行都没有，也就没有可展开的行：平表格报 grid
+          'root': { 'role': 'grid', 'data-empty': '', 'aria-busy': 'false', 'aria-rowcount': '2' },
           'body': { 'data-empty': '' },
           'empty-state': { hidden: null },
           'loading-state': { hidden: '' },
@@ -700,7 +726,8 @@ export const tableSuite: ConformanceSuite = {
           props: { rows: ROWS },
           expect: {
             parts: {
-              'root': { 'data-empty': null, 'aria-busy': 'true' },
+              // 装进可展开的行，角色跟着换
+              'root': { 'role': 'treegrid', 'data-empty': null, 'aria-busy': 'true' },
               'empty-state': { hidden: '' },
               'loading-state': { hidden: '' },
             },

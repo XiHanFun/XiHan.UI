@@ -110,8 +110,8 @@
 
   /* 复制成功那一段换成成功色，撑住"这次真的写进去了"这句话 */
   [data-scope='clipboard'][data-part='trigger'][data-copied] {
-    border-color: var(--xh-clipboard-trigger-border-copied, var(--xh-color-success-600));
-    color: var(--xh-clipboard-trigger-fg-copied, var(--xh-color-success-600));
+    border-color: var(--xh-clipboard-trigger-border-copied, var(--xh-fg-success));
+    color: var(--xh-clipboard-trigger-fg-copied, var(--xh-fg-success));
   }
 
   [data-scope='clipboard'][data-part='indicator'] {
@@ -128,6 +128,6 @@
 
   /* 成功那一侧的图标用成功色；平时那侧跟着按钮的文字色走 */
   [data-scope='clipboard'][data-part='indicator'][data-copied] {
-    color: var(--xh-clipboard-indicator-fg-copied, var(--xh-color-success-600));
+    color: var(--xh-clipboard-indicator-fg-copied, var(--xh-fg-success));
   }
 }

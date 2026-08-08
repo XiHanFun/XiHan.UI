@@ -685,7 +685,7 @@ describe('禁用 / 只读 / 越界 / 清空', () => {
     h.option('hour', '11').click()
     expect(h.value()).toBe('09:30')
     expect(h.clear.disabled).toBe(true)
-    expect(h.control.getAttribute('aria-readonly')).toBe('true')
+    expect(h.segment('hour').getAttribute('aria-readonly')).toBe('true')
   })
 
   it('禁用：整列的格都不可选，段整组退出 Tab 序列，隐藏输入不参与提交', () => {
@@ -720,10 +720,13 @@ describe('禁用 / 只读 / 越界 / 清空', () => {
     expect(document.activeElement).toBe(h.segment('hour'))
   })
 
-  it('required 落到 control 的 aria-required 上', () => {
-    const h = open({ required: true })
-    expect(h.control.getAttribute('aria-required')).toBe('true')
+  it('group 只带全局属性，只读与必填落在段上', () => {
+    const h = open({ required: true, readOnly: true })
+    expect(h.control.hasAttribute('aria-required')).toBe(false)
+    expect(h.control.hasAttribute('aria-readonly')).toBe(false)
     expect(h.control.getAttribute('aria-invalid')).toBe('false')
+    expect(h.segment('hour').getAttribute('aria-required')).toBe('true')
+    expect(h.segment('hour').getAttribute('aria-readonly')).toBe('true')
   })
 })
 

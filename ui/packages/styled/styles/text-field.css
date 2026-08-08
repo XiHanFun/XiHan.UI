@@ -21,7 +21,7 @@
   }
 
   [data-scope='text-field'][data-part='label'][data-disabled] {
-    color: var(--xh-text-field-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-text-field-label-fg-disabled, var(--xh-fg-subtle));
   }
 
   [data-scope='text-field'][data-part='input'] {

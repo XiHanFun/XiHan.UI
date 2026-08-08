@@ -13,7 +13,7 @@
   }
 
   [data-scope='field'][data-part='label'][data-disabled] {
-    color: var(--xh-field-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-field-label-fg-disabled, var(--xh-fg-subtle));
   }
 
   /* control 是作者自己的输入控件，这里只给一套可被覆盖的基础皮肤 */
@@ -52,13 +52,13 @@
   }
 
   [data-scope='field'][data-part='description'][data-disabled] {
-    color: var(--xh-fg-disabled);
+    color: var(--xh-field-description-fg-disabled, var(--xh-fg-subtle));
   }
 
   /* 不 invalid 时节点带 hidden：此处不声明 display，交给浏览器的 [hidden] 规则收起 */
   [data-scope='field'][data-part='error-text'] {
     margin: 0;
-    color: var(--xh-field-error-fg, var(--xh-color-danger-600));
+    color: var(--xh-field-error-fg, var(--xh-fg-danger));
     font-size: var(--xh-field-error-font-size, var(--xh-font-size-sm));
     line-height: var(--xh-leading-normal);
   }

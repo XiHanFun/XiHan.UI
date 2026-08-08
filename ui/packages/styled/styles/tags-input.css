@@ -21,7 +21,7 @@
   }
 
   [data-scope='tags-input'][data-part='label'][data-disabled] {
-    color: var(--xh-tags-input-label-fg-disabled, var(--xh-fg-disabled));
+    color: var(--xh-tags-input-label-fg-disabled, var(--xh-fg-subtle));
   }
 
   /* 标签换行排，输入框跟在最后一个标签后面。最小高度对齐单行输入框，

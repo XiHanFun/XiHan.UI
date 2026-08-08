@@ -139,7 +139,7 @@
   }
 
   [data-scope='calendar'][data-part='cell'][data-in-range] {
-    background: var(--xh-calendar-range-bg, var(--xh-color-brand-100));
+    background: var(--xh-calendar-range-bg, var(--xh-bg-brand-subtle));
   }
 
   /* 区间两端各自收圆：中间那些格子保持直角，底色才连成一条 */

@@ -200,4 +200,14 @@ describe('区域运算', () => {
     expect(isFullyClipped({ x: -20, y: 10, width: 20, height: 20 }, clip)).toBe(true)
     expect(isFullyClipped({ x: 200, y: 10, width: 20, height: 20 }, clip)).toBe(true)
   })
+
+  it('零尺寸锚点按点判：压在边界上仍算露着，越过边界才算被挡住', () => {
+    const clip = { top: 0, right: 200, bottom: 200, left: 0 }
+    expect(isFullyClipped({ x: 0, y: 0, width: 0, height: 0 }, clip)).toBe(false)
+    expect(isFullyClipped({ x: 200, y: 200, width: 0, height: 0 }, clip)).toBe(false)
+    expect(isFullyClipped({ x: 100, y: -1, width: 0, height: 0 }, clip)).toBe(true)
+    expect(isFullyClipped({ x: -1, y: 100, width: 0, height: 0 }, clip)).toBe(true)
+    expect(isFullyClipped({ x: 201, y: 100, width: 0, height: 0 }, clip)).toBe(true)
+    expect(isFullyClipped({ x: 100, y: 201, width: 0, height: 0 }, clip)).toBe(true)
+  })
 })

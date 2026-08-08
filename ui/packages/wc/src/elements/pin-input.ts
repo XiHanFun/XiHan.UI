@@ -1,4 +1,4 @@
-import type { PinInputSchema, PinInputType, PinInputValueChangeDetails } from '@xihan-ui/headless'
+import type { PinInputSchema, PinInputTranslations, PinInputType, PinInputValueChangeDetails } from '@xihan-ui/headless'
 import { connectPinInput, pinInputAnatomy, pinInputMachine, pinInputMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -44,7 +44,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @fires value-complete - 每格都填满；detail 同上
  * @csspart root - role=group 的容器，承载 data-disabled / data-invalid / data-complete
  * @csspart label - 标题；`for` 恒写向首格，故须是原生 `<label>` 才点得动
- * @csspart input - 一格一个的输入框，可自带 index 属性声明下标，缺省按文档序
+ * @csspart input - 一格一个的输入框，可自带 index 属性声明下标，缺省按文档序；aria-label 由内置文案给出
  * @csspart hidden-input - type=hidden 的表单出口，值是拼好的整串
  */
 export class XhPinInputElement extends XhElement {
@@ -63,6 +63,8 @@ export class XhPinInputElement extends XhElement {
     invalid: { type: Boolean },
     blurOnComplete: { type: Boolean, attribute: 'blur-on-complete' },
     name: { converter: STRING_CONVERTER },
+    // 文案是对象，走不了属性；只作为 property 暴露，与 Vue 侧的 translations prop 对齐
+    translations: { attribute: false },
   }
 
   declare value?: string[]
@@ -76,6 +78,7 @@ export class XhPinInputElement extends XhElement {
   declare invalid?: boolean
   declare blurOnComplete?: boolean
   declare name?: string
+  declare translations?: Partial<PinInputTranslations>
 
   private readonly notifyChange = (details: PinInputValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -101,6 +104,7 @@ export class XhPinInputElement extends XhElement {
       invalid: this.invalid ?? false,
       blurOnComplete: this.blurOnComplete ?? false,
       name: this.name,
+      translations: this.translations,
       onValueChange: this.notifyChange,
       onValueComplete: this.notifyComplete,
     }

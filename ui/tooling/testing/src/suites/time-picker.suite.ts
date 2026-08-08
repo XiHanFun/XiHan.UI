@@ -139,11 +139,11 @@ export const timePickerSuite: ConformanceSuite = {
           'control': {
             'role': 'group',
             'aria-labelledby': '@part(label)',
-            // 四个 aria 布尔显式写 true/false：省略是"没说"，显式 false 是"明确说了不是"
+            // group 只支持全局属性：禁用与非法显式写 true/false，只读与必填不落在这里
             'aria-disabled': 'false',
-            'aria-readonly': 'false',
-            'aria-required': 'false',
             'aria-invalid': 'false',
+            'aria-readonly': null,
+            'aria-required': null,
           },
           [HOUR_SEG]: {
             'role': 'spinbutton',
@@ -707,14 +707,14 @@ export const timePickerSuite: ConformanceSuite = {
     },
 
     {
-      name: 'invalid / required 落到 control 与各段上',
+      name: 'invalid 落到 control 与各段上，required 只落到段上',
       spec: { apg: `${APG}#roles_states_properties` },
       props: { ...BASE, invalid: true, required: true },
       initial: {
         parts: {
           root: { 'data-invalid': '' },
-          control: { 'aria-invalid': 'true', 'aria-required': 'true' },
-          [HOUR_SEG]: { 'aria-invalid': 'true', 'data-invalid': '' },
+          control: { 'aria-invalid': 'true', 'aria-required': null },
+          [HOUR_SEG]: { 'aria-invalid': 'true', 'aria-required': 'true', 'data-invalid': '' },
         },
       },
     },
@@ -760,7 +760,8 @@ export const timePickerSuite: ConformanceSuite = {
       initial: {
         parts: {
           'root': { 'data-readonly': '' },
-          'control': { 'aria-readonly': 'true' },
+          // 只读态在 control 上只留 data 属性，aria-readonly 落在每个段上
+          'control': { 'data-readonly': '', 'aria-readonly': null },
           [HOUR_SEG]: { 'aria-readonly': 'true', 'tabindex': '0' },
           'clear-trigger': { disabled: '' },
         },

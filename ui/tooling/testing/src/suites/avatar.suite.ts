@@ -89,7 +89,8 @@ export const avatarSuite: ConformanceSuite = {
     {
       name: '图片就绪：image 显出、fallback 收起',
       spec: { apg: APG, zag: 'avatar.machine#loading' },
-      props: { src: SRC },
+      // 头像显出来了就得有替代文本，alt 由作者给
+      props: { src: SRC, alt: '谁的头像' },
       steps: [
         {
           kind: 'raw',
@@ -127,7 +128,7 @@ export const avatarSuite: ConformanceSuite = {
     {
       name: 'status-change：来源决议后先通知 loading，图片就绪再通知 loaded',
       spec: { zag: 'avatar.machine#invokeLoading' },
-      props: { src: SRC },
+      props: { src: SRC, alt: '谁的头像' },
       initial: {
         events: [{ type: 'status-change', detail: { status: 'loading' } }],
       },

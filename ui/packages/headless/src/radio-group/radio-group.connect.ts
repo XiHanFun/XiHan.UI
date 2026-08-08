@@ -146,6 +146,9 @@ export function connectRadioGroup<T extends PropTypes>(
       'checked': isChecked(item),
       // 禁用时不提交值
       'disabled': isDisabled(item) || undefined,
+      // inert 把这份输入从焦点与无障碍树里整个摘掉：条目那层是 role=radio，
+      // 它的后代里不能留下可聚焦的控件（负 tabindex 与 aria-hidden 都拦不住读屏的虚拟光标）
+      'inert': true,
       'tabindex': -1,
       'aria-hidden': 'true',
       'style': HIDDEN_INPUT_STYLE,

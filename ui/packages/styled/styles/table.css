@@ -340,13 +340,20 @@
     outline-offset: calc(-1 * var(--xh-ring-width));
   }
 
-  /* 详情行：靠 hidden 收起，不卸载作者节点 */
+  /* 详情行：靠 hidden 收起，不卸载作者节点。内容长在它的单元格里，行本身只画底色与分隔线 */
   [data-scope='table'][data-part='expanded-row'] {
-    display: block;
-    padding-block: var(--xh-table-detail-py, var(--xh-space-3));
-    padding-inline: var(--xh-table-detail-px, var(--xh-space-4));
+    display: flex;
+    align-items: stretch;
     border-block-end: var(--xh-stroke-thin) solid var(--xh-table-row-border, var(--xh-border-subtle));
     background: var(--xh-table-detail-bg, var(--xh-bg-subtle));
+  }
+
+  /* 详情行里的格子铺满整行，且不按数据格那样截断成一行 */
+  [data-scope='table'][data-part='expanded-row'] > [data-scope='table'][data-part='cell'] {
+    padding-block: var(--xh-table-detail-py, var(--xh-space-3));
+    padding-inline: var(--xh-table-detail-px, var(--xh-space-4));
+    overflow: visible;
+    white-space: normal;
   }
 
   /* 收起态的唯一开关：display 会盖掉 hidden 属性的 UA 规则，漏了这条详情行就收不起来 */

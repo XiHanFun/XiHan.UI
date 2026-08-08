@@ -10,8 +10,10 @@ const APG_ARIA = `${APG}#roles_states_properties`
 const SCOPE = '[data-scope="rating"]'
 const COUNT = 5
 
-/** 一颗星的 fixture 节点，序号即条目身份。 */
-const star = (value: number): FixtureNode => ({ part: 'item', attrs: { value: String(value) } })
+/** 一颗星的 fixture 节点，序号即条目身份；每颗星的名字由作者标注。 */
+function star(value: number): FixtureNode {
+  return { part: 'item', attrs: { 'value': String(value), 'aria-label': `${value} 星` } }
+}
 
 function findPart(doc: Document, name: string, index = 0): HTMLElement {
   const el = doc.querySelectorAll<HTMLElement>(`${SCOPE}[data-part="${name}"]`)[index]

@@ -31,7 +31,7 @@
   }
 
   [data-scope='slider'][data-part='label'][data-disabled] {
-    color: var(--xh-fg-disabled);
+    color: var(--xh-fg-subtle);
   }
 
   /* 拇指以它为定位上下文（拇指常常浮出轨道，挂在 track 上会被轨道的盒子束住）。

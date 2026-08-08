@@ -53,7 +53,7 @@ export function connectCheckboxGroup<T extends PropTypes>(
   const invalid = !!prop('invalid')
   const orientation = prop('orientation') ?? 'vertical'
   const name = prop('name')
-  const ids = scope.ids('checkbox-group', 'label')
+  const ids = scope.ids('checkbox-group', 'label', 'trigger')
 
   const editable = !groupDisabled && !readOnly
   const checkedState = resolveCheckedState(value, prop('itemValues') ?? [])
@@ -163,6 +163,9 @@ export function connectCheckboxGroup<T extends PropTypes>(
       'checked': isChecked(item.value),
       // 单体输入用原生 disabled，禁用项不提交出值
       'disabled': isDisabled(item) || undefined,
+      // inert 把这份输入从焦点与无障碍树里整个摘掉：条目那层是 role=checkbox，
+      // 它的后代里不能留下可聚焦的控件（负 tabindex 与 aria-hidden 都拦不住读屏的虚拟光标）
+      'inert': true,
       'tabindex': -1,
       'aria-hidden': 'true',
       'style': HIDDEN_INPUT_STYLE,
@@ -171,6 +174,12 @@ export function connectCheckboxGroup<T extends PropTypes>(
     getTriggerProps: () => normalize.element({
       ...parts.trigger.attrs,
       'role': 'checkbox',
+      // 自指的那一段要有落点
+      'id': ids.trigger,
+      // 名字 = 组标题 + 全选格自己的文本：作者没写文本时由组标题兜住，
+      // 写了文本也不会被顶掉（自指那段按 accname 规则取本节点的内容）；
+      // 两段各自缺席时都是悬空 IDREF，按规则跳过
+      'aria-labelledby': `${ids.label} ${ids.trigger}`,
       // 勾了一部分时输出 mixed
       'aria-checked': checkedState === 'all' ? 'true' : checkedState === 'some' ? 'mixed' : 'false',
       // 与条目同形：用 aria-disabled，禁用后仍可聚焦

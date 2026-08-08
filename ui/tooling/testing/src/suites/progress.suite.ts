@@ -7,7 +7,8 @@ export const progressSuite: ConformanceSuite = {
   component: 'progress',
   anatomy: progressAnatomy,
   keyboard: progressKeyboard,
-  fixture: { part: 'root', tag: 'div' },
+  // 进度条的名字由作者写在角色节点上：组件不生成文案，也没有承载文案的部件
+  fixture: { part: 'root', tag: 'div', attrs: { 'aria-label': '上传进度' } },
   cases: [
     {
       name: '进行中：role=progressbar，aria-valuenow=50、aria-valuemax=100，data-state=loading',

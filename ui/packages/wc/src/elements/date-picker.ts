@@ -87,8 +87,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart week-day - role=columnheader 列头，须自带 value 属性标明列序 0-6
  * @csspart grid-body - role=rowgroup 日期组
  * @csspart week-row - role=row 周行，表头与日期行共用
- * @csspart cell - role=gridcell 日期格，须自带 value 属性（ISO 串）
- * @csspart cell-trigger - 真正可点可聚焦的那一层，承载 aria-selected 与 roving tabindex
+ * @csspart cell - role=gridcell 日期格，承载 aria-selected；须自带 value 属性（ISO 串）
+ * @csspart cell-trigger - 真正可点可聚焦的那一层，承载 aria-disabled 与 roving tabindex
  * @csspart hidden-input - type=hidden 的表单出口，值是 ISO 串
  */
 export class XhDatePickerElement extends XhElement {

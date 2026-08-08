@@ -351,14 +351,17 @@ describe('connectCalendar 属性输出', () => {
     expect(h.heading.id).not.toBe('')
   })
 
-  it('cell 只承担 gridcell 语义，选中与禁用标在真正能聚焦的 cell-trigger 上', () => {
+  it('选中态报在 gridcell 上，禁用标在真正能聚焦的 cell-trigger 上', () => {
     const h = mount({ defaultFocusedValue: '2024-02-15', defaultValue: '2024-02-15' })
     expect(h.gridcell('2024-02-15').getAttribute('role')).toBe('gridcell')
+    expect(h.gridcell('2024-02-15').getAttribute('aria-selected')).toBe('true')
+    expect(h.gridcell('2024-02-16').getAttribute('aria-selected')).toBe('false')
     const trigger = h.cell('2024-02-15')
     expect(trigger.getAttribute('role')).toBe('button')
-    expect(trigger.getAttribute('aria-selected')).toBe('true')
+    // aria-selected 不许挂在 role=button 上
+    expect(trigger.hasAttribute('aria-selected')).toBe(false)
+    expect(trigger.getAttribute('data-selected')).toBe('')
     expect(trigger.getAttribute('aria-disabled')).toBe('false')
-    expect(h.cell('2024-02-16').getAttribute('aria-selected')).toBe('false')
     // 集合条目绝不输出原生 disabled：那样就不可聚焦、也不派 click
     expect(trigger.hasAttribute('disabled')).toBe(false)
   })
@@ -646,7 +649,7 @@ describe('选中', () => {
     expect(onValueChange).toHaveBeenCalledWith({ value: ['2024-02-20'] })
     h.setProps({ value: '2024-02-20' })
     expect(h.value()).toEqual(['2024-02-20'])
-    expect(h.cell('2024-02-20').getAttribute('aria-selected')).toBe('true')
+    expect(h.gridcell('2024-02-20').getAttribute('aria-selected')).toBe('true')
   })
 
   it('同一份选中值重复写入不重复通知：数组按元素比，不看引用', () => {

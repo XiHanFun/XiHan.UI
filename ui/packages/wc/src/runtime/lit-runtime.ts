@@ -71,6 +71,8 @@ export function createLitRuntime(host: ReactiveControllerHost): LitRuntime {
     },
     flush(fn) {
       void (async () => {
+        // 先让出一次微任务，等这次转移把宿主的更新排上队，再去读 updateComplete
+        await null
         // updateComplete resolve 成 false 表示更新途中又排了新一轮，DOM 还没落定，接着等下一轮。
         let rounds = 0
         while (!(await host.updateComplete) && rounds < MAX_FLUSH_ROUNDS)

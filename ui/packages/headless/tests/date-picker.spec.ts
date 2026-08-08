@@ -84,6 +84,8 @@ interface Harness {
   segmentTexts: () => string[]
   /** 当前渲染出来的某一天的 cell-trigger；不在这个月的网格里就抛。 */
   cell: (value: string) => HTMLElement
+  /** 同一天的 cell（外层 gridcell）。 */
+  gridcell: (value: string) => HTMLElement
   /** 网格里全部日期的 ISO 串，文档序。 */
   rendered: () => string[]
   setProps: (next: Partial<Props>) => void
@@ -267,6 +269,12 @@ function mount(initial: Partial<Props> = {}): Harness {
         throw new Error(`网格里没有 ${value} 这一格（当前展示 ${heading.textContent}）`)
       return el
     },
+    gridcell: (value) => {
+      const el = cells.get(value)
+      if (!el)
+        throw new Error(`网格里没有 ${value} 这一格（当前展示 ${heading.textContent}）`)
+      return el
+    },
     rendered: () => [...triggers.keys()],
     setProps: (next2) => {
       props.set({ ...props.get(), ...next2 })
@@ -418,7 +426,7 @@ describe('选中值的三个入口', () => {
     expect(h.focusedValue()).toBe('2027-07-28')
     // 网格真的翻过去了：2026 年 7 月的日子已经不在了
     expect(h.rendered()).not.toContain('2026-07-15')
-    expect(h.cell('2027-07-28').getAttribute('aria-selected')).toBe('true')
+    expect(h.gridcell('2027-07-28').getAttribute('aria-selected')).toBe('true')
     expect(month!.getAttribute('data-segment')).toBe('month')
     expect(day!.getAttribute('data-segment')).toBe('day')
   })

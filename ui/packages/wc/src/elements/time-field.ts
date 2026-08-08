@@ -45,7 +45,7 @@ function declaredSegment(el: HTMLElement, position: number): TimeSegmentType {
  * @attr {boolean} disabled - 禁用：整组退出 Tab 序列，隐藏输入不参与提交
  * @attr {boolean} read-only - 只读：仍可聚焦与换段，改不动值
  * @attr {boolean} invalid - 校验失败标注
- * @attr {boolean} required - 必填标注
+ * @attr {boolean} required - 必填标注，落到每段的 aria-required 上
  * @attr {string} name - 表单字段名；给了隐藏输入才带 name
  * @attr {string} placeholder - 空段的占位字符（单字符），默认 '-'
  * @fires value-change - 值变化；detail 为 `{ value: string }`

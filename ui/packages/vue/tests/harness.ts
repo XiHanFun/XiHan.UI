@@ -114,9 +114,11 @@ export function createVueHarness(): AdapterHarness {
         if (declared.has(event))
           listeners[listener] = record(event)
       }
+      // 根节点上作者写的属性（aria-label 之类的标注）跟着走：WC 侧本就把它们
+      // setAttribute 到角色节点上，Vue 侧经透传落到根组件渲染出的那个元素上
       app = createApp({
         setup: () => () =>
-          h(Root, { ...props, ...listeners }, {
+          h(Root, { ...fixture.tree.attrs, ...props, ...listeners }, {
             default: () => fixture.tree.children?.map(c => render(c, fixture.component)) ?? [],
           }),
       })

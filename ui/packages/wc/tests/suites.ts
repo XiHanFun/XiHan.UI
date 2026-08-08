@@ -10,13 +10,13 @@ import { accordionSuite, alertSuite, anchorSuite, avatarSuite, badgeSuite, bread
 // 与 WC dialog 受控 open 同因延后，待 controlled 属性机制（设计 §11.2.9b）。
 const wcSwitchSuite: ConformanceSuite = {
   ...switchSuite,
-  fixture: { part: 'root', tag: 'button', children: [{ part: 'thumb', tag: 'span' }] },
+  fixture: { ...switchSuite.fixture, children: [{ part: 'thumb', tag: 'span' }] },
 }
 
 // checkbox 与 switch 同因：受控用例排除，fixture 换成行为宿主形态（indicator 由用户显式写）。
 const wcCheckboxSuite: ConformanceSuite = {
   ...checkboxSuite,
-  fixture: { part: 'root', tag: 'button', children: [{ part: 'indicator', tag: 'span' }] },
+  fixture: { ...checkboxSuite.fixture, children: [{ part: 'indicator', tag: 'span' }] },
 }
 
 // collapsible 的 fixture 三个 part 本就由用户显式写，两侧同构、整份复用；
@@ -34,7 +34,7 @@ const wcToggleSuite: ConformanceSuite = {
 // 用例断言全在 root 上，两侧同一份。
 const wcProgressSuite: ConformanceSuite = {
   ...progressSuite,
-  fixture: { part: 'root', tag: 'div', children: [{ part: 'track', children: [{ part: 'range' }] }] },
+  fixture: { ...progressSuite.fixture, children: [{ part: 'track', children: [{ part: 'range' }] }] },
 }
 
 // icon 的 glyph 空壳在 Vue 版由组件内部渲染，WC 版要作者手写，故只换 fixture；

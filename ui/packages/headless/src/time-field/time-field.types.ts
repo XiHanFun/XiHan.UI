@@ -58,7 +58,7 @@ export interface TimeFieldSchema extends MachineSchema {
     readOnly?: boolean
     /** 校验失败标注。 */
     invalid?: boolean
-    /** 必填标注（落到 control 的 aria-required 上）。 */
+    /** 必填标注（落到每段的 aria-required 上）。 */
     required?: boolean
     /** 表单字段名；给了隐藏输入才带 name，值随表单一并提交。 */
     name?: string

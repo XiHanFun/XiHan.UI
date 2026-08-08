@@ -69,8 +69,12 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
     const target = o.initialFocus?.() ?? null
     if (target) {
       focusSafely(target, { select: true })
-      focusSettled = true
-      return
+      // 目标还没显形（hidden / display:none / visibility:hidden）时 focus() 是空操作，
+      // 焦点没真落上就不算安排好，留给后续帧重试
+      if (scope.getActiveElement() === target)
+        focusSettled = true
+      if (focusSettled || !lastChance)
+        return
     }
     if (focusFirst(removeLinks(getTabbables(el)), { select: true })) {
       focusSettled = true

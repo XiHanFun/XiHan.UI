@@ -571,20 +571,27 @@ describe('列的展开与截断', () => {
     const h = mount({ defaultOpen: true })
     click(h.item('taiwan').item)
     expect(h.shownColumns()).toEqual([0])
-    expect(h.item('taiwan').item.getAttribute('aria-expanded')).toBeNull()
-    expect(h.item('zhejiang').item.getAttribute('aria-expanded')).toBe('false')
+    expect(h.item('taiwan').item.getAttribute('aria-haspopup')).toBeNull()
+    expect(h.item('taiwan').item.getAttribute('data-branch')).toBeNull()
+    expect(h.item('zhejiang').item.getAttribute('aria-haspopup')).toBe('listbox')
+    expect(h.item('zhejiang').item.getAttribute('data-branch')).toBe('')
   })
 
-  it('展开路径上的条目带 data-active 与 aria-expanded，被砍掉的那些一并复位', () => {
+  it('展开路径上的条目带 data-active，被砍掉的那些一并复位', () => {
     const h = mount({ defaultOpen: true })
     click(h.item('zhejiang').item)
     expect(h.item('zhejiang').item.getAttribute('data-active')).toBe('')
-    expect(h.item('zhejiang').item.getAttribute('aria-expanded')).toBe('true')
 
     click(h.item('jiangsu').item)
     expect(h.item('zhejiang').item.getAttribute('data-active')).toBeNull()
-    expect(h.item('zhejiang').item.getAttribute('aria-expanded')).toBe('false')
     expect(h.item('jiangsu').item.getAttribute('data-active')).toBe('')
+  })
+
+  it('条目不带 aria-expanded：option 不收这个属性，展开与否只留在 data-active 上', () => {
+    const h = mount({ defaultOpen: true })
+    click(h.item('zhejiang').item)
+    for (const value of ['zhejiang', 'taiwan', 'hangzhou'])
+      expect(h.item(value).item.hasAttribute('aria-expanded')).toBe(false)
   })
 
   it('收起的列与条目只是带 hidden，作者节点一个都没被卸载', () => {
