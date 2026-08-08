@@ -8476,6 +8476,235 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/icon.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-icon>` —— 图标宿主，无状态机，把命名与档位打到 root 上，把图元铺进 glyph 空壳。\n\n作者在 `<svg data-xh-part=\"root\">` 里留一个空的 `<g data-xh-part=\"glyph\"></g>` 即授权本元素\n在其内部铺图元；不写 glyph 时元素一个节点都不动，几何归作者（手写内联 SVG 或 `<use>`），\n命名与档位照常打在 root 上。\n\n图标记录是对象，只走 property：`el.icon = checkIcon`。",
+          "name": "XhIconElement",
+          "cssParts": [
+            {
+              "description": "根 `<svg>`，承载 viewBox/data-icon/命名属性/data-size/data-weight",
+              "name": "root"
+            },
+            {
+              "description": "作者留出的空 `<g>`，图元铺在它内部",
+              "name": "glyph"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: iconAnatomy, meta: iconMeta, // root 不是 <svg> 时 viewBox 会被小写化而静默失效；glyph 不是 <g> 时铺进去的图元挂在 HTML 元素下，什么都不显示 tags: { root: ['svg'], glyph: ['g'] }, }"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "IconSize | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "weight",
+              "privacy": "public",
+              "type": {
+                "text": "IconWeight | undefined"
+              },
+              "attribute": "weight"
+            },
+            {
+              "kind": "field",
+              "name": "icon",
+              "privacy": "public",
+              "type": {
+                "text": "IconRecord | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#glyphOwned",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<Element, boolean>()",
+              "description": "一个 glyph 节点归谁，首次见到时定死。"
+            },
+            {
+              "kind": "field",
+              "name": "#painted",
+              "privacy": "private",
+              "type": {
+                "text": "{ host: Element, record: IconRecord } | undefined"
+              },
+              "description": "上一次铺进哪个 glyph 节点、铺的是哪条记录。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#ownsGlyph",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "host",
+                  "type": {
+                    "text": "Element"
+                  }
+                },
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "Element | null"
+                  }
+                }
+              ],
+              "description": "一个 glyph 节点归谁，首次见到时定死：\n空壳 = 授权；非空但 root 上已有 data-icon = 服务端渲染出来的、也是本元素的产出。\ndata-icon 只由 connect 写出。"
+            },
+            {
+              "kind": "method",
+              "name": "#paint",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "host",
+                  "type": {
+                    "text": "Element | null"
+                  }
+                },
+                {
+                  "name": "owned",
+                  "type": {
+                    "text": "boolean"
+                  }
+                },
+                {
+                  "name": "record",
+                  "type": {
+                    "text": "IconRecord | undefined"
+                  }
+                }
+              ],
+              "description": "把记录的图元铺进 glyph。\n本元素其余各处都不替作者生成节点，这里是唯一的例外：图元是算出来的派生数据，作者没法自己写，\n且铺设范围被限死在作者显式留出的那个空壳里。\n内容判据是记录的引用相等——记录是模块级常量，同一个图标永远是同一个对象。\nchildElementCount 那一条兜住外部代码清空过 glyph 的情形。"
+            },
+            {
+              "kind": "method",
+              "name": "#report",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "Element | null"
+                  }
+                },
+                {
+                  "name": "glyph",
+                  "type": {
+                    "text": "Element | null"
+                  }
+                },
+                {
+                  "name": "owned",
+                  "type": {
+                    "text": "boolean"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "IconApi"
+                  }
+                }
+              ],
+              "description": "传了图标却铺不上、以及在自带名字的控件里又给图标命名，两类都会静默走偏，报出来。"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "可及名字；非空白时输出 role=img + aria-label，否则输出 aria-hidden=true",
+              "name": "label",
+              "fieldName": "label"
+            },
+            {
+              "type": {
+                "text": "IconSize | undefined"
+              },
+              "description": "直径档位，缺省 md",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "IconWeight | undefined"
+              },
+              "description": "描边粗细档位，缺省 regular",
+              "name": "weight",
+              "fieldName": "weight"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-icon",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhIconElement",
+          "declaration": {
+            "name": "XhIconElement",
+            "module": "src/elements/icon.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/image.ts",
       "declarations": [
         {

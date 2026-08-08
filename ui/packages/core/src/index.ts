@@ -66,6 +66,7 @@ export { toCleanup } from './types'
 
 // 端口类型
 export type { CodeToken, CodeTokenKind, HighlighterPort } from './types/highlighter'
+export type { IconNode, IconRecord, IconTag } from './types/icon'
 export type {
   Align,
   Anchor,

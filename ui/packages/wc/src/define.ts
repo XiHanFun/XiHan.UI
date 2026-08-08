@@ -28,6 +28,7 @@ import { XhFieldElement } from './elements/field'
 import { XhFileUploadElement } from './elements/file-upload'
 import { XhFormElement } from './elements/form'
 import { XhHoverCardElement } from './elements/hover-card'
+import { XhIconElement } from './elements/icon'
 import { XhImageElement } from './elements/image'
 import { XhListboxElement } from './elements/listbox'
 import { XhLoadingBarElement } from './elements/loading-bar'
@@ -103,6 +104,7 @@ export function defineXhElements(): void {
   defineElement('xh-file-upload', XhFileUploadElement, VERSION)
   defineElement('xh-form', XhFormElement, VERSION)
   defineElement('xh-hover-card', XhHoverCardElement, VERSION)
+  defineElement('xh-icon', XhIconElement, VERSION)
   defineElement('xh-image', XhImageElement, VERSION)
   defineElement('xh-listbox', XhListboxElement, VERSION)
   defineElement('xh-loading-bar', XhLoadingBarElement, VERSION)
@@ -173,6 +175,7 @@ export {
   XhFileUploadElement,
   XhFormElement,
   XhHoverCardElement,
+  XhIconElement,
   XhImageElement,
   XhListboxElement,
   XhLoadingBarElement,

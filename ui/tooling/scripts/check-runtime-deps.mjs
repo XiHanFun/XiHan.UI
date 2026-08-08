@@ -12,9 +12,6 @@ const ALLOWLIST = {
   },
 }
 
-// 冻结的遗留包，重建前不纳入门禁。
-const SKIP = new Set(['icons'])
-
 async function readJson(path) {
   return JSON.parse(await readFile(path, 'utf8'))
 }
@@ -24,7 +21,7 @@ const staleAllowlist = []
 
 const entries = await readdir(PACKAGES_DIR, { withFileTypes: true })
 for (const entry of entries) {
-  if (!entry.isDirectory() || SKIP.has(entry.name))
+  if (!entry.isDirectory())
     continue
 
   let pkg

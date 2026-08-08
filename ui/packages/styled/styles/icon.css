@@ -1,0 +1,47 @@
+@layer xihan.components {
+  /*
+   * 根 <svg>。直径、描边粗细、行内位置都由这里给，记录只带几何。
+   * 不写 fill / stroke：记录里那两条呈现属性取 currentColor，改这里会把
+   * 描边图标与实心图标一起改掉；皮肤只给 color，配色随上下文流下来。
+   */
+  [data-scope='icon'][data-part='root'] {
+    display: inline-block;
+    flex: none;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+
+    /* 替换元素的基线就是自身下边缘，落在文字基线上时整块图形都在基线以上、看着偏高。
+       往下挪一小段，单位是 em，跟着相邻文字的字号一起缩放 */
+    vertical-align: var(--xh-icon-shift, var(--xh-glyph-baseline-shift));
+    color: var(--xh-icon-fg, currentColor);
+
+    /* 记录把 stroke-width 写成根上的呈现属性，呈现属性的层叠优先级低于任何 CSS 规则，
+       这条与下面两档因此能接管粗细，再沿继承落到每个图元上 */
+    stroke-width: var(--xh-icon-stroke, var(--xh-glyph-stroke-regular));
+  }
+
+  /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+  [data-scope='icon'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 三档直径，缺省档写在上面的基础规则里 */
+  [data-scope='icon'][data-part='root'][data-size='sm'] {
+    inline-size: var(--xh-glyph-size-sm);
+    block-size: var(--xh-glyph-size-sm);
+  }
+
+  [data-scope='icon'][data-part='root'][data-size='lg'] {
+    inline-size: var(--xh-glyph-size-lg);
+    block-size: var(--xh-glyph-size-lg);
+  }
+
+  /* 三档描边，缺省档同样写在基础规则里 */
+  [data-scope='icon'][data-part='root'][data-weight='light'] {
+    stroke-width: var(--xh-glyph-stroke-light);
+  }
+
+  [data-scope='icon'][data-part='root'][data-weight='bold'] {
+    stroke-width: var(--xh-glyph-stroke-bold);
+  }
+}

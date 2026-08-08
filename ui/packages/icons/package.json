@@ -1,0 +1,35 @@
+{
+  "name": "@xihan-ui/icons",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "XiHan.UI first-party icon set — structured IconRecord data, no third-party dependency.",
+  "license": "MIT",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "node build/build-icons.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@xihan-ui/core": "workspace:^",
+    "@xihan-ui/tsconfig": "workspace:*",
+    "vitest": "catalog:"
+  }
+}

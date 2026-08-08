@@ -11,9 +11,15 @@ interface Updatable extends HTMLElement {
 // 对外语义事件（跨适配器一致的 CustomEvent），无关组件忽略
 const PUBLIC_EVENTS = ['open-change', 'checked-change', 'pressed-change', 'value-change', 'select', 'status-change', 'submit', 'stop', 'stick-change']
 
-// FixtureNode → Light-DOM 元素：part 节点打 data-xh-part，纯文本子节点建文本节点
-function renderNode(node: FixtureNode, doc: Document): HTMLElement {
-  const el = doc.createElement(node.tag ?? 'div')
+const SVG_NS = 'http://www.w3.org/2000/svg'
+
+// FixtureNode → Light-DOM 元素：part 节点打 data-xh-part，纯文本子节点建文本节点。
+// <svg> 连同它的子树建在 SVG 命名空间下：createElement('svg') 建出的是 XHTML 的 <svg>，
+// 那上面的 viewBox 会被小写成 viewbox，挂进去的图元也不显示。
+function renderNode(node: FixtureNode, doc: Document, ns?: string): HTMLElement | SVGElement {
+  const tag = node.tag ?? 'div'
+  const childNs = tag === 'svg' ? SVG_NS : ns
+  const el = childNs ? doc.createElementNS(childNs, tag) as SVGElement : doc.createElement(tag)
   if (node.part)
     el.dataset.xhPart = node.part
   for (const [k, v] of Object.entries(node.attrs ?? {})) el.setAttribute(k, v)
@@ -22,7 +28,7 @@ function renderNode(node: FixtureNode, doc: Document): HTMLElement {
       if (c.text != null && c.tag == null && c.part == null && c.children == null)
         el.appendChild(doc.createTextNode(c.text))
       else
-        el.appendChild(renderNode(c, doc))
+        el.appendChild(renderNode(c, doc, childNs))
     }
   }
   else if (node.text != null) {
