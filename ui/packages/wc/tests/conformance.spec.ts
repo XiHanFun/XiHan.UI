@@ -1,15 +1,32 @@
 // @vitest-environment jsdom
+import type { DiagnosticRecord } from '@xihan-ui/core'
+import {
+  DIAGNOSTIC_CODES,
+  onDiagnostic,
+  resetDiagnostics,
+  setDiagnosticsConsoleOutput,
+  setDiagnosticsLevel,
+} from '@xihan-ui/core'
 import { runConformance } from '@xihan-ui/testing'
-import { afterEach, beforeEach, describe, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createWcHarness } from './harness'
 import { wcSuites } from './suites'
 
+let diagnostics: DiagnosticRecord[] = []
+
 beforeEach(() => {
   vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener: () => {}, removeEventListener: () => {} }))
+  resetDiagnostics()
+  setDiagnosticsConsoleOutput(false)
+  setDiagnosticsLevel('warn')
+  diagnostics = []
+  onDiagnostic(record => void diagnostics.push(record))
 })
 
 afterEach(() => {
+  expect(diagnostics.filter(record => record.code === DIAGNOSTIC_CODES.wcUnknownPart)).toEqual([])
   document.body.innerHTML = ''
+  resetDiagnostics()
   vi.unstubAllGlobals()
 })
 
