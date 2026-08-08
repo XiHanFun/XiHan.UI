@@ -11,7 +11,6 @@ export const popoverSuite: ConformanceSuite = {
   anatomy: popoverAnatomy,
   keyboard: popoverKeyboard,
   fixture: {
-    part: 'root',
     children: [
       // 必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦
       { part: 'trigger', tag: 'button', text: '打开' },

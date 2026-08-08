@@ -18,7 +18,6 @@ function menuTree(disabled?: string): FixtureNode {
     return { part: 'item', text, attrs }
   }
   return {
-    part: 'root',
     children: [
       // 必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦
       { part: 'trigger', tag: 'button', text: '操作' },
