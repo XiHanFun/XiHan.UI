@@ -305,7 +305,6 @@ vue · wc  ── core / machine / behavior / headless / position / highlight / 
 | 组件文案国际化 | 未落地，面向用户的字符串内置英文，可经 `translations` 逐条覆盖 |
 | 令牌产物格式 | 仅 CSS / JSON / TS 三种 |
 | AI 组件族 | 协议内核与渲染内核已落地，Thread / Composer / CodeBlock 三件可用，代码着色走端口（内置自研粗粒度词法器，可换 Shiki）；MarkdownStream、Reasoning / ToolCall 折叠、工具审批仍在做 |
-| 样式检查未进门禁 | `stylelint.config.js` 与配置包都齐了，但没有对应脚本，也没进 CI，眼下要手动 `npx stylelint` |
 | 企业业务组件 | 未开始 |
 
 ## 质量门禁
