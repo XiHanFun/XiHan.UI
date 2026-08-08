@@ -8,7 +8,6 @@ export const knownA11yViolations: KnownViolations = {
   'time-field': { 'aria-allowed-attr': '分段元素的角色不支持所挂的 ARIA 属性' },
   'time-picker': { 'aria-allowed-attr': '同 time-field' },
   'cascader': { 'aria-allowed-attr': 'aria-expanded 挂在 role=option 的条目上，option 不支持它' },
-  'splitter': { 'aria-allowed-attr': 'aria-orientation 挂在无角色的 root 上，它不是全局属性' },
   'table': {
     'aria-conditional-attr': '行上的 aria-expanded 只在 treegrid 成立，当前 role 是 grid',
     'aria-required-children': 'grid 下出现了非 row 的直接子节点',
