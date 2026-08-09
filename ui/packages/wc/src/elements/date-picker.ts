@@ -5,6 +5,7 @@ import type {
   CalendarSelectionMode,
   CalendarWeekDay,
   DateFieldSchema,
+  DatePickerFieldApi,
   DatePickerFocusChangeDetails,
   DatePickerOpenChangeDetails,
   DatePickerSchema,
@@ -13,7 +14,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { calendarAnatomy, calendarMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldProps, datePickerMachine, datePickerMeta } from '@xihan-ui/headless'
+import { calendarAnatomy, calendarMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldEndProps, datePickerFieldProps, datePickerMachine, datePickerMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -25,7 +26,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
-/** 取作者写在段位上的 index，缺席或写坏了退回文档序。 */
+/** 取作者写在段位上的 index，缺席或写坏了退回组内文档序。 */
 function declaredIndex(el: HTMLElement, position: number): number {
   const raw = el.getAttribute('index')
   if (raw == null || raw.trim() === '')
@@ -45,7 +46,12 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * 网格由作者渲染，元素不生成节点：读 `weeks` / `weekDays` / `headingLabel` 三个只读属性，
  * 听 `focused-value-change` 重画。日期身份取 cell 节点上的 `value`（ISO 串），
  * cell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）；
- * 段位可自带 `index` 属性声明下标，缺省按文档序。
+ * 段位可自带 `index` 属性声明下标，缺省按所在 input 之内的文档序。
+ *
+ * 区间模式（selection-mode="range"）下 input 写两个：文档序在前的是起点、在后的是终点，
+ * 各自内部写一整套段位。段位与 hidden-input 按所在 input 归组，方向键不跨组；
+ * hidden-input 写在 input 之外（如与 control 平级）时按文档序对应起止两端。
+ * 其余模式只认第一个 input。
  *
  * @customElement xh-date-picker
  * @attr {string} value - 受控选中值（单选简写，ISO 串）；缺省该属性即非受控，区间/多选请用 property 传数组
@@ -61,7 +67,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {boolean} read-only - 只读：浮层照常展开、日历照常浏览，但选中值改不动
  * @attr {boolean} invalid - 校验失败标注
  * @attr {boolean} required - 必填标注，落到每段的 aria-required 上
- * @attr {string} name - 表单字段名；给了隐藏输入才带 name
+ * @attr {string} name - 表单字段名；给了隐藏输入才带 name。区间模式下是起点那一份
+ * @attr {string} end-name - 区间终点那份隐藏输入的表单字段名；不给即终点不参与提交
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
  * @attr {boolean} close-on-select - 选完即收起，默认 true；写 close-on-select="false" 关掉
@@ -71,8 +78,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid）
  * @csspart label - 标题；点它把焦点送进首段。刻意不是原生 label（段位是 div，标不了）
  * @csspart control - 输入行容器，同时是浮层的定位锚点
- * @csspart input - role=group 的分段容器，段位挂在它里面
- * @csspart segment - 一段一个的 spinbutton 节点（data-scope="date-field"），可自带 index 属性
+ * @csspart input - role=group 的分段容器，段位挂在它里面；区间模式下有起止两个，data-index 区分
+ * @csspart segment - 一段一个的 spinbutton 节点（data-scope="date-field"），可自带 index 属性；下标在所属 input 组内数
  * @csspart trigger - 展开日历的按钮，须是原生 button
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位且对读屏隐藏
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
@@ -89,7 +96,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart week-row - role=row 周行，表头与日期行共用
  * @csspart cell - role=gridcell 日期格，承载 aria-selected；须自带 value 属性（ISO 串）
  * @csspart cell-trigger - 真正可点可聚焦的那一层，承载 aria-disabled 与 roving tabindex
- * @csspart hidden-input - type=hidden 的表单出口，值是 ISO 串
+ * @csspart hidden-input - type=hidden 的表单出口，值是 ISO 串；区间模式下起止各一份
  */
 export class XhDatePickerElement extends XhElement {
   // 分段输入与日历的 DOM 摊在本元素的 Light DOM 里由本元素接线，它们的角色节点归各自 scope 管
@@ -115,6 +122,9 @@ export class XhDatePickerElement extends XhElement {
     invalid: { converter: BOOLEAN_CONVERTER },
     required: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
+    endName: { converter: STRING_CONVERTER, attribute: 'end-name' },
+    // 文案是对象，只能走 property
+    translations: { attribute: false },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
     closeOnSelect: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-select' },
@@ -136,13 +146,15 @@ export class XhDatePickerElement extends XhElement {
   declare invalid?: boolean
   declare required?: boolean
   declare name?: string
+  declare endName?: string
+  declare translations?: DatePickerSchema['props']['translations']
   declare placement?: Placement
   declare offset?: number
   declare closeOnSelect?: boolean
   declare isDateUnavailable?: (value: string) => boolean
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  // 三台机器共用一份 scope，part id 里带组件名故不相撞
+  // 四台机器共用一份 scope，part id 里带组件名故不相撞
   private readonly pickerScope = createScope(null, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
@@ -160,7 +172,7 @@ export class XhDatePickerElement extends XhElement {
     this.dispatchEvent(new CustomEvent('focused-value-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  // 声明顺序即 controller 挂载顺序：两台内嵌机器的 props 从编排机现读，编排机须先建
+  // 声明顺序即 controller 挂载顺序：三台内嵌机器的 props 从编排机现读，编排机须先建
   private readonly rootCtrl = new MachineController<DatePickerSchema>(
     this,
     datePickerMachine,
@@ -188,8 +200,22 @@ export class XhDatePickerElement extends XhElement {
     { scope: this.pickerScope },
   )
 
+  // 终点那组段位；一律建起来不按模式条件建，机器实例数得是定数。
+  // 非区间模式下它的值恒为空、写值入口自锁，connect 也不把它露出来
+  private readonly fieldEndCtrl = new MachineController<DateFieldSchema>(
+    this,
+    dateFieldMachine,
+    () => datePickerFieldEndProps(this.rootCtrl.service),
+    { scope: this.pickerScope },
+  )
+
   private services(): DatePickerServices {
-    return { root: this.rootCtrl.service, calendar: this.calendarCtrl.service, field: this.fieldCtrl.service }
+    return {
+      root: this.rootCtrl.service,
+      calendar: this.calendarCtrl.service,
+      field: this.fieldCtrl.service,
+      fieldEnd: this.fieldEndCtrl.service,
+    }
   }
 
   private machineProps(): Partial<DatePickerSchema['props']> {
@@ -209,6 +235,8 @@ export class XhDatePickerElement extends XhElement {
       invalid: this.invalid ?? false,
       required: this.required ?? false,
       name: this.name,
+      endName: this.endName,
+      translations: this.translations,
       placement: this.placement,
       offset: this.offset,
       closeOnSelect: this.closeOnSelect,
@@ -276,6 +304,35 @@ export class XhDatePickerElement extends XhElement {
     return this.getParts(name).filter(el => owner.contains(el))
   }
 
+  /**
+   * 把隐藏输入分到起止两端：写在某个 input 之内的归那一组，
+   * 写在全部 input 之外的按自己的文档序对号入座。多出来的一律不接线。
+   */
+  private hiddenInputGroups(inputs: readonly HTMLElement[]): HTMLElement[][] {
+    const groups: HTMLElement[][] = [[], []]
+    this.getParts('hidden-input').forEach((el, position) => {
+      const owned = inputs.findIndex(input => input.contains(el))
+      groups[owned >= 0 ? owned : position]?.push(el)
+    })
+    return groups
+  }
+
+  /** 打一组段位：下标在组内从 0 数起，段位文字与收起态一并落。 */
+  private wireSegments(owner: HTMLElement, field: DatePickerFieldApi): void {
+    // wire 跑在事件之前，换段时 data-scope/data-part 已在 DOM 上供现查
+    this.partsIn(owner, 'segment').forEach((el, position) => {
+      const index = declaredIndex(el, position)
+      this.spreader.spread(el, field.getSegmentProps({ index }) as Record<string, unknown>)
+      const state = field.segments[index]
+      // 段位文字归元素写，比对后再赋值
+      const text = state?.text ?? ''
+      if (el.textContent !== text)
+        el.textContent = text
+      // 用内联 display 收起（作者层的 display 声明会盖过 [hidden]）
+      this.setPartHidden(el, state == null)
+    })
+  }
+
   protected wire(): void {
     const api = connectDatePicker(this.services(), wcNormalize)
 
@@ -287,27 +344,32 @@ export class XhDatePickerElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)
-    put('input', api.getInputProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
     put('calendar', api.getCalendarProps() as Record<string, unknown>)
-    put('hidden-input', api.field.getHiddenInputProps() as Record<string, unknown>)
 
-    // 段位逐个打；wire 跑在事件之前，换段时 data-scope/data-part 已在 DOM 上供现查
-    this.getParts('segment').forEach((el, position) => {
-      const index = declaredIndex(el, position)
-      this.spreader.spread(el, api.field.getSegmentProps({ index }) as Record<string, unknown>)
-      const state = api.field.segments[index]
-      // 段位文字归元素写，比对后再赋值
-      const text = state?.text ?? ''
-      if (el.textContent !== text)
-        el.textContent = text
-      // 用内联 display 收起（作者层的 display 声明会盖过 [hidden]）
-      this.setPartHidden(el, state == null)
-    })
+    // 起止两组各自成组：段位与隐藏输入按所属 input 归组，跨组不共用下标。
+    // input 可缺省，作者没写就拿宿主自身当归组容器，段位全归起点那一组
+    const inputs = this.getParts('input')
+    const owners = [inputs[0] ?? (this as unknown as HTMLElement), inputs[1]]
+    const hiddenInputs = this.hiddenInputGroups(inputs)
+    for (const index of [0, 1] as const) {
+      // 非区间模式没有终点那一组，作者多写的 input、段位与隐藏输入一概不接线
+      const field = index === 0 ? api.field : api.fieldEnd
+      if (!field)
+        continue
+      const input = inputs[index]
+      if (input)
+        this.spreader.spread(input, api.getInputProps({ index }) as Record<string, unknown>)
+      const owner = owners[index]
+      if (owner)
+        this.wireSegments(owner, field)
+      for (const el of hiddenInputs[index] ?? [])
+        this.spreader.spread(el, field.getHiddenInputProps() as Record<string, unknown>)
+    }
 
     // 内嵌日历的角色节点：行为取自本元素持有的那台日历机器
     put('header', api.calendar.getHeaderProps() as Record<string, unknown>)

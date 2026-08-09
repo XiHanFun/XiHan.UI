@@ -11,6 +11,7 @@ import { dateFieldMachine } from '../src/date-field'
 import {
   connectDatePicker,
   datePickerCalendarProps,
+  datePickerFieldEndProps,
   datePickerFieldProps,
   datePickerMachine,
   findDatePickerCellEl,
@@ -70,6 +71,8 @@ interface Harness {
   label: HTMLElement
   control: HTMLElement
   input: HTMLElement
+  /** 终点那组分段容器；只有区间模式挂进文档。 */
+  inputEnd: HTMLElement
   trigger: HTMLButtonElement
   clear: HTMLButtonElement
   content: HTMLElement
@@ -79,9 +82,15 @@ interface Harness {
   prev: HTMLButtonElement
   next: HTMLButtonElement
   hiddenInput: HTMLInputElement
+  /** 终点那份表单出口。 */
+  hiddenInputEnd: HTMLInputElement
   segments: () => HTMLElement[]
+  /** 终点那组的段位，文档序。 */
+  segmentsEnd: () => HTMLElement[]
   /** 段位的可见文字，文档序。 */
   segmentTexts: () => string[]
+  /** 终点那组段位的可见文字，文档序。 */
+  segmentEndTexts: () => string[]
   /** 当前渲染出来的某一天的 cell-trigger；不在这个月的网格里就抛。 */
   cell: (value: string) => HTMLElement
   /** 同一天的 cell（外层 gridcell）。 */
@@ -98,14 +107,17 @@ interface Harness {
 const runtimes: VanillaRuntime[] = []
 
 /**
- * 挂载一台完整的日期选择器：编排机 + 内嵌日历 + 内嵌分段输入三台机器共用一个运行时与一份 scope，
+ * 挂载一台完整的日期选择器：编排机 + 内嵌日历 + 两台内嵌分段输入共用一个运行时与一份 scope，
  * 网格随聚焦日重画——这正是作者该做的事（连接层只给数据，不生成节点）。
  * 重画只在「这个月的日期集合真的换了」时发生，与 Vue 的 keyed diff 同语义。
+ *
+ * 机器一律建两台，终点那组的节点只有区间模式才挂进文档，与两个适配器同语义。
  */
 function mount(initial: Partial<Props> = {}): Harness {
   const doc = document
   const runtime = createVanillaRuntime()
   runtimes.push(runtime)
+  const range = (initial.selectionMode ?? 'single') === 'range'
   // props 挂在 signal 上：布尔态受控（open）靠 watch 里的 track 回写，
   // 而 track 只在有值真的变过时才复查——直接改一个普通对象，宿主的写回就被静默吞掉了
   const props = runtime.signal<Partial<Props>>({ locale: 'zh-CN', timeZone: 'UTC', ...initial })
@@ -120,10 +132,14 @@ function mount(initial: Partial<Props> = {}): Harness {
   const input = doc.createElement('div')
   const segmentEls = Array.from({ length: SEGMENT_NODES }, () => doc.createElement('div'))
   input.append(...segmentEls)
+  const inputEnd = doc.createElement('div')
+  const segmentEndEls = Array.from({ length: SEGMENT_NODES }, () => doc.createElement('div'))
+  inputEnd.append(...segmentEndEls)
   const clear = doc.createElement('button')
   const trigger = doc.createElement('button')
-  control.append(input, clear, trigger)
+  control.append(input, ...(range ? [inputEnd] : []), clear, trigger)
   const hiddenInput = doc.createElement('input')
+  const hiddenInputEnd = doc.createElement('input')
   const positioner = doc.createElement('div')
   const content = doc.createElement('div')
   const calendarEl = doc.createElement('div')
@@ -143,10 +159,10 @@ function mount(initial: Partial<Props> = {}): Harness {
   calendarEl.append(header, grid)
   content.appendChild(calendarEl)
   positioner.appendChild(content)
-  root.append(label, control, hiddenInput, positioner)
+  root.append(label, control, hiddenInput, ...(range ? [hiddenInputEnd] : []), positioner)
   doc.body.appendChild(root)
 
-  // 顺序要紧：两台内嵌机器的 props 都从编排机现读，编排机必须先立起来
+  // 顺序要紧：内嵌机器的 props 都从编排机现读，编排机必须先立起来
   const rootService = createService(datePickerMachine, { props: () => props.get(), runtime, scope })
   const calendarService = createService(calendarMachine, {
     props: () => datePickerCalendarProps(rootService),
@@ -158,7 +174,17 @@ function mount(initial: Partial<Props> = {}): Harness {
     runtime,
     scope,
   })
-  const services: DatePickerServices = { root: rootService, calendar: calendarService, field: fieldService }
+  const fieldEndService = createService(dateFieldMachine, {
+    props: () => datePickerFieldEndProps(rootService),
+    runtime,
+    scope,
+  })
+  const services: DatePickerServices = {
+    root: rootService,
+    calendar: calendarService,
+    field: fieldService,
+    fieldEnd: fieldEndService,
+  }
 
   const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
   rootService.refs.set('config', config)
@@ -219,6 +245,16 @@ function mount(initial: Partial<Props> = {}): Harness {
       // 段位的文字归适配器写：连接层只管属性与事件
       el.textContent = api.field.segments[index]?.text ?? ''
     })
+    // 终点那一组：非区间模式连接层不露出它，节点也就不接线
+    const fieldEnd = api.fieldEnd
+    if (fieldEnd) {
+      spread(inputEnd, api.getInputProps({ index: 1 }) as Record<string, unknown>)
+      spread(hiddenInputEnd, fieldEnd.getHiddenInputProps() as Record<string, unknown>)
+      segmentEndEls.forEach((el, index) => {
+        spread(el, fieldEnd.getSegmentProps({ index }) as Record<string, unknown>)
+        el.textContent = fieldEnd.segments[index]?.text ?? ''
+      })
+    }
     spread(positioner, api.getPositionerProps() as Record<string, unknown>)
     spread(content, api.getContentProps() as Record<string, unknown>)
     spread(calendarEl, api.getCalendarProps() as Record<string, unknown>)
@@ -252,6 +288,7 @@ function mount(initial: Partial<Props> = {}): Harness {
     label,
     control,
     input,
+    inputEnd,
     trigger: trigger as HTMLButtonElement,
     clear: clear as HTMLButtonElement,
     content,
@@ -261,8 +298,11 @@ function mount(initial: Partial<Props> = {}): Harness {
     prev: prev as HTMLButtonElement,
     next: next as HTMLButtonElement,
     hiddenInput: hiddenInput as HTMLInputElement,
+    hiddenInputEnd: hiddenInputEnd as HTMLInputElement,
     segments: () => segmentEls,
+    segmentsEnd: () => segmentEndEls,
     segmentTexts: () => segmentEls.map(el => el.textContent ?? ''),
+    segmentEndTexts: () => segmentEndEls.map(el => el.textContent ?? ''),
     cell: (value) => {
       const el = triggers.get(value)
       if (!el)
@@ -465,6 +505,49 @@ describe('选中值的三个入口', () => {
     year.focus()
     press(year, 'ArrowUp')
     expect(h.value()).toEqual(['2026-07-28'])
+  })
+})
+
+describe('区间：起止两组段位', () => {
+  it('两组各管一端：敲终点只改 value[1]，起点原封不动', () => {
+    const h = mount({ selectionMode: 'range', defaultValue: ['2026-07-01', '2026-07-09'] })
+    const day = h.segmentsEnd()[2]!
+    day.focus()
+    press(day, 'ArrowUp')
+    expect(h.value()).toEqual(['2026-07-01', '2026-07-10'])
+    expect(h.segmentTexts().slice(0, 3)).toEqual(['2026', '07', '01'])
+    expect(h.segmentEndTexts().slice(0, 3)).toEqual(['2026', '07', '10'])
+    expect(h.hiddenInput.value).toBe('2026-07-01')
+    expect(h.hiddenInputEnd.value).toBe('2026-07-10')
+  })
+
+  it('只敲终点：起点那一格留空占位，对外照位报出；换段不越出本组', () => {
+    const onValueChange = vi.fn()
+    const h = mount({ selectionMode: 'range', onValueChange })
+    h.segmentsEnd()[0]!.focus()
+    // 逐位敲满年月日，敲满一段就跳下一段
+    for (const digit of '20261119')
+      press(active(), digit)
+
+    expect(h.segmentsEnd()).toContain(active())
+    expect(h.value()).toEqual(['', '2026-11-19'])
+    expect(h.segmentTexts().slice(0, 3)).toEqual(['yyyy', 'mm', 'dd'])
+    expect(h.hiddenInput.value).toBe('')
+    expect(h.hiddenInputEnd.value).toBe('2026-11-19')
+    // 前面的空缺照位留着，受控回写才认得出这是终点
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['', '2026-11-19'] })
+  })
+
+  it('终点早于起点也照位存放：段位那一路不排序、不去重', () => {
+    const h = mount({ selectionMode: 'range', defaultValue: ['2026-07-20', '2026-07-25'] })
+    const day = h.segmentsEnd()[2]!
+    day.focus()
+    // 5 后面再接一位最小也是 50，越过当月天数，这一下当场敲定
+    press(day, '5')
+    expect(h.value()).toEqual(['2026-07-20', '2026-07-05'])
+    expect(h.segmentTexts().slice(0, 3)).toEqual(['2026', '07', '20'])
+    // 日历跟着终点走，不被拽回起点
+    expect(h.focusedValue()).toBe('2026-07-05')
   })
 })
 

@@ -21,6 +21,8 @@ const SEGMENT_NODES = 6
 
 const CALENDAR = '[data-scope="calendar"]'
 const FIELD = '[data-scope="date-field"]'
+/** 分段容器；区间模式下有两组，文档序即起止序。 */
+const INPUT = '[data-scope="date-picker"][data-part="input"]'
 
 function cellTrigger(doc: Document, value: string): HTMLElement {
   const el = doc.querySelector<HTMLElement>(`${CALENDAR}[data-part="cell-trigger"][data-value="${value}"]`)
@@ -37,24 +39,35 @@ function gridCell(doc: Document, value: string): HTMLElement {
   return el
 }
 
-function segments(doc: Document): HTMLElement[] {
-  return [...doc.querySelectorAll<HTMLElement>(`${FIELD}[data-part="segment"]`)]
+/** 第 group 组分段容器：0 是起点，1 是终点（只有区间模式有第二组）。 */
+function inputAt(doc: Document, group: number): HTMLElement {
+  const el = doc.querySelectorAll<HTMLElement>(INPUT)[group]
+  if (!el)
+    throw new Error(`没有第 ${group} 组分段容器`)
+  return el
 }
 
-function segmentTexts(doc: Document): string[] {
-  return segments(doc).map(el => el.textContent ?? '')
+/** 某一组内部的段位，文档序。段位戴的是分段输入那份 scope。 */
+function segments(doc: Document, group = 0): HTMLElement[] {
+  return [...inputAt(doc, group).querySelectorAll<HTMLElement>(`${FIELD}[data-part="segment"]`)]
 }
 
-function expectTexts(doc: Document, want: readonly string[], why: string): void {
-  const got = segmentTexts(doc).slice(0, want.length)
+function segmentTexts(doc: Document, group = 0): string[] {
+  return segments(doc, group).map(el => el.textContent ?? '')
+}
+
+function expectTexts(doc: Document, want: readonly string[], why: string, group = 0): void {
+  const got = segmentTexts(doc, group).slice(0, want.length)
   if (got.join('|') !== want.join('|'))
     throw new Error(`${why}：期望 [${want.join(',')}]，实际 [${got.join(',')}]`)
 }
 
-function expectHidden(doc: Document, want: string, why: string): void {
-  const got = doc.querySelector<HTMLInputElement>(`${FIELD}[data-part="hidden-input"]`)?.value ?? ''
+/** 第 group 份隐藏输入；两组各有一份，文档序即起止序。 */
+function expectHidden(doc: Document, want: string, why: string, group = 0): void {
+  const el = doc.querySelectorAll<HTMLInputElement>(`${FIELD}[data-part="hidden-input"]`)[group]
+  const got = el?.value ?? ''
   if (got !== want)
-    throw new Error(`${why}：隐藏输入期望 "${want}"，实际 "${got}"`)
+    throw new Error(`${why}：第 ${group} 份隐藏输入期望 "${want}"，实际 "${got}"`)
 }
 
 /** 点某一天；格子属于内嵌日历那份解剖。 */
@@ -63,22 +76,27 @@ async function pickDay(ctx: RawStepContext, value: string): Promise<void> {
   await ctx.flush()
 }
 
-/** 往某一段上直接派按键。 */
-async function pressOnSegment(ctx: RawStepContext, index: number, keys: readonly string[]): Promise<void> {
-  const el = segments(ctx.doc)[index]
+/** 往某一组的某一段上直接派按键。 */
+async function pressOnSegment(
+  ctx: RawStepContext,
+  index: number,
+  keys: readonly string[],
+  group = 0,
+): Promise<void> {
+  const el = segments(ctx.doc, group)[index]
   if (!el)
-    throw new Error(`找不到第 ${index} 段`)
+    throw new Error(`第 ${group} 组里找不到第 ${index} 段`)
   el.focus()
   for (const key of keys)
     el.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
   await ctx.flush()
 }
 
-function expectFocusedSegment(doc: Document, index: number, why: string): void {
-  const el = segments(doc)[index]
-  if (doc.activeElement !== el) {
-    const at = segments(doc).indexOf(doc.activeElement as HTMLElement)
-    throw new Error(`${why}：期望焦点在第 ${index} 段，实际在第 ${at} 段`)
+function expectFocusedSegment(doc: Document, index: number, why: string, group = 0): void {
+  const nodes = segments(doc, group)
+  if (doc.activeElement !== nodes[index]) {
+    const at = nodes.indexOf(doc.activeElement as HTMLElement)
+    throw new Error(`${why}：期望焦点在第 ${group} 组第 ${index} 段，实际在同组第 ${at} 段`)
   }
 }
 
@@ -158,6 +176,30 @@ const FIXTURE: FixtureNode = {
   ],
 }
 
+/**
+ * 区间模式的标记：控件里两组段位、表单出口两份，靠 index 属性认起止。
+ * 默认 fixture 保持单组，只有区间用例派生成这一份。
+ */
+function rangeFixture(base: FixtureNode): FixtureNode {
+  const pair = (node: FixtureNode): FixtureNode[] =>
+    [0, 1].map(index => ({ ...node, attrs: { ...node.attrs, index: String(index) } }))
+  return {
+    ...base,
+    children: base.children?.flatMap((node) => {
+      if (node.part === 'hidden-input')
+        return pair(node)
+      if (node.part !== 'control')
+        return [node]
+      return [{
+        ...node,
+        children: node.children?.flatMap(kid => (kid.part === 'input' ? pair(kid) : [kid])),
+      }]
+    }),
+  }
+}
+
+const RANGE_PROPS = { locale: LOCALE, timeZone: 'UTC', selectionMode: 'range' } as const
+
 export const datePickerSuite: ConformanceSuite = {
   component: 'date-picker',
   anatomy: datePickerAnatomy,
@@ -190,7 +232,10 @@ export const datePickerSuite: ConformanceSuite = {
           },
           'input': {
             'role': 'group',
+            'data-index': '0',
+            // 单值只有一组：名字借标题，不另报 aria-label
             'aria-labelledby': '@part(label)',
+            'aria-label': null,
             'aria-disabled': 'false',
             'data-complete': '',
             'data-empty': null,
@@ -403,13 +448,18 @@ export const datePickerSuite: ConformanceSuite = {
     {
       name: '区间：只落起点不收起，两端都落定才收起',
       spec: { apg: APG },
-      props: { locale: LOCALE, timeZone: 'UTC', selectionMode: 'range', defaultValue: [] },
+      fixture: rangeFixture,
+      props: { ...RANGE_PROPS, defaultValue: [] },
       steps: [
         { kind: 'click', part: 'trigger' },
         {
           kind: 'raw',
-          why: '格子是内嵌日历的部件',
-          run: ctx => pickDay(ctx, '2024-02-10'),
+          why: '格子是内嵌日历的部件，段位是内嵌分段输入的部件',
+          run: async (ctx) => {
+            await pickDay(ctx, '2024-02-10')
+            expectTexts(ctx.doc, ['2024', '02', '10'], '日历落的起点进第一组', 0)
+            expectTexts(ctx.doc, ['yyyy', 'mm', 'dd'], '终点还没落定，第二组留占位串', 1)
+          },
           expect: {
             parts: { content: { hidden: null } },
             // 区间只落了起点，closeOnSelect 不起跳，没有 open-change
@@ -419,7 +469,13 @@ export const datePickerSuite: ConformanceSuite = {
         {
           kind: 'raw',
           why: '同上',
-          run: ctx => pickDay(ctx, '2024-02-20'),
+          run: async (ctx) => {
+            await pickDay(ctx, '2024-02-20')
+            expectTexts(ctx.doc, ['2024', '02', '10'], '起点留在第一组', 0)
+            expectTexts(ctx.doc, ['2024', '02', '20'], '终点落进第二组', 1)
+            expectHidden(ctx.doc, '2024-02-10', '起点那份表单出口', 0)
+            expectHidden(ctx.doc, '2024-02-20', '终点那份表单出口', 1)
+          },
           expect: {
             parts: { content: { hidden: '' } },
             // 落终点凑满区间，closeOnSelect（缺省 true）随即收起：先值后开合
@@ -427,6 +483,109 @@ export const datePickerSuite: ConformanceSuite = {
               { type: 'value-change', detail: { value: ['2024-02-10', '2024-02-20'] } },
               { type: 'open-change', detail: { open: false } },
             ],
+          },
+        },
+      ],
+    },
+    {
+      name: '区间：终点那组段位自己能敲，按位只改终点，起点原封不动',
+      spec: { apg: APG },
+      fixture: rangeFixture,
+      props: { ...RANGE_PROPS, defaultValue: ['2024-02-10', '2024-02-20'] },
+      steps: [
+        {
+          kind: 'raw',
+          why: '段位与隐藏输入是内嵌分段输入的部件，按本组件的 scope 找不到',
+          run: async (ctx) => {
+            // 第三段是日：上键把终点的 20 推成 21
+            await pressOnSegment(ctx, 2, ['ArrowUp'], 1)
+            expectTexts(ctx.doc, ['2024', '02', '10'], '起点那组一个字都不该动', 0)
+            expectTexts(ctx.doc, ['2024', '02', '21'], '上键把终点推进一天', 1)
+            expectHidden(ctx.doc, '2024-02-10', '起点那份表单出口不动', 0)
+            expectHidden(ctx.doc, '2024-02-21', '终点那份表单出口跟着改口', 1)
+          },
+          expect: {
+            // 段位那一路不收起浮层，也不排序：终点还是排在起点后面
+            events: [{ type: 'value-change', detail: { value: ['2024-02-10', '2024-02-21'] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: '区间：清空一次抹掉两端，焦点回起点那组的首段',
+      spec: { apg: APG },
+      fixture: rangeFixture,
+      props: { ...RANGE_PROPS, defaultValue: ['2024-02-10', '2024-02-20'] },
+      steps: [
+        {
+          kind: 'click',
+          part: 'clear-trigger',
+          expect: {
+            parts: {
+              'clear-trigger': { 'disabled': '', 'data-disabled': '' },
+              'input[0]': { 'data-empty': '', 'data-complete': null },
+              'input[1]': { 'data-empty': '', 'data-complete': null },
+            },
+            events: [{ type: 'value-change', detail: { value: [] } }],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '段位与隐藏输入是内嵌解剖的部件',
+          run: ({ doc }) => {
+            expectTexts(doc, ['yyyy', 'mm', 'dd'], '起点那组退回占位串', 0)
+            expectTexts(doc, ['yyyy', 'mm', 'dd'], '终点那组一并退回占位串', 1)
+            expectHidden(doc, '', '起点没有值可提交', 0)
+            expectHidden(doc, '', '终点没有值可提交', 1)
+            expectFocusedSegment(doc, 0, '清空后焦点该回到起点那组的首段', 0)
+          },
+        },
+      ],
+    },
+    {
+      name: '区间：两组各是一个 group，各报各的名字，不共用标题',
+      spec: { apg: APG },
+      fixture: rangeFixture,
+      props: { ...RANGE_PROPS, defaultValue: [] },
+      initial: {
+        order: [
+          'root',
+          'label',
+          'control',
+          'input[0]',
+          'input[1]',
+          'clear-trigger',
+          'trigger',
+          'positioner',
+          'content',
+          'calendar',
+        ],
+        counts: { input: 2 },
+        parts: {
+          // 两组都指向同一个标题的话，读屏念出来是同一个名字，分不出敲的是哪一端
+          'input[0]': {
+            'role': 'group',
+            'data-index': '0',
+            'aria-label': 'Start date',
+            'aria-labelledby': null,
+          },
+          'input[1]': {
+            'role': 'group',
+            'data-index': '1',
+            'aria-label': 'End date',
+            'aria-labelledby': null,
+          },
+        },
+      },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { translations: { startDate: '开始日期', endDate: '结束日期' } },
+          expect: {
+            parts: {
+              'input[0]': { 'aria-label': '开始日期' },
+              'input[1]': { 'aria-label': '结束日期' },
+            },
           },
         },
       ],

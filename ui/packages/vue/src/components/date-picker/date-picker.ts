@@ -1,11 +1,23 @@
 import type { Placement } from '@xihan-ui/core'
-import type { CalendarCellProps, CalendarSelectionMode, DatePickerSchema } from '@xihan-ui/headless'
+import type { CalendarCellProps, CalendarSelectionMode, DatePickerApi, DatePickerFieldApi, DatePickerSchema } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { computed, defineComponent, h } from 'vue'
-import { provideDatePicker, provideDatePickerCell, useDatePickerCellContext, useDatePickerContext } from './context'
+import {
+  provideDatePicker,
+  provideDatePickerCell,
+  provideDatePickerInput,
+  useDatePickerCellContext,
+  useDatePickerContext,
+  useDatePickerInputContext,
+} from './context'
 import { useDatePicker } from './use-date-picker'
 
 type DatePickerProps = DatePickerSchema['props']
+
+/** 按组号取那一组分段输入；非区间模式下终点那组缺席。 */
+function fieldOf(api: DatePickerApi, index: 0 | 1): DatePickerFieldApi | null {
+  return index === 1 ? api.fieldEnd : api.field
+}
 
 export const XhDatePickerRoot = defineComponent({
   name: 'XhDatePickerRoot',
@@ -26,6 +38,10 @@ export const XhDatePickerRoot = defineComponent({
     invalid: Boolean,
     required: Boolean,
     name: { type: String, default: undefined },
+    // 区间终点那份隐藏输入的表单名；不给即终点不参与提交
+    endName: { type: String, default: undefined },
+    // 区间模式下两组段位各自的读屏名字
+    translations: { type: Object as PropType<DatePickerProps['translations']>, default: undefined },
     placement: { type: String as PropType<Placement>, default: undefined },
     offset: { type: Number, default: undefined },
     closeOnSelect: { type: Boolean, default: undefined },
@@ -62,6 +78,8 @@ export const XhDatePickerRoot = defineComponent({
       canGoPrev: ctx.api.value.calendar.canGoPrev,
       canGoNext: ctx.api.value.calendar.canGoNext,
       segments: ctx.api.value.field.segments,
+      // 区间终点那组段位；非区间模式为空数组，作者据此决定渲不渲第二组
+      endSegments: ctx.api.value.fieldEnd?.segments ?? [],
       canClear: ctx.api.value.canClear,
       setOpen: ctx.api.value.setOpen,
       setValue: ctx.api.value.setValue,
@@ -92,10 +110,21 @@ export const XhDatePickerControl = defineComponent({
 
 export const XhDatePickerInput = defineComponent({
   name: 'XhDatePickerInput',
-  setup(_, { slots }) {
+  props: {
+    // 组号：0 起点、1 区间终点，兼收字符串以支持模板里写 index="1"
+    index: { type: [Number, String] as PropType<number | string>, default: 0 },
+  },
+  setup(props, { slots }) {
     const ctx = useDatePickerContext()
+    const index = computed<0 | 1>(() => (Number(props.index) === 1 ? 1 : 0))
+    // 组内的段位与隐藏输入据此认领起止
+    provideDatePickerInput({ index })
     // role=group 的分段容器，也是换段时的查询边界
-    return () => h('div', ctx.api.value.getInputProps() as Record<string, unknown>, slots.default?.())
+    return () => h(
+      'div',
+      ctx.api.value.getInputProps({ index: index.value }) as Record<string, unknown>,
+      slots.default?.(),
+    )
   },
 })
 
@@ -107,14 +136,18 @@ export const XhDatePickerSegment = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useDatePickerContext()
+    const group = useDatePickerInputContext()
     return () => {
       const index = Math.trunc(Number(props.index))
-      const api = ctx.api.value
-      const state = api.field.segments[index]
+      const field = fieldOf(ctx.api.value, group.index.value)
+      // 非区间模式下写在终点组里的段位无处落脚，不渲染
+      if (!field)
+        return null
+      const state = field.segments[index]
       // 有插槽用插槽，否则渲染连接层算好的段位文本
       return h(
         'div',
-        api.field.getSegmentProps({ index }) as Record<string, unknown>,
+        field.getSegmentProps({ index }) as Record<string, unknown>,
         slots.default ? slots.default({ segment: state }) : state?.text,
       )
     }
@@ -291,8 +324,20 @@ export const XhDatePickerCellTrigger = defineComponent({
 
 export const XhDatePickerHiddenInput = defineComponent({
   name: 'XhDatePickerHiddenInput',
-  setup() {
+  props: {
+    // 写在分段容器外面时用它指明属于哪一端；写在容器里面不必给，跟着容器走
+    index: { type: [Number, String] as PropType<number | string>, default: undefined },
+  },
+  setup(props) {
     const ctx = useDatePickerContext()
-    return () => h('input', ctx.api.value.field.getHiddenInputProps() as Record<string, unknown>)
+    const group = useDatePickerInputContext()
+    return () => {
+      const index = props.index === undefined ? group.index.value : (Number(props.index) === 1 ? 1 : 0)
+      const field = fieldOf(ctx.api.value, index)
+      // 非区间模式下终点那份没有可提交的值，不渲染
+      if (!field)
+        return null
+      return h('input', field.getHiddenInputProps() as Record<string, unknown>)
+    }
   },
 })

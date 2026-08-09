@@ -1,7 +1,13 @@
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { Dict, NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { DateSegmentType } from '../date-field'
-import type { DatePickerApi, DatePickerFieldApi, DatePickerServices } from './date-picker.types'
+import type { Service } from '@xihan-ui/machine'
+import type { DateFieldApi, DateFieldSchema, DateSegmentType } from '../date-field'
+import type {
+  DatePickerApi,
+  DatePickerFieldApi,
+  DatePickerServices,
+  DatePickerTranslations,
+} from './date-picker.types'
 import { focusSafely, navIntentFromKey, stepIndex } from '@xihan-ui/behavior'
 import { dataAttr, normalizeProps } from '@xihan-ui/core'
 import { connectCalendar } from '../calendar'
@@ -26,22 +32,34 @@ function hasModifier(event: KeyboardEvent): boolean {
   return event.ctrlKey || event.metaKey || event.altKey
 }
 
+function resolveTranslations(input: Partial<DatePickerTranslations> | undefined): DatePickerTranslations {
+  return {
+    startDate: input?.startDate ?? 'Start date',
+    endDate: input?.endDate ?? 'End date',
+  }
+}
+
 export function connectDatePicker<T extends PropTypes>(
   services: DatePickerServices,
   normalize: NormalizeProps<T>,
 ): DatePickerApi<T> {
   const { state, prop, send, context, scope } = services.root
   const open = state.get() === 'open'
-  const ids = scope.ids('date-picker', 'label', 'trigger', 'content', 'input')
+  // 两组段位容器各占一个 id：同一份 id 出现两次会被判成重复 id
+  const ids = scope.ids('date-picker', 'label', 'trigger', 'content', 'input', 'input-end')
 
   const value = context.get('value')
+  // 空串是区间里空缺那一端的占位，算数的只有填了的
+  const filled = value.filter(v => v !== '')
   const selectionMode = prop('selectionMode') ?? 'single'
+  const range = selectionMode === 'range'
+  const label = resolveTranslations(prop('translations'))
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
   // 只读与禁用都改不了选中值，禁用还额外展不开浮层
   const interactive = !disabled && !readOnly
-  const canClear = interactive && value.length > 0
+  const canClear = interactive && filled.length > 0
   const stateAttr = open ? 'open' : 'closed'
   // connect 在 render 期求值，不得读 DOM：位置只读引擎写进 context 的结果
   const position = context.get('position')
@@ -56,6 +74,7 @@ export function connectDatePicker<T extends PropTypes>(
    * 不能传调用方的归一化器：它已把 onKeyDown 改成各框架的事件键名，再覆盖会变成两个键、两个处理器。
    */
   const fieldRaw = connectDateField(services.field, normalizeProps)
+  const fieldEndRaw = services.fieldEnd ? connectDateField(services.fieldEnd, normalizeProps) : null
   const bounds = { min: parseBoundary(prop('min')), max: parseBoundary(prop('max')) }
 
   /**
@@ -93,11 +112,15 @@ export function connectDatePicker<T extends PropTypes>(
   /**
    * 这一下数字键会不会把本段敲满。必须在 onKeyDown 写入之前算：写完缓冲即被清空。
    */
-  const digitFillsSegment = (event: KeyboardEvent, type: DateSegmentType): boolean => {
+  const digitFillsSegment = (
+    service: Service<DateFieldSchema>,
+    event: KeyboardEvent,
+    type: DateSegmentType,
+  ): boolean => {
     if (!DIGIT.test(event.key))
       return false
-    const live = services.field.context.get('segments')
-    const buffer = services.field.context.get('typing')
+    const live = service.context.get('segments')
+    const buffer = service.context.get('typing')
     const result = applySegmentDigit(
       buffer?.segment === type ? buffer.digits : '',
       event.key,
@@ -106,16 +129,20 @@ export function connectDatePicker<T extends PropTypes>(
     return !!result?.complete
   }
 
-  const field: DatePickerFieldApi<T> = {
-    value: fieldRaw.value,
-    segments: fieldRaw.segments,
-    complete: fieldRaw.complete,
-    empty: fieldRaw.empty,
-    outOfRange: fieldRaw.outOfRange,
+  /** 把一组段位包成对外那一面：换段在这里补，其余原样转发。 */
+  const toFieldApi = (
+    service: Service<DateFieldSchema>,
+    raw: DateFieldApi,
+  ): DatePickerFieldApi<T> => ({
+    value: raw.value,
+    segments: raw.segments,
+    complete: raw.complete,
+    empty: raw.empty,
+    outOfRange: raw.outOfRange,
 
     getSegmentProps: (item) => {
-      const base = fieldRaw.getSegmentProps(item) as Dict
-      const type = fieldRaw.segments[item.index]?.type
+      const base = raw.getSegmentProps(item) as Dict
+      const type = raw.segments[item.index]?.type
       const onKeyDown = base.onKeyDown as ((event: KeyboardEvent) => void) | undefined
       // 精度用不上的段：分段输入不挂处理器，这里也不补
       if (type == null || onKeyDown == null)
@@ -124,13 +151,13 @@ export function connectDatePicker<T extends PropTypes>(
         ...base,
         onKeyDown: (event: KeyboardEvent) => {
           const el = event.currentTarget as HTMLElement
-          const filled = interactive && !hasModifier(event) && digitFillsSegment(event, type)
+          const fills = interactive && !hasModifier(event) && digitFillsSegment(service, event, type)
           // 值那一路交给分段输入：加减、直填、清段与拦默认行为都在它手里
           onKeyDown(event)
           // 换段由这里补：分段输入按自己的根选择器找同组段位，而这里没有那个根节点
           if (!interactive || hasModifier(event))
             return
-          if (filled) {
+          if (fills) {
             moveSegment(el, 'next')
             return
           }
@@ -142,13 +169,19 @@ export function connectDatePicker<T extends PropTypes>(
       })
     },
 
-    getHiddenInputProps: () => normalize.input(fieldRaw.getHiddenInputProps() as Dict),
-  }
+    getHiddenInputProps: () => normalize.input(raw.getHiddenInputProps() as Dict),
+  })
+
+  const field = toFieldApi(services.field, fieldRaw)
+  // 终点那一组只在区间模式下露出
+  const fieldEnd = range && services.fieldEnd && fieldEndRaw
+    ? toFieldApi(services.fieldEnd, fieldEndRaw)
+    : null
 
   return {
     open,
     value,
-    valueAsString: value[0] ?? null,
+    valueAsString: filled[0] ?? null,
     selectionMode,
     // 取日历已收口的结果（宿主设过的 → 首个选中值 → 今天），不在这里重算
     focusedValue: calendar.focusedValue,
@@ -158,6 +191,7 @@ export function connectDatePicker<T extends PropTypes>(
     canClear,
     calendar,
     field,
+    fieldEnd,
     setOpen: (next) => {
       if (next !== open)
         send({ type: next ? 'OPEN' : 'CLOSE' })
@@ -193,21 +227,29 @@ export function connectDatePicker<T extends PropTypes>(
       'data-invalid': dataAttr(invalid),
     }),
 
-    // 分段容器：role=group 把一排段位兜成整体，名字由 label 提供。
+    // 分段容器：role=group 把一排段位兜成整体。单值时名字由 label 提供，
+    // 区间的两组各自报名字，否则读屏念出来的是同一个。
     // 它同时承担内嵌分段输入的 root/control 两个部件，不另挂分段输入的根节点
-    getInputProps: () => normalize.element({
-      ...parts.input.attrs,
-      'id': ids.input,
-      'role': 'group',
-      'aria-labelledby': ids.label,
-      'aria-disabled': disabled ? 'true' : 'false',
-      'data-disabled': dataAttr(disabled),
-      'data-readonly': dataAttr(readOnly),
-      'data-invalid': dataAttr(invalid || fieldRaw.outOfRange),
-      'data-empty': dataAttr(fieldRaw.empty),
-      'data-complete': dataAttr(fieldRaw.complete),
-      'data-out-of-range': dataAttr(fieldRaw.outOfRange),
-    }),
+    getInputProps: ({ index = 0 } = {}) => {
+      const end = index === 1
+      const raw = end ? fieldEndRaw : fieldRaw
+      const outOfRange = !!raw?.outOfRange
+      return normalize.element({
+        ...parts.input.attrs,
+        'id': end ? ids['input-end'] : ids.input,
+        'data-index': String(index),
+        'role': 'group',
+        'aria-labelledby': range ? undefined : ids.label,
+        'aria-label': range ? (end ? label.endDate : label.startDate) : undefined,
+        'aria-disabled': disabled ? 'true' : 'false',
+        'data-disabled': dataAttr(disabled),
+        'data-readonly': dataAttr(readOnly),
+        'data-invalid': dataAttr(invalid || outOfRange),
+        'data-empty': dataAttr(!!raw?.empty),
+        'data-complete': dataAttr(!!raw?.complete),
+        'data-out-of-range': dataAttr(outOfRange),
+      })
+    },
 
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,

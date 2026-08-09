@@ -2,7 +2,7 @@ import type { Placement, PositionResult } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
 import type { CalendarSchema, CalendarSelectionMode } from '../calendar'
 import type { DateFieldSchema, DateGranularity } from '../date-field'
-import type { DatePickerSchema } from './date-picker.types'
+import type { DatePickerSchema, DatePickerValueSource } from './date-picker.types'
 import { getLocalTimeZone, today } from '@internationalized/date'
 import { createDismissLayer, createFocusScope, itemValue } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
@@ -32,17 +32,58 @@ function compareIso(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0
 }
 
-/** 收口选中集合：单选长度 ≤ 1，多选去重升序，区间最多两端且有序。 */
+/**
+ * 对外的值：裁掉尾部的空位，前面的空缺原样留着。
+ * 区间只填了终点时是 ['', 终点]——受控回写读的是同一份下标，抹掉这个空位会让终点
+ * 落回起点那一格。只填起点时尾部无空位，仍是长度 1。
+ */
+function trimTrailingHoles(value: readonly string[]): string[] {
+  const out = [...value]
+  while (out.length > 0 && out[out.length - 1] === '')
+    out.pop()
+  return out
+}
+
+/** 收口选中集合：空串是占位先丢掉，单选长度 ≤ 1，多选去重升序，区间最多两端且有序。 */
 function normalizeSelection(next: readonly string[], mode: CalendarSelectionMode): string[] {
+  const filled = next.filter(v => v !== '')
   if (mode === 'single')
-    return next.slice(0, 1)
-  const unique = [...new Set(next)].sort(compareIso)
+    return filled.slice(0, 1)
+  const unique = [...new Set(filled)].sort(compareIso)
   return mode === 'range' ? unique.slice(0, 2) : unique
 }
 
-// 数组按元素比：受控时每次读都归一成新数组，用默认的 Object.is 会把每次读写都判成变更
+// 数组按位比：受控时每次读都归一成新数组，用默认的 Object.is 会把每次读写都判成变更。
+// 空串是占位，与该位缺席算同一件事：对外通知过滤掉空串，回写的那一份短一截
 function sameValues(a: string[], b: string[] | undefined): boolean {
-  return !!b && a.length === b.length && a.every((v, i) => v === b[i])
+  if (!b)
+    return false
+  const len = Math.max(a.length, b.length)
+  for (let i = 0; i < len; i += 1) {
+    if ((a[i] ?? '') !== (b[i] ?? ''))
+      return false
+  }
+  return true
+}
+
+/** 首个真实存在的选中值；空串是占位不算数。 */
+function firstValue(values: readonly string[]): string | null {
+  return values.find(v => v !== '') ?? null
+}
+
+/** 取区间某一端；空串占位视同没有值。 */
+function valueAt(values: readonly string[], index: 0 | 1): string | null {
+  return values[index] || null
+}
+
+/**
+ * 按位写入区间的一端：另一端原样留着，空缺处填空串占位，位置不因缺值而错位。
+ * 两端都空即空集合。
+ */
+function writeRangeAt(current: readonly string[], index: 0 | 1, value: string | null): string[] {
+  const next: [string, string] = [current[0] ?? '', current[1] ?? '']
+  next[index] = value ?? ''
+  return next[0] === '' && next[1] === '' ? [] : next
 }
 
 function timeZoneOf(service: Service<DatePickerSchema>): string {
@@ -56,7 +97,7 @@ function timeZoneOf(service: Service<DatePickerSchema>): string {
  */
 export function datePickerFocusedValue(service: Service<DatePickerSchema>): string {
   return service.context.get('focusedValue')
-    ?? service.context.get('value')[0]
+    ?? firstValue(service.context.get('value'))
     ?? today(timeZoneOf(service)).toString()
 }
 
@@ -79,11 +120,21 @@ export function datePickerCalendarProps(service: Service<DatePickerSchema>): Cal
   }
 }
 
-/** 喂给内嵌分段输入的那份 props：段位只承载首个选中值。 */
-export function datePickerFieldProps(service: Service<DatePickerSchema>): DateFieldSchema['props'] {
+/**
+ * 喂给某一组段位的那份 props。
+ *
+ * 区间模式下 index 即它承载的那一端；其余模式只有起点那一组，终点那台的值恒为空。
+ */
+function datePickerFieldPropsAt(
+  service: Service<DatePickerSchema>,
+  index: 0 | 1,
+): DateFieldSchema['props'] {
   const { prop, context, send } = service
+  const range = (prop('selectionMode') ?? 'single') === 'range'
+  const src: DatePickerValueSource = index === 0 ? 'field' : 'field-end'
+  const spare = index === 1 && !range
   return {
-    value: context.get('value')[0] ?? null,
+    value: spare ? null : valueAt(context.get('value'), index),
     granularity: DATE_PICKER_GRANULARITY,
     min: prop('min'),
     max: prop('max'),
@@ -93,13 +144,28 @@ export function datePickerFieldProps(service: Service<DatePickerSchema>): DateFi
     readOnly: prop('readOnly'),
     invalid: prop('invalid'),
     required: prop('required'),
-    name: prop('name'),
+    name: index === 0 ? prop('name') : prop('endName'),
     onValueChange: ({ value }) => {
+      // 非区间模式下终点那台不参与写值
+      if (spare)
+        return
       const current = context.get('value')
-      const next = value == null ? current.slice(1) : [value, ...current.slice(1)]
-      send({ type: 'VALUE.SET', value: next, src: 'field' })
+      const next = range
+        ? writeRangeAt(current, index, value)
+        : (value == null ? current.slice(1) : [value, ...current.slice(1)])
+      send({ type: 'VALUE.SET', value: next, src })
     },
   }
+}
+
+/** 喂给起点那组段位的 props：区间模式下承载 value[0]，其余模式承载唯一的选中值。 */
+export function datePickerFieldProps(service: Service<DatePickerSchema>): DateFieldSchema['props'] {
+  return datePickerFieldPropsAt(service, 0)
+}
+
+/** 喂给终点那组段位的 props：承载 value[1]，表单名走 endName。 */
+export function datePickerFieldEndProps(service: Service<DatePickerSchema>): DateFieldSchema['props'] {
+  return datePickerFieldPropsAt(service, 1)
 }
 
 /**
@@ -125,7 +191,7 @@ export const datePickerMachine = createMachine({
       value: toValues(prop('value')),
       defaultValue: toValues(prop('defaultValue')) ?? [],
       isEqual: sameValues,
-      onChange: value => prop('onValueChange')?.({ value }),
+      onChange: value => prop('onValueChange')?.({ value: trimTrailingHoles(value) }),
     })),
     // 聚焦日不受控，onFocusedValueChange 只作对外重画通知
     focusedValue: cell<string | null>(() => ({
@@ -239,11 +305,17 @@ export const datePickerMachine = createMachine({
         context.set('returnFocus', !handedOff)
       },
 
+      // 段位来的区间值按位落：不排序也不去重，两端各自对应一组输入框
       setValue: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'VALUE.SET')
           return
-        context.set('value', normalizeSelection(e.value, prop('selectionMode') ?? 'single'))
+        const mode = prop('selectionMode') ?? 'single'
+        const fromField = e.src === 'field' || e.src === 'field-end'
+        context.set(
+          'value',
+          mode === 'range' && fromField ? e.value.slice(0, 2) : normalizeSelection(e.value, mode),
+        )
       },
 
       clearValue: ({ context }) => context.set('value', []),
@@ -255,7 +327,7 @@ export const datePickerMachine = createMachine({
       },
 
       /**
-       * 值变了，日历跟着翻到首个选中值所在的月。
+       * 值变了，日历跟着翻到那一天所在的月：终点那组段位跟终点，其余跟首个选中值。
        *
        * 不认日历那一路：日历点选时已先发过 FOCUSED.SET，这里再改一遍会把区间终点的焦点拽回起点。
        */
@@ -263,14 +335,15 @@ export const datePickerMachine = createMachine({
         const e = event.current()
         if (e.type !== 'VALUE.SET' || e.src === 'calendar')
           return
-        const first = context.get('value')[0]
-        if (first != null)
-          context.set('focusedValue', first)
+        const values = context.get('value')
+        const next = e.src === 'field-end' ? valueAt(values, 1) : firstValue(values)
+        if (next != null)
+          context.set('focusedValue', next)
       },
 
       /** 展开那一刻把聚焦日拉回当前选中值；没有选中就落到今天。 */
       focusSelectedDay: ({ context, prop }) => {
-        const first = context.get('value')[0]
+        const first = firstValue(context.get('value'))
         context.set('focusedValue', first ?? today(prop('timeZone') ?? getLocalTimeZone()).toString())
       },
     },
