@@ -20,6 +20,11 @@
 @layer xihan.components {
   /* 表格自己滚动：吸顶表头与横向吸附列都要一个确定的滚动容器才钉得住 */
   [data-scope='table'][data-part='root'] {
+    /* 密度档只换这两个私有槽：单元格与列标题从 root 继承前者，字号靠 font-size 本身继承下去，
+       换档不必给每个部件各写一条选择器，列宽那套算法也一点不碰 */
+    --xh-_table-cell-py: var(--xh-space-2);
+    --xh-_table-font-size: var(--xh-text-body-size);
+
     display: flex;
     position: relative;
     flex-direction: column;
@@ -28,7 +33,7 @@
     border-radius: var(--xh-table-radius, var(--xh-shape-surface));
     background: var(--xh-table-bg, var(--xh-bg-surface));
     color: var(--xh-table-fg, var(--xh-fg-default));
-    font-size: var(--xh-table-font-size, var(--xh-text-body-size));
+    font-size: var(--xh-table-font-size, var(--xh-_table-font-size));
     /* 两轴一起给：列多了横向溢出是常态，得够得着 */
     overflow: auto;
   }
@@ -40,6 +45,18 @@
   /* 纯容器：焦点落它身上不画环，高亮永远长在行上 */
   [data-scope='table'][data-part='root']:focus-visible {
     outline: none;
+  }
+
+  /* —— 密度 —— */
+  /* 中间档不写规则，缺省即中档 */
+  [data-scope='table'][data-part='root'][data-size='sm'] {
+    --xh-_table-cell-py: var(--xh-space-1);
+    --xh-_table-font-size: var(--xh-font-size-sm);
+  }
+
+  [data-scope='table'][data-part='root'][data-size='lg'] {
+    --xh-_table-cell-py: var(--xh-space-3);
+    --xh-_table-font-size: var(--xh-font-size-lg);
   }
 
   [data-scope='table'][data-part='caption'] {
@@ -149,7 +166,7 @@
     align-items: center;
     gap: var(--xh-table-cell-gap, var(--xh-control-gap-md));
     min-inline-size: var(--xh-table-cell-min-w, 3rem);
-    padding-block: var(--xh-table-cell-py, var(--xh-space-2));
+    padding-block: var(--xh-table-cell-py, var(--xh-_table-cell-py));
     padding-inline: var(--xh-table-cell-px, var(--xh-control-px-sm));
     overflow: hidden;
     text-overflow: ellipsis;

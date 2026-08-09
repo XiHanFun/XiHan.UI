@@ -18,6 +18,7 @@ export const XhDrawerRoot = defineComponent({
     closeOnEscape: { type: Boolean, default: undefined },
     closeOnInteractOutside: { type: Boolean, default: undefined },
     restoreFocus: { type: Boolean, default: undefined },
+    size: { type: String, default: undefined },
     translations: { type: Object as PropType<DrawerProps['translations']>, default: undefined },
   },
   // open-change 携带 { open }，update:open 携带裸布尔

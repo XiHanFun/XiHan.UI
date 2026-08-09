@@ -275,6 +275,14 @@ export default defineConfig({
   head: head,
   lastUpdated: true,
   cleanUrls: true,
+  vite: {
+    // 组件库是 link: 进来的，Vite 的依赖预打包缓存只认 package.json 与锁文件，
+    // 改了库的源码它不会失效——本地构建会拿着旧产物继续渲染而且什么都不说。
+    // 排除掉，示例渲染的永远是当前代码。
+    optimizeDeps: {
+      exclude: ["@xihan-ui/vue", "@xihan-ui/styled"],
+    },
+  },
   themeConfig: {
     logo: logo,
     socialLinks: [

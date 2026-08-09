@@ -3,7 +3,7 @@
 export { accordionAnatomy, accordionKeyboard, accordionMachine, accordionMeta, connectAccordion } from './accordion'
 export type { AccordionApi, AccordionItemProps, AccordionSchema, AccordionValueChangeDetails } from './accordion'
 export { alertAnatomy, alertKeyboard, alertMachine, alertMeta, connectAlert } from './alert'
-export type { AlertApi, AlertOpenChangeDetails, AlertSchema, AlertTranslations, AlertVariant } from './alert'
+export type { AlertApi, AlertOpenChangeDetails, AlertSchema, AlertTranslations } from './alert'
 export { ANCHOR_DEFAULT_OFFSET, anchorAnatomy, anchorItemQuery, anchorKeyboard, anchorMachine, anchorMeta, connectAnchor, resolveActiveAnchor } from './anchor'
 export type { AnchorApi, AnchorIndicatorRect, AnchorLinkProps, AnchorRefs, AnchorSchema, AnchorTargetOffset, AnchorTranslations, AnchorValueChangeDetails } from './anchor'
 export { avatarAnatomy, avatarKeyboard, avatarMachine, avatarMeta, connectAvatar } from './avatar'

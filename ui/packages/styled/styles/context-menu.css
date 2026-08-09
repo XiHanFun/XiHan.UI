@@ -1,11 +1,40 @@
 @layer xihan.components {
   /* 根只是把触发区与浮层圈在一起做作用域，不该在作者布局里多插一层盒子 */
   [data-scope='context-menu'][data-part='root'] {
+    /* 尺寸档只换这四个私有槽，条目与分组标题都从 root 继承它们，
+       换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承
+       （display:contents 不影响继承：自定义属性沿 DOM 树传） */
+    --xh-_context-menu-item-py: var(--xh-space-2);
+    --xh-_context-menu-item-px: var(--xh-control-px-sm);
+    --xh-_context-menu-item-gap: var(--xh-control-gap-md);
+    --xh-_context-menu-font-size: var(--xh-text-body-size);
+
+    /* 条目高亮底与标记位强调色随语气走。没写 data-tone 时这两个语气槽没被声明，各自退回原来的取值 */
+    --xh-_context-menu-item-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+    --xh-_context-menu-accent: var(--xh-_tone, var(--xh-fg-subtle));
+
     display: contents;
   }
 
   [data-scope='context-menu'][data-part='root'][hidden] {
     display: none;
+  }
+
+  /* —— 尺寸 —— */
+  /* 缺省档写在上面的基础规则里。条目内外边距缺省档本就不在 control-h/px 那把尺上
+     （高度由 padding 撑出来、行内内缩取的是 sm 档），故按 space 档上下各挪一级 */
+  [data-scope='context-menu'][data-part='root'][data-size='sm'] {
+    --xh-_context-menu-item-py: var(--xh-space-1);
+    --xh-_context-menu-item-px: var(--xh-space-1);
+    --xh-_context-menu-item-gap: var(--xh-control-gap-sm);
+    --xh-_context-menu-font-size: var(--xh-font-size-sm);
+  }
+
+  [data-scope='context-menu'][data-part='root'][data-size='lg'] {
+    --xh-_context-menu-item-py: var(--xh-space-3);
+    --xh-_context-menu-item-px: var(--xh-space-3);
+    --xh-_context-menu-item-gap: var(--xh-control-gap-lg);
+    --xh-_context-menu-font-size: var(--xh-font-size-lg);
   }
 
   /* 触发区是作者自己的一块内容，尺寸与排布归他；这里只管交互观感：
@@ -85,7 +114,7 @@
   [data-scope='context-menu'][data-part='group-label'] {
     display: block;
     padding-block: var(--xh-context-menu-group-label-py, var(--xh-space-1));
-    padding-inline: var(--xh-context-menu-group-label-px, var(--xh-control-px-sm));
+    padding-inline: var(--xh-context-menu-group-label-px, var(--xh-_context-menu-item-px));
     color: var(--xh-context-menu-group-label-fg, var(--xh-fg-subtle));
     font-size: var(--xh-context-menu-group-label-font-size, var(--xh-font-size-xs));
     font-weight: var(--xh-context-menu-group-label-font-weight, var(--xh-font-weight-medium));
@@ -100,12 +129,12 @@
   [data-scope='context-menu'][data-part='item'] {
     display: flex;
     align-items: center;
-    gap: var(--xh-context-menu-item-gap, var(--xh-control-gap-md));
-    padding-block: var(--xh-context-menu-item-py, var(--xh-space-2));
-    padding-inline: var(--xh-context-menu-item-px, var(--xh-control-px-sm));
+    gap: var(--xh-context-menu-item-gap, var(--xh-_context-menu-item-gap));
+    padding-block: var(--xh-context-menu-item-py, var(--xh-_context-menu-item-py));
+    padding-inline: var(--xh-context-menu-item-px, var(--xh-_context-menu-item-px));
     border-radius: var(--xh-context-menu-item-radius, var(--xh-shape-control));
     color: var(--xh-context-menu-item-fg, var(--xh-fg-default));
-    font-size: var(--xh-context-menu-item-font-size, var(--xh-text-body-size));
+    font-size: var(--xh-context-menu-item-font-size, var(--xh-_context-menu-font-size));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
@@ -121,7 +150,7 @@
      data-highlighted 跟的是连接层记的焦点条目，与 :focus 说的是同一件事，
      子部件够不着那个伪类，只能读这个标记 */
   [data-scope='context-menu'][data-part='item']:not([data-disabled]):is(:hover, :focus, [data-highlighted]) {
-    background: var(--xh-context-menu-item-bg-highlight, var(--xh-bg-subtle-hover));
+    background: var(--xh-context-menu-item-bg-highlight, var(--xh-_context-menu-item-highlight-bg));
   }
 
   [data-scope='context-menu'][data-part='item']:focus {
@@ -153,7 +182,7 @@
     align-items: center;
     justify-content: center;
     inline-size: var(--xh-context-menu-item-indicator-size, var(--xh-control-indicator-size));
-    color: var(--xh-context-menu-item-indicator-fg, var(--xh-fg-subtle));
+    color: var(--xh-context-menu-item-indicator-fg, var(--xh-_context-menu-accent));
   }
 
   [data-scope='context-menu'][data-part='item-indicator'][hidden] {

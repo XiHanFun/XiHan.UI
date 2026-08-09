@@ -58,6 +58,8 @@ function authorDisabled(el: HTMLElement): boolean {
  * @attr {number} skip-delay-duration - 收起之后的静默毫秒，默认 300；窗口内再碰 trigger 直接展开
  * @attr {'ltr'|'rtl'} dir - 文字方向，只影响水平轴上 ArrowLeft/ArrowRight 的前后语义
  * @attr {boolean} loop - 方向键走到尽头回绕，默认开启；写 loop="false" 关掉
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 展开项变化；detail 为 `{ value: string | null }`
  * @csspart root - nav 地标，承载 aria-label；指针离开/焦点离场/Escape 三条收起出口都在这儿
  * @csspart list - ul 容器，同时是指示条定位的参照系
@@ -82,6 +84,8 @@ export class XhNavigationMenuElement extends XhElement {
     skipDelayDuration: { converter: NUMBER_CONVERTER, attribute: 'skip-delay-duration' },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     loop: { converter: BOOLEAN_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
     // 文案是对象，走不了属性；只作为 property 暴露，与 Vue 侧的 translations prop 对齐
     translations: { attribute: false },
   }
@@ -93,6 +97,8 @@ export class XhNavigationMenuElement extends XhElement {
   declare skipDelayDuration?: number
   declare direction?: Direction
   declare loop?: boolean
+  declare tone?: string
+  declare size?: string
   declare translations?: Partial<NavigationMenuTranslations>
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
@@ -121,6 +127,8 @@ export class XhNavigationMenuElement extends XhElement {
       dir: this.direction,
       // 布尔属性缺席即 undefined，把缺省交回 connect（回绕默认开）
       loop: this.loop,
+      tone: this.tone,
+      size: this.size,
       translations: this.translations,
       onValueChange: this.notify,
     }

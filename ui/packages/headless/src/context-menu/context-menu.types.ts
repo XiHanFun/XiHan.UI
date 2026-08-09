@@ -74,6 +74,10 @@ export interface ContextMenuSchema extends MachineSchema {
     typeahead?: boolean
     /** 触摸端长按多久算触发（ms），默认 700。 */
     longPressDelay?: number
+    /** 语气：brand / neutral / success / warning / danger / info，决定条目高亮与标记位用哪族颜色。 */
+    tone?: string
+    /** 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 */
+    size?: string
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: ContextMenuOpenChangeDetails) => void
     /** 条目被选中；菜单随之关闭。 */

@@ -48,6 +48,8 @@ placement 只是首选位，空间不够时定位引擎会自动翻面；arrow �
 | `offset` | `number` |  |  |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
+| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定条目高亮用哪族颜色。 |
+| `size` | `string` |  | 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 |
 | `onOpenChange` | `(details: MenuOpenChangeDetails) => void` |  | open 变化回调。 |
 | `onSelect` | `(details: MenuSelectDetails) => void` |  | 条目被选中；菜单随之关闭。 |
 

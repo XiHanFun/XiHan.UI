@@ -53,6 +53,8 @@ export function connectDialog<T extends PropTypes>(
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
       'data-state': stateAttr,
+      // 尺寸轴落在 content 上：解剖里没有 root，positioner 非必需，且 content 会被 portal 走
+      'data-size': prop('size'),
       // 收起态自带 hidden：positioner 非必需部件，最小结构下没有别的节点兜底
       'hidden': !open || undefined,
     }),

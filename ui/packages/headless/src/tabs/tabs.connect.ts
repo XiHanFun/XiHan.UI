@@ -57,9 +57,13 @@ export function connectTabs<T extends PropTypes>(
     value,
     focusedValue,
     setValue,
+    // 三个视觉轴只写在 root 上，子部件靠继承私有槽消费
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-orientation': orientation,
+      'data-variant': prop('variant'),
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
     }),
     // 键盘全在 list 上收口：条目只管声明自己，一次冒泡一个处理器
     getListProps: () => normalize.element({

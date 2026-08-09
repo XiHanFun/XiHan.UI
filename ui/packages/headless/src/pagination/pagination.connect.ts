@@ -57,6 +57,8 @@ export function connectPagination<T extends PropTypes>(
       'aria-label': label.root,
       // 只有作者显式给了才写：写死 ltr 会切断从 RTL 祖先继承来的方向
       'dir': prop('dir'),
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-empty': dataAttr(totalPages === 0),
     }),
 

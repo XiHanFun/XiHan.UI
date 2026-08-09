@@ -49,10 +49,12 @@
     padding-block: var(--xh-toast-py, var(--xh-space-3));
     padding-inline: var(--xh-toast-px, var(--xh-space-4));
     border: var(--xh-stroke-thin) solid var(--xh-toast-border, var(--xh-border-default));
-    /* 类型色条做成起始侧的粗边，而不是伪元素：圆角与阴影都不用再对第二遍。
-       两条必须排在 border 简写之后，否则被简写重置回细边与常规描边色 */
+    /* 语气色条做成起始侧的粗边，而不是伪元素：圆角与阴影都不用再对第二遍。
+       两条必须排在 border 简写之后，否则被简写重置回细边与常规描边色。
+       颜色由 connect 从 type 派生的 data-tone 经语气层给出，作者写 --xh-toast-accent
+       就能把某一条整体改色；两者都没有时退回原来的 info 蓝 */
     border-inline-start-width: var(--xh-toast-accent-width, 4px);
-    border-inline-start-color: var(--xh-toast-accent, var(--xh-color-info-500));
+    border-inline-start-color: var(--xh-toast-accent, var(--xh-_tone-soft, var(--xh-color-info-500)));
     border-radius: var(--xh-toast-radius, var(--xh-shape-surface));
     background: var(--xh-toast-bg, var(--xh-bg-surface-raised));
     color: var(--xh-toast-fg, var(--xh-fg-default));
@@ -64,33 +66,16 @@
     pointer-events: auto;
   }
 
+  /* loading 说的是「事情还没完」，不是好消息也不是坏消息，走中性灰。
+     它不是语气：连接层给它派生的 neutral 档是 500，而这里要的是 fg-muted（600） */
+  [data-scope='toast'][data-part='root'][data-type='loading'] {
+    border-inline-start-color: var(--xh-toast-accent, var(--xh-fg-muted));
+  }
+
   /* 退场窗口走完连接层给的是 hidden 属性，而上面声明了 display——
      漏掉这条，已经"卸载"的通知会一直杵在屏幕上，且再也没人来收 */
   [data-scope='toast'][data-part='root'][hidden] {
     display: none;
-  }
-
-  /* 五种语气各认一个色阶，共用同一个覆盖钩子：作者写一次 --xh-toast-accent
-     就能把某一条整体改色，不必按类型逐个改 */
-  [data-scope='toast'][data-part='root'][data-type='info'] {
-    border-inline-start-color: var(--xh-toast-accent, var(--xh-color-info-500));
-  }
-
-  [data-scope='toast'][data-part='root'][data-type='success'] {
-    border-inline-start-color: var(--xh-toast-accent, var(--xh-color-success-500));
-  }
-
-  [data-scope='toast'][data-part='root'][data-type='warning'] {
-    border-inline-start-color: var(--xh-toast-accent, var(--xh-color-warning-500));
-  }
-
-  [data-scope='toast'][data-part='root'][data-type='error'] {
-    border-inline-start-color: var(--xh-toast-accent, var(--xh-color-danger-500));
-  }
-
-  /* loading 说的是"事情还没完"，不是好消息也不是坏消息，走中性灰 */
-  [data-scope='toast'][data-part='root'][data-type='loading'] {
-    border-inline-start-color: var(--xh-toast-accent, var(--xh-fg-muted));
   }
 
   /* 生命周期只有三段，unmounted 那段由上面的 [hidden] 收走，这里只管前两段 */

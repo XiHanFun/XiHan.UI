@@ -188,6 +188,10 @@
     /* 位移方向的私有槽位：默认按 LTR，RTL 在下面整体翻符号 */
     --xh-_drawer-shift-inline: 100%;
     --xh-_drawer-shift-block: 100%;
+    /* 尺寸档只换这一个私有槽：左右放置时它是面板宽度、上下放置时是面板高度，
+       两种取法都在下面「四条边」那两条规则里。声明在 content 而不是 root：
+       content 会被 portal 到 body，root 上的槽位继承不过来（data-side 也是同一个道理） */
+    --xh-_drawer-size: 20rem;
 
     position: fixed;
     z-index: var(--xh-layer-drawer);
@@ -225,6 +229,17 @@
     outline: none;
   }
 
+  /* —— 尺寸 —— */
+  /* 只有面板厚度分档；中间档不写规则，缺省即中档。
+     data-size 与 data-side 一样同时打在 root 与 content 上，这里只认 content 自己那一份。 */
+  [data-scope='drawer'][data-part='content'][data-size='sm'] {
+    --xh-_drawer-size: 16rem;
+  }
+
+  [data-scope='drawer'][data-part='content'][data-size='lg'] {
+    --xh-_drawer-size: 28rem;
+  }
+
   /* —— 四条边 ——
      data-side 同时打在 root 与 content 上；content 会被 portal 到 body，
      选择器只认得 content 自己身上这一份。 */
@@ -233,7 +248,7 @@
   [data-scope='drawer'][data-part='content'][data-side='left'],
   [data-scope='drawer'][data-part='content'][data-side='right'] {
     inset-block: 0;
-    inline-size: var(--xh-drawer-size, 20rem);
+    inline-size: var(--xh-drawer-size, var(--xh-_drawer-size));
     /* 视口比抽屉还窄时让位，否则面板会顶出一条横向滚动条 */
     max-inline-size: 100%;
   }
@@ -255,7 +270,7 @@
   [data-scope='drawer'][data-part='content'][data-side='top'],
   [data-scope='drawer'][data-part='content'][data-side='bottom'] {
     inset-inline: 0;
-    block-size: var(--xh-drawer-size, 20rem);
+    block-size: var(--xh-drawer-size, var(--xh-_drawer-size));
     max-block-size: 100%;
   }
 

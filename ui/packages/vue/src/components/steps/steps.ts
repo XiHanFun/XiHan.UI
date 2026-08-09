@@ -18,6 +18,8 @@ export const XhStepsRoot = defineComponent({
     linear: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
+    tone: { type: String, default: undefined },
+    size: { type: String, default: undefined },
   },
   // step-change 携带 { step }，update:step 携带裸下标
   emits: ['step-change', 'update:step'],

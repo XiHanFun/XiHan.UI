@@ -77,8 +77,8 @@ describe('alertMachine 受控', () => {
 
 describe('connectAlert 实时区语义', () => {
   it('danger/warning 走 alert+assertive，info/success 走 status+polite', () => {
-    const roleOf = (variant: Props['variant']): [unknown, unknown] => {
-      const root = makeAlert({ variant }).api().getRootProps()
+    const roleOf = (tone: Props['tone']): [unknown, unknown] => {
+      const root = makeAlert({ tone }).api().getRootProps()
       return [root.role, root['aria-live']]
     }
     expect(roleOf('danger')).toEqual(['alert', 'assertive'])

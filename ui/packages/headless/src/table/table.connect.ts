@@ -224,6 +224,7 @@ export function connectTable<T extends PropTypes>(
       'aria-multiselectable': mode === 'multiple' ? 'true' : 'false',
       // 加载态的播报归它：两个状态节点自己不带 role，见 getLoadingStateProps
       'aria-busy': loading ? 'true' : 'false',
+      'data-size': prop('size'),
       'data-loading': dataAttr(loading),
       'data-empty': dataAttr(isEmpty),
       'data-sticky': dataAttr(stickyHeader),

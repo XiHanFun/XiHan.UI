@@ -9,7 +9,7 @@ import { MachineController } from '../runtime/machine-controller'
  * 角色节点，收起时用内联 style.display 隐藏 root。
  *
  * @customElement xh-alert
- * @attr {'info'|'success'|'warning'|'danger'} variant - 语气，决定实时区级别与配色
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定实时区级别与配色
  * @attr {boolean} closable - 关闭按钮是否可用，缺省为真
  * @attr {boolean} open - 受控显隐；缺省该属性即非受控
  * @attr {boolean} default-open - 非受控初始显隐，缺省为显示
@@ -26,7 +26,7 @@ export class XhAlertElement extends XhElement {
   // 三个布尔都用三态转换器：属性缺席翻成 undefined，缺省值由机器与 connect 决定；
   // 用 Lit 自带的 Boolean 转换器的话，缺省为真的 closable / default-open 永远关不掉
   static override properties = {
-    variant: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
+    tone: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     closable: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
     open: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
     defaultOpen: {
@@ -37,7 +37,7 @@ export class XhAlertElement extends XhElement {
     translations: { attribute: false },
   }
 
-  declare variant?: string
+  declare tone?: string
   declare closable?: boolean
   declare open?: boolean
   declare defaultOpen?: boolean
@@ -55,7 +55,7 @@ export class XhAlertElement extends XhElement {
 
   private machineProps(): Partial<AlertSchema['props']> {
     return {
-      variant: this.variant as AlertSchema['props']['variant'],
+      tone: this.tone,
       closable: this.closable,
       open: this.open,
       defaultOpen: this.defaultOpen,

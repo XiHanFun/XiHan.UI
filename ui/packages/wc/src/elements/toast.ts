@@ -35,7 +35,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} pause-on-page-idle - 页面切到后台时按住计时，默认关
  * @fires status-change - 生命周期落位；detail 为 `{ id: string, status: 'dismissing'|'unmounted' }`
  * @fires action - 操作按钮被按下；detail 为 `{ id: string }`
- * @csspart root - role=status（error 时 alert）的容器，承载 data-type / data-state / data-paused
+ * @csspart root - role=status（error 时 alert）的容器，承载 data-type / data-tone / data-state / data-paused
  * @csspart title - 标题，aria-labelledby 的目标
  * @csspart description - 补充说明，aria-describedby 的目标
  * @csspart action-trigger - 操作按钮：先发 action 再进入退场

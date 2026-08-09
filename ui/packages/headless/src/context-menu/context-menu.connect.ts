@@ -105,6 +105,9 @@ export function connectContextMenu<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': stateAttr,
+      // 视觉轴只在根上输出，条目与分组标题继承根声明的私有槽
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
     }),
 
     // 触发区是普通元素不是按钮：aria-expanded 不是全局属性，只对特定 role 有定义，这里不输出

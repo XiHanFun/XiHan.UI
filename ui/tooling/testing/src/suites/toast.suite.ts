@@ -57,6 +57,8 @@ export const toastSuite: ConformanceSuite = {
             'aria-labelledby': '@part(title)',
             'aria-describedby': '@part(description)',
             'data-type': 'info',
+            // 配色走全库共用的语气层，由 type 派生
+            'data-tone': 'info',
             'data-state': 'visible',
             'data-paused': null,
             'hidden': null,
@@ -84,6 +86,8 @@ export const toastSuite: ConformanceSuite = {
             'role': 'alert',
             'aria-live': 'assertive',
             'data-type': 'error',
+            // 词汇表里没有 error 这个语气，出错走 danger
+            'data-tone': 'danger',
           },
         },
       },
@@ -250,7 +254,8 @@ export const toastSuite: ConformanceSuite = {
             expectState(doc, 'visible', 'loading 不该到点自动消失')
           },
           expect: {
-            parts: { root: { 'data-state': 'visible', 'data-type': 'loading' } },
+            // loading 既不是好消息也不是坏消息，语气走中性
+            parts: { root: { 'data-state': 'visible', 'data-type': 'loading', 'data-tone': 'neutral' } },
             events: [],
           },
         },

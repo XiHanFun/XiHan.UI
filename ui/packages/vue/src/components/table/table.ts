@@ -68,6 +68,7 @@ export const XhTableRoot = defineComponent({
     footer: Boolean,
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
+    size: { type: String, default: undefined },
   },
   // *-change 携带 { value }，update:* 携带裸值以支持 v-model
   emits: [

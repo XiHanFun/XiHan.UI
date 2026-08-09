@@ -9,6 +9,8 @@ import { MachineController } from '../runtime/machine-controller'
 
 // 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
+// 属性缺席翻成 undefined，缺省值由皮肤的缺省档决定。
+const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
  * `<xh-dialog>` —— Light-DOM 行为宿主，跑 dialog 机器并把 connect 产出打到角色节点上，
@@ -21,6 +23,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'dialog'|'alertdialog'} role - 语义角色，默认 dialog
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true
  * @attr {boolean} restore-focus - 关闭后把焦点归还触发元素，默认 true
+ * @attr {'sm'|'md'|'lg'} size - 尺寸：只换 content 的最大宽度，落在 content 上
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart trigger - 触发按钮
  * @csspart backdrop - 遮罩层
@@ -40,6 +43,7 @@ export class XhDialogElement extends XhElement {
     modal: { converter: BOOLEAN_CONVERTER },
     closeOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-escape' },
     restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
+    size: { converter: STRING_CONVERTER },
   }
 
   declare open?: boolean
@@ -47,6 +51,7 @@ export class XhDialogElement extends XhElement {
   declare modal?: boolean
   declare closeOnEscape?: boolean
   declare restoreFocus?: boolean
+  declare size?: string
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly dialogScope = createScope(null, this.idGen)
@@ -73,6 +78,7 @@ export class XhDialogElement extends XhElement {
       role: (this.getAttribute('role') as DialogSchema['props']['role']) ?? undefined,
       closeOnEscape: this.closeOnEscape,
       restoreFocus: this.restoreFocus,
+      size: this.size,
       onOpenChange: this.notify,
     }
   }

@@ -18,6 +18,8 @@ export const XhPaginationRoot = defineComponent({
     siblingCount: { type: Number, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     translations: { type: Object as PropType<Partial<PaginationTranslations>>, default: undefined },
+    tone: { type: String, default: undefined },
+    size: { type: String, default: undefined },
   },
   // page-change 携带 { page, pageSize }，update:page 携带裸页码
   emits: ['page-change', 'update:page'],

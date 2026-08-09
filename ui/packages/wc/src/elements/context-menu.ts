@@ -35,6 +35,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} typeahead - 连打检索，默认开；写 typeahead="false" 关掉
  * @attr {'ltr'|'rtl'} dir - 文字方向，默认 ltr
  * @attr {number} long-press-delay - 触摸端长按触发时长（ms），默认 700
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires select - 条目被选中（菜单随之关闭）；detail 为 `{ value: string }`
  * @csspart root - 组件根容器（承载 data-state）
@@ -64,6 +66,8 @@ export class XhContextMenuElement extends XhElement {
     typeahead: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     longPressDelay: { converter: NUMBER_CONVERTER, attribute: 'long-press-delay' },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
   }
 
   declare open?: boolean
@@ -74,6 +78,8 @@ export class XhContextMenuElement extends XhElement {
   declare typeahead?: boolean
   declare direction?: Direction
   declare longPressDelay?: number
+  declare tone?: string
+  declare size?: string
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly menuScope = createScope(null, this.idGen)
@@ -105,6 +111,8 @@ export class XhContextMenuElement extends XhElement {
       typeahead: this.typeahead,
       dir: this.direction,
       longPressDelay: this.longPressDelay,
+      tone: this.tone,
+      size: this.size,
       onOpenChange: this.notifyOpen,
       onSelect: this.notifySelect,
     }

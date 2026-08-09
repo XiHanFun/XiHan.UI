@@ -1,4 +1,4 @@
-import type { AlertSchema, AlertTranslations, AlertVariant } from '@xihan-ui/headless'
+import type { AlertSchema, AlertTranslations } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { provideAlert, useAlertContext } from './context'
@@ -9,7 +9,7 @@ type AlertProps = AlertSchema['props']
 export const XhAlertRoot = defineComponent({
   name: 'XhAlertRoot',
   props: {
-    variant: String as PropType<AlertVariant>,
+    tone: String,
     // 三态：不传即由 connect 决定缺省，传 false 才真的关掉
     closable: { type: Boolean, default: undefined },
     open: { type: Boolean, default: undefined },

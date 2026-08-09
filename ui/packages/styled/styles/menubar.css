@@ -1,6 +1,19 @@
 @layer xihan.components {
   /* 一排 trigger。主轴跟着 data-orientation 走：菜单栏本身可以横排也可以竖排 */
   [data-scope='menubar'][data-part='root'] {
+    /* 尺寸档只换这五个私有槽，trigger 与菜单里的条目都从 root 继承它们，
+       换档不必给每个部件各写一条选择器。菜单浮层在 positioner 里、也是 root 的后代，一并继承 */
+    --xh-_menubar-trigger-py: var(--xh-space-1);
+    --xh-_menubar-trigger-px: var(--xh-control-px-sm);
+    --xh-_menubar-item-py: var(--xh-space-2);
+    --xh-_menubar-item-px: var(--xh-control-px-sm);
+    --xh-_menubar-font-size: var(--xh-text-body-size);
+
+    /* 高亮底随语气走：展开着的那张菜单的 trigger 与菜单里的高亮条目共用这一档。
+       没写 data-tone 时 --xh-_tone-subtle-hover 没被声明，退回原来的中性底。
+       聚焦环不在其列，它恒是 --xh-ring-focus */
+    --xh-_menubar-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+
     display: flex;
     align-items: center;
     gap: var(--xh-menubar-gap, var(--xh-space-1));
@@ -20,6 +33,25 @@
     align-items: stretch;
   }
 
+  /* —— 尺寸 —— */
+  /* 缺省档写在上面的基础规则里。内边距的缺省档已经落在控件内边距尺的 sm 那一格，
+     往下没有更小的一格，sm 档改取空间尺；lg 档回到控件尺的下一格 */
+  [data-scope='menubar'][data-part='root'][data-size='sm'] {
+    --xh-_menubar-trigger-py: var(--xh-space-0_5);
+    --xh-_menubar-trigger-px: var(--xh-space-1_5);
+    --xh-_menubar-item-py: var(--xh-space-1_5);
+    --xh-_menubar-item-px: var(--xh-space-1_5);
+    --xh-_menubar-font-size: var(--xh-font-size-sm);
+  }
+
+  [data-scope='menubar'][data-part='root'][data-size='lg'] {
+    --xh-_menubar-trigger-py: var(--xh-space-2);
+    --xh-_menubar-trigger-px: var(--xh-control-px-md);
+    --xh-_menubar-item-py: var(--xh-space-3);
+    --xh-_menubar-item-px: var(--xh-control-px-md);
+    --xh-_menubar-font-size: var(--xh-font-size-lg);
+  }
+
   /* root 只是 roving tabindex 的兜底落点，焦点转投给 trigger 之后就不再停留，不画环 */
   [data-scope='menubar'][data-part='root']:focus-visible {
     outline: none;
@@ -34,14 +66,14 @@
     flex: none;
     align-items: center;
     gap: var(--xh-menubar-trigger-gap, var(--xh-control-gap-sm));
-    padding-block: var(--xh-menubar-trigger-py, var(--xh-space-1));
-    padding-inline: var(--xh-menubar-trigger-px, var(--xh-control-px-sm));
+    padding-block: var(--xh-menubar-trigger-py, var(--xh-_menubar-trigger-py));
+    padding-inline: var(--xh-menubar-trigger-px, var(--xh-_menubar-trigger-px));
     border: none;
     border-radius: var(--xh-menubar-trigger-radius, var(--xh-shape-control));
     background: transparent;
     color: inherit;
     font: inherit;
-    font-size: var(--xh-menubar-trigger-font-size, var(--xh-text-body-size));
+    font-size: var(--xh-menubar-trigger-font-size, var(--xh-_menubar-font-size));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
@@ -54,7 +86,7 @@
 
   /* 展开着的那一项与指针悬停共用一套底色：菜单栏里"哪一张开着"必须一眼看得出来 */
   [data-scope='menubar'][data-part='trigger']:not([data-disabled]):is(:hover, [data-state='open']) {
-    background: var(--xh-menubar-trigger-bg-active, var(--xh-bg-subtle-hover));
+    background: var(--xh-menubar-trigger-bg-active, var(--xh-_menubar-highlight-bg));
   }
 
   /* trigger 自带 Tab 位（整条菜单栏唯一的那个），必须画得出焦点 */
@@ -136,7 +168,7 @@
   [data-scope='menubar'][data-part='group-label'] {
     display: block;
     padding-block: var(--xh-menubar-group-label-py, var(--xh-space-1));
-    padding-inline: var(--xh-menubar-group-label-px, var(--xh-control-px-sm));
+    padding-inline: var(--xh-menubar-group-label-px, var(--xh-_menubar-item-px));
     color: var(--xh-menubar-group-label-fg, var(--xh-fg-subtle));
     font-size: var(--xh-menubar-group-label-font-size, var(--xh-font-size-xs));
     font-weight: var(--xh-menubar-group-label-font-weight, var(--xh-font-weight-medium));
@@ -152,11 +184,11 @@
     display: flex;
     align-items: center;
     gap: var(--xh-menubar-item-gap, var(--xh-control-gap-md));
-    padding-block: var(--xh-menubar-item-py, var(--xh-space-2));
-    padding-inline: var(--xh-menubar-item-px, var(--xh-control-px-sm));
+    padding-block: var(--xh-menubar-item-py, var(--xh-_menubar-item-py));
+    padding-inline: var(--xh-menubar-item-px, var(--xh-_menubar-item-px));
     border-radius: var(--xh-menubar-item-radius, var(--xh-shape-control));
     color: var(--xh-menubar-item-fg, var(--xh-fg-default));
-    font-size: var(--xh-menubar-item-font-size, var(--xh-text-body-size));
+    font-size: var(--xh-menubar-item-font-size, var(--xh-_menubar-font-size));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
@@ -172,7 +204,7 @@
      data-highlighted 跟的是连接层记的焦点条目，与 :focus 说的是同一件事，
      子部件够不着那个伪类，只能读这个标记 */
   [data-scope='menubar'][data-part='item']:not([data-disabled]):is(:hover, :focus, [data-highlighted]) {
-    background: var(--xh-menubar-item-bg-highlight, var(--xh-bg-subtle-hover));
+    background: var(--xh-menubar-item-bg-highlight, var(--xh-_menubar-highlight-bg));
   }
 
   [data-scope='menubar'][data-part='item']:focus {

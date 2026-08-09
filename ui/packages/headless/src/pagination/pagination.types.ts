@@ -39,6 +39,10 @@ export interface PaginationSchema extends MachineSchema {
     /** 文字方向，只作用于排版；上一页/下一页的语义不随之翻转，"上一页"永远是 page - 1。 */
     dir?: Direction
     translations?: Partial<PaginationTranslations>
+    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    tone?: string
+    /** 尺寸：sm / md / lg。 */
+    size?: string
     /** 页码变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onPageChange?: (details: PaginationPageChangeDetails) => void
   }

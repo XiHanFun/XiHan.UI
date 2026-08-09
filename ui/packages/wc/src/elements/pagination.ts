@@ -33,6 +33,8 @@ function itemPage(el: HTMLElement): number {
  * @attr {number} default-page - 非受控初始页，默认 1
  * @attr {number} sibling-count - 当前页两侧各显示几页，默认 1
  * @attr {'ltr'|'rtl'} dir - 文字方向，只影响排版；上一页/下一页的语义不随之翻转
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires page-change - 页码变化；detail 为 `{ page: number, pageSize: number }`
  * @csspart root - nav 地标，承载 aria-label 与 data-empty
  * @csspart prev-trigger - 上一页；首页时转原生 disabled
@@ -53,6 +55,8 @@ export class XhPaginationElement extends XhElement {
     defaultPage: { converter: NUMBER_CONVERTER, attribute: 'default-page' },
     siblingCount: { converter: NUMBER_CONVERTER, attribute: 'sibling-count' },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
     // 文案是对象，走不了属性；只作为 property 暴露，与 Vue 侧的 translations prop 对齐
     translations: { attribute: false },
   }
@@ -63,6 +67,8 @@ export class XhPaginationElement extends XhElement {
   declare defaultPage?: number
   declare siblingCount?: number
   declare direction?: Direction
+  declare tone?: string
+  declare size?: string
   declare translations?: Partial<PaginationTranslations>
 
   private readonly notify = (details: PaginationPageChangeDetails): void => {
@@ -80,6 +86,8 @@ export class XhPaginationElement extends XhElement {
       defaultPage: this.defaultPage,
       siblingCount: this.siblingCount,
       dir: this.direction,
+      tone: this.tone,
+      size: this.size,
       translations: this.translations,
       onPageChange: this.notify,
     }

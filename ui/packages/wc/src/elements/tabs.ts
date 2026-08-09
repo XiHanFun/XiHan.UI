@@ -23,6 +23,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'ltr'|'rtl'} dir - 文字方向，只影响水平轴上 ArrowLeft/ArrowRight 的前后语义，默认 ltr
  * @attr {'automatic'|'manual'} activation-mode - 方向键移动焦点是否顺带切换选中，默认 automatic
  * @attr {boolean} loop - 方向键走到尽头回绕，默认开启
+ * @attr {'line'|'card'|'segment'} variant - 形态，默认 line
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 选中值变化；detail 为 `{ value: string | null }`
  * @csspart root - 组件根容器（承载 data-orientation）
  * @csspart list - role=tablist 容器（方向键与 Tab 序列在此收口）
@@ -41,6 +44,9 @@ export class XhTabsElement extends XhElement {
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     activationMode: { converter: STRING_CONVERTER, attribute: 'activation-mode' },
     loop: { converter: BOOLEAN_CONVERTER },
+    variant: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
   }
 
   declare value?: string
@@ -49,6 +55,9 @@ export class XhTabsElement extends XhElement {
   declare direction?: Direction
   declare activationMode?: TabsActivationMode
   declare loop?: boolean
+  declare variant?: string
+  declare tone?: string
+  declare size?: string
 
   private readonly notify = (details: TabsValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -64,6 +73,9 @@ export class XhTabsElement extends XhElement {
       dir: this.direction,
       activationMode: this.activationMode,
       loop: this.loop,
+      variant: this.variant,
+      tone: this.tone,
+      size: this.size,
       onValueChange: this.notify,
     }
   }

@@ -63,6 +63,7 @@ selectionMode 默认 none，声明 multiple 才有选择机制；选择列也要
 | `footer` | `boolean` |  | 表格带脚注行。行号空间的最后一行留给它，aria-rowcount 也把它算进去。 |
 | `loop` | `boolean` |  | 上下键走到首尾是否回绕，默认 false。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 |
+| `size` | `string` |  | 密度：sm / md / lg。只换单元格的纵向内边距与字号，列宽算法不受影响。 |
 | `onSortChange` | `(details: TableSortChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TableSelectionChangeDetails) => void` |  |  |
 | `onExpandedChange` | `(details: TableExpandedChangeDetails) => void` |  |  |

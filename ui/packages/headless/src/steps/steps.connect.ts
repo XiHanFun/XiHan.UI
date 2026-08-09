@@ -85,9 +85,12 @@ export function connectSteps<T extends PropTypes>(
     goToNextStep: () => send({ type: 'STEP.NEXT' }),
     goToPrevStep: () => send({ type: 'STEP.PREV' }),
 
+    // 视觉轴只写在 root 上，子部件靠继承私有槽消费
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-orientation': orientation,
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
       'data-complete': dataAttr(complete),
       // 一步都没声明时步序被夹死在 0，打个标记供作者排查

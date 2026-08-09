@@ -1,9 +1,6 @@
 import type { PropTypes } from '@xihan-ui/core'
 import type { MachineSchema } from '@xihan-ui/machine'
 
-/** 提示的语气。决定读屏的打断级别与皮肤配色。 */
-export type AlertVariant = 'info' | 'success' | 'warning' | 'danger'
-
 export interface AlertOpenChangeDetails {
   open: boolean
 }
@@ -15,8 +12,11 @@ export interface AlertTranslations {
 
 export interface AlertSchema extends MachineSchema {
   props: {
-    /** 语气，默认 info。danger / warning 走 role="alert"，其余走 role="status"。 */
-    variant?: AlertVariant
+    /**
+     * 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色，默认 info。
+     * danger / warning 走 role="alert"，其余走 role="status"。
+     */
+    tone?: string
     /** 关闭按钮是否可用，默认 true。false 时该按钮同时被禁用与收起。 */
     closable?: boolean
     /** 受控显隐；缺省该 prop 即非受控。 */
@@ -45,7 +45,7 @@ export interface AlertSchema extends MachineSchema {
 
 export interface AlertApi<T extends PropTypes = PropTypes> {
   open: boolean
-  variant: AlertVariant
+  tone: string
   closable: boolean
   setOpen: (next: boolean) => void
   getRootProps: () => T['element']

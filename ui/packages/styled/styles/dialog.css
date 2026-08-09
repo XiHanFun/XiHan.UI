@@ -29,9 +29,14 @@
   }
 
   [data-scope='dialog'][data-part='content'] {
+    /* 尺寸档只换这一个私有槽。它声明在 content 而不是别处：dialog 的解剖里没有 root，
+       positioner 又不是必需部件，content 才是这层浮层恒在的最外层，且它会被 portal 到 body，
+       选择器只认得它自己身上那一份 data-size。 */
+    --xh-_dialog-max-w: 32rem;
+
     position: relative;
     inline-size: 100%;
-    max-inline-size: var(--xh-dialog-max-w, 32rem);
+    max-inline-size: var(--xh-dialog-max-w, var(--xh-_dialog-max-w));
     display: flex;
     flex-direction: column;
     gap: var(--xh-dialog-gap, var(--xh-stack-gap-md));
@@ -48,6 +53,17 @@
      （只有 trigger + content）写时，没有这一条收起的对话框就一直摊在页面上。 */
   [data-scope='dialog'][data-part='content'][hidden] {
     display: none;
+  }
+
+  /* —— 尺寸 —— */
+  /* 只有最大宽度分档；中间档不写规则，缺省即中档。
+     宽度上限之外的一切（内边距、字号、圆角）都不随档位动：弹层的语气归里面的内容表达。 */
+  [data-scope='dialog'][data-part='content'][data-size='sm'] {
+    --xh-_dialog-max-w: 24rem;
+  }
+
+  [data-scope='dialog'][data-part='content'][data-size='lg'] {
+    --xh-_dialog-max-w: 48rem;
   }
 
   [data-scope='dialog'][data-part='content']:focus-visible {

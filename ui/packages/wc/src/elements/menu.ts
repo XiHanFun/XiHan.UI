@@ -29,6 +29,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {number} offset - 浮层与锚点的间距（px）
  * @attr {boolean} loop - 方向键走到尽头回绕，默认 true；写 loop="false" 关掉
  * @attr {'ltr'|'rtl'} dir - 文字方向，默认 ltr
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires select - 条目被选中（菜单随之关闭）；detail 为 `{ value: string }`
  * @csspart trigger - 触发按钮（aria-haspopup/aria-expanded/aria-controls 所在），同时是定位锚点
@@ -51,6 +53,8 @@ export class XhMenuElement extends XhElement {
     offset: { converter: NUMBER_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
   }
 
   declare open?: boolean
@@ -59,6 +63,8 @@ export class XhMenuElement extends XhElement {
   declare offset?: number
   declare loop?: boolean
   declare direction?: Direction
+  declare tone?: string
+  declare size?: string
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly menuScope = createScope(null, this.idGen)
@@ -88,6 +94,8 @@ export class XhMenuElement extends XhElement {
       offset: this.offset,
       loop: this.loop,
       dir: this.direction,
+      tone: this.tone,
+      size: this.size,
       onOpenChange: this.notifyOpen,
       onSelect: this.notifySelect,
     }

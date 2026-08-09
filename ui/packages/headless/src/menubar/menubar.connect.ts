@@ -135,6 +135,8 @@ export function connectMenubar<T extends PropTypes>(
       'aria-disabled': menubarDisabled ? 'true' : 'false',
       'data-orientation': orientation,
       'data-state': stateAttr(open),
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-disabled': dataAttr(menubarDisabled),
       // 仅作者显式给出时才写，避免切断从祖先继承的方向
       'dir': prop('dir'),

@@ -1,6 +1,6 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
-import type { ToastApi, ToastSchema, ToastStatus } from './toast.types'
+import type { ToastApi, ToastSchema, ToastStatus, ToastType } from './toast.types'
 import { dataAttr } from '@xihan-ui/core'
 import { toastAnatomy } from './toast.anatomy'
 import { resolveToastId } from './toast.machine'
@@ -12,6 +12,19 @@ function toStatus(state: ToastSchema['state']): ToastStatus {
   if (state === 'dismissing' || state === 'unmounted')
     return state
   return 'visible'
+}
+
+/**
+ * 类型到语气轴的映射。type 管行为（实时区级别、图标、是否自动消失），配色则统一交给
+ * 全库共用的语气层，所以这里派生一份 data-tone 而不是让皮肤按 type 各写一套颜色。
+ * error 在词汇表里叫 danger；loading 说的是"事情还没完"，不是好消息也不是坏消息，走中性。
+ */
+function toneOf(type: ToastType): string {
+  if (type === 'error')
+    return 'danger'
+  if (type === 'loading')
+    return 'neutral'
+  return type
 }
 
 export function connectToast<T extends PropTypes>(
@@ -52,6 +65,8 @@ export function connectToast<T extends PropTypes>(
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
       'data-type': type,
+      // 语气轴只挂在 root 上，子部件靠继承拿到语气槽
+      'data-tone': toneOf(type),
       'data-state': status,
       'data-paused': dataAttr(paused),
       // 退场窗口走完只收起、不卸载，何时把这条从队列里删掉是宿主的决定

@@ -79,6 +79,10 @@ export interface MenubarSchema extends MachineSchema {
     typeahead?: boolean
     placement?: Placement
     offset?: number
+    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    tone?: string
+    /** 尺寸：sm / md / lg。 */
+    size?: string
     /** value 变化回调。 */
     onValueChange?: (details: MenubarValueChangeDetails) => void
     /** 条目被选中；菜单随之收起。 */
