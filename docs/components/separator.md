@@ -2,6 +2,14 @@
 
 通用组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 方向
+
+竖向分隔线需要父容器有确定高度
+
+<XhDemo src="separator/01-basic" />
+
 ## 产物
 
 | 层 | 值 |
@@ -10,10 +18,6 @@
 | Vue 组件 | `XhSeparator` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styled/separator.css` |
-
-## 示例
-
-<XhDemo src="separator/01-basic" />
 
 ## 解剖
 

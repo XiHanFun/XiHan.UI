@@ -209,7 +209,19 @@ function demos(id) {
     .readdirSync(dir)
     .filter((f) => f.endsWith(".vue"))
     .sort()
-    .map((f) => `${id}/${f.replace(/\.vue$/, "")}`);
+    .map((f) => {
+      const src = `${id}/${f.replace(/\.vue$/, "")}`;
+      // 示例的标题与说明写在文件首行注释里：`标题 | 说明`。
+      // 标题在这里落成 h3，右侧目录才索引得到每个示例。
+      const head =
+        fs.readFileSync(path.join(dir, f), "utf8").match(/^<!--([\s\S]*?)-->/)?.[1] ?? "";
+      const [title, ...rest] = head.trim().split("|");
+      return {
+        src,
+        title: title.trim() || f.replace(/\.vue$/, ""),
+        description: rest.join("|").trim(),
+      };
+    });
 }
 
 // ── 渲染 ─────────────────────────────────────────────────────────────────────
@@ -232,6 +244,17 @@ function renderComponent(entry, category) {
     ""
   );
 
+  // 示例排在最前：看的人先要能照着抄，其次才关心产物与契约。
+  // 每个示例的标题落成 h3，右侧目录逐个索引得到。
+  if (ex.length) {
+    L.push("## 示例", "");
+    for (const demo of ex) {
+      L.push(`### ${demo.title}`, "");
+      if (demo.description) L.push(demo.description, "");
+      L.push(`<XhDemo src="${demo.src}" />`, "");
+    }
+  }
+
   // 产物
   L.push("## 产物", "");
   L.push("| 层 | 值 |", "| --- | --- |");
@@ -244,12 +267,6 @@ function renderComponent(entry, category) {
   );
   if (ad.skin) L.push(`| 皮肤 | ${code(ad.skin)} |`);
   L.push("");
-
-  // 示例
-  if (ex.length) {
-    L.push("## 示例", "");
-    for (const src of ex) L.push(`<XhDemo src="${src}" />`, "");
-  }
 
   // 解剖
   L.push("## 解剖", "");

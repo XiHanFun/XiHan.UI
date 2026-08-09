@@ -2,6 +2,14 @@
 
 通用组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+按下态由 pressed 表达，非受控时组件自己维护
+
+<XhDemo src="toggle/01-basic" />
+
 ## 产物
 
 | 层 | 值 |
@@ -11,10 +19,6 @@
 | 组合式函数 | `useToggle` |
 | 状态机 | `toggleMachine` |
 | 皮肤 | `@xihan-ui/styled/toggle.css` |
-
-## 示例
-
-<XhDemo src="toggle/01-basic" />
 
 ## 解剖
 

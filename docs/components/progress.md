@@ -2,6 +2,14 @@
 
 反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+value 与 max 共同决定百分比
+
+<XhDemo src="progress/01-basic" />
+
 ## 产物
 
 | 层 | 值 |
@@ -10,10 +18,6 @@
 | Vue 组件 | `XhProgress` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styled/progress.css` |
-
-## 示例
-
-<XhDemo src="progress/01-basic" />
 
 ## 解剖
 

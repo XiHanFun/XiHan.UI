@@ -20,10 +20,8 @@ const key = computed(() => `../demos/${props.src}.vue`);
 const demo = computed(() => modules[key.value]?.default);
 const raw = computed(() => sources[key.value] ?? "");
 
-// 示例文件首行注释写「标题 | 说明」，它同时供本组件取标题、并从展示的源码里剔除
-const header = computed(() => raw.value.match(/^<!--([\s\S]*?)-->/)?.[1]?.trim() ?? "");
-const title = computed(() => header.value.split("|")[0]?.trim() ?? "");
-const description = computed(() => header.value.split("|").slice(1).join("|").trim());
+// 示例文件首行注释写「标题 | 说明」，标题与说明由生成器落成 h3 与段落，
+// 这里只负责把它从展示的源码里剔除
 const code = computed(() => raw.value.replace(/^<!--[\s\S]*?-->\s*/, "").trimEnd());
 
 const expanded = ref(false);
@@ -38,11 +36,6 @@ async function copy() {
 
 <template>
   <div class="xh-demo">
-    <div v-if="title || description" class="xh-demo__head">
-      <p v-if="title" class="xh-demo__title">{{ title }}</p>
-      <p v-if="description" class="xh-demo__desc">{{ description }}</p>
-    </div>
-
     <div class="xh-demo__stage">
       <component :is="demo" v-if="demo" />
       <p v-else class="xh-demo__missing">示例缺失：{{ src }}</p>
@@ -75,20 +68,6 @@ async function copy() {
   border-radius: 10px;
   overflow: hidden;
   background: var(--vp-c-bg);
-}
-.xh-demo__head {
-  padding: 14px 20px 0;
-}
-.xh-demo__title {
-  margin: 0;
-  font-weight: 600;
-  line-height: 1.5;
-}
-.xh-demo__desc {
-  margin: 4px 0 0;
-  color: var(--vp-c-text-2);
-  font-size: 14px;
-  line-height: 1.6;
 }
 .xh-demo__stage {
   display: flex;

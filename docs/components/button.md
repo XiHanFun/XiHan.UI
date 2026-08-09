@@ -2,6 +2,32 @@
 
 通用组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+内容直接写在默认插槽里
+
+<XhDemo src="button/01-basic" />
+
+### 变体
+
+variant 只改皮肤的几个颜色槽位，行为完全一致
+
+<XhDemo src="button/02-variant" />
+
+### 尺寸
+
+不传 size 即默认档
+
+<XhDemo src="button/03-size" />
+
+### 禁用与载入
+
+loading 会挡住点击，并给 indicator 部件挂上旋转动画
+
+<XhDemo src="button/04-state" />
+
 ## 产物
 
 | 层 | 值 |
@@ -10,16 +36,6 @@
 | Vue 组件 | `XhButton` `XhButtonIndicator` `XhButtonLabel` `XhButtonPrefix` `XhButtonSuffix` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styled/button.css` |
-
-## 示例
-
-<XhDemo src="button/01-basic" />
-
-<XhDemo src="button/02-variant" />
-
-<XhDemo src="button/03-size" />
-
-<XhDemo src="button/04-state" />
 
 ## 解剖
 
