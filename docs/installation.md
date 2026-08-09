@@ -153,6 +153,45 @@ import tokens from '@xihan-ui/system/tokens.json' with { type: 'json' }
 // { "--xh-color-brand-500": "oklch(0.623 0.214 258)", ... }
 ```
 
+## 宿主有无层 reset 时改用无层版
+
+默认的 `index.css` 把全部皮肤包在 `@layer xihan.*` 里。CSS 级联有一条容易忽略的规则：**无层声明胜过任何有层声明，与特异性无关**。所以宿主应用只要带一条无层的 reset 或 normalize，比如
+
+```css
+button { padding: 0; background-color: transparent; }
+```
+
+它就会压掉皮肤里所有 `[data-scope='button'][data-part='root']` 的对应声明——即便后者特异性高得多。表现是组件渲染成没有内边距、没有底色的裸元素。Tailwind v3 的 preflight、normalize.css、以及多数文档站/脚手架自带的重置都是无层的，都会撞上。
+
+判断方法：组件的 `data-scope` / `data-part` 属性都在、皮肤 CSS 也确实加载了，但盒模型相关的属性全没生效。
+
+包里为此额外发一份拆掉层壳的 `index.unlayered.css`，内容与 `index.css` 完全一致，由构建脚本从同一份源生成：
+
+```ts
+// 宿主带无层 reset 时用这份，规则改按特异性竞争
+// 皮肤选择器至少是 [data-scope][data-part]（0,2,0），稳压 button（0,0,1）
+import '@xihan-ui/styled/index.unlayered.css'
+```
+
+两份怎么选：
+
+| 你的情况 | 用哪份 | 覆盖皮肤的方式 |
+| --- | --- | --- |
+| 自己的样式也都在 `@layer` 里（如 Tailwind v4） | `index.css` | 写进 `@layer xihan.overrides`，或任何排在 `xihan` 之后的层 |
+| 宿主带无层 reset / normalize | `index.unlayered.css` | 用不低于 `[data-scope][data-part]` 的特异性 |
+
+用 `index.css` 时，覆盖槽位是现成的：
+
+```css
+@layer xihan.overrides {
+  [data-scope='button'][data-part='root'] { border-radius: 0; }
+}
+```
+
+反过来只能单向：`@import url('...') layer(x)` 可以给无层样式套一层，但没有办法给已经层化的样式脱层——所以这份无层产物由库这边提供，而不是让你自己想办法拆。
+
+本文档站用的就是无层版：VitePress 自带无层的 `button` 重置，用 `index.css` 的话所有示例都会渲染成纯文本。
+
 ## 服务端渲染
 
 - 主题运行时在 `document` / `window` 缺席时自动走 SSR 分支：不读媒体查询、不写 DOM，一律回退到浅色与基线对比度。要让首屏不闪，请在服务端把 `data-theme` / `data-brand` / `data-density` / `data-contrast` / `dir` 五个属性直接渲染到 `<html>` 上。
