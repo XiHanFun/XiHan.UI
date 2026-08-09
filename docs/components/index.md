@@ -60,7 +60,7 @@
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
-| [表格](./table) | `table` | 15 | 10 | 4 |
+| [表格](./table) | `table` | 15 | 10 | 5 |
 | [树](./tree) | `tree` | 12 | 10 | 4 |
 | [虚拟滚动](./virtualizer) | `virtualizer` | 4 | 0 | 2 |
 | [滚动区域](./scroll-area) | `scroll-area` | 6 | 5 | 4 |
@@ -77,13 +77,13 @@
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
-| [菜单](./menu) | `menu` | 6 | 9 | 3 |
-| [菜单栏](./menubar) | `menubar` | 10 | 15 | 3 |
-| [右键菜单](./context-menu) | `context-menu` | 11 | 9 | 3 |
-| [导航菜单](./navigation-menu) | `navigation-menu` | 8 | 7 | 4 |
-| [标签页](./tabs) | `tabs` | 4 | 6 | 4 |
-| [步骤条](./steps) | `steps` | 9 | 6 | 4 |
-| [分页](./pagination) | `pagination` | 5 | 4 | 4 |
+| [菜单](./menu) | `menu` | 6 | 9 | 5 |
+| [菜单栏](./menubar) | `menubar` | 10 | 15 | 5 |
+| [右键菜单](./context-menu) | `context-menu` | 11 | 9 | 5 |
+| [导航菜单](./navigation-menu) | `navigation-menu` | 8 | 7 | 6 |
+| [标签页](./tabs) | `tabs` | 4 | 6 | 7 |
+| [步骤条](./steps) | `steps` | 9 | 6 | 6 |
+| [分页](./pagination) | `pagination` | 5 | 4 | 6 |
 | [面包屑](./breadcrumb) | `breadcrumb` | 6 | 2 | 3 |
 | [锚点](./anchor) | `anchor` | 5 | 2 | 4 |
 | [工具栏](./toolbar) | `toolbar` | 4 | 6 | 4 |
@@ -95,8 +95,8 @@
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
-| [对话框](./dialog) | `dialog` | 7 | 4 | 3 |
-| [抽屉](./drawer) | `drawer` | 8 | 4 | 3 |
+| [对话框](./dialog) | `dialog` | 7 | 4 | 4 |
+| [抽屉](./drawer) | `drawer` | 8 | 4 | 4 |
 | [气泡卡片](./popover) | `popover` | 7 | 4 | 3 |
 | [文字提示](./tooltip) | `tooltip` | 4 | 2 | 4 |
 | [悬浮卡片](./hover-card) | `hover-card` | 5 | 2 | 3 |

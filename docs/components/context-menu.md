@@ -22,6 +22,18 @@ group 用 value 跟自己的 group-label 配对，item-indicator 是纯装饰的
 
 <XhDemo src="context-menu/03-controlled" />
 
+### 语气
+
+tone 决定条目高亮与标记位用哪族颜色；高亮静止态看不出来，右键弹出后悬停条目、或用方向键把焦点移上去才显现
+
+<XhDemo src="context-menu/04-tone" />
+
+### 尺寸
+
+size 换的是条目的内边距、间距与字号；三档各挂一块触发区，逐块右键对比
+
+<XhDemo src="context-menu/05-size" />
+
 ## 产物
 
 | 层 | 值 |

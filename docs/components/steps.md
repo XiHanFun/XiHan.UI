@@ -28,6 +28,18 @@ orientation="vertical" 把步骤列与面板并排摆，方向键随之改收上
 
 <XhDemo src="steps/04-vertical" />
 
+### 语气
+
+tone 决定已完成与当前这两步的标记、连接线用哪族颜色；示例预置到第 2 步，第 1 步已走完
+
+<XhDemo src="steps/05-tone" />
+
+### 尺寸
+
+size 换序号圆点的直径与标题、说明的字号，不传 size 即默认档
+
+<XhDemo src="steps/06-size" />
+
 ## 产物
 
 | 层 | 值 |

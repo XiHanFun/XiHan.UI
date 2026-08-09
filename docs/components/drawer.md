@@ -22,6 +22,12 @@ side 只落成 data-side，面板压在哪条边由皮肤按这个值决定；ro
 
 <XhDemo src="drawer/03-controlled" />
 
+### 尺寸
+
+size 落成 content 的 data-size，只改面板贴边方向上的厚度；三档各自一个抽屉，点开才看得出厚薄
+
+<XhDemo src="drawer/04-size" />
+
 ## 产物
 
 | 层 | 值 |

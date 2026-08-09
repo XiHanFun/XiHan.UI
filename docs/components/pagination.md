@@ -28,6 +28,18 @@ translations 换掉 nav 地标名与各按钮的 aria-label，默认是英文
 
 <XhDemo src="pagination/04-translations" />
 
+### 语气
+
+tone 换的是当前页选中态的底色与文字色，这里预置第 3 页为当前页
+
+<XhDemo src="pagination/05-tone" />
+
+### 尺寸
+
+size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一页与省略号一并跟着变
+
+<XhDemo src="pagination/06-size" />
+
 ## 产物
 
 | 层 | 值 |
