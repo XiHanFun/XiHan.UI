@@ -31,6 +31,20 @@ export default {
   },
 };
 
+// 深浅模式桥接：VitePress 切主题是给 html 加 .dark 类，而组件令牌认的是
+// [data-theme]，两者不通的话暗色页面里的组件还在用浅色令牌（白底深字）。
+if (typeof window !== "undefined") {
+  const root = document.documentElement;
+  const syncTheme = () => {
+    root.dataset.theme = root.classList.contains("dark") ? "dark" : "light";
+  };
+  syncTheme();
+  new MutationObserver(syncTheme).observe(root, {
+    attributes: true,
+    attributeFilter: ["class"],
+  });
+}
+
 // 检测浏览器，添加到类中进行条件样式设置
 if (typeof window !== "undefined") {
   const browser = navigator.userAgent.toLowerCase();
