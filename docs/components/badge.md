@@ -11,6 +11,10 @@
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styled/badge.css` |
 
+## 示例
+
+<XhDemo src="badge/01-basic" />
+
 ## 解剖
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。

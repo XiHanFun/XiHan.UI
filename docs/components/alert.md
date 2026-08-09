@@ -11,6 +11,14 @@
 | 状态机 | `alertMachine` |
 | 皮肤 | `@xihan-ui/styled/alert.css` |
 
+## 示例
+
+<XhDemo src="alert/01-basic" />
+
+<XhDemo src="alert/02-variant" />
+
+<XhDemo src="alert/03-closable" />
+
 ## 解剖
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
