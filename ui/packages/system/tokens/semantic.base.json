@@ -64,7 +64,9 @@
     "arrow-size": { "$type": "dimension", "$value": "{space.2}" },
     "min-w": { "$type": "dimension", "$value": "12rem" },
     "menu-min-w": { "$type": "dimension", "$value": "10rem" },
+    "max-w-sm": { "$type": "dimension", "$value": "16rem" },
     "max-w": { "$type": "dimension", "$value": "20rem" },
+    "max-w-lg": { "$type": "dimension", "$value": "24rem" },
     "max-h": { "$type": "dimension", "$value": "16rem" }
   },
   "text": {
