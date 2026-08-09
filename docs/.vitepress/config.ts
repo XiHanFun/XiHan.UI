@@ -34,17 +34,28 @@ const guideChapters: [text: string, name: string][] = [
   ["测试与质量门禁", "testing"],
 ];
 
-const sidebar: DefaultTheme.SidebarItem[] = [
+const startSidebar: DefaultTheme.SidebarItem[] = [
   {
     text: "开始",
     collapsed: false,
     items: [
-      { text: "组件库简介", link: "/" },
+      { text: "组件库简介", link: "/introduction" },
       { text: "架构总览", link: "/overview" },
       { text: "安装与接入", link: "/installation" },
       { text: "快速上手", link: "/quickstart" },
     ],
   },
+  {
+    text: "参考",
+    collapsed: false,
+    items: [
+      { text: "包与依赖关系", link: "/npm-package-dependency" },
+      { text: "常见问题", link: "/faq" },
+    ],
+  },
+];
+
+const guideSidebar: DefaultTheme.SidebarItem[] = [
   {
     text: "核心概念",
     collapsed: false,
@@ -53,6 +64,9 @@ const sidebar: DefaultTheme.SidebarItem[] = [
       link: `/guide/${name}`,
     })),
   },
+];
+
+const adaptersSidebar: DefaultTheme.SidebarItem[] = [
   {
     text: "适配器",
     collapsed: false,
@@ -61,6 +75,9 @@ const sidebar: DefaultTheme.SidebarItem[] = [
       { text: "Web Components 适配器", link: "/adapters/wc" },
     ],
   },
+];
+
+const componentsSidebar: DefaultTheme.SidebarItem[] = [
   {
     text: "组件参考",
     link: "/components/",
@@ -74,21 +91,28 @@ const sidebar: DefaultTheme.SidebarItem[] = [
       { text: "AI 对话", link: "/components/ai" },
     ],
   },
-  {
-    text: "参考",
-    collapsed: false,
-    items: [
-      { text: "包与依赖关系", link: "/npm-package-dependency" },
-      { text: "常见问题", link: "/faq" },
-    ],
-  },
 ];
+
+// 每个顶部导航板块各自一份侧栏，由路径前缀决定用哪一份；
+// 首页是 layout: home，不落任何一份。
+const sidebar: DefaultTheme.Sidebar = {
+  "/guide/": guideSidebar,
+  "/adapters/": adaptersSidebar,
+  "/components/": componentsSidebar,
+  "/": startSidebar,
+};
 
 const nav: DefaultTheme.NavItem[] = [
   {
     text: withNavBadge("🎨 视图组件", release),
     link: "/",
     activeMatch: "^/$",
+  },
+  {
+    text: "开始",
+    link: "/introduction",
+    activeMatch:
+      "^/(introduction|overview|installation|quickstart|npm-package-dependency|faq)$",
   },
   { text: "核心概念", link: "/guide/anatomy", activeMatch: "/guide/" },
   { text: "适配器", link: "/adapters/vue", activeMatch: "/adapters/" },
