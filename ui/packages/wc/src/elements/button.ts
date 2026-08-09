@@ -11,6 +11,7 @@ import { XhElement } from '../element-base'
  * @attr {boolean} disabled - 禁用（原生 disabled，丢焦点）
  * @attr {boolean} loading - 加载中（aria-disabled，保留焦点并拦截点击）
  * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 视觉变体
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @csspart root - 承载 data-scope/data-part/data-* 的原生 button
  */
@@ -22,6 +23,7 @@ export class XhButtonElement extends XhElement {
     disabled: { type: Boolean },
     loading: { type: Boolean },
     variant: {},
+    tone: {},
     size: {},
   }
 
@@ -29,6 +31,7 @@ export class XhButtonElement extends XhElement {
   declare disabled?: boolean
   declare loading?: boolean
   declare variant?: string
+  declare tone?: string
   declare size?: string
 
   protected wire(): void {

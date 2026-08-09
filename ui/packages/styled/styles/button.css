@@ -47,25 +47,35 @@
   }
 
   /* —— 变体 —— */
+  /* 形态只决定颜色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的品牌/中性配色 */
   [data-scope='button'][data-part='root'][data-variant='solid'] {
-    --xh-_bg: var(--xh-bg-brand);
-    --xh-_bg-hover: var(--xh-bg-brand-hover);
-    --xh-_bg-active: var(--xh-bg-brand-active);
-    --xh-_fg: var(--xh-fg-on-brand);
+    --xh-_bg: var(--xh-_tone, var(--xh-bg-brand));
+    --xh-_bg-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
+    --xh-_bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
+    --xh-_fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  }
+
+  [data-scope='button'][data-part='root'][data-variant='subtle'] {
+    --xh-_bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+    --xh-_bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+    --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
   }
 
   [data-scope='button'][data-part='root'][data-variant='outline'] {
     --xh-_bg: transparent;
-    --xh-_bg-hover: var(--xh-bg-subtle);
-    --xh-_bg-active: var(--xh-bg-subtle-active);
+    --xh-_bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
+    --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
 
-    border-color: var(--xh-border-default);
+    border-color: var(--xh-_tone-border, var(--xh-border-default));
   }
 
   [data-scope='button'][data-part='root'][data-variant='ghost'] {
     --xh-_bg: transparent;
-    --xh-_bg-hover: var(--xh-bg-subtle);
-    --xh-_bg-active: var(--xh-bg-subtle-active);
+    --xh-_bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
+    --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
   }
 
   /* —— 尺寸 —— */

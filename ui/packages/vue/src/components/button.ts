@@ -24,6 +24,7 @@ export const XhButton = defineComponent({
     disabled: Boolean,
     loading: Boolean,
     variant: String,
+    tone: String,
     size: String,
   },
   setup(props, { slots }) {

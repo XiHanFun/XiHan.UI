@@ -8,6 +8,7 @@
 @import './styles/motion.css';
 @import './styles/undefined.css';
 @import './styles/visually-hidden.css';
+@import './styles/tone.css';
 @import './styles/alert.css';
 @import './styles/empty-state.css';
 @import './styles/skeleton.css';
