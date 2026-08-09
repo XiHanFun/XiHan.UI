@@ -158,12 +158,17 @@ describe('规模', () => {
 
   it('耗时对长度线性：翻十倍不该翻几十倍', () => {
     const unit = 'const value = "text" + 0x1F // 注释\n'
-    const small = unit.repeat(200)
-    const large = unit.repeat(2000)
+    // 两个样本都要高于计时器分辨率，比值量的才是复杂度而不是噪声
+    const small = unit.repeat(2000)
+    const large = unit.repeat(20_000)
+    // 热身一趟，把 JIT 编译排除在测量之外
+    tokenizeCode(small, JS)
     const a = fastest(() => tokenizeCode(small, JS))
     const b = fastest(() => tokenizeCode(large, JS))
+    // 小样本没量出耗时就当场判失败，不拿兜底值当除数折算出假的超线性
+    expect(a).toBeGreaterThan(0.05)
     expect(b).toBeLessThan(200)
-    expect(b / Math.max(a, 0.05)).toBeLessThan(30)
+    expect(b / a).toBeLessThan(30)
   })
 
   it('全是未闭合引号也不退化', () => {
