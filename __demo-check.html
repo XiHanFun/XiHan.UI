@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>demo check | 曦寒视图组件文档</title>
+    <meta name="description" content="框架无关的设计系统运行时与组件库">
+    <meta name="generator" content="VitePress v1.6.4">
+    <link rel="preload stylesheet" href="/assets/style.CI0MdZYz.css" as="style">
+    <link rel="preload stylesheet" href="/vp-icons.css" as="style">
+    
+    <script type="module" src="/assets/app.DS3W5y2m.js"></script>
+    <link rel="preload" href="/assets/inter-roman-latin.Di8DUHzh.woff2" as="font" type="font/woff2" crossorigin="">
+    <link rel="modulepreload" href="/assets/chunks/theme.D6Fv8jUu.js">
+    <link rel="modulepreload" href="/assets/chunks/framework.D7SS9GQA.js">
+    <link rel="modulepreload" href="/assets/demo-check.md.BOIw6d1O.lean.js">
+    <meta name="author" content="XiHanFun">
+    <meta name="keywords" content="曦寒,曦寒懿,视图组件,组件库,设计系统,Vue,Web Components,官方文档,开源,XiHanFun,XiHan.UI">
+    <link rel="icon" href="/favicon.ico">
+    <script id="check-dark-mode">(()=>{const e=localStorage.getItem("vitepress-theme-appearance")||"auto",a=window.matchMedia("(prefers-color-scheme: dark)").matches;(!e||e==="auto"?a:e==="dark")&&document.documentElement.classList.add("dark")})();</script>
+    <script id="check-mac-os">document.documentElement.classList.toggle("mac",/Mac|iPhone|iPod|iPad/i.test(navigator.platform));</script>
+  </head>
+  <body>
+    <div id="app"><div class="Layout" data-v-7444b867><!--[--><!--]--><!--[--><span tabindex="-1" data-v-25e7374c></span><a href="#VPContent" class="VPSkipLink visually-hidden" data-v-25e7374c>跳转到内容</a><!--]--><!----><header class="VPNav" data-v-7444b867 data-v-bf4cbd47><div class="VPNavBar" data-v-bf4cbd47 data-v-c14d81c4><div class="wrapper" data-v-c14d81c4><div class="container" data-v-c14d81c4><div class="title" data-v-c14d81c4><div class="VPNavBarTitle has-sidebar" data-v-c14d81c4 data-v-64b165c8><a class="title" href="/" data-v-64b165c8><!--[--><!--]--><!--[--><img class="VPImage logo" src="/images/logo.png" alt data-v-7b734435><!--]--><span data-v-64b165c8>曦寒视图组件文档</span><!--[--><!--]--></a></div></div><div class="content" data-v-c14d81c4><div class="content-body" data-v-c14d81c4><!--[--><!--]--><div class="VPNavBarSearch search" data-v-c14d81c4><!--[--><!----><div id="local-search"><button type="button" class="DocSearch DocSearch-Button" aria-label="搜索文档"><span class="DocSearch-Button-Container"><span class="vp-icon DocSearch-Search-Icon"></span><span class="DocSearch-Button-Placeholder">搜索文档</span></span><span class="DocSearch-Button-Keys"><kbd class="DocSearch-Button-Key"></kbd><kbd class="DocSearch-Button-Key">K</kbd></span></button></div><!--]--></div><nav aria-labelledby="main-nav-aria-label" class="VPNavBarMenu menu" data-v-c14d81c4 data-v-79daf4de><span id="main-nav-aria-label" class="visually-hidden" data-v-79daf4de> Main Navigation </span><!--[--><!--[--><a class="VPLink link VPNavBarMenuLink" href="/introduction" tabindex="0" data-v-79daf4de data-v-64011df0><!--[--><span data-v-64011df0>开始</span><!--]--></a><!--]--><!--[--><a class="VPLink link VPNavBarMenuLink" href="/guide/anatomy" tabindex="0" data-v-79daf4de data-v-64011df0><!--[--><span data-v-64011df0>核心概念</span><!--]--></a><!--]--><!--[--><a class="VPLink link VPNavBarMenuLink" href="/adapters/vue" tabindex="0" data-v-79daf4de data-v-64011df0><!--[--><span data-v-64011df0>适配器</span><!--]--></a><!--]--><!--[--><a class="VPLink link VPNavBarMenuLink" href="/components/" tabindex="0" data-v-79daf4de data-v-64011df0><!--[--><span data-v-64011df0>组件参考</span><!--]--></a><!--]--><!--[--><div class="VPFlyout VPNavBarMenuGroup" data-v-79daf4de data-v-2ca0e233><button type="button" class="button" aria-haspopup="true" aria-expanded="false" data-v-2ca0e233><span class="text" data-v-2ca0e233><!----><span data-v-2ca0e233>探索未知</span><span class="vpi-chevron-down text-icon" data-v-2ca0e233></span></span></button><div class="menu" data-v-2ca0e233><div class="VPMenu" data-v-2ca0e233 data-v-b7a31a82><div class="items" data-v-b7a31a82><!--[--><!--[--><div class="VPMenuGroup" data-v-b7a31a82 data-v-71151cdd><p class="title" data-v-71151cdd>关于我们</p><!--[--><!--[--><div class="VPMenuLink" data-v-71151cdd data-v-45045520><a class="VPLink link vp-external-link-icon" href="https://www.xihanfun.com" target="_blank" rel="noreferrer" data-v-45045520><!--[--><span data-v-45045520>官方网站</span><!--]--></a></div><!--]--><!--[--><div class="VPMenuLink" data-v-71151cdd data-v-45045520><a class="VPLink link vp-external-link-icon" href="https://docs.xihanfun.com" target="_blank" rel="noreferrer" data-v-45045520><!--[--><span data-v-45045520>组织文档</span><!--]--></a></div><!--]--><!--]--></div><!--]--><!--[--><div class="VPMenuGroup" data-v-b7a31a82 data-v-71151cdd><p class="title" data-v-71151cdd>生态文档</p><!--[--><!--[--><div class="VPMenuLink" data-v-71151cdd data-v-45045520><a class="VPLink link vp-external-link-icon" href="https://framework.docs.xihanfun.com" target="_blank" rel="noreferrer" data-v-45045520><!--[--><span data-v-45045520>后端 | 开发框架</span><!--]--></a></div><!--]--><!--[--><div class="VPMenuLink" data-v-71151cdd data-v-45045520><a class="VPLink link vp-external-link-icon" href="https://basicapp.docs.xihanfun.com" target="_blank" rel="noreferrer" data-v-45045520><!--[--><span data-v-45045520>用例 | 基础应用</span><!--]--></a></div><!--]--><!--]--></div><!--]--><!--[--><div class="VPMenuGroup" data-v-b7a31a82 data-v-71151cdd><p class="title" data-v-71151cdd>引用下载</p><!--[--><!--[--><div class="VPMenuLink" data-v-71151cdd data-v-45045520><a class="VPLink link vp-external-link-icon" href="https://www.nuget.org/profiles/XiHanFun" target="_blank" rel="noreferrer" data-v-45045520><!--[--><span data-v-45045520>后端 | nuget</span><!--]--></a></div><!--]--><!--[--><div class="VPMenuLink" data-v-71151cdd data-v-45045520><a class="VPLink link vp-external-link-icon" href="https://www.npmjs.com/org/xihan-ui" target="_blank" rel="noreferrer" data-v-45045520><!--[--><span data-v-45045520>前端 | npm</span><!--]--></a></div><!--]--><!--]--></div><!--]--><!--[--><div class="VPMenuGroup" data-v-b7a31a82 data-v-71151cdd><p class="title" data-v-71151cdd>在线体验</p><!--[--><!--[--><div class="VPMenuLink" data-v-71151cdd data-v-45045520><a class="VPLink link vp-external-link-icon" href="https://framework.xihanfun.com" target="_blank" rel="noreferrer" data-v-45045520><!--[--><span data-v-45045520>后端 | 开发框架</span><!--]--></a></div><!--]--><!--[--><div class="VPMenuLink" data-v-71151cdd data-v-45045520><a class="VPLink link vp-external-link-icon" href="https://ui.xihanfun.com" target="_blank" rel="noreferrer" data-v-45045520><!--[--><span data-v-45045520>前端 | 视图组件</span><!--]--></a></div><!--]--><!--[--><div class="VPMenuLink" data-v-71151cdd data-v-45045520><a class="VPLink link vp-external-link-icon" href="https://basicapp.xihanfun.com" target="_blank" rel="noreferrer" data-v-45045520><!--[--><span data-v-45045520>用例 | 基础应用</span><!--]--></a></div><!--]--><!--]--></div><!--]--><!--]--></div><!--[--><!--]--></div></div></div><!--]--><!--[--><div class="VPFlyout VPNavBarMenuGroup" data-v-79daf4de data-v-2ca0e233><button type="button" class="button" aria-haspopup="true" aria-expanded="false" data-v-2ca0e233><span class="text" data-v-2ca0e233><!----><span data-v-2ca0e233>代码仓库</span><span class="vpi-chevron-down text-icon" data-v-2ca0e233></span></span></button><div class="menu" data-v-2ca0e233><div class="VPMenu" data-v-2ca0e233 data-v-b7a31a82><div class="items" data-v-b7a31a82><!--[--><!--[--><div class="VPMenuLink" data-v-b7a31a82 data-v-45045520><a class="VPLink link vp-external-link-icon" href="https://github.com/XiHanFun/XiHan.UI" target="_blank" rel="noreferrer" data-v-45045520><!--[--><span data-v-45045520>Github主库(国际)</span><!--]--></a></div><!--]--><!--[--><div class="VPMenuLink" data-v-b7a31a82 data-v-45045520><a class="VPLink link vp-external-link-icon" href="https://gitee.com/XiHanFun/XiHan.UI" target="_blank" rel="noreferrer" data-v-45045520><!--[--><span data-v-45045520>Gitee同步备库(国内)</span><!--]--></a></div><!--]--><!--[--><div class="VPMenuLink" data-v-b7a31a82 data-v-45045520><a class="VPLink link vp-external-link-icon" href="https://atomgit.com/XiHanFun/XiHan.UI" target="_blank" rel="noreferrer" data-v-45045520><!--[--><span data-v-45045520>Atomgit同步备库(国内)</span><!--]--></a></div><!--]--><!--]--></div><!--[--><!--]--></div></div></div><!--]--><!--[--><div class="VPFlyout VPNavBarMenuGroup" data-v-79daf4de data-v-2ca0e233><button type="button" class="button" aria-haspopup="true" aria-expanded="false" data-v-2ca0e233><span class="text" data-v-2ca0e233><!----><span data-v-2ca0e233>参与贡献</span><span class="vpi-chevron-down text-icon" data-v-2ca0e233></span></span></button><div class="menu" data-v-2ca0e233><div class="VPMenu" data-v-2ca0e233 data-v-b7a31a82><div class="items" data-v-b7a31a82><!--[--><!--[--><div class="VPMenuLink" data-v-b7a31a82 data-v-45045520><a class="VPLink link vp-external-link-icon" href="https://docs.xihanfun.com/cosmos/code-of-conduct" target="_blank" rel="noreferrer" data-v-45045520><!--[--><span data-v-45045520>公约</span><!--]--></a></div><!--]--><!--[--><div class="VPMenuLink" data-v-b7a31a82 data-v-45045520><a class="VPLink link vp-external-link-icon" href="https://docs.xihanfun.com/cosmos/contributing" target="_blank" rel="noreferrer" data-v-45045520><!--[--><span data-v-45045520>指南</span><!--]--></a></div><!--]--><!--[--><div class="VPMenuLink" data-v-b7a31a82 data-v-45045520><a class="VPLink link vp-external-link-icon" href="https://docs.xihanfun.com/cosmos/contributors" target="_blank" rel="noreferrer" data-v-45045520><!--[--><span data-v-45045520>贡献者</span><!--]--></a></div><!--]--><!--[--><div class="VPMenuLink" data-v-b7a31a82 data-v-45045520><a class="VPLink link vp-external-link-icon" href="https://docs.xihanfun.com/cosmos/sponsor" target="_blank" rel="noreferrer" data-v-45045520><!--[--><span data-v-45045520>支持&赞助</span><!--]--></a></div><!--]--><!--]--></div><!--[--><!--]--></div></div></div><!--]--><!--[--><div class="VPFlyout VPNavBarMenuGroup" data-v-79daf4de data-v-2ca0e233><button type="button" class="button" aria-haspopup="true" aria-expanded="false" data-v-2ca0e233><span class="text" data-v-2ca0e233><!----><span data-v-2ca0e233>v0.0.0</span><span class="vpi-chevron-down text-icon" data-v-2ca0e233></span></span></button><div class="menu" data-v-2ca0e233><div class="VPMenu" data-v-2ca0e233 data-v-b7a31a82><div class="items" data-v-b7a31a82><!--[--><!--[--><div class="VPMenuLink" data-v-b7a31a82 data-v-45045520><a class="VPLink link" href="/changelog" data-v-45045520><!--[--><span data-v-45045520>更新日志</span><!--]--></a></div><!--]--><!--]--></div><!--[--><!--]--></div></div></div><!--]--><!--]--></nav><!----><div class="VPNavBarAppearance appearance" data-v-c14d81c4 data-v-638544fd><button class="VPSwitch VPSwitchAppearance" type="button" role="switch" title aria-checked="false" data-v-638544fd data-v-5dc3529b data-v-dd0e6b3f><span class="check" data-v-dd0e6b3f><span class="icon" data-v-dd0e6b3f><!--[--><span class="vpi-sun sun" data-v-5dc3529b></span><span class="vpi-moon moon" data-v-5dc3529b></span><!--]--></span></span></button></div><div class="VPSocialLinks VPNavBarSocialLinks social-links" data-v-c14d81c4 data-v-7b851c63 data-v-1f9b40c6><!--[--><a class="VPSocialLink no-icon" href="https://github.com/XiHanFun/XiHan.UI" aria-label="github" target="_blank" rel="noopener" data-v-1f9b40c6 data-v-6c4d972c><span class="vpi-social-github"></span></a><a class="VPSocialLink no-icon" href="https://gitee.com/XiHanFun/XiHan.UI" aria-label="gitee" target="_blank" rel="noopener" data-v-1f9b40c6 data-v-6c4d972c><span class="vpi-social-gitee"></span></a><a class="VPSocialLink no-icon" href="https://atomgit.com/XiHanFun/XiHan.UI" aria-label="git" target="_blank" rel="noopener" data-v-1f9b40c6 data-v-6c4d972c><span class="vpi-social-git"></span></a><!--]--></div><div class="VPFlyout VPNavBarExtra extra" data-v-c14d81c4 data-v-ca9e80ec data-v-2ca0e233><button type="button" class="button" aria-haspopup="true" aria-expanded="false" aria-label="extra navigation" data-v-2ca0e233><span class="vpi-more-horizontal icon" data-v-2ca0e233></span></button><div class="menu" data-v-2ca0e233><div class="VPMenu" data-v-2ca0e233 data-v-b7a31a82><!----><!--[--><!--[--><!----><div class="group" data-v-ca9e80ec><div class="item appearance" data-v-ca9e80ec><p class="label" data-v-ca9e80ec>主题</p><div class="appearance-action" data-v-ca9e80ec><button class="VPSwitch VPSwitchAppearance" type="button" role="switch" title aria-checked="false" data-v-ca9e80ec data-v-5dc3529b data-v-dd0e6b3f><span class="check" data-v-dd0e6b3f><span class="icon" data-v-dd0e6b3f><!--[--><span class="vpi-sun sun" data-v-5dc3529b></span><span class="vpi-moon moon" data-v-5dc3529b></span><!--]--></span></span></button></div></div></div><div class="group" data-v-ca9e80ec><div class="item social-links" data-v-ca9e80ec><div class="VPSocialLinks social-links-list" data-v-ca9e80ec data-v-1f9b40c6><!--[--><a class="VPSocialLink no-icon" href="https://github.com/XiHanFun/XiHan.UI" aria-label="github" target="_blank" rel="noopener" data-v-1f9b40c6 data-v-6c4d972c><span class="vpi-social-github"></span></a><a class="VPSocialLink no-icon" href="https://gitee.com/XiHanFun/XiHan.UI" aria-label="gitee" target="_blank" rel="noopener" data-v-1f9b40c6 data-v-6c4d972c><span class="vpi-social-gitee"></span></a><a class="VPSocialLink no-icon" href="https://atomgit.com/XiHanFun/XiHan.UI" aria-label="git" target="_blank" rel="noopener" data-v-1f9b40c6 data-v-6c4d972c><span class="vpi-social-git"></span></a><!--]--></div></div></div><!--]--><!--]--></div></div></div><!--[--><!--]--><button type="button" class="VPNavBarHamburger hamburger" aria-label="mobile navigation" aria-expanded="false" aria-controls="VPNavScreen" data-v-c14d81c4 data-v-f67c97fd><span class="container" data-v-f67c97fd><span class="top" data-v-f67c97fd></span><span class="middle" data-v-f67c97fd></span><span class="bottom" data-v-f67c97fd></span></span></button></div></div></div></div><div class="divider" data-v-c14d81c4><div class="divider-line" data-v-c14d81c4></div></div></div><!----></header><div class="VPLocalNav has-sidebar empty" data-v-7444b867 data-v-7eb26b99><div class="container" data-v-7eb26b99><button class="menu" aria-expanded="false" aria-controls="VPSidebarNav" data-v-7eb26b99><span class="vpi-align-left menu-icon" data-v-7eb26b99></span><span class="menu-text" data-v-7eb26b99>菜单</span></button><div class="VPLocalNavOutlineDropdown" style="--vp-vh:0px;" data-v-7eb26b99 data-v-a2492262><button data-v-a2492262>回到顶部</button><!----></div></div></div><aside class="VPSidebar" data-v-7444b867 data-v-f9925420><div class="curtain" data-v-f9925420></div><nav class="nav" id="VPSidebarNav" aria-labelledby="sidebar-aria-label" tabindex="-1" data-v-f9925420><span class="visually-hidden" id="sidebar-aria-label" data-v-f9925420> Sidebar Navigation </span><!--[--><!--]--><!--[--><div class="no-transition group" data-v-0c2e7b8e><section class="VPSidebarItem level-0 collapsible" data-v-0c2e7b8e data-v-5a24e92f><div class="item" role="button" tabindex="0" data-v-5a24e92f><div class="indicator" data-v-5a24e92f></div><h2 class="text" data-v-5a24e92f>开始</h2><div class="caret" role="button" aria-label="toggle section" tabindex="0" data-v-5a24e92f><span class="vpi-chevron-right caret-icon" data-v-5a24e92f></span></div></div><div class="items" data-v-5a24e92f><!--[--><div class="VPSidebarItem level-1 is-link" data-v-5a24e92f><div class="item" data-v-5a24e92f><div class="indicator" data-v-5a24e92f></div><a class="VPLink link link" href="/introduction" data-v-5a24e92f><!--[--><p class="text" data-v-5a24e92f>组件库简介</p><!--]--></a><!----></div><!----></div><div class="VPSidebarItem level-1 is-link" data-v-5a24e92f><div class="item" data-v-5a24e92f><div class="indicator" data-v-5a24e92f></div><a class="VPLink link link" href="/overview" data-v-5a24e92f><!--[--><p class="text" data-v-5a24e92f>架构总览</p><!--]--></a><!----></div><!----></div><div class="VPSidebarItem level-1 is-link" data-v-5a24e92f><div class="item" data-v-5a24e92f><div class="indicator" data-v-5a24e92f></div><a class="VPLink link link" href="/installation" data-v-5a24e92f><!--[--><p class="text" data-v-5a24e92f>安装与接入</p><!--]--></a><!----></div><!----></div><div class="VPSidebarItem level-1 is-link" data-v-5a24e92f><div class="item" data-v-5a24e92f><div class="indicator" data-v-5a24e92f></div><a class="VPLink link link" href="/quickstart" data-v-5a24e92f><!--[--><p class="text" data-v-5a24e92f>快速上手</p><!--]--></a><!----></div><!----></div><!--]--></div></section></div><div class="no-transition group" data-v-0c2e7b8e><section class="VPSidebarItem level-0 collapsible" data-v-0c2e7b8e data-v-5a24e92f><div class="item" role="button" tabindex="0" data-v-5a24e92f><div class="indicator" data-v-5a24e92f></div><h2 class="text" data-v-5a24e92f>参考</h2><div class="caret" role="button" aria-label="toggle section" tabindex="0" data-v-5a24e92f><span class="vpi-chevron-right caret-icon" data-v-5a24e92f></span></div></div><div class="items" data-v-5a24e92f><!--[--><div class="VPSidebarItem level-1 is-link" data-v-5a24e92f><div class="item" data-v-5a24e92f><div class="indicator" data-v-5a24e92f></div><a class="VPLink link link" href="/npm-package-dependency" data-v-5a24e92f><!--[--><p class="text" data-v-5a24e92f>包与依赖关系</p><!--]--></a><!----></div><!----></div><div class="VPSidebarItem level-1 is-link" data-v-5a24e92f><div class="item" data-v-5a24e92f><div class="indicator" data-v-5a24e92f></div><a class="VPLink link link" href="/faq" data-v-5a24e92f><!--[--><p class="text" data-v-5a24e92f>常见问题</p><!--]--></a><!----></div><!----></div><!--]--></div></section></div><div class="no-transition group" data-v-0c2e7b8e><section class="VPSidebarItem level-0" data-v-0c2e7b8e data-v-5a24e92f><!----><div class="items" data-v-5a24e92f><!--[--><div class="VPSidebarItem level-1 is-link" data-v-5a24e92f><div class="item" data-v-5a24e92f><div class="indicator" data-v-5a24e92f></div><a class="VPLink link link" href="/changelog" data-v-5a24e92f><!--[--><p class="text" data-v-5a24e92f>更新日志</p><!--]--></a><!----></div><!----></div><!--]--></div></section></div><!--]--><!--[--><!--]--></nav></aside><div class="VPContent has-sidebar" id="VPContent" data-v-7444b867 data-v-25e41847><div class="VPDoc has-sidebar has-aside" data-v-25e41847 data-v-8de920f4><!--[--><!--]--><div class="container" data-v-8de920f4><div class="aside" data-v-8de920f4><div class="aside-curtain" data-v-8de920f4></div><div class="aside-container" data-v-8de920f4><div class="aside-content" data-v-8de920f4><div class="VPDocAside" data-v-8de920f4 data-v-bb777e34><!--[--><!--]--><!--[--><!--]--><nav aria-labelledby="doc-outline-aria-label" class="VPDocAsideOutline" data-v-bb777e34 data-v-48d42369><div class="content" data-v-48d42369><div class="outline-marker" data-v-48d42369></div><div aria-level="2" class="outline-title" id="doc-outline-aria-label" role="heading" data-v-48d42369>目录</div><ul class="VPDocOutlineItem root" data-v-48d42369 data-v-35d1e26b><!--[--><!--]--></ul></div></nav><!--[--><!--]--><div class="spacer" data-v-bb777e34></div><!--[--><!--]--><!----><!--[--><!--]--><!--[--><!--]--></div></div></div></div><div class="content" data-v-8de920f4><div class="content-container" data-v-8de920f4><!--[--><!--]--><main class="main" data-v-8de920f4><div style="position:relative;" class="vp-doc ___demo-check" data-v-8de920f4><div><h1 id="demo-check" tabindex="-1">demo check <a class="header-anchor" href="#demo-check" aria-label="Permalink to &quot;demo check&quot;">​</a></h1><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><!--[--><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-scope="icon" data-part="root" viewBox="0 0 24 24" data-icon="check" aria-hidden="true"><g data-scope="icon" data-part="glyph"><path d="M4 12.5L9.5 18L20 6"></path></g></svg><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-scope="icon" data-part="root" viewBox="0 0 24 24" data-icon="search" aria-hidden="true"><g data-scope="icon" data-part="glyph"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5L20.5 20.5"></path></g></svg><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-scope="icon" data-part="root" viewBox="0 0 24 24" data-icon="star" aria-hidden="true"><g data-scope="icon" data-part="glyph"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z"></path></g></svg><span style="display:inline-flex;align-items:center;gap:6px;color:#16a34a;"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-scope="icon" data-part="root" viewBox="0 0 24 24" data-icon="check" aria-hidden="true"><g data-scope="icon" data-part="glyph"><path d="M4 12.5L9.5 18L20 6"></path></g></svg>已完成 </span><!--]--></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { XhIcon } from &quot;@xihan-ui/vue&quot;;
+
+// 图标记录是纯数据：坐标系、打在根 svg 上的呈现属性、图元树
+const CheckIcon = {
+  name: &quot;check&quot;,
+  viewBox: &quot;0 0 24 24&quot;,
+  attrs: {
+    &quot;fill&quot;: &quot;none&quot;,
+    &quot;stroke&quot;: &quot;currentColor&quot;,
+    &quot;stroke-width&quot;: &quot;2&quot;,
+    &quot;stroke-linecap&quot;: &quot;round&quot;,
+    &quot;stroke-linejoin&quot;: &quot;round&quot;,
+  },
+  nodes: [{ tag: &quot;path&quot;, attrs: { d: &quot;M4 12.5L9.5 18L20 6&quot; } }],
+} as const;
+
+const SearchIcon = {
+  name: &quot;search&quot;,
+  viewBox: &quot;0 0 24 24&quot;,
+  attrs: {
+    &quot;fill&quot;: &quot;none&quot;,
+    &quot;stroke&quot;: &quot;currentColor&quot;,
+    &quot;stroke-width&quot;: &quot;2&quot;,
+    &quot;stroke-linecap&quot;: &quot;round&quot;,
+    &quot;stroke-linejoin&quot;: &quot;round&quot;,
+  },
+  nodes: [
+    { tag: &quot;circle&quot;, attrs: { cx: &quot;10.5&quot;, cy: &quot;10.5&quot;, r: &quot;6.5&quot; } },
+    { tag: &quot;path&quot;, attrs: { d: &quot;M15.5 15.5L20.5 20.5&quot; } },
+  ],
+} as const;
+
+const StarIcon = {
+  name: &quot;star&quot;,
+  viewBox: &quot;0 0 24 24&quot;,
+  attrs: {
+    &quot;fill&quot;: &quot;none&quot;,
+    &quot;stroke&quot;: &quot;currentColor&quot;,
+    &quot;stroke-width&quot;: &quot;2&quot;,
+    &quot;stroke-linecap&quot;: &quot;round&quot;,
+    &quot;stroke-linejoin&quot;: &quot;round&quot;,
+  },
+  nodes: [
+    {
+      tag: &quot;path&quot;,
+      attrs: {
+        d: &quot;M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z&quot;,
+      },
+    },
+  ],
+} as const;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;XhIcon :icon=&quot;CheckIcon&quot; /&gt;
+  &lt;XhIcon :icon=&quot;SearchIcon&quot; /&gt;
+  &lt;XhIcon :icon=&quot;StarIcon&quot; /&gt;
+  &lt;!-- 记录里的 stroke 取 currentColor，配色随上下文的文字色流下来 --&gt;
+  &lt;span style=&quot;display: inline-flex; align-items: center; gap: 6px; color: #16a34a;&quot;&gt;
+    &lt;XhIcon :icon=&quot;CheckIcon&quot; /&gt;已完成
+  &lt;/span&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><!--[--><span style="display:inline-flex;align-items:center;gap:10px;"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-scope="icon" data-part="root" viewBox="0 0 24 24" data-icon="star" aria-hidden="true" data-size="sm"><g data-scope="icon" data-part="glyph"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z"></path></g></svg><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-scope="icon" data-part="root" viewBox="0 0 24 24" data-icon="star" aria-hidden="true"><g data-scope="icon" data-part="glyph"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z"></path></g></svg><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-scope="icon" data-part="root" viewBox="0 0 24 24" data-icon="star" aria-hidden="true" data-size="lg"><g data-scope="icon" data-part="glyph"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z"></path></g></svg><span style="font-size:13px;">sm / md（缺省）/ lg</span></span><span style="display:inline-flex;align-items:center;gap:10px;"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-scope="icon" data-part="root" viewBox="0 0 24 24" data-icon="star" aria-hidden="true" data-size="lg" data-weight="light"><g data-scope="icon" data-part="glyph"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z"></path></g></svg><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-scope="icon" data-part="root" viewBox="0 0 24 24" data-icon="star" aria-hidden="true" data-size="lg"><g data-scope="icon" data-part="glyph"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z"></path></g></svg><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-scope="icon" data-part="root" viewBox="0 0 24 24" data-icon="star" aria-hidden="true" data-size="lg" data-weight="bold"><g data-scope="icon" data-part="glyph"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z"></path></g></svg><span style="font-size:13px;">light / regular（缺省）/ bold</span></span><!--]--></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { XhIcon } from &quot;@xihan-ui/vue&quot;;
+
+const StarIcon = {
+  name: &quot;star&quot;,
+  viewBox: &quot;0 0 24 24&quot;,
+  attrs: {
+    &quot;fill&quot;: &quot;none&quot;,
+    &quot;stroke&quot;: &quot;currentColor&quot;,
+    &quot;stroke-width&quot;: &quot;2&quot;,
+    &quot;stroke-linecap&quot;: &quot;round&quot;,
+    &quot;stroke-linejoin&quot;: &quot;round&quot;,
+  },
+  nodes: [
+    {
+      tag: &quot;path&quot;,
+      attrs: {
+        d: &quot;M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z&quot;,
+      },
+    },
+  ],
+} as const;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;span style=&quot;display: inline-flex; align-items: center; gap: 10px;&quot;&gt;
+    &lt;XhIcon :icon=&quot;StarIcon&quot; size=&quot;sm&quot; /&gt;
+    &lt;XhIcon :icon=&quot;StarIcon&quot; /&gt;
+    &lt;XhIcon :icon=&quot;StarIcon&quot; size=&quot;lg&quot; /&gt;
+    &lt;span style=&quot;font-size: 13px;&quot;&gt;sm / md（缺省）/ lg&lt;/span&gt;
+  &lt;/span&gt;
+
+  &lt;span style=&quot;display: inline-flex; align-items: center; gap: 10px;&quot;&gt;
+    &lt;XhIcon :icon=&quot;StarIcon&quot; size=&quot;lg&quot; weight=&quot;light&quot; /&gt;
+    &lt;XhIcon :icon=&quot;StarIcon&quot; size=&quot;lg&quot; /&gt;
+    &lt;XhIcon :icon=&quot;StarIcon&quot; size=&quot;lg&quot; weight=&quot;bold&quot; /&gt;
+    &lt;span style=&quot;font-size: 13px;&quot;&gt;light / regular（缺省）/ bold&lt;/span&gt;
+  &lt;/span&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><!--[--><span style="display:inline-flex;align-items:center;gap:6px;"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-scope="icon" data-part="root" viewBox="0 0 24 24" data-icon="plus" aria-hidden="true"><g data-scope="icon" data-part="glyph"><path d="M12 5V19"></path><path d="M5 12H19"></path></g></svg>新建 </span><span style="display:inline-flex;align-items:center;gap:6px;"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-scope="icon" data-part="root" viewBox="0 0 24 24" data-icon="x" role="img" aria-label="关闭"><g data-scope="icon" data-part="glyph"><path d="M6 6L18 18"></path><path d="M18 6L6 18"></path></g></svg><span style="font-size:13px;">这枚没有可见文字，名字只能由 label 给</span></span><!--]--></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { XhIcon } from &quot;@xihan-ui/vue&quot;;
+
+const PlusIcon = {
+  name: &quot;plus&quot;,
+  viewBox: &quot;0 0 24 24&quot;,
+  attrs: {
+    &quot;fill&quot;: &quot;none&quot;,
+    &quot;stroke&quot;: &quot;currentColor&quot;,
+    &quot;stroke-width&quot;: &quot;2&quot;,
+    &quot;stroke-linecap&quot;: &quot;round&quot;,
+    &quot;stroke-linejoin&quot;: &quot;round&quot;,
+  },
+  nodes: [
+    { tag: &quot;path&quot;, attrs: { d: &quot;M12 5V19&quot; } },
+    { tag: &quot;path&quot;, attrs: { d: &quot;M5 12H19&quot; } },
+  ],
+} as const;
+
+const XIcon = {
+  name: &quot;x&quot;,
+  viewBox: &quot;0 0 24 24&quot;,
+  attrs: {
+    &quot;fill&quot;: &quot;none&quot;,
+    &quot;stroke&quot;: &quot;currentColor&quot;,
+    &quot;stroke-width&quot;: &quot;2&quot;,
+    &quot;stroke-linecap&quot;: &quot;round&quot;,
+    &quot;stroke-linejoin&quot;: &quot;round&quot;,
+  },
+  nodes: [
+    { tag: &quot;path&quot;, attrs: { d: &quot;M6 6L18 18&quot; } },
+    { tag: &quot;path&quot;, attrs: { d: &quot;M18 6L6 18&quot; } },
+  ],
+} as const;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;!-- 旁边已经有文字说这件事，图标不给 label，读屏不会把「加号 新建」念两遍 --&gt;
+  &lt;span style=&quot;display: inline-flex; align-items: center; gap: 6px;&quot;&gt;
+    &lt;XhIcon :icon=&quot;PlusIcon&quot; /&gt;新建
+  &lt;/span&gt;
+
+  &lt;!-- 图标是这里唯一说出「关闭」的东西，必须给 label --&gt;
+  &lt;span style=&quot;display: inline-flex; align-items: center; gap: 6px;&quot;&gt;
+    &lt;XhIcon :icon=&quot;XIcon&quot; label=&quot;关闭&quot; /&gt;
+    &lt;span style=&quot;font-size: 13px;&quot;&gt;这枚没有可见文字，名字只能由 label 给&lt;/span&gt;
+  &lt;/span&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><!--[--><svg data-scope="icon" data-part="root" viewBox="0 0 24 24" role="img" aria-label="曦寒标记" data-size="lg"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"></circle><path d="M8 8L16 16M16 8L8 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg><svg data-scope="icon" data-part="root" viewBox="0 0 24 24" role="img" aria-label="半满进度" data-size="lg"><rect x="3" y="9" width="18" height="6" rx="3" fill="none" stroke="currentColor" stroke-width="2"></rect><rect x="5" y="11" width="7" height="2" rx="1" fill="currentColor"></rect></svg><!--]--></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { XhIcon } from &quot;@xihan-ui/vue&quot;;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;!-- 不传 icon，几何自己写：适合一次性的品牌标记、渐变填充这类不进图标集的图形 --&gt;
+  &lt;XhIcon viewBox=&quot;0 0 24 24&quot; size=&quot;lg&quot; label=&quot;曦寒标记&quot;&gt;
+    &lt;circle cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;9&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; /&gt;
+    &lt;path
+      d=&quot;M8 8L16 16M16 8L8 16&quot;
+      fill=&quot;none&quot;
+      stroke=&quot;currentColor&quot;
+      stroke-width=&quot;2&quot;
+      stroke-linecap=&quot;round&quot;
+    /&gt;
+  &lt;/XhIcon&gt;
+
+  &lt;XhIcon viewBox=&quot;0 0 24 24&quot; size=&quot;lg&quot; label=&quot;半满进度&quot;&gt;
+    &lt;rect x=&quot;3&quot; y=&quot;9&quot; width=&quot;18&quot; height=&quot;6&quot; rx=&quot;3&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; /&gt;
+    &lt;rect x=&quot;5&quot; y=&quot;11&quot; width=&quot;7&quot; height=&quot;2&quot; rx=&quot;1&quot; fill=&quot;currentColor&quot; /&gt;
+  &lt;/XhIcon&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><div data-scope="toggle-group" data-part="root" role="radiogroup" aria-orientation="horizontal" data-orientation="horizontal" tabindex="0" data-v-f91339c8><button data-scope="toggle-group" data-part="item" data-value="left" type="button" role="radio" aria-checked="true" aria-disabled="false" tabindex="0" data-state="on">左对齐</button><button data-scope="toggle-group" data-part="item" data-value="center" type="button" role="radio" aria-checked="false" aria-disabled="false" tabindex="-1" data-state="off">居中</button><button data-scope="toggle-group" data-part="item" data-value="right" type="button" role="radio" aria-checked="false" aria-disabled="false" tabindex="-1" data-state="off">右对齐</button></div></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { XhToggleGroupItem, XhToggleGroupRoot } from &quot;@xihan-ui/vue&quot;;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;!-- 不传 value 即非受控，default-value 只给初值 --&gt;
+  &lt;XhToggleGroupRoot default-value=&quot;left&quot;&gt;
+    &lt;XhToggleGroupItem value=&quot;left&quot;&gt;左对齐&lt;/XhToggleGroupItem&gt;
+    &lt;XhToggleGroupItem value=&quot;center&quot;&gt;居中&lt;/XhToggleGroupItem&gt;
+    &lt;XhToggleGroupItem value=&quot;right&quot;&gt;右对齐&lt;/XhToggleGroupItem&gt;
+  &lt;/XhToggleGroupRoot&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><!--[--><span style="display:inline-flex;align-items:center;gap:10px;"><div data-scope="toggle-group" data-part="root" role="radiogroup" aria-orientation="horizontal" data-orientation="horizontal" tabindex="0"><button data-scope="toggle-group" data-part="item" data-value="left" type="button" role="radio" aria-checked="true" aria-disabled="false" tabindex="0" data-state="on">左对齐</button><button data-scope="toggle-group" data-part="item" data-value="center" type="button" role="radio" aria-checked="false" aria-disabled="false" tabindex="-1" data-state="off">居中</button><button data-scope="toggle-group" data-part="item" data-value="right" type="button" role="radio" aria-checked="false" aria-disabled="false" tabindex="-1" data-state="off">右对齐</button></div><span style="font-size:13px;">当前：left</span></span><span style="display:inline-flex;align-items:center;gap:10px;"><div data-scope="toggle-group" data-part="root" role="radiogroup" aria-orientation="horizontal" data-orientation="horizontal" tabindex="0"><button data-scope="toggle-group" data-part="item" data-value="compact" type="button" role="radio" aria-checked="false" aria-disabled="false" tabindex="-1" data-state="off">紧凑</button><button data-scope="toggle-group" data-part="item" data-value="comfortable" type="button" role="radio" aria-checked="true" aria-disabled="false" tabindex="0" data-state="on">宽松</button></div><span style="font-size:13px;">disallow-empty：comfortable，点不成空</span></span><!--]--></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref } from &quot;vue&quot;;
+import { XhToggleGroupItem, XhToggleGroupRoot } from &quot;@xihan-ui/vue&quot;;
+
+const align = ref&lt;string | null&gt;(&quot;left&quot;);
+const density = ref&lt;string | null&gt;(&quot;comfortable&quot;);
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;span style=&quot;display: inline-flex; align-items: center; gap: 10px;&quot;&gt;
+    &lt;XhToggleGroupRoot v-model:value=&quot;align&quot;&gt;
+      &lt;XhToggleGroupItem value=&quot;left&quot;&gt;左对齐&lt;/XhToggleGroupItem&gt;
+      &lt;XhToggleGroupItem value=&quot;center&quot;&gt;居中&lt;/XhToggleGroupItem&gt;
+      &lt;XhToggleGroupItem value=&quot;right&quot;&gt;右对齐&lt;/XhToggleGroupItem&gt;
+    &lt;/XhToggleGroupRoot&gt;
+    &lt;span style=&quot;font-size: 13px;&quot;&gt;当前：{{ align ?? &quot;（无选中）&quot; }}&lt;/span&gt;
+  &lt;/span&gt;
+
+  &lt;span style=&quot;display: inline-flex; align-items: center; gap: 10px;&quot;&gt;
+    &lt;XhToggleGroupRoot v-model:value=&quot;density&quot; disallow-empty&gt;
+      &lt;XhToggleGroupItem value=&quot;compact&quot;&gt;紧凑&lt;/XhToggleGroupItem&gt;
+      &lt;XhToggleGroupItem value=&quot;comfortable&quot;&gt;宽松&lt;/XhToggleGroupItem&gt;
+    &lt;/XhToggleGroupRoot&gt;
+    &lt;span style=&quot;font-size: 13px;&quot;&gt;disallow-empty：{{ density }}，点不成空&lt;/span&gt;
+  &lt;/span&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><!--[--><span style="display:inline-flex;align-items:center;gap:10px;"><div data-scope="toggle-group" data-part="root" role="group" data-orientation="horizontal" tabindex="0"><button data-scope="toggle-group" data-part="item" data-value="bold" type="button" aria-pressed="true" aria-disabled="false" tabindex="0" data-state="on">B</button><button data-scope="toggle-group" data-part="item" data-value="italic" type="button" aria-pressed="false" aria-disabled="false" tabindex="-1" data-state="off">I</button><button data-scope="toggle-group" data-part="item" data-value="underline" type="button" aria-pressed="false" aria-disabled="false" tabindex="-1" data-state="off">U</button></div><span style="font-size:13px;">当前：bold</span></span><div data-scope="toggle-group" data-part="root" role="group" data-orientation="vertical" tabindex="0"><button data-scope="toggle-group" data-part="item" data-value="grid" type="button" aria-pressed="true" aria-disabled="false" tabindex="0" data-state="on">网格</button><button data-scope="toggle-group" data-part="item" data-value="ruler" type="button" aria-pressed="false" aria-disabled="false" tabindex="-1" data-state="off">标尺</button><button data-scope="toggle-group" data-part="item" data-value="guide" type="button" aria-pressed="false" aria-disabled="false" tabindex="-1" data-state="off">参考线</button></div><!--]--></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref } from &quot;vue&quot;;
+import { XhToggleGroupItem, XhToggleGroupRoot } from &quot;@xihan-ui/vue&quot;;
+
+const marks = ref&lt;string[]&gt;([&quot;bold&quot;]);
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;span style=&quot;display: inline-flex; align-items: center; gap: 10px;&quot;&gt;
+    &lt;XhToggleGroupRoot v-model:value=&quot;marks&quot; multiple&gt;
+      &lt;XhToggleGroupItem value=&quot;bold&quot;&gt;B&lt;/XhToggleGroupItem&gt;
+      &lt;XhToggleGroupItem value=&quot;italic&quot;&gt;I&lt;/XhToggleGroupItem&gt;
+      &lt;XhToggleGroupItem value=&quot;underline&quot;&gt;U&lt;/XhToggleGroupItem&gt;
+    &lt;/XhToggleGroupRoot&gt;
+    &lt;span style=&quot;font-size: 13px;&quot;&gt;当前：{{ marks.join(&quot;、&quot;) || &quot;（无选中）&quot; }}&lt;/span&gt;
+  &lt;/span&gt;
+
+  &lt;!-- 竖排只改视觉排布，方向键接受的轴与它无关，四个方向键恒响应 --&gt;
+  &lt;XhToggleGroupRoot multiple orientation=&quot;vertical&quot; :default-value=&quot;[&#39;grid&#39;]&quot;&gt;
+    &lt;XhToggleGroupItem value=&quot;grid&quot;&gt;网格&lt;/XhToggleGroupItem&gt;
+    &lt;XhToggleGroupItem value=&quot;ruler&quot;&gt;标尺&lt;/XhToggleGroupItem&gt;
+    &lt;XhToggleGroupItem value=&quot;guide&quot;&gt;参考线&lt;/XhToggleGroupItem&gt;
+  &lt;/XhToggleGroupRoot&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><!--[--><div data-scope="toggle-group" data-part="root" role="radiogroup" aria-orientation="horizontal" data-orientation="horizontal" tabindex="0"><button data-scope="toggle-group" data-part="item" data-value="left" type="button" role="radio" aria-checked="true" aria-disabled="false" tabindex="0" data-state="on">左对齐</button><button data-scope="toggle-group" data-part="item" data-value="center" type="button" role="radio" aria-checked="false" aria-disabled="true" tabindex="-1" data-state="off" data-disabled>居中</button><button data-scope="toggle-group" data-part="item" data-value="right" type="button" role="radio" aria-checked="false" aria-disabled="false" tabindex="-1" data-state="off">右对齐</button></div><div data-scope="toggle-group" data-part="root" role="radiogroup" aria-orientation="horizontal" data-orientation="horizontal" data-disabled><button data-scope="toggle-group" data-part="item" data-value="left" type="button" role="radio" aria-checked="false" aria-disabled="true" tabindex="-1" data-state="off" data-disabled>左对齐</button><button data-scope="toggle-group" data-part="item" data-value="center" type="button" role="radio" aria-checked="true" aria-disabled="true" tabindex="0" data-state="on" data-disabled>居中</button><button data-scope="toggle-group" data-part="item" data-value="right" type="button" role="radio" aria-checked="false" aria-disabled="true" tabindex="-1" data-state="off" data-disabled>右对齐</button></div><!--]--></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { XhToggleGroupItem, XhToggleGroupRoot } from &quot;@xihan-ui/vue&quot;;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;!-- 只禁其中一项：走方向键时它不被跳过，按 Enter / Space 也不切值 --&gt;
+  &lt;XhToggleGroupRoot default-value=&quot;left&quot;&gt;
+    &lt;XhToggleGroupItem value=&quot;left&quot;&gt;左对齐&lt;/XhToggleGroupItem&gt;
+    &lt;XhToggleGroupItem value=&quot;center&quot; disabled&gt;居中&lt;/XhToggleGroupItem&gt;
+    &lt;XhToggleGroupItem value=&quot;right&quot;&gt;右对齐&lt;/XhToggleGroupItem&gt;
+  &lt;/XhToggleGroupRoot&gt;
+
+  &lt;!-- 整组禁用：选中那一段仍看得出是当前值，只是改不动 --&gt;
+  &lt;XhToggleGroupRoot default-value=&quot;center&quot; disabled&gt;
+    &lt;XhToggleGroupItem value=&quot;left&quot;&gt;左对齐&lt;/XhToggleGroupItem&gt;
+    &lt;XhToggleGroupItem value=&quot;center&quot;&gt;居中&lt;/XhToggleGroupItem&gt;
+    &lt;XhToggleGroupItem value=&quot;right&quot;&gt;右对齐&lt;/XhToggleGroupItem&gt;
+  &lt;/XhToggleGroupRoot&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><div data-scope="image" data-part="root" data-status="idle" style="--xh-image-w:220px;--xh-image-ratio:16 / 9;" data-v-f91339c8><img data-scope="image" data-part="image" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23475569%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E" alt="示例封面图" data-status="idle" hidden><div data-scope="image" data-part="fallback" data-status="idle">加载中</div></div></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { XhImageFallback, XhImageImage, XhImageRoot } from &quot;@xihan-ui/vue&quot;;
+
+// 内联的示例图，省得示例依赖外部资源
+const cover
+  = &quot;data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23475569%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E&quot;;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;!-- 尺寸由这两个自定义属性给：不给就是满宽、高度 auto --&gt;
+  &lt;XhImageRoot
+    :src=&quot;cover&quot;
+    alt=&quot;示例封面图&quot;
+    style=&quot;--xh-image-w: 220px; --xh-image-ratio: 16 / 9;&quot;
+  &gt;
+    &lt;XhImageImage /&gt;
+    &lt;XhImageFallback&gt;加载中&lt;/XhImageFallback&gt;
+  &lt;/XhImageRoot&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><!--[--><div data-scope="image" data-part="root" data-status="idle" style="--xh-image-w:160px;--xh-image-ratio:16 / 9;"><img data-scope="image" data-part="image" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23475569%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E" alt="正常加载的图" data-status="idle" hidden><div data-scope="image" data-part="fallback" data-status="idle">加载中</div></div><div data-scope="image" data-part="root" data-status="idle" style="--xh-image-w:160px;--xh-image-ratio:16 / 9;"><img data-scope="image" data-part="image" src="https://example.invalid/broken.png" alt="地址写坏的图" data-status="idle" hidden><div data-scope="image" data-part="fallback" data-status="idle">图挂了</div></div><div data-scope="image" data-part="root" data-status="idle" style="--xh-image-w:160px;--xh-image-ratio:16 / 9;"><img data-scope="image" data-part="image" data-status="idle" hidden><div data-scope="image" data-part="fallback" data-status="idle">没有来源</div></div><span style="font-size:13px;"> 状态：正常 idle · 坏地址 idle · 无 src idle</span><!--]--></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { reactive } from &quot;vue&quot;;
+import { XhImageFallback, XhImageImage, XhImageRoot } from &quot;@xihan-ui/vue&quot;;
+
+const cover
+  = &quot;data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23475569%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E&quot;;
+
+const status = reactive&lt;Record&lt;string, string&gt;&gt;({
+  ok: &quot;idle&quot;,
+  broken: &quot;idle&quot;,
+  none: &quot;idle&quot;,
+});
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;XhImageRoot
+    :src=&quot;cover&quot;
+    alt=&quot;正常加载的图&quot;
+    style=&quot;--xh-image-w: 160px; --xh-image-ratio: 16 / 9;&quot;
+    @status-change=&quot;(d: { status: string }) =&gt; (status.ok = d.status)&quot;
+  &gt;
+    &lt;XhImageImage /&gt;
+    &lt;XhImageFallback&gt;加载中&lt;/XhImageFallback&gt;
+  &lt;/XhImageRoot&gt;
+
+  &lt;XhImageRoot
+    src=&quot;https://example.invalid/broken.png&quot;
+    alt=&quot;地址写坏的图&quot;
+    style=&quot;--xh-image-w: 160px; --xh-image-ratio: 16 / 9;&quot;
+    @status-change=&quot;(d: { status: string }) =&gt; (status.broken = d.status)&quot;
+  &gt;
+    &lt;XhImageImage /&gt;
+    &lt;XhImageFallback&gt;图挂了&lt;/XhImageFallback&gt;
+  &lt;/XhImageRoot&gt;
+
+  &lt;XhImageRoot
+    style=&quot;--xh-image-w: 160px; --xh-image-ratio: 16 / 9;&quot;
+    @status-change=&quot;(d: { status: string }) =&gt; (status.none = d.status)&quot;
+  &gt;
+    &lt;XhImageImage /&gt;
+    &lt;XhImageFallback&gt;没有来源&lt;/XhImageFallback&gt;
+  &lt;/XhImageRoot&gt;
+
+  &lt;span style=&quot;font-size: 13px;&quot;&gt;
+    状态：正常 {{ status.ok }} · 坏地址 {{ status.broken }} · 无 src {{ status.none }}
+  &lt;/span&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><!--[--><div data-scope="image" data-part="root" data-status="idle" style="--xh-image-w:120px;--xh-image-ratio:1;--xh-image-fit:cover;"><img data-scope="image" data-part="image" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%203%204%22%3E%3Crect%20width=%223%22%20height=%224%22%20fill=%22%230f766e%22/%3E%3Ccircle%20cx=%221.5%22%20cy=%221.4%22%20r=%220.7%22%20fill=%22%235eead4%22/%3E%3C/svg%3E" alt="裁掉多余部分" data-status="idle" hidden><div data-scope="image" data-part="fallback" data-status="idle">加载中</div></div><div data-scope="image" data-part="root" data-status="idle" style="--xh-image-w:120px;--xh-image-ratio:1;--xh-image-fit:contain;"><img data-scope="image" data-part="image" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%203%204%22%3E%3Crect%20width=%223%22%20height=%224%22%20fill=%22%230f766e%22/%3E%3Ccircle%20cx=%221.5%22%20cy=%221.4%22%20r=%220.7%22%20fill=%22%235eead4%22/%3E%3C/svg%3E" alt="整幅装进去" data-status="idle" hidden><div data-scope="image" data-part="fallback" data-status="idle">加载中</div></div><div data-scope="image" data-part="root" data-status="idle" style="--xh-image-w:64px;--xh-image-ratio:1;--xh-image-radius:50%;"><img data-scope="image" data-part="image" src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%203%204%22%3E%3Crect%20width=%223%22%20height=%224%22%20fill=%22%230f766e%22/%3E%3Ccircle%20cx=%221.5%22%20cy=%221.4%22%20r=%220.7%22%20fill=%22%235eead4%22/%3E%3C/svg%3E" alt="圆形缩略图" data-status="idle" hidden><div data-scope="image" data-part="fallback" data-status="idle">无</div></div><span style="font-size:13px;">cover（裁切）· contain（留边）· 圆形缩略图</span><!--]--></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { XhImageFallback, XhImageImage, XhImageRoot } from &quot;@xihan-ui/vue&quot;;
+
+// 竖幅素材，放进方形盒子里才看得出 cover 与 contain 的差别
+const portrait
+  = &quot;data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%203%204%22%3E%3Crect%20width=%223%22%20height=%224%22%20fill=%22%230f766e%22/%3E%3Ccircle%20cx=%221.5%22%20cy=%221.4%22%20r=%220.7%22%20fill=%22%235eead4%22/%3E%3C/svg%3E&quot;;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;XhImageRoot
+    :src=&quot;portrait&quot;
+    alt=&quot;裁掉多余部分&quot;
+    style=&quot;--xh-image-w: 120px; --xh-image-ratio: 1; --xh-image-fit: cover;&quot;
+  &gt;
+    &lt;XhImageImage /&gt;
+    &lt;XhImageFallback&gt;加载中&lt;/XhImageFallback&gt;
+  &lt;/XhImageRoot&gt;
+
+  &lt;XhImageRoot
+    :src=&quot;portrait&quot;
+    alt=&quot;整幅装进去&quot;
+    style=&quot;--xh-image-w: 120px; --xh-image-ratio: 1; --xh-image-fit: contain;&quot;
+  &gt;
+    &lt;XhImageImage /&gt;
+    &lt;XhImageFallback&gt;加载中&lt;/XhImageFallback&gt;
+  &lt;/XhImageRoot&gt;
+
+  &lt;!-- 圆形缩略图：圆角也是一个变量，不必另建一个组件 --&gt;
+  &lt;XhImageRoot
+    :src=&quot;portrait&quot;
+    alt=&quot;圆形缩略图&quot;
+    style=&quot;--xh-image-w: 64px; --xh-image-ratio: 1; --xh-image-radius: 50%;&quot;
+  &gt;
+    &lt;XhImageImage /&gt;
+    &lt;XhImageFallback&gt;无&lt;/XhImageFallback&gt;
+  &lt;/XhImageRoot&gt;
+
+  &lt;span style=&quot;font-size: 13px;&quot;&gt;cover（裁切）· contain（留边）· 圆形缩略图&lt;/span&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><div data-scope="code-block" data-part="root" data-lang="typescript" data-complete style="inline-size:100%;" data-v-f91339c8><span data-scope="code-block" data-part="lang-label" aria-hidden="true">typescript</span><pre data-scope="code-block" data-part="pre" tabindex="0" data-complete style="min-block-size:calc(var(--xh-code-block-line-height, 1.5rem) * 11);"><code data-scope="code-block" data-part="code" data-lang="typescript"><span data-scope="code-block" data-part="token" data-kind="keyword">export</span><span data-scope="code-block" data-part="token" data-kind="plain"> </span><span data-scope="code-block" data-part="token" data-kind="keyword">function</span><span data-scope="code-block" data-part="token" data-kind="plain"> createTicker</span><span data-scope="code-block" data-part="token" data-kind="punctuation">(</span><span data-scope="code-block" data-part="token" data-kind="plain">intervalTime</span><span data-scope="code-block" data-part="token" data-kind="punctuation">:</span><span data-scope="code-block" data-part="token" data-kind="plain"> </span><span data-scope="code-block" data-part="token" data-kind="keyword">number</span><span data-scope="code-block" data-part="token" data-kind="punctuation">)</span><span data-scope="code-block" data-part="token" data-kind="plain"> </span><span data-scope="code-block" data-part="token" data-kind="punctuation">{</span><span data-scope="code-block" data-part="token" data-kind="plain">
+  </span><span data-scope="code-block" data-part="token" data-kind="keyword">let</span><span data-scope="code-block" data-part="token" data-kind="plain"> handle </span><span data-scope="code-block" data-part="token" data-kind="punctuation">=</span><span data-scope="code-block" data-part="token" data-kind="plain"> </span><span data-scope="code-block" data-part="token" data-kind="number">0</span><span data-scope="code-block" data-part="token" data-kind="plain">
+  </span><span data-scope="code-block" data-part="token" data-kind="keyword">return</span><span data-scope="code-block" data-part="token" data-kind="plain"> </span><span data-scope="code-block" data-part="token" data-kind="punctuation">{</span><span data-scope="code-block" data-part="token" data-kind="plain">
+    start</span><span data-scope="code-block" data-part="token" data-kind="punctuation">(</span><span data-scope="code-block" data-part="token" data-kind="plain">onTick</span><span data-scope="code-block" data-part="token" data-kind="punctuation">:</span><span data-scope="code-block" data-part="token" data-kind="plain"> </span><span data-scope="code-block" data-part="token" data-kind="punctuation">(</span><span data-scope="code-block" data-part="token" data-kind="punctuation">)</span><span data-scope="code-block" data-part="token" data-kind="plain"> </span><span data-scope="code-block" data-part="token" data-kind="punctuation">=</span><span data-scope="code-block" data-part="token" data-kind="punctuation">&gt;</span><span data-scope="code-block" data-part="token" data-kind="plain"> </span><span data-scope="code-block" data-part="token" data-kind="keyword">void</span><span data-scope="code-block" data-part="token" data-kind="punctuation">)</span><span data-scope="code-block" data-part="token" data-kind="plain"> </span><span data-scope="code-block" data-part="token" data-kind="punctuation">{</span><span data-scope="code-block" data-part="token" data-kind="plain">
+      handle </span><span data-scope="code-block" data-part="token" data-kind="punctuation">=</span><span data-scope="code-block" data-part="token" data-kind="plain"> setInterval</span><span data-scope="code-block" data-part="token" data-kind="punctuation">(</span><span data-scope="code-block" data-part="token" data-kind="plain">onTick</span><span data-scope="code-block" data-part="token" data-kind="punctuation">,</span><span data-scope="code-block" data-part="token" data-kind="plain"> intervalTime</span><span data-scope="code-block" data-part="token" data-kind="punctuation">)</span><span data-scope="code-block" data-part="token" data-kind="plain">
+    </span><span data-scope="code-block" data-part="token" data-kind="punctuation">}</span><span data-scope="code-block" data-part="token" data-kind="punctuation">,</span><span data-scope="code-block" data-part="token" data-kind="plain">
+    stop</span><span data-scope="code-block" data-part="token" data-kind="punctuation">(</span><span data-scope="code-block" data-part="token" data-kind="punctuation">)</span><span data-scope="code-block" data-part="token" data-kind="plain"> </span><span data-scope="code-block" data-part="token" data-kind="punctuation">{</span><span data-scope="code-block" data-part="token" data-kind="plain">
+      clearInterval</span><span data-scope="code-block" data-part="token" data-kind="punctuation">(</span><span data-scope="code-block" data-part="token" data-kind="plain">handle</span><span data-scope="code-block" data-part="token" data-kind="punctuation">)</span><span data-scope="code-block" data-part="token" data-kind="plain">
+    </span><span data-scope="code-block" data-part="token" data-kind="punctuation">}</span><span data-scope="code-block" data-part="token" data-kind="punctuation">,</span><span data-scope="code-block" data-part="token" data-kind="plain">
+  </span><span data-scope="code-block" data-part="token" data-kind="punctuation">}</span><span data-scope="code-block" data-part="token" data-kind="plain">
+</span><span data-scope="code-block" data-part="token" data-kind="punctuation">}</span></code></pre></div></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { XhCodeBlock } from &quot;@xihan-ui/vue&quot;;
+
+const sample = `export function createTicker(intervalTime: number) {
+  let handle = 0
+  return {
+    start(onTick: () =&gt; void) {
+      handle = setInterval(onTick, intervalTime)
+    },
+    stop() {
+      clearInterval(handle)
+    },
+  }
+}`;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;!-- complete 表示这个块已闭合，可以放心着色 --&gt;
+  &lt;XhCodeBlock :code=&quot;sample&quot; lang=&quot;typescript&quot; complete style=&quot;inline-size: 100%;&quot; /&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><!--[--><div data-scope="code-block" data-part="root" data-lang="plaintext" style="inline-size:100%;"><span data-scope="code-block" data-part="lang-label" aria-hidden="true">plaintext</span><pre data-scope="code-block" data-part="pre" tabindex="0" style="min-block-size:calc(var(--xh-code-block-line-height, 1.5rem) * 5);"><code data-scope="code-block" data-part="code" data-lang="plaintext">const stream = await client.chat({
+  model: &#39;demo&#39;,
+  messages,
+  onToken(token) {
+    buffer +=</code></pre></div><div data-scope="code-block" data-part="root" data-lang="typescript" style="inline-size:100%;"><span data-scope="code-block" data-part="lang-label" aria-hidden="true">typescript</span><pre data-scope="code-block" data-part="pre" tabindex="0" style="min-block-size:calc(var(--xh-code-block-line-height, 1.5rem) * 5);"><code data-scope="code-block" data-part="code" data-lang="typescript"><span data-scope="code-block" data-part="token" data-kind="keyword">const</span><span data-scope="code-block" data-part="token" data-kind="plain"> stream </span><span data-scope="code-block" data-part="token" data-kind="punctuation">=</span><span data-scope="code-block" data-part="token" data-kind="plain"> </span><span data-scope="code-block" data-part="token" data-kind="keyword">await</span><span data-scope="code-block" data-part="token" data-kind="plain"> client</span><span data-scope="code-block" data-part="token" data-kind="punctuation">.</span><span data-scope="code-block" data-part="token" data-kind="plain">chat</span><span data-scope="code-block" data-part="token" data-kind="punctuation">(</span><span data-scope="code-block" data-part="token" data-kind="punctuation">{</span><span data-scope="code-block" data-part="token" data-kind="plain">
+  model</span><span data-scope="code-block" data-part="token" data-kind="punctuation">:</span><span data-scope="code-block" data-part="token" data-kind="plain"> </span><span data-scope="code-block" data-part="token" data-kind="string">&#39;demo&#39;</span><span data-scope="code-block" data-part="token" data-kind="punctuation">,</span><span data-scope="code-block" data-part="token" data-kind="plain">
+  messages</span><span data-scope="code-block" data-part="token" data-kind="punctuation">,</span><span data-scope="code-block" data-part="token" data-kind="plain">
+  onToken</span><span data-scope="code-block" data-part="token" data-kind="punctuation">(</span><span data-scope="code-block" data-part="token" data-kind="plain">token</span><span data-scope="code-block" data-part="token" data-kind="punctuation">)</span><span data-scope="code-block" data-part="token" data-kind="plain"> </span><span data-scope="code-block" data-part="token" data-kind="punctuation">{</span><span data-scope="code-block" data-part="token" data-kind="plain">
+    buffer </span><span data-scope="code-block" data-part="token" data-kind="punctuation">+</span><span data-scope="code-block" data-part="token" data-kind="punctuation">=</span></code></pre></div><!--]--></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { XhCodeBlock } from &quot;@xihan-ui/vue&quot;;
+
+// 吐到一半的样子：最后一行断在半个表达式上，围栏也还没闭合
+const partial = `const stream = await client.chat({
+  model: &#39;demo&#39;,
+  messages,
+  onToken(token) {
+    buffer +=`;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;!-- 语言标注也没吐出来：空白、半截、不认识的一律落到 plaintext --&gt;
+  &lt;XhCodeBlock :code=&quot;partial&quot; :complete=&quot;false&quot; style=&quot;inline-size: 100%;&quot; /&gt;
+
+  &lt;!-- 真要看流式着色，把这一条打开 --&gt;
+  &lt;XhCodeBlock
+    :code=&quot;partial&quot;
+    lang=&quot;typescript&quot;
+    :complete=&quot;false&quot;
+    highlight-while-streaming
+    style=&quot;inline-size: 100%;&quot;
+  /&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><!--[--><div data-scope="code-block" data-part="root" data-lang="yaml" data-complete style="inline-size:100%;"><span data-scope="code-block" data-part="lang-label" aria-hidden="true">yaml</span><pre data-scope="code-block" data-part="pre" tabindex="0" data-complete style="min-block-size:calc(var(--xh-code-block-line-height, 1.5rem) * 6);"><code data-scope="code-block" data-part="code" data-lang="yaml"># 部署清单
+image: xihan/ui:latest
+replicas: 2
+env:
+  - name: MODE
+    value: production</code></pre></div><div data-scope="code-block" data-part="root" data-lang="yaml" data-complete style="inline-size:100%;"><span data-scope="code-block" data-part="lang-label" aria-hidden="true">yaml</span><pre data-scope="code-block" data-part="pre" tabindex="0" data-complete style="min-block-size:calc(var(--xh-code-block-line-height, 1.5rem) * 6);"><code data-scope="code-block" data-part="code" data-lang="yaml"><span data-scope="code-block" data-part="token" data-kind="comment"># 部署清单</span><span data-scope="code-block" data-part="token" data-kind="plain">
+image: xihan/ui:latest
+replicas: 2
+env:
+  - name: MODE
+    value: production</span></code></pre></div><div data-scope="code-block" data-part="root" data-lang="yaml" data-complete style="inline-size:100%;"><span data-scope="code-block" data-part="lang-label" aria-hidden="true">yaml</span><pre data-scope="code-block" data-part="pre" tabindex="0" data-complete style="min-block-size:calc(var(--xh-code-block-line-height, 1.5rem) * 6);"><code data-scope="code-block" data-part="code" data-lang="yaml"># 部署清单
+image: xihan/ui:latest
+replicas: 2
+env:
+  - name: MODE
+    value: production</code></pre></div><!--]--></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { XhCodeBlock } from &quot;@xihan-ui/vue&quot;;
+
+const manifest = `# 部署清单
+image: xihan/ui:latest
+replicas: 2
+env:
+  - name: MODE
+    value: production`;
+
+// 端口只有一个方法：给代码与语言，返回记号序列；返回 null 表示这一次不着色
+const yamlComments = {
+  highlight(code: string, lang: string) {
+    if (lang !== &quot;yaml&quot;) return null;
+    return code
+      .split(/(#[^\n]*)/)
+      .filter((text) =&gt; text !== &quot;&quot;)
+      .map((text) =&gt; ({
+        text,
+        kind: text.startsWith(&quot;#&quot;) ? (&quot;comment&quot; as const) : (&quot;plain&quot; as const),
+      }));
+  },
+};
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;!-- 自带的着色实现不认识 yaml，退回纯文本；不着色是合法结果 --&gt;
+  &lt;XhCodeBlock :code=&quot;manifest&quot; lang=&quot;yaml&quot; complete style=&quot;inline-size: 100%;&quot; /&gt;
+
+  &lt;!-- 换成自己的实现：只把注释挑出来 --&gt;
+  &lt;XhCodeBlock
+    :code=&quot;manifest&quot;
+    lang=&quot;yaml&quot;
+    complete
+    :highlighter=&quot;yamlComments&quot;
+    style=&quot;inline-size: 100%;&quot;
+  /&gt;
+
+  &lt;!-- 显式 null：一个记号都不产，code 里就一个文本节点 --&gt;
+  &lt;XhCodeBlock
+    :code=&quot;manifest&quot;
+    lang=&quot;yaml&quot;
+    complete
+    :highlighter=&quot;null&quot;
+    style=&quot;inline-size: 100%;&quot;
+  /&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><div data-scope="clipboard" data-part="root" data-state="idle" data-v-f91339c8><label data-scope="clipboard" data-part="label" id="clipboard:xh-15:label" for="clipboard:xh-15:input" data-state="idle">接口密钥</label><div data-scope="clipboard" data-part="control" data-state="idle"><input data-scope="clipboard" data-part="input" id="clipboard:xh-15:input" type="text" value="xh_live_9f2c7a41b6d84e05" readonly aria-labelledby="clipboard:xh-15:label" data-state="idle"><button data-scope="clipboard" data-part="trigger" type="button" data-state="idle"><span data-scope="clipboard" data-part="indicator" data-state="idle">复制</span><span data-scope="clipboard" data-part="indicator" data-state="idle" data-copied hidden>✓ 已复制</span></button></div></div></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import {
+  XhClipboardControl,
+  XhClipboardIndicator,
+  XhClipboardInput,
+  XhClipboardLabel,
+  XhClipboardRoot,
+  XhClipboardTrigger,
+} from &quot;@xihan-ui/vue&quot;;
+
+const apiToken = &quot;xh_live_9f2c7a41b6d84e05&quot;;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;XhClipboardRoot :value=&quot;apiToken&quot;&gt;
+    &lt;XhClipboardLabel&gt;接口密钥&lt;/XhClipboardLabel&gt;
+    &lt;XhClipboardControl&gt;
+      &lt;XhClipboardInput /&gt;
+      &lt;XhClipboardTrigger&gt;
+        &lt;!-- 两个指示器都常挂 DOM、靠 hidden 互斥显隐，来回切按钮不抖宽 --&gt;
+        &lt;XhClipboardIndicator&gt;复制&lt;/XhClipboardIndicator&gt;
+        &lt;XhClipboardIndicator copied&gt;✓ 已复制&lt;/XhClipboardIndicator&gt;
+      &lt;/XhClipboardTrigger&gt;
+    &lt;/XhClipboardControl&gt;
+  &lt;/XhClipboardRoot&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><!--[--><code style="font-size:13px;">pnpm add @xihan-ui/vue @xihan-ui/styled</code><div data-scope="clipboard" data-part="root" data-state="idle"><button data-scope="clipboard" data-part="trigger" type="button" data-state="idle"><span data-scope="clipboard" data-part="indicator" data-state="idle">复制安装命令</span><span data-scope="clipboard" data-part="indicator" data-state="idle" data-copied hidden>已复制</span></button></div><!--]--></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { XhClipboardIndicator, XhClipboardRoot, XhClipboardTrigger } from &quot;@xihan-ui/vue&quot;;
+
+const install = &quot;pnpm add @xihan-ui/vue @xihan-ui/styled&quot;;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;code style=&quot;font-size: 13px;&quot;&gt;{{ install }}&lt;/code&gt;
+  &lt;XhClipboardRoot :value=&quot;install&quot; :timeout=&quot;1500&quot;&gt;
+    &lt;XhClipboardTrigger&gt;
+      &lt;XhClipboardIndicator&gt;复制安装命令&lt;/XhClipboardIndicator&gt;
+      &lt;XhClipboardIndicator copied&gt;已复制&lt;/XhClipboardIndicator&gt;
+    &lt;/XhClipboardTrigger&gt;
+  &lt;/XhClipboardRoot&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><!--[--><div data-scope="clipboard" data-part="root" data-state="idle"><div data-scope="clipboard" data-part="control" data-state="idle"><input data-scope="clipboard" data-part="input" id="clipboard:xh-17:input" type="text" value="订单号 A2026-0809-117" readonly aria-labelledby="clipboard:xh-17:label" data-state="idle"><button data-scope="clipboard" data-part="trigger" type="button" data-state="idle"><span data-scope="clipboard" data-part="indicator" data-state="idle">复制</span><span data-scope="clipboard" data-part="indicator" data-state="idle" data-copied hidden>✓ 已复制</span></button></div></div><span style="font-size:13px;"> 状态：idle <!----></span><!--]--></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref } from &quot;vue&quot;;
+import {
+  XhClipboardControl,
+  XhClipboardIndicator,
+  XhClipboardInput,
+  XhClipboardRoot,
+  XhClipboardTrigger,
+} from &quot;@xihan-ui/vue&quot;;
+
+const status = ref(&quot;idle&quot;);
+const lastError = ref(&quot;&quot;);
+
+function onStatusChange(details: { status: string }) {
+  status.value = details.status;
+}
+
+function onCopyError(details: { error: unknown; value: string }) {
+  lastError.value = String(details.error);
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;!-- timeout 决定“已复制”停留多久，到点自己回落 --&gt;
+  &lt;XhClipboardRoot
+    value=&quot;订单号 A2026-0809-117&quot;
+    :timeout=&quot;2000&quot;
+    @status-change=&quot;onStatusChange&quot;
+    @copy-error=&quot;onCopyError&quot;
+  &gt;
+    &lt;XhClipboardControl&gt;
+      &lt;XhClipboardInput /&gt;
+      &lt;XhClipboardTrigger&gt;
+        &lt;XhClipboardIndicator&gt;复制&lt;/XhClipboardIndicator&gt;
+        &lt;XhClipboardIndicator copied&gt;✓ 已复制&lt;/XhClipboardIndicator&gt;
+      &lt;/XhClipboardTrigger&gt;
+    &lt;/XhClipboardControl&gt;
+  &lt;/XhClipboardRoot&gt;
+
+  &lt;span style=&quot;font-size: 13px;&quot;&gt;
+    状态：{{ status }}
+    &lt;template v-if=&quot;lastError&quot;&gt; · 上次失败：{{ lastError }}&lt;/template&gt;
+  &lt;/span&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><div data-scope="field" data-part="root" style="inline-size:280px;" data-v-f91339c8><label data-scope="field" data-part="label" id="field:v-0:label" for="field:v-0:control">邮箱</label><input type="email" placeholder="you@example.com" data-scope="field" data-part="control" id="field:v-0:control" aria-labelledby="field:v-0:label" aria-describedby="field:v-0:description" aria-invalid="false" aria-required="false"><p data-scope="field" data-part="description" id="field:v-0:description">用于接收账单与安全提醒</p></div></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { XhFieldControl, XhFieldDescription, XhFieldLabel, XhFieldRoot } from &quot;@xihan-ui/vue&quot;;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;XhFieldRoot style=&quot;inline-size: 280px;&quot;&gt;
+    &lt;XhFieldLabel&gt;邮箱&lt;/XhFieldLabel&gt;
+    &lt;XhFieldControl&gt;
+      &lt;input type=&quot;email&quot; placeholder=&quot;you@example.com&quot; /&gt;
+    &lt;/XhFieldControl&gt;
+    &lt;XhFieldDescription&gt;用于接收账单与安全提醒&lt;/XhFieldDescription&gt;
+  &lt;/XhFieldRoot&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><div data-scope="field" data-part="root" data-invalid data-required style="inline-size:280px;" data-v-f91339c8><label data-scope="field" data-part="label" id="field:v-1:label" for="field:v-1:control">邮箱</label><input type="email" placeholder="you@example.com" data-scope="field" data-part="control" id="field:v-1:control" aria-labelledby="field:v-1:label" aria-describedby="field:v-1:description field:v-1:error-text" aria-invalid="true" aria-required="true" data-invalid value="zhaifanhua"><p data-scope="field" data-part="description" id="field:v-1:description">用于接收账单与安全提醒</p><p data-scope="field" data-part="error-text" id="field:v-1:error-text" role="alert">邮箱格式不正确</p></div></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { computed, ref } from &quot;vue&quot;;
+import {
+  XhFieldControl,
+  XhFieldDescription,
+  XhFieldErrorText,
+  XhFieldLabel,
+  XhFieldRoot,
+} from &quot;@xihan-ui/vue&quot;;
+
+const email = ref(&quot;zhaifanhua&quot;);
+// 无效与否由宿主判定，Field 只负责把这个结论铺成属性
+const invalid = computed(() =&gt; email.value !== &quot;&quot; &amp;&amp; !email.value.includes(&quot;@&quot;));
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;XhFieldRoot :invalid=&quot;invalid&quot; required style=&quot;inline-size: 280px;&quot;&gt;
+    &lt;XhFieldLabel&gt;邮箱&lt;/XhFieldLabel&gt;
+    &lt;XhFieldControl&gt;
+      &lt;input v-model=&quot;email&quot; type=&quot;email&quot; placeholder=&quot;you@example.com&quot; /&gt;
+    &lt;/XhFieldControl&gt;
+    &lt;XhFieldDescription&gt;用于接收账单与安全提醒&lt;/XhFieldDescription&gt;
+    &lt;!-- 错误文案带 role=alert，翻转的那一刻读屏立即播报 --&gt;
+    &lt;XhFieldErrorText&gt;邮箱格式不正确&lt;/XhFieldErrorText&gt;
+  &lt;/XhFieldRoot&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><div data-scope="field" data-part="root" data-disabled style="inline-size:280px;" data-v-f91339c8><label data-scope="field" data-part="label" id="field:v-2:label" for="field:v-2:control" data-disabled>登录账号</label><input value="zhaifanhua" disabled data-scope="field" data-part="control" id="field:v-2:control" aria-labelledby="field:v-2:label" aria-describedby="field:v-2:description" aria-invalid="false" aria-required="false" data-disabled><p data-scope="field" data-part="description" id="field:v-2:description" data-disabled>账号创建后不可更改</p></div></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { XhFieldControl, XhFieldDescription, XhFieldLabel, XhFieldRoot } from &quot;@xihan-ui/vue&quot;;
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;XhFieldRoot disabled style=&quot;inline-size: 280px;&quot;&gt;
+    &lt;XhFieldLabel&gt;登录账号&lt;/XhFieldLabel&gt;
+    &lt;XhFieldControl&gt;
+      &lt;input value=&quot;zhaifanhua&quot; disabled /&gt;
+    &lt;/XhFieldControl&gt;
+    &lt;XhFieldDescription&gt;账号创建后不可更改&lt;/XhFieldDescription&gt;
+  &lt;/XhFieldRoot&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><form data-scope="form" data-part="root" novalidate data-state="idle" style="inline-size:320px;" data-v-f91339c8><div data-scope="form" data-part="error-summary" id="form:v-3:error-summary" role="alert" data-state="idle" data-count="0" hidden><span>共 0 处需要修改</span><a data-scope="form" data-part="error-summary-item" href="#form:v-3:field:email" data-name="email" hidden></a><a data-scope="form" data-part="error-summary-item" href="#form:v-3:field:nickname" data-name="nickname" hidden></a></div><div data-scope="form" data-part="field-group" id="form:v-3:field:email" data-name="email" tabindex="-1"><div data-scope="field" data-part="root" data-required><label data-scope="field" data-part="label" id="field:v-4:label" for="field:v-4:control">邮箱</label><input type="email" placeholder="you@example.com" value data-scope="field" data-part="control" id="field:v-4:control" aria-labelledby="field:v-4:label" aria-describedby="field:v-4:description" aria-invalid="false" aria-required="true"><p data-scope="field" data-part="error-text" id="field:v-4:error-text" role="alert" hidden></p></div></div><div data-scope="form" data-part="field-group" id="form:v-3:field:nickname" data-name="nickname" tabindex="-1"><div data-scope="field" data-part="root" data-required><label data-scope="field" data-part="label" id="field:v-5:label" for="field:v-5:control">昵称</label><input value data-scope="field" data-part="control" id="field:v-5:control" aria-labelledby="field:v-5:label" aria-describedby="field:v-5:description" aria-invalid="false" aria-required="true"><p data-scope="field" data-part="error-text" id="field:v-5:error-text" role="alert" hidden></p></div></div><div style="display:flex;gap:8px;"><button data-scope="form" data-part="submit-trigger" type="submit">提交</button><button data-scope="form" data-part="reset-trigger" type="reset">重置</button></div><!----></form></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref } from &quot;vue&quot;;
+import {
+  XhFieldControl,
+  XhFieldErrorText,
+  XhFieldLabel,
+  XhFieldRoot,
+  XhFormErrorSummary,
+  XhFormErrorSummaryItem,
+  XhFormFieldGroup,
+  XhFormResetTrigger,
+  XhFormRoot,
+  XhFormSubmitTrigger,
+} from &quot;@xihan-ui/vue&quot;;
+
+const submitted = ref(&quot;&quot;);
+
+// 校验整表跑一遍，返回「字段名 → 错误文案」；空串表示这条没错
+function validate(values: Record&lt;string, unknown&gt;) {
+  return {
+    email: String(values.email ?? &quot;&quot;).includes(&quot;@&quot;) ? &quot;&quot; : &quot;邮箱要带一个 @&quot;,
+    nickname: String(values.nickname ?? &quot;&quot;).trim() ? &quot;&quot; : &quot;昵称不能为空&quot;,
+  };
+}
+
+function onSubmit(details: { values: Record&lt;string, unknown&gt; }) {
+  submitted.value = JSON.stringify(details.values);
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;XhFormRoot
+    :default-values=&quot;{ email: &#39;&#39;, nickname: &#39;&#39; }&quot;
+    :validate=&quot;validate&quot;
+    style=&quot;inline-size: 320px;&quot;
+    @submit=&quot;onSubmit&quot;
+  &gt;
+    &lt;!-- 摘要只在提交失败后显形；条目一次全写上，谁露面由当下的错误表决定 --&gt;
+    &lt;XhFormErrorSummary v-slot=&quot;{ errorCount }&quot;&gt;
+      &lt;span&gt;共 {{ errorCount }} 处需要修改&lt;/span&gt;
+      &lt;XhFormErrorSummaryItem v-slot=&quot;{ error }&quot; value=&quot;email&quot;&gt;{{ error }}&lt;/XhFormErrorSummaryItem&gt;
+      &lt;XhFormErrorSummaryItem v-slot=&quot;{ error }&quot; value=&quot;nickname&quot;&gt;{{ error }}&lt;/XhFormErrorSummaryItem&gt;
+    &lt;/XhFormErrorSummary&gt;
+
+    &lt;XhFormFieldGroup v-slot=&quot;{ value, error, invalid, setValue }&quot; value=&quot;email&quot;&gt;
+      &lt;XhFieldRoot :invalid=&quot;invalid&quot; required&gt;
+        &lt;XhFieldLabel&gt;邮箱&lt;/XhFieldLabel&gt;
+        &lt;XhFieldControl&gt;
+          &lt;input
+            type=&quot;email&quot;
+            placeholder=&quot;you@example.com&quot;
+            :value=&quot;value&quot;
+            @input=&quot;setValue(($event.target as HTMLInputElement).value)&quot;
+          /&gt;
+        &lt;/XhFieldControl&gt;
+        &lt;XhFieldErrorText&gt;{{ error }}&lt;/XhFieldErrorText&gt;
+      &lt;/XhFieldRoot&gt;
+    &lt;/XhFormFieldGroup&gt;
+
+    &lt;XhFormFieldGroup v-slot=&quot;{ value, error, invalid, setValue }&quot; value=&quot;nickname&quot;&gt;
+      &lt;XhFieldRoot :invalid=&quot;invalid&quot; required&gt;
+        &lt;XhFieldLabel&gt;昵称&lt;/XhFieldLabel&gt;
+        &lt;XhFieldControl&gt;
+          &lt;input
+            :value=&quot;value&quot;
+            @input=&quot;setValue(($event.target as HTMLInputElement).value)&quot;
+          /&gt;
+        &lt;/XhFieldControl&gt;
+        &lt;XhFieldErrorText&gt;{{ error }}&lt;/XhFieldErrorText&gt;
+      &lt;/XhFieldRoot&gt;
+    &lt;/XhFormFieldGroup&gt;
+
+    &lt;div style=&quot;display: flex; gap: 8px;&quot;&gt;
+      &lt;XhFormSubmitTrigger&gt;提交&lt;/XhFormSubmitTrigger&gt;
+      &lt;XhFormResetTrigger&gt;重置&lt;/XhFormResetTrigger&gt;
+    &lt;/div&gt;
+
+    &lt;p v-if=&quot;submitted&quot; style=&quot;margin: 0; font-size: 13px;&quot;&gt;已提交：{{ submitted }}&lt;/p&gt;
+  &lt;/XhFormRoot&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><!--[--><form data-scope="form" data-part="root" novalidate data-state="idle" style="inline-size:240px;"><div data-scope="form" data-part="field-group" id="form:v-6:field:port" data-name="port" tabindex="-1"><div data-scope="field" data-part="root"><label data-scope="field" data-part="label" id="field:v-7:label" for="field:v-7:control">端口（失焦校验）</label><input value="abc" data-scope="field" data-part="control" id="field:v-7:control" aria-labelledby="field:v-7:label" aria-describedby="field:v-7:description" aria-invalid="false" aria-required="false"><p data-scope="field" data-part="error-text" id="field:v-7:error-text" role="alert" hidden></p></div></div><button data-scope="form" data-part="submit-trigger" type="submit">提交</button></form><form data-scope="form" data-part="root" novalidate data-state="idle" style="inline-size:240px;"><div data-scope="form" data-part="field-group" id="form:v-8:field:port" data-name="port" tabindex="-1"><div data-scope="field" data-part="root"><label data-scope="field" data-part="label" id="field:v-9:label" for="field:v-9:control">端口（改动即校验）</label><input value="abc" data-scope="field" data-part="control" id="field:v-9:control" aria-labelledby="field:v-9:label" aria-describedby="field:v-9:description" aria-invalid="false" aria-required="false"><p data-scope="field" data-part="error-text" id="field:v-9:error-text" role="alert" hidden></p></div></div><button data-scope="form" data-part="submit-trigger" type="submit">提交</button></form><!--]--></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import {
+  XhFieldControl,
+  XhFieldErrorText,
+  XhFieldLabel,
+  XhFieldRoot,
+  XhFormFieldGroup,
+  XhFormRoot,
+  XhFormSubmitTrigger,
+} from &quot;@xihan-ui/vue&quot;;
+
+function validate(values: Record&lt;string, unknown&gt;) {
+  const port = String(values.port ?? &quot;&quot;).trim();
+  return { port: /^\d+$/.test(port) ? &quot;&quot; : &quot;端口只能是数字&quot; };
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;!-- 失焦时校验这一个字段：填的过程中不打断 --&gt;
+  &lt;XhFormRoot
+    :default-values=&quot;{ port: &#39;abc&#39; }&quot;
+    :validate=&quot;validate&quot;
+    validate-on=&quot;blur&quot;
+    style=&quot;inline-size: 240px;&quot;
+  &gt;
+    &lt;XhFormFieldGroup v-slot=&quot;{ value, error, invalid, setValue }&quot; value=&quot;port&quot;&gt;
+      &lt;XhFieldRoot :invalid=&quot;invalid&quot;&gt;
+        &lt;XhFieldLabel&gt;端口（失焦校验）&lt;/XhFieldLabel&gt;
+        &lt;XhFieldControl&gt;
+          &lt;input :value=&quot;value&quot; @input=&quot;setValue(($event.target as HTMLInputElement).value)&quot; /&gt;
+        &lt;/XhFieldControl&gt;
+        &lt;XhFieldErrorText&gt;{{ error }}&lt;/XhFieldErrorText&gt;
+      &lt;/XhFieldRoot&gt;
+    &lt;/XhFormFieldGroup&gt;
+    &lt;XhFormSubmitTrigger&gt;提交&lt;/XhFormSubmitTrigger&gt;
+  &lt;/XhFormRoot&gt;
+
+  &lt;!-- 改一个字就校验一次：错误随输入实时消长 --&gt;
+  &lt;XhFormRoot
+    :default-values=&quot;{ port: &#39;abc&#39; }&quot;
+    :validate=&quot;validate&quot;
+    validate-on=&quot;change&quot;
+    style=&quot;inline-size: 240px;&quot;
+  &gt;
+    &lt;XhFormFieldGroup v-slot=&quot;{ value, error, invalid, setValue }&quot; value=&quot;port&quot;&gt;
+      &lt;XhFieldRoot :invalid=&quot;invalid&quot;&gt;
+        &lt;XhFieldLabel&gt;端口（改动即校验）&lt;/XhFieldLabel&gt;
+        &lt;XhFieldControl&gt;
+          &lt;input :value=&quot;value&quot; @input=&quot;setValue(($event.target as HTMLInputElement).value)&quot; /&gt;
+        &lt;/XhFieldControl&gt;
+        &lt;XhFieldErrorText&gt;{{ error }}&lt;/XhFieldErrorText&gt;
+      &lt;/XhFieldRoot&gt;
+    &lt;/XhFormFieldGroup&gt;
+    &lt;XhFormSubmitTrigger&gt;提交&lt;/XhFormSubmitTrigger&gt;
+  &lt;/XhFormRoot&gt;
+&lt;/template&gt;</code></pre></div></div><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><!--[--><form data-scope="form" data-part="root" novalidate data-state="idle" style="inline-size:260px;"><div data-scope="form" data-part="field-group" id="form:v-10:field:host" data-name="host" tabindex="-1"><div data-scope="field" data-part="root"><label data-scope="field" data-part="label" id="field:v-11:label" for="field:v-11:control">主机</label><input value="127.0.0.1" data-scope="field" data-part="control" id="field:v-11:control" aria-labelledby="field:v-11:label" aria-describedby="field:v-11:description" aria-invalid="false" aria-required="false"></div></div><div data-scope="form" data-part="field-group" id="form:v-10:field:port" data-name="port" tabindex="-1"><div data-scope="field" data-part="root"><label data-scope="field" data-part="label" id="field:v-12:label" for="field:v-12:control">端口</label><input value="5173" data-scope="field" data-part="control" id="field:v-12:control" aria-labelledby="field:v-12:label" aria-describedby="field:v-12:description" aria-invalid="false" aria-required="false"></div></div><button data-scope="form" data-part="reset-trigger" type="reset">重置</button></form><span style="font-size:13px;">宿主持有的值：{&quot;host&quot;:&quot;127.0.0.1&quot;,&quot;port&quot;:&quot;5173&quot;}</span><!--]--></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref } from &quot;vue&quot;;
+import {
+  XhFieldControl,
+  XhFieldLabel,
+  XhFieldRoot,
+  XhFormFieldGroup,
+  XhFormResetTrigger,
+  XhFormRoot,
+} from &quot;@xihan-ui/vue&quot;;
+
+const defaults = { host: &quot;127.0.0.1&quot;, port: &quot;5173&quot; };
+const values = ref&lt;Record&lt;string, unknown&gt;&gt;({ ...defaults });
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;XhFormRoot
+    v-model:values=&quot;values&quot;
+    :default-values=&quot;defaults&quot;
+    style=&quot;inline-size: 260px;&quot;
+  &gt;
+    &lt;XhFormFieldGroup v-slot=&quot;{ value, setValue }&quot; value=&quot;host&quot;&gt;
+      &lt;XhFieldRoot&gt;
+        &lt;XhFieldLabel&gt;主机&lt;/XhFieldLabel&gt;
+        &lt;XhFieldControl&gt;
+          &lt;input :value=&quot;value&quot; @input=&quot;setValue(($event.target as HTMLInputElement).value)&quot; /&gt;
+        &lt;/XhFieldControl&gt;
+      &lt;/XhFieldRoot&gt;
+    &lt;/XhFormFieldGroup&gt;
+
+    &lt;XhFormFieldGroup v-slot=&quot;{ value, setValue }&quot; value=&quot;port&quot;&gt;
+      &lt;XhFieldRoot&gt;
+        &lt;XhFieldLabel&gt;端口&lt;/XhFieldLabel&gt;
+        &lt;XhFieldControl&gt;
+          &lt;input :value=&quot;value&quot; @input=&quot;setValue(($event.target as HTMLInputElement).value)&quot; /&gt;
+        &lt;/XhFieldControl&gt;
+      &lt;/XhFieldRoot&gt;
+    &lt;/XhFormFieldGroup&gt;
+
+    &lt;!-- 重置把值送回 default-values，同样经由 update:values 落到宿主这张表上 --&gt;
+    &lt;XhFormResetTrigger&gt;重置&lt;/XhFormResetTrigger&gt;
+  &lt;/XhFormRoot&gt;
+
+  &lt;span style=&quot;font-size: 13px;&quot;&gt;宿主持有的值：{{ JSON.stringify(values) }}&lt;/span&gt;
+&lt;/template&gt;</code></pre></div></div></div></div></main><footer class="VPDocFooter" data-v-8de920f4 data-v-9f1a4103><!--[--><!--]--><div class="edit-info" data-v-9f1a4103><div class="edit-link" data-v-9f1a4103><a class="VPLink link vp-external-link-icon no-icon edit-link-button" href="https://github.com/XiHanFun/XiHan.UI/tree/main/docs/__demo-check.md" target="_blank" rel="noreferrer" data-v-9f1a4103><!--[--><span class="vpi-square-pen edit-link-icon" data-v-9f1a4103></span> 在 GitHub 上编辑此页<!--]--></a></div><div class="last-updated" data-v-9f1a4103><p class="VPLastUpdated" data-v-9f1a4103 data-v-2a7fc56b>最后更新于: <time datetime="2026-08-09T16:01:11.000Z" data-v-2a7fc56b></time></p></div></div><nav class="prev-next" aria-labelledby="doc-footer-aria-label" data-v-9f1a4103><span class="visually-hidden" id="doc-footer-aria-label" data-v-9f1a4103>Pager</span><div class="pager" data-v-9f1a4103><!----></div><div class="pager" data-v-9f1a4103><a class="VPLink link pager-link next" href="/introduction" data-v-9f1a4103><!--[--><span class="desc" data-v-9f1a4103>下一页</span><span class="title" data-v-9f1a4103>组件库简介</span><!--]--></a></div></nav></footer><!--[--><!--]--></div></div></div><!--[--><!--]--></div></div><footer class="VPFooter has-sidebar" data-v-7444b867 data-v-302810ea><div class="container" data-v-302810ea><p class="message" data-v-302810ea>Released under The <a href='https://opensource.org/license/MIT' target='_blank'>MIT</a> License</p><p class="copyright" data-v-302810ea>Copyright ©2021-Present <a href='https://www.xihanfun.com' target='_blank'>XiHanFun</a> and contributors.</p></div></footer><!--[--><!--]--></div></div>
+    <script>window.__VP_HASH_MAP__=JSON.parse("{\"adapters_vue.md\":\"uOHr0myd\",\"adapters_wc.md\":\"DxEptwWb\",\"changelog.md\":\"DFf8pES6\",\"components_accordion.md\":\"BarylCgD\",\"components_alert.md\":\"BtLQjyFA\",\"components_anchor.md\":\"BBT9a4SW\",\"components_avatar.md\":\"C5mCoNHU\",\"components_badge.md\":\"Xg7Rn-6T\",\"components_breadcrumb.md\":\"FqLqvMYk\",\"components_button.md\":\"_nfuN1hq\",\"components_calendar.md\":\"BEkTqdxW\",\"components_carousel.md\":\"DnpBj1ny\",\"components_cascader.md\":\"DZsfzdP8\",\"components_checkbox-group.md\":\"DiOQaEIf\",\"components_checkbox.md\":\"Beh7Nalt\",\"components_clipboard.md\":\"DETt9lkN\",\"components_code-block.md\":\"DDCBdcTn\",\"components_collapsible.md\":\"CfjaZ_UJ\",\"components_color-picker.md\":\"AD9AF8BO\",\"components_combobox.md\":\"Cb7YXyIh\",\"components_composer.md\":\"C3PpxWPj\",\"components_context-menu.md\":\"CAYFYRg8\",\"components_date-field.md\":\"KsFFwX4B\",\"components_date-picker.md\":\"B9dAsoz4\",\"components_dialog.md\":\"BeelEVv_\",\"components_drawer.md\":\"DBm0wQ_-\",\"components_editable.md\":\"CsjTb9fr\",\"components_empty-state.md\":\"i4KLtTSD\",\"components_field.md\":\"BIJ4AUAo\",\"components_file-upload.md\":\"BP5ZSlFj\",\"components_form.md\":\"Cj3TQBMN\",\"components_hover-card.md\":\"BrcVhxAr\",\"components_icon.md\":\"BDmHycF-\",\"components_image.md\":\"DnDoGmVi\",\"components_index.md\":\"Bb5vmZzI\",\"components_listbox.md\":\"BepdlAys\",\"components_loading-bar.md\":\"t9M_Sw0i\",\"components_menu.md\":\"3MSfuWNV\",\"components_menubar.md\":\"D3jPkkHN\",\"components_navigation-menu.md\":\"C0htAdHx\",\"components_number-field.md\":\"BMQqNqHu\",\"components_pagination.md\":\"DLmW5ZQW\",\"components_pin-input.md\":\"DLBlt1o_\",\"components_popover.md\":\"C4d8XO-M\",\"components_progress.md\":\"BU9T9qY4\",\"components_radio-group.md\":\"M1xwUVD8\",\"components_rating.md\":\"k9hLozpP\",\"components_scroll-area.md\":\"DlJcJyE6\",\"components_select.md\":\"BQSpT3rf\",\"components_separator.md\":\"DexLd8q9\",\"components_skeleton.md\":\"DvSLMgGR\",\"components_slider.md\":\"H_DZeUy0\",\"components_spinner.md\":\"DYunZQcm\",\"components_splitter.md\":\"CZJZoKDW\",\"components_steps.md\":\"EeEDlGqq\",\"components_switch.md\":\"Dqqh9rYh\",\"components_table.md\":\"jQdSgcj_\",\"components_tabs.md\":\"K0WMGnbl\",\"components_tags-input.md\":\"DoHoy_OQ\",\"components_text-field.md\":\"DCbv4QsJ\",\"components_thread.md\":\"Bh-wSHrH\",\"components_time-field.md\":\"BZZctNKy\",\"components_time-picker.md\":\"hM_so0uv\",\"components_toast.md\":\"DTZrelgS\",\"components_toaster.md\":\"BXujarLj\",\"components_toggle-group.md\":\"DgOEMDQl\",\"components_toggle.md\":\"CrNYTqSe\",\"components_toolbar.md\":\"D4CdAhbW\",\"components_tooltip.md\":\"UklByy6g\",\"components_tour.md\":\"DqwJH1Ml\",\"components_transfer.md\":\"BH6_es3j\",\"components_tree-select.md\":\"C_SbbpJg\",\"components_tree.md\":\"Ba3Adw7p\",\"components_virtualizer.md\":\"B5mbzEN4\",\"demo-check.md\":\"BOIw6d1O\",\"faq.md\":\"DkeyLPJZ\",\"guide_a11y.md\":\"BNNfdEhK\",\"guide_ai.md\":\"UJpxBhk-\",\"guide_anatomy.md\":\"DZLYmWFR\",\"guide_behavior.md\":\"CaarteI0\",\"guide_connect.md\":\"BhoG20WJ\",\"guide_diagnostics.md\":\"BaXytc9f\",\"guide_machine.md\":\"CmkgIId5\",\"guide_position.md\":\"BV6Bfhd0\",\"guide_styling.md\":\"Dx3Esv-l\",\"guide_testing.md\":\"CSgsP2cX\",\"guide_theme.md\":\"CmVrgJ2E\",\"guide_visual.md\":\"DiYPmHFQ\",\"index.md\":\"-Lp2QPVl\",\"installation.md\":\"BPxh3Ju-\",\"introduction.md\":\"BlAMsXUV\",\"npm-package-dependency.md\":\"-OiiG3sS\",\"overview.md\":\"BYY_gQ6h\",\"quickstart.md\":\"BE1mSsze\"}");window.__VP_SITE_DATA__=JSON.parse("{\"lang\":\"zh-CN\",\"dir\":\"ltr\",\"title\":\"曦寒视图组件文档\",\"description\":\"框架无关的设计系统运行时与组件库\",\"base\":\"/\",\"head\":[],\"router\":{\"prefetchLinks\":true},\"appearance\":true,\"themeConfig\":{\"logo\":\"/images/logo.png\",\"socialLinks\":[{\"icon\":\"github\",\"link\":\"https://github.com/XiHanFun/XiHan.UI\"},{\"icon\":\"gitee\",\"link\":\"https://gitee.com/XiHanFun/XiHan.UI\"},{\"icon\":\"git\",\"link\":\"https://atomgit.com/XiHanFun/XiHan.UI\"}],\"search\":{\"provider\":\"local\",\"options\":{\"placeholder\":\"搜索文档\",\"translations\":{\"button\":{\"buttonText\":\"搜索文档\",\"buttonAriaLabel\":\"搜索文档\"},\"modal\":{\"searchBox\":{\"resetButtonTitle\":\"清除查询条件\",\"resetButtonAriaLabel\":\"清除查询条件\",\"cancelButtonText\":\"取消\",\"cancelButtonAriaLabel\":\"取消\"},\"startScreen\":{\"recentSearchesTitle\":\"搜索历史\",\"noRecentSearchesText\":\"没有搜索历史\",\"saveRecentSearchButtonTitle\":\"保存至搜索历史\",\"removeRecentSearchButtonTitle\":\"从搜索历史中移除\",\"favoriteSearchesTitle\":\"收藏\",\"removeFavoriteSearchButtonTitle\":\"从收藏中移除\"},\"errorScreen\":{\"titleText\":\"无法获取结果\",\"helpText\":\"你可能需要检查你的网络连接\"},\"footer\":{\"selectText\":\"选择\",\"navigateText\":\"切换\",\"closeText\":\"关闭\",\"searchByText\":\"搜索提供者\"},\"noResultsScreen\":{\"noResultsText\":\"无法找到相关结果\",\"suggestedQueryText\":\"你可以尝试查询\",\"reportMissingResultsText\":\"你认为该查询应该有结果？\",\"reportMissingResultsLinkText\":\"点击反馈\"}}}}},\"nav\":[{\"text\":\"开始\",\"link\":\"/introduction\",\"activeMatch\":\"^/(introduction|overview|installation|quickstart|npm-package-dependency|faq)$\"},{\"text\":\"核心概念\",\"link\":\"/guide/anatomy\",\"activeMatch\":\"/guide/\"},{\"text\":\"适配器\",\"link\":\"/adapters/vue\",\"activeMatch\":\"/adapters/\"},{\"text\":\"组件参考\",\"link\":\"/components/\",\"activeMatch\":\"/components/\"},{\"text\":\"探索未知\",\"items\":[{\"text\":\"关于我们\",\"items\":[{\"text\":\"官方网站\",\"link\":\"https://www.xihanfun.com\"},{\"text\":\"组织文档\",\"link\":\"https://docs.xihanfun.com\"}]},{\"text\":\"生态文档\",\"items\":[{\"text\":\"后端 | 开发框架\",\"link\":\"https://framework.docs.xihanfun.com\"},{\"text\":\"用例 | 基础应用\",\"link\":\"https://basicapp.docs.xihanfun.com\"}]},{\"text\":\"引用下载\",\"items\":[{\"text\":\"后端 | nuget\",\"link\":\"https://www.nuget.org/profiles/XiHanFun\"},{\"text\":\"前端 | npm\",\"link\":\"https://www.npmjs.com/org/xihan-ui\"}]},{\"text\":\"在线体验\",\"items\":[{\"text\":\"后端 | 开发框架\",\"link\":\"https://framework.xihanfun.com\"},{\"text\":\"前端 | 视图组件\",\"link\":\"https://ui.xihanfun.com\"},{\"text\":\"用例 | 基础应用\",\"link\":\"https://basicapp.xihanfun.com\"}]}]},{\"text\":\"代码仓库\",\"items\":[{\"text\":\"Github主库(国际)\",\"link\":\"https://github.com/XiHanFun/XiHan.UI\"},{\"text\":\"Gitee同步备库(国内)\",\"link\":\"https://gitee.com/XiHanFun/XiHan.UI\"},{\"text\":\"Atomgit同步备库(国内)\",\"link\":\"https://atomgit.com/XiHanFun/XiHan.UI\"}]},{\"text\":\"参与贡献\",\"items\":[{\"text\":\"公约\",\"link\":\"https://docs.xihanfun.com/cosmos/code-of-conduct\"},{\"text\":\"指南\",\"link\":\"https://docs.xihanfun.com/cosmos/contributing\"},{\"text\":\"贡献者\",\"link\":\"https://docs.xihanfun.com/cosmos/contributors\"},{\"text\":\"支持&赞助\",\"link\":\"https://docs.xihanfun.com/cosmos/sponsor\"}]},{\"text\":\"v0.0.0\",\"items\":[{\"text\":\"更新日志\",\"link\":\"/changelog\"}]}],\"sidebar\":{\"/guide/\":[{\"text\":\"核心概念\",\"collapsed\":false,\"items\":[{\"text\":\"1. 解剖与部件契约\",\"link\":\"/guide/anatomy\"},{\"text\":\"2. 状态机运行时\",\"link\":\"/guide/machine\"},{\"text\":\"3. connect 与属性产出\",\"link\":\"/guide/connect\"},{\"text\":\"4. 行为原语\",\"link\":\"/guide/behavior\"},{\"text\":\"5. 浮层定位\",\"link\":\"/guide/position\"},{\"text\":\"6. 设计令牌与主题\",\"link\":\"/guide/theme\"},{\"text\":\"7. 皮肤与样式分层\",\"link\":\"/guide/styling\"},{\"text\":\"8. 无障碍与键盘规格\",\"link\":\"/guide/a11y\"},{\"text\":\"9. 诊断通道\",\"link\":\"/guide/diagnostics\"},{\"text\":\"10. AI 对话内核\",\"link\":\"/guide/ai\"},{\"text\":\"11. 视觉层\",\"link\":\"/guide/visual\"},{\"text\":\"12. 测试与质量门禁\",\"link\":\"/guide/testing\"}]}],\"/adapters/\":[{\"text\":\"适配器\",\"collapsed\":false,\"items\":[{\"text\":\"Vue 适配器\",\"link\":\"/adapters/vue\"},{\"text\":\"Web Components 适配器\",\"link\":\"/adapters/wc\"}]}],\"/components/\":[{\"text\":\"组件总览\",\"link\":\"/components/\"},{\"text\":\"通用（10）\",\"collapsed\":false,\"items\":[{\"text\":\"按钮\",\"link\":\"/components/button\"},{\"text\":\"图标\",\"link\":\"/components/icon\"},{\"text\":\"切换按钮\",\"link\":\"/components/toggle\"},{\"text\":\"切换按钮组\",\"link\":\"/components/toggle-group\"},{\"text\":\"徽标\",\"link\":\"/components/badge\"},{\"text\":\"头像\",\"link\":\"/components/avatar\"},{\"text\":\"图片\",\"link\":\"/components/image\"},{\"text\":\"分隔线\",\"link\":\"/components/separator\"},{\"text\":\"代码块\",\"link\":\"/components/code-block\"},{\"text\":\"剪贴板\",\"link\":\"/components/clipboard\"}]},{\"text\":\"数据录入（26）\",\"collapsed\":false,\"items\":[{\"text\":\"表单字段\",\"link\":\"/components/field\"},{\"text\":\"表单\",\"link\":\"/components/form\"},{\"text\":\"文本输入\",\"link\":\"/components/text-field\"},{\"text\":\"数字输入\",\"link\":\"/components/number-field\"},{\"text\":\"分格输入\",\"link\":\"/components/pin-input\"},{\"text\":\"就地编辑\",\"link\":\"/components/editable\"},{\"text\":\"复选框\",\"link\":\"/components/checkbox\"},{\"text\":\"复选框组\",\"link\":\"/components/checkbox-group\"},{\"text\":\"单选组\",\"link\":\"/components/radio-group\"},{\"text\":\"开关\",\"link\":\"/components/switch\"},{\"text\":\"滑块\",\"link\":\"/components/slider\"},{\"text\":\"评分\",\"link\":\"/components/rating\"},{\"text\":\"选择器\",\"link\":\"/components/select\"},{\"text\":\"列表框\",\"link\":\"/components/listbox\"},{\"text\":\"组合框\",\"link\":\"/components/combobox\"},{\"text\":\"级联选择\",\"link\":\"/components/cascader\"},{\"text\":\"树选择\",\"link\":\"/components/tree-select\"},{\"text\":\"标签输入\",\"link\":\"/components/tags-input\"},{\"text\":\"穿梭框\",\"link\":\"/components/transfer\"},{\"text\":\"日期输入\",\"link\":\"/components/date-field\"},{\"text\":\"日期选择器\",\"link\":\"/components/date-picker\"},{\"text\":\"时间输入\",\"link\":\"/components/time-field\"},{\"text\":\"时间选择器\",\"link\":\"/components/time-picker\"},{\"text\":\"日历\",\"link\":\"/components/calendar\"},{\"text\":\"颜色选择器\",\"link\":\"/components/color-picker\"},{\"text\":\"文件上传\",\"link\":\"/components/file-upload\"}]},{\"text\":\"数据展示（10）\",\"collapsed\":false,\"items\":[{\"text\":\"表格\",\"link\":\"/components/table\"},{\"text\":\"树\",\"link\":\"/components/tree\"},{\"text\":\"虚拟滚动\",\"link\":\"/components/virtualizer\"},{\"text\":\"滚动区域\",\"link\":\"/components/scroll-area\"},{\"text\":\"手风琴\",\"link\":\"/components/accordion\"},{\"text\":\"折叠区域\",\"link\":\"/components/collapsible\"},{\"text\":\"走马灯\",\"link\":\"/components/carousel\"},{\"text\":\"分栏\",\"link\":\"/components/splitter\"},{\"text\":\"骨架屏\",\"link\":\"/components/skeleton\"},{\"text\":\"空状态\",\"link\":\"/components/empty-state\"}]},{\"text\":\"导航（11）\",\"collapsed\":false,\"items\":[{\"text\":\"菜单\",\"link\":\"/components/menu\"},{\"text\":\"菜单栏\",\"link\":\"/components/menubar\"},{\"text\":\"右键菜单\",\"link\":\"/components/context-menu\"},{\"text\":\"导航菜单\",\"link\":\"/components/navigation-menu\"},{\"text\":\"标签页\",\"link\":\"/components/tabs\"},{\"text\":\"步骤条\",\"link\":\"/components/steps\"},{\"text\":\"分页\",\"link\":\"/components/pagination\"},{\"text\":\"面包屑\",\"link\":\"/components/breadcrumb\"},{\"text\":\"锚点\",\"link\":\"/components/anchor\"},{\"text\":\"工具栏\",\"link\":\"/components/toolbar\"},{\"text\":\"引导\",\"link\":\"/components/tour\"}]},{\"text\":\"反馈与浮层（11）\",\"collapsed\":false,\"items\":[{\"text\":\"对话框\",\"link\":\"/components/dialog\"},{\"text\":\"抽屉\",\"link\":\"/components/drawer\"},{\"text\":\"气泡卡片\",\"link\":\"/components/popover\"},{\"text\":\"文字提示\",\"link\":\"/components/tooltip\"},{\"text\":\"悬浮卡片\",\"link\":\"/components/hover-card\"},{\"text\":\"警告提示\",\"link\":\"/components/alert\"},{\"text\":\"轻提示\",\"link\":\"/components/toast\"},{\"text\":\"轻提示容器\",\"link\":\"/components/toaster\"},{\"text\":\"进度条\",\"link\":\"/components/progress\"},{\"text\":\"加载指示器\",\"link\":\"/components/spinner\"},{\"text\":\"加载条\",\"link\":\"/components/loading-bar\"}]},{\"text\":\"AI 对话（2）\",\"collapsed\":false,\"items\":[{\"text\":\"会话线程\",\"link\":\"/components/thread\"},{\"text\":\"消息编辑器\",\"link\":\"/components/composer\"}]}],\"/\":[{\"text\":\"开始\",\"collapsed\":false,\"items\":[{\"text\":\"组件库简介\",\"link\":\"/introduction\"},{\"text\":\"架构总览\",\"link\":\"/overview\"},{\"text\":\"安装与接入\",\"link\":\"/installation\"},{\"text\":\"快速上手\",\"link\":\"/quickstart\"}]},{\"text\":\"参考\",\"collapsed\":false,\"items\":[{\"text\":\"包与依赖关系\",\"link\":\"/npm-package-dependency\"},{\"text\":\"常见问题\",\"link\":\"/faq\"}]},{\"text\":\"更新日志\",\"link\":\"/changelog\"}]},\"docFooter\":{\"prev\":\"上一页\",\"next\":\"下一页\"},\"outline\":{\"label\":\"目录\",\"level\":\"deep\"},\"langMenuLabel\":\"多语言\",\"returnToTopLabel\":\"回到顶部\",\"sidebarMenuLabel\":\"菜单\",\"darkModeSwitchLabel\":\"主题\",\"lightModeSwitchTitle\":\"切换到浅色模式\",\"darkModeSwitchTitle\":\"切换到深色模式\",\"skipToContentLabel\":\"跳转到内容\",\"notFound\":{\"title\":\"页面未找到\",\"quote\":\"但如果你不改变方向，并且继续寻找，你可能最终会到达你所前往的地方。\",\"linkLabel\":\"前往首页\",\"linkText\":\"带我回首页\"},\"editLink\":{\"text\":\"在 GitHub 上编辑此页\",\"pattern\":\"https://github.com/XiHanFun/XiHan.UI/tree/main/docs/:path\"},\"lastUpdated\":{\"text\":\"最后更新于\"},\"footer\":{\"message\":\"Released under The <a href='https://opensource.org/license/MIT' target='_blank'>MIT</a> License\",\"copyright\":\"Copyright ©2021-Present <a href='https://www.xihanfun.com' target='_blank'>XiHanFun</a> and contributors.\"}},\"locales\":{},\"scrollOffset\":134,\"cleanUrls\":true}");</script>
+    
+  </body>
+</html>
