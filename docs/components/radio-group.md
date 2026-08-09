@@ -60,8 +60,8 @@ size 改条目间距与字号，不写即缺省中档
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string | null` |  |  |
-| `defaultValue` | `string | null` |  |  |
+| `value` | `string \| null` |  |  |
+| `defaultValue` | `string \| null` |  |  |
 | `disabled` | `boolean` |  |  |
 | `orientation` | `Orientation` |  |  |
 | `dir` | `Direction` |  | 文字方向，缺省 'ltr'。 |
@@ -82,8 +82,8 @@ size 改条目间距与字号，不写即缺省中档
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string | null` |  |
-| `focusedValue` | `string | null` | 焦点在组外时为 null。 |
+| `value` | `string \| null` |  |
+| `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
 | `setValue` | `(next: string) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |

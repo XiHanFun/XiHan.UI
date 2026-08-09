@@ -94,14 +94,14 @@ size 只落成 root 的 data-size，换的是单元格纵向内边距与字号�
 | `selectionState` | `TableSelectionState` | 全选把手的三态，只按**可选行**（未禁用）算。 |
 | `selectionMode` | `TableSelectionMode` |  |
 | `expandedValue` | `string[]` |  |
-| `focusedRow` | `string | null` | 焦点锚点；焦点不在表体里时为 null。 |
+| `focusedRow` | `string \| null` | 焦点锚点；焦点不在表体里时为 null。 |
 | `loading` | `boolean` |  |
 | `empty` | `boolean` | 表体为空（显式声明或 rows 为空）。 |
 | `rowCount` | `number` | aria-rowcount：表头行 + 可见行 + 脚注行。 |
 | `columnCount` | `number` | aria-colcount：列定义的条数。 |
 | `isSelected` | `(value: string) => boolean` |  |
 | `isExpanded` | `(value: string) => boolean` |  |
-| `sortDirection` | `(value: string) => TableSortDirection | null` | 该列当前的排序方向；不参与排序时为 null。 |
+| `sortDirection` | `(value: string) => TableSortDirection \| null` | 该列当前的排序方向；不参与排序时为 null。 |
 | `sortPriority` | `(value: string) => number` | 该列在排序链里的优先级，1 起算；不参与排序时为 0。 |
 | `setSort` | `(next: TableSortDescriptor[]) => void` |  |
 | `toggleSort` | `(value: string, options?: { append?: boolean }) => void` |  |

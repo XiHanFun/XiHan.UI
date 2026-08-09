@@ -80,7 +80,7 @@ blur 与 change 两种模式下 validate 仍整表跑（校验可能带跨字段
 | `validateOn` | `FormValidateOn` |  |
 | `getFieldId` | `(name: string) => string` | 字段容器的 DOM id；错误摘要的链接指向它。 |
 | `getFieldValue` | `(name: string) => unknown` |  |
-| `getFieldError` | `(name: string) => string | undefined` | 该字段此刻的错误文案；没错时为 undefined。 |
+| `getFieldError` | `(name: string) => string \| undefined` | 该字段此刻的错误文案；没错时为 undefined。 |
 | `isFieldInvalid` | `(name: string) => boolean` |  |
 | `setFieldValue` | `(name: string, value: unknown) => void` | 写一个字段的值；禁用或只读时不动。 |
 | `setFieldError` | `(name: string, message?: string) => void` | 写一个字段的错误；不给文案（或给空串）即清掉这一条。 |

@@ -42,8 +42,8 @@ isDateUnavailable 与 min / max 都只挡落值不挡聚焦：方向键照样走
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string | string[]` |  | 选中值，ISO 串。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 单选写成裸串是简写，内部一律归一成数组。 |
-| `defaultValue` | `string | string[]` |  |  |
+| `value` | `string \| string[]` |  | 选中值，ISO 串。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 单选写成裸串是简写，内部一律归一成数组。 |
+| `defaultValue` | `string \| string[]` |  |  |
 | `selectionMode` | `CalendarSelectionMode` |  |  |
 | `focusedValue` | `string` |  | 当前聚焦的那天，ISO 串；它同时决定展示哪个月。给定即受控。 缺省时退回首个选中值，再退回今天。 |
 | `defaultFocusedValue` | `string` |  |  |

@@ -83,8 +83,8 @@ size 换的是条目的内边距、间距与字号；三档各挂一块触发区
 | --- | --- | --- |
 | `open` | `boolean` |  |
 | `pressing` | `boolean` | 长按计时进行中；触发区据此给按压反馈。 |
-| `point` | `ContextMenuPoint | null` | 当前锚点坐标；一次都没打开过时为 null。 |
-| `focusedValue` | `string | null` | 焦点锚点；收起时为 null。 |
+| `point` | `ContextMenuPoint \| null` | 当前锚点坐标；一次都没打开过时为 null。 |
+| `focusedValue` | `string \| null` | 焦点锚点；收起时为 null。 |
 | `setOpen` | `(next: boolean) => void` | 收起走 CLOSE；展开落在最近一次锚点坐标上（从未打开过则是原点）。 |
 | `openAt` | `(x: number, y: number) => void` | 命令式展开到指定视口坐标。 |
 | `getRootProps` | `() => T['element']` |  |

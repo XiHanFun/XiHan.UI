@@ -60,8 +60,8 @@ size 一档换掉入口的高度、内边距与字号，写在 root 上、面板
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string | null` |  | 当前展开项，给定即受控；null 表示都收起。 |
-| `defaultValue` | `string | null` |  |  |
+| `value` | `string \| null` |  | 当前展开项，给定即受控；null 表示都收起。 |
+| `defaultValue` | `string \| null` |  |  |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 horizontal。 |
 | `delayDuration` | `number` |  | 悬停/聚焦到 trigger 后等多久才展开，默认 200ms。 |
 | `skipDelayDuration` | `number` |  | 收起之后的静默窗口，默认 300ms；窗口内再碰任意 trigger 直接展开。 |
@@ -86,10 +86,10 @@ size 一档换掉入口的高度、内边距与字号，写在 root 上、面板
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string | null` | 当前展开的那一项；都收起时为 null。 |
+| `value` | `string \| null` | 当前展开的那一项；都收起时为 null。 |
 | `open` | `boolean` | 有没有面板展开着。 |
 | `isOpen` | `(value: string) => boolean` |  |
-| `setValue` | `(next: string | null) => void` |  |
+| `setValue` | `(next: string \| null) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getListProps` | `() => T['element']` |  |
 | `getItemProps` | `() => T['element']` |  |

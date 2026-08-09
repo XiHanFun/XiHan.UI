@@ -247,6 +247,9 @@ function demos(id) {
 
 const esc = s => String(s).replace(/\|/g, '\\|').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 const code = s => `\`${String(s).replace(/`/g, '')}\``
+// 表格单元格里的代码格：管道符不转义会被当成列分隔符，把这一格从中间切断，
+// 反引号随之失配，剩下的泛型尖括号就成了没有闭合的 HTML 标签
+const cell = s => code(s).replace(/\|/g, '\\|')
 
 function renderComponent(entry, category) {
   const { id, name } = entry
@@ -309,7 +312,7 @@ function renderComponent(entry, category) {
     L.push('| 属性 | 类型 | 必填 | 说明 |', '| --- | --- | --- | --- |')
     for (const p of tm.props) {
       L.push(
-        `| ${code(p.name)} | ${code(p.type)} | ${p.optional ? '' : '是'} | ${esc(p.doc)} |`,
+        `| ${cell(p.name)} | ${cell(p.type)} | ${p.optional ? '' : '是'} | ${esc(p.doc)} |`,
       )
     }
     L.push('')
@@ -335,7 +338,7 @@ function renderComponent(entry, category) {
     )
     L.push('| 成员 | 类型 | 说明 |', '| --- | --- | --- |')
     for (const a of tm.api) {
-      L.push(`| ${code(a.name)} | ${code(a.type)} | ${esc(a.doc)} |`)
+      L.push(`| ${cell(a.name)} | ${cell(a.type)} | ${esc(a.doc)} |`)
     }
     L.push('')
   }

@@ -52,7 +52,7 @@ size 落成 content 的 data-size，只改面板贴边方向上的厚度；三�
 | `defaultOpen` | `boolean` |  |  |
 | `modal` | `boolean` |  |  |
 | `side` | `DrawerSide` |  | 从哪条边滑出，默认 'right'。只影响输出的 data-side，不参与状态转移。 |
-| `role` | `'dialog' | 'alertdialog'` |  |  |
+| `role` | `'dialog' \| 'alertdialog'` |  |  |
 | `closeOnEscape` | `boolean` |  |  |
 | `closeOnInteractOutside` | `boolean` |  |  |
 | `restoreFocus` | `boolean` |  |  |

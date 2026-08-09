@@ -72,7 +72,7 @@ size 只换整条的内边距与条目间的间距，条目自身的高度与字
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `focusedValue` | `string | null` | 焦点锚点；焦点不在工具条内时为 null。 |
+| `focusedValue` | `string \| null` | 焦点锚点；焦点不在工具条内时为 null。 |
 | `orientation` | `Orientation` | 生效的主轴。 |
 | `separatorOrientation` | `Orientation` | 分隔线的朝向：恒与主轴垂直（横排工具条里的分隔线是竖线）。 |
 | `disabled` | `boolean` |  |

@@ -93,10 +93,10 @@ granularity 同时决定输入行显示几段、浮层里排几列
 | `granularity` | `TimeGranularity` |  |
 | `step` | `number` | 实际生效的分列步进。 |
 | `segments` | `TimeSegmentType[]` | 此刻参与显示的段，文档序。未列入的段由 connect 打上 hidden 收起。 |
-| `focusedSegment` | `TimeSegmentType | null` | 焦点所在段；焦点在分段输入外时为 null。 |
+| `focusedSegment` | `TimeSegmentType \| null` | 焦点所在段；焦点在分段输入外时为 null。 |
 | `columns` | `TimePickerColumn[]` | 此刻该排哪几列、每列有哪些可选值（已按 step 与 min/max 裁过）。作者据此渲染浮层。 |
-| `focusedColumn` | `TimePickerColumnUnit | null` |  |
-| `focusedOption` | `string | null` |  |
+| `focusedColumn` | `TimePickerColumnUnit \| null` |  |
+| `focusedOption` | `string \| null` |  |
 | `canClear` | `boolean` | 清空按钮此刻可不可按。 |
 | `getSegmentText` | `(props: TimePickerInputProps) => string` | 某一段该显示的文字（空段是占位串）。两个适配器都拿它填文本，保证同构。 |
 | `isOptionSelected` | `(props: TimePickerOptionProps) => boolean` |  |

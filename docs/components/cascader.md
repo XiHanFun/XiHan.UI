@@ -108,11 +108,11 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | `columns` | `readonly CascaderColumn[]` | 当下并排开着的列（含每列的条目）：列数 = 展开路径走得通的段数 + 1。 |
 | `levels` | `readonly CascaderLevel[]` | 按深度摊开的静态列，与展开路径无关；不该露面的条目由连接层加 hidden 收起。 |
 | `value` | `string[][]` | 选中路径集合；单选下长度 ≤ 1，形状不随模式变。 |
-| `valuePath` | `string[] | null` | 单选便利读法：选中的那一条路径，无选中时为 null。 |
-| `valueText` | `string | null` | 选中路径的显示文字（整条路径用分隔符连起来；多选各条之间用逗号）；无选中时为 null。 |
+| `valuePath` | `string[] \| null` | 单选便利读法：选中的那一条路径，无选中时为 null。 |
+| `valueText` | `string \| null` | 选中路径的显示文字（整条路径用分隔符连起来；多选各条之间用逗号）；无选中时为 null。 |
 | `displayText` | `string` | value-text 实际显示的文字：有选中取路径文本，否则取 placeholder。 |
 | `activePath` | `string[]` | 展开路径：并排开着哪几列由它决定。 |
-| `focusedPath` | `string[] | null` | 焦点锚点；收起、或它已不在任何可见列里时为 null。 |
+| `focusedPath` | `string[] \| null` | 焦点锚点；收起、或它已不在任何可见列里时为 null。 |
 | `multiple` | `boolean` |  |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |

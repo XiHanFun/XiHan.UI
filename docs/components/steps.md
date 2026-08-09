@@ -86,7 +86,7 @@ size 换序号圆点的直径与标题、说明的字号，不传 size 即默认
 | `step` | `number` | 当前步序，恒在 [0, count] 内：count 变小后停在越界步也读得到一个可用的值。 |
 | `count` | `number` |  |
 | `complete` | `boolean` | 全部走完（step 走到 count）。此时没有任何一步是 current，作者据此渲染完成页。 |
-| `focusedStep` | `number | null` | 焦点在组外时为 null。 |
+| `focusedStep` | `number \| null` | 焦点在组外时为 null。 |
 | `getItemState` | `(props: StepsItemProps) => StepsItemState` |  |
 | `setStep` | `(next: number) => void` | 直接跳到某一步；越界会被夹回 [0, count]。 不认 linear：linear 只拦界面上的乱跳，不拦作者的命令式调用。 |
 | `goToNextStep` | `() => void` |  |

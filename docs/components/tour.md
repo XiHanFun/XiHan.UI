@@ -76,7 +76,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `open` | `boolean` |  |
 | `step` | `number` | 当前步序，恒在 [0, count - 1] 内；清单为空时为 0。 |
 | `count` | `number` |  |
-| `currentStep` | `TourStep | null` | 当前步的声明；清单为空时为 null。 |
+| `currentStep` | `TourStep \| null` | 当前步的声明；清单为空时为 null。 |
 | `firstStep` | `boolean` | 停在首步：上一步按钮据此禁用。 |
 | `lastStep` | `boolean` | 停在末步：下一步按钮据此改文案（"完成"）。 |
 | `anchored` | `boolean` | 这一步锚定了页面元素：居中步为 false，此时不画高亮框也不出箭头。 |

@@ -51,7 +51,7 @@ size 落成 content 的 data-size，只改面板的最大宽度；三档各自�
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
 | `modal` | `boolean` |  |  |
-| `role` | `'dialog' | 'alertdialog'` |  |  |
+| `role` | `'dialog' \| 'alertdialog'` |  |  |
 | `closeOnEscape` | `boolean` |  |  |
 | `closeOnInteractOutside` | `boolean` |  |  |
 | `restoreFocus` | `boolean` |  |  |
