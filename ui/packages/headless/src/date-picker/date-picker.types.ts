@@ -3,15 +3,35 @@ import type { MachineSchema, Service } from '@xihan-ui/machine'
 import type { CalendarApi, CalendarSchema, CalendarSelectionMode } from '../calendar'
 import type { DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState } from '../date-field'
 
-/** 值的来源；只有 calendar 一路参与「选完即收起」判定。 */
-export type DatePickerValueSource = 'calendar' | 'field' | 'api'
+/**
+ * 值的来源；只有 calendar 一路参与「选完即收起」判定。
+ * field 是起点那组段位，field-end 是终点那组（只在区间模式下有）。
+ */
+export type DatePickerValueSource = 'calendar' | 'field' | 'field-end' | 'api'
+
+/** 读屏用的文案，默认英文。区间模式下两组段位各是一个 role=group，各要一个名字。 */
+export interface DatePickerTranslations {
+  /** 起点那组段位的名字。 */
+  startDate: string
+  /** 终点那组段位的名字。 */
+  endDate: string
+}
+
+/** 分段容器自报家门：区间模式下 0 是起点那组、1 是终点那组。 */
+export interface DatePickerInputProps {
+  /** 默认 0。 */
+  index?: 0 | 1
+}
 
 export interface DatePickerOpenChangeDetails {
   open: boolean
 }
 
 export interface DatePickerValueChangeDetails {
-  /** 选中日期集合，ISO 串。单选模式下也是数组（长度 ≤ 1），range 挑到一半时长度为 1。 */
+  /**
+   * 选中日期集合，ISO 串。单选模式下也是数组（长度 ≤ 1）。
+   * 区间按位存放：只落起点时长度为 1，只落终点时是 ['', 终点]。
+   */
   value: string[]
 }
 
@@ -66,10 +86,13 @@ export interface DatePickerSchema extends MachineSchema {
     invalid?: boolean
     /** 必填标注，落到每一段的 aria-required 上。 */
     required?: boolean
-    /** 表单字段名；给了隐藏输入才带 name，ISO 串随表单一并提交。 */
+    /** 表单字段名；给了隐藏输入才带 name，ISO 串随表单一并提交。区间模式下是起点那一份。 */
     name?: string
+    /** 区间终点那份隐藏输入的表单字段名；不给即终点不参与提交。 */
+    endName?: string
     placement?: Placement
     offset?: number
+    translations?: Partial<DatePickerTranslations>
     /** 选完即收起，默认 true。区间模式下要两端都落定才算选完。 */
     closeOnSelect?: boolean
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
@@ -85,7 +108,10 @@ export interface DatePickerSchema extends MachineSchema {
   context: {
     /** 定位引擎回填的最新结果；connect 只读它，不碰 DOM 也不调引擎。 */
     position: PositionResult | null
-    /** 选中集合，恒为数组。受控（value 给定）时直读 prop。 */
+    /**
+     * 选中集合，恒为数组。受控（value 给定）时直读 prop。
+     * 区间模式下段位按位写入：下标即起止两端，空缺的那一端是空串。
+     */
     value: string[]
     /**
      * 聚焦日，ISO 串；同时决定日历展示哪个月。内嵌日历的聚焦日恒由这里受控。
@@ -126,13 +152,16 @@ export interface DatePickerSchema extends MachineSchema {
 }
 
 /**
- * 三台机器的把手。编排机管开合与两侧值同步，
+ * 各台机器的把手。编排机管开合与两侧值同步，
  * 选日期/翻月/键盘导航归 calendar，分段输入归 date-field。
  */
 export interface DatePickerServices {
   root: Service<DatePickerSchema>
   calendar: Service<CalendarSchema>
+  /** 起点那组段位。 */
   field: Service<DateFieldSchema>
+  /** 终点那组段位；缺席即区间模式下没有终点输入。 */
+  fieldEnd?: Service<DateFieldSchema>
 }
 
 /**
@@ -159,9 +188,12 @@ export interface DatePickerFieldApi<T extends PropTypes = PropTypes> {
 
 export interface DatePickerApi<T extends PropTypes = PropTypes> {
   open: boolean
-  /** 选中集合，ISO 串；形状不随模式变。 */
+  /**
+   * 选中集合，ISO 串；形状不随模式变。
+   * 区间模式下按位存放，空缺的那一端是空串。
+   */
   value: string[]
-  /** 首个选中值；无选中时为 null。分段输入承载的就是它。 */
+  /** 首个选中值（跳过空缺的那一端）；无选中时为 null。 */
   valueAsString: string | null
   selectionMode: CalendarSelectionMode
   /** 生效聚焦日（三路收口后的结果），恒非空。日历展示哪个月由它决定。 */
@@ -176,13 +208,15 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   clear: () => void
   /** 内嵌日历：选日期、翻月、键盘导航都在它身上。 */
   calendar: CalendarApi<T>
-  /** 内嵌分段输入。 */
+  /** 内嵌分段输入，区间模式下是起点那一组。 */
   field: DatePickerFieldApi<T>
+  /** 终点那组分段输入；非区间模式为 null。 */
+  fieldEnd: DatePickerFieldApi<T> | null
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
   getControlProps: () => T['element']
-  /** role=group 的分段容器，段位挂在它里面。 */
-  getInputProps: () => T['element']
+  /** role=group 的分段容器，段位挂在它里面。区间模式下 index 选起止两组，不传即起点。 */
+  getInputProps: (props?: DatePickerInputProps) => T['element']
   getTriggerProps: () => T['button']
   getClearTriggerProps: () => T['button']
   getPositionerProps: () => T['element']

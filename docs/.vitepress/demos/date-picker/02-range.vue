@@ -1,4 +1,4 @@
-<!-- 区间选择 | 只落了起点浮层不收，两端都在才算选完；段位只表达起点 -->
+<!-- 区间选择 | 起止各一组段位，两端都能敲；只落一端浮层不收，两端都在才算选完 -->
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import {
@@ -27,9 +27,13 @@ import {
 
 const value = ref<string[]>([]);
 
+// 两组段位各自的读屏名字，区间模式下替掉指向 label 的那份
+const translations = { startDate: "开始日期", endDate: "结束日期" };
+
 const text = computed(() => {
   if (value.value.length === 0) return "（未选）";
-  if (value.value.length === 1) return `${value.value[0]} → 待定`;
+  // 对外的值滤掉了空缺那一端，只剩一个值时不分起止
+  if (value.value.length === 1) return `${value.value[0]}（另一端待定）`;
   return `${value.value[0]} → ${value.value[1]}`;
 });
 </script>
@@ -38,12 +42,23 @@ const text = computed(() => {
   <XhDatePickerRoot
     v-slot="{ weeks, weekDays }"
     v-model:value="value"
+    :translations="translations"
     locale="zh-CN"
     selection-mode="range"
   >
     <XhDatePickerLabel>起止日期</XhDatePickerLabel>
     <XhDatePickerControl>
-      <XhDatePickerInput>
+      <!-- 组号定这组段位认领哪一端：0 起点、1 终点 -->
+      <XhDatePickerInput :index="0">
+        <XhDatePickerSegment :index="0" />
+        <span>-</span>
+        <XhDatePickerSegment :index="1" />
+        <span>-</span>
+        <XhDatePickerSegment :index="2" />
+      </XhDatePickerInput>
+      <!-- 装饰性分隔符，不进读屏 -->
+      <span aria-hidden="true">→</span>
+      <XhDatePickerInput :index="1">
         <XhDatePickerSegment :index="0" />
         <span>-</span>
         <XhDatePickerSegment :index="1" />

@@ -7,6 +7,7 @@ import {
   connectDatePicker,
   dateFieldMachine,
   datePickerCalendarProps,
+  datePickerFieldEndProps,
   datePickerFieldProps,
   datePickerMachine,
 } from '@xihan-ui/headless'
@@ -18,7 +19,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface DatePickerContext {
   api: ComputedRef<DatePickerApi>
-  /** 三台机器的把手，供部件上报 DOM 侧的事实。 */
+  /** 四台机器的把手，供部件上报 DOM 侧的事实。 */
   services: DatePickerServices
   controlRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
@@ -35,15 +36,17 @@ export function useDatePicker(
   const contentRef = ref<HTMLElement | null>(null)
   const gridRef = ref<HTMLElement | null>(null)
 
-  // 三台机器共用一份 scope，part id 里带组件名区分
+  // 四台机器共用一份 scope，part id 里带组件名区分；两组段位不产出 id，同 scope 不会撞
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
 
-  // 两台内嵌机器的 props 都从编排机现读，编排机须先建立
+  // 三台内嵌机器的 props 都从编排机现读，编排机须先建立
   const root = useMachine(datePickerMachine, () => ({ ...props, ...handlers }), scope)
   const calendar = useMachine<CalendarSchema>(calendarMachine, () => datePickerCalendarProps(root), scope)
   const field = useMachine<DateFieldSchema>(dateFieldMachine, () => datePickerFieldProps(root), scope)
-  const services: DatePickerServices = { root, calendar, field }
+  // 终点那组段位无条件建：机器实例数不随模式变，非区间模式下它的值恒为空且不参与写值
+  const fieldEnd = useMachine<DateFieldSchema>(dateFieldMachine, () => datePickerFieldEndProps(root), scope)
+  const services: DatePickerServices = { root, calendar, field, fieldEnd }
 
   if (typeof document !== 'undefined') {
     const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
