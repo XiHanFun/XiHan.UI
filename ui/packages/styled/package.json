@@ -93,11 +93,11 @@
     "index.unlayered.css",
     "styles"
   ],
-  "dependencies": {
-    "@xihan-ui/system": "workspace:^"
-  },
   "scripts": {
     "gen": "node build/emit-unlayered.mjs",
     "build": "node build/emit-unlayered.mjs"
+  },
+  "dependencies": {
+    "@xihan-ui/system": "workspace:^"
   }
 }

@@ -14,120 +14,124 @@
 //
 // 用法：node build/emit-unlayered.mjs
 
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const pkgRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const entry = path.join(pkgRoot, "index.css");
-const outFile = path.join(pkgRoot, "index.unlayered.css");
+const pkgRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const entry = path.join(pkgRoot, 'index.css')
+const outFile = path.join(pkgRoot, 'index.unlayered.css')
 
-const source = fs.readFileSync(entry, "utf8");
+const source = fs.readFileSync(entry, 'utf8')
 
 const head = [
-  "/* 本文件由 build/emit-unlayered.mjs 生成，不要手改。改皮肤请改 styles/ 下的源文件。",
-  " *",
-  " * 这是 index.css 的无层版本：内容一致，只是拆掉了 @layer 外壳，供宿主应用带有",
-  " * 无层 reset/normalize 时使用。取舍见文档站的「安装与接入」。",
-  " */",
-  "",
-];
+  '/* 本文件由 build/emit-unlayered.mjs 生成，不要手改。改皮肤请改 styles/ 下的源文件。',
+  ' *',
+  ' * 这是 index.css 的无层版本：内容一致，只是拆掉了 @layer 外壳，供宿主应用带有',
+  ' * 无层 reset/normalize 时使用。取舍见文档站的「安装与接入」。',
+  ' */',
+  '',
+]
 
-const out = [...head];
+const out = [...head]
 
-for (const line of source.split("\n")) {
-  const imported = line.match(/^\s*@import\s+['"]([^'"]+)['"];/);
+for (const line of source.split('\n')) {
+  const imported = line.match(/^\s*@import\s+['"]([^'"]+)['"];/)
   // 只替换相对路径的 @import，其余（注释、空行、跨行注释的后续行）一律原样保留：
   // 按内容挑着丢会把多行注释拦腰截断，留下不闭合的 /*，把后面的规则整段吃掉
   if (!imported) {
-    out.push(line);
-    continue;
+    out.push(line)
+    continue
   }
-  const spec = imported[1];
+  const spec = imported[1]
   // 令牌来自 @xihan-ui/system，是自定义属性声明，没有同名的无层声明与它相争，
   // 留在层里也照样生效；保持 @import 也避免把另一个包的产物复制进来。
-  if (!spec.startsWith(".")) {
-    out.push(line);
-    continue;
+  if (!spec.startsWith('.')) {
+    out.push(line)
+    continue
   }
-  const file = path.join(pkgRoot, spec);
-  const css = fs.readFileSync(file, "utf8");
-  out.push("", `/* ${path.posix.join("styles", path.basename(file))} */`);
-  out.push(unwrapLayerBlocks(css).trim());
+  const file = path.join(pkgRoot, spec)
+  const css = fs.readFileSync(file, 'utf8')
+  out.push('', `/* ${path.posix.join('styles', path.basename(file))} */`)
+  out.push(unwrapLayerBlocks(css).trim())
 }
 
-fs.writeFileSync(outFile, `${out.join("\n").replace(/\n{3,}/g, "\n\n").trim()}\n`);
-console.log(`已生成 ${path.relative(pkgRoot, outFile)}`);
+fs.writeFileSync(outFile, `${out.join('\n').replace(/\n{3,}/g, '\n\n').trim()}\n`)
+console.log(`已生成 ${path.relative(pkgRoot, outFile)}`)
 
 /** 逐个拆掉 `@layer <名字> { ... }` 外壳，保留块内内容；`@layer a, b;` 声明语句丢弃 */
 function unwrapLayerBlocks(css) {
-  let out = "";
-  let i = 0;
+  let out = ''
+  let i = 0
   while (i < css.length) {
-    const start = css.indexOf("@layer", i);
+    const start = css.indexOf('@layer', i)
     if (start === -1) {
-      out += css.slice(i);
-      break;
+      out += css.slice(i)
+      break
     }
-    const brace = css.indexOf("{", start);
-    const semi = css.indexOf(";", start);
+    const brace = css.indexOf('{', start)
+    const semi = css.indexOf(';', start)
     if (brace === -1 || (semi !== -1 && semi < brace)) {
       // 只声明层序，无层版本里没有意义
-      out += css.slice(i, start);
-      i = (semi === -1 ? css.length : semi + 1);
-      continue;
+      out += css.slice(i, start)
+      i = (semi === -1 ? css.length : semi + 1)
+      continue
     }
-    const close = matchBrace(css, brace);
+    const close = matchBrace(css, brace)
     if (close === -1) {
-      out += css.slice(i);
-      break;
+      out += css.slice(i)
+      break
     }
-    out += css.slice(i, start);
-    out += dedent(unwrapLayerBlocks(css.slice(brace + 1, close)));
-    i = close + 1;
+    out += css.slice(i, start)
+    out += dedent(unwrapLayerBlocks(css.slice(brace + 1, close)))
+    i = close + 1
   }
-  return out;
+  return out
 }
 
 /** 拆掉一层缩进，免得内容一直悬在两个空格里 */
 function dedent(css) {
   return css
-    .split("\n")
-    .map((line) => (line.startsWith("  ") ? line.slice(2) : line))
-    .join("\n");
+    .split('\n')
+    .map(line => (line.startsWith('  ') ? line.slice(2) : line))
+    .join('\n')
 }
 
 /** 从 `{` 出发找到配对的 `}`，跳过注释与字符串 */
 function matchBrace(css, open) {
-  let depth = 0;
+  let depth = 0
   for (let i = open; i < css.length; i++) {
-    const c = css[i];
-    if (c === "/" && css[i + 1] === "*") {
-      const end = css.indexOf("*/", i + 2);
-      i = end === -1 ? css.length : end + 1;
-      continue;
+    const c = css[i]
+    if (c === '/' && css[i + 1] === '*') {
+      const end = css.indexOf('*/', i + 2)
+      i = end === -1 ? css.length : end + 1
+      continue
     }
-    if (c === '"' || c === "'") {
-      i = skipString(css, i);
-      continue;
+    if (c === '"' || c === '\'') {
+      i = skipString(css, i)
+      continue
     }
-    if (c === "{") depth++;
-    else if (c === "}") {
-      depth--;
-      if (depth === 0) return i;
+    if (c === '{') {
+      depth++
+    }
+    else if (c === '}') {
+      depth--
+      if (depth === 0)
+        return i
     }
   }
-  return -1;
+  return -1
 }
 
 function skipString(css, start) {
-  const quote = css[start];
+  const quote = css[start]
   for (let i = start + 1; i < css.length; i++) {
-    if (css[i] === "\\") {
-      i++;
-      continue;
+    if (css[i] === '\\') {
+      i++
+      continue
     }
-    if (css[i] === quote) return i;
+    if (css[i] === quote)
+      return i
   }
-  return css.length;
+  return css.length
 }
