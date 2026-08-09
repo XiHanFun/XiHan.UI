@@ -50,13 +50,14 @@
        面板几何也长在 content 上。语气不接：卡片是内容容器，语气该由里面的内容表达 */
     --xh-_hover-card-py: var(--xh-space-3);
     --xh-_hover-card-px: var(--xh-control-px-md);
+    --xh-_hover-card-max-w: var(--xh-overlay-max-w);
 
     position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--xh-hover-card-gap, var(--xh-space-2));
     inline-size: max-content;
-    max-inline-size: var(--xh-hover-card-max-w, var(--xh-overlay-max-w));
+    max-inline-size: var(--xh-hover-card-max-w, var(--xh-_hover-card-max-w));
     padding-block: var(--xh-hover-card-py, var(--xh-_hover-card-py));
     padding-inline: var(--xh-hover-card-px, var(--xh-_hover-card-px));
     border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-border-default));
@@ -89,11 +90,13 @@
   [data-scope='hover-card'][data-part='content'][data-size='sm'] {
     --xh-_hover-card-py: var(--xh-space-2);
     --xh-_hover-card-px: var(--xh-control-px-sm);
+    --xh-_hover-card-max-w: var(--xh-overlay-max-w-sm);
   }
 
   [data-scope='hover-card'][data-part='content'][data-size='lg'] {
     --xh-_hover-card-py: var(--xh-space-4);
     --xh-_hover-card-px: var(--xh-control-px-lg);
+    --xh-_hover-card-max-w: var(--xh-overlay-max-w-lg);
   }
 
   /* 箭头是旋转 45° 的方块，只保留朝向锚点那两条边的描边；
