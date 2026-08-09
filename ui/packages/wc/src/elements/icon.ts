@@ -39,7 +39,8 @@ function buildNode(doc: Document, node: IconNode): SVGElement {
  * @attr {string} label - 可及名字；非空白时输出 role=img + aria-label，否则输出 aria-hidden=true
  * @attr {'sm'|'md'|'lg'} size - 直径档位，缺省 md
  * @attr {'light'|'regular'|'bold'} weight - 描边粗细档位，缺省 regular
- * @csspart root - 根 `<svg>`，承载 viewBox/data-icon/命名属性/data-size/data-weight
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @csspart root - 根 `<svg>`，承载 viewBox/data-icon/命名属性/data-size/data-weight/data-tone
  * @csspart glyph - 作者留出的空 `<g>`，图元铺在它内部
  */
 export class XhIconElement extends XhElement {
@@ -55,6 +56,7 @@ export class XhIconElement extends XhElement {
     label: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     weight: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
     // 记录是对象，只走 property
     icon: { attribute: false },
   }
@@ -62,6 +64,7 @@ export class XhIconElement extends XhElement {
   declare label?: string
   declare size?: IconSize
   declare weight?: IconWeight
+  declare tone?: string
   declare icon?: IconRecord
 
   /** 一个 glyph 节点归谁，首次见到时定死。 */
@@ -76,6 +79,7 @@ export class XhIconElement extends XhElement {
       label: this.label,
       size: this.size,
       weight: this.weight,
+      tone: this.tone,
     }
     const api = connectIcon(props, wcNormalize)
 

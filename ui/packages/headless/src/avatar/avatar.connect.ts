@@ -19,6 +19,8 @@ export function connectAvatar<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-status': status,
+      // 缺省档不写属性：皮肤的基础规则就是缺省档
+      'data-size': prop('size'),
     }),
     getImageProps: () => normalize.img({
       ...parts.image.attrs,

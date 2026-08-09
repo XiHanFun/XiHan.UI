@@ -642,7 +642,7 @@
           "name": "XhAvatarElement",
           "cssParts": [
             {
-              "description": "头像根容器",
+              "description": "头像根容器，承载 data-status/data-size",
               "name": "root"
             },
             {
@@ -681,6 +681,15 @@
                 "text": "string | undefined"
               },
               "attribute": "alt"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
             },
             {
               "kind": "field",
@@ -757,6 +766,14 @@
               "description": "图片替代文本，原样写到 image 节点上",
               "name": "alt",
               "fieldName": "alt"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸档位，缺省 md",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -788,7 +805,7 @@
           "name": "XhBadgeElement",
           "cssParts": [
             {
-              "description": "承载 data-scope/data-part/data-variant 的展示节点",
+              "description": "承载 data-scope/data-part/data-* 的展示节点",
               "name": "root"
             }
           ],
@@ -812,6 +829,24 @@
               "attribute": "variant"
             },
             {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -830,6 +865,22 @@
               "description": "视觉变体",
               "name": "variant",
               "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -2808,6 +2859,24 @@
             },
             {
               "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -2870,6 +2939,22 @@
               "description": "禁用",
               "name": "disabled",
               "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -8501,7 +8586,7 @@
           "name": "XhIconElement",
           "cssParts": [
             {
-              "description": "根 `<svg>`，承载 viewBox/data-icon/命名属性/data-size/data-weight",
+              "description": "根 `<svg>`，承载 viewBox/data-icon/命名属性/data-size/data-weight/data-tone",
               "name": "root"
             },
             {
@@ -8545,6 +8630,15 @@
                 "text": "IconWeight | undefined"
               },
               "attribute": "weight"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
             },
             {
               "kind": "field",
@@ -8699,6 +8793,14 @@
               "description": "描边粗细档位，缺省 regular",
               "name": "weight",
               "fieldName": "weight"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
             }
           ],
           "superclass": {
@@ -11676,6 +11778,24 @@
               "attribute": "max"
             },
             {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -11702,6 +11822,22 @@
               "description": "满值上限，默认 100",
               "name": "max",
               "fieldName": "max"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -11820,6 +11956,24 @@
                 "text": "string | undefined"
               },
               "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
             },
             {
               "kind": "field",
@@ -12011,6 +12165,22 @@
               "description": "表单字段名；给定后隐藏输入才带 name 并参与提交",
               "name": "name",
               "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -12152,6 +12322,24 @@
                 "text": "Direction | undefined"
               },
               "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
             },
             {
               "kind": "field",
@@ -12313,6 +12501,22 @@
               "description": "文字方向，只改写左右方向键与\"指针落在哪半边\"的语义，默认 ltr",
               "name": "dir",
               "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -13457,6 +13661,24 @@
             },
             {
               "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "name",
               "privacy": "public",
               "type": {
@@ -13699,6 +13921,22 @@
               "type": {
                 "text": "string | undefined"
               },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
               "description": "表单字段名；给了才参与提交，多滑块逐个同名 append",
               "name": "name",
               "fieldName": "name"
@@ -13733,7 +13971,7 @@
           "name": "XhSpinnerElement",
           "cssParts": [
             {
-              "description": "role=status 的活区容器，承载 aria-live/aria-label/data-size",
+              "description": "role=status 的活区容器，承载 aria-live/aria-label/data-size/data-tone",
               "name": "root"
             },
             {
@@ -13771,6 +14009,15 @@
             },
             {
               "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -13804,6 +14051,14 @@
               "description": "直径档位，缺省 md",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
             }
           ],
           "superclass": {
@@ -14447,6 +14702,24 @@
             },
             {
               "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -14509,6 +14782,22 @@
               "description": "禁用",
               "name": "disabled",
               "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -17949,6 +18238,33 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -18011,6 +18327,30 @@
               "description": "禁用",
               "name": "disabled",
               "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "视觉变体",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {

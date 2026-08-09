@@ -30,6 +30,8 @@ export function connectSwitch<T extends PropTypes>(
       'aria-checked': checked ? 'true' : 'false',
       'disabled': disabled || undefined,
       'data-state': stateAttr,
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
       'onClick': () => {
         if (!disabled)

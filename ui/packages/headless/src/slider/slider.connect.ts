@@ -95,9 +95,12 @@ export function connectSlider<T extends PropTypes>(
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     setThumbValue: (index, next) => send({ type: 'THUMB.SET', index: clampIndex(index), value: next }),
 
+    // 视觉三轴只落在 root：语气与尺寸都靠自定义属性向下继承，子部件不必各写一份
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       ...stateAttrs(),
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
     }),
 
     getLabelProps: () => normalize.label({

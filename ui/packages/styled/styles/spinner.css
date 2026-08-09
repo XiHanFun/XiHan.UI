@@ -43,6 +43,14 @@
     block-size: var(--xh-control-h-md);
   }
 
+  /* 语气只换起始边那一段，轨道留在中性描边上：轨道与起始边的反差就是转向的读法，
+     两者同时换成同一族颜色，转到哪儿就看不出来了。
+     选择器上带 [data-tone] 是必需的：语气槽会沿继承流下来，不限定在写了语气的
+     那个节点上，放在语气容器里的转圈会跟着一起改色 */
+  [data-scope='spinner'][data-part='root'][data-tone]::before {
+    border-block-start-color: var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand)));
+  }
+
   [data-scope='spinner'][data-part='label'] {
     color: var(--xh-spinner-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-spinner-label-size, var(--xh-font-size-sm));
@@ -56,6 +64,11 @@
       border-style: dotted;
       border-color: var(--xh-spinner-fg, var(--xh-bg-brand));
       animation: none;
+    }
+
+    /* 静止态整圈同色，语气跟着铺满整圈 */
+    [data-scope='spinner'][data-part='root'][data-tone]::before {
+      border-color: var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand)));
     }
   }
 }

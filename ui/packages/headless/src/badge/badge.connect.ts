@@ -13,6 +13,8 @@ export function connectBadge<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-variant': props.variant,
+      'data-tone': props.tone,
+      'data-size': props.size,
     }),
   }
 }

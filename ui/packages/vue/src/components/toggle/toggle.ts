@@ -10,6 +10,9 @@ export const XhToggle = defineComponent({
     pressed: { type: Boolean, default: undefined },
     defaultPressed: Boolean,
     disabled: Boolean,
+    variant: String,
+    tone: String,
+    size: String,
   },
   // pressed-change 携带 { pressed }；update:pressed 携带裸布尔，支持 v-model:pressed
   emits: ['pressed-change', 'update:pressed'],

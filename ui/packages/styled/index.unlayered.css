@@ -543,6 +543,14 @@
   block-size: var(--xh-control-h-md);
 }
 
+/* 语气只换起始边那一段，轨道留在中性描边上：轨道与起始边的反差就是转向的读法，
+   两者同时换成同一族颜色，转到哪儿就看不出来了。
+   选择器上带 [data-tone] 是必需的：语气槽会沿继承流下来，不限定在写了语气的
+   那个节点上，放在语气容器里的转圈会跟着一起改色 */
+[data-scope='spinner'][data-part='root'][data-tone]::before {
+  border-block-start-color: var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand)));
+}
+
 [data-scope='spinner'][data-part='label'] {
   color: var(--xh-spinner-label-fg, var(--xh-fg-muted));
   font-size: var(--xh-spinner-label-size, var(--xh-font-size-sm));
@@ -556,6 +564,11 @@
     border-style: dotted;
     border-color: var(--xh-spinner-fg, var(--xh-bg-brand));
     animation: none;
+  }
+
+  /* 静止态整圈同色，语气跟着铺满整圈 */
+  [data-scope='spinner'][data-part='root'][data-tone]::before {
+    border-color: var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand)));
   }
 }
 
@@ -767,6 +780,20 @@
   user-select: none;
 }
 
+/* 三档尺寸对齐控件档位，缺省档写在上面的基础规则里；
+   字号跟着一起缩放，回退字才在小头像里放得下、在大头像里不显小 */
+[data-scope='avatar'][data-part='root'][data-size='sm'] {
+  inline-size: var(--xh-control-h-sm);
+  block-size: var(--xh-control-h-sm);
+  font-size: var(--xh-font-size-xs);
+}
+
+[data-scope='avatar'][data-part='root'][data-size='lg'] {
+  inline-size: var(--xh-control-h-lg);
+  block-size: var(--xh-control-h-lg);
+  font-size: var(--xh-font-size-md);
+}
+
 /* 不声明 display，加载完成前的 hidden 直接交给浏览器的 [hidden] 规则收起 */
 [data-scope='avatar'][data-part='image'] {
   inline-size: 100%;
@@ -806,20 +833,37 @@
   white-space: nowrap;
 }
 
+/* —— 变体 —— */
+/* 形态只决定颜色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的品牌/中性配色 */
 [data-scope='badge'][data-part='root'][data-variant='solid'] {
-  background: var(--xh-bg-brand);
-  color: var(--xh-fg-on-brand);
+  background: var(--xh-_tone, var(--xh-bg-brand));
+  color: var(--xh-_tone-on, var(--xh-fg-on-brand));
 }
 
 [data-scope='badge'][data-part='root'][data-variant='subtle'] {
-  background: var(--xh-bg-subtle);
-  color: var(--xh-fg-default);
+  background: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  color: var(--xh-_tone-fg, var(--xh-fg-default));
 }
 
 [data-scope='badge'][data-part='root'][data-variant='outline'] {
-  border-color: var(--xh-border-default);
+  border-color: var(--xh-_tone-border, var(--xh-border-default));
   background: transparent;
-  color: var(--xh-fg-default);
+  color: var(--xh-_tone-fg, var(--xh-fg-default));
+}
+
+/* —— 尺寸 —— */
+/* 徽标是随文排的药丸，不占控件行高，档位走间距与字号而不是 control-h */
+[data-scope='badge'][data-part='root'][data-size='sm'] {
+  gap: var(--xh-space-0_5);
+  padding-inline: var(--xh-space-1_5);
+  padding-block: var(--xh-space-0);
+}
+
+[data-scope='badge'][data-part='root'][data-size='lg'] {
+  gap: var(--xh-space-1_5);
+  padding-inline: var(--xh-space-3);
+  padding-block: var(--xh-space-1);
+  font-size: var(--xh-font-size-sm);
 }
 
 /* styles/breadcrumb.css */
@@ -1778,17 +1822,28 @@
 
 /* styles/checkbox.css */
 [data-scope='checkbox'][data-part='root'] {
+  /* 尺寸档只换方框边长这一个私有槽，勾的字号按边长的比例跟着走；
+     指示器从 root 继承这两个槽，换档不必给每个部件各写一条选择器 */
+  --xh-_checkbox-box: var(--xh-space-4);
+  --xh-_checkbox-glyph: calc(var(--xh-_checkbox-box) * 0.75);
+
+  /* 选中态的底与描边随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的品牌色 */
+  --xh-_checkbox-accent: var(--xh-_tone, var(--xh-bg-brand));
+
+  /* 实心底上的勾与横杠，同样没写 data-tone 时退回原来的品牌底前景色 */
+  --xh-_checkbox-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
+
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: 16px;
-  block-size: 16px;
+  inline-size: var(--xh-_checkbox-box);
+  block-size: var(--xh-_checkbox-box);
   padding: 0;
   border: 1px solid var(--xh-checkbox-border, var(--xh-border-default));
   border-radius: var(--xh-radius-sm);
   background: var(--xh-checkbox-bg, var(--xh-bg-canvas));
-  color: var(--xh-checkbox-fg, var(--xh-fg-on-brand));
+  color: var(--xh-checkbox-fg, var(--xh-_checkbox-on-accent));
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -1796,8 +1851,8 @@
 }
 
 [data-scope='checkbox'][data-part='root'][data-state='checked'] {
-  border-color: var(--xh-checkbox-border-checked, var(--xh-bg-brand));
-  background: var(--xh-checkbox-bg-checked, var(--xh-bg-brand));
+  border-color: var(--xh-checkbox-border-checked, var(--xh-_checkbox-accent));
+  background: var(--xh-checkbox-bg-checked, var(--xh-_checkbox-accent));
 }
 
 [data-scope='checkbox'][data-part='root'][data-disabled] {
@@ -1810,6 +1865,16 @@
   outline-offset: 2px;
 }
 
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里 */
+[data-scope='checkbox'][data-part='root'][data-size='sm'] {
+  --xh-_checkbox-box: var(--xh-space-3);
+}
+
+[data-scope='checkbox'][data-part='root'][data-size='lg'] {
+  --xh-_checkbox-box: var(--xh-space-5);
+}
+
 [data-scope='checkbox'][data-part='indicator'] {
   display: inline-flex;
   align-items: center;
@@ -1817,7 +1882,7 @@
   inline-size: 100%;
   block-size: 100%;
   line-height: var(--xh-leading-none);
-  font-size: 12px;
+  font-size: var(--xh-_checkbox-glyph);
 }
 
 [data-scope='checkbox'][data-part='indicator']::before {
@@ -1839,7 +1904,7 @@
   inline-size: 60%;
   block-size: var(--xh-stroke-thick);
   border-radius: var(--xh-radius-full);
-  background: var(--xh-checkbox-indicator-fg, var(--xh-fg-on-brand));
+  background: var(--xh-checkbox-indicator-fg, var(--xh-_checkbox-on-accent));
   content: '';
 }
 
@@ -5200,6 +5265,13 @@
   stroke-width: var(--xh-glyph-stroke-bold);
 }
 
+/* 语气：图标没有底色，语气只落在前景上，取普通背景上表达该语气的那档文字色。
+   选择器上带 [data-tone] 是必需的：语气槽会沿继承流下来，不限定在写了语气的
+   那个节点上，放在语气容器里的装饰图标会跟着一起改色 */
+[data-scope='icon'][data-part='root'][data-tone] {
+  color: var(--xh-icon-fg, var(--xh-_tone-fg, currentColor));
+}
+
 /* styles/image.css */
 /* 尺寸交给三个变量而不是写死：这个组件既要能当封面图，也要能当头图与缩略图。
    给了 --xh-image-ratio 才有确定高度，回退内容与图片在同一个盒子里换人时不会跳。 */
@@ -6522,7 +6594,11 @@
 }
 
 /* styles/progress.css */
+/* 私有槽位：组件令牌 → 中档字面量两级回退。厚度写在 root 上而不是 track 上，
+   尺寸档才改得动一处就够，track 靠继承拿到值。 */
 [data-scope='progress'][data-part='root'] {
+  --xh-_thickness: var(--xh-progress-thickness, 6px);
+
   display: inline-block;
   inline-size: 100%;
 }
@@ -6530,20 +6606,38 @@
 [data-scope='progress'][data-part='track'] {
   overflow: hidden;
   inline-size: 100%;
-  block-size: var(--xh-progress-thickness, 6px);
+  block-size: var(--xh-_thickness);
   border-radius: var(--xh-shape-pill);
   background: var(--xh-progress-track, var(--xh-bg-subtle-active));
 }
 
+/* 语气槽由 root 上的 data-tone 声明、经继承发下来；没写 data-tone 时退回原来的品牌色。
+   轨道不跟着换族：只有已完成的那段换色，底槽保持中性才读得出"完成了多少"。 */
 [data-scope='progress'][data-part='range'] {
   block-size: 100%;
   border-radius: var(--xh-shape-pill);
-  background: var(--xh-progress-range, var(--xh-bg-brand));
+  background: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
   transition: inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* —— 尺寸 —— */
+/* 只有厚度分档；中间档不写规则，缺省即中档 */
+[data-scope='progress'][data-part='root'][data-size='sm'] {
+  --xh-_thickness: var(--xh-progress-thickness, var(--xh-space-1));
+}
+
+[data-scope='progress'][data-part='root'][data-size='lg'] {
+  --xh-_thickness: var(--xh-progress-thickness, var(--xh-space-2));
 }
 
 /* styles/radio-group.css */
 [data-scope='radio-group'][data-part='root'] {
+  /* 尺寸档只换这两个私有槽，标题与条目都从 root 继承它们，换档不必给每个部件各写一条选择器 */
+  --xh-_radio-group-item-gap: var(--xh-control-gap-md);
+  --xh-_radio-group-font-size: var(--xh-text-label-size);
+  /* 选中色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的品牌色 */
+  --xh-_radio-group-accent: var(--xh-_tone, var(--xh-bg-brand));
+
   display: flex;
   gap: var(--xh-radio-group-gap, var(--xh-stack-gap-md));
 }
@@ -6557,9 +6651,20 @@
   align-items: center;
 }
 
+/* —— 尺寸 —— */
+[data-scope='radio-group'][data-part='root'][data-size='sm'] {
+  --xh-_radio-group-item-gap: var(--xh-control-gap-sm);
+  --xh-_radio-group-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='radio-group'][data-part='root'][data-size='lg'] {
+  --xh-_radio-group-item-gap: var(--xh-control-gap-lg);
+  --xh-_radio-group-font-size: var(--xh-font-size-lg);
+}
+
 [data-scope='radio-group'][data-part='label'] {
   color: var(--xh-radio-group-label-fg, var(--xh-fg-muted));
-  font-size: var(--xh-radio-group-label-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-radio-group-label-font-size, var(--xh-_radio-group-font-size));
   font-weight: var(--xh-radio-group-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
 }
@@ -6569,10 +6674,10 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: var(--xh-radio-group-item-gap, var(--xh-control-gap-md));
+  gap: var(--xh-radio-group-item-gap, var(--xh-_radio-group-item-gap));
   border-radius: var(--xh-radio-group-item-radius, var(--xh-shape-control));
   color: var(--xh-radio-group-item-fg, var(--xh-fg-default));
-  font-size: var(--xh-radio-group-item-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-radio-group-item-font-size, var(--xh-_radio-group-font-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
 }
@@ -6603,7 +6708,7 @@
 }
 
 [data-scope='radio-group'][data-part='indicator'][data-state='checked'] {
-  border-color: var(--xh-radio-group-indicator-border-checked, var(--xh-bg-brand));
+  border-color: var(--xh-radio-group-indicator-border-checked, var(--xh-_radio-group-accent));
 }
 
 /* 圆点用 scale 收放，选中态切换不引起布局抖动 */
@@ -6612,7 +6717,7 @@
   inline-size: 8px;
   block-size: 8px;
   border-radius: var(--xh-shape-pill);
-  background: var(--xh-radio-group-indicator-dot, var(--xh-bg-brand));
+  background: var(--xh-radio-group-indicator-dot, var(--xh-_radio-group-accent));
   scale: 0;
   transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -6630,10 +6735,30 @@
 /* position 是给表单影子做定位基准的：那份输入被连接层内联写成绝对定位，
    根上不留基准它就会贴到更外层的定位祖先上，原生校验提示跟着飘到页面别处。 */
 [data-scope='rating'][data-part='root'] {
+  /* 尺寸档只换这三个私有槽，标题与星星都从 root 继承它们，换档不必给每个部件各写一条选择器 */
+  --xh-_rating-item-gap: var(--xh-space-1);
+  --xh-_rating-item-size: var(--xh-font-size-2xl);
+  --xh-_rating-font-size: var(--xh-text-label-size);
+  /* 点亮色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的警示色 */
+  --xh-_rating-accent: var(--xh-_tone, var(--xh-color-warning-500));
+
   position: relative;
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-rating-gap, var(--xh-stack-gap-md));
+}
+
+/* —— 尺寸 —— */
+[data-scope='rating'][data-part='root'][data-size='sm'] {
+  --xh-_rating-item-gap: var(--xh-control-gap-sm);
+  --xh-_rating-item-size: var(--xh-font-size-xl);
+  --xh-_rating-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='rating'][data-part='root'][data-size='lg'] {
+  --xh-_rating-item-gap: var(--xh-control-gap-lg);
+  --xh-_rating-item-size: var(--xh-font-size-3xl);
+  --xh-_rating-font-size: var(--xh-font-size-lg);
 }
 
 /* 整体压暗只做一次，落在最外层：星星逐颗再叠 opacity 会越叠越黑 */
@@ -6644,7 +6769,7 @@
 
 [data-scope='rating'][data-part='label'] {
   color: var(--xh-rating-label-fg, var(--xh-fg-muted));
-  font-size: var(--xh-rating-label-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-rating-label-font-size, var(--xh-_rating-font-size));
   font-weight: var(--xh-rating-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
 }
@@ -6656,7 +6781,7 @@
 [data-scope='rating'][data-part='control'] {
   display: inline-flex;
   align-items: center;
-  gap: var(--xh-rating-item-gap, var(--xh-space-1));
+  gap: var(--xh-rating-item-gap, var(--xh-_rating-item-gap));
 }
 
 /* 容器只是焦点域的兜底落点（焦点从带外进来先落在它身上，随即被转投给某颗星），
@@ -6680,7 +6805,7 @@
   display: inline-block;
   border-radius: var(--xh-rating-item-radius, var(--xh-shape-control));
   color: var(--xh-rating-item-fg, var(--xh-fg-subtle));
-  font-size: var(--xh-rating-item-font-size, var(--xh-font-size-2xl));
+  font-size: var(--xh-rating-item-font-size, var(--xh-_rating-item-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
   /* 从一颗星划到另一颗会把中间的字符连着选中，星带看上去像被刷蓝了 */
@@ -6692,7 +6817,7 @@
    aria-checked 只认落定的值，而悬停预览要求手划过去当场就亮。
    两者共用同一档颜色，预览与选中因此看不出差别——这正是"预览"该有的样子。 */
 [data-scope='rating'][data-part='item'][data-highlighted] {
-  color: var(--xh-rating-item-fg-highlighted, var(--xh-color-warning-500));
+  color: var(--xh-rating-item-fg-highlighted, var(--xh-_rating-accent));
 }
 
 /* 半颗：一道 50% 硬边渐变裁到字形上，左半亮右半灰。
@@ -6701,7 +6826,7 @@
 [data-scope='rating'][data-part='item'][data-half] {
   background-image: linear-gradient(
     to right,
-    var(--xh-rating-item-fg-highlighted, var(--xh-color-warning-500)) 50%,
+    var(--xh-rating-item-fg-highlighted, var(--xh-_rating-accent)) 50%,
     var(--xh-rating-item-fg, var(--xh-fg-subtle)) 50%
   );
   -webkit-background-clip: text;
@@ -6714,7 +6839,7 @@
 [data-scope='rating'][data-part='item'][data-half]:dir(rtl) {
   background-image: linear-gradient(
     to left,
-    var(--xh-rating-item-fg-highlighted, var(--xh-color-warning-500)) 50%,
+    var(--xh-rating-item-fg-highlighted, var(--xh-_rating-accent)) 50%,
     var(--xh-rating-item-fg, var(--xh-fg-subtle)) 50%
   );
 }
@@ -7117,7 +7242,12 @@
    切换 orientation 的那一帧还会跟连接层清空另一轴的动作抢位置，把拇指钉在两轴都被约束的地方。
    皮肤只管另一条轴（交叉轴）的尺寸、颜色、圆角与状态表现。 */
 
+/* 私有槽位：组件令牌 → 中档字面量两级回退。轨道厚度与拇指直径同时被 control / track / thumb
+   三个角色节点用到，收成两个槽位挂在 root 上，尺寸档只改这两处，靠继承发到子部件。 */
 [data-scope='slider'][data-part='root'] {
+  --xh-_thumb-size: var(--xh-slider-thumb-size, 18px);
+  --xh-_track-thickness: var(--xh-slider-track-thickness, 6px);
+
   display: flex;
   flex-direction: column;
   gap: var(--xh-slider-gap, var(--xh-stack-gap-md));
@@ -7153,14 +7283,14 @@
   position: relative;
   display: flex;
   align-items: center;
-  block-size: var(--xh-slider-thumb-size, 18px);
+  block-size: var(--xh-_thumb-size);
   cursor: pointer;
 }
 
 [data-scope='slider'][data-part='control'][data-orientation='vertical'] {
   flex-direction: column;
   justify-content: center;
-  inline-size: var(--xh-slider-thumb-size, 18px);
+  inline-size: var(--xh-_thumb-size);
   block-size: var(--xh-slider-vertical-length, 10rem);
 }
 
@@ -7187,20 +7317,22 @@
 
 [data-scope='slider'][data-part='track'][data-orientation='horizontal'] {
   inline-size: 100%;
-  block-size: var(--xh-slider-track-thickness, 6px);
+  block-size: var(--xh-_track-thickness);
 }
 
 [data-scope='slider'][data-part='track'][data-orientation='vertical'] {
   block-size: 100%;
-  inline-size: var(--xh-slider-track-thickness, 6px);
+  inline-size: var(--xh-_track-thickness);
 }
 
 /* 主轴（起点 + 长度）来自内联样式，这里只给定位模式与配色。
-   绝不给 inset / size 加过渡：拖拽时这两个值每帧都在变，一加过渡区间就永远追在指针后面。 */
+   绝不给 inset / size 加过渡：拖拽时这两个值每帧都在变，一加过渡区间就永远追在指针后面。
+   语气槽由 root 上的 data-tone 声明、经继承发下来；没写 data-tone 时退回原来的品牌色。
+   轨道不跟着换族：区间与拇指换色即可读出语气，底槽保持中性才不会盖掉"已选/未选"的对比。 */
 [data-scope='slider'][data-part='range'] {
   position: absolute;
   border-radius: var(--xh-slider-range-radius, var(--xh-shape-pill));
-  background: var(--xh-slider-range-bg, var(--xh-bg-brand));
+  background: var(--xh-slider-range-bg, var(--xh-_tone, var(--xh-bg-brand)));
 }
 
 /* 交叉轴铺满轨道。这一侧的 inset 连接层每帧写成空串（即不设），样式表接手才有确定值；
@@ -7220,16 +7352,16 @@
 }
 
 /* 圆点浮在轨道之上：轨道是流内的，拇指是绝对定位的，天然后来居上，不必再堆 z-index。
-   box-sizing 必须显式写：描边要吃进直径里，否则实际盒子比 --xh-slider-thumb-size 宽两条边，
+   box-sizing 必须显式写：描边要吃进直径里，否则实际盒子比 --xh-_thumb-size 宽两条边，
    下面按半个直径回拉的负外边距就对不上圆心。 */
 [data-scope='slider'][data-part='thumb'] {
   position: absolute;
   box-sizing: border-box;
-  inline-size: var(--xh-slider-thumb-size, 18px);
-  block-size: var(--xh-slider-thumb-size, 18px);
+  inline-size: var(--xh-_thumb-size);
+  block-size: var(--xh-_thumb-size);
   border: var(--xh-stroke-thick) solid var(--xh-slider-thumb-border, var(--xh-bg-surface));
   border-radius: var(--xh-slider-thumb-radius, var(--xh-shape-pill));
-  background: var(--xh-slider-thumb-bg, var(--xh-bg-brand));
+  background: var(--xh-slider-thumb-bg, var(--xh-_tone, var(--xh-bg-brand)));
   box-shadow: var(--xh-slider-thumb-shadow, var(--xh-elevation-1));
   cursor: grab;
   transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -7242,15 +7374,15 @@
    交叉轴同理：inset-block-start 是连接层不写的那条轴，样式表接管即可。 */
 [data-scope='slider'][data-part='thumb'][data-orientation='horizontal'] {
   inset-block-start: 50%;
-  margin-block-start: calc(var(--xh-slider-thumb-size, 18px) / -2);
-  margin-inline-start: calc(var(--xh-slider-thumb-size, 18px) / -2);
+  margin-block-start: calc(var(--xh-_thumb-size) / -2);
+  margin-inline-start: calc(var(--xh-_thumb-size) / -2);
 }
 
 /* 竖排的主轴是 inset-block-end（值向上增大），回拉也就换到 block-end 那侧 */
 [data-scope='slider'][data-part='thumb'][data-orientation='vertical'] {
   inset-inline-start: 50%;
-  margin-inline-start: calc(var(--xh-slider-thumb-size, 18px) / -2);
-  margin-block-end: calc(var(--xh-slider-thumb-size, 18px) / -2);
+  margin-inline-start: calc(var(--xh-_thumb-size) / -2);
+  margin-block-end: calc(var(--xh-_thumb-size) / -2);
 }
 
 [data-scope='slider'][data-part='thumb']:focus-visible {
@@ -7276,6 +7408,19 @@
 
 [data-scope='slider'][data-part='thumb'][data-disabled] {
   cursor: not-allowed;
+}
+
+/* —— 尺寸 —— */
+/* 尺寸只改 root 上那两个槽位，control / track / thumb 跟着一起走；中间档不写规则，缺省即中档。
+   两档都保持"拇指是轨道的三倍厚"这个比例，换档时圆点与底槽的关系看着不变。 */
+[data-scope='slider'][data-part='root'][data-size='sm'] {
+  --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-3));
+  --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-space-1));
+}
+
+[data-scope='slider'][data-part='root'][data-size='lg'] {
+  --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-6));
+  --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-space-2));
 }
 
 /* display 会盖掉 UA 的 [hidden]{display:none}，凡是被赋了 display 的角色节点都要显式让位 */
@@ -7640,12 +7785,21 @@
 
 /* styles/switch.css */
 [data-scope='switch'][data-part='root'] {
+  /* 尺寸档只换轨道高度这一个私有槽，其余几何都从它算出来：
+     滑块边长 = 轨道高 − 两条留白，轨道宽 = 两倍轨道高 − 两条留白，滑块行程因此正好等于自身边长 */
+  --xh-_switch-track-h: var(--xh-font-size-2xl);
+  --xh-_switch-pad: 2px;
+  --xh-_switch-thumb-size: calc(var(--xh-_switch-track-h) - var(--xh-_switch-pad) * 2);
+
+  /* 选中态轨道色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的品牌色 */
+  --xh-_switch-accent: var(--xh-_tone, var(--xh-bg-brand));
+
   position: relative;
   display: inline-flex;
   align-items: center;
-  inline-size: 40px;
-  block-size: 22px;
-  padding: 2px;
+  inline-size: calc(var(--xh-_switch-track-h) * 2 - var(--xh-_switch-pad) * 2);
+  block-size: var(--xh-_switch-track-h);
+  padding: var(--xh-_switch-pad);
   border: 0;
   border-radius: var(--xh-shape-pill);
   background: var(--xh-switch-bg, var(--xh-bg-subtle-active));
@@ -7654,7 +7808,7 @@
 }
 
 [data-scope='switch'][data-part='root'][data-state='checked'] {
-  background: var(--xh-switch-bg-checked, var(--xh-bg-brand));
+  background: var(--xh-switch-bg-checked, var(--xh-_switch-accent));
 }
 
 [data-scope='switch'][data-part='root'][data-disabled] {
@@ -7667,9 +7821,19 @@
   outline-offset: 2px;
 }
 
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里 */
+[data-scope='switch'][data-part='root'][data-size='sm'] {
+  --xh-_switch-track-h: var(--xh-font-size-xl);
+}
+
+[data-scope='switch'][data-part='root'][data-size='lg'] {
+  --xh-_switch-track-h: var(--xh-font-size-3xl);
+}
+
 [data-scope='switch'][data-part='thumb'] {
-  inline-size: 18px;
-  block-size: 18px;
+  inline-size: var(--xh-_switch-thumb-size);
+  block-size: var(--xh-_switch-thumb-size);
   border-radius: var(--xh-shape-pill);
   background: var(--xh-switch-thumb, var(--xh-bg-canvas));
   box-shadow: var(--xh-elevation-1);
@@ -7677,7 +7841,7 @@
 }
 
 [data-scope='switch'][data-part='thumb'][data-state='checked'] {
-  translate: 18px 0;
+  translate: var(--xh-_switch-thumb-size) 0;
 }
 
 /* styles/table.css */
@@ -9453,10 +9617,15 @@
 
 /* styles/toggle.css */
 [data-scope='toggle'][data-part='root'] {
-  /* 私有槽位：组件令牌 → 语义令牌两级回退 */
+  /* 私有槽位：组件令牌 → 语义令牌两级回退，变体只改这几个槽位 */
   --xh-_bg: var(--xh-toggle-bg, transparent);
   --xh-_bg-hover: var(--xh-toggle-bg-hover, var(--xh-bg-subtle-hover));
   --xh-_fg: var(--xh-toggle-fg, var(--xh-fg-default));
+
+  /* 按下态：强调交给底色。前景不用品牌色——subtle-active 这一档底上任何品牌色都过不了
+     AA（浅色最好的 brand-700 只有 4.37），强调靠底、可读靠前景是更稳的分工 */
+  --xh-_bg-pressed: var(--xh-toggle-bg-pressed, var(--xh-bg-subtle-active));
+  --xh-_fg-pressed: var(--xh-toggle-fg-pressed, var(--xh-fg-default));
 
   display: inline-flex;
   align-items: center;
@@ -9481,15 +9650,6 @@
   background: var(--xh-_bg-hover);
 }
 
-/* 按下态：强调交给底色。前景不用品牌色——subtle-active 这一档底上任何品牌色都过不了
-   AA（浅色最好的 brand-700 只有 4.37），强调靠底、可读靠前景是更稳的分工 */
-[data-scope='toggle'][data-part='root'][data-state='on'] {
-  --xh-_bg: var(--xh-toggle-bg-pressed, var(--xh-bg-subtle-active));
-  --xh-_bg-hover: var(--xh-toggle-bg-pressed, var(--xh-bg-subtle-active));
-
-  color: var(--xh-toggle-fg-pressed, var(--xh-fg-default));
-}
-
 [data-scope='toggle'][data-part='root'][data-disabled] {
   cursor: not-allowed;
   opacity: 0.5;
@@ -9498,6 +9658,64 @@
 [data-scope='toggle'][data-part='root']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: 2px;
+}
+
+/* —— 变体 —— */
+/* 形态只决定颜色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的中性配色 */
+[data-scope='toggle'][data-part='root'][data-variant='solid'] {
+  --xh-_bg: transparent;
+  --xh-_bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-hover));
+  --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_bg-pressed: var(--xh-_tone, var(--xh-bg-brand));
+  --xh-_fg-pressed: var(--xh-_tone-on, var(--xh-fg-on-brand));
+}
+
+[data-scope='toggle'][data-part='root'][data-variant='subtle'] {
+  --xh-_bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+  --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_bg-pressed: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+  --xh-_fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
+}
+
+[data-scope='toggle'][data-part='root'][data-variant='outline'] {
+  --xh-_bg: transparent;
+  --xh-_bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-hover));
+  --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_bg-pressed: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+  --xh-_fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
+
+  border-color: var(--xh-_tone-border, var(--xh-border-default));
+}
+
+[data-scope='toggle'][data-part='root'][data-variant='ghost'] {
+  --xh-_bg: transparent;
+  --xh-_bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-hover));
+  --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_bg-pressed: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+  --xh-_fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
+}
+
+/* 按下态排在变体之后：两者特异度相同，后写的那条赢，
+   变体只负责给出按下档的取值，切换由这里一处完成 */
+[data-scope='toggle'][data-part='root'][data-state='on'] {
+  --xh-_bg: var(--xh-_bg-pressed);
+  --xh-_bg-hover: var(--xh-_bg-pressed);
+
+  color: var(--xh-_fg-pressed);
+}
+
+/* —— 尺寸 —— */
+[data-scope='toggle'][data-part='root'][data-size='sm'] {
+  block-size: var(--xh-control-h-sm);
+  padding-inline: var(--xh-control-px-sm);
+  font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='toggle'][data-part='root'][data-size='lg'] {
+  block-size: var(--xh-control-h-lg);
+  padding-inline: var(--xh-control-px-lg);
+  font-size: var(--xh-font-size-lg);
 }
 
 /* styles/toggle-group.css */

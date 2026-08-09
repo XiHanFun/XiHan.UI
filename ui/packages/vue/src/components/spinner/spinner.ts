@@ -11,6 +11,7 @@ export const XhSpinner = defineComponent({
   props: {
     label: { type: String, default: undefined },
     size: { type: String as PropType<SpinnerSize>, default: undefined },
+    tone: { type: String, default: undefined },
     translations: { type: Object as PropType<Partial<SpinnerTranslations>>, default: undefined },
   },
   setup(props, { slots }) {

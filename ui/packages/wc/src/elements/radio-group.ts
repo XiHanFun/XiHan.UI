@@ -19,6 +19,8 @@ import { MachineController } from '../runtime/machine-controller'
  * @attr {'horizontal'|'vertical'} orientation - 视觉排布，默认 vertical
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义，默认 ltr
  * @attr {string} name - 表单字段名；给定后隐藏输入才带 name 并参与提交
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 选中值变化；detail 为 `{ value: string | null }`
  * @csspart root - role=radiogroup 容器（承载 roving tabindex 的兜底位）
  * @csspart label - 组标题（aria-labelledby 目标）
@@ -38,6 +40,8 @@ export class XhRadioGroupElement extends XhElement {
     orientation: {},
     direction: { attribute: 'dir' },
     name: {},
+    tone: {},
+    size: {},
   }
 
   declare value?: string
@@ -46,6 +50,8 @@ export class XhRadioGroupElement extends XhElement {
   declare orientation?: Orientation
   declare direction?: Direction
   declare name?: string
+  declare tone?: string
+  declare size?: string
 
   // 整组禁用期间的条目自身声明快照：connect 每帧把 aria-disabled 写回条目，回读分不清作者声明与自己的写回
   private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
@@ -66,6 +72,8 @@ export class XhRadioGroupElement extends XhElement {
       orientation: this.orientation,
       dir: this.direction,
       name: this.name,
+      tone: this.tone,
+      size: this.size,
       onValueChange: this.notify,
     }
   }

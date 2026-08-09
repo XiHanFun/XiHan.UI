@@ -18,6 +18,8 @@ export interface SpinnerProps {
   label?: string
   /** 直径档位，缺省 md；缺省档不输出 data-size。 */
   size?: SpinnerSize
+  /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 */
+  tone?: string
   translations?: Partial<SpinnerTranslations>
 }
 

@@ -36,6 +36,10 @@ export interface SliderSchema extends MachineSchema {
     disabled?: boolean
     readOnly?: boolean
     invalid?: boolean
+    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 */
+    tone?: string
+    /** 尺寸：sm / md / lg，决定拇指直径与轨道厚度 */
+    size?: string
     /** 表单字段名；多滑块时逐个 append。 */
     name?: string
     /** 相邻滑块至少隔几格，默认 0（可以贴在一起但不能交换顺序）。 */

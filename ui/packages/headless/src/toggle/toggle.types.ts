@@ -10,6 +10,12 @@ export interface ToggleSchema extends MachineSchema {
     pressed?: boolean
     defaultPressed?: boolean
     disabled?: boolean
+    /** 形态：solid / subtle / outline / ghost，决定颜色怎么用 */
+    variant?: string
+    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 */
+    tone?: string
+    /** 尺寸：sm / md / lg */
+    size?: string
     /** pressed 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 */
     onPressedChange?: (details: TogglePressedChangeDetails) => void
   }

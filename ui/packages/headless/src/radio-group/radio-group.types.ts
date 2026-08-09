@@ -24,6 +24,10 @@ export interface RadioGroupSchema extends MachineSchema {
     dir?: Direction
     /** 表单字段名。 */
     name?: string
+    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    tone?: string
+    /** 尺寸：sm / md / lg。 */
+    size?: string
     /** value 变化回调。 */
     onValueChange?: (details: RadioGroupValueChangeDetails) => void
   }

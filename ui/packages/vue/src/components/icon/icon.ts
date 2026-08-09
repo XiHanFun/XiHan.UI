@@ -25,6 +25,7 @@ export const XhIcon = defineComponent({
     label: { type: String, default: undefined },
     size: { type: String as PropType<IconSize>, default: undefined },
     weight: { type: String as PropType<IconWeight>, default: undefined },
+    tone: { type: String, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useIcon(props as IconProps)

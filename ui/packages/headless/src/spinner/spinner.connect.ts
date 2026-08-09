@@ -40,6 +40,7 @@ export function connectSpinner<T extends PropTypes>(
       'aria-label': label,
       // 缺省档不写属性：皮肤的基础规则就是缺省档
       'data-size': props.size,
+      'data-tone': props.tone,
     }),
 
     getLabelProps: () => normalize.element({

@@ -16,6 +16,8 @@ export const XhRadioGroupRoot = defineComponent({
     orientation: { type: String as PropType<Orientation>, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     name: { type: String, default: undefined },
+    tone: { type: String, default: undefined },
+    size: { type: String, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸值
   emits: ['value-change', 'update:value'],

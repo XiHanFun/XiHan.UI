@@ -45,6 +45,8 @@ disabled 同时挡住指针与键盘，状态机收不到 TOGGLE
 | `checked` | `boolean` |  |  |
 | `defaultChecked` | `boolean` |  |  |
 | `disabled` | `boolean` |  |  |
+| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定选中态轨道用哪族颜色。 |
+| `size` | `string` |  | 尺寸：sm / md / lg，决定轨道与滑块的几何档位。 |
 | `onCheckedChange` | `(details: SwitchCheckedChangeDetails) => void` |  | checked 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
 ## 状态机

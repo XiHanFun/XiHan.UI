@@ -44,4 +44,11 @@
   [data-scope='icon'][data-part='root'][data-weight='bold'] {
     stroke-width: var(--xh-glyph-stroke-bold);
   }
+
+  /* 语气：图标没有底色，语气只落在前景上，取普通背景上表达该语气的那档文字色。
+     选择器上带 [data-tone] 是必需的：语气槽会沿继承流下来，不限定在写了语气的
+     那个节点上，放在语气容器里的装饰图标会跟着一起改色 */
+  [data-scope='icon'][data-part='root'][data-tone] {
+    color: var(--xh-icon-fg, var(--xh-_tone-fg, currentColor));
+  }
 }

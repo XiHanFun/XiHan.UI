@@ -17,6 +17,20 @@
     user-select: none;
   }
 
+  /* 三档尺寸对齐控件档位，缺省档写在上面的基础规则里；
+     字号跟着一起缩放，回退字才在小头像里放得下、在大头像里不显小 */
+  [data-scope='avatar'][data-part='root'][data-size='sm'] {
+    inline-size: var(--xh-control-h-sm);
+    block-size: var(--xh-control-h-sm);
+    font-size: var(--xh-font-size-xs);
+  }
+
+  [data-scope='avatar'][data-part='root'][data-size='lg'] {
+    inline-size: var(--xh-control-h-lg);
+    block-size: var(--xh-control-h-lg);
+    font-size: var(--xh-font-size-md);
+  }
+
   /* 不声明 display，加载完成前的 hidden 直接交给浏览器的 [hidden] 规则收起 */
   [data-scope='avatar'][data-part='image'] {
     inline-size: 100%;

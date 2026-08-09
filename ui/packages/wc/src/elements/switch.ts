@@ -11,6 +11,8 @@ import { MachineController } from '../runtime/machine-controller'
  * @attr {boolean} checked - 受控开合；缺省该属性即非受控
  * @attr {boolean} default-checked - 非受控初始为选中
  * @attr {boolean} disabled - 禁用
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires checked-change - checked 状态变化；detail 为 `{ checked: boolean }`
  * @csspart root - role=switch 的按钮（承载 aria-checked / data-state）
  * @csspart thumb - 滑块
@@ -22,11 +24,15 @@ export class XhSwitchElement extends XhElement {
     checked: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
     defaultChecked: { type: Boolean, attribute: 'default-checked' },
     disabled: { type: Boolean },
+    tone: {},
+    size: {},
   }
 
   declare checked?: boolean
   declare defaultChecked?: boolean
   declare disabled?: boolean
+  declare tone?: string
+  declare size?: string
 
   private readonly notify = (details: SwitchCheckedChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('checked-change', { detail: details, bubbles: true, composed: true }))
@@ -39,6 +45,8 @@ export class XhSwitchElement extends XhElement {
       checked: this.checked,
       defaultChecked: this.defaultChecked ?? false,
       disabled: this.disabled ?? false,
+      tone: this.tone,
+      size: this.size,
       onCheckedChange: this.notify,
     }
   }

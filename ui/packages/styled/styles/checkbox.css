@@ -1,16 +1,27 @@
 @layer xihan.components {
   [data-scope='checkbox'][data-part='root'] {
+    /* 尺寸档只换方框边长这一个私有槽，勾的字号按边长的比例跟着走；
+       指示器从 root 继承这两个槽，换档不必给每个部件各写一条选择器 */
+    --xh-_checkbox-box: var(--xh-space-4);
+    --xh-_checkbox-glyph: calc(var(--xh-_checkbox-box) * 0.75);
+
+    /* 选中态的底与描边随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的品牌色 */
+    --xh-_checkbox-accent: var(--xh-_tone, var(--xh-bg-brand));
+
+    /* 实心底上的勾与横杠，同样没写 data-tone 时退回原来的品牌底前景色 */
+    --xh-_checkbox-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
+
     position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    inline-size: 16px;
-    block-size: 16px;
+    inline-size: var(--xh-_checkbox-box);
+    block-size: var(--xh-_checkbox-box);
     padding: 0;
     border: 1px solid var(--xh-checkbox-border, var(--xh-border-default));
     border-radius: var(--xh-radius-sm);
     background: var(--xh-checkbox-bg, var(--xh-bg-canvas));
-    color: var(--xh-checkbox-fg, var(--xh-fg-on-brand));
+    color: var(--xh-checkbox-fg, var(--xh-_checkbox-on-accent));
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -18,8 +29,8 @@
   }
 
   [data-scope='checkbox'][data-part='root'][data-state='checked'] {
-    border-color: var(--xh-checkbox-border-checked, var(--xh-bg-brand));
-    background: var(--xh-checkbox-bg-checked, var(--xh-bg-brand));
+    border-color: var(--xh-checkbox-border-checked, var(--xh-_checkbox-accent));
+    background: var(--xh-checkbox-bg-checked, var(--xh-_checkbox-accent));
   }
 
   [data-scope='checkbox'][data-part='root'][data-disabled] {
@@ -32,6 +43,16 @@
     outline-offset: 2px;
   }
 
+  /* —— 尺寸 —— */
+  /* 缺省档写在上面的基础规则里 */
+  [data-scope='checkbox'][data-part='root'][data-size='sm'] {
+    --xh-_checkbox-box: var(--xh-space-3);
+  }
+
+  [data-scope='checkbox'][data-part='root'][data-size='lg'] {
+    --xh-_checkbox-box: var(--xh-space-5);
+  }
+
   [data-scope='checkbox'][data-part='indicator'] {
     display: inline-flex;
     align-items: center;
@@ -39,7 +60,7 @@
     inline-size: 100%;
     block-size: 100%;
     line-height: var(--xh-leading-none);
-    font-size: 12px;
+    font-size: var(--xh-_checkbox-glyph);
   }
 
   [data-scope='checkbox'][data-part='indicator']::before {
@@ -61,7 +82,7 @@
     inline-size: 60%;
     block-size: var(--xh-stroke-thick);
     border-radius: var(--xh-radius-full);
-    background: var(--xh-checkbox-indicator-fg, var(--xh-fg-on-brand));
+    background: var(--xh-checkbox-indicator-fg, var(--xh-_checkbox-on-accent));
     content: '';
   }
 }

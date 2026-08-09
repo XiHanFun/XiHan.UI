@@ -51,6 +51,8 @@ const NUMBER_LIST_CONVERTER = {
  * @attr {boolean} disabled - 禁用：拇指退出 Tab 序列、推不动、不参与表单提交
  * @attr {boolean} read-only - 只读：仍可聚焦与被读屏念出，推不动
  * @attr {boolean} invalid - 校验失败标注
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {string} name - 表单字段名；给了才参与提交，多滑块逐个同名 append
  * @fires value-change - 值变化（拖动途中会连发）；detail 为 `{ value: number[] }`
  * @fires value-change-end - 一次操作收尾发一次；detail 为 `{ value: number[], index: number }`
@@ -81,6 +83,8 @@ export class XhSliderElement extends XhElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
     name: { converter: STRING_CONVERTER },
     // 格式化函数只能按 property 给（属性表达不了函数），与 Vue 的同名 prop 是同一件事
     getValueText: { attribute: false },
@@ -98,6 +102,8 @@ export class XhSliderElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
+  declare tone?: string
+  declare size?: string
   declare name?: string
   declare getValueText?: (details: SliderValueTextDetails) => string
 
@@ -133,6 +139,8 @@ export class XhSliderElement extends XhElement {
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,
       invalid: this.invalid ?? false,
+      tone: this.tone,
+      size: this.size,
       name: this.name,
       getValueText: this.getValueText,
       onValueChange: this.notifyValue,

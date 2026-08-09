@@ -13,7 +13,8 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @customElement xh-spinner
  * @attr {string} label - 可及名字；label 角色节点显示的应当是同一段文案
  * @attr {'sm'|'md'|'lg'} size - 直径档位，缺省 md
- * @csspart root - role=status 的活区容器，承载 aria-live/aria-label/data-size
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @csspart root - role=status 的活区容器，承载 aria-live/aria-label/data-size/data-tone
  * @csspart label - 可见文案节点，可省
  */
 export class XhSpinnerElement extends XhElement {
@@ -23,18 +24,21 @@ export class XhSpinnerElement extends XhElement {
   static override properties = {
     label: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
     // 文案是对象，只走 property
     translations: { attribute: false },
   }
 
   declare label?: string
   declare size?: SpinnerSize
+  declare tone?: string
   declare translations?: Partial<SpinnerTranslations>
 
   protected wire(): void {
     const props: SpinnerProps = {
       label: this.label,
       size: this.size,
+      tone: this.tone,
       translations: this.translations,
     }
     const api = connectSpinner(props, wcNormalize)

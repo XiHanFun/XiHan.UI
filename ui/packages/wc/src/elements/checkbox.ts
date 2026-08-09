@@ -11,6 +11,8 @@ import { MachineController } from '../runtime/machine-controller'
  * @attr {boolean|'indeterminate'} checked - 受控选中；写 indeterminate 为半选，缺省该属性即非受控
  * @attr {boolean|'indeterminate'} default-checked - 非受控初值
  * @attr {boolean} disabled - 禁用
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires checked-change - checked 状态变化；detail 为 `{ checked: boolean }`
  * @csspart root - role=checkbox 的按钮（承载 aria-checked / data-state）
  * @csspart indicator - 选中标记
@@ -23,11 +25,15 @@ export class XhCheckboxElement extends XhElement {
     checked: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v === 'indeterminate' ? 'indeterminate' : v !== 'false') } },
     defaultChecked: { attribute: 'default-checked', converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v === 'indeterminate' ? 'indeterminate' : v !== 'false') } },
     disabled: { type: Boolean },
+    tone: {},
+    size: {},
   }
 
   declare checked?: CheckboxCheckedState
   declare defaultChecked?: CheckboxCheckedState
   declare disabled?: boolean
+  declare tone?: string
+  declare size?: string
 
   private readonly notify = (details: CheckboxCheckedChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('checked-change', { detail: details, bubbles: true, composed: true }))
@@ -40,6 +46,8 @@ export class XhCheckboxElement extends XhElement {
       checked: this.checked,
       defaultChecked: this.defaultChecked ?? false,
       disabled: this.disabled ?? false,
+      tone: this.tone,
+      size: this.size,
       onCheckedChange: this.notify,
     }
   }
