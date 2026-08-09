@@ -2,6 +2,32 @@
 
 导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+目录跟着滚动位置自己换高亮；scroll-element 把判定线挂到指定滚动容器上，不给就挂在窗口上
+
+<XhDemo src="anchor/01-basic" />
+
+### 受控
+
+传了 value 就由宿主说了算；一节都没越过判定线时它是 null，此时谁都不亮、指示条整条收起
+
+<XhDemo src="anchor/02-controlled" />
+
+### 判定线偏移
+
+offset 是判定线距容器视口顶边的距离，有吸顶栏就把栏高填进去，越过它的最后一节才算当前节
+
+<XhDemo src="anchor/03-offset" />
+
+### 横排目录
+
+orientation="horizontal" 只改样式：条目排成一行，轨道与指示条从起始缘挪到底边
+
+<XhDemo src="anchor/04-horizontal" />
+
 ## 产物
 
 | 层 | 值 |

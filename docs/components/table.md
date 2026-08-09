@@ -2,6 +2,32 @@
 
 数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一事实源，标记只管长相
+
+<XhDemo src="table/01-basic" />
+
+### 排序
+
+列上标了 sortable 才认排序把手；按住 Shift 点是追加到排序链，裸点是整条链换成这一列
+
+<XhDemo src="table/02-sort" />
+
+### 多选
+
+selectionMode 默认 none，声明 multiple 才有选择机制；选择列也要在 columns 里占一条，否则右侧列号串位
+
+<XhDemo src="table/03-selection" />
+
+### 行展开
+
+行上标了 expandable 才认展开把手与左右方向键；详情行占一个真实行号，收起只加 hidden 不卸载内部节点
+
+<XhDemo src="table/04-expand" />
+
 ## 产物
 
 | 层 | 值 |

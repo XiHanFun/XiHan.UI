@@ -2,6 +2,32 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+collection 是层级、显示文本与禁用的唯一事实源；levels 按深度摊开，每层一个 column
+
+<XhDemo src="cascader/01-basic" />
+
+### 中间层可选
+
+change-on-select 让分支自己也能落值；选中分支后浮层不收起，还能接着往下挑
+
+<XhDemo src="cascader/02-change-on-select" />
+
+### 悬停展开
+
+expand-trigger 改成 hover 后，指针划过分支即开子列，只挪展开路径不抢焦点；键盘仍走右方向键
+
+<XhDemo src="cascader/03-hover-expand" />
+
+### 多选
+
+选中的是一组路径，落值后浮层不收起、焦点留在列里接着挑；再点一次即取消
+
+<XhDemo src="cascader/04-multiple" />
+
 ## 产物
 
 | 层 | 值 |

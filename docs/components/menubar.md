@@ -2,6 +2,26 @@
 
 导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+一排 trigger 共用一个 Tab 位，positioner 与 content 靠 value 跟自己那个 trigger 配对
+
+<XhDemo src="menubar/01-basic" />
+
+### 受控
+
+value 是当前展开的那一项，null 表示都收起；给了它就由宿主说了算
+
+<XhDemo src="menubar/02-controlled" />
+
+### 分组与标记位
+
+group 用 value 跟自己的 group-label 配对，item-indicator 是纯装饰的勾选位
+
+<XhDemo src="menubar/03-group" />
+
 ## 产物
 
 | 层 | 值 |

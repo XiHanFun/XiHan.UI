@@ -2,6 +2,26 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+网格由作者照插槽里的 weeks / weekDays 自己渲染，组件一个节点都不替你生成
+
+<XhDemo src="calendar/01-basic" />
+
+### 区间选择
+
+selection-mode=range：第一下落起点、第二下落终点，中间铺一条连续底色
+
+<XhDemo src="calendar/02-range" />
+
+### 不可选的日子
+
+isDateUnavailable 与 min / max 都只挡落值不挡聚焦：方向键照样走得过去
+
+<XhDemo src="calendar/03-unavailable" />
+
 ## 产物
 
 | 层 | 值 |

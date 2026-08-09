@@ -2,6 +2,26 @@
 
 数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+不传 open 即为非受控，defaultOpen 只给初始值，之后由组件自己维护开合
+
+<XhDemo src="collapsible/01-basic" />
+
+### 受控
+
+传了 open 就由宿主说了算，组件自己不再改状态，只发 open-change 报告意图
+
+<XhDemo src="collapsible/02-controlled" />
+
+### 禁用
+
+disabled 把触发器整个关停，点击与键盘都不再改开合，已展开的内容维持原样
+
+<XhDemo src="collapsible/03-disabled" />
+
 ## 产物
 
 | 层 | 值 |

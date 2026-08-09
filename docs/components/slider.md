@@ -2,6 +2,32 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+值恒是数组，单滑块即长度 1；方向键走一格 step，PageUp 与 PageDown 走 largeStep，Home 与 End 贴到端点
+
+<XhDemo src="slider/01-basic" />
+
+### 区间选择
+
+两个拇指互为对方的边界、永不交叉，minStepsBetweenThumbs 再给它们之间留出格数；getValueText 把值翻成读屏念得出的话
+
+<XhDemo src="slider/02-range" />
+
+### 竖向
+
+orientation 换成 vertical 后整条控件收成一块，键盘与拖动的方向跟着一起翻
+
+<XhDemo src="slider/03-vertical" />
+
+### 禁用与只读
+
+禁用的拇指退出 Tab 序列、值也不再随表单提交；只读仍可聚焦与朗读，只是推不动
+
+<XhDemo src="slider/04-disabled" />
+
 ## 产物
 
 | 层 | 值 |

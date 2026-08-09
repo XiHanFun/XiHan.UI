@@ -2,6 +2,32 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+加减按钮与输入框共用一份状态；值是原始输入串，不传 value 即为非受控
+
+<XhDemo src="number-field/01-basic" />
+
+### 区间与步长
+
+方向键走 step，PageUp 与 PageDown 走 largeStep，Home 与 End 取端点；贴到边界时对应按钮转灰
+
+<XhDemo src="number-field/02-range" />
+
+### 受控
+
+传了 value 就由宿主说了算；value-change 除了原始串还带一份 valueAsNumber
+
+<XhDemo src="number-field/03-controlled" />
+
+### 禁用与只读
+
+两者都改不动值，禁用还会把加减按钮一并关掉、值也不再随表单提交
+
+<XhDemo src="number-field/04-disabled" />
+
 ## 产物
 
 | 层 | 值 |

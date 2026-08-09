@@ -10,6 +10,18 @@ value 与 max 共同决定百分比
 
 <XhDemo src="progress/01-basic" />
 
+### 配文字说明
+
+进度条自身只画轨道与进度，百分比文字由使用者摆
+
+<XhDemo src="progress/02-labelled" />
+
+### 自定义量程
+
+max 不是 100 时按 value/max 折算，用于「已完成 3/8 步」这类场景
+
+<XhDemo src="progress/03-max" />
+
 ## 产物
 
 | 层 | 值 |

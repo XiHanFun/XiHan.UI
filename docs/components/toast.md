@@ -2,6 +2,32 @@
 
 反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+单独一条通知：title 与 description 没写插槽内容时由 props 兜底；duration 给 0 即不自动消失
+
+<XhDemo src="toast/01-basic" />
+
+### 语气
+
+type 落成 data-type，皮肤据此换色条；error 走 alert + assertive，loading 表示事情还没完、不自动消失
+
+<XhDemo src="toast/02-type" />
+
+### 计时与暂停
+
+duration 走完自动退场；指针停在卡片上或焦点进到卡片里都会把计时按住，离开才接着走剩下那一段
+
+<XhDemo src="toast/03-pause" />
+
+### 操作按钮
+
+action-trigger 按下时先发 action 事件，再让这条进入退场；closable 决定还要不要那颗叉
+
+<XhDemo src="toast/04-action" />
+
 ## 产物
 
 | 层 | 值 |

@@ -2,6 +2,32 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+root 持有状态，label 与 input 各自向它取属性；不传 value 即为非受控，组件自己维护值
+
+<XhDemo src="text-field/01-basic" />
+
+### 受控
+
+传了 value 就由宿主说了算，组件自己不再改状态；v-model:value 是它的语法糖
+
+<XhDemo src="text-field/02-controlled" />
+
+### 可清空与字数上限
+
+clearable 让清空按钮可用并把 Escape 接管过来，maxLength 同时落成原生 maxlength 与机器侧截断
+
+<XhDemo src="text-field/03-clearable" />
+
+### 禁用与校验态
+
+disabled 与 readOnly 都改不动值，invalid 只把 aria-invalid 标出来、不拦输入
+
+<XhDemo src="text-field/04-states" />
+
 ## 产物
 
 | 层 | 值 |

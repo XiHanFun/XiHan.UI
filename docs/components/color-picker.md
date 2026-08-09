@@ -2,6 +2,32 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+必备部件是 trigger / content / area / area-thumb，缺一个组件就不工作
+
+<XhDemo src="color-picker/01-basic" />
+
+### 受控
+
+传了 value 就由宿主说了算，取色只回写不自改
+
+<XhDemo src="color-picker/02-controlled" />
+
+### 预设色板
+
+swatches 给出常用色，选中即写回 value
+
+<XhDemo src="color-picker/03-swatches" />
+
+### 禁用
+
+disabled 同时挡住触发器与面板内的所有交互
+
+<XhDemo src="color-picker/04-disabled" />
+
 ## 产物
 
 | 层 | 值 |

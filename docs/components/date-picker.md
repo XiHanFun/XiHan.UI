@@ -2,6 +2,26 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+段位与日历写的是同一个值，改哪边另一边当场跟着改口
+
+<XhDemo src="date-picker/01-basic" />
+
+### 区间选择
+
+只落了起点浮层不收，两端都在才算选完；段位只表达起点
+
+<XhDemo src="date-picker/02-range" />
+
+### 不可选的日子
+
+周末由 isDateUnavailable 判不可用：方向键仍走得过去，只是落不了值
+
+<XhDemo src="date-picker/03-unavailable" />
+
 ## 产物
 
 | 层 | 值 |

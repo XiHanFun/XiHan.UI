@@ -2,6 +2,32 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+过滤由宿主自己算：组件把输入串交给 input-value，筛出哪几条渲染成 item 是调用方的事
+
+<XhDemo src="combobox/01-basic" />
+
+### 多选
+
+选完不收起、输入串自动清空，候选立刻回到全集；框里空着时退格删掉最后一个已选项
+
+<XhDemo src="combobox/02-multiple" />
+
+### 允许自由文本
+
+allow-custom-value 让没匹配上候选的输入也能落值，适合标签、邮箱这类开放集合
+
+<XhDemo src="combobox/03-custom-value" />
+
+### 分组
+
+候选分段展示；整段被筛空时连同段标题一起不渲染，列表里不留空壳
+
+<XhDemo src="combobox/04-group" />
+
 ## 产物
 
 | 层 | 值 |

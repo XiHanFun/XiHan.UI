@@ -2,6 +2,32 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+焦点与选中是两条线：方向键只搬焦点，Enter 或空格才落值；整组只占一个 Tab 位
+
+<XhDemo src="listbox/01-basic" />
+
+### 多选
+
+multiple 下空格改成切换该条，Shift + 方向键顺手扩选，Ctrl / Cmd + A 全选或全不选
+
+<XhDemo src="listbox/02-multiple" />
+
+### 分组
+
+item-group 把条目分段，group-label 是这一段的可及名字，不参与选中也不接方向键
+
+<XhDemo src="listbox/03-group" />
+
+### 选择模式
+
+selection-mode 直接指定三种模式，extended 是「单击换一条、Ctrl 与 Shift 才扩选」
+
+<XhDemo src="listbox/04-selection-mode" />
+
 ## 产物
 
 | 层 | 值 |

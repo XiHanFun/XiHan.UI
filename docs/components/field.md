@@ -2,6 +2,26 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+控件由自己写，Field 只把属性并上去：标题的 for、控件的 id 与描述链（aria-describedby）自动对齐
+
+<XhDemo src="field/01-basic" />
+
+### 无效与必填
+
+invalid 一翻，错误文案接入描述链并显出，控件上同时落 aria-invalid；required 只落 aria-required，校验仍归宿主
+
+<XhDemo src="field/02-invalid" />
+
+### 禁用
+
+Field 的 disabled 只把 data-disabled 铺到各部件上；真正改不动还得在自己的控件上落原生 disabled
+
+<XhDemo src="field/03-disabled" />
+
 ## 产物
 
 | 层 | 值 |

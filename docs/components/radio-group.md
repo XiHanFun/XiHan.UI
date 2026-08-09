@@ -2,6 +2,32 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+组内只有一个 Tab 停靠点，进组后四个方向键都能切换，隐藏输入与选中圆点由条目自行装配
+
+<XhDemo src="radio-group/01-basic" />
+
+### 受控
+
+传了 value 就由宿主说了算；值可以是 null，表示一项都没选中
+
+<XhDemo src="radio-group/02-controlled" />
+
+### 横向排布
+
+orientation 只影响排版与 aria-orientation，方向键四个方向照样都能切换
+
+<XhDemo src="radio-group/03-horizontal" />
+
+### 禁用
+
+单项禁用后点不动，方向键也跳过它；整组禁用则每一项都跟着禁用
+
+<XhDemo src="radio-group/04-disabled" />
+
 ## 产物
 
 | 层 | 值 |

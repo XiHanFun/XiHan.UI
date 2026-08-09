@@ -2,6 +2,32 @@
 
 通用组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+单选分段控件：root 是 radiogroup、条目是 radio；整组只占一个 Tab 位，进组后四个方向键都能走
+
+<XhDemo src="toggle-group/01-basic" />
+
+### 受控与不可清空
+
+传了 value 就由宿主说了算；单选组再点一次当前项会清空成 null，disallow-empty 把这一手关掉
+
+<XhDemo src="toggle-group/02-controlled" />
+
+### 多选
+
+multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + aria-pressed，值也从字符串变成数组
+
+<XhDemo src="toggle-group/03-multiple" />
+
+### 禁用
+
+条目一律 aria-disabled 而非原生 disabled：点不动，但焦点落得上去，仍能当方向键的起点
+
+<XhDemo src="toggle-group/04-disabled" />
+
 ## 产物
 
 | 层 | 值 |

@@ -2,6 +2,32 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+items 是条目全集的唯一事实源，value 只装落在右侧的那批
+
+<XhDemo src="transfer/01-basic" />
+
+### 搜索过滤
+
+searchable 给每侧配一个搜索框，筛剩下的才参与方向键、全选与搬运
+
+<XhDemo src="transfer/02-searchable" />
+
+### 条目禁用
+
+禁用写在 items 上：勾不动也搬不动，但仍可聚焦、仍是方向键的起点
+
+<XhDemo src="transfer/03-disabled-item" />
+
+### 单向搬运
+
+oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的按钮也就不必写
+
+<XhDemo src="transfer/04-one-way" />
+
 ## 产物
 
 | 层 | 值 |

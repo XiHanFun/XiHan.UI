@@ -2,6 +2,26 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+默认只在提交时整表校验：过了发 submit，没过发 invalid、摘要显形并把焦点送到第一个出错的字段
+
+<XhDemo src="form/01-basic" />
+
+### 校验时机
+
+blur 与 change 两种模式下 validate 仍整表跑（校验可能带跨字段规则），但只把当事字段那一条写回错误表
+
+<XhDemo src="form/02-validate-on" />
+
+### 受控值表
+
+传了 values 就由宿主说了算：组件内部不再落值，只发 update:values；页面别处也能直接改这张表
+
+<XhDemo src="form/03-controlled" />
+
 ## 产物
 
 | 层 | 值 |

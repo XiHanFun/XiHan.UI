@@ -2,6 +2,26 @@
 
 数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+容器竖着码放骨架条，形状缺省是一行文字
+
+<XhDemo src="skeleton/01-basic" />
+
+### 形状
+
+容器的 variant 是这一组的默认形状，单根骨架条自带 variant 就按自己的来
+
+<XhDemo src="skeleton/02-variant" />
+
+### 加载结束
+
+loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给真内容
+
+<XhDemo src="skeleton/03-loading" />
+
 ## 产物
 
 | 层 | 值 |

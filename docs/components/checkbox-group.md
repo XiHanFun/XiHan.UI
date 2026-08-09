@@ -2,6 +2,32 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+值是字符串数组，各选各的，再点一次即取消；组内有几项就有几个 Tab 停靠点
+
+<XhDemo src="checkbox-group/01-basic" />
+
+### 全选与半选
+
+trigger 是第三态复选框，只有把全部条目的值交给 itemValues 才分得清 all 与 some
+
+<XhDemo src="checkbox-group/02-select-all" />
+
+### 横向排布
+
+orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 aria-orientation
+
+<XhDemo src="checkbox-group/03-horizontal" />
+
+### 禁用与只读
+
+整组禁用连隐藏输入一起退出提交，只读则仍能聚焦与朗读、只是改不动
+
+<XhDemo src="checkbox-group/04-disabled" />
+
 ## 产物
 
 | 层 | 值 |

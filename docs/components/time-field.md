@@ -2,6 +2,32 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+默认 24 小时制，上下键在段区间里回绕，缺一段整份值就退回空串
+
+<XhDemo src="time-field/01-basic" />
+
+### 12 小时制
+
+hour-cycle=12 多出一个上午/下午段，值本身仍是 24 小时的串
+
+<XhDemo src="time-field/02-hour-cycle" />
+
+### 精度到秒
+
+granularity=second 让秒段显出来并参与值，空段按上下键从该段边界起步
+
+<XhDemo src="time-field/03-granularity" />
+
+### 禁用与越界
+
+禁用整组退出 Tab 序；越界只做标注，08:00 原样留着不被改写
+
+<XhDemo src="time-field/04-state" />
+
 ## 产物
 
 | 层 | 值 |

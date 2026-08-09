@@ -2,6 +2,32 @@
 
 AI 对话组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+root / input / submit-trigger 三件缺一不可；Enter 提交、Shift+Enter 换行，清空发生在 submit 派发之后
+
+<XhDemo src="composer/01-basic" />
+
+### 流式与停止
+
+run-status 翻成 streaming 后，发送按钮原位变停止：同一个节点、同一个位置，只换 data-mode 与可访问名
+
+<XhDemo src="composer/02-streaming" />
+
+### Enter 只换行
+
+submit-on-enter 关掉后 Enter 交回浏览器插入换行，发送只剩按钮一条路
+
+<XhDemo src="composer/03-enter" />
+
+### 禁用与空值
+
+disabled 罩住整框并走原生 disabled；输入为空或只有空白时发送按钮转灰，但位置留着不收起
+
+<XhDemo src="composer/04-disabled" />
+
 ## 产物
 
 | 层 | 值 |

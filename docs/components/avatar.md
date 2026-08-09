@@ -10,6 +10,18 @@
 
 <XhDemo src="avatar/01-basic" />
 
+### 加载失败回退
+
+图片地址取不到时切到 fallback，切换由状态机决定而不是 CSS
+
+<XhDemo src="avatar/02-fallback" />
+
+### 排成一列
+
+头像本身不管布局，叠放与间距由外层容器决定
+
+<XhDemo src="avatar/03-group" />
+
 ## 产物
 
 | 层 | 值 |

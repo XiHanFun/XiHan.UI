@@ -10,6 +10,18 @@
 
 <XhDemo src="toggle/01-basic" />
 
+### 禁用
+
+disabled 同时挡住指针与键盘，按下态保持原样
+
+<XhDemo src="toggle/02-disabled" />
+
+### 排成一组
+
+多个独立的 toggle 各管各的按下态；要互斥或单一 Tab 位请改用切换按钮组
+
+<XhDemo src="toggle/03-group" />
+
 ## 产物
 
 | 层 | 值 |

@@ -2,6 +2,32 @@
 
 导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+count 给的是总条数不是总页数；页码序列由 root 的插槽交出来，作者照着渲染 item 与省略号
+
+<XhDemo src="pagination/01-basic" />
+
+### 受控与切片
+
+传了 page 就由宿主说了算；插槽里的 slice 按当前页从整份数据里切出这一页
+
+<XhDemo src="pagination/02-controlled" />
+
+### 两侧页数
+
+sibling-count 决定当前页两侧各留几页，序列长度恒定，切页时省略号左右挪、按钮不抖
+
+<XhDemo src="pagination/03-sibling-count" />
+
+### 读屏文案
+
+translations 换掉 nav 地标名与各按钮的 aria-label，默认是英文
+
+<XhDemo src="pagination/04-translations" />
+
 ## 产物
 
 | 层 | 值 |

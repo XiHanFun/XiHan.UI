@@ -2,6 +2,32 @@
 
 数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+panels 数组的长度决定面板块数，每条分隔条调的是它前面那一块
+
+<XhDemo src="splitter/01-basic" />
+
+### 受控
+
+传了 size 就由宿主说了算；size-change 拖动途中连着发，size-change-end 松手才发一次
+
+<XhDemo src="splitter/02-controlled" />
+
+### 竖排与折叠
+
+orientation 换轴后方向键跟着换，collapsible 的面板在它的分隔条上按 Enter 折叠
+
+<XhDemo src="splitter/03-vertical-collapsible" />
+
+### 禁用
+
+disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键放行给页面
+
+<XhDemo src="splitter/04-disabled" />
+
 ## 产物
 
 | 层 | 值 |

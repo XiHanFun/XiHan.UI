@@ -2,6 +2,32 @@
 
 反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+create 入队并返回 id，队列里的每条交给 XhToastRoot 渲染；退场窗口走完只收起不删，宿主在 status-change 里把它移出队列
+
+<XhDemo src="toaster/01-basic" />
+
+### 落位
+
+placement 决定这一摞贴视口的哪个角，换的只是 group 上的 data-placement，队列本身不动
+
+<XhDemo src="toaster/02-placement" />
+
+### 就地改写
+
+同一个 id 再 create 一次是原地改写而不是新弹一条，位置不动；loading 不自动消失，换成 success 才开始倒计时
+
+<XhDemo src="toaster/03-update" />
+
+### 上限与清空
+
+max 限制每个位置同时显示几条，超出挤掉最旧的；dismissAll 把队列直接倒掉，不走退场窗口
+
+<XhDemo src="toaster/04-max" />
+
 ## 产物
 
 | 层 | 值 |

@@ -2,6 +2,26 @@
 
 反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+root 是 role=status 的活区，转圈图形由皮肤画在伪元素上；label 给出这一处在等什么
+
+<XhDemo src="spinner/01-basic" />
+
+### 尺寸
+
+size 只换直径，缺省档 md 不输出 data-size
+
+<XhDemo src="spinner/02-size" />
+
+### 可见文案
+
+label 部件不写内容时显示解析后的 label，屏幕上看到的与读屏念的因此是同一段字
+
+<XhDemo src="spinner/03-label" />
+
 ## 产物
 
 | 层 | 值 |

@@ -2,6 +2,26 @@
 
 反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+不传 open 即为非受控；内容被 portal 到 body，Esc 或点遮罩关闭，关闭后焦点回到触发按钮
+
+<XhDemo src="dialog/01-basic" />
+
+### 受控
+
+传了 open 就由宿主说了算，组件自己不再改状态；Esc、点遮罩、按叉都只回写 open
+
+<XhDemo src="dialog/02-controlled" />
+
+### 警示对话框
+
+role=alertdialog 交给读屏更强的语气；关掉 Esc 与点遮罩后，只剩里面这两颗按钮能走出去
+
+<XhDemo src="dialog/03-alert" />
+
 ## 产物
 
 | 层 | 值 |

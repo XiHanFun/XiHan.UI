@@ -2,6 +2,32 @@
 
 数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+collection 是层级元信息的唯一事实源，标记只管长相；缩进由子层容器自己顶着
+
+<XhDemo src="tree/01-basic" />
+
+### 多选
+
+selectionMode 默认 single，改成 multiple 后点击与确认键都变成切换，选中集合形状不变仍是数组
+
+<XhDemo src="tree/02-multiple" />
+
+### 受控
+
+传了 expandedValue / selectedValue 就由宿主说了算，组件只发事件不落内部值，宿主写回它才动
+
+<XhDemo src="tree/03-controlled" />
+
+### 点行不展开与禁用节点
+
+expandOnClick 关掉后只有箭头与左右方向键能改展开态；禁用节点仍可聚焦，只是确认键不认它
+
+<XhDemo src="tree/04-expand-on-click" />
+
 ## 产物
 
 | 层 | 值 |

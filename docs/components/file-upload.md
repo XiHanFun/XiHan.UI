@@ -2,6 +2,32 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+投放区自己就是一个大按钮，隐藏输入是必备部件，缺了它选不了文件
+
+<XhDemo src="file-upload/01-basic" />
+
+### 限制与拒收
+
+accept / maxFiles / maxFileSize 越界的当场被拒，file-reject 逐个报出理由
+
+<XhDemo src="file-upload/02-limits" />
+
+### 受控
+
+传了 files 就由宿主说了算，组件自己不再落值，只发 files-change 报告意图
+
+<XhDemo src="file-upload/03-controlled" />
+
+### 禁用
+
+disabled 把投放区、触发器与隐藏输入一并关停，拖拽进来也不再收
+
+<XhDemo src="file-upload/04-disabled" />
+
 ## 产物
 
 | 层 | 值 |

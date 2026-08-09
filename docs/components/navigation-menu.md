@@ -2,6 +2,32 @@
 
 导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+面板写在同一个 li 里、紧跟 trigger 之后，展开时按 Tab 就走得进去；里面的条目是链接不是命令，点了就跳走
+
+<XhDemo src="navigation-menu/01-basic" />
+
+### 受控
+
+传了 value 就由宿主说了算，null 表示都收起；v-model:value 是它的语法糖
+
+<XhDemo src="navigation-menu/02-controlled" />
+
+### 展开延时
+
+delay-duration 是悬停多久才展开，防的是指针横穿导航时一路闪出面板；skip-delay-duration 是收起后的静默窗口，窗口内再碰任意入口直接展开
+
+<XhDemo src="navigation-menu/03-delay" />
+
+### 竖排
+
+orientation="vertical" 把入口排成一列、面板改从侧边长出来，方向键随之改收上下键
+
+<XhDemo src="navigation-menu/04-vertical" />
+
 ## 产物
 
 | 层 | 值 |

@@ -2,6 +2,26 @@
 
 AI 对话组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+root 的高度由外部给定，滚动才发生在 viewport 里面；root / viewport / content 三层缺一不可
+
+<XhDemo src="thread/01-basic" />
+
+### 粘底与回到底部
+
+内容长高时自动跟到底；往上滚一下当场撒手，回到底部按钮随即露出，滚回阈值内又自动粘上
+
+<XhDemo src="thread/02-stick" />
+
+### 运行态与播报
+
+status 由宿主持有，组件只把它透出成 data-status；viewport 恒 aria-live="off"，播报只发生在 live-region 里
+
+<XhDemo src="thread/03-status" />
+
 ## 产物
 
 | 层 | 值 |

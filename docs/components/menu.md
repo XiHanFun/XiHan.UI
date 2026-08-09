@@ -2,6 +2,26 @@
 
 导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+trigger / content / item 三件缺一不可，positioner 负责摆位置
+
+<XhDemo src="menu/01-basic" />
+
+### 受控
+
+传了 open 就由宿主说了算，组件只发 open-change 不自己改展开态
+
+<XhDemo src="menu/02-controlled" />
+
+### 放置位与箭头
+
+placement 只是首选位，空间不够时定位引擎会自动翻面；arrow 指回触发器
+
+<XhDemo src="menu/03-placement" />
+
 ## 产物
 
 | 层 | 值 |

@@ -2,6 +2,32 @@
 
 导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+不传 value 即为非受控，default-value 指定初始选中项；面板常挂，靠 hidden 显隐
+
+<XhDemo src="tabs/01-basic" />
+
+### 受控
+
+传了 value 就由宿主说了算，组件自己不再改选中值；v-model:value 是它的语法糖
+
+<XhDemo src="tabs/02-controlled" />
+
+### 手动激活
+
+activation-mode="manual" 时方向键只搬焦点，按 Enter 或空格才真的切面板
+
+<XhDemo src="tabs/03-manual" />
+
+### 竖排
+
+orientation 换掉方向键收哪一对键：竖排认上下键，左右键原样放行给页面
+
+<XhDemo src="tabs/04-vertical" />
+
 ## 产物
 
 | 层 | 值 |

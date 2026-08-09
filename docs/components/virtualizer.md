@@ -2,6 +2,20 @@
 
 数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+一万条只渲可视区那几条，root 要有确定高度，条目的主轴尺寸由作者按 estimateSize 自己写
+
+<XhDemo src="virtualizer/01-basic" />
+
+### 动态高度
+
+条目开了 measure 就把真实尺寸回喂给内核，estimateSize 只是首帧的起点，滚过一遍就收敛
+
+<XhDemo src="virtualizer/02-dynamic" />
+
 ## 产物
 
 | 层 | 值 |

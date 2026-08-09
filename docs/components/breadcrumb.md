@@ -2,6 +2,26 @@
 
 导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+href 归作者写，末级只多一个 current：它拿到 aria-current="page"、点不动、也不占 Tab 位
+
+<XhDemo src="breadcrumb/01-basic" />
+
+### 折叠中间层级
+
+省略号与分隔符同为 ol 的直接子 li，两者都对读屏隐藏，念出来仍是「列表，共 3 项」
+
+<XhDemo src="breadcrumb/02-ellipsis" />
+
+### 读屏文案
+
+root 是 nav 地标，translations.root 换掉它的 aria-label，同页有多个地标时靠它区分
+
+<XhDemo src="breadcrumb/03-translations" />
+
 ## 产物
 
 | 层 | 值 |
