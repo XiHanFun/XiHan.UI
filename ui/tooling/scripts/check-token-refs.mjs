@@ -30,6 +30,7 @@ for (const src of sources.values()) {
 
 const orphans = []
 const fallbacks = []
+const garbage = []
 for (const [file, src] of sources) {
   const lines = src.split(/\r?\n/)
   lines.forEach((line, i) => {
@@ -49,6 +50,14 @@ for (const [file, src] of sources) {
       if (declared.has(name) && !fb.trim().startsWith('var('))
         fallbacks.push(`${file}:${i + 1}  ${name} 的兜底「${fb.trim()}」`)
     }
+    // $1 这类正则替换残留不是 CSS 值，整条声明会在计算期失效而不报错。
+    // 单独一轮扫：上面那条的令牌名不含下划线，扫不到 --xh-_ 开头的私有槽，
+    // 而私有槽恰恰是最容易被批量替换改坏的地方。
+    for (const m of line.matchAll(/var\(\s*(--xh-[a-z0-9_-]+)\s*,([^;()]*)\)/g)) {
+      const [, name, fb] = m
+      if (/[$\\]/.test(fb))
+        garbage.push(`${file}:${i + 1}  ${name} 的兜底「${fb.trim()}」`)
+    }
   })
 }
 
@@ -64,7 +73,13 @@ if (fallbacks.length) {
     console.error(`  ${f}`)
   console.error('删掉第二个参数即可——令牌是唯一事实源。')
 }
-if (orphans.length || fallbacks.length)
+if (garbage.length) {
+  console.error('[check-token-refs] ✗ var() 兜底里混进了非 CSS 值：')
+  for (const g of garbage)
+    console.error(`  ${g}`)
+  console.error('多半是正则替换的残留（$1 这类捕获组引用）。它让整条声明在计算期失效，且不报任何错。')
+}
+if (orphans.length || fallbacks.length || garbage.length)
   process.exit(1)
 
 console.log(`[check-token-refs] 通过：${files.length} 份皮肤的全局令牌都有声明、且都没有字面量兜底`)
