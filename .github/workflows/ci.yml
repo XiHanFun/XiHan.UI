@@ -36,6 +36,9 @@ jobs:
         run: pnpm boundaries
       - name: Build
         run: pnpm build
+      # 组件文档由 headless 产物与类型生成，必须排在 Build 之后
+      - name: Component docs in sync
+        run: pnpm gate:docs
       - name: Test
         run: pnpm test
       - name: Size limit

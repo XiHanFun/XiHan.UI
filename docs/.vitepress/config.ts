@@ -1,8 +1,15 @@
 import { createRequire } from "node:module";
 import { DefaultTheme, HeadConfig, defineConfig } from "vitepress";
 
+const require = createRequire(import.meta.url);
+
 // 导航末项显示的版本号取自本站 package.json，发版时只改那一处
-const { version } = createRequire(import.meta.url)("../package.json");
+const { version } = require("../package.json");
+
+// 组件页由 ui/scripts/gen-component-docs.mjs 生成，侧栏读同一份清单，增删组件不用改这里
+const componentManifest: {
+  categories: { id: string; label: string; components: { id: string; name: string }[] }[];
+} = require("../../ui/scripts/component-docs.manifest.json");
 
 const title: string = "曦寒视图组件文档";
 const description: string = "框架无关的设计系统运行时与组件库";
@@ -82,19 +89,15 @@ const adaptersSidebar: DefaultTheme.SidebarItem[] = [
 ];
 
 const componentsSidebar: DefaultTheme.SidebarItem[] = [
-  {
-    text: "组件参考",
-    link: "/components/",
+  { text: "组件总览", link: "/components/" },
+  ...componentManifest.categories.map((category) => ({
+    text: `${category.label}（${category.components.length}）`,
     collapsed: false,
-    items: [
-      { text: "通用组件", link: "/components/general" },
-      { text: "数据录入", link: "/components/form" },
-      { text: "数据展示", link: "/components/data-display" },
-      { text: "导航", link: "/components/navigation" },
-      { text: "反馈与浮层", link: "/components/feedback" },
-      { text: "AI 对话", link: "/components/ai" },
-    ],
-  },
+    items: category.components.map((component) => ({
+      text: component.name,
+      link: `/components/${component.id}`,
+    })),
+  })),
 ];
 
 // 每个顶部导航板块各自一份侧栏，由路径前缀决定用哪一份；

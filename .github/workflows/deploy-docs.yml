@@ -1,12 +1,14 @@
 # 名称
 name: 部署文档
 
-# 触发条件：main 分支上 docs 目录有变更时，或手动触发
+# 触发条件：main 分支上 docs 或组件库有变更时，或手动触发
+# 组件库也要触发：文档里的示例渲染的是真实组件，库改了文档产物就变了
 on:
   push:
     branches: [main]
     paths:
       - "docs/**"
+      - "ui/**"
       - ".github/workflows/deploy-docs.yml"
   workflow_dispatch:
 
@@ -40,6 +42,15 @@ jobs:
 
       - name: 安装 pnpm
         run: npm install -g pnpm@11
+
+      # 文档站以 link: 引用 ui/packages/{vue,styled}，示例要渲染就得先有 dist
+      - name: 安装组件库依赖
+        working-directory: ./ui/
+        run: pnpm install --frozen-lockfile
+
+      - name: 构建组件库
+        working-directory: ./ui/
+        run: pnpm build
 
       - name: 安装依赖
         run: pnpm install
