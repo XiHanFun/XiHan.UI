@@ -70,12 +70,13 @@
     display: flex;
     align-items: center;
     gap: var(--xh-tree-row-gap, var(--xh-control-gap-md));
-    padding-block: var(--xh-tree-row-py, var(--xh-space-2));
+    padding-block: var(--xh-tree-row-py, var(--xh-space-1));
     padding-inline: var(--xh-tree-row-px, var(--xh-control-px-sm));
     border-radius: var(--xh-tree-row-radius, var(--xh-shape-control));
     color: var(--xh-tree-row-fg, var(--xh-fg-default));
     font-size: var(--xh-tree-row-font-size, var(--xh-text-body-size));
-    line-height: var(--xh-leading-none);
+    /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
+    line-height: var(--xh-tree-row-leading, var(--xh-leading-normal));
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
@@ -93,10 +94,11 @@
     background: var(--xh-tree-row-bg-highlight, var(--xh-bg-subtle-hover));
   }
 
-  /* 选中比高亮更"实"：它表达的是数据状态，翻页回来还在 */
+  /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
+     两者因此能同时看见 */
   [data-scope='tree'][data-part='item'][data-selected],
   [data-scope='tree'][data-part='branch-control'][data-selected] {
-    background: var(--xh-tree-row-bg-selected, var(--xh-bg-subtle-active));
+    color: var(--xh-tree-row-fg-selected, var(--xh-fg-brand-strong));
     font-weight: var(--xh-tree-row-selected-font-weight, var(--xh-font-weight-medium));
   }
 
@@ -117,6 +119,8 @@
   [data-scope='tree'][data-part='item-text'],
   [data-scope='tree'][data-part='branch-text'] {
     flex: 1;
+    /* 弹性子项默认最小尺寸是内容尺寸，不归零则长文本把行撑破、省略号轮不上 */
+    min-inline-size: 0;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

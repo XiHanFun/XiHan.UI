@@ -99,6 +99,7 @@ export function connectNavigationMenu<T extends PropTypes>(
         // 用 aria-disabled 而非原生 disabled，禁用项仍可聚焦、仍留在方向键行程里
         'aria-disabled': item.disabled ? 'true' : 'false',
         'data-state': stateAttr(isOpen),
+        'data-orientation': orientation,
         'data-disabled': dataAttr(item.disabled),
         // 不做 roving tabindex，每个 trigger 都留在 Tab 序列里
         'onPointerenter': () => {

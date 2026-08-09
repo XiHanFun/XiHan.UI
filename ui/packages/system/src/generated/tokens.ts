@@ -160,6 +160,7 @@ export const tokens = {
   "--xh-fg-disabled": "var(--xh-color-neutral-400)",
   "--xh-fg-on-brand": "var(--xh-color-neutral-0)",
   "--xh-fg-brand": "var(--xh-color-brand-600)",
+  "--xh-fg-brand-strong": "var(--xh-color-brand-700)",
   "--xh-fg-success": "var(--xh-color-success-700)",
   "--xh-fg-danger": "var(--xh-color-danger-600)",
   "--xh-fg-danger-hover": "var(--xh-color-danger-700)",

@@ -16,6 +16,9 @@
     --xh-_cascader-border-hover: var(--xh-border-strong);
     --xh-_cascader-bg: var(--xh-bg-canvas);
 
+    /* 选中条目的文字色随语气走，没写 data-tone 时退回品牌强调色 */
+    --xh-_cascader-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
@@ -301,12 +304,13 @@
     display: flex;
     align-items: center;
     gap: var(--xh-cascader-row-gap, var(--xh-_cascader-gap));
-    padding-block: var(--xh-cascader-row-py, var(--xh-space-2));
+    padding-block: var(--xh-cascader-row-py, var(--xh-space-1));
     padding-inline: var(--xh-cascader-row-px, var(--xh-control-px-sm));
     border-radius: var(--xh-cascader-row-radius, var(--xh-shape-control));
     color: var(--xh-cascader-row-fg, var(--xh-fg-default));
     font-size: var(--xh-cascader-row-font-size, var(--xh-_cascader-font-size));
-    line-height: var(--xh-leading-none);
+    /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
+    line-height: var(--xh-cascader-row-leading, var(--xh-leading-normal));
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
@@ -318,22 +322,16 @@
     display: none;
   }
 
-  /* 键盘高亮与指针高亮共用一套底色。data-highlighted 跟的是连接层记的焦点条目，
-     与选中互相独立：可以停在一个没被选中的条目上 */
-  [data-scope='cascader'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
+  /* 指针悬停、键盘高亮与展开路径共用同一张底：三者都是「此刻停在这儿」，
+     data-highlighted 跟的是连接层记的焦点条目 */
+  [data-scope='cascader'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted], [data-active]) {
     background: var(--xh-cascader-row-bg-highlight, var(--xh-bg-subtle-hover));
   }
 
-  /* 展开路径上的那一串：让用户一眼看出「是从这几条一路点进来的」。
-     比高亮淡、比选中轻——它表达的是浏览痕迹，不是数据状态 */
-  [data-scope='cascader'][data-part='item'][data-active] {
-    background: var(--xh-cascader-row-bg-active, var(--xh-bg-subtle));
-  }
-
-  /* 选中最「实」：它表达的是数据状态，收起再展开还在。
-     选中底随语气走，没写 data-tone 时退回原来的中性底 */
+  /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给悬停，
+     两者因此能同时看见 */
   [data-scope='cascader'][data-part='item'][data-selected] {
-    background: var(--xh-cascader-row-bg-selected, var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active)));
+    color: var(--xh-cascader-row-fg-selected, var(--xh-_cascader-selected-fg));
     font-weight: var(--xh-cascader-row-selected-font-weight, var(--xh-font-weight-medium));
   }
 

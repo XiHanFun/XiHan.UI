@@ -170,6 +170,7 @@
     --xh-fg-disabled: var(--xh-color-neutral-400);
     --xh-fg-on-brand: var(--xh-color-neutral-0);
     --xh-fg-brand: var(--xh-color-brand-600);
+    --xh-fg-brand-strong: var(--xh-color-brand-700);
     --xh-fg-success: var(--xh-color-success-700);
     --xh-fg-danger: var(--xh-color-danger-600);
     --xh-fg-danger-hover: var(--xh-color-danger-700);
@@ -200,6 +201,7 @@
     --xh-fg-disabled: var(--xh-color-neutral-400);
     --xh-fg-on-brand: var(--xh-color-neutral-0);
     --xh-fg-brand: var(--xh-color-brand-600);
+    --xh-fg-brand-strong: var(--xh-color-brand-700);
     --xh-fg-success: var(--xh-color-success-700);
     --xh-fg-danger: var(--xh-color-danger-600);
     --xh-fg-danger-hover: var(--xh-color-danger-700);
@@ -230,6 +232,7 @@
     --xh-fg-disabled: var(--xh-color-neutral-600);
     --xh-fg-on-brand: var(--xh-color-neutral-950);
     --xh-fg-brand: var(--xh-color-brand-400);
+    --xh-fg-brand-strong: var(--xh-color-brand-300);
     --xh-fg-success: var(--xh-color-success-500);
     --xh-fg-danger: var(--xh-color-danger-500);
     --xh-fg-danger-hover: var(--xh-color-danger-400);

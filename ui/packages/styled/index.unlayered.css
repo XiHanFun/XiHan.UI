@@ -735,6 +735,8 @@
 
 [data-scope='anchor'][data-part='item'] {
   display: flex;
+  /* 库里没有全局 preflight，列表项的外边距在这里自己抹平 */
+  margin: 0;
   /* 允许被压缩，链接内部的省略号才有生效的余地 */
   min-inline-size: 0;
 }
@@ -784,6 +786,8 @@
 [data-scope='anchor'][data-part='indicator'] {
   position: absolute;
   display: block;
+  /* 指示条也是列表项，宿主给 li 的外边距会把绝对定位的它推离条目 */
+  margin: 0;
   inset-inline-start: calc(var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick)) * -1);
   inline-size: var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick));
   border-radius: var(--xh-anchor-indicator-radius, var(--xh-radius-full));
@@ -962,6 +966,8 @@
 [data-scope='breadcrumb'][data-part='item'] {
   display: inline-flex;
   align-items: center;
+  /* 库里没有全局 preflight，列表项的外边距在这里自己抹平 */
+  margin: 0;
   /* 允许被压缩，链接内部的省略号才有生效的余地 */
   min-inline-size: 0;
 }
@@ -1016,6 +1022,8 @@
 [data-scope='breadcrumb'][data-part='ellipsis'] {
   display: inline-flex;
   flex: none;
+  /* 两者也是列表项，宿主给 li 的外边距会把它们顶离同一行 */
+  margin: 0;
   align-items: center;
   justify-content: center;
   color: var(--xh-breadcrumb-separator-fg, var(--xh-fg-subtle));
@@ -1565,6 +1573,9 @@
   --xh-_cascader-border-hover: var(--xh-border-strong);
   --xh-_cascader-bg: var(--xh-bg-canvas);
 
+  /* 选中条目的文字色随语气走，没写 data-tone 时退回品牌强调色 */
+  --xh-_cascader-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
@@ -1850,12 +1861,13 @@
   display: flex;
   align-items: center;
   gap: var(--xh-cascader-row-gap, var(--xh-_cascader-gap));
-  padding-block: var(--xh-cascader-row-py, var(--xh-space-2));
+  padding-block: var(--xh-cascader-row-py, var(--xh-space-1));
   padding-inline: var(--xh-cascader-row-px, var(--xh-control-px-sm));
   border-radius: var(--xh-cascader-row-radius, var(--xh-shape-control));
   color: var(--xh-cascader-row-fg, var(--xh-fg-default));
   font-size: var(--xh-cascader-row-font-size, var(--xh-_cascader-font-size));
-  line-height: var(--xh-leading-none);
+  /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
+  line-height: var(--xh-cascader-row-leading, var(--xh-leading-normal));
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
@@ -1867,22 +1879,16 @@
   display: none;
 }
 
-/* 键盘高亮与指针高亮共用一套底色。data-highlighted 跟的是连接层记的焦点条目，
-   与选中互相独立：可以停在一个没被选中的条目上 */
-[data-scope='cascader'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
+/* 指针悬停、键盘高亮与展开路径共用同一张底：三者都是「此刻停在这儿」，
+   data-highlighted 跟的是连接层记的焦点条目 */
+[data-scope='cascader'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted], [data-active]) {
   background: var(--xh-cascader-row-bg-highlight, var(--xh-bg-subtle-hover));
 }
 
-/* 展开路径上的那一串：让用户一眼看出「是从这几条一路点进来的」。
-   比高亮淡、比选中轻——它表达的是浏览痕迹，不是数据状态 */
-[data-scope='cascader'][data-part='item'][data-active] {
-  background: var(--xh-cascader-row-bg-active, var(--xh-bg-subtle));
-}
-
-/* 选中最「实」：它表达的是数据状态，收起再展开还在。
-   选中底随语气走，没写 data-tone 时退回原来的中性底 */
+/* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给悬停，
+   两者因此能同时看见 */
 [data-scope='cascader'][data-part='item'][data-selected] {
-  background: var(--xh-cascader-row-bg-selected, var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active)));
+  color: var(--xh-cascader-row-fg-selected, var(--xh-_cascader-selected-fg));
   font-weight: var(--xh-cascader-row-selected-font-weight, var(--xh-font-weight-medium));
 }
 
@@ -2938,6 +2944,7 @@
   --xh-_combobox-ring: var(--xh-ring-focus);
   --xh-_combobox-accent: var(--xh-_tone, var(--xh-bg-brand));
   --xh-_combobox-item-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+  --xh-_combobox-item-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 
   display: inline-flex;
   flex-direction: column;
@@ -3226,12 +3233,13 @@
   display: flex;
   align-items: center;
   gap: var(--xh-combobox-item-gap, var(--xh-_combobox-gap));
-  padding-block: var(--xh-combobox-item-py, var(--xh-space-2));
+  padding-block: var(--xh-combobox-item-py, var(--xh-space-1));
   padding-inline: var(--xh-combobox-item-px, var(--xh-control-px-sm));
   border-radius: var(--xh-combobox-item-radius, var(--xh-shape-control));
   color: var(--xh-combobox-item-fg, var(--xh-fg-default));
   font-size: var(--xh-combobox-item-font-size, var(--xh-_combobox-font-size));
-  line-height: var(--xh-leading-none);
+  /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
+  line-height: var(--xh-combobox-item-leading, var(--xh-leading-normal));
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
@@ -3248,6 +3256,13 @@
   background: var(--xh-combobox-item-bg-highlight, var(--xh-_combobox-item-highlight-bg));
 }
 
+/* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
+   两者因此能同时看见 */
+[data-scope='combobox'][data-part='item'][data-state='checked'] {
+  color: var(--xh-combobox-item-fg-selected, var(--xh-_combobox-item-selected-fg));
+  font-weight: var(--xh-combobox-item-font-weight-selected, var(--xh-font-weight-medium));
+}
+
 /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），
    所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
 [data-scope='combobox'][data-part='item'][data-disabled] {
@@ -3257,6 +3272,8 @@
 
 [data-scope='combobox'][data-part='item-text'] {
   flex: 1;
+  /* 弹性项默认 min-width: auto 不肯收缩到内容以下，省略号因此永不生效 */
+  min-inline-size: 0;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -3314,6 +3331,9 @@
 /* styles/composer.css */
 /* 边框画在 root 上，内部 textarea 无边框；align-items: flex-end 让按钮随输入框长高贴着底边 */
 [data-scope='composer'][data-part='root'] {
+  /* 输入与发送按钮共用的控件高度 */
+  --xh-_composer-control-h: var(--xh-composer-submit-h, var(--xh-control-h-md));
+
   display: flex;
   align-items: flex-end;
   gap: var(--xh-composer-gap, var(--xh-control-gap-md));
@@ -3344,7 +3364,9 @@
 [data-scope='composer'][data-part='input'] {
   flex: 1;
   min-inline-size: 0;
-  padding: 0;
+  /* 上下留白把单行文本盒撑到控件高度，文字中线与按钮中线对齐 */
+  padding-block: calc((var(--xh-_composer-control-h) - 1lh) / 2);
+  padding-inline: 0;
   border: 0;
   background: transparent;
   color: var(--xh-composer-input-fg, var(--xh-fg-default));
@@ -3385,8 +3407,8 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  min-inline-size: var(--xh-composer-submit-h, var(--xh-control-h-md));
-  block-size: var(--xh-composer-submit-h, var(--xh-control-h-md));
+  min-inline-size: var(--xh-_composer-control-h);
+  block-size: var(--xh-_composer-control-h);
   padding-inline: var(--xh-composer-submit-px, var(--xh-control-px-md));
   border: 0;
   border-radius: var(--xh-composer-submit-radius, var(--xh-shape-control));
@@ -5756,12 +5778,13 @@
   display: flex;
   align-items: center;
   gap: var(--xh-listbox-item-gap, var(--xh-control-gap-md));
-  padding-block: var(--xh-listbox-item-py, var(--xh-space-2));
+  padding-block: var(--xh-listbox-item-py, var(--xh-space-1));
   padding-inline: var(--xh-listbox-item-px, var(--xh-control-px-sm));
   border-radius: var(--xh-listbox-item-radius, var(--xh-shape-control));
   color: var(--xh-listbox-item-fg, var(--xh-fg-default));
   font-size: var(--xh-listbox-item-font-size, var(--xh-text-body-size));
-  line-height: var(--xh-leading-none);
+  /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
+  line-height: var(--xh-listbox-item-leading, var(--xh-leading-normal));
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
@@ -5778,6 +5801,13 @@
   background: var(--xh-listbox-item-bg-highlight, var(--xh-bg-subtle-hover));
 }
 
+/* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
+   两者因此能同时看见 */
+[data-scope='listbox'][data-part='item'][data-state='checked'] {
+  color: var(--xh-listbox-item-fg-selected, var(--xh-fg-brand-strong));
+  font-weight: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-medium));
+}
+
 [data-scope='listbox'][data-part='item']:focus {
   outline: none;
 }
@@ -5791,6 +5821,8 @@
 
 [data-scope='listbox'][data-part='item-text'] {
   flex: 1;
+  /* 弹性子项默认最小尺寸是内容尺寸，不归零则长文本把行撑破、省略号轮不上 */
+  min-inline-size: 0;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -6384,6 +6416,8 @@
 [data-scope='navigation-menu'][data-part='item'] {
   position: relative;
   display: flex;
+  /* 库里没有全局 preflight，列表项的外边距在这里自己抹平 */
+  margin: 0;
 }
 
 [data-scope='navigation-menu'][data-part='item'][hidden] {
@@ -6430,6 +6464,11 @@
 [data-scope='navigation-menu'][data-part='trigger'][data-disabled] {
   color: var(--xh-fg-disabled);
   cursor: not-allowed;
+}
+
+/* 竖排：入口占满整项的宽度，面板才从入口右缘长出来 */
+[data-scope='navigation-menu'][data-part='trigger'][data-orientation='vertical'] {
+  flex: 1;
 }
 
 /* 面板贴着自己那一项落位：横排从 trigger 底下长出来 */
@@ -6509,6 +6548,8 @@
 [data-scope='navigation-menu'][data-part='indicator'] {
   position: absolute;
   display: block;
+  /* 指示条也是列表项，宿主给 li 的外边距会把绝对定位的它推离入口 */
+  margin: 0;
   inset-block-end: calc(var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick)) * -1);
   block-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
   border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-radius-full));
@@ -6525,7 +6566,7 @@
 /* 竖排：指示条改贴在起始缘，交叉轴换成内联轴 */
 [data-scope='navigation-menu'][data-part='indicator'][data-orientation='vertical'] {
   inset-block-end: auto;
-  inset-inline-start: calc(var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick)) * -1);
+  inset-inline-start: 0;
   inline-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
   block-size: auto;
   transition:
@@ -6549,6 +6590,12 @@
 
 [data-scope='navigation-menu'][data-part='viewport'][hidden] {
   display: none;
+}
+
+/* 竖排导航：共享外壳跟着面板改从侧边长出来 */
+[data-scope='navigation-menu'][data-part='viewport'][data-orientation='vertical'] {
+  inset-block-start: 0;
+  inset-inline-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
 }
 
 /* styles/number-field.css */
@@ -7573,6 +7620,17 @@
   outline-offset: calc(-1 * var(--xh-ring-width));
 }
 
+/* 有滚动条要占道时，视口在那条轴上收窄一条道的宽度，末端内容不再被压在滚动条底下。
+   缩视口而不是给视口加内边距：滚动容器末端缘的 padding 计不计进 scrollWidth，各引擎不一致。
+   子结合符：只认自己这一层的滚动条，嵌套滚动区不会把外层视口也削掉。 */
+[data-scope='scroll-area'][data-part='root']:has(> [data-part='scrollbar'][data-orientation='vertical'][data-gutter]) > [data-scope='scroll-area'][data-part='viewport'] {
+  inline-size: calc(100% - var(--xh-scroll-area-bar-size, 10px));
+}
+
+[data-scope='scroll-area'][data-part='root']:has(> [data-part='scrollbar'][data-orientation='horizontal'][data-gutter]) > [data-scope='scroll-area'][data-part='viewport'] {
+  block-size: calc(100% - var(--xh-scroll-area-bar-size, 10px));
+}
+
 /* 横向溢出全靠它撑：内容若跟着视口一起收成 100% 宽，横轴永远量不出溢出，
    横向滚动条也就永远不显形。 */
 [data-scope='scroll-area'][data-part='content'] {
@@ -7584,7 +7642,6 @@
    user-select 同理——拖动时选中页面文字会让滑块"粘"住。 */
 [data-scope='scroll-area'][data-part='scrollbar'] {
   position: absolute;
-  display: flex;
   padding: var(--xh-scroll-area-bar-padding, 2px);
   background: var(--xh-scroll-area-bar-bg, var(--xh-bg-subtle));
   touch-action: none;
@@ -7628,14 +7685,16 @@
   transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-/* 交叉轴铺满轨道。这一侧的 inset 连接层每帧写成空串（即不设），样式表接手才有确定值；
-   不写的话绝对定位会退回"静态位置"，作者一给轨道加内边距就对不齐了。 */
+/* 交叉轴在轨道内两侧各收进一个轨道内边距，与轨道那条 padding 共用同一个旋钮。
+   这一侧的 inset 连接层每帧写成空串（即不设），样式表接手才有确定值；
+   不写的话绝对定位会退回"静态位置"。
+   主轴那一侧一律不写：几何层量的轨道是 padding box，滑块长度也解析在同一个盒子上。 */
 [data-scope='scroll-area'][data-part='thumb'][data-orientation='vertical'] {
-  inset-inline: 0;
+  inset-inline: var(--xh-scroll-area-bar-padding, 2px);
 }
 
 [data-scope='scroll-area'][data-part='thumb'][data-orientation='horizontal'] {
-  inset-block: 0;
+  inset-block: var(--xh-scroll-area-bar-padding, 2px);
 }
 
 [data-scope='scroll-area'][data-part='thumb']:hover {
@@ -7686,6 +7745,7 @@
   --xh-_select-ring: var(--xh-ring-focus);
   --xh-_select-accent: var(--xh-_tone, var(--xh-bg-brand));
   --xh-_select-item-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+  --xh-_select-item-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 
   display: inline-flex;
   flex-direction: column;
@@ -7856,12 +7916,13 @@
   display: flex;
   align-items: center;
   gap: var(--xh-select-item-gap, var(--xh-_select-gap));
-  padding-block: var(--xh-select-item-py, var(--xh-space-2));
+  padding-block: var(--xh-select-item-py, var(--xh-space-1));
   padding-inline: var(--xh-select-item-px, var(--xh-control-px-sm));
   border-radius: var(--xh-select-item-radius, var(--xh-shape-control));
   color: var(--xh-select-item-fg, var(--xh-fg-default));
   font-size: var(--xh-select-item-font-size, var(--xh-_select-font-size));
-  line-height: var(--xh-leading-none);
+  /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
+  line-height: var(--xh-select-item-leading, var(--xh-leading-normal));
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
@@ -7870,6 +7931,13 @@
 /* 键盘高亮与指针高亮共用一套底色：条目本身承载焦点，不另画描边 */
 [data-scope='select'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
   background: var(--xh-select-item-bg-highlight, var(--xh-_select-item-highlight-bg));
+}
+
+/* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
+   两者因此能同时看见 */
+[data-scope='select'][data-part='item'][data-state='checked'] {
+  color: var(--xh-select-item-fg-selected, var(--xh-_select-item-selected-fg));
+  font-weight: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-medium));
 }
 
 [data-scope='select'][data-part='item']:focus {
@@ -7884,6 +7952,8 @@
 
 [data-scope='select'][data-part='item-text'] {
   flex: 1;
+  /* 弹性子项默认最小尺寸是内容尺寸，不归零则长文本把行撑破、省略号轮不上 */
+  min-inline-size: 0;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -11514,12 +11584,13 @@
   flex: none;
   gap: var(--xh-transfer-item-gap, var(--xh-control-gap-md));
   align-items: center;
-  padding-block: var(--xh-transfer-item-py, var(--xh-space-2));
+  padding-block: var(--xh-transfer-item-py, var(--xh-space-1));
   padding-inline: var(--xh-transfer-item-px, var(--xh-control-px-sm));
   border-radius: var(--xh-transfer-item-radius, var(--xh-shape-control));
   color: var(--xh-transfer-item-fg, var(--xh-fg-default));
   font-size: var(--xh-transfer-item-font-size, var(--xh-text-body-size));
-  line-height: var(--xh-leading-none);
+  /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
+  line-height: var(--xh-transfer-item-leading, var(--xh-leading-normal));
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
@@ -11765,12 +11836,13 @@
   display: flex;
   align-items: center;
   gap: var(--xh-tree-row-gap, var(--xh-control-gap-md));
-  padding-block: var(--xh-tree-row-py, var(--xh-space-2));
+  padding-block: var(--xh-tree-row-py, var(--xh-space-1));
   padding-inline: var(--xh-tree-row-px, var(--xh-control-px-sm));
   border-radius: var(--xh-tree-row-radius, var(--xh-shape-control));
   color: var(--xh-tree-row-fg, var(--xh-fg-default));
   font-size: var(--xh-tree-row-font-size, var(--xh-text-body-size));
-  line-height: var(--xh-leading-none);
+  /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
+  line-height: var(--xh-tree-row-leading, var(--xh-leading-normal));
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
@@ -11788,10 +11860,11 @@
   background: var(--xh-tree-row-bg-highlight, var(--xh-bg-subtle-hover));
 }
 
-/* 选中比高亮更"实"：它表达的是数据状态，翻页回来还在 */
+/* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
+   两者因此能同时看见 */
 [data-scope='tree'][data-part='item'][data-selected],
 [data-scope='tree'][data-part='branch-control'][data-selected] {
-  background: var(--xh-tree-row-bg-selected, var(--xh-bg-subtle-active));
+  color: var(--xh-tree-row-fg-selected, var(--xh-fg-brand-strong));
   font-weight: var(--xh-tree-row-selected-font-weight, var(--xh-font-weight-medium));
 }
 
@@ -11812,6 +11885,8 @@
 [data-scope='tree'][data-part='item-text'],
 [data-scope='tree'][data-part='branch-text'] {
   flex: 1;
+  /* 弹性子项默认最小尺寸是内容尺寸，不归零则长文本把行撑破、省略号轮不上 */
+  min-inline-size: 0;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -11910,6 +11985,9 @@
   --xh-_tree-select-border: var(--xh-border-default);
   --xh-_tree-select-border-hover: var(--xh-border-strong);
   --xh-_tree-select-bg: var(--xh-bg-canvas);
+
+  /* 选中行的文字色随语气走，没写 data-tone 时退回品牌强调色 */
+  --xh-_tree-select-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 
   display: inline-flex;
   flex-wrap: wrap;
@@ -12037,6 +12115,9 @@
   flex: 1;
   min-inline-size: 0;
   overflow: hidden;
+  /* 行高留出文字的上下伸展空间，本行那层 overflow:hidden 才不会把字削掉；
+     触发框自带固定高度，抬行高不改变几何 */
+  line-height: var(--xh-tree-select-value-leading, var(--xh-leading-normal));
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -12197,12 +12278,13 @@
   display: flex;
   align-items: center;
   gap: var(--xh-tree-select-row-gap, var(--xh-_tree-select-gap));
-  padding-block: var(--xh-tree-select-row-py, var(--xh-space-2));
+  padding-block: var(--xh-tree-select-row-py, var(--xh-space-1));
   padding-inline: var(--xh-tree-select-row-px, var(--xh-control-px-sm));
   border-radius: var(--xh-tree-select-row-radius, var(--xh-shape-control));
   color: var(--xh-tree-select-row-fg, var(--xh-fg-default));
   font-size: var(--xh-tree-select-row-font-size, var(--xh-_tree-select-font-size));
-  line-height: var(--xh-leading-none);
+  /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
+  line-height: var(--xh-tree-select-row-leading, var(--xh-leading-normal));
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
@@ -12220,11 +12302,11 @@
   background: var(--xh-tree-select-row-bg-highlight, var(--xh-bg-subtle-hover));
 }
 
-/* 选中比高亮更「实」：它表达的是数据状态，收起再展开还在。
-   选中底随语气走，没写 data-tone 时退回原来的中性底 */
+/* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
+   两者因此能同时看见 */
 [data-scope='tree-select'][data-part='item'][data-selected],
 [data-scope='tree-select'][data-part='branch-control'][data-selected] {
-  background: var(--xh-tree-select-row-bg-selected, var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active)));
+  color: var(--xh-tree-select-row-fg-selected, var(--xh-_tree-select-selected-fg));
   font-weight: var(--xh-tree-select-row-selected-font-weight, var(--xh-font-weight-medium));
 }
 
