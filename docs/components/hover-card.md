@@ -22,6 +22,12 @@ openDelay 默认 700ms，closeDelay 默认 300ms——那段收起等待正是�
 
 <XhDemo src="hover-card/03-controlled" />
 
+### 尺寸
+
+三档换的是卡片的内边距与字号，不写 size 即缺省档；把指针停在触发器上看差别
+
+<XhDemo src="hover-card/04-size" />
+
 ## 产物
 
 | 层 | 值 |

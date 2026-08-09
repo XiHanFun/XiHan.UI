@@ -28,6 +28,18 @@ disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
 
 <XhDemo src="tooltip/04-disabled" />
 
+### 语气
+
+六种语气换的是浮层实心底与其上的文字色，箭头一并跟着走；把指针停在触发器上（或用 Tab 聚焦）看差别
+
+<XhDemo src="tooltip/05-tone" />
+
+### 尺寸
+
+三档换的是浮层的内边距与字号，不写 size 即缺省档；把指针停在触发器上（或用 Tab 聚焦）看差别
+
+<XhDemo src="tooltip/06-size" />
+
 ## 产物
 
 | 层 | 值 |

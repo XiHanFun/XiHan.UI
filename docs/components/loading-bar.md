@@ -28,6 +28,12 @@ trickle 为 false 时条子停在起步值 minimum 不动，往前走全靠宿�
 
 <XhDemo src="loading-bar/04-trickle" />
 
+### 语气
+
+tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里给它写死 absolute 并配一个相对定位的框子，六条才留在示例里而不是叠到页面顶边
+
+<XhDemo src="loading-bar/05-tone" />
+
 ## 产物
 
 | 层 | 值 |

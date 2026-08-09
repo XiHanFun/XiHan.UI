@@ -64,8 +64,8 @@
 | [树](./tree) | `tree` | 12 | 10 | 4 |
 | [虚拟滚动](./virtualizer) | `virtualizer` | 4 | 0 | 2 |
 | [滚动区域](./scroll-area) | `scroll-area` | 6 | 5 | 4 |
-| [手风琴](./accordion) | `accordion` | 6 | 6 | 4 |
-| [折叠区域](./collapsible) | `collapsible` | 3 | 1 | 3 |
+| [手风琴](./accordion) | `accordion` | 6 | 6 | 6 |
+| [折叠区域](./collapsible) | `collapsible` | 3 | 1 | 4 |
 | [走马灯](./carousel) | `carousel` | 8 | 10 | 4 |
 | [分栏](./splitter) | `splitter` | 3 | 7 | 4 |
 | [骨架屏](./skeleton) | `skeleton` | 2 | 0 | 3 |
@@ -84,9 +84,9 @@
 | [标签页](./tabs) | `tabs` | 4 | 6 | 7 |
 | [步骤条](./steps) | `steps` | 9 | 6 | 6 |
 | [分页](./pagination) | `pagination` | 5 | 4 | 6 |
-| [面包屑](./breadcrumb) | `breadcrumb` | 6 | 2 | 3 |
-| [锚点](./anchor) | `anchor` | 5 | 2 | 4 |
-| [工具栏](./toolbar) | `toolbar` | 4 | 6 | 4 |
+| [面包屑](./breadcrumb) | `breadcrumb` | 6 | 2 | 5 |
+| [锚点](./anchor) | `anchor` | 5 | 2 | 6 |
+| [工具栏](./toolbar) | `toolbar` | 4 | 6 | 5 |
 | [引导](./tour) | `tour` | 13 | 4 | 3 |
 
 ## 反馈与浮层
@@ -97,15 +97,15 @@
 | --- | --- | --- | --- | --- |
 | [对话框](./dialog) | `dialog` | 7 | 4 | 4 |
 | [抽屉](./drawer) | `drawer` | 8 | 4 | 4 |
-| [气泡卡片](./popover) | `popover` | 7 | 4 | 3 |
-| [文字提示](./tooltip) | `tooltip` | 4 | 2 | 4 |
-| [悬浮卡片](./hover-card) | `hover-card` | 5 | 2 | 3 |
+| [气泡卡片](./popover) | `popover` | 7 | 4 | 4 |
+| [文字提示](./tooltip) | `tooltip` | 4 | 2 | 6 |
+| [悬浮卡片](./hover-card) | `hover-card` | 5 | 2 | 4 |
 | [警告提示](./alert) | `alert` | 5 | 1 | 3 |
 | [轻提示](./toast) | `toast` | 5 | 2 | 4 |
 | [轻提示容器](./toaster) | `toaster` | 2 | 0 | 4 |
 | [进度条](./progress) | `progress` | 3 | 0 | 5 |
 | [加载指示器](./spinner) | `spinner` | 2 | 0 | 4 |
-| [加载条](./loading-bar) | `loading-bar` | 3 | 0 | 4 |
+| [加载条](./loading-bar) | `loading-bar` | 3 | 0 | 5 |
 
 ## AI 对话
 

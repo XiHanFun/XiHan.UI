@@ -22,6 +22,18 @@ root 是 nav 地标，translations.root 换掉它的 aria-label，同页有多�
 
 <XhDemo src="breadcrumb/03-translations" />
 
+### 语气
+
+tone 换的是当前项的文字色，以及可点那几层悬停时的文字色；末级预置为当前项
+
+<XhDemo src="breadcrumb/04-tone" />
+
+### 尺寸
+
+size 换整条路径的字号与各层之间的间距，不传 size 即默认档
+
+<XhDemo src="breadcrumb/05-size" />
+
 ## 产物
 
 | 层 | 值 |
