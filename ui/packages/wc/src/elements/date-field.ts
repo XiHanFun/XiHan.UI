@@ -48,6 +48,9 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {boolean} invalid - 校验失败标注
  * @attr {boolean} required - 必填标注，落到每段的 aria-required 上
  * @attr {string} name - 表单字段名；给了隐藏输入才带 name
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 值变化；detail 为 `{ value: string | null }`
  * @csspart root - 最外层，承载 data-disabled / data-invalid / data-complete / data-out-of-range
  * @csspart label - 标题；点它把焦点送进首段
@@ -74,6 +77,9 @@ export class XhDateFieldElement extends XhElement {
     name: { converter: STRING_CONVERTER },
     placeholder: { attribute: false },
     translations: { attribute: false },
+    variant: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
   }
 
   declare value?: string
@@ -90,6 +96,9 @@ export class XhDateFieldElement extends XhElement {
   declare name?: string
   declare placeholder?: SegmentTexts
   declare translations?: SegmentTexts
+  declare variant?: string
+  declare tone?: string
+  declare size?: string
 
   private readonly notifyChange = (details: DateFieldValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -114,6 +123,9 @@ export class XhDateFieldElement extends XhElement {
       name: this.name,
       placeholder: this.placeholder,
       translations: this.translations,
+      variant: this.variant,
+      tone: this.tone,
+      size: this.size,
       onValueChange: this.notifyChange,
     }
   }

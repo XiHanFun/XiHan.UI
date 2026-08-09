@@ -108,9 +108,13 @@ export function connectSelect<T extends PropTypes>(
         send(next ? { type: 'OPEN', focus: 'selected' } : { type: 'CLOSE' })
     },
     setValue: next => send({ type: 'VALUE.SET', value: next }),
+    // 三个视觉轴只落在根上：触发器与条目都从这里继承私有槽，子部件不重复标注
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': stateAttr,
+      'data-variant': prop('variant'),
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
     }),
     getLabelProps: () => normalize.element({

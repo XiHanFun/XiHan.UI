@@ -53,6 +53,9 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @attr {boolean} disabled - 整个控件禁用：trigger 用原生 disabled，浮层展不开
  * @attr {boolean} read-only - 只读：浮层照常展开、列照常浏览，但选中值改不动、也清不掉
  * @attr {boolean} invalid - 校验失败标注
+ * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {string} placeholder - 无选中时 value-text 显示的占位文字
  * @attr {string} separator - 路径回显的连接符，默认 " / "
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
@@ -91,6 +94,9 @@ export class XhCascaderElement extends XhElement {
     disabled: { type: Boolean },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
+    variant: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
     separator: { converter: STRING_CONVERTER },
     placement: { converter: STRING_CONVERTER },
@@ -110,6 +116,9 @@ export class XhCascaderElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
+  declare variant?: string
+  declare tone?: string
+  declare size?: string
   declare placeholder?: string
   declare separator?: string
   declare placement?: Placement
@@ -153,6 +162,9 @@ export class XhCascaderElement extends XhElement {
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,
       invalid: this.invalid ?? false,
+      variant: this.variant,
+      tone: this.tone,
+      size: this.size,
       placeholder: this.placeholder,
       separator: this.separator,
       placement: this.placement,

@@ -35,6 +35,9 @@ export const XhComboboxRoot = defineComponent({
     inputBehavior: { type: String as PropType<ComboboxInputBehavior>, default: undefined },
     placement: { type: String as PropType<Placement>, default: undefined },
     offset: { type: Number, default: undefined },
+    variant: { type: String, default: undefined },
+    tone: { type: String, default: undefined },
+    size: { type: String, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸值
   emits: ['value-change', 'input-value-change', 'open-change', 'update:value', 'update:inputValue', 'update:open'],

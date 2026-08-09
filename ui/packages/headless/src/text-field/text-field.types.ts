@@ -23,6 +23,12 @@ export interface TextFieldSchema extends MachineSchema {
     maxLength?: number
     /** 开启清空能力：清空按钮可用、Escape 接管。关掉时按钮带 hidden 收起。 */
     clearable?: boolean
+    /** 形态：outline / subtle / ghost，决定输入框的底与描边怎么画。 */
+    variant?: string
+    /** 语气：brand / neutral / success / warning / danger / info，决定聚焦强调用哪族颜色。 */
+    tone?: string
+    /** 尺寸：sm / md / lg，决定输入框与清空按钮的几何档位。 */
+    size?: string
     onValueChange?: (details: TextFieldValueChangeDetails) => void
   }
   context: {

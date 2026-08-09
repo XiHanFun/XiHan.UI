@@ -131,6 +131,9 @@ export function connectDateField<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      'data-variant': prop('variant'),
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),

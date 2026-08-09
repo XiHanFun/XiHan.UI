@@ -164,6 +164,10 @@ export function connectTreeSelect<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': stateAttr,
+      // 三个视觉轴只落在根上，皮肤由此往下派发；子部件不重复标注
+      'data-variant': prop('variant'),
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),

@@ -1,5 +1,24 @@
 @layer xihan.components {
   [data-scope='select'][data-part='root'] {
+    /* 尺寸档只换这五个私有槽，触发器、标题与条目都从 root 继承它们，
+       换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承 */
+    --xh-_select-h: var(--xh-control-h-md);
+    --xh-_select-px: var(--xh-control-px-md);
+    --xh-_select-gap: var(--xh-control-gap-md);
+    --xh-_select-font-size: var(--xh-text-body-size);
+    --xh-_select-label-font-size: var(--xh-text-label-size);
+
+    /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
+    --xh-_select-trigger-bg: var(--xh-bg-canvas);
+    --xh-_select-trigger-border: var(--xh-border-default);
+    --xh-_select-trigger-border-hover: var(--xh-border-strong);
+
+    /* 强调色随语气走，只落在聚焦与选中上，正文文字色不动。
+       没写 data-tone 时 --xh-_tone 没被声明，三处都退回原来的取值 */
+    --xh-_select-ring: var(--xh-ring-focus);
+    --xh-_select-accent: var(--xh-_tone, var(--xh-bg-brand));
+    --xh-_select-item-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-select-gap, var(--xh-stack-gap-md));
@@ -7,9 +26,49 @@
     position: relative;
   }
 
+  /* —— 尺寸 —— */
+  /* 缺省档写在上面的基础规则里 */
+  [data-scope='select'][data-part='root'][data-size='sm'] {
+    --xh-_select-h: var(--xh-control-h-sm);
+    --xh-_select-px: var(--xh-control-px-sm);
+    --xh-_select-gap: var(--xh-control-gap-sm);
+    --xh-_select-font-size: var(--xh-font-size-sm);
+    --xh-_select-label-font-size: var(--xh-font-size-sm);
+  }
+
+  [data-scope='select'][data-part='root'][data-size='lg'] {
+    --xh-_select-h: var(--xh-control-h-lg);
+    --xh-_select-px: var(--xh-control-px-lg);
+    --xh-_select-gap: var(--xh-control-gap-lg);
+    --xh-_select-font-size: var(--xh-font-size-lg);
+    --xh-_select-label-font-size: var(--xh-font-size-lg);
+  }
+
+  /* —— 形态 —— */
+  /* 输入类不做 solid：实心底压着可编辑的值，读起来像块不可点的色板。
+     形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
+  [data-scope='select'][data-part='root'][data-variant='outline'] {
+    --xh-_select-trigger-bg: var(--xh-bg-canvas);
+    --xh-_select-trigger-border: var(--xh-border-default);
+    --xh-_select-trigger-border-hover: var(--xh-border-strong);
+  }
+
+  /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
+  [data-scope='select'][data-part='root'][data-variant='subtle'] {
+    --xh-_select-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_select-trigger-border: transparent;
+    --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  }
+
+  [data-scope='select'][data-part='root'][data-variant='ghost'] {
+    --xh-_select-trigger-bg: transparent;
+    --xh-_select-trigger-border: transparent;
+    --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  }
+
   [data-scope='select'][data-part='label'] {
     color: var(--xh-select-label-fg, var(--xh-fg-muted));
-    font-size: var(--xh-select-label-font-size, var(--xh-text-label-size));
+    font-size: var(--xh-select-label-font-size, var(--xh-_select-label-font-size));
     font-weight: var(--xh-select-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
   }
@@ -22,28 +81,28 @@
     display: inline-flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--xh-select-trigger-gap, var(--xh-control-gap-md));
+    gap: var(--xh-select-trigger-gap, var(--xh-_select-gap));
     min-inline-size: var(--xh-select-trigger-min-w, 10rem);
     /* 多选会把 N 项的文本连成一串，框宽必须封顶；与浮层同一个上限，两半看着才是一件东西 */
     max-inline-size: var(--xh-select-trigger-max-w, var(--xh-overlay-max-w));
-    block-size: var(--xh-select-trigger-h, var(--xh-control-h-md));
-    padding-inline: var(--xh-select-trigger-px, var(--xh-control-px-md));
-    border: var(--xh-stroke-thin) solid var(--xh-select-trigger-border, var(--xh-border-default));
+    block-size: var(--xh-select-trigger-h, var(--xh-_select-h));
+    padding-inline: var(--xh-select-trigger-px, var(--xh-_select-px));
+    border: var(--xh-stroke-thin) solid var(--xh-select-trigger-border, var(--xh-_select-trigger-border));
     border-radius: var(--xh-select-trigger-radius, var(--xh-shape-control));
-    background: var(--xh-select-trigger-bg, var(--xh-bg-canvas));
+    background: var(--xh-select-trigger-bg, var(--xh-_select-trigger-bg));
     color: var(--xh-select-trigger-fg, var(--xh-fg-default));
-    font-size: var(--xh-select-trigger-font-size, var(--xh-text-body-size));
+    font-size: var(--xh-select-trigger-font-size, var(--xh-_select-font-size));
     line-height: var(--xh-leading-none);
     text-align: start;
     cursor: pointer;
   }
 
   [data-scope='select'][data-part='trigger']:hover:not(:disabled) {
-    border-color: var(--xh-select-trigger-border-hover, var(--xh-border-strong));
+    border-color: var(--xh-select-trigger-border-hover, var(--xh-_select-trigger-border-hover));
   }
 
   [data-scope='select'][data-part='trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline: var(--xh-ring-width) solid var(--xh-_select-ring);
     outline-offset: 2px;
   }
 
@@ -128,12 +187,12 @@
   [data-scope='select'][data-part='item'] {
     display: flex;
     align-items: center;
-    gap: var(--xh-select-item-gap, var(--xh-control-gap-md));
+    gap: var(--xh-select-item-gap, var(--xh-_select-gap));
     padding-block: var(--xh-select-item-py, var(--xh-space-2));
     padding-inline: var(--xh-select-item-px, var(--xh-control-px-sm));
     border-radius: var(--xh-select-item-radius, var(--xh-shape-control));
     color: var(--xh-select-item-fg, var(--xh-fg-default));
-    font-size: var(--xh-select-item-font-size, var(--xh-text-body-size));
+    font-size: var(--xh-select-item-font-size, var(--xh-_select-font-size));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
@@ -142,7 +201,7 @@
 
   /* 键盘高亮与指针高亮共用一套底色：条目本身承载焦点，不另画描边 */
   [data-scope='select'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
-    background: var(--xh-select-item-bg-highlight, var(--xh-bg-subtle-hover));
+    background: var(--xh-select-item-bg-highlight, var(--xh-_select-item-highlight-bg));
   }
 
   [data-scope='select'][data-part='item']:focus {
@@ -169,7 +228,7 @@
     align-items: center;
     justify-content: center;
     inline-size: var(--xh-select-item-indicator-size, var(--xh-control-indicator-size));
-    color: var(--xh-select-item-indicator-fg, var(--xh-bg-brand));
+    color: var(--xh-select-item-indicator-fg, var(--xh-_select-accent));
     visibility: hidden;
   }
 

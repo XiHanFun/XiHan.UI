@@ -19,6 +19,9 @@ export const XhTextFieldRoot = defineComponent({
     name: { type: String, default: undefined },
     maxLength: { type: Number, default: undefined },
     clearable: Boolean,
+    variant: { type: String, default: undefined },
+    tone: { type: String, default: undefined },
+    size: { type: String, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸串
   emits: ['value-change', 'update:value'],

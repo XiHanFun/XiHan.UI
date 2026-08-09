@@ -115,9 +115,13 @@ export function connectCombobox<T extends PropTypes>(
     setInputValue: next => send({ type: 'INPUT.SET', value: next }),
     clear: () => send({ type: 'VALUE.CLEAR' }),
 
+    // 三个视觉轴只落在根上：输入行与候选都从这里继承私有槽，子部件不重复标注
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': stateAttr,
+      'data-variant': prop('variant'),
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),

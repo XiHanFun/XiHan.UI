@@ -29,6 +29,9 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {string} name - 表单字段名；给了才参与提交
  * @attr {number} change-delay - 按住加减按钮多久开始连发，默认 300ms
  * @attr {number} change-interval - 连发间隔，默认 50ms
+ * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 值变化；detail 为 `{ value: string, valueAsNumber: number }`
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty 的容器
  * @csspart label - 标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动
@@ -54,6 +57,9 @@ export class XhNumberFieldElement extends XhElement {
     name: { converter: STRING_CONVERTER },
     changeDelay: { converter: NUMBER_CONVERTER, attribute: 'change-delay' },
     changeInterval: { converter: NUMBER_CONVERTER, attribute: 'change-interval' },
+    variant: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
   }
 
   declare value?: string
@@ -69,6 +75,9 @@ export class XhNumberFieldElement extends XhElement {
   declare name?: string
   declare changeDelay?: number
   declare changeInterval?: number
+  declare variant?: string
+  declare tone?: string
+  declare size?: string
 
   private readonly notify = (details: NumberFieldValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -91,6 +100,9 @@ export class XhNumberFieldElement extends XhElement {
       name: this.name,
       changeDelay: this.changeDelay,
       changeInterval: this.changeInterval,
+      variant: this.variant,
+      tone: this.tone,
+      size: this.size,
       onValueChange: this.notify,
     }
   }

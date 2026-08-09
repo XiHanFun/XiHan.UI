@@ -48,6 +48,9 @@ function declaredSegment(el: HTMLElement, position: number): TimeSegmentType {
  * @attr {boolean} required - 必填标注，落到每段的 aria-required 上
  * @attr {string} name - 表单字段名；给了隐藏输入才带 name
  * @attr {string} placeholder - 空段的占位字符（单字符），默认 '-'
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 值变化；detail 为 `{ value: string }`
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-out-of-range 的容器
  * @csspart label - 标题；点它会把焦点送到第一段
@@ -73,6 +76,9 @@ export class XhTimeFieldElement extends XhElement {
     required: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
+    variant: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
   }
 
   declare value?: string
@@ -88,6 +94,9 @@ export class XhTimeFieldElement extends XhElement {
   declare required?: boolean
   declare name?: string
   declare placeholder?: string
+  declare variant?: string
+  declare tone?: string
+  declare size?: string
 
   private readonly notifyChange = (details: TimeFieldValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -111,6 +120,9 @@ export class XhTimeFieldElement extends XhElement {
       required: this.required ?? false,
       name: this.name,
       placeholder: this.placeholder,
+      variant: this.variant,
+      tone: this.tone,
+      size: this.size,
       onValueChange: this.notifyChange,
     }
   }

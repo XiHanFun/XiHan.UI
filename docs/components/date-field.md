@@ -62,6 +62,9 @@ min / max 收窄各段的加减范围，越界的初值只做标注、不被改�
 | `name` | `string` |  | 表单字段名；给了隐藏输入才带 name，ISO 串随表单一并提交。 |
 | `placeholder` | `{ readonly [K in DateSegmentType]?: string }` |  | 各段未填时显示的占位串，逐段覆盖内置默认（yyyy / mm / dd / hh / mm / ss）。 |
 | `translations` | `{ readonly [K in DateSegmentType]?: string }` |  | 各段的读屏名字，逐段覆盖内置默认。段是 spinbutton，没有名字读屏只念得出一串数字。 |
+| `variant` | `string` |  | 形态：outline / subtle / ghost，决定描边与底色怎么用。 |
+| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调用哪族颜色。 |
+| `size` | `string` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: DateFieldValueChangeDetails) => void` |  |  |
 
 ## 状态机

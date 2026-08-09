@@ -2055,6 +2055,33 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "placeholder",
               "privacy": "public",
               "type": {
@@ -2403,6 +2430,30 @@
               "description": "校验失败标注",
               "name": "invalid",
               "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "视觉变体",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             },
             {
               "type": {
@@ -4190,6 +4241,33 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "idGen",
               "type": {
                 "text": "IdGenerator"
@@ -4475,6 +4553,30 @@
               "description": "浮层与锚点的间距（px）",
               "name": "offset",
               "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "视觉变体",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -5256,6 +5358,33 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "notifyChange",
               "privacy": "private",
               "readonly": true
@@ -5390,6 +5519,30 @@
               "description": "表单字段名；给了隐藏输入才带 name",
               "name": "name",
               "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "形态",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -10747,6 +10900,33 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -10889,6 +11069,30 @@
               "description": "连发间隔，默认 50ms",
               "name": "change-interval",
               "fieldName": "changeInterval"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "视觉变体",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -11258,6 +11462,33 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -11402,6 +11633,30 @@
               "description": "表单字段名；给了隐藏输入才带 name",
               "name": "name",
               "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "视觉变体",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -12958,6 +13213,33 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "idGen",
               "type": {
                 "text": "IdGenerator"
@@ -13298,6 +13580,30 @@
               "description": "文字方向，默认 ltr",
               "name": "dir",
               "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "视觉变体",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -15681,6 +15987,33 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -15892,6 +16225,30 @@
               "description": "焦点离开整个组件时怎么处置残留文本",
               "name": "blur-behavior",
               "fieldName": "blurBehavior"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "视觉变体",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -16041,6 +16398,33 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -16159,6 +16543,30 @@
               "description": "开启清空：清空按钮显出并在有值时可用，Escape 接管",
               "name": "clearable",
               "fieldName": "clearable"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "视觉变体",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -16536,6 +16944,33 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "notifyChange",
               "privacy": "private",
               "readonly": true
@@ -16711,6 +17146,30 @@
               "description": "空段的占位字符（单字符），默认 '-'",
               "name": "placeholder",
               "fieldName": "placeholder"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "形态",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -19832,6 +20291,33 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "placeholder",
               "privacy": "public",
               "type": {
@@ -20152,6 +20638,30 @@
               "description": "校验失败标注",
               "name": "invalid",
               "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "视觉变体",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             },
             {
               "type": {

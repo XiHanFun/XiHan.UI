@@ -48,6 +48,12 @@ export interface PinInputSchema extends MachineSchema {
     blurOnComplete?: boolean
     /** 表单字段名；给了隐藏输入才带 name，整串值随表单一并提交。 */
     name?: string
+    /** 形态：outline / subtle / ghost，决定颜色怎么用。 */
+    variant?: string
+    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    tone?: string
+    /** 尺寸：sm / md / lg。 */
+    size?: string
     translations?: Partial<PinInputTranslations>
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: PinInputValueChangeDetails) => void

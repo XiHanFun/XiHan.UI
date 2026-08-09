@@ -100,6 +100,12 @@ export interface ComboboxSchema extends MachineSchema {
     inputBehavior?: ComboboxInputBehavior
     placement?: Placement
     offset?: number
+    /** 形态：outline / subtle / ghost，决定输入行的描边与底色怎么用。 */
+    variant?: string
+    /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 */
+    tone?: string
+    /** 尺寸：sm / md / lg，决定输入行高度、内边距与字号档位。 */
+    size?: string
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: ComboboxValueChangeDetails) => void
     /** 输入串变化回调：调用方据此重新过滤候选。 */

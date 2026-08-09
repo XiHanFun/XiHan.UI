@@ -38,6 +38,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} loop - 方向键走到尽头回绕，默认 true；写 loop="false" 关掉
  * @attr {boolean} multiple - 多选：点中即在集合里增删该项，列表不收起；存在即开，关掉要摘属性（不同于 loop，写 multiple="false" 仍是开）
  * @attr {'ltr'|'rtl'} dir - 文字方向，默认 ltr
+ * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 选中值变化；detail 为 `{ value: string[] }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 组件根容器（承载 data-state/data-disabled，也是表单影子的定位基准）
@@ -71,6 +74,9 @@ export class XhSelectElement extends XhElement {
     loop: { converter: BOOLEAN_CONVERTER },
     multiple: { type: Boolean },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
+    variant: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
   }
 
   // 属性只递得进单值，多选集合走 property
@@ -87,6 +93,9 @@ export class XhSelectElement extends XhElement {
   declare loop?: boolean
   declare multiple?: boolean
   declare direction?: Direction
+  declare variant?: string
+  declare tone?: string
+  declare size?: string
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly selectScope = createScope(null, this.idGen)
@@ -128,6 +137,9 @@ export class XhSelectElement extends XhElement {
       loop: this.loop,
       multiple: this.multiple ?? false,
       dir: this.direction,
+      variant: this.variant,
+      tone: this.tone,
+      size: this.size,
       onValueChange: this.notifyValue,
       onOpenChange: this.notifyOpen,
     }

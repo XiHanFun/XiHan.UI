@@ -49,6 +49,9 @@ const ARRAY_CONVERTER = {
  * @attr {boolean} add-on-paste - 粘贴时按 delimiter 拆成多个标签
  * @attr {boolean} editable - 允许双击标签就地改
  * @attr {'add'|'clear'} blur-behavior - 焦点离开整个组件时怎么处置残留文本
+ * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 标签集合变化；detail 为 `{ value: string[] }`
  * @fires input-value-change - 输入文本变化；detail 为 `{ inputValue: string }`
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-max / data-overflow
@@ -83,6 +86,9 @@ export class XhTagsInputElement extends XhElement {
     addOnPaste: { converter: BOOLEAN_CONVERTER, attribute: 'add-on-paste' },
     editable: { converter: BOOLEAN_CONVERTER },
     blurBehavior: { converter: STRING_CONVERTER, attribute: 'blur-behavior' },
+    variant: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
   }
 
   declare value?: string[]
@@ -100,6 +106,9 @@ export class XhTagsInputElement extends XhElement {
   declare addOnPaste?: boolean
   declare editable?: boolean
   declare blurBehavior?: TagsInputBlurBehavior | null
+  declare variant?: string
+  declare tone?: string
+  declare size?: string
 
   private readonly notifyValue = (details: TagsInputValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -130,6 +139,9 @@ export class XhTagsInputElement extends XhElement {
       addOnPaste: this.addOnPaste ?? false,
       editable: this.editable ?? false,
       blurBehavior: this.blurBehavior,
+      variant: this.variant,
+      tone: this.tone,
+      size: this.size,
       onValueChange: this.notifyValue,
       onInputValueChange: this.notifyInputValue,
     }

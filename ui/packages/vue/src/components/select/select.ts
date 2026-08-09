@@ -24,6 +24,9 @@ export const XhSelectRoot = defineComponent({
     offset: { type: Number, default: undefined },
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
+    variant: { type: String, default: undefined },
+    tone: { type: String, default: undefined },
+    size: { type: String, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸值。
   // 校验函数恒真，只声明载荷类型：'update:value' 是 string[]，单选也是长度 1 的数组而非裸串。
