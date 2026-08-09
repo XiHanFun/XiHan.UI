@@ -53,6 +53,7 @@ const startSidebar: DefaultTheme.SidebarItem[] = [
       { text: "常见问题", link: "/faq" },
     ],
   },
+  { text: "更新日志", link: "/changelog" },
 ];
 
 const guideSidebar: DefaultTheme.SidebarItem[] = [
@@ -104,11 +105,6 @@ const sidebar: DefaultTheme.Sidebar = {
 
 const nav: DefaultTheme.NavItem[] = [
   {
-    text: withNavBadge("🎨 视图组件", release),
-    link: "/",
-    activeMatch: "^/$",
-  },
-  {
     text: "开始",
     link: "/introduction",
     activeMatch:
@@ -117,6 +113,8 @@ const nav: DefaultTheme.NavItem[] = [
   { text: "核心概念", link: "/guide/anatomy", activeMatch: "/guide/" },
   { text: "适配器", link: "/adapters/vue", activeMatch: "/adapters/" },
   { text: "组件参考", link: "/components/", activeMatch: "/components/" },
+  // 版本徽章挂在更新日志上：徽章上的版本号就是本页最新那条
+  { text: withNavBadge("更新日志", release), link: "/changelog" },
   {
     text: "探索未知",
     items: [
