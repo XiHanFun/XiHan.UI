@@ -20,6 +20,7 @@
     "disabled": { "$type": "color", "$value": "{color.neutral.600}" },
     "on-brand": { "$type": "color", "$value": "{color.neutral.950}" },
     "brand": { "$type": "color", "$value": "{color.brand.400}" },
+    "brand-strong": { "$type": "color", "$value": "{color.brand.300}" },
     "success": { "$type": "color", "$value": "{color.success.500}" },
     "danger": { "$type": "color", "$value": "{color.danger.500}" },
     "danger-hover": { "$type": "color", "$value": "{color.danger.400}" }

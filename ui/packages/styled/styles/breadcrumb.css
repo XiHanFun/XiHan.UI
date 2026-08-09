@@ -46,6 +46,8 @@
   [data-scope='breadcrumb'][data-part='item'] {
     display: inline-flex;
     align-items: center;
+    /* 库里没有全局 preflight，列表项的外边距在这里自己抹平 */
+    margin: 0;
     /* 允许被压缩，链接内部的省略号才有生效的余地 */
     min-inline-size: 0;
   }
@@ -100,6 +102,8 @@
   [data-scope='breadcrumb'][data-part='ellipsis'] {
     display: inline-flex;
     flex: none;
+    /* 两者也是列表项，宿主给 li 的外边距会把它们顶离同一行 */
+    margin: 0;
     align-items: center;
     justify-content: center;
     color: var(--xh-breadcrumb-separator-fg, var(--xh-fg-subtle));

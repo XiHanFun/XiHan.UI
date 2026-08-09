@@ -94,12 +94,13 @@
     display: flex;
     align-items: center;
     gap: var(--xh-listbox-item-gap, var(--xh-control-gap-md));
-    padding-block: var(--xh-listbox-item-py, var(--xh-space-2));
+    padding-block: var(--xh-listbox-item-py, var(--xh-space-1));
     padding-inline: var(--xh-listbox-item-px, var(--xh-control-px-sm));
     border-radius: var(--xh-listbox-item-radius, var(--xh-shape-control));
     color: var(--xh-listbox-item-fg, var(--xh-fg-default));
     font-size: var(--xh-listbox-item-font-size, var(--xh-text-body-size));
-    line-height: var(--xh-leading-none);
+    /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
+    line-height: var(--xh-listbox-item-leading, var(--xh-leading-normal));
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
@@ -116,6 +117,13 @@
     background: var(--xh-listbox-item-bg-highlight, var(--xh-bg-subtle-hover));
   }
 
+  /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
+     两者因此能同时看见 */
+  [data-scope='listbox'][data-part='item'][data-state='checked'] {
+    color: var(--xh-listbox-item-fg-selected, var(--xh-fg-brand-strong));
+    font-weight: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-medium));
+  }
+
   [data-scope='listbox'][data-part='item']:focus {
     outline: none;
   }
@@ -129,6 +137,8 @@
 
   [data-scope='listbox'][data-part='item-text'] {
     flex: 1;
+    /* 弹性子项默认最小尺寸是内容尺寸，不归零则长文本把行撑破、省略号轮不上 */
+    min-inline-size: 0;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

@@ -18,6 +18,7 @@
     --xh-_combobox-ring: var(--xh-ring-focus);
     --xh-_combobox-accent: var(--xh-_tone, var(--xh-bg-brand));
     --xh-_combobox-item-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+    --xh-_combobox-item-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 
     display: inline-flex;
     flex-direction: column;
@@ -306,12 +307,13 @@
     display: flex;
     align-items: center;
     gap: var(--xh-combobox-item-gap, var(--xh-_combobox-gap));
-    padding-block: var(--xh-combobox-item-py, var(--xh-space-2));
+    padding-block: var(--xh-combobox-item-py, var(--xh-space-1));
     padding-inline: var(--xh-combobox-item-px, var(--xh-control-px-sm));
     border-radius: var(--xh-combobox-item-radius, var(--xh-shape-control));
     color: var(--xh-combobox-item-fg, var(--xh-fg-default));
     font-size: var(--xh-combobox-item-font-size, var(--xh-_combobox-font-size));
-    line-height: var(--xh-leading-none);
+    /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
+    line-height: var(--xh-combobox-item-leading, var(--xh-leading-normal));
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
@@ -328,6 +330,13 @@
     background: var(--xh-combobox-item-bg-highlight, var(--xh-_combobox-item-highlight-bg));
   }
 
+  /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
+     两者因此能同时看见 */
+  [data-scope='combobox'][data-part='item'][data-state='checked'] {
+    color: var(--xh-combobox-item-fg-selected, var(--xh-_combobox-item-selected-fg));
+    font-weight: var(--xh-combobox-item-font-weight-selected, var(--xh-font-weight-medium));
+  }
+
   /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），
      所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
   [data-scope='combobox'][data-part='item'][data-disabled] {
@@ -337,6 +346,8 @@
 
   [data-scope='combobox'][data-part='item-text'] {
     flex: 1;
+    /* 弹性项默认 min-width: auto 不肯收缩到内容以下，省略号因此永不生效 */
+    min-inline-size: 0;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

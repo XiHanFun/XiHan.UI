@@ -69,6 +69,17 @@
     outline-offset: calc(-1 * var(--xh-ring-width));
   }
 
+  /* 有滚动条要占道时，视口在那条轴上收窄一条道的宽度，末端内容不再被压在滚动条底下。
+     缩视口而不是给视口加内边距：滚动容器末端缘的 padding 计不计进 scrollWidth，各引擎不一致。
+     子结合符：只认自己这一层的滚动条，嵌套滚动区不会把外层视口也削掉。 */
+  [data-scope='scroll-area'][data-part='root']:has(> [data-part='scrollbar'][data-orientation='vertical'][data-gutter]) > [data-scope='scroll-area'][data-part='viewport'] {
+    inline-size: calc(100% - var(--xh-scroll-area-bar-size, 10px));
+  }
+
+  [data-scope='scroll-area'][data-part='root']:has(> [data-part='scrollbar'][data-orientation='horizontal'][data-gutter]) > [data-scope='scroll-area'][data-part='viewport'] {
+    block-size: calc(100% - var(--xh-scroll-area-bar-size, 10px));
+  }
+
   /* 横向溢出全靠它撑：内容若跟着视口一起收成 100% 宽，横轴永远量不出溢出，
      横向滚动条也就永远不显形。 */
   [data-scope='scroll-area'][data-part='content'] {
@@ -80,7 +91,6 @@
      user-select 同理——拖动时选中页面文字会让滑块"粘"住。 */
   [data-scope='scroll-area'][data-part='scrollbar'] {
     position: absolute;
-    display: flex;
     padding: var(--xh-scroll-area-bar-padding, 2px);
     background: var(--xh-scroll-area-bar-bg, var(--xh-bg-subtle));
     touch-action: none;
@@ -124,14 +134,16 @@
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 交叉轴铺满轨道。这一侧的 inset 连接层每帧写成空串（即不设），样式表接手才有确定值；
-     不写的话绝对定位会退回"静态位置"，作者一给轨道加内边距就对不齐了。 */
+  /* 交叉轴在轨道内两侧各收进一个轨道内边距，与轨道那条 padding 共用同一个旋钮。
+     这一侧的 inset 连接层每帧写成空串（即不设），样式表接手才有确定值；
+     不写的话绝对定位会退回"静态位置"。
+     主轴那一侧一律不写：几何层量的轨道是 padding box，滑块长度也解析在同一个盒子上。 */
   [data-scope='scroll-area'][data-part='thumb'][data-orientation='vertical'] {
-    inset-inline: 0;
+    inset-inline: var(--xh-scroll-area-bar-padding, 2px);
   }
 
   [data-scope='scroll-area'][data-part='thumb'][data-orientation='horizontal'] {
-    inset-block: 0;
+    inset-block: var(--xh-scroll-area-bar-padding, 2px);
   }
 
   [data-scope='scroll-area'][data-part='thumb']:hover {

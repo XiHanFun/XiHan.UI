@@ -1,6 +1,9 @@
 @layer xihan.components {
   /* 边框画在 root 上，内部 textarea 无边框；align-items: flex-end 让按钮随输入框长高贴着底边 */
   [data-scope='composer'][data-part='root'] {
+    /* 输入与发送按钮共用的控件高度 */
+    --xh-_composer-control-h: var(--xh-composer-submit-h, var(--xh-control-h-md));
+
     display: flex;
     align-items: flex-end;
     gap: var(--xh-composer-gap, var(--xh-control-gap-md));
@@ -31,7 +34,9 @@
   [data-scope='composer'][data-part='input'] {
     flex: 1;
     min-inline-size: 0;
-    padding: 0;
+    /* 上下留白把单行文本盒撑到控件高度，文字中线与按钮中线对齐 */
+    padding-block: calc((var(--xh-_composer-control-h) - 1lh) / 2);
+    padding-inline: 0;
     border: 0;
     background: transparent;
     color: var(--xh-composer-input-fg, var(--xh-fg-default));
@@ -72,8 +77,8 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    min-inline-size: var(--xh-composer-submit-h, var(--xh-control-h-md));
-    block-size: var(--xh-composer-submit-h, var(--xh-control-h-md));
+    min-inline-size: var(--xh-_composer-control-h);
+    block-size: var(--xh-_composer-control-h);
     padding-inline: var(--xh-composer-submit-px, var(--xh-control-px-md));
     border: 0;
     border-radius: var(--xh-composer-submit-radius, var(--xh-shape-control));

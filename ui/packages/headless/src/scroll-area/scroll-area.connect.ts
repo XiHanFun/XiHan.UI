@@ -52,6 +52,18 @@ export function connectScrollArea<T extends PropTypes>(
   const horizontal = axisState('horizontal')
   const cornerVisible = vertical.visible && horizontal.visible
 
+  /**
+   * 这条轴要不要在布局里占一条道：只有常驻的滚动条才占，浮在内容上的不占。
+   * always 恒占；auto 溢出才占；hover 与 scroll 是临时露面，一律不占。
+   * 判据取 overflow 而非 visible——visible 随指针进出翻转，占道与否不跟着翻。
+   * 只喂给皮肤的 data-gutter，不进 ScrollAreaAxisState、不进公开 api。
+   */
+  const persistent = type === 'always' || type === 'auto'
+  const reserved: Record<Orientation, boolean> = {
+    vertical: persistent && axisEnabled('vertical') && (type === 'always' || vertical.overflow),
+    horizontal: persistent && axisEnabled('horizontal') && (type === 'always' || horizontal.overflow),
+  }
+
   const stateOf = (axis: Orientation): ScrollAreaAxisState => (axis === 'vertical' ? vertical : horizontal)
 
   /**
@@ -116,6 +128,8 @@ export function connectScrollArea<T extends PropTypes>(
         'aria-hidden': 'true',
         'data-orientation': axis,
         'data-state': axisView.visible ? 'visible' : 'hidden',
+        // 皮肤据此把视口在该轴上缩掉一条道的宽度
+        'data-gutter': dataAttr(reserved[axis]),
         'data-dragging': dataAttr(draggingAxis === axis),
         // 收起时留在 DOM 里只隐藏，不卸载作者节点
         'hidden': !axisView.visible || undefined,

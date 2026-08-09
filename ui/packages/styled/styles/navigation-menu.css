@@ -86,6 +86,8 @@
   [data-scope='navigation-menu'][data-part='item'] {
     position: relative;
     display: flex;
+    /* 库里没有全局 preflight，列表项的外边距在这里自己抹平 */
+    margin: 0;
   }
 
   [data-scope='navigation-menu'][data-part='item'][hidden] {
@@ -132,6 +134,11 @@
   [data-scope='navigation-menu'][data-part='trigger'][data-disabled] {
     color: var(--xh-fg-disabled);
     cursor: not-allowed;
+  }
+
+  /* 竖排：入口占满整项的宽度，面板才从入口右缘长出来 */
+  [data-scope='navigation-menu'][data-part='trigger'][data-orientation='vertical'] {
+    flex: 1;
   }
 
   /* 面板贴着自己那一项落位：横排从 trigger 底下长出来 */
@@ -211,6 +218,8 @@
   [data-scope='navigation-menu'][data-part='indicator'] {
     position: absolute;
     display: block;
+    /* 指示条也是列表项，宿主给 li 的外边距会把绝对定位的它推离入口 */
+    margin: 0;
     inset-block-end: calc(var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick)) * -1);
     block-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
     border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-radius-full));
@@ -227,7 +236,7 @@
   /* 竖排：指示条改贴在起始缘，交叉轴换成内联轴 */
   [data-scope='navigation-menu'][data-part='indicator'][data-orientation='vertical'] {
     inset-block-end: auto;
-    inset-inline-start: calc(var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick)) * -1);
+    inset-inline-start: 0;
     inline-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
     block-size: auto;
     transition:
@@ -251,5 +260,11 @@
 
   [data-scope='navigation-menu'][data-part='viewport'][hidden] {
     display: none;
+  }
+
+  /* 竖排导航：共享外壳跟着面板改从侧边长出来 */
+  [data-scope='navigation-menu'][data-part='viewport'][data-orientation='vertical'] {
+    inset-block-start: 0;
+    inset-inline-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
   }
 }

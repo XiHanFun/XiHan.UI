@@ -136,12 +136,13 @@
     flex: none;
     gap: var(--xh-transfer-item-gap, var(--xh-control-gap-md));
     align-items: center;
-    padding-block: var(--xh-transfer-item-py, var(--xh-space-2));
+    padding-block: var(--xh-transfer-item-py, var(--xh-space-1));
     padding-inline: var(--xh-transfer-item-px, var(--xh-control-px-sm));
     border-radius: var(--xh-transfer-item-radius, var(--xh-shape-control));
     color: var(--xh-transfer-item-fg, var(--xh-fg-default));
     font-size: var(--xh-transfer-item-font-size, var(--xh-text-body-size));
-    line-height: var(--xh-leading-none);
+    /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
+    line-height: var(--xh-transfer-item-leading, var(--xh-leading-normal));
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
