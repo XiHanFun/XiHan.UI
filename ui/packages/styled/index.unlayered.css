@@ -1850,7 +1850,10 @@
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-[data-scope='checkbox'][data-part='root'][data-state='checked'] {
+/* 半选与全选同样是「有值」，方框都得填上：
+   只填全选的话，半选那条横杠是实心底上的前景色（白），压在白画布上等于没画 */
+[data-scope='checkbox'][data-part='root'][data-state='checked'],
+[data-scope='checkbox'][data-part='root'][data-state='indeterminate'] {
   border-color: var(--xh-checkbox-border-checked, var(--xh-_checkbox-accent));
   background: var(--xh-checkbox-bg-checked, var(--xh-_checkbox-accent));
 }
