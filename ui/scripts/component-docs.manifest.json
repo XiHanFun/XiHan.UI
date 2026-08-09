@@ -1,0 +1,326 @@
+{
+  "categories": [
+    {
+      "id": "general",
+      "label": "通用",
+      "description": "不承载表单值、也不管理浮层的基础件。",
+      "components": [
+        {
+          "id": "button",
+          "name": "按钮"
+        },
+        {
+          "id": "icon",
+          "name": "图标"
+        },
+        {
+          "id": "toggle",
+          "name": "切换按钮"
+        },
+        {
+          "id": "toggle-group",
+          "name": "切换按钮组"
+        },
+        {
+          "id": "badge",
+          "name": "徽标"
+        },
+        {
+          "id": "avatar",
+          "name": "头像"
+        },
+        {
+          "id": "image",
+          "name": "图片"
+        },
+        {
+          "id": "separator",
+          "name": "分隔线"
+        },
+        {
+          "id": "code-block",
+          "name": "代码块"
+        },
+        {
+          "id": "clipboard",
+          "name": "剪贴板"
+        }
+      ]
+    },
+    {
+      "id": "form",
+      "label": "数据录入",
+      "description": "承载表单值的组件，统一走受控/非受控两态与 name 表单集成。",
+      "components": [
+        {
+          "id": "field",
+          "name": "表单字段"
+        },
+        {
+          "id": "form",
+          "name": "表单"
+        },
+        {
+          "id": "text-field",
+          "name": "文本输入"
+        },
+        {
+          "id": "number-field",
+          "name": "数字输入"
+        },
+        {
+          "id": "pin-input",
+          "name": "分格输入"
+        },
+        {
+          "id": "editable",
+          "name": "就地编辑"
+        },
+        {
+          "id": "checkbox",
+          "name": "复选框"
+        },
+        {
+          "id": "checkbox-group",
+          "name": "复选框组"
+        },
+        {
+          "id": "radio-group",
+          "name": "单选组"
+        },
+        {
+          "id": "switch",
+          "name": "开关"
+        },
+        {
+          "id": "slider",
+          "name": "滑块"
+        },
+        {
+          "id": "rating",
+          "name": "评分"
+        },
+        {
+          "id": "select",
+          "name": "选择器"
+        },
+        {
+          "id": "listbox",
+          "name": "列表框"
+        },
+        {
+          "id": "combobox",
+          "name": "组合框"
+        },
+        {
+          "id": "cascader",
+          "name": "级联选择"
+        },
+        {
+          "id": "tree-select",
+          "name": "树选择"
+        },
+        {
+          "id": "tags-input",
+          "name": "标签输入"
+        },
+        {
+          "id": "transfer",
+          "name": "穿梭框"
+        },
+        {
+          "id": "date-field",
+          "name": "日期输入"
+        },
+        {
+          "id": "date-picker",
+          "name": "日期选择器"
+        },
+        {
+          "id": "time-field",
+          "name": "时间输入"
+        },
+        {
+          "id": "time-picker",
+          "name": "时间选择器"
+        },
+        {
+          "id": "calendar",
+          "name": "日历"
+        },
+        {
+          "id": "color-picker",
+          "name": "颜色选择器"
+        },
+        {
+          "id": "file-upload",
+          "name": "文件上传"
+        }
+      ]
+    },
+    {
+      "id": "data-display",
+      "label": "数据展示",
+      "description": "把数据摆出来的组件：表格、树、折叠、虚拟滚动。",
+      "components": [
+        {
+          "id": "table",
+          "name": "表格"
+        },
+        {
+          "id": "tree",
+          "name": "树"
+        },
+        {
+          "id": "virtualizer",
+          "name": "虚拟滚动"
+        },
+        {
+          "id": "scroll-area",
+          "name": "滚动区域"
+        },
+        {
+          "id": "accordion",
+          "name": "手风琴"
+        },
+        {
+          "id": "collapsible",
+          "name": "折叠区域"
+        },
+        {
+          "id": "carousel",
+          "name": "走马灯"
+        },
+        {
+          "id": "splitter",
+          "name": "分栏"
+        },
+        {
+          "id": "skeleton",
+          "name": "骨架屏"
+        },
+        {
+          "id": "empty-state",
+          "name": "空状态"
+        }
+      ]
+    },
+    {
+      "id": "navigation",
+      "label": "导航",
+      "description": "在页面与视图之间移动的组件。",
+      "components": [
+        {
+          "id": "menu",
+          "name": "菜单"
+        },
+        {
+          "id": "menubar",
+          "name": "菜单栏"
+        },
+        {
+          "id": "context-menu",
+          "name": "右键菜单"
+        },
+        {
+          "id": "navigation-menu",
+          "name": "导航菜单"
+        },
+        {
+          "id": "tabs",
+          "name": "标签页"
+        },
+        {
+          "id": "steps",
+          "name": "步骤条"
+        },
+        {
+          "id": "pagination",
+          "name": "分页"
+        },
+        {
+          "id": "breadcrumb",
+          "name": "面包屑"
+        },
+        {
+          "id": "anchor",
+          "name": "锚点"
+        },
+        {
+          "id": "toolbar",
+          "name": "工具栏"
+        },
+        {
+          "id": "tour",
+          "name": "引导"
+        }
+      ]
+    },
+    {
+      "id": "feedback",
+      "label": "反馈与浮层",
+      "description": "向用户反馈状态、或浮在页面之上的组件。",
+      "components": [
+        {
+          "id": "dialog",
+          "name": "对话框"
+        },
+        {
+          "id": "drawer",
+          "name": "抽屉"
+        },
+        {
+          "id": "popover",
+          "name": "气泡卡片"
+        },
+        {
+          "id": "tooltip",
+          "name": "文字提示"
+        },
+        {
+          "id": "hover-card",
+          "name": "悬浮卡片"
+        },
+        {
+          "id": "alert",
+          "name": "警告提示"
+        },
+        {
+          "id": "toast",
+          "name": "轻提示"
+        },
+        {
+          "id": "toaster",
+          "name": "轻提示容器"
+        },
+        {
+          "id": "progress",
+          "name": "进度条"
+        },
+        {
+          "id": "spinner",
+          "name": "加载指示器"
+        },
+        {
+          "id": "loading-bar",
+          "name": "加载条"
+        }
+      ]
+    },
+    {
+      "id": "ai",
+      "label": "AI 对话",
+      "description": "AI 对话界面的组件。",
+      "components": [
+        {
+          "id": "thread",
+          "name": "会话线程"
+        },
+        {
+          "id": "composer",
+          "name": "消息编辑器"
+        }
+      ]
+    }
+  ]
+}

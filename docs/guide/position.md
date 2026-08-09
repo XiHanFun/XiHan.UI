@@ -97,6 +97,6 @@ engine.attach(virtual, floatingEl, { placement: 'bottom-start' }, apply)
 
 ## 相关
 
-- [反馈与浮层组件](../components/feedback)：哪些组件带 `positioner` 部件
+- [组件参考](../components/)：哪些组件带 `positioner` 部件
 - [行为原语](./behavior)：定位之外的层栈、消隐与焦点
 - [测试与质量门禁](./testing)：定位契约怎么验

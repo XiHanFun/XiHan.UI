@@ -8,7 +8,7 @@
 | `@xihan-ui/markdown` | 流式 Markdown 渲染：增量切块、稳定 key、消毒 |
 | `@xihan-ui/highlight` | 代码着色，自研粗粒度词法器 |
 
-配套的两个组件是[会话线程与消息编辑器](../components/ai)。
+配套的两个组件是[会话线程](../components/thread)与[消息编辑器](../components/composer)。
 
 ## 数据流
 
@@ -144,5 +144,5 @@ const tokens = highlighter.highlight(code, 'typescript') // CodeToken[] | null
 
 ## 相关
 
-- [AI 对话组件](../components/ai)：`thread` 与 `composer`
+- [会话线程](../components/thread) 与 [消息编辑器](../components/composer)：AI 对话的两个组件
 - [行为原语](./behavior#贴底)：消息列表的自动贴底

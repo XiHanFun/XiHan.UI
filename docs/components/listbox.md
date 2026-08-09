@@ -1,0 +1,80 @@
+# 列表框 <Badge type="info" text="listbox" />
+
+数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+
+## 产物
+
+| 层 | 值 |
+| --- | --- |
+| 自定义元素 | `<xh-listbox>` |
+| Vue 组件 | `XhListboxContent` `XhListboxItem` `XhListboxItemGroup` `XhListboxItemGroupLabel` `XhListboxItemIndicator` `XhListboxItemText` `XhListboxLabel` `XhListboxRoot` |
+| 组合式函数 | `useListbox` |
+| 状态机 | `listboxMachine` |
+| 皮肤 | `@xihan-ui/styled/listbox.css` |
+
+## 解剖
+
+部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
+
+`data-scope="listbox"`：`root` · `label` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-group` · `item-group-label`
+
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string | string[]` |  | 选中值，给定即受控；单选可写成裸串，内部归一成数组。 |
+| `defaultValue` | `string | string[]` |  |  |
+| `multiple` | `boolean` |  | selectionMode='multiple' 的简写；两者同时给时以 selectionMode 为准。 |
+| `selectionMode` | `ListboxSelectionMode` |  |  |
+| `disabled` | `boolean` |  | 整个列表禁用，键盘与点击都不再改选中值。 |
+| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr。 |
+| `orientation` | `Orientation` |  | 方向键轴向，默认 vertical。 |
+| `typeahead` | `boolean` |  | 连打检索，默认开。 |
+| `onValueChange` | `(details: ListboxValueChangeDetails) => void` |  | value 变化意图回调。 |
+
+## 状态机
+
+**状态**：`idle`
+
+**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `LIST.BLUR`
+
+## connect API
+
+`useListbox` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+
+| 成员 | 类型 | 说明 |
+| --- | --- | --- |
+| `value` | `string[]` | 选中集合；单选模式下长度 ≤ 1。 |
+| `selectionMode` | `ListboxSelectionMode` | 生效的选择模式。 |
+| `focusedValue` | `string | null` | 焦点锚点；焦点不在列表内时为 null。 |
+| `disabled` | `boolean` |  |
+| `isSelected` | `(value: string) => boolean` |  |
+| `setValue` | `(next: string[]) => void` |  |
+| `select` | `(value: string) => void` | 只留这一个；加选用 toggle。 |
+| `toggle` | `(value: string) => void` |  |
+| `getRootProps` | `() => T['element']` |  |
+| `getLabelProps` | `() => T['element']` |  |
+| `getContentProps` | `() => T['element']` |  |
+| `getItemGroupProps` | `(props: ListboxItemGroupProps) => T['element']` |  |
+| `getItemGroupLabelProps` | `(props: ListboxItemGroupProps) => T['element']` |  |
+| `getItemProps` | `(props: ListboxItemProps) => T['element']` |  |
+| `getItemTextProps` | `(props: ListboxItemProps) => T['element']` |  |
+| `getItemIndicatorProps` | `(props: ListboxItemProps) => T['element']` |  |
+
+## 键盘
+
+规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/listbox/#keyboardinteraction)
+
+| 按键 | 生效条件 | 行为 |
+| --- | --- | --- |
+| `Tab` / `Shift+Tab` | focus outside the listbox | 整个列表只占一个 Tab 位：焦点进入锚点条目，无锚点时先落容器再由它转投 |
+| `ArrowDown` | focus in listbox, orientation=vertical | 焦点移到下一个可停留条目（禁用项跳过、尽头按 loop 回绕）；orientation=horizontal 时改由 ArrowRight 承担，dir=rtl 再对调左右 |
+| `ArrowUp` | focus in listbox, orientation=vertical | 焦点移到上一个可停留条目（禁用项跳过、尽头按 loop 回绕）；orientation=horizontal 时改由 ArrowLeft 承担，dir=rtl 再对调左右 |
+| `Home` | focus in listbox | 焦点移到首个可停留条目 |
+| `End` | focus in listbox | 焦点移到末个可停留条目 |
+| `Enter` / `Space` | focus on item, selectionMode 为 single 或 extended | 只选中焦点条目，替换原有选中；条目自报禁用则不认 |
+| `Space` / `Enter` / `Ctrl+Space` | focus on item, 可多选（multiple；extended 下须按住 Ctrl/Cmd） | 切换焦点条目的选中态，其余选中不动 |
+| `Shift+ArrowDown` / `Shift+ArrowUp` | focus in listbox, 可多选 | 焦点移到相邻条目并切换它的选中态；往回走即把刚扩进来的那个摘掉 |
+| `Ctrl+A` / `Cmd+A` | focus in listbox, 可多选 | 选中全部可选条目；已经全选则把它们一并取消（禁用但已选中的不动） |
+| `单个可打印字符` | focus in listbox, typeahead 未关 | 连打检索把焦点移到首字母匹配的条目，不改选中值 |

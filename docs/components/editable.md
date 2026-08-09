@@ -1,0 +1,89 @@
+# 就地编辑 <Badge type="info" text="editable" />
+
+数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+
+## 产物
+
+| 层 | 值 |
+| --- | --- |
+| 自定义元素 | `<xh-editable>` |
+| Vue 组件 | `XhEditableArea` `XhEditableCancelTrigger` `XhEditableControl` `XhEditableEditTrigger` `XhEditableInput` `XhEditableLabel` `XhEditablePreview` `XhEditableRoot` `XhEditableSubmitTrigger` |
+| 组合式函数 | `useEditable` |
+| 状态机 | `editableMachine` |
+| 皮肤 | `@xihan-ui/styled/editable.css` |
+
+## 解剖
+
+部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
+
+`data-scope="editable"`：**`root`** · `label` · `area` · **`preview`** · **`input`** · `edit-trigger` · `submit-trigger` · `cancel-trigger` · `control`
+
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` |  | 受控值；给了就由宿主说了算，机器不自改（cell 原生受控，无影子事件）。 |
+| `defaultValue` | `string` |  | 非受控初值。 |
+| `edit` | `boolean` |  | 受控编辑态；给了就由宿主说了算，用户交互只发 onEditChange。 |
+| `defaultEdit` | `boolean` |  | 非受控初始编辑态。为真时挂载即进编辑态并把焦点搬进输入框。 |
+| `placeholder` | `string` |  | 值为空时预览区显示它，输入框也拿它当占位。 |
+| `disabled` | `boolean` |  | 禁用：进不了编辑态，输入框带原生 disabled。 |
+| `readOnly` | `boolean` |  | 只读：进不了编辑态，但已在编辑态时仍能退出（撤销/提交都通）。 |
+| `invalid` | `boolean` |  | 校验失败标注。 |
+| `maxLength` | `number` |  | 字符数上限；同时落成原生 maxlength 与机器侧截断。 |
+| `name` | `string` |  | 表单字段名；给了输入框才参与提交。 |
+| `submitMode` | `EditableSubmitMode` |  | 编辑态的收尾方式，默认 both。 |
+| `activationMode` | `EditableActivationMode` |  | 预览区的激活方式，默认 click。 |
+| `selectOnFocus` | `boolean` |  | 进编辑态时全选已有内容，默认开。关掉则光标停在原处。 |
+| `autoResize` | `boolean` |  | 输入框宽度跟着内容走：连接层把字符数落成原生 size 属性。 |
+| `onValueChange` | `(details: EditableValueChangeDetails) => void` |  | 值变化意图回调；编辑途中每次输入都发，受控时是唯一出口。 |
+| `onValueCommit` | `(details: EditableValueCommitDetails) => void` |  | 提交那一刻才发；编辑途中的输入不会惊动它。 |
+| `onValueRevert` | `(details: EditableValueRevertDetails) => void` |  | 撤销那一刻发（Escape、取消按钮、不算提交的离场）。 |
+| `onEditChange` | `(details: EditableEditChangeDetails) => void` |  | 编辑态变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
+
+## 状态机
+
+**状态**：`preview` · `edit`
+
+**事件**：`EDIT.START` · `EDIT.SUBMIT` · `EDIT.CANCEL` · `EDIT.LEAVE` · `VALUE.SET` · `CONTROLLED.EDIT` · `CONTROLLED.PREVIEW`
+
+**判据**：`isEditControlled` · `canEdit` · `submitsOnLeave`
+
+## connect API
+
+`useEditable` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+
+| 成员 | 类型 | 说明 |
+| --- | --- | --- |
+| `value` | `string` | 当下的值（编辑途中就是输入框里的那串）。 |
+| `committedValue` | `string` | 上一次提交的值，也是撤销的落点。 |
+| `editing` | `boolean` | 正处在编辑态。 |
+| `empty` | `boolean` | 值为空串。 |
+| `displayValue` | `string` | 预览区当下该显示的文字：值为空时退回 placeholder。 |
+| `disabled` | `boolean` |  |
+| `readOnly` | `boolean` |  |
+| `invalid` | `boolean` |  |
+| `interactive` | `boolean` | 进得了编辑态（既没禁用也不只读）。 |
+| `setValue` | `(next: string) => void` | 直接写值，只受 disabled/readOnly 与 maxLength 约束，与编辑态无关。 |
+| `edit` | `() => void` | 进编辑态；禁用或只读时不动。 |
+| `submit` | `() => void` | 提交当下的值并回到预览态。 |
+| `cancel` | `() => void` | 撤销回上一次提交的值并回到预览态。 |
+| `getRootProps` | `() => T['element']` |  |
+| `getLabelProps` | `() => T['label']` |  |
+| `getAreaProps` | `() => T['element']` |  |
+| `getPreviewProps` | `() => T['element']` |  |
+| `getInputProps` | `() => T['input']` |  |
+| `getEditTriggerProps` | `() => T['button']` |  |
+| `getSubmitTriggerProps` | `() => T['button']` |  |
+| `getCancelTriggerProps` | `() => T['button']` |  |
+| `getControlProps` | `() => T['element']` |  |
+
+## 键盘
+
+规格出处：[W3C APG](https://html.spec.whatwg.org/multipage/input.html#text-(type=text)-state-and-search-state-(type=search))
+
+| 按键 | 生效条件 | 行为 |
+| --- | --- | --- |
+| `Enter` | focus in input, submitMode 为 enter 或 both | 提交当下的值并回到预览态；其余模式不接管该键，交回给浏览器与外层表单 |
+| `Escape` | focus in input | 撤销回上一次提交的值并回到预览态 |
+| `Tab` / `Shift+Tab` | focus in input | 按 submitMode 收尾（blur/both 提交，enter/none 撤销）；不拦默认行为，焦点照常移出 |

@@ -1,0 +1,53 @@
+# 图片 <Badge type="info" text="image" />
+
+通用组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+
+## 产物
+
+| 层 | 值 |
+| --- | --- |
+| 自定义元素 | `<xh-image>` |
+| Vue 组件 | `XhImageFallback` `XhImageImage` `XhImageRoot` |
+| 组合式函数 | `useImage` |
+| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 皮肤 | `@xihan-ui/styled/image.css` |
+
+## 解剖
+
+部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
+
+`data-scope="image"`：**`root`** · **`image`** · `fallback`
+
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `src` | `string` |  |  |
+| `alt` | `string` |  |  |
+| `fallbackDelay` | `number` |  | 加载超过这么久（毫秒）才让回退内容露面，默认 0（立刻露面）。 Infinity 表示加载期间永不显示回退内容，只有失败才显。 |
+| `onStatusChange` | `(details: ImageStatusChangeDetails) => void` |  | 状态每次真正落位时通知一次；过渡态 idle 不通知。 |
+
+## 状态机
+
+**事件**：`SRC.CHANGE` · `IMAGE.LOAD` · `IMAGE.ERROR` · `after.fallbackDelay`
+
+**判据**：`hasSrc`
+
+## connect API
+
+`useImage` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+
+| 成员 | 类型 | 说明 |
+| --- | --- | --- |
+| `status` | `ImageStatus` |  |
+| `loaded` | `boolean` |  |
+| `showFallback` | `boolean` | 回退内容此刻是否该露面：加载失败恒为真，加载途中要看 fallbackDelay 是否已过。 |
+| `getRootProps` | `() => T['element']` |  |
+| `getImageProps` | `() => T['img']` |  |
+| `getFallbackProps` | `() => T['element']` |  |
+
+## 键盘
+
+规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
+
+无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。

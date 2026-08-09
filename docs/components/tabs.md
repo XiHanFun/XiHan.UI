@@ -1,0 +1,66 @@
+# 标签页 <Badge type="info" text="tabs" />
+
+导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+
+## 产物
+
+| 层 | 值 |
+| --- | --- |
+| 自定义元素 | `<xh-tabs>` |
+| Vue 组件 | `XhTabsContent` `XhTabsList` `XhTabsRoot` `XhTabsTrigger` |
+| 组合式函数 | `useTabs` |
+| 状态机 | `tabsMachine` |
+| 皮肤 | `@xihan-ui/styled/tabs.css` |
+
+## 解剖
+
+部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
+
+`data-scope="tabs"`：`root` · **`list`** · **`trigger`** · **`content`**
+
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string | null` |  | 选中值。给定即受控：内部不再自改，只发 onValueChange。 |
+| `defaultValue` | `string | null` |  |  |
+| `orientation` | `Orientation` |  | 方向键轴向，默认 horizontal；不同轴的方向键放行给页面滚动与读屏。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr；只影响水平轴上 ArrowLeft/ArrowRight 的前后语义。 |
+| `activationMode` | `TabsActivationMode` |  | 方向键移动焦点时是否顺带切换选中，默认 automatic。 |
+| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
+| `onValueChange` | `(details: TabsValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+
+## 状态机
+
+**状态**：`idle`
+
+**事件**：`VALUE.SET` · `TRIGGER.SELECT` · `TRIGGER.FOCUS` · `TRIGGER.NAVIGATE` · `LIST.BLUR`
+
+**判据**：`isAutomatic`
+
+## connect API
+
+`useTabs` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+
+| 成员 | 类型 | 说明 |
+| --- | --- | --- |
+| `value` | `string | null` |  |
+| `focusedValue` | `string | null` | 焦点在组外时为 null。 |
+| `setValue` | `(next: string | null) => void` | 传 null 清空选中：context.value 与受控 value 都能表达"无选中"，写入侧同样收得下。 |
+| `getRootProps` | `() => T['element']` |  |
+| `getListProps` | `() => T['element']` |  |
+| `getTriggerProps` | `(props: TabsTriggerProps) => T['button']` |  |
+| `getContentProps` | `(props: TabsContentProps) => T['element']` |  |
+
+## 键盘
+
+规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/#keyboardinteraction)
+
+| 按键 | 生效条件 | 行为 |
+| --- | --- | --- |
+| `ArrowRight` / `ArrowDown` | focus in list, 按键与 orientation 同轴 | 焦点移到下一个 trigger（禁用项跳过、尽头按 loop 回绕）；automatic 模式顺带切换选中 |
+| `ArrowLeft` / `ArrowUp` | focus in list, 按键与 orientation 同轴 | 焦点移到上一个 trigger；automatic 模式顺带切换选中 |
+| `Home` | focus in list | 焦点移到首个可停留 trigger |
+| `End` | focus in list | 焦点移到末个可停留 trigger |
+| `Enter` / `Space` | focus in trigger, not disabled | 把选中切到焦点所在 trigger（manual 模式的确认键） |
+| `Tab` / `Shift+Tab` | focus in list | 整组只有锚点 trigger 留在 Tab 序列内，一次 Tab 进出；无锚点时由 list 兜底 |

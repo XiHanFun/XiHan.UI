@@ -1,0 +1,71 @@
+# 抽屉 <Badge type="info" text="drawer" />
+
+反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+
+## 产物
+
+| 层 | 值 |
+| --- | --- |
+| 自定义元素 | `<xh-drawer>` |
+| Vue 组件 | `XhDrawerCloseTrigger` `XhDrawerContent` `XhDrawerDescription` `XhDrawerRoot` `XhDrawerTitle` `XhDrawerTrigger` |
+| 组合式函数 | `useDrawer` |
+| 状态机 | `drawerMachine` |
+| 皮肤 | `@xihan-ui/styled/drawer.css` |
+
+## 解剖
+
+部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
+
+`data-scope="drawer"`：**`root`** · `trigger` · `backdrop` · `positioner` · **`content`** · `title` · `description` · `close-trigger`
+
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `open` | `boolean` |  |  |
+| `defaultOpen` | `boolean` |  |  |
+| `modal` | `boolean` |  |  |
+| `side` | `DrawerSide` |  | 从哪条边滑出，默认 'right'。只影响输出的 data-side，不参与状态转移。 |
+| `role` | `'dialog' | 'alertdialog'` |  |  |
+| `closeOnEscape` | `boolean` |  |  |
+| `closeOnInteractOutside` | `boolean` |  |  |
+| `restoreFocus` | `boolean` |  |  |
+| `translations` | `Partial<DrawerTranslations>` |  |  |
+| `onOpenChange` | `(details: DrawerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
+
+## 状态机
+
+**状态**：`open` · `closed`
+
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
+
+**判据**：`isOpenControlled`
+
+## connect API
+
+`useDrawer` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+
+| 成员 | 类型 | 说明 |
+| --- | --- | --- |
+| `open` | `boolean` |  |
+| `side` | `DrawerSide` | 已解析的滑出边（prop 缺省时是默认值），作者据此配动画。 |
+| `setOpen` | `(next: boolean) => void` |  |
+| `getRootProps` | `() => T['element']` |  |
+| `getTriggerProps` | `() => T['button']` |  |
+| `getBackdropProps` | `() => T['element']` |  |
+| `getPositionerProps` | `() => T['element']` |  |
+| `getContentProps` | `() => T['element']` |  |
+| `getTitleProps` | `() => T['element']` |  |
+| `getDescriptionProps` | `() => T['element']` |  |
+| `getCloseTriggerProps` | `() => T['button']` |  |
+
+## 键盘
+
+规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/#keyboardinteraction)
+
+| 按键 | 生效条件 | 行为 |
+| --- | --- | --- |
+| `Enter` / `Space` | focus in trigger | 打开抽屉并把焦点移入 content |
+| `Escape` | open | 关闭并把焦点还给 trigger |
+| `Tab` | open 且 modal | 在 content 内向后循环焦点 |
+| `Shift+Tab` | open 且 modal | 在 content 内向前循环焦点 |
