@@ -1,0 +1,33 @@
+{
+  "name": "xihan-ui-docs",
+  "version": "0.9.8",
+  "type": "module",
+  "description": "XiHan.UI document site. Framework-agnostic design system runtime with Vue and Web Components adapters.",
+  "author": {
+    "name": "XiHanFun"
+  },
+  "license": "MIT",
+  "homepage": "https://ui.docs.xihanfun.com",
+  "repository": {
+    "url": "https://github.com/XiHanFun/XiHan.UI"
+  },
+  "bugs": {
+    "url": "https://github.com/XiHanFun/XiHan.UI/issues"
+  },
+  "scripts": {
+    "bootstrap": "pnpm install",
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "serve": "vitepress serve",
+    "preview": "vitepress preview",
+    "clean": "rimraf .vitepress/dist",
+    "clean:modules": "rimraf node_modules",
+    "upgrade": "pnpm upgrade",
+    "reinstall": "pnpm run clean:modules && pnpm install",
+    "rebuild": "pnpm run clean && pnpm run build"
+  },
+  "dependencies": {
+    "vue": "^3.5.39",
+    "vitepress": "^1.6.4"
+  }
+}

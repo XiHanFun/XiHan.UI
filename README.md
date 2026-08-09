@@ -33,13 +33,13 @@
 
 <p>
   <a href="https://deepwiki.com/XiHanFun/XiHan.UI"><img alt="Ask DeepWiki" src="https://deepwiki.com/badge.svg" /></a>
-  <a href="https://docs.xihanfun.com"><img alt="Docs" src="https://img.shields.io/badge/Docs-docs.xihanfun.com-2496ED?style=flat-square&logo=readthedocs&logoColor=white" /></a>
+  <a href="https://ui.docs.xihanfun.com"><img alt="Docs" src="https://img.shields.io/badge/Docs-ui.docs.xihanfun.com-2496ED?style=flat-square&logo=readthedocs&logoColor=white" /></a>
   <a href="https://qm.qq.com/q/qYp1Urv3z2"><img alt="QQ Group" src="https://img.shields.io/badge/QQ_Group-462371834-EB1923?style=flat-square&logo=tencentqq&logoColor=white" /></a>
 </p>
 
 </div>
 
-> **实验性项目**：69 个组件的内核、Vue 适配器、Web Components 适配器与默认皮肤均已实现，无障碍扫描跑在真实 Chromium 上，但**尚未发布到 npm、尚无文档站**，且首轮扫出的存量无障碍问题尚未修完（17 个组件登记在案，外加一条全局的对比度问题）。请勿在生产环境依赖。
+> **实验性项目**：69 个组件的内核、Vue 适配器、Web Components 适配器与默认皮肤均已实现，无障碍扫描跑在真实 Chromium 上、存量违规登记表已从 24 条降到 2 条（WC 侧 `steps` 一条，外加一条步骤重放豁免），但**尚未发布到 npm**。请勿在生产环境依赖。
 
 ## 概述
 
@@ -300,7 +300,7 @@ vue · wc  ── core / machine / behavior / headless / position / highlight / 
 
 | 事项 | 现状 |
 | --- | --- |
-| 文档站 | 无（API 表、状态图、键盘表、令牌浏览器均未产出） |
+| 文档站 | 已有（<https://ui.docs.xihanfun.com>，源码在 `docs/`），但 API 表、状态图、键盘表、令牌浏览器等自动产出物仍未生成 |
 | npm 发布 | 未发布，本地用 `pnpm pack` 验证 |
 | 组件文案国际化 | 未落地，面向用户的字符串内置英文，可经 `translations` 逐条覆盖 |
 | 令牌产物格式 | 仅 CSS / JSON / TS 三种 |
