@@ -46,11 +46,12 @@ export interface NavBadge {
  * 本仓库的发布状态。
  *
  * 版本号真源是 ui/packages/ 下各库包的 package.json（changesets fixed 版本组，全部同号），
- * 改版本时同步这里。库包版本仍是 0.0.0、尚未发布到 npm，下面 0.9.8 是重构前遗留的号。
+ * 改版本时同步这里。徽章挂在导航的「更新日志」上，两者必须对得上：库包当前是 0.0.0、
+ * 尚未发布到 npm，首个公开版本计划为 1.0.0-alpha.0。
  * 另外两个仓库（XiHan.Framework、XiHan.BasicApp）独立发版，各自文档站维护各自的版本号。
  */
 export const release: ProductRelease = {
-  version: "0.9.8",
+  version: "0.0.0",
   stage: ReleaseStage.Alpha,
 };
 
