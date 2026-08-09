@@ -2,6 +2,26 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+不传 checked 即为非受控，开关自己维护状态
+
+<XhDemo src="switch/01-basic" />
+
+### 受控
+
+传了 checked 就由宿主说了算，组件自己不再改状态；v-model:checked 是它的语法糖
+
+<XhDemo src="switch/02-controlled" />
+
+### 禁用
+
+disabled 同时挡住指针与键盘，状态机收不到 TOGGLE
+
+<XhDemo src="switch/03-disabled" />
+
 ## 产物
 
 | 层 | 值 |
@@ -11,14 +31,6 @@
 | 组合式函数 | `useSwitch` |
 | 状态机 | `switchMachine` |
 | 皮肤 | `@xihan-ui/styled/switch.css` |
-
-## 示例
-
-<XhDemo src="switch/01-basic" />
-
-<XhDemo src="switch/02-controlled" />
-
-<XhDemo src="switch/03-disabled" />
 
 ## 解剖
 

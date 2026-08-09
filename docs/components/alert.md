@@ -2,6 +2,26 @@
 
 反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+各部件按需摆放，标题与描述都是可选的
+
+<XhDemo src="alert/01-basic" />
+
+### 变体
+
+variant 只改配色，语义仍由内容与 role 决定
+
+<XhDemo src="alert/02-variant" />
+
+### 可关闭
+
+closable 开启后才渲染关闭按钮；open 受控时由宿主决定去留
+
+<XhDemo src="alert/03-closable" />
+
 ## 产物
 
 | 层 | 值 |
@@ -10,14 +30,6 @@
 | Vue 组件 | `XhAlertCloseTrigger` `XhAlertDescription` `XhAlertIcon` `XhAlertRoot` `XhAlertTitle` |
 | 状态机 | `alertMachine` |
 | 皮肤 | `@xihan-ui/styled/alert.css` |
-
-## 示例
-
-<XhDemo src="alert/01-basic" />
-
-<XhDemo src="alert/02-variant" />
-
-<XhDemo src="alert/03-closable" />
 
 ## 解剖
 

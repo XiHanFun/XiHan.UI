@@ -2,6 +2,20 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+不传 checked 即为非受控
+
+<XhDemo src="checkbox/01-basic" />
+
+### 三态
+
+checked 传 "indeterminate" 表示部分选中，它不是第三个稳定态：点一下就落到 true
+
+<XhDemo src="checkbox/02-indeterminate" />
+
 ## 产物
 
 | 层 | 值 |
@@ -11,12 +25,6 @@
 | 组合式函数 | `useCheckbox` |
 | 状态机 | `checkboxMachine` |
 | 皮肤 | `@xihan-ui/styled/checkbox.css` |
-
-## 示例
-
-<XhDemo src="checkbox/01-basic" />
-
-<XhDemo src="checkbox/02-indeterminate" />
 
 ## 解剖
 
