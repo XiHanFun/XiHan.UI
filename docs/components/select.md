@@ -28,6 +28,24 @@ multiple 下点中即在集合里增删该项、浮层不收起，触发器上�
 
 <XhDemo src="select/04-disabled" />
 
+### 形态
+
+variant 只改触发器的颜色槽位，浮层与键盘行为三档一致
+
+<XhDemo src="select/05-variant" />
+
+### 语气
+
+tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语气的差别
+
+<XhDemo src="select/06-tone" />
+
+### 尺寸
+
+触发器与浮层条目一起换档，不传 size 即默认档
+
+<XhDemo src="select/07-size" />
+
 ## 产物
 
 | 层 | 值 |

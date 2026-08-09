@@ -22,6 +22,24 @@ disabled 同时挡住指针与键盘，按下态保持原样
 
 <XhDemo src="toggle/03-group" />
 
+### 形态
+
+variant 决定颜色怎么用，未按下与已按下两档一起看才完整
+
+<XhDemo src="toggle/04-variant" />
+
+### 语气
+
+tone 决定用哪族颜色，与 variant 正交；这里固定 solid 形态并置于按下态，语气差别最明显
+
+<XhDemo src="toggle/05-tone" />
+
+### 尺寸
+
+size 只改高度、内边距与字号，不写就是缺省档
+
+<XhDemo src="toggle/06-size" />
+
 ## 产物
 
 | 层 | 值 |

@@ -22,6 +22,18 @@ max 不是 100 时按 value/max 折算，用于「已完成 3/8 步」这类场�
 
 <XhDemo src="progress/03-max" />
 
+### 语气
+
+tone 决定进度段用哪族颜色，不写时沿用品牌色
+
+<XhDemo src="progress/04-tone" />
+
+### 尺寸
+
+size 只改轨道厚度，不写即缺省中档
+
+<XhDemo src="progress/05-size" />
+
 ## 产物
 
 | 层 | 值 |

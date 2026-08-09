@@ -22,6 +22,12 @@ label 部件不写内容时显示解析后的 label，屏幕上看到的与读�
 
 <XhDemo src="spinner/03-label" />
 
+### 语气
+
+tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到哪儿才看得出来
+
+<XhDemo src="spinner/04-tone" />
+
 ## 产物
 
 | 层 | 值 |

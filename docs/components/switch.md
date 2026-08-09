@@ -22,6 +22,18 @@ disabled 同时挡住指针与键盘，状态机收不到 TOGGLE
 
 <XhDemo src="switch/03-disabled" />
 
+### 语气
+
+tone 决定选中态轨道用哪族颜色，所以这里都置为开
+
+<XhDemo src="switch/04-tone" />
+
+### 尺寸
+
+size 同时缩放轨道与滑块，不写就是缺省档
+
+<XhDemo src="switch/05-size" />
+
 ## 产物
 
 | 层 | 值 |

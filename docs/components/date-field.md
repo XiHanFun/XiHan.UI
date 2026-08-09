@@ -28,6 +28,24 @@ min / max 收窄各段的加减范围，越界的初值只做标注、不被改�
 
 <XhDemo src="date-field/04-state" />
 
+### 形态
+
+variant 只改分段框的底色与描边用法，分段结构与键盘行为都不变
+
+<XhDemo src="date-field/05-variant" />
+
+### 语气
+
+tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，只看语气这一轴
+
+<XhDemo src="date-field/06-tone" />
+
+### 尺寸
+
+不传 size 即默认档；行高、内边距与字号一起换档，标题也跟着变
+
+<XhDemo src="date-field/07-size" />
+
 ## 产物
 
 | 层 | 值 |

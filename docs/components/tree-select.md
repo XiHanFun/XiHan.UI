@@ -22,6 +22,24 @@ multiple 下确认键是切换、浮层不收起；写了 hidden-input 才随表
 
 <XhDemo src="tree-select/03-multiple" />
 
+### 形态
+
+variant 只换触发框的描边与底色，浮层与树的长相不跟着变
+
+<XhDemo src="tree-select/04-variant" />
+
+### 语气
+
+tone 决定用哪族颜色，与 variant 正交，这里统一用 subtle 形态
+
+<XhDemo src="tree-select/05-tone" />
+
+### 尺寸
+
+size 换掉行高、内边距与字号，不写就是缺省档
+
+<XhDemo src="tree-select/06-size" />
+
 ## 产物
 
 | 层 | 值 |
