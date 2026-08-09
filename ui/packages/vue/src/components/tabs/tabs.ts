@@ -17,6 +17,9 @@ export const XhTabsRoot = defineComponent({
     dir: { type: String as PropType<Direction>, default: undefined },
     activationMode: { type: String as PropType<TabsActivationMode>, default: undefined },
     loop: { type: Boolean, default: undefined },
+    variant: { type: String, default: undefined },
+    tone: { type: String, default: undefined },
+    size: { type: String, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸值
   emits: ['value-change', 'update:value'],

@@ -34,6 +34,7 @@ export function connectDrawer<T extends PropTypes>(
       ...parts.root.attrs,
       'data-state': stateAttr,
       'data-side': side,
+      'data-size': prop('size'),
     }),
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
@@ -63,8 +64,9 @@ export function connectDrawer<T extends PropTypes>(
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
       'data-state': stateAttr,
-      // content 被 portal 到 body 后 root 上的选择器够不着它，故自身也带 data-side
+      // content 被 portal 到 body 后 root 上的选择器够不着它，故自身也带 data-side / data-size
       'data-side': side,
+      'data-size': prop('size'),
       // positioner 非必需部件，content 收起态必须自带 hidden，否则最小结构（root + content）
       // 下抽屉关不掉（WC 侧 content 常驻，尤为明显）
       'hidden': !open || undefined,

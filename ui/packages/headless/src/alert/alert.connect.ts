@@ -1,6 +1,6 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
-import type { AlertApi, AlertSchema, AlertVariant } from './alert.types'
+import type { AlertApi, AlertSchema } from './alert.types'
 import { dataAttr } from '@xihan-ui/core'
 import { alertAnatomy } from './alert.anatomy'
 
@@ -15,8 +15,8 @@ const parts = alertAnatomy.build()
  * 出错与警告属于前者，一般信息与成功回执属于后者。
  * live 值仍显式写出：role 隐含的 live 各家读屏落实并不一致。
  */
-function liveOf(variant: AlertVariant): { role: 'alert' | 'status', live: 'assertive' | 'polite' } {
-  return variant === 'danger' || variant === 'warning'
+function liveOf(tone: string): { role: 'alert' | 'status', live: 'assertive' | 'polite' } {
+  return tone === 'danger' || tone === 'warning'
     ? { role: 'alert', live: 'assertive' }
     : { role: 'status', live: 'polite' }
 }
@@ -27,11 +27,11 @@ export function connectAlert<T extends PropTypes>(
 ): AlertApi<T> {
   const { state, prop, send, scope } = service
   const open = state.get() === 'open'
-  const variant = prop('variant') ?? 'info'
+  const tone = prop('tone') ?? 'info'
   const closable = prop('closable') ?? true
   const ids = scope.ids('alert', 'title', 'description')
   const stateAttr = open ? 'open' : 'closed'
-  const { role, live } = liveOf(variant)
+  const { role, live } = liveOf(tone)
 
   const setOpen = (next: boolean): void => {
     if (next !== open)
@@ -40,7 +40,7 @@ export function connectAlert<T extends PropTypes>(
 
   return {
     open,
-    variant,
+    tone,
     closable,
     setOpen,
 
@@ -52,7 +52,8 @@ export function connectAlert<T extends PropTypes>(
       'aria-atomic': 'true',
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
-      'data-variant': variant,
+      // 语气轴只挂在 root 上，子部件靠继承拿到语气槽
+      'data-tone': tone,
       'data-state': stateAttr,
       'hidden': !open || undefined,
     }),
@@ -61,7 +62,6 @@ export function connectAlert<T extends PropTypes>(
     getIconProps: () => normalize.element({
       ...parts.icon.attrs,
       'aria-hidden': 'true',
-      'data-variant': variant,
     }),
 
     getTitleProps: () => normalize.element({

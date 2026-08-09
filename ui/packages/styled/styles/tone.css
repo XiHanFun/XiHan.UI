@@ -25,6 +25,9 @@
        而不是让 --xh-_tone 悬空——悬空会让下面每条 color-mix 变成计算期无效，
        用它的声明会整条失效，且 var() 兜底也救不回来（槽位是「已声明但无效」）。 */
     --xh-_tone: var(--xh-color-neutral-600);
+    /* 装饰性强调（色条、图标这类）用 500 档：600 是给实心底与文字用的强调档，
+       压在细长的色条上偏重。alert 与 toast 原本就用 500，接语气层不该改变它们的观感 */
+    --xh-_tone-soft: var(--xh-color-neutral-500);
     --xh-_tone-on: var(--xh-color-neutral-0);
     --xh-_tone-shift: var(--xh-color-neutral-950);
 
@@ -41,6 +44,7 @@
 
   [data-tone='brand'] {
     --xh-_tone: var(--xh-color-brand-600);
+    --xh-_tone-soft: var(--xh-color-brand-500);
     --xh-_tone-on: var(--xh-color-neutral-0);
     --xh-_tone-shift: var(--xh-color-neutral-950);
   }
@@ -53,24 +57,28 @@
 
   [data-tone='danger'] {
     --xh-_tone: var(--xh-color-danger-600);
+    --xh-_tone-soft: var(--xh-color-danger-500);
     --xh-_tone-on: var(--xh-color-neutral-0);
     --xh-_tone-shift: var(--xh-color-neutral-950);
   }
 
   [data-tone='success'] {
     --xh-_tone: var(--xh-color-success-600);
+    --xh-_tone-soft: var(--xh-color-success-500);
     --xh-_tone-on: var(--xh-color-neutral-950);
     --xh-_tone-shift: var(--xh-color-neutral-0);
   }
 
   [data-tone='warning'] {
     --xh-_tone: var(--xh-color-warning-600);
+    --xh-_tone-soft: var(--xh-color-warning-500);
     --xh-_tone-on: var(--xh-color-neutral-950);
     --xh-_tone-shift: var(--xh-color-neutral-0);
   }
 
   [data-tone='info'] {
     --xh-_tone: var(--xh-color-info-600);
+    --xh-_tone-soft: var(--xh-color-info-500);
     --xh-_tone-on: var(--xh-color-neutral-950);
     --xh-_tone-shift: var(--xh-color-neutral-0);
   }

@@ -13,6 +13,16 @@
   }
 
   [data-scope='menu'][data-part='content'] {
+    /* 尺寸档只换这四个私有槽，条目从 content 继承它们，换档不必给每个部件各写一条选择器。
+       菜单没有 root 部件（浮层树的最外层就是 content），三轴属性都落在这里 */
+    --xh-_menu-item-py: var(--xh-space-2);
+    --xh-_menu-item-px: var(--xh-control-px-sm);
+    --xh-_menu-item-gap: var(--xh-control-gap-md);
+    --xh-_menu-font-size: var(--xh-text-body-size);
+
+    /* 条目高亮底随语气走。没写 data-tone 时 --xh-_tone-subtle-hover 没被声明，退回原来的取值 */
+    --xh-_menu-item-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+
     display: flex;
     flex-direction: column;
     min-inline-size: var(--xh-menu-min-w, var(--xh-overlay-menu-min-w));
@@ -41,15 +51,32 @@
     animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
+  /* —— 尺寸 —— */
+  /* 缺省档写在 content 的基础规则里。条目内外边距缺省档本就不在 control-h/px 那把尺上
+     （高度由 padding 撑出来、行内内缩取的是 sm 档），故按 space 档上下各挪一级 */
+  [data-scope='menu'][data-part='content'][data-size='sm'] {
+    --xh-_menu-item-py: var(--xh-space-1);
+    --xh-_menu-item-px: var(--xh-space-1);
+    --xh-_menu-item-gap: var(--xh-control-gap-sm);
+    --xh-_menu-font-size: var(--xh-font-size-sm);
+  }
+
+  [data-scope='menu'][data-part='content'][data-size='lg'] {
+    --xh-_menu-item-py: var(--xh-space-3);
+    --xh-_menu-item-px: var(--xh-space-3);
+    --xh-_menu-item-gap: var(--xh-control-gap-lg);
+    --xh-_menu-font-size: var(--xh-font-size-lg);
+  }
+
   [data-scope='menu'][data-part='item'] {
     display: flex;
     align-items: center;
-    gap: var(--xh-menu-item-gap, var(--xh-control-gap-md));
-    padding-block: var(--xh-menu-item-py, var(--xh-space-2));
-    padding-inline: var(--xh-menu-item-px, var(--xh-control-px-sm));
+    gap: var(--xh-menu-item-gap, var(--xh-_menu-item-gap));
+    padding-block: var(--xh-menu-item-py, var(--xh-_menu-item-py));
+    padding-inline: var(--xh-menu-item-px, var(--xh-_menu-item-px));
     border-radius: var(--xh-menu-item-radius, var(--xh-shape-control));
     color: var(--xh-menu-item-fg, var(--xh-fg-default));
-    font-size: var(--xh-menu-item-font-size, var(--xh-text-body-size));
+    font-size: var(--xh-menu-item-font-size, var(--xh-_menu-font-size));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
@@ -58,7 +85,7 @@
 
   /* 键盘高亮与指针高亮共用一套底色：条目本身承载焦点，不另画描边 */
   [data-scope='menu'][data-part='item']:not([data-disabled]):is(:hover, :focus) {
-    background: var(--xh-menu-item-bg-highlight, var(--xh-bg-subtle-hover));
+    background: var(--xh-menu-item-bg-highlight, var(--xh-_menu-item-highlight-bg));
   }
 
   [data-scope='menu'][data-part='item']:focus {

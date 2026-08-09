@@ -34,6 +34,12 @@ export interface TabsSchema extends MachineSchema {
     activationMode?: TabsActivationMode
     /** 方向键走到尽头是否回绕，默认 true。 */
     loop?: boolean
+    /** 形态：line / card / segment，决定选中态怎么画。缺省是 line。 */
+    variant?: string
+    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    tone?: string
+    /** 尺寸：sm / md / lg。 */
+    size?: string
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: TabsValueChangeDetails) => void
   }

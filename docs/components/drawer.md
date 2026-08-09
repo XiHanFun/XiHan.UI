@@ -50,6 +50,7 @@ side 只落成 data-side，面板压在哪条边由皮肤按这个值决定；ro
 | `closeOnEscape` | `boolean` |  |  |
 | `closeOnInteractOutside` | `boolean` |  |  |
 | `restoreFocus` | `boolean` |  |  |
+| `size` | `string` |  | 尺寸：sm / md / lg。横放时换面板宽度、竖放时换面板高度，随 side 而定。 |
 | `translations` | `Partial<DrawerTranslations>` |  |  |
 | `onOpenChange` | `(details: DrawerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 

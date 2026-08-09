@@ -30,6 +30,8 @@ export interface DialogSchema extends MachineSchema {
     closeOnEscape?: boolean
     closeOnInteractOutside?: boolean
     restoreFocus?: boolean
+    /** 尺寸：sm / md / lg。只换 content 的最大宽度，落在 content 上（本组件没有 root 部件）。 */
+    size?: string
     translations?: Partial<DialogTranslations>
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: DialogOpenChangeDetails) => void

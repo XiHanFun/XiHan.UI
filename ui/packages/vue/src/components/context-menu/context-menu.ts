@@ -26,6 +26,8 @@ export const XhContextMenuRoot = defineComponent({
     typeahead: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     longPressDelay: { type: Number, default: undefined },
+    tone: { type: String, default: undefined },
+    size: { type: String, default: undefined },
   },
   // open-change 携带 { open }、select 携带 { value }，update:open 携带裸布尔
   emits: ['open-change', 'select', 'update:open'],

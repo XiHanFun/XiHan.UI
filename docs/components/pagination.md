@@ -55,6 +55,8 @@ translations 换掉 nav 地标名与各按钮的 aria-label，默认是英文
 | `siblingCount` | `number` |  | 当前页两侧各显示几页，默认 1。 |
 | `dir` | `Direction` |  | 文字方向，只作用于排版；上一页/下一页的语义不随之翻转，"上一页"永远是 page - 1。 |
 | `translations` | `Partial<PaginationTranslations>` |  |  |
+| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `size` | `string` |  | 尺寸：sm / md / lg。 |
 | `onPageChange` | `(details: PaginationPageChangeDetails) => void` |  | 页码变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 
 ## 状态机

@@ -35,6 +35,15 @@ npm 上的 `xihan-ui` 是重写前的旧实现，最后一版 `0.9.8` 发布于 
 - **新增** Checkbox 三态
 - **调整** Select 支持多选，选中值由单值改为集合：`SelectValueChangeDetails.value` 由 `string | null` 变 `string[]`，`SelectApi` 的 `value` / `valueText` 变数组，`setValue` 签名变 `(next: string | string[]) => void`；Vue 侧 `update:value` 载荷与 WC 侧 `value-change` 的 `detail` 随之变化。见[选择器](./components/select)
 
+### 视觉词汇表
+
+- **新增** 三个正交的视觉轴：`variant` 形态（`solid` / `subtle` / `outline` / `ghost`）、`tone` 语气（`brand` / `neutral` / `success` / `warning` / `danger` / `info`）、`size` 尺寸（`sm` / 缺省 / `lg`）。语气做成与组件无关的共享一层，各组件的形态规则只消费它声明的私有槽——加一个语气改一处，不是逐个组件写六遍
+- **新增** 34 个组件接入这套词汇表：按钮族与表单控件、十个输入类组件、以及标签页、步骤条、菜单族、分页、表格、对话框、抽屉等。没写轴的组件外观与接入前逐值一致
+- **调整** 实心底上的前景色按实测对比度分派而非统一白字：600 档上白字对 brand 5.08、neutral 7.80、danger 4.83 达标，而 success 3.04、warning 2.70、info 3.47 都不到 4.5，这三族配深字
+- **调整** 破坏性变更：`alert` 的 `variant` 改名为 `tone`。它原本的取值是 `success` / `warning` / `danger`——那是语气不是形态，与全库词汇表冲突。取值不变，只改属性名；同时移除公开导出的 `AlertVariant` 类型
+- **调整** `toast` 的配色改走共享语气层，由 `type` 内部派生（`error` → `danger`，`loading` → 中性），公开 API 不变
+- **修复** `checkbox` 半选态的横杠此前不可见：方框只在全选时填色，半选保持画布底，而横杠用的是实心底上的前景色，白压白等于没画
+
 ### 自研替换第三方
 
 - **新增** `@xihan-ui/position` 自研浮层定位引擎（包含块解析、缩放换算、翻面与避让、跟随更新），**移除** `@floating-ui/dom`

@@ -252,12 +252,12 @@
             },
             {
               "kind": "field",
-              "name": "variant",
+              "name": "tone",
               "privacy": "public",
               "type": {
                 "text": "string | undefined"
               },
-              "attribute": "variant"
+              "attribute": "tone"
             },
             {
               "kind": "field",
@@ -340,8 +340,8 @@
                 "text": "string | undefined"
               },
               "description": "语气，决定实时区级别与配色",
-              "name": "variant",
-              "fieldName": "variant"
+              "name": "tone",
+              "fieldName": "tone"
             },
             {
               "type": {
@@ -4949,6 +4949,24 @@
             },
             {
               "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "idGen",
               "type": {
                 "text": "IdGenerator"
@@ -5171,6 +5189,22 @@
               "description": "触摸端长按触发时长（ms），默认 700",
               "name": "long-press-delay",
               "fieldName": "longPressDelay"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -6288,6 +6322,15 @@
             },
             {
               "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "idGen",
               "type": {
                 "text": "IdGenerator"
@@ -6449,6 +6492,14 @@
               "description": "关闭后把焦点归还触发元素，默认 true",
               "name": "restore-focus",
               "fieldName": "restoreFocus"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸：只换 content 的最大宽度，落在 content 上",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -6480,7 +6531,7 @@
           "name": "XhDrawerElement",
           "cssParts": [
             {
-              "description": "留在页面原地的容器，承载 data-side / data-state",
+              "description": "留在页面原地的容器，承载 data-side / data-size / data-state",
               "name": "root"
             },
             {
@@ -6496,7 +6547,7 @@
               "name": "positioner"
             },
             {
-              "description": "抽屉面板（role/aria-modal/焦点陷阱所在，另带 data-side）",
+              "description": "抽屉面板（role/aria-modal/焦点陷阱所在，另带 data-side / data-size）",
               "name": "content"
             },
             {
@@ -6584,6 +6635,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "restore-focus"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
             },
             {
               "kind": "field",
@@ -6772,6 +6832,14 @@
               "description": "关闭后把焦点归还触发元素，默认 true",
               "name": "restore-focus",
               "fieldName": "restoreFocus"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸：横放时换面板宽度、竖放时换面板高度",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -9836,6 +9904,24 @@
             },
             {
               "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "idGen",
               "type": {
                 "text": "IdGenerator"
@@ -10018,6 +10104,22 @@
               "description": "文字方向，默认 ltr",
               "name": "dir",
               "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -10179,6 +10281,24 @@
                 "text": "number | undefined"
               },
               "attribute": "offset"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
             },
             {
               "kind": "field",
@@ -10447,6 +10567,22 @@
               "description": "浮层与锚点的间距（px）",
               "name": "offset",
               "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -10585,6 +10721,24 @@
             },
             {
               "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -10720,6 +10874,22 @@
               "description": "方向键走到尽头回绕，默认开启；写 loop=\"false\" 关掉",
               "name": "loop",
               "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -11210,6 +11380,24 @@
             },
             {
               "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -11304,6 +11492,22 @@
               "description": "文字方向，只影响排版；上一页/下一页的语义不随之翻转",
               "name": "dir",
               "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -14798,6 +15002,24 @@
             },
             {
               "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -14930,6 +15152,22 @@
               "description": "文字方向，只影响水平轴上 ArrowLeft/ArrowRight 的前后语义，默认 ltr",
               "name": "dir",
               "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -15334,6 +15572,15 @@
             },
             {
               "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "notifySort",
               "privacy": "private",
               "readonly": true
@@ -15547,6 +15794,14 @@
               "description": "文字方向，只对调左右方向键的展开/收起语义，默认 ltr",
               "name": "dir",
               "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "密度：只换单元格的纵向内边距与字号，列宽不受影响",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -15660,6 +15915,33 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -15765,6 +16047,30 @@
               "description": "方向键走到尽头回绕，默认开启",
               "name": "loop",
               "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "形态，默认 line",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -17725,7 +18031,7 @@
           "name": "XhToastElement",
           "cssParts": [
             {
-              "description": "role=status（error 时 alert）的容器，承载 data-type / data-state / data-paused",
+              "description": "role=status（error 时 alert）的容器，承载 data-type / data-tone / data-state / data-paused",
               "name": "root"
             },
             {

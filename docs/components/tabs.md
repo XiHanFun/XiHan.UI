@@ -54,6 +54,9 @@ orientation 换掉方向键收哪一对键：竖排认上下键，左右键原�
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只影响水平轴上 ArrowLeft/ArrowRight 的前后语义。 |
 | `activationMode` | `TabsActivationMode` |  | 方向键移动焦点时是否顺带切换选中，默认 automatic。 |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
+| `variant` | `string` |  | 形态：line / card / segment，决定选中态怎么画。缺省是 line。 |
+| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `size` | `string` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: TabsValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 
 ## 状态机

@@ -42,6 +42,8 @@ function stepIndexOf(el: HTMLElement): number {
  * @attr {boolean} linear - 线性模式：跳不到还没走到的步（那些 trigger 一律禁用）
  * @attr {boolean} disabled - 整组不可交互，连 Tab 停靠点都不留
  * @attr {'ltr'|'rtl'} dir - 文字方向，只影响水平轴上 ArrowLeft/ArrowRight 的前后语义，默认 ltr
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires step-change - 步序变化；detail 为 `{ step: number }`
  * @csspart root - 组件根容器（承载 data-orientation / data-complete / data-empty）
  * @csspart list - role=tablist 容器（方向键与 Tab 序列在此收口）
@@ -67,6 +69,8 @@ export class XhStepsElement extends XhElement {
     linear: { converter: BOOLEAN_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
   }
 
   declare step?: number
@@ -76,6 +80,8 @@ export class XhStepsElement extends XhElement {
   declare linear?: boolean
   declare disabled?: boolean
   declare direction?: Direction
+  declare tone?: string
+  declare size?: string
 
   private readonly notify = (details: StepsStepChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('step-change', { detail: details, bubbles: true, composed: true }))
@@ -94,6 +100,8 @@ export class XhStepsElement extends XhElement {
       linear: this.linear,
       disabled: this.disabled,
       dir: this.direction,
+      tone: this.tone,
+      size: this.size,
       onStepChange: this.notify,
     }
   }

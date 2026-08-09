@@ -44,6 +44,8 @@ export function connectNavigationMenu<T extends PropTypes>(
       'aria-label': label,
       'data-orientation': orientation,
       'data-state': stateAttr(open),
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       // 仅作者显式给出时才写，避免切断从祖先继承的方向
       'dir': prop('dir'),
       'onPointerleave': (event: PointerEvent) => {

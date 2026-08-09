@@ -10,11 +10,11 @@
 
 <XhDemo src="alert/01-basic" />
 
-### 变体
+### 语气
 
-variant 只改配色，语义仍由内容与 role 决定
+tone 只改配色，语义仍由内容与 role 决定
 
-<XhDemo src="alert/02-variant" />
+<XhDemo src="alert/02-tone" />
 
 ### 可关闭
 
@@ -41,7 +41,7 @@ closable 开启后才渲染关闭按钮；open 受控时由宿主决定去留
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `AlertVariant` |  | 语气，默认 info。danger / warning 走 role="alert"，其余走 role="status"。 |
+| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色，默认 info。 danger / warning 走 role="alert"，其余走 role="status"。 |
 | `closable` | `boolean` |  | 关闭按钮是否可用，默认 true。false 时该按钮同时被禁用与收起。 |
 | `open` | `boolean` |  | 受控显隐；缺省该 prop 即非受控。 |
 | `defaultOpen` | `boolean` |  | 非受控初始显隐，默认显示。 |
@@ -63,7 +63,7 @@ closable 开启后才渲染关闭按钮；open 受控时由宿主决定去留
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `variant` | `AlertVariant` |  |
+| `tone` | `string` |  |
 | `closable` | `boolean` |  |
 | `setOpen` | `(next: boolean) => void` |  |
 | `getRootProps` | `() => T['element']` |  |

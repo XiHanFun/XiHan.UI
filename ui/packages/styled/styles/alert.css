@@ -1,8 +1,8 @@
 @layer xihan.components {
   [data-scope='alert'][data-part='root'] {
-    /* 四个语气只换这一个私有槽，底色/描边/图标色都由它推导出来，
-       换语气不必逐条属性各写一遍 */
-    --xh-_alert-accent: var(--xh-color-info-500);
+    /* 强调色随语气走，底色/描边/图标色都由它推导出来，换语气不必逐条属性各写一遍。
+       没写 data-tone 时 --xh-_tone 没被声明，退回原来的 info 蓝 */
+    --xh-_alert-accent: var(--xh-_tone-soft, var(--xh-color-info-500));
     /* 底色与描边由语气色兑进当前表面色得到：表面色本身跟着深浅模式翻，
        兑出来的淡底也就跟着翻，不必为深色再写一套选择器 */
     --xh-_alert-tint: color-mix(in oklab, var(--xh-_alert-accent) 12%, var(--xh-bg-surface));
@@ -27,18 +27,6 @@
      漏掉这条，关掉的提示还会一直摊在页面上 */
   [data-scope='alert'][data-part='root'][hidden] {
     display: none;
-  }
-
-  [data-scope='alert'][data-part='root'][data-variant='success'] {
-    --xh-_alert-accent: var(--xh-color-success-500);
-  }
-
-  [data-scope='alert'][data-part='root'][data-variant='warning'] {
-    --xh-_alert-accent: var(--xh-color-warning-500);
-  }
-
-  [data-scope='alert'][data-part='root'][data-variant='danger'] {
-    --xh-_alert-accent: var(--xh-color-danger-500);
   }
 
   [data-scope='alert'][data-part='icon'] {

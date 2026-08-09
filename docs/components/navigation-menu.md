@@ -56,6 +56,8 @@ orientation="vertical" 把入口排成一列、面板改从侧边长出来，方
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
 | `translations` | `Partial<NavigationMenuTranslations>` |  |  |
+| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `size` | `string` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: NavigationMenuValueChangeDetails) => void` |  | value 变化回调。 |
 
 ## 状态机

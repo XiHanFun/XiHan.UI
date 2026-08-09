@@ -145,6 +145,8 @@ export interface TableSchema extends MachineSchema {
     loop?: boolean
     /** 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 */
     dir?: Direction
+    /** 密度：sm / md / lg。只换单元格的纵向内边距与字号，列宽算法不受影响。 */
+    size?: string
     onSortChange?: (details: TableSortChangeDetails) => void
     onSelectionChange?: (details: TableSelectionChangeDetails) => void
     onExpandedChange?: (details: TableExpandedChangeDetails) => void

@@ -47,6 +47,10 @@ export interface MenuSchema extends MachineSchema {
     loop?: boolean
     /** 文字方向，默认 ltr。 */
     dir?: Direction
+    /** 语气：brand / neutral / success / warning / danger / info，决定条目高亮用哪族颜色。 */
+    tone?: string
+    /** 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 */
+    size?: string
     /** open 变化回调。 */
     onOpenChange?: (details: MenuOpenChangeDetails) => void
     /** 条目被选中；菜单随之关闭。 */

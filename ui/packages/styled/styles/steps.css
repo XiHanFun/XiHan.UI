@@ -1,5 +1,18 @@
 @layer xihan.components {
   [data-scope='steps'][data-part='root'] {
+    /* 尺寸档只换这三个私有槽，序号圆点、标题与说明都从 root 继承它们，
+       换档不必给每个部件各写一条选择器 */
+    --xh-_steps-indicator-size: var(--xh-control-h-sm);
+    --xh-_steps-title-font-size: var(--xh-text-label-size);
+    --xh-_steps-caption-font-size: var(--xh-font-size-xs);
+
+    /* 语气落在走过与当前这两步的标记和连接线上：强调色画描边与填充，
+       accent-text 是普通底上的强调文字（当前步的序号），on-accent 是实心底上的前景。
+       没写 data-tone 时 --xh-_tone 一族没被声明，三个槽都退回原来的品牌配色 */
+    --xh-_steps-accent: var(--xh-_tone, var(--xh-bg-brand));
+    --xh-_steps-accent-text: var(--xh-_tone-fg, var(--xh-bg-brand));
+    --xh-_steps-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
+
     display: flex;
     flex-direction: column;
     gap: var(--xh-steps-gap, var(--xh-stack-gap-md));
@@ -12,6 +25,21 @@
   /* 纵向：步骤列与面板并排 */
   [data-scope='steps'][data-part='root'][data-orientation='vertical'] {
     flex-direction: row;
+  }
+
+  /* —— 尺寸 —— */
+  /* 缺省档写在上面的基础规则里。圆点直径不在 control-h 那把尺上（缺省是 sm 档的 28px），
+     两侧改从 space 档取，缺省档才留得住 */
+  [data-scope='steps'][data-part='root'][data-size='sm'] {
+    --xh-_steps-indicator-size: var(--xh-space-6);
+    --xh-_steps-title-font-size: var(--xh-font-size-sm);
+    /* 字号档最小就是 xs，序号与说明不再往下走，故不重声明 caption */
+  }
+
+  [data-scope='steps'][data-part='root'][data-size='lg'] {
+    --xh-_steps-indicator-size: var(--xh-space-8);
+    --xh-_steps-title-font-size: var(--xh-font-size-lg);
+    --xh-_steps-caption-font-size: var(--xh-font-size-sm);
   }
 
   [data-scope='steps'][data-part='list'] {
@@ -113,13 +141,13 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-steps-indicator-size, var(--xh-control-h-sm));
-    block-size: var(--xh-steps-indicator-size, var(--xh-control-h-sm));
+    inline-size: var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size));
+    block-size: var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size));
     border: var(--xh-stroke-thin) solid var(--xh-steps-indicator-border, var(--xh-border-strong));
     border-radius: var(--xh-radius-full);
     background: var(--xh-steps-indicator-bg, transparent);
     color: var(--xh-steps-indicator-fg, var(--xh-fg-muted));
-    font-size: var(--xh-steps-indicator-font-size, var(--xh-font-size-xs));
+    font-size: var(--xh-steps-indicator-font-size, var(--xh-_steps-caption-font-size));
     font-weight: var(--xh-font-weight-medium);
     /* 等宽数字：1 与 7 的字形宽度在比例字体里并不相同，不定住会让序号左右抖一格 */
     font-variant-numeric: tabular-nums;
@@ -137,14 +165,14 @@
   /* 当前步是空心的品牌色描边，走过的那些是实心——两者一眼分得开，
      光靠"都填成品牌色"会让人看不出自己停在哪儿 */
   [data-scope='steps'][data-part='indicator'][data-state='current'] {
-    border-color: var(--xh-steps-indicator-border-current, var(--xh-bg-brand));
-    color: var(--xh-steps-indicator-fg-current, var(--xh-bg-brand));
+    border-color: var(--xh-steps-indicator-border-current, var(--xh-_steps-accent));
+    color: var(--xh-steps-indicator-fg-current, var(--xh-_steps-accent-text));
   }
 
   [data-scope='steps'][data-part='indicator'][data-state='completed'] {
-    border-color: var(--xh-steps-indicator-border-completed, var(--xh-bg-brand));
-    background: var(--xh-steps-indicator-bg-completed, var(--xh-bg-brand));
-    color: var(--xh-steps-indicator-fg-completed, var(--xh-fg-on-brand));
+    border-color: var(--xh-steps-indicator-border-completed, var(--xh-_steps-accent));
+    background: var(--xh-steps-indicator-bg-completed, var(--xh-_steps-accent));
+    color: var(--xh-steps-indicator-fg-completed, var(--xh-_steps-on-accent));
   }
 
   [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator'] {
@@ -157,7 +185,7 @@
   [data-scope='steps'][data-part='title'] {
     grid-column: 2;
     color: var(--xh-steps-title-fg, var(--xh-fg-muted));
-    font-size: var(--xh-steps-title-font-size, var(--xh-text-label-size));
+    font-size: var(--xh-steps-title-font-size, var(--xh-_steps-title-font-size));
     font-weight: var(--xh-steps-title-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-tight);
     overflow: hidden;
@@ -172,7 +200,7 @@
   [data-scope='steps'][data-part='description'] {
     grid-column: 2;
     color: var(--xh-steps-description-fg, var(--xh-fg-subtle));
-    font-size: var(--xh-steps-description-font-size, var(--xh-font-size-xs));
+    font-size: var(--xh-steps-description-font-size, var(--xh-_steps-caption-font-size));
     line-height: var(--xh-leading-tight);
     overflow: hidden;
     white-space: nowrap;
@@ -194,7 +222,7 @@
   }
 
   [data-scope='steps'][data-part='separator'][data-state='completed'] {
-    background: var(--xh-steps-separator-bg-completed, var(--xh-bg-brand));
+    background: var(--xh-steps-separator-bg-completed, var(--xh-_steps-accent));
   }
 
   /* 纵向时连接线转成竖的一条，缩进到与序号圆点同一条竖线上 */
@@ -204,7 +232,7 @@
     block-size: var(--xh-steps-separator-min-length, var(--xh-space-4));
     /* 圆点半径减去线宽的一半：calc 里的除法要写成乘 0.5，除号在这儿是无效语法 */
     margin-inline-start: calc(
-      var(--xh-steps-indicator-size, var(--xh-control-h-sm)) * 0.5
+      var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size)) * 0.5
       + var(--xh-steps-trigger-p, var(--xh-space-1))
       - var(--xh-steps-separator-thickness, var(--xh-stroke-thick)) * 0.5
     );

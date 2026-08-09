@@ -27,12 +27,13 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true
  * @attr {boolean} close-on-interact-outside - 点击浮层外关闭；默认跟随 modal，alertdialog 恒不关
  * @attr {boolean} restore-focus - 关闭后把焦点归还触发元素，默认 true
+ * @attr {'sm'|'md'|'lg'} size - 尺寸：横放时换面板宽度、竖放时换面板高度
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
- * @csspart root - 留在页面原地的容器，承载 data-side / data-state
+ * @csspart root - 留在页面原地的容器，承载 data-side / data-size / data-state
  * @csspart trigger - 触发按钮
  * @csspart backdrop - 遮罩层
  * @csspart positioner - 浮层定位容器（贴边布局写在它身上）
- * @csspart content - 抽屉面板（role/aria-modal/焦点陷阱所在，另带 data-side）
+ * @csspart content - 抽屉面板（role/aria-modal/焦点陷阱所在，另带 data-side / data-size）
  * @csspart title - 标题（aria-labelledby 目标）
  * @csspart description - 描述（aria-describedby 目标）
  * @csspart close-trigger - 关闭按钮
@@ -50,6 +51,7 @@ export class XhDrawerElement extends XhElement {
     closeOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-escape' },
     closeOnInteractOutside: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-interact-outside' },
     restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
+    size: { converter: STRING_CONVERTER },
     // 文案是对象，只走 property
     translations: { attribute: false },
   }
@@ -61,6 +63,7 @@ export class XhDrawerElement extends XhElement {
   declare closeOnEscape?: boolean
   declare closeOnInteractOutside?: boolean
   declare restoreFocus?: boolean
+  declare size?: string
   declare translations?: DrawerSchema['props']['translations']
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
@@ -90,6 +93,7 @@ export class XhDrawerElement extends XhElement {
       closeOnEscape: this.closeOnEscape,
       closeOnInteractOutside: this.closeOnInteractOutside,
       restoreFocus: this.restoreFocus,
+      size: this.size,
       translations: this.translations,
       onOpenChange: this.notify,
     }

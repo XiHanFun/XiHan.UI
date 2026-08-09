@@ -174,6 +174,9 @@
      而不是让 --xh-_tone 悬空——悬空会让下面每条 color-mix 变成计算期无效，
      用它的声明会整条失效，且 var() 兜底也救不回来（槽位是「已声明但无效」）。 */
   --xh-_tone: var(--xh-color-neutral-600);
+  /* 装饰性强调（色条、图标这类）用 500 档：600 是给实心底与文字用的强调档，
+     压在细长的色条上偏重。alert 与 toast 原本就用 500，接语气层不该改变它们的观感 */
+  --xh-_tone-soft: var(--xh-color-neutral-500);
   --xh-_tone-on: var(--xh-color-neutral-0);
   --xh-_tone-shift: var(--xh-color-neutral-950);
 
@@ -190,6 +193,7 @@
 
 [data-tone='brand'] {
   --xh-_tone: var(--xh-color-brand-600);
+  --xh-_tone-soft: var(--xh-color-brand-500);
   --xh-_tone-on: var(--xh-color-neutral-0);
   --xh-_tone-shift: var(--xh-color-neutral-950);
 }
@@ -202,33 +206,37 @@
 
 [data-tone='danger'] {
   --xh-_tone: var(--xh-color-danger-600);
+  --xh-_tone-soft: var(--xh-color-danger-500);
   --xh-_tone-on: var(--xh-color-neutral-0);
   --xh-_tone-shift: var(--xh-color-neutral-950);
 }
 
 [data-tone='success'] {
   --xh-_tone: var(--xh-color-success-600);
+  --xh-_tone-soft: var(--xh-color-success-500);
   --xh-_tone-on: var(--xh-color-neutral-950);
   --xh-_tone-shift: var(--xh-color-neutral-0);
 }
 
 [data-tone='warning'] {
   --xh-_tone: var(--xh-color-warning-600);
+  --xh-_tone-soft: var(--xh-color-warning-500);
   --xh-_tone-on: var(--xh-color-neutral-950);
   --xh-_tone-shift: var(--xh-color-neutral-0);
 }
 
 [data-tone='info'] {
   --xh-_tone: var(--xh-color-info-600);
+  --xh-_tone-soft: var(--xh-color-info-500);
   --xh-_tone-on: var(--xh-color-neutral-950);
   --xh-_tone-shift: var(--xh-color-neutral-0);
 }
 
 /* styles/alert.css */
 [data-scope='alert'][data-part='root'] {
-  /* 四个语气只换这一个私有槽，底色/描边/图标色都由它推导出来，
-     换语气不必逐条属性各写一遍 */
-  --xh-_alert-accent: var(--xh-color-info-500);
+  /* 强调色随语气走，底色/描边/图标色都由它推导出来，换语气不必逐条属性各写一遍。
+     没写 data-tone 时 --xh-_tone 没被声明，退回原来的 info 蓝 */
+  --xh-_alert-accent: var(--xh-_tone-soft, var(--xh-color-info-500));
   /* 底色与描边由语气色兑进当前表面色得到：表面色本身跟着深浅模式翻，
      兑出来的淡底也就跟着翻，不必为深色再写一套选择器 */
   --xh-_alert-tint: color-mix(in oklab, var(--xh-_alert-accent) 12%, var(--xh-bg-surface));
@@ -253,18 +261,6 @@
    漏掉这条，关掉的提示还会一直摊在页面上 */
 [data-scope='alert'][data-part='root'][hidden] {
   display: none;
-}
-
-[data-scope='alert'][data-part='root'][data-variant='success'] {
-  --xh-_alert-accent: var(--xh-color-success-500);
-}
-
-[data-scope='alert'][data-part='root'][data-variant='warning'] {
-  --xh-_alert-accent: var(--xh-color-warning-500);
-}
-
-[data-scope='alert'][data-part='root'][data-variant='danger'] {
-  --xh-_alert-accent: var(--xh-color-danger-500);
 }
 
 [data-scope='alert'][data-part='icon'] {
@@ -3343,11 +3339,40 @@
 /* styles/context-menu.css */
 /* 根只是把触发区与浮层圈在一起做作用域，不该在作者布局里多插一层盒子 */
 [data-scope='context-menu'][data-part='root'] {
+  /* 尺寸档只换这四个私有槽，条目与分组标题都从 root 继承它们，
+     换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承
+     （display:contents 不影响继承：自定义属性沿 DOM 树传） */
+  --xh-_context-menu-item-py: var(--xh-space-2);
+  --xh-_context-menu-item-px: var(--xh-control-px-sm);
+  --xh-_context-menu-item-gap: var(--xh-control-gap-md);
+  --xh-_context-menu-font-size: var(--xh-text-body-size);
+
+  /* 条目高亮底与标记位强调色随语气走。没写 data-tone 时这两个语气槽没被声明，各自退回原来的取值 */
+  --xh-_context-menu-item-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+  --xh-_context-menu-accent: var(--xh-_tone, var(--xh-fg-subtle));
+
   display: contents;
 }
 
 [data-scope='context-menu'][data-part='root'][hidden] {
   display: none;
+}
+
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里。条目内外边距缺省档本就不在 control-h/px 那把尺上
+   （高度由 padding 撑出来、行内内缩取的是 sm 档），故按 space 档上下各挪一级 */
+[data-scope='context-menu'][data-part='root'][data-size='sm'] {
+  --xh-_context-menu-item-py: var(--xh-space-1);
+  --xh-_context-menu-item-px: var(--xh-space-1);
+  --xh-_context-menu-item-gap: var(--xh-control-gap-sm);
+  --xh-_context-menu-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='context-menu'][data-part='root'][data-size='lg'] {
+  --xh-_context-menu-item-py: var(--xh-space-3);
+  --xh-_context-menu-item-px: var(--xh-space-3);
+  --xh-_context-menu-item-gap: var(--xh-control-gap-lg);
+  --xh-_context-menu-font-size: var(--xh-font-size-lg);
 }
 
 /* 触发区是作者自己的一块内容，尺寸与排布归他；这里只管交互观感：
@@ -3427,7 +3452,7 @@
 [data-scope='context-menu'][data-part='group-label'] {
   display: block;
   padding-block: var(--xh-context-menu-group-label-py, var(--xh-space-1));
-  padding-inline: var(--xh-context-menu-group-label-px, var(--xh-control-px-sm));
+  padding-inline: var(--xh-context-menu-group-label-px, var(--xh-_context-menu-item-px));
   color: var(--xh-context-menu-group-label-fg, var(--xh-fg-subtle));
   font-size: var(--xh-context-menu-group-label-font-size, var(--xh-font-size-xs));
   font-weight: var(--xh-context-menu-group-label-font-weight, var(--xh-font-weight-medium));
@@ -3442,12 +3467,12 @@
 [data-scope='context-menu'][data-part='item'] {
   display: flex;
   align-items: center;
-  gap: var(--xh-context-menu-item-gap, var(--xh-control-gap-md));
-  padding-block: var(--xh-context-menu-item-py, var(--xh-space-2));
-  padding-inline: var(--xh-context-menu-item-px, var(--xh-control-px-sm));
+  gap: var(--xh-context-menu-item-gap, var(--xh-_context-menu-item-gap));
+  padding-block: var(--xh-context-menu-item-py, var(--xh-_context-menu-item-py));
+  padding-inline: var(--xh-context-menu-item-px, var(--xh-_context-menu-item-px));
   border-radius: var(--xh-context-menu-item-radius, var(--xh-shape-control));
   color: var(--xh-context-menu-item-fg, var(--xh-fg-default));
-  font-size: var(--xh-context-menu-item-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-context-menu-item-font-size, var(--xh-_context-menu-font-size));
   line-height: var(--xh-leading-none);
   white-space: nowrap;
   cursor: pointer;
@@ -3463,7 +3488,7 @@
    data-highlighted 跟的是连接层记的焦点条目，与 :focus 说的是同一件事，
    子部件够不着那个伪类，只能读这个标记 */
 [data-scope='context-menu'][data-part='item']:not([data-disabled]):is(:hover, :focus, [data-highlighted]) {
-  background: var(--xh-context-menu-item-bg-highlight, var(--xh-bg-subtle-hover));
+  background: var(--xh-context-menu-item-bg-highlight, var(--xh-_context-menu-item-highlight-bg));
 }
 
 [data-scope='context-menu'][data-part='item']:focus {
@@ -3495,7 +3520,7 @@
   align-items: center;
   justify-content: center;
   inline-size: var(--xh-context-menu-item-indicator-size, var(--xh-control-indicator-size));
-  color: var(--xh-context-menu-item-indicator-fg, var(--xh-fg-subtle));
+  color: var(--xh-context-menu-item-indicator-fg, var(--xh-_context-menu-accent));
 }
 
 [data-scope='context-menu'][data-part='item-indicator'][hidden] {
@@ -4032,9 +4057,14 @@
 }
 
 [data-scope='dialog'][data-part='content'] {
+  /* 尺寸档只换这一个私有槽。它声明在 content 而不是别处：dialog 的解剖里没有 root，
+     positioner 又不是必需部件，content 才是这层浮层恒在的最外层，且它会被 portal 到 body，
+     选择器只认得它自己身上那一份 data-size。 */
+  --xh-_dialog-max-w: 32rem;
+
   position: relative;
   inline-size: 100%;
-  max-inline-size: var(--xh-dialog-max-w, 32rem);
+  max-inline-size: var(--xh-dialog-max-w, var(--xh-_dialog-max-w));
   display: flex;
   flex-direction: column;
   gap: var(--xh-dialog-gap, var(--xh-stack-gap-md));
@@ -4051,6 +4081,17 @@
    （只有 trigger + content）写时，没有这一条收起的对话框就一直摊在页面上。 */
 [data-scope='dialog'][data-part='content'][hidden] {
   display: none;
+}
+
+/* —— 尺寸 —— */
+/* 只有最大宽度分档；中间档不写规则，缺省即中档。
+   宽度上限之外的一切（内边距、字号、圆角）都不随档位动：弹层的语气归里面的内容表达。 */
+[data-scope='dialog'][data-part='content'][data-size='sm'] {
+  --xh-_dialog-max-w: 24rem;
+}
+
+[data-scope='dialog'][data-part='content'][data-size='lg'] {
+  --xh-_dialog-max-w: 48rem;
 }
 
 [data-scope='dialog'][data-part='content']:focus-visible {
@@ -4300,6 +4341,10 @@
   /* 位移方向的私有槽位：默认按 LTR，RTL 在下面整体翻符号 */
   --xh-_drawer-shift-inline: 100%;
   --xh-_drawer-shift-block: 100%;
+  /* 尺寸档只换这一个私有槽：左右放置时它是面板宽度、上下放置时是面板高度，
+     两种取法都在下面「四条边」那两条规则里。声明在 content 而不是 root：
+     content 会被 portal 到 body，root 上的槽位继承不过来（data-side 也是同一个道理） */
+  --xh-_drawer-size: 20rem;
 
   position: fixed;
   z-index: var(--xh-layer-drawer);
@@ -4337,6 +4382,17 @@
   outline: none;
 }
 
+/* —— 尺寸 —— */
+/* 只有面板厚度分档；中间档不写规则，缺省即中档。
+   data-size 与 data-side 一样同时打在 root 与 content 上，这里只认 content 自己那一份。 */
+[data-scope='drawer'][data-part='content'][data-size='sm'] {
+  --xh-_drawer-size: 16rem;
+}
+
+[data-scope='drawer'][data-part='content'][data-size='lg'] {
+  --xh-_drawer-size: 28rem;
+}
+
 /* —— 四条边 ——
    data-side 同时打在 root 与 content 上；content 会被 portal 到 body，
    选择器只认得 content 自己身上这一份。 */
@@ -4345,7 +4401,7 @@
 [data-scope='drawer'][data-part='content'][data-side='left'],
 [data-scope='drawer'][data-part='content'][data-side='right'] {
   inset-block: 0;
-  inline-size: var(--xh-drawer-size, 20rem);
+  inline-size: var(--xh-drawer-size, var(--xh-_drawer-size));
   /* 视口比抽屉还窄时让位，否则面板会顶出一条横向滚动条 */
   max-inline-size: 100%;
 }
@@ -4367,7 +4423,7 @@
 [data-scope='drawer'][data-part='content'][data-side='top'],
 [data-scope='drawer'][data-part='content'][data-side='bottom'] {
   inset-inline: 0;
-  block-size: var(--xh-drawer-size, 20rem);
+  block-size: var(--xh-drawer-size, var(--xh-_drawer-size));
   max-block-size: 100%;
 }
 
@@ -5722,6 +5778,16 @@
 }
 
 [data-scope='menu'][data-part='content'] {
+  /* 尺寸档只换这四个私有槽，条目从 content 继承它们，换档不必给每个部件各写一条选择器。
+     菜单没有 root 部件（浮层树的最外层就是 content），三轴属性都落在这里 */
+  --xh-_menu-item-py: var(--xh-space-2);
+  --xh-_menu-item-px: var(--xh-control-px-sm);
+  --xh-_menu-item-gap: var(--xh-control-gap-md);
+  --xh-_menu-font-size: var(--xh-text-body-size);
+
+  /* 条目高亮底随语气走。没写 data-tone 时 --xh-_tone-subtle-hover 没被声明，退回原来的取值 */
+  --xh-_menu-item-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+
   display: flex;
   flex-direction: column;
   min-inline-size: var(--xh-menu-min-w, var(--xh-overlay-menu-min-w));
@@ -5750,15 +5816,32 @@
   animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
+/* —— 尺寸 —— */
+/* 缺省档写在 content 的基础规则里。条目内外边距缺省档本就不在 control-h/px 那把尺上
+   （高度由 padding 撑出来、行内内缩取的是 sm 档），故按 space 档上下各挪一级 */
+[data-scope='menu'][data-part='content'][data-size='sm'] {
+  --xh-_menu-item-py: var(--xh-space-1);
+  --xh-_menu-item-px: var(--xh-space-1);
+  --xh-_menu-item-gap: var(--xh-control-gap-sm);
+  --xh-_menu-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='menu'][data-part='content'][data-size='lg'] {
+  --xh-_menu-item-py: var(--xh-space-3);
+  --xh-_menu-item-px: var(--xh-space-3);
+  --xh-_menu-item-gap: var(--xh-control-gap-lg);
+  --xh-_menu-font-size: var(--xh-font-size-lg);
+}
+
 [data-scope='menu'][data-part='item'] {
   display: flex;
   align-items: center;
-  gap: var(--xh-menu-item-gap, var(--xh-control-gap-md));
-  padding-block: var(--xh-menu-item-py, var(--xh-space-2));
-  padding-inline: var(--xh-menu-item-px, var(--xh-control-px-sm));
+  gap: var(--xh-menu-item-gap, var(--xh-_menu-item-gap));
+  padding-block: var(--xh-menu-item-py, var(--xh-_menu-item-py));
+  padding-inline: var(--xh-menu-item-px, var(--xh-_menu-item-px));
   border-radius: var(--xh-menu-item-radius, var(--xh-shape-control));
   color: var(--xh-menu-item-fg, var(--xh-fg-default));
-  font-size: var(--xh-menu-item-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-menu-item-font-size, var(--xh-_menu-font-size));
   line-height: var(--xh-leading-none);
   white-space: nowrap;
   cursor: pointer;
@@ -5767,7 +5850,7 @@
 
 /* 键盘高亮与指针高亮共用一套底色：条目本身承载焦点，不另画描边 */
 [data-scope='menu'][data-part='item']:not([data-disabled]):is(:hover, :focus) {
-  background: var(--xh-menu-item-bg-highlight, var(--xh-bg-subtle-hover));
+  background: var(--xh-menu-item-bg-highlight, var(--xh-_menu-item-highlight-bg));
 }
 
 [data-scope='menu'][data-part='item']:focus {
@@ -5827,6 +5910,19 @@
 /* styles/menubar.css */
 /* 一排 trigger。主轴跟着 data-orientation 走：菜单栏本身可以横排也可以竖排 */
 [data-scope='menubar'][data-part='root'] {
+  /* 尺寸档只换这五个私有槽，trigger 与菜单里的条目都从 root 继承它们，
+     换档不必给每个部件各写一条选择器。菜单浮层在 positioner 里、也是 root 的后代，一并继承 */
+  --xh-_menubar-trigger-py: var(--xh-space-1);
+  --xh-_menubar-trigger-px: var(--xh-control-px-sm);
+  --xh-_menubar-item-py: var(--xh-space-2);
+  --xh-_menubar-item-px: var(--xh-control-px-sm);
+  --xh-_menubar-font-size: var(--xh-text-body-size);
+
+  /* 高亮底随语气走：展开着的那张菜单的 trigger 与菜单里的高亮条目共用这一档。
+     没写 data-tone 时 --xh-_tone-subtle-hover 没被声明，退回原来的中性底。
+     聚焦环不在其列，它恒是 --xh-ring-focus */
+  --xh-_menubar-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+
   display: flex;
   align-items: center;
   gap: var(--xh-menubar-gap, var(--xh-space-1));
@@ -5846,6 +5942,25 @@
   align-items: stretch;
 }
 
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里。内边距的缺省档已经落在控件内边距尺的 sm 那一格，
+   往下没有更小的一格，sm 档改取空间尺；lg 档回到控件尺的下一格 */
+[data-scope='menubar'][data-part='root'][data-size='sm'] {
+  --xh-_menubar-trigger-py: var(--xh-space-0_5);
+  --xh-_menubar-trigger-px: var(--xh-space-1_5);
+  --xh-_menubar-item-py: var(--xh-space-1_5);
+  --xh-_menubar-item-px: var(--xh-space-1_5);
+  --xh-_menubar-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='menubar'][data-part='root'][data-size='lg'] {
+  --xh-_menubar-trigger-py: var(--xh-space-2);
+  --xh-_menubar-trigger-px: var(--xh-control-px-md);
+  --xh-_menubar-item-py: var(--xh-space-3);
+  --xh-_menubar-item-px: var(--xh-control-px-md);
+  --xh-_menubar-font-size: var(--xh-font-size-lg);
+}
+
 /* root 只是 roving tabindex 的兜底落点，焦点转投给 trigger 之后就不再停留，不画环 */
 [data-scope='menubar'][data-part='root']:focus-visible {
   outline: none;
@@ -5860,14 +5975,14 @@
   flex: none;
   align-items: center;
   gap: var(--xh-menubar-trigger-gap, var(--xh-control-gap-sm));
-  padding-block: var(--xh-menubar-trigger-py, var(--xh-space-1));
-  padding-inline: var(--xh-menubar-trigger-px, var(--xh-control-px-sm));
+  padding-block: var(--xh-menubar-trigger-py, var(--xh-_menubar-trigger-py));
+  padding-inline: var(--xh-menubar-trigger-px, var(--xh-_menubar-trigger-px));
   border: none;
   border-radius: var(--xh-menubar-trigger-radius, var(--xh-shape-control));
   background: transparent;
   color: inherit;
   font: inherit;
-  font-size: var(--xh-menubar-trigger-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-menubar-trigger-font-size, var(--xh-_menubar-font-size));
   line-height: var(--xh-leading-none);
   white-space: nowrap;
   cursor: pointer;
@@ -5880,7 +5995,7 @@
 
 /* 展开着的那一项与指针悬停共用一套底色：菜单栏里"哪一张开着"必须一眼看得出来 */
 [data-scope='menubar'][data-part='trigger']:not([data-disabled]):is(:hover, [data-state='open']) {
-  background: var(--xh-menubar-trigger-bg-active, var(--xh-bg-subtle-hover));
+  background: var(--xh-menubar-trigger-bg-active, var(--xh-_menubar-highlight-bg));
 }
 
 /* trigger 自带 Tab 位（整条菜单栏唯一的那个），必须画得出焦点 */
@@ -5962,7 +6077,7 @@
 [data-scope='menubar'][data-part='group-label'] {
   display: block;
   padding-block: var(--xh-menubar-group-label-py, var(--xh-space-1));
-  padding-inline: var(--xh-menubar-group-label-px, var(--xh-control-px-sm));
+  padding-inline: var(--xh-menubar-group-label-px, var(--xh-_menubar-item-px));
   color: var(--xh-menubar-group-label-fg, var(--xh-fg-subtle));
   font-size: var(--xh-menubar-group-label-font-size, var(--xh-font-size-xs));
   font-weight: var(--xh-menubar-group-label-font-weight, var(--xh-font-weight-medium));
@@ -5978,11 +6093,11 @@
   display: flex;
   align-items: center;
   gap: var(--xh-menubar-item-gap, var(--xh-control-gap-md));
-  padding-block: var(--xh-menubar-item-py, var(--xh-space-2));
-  padding-inline: var(--xh-menubar-item-px, var(--xh-control-px-sm));
+  padding-block: var(--xh-menubar-item-py, var(--xh-_menubar-item-py));
+  padding-inline: var(--xh-menubar-item-px, var(--xh-_menubar-item-px));
   border-radius: var(--xh-menubar-item-radius, var(--xh-shape-control));
   color: var(--xh-menubar-item-fg, var(--xh-fg-default));
-  font-size: var(--xh-menubar-item-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-menubar-item-font-size, var(--xh-_menubar-font-size));
   line-height: var(--xh-leading-none);
   white-space: nowrap;
   cursor: pointer;
@@ -5998,7 +6113,7 @@
    data-highlighted 跟的是连接层记的焦点条目，与 :focus 说的是同一件事，
    子部件够不着那个伪类，只能读这个标记 */
 [data-scope='menubar'][data-part='item']:not([data-disabled]):is(:hover, :focus, [data-highlighted]) {
-  background: var(--xh-menubar-item-bg-highlight, var(--xh-bg-subtle-hover));
+  background: var(--xh-menubar-item-bg-highlight, var(--xh-_menubar-highlight-bg));
 }
 
 [data-scope='menubar'][data-part='item']:focus {
@@ -6078,9 +6193,48 @@
 /* 根节点是 nav 地标，不参与排版；给 relative 是为了让共享外壳（viewport）有个定位参照系。
    这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
 [data-scope='navigation-menu'][data-part='root'] {
+  /* 尺寸档只换这五个私有槽，trigger 与面板里的链接都从 root 继承它们，
+     换档不必给每个部件各写一条选择器。面板与共享外壳都是 root 的后代，一并继承。
+     trigger 写的是 font: inherit，字号跟着 root 这一档走，不另立槽 */
+  --xh-_navigation-menu-font-size: var(--xh-text-label-size);
+  --xh-_navigation-menu-trigger-h: var(--xh-control-h-md);
+  --xh-_navigation-menu-trigger-px: var(--xh-control-px-md);
+  --xh-_navigation-menu-trigger-gap: var(--xh-control-gap-md);
+  --xh-_navigation-menu-link-p: var(--xh-space-2);
+  --xh-_navigation-menu-link-font-size: var(--xh-text-body-size);
+
+  /* 语气落在三处：条目的高亮底、展开着的 trigger 与当前链接的文字色、指示条。
+     没写 data-tone 时这几个 --xh-_tone-* 都没被声明，各自退回原来的取值。
+     聚焦环不在其列，它恒是 --xh-ring-focus */
+  --xh-_navigation-menu-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+  --xh-_navigation-menu-open-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_navigation-menu-current-fg: var(--xh-_tone-fg, var(--xh-fg-brand));
+  --xh-_navigation-menu-accent: var(--xh-_tone, var(--xh-fg-brand));
+
   position: relative;
   color: var(--xh-navigation-menu-fg, var(--xh-fg-default));
-  font-size: var(--xh-navigation-menu-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-navigation-menu-font-size, var(--xh-_navigation-menu-font-size));
+}
+
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里。链接的内边距不在控件内边距那把尺上（它比控件矮一档），
+   三档一律取空间尺，缺省档的取值原样保留 */
+[data-scope='navigation-menu'][data-part='root'][data-size='sm'] {
+  --xh-_navigation-menu-font-size: var(--xh-font-size-sm);
+  --xh-_navigation-menu-trigger-h: var(--xh-control-h-sm);
+  --xh-_navigation-menu-trigger-px: var(--xh-control-px-sm);
+  --xh-_navigation-menu-trigger-gap: var(--xh-control-gap-sm);
+  --xh-_navigation-menu-link-p: var(--xh-space-1_5);
+  --xh-_navigation-menu-link-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='navigation-menu'][data-part='root'][data-size='lg'] {
+  --xh-_navigation-menu-font-size: var(--xh-font-size-lg);
+  --xh-_navigation-menu-trigger-h: var(--xh-control-h-lg);
+  --xh-_navigation-menu-trigger-px: var(--xh-control-px-lg);
+  --xh-_navigation-menu-trigger-gap: var(--xh-control-gap-lg);
+  --xh-_navigation-menu-link-p: var(--xh-space-3);
+  --xh-_navigation-menu-link-font-size: var(--xh-font-size-lg);
 }
 
 /* 指示条的定位参照系（它是 absolute，量出来的偏移就是相对这里的）。
@@ -6117,9 +6271,9 @@
 [data-scope='navigation-menu'][data-part='trigger'] {
   display: inline-flex;
   align-items: center;
-  gap: var(--xh-navigation-menu-trigger-gap, var(--xh-control-gap-md));
-  block-size: var(--xh-navigation-menu-trigger-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-navigation-menu-trigger-px, var(--xh-control-px-md));
+  gap: var(--xh-navigation-menu-trigger-gap, var(--xh-_navigation-menu-trigger-gap));
+  block-size: var(--xh-navigation-menu-trigger-h, var(--xh-_navigation-menu-trigger-h));
+  padding-inline: var(--xh-navigation-menu-trigger-px, var(--xh-_navigation-menu-trigger-px));
   border: 0;
   border-radius: var(--xh-navigation-menu-trigger-radius, var(--xh-shape-control));
   background: transparent;
@@ -6137,7 +6291,7 @@
 }
 
 [data-scope='navigation-menu'][data-part='trigger']:hover {
-  background: var(--xh-navigation-menu-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  background: var(--xh-navigation-menu-trigger-bg-hover, var(--xh-_navigation-menu-highlight-bg));
 }
 
 [data-scope='navigation-menu'][data-part='trigger']:focus-visible {
@@ -6146,7 +6300,7 @@
 }
 
 [data-scope='navigation-menu'][data-part='trigger'][data-state='open'] {
-  color: var(--xh-navigation-menu-trigger-fg-open, var(--xh-fg-default));
+  color: var(--xh-navigation-menu-trigger-fg-open, var(--xh-_navigation-menu-open-fg));
 }
 
 /* 集合条目用 data-disabled，不用 :disabled：它带的是 aria-disabled，
@@ -6201,11 +6355,11 @@
 [data-scope='navigation-menu'][data-part='link'] {
   display: flex;
   align-items: center;
-  padding-block: var(--xh-navigation-menu-link-py, var(--xh-space-2));
-  padding-inline: var(--xh-navigation-menu-link-px, var(--xh-space-2));
+  padding-block: var(--xh-navigation-menu-link-py, var(--xh-_navigation-menu-link-p));
+  padding-inline: var(--xh-navigation-menu-link-px, var(--xh-_navigation-menu-link-p));
   border-radius: var(--xh-navigation-menu-link-radius, var(--xh-shape-control));
   color: var(--xh-navigation-menu-link-fg, var(--xh-fg-default));
-  font-size: var(--xh-navigation-menu-link-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-navigation-menu-link-font-size, var(--xh-_navigation-menu-link-font-size));
   text-decoration: none;
 }
 
@@ -6214,7 +6368,7 @@
 }
 
 [data-scope='navigation-menu'][data-part='link']:hover {
-  background: var(--xh-navigation-menu-link-bg-hover, var(--xh-bg-subtle-hover));
+  background: var(--xh-navigation-menu-link-bg-hover, var(--xh-_navigation-menu-highlight-bg));
 }
 
 [data-scope='navigation-menu'][data-part='link']:focus-visible {
@@ -6224,7 +6378,7 @@
 
 /* 指向当前页面的那一条：颜色与字重都变，不加下划线（下划线是"可点"的信号，它已经在这儿了） */
 [data-scope='navigation-menu'][data-part='link'][data-current] {
-  color: var(--xh-navigation-menu-link-fg-current, var(--xh-fg-brand));
+  color: var(--xh-navigation-menu-link-fg-current, var(--xh-_navigation-menu-current-fg));
   font-weight: var(--xh-navigation-menu-link-font-weight-current, var(--xh-font-weight-medium));
 }
 
@@ -6236,7 +6390,7 @@
   inset-block-end: calc(var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick)) * -1);
   block-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
   border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-radius-full));
-  background: var(--xh-navigation-menu-indicator-color, var(--xh-fg-brand));
+  background: var(--xh-navigation-menu-indicator-color, var(--xh-_navigation-menu-accent));
   transition:
     inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
     inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
@@ -6499,11 +6653,39 @@
    页数为 0 时连接层会打 data-empty，这里不拿它做隐藏：作者常把「第 x-y 条」这类
    区间回显也写在 nav 里，整块藏掉会连那行字一起吞了，是否隐藏交给作者决定 */
 [data-scope='pagination'][data-part='root'] {
+  /* 尺寸档只换这三个私有槽，上一页/下一页、页码与省略号都从 root 继承它们，
+     换档不必给每个部件各写一条选择器 */
+  --xh-_pagination-item-size: var(--xh-control-h-md);
+  --xh-_pagination-item-px: var(--xh-space-2);
+  --xh-_pagination-font-size: var(--xh-text-label-size);
+
+  /* 当前页的选中态随语气走。没写 data-tone 时这几个 --xh-_tone-* 都没被声明，
+     退回原来的品牌底与其配色。聚焦环不在其列，它恒是 --xh-ring-focus */
+  --xh-_pagination-selected-bg: var(--xh-_tone, var(--xh-bg-brand));
+  --xh-_pagination-selected-bg-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
+  --xh-_pagination-selected-bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
+  --xh-_pagination-selected-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+
   display: flex;
   align-items: center;
   /* 页码多到一行放不下就换行，宁可折行也不要把按钮压扁或撑出横向滚动 */
   flex-wrap: wrap;
   gap: var(--xh-pagination-gap, var(--xh-space-1));
+}
+
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里。格子高度走控件高度尺；内边距不在控件内边距那把尺上
+   （页码格子靠最小宽度撑等宽，内边距比同高的控件窄一档），三档一律取空间尺 */
+[data-scope='pagination'][data-part='root'][data-size='sm'] {
+  --xh-_pagination-item-size: var(--xh-control-h-sm);
+  --xh-_pagination-item-px: var(--xh-space-1_5);
+  --xh-_pagination-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='pagination'][data-part='root'][data-size='lg'] {
+  --xh-_pagination-item-size: var(--xh-control-h-lg);
+  --xh-_pagination-item-px: var(--xh-space-3);
+  --xh-_pagination-font-size: var(--xh-font-size-lg);
 }
 
 [data-scope='pagination'][data-part='root'][hidden] {
@@ -6521,13 +6703,13 @@
   justify-content: center;
   /* 等宽的关键：1 与 10 的内容宽度不同，靠最小宽度把它们撑到同一格，
      行宽才不会随当前页左右抖动。三位数超过最小宽度时才自然变宽 */
-  min-inline-size: var(--xh-pagination-item-min-size, var(--xh-control-h-md));
-  block-size: var(--xh-pagination-item-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-pagination-item-px, var(--xh-space-2));
+  min-inline-size: var(--xh-pagination-item-min-size, var(--xh-_pagination-item-size));
+  block-size: var(--xh-pagination-item-h, var(--xh-_pagination-item-size));
+  padding-inline: var(--xh-pagination-item-px, var(--xh-_pagination-item-px));
   /* 省略号也占一条透明描边：只给按钮描边的话两者内容盒不等高，一行里就对不齐 */
   border: var(--xh-stroke-thin) solid transparent;
   border-radius: var(--xh-pagination-item-radius, var(--xh-shape-control));
-  font-size: var(--xh-pagination-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-pagination-font-size, var(--xh-_pagination-font-size));
   line-height: var(--xh-leading-none);
   /* 等宽数字：1 与 7 的字形宽度在比例字体里并不相同，不定住会让同位数页码抖一格 */
   font-variant-numeric: tabular-nums;
@@ -6591,19 +6773,19 @@
    样式挂在 data 钩子上，无障碍语义留给 aria，两边各司其职。
    只换底色不加粗——字重一变字形就变宽，页码格子会跟着长一点，正是这里要避免的抖动 */
 [data-scope='pagination'][data-part='item'][data-selected] {
-  border-color: var(--xh-pagination-item-border-selected, var(--xh-bg-brand));
-  background: var(--xh-pagination-item-bg-selected, var(--xh-bg-brand));
-  color: var(--xh-pagination-item-fg-selected, var(--xh-fg-on-brand));
+  border-color: var(--xh-pagination-item-border-selected, var(--xh-_pagination-selected-bg));
+  background: var(--xh-pagination-item-bg-selected, var(--xh-_pagination-selected-bg));
+  color: var(--xh-pagination-item-fg-selected, var(--xh-_pagination-selected-fg));
 }
 
 [data-scope='pagination'][data-part='item'][data-selected]:hover {
-  border-color: var(--xh-pagination-item-border-selected-hover, var(--xh-bg-brand-hover));
-  background: var(--xh-pagination-item-bg-selected-hover, var(--xh-bg-brand-hover));
+  border-color: var(--xh-pagination-item-border-selected-hover, var(--xh-_pagination-selected-bg-hover));
+  background: var(--xh-pagination-item-bg-selected-hover, var(--xh-_pagination-selected-bg-hover));
 }
 
 [data-scope='pagination'][data-part='item'][data-selected]:active {
-  border-color: var(--xh-pagination-item-border-selected-active, var(--xh-bg-brand-active));
-  background: var(--xh-pagination-item-bg-selected-active, var(--xh-bg-brand-active));
+  border-color: var(--xh-pagination-item-border-selected-active, var(--xh-_pagination-selected-bg-active));
+  background: var(--xh-pagination-item-bg-selected-active, var(--xh-_pagination-selected-bg-active));
 }
 
 /* 省略号是纯视觉占位，读屏那边已被 aria-hidden 摘掉：
@@ -7927,6 +8109,19 @@
 
 /* styles/steps.css */
 [data-scope='steps'][data-part='root'] {
+  /* 尺寸档只换这三个私有槽，序号圆点、标题与说明都从 root 继承它们，
+     换档不必给每个部件各写一条选择器 */
+  --xh-_steps-indicator-size: var(--xh-control-h-sm);
+  --xh-_steps-title-font-size: var(--xh-text-label-size);
+  --xh-_steps-caption-font-size: var(--xh-font-size-xs);
+
+  /* 语气落在走过与当前这两步的标记和连接线上：强调色画描边与填充，
+     accent-text 是普通底上的强调文字（当前步的序号），on-accent 是实心底上的前景。
+     没写 data-tone 时 --xh-_tone 一族没被声明，三个槽都退回原来的品牌配色 */
+  --xh-_steps-accent: var(--xh-_tone, var(--xh-bg-brand));
+  --xh-_steps-accent-text: var(--xh-_tone-fg, var(--xh-bg-brand));
+  --xh-_steps-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
+
   display: flex;
   flex-direction: column;
   gap: var(--xh-steps-gap, var(--xh-stack-gap-md));
@@ -7939,6 +8134,21 @@
 /* 纵向：步骤列与面板并排 */
 [data-scope='steps'][data-part='root'][data-orientation='vertical'] {
   flex-direction: row;
+}
+
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里。圆点直径不在 control-h 那把尺上（缺省是 sm 档的 28px），
+   两侧改从 space 档取，缺省档才留得住 */
+[data-scope='steps'][data-part='root'][data-size='sm'] {
+  --xh-_steps-indicator-size: var(--xh-space-6);
+  --xh-_steps-title-font-size: var(--xh-font-size-sm);
+  /* 字号档最小就是 xs，序号与说明不再往下走，故不重声明 caption */
+}
+
+[data-scope='steps'][data-part='root'][data-size='lg'] {
+  --xh-_steps-indicator-size: var(--xh-space-8);
+  --xh-_steps-title-font-size: var(--xh-font-size-lg);
+  --xh-_steps-caption-font-size: var(--xh-font-size-sm);
 }
 
 [data-scope='steps'][data-part='list'] {
@@ -8040,13 +8250,13 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  inline-size: var(--xh-steps-indicator-size, var(--xh-control-h-sm));
-  block-size: var(--xh-steps-indicator-size, var(--xh-control-h-sm));
+  inline-size: var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size));
+  block-size: var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size));
   border: var(--xh-stroke-thin) solid var(--xh-steps-indicator-border, var(--xh-border-strong));
   border-radius: var(--xh-radius-full);
   background: var(--xh-steps-indicator-bg, transparent);
   color: var(--xh-steps-indicator-fg, var(--xh-fg-muted));
-  font-size: var(--xh-steps-indicator-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-steps-indicator-font-size, var(--xh-_steps-caption-font-size));
   font-weight: var(--xh-font-weight-medium);
   /* 等宽数字：1 与 7 的字形宽度在比例字体里并不相同，不定住会让序号左右抖一格 */
   font-variant-numeric: tabular-nums;
@@ -8064,14 +8274,14 @@
 /* 当前步是空心的品牌色描边，走过的那些是实心——两者一眼分得开，
    光靠"都填成品牌色"会让人看不出自己停在哪儿 */
 [data-scope='steps'][data-part='indicator'][data-state='current'] {
-  border-color: var(--xh-steps-indicator-border-current, var(--xh-bg-brand));
-  color: var(--xh-steps-indicator-fg-current, var(--xh-bg-brand));
+  border-color: var(--xh-steps-indicator-border-current, var(--xh-_steps-accent));
+  color: var(--xh-steps-indicator-fg-current, var(--xh-_steps-accent-text));
 }
 
 [data-scope='steps'][data-part='indicator'][data-state='completed'] {
-  border-color: var(--xh-steps-indicator-border-completed, var(--xh-bg-brand));
-  background: var(--xh-steps-indicator-bg-completed, var(--xh-bg-brand));
-  color: var(--xh-steps-indicator-fg-completed, var(--xh-fg-on-brand));
+  border-color: var(--xh-steps-indicator-border-completed, var(--xh-_steps-accent));
+  background: var(--xh-steps-indicator-bg-completed, var(--xh-_steps-accent));
+  color: var(--xh-steps-indicator-fg-completed, var(--xh-_steps-on-accent));
 }
 
 [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator'] {
@@ -8084,7 +8294,7 @@
 [data-scope='steps'][data-part='title'] {
   grid-column: 2;
   color: var(--xh-steps-title-fg, var(--xh-fg-muted));
-  font-size: var(--xh-steps-title-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-steps-title-font-size, var(--xh-_steps-title-font-size));
   font-weight: var(--xh-steps-title-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-tight);
   overflow: hidden;
@@ -8099,7 +8309,7 @@
 [data-scope='steps'][data-part='description'] {
   grid-column: 2;
   color: var(--xh-steps-description-fg, var(--xh-fg-subtle));
-  font-size: var(--xh-steps-description-font-size, var(--xh-font-size-xs));
+  font-size: var(--xh-steps-description-font-size, var(--xh-_steps-caption-font-size));
   line-height: var(--xh-leading-tight);
   overflow: hidden;
   white-space: nowrap;
@@ -8121,7 +8331,7 @@
 }
 
 [data-scope='steps'][data-part='separator'][data-state='completed'] {
-  background: var(--xh-steps-separator-bg-completed, var(--xh-bg-brand));
+  background: var(--xh-steps-separator-bg-completed, var(--xh-_steps-accent));
 }
 
 /* 纵向时连接线转成竖的一条，缩进到与序号圆点同一条竖线上 */
@@ -8131,7 +8341,7 @@
   block-size: var(--xh-steps-separator-min-length, var(--xh-space-4));
   /* 圆点半径减去线宽的一半：calc 里的除法要写成乘 0.5，除号在这儿是无效语法 */
   margin-inline-start: calc(
-    var(--xh-steps-indicator-size, var(--xh-control-h-sm)) * 0.5
+    var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size)) * 0.5
     + var(--xh-steps-trigger-p, var(--xh-space-1))
     - var(--xh-steps-separator-thickness, var(--xh-stroke-thick)) * 0.5
   );
@@ -8230,6 +8440,11 @@
 
 /* 表格自己滚动：吸顶表头与横向吸附列都要一个确定的滚动容器才钉得住 */
 [data-scope='table'][data-part='root'] {
+  /* 密度档只换这两个私有槽：单元格与列标题从 root 继承前者，字号靠 font-size 本身继承下去，
+     换档不必给每个部件各写一条选择器，列宽那套算法也一点不碰 */
+  --xh-_table-cell-py: var(--xh-space-2);
+  --xh-_table-font-size: var(--xh-text-body-size);
+
   display: flex;
   position: relative;
   flex-direction: column;
@@ -8238,7 +8453,7 @@
   border-radius: var(--xh-table-radius, var(--xh-shape-surface));
   background: var(--xh-table-bg, var(--xh-bg-surface));
   color: var(--xh-table-fg, var(--xh-fg-default));
-  font-size: var(--xh-table-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-table-font-size, var(--xh-_table-font-size));
   /* 两轴一起给：列多了横向溢出是常态，得够得着 */
   overflow: auto;
 }
@@ -8250,6 +8465,18 @@
 /* 纯容器：焦点落它身上不画环，高亮永远长在行上 */
 [data-scope='table'][data-part='root']:focus-visible {
   outline: none;
+}
+
+/* —— 密度 —— */
+/* 中间档不写规则，缺省即中档 */
+[data-scope='table'][data-part='root'][data-size='sm'] {
+  --xh-_table-cell-py: var(--xh-space-1);
+  --xh-_table-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='table'][data-part='root'][data-size='lg'] {
+  --xh-_table-cell-py: var(--xh-space-3);
+  --xh-_table-font-size: var(--xh-font-size-lg);
 }
 
 [data-scope='table'][data-part='caption'] {
@@ -8359,7 +8586,7 @@
   align-items: center;
   gap: var(--xh-table-cell-gap, var(--xh-control-gap-md));
   min-inline-size: var(--xh-table-cell-min-w, 3rem);
-  padding-block: var(--xh-table-cell-py, var(--xh-space-2));
+  padding-block: var(--xh-table-cell-py, var(--xh-_table-cell-py));
   padding-inline: var(--xh-table-cell-px, var(--xh-control-px-sm));
   overflow: hidden;
   text-overflow: ellipsis;
@@ -8597,6 +8824,30 @@
 
 /* styles/tabs.css */
 [data-scope='tabs'][data-part='root'] {
+  /* 尺寸档只换这三个私有槽，标签从 root 继承它们，换档不必给每个部件各写一条选择器 */
+  --xh-_tabs-trigger-h: var(--xh-control-h-md);
+  --xh-_tabs-trigger-px: var(--xh-control-px-md);
+  --xh-_tabs-trigger-font-size: var(--xh-text-label-size);
+
+  /* 形态档只换这几个私有槽：列表的底、内边距、基线，与标签的描边、选中底、选中态那道指示。
+     缺省档（line）是一条基线加一行标签，选中只换文字色——这里的取值即现状 */
+  --xh-_tabs-list-gap: var(--xh-control-gap-md);
+  --xh-_tabs-list-bg: transparent;
+  --xh-_tabs-list-p: var(--xh-space-0);
+  --xh-_tabs-list-radius: var(--xh-radius-none);
+  --xh-_tabs-list-border-width: var(--xh-stroke-thin);
+  --xh-_tabs-trigger-border-width: 0;
+  --xh-_tabs-trigger-border: transparent;
+  --xh-_tabs-trigger-bg-active: transparent;
+  --xh-_tabs-trigger-bg-active-hover: var(--xh-bg-subtle-hover);
+  --xh-_tabs-trigger-border-active: transparent;
+  --xh-_tabs-trigger-shadow-active: none;
+
+  /* 语气落在选中态：指示条与选中标签的文字。
+     没写 data-tone 时 --xh-_tone 一族没被声明，两个槽都退回原来的取色 */
+  --xh-_tabs-accent: var(--xh-_tone, var(--xh-bg-brand));
+  --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-default));
+
   display: flex;
   flex-direction: column;
   gap: var(--xh-tabs-gap, var(--xh-stack-gap-md));
@@ -8607,19 +8858,62 @@
   flex-direction: row;
 }
 
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里 */
+[data-scope='tabs'][data-part='root'][data-size='sm'] {
+  --xh-_tabs-trigger-h: var(--xh-control-h-sm);
+  --xh-_tabs-trigger-px: var(--xh-control-px-sm);
+  --xh-_tabs-trigger-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='tabs'][data-part='root'][data-size='lg'] {
+  --xh-_tabs-trigger-h: var(--xh-control-h-lg);
+  --xh-_tabs-trigger-px: var(--xh-control-px-lg);
+  --xh-_tabs-trigger-font-size: var(--xh-font-size-lg);
+}
+
+/* —— 形态 —— */
+/* 形态只决定选中态怎么画；用哪族颜色由 data-tone 决定。
+   line 档不在这儿：它就是上面那套基础取值，写不写 data-variant 都长一个样 */
+
+/* 卡片式：基线收掉，选中的那张标签自己成为一张有描边有底的卡片，顶边一条指示条 */
+[data-scope='tabs'][data-part='root'][data-variant='card'] {
+  --xh-_tabs-list-border-width: 0;
+  --xh-_tabs-trigger-border-width: var(--xh-stroke-thin);
+  --xh-_tabs-trigger-bg-active: var(--xh-_tone-subtle, var(--xh-bg-surface));
+  --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-surface));
+  --xh-_tabs-trigger-border-active: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_tabs-trigger-shadow-active: inset 0 var(--xh-stroke-thick) 0 0 var(--xh-_tabs-accent);
+}
+
+/* 分段控件式：整条列表是一块底，选中的标签是压在这块底上浮起的一片，没有基线也没有指示条 */
+[data-scope='tabs'][data-part='root'][data-variant='segment'] {
+  --xh-_tabs-list-gap: var(--xh-space-0_5);
+  --xh-_tabs-list-bg: var(--xh-bg-subtle);
+  --xh-_tabs-list-p: var(--xh-space-1);
+  --xh-_tabs-list-radius: var(--xh-shape-control);
+  --xh-_tabs-list-border-width: 0;
+  --xh-_tabs-trigger-bg-active: var(--xh-_tone-subtle, var(--xh-bg-surface));
+  --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-surface));
+  --xh-_tabs-trigger-shadow-active: var(--xh-elevation-1);
+}
+
 [data-scope='tabs'][data-part='list'] {
   position: relative;
   display: flex;
   align-items: center;
-  gap: var(--xh-tabs-list-gap, var(--xh-control-gap-md));
-  border-block-end: var(--xh-stroke-thin) solid var(--xh-tabs-list-border, var(--xh-border-default));
+  gap: var(--xh-tabs-list-gap, var(--xh-_tabs-list-gap));
+  padding: var(--xh-tabs-list-p, var(--xh-_tabs-list-p));
+  border-block-end: var(--xh-_tabs-list-border-width) solid var(--xh-tabs-list-border, var(--xh-border-default));
+  border-radius: var(--xh-tabs-list-radius, var(--xh-_tabs-list-radius));
+  background: var(--xh-tabs-list-bg, var(--xh-_tabs-list-bg));
 }
 
 [data-scope='tabs'][data-part='list'][aria-orientation='vertical'] {
   flex-direction: column;
   align-items: stretch;
   border-block-end: 0;
-  border-inline-end: var(--xh-stroke-thin) solid var(--xh-tabs-list-border, var(--xh-border-default));
+  border-inline-end: var(--xh-_tabs-list-border-width) solid var(--xh-tabs-list-border, var(--xh-border-default));
 }
 
 /* 组内无锚点时 list 自己在 Tab 序列里，落焦要看得见 */
@@ -8634,13 +8928,13 @@
   align-items: center;
   justify-content: center;
   gap: var(--xh-tabs-trigger-gap, var(--xh-control-gap-md));
-  block-size: var(--xh-tabs-trigger-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-tabs-trigger-px, var(--xh-control-px-md));
-  border: 0;
+  block-size: var(--xh-tabs-trigger-h, var(--xh-_tabs-trigger-h));
+  padding-inline: var(--xh-tabs-trigger-px, var(--xh-_tabs-trigger-px));
+  border: var(--xh-_tabs-trigger-border-width) solid var(--xh-tabs-trigger-border, var(--xh-_tabs-trigger-border));
   border-radius: var(--xh-tabs-trigger-radius, var(--xh-shape-control));
   background: var(--xh-tabs-trigger-bg, transparent);
   color: var(--xh-tabs-trigger-fg, var(--xh-fg-muted));
-  font-size: var(--xh-tabs-trigger-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-tabs-trigger-font-size, var(--xh-_tabs-trigger-font-size));
   font-weight: var(--xh-tabs-trigger-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
   white-space: nowrap;
@@ -8658,7 +8952,16 @@
 }
 
 [data-scope='tabs'][data-part='trigger'][data-state='active'] {
-  color: var(--xh-tabs-trigger-fg-active, var(--xh-fg-default));
+  border-color: var(--xh-tabs-trigger-border-active, var(--xh-_tabs-trigger-border-active));
+  background: var(--xh-tabs-trigger-bg-active, var(--xh-_tabs-trigger-bg-active));
+  color: var(--xh-tabs-trigger-fg-active, var(--xh-_tabs-accent-text));
+  box-shadow: var(--xh-tabs-trigger-shadow-active, var(--xh-_tabs-trigger-shadow-active));
+}
+
+/* 选中项被悬停：上面那条与常态 :hover 特异度相同，谁写在后面谁赢，
+   不单列一条的话选中项的悬停底会被形态档的选中底吃掉 */
+[data-scope='tabs'][data-part='trigger'][data-state='active']:hover {
+  background: var(--xh-tabs-trigger-bg-active-hover, var(--xh-_tabs-trigger-bg-active-hover));
 }
 
 [data-scope='tabs'][data-part='trigger'][data-disabled] {
@@ -9928,10 +10231,12 @@
   padding-block: var(--xh-toast-py, var(--xh-space-3));
   padding-inline: var(--xh-toast-px, var(--xh-space-4));
   border: var(--xh-stroke-thin) solid var(--xh-toast-border, var(--xh-border-default));
-  /* 类型色条做成起始侧的粗边，而不是伪元素：圆角与阴影都不用再对第二遍。
-     两条必须排在 border 简写之后，否则被简写重置回细边与常规描边色 */
+  /* 语气色条做成起始侧的粗边，而不是伪元素：圆角与阴影都不用再对第二遍。
+     两条必须排在 border 简写之后，否则被简写重置回细边与常规描边色。
+     颜色由 connect 从 type 派生的 data-tone 经语气层给出，作者写 --xh-toast-accent
+     就能把某一条整体改色；两者都没有时退回原来的 info 蓝 */
   border-inline-start-width: var(--xh-toast-accent-width, 4px);
-  border-inline-start-color: var(--xh-toast-accent, var(--xh-color-info-500));
+  border-inline-start-color: var(--xh-toast-accent, var(--xh-_tone-soft, var(--xh-color-info-500)));
   border-radius: var(--xh-toast-radius, var(--xh-shape-surface));
   background: var(--xh-toast-bg, var(--xh-bg-surface-raised));
   color: var(--xh-toast-fg, var(--xh-fg-default));
@@ -9943,33 +10248,16 @@
   pointer-events: auto;
 }
 
+/* loading 说的是「事情还没完」，不是好消息也不是坏消息，走中性灰。
+   它不是语气：连接层给它派生的 neutral 档是 500，而这里要的是 fg-muted（600） */
+[data-scope='toast'][data-part='root'][data-type='loading'] {
+  border-inline-start-color: var(--xh-toast-accent, var(--xh-fg-muted));
+}
+
 /* 退场窗口走完连接层给的是 hidden 属性，而上面声明了 display——
    漏掉这条，已经"卸载"的通知会一直杵在屏幕上，且再也没人来收 */
 [data-scope='toast'][data-part='root'][hidden] {
   display: none;
-}
-
-/* 五种语气各认一个色阶，共用同一个覆盖钩子：作者写一次 --xh-toast-accent
-   就能把某一条整体改色，不必按类型逐个改 */
-[data-scope='toast'][data-part='root'][data-type='info'] {
-  border-inline-start-color: var(--xh-toast-accent, var(--xh-color-info-500));
-}
-
-[data-scope='toast'][data-part='root'][data-type='success'] {
-  border-inline-start-color: var(--xh-toast-accent, var(--xh-color-success-500));
-}
-
-[data-scope='toast'][data-part='root'][data-type='warning'] {
-  border-inline-start-color: var(--xh-toast-accent, var(--xh-color-warning-500));
-}
-
-[data-scope='toast'][data-part='root'][data-type='error'] {
-  border-inline-start-color: var(--xh-toast-accent, var(--xh-color-danger-500));
-}
-
-/* loading 说的是"事情还没完"，不是好消息也不是坏消息，走中性灰 */
-[data-scope='toast'][data-part='root'][data-type='loading'] {
-  border-inline-start-color: var(--xh-toast-accent, var(--xh-fg-muted));
 }
 
 /* 生命周期只有三段，unmounted 那段由上面的 [hidden] 收走，这里只管前两段 */

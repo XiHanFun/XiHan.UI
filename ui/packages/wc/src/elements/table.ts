@@ -51,6 +51,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @attr {boolean} footer - 表格带脚注行：行号空间的最后一行留给它，aria-rowcount 也算上
  * @attr {boolean} loop - 上下键走到首尾回绕，默认关；写 loop="true" 打开
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义，默认 ltr
+ * @attr {'sm'|'md'|'lg'} size - 密度：只换单元格的纵向内边距与字号，列宽不受影响
  * @fires sort-change - 排序链变化；detail 为 `{ value: { id, direction }[] }`
  * @fires selection-change - 选中集合变化；detail 为 `{ value: string[] | 'all' }`
  * @fires expanded-change - 展开集合变化；detail 为 `{ value: string[] }`
@@ -91,6 +92,7 @@ export class XhTableElement extends XhElement {
     footer: { type: Boolean },
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
+    size: { converter: STRING_CONVERTER },
   }
 
   declare columns?: TableColumnDef[]
@@ -108,6 +110,7 @@ export class XhTableElement extends XhElement {
   declare footer?: boolean
   declare loop?: boolean
   declare direction?: Direction
+  declare size?: string
 
   private readonly notifySort = (details: TableSortChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('sort-change', { detail: details, bubbles: true, composed: true }))
@@ -142,6 +145,7 @@ export class XhTableElement extends XhElement {
       footer: this.footer ?? false,
       loop: this.loop,
       dir: this.direction,
+      size: this.size,
       onSortChange: this.notifySort,
       onSelectionChange: this.notifySelection,
       onExpandedChange: this.notifyExpanded,

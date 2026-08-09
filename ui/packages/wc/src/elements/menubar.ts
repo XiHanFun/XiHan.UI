@@ -44,6 +44,8 @@ function authorDisabled(el: HTMLElement): boolean {
  * @attr {boolean} typeahead - 菜单内的连打检索，默认开；写 typeahead="false" 关掉
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 展开项变化；detail 为 `{ value: string | null }`
  * @fires select - 条目被选中（菜单随之收起）；detail 为 `{ menu: string, value: string }`
  * @csspart root - role=menubar 容器，承载 roving tabindex 的兜底 Tab 位与焦点离场
@@ -72,6 +74,8 @@ export class XhMenubarElement extends XhElement {
     typeahead: { converter: BOOLEAN_CONVERTER },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
   }
 
   declare value?: string
@@ -83,6 +87,8 @@ export class XhMenubarElement extends XhElement {
   declare typeahead?: boolean
   declare placement?: Placement
   declare offset?: number
+  declare tone?: string
+  declare size?: string
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   // trigger 与 content 按 value 逐对互指的 id 由 scope 派生
@@ -117,6 +123,8 @@ export class XhMenubarElement extends XhElement {
       typeahead: this.typeahead,
       placement: this.placement,
       offset: this.offset,
+      tone: this.tone,
+      size: this.size,
       onValueChange: this.notifyValue,
       onSelect: this.notifySelect,
     }

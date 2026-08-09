@@ -1,5 +1,29 @@
 @layer xihan.components {
   [data-scope='tabs'][data-part='root'] {
+    /* 尺寸档只换这三个私有槽，标签从 root 继承它们，换档不必给每个部件各写一条选择器 */
+    --xh-_tabs-trigger-h: var(--xh-control-h-md);
+    --xh-_tabs-trigger-px: var(--xh-control-px-md);
+    --xh-_tabs-trigger-font-size: var(--xh-text-label-size);
+
+    /* 形态档只换这几个私有槽：列表的底、内边距、基线，与标签的描边、选中底、选中态那道指示。
+       缺省档（line）是一条基线加一行标签，选中只换文字色——这里的取值即现状 */
+    --xh-_tabs-list-gap: var(--xh-control-gap-md);
+    --xh-_tabs-list-bg: transparent;
+    --xh-_tabs-list-p: var(--xh-space-0);
+    --xh-_tabs-list-radius: var(--xh-radius-none);
+    --xh-_tabs-list-border-width: var(--xh-stroke-thin);
+    --xh-_tabs-trigger-border-width: 0;
+    --xh-_tabs-trigger-border: transparent;
+    --xh-_tabs-trigger-bg-active: transparent;
+    --xh-_tabs-trigger-bg-active-hover: var(--xh-bg-subtle-hover);
+    --xh-_tabs-trigger-border-active: transparent;
+    --xh-_tabs-trigger-shadow-active: none;
+
+    /* 语气落在选中态：指示条与选中标签的文字。
+       没写 data-tone 时 --xh-_tone 一族没被声明，两个槽都退回原来的取色 */
+    --xh-_tabs-accent: var(--xh-_tone, var(--xh-bg-brand));
+    --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-default));
+
     display: flex;
     flex-direction: column;
     gap: var(--xh-tabs-gap, var(--xh-stack-gap-md));
@@ -10,19 +34,62 @@
     flex-direction: row;
   }
 
+  /* —— 尺寸 —— */
+  /* 缺省档写在上面的基础规则里 */
+  [data-scope='tabs'][data-part='root'][data-size='sm'] {
+    --xh-_tabs-trigger-h: var(--xh-control-h-sm);
+    --xh-_tabs-trigger-px: var(--xh-control-px-sm);
+    --xh-_tabs-trigger-font-size: var(--xh-font-size-sm);
+  }
+
+  [data-scope='tabs'][data-part='root'][data-size='lg'] {
+    --xh-_tabs-trigger-h: var(--xh-control-h-lg);
+    --xh-_tabs-trigger-px: var(--xh-control-px-lg);
+    --xh-_tabs-trigger-font-size: var(--xh-font-size-lg);
+  }
+
+  /* —— 形态 —— */
+  /* 形态只决定选中态怎么画；用哪族颜色由 data-tone 决定。
+     line 档不在这儿：它就是上面那套基础取值，写不写 data-variant 都长一个样 */
+
+  /* 卡片式：基线收掉，选中的那张标签自己成为一张有描边有底的卡片，顶边一条指示条 */
+  [data-scope='tabs'][data-part='root'][data-variant='card'] {
+    --xh-_tabs-list-border-width: 0;
+    --xh-_tabs-trigger-border-width: var(--xh-stroke-thin);
+    --xh-_tabs-trigger-bg-active: var(--xh-_tone-subtle, var(--xh-bg-surface));
+    --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-surface));
+    --xh-_tabs-trigger-border-active: var(--xh-_tone-border, var(--xh-border-default));
+    --xh-_tabs-trigger-shadow-active: inset 0 var(--xh-stroke-thick) 0 0 var(--xh-_tabs-accent);
+  }
+
+  /* 分段控件式：整条列表是一块底，选中的标签是压在这块底上浮起的一片，没有基线也没有指示条 */
+  [data-scope='tabs'][data-part='root'][data-variant='segment'] {
+    --xh-_tabs-list-gap: var(--xh-space-0_5);
+    --xh-_tabs-list-bg: var(--xh-bg-subtle);
+    --xh-_tabs-list-p: var(--xh-space-1);
+    --xh-_tabs-list-radius: var(--xh-shape-control);
+    --xh-_tabs-list-border-width: 0;
+    --xh-_tabs-trigger-bg-active: var(--xh-_tone-subtle, var(--xh-bg-surface));
+    --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-surface));
+    --xh-_tabs-trigger-shadow-active: var(--xh-elevation-1);
+  }
+
   [data-scope='tabs'][data-part='list'] {
     position: relative;
     display: flex;
     align-items: center;
-    gap: var(--xh-tabs-list-gap, var(--xh-control-gap-md));
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-tabs-list-border, var(--xh-border-default));
+    gap: var(--xh-tabs-list-gap, var(--xh-_tabs-list-gap));
+    padding: var(--xh-tabs-list-p, var(--xh-_tabs-list-p));
+    border-block-end: var(--xh-_tabs-list-border-width) solid var(--xh-tabs-list-border, var(--xh-border-default));
+    border-radius: var(--xh-tabs-list-radius, var(--xh-_tabs-list-radius));
+    background: var(--xh-tabs-list-bg, var(--xh-_tabs-list-bg));
   }
 
   [data-scope='tabs'][data-part='list'][aria-orientation='vertical'] {
     flex-direction: column;
     align-items: stretch;
     border-block-end: 0;
-    border-inline-end: var(--xh-stroke-thin) solid var(--xh-tabs-list-border, var(--xh-border-default));
+    border-inline-end: var(--xh-_tabs-list-border-width) solid var(--xh-tabs-list-border, var(--xh-border-default));
   }
 
   /* 组内无锚点时 list 自己在 Tab 序列里，落焦要看得见 */
@@ -37,13 +104,13 @@
     align-items: center;
     justify-content: center;
     gap: var(--xh-tabs-trigger-gap, var(--xh-control-gap-md));
-    block-size: var(--xh-tabs-trigger-h, var(--xh-control-h-md));
-    padding-inline: var(--xh-tabs-trigger-px, var(--xh-control-px-md));
-    border: 0;
+    block-size: var(--xh-tabs-trigger-h, var(--xh-_tabs-trigger-h));
+    padding-inline: var(--xh-tabs-trigger-px, var(--xh-_tabs-trigger-px));
+    border: var(--xh-_tabs-trigger-border-width) solid var(--xh-tabs-trigger-border, var(--xh-_tabs-trigger-border));
     border-radius: var(--xh-tabs-trigger-radius, var(--xh-shape-control));
     background: var(--xh-tabs-trigger-bg, transparent);
     color: var(--xh-tabs-trigger-fg, var(--xh-fg-muted));
-    font-size: var(--xh-tabs-trigger-font-size, var(--xh-text-label-size));
+    font-size: var(--xh-tabs-trigger-font-size, var(--xh-_tabs-trigger-font-size));
     font-weight: var(--xh-tabs-trigger-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
@@ -61,7 +128,16 @@
   }
 
   [data-scope='tabs'][data-part='trigger'][data-state='active'] {
-    color: var(--xh-tabs-trigger-fg-active, var(--xh-fg-default));
+    border-color: var(--xh-tabs-trigger-border-active, var(--xh-_tabs-trigger-border-active));
+    background: var(--xh-tabs-trigger-bg-active, var(--xh-_tabs-trigger-bg-active));
+    color: var(--xh-tabs-trigger-fg-active, var(--xh-_tabs-accent-text));
+    box-shadow: var(--xh-tabs-trigger-shadow-active, var(--xh-_tabs-trigger-shadow-active));
+  }
+
+  /* 选中项被悬停：上面那条与常态 :hover 特异度相同，谁写在后面谁赢，
+     不单列一条的话选中项的悬停底会被形态档的选中底吃掉 */
+  [data-scope='tabs'][data-part='trigger'][data-state='active']:hover {
+    background: var(--xh-tabs-trigger-bg-active-hover, var(--xh-_tabs-trigger-bg-active-hover));
   }
 
   [data-scope='tabs'][data-part='trigger'][data-disabled] {

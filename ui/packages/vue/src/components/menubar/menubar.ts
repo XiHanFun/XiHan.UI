@@ -47,6 +47,8 @@ export const XhMenubarRoot = defineComponent({
     typeahead: { type: Boolean, default: undefined },
     placement: { type: String as PropType<Placement>, default: undefined },
     offset: { type: Number, default: undefined },
+    tone: { type: String, default: undefined },
+    size: { type: String, default: undefined },
   },
   // value-change 携带 { value }、select 携带 { menu, value }，update:value 携带裸值
   emits: ['value-change', 'select', 'update:value'],

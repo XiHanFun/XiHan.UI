@@ -99,6 +99,9 @@ export function connectMenu<T extends PropTypes>(
       'tabindex': open && anchor == null ? 0 : -1,
       'data-state': stateAttr,
       'data-placement': placement,
+      // 菜单没有 root 部件，视觉轴落在浮层树最外层的 content 上，条目继承私有槽
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       // 收起时留在 DOM 只隐藏
       'hidden': !open || undefined,
       'onKeydown': (event: KeyboardEvent) => {

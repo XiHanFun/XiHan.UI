@@ -61,6 +61,10 @@ export interface NavigationMenuSchema extends MachineSchema {
     /** 方向键走到尽头是否回绕，默认 true。 */
     loop?: boolean
     translations?: Partial<NavigationMenuTranslations>
+    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    tone?: string
+    /** 尺寸：sm / md / lg。 */
+    size?: string
     /** value 变化回调。 */
     onValueChange?: (details: NavigationMenuValueChangeDetails) => void
   }

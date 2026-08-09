@@ -32,11 +32,11 @@ export const alertSuite: ConformanceSuite = {
             'aria-atomic': 'true',
             'aria-labelledby': '@part(title)',
             'aria-describedby': '@part(description)',
-            'data-variant': 'info',
+            'data-tone': 'info',
             'data-state': 'open',
             'hidden': null,
           },
-          'icon': { 'aria-hidden': 'true', 'data-variant': 'info' },
+          'icon': { 'aria-hidden': 'true' },
           'close-trigger': {
             'type': 'button',
             'aria-label': 'Close',
@@ -50,28 +50,27 @@ export const alertSuite: ConformanceSuite = {
     {
       name: 'danger：role=alert + assertive，打断当前朗读',
       spec: { apg: APG },
-      props: { variant: 'danger' },
+      props: { tone: 'danger' },
       initial: {
         parts: {
-          root: { 'role': 'alert', 'aria-live': 'assertive', 'data-variant': 'danger' },
-          icon: { 'data-variant': 'danger' },
+          root: { 'role': 'alert', 'aria-live': 'assertive', 'data-tone': 'danger' },
         },
       },
     },
     {
       name: 'warning：与 danger 同级，也走 alert + assertive',
       spec: { apg: APG },
-      props: { variant: 'warning' },
+      props: { tone: 'warning' },
       initial: {
-        parts: { root: { 'role': 'alert', 'aria-live': 'assertive', 'data-variant': 'warning' } },
+        parts: { root: { 'role': 'alert', 'aria-live': 'assertive', 'data-tone': 'warning' } },
       },
     },
     {
       name: 'success：与 info 同级，走 status + polite',
       spec: { apg: APG },
-      props: { variant: 'success' },
+      props: { tone: 'success' },
       initial: {
-        parts: { root: { 'role': 'status', 'aria-live': 'polite', 'data-variant': 'success' } },
+        parts: { root: { 'role': 'status', 'aria-live': 'polite', 'data-tone': 'success' } },
       },
     },
     {

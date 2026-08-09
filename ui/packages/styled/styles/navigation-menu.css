@@ -17,9 +17,48 @@
   /* 根节点是 nav 地标，不参与排版；给 relative 是为了让共享外壳（viewport）有个定位参照系。
      这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
   [data-scope='navigation-menu'][data-part='root'] {
+    /* 尺寸档只换这五个私有槽，trigger 与面板里的链接都从 root 继承它们，
+       换档不必给每个部件各写一条选择器。面板与共享外壳都是 root 的后代，一并继承。
+       trigger 写的是 font: inherit，字号跟着 root 这一档走，不另立槽 */
+    --xh-_navigation-menu-font-size: var(--xh-text-label-size);
+    --xh-_navigation-menu-trigger-h: var(--xh-control-h-md);
+    --xh-_navigation-menu-trigger-px: var(--xh-control-px-md);
+    --xh-_navigation-menu-trigger-gap: var(--xh-control-gap-md);
+    --xh-_navigation-menu-link-p: var(--xh-space-2);
+    --xh-_navigation-menu-link-font-size: var(--xh-text-body-size);
+
+    /* 语气落在三处：条目的高亮底、展开着的 trigger 与当前链接的文字色、指示条。
+       没写 data-tone 时这几个 --xh-_tone-* 都没被声明，各自退回原来的取值。
+       聚焦环不在其列，它恒是 --xh-ring-focus */
+    --xh-_navigation-menu-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+    --xh-_navigation-menu-open-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_navigation-menu-current-fg: var(--xh-_tone-fg, var(--xh-fg-brand));
+    --xh-_navigation-menu-accent: var(--xh-_tone, var(--xh-fg-brand));
+
     position: relative;
     color: var(--xh-navigation-menu-fg, var(--xh-fg-default));
-    font-size: var(--xh-navigation-menu-font-size, var(--xh-text-label-size));
+    font-size: var(--xh-navigation-menu-font-size, var(--xh-_navigation-menu-font-size));
+  }
+
+  /* —— 尺寸 —— */
+  /* 缺省档写在上面的基础规则里。链接的内边距不在控件内边距那把尺上（它比控件矮一档），
+     三档一律取空间尺，缺省档的取值原样保留 */
+  [data-scope='navigation-menu'][data-part='root'][data-size='sm'] {
+    --xh-_navigation-menu-font-size: var(--xh-font-size-sm);
+    --xh-_navigation-menu-trigger-h: var(--xh-control-h-sm);
+    --xh-_navigation-menu-trigger-px: var(--xh-control-px-sm);
+    --xh-_navigation-menu-trigger-gap: var(--xh-control-gap-sm);
+    --xh-_navigation-menu-link-p: var(--xh-space-1_5);
+    --xh-_navigation-menu-link-font-size: var(--xh-font-size-sm);
+  }
+
+  [data-scope='navigation-menu'][data-part='root'][data-size='lg'] {
+    --xh-_navigation-menu-font-size: var(--xh-font-size-lg);
+    --xh-_navigation-menu-trigger-h: var(--xh-control-h-lg);
+    --xh-_navigation-menu-trigger-px: var(--xh-control-px-lg);
+    --xh-_navigation-menu-trigger-gap: var(--xh-control-gap-lg);
+    --xh-_navigation-menu-link-p: var(--xh-space-3);
+    --xh-_navigation-menu-link-font-size: var(--xh-font-size-lg);
   }
 
   /* 指示条的定位参照系（它是 absolute，量出来的偏移就是相对这里的）。
@@ -56,9 +95,9 @@
   [data-scope='navigation-menu'][data-part='trigger'] {
     display: inline-flex;
     align-items: center;
-    gap: var(--xh-navigation-menu-trigger-gap, var(--xh-control-gap-md));
-    block-size: var(--xh-navigation-menu-trigger-h, var(--xh-control-h-md));
-    padding-inline: var(--xh-navigation-menu-trigger-px, var(--xh-control-px-md));
+    gap: var(--xh-navigation-menu-trigger-gap, var(--xh-_navigation-menu-trigger-gap));
+    block-size: var(--xh-navigation-menu-trigger-h, var(--xh-_navigation-menu-trigger-h));
+    padding-inline: var(--xh-navigation-menu-trigger-px, var(--xh-_navigation-menu-trigger-px));
     border: 0;
     border-radius: var(--xh-navigation-menu-trigger-radius, var(--xh-shape-control));
     background: transparent;
@@ -76,7 +115,7 @@
   }
 
   [data-scope='navigation-menu'][data-part='trigger']:hover {
-    background: var(--xh-navigation-menu-trigger-bg-hover, var(--xh-bg-subtle-hover));
+    background: var(--xh-navigation-menu-trigger-bg-hover, var(--xh-_navigation-menu-highlight-bg));
   }
 
   [data-scope='navigation-menu'][data-part='trigger']:focus-visible {
@@ -85,7 +124,7 @@
   }
 
   [data-scope='navigation-menu'][data-part='trigger'][data-state='open'] {
-    color: var(--xh-navigation-menu-trigger-fg-open, var(--xh-fg-default));
+    color: var(--xh-navigation-menu-trigger-fg-open, var(--xh-_navigation-menu-open-fg));
   }
 
   /* 集合条目用 data-disabled，不用 :disabled：它带的是 aria-disabled，
@@ -140,11 +179,11 @@
   [data-scope='navigation-menu'][data-part='link'] {
     display: flex;
     align-items: center;
-    padding-block: var(--xh-navigation-menu-link-py, var(--xh-space-2));
-    padding-inline: var(--xh-navigation-menu-link-px, var(--xh-space-2));
+    padding-block: var(--xh-navigation-menu-link-py, var(--xh-_navigation-menu-link-p));
+    padding-inline: var(--xh-navigation-menu-link-px, var(--xh-_navigation-menu-link-p));
     border-radius: var(--xh-navigation-menu-link-radius, var(--xh-shape-control));
     color: var(--xh-navigation-menu-link-fg, var(--xh-fg-default));
-    font-size: var(--xh-navigation-menu-link-font-size, var(--xh-text-body-size));
+    font-size: var(--xh-navigation-menu-link-font-size, var(--xh-_navigation-menu-link-font-size));
     text-decoration: none;
   }
 
@@ -153,7 +192,7 @@
   }
 
   [data-scope='navigation-menu'][data-part='link']:hover {
-    background: var(--xh-navigation-menu-link-bg-hover, var(--xh-bg-subtle-hover));
+    background: var(--xh-navigation-menu-link-bg-hover, var(--xh-_navigation-menu-highlight-bg));
   }
 
   [data-scope='navigation-menu'][data-part='link']:focus-visible {
@@ -163,7 +202,7 @@
 
   /* 指向当前页面的那一条：颜色与字重都变，不加下划线（下划线是"可点"的信号，它已经在这儿了） */
   [data-scope='navigation-menu'][data-part='link'][data-current] {
-    color: var(--xh-navigation-menu-link-fg-current, var(--xh-fg-brand));
+    color: var(--xh-navigation-menu-link-fg-current, var(--xh-_navigation-menu-current-fg));
     font-weight: var(--xh-navigation-menu-link-font-weight-current, var(--xh-font-weight-medium));
   }
 
@@ -175,7 +214,7 @@
     inset-block-end: calc(var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick)) * -1);
     block-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
     border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-radius-full));
-    background: var(--xh-navigation-menu-indicator-color, var(--xh-fg-brand));
+    background: var(--xh-navigation-menu-indicator-color, var(--xh-_navigation-menu-accent));
     transition:
       inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
       inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
