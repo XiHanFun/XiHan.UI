@@ -22,6 +22,12 @@ role=alertdialog 交给读屏更强的语气；关掉 Esc 与点遮罩后，只�
 
 <XhDemo src="dialog/03-alert" />
 
+### 尺寸
+
+size 落成 content 的 data-size，只改面板的最大宽度；三档各自一个对话框，点开才看得出宽窄
+
+<XhDemo src="dialog/04-size" />
+
 ## 产物
 
 | 层 | 值 |

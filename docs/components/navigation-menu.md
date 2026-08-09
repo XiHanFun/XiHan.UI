@@ -28,6 +28,18 @@ orientation="vertical" 把入口排成一列、面板改从侧边长出来，方
 
 <XhDemo src="navigation-menu/04-vertical" />
 
+### 语气
+
+tone 换的是入口的高亮底与指示条、当前链接的文字色，静止态一样：悬停到入口上、或用方向键把焦点移过去才显现
+
+<XhDemo src="navigation-menu/05-tone" />
+
+### 尺寸
+
+size 一档换掉入口的高度、内边距与字号，写在 root 上、面板里的链接一并跟着变
+
+<XhDemo src="navigation-menu/06-size" />
+
 ## 产物
 
 | 层 | 值 |

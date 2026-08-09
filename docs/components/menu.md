@@ -22,6 +22,18 @@ placement 只是首选位，空间不够时定位引擎会自动翻面；arrow �
 
 <XhDemo src="menu/03-placement" />
 
+### 语气
+
+tone 决定条目高亮用哪族颜色；静止态看不出来，展开后悬停条目、或用方向键把焦点移上去才显现
+
+<XhDemo src="menu/04-tone" />
+
+### 尺寸
+
+size 换的是条目的内边距、间距与字号；三档各挂一个菜单，逐个展开对比
+
+<XhDemo src="menu/05-size" />
+
 ## 产物
 
 | 层 | 值 |

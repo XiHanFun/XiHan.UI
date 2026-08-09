@@ -28,6 +28,12 @@ selectionMode 默认 none，声明 multiple 才有选择机制；选择列也要
 
 <XhDemo src="table/04-expand" />
 
+### 密度
+
+size 只落成 root 的 data-size，换的是单元格纵向内边距与字号；三档并排，差别在行高上
+
+<XhDemo src="table/05-size" />
+
 ## 产物
 
 | 层 | 值 |

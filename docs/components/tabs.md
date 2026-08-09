@@ -28,6 +28,24 @@ orientation 换掉方向键收哪一对键：竖排认上下键，左右键原�
 
 <XhDemo src="tabs/04-vertical" />
 
+### 形态
+
+variant 只改选中态怎么画，切换行为与键盘操作三档一致；不写 variant 即 line 档
+
+<XhDemo src="tabs/05-variant" />
+
+### 语气
+
+tone 决定选中态用哪族颜色，与 variant 正交；这里固定 card 形态只看语气的差别
+
+<XhDemo src="tabs/06-tone" />
+
+### 尺寸
+
+size 换标签的高度、内边距与字号，不传 size 即默认档
+
+<XhDemo src="tabs/07-size" />
+
 ## 产物
 
 | 层 | 值 |

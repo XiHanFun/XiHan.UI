@@ -22,6 +22,18 @@ group 用 value 跟自己的 group-label 配对，item-indicator 是纯装饰的
 
 <XhDemo src="menubar/03-group" />
 
+### 语气
+
+tone 换的是高亮底色，静止态一样：悬停到 trigger 上、或展开菜单后把焦点移到条目上才显现
+
+<XhDemo src="menubar/04-tone" />
+
+### 尺寸
+
+size 一档换掉 trigger 与菜单条目的字号与内边距，写在 root 上、浮层里的条目一并跟着变
+
+<XhDemo src="menubar/05-size" />
+
 ## 产物
 
 | 层 | 值 |
