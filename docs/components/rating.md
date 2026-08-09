@@ -89,7 +89,7 @@ size 改星的大小与间距，不写即缺省中档
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `number` | 已归一化的评分：非法与越界的宿主输入在这里就被夹回来了。 |
-| `hoveredValue` | `number | null` | 指针预览值；没有预览（或不可交互）时为 null。 |
+| `hoveredValue` | `number \| null` | 指针预览值；没有预览（或不可交互）时为 null。 |
 | `highlightedValue` | `number` | 当前该点亮到哪：有预览就是预览值，否则就是评分。样式与 data-highlighted 用的都是它。 |
 | `count` | `number` |  |
 | `empty` | `boolean` | 还没评（value 为 0）。 |

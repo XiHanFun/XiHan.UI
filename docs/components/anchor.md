@@ -60,8 +60,8 @@ size 换条目的字号与左右内边距，不传 size 即默认档
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string | null` |  | 当前激活的锚点 id，给定即受控。 |
-| `defaultValue` | `string | null` |  |  |
+| `value` | `string \| null` |  | 当前激活的锚点 id，给定即受控。 |
+| `defaultValue` | `string \| null` |  |  |
 | `targets` | `readonly string[]` |  | 目标区块的 id 清单，按文档序给；不给则按渲染出来的 link 现查。 |
 | `offset` | `number` |  | 判定线距滚动容器视口顶边的距离（px），默认 0。 |
 | `smooth` | `boolean` |  | 点链接时平滑滚动到目标，默认 false。 |
@@ -86,9 +86,9 @@ size 换条目的字号与左右内边距，不传 size 即默认档
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string | null` | 当前激活的锚点 id；一个都没越过判定线时为 null。 |
+| `value` | `string \| null` | 当前激活的锚点 id；一个都没越过判定线时为 null。 |
 | `isActive` | `(value: string) => boolean` |  |
-| `setValue` | `(next: string | null) => void` |  |
+| `setValue` | `(next: string \| null) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getListProps` | `() => T['element']` |  |
 | `getItemProps` | `() => T['element']` |  |

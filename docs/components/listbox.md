@@ -48,8 +48,8 @@ selection-mode 直接指定三种模式，extended 是「单击换一条、Ctrl 
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string | string[]` |  | 选中值，给定即受控；单选可写成裸串，内部归一成数组。 |
-| `defaultValue` | `string | string[]` |  |  |
+| `value` | `string \| string[]` |  | 选中值，给定即受控；单选可写成裸串，内部归一成数组。 |
+| `defaultValue` | `string \| string[]` |  |  |
 | `multiple` | `boolean` |  | selectionMode='multiple' 的简写；两者同时给时以 selectionMode 为准。 |
 | `selectionMode` | `ListboxSelectionMode` |  |  |
 | `disabled` | `boolean` |  | 整个列表禁用，键盘与点击都不再改选中值。 |
@@ -73,7 +73,7 @@ selection-mode 直接指定三种模式，extended 是「单击换一条、Ctrl 
 | --- | --- | --- |
 | `value` | `string[]` | 选中集合；单选模式下长度 ≤ 1。 |
 | `selectionMode` | `ListboxSelectionMode` | 生效的选择模式。 |
-| `focusedValue` | `string | null` | 焦点锚点；焦点不在列表内时为 null。 |
+| `focusedValue` | `string \| null` | 焦点锚点；焦点不在列表内时为 null。 |
 | `disabled` | `boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string[]) => void` |  |

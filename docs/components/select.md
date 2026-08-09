@@ -66,8 +66,8 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string | string[] | null` |  | 选中值。裸串是单选的简写，null 是「受控且无选中」，缺省（undefined）才是非受控；内部一律按数组处理。 受控时 cell 直读 prop，写只发 onValueChange 不落内部值。 |
-| `defaultValue` | `string | string[] | null` |  | 非受控初始选中值。与 value 同样接受裸串与 null。 |
+| `value` | `string \| string[] \| null` |  | 选中值。裸串是单选的简写，null 是「受控且无选中」，缺省（undefined）才是非受控；内部一律按数组处理。 受控时 cell 直读 prop，写只发 onValueChange 不落内部值。 |
+| `defaultValue` | `string \| string[] \| null` |  | 非受控初始选中值。与 value 同样接受裸串与 null。 |
 | `multiple` | `boolean` |  | 允许选中多项。单选时选完即收起，多选时保持展开继续选。 |
 | `open` | `boolean` |  | 展开态。给定即受控：内部不再自改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
@@ -104,9 +104,9 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `valueText` | `string[]` | 选中项的文本，与 value 逐项等长对应；某项在 DOM 里查不到条目时该项退回值本身。 |
 | `displayText` | `string` | value-text 实际显示的文字：有选中取其文本（多选按半角逗号加空格连起来），否则取 placeholder。 |
 | `multiple` | `boolean` | 是否允许多选。 |
-| `highlightedValue` | `string | null` | 高亮锚点；收起时为 null。 |
+| `highlightedValue` | `string \| null` | 高亮锚点；收起时为 null。 |
 | `setOpen` | `(next: boolean) => void` |  |
-| `setValue` | `(next: string | string[]) => void` |  |
+| `setValue` | `(next: string \| string[]) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |

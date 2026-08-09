@@ -56,7 +56,7 @@ autoplay 给毫秒即间隔，鼠标停上去或焦点走进来都会把计时�
 | `orientation` | `Orientation` |  | 轨道方向，默认 horizontal；方向键的轴跟着它走。 |
 | `dir` | `Direction` |  | 文字方向。水平轴上同时作用于排版与位移方向：rtl 下"下一张"在左手边， 轨道也要往正方向位移。纵向轨道不受它影响。 |
 | `loop` | `boolean` |  | 走到尽头是否回绕，默认 false。 |
-| `autoplay` | `boolean | number` |  | 自动播放。true 用默认间隔，数值即毫秒间隔；缺省 / false / 非正数一律不自动播放。 指针悬停或轮播内任一节点获得焦点时按住计时，离开后从头计满一整个间隔再翻。 |
+| `autoplay` | `boolean \| number` |  | 自动播放。true 用默认间隔，数值即毫秒间隔；缺省 / false / 非正数一律不自动播放。 指针悬停或轮播内任一节点获得焦点时按住计时，离开后从头计满一整个间隔再翻。 |
 | `allowPointerDrag` | `boolean` |  | 允许指针拖拽切页，默认 false。鼠标、触摸、触控笔一并门控。 打开后沿轨道那一轴的原生滚动会让位给拖拽，关掉则完全没有拖拽、触摸走原生滚动。 |
 | `spacing` | `string` |  | 张与张之间的间距，任意 CSS 长度（如 '12px'）。落成条目自身的内边距，不影响位移算术。 |
 | `translations` | `Partial<CarouselTranslations>` |  |  |

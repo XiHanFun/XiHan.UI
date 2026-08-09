@@ -66,8 +66,8 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string | null` |  | 受控值，ISO 串（'2026-07-28' / '2026-07-28T13:45'）；null 表示空。给定即受控。 |
-| `defaultValue` | `string | null` |  | 非受控初值，同样是 ISO 串。 |
+| `value` | `string \| null` |  | 受控值，ISO 串（'2026-07-28' / '2026-07-28T13:45'）；null 表示空。给定即受控。 |
+| `defaultValue` | `string \| null` |  | 非受控初值，同样是 ISO 串。 |
 | `min` | `string` |  | 下界，ISO 串。参与各段区间的收窄，并决定 outOfRange。 |
 | `max` | `string` |  | 上界，ISO 串。 |
 | `locale` | `string` |  | BCP 47 语言标记，决定年月日三段的先后。不给按 en-US（月日年）排。 |
@@ -99,8 +99,8 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string | null` | ISO 串；段位没填齐时是 null。 |
-| `valueAsDate` | `Date | null` | 同一个值的原生 Date；空值或算不出来时为 null。按 timeZone 换算。 |
+| `value` | `string \| null` | ISO 串；段位没填齐时是 null。 |
+| `valueAsDate` | `Date \| null` | 同一个值的原生 Date；空值或算不出来时为 null。按 timeZone 换算。 |
 | `segments` | `DateFieldSegmentState[]` | 逐段投影，文档序即 locale 决定的段序。 |
 | `complete` | `boolean` | 段位填齐了（value 非 null）。 |
 | `empty` | `boolean` | 一段都没填。 |
@@ -108,10 +108,10 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
-| `focusedSegment` | `DateSegmentType | null` | 焦点落在哪一段；焦点在组外时为 null。 |
+| `focusedSegment` | `DateSegmentType \| null` | 焦点落在哪一段；焦点在组外时为 null。 |
 | `locale` | `string` |  |
 | `granularity` | `DateGranularity` |  |
-| `setValue` | `(next: string | null) => void` | 直接写整份值；传 null 等于清空。 |
+| `setValue` | `(next: string \| null) => void` | 直接写整份值；传 null 等于清空。 |
 | `clear` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` | 标题不是原生 label（段位是 div，不可被 label 标注），点它由连接层代为把焦点送进首段。 |

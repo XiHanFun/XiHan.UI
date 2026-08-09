@@ -80,7 +80,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `delimiter` | `string` |  | 断词符，默认逗号。打字打出它即断词成标签，粘贴时也按它拆。 显式给空串即关掉断词：此时只有 Enter 能把文本变成标签。 |
 | `addOnPaste` | `boolean` |  | 粘贴时接管：按 delimiter 拆成多个标签。默认关（交给浏览器照常粘进框里）。 |
 | `editable` | `boolean` |  | 允许双击标签就地改。默认关。 |
-| `blurBehavior` | `TagsInputBlurBehavior | null` |  | 焦点离开整个组件时怎么处置输入框里的残留文本。 |
+| `blurBehavior` | `TagsInputBlurBehavior \| null` |  | 焦点离开整个组件时怎么处置输入框里的残留文本。 |
 | `variant` | `string` |  | 形态：outline / subtle / ghost，决定颜色怎么用。 |
 | `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
 | `size` | `string` |  | 尺寸：sm / md / lg。 |
@@ -111,15 +111,15 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `invalid` | `boolean` |  |
 | `atMax` | `boolean` | 已顶到 max：再加进不去（allowOverflow 开时只是提示，不拦）。 |
 | `overflow` | `boolean` | 已经越过 max（只有 allowOverflow 开着才可能为真）。 |
-| `highlightedValue` | `string | null` | 光标停着的标签；没在标签间走时为 null。 |
-| `editedValue` | `string | null` | 正被就地改写的标签；不在编辑态时为 null。 |
+| `highlightedValue` | `string \| null` | 光标停着的标签；没在标签间走时为 null。 |
+| `editedValue` | `string \| null` | 正被就地改写的标签；不在编辑态时为 null。 |
 | `canClear` | `boolean` | 清空按钮此刻是否可用（可编辑，且标签或输入文本至少有一样）。 |
 | `setValue` | `(next: string[]) => void` | 整份替换，去重去空白，不受 max 约束。 |
 | `addValue` | `(next: string) => void` | 追加一个标签，受 max 与 allowOverflow 约束。 |
 | `deleteValue` | `(value: string) => void` |  |
 | `clear` | `() => void` |  |
 | `setInputValue` | `(next: string) => void` |  |
-| `highlight` | `(value: string | null) => void` | 把光标挪到某个标签上；传 null 即交回输入框。 |
+| `highlight` | `(value: string \| null) => void` | 把光标挪到某个标签上；传 null 即交回输入框。 |
 | `edit` | `(value: string) => void` | 进入就地编辑；未开 editable 时被守卫挡下。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |

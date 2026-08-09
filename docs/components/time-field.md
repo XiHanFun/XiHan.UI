@@ -107,7 +107,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | `hourCycle` | `TimeHourCycle` | 实际生效的小时制（prop 没给时由 locale 推出来的那个）。 |
 | `granularity` | `TimeGranularity` |  |
 | `segments` | `TimeSegmentType[]` | 此刻参与显示的段，文档序。未列入的段由 connect 打上 hidden 收起。 |
-| `focusedSegment` | `TimeSegmentType | null` | 焦点所在段；焦点在组外时为 null。 |
+| `focusedSegment` | `TimeSegmentType \| null` | 焦点所在段；焦点在组外时为 null。 |
 | `getSegmentText` | `(props: TimeFieldSegmentProps) => string` | 某一段该显示的文字（空段是占位串）。两个适配器都拿它填文本，保证同构。 |
 | `setValue` | `(next: string) => void` |  |
 | `clear` | `() => void` |  |

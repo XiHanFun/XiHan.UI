@@ -56,10 +56,10 @@ size 三档改直径、weight 三档改 stroke-width；缺省档不落 data-* �
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `label` | `string | undefined` | 解析后的可及名字；装饰态为 undefined。 |
+| `label` | `string \| undefined` | 解析后的可及名字；装饰态为 undefined。 |
 | `decorative` | `boolean` | 是否装饰态（label 没给或全空白）。 |
 | `nodes` | `readonly IconNode[]` | 要铺进 glyph 的图元树；没传 icon 时是空数组。 |
-| `content` | `IconRecord | undefined` | 当前铺设内容的身份。就是 icon 本身：记录是模块级常量，引用相等即内容相等。 不用字符串签名——签名要遍历整棵树再拼串，每次 wire 都付一遍。 |
+| `content` | `IconRecord \| undefined` | 当前铺设内容的身份。就是 icon 本身：记录是模块级常量，引用相等即内容相等。 不用字符串签名——签名要遍历整棵树再拼串，每次 wire 都付一遍。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getGlyphProps` | `() => T['element']` |  |
 

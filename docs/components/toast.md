@@ -77,8 +77,8 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | `id` | `string` |  |
 | `status` | `ToastStatus` |  |
 | `type` | `ToastType` |  |
-| `title` | `string | undefined` |  |
-| `description` | `string | undefined` |  |
+| `title` | `string \| undefined` |  |
+| `description` | `string \| undefined` |  |
 | `paused` | `boolean` | 计时被按住中。样式层据此暂停进度条动画。 |
 | `closable` | `boolean` |  |
 | `remaining` | `number` | 剩余毫秒；不自动消失时为 Infinity。 |

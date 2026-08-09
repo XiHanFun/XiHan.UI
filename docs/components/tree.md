@@ -78,7 +78,7 @@ expandOnClick 关掉后只有箭头与左右方向键能改展开态；禁用节
 | `visibleNodes` | `readonly TreeVisibleNode[]` | 当前可见行序列（收起分支的子树不在其中）。 方向键、Home/End 与连打检索都在它上面走，不是在原始树上走。 |
 | `expandedValue` | `string[]` |  |
 | `selectedValue` | `string[]` |  |
-| `focusedValue` | `string | null` | 焦点锚点；焦点不在树内、或它已被收起而不可见时为 null。 |
+| `focusedValue` | `string \| null` | 焦点锚点；焦点不在树内、或它已被收起而不可见时为 null。 |
 | `selectionMode` | `TreeSelectionMode` |  |
 | `disabled` | `boolean` |  |
 | `isExpanded` | `(value: string) => boolean` |  |

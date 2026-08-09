@@ -57,7 +57,7 @@ tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里
 | `value` | `number` |  | 受控进度值（0-100）。给了它就是确定进度：宽度照它显示，内部爬升停止。 |
 | `defaultValue` | `number` |  | 非受控初值，缺省 0。 |
 | `loading` | `boolean` |  | 加载开关：true 开始，false 结束（冲到 100 再淡出归零）。只由宿主写入，无配套回调。 |
-| `height` | `string | number` |  | 条子厚度：数字按像素，字符串按任意 CSS 长度。缺省 2px。 |
+| `height` | `string \| number` |  | 条子厚度：数字按像素，字符串按任意 CSS 长度。缺省 2px。 |
 | `color` | `string` |  | 进度段颜色（任意 CSS 颜色）。不给就用皮肤的品牌色。 |
 | `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定进度段用哪族颜色。给了 color 就以 color 为准。 |
 | `trickle` | `boolean` |  | 不确定进度时自行往前爬，默认开。关掉即停在起步值等宿主收尾。 |

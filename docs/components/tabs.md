@@ -66,8 +66,8 @@ size 换标签的高度、内边距与字号，不传 size 即默认档
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string | null` |  | 选中值。给定即受控：内部不再自改，只发 onValueChange。 |
-| `defaultValue` | `string | null` |  |  |
+| `value` | `string \| null` |  | 选中值。给定即受控：内部不再自改，只发 onValueChange。 |
+| `defaultValue` | `string \| null` |  |  |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 horizontal；不同轴的方向键放行给页面滚动与读屏。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只影响水平轴上 ArrowLeft/ArrowRight 的前后语义。 |
 | `activationMode` | `TabsActivationMode` |  | 方向键移动焦点时是否顺带切换选中，默认 automatic。 |
@@ -91,9 +91,9 @@ size 换标签的高度、内边距与字号，不传 size 即默认档
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string | null` |  |
-| `focusedValue` | `string | null` | 焦点在组外时为 null。 |
-| `setValue` | `(next: string | null) => void` | 传 null 清空选中：context.value 与受控 value 都能表达"无选中"，写入侧同样收得下。 |
+| `value` | `string \| null` |  |
+| `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
+| `setValue` | `(next: string \| null) => void` | 传 null 清空选中：context.value 与受控 value 都能表达"无选中"，写入侧同样收得下。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getListProps` | `() => T['element']` |  |
 | `getTriggerProps` | `(props: TabsTriggerProps) => T['button']` |  |

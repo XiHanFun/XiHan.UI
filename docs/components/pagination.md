@@ -89,8 +89,8 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 | `totalPages` | `number` |  |
 | `pages` | `PaginationPage[]` | 页码序列，作者照着渲染 item 与 ellipsis。 |
 | `pageRange` | `PaginationEntryRange` | 当前页对应的条目区间，1 基闭区间；无数据时是 { start: 0, end: 0 }。 |
-| `previousPage` | `number | null` | 上一页页码；已在首页（或无数据）时为 null。 |
-| `nextPage` | `number | null` |  |
+| `previousPage` | `number \| null` | 上一页页码；已在首页（或无数据）时为 null。 |
+| `nextPage` | `number \| null` |  |
 | `setPage` | `(page: number) => void` | 页码会被夹进合法区间，越界入参不会写出越界的页。 |
 | `goToPrevPage` | `() => void` |  |
 | `goToNextPage` | `() => void` |  |

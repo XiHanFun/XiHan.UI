@@ -61,8 +61,8 @@ size 换掉行高、内边距与字号，不写就是缺省档
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `collection` | `TreeNode[]` |  | 树数据，层级元信息与显示文本的唯一事实源。缺省为空树。 |
-| `value` | `string | string[]` |  | 选中值。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 单选写成裸串是简写，内部一律归一成数组。 |
-| `defaultValue` | `string | string[]` |  |  |
+| `value` | `string \| string[]` |  | 选中值。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 单选写成裸串是简写，内部一律归一成数组。 |
+| `defaultValue` | `string \| string[]` |  |  |
 | `expandedValue` | `string[]` |  | 展开集合。给定即受控，语义同上。 |
 | `defaultExpandedValue` | `string[]` |  |  |
 | `open` | `boolean` |  | 展开态。给定即受控：内部不再自改，只发 onOpenChange。 |
@@ -103,9 +103,9 @@ size 换掉行高、内边距与字号，不写就是缺省档
 | `visibleNodes` | `readonly TreeVisibleNode[]` | 当前可见行序列（收起分支的子树不在其中）。 方向键、Home/End 与连打检索都在它上面走，不是在原始树上走。 |
 | `value` | `string[]` | 选中集合；单选下长度 ≤ 1，形状不随模式变。 |
 | `expandedValue` | `string[]` |  |
-| `valueText` | `string | null` | 选中项的显示文本（多选用逗号加空格连接）；无选中时为 null。取自 collection 的 label。 |
+| `valueText` | `string \| null` | 选中项的显示文本（多选用逗号加空格连接）；无选中时为 null。取自 collection 的 label。 |
 | `displayText` | `string` | value-text 实际显示的文字：有选中取其文本，否则取 placeholder。 |
-| `focusedValue` | `string | null` | 焦点锚点；收起、或它已被收起而不可见时为 null。 |
+| `focusedValue` | `string \| null` | 焦点锚点；收起、或它已被收起而不可见时为 null。 |
 | `multiple` | `boolean` |  |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |

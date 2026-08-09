@@ -72,7 +72,7 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string[]` | 当前选中集合，恒为数组（单选时长度 ≤ 1）。 |
-| `focusedValue` | `string | null` | 焦点在组外时为 null。 |
+| `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
 | `multiple` | `boolean` |  |
 | `disabled` | `boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |

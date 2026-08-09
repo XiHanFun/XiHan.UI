@@ -54,8 +54,8 @@ size 一档换掉 trigger 与菜单条目的字号与内边距，写在 root 上
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string | null` |  | 当前展开项，给定即受控；null 表示都收起。 |
-| `defaultValue` | `string | null` |  |  |
+| `value` | `string \| null` |  | 当前展开项，给定即受控；null 表示都收起。 |
+| `defaultValue` | `string \| null` |  |  |
 | `orientation` | `Orientation` |  | 菜单栏排布轴，默认 horizontal。 |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
@@ -82,14 +82,14 @@ size 一档换掉 trigger 与菜单条目的字号与内边距，写在 root 上
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string | null` | 当前展开的那一项；都收起时为 null。 |
+| `value` | `string \| null` | 当前展开的那一项；都收起时为 null。 |
 | `open` | `boolean` | 有没有菜单展开着。 |
-| `focusedValue` | `string | null` | trigger 的 roving 锚点；焦点不在菜单栏内时为 null。 |
-| `focusedItem` | `string | null` | 展开菜单内持有焦点的条目；无锚点时为 null。 |
+| `focusedValue` | `string \| null` | trigger 的 roving 锚点；焦点不在菜单栏内时为 null。 |
+| `focusedItem` | `string \| null` | 展开菜单内持有焦点的条目；无锚点时为 null。 |
 | `orientation` | `Orientation` |  |
 | `disabled` | `boolean` |  |
 | `isOpen` | `(value: string) => boolean` |  |
-| `setValue` | `(next: string | null) => void` |  |
+| `setValue` | `(next: string \| null) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getTriggerProps` | `(props: MenubarTriggerProps) => T['button']` |  |
 | `getPositionerProps` | `(props: MenubarContentProps) => T['element']` |  |

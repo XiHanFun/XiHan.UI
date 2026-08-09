@@ -80,7 +80,7 @@ size 换的是条目的内边距、间距与字号；三档各挂一个菜单，
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `focusedValue` | `string | null` | 焦点锚点；收起时为 null。 |
+| `focusedValue` | `string \| null` | 焦点锚点；收起时为 null。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |

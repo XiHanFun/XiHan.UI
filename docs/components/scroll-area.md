@@ -71,7 +71,7 @@ orientation 关掉的那条轴滚动条恒不显形，视口那一向也不再�
 | `orientation` | `ScrollAreaOrientation` |  |
 | `vertical` | `ScrollAreaAxisState` |  |
 | `horizontal` | `ScrollAreaAxisState` |  |
-| `draggingAxis` | `Orientation | null` | 正被拖动的那条轴；没在拖为 null。 |
+| `draggingAxis` | `Orientation \| null` | 正被拖动的那条轴；没在拖为 null。 |
 | `cornerVisible` | `boolean` | 右下角补丁该不该显形：两条滚动条同时在场才有它的位置。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |

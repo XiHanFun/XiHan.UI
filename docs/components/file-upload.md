@@ -48,7 +48,7 @@ disabled 把投放区、触发器与隐藏输入一并关停，拖拽进来也�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `accept` | `string | string[]` |  | 允许的类型，写法与原生 input 的 accept 一致： 'image/*' 这类通配、'.png' 这类扩展名、'application/pdf' 这类精确 MIME 都收， 逗号分隔的整串或数组两种形态都行（属性只表达得了整串，数组要走 property）。 |
+| `accept` | `string \| string[]` |  | 允许的类型，写法与原生 input 的 accept 一致： 'image/*' 这类通配、'.png' 这类扩展名、'application/pdf' 这类精确 MIME 都收， 逗号分隔的整串或数组两种形态都行（属性只表达得了整串，数组要走 property）。 |
 | `maxFiles` | `number` |  | 最多留几个文件，默认 1。给 Infinity 即不限。 |
 | `maxFileSize` | `number` |  | 单个文件的字节上限，默认不限。 |
 | `minFileSize` | `number` |  | 单个文件的字节下限，默认 0（挡住 0 字节的空文件可以设成 1）。 |
@@ -59,7 +59,7 @@ disabled 把投放区、触发器与隐藏输入一并关停，拖拽进来也�
 | `defaultFiles` | `File[]` |  |  |
 | `allowDrop` | `boolean` |  | 是否接受拖拽投放，默认 true。关掉后投放区不再拦默认行为，也不再出 data-dragging。 |
 | `directory` | `boolean` |  | 选目录而不是选文件（隐藏输入带 webkitdirectory）。 |
-| `capture` | `'user' | 'environment'` |  | 移动端直接调用摄像头/麦克风采集。 |
+| `capture` | `'user' \| 'environment'` |  | 移动端直接调用摄像头/麦克风采集。 |
 | `translations` | `Partial<FileUploadTranslations>` |  |  |
 | `onFilesChange` | `(details: FileUploadFilesChangeDetails) => void` |  | 列表变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onFileAccept` | `(details: FileUploadFileAcceptDetails) => void` |  | 本次收下了哪些。受控与否都发——宿主要据此发起上传。 |
