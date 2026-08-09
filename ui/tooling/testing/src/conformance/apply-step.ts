@@ -75,8 +75,48 @@ function checkSettle(ctx: ApplyContext, cond: SettleCondition): boolean {
   return actual === cond.attr.value
 }
 
+/** 条件盯着哪个部件。 */
+function refOf(cond: SettleCondition): PartRef {
+  if ('present' in cond)
+    return cond.present
+  if ('absent' in cond)
+    return cond.absent
+  if ('activeElement' in cond)
+    return cond.activeElement
+  return cond.attr.part
+}
+
+/** 部件身上的 data-* 与 hidden，状态都写在这些属性上。 */
+function stateAttrs(el: Element): string {
+  return Array.from(el.attributes)
+    .filter(a => a.name.startsWith('data-') || a.name === 'hidden')
+    .map(a => `${a.name}="${a.value}"`)
+    .join(' ')
+}
+
+/** 超时那一刻的实况：同名部件有几个、盯的那个现在什么样、root 什么样。 */
+function describeSettle(ctx: ApplyContext, cond: SettleCondition): string {
+  const { part, index } = parseRef(refOf(cond))
+  const els = ctx.doc.querySelectorAll<HTMLElement>(
+    `[data-scope="${ctx.component}"][data-part="${part}"]`,
+  )
+  const el = els[index] ?? null
+  const lines = [`文档里 ${part} 共 ${els.length} 个，条件盯的是第 ${index} 个${el ? '' : '（不存在）'}`]
+  if (el)
+    lines.push(`它现在是：${stateAttrs(el)}`)
+  if ('activeElement' in cond) {
+    const ae = ctx.doc.activeElement
+    lines.push(`焦点在：${ae ? `<${ae.tagName.toLowerCase()} ${stateAttrs(ae)}>` : '（无）'}`)
+  }
+  const root = ctx.doc.querySelector(`[data-scope="${ctx.component}"][data-part="root"]`)
+  if (root && root !== el)
+    lines.push(`root 现在是：${stateAttrs(root)}`)
+  return lines.join('；')
+}
+
 async function settle(ctx: ApplyContext, cond: SettleCondition, timeoutMs = 1000): Promise<void> {
   const rounds = Math.max(1, Math.ceil(timeoutMs / 10))
+  const started = performance.now()
   for (let i = 0; i < rounds; i++) {
     await ctx.harness.flush()
     if (checkSettle(ctx, cond))
@@ -84,8 +124,13 @@ async function settle(ctx: ApplyContext, cond: SettleCondition, timeoutMs = 1000
     await new Promise<void>(r => setTimeout(r, 10))
   }
   await ctx.harness.flush()
-  if (!checkSettle(ctx, cond))
-    throw new Error(`settle 超时未满足条件：${JSON.stringify(cond)}`)
+  if (!checkSettle(ctx, cond)) {
+    // 实况一起报出来：只说"没到终态"分不清是状态没动还是循环被饿着了
+    const waited = Math.round(performance.now() - started)
+    throw new Error(
+      `settle 超时未满足条件：${JSON.stringify(cond)}；轮询 ${rounds} 轮共 ${waited}ms；${describeSettle(ctx, cond)}`,
+    )
+  }
 }
 
 /** 把一个声明式步骤翻译成真实 DOM 交互（jsdom 环境）。 */
