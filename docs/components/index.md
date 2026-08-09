@@ -10,14 +10,14 @@
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
-| [按钮](./button) | `button` | 5 | 1 | — |
+| [按钮](./button) | `button` | 5 | 1 | 4 |
 | [图标](./icon) | `icon` | 2 | 0 | — |
-| [切换按钮](./toggle) | `toggle` | 1 | 1 | — |
+| [切换按钮](./toggle) | `toggle` | 1 | 1 | 1 |
 | [切换按钮组](./toggle-group) | `toggle-group` | 2 | 6 | — |
-| [徽标](./badge) | `badge` | 1 | 0 | — |
-| [头像](./avatar) | `avatar` | 3 | 0 | — |
+| [徽标](./badge) | `badge` | 1 | 0 | 1 |
+| [头像](./avatar) | `avatar` | 3 | 0 | 1 |
 | [图片](./image) | `image` | 3 | 0 | — |
-| [分隔线](./separator) | `separator` | 1 | 0 | — |
+| [分隔线](./separator) | `separator` | 1 | 0 | 1 |
 | [代码块](./code-block) | `code-block` | 5 | 1 | — |
 | [剪贴板](./clipboard) | `clipboard` | 6 | 0 | — |
 
@@ -33,7 +33,7 @@
 | [数字输入](./number-field) | `number-field` | 5 | 6 | — |
 | [分格输入](./pin-input) | `pin-input` | 4 | 6 | — |
 | [就地编辑](./editable) | `editable` | 9 | 3 | — |
-| [复选框](./checkbox) | `checkbox` | 2 | 1 | — |
+| [复选框](./checkbox) | `checkbox` | 2 | 1 | 2 |
 | [复选框组](./checkbox-group) | `checkbox-group` | 7 | 3 | — |
 | [单选组](./radio-group) | `radio-group` | 6 | 4 | — |
 | [开关](./switch) | `switch` | 2 | 1 | 3 |
@@ -100,10 +100,10 @@
 | [气泡卡片](./popover) | `popover` | 7 | 4 | — |
 | [文字提示](./tooltip) | `tooltip` | 4 | 2 | — |
 | [悬浮卡片](./hover-card) | `hover-card` | 5 | 2 | — |
-| [警告提示](./alert) | `alert` | 5 | 1 | — |
+| [警告提示](./alert) | `alert` | 5 | 1 | 3 |
 | [轻提示](./toast) | `toast` | 5 | 2 | — |
 | [轻提示容器](./toaster) | `toaster` | 2 | 0 | — |
-| [进度条](./progress) | `progress` | 3 | 0 | — |
+| [进度条](./progress) | `progress` | 3 | 0 | 1 |
 | [加载指示器](./spinner) | `spinner` | 2 | 0 | — |
 | [加载条](./loading-bar) | `loading-bar` | 3 | 0 | — |
 

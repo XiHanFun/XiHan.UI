@@ -12,6 +12,10 @@
 | 状态机 | `toggleMachine` |
 | 皮肤 | `@xihan-ui/styled/toggle.css` |
 
+## 示例
+
+<XhDemo src="toggle/01-basic" />
+
 ## 解剖
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
