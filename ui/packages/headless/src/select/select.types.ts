@@ -72,6 +72,12 @@ export interface SelectSchema extends MachineSchema {
     loop?: boolean
     /** 文字方向，默认 ltr。 */
     dir?: Direction
+    /** 形态：outline / subtle / ghost，决定触发器的描边与底色怎么用。 */
+    variant?: string
+    /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 */
+    tone?: string
+    /** 尺寸：sm / md / lg，决定触发器高度、内边距与字号档位。 */
+    size?: string
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: SelectValueChangeDetails) => void
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */

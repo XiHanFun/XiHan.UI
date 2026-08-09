@@ -32,6 +32,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} name - 表单字段名；给了才参与提交
  * @attr {number} max-length - 字符数上限；同时落成原生 maxlength 与机器侧截断
  * @attr {boolean} clearable - 开启清空：清空按钮显出并在有值时可用，Escape 接管
+ * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 值变化；detail 为 `{ value: string }`
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-limit 的容器
  * @csspart label - 标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动
@@ -53,6 +56,9 @@ export class XhTextFieldElement extends XhElement {
     name: { converter: STRING_CONVERTER },
     maxLength: { converter: NUMBER_CONVERTER, attribute: 'max-length' },
     clearable: { converter: BOOLEAN_CONVERTER },
+    variant: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
   }
 
   declare value?: string
@@ -65,6 +71,9 @@ export class XhTextFieldElement extends XhElement {
   declare name?: string
   declare maxLength?: number
   declare clearable?: boolean
+  declare variant?: string
+  declare tone?: string
+  declare size?: string
 
   private readonly notify = (details: TextFieldValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -84,6 +93,9 @@ export class XhTextFieldElement extends XhElement {
       name: this.name,
       maxLength: this.maxLength,
       clearable: this.clearable ?? false,
+      variant: this.variant,
+      tone: this.tone,
+      size: this.size,
       onValueChange: this.notify,
     }
   }

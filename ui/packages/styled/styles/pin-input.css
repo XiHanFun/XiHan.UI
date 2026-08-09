@@ -1,6 +1,19 @@
 @layer xihan.components {
   /* 与文本框、数字框同一套堆叠：标签一行、格子一行 */
   [data-scope='pin-input'][data-part='root'] {
+    /* 尺寸档只换这四个私有槽，标题与格子都从 root 继承它们，换档不必给每个部件各写一条选择器 */
+    --xh-_pin-input-box-size: var(--xh-control-h-lg);
+    --xh-_pin-input-box-gap: var(--xh-space-2);
+    --xh-_pin-input-box-font-size: var(--xh-font-size-xl);
+    --xh-_pin-input-label-font-size: var(--xh-text-label-size);
+    /* 形态档只换这三个私有槽，缺省这一份就是描边式（描边 + 画布底） */
+    --xh-_pin-input-box-bg: var(--xh-bg-canvas);
+    --xh-_pin-input-box-border: var(--xh-border-default);
+    --xh-_pin-input-box-border-hover: var(--xh-border-strong);
+    /* 聚焦环与填满态的强调色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的取值 */
+    --xh-_pin-input-ring: var(--xh-ring-focus);
+    --xh-_pin-input-accent: var(--xh-_tone, var(--xh-bg-brand));
+
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-pin-input-gap, var(--xh-space-1));
@@ -11,9 +24,48 @@
     display: none;
   }
 
+  /* —— 形态 —— */
+  /* 形态只决定颜色怎么用；用哪族颜色由 data-tone 决定。
+     不做 solid：实心填充盖住了"这里能打字"这件事，输入框用不上它 */
+  [data-scope='pin-input'][data-part='root'][data-variant='outline'] {
+    --xh-_pin-input-box-bg: var(--xh-bg-canvas);
+    --xh-_pin-input-box-border: var(--xh-border-default);
+    --xh-_pin-input-box-border-hover: var(--xh-border-strong);
+  }
+
+  /* 填充式：底色说明这里是一格输入位，描边让位给底色 */
+  [data-scope='pin-input'][data-part='root'][data-variant='subtle'] {
+    --xh-_pin-input-box-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_pin-input-box-border: transparent;
+    --xh-_pin-input-box-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  }
+
+  /* 无边框、透明底：静息时格子完全隐入背景，可见反馈全靠悬停描边与聚焦环 */
+  [data-scope='pin-input'][data-part='root'][data-variant='ghost'] {
+    --xh-_pin-input-box-bg: transparent;
+    --xh-_pin-input-box-border: transparent;
+    --xh-_pin-input-box-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  }
+
+  /* —— 尺寸 —— */
+  [data-scope='pin-input'][data-part='root'][data-size='sm'] {
+    --xh-_pin-input-box-size: var(--xh-control-h-md);
+    --xh-_pin-input-box-gap: var(--xh-control-gap-sm);
+    --xh-_pin-input-box-font-size: var(--xh-font-size-lg);
+    --xh-_pin-input-label-font-size: var(--xh-font-size-sm);
+  }
+
+  /* 格子是正方形，缺省档已经占到控件高度表的顶档，lg 档由顶档加一格间距合成，不另立数值 */
+  [data-scope='pin-input'][data-part='root'][data-size='lg'] {
+    --xh-_pin-input-box-size: calc(var(--xh-control-h-lg) + var(--xh-space-2));
+    --xh-_pin-input-box-gap: var(--xh-control-gap-lg);
+    --xh-_pin-input-box-font-size: var(--xh-font-size-2xl);
+    --xh-_pin-input-label-font-size: var(--xh-font-size-lg);
+  }
+
   [data-scope='pin-input'][data-part='label'] {
     color: var(--xh-pin-input-label-fg, var(--xh-fg-default));
-    font-size: var(--xh-pin-input-label-font-size, var(--xh-text-label-size));
+    font-size: var(--xh-pin-input-label-font-size, var(--xh-_pin-input-label-font-size));
     font-weight: var(--xh-pin-input-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
   }
@@ -26,16 +78,16 @@
      留了内边距，单字符居中后可用宽度不足，中文与全角字符会被挤出框外 */
   [data-scope='pin-input'][data-part='input'] {
     flex: none;
-    inline-size: var(--xh-pin-input-box-size, var(--xh-control-h-lg));
-    block-size: var(--xh-pin-input-box-size, var(--xh-control-h-lg));
+    inline-size: var(--xh-pin-input-box-size, var(--xh-_pin-input-box-size));
+    block-size: var(--xh-pin-input-box-size, var(--xh-_pin-input-box-size));
     padding: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-pin-input-box-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-pin-input-box-border, var(--xh-_pin-input-box-border));
     border-radius: var(--xh-pin-input-box-radius, var(--xh-shape-control));
-    background: var(--xh-pin-input-box-bg, var(--xh-bg-canvas));
+    background: var(--xh-pin-input-box-bg, var(--xh-_pin-input-box-bg));
     color: var(--xh-pin-input-box-fg, var(--xh-fg-default));
     /* 表单控件不继承页面字体，只给字号会让格子用 UA 默认字族 */
     font-family: inherit;
-    font-size: var(--xh-pin-input-box-font-size, var(--xh-font-size-xl));
+    font-size: var(--xh-pin-input-box-font-size, var(--xh-_pin-input-box-font-size));
     /* 等宽数字：各位字宽不一时逐格填入会让每格里的字符左右跳 */
     font-variant-numeric: tabular-nums;
     line-height: var(--xh-leading-none);
@@ -47,7 +99,7 @@
      指望它给 gap 就等于把间距交给了皮肤管不着的地方。
      用相邻兄弟而不是给每格加外边距，是为了不在首尾多出两段空白 */
   [data-scope='pin-input'][data-part='input'] + [data-scope='pin-input'][data-part='input'] {
-    margin-inline-start: var(--xh-pin-input-box-gap, var(--xh-space-2));
+    margin-inline-start: var(--xh-pin-input-box-gap, var(--xh-_pin-input-box-gap));
   }
 
   [data-scope='pin-input'][data-part='input']::placeholder {
@@ -56,7 +108,7 @@
 
   /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
   [data-scope='pin-input'][data-part='input']:hover:not(:disabled, [data-invalid]) {
-    border-color: var(--xh-pin-input-box-border-hover, var(--xh-border-strong));
+    border-color: var(--xh-pin-input-box-border-hover, var(--xh-_pin-input-box-border-hover));
   }
 
   /* 一行格子长得一模一样，光标那道竖线太细，看不出正在填哪一格：
@@ -64,8 +116,8 @@
      :focus-visible 兜住机器状态还没回流的那一帧，两条同时写不冲突 */
   [data-scope='pin-input'][data-part='input'][data-focus],
   [data-scope='pin-input'][data-part='input']:focus-visible {
-    border-color: var(--xh-pin-input-box-border-focus, var(--xh-ring-focus));
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    border-color: var(--xh-pin-input-box-border-focus, var(--xh-_pin-input-ring));
+    outline: var(--xh-ring-width) solid var(--xh-_pin-input-ring);
     outline-offset: 2px;
   }
 
@@ -84,7 +136,7 @@
      已经标了 invalid 的不在此列——那是明确说了不对 */
   [data-scope='pin-input'][data-part='root'][data-complete]
     [data-scope='pin-input'][data-part='input']:not([data-invalid], :disabled) {
-    border-color: var(--xh-pin-input-box-border-complete, var(--xh-bg-brand));
+    border-color: var(--xh-pin-input-box-border-complete, var(--xh-_pin-input-accent));
   }
 
   /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底

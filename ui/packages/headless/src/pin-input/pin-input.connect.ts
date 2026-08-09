@@ -100,6 +100,10 @@ export function connectPinInput<T extends PropTypes>(
       // 一组格子对读屏是一个整体，标题由 label 提供
       'role': 'group',
       'aria-labelledby': ids.label,
+      // 三个视觉轴只落在 root 上，格子从这里继承皮肤声明的私有槽
+      'data-variant': prop('variant'),
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
       'data-invalid': dataAttr(invalid),
       'data-complete': dataAttr(complete),

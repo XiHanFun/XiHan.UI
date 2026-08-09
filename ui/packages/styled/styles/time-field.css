@@ -1,9 +1,60 @@
 @layer xihan.components {
   /* 与文本框、数字框同一套堆叠：标签一行、控件一行 */
   [data-scope='time-field'][data-part='root'] {
+    /* 尺寸档只换这四个私有槽，标题与控件都从 root 继承它们，换档不必给每个部件各写一条选择器 */
+    --xh-_time-field-control-h: var(--xh-control-h-md);
+    --xh-_time-field-control-px: var(--xh-control-px-md);
+    --xh-_time-field-font-size: var(--xh-text-body-size);
+    --xh-_time-field-label-font-size: var(--xh-text-label-size);
+    /* 形态档只换这三个私有槽：底色与两档描边 */
+    --xh-_time-field-control-bg: var(--xh-bg-canvas);
+    --xh-_time-field-control-border: var(--xh-border-default);
+    --xh-_time-field-control-border-hover: var(--xh-border-strong);
+    /* 聚焦描边与段位反白随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回原来的焦点色与品牌色 */
+    --xh-_time-field-ring: var(--xh-ring-focus);
+    --xh-_time-field-segment-bg: var(--xh-_tone, var(--xh-bg-brand));
+    --xh-_time-field-segment-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-time-field-gap, var(--xh-space-1));
+  }
+
+  /* —— 尺寸 —— */
+  [data-scope='time-field'][data-part='root'][data-size='sm'] {
+    --xh-_time-field-control-h: var(--xh-control-h-sm);
+    --xh-_time-field-control-px: var(--xh-control-px-sm);
+    --xh-_time-field-font-size: var(--xh-font-size-sm);
+    --xh-_time-field-label-font-size: var(--xh-font-size-sm);
+  }
+
+  [data-scope='time-field'][data-part='root'][data-size='lg'] {
+    --xh-_time-field-control-h: var(--xh-control-h-lg);
+    --xh-_time-field-control-px: var(--xh-control-px-lg);
+    --xh-_time-field-font-size: var(--xh-font-size-lg);
+    --xh-_time-field-label-font-size: var(--xh-font-size-lg);
+  }
+
+  /* —— 形态 —— */
+  /* 描边式：与缺省等价，写出来是为了三档形态在皮肤里都看得见 */
+  [data-scope='time-field'][data-part='root'][data-variant='outline'] {
+    --xh-_time-field-control-bg: var(--xh-bg-canvas);
+    --xh-_time-field-control-border: var(--xh-border-default);
+    --xh-_time-field-control-border-hover: var(--xh-border-strong);
+  }
+
+  /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
+  [data-scope='time-field'][data-part='root'][data-variant='subtle'] {
+    --xh-_time-field-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_time-field-control-border: transparent;
+    --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  }
+
+  /* 无框式：底与边都让开，可见反馈只剩聚焦那一档 */
+  [data-scope='time-field'][data-part='root'][data-variant='ghost'] {
+    --xh-_time-field-control-bg: transparent;
+    --xh-_time-field-control-border: transparent;
+    --xh-_time-field-control-border-hover: transparent;
   }
 
   /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -13,7 +64,7 @@
 
   [data-scope='time-field'][data-part='label'] {
     color: var(--xh-time-field-label-fg, var(--xh-fg-default));
-    font-size: var(--xh-time-field-label-font-size, var(--xh-text-label-size));
+    font-size: var(--xh-time-field-label-font-size, var(--xh-_time-field-label-font-size));
     font-weight: var(--xh-time-field-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
     /* 点标题会把焦点送到第一段（段不是能被 for 指向的原生控件，这条由连接层接管），
@@ -31,16 +82,16 @@
   [data-scope='time-field'][data-part='control'] {
     display: inline-flex;
     align-items: center;
-    block-size: var(--xh-time-field-control-h, var(--xh-control-h-md));
-    padding-inline: var(--xh-time-field-control-px, var(--xh-control-px-md));
+    block-size: var(--xh-time-field-control-h, var(--xh-_time-field-control-h));
+    padding-inline: var(--xh-time-field-control-px, var(--xh-_time-field-control-px));
     padding-block: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-time-field-control-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-time-field-control-border, var(--xh-_time-field-control-border));
     border-radius: var(--xh-time-field-control-radius, var(--xh-shape-control));
-    background: var(--xh-time-field-control-bg, var(--xh-bg-canvas));
+    background: var(--xh-time-field-control-bg, var(--xh-_time-field-control-bg));
     color: var(--xh-time-field-control-fg, var(--xh-fg-default));
     /* 表单控件不继承页面字体，只给字号会让它用 UA 默认字族，与周围文本对不上 */
     font-family: inherit;
-    font-size: var(--xh-time-field-font-size, var(--xh-text-body-size));
+    font-size: var(--xh-time-field-font-size, var(--xh-_time-field-font-size));
     /* 等宽数字：各位字宽不一时逐段填入会让整行左右跳 */
     font-variant-numeric: tabular-nums;
     line-height: var(--xh-leading-normal);
@@ -53,13 +104,13 @@
 
   /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
   [data-scope='time-field'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
-    border-color: var(--xh-time-field-control-border-hover, var(--xh-border-strong));
+    border-color: var(--xh-time-field-control-border-hover, var(--xh-_time-field-control-border-hover));
   }
 
   /* 焦点真正落在段上，但整块看起来才是一个控件：段内有焦点时整框亮起来。
      control 自己不占 Tab 位，所以这里写的是 focus-within 而不是 focus-visible */
   [data-scope='time-field'][data-part='control']:focus-within:not([data-disabled]) {
-    border-color: var(--xh-time-field-control-border-focus, var(--xh-ring-focus));
+    border-color: var(--xh-time-field-control-border-focus, var(--xh-_time-field-ring));
   }
 
   [data-scope='time-field'][data-part='control'][data-invalid] {
@@ -111,14 +162,14 @@
      两条同时写不冲突 */
   [data-scope='time-field'][data-part='segment'][data-focus]:not([data-disabled]),
   [data-scope='time-field'][data-part='segment']:focus-visible {
-    background: var(--xh-time-field-segment-bg-focus, var(--xh-bg-brand));
-    color: var(--xh-time-field-segment-fg-focus, var(--xh-fg-on-brand));
+    background: var(--xh-time-field-segment-bg-focus, var(--xh-_time-field-segment-bg));
+    color: var(--xh-time-field-segment-fg-focus, var(--xh-_time-field-segment-fg));
     outline: none;
   }
 
   /* 选中态用了品牌底色之后，占位符那条弱色会被它盖住，这里明确让位给焦点态 */
   [data-scope='time-field'][data-part='segment'][data-focus][data-placeholder]:not([data-disabled]) {
-    color: var(--xh-time-field-segment-fg-focus, var(--xh-fg-on-brand));
+    color: var(--xh-time-field-segment-fg-focus, var(--xh-_time-field-segment-fg));
   }
 
   [data-scope='time-field'][data-part='segment']:hover:not([data-focus], [data-disabled]) {

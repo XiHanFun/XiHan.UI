@@ -61,6 +61,9 @@
 | `name` | `string` |  | 表单字段名；给了才参与提交。 |
 | `changeDelay` | `number` |  | 按住加减按钮多久开始连发，默认 300ms。 |
 | `changeInterval` | `number` |  | 连发间隔，默认 50ms。 |
+| `variant` | `string` |  | 形态：outline / subtle / ghost，决定输入框与加减钮的底与描边怎么画。 |
+| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调用哪族颜色。 |
+| `size` | `string` |  | 尺寸：sm / md / lg，决定输入框与加减钮的几何档位。 |
 | `onValueChange` | `(details: NumberFieldValueChangeDetails) => void` |  |  |
 
 ## 状态机

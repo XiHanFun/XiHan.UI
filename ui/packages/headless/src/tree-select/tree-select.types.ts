@@ -78,6 +78,12 @@ export interface TreeSelectSchema extends MachineSchema {
     readOnly?: boolean
     /** 校验失败：trigger 报 aria-invalid，各角色节点带 data-invalid。 */
     invalid?: boolean
+    /** 形态：outline / subtle / ghost，决定触发框的描边与底色怎么用。 */
+    variant?: string
+    /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中用哪族颜色。 */
+    tone?: string
+    /** 尺寸：sm / md / lg，决定触发框与树节点行的几何档位。 */
+    size?: string
     /** 无选中时 value-text 显示的占位文字。 */
     placeholder?: string
     placement?: Placement

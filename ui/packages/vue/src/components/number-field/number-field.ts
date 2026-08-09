@@ -22,6 +22,9 @@ export const XhNumberFieldRoot = defineComponent({
     name: { type: String, default: undefined },
     changeDelay: { type: Number, default: undefined },
     changeInterval: { type: Number, default: undefined },
+    variant: { type: String, default: undefined },
+    tone: { type: String, default: undefined },
+    size: { type: String, default: undefined },
   },
   // value-change 携带 { value, valueAsNumber }，update:value 携带裸串
   emits: ['value-change', 'update:value'],

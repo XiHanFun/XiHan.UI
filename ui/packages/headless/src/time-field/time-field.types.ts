@@ -64,6 +64,12 @@ export interface TimeFieldSchema extends MachineSchema {
     name?: string
     /** 空段的占位字符（单字符），按段宽重复，默认 '-'。 */
     placeholder?: string
+    /** 形态：outline / subtle / ghost，决定描边与底色怎么用。 */
+    variant?: string
+    /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调用哪族颜色。 */
+    tone?: string
+    /** 尺寸：sm / md / lg。 */
+    size?: string
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: TimeFieldValueChangeDetails) => void
   }

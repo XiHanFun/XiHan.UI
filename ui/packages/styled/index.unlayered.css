@@ -1484,6 +1484,19 @@
    标签占满整行把后面的挤到下一行，触发器与清空按钮就并排落在同一行上。
    这样作者少写标签、少写清空按钮，剩下的部件也不会塌 */
 [data-scope='cascader'][data-part='root'] {
+  /* 尺寸档只换这几个私有槽，触发框与列里的条目都从 root 继承它们，换档不必给每个部件各写一条选择器 */
+  --xh-_cascader-h: var(--xh-control-h-md);
+  --xh-_cascader-px: var(--xh-control-px-md);
+  --xh-_cascader-gap: var(--xh-control-gap-md);
+  --xh-_cascader-font-size: var(--xh-text-body-size);
+  --xh-_cascader-label-font-size: var(--xh-text-label-size);
+
+  /* 形态档只换触发框的描边与底色这三个槽，浮层与列不跟着变：
+     变的是「这是个输入位」的表达方式，不是弹出内容的表达方式 */
+  --xh-_cascader-border: var(--xh-border-default);
+  --xh-_cascader-border-hover: var(--xh-border-strong);
+  --xh-_cascader-bg: var(--xh-bg-canvas);
+
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
@@ -1495,11 +1508,52 @@
   display: none;
 }
 
+/* —— 形态 —— */
+/* 形态只决定描边与底色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的中性配色 */
+/* outline 就是缺省那一身：描边加画布底，写出来只为让三档并列可读 */
+[data-scope='cascader'][data-part='root'][data-variant='outline'] {
+  --xh-_cascader-border: var(--xh-border-default);
+  --xh-_cascader-border-hover: var(--xh-border-strong);
+  --xh-_cascader-bg: var(--xh-bg-canvas);
+}
+
+/* subtle 是填充式：底色接过「这里能点」的表达，描边随之让位 */
+[data-scope='cascader'][data-part='root'][data-variant='subtle'] {
+  --xh-_cascader-border: transparent;
+  --xh-_cascader-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_cascader-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+}
+
+/* ghost 无框无底，可见反馈只在聚焦时给；边框宽度仍占位，切换形态不引起布局抖动 */
+[data-scope='cascader'][data-part='root'][data-variant='ghost'] {
+  --xh-_cascader-border: transparent;
+  --xh-_cascader-border-hover: transparent;
+  --xh-_cascader-bg: transparent;
+}
+
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里 */
+[data-scope='cascader'][data-part='root'][data-size='sm'] {
+  --xh-_cascader-h: var(--xh-control-h-sm);
+  --xh-_cascader-px: var(--xh-control-px-sm);
+  --xh-_cascader-gap: var(--xh-control-gap-sm);
+  --xh-_cascader-font-size: var(--xh-font-size-sm);
+  --xh-_cascader-label-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='cascader'][data-part='root'][data-size='lg'] {
+  --xh-_cascader-h: var(--xh-control-h-lg);
+  --xh-_cascader-px: var(--xh-control-px-lg);
+  --xh-_cascader-gap: var(--xh-control-gap-lg);
+  --xh-_cascader-font-size: var(--xh-font-size-lg);
+  --xh-_cascader-label-font-size: var(--xh-font-size-lg);
+}
+
 [data-scope='cascader'][data-part='label'] {
   /* 占满整行，把触发器那一行挤下去 */
   flex-basis: 100%;
   color: var(--xh-cascader-label-fg, var(--xh-fg-muted));
-  font-size: var(--xh-cascader-label-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-cascader-label-font-size, var(--xh-_cascader-label-font-size));
   font-weight: var(--xh-cascader-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
 }
@@ -1516,16 +1570,16 @@
   flex: 1;
   align-items: center;
   justify-content: space-between;
-  gap: var(--xh-cascader-trigger-gap, var(--xh-control-gap-md));
+  gap: var(--xh-cascader-trigger-gap, var(--xh-_cascader-gap));
   min-inline-size: var(--xh-cascader-trigger-min-w, 14rem);
-  block-size: var(--xh-cascader-trigger-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-cascader-trigger-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid var(--xh-cascader-trigger-border, var(--xh-border-default));
+  block-size: var(--xh-cascader-trigger-h, var(--xh-_cascader-h));
+  padding-inline: var(--xh-cascader-trigger-px, var(--xh-_cascader-px));
+  border: var(--xh-stroke-thin) solid var(--xh-cascader-trigger-border, var(--xh-_cascader-border));
   border-radius: var(--xh-cascader-trigger-radius, var(--xh-shape-control));
-  background: var(--xh-cascader-trigger-bg, var(--xh-bg-canvas));
+  background: var(--xh-cascader-trigger-bg, var(--xh-_cascader-bg));
   color: var(--xh-cascader-trigger-fg, var(--xh-fg-default));
   font-family: inherit;
-  font-size: var(--xh-cascader-trigger-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-cascader-trigger-font-size, var(--xh-_cascader-font-size));
   line-height: var(--xh-leading-none);
   text-align: start;
   cursor: pointer;
@@ -1538,12 +1592,13 @@
 
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='cascader'][data-part='trigger']:hover:not(:disabled, [data-invalid]) {
-  border-color: var(--xh-cascader-trigger-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-cascader-trigger-border-hover, var(--xh-_cascader-border-hover));
 }
 
-/* trigger 是整个控件唯一的 Tab 停靠点（展开后停靠点才移进列里），落焦必须看得见 */
+/* trigger 是整个控件唯一的 Tab 停靠点（展开后停靠点才移进列里），落焦必须看得见。
+   语气落在环上：没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色 */
 [data-scope='cascader'][data-part='trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
   outline-offset: 2px;
 }
 
@@ -1639,7 +1694,7 @@
 /* 清空按钮退出了 Tab 序列（tabindex=-1），正常操作走不到这里；
    留着是给程序化聚焦兜底，落焦时得看得见 */
 [data-scope='cascader'][data-part='clear-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
   outline-offset: 2px;
 }
 
@@ -1726,12 +1781,12 @@
 [data-scope='cascader'][data-part='item'] {
   display: flex;
   align-items: center;
-  gap: var(--xh-cascader-row-gap, var(--xh-control-gap-md));
+  gap: var(--xh-cascader-row-gap, var(--xh-_cascader-gap));
   padding-block: var(--xh-cascader-row-py, var(--xh-space-2));
   padding-inline: var(--xh-cascader-row-px, var(--xh-control-px-sm));
   border-radius: var(--xh-cascader-row-radius, var(--xh-shape-control));
   color: var(--xh-cascader-row-fg, var(--xh-fg-default));
-  font-size: var(--xh-cascader-row-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-cascader-row-font-size, var(--xh-_cascader-font-size));
   line-height: var(--xh-leading-none);
   white-space: nowrap;
   cursor: pointer;
@@ -1756,15 +1811,16 @@
   background: var(--xh-cascader-row-bg-active, var(--xh-bg-subtle));
 }
 
-/* 选中最「实」：它表达的是数据状态，收起再展开还在 */
+/* 选中最「实」：它表达的是数据状态，收起再展开还在。
+   选中底随语气走，没写 data-tone 时退回原来的中性底 */
 [data-scope='cascader'][data-part='item'][data-selected] {
-  background: var(--xh-cascader-row-bg-selected, var(--xh-bg-subtle-active));
+  background: var(--xh-cascader-row-bg-selected, var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active)));
   font-weight: var(--xh-cascader-row-selected-font-weight, var(--xh-font-weight-medium));
 }
 
 /* 条目自己就是 option，环直接画在它身上；往内收，行是撑满列宽的，环画在外沿会被裁掉 */
 [data-scope='cascader'][data-part='item']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
   outline-offset: calc(-1 * var(--xh-ring-width));
 }
 
@@ -1790,7 +1846,7 @@
   align-items: center;
   justify-content: center;
   inline-size: var(--xh-cascader-indicator-size, var(--xh-control-indicator-size));
-  color: var(--xh-cascader-item-indicator-fg, var(--xh-bg-brand));
+  color: var(--xh-cascader-item-indicator-fg, var(--xh-_tone, var(--xh-bg-brand)));
   visibility: hidden;
 }
 
@@ -2771,6 +2827,25 @@
 
 /* styles/combobox.css */
 [data-scope='combobox'][data-part='root'] {
+  /* 尺寸档只换这五个私有槽，输入行、标题与候选都从 root 继承它们，
+     换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承 */
+  --xh-_combobox-h: var(--xh-control-h-md);
+  --xh-_combobox-px: var(--xh-control-px-md);
+  --xh-_combobox-gap: var(--xh-control-gap-md);
+  --xh-_combobox-font-size: var(--xh-text-body-size);
+  --xh-_combobox-label-font-size: var(--xh-text-label-size);
+
+  /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
+  --xh-_combobox-control-bg: var(--xh-bg-canvas);
+  --xh-_combobox-control-border: var(--xh-border-default);
+  --xh-_combobox-control-border-hover: var(--xh-border-strong);
+
+  /* 强调色随语气走，只落在聚焦与选中上，正文文字色不动。
+     没写 data-tone 时 --xh-_tone 没被声明，三处都退回原来的取值 */
+  --xh-_combobox-ring: var(--xh-ring-focus);
+  --xh-_combobox-accent: var(--xh-_tone, var(--xh-bg-brand));
+  --xh-_combobox-item-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-combobox-gap, var(--xh-stack-gap-md));
@@ -2781,9 +2856,49 @@
   display: none;
 }
 
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里 */
+[data-scope='combobox'][data-part='root'][data-size='sm'] {
+  --xh-_combobox-h: var(--xh-control-h-sm);
+  --xh-_combobox-px: var(--xh-control-px-sm);
+  --xh-_combobox-gap: var(--xh-control-gap-sm);
+  --xh-_combobox-font-size: var(--xh-font-size-sm);
+  --xh-_combobox-label-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='combobox'][data-part='root'][data-size='lg'] {
+  --xh-_combobox-h: var(--xh-control-h-lg);
+  --xh-_combobox-px: var(--xh-control-px-lg);
+  --xh-_combobox-gap: var(--xh-control-gap-lg);
+  --xh-_combobox-font-size: var(--xh-font-size-lg);
+  --xh-_combobox-label-font-size: var(--xh-font-size-lg);
+}
+
+/* —— 形态 —— */
+/* 输入类不做 solid：实心底压着可编辑的文字，读起来像块不可点的色板。
+   形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
+[data-scope='combobox'][data-part='root'][data-variant='outline'] {
+  --xh-_combobox-control-bg: var(--xh-bg-canvas);
+  --xh-_combobox-control-border: var(--xh-border-default);
+  --xh-_combobox-control-border-hover: var(--xh-border-strong);
+}
+
+/* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
+[data-scope='combobox'][data-part='root'][data-variant='subtle'] {
+  --xh-_combobox-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_combobox-control-border: transparent;
+  --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+}
+
+[data-scope='combobox'][data-part='root'][data-variant='ghost'] {
+  --xh-_combobox-control-bg: transparent;
+  --xh-_combobox-control-border: transparent;
+  --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+}
+
 [data-scope='combobox'][data-part='label'] {
   color: var(--xh-combobox-label-fg, var(--xh-fg-muted));
-  font-size: var(--xh-combobox-label-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-combobox-label-font-size, var(--xh-_combobox-label-font-size));
   font-weight: var(--xh-combobox-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
 }
@@ -2797,13 +2912,13 @@
 [data-scope='combobox'][data-part='control'] {
   display: inline-flex;
   align-items: center;
-  gap: var(--xh-combobox-control-gap, var(--xh-control-gap-md));
+  gap: var(--xh-combobox-control-gap, var(--xh-_combobox-gap));
   min-inline-size: var(--xh-combobox-control-min-w, var(--xh-overlay-min-w));
-  block-size: var(--xh-combobox-control-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-combobox-control-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid var(--xh-combobox-control-border, var(--xh-border-default));
+  block-size: var(--xh-combobox-control-h, var(--xh-_combobox-h));
+  padding-inline: var(--xh-combobox-control-px, var(--xh-_combobox-px));
+  border: var(--xh-stroke-thin) solid var(--xh-combobox-control-border, var(--xh-_combobox-control-border));
   border-radius: var(--xh-combobox-control-radius, var(--xh-shape-control));
-  background: var(--xh-combobox-control-bg, var(--xh-bg-canvas));
+  background: var(--xh-combobox-control-bg, var(--xh-_combobox-control-bg));
   color: var(--xh-combobox-control-fg, var(--xh-fg-default));
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -2814,15 +2929,15 @@
 
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='combobox'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
-  border-color: var(--xh-combobox-control-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-combobox-control-border-hover, var(--xh-_combobox-control-border-hover));
 }
 
 /* 焦点环画在 control 上而不是 input 上：视觉上的「框」是 control，
    环若长在里面那个透明的 input 身上，就会缩在文字区里、与框错开一圈。
    input 是这里唯一可聚焦的常规节点，:focus-within 与它的 :focus-visible 等价 */
 [data-scope='combobox'][data-part='control']:focus-within {
-  border-color: var(--xh-combobox-control-border-focus, var(--xh-ring-focus));
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  border-color: var(--xh-combobox-control-border-focus, var(--xh-_combobox-ring));
+  outline: var(--xh-ring-width) solid var(--xh-_combobox-ring);
   outline-offset: 2px;
 }
 
@@ -2853,7 +2968,7 @@
   color: inherit;
   /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
   font-family: inherit;
-  font-size: var(--xh-combobox-input-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-combobox-input-font-size, var(--xh-_combobox-font-size));
   line-height: var(--xh-leading-normal);
 }
 
@@ -2928,7 +3043,7 @@
    留着是给程序化聚焦兜底，落焦时得看得见 */
 [data-scope='combobox'][data-part='trigger']:focus-visible,
 [data-scope='combobox'][data-part='clear-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_combobox-ring);
   outline-offset: 2px;
 }
 
@@ -3017,12 +3132,12 @@
 [data-scope='combobox'][data-part='item'] {
   display: flex;
   align-items: center;
-  gap: var(--xh-combobox-item-gap, var(--xh-control-gap-md));
+  gap: var(--xh-combobox-item-gap, var(--xh-_combobox-gap));
   padding-block: var(--xh-combobox-item-py, var(--xh-space-2));
   padding-inline: var(--xh-combobox-item-px, var(--xh-control-px-sm));
   border-radius: var(--xh-combobox-item-radius, var(--xh-shape-control));
   color: var(--xh-combobox-item-fg, var(--xh-fg-default));
-  font-size: var(--xh-combobox-item-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-combobox-item-font-size, var(--xh-_combobox-font-size));
   line-height: var(--xh-leading-none);
   white-space: nowrap;
   cursor: pointer;
@@ -3037,7 +3152,7 @@
 /* 只认 data-highlighted，不写 :hover：指针划过时连接层已经把高亮搬过来了，
    两套底色各画各的会出现"鼠标停在 A 上、回车提交的却是 B" */
 [data-scope='combobox'][data-part='item'][data-highlighted]:not([data-disabled]) {
-  background: var(--xh-combobox-item-bg-highlight, var(--xh-bg-subtle-hover));
+  background: var(--xh-combobox-item-bg-highlight, var(--xh-_combobox-item-highlight-bg));
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），
@@ -3065,7 +3180,7 @@
   align-items: center;
   justify-content: center;
   inline-size: var(--xh-combobox-item-indicator-size, var(--xh-control-indicator-size));
-  color: var(--xh-combobox-item-indicator-fg, var(--xh-bg-brand));
+  color: var(--xh-combobox-item-indicator-fg, var(--xh-_combobox-accent));
   visibility: hidden;
 }
 
@@ -3091,7 +3206,7 @@
   border-radius: var(--xh-combobox-empty-radius, var(--xh-shape-surface));
   background: var(--xh-combobox-empty-bg, var(--xh-bg-surface));
   color: var(--xh-combobox-empty-fg, var(--xh-fg-subtle));
-  font-size: var(--xh-combobox-empty-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-combobox-empty-font-size, var(--xh-_combobox-font-size));
   line-height: var(--xh-leading-none);
   box-shadow: var(--xh-combobox-empty-shadow, var(--xh-elevation-2));
   text-align: center;
@@ -3460,9 +3575,60 @@
 /* styles/date-field.css */
 /* 与文本框、数字框同一套堆叠：标签一行、分段框一行 */
 [data-scope='date-field'][data-part='root'] {
+  /* 尺寸档只换这四个私有槽，标题与分段框都从 root 继承它们，换档不必给每个部件各写一条选择器 */
+  --xh-_date-field-control-h: var(--xh-control-h-md);
+  --xh-_date-field-control-px: var(--xh-control-px-md);
+  --xh-_date-field-font-size: var(--xh-text-body-size);
+  --xh-_date-field-label-font-size: var(--xh-text-label-size);
+  /* 形态档只换这三个私有槽：底色与两档描边 */
+  --xh-_date-field-control-bg: var(--xh-bg-canvas);
+  --xh-_date-field-control-border: var(--xh-border-default);
+  --xh-_date-field-control-border-hover: var(--xh-border-strong);
+  /* 聚焦环与段位反白随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回原来的焦点色与品牌色 */
+  --xh-_date-field-ring: var(--xh-ring-focus);
+  --xh-_date-field-segment-bg: var(--xh-_tone, var(--xh-bg-brand));
+  --xh-_date-field-segment-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-date-field-gap, var(--xh-space-1));
+}
+
+/* —— 尺寸 —— */
+[data-scope='date-field'][data-part='root'][data-size='sm'] {
+  --xh-_date-field-control-h: var(--xh-control-h-sm);
+  --xh-_date-field-control-px: var(--xh-control-px-sm);
+  --xh-_date-field-font-size: var(--xh-font-size-sm);
+  --xh-_date-field-label-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='date-field'][data-part='root'][data-size='lg'] {
+  --xh-_date-field-control-h: var(--xh-control-h-lg);
+  --xh-_date-field-control-px: var(--xh-control-px-lg);
+  --xh-_date-field-font-size: var(--xh-font-size-lg);
+  --xh-_date-field-label-font-size: var(--xh-font-size-lg);
+}
+
+/* —— 形态 —— */
+/* 描边式：与缺省等价，写出来是为了三档形态在皮肤里都看得见 */
+[data-scope='date-field'][data-part='root'][data-variant='outline'] {
+  --xh-_date-field-control-bg: var(--xh-bg-canvas);
+  --xh-_date-field-control-border: var(--xh-border-default);
+  --xh-_date-field-control-border-hover: var(--xh-border-strong);
+}
+
+/* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
+[data-scope='date-field'][data-part='root'][data-variant='subtle'] {
+  --xh-_date-field-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_date-field-control-border: transparent;
+  --xh-_date-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+}
+
+/* 无框式：底与边都让开，可见反馈只剩聚焦那一档 */
+[data-scope='date-field'][data-part='root'][data-variant='ghost'] {
+  --xh-_date-field-control-bg: transparent;
+  --xh-_date-field-control-border: transparent;
+  --xh-_date-field-control-border-hover: transparent;
 }
 
 /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -3472,7 +3638,7 @@
 
 [data-scope='date-field'][data-part='label'] {
   color: var(--xh-date-field-label-fg, var(--xh-fg-default));
-  font-size: var(--xh-date-field-label-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-date-field-label-font-size, var(--xh-_date-field-label-font-size));
   font-weight: var(--xh-date-field-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
   /* 点标题会把焦点送进首段，指针得说明这件事 */
@@ -3493,16 +3659,16 @@
 [data-scope='date-field'][data-part='control'] {
   display: inline-flex;
   align-items: center;
-  block-size: var(--xh-date-field-control-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-date-field-control-px, var(--xh-control-px-md));
+  block-size: var(--xh-date-field-control-h, var(--xh-_date-field-control-h));
+  padding-inline: var(--xh-date-field-control-px, var(--xh-_date-field-control-px));
   padding-block: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-date-field-control-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-date-field-control-border, var(--xh-_date-field-control-border));
   border-radius: var(--xh-date-field-control-radius, var(--xh-shape-control));
-  background: var(--xh-date-field-control-bg, var(--xh-bg-canvas));
+  background: var(--xh-date-field-control-bg, var(--xh-_date-field-control-bg));
   color: var(--xh-date-field-control-fg, var(--xh-fg-default));
   /* 表单控件不继承页面字体，只给字号会让分段框用 UA 默认字族 */
   font-family: inherit;
-  font-size: var(--xh-date-field-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-date-field-font-size, var(--xh-_date-field-font-size));
   line-height: var(--xh-leading-none);
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -3513,14 +3679,14 @@
 
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='date-field'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
-  border-color: var(--xh-date-field-control-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-date-field-control-border-hover, var(--xh-_date-field-control-border-hover));
 }
 
 /* 焦点落在某一段上，而边框长在 control 上：焦点环得由内向外借一层。
    control 自己不占 Tab 位，:focus-within 是它唯一能感知组内焦点的方式 */
 [data-scope='date-field'][data-part='control']:focus-within {
-  border-color: var(--xh-date-field-control-border-focus, var(--xh-ring-focus));
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  border-color: var(--xh-date-field-control-border-focus, var(--xh-_date-field-ring));
+  outline: var(--xh-ring-width) solid var(--xh-_date-field-ring);
   outline-offset: 2px;
 }
 
@@ -3580,14 +3746,14 @@
    焦点环画在 control 上，段位这里只反白，两层各管各的不打架 */
 [data-scope='date-field'][data-part='segment'][data-focus],
 [data-scope='date-field'][data-part='segment']:focus-visible {
-  background: var(--xh-date-field-segment-bg-focus, var(--xh-bg-brand));
-  color: var(--xh-date-field-segment-fg-focus, var(--xh-fg-on-brand));
+  background: var(--xh-date-field-segment-bg-focus, var(--xh-_date-field-segment-bg));
+  color: var(--xh-date-field-segment-fg-focus, var(--xh-_date-field-segment-fg));
   outline: none;
 }
 
 /* 反白之后占位串那条弱色规则会被盖掉，专门再压一遍才看得清 */
 [data-scope='date-field'][data-part='segment'][data-focus][data-placeholder] {
-  color: var(--xh-date-field-segment-fg-focus, var(--xh-fg-on-brand));
+  color: var(--xh-date-field-segment-fg-focus, var(--xh-_date-field-segment-fg));
 }
 
 /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底
@@ -6113,6 +6279,29 @@
 /* 与文本框同一套堆叠：标签一行、输入行一行。
    加减钮与输入框中间那层包裹归作者，这里不碰，三者各自把高度对齐即可成一体 */
 [data-scope='number-field'][data-part='root'] {
+  /* 尺寸档只换这几个私有槽，标题、输入框与加减钮都从 root 继承它们，
+     换档不必给每个部件各写一条选择器 */
+  --xh-_number-field-h: var(--xh-control-h-md);
+  --xh-_number-field-px: var(--xh-control-px-md);
+  --xh-_number-field-font-size: var(--xh-text-body-size);
+  --xh-_number-field-label-font-size: var(--xh-text-label-size);
+  --xh-_number-field-trigger-font-size: var(--xh-text-body-size);
+
+  /* 形态档只换这几个私有槽：输入框的底与描边，加减钮的底与描边 */
+  --xh-_number-field-bg: var(--xh-bg-canvas);
+  --xh-_number-field-border: var(--xh-border-default);
+  --xh-_number-field-border-hover: var(--xh-border-strong);
+  --xh-_number-field-trigger-bg: var(--xh-bg-subtle);
+  --xh-_number-field-trigger-bg-hover: var(--xh-bg-subtle-hover);
+  --xh-_number-field-trigger-bg-active: var(--xh-bg-subtle-active);
+  --xh-_number-field-trigger-border: var(--xh-border-default);
+  --xh-_number-field-trigger-border-hover: var(--xh-border-strong);
+
+  /* 语气只落在聚焦这一处：环与聚焦态描边。框里的数字不归它管。
+     没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色与常态描边 */
+  --xh-_number-field-ring: var(--xh-ring-focus);
+  --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, $3));
+
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-number-field-gap, var(--xh-space-1));
@@ -6123,9 +6312,69 @@
   display: none;
 }
 
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里 */
+[data-scope='number-field'][data-part='root'][data-size='sm'] {
+  --xh-_number-field-h: var(--xh-control-h-sm);
+  --xh-_number-field-px: var(--xh-control-px-sm);
+  --xh-_number-field-font-size: var(--xh-font-size-sm);
+  --xh-_number-field-label-font-size: var(--xh-font-size-sm);
+  --xh-_number-field-trigger-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='number-field'][data-part='root'][data-size='lg'] {
+  --xh-_number-field-h: var(--xh-control-h-lg);
+  --xh-_number-field-px: var(--xh-control-px-lg);
+  --xh-_number-field-font-size: var(--xh-font-size-lg);
+  --xh-_number-field-label-font-size: var(--xh-font-size-lg);
+  --xh-_number-field-trigger-font-size: var(--xh-font-size-lg);
+}
+
+/* —— 形态 —— */
+/* 形态只决定底与描边怎么画；用哪族颜色由 data-tone 决定。
+   输入框没有实心档：填满一个要往里打字的框，字与底就没法同时读 */
+[data-scope='number-field'][data-part='root'][data-variant='outline'] {
+  --xh-_number-field-bg: var(--xh-bg-canvas);
+  --xh-_number-field-border: var(--xh-border-default);
+  --xh-_number-field-border-hover: var(--xh-border-strong);
+  --xh-_number-field-trigger-bg: var(--xh-bg-subtle);
+  --xh-_number-field-trigger-bg-hover: var(--xh-bg-subtle-hover);
+  --xh-_number-field-trigger-bg-active: var(--xh-bg-subtle-active);
+  --xh-_number-field-trigger-border: var(--xh-border-default);
+  --xh-_number-field-trigger-border-hover: var(--xh-border-strong);
+  --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, $3));
+}
+
+/* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
+   与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
+[data-scope='number-field'][data-part='root'][data-variant='subtle'] {
+  --xh-_number-field-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_number-field-border: transparent;
+  --xh-_number-field-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_number-field-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_number-field-trigger-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+  --xh-_number-field-trigger-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+  --xh-_number-field-trigger-border: transparent;
+  --xh-_number-field-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-default));
+}
+
+/* 无框：底与描边都透明，平时只看得见数字，悬停与聚焦才浮出边界 */
+[data-scope='number-field'][data-part='root'][data-variant='ghost'] {
+  --xh-_number-field-bg: transparent;
+  --xh-_number-field-border: transparent;
+  --xh-_number-field-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_number-field-trigger-bg: transparent;
+  --xh-_number-field-trigger-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-hover));
+  --xh-_number-field-trigger-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+  --xh-_number-field-trigger-border: transparent;
+  --xh-_number-field-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-default));
+}
+
 [data-scope='number-field'][data-part='label'] {
   color: var(--xh-number-field-label-fg, var(--xh-fg-default));
-  font-size: var(--xh-number-field-label-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-number-field-label-font-size, var(--xh-_number-field-label-font-size));
   font-weight: var(--xh-number-field-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
 }
@@ -6135,16 +6384,16 @@
 }
 
 [data-scope='number-field'][data-part='input'] {
-  block-size: var(--xh-number-field-input-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-number-field-input-px, var(--xh-control-px-md));
+  block-size: var(--xh-number-field-input-h, var(--xh-_number-field-h));
+  padding-inline: var(--xh-number-field-input-px, var(--xh-_number-field-px));
   padding-block: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-number-field-input-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-number-field-input-border, var(--xh-_number-field-border));
   border-radius: var(--xh-number-field-input-radius, var(--xh-shape-control));
-  background: var(--xh-number-field-input-bg, var(--xh-bg-canvas));
+  background: var(--xh-number-field-input-bg, var(--xh-_number-field-bg));
   color: var(--xh-number-field-input-fg, var(--xh-fg-default));
   /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族 */
   font-family: inherit;
-  font-size: var(--xh-number-field-input-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-number-field-input-font-size, var(--xh-_number-field-font-size));
   /* 等宽数字：按住加减钮连发时字宽一变，框里的数字就会左右抖 */
   font-variant-numeric: tabular-nums;
   line-height: var(--xh-leading-normal);
@@ -6157,11 +6406,14 @@
 
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='number-field'][data-part='input']:hover:not(:disabled, [data-invalid]) {
-  border-color: var(--xh-number-field-input-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-number-field-input-border-hover, var(--xh-_number-field-border-hover));
 }
 
+/* 聚焦态描边与环共用一族语气色。这条特异度低于上面的 hover、也低于下面的 invalid，
+   两者仍按原来的次序赢过它 */
 [data-scope='number-field'][data-part='input']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  border-color: var(--xh-number-field-input-border-focus, var(--xh-_number-field-border-focus));
+  outline: var(--xh-ring-width) solid var(--xh-_number-field-ring);
   outline-offset: 2px;
 }
 
@@ -6189,15 +6441,15 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  inline-size: var(--xh-number-field-trigger-size, var(--xh-control-h-md));
-  block-size: var(--xh-number-field-trigger-size, var(--xh-control-h-md));
+  inline-size: var(--xh-number-field-trigger-size, var(--xh-_number-field-h));
+  block-size: var(--xh-number-field-trigger-size, var(--xh-_number-field-h));
   padding: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-number-field-trigger-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-number-field-trigger-border, var(--xh-_number-field-trigger-border));
   border-radius: var(--xh-number-field-trigger-radius, var(--xh-shape-control));
-  background: var(--xh-number-field-trigger-bg, var(--xh-bg-subtle));
+  background: var(--xh-number-field-trigger-bg, var(--xh-_number-field-trigger-bg));
   color: var(--xh-number-field-trigger-fg, var(--xh-fg-default));
   font-family: inherit;
-  font-size: var(--xh-number-field-trigger-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-number-field-trigger-font-size, var(--xh-_number-field-trigger-font-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
   /* 按住不放会连发，长按期间浏览器默认会去选中按钮里的符号、
@@ -6215,20 +6467,20 @@
 
 [data-scope='number-field'][data-part='increment-trigger']:hover:not(:disabled),
 [data-scope='number-field'][data-part='decrement-trigger']:hover:not(:disabled) {
-  border-color: var(--xh-number-field-trigger-border-hover, var(--xh-border-strong));
-  background: var(--xh-number-field-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  border-color: var(--xh-number-field-trigger-border-hover, var(--xh-_number-field-trigger-border-hover));
+  background: var(--xh-number-field-trigger-bg-hover, var(--xh-_number-field-trigger-bg-hover));
 }
 
 /* 连发期间按钮一直是按下态：:active 在指针没松开时始终成立，正好对上 */
 [data-scope='number-field'][data-part='increment-trigger']:active:not(:disabled),
 [data-scope='number-field'][data-part='decrement-trigger']:active:not(:disabled) {
-  background: var(--xh-number-field-trigger-bg-active, var(--xh-bg-subtle-active));
+  background: var(--xh-number-field-trigger-bg-active, var(--xh-_number-field-trigger-bg-active));
 }
 
 /* 按钮不占 Tab 位（tabindex=-1），留这条是给程序化聚焦兜底 */
 [data-scope='number-field'][data-part='increment-trigger']:focus-visible,
 [data-scope='number-field'][data-part='decrement-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_number-field-ring);
   outline-offset: 2px;
 }
 
@@ -6365,6 +6617,19 @@
 /* styles/pin-input.css */
 /* 与文本框、数字框同一套堆叠：标签一行、格子一行 */
 [data-scope='pin-input'][data-part='root'] {
+  /* 尺寸档只换这四个私有槽，标题与格子都从 root 继承它们，换档不必给每个部件各写一条选择器 */
+  --xh-_pin-input-box-size: var(--xh-control-h-lg);
+  --xh-_pin-input-box-gap: var(--xh-space-2);
+  --xh-_pin-input-box-font-size: var(--xh-font-size-xl);
+  --xh-_pin-input-label-font-size: var(--xh-text-label-size);
+  /* 形态档只换这三个私有槽，缺省这一份就是描边式（描边 + 画布底） */
+  --xh-_pin-input-box-bg: var(--xh-bg-canvas);
+  --xh-_pin-input-box-border: var(--xh-border-default);
+  --xh-_pin-input-box-border-hover: var(--xh-border-strong);
+  /* 聚焦环与填满态的强调色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的取值 */
+  --xh-_pin-input-ring: var(--xh-ring-focus);
+  --xh-_pin-input-accent: var(--xh-_tone, var(--xh-bg-brand));
+
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-pin-input-gap, var(--xh-space-1));
@@ -6375,9 +6640,48 @@
   display: none;
 }
 
+/* —— 形态 —— */
+/* 形态只决定颜色怎么用；用哪族颜色由 data-tone 决定。
+   不做 solid：实心填充盖住了"这里能打字"这件事，输入框用不上它 */
+[data-scope='pin-input'][data-part='root'][data-variant='outline'] {
+  --xh-_pin-input-box-bg: var(--xh-bg-canvas);
+  --xh-_pin-input-box-border: var(--xh-border-default);
+  --xh-_pin-input-box-border-hover: var(--xh-border-strong);
+}
+
+/* 填充式：底色说明这里是一格输入位，描边让位给底色 */
+[data-scope='pin-input'][data-part='root'][data-variant='subtle'] {
+  --xh-_pin-input-box-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_pin-input-box-border: transparent;
+  --xh-_pin-input-box-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+}
+
+/* 无边框、透明底：静息时格子完全隐入背景，可见反馈全靠悬停描边与聚焦环 */
+[data-scope='pin-input'][data-part='root'][data-variant='ghost'] {
+  --xh-_pin-input-box-bg: transparent;
+  --xh-_pin-input-box-border: transparent;
+  --xh-_pin-input-box-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+}
+
+/* —— 尺寸 —— */
+[data-scope='pin-input'][data-part='root'][data-size='sm'] {
+  --xh-_pin-input-box-size: var(--xh-control-h-md);
+  --xh-_pin-input-box-gap: var(--xh-control-gap-sm);
+  --xh-_pin-input-box-font-size: var(--xh-font-size-lg);
+  --xh-_pin-input-label-font-size: var(--xh-font-size-sm);
+}
+
+/* 格子是正方形，缺省档已经占到控件高度表的顶档，lg 档由顶档加一格间距合成，不另立数值 */
+[data-scope='pin-input'][data-part='root'][data-size='lg'] {
+  --xh-_pin-input-box-size: calc(var(--xh-control-h-lg) + var(--xh-space-2));
+  --xh-_pin-input-box-gap: var(--xh-control-gap-lg);
+  --xh-_pin-input-box-font-size: var(--xh-font-size-2xl);
+  --xh-_pin-input-label-font-size: var(--xh-font-size-lg);
+}
+
 [data-scope='pin-input'][data-part='label'] {
   color: var(--xh-pin-input-label-fg, var(--xh-fg-default));
-  font-size: var(--xh-pin-input-label-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-pin-input-label-font-size, var(--xh-_pin-input-label-font-size));
   font-weight: var(--xh-pin-input-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
 }
@@ -6390,16 +6694,16 @@
    留了内边距，单字符居中后可用宽度不足，中文与全角字符会被挤出框外 */
 [data-scope='pin-input'][data-part='input'] {
   flex: none;
-  inline-size: var(--xh-pin-input-box-size, var(--xh-control-h-lg));
-  block-size: var(--xh-pin-input-box-size, var(--xh-control-h-lg));
+  inline-size: var(--xh-pin-input-box-size, var(--xh-_pin-input-box-size));
+  block-size: var(--xh-pin-input-box-size, var(--xh-_pin-input-box-size));
   padding: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-pin-input-box-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-pin-input-box-border, var(--xh-_pin-input-box-border));
   border-radius: var(--xh-pin-input-box-radius, var(--xh-shape-control));
-  background: var(--xh-pin-input-box-bg, var(--xh-bg-canvas));
+  background: var(--xh-pin-input-box-bg, var(--xh-_pin-input-box-bg));
   color: var(--xh-pin-input-box-fg, var(--xh-fg-default));
   /* 表单控件不继承页面字体，只给字号会让格子用 UA 默认字族 */
   font-family: inherit;
-  font-size: var(--xh-pin-input-box-font-size, var(--xh-font-size-xl));
+  font-size: var(--xh-pin-input-box-font-size, var(--xh-_pin-input-box-font-size));
   /* 等宽数字：各位字宽不一时逐格填入会让每格里的字符左右跳 */
   font-variant-numeric: tabular-nums;
   line-height: var(--xh-leading-none);
@@ -6411,7 +6715,7 @@
    指望它给 gap 就等于把间距交给了皮肤管不着的地方。
    用相邻兄弟而不是给每格加外边距，是为了不在首尾多出两段空白 */
 [data-scope='pin-input'][data-part='input'] + [data-scope='pin-input'][data-part='input'] {
-  margin-inline-start: var(--xh-pin-input-box-gap, var(--xh-space-2));
+  margin-inline-start: var(--xh-pin-input-box-gap, var(--xh-_pin-input-box-gap));
 }
 
 [data-scope='pin-input'][data-part='input']::placeholder {
@@ -6420,7 +6724,7 @@
 
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='pin-input'][data-part='input']:hover:not(:disabled, [data-invalid]) {
-  border-color: var(--xh-pin-input-box-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-pin-input-box-border-hover, var(--xh-_pin-input-box-border-hover));
 }
 
 /* 一行格子长得一模一样，光标那道竖线太细，看不出正在填哪一格：
@@ -6428,8 +6732,8 @@
    :focus-visible 兜住机器状态还没回流的那一帧，两条同时写不冲突 */
 [data-scope='pin-input'][data-part='input'][data-focus],
 [data-scope='pin-input'][data-part='input']:focus-visible {
-  border-color: var(--xh-pin-input-box-border-focus, var(--xh-ring-focus));
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  border-color: var(--xh-pin-input-box-border-focus, var(--xh-_pin-input-ring));
+  outline: var(--xh-ring-width) solid var(--xh-_pin-input-ring);
   outline-offset: 2px;
 }
 
@@ -6448,7 +6752,7 @@
    已经标了 invalid 的不在此列——那是明确说了不对 */
 [data-scope='pin-input'][data-part='root'][data-complete]
   [data-scope='pin-input'][data-part='input']:not([data-invalid], :disabled) {
-  border-color: var(--xh-pin-input-box-border-complete, var(--xh-bg-brand));
+  border-color: var(--xh-pin-input-box-border-complete, var(--xh-_pin-input-accent));
 }
 
 /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底
@@ -7039,6 +7343,25 @@
 
 /* styles/select.css */
 [data-scope='select'][data-part='root'] {
+  /* 尺寸档只换这五个私有槽，触发器、标题与条目都从 root 继承它们，
+     换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承 */
+  --xh-_select-h: var(--xh-control-h-md);
+  --xh-_select-px: var(--xh-control-px-md);
+  --xh-_select-gap: var(--xh-control-gap-md);
+  --xh-_select-font-size: var(--xh-text-body-size);
+  --xh-_select-label-font-size: var(--xh-text-label-size);
+
+  /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
+  --xh-_select-trigger-bg: var(--xh-bg-canvas);
+  --xh-_select-trigger-border: var(--xh-border-default);
+  --xh-_select-trigger-border-hover: var(--xh-border-strong);
+
+  /* 强调色随语气走，只落在聚焦与选中上，正文文字色不动。
+     没写 data-tone 时 --xh-_tone 没被声明，三处都退回原来的取值 */
+  --xh-_select-ring: var(--xh-ring-focus);
+  --xh-_select-accent: var(--xh-_tone, var(--xh-bg-brand));
+  --xh-_select-item-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-select-gap, var(--xh-stack-gap-md));
@@ -7046,9 +7369,49 @@
   position: relative;
 }
 
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里 */
+[data-scope='select'][data-part='root'][data-size='sm'] {
+  --xh-_select-h: var(--xh-control-h-sm);
+  --xh-_select-px: var(--xh-control-px-sm);
+  --xh-_select-gap: var(--xh-control-gap-sm);
+  --xh-_select-font-size: var(--xh-font-size-sm);
+  --xh-_select-label-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='select'][data-part='root'][data-size='lg'] {
+  --xh-_select-h: var(--xh-control-h-lg);
+  --xh-_select-px: var(--xh-control-px-lg);
+  --xh-_select-gap: var(--xh-control-gap-lg);
+  --xh-_select-font-size: var(--xh-font-size-lg);
+  --xh-_select-label-font-size: var(--xh-font-size-lg);
+}
+
+/* —— 形态 —— */
+/* 输入类不做 solid：实心底压着可编辑的值，读起来像块不可点的色板。
+   形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
+[data-scope='select'][data-part='root'][data-variant='outline'] {
+  --xh-_select-trigger-bg: var(--xh-bg-canvas);
+  --xh-_select-trigger-border: var(--xh-border-default);
+  --xh-_select-trigger-border-hover: var(--xh-border-strong);
+}
+
+/* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
+[data-scope='select'][data-part='root'][data-variant='subtle'] {
+  --xh-_select-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_select-trigger-border: transparent;
+  --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+}
+
+[data-scope='select'][data-part='root'][data-variant='ghost'] {
+  --xh-_select-trigger-bg: transparent;
+  --xh-_select-trigger-border: transparent;
+  --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+}
+
 [data-scope='select'][data-part='label'] {
   color: var(--xh-select-label-fg, var(--xh-fg-muted));
-  font-size: var(--xh-select-label-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-select-label-font-size, var(--xh-_select-label-font-size));
   font-weight: var(--xh-select-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
 }
@@ -7061,28 +7424,28 @@
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--xh-select-trigger-gap, var(--xh-control-gap-md));
+  gap: var(--xh-select-trigger-gap, var(--xh-_select-gap));
   min-inline-size: var(--xh-select-trigger-min-w, 10rem);
   /* 多选会把 N 项的文本连成一串，框宽必须封顶；与浮层同一个上限，两半看着才是一件东西 */
   max-inline-size: var(--xh-select-trigger-max-w, var(--xh-overlay-max-w));
-  block-size: var(--xh-select-trigger-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-select-trigger-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid var(--xh-select-trigger-border, var(--xh-border-default));
+  block-size: var(--xh-select-trigger-h, var(--xh-_select-h));
+  padding-inline: var(--xh-select-trigger-px, var(--xh-_select-px));
+  border: var(--xh-stroke-thin) solid var(--xh-select-trigger-border, var(--xh-_select-trigger-border));
   border-radius: var(--xh-select-trigger-radius, var(--xh-shape-control));
-  background: var(--xh-select-trigger-bg, var(--xh-bg-canvas));
+  background: var(--xh-select-trigger-bg, var(--xh-_select-trigger-bg));
   color: var(--xh-select-trigger-fg, var(--xh-fg-default));
-  font-size: var(--xh-select-trigger-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-select-trigger-font-size, var(--xh-_select-font-size));
   line-height: var(--xh-leading-none);
   text-align: start;
   cursor: pointer;
 }
 
 [data-scope='select'][data-part='trigger']:hover:not(:disabled) {
-  border-color: var(--xh-select-trigger-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-select-trigger-border-hover, var(--xh-_select-trigger-border-hover));
 }
 
 [data-scope='select'][data-part='trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_select-ring);
   outline-offset: 2px;
 }
 
@@ -7167,12 +7530,12 @@
 [data-scope='select'][data-part='item'] {
   display: flex;
   align-items: center;
-  gap: var(--xh-select-item-gap, var(--xh-control-gap-md));
+  gap: var(--xh-select-item-gap, var(--xh-_select-gap));
   padding-block: var(--xh-select-item-py, var(--xh-space-2));
   padding-inline: var(--xh-select-item-px, var(--xh-control-px-sm));
   border-radius: var(--xh-select-item-radius, var(--xh-shape-control));
   color: var(--xh-select-item-fg, var(--xh-fg-default));
-  font-size: var(--xh-select-item-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-select-item-font-size, var(--xh-_select-font-size));
   line-height: var(--xh-leading-none);
   white-space: nowrap;
   cursor: pointer;
@@ -7181,7 +7544,7 @@
 
 /* 键盘高亮与指针高亮共用一套底色：条目本身承载焦点，不另画描边 */
 [data-scope='select'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
-  background: var(--xh-select-item-bg-highlight, var(--xh-bg-subtle-hover));
+  background: var(--xh-select-item-bg-highlight, var(--xh-_select-item-highlight-bg));
 }
 
 [data-scope='select'][data-part='item']:focus {
@@ -7208,7 +7571,7 @@
   align-items: center;
   justify-content: center;
   inline-size: var(--xh-select-item-indicator-size, var(--xh-control-indicator-size));
-  color: var(--xh-select-item-indicator-fg, var(--xh-bg-brand));
+  color: var(--xh-select-item-indicator-fg, var(--xh-_select-accent));
   visibility: hidden;
 }
 
@@ -8317,6 +8680,23 @@
 /* root 只负责纵向堆叠：标题一行、控件一行。可见的那个"框"长在 control 上，
    因为标签、输入框、清空按钮都在它里面，边框必须把三者一起圈住 */
 [data-scope='tags-input'][data-part='root'] {
+  /* 尺寸档只换这六个私有槽，标题、框、输入框与标签都从 root 继承它们，
+     换档不必给每个部件各写一条选择器 */
+  --xh-_tags-input-control-h: var(--xh-control-h-md);
+  --xh-_tags-input-control-px: var(--xh-control-px-md);
+  --xh-_tags-input-control-gap: var(--xh-control-gap-sm);
+  --xh-_tags-input-input-font-size: var(--xh-text-body-size);
+  --xh-_tags-input-item-font-size: var(--xh-font-size-sm);
+  --xh-_tags-input-label-font-size: var(--xh-text-label-size);
+  /* 形态档只换这三个私有槽，缺省这一份就是描边式（描边 + 画布底） */
+  --xh-_tags-input-control-bg: var(--xh-bg-canvas);
+  --xh-_tags-input-control-border: var(--xh-border-default);
+  --xh-_tags-input-control-border-hover: var(--xh-border-strong);
+  /* 聚焦环与标签块的强调色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的取值 */
+  --xh-_tags-input-ring: var(--xh-ring-focus);
+  --xh-_tags-input-accent: var(--xh-_tone, var(--xh-bg-brand));
+  --xh-_tags-input-accent-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-tags-input-gap, var(--xh-space-1));
@@ -8328,9 +8708,50 @@
   display: none;
 }
 
+/* —— 形态 —— */
+/* 形态只决定颜色怎么用；用哪族颜色由 data-tone 决定。
+   不做 solid：实心填充盖住了"这里能打字"这件事，输入框用不上它 */
+[data-scope='tags-input'][data-part='root'][data-variant='outline'] {
+  --xh-_tags-input-control-bg: var(--xh-bg-canvas);
+  --xh-_tags-input-control-border: var(--xh-border-default);
+  --xh-_tags-input-control-border-hover: var(--xh-border-strong);
+}
+
+/* 填充式：底色圈出可输入的范围，描边让位给底色 */
+[data-scope='tags-input'][data-part='root'][data-variant='subtle'] {
+  --xh-_tags-input-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_tags-input-control-border: transparent;
+  --xh-_tags-input-control-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+}
+
+/* 无边框、透明底：静息时框完全隐入背景，可见反馈全靠悬停描边与聚焦环 */
+[data-scope='tags-input'][data-part='root'][data-variant='ghost'] {
+  --xh-_tags-input-control-bg: transparent;
+  --xh-_tags-input-control-border: transparent;
+  --xh-_tags-input-control-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+}
+
+/* —— 尺寸 —— */
+[data-scope='tags-input'][data-part='root'][data-size='sm'] {
+  --xh-_tags-input-control-h: var(--xh-control-h-sm);
+  --xh-_tags-input-control-px: var(--xh-control-px-sm);
+  --xh-_tags-input-input-font-size: var(--xh-font-size-sm);
+  --xh-_tags-input-item-font-size: var(--xh-font-size-xs);
+  --xh-_tags-input-label-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='tags-input'][data-part='root'][data-size='lg'] {
+  --xh-_tags-input-control-h: var(--xh-control-h-lg);
+  --xh-_tags-input-control-px: var(--xh-control-px-lg);
+  --xh-_tags-input-control-gap: var(--xh-control-gap-lg);
+  --xh-_tags-input-input-font-size: var(--xh-font-size-lg);
+  --xh-_tags-input-item-font-size: var(--xh-font-size-md);
+  --xh-_tags-input-label-font-size: var(--xh-font-size-lg);
+}
+
 [data-scope='tags-input'][data-part='label'] {
   color: var(--xh-tags-input-label-fg, var(--xh-fg-default));
-  font-size: var(--xh-tags-input-label-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-tags-input-label-font-size, var(--xh-_tags-input-label-font-size));
   font-weight: var(--xh-tags-input-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
 }
@@ -8345,13 +8766,13 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--xh-tags-input-control-gap, var(--xh-control-gap-sm));
-  min-block-size: var(--xh-tags-input-control-h, var(--xh-control-h-md));
+  gap: var(--xh-tags-input-control-gap, var(--xh-_tags-input-control-gap));
+  min-block-size: var(--xh-tags-input-control-h, var(--xh-_tags-input-control-h));
   padding-block: var(--xh-tags-input-control-py, var(--xh-space-1));
-  padding-inline: var(--xh-tags-input-control-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid var(--xh-tags-input-control-border, var(--xh-border-default));
+  padding-inline: var(--xh-tags-input-control-px, var(--xh-_tags-input-control-px));
+  border: var(--xh-stroke-thin) solid var(--xh-tags-input-control-border, var(--xh-_tags-input-control-border));
   border-radius: var(--xh-tags-input-control-radius, var(--xh-shape-control));
-  background: var(--xh-tags-input-control-bg, var(--xh-bg-canvas));
+  background: var(--xh-tags-input-control-bg, var(--xh-_tags-input-control-bg));
   color: var(--xh-tags-input-control-fg, var(--xh-fg-default));
   cursor: text;
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -8363,13 +8784,13 @@
 
 /* hover 只在中性态换描边：invalid 与 at-max 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='tags-input'][data-part='control']:hover:not([data-disabled], [data-invalid], [data-at-max]) {
-  border-color: var(--xh-tags-input-control-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-tags-input-control-border-hover, var(--xh-_tags-input-control-border-hover));
 }
 
 /* 焦点环画在这个框上：用户眼里"被聚焦的控件"就是整个框，
    而真正持有焦点的是里面的 input（它自己那圈环因此让位，见下） */
 [data-scope='tags-input'][data-part='control']:focus-within {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
   outline-offset: 2px;
 }
 
@@ -8407,7 +8828,7 @@
   color: inherit;
   /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
   font-family: inherit;
-  font-size: var(--xh-tags-input-input-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-tags-input-input-font-size, var(--xh-_tags-input-input-font-size));
   line-height: var(--xh-leading-normal);
 }
 
@@ -8435,7 +8856,7 @@
   border-radius: var(--xh-tags-input-item-radius, var(--xh-shape-pill));
   background: var(--xh-tags-input-item-bg, var(--xh-bg-subtle));
   color: var(--xh-tags-input-item-fg, var(--xh-fg-default));
-  font-size: var(--xh-tags-input-item-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-tags-input-item-font-size, var(--xh-_tags-input-item-font-size));
   line-height: var(--xh-leading-none);
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -8449,8 +8870,8 @@
 /* 光标走到这颗标签上（退格第一下、方向键）：整颗反白，与"删掉它"这件事对得上。
    禁用态下不给高亮：那时候本来就走不进标签 */
 [data-scope='tags-input'][data-part='item'][data-highlighted]:not([data-disabled]) {
-  background: var(--xh-tags-input-item-bg-highlight, var(--xh-bg-brand));
-  color: var(--xh-tags-input-item-fg-highlight, var(--xh-fg-on-brand));
+  background: var(--xh-tags-input-item-bg-highlight, var(--xh-_tags-input-accent));
+  color: var(--xh-tags-input-item-fg-highlight, var(--xh-_tags-input-accent-fg));
 }
 
 /* 标签不是原生控件，禁用同样只能靠 data-disabled */
@@ -8513,7 +8934,7 @@
 
 /* 整颗标签反白时按钮跟着改色，否则灰字压在品牌底色上会看不清 */
 [data-scope='tags-input'][data-part='item-delete-trigger'][data-highlighted]:not(:disabled) {
-  color: var(--xh-tags-input-delete-fg-highlight, var(--xh-fg-on-brand));
+  color: var(--xh-tags-input-delete-fg-highlight, var(--xh-_tags-input-accent-fg));
 }
 
 [data-scope='tags-input'][data-part='item-delete-trigger']:hover:not(:disabled) {
@@ -8528,7 +8949,7 @@
 /* 按钮不占 Tab 位（tabindex=-1），正常操作走不到这里；
    留着焦点环是给程序化聚焦兜底——删完把焦点交回输入框之前，它确实短暂持有过焦点 */
 [data-scope='tags-input'][data-part='item-delete-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
   outline-offset: 1px;
 }
 
@@ -8551,14 +8972,14 @@
   background: var(--xh-tags-input-item-input-bg, var(--xh-bg-canvas));
   color: var(--xh-tags-input-item-input-fg, var(--xh-fg-default));
   font-family: inherit;
-  font-size: var(--xh-tags-input-item-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-tags-input-item-font-size, var(--xh-_tags-input-item-font-size));
   line-height: var(--xh-leading-none);
 }
 
 /* 它是真正持有焦点的那个节点，环画在自己身上；
    外层 control 的 :focus-within 环同时亮着也合理——焦点确实在框内 */
 [data-scope='tags-input'][data-part='item-input']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
   outline-offset: 1px;
 }
 
@@ -8601,7 +9022,7 @@
 }
 
 [data-scope='tags-input'][data-part='clear-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
   outline-offset: 1px;
 }
 
@@ -8617,6 +9038,24 @@
    输入框与清空按钮中间那层包裹是作者自己写的、不在角色表里，
    所以尺寸与间距一律长在各自的角色节点上，不去假设那层存在 */
 [data-scope='text-field'][data-part='root'] {
+  /* 尺寸档只换这几个私有槽，标题、输入框与清空按钮都从 root 继承它们，
+     换档不必给每个部件各写一条选择器 */
+  --xh-_text-field-h: var(--xh-control-h-md);
+  --xh-_text-field-px: var(--xh-control-px-md);
+  --xh-_text-field-font-size: var(--xh-text-body-size);
+  --xh-_text-field-label-font-size: var(--xh-text-label-size);
+  --xh-_text-field-clear-font-size: var(--xh-font-size-sm);
+
+  /* 形态档只换这三个私有槽：底、常态描边、悬停描边 */
+  --xh-_text-field-bg: var(--xh-bg-canvas);
+  --xh-_text-field-border: var(--xh-border-default);
+  --xh-_text-field-border-hover: var(--xh-border-strong);
+
+  /* 语气只落在聚焦这一处：环与聚焦态描边。正文颜色不归它管。
+     没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色与常态描边 */
+  --xh-_text-field-ring: var(--xh-ring-focus);
+  --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, $3));
+
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-text-field-gap, var(--xh-space-1));
@@ -8627,9 +9066,54 @@
   display: none;
 }
 
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里 */
+[data-scope='text-field'][data-part='root'][data-size='sm'] {
+  --xh-_text-field-h: var(--xh-control-h-sm);
+  --xh-_text-field-px: var(--xh-control-px-sm);
+  --xh-_text-field-font-size: var(--xh-font-size-sm);
+  --xh-_text-field-label-font-size: var(--xh-font-size-sm);
+  --xh-_text-field-clear-font-size: var(--xh-font-size-xs);
+}
+
+[data-scope='text-field'][data-part='root'][data-size='lg'] {
+  --xh-_text-field-h: var(--xh-control-h-lg);
+  --xh-_text-field-px: var(--xh-control-px-lg);
+  --xh-_text-field-font-size: var(--xh-font-size-lg);
+  --xh-_text-field-label-font-size: var(--xh-font-size-lg);
+  --xh-_text-field-clear-font-size: var(--xh-font-size-md);
+}
+
+/* —— 形态 —— */
+/* 形态只决定底与描边怎么画；用哪族颜色由 data-tone 决定。
+   输入框没有实心档：填满一个要往里打字的框，字与底就没法同时读 */
+[data-scope='text-field'][data-part='root'][data-variant='outline'] {
+  --xh-_text-field-bg: var(--xh-bg-canvas);
+  --xh-_text-field-border: var(--xh-border-default);
+  --xh-_text-field-border-hover: var(--xh-border-strong);
+  --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, $3));
+}
+
+/* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
+   与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
+[data-scope='text-field'][data-part='root'][data-variant='subtle'] {
+  --xh-_text-field-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_text-field-border: transparent;
+  --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-default));
+}
+
+/* 无框：底与描边都透明，平时只看得见字，悬停与聚焦才浮出边界 */
+[data-scope='text-field'][data-part='root'][data-variant='ghost'] {
+  --xh-_text-field-bg: transparent;
+  --xh-_text-field-border: transparent;
+  --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-default));
+}
+
 [data-scope='text-field'][data-part='label'] {
   color: var(--xh-text-field-label-fg, var(--xh-fg-default));
-  font-size: var(--xh-text-field-label-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-text-field-label-font-size, var(--xh-_text-field-label-font-size));
   font-weight: var(--xh-text-field-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
 }
@@ -8639,16 +9123,16 @@
 }
 
 [data-scope='text-field'][data-part='input'] {
-  block-size: var(--xh-text-field-input-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-text-field-input-px, var(--xh-control-px-md));
+  block-size: var(--xh-text-field-input-h, var(--xh-_text-field-h));
+  padding-inline: var(--xh-text-field-input-px, var(--xh-_text-field-px));
   padding-block: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-text-field-input-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-text-field-input-border, var(--xh-_text-field-border));
   border-radius: var(--xh-text-field-input-radius, var(--xh-shape-control));
-  background: var(--xh-text-field-input-bg, var(--xh-bg-canvas));
+  background: var(--xh-text-field-input-bg, var(--xh-_text-field-bg));
   color: var(--xh-text-field-input-fg, var(--xh-fg-default));
   /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
   font-family: inherit;
-  font-size: var(--xh-text-field-input-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-text-field-input-font-size, var(--xh-_text-field-font-size));
   line-height: var(--xh-leading-normal);
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -8660,11 +9144,14 @@
 /* hover 只在中性态换描边：invalid 与 at-limit 正拿边框颜色说事，
    被 hover 盖掉那条信息就没了 */
 [data-scope='text-field'][data-part='input']:hover:not(:disabled, [data-invalid], [data-at-limit]) {
-  border-color: var(--xh-text-field-input-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-text-field-input-border-hover, var(--xh-_text-field-border-hover));
 }
 
+/* 聚焦态描边与环共用一族语气色。这条特异度低于上面的 hover、也低于下面的
+   at-limit 与 invalid，三者仍按原来的次序赢过它 */
 [data-scope='text-field'][data-part='input']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  border-color: var(--xh-text-field-input-border-focus, var(--xh-_text-field-border-focus));
+  outline: var(--xh-ring-width) solid var(--xh-_text-field-ring);
   outline-offset: 2px;
 }
 
@@ -8697,15 +9184,15 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  inline-size: var(--xh-text-field-clear-size, var(--xh-control-h-md));
-  block-size: var(--xh-text-field-clear-size, var(--xh-control-h-md));
+  inline-size: var(--xh-text-field-clear-size, var(--xh-_text-field-h));
+  block-size: var(--xh-text-field-clear-size, var(--xh-_text-field-h));
   padding: 0;
   border: 0;
   border-radius: var(--xh-text-field-clear-radius, var(--xh-shape-control));
   background: var(--xh-text-field-clear-bg, transparent);
   color: var(--xh-text-field-clear-fg, var(--xh-fg-muted));
   font-family: inherit;
-  font-size: var(--xh-text-field-clear-font-size, var(--xh-font-size-sm));
+  font-size: var(--xh-text-field-clear-font-size, var(--xh-_text-field-clear-font-size));
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
@@ -8730,7 +9217,7 @@
 /* 按钮不占 Tab 位（tabindex=-1）也不抢焦点，正常操作走不到这里；
    留着是给程序化聚焦兜底，落焦时得看得见 */
 [data-scope='text-field'][data-part='clear-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_text-field-ring);
   outline-offset: 2px;
 }
 
@@ -8851,9 +9338,60 @@
 /* styles/time-field.css */
 /* 与文本框、数字框同一套堆叠：标签一行、控件一行 */
 [data-scope='time-field'][data-part='root'] {
+  /* 尺寸档只换这四个私有槽，标题与控件都从 root 继承它们，换档不必给每个部件各写一条选择器 */
+  --xh-_time-field-control-h: var(--xh-control-h-md);
+  --xh-_time-field-control-px: var(--xh-control-px-md);
+  --xh-_time-field-font-size: var(--xh-text-body-size);
+  --xh-_time-field-label-font-size: var(--xh-text-label-size);
+  /* 形态档只换这三个私有槽：底色与两档描边 */
+  --xh-_time-field-control-bg: var(--xh-bg-canvas);
+  --xh-_time-field-control-border: var(--xh-border-default);
+  --xh-_time-field-control-border-hover: var(--xh-border-strong);
+  /* 聚焦描边与段位反白随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回原来的焦点色与品牌色 */
+  --xh-_time-field-ring: var(--xh-ring-focus);
+  --xh-_time-field-segment-bg: var(--xh-_tone, var(--xh-bg-brand));
+  --xh-_time-field-segment-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-time-field-gap, var(--xh-space-1));
+}
+
+/* —— 尺寸 —— */
+[data-scope='time-field'][data-part='root'][data-size='sm'] {
+  --xh-_time-field-control-h: var(--xh-control-h-sm);
+  --xh-_time-field-control-px: var(--xh-control-px-sm);
+  --xh-_time-field-font-size: var(--xh-font-size-sm);
+  --xh-_time-field-label-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='time-field'][data-part='root'][data-size='lg'] {
+  --xh-_time-field-control-h: var(--xh-control-h-lg);
+  --xh-_time-field-control-px: var(--xh-control-px-lg);
+  --xh-_time-field-font-size: var(--xh-font-size-lg);
+  --xh-_time-field-label-font-size: var(--xh-font-size-lg);
+}
+
+/* —— 形态 —— */
+/* 描边式：与缺省等价，写出来是为了三档形态在皮肤里都看得见 */
+[data-scope='time-field'][data-part='root'][data-variant='outline'] {
+  --xh-_time-field-control-bg: var(--xh-bg-canvas);
+  --xh-_time-field-control-border: var(--xh-border-default);
+  --xh-_time-field-control-border-hover: var(--xh-border-strong);
+}
+
+/* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
+[data-scope='time-field'][data-part='root'][data-variant='subtle'] {
+  --xh-_time-field-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_time-field-control-border: transparent;
+  --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+}
+
+/* 无框式：底与边都让开，可见反馈只剩聚焦那一档 */
+[data-scope='time-field'][data-part='root'][data-variant='ghost'] {
+  --xh-_time-field-control-bg: transparent;
+  --xh-_time-field-control-border: transparent;
+  --xh-_time-field-control-border-hover: transparent;
 }
 
 /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -8863,7 +9401,7 @@
 
 [data-scope='time-field'][data-part='label'] {
   color: var(--xh-time-field-label-fg, var(--xh-fg-default));
-  font-size: var(--xh-time-field-label-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-time-field-label-font-size, var(--xh-_time-field-label-font-size));
   font-weight: var(--xh-time-field-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
   /* 点标题会把焦点送到第一段（段不是能被 for 指向的原生控件，这条由连接层接管），
@@ -8881,16 +9419,16 @@
 [data-scope='time-field'][data-part='control'] {
   display: inline-flex;
   align-items: center;
-  block-size: var(--xh-time-field-control-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-time-field-control-px, var(--xh-control-px-md));
+  block-size: var(--xh-time-field-control-h, var(--xh-_time-field-control-h));
+  padding-inline: var(--xh-time-field-control-px, var(--xh-_time-field-control-px));
   padding-block: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-time-field-control-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-time-field-control-border, var(--xh-_time-field-control-border));
   border-radius: var(--xh-time-field-control-radius, var(--xh-shape-control));
-  background: var(--xh-time-field-control-bg, var(--xh-bg-canvas));
+  background: var(--xh-time-field-control-bg, var(--xh-_time-field-control-bg));
   color: var(--xh-time-field-control-fg, var(--xh-fg-default));
   /* 表单控件不继承页面字体，只给字号会让它用 UA 默认字族，与周围文本对不上 */
   font-family: inherit;
-  font-size: var(--xh-time-field-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-time-field-font-size, var(--xh-_time-field-font-size));
   /* 等宽数字：各位字宽不一时逐段填入会让整行左右跳 */
   font-variant-numeric: tabular-nums;
   line-height: var(--xh-leading-normal);
@@ -8903,13 +9441,13 @@
 
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='time-field'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
-  border-color: var(--xh-time-field-control-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-time-field-control-border-hover, var(--xh-_time-field-control-border-hover));
 }
 
 /* 焦点真正落在段上，但整块看起来才是一个控件：段内有焦点时整框亮起来。
    control 自己不占 Tab 位，所以这里写的是 focus-within 而不是 focus-visible */
 [data-scope='time-field'][data-part='control']:focus-within:not([data-disabled]) {
-  border-color: var(--xh-time-field-control-border-focus, var(--xh-ring-focus));
+  border-color: var(--xh-time-field-control-border-focus, var(--xh-_time-field-ring));
 }
 
 [data-scope='time-field'][data-part='control'][data-invalid] {
@@ -8961,14 +9499,14 @@
    两条同时写不冲突 */
 [data-scope='time-field'][data-part='segment'][data-focus]:not([data-disabled]),
 [data-scope='time-field'][data-part='segment']:focus-visible {
-  background: var(--xh-time-field-segment-bg-focus, var(--xh-bg-brand));
-  color: var(--xh-time-field-segment-fg-focus, var(--xh-fg-on-brand));
+  background: var(--xh-time-field-segment-bg-focus, var(--xh-_time-field-segment-bg));
+  color: var(--xh-time-field-segment-fg-focus, var(--xh-_time-field-segment-fg));
   outline: none;
 }
 
 /* 选中态用了品牌底色之后，占位符那条弱色会被它盖住，这里明确让位给焦点态 */
 [data-scope='time-field'][data-part='segment'][data-focus][data-placeholder]:not([data-disabled]) {
-  color: var(--xh-time-field-segment-fg-focus, var(--xh-fg-on-brand));
+  color: var(--xh-time-field-segment-fg-focus, var(--xh-_time-field-segment-fg));
 }
 
 [data-scope='time-field'][data-part='segment']:hover:not([data-focus], [data-disabled]) {
@@ -10890,6 +11428,19 @@
    标签占满整行把后面的挤到下一行，触发器与清空按钮就并排落在同一行上。
    这样作者少写标签、少写清空按钮，剩下的部件也不会塌 */
 [data-scope='tree-select'][data-part='root'] {
+  /* 尺寸档只换这几个私有槽，触发框与树里的行都从 root 继承它们，换档不必给每个部件各写一条选择器 */
+  --xh-_tree-select-h: var(--xh-control-h-md);
+  --xh-_tree-select-px: var(--xh-control-px-md);
+  --xh-_tree-select-gap: var(--xh-control-gap-md);
+  --xh-_tree-select-font-size: var(--xh-text-body-size);
+  --xh-_tree-select-label-font-size: var(--xh-text-label-size);
+
+  /* 形态档只换触发框的描边与底色这三个槽，浮层与树不跟着变：
+     变的是「这是个输入位」的表达方式，不是弹出内容的表达方式 */
+  --xh-_tree-select-border: var(--xh-border-default);
+  --xh-_tree-select-border-hover: var(--xh-border-strong);
+  --xh-_tree-select-bg: var(--xh-bg-canvas);
+
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
@@ -10901,11 +11452,52 @@
   display: none;
 }
 
+/* —— 形态 —— */
+/* 形态只决定描边与底色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的中性配色 */
+/* outline 就是缺省那一身：描边加画布底，写出来只为让三档并列可读 */
+[data-scope='tree-select'][data-part='root'][data-variant='outline'] {
+  --xh-_tree-select-border: var(--xh-border-default);
+  --xh-_tree-select-border-hover: var(--xh-border-strong);
+  --xh-_tree-select-bg: var(--xh-bg-canvas);
+}
+
+/* subtle 是填充式：底色接过「这里能点」的表达，描边随之让位 */
+[data-scope='tree-select'][data-part='root'][data-variant='subtle'] {
+  --xh-_tree-select-border: transparent;
+  --xh-_tree-select-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_tree-select-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+}
+
+/* ghost 无框无底，可见反馈只在聚焦时给；边框宽度仍占位，切换形态不引起布局抖动 */
+[data-scope='tree-select'][data-part='root'][data-variant='ghost'] {
+  --xh-_tree-select-border: transparent;
+  --xh-_tree-select-border-hover: transparent;
+  --xh-_tree-select-bg: transparent;
+}
+
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里 */
+[data-scope='tree-select'][data-part='root'][data-size='sm'] {
+  --xh-_tree-select-h: var(--xh-control-h-sm);
+  --xh-_tree-select-px: var(--xh-control-px-sm);
+  --xh-_tree-select-gap: var(--xh-control-gap-sm);
+  --xh-_tree-select-font-size: var(--xh-font-size-sm);
+  --xh-_tree-select-label-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='tree-select'][data-part='root'][data-size='lg'] {
+  --xh-_tree-select-h: var(--xh-control-h-lg);
+  --xh-_tree-select-px: var(--xh-control-px-lg);
+  --xh-_tree-select-gap: var(--xh-control-gap-lg);
+  --xh-_tree-select-font-size: var(--xh-font-size-lg);
+  --xh-_tree-select-label-font-size: var(--xh-font-size-lg);
+}
+
 [data-scope='tree-select'][data-part='label'] {
   /* 占满整行，把触发器那一行挤下去 */
   flex-basis: 100%;
   color: var(--xh-tree-select-label-fg, var(--xh-fg-muted));
-  font-size: var(--xh-tree-select-label-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-tree-select-label-font-size, var(--xh-_tree-select-label-font-size));
   font-weight: var(--xh-tree-select-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
 }
@@ -10922,16 +11514,16 @@
   flex: 1;
   align-items: center;
   justify-content: space-between;
-  gap: var(--xh-tree-select-trigger-gap, var(--xh-control-gap-md));
+  gap: var(--xh-tree-select-trigger-gap, var(--xh-_tree-select-gap));
   min-inline-size: var(--xh-tree-select-trigger-min-w, 12rem);
-  block-size: var(--xh-tree-select-trigger-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-tree-select-trigger-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid var(--xh-tree-select-trigger-border, var(--xh-border-default));
+  block-size: var(--xh-tree-select-trigger-h, var(--xh-_tree-select-h));
+  padding-inline: var(--xh-tree-select-trigger-px, var(--xh-_tree-select-px));
+  border: var(--xh-stroke-thin) solid var(--xh-tree-select-trigger-border, var(--xh-_tree-select-border));
   border-radius: var(--xh-tree-select-trigger-radius, var(--xh-shape-control));
-  background: var(--xh-tree-select-trigger-bg, var(--xh-bg-canvas));
+  background: var(--xh-tree-select-trigger-bg, var(--xh-_tree-select-bg));
   color: var(--xh-tree-select-trigger-fg, var(--xh-fg-default));
   font-family: inherit;
-  font-size: var(--xh-tree-select-trigger-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-tree-select-trigger-font-size, var(--xh-_tree-select-font-size));
   line-height: var(--xh-leading-none);
   text-align: start;
   cursor: pointer;
@@ -10944,12 +11536,13 @@
 
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='tree-select'][data-part='trigger']:hover:not(:disabled, [data-invalid]) {
-  border-color: var(--xh-tree-select-trigger-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-tree-select-trigger-border-hover, var(--xh-_tree-select-border-hover));
 }
 
-/* trigger 是整个控件唯一的 Tab 停靠点（展开后停靠点才移进树里），落焦必须看得见 */
+/* trigger 是整个控件唯一的 Tab 停靠点（展开后停靠点才移进树里），落焦必须看得见。
+   语气落在环上：没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色 */
 [data-scope='tree-select'][data-part='trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
   outline-offset: 2px;
 }
 
@@ -11045,7 +11638,7 @@
 /* 清空按钮退出了 Tab 序列（tabindex=-1），正常操作走不到这里；
    留着是给程序化聚焦兜底，落焦时得看得见 */
 [data-scope='tree-select'][data-part='clear-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
   outline-offset: 2px;
 }
 
@@ -11123,7 +11716,7 @@
 }
 
 [data-scope='tree-select'][data-part='branch']:focus-visible > [data-scope='tree-select'][data-part='branch-control'] {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
   /* 往内收：行是撑满宽度的，环画在外沿会被容器裁掉 */
   outline-offset: calc(-1 * var(--xh-ring-width));
 }
@@ -11133,12 +11726,12 @@
 [data-scope='tree-select'][data-part='branch-control'] {
   display: flex;
   align-items: center;
-  gap: var(--xh-tree-select-row-gap, var(--xh-control-gap-md));
+  gap: var(--xh-tree-select-row-gap, var(--xh-_tree-select-gap));
   padding-block: var(--xh-tree-select-row-py, var(--xh-space-2));
   padding-inline: var(--xh-tree-select-row-px, var(--xh-control-px-sm));
   border-radius: var(--xh-tree-select-row-radius, var(--xh-shape-control));
   color: var(--xh-tree-select-row-fg, var(--xh-fg-default));
-  font-size: var(--xh-tree-select-row-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-tree-select-row-font-size, var(--xh-_tree-select-font-size));
   line-height: var(--xh-leading-none);
   white-space: nowrap;
   cursor: pointer;
@@ -11157,16 +11750,17 @@
   background: var(--xh-tree-select-row-bg-highlight, var(--xh-bg-subtle-hover));
 }
 
-/* 选中比高亮更「实」：它表达的是数据状态，收起再展开还在 */
+/* 选中比高亮更「实」：它表达的是数据状态，收起再展开还在。
+   选中底随语气走，没写 data-tone 时退回原来的中性底 */
 [data-scope='tree-select'][data-part='item'][data-selected],
 [data-scope='tree-select'][data-part='branch-control'][data-selected] {
-  background: var(--xh-tree-select-row-bg-selected, var(--xh-bg-subtle-active));
+  background: var(--xh-tree-select-row-bg-selected, var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active)));
   font-weight: var(--xh-tree-select-row-selected-font-weight, var(--xh-font-weight-medium));
 }
 
 /* 叶子自己就是 treeitem，环直接画在它身上 */
 [data-scope='tree-select'][data-part='item']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
   outline-offset: calc(-1 * var(--xh-ring-width));
 }
 
@@ -11194,7 +11788,7 @@
   align-items: center;
   justify-content: center;
   inline-size: var(--xh-tree-select-indicator-size, var(--xh-control-indicator-size));
-  color: var(--xh-tree-select-item-indicator-fg, var(--xh-bg-brand));
+  color: var(--xh-tree-select-item-indicator-fg, var(--xh-_tone, var(--xh-bg-brand)));
   visibility: hidden;
 }
 

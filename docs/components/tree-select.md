@@ -53,6 +53,9 @@ multiple 下确认键是切换、浮层不收起；写了 hidden-input 才随表
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 用原生 disabled，表单出口不参与提交。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开、树照常浏览与展开收起，但选中值改不动、也清不掉。 disabled 则连键盘入口都没有。 |
 | `invalid` | `boolean` |  | 校验失败：trigger 报 aria-invalid，各角色节点带 data-invalid。 |
+| `variant` | `string` |  | 形态：outline / subtle / ghost，决定触发框的描边与底色怎么用。 |
+| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中用哪族颜色。 |
+| `size` | `string` |  | 尺寸：sm / md / lg，决定触发框与树节点行的几何档位。 |
 | `placeholder` | `string` |  | 无选中时 value-text 显示的占位文字。 |
 | `placement` | `Placement` |  |  |
 | `offset` | `number` |  |  |

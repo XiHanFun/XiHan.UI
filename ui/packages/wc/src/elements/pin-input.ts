@@ -40,6 +40,9 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {boolean} invalid - 校验失败标注
  * @attr {boolean} blur-on-complete - 填满即把焦点撤走
  * @attr {string} name - 表单字段名；给了隐藏输入才带 name
+ * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 值变化；detail 为 `{ value: string[], valueAsString: string }`
  * @fires value-complete - 每格都填满；detail 同上
  * @csspart root - role=group 的容器，承载 data-disabled / data-invalid / data-complete
@@ -63,6 +66,9 @@ export class XhPinInputElement extends XhElement {
     invalid: { type: Boolean },
     blurOnComplete: { type: Boolean, attribute: 'blur-on-complete' },
     name: { converter: STRING_CONVERTER },
+    variant: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
     // 文案是对象，走不了属性；只作为 property 暴露，与 Vue 侧的 translations prop 对齐
     translations: { attribute: false },
   }
@@ -78,6 +84,9 @@ export class XhPinInputElement extends XhElement {
   declare invalid?: boolean
   declare blurOnComplete?: boolean
   declare name?: string
+  declare variant?: string
+  declare tone?: string
+  declare size?: string
   declare translations?: Partial<PinInputTranslations>
 
   private readonly notifyChange = (details: PinInputValueChangeDetails): void => {
@@ -104,6 +113,9 @@ export class XhPinInputElement extends XhElement {
       invalid: this.invalid ?? false,
       blurOnComplete: this.blurOnComplete ?? false,
       name: this.name,
+      variant: this.variant,
+      tone: this.tone,
+      size: this.size,
       translations: this.translations,
       onValueChange: this.notifyChange,
       onValueComplete: this.notifyComplete,

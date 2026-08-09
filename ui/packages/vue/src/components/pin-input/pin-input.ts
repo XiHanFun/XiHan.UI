@@ -22,6 +22,9 @@ export const XhPinInputRoot = defineComponent({
     invalid: Boolean,
     blurOnComplete: Boolean,
     name: { type: String, default: undefined },
+    variant: { type: String, default: undefined },
+    tone: { type: String, default: undefined },
+    size: { type: String, default: undefined },
     translations: { type: Object as PropType<Partial<PinInputTranslations>>, default: undefined },
   },
   // value-change 携带 { value, valueAsString }，update:value 携带裸数组

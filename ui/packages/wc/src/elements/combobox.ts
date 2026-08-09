@@ -50,6 +50,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'none'|'autohighlight'|'autocomplete'} input-behavior - 输入行为，默认 none
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
+ * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
  * @fires input-value-change - 输入串变化；detail 为 `{ inputValue: string }`，作者据此过滤候选
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
@@ -90,6 +93,9 @@ export class XhComboboxElement extends XhElement {
     inputBehavior: { converter: STRING_CONVERTER, attribute: 'input-behavior' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
+    variant: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
   }
 
   declare value?: string | string[]
@@ -109,6 +115,9 @@ export class XhComboboxElement extends XhElement {
   declare inputBehavior?: ComboboxInputBehavior
   declare placement?: Placement
   declare offset?: number
+  declare variant?: string
+  declare tone?: string
+  declare size?: string
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly comboboxScope = createScope(null, this.idGen)
@@ -153,6 +162,9 @@ export class XhComboboxElement extends XhElement {
       inputBehavior: this.inputBehavior,
       placement: this.placement,
       offset: this.offset,
+      variant: this.variant,
+      tone: this.tone,
+      size: this.size,
       onValueChange: this.notifyValue,
       onInputValueChange: this.notifyInputValue,
       onOpenChange: this.notifyOpen,

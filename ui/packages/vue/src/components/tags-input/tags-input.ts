@@ -26,6 +26,9 @@ export const XhTagsInputRoot = defineComponent({
     addOnPaste: Boolean,
     editable: Boolean,
     blurBehavior: { type: String as PropType<TagsInputBlurBehavior | null>, default: undefined },
+    variant: { type: String, default: undefined },
+    tone: { type: String, default: undefined },
+    size: { type: String, default: undefined },
     translations: { type: Object as PropType<Partial<TagsInputTranslations>>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸数组；输入文本走 input-value-change 一路

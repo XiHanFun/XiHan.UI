@@ -129,6 +129,10 @@ export function connectTagsInput<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       ...surfaceAttrs(),
+      // 三个视觉轴只落在 root 上，框、标签与各按钮从这里继承皮肤声明的私有槽
+      'data-variant': prop('variant'),
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
     }),
 
     getLabelProps: () => normalize.label({
