@@ -1,6 +1,8 @@
 import { h, watch } from "vue";
 import Theme from "vitepress/theme";
 import XhDemo from "./XhDemo.vue";
+// 示例舞台隔离必须排在皮肤之前：两者选择器同权，同权时后来者胜，皮肤在后才盖得住隔离。
+import "./demo-isolation.css";
 // 组件默认皮肤：用无层版本。VitePress 自带无层的 button 重置，CSS 级联里无层
 // 声明胜过任何有层声明，皮肤若带 @layer 外壳会被整体压掉（见「安装与接入」）。
 import "@xihan-ui/styled/index.unlayered.css";
