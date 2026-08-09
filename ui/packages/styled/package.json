@@ -14,6 +14,7 @@
   "exports": {
     ".": "./index.css",
     "./index.css": "./index.css",
+    "./index.unlayered.css": "./index.unlayered.css",
     "./layers.css": "./styles/layers.css",
     "./motion.css": "./styles/motion.css",
     "./accordion.css": "./styles/accordion.css",
@@ -89,9 +90,14 @@
   },
   "files": [
     "index.css",
+    "index.unlayered.css",
     "styles"
   ],
   "dependencies": {
     "@xihan-ui/system": "workspace:^"
+  },
+  "scripts": {
+    "gen": "node build/emit-unlayered.mjs",
+    "build": "node build/emit-unlayered.mjs"
   }
 }
