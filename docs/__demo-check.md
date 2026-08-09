@@ -1,0 +1,25 @@
+# demo check
+
+<XhDemo src="icon/01-basic" />
+<XhDemo src="icon/02-size-weight" />
+<XhDemo src="icon/03-label" />
+<XhDemo src="icon/04-custom-glyph" />
+<XhDemo src="toggle-group/01-basic" />
+<XhDemo src="toggle-group/02-controlled" />
+<XhDemo src="toggle-group/03-multiple" />
+<XhDemo src="toggle-group/04-disabled" />
+<XhDemo src="image/01-basic" />
+<XhDemo src="image/02-fallback" />
+<XhDemo src="image/03-size" />
+<XhDemo src="code-block/01-basic" />
+<XhDemo src="code-block/02-streaming" />
+<XhDemo src="code-block/03-highlighter" />
+<XhDemo src="clipboard/01-basic" />
+<XhDemo src="clipboard/02-trigger-only" />
+<XhDemo src="clipboard/03-status" />
+<XhDemo src="field/01-basic" />
+<XhDemo src="field/02-invalid" />
+<XhDemo src="field/03-disabled" />
+<XhDemo src="form/01-basic" />
+<XhDemo src="form/02-validate-on" />
+<XhDemo src="form/03-controlled" />

@@ -2,6 +2,32 @@
 
 通用组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+传的是图标记录本身而不是名字：名字要运行期查表，查表就得把整张表静态引进来，摇树全废
+
+<XhDemo src="icon/01-basic" />
+
+### 尺寸与描边
+
+size 三档改直径、weight 三档改 stroke-width；缺省档不落 data-* 属性，皮肤的基础规则就是缺省档
+
+<XhDemo src="icon/02-size-weight" />
+
+### 可及名字
+
+命名只有两态：给了非空白 label 就是 role="img" + aria-label，没给就是 aria-hidden="true" 的装饰件
+
+<XhDemo src="icon/03-label" />
+
+### 自定义图元
+
+默认插槽给出内容时改由插槽填充根 svg，元素不再生成 glyph 空壳；坐标系此时由自己写的 viewBox 定
+
+<XhDemo src="icon/04-custom-glyph" />
+
 ## 产物
 
 | 层 | 值 |

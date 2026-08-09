@@ -2,6 +2,32 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+三段各是一个可加减的数，整组只占一个 Tab 位，三段填齐才第一次报出值
+
+<XhDemo src="date-field/01-basic" />
+
+### 段序随 locale
+
+同一份标记，locale 换成 en-US 后段序自动排成月日年
+
+<XhDemo src="date-field/02-locale" />
+
+### 可填区间
+
+min / max 收窄各段的加减范围，越界的初值只做标注、不被改写
+
+<XhDemo src="date-field/03-range" />
+
+### 禁用与非法
+
+禁用整组退出 Tab 序、隐藏输入不再提交；invalid 只改观感与 aria，不动值
+
+<XhDemo src="date-field/04-state" />
+
 ## 产物
 
 | 层 | 值 |

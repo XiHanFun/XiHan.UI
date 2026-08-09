@@ -10,6 +10,12 @@ badge 没有状态机，connect 直接由 props 算属性
 
 <XhDemo src="badge/01-basic" />
 
+### 用作状态标记
+
+徽标不接收焦点、也不进 Tab 序列，状态语义靠文字本身表达
+
+<XhDemo src="badge/02-status" />
+
 ## 产物
 
 | 层 | 值 |

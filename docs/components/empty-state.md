@@ -2,6 +2,26 @@
 
 数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+图标、标题、说明、操作四个槽都可选，只有 root 是必须的
+
+<XhDemo src="empty-state/01-basic" />
+
+### 尺寸
+
+size 只换留白与字号，语义一点不动；不传即 md
+
+<XhDemo src="empty-state/02-size" />
+
+### 播报方式
+
+缺省 polite 让 root 成为活区，筛完就地播报；off 让它只是个普通容器
+
+<XhDemo src="empty-state/03-live" />
+
 ## 产物
 
 | 层 | 值 |

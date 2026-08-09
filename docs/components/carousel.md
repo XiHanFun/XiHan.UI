@@ -2,6 +2,32 @@
 
 数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+张数由 slideCount 声明而不是从 DOM 数，页数与指示点数量都由它算出来
+
+<XhDemo src="carousel/01-basic" />
+
+### 受控
+
+传了 page 就由宿主说了算，组件只发 page-change 不自己改页码；v-model:page 是它的语法糖
+
+<XhDemo src="carousel/02-controlled" />
+
+### 一屏多张
+
+slidesPerPage 决定一屏露几张，一次翻几张缺省跟着它走，所以仍是整屏翻
+
+<XhDemo src="carousel/03-slides-per-page" />
+
+### 自动播放与回绕
+
+autoplay 给毫秒即间隔，鼠标停上去或焦点走进来都会把计时按住
+
+<XhDemo src="carousel/04-autoplay" />
+
 ## 产物
 
 | 层 | 值 |

@@ -2,6 +2,32 @@
 
 数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+root 要有确定高度，视口才量得出溢出；滚动走的是浏览器原生通路，组件只画滚动条
+
+<XhDemo src="scroll-area/01-basic" />
+
+### 显隐时机
+
+type 决定滚动条什么时候露面：hover 指针进来才露，always 恒露，scroll 滚动时露、停手后收起
+
+<XhDemo src="scroll-area/02-type" />
+
+### 双轴与拐角
+
+两条轴各写一条滚动条，corner 补上右下角那块空白；内容要比视口宽，横轴才量得出溢出
+
+<XhDemo src="scroll-area/03-both-axes" />
+
+### 只管一条轴
+
+orientation 关掉的那条轴滚动条恒不显形，视口那一向也不再滚，不留滚不回来的暗格
+
+<XhDemo src="scroll-area/04-orientation" />
+
 ## 产物
 
 | 层 | 值 |

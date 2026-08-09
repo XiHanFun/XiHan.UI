@@ -2,6 +2,32 @@
 
 反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+条子贴在视口顶边（往页面最上方看）；不给 value 就是不确定进度，宽度自行往前爬，loading 翻 false 才冲到头并淡出
+
+<XhDemo src="loading-bar/01-basic" />
+
+### 确定进度
+
+传了 value 就由宿主说了算，宽度照它显示，内部爬升不再插手；loading 仍然负责露面与收起
+
+<XhDemo src="loading-bar/02-determinate" />
+
+### 厚度与颜色
+
+height 数字按像素、字符串按任意 CSS 长度；color 只改进度段的底色
+
+<XhDemo src="loading-bar/03-appearance" />
+
+### 关掉爬升
+
+trickle 为 false 时条子停在起步值 minimum 不动，往前走全靠宿主收尾
+
+<XhDemo src="loading-bar/04-trickle" />
+
 ## 产物
 
 | 层 | 值 |

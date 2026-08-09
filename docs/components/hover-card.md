@@ -2,6 +2,26 @@
 
 反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+与 Tooltip 的分界在于卡片本体可交互：指针停在卡片上不收起，里面的链接与按钮都点得到
+
+<XhDemo src="hover-card/01-basic" />
+
+### 延时
+
+openDelay 默认 700ms，closeDelay 默认 300ms——那段收起等待正是留给指针从触发器走到卡片上的通行时间
+
+<XhDemo src="hover-card/02-delay" />
+
+### 受控
+
+传了 open 就由宿主说了算；悬停与 Escape 都只发意图，最终写不写由外面这颗按钮同一份状态决定
+
+<XhDemo src="hover-card/03-controlled" />
+
 ## 产物
 
 | 层 | 值 |

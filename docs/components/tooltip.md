@@ -2,6 +2,32 @@
 
 反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+悬停或聚焦触发器即出；指针停在提示上也不收起
+
+<XhDemo src="tooltip/01-basic" />
+
+### 朝向
+
+placement 是请求值，空间不够时由定位引擎避让；箭头跟着最终落定的那一面走
+
+<XhDemo src="tooltip/02-placement" />
+
+### 延时
+
+openDelay 默认 700ms 用来防误触，closeDelay 默认 300ms 留出指针走位的余地；聚焦不走这两段等待
+
+<XhDemo src="tooltip/03-delay" />
+
+### 禁用
+
+disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
+
+<XhDemo src="tooltip/04-disabled" />
+
 ## 产物
 
 | 层 | 值 |

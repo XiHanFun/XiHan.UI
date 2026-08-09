@@ -2,6 +2,26 @@
 
 反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+root 留在页面原地，content 被 portal 到 body；Escape 关闭、Tab 在面板里循环，展开期间页面滚不动
+
+<XhDemo src="drawer/01-basic" />
+
+### 贴边方向
+
+side 只落成 data-side，面板压在哪条边由皮肤按这个值决定；root 与 content 报的是同一条边
+
+<XhDemo src="drawer/02-side" />
+
+### 受控
+
+传了 open 就由宿主说了算；Escape、点面板外、按叉都只回写 open，不自己改状态
+
+<XhDemo src="drawer/03-controlled" />
+
 ## 产物
 
 | 层 | 值 |

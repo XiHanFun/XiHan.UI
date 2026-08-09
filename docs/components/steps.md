@@ -2,6 +2,32 @@
 
 导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+不传 step 即为非受控；方向键只搬焦点，按 Enter 或空格才切步，进退方法由 root 的插槽交出来
+
+<XhDemo src="steps/01-basic" />
+
+### 受控
+
+传了 step 就由宿主说了算，组件自己不再改步序；v-model:step 是它的语法糖
+
+<XhDemo src="steps/02-controlled" />
+
+### 线性模式
+
+linear 下还没走到的步一律禁用，只能回头看走过的；它只拦界面上的乱跳，逐步前进照常
+
+<XhDemo src="steps/03-linear" />
+
+### 竖排
+
+orientation="vertical" 把步骤列与面板并排摆，方向键随之改收上下键
+
+<XhDemo src="steps/04-vertical" />
+
 ## 产物
 
 | 层 | 值 |

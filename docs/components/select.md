@@ -2,6 +2,32 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+trigger 展开浮层，item 落值；条目自己声明 disabled，方向键与连打检索会跳过它
+
+<XhDemo src="select/01-basic" />
+
+### 多选
+
+multiple 下点中即在集合里增删该项、浮层不收起，触发器上的文本把选中项连起来
+
+<XhDemo src="select/02-multiple" />
+
+### 受控
+
+传了 value 就由宿主说了算：组件只发 value-change，宿主写回它才变，这里把樱桃挡在门外
+
+<XhDemo src="select/03-controlled" />
+
+### 禁用
+
+根部件的 disabled 把触发器转成原生 disabled，浮层展不开、也不占 Tab 位
+
+<XhDemo src="select/04-disabled" />
+
 ## 产物
 
 | 层 | 值 |

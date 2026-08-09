@@ -2,6 +2,26 @@
 
 反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+点击展开，Escape 或点外部关闭；positioner 负责摆位，content 才是浮层本体
+
+<XhDemo src="popover/01-basic" />
+
+### 朝向与间距
+
+placement 是请求值，空间不够时定位引擎会自动翻面；offset 调的是浮层与触发器的距离
+
+<XhDemo src="popover/02-placement" />
+
+### 受控
+
+传了 open 就由宿主说了算；这里额外关掉点外部关闭，只有按钮与 Escape 能收起
+
+<XhDemo src="popover/03-controlled" />
+
 ## 产物
 
 | 层 | 值 |

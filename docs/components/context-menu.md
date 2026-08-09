@@ -2,6 +2,26 @@
 
 导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+在触发区上右键（触摸端长按），菜单钉在按下去的那一点上而不是贴着区域某条边
+
+<XhDemo src="context-menu/01-basic" />
+
+### 分组与标记位
+
+group 用 value 跟自己的 group-label 配对，item-indicator 是纯装饰的勾选位
+
+<XhDemo src="context-menu/02-group" />
+
+### 受控与锚点
+
+传了 open 就由宿主说了算；root 的插槽给出锚点坐标与 openAt，可以从任意位置弹出
+
+<XhDemo src="context-menu/03-controlled" />
+
 ## 产物
 
 | 层 | 值 |

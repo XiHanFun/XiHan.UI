@@ -2,6 +2,32 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+每格都是原生输入框，敲一个字符自动跳下一格；粘贴整串会从落点那一格起按格铺开
+
+<XhDemo src="pin-input/01-basic" />
+
+### 一次性验证码
+
+otp 补上 autocomplete=one-time-code，隐藏输入把拼好的整串交给表单，填满那一刻发 value-complete
+
+<XhDemo src="pin-input/02-otp" />
+
+### 遮蔽与字符类别
+
+mask 把每格转成密码框，type 决定哪类字符进得来，其余按键既不进值也不留在框里
+
+<XhDemo src="pin-input/03-mask" />
+
+### 禁用与校验失败
+
+disabled 让每格都带原生 disabled 且不参与提交，invalid 只做标注、照样能改
+
+<XhDemo src="pin-input/04-disabled" />
+
 ## 产物
 
 | 层 | 值 |

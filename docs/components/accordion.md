@@ -2,6 +2,32 @@
 
 数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+默认单开：展开一项即收起其余，defaultValue 只给初始值，之后由组件自己维护
+
+<XhDemo src="accordion/01-basic" />
+
+### 多项展开
+
+multiple 允许多项并存，展开集合恒为 string[]，用 v-model:value 拿到它
+
+<XhDemo src="accordion/02-multiple" />
+
+### 允许全收
+
+单开模式下最后一项默认收不起来，加 collapsible 才能把它也收上
+
+<XhDemo src="accordion/03-collapsible" />
+
+### 指示器与禁用
+
+indicator 的朝向由 data-state 驱动，禁用项点不动、方向键也跳过它
+
+<XhDemo src="accordion/04-indicator" />
+
 ## 产物
 
 | 层 | 值 |

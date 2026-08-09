@@ -10,6 +10,12 @@
 
 <XhDemo src="separator/01-basic" />
 
+### 纯装饰
+
+decorative 开启后读屏跳过它；只是排版用的横线应该这么写
+
+<XhDemo src="separator/02-decorative" />
+
 ## 产物
 
 | 层 | 值 |

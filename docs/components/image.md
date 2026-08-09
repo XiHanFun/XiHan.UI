@@ -2,6 +2,26 @@
 
 通用组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+图片与回退内容始终同挂 DOM、靠 hidden 互斥显隐，换人时盒子不塌也不跳
+
+<XhDemo src="image/01-basic" />
+
+### 回退与状态
+
+地址写坏和压根没给 src 是同一个落点，status-change 把三态报出来，root 上的 data-status 也有一份
+
+<XhDemo src="image/02-fallback" />
+
+### 尺寸与裁切
+
+同一个组件既当封面图也当缩略图：宽高比由 --xh-image-ratio 定，画面怎么填由 --xh-image-fit 定
+
+<XhDemo src="image/03-size" />
+
 ## 产物
 
 | 层 | 值 |

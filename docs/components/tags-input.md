@@ -2,6 +2,32 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+框里打字按 Enter 落一个标签；标签由作者按当前值渲染，v-for 的 key 必须给
+
+<XhDemo src="tags-input/01-basic" />
+
+### 上限与粘贴拆分
+
+add-on-paste 让粘进来的一串按分隔符拆成多个标签；顶到 max 后再打再粘都进不去
+
+<XhDemo src="tags-input/02-max-paste" />
+
+### 就地编辑
+
+editable 打开后双击任一标签改写它：Enter 提交、Escape 撤销，改成空白等于删掉这个标签
+
+<XhDemo src="tags-input/03-editable" />
+
+### 禁用与只读
+
+disabled 整个控件退出 Tab 序列；read-only 仍可聚焦浏览，但加不进也删不掉
+
+<XhDemo src="tags-input/04-disabled-readonly" />
+
 ## 产物
 
 | 层 | 值 |

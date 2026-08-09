@@ -2,6 +2,26 @@
 
 通用组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+展示框是只读不是禁用：聚焦即全选，键盘用户照样能用 Ctrl / Cmd + C 自己带走
+
+<XhDemo src="clipboard/01-basic" />
+
+### 只要一颗按钮
+
+必备部件只有 root 与 trigger：文本已经在页面上时，展示框与标题都可以省掉
+
+<XhDemo src="clipboard/02-trigger-only" />
+
+### 状态与失败
+
+写入是异步的也真的会失败：按下先进 copying，写成功才翻成 copied，失败一律退回 idle 并把原因报出来
+
+<XhDemo src="clipboard/03-status" />
+
 ## 产物
 
 | 层 | 值 |

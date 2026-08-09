@@ -2,6 +2,32 @@
 
 数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
 
+## 示例
+
+### 基础用法
+
+不传 value 即为非受控，组件自己维护评分；default-value 只决定初始那一档
+
+<XhDemo src="rating/01-basic" />
+
+### 半星与悬停预览
+
+allow-half 让落点分左右半边；划过只发 hover-change，评分要点下去才改
+
+<XhDemo src="rating/02-half" />
+
+### 自定义档数
+
+count 决定几颗星，插槽里的 items 就是 1..count 的序号表
+
+<XhDemo src="rating/03-count" />
+
+### 只读与禁用
+
+read-only 仍进 Tab 序列、读屏念得出但改不动；disabled 整条退出 Tab 序列
+
+<XhDemo src="rating/04-readonly-disabled" />
+
 ## 产物
 
 | 层 | 值 |
