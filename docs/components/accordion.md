@@ -28,6 +28,18 @@ indicator 的朝向由 data-state 驱动，禁用项点不动、方向键也跳�
 
 <XhDemo src="accordion/04-indicator" />
 
+### 语气
+
+tone 落在展开态的标题上，六种语气各预置一项展开做对照
+
+<XhDemo src="accordion/05-tone" />
+
+### 尺寸
+
+size 换的是标题栏的高度、内边距与字号，三档并排对照
+
+<XhDemo src="accordion/06-size" />
+
 ## 产物
 
 | 层 | 值 |

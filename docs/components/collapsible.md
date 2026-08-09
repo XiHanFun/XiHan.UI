@@ -22,6 +22,12 @@ disabled 把触发器整个关停，点击与键盘都不再改开合，已展�
 
 <XhDemo src="collapsible/03-disabled" />
 
+### 尺寸
+
+size 换的是触发按钮的高度、内边距与字号，三档并排对照
+
+<XhDemo src="collapsible/04-size" />
+
 ## 产物
 
 | 层 | 值 |

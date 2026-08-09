@@ -28,6 +28,12 @@ orientation 决定方向键收哪一对键（另一轴原样放行给页面）�
 
 <XhDemo src="toolbar/04-disabled" />
 
+### 尺寸
+
+size 只换整条的内边距与条目间的间距，条目自身的高度与字号归条目的皮肤管
+
+<XhDemo src="toolbar/05-size" />
+
 ## 产物
 
 | 层 | 值 |

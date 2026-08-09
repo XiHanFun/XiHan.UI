@@ -28,6 +28,18 @@ orientation="horizontal" 只改样式：条目排成一行，轨道与指示条�
 
 <XhDemo src="anchor/04-horizontal" />
 
+### 语气
+
+tone 换的是选中那一节的指示条与文字颜色，这里用 default-value 预置「用法」为选中项
+
+<XhDemo src="anchor/05-tone" />
+
+### 尺寸
+
+size 换条目的字号与左右内边距，不传 size 即默认档
+
+<XhDemo src="anchor/06-size" />
+
 ## 产物
 
 | 层 | 值 |

@@ -22,6 +22,12 @@ placement 是请求值，空间不够时定位引擎会自动翻面；offset 调
 
 <XhDemo src="popover/03-controlled" />
 
+### 尺寸
+
+三档换的是浮层的内边距与字号，不写 size 即缺省档；逐个点开触发器看差别
+
+<XhDemo src="popover/04-size" />
+
 ## 产物
 
 | 层 | 值 |
