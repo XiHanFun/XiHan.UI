@@ -10,6 +10,8 @@ export const XhSwitch = defineComponent({
     checked: { type: Boolean, default: undefined },
     defaultChecked: Boolean,
     disabled: Boolean,
+    tone: String,
+    size: String,
   },
   // checked-change 携带 { checked }，update:checked 携带裸布尔
   emits: ['checked-change', 'update:checked'],

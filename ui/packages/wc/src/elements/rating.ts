@@ -30,6 +30,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} required - 必填标注；表单影子据此参与原生校验
  * @attr {string} name - 表单字段名；给了表单影子才带 name 并参与提交
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键与"指针落在哪半边"的语义，默认 ltr
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 评分变化；detail 为 `{ value: number }`
  * @fires hover-change - 悬停预览变化；detail 为 `{ value: number | null }`，指针离开时带 null
  * @csspart root - 承载 data-disabled / data-readonly / data-empty 的外壳
@@ -56,6 +58,8 @@ export class XhRatingElement extends XhElement {
     required: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
   }
 
   declare value?: number
@@ -67,6 +71,8 @@ export class XhRatingElement extends XhElement {
   declare required?: boolean
   declare name?: string
   declare direction?: Direction
+  declare tone?: string
+  declare size?: string
 
   private readonly notifyValue = (details: RatingValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -89,6 +95,8 @@ export class XhRatingElement extends XhElement {
       required: this.required ?? false,
       name: this.name,
       dir: this.direction,
+      tone: this.tone,
+      size: this.size,
       onValueChange: this.notifyValue,
       onHoverChange: this.notifyHover,
     }

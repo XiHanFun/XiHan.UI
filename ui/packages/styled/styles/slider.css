@@ -5,7 +5,12 @@
      切换 orientation 的那一帧还会跟连接层清空另一轴的动作抢位置，把拇指钉在两轴都被约束的地方。
      皮肤只管另一条轴（交叉轴）的尺寸、颜色、圆角与状态表现。 */
 
+  /* 私有槽位：组件令牌 → 中档字面量两级回退。轨道厚度与拇指直径同时被 control / track / thumb
+     三个角色节点用到，收成两个槽位挂在 root 上，尺寸档只改这两处，靠继承发到子部件。 */
   [data-scope='slider'][data-part='root'] {
+    --xh-_thumb-size: var(--xh-slider-thumb-size, 18px);
+    --xh-_track-thickness: var(--xh-slider-track-thickness, 6px);
+
     display: flex;
     flex-direction: column;
     gap: var(--xh-slider-gap, var(--xh-stack-gap-md));
@@ -41,14 +46,14 @@
     position: relative;
     display: flex;
     align-items: center;
-    block-size: var(--xh-slider-thumb-size, 18px);
+    block-size: var(--xh-_thumb-size);
     cursor: pointer;
   }
 
   [data-scope='slider'][data-part='control'][data-orientation='vertical'] {
     flex-direction: column;
     justify-content: center;
-    inline-size: var(--xh-slider-thumb-size, 18px);
+    inline-size: var(--xh-_thumb-size);
     block-size: var(--xh-slider-vertical-length, 10rem);
   }
 
@@ -75,20 +80,22 @@
 
   [data-scope='slider'][data-part='track'][data-orientation='horizontal'] {
     inline-size: 100%;
-    block-size: var(--xh-slider-track-thickness, 6px);
+    block-size: var(--xh-_track-thickness);
   }
 
   [data-scope='slider'][data-part='track'][data-orientation='vertical'] {
     block-size: 100%;
-    inline-size: var(--xh-slider-track-thickness, 6px);
+    inline-size: var(--xh-_track-thickness);
   }
 
   /* 主轴（起点 + 长度）来自内联样式，这里只给定位模式与配色。
-     绝不给 inset / size 加过渡：拖拽时这两个值每帧都在变，一加过渡区间就永远追在指针后面。 */
+     绝不给 inset / size 加过渡：拖拽时这两个值每帧都在变，一加过渡区间就永远追在指针后面。
+     语气槽由 root 上的 data-tone 声明、经继承发下来；没写 data-tone 时退回原来的品牌色。
+     轨道不跟着换族：区间与拇指换色即可读出语气，底槽保持中性才不会盖掉"已选/未选"的对比。 */
   [data-scope='slider'][data-part='range'] {
     position: absolute;
     border-radius: var(--xh-slider-range-radius, var(--xh-shape-pill));
-    background: var(--xh-slider-range-bg, var(--xh-bg-brand));
+    background: var(--xh-slider-range-bg, var(--xh-_tone, var(--xh-bg-brand)));
   }
 
   /* 交叉轴铺满轨道。这一侧的 inset 连接层每帧写成空串（即不设），样式表接手才有确定值；
@@ -108,16 +115,16 @@
   }
 
   /* 圆点浮在轨道之上：轨道是流内的，拇指是绝对定位的，天然后来居上，不必再堆 z-index。
-     box-sizing 必须显式写：描边要吃进直径里，否则实际盒子比 --xh-slider-thumb-size 宽两条边，
+     box-sizing 必须显式写：描边要吃进直径里，否则实际盒子比 --xh-_thumb-size 宽两条边，
      下面按半个直径回拉的负外边距就对不上圆心。 */
   [data-scope='slider'][data-part='thumb'] {
     position: absolute;
     box-sizing: border-box;
-    inline-size: var(--xh-slider-thumb-size, 18px);
-    block-size: var(--xh-slider-thumb-size, 18px);
+    inline-size: var(--xh-_thumb-size);
+    block-size: var(--xh-_thumb-size);
     border: var(--xh-stroke-thick) solid var(--xh-slider-thumb-border, var(--xh-bg-surface));
     border-radius: var(--xh-slider-thumb-radius, var(--xh-shape-pill));
-    background: var(--xh-slider-thumb-bg, var(--xh-bg-brand));
+    background: var(--xh-slider-thumb-bg, var(--xh-_tone, var(--xh-bg-brand)));
     box-shadow: var(--xh-slider-thumb-shadow, var(--xh-elevation-1));
     cursor: grab;
     transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -130,15 +137,15 @@
      交叉轴同理：inset-block-start 是连接层不写的那条轴，样式表接管即可。 */
   [data-scope='slider'][data-part='thumb'][data-orientation='horizontal'] {
     inset-block-start: 50%;
-    margin-block-start: calc(var(--xh-slider-thumb-size, 18px) / -2);
-    margin-inline-start: calc(var(--xh-slider-thumb-size, 18px) / -2);
+    margin-block-start: calc(var(--xh-_thumb-size) / -2);
+    margin-inline-start: calc(var(--xh-_thumb-size) / -2);
   }
 
   /* 竖排的主轴是 inset-block-end（值向上增大），回拉也就换到 block-end 那侧 */
   [data-scope='slider'][data-part='thumb'][data-orientation='vertical'] {
     inset-inline-start: 50%;
-    margin-inline-start: calc(var(--xh-slider-thumb-size, 18px) / -2);
-    margin-block-end: calc(var(--xh-slider-thumb-size, 18px) / -2);
+    margin-inline-start: calc(var(--xh-_thumb-size) / -2);
+    margin-block-end: calc(var(--xh-_thumb-size) / -2);
   }
 
   [data-scope='slider'][data-part='thumb']:focus-visible {
@@ -164,6 +171,19 @@
 
   [data-scope='slider'][data-part='thumb'][data-disabled] {
     cursor: not-allowed;
+  }
+
+  /* —— 尺寸 —— */
+  /* 尺寸只改 root 上那两个槽位，control / track / thumb 跟着一起走；中间档不写规则，缺省即中档。
+     两档都保持"拇指是轨道的三倍厚"这个比例，换档时圆点与底槽的关系看着不变。 */
+  [data-scope='slider'][data-part='root'][data-size='sm'] {
+    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-3));
+    --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-space-1));
+  }
+
+  [data-scope='slider'][data-part='root'][data-size='lg'] {
+    --xh-_thumb-size: var(--xh-slider-thumb-size, var(--xh-space-6));
+    --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-space-2));
   }
 
   /* display 会盖掉 UA 的 [hidden]{display:none}，凡是被赋了 display 的角色节点都要显式让位 */

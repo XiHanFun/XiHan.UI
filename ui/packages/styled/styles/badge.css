@@ -15,19 +15,36 @@
     white-space: nowrap;
   }
 
+  /* —— 变体 —— */
+  /* 形态只决定颜色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的品牌/中性配色 */
   [data-scope='badge'][data-part='root'][data-variant='solid'] {
-    background: var(--xh-bg-brand);
-    color: var(--xh-fg-on-brand);
+    background: var(--xh-_tone, var(--xh-bg-brand));
+    color: var(--xh-_tone-on, var(--xh-fg-on-brand));
   }
 
   [data-scope='badge'][data-part='root'][data-variant='subtle'] {
-    background: var(--xh-bg-subtle);
-    color: var(--xh-fg-default);
+    background: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    color: var(--xh-_tone-fg, var(--xh-fg-default));
   }
 
   [data-scope='badge'][data-part='root'][data-variant='outline'] {
-    border-color: var(--xh-border-default);
+    border-color: var(--xh-_tone-border, var(--xh-border-default));
     background: transparent;
-    color: var(--xh-fg-default);
+    color: var(--xh-_tone-fg, var(--xh-fg-default));
+  }
+
+  /* —— 尺寸 —— */
+  /* 徽标是随文排的药丸，不占控件行高，档位走间距与字号而不是 control-h */
+  [data-scope='badge'][data-part='root'][data-size='sm'] {
+    gap: var(--xh-space-0_5);
+    padding-inline: var(--xh-space-1_5);
+    padding-block: var(--xh-space-0);
+  }
+
+  [data-scope='badge'][data-part='root'][data-size='lg'] {
+    gap: var(--xh-space-1_5);
+    padding-inline: var(--xh-space-3);
+    padding-block: var(--xh-space-1);
+    font-size: var(--xh-font-size-sm);
   }
 }

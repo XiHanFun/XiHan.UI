@@ -1,9 +1,14 @@
 @layer xihan.components {
   [data-scope='toggle'][data-part='root'] {
-    /* 私有槽位：组件令牌 → 语义令牌两级回退 */
+    /* 私有槽位：组件令牌 → 语义令牌两级回退，变体只改这几个槽位 */
     --xh-_bg: var(--xh-toggle-bg, transparent);
     --xh-_bg-hover: var(--xh-toggle-bg-hover, var(--xh-bg-subtle-hover));
     --xh-_fg: var(--xh-toggle-fg, var(--xh-fg-default));
+
+    /* 按下态：强调交给底色。前景不用品牌色——subtle-active 这一档底上任何品牌色都过不了
+       AA（浅色最好的 brand-700 只有 4.37），强调靠底、可读靠前景是更稳的分工 */
+    --xh-_bg-pressed: var(--xh-toggle-bg-pressed, var(--xh-bg-subtle-active));
+    --xh-_fg-pressed: var(--xh-toggle-fg-pressed, var(--xh-fg-default));
 
     display: inline-flex;
     align-items: center;
@@ -28,15 +33,6 @@
     background: var(--xh-_bg-hover);
   }
 
-  /* 按下态：强调交给底色。前景不用品牌色——subtle-active 这一档底上任何品牌色都过不了
-     AA（浅色最好的 brand-700 只有 4.37），强调靠底、可读靠前景是更稳的分工 */
-  [data-scope='toggle'][data-part='root'][data-state='on'] {
-    --xh-_bg: var(--xh-toggle-bg-pressed, var(--xh-bg-subtle-active));
-    --xh-_bg-hover: var(--xh-toggle-bg-pressed, var(--xh-bg-subtle-active));
-
-    color: var(--xh-toggle-fg-pressed, var(--xh-fg-default));
-  }
-
   [data-scope='toggle'][data-part='root'][data-disabled] {
     cursor: not-allowed;
     opacity: 0.5;
@@ -45,5 +41,63 @@
   [data-scope='toggle'][data-part='root']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: 2px;
+  }
+
+  /* —— 变体 —— */
+  /* 形态只决定颜色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的中性配色 */
+  [data-scope='toggle'][data-part='root'][data-variant='solid'] {
+    --xh-_bg: transparent;
+    --xh-_bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-hover));
+    --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_bg-pressed: var(--xh-_tone, var(--xh-bg-brand));
+    --xh-_fg-pressed: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  }
+
+  [data-scope='toggle'][data-part='root'][data-variant='subtle'] {
+    --xh-_bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+    --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_bg-pressed: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+    --xh-_fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='toggle'][data-part='root'][data-variant='outline'] {
+    --xh-_bg: transparent;
+    --xh-_bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-hover));
+    --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_bg-pressed: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+    --xh-_fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
+
+    border-color: var(--xh-_tone-border, var(--xh-border-default));
+  }
+
+  [data-scope='toggle'][data-part='root'][data-variant='ghost'] {
+    --xh-_bg: transparent;
+    --xh-_bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-hover));
+    --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_bg-pressed: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+    --xh-_fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
+  }
+
+  /* 按下态排在变体之后：两者特异度相同，后写的那条赢，
+     变体只负责给出按下档的取值，切换由这里一处完成 */
+  [data-scope='toggle'][data-part='root'][data-state='on'] {
+    --xh-_bg: var(--xh-_bg-pressed);
+    --xh-_bg-hover: var(--xh-_bg-pressed);
+
+    color: var(--xh-_fg-pressed);
+  }
+
+  /* —— 尺寸 —— */
+  [data-scope='toggle'][data-part='root'][data-size='sm'] {
+    block-size: var(--xh-control-h-sm);
+    padding-inline: var(--xh-control-px-sm);
+    font-size: var(--xh-font-size-sm);
+  }
+
+  [data-scope='toggle'][data-part='root'][data-size='lg'] {
+    block-size: var(--xh-control-h-lg);
+    padding-inline: var(--xh-control-px-lg);
+    font-size: var(--xh-font-size-lg);
   }
 }

@@ -15,6 +15,7 @@ export function connectProgress<T extends PropTypes>(
   const complete = value >= max
 
   return {
+    // 视觉两轴只落在 root：语气与尺寸都靠自定义属性向下继承，track / range 不必各写一份
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'role': 'progressbar',
@@ -22,6 +23,8 @@ export function connectProgress<T extends PropTypes>(
       'aria-valuemax': String(max),
       'aria-valuenow': String(value),
       'data-state': complete ? 'complete' : 'loading',
+      'data-tone': props.tone,
+      'data-size': props.size,
     }),
     getTrackProps: () => normalize.element({
       ...parts.track.attrs,

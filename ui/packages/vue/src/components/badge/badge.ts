@@ -8,6 +8,8 @@ export const XhBadge = defineComponent({
   name: 'XhBadge',
   props: {
     variant: String as PropType<'solid' | 'subtle' | 'outline'>,
+    tone: String,
+    size: String,
   },
   setup(props, { slots }) {
     return () => h('span', connectBadge(props as BadgeProps, vueNormalize).getRootProps() as Record<string, unknown>, slots.default?.())

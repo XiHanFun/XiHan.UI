@@ -59,6 +59,8 @@ orientation 换成 vertical 后整条控件收成一块，键盘与拖动的方�
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
 | `invalid` | `boolean` |  |  |
+| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
+| `size` | `string` |  | 尺寸：sm / md / lg，决定拇指直径与轨道厚度 |
 | `name` | `string` |  | 表单字段名；多滑块时逐个 append。 |
 | `minStepsBetweenThumbs` | `number` |  | 相邻滑块至少隔几格，默认 0（可以贴在一起但不能交换顺序）。 |
 | `getValueText` | `(details: SliderValueTextDetails) => string` |  | 把值翻成人话，产出写进拇指的 aria-valuetext。 不给就不写这个属性，读屏退回念 aria-valuenow。 |

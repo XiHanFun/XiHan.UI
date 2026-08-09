@@ -1,5 +1,9 @@
 @layer xihan.components {
+  /* 私有槽位：组件令牌 → 中档字面量两级回退。厚度写在 root 上而不是 track 上，
+     尺寸档才改得动一处就够，track 靠继承拿到值。 */
   [data-scope='progress'][data-part='root'] {
+    --xh-_thickness: var(--xh-progress-thickness, 6px);
+
     display: inline-block;
     inline-size: 100%;
   }
@@ -7,15 +11,27 @@
   [data-scope='progress'][data-part='track'] {
     overflow: hidden;
     inline-size: 100%;
-    block-size: var(--xh-progress-thickness, 6px);
+    block-size: var(--xh-_thickness);
     border-radius: var(--xh-shape-pill);
     background: var(--xh-progress-track, var(--xh-bg-subtle-active));
   }
 
+  /* 语气槽由 root 上的 data-tone 声明、经继承发下来；没写 data-tone 时退回原来的品牌色。
+     轨道不跟着换族：只有已完成的那段换色，底槽保持中性才读得出"完成了多少"。 */
   [data-scope='progress'][data-part='range'] {
     block-size: 100%;
     border-radius: var(--xh-shape-pill);
-    background: var(--xh-progress-range, var(--xh-bg-brand));
+    background: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
     transition: inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* —— 尺寸 —— */
+  /* 只有厚度分档；中间档不写规则，缺省即中档 */
+  [data-scope='progress'][data-part='root'][data-size='sm'] {
+    --xh-_thickness: var(--xh-progress-thickness, var(--xh-space-1));
+  }
+
+  [data-scope='progress'][data-part='root'][data-size='lg'] {
+    --xh-_thickness: var(--xh-progress-thickness, var(--xh-space-2));
   }
 }

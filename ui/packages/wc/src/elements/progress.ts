@@ -8,6 +8,8 @@ import { XhElement } from '../element-base'
  * @customElement xh-progress
  * @attr {number} value - 当前进度值，越界会被夹到 [0, max]，默认 0
  * @attr {number} max - 满值上限，默认 100
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @csspart root - role=progressbar 的容器（承载 aria-valuenow/aria-valuemax/data-state）
  * @csspart track - 进度轨道（满长背景）
  * @csspart range - 已完成区段，长度按百分比写成内联 inline-size
@@ -18,13 +20,17 @@ export class XhProgressElement extends XhElement {
   static override properties = {
     value: { type: Number },
     max: { type: Number },
+    tone: {},
+    size: {},
   }
 
   declare value?: number
   declare max?: number
+  declare tone?: string
+  declare size?: string
 
   protected wire(): void {
-    const api = connectProgress({ value: this.value, max: this.max }, wcNormalize)
+    const api = connectProgress({ value: this.value, max: this.max, tone: this.tone, size: this.size }, wcNormalize)
     const root = this.getPart('root')
     if (root)
       this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)

@@ -8,7 +8,9 @@ import { XhElement } from '../element-base'
  *
  * @customElement xh-badge
  * @attr {'solid'|'subtle'|'outline'} variant - 视觉变体
- * @csspart root - 承载 data-scope/data-part/data-variant 的展示节点
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
+ * @csspart root - 承载 data-scope/data-part/data-* 的展示节点
  */
 export class XhBadgeElement extends XhElement {
   static override partContract = { anatomy: badgeAnatomy, meta: badgeMeta }
@@ -16,16 +18,20 @@ export class XhBadgeElement extends XhElement {
   // 属性缺席翻成 undefined，缺省值由 connect 决定
   static override properties = {
     variant: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
+    tone: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
+    size: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
   }
 
   declare variant?: string
+  declare tone?: string
+  declare size?: string
 
   protected wire(): void {
     const root = this.getPart('root')
     if (!root)
       return
     // 读响应式 property，不回读 DOM 特性
-    const api = connectBadge({ variant: this.variant } as BadgeProps, wcNormalize)
+    const api = connectBadge({ variant: this.variant, tone: this.tone, size: this.size } as BadgeProps, wcNormalize)
     this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
   }
 }

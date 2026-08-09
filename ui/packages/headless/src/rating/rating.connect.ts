@@ -155,6 +155,8 @@ export function connectRating<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-empty': dataAttr(empty),

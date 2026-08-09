@@ -12,6 +12,8 @@ export interface AvatarSchema extends MachineSchema {
   props: {
     src?: string
     alt?: string
+    /** 尺寸：sm / md / lg，缺省 md；缺省档不输出 data-size */
+    size?: string
     /** 状态落位时通知，过渡态 idle 不通知。 */
     onStatusChange?: (details: AvatarStatusChangeDetails) => void
   }

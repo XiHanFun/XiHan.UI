@@ -5,6 +5,10 @@ export interface ProgressProps {
   value?: number
   /** 满值上限，默认 100。 */
   max?: number
+  /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 */
+  tone?: string
+  /** 尺寸：sm / md / lg，决定轨道厚度 */
+  size?: string
 }
 
 export interface ProgressApi<T extends PropTypes = PropTypes> {

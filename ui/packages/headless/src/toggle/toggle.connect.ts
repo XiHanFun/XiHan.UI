@@ -28,6 +28,9 @@ export function connectToggle<T extends PropTypes>(
       'aria-pressed': pressed ? 'true' : 'false',
       'disabled': disabled || undefined,
       'data-state': pressed ? 'on' : 'off',
+      'data-variant': prop('variant'),
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
       'onClick': () => {
         if (!disabled)

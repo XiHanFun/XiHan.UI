@@ -65,6 +65,8 @@ export function connectRadioGroup<T extends PropTypes>(
       // 只描述视觉排布，与方向键接受的轴无关（见 onKeyDown 的 axis: 'both'）
       'aria-orientation': orientation,
       'data-orientation': orientation,
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-disabled': dataAttr(groupDisabled),
       // 焦点在组外时容器可 Tab，进入后让位给条目。
       // 判据只能用 focusedValue：anchor 可能指向一个已不存在的值，那时没有条目认领 tabindex=0

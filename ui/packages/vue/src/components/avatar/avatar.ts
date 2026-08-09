@@ -11,6 +11,7 @@ export const XhAvatarRoot = defineComponent({
     // 缺席即无来源，落回退态
     src: { type: String, default: undefined },
     alt: { type: String, default: undefined },
+    size: { type: String, default: undefined },
   },
   // status-change 携带 { status }
   emits: ['status-change'],

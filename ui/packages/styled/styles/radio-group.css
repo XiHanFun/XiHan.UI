@@ -1,5 +1,11 @@
 @layer xihan.components {
   [data-scope='radio-group'][data-part='root'] {
+    /* 尺寸档只换这两个私有槽，标题与条目都从 root 继承它们，换档不必给每个部件各写一条选择器 */
+    --xh-_radio-group-item-gap: var(--xh-control-gap-md);
+    --xh-_radio-group-font-size: var(--xh-text-label-size);
+    /* 选中色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的品牌色 */
+    --xh-_radio-group-accent: var(--xh-_tone, var(--xh-bg-brand));
+
     display: flex;
     gap: var(--xh-radio-group-gap, var(--xh-stack-gap-md));
   }
@@ -13,9 +19,20 @@
     align-items: center;
   }
 
+  /* —— 尺寸 —— */
+  [data-scope='radio-group'][data-part='root'][data-size='sm'] {
+    --xh-_radio-group-item-gap: var(--xh-control-gap-sm);
+    --xh-_radio-group-font-size: var(--xh-font-size-sm);
+  }
+
+  [data-scope='radio-group'][data-part='root'][data-size='lg'] {
+    --xh-_radio-group-item-gap: var(--xh-control-gap-lg);
+    --xh-_radio-group-font-size: var(--xh-font-size-lg);
+  }
+
   [data-scope='radio-group'][data-part='label'] {
     color: var(--xh-radio-group-label-fg, var(--xh-fg-muted));
-    font-size: var(--xh-radio-group-label-font-size, var(--xh-text-label-size));
+    font-size: var(--xh-radio-group-label-font-size, var(--xh-_radio-group-font-size));
     font-weight: var(--xh-radio-group-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
   }
@@ -25,10 +42,10 @@
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: var(--xh-radio-group-item-gap, var(--xh-control-gap-md));
+    gap: var(--xh-radio-group-item-gap, var(--xh-_radio-group-item-gap));
     border-radius: var(--xh-radio-group-item-radius, var(--xh-shape-control));
     color: var(--xh-radio-group-item-fg, var(--xh-fg-default));
-    font-size: var(--xh-radio-group-item-font-size, var(--xh-text-label-size));
+    font-size: var(--xh-radio-group-item-font-size, var(--xh-_radio-group-font-size));
     line-height: var(--xh-leading-none);
     cursor: pointer;
   }
@@ -59,7 +76,7 @@
   }
 
   [data-scope='radio-group'][data-part='indicator'][data-state='checked'] {
-    border-color: var(--xh-radio-group-indicator-border-checked, var(--xh-bg-brand));
+    border-color: var(--xh-radio-group-indicator-border-checked, var(--xh-_radio-group-accent));
   }
 
   /* 圆点用 scale 收放，选中态切换不引起布局抖动 */
@@ -68,7 +85,7 @@
     inline-size: 8px;
     block-size: 8px;
     border-radius: var(--xh-shape-pill);
-    background: var(--xh-radio-group-indicator-dot, var(--xh-bg-brand));
+    background: var(--xh-radio-group-indicator-dot, var(--xh-_radio-group-accent));
     scale: 0;
     transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }

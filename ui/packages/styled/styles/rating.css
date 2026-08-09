@@ -2,10 +2,30 @@
   /* position 是给表单影子做定位基准的：那份输入被连接层内联写成绝对定位，
      根上不留基准它就会贴到更外层的定位祖先上，原生校验提示跟着飘到页面别处。 */
   [data-scope='rating'][data-part='root'] {
+    /* 尺寸档只换这三个私有槽，标题与星星都从 root 继承它们，换档不必给每个部件各写一条选择器 */
+    --xh-_rating-item-gap: var(--xh-space-1);
+    --xh-_rating-item-size: var(--xh-font-size-2xl);
+    --xh-_rating-font-size: var(--xh-text-label-size);
+    /* 点亮色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的警示色 */
+    --xh-_rating-accent: var(--xh-_tone, var(--xh-color-warning-500));
+
     position: relative;
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-rating-gap, var(--xh-stack-gap-md));
+  }
+
+  /* —— 尺寸 —— */
+  [data-scope='rating'][data-part='root'][data-size='sm'] {
+    --xh-_rating-item-gap: var(--xh-control-gap-sm);
+    --xh-_rating-item-size: var(--xh-font-size-xl);
+    --xh-_rating-font-size: var(--xh-font-size-sm);
+  }
+
+  [data-scope='rating'][data-part='root'][data-size='lg'] {
+    --xh-_rating-item-gap: var(--xh-control-gap-lg);
+    --xh-_rating-item-size: var(--xh-font-size-3xl);
+    --xh-_rating-font-size: var(--xh-font-size-lg);
   }
 
   /* 整体压暗只做一次，落在最外层：星星逐颗再叠 opacity 会越叠越黑 */
@@ -16,7 +36,7 @@
 
   [data-scope='rating'][data-part='label'] {
     color: var(--xh-rating-label-fg, var(--xh-fg-muted));
-    font-size: var(--xh-rating-label-font-size, var(--xh-text-label-size));
+    font-size: var(--xh-rating-label-font-size, var(--xh-_rating-font-size));
     font-weight: var(--xh-rating-label-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
   }
@@ -28,7 +48,7 @@
   [data-scope='rating'][data-part='control'] {
     display: inline-flex;
     align-items: center;
-    gap: var(--xh-rating-item-gap, var(--xh-space-1));
+    gap: var(--xh-rating-item-gap, var(--xh-_rating-item-gap));
   }
 
   /* 容器只是焦点域的兜底落点（焦点从带外进来先落在它身上，随即被转投给某颗星），
@@ -52,7 +72,7 @@
     display: inline-block;
     border-radius: var(--xh-rating-item-radius, var(--xh-shape-control));
     color: var(--xh-rating-item-fg, var(--xh-fg-subtle));
-    font-size: var(--xh-rating-item-font-size, var(--xh-font-size-2xl));
+    font-size: var(--xh-rating-item-font-size, var(--xh-_rating-item-size));
     line-height: var(--xh-leading-none);
     cursor: pointer;
     /* 从一颗星划到另一颗会把中间的字符连着选中，星带看上去像被刷蓝了 */
@@ -64,7 +84,7 @@
      aria-checked 只认落定的值，而悬停预览要求手划过去当场就亮。
      两者共用同一档颜色，预览与选中因此看不出差别——这正是"预览"该有的样子。 */
   [data-scope='rating'][data-part='item'][data-highlighted] {
-    color: var(--xh-rating-item-fg-highlighted, var(--xh-color-warning-500));
+    color: var(--xh-rating-item-fg-highlighted, var(--xh-_rating-accent));
   }
 
   /* 半颗：一道 50% 硬边渐变裁到字形上，左半亮右半灰。
@@ -73,7 +93,7 @@
   [data-scope='rating'][data-part='item'][data-half] {
     background-image: linear-gradient(
       to right,
-      var(--xh-rating-item-fg-highlighted, var(--xh-color-warning-500)) 50%,
+      var(--xh-rating-item-fg-highlighted, var(--xh-_rating-accent)) 50%,
       var(--xh-rating-item-fg, var(--xh-fg-subtle)) 50%
     );
     -webkit-background-clip: text;
@@ -86,7 +106,7 @@
   [data-scope='rating'][data-part='item'][data-half]:dir(rtl) {
     background-image: linear-gradient(
       to left,
-      var(--xh-rating-item-fg-highlighted, var(--xh-color-warning-500)) 50%,
+      var(--xh-rating-item-fg-highlighted, var(--xh-_rating-accent)) 50%,
       var(--xh-rating-item-fg, var(--xh-fg-subtle)) 50%
     );
   }

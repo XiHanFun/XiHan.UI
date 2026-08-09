@@ -12,6 +12,8 @@ export const XhCheckbox = defineComponent({
     checked: { type: [Boolean, String] as PropType<CheckboxCheckedState>, default: undefined },
     defaultChecked: { type: [Boolean, String] as PropType<CheckboxCheckedState>, default: undefined },
     disabled: Boolean,
+    tone: String,
+    size: String,
   },
   // checked-change 携带 { checked }，update:checked 携带裸布尔
   emits: ['checked-change', 'update:checked'],

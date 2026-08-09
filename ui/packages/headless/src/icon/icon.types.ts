@@ -21,6 +21,8 @@ export interface IconProps {
   size?: IconSize
   /** 描边粗细档位，缺省 regular；缺省档不输出 data-weight。 */
   weight?: IconWeight
+  /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 */
+  tone?: string
 }
 
 export interface IconApi<T extends PropTypes = PropTypes> {

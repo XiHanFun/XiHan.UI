@@ -8,6 +8,8 @@ export const XhProgress = defineComponent({
   props: {
     value: { type: Number, default: 0 },
     max: { type: Number, default: 100 },
+    tone: String,
+    size: String,
   },
   setup(props) {
     return () => {

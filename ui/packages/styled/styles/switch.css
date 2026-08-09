@@ -1,11 +1,20 @@
 @layer xihan.components {
   [data-scope='switch'][data-part='root'] {
+    /* 尺寸档只换轨道高度这一个私有槽，其余几何都从它算出来：
+       滑块边长 = 轨道高 − 两条留白，轨道宽 = 两倍轨道高 − 两条留白，滑块行程因此正好等于自身边长 */
+    --xh-_switch-track-h: var(--xh-font-size-2xl);
+    --xh-_switch-pad: 2px;
+    --xh-_switch-thumb-size: calc(var(--xh-_switch-track-h) - var(--xh-_switch-pad) * 2);
+
+    /* 选中态轨道色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的品牌色 */
+    --xh-_switch-accent: var(--xh-_tone, var(--xh-bg-brand));
+
     position: relative;
     display: inline-flex;
     align-items: center;
-    inline-size: 40px;
-    block-size: 22px;
-    padding: 2px;
+    inline-size: calc(var(--xh-_switch-track-h) * 2 - var(--xh-_switch-pad) * 2);
+    block-size: var(--xh-_switch-track-h);
+    padding: var(--xh-_switch-pad);
     border: 0;
     border-radius: var(--xh-shape-pill);
     background: var(--xh-switch-bg, var(--xh-bg-subtle-active));
@@ -14,7 +23,7 @@
   }
 
   [data-scope='switch'][data-part='root'][data-state='checked'] {
-    background: var(--xh-switch-bg-checked, var(--xh-bg-brand));
+    background: var(--xh-switch-bg-checked, var(--xh-_switch-accent));
   }
 
   [data-scope='switch'][data-part='root'][data-disabled] {
@@ -27,9 +36,19 @@
     outline-offset: 2px;
   }
 
+  /* —— 尺寸 —— */
+  /* 缺省档写在上面的基础规则里 */
+  [data-scope='switch'][data-part='root'][data-size='sm'] {
+    --xh-_switch-track-h: var(--xh-font-size-xl);
+  }
+
+  [data-scope='switch'][data-part='root'][data-size='lg'] {
+    --xh-_switch-track-h: var(--xh-font-size-3xl);
+  }
+
   [data-scope='switch'][data-part='thumb'] {
-    inline-size: 18px;
-    block-size: 18px;
+    inline-size: var(--xh-_switch-thumb-size);
+    block-size: var(--xh-_switch-thumb-size);
     border-radius: var(--xh-shape-pill);
     background: var(--xh-switch-thumb, var(--xh-bg-canvas));
     box-shadow: var(--xh-elevation-1);
@@ -37,6 +56,6 @@
   }
 
   [data-scope='switch'][data-part='thumb'][data-state='checked'] {
-    translate: 18px 0;
+    translate: var(--xh-_switch-thumb-size) 0;
   }
 }

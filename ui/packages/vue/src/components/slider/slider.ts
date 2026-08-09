@@ -23,6 +23,8 @@ export const XhSliderRoot = defineComponent({
     disabled: Boolean,
     readOnly: Boolean,
     invalid: Boolean,
+    tone: { type: String, default: undefined },
+    size: { type: String, default: undefined },
     name: { type: String, default: undefined },
     getValueText: {
       type: Function as PropType<(details: SliderValueTextDetails) => string>,
