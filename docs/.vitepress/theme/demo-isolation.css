@@ -1,0 +1,31 @@
+/*
+ * 示例舞台隔离：把 VitePress .vp-doc 写在这些标签上的正文排版退回浏览器默认，
+ * 示例里的外观只由组件皮肤决定。
+ *
+ * 取值一律用 revert：退回 UA 默认而不是清零或继承，裸 <hr> 的边框、<code> 的等宽
+ * 字体、<h2> 的字重都还在。属性逐条对应 .vp-doc 写下的声明。
+ *
+ * 选择器特异度 (0,2,0)（:where() 不计权），与皮肤的 [data-scope][data-part] 同权，
+ * 靠 index.ts 里的导入顺序让皮肤排在后面。
+ * .xh-demo__missing 是示例外壳自己的提示文案，不参与隔离。
+ */
+.vp-doc
+  .xh-demo__stage
+  :where(h1, h2, h3, h4, h5, h6, p, blockquote, ul, ol, li, table, tr, th, td, hr, a, code):where(
+    :not(.xh-demo__missing)
+  ) {
+  margin: revert;
+  padding: revert;
+  border: revert;
+  background: revert;
+  color: revert;
+  font: revert;
+  letter-spacing: revert;
+  line-height: revert;
+  text-align: revert;
+  list-style: revert;
+  text-decoration: revert;
+  transition: revert;
+  display: revert;
+  overflow: revert;
+}
