@@ -16,6 +16,24 @@ badge 没有状态机，connect 直接由 props 算属性
 
 <XhDemo src="badge/02-status" />
 
+### 形态
+
+variant 决定颜色怎么用：实心填底、淡色填底、只描边
+
+<XhDemo src="badge/03-variant" />
+
+### 语气
+
+tone 决定用哪族颜色，与 variant 正交；这里固定 solid 形态只看语气的差别
+
+<XhDemo src="badge/04-tone" />
+
+### 尺寸
+
+size 只改内边距与字号，不写就是缺省档
+
+<XhDemo src="badge/05-size" />
+
 ## 产物
 
 | 层 | 值 |

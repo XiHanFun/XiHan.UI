@@ -28,6 +28,12 @@ size 三档改直径、weight 三档改 stroke-width；缺省档不落 data-* �
 
 <XhDemo src="icon/04-custom-glyph" />
 
+### 语气
+
+图标没有底色，语气只落在前景上，取普通背景上表达该语气的那档文字色
+
+<XhDemo src="icon/05-tone" />
+
 ## 产物
 
 | 层 | 值 |

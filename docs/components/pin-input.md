@@ -28,6 +28,24 @@ disabled 让每格都带原生 disabled 且不参与提交，invalid 只做标�
 
 <XhDemo src="pin-input/04-disabled" />
 
+### 形态
+
+variant 只改每格的颜色槽位，跳格与粘贴铺开的行为三档一致
+
+<XhDemo src="pin-input/05-variant" />
+
+### 语气
+
+tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语气的差别
+
+<XhDemo src="pin-input/06-tone" />
+
+### 尺寸
+
+每格的边长随 size 换档，不传 size 即默认档
+
+<XhDemo src="pin-input/07-size" />
+
 ## 产物
 
 | 层 | 值 |

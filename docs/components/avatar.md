@@ -22,6 +22,12 @@
 
 <XhDemo src="avatar/03-group" />
 
+### 尺寸
+
+size 三档只换直径，回退字的字号跟着一起缩放；缺省档不输出 data-size
+
+<XhDemo src="avatar/04-size" />
+
 ## 产物
 
 | 层 | 值 |

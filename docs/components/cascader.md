@@ -28,6 +28,24 @@ expand-trigger 改成 hover 后，指针划过分支即开子列，只挪展开�
 
 <XhDemo src="cascader/04-multiple" />
 
+### 形态
+
+variant 只改触发框的底色与描边用法，浮层与列不跟着变
+
+<XhDemo src="cascader/05-variant" />
+
+### 语气
+
+tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，只看语气这一轴
+
+<XhDemo src="cascader/06-tone" />
+
+### 尺寸
+
+不传 size 即默认档；触发框与列里的条目一起换档
+
+<XhDemo src="cascader/07-size" />
+
 ## 产物
 
 | 层 | 值 |

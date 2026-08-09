@@ -16,6 +16,18 @@ checked 传 "indeterminate" 表示部分选中，它不是第三个稳定态：�
 
 <XhDemo src="checkbox/02-indeterminate" />
 
+### 语气
+
+tone 决定选中态的底与描边用哪族颜色，所以这里都置为选中
+
+<XhDemo src="checkbox/03-tone" />
+
+### 尺寸
+
+size 同时缩放方框与勾选标记，不写就是缺省档
+
+<XhDemo src="checkbox/04-size" />
+
 ## 产物
 
 | 层 | 值 |

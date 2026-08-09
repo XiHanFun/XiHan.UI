@@ -19,7 +19,7 @@
     /* 语气只落在聚焦这一处：环与聚焦态描边。正文颜色不归它管。
        没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色与常态描边 */
     --xh-_text-field-ring: var(--xh-ring-focus);
-    --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, $3));
+    --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-default)));
 
     display: inline-flex;
     flex-direction: column;
@@ -56,7 +56,7 @@
     --xh-_text-field-bg: var(--xh-bg-canvas);
     --xh-_text-field-border: var(--xh-border-default);
     --xh-_text-field-border-hover: var(--xh-border-strong);
-    --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, $3));
+    --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-default)));
   }
 
   /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，

@@ -28,6 +28,18 @@ read-only 仍进 Tab 序列、读屏念得出但改不动；disabled 整条退�
 
 <XhDemo src="rating/04-readonly-disabled" />
 
+### 语气
+
+tone 决定点亮的星用哪族颜色，不写时沿用警示色
+
+<XhDemo src="rating/05-tone" />
+
+### 尺寸
+
+size 改星的大小与间距，不写即缺省中档
+
+<XhDemo src="rating/06-size" />
+
 ## 产物
 
 | 层 | 值 |

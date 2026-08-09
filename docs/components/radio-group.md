@@ -28,6 +28,18 @@ orientation 只影响排版与 aria-orientation，方向键四个方向照样都
 
 <XhDemo src="radio-group/04-disabled" />
 
+### 语气
+
+tone 决定选中圆点用哪族颜色，六种语气各一组
+
+<XhDemo src="radio-group/05-tone" />
+
+### 尺寸
+
+size 改条目间距与字号，不写即缺省中档
+
+<XhDemo src="radio-group/06-size" />
+
 ## 产物
 
 | 层 | 值 |

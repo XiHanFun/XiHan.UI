@@ -28,6 +28,24 @@ disabled 整个控件退出 Tab 序列；read-only 仍可聚焦浏览，但加�
 
 <XhDemo src="tags-input/04-disabled-readonly" />
 
+### 形态
+
+variant 只改控件与胶囊的颜色槽位，落标签与删标签的行为三档一致
+
+<XhDemo src="tags-input/05-variant" />
+
+### 语气
+
+tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语气的差别
+
+<XhDemo src="tags-input/06-tone" />
+
+### 尺寸
+
+控件高度、胶囊与输入文字一起换档，不传 size 即默认档
+
+<XhDemo src="tags-input/07-size" />
+
 ## 产物
 
 | 层 | 值 |

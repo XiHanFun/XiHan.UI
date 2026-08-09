@@ -28,6 +28,18 @@ orientation 换成 vertical 后整条控件收成一块，键盘与拖动的方�
 
 <XhDemo src="slider/04-disabled" />
 
+### 语气
+
+tone 决定已填轨道与滑块用哪族颜色，不写时沿用品牌色
+
+<XhDemo src="slider/05-tone" />
+
+### 尺寸
+
+size 改轨道厚度与滑块直径，不写即缺省中档
+
+<XhDemo src="slider/06-size" />
+
 ## 产物
 
 | 层 | 值 |

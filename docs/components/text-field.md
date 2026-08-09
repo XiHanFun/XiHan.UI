@@ -28,6 +28,24 @@ disabled 与 readOnly 都改不动值，invalid 只把 aria-invalid 标出来、
 
 <XhDemo src="text-field/04-states" />
 
+### 形态
+
+variant 决定底与描边怎么画：描边、淡色填底、无框；输入框没有实心档
+
+<XhDemo src="text-field/05-variant" />
+
+### 语气
+
+tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，语气的底色差别不必聚焦就看得见
+
+<XhDemo src="text-field/06-tone" />
+
+### 尺寸
+
+size 只改高度、内边距与字号，标签与清空按钮一起跟着换档；不写就是缺省档
+
+<XhDemo src="text-field/07-size" />
+
 ## 产物
 
 | 层 | 值 |

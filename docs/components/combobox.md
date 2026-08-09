@@ -28,6 +28,24 @@ allow-custom-value 让没匹配上候选的输入也能落值，适合标签、�
 
 <XhDemo src="combobox/04-group" />
 
+### 形态
+
+variant 只改输入行的底色与描边用法，取值、过滤与键盘行为都不变
+
+<XhDemo src="combobox/05-variant" />
+
+### 语气
+
+tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，只看语气这一轴
+
+<XhDemo src="combobox/06-tone" />
+
+### 尺寸
+
+不传 size 即默认档；行高、内边距与字号一起换档，浮层里的候选也跟着变
+
+<XhDemo src="combobox/07-size" />
+
 ## 产物
 
 | 层 | 值 |
