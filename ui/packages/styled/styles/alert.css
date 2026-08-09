@@ -9,6 +9,8 @@
     --xh-_alert-edge: color-mix(in oklab, var(--xh-_alert-accent) 32%, var(--xh-bg-surface));
 
     display: flex;
+    /* 说明用 flex: 1 1 100% 独占一行，容器不换行的话它只会挤在标题旁边 */
+    flex-wrap: wrap;
     align-items: flex-start;
     gap: var(--xh-alert-gap, var(--xh-space-3));
     padding-block: var(--xh-alert-py, var(--xh-space-3));

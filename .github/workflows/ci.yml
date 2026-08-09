@@ -28,6 +28,8 @@ jobs:
         run: pnpm gate:tokens
       - name: Custom elements manifest in sync
         run: pnpm gate:cem
+      - name: Unlayered skin in sync
+        run: pnpm gate:styled
       - name: Lint
         run: pnpm lint
       - name: Typecheck

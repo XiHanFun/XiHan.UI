@@ -17,6 +17,10 @@
       "inputs": ["src/**", "tests/**", "spec/**", "runners/**"],
       "outputs": ["coverage/**"]
     },
+    "@xihan-ui/styled#build": {
+      "inputs": ["index.css", "styles/**", "build/**", "package.json"],
+      "outputs": []
+    },
     "@xihan-ui/testing#test": {
       "dependsOn": ["^build", "@xihan-ui/vue#build", "@xihan-ui/wc#build"],
       "inputs": ["src/**", "tests/**", "spec/**", "runners/**"],
