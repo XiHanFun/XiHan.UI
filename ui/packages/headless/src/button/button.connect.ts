@@ -26,6 +26,7 @@ export function connectButton<T extends PropTypes>(
       'aria-disabled': loading ? 'true' : undefined,
       'data-state': state,
       'data-variant': props.variant,
+      'data-tone': props.tone,
       'data-size': props.size,
       'data-disabled': dataAttr(disabled),
       'data-loading': dataAttr(loading),

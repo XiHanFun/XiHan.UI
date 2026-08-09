@@ -1014,6 +1014,15 @@
             },
             {
               "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
               "name": "size",
               "privacy": "public",
               "type": {
@@ -1064,6 +1073,14 @@
               "description": "视觉变体",
               "name": "variant",
               "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
             },
             {
               "type": {

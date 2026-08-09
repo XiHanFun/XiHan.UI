@@ -1,0 +1,77 @@
+/*
+ * 语气层：与组件无关，全库共用一份。
+ *
+ * 三个视觉轴各管一件事，互不干涉：
+ *   data-variant  形态  solid / subtle / outline / ghost —— 颜色怎么用
+ *   data-tone     语气  brand / neutral / success / warning / danger / info —— 用哪族颜色
+ *   data-size     尺寸  sm / md / lg
+ *
+ * 这里只声明私有槽，各组件的形态规则去消费。所以加一个语气是改这一处 6 条规则，
+ * 而不是逐个组件写 6 遍。
+ *
+ * --xh-_tone-on 是实心底上的前景色，按实测对比度分派而非统一白字：
+ * 600 档上白字对 brand 5.08、neutral 7.80、danger 4.83 达标，而 success 3.04、
+ * warning 2.70、info 3.47 都不到 4.5，这三族必须配深字。
+ *
+ * --xh-_tone-shift 是交互态要往哪个方向挪：永远背离前景色走，悬停与按下才不会
+ * 反过来压低对比度。白字族往深处挪，深字族往浅处挪。
+ *
+ * 这两个槽用的都是固定原语而不是 --xh-fg-default：实心底本身是原语色、不随主题翻，
+ * 配色若跟着主题翻，暗色下就会变成白字压在浅黄底上（实测对比度 2.70）。
+ */
+@layer xihan.components {
+  [data-tone] {
+    /* 先给一份中性缺省：写了 data-tone 却拼错取值时退成中性，
+       而不是让 --xh-_tone 悬空——悬空会让下面每条 color-mix 变成计算期无效，
+       用它的声明会整条失效，且 var() 兜底也救不回来（槽位是「已声明但无效」）。 */
+    --xh-_tone: var(--xh-color-neutral-600);
+    --xh-_tone-on: var(--xh-color-neutral-0);
+    --xh-_tone-shift: var(--xh-color-neutral-950);
+
+    /* 交互态与淡底都从主色兑出来，兑的对象是主题色，深浅两态自动跟随 */
+    --xh-_tone-hover: color-mix(in oklab, var(--xh-_tone) 88%, var(--xh-_tone-shift));
+    --xh-_tone-active: color-mix(in oklab, var(--xh-_tone) 78%, var(--xh-_tone-shift));
+    --xh-_tone-subtle: color-mix(in oklab, var(--xh-_tone) 12%, var(--xh-bg-surface));
+    --xh-_tone-subtle-hover: color-mix(in oklab, var(--xh-_tone) 20%, var(--xh-bg-surface));
+    --xh-_tone-subtle-active: color-mix(in oklab, var(--xh-_tone) 28%, var(--xh-bg-surface));
+    --xh-_tone-border: color-mix(in oklab, var(--xh-_tone) 40%, var(--xh-bg-surface));
+    /* 在普通背景上表达该语气的文字色：往前景色兑，浅色态变深、深色态变浅 */
+    --xh-_tone-fg: color-mix(in oklab, var(--xh-_tone) 72%, var(--xh-fg-default));
+  }
+
+  [data-tone='brand'] {
+    --xh-_tone: var(--xh-color-brand-600);
+    --xh-_tone-on: var(--xh-color-neutral-0);
+    --xh-_tone-shift: var(--xh-color-neutral-950);
+  }
+
+  [data-tone='neutral'] {
+    --xh-_tone: var(--xh-color-neutral-600);
+    --xh-_tone-on: var(--xh-color-neutral-0);
+    --xh-_tone-shift: var(--xh-color-neutral-950);
+  }
+
+  [data-tone='danger'] {
+    --xh-_tone: var(--xh-color-danger-600);
+    --xh-_tone-on: var(--xh-color-neutral-0);
+    --xh-_tone-shift: var(--xh-color-neutral-950);
+  }
+
+  [data-tone='success'] {
+    --xh-_tone: var(--xh-color-success-600);
+    --xh-_tone-on: var(--xh-color-neutral-950);
+    --xh-_tone-shift: var(--xh-color-neutral-0);
+  }
+
+  [data-tone='warning'] {
+    --xh-_tone: var(--xh-color-warning-600);
+    --xh-_tone-on: var(--xh-color-neutral-950);
+    --xh-_tone-shift: var(--xh-color-neutral-0);
+  }
+
+  [data-tone='info'] {
+    --xh-_tone: var(--xh-color-info-600);
+    --xh-_tone-on: var(--xh-color-neutral-950);
+    --xh-_tone-shift: var(--xh-color-neutral-0);
+  }
+}

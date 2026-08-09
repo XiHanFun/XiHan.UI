@@ -5,7 +5,10 @@ export interface ButtonProps {
   disabled?: boolean
   /** 加载态：用 aria-disabled + 拦截事件表达，保留焦点。 */
   loading?: boolean
+  /** 形态：solid / subtle / outline / ghost，决定颜色怎么用 */
   variant?: string
+  /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 */
+  tone?: string
   size?: string
 }
 
