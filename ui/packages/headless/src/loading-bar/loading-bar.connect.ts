@@ -43,6 +43,7 @@ export function connectLoadingBar<T extends PropTypes>(
       // 不确定进度按规范省略 aria-valuenow
       'aria-valuenow': determinate ? String(value) : undefined,
       'data-state': phase,
+      'data-tone': prop('tone'),
       'data-indeterminate': dataAttr(!determinate),
       // 收起时留着节点，只加 hidden
       'hidden': !visible || undefined,

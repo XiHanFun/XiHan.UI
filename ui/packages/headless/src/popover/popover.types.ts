@@ -35,6 +35,8 @@ export interface PopoverSchema extends MachineSchema {
     closeOnEscape?: boolean
     closeOnInteractOutside?: boolean
     translations?: Partial<PopoverTranslations>
+    /** 尺寸：sm / md / lg，决定面板的内边距档位。 */
+    size?: string
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: PopoverOpenChangeDetails) => void
   }

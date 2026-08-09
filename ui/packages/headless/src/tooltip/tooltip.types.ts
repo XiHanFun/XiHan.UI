@@ -31,6 +31,10 @@ export interface TooltipSchema extends MachineSchema {
     closeDelay?: number
     /** 只关闭提示本身，不影响被包裹控件的可用性。 */
     disabled?: boolean
+    /** 语气：brand / neutral / success / warning / danger / info，决定提示的底色与其上的文字色。 */
+    tone?: string
+    /** 尺寸：sm / md / lg，决定内边距与字号档位。 */
+    size?: string
     /** open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 */
     onOpenChange?: (details: TooltipOpenChangeDetails) => void
   }

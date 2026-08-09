@@ -15,6 +15,7 @@ export const XhLoadingBarRoot = defineComponent({
     loading: { type: Boolean, default: undefined },
     height: { type: [String, Number] as PropType<string | number>, default: undefined },
     color: { type: String, default: undefined },
+    tone: { type: String, default: undefined },
     trickle: { type: Boolean, default: undefined },
     trickleSpeed: { type: Number, default: undefined },
     minimum: { type: Number, default: undefined },

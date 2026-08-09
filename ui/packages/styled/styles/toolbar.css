@@ -2,11 +2,15 @@
   /* 一条控件带：条目之间留固定间距，分隔线再把它们切成语义上的几段。
      排布只能读 data-orientation——它与 aria-orientation 同源，但样式不该去读 ARIA */
   [data-scope='toolbar'][data-part='root'] {
+    /* 尺寸档只换这两个私有槽：条目之间的间距，与整条的内边距 */
+    --xh-_toolbar-gap: var(--xh-space-1);
+    --xh-_toolbar-p: var(--xh-space-1);
+
     display: flex;
     align-items: center;
-    gap: var(--xh-toolbar-gap, var(--xh-space-1));
-    padding-block: var(--xh-toolbar-py, var(--xh-space-1));
-    padding-inline: var(--xh-toolbar-px, var(--xh-space-1));
+    gap: var(--xh-toolbar-gap, var(--xh-_toolbar-gap));
+    padding-block: var(--xh-toolbar-py, var(--xh-_toolbar-p));
+    padding-inline: var(--xh-toolbar-px, var(--xh-_toolbar-p));
     border: var(--xh-stroke-thin) solid var(--xh-toolbar-border, var(--xh-border-default));
     border-radius: var(--xh-toolbar-radius, var(--xh-shape-surface));
     background: var(--xh-toolbar-bg, var(--xh-bg-surface));
@@ -21,6 +25,19 @@
   [data-scope='toolbar'][data-part='root'][data-orientation='vertical'] {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  /* —— 尺寸 —— */
+  /* 缺省档写在上面的基础规则里。工具条自己不定条目的高度与字号（那归条目的皮肤），
+     这里只换排布尺寸；缺省的 --xh-space-1 已经是控件间距那把尺的小档，容不下三档，故一律取空间尺 */
+  [data-scope='toolbar'][data-part='root'][data-size='sm'] {
+    --xh-_toolbar-gap: var(--xh-space-0_5);
+    --xh-_toolbar-p: var(--xh-space-0_5);
+  }
+
+  [data-scope='toolbar'][data-part='root'][data-size='lg'] {
+    --xh-_toolbar-gap: var(--xh-space-2);
+    --xh-_toolbar-p: var(--xh-space-2);
   }
 
   /* root 会在焦点进条前短暂拿到 tabindex=0，但它的 onFocus 立刻把焦点转投给条目，

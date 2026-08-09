@@ -37,6 +37,7 @@ const HEIGHT_CONVERTER = {
  * @attr {boolean} loading - 加载开关：属性在即开始，`loading="false"` 或摘掉即结束
  * @attr {string|number} height - 条子厚度：纯数字按像素，其余按 CSS 长度；默认 2px
  * @attr {string} color - 进度段颜色（任意 CSS 颜色）；不给就用皮肤的品牌色
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定进度段用哪族颜色；给了 color 就以 color 为准
  * @attr {boolean} trickle - 不确定进度时自行往前爬，默认开；`trickle="false"` 关掉
  * @attr {number} trickle-speed - 爬升节拍毫秒，默认 200；<=0 等同于关掉爬升
  * @attr {number} minimum - 起步值，默认 8
@@ -56,6 +57,7 @@ export class XhLoadingBarElement extends XhElement {
     loading: { converter: BOOLEAN_CONVERTER },
     height: { converter: HEIGHT_CONVERTER },
     color: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
     trickle: { converter: BOOLEAN_CONVERTER },
     trickleSpeed: { converter: NUMBER_CONVERTER, attribute: 'trickle-speed' },
     minimum: { converter: NUMBER_CONVERTER },
@@ -69,6 +71,7 @@ export class XhLoadingBarElement extends XhElement {
   declare loading?: boolean
   declare height?: string | number
   declare color?: string
+  declare tone?: string
   declare trickle?: boolean
   declare trickleSpeed?: number
   declare minimum?: number
@@ -90,6 +93,7 @@ export class XhLoadingBarElement extends XhElement {
       loading: this.loading,
       height: this.height,
       color: this.color,
+      tone: this.tone,
       trickle: this.trickle,
       trickleSpeed: this.trickleSpeed,
       minimum: this.minimum,

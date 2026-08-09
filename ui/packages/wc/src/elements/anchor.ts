@@ -26,6 +26,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} smooth - 点链接时平滑滚动到目标，默认关闭
  * @attr {'horizontal'|'vertical'} orientation - 列表轴向，默认 vertical
  * @attr {'ltr'|'rtl'} dir - 文字方向；不给则继承祖先
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 激活项变化；detail 为 `{ value: string | null }`
  * @csspart root - nav 地标，承载 aria-label
  * @csspart list - ul 容器，同时是指示条定位的参照系
@@ -46,6 +48,8 @@ export class XhAnchorElement extends XhElement {
     smooth: { converter: BOOLEAN_CONVERTER },
     orientation: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
     // 清单与文案是对象，只走 property
     targets: { attribute: false },
     translations: { attribute: false },
@@ -59,6 +63,8 @@ export class XhAnchorElement extends XhElement {
   declare smooth?: boolean
   declare orientation?: Orientation
   declare direction?: Direction
+  declare tone?: string
+  declare size?: string
   declare targets?: readonly string[]
   declare translations?: Partial<AnchorTranslations>
   declare scrollElement?: HTMLElement | null
@@ -84,6 +90,8 @@ export class XhAnchorElement extends XhElement {
       orientation: this.orientation,
       dir: this.direction,
       translations: this.translations,
+      tone: this.tone,
+      size: this.size,
       onValueChange: this.notify,
     }
   }

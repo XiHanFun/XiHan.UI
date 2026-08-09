@@ -50,6 +50,7 @@ placement 是请求值，空间不够时定位引擎会自动翻面；offset 调
 | `closeOnEscape` | `boolean` |  |  |
 | `closeOnInteractOutside` | `boolean` |  |  |
 | `translations` | `Partial<PopoverTranslations>` |  |  |
+| `size` | `string` |  | 尺寸：sm / md / lg，决定面板的内边距档位。 |
 | `onOpenChange` | `(details: PopoverOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
 ## 状态机

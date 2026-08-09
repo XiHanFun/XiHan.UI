@@ -25,6 +25,10 @@ export interface AccordionSchema extends MachineSchema {
     orientation?: Orientation
     /** 文字方向，默认 ltr；影响水平轴上 ArrowLeft/ArrowRight 的语义。 */
     dir?: Direction
+    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    tone?: string
+    /** 尺寸：sm / md / lg。 */
+    size?: string
     /** 展开集合变化回调。 */
     onValueChange?: (details: AccordionValueChangeDetails) => void
   }

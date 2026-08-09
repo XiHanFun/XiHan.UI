@@ -2,9 +2,30 @@
   /* 根节点是 nav 地标，不参与排版：整条目录的布局全在 list 上，
      这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
   [data-scope='anchor'][data-part='root'] {
+    /* 尺寸档只换这两个私有槽，链接从 root 继承它们，换档不必给每个部件各写一条选择器 */
+    --xh-_anchor-font-size: var(--xh-text-label-size);
+    --xh-_anchor-link-px: var(--xh-space-3);
+    /* 当前那一节的指示条与文字随语气走。没写 data-tone 时这两个槽都没被声明，退回原来的品牌色。
+       指示条是装饰性的色条，取柔和档；文字要压在普通背景上读，取语气的文字档。
+       聚焦环不在其列，它恒是 --xh-ring-focus */
+    --xh-_anchor-accent: var(--xh-_tone-soft, var(--xh-fg-brand));
+    --xh-_anchor-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand));
+
     color: var(--xh-anchor-fg, var(--xh-fg-muted));
-    font-size: var(--xh-anchor-font-size, var(--xh-text-label-size));
+    font-size: var(--xh-anchor-font-size, var(--xh-_anchor-font-size));
     line-height: var(--xh-anchor-leading, var(--xh-leading-normal));
+  }
+
+  /* —— 尺寸 —— */
+  /* 缺省档写在上面的基础规则里；链接的内边距走控件内边距那把尺，缺省的 --xh-space-3 即它的中档 */
+  [data-scope='anchor'][data-part='root'][data-size='sm'] {
+    --xh-_anchor-font-size: var(--xh-font-size-sm);
+    --xh-_anchor-link-px: var(--xh-control-px-sm);
+  }
+
+  [data-scope='anchor'][data-part='root'][data-size='lg'] {
+    --xh-_anchor-font-size: var(--xh-font-size-lg);
+    --xh-_anchor-link-px: var(--xh-control-px-lg);
   }
 
   /* 指示条的定位参照系（它是 absolute，量出来的偏移就是相对这里的）。
@@ -50,7 +71,7 @@
     /* 一节的标题可能很长，压不住会把整列撑开 */
     max-inline-size: var(--xh-anchor-link-max-w, 14rem);
     padding-block: var(--xh-anchor-link-py, var(--xh-space-1));
-    padding-inline: var(--xh-anchor-link-px, var(--xh-space-3));
+    padding-inline: var(--xh-anchor-link-px, var(--xh-_anchor-link-px));
     border-radius: var(--xh-anchor-link-radius, var(--xh-shape-control));
     color: inherit;
     white-space: nowrap;
@@ -76,7 +97,7 @@
   /* 当前那一节：颜色与字重都跟着变，不只靠指示条——
      指示条是可选部件，作者不渲染它时"当前在哪"仍然要看得出来 */
   [data-scope='anchor'][data-part='link'][data-active] {
-    color: var(--xh-anchor-link-fg-active, var(--xh-fg-brand));
+    color: var(--xh-anchor-link-fg-active, var(--xh-_anchor-accent-text));
     font-weight: var(--xh-anchor-link-font-weight-active, var(--xh-font-weight-medium));
   }
 
@@ -88,7 +109,7 @@
     inset-inline-start: calc(var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick)) * -1);
     inline-size: var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick));
     border-radius: var(--xh-anchor-indicator-radius, var(--xh-radius-full));
-    background: var(--xh-anchor-indicator-color, var(--xh-fg-brand));
+    background: var(--xh-anchor-indicator-color, var(--xh-_anchor-accent));
     transition:
       inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
       block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);

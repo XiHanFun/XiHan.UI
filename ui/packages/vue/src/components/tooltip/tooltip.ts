@@ -17,6 +17,8 @@ export const XhTooltipRoot = defineComponent({
     openDelay: { type: Number, default: undefined },
     closeDelay: { type: Number, default: undefined },
     disabled: Boolean,
+    tone: { type: String, default: undefined },
+    size: { type: String, default: undefined },
   },
   // open-change 携带 { open }；update:open 携带裸布尔，支持 v-model:open
   emits: ['open-change', 'update:open'],

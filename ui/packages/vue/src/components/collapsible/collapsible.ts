@@ -11,6 +11,7 @@ export const XhCollapsibleRoot = defineComponent({
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     disabled: Boolean,
+    size: { type: String, default: undefined },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
   emits: ['open-change', 'update:open'],

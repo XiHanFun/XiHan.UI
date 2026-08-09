@@ -19,6 +19,8 @@ export function connectBreadcrumb<T extends PropTypes>(
       'aria-label': label,
       // 只有作者显式给了才写
       'dir': props.dir,
+      'data-tone': props.tone,
+      'data-size': props.size,
     }),
 
     getListProps: () => normalize.element({

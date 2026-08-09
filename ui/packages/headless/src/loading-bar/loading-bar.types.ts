@@ -26,6 +26,8 @@ export interface LoadingBarSchema extends MachineSchema {
     height?: string | number
     /** 进度段颜色（任意 CSS 颜色）。不给就用皮肤的品牌色。 */
     color?: string
+    /** 语气：brand / neutral / success / warning / danger / info，决定进度段用哪族颜色。给了 color 就以 color 为准。 */
+    tone?: string
     /** 不确定进度时自行往前爬，默认开。关掉即停在起步值等宿主收尾。 */
     trickle?: boolean
     /** 爬升节拍毫秒，默认 200；<=0 或非有限数等同于关掉爬升。 */

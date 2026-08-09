@@ -52,6 +52,7 @@ orientation 决定方向键收哪一对键（另一轴原样放行给页面）�
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只改写水平主轴上左右方向键的语义。 |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
 | `disabled` | `boolean` |  | 整条禁用：条目全部转 aria-disabled，方向键不再接管。 |
+| `size` | `string` |  | 尺寸：sm / md / lg。工具条是布局容器，只换排布尺寸，不带语气。 |
 
 ## 状态机
 

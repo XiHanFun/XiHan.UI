@@ -100,6 +100,24 @@
             },
             {
               "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -189,6 +207,22 @@
               "description": "方向键轴向，默认 vertical",
               "name": "orientation",
               "fieldName": "orientation"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -483,6 +517,24 @@
             },
             {
               "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "targets",
               "privacy": "public",
               "type": {
@@ -611,6 +663,22 @@
               "description": "文字方向；不给则继承祖先",
               "name": "dir",
               "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -957,6 +1025,24 @@
             },
             {
               "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -982,6 +1068,22 @@
               "description": "文字方向，写到 root 上；不给则继承祖先",
               "name": "dir",
               "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -3418,6 +3520,15 @@
             },
             {
               "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -3480,6 +3591,14 @@
               "description": "禁用 trigger 切换",
               "name": "disabled",
               "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -8607,6 +8726,15 @@
             },
             {
               "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "idGen",
               "type": {
                 "text": "IdGenerator"
@@ -8776,6 +8904,14 @@
               "description": "只关掉卡片，trigger 本身仍可点、可聚焦",
               "name": "disabled",
               "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -9629,6 +9765,15 @@
             },
             {
               "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
               "name": "trickle",
               "privacy": "public",
               "type": {
@@ -9751,6 +9896,14 @@
               "description": "进度段颜色（任意 CSS 颜色）；不给就用皮肤的品牌色",
               "name": "color",
               "fieldName": "color"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气，决定进度段用哪族颜色；给了 color 就以 color 为准",
+              "name": "tone",
+              "fieldName": "tone"
             },
             {
               "type": {
@@ -11995,6 +12148,15 @@
             },
             {
               "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -12165,6 +12327,14 @@
               "description": "层外交互关闭，默认 true；写 \"false\" 关掉",
               "name": "close-on-interact-outside",
               "fieldName": "closeOnInteractOutside"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -19211,6 +19381,15 @@
             },
             {
               "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
@@ -19323,6 +19502,14 @@
               "description": "整条禁用：条目全转 aria-disabled，方向键不再接管",
               "name": "disabled",
               "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸：只换条目间距与整条内边距，条目自身的大小归条目",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {
@@ -19442,6 +19629,24 @@
                 "text": "boolean | undefined"
               },
               "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
             },
             {
               "kind": "field",
@@ -19566,6 +19771,22 @@
               "description": "只关掉提示，被包裹的控件仍可用",
               "name": "disabled",
               "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             }
           ],
           "superclass": {

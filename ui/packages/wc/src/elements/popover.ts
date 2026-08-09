@@ -28,6 +28,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} modal - 模态浮层陷住焦点并回绕 Tab，默认 false
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true；写 close-on-escape="false" 关掉
  * @attr {boolean} close-on-interact-outside - 层外交互关闭，默认 true；写 "false" 关掉
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart trigger - 触发按钮（aria-haspopup/aria-expanded/aria-controls 所在），同时是定位锚点
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
@@ -49,6 +50,7 @@ export class XhPopoverElement extends XhElement {
     modal: { converter: BOOLEAN_CONVERTER },
     closeOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-escape' },
     closeOnInteractOutside: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-interact-outside' },
+    size: { converter: STRING_CONVERTER },
     // 对象值进不了属性，只作为 property 暴露
     translations: { attribute: false },
   }
@@ -60,6 +62,7 @@ export class XhPopoverElement extends XhElement {
   declare modal?: boolean
   declare closeOnEscape?: boolean
   declare closeOnInteractOutside?: boolean
+  declare size?: string
   /** 关闭按钮的无障碍名；connect 每帧重写 aria-label，作者自己写在节点上会被盖掉，只能从这里给。 */
   declare translations?: Partial<PopoverTranslations>
 
@@ -89,6 +92,7 @@ export class XhPopoverElement extends XhElement {
       closeOnEscape: this.closeOnEscape,
       closeOnInteractOutside: this.closeOnInteractOutside,
       translations: this.translations,
+      size: this.size,
       onOpenChange: this.notify,
     }
   }

@@ -33,6 +33,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写水平主轴上左右方向键的语义，默认 ltr
  * @attr {boolean} loop - 方向键走到尽头回绕，默认开启；写 loop="false" 关掉
  * @attr {boolean} disabled - 整条禁用：条目全转 aria-disabled，方向键不再接管
+ * @attr {'sm'|'md'|'lg'} size - 尺寸：只换条目间距与整条内边距，条目自身的大小归条目
  * @csspart root - role=toolbar 的容器（键盘在此收口，也是 roving tabindex 的兜底位）
  * @csspart group - role=group 的小分组，装一串相关控件
  * @csspart item - 工具条条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
@@ -50,12 +51,14 @@ export class XhToolbarElement extends XhElement {
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     loop: { converter: BOOLEAN_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
+    size: { converter: STRING_CONVERTER },
   }
 
   declare orientation?: Orientation
   declare direction?: Direction
   declare loop?: boolean
   declare disabled?: boolean
+  declare size?: string
 
   // 整条禁用期间的条目自身声明快照。connect 每帧都把 aria-disabled 写回条目，整条禁用更是写满每一个，
   // 此时回读分不清「作者声明的」还是「自己上一帧写的」，解禁后条目就永远解不开。
@@ -73,6 +76,7 @@ export class XhToolbarElement extends XhElement {
       // 布尔一律原样透传：属性不在即 undefined，把缺省交回 connect（loop 默认开、disabled 默认关）
       loop: this.loop,
       disabled: this.disabled,
+      size: this.size,
     }
   }
 

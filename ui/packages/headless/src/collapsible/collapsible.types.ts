@@ -10,6 +10,8 @@ export interface CollapsibleSchema extends MachineSchema {
     open?: boolean
     defaultOpen?: boolean
     disabled?: boolean
+    /** 尺寸：sm / md / lg。 */
+    size?: string
     /** open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 */
     onOpenChange?: (details: CollapsibleOpenChangeDetails) => void
   }

@@ -62,6 +62,7 @@ export function connectToolbar<T extends PropTypes>(
       'aria-orientation': orientation,
       'aria-disabled': toolbarDisabled ? 'true' : 'false',
       'data-orientation': orientation,
+      'data-size': prop('size'),
       'data-disabled': dataAttr(toolbarDisabled),
       // 焦点在工具条外时容器兜底进 Tab 序列，由 onFocus 转投给条目。
       // 判据用 focusedValue 而非锚点：锚点可能指向已被删掉的条目，那时无人认领 tabindex=0。

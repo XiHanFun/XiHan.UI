@@ -17,6 +17,8 @@ export const XhAccordionRoot = defineComponent({
     orientation: { type: String as PropType<Orientation>, default: undefined },
     // 只改水平轴上左右键的语义，不写进 DOM
     dir: { type: String as PropType<Direction>, default: undefined },
+    tone: { type: String, default: undefined },
+    size: { type: String, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸数组
   emits: ['value-change', 'update:value'],

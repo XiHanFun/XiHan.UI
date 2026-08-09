@@ -45,6 +45,7 @@ disabled 把触发器整个关停，点击与键盘都不再改开合，已展�
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
 | `disabled` | `boolean` |  |  |
+| `size` | `string` |  | 尺寸：sm / md / lg。 |
 | `onOpenChange` | `(details: CollapsibleOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
 ## 状态机

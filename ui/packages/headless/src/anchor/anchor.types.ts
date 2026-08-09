@@ -61,6 +61,10 @@ export interface AnchorSchema extends MachineSchema {
     /** 列表轴向，默认 vertical，只影响样式。 */
     orientation?: Orientation
     translations?: Partial<AnchorTranslations>
+    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    tone?: string
+    /** 尺寸：sm / md / lg。 */
+    size?: string
     /** value 变化意图回调。 */
     onValueChange?: (details: AnchorValueChangeDetails) => void
   }

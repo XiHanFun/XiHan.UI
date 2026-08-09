@@ -32,16 +32,23 @@
   }
 
   [data-scope='tooltip'][data-part='content'] {
+    /* 尺寸档只换这三个私有槽。tooltip 没有 root 部件，两轴都落在浮层树最外层的 content 上，
+       箭头是它的后代，语气槽一并继承 */
+    --xh-_tooltip-py: var(--xh-space-1);
+    --xh-_tooltip-px: var(--xh-space-2);
+    --xh-_tooltip-font-size: var(--xh-font-size-sm);
+
     /* 与 positioner 相反：浮层本体要能接指针，指针停在提示上就不该收起
        （长文案需要停留细看）。positioner 仍是 none，空白区域照样点得穿。 */
     pointer-events: auto;
     max-inline-size: var(--xh-tooltip-max-w, var(--xh-overlay-max-w));
-    padding-block: var(--xh-tooltip-py, var(--xh-space-1));
-    padding-inline: var(--xh-tooltip-px, var(--xh-space-2));
+    padding-block: var(--xh-tooltip-py, var(--xh-_tooltip-py));
+    padding-inline: var(--xh-tooltip-px, var(--xh-_tooltip-px));
     border-radius: var(--xh-tooltip-radius, var(--xh-shape-control));
-    background: var(--xh-tooltip-bg, var(--xh-fg-default));
-    color: var(--xh-tooltip-fg, var(--xh-bg-surface));
-    font-size: var(--xh-tooltip-font-size, var(--xh-font-size-sm));
+    /* 实心底与其上的文字色随语气走。没写 data-tone 时两个槽都没被声明，退回原来的取值 */
+    background: var(--xh-tooltip-bg, var(--xh-_tone, var(--xh-fg-default)));
+    color: var(--xh-tooltip-fg, var(--xh-_tone-on, var(--xh-bg-surface)));
+    font-size: var(--xh-tooltip-font-size, var(--xh-_tooltip-font-size));
     line-height: var(--xh-leading-normal);
     box-shadow: var(--xh-tooltip-shadow, var(--xh-elevation-2));
   }
@@ -50,12 +57,27 @@
     animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
+  /* —— 尺寸 —— */
+  /* 缺省档写在 content 的基础规则里。提示的内边距与字号本就不在 control-* 那把尺上
+     （它是浮层不是控件），故按 space / font-size 档上下各挪一级 */
+  [data-scope='tooltip'][data-part='content'][data-size='sm'] {
+    --xh-_tooltip-py: var(--xh-space-0_5);
+    --xh-_tooltip-px: var(--xh-space-1_5);
+    --xh-_tooltip-font-size: var(--xh-font-size-xs);
+  }
+
+  [data-scope='tooltip'][data-part='content'][data-size='lg'] {
+    --xh-_tooltip-py: var(--xh-space-1_5);
+    --xh-_tooltip-px: var(--xh-space-2_5);
+    --xh-_tooltip-font-size: var(--xh-font-size-md);
+  }
+
   /* 箭头是旋转 45° 的方块，按落定朝向贴在 content 对侧边的中点 */
   [data-scope='tooltip'][data-part='arrow'] {
     position: absolute;
     inline-size: var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size));
     block-size: var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size));
-    background: var(--xh-tooltip-bg, var(--xh-fg-default));
+    background: var(--xh-tooltip-bg, var(--xh-_tone, var(--xh-fg-default)));
     transform: rotate(45deg);
   }
 
