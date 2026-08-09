@@ -1,6 +1,5 @@
 import { createRequire } from "node:module";
 import { DefaultTheme, HeadConfig, defineConfig } from "vitepress";
-import { unlayerSkin } from "./unlayer-skin";
 
 const require = createRequire(import.meta.url);
 
@@ -276,11 +275,6 @@ export default defineConfig({
   head: head,
   lastUpdated: true,
   cleanUrls: true,
-  vite: {
-    css: {
-      postcss: { plugins: [unlayerSkin()] },
-    },
-  },
   themeConfig: {
     logo: logo,
     socialLinks: [

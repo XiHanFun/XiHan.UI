@@ -1,8 +1,9 @@
 import { h, watch } from "vue";
 import Theme from "vitepress/theme";
 import XhDemo from "./XhDemo.vue";
-// 组件默认皮肤：文档里的示例渲染的就是发布出去的那套样式
-import "@xihan-ui/styled/index.css";
+// 组件默认皮肤：用无层版本。VitePress 自带无层的 button 重置，CSS 级联里无层
+// 声明胜过任何有层声明，皮肤若带 @layer 外壳会被整体压掉（见「安装与接入」）。
+import "@xihan-ui/styled/index.unlayered.css";
 import "./rainbow.css";
 import "./vars.css";
 import "./overrides.css";
