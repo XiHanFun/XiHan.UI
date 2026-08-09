@@ -15,7 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # 仓库根没有 package.json，action 默认在根找 packageManager 会失败；
+      # 指向工作区的清单，pnpm 版本仍以 ui/package.json 为唯一事实源
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: ui/package.json
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -57,7 +61,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # 仓库根没有 package.json，action 默认在根找 packageManager 会失败；
+      # 指向工作区的清单，pnpm 版本仍以 ui/package.json 为唯一事实源
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: ui/package.json
       - uses: actions/setup-node@v4
         with:
           node-version: 24
