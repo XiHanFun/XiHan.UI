@@ -12,6 +12,8 @@ export const XhBreadcrumbRoot = defineComponent({
   props: {
     dir: { type: String as PropType<Direction>, default: undefined },
     translations: { type: Object as PropType<Partial<BreadcrumbTranslations>>, default: undefined },
+    tone: { type: String, default: undefined },
+    size: { type: String, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useBreadcrumb(props as BreadcrumbProps)

@@ -19,6 +19,7 @@ export const XhHoverCardRoot = defineComponent({
     closeDelay: { type: Number, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     disabled: Boolean,
+    size: { type: String, default: undefined },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
   emits: ['open-change', 'update:open'],

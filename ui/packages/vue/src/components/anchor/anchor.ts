@@ -20,6 +20,8 @@ export const XhAnchorRoot = defineComponent({
     orientation: { type: String as PropType<Orientation>, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     translations: { type: Object as PropType<Partial<AnchorTranslations>>, default: undefined },
+    tone: { type: String, default: undefined },
+    size: { type: String, default: undefined },
     /** 判定线所依附的滚动容器，缺省挂在窗口上；经 refs 交给观察器。 */
     scrollElement: { type: Object as PropType<HTMLElement | null>, default: undefined },
   },

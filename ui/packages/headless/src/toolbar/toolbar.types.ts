@@ -24,6 +24,8 @@ export interface ToolbarSchema extends MachineSchema {
     loop?: boolean
     /** 整条禁用：条目全部转 aria-disabled，方向键不再接管。 */
     disabled?: boolean
+    /** 尺寸：sm / md / lg。工具条是布局容器，只换排布尺寸，不带语气。 */
+    size?: string
   }
   context: {
     /**

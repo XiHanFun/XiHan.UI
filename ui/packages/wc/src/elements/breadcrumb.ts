@@ -21,6 +21,8 @@ function authorFlag(el: HTMLElement, name: string): boolean {
  *
  * @customElement xh-breadcrumb
  * @attr {'ltr'|'rtl'} dir - 文字方向，写到 root 上；不给则继承祖先
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @csspart root - nav 地标，承载 aria-label
  * @csspart list - ol 容器
  * @csspart item - li 条目
@@ -35,17 +37,23 @@ export class XhBreadcrumbElement extends XhElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
     // 文案是对象，只走 property
     translations: { attribute: false },
   }
 
   declare direction?: Direction
+  declare tone?: string
+  declare size?: string
   declare translations?: Partial<BreadcrumbTranslations>
 
   protected wire(): void {
     const props: BreadcrumbProps = {
       dir: this.direction,
       translations: this.translations,
+      tone: this.tone,
+      size: this.size,
     }
     const api = connectBreadcrumb(props, wcNormalize)
 

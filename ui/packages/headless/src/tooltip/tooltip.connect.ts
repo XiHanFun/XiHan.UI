@@ -70,6 +70,9 @@ export function connectTooltip<T extends PropTypes>(
       'id': ids.content,
       'role': 'tooltip',
       'data-state': stateAttr,
+      // tooltip 没有 root 部件，视觉轴落在浮层树最外层的 content 上，箭头继承它声明的私有槽
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'hidden': !open || undefined,
       'onPointerenter': () => send({ type: 'POINTER.ENTER' }),
       'onPointerleave': () => send({ type: 'POINTER.LEAVE' }),

@@ -10,6 +10,10 @@ export interface BreadcrumbProps {
   /** 文字方向，只作用于排版；作者没给就不写。 */
   dir?: Direction
   translations?: Partial<BreadcrumbTranslations>
+  /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+  tone?: string
+  /** 尺寸：sm / md / lg。 */
+  size?: string
 }
 
 /**

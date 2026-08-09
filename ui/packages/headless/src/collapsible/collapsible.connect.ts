@@ -27,6 +27,7 @@ export function connectCollapsible<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': stateAttr,
+      'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
     }),
     getTriggerProps: () => normalize.button({

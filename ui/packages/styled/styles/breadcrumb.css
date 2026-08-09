@@ -2,9 +2,29 @@
   /* 根节点是 nav 地标，不参与排版：整条路径的行为全在 list 上，
      这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
   [data-scope='breadcrumb'][data-part='root'] {
+    /* 尺寸档只换这两个私有槽，列表与链接都从 root 继承它们，换档不必给每个部件各写一条选择器 */
+    --xh-_breadcrumb-font-size: var(--xh-text-label-size);
+    --xh-_breadcrumb-gap: var(--xh-space-2);
+    /* 当前项与链接悬停的强调色随语气走。没写 data-tone 时 --xh-_tone-fg 没被声明，
+       退回原来的前景色。聚焦环不在其列，它恒是 --xh-ring-focus */
+    --xh-_breadcrumb-accent-text: var(--xh-_tone-fg, var(--xh-fg-default));
+
     color: var(--xh-breadcrumb-fg, var(--xh-fg-muted));
-    font-size: var(--xh-breadcrumb-font-size, var(--xh-text-label-size));
+    font-size: var(--xh-breadcrumb-font-size, var(--xh-_breadcrumb-font-size));
     line-height: var(--xh-breadcrumb-leading, var(--xh-leading-tight));
+  }
+
+  /* —— 尺寸 —— */
+  /* 缺省档写在上面的基础规则里。间距量的是路径里文字与分隔符之间的距离，
+     不在控件间距那把尺上（那把尺的大档与中档同值），三档一律取空间尺 */
+  [data-scope='breadcrumb'][data-part='root'][data-size='sm'] {
+    --xh-_breadcrumb-font-size: var(--xh-font-size-sm);
+    --xh-_breadcrumb-gap: var(--xh-space-1_5);
+  }
+
+  [data-scope='breadcrumb'][data-part='root'][data-size='lg'] {
+    --xh-_breadcrumb-font-size: var(--xh-font-size-lg);
+    --xh-_breadcrumb-gap: var(--xh-space-3);
   }
 
   /* ol 的项目符号与内外边距是 UA 给的，库里没有全局 preflight，只能在这儿自己抹平 */
@@ -13,7 +33,7 @@
     align-items: center;
     /* 层级多到一行放不下就换行：宁可折行，也不要把路径压扁或撑出横向滚动 */
     flex-wrap: wrap;
-    gap: var(--xh-breadcrumb-gap, var(--xh-space-2));
+    gap: var(--xh-breadcrumb-gap, var(--xh-_breadcrumb-gap));
     margin: 0;
     padding: 0;
     list-style: none;
@@ -60,7 +80,7 @@
      连接层同时拦下了它的点击并把它移出了 Tab 序列，这里只负责说清楚这件事 */
   [data-scope='breadcrumb'][data-part='link']:not([data-current]):hover {
     background: var(--xh-breadcrumb-link-bg-hover, var(--xh-bg-subtle-hover));
-    color: var(--xh-breadcrumb-link-fg-hover, var(--xh-fg-default));
+    color: var(--xh-breadcrumb-link-fg-hover, var(--xh-_breadcrumb-accent-text));
   }
 
   [data-scope='breadcrumb'][data-part='link']:focus-visible {
@@ -70,7 +90,7 @@
 
   /* 当前页用字重与前景色区分，不加下划线：下划线是"可点"的信号，而它点不动 */
   [data-scope='breadcrumb'][data-part='link'][data-current] {
-    color: var(--xh-breadcrumb-current-fg, var(--xh-fg-default));
+    color: var(--xh-breadcrumb-current-fg, var(--xh-_breadcrumb-accent-text));
     font-weight: var(--xh-breadcrumb-current-font-weight, var(--xh-font-weight-medium));
     cursor: default;
   }

@@ -100,6 +100,8 @@ export function connectHoverCard<T extends PropTypes>(
       'aria-labelledby': ids.trigger,
       'data-state': stateAttr,
       'data-placement': placement,
+      // 尺寸轴落在 content 上而非 root：root 是可选部件，面板几何也长在 content 上
+      'data-size': prop('size'),
       'hidden': !open || undefined,
       // 指针移入卡片即撤销收起等待
       'onPointerenter': () => send({ type: 'POINTER.ENTER' }),

@@ -29,6 +29,8 @@ export function connectAnchor<T extends PropTypes>(
       ...parts.root.attrs,
       'aria-label': label,
       'data-orientation': orientation,
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       // 只在作者显式给了时才写：写死 ltr 会切断从 RTL 祖先继承来的方向
       'dir': prop('dir'),
     }),

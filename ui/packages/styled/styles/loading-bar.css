@@ -43,11 +43,15 @@
 
   /*
    * 进度段。宽度那条轴（inline-size）由连接层写进内联样式，这里绝不重复写。
-   * 背景色同理：给了 color 就走内联，这里只提供缺省的品牌色。
+   * 背景色同理：给了 color 就走内联，盖过下面这条。
+   *
+   * 语气取柔和档 --xh-_tone-soft（500）而不是 --xh-_tone（600）：600 是给实心底与
+   * 文字用的强调档，压在这么一条细带上偏重。槽位由 root 上的 data-tone 声明，继承下来。
+   * 没写 data-tone 时该槽没被声明，退回原来的品牌色。
    */
   [data-scope='loading-bar'][data-part='range'] {
     block-size: 100%;
-    background: var(--xh-loading-bar-range, var(--xh-bg-brand));
+    background: var(--xh-loading-bar-range, var(--xh-_tone-soft, var(--xh-bg-brand)));
     transition: inline-size var(--xh-loading-bar-speed, var(--xh-motion-duration-enter)) var(--xh-motion-ease-enter);
   }
 

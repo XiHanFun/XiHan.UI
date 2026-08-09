@@ -570,6 +570,17 @@
 
 /* styles/accordion.css */
 [data-scope='accordion'][data-part='root'] {
+  /* 尺寸档只换这四个私有槽，标题栏从 root 继承它们，换档不必给每个部件各写一条选择器 */
+  --xh-_accordion-trigger-h: var(--xh-control-h-md);
+  --xh-_accordion-trigger-px: var(--xh-control-px-md);
+  --xh-_accordion-trigger-gap: var(--xh-control-gap-md);
+  --xh-_accordion-trigger-font-size: var(--xh-text-label-size);
+
+  /* 语气落在展开着的标题上，指示器写在标题里、跟着继承这个色，不另立规则。
+     没写 data-tone 时 --xh-_tone-fg 没被声明，退回原来的前景色。
+     聚焦环不在其列，它恒是 --xh-ring-focus */
+  --xh-_accordion-open-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+
   display: flex;
   flex-direction: column;
   inline-size: 100%;
@@ -577,6 +588,22 @@
 
 [data-scope='accordion'][data-part='root'][data-orientation='horizontal'] {
   flex-direction: row;
+}
+
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里 */
+[data-scope='accordion'][data-part='root'][data-size='sm'] {
+  --xh-_accordion-trigger-h: var(--xh-control-h-sm);
+  --xh-_accordion-trigger-px: var(--xh-control-px-sm);
+  --xh-_accordion-trigger-gap: var(--xh-control-gap-sm);
+  --xh-_accordion-trigger-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='accordion'][data-part='root'][data-size='lg'] {
+  --xh-_accordion-trigger-h: var(--xh-control-h-lg);
+  --xh-_accordion-trigger-px: var(--xh-control-px-lg);
+  --xh-_accordion-trigger-gap: var(--xh-control-gap-lg);
+  --xh-_accordion-trigger-font-size: var(--xh-font-size-lg);
 }
 
 [data-scope='accordion'][data-part='item'] {
@@ -594,14 +621,14 @@
   align-items: center;
   justify-content: space-between;
   inline-size: 100%;
-  gap: var(--xh-accordion-trigger-gap, var(--xh-control-gap-md));
-  block-size: var(--xh-accordion-trigger-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-accordion-trigger-px, var(--xh-control-px-md));
+  gap: var(--xh-accordion-trigger-gap, var(--xh-_accordion-trigger-gap));
+  block-size: var(--xh-accordion-trigger-h, var(--xh-_accordion-trigger-h));
+  padding-inline: var(--xh-accordion-trigger-px, var(--xh-_accordion-trigger-px));
   border: 0;
   border-radius: var(--xh-accordion-trigger-radius, var(--xh-shape-control));
   background: var(--xh-accordion-trigger-bg, transparent);
   color: var(--xh-accordion-trigger-fg, var(--xh-fg-default));
-  font-size: var(--xh-accordion-trigger-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-accordion-trigger-font-size, var(--xh-_accordion-trigger-font-size));
   font-weight: var(--xh-accordion-trigger-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
   cursor: pointer;
@@ -614,6 +641,10 @@
 [data-scope='accordion'][data-part='trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: 2px;
+}
+
+[data-scope='accordion'][data-part='trigger'][data-state='open'] {
+  color: var(--xh-accordion-trigger-fg, var(--xh-_accordion-open-fg));
 }
 
 /* 禁用条目走 aria-disabled，仍留在 Tab 序里，只是不可操作 */
@@ -649,9 +680,30 @@
 /* 根节点是 nav 地标，不参与排版：整条目录的布局全在 list 上，
    这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
 [data-scope='anchor'][data-part='root'] {
+  /* 尺寸档只换这两个私有槽，链接从 root 继承它们，换档不必给每个部件各写一条选择器 */
+  --xh-_anchor-font-size: var(--xh-text-label-size);
+  --xh-_anchor-link-px: var(--xh-space-3);
+  /* 当前那一节的指示条与文字随语气走。没写 data-tone 时这两个槽都没被声明，退回原来的品牌色。
+     指示条是装饰性的色条，取柔和档；文字要压在普通背景上读，取语气的文字档。
+     聚焦环不在其列，它恒是 --xh-ring-focus */
+  --xh-_anchor-accent: var(--xh-_tone-soft, var(--xh-fg-brand));
+  --xh-_anchor-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand));
+
   color: var(--xh-anchor-fg, var(--xh-fg-muted));
-  font-size: var(--xh-anchor-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-anchor-font-size, var(--xh-_anchor-font-size));
   line-height: var(--xh-anchor-leading, var(--xh-leading-normal));
+}
+
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里；链接的内边距走控件内边距那把尺，缺省的 --xh-space-3 即它的中档 */
+[data-scope='anchor'][data-part='root'][data-size='sm'] {
+  --xh-_anchor-font-size: var(--xh-font-size-sm);
+  --xh-_anchor-link-px: var(--xh-control-px-sm);
+}
+
+[data-scope='anchor'][data-part='root'][data-size='lg'] {
+  --xh-_anchor-font-size: var(--xh-font-size-lg);
+  --xh-_anchor-link-px: var(--xh-control-px-lg);
 }
 
 /* 指示条的定位参照系（它是 absolute，量出来的偏移就是相对这里的）。
@@ -697,7 +749,7 @@
   /* 一节的标题可能很长，压不住会把整列撑开 */
   max-inline-size: var(--xh-anchor-link-max-w, 14rem);
   padding-block: var(--xh-anchor-link-py, var(--xh-space-1));
-  padding-inline: var(--xh-anchor-link-px, var(--xh-space-3));
+  padding-inline: var(--xh-anchor-link-px, var(--xh-_anchor-link-px));
   border-radius: var(--xh-anchor-link-radius, var(--xh-shape-control));
   color: inherit;
   white-space: nowrap;
@@ -723,7 +775,7 @@
 /* 当前那一节：颜色与字重都跟着变，不只靠指示条——
    指示条是可选部件，作者不渲染它时"当前在哪"仍然要看得出来 */
 [data-scope='anchor'][data-part='link'][data-active] {
-  color: var(--xh-anchor-link-fg-active, var(--xh-fg-brand));
+  color: var(--xh-anchor-link-fg-active, var(--xh-_anchor-accent-text));
   font-weight: var(--xh-anchor-link-font-weight-active, var(--xh-font-weight-medium));
 }
 
@@ -735,7 +787,7 @@
   inset-inline-start: calc(var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick)) * -1);
   inline-size: var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick));
   border-radius: var(--xh-anchor-indicator-radius, var(--xh-radius-full));
-  background: var(--xh-anchor-indicator-color, var(--xh-fg-brand));
+  background: var(--xh-anchor-indicator-color, var(--xh-_anchor-accent));
   transition:
     inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
     block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
@@ -866,9 +918,29 @@
 /* 根节点是 nav 地标，不参与排版：整条路径的行为全在 list 上，
    这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
 [data-scope='breadcrumb'][data-part='root'] {
+  /* 尺寸档只换这两个私有槽，列表与链接都从 root 继承它们，换档不必给每个部件各写一条选择器 */
+  --xh-_breadcrumb-font-size: var(--xh-text-label-size);
+  --xh-_breadcrumb-gap: var(--xh-space-2);
+  /* 当前项与链接悬停的强调色随语气走。没写 data-tone 时 --xh-_tone-fg 没被声明，
+     退回原来的前景色。聚焦环不在其列，它恒是 --xh-ring-focus */
+  --xh-_breadcrumb-accent-text: var(--xh-_tone-fg, var(--xh-fg-default));
+
   color: var(--xh-breadcrumb-fg, var(--xh-fg-muted));
-  font-size: var(--xh-breadcrumb-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-breadcrumb-font-size, var(--xh-_breadcrumb-font-size));
   line-height: var(--xh-breadcrumb-leading, var(--xh-leading-tight));
+}
+
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里。间距量的是路径里文字与分隔符之间的距离，
+   不在控件间距那把尺上（那把尺的大档与中档同值），三档一律取空间尺 */
+[data-scope='breadcrumb'][data-part='root'][data-size='sm'] {
+  --xh-_breadcrumb-font-size: var(--xh-font-size-sm);
+  --xh-_breadcrumb-gap: var(--xh-space-1_5);
+}
+
+[data-scope='breadcrumb'][data-part='root'][data-size='lg'] {
+  --xh-_breadcrumb-font-size: var(--xh-font-size-lg);
+  --xh-_breadcrumb-gap: var(--xh-space-3);
 }
 
 /* ol 的项目符号与内外边距是 UA 给的，库里没有全局 preflight，只能在这儿自己抹平 */
@@ -877,7 +949,7 @@
   align-items: center;
   /* 层级多到一行放不下就换行：宁可折行，也不要把路径压扁或撑出横向滚动 */
   flex-wrap: wrap;
-  gap: var(--xh-breadcrumb-gap, var(--xh-space-2));
+  gap: var(--xh-breadcrumb-gap, var(--xh-_breadcrumb-gap));
   margin: 0;
   padding: 0;
   list-style: none;
@@ -924,7 +996,7 @@
    连接层同时拦下了它的点击并把它移出了 Tab 序列，这里只负责说清楚这件事 */
 [data-scope='breadcrumb'][data-part='link']:not([data-current]):hover {
   background: var(--xh-breadcrumb-link-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-breadcrumb-link-fg-hover, var(--xh-fg-default));
+  color: var(--xh-breadcrumb-link-fg-hover, var(--xh-_breadcrumb-accent-text));
 }
 
 [data-scope='breadcrumb'][data-part='link']:focus-visible {
@@ -934,7 +1006,7 @@
 
 /* 当前页用字重与前景色区分，不加下划线：下划线是"可点"的信号，而它点不动 */
 [data-scope='breadcrumb'][data-part='link'][data-current] {
-  color: var(--xh-breadcrumb-current-fg, var(--xh-fg-default));
+  color: var(--xh-breadcrumb-current-fg, var(--xh-_breadcrumb-accent-text));
   font-weight: var(--xh-breadcrumb-current-font-weight, var(--xh-font-weight-medium));
   cursor: default;
 }
@@ -2363,19 +2435,44 @@
 }
 
 /* styles/collapsible.css */
+/* 根容器自己不排版，这条只声明尺寸档的私有槽：触发按钮从 root 继承它们，
+   换档不必给部件各写一条选择器 */
+[data-scope='collapsible'][data-part='root'] {
+  --xh-_collapsible-trigger-h: var(--xh-control-h-md);
+  --xh-_collapsible-trigger-px: var(--xh-control-px-md);
+  --xh-_collapsible-trigger-gap: var(--xh-control-gap-md);
+  --xh-_collapsible-trigger-font-size: var(--xh-text-label-size);
+}
+
+/* —— 尺寸 —— */
+/* 缺省档写在上面那条里 */
+[data-scope='collapsible'][data-part='root'][data-size='sm'] {
+  --xh-_collapsible-trigger-h: var(--xh-control-h-sm);
+  --xh-_collapsible-trigger-px: var(--xh-control-px-sm);
+  --xh-_collapsible-trigger-gap: var(--xh-control-gap-sm);
+  --xh-_collapsible-trigger-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='collapsible'][data-part='root'][data-size='lg'] {
+  --xh-_collapsible-trigger-h: var(--xh-control-h-lg);
+  --xh-_collapsible-trigger-px: var(--xh-control-px-lg);
+  --xh-_collapsible-trigger-gap: var(--xh-control-gap-lg);
+  --xh-_collapsible-trigger-font-size: var(--xh-font-size-lg);
+}
+
 [data-scope='collapsible'][data-part='trigger'] {
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
   inline-size: 100%;
-  gap: var(--xh-collapsible-trigger-gap, var(--xh-control-gap-md));
-  block-size: var(--xh-collapsible-trigger-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-collapsible-trigger-px, var(--xh-control-px-md));
+  gap: var(--xh-collapsible-trigger-gap, var(--xh-_collapsible-trigger-gap));
+  block-size: var(--xh-collapsible-trigger-h, var(--xh-_collapsible-trigger-h));
+  padding-inline: var(--xh-collapsible-trigger-px, var(--xh-_collapsible-trigger-px));
   border: 0;
   border-radius: var(--xh-collapsible-trigger-radius, var(--xh-shape-control));
   background: var(--xh-collapsible-trigger-bg, transparent);
   color: var(--xh-collapsible-trigger-fg, var(--xh-fg-default));
-  font-size: var(--xh-collapsible-trigger-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-collapsible-trigger-font-size, var(--xh-_collapsible-trigger-font-size));
   font-weight: var(--xh-collapsible-trigger-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
   cursor: pointer;
@@ -5366,14 +5463,19 @@
 /* 与 tooltip 不同：卡片本体承载交互，必须吃指针——
    指针停在卡片上就不该收起，里面的链接与按钮也要点得到 */
 [data-scope='hover-card'][data-part='content'] {
+  /* 尺寸档只换这两个私有槽。size 落在 content 上而非 root：root 是可选部件，
+     面板几何也长在 content 上。语气不接：卡片是内容容器，语气该由里面的内容表达 */
+  --xh-_hover-card-py: var(--xh-space-3);
+  --xh-_hover-card-px: var(--xh-control-px-md);
+
   position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--xh-hover-card-gap, var(--xh-space-2));
   inline-size: max-content;
   max-inline-size: var(--xh-hover-card-max-w, var(--xh-overlay-max-w));
-  padding-block: var(--xh-hover-card-py, var(--xh-space-3));
-  padding-inline: var(--xh-hover-card-px, var(--xh-control-px-md));
+  padding-block: var(--xh-hover-card-py, var(--xh-_hover-card-py));
+  padding-inline: var(--xh-hover-card-px, var(--xh-_hover-card-px));
   border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-border-default));
   border-radius: var(--xh-hover-card-radius, var(--xh-shape-surface));
   background: var(--xh-hover-card-bg, var(--xh-bg-surface));
@@ -5396,6 +5498,19 @@
 
 [data-scope='hover-card'][data-part='content'][data-state='open'] {
   animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+}
+
+/* —— 尺寸 —— */
+/* 缺省档写在 content 的基础规则里；行内内缩本就取 control-px 那把尺，上下各挪一档，
+   纵向内缩按 space 档同步 */
+[data-scope='hover-card'][data-part='content'][data-size='sm'] {
+  --xh-_hover-card-py: var(--xh-space-2);
+  --xh-_hover-card-px: var(--xh-control-px-sm);
+}
+
+[data-scope='hover-card'][data-part='content'][data-size='lg'] {
+  --xh-_hover-card-py: var(--xh-space-4);
+  --xh-_hover-card-px: var(--xh-control-px-lg);
 }
 
 /* 箭头是旋转 45° 的方块，只保留朝向锚点那两条边的描边；
@@ -5746,11 +5861,15 @@
 
 /*
  * 进度段。宽度那条轴（inline-size）由连接层写进内联样式，这里绝不重复写。
- * 背景色同理：给了 color 就走内联，这里只提供缺省的品牌色。
+ * 背景色同理：给了 color 就走内联，盖过下面这条。
+ *
+ * 语气取柔和档 --xh-_tone-soft（500）而不是 --xh-_tone（600）：600 是给实心底与
+ * 文字用的强调档，压在这么一条细带上偏重。槽位由 root 上的 data-tone 声明，继承下来。
+ * 没写 data-tone 时该槽没被声明，退回原来的品牌色。
  */
 [data-scope='loading-bar'][data-part='range'] {
   block-size: 100%;
-  background: var(--xh-loading-bar-range, var(--xh-bg-brand));
+  background: var(--xh-loading-bar-range, var(--xh-_tone-soft, var(--xh-bg-brand)));
   transition: inline-size var(--xh-loading-bar-speed, var(--xh-motion-duration-enter)) var(--xh-motion-ease-enter);
 }
 
@@ -6968,14 +7087,19 @@
 }
 
 [data-scope='popover'][data-part='content'] {
+  /* 尺寸档只换这两个私有槽。popover 没有 root 部件，size 落在浮层树最外层的 content 上。
+     语气不接：面板是内容容器，语气该由里面的内容表达 */
+  --xh-_popover-py: var(--xh-space-3);
+  --xh-_popover-px: var(--xh-control-px-md);
+
   position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--xh-popover-gap, var(--xh-space-2));
   inline-size: max-content;
   max-inline-size: var(--xh-popover-max-w, var(--xh-overlay-max-w));
-  padding-block: var(--xh-popover-py, var(--xh-space-3));
-  padding-inline: var(--xh-popover-px, var(--xh-control-px-md));
+  padding-block: var(--xh-popover-py, var(--xh-_popover-py));
+  padding-inline: var(--xh-popover-px, var(--xh-_popover-px));
   border: var(--xh-stroke-thin) solid var(--xh-popover-border, var(--xh-border-default));
   border-radius: var(--xh-popover-radius, var(--xh-shape-surface));
   background: var(--xh-popover-bg, var(--xh-bg-surface));
@@ -6995,6 +7119,19 @@
 
 [data-scope='popover'][data-part='content'][data-state='open'] {
   animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+}
+
+/* —— 尺寸 —— */
+/* 缺省档写在 content 的基础规则里；行内内缩本就取 control-px 那把尺，上下各挪一档，
+   纵向内缩按 space 档同步 */
+[data-scope='popover'][data-part='content'][data-size='sm'] {
+  --xh-_popover-py: var(--xh-space-2);
+  --xh-_popover-px: var(--xh-control-px-sm);
+}
+
+[data-scope='popover'][data-part='content'][data-size='lg'] {
+  --xh-_popover-py: var(--xh-space-4);
+  --xh-_popover-px: var(--xh-control-px-lg);
 }
 
 [data-scope='popover'][data-part='title'] {
@@ -10711,11 +10848,15 @@
 /* 一条控件带：条目之间留固定间距，分隔线再把它们切成语义上的几段。
    排布只能读 data-orientation——它与 aria-orientation 同源，但样式不该去读 ARIA */
 [data-scope='toolbar'][data-part='root'] {
+  /* 尺寸档只换这两个私有槽：条目之间的间距，与整条的内边距 */
+  --xh-_toolbar-gap: var(--xh-space-1);
+  --xh-_toolbar-p: var(--xh-space-1);
+
   display: flex;
   align-items: center;
-  gap: var(--xh-toolbar-gap, var(--xh-space-1));
-  padding-block: var(--xh-toolbar-py, var(--xh-space-1));
-  padding-inline: var(--xh-toolbar-px, var(--xh-space-1));
+  gap: var(--xh-toolbar-gap, var(--xh-_toolbar-gap));
+  padding-block: var(--xh-toolbar-py, var(--xh-_toolbar-p));
+  padding-inline: var(--xh-toolbar-px, var(--xh-_toolbar-p));
   border: var(--xh-stroke-thin) solid var(--xh-toolbar-border, var(--xh-border-default));
   border-radius: var(--xh-toolbar-radius, var(--xh-shape-surface));
   background: var(--xh-toolbar-bg, var(--xh-bg-surface));
@@ -10730,6 +10871,19 @@
 [data-scope='toolbar'][data-part='root'][data-orientation='vertical'] {
   flex-direction: column;
   align-items: stretch;
+}
+
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里。工具条自己不定条目的高度与字号（那归条目的皮肤），
+   这里只换排布尺寸；缺省的 --xh-space-1 已经是控件间距那把尺的小档，容不下三档，故一律取空间尺 */
+[data-scope='toolbar'][data-part='root'][data-size='sm'] {
+  --xh-_toolbar-gap: var(--xh-space-0_5);
+  --xh-_toolbar-p: var(--xh-space-0_5);
+}
+
+[data-scope='toolbar'][data-part='root'][data-size='lg'] {
+  --xh-_toolbar-gap: var(--xh-space-2);
+  --xh-_toolbar-p: var(--xh-space-2);
 }
 
 /* root 会在焦点进条前短暂拿到 tabindex=0，但它的 onFocus 立刻把焦点转投给条目，
@@ -10838,16 +10992,23 @@
 }
 
 [data-scope='tooltip'][data-part='content'] {
+  /* 尺寸档只换这三个私有槽。tooltip 没有 root 部件，两轴都落在浮层树最外层的 content 上，
+     箭头是它的后代，语气槽一并继承 */
+  --xh-_tooltip-py: var(--xh-space-1);
+  --xh-_tooltip-px: var(--xh-space-2);
+  --xh-_tooltip-font-size: var(--xh-font-size-sm);
+
   /* 与 positioner 相反：浮层本体要能接指针，指针停在提示上就不该收起
      （长文案需要停留细看）。positioner 仍是 none，空白区域照样点得穿。 */
   pointer-events: auto;
   max-inline-size: var(--xh-tooltip-max-w, var(--xh-overlay-max-w));
-  padding-block: var(--xh-tooltip-py, var(--xh-space-1));
-  padding-inline: var(--xh-tooltip-px, var(--xh-space-2));
+  padding-block: var(--xh-tooltip-py, var(--xh-_tooltip-py));
+  padding-inline: var(--xh-tooltip-px, var(--xh-_tooltip-px));
   border-radius: var(--xh-tooltip-radius, var(--xh-shape-control));
-  background: var(--xh-tooltip-bg, var(--xh-fg-default));
-  color: var(--xh-tooltip-fg, var(--xh-bg-surface));
-  font-size: var(--xh-tooltip-font-size, var(--xh-font-size-sm));
+  /* 实心底与其上的文字色随语气走。没写 data-tone 时两个槽都没被声明，退回原来的取值 */
+  background: var(--xh-tooltip-bg, var(--xh-_tone, var(--xh-fg-default)));
+  color: var(--xh-tooltip-fg, var(--xh-_tone-on, var(--xh-bg-surface)));
+  font-size: var(--xh-tooltip-font-size, var(--xh-_tooltip-font-size));
   line-height: var(--xh-leading-normal);
   box-shadow: var(--xh-tooltip-shadow, var(--xh-elevation-2));
 }
@@ -10856,12 +11017,27 @@
   animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
+/* —— 尺寸 —— */
+/* 缺省档写在 content 的基础规则里。提示的内边距与字号本就不在 control-* 那把尺上
+   （它是浮层不是控件），故按 space / font-size 档上下各挪一级 */
+[data-scope='tooltip'][data-part='content'][data-size='sm'] {
+  --xh-_tooltip-py: var(--xh-space-0_5);
+  --xh-_tooltip-px: var(--xh-space-1_5);
+  --xh-_tooltip-font-size: var(--xh-font-size-xs);
+}
+
+[data-scope='tooltip'][data-part='content'][data-size='lg'] {
+  --xh-_tooltip-py: var(--xh-space-1_5);
+  --xh-_tooltip-px: var(--xh-space-2_5);
+  --xh-_tooltip-font-size: var(--xh-font-size-md);
+}
+
 /* 箭头是旋转 45° 的方块，按落定朝向贴在 content 对侧边的中点 */
 [data-scope='tooltip'][data-part='arrow'] {
   position: absolute;
   inline-size: var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size));
   block-size: var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size));
-  background: var(--xh-tooltip-bg, var(--xh-fg-default));
+  background: var(--xh-tooltip-bg, var(--xh-_tone, var(--xh-fg-default)));
   transform: rotate(45deg);
 }
 

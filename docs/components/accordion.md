@@ -54,6 +54,8 @@ indicator 的朝向由 data-state 驱动，禁用项点不动、方向键也跳�
 | `collapsible` | `boolean` |  | 允许把最后一个展开项收起，默认 false。 |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 vertical。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；影响水平轴上 ArrowLeft/ArrowRight 的语义。 |
+| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `size` | `string` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: AccordionValueChangeDetails) => void` |  | 展开集合变化回调。 |
 
 ## 状态机

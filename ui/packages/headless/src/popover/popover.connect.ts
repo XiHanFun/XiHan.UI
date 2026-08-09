@@ -59,6 +59,8 @@ export function connectPopover<T extends PropTypes>(
       'aria-describedby': ids.description,
       'data-state': stateAttr,
       'data-placement': placement,
+      // popover 没有 root 部件，尺寸轴落在浮层树最外层的 content 上
+      'data-size': prop('size'),
       // 收起时留在 DOM 只隐藏，不卸载作者节点
       'hidden': !open || undefined,
     }),

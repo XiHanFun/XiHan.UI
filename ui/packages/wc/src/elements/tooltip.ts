@@ -34,6 +34,8 @@ const NUMBER_CONVERTER = {
  * @attr {number} open-delay - 悬停进入到展开的等待毫秒，默认 700
  * @attr {number} close-delay - 悬停移出到收起的等待毫秒，默认 300
  * @attr {boolean} disabled - 只关掉提示，被包裹的控件仍可用
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart trigger - 悬停/聚焦的锚点按钮（aria-describedby 指向 content）
  * @csspart positioner - 浮层定位容器（坐标写成内联样式，落定朝向在 data-placement）
@@ -52,6 +54,8 @@ export class XhTooltipElement extends XhElement {
     openDelay: { converter: NUMBER_CONVERTER, attribute: 'open-delay' },
     closeDelay: { converter: NUMBER_CONVERTER, attribute: 'close-delay' },
     disabled: { type: Boolean },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
   }
 
   declare open?: boolean
@@ -61,6 +65,8 @@ export class XhTooltipElement extends XhElement {
   declare openDelay?: number
   declare closeDelay?: number
   declare disabled?: boolean
+  declare tone?: string
+  declare size?: string
 
   private engine: PositionEnginePort | null = null
 
@@ -84,6 +90,8 @@ export class XhTooltipElement extends XhElement {
       openDelay: this.openDelay,
       closeDelay: this.closeDelay,
       disabled: this.disabled ?? false,
+      tone: this.tone,
+      size: this.size,
       onOpenChange: this.notify,
     }
   }

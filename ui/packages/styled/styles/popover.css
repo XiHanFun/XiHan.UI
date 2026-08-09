@@ -13,14 +13,19 @@
   }
 
   [data-scope='popover'][data-part='content'] {
+    /* 尺寸档只换这两个私有槽。popover 没有 root 部件，size 落在浮层树最外层的 content 上。
+       语气不接：面板是内容容器，语气该由里面的内容表达 */
+    --xh-_popover-py: var(--xh-space-3);
+    --xh-_popover-px: var(--xh-control-px-md);
+
     position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--xh-popover-gap, var(--xh-space-2));
     inline-size: max-content;
     max-inline-size: var(--xh-popover-max-w, var(--xh-overlay-max-w));
-    padding-block: var(--xh-popover-py, var(--xh-space-3));
-    padding-inline: var(--xh-popover-px, var(--xh-control-px-md));
+    padding-block: var(--xh-popover-py, var(--xh-_popover-py));
+    padding-inline: var(--xh-popover-px, var(--xh-_popover-px));
     border: var(--xh-stroke-thin) solid var(--xh-popover-border, var(--xh-border-default));
     border-radius: var(--xh-popover-radius, var(--xh-shape-surface));
     background: var(--xh-popover-bg, var(--xh-bg-surface));
@@ -40,6 +45,19 @@
 
   [data-scope='popover'][data-part='content'][data-state='open'] {
     animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* —— 尺寸 —— */
+  /* 缺省档写在 content 的基础规则里；行内内缩本就取 control-px 那把尺，上下各挪一档，
+     纵向内缩按 space 档同步 */
+  [data-scope='popover'][data-part='content'][data-size='sm'] {
+    --xh-_popover-py: var(--xh-space-2);
+    --xh-_popover-px: var(--xh-control-px-sm);
+  }
+
+  [data-scope='popover'][data-part='content'][data-size='lg'] {
+    --xh-_popover-py: var(--xh-space-4);
+    --xh-_popover-px: var(--xh-control-px-lg);
   }
 
   [data-scope='popover'][data-part='title'] {

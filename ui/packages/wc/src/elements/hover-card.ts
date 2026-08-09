@@ -40,6 +40,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {number} close-delay - 指针移出到收起的等待毫秒，默认 300
  * @attr {'ltr'|'rtl'} dir - 文字方向，只在显式给了才写到 root 上
  * @attr {boolean} disabled - 只关掉卡片，trigger 本身仍可点、可聚焦
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 承载 data-state / data-disabled / dir 的容器
  * @csspart trigger - 悬停/聚焦的锚点（aria-expanded/aria-controls 所在），同时是定位锚点
@@ -62,6 +63,7 @@ export class XhHoverCardElement extends XhElement {
     // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     disabled: { type: Boolean },
+    size: { converter: STRING_CONVERTER },
   }
 
   declare open?: boolean
@@ -72,6 +74,7 @@ export class XhHoverCardElement extends XhElement {
   declare closeDelay?: number
   declare direction?: Direction
   declare disabled?: boolean
+  declare size?: string
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly hoverCardScope = createScope(null, this.idGen)
@@ -99,6 +102,7 @@ export class XhHoverCardElement extends XhElement {
       closeDelay: this.closeDelay,
       dir: this.direction,
       disabled: this.disabled ?? false,
+      size: this.size,
       onOpenChange: this.notify,
     }
   }

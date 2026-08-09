@@ -16,6 +16,8 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @attr {boolean} multiple - 允许多项同时展开
  * @attr {boolean} collapsible - 允许把最后一个展开项收起
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 vertical
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @csspart root - 手风琴根容器
  * @csspart item - 单个条目容器，作者在此写 value 与可选 disabled
@@ -36,6 +38,8 @@ export class XhAccordionElement extends XhElement {
     orientation: {},
     // property 另起名字，避开 HTMLElement 自带的 dir 存取器
     textDir: { attribute: 'dir' },
+    tone: {},
+    size: {},
   }
 
   declare value?: string[]
@@ -44,6 +48,8 @@ export class XhAccordionElement extends XhElement {
   declare collapsible?: boolean
   declare orientation?: Orientation
   declare textDir?: Direction
+  declare tone?: string
+  declare size?: string
 
   private readonly notify = (details: AccordionValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -63,6 +69,8 @@ export class XhAccordionElement extends XhElement {
       collapsible: this.collapsible ?? false,
       orientation: this.orientation,
       dir: this.textDir,
+      tone: this.tone,
+      size: this.size,
       onValueChange: this.notify,
     }
   }

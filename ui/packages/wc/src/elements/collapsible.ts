@@ -12,6 +12,7 @@ import { MachineController } from '../runtime/machine-controller'
  * @attr {boolean} open - 受控开合；缺省该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {boolean} disabled - 禁用 trigger 切换
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 披露根容器
  * @csspart trigger - 触发按钮（aria-expanded/aria-controls 所在）
@@ -24,11 +25,13 @@ export class XhCollapsibleElement extends XhElement {
     open: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     disabled: { type: Boolean },
+    size: {},
   }
 
   declare open?: boolean
   declare defaultOpen?: boolean
   declare disabled?: boolean
+  declare size?: string
 
   private readonly notify = (details: CollapsibleOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
@@ -45,6 +48,7 @@ export class XhCollapsibleElement extends XhElement {
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       disabled: this.disabled ?? false,
+      size: this.size,
       onOpenChange: this.notify,
     }
   }

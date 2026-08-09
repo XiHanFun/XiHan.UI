@@ -15,6 +15,7 @@ export const XhToolbarRoot = defineComponent({
     dir: { type: String as PropType<Direction>, default: undefined },
     loop: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
+    size: { type: String, default: undefined },
   },
   // 无对外事件，条目的点击与切换由条目自行派发
   setup(props, { slots }) {

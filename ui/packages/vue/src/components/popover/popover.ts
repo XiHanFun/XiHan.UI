@@ -18,6 +18,7 @@ export const XhPopoverRoot = defineComponent({
     closeOnEscape: { type: Boolean, default: true },
     closeOnInteractOutside: { type: Boolean, default: true },
     translations: { type: Object as PropType<PopoverProps['translations']>, default: undefined },
+    size: { type: String, default: undefined },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
   emits: ['open-change', 'update:open'],
