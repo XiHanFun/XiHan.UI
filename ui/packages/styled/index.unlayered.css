@@ -311,6 +311,27 @@
   border-end-end-radius: var(--xh-button-group-radius, var(--xh-shape-control));
 }
 
+/* styles/countdown.css */
+[data-scope='countdown'][data-part='root'] {
+  display: inline-block;
+  color: var(--xh-countdown-fg, var(--xh-fg-default));
+  /* 不自带字号：倒计时多半嵌在一句话里或摆在别人的数值槽里，跟着上下文走 */
+  /* 等宽数字：逐位宽度一致，秒数换位时冒号不会左右挪动 */
+  font-variant-numeric: tabular-nums;
+  line-height: var(--xh-leading-tight);
+}
+
+/* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
+[data-scope='countdown'][data-part='root'][hidden] {
+  display: none;
+}
+
+/* 到点之后这串 00:00:00 不再是活的信息，退一档；它与"暂停在 30 秒上"是两回事，
+   后者仍然是要盯着看的数，所以退档只认 data-finished，不认 data-state */
+[data-scope='countdown'][data-part='root'][data-finished] {
+  color: var(--xh-countdown-finished-fg, var(--xh-fg-muted));
+}
+
 /* styles/descriptions.css */
 [data-scope='descriptions'][data-part='root'] {
   /* 一个尺寸档只换这几个私有槽，每一格与格内两段都从根上继承它们，
@@ -511,6 +532,204 @@
   border-block-start-width: 0;
 }
 
+/* styles/dynamic-input.css */
+/* 一行一条，纵向堆叠；新增把手跟在最后一行下面 */
+[data-scope='dynamic-input'][data-part='root'] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-dynamic-input-gap, var(--xh-space-2));
+}
+
+/* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+[data-scope='dynamic-input'][data-part='root'][hidden] {
+  display: none;
+}
+
+/* 内容在左、把手在右，把手那一列不随内容伸缩 */
+[data-scope='dynamic-input'][data-part='item'] {
+  display: flex;
+  align-items: center;
+  gap: var(--xh-dynamic-input-item-gap, var(--xh-space-2));
+  padding: var(--xh-dynamic-input-item-padding, var(--xh-space-0));
+  border-radius: var(--xh-dynamic-input-item-radius, var(--xh-shape-surface));
+}
+
+[data-scope='dynamic-input'][data-part='item'][hidden] {
+  display: none;
+}
+
+/* 行里放什么控件归作者，这里只给它一条能撑开也能收窄的轨道。
+   min-inline-size 归零：不写的话里面的输入框按 UA 默认宽度顶住，长内容会把整行撑破 */
+[data-scope='dynamic-input'][data-part='item-content'] {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: var(--xh-dynamic-input-content-gap, var(--xh-space-2));
+  min-inline-size: 0;
+}
+
+[data-scope='dynamic-input'][data-part='item-action'] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--xh-dynamic-input-action-gap, var(--xh-space-1));
+}
+
+/* —— 行内三个把手 —— */
+[data-scope='dynamic-input'][data-part='remove-trigger'],
+[data-scope='dynamic-input'][data-part='move-up-trigger'],
+[data-scope='dynamic-input'][data-part='move-down-trigger'] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
+  block-size: var(--xh-dynamic-input-trigger-size, var(--xh-control-action-size));
+  padding: 0;
+  border: 0;
+  border-radius: var(--xh-dynamic-input-trigger-radius, var(--xh-shape-control));
+  background: var(--xh-dynamic-input-trigger-bg, transparent);
+  color: var(--xh-dynamic-input-trigger-fg, var(--xh-fg-muted));
+  font-family: inherit;
+  font-size: var(--xh-dynamic-input-trigger-font-size, var(--xh-font-size-sm));
+  line-height: var(--xh-leading-none);
+  cursor: pointer;
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 不换序时连接层给换序把手写 hidden；上面那条 display 会把 UA 的 [hidden]{display:none}
+   盖掉，少了这条把手还留在原地。删除把手同样声明了 display，作者自己收起它时要的是同一条 */
+[data-scope='dynamic-input'][data-part='remove-trigger'][hidden],
+[data-scope='dynamic-input'][data-part='move-up-trigger'][hidden],
+[data-scope='dynamic-input'][data-part='move-down-trigger'][hidden] {
+  display: none;
+}
+
+/* 按不动的把手不给悬停与按下反馈：它仍然可聚焦、可点，反馈会让人以为点得动 */
+[data-scope='dynamic-input'][data-part='remove-trigger']:hover:not([aria-disabled='true']),
+[data-scope='dynamic-input'][data-part='move-up-trigger']:hover:not([aria-disabled='true']),
+[data-scope='dynamic-input'][data-part='move-down-trigger']:hover:not([aria-disabled='true']) {
+  background: var(--xh-dynamic-input-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  color: var(--xh-dynamic-input-trigger-fg-hover, var(--xh-fg-default));
+}
+
+[data-scope='dynamic-input'][data-part='remove-trigger']:active:not([aria-disabled='true']),
+[data-scope='dynamic-input'][data-part='move-up-trigger']:active:not([aria-disabled='true']),
+[data-scope='dynamic-input'][data-part='move-down-trigger']:active:not([aria-disabled='true']) {
+  background: var(--xh-dynamic-input-trigger-bg-active, var(--xh-bg-subtle-active));
+}
+
+/* 删除把手悬停转危险色：它是这一行里唯一不可撤销的动作 */
+[data-scope='dynamic-input'][data-part='remove-trigger']:hover:not([aria-disabled='true']) {
+  color: var(--xh-dynamic-input-remove-fg-hover, var(--xh-fg-danger-hover));
+}
+
+[data-scope='dynamic-input'][data-part='remove-trigger']:focus-visible,
+[data-scope='dynamic-input'][data-part='move-up-trigger']:focus-visible,
+[data-scope='dynamic-input'][data-part='move-down-trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+/* 到上下限、或整份禁用时用 aria-disabled 表达（原生 disabled 不派 click，禁用守卫走不到），
+   所以样式也得认这个属性，写 :disabled 永远不命中 */
+[data-scope='dynamic-input'][data-part='remove-trigger'][aria-disabled='true'],
+[data-scope='dynamic-input'][data-part='move-up-trigger'][aria-disabled='true'],
+[data-scope='dynamic-input'][data-part='move-down-trigger'][aria-disabled='true'] {
+  background: transparent;
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+/* —— 新增把手 —— */
+/* 虚线描边把它和行里的实心控件区分开：它加的是行，不是行里的值 */
+[data-scope='dynamic-input'][data-part='add-trigger'] {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  justify-content: center;
+  gap: var(--xh-dynamic-input-action-gap, var(--xh-space-1));
+  block-size: var(--xh-dynamic-input-add-height, var(--xh-control-h-md));
+  padding-inline: var(--xh-dynamic-input-add-px, var(--xh-control-px-md));
+  border: var(--xh-stroke-thin) dashed var(--xh-dynamic-input-add-border, var(--xh-border-default));
+  border-radius: var(--xh-dynamic-input-add-radius, var(--xh-shape-control));
+  background: var(--xh-dynamic-input-add-bg, transparent);
+  color: var(--xh-dynamic-input-add-fg, var(--xh-fg-brand));
+  font-family: inherit;
+  font-size: var(--xh-dynamic-input-add-font-size, var(--xh-text-label-size));
+  line-height: var(--xh-leading-none);
+  cursor: pointer;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='dynamic-input'][data-part='add-trigger'][hidden] {
+  display: none;
+}
+
+[data-scope='dynamic-input'][data-part='add-trigger']:hover:not([aria-disabled='true']) {
+  border-color: var(--xh-dynamic-input-add-border-hover, var(--xh-border-strong));
+  background: var(--xh-dynamic-input-add-bg-hover, var(--xh-bg-subtle-hover));
+}
+
+[data-scope='dynamic-input'][data-part='add-trigger']:active:not([aria-disabled='true']) {
+  background: var(--xh-dynamic-input-add-bg-active, var(--xh-bg-subtle-active));
+}
+
+[data-scope='dynamic-input'][data-part='add-trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope='dynamic-input'][data-part='add-trigger'][aria-disabled='true'] {
+  border-color: var(--xh-border-subtle);
+  background: transparent;
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+/* styles/ellipsis.css */
+/* 单行：一行装不下就收成省略号。
+   行数由连接层写进这个盒子的内联 style，样式表这一行只是它缺席时的落点 */
+[data-scope='ellipsis'][data-part='root'] {
+  --xh-_ellipsis-lines: 1;
+
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* 多行：按行数裁，裁掉的那一行末尾收省略号 */
+[data-scope='ellipsis'][data-part='root'][data-multiline] {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--xh-_ellipsis-lines);
+  white-space: normal;
+  /* 一长串没有断点的字符（网址、编号）也得断开，否则它一路撑出去，裁不住 */
+  overflow-wrap: break-word;
+}
+
+/* 铺开：裁剪整个撤掉。写在两档之后，压得住上面同权重的那两条 */
+[data-scope='ellipsis'][data-part='root'][data-expanded] {
+  display: block;
+  overflow: visible;
+  white-space: normal;
+}
+
+/* 可展开时整块文字就是那颗按钮 */
+[data-scope='ellipsis'][data-part='root'][data-expandable] {
+  cursor: pointer;
+}
+
+/* 聚焦环恒是 --xh-ring-focus，不随语气走 */
+[data-scope='ellipsis'][data-part='root'][data-expandable]:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
 /* styles/flex.css */
 [data-scope='flex'][data-part='root'] {
   display: flex;
@@ -604,6 +823,127 @@
 
 [data-scope='flex'][data-part='root'][data-gap='xl'] {
   gap: var(--xh-flex-gap, var(--xh-space-6));
+}
+
+/* styles/float-button.css */
+/* 定位壳：钉在视口一角。贴边距离由连接层写进这个盒子的内联 style，
+   样式表这一行只是它缺席时的落点；贴的是哪两条边看 data-placement。
+   另一件必须提防的事：fixed 认的是视口，祖先上一旦出现
+   transform / filter / backdrop-filter / contain，包含块就被抢走，整组立刻贴错位置——
+   所以别往覆盖钩子里加这几个属性。 */
+[data-scope='float-button'][data-part='root'] {
+  --xh-_float-button-offset: var(--xh-space-6);
+  /* 触发器与展开的每一条动作共用这两个私有槽，换档只改这里 */
+  --xh-_float-button-size: var(--xh-float-button-size, var(--xh-control-h-lg));
+  --xh-_float-button-radius: var(--xh-float-button-radius, var(--xh-shape-pill));
+
+  position: fixed;
+  z-index: var(--xh-float-button-layer, var(--xh-layer-sticky));
+  display: flex;
+  /* 摞的方向由落位定，下面四条各自覆盖；这里给的是没写落位时的落点 */
+  flex-direction: column;
+  align-items: center;
+  gap: var(--xh-float-button-gap, var(--xh-space-2));
+}
+
+/* —— 四角 ——
+   start / end 用逻辑属性，RTL 下自动换到另一侧。
+   摞的方向按贴的是上沿还是下沿定：离屏幕边最近的恒是触发器，展开的那一组往页面中间长 */
+[data-scope='float-button'][data-part='root'][data-placement^='top'] {
+  inset-block-start: var(--xh-_float-button-offset);
+  flex-direction: column;
+}
+
+[data-scope='float-button'][data-part='root'][data-placement^='bottom'] {
+  inset-block-end: var(--xh-_float-button-offset);
+  flex-direction: column-reverse;
+}
+
+[data-scope='float-button'][data-part='root'][data-placement$='-start'] {
+  inset-inline-start: var(--xh-_float-button-offset);
+}
+
+[data-scope='float-button'][data-part='root'][data-placement$='-end'] {
+  inset-inline-end: var(--xh-_float-button-offset);
+}
+
+/* —— 外形 —— */
+/* 使用者令牌排在形态之前：写了 --xh-float-button-radius 就以它为准，没写才按 shape 换档 */
+[data-scope='float-button'][data-part='root'][data-shape='square'] {
+  --xh-_float-button-radius: var(--xh-float-button-radius, var(--xh-shape-control));
+}
+
+/* —— 触发器 —— */
+/* 里面通常只放一个图标，宽高同取一档尺寸 */
+[data-scope='float-button'][data-part='trigger'] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--xh-_float-button-size);
+  block-size: var(--xh-_float-button-size);
+  padding: 0;
+  border: var(--xh-stroke-thin) solid var(--xh-float-button-border, var(--xh-border-default));
+  border-radius: var(--xh-_float-button-radius);
+  /* 使用者令牌排在缺省之前：写了覆盖钩子就以它为准，没写才退到中性缺省 */
+  background: var(--xh-float-button-bg, var(--xh-bg-surface-raised));
+  color: var(--xh-float-button-fg, var(--xh-fg-default));
+  /* 浮在内容之上，靠投影与页面拉开层次 */
+  box-shadow: var(--xh-elevation-3);
+  cursor: pointer;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 悬停只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
+@media (hover: hover) {
+  [data-scope='float-button'][data-part='trigger']:not([data-disabled]):hover {
+    border-color: var(--xh-float-button-border-hover, var(--xh-border-strong));
+    background: var(--xh-float-button-bg-hover, var(--xh-bg-subtle-hover));
+  }
+}
+
+[data-scope='float-button'][data-part='trigger']:not([data-disabled]):active {
+  background: var(--xh-float-button-bg-active, var(--xh-bg-subtle-active));
+}
+
+/* 禁用只换颜色，不叠不透明度：两者同时用只会互相抵消，把字压到读不出来 */
+[data-scope='float-button'][data-part='trigger'][data-disabled] {
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+/* 聚焦环恒是 --xh-ring-focus，不随外形与落位走 */
+[data-scope='float-button'][data-part='trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+/* —— 展开的那一组 —— */
+[data-scope='float-button'][data-part='list'] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--xh-float-button-gap, var(--xh-space-2));
+}
+
+/* 贴下沿时整组往上长，翻过来摆，第一条动作离触发器最近 */
+[data-scope='float-button'][data-part='list'][data-placement^='bottom'] {
+  flex-direction: column-reverse;
+}
+
+/* 声明过 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己补回来 */
+[data-scope='float-button'][data-part='list'][hidden] {
+  display: none;
+}
+
+/* 展开的每一条动作与触发器同一副身量：它们是一排里的同类，作者只管往里放按钮 */
+[data-scope='float-button'][data-part='list'] > * {
+  flex: none;
+  inline-size: var(--xh-_float-button-size);
+  block-size: var(--xh-_float-button-size);
+  border-radius: var(--xh-_float-button-radius);
 }
 
 /* styles/gradient-text.css */
@@ -1096,6 +1436,27 @@
   --xh-_grid-start: 12;
 }
 
+/* styles/highlight.css */
+/* 文本按原样显示：命中位置是按原串逐字符算的，折叠掉连续空格与换行会让看到的
+   与算出来的对不上。pre-wrap 保留空白但仍在容器边界换行 */
+[data-scope='highlight'][data-part='root'] {
+  white-space: pre-wrap;
+}
+
+/* 浏览器给 mark 的默认底色是一个固定的亮黄，暗色主题下压在深底上刺眼、
+   配的黑字也不随主题走；这里整份换成随主题走的品牌淡底 */
+[data-scope='highlight'][data-part='mark'] {
+  padding-inline: var(--xh-space-0_5);
+  border-radius: var(--xh-highlight-radius, var(--xh-radius-sm));
+  background: var(--xh-highlight-bg, var(--xh-bg-brand-subtle));
+  color: var(--xh-highlight-fg, var(--xh-fg-brand-strong));
+  font-weight: var(--xh-font-weight-medium);
+  /* 命中片段跨行时两半各自收边，否则圆角与内边距只画在整段的首尾。
+     两条都写：WebKit 只认带前缀那条 */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
 /* styles/icon-wrapper.css */
 /* 定直径的图标底座：图元在正中，底色、描边与形状由三轴决定。
    直径与图元直径分两个槽位，底座换档时里面的图元跟着一起换 */
@@ -1535,6 +1896,440 @@
   line-height: var(--xh-_log-line-h);
   white-space: pre;
   tab-size: var(--xh-log-tab-size, 4);
+}
+
+/* styles/marquee.css */
+/*
+ * 横轴一条、纵轴一条。四个方向乘两种铺法共八组起止点，若不外提就要写八份几乎一样的关键帧。
+ * 关键帧里的自定义属性取元素上的计算值，一圈跑下来它不变，所以两条就够。
+ */
+@keyframes xh-marquee-x {
+  from {
+    transform: translateX(var(--xh-_marquee-from));
+  }
+
+  to {
+    transform: translateX(var(--xh-_marquee-to));
+  }
+}
+
+@keyframes xh-marquee-y {
+  from {
+    transform: translateY(var(--xh-_marquee-from));
+  }
+
+  to {
+    transform: translateY(var(--xh-_marquee-to));
+  }
+}
+
+/*
+ * 窗口：只露出轨道的一段。
+ *
+ * 方向、轴与铺法全部换成根上的私有槽，轨道与每一份内容各自只有一条规则去取值。
+ * 这样写不只是为了短：轨道那条选择器因此能写成 [data-scope][data-part] 的复合式，
+ * 而不是从根往下够的后代式——marquee 里嵌一个同样有 content 部件的组件时，
+ * 后代式会一路匹配到别人家的节点上去。
+ *
+ * 一圈的时长 = 一份内容的长度 ÷ 每秒像素数。--xh-_marquee-span 是一份内容在滚动轴上的长度，
+ * 单位像素、写成纯数字。CSS 读不到布局尺寸，这里给的是缺省值；内容明显长于或短于它时，
+ * 由使用者改写 --xh-marquee-span 对齐真实长度，速度才逐字等于每秒那么多像素。
+ */
+[data-scope='marquee'][data-part='root'] {
+  --xh-_marquee-span: var(--xh-marquee-span, 600);
+  --xh-_marquee-speed: var(--xh-marquee-speed, 60);
+
+  /* 铺一份时一圈走两倍自身长度：从窗口一侧整段进来，再整段出到另一侧 */
+  --xh-_marquee-duration: calc(2 * var(--xh-_marquee-span) / var(--xh-_marquee-speed) * 1s);
+  --xh-_marquee-play: running;
+  --xh-_marquee-flow: row;
+  --xh-_marquee-name: xh-marquee-x;
+  --xh-_marquee-track-inline: max-content;
+  --xh-_marquee-track-block: auto;
+
+  /* 轨道自身至少铺满窗口，起点那一跳才真的落在窗口外面 */
+  --xh-_marquee-fill-inline: 100%;
+  --xh-_marquee-fill-block: auto;
+  --xh-_marquee-copy-inline: auto;
+  --xh-_marquee-copy-block: auto;
+  --xh-_marquee-gap-inline: var(--xh-marquee-gap, var(--xh-space-6));
+  --xh-_marquee-gap-block: 0;
+  --xh-_marquee-from: 100%;
+  --xh-_marquee-to: -100%;
+
+  display: flex;
+  overflow: hidden;
+  max-inline-size: 100%;
+}
+
+/* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，补这条兜住收起态 */
+[data-scope='marquee'][data-part='root'][hidden] {
+  display: none;
+}
+
+/* 竖着滚要有一个定高的窗口，否则内容自己把窗口撑到一样高，一格都走不动 */
+[data-scope='marquee'][data-part='root'][data-orientation='vertical'] {
+  --xh-_marquee-flow: column;
+  --xh-_marquee-name: xh-marquee-y;
+  --xh-_marquee-track-inline: auto;
+  --xh-_marquee-track-block: max-content;
+  --xh-_marquee-fill-inline: auto;
+  --xh-_marquee-fill-block: 100%;
+  --xh-_marquee-gap-inline: 0;
+  --xh-_marquee-gap-block: var(--xh-marquee-gap, var(--xh-space-6));
+
+  block-size: var(--xh-marquee-block-size, 10rem);
+}
+
+/* 往右、往下是同一条轨迹倒过来走 */
+[data-scope='marquee'][data-part='root'][data-direction='right'],
+[data-scope='marquee'][data-part='root'][data-direction='down'] {
+  --xh-_marquee-from: -100%;
+  --xh-_marquee-to: 100%;
+}
+
+/*
+ * 铺两份：一圈只走一份的长度，走完那一刻第二份正好压在起点上，看不出接缝。
+ * 这条排在竖轴那条之后：两者同权，铺两份时轨道自己不必铺满窗口，改由每一份各自铺满。
+ */
+[data-scope='marquee'][data-part='root'][data-auto-fill] {
+  --xh-_marquee-duration: calc(var(--xh-_marquee-span) / var(--xh-_marquee-speed) * 1s);
+  --xh-_marquee-fill-inline: auto;
+  --xh-_marquee-fill-block: auto;
+}
+
+/* 内容短于窗口时每份自己先铺满一整窗，两份接起来才不会在接缝处露出空白 */
+[data-scope='marquee'][data-part='root'][data-auto-fill][data-orientation='horizontal'] {
+  --xh-_marquee-copy-inline: 100%;
+}
+
+[data-scope='marquee'][data-part='root'][data-auto-fill][data-orientation='vertical'] {
+  --xh-_marquee-copy-block: 100%;
+}
+
+/* 起止点逐档写全：铺法与方向同权，交叉的四种情形各写一条才不看书写顺序 */
+[data-scope='marquee'][data-part='root'][data-auto-fill][data-direction='left'],
+[data-scope='marquee'][data-part='root'][data-auto-fill][data-direction='up'] {
+  --xh-_marquee-from: 0%;
+  --xh-_marquee-to: -50%;
+}
+
+[data-scope='marquee'][data-part='root'][data-auto-fill][data-direction='right'],
+[data-scope='marquee'][data-part='root'][data-auto-fill][data-direction='down'] {
+  --xh-_marquee-from: -50%;
+  --xh-_marquee-to: 0%;
+}
+
+/* 悬停暂停：只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
+@media (hover: hover) {
+  [data-scope='marquee'][data-part='root'][data-pause-on-hover]:hover {
+    --xh-_marquee-play: paused;
+  }
+}
+
+/* 键盘用户没有悬停：焦点落进窗口时同样停住，否则轨道里的链接刚聚焦就被带走了 */
+[data-scope='marquee'][data-part='root'][data-pause-on-hover]:focus-within {
+  --xh-_marquee-play: paused;
+}
+
+/* 轨道：走的是这一层，一圈走完立刻回到起点接着走 */
+[data-scope='marquee'][data-part='content'] {
+  display: flex;
+  flex: none;
+  flex-direction: var(--xh-_marquee-flow);
+  inline-size: var(--xh-_marquee-track-inline);
+  min-inline-size: var(--xh-_marquee-fill-inline);
+  block-size: var(--xh-_marquee-track-block);
+  min-block-size: var(--xh-_marquee-fill-block);
+  animation-name: var(--xh-_marquee-name);
+  animation-duration: var(--xh-_marquee-duration);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-play-state: var(--xh-_marquee-play);
+}
+
+/*
+ * 一份内容。份与份之间的空白做成每份自己的收尾内边距，而不是轨道上的 gap：
+ * gap 只加在中间那一道，两份就不等长了，而接缝对不对得上看的正是"走完的距离等于一份的长度"。
+ */
+[data-scope='marquee'][data-part='content'] > [data-xh-copy] {
+  display: flex;
+  flex: none;
+  flex-direction: var(--xh-_marquee-flow);
+  align-items: center;
+  min-inline-size: var(--xh-_marquee-copy-inline);
+  min-block-size: var(--xh-_marquee-copy-block);
+  padding-inline-end: var(--xh-_marquee-gap-inline);
+  padding-block-end: var(--xh-_marquee-gap-block);
+}
+
+/*
+ * 减少动效：轨道停在起点不再走。一段自己动起来、不停到底的横移正是最容易引发不适的那一类，
+ * 这里不能只把速度压到很慢——慢速横移仍然是横移。
+ * 停下后窗口外那段就够不着了，故窗口同时改成可滚，内容仍然读得全。
+ */
+@media (prefers-reduced-motion: reduce) {
+  [data-scope='marquee'][data-part='content'] {
+    animation: none;
+  }
+
+  [data-scope='marquee'][data-part='root'] {
+    overflow: auto;
+  }
+}
+
+/* styles/mention.css */
+[data-scope='mention'][data-part='root'] {
+  /* 尺寸档只换这四个私有槽，输入框与候选都从 root 继承它们，换档不必给每个部件各写一条选择器。
+     浮层在 positioner 里、也是 root 的后代，一并继承 */
+  --xh-_mention-px: var(--xh-control-px-md);
+  --xh-_mention-py: var(--xh-field-py);
+  --xh-_mention-gap: var(--xh-control-gap-md);
+  --xh-_mention-font-size: var(--xh-text-body-size);
+
+  /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
+  --xh-_mention-input-bg: var(--xh-bg-canvas);
+  --xh-_mention-input-border: var(--xh-border-default);
+  --xh-_mention-input-border-hover: var(--xh-border-strong);
+
+  /* 强调色随语气走，只落在聚焦与高亮上，正文文字色不动。
+     没写 data-tone 时 --xh-_tone 没被声明，三处都退回原来的取值 */
+  --xh-_mention-ring: var(--xh-ring-focus);
+  --xh-_mention-item-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+  --xh-_mention-item-highlight-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+
+  display: block;
+}
+
+/* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+[data-scope='mention'][data-part='root'][hidden] {
+  display: none;
+}
+
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里 */
+[data-scope='mention'][data-part='root'][data-size='sm'] {
+  --xh-_mention-px: var(--xh-control-px-sm);
+  --xh-_mention-py: var(--xh-space-1);
+  --xh-_mention-gap: var(--xh-control-gap-sm);
+  --xh-_mention-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='mention'][data-part='root'][data-size='lg'] {
+  --xh-_mention-px: var(--xh-control-px-lg);
+  --xh-_mention-py: var(--xh-space-3);
+  --xh-_mention-gap: var(--xh-control-gap-lg);
+  --xh-_mention-font-size: var(--xh-font-size-lg);
+}
+
+/* —— 形态 —— */
+/* 输入类不做 solid：实心底压着可编辑的正文，读起来像块不可点的色板。
+   形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
+[data-scope='mention'][data-part='root'][data-variant='outline'] {
+  --xh-_mention-input-bg: var(--xh-bg-canvas);
+  --xh-_mention-input-border: var(--xh-border-default);
+  --xh-_mention-input-border-hover: var(--xh-border-strong);
+}
+
+/* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
+[data-scope='mention'][data-part='root'][data-variant='subtle'] {
+  --xh-_mention-input-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_mention-input-border: transparent;
+  --xh-_mention-input-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+}
+
+[data-scope='mention'][data-part='root'][data-variant='ghost'] {
+  --xh-_mention-input-bg: transparent;
+  --xh-_mention-input-border: transparent;
+  --xh-_mention-input-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+}
+
+/* 框与聚焦环都长在输入框自己身上：这里没有把输入框和别的控件裹成一体的输入行，
+   整个组件在视觉上就是这一个可打字的方框 */
+[data-scope='mention'][data-part='input'] {
+  display: block;
+  inline-size: 100%;
+  padding-block: var(--xh-mention-input-py, var(--xh-_mention-py));
+  padding-inline: var(--xh-mention-input-px, var(--xh-_mention-px));
+  border: var(--xh-stroke-thin) solid var(--xh-mention-input-border, var(--xh-_mention-input-border));
+  border-radius: var(--xh-mention-input-radius, var(--xh-shape-control));
+  background: var(--xh-mention-input-bg, var(--xh-_mention-input-bg));
+  color: var(--xh-mention-input-fg, var(--xh-fg-default));
+  /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
+  font-family: inherit;
+  font-size: var(--xh-mention-input-font-size, var(--xh-_mention-font-size));
+  line-height: var(--xh-leading-normal);
+  /* 多行宿主只许纵向拉伸：横向拉宽会把浮层与输入框的对齐拽歪 */
+  resize: vertical;
+  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='mention'][data-part='input'][hidden] {
+  display: none;
+}
+
+[data-scope='mention'][data-part='input']::placeholder {
+  color: var(--xh-mention-placeholder-fg, var(--xh-fg-subtle));
+}
+
+[data-scope='mention'][data-part='input']:hover:not(:disabled) {
+  border-color: var(--xh-mention-input-border-hover, var(--xh-_mention-input-border-hover));
+}
+
+[data-scope='mention'][data-part='input']:focus-visible {
+  border-color: var(--xh-mention-input-border-focus, var(--xh-_mention-ring));
+  outline: var(--xh-ring-width) solid var(--xh-_mention-ring);
+  outline-offset: var(--xh-ring-offset);
+}
+
+/* 输入框是单体表单控件，禁用走原生 disabled（候选那边一律 aria-disabled） */
+[data-scope='mention'][data-part='input']:disabled {
+  background: var(--xh-mention-input-bg-disabled, var(--xh-bg-subtle));
+  color: var(--xh-fg-disabled);
+  /* 禁用时连拉伸把手也一并收走，免得留一个拖得动却改不了内容的角 */
+  resize: none;
+  cursor: not-allowed;
+}
+
+/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+[data-scope='mention'][data-part='positioner'] {
+  position: fixed;
+  z-index: var(--xh-layer-popover);
+  /* 空壳不吃指针，交互只发生在 content 上 */
+  pointer-events: none;
+}
+
+/* 输入框被滚出可视区：整个浮层随之收起 */
+[data-scope='mention'][data-part='positioner'][data-hidden] {
+  visibility: hidden;
+}
+
+[data-scope='mention'][data-part='content'] {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: var(--xh-mention-content-min-w, var(--xh-overlay-min-w));
+  max-inline-size: var(--xh-mention-content-max-w, var(--xh-overlay-max-w));
+  max-block-size: var(--xh-mention-content-max-h, var(--xh-overlay-max-h));
+  padding-block: var(--xh-mention-content-py, var(--xh-space-1));
+  padding-inline: var(--xh-mention-content-px, var(--xh-space-1));
+  border: var(--xh-stroke-thin) solid var(--xh-mention-content-border, var(--xh-border-default));
+  border-radius: var(--xh-mention-content-radius, var(--xh-shape-surface));
+  background: var(--xh-mention-content-bg, var(--xh-bg-surface));
+  color: var(--xh-mention-content-fg, var(--xh-fg-default));
+  box-shadow: var(--xh-mention-content-shadow, var(--xh-elevation-2));
+  overflow-y: auto;
+  pointer-events: auto;
+}
+
+/* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位 */
+[data-scope='mention'][data-part='content'][hidden] {
+  display: none;
+}
+
+/* 宿主把候选全筛没了：浮层还开着，但这一副框壳没有内容可框，整个让位。
+   组件不替宿主判空——「没有匹配项」要不要说话、说什么，是宿主的事 */
+[data-scope='mention'][data-part='content']:empty {
+  display: none;
+}
+
+/* 列表从不承载焦点（焦点恒在输入框，高亮走 aria-activedescendant），
+   可滚动容器在某些浏览器里会被自动塞进 Tab 序列，落焦时不画环 */
+[data-scope='mention'][data-part='content']:focus-visible {
+  outline: none;
+}
+
+[data-scope='mention'][data-part='content'][data-state='open'] {
+  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+}
+
+[data-scope='mention'][data-part='item'] {
+  display: flex;
+  align-items: center;
+  gap: var(--xh-mention-item-gap, var(--xh-_mention-gap));
+  padding-block: var(--xh-mention-item-py, var(--xh-space-1));
+  padding-inline: var(--xh-mention-item-px, var(--xh-control-px-sm));
+  border-radius: var(--xh-mention-item-radius, var(--xh-shape-control));
+  color: var(--xh-mention-item-fg, var(--xh-fg-default));
+  font-size: var(--xh-mention-item-font-size, var(--xh-_mention-font-size));
+  /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
+  line-height: var(--xh-mention-item-leading, var(--xh-leading-normal));
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+[data-scope='mention'][data-part='item'][hidden] {
+  display: none;
+}
+
+/* 只认 data-highlighted，不写 :hover：指针划过时连接层已经把高亮搬过来了，
+   两套底色各画各的会出现"鼠标停在 A 上、回车却插进了 B" */
+[data-scope='mention'][data-part='item'][data-highlighted]:not([data-disabled]) {
+  background: var(--xh-mention-item-bg-highlight, var(--xh-_mention-item-highlight-bg));
+  color: var(--xh-mention-item-fg-highlight, var(--xh-_mention-item-highlight-fg));
+  font-weight: var(--xh-mention-item-font-weight-highlight, var(--xh-font-weight-medium));
+}
+
+/* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），
+   所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
+[data-scope='mention'][data-part='item'][data-disabled] {
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+[data-scope='mention'][data-part='item-text'] {
+  flex: 1;
+  /* 弹性项默认 min-width: auto 不肯收缩到内容以下，省略号因此永不生效 */
+  min-inline-size: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+[data-scope='mention'][data-part='item-text'][hidden] {
+  display: none;
+}
+
+/* 候选行里除文本以外的部分（作者摆的头像、副标题）由作者自己画；
+   这里只把强调色透出去，作者要用就取它 */
+[data-scope='mention'][data-part='item'][data-highlighted] [data-part='item-text'] {
+  color: var(--xh-mention-item-fg-highlight, var(--xh-_mention-item-highlight-fg));
+}
+
+[data-scope='mention'][data-part='item'][data-disabled] [data-part='item-text'] {
+  color: var(--xh-fg-disabled);
+}
+
+/* styles/number-animation.css */
+[data-scope='number-animation'][data-part='root'] {
+  /* 不写尺寸就跟着上下文的字号走：这个数常常摆在别人的标题、卡片标题或统计数值槽里，
+     自带一个字号只会跟摆放它的地方打架。三个档位各自换掉这个私有槽 */
+  --xh-_number-animation-size: inherit;
+
+  display: inline-block;
+  color: var(--xh-number-animation-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
+  font-size: var(--xh-number-animation-font-size, var(--xh-_number-animation-size));
+  /* 等宽数字：逐位宽度一致，逐帧换数时后面的字符不会左右挪动，整块也不会一跳一跳地变宽 */
+  font-variant-numeric: tabular-nums;
+  line-height: var(--xh-leading-tight);
+}
+
+/* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
+[data-scope='number-animation'][data-part='root'][hidden] {
+  display: none;
+}
+
+/* —— 尺寸 —— */
+[data-scope='number-animation'][data-part='root'][data-size='sm'] {
+  --xh-_number-animation-size: var(--xh-font-size-lg);
+}
+
+[data-scope='number-animation'][data-part='root'][data-size='md'] {
+  --xh-_number-animation-size: var(--xh-font-size-2xl);
+}
+
+[data-scope='number-animation'][data-part='root'][data-size='lg'] {
+  --xh-_number-animation-size: var(--xh-font-size-3xl);
 }
 
 /* styles/page-header.css */
@@ -2279,6 +3074,26 @@
   font-variant-numeric: tabular-nums;
   font-weight: var(--xh-font-weight-regular);
   line-height: var(--xh-leading-tight);
+}
+
+/* styles/time.css */
+[data-scope='time'][data-part='root'] {
+  color: var(--xh-time-fg, var(--xh-fg-default));
+  /* 等宽数字：秒数跳动时后面的字符不会左右挪 */
+  font-variant-numeric: tabular-nums;
+  /* 一个时间戳不该被拆到两行去 */
+  white-space: nowrap;
+}
+
+/* 相对说法是一句话不是一串数字，等宽数字反而把字距拉开 */
+[data-scope='time'][data-part='root'][data-relative] {
+  font-variant-numeric: normal;
+}
+
+/* 没给时刻、或给了认不出的时刻：这时显示的是作者写在节点里的兜底文案，退成弱前景 */
+[data-scope='time'][data-part='root'][data-state='empty'],
+[data-scope='time'][data-part='root'][data-state='invalid'] {
+  color: var(--xh-time-placeholder-fg, var(--xh-fg-muted));
 }
 
 /* styles/timeline.css */
@@ -5813,6 +6628,20 @@
 
 [data-scope='combobox'][data-part='input'][hidden] {
   display: none;
+}
+
+/* 多行宿主：输入行不再是固定一行高，改由 textarea 自己的行数撑开。
+   两个按钮跟着贴到顶上对齐首行，不然它们会浮在整块文字的正中间 */
+[data-scope='combobox'][data-part='control']:has([data-part='input'][data-multiline]) {
+  align-items: start;
+  block-size: auto;
+  padding-block: var(--xh-field-py);
+}
+
+[data-scope='combobox'][data-part='input'][data-multiline] {
+  block-size: auto;
+  /* 只许纵向拉伸：横向拉宽会把浮层与输入行的对齐拽歪 */
+  resize: vertical;
 }
 
 [data-scope='combobox'][data-part='input']::placeholder {
@@ -15284,4 +16113,52 @@
 [data-scope='virtualizer'][data-part='content'][hidden],
 [data-scope='virtualizer'][data-part='item'][hidden] {
   display: none;
+}
+
+/* styles/watermark.css */
+/*
+ * 盖水印的那块地。层叠上下文就地隔离，印子只压在这块地里，不会盖到组件外面去。
+ */
+[data-scope='watermark'][data-part='root'] {
+  position: relative;
+  isolation: isolate;
+}
+
+/* 被盖住的内容排在印子下面 */
+[data-scope='watermark'][data-part='content'] {
+  position: relative;
+  z-index: 0;
+}
+
+/*
+ * 印子。图样由连接层算成一张 SVG，这里当遮罩用而不是当背景图铺：
+ * 遮罩只取图样的透明度，颜色从下面这个槽来，深浅主题各自跟着走；
+ * 当背景图铺就得把颜色写死在 SVG 里，换主题时那张图不会跟着变。
+ * 两条前缀都写：一部分 WebKit 只认带前缀那条。
+ *
+ * 没有可印的文字时 root 落 data-state="empty"，整层不画。
+ */
+[data-scope='watermark'][data-part='root'][data-state='ready']::after {
+  content: '';
+
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+
+  /* 它只是一层印子：不吃点击，底下的内容照常点、照常选 */
+  pointer-events: none;
+  background-color: var(--xh-watermark-fg, var(--xh-fg-muted));
+  -webkit-mask-image: var(--xh-watermark-image, none);
+  mask-image: var(--xh-watermark-image, none);
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+  -webkit-mask-size: var(--xh-watermark-tile, auto);
+  mask-size: var(--xh-watermark-tile, auto);
+}
+
+/* 遮罩不支持时整层不画：只剩底色的话，盖上去的会是一整块实心色 */
+@supports not ((mask-image: none) or (-webkit-mask-image: none)) {
+  [data-scope='watermark'][data-part='root'][data-state='ready']::after {
+    display: none;
+  }
 }

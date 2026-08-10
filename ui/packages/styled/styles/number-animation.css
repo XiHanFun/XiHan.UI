@@ -1,0 +1,32 @@
+@layer xihan.components {
+  [data-scope='number-animation'][data-part='root'] {
+    /* 不写尺寸就跟着上下文的字号走：这个数常常摆在别人的标题、卡片标题或统计数值槽里，
+       自带一个字号只会跟摆放它的地方打架。三个档位各自换掉这个私有槽 */
+    --xh-_number-animation-size: inherit;
+
+    display: inline-block;
+    color: var(--xh-number-animation-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
+    font-size: var(--xh-number-animation-font-size, var(--xh-_number-animation-size));
+    /* 等宽数字：逐位宽度一致，逐帧换数时后面的字符不会左右挪动，整块也不会一跳一跳地变宽 */
+    font-variant-numeric: tabular-nums;
+    line-height: var(--xh-leading-tight);
+  }
+
+  /* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
+  [data-scope='number-animation'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* —— 尺寸 —— */
+  [data-scope='number-animation'][data-part='root'][data-size='sm'] {
+    --xh-_number-animation-size: var(--xh-font-size-lg);
+  }
+
+  [data-scope='number-animation'][data-part='root'][data-size='md'] {
+    --xh-_number-animation-size: var(--xh-font-size-2xl);
+  }
+
+  [data-scope='number-animation'][data-part='root'][data-size='lg'] {
+    --xh-_number-animation-size: var(--xh-font-size-3xl);
+  }
+}

@@ -1,0 +1,5 @@
+export { watermarkAnatomy } from './watermark.anatomy'
+export { connectWatermark } from './watermark.connect'
+export { watermarkKeyboard } from './watermark.keyboard'
+export { watermarkMeta } from './watermark.meta'
+export type { WatermarkApi, WatermarkProps, WatermarkState, WatermarkTile } from './watermark.types'

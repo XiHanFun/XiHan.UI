@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { accordionSuite, affixSuite, alertSuite, anchorSuite, avatarGroupSuite, avatarSuite, backTopSuite, badgeSuite, breadcrumbSuite, buttonGroupSuite, buttonSuite, calendarSuite, cardSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, codeBlockSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, composerSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, descriptionsSuite, dialogSuite, drawerSuite, editableSuite, emptyStateSuite, fieldSuite, fileUploadSuite, flexSuite, formSuite, gradientTextSuite, gridSuite, hoverCardSuite, iconSuite, iconWrapperSuite, imageSuite, infiniteScrollSuite, layoutSuite, listboxSuite, listSuite, loadingBarSuite, logSuite, menubarSuite, menuSuite, navigationMenuSuite, numberFieldSuite, pageHeaderSuite, paginationSuite, pinInputSuite, popconfirmSuite, popoverSuite, popselectSuite, progressSuite, qrCodeSuite, radioGroupSuite, ratingSuite, resultSuite, runConformance, scrollAreaSuite, selectSuite, separatorSuite, skeletonSuite, sliderSuite, spinnerSuite, splitterSuite, statisticSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, textFieldSuite, threadSuite, timeFieldSuite, timelineSuite, timePickerSuite, toasterSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, typographySuite, virtualizerSuite } from '@xihan-ui/testing'
+import { accordionSuite, affixSuite, alertSuite, anchorSuite, avatarGroupSuite, avatarSuite, backTopSuite, badgeSuite, breadcrumbSuite, buttonGroupSuite, buttonSuite, calendarSuite, cardSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, codeBlockSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, composerSuite, contextMenuSuite, countdownSuite, dateFieldSuite, datePickerSuite, descriptionsSuite, dialogSuite, drawerSuite, dynamicInputSuite, editableSuite, ellipsisSuite, emptyStateSuite, fieldSuite, fileUploadSuite, flexSuite, floatButtonSuite, formSuite, gradientTextSuite, gridSuite, highlightSuite, hoverCardSuite, iconSuite, iconWrapperSuite, imageSuite, infiniteScrollSuite, layoutSuite, listboxSuite, listSuite, loadingBarSuite, logSuite, marqueeSuite, mentionSuite, menubarSuite, menuSuite, navigationMenuSuite, numberAnimationSuite, numberFieldSuite, pageHeaderSuite, paginationSuite, pinInputSuite, popconfirmSuite, popoverSuite, popselectSuite, progressSuite, qrCodeSuite, radioGroupSuite, ratingSuite, resultSuite, runConformance, scrollAreaSuite, selectSuite, separatorSuite, skeletonSuite, sliderSuite, spinnerSuite, splitterSuite, statisticSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, textFieldSuite, threadSuite, timeFieldSuite, timelineSuite, timePickerSuite, timeSuite, toasterSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, typographySuite, virtualizerSuite, watermarkSuite } from '@xihan-ui/testing'
 import { afterEach, beforeEach, describe, it, vi } from 'vitest'
 import { createVueHarness } from './harness'
 
@@ -23,17 +23,25 @@ runConformance(
     avatarGroupSuite,
     backTopSuite,
     buttonGroupSuite,
+    countdownSuite,
     descriptionsSuite,
+    dynamicInputSuite,
+    ellipsisSuite,
     emptyStateSuite,
 
     flexSuite,
+    floatButtonSuite,
     gradientTextSuite,
     gridSuite,
+    highlightSuite,
     iconWrapperSuite,
     infiniteScrollSuite,
     layoutSuite,
     listSuite,
     logSuite,
+    marqueeSuite,
+    mentionSuite,
+    numberAnimationSuite,
     pageHeaderSuite,
     popconfirmSuite,
     popselectSuite,
@@ -94,6 +102,7 @@ runConformance(
     threadSuite,
     timeFieldSuite,
     timePickerSuite,
+    timeSuite,
     timelineSuite,
     toastSuite,
     toasterSuite,
@@ -113,6 +122,7 @@ runConformance(
     virtualizerSuite,
     treeSelectSuite,
     treeSuite,
+    watermarkSuite,
   ],
   { describe, it },
   {

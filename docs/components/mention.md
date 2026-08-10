@@ -1,0 +1,118 @@
+# 提及 <Badge type="info" text="mention" />
+
+数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+
+## 示例
+
+### 基础用法
+
+在正文里敲 @ 才开候选，选中的那条被插到光标处，前后文一字不动
+
+<XhDemo src="mention/01-basic" />
+
+### 多种前缀
+
+@ 提人、# 打标签共用一个输入框，query-change 会报回是哪个前缀触发的
+
+<XhDemo src="mention/02-multi-prefix" />
+
+### 候选里的自定义内容
+
+手写各部件即可在候选行里放头像与职位；插回正文的那段字取自 item-text
+
+<XhDemo src="mention/03-custom-item" />
+
+### 受控正文与选中回调
+
+正文由父持有，select 事件报回插进去的是哪一条，用来攒收件人名单
+
+<XhDemo src="mention/04-controlled" />
+
+### 异步候选
+
+查询串每变一次就重新去远端查一遍，等结果的这段时间浮层里空着
+
+<XhDemo src="mention/05-async" />
+
+## 产物
+
+| 层 | 值 |
+| --- | --- |
+| 自定义元素 | `<xh-mention>` |
+| Vue 组件 | `XhMentionContent` `XhMentionInput` `XhMentionItem` `XhMentionItemText` `XhMentionPositioner` `XhMentionRoot` |
+| 组合式函数 | `useMention` |
+| 状态机 | `mentionMachine` |
+| 皮肤 | `@xihan-ui/styled/mention.css` |
+
+## 解剖
+
+部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
+
+`data-scope="mention"`：**`root`** · **`input`** · `positioner` · **`content`** · `item` · `item-text`
+
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `prefix` | `string \| string[]` |  | 开候选的前缀字符，缺省 '@'。给数组即多种前缀并存，宿主按 onQueryChange 报回的 prefix 分流。 前缀必须紧跟在行首或空白之后，邮箱地址里的 @ 因此不会误触发。 |
+| `collection` | `MentionNode[]` |  | 候选数据，显示文本与禁用的事实源。过滤仍归调用方：交进来的就是此刻该显示的那几条。 组件不管怎么筛，它只负责把查询串交出去。 |
+| `value` | `string` |  | 整段正文。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 |
+| `defaultValue` | `string` |  |  |
+| `disabled` | `boolean` |  | 整个控件禁用：输入框用原生 disabled，候选一概不开。 |
+| `placeholder` | `string` |  | 输入框占位文字。不给就整条不输出，作者写在 input 部件上的那份因此留得住。 |
+| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
+| `placement` | `Placement` |  |  |
+| `offset` | `number` |  |  |
+| `translations` | `MentionTranslations` |  |  |
+| `variant` | `string` |  | 形态：outline / subtle / ghost，决定输入框的描边与底色怎么用。 |
+| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与高亮用哪族颜色。 |
+| `size` | `string` |  | 尺寸：sm / md / lg，决定输入框内边距与字号档位。 |
+| `onValueChange` | `(details: MentionValueChangeDetails) => void` |  | 正文变化回调；受控时是唯一出口。 |
+| `onQueryChange` | `(details: MentionQueryChangeDetails) => void` |  | 查询串变化回调：调用方据此重新过滤候选。收起时报 null。 |
+| `onSelect` | `(details: MentionSelectDetails) => void` |  | 候选被插进正文时回调，带上是哪一条。 |
+| `onOpenChange` | `(details: MentionOpenChangeDetails) => void` |  | 浮层开合回调。 |
+
+## 状态机
+
+**状态**：`open` · `closed`
+
+**事件**：`OPEN` · `CLOSE` · `ESCAPE` · `INPUT.CHANGE` · `CARET.SYNC` · `VALUE.SET` · `ITEM.HIGHLIGHT` · `ITEM.SELECT` · `ITEMS.SYNC`
+
+## connect API
+
+`useMention` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+
+| 成员 | 类型 | 说明 |
+| --- | --- | --- |
+| `open` | `boolean` |  |
+| `collection` | `readonly MentionNodeMeta[]` | collection 推出的候选元信息，按数据顺序排列；没给 collection 即空数组。 |
+| `value` | `string` | 整段正文。 |
+| `query` | `string \| null` | 当前查询串；没有触发时为 null。 |
+| `activePrefix` | `string \| null` | 触发本次查询的前缀；没有触发时为 null。 |
+| `highlightedValue` | `string \| null` | 高亮候选；收起时为 null。焦点不在它身上，只经 aria-activedescendant 上报。 |
+| `disabled` | `boolean` |  |
+| `isHighlighted` | `(value: string) => boolean` |  |
+| `setValue` | `(next: string) => void` | 整段改写正文，浮层随之收起。 |
+| `close` | `() => void` |  |
+| `getRootProps` | `() => T['element']` |  |
+| `getInputProps` | `(props?: MentionInputProps) => T['textarea']` | 不传参即多行 textarea。 |
+| `getPositionerProps` | `() => T['element']` |  |
+| `getContentProps` | `() => T['element']` |  |
+| `getItemProps` | `(props: MentionItemProps) => T['element']` |  |
+| `getItemTextProps` | `(props: MentionItemProps) => T['element']` |  |
+
+## 键盘
+
+规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/#keyboardinteraction)
+
+| 按键 | 生效条件 | 行为 |
+| --- | --- | --- |
+| `前缀字符` | 光标前是行首或空白 | 开候选浮层，并把前缀到光标之间那段作为查询串交给宿主 |
+| `可打印字符` | open | 查询串跟着变长，过滤由调用方按 onQueryChange 自己做 |
+| `ArrowDown` | open | 高亮移到下一个候选（禁用项跳过、尽头按 loop 回绕），焦点不动 |
+| `ArrowUp` | open | 高亮移到上一个候选（禁用项跳过、尽头按 loop 回绕），焦点不动 |
+| `Enter` | open, 有高亮且未禁用 | 把候选文本插到光标处替换查询串，光标落到插入内容之后，浮层收起；这次回车不换行 |
+| `Enter` | open, 无可提交候选 | 照常换行，只把浮层收起来 |
+| `Escape` | open | 收起浮层且正文不变；光标不离开这个触发点就不再自动展开 |
+| `Tab` / `Shift+Tab` | open | 收起浮层且不拦按键，焦点按 Tab 序列自然离开 |
+| `ArrowLeft` / `ArrowRight` / `Home` / `End` | 任意时候 | 一律不接管：光标照常移动，触发按新的光标位置重算，挪出查询串即收起 |

@@ -12,6 +12,7 @@ const FAMILIES = [
   'context-menu',
   'date-picker',
   'hover-card',
+  'mention',
   'menu',
   'menubar',
   'popover',

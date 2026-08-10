@@ -1,0 +1,48 @@
+@layer xihan.components {
+  /*
+   * 盖水印的那块地。层叠上下文就地隔离，印子只压在这块地里，不会盖到组件外面去。
+   */
+  [data-scope='watermark'][data-part='root'] {
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* 被盖住的内容排在印子下面 */
+  [data-scope='watermark'][data-part='content'] {
+    position: relative;
+    z-index: 0;
+  }
+
+  /*
+   * 印子。图样由连接层算成一张 SVG，这里当遮罩用而不是当背景图铺：
+   * 遮罩只取图样的透明度，颜色从下面这个槽来，深浅主题各自跟着走；
+   * 当背景图铺就得把颜色写死在 SVG 里，换主题时那张图不会跟着变。
+   * 两条前缀都写：一部分 WebKit 只认带前缀那条。
+   *
+   * 没有可印的文字时 root 落 data-state="empty"，整层不画。
+   */
+  [data-scope='watermark'][data-part='root'][data-state='ready']::after {
+    content: '';
+
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+
+    /* 它只是一层印子：不吃点击，底下的内容照常点、照常选 */
+    pointer-events: none;
+    background-color: var(--xh-watermark-fg, var(--xh-fg-muted));
+    -webkit-mask-image: var(--xh-watermark-image, none);
+    mask-image: var(--xh-watermark-image, none);
+    -webkit-mask-repeat: repeat;
+    mask-repeat: repeat;
+    -webkit-mask-size: var(--xh-watermark-tile, auto);
+    mask-size: var(--xh-watermark-tile, auto);
+  }
+
+  /* 遮罩不支持时整层不画：只剩底色的话，盖上去的会是一整块实心色 */
+  @supports not ((mask-image: none) or (-webkit-mask-image: none)) {
+    [data-scope='watermark'][data-part='root'][data-state='ready']::after {
+      display: none;
+    }
+  }
+}

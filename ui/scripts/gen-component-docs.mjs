@@ -235,10 +235,13 @@ function demos(id) {
       const head
         = fs.readFileSync(path.join(dir, f), 'utf8').match(/^<!--([\s\S]*?)-->/)?.[1] ?? ''
       const [title, ...rest] = head.trim().split('|')
+      // 标题与说明是作者写的散文，裸的 < 会被 Vue 编译器当成缺闭合标签的元素、
+      // 让整站构建挂掉。这里统一转义，作者不必记着这条
+      const prose = x => x.replace(/</g, '&lt;')
       return {
         src,
         title: title.trim() || f.replace(/\.vue$/, ''),
-        description: rest.join('|').trim(),
+        description: prose(rest.join('|').trim()),
       }
     })
 }

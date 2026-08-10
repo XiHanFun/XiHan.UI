@@ -1,6 +1,8 @@
 import type { Cleanup, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/core'
 import type {
   ComboboxInputBehavior,
+  ComboboxInputEl,
+  ComboboxInputHost,
   ComboboxInputValueChangeDetails,
   ComboboxItemProps,
   ComboboxNode,
@@ -61,7 +63,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid）
  * @csspart label - 标题，须是原生 label（connect 给的 for 只在它身上生效）
  * @csspart control - 输入行容器，同时是浮层的定位锚点
- * @csspart input - role=combobox 的原生 input，整个组合框唯一的 Tab 停靠点
+ * @csspart input - 输入框，整个组合框唯一的 Tab 停靠点；写 input 时带 role=combobox，写 textarea 时保留它自带的 textbox 角色
  * @csspart trigger - 展开/收起按钮，须是原生 button；不占 Tab 位，可及名字由作者给
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位且对读屏隐藏
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
@@ -210,7 +212,7 @@ export class XhComboboxElement extends XhElement {
     svc.refs.set('getAnchorEl', () => this.getPart('control'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
     svc.refs.set('getContentEl', () => this.getPart('content'))
-    svc.refs.set('getInputEl', () => this.getPart('input') as HTMLInputElement | null)
+    svc.refs.set('getInputEl', () => this.getPart('input') as ComboboxInputEl | null)
   }
 
   /**
@@ -238,7 +240,9 @@ export class XhComboboxElement extends XhElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)
-    put('input', api.getInputProps() as Record<string, unknown>)
+    // 宿主标签直接读作者写的标记：作者摆的是 input 还是 textarea，DOM 已经说明白了
+    const inputHost: ComboboxInputHost = this.getPart('input')?.tagName === 'TEXTAREA' ? 'textarea' : 'input'
+    put('input', api.getInputProps({ as: inputHost }) as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     // positioner 的 style 是对象，spreader 会逐条写成内联样式

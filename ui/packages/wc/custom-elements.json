@@ -4880,7 +4880,7 @@
               "name": "control"
             },
             {
-              "description": "role=combobox 的原生 input，整个组合框唯一的 Tab 停靠点",
+              "description": "输入框，整个组合框唯一的 Tab 停靠点；写 input 时带 role=combobox，写 textarea 时保留它自带的 textbox 角色",
               "name": "input"
             },
             {
@@ -6100,6 +6100,176 @@
           "declaration": {
             "name": "XhContextMenuElement",
             "module": "src/elements/context-menu.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/countdown.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-countdown>` —— Light-DOM 行为宿主：作者写一个 root 角色节点，\n元素跑 countdown 机器，逐帧把剩余毫秒按模板铺成时分秒写进那个节点。\n\n剩余量走的是与数值动画同一份补间：起点是这一轮开始时的剩余毫秒、终点是 0、\n时长恰好等于起点本身。改写 `value` 即把剩余量落到新值并从那里重新计时，\n停在 idle 时改 `value` 同样会重新走起来。\n\n`precision` 管的是取值粒度而不是排版：0 取到整秒、3 取到整毫秒；\n想显示毫秒得把 precision 提上去，只在 `format` 里写 `SSS` 会一直是 `000`。\n\n根是 role=\"status\" 但 aria-live 缺省写死 off：status 的隐含 aria-live 就是 polite，\n一个每秒都在变的数字用 polite 会把读屏刷爆，要播报由作者把 live 开到 polite 或 assertive。",
+          "name": "XhCountdownElement",
+          "cssParts": [
+            {
+              "description": "时间本身（承载 status 语义、data-state 与 data-finished）；文字归元素写",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: countdownAnatomy, meta: countdownMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "format",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "format"
+            },
+            {
+              "kind": "field",
+              "name": "active",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "active"
+            },
+            {
+              "kind": "field",
+              "name": "precision",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "precision"
+            },
+            {
+              "kind": "field",
+              "name": "live",
+              "privacy": "public",
+              "type": {
+                "text": "CountdownLive | undefined"
+              },
+              "attribute": "live"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<CountdownSchema>(this, countdownMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<CountdownSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "走到 0；detail 为 `{ value: number }`",
+              "name": "finish"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "剩余毫秒，缺省 0",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "模板，缺省 `HH:mm:ss`；H 时、m 分、s 秒、S 毫秒，重复字母的个数即最少位数",
+              "name": "format",
+              "fieldName": "format"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "是否在走，缺省真；`active=\"false\"` 停在当前剩余量",
+              "name": "active",
+              "fieldName": "active"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "取值粒度：0 到秒、1 到十分之一秒、2 到百分之一秒、3 到毫秒，缺省 0",
+              "name": "precision",
+              "fieldName": "precision"
+            },
+            {
+              "type": {
+                "text": "CountdownLive | undefined"
+              },
+              "description": "读屏播报档位，缺省 off",
+              "name": "live",
+              "fieldName": "live"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-countdown",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhCountdownElement",
+          "declaration": {
+            "name": "XhCountdownElement",
+            "module": "src/elements/countdown.ts"
           }
         }
       ]
@@ -7953,6 +8123,243 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/dynamic-input.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-dynamic-input>` —— Light-DOM 行为宿主：作者写 root/item/item-content/item-action 与\nadd-trigger、remove-trigger、move-up-trigger、move-down-trigger 角色节点，\n元素跑 dynamic-input 机器并把 connect 产出打上去。\n\n值是宿主自己的数据数组，元素只管增删与换序这套动作，行里放什么控件由作者写进 item-content。\n行节点由作者按当前值渲染（一行一个 item，身份取节点上的 index 属性，缺省按文档序），\n值变了要由作者那一侧增删行节点，改完 MutationObserver 会自动重新接线。\n\n数据数组、造行工厂与读屏文案都表达不成属性，三者只作为 property 暴露。",
+          "name": "XhDynamicInputElement",
+          "cssParts": [
+            {
+              "description": "整份列表的容器，承载 data-disabled / data-empty / data-at-min / data-at-max / data-movable",
+              "name": "root"
+            },
+            {
+              "description": "一行一个，可自带 index 属性声明下标，缺省按文档序",
+              "name": "item"
+            },
+            {
+              "description": "一行里放作者自己控件的位置",
+              "name": "item-content"
+            },
+            {
+              "description": "一行里放把手的位置",
+              "name": "item-action"
+            },
+            {
+              "description": "新增把手，须是原生 `<button>`；到上限转 aria-disabled 但仍可聚焦；名字取自身内容",
+              "name": "add-trigger"
+            },
+            {
+              "description": "删除把手，须是原生 `<button>`；到下限转 aria-disabled；自带 aria-label",
+              "name": "remove-trigger"
+            },
+            {
+              "description": "上移把手，须是原生 `<button>`；首行转 aria-disabled；自带 aria-label",
+              "name": "move-up-trigger"
+            },
+            {
+              "description": "下移把手，须是原生 `<button>`；末行转 aria-disabled；自带 aria-label",
+              "name": "move-down-trigger"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: dynamicInputAnatomy, meta: dynamicInputMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "unknown[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "unknown[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "min",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "min"
+            },
+            {
+              "kind": "field",
+              "name": "max",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max"
+            },
+            {
+              "kind": "field",
+              "name": "createItem",
+              "privacy": "public",
+              "type": {
+                "text": "() => unknown | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "movable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "movable"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<DynamicInputTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "notifyValue",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<DynamicInputSchema>(this, dynamicInputMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<DynamicInputSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "partsIn",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "owner",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "数据数组变化；detail 为 `{ value: unknown[] }`",
+              "name": "value-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "最少几行；到了就按不动删除把手",
+              "name": "min",
+              "fieldName": "min"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "最多几行；到了就按不动新增把手",
+              "name": "max",
+              "fieldName": "max"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "出不出换序把手；关时两个换序把手一律收起",
+              "name": "movable",
+              "fieldName": "movable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用：新增、删除、换序三路都按不动",
+              "name": "disabled",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-dynamic-input",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhDynamicInputElement",
+          "declaration": {
+            "name": "XhDynamicInputElement",
+            "module": "src/elements/dynamic-input.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/editable.ts",
       "declarations": [
         {
@@ -8383,6 +8790,204 @@
           "declaration": {
             "name": "XhEditableElement",
             "module": "src/elements/editable.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/ellipsis.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-ellipsis>` —— 省略行为宿主：把一段文字夹在给定行数内，并如实报出它有没有被裁掉。\n\n量测在机器的效应里跑：挂载后推迟一拍量一次，此后跟着盒子尺寸与盒内文字的变化重量。\n结论落成 root 上的 data-overflowing，浮层不在这里做——要不要套一层提示由作者按这个属性决定。\n开了 tooltip 则另给一条不用浮层的路：真被裁了才把整段文字写进 root 的 title，交给平台的原生提示。\n\n行数写在 root 的内联 style 里（自定义属性只有这一条路能同时落到两个适配器上），\n于是 root 的内联 style 归本元素管，作者自己的内联样式写在外层元素上。",
+          "name": "XhEllipsisElement",
+          "cssParts": [
+            {
+              "description": "夹字的盒子，承载 data-lines / data-multiline / data-expandable / data-expanded / data-overflowing",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: ellipsisAnatomy, meta: ellipsisMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "lines",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "lines"
+            },
+            {
+              "kind": "field",
+              "name": "expandable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "expandable"
+            },
+            {
+              "kind": "field",
+              "name": "expanded",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "expanded"
+            },
+            {
+              "kind": "field",
+              "name": "defaultExpanded",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-expanded"
+            },
+            {
+              "kind": "field",
+              "name": "tooltip",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "tooltip"
+            },
+            {
+              "kind": "field",
+              "name": "notifyExpanded",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyOverflow",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<EllipsisSchema>( this, ellipsisMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<EllipsisSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<EllipsisSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "展开状态变化；detail 为 `{ expanded: boolean }`",
+              "name": "expanded-change"
+            },
+            {
+              "description": "溢出结论翻面；detail 为 `{ overflowing: boolean }`",
+              "name": "overflow-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "夹几行，1 为单行，默认 1",
+              "name": "lines",
+              "fieldName": "lines"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "点一下铺开全文",
+              "name": "expandable",
+              "fieldName": "expandable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控展开；缺省该属性即非受控",
+              "name": "expanded",
+              "fieldName": "expanded"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始为铺开",
+              "name": "default-expanded",
+              "fieldName": "defaultExpanded"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "真被裁了才把整段文字交给平台的原生提示",
+              "name": "tooltip",
+              "fieldName": "tooltip"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-ellipsis",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhEllipsisElement",
+          "declaration": {
+            "name": "XhEllipsisElement",
+            "module": "src/elements/ellipsis.ts"
           }
         }
       ]
@@ -9340,6 +9945,236 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/float-button.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-float-button>` —— 悬浮按钮行为宿主：一颗钉在视口一角的触发器，展开一组动作。\n\n开合跑的是 collapsible 机器——一颗触发器管着一组内容的开合，正是那台机器的活儿；\n落位、外形与展开方式不入机器，只决定接哪几个监听、往根上写哪几个 data-*。\n\n作者须把 trigger 写成 `<button>`：激活与 Tab 停靠由平台提供，元素不接管这两件。\n收起时 list 带 hidden，里面的按钮一并退出 Tab 序列与无障碍树。\n贴边距离写在 root 的内联 style 里（自定义属性只有这一条路能同时落到两个适配器上），\n于是 root 的内联 style 归本元素管，作者自己的内联样式写在外层元素上。",
+          "name": "XhFloatButtonElement",
+          "cssParts": [
+            {
+              "description": "定位壳，承载 data-state / data-placement / data-shape / data-disabled",
+              "name": "root"
+            },
+            {
+              "description": "触发按钮，须写成 `<button>`；可及名字由 translations.trigger 给",
+              "name": "trigger"
+            },
+            {
+              "description": "展开的那一组动作；收起时带 hidden",
+              "name": "list"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: floatButtonAnatomy, meta: floatButtonMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "defaultOpen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-open"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "placement",
+              "privacy": "public",
+              "type": {
+                "text": "FloatButtonPlacement | undefined"
+              },
+              "attribute": "placement"
+            },
+            {
+              "kind": "field",
+              "name": "offset",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "offset"
+            },
+            {
+              "kind": "field",
+              "name": "shape",
+              "privacy": "public",
+              "type": {
+                "text": "FloatButtonShape | undefined"
+              },
+              "attribute": "shape"
+            },
+            {
+              "kind": "field",
+              "name": "expandTrigger",
+              "privacy": "public",
+              "type": {
+                "text": "FloatButtonExpandTrigger | undefined"
+              },
+              "attribute": "expand-trigger"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<FloatButtonTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<CollapsibleSchema>( this, collapsibleMachine, () => this.machineProps(), )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<CollapsibleSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "appearance",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "FloatButtonAppearance"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "展开状态变化；detail 为 `{ open: boolean }`",
+              "name": "open-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控展开；缺省该属性即非受控",
+              "name": "open",
+              "fieldName": "open"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始为展开",
+              "name": "default-open",
+              "fieldName": "defaultOpen"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用触发器",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "FloatButtonPlacement | undefined"
+              },
+              "description": "钉在哪一角，默认 bottom-end",
+              "name": "placement",
+              "fieldName": "placement"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "距那两条边的距离（px），默认 24",
+              "name": "offset",
+              "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "FloatButtonShape | undefined"
+              },
+              "description": "触发器外形，默认 circle",
+              "name": "shape",
+              "fieldName": "shape"
+            },
+            {
+              "type": {
+                "text": "FloatButtonExpandTrigger | undefined"
+              },
+              "description": "展开方式，默认 click",
+              "name": "expand-trigger",
+              "fieldName": "expandTrigger"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-float-button",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhFloatButtonElement",
+          "declaration": {
+            "name": "XhFloatButtonElement",
+            "module": "src/elements/float-button.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/form.ts",
       "declarations": [
         {
@@ -9972,6 +10807,151 @@
           "declaration": {
             "name": "XhGridElement",
             "module": "src/elements/grid.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/highlight.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-highlight>` —— Light-DOM 行为宿主，无状态机，把 text 按 keyword 切段铺进 root。\n\n作者写一个空的行内容器当 root：命中位置是按 text 这个串逐字符算的，\n切出来的片段作者自己写不出，故 root 的内容整份由本元素接管，写在里面的东西会被替换掉。\n\n一处有多个关键词都命中时取最长的那个，重叠的命中只切出一段。\n关键词全程逐字符比对，不拼进正则：搜索框里敲进来的 `.` `*` `(` 都是普通字符。\n\n多个关键词只能走 property（`el.keyword = ['a', 'b']`）：属性里的一个串就是一个关键词，\n按空格拆的话带空格的关键词就没法写了。",
+          "name": "XhHighlightElement",
+          "cssParts": [
+            {
+              "description": "包住整段文本的容器，承载 data-case-sensitive",
+              "name": "root"
+            },
+            {
+              "description": "命中关键词的那一小段，渲染成 `<mark>`",
+              "name": "mark"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: highlightAnatomy, meta: highlightMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "text",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "text"
+            },
+            {
+              "kind": "field",
+              "name": "keyword",
+              "privacy": "public",
+              "type": {
+                "text": "string | readonly string[] | undefined"
+              },
+              "attribute": "keyword"
+            },
+            {
+              "kind": "field",
+              "name": "caseSensitive",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "case-sensitive"
+            },
+            {
+              "kind": "field",
+              "name": "#painted",
+              "privacy": "private",
+              "type": {
+                "text": "{ host: Element, key: string } | undefined"
+              },
+              "description": "上一次往哪个 root 铺过哪一串片段。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#paint",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "HighlightApi"
+                  }
+                }
+              ],
+              "description": "把切好的片段铺进 root：命中的建一个 `<mark>`，其余建文本节点。\n片段没变就不重铺——每帧重建节点会把用户正在拖的选区弄没。"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "要显示的整段文本",
+              "name": "text",
+              "fieldName": "text"
+            },
+            {
+              "type": {
+                "text": "string | readonly string[] | undefined"
+              },
+              "description": "一个关键词；一组关键词走 property",
+              "name": "keyword",
+              "fieldName": "keyword"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "区分大小写，缺省不区分",
+              "name": "case-sensitive",
+              "fieldName": "caseSensitive"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-highlight",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhHighlightElement",
+          "declaration": {
+            "name": "XhHighlightElement",
+            "module": "src/elements/highlight.ts"
           }
         }
       ]
@@ -12203,6 +13183,570 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/marquee.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-marquee>` —— Light-DOM 行为宿主，无状态机，把 connectMarquee 产出打到 root 与 content 上。\n\n作者写一个 root 窗口，里面写一条 content 轨道，内容放进轨道里。\n滚动整段在皮肤里：横竖各一条",
+          "name": "XhMarqueeElement",
+          "cssParts": [
+            {
+              "description": "只露出一段的窗口，承载 data-direction / data-orientation / data-pause-on-hover / data-auto-fill",
+              "name": "root"
+            },
+            {
+              "description": "在窗口里走的轨道，动画挂在它身上",
+              "name": "content"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: marqueeAnatomy, meta: marqueeMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "MarqueeDirection | undefined"
+              },
+              "attribute": "direction"
+            },
+            {
+              "kind": "field",
+              "name": "speed",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "speed"
+            },
+            {
+              "kind": "field",
+              "name": "pauseOnHover",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "pause-on-hover"
+            },
+            {
+              "kind": "field",
+              "name": "autoFill",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "auto-fill"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "MarqueeDirection | undefined"
+              },
+              "description": "滚动方向，缺省 left",
+              "name": "direction",
+              "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "每秒滚过的像素数，写成 root 上的 --xh-marquee-speed",
+              "name": "speed",
+              "fieldName": "speed"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "指针停在窗口上时暂停，键盘焦点落进窗口时同样暂停",
+              "name": "pause-on-hover",
+              "fieldName": "pauseOnHover"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "轨道里铺两份内容，走完一份正好接上第二份",
+              "name": "auto-fill",
+              "fieldName": "autoFill"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-marquee",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhMarqueeElement",
+          "declaration": {
+            "name": "XhMarqueeElement",
+            "module": "src/elements/marquee.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/mention.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-mention>` —— Light-DOM 行为宿主：作者写 root/input/positioner/content/item 角色节点，\n元素跑 mention 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点就是输入框本身（浮层贴着整个输入框，不跟着光标走）。\n\n与组合框的分水岭有两条。其一，浮层由「光标处的前缀字符」开合：前缀必须紧跟在行首或空白之后，\n邮箱地址里的 @ 因此不会误触发；前缀到光标之间那段就是查询串。其二，选中候选不是替换整个值，\n而是把那段查询串换成候选文本、前后文一字不动，光标随后落在插入内容之后。\n\ninput 部件写成 textarea（缺省）时保留它自带的 textbox 角色：ARIA in HTML 只允许 textarea\n取 textbox，而 aria-expanded 不在 textbox 的支持属性里，两者一并让位；\n「有候选浮层」改由 aria-haspopup、aria-controls、aria-autocomplete 与 aria-activedescendant 表达。\n写成 input 时才补上 role=combobox 与 aria-expanded。\n\n过滤不由本元素做：查询串变化时派发 query-change，作者据此增删 item 节点。",
+          "name": "XhMentionElement",
+          "cssParts": [
+            {
+              "description": "组件根容器（承载 data-state/data-disabled 与三个视觉轴）",
+              "name": "root"
+            },
+            {
+              "description": "输入框，写 textarea（推荐）或 input；可及名字由作者自己给",
+              "name": "input"
+            },
+            {
+              "description": "浮层定位容器，坐标由引擎写成内联样式",
+              "name": "positioner"
+            },
+            {
+              "description": "role=listbox 容器（消解层的根节点），收起时带 hidden",
+              "name": "content"
+            },
+            {
+              "description": "role=option 候选，须自带 value 属性标识身份；禁用写 aria-disabled=\"true\"",
+              "name": "item"
+            },
+            {
+              "description": "候选文本，也是插回正文的取字处",
+              "name": "item-text"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: mentionAnatomy, meta: mentionMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "MentionNode[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "MentionTranslations | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "triggerPrefix",
+              "privacy": "public",
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "attribute": "prefix"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "default-value"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "placeholder",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "loop",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "placement",
+              "privacy": "public",
+              "type": {
+                "text": "Placement | undefined"
+              },
+              "attribute": "placement"
+            },
+            {
+              "kind": "field",
+              "name": "offset",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "offset"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "mentionScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "positionEngine",
+              "type": {
+                "text": "PositionEnginePort"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "notifyValue",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyQuery",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifySelect",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyOpen",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<MentionSchema>( this, mentionMachine, () => this.machineProps(), { scope: this.mentionScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "declaredDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "description": "作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<MentionSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "registerLayer",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<MentionSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "partsIn",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "owner",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "正文变化；detail 为 `{ value: string }`",
+              "name": "value-change"
+            },
+            {
+              "description": "查询串变化；detail 为 `{ query, prefix }`，作者据此过滤候选；收起时报 null",
+              "name": "query-change"
+            },
+            {
+              "description": "候选被插进正文；detail 为 `{ value, label, prefix }`",
+              "name": "select"
+            },
+            {
+              "description": "浮层开合；detail 为 `{ open: boolean }`",
+              "name": "open-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "description": "开候选的前缀字符，默认 '@'；多种前缀并存请用 property 传数组",
+              "name": "prefix",
+              "fieldName": "triggerPrefix"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "受控正文；缺省该属性即非受控",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "非受控初始正文",
+              "name": "default-value",
+              "fieldName": "defaultValue"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "整个控件禁用：输入框用原生 disabled，候选一概不开",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "输入框占位文字；不写就保留作者标在 input 部件上的那份",
+              "name": "placeholder",
+              "fieldName": "placeholder"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "方向键走到尽头回绕，默认 true；写 loop=\"false\" 关掉",
+              "name": "loop",
+              "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "Placement | undefined"
+              },
+              "description": "首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上",
+              "name": "placement",
+              "fieldName": "placement"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "浮层与输入框的间距（px）",
+              "name": "offset",
+              "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "视觉变体",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-mention",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhMentionElement",
+          "declaration": {
+            "name": "XhMentionElement",
+            "module": "src/elements/mention.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/menu.ts",
       "declarations": [
         {
@@ -13335,6 +14879,261 @@
           "declaration": {
             "name": "XhNavigationMenuElement",
             "module": "src/elements/navigation-menu.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/number-animation.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-number-animation>` —— Light-DOM 行为宿主：作者写一个 root 角色节点，\n元素跑 number-animation 机器，逐帧把补间算出的数字格式化后写进那个节点。\n\n参数改写分两路：改 `from` 是\"换起点\"，数字当场落到新起点再重跑；\n改 `to` / `duration` / `easing` 是\"换目标\"，从当前数字接着走，不跳回起点。\n已经跑完停在 idle 时改 `to` 同样会重新跑起来，所以\"数字跟着数据走\"不必额外拨 `active`。\n\n根是 role=\"status\" 但 aria-live 缺省写死 off：status 的隐含 aria-live 就是 polite，\n一个每帧都在变的数字用 polite 会把读屏刷爆，要播报由作者把 live 开到 polite 或 assertive。",
+          "name": "XhNumberAnimationElement",
+          "cssParts": [
+            {
+              "description": "数字本身（承载 status 语义、data-state 与两个视觉轴）；文字归元素写",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: numberAnimationAnatomy, meta: numberAnimationMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "from",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "from"
+            },
+            {
+              "kind": "field",
+              "name": "to",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "to"
+            },
+            {
+              "kind": "field",
+              "name": "duration",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "duration"
+            },
+            {
+              "kind": "field",
+              "name": "easing",
+              "privacy": "public",
+              "type": {
+                "text": "NumberAnimationEasing | undefined"
+              },
+              "attribute": "easing"
+            },
+            {
+              "kind": "field",
+              "name": "precision",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "precision"
+            },
+            {
+              "kind": "field",
+              "name": "separator",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "separator"
+            },
+            {
+              "kind": "field",
+              "name": "active",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "active"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "NumberAnimationSize | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "NumberAnimationTone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "live",
+              "privacy": "public",
+              "type": {
+                "text": "NumberAnimationLive | undefined"
+              },
+              "attribute": "live"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<NumberAnimationSchema>(this, numberAnimationMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<NumberAnimationSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "走到终点；detail 为 `{ value: number }`",
+              "name": "finish"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "起点，缺省 0",
+              "name": "from",
+              "fieldName": "from"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "终点，缺省 0",
+              "name": "to",
+              "fieldName": "to"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "时长毫秒，缺省 1000；<=0 即一步到位",
+              "name": "duration",
+              "fieldName": "duration"
+            },
+            {
+              "type": {
+                "text": "NumberAnimationEasing | undefined"
+              },
+              "description": "缓动，缺省 linear",
+              "name": "easing",
+              "fieldName": "easing"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "小数位，缺省 0",
+              "name": "precision",
+              "fieldName": "precision"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "千位分隔符，缺省不分隔",
+              "name": "separator",
+              "fieldName": "separator"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "是否在跑，缺省真；`active=\"false\"` 停在当前值",
+              "name": "active",
+              "fieldName": "active"
+            },
+            {
+              "type": {
+                "text": "NumberAnimationSize | undefined"
+              },
+              "description": "尺寸，只改字号",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "NumberAnimationTone | undefined"
+              },
+              "description": "语气，决定数字用哪族颜色",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "NumberAnimationLive | undefined"
+              },
+              "description": "读屏播报档位，缺省 off",
+              "name": "live",
+              "fieldName": "live"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-number-animation",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhNumberAnimationElement",
+          "declaration": {
+            "name": "XhNumberAnimationElement",
+            "module": "src/elements/number-animation.ts"
           }
         }
       ]
@@ -21917,6 +23716,181 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/time.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-time>` —— Light-DOM 行为宿主，无状态机，把 connectTime 产出打到 root 角色节点。\n\n作者写一个空的 `<time data-xh-part=\"root\"></time>`：datetime 与显示文本都是算出来的，\n两者取自同一个墙钟，元素不做时区换算。作者若自己在这个节点里写了文本，那份文本原样留着，\n元素只覆盖自己上一次铺进去的那一份。\n\n认不出的时刻落 `data-state=\"invalid\"`，此时不写 datetime——\n与其给机器一个瞎编的时间戳，不如什么都不给。\n\n数字时间戳只能走 property（`el.value = 1786000000000`）：属性里的一串数字与年份写法分不开。",
+          "name": "XhTimeElement",
+          "cssParts": [
+            {
+              "description": "那个 `<time>`，承载 datetime / data-type / data-state / data-relative",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: timeAnatomy, meta: timeMeta, // root 不是 <time> 时 datetime 只是个自定义属性，机器读不到任何时刻 tags: { root: ['time'] }, }"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "TimeValue | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "type",
+              "privacy": "public",
+              "type": {
+                "text": "TimeType | undefined"
+              },
+              "attribute": "type"
+            },
+            {
+              "kind": "field",
+              "name": "format",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "format"
+            },
+            {
+              "kind": "field",
+              "name": "locale",
+              "privacy": "public",
+              "type": {
+                "text": "TimeLocale | undefined"
+              },
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "now",
+              "privacy": "public",
+              "type": {
+                "text": "TimeValue | undefined"
+              },
+              "attribute": "now"
+            },
+            {
+              "kind": "field",
+              "name": "#painted",
+              "privacy": "private",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "上一次铺进 root 的那份文本。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#paintText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "把格式化好的文本铺进 root。\n节点里已有的文本不是本元素铺的（作者自己写的兜底文案）就不动它。"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "TimeValue | undefined"
+              },
+              "description": "要显示的时刻；只写年月日的串按本地零点解读",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "TimeType | undefined"
+              },
+              "description": "呈现方式，缺省 datetime",
+              "name": "type",
+              "fieldName": "type"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "自定义格式串，记号是 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s",
+              "name": "format",
+              "fieldName": "format"
+            },
+            {
+              "type": {
+                "text": "TimeLocale | undefined"
+              },
+              "description": "用词，缺省 zh-CN；只换给人看的文本",
+              "name": "locale",
+              "fieldName": "locale"
+            },
+            {
+              "type": {
+                "text": "TimeValue | undefined"
+              },
+              "description": "算相对说法时的参照时刻，缺省取当前时刻",
+              "name": "now",
+              "fieldName": "now"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-time",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhTimeElement",
+          "declaration": {
+            "name": "XhTimeElement",
+            "module": "src/elements/time.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/timeline.ts",
       "declarations": [
         {
@@ -25934,6 +27908,151 @@
           "declaration": {
             "name": "XhVirtualizerElement",
             "module": "src/elements/virtualizer.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/watermark.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-watermark>` —— Light-DOM 行为宿主，无状态机，把 connectWatermark 产出打到 root 与 content 上。\n\n图样是一张按 props 算出来的 SVG，整段百分号编码成 data URI 写进 root 的内联 CSS 变量；\n铺成一层盖在内容之上的伪元素归皮肤管，因此印子不进无障碍树、不吃点击、也选不中。\n\n多行水印用 text 属性里的换行，或把 text 当 property 传一个字符串数组。\n没有可印的文字时 root 落 data-state=\"empty\"，皮肤整层不画。\n\n给了文字时 root 的内联 style 归本元素管，作者自己的内联样式请写在宿主元素上。",
+          "name": "XhWatermarkElement",
+          "cssParts": [
+            {
+              "description": "盖水印的那块地，承载 data-state 与图样、步距两个变量",
+              "name": "root"
+            },
+            {
+              "description": "被盖住的那段内容",
+              "name": "content"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: watermarkAnatomy, meta: watermarkMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "text",
+              "privacy": "public",
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "attribute": "text"
+            },
+            {
+              "kind": "field",
+              "name": "rotate",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "rotate"
+            },
+            {
+              "kind": "field",
+              "name": "gap",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "gap"
+            },
+            {
+              "kind": "field",
+              "name": "fontSize",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "font-size"
+            },
+            {
+              "kind": "field",
+              "name": "opacity",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "opacity"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "description": "水印文字，换行即多行",
+              "name": "text",
+              "fieldName": "text"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "倾斜角度（度），缺省 -22",
+              "name": "rotate",
+              "fieldName": "rotate"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "两块图样之间的空白（像素），缺省 24",
+              "name": "gap",
+              "fieldName": "gap"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "字号（像素），缺省 14",
+              "name": "font-size",
+              "fieldName": "fontSize"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "印子的深浅，0 到 1，缺省 0.15",
+              "name": "opacity",
+              "fieldName": "opacity"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-watermark",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhWatermarkElement",
+          "declaration": {
+            "name": "XhWatermarkElement",
+            "module": "src/elements/watermark.ts"
           }
         }
       ]

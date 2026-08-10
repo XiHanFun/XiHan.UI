@@ -1,0 +1,7 @@
+export { highlightAnatomy } from './highlight.anatomy'
+export { connectHighlight } from './highlight.connect'
+export { highlightKeyboard } from './highlight.keyboard'
+export { highlightMeta } from './highlight.meta'
+export { normalizeHighlightKeywords, splitHighlight } from './highlight.split'
+export type { HighlightSegment } from './highlight.split'
+export type { HighlightApi, HighlightProps } from './highlight.types'

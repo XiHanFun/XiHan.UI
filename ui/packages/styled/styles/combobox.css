@@ -150,6 +150,20 @@
     display: none;
   }
 
+  /* 多行宿主：输入行不再是固定一行高，改由 textarea 自己的行数撑开。
+     两个按钮跟着贴到顶上对齐首行，不然它们会浮在整块文字的正中间 */
+  [data-scope='combobox'][data-part='control']:has([data-part='input'][data-multiline]) {
+    align-items: start;
+    block-size: auto;
+    padding-block: var(--xh-field-py);
+  }
+
+  [data-scope='combobox'][data-part='input'][data-multiline] {
+    block-size: auto;
+    /* 只许纵向拉伸：横向拉宽会把浮层与输入行的对齐拽歪 */
+    resize: vertical;
+  }
+
   [data-scope='combobox'][data-part='input']::placeholder {
     color: var(--xh-combobox-placeholder-fg, var(--xh-fg-subtle));
   }

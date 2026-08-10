@@ -171,6 +171,14 @@
         {
           "id": "popselect",
           "name": "弹出选择"
+        },
+        {
+          "id": "dynamic-input",
+          "name": "动态录入"
+        },
+        {
+          "id": "mention",
+          "name": "提及"
         }
       ]
     },
@@ -254,6 +262,22 @@
         {
           "id": "qr-code",
           "name": "二维码"
+        },
+        {
+          "id": "number-animation",
+          "name": "数值动画"
+        },
+        {
+          "id": "countdown",
+          "name": "倒计时"
+        },
+        {
+          "id": "time",
+          "name": "时间"
+        },
+        {
+          "id": "highlight",
+          "name": "文本高亮"
         }
       ]
     },
@@ -317,6 +341,10 @@
         {
           "id": "page-header",
           "name": "页头"
+        },
+        {
+          "id": "float-button",
+          "name": "浮动按钮"
         }
       ]
     },
@@ -414,6 +442,18 @@
         {
           "id": "layout",
           "name": "布局"
+        },
+        {
+          "id": "marquee",
+          "name": "跑马灯"
+        },
+        {
+          "id": "watermark",
+          "name": "水印"
+        },
+        {
+          "id": "ellipsis",
+          "name": "文本省略"
         }
       ]
     }
