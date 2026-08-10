@@ -63,6 +63,6 @@ pnpm size         # bundle size ratchet — builds, then checks the 17 budgets i
 ## Conventions
 
 - Internal dependencies are always `workspace:*`; third-party versions come from the workspace catalog only.
-- `packages/core` and `packages/machine` have zero runtime dependencies.
+- `packages/engine/kernel` and `packages/engine/machine` have zero runtime dependencies.
 - Layer order is enforced by dependency-cruiser, not by convention.
 - Commits follow conventional commits; releases go through changesets as one fixed version group.

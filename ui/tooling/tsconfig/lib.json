@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "@xihan-ui lib (packages/*)",
+  "display": "@xihan-ui lib (packages/*/*)",
   "extends": "./base.json",
   "compilerOptions": {
     "lib": ["ES2023", "DOM", "DOM.Iterable"],

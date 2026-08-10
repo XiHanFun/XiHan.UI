@@ -65,9 +65,9 @@ cd XiHan.UI/ui && pnpm build
 ```json
 {
   "dependencies": {
-    "@xihan-ui/vue": "link:../XiHan.UI/ui/packages/vue",
-    "@xihan-ui/styles": "link:../XiHan.UI/ui/packages/styled",
-    "@xihan-ui/tokens": "link:../XiHan.UI/ui/packages/system"
+    "@xihan-ui/vue": "link:../XiHan.UI/ui/packages/adapters/vue",
+    "@xihan-ui/styles": "link:../XiHan.UI/ui/packages/design/styles",
+    "@xihan-ui/tokens": "link:../XiHan.UI/ui/packages/design/tokens"
   }
 }
 ```

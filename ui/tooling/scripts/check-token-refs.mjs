@@ -5,8 +5,8 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-const STYLES_DIR = 'packages/styled/styles'
-const TOKENS_CSS = 'packages/system/tokens.css'
+const STYLES_DIR = 'packages/design/styles/styles'
+const TOKENS_CSS = 'packages/design/tokens/tokens.css'
 
 /** 组件私有槽：由皮肤自己声明或留给使用者覆盖，不在令牌产物里。 */
 function isComponentSlot(name, declaredInStyles) {

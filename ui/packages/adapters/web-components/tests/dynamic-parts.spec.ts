@@ -64,7 +64,7 @@ function addTrigger(el: HTMLElement, value: string): HTMLElement {
 }
 
 // 作者在运行期直接改 Light DOM 是 WC 独有的用法（Vue 侧条目是组件、增删自带渲染）。
-// 不观察子节点变动就会留下"死条目"。其余仍存在的适配器差异见 packages/wc/README.md。
+// 不观察子节点变动就会留下"死条目"。其余仍存在的适配器差异见 packages/adapters/web-components/README.md。
 describe('xhElement 运行期增删角色节点', () => {
   it('新增的条目会被接线：拿到 part 标记与身份，且能被点击切换', async () => {
     const el = mountTabs(['one', 'two'])

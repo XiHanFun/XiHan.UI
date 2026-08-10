@@ -8,9 +8,9 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-const HEADLESS = 'packages/headless/src'
-const VUE = 'packages/vue/src/components'
-const WC = 'packages/wc/src/elements'
+const HEADLESS = 'packages/engine/headless/src'
+const VUE = 'packages/adapters/vue/src/components'
+const WC = 'packages/adapters/web-components/src/elements'
 
 /** 只在某一端存在的角色节点，逐条写明理由。 */
 const EXEMPT = {}

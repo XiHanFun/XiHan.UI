@@ -39,7 +39,7 @@ primitive  ──►  semantic  ──►  组件私有槽
 
 语义层按角色分组：`bg-*` 背景、`fg-*` 前景、`border-*` 描边、`control-*` 控件尺寸、`shape-*` 圆角、`ring-*` 焦点环、`elevation-*` 阴影、`motion-*` 时长与缓动、`layer-*` 层级、`overlay-*` 浮层尺寸、`text-*` 排版。
 
-令牌源是 DTCG 格式的 JSON（`packages/system/tokens/`），产物由构建脚本生成，`tokens.css` / `tokens.json` / `src/generated/tokens.ts` 三份都入库。产物与源是否同步由 CI 重跑生成后比对，改源忘了跑生成会被拦下。
+令牌源是 DTCG 格式的 JSON（`packages/design/tokens/tokens/`），产物由构建脚本生成，`tokens.css` / `tokens.json` / `src/generated/tokens.ts` 三份都入库。产物与源是否同步由 CI 重跑生成后比对，改源忘了跑生成会被拦下。
 
 ## 主题运行时
 
@@ -94,7 +94,7 @@ interface ThemePreference {
 ::: warning 只有色彩模式一维真正接完
 主题运行时对五个维度一视同仁地写属性，但令牌产物**目前只对 `data-theme` 的明暗两值给出了不同取值**。`data-density='compact'`、`data-contrast='more'`、`data-brand` 三个属性会被写到 DOM 上，令牌层却还没有对应的取值块——换句话说，切换密度、高对比度、品牌**当前不会改变任何视觉表现**。
 
-这三条轴是设计上预留的接入点，接法已经确定（在 `packages/system/tokens/` 下补对应的语义取值文件，重跑生成），但还没有落地。
+这三条轴是设计上预留的接入点，接法已经确定（在 `packages/design/tokens/tokens/` 下补对应的语义取值文件，重跑生成），但还没有落地。
 :::
 
 ## 服务端渲染

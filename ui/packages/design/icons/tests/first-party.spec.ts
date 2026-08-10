@@ -6,7 +6,7 @@ import { buildIconSet, exportNameOf, renderDeclaration, renderModule, renderType
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
 const SVG_DIR = join(ROOT, 'src', 'svg')
-const CORE_ICON_TYPES = join(ROOT, '..', 'core', 'src', 'types', 'icon.ts')
+const CORE_ICON_TYPES = join(ROOT, '..', '..', 'engine', 'kernel', 'src', 'types', 'icon.ts')
 
 /** 第一批要画的语义，来自组件库自用图标清单。少一个就有组件还在拿 Unicode 字符顶。 */
 const EXPECTED = [
@@ -187,7 +187,7 @@ describe('产物', () => {
       expect(dts).toContain(`export declare const ${exportName}: IconRecord`)
   })
 
-  it('类型副本是 core 那份逐字节原文，只在最前面多一行来源说明', async () => {
+  it('类型副本是 kernel 那份逐字节原文，只在最前面多一行来源说明', async () => {
     const core = await readFile(CORE_ICON_TYPES, 'utf8')
     const copy = renderTypes(core)
     expect(copy.startsWith(`${TYPES_HEADER}\n`)).toBe(true)

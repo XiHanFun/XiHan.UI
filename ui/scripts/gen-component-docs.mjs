@@ -40,7 +40,7 @@ function camel(id) {
 // ── 产物元数据 ────────────────────────────────────────────────────────────────
 
 const headless = await import(
-  new URL('../packages/headless/dist/index.js', import.meta.url).href,
+  new URL('../packages/engine/headless/dist/index.js', import.meta.url).href,
 )
 
 function runtimeMeta(id) {
@@ -61,7 +61,7 @@ function runtimeMeta(id) {
 // ── 适配器产物 ────────────────────────────────────────────────────────────────
 
 const vueIndex = fs.readFileSync(
-  path.join(uiRoot, 'packages/vue/dist/index.d.ts'),
+  path.join(uiRoot, 'packages/adapters/vue/dist/index.d.ts'),
   'utf8',
 )
 const vueExports = new Set(
@@ -70,7 +70,7 @@ const vueExports = new Set(
   ),
 )
 
-const wcDefine = fs.readFileSync(path.join(uiRoot, 'packages/wc/src/define.ts'), 'utf8')
+const wcDefine = fs.readFileSync(path.join(uiRoot, 'packages/adapters/web-components/src/define.ts'), 'utf8')
 const wcTags = new Set([...wcDefine.matchAll(/['"`](xh-[a-z0-9-]+)['"`]/g)].map(m => m[1]))
 
 function adapterArtifacts(id) {
@@ -88,7 +88,7 @@ function adapterArtifacts(id) {
     .sort()
   const composable = vueExports.has(`use${P}`) ? `use${P}` : null
   const tag = wcTags.has(`xh-${id}`) ? `xh-${id}` : null
-  const skinPath = path.join(uiRoot, 'packages/styled/styles', `${id}.css`)
+  const skinPath = path.join(uiRoot, 'packages/design/styles/styles', `${id}.css`)
   const skin = fs.existsSync(skinPath) ? `@xihan-ui/styles/${id}.css` : null
   return { components, composable, tag, skin }
 }
@@ -96,10 +96,10 @@ function adapterArtifacts(id) {
 // ── 类型元数据 ────────────────────────────────────────────────────────────────
 
 const typeFiles = fs
-  .readdirSync(path.join(uiRoot, 'packages/headless/src'), { withFileTypes: true })
+  .readdirSync(path.join(uiRoot, 'packages/engine/headless/src'), { withFileTypes: true })
   .filter(d => d.isDirectory())
   .flatMap((d) => {
-    const dir = path.join(uiRoot, 'packages/headless/src', d.name)
+    const dir = path.join(uiRoot, 'packages/engine/headless/src', d.name)
     return fs
       .readdirSync(dir)
       .filter(f => f.endsWith('.types.ts'))

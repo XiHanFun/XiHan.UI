@@ -47,9 +47,9 @@ export default function xihanUi(options = {}, ...userConfigs) {
       },
     },
     {
-      // foundation 层必须框架无关：core/machine/behavior/headless/system 不得 import 任何框架库
+      // foundation 必须框架无关：engine 组整组 + 设计令牌不得 import 任何框架库
       // （含 import type——框架特定代码一律放各适配器包 vue/wc/...）。这是"框架无关"的机读门禁。
-      files: ['packages/{core,machine,behavior,headless,system}/src/**/*.ts'],
+      files: ['packages/engine/*/src/**/*.ts', 'packages/design/tokens/src/**/*.ts'],
       rules: {
         'no-restricted-imports': ['error', {
           patterns: [{

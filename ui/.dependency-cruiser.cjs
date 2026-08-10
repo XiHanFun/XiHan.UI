@@ -12,10 +12,18 @@ const names = Object.keys(layers)
 // 规则是按键生成的：键多出来（指向不存在的包）不生成任何有效规则，键少一个（新包没登记）
 // 则那个包既不受约束、也不出现在任何 forbidden 列表里——两种漂移都让 depcruise 报绿。
 // 真发生过：i18n 与 pro 两个键在 packages/ 下根本不存在，长期无人发现。
+//
+// 包在 packages/ 下按角色分两级（adapters / design / features / engine），键就是那两级路径。
+// 新开一个角色组也归这条管：组里的包没登记照样抛错。
 {
-  const dirs = readdirSync('packages', { withFileTypes: true })
+  const groups = readdirSync('packages', { withFileTypes: true })
     .filter(entry => entry.isDirectory())
     .map(entry => entry.name)
+  const dirs = groups.flatMap(group =>
+    readdirSync(`packages/${group}`, { withFileTypes: true })
+      .filter(entry => entry.isDirectory())
+      .map(entry => `${group}/${entry.name}`),
+  )
   const missing = dirs.filter(dir => !names.includes(dir))
   const ghost = names.filter(name => !dirs.includes(name))
   if (missing.length || ghost.length) {
@@ -41,7 +49,7 @@ const layerRules = names
       severity: 'error',
       comment: `packages/${from} 只能依赖 [${[...allowed].join(', ')}]`,
       // 只管 src：分层约束的是发出去的那份实现。
-      // 测试要跨层取材（浏览器态无障碍扫描必须加载 styled 的皮肤才量得到对比度），
+      // 测试要跨层取材（浏览器态无障碍扫描必须加载 design/styles 的皮肤才量得到对比度），
       // 把 tests 一起管住只会逼人把跨层依赖藏进别处。
       from: { path: `^packages/${from}/src/` },
       to: { path: `^packages/(${forbidden.join('|')})/` },
@@ -67,10 +75,10 @@ module.exports = {
       to: { couldNotResolve: true },
     },
     {
-      name: 'styled-no-js-deps',
+      name: 'styles-no-js-deps',
       severity: 'error',
-      comment: 'packages/styled 是纯 CSS，不得依赖任何 JS 包',
-      from: { path: '^packages/styled/' },
+      comment: 'packages/design/styles 是纯 CSS，不得依赖任何 JS 包',
+      from: { path: '^packages/design/styles/' },
       to: { path: '^packages/' },
     },
     {
@@ -78,7 +86,8 @@ module.exports = {
       severity: 'error',
       comment: '库包的运行时代码不得引第三方；确需保留的登记进 RUNTIME_DEP_ALLOWLIST 与 check-runtime-deps.mjs',
       // 只管 src，与分层规则同一道理：测试要引 vitest 与 jsdom，那是工具不是产物。
-      from: { path: '^packages/[^/]+/src/' },
+      // 两级：packages/<角色组>/<包>/src/
+      from: { path: '^packages/[^/]+/[^/]+/src/' },
       to: {
         // 只咬会随包发出去的与压根没声明的。peer 不算：适配器引宿主框架正是它的契约。
         dependencyTypes: ['npm', 'npm-optional', 'npm-bundled', 'npm-no-pkg', 'npm-unknown'],
