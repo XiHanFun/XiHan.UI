@@ -254,6 +254,155 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/affix.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-affix>` —— 吸附行为宿主：滚过判定线就把 content 钉在滚动容器可视区的边上。\n\nroot 是占位盒，content 吸住时脱离常规流，root 留在原位撑住那块空间，页面不跳。\n判定与量测都在机器的效应里做：挂载后推迟一拍量一次，此后跟着 scroll 与 resize 走。\n钉住的落位（top / bottom / left / width）由机器量好写进 content 的内联样式，\n皮肤只按 data-affixed 给 position 与层级。",
+          "name": "XhAffixElement",
+          "cssParts": [
+            {
+              "description": "占位盒，吸住时带上冻结的高度",
+              "name": "root"
+            },
+            {
+              "description": "真正被钉住的那块内容，吸住时带 data-affixed",
+              "name": "content"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: affixAnatomy, meta: affixMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "topOffset",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "offset-top"
+            },
+            {
+              "kind": "field",
+              "name": "bottomOffset",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "offset-bottom"
+            },
+            {
+              "kind": "field",
+              "name": "target",
+              "privacy": "public",
+              "type": {
+                "text": "HTMLElement | null | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<AffixSchema>( this, affixMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<AffixSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<AffixSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "吸附状态变化；detail 为 `{ affixed: boolean }`",
+              "name": "affix-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "吸住后距滚动容器可视区上边的距离（px），默认 0",
+              "name": "offset-top",
+              "fieldName": "topOffset"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "吸住后距可视区下边的距离（px）；给了它就改贴下边",
+              "name": "offset-bottom",
+              "fieldName": "bottomOffset"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-affix",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhAffixElement",
+          "declaration": {
+            "name": "XhAffixElement",
+            "module": "src/elements/affix.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/alert.ts",
       "declarations": [
         {
@@ -710,6 +859,100 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/avatar-group.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-avatar-group>` —— Light-DOM 行为宿主，无状态机，把 connectAvatarGroup 产出打到各角色节点。\n\n组内每一枚头像是作者自己的节点，不是本组件的角色节点：尺寸写在根上，\n皮肤把它翻成 `--xh-avatar-*` 槽位，沿继承流给每一枚。\noverflow 可缺省：没超出上限时就没有「+N」。",
+          "name": "XhAvatarGroupElement",
+          "cssParts": [
+            {
+              "description": "组容器，承载 data-size 与 data-max",
+              "name": "root"
+            },
+            {
+              "description": "溢出计数位，内容（「+N」）由作者写",
+              "name": "overflow"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: avatarGroupAnatomy, meta: avatarGroupMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "max",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "展示上限，如实落成根上的 data-max；裁剪与计数由作者做",
+              "name": "max",
+              "fieldName": "max"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸，决定组内每一枚的直径与字号",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-avatar-group",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhAvatarGroupElement",
+          "declaration": {
+            "name": "XhAvatarGroupElement",
+            "module": "src/elements/avatar-group.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/avatar.ts",
       "declarations": [
         {
@@ -867,6 +1110,197 @@
           "declaration": {
             "name": "XhAvatarElement",
             "module": "src/elements/avatar.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/back-top.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-back-top>` —— 回到顶部行为宿主：滚动量过线时露出按钮，点它滚回顶部。\n\n作者须把 trigger 写成 `<button>`：激活与 Tab 停靠由平台提供，元素不接管任何按键。\n收起时整个 root 带 hidden，按钮一并退出 Tab 序列与无障碍树——\n靠不透明度藏起来的按钮仍然可聚焦、仍然被读屏念到。",
+          "name": "XhBackTopElement",
+          "cssParts": [
+            {
+              "description": "定位壳，承载 data-visible / data-tone / data-size；收起时带 hidden",
+              "name": "root"
+            },
+            {
+              "description": "按钮，须写成 `<button>`；可及名字由 translations.trigger 给",
+              "name": "trigger"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: backTopAnatomy, meta: backTopMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "visibilityHeight",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "visibility-height"
+            },
+            {
+              "kind": "field",
+              "name": "behavior",
+              "privacy": "public",
+              "type": {
+                "text": "BackTopBehavior | undefined"
+              },
+              "attribute": "behavior"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<BackTopTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "target",
+              "privacy": "public",
+              "type": {
+                "text": "HTMLElement | null | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<BackTopSchema>( this, backTopMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<BackTopSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<BackTopSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "露面与否变化；detail 为 `{ visible: boolean }`",
+              "name": "visible-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "滚过这么多像素按钮才露面，默认 200",
+              "name": "visibility-height",
+              "fieldName": "visibilityHeight"
+            },
+            {
+              "type": {
+                "text": "BackTopBehavior | undefined"
+              },
+              "description": "滚回顶部的方式，默认 smooth",
+              "name": "behavior",
+              "fieldName": "behavior"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-back-top",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhBackTopElement",
+          "declaration": {
+            "name": "XhBackTopElement",
+            "module": "src/elements/back-top.ts"
           }
         }
       ]
@@ -1109,6 +1543,130 @@
           "declaration": {
             "name": "XhBreadcrumbElement",
             "module": "src/elements/breadcrumb.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/button-group.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-button-group>` —— Light-DOM 行为宿主，无状态机，把 connectButtonGroup 产出打到 root 角色节点。\n\n组内每一段是作者自己的按钮，不是本组件的角色节点：三个视觉轴写在根上，\n皮肤把它们翻成 `--xh-button-*` 槽位，沿继承流给每一段。",
+          "name": "XhButtonGroupElement",
+          "cssParts": [
+            {
+              "description": "组容器，承载 role=group 与 data-orientation / data-variant / data-tone / data-size",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: buttonGroupAnatomy, meta: buttonGroupMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "orientation",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "orientation"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "排布，决定相邻两段在哪个轴上合边，默认 horizontal",
+              "name": "orientation",
+              "fieldName": "orientation"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "形态，决定底色、描边与前景怎么用",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气，决定用哪族颜色",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸，决定各段的高度、内边距与字号",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-button-group",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhButtonGroupElement",
+          "declaration": {
+            "name": "XhButtonGroupElement",
+            "module": "src/elements/button-group.ts"
           }
         }
       ]
@@ -1687,6 +2245,154 @@
           "declaration": {
             "name": "XhCalendarElement",
             "module": "src/elements/calendar.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/card.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-card>` —— Light-DOM 行为宿主，无状态机，把 connectCard 产出打到各角色节点。\n除 root 外的部件全部可缺省：封面、头、身、脚按需摆，一个不写也是一张合法的卡片。\n\n根上不写 role：卡片是不是地标、要不要可及名字，由里面放了什么内容决定，作者自己声明。",
+          "name": "XhCardElement",
+          "cssParts": [
+            {
+              "description": "卡片根容器，承载 data-variant / data-size / data-hoverable / data-segmented",
+              "name": "root"
+            },
+            {
+              "description": "封面位，通常放图片，压在头部之上",
+              "name": "cover"
+            },
+            {
+              "description": "头部，装标题与描述",
+              "name": "header"
+            },
+            {
+              "description": "标题",
+              "name": "title"
+            },
+            {
+              "description": "标题下的说明",
+              "name": "description"
+            },
+            {
+              "description": "主体内容",
+              "name": "body"
+            },
+            {
+              "description": "底部，通常放操作",
+              "name": "footer"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: cardAnatomy, meta: cardMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "hoverable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "hoverable"
+            },
+            {
+              "kind": "field",
+              "name": "segmented",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "segmented"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "形态，决定描边、底色与投影怎么用",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸，决定各段的内边距与标题字号",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "指针悬停时抬起",
+              "name": "hoverable",
+              "fieldName": "hoverable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "在头、身、脚之间画分隔线",
+              "name": "segmented",
+              "fieldName": "segmented"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-card",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhCardElement",
+          "declaration": {
+            "name": "XhCardElement",
+            "module": "src/elements/card.ts"
           }
         }
       ]
@@ -8340,6 +9046,164 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/flex.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-flex>` —— Light-DOM 行为宿主，无状态机，把 connectFlex 产出打到 root 角色节点。\n六个排版参数原样落成 data-*，排布规则写在皮肤里。\n\n根上不写 role：容器只做排布，里面装的是列表还是一组按钮由作者自己声明。",
+          "name": "XhFlexElement",
+          "cssParts": [
+            {
+              "description": "排布容器，承载 data-direction / data-align / data-justify / data-gap / data-wrap / data-inline",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: flexAnatomy, meta: flexMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "direction"
+            },
+            {
+              "kind": "field",
+              "name": "align",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "align"
+            },
+            {
+              "kind": "field",
+              "name": "justify",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "justify"
+            },
+            {
+              "kind": "field",
+              "name": "gap",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "gap"
+            },
+            {
+              "kind": "field",
+              "name": "wrap",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "wrap"
+            },
+            {
+              "kind": "field",
+              "name": "inline",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "inline"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "主轴方向，缺省 row",
+              "name": "direction",
+              "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "交叉轴对齐",
+              "name": "align",
+              "fieldName": "align"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "主轴分布",
+              "name": "justify",
+              "fieldName": "justify"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "子项间距档位，逐档对应一个间距令牌",
+              "name": "gap",
+              "fieldName": "gap"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "一行放不下时折行",
+              "name": "wrap",
+              "fieldName": "wrap"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "容器按行内盒排版，宽度收到内容",
+              "name": "inline",
+              "fieldName": "inline"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-flex",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhFlexElement",
+          "declaration": {
+            "name": "XhFlexElement",
+            "module": "src/elements/flex.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/form.ts",
       "declarations": [
         {
@@ -9064,6 +9928,113 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/icon-wrapper.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-icon-wrapper>` —— Light-DOM 行为宿主，无状态机，把 connectIconWrapper 产出打到 root 角色节点。\n\n根上不写 role、也不写 aria-hidden：里面那个图元是装饰还是信息，由作者按用途声明。",
+          "name": "XhIconWrapperElement",
+          "cssParts": [
+            {
+              "description": "底座容器，承载 data-variant / data-tone / data-size",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: iconWrapperAnatomy, meta: iconWrapperMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "形态，决定底色、描边与前景怎么用",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气，决定用哪族颜色",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸，决定底座直径与里面图元的直径",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-icon-wrapper",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhIconWrapperElement",
+          "declaration": {
+            "name": "XhIconWrapperElement",
+            "module": "src/elements/icon-wrapper.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/icon.ts",
       "declarations": [
         {
@@ -9467,6 +10438,172 @@
           "declaration": {
             "name": "XhImageElement",
             "module": "src/elements/image.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/infinite-scroll.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-infinite-scroll>` —— 无限滚动行为宿主：摆在列表末尾的哨兵一进可视区就报「该取下一页了」。\n\n滚动本身一概不接管，走浏览器原生通路；触发的判据是哨兵与可视区的交叠。\n列表滚在某个 overflow 容器里时把容器交给 target：distance 的提前量扩的正是那块可视区，\n不给就只对窗口视口生效，落到列表上等于没写。\n观察器只在 idle 挂着：loading 与 disabled 两段都不观察，哨兵留在可视区里也不会连着触发第二次。",
+          "name": "XhInfiniteScrollElement",
+          "cssParts": [
+            {
+              "description": "列表外壳，承载 data-state / data-loading / data-disabled 与 aria-busy",
+              "name": "root"
+            },
+            {
+              "description": "哨兵，摆在列表末尾；对读屏隐藏",
+              "name": "sentinel"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: infiniteScrollAnatomy, meta: infiniteScrollMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "distance",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "distance"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loading"
+            },
+            {
+              "kind": "field",
+              "name": "target",
+              "privacy": "public",
+              "type": {
+                "text": "HTMLElement | null | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<InfiniteScrollSchema>( this, infiniteScrollMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<InfiniteScrollSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<InfiniteScrollSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "该取下一页了",
+              "name": "load"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "提前量（px）：哨兵离可视区还有这么远就算进入，默认 0",
+              "name": "distance",
+              "fieldName": "distance"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "关掉，不再观察也不再触发",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "正在取数，其间不观察、不重复触发；取完由宿主写回 false",
+              "name": "loading",
+              "fieldName": "loading"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-infinite-scroll",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhInfiniteScrollElement",
+          "declaration": {
+            "name": "XhInfiniteScrollElement",
+            "module": "src/elements/infinite-scroll.ts"
           }
         }
       ]
@@ -10097,6 +11234,209 @@
           "declaration": {
             "name": "XhLoadingBarElement",
             "module": "src/elements/loading-bar.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/log.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-log>` —— Light-DOM 行为宿主：作者写 root/viewport/content/line 角色节点，\n元素把 connectLog 的产出打上去。行长出来时跟随滚动到底部，用户上滚后解除粘附，\n滚回底部阈值内或调 scrollToBottom() 时恢复。\n\n粘底整套复用 thread 的机器：它只认滚动容器与内容容器两个节点，不认解剖。\n\n行的内容不替作者生成：文本、级别、时间戳、标注都写在 line 角色节点里，元素只发身份与等宽排版。",
+          "name": "XhLogElement",
+          "cssParts": [
+            {
+              "description": "组件根容器，承载 data-loading / data-at-bottom / data-sticking",
+              "name": "root"
+            },
+            {
+              "description": "滚动容器；role=log + tabindex=0，按行数定高写进内联样式",
+              "name": "viewport"
+            },
+            {
+              "description": "所有行的包裹层，尺寸变化的观察目标",
+              "name": "content"
+            },
+            {
+              "description": "一行日志，只拿身份与等宽排版",
+              "name": "line"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: logAnatomy, meta: logMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "rows",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "rows"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loading"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<LogTranslations> | undefined"
+              },
+              "description": "日志区的无障碍名，由 connect 写到视口上。"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "logScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<ThreadSchema>( this, threadMachine, () => ({ onStickChange: this.notify }), { scope: this.logScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<ThreadSchema>"
+                  }
+                }
+              ],
+              "description": "装填 config 与两个节点 getter；onBuilt 在 ctrl 构造期就跑，故 service 由参数传入。"
+            },
+            {
+              "kind": "method",
+              "name": "viewProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "LogProps"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "scrollToBottom",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "滚回底部并恢复粘附。机器要等 hostConnected 才建，还没进 DOM 时如实什么都不做、别炸。\n元素不带内置的\"回到底部\"按钮，作者自己的按钮调它。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }`",
+              "name": "stick-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "视口按多少行定高；缺省时高度由皮肤给",
+              "name": "rows",
+              "fieldName": "rows"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "行还在路上：日志区报 aria-busy，根落 data-loading",
+              "name": "loading",
+              "fieldName": "loading"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-log",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhLogElement",
+          "declaration": {
+            "name": "XhLogElement",
+            "module": "src/elements/log.ts"
           }
         }
       ]
@@ -12212,6 +13552,323 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/popconfirm.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-popconfirm>` —— Light-DOM 行为宿主：用户写 root/trigger/positioner/content/... 角色节点，\n元素跑 popover 机器（开合、定位、消解层、焦点域都在那里）并把 connectPopconfirm 产出打上去。\n确认与取消不入机器，点下去先派出对应事件再请求收起。\n\n浮层不陷焦点，也没有关闭按钮：答复由 confirm-trigger / cancel-trigger 两颗按钮给出，\nEscape 与层外交互只收起浮层、只派 open-change。",
+          "name": "XhPopconfirmElement",
+          "cssParts": [
+            {
+              "description": "框住触发器的根容器，承载 data-state",
+              "name": "root"
+            },
+            {
+              "description": "触发按钮（aria-haspopup/aria-expanded/aria-controls 所在），同时是定位锚点",
+              "name": "trigger"
+            },
+            {
+              "description": "浮层定位容器，坐标由引擎写成内联样式",
+              "name": "positioner"
+            },
+            {
+              "description": "浮层内容（role=alertdialog；焦点域与消解层的根节点），收起时带 hidden",
+              "name": "content"
+            },
+            {
+              "description": "标题（aria-labelledby 目标）",
+              "name": "title"
+            },
+            {
+              "description": "问题正文（aria-describedby 目标）",
+              "name": "description"
+            },
+            {
+              "description": "确认按钮",
+              "name": "confirm-trigger"
+            },
+            {
+              "description": "取消按钮",
+              "name": "cancel-trigger"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: popconfirmAnatomy, meta: popconfirmMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "defaultOpen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-open"
+            },
+            {
+              "kind": "field",
+              "name": "placement",
+              "privacy": "public",
+              "type": {
+                "text": "Placement | undefined"
+              },
+              "attribute": "placement"
+            },
+            {
+              "kind": "field",
+              "name": "offset",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "offset"
+            },
+            {
+              "kind": "field",
+              "name": "closeOnEscape",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "close-on-escape"
+            },
+            {
+              "kind": "field",
+              "name": "closeOnInteractOutside",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "close-on-interact-outside"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "popconfirmScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "positionEngine",
+              "type": {
+                "text": "PositionEnginePort"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "intents",
+              "type": {
+                "text": "PopconfirmIntents"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "{ onConfirm: () => { this.dispatchEvent(new CustomEvent('confirm', { bubbles: true, composed: true })) }, onCancel: () => { this.dispatchEvent(new CustomEvent('cancel', { bubbles: true, composed: true })) }, }"
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<PopoverSchema>( this, popoverMachine, () => this.machineProps(), { scope: this.popconfirmScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<PopoverSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "registerLayer",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<PopoverSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "open 状态变化；detail 为 `{ open: boolean }`",
+              "name": "open-change"
+            },
+            {
+              "description": "点了确认按钮；随后浮层收起",
+              "name": "confirm"
+            },
+            {
+              "description": "点了取消按钮；随后浮层收起",
+              "name": "cancel"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控开合；缺省该属性即非受控",
+              "name": "open",
+              "fieldName": "open"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始为展开",
+              "name": "default-open",
+              "fieldName": "defaultOpen"
+            },
+            {
+              "type": {
+                "text": "Placement | undefined"
+              },
+              "description": "首选放置位，默认 bottom；避让后的实际位写在 data-placement 上",
+              "name": "placement",
+              "fieldName": "placement"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "浮层与锚点的间距（px），默认 8",
+              "name": "offset",
+              "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "Esc 关闭，默认 true；写 close-on-escape=\"false\" 关掉",
+              "name": "close-on-escape",
+              "fieldName": "closeOnEscape"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "层外交互关闭，默认 true；写 \"false\" 关掉",
+              "name": "close-on-interact-outside",
+              "fieldName": "closeOnInteractOutside"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-popconfirm",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhPopconfirmElement",
+          "declaration": {
+            "name": "XhPopconfirmElement",
+            "module": "src/elements/popconfirm.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/popover.ts",
       "declarations": [
         {
@@ -12527,6 +14184,558 @@
           "declaration": {
             "name": "XhPopoverElement",
             "module": "src/elements/popover.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/popselect.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-popselect>` —— Light-DOM 行为宿主：作者写 root/trigger/positioner/content/item 角色节点，\n元素同时跑两台机器——浮层开合、定位、消解层与焦点域归 popover，选中集合与焦点锚点归 listbox——\n再把 connectPopselect 的产出打到各角色节点上。定位引擎在本元素里建好、经 refs 注入 popover 机器，\n锚点取 trigger、被定位的浮层取 positioner。\n\n条目身份取作者写在 item 上的 value 属性，禁用由条目自报 aria-disabled 或写进 collection。\n单选落值即收起浮层、焦点归还 trigger；多选保持展开继续挑。\n\n选中值是集合：单选可以直接写 value=\"apple\" 属性，多选只能走 property（`el.value = ['a','b']`），\n属性表达不了数组。",
+          "name": "XhPopselectElement",
+          "cssParts": [
+            {
+              "description": "组件根容器，承载 data-state 与三个视觉轴，浮层从这里继承私有槽",
+              "name": "root"
+            },
+            {
+              "description": "触发按钮（aria-haspopup=listbox/aria-expanded/aria-controls 所在），同时是定位锚点，须是原生 button",
+              "name": "trigger"
+            },
+            {
+              "description": "浮层定位容器，坐标由引擎写成内联样式",
+              "name": "positioner"
+            },
+            {
+              "description": "role=listbox 容器（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden",
+              "name": "content"
+            },
+            {
+              "description": "role=option 条目，须自带 value 属性标识身份；禁用写 aria-disabled=\"true\"",
+              "name": "item"
+            },
+            {
+              "description": "条目文本（连打检索的取字处）",
+              "name": "item-text"
+            },
+            {
+              "description": "条目选中标记（aria-hidden）",
+              "name": "item-indicator"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: popselectAnatomy, meta: popselectMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "PopselectNode[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "attribute": "default-value"
+            },
+            {
+              "kind": "field",
+              "name": "multiple",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "multiple"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "loop",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "typeahead",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "typeahead"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "defaultOpen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-open"
+            },
+            {
+              "kind": "field",
+              "name": "placement",
+              "privacy": "public",
+              "type": {
+                "text": "Placement | undefined"
+              },
+              "attribute": "placement"
+            },
+            {
+              "kind": "field",
+              "name": "offset",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "offset"
+            },
+            {
+              "kind": "field",
+              "name": "closeOnEscape",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "close-on-escape"
+            },
+            {
+              "kind": "field",
+              "name": "closeOnInteractOutside",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "close-on-interact-outside"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "popselectScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "positionEngine",
+              "type": {
+                "text": "PositionEnginePort"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "notifyOpen",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyValue",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "popoverCtrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<PopoverSchema>( this, popoverMachine, () => this.popoverProps(), { scope: this.popselectScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "listboxCtrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<ListboxSchema>( this, listboxMachine, () => this.listboxProps(), { scope: this.popselectScope }, )"
+            },
+            {
+              "kind": "field",
+              "name": "declaredDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "description": "作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺"
+            },
+            {
+              "kind": "method",
+              "name": "popoverProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<PopoverSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "listboxProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<ListboxSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "registerLayer",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<PopoverSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "onPartsReleased",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "nodes",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
+                  }
+                }
+              ],
+              "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：\ncontent 判自己「焦点在列表内」退出 Tab 序列，又没有条目认领得了这个锚点，\n整组零个 Tab 停靠点，键盘用户再也进不来。这里替 DOM 把焦点离场如实上报。"
+            },
+            {
+              "kind": "method",
+              "name": "itemProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "PopselectItemProps"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "条目身份取作者写的 value，禁用取首见那一份声明（没写即交给 collection 定夺）。"
+            },
+            {
+              "kind": "method",
+              "name": "partsIn",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "owner",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "选中集合变化；detail 为 `{ value: string[] }`",
+              "name": "value-change"
+            },
+            {
+              "description": "open 状态变化；detail 为 `{ open: boolean }`",
+              "name": "open-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "description": "受控选中值（单选简写）；缺省该属性即非受控，多选请用 property",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "description": "非受控初始选中值",
+              "name": "default-value",
+              "fieldName": "defaultValue"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "多选：落值即在集合里增删该项，浮层不收起",
+              "name": "multiple",
+              "fieldName": "multiple"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "整个控件禁用：trigger 用原生 disabled，键盘与点击都改不了选中值",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "方向键走到尽头回绕，默认 true；写 loop=\"false\" 关掉",
+              "name": "loop",
+              "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "连打检索，默认开；写 typeahead=\"false\" 关掉",
+              "name": "typeahead",
+              "fieldName": "typeahead"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，只改写左右方向键语义，默认 ltr",
+              "name": "dir",
+              "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控开合；缺省该属性即非受控",
+              "name": "open",
+              "fieldName": "open"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始为展开",
+              "name": "default-open",
+              "fieldName": "defaultOpen"
+            },
+            {
+              "type": {
+                "text": "Placement | undefined"
+              },
+              "description": "首选放置位，默认 bottom；避让后的实际位写在 data-placement 上",
+              "name": "placement",
+              "fieldName": "placement"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "浮层与锚点的间距（px）",
+              "name": "offset",
+              "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "Esc 关闭，默认 true；写 close-on-escape=\"false\" 关掉",
+              "name": "close-on-escape",
+              "fieldName": "closeOnEscape"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "层外交互关闭，默认 true；写 \"false\" 关掉",
+              "name": "close-on-interact-outside",
+              "fieldName": "closeOnInteractOutside"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "形态，决定触发器的描边与底色怎么用",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "语气，决定聚焦与选中强调用哪族颜色",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸，决定触发器高度、内边距与字号档位",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-popselect",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhPopselectElement",
+          "declaration": {
+            "name": "XhPopselectElement",
+            "module": "src/elements/popselect.ts"
           }
         }
       ]
@@ -13353,6 +15562,112 @@
           "declaration": {
             "name": "XhRatingElement",
             "module": "src/elements/rating.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/result.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-result>` —— 结果页行为宿主，无状态机，把 connectResult 产出的属性打到角色节点上。\n\n除 root 外的部件全部可缺省。图标画什么由作者塞进图标槽，库不带插画资产；\nstatus 只落成 root 的 data-status，皮肤据它给图标区上语气色。\n\nroot 上不写 role：整页结果随页面一起呈现，就地换出来的结果用 `<xh-empty-state>` 或 `<xh-alert>`。",
+          "name": "XhResultElement",
+          "cssParts": [
+            {
+              "description": "承载 data-status 与 data-size 的容器",
+              "name": "root"
+            },
+            {
+              "description": "装饰图标位，对读屏隐藏，颜色随 status 走",
+              "name": "icon"
+            },
+            {
+              "description": "结果标题",
+              "name": "title"
+            },
+            {
+              "description": "标题下的说明",
+              "name": "description"
+            },
+            {
+              "description": "操作按钮槽",
+              "name": "action"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: resultAnatomy, meta: resultMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "status",
+              "privacy": "public",
+              "type": {
+                "text": "ResultStatus | undefined"
+              },
+              "attribute": "status"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "'sm' | 'md' | 'lg' | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "ResultStatus | undefined"
+              },
+              "description": "结果类型，写到 root 的 data-status 上",
+              "name": "status",
+              "fieldName": "status"
+            },
+            {
+              "type": {
+                "text": "'sm' | 'md' | 'lg' | undefined"
+              },
+              "description": "尺寸档位，写到 root 的 data-size 上",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-result",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhResultElement",
+          "declaration": {
+            "name": "XhResultElement",
+            "module": "src/elements/result.ts"
           }
         }
       ]

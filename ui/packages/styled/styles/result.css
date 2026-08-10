@@ -1,0 +1,104 @@
+@layer xihan.components {
+  [data-scope='result'][data-part='root'] {
+    /* 三个尺寸档只换这几个私有槽，图标与标题都从 root 继承它们，
+       换档不必给每个部件各写一条选择器 */
+    --xh-_result-gap: var(--xh-stack-gap-md);
+    --xh-_result-py: var(--xh-section-py);
+    --xh-_result-icon-size: 3.5rem;
+    --xh-_result-title-size: var(--xh-font-size-xl);
+    /* 说明的读行宽度：整句话不收窄就会拉成一条难读的长行 */
+    --xh-_result-measure: 32rem;
+    /* 图标区的语气色，由 data-status 换掉；没写 status 就退成中性 */
+    --xh-_result-accent: var(--xh-fg-subtle);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-result-gap, var(--xh-_result-gap));
+    padding-block: var(--xh-result-py, var(--xh-_result-py));
+    padding-inline: var(--xh-result-px, var(--xh-space-6));
+    color: var(--xh-result-fg, var(--xh-fg-default));
+    text-align: center;
+  }
+
+  /* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
+  [data-scope='result'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* —— 尺寸 —— */
+  [data-scope='result'][data-part='root'][data-size='sm'] {
+    --xh-_result-gap: var(--xh-space-3);
+    --xh-_result-py: var(--xh-space-6);
+    --xh-_result-icon-size: 2.5rem;
+    --xh-_result-title-size: var(--xh-font-size-lg);
+  }
+
+  [data-scope='result'][data-part='root'][data-size='lg'] {
+    --xh-_result-gap: var(--xh-space-6);
+    --xh-_result-py: var(--xh-space-8);
+    --xh-_result-icon-size: 4.5rem;
+    --xh-_result-title-size: var(--xh-font-size-2xl);
+  }
+
+  /* —— 语气 —— */
+  /* 三个状态码各并进最接近的一族：找不到=提示，没权限=警示，服务出错=危险。
+     用 500 档而不是 600：500 是装饰性强调档，600 是给实心底与文字用的 */
+  [data-scope='result'][data-part='root'][data-status='success'] {
+    --xh-_result-accent: var(--xh-color-success-500);
+  }
+
+  [data-scope='result'][data-part='root'][data-status='warning'],
+  [data-scope='result'][data-part='root'][data-status='403'] {
+    --xh-_result-accent: var(--xh-color-warning-500);
+  }
+
+  [data-scope='result'][data-part='root'][data-status='error'],
+  [data-scope='result'][data-part='root'][data-status='500'] {
+    --xh-_result-accent: var(--xh-color-danger-500);
+  }
+
+  [data-scope='result'][data-part='root'][data-status='info'],
+  [data-scope='result'][data-part='root'][data-status='404'] {
+    --xh-_result-accent: var(--xh-color-info-500);
+  }
+
+  /* —— 各段 —— */
+  [data-scope='result'][data-part='icon'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    block-size: var(--xh-result-icon-size, var(--xh-_result-icon-size));
+    inline-size: var(--xh-result-icon-size, var(--xh-_result-icon-size));
+    color: var(--xh-result-icon-fg, var(--xh-_result-accent));
+    /* 图标常是一个字形，字号跟着图标框走，line-height 不再另占高度 */
+    font-size: var(--xh-result-icon-font-size, var(--xh-_result-icon-size));
+    line-height: var(--xh-leading-none);
+  }
+
+  [data-scope='result'][data-part='title'] {
+    margin: 0;
+    color: var(--xh-result-title-fg, var(--xh-fg-default));
+    font-size: var(--xh-result-title-font-size, var(--xh-_result-title-size));
+    font-weight: var(--xh-result-title-font-weight, var(--xh-font-weight-semibold));
+    line-height: var(--xh-result-title-leading, var(--xh-leading-tight));
+  }
+
+  [data-scope='result'][data-part='description'] {
+    margin: 0;
+    max-inline-size: var(--xh-result-description-max-w, var(--xh-_result-measure));
+    color: var(--xh-result-description-fg, var(--xh-fg-muted));
+    font-size: var(--xh-result-description-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-result-description-leading, var(--xh-text-body-leading));
+  }
+
+  [data-scope='result'][data-part='action'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-result-action-gap, var(--xh-space-2));
+  }
+}

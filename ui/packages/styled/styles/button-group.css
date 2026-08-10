@@ -1,0 +1,131 @@
+@layer xihan.components {
+  /* 一组按钮连成一条：段与段之间不留缝，靠共边接上，所以不设 gap。
+     排布只能读 data-orientation——role=group 不收 aria-orientation，连接层根本不输出它。
+     圆角槽位在容器上先收成 0，组内每段都取得到，两端的圆角再逐段补回来 */
+  [data-scope='button-group'][data-part='root'] {
+    --xh-button-radius: 0;
+
+    display: inline-flex;
+    align-items: stretch;
+  }
+
+  [data-scope='button-group'][data-part='root'][data-orientation='horizontal'] {
+    flex-direction: row;
+  }
+
+  [data-scope='button-group'][data-part='root'][data-orientation='vertical'] {
+    flex-direction: column;
+  }
+
+  /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
+     不补的话作者给节点加 hidden 后它照样显示 */
+  [data-scope='button-group'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* —— 尺寸 —— */
+  /* 高度、内边距、间距、字号在容器上写一次，沿继承流给组内每一段。
+     三档都写出来：自定义属性会一路继承，组里再套一组时内层不写就会沿用外层的档 */
+  [data-scope='button-group'][data-part='root'][data-size='sm'] {
+    --xh-button-h: var(--xh-control-h-sm);
+    --xh-button-px: var(--xh-control-px-sm);
+    --xh-button-gap: var(--xh-control-gap-sm);
+    --xh-button-font-size: var(--xh-font-size-sm);
+  }
+
+  [data-scope='button-group'][data-part='root'][data-size='md'] {
+    --xh-button-h: var(--xh-control-h-md);
+    --xh-button-px: var(--xh-control-px-md);
+    --xh-button-gap: var(--xh-control-gap-md);
+    --xh-button-font-size: var(--xh-font-size-md);
+  }
+
+  [data-scope='button-group'][data-part='root'][data-size='lg'] {
+    --xh-button-h: var(--xh-control-h-lg);
+    --xh-button-px: var(--xh-control-px-lg);
+    --xh-button-gap: var(--xh-control-gap-lg);
+    --xh-button-font-size: var(--xh-font-size-lg);
+  }
+
+  /* —— 形态 —— */
+  /* 只写按钮暴露出来的颜色槽位：段自己写了形态时走的是它自己那条规则，这里的槽位不参与。
+     用哪族颜色由根上的 data-tone 决定，语气槽沿继承流下来，没写语气就沿用品牌/中性配色 */
+  [data-scope='button-group'][data-part='root'][data-variant='solid'] {
+    --xh-button-bg: var(--xh-_tone, var(--xh-bg-brand));
+    --xh-button-bg-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
+    --xh-button-bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
+    --xh-button-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  }
+
+  [data-scope='button-group'][data-part='root'][data-variant='subtle'] {
+    --xh-button-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-button-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+    --xh-button-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
+    --xh-button-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='button-group'][data-part='root'][data-variant='outline'],
+  [data-scope='button-group'][data-part='root'][data-variant='ghost'] {
+    --xh-button-bg: transparent;
+    --xh-button-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-button-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
+    --xh-button-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  }
+
+  /* 段的描边归组画（两个适配器各一条选择器：Vue 的段就是直接子节点，WC 的段在行为宿主里面）：合边本来就是组的事，按钮那边没有描边色的槽位可以流 */
+  [data-scope='button-group'][data-part='root'][data-variant='outline'] > *,
+  [data-scope='button-group'][data-part='root'][data-variant='outline'] > * [data-scope='button'][data-part='root'] {
+    border-color: var(--xh-_tone-border, var(--xh-border-default));
+  }
+
+  /* —— 合边 —— */
+  /* 相邻两段的边重合在同一像素上，谁的描边浮在上面必须能指定，
+     因此每一段都是定位元素——静态元素的 z-index 不生效 */
+  [data-scope='button-group'][data-part='root'] > * {
+    position: relative;
+  }
+
+  /* 后一段往回挪一个描边宽度，相邻的两条边重合成一条。
+     方向跟着 data-orientation 走，横排收 inline 轴、竖排收 block 轴 */
+  [data-scope='button-group'][data-part='root'][data-orientation='horizontal'] > * + * {
+    margin-inline-start: calc(-1 * var(--xh-stroke-thin));
+  }
+
+  [data-scope='button-group'][data-part='root'][data-orientation='vertical'] > * + * {
+    margin-block-start: calc(-1 * var(--xh-stroke-thin));
+  }
+
+  /* 悬停或拿到焦点的那一段抬到最上层：焦点环画在元素外侧，
+     不抬层就会被后一段的底色与描边盖掉一半 */
+  [data-scope='button-group'][data-part='root'] > *:hover,
+  [data-scope='button-group'][data-part='root'] > *:focus-within {
+    z-index: 1;
+  }
+
+  /* —— 两端圆角 —— */
+  /* 逻辑角属性写，rtl 与竖排都跟着换边，不必另写一套。
+     只认直接子节点：段之间插了别的节点时宁可退化成直角，也不要圆错位置 */
+  [data-scope='button-group'][data-part='root'][data-orientation='horizontal'] > *:first-child,
+  [data-scope='button-group'][data-part='root'][data-orientation='horizontal'] > *:first-child [data-scope='button'][data-part='root'] {
+    border-start-start-radius: var(--xh-button-group-radius, var(--xh-shape-control));
+    border-end-start-radius: var(--xh-button-group-radius, var(--xh-shape-control));
+  }
+
+  [data-scope='button-group'][data-part='root'][data-orientation='horizontal'] > *:last-child,
+  [data-scope='button-group'][data-part='root'][data-orientation='horizontal'] > *:last-child [data-scope='button'][data-part='root'] {
+    border-start-end-radius: var(--xh-button-group-radius, var(--xh-shape-control));
+    border-end-end-radius: var(--xh-button-group-radius, var(--xh-shape-control));
+  }
+
+  [data-scope='button-group'][data-part='root'][data-orientation='vertical'] > *:first-child,
+  [data-scope='button-group'][data-part='root'][data-orientation='vertical'] > *:first-child [data-scope='button'][data-part='root'] {
+    border-start-start-radius: var(--xh-button-group-radius, var(--xh-shape-control));
+    border-start-end-radius: var(--xh-button-group-radius, var(--xh-shape-control));
+  }
+
+  [data-scope='button-group'][data-part='root'][data-orientation='vertical'] > *:last-child,
+  [data-scope='button-group'][data-part='root'][data-orientation='vertical'] > *:last-child [data-scope='button'][data-part='root'] {
+    border-end-start-radius: var(--xh-button-group-radius, var(--xh-shape-control));
+    border-end-end-radius: var(--xh-button-group-radius, var(--xh-shape-control));
+  }
+}

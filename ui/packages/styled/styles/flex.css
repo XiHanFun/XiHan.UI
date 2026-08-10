@@ -1,0 +1,95 @@
+@layer xihan.components {
+  [data-scope='flex'][data-part='root'] {
+    display: flex;
+    flex-wrap: nowrap;
+    /* 不写 gap 档位就不留间距；使用者槽位排在档位之前，写死一个值即盖过所有档 */
+    gap: var(--xh-flex-gap, var(--xh-space-0));
+  }
+
+  /* 行内盒：宽度收到内容，能和文字排在同一行 */
+  [data-scope='flex'][data-part='root'][data-inline] {
+    display: inline-flex;
+  }
+
+  /* —— 方向 —— */
+  [data-scope='flex'][data-part='root'][data-direction='row'] {
+    flex-direction: row;
+  }
+
+  [data-scope='flex'][data-part='root'][data-direction='column'] {
+    flex-direction: column;
+  }
+
+  /* —— 折行 —— */
+  [data-scope='flex'][data-part='root'][data-wrap] {
+    flex-wrap: wrap;
+  }
+
+  /* —— 交叉轴对齐 —— */
+  [data-scope='flex'][data-part='root'][data-align='start'] {
+    align-items: flex-start;
+  }
+
+  [data-scope='flex'][data-part='root'][data-align='center'] {
+    align-items: center;
+  }
+
+  [data-scope='flex'][data-part='root'][data-align='end'] {
+    align-items: flex-end;
+  }
+
+  [data-scope='flex'][data-part='root'][data-align='stretch'] {
+    align-items: stretch;
+  }
+
+  [data-scope='flex'][data-part='root'][data-align='baseline'] {
+    align-items: baseline;
+  }
+
+  /* —— 主轴分布 —— */
+  [data-scope='flex'][data-part='root'][data-justify='start'] {
+    justify-content: flex-start;
+  }
+
+  [data-scope='flex'][data-part='root'][data-justify='center'] {
+    justify-content: center;
+  }
+
+  [data-scope='flex'][data-part='root'][data-justify='end'] {
+    justify-content: flex-end;
+  }
+
+  [data-scope='flex'][data-part='root'][data-justify='between'] {
+    justify-content: space-between;
+  }
+
+  [data-scope='flex'][data-part='root'][data-justify='around'] {
+    justify-content: space-around;
+  }
+
+  [data-scope='flex'][data-part='root'][data-justify='evenly'] {
+    justify-content: space-evenly;
+  }
+
+  /* —— 间距档位 —— */
+  /* 每一档指向一个间距令牌，折行时行与行之间也吃这份间距 */
+  [data-scope='flex'][data-part='root'][data-gap='xs'] {
+    gap: var(--xh-flex-gap, var(--xh-space-1));
+  }
+
+  [data-scope='flex'][data-part='root'][data-gap='sm'] {
+    gap: var(--xh-flex-gap, var(--xh-space-2));
+  }
+
+  [data-scope='flex'][data-part='root'][data-gap='md'] {
+    gap: var(--xh-flex-gap, var(--xh-space-3));
+  }
+
+  [data-scope='flex'][data-part='root'][data-gap='lg'] {
+    gap: var(--xh-flex-gap, var(--xh-space-4));
+  }
+
+  [data-scope='flex'][data-part='root'][data-gap='xl'] {
+    gap: var(--xh-flex-gap, var(--xh-space-6));
+  }
+}

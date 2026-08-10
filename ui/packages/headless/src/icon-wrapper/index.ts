@@ -1,0 +1,5 @@
+export { iconWrapperAnatomy } from './icon-wrapper.anatomy'
+export { connectIconWrapper } from './icon-wrapper.connect'
+export { iconWrapperKeyboard } from './icon-wrapper.keyboard'
+export { iconWrapperMeta } from './icon-wrapper.meta'
+export type { IconWrapperApi, IconWrapperProps } from './icon-wrapper.types'

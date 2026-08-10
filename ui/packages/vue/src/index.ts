@@ -10,6 +10,10 @@ export {
 } from './components/accordion/accordion'
 export { useAccordion } from './components/accordion/use-accordion'
 export type { AccordionContext } from './components/accordion/use-accordion'
+export { XhAffixContent, XhAffixRoot } from './components/affix/affix'
+export { provideAffix, useAffixContext } from './components/affix/context'
+export { useAffix } from './components/affix/use-affix'
+export type { AffixContext } from './components/affix/use-affix'
 export { XhAlertCloseTrigger, XhAlertDescription, XhAlertIcon, XhAlertRoot, XhAlertTitle } from './components/alert/alert'
 export {
   XhAnchorIndicator,
@@ -20,9 +24,16 @@ export {
 } from './components/anchor/anchor'
 export { useAnchor } from './components/anchor/use-anchor'
 export type { AnchorContext } from './components/anchor/use-anchor'
+export { XhAvatarGroupOverflow, XhAvatarGroupRoot } from './components/avatar-group/avatar-group'
+export { provideAvatarGroup, useAvatarGroupContext } from './components/avatar-group/context'
+export type { AvatarGroupContext } from './components/avatar-group/context'
 export { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from './components/avatar/avatar'
 export { useAvatar } from './components/avatar/use-avatar'
 export type { AvatarContext } from './components/avatar/use-avatar'
+export { XhBackTopRoot, XhBackTopTrigger } from './components/back-top/back-top'
+export { provideBackTop, useBackTopContext } from './components/back-top/context'
+export { useBackTop } from './components/back-top/use-back-top'
+export type { BackTopContext } from './components/back-top/use-back-top'
 export { XhBadge } from './components/badge/badge'
 export {
   XhBreadcrumbEllipsis,
@@ -35,6 +46,7 @@ export {
 export { useBreadcrumb } from './components/breadcrumb/use-breadcrumb'
 export type { BreadcrumbContext } from './components/breadcrumb/use-breadcrumb'
 export { XhButton, XhButtonIndicator, XhButtonLabel, XhButtonPrefix, XhButtonSuffix } from './components/button'
+export { XhButtonGroup } from './components/button-group/button-group'
 export {
   XhCalendarCell,
   XhCalendarCellTrigger,
@@ -51,6 +63,16 @@ export {
 } from './components/calendar/calendar'
 export { useCalendar } from './components/calendar/use-calendar'
 export type { CalendarContext } from './components/calendar/use-calendar'
+export {
+  XhCardBody,
+  XhCardCover,
+  XhCardDescription,
+  XhCardFooter,
+  XhCardHeader,
+  XhCardRoot,
+  XhCardTitle,
+} from './components/card/card'
+export type { CardContext } from './components/card/context'
 export {
   XhCarouselIndicator,
   XhCarouselIndicatorGroup,
@@ -258,6 +280,7 @@ export {
 } from './components/file-upload/file-upload'
 export { useFileUpload } from './components/file-upload/use-file-upload'
 export type { FileUploadContext } from './components/file-upload/use-file-upload'
+export { XhFlex } from './components/flex/flex'
 export {
   XhFormErrorSummary,
   XhFormErrorSummaryItem,
@@ -277,6 +300,7 @@ export {
 } from './components/hover-card/hover-card'
 export { useHoverCard } from './components/hover-card/use-hover-card'
 export type { HoverCardContext } from './components/hover-card/use-hover-card'
+export { XhIconWrapper } from './components/icon-wrapper/icon-wrapper'
 export { XhIcon } from './components/icon/icon'
 export { useIcon } from './components/icon/use-icon'
 export type { IconContext } from './components/icon/use-icon'
@@ -287,6 +311,10 @@ export {
 } from './components/image/image'
 export { useImage } from './components/image/use-image'
 export type { ImageContext } from './components/image/use-image'
+export { provideInfiniteScroll, useInfiniteScrollContext } from './components/infinite-scroll/context'
+export { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from './components/infinite-scroll/infinite-scroll'
+export { useInfiniteScroll } from './components/infinite-scroll/use-infinite-scroll'
+export type { InfiniteScrollContext } from './components/infinite-scroll/use-infinite-scroll'
 export {
   XhListboxContent,
   XhListboxItem,
@@ -306,6 +334,10 @@ export {
 } from './components/loading-bar/loading-bar'
 export { useLoadingBar } from './components/loading-bar/use-loading-bar'
 export type { LoadingBarContext } from './components/loading-bar/use-loading-bar'
+export { provideLog, useLogContext } from './components/log/context'
+export { XhLogContent, XhLogLine, XhLogRoot, XhLogViewport } from './components/log/log'
+export { useLog } from './components/log/use-log'
+export type { LogContext } from './components/log/use-log'
 export {
   XhMenuArrow,
   XhMenuContent,
@@ -369,6 +401,10 @@ export {
 } from './components/pin-input/pin-input'
 export { usePinInput } from './components/pin-input/use-pin-input'
 export type { PinInputContext } from './components/pin-input/use-pin-input'
+export { providePopconfirm, usePopconfirmContext } from './components/popconfirm/context'
+export { XhPopconfirmCancelTrigger, XhPopconfirmConfirmTrigger, XhPopconfirmContent, XhPopconfirmDescription, XhPopconfirmPositioner, XhPopconfirmRoot, XhPopconfirmTitle, XhPopconfirmTrigger } from './components/popconfirm/popconfirm'
+export { usePopconfirm } from './components/popconfirm/use-popconfirm'
+export type { PopconfirmContext } from './components/popconfirm/use-popconfirm'
 export {
   XhPopoverArrow,
   XhPopoverCloseTrigger,
@@ -381,6 +417,11 @@ export {
 } from './components/popover/popover'
 export { usePopover } from './components/popover/use-popover'
 export type { PopoverContext } from './components/popover/use-popover'
+export { providePopselect, providePopselectItem, usePopselectContext, usePopselectItemContext } from './components/popselect/context'
+export type { PopselectItemContext } from './components/popselect/context'
+export { XhPopselectContent, XhPopselectItem, XhPopselectItemIndicator, XhPopselectItemText, XhPopselectPositioner, XhPopselectRoot, XhPopselectTrigger } from './components/popselect/popselect'
+export { usePopselect } from './components/popselect/use-popselect'
+export type { PopselectContext } from './components/popselect/use-popselect'
 export { XhProgress } from './components/progress/progress'
 export {
   XhRadioGroupItem,
@@ -399,6 +440,9 @@ export {
 } from './components/rating/rating'
 export { useRating } from './components/rating/use-rating'
 export type { RatingContext } from './components/rating/use-rating'
+export { provideResult, useResultContext } from './components/result/context'
+export type { ResultContext } from './components/result/context'
+export { XhResultAction, XhResultDescription, XhResultIcon, XhResultRoot, XhResultTitle } from './components/result/result'
 export {
   XhScrollAreaContent,
   XhScrollAreaCorner,
@@ -477,6 +521,7 @@ export {
   XhTableSelectAllTrigger,
   XhTableSortTrigger,
 } from './components/table/table'
+
 export { useTable } from './components/table/use-table'
 export type { TableContext } from './components/table/use-table'
 export {
@@ -542,6 +587,7 @@ export {
   XhTimePickerTrigger,
 } from './components/time-picker/time-picker'
 export { useTimePicker } from './components/time-picker/use-time-picker'
+
 export type { TimePickerContext } from './components/time-picker/use-time-picker'
 export {
   XhToastActionTrigger,
@@ -574,7 +620,6 @@ export {
   XhToolbarSeparator,
 } from './components/toolbar/toolbar'
 export { useToolbar } from './components/toolbar/use-toolbar'
-
 export type { ToolbarContext } from './components/toolbar/use-toolbar'
 export {
   XhTooltipArrow,
@@ -667,7 +712,6 @@ export {
   XhVirtualizerRoot,
   XhVirtualizerViewport,
 } from './components/virtualizer/virtualizer'
-
 export { createVueRuntime } from './runtime/create-vue-runtime'
 export { vueNormalize } from './runtime/normalize-props'
 export { useMachine } from './runtime/use-machine'

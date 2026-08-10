@@ -1,0 +1,116 @@
+@layer xihan.components {
+  [data-scope='card'][data-part='root'] {
+    display: flex;
+    flex-direction: column;
+    /* 封面要被圆角裁住，所以根自己收边 */
+    overflow: hidden;
+    border: var(--xh-stroke-thin) solid transparent;
+    border-radius: var(--xh-card-radius, var(--xh-shape-surface));
+    background: var(--xh-card-bg, var(--xh-bg-surface));
+    color: var(--xh-card-fg, var(--xh-fg-default));
+    /* 各段的内边距由根上这一个槽位统一给，换档只改这里 */
+    --xh-_card-pad: var(--xh-space-4);
+  }
+
+  /* —— 形态 —— */
+  [data-scope='card'][data-part='root'][data-variant='outline'] {
+    border-color: var(--xh-card-border, var(--xh-border-default));
+  }
+
+  [data-scope='card'][data-part='root'][data-variant='subtle'] {
+    background: var(--xh-card-bg, var(--xh-bg-subtle));
+  }
+
+  [data-scope='card'][data-part='root'][data-variant='elevated'] {
+    box-shadow: var(--xh-elevation-2);
+  }
+
+  [data-scope='card'][data-part='root'][data-variant='ghost'] {
+    background: transparent;
+  }
+
+  /* —— 尺寸 —— */
+  [data-scope='card'][data-part='root'][data-size='sm'] {
+    --xh-_card-pad: var(--xh-space-3);
+  }
+
+  [data-scope='card'][data-part='root'][data-size='lg'] {
+    --xh-_card-pad: var(--xh-space-6);
+  }
+
+  /* 悬停抬起：只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
+  @media (hover: hover) {
+    [data-scope='card'][data-part='root'][data-hoverable]:hover {
+      border-color: var(--xh-card-border, var(--xh-border-strong));
+      box-shadow: var(--xh-elevation-2);
+    }
+  }
+
+  [data-scope='card'][data-part='root'][data-hoverable] {
+    transition:
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* —— 各段 —— */
+  /* 封面顶到根的边上，不吃内边距 */
+  [data-scope='card'][data-part='cover'] {
+    display: block;
+    overflow: hidden;
+  }
+
+  [data-scope='card'][data-part='header'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-space-1);
+    padding: var(--xh-_card-pad);
+    /* 头下面若还有别的段，间距由那一段自己的内边距接上，这里不重复留白 */
+    padding-block-end: var(--xh-space-2);
+  }
+
+  [data-scope='card'][data-part='title'] {
+    font-size: var(--xh-card-title-font-size, var(--xh-font-size-md));
+    font-weight: var(--xh-font-weight-medium);
+    line-height: var(--xh-leading-tight);
+  }
+
+  [data-scope='card'][data-part='root'][data-size='lg'] [data-part='title'] {
+    font-size: var(--xh-card-title-font-size, var(--xh-font-size-lg));
+  }
+
+  [data-scope='card'][data-part='description'] {
+    color: var(--xh-fg-muted);
+    font-size: var(--xh-font-size-sm);
+    line-height: var(--xh-leading-normal);
+  }
+
+  [data-scope='card'][data-part='body'] {
+    flex: 1 1 auto;
+    padding: var(--xh-_card-pad);
+  }
+
+  /* 头与身相邻时，头已经收窄了下边距，身不必再从顶上留一份 */
+  [data-scope='card'][data-part='header'] + [data-part='body'] {
+    padding-block-start: var(--xh-space-2);
+  }
+
+  [data-scope='card'][data-part='footer'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-space-2);
+    padding: var(--xh-_card-pad);
+    padding-block-start: var(--xh-space-2);
+  }
+
+  /* —— 分段 —— */
+  /* 分隔线画在下一段的上边，段与段之间才只有一条 */
+  [data-scope='card'][data-part='root'][data-segmented] [data-part='body'],
+  [data-scope='card'][data-part='root'][data-segmented] [data-part='footer'] {
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-card-border, var(--xh-border-subtle));
+    padding-block-start: var(--xh-_card-pad);
+  }
+
+  [data-scope='card'][data-part='root'][data-segmented] [data-part='header'] {
+    padding-block-end: var(--xh-_card-pad);
+  }
+}

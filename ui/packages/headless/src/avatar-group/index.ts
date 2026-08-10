@@ -1,0 +1,5 @@
+export { avatarGroupAnatomy } from './avatar-group.anatomy'
+export { connectAvatarGroup } from './avatar-group.connect'
+export { avatarGroupKeyboard } from './avatar-group.keyboard'
+export { avatarGroupMeta } from './avatar-group.meta'
+export type { AvatarGroupApi, AvatarGroupProps } from './avatar-group.types'

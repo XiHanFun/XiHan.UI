@@ -1,0 +1,22 @@
+@layer xihan.components {
+  /*
+   * 列表外壳这一层刻意不给盒模型：滚的是页面还是作者自己的 overflow 容器、列表长什么样，
+   * 都归作者的布局管，组件只往它身上挂 data-state / data-loading / data-disabled 供作者取用。
+   * 一旦声明 display，UA 的 [hidden]{display:none} 就压不住了，故连 display 也不写。
+   *
+   * 哨兵是纯机制，不是可见元素：给它一条最细的高度让它有个能被观察到的盒子，
+   * 高度为 0 的元素在部分实现里交叠比恒为 0，永远等不到进入。
+   * 不吃指针：它紧贴在列表末尾，吃了指针就会挡住最后一条的点击。
+   */
+  [data-scope='infinite-scroll'][data-part='sentinel'] {
+    display: block;
+    inline-size: 100%;
+    block-size: var(--xh-infinite-scroll-sentinel-size, var(--xh-stroke-thin));
+    pointer-events: none;
+  }
+
+  /* 声明过 display 就盖掉了 UA 的 [hidden]{display:none}，作者要藏哨兵时得自己补回来 */
+  [data-scope='infinite-scroll'][data-part='sentinel'][hidden] {
+    display: none;
+  }
+}

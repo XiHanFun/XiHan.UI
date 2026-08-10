@@ -1,12 +1,17 @@
 import { version as VERSION } from '../package.json'
 import { XhAccordionElement } from './elements/accordion'
+import { XhAffixElement } from './elements/affix'
 import { XhAlertElement } from './elements/alert'
 import { XhAnchorElement } from './elements/anchor'
 import { XhAvatarElement } from './elements/avatar'
+import { XhAvatarGroupElement } from './elements/avatar-group'
+import { XhBackTopElement } from './elements/back-top'
 import { XhBadgeElement } from './elements/badge'
 import { XhBreadcrumbElement } from './elements/breadcrumb'
 import { XhButtonElement } from './elements/button'
+import { XhButtonGroupElement } from './elements/button-group'
 import { XhCalendarElement } from './elements/calendar'
+import { XhCardElement } from './elements/card'
 import { XhCarouselElement } from './elements/carousel'
 import { XhCascaderElement } from './elements/cascader'
 import { XhCheckboxElement } from './elements/checkbox'
@@ -26,22 +31,29 @@ import { XhEditableElement } from './elements/editable'
 import { XhEmptyStateElement } from './elements/empty-state'
 import { XhFieldElement } from './elements/field'
 import { XhFileUploadElement } from './elements/file-upload'
+import { XhFlexElement } from './elements/flex'
 import { XhFormElement } from './elements/form'
 import { XhHoverCardElement } from './elements/hover-card'
 import { XhIconElement } from './elements/icon'
+import { XhIconWrapperElement } from './elements/icon-wrapper'
 import { XhImageElement } from './elements/image'
+import { XhInfiniteScrollElement } from './elements/infinite-scroll'
 import { XhListboxElement } from './elements/listbox'
 import { XhLoadingBarElement } from './elements/loading-bar'
+import { XhLogElement } from './elements/log'
 import { XhMenuElement } from './elements/menu'
 import { XhMenubarElement } from './elements/menubar'
 import { XhNavigationMenuElement } from './elements/navigation-menu'
 import { XhNumberFieldElement } from './elements/number-field'
 import { XhPaginationElement } from './elements/pagination'
 import { XhPinInputElement } from './elements/pin-input'
+import { XhPopconfirmElement } from './elements/popconfirm'
 import { XhPopoverElement } from './elements/popover'
+import { XhPopselectElement } from './elements/popselect'
 import { XhProgressElement } from './elements/progress'
 import { XhRadioGroupElement } from './elements/radio-group'
 import { XhRatingElement } from './elements/rating'
+import { XhResultElement } from './elements/result'
 import { XhScrollAreaElement } from './elements/scroll-area'
 import { XhSelectElement } from './elements/select'
 import { XhSeparatorElement } from './elements/separator'
@@ -73,8 +85,19 @@ import { defineElement } from './runtime/registry'
 
 // 注册全部 xh-* 元素，需显式调用，主入口 import 不注册。
 export function defineXhElements(): void {
+  defineElement('xh-affix', XhAffixElement, VERSION)
   defineElement('xh-alert', XhAlertElement, VERSION)
+  defineElement('xh-avatar-group', XhAvatarGroupElement, VERSION)
+  defineElement('xh-back-top', XhBackTopElement, VERSION)
+  defineElement('xh-button-group', XhButtonGroupElement, VERSION)
   defineElement('xh-empty-state', XhEmptyStateElement, VERSION)
+  defineElement('xh-flex', XhFlexElement, VERSION)
+  defineElement('xh-icon-wrapper', XhIconWrapperElement, VERSION)
+  defineElement('xh-infinite-scroll', XhInfiniteScrollElement, VERSION)
+  defineElement('xh-log', XhLogElement, VERSION)
+  defineElement('xh-popconfirm', XhPopconfirmElement, VERSION)
+  defineElement('xh-popselect', XhPopselectElement, VERSION)
+  defineElement('xh-result', XhResultElement, VERSION)
   defineElement('xh-skeleton', XhSkeletonElement, VERSION)
   defineElement('xh-spinner', XhSpinnerElement, VERSION)
   defineElement('xh-accordion', XhAccordionElement, VERSION)
@@ -84,6 +107,7 @@ export function defineXhElements(): void {
   defineElement('xh-breadcrumb', XhBreadcrumbElement, VERSION)
   defineElement('xh-button', XhButtonElement, VERSION)
   defineElement('xh-calendar', XhCalendarElement, VERSION)
+  defineElement('xh-card', XhCardElement, VERSION)
   defineElement('xh-carousel', XhCarouselElement, VERSION)
   defineElement('xh-cascader', XhCascaderElement, VERSION)
   defineElement('xh-checkbox', XhCheckboxElement, VERSION)
