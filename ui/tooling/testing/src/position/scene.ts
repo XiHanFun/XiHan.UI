@@ -1,4 +1,4 @@
-import type { Anchor, PositionEnginePort, PositionOptions, PositionResult } from '@xihan-ui/core'
+import type { Anchor, PositionEnginePort, PositionOptions, PositionResult } from '@xihan-ui/kernel'
 
 /**
  * 定位套件的场景搭建与几何断言。

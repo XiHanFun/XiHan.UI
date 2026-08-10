@@ -2,7 +2,7 @@
 // 编译失败不抛异常——一张背景画不出来不该把宿主组件带崩，走诊断通道报出来再降级。
 
 import type { UniformValue } from '../types'
-import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
+import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/kernel'
 
 export interface GlProgram {
   readonly handle: WebGLProgram

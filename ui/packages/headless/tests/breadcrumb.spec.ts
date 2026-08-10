@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { BreadcrumbProps } from '../src/breadcrumb'
-import { normalizeProps } from '@xihan-ui/core'
+import { normalizeProps } from '@xihan-ui/kernel'
 import { describe, expect, it } from 'vitest'
 import { breadcrumbAnatomy, breadcrumbMeta, connectBreadcrumb } from '../src/breadcrumb'
 

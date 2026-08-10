@@ -1,4 +1,4 @@
-import type { Cleanup, Disposable, RuntimeConfig } from '@xihan-ui/core'
+import type { Cleanup, Disposable, RuntimeConfig } from '@xihan-ui/kernel'
 import type { PresenceEvent, PresenceState } from './presence-machine'
 import { nextPresence } from './presence-machine'
 

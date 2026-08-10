@@ -1,4 +1,4 @@
-import type { Placement, Scope } from '@xihan-ui/core'
+import type { Placement, Scope } from '@xihan-ui/kernel'
 import type { Params } from '@xihan-ui/machine'
 import type { ColorPickerChannel, ColorPickerHsva } from './color-picker.color'
 import type { ColorPickerPoint } from './color-picker.geometry'

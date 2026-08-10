@@ -1,5 +1,5 @@
 // 机器类型系统的类型契约。
-import type { Scope } from '@xihan-ui/core'
+import type { Scope } from '@xihan-ui/kernel'
 
 export type Dict = Record<string, any>
 

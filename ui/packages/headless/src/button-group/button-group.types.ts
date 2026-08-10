@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/kernel'
 
 export interface ButtonGroupProps {
   /** 排布：horizontal / vertical，决定相邻两段在哪个轴上合边。 */

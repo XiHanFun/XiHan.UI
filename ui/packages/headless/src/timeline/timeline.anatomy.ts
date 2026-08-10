@@ -1,4 +1,4 @@
-import { createAnatomy } from '@xihan-ui/core'
+import { createAnatomy } from '@xihan-ui/kernel'
 
 // data-part 直接用 kebab-case，与 CSS 选择器一致。
 // indicator 是事件那一刻的圆点，connector 是圆点与圆点之间的那截线，

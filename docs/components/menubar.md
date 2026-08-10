@@ -66,7 +66,7 @@ orientation 决定主轴：竖排时上下键在入口之间走，左右键改�
 | Vue 组件 | `XhMenubarContent` `XhMenubarGroup` `XhMenubarGroupLabel` `XhMenubarItem` `XhMenubarItemIndicator` `XhMenubarItemText` `XhMenubarPositioner` `XhMenubarRoot` `XhMenubarSeparator` `XhMenubarTrigger` |
 | 组合式函数 | `useMenubar` |
 | 状态机 | `menubarMachine` |
-| 皮肤 | `@xihan-ui/styled/menubar.css` |
+| 皮肤 | `@xihan-ui/styles/menubar.css` |
 
 ## 解剖
 

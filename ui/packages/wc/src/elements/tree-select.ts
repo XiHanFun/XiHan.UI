@@ -1,4 +1,3 @@
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/core'
 import type {
   TreeNode,
   TreeSelectExpandedChangeDetails,
@@ -7,10 +6,11 @@ import type {
   TreeSelectSchema,
   TreeSelectValueChangeDetails,
 } from '@xihan-ui/headless'
+import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectTreeSelect, treeSelectAnatomy, treeSelectMachine, treeSelectMeta } from '@xihan-ui/headless'
+import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

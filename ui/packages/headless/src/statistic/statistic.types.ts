@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/kernel'
 
 /** 尺寸档位，只改字号与行间距。 */
 export type StatisticSize = 'sm' | 'md' | 'lg'

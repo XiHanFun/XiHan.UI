@@ -36,7 +36,7 @@ tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读
 | Vue 组件 | `XhBackTopRoot` `XhBackTopTrigger` |
 | 组合式函数 | `useBackTop` |
 | 状态机 | `backTopMachine` |
-| 皮肤 | `@xihan-ui/styled/back-top.css` |
+| 皮肤 | `@xihan-ui/styles/back-top.css` |
 
 ## 解剖
 

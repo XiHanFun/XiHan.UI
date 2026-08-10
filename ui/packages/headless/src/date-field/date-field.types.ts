@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 一段的身份。日期三段恒在，时间三段由 granularity 决定要不要。 */

@@ -1,5 +1,5 @@
-import type { Direction, Orientation } from '@xihan-ui/core'
 import type { TabsActivationMode, TabsNode, TabsNodeMeta, TabsSchema } from '@xihan-ui/headless'
+import type { Direction, Orientation } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { slotPaints } from '../../runtime/slot-content'

@@ -1,5 +1,5 @@
-import type { Direction, Placement } from '@xihan-ui/core'
 import type { ContextMenuGroupProps, ContextMenuItemProps, ContextMenuNode, ContextMenuNodeMeta, ContextMenuSchema } from '@xihan-ui/headless'
+import type { Direction, Placement } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import {

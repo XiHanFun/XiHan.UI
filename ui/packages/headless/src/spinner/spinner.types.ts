@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/kernel'
 
 /** 直径档位，缺省 md。 */
 export type SpinnerSize = 'sm' | 'md' | 'lg'

@@ -102,7 +102,7 @@ trigger 部件渲染的就是原生按钮，模板 ref 拿到它即可 focus / b
 | Vue 组件 | `XhCascaderClearTrigger` `XhCascaderColumn` `XhCascaderContent` `XhCascaderIndicator` `XhCascaderItem` `XhCascaderItemIndicator` `XhCascaderItemText` `XhCascaderLabel` `XhCascaderPositioner` `XhCascaderRoot` `XhCascaderTrigger` `XhCascaderValueText` |
 | 组合式函数 | `useCascader` |
 | 状态机 | `cascaderMachine` |
-| 皮肤 | `@xihan-ui/styled/cascader.css` |
+| 皮肤 | `@xihan-ui/styles/cascader.css` |
 
 ## 解剖
 

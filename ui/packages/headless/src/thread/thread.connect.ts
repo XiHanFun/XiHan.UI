@@ -1,4 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ThreadApi, ThreadSchema, ThreadStatus } from './thread.types'
 import { threadAnatomy } from './thread.anatomy'

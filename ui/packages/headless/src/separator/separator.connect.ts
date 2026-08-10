@@ -1,4 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { SeparatorApi, SeparatorProps } from './separator.types'
 import { separatorAnatomy } from './separator.anatomy'
 

@@ -1,5 +1,5 @@
 {
-  "name": "@xihan-ui/highlight",
+  "name": "@xihan-ui/code-highlight",
   "type": "module",
   "version": "0.0.0",
   "description": "XiHan.UI code highlighter — coarse lexical tokenizer, no third-party runtime dependency.",
@@ -25,7 +25,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@xihan-ui/core": "workspace:*"
+    "@xihan-ui/kernel": "workspace:*"
   },
   "devDependencies": {
     "@xihan-ui/build": "workspace:*",

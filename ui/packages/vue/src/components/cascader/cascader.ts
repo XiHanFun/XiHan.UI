@@ -1,4 +1,3 @@
-import type { Direction, Placement } from '@xihan-ui/core'
 import type {
   CascaderExpandTrigger,
   CascaderItemProps,
@@ -6,6 +5,7 @@ import type {
   CascaderSchema,
   CascaderValue,
 } from '@xihan-ui/headless'
+import type { Direction, Placement } from '@xihan-ui/kernel'
 import type { PropType, Ref } from 'vue'
 import type { CascaderContext } from './use-cascader'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'

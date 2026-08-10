@@ -36,7 +36,7 @@ expandable 让整块文字变成一颗按钮，Enter / Space 也按得动
 | Vue 组件 | `XhEllipsis` |
 | 组合式函数 | `useEllipsis` |
 | 状态机 | `ellipsisMachine` |
-| 皮肤 | `@xihan-ui/styled/ellipsis.css` |
+| 皮肤 | `@xihan-ui/styles/ellipsis.css` |
 
 ## 解剖
 

@@ -1,4 +1,4 @@
-import type { PositionRect } from '@xihan-ui/core'
+import type { PositionRect } from '@xihan-ui/kernel'
 import type { TourSpotlightRect } from './tour.types'
 
 /** 高亮框在目标四周留出的缺省空白（px）。 */

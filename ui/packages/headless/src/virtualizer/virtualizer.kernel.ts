@@ -4,7 +4,7 @@
  * 算出"此刻该渲哪几条、各自落在哪儿"，变了就回调一次。
  */
 
-import type { Scope } from '@xihan-ui/core'
+import type { Scope } from '@xihan-ui/kernel'
 import type { VirtualizerAlign, VirtualizerMeasurement, VirtualizerMetrics, VirtualizerRange } from './virtualizer.geometry'
 import type { VirtualizerSnapshot } from './virtualizer.sizing'
 import {

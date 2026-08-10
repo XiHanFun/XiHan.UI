@@ -1,9 +1,9 @@
 import type { ItemQuery } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { AccordionApi, AccordionItemProps, AccordionNodeMeta, AccordionSchema } from './accordion.types'
 import { focusItem, ITEM_VALUE_ATTR, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { accordionAnatomy } from './accordion.anatomy'
 
 const parts = accordionAnatomy.build()

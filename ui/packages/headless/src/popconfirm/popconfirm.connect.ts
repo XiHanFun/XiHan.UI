@@ -1,8 +1,8 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { PopoverSchema } from '../popover'
 import type { PopconfirmApi, PopconfirmIntents } from './popconfirm.types'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { popconfirmAnatomy } from './popconfirm.anatomy'
 
 const parts = popconfirmAnatomy.build()

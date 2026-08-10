@@ -1,8 +1,8 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { CollapsibleSchema } from '../collapsible'
 import type { FloatButtonApi, FloatButtonAppearance, FloatButtonPlacement, FloatButtonShape } from './float-button.types'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { floatButtonAnatomy } from './float-button.anatomy'
 
 const parts = floatButtonAnatomy.build()

@@ -1,4 +1,4 @@
-import type { Placement, PositionResult } from '@xihan-ui/core'
+import type { Placement, PositionResult } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { CalendarSchema, CalendarSelectionMode } from '../calendar'
 import type { DateFieldSchema, DateGranularity } from '../date-field'

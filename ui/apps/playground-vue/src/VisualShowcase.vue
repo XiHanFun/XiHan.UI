@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ParamValue, PointCloud, ShapeName, VisualEffect } from '@xihan-ui/visual'
+import type { ParamValue, PointCloud, ShapeName, VisualEffect } from '@xihan-ui/backgrounds'
 import {
   builtinEffects,
   defaultParams,
@@ -9,9 +9,9 @@ import {
   SHAPE_NAMES,
   shapeCloud,
   textToCloud,
-} from '@xihan-ui/visual'
+} from '@xihan-ui/backgrounds'
 import { XhButton } from '@xihan-ui/vue'
-import { vVisual, XhVisual } from '@xihan-ui/vue/visual'
+import { vVisual, XhVisual } from '@xihan-ui/vue/backgrounds'
 import { computed, ref, shallowRef, watch } from 'vue'
 
 // 按名字取效果（如 v-visual="'mesh'"）要先把内置效果登记进注册表；

@@ -1,7 +1,7 @@
-import type { IconNode, IconRecord } from '@xihan-ui/core'
 import type { IconApi, IconProps, IconSize, IconWeight } from '@xihan-ui/headless'
-import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
+import type { IconNode, IconRecord } from '@xihan-ui/kernel'
 import { connectIcon, iconAnatomy, iconMeta } from '@xihan-ui/headless'
+import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/kernel'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 

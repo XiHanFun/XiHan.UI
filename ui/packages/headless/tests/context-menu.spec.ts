@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
-import type { Anchor, PositionEnginePort, PositionOptions, PositionRect } from '@xihan-ui/core'
+import type { Anchor, PositionEnginePort, PositionOptions, PositionRect } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ContextMenuApi, ContextMenuSchema } from '../src/context-menu'
-import { normalizeProps } from '@xihan-ui/core'
+import { normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'

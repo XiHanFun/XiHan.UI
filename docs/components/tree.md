@@ -72,7 +72,7 @@ collection 换一份树就换一棵：标记跟着数据用 v-for 渲，过滤�
 | Vue 组件 | `XhTreeBranch` `XhTreeBranchContent` `XhTreeBranchControl` `XhTreeBranchIndicator` `XhTreeBranchText` `XhTreeBranchTrigger` `XhTreeItem` `XhTreeItemIndicator` `XhTreeItemText` `XhTreeLabel` `XhTreeRoot` `XhTreeTree` |
 | 组合式函数 | `useTree` |
 | 状态机 | `treeMachine` |
-| 皮肤 | `@xihan-ui/styled/tree.css` |
+| 皮肤 | `@xihan-ui/styles/tree.css` |
 
 ## 解剖
 

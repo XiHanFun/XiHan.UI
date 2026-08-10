@@ -1,4 +1,4 @@
-import type { Disposable, Scope } from '@xihan-ui/core'
+import type { Disposable, Scope } from '@xihan-ui/kernel'
 
 export interface ViewportEntryOptions {
   scope: Scope

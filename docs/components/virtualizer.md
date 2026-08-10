@@ -36,7 +36,7 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 | Vue 组件 | `XhVirtualizerContent` `XhVirtualizerItem` `XhVirtualizerRoot` `XhVirtualizerViewport` |
 | 组合式函数 | `useVirtualizer` |
 | 状态机 | `virtualizerMachine` |
-| 皮肤 | `@xihan-ui/styled/virtualizer.css` |
+| 皮肤 | `@xihan-ui/styles/virtualizer.css` |
 
 ## 解剖
 

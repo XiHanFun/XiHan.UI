@@ -1,5 +1,5 @@
 import type { StickToBottomHandle } from '@xihan-ui/behavior'
-import type { PropTypes, RuntimeConfig } from '@xihan-ui/core'
+import type { PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 一轮对话的运行态，由宿主持有，组件只把它透出成 data 属性。 */

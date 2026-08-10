@@ -6,7 +6,7 @@ const items = [
   {
     value: "install",
     label: "怎么安装",
-    content: "装 @xihan-ui/vue 与 @xihan-ui/styled 两个包，皮肤单独引一次。",
+    content: "装 @xihan-ui/vue 与 @xihan-ui/styles 两个包，皮肤单独引一次。",
   },
   {
     value: "theme",

@@ -41,7 +41,7 @@ segmented 在段与段之间画一条分隔线；hoverable 只在能用指针的
 | 自定义元素 | `<xh-card>` |
 | Vue 组件 | `XhCardBody` `XhCardCover` `XhCardDescription` `XhCardFooter` `XhCardHeader` `XhCardRoot` `XhCardTitle` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/card.css` |
+| 皮肤 | `@xihan-ui/styles/card.css` |
 
 ## 解剖
 

@@ -1,5 +1,5 @@
-import type { Direction, Placement } from '@xihan-ui/core'
 import type { PopselectItemProps, PopselectNode, PopselectNodeMeta } from '@xihan-ui/headless'
+import type { Direction, Placement } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import type { PopselectNotifiers, PopselectRootProps } from './use-popselect'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'

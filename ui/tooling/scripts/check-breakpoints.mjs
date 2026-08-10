@@ -24,7 +24,9 @@ async function declaredBreakpoints() {
 }
 
 // 只查宽度条件；forced-colors、prefers-reduced-motion、hover 这些不带长度，不在此列
-const WIDTH_QUERY = /@media[^{]*?\((?:min|max)-width:\s*([^)]+)\)/g
+// 冒号后不再单写 \s*：它与 [^)]+ 能吃同一批字符，两边可交换的前缀会让引擎在不匹配时
+// 逐位回溯。值统一交给下面的 trim 归一，正则只负责切出来。
+const WIDTH_QUERY = /@media[^{]*?\((?:min|max)-width:([^)]+)\)/g
 
 const declared = await declaredBreakpoints()
 if (declared.size === 0) {

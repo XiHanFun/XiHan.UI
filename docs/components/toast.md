@@ -42,7 +42,7 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | Vue 组件 | `XhToastActionTrigger` `XhToastCloseTrigger` `XhToastDescription` `XhToastRoot` `XhToastTitle` |
 | 组合式函数 | `useToast` |
 | 状态机 | `toastMachine` |
-| 皮肤 | `@xihan-ui/styled/toast.css` |
+| 皮肤 | `@xihan-ui/styles/toast.css` |
 
 ## 解剖
 

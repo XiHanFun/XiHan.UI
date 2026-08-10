@@ -30,7 +30,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | Vue 组件 | `XhTourArrow` `XhTourBackdrop` `XhTourCloseTrigger` `XhTourContent` `XhTourDescription` `XhTourNextTrigger` `XhTourPositioner` `XhTourPrevTrigger` `XhTourProgressText` `XhTourRoot` `XhTourSkipTrigger` `XhTourSpotlight` `XhTourTitle` |
 | 组合式函数 | `useTour` |
 | 状态机 | `tourMachine` |
-| 皮肤 | `@xihan-ui/styled/tour.css` |
+| 皮肤 | `@xihan-ui/styles/tour.css` |
 
 ## 解剖
 

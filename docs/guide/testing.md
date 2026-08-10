@@ -51,7 +51,7 @@ interface DomSnapshot {
 
 这套判据能成立靠的是五条自我约束：
 
-1. **规格零框架**——套件只从 `@xihan-ui/core` / `@xihan-ui/headless` 取纯数据（解剖、键盘表、类型），不 import 任何框架；
+1. **规格零框架**——套件只从 `@xihan-ui/kernel` / `@xihan-ui/headless` 取纯数据（解剖、键盘表、类型），不 import 任何框架；
 2. **只断言归一化快照**——断言对象只能是 `DomSnapshot`，不碰组件实例、内部 ref、`shadowRoot`；
 3. **快照适配器无关**——id 的具体值、`data-v-*` 这类适配器痕迹在采集阶段抹掉，IDREF 属性翻译成 `@part(...)`。**抹不掉的差异即抽象泄漏**；
 4. **单实例文档**——同一时刻文档内只有一个 harness 的一个挂载实例，卸载后该 scope 不得残留节点；

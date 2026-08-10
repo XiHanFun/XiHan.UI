@@ -48,7 +48,7 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 | Vue 组件 | `XhSplitterPanel` `XhSplitterResizeTrigger` `XhSplitterRoot` |
 | 组合式函数 | `useSplitter` |
 | 状态机 | `splitterMachine` |
-| 皮肤 | `@xihan-ui/styled/splitter.css` |
+| 皮肤 | `@xihan-ui/styles/splitter.css` |
 
 ## 解剖
 

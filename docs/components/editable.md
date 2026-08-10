@@ -48,7 +48,7 @@ edit 受控就由宿主统一调度：一个开关把整张表切进编辑，放
 | Vue 组件 | `XhEditableArea` `XhEditableCancelTrigger` `XhEditableControl` `XhEditableEditTrigger` `XhEditableInput` `XhEditableLabel` `XhEditablePreview` `XhEditableRoot` `XhEditableSubmitTrigger` |
 | 组合式函数 | `useEditable` |
 | 状态机 | `editableMachine` |
-| 皮肤 | `@xihan-ui/styled/editable.css` |
+| 皮肤 | `@xihan-ui/styles/editable.css` |
 
 ## 解剖
 

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { CodeBlockApi, CodeBlockProps } from '../src/code-block'
-import { normalizeProps } from '@xihan-ui/core'
+import { normalizeProps } from '@xihan-ui/kernel'
 import { describe, expect, it } from 'vitest'
 // 直接从组件目录导入，不经包主入口
 import { CODE_BLOCK_FALLBACK_LANG, codeBlockAnatomy, codeBlockMeta, connectCodeBlock, countCodeLines } from '../src/code-block'

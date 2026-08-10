@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
-import type { RuntimeConfig } from '@xihan-ui/core'
+import type { RuntimeConfig } from '@xihan-ui/kernel'
 import type { VanillaRuntime } from '@xihan-ui/machine/vanilla'
 import type { TreeNode } from '../src/tree'
 import type { TreeSelectApi, TreeSelectSchema } from '../src/tree-select'
-import { createCounterIdGenerator, createRuntimeConfig, createScope, normalizeProps } from '@xihan-ui/core'
+import { createCounterIdGenerator, createRuntimeConfig, createScope, normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'

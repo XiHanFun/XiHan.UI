@@ -1,5 +1,5 @@
-import type { Direction, Placement } from '@xihan-ui/core'
 import type { TreeNode, TreeSelectNodeProps, TreeSelectSchema } from '@xihan-ui/headless'
+import type { Direction, Placement } from '@xihan-ui/kernel'
 import type { PropType, Ref } from 'vue'
 import type { TreeSelectContext } from './use-tree-select'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'

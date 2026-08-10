@@ -1,5 +1,5 @@
 import type { NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, Orientation, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, Orientation, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { MenubarApi, MenubarItemProps, MenubarNode, MenubarNodeMeta, MenubarSchema, MenubarTriggerProps } from './menubar.types'
 import {
@@ -13,7 +13,7 @@ import {
   navIntentFromKey,
   queryItems,
 } from '@xihan-ui/behavior'
-import { contains, dataAttr } from '@xihan-ui/core'
+import { contains, dataAttr } from '@xihan-ui/kernel'
 import {
   menubarAnatomy,
   menubarContentQuery,

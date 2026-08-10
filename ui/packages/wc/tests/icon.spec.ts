@@ -1,13 +1,13 @@
 // @vitest-environment jsdom
 
-import type { DiagnosticRecord, IconRecord } from '@xihan-ui/core'
+import type { DiagnosticRecord, IconRecord } from '@xihan-ui/kernel'
 import {
   DIAGNOSTIC_CODES,
   onDiagnostic,
   resetDiagnostics,
   setDiagnosticsConsoleOutput,
   setDiagnosticsLevel,
-} from '@xihan-ui/core'
+} from '@xihan-ui/kernel'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../src/define'
 

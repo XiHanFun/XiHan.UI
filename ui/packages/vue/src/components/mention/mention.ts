@@ -1,5 +1,5 @@
-import type { Placement } from '@xihan-ui/core'
 import type { MentionInputEl, MentionInputHost, MentionItemProps, MentionNode, MentionNodeMeta, MentionSchema, MentionTranslations } from '@xihan-ui/headless'
+import type { Placement } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import { computed, defineComponent, h, onMounted, onUnmounted, onUpdated, watch } from 'vue'
 import { provideMention, provideMentionItem, useMentionContext, useMentionItemContext } from './context'

@@ -1,4 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { BadgeApi, BadgeProps } from './badge.types'
 import { badgeAnatomy } from './badge.anatomy'
 

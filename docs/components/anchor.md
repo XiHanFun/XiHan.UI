@@ -66,7 +66,7 @@ size 换条目的字号与左右内边距，不传 size 即默认档
 | Vue 组件 | `XhAnchorIndicator` `XhAnchorItem` `XhAnchorLink` `XhAnchorList` `XhAnchorRoot` |
 | 组合式函数 | `useAnchor` |
 | 状态机 | `anchorMachine` |
-| 皮肤 | `@xihan-ui/styled/anchor.css` |
+| 皮肤 | `@xihan-ui/styles/anchor.css` |
 
 ## 解剖
 

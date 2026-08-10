@@ -1,4 +1,4 @@
-import type { Scope } from '@xihan-ui/core'
+import type { Scope } from '@xihan-ui/kernel'
 
 /** 一次量测：滚动量与可视区尺寸，单位 px。 */
 export interface ScrollMetrics {

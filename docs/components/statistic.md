@@ -41,7 +41,7 @@ tone 决定数值与前后缀用哪族颜色，标签始终保持弱前景
 | 自定义元素 | `<xh-statistic>` |
 | Vue 组件 | `XhStatisticLabel` `XhStatisticPrefix` `XhStatisticRoot` `XhStatisticSuffix` `XhStatisticValue` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/statistic.css` |
+| 皮肤 | `@xihan-ui/styles/statistic.css` |
 
 ## 解剖
 

@@ -41,7 +41,7 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 | 自定义元素 | `<xh-alert>` |
 | Vue 组件 | `XhAlertCloseTrigger` `XhAlertDescription` `XhAlertIcon` `XhAlertRoot` `XhAlertTitle` |
 | 状态机 | `alertMachine` |
-| 皮肤 | `@xihan-ui/styled/alert.css` |
+| 皮肤 | `@xihan-ui/styles/alert.css` |
 
 ## 解剖
 

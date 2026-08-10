@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-import type { RuntimeConfig } from '@xihan-ui/core'
+import type { RuntimeConfig } from '@xihan-ui/kernel'
 import type { StickToBottomHandle, StickToBottomState } from '../src/stick-to-bottom'
-import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
+import { createCounterIdGenerator, createScope } from '@xihan-ui/kernel'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createStickToBottom, STICK_TO_BOTTOM_THRESHOLD } from '../src/stick-to-bottom'
 

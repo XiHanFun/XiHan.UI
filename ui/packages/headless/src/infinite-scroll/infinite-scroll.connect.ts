@@ -1,7 +1,7 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { InfiniteScrollApi, InfiniteScrollSchema } from './infinite-scroll.types'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { infiniteScrollAnatomy } from './infinite-scroll.anatomy'
 
 const parts = infiniteScrollAnatomy.build()

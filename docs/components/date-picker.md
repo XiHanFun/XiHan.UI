@@ -60,7 +60,7 @@ open 交给宿主持有，值、展开、聚焦日三条变化各自播报
 | Vue 组件 | `XhDatePickerCalendar` `XhDatePickerCell` `XhDatePickerCellTrigger` `XhDatePickerClearTrigger` `XhDatePickerContent` `XhDatePickerControl` `XhDatePickerGrid` `XhDatePickerGridBody` `XhDatePickerGridHead` `XhDatePickerHeader` `XhDatePickerHeading` `XhDatePickerHiddenInput` `XhDatePickerInput` `XhDatePickerLabel` `XhDatePickerNextTrigger` `XhDatePickerPositioner` `XhDatePickerPrevTrigger` `XhDatePickerRoot` `XhDatePickerSegment` `XhDatePickerTrigger` `XhDatePickerWeekDay` `XhDatePickerWeekRow` |
 | 组合式函数 | `useDatePicker` |
 | 状态机 | `datePickerMachine` |
-| 皮肤 | `@xihan-ui/styled/date-picker.css` |
+| 皮肤 | `@xihan-ui/styles/date-picker.css` |
 
 ## 解剖
 

@@ -1,7 +1,7 @@
-import type { Scope } from '@xihan-ui/core'
 import type { FieldProps } from '@xihan-ui/headless'
-import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
+import type { Scope } from '@xihan-ui/kernel'
 import { connectField, fieldAnatomy, fieldMeta } from '@xihan-ui/headless'
+import { createCounterIdGenerator, createScope } from '@xihan-ui/kernel'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 

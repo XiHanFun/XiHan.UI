@@ -48,7 +48,7 @@ Field 的 disabled 只把 data-disabled 铺到各部件上；真正改不动还�
 | Vue 组件 | `XhFieldControl` `XhFieldDescription` `XhFieldErrorText` `XhFieldLabel` `XhFieldRoot` |
 | 组合式函数 | `useField` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/field.css` |
+| 皮肤 | `@xihan-ui/styles/field.css` |
 
 ## 解剖
 

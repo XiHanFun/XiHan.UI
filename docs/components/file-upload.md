@@ -72,7 +72,7 @@ item-preview 是个空方框，作者往里塞什么都行；塞进去的图会�
 | Vue 组件 | `XhFileUploadClearTrigger` `XhFileUploadDropzone` `XhFileUploadHiddenInput` `XhFileUploadItem` `XhFileUploadItemDeleteTrigger` `XhFileUploadItemGroup` `XhFileUploadItemName` `XhFileUploadItemPreview` `XhFileUploadItemSizeText` `XhFileUploadLabel` `XhFileUploadRoot` `XhFileUploadTrigger` |
 | 组合式函数 | `useFileUpload` |
 | 状态机 | `fileUploadMachine` |
-| 皮肤 | `@xihan-ui/styled/file-upload.css` |
+| 皮肤 | `@xihan-ui/styles/file-upload.css` |
 
 ## 解剖
 

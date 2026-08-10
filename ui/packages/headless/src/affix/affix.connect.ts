@@ -1,7 +1,7 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { AffixApi, AffixSchema } from './affix.types'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { affixAnatomy } from './affix.anatomy'
 
 const parts = affixAnatomy.build()

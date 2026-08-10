@@ -44,7 +44,7 @@ for (const line of source.split('\n')) {
     continue
   }
   const spec = imported[1]
-  // 令牌来自 @xihan-ui/system，是自定义属性声明，没有同名的无层声明与它相争，
+  // 令牌来自 @xihan-ui/tokens，是自定义属性声明，没有同名的无层声明与它相争，
   // 留在层里也照样生效；保持 @import 也避免把另一个包的产物复制进来。
   if (!spec.startsWith('.')) {
     out.push(line)

@@ -60,7 +60,7 @@ min / max 直接把界外的格从列里裁掉；分列还会随已选的时再�
 | Vue 组件 | `XhTimePickerClearTrigger` `XhTimePickerColumn` `XhTimePickerContent` `XhTimePickerControl` `XhTimePickerHiddenInput` `XhTimePickerInput` `XhTimePickerLabel` `XhTimePickerOption` `XhTimePickerPositioner` `XhTimePickerRoot` `XhTimePickerTrigger` |
 | 组合式函数 | `useTimePicker` |
 | 状态机 | `timePickerMachine` |
-| 皮肤 | `@xihan-ui/styled/time-picker.css` |
+| 皮肤 | `@xihan-ui/styles/time-picker.css` |
 
 ## 解剖
 

@@ -30,7 +30,7 @@
 | Vue 组件 | `XhClipboardControl` `XhClipboardIndicator` `XhClipboardInput` `XhClipboardLabel` `XhClipboardRoot` `XhClipboardTrigger` |
 | 组合式函数 | `useClipboard` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/clipboard.css` |
+| 皮肤 | `@xihan-ui/styles/clipboard.css` |
 
 ## 解剖
 

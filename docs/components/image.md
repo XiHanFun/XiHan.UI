@@ -60,7 +60,7 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 | Vue 组件 | `XhImageFallback` `XhImageImage` `XhImageRoot` |
 | 组合式函数 | `useImage` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/image.css` |
+| 皮肤 | `@xihan-ui/styles/image.css` |
 
 ## 解剖
 

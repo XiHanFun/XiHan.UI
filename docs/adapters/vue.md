@@ -2,7 +2,7 @@
 
 `@xihan-ui/vue` 是无头内核的 Vue 3 外壳。它做三件事：把机器接到 Vue 的响应式上、把部件包成组件、把 `connect` 产出的 props 展开到 vnode 上。**不实现任何组件逻辑。**
 
-依赖：`vue` 是 peer 依赖（由你的项目提供）；`@xihan-ui/visual` 是**可选** peer，不用视觉效果就不必装。
+依赖：`vue` 是 peer 依赖（由你的项目提供）；`@xihan-ui/backgrounds` 是**可选** peer，不用视觉效果就不必装。
 
 ## 组件命名
 
@@ -124,7 +124,7 @@ const { api } = useAccordion(
 Vue 侧的视觉适配在**单独的子入口**，不引就不会把 WebGL 引擎打进包：
 
 ```ts
-import { useVisual, vVisual, XhVisual } from '@xihan-ui/vue/visual'
+import { useVisual, vVisual, XhVisual } from '@xihan-ui/vue/backgrounds'
 ```
 
 三种用法见[视觉层](../guide/visual#在-vue-里用)。

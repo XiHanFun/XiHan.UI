@@ -1,5 +1,5 @@
-import type { IconNode, IconRecord } from '@xihan-ui/core'
 import type { IconProps, IconSize, IconWeight } from '@xihan-ui/headless'
+import type { IconNode, IconRecord } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import { defineComponent, h } from 'vue'
 import { slotPaints } from '../../runtime/slot-content'

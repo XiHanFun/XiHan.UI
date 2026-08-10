@@ -54,7 +54,7 @@ selection-mode 直接指定三种模式，extended 是「单击换一条、Ctrl 
 | Vue 组件 | `XhListboxContent` `XhListboxItem` `XhListboxItemGroup` `XhListboxItemGroupLabel` `XhListboxItemIndicator` `XhListboxItemText` `XhListboxLabel` `XhListboxRoot` |
 | 组合式函数 | `useListbox` |
 | 状态机 | `listboxMachine` |
-| 皮肤 | `@xihan-ui/styled/listbox.css` |
+| 皮肤 | `@xihan-ui/styles/listbox.css` |
 
 ## 解剖
 

@@ -41,7 +41,7 @@ wrap 让放不下的子项换行、行与行之间同样吃 gap；inline 让容�
 | 自定义元素 | `<xh-flex>` |
 | Vue 组件 | `XhFlex` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/flex.css` |
+| 皮肤 | `@xihan-ui/styles/flex.css` |
 
 ## 解剖
 

@@ -21,7 +21,7 @@ import type {
 } from './types'
 // 解释器：把 machine 定义与注入的响应式宿主组合成可运行的 service。
 // 事件走同步 FIFO 队列 + run-to-completion，转移走六阶段编排。
-import { callAll, createCounterIdGenerator, createScope, isDev } from '@xihan-ui/core'
+import { callAll, createCounterIdGenerator, createScope, isDev } from '@xihan-ui/kernel'
 import { MachineError, raiseMachineError, reportMachineCrash } from './errors'
 import {
   choose,

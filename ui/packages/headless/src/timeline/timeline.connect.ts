@@ -1,4 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { TimelineApi, TimelineProps } from './timeline.types'
 import { timelineAnatomy } from './timeline.anatomy'
 

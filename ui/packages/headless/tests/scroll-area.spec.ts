@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
-import type { Orientation } from '@xihan-ui/core'
+import type { Orientation } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ScrollAreaApi, ScrollAreaSchema } from '../src/scroll-area'
-import { normalizeProps } from '@xihan-ui/core'
+import { normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'

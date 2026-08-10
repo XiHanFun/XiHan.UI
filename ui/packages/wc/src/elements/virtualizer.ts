@@ -1,13 +1,13 @@
-import type { IdGenerator } from '@xihan-ui/core'
 import type {
   VirtualizerAlign,
   VirtualizerChangeDetails,
   VirtualizerItemState,
   VirtualizerSchema,
 } from '@xihan-ui/headless'
+import type { IdGenerator } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
-import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectVirtualizer, virtualizerAnatomy, virtualizerMachine, virtualizerMeta } from '@xihan-ui/headless'
+import { createCounterIdGenerator, createScope } from '@xihan-ui/kernel'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'

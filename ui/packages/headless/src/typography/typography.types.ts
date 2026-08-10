@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/kernel'
 
 /** 标题字号档位，1 最大、6 最小。 */
 export type TypographyLevel = 1 | 2 | 3 | 4 | 5 | 6

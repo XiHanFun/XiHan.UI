@@ -1,4 +1,4 @@
-import type { Direction } from '@xihan-ui/core'
+import type { Direction } from '@xihan-ui/kernel'
 import { clamp } from '../shared/number'
 
 /**

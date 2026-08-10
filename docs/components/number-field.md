@@ -90,7 +90,7 @@ invalid 由宿主自己判定，不必挂在表单上；标出来之后值照样
 | Vue 组件 | `XhNumberFieldDecrementTrigger` `XhNumberFieldIncrementTrigger` `XhNumberFieldInput` `XhNumberFieldLabel` `XhNumberFieldRoot` |
 | 组合式函数 | `useNumberField` |
 | 状态机 | `numberFieldMachine` |
-| 皮肤 | `@xihan-ui/styled/number-field.css` |
+| 皮肤 | `@xihan-ui/styles/number-field.css` |
 
 ## 解剖
 

@@ -1,9 +1,9 @@
 import type { ItemQuery, NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { TabsApi, TabsNodeMeta, TabsSchema, TabsTriggerProps } from './tabs.types'
 import { focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { tabsAnatomy } from './tabs.anatomy'
 
 const parts = tabsAnatomy.build()

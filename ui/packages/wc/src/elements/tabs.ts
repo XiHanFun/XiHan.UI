@@ -1,5 +1,5 @@
-import type { Direction, Orientation } from '@xihan-ui/core'
 import type { TabsActivationMode, TabsNode, TabsSchema, TabsValueChangeDetails } from '@xihan-ui/headless'
+import type { Direction, Orientation } from '@xihan-ui/kernel'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectTabs, tabsAnatomy, tabsMachine, tabsMeta } from '@xihan-ui/headless'
 import { createDeclaredDisabled } from '../dom/declared-disabled'

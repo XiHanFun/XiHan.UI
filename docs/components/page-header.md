@@ -41,7 +41,7 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 | 自定义元素 | `<xh-page-header>` |
 | Vue 组件 | `XhPageHeaderBackTrigger` `XhPageHeaderExtra` `XhPageHeaderFooter` `XhPageHeaderRoot` `XhPageHeaderSubtitle` `XhPageHeaderTitle` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/page-header.css` |
+| 皮肤 | `@xihan-ui/styles/page-header.css` |
 
 ## 解剖
 

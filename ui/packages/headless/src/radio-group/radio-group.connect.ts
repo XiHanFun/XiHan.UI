@@ -1,9 +1,9 @@
 import type { ItemQuery } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { RadioGroupApi, RadioGroupItemProps, RadioGroupNodeMeta, RadioGroupSchema } from './radio-group.types'
 import { focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
-import { contains, dataAttr } from '@xihan-ui/core'
+import { contains, dataAttr } from '@xihan-ui/kernel'
 import { radioGroupAnatomy } from './radio-group.anatomy'
 
 const parts = radioGroupAnatomy.build()

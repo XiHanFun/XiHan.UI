@@ -12,17 +12,17 @@ npm 上的 `xihan-ui` 是重写前的旧实现，最后一版 `0.9.8` 发布于 
 
 ### 基座
 
-- **新增** `@xihan-ui/core` 结构原语：anatomy、`mergeProps`、`normalizeProps`、Scope、context、id 生成，以及浮层定位、虚拟滚动、代码着色三个端口的类型契约
+- **新增** `@xihan-ui/kernel` 结构原语：anatomy、`mergeProps`、`normalizeProps`、Scope、context、id 生成，以及浮层定位、虚拟滚动、代码着色三个端口的类型契约
 - **新增** `@xihan-ui/machine` 自研薄状态机：定义层、`createService` 解释器与 vanilla 运行时，受控值绑定与效应生命周期
 - **新增** `@xihan-ui/behavior` 交互行为原语：消解层、焦点域、滚动锁、进出场，随后补上条目集合导航（roving tabindex 底座）与首字母连打检索
-- **新增** `@xihan-ui/system` 设计令牌体系与主题运行时，令牌从 DTCG 源产出 CSS / JSON / TS 三种形态
-- **新增** `@xihan-ui/styled` 纯 CSS 皮肤层，后续补上 reset 层
-- **新增** `@xihan-ui/core` 全局诊断通道，状态机错误投递进该通道而不是抛在使用者脸上
+- **新增** `@xihan-ui/tokens` 设计令牌体系与主题运行时，令牌从 DTCG 源产出 CSS / JSON / TS 三种形态
+- **新增** `@xihan-ui/styles` 纯 CSS 皮肤层，后续补上 reset 层
+- **新增** `@xihan-ui/kernel` 全局诊断通道，状态机错误投递进该通道而不是抛在使用者脸上
 
 ### 适配器
 
 - **新增** `@xihan-ui/vue` Vue 3 适配器，Button / Dialog 纵切片先打穿全链路
-- **新增** `@xihan-ui/wc` Web Components 适配器，Light DOM 行为宿主；`xh-dialog` 把「有状态组件也能框架无关」这件事验证掉
+- **新增** `@xihan-ui/web-components` Web Components 适配器，Light DOM 行为宿主；`xh-dialog` 把「有状态组件也能框架无关」这件事验证掉
 - **新增** WC 侧观察 Light DOM 增删并重新接线，抹平「运行期增删条目」上的适配器分叉
 - **新增** WC 角色节点契约校验与 Custom Elements Manifest 生成，两者都进门禁
 - **新增** 跨适配器一致性套件（conformance）：同一批判据在两套宿主上逐帧比对归一化后的 DOM，套件数从 1 个扩到 42 个，排除项改为显式登记
@@ -55,14 +55,14 @@ npm 上的 `xihan-ui` 是重写前的旧实现，最后一版 `0.9.8` 发布于 
 
 ### AI 与 Markdown
 
-- **新增** `@xihan-ui/ai` 协议内核与 AI 组件族第一批：SSE 读取、协议归一、parts 归约、会话 store，配 Thread / Composer / CodeBlock 三件与粘底原语，双适配器
+- **新增** `@xihan-ui/chat-stream` 协议内核与 AI 组件族第一批：SSE 读取、协议归一、parts 归约、会话 store，配 Thread / Composer / CodeBlock 三件与粘底原语，双适配器
 - **新增** `@xihan-ui/markdown` 流式渲染内核，增量切块 + 稳定 key + 消毒
 - **优化** Markdown 接上 CommonMark 官方用例的一致率棘轮，逐步实现缩进代码块、Setext 标题、跨行链接引用定义与列表松紧排布，一致率由 375 提升至 489
 
 ### 视觉层
 
-- **新增** `@xihan-ui/visual`：WebGL2 背景效果与数据驱动粒子点云，框架无关、零第三方依赖。流场跑片元着色器、粒子走 `gl.POINTS`，两通道共用同一段 GLSL；内置 14 个效果，不支持 WebGL2 时降级为 CSS 静态背景
-- **新增** 两个适配器接上视觉层，各走独立子入口 `@xihan-ui/vue/visual` 与 `@xihan-ui/wc/visual`，`@xihan-ui/visual` 声明为可选 peer
+- **新增** `@xihan-ui/backgrounds`：WebGL2 背景效果与数据驱动粒子点云，框架无关、零第三方依赖。流场跑片元着色器、粒子走 `gl.POINTS`，两通道共用同一段 GLSL；内置 14 个效果，不支持 WebGL2 时降级为 CSS 静态背景
+- **新增** 两个适配器接上视觉层，各走独立子入口 `@xihan-ui/vue/backgrounds` 与 `@xihan-ui/web-components/backgrounds`，`@xihan-ui/backgrounds` 声明为可选 peer
 - **修复** 修复画面在真实页面里一片空白的三个成因
 
 ### 图标

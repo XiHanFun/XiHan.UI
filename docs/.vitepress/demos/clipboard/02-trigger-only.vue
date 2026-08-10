@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { XhClipboardIndicator, XhClipboardRoot, XhClipboardTrigger } from "@xihan-ui/vue";
 
-const install = "pnpm add @xihan-ui/vue @xihan-ui/styled";
+const install = "pnpm add @xihan-ui/vue @xihan-ui/styles";
 </script>
 
 <template>

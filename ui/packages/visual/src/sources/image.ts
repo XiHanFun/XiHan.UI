@@ -3,7 +3,7 @@
 
 import type { PointCloud } from '../types'
 import type { SampleOptions } from './sampler'
-import { isSSR } from '@xihan-ui/core'
+import { isSSR } from '@xihan-ui/kernel'
 import { fitSize, rasterize } from './raster'
 import { sampleImageData } from './sampler'
 

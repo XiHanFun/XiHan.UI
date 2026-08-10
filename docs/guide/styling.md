@@ -1,6 +1,6 @@
 # 皮肤与样式分层
 
-`@xihan-ui/styled` 是**纯 CSS** 包：不依赖任何 JS 包，也不被任何 JS 包依赖。它可以脱离整个 JS 层单独使用，也可以整包丢掉自己写。
+`@xihan-ui/styles` 是**纯 CSS** 包：不依赖任何 JS 包，也不被任何 JS 包依赖。它可以脱离整个 JS 层单独使用，也可以整包丢掉自己写。
 
 ## 层序
 
@@ -14,7 +14,7 @@ CSS 的级联顺序由 `@layer` 声明的**首次出现顺序**决定，与 `@im
 | 层 | 内容 |
 | --- | --- |
 | `xihan.reset` | 库自己的基线，只作用于带 `data-scope` 的节点 |
-| `xihan.tokens` | 令牌声明（来自 `@xihan-ui/system/tokens.css`） |
+| `xihan.tokens` | 令牌声明（来自 `@xihan-ui/tokens/tokens.css`） |
 | `xihan.motion` | 关键帧动画 |
 | `xihan.components` | 组件皮肤 |
 | `xihan.overrides` | 留给使用者，永远盖得住上面全部 |
@@ -154,7 +154,7 @@ CSS 的级联顺序由 `@layer` 声明的**首次出现顺序**决定，与 `@im
 
 ## 完全自己写皮肤
 
-丢掉 `@xihan-ui/styled`，只留令牌（或连令牌一起丢），组件行为一点不受影响。你需要知道的全部接口是：
+丢掉 `@xihan-ui/styles`，只留令牌（或连令牌一起丢），组件行为一点不受影响。你需要知道的全部接口是：
 
 1. **`data-scope` + `data-part`**——结构标识，见[组件参考](../components/)里每个组件的解剖；
 2. **`data-state` / `data-disabled` / `data-orientation` / `data-highlighted` / `data-side` / `data-align`**——状态钩子；

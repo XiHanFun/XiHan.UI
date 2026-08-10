@@ -1,4 +1,3 @@
-import type { Direction } from '@xihan-ui/core'
 import type {
   TransferFilter,
   TransferItem,
@@ -7,6 +6,7 @@ import type {
   TransferSide,
   TransferValueChangeDetails,
 } from '@xihan-ui/headless'
+import type { Direction } from '@xihan-ui/kernel'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectTransfer, transferAnatomy, transferFocusKey, transferMachine, transferMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'

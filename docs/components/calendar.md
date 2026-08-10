@@ -36,7 +36,7 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | Vue 组件 | `XhCalendarCell` `XhCalendarCellTrigger` `XhCalendarGrid` `XhCalendarGridBody` `XhCalendarGridHead` `XhCalendarHeader` `XhCalendarHeading` `XhCalendarNextTrigger` `XhCalendarPrevTrigger` `XhCalendarRoot` `XhCalendarWeekDay` `XhCalendarWeekRow` |
 | 组合式函数 | `useCalendar` |
 | 状态机 | `calendarMachine` |
-| 皮肤 | `@xihan-ui/styled/calendar.css` |
+| 皮肤 | `@xihan-ui/styles/calendar.css` |
 
 ## 解剖
 

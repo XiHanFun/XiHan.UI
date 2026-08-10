@@ -1,5 +1,5 @@
 ---
-"@xihan-ui/visual": major
+"@xihan-ui/backgrounds": major
 ---
 
 新增视觉层：WebGL2 背景效果与数据驱动粒子点云，框架无关、零第三方依赖。

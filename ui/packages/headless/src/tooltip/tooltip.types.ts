@@ -1,4 +1,4 @@
-import type { Placement, PositionEnginePort, PositionResult, PropTypes } from '@xihan-ui/core'
+import type { Placement, PositionEnginePort, PositionResult, PropTypes } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface TooltipOpenChangeDetails {

@@ -1,4 +1,4 @@
-import type { Placement, PositionResult, VirtualAnchor } from '@xihan-ui/core'
+import type { Placement, PositionResult, VirtualAnchor } from '@xihan-ui/kernel'
 import type { ContextMenuFocusIntent, ContextMenuPoint, ContextMenuSchema } from './context-menu.types'
 import { createDismissLayer, createFocusScope, createTypeahead, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
 import { setTimeoutEffect, setup } from '@xihan-ui/machine'

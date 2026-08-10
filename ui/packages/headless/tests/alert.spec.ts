@@ -1,5 +1,5 @@
 import type { AlertOpenChangeDetails, AlertSchema } from '../src/alert'
-import { normalizeProps } from '@xihan-ui/core'
+import { normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { describe, expect, it } from 'vitest'

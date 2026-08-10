@@ -1,4 +1,4 @@
-import type { Cleanup } from '@xihan-ui/core'
+import type { Cleanup } from '@xihan-ui/kernel'
 import type { PresenceHandle } from './index'
 
 /** 逗号分隔的时长串里取最长的一段，单位统一成毫秒。 */

@@ -1,7 +1,6 @@
-import type { Cleanup, Layer, RuntimeConfig } from '@xihan-ui/core'
 import type { CalendarSchema, DateFieldSchema, DatePickerApi, DatePickerSchema, DatePickerServices } from '@xihan-ui/headless'
+import type { Cleanup, Layer, RuntimeConfig } from '@xihan-ui/kernel'
 import type { ComputedRef, Ref } from 'vue'
-import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import {
   calendarMachine,
   connectDatePicker,
@@ -11,6 +10,7 @@ import {
   datePickerFieldProps,
   datePickerMachine,
 } from '@xihan-ui/headless'
+import { createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'

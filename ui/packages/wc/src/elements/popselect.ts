@@ -1,4 +1,3 @@
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/core'
 import type {
   ListboxSchema,
   ListboxValueChangeDetails,
@@ -7,10 +6,11 @@ import type {
   PopselectItemProps,
   PopselectNode,
 } from '@xihan-ui/headless'
+import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectPopselect, listboxMachine, popoverMachine, popselectAnatomy, popselectMeta } from '@xihan-ui/headless'
+import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'

@@ -1,5 +1,5 @@
 {
-  "name": "@xihan-ui/ai",
+  "name": "@xihan-ui/chat-stream",
   "type": "module",
   "version": "0.0.0",
   "description": "XiHan.UI AI protocol core — SSE transport, protocol normalize, parts reducer, thread store.",
@@ -27,7 +27,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@xihan-ui/core": "workspace:*"
+    "@xihan-ui/kernel": "workspace:*"
   },
   "devDependencies": {
     "@xihan-ui/build": "workspace:*",

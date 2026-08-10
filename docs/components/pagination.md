@@ -72,7 +72,7 @@ pageSize 归宿主持有；换档后总页数重算，越界的当前页被夹�
 | Vue 组件 | `XhPaginationEllipsis` `XhPaginationItem` `XhPaginationNextTrigger` `XhPaginationPrevTrigger` `XhPaginationRoot` |
 | 组合式函数 | `usePagination` |
 | 状态机 | `paginationMachine` |
-| 皮肤 | `@xihan-ui/styled/pagination.css` |
+| 皮肤 | `@xihan-ui/styles/pagination.css` |
 
 ## 解剖
 

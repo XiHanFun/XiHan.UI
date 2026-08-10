@@ -1,5 +1,5 @@
-import type { Direction } from '@xihan-ui/core'
 import type { BreadcrumbProps, BreadcrumbTranslations } from '@xihan-ui/headless'
+import type { Direction } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { provideBreadcrumb, useBreadcrumbContext } from './context'

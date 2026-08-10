@@ -1,6 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { MarqueeApi, MarqueeDirection, MarqueeProps } from './marquee.types'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { marqueeAnatomy } from './marquee.anatomy'
 
 const parts = marqueeAnatomy.build()

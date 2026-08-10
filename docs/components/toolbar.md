@@ -54,7 +54,7 @@ size 只换整条的内边距与条目间的间距，条目自身的高度与字
 | Vue 组件 | `XhToolbarGroup` `XhToolbarItem` `XhToolbarRoot` `XhToolbarSeparator` |
 | 组合式函数 | `useToolbar` |
 | 状态机 | `toolbarMachine` |
-| 皮肤 | `@xihan-ui/styled/toolbar.css` |
+| 皮肤 | `@xihan-ui/styles/toolbar.css` |
 
 ## 解剖
 

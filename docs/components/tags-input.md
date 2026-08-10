@@ -84,7 +84,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | Vue 组件 | `XhTagsInputClearTrigger` `XhTagsInputControl` `XhTagsInputHiddenInput` `XhTagsInputInput` `XhTagsInputItem` `XhTagsInputItemDeleteTrigger` `XhTagsInputItemInput` `XhTagsInputItemPreview` `XhTagsInputItemText` `XhTagsInputLabel` `XhTagsInputRoot` |
 | 组合式函数 | `useTagsInput` |
 | 状态机 | `tagsInputMachine` |
-| 皮肤 | `@xihan-ui/styled/tags-input.css` |
+| 皮肤 | `@xihan-ui/styles/tags-input.css` |
 
 ## 解剖
 

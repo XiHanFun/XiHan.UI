@@ -1,9 +1,9 @@
 import type { NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ComboboxApi, ComboboxInputEl, ComboboxInputProps, ComboboxItemProps, ComboboxNodeMeta, ComboboxSchema } from './combobox.types'
 import { isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
-import { contains, dataAttr, isComposingEvent } from '@xihan-ui/core'
+import { contains, dataAttr, isComposingEvent } from '@xihan-ui/kernel'
 import { comboboxAnatomy, comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 import { COMBOBOX_DEFAULT_PLACEMENT } from './combobox.machine'
 

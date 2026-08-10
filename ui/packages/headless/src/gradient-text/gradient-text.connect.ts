@@ -1,4 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { GradientTextApi, GradientTextProps } from './gradient-text.types'
 import { gradientTextAnatomy } from './gradient-text.anatomy'
 

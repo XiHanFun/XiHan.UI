@@ -1,9 +1,9 @@
 import type { NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ListboxApi, ListboxItemProps, ListboxNodeMeta, ListboxSchema } from './listbox.types'
 import { focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
-import { contains, dataAttr } from '@xihan-ui/core'
+import { contains, dataAttr } from '@xihan-ui/kernel'
 import { listboxAnatomy, listboxItemQuery, listboxItemText } from './listbox.anatomy'
 import { listboxSelectionMode } from './listbox.machine'
 

@@ -1,4 +1,4 @@
-import type { RuntimeConfig } from '@xihan-ui/core'
+import type { RuntimeConfig } from '@xihan-ui/kernel'
 import { describe, expect, it, vi } from 'vitest'
 import { createPresence, nextPresence } from '../src/presence'
 

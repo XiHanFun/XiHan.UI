@@ -1,5 +1,5 @@
-import type { Disposable, Layer, RuntimeConfig } from '@xihan-ui/core'
-import { contains, EV_MOUNT_AUTO_FOCUS, EV_UNMOUNT_AUTO_FOCUS } from '@xihan-ui/core'
+import type { Disposable, Layer, RuntimeConfig } from '@xihan-ui/kernel'
+import { contains, EV_MOUNT_AUTO_FOCUS, EV_UNMOUNT_AUTO_FOCUS } from '@xihan-ui/kernel'
 import { dispatchCancelable } from '../dispatch'
 import { acquireFocusGuards } from './focus-guards'
 import { focusFirst, focusSafely, getTabbables, removeLinks } from './tabbable'

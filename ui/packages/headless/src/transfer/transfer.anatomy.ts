@@ -1,5 +1,5 @@
 import type { ItemQuery } from '@xihan-ui/behavior'
-import { createAnatomy } from '@xihan-ui/core'
+import { createAnatomy } from '@xihan-ui/kernel'
 
 // data-part 直接用 kebab-case，与 CSS 选择器一致。
 // 两侧面板各是一个独立的 part（source-panel / target-panel），面板内部的角色节点

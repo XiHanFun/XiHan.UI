@@ -114,7 +114,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | Vue 组件 | `XhSelectContent` `XhSelectIndicator` `XhSelectItem` `XhSelectItemIndicator` `XhSelectItemText` `XhSelectLabel` `XhSelectPositioner` `XhSelectRoot` `XhSelectTrigger` `XhSelectValueText` |
 | 组合式函数 | `useSelect` |
 | 状态机 | `selectMachine` |
-| 皮肤 | `@xihan-ui/styled/select.css` |
+| 皮肤 | `@xihan-ui/styles/select.css` |
 
 ## 解剖
 

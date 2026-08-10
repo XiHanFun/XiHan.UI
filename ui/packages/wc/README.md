@@ -1,4 +1,4 @@
-# @xihan-ui/wc
+# @xihan-ui/web-components
 
 Web Components 适配器：把框架无关的 headless（anatomy + machine + connect）落在
 自研基类 `XhReactiveElement` 上的 **Light-DOM 行为宿主**（零第三方运行时依赖）。
@@ -6,7 +6,7 @@ Web Components 适配器：把框架无关的 headless（anatomy + machine + con
 - 元素不渲染结构；用户写带 `data-xh-part` 的 Light-DOM 子节点，元素发现后用
   `spreadProps` 把 `connect()` 产出命令式打上去。每个组件一个 `xh-*` 元素，part 不是各自的元素。
 - `MachineController` 把机器唯一解释器 `createService` 桥到 controller 生命周期，
-  不重造 FSM。元素类只在 `@xihan-ui/wc/define` 子路径，`defineXhElements()` 显式注册。
+  不重造 FSM。元素类只在 `@xihan-ui/web-components/define` 子路径，`defineXhElements()` 显式注册。
 - **两个入口在 Node 下都可安全 import**：基类无 DOM 时取一个替身基座（`src/reactive/element.ts`），
   元素类的定义式不再在模块求值那一刻取 `HTMLElement`；`defineElement` 无 `customElements` 时静默跳过。
   判据在 `tests/node-smoke.spec.ts`。

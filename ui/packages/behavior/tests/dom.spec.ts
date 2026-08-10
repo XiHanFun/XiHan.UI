@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import type { RuntimeConfig } from '@xihan-ui/core'
-import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
+import type { RuntimeConfig } from '@xihan-ui/kernel'
+import { createCounterIdGenerator, createScope } from '@xihan-ui/kernel'
 import { afterEach, describe, expect, it } from 'vitest'
 import { acquireFocusGuards } from '../src/focus-scope/focus-guards'
 import { getTabbables, removeLinks } from '../src/focus-scope/tabbable'

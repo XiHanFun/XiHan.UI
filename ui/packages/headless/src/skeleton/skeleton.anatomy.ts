@@ -1,3 +1,3 @@
-import { createAnatomy } from '@xihan-ui/core'
+import { createAnatomy } from '@xihan-ui/kernel'
 
 export const skeletonAnatomy = createAnatomy('skeleton', ['root', 'bone'])

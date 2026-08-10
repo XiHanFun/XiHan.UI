@@ -1,4 +1,4 @@
-import { createAnatomy } from '@xihan-ui/core'
+import { createAnatomy } from '@xihan-ui/kernel'
 
 // viewport 是滚动容器，content 是内容包裹层，scroll-button 是回到底部按钮，
 // live-region 是视觉隐藏的播报区。

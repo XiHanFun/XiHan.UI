@@ -1,4 +1,4 @@
-import type { Layer, LayerRegistry } from '@xihan-ui/core'
+import type { Layer, LayerRegistry } from '@xihan-ui/kernel'
 import { describe, expect, it } from 'vitest'
 import { isInside, shouldDismiss } from '../src'
 

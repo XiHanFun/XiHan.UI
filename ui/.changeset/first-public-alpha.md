@@ -1,16 +1,16 @@
 ---
-"@xihan-ui/core": major
+"@xihan-ui/kernel": major
 "@xihan-ui/machine": major
 "@xihan-ui/behavior": major
-"@xihan-ui/system": major
+"@xihan-ui/tokens": major
 "@xihan-ui/headless": major
-"@xihan-ui/styled": major
+"@xihan-ui/styles": major
 "@xihan-ui/vue": major
-"@xihan-ui/wc": major
+"@xihan-ui/web-components": major
 "@xihan-ui/position": major
-"@xihan-ui/ai": major
+"@xihan-ui/chat-stream": major
 "@xihan-ui/markdown": major
-"@xihan-ui/highlight": major
+"@xihan-ui/code-highlight": major
 ---
 
 首个公开版本：框架无关的 UI 基座。

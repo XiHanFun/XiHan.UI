@@ -6,7 +6,7 @@
 
 import type { Service } from '@xihan-ui/machine'
 import type { ToggleGroupItemProps, ToggleGroupSchema, ToggleGroupValueChangeDetails } from '../src/toggle-group/index'
-import { normalizeProps } from '@xihan-ui/core'
+import { normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'

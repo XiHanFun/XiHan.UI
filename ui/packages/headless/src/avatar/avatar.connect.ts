@@ -1,4 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { AvatarApi, AvatarSchema } from './avatar.types'
 import { avatarAnatomy } from './avatar.anatomy'

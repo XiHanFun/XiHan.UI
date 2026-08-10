@@ -1,7 +1,7 @@
 ---
 "@xihan-ui/headless": major
 "@xihan-ui/vue": major
-"@xihan-ui/wc": major
+"@xihan-ui/web-components": major
 ---
 
 Select 支持多选，选中值由单值改为集合，公开 API 破坏性变更。

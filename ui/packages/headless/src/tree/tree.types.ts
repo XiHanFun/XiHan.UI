@@ -1,5 +1,5 @@
 import type { Typeahead } from '@xihan-ui/behavior'
-import type { Direction, PropTypes } from '@xihan-ui/core'
+import type { Direction, PropTypes } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /**

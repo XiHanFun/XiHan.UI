@@ -42,7 +42,7 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | Vue 组件 | `XhPopconfirmCancelTrigger` `XhPopconfirmConfirmTrigger` `XhPopconfirmContent` `XhPopconfirmDescription` `XhPopconfirmPositioner` `XhPopconfirmRoot` `XhPopconfirmTitle` `XhPopconfirmTrigger` |
 | 组合式函数 | `usePopconfirm` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/popconfirm.css` |
+| 皮肤 | `@xihan-ui/styles/popconfirm.css` |
 
 ## 解剖
 

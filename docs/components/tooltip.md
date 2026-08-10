@@ -60,7 +60,7 @@ disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
 | Vue 组件 | `XhTooltipArrow` `XhTooltipContent` `XhTooltipPositioner` `XhTooltipRoot` `XhTooltipTrigger` |
 | 组合式函数 | `useTooltip` |
 | 状态机 | `tooltipMachine` |
-| 皮肤 | `@xihan-ui/styled/tooltip.css` |
+| 皮肤 | `@xihan-ui/styles/tooltip.css` |
 
 ## 解剖
 

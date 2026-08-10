@@ -1,5 +1,5 @@
 import type { NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { TableApi, TableColumnDef, TableSchema, TableVisibleRow } from './table.types'
 import {
@@ -11,7 +11,7 @@ import {
   navIntentFromKey,
   queryItems,
 } from '@xihan-ui/behavior'
-import { contains, dataAttr, warn } from '@xihan-ui/core'
+import { contains, dataAttr, warn } from '@xihan-ui/kernel'
 import { tableAnatomy, tableRowQuery } from './table.anatomy'
 import { tableSelectionMode } from './table.machine'
 import {

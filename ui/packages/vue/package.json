@@ -14,9 +14,9 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./visual": {
-      "types": "./dist/visual.d.ts",
-      "import": "./dist/visual.js"
+    "./backgrounds": {
+      "types": "./dist/backgrounds.d.ts",
+      "import": "./dist/backgrounds.js"
     }
   },
   "main": "./dist/index.js",
@@ -32,19 +32,19 @@
     "test:browser": "vitest run --config vitest.browser.config.ts"
   },
   "peerDependencies": {
-    "@xihan-ui/visual": "workspace:*",
+    "@xihan-ui/backgrounds": "workspace:*",
     "vue": "catalog:"
   },
   "peerDependenciesMeta": {
-    "@xihan-ui/visual": {
+    "@xihan-ui/backgrounds": {
       "optional": true
     }
   },
   "dependencies": {
     "@xihan-ui/behavior": "workspace:*",
-    "@xihan-ui/core": "workspace:*",
+    "@xihan-ui/code-highlight": "workspace:*",
     "@xihan-ui/headless": "workspace:*",
-    "@xihan-ui/highlight": "workspace:*",
+    "@xihan-ui/kernel": "workspace:*",
     "@xihan-ui/machine": "workspace:*",
     "@xihan-ui/position": "workspace:*"
   },
@@ -52,12 +52,12 @@
     "@vitest/browser": "catalog:",
     "@vitest/browser-playwright": "catalog:",
     "@vue/test-utils": "catalog:",
+    "@xihan-ui/backgrounds": "workspace:*",
     "@xihan-ui/build": "workspace:*",
-    "@xihan-ui/styled": "workspace:*",
-    "@xihan-ui/system": "workspace:*",
+    "@xihan-ui/styles": "workspace:*",
     "@xihan-ui/testing": "workspace:*",
+    "@xihan-ui/tokens": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",
-    "@xihan-ui/visual": "workspace:*",
     "jsdom": "catalog:",
     "playwright": "catalog:",
     "vitest": "catalog:",

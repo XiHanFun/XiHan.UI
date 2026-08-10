@@ -1,9 +1,9 @@
 import type { ItemQuery, NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { TimeFieldApi, TimeFieldSchema, TimeSegmentType } from './time-field.types'
 import { focusSafely, ITEM_VALUE_ATTR, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { timeFieldAnatomy } from './time-field.anatomy'
 import {
   appendSegmentDigit,

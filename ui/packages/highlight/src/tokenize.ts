@@ -1,4 +1,4 @@
-import type { CodeToken, CodeTokenKind } from '@xihan-ui/core'
+import type { CodeToken, CodeTokenKind } from '@xihan-ui/kernel'
 import type { LangSpec } from './languages'
 
 /**

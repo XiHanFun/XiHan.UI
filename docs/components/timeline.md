@@ -41,7 +41,7 @@ size 换的是圆点直径、条目间距与字号，不传 size 即默认档
 | 自定义元素 | `<xh-timeline>` |
 | Vue 组件 | `XhTimelineConnector` `XhTimelineContent` `XhTimelineDescription` `XhTimelineIndicator` `XhTimelineItem` `XhTimelineRoot` `XhTimelineTime` `XhTimelineTitle` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/timeline.css` |
+| 皮肤 | `@xihan-ui/styles/timeline.css` |
 
 ## 解剖
 

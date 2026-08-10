@@ -1,4 +1,4 @@
-import type { Disposable, Layer, RuntimeConfig } from '@xihan-ui/core'
+import type { Disposable, Layer, RuntimeConfig } from '@xihan-ui/kernel'
 import { isInside, shouldDismiss } from './layer-stack'
 
 export type DismissReason = 'escape-key' | 'pointer-down-outside' | 'focus-outside' | 'programmatic'

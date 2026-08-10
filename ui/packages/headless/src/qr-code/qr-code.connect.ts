@@ -1,7 +1,7 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { QrCodeApi, QrCodeLogoArea, QrCodeLogoDamage, QrCodeProps, QrCodeState, QrEyeShape, QrModuleShape } from './qr-code.types'
 import type { QrLevel } from './qr-encode'
-import { dataAttr, DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
+import { dataAttr, DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/kernel'
 import { qrCodeAnatomy } from './qr-code.anatomy'
 import { qrAlignmentPositions, qrDamage, qrEncode } from './qr-encode'
 

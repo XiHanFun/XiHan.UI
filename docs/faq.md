@@ -30,7 +30,7 @@ BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.x
 
 ## 能不用默认皮肤吗
 
-能，而且是设计上就支持的。组件只往 DOM 上打 `data-scope` / `data-part` / `data-state` 等属性，不依赖 `@xihan-ui/styled` 的任何一行。
+能，而且是设计上就支持的。组件只往 DOM 上打 `data-scope` / `data-part` / `data-state` 等属性，不依赖 `@xihan-ui/styles` 的任何一行。
 
 只引令牌自己写皮肤，或者连令牌一起丢，都行。见[皮肤与样式分层](./guide/styling#完全自己写皮肤)。
 
@@ -56,7 +56,7 @@ BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.x
 
 先查是不是引用了不存在的令牌名。孤儿引用不报错也不降级——整条声明在计算值阶段静默失效，CSS 不会告诉任何人。仓库里的 `check-token-refs` 门禁专门查这个。
 
-其次查层序：按组件挑样式时必须先引 `@xihan-ui/styled/layers.css`，否则级联顺序就变成了引入顺序。
+其次查层序：按组件挑样式时必须先引 `@xihan-ui/styles/layers.css`，否则级联顺序就变成了引入顺序。
 
 ## 浮层位置整体偏了一个滚动距离
 

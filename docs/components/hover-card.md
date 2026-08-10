@@ -48,7 +48,7 @@ disabled 只关掉卡片本身，触发器照样可点、可聚焦，也照样�
 | Vue 组件 | `XhHoverCardArrow` `XhHoverCardContent` `XhHoverCardPositioner` `XhHoverCardRoot` `XhHoverCardTrigger` |
 | 组合式函数 | `useHoverCard` |
 | 状态机 | `hoverCardMachine` |
-| 皮肤 | `@xihan-ui/styled/hover-card.css` |
+| 皮肤 | `@xihan-ui/styles/hover-card.css` |
 
 ## 解剖
 

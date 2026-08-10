@@ -1,6 +1,6 @@
-import type { NormalizeProps, PropTypes, Scope } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes, Scope } from '@xihan-ui/kernel'
 import type { FieldApi, FieldProps } from './field.types'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { fieldAnatomy } from './field.anatomy'
 
 const parts = fieldAnatomy.build()

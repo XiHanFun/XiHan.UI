@@ -1,5 +1,5 @@
-import type { Direction, Orientation } from '@xihan-ui/core'
 import type { AccordionItemProps, AccordionNode, AccordionSchema, AccordionValueChangeDetails } from '@xihan-ui/headless'
+import type { Direction, Orientation } from '@xihan-ui/kernel'
 import { isItemDisabled } from '@xihan-ui/behavior'
 import { accordionAnatomy, accordionMachine, accordionMeta, connectAccordion } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'

@@ -36,7 +36,7 @@ affix-change 报吸住与松开；默认插槽也把 affixed 透出来
 | Vue 组件 | `XhAffixContent` `XhAffixRoot` |
 | 组合式函数 | `useAffix` |
 | 状态机 | `affixMachine` |
-| 皮肤 | `@xihan-ui/styled/affix.css` |
+| 皮肤 | `@xihan-ui/styles/affix.css` |
 
 ## 解剖
 

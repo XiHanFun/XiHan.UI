@@ -6,20 +6,20 @@ XiHan.UI 是一个 pnpm workspace。`packages/*` 是对外发布的库包，`too
 
 | 包 | 版本 | 依赖 | peer 依赖 | 层 |
 | --- | --- | --- | --- | --- |
-| `@xihan-ui/core` | `0.0.0` | — | — | 1 |
+| `@xihan-ui/kernel` | `0.0.0` | — | — | 1 |
 | `@xihan-ui/machine` | `0.0.0` | `core` | — | 1 |
-| `@xihan-ui/system` | `0.0.0` | — | — | 1 |
+| `@xihan-ui/tokens` | `0.0.0` | — | — | 1 |
 | `@xihan-ui/icons` | `0.9.8` | — | — | 1 |
 | `@xihan-ui/behavior` | `0.0.0` | `core` | — | 2 |
 | `@xihan-ui/position` | `0.0.0` | `core` | — | 2 |
-| `@xihan-ui/highlight` | `0.0.0` | `core` | — | 2 |
-| `@xihan-ui/ai` | `0.0.0` | `core` | — | 2 |
+| `@xihan-ui/code-highlight` | `0.0.0` | `core` | — | 2 |
+| `@xihan-ui/chat-stream` | `0.0.0` | `core` | — | 2 |
 | `@xihan-ui/markdown` | `0.0.0` | — | — | 2 |
 | `@xihan-ui/headless` | `0.0.0` | `core` `machine` `behavior` + `@internationalized/date` | — | 3 |
-| `@xihan-ui/styled` | `0.0.0` | `system`（只取其 CSS 产物） | — | 3 |
-| `@xihan-ui/visual` | `0.0.0` | `core` `behavior` | — | 3 |
+| `@xihan-ui/styles` | `0.0.0` | `system`（只取其 CSS 产物） | — | 3 |
+| `@xihan-ui/backgrounds` | `0.0.0` | `core` `behavior` | — | 3 |
 | `@xihan-ui/vue` | `0.0.0` | `core` `machine` `behavior` `headless` `position` `highlight` | `vue`、`visual`（可选） | 4 |
-| `@xihan-ui/wc` | `0.0.0` | `core` `machine` `behavior` `headless` `position` `highlight` | `visual`（可选） | 4 |
+| `@xihan-ui/web-components` | `0.0.0` | `core` `machine` `behavior` `headless` `position` `highlight` | `visual`（可选） | 4 |
 
 ::: warning 版本状态
 除 `@xihan-ui/icons` 外全部是 `0.0.0`——**尚未发布到 npm**。`icons` 是一个冻结的遗留包：不进构建图、不发布，源码里还引着已经删掉的依赖，在它重建之前不要使用。
@@ -58,9 +58,9 @@ XiHan.UI 是一个 pnpm workspace。`packages/*` 是对外发布的库包，`too
 
 三个包完全独立、可以单独用：
 
-- **`@xihan-ui/system`**——只要设计令牌与主题运行时，不要组件；
+- **`@xihan-ui/tokens`**——只要设计令牌与主题运行时，不要组件；
 - **`@xihan-ui/markdown`**——只要流式 Markdown 渲染内核；
-- **`@xihan-ui/styled`**——纯 CSS，它对 `system` 的依赖只是为了 `@import` 令牌产物，不引入任何 JS。
+- **`@xihan-ui/styles`**——纯 CSS，它对 `system` 的依赖只是为了 `@import` 令牌产物，不引入任何 JS。
 
 ## 依赖规则
 
@@ -120,12 +120,12 @@ XiHan.UI 是一个 pnpm workspace。`packages/*` 是对外发布的库包，`too
 
 | 包 | 子路径 |
 | --- | --- |
-| `@xihan-ui/system` | `./runtime` `./tokens.css` `./tokens.json` |
+| `@xihan-ui/tokens` | `./runtime` `./tokens.css` `./tokens.json` |
 | `@xihan-ui/machine` | `./vanilla` |
 | `@xihan-ui/behavior` | `./presence` |
 | `@xihan-ui/vue` | `./visual` |
-| `@xihan-ui/wc` | `./define` `./visual` `./custom-elements.json` |
-| `@xihan-ui/styled` | 每个组件一份 CSS，共 74 条 |
+| `@xihan-ui/web-components` | `./define` `./visual` `./custom-elements.json` |
+| `@xihan-ui/styles` | 每个组件一份 CSS，共 74 条 |
 
 组件**没有**单独的子路径导出——按需引入靠 tree-shaking，不靠手写路径。
 

@@ -1,5 +1,5 @@
 import type { PresenceHandle } from '@xihan-ui/behavior/presence'
-import type { Cleanup, Layer, PropTypes, RuntimeConfig } from '@xihan-ui/core'
+import type { Cleanup, Layer, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface DialogTranslations {

@@ -78,7 +78,7 @@ indicator 是可选部件，不渲染它就没有默认字形；标记由作者�
 | Vue 组件 | `XhAccordionContent` `XhAccordionHeader` `XhAccordionIndicator` `XhAccordionItem` `XhAccordionRoot` `XhAccordionTrigger` |
 | 组合式函数 | `useAccordion` |
 | 状态机 | `accordionMachine` |
-| 皮肤 | `@xihan-ui/styled/accordion.css` |
+| 皮肤 | `@xihan-ui/styles/accordion.css` |
 
 ## 解剖
 

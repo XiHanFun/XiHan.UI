@@ -1,4 +1,3 @@
-import type { Cleanup, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/core'
 import type {
   TimeGranularity,
   TimeHourCycle,
@@ -8,9 +7,10 @@ import type {
   TimePickerValueChangeDetails,
   TimeSegmentType,
 } from '@xihan-ui/headless'
+import type { Cleanup, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
-import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectTimePicker, timePickerAnatomy, timePickerMachine, timePickerMeta } from '@xihan-ui/headless'
+import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

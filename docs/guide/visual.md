@@ -1,6 +1,6 @@
 # 视觉层
 
-`@xihan-ui/visual` 是一层 WebGL2 背景效果与数据驱动粒子点云，框架无关、零第三方依赖。它是**可选**的：适配器把它声明为 optional peer，不用视觉效果的应用不会因为装了 `@xihan-ui/vue` 而多出一个 WebGL 引擎。
+`@xihan-ui/backgrounds` 是一层 WebGL2 背景效果与数据驱动粒子点云，框架无关、零第三方依赖。它是**可选**的：适配器把它声明为 optional peer，不用视觉效果的应用不会因为装了 `@xihan-ui/vue` 而多出一个 WebGL 引擎。
 
 WebGL2 缺席时自动降级成 CSS 静态背景，不报错、不留白。
 
@@ -18,7 +18,7 @@ WebGL2 缺席时自动降级成 CSS 静态背景，不报错、不留白。
 ## 基础用法
 
 ```ts
-import { createVisualSurface } from '@xihan-ui/visual'
+import { createVisualSurface } from '@xihan-ui/backgrounds'
 
 const surface = createVisualSurface(el, {
   effect: 'aurora',
@@ -40,11 +40,11 @@ surface.destroy()
 
 ## 在 Vue 里用
 
-Vue 侧的适配放在**单独的子入口** `@xihan-ui/vue/visual`，三种用法从轻到重：
+Vue 侧的适配放在**单独的子入口** `@xihan-ui/vue/backgrounds`，三种用法从轻到重：
 
 ```vue
 <script setup lang="ts">
-import { useVisual, vVisual, XhVisual } from '@xihan-ui/vue/visual'
+import { useVisual, vVisual, XhVisual } from '@xihan-ui/vue/backgrounds'
 
 const visual = useVisual({ effect: 'fluid' })
 </script>
@@ -69,7 +69,7 @@ const visual = useVisual({ effect: 'fluid' })
 同样是单独注册，不引这一行就不会把引擎打进包里：
 
 ```ts
-import { defineXhVisual } from '@xihan-ui/wc/visual'
+import { defineXhVisual } from '@xihan-ui/web-components/backgrounds'
 
 defineXhVisual()
 ```
@@ -79,7 +79,7 @@ defineXhVisual()
 把任意东西采样成点，再让粒子摆成那个形状：
 
 ```ts
-import { imageToCloud, shapeCloud, svgToCloud, textToCloud } from '@xihan-ui/visual'
+import { imageToCloud, shapeCloud, svgToCloud, textToCloud } from '@xihan-ui/backgrounds'
 
 const cloud = await textToCloud('曦寒', { count: 8000 })
 surface.setCloud(cloud, { duration: 1.2 }) // 与上一份点云之间形变过渡
@@ -98,7 +98,7 @@ surface.setCloud(cloud, { duration: 1.2 }) // 与上一份点云之间形变过�
 ## 自定义效果
 
 ```ts
-import { colorSpec, defineEffect, numberSpec, registerEffect } from '@xihan-ui/visual'
+import { colorSpec, defineEffect, numberSpec, registerEffect } from '@xihan-ui/backgrounds'
 
 const myEffect = defineEffect({
   name: 'my-effect',

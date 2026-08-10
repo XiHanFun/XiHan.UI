@@ -1,7 +1,7 @@
 export { applyThemeAttrs, toThemeAttrs } from './apply'
 export type { ThemeController, ThemeControllerOptions } from './controller'
 export { createThemeController } from './controller'
-// @xihan-ui/system/runtime —— 主题运行时。
+// @xihan-ui/tokens/runtime —— 主题运行时。
 export type { EnvSignals } from './env'
 export { createEnvSignals, SSR_ENV } from './env'
 export { resolveTheme } from './resolve'

@@ -1,6 +1,6 @@
 import type { DrawerSchema } from './drawer.types'
 import { acquireScrollLock, createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
-import { hideOutside } from '@xihan-ui/core'
+import { hideOutside } from '@xihan-ui/kernel'
 import { setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<DrawerSchema>()

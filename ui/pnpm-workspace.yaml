@@ -27,7 +27,7 @@ catalog:
   '@commitlint/config-conventional': ^19.8.0
   # —— Web Components 端 ——
   '@custom-elements-manifest/analyzer': ^0.11.0
-  # 只供 @xihan-ui/wc 的差分判据对拍自研基类，不进任何包的运行时依赖
+  # 只供 @xihan-ui/web-components 的差分判据对拍自研基类，不进任何包的运行时依赖
   '@lit/reactive-element': 2.1.2
   '@size-limit/preset-small-lib': ^12.1.0
   '@types/node': ^24.10.0

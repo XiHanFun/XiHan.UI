@@ -72,7 +72,7 @@ validate 拿到的是整张值表，可以写两个字段互相约束的规则�
 | Vue 组件 | `XhFormErrorSummary` `XhFormErrorSummaryItem` `XhFormFieldGroup` `XhFormResetTrigger` `XhFormRoot` `XhFormSubmitTrigger` |
 | 组合式函数 | `useForm` |
 | 状态机 | `formMachine` |
-| 皮肤 | `@xihan-ui/styled/form.css` |
+| 皮肤 | `@xihan-ui/styles/form.css` |
 
 ## 解剖
 

@@ -90,7 +90,7 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | Vue 组件 | `XhTabsContent` `XhTabsList` `XhTabsRoot` `XhTabsTrigger` |
 | 组合式函数 | `useTabs` |
 | 状态机 | `tabsMachine` |
-| 皮肤 | `@xihan-ui/styled/tabs.css` |
+| 皮肤 | `@xihan-ui/styles/tabs.css` |
 
 ## 解剖
 

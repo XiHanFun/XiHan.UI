@@ -1,5 +1,5 @@
 import type { Typeahead } from '@xihan-ui/behavior'
-import type { Cleanup, Direction, Layer, Orientation, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/core'
+import type { Cleanup, Direction, Layer, Orientation, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 展开菜单时的落焦端：'first'/'last' 从集合两端进，'none' 焦点留在 trigger 上。 */

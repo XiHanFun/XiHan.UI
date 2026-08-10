@@ -42,7 +42,7 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | Vue 组件 | `XhDynamicInputAddTrigger` `XhDynamicInputItem` `XhDynamicInputItemAction` `XhDynamicInputItemContent` `XhDynamicInputMoveDownTrigger` `XhDynamicInputMoveUpTrigger` `XhDynamicInputRemoveTrigger` `XhDynamicInputRoot` |
 | 组合式函数 | `useDynamicInput` |
 | 状态机 | `dynamicInputMachine` |
-| 皮肤 | `@xihan-ui/styled/dynamic-input.css` |
+| 皮肤 | `@xihan-ui/styles/dynamic-input.css` |
 
 ## 解剖
 

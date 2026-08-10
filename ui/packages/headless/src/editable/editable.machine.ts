@@ -1,4 +1,4 @@
-import type { Scope } from '@xihan-ui/core'
+import type { Scope } from '@xihan-ui/kernel'
 import type { EditableSchema, EditableSubmitMode } from './editable.types'
 import { focusSafely } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'

@@ -1,4 +1,4 @@
-import type { IconNode, NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { IconNode, NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { IconApi, IconProps } from './icon.types'
 import { iconAnatomy } from './icon.anatomy'
 

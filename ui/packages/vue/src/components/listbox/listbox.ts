@@ -1,5 +1,5 @@
-import type { Direction, Orientation } from '@xihan-ui/core'
 import type { ListboxItemGroupProps, ListboxItemProps, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode } from '@xihan-ui/headless'
+import type { Direction, Orientation } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import {

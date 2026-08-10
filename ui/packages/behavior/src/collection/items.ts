@@ -1,5 +1,5 @@
 import type { NavIntent, StepOptions } from './navigate'
-import { DATA_PART, DATA_SCOPE } from '@xihan-ui/core'
+import { DATA_PART, DATA_SCOPE } from '@xihan-ui/kernel'
 import { focusSafely } from '../focus-scope/tabbable'
 import { stepIndex } from './navigate'
 

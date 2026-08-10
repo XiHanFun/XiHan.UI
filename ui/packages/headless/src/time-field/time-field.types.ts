@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 段的身份。dayPeriod 只在 12 小时制下存在，second 只在 granularity 为 second 时存在。 */

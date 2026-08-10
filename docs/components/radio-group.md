@@ -54,7 +54,7 @@ size 改条目间距与字号，不写即缺省中档
 | Vue 组件 | `XhRadioGroupItem` `XhRadioGroupItemText` `XhRadioGroupLabel` `XhRadioGroupRoot` |
 | 组合式函数 | `useRadioGroup` |
 | 状态机 | `radioGroupMachine` |
-| 皮肤 | `@xihan-ui/styled/radio-group.css` |
+| 皮肤 | `@xihan-ui/styles/radio-group.css` |
 
 ## 解剖
 

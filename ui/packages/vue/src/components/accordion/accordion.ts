@@ -1,5 +1,5 @@
-import type { Direction, Orientation } from '@xihan-ui/core'
 import type { AccordionNode, AccordionNodeMeta, AccordionSchema } from '@xihan-ui/headless'
+import type { Direction, Orientation } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import { defineComponent, h } from 'vue'
 import { provideAccordion, provideAccordionItem, useAccordionContext, useAccordionItem } from './context'

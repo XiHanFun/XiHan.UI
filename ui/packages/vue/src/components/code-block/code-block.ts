@@ -1,8 +1,8 @@
-import type { HighlighterPort } from '@xihan-ui/core'
 import type { CodeBlockProps } from '@xihan-ui/headless'
+import type { HighlighterPort } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import { createHighlighter } from '@xihan-ui/code-highlight'
 import { connectCodeBlock } from '@xihan-ui/headless'
-import { createHighlighter } from '@xihan-ui/highlight'
 import { computed, defineComponent, h } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 

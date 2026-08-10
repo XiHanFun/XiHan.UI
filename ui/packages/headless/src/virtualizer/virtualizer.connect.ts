@@ -1,7 +1,7 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { VirtualizerApi, VirtualizerCore, VirtualizerSchema } from './virtualizer.types'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { virtualizerAnatomy } from './virtualizer.anatomy'
 import { resolveVirtualizerLanes } from './virtualizer.geometry'
 import {

@@ -15,12 +15,17 @@ const STYLES = 'packages/styled/styles'
 // 允许的写法：直接引令牌，或由令牌算出来（往内收的负偏移）
 const TOKEN_DRIVEN = /var\(--xh-[a-z-]+\)/
 
-/** outline 简写里的粗细与颜色、以及 outline-offset 的值 */
+/**
+ * outline 简写里的粗细与颜色、以及 outline-offset 的值。
+ *
+ * 冒号后不写 \s*：它与 [^;]+ 能吃同一批字符，两边可交换的前缀会让引擎在不匹配时逐位回溯。
+ * 值统一交给下面的 trim 归一，正则只负责切出来。
+ */
 const DECLS = [
-  { prop: 'outline-width', re: /^\s*outline-width:\s*([^;]+);/gm },
-  { prop: 'outline-color', re: /^\s*outline-color:\s*([^;]+);/gm },
-  { prop: 'outline-offset', re: /^\s*outline-offset:\s*([^;]+);/gm },
-  { prop: 'outline', re: /^\s*outline:\s*([^;]+);/gm },
+  { prop: 'outline-width', re: /^\s*outline-width:([^;]+);/gm },
+  { prop: 'outline-color', re: /^\s*outline-color:([^;]+);/gm },
+  { prop: 'outline-offset', re: /^\s*outline-offset:([^;]+);/gm },
+  { prop: 'outline', re: /^\s*outline:([^;]+);/gm },
 ]
 
 const offenders = []
@@ -31,7 +36,7 @@ for (const file of (await readdir(STYLES)).filter(f => f.endsWith('.css'))) {
     for (const m of src.matchAll(re)) {
       const value = m[1].trim()
       // outline: none / 0 是「明确不画环」，不是环的取值
-      if (prop === 'outline' && /^(none|0)$/.test(value))
+      if (prop === 'outline' && /^(?:none|0)$/.test(value))
         continue
       if (!TOKEN_DRIVEN.test(value))
         offenders.push(`${file}: ${prop}: ${value}`)

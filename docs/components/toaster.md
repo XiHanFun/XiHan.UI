@@ -48,7 +48,7 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | Vue 组件 | `XhToasterGroup` `XhToasterRoot` |
 | 组合式函数 | `useToaster` |
 | 状态机 | `toasterMachine` |
-| 皮肤 | `@xihan-ui/styled/toaster.css` |
+| 皮肤 | `@xihan-ui/styles/toaster.css` |
 
 ## 解剖
 

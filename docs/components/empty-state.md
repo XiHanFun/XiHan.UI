@@ -41,7 +41,7 @@ size 只换留白与字号，语义一点不动；不传即 md
 | 自定义元素 | `<xh-empty-state>` |
 | Vue 组件 | `XhEmptyStateAction` `XhEmptyStateDescription` `XhEmptyStateIcon` `XhEmptyStateRoot` `XhEmptyStateTitle` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/empty-state.css` |
+| 皮肤 | `@xihan-ui/styles/empty-state.css` |
 
 ## 解剖
 

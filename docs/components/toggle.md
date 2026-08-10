@@ -66,7 +66,7 @@ pressed-change 每次带着 details 报一次按下意图；不接 v-model 时�
 | Vue 组件 | `XhToggle` |
 | 组合式函数 | `useToggle` |
 | 状态机 | `toggleMachine` |
-| 皮肤 | `@xihan-ui/styled/toggle.css` |
+| 皮肤 | `@xihan-ui/styles/toggle.css` |
 
 ## 解剖
 

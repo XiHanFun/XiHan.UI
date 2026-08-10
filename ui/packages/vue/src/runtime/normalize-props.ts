@@ -1,4 +1,4 @@
-import { createNormalizer } from '@xihan-ui/core'
+import { createNormalizer } from '@xihan-ui/kernel'
 
 // 事件名归一为 on + 首字母大写 + 其余小写（onKeyDown → onKeydown），与 WC 适配器对齐
 function normalizeEventKey(key: string): string {

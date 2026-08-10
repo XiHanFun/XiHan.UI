@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { HoverCardOpenChangeDetails, HoverCardSchema } from '../src/hover-card'
-import { createRuntimeConfig, normalizeProps } from '@xihan-ui/core'
+import { createRuntimeConfig, normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'

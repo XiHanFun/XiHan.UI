@@ -1,9 +1,9 @@
 ---
-"@xihan-ui/core": major
+"@xihan-ui/kernel": major
 "@xihan-ui/headless": major
 "@xihan-ui/vue": major
-"@xihan-ui/wc": major
-"@xihan-ui/styled": major
+"@xihan-ui/web-components": major
+"@xihan-ui/styles": major
 "@xihan-ui/icons": major
 ---
 
@@ -15,10 +15,10 @@ npm 上弃用。新包只收自研图标，第一批 29 个覆盖组件库自用
 
 用法：
 
-- `@xihan-ui/core` 导出 `IconRecord` / `IconNode` / `IconTag` 三个类型
+- `@xihan-ui/kernel` 导出 `IconRecord` / `IconNode` / `IconTag` 三个类型
 - `@xihan-ui/headless` 导出 `connectIcon` / `iconAnatomy` / `iconMeta` / `iconKeyboard`
-- `@xihan-ui/vue` 导出 `XhIcon`，`@xihan-ui/wc` 注册 `<xh-icon>`
-- `@xihan-ui/styled` 新增 `icon.css`，`data-size` 与 `data-weight` 各三档
+- `@xihan-ui/vue` 导出 `XhIcon`，`@xihan-ui/web-components` 注册 `<xh-icon>`
+- `@xihan-ui/styles` 新增 `icon.css`，`data-size` 与 `data-weight` 各三档
 
 图标记录是结构化节点数组而不是 SVG 字符串，渲染端逐节点建元素，运行期不经 HTML
 解析器。图标数据传的是记录本身而不是名字：按名字查表要把全表静态引进来，摇树会

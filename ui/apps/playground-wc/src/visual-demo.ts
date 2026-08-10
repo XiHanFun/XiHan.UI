@@ -1,7 +1,7 @@
 // 视觉层的 Web Components 示例。单独一个模块，免得 main.ts 那份模板串再长一截。
 
-import type { ParamSpec, ParamValue, ShapeName, VisualEffect } from '@xihan-ui/visual'
-import type { XhVisualElement } from '@xihan-ui/wc/visual'
+import type { ParamSpec, ParamValue, ShapeName, VisualEffect } from '@xihan-ui/backgrounds'
+import type { XhVisualElement } from '@xihan-ui/web-components/backgrounds'
 import {
   builtinEffects,
   defaultParams,
@@ -9,7 +9,7 @@ import {
   SHAPE_NAMES,
   shapeCloud,
   textToCloud,
-} from '@xihan-ui/visual'
+} from '@xihan-ui/backgrounds'
 
 // 画廊只放自成画面的效果。浏览器每页能同时持有的 WebGL 上下文有上限（各家在 16 上下），
 // 超了最早创建的会被丢弃变成白板，所以这页把活画面控制在十几个以内。

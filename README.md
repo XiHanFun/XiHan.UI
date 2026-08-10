@@ -164,9 +164,9 @@ XiHan.UI 是面向跨框架场景的组件库：一个组件的状态、交互�
 两个适配器共用同一份令牌与皮肤，入口处各引一次：
 
 ```ts
-import { createThemeController } from '@xihan-ui/system/runtime'
-import '@xihan-ui/system/tokens.css'
-import '@xihan-ui/styled'
+import { createThemeController } from '@xihan-ui/tokens/runtime'
+import '@xihan-ui/tokens/tokens.css'
+import '@xihan-ui/styles'
 
 // 把主题写到根元素（明暗 / 品牌 / 密度 / 对比度 / 书写方向五个属性）
 createThemeController({ storageKey: 'app-theme' })
@@ -195,7 +195,7 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from '@
 元素不生成结构：作者写带 `data-xh-part` 的 Light-DOM 子节点，元素把 `connect()` 产出打上去。
 
 ```ts
-import { defineXhElements } from '@xihan-ui/wc/define'
+import { defineXhElements } from '@xihan-ui/web-components/define'
 
 defineXhElements()
 ```

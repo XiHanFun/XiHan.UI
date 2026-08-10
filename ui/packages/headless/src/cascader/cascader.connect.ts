@@ -1,9 +1,9 @@
 import type { NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { CascaderApi, CascaderNodeMeta, CascaderSchema } from './cascader.types'
 import { focusItem, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/behavior'
-import { contains, dataAttr } from '@xihan-ui/core'
+import { contains, dataAttr } from '@xihan-ui/kernel'
 import { cascaderAnatomy } from './cascader.anatomy'
 import {
   cascaderBuildColumns,

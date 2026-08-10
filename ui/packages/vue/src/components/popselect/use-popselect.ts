@@ -1,14 +1,14 @@
-import type { Cleanup, Direction, Layer, Placement, RuntimeConfig } from '@xihan-ui/core'
 import type {
   ListboxSchema,
   PopoverSchema,
   PopselectApi,
   PopselectNode,
 } from '@xihan-ui/headless'
+import type { Cleanup, Direction, Layer, Placement, RuntimeConfig } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef, Ref } from 'vue'
-import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectPopselect, listboxMachine, popoverMachine } from '@xihan-ui/headless'
+import { createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'

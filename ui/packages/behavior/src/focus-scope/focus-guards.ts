@@ -1,5 +1,5 @@
-import type { Cleanup } from '@xihan-ui/core'
-import { createPerDocumentRegistry, DATA_FOCUS_GUARD } from '@xihan-ui/core'
+import type { Cleanup } from '@xihan-ui/kernel'
+import { createPerDocumentRegistry, DATA_FOCUS_GUARD } from '@xihan-ui/kernel'
 
 interface GuardState {
   count: number

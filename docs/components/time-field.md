@@ -66,7 +66,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | Vue 组件 | `XhTimeFieldControl` `XhTimeFieldHiddenInput` `XhTimeFieldLabel` `XhTimeFieldRoot` `XhTimeFieldSegment` |
 | 组合式函数 | `useTimeField` |
 | 状态机 | `timeFieldMachine` |
-| 皮肤 | `@xihan-ui/styled/time-field.css` |
+| 皮肤 | `@xihan-ui/styles/time-field.css` |
 
 ## 解剖
 

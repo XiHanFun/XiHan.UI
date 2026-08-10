@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/kernel'
 
 /** 主轴方向。 */
 export type FlexDirection = 'row' | 'column'

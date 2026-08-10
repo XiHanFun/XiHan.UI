@@ -1,5 +1,5 @@
-import type { Direction } from '@xihan-ui/core'
 import type { RatingSchema } from '@xihan-ui/headless'
+import type { Direction } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideRating, useRatingContext } from './context'

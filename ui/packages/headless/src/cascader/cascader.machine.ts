@@ -1,4 +1,4 @@
-import type { Placement, PositionResult } from '@xihan-ui/core'
+import type { Placement, PositionResult } from '@xihan-ui/kernel'
 import type { CascaderFocusIntent, CascaderNodeMeta, CascaderSchema, CascaderValue } from './cascader.types'
 import { createDismissLayer, createFocusScope, itemValue, queryItems } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'

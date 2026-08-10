@@ -1,4 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { ResultApi, ResultProps } from './result.types'
 import { resultAnatomy } from './result.anatomy'
 

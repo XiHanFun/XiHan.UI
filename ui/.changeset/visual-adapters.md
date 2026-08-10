@@ -1,11 +1,11 @@
 ---
 "@xihan-ui/vue": minor
-"@xihan-ui/wc": minor
+"@xihan-ui/web-components": minor
 ---
 
-两个适配器接上视觉层，各自走独立子入口 `@xihan-ui/vue/visual` 与 `@xihan-ui/wc/visual`。
+两个适配器接上视觉层，各自走独立子入口 `@xihan-ui/vue/backgrounds` 与 `@xihan-ui/web-components/backgrounds`。
 
-`@xihan-ui/visual` 声明为**可选 peer**：主入口一行都不引它，不用视觉效果的应用不会因为装了适配器
+`@xihan-ui/backgrounds` 声明为**可选 peer**：主入口一行都不引它，不用视觉效果的应用不会因为装了适配器
 而多出一个 WebGL 引擎。
 
 Vue 侧三种用法，从轻到重：`v-visual` 指令、`XhVisual` 组件、`useVisual` 组合式函数。

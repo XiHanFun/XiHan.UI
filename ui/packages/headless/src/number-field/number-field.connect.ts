@@ -1,7 +1,7 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { NumberFieldApi, NumberFieldSchema } from './number-field.types'
-import { dataAttr, isComposingEvent } from '@xihan-ui/core'
+import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
 import { parseValue } from '../shared/number'
 import { numberFieldAnatomy } from './number-field.anatomy'
 

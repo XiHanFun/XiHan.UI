@@ -1,5 +1,5 @@
-import type { Direction } from '@xihan-ui/core'
 import type { TreeExpandedChangeDetails, TreeNode, TreeNodeProps, TreeSchema, TreeSelectionChangeDetails, TreeSelectionMode } from '@xihan-ui/headless'
+import type { Direction } from '@xihan-ui/kernel'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectTree, treeAnatomy, treeMachine, treeMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'

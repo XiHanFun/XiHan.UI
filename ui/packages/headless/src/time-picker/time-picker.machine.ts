@@ -1,4 +1,4 @@
-import type { Placement, PositionResult } from '@xihan-ui/core'
+import type { Placement, PositionResult } from '@xihan-ui/kernel'
 import type { Params } from '@xihan-ui/machine'
 import type { TimeDraft, TimeGranularity, TimeHourCycle, TimeSegmentType } from '../time-field'
 import type {

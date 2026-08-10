@@ -1,9 +1,9 @@
 import type { ItemQuery } from '@xihan-ui/behavior'
-import type { Direction, NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { Direction, NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { RatingApi, RatingItemProps, RatingItemState, RatingSchema } from './rating.types'
 import { focusItem, ITEM_VALUE_ATTR, itemValue, queryItems } from '@xihan-ui/behavior'
-import { contains, dataAttr } from '@xihan-ui/core'
+import { contains, dataAttr } from '@xihan-ui/kernel'
 import { ratingAnatomy } from './rating.anatomy'
 import { clampRating, ratingMax } from './rating.machine'
 

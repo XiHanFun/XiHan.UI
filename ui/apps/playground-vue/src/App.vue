@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { createThemeController } from '@xihan-ui/system/runtime'
+import { createThemeController } from '@xihan-ui/tokens/runtime'
 import {
   XhAccordionContent,
   XhAccordionHeader,

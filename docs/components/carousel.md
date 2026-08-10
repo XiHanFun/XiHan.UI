@@ -66,7 +66,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | Vue 组件 | `XhCarouselIndicator` `XhCarouselIndicatorGroup` `XhCarouselItem` `XhCarouselItemGroup` `XhCarouselNextTrigger` `XhCarouselPrevTrigger` `XhCarouselRoot` `XhCarouselViewport` |
 | 组合式函数 | `useCarousel` |
 | 状态机 | `carouselMachine` |
-| 皮肤 | `@xihan-ui/styled/carousel.css` |
+| 皮肤 | `@xihan-ui/styles/carousel.css` |
 
 ## 解剖
 

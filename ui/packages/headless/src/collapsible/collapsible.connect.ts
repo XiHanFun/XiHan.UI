@@ -1,7 +1,7 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { CollapsibleApi, CollapsibleSchema } from './collapsible.types'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { collapsibleAnatomy } from './collapsible.anatomy'
 
 const parts = collapsibleAnatomy.build()
