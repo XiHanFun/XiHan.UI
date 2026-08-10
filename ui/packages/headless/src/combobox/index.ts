@@ -10,6 +10,8 @@ export type {
   ComboboxInputValueChangeDetails,
   ComboboxItemGroupProps,
   ComboboxItemProps,
+  ComboboxNode,
+  ComboboxNodeMeta,
   ComboboxOpenChangeDetails,
   ComboboxRefs,
   ComboboxSchema,

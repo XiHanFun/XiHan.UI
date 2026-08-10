@@ -1,7 +1,8 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
-import type { RadioGroupItemProps, RadioGroupSchema, RadioGroupValueChangeDetails } from '@xihan-ui/headless'
+import type { RadioGroupItemProps, RadioGroupNode, RadioGroupSchema, RadioGroupValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectRadioGroup, radioGroupAnatomy, radioGroupMachine, radioGroupMeta } from '@xihan-ui/headless'
+import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -34,6 +35,8 @@ export class XhRadioGroupElement extends XhElement {
 
   // dir 是 HTMLElement 原生访问器，同名声明会与基类冲突并盖掉原生反射，故字段叫 direction、属性名仍用 dir
   static override properties = {
+    // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准
+    collection: { attribute: false },
     value: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     defaultValue: { attribute: 'default-value' },
     disabled: { type: Boolean },
@@ -44,6 +47,7 @@ export class XhRadioGroupElement extends XhElement {
     size: {},
   }
 
+  declare collection?: RadioGroupNode[]
   declare value?: string
   declare defaultValue?: string
   declare disabled?: boolean
@@ -66,6 +70,7 @@ export class XhRadioGroupElement extends XhElement {
 
   private machineProps(): Partial<RadioGroupSchema['props']> {
     return {
+      collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue ?? null,
       disabled: this.disabled ?? false,
@@ -92,8 +97,15 @@ export class XhRadioGroupElement extends XhElement {
       send({ type: 'GROUP.BLUR' })
   }
 
+  /** 作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺 */
+  private readonly declaredItemDisabled = createDeclaredDisabled()
+
   private itemProps(el: HTMLElement): RadioGroupItemProps {
     const value = el.getAttribute('value') ?? ''
+    // 给了 collection 就以数据为事实源：现读会读到 connect 上一帧写回的 aria-disabled，
+    // 「作者没写」表达不出 undefined，数据里的禁用就永远轮不到生效。
+    if (this.collection)
+      return { value, disabled: this.declaredItemDisabled(el) }
     const groupDisabled = !!this.disabled
     // 头一回见到这个条目：本帧的写回尚未发生，DOM 上还只有作者声明，此刻无论禁没禁用都要记下快照
     if (!this.declaredDisabled.has(el)) {

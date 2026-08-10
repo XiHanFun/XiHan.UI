@@ -12,12 +12,37 @@ export interface NavigationMenuValueChangeDetails {
   value: string | null
 }
 
+/** 入口数据。给了 collection，入口文本、禁用与直达去处就以它为准。 */
+export interface NavigationMenuNode {
+  value: string
+  /** 入口文本；缺省退回 value。 */
+  label?: string
+  /** 入口禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
+  disabled?: boolean
+  /** 直达去处。给了它这一项就是一条链接，没有面板。 */
+  href?: string
+  /** 指向当前页面的直达入口：输出 aria-current="page"。 */
+  current?: boolean
+}
+
+/** 单个入口的元信息，由 collection 推出，不含展开态。 */
+export interface NavigationMenuNodeMeta {
+  value: string
+  /** node.label ?? node.value，恒为字符串。 */
+  label: string
+  disabled: boolean
+  /** 直达去处；缺省即这一项带面板。 */
+  href?: string
+  current: boolean
+}
+
 /**
- * 触发器属性：身份与禁用由作者声明。
+ * 触发器属性：身份必报，禁用可由 collection 代为声明。
  * connect 据此产出属性，不反查 DOM：它在 Vue 的 render 期求值，此时 DOM 尚不存在。
  */
 export interface NavigationMenuTriggerProps {
   value: string
+  /** 逐条覆盖禁用；缺省时回 collection 里查，两处都没有即为不禁用。 */
   disabled?: boolean
 }
 
@@ -47,6 +72,11 @@ export interface NavigationMenuRefs {
 
 export interface NavigationMenuSchema extends MachineSchema {
   props: {
+    /**
+     * 入口数据，入口文本与禁用的事实源。给了它，trigger 部件只需报 value。
+     * 缺省即回到「文本与禁用都写在部件上」的老路。
+     */
+    collection?: NavigationMenuNode[]
     /** 当前展开项，给定即受控；null 表示都收起。 */
     value?: string | null
     defaultValue?: string | null
@@ -117,6 +147,8 @@ export interface NavigationMenuSchema extends MachineSchema {
 export interface NavigationMenuApi<T extends PropTypes = PropTypes> {
   /** 当前展开的那一项；都收起时为 null。 */
   value: string | null
+  /** collection 推出的入口元信息，按数据顺序排列；没给 collection 即空数组。 */
+  collection: readonly NavigationMenuNodeMeta[]
   /** 有没有面板展开着。 */
   open: boolean
   isOpen: (value: string) => boolean

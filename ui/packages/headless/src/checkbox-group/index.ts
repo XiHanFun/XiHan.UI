@@ -7,6 +7,8 @@ export type {
   CheckboxGroupApi,
   CheckboxGroupCheckedState,
   CheckboxGroupItemProps,
+  CheckboxGroupNode,
+  CheckboxGroupNodeMeta,
   CheckboxGroupSchema,
   CheckboxGroupValueChangeDetails,
 } from './checkbox-group.types'

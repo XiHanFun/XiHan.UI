@@ -1,6 +1,6 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
-import type { NavigationMenuSchema, NavigationMenuTranslations } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { NavigationMenuNode, NavigationMenuNodeMeta, NavigationMenuSchema, NavigationMenuTranslations } from '@xihan-ui/headless'
+import type { PropType, VNode } from 'vue'
 import { defineComponent, h } from 'vue'
 import { provideNavigationMenu, useNavigationMenuContext } from './context'
 import { useNavigationMenu } from './use-navigation-menu'
@@ -12,6 +12,7 @@ export const XhNavigationMenuRoot = defineComponent({
   name: 'XhNavigationMenuRoot',
   // 全部 default: undefined，缺省值由机器与 connect 决定
   props: {
+    collection: { type: Array as PropType<NavigationMenuNode[]>, default: undefined },
     value: { type: String as PropType<string | null>, default: undefined },
     defaultValue: { type: String as PropType<string | null>, default: undefined },
     orientation: { type: String as PropType<Orientation>, default: undefined },
@@ -32,7 +33,12 @@ export const XhNavigationMenuRoot = defineComponent({
     }
     const ctx = useNavigationMenu(props as NavigationMenuProps, notify)
     provideNavigationMenu(ctx)
-    return () => h('nav', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => {
+      // 写了默认插槽就照旧交给作者；没写且给了 collection 才按数据铺开整套结构
+      const children = slots.default?.()
+        ?? (props.collection ? renderDefaultTree(ctx.api.value.collection, slots.panel) : undefined)
+      return h('nav', ctx.api.value.getRootProps() as Record<string, unknown>, children)
+    }
   },
 })
 
@@ -61,7 +67,8 @@ export const XhNavigationMenuTrigger = defineComponent({
   name: 'XhNavigationMenuTrigger',
   props: {
     value: { type: String, required: true },
-    disabled: Boolean,
+    // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
+    disabled: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useNavigationMenuContext()
@@ -122,3 +129,27 @@ export const XhNavigationMenuViewport = defineComponent({
     return () => h('div', ctx.api.value.getViewportProps() as Record<string, unknown>, slots.default?.())
   },
 })
+
+/**
+ * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
+ * 一项一个 li：带 href 的铺成直达链接，其余铺成 trigger 加面板，面板内容由 panel 插槽给。
+ * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
+ */
+function renderDefaultTree(
+  collection: readonly NavigationMenuNodeMeta[],
+  panelSlot?: (node: NavigationMenuNodeMeta) => VNode[],
+): VNode[] {
+  return [
+    h(XhNavigationMenuList, null, () => [
+      ...collection.map(node => h(XhNavigationMenuItem, { key: node.value }, () => (
+        node.href != null
+          ? [h(XhNavigationMenuLink, { href: node.href, current: node.current }, () => node.label)]
+          : [
+              h(XhNavigationMenuTrigger, { value: node.value }, () => node.label),
+              h(XhNavigationMenuContent, { value: node.value }, () => panelSlot?.(node) ?? []),
+            ]
+      ))),
+      h(XhNavigationMenuIndicator),
+    ]),
+  ]
+}

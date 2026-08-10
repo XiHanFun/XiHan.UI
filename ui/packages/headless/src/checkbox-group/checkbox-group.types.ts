@@ -13,17 +13,40 @@ export interface CheckboxGroupValueChangeDetails {
  */
 export type CheckboxGroupCheckedState = 'all' | 'some' | 'none'
 
+/** 条目数据。给了 collection，显示文本与禁用就以它为准。 */
+export interface CheckboxGroupNode {
+  value: string
+  /** 展示文本；缺省退回 value。 */
+  label?: string
+  /** 条目禁用：仍可聚焦、仍占一个 Tab 停靠点，但改不动，全选也跳过它。 */
+  disabled?: boolean
+}
+
+/** 单个条目的元信息，由 collection 推出，不含选中态。 */
+export interface CheckboxGroupNodeMeta {
+  value: string
+  /** node.label ?? node.value，恒为字符串。 */
+  label: string
+  disabled: boolean
+}
+
 /**
- * 条目自报值与禁用，connect 据此产出属性。
+ * 条目自报家门：值必报，禁用可由 collection 代为声明。
  * connect 不反查 DOM：它在 Vue 的 render 期求值，此时 DOM 尚不存在。
  */
 export interface CheckboxGroupItemProps {
   value: string
+  /** 逐条覆盖禁用；缺省时回 collection 里查，两处都没有即为不禁用。 */
   disabled?: boolean
 }
 
 export interface CheckboxGroupSchema extends MachineSchema {
   props: {
+    /**
+     * 条目数据，显示文本与禁用的事实源。给了它，条目部件只需报 value。
+     * 缺省即回到「文本与禁用都写在条目部件上」的老路。
+     */
+    collection?: CheckboxGroupNode[]
     /** 选中值集合。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 */
     value?: string[]
     defaultValue?: string[]
@@ -62,6 +85,8 @@ export interface CheckboxGroupSchema extends MachineSchema {
 
 export interface CheckboxGroupApi<T extends PropTypes = PropTypes> {
   value: string[]
+  /** collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 */
+  collection: readonly CheckboxGroupNodeMeta[]
   checkedState: CheckboxGroupCheckedState
   disabled: boolean
   readOnly: boolean

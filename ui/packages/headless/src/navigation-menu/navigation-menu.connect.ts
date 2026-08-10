@@ -1,7 +1,7 @@
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
-import type { NavigationMenuApi, NavigationMenuSchema } from './navigation-menu.types'
+import type { NavigationMenuApi, NavigationMenuNodeMeta, NavigationMenuSchema, NavigationMenuTriggerProps } from './navigation-menu.types'
 import { focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/core'
 import { navigationMenuAnatomy, navigationMenuTriggerQuery } from './navigation-menu.anatomy'
@@ -22,6 +22,20 @@ export function connectNavigationMenu<T extends PropTypes>(
   const label = prop('translations')?.root ?? 'Main navigation'
   const open = value != null
 
+  // collection 推出的入口元信息：入口文本、禁用与直达去处都在这里定案，trigger 部件只报 value
+  const collection: NavigationMenuNodeMeta[] = (prop('collection') ?? []).map(node => ({
+    value: node.value,
+    label: node.label ?? node.value,
+    disabled: !!node.disabled,
+    href: node.href,
+    current: !!node.current,
+  }))
+  const metaOf = new Map(collection.map(meta => [meta.value, meta]))
+
+  /** 入口禁用：部件上写的优先，没写就回 collection 里查。 */
+  const triggerDisabled = (item: NavigationMenuTriggerProps): boolean =>
+    item.disabled ?? metaOf.get(item.value)?.disabled ?? false
+
   const triggerId = (target: string): string => scope.partId(navigationMenuAnatomy.name, `trigger:${target}`)
   const contentId = (target: string): string => scope.partId(navigationMenuAnatomy.name, `content:${target}`)
   const stateAttr = (isOpen: boolean): 'open' | 'closed' => (isOpen ? 'open' : 'closed')
@@ -34,6 +48,7 @@ export function connectNavigationMenu<T extends PropTypes>(
 
   return {
     value,
+    collection,
     open,
     isOpen: target => target === value,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
@@ -89,6 +104,7 @@ export function connectNavigationMenu<T extends PropTypes>(
     /** 键盘处理挂在 trigger 上，而非 list。 */
     getTriggerProps: (item) => {
       const isOpen = item.value === value
+      const disabled = triggerDisabled(item)
       return normalize.button({
         ...parts.trigger.attrs,
         [ITEM_VALUE_ATTR]: item.value,
@@ -97,25 +113,25 @@ export function connectNavigationMenu<T extends PropTypes>(
         'aria-expanded': isOpen ? 'true' : 'false',
         'aria-controls': contentId(item.value),
         // 用 aria-disabled 而非原生 disabled，禁用项仍可聚焦、仍留在方向键行程里
-        'aria-disabled': item.disabled ? 'true' : 'false',
+        'aria-disabled': disabled ? 'true' : 'false',
         'data-state': stateAttr(isOpen),
         'data-orientation': orientation,
-        'data-disabled': dataAttr(item.disabled),
+        'data-disabled': dataAttr(disabled),
         // 不做 roving tabindex，每个 trigger 都留在 Tab 序列里
         'onPointerenter': () => {
-          if (!item.disabled)
+          if (!disabled)
             send({ type: 'TRIGGER.POINTER', value: item.value })
         },
         'onFocus': () => {
-          if (!item.disabled)
+          if (!disabled)
             send({ type: 'TRIGGER.FOCUS', value: item.value })
         },
         'onClick': () => {
-          if (!item.disabled)
+          if (!disabled)
             send({ type: 'TRIGGER.TOGGLE', value: item.value })
         },
         'onKeydown': (event: KeyboardEvent) => {
-          if (item.disabled)
+          if (disabled)
             return
           // 轴跟随 orientation，异轴按键不拦默认行为
           const intent = navIntentFromKey(event, { axis: orientation, dir })

@@ -1,5 +1,5 @@
 import type { Direction, IdGenerator, Orientation } from '@xihan-ui/core'
-import type { NavigationMenuSchema, NavigationMenuTranslations, NavigationMenuValueChangeDetails } from '@xihan-ui/headless'
+import type { NavigationMenuNode, NavigationMenuSchema, NavigationMenuTranslations, NavigationMenuValueChangeDetails } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import { isItemDisabled } from '@xihan-ui/behavior'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
@@ -77,6 +77,8 @@ export class XhNavigationMenuElement extends XhElement {
   // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    // 数组只走 property，属性表达不了；给了它入口的文本与禁用即以数据为准
+    collection: { attribute: false },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     orientation: { converter: STRING_CONVERTER },
@@ -90,6 +92,7 @@ export class XhNavigationMenuElement extends XhElement {
     translations: { attribute: false },
   }
 
+  declare collection?: NavigationMenuNode[]
   declare value?: string
   declare defaultValue?: string
   declare orientation?: Orientation
@@ -119,6 +122,7 @@ export class XhNavigationMenuElement extends XhElement {
 
   private machineProps(): Partial<NavigationMenuSchema['props']> {
     return {
+      collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
       orientation: this.orientation,

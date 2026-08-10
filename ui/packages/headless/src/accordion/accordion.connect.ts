@@ -1,7 +1,7 @@
 import type { ItemQuery } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
-import type { AccordionApi, AccordionItemProps, AccordionSchema } from './accordion.types'
+import type { AccordionApi, AccordionItemProps, AccordionNodeMeta, AccordionSchema } from './accordion.types'
 import { focusItem, ITEM_VALUE_ATTR, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/core'
 import { accordionAnatomy } from './accordion.anatomy'
@@ -19,6 +19,19 @@ export function connectAccordion<T extends PropTypes>(
   const value = context.get('value')
   const orientation = prop('orientation') ?? 'vertical'
   const dir = prop('dir')
+
+  // collection 推出的条目元信息：标题文本、正文与禁用都在这里定案，条目部件只报 value
+  const collection: AccordionNodeMeta[] = (prop('collection') ?? []).map(node => ({
+    value: node.value,
+    label: node.label ?? node.value,
+    content: node.content,
+    disabled: !!node.disabled,
+  }))
+  const metaOf = new Map(collection.map(meta => [meta.value, meta]))
+
+  /** 条目禁用：部件上写的优先，没写就回 collection 里查。 */
+  const itemDisabled = (item: AccordionItemProps): boolean =>
+    item.disabled ?? metaOf.get(item.value)?.disabled ?? false
 
   const isOpen = (target: string): boolean => value.includes(target)
   const stateAttr = (item: AccordionItemProps): 'open' | 'closed' => (isOpen(item.value) ? 'open' : 'closed')
@@ -42,6 +55,7 @@ export function connectAccordion<T extends PropTypes>(
 
   return {
     value,
+    collection,
     setValue,
     isOpen,
     getRootProps: () => normalize.element({
@@ -53,14 +67,14 @@ export function connectAccordion<T extends PropTypes>(
     getItemProps: item => normalize.element({
       ...parts.item.attrs,
       'data-state': stateAttr(item),
-      'data-disabled': dataAttr(item.disabled),
+      'data-disabled': dataAttr(itemDisabled(item)),
     }),
     getHeaderProps: item => normalize.element({
       ...parts.header.attrs,
       'role': 'heading',
       'aria-level': 3,
       'data-state': stateAttr(item),
-      'data-disabled': dataAttr(item.disabled),
+      'data-disabled': dataAttr(itemDisabled(item)),
     }),
     getTriggerProps: item => normalize.button({
       ...parts.trigger.attrs,
@@ -70,12 +84,12 @@ export function connectAccordion<T extends PropTypes>(
       'aria-controls': contentId(item.value),
       'aria-expanded': isOpen(item.value) ? 'true' : 'false',
       // 用 aria-disabled，禁用条目仍可聚焦
-      'aria-disabled': item.disabled ? 'true' : 'false',
+      'aria-disabled': itemDisabled(item) ? 'true' : 'false',
       'data-state': stateAttr(item),
-      'data-disabled': dataAttr(item.disabled),
+      'data-disabled': dataAttr(itemDisabled(item)),
       // 不输出 tabindex：手风琴不做 roving tabindex，每个 trigger 都是独立的 Tab 停靠点
       'onClick': () => {
-        if (!item.disabled)
+        if (!itemDisabled(item))
           send({ type: 'ITEM.TOGGLE', value: item.value })
       },
       'onKeydown': onTriggerKeydown(item),
@@ -92,7 +106,7 @@ export function connectAccordion<T extends PropTypes>(
       ...parts.indicator.attrs,
       'aria-hidden': 'true',
       'data-state': stateAttr(item),
-      'data-disabled': dataAttr(item.disabled),
+      'data-disabled': dataAttr(itemDisabled(item)),
     }),
   }
 }

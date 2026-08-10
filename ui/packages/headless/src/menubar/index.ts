@@ -15,6 +15,8 @@ export type {
   MenubarFocusIntent,
   MenubarGroupProps,
   MenubarItemProps,
+  MenubarNode,
+  MenubarNodeMeta,
   MenubarRefs,
   MenubarSchema,
   MenubarSelectDetails,

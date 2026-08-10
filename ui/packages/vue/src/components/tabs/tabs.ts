@@ -1,6 +1,6 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
-import type { TabsActivationMode, TabsSchema } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { TabsActivationMode, TabsNode, TabsNodeMeta, TabsSchema } from '@xihan-ui/headless'
+import type { PropType, VNode } from 'vue'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideTabs, useTabsContext } from './context'
 import { useTabs } from './use-tabs'
@@ -11,6 +11,7 @@ export const XhTabsRoot = defineComponent({
   name: 'XhTabsRoot',
   // 全部 default: undefined，缺省值由 connect 决定
   props: {
+    collection: { type: Array as PropType<TabsNode[]>, default: undefined },
     value: { type: String as PropType<string | null>, default: undefined },
     defaultValue: { type: String as PropType<string | null>, default: undefined },
     orientation: { type: String as PropType<Orientation>, default: undefined },
@@ -30,7 +31,12 @@ export const XhTabsRoot = defineComponent({
     }
     const ctx = useTabs(props as TabsProps, notify)
     provideTabs(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => {
+      // 写了默认插槽就照旧交给作者；没写且给了 collection 才按数据铺开整套结构
+      const children = slots.default?.()
+        ?? (props.collection ? renderDefaultTree(ctx.api.value.collection, slots.panel) : undefined)
+      return h('div', ctx.api.value.getRootProps() as Record<string, unknown>, children)
+    }
   },
 })
 
@@ -46,7 +52,8 @@ export const XhTabsTrigger = defineComponent({
   name: 'XhTabsTrigger',
   props: {
     value: { type: String, required: true },
-    disabled: Boolean,
+    // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
+    disabled: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useTabsContext()
@@ -90,3 +97,22 @@ export const XhTabsContent = defineComponent({
     )
   },
 })
+
+/**
+ * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
+ * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
+ * 面板内容走 panel 插槽，没写就是空面板。
+ */
+function renderDefaultTree(
+  collection: readonly TabsNodeMeta[],
+  panelSlot?: (node: TabsNodeMeta) => VNode[],
+): VNode[] {
+  return [
+    h(XhTabsList, null, () => collection.map(node =>
+      h(XhTabsTrigger, { key: node.value, value: node.value }, () => node.label),
+    )),
+    ...collection.map(node =>
+      h(XhTabsContent, { key: node.value, value: node.value }, () => panelSlot?.(node) ?? []),
+    ),
+  ]
+}

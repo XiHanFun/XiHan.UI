@@ -1,6 +1,6 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
-import type { ToggleGroupSchema, ToggleGroupValue } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupValue } from '@xihan-ui/headless'
+import type { PropType, VNode } from 'vue'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideToggleGroup, useToggleGroupContext } from './context'
 import { useToggleGroup } from './use-toggle-group'
@@ -11,6 +11,7 @@ export const XhToggleGroupRoot = defineComponent({
   name: 'XhToggleGroupRoot',
   // 全部 default: undefined，缺省值由 connect 决定
   props: {
+    collection: { type: Array as PropType<ToggleGroupNode[]>, default: undefined },
     value: { type: [String, Array] as PropType<ToggleGroupValue>, default: undefined },
     defaultValue: { type: [String, Array] as PropType<ToggleGroupValue>, default: undefined },
     multiple: { type: Boolean, default: undefined },
@@ -30,7 +31,15 @@ export const XhToggleGroupRoot = defineComponent({
     }
     const ctx = useToggleGroup(props as ToggleGroupProps, notify)
     provideToggleGroup(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h(
+      'div',
+      ctx.api.value.getRootProps() as Record<string, unknown>,
+      slots.default
+        ? slots.default()
+        : props.collection
+          ? renderDefaultTree(ctx.api.value.collection, slots.item)
+          : [],
+    )
   },
 })
 
@@ -38,7 +47,8 @@ export const XhToggleGroupItem = defineComponent({
   name: 'XhToggleGroupItem',
   props: {
     value: { type: String, required: true },
-    disabled: Boolean,
+    // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
+    disabled: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useToggleGroupContext()
@@ -69,3 +79,19 @@ export const XhToggleGroupItem = defineComponent({
     )
   },
 })
+
+/**
+ * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
+ * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
+ * 条目底下没有文本部件，文字直接落在条目里。
+ */
+function renderDefaultTree(
+  collection: readonly ToggleGroupNodeMeta[],
+  itemSlot?: (node: ToggleGroupNodeMeta) => VNode[],
+): VNode[] {
+  return collection.map(node => h(
+    XhToggleGroupItem,
+    { key: node.value, value: node.value },
+    () => itemSlot?.(node) ?? node.label,
+  ))
+}

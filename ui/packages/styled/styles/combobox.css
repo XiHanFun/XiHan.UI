@@ -198,6 +198,16 @@
       rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
+  /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
+  [data-scope='combobox'][data-part='trigger']:empty::before {
+    content: '▾';
+  }
+
+  /* 同上：没写内容就由皮肤画叉 */
+  [data-scope='combobox'][data-part='clear-trigger']:empty::before {
+    content: '✕';
+  }
+
   [data-scope='combobox'][data-part='trigger'][data-state='open'] {
     rotate: 180deg;
   }
@@ -370,6 +380,11 @@
 
   [data-scope='combobox'][data-part='item-indicator'][hidden] {
     display: none;
+  }
+
+  /* 同上：没写内容就由皮肤画勾 */
+  [data-scope='combobox'][data-part='item-indicator']:empty::before {
+    content: '✓';
   }
 
   [data-scope='combobox'][data-part='item-indicator'][data-state='checked'] {

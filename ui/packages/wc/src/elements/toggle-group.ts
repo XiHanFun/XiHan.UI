@@ -1,7 +1,8 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
-import type { ToggleGroupItemProps, ToggleGroupSchema, ToggleGroupValueChangeDetails } from '@xihan-ui/headless'
+import type { ToggleGroupItemProps, ToggleGroupNode, ToggleGroupSchema, ToggleGroupValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectToggleGroup, toggleGroupAnatomy, toggleGroupMachine, toggleGroupMeta } from '@xihan-ui/headless'
+import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -46,6 +47,8 @@ export class XhToggleGroupElement extends XhElement {
   // 同时让 dir 进 observedAttributes——运行期改 dir 才会重跑 wire 换掉按键处理器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准
+    collection: { attribute: false },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     multiple: { converter: BOOLEAN_CONVERTER },
@@ -58,6 +61,7 @@ export class XhToggleGroupElement extends XhElement {
   }
 
   // 属性只喂得进字符串，property 还能直接喂数组（多选受控走这一路）
+  declare collection?: ToggleGroupNode[]
   declare value?: string | string[]
   declare defaultValue?: string | string[]
   declare multiple?: boolean
@@ -83,6 +87,7 @@ export class XhToggleGroupElement extends XhElement {
 
   private machineProps(): Partial<ToggleGroupSchema['props']> {
     return {
+      collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
       // 布尔一律原样透传：属性不在即 undefined，把缺省交回 connect
@@ -116,8 +121,15 @@ export class XhToggleGroupElement extends XhElement {
       send({ type: 'GROUP.BLUR' })
   }
 
+  /** 作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺 */
+  private readonly declaredItemDisabled = createDeclaredDisabled()
+
   private itemProps(el: HTMLElement): ToggleGroupItemProps {
     const value = el.getAttribute('value') ?? ''
+    // 给了 collection 就以数据为事实源：现读会读到 connect 上一帧写回的 aria-disabled，
+    // 「作者没写」表达不出 undefined，数据里的禁用就永远轮不到生效。
+    if (this.collection)
+      return { value, disabled: this.declaredItemDisabled(el) }
     // 只有「本帧与上一帧都没整组禁用」时，节点上的 aria-disabled 才等于作者声明：
     // 整组禁用那几帧 connect 把每个条目都写成了 true，解禁当帧 DOM 上还留着这些写回值，
     // 此刻现读会把机器自己的产物误当声明、条目再也解不开。

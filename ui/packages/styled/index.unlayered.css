@@ -3124,6 +3124,16 @@
     rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
+/* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
+[data-scope='combobox'][data-part='trigger']:empty::before {
+  content: '▾';
+}
+
+/* 同上：没写内容就由皮肤画叉 */
+[data-scope='combobox'][data-part='clear-trigger']:empty::before {
+  content: '✕';
+}
+
 [data-scope='combobox'][data-part='trigger'][data-state='open'] {
   rotate: 180deg;
 }
@@ -3296,6 +3306,11 @@
 
 [data-scope='combobox'][data-part='item-indicator'][hidden] {
   display: none;
+}
+
+/* 同上：没写内容就由皮肤画勾 */
+[data-scope='combobox'][data-part='item-indicator']:empty::before {
+  content: '✓';
 }
 
 [data-scope='combobox'][data-part='item-indicator'][data-state='checked'] {
@@ -5843,6 +5858,11 @@
   display: none;
 }
 
+/* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
+[data-scope='listbox'][data-part='item-indicator']:empty::before {
+  content: '✓';
+}
+
 [data-scope='listbox'][data-part='item-indicator'][data-state='checked'] {
   visibility: visible;
 }
@@ -7864,6 +7884,11 @@
   transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
+/* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
+[data-scope='select'][data-part='indicator']:empty::before {
+  content: '▾';
+}
+
 [data-scope='select'][data-part='indicator'][data-state='open'] {
   rotate: 180deg;
 }
@@ -7968,6 +7993,11 @@
   inline-size: var(--xh-select-item-indicator-size, var(--xh-control-indicator-size));
   color: var(--xh-select-item-indicator-fg, var(--xh-_select-accent));
   visibility: hidden;
+}
+
+/* 同上：没写内容就由皮肤画勾 */
+[data-scope='select'][data-part='item-indicator']:empty::before {
+  content: '✓';
 }
 
 [data-scope='select'][data-part='item-indicator'][data-state='checked'] {

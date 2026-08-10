@@ -8,6 +8,8 @@ export type {
   NavigationMenuContentProps,
   NavigationMenuIndicatorRect,
   NavigationMenuLinkProps,
+  NavigationMenuNode,
+  NavigationMenuNodeMeta,
   NavigationMenuRefs,
   NavigationMenuSchema,
   NavigationMenuTranslations,

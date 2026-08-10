@@ -1,7 +1,7 @@
 import type { ItemQuery } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
-import type { ToggleGroupApi, ToggleGroupItemProps, ToggleGroupSchema } from './toggle-group.types'
+import type { ToggleGroupApi, ToggleGroupItemProps, ToggleGroupNodeMeta, ToggleGroupSchema } from './toggle-group.types'
 import { focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/core'
 import { toggleGroupAnatomy } from './toggle-group.anatomy'
@@ -17,6 +17,15 @@ export function connectToggleGroup<T extends PropTypes>(
 ): ToggleGroupApi<T> {
   const { context, prop, send } = service
   const value = context.get('value')
+
+  // collection 推出的条目元信息：显示文本与禁用都在这里定案，条目部件只报 value
+  const collection: ToggleGroupNodeMeta[] = (prop('collection') ?? []).map(node => ({
+    value: node.value,
+    label: node.label ?? node.value,
+    disabled: !!node.disabled,
+  }))
+  const metaOf = new Map(collection.map(meta => [meta.value, meta]))
+
   const focusedValue = context.get('focusedValue') ?? null
   const multiple = !!prop('multiple')
   const groupDisabled = !!prop('disabled')
@@ -26,8 +35,9 @@ export function connectToggleGroup<T extends PropTypes>(
   const rovingFocus = prop('rovingFocus') ?? true
 
   const isSelected = (target: string): boolean => value.includes(target)
-  // 组禁用向下传导到每个条目；条目也能单独禁用
-  const isDisabled = (item: ToggleGroupItemProps): boolean => groupDisabled || !!item.disabled
+  // 组禁用向下传导到每个条目；条目也能单独禁用：部件上写的优先，没写就回 collection 里查
+  const isDisabled = (item: ToggleGroupItemProps): boolean =>
+    groupDisabled || (item.disabled ?? metaOf.get(item.value)?.disabled ?? false)
 
   // roving tabindex 的唯一锚点：焦点在组内跟焦点走，否则跟第一个选中值走。
   const anchor = focusedValue ?? value[0] ?? null
@@ -74,6 +84,7 @@ export function connectToggleGroup<T extends PropTypes>(
 
   return {
     value,
+    collection,
     focusedValue,
     multiple,
     disabled: groupDisabled,

@@ -44,6 +44,19 @@ export function isItemDisabled(el: HTMLElement): boolean {
   return el.getAttribute('aria-disabled') === 'true' || el.hasAttribute('disabled')
 }
 
+/**
+ * 作者在标记里声明的禁用：属性没写返回 undefined，交由 collection 定夺。
+ *
+ * 与 isItemDisabled 的区别只在「没写」这一档：后者把没写并成 false，
+ * 于是 `item.disabled ?? collection` 的回退永远够不着。
+ */
+export function declaredItemDisabled(el: HTMLElement): boolean | undefined {
+  if (el.hasAttribute('disabled'))
+    return true
+  const aria = el.getAttribute('aria-disabled')
+  return aria == null ? undefined : aria === 'true'
+}
+
 export function indexOfValue(items: readonly HTMLElement[], value: string | null): number {
   if (value == null)
     return -1

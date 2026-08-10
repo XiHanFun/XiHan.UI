@@ -1,7 +1,7 @@
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
-import type { ComboboxApi, ComboboxItemProps, ComboboxSchema } from './combobox.types'
+import type { ComboboxApi, ComboboxItemProps, ComboboxNodeMeta, ComboboxSchema } from './combobox.types'
 import { isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
 import { contains, dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { comboboxAnatomy, comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
@@ -19,7 +19,21 @@ export function connectCombobox<T extends PropTypes>(
 
   const value = context.get('value')
   const inputValue = context.get('inputValue')
-  const valueText = context.get('valueText')
+
+  // collection 推出的候选元信息：显示文本与禁用都在这里定案，条目部件只报 value
+  const nodes = prop('collection')
+  const collection: ComboboxNodeMeta[] = (nodes ?? []).map(node => ({
+    value: node.value,
+    label: node.label ?? node.value,
+    disabled: !!node.disabled,
+  }))
+  const metaOf = new Map(collection.map(meta => [meta.value, meta]))
+
+  // 给了 collection 就当场按数据算，首帧即准；选中项已被宿主筛出候选时退回机器算好的那一份
+  const onlySelected = value.length === 1 ? value[0] : undefined
+  const valueText = nodes && onlySelected != null
+    ? metaOf.get(onlySelected)?.label ?? context.get('valueText')
+    : context.get('valueText')
   // 高亮不承载焦点，只经 aria-activedescendant 上报；收起时为 null
   const highlighted = context.get('highlightedValue') ?? null
   const itemCount = context.get('itemCount')
@@ -45,10 +59,14 @@ export function connectCombobox<T extends PropTypes>(
   const itemId = (v: string): string => scope.partId(comboboxAnatomy.name, `item:${encodeURIComponent(v)}`)
   const groupLabelId = (group: string): string => scope.partId(comboboxAnatomy.name, `item-group-label:${group}`)
 
+  /** 候选禁用：部件上写的优先，没写就回 collection 里查。 */
+  const itemDisabled = (item: ComboboxItemProps): boolean =>
+    item.disabled ?? metaOf.get(item.value)?.disabled ?? false
+
   // item / item-text / item-indicator 共用同一份状态标记，样式层各处一致
   const itemStateAttrs = (item: ComboboxItemProps): Record<string, string | undefined> => ({
     'data-state': isSelected(item.value) ? 'checked' : 'unchecked',
-    'data-disabled': dataAttr(item.disabled),
+    'data-disabled': dataAttr(itemDisabled(item)),
     // 高亮与选中互相独立：可以高亮着一个未选中的候选
     'data-highlighted': dataAttr(highlighted === item.value),
   })
@@ -96,6 +114,7 @@ export function connectCombobox<T extends PropTypes>(
 
   return {
     open,
+    collection,
     value,
     inputValue,
     valueText,
@@ -361,17 +380,17 @@ export function connectCombobox<T extends PropTypes>(
       // listbox 的选中语义是 aria-selected；未选中也显式写 'false'
       'aria-selected': isSelected(item.value) ? 'true' : 'false',
       // 集合条目一律 aria-disabled，原生 disabled 不派发 click，点击就走不到守卫里
-      'aria-disabled': item.disabled ? 'true' : 'false',
+      'aria-disabled': itemDisabled(item) ? 'true' : 'false',
       // 不给 tabindex：焦点恒在输入框
       'onClick': (event: MouseEvent) => {
         // 候选常挂在文档里（只是随 content 一起 hidden），程序化点击照样送得到，守卫必须写在这儿
-        if (!interactive || item.disabled)
+        if (!interactive || itemDisabled(item))
           return
         send({ type: 'ITEM.SELECT', value: item.value, label: comboboxItemText(event.currentTarget as HTMLElement) })
       },
       // 指针划过即高亮：不同步的话，鼠标停在 A 上、回车却提交了键盘高亮的 B
       'onPointerMove': () => {
-        if (interactive && !item.disabled && highlighted !== item.value)
+        if (interactive && !itemDisabled(item) && highlighted !== item.value)
           send({ type: 'ITEM.HIGHLIGHT', value: item.value })
       },
     }),

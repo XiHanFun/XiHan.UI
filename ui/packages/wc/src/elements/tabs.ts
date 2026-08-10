@@ -1,7 +1,8 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
-import type { TabsActivationMode, TabsSchema, TabsValueChangeDetails } from '@xihan-ui/headless'
+import type { TabsActivationMode, TabsNode, TabsSchema, TabsValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectTabs, tabsAnatomy, tabsMachine, tabsMeta } from '@xihan-ui/headless'
+import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -38,6 +39,8 @@ export class XhTabsElement extends XhElement {
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准
+    collection: { attribute: false },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     orientation: { converter: STRING_CONVERTER },
@@ -49,6 +52,7 @@ export class XhTabsElement extends XhElement {
     size: { converter: STRING_CONVERTER },
   }
 
+  declare collection?: TabsNode[]
   declare value?: string
   declare defaultValue?: string
   declare orientation?: Orientation
@@ -65,8 +69,12 @@ export class XhTabsElement extends XhElement {
 
   private readonly ctrl = new MachineController<TabsSchema>(this, tabsMachine, () => this.machineProps())
 
+  /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
+  private readonly declaredDisabled = createDeclaredDisabled()
+
   private machineProps(): Partial<TabsSchema['props']> {
     return {
+      collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
       orientation: this.orientation,
@@ -109,7 +117,7 @@ export class XhTabsElement extends XhElement {
     for (const el of this.getParts('trigger')) {
       const props = api.getTriggerProps({
         value: el.getAttribute('value') ?? '',
-        disabled: isItemDisabled(el),
+        disabled: this.collection ? this.declaredDisabled(el) : isItemDisabled(el),
       })
       this.spreader.spread(el, props as Record<string, unknown>)
     }

@@ -1,7 +1,7 @@
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
-import type { ListboxApi, ListboxItemProps, ListboxSchema } from './listbox.types'
+import type { ListboxApi, ListboxItemProps, ListboxNodeMeta, ListboxSchema } from './listbox.types'
 import { focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/core'
 import { listboxAnatomy, listboxItemQuery, listboxItemText } from './listbox.anatomy'
@@ -30,8 +30,18 @@ export function connectListbox<T extends PropTypes>(
   // 不取文档序里最靠前的选中项，那要查 DOM，而 connect 在 render 期求值、此时 DOM 尚不存在
   const anchor = focusedValue ?? value[0] ?? null
 
+  // collection 推出的条目元信息：显示文本与禁用都在这里定案，条目部件只报 value
+  const collection: ListboxNodeMeta[] = (prop('collection') ?? []).map(node => ({
+    value: node.value,
+    label: node.label ?? node.value,
+    disabled: !!node.disabled,
+  }))
+  const metaOf = new Map(collection.map(meta => [meta.value, meta]))
+
   const isSelected = (v: string): boolean => value.includes(v)
-  const isDisabled = (item: ListboxItemProps): boolean => listDisabled || !!item.disabled
+  /** 条目禁用：整列禁用一票通过，其次看部件上写的，再没有就回 collection 里查。 */
+  const isDisabled = (item: ListboxItemProps): boolean =>
+    listDisabled || (item.disabled ?? metaOf.get(item.value)?.disabled ?? false)
 
   // item / item-text / item-indicator 共用同一份状态标记
   const stateAttrs = (item: ListboxItemProps): Record<string, string | undefined> => ({
@@ -110,6 +120,7 @@ export function connectListbox<T extends PropTypes>(
 
   return {
     value,
+    collection,
     selectionMode: mode,
     focusedValue,
     disabled: listDisabled,

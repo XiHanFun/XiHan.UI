@@ -1,7 +1,7 @@
 import type { ItemQuery } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
-import type { RadioGroupApi, RadioGroupItemProps, RadioGroupSchema } from './radio-group.types'
+import type { RadioGroupApi, RadioGroupItemProps, RadioGroupNodeMeta, RadioGroupSchema } from './radio-group.types'
 import { focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/core'
 import { radioGroupAnatomy } from './radio-group.anatomy'
@@ -37,11 +37,23 @@ export function connectRadioGroup<T extends PropTypes>(
   const name = prop('name')
   const ids = scope.ids('radio-group', 'label')
 
+  // collection 推出的条目元信息：显示文本与禁用都在这里定案，条目部件只报 value
+  const collection: RadioGroupNodeMeta[] = (prop('collection') ?? []).map(node => ({
+    value: node.value,
+    label: node.label ?? node.value,
+    disabled: !!node.disabled,
+  }))
+  const metaOf = new Map(collection.map(meta => [meta.value, meta]))
+
+  /** 条目禁用：部件上写的优先，没写就回 collection 里查。 */
+  const itemDisabled = (item: RadioGroupItemProps): boolean =>
+    item.disabled ?? metaOf.get(item.value)?.disabled ?? false
+
   // roving tabindex 锚点：焦点值优先，否则选中值
   const anchor = focusedValue ?? value
 
   const isChecked = (item: RadioGroupItemProps): boolean => value === item.value
-  const isDisabled = (item: RadioGroupItemProps): boolean => groupDisabled || !!item.disabled
+  const isDisabled = (item: RadioGroupItemProps): boolean => groupDisabled || itemDisabled(item)
 
   // item / item-text / indicator / hidden-input 共用的状态标记
   const stateAttrs = (item: RadioGroupItemProps): Record<string, string | undefined> => ({
@@ -56,6 +68,7 @@ export function connectRadioGroup<T extends PropTypes>(
 
   return {
     value,
+    collection,
     focusedValue,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     getRootProps: () => normalize.element({

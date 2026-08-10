@@ -1,7 +1,7 @@
 import type { ItemQuery, NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
-import type { TabsApi, TabsSchema } from './tabs.types'
+import type { TabsApi, TabsNodeMeta, TabsSchema, TabsTriggerProps } from './tabs.types'
 import { focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/core'
 import { tabsAnatomy } from './tabs.anatomy'
@@ -24,6 +24,18 @@ export function connectTabs<T extends PropTypes>(
   const orientation = prop('orientation') ?? 'horizontal'
   const dir = prop('dir')
   const loop = prop('loop') ?? true
+
+  // collection 推出的条目元信息：标签文本与禁用都在这里定案，trigger 部件只报 value
+  const collection: TabsNodeMeta[] = (prop('collection') ?? []).map(node => ({
+    value: node.value,
+    label: node.label ?? node.value,
+    disabled: !!node.disabled,
+  }))
+  const metaOf = new Map(collection.map(meta => [meta.value, meta]))
+
+  /** 条目禁用：部件上写的优先，没写就回 collection 里查。 */
+  const itemDisabled = (item: TabsTriggerProps): boolean =>
+    item.disabled ?? metaOf.get(item.value)?.disabled ?? false
 
   const triggerId = (target: string): string => scope.partId(tabsAnatomy.name, `trigger:${target}`)
   const contentId = (target: string): string => scope.partId(tabsAnatomy.name, `content:${target}`)
@@ -55,6 +67,7 @@ export function connectTabs<T extends PropTypes>(
 
   return {
     value,
+    collection,
     focusedValue,
     setValue,
     // 三个视觉轴只写在 root 上，子部件靠继承私有槽消费
@@ -112,13 +125,13 @@ export function connectTabs<T extends PropTypes>(
       'aria-selected': item.value === value ? 'true' : 'false',
       'aria-controls': contentId(item.value),
       // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、不派 click
-      'aria-disabled': item.disabled ? 'true' : 'false',
+      'aria-disabled': itemDisabled(item) ? 'true' : 'false',
       // roving tabindex：整组只有锚点条目留在 Tab 序列内
       'tabindex': anchor === item.value ? 0 : -1,
       'data-state': stateAttr(item.value),
-      'data-disabled': dataAttr(item.disabled),
+      'data-disabled': dataAttr(itemDisabled(item)),
       'onClick': () => {
-        if (!item.disabled)
+        if (!itemDisabled(item))
           send({ type: 'TRIGGER.SELECT', value: item.value })
       },
       'onFocus': () => send({ type: 'TRIGGER.FOCUS', value: item.value }),

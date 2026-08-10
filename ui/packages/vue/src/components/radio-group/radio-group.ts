@@ -1,6 +1,6 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
-import type { RadioGroupItemProps, RadioGroupSchema } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { RadioGroupItemProps, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema } from '@xihan-ui/headless'
+import type { PropType, VNode } from 'vue'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideRadioGroup, provideRadioGroupItem, useRadioGroupContext, useRadioGroupItemContext } from './context'
 import { useRadioGroup } from './use-radio-group'
@@ -10,6 +10,9 @@ type RadioGroupProps = RadioGroupSchema['props']
 export const XhRadioGroupRoot = defineComponent({
   name: 'XhRadioGroupRoot',
   props: {
+    collection: { type: Array as PropType<RadioGroupNode[]>, default: undefined },
+    /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
+    label: { type: String, default: undefined },
     value: { type: String as PropType<string | null>, default: undefined },
     defaultValue: { type: String as PropType<string | null>, default: undefined },
     disabled: Boolean,
@@ -28,7 +31,19 @@ export const XhRadioGroupRoot = defineComponent({
     }
     const ctx = useRadioGroup(props as RadioGroupProps, notify)
     provideRadioGroup(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h(
+      'div',
+      ctx.api.value.getRootProps() as Record<string, unknown>,
+      slots.default
+        ? slots.default()
+        : props.collection
+          ? renderDefaultTree(
+              ctx.api.value.collection,
+              slots.label?.() ?? (props.label != null ? [props.label] : null),
+              slots.item,
+            )
+          : [],
+    )
   },
 })
 
@@ -44,7 +59,8 @@ export const XhRadioGroupItem = defineComponent({
   name: 'XhRadioGroupItem',
   props: {
     value: { type: String, required: true },
-    disabled: Boolean,
+    // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
+    disabled: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useRadioGroupContext()
@@ -86,3 +102,21 @@ export const XhRadioGroupItemText = defineComponent({
     return () => h('span', ctx.api.value.getItemTextProps(item.value) as Record<string, unknown>, slots.default?.())
   },
 })
+
+/**
+ * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
+ * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
+ */
+function renderDefaultTree(
+  collection: readonly RadioGroupNodeMeta[],
+  label: (VNode | string)[] | null,
+  itemSlot?: (node: RadioGroupNodeMeta) => VNode[],
+): VNode[] {
+  return [
+    ...(label ? [h(XhRadioGroupLabel, null, () => label)] : []),
+    // 条目内的 hidden-input 与 indicator 由 XhRadioGroupItem 自行装配
+    ...collection.map(node => h(XhRadioGroupItem, { key: node.value, value: node.value }, () => [
+      h(XhRadioGroupItemText, null, () => itemSlot?.(node) ?? node.label),
+    ])),
+  ]
+}

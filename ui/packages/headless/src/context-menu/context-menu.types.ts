@@ -43,12 +43,45 @@ export interface ContextMenuSelectDetails {
   value: string
 }
 
+/** 条目数据。给了 collection，显示文本、禁用、标记位与分组就以它为准。 */
+export interface ContextMenuNode {
+  value: string
+  /** 展示文本，也是连打检索的取字处；缺省退回 value。 */
+  label?: string
+  /** 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
+  disabled?: boolean
+  /** 标记位文字（勾选符号这类装饰）；缺省即本条不铺 item-indicator。 */
+  indicator?: string
+  /** 归属分组的身份值；相邻同值的条目收进同一个 group 部件。缺省即本条直接落在 content 上。 */
+  group?: string
+  /** 分组标题文字，取本组首个给出它的条目；本组无人给出即不铺 group-label。 */
+  groupLabel?: string
+  /** 本条之前画一条分隔线；写在首条上不产出分隔线。本条领头一个分组时，分隔线画在分组外面。 */
+  separatorBefore?: boolean
+}
+
+/** 单个条目的元信息，由 collection 推出，不含高亮态。 */
+export interface ContextMenuNodeMeta {
+  value: string
+  /** node.label ?? node.value，恒为字符串。 */
+  label: string
+  disabled: boolean
+  /** 标记位文字；没给即 null。 */
+  indicator: string | null
+  /** 分组身份；没给即 null。 */
+  group: string | null
+  /** 分组标题；没给即 null。 */
+  groupLabel: string | null
+  separatorBefore: boolean
+}
+
 /**
- * 条目自报家门：值与禁用由作者在部件上声明，connect 据此产出属性。
+ * 条目自报家门：值必报，禁用可由 collection 代为声明。
  * connect 不得反查 DOM：Vue 侧在 render 期求值（此时 DOM 不存在），WC 侧在 updated 后求值。
  */
 export interface ContextMenuItemProps {
   value: string
+  /** 逐条覆盖禁用；缺省时回 collection 里查，两处都没有即为不禁用。 */
   disabled?: boolean
 }
 
@@ -59,6 +92,11 @@ export interface ContextMenuGroupProps {
 
 export interface ContextMenuSchema extends MachineSchema {
   props: {
+    /**
+     * 条目数据，显示文本、禁用、标记位与分组的事实源。给了它，条目部件只需报 value。
+     * 缺省即回到「文本与禁用全写在条目部件上」的老路。
+     */
+    collection?: ContextMenuNode[]
     /** 展开态。给定即受控：内部不再自改，只发 onOpenChange。 */
     open?: boolean
     defaultOpen?: boolean
@@ -143,6 +181,8 @@ export interface ContextMenuSchema extends MachineSchema {
 
 export interface ContextMenuApi<T extends PropTypes = PropTypes> {
   open: boolean
+  /** collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 */
+  collection: readonly ContextMenuNodeMeta[]
   /** 长按计时进行中；触发区据此给按压反馈。 */
   pressing: boolean
   /** 当前锚点坐标；一次都没打开过时为 null。 */

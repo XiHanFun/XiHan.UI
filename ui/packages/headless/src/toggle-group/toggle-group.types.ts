@@ -12,17 +12,40 @@ export interface ToggleGroupValueChangeDetails {
   value: string | string[] | null
 }
 
+/** 条目数据。给了 collection，显示文本与禁用就以它为准。 */
+export interface ToggleGroupNode {
+  value: string
+  /** 展示文本；缺省退回 value。 */
+  label?: string
+  /** 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
+  disabled?: boolean
+}
+
+/** 单个条目的元信息，由 collection 推出，不含选中态与焦点态。 */
+export interface ToggleGroupNodeMeta {
+  value: string
+  /** node.label ?? node.value，恒为字符串。 */
+  label: string
+  disabled: boolean
+}
+
 /**
- * 条目自报家门：值与禁用由作者在部件上声明，connect 据此产出属性。
+ * 条目自报家门：值必报，禁用可由 collection 代为声明。
  * connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得反查 DOM。
  */
 export interface ToggleGroupItemProps {
   value: string
+  /** 逐条覆盖禁用；缺省时回 collection 里查，两处都没有即为不禁用。 */
   disabled?: boolean
 }
 
 export interface ToggleGroupSchema extends MachineSchema {
   props: {
+    /**
+     * 条目数据，显示文本与禁用的事实源。给了它，条目部件只需报 value。
+     * 缺省即回到「文本与禁用都写在条目部件上」的老路。
+     */
+    collection?: ToggleGroupNode[]
     /** 选中值。给定即受控：内部不再自改，只发 onValueChange。 */
     value?: ToggleGroupValue
     defaultValue?: ToggleGroupValue
@@ -76,6 +99,8 @@ export interface ToggleGroupSchema extends MachineSchema {
 export interface ToggleGroupApi<T extends PropTypes = PropTypes> {
   /** 当前选中集合，恒为数组（单选时长度 ≤ 1）。 */
   value: string[]
+  /** collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 */
+  collection: readonly ToggleGroupNodeMeta[]
   /** 焦点在组外时为 null。 */
   focusedValue: string | null
   multiple: boolean

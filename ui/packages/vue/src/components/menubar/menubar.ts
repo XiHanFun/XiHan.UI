@@ -1,6 +1,6 @@
 import type { Direction, Orientation, Placement } from '@xihan-ui/core'
-import type { MenubarContentProps, MenubarGroupProps, MenubarItemProps, MenubarSchema } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { MenubarContentProps, MenubarGroupProps, MenubarItemProps, MenubarNode, MenubarNodeMeta, MenubarSchema } from '@xihan-ui/headless'
+import type { PropType, VNode } from 'vue'
 import type { MenubarPartRegistry } from './use-menubar'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import {
@@ -38,6 +38,7 @@ export const XhMenubarRoot = defineComponent({
   name: 'XhMenubarRoot',
   // 全部 default: undefined，缺省值由机器与 connect 决定
   props: {
+    collection: { type: Array as PropType<MenubarNode[]>, default: undefined },
     value: { type: String as PropType<string | null>, default: undefined },
     defaultValue: { type: String as PropType<string | null>, default: undefined },
     orientation: { type: String as PropType<Orientation>, default: undefined },
@@ -63,11 +64,15 @@ export const XhMenubarRoot = defineComponent({
     return () => h('div', {
       ...ctx.api.value.getRootProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
-    }, slots.default?.({
-      value: ctx.api.value.value,
-      open: ctx.api.value.open,
-      setValue: ctx.api.value.setValue,
-    }))
+    }, slots.default
+      ? slots.default({
+          value: ctx.api.value.value,
+          open: ctx.api.value.open,
+          setValue: ctx.api.value.setValue,
+        })
+      : props.collection
+        ? renderDefaultTree(ctx.api.value.collection, slots.item)
+        : [])
   },
 })
 
@@ -75,7 +80,8 @@ export const XhMenubarTrigger = defineComponent({
   name: 'XhMenubarTrigger',
   props: {
     value: { type: String, required: true },
-    disabled: Boolean,
+    // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
+    disabled: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useMenubarContext()
@@ -152,7 +158,8 @@ export const XhMenubarItem = defineComponent({
   name: 'XhMenubarItem',
   props: {
     value: { type: String, required: true },
-    disabled: Boolean,
+    // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
+    disabled: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useMenubarContext()
@@ -211,3 +218,28 @@ export const XhMenubarSeparator = defineComponent({
     return () => h('div', ctx.api.value.getSeparatorProps() as Record<string, unknown>)
   },
 })
+
+/**
+ * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
+ * 一排入口排在前、各自那张菜单的浮层排在后，与手写部件产出的 DOM 完全一致；
+ * 要改结构就写默认插槽，行为不变。
+ */
+function renderDefaultTree(
+  collection: readonly MenubarNodeMeta[],
+  itemSlot?: (node: MenubarNodeMeta) => VNode[],
+): VNode[] {
+  return [
+    ...collection.map(menu =>
+      h(XhMenubarTrigger, { key: `trigger:${menu.value}`, value: menu.value }, () => menu.label),
+    ),
+    ...collection.map(menu =>
+      h(XhMenubarPositioner, { key: `positioner:${menu.value}`, value: menu.value }, () => [
+        h(XhMenubarContent, null, () => menu.items.map(item =>
+          h(XhMenubarItem, { key: item.value, value: item.value }, () => [
+            h(XhMenubarItemText, null, () => itemSlot?.(item) ?? item.label),
+          ]),
+        )),
+      ]),
+    ),
+  ]
+}

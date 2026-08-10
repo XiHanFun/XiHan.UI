@@ -1,5 +1,5 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
-import type { AccordionItemProps, AccordionSchema, AccordionValueChangeDetails } from '@xihan-ui/headless'
+import type { AccordionItemProps, AccordionNode, AccordionSchema, AccordionValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled } from '@xihan-ui/behavior'
 import { accordionAnatomy, accordionMachine, accordionMeta, connectAccordion } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -30,6 +30,8 @@ export class XhAccordionElement extends XhElement {
   static override partContract = { anatomy: accordionAnatomy, meta: accordionMeta }
 
   static override properties = {
+    // 数组只走 property，属性表达不了；给了它条目的标题文本与禁用即以数据为准
+    collection: { attribute: false },
     // 展开集合是字符串数组，只走 property
     value: { attribute: false },
     defaultValue: { attribute: false },
@@ -42,6 +44,7 @@ export class XhAccordionElement extends XhElement {
     size: {},
   }
 
+  declare collection?: AccordionNode[]
   declare value?: string[]
   declare defaultValue?: string[]
   declare multiple?: boolean
@@ -63,6 +66,7 @@ export class XhAccordionElement extends XhElement {
 
   private machineProps(): Partial<AccordionSchema['props']> {
     return {
+      collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
       multiple: this.multiple ?? false,
@@ -79,7 +83,8 @@ export class XhAccordionElement extends XhElement {
   private itemProps(el: HTMLElement): AccordionItemProps {
     const owner = el.closest<HTMLElement>(ITEM_SELECTOR)
     const source = owner && owner !== this && this.contains(owner) ? owner : el
-    return { value: source.getAttribute('value') ?? '', disabled: isItemDisabled(source) }
+    // 节点上没写禁用就报 undefined，交给 connect 回 collection 里查
+    return { value: source.getAttribute('value') ?? '', disabled: isItemDisabled(source) || undefined }
   }
 
   protected wire(): void {

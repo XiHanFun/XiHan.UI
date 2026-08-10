@@ -14,6 +14,8 @@ export type {
   ContextMenuFocusIntent,
   ContextMenuGroupProps,
   ContextMenuItemProps,
+  ContextMenuNode,
+  ContextMenuNodeMeta,
   ContextMenuOpenChangeDetails,
   ContextMenuPoint,
   ContextMenuRefs,
