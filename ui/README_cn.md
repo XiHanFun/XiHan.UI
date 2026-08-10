@@ -6,9 +6,9 @@
 
 框架无关的组件库：状态机与无障碍逻辑沉在无头内核，各框架只写一层薄适配器。
 
-69 个组件，每个都有 headless 内核、Vue 组件、自定义元素与默认皮肤。
+102 个组件，每个都有 headless 内核、Vue 组件、自定义元素与默认皮肤。
 
-> **实验阶段**：尚未发布到 npm，尚无文档站；无障碍扫描已跑在真实 Chromium 上，但首轮扫出的存量问题尚未修完（17 个组件登记在案，外加一条全局的对比度问题）。请勿在生产环境依赖。
+> **实验阶段**：尚未发布到 npm；文档站已上线（https://ui.docs.xihanfun.com）。无障碍扫描跑在真实 Chromium 上，存量违规登记表只剩两条（WC 侧 steps 的必需子节点、breadcrumb 的步骤重放豁免）。请勿在生产环境依赖。
 
 ## 包一览
 
@@ -17,7 +17,7 @@
 | `@xihan-ui/kernel` | 结构原语：anatomy、`mergeProps`、`normalizeProps`、Scope、context、id |
 | `@xihan-ui/machine` | 状态机运行时：`createMachine`、解释器契约、受控值绑定 |
 | `@xihan-ui/behavior` | 行为原语：dismissable layer、焦点域、滚动锁、进出场、集合、typeahead |
-| `@xihan-ui/headless` | 69 个组件的 anatomy + machine + `connect`，无样式、无框架 |
+| `@xihan-ui/headless` | 102 个组件的 anatomy + machine + `connect`，无样式、无框架 |
 | `@xihan-ui/vue` | Vue 3 适配器 |
 | `@xihan-ui/web-components` | Web Components 适配器（自研响应式基类，无第三方运行时依赖） |
 | `@xihan-ui/styles` | 默认皮肤，按 `@layer` 分层的 CSS |
@@ -26,7 +26,7 @@
 | `@xihan-ui/chat-stream` | AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store（零 DOM、零框架） |
 | `@xihan-ui/code-highlight` | 代码着色，自研粗粒度词法器，无第三方运行时依赖 |
 | `@xihan-ui/markdown` | 流式 Markdown 渲染内核：增量切块 + 稳定 key + 消毒（CommonMark 子集，一致率 489/652） |
-| `@xihan-ui/backgrounds` | 视觉层：WebGL2 背景效果与数据驱动的粒子云，框架无关 |
+| `@xihan-ui/backgrounds` | 背景层：WebGL2 效果与数据驱动的粒子云，框架无关 |
 | `@xihan-ui/icons` | 首方图标集：`IconRecord` 结构化记录，渲染端逐节点建元素，运行期不解析 SVG 字符串 |
 
 `tooling/*` 放构建、lint、tsconfig、测试与脚本等内部包，不对外发布。
@@ -57,7 +57,7 @@ pnpm typecheck
 pnpm lint
 pnpm boundaries   # 分层依赖门禁（dependency-cruiser）
 pnpm build
-pnpm size         # 体积棘轮：先构建，再核对 .size-limit.json 里的 17 条产物限额
+pnpm size         # 体积棘轮：先构建，再核对 .size-limit.json 里的 18 条产物限额
 ```
 
 ## 约定

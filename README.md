@@ -4,7 +4,7 @@
 
 <p><b>快速、轻量、高效、用心的跨框架组件库</b></p>
 
-<p>无头内核 + Vue / Web Components 双适配器 · 69 个组件 · 14 个 workspace 包 · TypeScript Monorepo</p>
+<p>无头内核 + Vue / Web Components 双适配器 · 102 个组件 · 14 个 workspace 包 · TypeScript Monorepo</p>
 
 <p>
   <a href="https://github.com/XiHanFun/XiHan.UI/stargazers"><img alt="GitHub Stars" src="https://img.shields.io/github/stars/XiHanFun/XiHan.UI?style=flat-square&logo=github&label=Stars&color=1f6feb" /></a>
@@ -18,7 +18,7 @@
   <img alt="Vite" src="https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite&logoColor=white" />
   <img alt="Turborepo" src="https://img.shields.io/badge/Turborepo-2.10-EF4444?style=flat-square&logo=turborepo&logoColor=white" />
   <img alt="pnpm" src="https://img.shields.io/badge/pnpm-11-F69220?style=flat-square&logo=pnpm&logoColor=white" />
-  <img alt="Components" src="https://img.shields.io/badge/Components-69-1f6feb?style=flat-square" />
+  <img alt="Components" src="https://img.shields.io/badge/Components-102-1f6feb?style=flat-square" />
   <img alt="npm" src="https://img.shields.io/badge/npm-unpublished-orange?style=flat-square&logo=npm&logoColor=white" />
 </p>
 
@@ -39,7 +39,7 @@
 
 </div>
 
-> **实验性项目**：69 个组件的内核、Vue 适配器、Web Components 适配器与默认皮肤均已实现，无障碍扫描跑在真实 Chromium 上、存量违规登记表已从 24 条降到 2 条（WC 侧 `steps` 一条，外加一条步骤重放豁免），但**尚未发布到 npm**。请勿在生产环境依赖。
+> **实验性项目**：102 个组件的内核、Vue 适配器、Web Components 适配器与默认皮肤均已实现，无障碍扫描跑在真实 Chromium 上、存量违规登记表已从 24 条降到 2 条（WC 侧 `steps` 一条，外加一条步骤重放豁免），但**尚未发布到 npm**。请勿在生产环境依赖。
 
 ## 概述
 
@@ -68,31 +68,33 @@ XiHan.UI 是面向跨框架场景的组件库：一个组件的状态、交互�
 | 测试 | Vitest | 4.1 |
 | 浏览器态测试 | @vitest/browser + Playwright + axe-core | 4.1 / 1.62 / 4.12 |
 | 代码检查 | ESLint + oxlint | 10.7 / 1.75 |
-| 样式检查 | Stylelint（配好了但未进脚本） | 16.19 |
+| 样式检查 | Stylelint | 16.19 |
 | 依赖门禁 | dependency-cruiser | 18.1 |
 | 发布 | changesets | 2.31 |
 | 日期运算 | @internationalized/date | 3.12 |
 
 ## 架构概览
 
-包按层组织，层级越低越基础，只能向下依赖。依赖拓扑的单一事实源是 `tooling/eslint-config/src/layers.json`，dependency-cruiser 据它生成门禁规则：
+`packages/` 按**角色**分四组，目录名回答的是「这个包跟你什么关系」，不是「这段代码属于哪一层」：
 
 ```text
-┌─────────────────────────────────────────────────────────────────┐
-│                        4. 适配器层                              │
-│  vue                            wc                              │
-├─────────────────────────────────────────────────────────────────┤
-│                        3. 组件层                                │
-│  headless (69 个组件的 anatomy + machine + connect)             │
-│  styled   (默认皮肤，纯 CSS，不依赖任何 JS 包)                  │
-├─────────────────────────────────────────────────────────────────┤
-│                        2. 能力层                                │
-│  behavior  position  highlight  ai  markdown  visual            │
-├─────────────────────────────────────────────────────────────────┤
-│                        1. 基础层                                │
-│  core (结构原语与端口契约)      machine (FSM 运行时)            │
-│  system (设计令牌与主题运行时)  icons (首方图标集)              │
-└─────────────────────────────────────────────────────────────────┘
+packages/
+  adapters/   vue  web-components                     ← 你选一个
+  design/     tokens  styles  icons                   ← 你的外观
+  features/   markdown  chat-stream  backgrounds      ← 按需自选
+  engine/     kernel  machine  behavior  position     ← 你不用管
+              code-highlight  headless
+```
+
+入组判据落在「这个包怎么到达使用者手里」：**engine 是每个适配器的硬依赖**（装了适配器就自动拿到，做不了取舍），**features 没有任何适配器硬依赖它**（可选 peer 或谁都不依赖）。这条线由 `pnpm gate` 里的 `check-package-roles` 每次校验，判据全文见 `ui/packages/README.md`。
+
+依赖拓扑的单一事实源是 `tooling/eslint-config/src/layers.json`，dependency-cruiser 据它生成门禁规则；这张表与 `packages/` 必须逐个对上，多一个少一个都会抛错：
+
+```text
+4. adapters/vue · adapters/web-components
+3. engine/headless（102 个组件的 anatomy + machine + connect）· design/styles（纯 CSS，不依赖任何 JS 包）
+2. engine/behavior · engine/position · engine/code-highlight · features/chat-stream · features/markdown · features/backgrounds
+1. engine/kernel（结构原语与端口契约）· engine/machine（FSM 运行时）· design/tokens（令牌与主题运行时）· design/icons
 ```
 
 ### 命名约定
@@ -104,54 +106,55 @@ XiHan.UI 是面向跨框架场景的组件库：一个组件的状态、交互�
 
 ## 包清单
 
-### 基础层
+### `engine/` —— 装了适配器就自动拿到
 
 | 包 | 说明 |
 | --- | --- |
-| `core` | 结构原语：anatomy、`mergeProps`、`normalizeProps`、Scope、context、id 生成；以及浮层定位、虚拟滚动、代码着色三个端口的类型契约 |
-| `machine` | 自研薄 FSM 运行时：`createMachine`、解释器契约、受控值绑定、效应生命周期 |
-| `system` | 设计令牌产物（DTCG 源 → CSS / JSON / TS 三种形态）与主题运行时（明暗 / 品牌 / 密度 / 对比度 / 书写方向） |
-| `icons` | 首方图标集：`IconRecord` 结构化记录，渲染端逐节点建元素，运行期不解析 SVG 字符串 |
+| `@xihan-ui/kernel` | 结构原语：anatomy、`mergeProps`、`normalizeProps`、Scope、context、id 生成；以及浮层定位、虚拟滚动、代码着色三个端口的类型契约 |
+| `@xihan-ui/machine` | 自研薄 FSM 运行时：`createMachine`、解释器契约、受控值绑定、效应生命周期 |
+| `@xihan-ui/behavior` | 交互行为原语：消解层、焦点域、滚动锁、进出场、集合导航、typeahead、粘底滚动 |
+| `@xihan-ui/position` | 浮层定位实现：包含块解析、缩放换算、翻面与避让、跟随更新。自研，零第三方 |
+| `@xihan-ui/code-highlight` | 代码着色实现：单趟扫描的粗粒度词法器，十来种语言。自研，零第三方 |
+| `@xihan-ui/headless` | 102 个组件的 anatomy + machine + `connect`，无样式、无框架 |
 
-### 能力层
-
-| 包 | 说明 |
-| --- | --- |
-| `behavior` | 交互行为原语：消解层、焦点域、滚动锁、进出场、集合导航、typeahead、粘底滚动 |
-| `position` | 浮层定位实现：包含块解析、缩放换算、翻面与避让、跟随更新。自研，零第三方 |
-| `highlight` | 代码着色实现：单趟扫描的粗粒度词法器，十来种语言。自研，零第三方 |
-| `ai` | AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store。零 DOM、零框架 |
-| `markdown` | 流式 Markdown 渲染内核：增量切块 + 稳定 key + 消毒。CommonMark 子集，一致率 489/652 |
-| `visual` | 视觉层：WebGL2 背景效果与数据驱动的粒子云，框架无关 |
-
-### 组件与适配器
+### `adapters/` —— 选一个
 
 | 包 | 说明 |
 | --- | --- |
-| `headless` | 69 个组件的 anatomy + machine + `connect`，无样式、无框架 |
-| `styled` | 默认皮肤，按 `@layer` 分层的纯 CSS，靠 `data-part` 定位 |
-| `vue` | Vue 3 适配器：`useMachine`、属性归一、复合组件 |
-| `wc` | Web Components 适配器：自研响应式基类，Light DOM 行为宿主 |
+| `@xihan-ui/vue` | Vue 3 适配器：`useMachine`、属性归一、复合组件 |
+| `@xihan-ui/web-components` | Web Components 适配器：自研响应式基类，Light DOM 行为宿主 |
+
+### `design/` —— 你的外观
+
+| 包 | 说明 |
+| --- | --- |
+| `@xihan-ui/tokens` | 设计令牌产物（DTCG 源 → CSS / JSON / TS 三种形态）与主题运行时（明暗 / 品牌 / 密度 / 对比度 / 书写方向） |
+| `@xihan-ui/styles` | 默认皮肤，按 `@layer` 分层的纯 CSS，靠 `data-part` 定位 |
+| `@xihan-ui/icons` | 一等图标集：`IconRecord` 结构化记录，渲染端逐节点建元素，运行期不解析 SVG 字符串 |
+
+### `features/` —— 按需自选
+
+| 包 | 说明 |
+| --- | --- |
+| `@xihan-ui/markdown` | 流式 Markdown 渲染内核：增量切块 + 稳定 key + 消毒。CommonMark 子集，一致率 489/652 |
+| `@xihan-ui/chat-stream` | 流式对话内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store。零 DOM、零框架 |
+| `@xihan-ui/backgrounds` | 背景层：WebGL2 效果与数据驱动的粒子云，框架无关。声明为可选 peer |
 
 `tooling/*` 放构建、lint、tsconfig、测试与脚本等内部包，不对外发布。
 
 ## 组件清单
 
-69 个组件，每个都有 headless 内核、Vue 组件、自定义元素与默认皮肤：
+102 个组件，每个都有 headless 内核、Vue 组件、自定义元素与默认皮肤：
 
 | 组 | 组件 |
 | --- | --- |
-| 浮层 | dialog · drawer · popover · tooltip · hover-card · tour |
-| 导航 | menu · context-menu · menubar · navigation-menu · tabs · breadcrumb · pagination · steps · anchor · toolbar |
-| 表单 | field · form · text-field · number-field · pin-input · tags-input · editable · file-upload |
-| 选择 | checkbox · checkbox-group · radio-group · switch · toggle · toggle-group · select · combobox · listbox · cascader · transfer |
-| 日期时间 | calendar · date-field · date-picker · time-field · time-picker |
-| 取值 | slider · rating · color-picker |
-| 数据 | table · tree · tree-select · virtualizer |
-| 展示 | avatar · badge · image · carousel · accordion · collapsible · separator |
-| 反馈 | toast · toaster · progress · loading-bar · alert · spinner · skeleton · empty-state |
-| AI | thread · composer · code-block |
-| 其他 | button · scroll-area · splitter · clipboard |
+| 通用 | button · icon · toggle · toggle-group · badge · avatar · image · separator · code-block · clipboard · button-group · avatar-group · icon-wrapper |
+| 数据录入 | field · form · text-field · number-field · pin-input · editable · checkbox · checkbox-group · radio-group · switch · slider · rating · select · listbox · combobox · cascader · tree-select · tags-input · transfer · date-field · date-picker · time-field · time-picker · calendar · color-picker · file-upload · popselect · dynamic-input · mention |
+| 数据展示 | card · table · tree · virtualizer · scroll-area · accordion · collapsible · carousel · splitter · skeleton · empty-state · result · infinite-scroll · log · list · descriptions · timeline · statistic · qr-code · number-animation · countdown · time · highlight |
+| 导航 | menu · menubar · context-menu · navigation-menu · tabs · steps · pagination · breadcrumb · anchor · toolbar · tour · affix · back-top · page-header · float-button |
+| 反馈与浮层 | dialog · drawer · popover · tooltip · hover-card · alert · toast · toaster · progress · spinner · loading-bar · popconfirm |
+| AI 对话 | thread · composer |
+| 布局 | flex · grid · typography · gradient-text · layout · marquee · watermark · ellipsis |
 
 两个 playground 逐组件对照两套适配器的行为：`apps/playground-vue` 与 `apps/playground-wc`。
 
@@ -225,7 +228,7 @@ pnpm typecheck
 pnpm lint
 pnpm boundaries   # 分层依赖门禁
 pnpm build
-pnpm size         # 体积棘轮：先构建，再核对 .size-limit.json 里的 17 条产物限额
+pnpm size         # 体积棘轮：先构建，再核对 .size-limit.json 里的 18 条产物限额
 ```
 
 首次跑浏览器态测试前需 `pnpm exec playwright install chromium`。
@@ -245,7 +248,7 @@ XiHan.UI/
 │   │   ├── ai/                      #   AI 协议内核
 │   │   ├── markdown/                #   流式 Markdown 内核（自研）
 │   │   ├── visual/                  #   WebGL2 视觉层
-│   │   ├── headless/                #   69 个组件的无头实现
+│   │   ├── headless/                #   102 个组件的无头实现
 │   │   ├── styled/                  #   默认皮肤
 │   │   ├── vue/                     #   Vue 适配器
 │   │   ├── wc/                      #   Web Components 适配器
@@ -294,13 +297,13 @@ vue · wc  ── core / machine / behavior / headless / position / highlight / 
 
 ## 现状与边界
 
-已经能用的：69 个组件的内核与双适配器、默认皮肤、设计令牌与主题运行时、跨适配器一致性套件、真实 Chromium 里的无障碍扫描与浮层定位契约。
+已经能用的：102 个组件的内核与双适配器、默认皮肤、设计令牌与主题运行时、跨适配器一致性套件、真实 Chromium 里的无障碍扫描与浮层定位契约。
 
 还没做的：
 
 | 事项 | 现状 |
 | --- | --- |
-| 文档站 | 已有（<https://ui.docs.xihanfun.com>，源码在 `docs/`），但 API 表、状态图、键盘表、令牌浏览器等自动产出物仍未生成 |
+| 文档站 | 已有（<https://ui.docs.xihanfun.com>，源码在 `docs/`），组件页由 headless 产物与类型生成，含 connect API、键盘表与状态图；令牌浏览器仍未生成 |
 | npm 发布 | 未发布，本地用 `pnpm pack` 验证 |
 | 组件文案国际化 | 未落地，面向用户的字符串内置英文，可经 `translations` 逐条覆盖 |
 | 令牌产物格式 | 仅 CSS / JSON / TS 三种 |
@@ -309,16 +312,22 @@ vue · wc  ── core / machine / behavior / headless / position / highlight / 
 
 ## 质量门禁
 
-改动需通过六道门禁，CI 与本地同一套命令：
+改动需通过十二道门禁，CI 与本地同一套命令：
 
 | 门禁 | 命令 | 管什么 |
 | --- | --- | --- |
-| 代码检查 | `pnpm lint` | oxlint + ESLint；样式检查还没进这条命令 |
+| 代码检查 | `pnpm lint` | oxlint + ESLint + Stylelint |
 | 类型检查 | `pnpm typecheck` | 逐包 `tsc --noEmit`，Vue 侧走 `vue-tsc` |
-| 分层门禁 | `pnpm boundaries` | 依赖拓扑、循环依赖、解析失败的 import |
+| 分层门禁 | `pnpm boundaries` | 依赖拓扑、循环依赖、解析失败的 import；登记表与 `packages/` 必须逐个对上 |
+| 契约门禁 | `pnpm gate` | 12 个检查串成一条：运行时依赖、版本锁、令牌产物、浮层坐标系、令牌引用、皮肤共享槽、禁用态对比度、断点、聚焦环、部件接线、导出完整性、角色组归属 |
+| 令牌同步 | `pnpm gate:tokens` | 重跑生成再比对，产物与 DTCG 源不许漂 |
+| 元素清单同步 | `pnpm gate:cem` | 同上，`custom-elements.json` |
+| 无层皮肤同步 | `pnpm gate:styled` | 同上，`index.unlayered.css` |
+| 组件文档同步 | `pnpm gate:docs` | 103 个组件页由 headless 产物与类型生成，重跑比对 |
+| 发布产物 | `pnpm gate:publish` | publint + attw，逐包核对 exports / types 的解析 |
 | 测试 | `pnpm test` | 单元测试与跨适配器一致性套件（jsdom） |
 | 构建 | `pnpm build` | 全包打包与类型产物 |
-| 体积棘轮 | `pnpm size` | 先构建，再核对 `.size-limit.json` 里的 17 条产物限额（gzip） |
+| 体积棘轮 | `pnpm size` | 先构建，再核对 `.size-limit.json` 里的 18 条产物限额（gzip），一律留一成余量 |
 
 浏览器态另起一路：`pnpm test:browser` 在真实 Chromium 里跑无障碍扫描与浮层定位契约 —— 对比度、目标尺寸、翻面与避让这些，jsdom 没有布局，一概演不出来。
 
@@ -329,7 +338,7 @@ vue · wc  ── core / machine / behavior / headless / position / highlight / 
 
 ## 贡献
 
-欢迎提交 Issue 和 Pull Request。提交遵循 conventional commits 规范，改动需通过上述六道门禁。
+欢迎提交 Issue 和 Pull Request。提交遵循 conventional commits 规范，改动需通过上述十二道门禁。
 
 ## 诚挚致谢
 

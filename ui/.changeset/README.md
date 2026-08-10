@@ -1,6 +1,6 @@
 # Changesets · 发布流程
 
-版本与发布由 [changesets](https://github.com/changesets/changesets) 驱动。**13 个公开包**
+版本与发布由 [changesets](https://github.com/changesets/changesets) 驱动。**14 个公开包**
 （core / machine / behavior / system / headless / styled / vue / wc / ai / markdown / position / highlight / visual）
 经 `fixed` 组**锁步同版**；私有包（testing / playground-* / tooling-*）不发布、不计版。
 
