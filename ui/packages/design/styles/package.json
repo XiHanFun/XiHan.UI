@@ -3,14 +3,30 @@
   "type": "module",
   "version": "0.0.0",
   "description": "XiHan.UI styled layer — pure CSS skins driven by data-attributes and design tokens.",
+  "author": {
+    "name": "XiHanFun",
+    "url": "https://github.com/XiHanFun"
+  },
   "license": "MIT",
+  "homepage": "https://ui.docs.xihanfun.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/XiHanFun/XiHan.UI.git",
+    "directory": "ui/packages/design/styles"
+  },
+  "bugs": {
+    "url": "https://github.com/XiHanFun/XiHan.UI/issues"
+  },
+  "keywords": [
+    "css",
+    "design-system",
+    "theming",
+    "skin",
+    "unstyled"
+  ],
   "sideEffects": [
     "**/*.css"
   ],
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
   "exports": {
     ".": "./index.css",
     "./accordion.css": "./css/accordion.css",
@@ -57,6 +73,7 @@
     "./highlight.css": "./css/highlight.css",
     "./hover-card.css": "./css/hover-card.css",
     "./icon-wrapper.css": "./css/icon-wrapper.css",
+    "./icon.css": "./css/icon.css",
     "./image.css": "./css/image.css",
     "./index.css": "./index.css",
     "./index.unlayered.css": "./index.unlayered.css",
@@ -85,6 +102,7 @@
     "./qr-code.css": "./css/qr-code.css",
     "./radio-group.css": "./css/radio-group.css",
     "./rating.css": "./css/rating.css",
+    "./reset.css": "./css/reset.css",
     "./result.css": "./css/result.css",
     "./scroll-area.css": "./css/scroll-area.css",
     "./select.css": "./css/select.css",
@@ -109,6 +127,7 @@
     "./toaster.css": "./css/toaster.css",
     "./toggle-group.css": "./css/toggle-group.css",
     "./toggle.css": "./css/toggle.css",
+    "./tone.css": "./css/tone.css",
     "./toolbar.css": "./css/toolbar.css",
     "./tooltip.css": "./css/tooltip.css",
     "./tour.css": "./css/tour.css",
@@ -116,15 +135,24 @@
     "./tree-select.css": "./css/tree-select.css",
     "./tree.css": "./css/tree.css",
     "./typography.css": "./css/typography.css",
+    "./undefined.css": "./css/undefined.css",
     "./virtualizer.css": "./css/virtualizer.css",
     "./visually-hidden.css": "./css/visually-hidden.css",
     "./watermark.css": "./css/watermark.css"
   },
   "files": [
+    "CHANGELOG.md",
     "index.css",
     "index.unlayered.css",
     "styles"
   ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "gen": "node build/emit-unlayered.mjs",
     "build": "node build/emit-unlayered.mjs"

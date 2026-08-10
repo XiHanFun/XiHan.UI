@@ -3,12 +3,28 @@
   "type": "module",
   "version": "0.0.0",
   "description": "XiHan.UI AI protocol core — SSE transport, protocol normalize, parts reducer, thread store.",
-  "license": "MIT",
-  "sideEffects": false,
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
+  "author": {
+    "name": "XiHanFun",
+    "url": "https://github.com/XiHanFun"
   },
+  "license": "MIT",
+  "homepage": "https://ui.docs.xihanfun.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/XiHanFun/XiHan.UI.git",
+    "directory": "ui/packages/features/chat-stream"
+  },
+  "bugs": {
+    "url": "https://github.com/XiHanFun/XiHan.UI/issues"
+  },
+  "keywords": [
+    "sse",
+    "streaming",
+    "chat",
+    "ai",
+    "data-stream"
+  ],
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -19,15 +35,23 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
+    "CHANGELOG.md",
     "dist"
   ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run"
   },
   "dependencies": {
-    "@xihan-ui/kernel": "workspace:*"
+    "@xihan-ui/kernel": "workspace:^"
   },
   "devDependencies": {
     "@xihan-ui/build": "workspace:*",

@@ -16,12 +16,17 @@
       "@xihan-ui/markdown",
       "@xihan-ui/code-highlight",
       "@xihan-ui/position",
-      "@xihan-ui/backgrounds"
+      "@xihan-ui/backgrounds",
+      "@xihan-ui/icons"
     ]
   ],
   "linked": [],
   "access": "public",
   "baseBranch": "dev",
   "updateInternalDependencies": "patch",
-  "ignore": ["@xihan-ui/testing", "@xihan-ui/playground-vue", "@xihan-ui/playground-wc"]
+  "ignore": [
+    "@xihan-ui/testing",
+    "@xihan-ui/playground-vue",
+    "@xihan-ui/playground-wc"
+  ]
 }

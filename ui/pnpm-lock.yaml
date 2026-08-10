@@ -227,22 +227,22 @@ importers:
   packages/adapters/vue:
     dependencies:
       '@xihan-ui/behavior':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../engine/behavior
       '@xihan-ui/code-highlight':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../engine/code-highlight
       '@xihan-ui/headless':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../engine/headless
       '@xihan-ui/kernel':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../engine/kernel
       '@xihan-ui/machine':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../engine/machine
       '@xihan-ui/position':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../engine/position
     devDependencies:
       '@vitest/browser':
@@ -288,22 +288,22 @@ importers:
   packages/adapters/web-components:
     dependencies:
       '@xihan-ui/behavior':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../engine/behavior
       '@xihan-ui/code-highlight':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../engine/code-highlight
       '@xihan-ui/headless':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../engine/headless
       '@xihan-ui/kernel':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../engine/kernel
       '@xihan-ui/machine':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../engine/machine
       '@xihan-ui/position':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../engine/position
     devDependencies:
       '@custom-elements-manifest/analyzer':
@@ -382,7 +382,7 @@ importers:
   packages/engine/behavior:
     dependencies:
       '@xihan-ui/kernel':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../kernel
     devDependencies:
       '@xihan-ui/build':
@@ -401,7 +401,7 @@ importers:
   packages/engine/code-highlight:
     dependencies:
       '@xihan-ui/kernel':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../kernel
     devDependencies:
       '@xihan-ui/build':
@@ -420,13 +420,13 @@ importers:
         specifier: 'catalog:'
         version: 3.12.2
       '@xihan-ui/behavior':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../behavior
       '@xihan-ui/kernel':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../kernel
       '@xihan-ui/machine':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../machine
     devDependencies:
       '@xihan-ui/build':
@@ -457,7 +457,7 @@ importers:
   packages/engine/machine:
     dependencies:
       '@xihan-ui/kernel':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../kernel
     devDependencies:
       '@xihan-ui/build':
@@ -473,7 +473,7 @@ importers:
   packages/engine/position:
     dependencies:
       '@xihan-ui/kernel':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../kernel
     devDependencies:
       '@vitest/browser':
@@ -504,10 +504,10 @@ importers:
   packages/features/backgrounds:
     dependencies:
       '@xihan-ui/behavior':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../engine/behavior
       '@xihan-ui/kernel':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../engine/kernel
     devDependencies:
       '@xihan-ui/build':
@@ -523,7 +523,7 @@ importers:
   packages/features/chat-stream:
     dependencies:
       '@xihan-ui/kernel':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../engine/kernel
     devDependencies:
       '@xihan-ui/build':

@@ -3,12 +3,28 @@
   "type": "module",
   "version": "0.0.0",
   "description": "XiHan.UI Vue adapter — components, composables, machine runtime.",
-  "license": "MIT",
-  "sideEffects": false,
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
+  "author": {
+    "name": "XiHanFun",
+    "url": "https://github.com/XiHanFun"
   },
+  "license": "MIT",
+  "homepage": "https://ui.docs.xihanfun.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/XiHanFun/XiHan.UI.git",
+    "directory": "ui/packages/adapters/vue"
+  },
+  "bugs": {
+    "url": "https://github.com/XiHanFun/XiHan.UI/issues"
+  },
+  "keywords": [
+    "vue",
+    "vue3",
+    "components",
+    "headless-ui",
+    "design-system"
+  ],
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -23,8 +39,16 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
+    "CHANGELOG.md",
     "dist"
   ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc --noEmit -p tsconfig.json",
@@ -32,8 +56,8 @@
     "test:browser": "vitest run --config vitest.browser.config.ts"
   },
   "peerDependencies": {
-    "@xihan-ui/backgrounds": "workspace:*",
-    "vue": "catalog:"
+    "@xihan-ui/backgrounds": "workspace:^",
+    "vue": "^3.5.0"
   },
   "peerDependenciesMeta": {
     "@xihan-ui/backgrounds": {
@@ -41,12 +65,12 @@
     }
   },
   "dependencies": {
-    "@xihan-ui/behavior": "workspace:*",
-    "@xihan-ui/code-highlight": "workspace:*",
-    "@xihan-ui/headless": "workspace:*",
-    "@xihan-ui/kernel": "workspace:*",
-    "@xihan-ui/machine": "workspace:*",
-    "@xihan-ui/position": "workspace:*"
+    "@xihan-ui/behavior": "workspace:^",
+    "@xihan-ui/code-highlight": "workspace:^",
+    "@xihan-ui/headless": "workspace:^",
+    "@xihan-ui/kernel": "workspace:^",
+    "@xihan-ui/machine": "workspace:^",
+    "@xihan-ui/position": "workspace:^"
   },
   "devDependencies": {
     "@vitest/browser": "catalog:",
