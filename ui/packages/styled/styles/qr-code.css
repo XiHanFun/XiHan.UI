@@ -1,0 +1,30 @@
+@layer xihan.components {
+  /*
+   * 根 <svg>。深浅两色取固定档而不是语义前景/背景：语义色跟着主题走，深色主题下整张码
+   * 会翻成浅底深模块的反相图，一部分读码器不认反相码。要换配色改这两个覆盖槽。
+   */
+  [data-scope='qr-code'][data-part='root'] {
+    display: block;
+    border-radius: var(--xh-qr-code-radius, var(--xh-radius-md));
+    background: var(--xh-qr-code-bg, var(--xh-color-neutral-0));
+
+    /* 模块那条 path 不带自己的填充色，从这里继承下去 */
+    color: var(--xh-qr-code-fg, var(--xh-color-neutral-950));
+    fill: currentColor;
+  }
+
+  /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+  [data-scope='qr-code'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /*
+   * 没有可编码的内容、以及内容超出容量：两种情形都一个模块不铺，留一块带描边的占位。
+   * 占位用的是语义色——它是界面元素不是码面，跟着主题走才对。
+   */
+  [data-scope='qr-code'][data-part='root'][data-state='empty'],
+  [data-scope='qr-code'][data-part='root'][data-state='error'] {
+    background: var(--xh-qr-code-placeholder-bg, var(--xh-bg-subtle));
+    box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-qr-code-placeholder-border, var(--xh-border-default));
+  }
+}

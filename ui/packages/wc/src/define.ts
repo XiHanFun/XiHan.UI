@@ -57,6 +57,7 @@ import { XhPopconfirmElement } from './elements/popconfirm'
 import { XhPopoverElement } from './elements/popover'
 import { XhPopselectElement } from './elements/popselect'
 import { XhProgressElement } from './elements/progress'
+import { XhQrCodeElement } from './elements/qr-code'
 import { XhRadioGroupElement } from './elements/radio-group'
 import { XhRatingElement } from './elements/rating'
 import { XhResultElement } from './elements/result'
@@ -112,6 +113,7 @@ export function defineXhElements(): void {
   defineElement('xh-page-header', XhPageHeaderElement, VERSION)
   defineElement('xh-popconfirm', XhPopconfirmElement, VERSION)
   defineElement('xh-popselect', XhPopselectElement, VERSION)
+  defineElement('xh-qr-code', XhQrCodeElement, VERSION)
   defineElement('xh-result', XhResultElement, VERSION)
   defineElement('xh-skeleton', XhSkeletonElement, VERSION)
   defineElement('xh-spinner', XhSpinnerElement, VERSION)

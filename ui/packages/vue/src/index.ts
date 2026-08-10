@@ -440,6 +440,7 @@ export { XhPopselectContent, XhPopselectItem, XhPopselectItemIndicator, XhPopsel
 export { usePopselect } from './components/popselect/use-popselect'
 export type { PopselectContext } from './components/popselect/use-popselect'
 export { XhProgress } from './components/progress/progress'
+export { XhQrCode } from './components/qr-code/qr-code'
 export {
   XhRadioGroupItem,
   XhRadioGroupItemText,
@@ -482,8 +483,8 @@ export {
   XhSelectTrigger,
   XhSelectValueText,
 } from './components/select/select'
-export { useSelect } from './components/select/use-select'
 
+export { useSelect } from './components/select/use-select'
 export type { SelectContext } from './components/select/use-select'
 export { XhSeparator } from './components/separator/separator'
 export { XhSkeletonBone, XhSkeletonRoot } from './components/skeleton/skeleton'
@@ -524,8 +525,8 @@ export { useSteps } from './components/steps/use-steps'
 export type { StepsContext } from './components/steps/use-steps'
 export { XhSwitch } from './components/switch/switch'
 export { useSwitch } from './components/switch/use-switch'
-export type { SwitchContext } from './components/switch/use-switch'
 
+export type { SwitchContext } from './components/switch/use-switch'
 export {
   XhTableBody,
   XhTableCaption,
