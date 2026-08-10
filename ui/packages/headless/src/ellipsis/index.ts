@@ -1,0 +1,13 @@
+export { ellipsisAnatomy } from './ellipsis.anatomy'
+export { connectEllipsis } from './ellipsis.connect'
+export { ellipsisKeyboard } from './ellipsis.keyboard'
+export { ELLIPSIS_DEFAULT_LINES, ellipsisMachine, isEllipsisOverflowing, resolveEllipsisLines } from './ellipsis.machine'
+export { ellipsisMeta } from './ellipsis.meta'
+export type {
+  EllipsisApi,
+  EllipsisExpandedChangeDetails,
+  EllipsisMetrics,
+  EllipsisOverflowChangeDetails,
+  EllipsisRefs,
+  EllipsisSchema,
+} from './ellipsis.types'

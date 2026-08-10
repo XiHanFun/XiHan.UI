@@ -1,0 +1,5 @@
+export { marqueeAnatomy } from './marquee.anatomy'
+export { connectMarquee } from './marquee.connect'
+export { marqueeKeyboard } from './marquee.keyboard'
+export { marqueeMeta } from './marquee.meta'
+export type { MarqueeApi, MarqueeDirection, MarqueeProps } from './marquee.types'

@@ -1,5 +1,5 @@
 import type { Placement } from '@xihan-ui/core'
-import type { ComboboxInputBehavior, ComboboxItemGroupProps, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
+import type { ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxItemGroupProps, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import { computed, defineComponent, h, onMounted, onUnmounted, onUpdated, watch } from 'vue'
 import {
@@ -120,11 +120,18 @@ export const XhComboboxControl = defineComponent({
 
 export const XhComboboxInput = defineComponent({
   name: 'XhComboboxInput',
-  setup() {
+  props: {
+    /**
+     * 输入框渲染成哪个标签，默认 input。
+     * 写 textarea 即多行宿主：connect 随之撤掉 type、role 与 aria-expanded。
+     */
+    as: { type: String as PropType<ComboboxInputHost>, default: 'input' },
+  },
+  setup(props) {
     const ctx = useComboboxContext()
-    return () => h('input', {
-      ...ctx.api.value.getInputProps() as Record<string, unknown>,
-      ref: (el: unknown) => { ctx.inputRef.value = el as HTMLInputElement },
+    return () => h(props.as, {
+      ...ctx.api.value.getInputProps({ as: props.as }) as Record<string, unknown>,
+      ref: (el: unknown) => { ctx.inputRef.value = el as ComboboxInputEl },
     })
   },
 })

@@ -82,6 +82,12 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 
 <XhDemo src="combobox/13-form" />
 
+### 多行输入宿主
+
+输入框写 as="textarea" 即换成多行；此时不写 role 与 aria-expanded，textarea 保留它自带的 textbox 角色
+
+<XhDemo src="combobox/14-textarea-host" />
+
 ## 产物
 
 | 层 | 值 |
@@ -161,7 +167,7 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
-| `getInputProps` | `() => T['input']` |  |
+| `getInputProps` | `(props?: ComboboxInputProps) => T['input']` | 不传参即单行 input，产出与加此参数前逐字相同。 |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |

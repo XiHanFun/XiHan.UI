@@ -1,0 +1,21 @@
+@layer xihan.components {
+  [data-scope='countdown'][data-part='root'] {
+    display: inline-block;
+    color: var(--xh-countdown-fg, var(--xh-fg-default));
+    /* 不自带字号：倒计时多半嵌在一句话里或摆在别人的数值槽里，跟着上下文走 */
+    /* 等宽数字：逐位宽度一致，秒数换位时冒号不会左右挪动 */
+    font-variant-numeric: tabular-nums;
+    line-height: var(--xh-leading-tight);
+  }
+
+  /* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
+  [data-scope='countdown'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 到点之后这串 00:00:00 不再是活的信息，退一档；它与"暂停在 30 秒上"是两回事，
+     后者仍然是要盯着看的数，所以退档只认 data-finished，不认 data-state */
+  [data-scope='countdown'][data-part='root'][data-finished] {
+    color: var(--xh-countdown-finished-fg, var(--xh-fg-muted));
+  }
+}

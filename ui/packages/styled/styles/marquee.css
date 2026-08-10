@@ -1,0 +1,182 @@
+@layer xihan.motion {
+  /*
+   * 横轴一条、纵轴一条。四个方向乘两种铺法共八组起止点，若不外提就要写八份几乎一样的关键帧。
+   * 关键帧里的自定义属性取元素上的计算值，一圈跑下来它不变，所以两条就够。
+   */
+  @keyframes xh-marquee-x {
+    from {
+      transform: translateX(var(--xh-_marquee-from));
+    }
+
+    to {
+      transform: translateX(var(--xh-_marquee-to));
+    }
+  }
+
+  @keyframes xh-marquee-y {
+    from {
+      transform: translateY(var(--xh-_marquee-from));
+    }
+
+    to {
+      transform: translateY(var(--xh-_marquee-to));
+    }
+  }
+}
+
+@layer xihan.components {
+  /*
+   * 窗口：只露出轨道的一段。
+   *
+   * 方向、轴与铺法全部换成根上的私有槽，轨道与每一份内容各自只有一条规则去取值。
+   * 这样写不只是为了短：轨道那条选择器因此能写成 [data-scope][data-part] 的复合式，
+   * 而不是从根往下够的后代式——marquee 里嵌一个同样有 content 部件的组件时，
+   * 后代式会一路匹配到别人家的节点上去。
+   *
+   * 一圈的时长 = 一份内容的长度 ÷ 每秒像素数。--xh-_marquee-span 是一份内容在滚动轴上的长度，
+   * 单位像素、写成纯数字。CSS 读不到布局尺寸，这里给的是缺省值；内容明显长于或短于它时，
+   * 由使用者改写 --xh-marquee-span 对齐真实长度，速度才逐字等于每秒那么多像素。
+   */
+  [data-scope='marquee'][data-part='root'] {
+    --xh-_marquee-span: var(--xh-marquee-span, 600);
+    --xh-_marquee-speed: var(--xh-marquee-speed, 60);
+
+    /* 铺一份时一圈走两倍自身长度：从窗口一侧整段进来，再整段出到另一侧 */
+    --xh-_marquee-duration: calc(2 * var(--xh-_marquee-span) / var(--xh-_marquee-speed) * 1s);
+    --xh-_marquee-play: running;
+    --xh-_marquee-flow: row;
+    --xh-_marquee-name: xh-marquee-x;
+    --xh-_marquee-track-inline: max-content;
+    --xh-_marquee-track-block: auto;
+
+    /* 轨道自身至少铺满窗口，起点那一跳才真的落在窗口外面 */
+    --xh-_marquee-fill-inline: 100%;
+    --xh-_marquee-fill-block: auto;
+    --xh-_marquee-copy-inline: auto;
+    --xh-_marquee-copy-block: auto;
+    --xh-_marquee-gap-inline: var(--xh-marquee-gap, var(--xh-space-6));
+    --xh-_marquee-gap-block: 0;
+    --xh-_marquee-from: 100%;
+    --xh-_marquee-to: -100%;
+
+    display: flex;
+    overflow: hidden;
+    max-inline-size: 100%;
+  }
+
+  /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，补这条兜住收起态 */
+  [data-scope='marquee'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 竖着滚要有一个定高的窗口，否则内容自己把窗口撑到一样高，一格都走不动 */
+  [data-scope='marquee'][data-part='root'][data-orientation='vertical'] {
+    --xh-_marquee-flow: column;
+    --xh-_marquee-name: xh-marquee-y;
+    --xh-_marquee-track-inline: auto;
+    --xh-_marquee-track-block: max-content;
+    --xh-_marquee-fill-inline: auto;
+    --xh-_marquee-fill-block: 100%;
+    --xh-_marquee-gap-inline: 0;
+    --xh-_marquee-gap-block: var(--xh-marquee-gap, var(--xh-space-6));
+
+    block-size: var(--xh-marquee-block-size, 10rem);
+  }
+
+  /* 往右、往下是同一条轨迹倒过来走 */
+  [data-scope='marquee'][data-part='root'][data-direction='right'],
+  [data-scope='marquee'][data-part='root'][data-direction='down'] {
+    --xh-_marquee-from: -100%;
+    --xh-_marquee-to: 100%;
+  }
+
+  /*
+   * 铺两份：一圈只走一份的长度，走完那一刻第二份正好压在起点上，看不出接缝。
+   * 这条排在竖轴那条之后：两者同权，铺两份时轨道自己不必铺满窗口，改由每一份各自铺满。
+   */
+  [data-scope='marquee'][data-part='root'][data-auto-fill] {
+    --xh-_marquee-duration: calc(var(--xh-_marquee-span) / var(--xh-_marquee-speed) * 1s);
+    --xh-_marquee-fill-inline: auto;
+    --xh-_marquee-fill-block: auto;
+  }
+
+  /* 内容短于窗口时每份自己先铺满一整窗，两份接起来才不会在接缝处露出空白 */
+  [data-scope='marquee'][data-part='root'][data-auto-fill][data-orientation='horizontal'] {
+    --xh-_marquee-copy-inline: 100%;
+  }
+
+  [data-scope='marquee'][data-part='root'][data-auto-fill][data-orientation='vertical'] {
+    --xh-_marquee-copy-block: 100%;
+  }
+
+  /* 起止点逐档写全：铺法与方向同权，交叉的四种情形各写一条才不看书写顺序 */
+  [data-scope='marquee'][data-part='root'][data-auto-fill][data-direction='left'],
+  [data-scope='marquee'][data-part='root'][data-auto-fill][data-direction='up'] {
+    --xh-_marquee-from: 0%;
+    --xh-_marquee-to: -50%;
+  }
+
+  [data-scope='marquee'][data-part='root'][data-auto-fill][data-direction='right'],
+  [data-scope='marquee'][data-part='root'][data-auto-fill][data-direction='down'] {
+    --xh-_marquee-from: -50%;
+    --xh-_marquee-to: 0%;
+  }
+
+  /* 悬停暂停：只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
+  @media (hover: hover) {
+    [data-scope='marquee'][data-part='root'][data-pause-on-hover]:hover {
+      --xh-_marquee-play: paused;
+    }
+  }
+
+  /* 键盘用户没有悬停：焦点落进窗口时同样停住，否则轨道里的链接刚聚焦就被带走了 */
+  [data-scope='marquee'][data-part='root'][data-pause-on-hover]:focus-within {
+    --xh-_marquee-play: paused;
+  }
+
+  /* 轨道：走的是这一层，一圈走完立刻回到起点接着走 */
+  [data-scope='marquee'][data-part='content'] {
+    display: flex;
+    flex: none;
+    flex-direction: var(--xh-_marquee-flow);
+    inline-size: var(--xh-_marquee-track-inline);
+    min-inline-size: var(--xh-_marquee-fill-inline);
+    block-size: var(--xh-_marquee-track-block);
+    min-block-size: var(--xh-_marquee-fill-block);
+    animation-name: var(--xh-_marquee-name);
+    animation-duration: var(--xh-_marquee-duration);
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-play-state: var(--xh-_marquee-play);
+  }
+
+  /*
+   * 一份内容。份与份之间的空白做成每份自己的收尾内边距，而不是轨道上的 gap：
+   * gap 只加在中间那一道，两份就不等长了，而接缝对不对得上看的正是"走完的距离等于一份的长度"。
+   */
+  [data-scope='marquee'][data-part='content'] > [data-xh-copy] {
+    display: flex;
+    flex: none;
+    flex-direction: var(--xh-_marquee-flow);
+    align-items: center;
+    min-inline-size: var(--xh-_marquee-copy-inline);
+    min-block-size: var(--xh-_marquee-copy-block);
+    padding-inline-end: var(--xh-_marquee-gap-inline);
+    padding-block-end: var(--xh-_marquee-gap-block);
+  }
+
+  /*
+   * 减少动效：轨道停在起点不再走。一段自己动起来、不停到底的横移正是最容易引发不适的那一类，
+   * 这里不能只把速度压到很慢——慢速横移仍然是横移。
+   * 停下后窗口外那段就够不着了，故窗口同时改成可滚，内容仍然读得全。
+   */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='marquee'][data-part='content'] {
+      animation: none;
+    }
+
+    [data-scope='marquee'][data-part='root'] {
+      overflow: auto;
+    }
+  }
+}

@@ -1,0 +1,121 @@
+@layer xihan.components {
+  /* 定位壳：钉在视口一角。贴边距离由连接层写进这个盒子的内联 style，
+     样式表这一行只是它缺席时的落点；贴的是哪两条边看 data-placement。
+     另一件必须提防的事：fixed 认的是视口，祖先上一旦出现
+     transform / filter / backdrop-filter / contain，包含块就被抢走，整组立刻贴错位置——
+     所以别往覆盖钩子里加这几个属性。 */
+  [data-scope='float-button'][data-part='root'] {
+    --xh-_float-button-offset: var(--xh-space-6);
+    /* 触发器与展开的每一条动作共用这两个私有槽，换档只改这里 */
+    --xh-_float-button-size: var(--xh-float-button-size, var(--xh-control-h-lg));
+    --xh-_float-button-radius: var(--xh-float-button-radius, var(--xh-shape-pill));
+
+    position: fixed;
+    z-index: var(--xh-float-button-layer, var(--xh-layer-sticky));
+    display: flex;
+    /* 摞的方向由落位定，下面四条各自覆盖；这里给的是没写落位时的落点 */
+    flex-direction: column;
+    align-items: center;
+    gap: var(--xh-float-button-gap, var(--xh-space-2));
+  }
+
+  /* —— 四角 ——
+     start / end 用逻辑属性，RTL 下自动换到另一侧。
+     摞的方向按贴的是上沿还是下沿定：离屏幕边最近的恒是触发器，展开的那一组往页面中间长 */
+  [data-scope='float-button'][data-part='root'][data-placement^='top'] {
+    inset-block-start: var(--xh-_float-button-offset);
+    flex-direction: column;
+  }
+
+  [data-scope='float-button'][data-part='root'][data-placement^='bottom'] {
+    inset-block-end: var(--xh-_float-button-offset);
+    flex-direction: column-reverse;
+  }
+
+  [data-scope='float-button'][data-part='root'][data-placement$='-start'] {
+    inset-inline-start: var(--xh-_float-button-offset);
+  }
+
+  [data-scope='float-button'][data-part='root'][data-placement$='-end'] {
+    inset-inline-end: var(--xh-_float-button-offset);
+  }
+
+  /* —— 外形 —— */
+  /* 使用者令牌排在形态之前：写了 --xh-float-button-radius 就以它为准，没写才按 shape 换档 */
+  [data-scope='float-button'][data-part='root'][data-shape='square'] {
+    --xh-_float-button-radius: var(--xh-float-button-radius, var(--xh-shape-control));
+  }
+
+  /* —— 触发器 —— */
+  /* 里面通常只放一个图标，宽高同取一档尺寸 */
+  [data-scope='float-button'][data-part='trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-_float-button-size);
+    block-size: var(--xh-_float-button-size);
+    padding: 0;
+    border: var(--xh-stroke-thin) solid var(--xh-float-button-border, var(--xh-border-default));
+    border-radius: var(--xh-_float-button-radius);
+    /* 使用者令牌排在缺省之前：写了覆盖钩子就以它为准，没写才退到中性缺省 */
+    background: var(--xh-float-button-bg, var(--xh-bg-surface-raised));
+    color: var(--xh-float-button-fg, var(--xh-fg-default));
+    /* 浮在内容之上，靠投影与页面拉开层次 */
+    box-shadow: var(--xh-elevation-3);
+    cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 悬停只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
+  @media (hover: hover) {
+    [data-scope='float-button'][data-part='trigger']:not([data-disabled]):hover {
+      border-color: var(--xh-float-button-border-hover, var(--xh-border-strong));
+      background: var(--xh-float-button-bg-hover, var(--xh-bg-subtle-hover));
+    }
+  }
+
+  [data-scope='float-button'][data-part='trigger']:not([data-disabled]):active {
+    background: var(--xh-float-button-bg-active, var(--xh-bg-subtle-active));
+  }
+
+  /* 禁用只换颜色，不叠不透明度：两者同时用只会互相抵消，把字压到读不出来 */
+  [data-scope='float-button'][data-part='trigger'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* 聚焦环恒是 --xh-ring-focus，不随外形与落位走 */
+  [data-scope='float-button'][data-part='trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* —— 展开的那一组 —— */
+  [data-scope='float-button'][data-part='list'] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--xh-float-button-gap, var(--xh-space-2));
+  }
+
+  /* 贴下沿时整组往上长，翻过来摆，第一条动作离触发器最近 */
+  [data-scope='float-button'][data-part='list'][data-placement^='bottom'] {
+    flex-direction: column-reverse;
+  }
+
+  /* 声明过 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己补回来 */
+  [data-scope='float-button'][data-part='list'][hidden] {
+    display: none;
+  }
+
+  /* 展开的每一条动作与触发器同一副身量：它们是一排里的同类，作者只管往里放按钮 */
+  [data-scope='float-button'][data-part='list'] > * {
+    flex: none;
+    inline-size: var(--xh-_float-button-size);
+    block-size: var(--xh-_float-button-size);
+    border-radius: var(--xh-_float-button-radius);
+  }
+}

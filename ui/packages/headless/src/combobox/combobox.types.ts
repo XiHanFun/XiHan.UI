@@ -18,6 +18,18 @@ export type ComboboxFocusIntent = 'none' | 'selected' | 'first' | 'last'
  */
 export type ComboboxInputBehavior = 'none' | 'autohighlight' | 'autocomplete'
 
+/** 输入框渲染成哪个标签：单行 input（缺省）或多行 textarea。 */
+export type ComboboxInputHost = 'input' | 'textarea'
+
+/** 输入宿主元素。机器只用到 focus / value / setSelectionRange，两种标签都提供。 */
+export type ComboboxInputEl = HTMLInputElement | HTMLTextAreaElement
+
+/** 输入部件自报宿主标签，connect 据此决定写不写 type 与组合框角色。 */
+export interface ComboboxInputProps {
+  /** 缺省 input。 */
+  as?: ComboboxInputHost
+}
+
 // 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；缺省时副作用一律短路。
 export interface ComboboxRefs {
   config: RuntimeConfig | null
@@ -32,7 +44,7 @@ export interface ComboboxRefs {
   /** 消解层节点，同时是候选集合的查询容器。 */
   getContentEl: () => HTMLElement | null
   /** 输入框本体：焦点归还与内联补全的选区都落在它身上。 */
-  getInputEl: () => HTMLInputElement | null
+  getInputEl: () => ComboboxInputEl | null
 }
 
 export interface ComboboxOpenChangeDetails {
@@ -236,7 +248,8 @@ export interface ComboboxApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getLabelProps: () => T['label']
   getControlProps: () => T['element']
-  getInputProps: () => T['input']
+  /** 不传参即单行 input，产出与加此参数前逐字相同。 */
+  getInputProps: (props?: ComboboxInputProps) => T['input']
   getTriggerProps: () => T['button']
   getClearTriggerProps: () => T['button']
   getPositionerProps: () => T['element']

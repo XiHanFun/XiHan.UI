@@ -1,13 +1,25 @@
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
-import type { ComboboxApi, ComboboxItemProps, ComboboxNodeMeta, ComboboxSchema } from './combobox.types'
+import type { ComboboxApi, ComboboxInputEl, ComboboxInputProps, ComboboxItemProps, ComboboxNodeMeta, ComboboxSchema } from './combobox.types'
 import { isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
 import { contains, dataAttr, isComposingEvent } from '@xihan-ui/core'
 import { comboboxAnatomy, comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 import { COMBOBOX_DEFAULT_PLACEMENT } from './combobox.machine'
 
 const parts = comboboxAnatomy.build()
+
+/**
+ * 输入宿主是不是多行。
+ *
+ * textarea 的允许角色只有它自带的 textbox，写 role="combobox" 是文档一致性违规；
+ * 而 aria-expanded 不在 textbox 的支持属性里。所以多行宿主上 type / role / aria-expanded
+ * 三条一并缺席，「有候选浮层」改由 aria-haspopup、aria-controls、aria-autocomplete
+ * 与 aria-activedescendant 表达——这四条 textbox 都支持。
+ */
+function isMultilineHost(input: ComboboxInputProps): boolean {
+  return (input.as ?? 'input') === 'textarea'
+}
 
 export function connectCombobox<T extends PropTypes>(
   service: Service<ComboboxSchema>,
@@ -163,12 +175,14 @@ export function connectCombobox<T extends PropTypes>(
       'data-invalid': dataAttr(invalid),
     }),
 
-    getInputProps: () => normalize.input({
+    getInputProps: (input = {}) => normalize.input({
       ...parts.input.attrs,
       'id': ids.input,
-      'type': 'text',
-      // 焦点自始至终在这里：列表展开也不交出去，高亮改由 aria-activedescendant 报给读屏
-      'role': 'combobox',
+      // textarea 没有 type 属性
+      'type': isMultilineHost(input) ? undefined : 'text',
+      // 焦点自始至终在这里：列表展开也不交出去，高亮改由 aria-activedescendant 报给读屏。
+      // textarea 不写这个角色：它的允许角色只有 textbox，组合框语义改由下面几条属性表达
+      'role': isMultilineHost(input) ? undefined : 'combobox',
       // 关掉浏览器自带的历史补全，它会盖在候选列表上
       'autocomplete': 'off',
       'autocapitalize': 'none',
@@ -179,19 +193,22 @@ export function connectCombobox<T extends PropTypes>(
       // 作者把 label 换成非 <label> 元素时 for 会失效，这条兜住名字
       'aria-labelledby': ids.label,
       'aria-haspopup': 'listbox',
-      'aria-expanded': open ? 'true' : 'false',
+      // aria-expanded 不在 textbox 的支持属性里，多行宿主上整条缺席
+      'aria-expanded': isMultilineHost(input) ? undefined : (open ? 'true' : 'false'),
       'aria-controls': ids.content,
       // list = 候选以列表形式给出；both = 还额外做了内联补全
       'aria-autocomplete': inputBehavior === 'autocomplete' ? 'both' : 'list',
       // 收起态没有高亮可指，属性整个缺席（aria-activedescendant 没有"假值"写法）
       'aria-activedescendant': open && highlighted != null ? itemId(highlighted) : undefined,
       'aria-invalid': invalid ? 'true' : 'false',
+      // 皮肤只认 data-*、不认标签名，多行宿主的排版靠这一条认出来
+      'data-multiline': dataAttr(isMultilineHost(input)),
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
       'onInput': (event: Event) => {
-        const el = event.target as HTMLInputElement
+        const el = event.target as ComboboxInputEl
         // 删字标记必须在这里判：机器里 setInputValue 已落下新值，那时比不出方向
         send({ type: 'INPUT.CHANGE', value: el.value, deleting: el.value.length < inputValue.length })
       },

@@ -1,6 +1,6 @@
 # 组件总览
 
-92 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/wc`）与**默认皮肤**（`@xihan-ui/styled`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
+102 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/wc`）与**默认皮肤**（`@xihan-ui/styled`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
 
 本册每个组件一页，页内固定为：产物 · 示例 · 解剖 · Props · 状态机 · connect API · 键盘。除示例外全部由组件源码生成，不会与代码对不上。
 
@@ -44,7 +44,7 @@
 | [评分](./rating) | `rating` | 5 | 5 | 9 |
 | [选择器](./select) | `select` | 11 | 13 | 17 |
 | [列表框](./listbox) | `listbox` | 8 | 10 | 7 |
-| [组合框](./combobox) | `combobox` | 14 | 14 | 13 |
+| [组合框](./combobox) | `combobox` | 14 | 14 | 14 |
 | [级联选择](./cascader) | `cascader` | 12 | 12 | 15 |
 | [树选择](./tree-select) | `tree-select` | 19 | 14 | 12 |
 | [标签输入](./tags-input) | `tags-input` | 11 | 13 | 12 |
@@ -57,6 +57,8 @@
 | [颜色选择器](./color-picker) | `color-picker` | 16 | 9 | 10 |
 | [文件上传](./file-upload) | `file-upload` | 12 | 5 | 10 |
 | [弹出选择](./popselect) | `popselect` | 7 | 9 | 5 |
+| [动态录入](./dynamic-input) | `dynamic-input` | 8 | 0 | 5 |
+| [提及](./mention) | `mention` | 6 | 9 | 5 |
 
 ## 数据展示
 
@@ -83,6 +85,10 @@
 | [时间线](./timeline) | `timeline` | 8 | 0 | 5 |
 | [统计数值](./statistic) | `statistic` | 5 | 0 | 5 |
 | [二维码](./qr-code) | `qr-code` | 2 | 0 | 8 |
+| [数值动画](./number-animation) | `number-animation` | 1 | 0 | 4 |
+| [倒计时](./countdown) | `countdown` | 1 | 0 | 4 |
+| [时间](./time) | `time` | 1 | 0 | 4 |
+| [文本高亮](./highlight) | `highlight` | 2 | 0 | 4 |
 
 ## 导航
 
@@ -104,6 +110,7 @@
 | [固钉](./affix) | `affix` | 2 | 0 | 4 |
 | [回到顶部](./back-top) | `back-top` | 2 | 2 | 4 |
 | [页头](./page-header) | `page-header` | 6 | 0 | 5 |
+| [浮动按钮](./float-button) | `float-button` | 3 | 3 | 4 |
 
 ## 反馈与浮层
 
@@ -144,3 +151,6 @@ AI 对话界面的组件。
 | [排印](./typography) | `typography` | 5 | 0 | 5 |
 | [渐变文字](./gradient-text) | `gradient-text` | 1 | 0 | 4 |
 | [布局](./layout) | `layout` | 6 | 1 | 7 |
+| [跑马灯](./marquee) | `marquee` | 2 | 0 | 4 |
+| [水印](./watermark) | `watermark` | 2 | 0 | 4 |
+| [文本省略](./ellipsis) | `ellipsis` | 1 | 2 | 4 |

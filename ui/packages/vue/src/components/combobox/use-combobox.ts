@@ -1,5 +1,5 @@
 import type { Cleanup, Layer, RuntimeConfig } from '@xihan-ui/core'
-import type { ComboboxApi, ComboboxSchema } from '@xihan-ui/headless'
+import type { ComboboxApi, ComboboxInputEl, ComboboxSchema } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
@@ -15,7 +15,8 @@ export interface ComboboxContext {
   service: Service<ComboboxSchema>
   api: ComputedRef<ComboboxApi>
   controlRef: Ref<HTMLElement | null>
-  inputRef: Ref<HTMLInputElement | null>
+  /** 输入宿主，input 或 textarea；由 XhComboboxInput 的 as 决定渲染成哪个。 */
+  inputRef: Ref<ComboboxInputEl | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
   /** 上报候选集合可能变了；同一拍里多次调用只上报一次。 */
@@ -27,7 +28,7 @@ export function useCombobox(
   handlers: Pick<ComboboxSchema['props'], 'onValueChange' | 'onInputValueChange' | 'onOpenChange'> = {},
 ): ComboboxContext {
   const controlRef = ref<HTMLElement | null>(null)
-  const inputRef = ref<HTMLInputElement | null>(null)
+  const inputRef = ref<ComboboxInputEl | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
 

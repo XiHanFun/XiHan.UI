@@ -23,19 +23,24 @@ import { XhColorPickerElement } from './elements/color-picker'
 import { XhComboboxElement } from './elements/combobox'
 import { XhComposerElement } from './elements/composer'
 import { XhContextMenuElement } from './elements/context-menu'
+import { XhCountdownElement } from './elements/countdown'
 import { XhDateFieldElement } from './elements/date-field'
 import { XhDatePickerElement } from './elements/date-picker'
 import { XhDescriptionsElement } from './elements/descriptions'
 import { XhDialogElement } from './elements/dialog'
 import { XhDrawerElement } from './elements/drawer'
+import { XhDynamicInputElement } from './elements/dynamic-input'
 import { XhEditableElement } from './elements/editable'
+import { XhEllipsisElement } from './elements/ellipsis'
 import { XhEmptyStateElement } from './elements/empty-state'
 import { XhFieldElement } from './elements/field'
 import { XhFileUploadElement } from './elements/file-upload'
 import { XhFlexElement } from './elements/flex'
+import { XhFloatButtonElement } from './elements/float-button'
 import { XhFormElement } from './elements/form'
 import { XhGradientTextElement } from './elements/gradient-text'
 import { XhGridElement } from './elements/grid'
+import { XhHighlightElement } from './elements/highlight'
 import { XhHoverCardElement } from './elements/hover-card'
 import { XhIconElement } from './elements/icon'
 import { XhIconWrapperElement } from './elements/icon-wrapper'
@@ -46,9 +51,12 @@ import { XhListElement } from './elements/list'
 import { XhListboxElement } from './elements/listbox'
 import { XhLoadingBarElement } from './elements/loading-bar'
 import { XhLogElement } from './elements/log'
+import { XhMarqueeElement } from './elements/marquee'
+import { XhMentionElement } from './elements/mention'
 import { XhMenuElement } from './elements/menu'
 import { XhMenubarElement } from './elements/menubar'
 import { XhNavigationMenuElement } from './elements/navigation-menu'
+import { XhNumberAnimationElement } from './elements/number-animation'
 import { XhNumberFieldElement } from './elements/number-field'
 import { XhPageHeaderElement } from './elements/page-header'
 import { XhPaginationElement } from './elements/pagination'
@@ -76,6 +84,7 @@ import { XhTabsElement } from './elements/tabs'
 import { XhTagsInputElement } from './elements/tags-input'
 import { XhTextFieldElement } from './elements/text-field'
 import { XhThreadElement } from './elements/thread'
+import { XhTimeElement } from './elements/time'
 import { XhTimeFieldElement } from './elements/time-field'
 import { XhTimePickerElement } from './elements/time-picker'
 import { XhTimelineElement } from './elements/timeline'
@@ -91,6 +100,7 @@ import { XhTreeElement } from './elements/tree'
 import { XhTreeSelectElement } from './elements/tree-select'
 import { XhTypographyElement } from './elements/typography'
 import { XhVirtualizerElement } from './elements/virtualizer'
+import { XhWatermarkElement } from './elements/watermark'
 import { defineElement } from './runtime/registry'
 
 // 注册全部 xh-* 元素，需显式调用，主入口 import 不注册。
@@ -100,16 +110,24 @@ export function defineXhElements(): void {
   defineElement('xh-avatar-group', XhAvatarGroupElement, VERSION)
   defineElement('xh-back-top', XhBackTopElement, VERSION)
   defineElement('xh-button-group', XhButtonGroupElement, VERSION)
+  defineElement('xh-countdown', XhCountdownElement, VERSION)
   defineElement('xh-descriptions', XhDescriptionsElement, VERSION)
+  defineElement('xh-dynamic-input', XhDynamicInputElement, VERSION)
+  defineElement('xh-ellipsis', XhEllipsisElement, VERSION)
   defineElement('xh-empty-state', XhEmptyStateElement, VERSION)
   defineElement('xh-flex', XhFlexElement, VERSION)
+  defineElement('xh-float-button', XhFloatButtonElement, VERSION)
   defineElement('xh-gradient-text', XhGradientTextElement, VERSION)
   defineElement('xh-grid', XhGridElement, VERSION)
+  defineElement('xh-highlight', XhHighlightElement, VERSION)
   defineElement('xh-icon-wrapper', XhIconWrapperElement, VERSION)
   defineElement('xh-infinite-scroll', XhInfiniteScrollElement, VERSION)
   defineElement('xh-layout', XhLayoutElement, VERSION)
   defineElement('xh-list', XhListElement, VERSION)
   defineElement('xh-log', XhLogElement, VERSION)
+  defineElement('xh-marquee', XhMarqueeElement, VERSION)
+  defineElement('xh-mention', XhMentionElement, VERSION)
+  defineElement('xh-number-animation', XhNumberAnimationElement, VERSION)
   defineElement('xh-page-header', XhPageHeaderElement, VERSION)
   defineElement('xh-popconfirm', XhPopconfirmElement, VERSION)
   defineElement('xh-popselect', XhPopselectElement, VERSION)
@@ -172,6 +190,7 @@ export function defineXhElements(): void {
   defineElement('xh-tags-input', XhTagsInputElement, VERSION)
   defineElement('xh-text-field', XhTextFieldElement, VERSION)
   defineElement('xh-thread', XhThreadElement, VERSION)
+  defineElement('xh-time', XhTimeElement, VERSION)
   defineElement('xh-time-field', XhTimeFieldElement, VERSION)
   defineElement('xh-time-picker', XhTimePickerElement, VERSION)
   defineElement('xh-timeline', XhTimelineElement, VERSION)
@@ -187,6 +206,7 @@ export function defineXhElements(): void {
   defineElement('xh-tree-select', XhTreeSelectElement, VERSION)
   defineElement('xh-typography', XhTypographyElement, VERSION)
   defineElement('xh-virtualizer', XhVirtualizerElement, VERSION)
+  defineElement('xh-watermark', XhWatermarkElement, VERSION)
 }
 
 export {

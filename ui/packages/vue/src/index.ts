@@ -192,6 +192,7 @@ export {
 } from './components/context-menu/context-menu'
 export { useContextMenu } from './components/context-menu/use-context-menu'
 export type { ContextMenuContext } from './components/context-menu/use-context-menu'
+export { XhCountdown } from './components/countdown/countdown'
 export {
   XhDateFieldControl,
   XhDateFieldHiddenInput,
@@ -250,6 +251,11 @@ export {
 } from './components/drawer/drawer'
 export { useDrawer } from './components/drawer/use-drawer'
 export type { DrawerContext } from './components/drawer/use-drawer'
+export { provideDynamicInput, provideDynamicInputItem, useDynamicInputContext, useDynamicInputItemContext } from './components/dynamic-input/context'
+export type { DynamicInputItemContext } from './components/dynamic-input/context'
+export { XhDynamicInputAddTrigger, XhDynamicInputItem, XhDynamicInputItemAction, XhDynamicInputItemContent, XhDynamicInputMoveDownTrigger, XhDynamicInputMoveUpTrigger, XhDynamicInputRemoveTrigger, XhDynamicInputRoot } from './components/dynamic-input/dynamic-input'
+export { useDynamicInput } from './components/dynamic-input/use-dynamic-input'
+export type { DynamicInputContext } from './components/dynamic-input/use-dynamic-input'
 export {
   XhEditableArea,
   XhEditableCancelTrigger,
@@ -263,6 +269,9 @@ export {
 } from './components/editable/editable'
 export { useEditable } from './components/editable/use-editable'
 export type { EditableCallbacks, EditableContext } from './components/editable/use-editable'
+export { XhEllipsis } from './components/ellipsis/ellipsis'
+export { useEllipsis } from './components/ellipsis/use-ellipsis'
+export type { EllipsisContext } from './components/ellipsis/use-ellipsis'
 export { XhEmptyStateAction, XhEmptyStateDescription, XhEmptyStateIcon, XhEmptyStateRoot, XhEmptyStateTitle } from './components/empty-state/empty-state'
 export { XhFieldControl, XhFieldDescription, XhFieldErrorText, XhFieldLabel, XhFieldRoot } from './components/field/field'
 export { useField } from './components/field/use-field'
@@ -284,6 +293,10 @@ export {
 export { useFileUpload } from './components/file-upload/use-file-upload'
 export type { FileUploadContext } from './components/file-upload/use-file-upload'
 export { XhFlex } from './components/flex/flex'
+export { provideFloatButton, useFloatButtonContext } from './components/float-button/context'
+export { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger } from './components/float-button/float-button'
+export { useFloatButton } from './components/float-button/use-float-button'
+export type { FloatButtonContext } from './components/float-button/use-float-button'
 export {
   XhFormErrorSummary,
   XhFormErrorSummaryItem,
@@ -298,6 +311,7 @@ export { XhGradientText } from './components/gradient-text/gradient-text'
 export { provideGrid, useGridContext } from './components/grid/context'
 export type { GridContext } from './components/grid/context'
 export { XhGridItem, XhGridRoot } from './components/grid/grid'
+export { XhHighlight } from './components/highlight/highlight'
 export {
   XhHoverCardArrow,
   XhHoverCardContent,
@@ -352,6 +366,14 @@ export { provideLog, useLogContext } from './components/log/context'
 export { XhLogContent, XhLogLine, XhLogRoot, XhLogViewport } from './components/log/log'
 export { useLog } from './components/log/use-log'
 export type { LogContext } from './components/log/use-log'
+export { provideMarquee, useMarqueeContext } from './components/marquee/context'
+export type { MarqueeContext } from './components/marquee/context'
+export { XhMarqueeContent, XhMarqueeRoot } from './components/marquee/marquee'
+export { provideMention, provideMentionItem, useMentionContext, useMentionItemContext } from './components/mention/context'
+export type { MentionItemContext } from './components/mention/context'
+export { XhMentionContent, XhMentionInput, XhMentionItem, XhMentionItemText, XhMentionPositioner, XhMentionRoot } from './components/mention/mention'
+export { useMention } from './components/mention/use-mention'
+export type { MentionContext } from './components/mention/use-mention'
 export {
   XhMenuArrow,
   XhMenuContent,
@@ -389,6 +411,7 @@ export {
 } from './components/navigation-menu/navigation-menu'
 export { useNavigationMenu } from './components/navigation-menu/use-navigation-menu'
 export type { NavigationMenuContext } from './components/navigation-menu/use-navigation-menu'
+export { XhNumberAnimation } from './components/number-animation/number-animation'
 export {
   XhNumberFieldDecrementTrigger,
   XhNumberFieldIncrementTrigger,
@@ -433,6 +456,7 @@ export {
   XhPopoverTrigger,
 } from './components/popover/popover'
 export { usePopover } from './components/popover/use-popover'
+
 export type { PopoverContext } from './components/popover/use-popover'
 export { providePopselect, providePopselectItem, usePopselectContext, usePopselectItemContext } from './components/popselect/context'
 export type { PopselectItemContext } from './components/popselect/context'
@@ -463,6 +487,7 @@ export type { RatingContext } from './components/rating/use-rating'
 export { provideResult, useResultContext } from './components/result/context'
 export type { ResultContext } from './components/result/context'
 export { XhResultAction, XhResultDescription, XhResultIcon, XhResultRoot, XhResultTitle } from './components/result/result'
+
 export {
   XhScrollAreaContent,
   XhScrollAreaCorner,
@@ -485,7 +510,6 @@ export {
   XhSelectTrigger,
   XhSelectValueText,
 } from './components/select/select'
-
 export { useSelect } from './components/select/use-select'
 export type { SelectContext } from './components/select/use-select'
 export { XhSeparator } from './components/separator/separator'
@@ -527,7 +551,6 @@ export { useSteps } from './components/steps/use-steps'
 export type { StepsContext } from './components/steps/use-steps'
 export { XhSwitch } from './components/switch/switch'
 export { useSwitch } from './components/switch/use-switch'
-
 export type { SwitchContext } from './components/switch/use-switch'
 export {
   XhTableBody,
@@ -612,6 +635,7 @@ export {
 } from './components/time-picker/time-picker'
 export { useTimePicker } from './components/time-picker/use-time-picker'
 export type { TimePickerContext } from './components/time-picker/use-time-picker'
+export { XhTime } from './components/time/time'
 export { provideTimeline, provideTimelineItem, useTimelineContext, useTimelineItem } from './components/timeline/context'
 export type { TimelineContext } from './components/timeline/context'
 export { XhTimelineConnector, XhTimelineContent, XhTimelineDescription, XhTimelineIndicator, XhTimelineItem, XhTimelineRoot, XhTimelineTime, XhTimelineTitle } from './components/timeline/timeline'
@@ -741,6 +765,9 @@ export {
   XhVirtualizerRoot,
   XhVirtualizerViewport,
 } from './components/virtualizer/virtualizer'
+export { provideWatermark, useWatermarkContext } from './components/watermark/context'
+export type { WatermarkContext } from './components/watermark/context'
+export { XhWatermarkContent, XhWatermarkRoot } from './components/watermark/watermark'
 export { createVueRuntime } from './runtime/create-vue-runtime'
 export { vueNormalize } from './runtime/normalize-props'
 export { useMachine } from './runtime/use-machine'
