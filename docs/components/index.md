@@ -139,7 +139,7 @@ AI 对话界面的组件。
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
 | [弹性布局](./flex) | `flex` | 1 | 0 | 5 |
-| [栅格](./grid) | `grid` | 2 | 0 | 5 |
+| [栅格](./grid) | `grid` | 2 | 0 | 7 |
 | [排印](./typography) | `typography` | 5 | 0 | 5 |
 | [渐变文字](./gradient-text) | `gradient-text` | 1 | 0 | 4 |
-| [布局](./layout) | `layout` | 6 | 1 | 5 |
+| [布局](./layout) | `layout` | 6 | 1 | 7 |

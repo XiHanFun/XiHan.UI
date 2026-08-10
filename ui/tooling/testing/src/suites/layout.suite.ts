@@ -24,7 +24,7 @@ export const layoutSuite: ConformanceSuite = {
   },
   cases: [
     {
-      name: '缺省：侧栏展开、侧栏挂在行首，根上不写 role 也不写折叠标记',
+      name: '缺省：侧栏展开、侧栏挂在行首，根上不写 role，折叠与固定标记一个都不落',
       spec: { apg: APG },
       initial: {
         order: ['root', 'header', 'sider-trigger', 'sider', 'content', 'footer'],
@@ -34,12 +34,18 @@ export const layoutSuite: ConformanceSuite = {
             'role': null,
             'data-sider-placement': 'start',
             'data-sider-collapsed': null,
+            'data-header-fixed': null,
+            'data-sider-fixed': null,
             'data-bordered': null,
+          },
+          'header': {
+            'data-fixed': null,
           },
           'sider': {
             'id': '@self',
             'data-state': 'expanded',
             'data-placement': 'start',
+            'data-fixed': null,
           },
           'sider-trigger': {
             'type': 'button',
@@ -134,6 +140,60 @@ export const layoutSuite: ConformanceSuite = {
           sider: { 'data-placement': 'end' },
         },
       },
+    },
+    {
+      name: '头吸顶：标记落在根与头上，侧栏不受牵连',
+      spec: { apg: APG },
+      props: { headerFixed: true },
+      initial: {
+        parts: {
+          root: { 'data-header-fixed': '', 'data-sider-fixed': null },
+          header: { 'data-fixed': '' },
+          sider: { 'data-fixed': null },
+        },
+      },
+    },
+    {
+      name: '侧栏吸附：标记落在根与侧栏上，头不受牵连',
+      spec: { apg: APG },
+      props: { siderFixed: true },
+      initial: {
+        parts: {
+          root: { 'data-sider-fixed': '', 'data-header-fixed': null },
+          sider: { 'data-fixed': '' },
+          header: { 'data-fixed': null },
+        },
+      },
+    },
+    {
+      name: '两个开关一起开：根上两个标记都在，头与侧栏各自带 data-fixed',
+      spec: { apg: APG },
+      props: { headerFixed: true, siderFixed: true },
+      initial: {
+        parts: {
+          root: { 'data-header-fixed': '', 'data-sider-fixed': '' },
+          header: { 'data-fixed': '' },
+          sider: { 'data-fixed': '' },
+        },
+      },
+    },
+    {
+      name: '固定标记与折叠态互不相干：折起来后两个 data-fixed 照旧在',
+      spec: { apg: APG },
+      props: { headerFixed: true, siderFixed: true },
+      steps: [
+        {
+          kind: 'click',
+          part: 'sider-trigger',
+          expect: {
+            parts: {
+              root: { 'data-sider-collapsed': '', 'data-header-fixed': '', 'data-sider-fixed': '' },
+              header: { 'data-fixed': '' },
+              sider: { 'data-state': 'collapsed', 'data-fixed': '' },
+            },
+          },
+        },
+      ],
     },
     {
       name: 'bordered 落成 data-bordered，关掉时不留空属性',

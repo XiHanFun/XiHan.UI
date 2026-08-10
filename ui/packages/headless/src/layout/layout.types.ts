@@ -20,6 +20,10 @@ export interface LayoutSchema extends MachineSchema {
     siderCollapsedWidth?: string
     /** 侧栏挂在行首还是行尾，缺省 start。 */
     siderPlacement?: LayoutSiderPlacement
+    /** 头吸顶：滚动时头钉在滚动容器的上沿。只落标记，钉住的实现归皮肤。 */
+    headerFixed?: boolean
+    /** 侧栏吸附：滚动时侧栏钉在滚动容器的上沿，头也吸顶时让开头那一条。只落标记，钉住的实现归皮肤。 */
+    siderFixed?: boolean
     /** 在头、侧栏、脚与内容之间画分隔线。 */
     bordered?: boolean
     /** 折叠态变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 */

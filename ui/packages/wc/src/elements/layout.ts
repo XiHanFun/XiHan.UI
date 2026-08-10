@@ -16,17 +16,21 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  *
  * 侧栏宽度只写成 sider 上的内联 inline-size，宽度过渡由皮肤声明。
  *
+ * 固定定位只落 data-fixed 标记：钉住的实现（含滚动容器的分工）归皮肤。
+ *
  * @customElement xh-layout
  * @attr {boolean} sider-collapsed - 受控折叠态；缺省该属性即非受控
  * @attr {boolean} default-sider-collapsed - 非受控初始为折叠
  * @attr {string} sider-width - 展开时侧栏的宽度，任意 CSS 长度
  * @attr {string} sider-collapsed-width - 折叠时侧栏的宽度，任意 CSS 长度
  * @attr {'start'|'end'} sider-placement - 侧栏挂在行首还是行尾，缺省 start
+ * @attr {boolean} header-fixed - 头吸顶：滚动时头钉在滚动容器的上沿
+ * @attr {boolean} sider-fixed - 侧栏吸附：滚动时侧栏钉在滚动容器的上沿，头也吸顶时让开头那一条
  * @attr {boolean} bordered - 在头、侧栏、脚与内容之间画分隔线
  * @fires sider-collapsed-change - 折叠态变化；detail 为 `{ collapsed: boolean }`
- * @csspart root - 骨架根容器，承载 data-sider-placement / data-sider-collapsed / data-bordered
- * @csspart header - 顶部横幅区，横贯整行
- * @csspart sider - 侧栏，宽度随折叠态在两档之间切换
+ * @csspart root - 骨架根容器，承载 data-sider-placement / data-sider-collapsed / data-header-fixed / data-sider-fixed / data-bordered
+ * @csspart header - 顶部横幅区，横贯整行；吸顶时带 data-fixed
+ * @csspart sider - 侧栏，宽度随折叠态在两档之间切换；吸附时带 data-fixed
  * @csspart content - 主内容区
  * @csspart footer - 底部区，横贯整行
  * @csspart sider-trigger - 折叠把手（aria-expanded / aria-controls 所在）
@@ -49,6 +53,8 @@ export class XhLayoutElement extends XhElement {
     siderWidth: { attribute: 'sider-width', converter: STRING_CONVERTER },
     siderCollapsedWidth: { attribute: 'sider-collapsed-width', converter: STRING_CONVERTER },
     siderPlacement: { attribute: 'sider-placement', converter: STRING_CONVERTER },
+    headerFixed: { type: Boolean, attribute: 'header-fixed' },
+    siderFixed: { type: Boolean, attribute: 'sider-fixed' },
     bordered: { type: Boolean },
   }
 
@@ -57,6 +63,8 @@ export class XhLayoutElement extends XhElement {
   declare siderWidth?: string
   declare siderCollapsedWidth?: string
   declare siderPlacement?: LayoutSiderPlacement
+  declare headerFixed?: boolean
+  declare siderFixed?: boolean
   declare bordered?: boolean
 
   private readonly notify = (details: LayoutSiderCollapsedChangeDetails): void => {
@@ -72,6 +80,8 @@ export class XhLayoutElement extends XhElement {
       siderWidth: this.siderWidth,
       siderCollapsedWidth: this.siderCollapsedWidth,
       siderPlacement: this.siderPlacement,
+      headerFixed: this.headerFixed ?? false,
+      siderFixed: this.siderFixed ?? false,
       bordered: this.bordered ?? false,
       onSiderCollapsedChange: this.notify,
     }

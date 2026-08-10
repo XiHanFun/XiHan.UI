@@ -1,7 +1,8 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { gridAnatomy, gridKeyboard } from '@xihan-ui/headless'
 
-// 排版容器，APG 没有对应模式；判据只锁「四个排版参数如实落到根上、每一格自报的占位落到自己身上」。
+// 排版容器，APG 没有对应模式；判据只锁「四个排版参数如实落到根上（列数还可逐档写成断点属性）、
+// 每一格自报的占位落到自己身上」。哪一档在多宽的视口上接管由皮肤定，不在这里断言。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/'
 
 export const gridSuite: ConformanceSuite = {
@@ -25,6 +26,10 @@ export const gridSuite: ConformanceSuite = {
           'root': {
             'role': null,
             'data-cols': '1',
+            'data-cols-sm': null,
+            'data-cols-md': null,
+            'data-cols-lg': null,
+            'data-cols-xl': null,
             'data-gap': null,
             'data-align': null,
             'data-justify': null,
@@ -46,6 +51,63 @@ export const gridSuite: ConformanceSuite = {
           root: {
             'data-cols': '3',
             'data-gap': 'lg',
+          },
+        },
+      },
+    },
+    {
+      name: '列数给整数：只落 data-cols，一个断点档都不输出',
+      spec: { apg: APG },
+      props: { cols: 3 },
+      initial: {
+        order: ['root', 'item[0]', 'item[1]', 'item[2]'],
+        counts: { root: 1, item: 3 },
+        parts: {
+          root: {
+            'data-cols': '3',
+            'data-cols-sm': null,
+            'data-cols-md': null,
+            'data-cols-lg': null,
+            'data-cols-xl': null,
+          },
+        },
+      },
+    },
+    {
+      name: '列数给断点对象：base 落 data-cols，写了的档逐档落，没写的档不输出',
+      spec: { apg: APG },
+      props: { cols: { base: 1, md: 2, xl: 4 } },
+      initial: {
+        order: ['root', 'item[0]', 'item[1]', 'item[2]'],
+        counts: { root: 1, item: 3 },
+        parts: {
+          'root': {
+            'data-cols': '1',
+            'data-cols-sm': null,
+            'data-cols-md': '2',
+            'data-cols-lg': null,
+            'data-cols-xl': '4',
+          },
+          // 逐档的列数是根一层的事，不落到格子上
+          'item[0]': {
+            'data-cols': null,
+            'data-cols-md': null,
+          },
+        },
+      },
+    },
+    {
+      name: '列数给断点对象但不写 base：base 仍按一列，其余各档如实落',
+      spec: { apg: APG },
+      props: { cols: { sm: 2, lg: 3 } },
+      initial: {
+        parts: {
+          root: {
+            'data-cols': '1',
+            'data-cols-sm': '2',
+            'data-cols-md': null,
+            'data-cols-lg': '3',
+            'data-cols-xl': null,
           },
         },
       },

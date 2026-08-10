@@ -18,6 +18,12 @@ export function connectLayout<T extends PropTypes>(
   const ids = scope.ids('layout', 'sider')
   const stateAttr = collapsed ? 'collapsed' : 'expanded'
 
+  // 两个固定开关各走各的：头钉住不牵连侧栏，侧栏钉住也不牵连头。
+  // 标记同时落在根与对应那一段上：段上的给自己的钉法用，根上的给需要看见两个开关的排布规则用
+  // （头钉住时头这一行要改成定高；侧栏要不要让开头的高度，取决于头是不是也钉住了）。
+  const headerFixed = prop('headerFixed')
+  const siderFixed = prop('siderFixed')
+
   // 侧栏宽度取当前这一档；该档没给值就把内联宽度清空，宽度交回皮肤里的档位变量。
   // 只写标准长度属性、不写自定义属性：过渡由皮肤对 inline-size 声明。
   const siderWidth = (collapsed ? prop('siderCollapsedWidth') : prop('siderWidth')) ?? ''
@@ -31,21 +37,27 @@ export function connectLayout<T extends PropTypes>(
     siderCollapsed: collapsed,
     setSiderCollapsed,
 
-    // 侧栏位置、折叠态与分隔线开关都落在根上，各段从这里取自己的排布与描边
+    // 侧栏位置、折叠态、两个固定开关与分隔线开关都落在根上，各段从这里取自己的排布与描边
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-sider-placement': placement,
       'data-sider-collapsed': dataAttr(collapsed),
+      'data-header-fixed': dataAttr(headerFixed),
+      'data-sider-fixed': dataAttr(siderFixed),
       'data-bordered': dataAttr(prop('bordered')),
     }),
 
-    getHeaderProps: () => normalize.element({ ...parts.header.attrs }),
+    getHeaderProps: () => normalize.element({
+      ...parts.header.attrs,
+      'data-fixed': dataAttr(headerFixed),
+    }),
 
     getSiderProps: () => normalize.element({
       ...parts.sider.attrs,
       'id': ids.sider,
       'data-state': stateAttr,
       'data-placement': placement,
+      'data-fixed': dataAttr(siderFixed),
       'style': { inlineSize: siderWidth },
     }),
 

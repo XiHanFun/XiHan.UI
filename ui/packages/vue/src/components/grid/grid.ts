@@ -5,24 +5,46 @@ import { computed, defineComponent, h } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { provideGrid, useGridContext } from './context'
 
+/** 断点对象形态的列数，从 GridProps 上取，不在这里另抄一份档位清单。 */
+type ColsByBreakpoint = Exclude<GridProps['cols'], number | undefined>
+
+/** 列数的档位名，base 在前，其余自窄到宽。 */
+const COLS_TIERS = ['base', 'sm', 'md', 'lg', 'xl'] as const
+
 /** 模板里写 cols="3" 拿到的是字符串，交给 connect 前统一转成数字。 */
 function count(value: number | string | undefined): number | undefined {
   return value == null ? undefined : Number(value)
+}
+
+/** 列数：整数与字符串按单个数走；断点对象逐档转数字，没写的档不带进去。 */
+function colsOf(value: number | string | ColsByBreakpoint | undefined): GridProps['cols'] {
+  if (value == null || typeof value !== 'object')
+    return count(value)
+  const out: ColsByBreakpoint = {}
+  for (const name of COLS_TIERS) {
+    const raw = value[name]
+    if (raw != null)
+      out[name] = Number(raw)
+  }
+  return out
 }
 
 export const XhGridRoot = defineComponent({
   name: 'XhGridRoot',
   // 有 connect 兜底的 prop 一律 default: undefined
   props: {
-    // 列数由作者声明，兼收字符串以支持模板里写 cols="3"
-    cols: { type: [Number, String] as PropType<number | string>, default: undefined },
+    // 列数由作者声明：兼收字符串以支持模板里写 cols="3"，收对象则是逐档的列数
+    cols: {
+      type: [Number, String, Object] as PropType<number | string | ColsByBreakpoint>,
+      default: undefined,
+    },
     gap: { type: String as PropType<GridProps['gap']>, default: undefined },
     align: { type: String as PropType<GridProps['align']>, default: undefined },
     justify: { type: String as PropType<GridProps['justify']>, default: undefined },
   },
   setup(props, { slots }) {
     const api = computed(() => connectGrid({
-      cols: count(props.cols),
+      cols: colsOf(props.cols),
       gap: props.gap,
       align: props.align,
       justify: props.justify,
