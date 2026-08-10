@@ -28,6 +28,24 @@ size 落成 content 的 data-size，只改面板贴边方向上的厚度；三�
 
 <XhDemo src="drawer/04-size" />
 
+### 内容滚动
+
+面板本身定高，把中间那段设成可伸缩并开滚动，标题与底部操作就钉在两头
+
+<XhDemo src="drawer/05-scroll" />
+
+### 关闭前拦截
+
+受控时组件不自改状态：Escape、点面板外、按叉都只发一次收起意图，写不写由宿主定
+
+<XhDemo src="drawer/06-guard" />
+
+### 拖边缘改厚度
+
+面板里放一根把手，拖动时把新厚度写进 content 的 --xh-drawer-size；这个槽压过 size 三档，滑入滑出仍按面板自身宽度算
+
+<XhDemo src="drawer/07-resize" />
+
 ## 产物
 
 | 层 | 值 |

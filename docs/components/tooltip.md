@@ -40,6 +40,18 @@ disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
 
 <XhDemo src="tooltip/06-size" />
 
+### 受控
+
+传了 open 就由宿主说了算；悬停、聚焦、Escape 都只发意图，最终写不写由外面这份状态决定
+
+<XhDemo src="tooltip/07-controlled" />
+
+### 长文案
+
+提示到了宽度上限就换行，不会拉成一条横线；上限是 content 上的 --xh-tooltip-max-w 槽位
+
+<XhDemo src="tooltip/08-long-text" />
+
 ## 产物
 
 | 层 | 值 |

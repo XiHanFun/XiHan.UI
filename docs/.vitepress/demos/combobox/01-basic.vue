@@ -1,20 +1,7 @@
-<!-- 基础用法 | 过滤由宿主自己算：组件把输入串交给 input-value，筛出哪几条渲染成 item 是调用方的事 -->
+<!-- 基础用法 | 过滤由宿主自己算：组件把输入串交给 input-value，筛出哪几条交给 collection 是调用方的事 -->
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import {
-  XhComboboxClearTrigger,
-  XhComboboxContent,
-  XhComboboxControl,
-  XhComboboxEmpty,
-  XhComboboxInput,
-  XhComboboxItem,
-  XhComboboxItemIndicator,
-  XhComboboxItemText,
-  XhComboboxLabel,
-  XhComboboxPositioner,
-  XhComboboxRoot,
-  XhComboboxTrigger,
-} from "@xihan-ui/vue";
+import { XhComboboxRoot } from "@xihan-ui/vue";
 
 const cities = [
   { value: "beijing", label: "Beijing 北京" },
@@ -36,24 +23,11 @@ const filtered = computed(() => {
   <XhComboboxRoot
     v-model:value="value"
     v-model:input-value="query"
+    :collection="filtered"
+    label="城市"
+    empty="无匹配城市"
     open-on-click
     placeholder="输入城市名筛选"
-  >
-    <XhComboboxLabel>城市</XhComboboxLabel>
-    <XhComboboxControl>
-      <XhComboboxInput />
-      <XhComboboxTrigger>▾</XhComboboxTrigger>
-      <XhComboboxClearTrigger>✕</XhComboboxClearTrigger>
-    </XhComboboxControl>
-    <XhComboboxPositioner>
-      <XhComboboxContent>
-        <XhComboboxItem v-for="c in filtered" :key="c.value" :value="c.value" :disabled="c.disabled">
-          <XhComboboxItemText>{{ c.label }}</XhComboboxItemText>
-          <XhComboboxItemIndicator>✓</XhComboboxItemIndicator>
-        </XhComboboxItem>
-      </XhComboboxContent>
-      <XhComboboxEmpty>无匹配城市</XhComboboxEmpty>
-    </XhComboboxPositioner>
-  </XhComboboxRoot>
+  />
   <p>当前值：{{ value[0] ?? "（未选）" }}</p>
 </template>

@@ -28,6 +28,12 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 
 <XhDemo src="toast/04-action" />
 
+### 图标与自定义排版
+
+卡片里排什么由作者定：图标与标题排成一行，标题、描述两个部件都接受插槽内容
+
+<XhDemo src="toast/05-icon" />
+
 ## 产物
 
 | 层 | 值 |

@@ -1,18 +1,7 @@
-<!-- 基础用法 | trigger 展开浮层，item 落值；条目自己声明 disabled，方向键与连打检索会跳过它 -->
+<!-- 基础用法 | collection 是条目的事实源：显示文本与禁用都写在数据里，结构由组件铺开 -->
 <script setup lang="ts">
 import { ref } from "vue";
-import {
-  XhSelectContent,
-  XhSelectIndicator,
-  XhSelectItem,
-  XhSelectItemIndicator,
-  XhSelectItemText,
-  XhSelectLabel,
-  XhSelectPositioner,
-  XhSelectRoot,
-  XhSelectTrigger,
-  XhSelectValueText,
-} from "@xihan-ui/vue";
+import { XhSelectRoot } from "@xihan-ui/vue";
 
 const fruit = ref<string[]>([]);
 const fruits = [
@@ -25,20 +14,6 @@ const fruits = [
 </script>
 
 <template>
-  <XhSelectRoot v-model:value="fruit" placeholder="请选择">
-    <XhSelectLabel>水果</XhSelectLabel>
-    <XhSelectTrigger>
-      <XhSelectValueText />
-      <XhSelectIndicator>▾</XhSelectIndicator>
-    </XhSelectTrigger>
-    <XhSelectPositioner>
-      <XhSelectContent>
-        <XhSelectItem v-for="f in fruits" :key="f.value" :value="f.value" :disabled="f.disabled">
-          <XhSelectItemText>{{ f.label }}</XhSelectItemText>
-          <XhSelectItemIndicator>✓</XhSelectItemIndicator>
-        </XhSelectItem>
-      </XhSelectContent>
-    </XhSelectPositioner>
-  </XhSelectRoot>
+  <XhSelectRoot v-model:value="fruit" :collection="fruits" label="水果" placeholder="请选择" />
   <p>当前值：{{ fruit.length ? fruit.join("、") : "（未选）" }}</p>
 </template>

@@ -28,6 +28,18 @@ openDelay 默认 700ms，closeDelay 默认 300ms——那段收起等待正是�
 
 <XhDemo src="hover-card/04-size" />
 
+### 朝向与间距
+
+placement 是请求值，空间不够时定位引擎会自动翻面；offset 调的是卡片与触发器的距离
+
+<XhDemo src="hover-card/05-placement" />
+
+### 禁用
+
+disabled 只关掉卡片本身，触发器照样可点、可聚焦，也照样进不了展开等待
+
+<XhDemo src="hover-card/06-disabled" />
+
 ## 产物
 
 | 层 | 值 |

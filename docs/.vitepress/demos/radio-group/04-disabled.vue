@@ -1,31 +1,24 @@
 <!-- 禁用 | 单项禁用后点不动，方向键也跳过它；整组禁用则每一项都跟着禁用 -->
 <script setup lang="ts">
-import {
-  XhRadioGroupItem,
-  XhRadioGroupItemText,
-  XhRadioGroupLabel,
-  XhRadioGroupRoot,
-} from "@xihan-ui/vue";
+import { XhRadioGroupRoot } from "@xihan-ui/vue";
+
+const plans = [
+  { value: "free", label: "免费版" },
+  { value: "pro", label: "专业版", disabled: true },
+];
+const openPlans = [
+  { value: "free", label: "免费版" },
+  { value: "pro", label: "专业版" },
+];
 </script>
 
 <template>
-  <XhRadioGroupRoot default-value="free">
-    <XhRadioGroupLabel>单项禁用</XhRadioGroupLabel>
-    <XhRadioGroupItem value="free">
-      <XhRadioGroupItemText>免费版</XhRadioGroupItemText>
-    </XhRadioGroupItem>
-    <XhRadioGroupItem value="pro" disabled>
-      <XhRadioGroupItemText>专业版</XhRadioGroupItemText>
-    </XhRadioGroupItem>
-  </XhRadioGroupRoot>
+  <XhRadioGroupRoot :collection="plans" default-value="free" label="单项禁用" />
 
-  <XhRadioGroupRoot default-value="free" disabled>
-    <XhRadioGroupLabel>整组禁用</XhRadioGroupLabel>
-    <XhRadioGroupItem value="free">
-      <XhRadioGroupItemText>免费版</XhRadioGroupItemText>
-    </XhRadioGroupItem>
-    <XhRadioGroupItem value="pro">
-      <XhRadioGroupItemText>专业版</XhRadioGroupItemText>
-    </XhRadioGroupItem>
-  </XhRadioGroupRoot>
+  <XhRadioGroupRoot
+    :collection="openPlans"
+    default-value="free"
+    disabled
+    label="整组禁用"
+  />
 </template>

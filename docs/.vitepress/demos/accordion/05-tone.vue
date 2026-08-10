@@ -1,13 +1,6 @@
 <!-- 语气 | tone 落在展开态的标题上，六种语气各预置一项展开做对照 -->
 <script setup lang="ts">
-import {
-  XhAccordionContent,
-  XhAccordionHeader,
-  XhAccordionIndicator,
-  XhAccordionItem,
-  XhAccordionRoot,
-  XhAccordionTrigger,
-} from "@xihan-ui/vue";
+import { XhAccordionRoot } from "@xihan-ui/vue";
 
 const tones = [
   { value: "brand", label: "品牌" },
@@ -16,7 +9,21 @@ const tones = [
   { value: "warning", label: "警告" },
   { value: "danger", label: "危险" },
   { value: "info", label: "信息" },
-];
+].map((tone) => ({
+  ...tone,
+  panels: [
+    {
+      value: "open",
+      label: `${tone.label}（展开）`,
+      content: `tone="${tone.value}"`,
+    },
+    {
+      value: "closed",
+      label: `${tone.label}（收起）`,
+      content: "收起态的标题不吃语气色。",
+    },
+  ],
+}));
 </script>
 
 <template>
@@ -31,26 +38,8 @@ const tones = [
       v-for="tone in tones"
       :key="tone.value"
       :tone="tone.value"
+      :collection="tone.panels"
       :default-value="['open']"
-    >
-      <XhAccordionItem value="open">
-        <XhAccordionHeader>
-          <XhAccordionTrigger>
-            <span>{{ tone.label }}（展开）</span>
-            <XhAccordionIndicator />
-          </XhAccordionTrigger>
-        </XhAccordionHeader>
-        <XhAccordionContent>tone="{{ tone.value }}"</XhAccordionContent>
-      </XhAccordionItem>
-      <XhAccordionItem value="closed">
-        <XhAccordionHeader>
-          <XhAccordionTrigger>
-            <span>{{ tone.label }}（收起）</span>
-            <XhAccordionIndicator />
-          </XhAccordionTrigger>
-        </XhAccordionHeader>
-        <XhAccordionContent>收起态的标题不吃语气色。</XhAccordionContent>
-      </XhAccordionItem>
-    </XhAccordionRoot>
+    />
   </div>
 </template>

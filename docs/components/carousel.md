@@ -28,6 +28,36 @@ autoplay 给毫秒即间隔，鼠标停上去或焦点走进来都会把计时�
 
 <XhDemo src="carousel/04-autoplay" />
 
+### 纵向轨道
+
+orientation 换成 vertical 后轨道竖着位移，两端按钮落到上下两头，翻页认的是上下方向键
+
+<XhDemo src="carousel/05-vertical" />
+
+### 指针拖拽
+
+allowPointerDrag 打开后按住轨道就能拖着走，松手落回整页；关掉则只有触摸的原生滚动
+
+<XhDemo src="carousel/06-pointer-drag" />
+
+### 指示点悬停切页
+
+页码由插槽交出的 setPage 说了算，指示点上补一个原生 mouseenter 就是悬停切页，点击照常翻页
+
+<XhDemo src="carousel/07-indicator-hover" />
+
+### 一次挪一张
+
+slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张，页数按剩下的张数重新算
+
+<XhDemo src="carousel/08-slides-per-move" />
+
+### 换过渡效果
+
+条目的内联样式只有尺寸与间距，位移之外的表现全归作者：把条目摞起来再按当前页调透明度与缩放，翻页、键盘与指示点一概照旧
+
+<XhDemo src="carousel/09-effect" />
+
 ## 产物
 
 | 层 | 值 |

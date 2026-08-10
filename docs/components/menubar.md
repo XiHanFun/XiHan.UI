@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-一排 trigger 共用一个 Tab 位，positioner 与 content 靠 value 跟自己那个 trigger 配对
+collection 是入口与条目的事实源：顶层节点铺成一排入口，它的 items 铺成那张菜单里的条目
 
 <XhDemo src="menubar/01-basic" />
 
@@ -34,6 +34,30 @@ size 一档换掉 trigger 与菜单条目的字号与内边距，写在 root 上
 
 <XhDemo src="menubar/05-size" />
 
+### 竖排菜单栏
+
+orientation 决定主轴：竖排时上下键在入口之间走，左右键改为展开本项的菜单
+
+<XhDemo src="menubar/06-vertical" />
+
+### 入口与条目的图标
+
+图标是插槽里的普通节点：入口里排在文字前，条目里排在 item-text 前，逐项自己写
+
+<XhDemo src="menubar/07-icon" />
+
+### 禁用
+
+禁用走 aria-disabled 而非原生 disabled：禁用的入口仍聚焦得上、仍是方向键的起点，只是展不开菜单
+
+<XhDemo src="menubar/08-disabled" />
+
+### 装不下就收进「更多」
+
+宿主自己观测容器宽度，一次收起一个入口直到这排不再溢出；收起来的那几张菜单在「更多」里各占一组
+
+<XhDemo src="menubar/09-overflow" />
+
 ## 产物
 
 | 层 | 值 |
@@ -54,6 +78,7 @@ size 一档换掉 trigger 与菜单条目的字号与内边距，写在 root 上
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `collection` | `MenubarNode[]` |  | 菜单栏数据，显示文本与禁用的事实源。给了它，入口与条目部件只需报 value。 缺省即回到「文本与禁用逐个写在部件上」的老路。 |
 | `value` | `string \| null` |  | 当前展开项，给定即受控；null 表示都收起。 |
 | `defaultValue` | `string \| null` |  |  |
 | `orientation` | `Orientation` |  | 菜单栏排布轴，默认 horizontal。 |
@@ -83,6 +108,7 @@ size 一档换掉 trigger 与菜单条目的字号与内边距，写在 root 上
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string \| null` | 当前展开的那一项；都收起时为 null。 |
+| `collection` | `readonly MenubarNodeMeta[]` | collection 推出的入口元信息（各自带着它那张菜单的条目），按数据顺序排列；没给 collection 即空数组。 |
 | `open` | `boolean` | 有没有菜单展开着。 |
 | `focusedValue` | `string \| null` | trigger 的 roving 锚点；焦点不在菜单栏内时为 null。 |
 | `focusedItem` | `string \| null` | 展开菜单内持有焦点的条目；无锚点时为 null。 |

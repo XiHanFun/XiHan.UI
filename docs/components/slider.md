@@ -40,6 +40,36 @@ size 改轨道厚度与滑块直径，不写即缺省中档
 
 <XhDemo src="slider/06-size" />
 
+### 文字方向
+
+dir 换成 rtl 后轨道从右往左填，左右两键的语义跟着对调；上下键与 Home、End 不受影响
+
+<XhDemo src="slider/07-direction" />
+
+### 滑块里的内容
+
+thumb 是个普通容器，往里放什么都由作者说了算；放得下靠 --xh-slider-thumb-size 把直径撑开
+
+<XhDemo src="slider/08-thumb-content" />
+
+### 轨道刻度
+
+刻度是作者写进 track 里的普通节点：按值算出百分比绝对定位；轨道不裁剪，刻度线与文字都露得出来，内容随便写
+
+<XhDemo src="slider/09-marks" />
+
+### 拖动时的值气泡
+
+thumb 自己是定位上下文，气泡挂在它上方就跟着走位；dragging 决定露不露面，气泡里的文字由作者的格式化函数产出
+
+<XhDemo src="slider/10-value-bubble" />
+
+### 离散档位
+
+可选值不必是等距数值：让滑块在档位下标上走，宿主再把下标映射回自己的取值表，键盘与拖动都只落在档位上
+
+<XhDemo src="slider/11-discrete-steps" />
+
 ## 产物
 
 | 层 | 值 |

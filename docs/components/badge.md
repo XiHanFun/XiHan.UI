@@ -34,6 +34,30 @@ size 只改内边距与字号，不写就是缺省档
 
 <XhDemo src="badge/05-size" />
 
+### 带图元的标签
+
+根是 inline-flex 且自带间距，图标或头像直接写进默认插槽跟文字并排
+
+<XhDemo src="badge/06-with-glyph" />
+
+### 自定义配色
+
+不写 variant 时底色与文字色取自组件令牌；描边这一条直接写 border-color
+
+<XhDemo src="badge/07-custom-color" />
+
+### 挂成角标
+
+徽标本身随文排；外层套一层定位上下文，它就落到子元素的角上。计数、圆点、0 值收起、上限截断都在宿主这一侧
+
+<XhDemo src="badge/08-anchor" />
+
+### 可关闭标签
+
+根是 inline-flex 且自带间距，关闭件直接写进默认插槽跟文字并排；点击语义、Tab 停靠与回车触发由原生按钮自带
+
+<XhDemo src="badge/09-closable" />
+
 ## 产物
 
 | 层 | 值 |

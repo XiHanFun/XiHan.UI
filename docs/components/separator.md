@@ -16,6 +16,18 @@ decorative 开启后读屏跳过它；只是排版用的横线应该这么写
 
 <XhDemo src="separator/02-decorative" />
 
+### 分节标题
+
+分隔线自己不排版：一行里放两条、中间留出标题，两侧各自撑开；语义由标题文字给，线只是装饰
+
+<XhDemo src="separator/03-section-title" />
+
+### 线型、粗细与颜色
+
+线是拿背景画出来的：颜色槽位收的是背景值，填一段重复渐变就是虚线；粗细是另一个槽位
+
+<XhDemo src="separator/04-line-style" />
+
 ## 产物
 
 | 层 | 值 |

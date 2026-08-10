@@ -28,6 +28,42 @@ disabled 罩住整框并走原生 disabled；输入为空或只有空白时发�
 
 <XhDemo src="composer/04-disabled" />
 
+### 框里的附加按钮
+
+root 里除输入与发送外还能放自己的节点；插槽给出的 value 与 setValue 让清空这类操作就在框内完成
+
+<XhDemo src="composer/05-clear" />
+
+### 字数与上限
+
+原生属性直接落到输入框上（maxlength 定上限），字数由插槽里的 value 现算
+
+<XhDemo src="composer/06-count" />
+
+### 随内容长高
+
+输入框的高度跟着内容走，rows 定的是起始行数；不手动拖拽，也不写死高度
+
+<XhDemo src="composer/07-autosize" />
+
+### 过滤输入
+
+写回这一步由宿主说了算：把不要的字符滤掉再落回去，框里留下的始终是滤过的那一份
+
+<XhDemo src="composer/08-filter" />
+
+### 聚焦与选中
+
+输入部件渲染出来就是一个 textarea，拿到它的节点就能聚焦、全选、失焦；发完一条把焦点送回去，接着敲下一条
+
+<XhDemo src="composer/09-focus" />
+
+### 发送失败的错误态
+
+判定谁算出错是宿主的事：属性直接落到真元素上，整框换色靠覆盖公开变量，原因由活区播报
+
+<XhDemo src="composer/10-status" />
+
 ## 产物
 
 | 层 | 值 |

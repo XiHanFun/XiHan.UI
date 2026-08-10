@@ -16,6 +16,18 @@
 
 <XhDemo src="virtualizer/02-dynamic" />
 
+### 滚到指定条目
+
+scrollToIndex 按 align 落位：start 贴上沿、center 居中、end 贴下沿，越界下标由内核夹住
+
+<XhDemo src="virtualizer/03-scroll-to" />
+
+### 横向列表
+
+horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由作者写，gap 由内核直接算进位移
+
+<XhDemo src="virtualizer/04-horizontal" />
+
 ## 产物
 
 | 层 | 值 |

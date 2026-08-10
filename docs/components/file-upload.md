@@ -28,6 +28,42 @@ disabled 把投放区、触发器与隐藏输入一并关停，拖拽进来也�
 
 <XhDemo src="file-upload/04-disabled" />
 
+### 预置列表
+
+defaultFiles 给出挂载时就在的那几份，之后列表照旧由组件自己保管，删除与清空都照常
+
+<XhDemo src="file-upload/05-default-files" />
+
+### 选整个目录
+
+directory 让隐藏输入改收目录，选中目录下的文件一次性全进来，数量上限要跟着放开
+
+<XhDemo src="file-upload/06-directory" />
+
+### 缩略图墙
+
+item-preview 是个空方框，作者往里塞什么都行；塞进去的图会被裁成方格，一行摆几张由外层网格定
+
+<XhDemo src="file-upload/07-image-wall" />
+
+### 宿主自定的准入
+
+组件只管 accept 与大小数量这几条通用规则，别的规矩由宿主在受控列表里再筛一道：这里同名文件只留最先来的那份
+
+<XhDemo src="file-upload/08-custom-rule" />
+
+### 手动上传与进度
+
+传输整件事在宿主手里：file-accept 报来本批收下了谁，宿主以 File 为键记状态、进度与完成后的名字，再自己挑时机发起
+
+<XhDemo src="file-upload/09-manual-upload" />
+
+### 列表项上的下载
+
+条目里放什么由作者定：一条普通的 a[download] 就是下载口；想自己接管就换成按钮，在处理器里怎么取都行
+
+<XhDemo src="file-upload/10-download" />
+
 ## 产物
 
 | 层 | 值 |

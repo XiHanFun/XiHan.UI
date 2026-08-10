@@ -1,17 +1,6 @@
 <!-- 语气 | tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语气的差别 -->
 <script setup lang="ts">
-import {
-  XhSelectContent,
-  XhSelectIndicator,
-  XhSelectItem,
-  XhSelectItemIndicator,
-  XhSelectItemText,
-  XhSelectLabel,
-  XhSelectPositioner,
-  XhSelectRoot,
-  XhSelectTrigger,
-  XhSelectValueText,
-} from "@xihan-ui/vue";
+import { XhSelectRoot } from "@xihan-ui/vue";
 
 const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as const;
 const fruits = [
@@ -28,22 +17,10 @@ const fruits = [
       :key="t"
       variant="outline"
       :tone="t"
+      :collection="fruits"
       :default-value="['apple']"
+      :label="t"
       placeholder="请选择"
-    >
-      <XhSelectLabel>{{ t }}</XhSelectLabel>
-      <XhSelectTrigger>
-        <XhSelectValueText />
-        <XhSelectIndicator>▾</XhSelectIndicator>
-      </XhSelectTrigger>
-      <XhSelectPositioner>
-        <XhSelectContent>
-          <XhSelectItem v-for="f in fruits" :key="f.value" :value="f.value">
-            <XhSelectItemText>{{ f.label }}</XhSelectItemText>
-            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
-          </XhSelectItem>
-        </XhSelectContent>
-      </XhSelectPositioner>
-    </XhSelectRoot>
+    />
   </div>
 </template>

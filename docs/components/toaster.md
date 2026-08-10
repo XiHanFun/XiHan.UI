@@ -28,6 +28,18 @@ max 限制每个位置同时显示几条，超出挤掉最旧的；dismissAll �
 
 <XhDemo src="toaster/04-max" />
 
+### 手动收走
+
+create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；dismiss 直接移出队列，不走退场窗口
+
+<XhDemo src="toaster/05-manual-dismiss" />
+
+### 逐条落位
+
+单条通知自带 placement 就盖掉 toaster 的默认落位；placements 交出眼下有条目的位置，照它渲染几摞就够
+
+<XhDemo src="toaster/06-per-toast-placement" />
+
 ## 产物
 
 | 层 | 值 |

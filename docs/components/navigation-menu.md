@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-面板写在同一个 li 里、紧跟 trigger 之后，展开时按 Tab 就走得进去；里面的条目是链接不是命令，点了就跳走
+入口写在 collection 里、面板内容走 panel 插槽；面板落在同一个 li 里、紧跟 trigger 之后，展开时按 Tab 就走得进去，里面的条目是链接不是命令，点了就跳走
 
 <XhDemo src="navigation-menu/01-basic" />
 
@@ -40,6 +40,30 @@ size 一档换掉入口的高度、内边距与字号，写在 root 上、面板
 
 <XhDemo src="navigation-menu/06-size" />
 
+### 直达入口
+
+没有下级的去处不必套面板：数据里写了 href 的那一项铺成一条 link，它不进方向键那一组（那一组只认 trigger），按 Tab 一样到得了
+
+<XhDemo src="navigation-menu/07-link-item" />
+
+### 共享面板外壳
+
+面板整批塞进 viewport 后落位归外壳管：几个入口的面板落在同一处，宽窄不同也不再各贴各的入口
+
+<XhDemo src="navigation-menu/08-viewport" />
+
+### 默认展开项
+
+defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针移开、Escape 或点回入口都收得起来
+
+<XhDemo src="navigation-menu/09-default-open" />
+
+### 收窄成一列图标
+
+竖排时面板本就从入口侧边长出来；收窄只是把文字从入口里撤掉、把它挪进面板，指针停上去才露出来
+
+<XhDemo src="navigation-menu/10-collapsed" />
+
 ## 产物
 
 | 层 | 值 |
@@ -60,6 +84,7 @@ size 一档换掉入口的高度、内边距与字号，写在 root 上、面板
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `collection` | `NavigationMenuNode[]` |  | 入口数据，入口文本与禁用的事实源。给了它，trigger 部件只需报 value。 缺省即回到「文本与禁用都写在部件上」的老路。 |
 | `value` | `string \| null` |  | 当前展开项，给定即受控；null 表示都收起。 |
 | `defaultValue` | `string \| null` |  |  |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 horizontal。 |
@@ -87,6 +112,7 @@ size 一档换掉入口的高度、内边距与字号，写在 root 上、面板
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string \| null` | 当前展开的那一项；都收起时为 null。 |
+| `collection` | `readonly NavigationMenuNodeMeta[]` | collection 推出的入口元信息，按数据顺序排列；没给 collection 即空数组。 |
 | `open` | `boolean` | 有没有面板展开着。 |
 | `isOpen` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string \| null) => void` |  |

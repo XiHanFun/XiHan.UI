@@ -40,6 +40,24 @@ size 换条目的字号与左右内边距，不传 size 即默认档
 
 <XhDemo src="anchor/06-size" />
 
+### 吸顶目录
+
+目录用 sticky 钉在滚动容器顶边，滚动时留在原处；判定线仍由 offset 定
+
+<XhDemo src="anchor/07-affix" />
+
+### 二级目录
+
+子链接嵌在父项里的原生列表中，按文档序照常参与结算；父级要不要跟着亮由宿主自己算
+
+<XhDemo src="anchor/08-nested" />
+
+### 从外部跳到某一节
+
+组件只在点链接时滚动；程序化跳转由宿主自己滚，滚完观察器会把高亮结算过来
+
+<XhDemo src="anchor/09-scroll-to" />
+
 ## 产物
 
 | 层 | 值 |

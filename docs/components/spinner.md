@@ -28,6 +28,18 @@ tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到
 
 <XhDemo src="spinner/04-tone" />
 
+### 盖住等待中的内容
+
+转圈浮在内容上方，容器同时报 aria-busy，看得见的与念得出的是同一件事
+
+<XhDemo src="spinner/05-overlay" />
+
+### 换掉转圈图形
+
+内置圆环画在伪元素上，把直径与描边归零它就不占位；自绘的图形写进默认插槽
+
+<XhDemo src="spinner/06-custom-graphic" />
+
 ## 产物
 
 | 层 | 值 |

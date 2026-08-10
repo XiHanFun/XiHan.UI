@@ -1,17 +1,23 @@
 <!-- 语气 | tone 决定条目高亮与标记位用哪族颜色；高亮静止态看不出来，右键弹出后悬停条目、或用方向键把焦点移上去才显现 -->
 <script setup lang="ts">
-import {
-  XhContextMenuContent,
-  XhContextMenuItem,
-  XhContextMenuItemIndicator,
-  XhContextMenuItemText,
-  XhContextMenuPositioner,
-  XhContextMenuRoot,
-  XhContextMenuSeparator,
-  XhContextMenuTrigger,
-} from "@xihan-ui/vue";
+import { XhContextMenuRoot } from "@xihan-ui/vue";
 
 const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as const;
+
+// 标记位的强调色也随语气走，这一处不必悬停就能看出来
+const commands = [
+  { value: "star", label: "标记", indicator: "✓" },
+  { value: "rename", label: "重命名" },
+  { value: "delete", label: "删除", separatorBefore: true },
+];
+
+const triggerStyle = {
+  display: "grid",
+  placeItems: "center",
+  minBlockSize: "76px",
+  border: "1px dashed var(--xh-border-default)",
+  borderRadius: "8px",
+};
 </script>
 
 <template>
@@ -24,34 +30,15 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
       gap: 12px;
     "
   >
-    <XhContextMenuRoot v-for="tone in tones" :key="tone" :tone="tone">
-      <XhContextMenuTrigger
-        style="
-          display: grid;
-          place-items: center;
-          min-block-size: 76px;
-          border: 1px dashed var(--xh-border-default);
-          border-radius: 8px;
-        "
-      >
-        <span>{{ tone }}</span>
-      </XhContextMenuTrigger>
-      <XhContextMenuPositioner>
-        <XhContextMenuContent>
-          <!-- 标记位的强调色也随语气走，这一处不必悬停就能看出来 -->
-          <XhContextMenuItem value="star">
-            <XhContextMenuItemIndicator>✓</XhContextMenuItemIndicator>
-            <XhContextMenuItemText>标记</XhContextMenuItemText>
-          </XhContextMenuItem>
-          <XhContextMenuItem value="rename">
-            <XhContextMenuItemText>重命名</XhContextMenuItemText>
-          </XhContextMenuItem>
-          <XhContextMenuSeparator />
-          <XhContextMenuItem value="delete">
-            <XhContextMenuItemText>删除</XhContextMenuItemText>
-          </XhContextMenuItem>
-        </XhContextMenuContent>
-      </XhContextMenuPositioner>
+    <XhContextMenuRoot
+      v-for="tone in tones"
+      :key="tone"
+      :tone="tone"
+      :collection="commands"
+    >
+      <template #trigger>
+        <span :style="triggerStyle">{{ tone }}</span>
+      </template>
     </XhContextMenuRoot>
   </div>
 </template>

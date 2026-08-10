@@ -46,6 +46,36 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 
 <XhDemo src="date-field/07-size" />
 
+### 精确到分
+
+granularity=minute 在年月日后面接出时、分两段，值随之带上 T 与时间位
+
+<XhDemo src="date-field/08-datetime" />
+
+### 外部写值与清空
+
+根插槽给出 setValue / clear 与填齐、越界两个判据，按钮照它们摆
+
+<XhDemo src="date-field/09-actions" />
+
+### 值变化事件
+
+value-change 每次带上整份 ISO 串，段位被清掉时它是 null
+
+<XhDemo src="date-field/10-events" />
+
+### 段位自定义文本
+
+段位插槽给出这一段的类型、取值与焦点状态，离焦后年份只留两位、月份换成中文名
+
+<XhDemo src="date-field/11-segment-format" />
+
+### 对外值换个写法
+
+组件读写的恒是 ISO 串，宿主用一个双向 computed 换成自己的格式，表单也提交这一份
+
+<XhDemo src="date-field/12-value-format" />
+
 ## 产物
 
 | 层 | 值 |

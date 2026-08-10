@@ -22,6 +22,12 @@ isDateUnavailable 与 min / max 都只挡落值不挡聚焦：方向键照样走
 
 <XhDemo src="calendar/03-unavailable" />
 
+### 格子里放内容
+
+cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
+
+<XhDemo src="calendar/04-cell-content" />
+
 ## 产物
 
 | 层 | 值 |

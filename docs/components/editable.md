@@ -28,6 +28,18 @@ value 与 edit 都能受控，传了就由宿主说了算，用户交互只发�
 
 <XhDemo src="editable/04-disabled" />
 
+### 表格里的单元格
+
+一格一个就地编辑：点开就是输入框，收尾即写回行数据；autoResize 让输入框按内容宽窄走，不把列撑变形
+
+<XhDemo src="editable/05-table-cell" />
+
+### 整表进出编辑态
+
+edit 受控就由宿主统一调度：一个开关把整张表切进编辑，放弃时宿主拿自己留的底稿还原
+
+<XhDemo src="editable/06-switchable" />
+
 ## 产物
 
 | 层 | 值 |

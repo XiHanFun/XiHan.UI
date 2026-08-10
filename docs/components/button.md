@@ -34,6 +34,42 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 
 <XhDemo src="button/05-tone" />
 
+### 图标与文字
+
+图元放进 prefix 或 suffix 部件，文字放进 label；两个图元部件自带 aria-hidden，读屏念到的只有 label
+
+<XhDemo src="button/06-icon" />
+
+### 点击事件
+
+处理器照常挂在组件上；载入态与禁用态的点击在根上就被拦下，作者挂的处理器也收不到
+
+<XhDemo src="button/07-click" />
+
+### 形状与图标按钮
+
+圆角是一个组件令牌；只放一枚图元时把左右内边距收成 0、宽度取控件档位，名字这时只能由 aria-label 给
+
+<XhDemo src="button/08-shape" />
+
+### 自定义配色
+
+不写 variant 时底色与文字色取自组件令牌，逐个实例覆盖就能用上语气表以外的颜色
+
+<XhDemo src="button/09-custom-color" />
+
+### 按钮组
+
+相邻两段共用一条边，圆角只留在两端；档位与形状写在容器上，靠自定义属性流给组内每一段
+
+<XhDemo src="button/10-group" />
+
+### 渲染成链接
+
+皮肤认的是 data-scope 与 data-part 这组契约，不是标签名：把契约铺到链接元素上就得到导航型按钮，跳转仍由浏览器原生完成
+
+<XhDemo src="button/11-as-link" />
+
 ## 产物
 
 | 层 | 值 |

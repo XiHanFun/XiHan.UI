@@ -34,6 +34,12 @@ size 只改轨道厚度，不写即缺省中档
 
 <XhDemo src="progress/05-size" />
 
+### 自定义外观
+
+轨道色、进度段色与轨道厚度各是一个组件令牌，纯色与渐变都塞得进去
+
+<XhDemo src="progress/06-custom-appearance" />
+
 ## 产物
 
 | 层 | 值 |

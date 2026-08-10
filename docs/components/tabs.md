@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-不传 value 即为非受控，default-value 指定初始选中项；面板常挂，靠 hidden 显隐
+标签清单交给 collection，default-value 指定初始选中项；面板常挂，靠 hidden 显隐
 
 <XhDemo src="tabs/01-basic" />
 
@@ -46,6 +46,42 @@ size 换标签的高度、内边距与字号，不传 size 即默认档
 
 <XhDemo src="tabs/07-size" />
 
+### 标签栏前后缀
+
+list 里只收 trigger；要在标签栏两侧摆东西，把它们与 list 排进同一行
+
+<XhDemo src="tabs/08-prefix-suffix" />
+
+### 拦截切换
+
+受控下 value-change 只是意图，宿主校验不过就不写回 value，标签页原地不动
+
+<XhDemo src="tabs/09-guard" />
+
+### 动态增删
+
+标签清单归宿主维护；关掉当前这页时把选中值挪到相邻一项，全关完选中值是 null
+
+<XhDemo src="tabs/10-dynamic" />
+
+### 可滚动的标签栏
+
+标签多到一行放不下时，把 list 装进作者自建的横滚容器，两端各摆一个滚动按钮
+
+<XhDemo src="tabs/11-scrollable" />
+
+### 切换后滚进视野
+
+每个标签都带 data-value 身份标记，选中值一变就按它取到那个标签，滚到视口正中
+
+<XhDemo src="tabs/12-active-into-view" />
+
+### 标签栏摆在哪一边
+
+root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就落到内容之后，基线换到另一边
+
+<XhDemo src="tabs/13-placement" />
+
 ## 产物
 
 | 层 | 值 |
@@ -66,6 +102,7 @@ size 换标签的高度、内边距与字号，不传 size 即默认档
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `collection` | `TabsNode[]` |  | 条目数据，标签文本与禁用的事实源。给了它，trigger 部件只需报 value。 缺省即回到「文本与禁用都写在 trigger 上」的老路。 |
 | `value` | `string \| null` |  | 选中值。给定即受控：内部不再自改，只发 onValueChange。 |
 | `defaultValue` | `string \| null` |  |  |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 horizontal；不同轴的方向键放行给页面滚动与读屏。 |
@@ -92,6 +129,7 @@ size 换标签的高度、内边距与字号，不传 size 即默认档
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string \| null` |  |
+| `collection` | `readonly TabsNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
 | `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
 | `setValue` | `(next: string \| null) => void` | 传 null 清空选中：context.value 与受控 value 都能表达"无选中"，写入侧同样收得下。 |
 | `getRootProps` | `() => T['element']` |  |

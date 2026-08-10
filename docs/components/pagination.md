@@ -40,6 +40,30 @@ size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一
 
 <XhDemo src="pagination/06-size" />
 
+### 极简排布
+
+页码序列不渲染也行，只留上一页 / 下一页与一行位置回显；先后顺序归作者
+
+<XhDemo src="pagination/07-simple" />
+
+### 快速跳页
+
+输入框按 Enter 调插槽给的 setPage；越界页码由它夹回合法区间
+
+<XhDemo src="pagination/08-jumper" />
+
+### 每页条数
+
+pageSize 归宿主持有；换档后总页数重算，越界的当前页被夹回末页
+
+<XhDemo src="pagination/09-page-size" />
+
+### 整组禁用
+
+分页自己没有禁用开关：裹一层 disabled 的 fieldset，里面的按钮统一失效并脱出 Tab 序
+
+<XhDemo src="pagination/10-disabled" />
+
 ## 产物
 
 | 层 | 值 |

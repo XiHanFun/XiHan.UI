@@ -28,6 +28,42 @@ expandOnClick 关掉后只有箭头与左右方向键能改展开态；禁用节
 
 <XhDemo src="tree/04-expand-on-click" />
 
+### 关键词过滤
+
+collection 换一份树就换一棵：标记跟着数据用 v-for 渲，过滤剩下的分支顺手全展开
+
+<XhDemo src="tree/05-filter" />
+
+### 异步加载子节点
+
+展开那一刻才去要数据：先摆一行禁用的占位，取回来就地换掉，收起再展开不重复请求
+
+<XhDemo src="tree/06-async" />
+
+### 前缀与行尾
+
+行里放什么由标记说了算：文字前塞图标、文字后塞操作，方向指示也可以挪到行尾去
+
+<XhDemo src="tree/07-prefix-suffix" />
+
+### 只让叶子进选中集合
+
+选中受控就由宿主定夺：分支的值直接不写回，点目录只剩展开收起这一个效果
+
+<XhDemo src="tree/08-leaf-only" />
+
+### 勾选与父子级联
+
+复选下机器只做朴素切换，级联与半选由宿主在受控回调里算：勾选框本身就是行里的一段标记
+
+<XhDemo src="tree/09-checkable" />
+
+### 拖放换父
+
+树从不拥有数据：把 draggable 与拖放监听补在节点上，落点判定与数组搬运都在宿主这边，改完 collection 树自己重推层级
+
+<XhDemo src="tree/10-drag-move" />
+
 ## 产物
 
 | 层 | 值 |

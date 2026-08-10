@@ -28,6 +28,30 @@ granularity 同时决定输入行显示几段、浮层里排几列
 
 <XhDemo src="time-picker/04-granularity" />
 
+### 禁用 / 只读 / 校验失败
+
+禁用整条退出 Tab 序，只读仍能展开浏览只是改不动值，invalid 只改标注
+
+<XhDemo src="time-picker/05-state" />
+
+### 可选时段
+
+min / max 直接把界外的格从列里裁掉；分列还会随已选的时再裁一遍
+
+<XhDemo src="time-picker/06-range" />
+
+### 浮层里的操作按钮
+
+列表下面这排按钮是作者自己的节点，键盘事件在它这一层收口，不再上交给列表
+
+<XhDemo src="time-picker/07-actions" />
+
+### 按谓词裁可选值
+
+列里渲染哪几格由作者决定，午休两格整段拿掉；手打进段位的时被吸到下一个可约小时
+
+<XhDemo src="time-picker/08-predicate" />
+
 ## 产物
 
 | 层 | 值 |

@@ -22,6 +22,48 @@ blur 与 change 两种模式下 validate 仍整表跑（校验可能带跨字段
 
 <XhDemo src="form/03-controlled" />
 
+### 禁用与只读
+
+disabled 把提交、重置、写值三条路一起封死；read-only 只封写值与重置，提交照发
+
+<XhDemo src="form/04-disabled" />
+
+### 动态字段
+
+字段容器随数组增删，值表的键跟着字段名走；校验只遍历当下这几行，删掉的行不再参与
+
+<XhDemo src="form/05-dynamic" />
+
+### 异步校验
+
+核验结果落在宿主自己的表里，validate 同步读它；核验回来直接写受控错误表，提交这一路照样拦得住
+
+<XhDemo src="form/06-async" />
+
+### 跨字段规则与手动入口
+
+validate 拿到的是整张值表，可以写两个字段互相约束的规则；插槽里的 setFieldError 与 clearErrors 随时能单独动一条
+
+<XhDemo src="form/07-manual" />
+
+### 提醒但不拦下
+
+可疑的值只在描述里提醒一句，不写进错误表：控件的 aria-invalid 仍是 false，提交照样放行
+
+<XhDemo src="form/08-warning" />
+
+### 分步校验
+
+校验函数每次提交现读一次：闭住当前这一步，提交就只校验这一步的字段；存草稿走的是普通按钮，一条规则都不跑
+
+<XhDemo src="form/09-steps" />
+
+### 嵌套模型与路径字段名
+
+字段名直接写成路径，值仍住在宿主自己的嵌套对象里：表单只管错误、id 与摘要跳转，提交时不用把扁平表折回去
+
+<XhDemo src="form/10-nested" />
+
 ## 产物
 
 | 层 | 值 |

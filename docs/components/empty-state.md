@@ -22,6 +22,18 @@ size 只换留白与字号，语义一点不动；不传即 md
 
 <XhDemo src="empty-state/03-live" />
 
+### 用作结果页
+
+同一套部件也承载 404、403 这类结果：换掉图标与文案，操作槽里放回退出口
+
+<XhDemo src="empty-state/04-result" />
+
+### 按语气着色
+
+空状态自己不带语气，图标槽里放一枚带 tone 的图标，成功、警示、出错就各是一族颜色
+
+<XhDemo src="empty-state/05-tone-icon" />
+
 ## 产物
 
 | 层 | 值 |

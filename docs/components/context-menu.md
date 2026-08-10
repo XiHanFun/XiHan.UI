@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-在触发区上右键（触摸端长按），菜单钉在按下去的那一点上而不是贴着区域某条边
+collection 是条目的事实源，结构由组件铺开；在触发区上右键（触摸端长按），菜单钉在按下去的那一点上
 
 <XhDemo src="context-menu/01-basic" />
 
@@ -34,6 +34,24 @@ size 换的是条目的内边距、间距与字号；三档各挂一块触发区
 
 <XhDemo src="context-menu/05-size" />
 
+### 放置位与箭头
+
+placement 是相对光标那一点的首选位，offset 把浮层从光标推开；arrow 指回那一点
+
+<XhDemo src="context-menu/06-placement" />
+
+### 条目里的图标与快捷键
+
+item-text 只是文字那一段，图标与快捷键提示作为兄弟节点排在它两侧
+
+<XhDemo src="context-menu/07-icon" />
+
+### 触发与连打
+
+longPressDelay 是触摸端按住多久算触发；typeahead 决定展开后的可打印字符是拿去检索还是放行给页面
+
+<XhDemo src="context-menu/08-trigger" />
+
 ## 产物
 
 | 层 | 值 |
@@ -54,6 +72,7 @@ size 换的是条目的内边距、间距与字号；三档各挂一块触发区
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `collection` | `ContextMenuNode[]` |  | 条目数据，显示文本、禁用、标记位与分组的事实源。给了它，条目部件只需报 value。 缺省即回到「文本与禁用全写在条目部件上」的老路。 |
 | `open` | `boolean` |  | 展开态。给定即受控：内部不再自改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
 | `placement` | `Placement` |  | 相对光标那一点的首选放置位，默认 bottom-start。 |
@@ -82,6 +101,7 @@ size 换的是条目的内边距、间距与字号；三档各挂一块触发区
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
+| `collection` | `readonly ContextMenuNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
 | `pressing` | `boolean` | 长按计时进行中；触发区据此给按压反馈。 |
 | `point` | `ContextMenuPoint \| null` | 当前锚点坐标；一次都没打开过时为 null。 |
 | `focusedValue` | `string \| null` | 焦点锚点；收起时为 null。 |

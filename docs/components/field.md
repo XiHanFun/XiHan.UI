@@ -22,6 +22,24 @@ Field 的 disabled 只把 data-disabled 铺到各部件上；真正改不动还�
 
 <XhDemo src="field/03-disabled" />
 
+### 标签左置
+
+各部件都是独立节点，把根节点改成两列网格就能把标题挪到控件左边，说明与错误文案跟着对齐到控件那一列
+
+<XhDemo src="field/04-label-left" />
+
+### 字段横排
+
+一行里摆多个字段：每个字段自成一块，谁跟谁排一行是外层容器的事
+
+<XhDemo src="field/05-inline" />
+
+### 提示、警告与错误
+
+三档语气各归各的部件：提示与警告都写在描述里，控件的 aria-invalid 保持 false；只有真出错才翻 invalid、错误文案才接进描述链
+
+<XhDemo src="field/06-warning" />
+
 ## 产物
 
 | 层 | 值 |

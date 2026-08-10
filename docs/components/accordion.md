@@ -40,6 +40,36 @@ size 换的是标题栏的高度、内边距与字号，三档并排对照
 
 <XhDemo src="accordion/06-size" />
 
+### 嵌套
+
+content 里再放一组手风琴，内外两组各自维护展开集合，方向键也各管各的
+
+<XhDemo src="accordion/07-nested" />
+
+### 标题栏附加信息
+
+标题栏里的节点全归作者，把计数与指示器包成一组排在末尾
+
+<XhDemo src="accordion/08-header-extra" />
+
+### 指示器在前
+
+指示器写在标题之前就落到起始缘，标题拿 auto 外边距吃掉余量
+
+<XhDemo src="accordion/09-indicator-start" />
+
+### 缩小触发区域
+
+trigger 只包住指示器，标题文字留在 header 里，点标题不再展开
+
+<XhDemo src="accordion/10-trigger-area" />
+
+### 自定义展开图标
+
+indicator 是可选部件，不渲染它就没有默认字形；标记由作者按展开集合自己画
+
+<XhDemo src="accordion/11-custom-icon" />
+
 ## 产物
 
 | 层 | 值 |
@@ -60,6 +90,7 @@ size 换的是标题栏的高度、内边距与字号，三档并排对照
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `collection` | `AccordionNode[]` |  | 条目数据，标题文本、正文与禁用的事实源。给了它，条目部件只需报 value。 缺省即回到「文本写在部件里、禁用写在条目上」的老路。 |
 | `value` | `string[]` |  | 展开集合，给定即受控。 |
 | `defaultValue` | `string[]` |  |  |
 | `multiple` | `boolean` |  | 允许多项同时展开；false 时展开一项即收起其余。 |
@@ -83,6 +114,7 @@ size 换的是标题栏的高度、内边距与字号，三档并排对照
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string[]` | 当前展开集合，单开模式下长度 ≤ 1。 |
+| `collection` | `readonly AccordionNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
 | `setValue` | `(next: string[]) => void` |  |
 | `isOpen` | `(value: string) => boolean` |  |
 | `getRootProps` | `() => T['element']` |  |
