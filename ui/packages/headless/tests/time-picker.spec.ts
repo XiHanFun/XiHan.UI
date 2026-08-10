@@ -232,6 +232,24 @@ function pressKey(el: HTMLElement, key: string, init: KeyboardEventInit = {}): K
   return event
 }
 
+/**
+ * 连等 n 个动画帧。
+ * 每一拍都由上一拍的回调里排下一拍，与被等的那一方逐帧重试的排法对齐；
+ * 不用定时器换算毫秒，帧的疏密由环境说了算。
+ */
+function flushFrames(n: number): Promise<void> {
+  return new Promise((resolve) => {
+    const step = (left: number): void => {
+      if (left <= 0) {
+        resolve()
+        return
+      }
+      requestAnimationFrame(() => step(left - 1))
+    }
+    step(n)
+  })
+}
+
 /** 一列里此刻还可选的那些格（被 min/max 裁掉的自报 aria-disabled）。 */
 function enabledValues(el: HTMLElement): string[] {
   return [...el.children]
@@ -376,8 +394,9 @@ describe('开合', () => {
   it('焦点域把焦点交给锚点那一格，而不是落在容器上', async () => {
     const h = open({ defaultValue: '09:30' })
     h.trigger.click()
-    // 焦点域会等 DOM 就位（content 那一帧还带着 hidden 时它返回 null 并重试）
-    await new Promise(resolve => setTimeout(resolve, 0))
+    // 落焦排在帧上：效应先于 open 的 entry 动作挂载，同步那一趟锚点还没算出来、
+    // content 也还带着 hidden，焦点域要到下一帧才拿得到落点，最多重试三帧
+    await flushFrames(3)
     expect(document.activeElement).toBe(h.option('hour', '09'))
   })
 
