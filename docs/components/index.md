@@ -1,6 +1,6 @@
 # 组件总览
 
-82 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/wc`）与**默认皮肤**（`@xihan-ui/styled`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
+91 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/wc`）与**默认皮肤**（`@xihan-ui/styled`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
 
 本册每个组件一页，页内固定为：产物 · 示例 · 解剖 · Props · 状态机 · connect API · 键盘。除示例外全部由组件源码生成，不会与代码对不上。
 
@@ -78,6 +78,10 @@
 | [结果页](./result) | `result` | 5 | 0 | 5 |
 | [无限滚动](./infinite-scroll) | `infinite-scroll` | 2 | 0 | 4 |
 | [日志](./log) | `log` | 4 | 1 | 5 |
+| [列表](./list) | `list` | 7 | 0 | 5 |
+| [描述列表](./descriptions) | `descriptions` | 4 | 0 | 5 |
+| [时间线](./timeline) | `timeline` | 8 | 0 | 5 |
+| [统计数值](./statistic) | `statistic` | 5 | 0 | 5 |
 
 ## 导航
 
@@ -98,6 +102,7 @@
 | [引导](./tour) | `tour` | 13 | 4 | 3 |
 | [固钉](./affix) | `affix` | 2 | 0 | 4 |
 | [回到顶部](./back-top) | `back-top` | 2 | 2 | 4 |
+| [页头](./page-header) | `page-header` | 6 | 0 | 5 |
 
 ## 反馈与浮层
 
@@ -134,3 +139,7 @@ AI 对话界面的组件。
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
 | [弹性布局](./flex) | `flex` | 1 | 0 | 5 |
+| [栅格](./grid) | `grid` | 2 | 0 | 5 |
+| [排印](./typography) | `typography` | 5 | 0 | 5 |
+| [渐变文字](./gradient-text) | `gradient-text` | 1 | 0 | 4 |
+| [布局](./layout) | `layout` | 6 | 1 | 5 |

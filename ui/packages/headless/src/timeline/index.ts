@@ -1,0 +1,5 @@
+export { timelineAnatomy } from './timeline.anatomy'
+export { connectTimeline } from './timeline.connect'
+export { timelineKeyboard } from './timeline.keyboard'
+export { timelineMeta } from './timeline.meta'
+export type { TimelineApi, TimelineItemProps, TimelinePlacement, TimelineProps } from './timeline.types'

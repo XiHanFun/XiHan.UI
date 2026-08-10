@@ -1,0 +1,223 @@
+@layer xihan.components {
+  [data-scope='grid'][data-part='root'] {
+    display: grid;
+    /* 各列等宽；下限写 0 而不是 auto，一段长文本才不会把自己那列撑宽 */
+    /* 使用者槽位排在档位之前，写死一份轨道表即盖过所有列数档 */
+    grid-template-columns: var(--xh-grid-columns, repeat(var(--xh-_grid-cols), minmax(0, 1fr)));
+    /* 不写 gap 档位就不留间距 */
+    gap: var(--xh-grid-gap, var(--xh-space-0));
+    /* 列数收在根上这一个槽位里，换档只改这里；每一层都声明一遍，嵌套时内层不吃外层的值 */
+    --xh-_grid-cols: 1;
+  }
+
+  /* —— 列数 —— */
+  /* 一列是上面的缺省，这里从两列起逐档写 */
+  [data-scope='grid'][data-part='root'][data-cols='2'] {
+    --xh-_grid-cols: 2;
+  }
+
+  [data-scope='grid'][data-part='root'][data-cols='3'] {
+    --xh-_grid-cols: 3;
+  }
+
+  [data-scope='grid'][data-part='root'][data-cols='4'] {
+    --xh-_grid-cols: 4;
+  }
+
+  [data-scope='grid'][data-part='root'][data-cols='5'] {
+    --xh-_grid-cols: 5;
+  }
+
+  [data-scope='grid'][data-part='root'][data-cols='6'] {
+    --xh-_grid-cols: 6;
+  }
+
+  [data-scope='grid'][data-part='root'][data-cols='7'] {
+    --xh-_grid-cols: 7;
+  }
+
+  [data-scope='grid'][data-part='root'][data-cols='8'] {
+    --xh-_grid-cols: 8;
+  }
+
+  [data-scope='grid'][data-part='root'][data-cols='9'] {
+    --xh-_grid-cols: 9;
+  }
+
+  [data-scope='grid'][data-part='root'][data-cols='10'] {
+    --xh-_grid-cols: 10;
+  }
+
+  [data-scope='grid'][data-part='root'][data-cols='11'] {
+    --xh-_grid-cols: 11;
+  }
+
+  [data-scope='grid'][data-part='root'][data-cols='12'] {
+    --xh-_grid-cols: 12;
+  }
+
+  /* —— 间距档位 —— */
+  /* 每一档指向一个间距令牌，行与行之间也吃这同一份间距 */
+  [data-scope='grid'][data-part='root'][data-gap='xs'] {
+    gap: var(--xh-grid-gap, var(--xh-space-1));
+  }
+
+  [data-scope='grid'][data-part='root'][data-gap='sm'] {
+    gap: var(--xh-grid-gap, var(--xh-space-2));
+  }
+
+  [data-scope='grid'][data-part='root'][data-gap='md'] {
+    gap: var(--xh-grid-gap, var(--xh-space-3));
+  }
+
+  [data-scope='grid'][data-part='root'][data-gap='lg'] {
+    gap: var(--xh-grid-gap, var(--xh-space-4));
+  }
+
+  [data-scope='grid'][data-part='root'][data-gap='xl'] {
+    gap: var(--xh-grid-gap, var(--xh-space-6));
+  }
+
+  /* —— 块向对齐 —— */
+  /* 管的是每一项在自己那格里怎么摆，不是格子在容器里怎么摆：列宽由轨道表定死，容器不留富余 */
+  [data-scope='grid'][data-part='root'][data-align='start'] {
+    align-items: start;
+  }
+
+  [data-scope='grid'][data-part='root'][data-align='center'] {
+    align-items: center;
+  }
+
+  [data-scope='grid'][data-part='root'][data-align='end'] {
+    align-items: end;
+  }
+
+  [data-scope='grid'][data-part='root'][data-align='stretch'] {
+    align-items: stretch;
+  }
+
+  [data-scope='grid'][data-part='root'][data-align='baseline'] {
+    align-items: baseline;
+  }
+
+  /* —— 行内对齐 —— */
+  [data-scope='grid'][data-part='root'][data-justify='start'] {
+    justify-items: start;
+  }
+
+  [data-scope='grid'][data-part='root'][data-justify='center'] {
+    justify-items: center;
+  }
+
+  [data-scope='grid'][data-part='root'][data-justify='end'] {
+    justify-items: end;
+  }
+
+  [data-scope='grid'][data-part='root'][data-justify='stretch'] {
+    justify-items: stretch;
+  }
+
+  /* —— 格子 —— */
+  [data-scope='grid'][data-part='item'] {
+    grid-column-start: var(--xh-_grid-start);
+    grid-column-end: span var(--xh-_grid-span);
+
+    /* 两个槽位在每一格上都声明一遍，嵌套时内层的格子不吃外层那一格的值 */
+    --xh-_grid-span: 1;
+    --xh-_grid-start: auto;
+  }
+
+  /* —— 跨列 —— */
+  /* 占一列是上面的缺省，这里从跨两列起逐档写 */
+  [data-scope='grid'][data-part='item'][data-span='2'] {
+    --xh-_grid-span: 2;
+  }
+
+  [data-scope='grid'][data-part='item'][data-span='3'] {
+    --xh-_grid-span: 3;
+  }
+
+  [data-scope='grid'][data-part='item'][data-span='4'] {
+    --xh-_grid-span: 4;
+  }
+
+  [data-scope='grid'][data-part='item'][data-span='5'] {
+    --xh-_grid-span: 5;
+  }
+
+  [data-scope='grid'][data-part='item'][data-span='6'] {
+    --xh-_grid-span: 6;
+  }
+
+  [data-scope='grid'][data-part='item'][data-span='7'] {
+    --xh-_grid-span: 7;
+  }
+
+  [data-scope='grid'][data-part='item'][data-span='8'] {
+    --xh-_grid-span: 8;
+  }
+
+  [data-scope='grid'][data-part='item'][data-span='9'] {
+    --xh-_grid-span: 9;
+  }
+
+  [data-scope='grid'][data-part='item'][data-span='10'] {
+    --xh-_grid-span: 10;
+  }
+
+  [data-scope='grid'][data-part='item'][data-span='11'] {
+    --xh-_grid-span: 11;
+  }
+
+  [data-scope='grid'][data-part='item'][data-span='12'] {
+    --xh-_grid-span: 12;
+  }
+
+  /* —— 错列 —— */
+  /* 错 N 列 = 改从第 N+1 条列线起排，前面那 N 列空着。
+     列线跟着书写方向走，RTL 下自动从另一头数。
+     错的是列线不是「相对上一格再往后几格」：同一行里前面已经排到更后面时，这一格落到下一行的那条列线上。 */
+  [data-scope='grid'][data-part='item'][data-offset='1'] {
+    --xh-_grid-start: 2;
+  }
+
+  [data-scope='grid'][data-part='item'][data-offset='2'] {
+    --xh-_grid-start: 3;
+  }
+
+  [data-scope='grid'][data-part='item'][data-offset='3'] {
+    --xh-_grid-start: 4;
+  }
+
+  [data-scope='grid'][data-part='item'][data-offset='4'] {
+    --xh-_grid-start: 5;
+  }
+
+  [data-scope='grid'][data-part='item'][data-offset='5'] {
+    --xh-_grid-start: 6;
+  }
+
+  [data-scope='grid'][data-part='item'][data-offset='6'] {
+    --xh-_grid-start: 7;
+  }
+
+  [data-scope='grid'][data-part='item'][data-offset='7'] {
+    --xh-_grid-start: 8;
+  }
+
+  [data-scope='grid'][data-part='item'][data-offset='8'] {
+    --xh-_grid-start: 9;
+  }
+
+  [data-scope='grid'][data-part='item'][data-offset='9'] {
+    --xh-_grid-start: 10;
+  }
+
+  [data-scope='grid'][data-part='item'][data-offset='10'] {
+    --xh-_grid-start: 11;
+  }
+
+  [data-scope='grid'][data-part='item'][data-offset='11'] {
+    --xh-_grid-start: 12;
+  }
+}

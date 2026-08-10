@@ -1,0 +1,85 @@
+@layer xihan.components {
+  [data-scope='page-header'][data-part='root'] {
+    /* 尺寸档只换这三个私有槽，各段从根上继承它们，换档不必给每个部件各写一条选择器 */
+    --xh-_page-header-py: var(--xh-space-4);
+    --xh-_page-header-row-gap: var(--xh-space-2);
+    --xh-_page-header-title-size: var(--xh-font-size-xl);
+
+    /* 一行排不下就折行；返回位、标题、副标题排在同一行，操作贴到行尾，页脚整行另起 */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: var(--xh-page-header-column-gap, var(--xh-space-3));
+    row-gap: var(--xh-page-header-row-gap, var(--xh-_page-header-row-gap));
+    padding-block: var(--xh-page-header-py, var(--xh-_page-header-py));
+    color: var(--xh-page-header-fg, var(--xh-fg-default));
+  }
+
+  /* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
+  [data-scope='page-header'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* —— 尺寸 —— */
+  [data-scope='page-header'][data-part='root'][data-size='sm'] {
+    --xh-_page-header-py: var(--xh-space-3);
+    --xh-_page-header-row-gap: var(--xh-space-1);
+    --xh-_page-header-title-size: var(--xh-font-size-lg);
+  }
+
+  [data-scope='page-header'][data-part='root'][data-size='lg'] {
+    --xh-_page-header-py: var(--xh-space-6);
+    --xh-_page-header-row-gap: var(--xh-space-3);
+    --xh-_page-header-title-size: var(--xh-font-size-2xl);
+  }
+
+  /* —— 分隔线 —— */
+  [data-scope='page-header'][data-part='root'][data-bordered] {
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-page-header-border, var(--xh-border-subtle));
+  }
+
+  /* —— 各段 —— */
+  /* 返回位只摆位置与对齐，外观归作者自己的按钮 */
+  [data-scope='page-header'][data-part='back-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  [data-scope='page-header'][data-part='title'] {
+    margin: 0;
+    flex: none;
+    color: var(--xh-page-header-title-fg, var(--xh-fg-default));
+    font-size: var(--xh-page-header-title-font-size, var(--xh-_page-header-title-size));
+    font-weight: var(--xh-page-header-title-font-weight, var(--xh-font-weight-semibold));
+    line-height: var(--xh-leading-tight);
+  }
+
+  /* 副标题吃掉标题与操作之间的剩余宽度，长文本在这里收窄换行 */
+  [data-scope='page-header'][data-part='subtitle'] {
+    margin: 0;
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    color: var(--xh-page-header-subtitle-fg, var(--xh-fg-muted));
+    font-size: var(--xh-page-header-subtitle-font-size, var(--xh-font-size-sm));
+    line-height: var(--xh-leading-normal);
+  }
+
+  /* 操作区贴到行尾，没有副标题占位时也一样靠边 */
+  [data-scope='page-header'][data-part='extra'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--xh-page-header-extra-gap, var(--xh-space-2));
+    margin-inline-start: auto;
+  }
+
+  /* 页脚占满一整行，前面有内容时自然被挤到下一行 */
+  [data-scope='page-header'][data-part='footer'] {
+    flex: 1 0 100%;
+    color: var(--xh-page-header-footer-fg, var(--xh-fg-muted));
+    font-size: var(--xh-page-header-footer-font-size, var(--xh-font-size-sm));
+    line-height: var(--xh-leading-normal);
+  }
+}

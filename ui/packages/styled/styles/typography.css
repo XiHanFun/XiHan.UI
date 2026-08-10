@@ -1,0 +1,151 @@
+@layer xihan.components {
+  [data-scope='typography'][data-part='root'] {
+    /* 尺寸档只换这几个私有槽，各段从根上继承它们，换档不必给每个部件各写一条选择器 */
+    --xh-_typography-body-size: var(--xh-text-body-size);
+    --xh-_typography-block-gap: var(--xh-space-4);
+    --xh-_typography-heading-gap: var(--xh-space-6);
+    --xh-_typography-h1: var(--xh-font-size-3xl);
+    --xh-_typography-h2: var(--xh-font-size-2xl);
+    --xh-_typography-h3: var(--xh-font-size-xl);
+    --xh-_typography-h4: var(--xh-font-size-lg);
+    --xh-_typography-h5: var(--xh-font-size-md);
+    --xh-_typography-h6: var(--xh-font-size-sm);
+    /* 读行宽度：整块正文不收窄就会拉成一行行难读的长句 */
+    --xh-_typography-measure: 68ch;
+    /* 行内代码跟着所在那行的字号缩，用相对单位而不是档位 */
+    --xh-_typography-code-size: 0.9em;
+
+    /* 建块级格式化上下文，段落的外边距不越过根往外塌 */
+    display: flow-root;
+    max-inline-size: var(--xh-typography-measure, var(--xh-_typography-measure));
+    color: var(--xh-typography-fg, var(--xh-fg-default));
+    font-size: var(--xh-typography-font-size, var(--xh-_typography-body-size));
+    font-weight: var(--xh-typography-font-weight, var(--xh-text-body-weight));
+    line-height: var(--xh-typography-leading, var(--xh-text-body-leading));
+  }
+
+  /* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
+  [data-scope='typography'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* —— 尺寸 —— */
+  /* 小档整体降一级字号档位 */
+  [data-scope='typography'][data-part='root'][data-size='sm'] {
+    --xh-_typography-body-size: var(--xh-font-size-sm);
+    --xh-_typography-block-gap: var(--xh-space-3);
+    --xh-_typography-heading-gap: var(--xh-space-5);
+    --xh-_typography-h1: var(--xh-font-size-2xl);
+    --xh-_typography-h2: var(--xh-font-size-xl);
+    --xh-_typography-h3: var(--xh-font-size-lg);
+    --xh-_typography-h4: var(--xh-font-size-md);
+    --xh-_typography-h5: var(--xh-font-size-sm);
+    --xh-_typography-h6: var(--xh-font-size-xs);
+  }
+
+  /* 大档只放大正文与段距：标题档位在 3xl 见顶，六档保持原样 */
+  [data-scope='typography'][data-part='root'][data-size='lg'] {
+    --xh-_typography-body-size: var(--xh-font-size-lg);
+    --xh-_typography-block-gap: var(--xh-space-5);
+    --xh-_typography-heading-gap: var(--xh-space-8);
+  }
+
+  /* —— 块级段落 —— */
+  /* 库里没有全局 preflight，作者写的 hN / p 带着 UA 外边距，在这儿抹平 */
+  [data-scope='typography'][data-part='heading'],
+  [data-scope='typography'][data-part='paragraph'] {
+    margin: 0;
+  }
+
+  [data-scope='typography'][data-part='heading'] {
+    color: var(--xh-typography-heading-fg, var(--xh-fg-default));
+    font-size: var(--xh-typography-heading-font-size, var(--xh-_typography-h3));
+    font-weight: var(--xh-typography-heading-font-weight, var(--xh-font-weight-semibold));
+    line-height: var(--xh-typography-heading-leading, var(--xh-leading-tight));
+    /* 标题折行时把各行拉得一样长 */
+    text-wrap: balance;
+  }
+
+  /* —— 标题档位 —— */
+  /* 使用者槽位排在档位之前：写死一个值即盖过全部六档 */
+  [data-scope='typography'][data-part='heading'][data-level='1'] {
+    font-size: var(--xh-typography-heading-font-size, var(--xh-_typography-h1));
+  }
+
+  [data-scope='typography'][data-part='heading'][data-level='2'] {
+    font-size: var(--xh-typography-heading-font-size, var(--xh-_typography-h2));
+  }
+
+  [data-scope='typography'][data-part='heading'][data-level='3'] {
+    font-size: var(--xh-typography-heading-font-size, var(--xh-_typography-h3));
+  }
+
+  [data-scope='typography'][data-part='heading'][data-level='4'] {
+    font-size: var(--xh-typography-heading-font-size, var(--xh-_typography-h4));
+  }
+
+  [data-scope='typography'][data-part='heading'][data-level='5'] {
+    font-size: var(--xh-typography-heading-font-size, var(--xh-_typography-h5));
+  }
+
+  [data-scope='typography'][data-part='heading'][data-level='6'] {
+    font-size: var(--xh-typography-heading-font-size, var(--xh-_typography-h6));
+  }
+
+  /* —— 段间距 —— */
+  /* 间距画在后一块的上边，块与块之间只留一份，正文末尾也不多出一截 */
+  [data-scope='typography']:is([data-part='heading'], [data-part='paragraph'])
+    + [data-scope='typography']:is([data-part='heading'], [data-part='paragraph']) {
+    margin-block-start: var(--xh-typography-block-gap, var(--xh-_typography-block-gap));
+  }
+
+  /* 标题上面留得更开，它带起的是下面一整段 */
+  [data-scope='typography']:is([data-part='heading'], [data-part='paragraph'])
+    + [data-scope='typography'][data-part='heading'] {
+    margin-block-start: var(--xh-typography-heading-gap, var(--xh-_typography-heading-gap));
+  }
+
+  /* —— 行内文字 —— */
+  /* 不写形态与语气时就是一段普通正文，这里只声明形态各自加的那一层 */
+  [data-scope='typography'][data-part='text'][data-variant='muted'] {
+    color: var(--xh-typography-text-fg, var(--xh-fg-muted));
+  }
+
+  [data-scope='typography'][data-part='text'][data-variant='strong'] {
+    font-weight: var(--xh-typography-text-font-weight, var(--xh-font-weight-semibold));
+  }
+
+  [data-scope='typography'][data-part='text'][data-variant='code'] {
+    padding-block: var(--xh-typography-code-py, var(--xh-space-0_5));
+    padding-inline: var(--xh-typography-code-px, var(--xh-space-1));
+    border-radius: var(--xh-typography-code-radius, var(--xh-radius-sm));
+    background: var(--xh-typography-code-bg, var(--xh-bg-subtle));
+    font-family: var(--xh-font-family-mono);
+    font-size: var(--xh-typography-code-font-size, var(--xh-_typography-code-size));
+  }
+
+  /* 语气排在形态之后：两个轴一起写时，用哪族颜色由语气说了算 */
+  [data-scope='typography'][data-part='text'][data-tone] {
+    color: var(--xh-typography-text-fg, var(--xh-_tone-fg));
+  }
+
+  /* —— 行内链接 —— */
+  [data-scope='typography'][data-part='link'] {
+    border-radius: var(--xh-typography-link-radius, var(--xh-radius-sm));
+    color: var(--xh-typography-link-fg, var(--xh-fg-brand));
+    text-decoration: underline;
+    text-underline-offset: var(--xh-typography-link-underline-offset, var(--xh-space-0_5));
+  }
+
+  /* 悬停只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
+  @media (hover: hover) {
+    [data-scope='typography'][data-part='link']:hover {
+      color: var(--xh-typography-link-fg-hover, var(--xh-fg-brand-strong));
+    }
+  }
+
+  [data-scope='typography'][data-part='link']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+}

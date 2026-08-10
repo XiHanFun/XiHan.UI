@@ -1,0 +1,284 @@
+@layer xihan.components {
+  [data-scope='timeline'][data-part='root'] {
+    /* 尺寸档只换这几个私有槽，条目、圆点与文字都从 root 继承它们，
+       换档不必给每个部件各写一条选择器 */
+    --xh-_timeline-dot-size: 10px;
+    --xh-_timeline-gutter: var(--xh-space-3);
+    --xh-_timeline-item-gap: var(--xh-space-5);
+    --xh-_timeline-title-font-size: var(--xh-text-label-size);
+    --xh-_timeline-caption-font-size: var(--xh-font-size-xs);
+    /* 标题首行占多高。圆点按它居中下移，圆心才落在标题这一行的中线上 */
+    --xh-_timeline-line-h: calc(
+      var(--xh-timeline-title-font-size, var(--xh-_timeline-title-font-size)) * var(--xh-leading-tight)
+    );
+
+    /* 条目之间不设 gap：留白由 content 自己的边距撑出来，连线才连得到下一条的圆点。
+       ol 的项目符号与内外边距是 UA 给的，库里没有全局 preflight，只能在这儿自己抹平 */
+    display: flex;
+    margin: 0;
+    padding: 0;
+    color: var(--xh-timeline-fg, var(--xh-fg-default));
+    list-style: none;
+  }
+
+  [data-scope='timeline'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='timeline'][data-part='root'][data-orientation='vertical'] {
+    flex-direction: column;
+  }
+
+  [data-scope='timeline'][data-part='root'][data-orientation='horizontal'] {
+    flex-direction: row;
+  }
+
+  /* —— 尺寸 —— */
+  /* 缺省档写在上面的基础规则里。圆点直径不在控件高度那把尺上，两侧直接给像素 */
+  [data-scope='timeline'][data-part='root'][data-size='sm'] {
+    --xh-_timeline-dot-size: 8px;
+    --xh-_timeline-gutter: var(--xh-space-2);
+    --xh-_timeline-item-gap: var(--xh-space-4);
+    --xh-_timeline-title-font-size: var(--xh-font-size-sm);
+    /* 字号档最小就是 xs，时刻文本不再往下走，故不重声明 caption */
+  }
+
+  [data-scope='timeline'][data-part='root'][data-size='lg'] {
+    --xh-_timeline-dot-size: 12px;
+    --xh-_timeline-gutter: var(--xh-space-4);
+    --xh-_timeline-item-gap: var(--xh-space-6);
+    --xh-_timeline-title-font-size: var(--xh-font-size-lg);
+    --xh-_timeline-caption-font-size: var(--xh-font-size-sm);
+  }
+
+  /* —— 条目 —— */
+  /* 圆点与连线占一列（横排时占一行），内容占另一列，用 grid 而不是再包一层节点：
+     解剖里没有那个包裹层，作者也不该被逼着多写一个 div */
+  [data-scope='timeline'][data-part='item'] {
+    display: grid;
+    column-gap: var(--xh-timeline-gutter, var(--xh-_timeline-gutter));
+    /* 库里没有全局 preflight，列表项的外边距在这里自己抹平 */
+    margin: 0;
+    /* 允许被压缩，内容里的省略号才有生效的余地 */
+    min-inline-size: 0;
+  }
+
+  [data-scope='timeline'][data-part='item'][hidden] {
+    display: none;
+  }
+
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical'] {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  /* 横排时每条等分整行 */
+  [data-scope='timeline'][data-part='item'][data-orientation='horizontal'] {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    flex: 1;
+  }
+
+  /* —— 圆点 —— */
+  [data-scope='timeline'][data-part='indicator'] {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-timeline-indicator-size, var(--xh-_timeline-dot-size));
+    block-size: var(--xh-timeline-indicator-size, var(--xh-_timeline-dot-size));
+    border-radius: var(--xh-radius-full);
+    /* 使用者令牌排在语气之前；两者都没有时退回一个中性的实心点 */
+    background: var(--xh-timeline-indicator-bg, var(--xh-_tone-soft, var(--xh-fg-muted)));
+    color: var(--xh-timeline-indicator-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+    font-size: var(--xh-timeline-indicator-font-size, var(--xh-_timeline-caption-font-size));
+    line-height: var(--xh-leading-none);
+  }
+
+  [data-scope='timeline'][data-part='indicator'][hidden] {
+    display: none;
+  }
+
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical'] [data-scope='timeline'][data-part='indicator'] {
+    grid-column: 1;
+    grid-row: 1;
+    /* 行高减去直径的一半：calc 里的除法要写成乘 0.5，除号在这儿是无效语法 */
+    margin-block-start: calc(
+      (var(--xh-_timeline-line-h) - var(--xh-timeline-indicator-size, var(--xh-_timeline-dot-size))) * 0.5
+    );
+  }
+
+  [data-scope='timeline'][data-part='item'][data-orientation='horizontal'] [data-scope='timeline'][data-part='indicator'] {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  /* —— 连线 —— */
+  [data-scope='timeline'][data-part='connector'] {
+    border-radius: var(--xh-radius-full);
+    background: var(--xh-timeline-connector-bg, var(--xh-border-default));
+  }
+
+  [data-scope='timeline'][data-part='connector'][hidden] {
+    display: none;
+  }
+
+  /* 竖排：从圆点下沿一直伸到条目底边，接上下一条的圆点。
+     min-block-size 兜住内容极短的条目，那时也还看得见一截线 */
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical'] [data-scope='timeline'][data-part='connector'] {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: center;
+    inline-size: var(--xh-timeline-connector-thickness, var(--xh-stroke-thick));
+    min-block-size: var(--xh-timeline-connector-min-length, var(--xh-space-4));
+    margin-block-start: var(--xh-space-1);
+  }
+
+  /* 横排：线转成横的一条，与圆点同一行 */
+  [data-scope='timeline'][data-part='item'][data-orientation='horizontal'] [data-scope='timeline'][data-part='connector'] {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    min-inline-size: var(--xh-timeline-connector-min-length, var(--xh-space-4));
+    block-size: var(--xh-timeline-connector-thickness, var(--xh-stroke-thick));
+    margin-inline-start: var(--xh-space-1);
+  }
+
+  /* 末条后面没有下一件事，那截线不该占地方；作者不写它也一样，写了就替他收掉 */
+  [data-scope='timeline'][data-part='item']:last-child [data-scope='timeline'][data-part='connector'] {
+    display: none;
+  }
+
+  /* —— 内容 —— */
+  [data-scope='timeline'][data-part='content'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-space-1);
+    min-inline-size: 0;
+  }
+
+  [data-scope='timeline'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  /* 条目之间的留白由内容自己的边距撑出来，连线的那一列因此能一路连到下一条 */
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical'] [data-scope='timeline'][data-part='content'] {
+    grid-column: 2;
+    grid-row: 1 / -1;
+    padding-block-end: var(--xh-timeline-item-gap, var(--xh-_timeline-item-gap));
+  }
+
+  [data-scope='timeline'][data-part='item'][data-orientation='horizontal'] [data-scope='timeline'][data-part='content'] {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    padding-block-start: var(--xh-space-2);
+    padding-inline-end: var(--xh-timeline-item-gap, var(--xh-_timeline-item-gap));
+  }
+
+  /* 末条的留白同样收掉：它后面已经没有要隔开的东西 */
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical']:last-child [data-scope='timeline'][data-part='content'] {
+    padding-block-end: 0;
+  }
+
+  [data-scope='timeline'][data-part='item'][data-orientation='horizontal']:last-child [data-scope='timeline'][data-part='content'] {
+    padding-inline-end: 0;
+  }
+
+  /* —— 侧别 —— */
+  /* 不写 placement 时内容落在结束侧，即上面那几条基础规则。
+     start 把线挪到结束侧、内容挪到起始侧，文字一并靠向线 */
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='start'] {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='start'] [data-scope='timeline'][data-part='indicator'],
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='start'] [data-scope='timeline'][data-part='connector'] {
+    grid-column: 2;
+  }
+
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='start'] [data-scope='timeline'][data-part='content'] {
+    grid-column: 1;
+    align-items: flex-end;
+    text-align: end;
+  }
+
+  /* alternate：线走中间，奇数条在结束侧、偶数条在起始侧 */
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='alternate'] {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='alternate'] [data-scope='timeline'][data-part='indicator'],
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='alternate'] [data-scope='timeline'][data-part='connector'] {
+    grid-column: 2;
+  }
+
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='alternate'] [data-scope='timeline'][data-part='content'] {
+    grid-column: 3;
+  }
+
+  [data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='alternate']:nth-child(even) [data-scope='timeline'][data-part='content'] {
+    grid-column: 1;
+    align-items: flex-end;
+    text-align: end;
+  }
+
+  /* 横排的 start 是把内容挪到线的上方，内容贴着线的那一边对齐 */
+  [data-scope='timeline'][data-part='item'][data-orientation='horizontal'][data-placement='start'] {
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  [data-scope='timeline'][data-part='item'][data-orientation='horizontal'][data-placement='start'] [data-scope='timeline'][data-part='indicator'],
+  [data-scope='timeline'][data-part='item'][data-orientation='horizontal'][data-placement='start'] [data-scope='timeline'][data-part='connector'] {
+    grid-row: 2;
+  }
+
+  [data-scope='timeline'][data-part='item'][data-orientation='horizontal'][data-placement='start'] [data-scope='timeline'][data-part='content'] {
+    grid-row: 1;
+    align-self: end;
+    padding-block-start: 0;
+    padding-block-end: var(--xh-space-2);
+  }
+
+  [data-scope='timeline'][data-part='item'][data-orientation='horizontal'][data-placement='alternate'] {
+    grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+
+  [data-scope='timeline'][data-part='item'][data-orientation='horizontal'][data-placement='alternate'] [data-scope='timeline'][data-part='indicator'],
+  [data-scope='timeline'][data-part='item'][data-orientation='horizontal'][data-placement='alternate'] [data-scope='timeline'][data-part='connector'] {
+    grid-row: 2;
+  }
+
+  [data-scope='timeline'][data-part='item'][data-orientation='horizontal'][data-placement='alternate'] [data-scope='timeline'][data-part='content'] {
+    grid-row: 3;
+    align-self: start;
+  }
+
+  [data-scope='timeline'][data-part='item'][data-orientation='horizontal'][data-placement='alternate']:nth-child(even) [data-scope='timeline'][data-part='content'] {
+    grid-row: 1;
+    align-self: end;
+    padding-block-start: 0;
+    padding-block-end: var(--xh-space-2);
+  }
+
+  /* —— 文字 —— */
+  [data-scope='timeline'][data-part='title'] {
+    color: var(--xh-timeline-title-fg, var(--xh-fg-default));
+    font-size: var(--xh-timeline-title-font-size, var(--xh-_timeline-title-font-size));
+    font-weight: var(--xh-timeline-title-font-weight, var(--xh-text-label-weight));
+    line-height: var(--xh-leading-tight);
+  }
+
+  [data-scope='timeline'][data-part='description'] {
+    color: var(--xh-timeline-description-fg, var(--xh-fg-muted));
+    font-size: var(--xh-timeline-description-font-size, var(--xh-text-body-size));
+    line-height: var(--xh-leading-normal);
+  }
+
+  [data-scope='timeline'][data-part='time'] {
+    color: var(--xh-timeline-time-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-timeline-time-font-size, var(--xh-_timeline-caption-font-size));
+    /* 等宽数字：时刻里的 1 与 7 在比例字体里宽度不同，不定住会让整列时间左右抖一格 */
+    font-variant-numeric: tabular-nums;
+    line-height: var(--xh-leading-normal);
+  }
+}

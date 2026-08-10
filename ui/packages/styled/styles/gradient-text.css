@@ -1,0 +1,62 @@
+@layer xihan.components {
+  /* 渐变画在背景上，再用 background-clip 把背景裁进字形里；前景必须透明才透得出底下的渐变。
+     两条 background-clip 都写：WebKit 只认带前缀那条。
+     -webkit-text-fill-color 在 WebKit 里决定字形填充色并盖过 color，也要一并透明。 */
+  [data-scope='gradient-text'][data-part='root'] {
+    /* 走向由 data-direction 换掉这一个槽，背景那条声明只写一遍 */
+    --xh-_gradient-text-dir: to right;
+
+    background-image: linear-gradient(
+      var(--xh-_gradient-text-dir),
+      var(--xh-gradient-text-from, var(--xh-color-brand-500)),
+      var(--xh-gradient-text-to, var(--xh-color-brand-700))
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* —— 走向 —— */
+  /* 逐档换算成 CSS 的 to <边或角>，四条边加四个角 */
+  [data-scope='gradient-text'][data-part='root'][data-direction='to-right'] {
+    --xh-_gradient-text-dir: to right;
+  }
+
+  [data-scope='gradient-text'][data-part='root'][data-direction='to-left'] {
+    --xh-_gradient-text-dir: to left;
+  }
+
+  [data-scope='gradient-text'][data-part='root'][data-direction='to-bottom'] {
+    --xh-_gradient-text-dir: to bottom;
+  }
+
+  [data-scope='gradient-text'][data-part='root'][data-direction='to-top'] {
+    --xh-_gradient-text-dir: to top;
+  }
+
+  [data-scope='gradient-text'][data-part='root'][data-direction='to-bottom-right'] {
+    --xh-_gradient-text-dir: to bottom right;
+  }
+
+  [data-scope='gradient-text'][data-part='root'][data-direction='to-bottom-left'] {
+    --xh-_gradient-text-dir: to bottom left;
+  }
+
+  [data-scope='gradient-text'][data-part='root'][data-direction='to-top-right'] {
+    --xh-_gradient-text-dir: to top right;
+  }
+
+  [data-scope='gradient-text'][data-part='root'][data-direction='to-top-left'] {
+    --xh-_gradient-text-dir: to top left;
+  }
+
+  /* 强制色模式下系统会禁掉背景图，留着透明前景整段字就彻底看不见了，这里把填充色还回去 */
+  @media (forced-colors: active) {
+    [data-scope='gradient-text'][data-part='root'] {
+      background-image: none;
+      color: inherit;
+      -webkit-text-fill-color: currentColor;
+    }
+  }
+}

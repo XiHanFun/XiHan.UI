@@ -227,6 +227,9 @@ export {
 } from './components/date-picker/date-picker'
 export { useDatePicker } from './components/date-picker/use-date-picker'
 export type { DatePickerContext } from './components/date-picker/use-date-picker'
+export { provideDescriptions, useDescriptionsContext } from './components/descriptions/context'
+export type { DescriptionsContext } from './components/descriptions/context'
+export { XhDescriptionsItem, XhDescriptionsLabel, XhDescriptionsRoot, XhDescriptionsValue } from './components/descriptions/descriptions'
 export {
   XhDialogCloseTrigger,
   XhDialogContent,
@@ -291,6 +294,10 @@ export {
 } from './components/form/form'
 export { useForm } from './components/form/use-form'
 export type { FormCallbacks, FormContext } from './components/form/use-form'
+export { XhGradientText } from './components/gradient-text/gradient-text'
+export { provideGrid, useGridContext } from './components/grid/context'
+export type { GridContext } from './components/grid/context'
+export { XhGridItem, XhGridRoot } from './components/grid/grid'
 export {
   XhHoverCardArrow,
   XhHoverCardContent,
@@ -315,6 +322,13 @@ export { provideInfiniteScroll, useInfiniteScrollContext } from './components/in
 export { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from './components/infinite-scroll/infinite-scroll'
 export { useInfiniteScroll } from './components/infinite-scroll/use-infinite-scroll'
 export type { InfiniteScrollContext } from './components/infinite-scroll/use-infinite-scroll'
+export { provideLayout, useLayoutContext } from './components/layout/context'
+export { XhLayoutContent, XhLayoutFooter, XhLayoutHeader, XhLayoutRoot, XhLayoutSider, XhLayoutSiderTrigger } from './components/layout/layout'
+export { useLayout } from './components/layout/use-layout'
+export type { LayoutContext } from './components/layout/use-layout'
+export { provideList, useListContext } from './components/list/context'
+export type { ListContext } from './components/list/context'
+export { XhListItem, XhListItemAction, XhListItemContent, XhListItemDescription, XhListItemMedia, XhListItemTitle, XhListRoot } from './components/list/list'
 export {
   XhListboxContent,
   XhListboxItem,
@@ -384,6 +398,9 @@ export {
 } from './components/number-field/number-field'
 export { useNumberField } from './components/number-field/use-number-field'
 export type { NumberFieldContext } from './components/number-field/use-number-field'
+export { providePageHeader, usePageHeaderContext } from './components/page-header/context'
+export type { PageHeaderContext } from './components/page-header/context'
+export { XhPageHeaderBackTrigger, XhPageHeaderExtra, XhPageHeaderFooter, XhPageHeaderRoot, XhPageHeaderSubtitle, XhPageHeaderTitle } from './components/page-header/page-header'
 export {
   XhPaginationEllipsis,
   XhPaginationItem,
@@ -466,6 +483,7 @@ export {
   XhSelectValueText,
 } from './components/select/select'
 export { useSelect } from './components/select/use-select'
+
 export type { SelectContext } from './components/select/use-select'
 export { XhSeparator } from './components/separator/separator'
 export { XhSkeletonBone, XhSkeletonRoot } from './components/skeleton/skeleton'
@@ -488,6 +506,9 @@ export {
 } from './components/splitter/splitter'
 export { useSplitter } from './components/splitter/use-splitter'
 export type { SplitterContext } from './components/splitter/use-splitter'
+export { provideStatistic, useStatisticContext } from './components/statistic/context'
+export type { StatisticContext } from './components/statistic/context'
+export { XhStatisticLabel, XhStatisticPrefix, XhStatisticRoot, XhStatisticSuffix, XhStatisticValue } from './components/statistic/statistic'
 export {
   XhStepsContent,
   XhStepsDescription,
@@ -504,6 +525,7 @@ export type { StepsContext } from './components/steps/use-steps'
 export { XhSwitch } from './components/switch/switch'
 export { useSwitch } from './components/switch/use-switch'
 export type { SwitchContext } from './components/switch/use-switch'
+
 export {
   XhTableBody,
   XhTableCaption,
@@ -521,7 +543,6 @@ export {
   XhTableSelectAllTrigger,
   XhTableSortTrigger,
 } from './components/table/table'
-
 export { useTable } from './components/table/use-table'
 export type { TableContext } from './components/table/use-table'
 export {
@@ -587,8 +608,10 @@ export {
   XhTimePickerTrigger,
 } from './components/time-picker/time-picker'
 export { useTimePicker } from './components/time-picker/use-time-picker'
-
 export type { TimePickerContext } from './components/time-picker/use-time-picker'
+export { provideTimeline, provideTimelineItem, useTimelineContext, useTimelineItem } from './components/timeline/context'
+export type { TimelineContext } from './components/timeline/context'
+export { XhTimelineConnector, XhTimelineContent, XhTimelineDescription, XhTimelineIndicator, XhTimelineItem, XhTimelineRoot, XhTimelineTime, XhTimelineTitle } from './components/timeline/timeline'
 export {
   XhToastActionTrigger,
   XhToastCloseTrigger,
@@ -704,6 +727,9 @@ export {
 } from './components/tree/tree'
 export { useTree } from './components/tree/use-tree'
 export type { TreeContext } from './components/tree/use-tree'
+export { provideTypography, useTypographyContext } from './components/typography/context'
+export type { TypographyContext } from './components/typography/context'
+export { XhTypographyHeading, XhTypographyLink, XhTypographyParagraph, XhTypographyRoot, XhTypographyText } from './components/typography/typography'
 export { useVirtualizer } from './components/virtualizer/use-virtualizer'
 export type { VirtualizerContext } from './components/virtualizer/use-virtualizer'
 export {
