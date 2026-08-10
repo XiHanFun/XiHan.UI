@@ -88,13 +88,24 @@ const adaptersSidebar: DefaultTheme.SidebarItem[] = [
   },
 ];
 
+// 组件标识本身就是规范英文名（kebab-case），转成词首大写即可，
+// 不必在 manifest 里另存一份，也就不会与中文名各自漂移。
+function enName(id: string): string {
+  return id
+    .split("-")
+    .map((word) => word[0].toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 const componentsSidebar: DefaultTheme.SidebarItem[] = [
   { text: "组件总览", link: "/components/" },
   ...componentManifest.categories.map((category) => ({
     text: `${category.label}（${category.components.length}）`,
     collapsed: false,
     items: category.components.map((component) => ({
-      text: component.name,
+      // 中英并列：中文认得快，英文对得上代码里的标识与导出名。
+      // 侧栏文本走 v-html，英文压成次要样式，中文仍是主视觉
+      text: `${component.name} <span class="xh-sidebar-en">${enName(component.id)}</span>`,
       link: `/components/${component.id}`,
     })),
   })),
