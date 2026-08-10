@@ -10,6 +10,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { Direction, Size } from '@xihan-ui/kernel'
 import type { PropType, Ref } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import type { TableContext } from './use-table'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import {
@@ -71,14 +72,14 @@ export const XhTableRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // *-change 携带 { value }，update:* 携带裸值以支持 v-model
-  emits: [
-    'sort-change',
-    'update:sort',
-    'selection-change',
-    'update:selection',
-    'expanded-change',
-    'update:expanded',
-  ],
+  emits: {
+    'sort-change': (_details: PayloadOf<TableProps, 'onSortChange'>) => true,
+    'update:sort': (_sort: PayloadOf<TableProps, 'onSortChange'>['value']) => true,
+    'selection-change': (_details: PayloadOf<TableProps, 'onSelectionChange'>) => true,
+    'update:selection': (_selection: PayloadOf<TableProps, 'onSelectionChange'>['value']) => true,
+    'expanded-change': (_details: PayloadOf<TableProps, 'onExpandedChange'>) => true,
+    'update:expanded': (_expanded: PayloadOf<TableProps, 'onExpandedChange'>['value']) => true,
+  },
   setup(props, { slots, emit }) {
     const onSortChange: TableProps['onSortChange'] = (details) => {
       emit('sort-change', details)

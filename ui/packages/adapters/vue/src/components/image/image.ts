@@ -1,4 +1,5 @@
 import type { ImageSchema } from '@xihan-ui/headless'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, ref, watch } from 'vue'
 import { provideImage, useImageContext } from './context'
 import { useImage } from './use-image'
@@ -14,7 +15,9 @@ export const XhImageRoot = defineComponent({
     fallbackDelay: { type: Number, default: undefined },
   },
   // status-change 携带 { status }
-  emits: ['status-change'],
+  emits: {
+    'status-change': (_details: PayloadOf<ImageProps, 'onStatusChange'>) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: ImageProps['onStatusChange'] = details => emit('status-change', details)
     const ctx = useImage(props as ImageProps, notify)

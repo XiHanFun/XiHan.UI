@@ -1,6 +1,7 @@
 import type { DialogSchema } from '@xihan-ui/headless'
 import type { Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, Teleport } from 'vue'
 import { provideDialog, useDialogContext } from './context'
 import { useDialog } from './use-dialog'
@@ -21,7 +22,10 @@ export const XhDialogRoot = defineComponent({
     translations: { type: Object as PropType<DialogProps['translations']>, default: undefined },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
-  emits: ['open-change', 'update:open'],
+  emits: {
+    'open-change': (_details: PayloadOf<DialogProps, 'onOpenChange'>) => true,
+    'update:open': (_open: PayloadOf<DialogProps, 'onOpenChange'>['open']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: DialogProps['onOpenChange'] = (details) => {
       emit('open-change', details)

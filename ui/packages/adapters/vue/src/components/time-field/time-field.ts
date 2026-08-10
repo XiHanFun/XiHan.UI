@@ -1,6 +1,7 @@
 import type { TimeFieldSchema, TimeGranularity, TimeHourCycle, TimeSegmentType } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideTimeField, useTimeFieldContext } from './context'
 import { useTimeField } from './use-time-field'
@@ -30,7 +31,10 @@ export const XhTimeFieldRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸串
-  emits: ['value-change', 'update:value'],
+  emits: {
+    'value-change': (_details: PayloadOf<TimeFieldProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<TimeFieldProps, 'onValueChange'>['value']) => true,
+  },
   setup(props, { slots, emit }) {
     const onValueChange: TimeFieldProps['onValueChange'] = (details) => {
       emit('value-change', details)

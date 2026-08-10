@@ -1,6 +1,7 @@
 import type { RadioGroupItemProps, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema } from '@xihan-ui/headless'
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideRadioGroup, provideRadioGroupItem, useRadioGroupContext, useRadioGroupItemContext } from './context'
 import { useRadioGroup } from './use-radio-group'
@@ -23,7 +24,10 @@ export const XhRadioGroupRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸值
-  emits: ['value-change', 'update:value'],
+  emits: {
+    'value-change': (_details: PayloadOf<RadioGroupProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<RadioGroupProps, 'onValueChange'>['value']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: RadioGroupProps['onValueChange'] = (details) => {
       emit('value-change', details)

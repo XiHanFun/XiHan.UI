@@ -1,6 +1,7 @@
 import type { TreeNode, TreeSelectNodeProps, TreeSelectSchema } from '@xihan-ui/headless'
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, Ref } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import type { TreeSelectContext } from './use-tree-select'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideTreeSelect, provideTreeSelectNode, useTreeSelectContext, useTreeSelectNodeContext } from './context'
@@ -56,14 +57,14 @@ export const XhTreeSelectRoot = defineComponent({
     name: { type: String, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸值；选中值恒为数组，单选时长度 ≤ 1
-  emits: [
-    'value-change',
-    'expanded-change',
-    'open-change',
-    'update:value',
-    'update:expandedValue',
-    'update:open',
-  ],
+  emits: {
+    'value-change': (_details: PayloadOf<TreeSelectProps, 'onValueChange'>) => true,
+    'expanded-change': (_details: PayloadOf<TreeSelectProps, 'onExpandedChange'>) => true,
+    'open-change': (_details: PayloadOf<TreeSelectProps, 'onOpenChange'>) => true,
+    'update:value': (_value: PayloadOf<TreeSelectProps, 'onValueChange'>['value']) => true,
+    'update:expandedValue': (_value: PayloadOf<TreeSelectProps, 'onExpandedChange'>['value']) => true,
+    'update:open': (_open: PayloadOf<TreeSelectProps, 'onOpenChange'>['open']) => true,
+  },
   setup(props, { slots, emit }) {
     const notifyValue: TreeSelectProps['onValueChange'] = (details) => {
       emit('value-change', details)

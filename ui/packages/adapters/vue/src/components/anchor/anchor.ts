@@ -1,6 +1,7 @@
 import type { AnchorSchema, AnchorTranslations } from '@xihan-ui/headless'
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideAnchor, useAnchorContext } from './context'
 import { useAnchor } from './use-anchor'
@@ -26,7 +27,10 @@ export const XhAnchorRoot = defineComponent({
     scrollElement: { type: Object as PropType<HTMLElement | null>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸值
-  emits: ['value-change', 'update:value'],
+  emits: {
+    'value-change': (_details: PayloadOf<AnchorProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<AnchorProps, 'onValueChange'>['value']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: AnchorProps['onValueChange'] = (details) => {
       emit('value-change', details)

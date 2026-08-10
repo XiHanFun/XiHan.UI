@@ -1,6 +1,7 @@
 import type { DrawerSchema, DrawerSide } from '@xihan-ui/headless'
 import type { Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, Teleport } from 'vue'
 import { provideDrawer, useDrawerContext } from './context'
 import { useDrawer } from './use-drawer'
@@ -23,7 +24,10 @@ export const XhDrawerRoot = defineComponent({
     translations: { type: Object as PropType<DrawerProps['translations']>, default: undefined },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
-  emits: ['open-change', 'update:open'],
+  emits: {
+    'open-change': (_details: PayloadOf<DrawerProps, 'onOpenChange'>) => true,
+    'update:open': (_open: PayloadOf<DrawerProps, 'onOpenChange'>['open']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: DrawerProps['onOpenChange'] = (details) => {
       emit('open-change', details)

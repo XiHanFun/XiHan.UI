@@ -1,6 +1,7 @@
 import type { SliderSchema, SliderValueTextDetails } from '@xihan-ui/headless'
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import { provideSlider, provideSliderThumb, useSliderContext, useSliderThumbContext } from './context'
 import { useSlider } from './use-slider'
@@ -32,7 +33,11 @@ export const XhSliderRoot = defineComponent({
     },
   },
   // value-change 携带 { value }，update:value 携带裸数组；value-change-end 只在操作收尾时发一次
-  emits: ['value-change', 'update:value', 'value-change-end'],
+  emits: {
+    'value-change': (_details: PayloadOf<SliderProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<SliderProps, 'onValueChange'>['value']) => true,
+    'value-change-end': (_details: PayloadOf<SliderProps, 'onValueChangeEnd'>) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: SliderProps['onValueChange'] = (details) => {
       emit('value-change', details)

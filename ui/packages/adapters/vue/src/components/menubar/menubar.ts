@@ -1,6 +1,7 @@
 import type { MenubarContentProps, MenubarGroupProps, MenubarItemProps, MenubarNode, MenubarNodeMeta, MenubarSchema } from '@xihan-ui/headless'
 import type { Direction, Orientation, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import type { MenubarPartRegistry } from './use-menubar'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import {
@@ -52,7 +53,11 @@ export const XhMenubarRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // value-change 携带 { value }、select 携带 { menu, value }，update:value 携带裸值
-  emits: ['value-change', 'select', 'update:value'],
+  emits: {
+    'value-change': (_details: PayloadOf<MenubarProps, 'onValueChange'>) => true,
+    'select': (_details: PayloadOf<MenubarProps, 'onSelect'>) => true,
+    'update:value': (_value: PayloadOf<MenubarProps, 'onValueChange'>['value']) => true,
+  },
   setup(props, { slots, emit }) {
     const notifyValue: MenubarProps['onValueChange'] = (details) => {
       emit('value-change', details)

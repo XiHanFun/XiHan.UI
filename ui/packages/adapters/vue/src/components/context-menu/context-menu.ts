@@ -1,6 +1,7 @@
 import type { ContextMenuGroupProps, ContextMenuItemProps, ContextMenuNode, ContextMenuNodeMeta, ContextMenuSchema } from '@xihan-ui/headless'
 import type { Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import {
   provideContextMenu,
@@ -31,7 +32,11 @@ export const XhContextMenuRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // open-change 携带 { open }、select 携带 { value }，update:open 携带裸布尔
-  emits: ['open-change', 'select', 'update:open'],
+  emits: {
+    'open-change': (_details: PayloadOf<ContextMenuProps, 'onOpenChange'>) => true,
+    'select': (_details: PayloadOf<ContextMenuProps, 'onSelect'>) => true,
+    'update:open': (_open: PayloadOf<ContextMenuProps, 'onOpenChange'>['open']) => true,
+  },
   setup(props, { slots, emit }) {
     const notifyOpen: ContextMenuProps['onOpenChange'] = (details) => {
       emit('open-change', details)

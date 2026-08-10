@@ -1,6 +1,7 @@
 import type { AvatarSchema } from '@xihan-ui/headless'
 import type { Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, ref, watch } from 'vue'
 import { provideAvatar, useAvatarContext } from './context'
 import { useAvatar } from './use-avatar'
@@ -16,7 +17,9 @@ export const XhAvatarRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // status-change 携带 { status }
-  emits: ['status-change'],
+  emits: {
+    'status-change': (_details: PayloadOf<AvatarProps, 'onStatusChange'>) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: AvatarProps['onStatusChange'] = details => emit('status-change', details)
     const ctx = useAvatar(props as AvatarProps, notify)

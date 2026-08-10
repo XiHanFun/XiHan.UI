@@ -1,5 +1,6 @@
 import type { ToastSchema, ToastTranslations, ToastType } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideToast, useToastContext } from './context'
 import { useToast } from './use-toast'
@@ -22,7 +23,10 @@ export const XhToastRoot = defineComponent({
     translations: { type: Object as PropType<Partial<ToastTranslations>>, default: undefined },
   },
   // status-change 携带 { id, status }，action 携带 { id }
-  emits: ['status-change', 'action'],
+  emits: {
+    'status-change': (_details: PayloadOf<ToastProps, 'onStatusChange'>) => true,
+    'action': (_details: PayloadOf<ToastProps, 'onAction'>) => true,
+  },
   setup(props, { slots, emit }) {
     const notifyStatus: ToastProps['onStatusChange'] = (details) => {
       emit('status-change', details)

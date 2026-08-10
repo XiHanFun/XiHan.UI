@@ -1,6 +1,7 @@
 import type { TreeNode, TreeNodeProps, TreeSchema, TreeSelectionMode } from '@xihan-ui/headless'
 import type { Direction } from '@xihan-ui/kernel'
 import type { PropType, Ref } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import type { TreeContext } from './use-tree'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideTree, provideTreeNode, useTreeContext, useTreeNodeContext } from './context'
@@ -47,7 +48,12 @@ export const XhTreeRoot = defineComponent({
     dir: { type: String as PropType<Direction>, default: undefined },
   },
   // *-change 携带 { value }，update:* 携带裸集合；回传值恒为数组，单选时长度 ≤ 1
-  emits: ['expanded-change', 'update:expandedValue', 'selection-change', 'update:selectedValue'],
+  emits: {
+    'expanded-change': (_details: PayloadOf<TreeProps, 'onExpandedChange'>) => true,
+    'update:expandedValue': (_value: PayloadOf<TreeProps, 'onExpandedChange'>['value']) => true,
+    'selection-change': (_details: PayloadOf<TreeProps, 'onSelectionChange'>) => true,
+    'update:selectedValue': (_value: PayloadOf<TreeProps, 'onSelectionChange'>['value']) => true,
+  },
   setup(props, { slots, emit }) {
     const onExpandedChange: TreeProps['onExpandedChange'] = (details) => {
       emit('expanded-change', details)

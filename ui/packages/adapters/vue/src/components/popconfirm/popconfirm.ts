@@ -1,6 +1,7 @@
-import type { PopconfirmNotifiers, PopconfirmOverlayProps } from '@xihan-ui/headless'
+import type { PopconfirmNotifiers, PopconfirmOverlayProps, PopconfirmProps } from '@xihan-ui/headless'
 import type { Placement, Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { providePopconfirm, usePopconfirmContext } from './context'
 import { usePopconfirm } from './use-popconfirm'
@@ -17,7 +18,12 @@ export const XhPopconfirmRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // open-change 携带 { open }，update:open 携带裸布尔；confirm / cancel 不带载荷
-  emits: ['open-change', 'update:open', 'confirm', 'cancel'],
+  emits: {
+    'open-change': (_details: PayloadOf<PopconfirmProps, 'onOpenChange'>) => true,
+    'update:open': (_open: PayloadOf<PopconfirmProps, 'onOpenChange'>['open']) => true,
+    'confirm': () => true,
+    'cancel': () => true,
+  },
   setup(props, { slots, emit }) {
     const notify: PopconfirmNotifiers = {
       onOpenChange: (details) => {

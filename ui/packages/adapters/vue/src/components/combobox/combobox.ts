@@ -1,6 +1,7 @@
 import type { ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxItemGroupProps, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
 import type { ControlVariant, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onMounted, onUnmounted, onUpdated, watch } from 'vue'
 import {
   provideCombobox,
@@ -45,7 +46,14 @@ export const XhComboboxRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸值
-  emits: ['value-change', 'input-value-change', 'open-change', 'update:value', 'update:inputValue', 'update:open'],
+  emits: {
+    'value-change': (_details: PayloadOf<ComboboxProps, 'onValueChange'>) => true,
+    'input-value-change': (_details: PayloadOf<ComboboxProps, 'onInputValueChange'>) => true,
+    'open-change': (_details: PayloadOf<ComboboxProps, 'onOpenChange'>) => true,
+    'update:value': (_value: PayloadOf<ComboboxProps, 'onValueChange'>['value']) => true,
+    'update:inputValue': (_inputValue: PayloadOf<ComboboxProps, 'onInputValueChange'>['inputValue']) => true,
+    'update:open': (_open: PayloadOf<ComboboxProps, 'onOpenChange'>['open']) => true,
+  },
   setup(props, { slots, emit }) {
     const notifyValue: ComboboxProps['onValueChange'] = (details) => {
       emit('value-change', details)

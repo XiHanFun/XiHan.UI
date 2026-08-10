@@ -1,6 +1,7 @@
 import type { SwitchSchema } from '@xihan-ui/headless'
 import type { Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { useSwitch } from './use-switch'
 
@@ -16,7 +17,10 @@ export const XhSwitch = defineComponent({
     size: String as PropType<Size>,
   },
   // checked-change 携带 { checked }，update:checked 携带裸布尔
-  emits: ['checked-change', 'update:checked'],
+  emits: {
+    'checked-change': (_details: PayloadOf<SwitchProps, 'onCheckedChange'>) => true,
+    'update:checked': (_checked: PayloadOf<SwitchProps, 'onCheckedChange'>['checked']) => true,
+  },
   setup(props, { emit }) {
     const notify: SwitchProps['onCheckedChange'] = (details) => {
       emit('checked-change', details)

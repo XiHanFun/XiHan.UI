@@ -1,6 +1,7 @@
 import type { SplitterPanelProps, SplitterSchema } from '@xihan-ui/headless'
 import type { Direction, Orientation } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import { provideSplitter, useSplitterContext } from './context'
 import { useSplitter } from './use-splitter'
@@ -29,7 +30,11 @@ export const XhSplitterRoot = defineComponent({
     largeStep: { type: Number, default: undefined },
   },
   // size-change 携带 { size }，update:size 携带裸数组；size-change-end 只在操作收尾时发一次
-  emits: ['size-change', 'update:size', 'size-change-end'],
+  emits: {
+    'size-change': (_details: PayloadOf<SplitterProps, 'onSizeChange'>) => true,
+    'update:size': (_size: PayloadOf<SplitterProps, 'onSizeChange'>['size']) => true,
+    'size-change-end': (_details: PayloadOf<SplitterProps, 'onSizeChangeEnd'>) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: SplitterProps['onSizeChange'] = (details) => {
       emit('size-change', details)

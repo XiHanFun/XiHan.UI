@@ -8,6 +8,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { Direction } from '@xihan-ui/kernel'
 import type { PropType, Slots, VNode } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import {
   provideTransfer,
@@ -38,7 +39,12 @@ export const XhTransferRoot = defineComponent({
     dir: { type: String as PropType<Direction>, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸集合以支持 v-model
-  emits: ['value-change', 'selected-change', 'update:value', 'update:selected'],
+  emits: {
+    'value-change': (_details: PayloadOf<TransferProps, 'onValueChange'>) => true,
+    'selected-change': (_details: PayloadOf<TransferProps, 'onSelectedChange'>) => true,
+    'update:value': (_value: PayloadOf<TransferProps, 'onValueChange'>['value']) => true,
+    'update:selected': (_selected: PayloadOf<TransferProps, 'onSelectedChange'>['selected']) => true,
+  },
   setup(props, { slots, emit }) {
     const notifyValue: TransferProps['onValueChange'] = (details) => {
       emit('value-change', details)

@@ -1,6 +1,7 @@
 import type { NavigationMenuNode, NavigationMenuNodeMeta, NavigationMenuSchema, NavigationMenuTranslations } from '@xihan-ui/headless'
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { slotPaints } from '../../runtime/slot-content'
 import { provideNavigationMenu, useNavigationMenuContext } from './context'
@@ -26,7 +27,10 @@ export const XhNavigationMenuRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸值以支持 v-model:value
-  emits: ['value-change', 'update:value'],
+  emits: {
+    'value-change': (_details: PayloadOf<NavigationMenuProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<NavigationMenuProps, 'onValueChange'>['value']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: NavigationMenuProps['onValueChange'] = (details) => {
       emit('value-change', details)

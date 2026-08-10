@@ -1,5 +1,6 @@
 import type { EditableActivationMode, EditableSchema, EditableSubmitMode } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideEditable, useEditableContext } from './context'
 import { useEditable } from './use-editable'
@@ -26,7 +27,14 @@ export const XhEditableRoot = defineComponent({
     autoResize: Boolean,
   },
   // value-change / edit-change 携带 details，update:* 携带裸值；提交与撤销只有语义事件
-  emits: ['value-change', 'update:value', 'value-commit', 'value-revert', 'edit-change', 'update:edit'],
+  emits: {
+    'value-change': (_details: PayloadOf<EditableProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<EditableProps, 'onValueChange'>['value']) => true,
+    'value-commit': (_details: PayloadOf<EditableProps, 'onValueCommit'>) => true,
+    'value-revert': (_details: PayloadOf<EditableProps, 'onValueRevert'>) => true,
+    'edit-change': (_details: PayloadOf<EditableProps, 'onEditChange'>) => true,
+    'update:edit': (_edit: PayloadOf<EditableProps, 'onEditChange'>['edit']) => true,
+  },
   setup(props, { slots, emit }) {
     const ctx = useEditable(props as EditableProps, {
       onValueChange: (details) => {

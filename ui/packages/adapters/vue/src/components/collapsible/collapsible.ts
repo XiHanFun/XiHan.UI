@@ -1,6 +1,7 @@
 import type { CollapsibleSchema } from '@xihan-ui/headless'
 import type { Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideCollapsible, useCollapsibleContext } from './context'
 import { useCollapsible } from './use-collapsible'
@@ -16,7 +17,10 @@ export const XhCollapsibleRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
-  emits: ['open-change', 'update:open'],
+  emits: {
+    'open-change': (_details: PayloadOf<CollapsibleProps, 'onOpenChange'>) => true,
+    'update:open': (_open: PayloadOf<CollapsibleProps, 'onOpenChange'>['open']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: CollapsibleProps['onOpenChange'] = (details) => {
       emit('open-change', details)

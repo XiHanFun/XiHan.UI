@@ -1,6 +1,7 @@
 import type { TagsInputBlurBehavior, TagsInputItemProps, TagsInputSchema, TagsInputTranslations } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideTagsInput, provideTagsInputItem, useTagsInputContext, useTagsInputItemContext } from './context'
 import { useTagsInput } from './use-tags-input'
@@ -33,7 +34,12 @@ export const XhTagsInputRoot = defineComponent({
     translations: { type: Object as PropType<Partial<TagsInputTranslations>>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸数组；输入文本走 input-value-change 一路
-  emits: ['value-change', 'update:value', 'input-value-change', 'update:inputValue'],
+  emits: {
+    'value-change': (_details: PayloadOf<TagsInputProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<TagsInputProps, 'onValueChange'>['value']) => true,
+    'input-value-change': (_details: PayloadOf<TagsInputProps, 'onInputValueChange'>) => true,
+    'update:inputValue': (_inputValue: PayloadOf<TagsInputProps, 'onInputValueChange'>['inputValue']) => true,
+  },
   setup(props, { slots, emit }) {
     const onValueChange: TagsInputProps['onValueChange'] = (details) => {
       emit('value-change', details)

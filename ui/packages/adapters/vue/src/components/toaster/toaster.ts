@@ -1,5 +1,6 @@
 import type { ToasterSchema, ToasterTranslations, ToastPlacement, ToastRecord } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, Fragment, h } from 'vue'
 import { provideToaster, useToasterContext } from './context'
 import { useToaster } from './use-toaster'
@@ -21,7 +22,10 @@ export const XhToasterRoot = defineComponent({
     translations: { type: Object as PropType<Partial<ToasterTranslations>>, default: undefined },
   },
   // toasts-change 携带 { toasts }，update:toasts 携带裸队列以支持 v-model:toasts
-  emits: ['toasts-change', 'update:toasts'],
+  emits: {
+    'toasts-change': (_details: PayloadOf<ToasterProps, 'onToastsChange'>) => true,
+    'update:toasts': (_toasts: PayloadOf<ToasterProps, 'onToastsChange'>['toasts']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: ToasterProps['onToastsChange'] = (details) => {
       emit('toasts-change', details)

@@ -17,7 +17,9 @@ export const XhInfiniteScrollRoot = defineComponent({
     /** 裁剪出可视区的滚动容器，缺省即整页滚动；distance 的提前量扩的正是这块区域。 */
     target: { type: Object as PropType<HTMLElement | null>, default: undefined },
   },
-  emits: ['load'],
+  emits: {
+    load: () => true,
+  },
   setup(props, { slots, emit }) {
     const notify: InfiniteScrollProps['onLoad'] = () => emit('load')
     // 传响应式 props 对象本身而非快照，供机器每次读时重新展开

@@ -1,5 +1,6 @@
 import type { DynamicInputItemProps, DynamicInputSchema, DynamicInputTranslations } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import { provideDynamicInput, provideDynamicInputItem, useDynamicInputContext, useDynamicInputItemContext } from './context'
 import { useDynamicInput } from './use-dynamic-input'
@@ -21,7 +22,10 @@ export const XhDynamicInputRoot = defineComponent({
     translations: { type: Object as PropType<Partial<DynamicInputTranslations>>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸数组
-  emits: ['value-change', 'update:value'],
+  emits: {
+    'value-change': (_details: PayloadOf<DynamicInputProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<DynamicInputProps, 'onValueChange'>['value']) => true,
+  },
   setup(props, { slots, emit }) {
     const onValueChange: DynamicInputProps['onValueChange'] = (details) => {
       emit('value-change', details)

@@ -1,6 +1,7 @@
 import type { MentionInputEl, MentionInputHost, MentionItemProps, MentionNode, MentionNodeMeta, MentionSchema, MentionTranslations } from '@xihan-ui/headless'
 import type { ControlVariant, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onMounted, onUnmounted, onUpdated, watch } from 'vue'
 import { provideMention, provideMentionItem, useMentionContext, useMentionItemContext } from './context'
 import { useMention } from './use-mention'
@@ -26,7 +27,13 @@ export const XhMentionRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸值
-  emits: ['value-change', 'query-change', 'select', 'open-change', 'update:value'],
+  emits: {
+    'value-change': (_details: PayloadOf<MentionProps, 'onValueChange'>) => true,
+    'query-change': (_details: PayloadOf<MentionProps, 'onQueryChange'>) => true,
+    'select': (_details: PayloadOf<MentionProps, 'onSelect'>) => true,
+    'open-change': (_details: PayloadOf<MentionProps, 'onOpenChange'>) => true,
+    'update:value': (_value: PayloadOf<MentionProps, 'onValueChange'>['value']) => true,
+  },
   setup(props, { slots, emit }) {
     const notifyValue: MentionProps['onValueChange'] = (details) => {
       emit('value-change', details)

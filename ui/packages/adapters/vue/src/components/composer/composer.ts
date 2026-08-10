@@ -1,5 +1,6 @@
 import type { ComposerRunStatus, ComposerSchema, ComposerTranslations } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideComposer, useComposerContext } from './context'
 import { useComposer } from './use-composer'
@@ -19,7 +20,12 @@ export const XhComposerRoot = defineComponent({
     translations: { type: Object as PropType<Partial<ComposerTranslations>>, default: undefined },
   },
   // value-change 与 submit 携带 { value }，update:value 携带裸串以支持 v-model:value，stop 无载荷
-  emits: ['value-change', 'update:value', 'submit', 'stop'],
+  emits: {
+    'value-change': (_details: PayloadOf<ComposerProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<ComposerProps, 'onValueChange'>['value']) => true,
+    'submit': (_details: PayloadOf<ComposerProps, 'onSubmit'>) => true,
+    'stop': () => true,
+  },
   setup(props, { slots, emit }) {
     const ctx = useComposer(props as ComposerProps, {
       onValueChange: (details) => {

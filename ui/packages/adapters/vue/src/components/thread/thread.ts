@@ -1,5 +1,6 @@
 import type { ThreadSchema, ThreadStatus, ThreadTranslations } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideThread, useThreadContext } from './context'
 import { useThread } from './use-thread'
@@ -15,7 +16,9 @@ export const XhThreadRoot = defineComponent({
     translations: { type: Object as PropType<Partial<ThreadTranslations>>, default: undefined },
   },
   // stick-change 携带 { atBottom, sticking }，无对应的 v-model
-  emits: ['stick-change'],
+  emits: {
+    'stick-change': (_details: PayloadOf<ThreadProps, 'onStickChange'>) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: ThreadProps['onStickChange'] = details => emit('stick-change', details)
     const ctx = useThread(props as ThreadProps, notify)

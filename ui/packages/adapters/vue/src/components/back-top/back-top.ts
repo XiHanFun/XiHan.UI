@@ -1,6 +1,7 @@
 import type { BackTopBehavior, BackTopSchema, BackTopTranslations } from '@xihan-ui/headless'
 import type { Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideBackTop, useBackTopContext } from './context'
 import { useBackTop } from './use-back-top'
@@ -20,7 +21,9 @@ export const XhBackTopRoot = defineComponent({
     /** 滚动容器，缺省即整页滚动；经 refs 交给观察器。 */
     target: { type: Object as PropType<HTMLElement | null>, default: undefined },
   },
-  emits: ['visible-change'],
+  emits: {
+    'visible-change': (_details: PayloadOf<BackTopProps, 'onVisibleChange'>) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: BackTopProps['onVisibleChange'] = details => emit('visible-change', details)
     // 传响应式 props 对象本身而非快照，供机器每次读时重新展开

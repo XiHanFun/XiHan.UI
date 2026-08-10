@@ -1,6 +1,7 @@
 import type { LoadingBarSchema, LoadingBarTranslations } from '@xihan-ui/headless'
 import type { Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideLoadingBar, useLoadingBarContext } from './context'
 import { useLoadingBar } from './use-loading-bar'
@@ -24,7 +25,10 @@ export const XhLoadingBarRoot = defineComponent({
     translations: { type: Object as PropType<Partial<LoadingBarTranslations>>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸数值
-  emits: ['value-change', 'update:value'],
+  emits: {
+    'value-change': (_details: PayloadOf<LoadingBarProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<LoadingBarProps, 'onValueChange'>['value']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: LoadingBarProps['onValueChange'] = (details) => {
       emit('value-change', details)
