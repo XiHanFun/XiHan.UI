@@ -1,5 +1,5 @@
 {
-  "$comment": "分层依赖拓扑单一事实源。被 .dependency-cruiser.cjs 消费；见 §2 依赖矩阵。层级越低越基础，只能向下依赖。",
+  "$comment": "分层依赖拓扑单一事实源。被 .dependency-cruiser.cjs 消费。键必须与 packages/ 下的目录一一对应，多一个少一个都会被门禁抛错。层级越低越基础，只能向下依赖。",
   "layers": {
     "core": { "level": 1, "canDependOn": [] },
     "machine": { "level": 1, "canDependOn": ["core"] },
@@ -14,8 +14,6 @@
     "wc": { "level": 4, "canDependOn": ["core", "machine", "behavior", "headless", "position", "highlight", "system", "visual"] },
     "ai": { "level": 2, "canDependOn": ["core"] },
     "markdown": { "level": 2, "canDependOn": ["core"] },
-    "i18n": { "level": 1, "canDependOn": [] },
-    "icons": { "level": 1, "canDependOn": [] },
-    "pro": { "level": 5, "canDependOn": ["core", "machine", "behavior", "headless", "position", "highlight", "styled", "system", "vue", "ai", "markdown", "i18n", "icons"] }
+    "icons": { "level": 1, "canDependOn": [] }
   }
 }
