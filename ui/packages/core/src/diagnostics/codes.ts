@@ -15,6 +15,8 @@ export const DIAGNOSTIC_CODES = {
   wcUnknownPart: 'wc.unknown-part',
   /** 角色节点用的标签不满足元素文档的要求，原生语义会静默失效。 */
   wcWrongPartTag: 'wc.wrong-part-tag',
+  /** 二维码中心 logo 挖掉的码字超出所选纠错级别能恢复的量。 */
+  qrCodeLogoDamage: 'qr-code.logo-damage',
 } as const
 
 export type DiagnosticCode = (typeof DIAGNOSTIC_CODES)[keyof typeof DIAGNOSTIC_CODES]

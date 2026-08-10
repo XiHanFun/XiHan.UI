@@ -3,10 +3,44 @@
 // 这里不看 d 是怎么写的，只看墨最后落在哪儿：自带一个 SVG 路径求值器——记号解析、
 // 圆弧展成折线、按非零填充规则算绕数——然后照读码器的取样规则，在每个模块的几何中心
 // 问一句「这一点有没有墨」。回环解码那份验的是矩阵本身，这份验的是矩阵被画成了什么样。
+import type { DiagnosticRecord } from '@xihan-ui/core'
 import type { QrCodeLogoArea, QrCodeProps, QrEyeShape, QrLevel, QrModuleShape } from '../src/qr-code'
-import { normalizeProps } from '@xihan-ui/core'
-import { describe, expect, it } from 'vitest'
+import {
+  DIAGNOSTIC_CODES,
+  normalizeProps,
+  onDiagnostic,
+  resetDiagnostics,
+  setDiagnosticsConsoleOutput,
+  setDiagnosticsDedupe,
+  setDiagnosticsLevel,
+} from '@xihan-ui/core'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { connectQrCode, qrAlignmentPositions, qrCapacityBytes, qrEncode } from '../src/qr-code'
+
+/** logo 损伤警告的诊断码。写成字面量，订阅方按它分流，改了就是改契约。 */
+const LOGO_DAMAGE_CODE = 'qr-code.logo-damage'
+
+/** 本轮收到的诊断记录；连 logo 的用例会往通道里报，逐条收下来自己看。 */
+let diagnostics: DiagnosticRecord[] = []
+
+beforeEach(() => {
+  resetDiagnostics()
+  setDiagnosticsConsoleOutput(false)
+  setDiagnosticsLevel('warn')
+  // 这份判据一次跑很多组同码同文案的记录，去重会把后面的吃掉
+  setDiagnosticsDedupe(false)
+  diagnostics = []
+  onDiagnostic(record => void diagnostics.push(record))
+})
+
+afterEach(() => {
+  resetDiagnostics()
+})
+
+/** 本轮报出的 logo 损伤警告。 */
+function damageWarnings(): DiagnosticRecord[] {
+  return diagnostics.filter(record => record.code === LOGO_DAMAGE_CODE)
+}
 
 // ── SVG 路径求值器 ──
 
@@ -556,8 +590,12 @@ function mismatches(ink: readonly boolean[][], matrix: readonly (readonly boolea
   return out
 }
 
-describe('缺省形状的 d 不变', () => {
-  /** 缺省形状那条 d 的参照实现：逐行找深色游程，一段一个矩形子路径。 */
+describe('缺省形状的几何总量不变', () => {
+  // 码眼独立成一条之后，缺省形状的 path 不再逐字等于整张码合并出来的那条。
+  // 这一组钉的是墨的总量：两条 path 合起来必须与整张码合并出来的那条盖住同一片面积、
+  // 同一批格子——差一格就是一张扫不出来的码。
+
+  /** 参照实现：整张码（含三个码眼）逐行找深色游程，一段一个矩形子路径。 */
   function mergedRunPath(modules: readonly (readonly boolean[])[], margin: number): string {
     const out: string[] = []
     modules.forEach((line, row) => {
@@ -576,19 +614,66 @@ describe('缺省形状的 d 不变', () => {
     return out.join('')
   }
 
-  it('square + square 的 path 与逐行合并矩形逐字相同，且不拆出 eyePath', () => {
+  /**
+   * 一条 d 围出的有向面积（鞋带公式逐子路径求和）。
+   * 顺绕记正、逆绕记负，于是码眼那种「外框挖孔再补内心」的环算出来正好是环本身的面积。
+   */
+  function signedArea(d: string): number {
+    let total = 0
+    for (const sub of parsePath(d)) {
+      let sum = 0
+      for (let i = 0; i < sub.length; i++) {
+        const [x0, y0] = sub[i]!
+        const [x1, y1] = sub[(i + 1) % sub.length]!
+        sum += x0 * y1 - x1 * y0
+      }
+      total += sum / 2
+    }
+    return total
+  }
+
+  /** 深色模块个数，即那张码该有的墨的总面积（每格边长 1）。 */
+  function darkCount(modules: readonly (readonly boolean[])[]): number {
+    return modules.reduce((n, line) => n + line.filter(Boolean).length, 0)
+  }
+
+  it('square + square 的 path + eyePath 与整张码合并出来的那条盖住同一片墨', () => {
     for (const { value, level } of SAMPLES) {
       for (const margin of [0, 1, 4, 9]) {
         const api = connectQrCode({ value, level, margin }, normalizeProps)
         const matrix = qrEncode(value, level).modules
-        expect({ value: value.slice(0, 8), margin, d: api.path })
-          .toEqual({ value: value.slice(0, 8), margin, d: mergedRunPath(matrix, margin) })
-        expect(api.eyePath).toBe('')
+        const merged = mergedRunPath(matrix, margin)
+        const tag = { value: value.slice(0, 8), margin }
+
+        // 一、面积：两条加起来恰好是深色模块数，一格不多一格不少
+        const dark = darkCount(matrix)
+        expect({ ...tag, area: Number((signedArea(api.path) + signedArea(api.eyePath)).toFixed(6)) })
+          .toEqual({ ...tag, area: dark })
+        expect(Number(signedArea(merged).toFixed(6))).toBe(dark)
+
+        // 二、落点：缺省形状的边界全在整数坐标上，格内墨色恒定，
+        // 于是逐格取样就是完备判据——整个 viewBox（含静区）每一格都与参照实现相同
+        const side = api.count + margin * 2
+        const coords = Array.from({ length: side }, (_, i) => i + 0.5)
+        const now = inkGrid(paintedOf(api.path, api.eyePath, undefined), coords, coords)
+        const before = inkGrid(paintedOf(merged, '', undefined), coords, coords)
+        const diff: string[] = []
+        for (let row = 0; row < side && diff.length < 8; row++) {
+          for (let col = 0; col < side && diff.length < 8; col++) {
+            if (now[row]![col] !== before[row]![col])
+              diff.push(`格 ${row},${col}：原先 ${before[row]![col] ? '有墨' : '无墨'}，现在 ${now[row]![col] ? '有墨' : '无墨'}`)
+          }
+        }
+        expect({ ...tag, diff }).toEqual({ ...tag, diff: [] })
+
+        // 三、码眼确实拆了出去：eyePath 非空，主 path 比参照实现短
+        expect(api.eyePath).not.toBe('')
+        expect(api.path.length).toBeLessThan(merged.length)
       }
     }
   })
 
-  it('显式写死缺省值、以及只写其中一个，都还是那条合并路径', () => {
+  it('显式写死缺省值、以及只写其中一个，几何逐字不变', () => {
     const base = connectQrCode({ value: '曦寒 UI', level: 'M' }, normalizeProps)
     for (const props of [
       { moduleShape: 'square' as const },
@@ -598,18 +683,17 @@ describe('缺省形状的 d 不变', () => {
     ]) {
       const api = connectQrCode({ value: '曦寒 UI', level: 'M', ...props }, normalizeProps)
       expect(api.path).toBe(base.path)
-      expect(api.eyePath).toBe('')
+      expect(api.eyePath).toBe(base.eyePath)
     }
+    expect(base.eyePath).not.toBe('')
   })
 
-  it('任一形状不是缺省值就拆出 eyePath，且 path 里不再含码眼那三块', () => {
+  it('六种形状组合都拆出 eyePath，且 path 里不含码眼那三块', () => {
+    // 码眼恒独立成一条，皮肤的 --xh-qr-code-eye-fg 才有落地的节点；缺省形状也不例外
     for (const moduleShape of MODULE_SHAPES) {
       for (const eyeShape of EYE_SHAPES) {
         const api = connectQrCode({ value: '曦寒 UI', level: 'M', moduleShape, eyeShape }, normalizeProps)
-        const split = moduleShape !== 'square' || eyeShape !== 'square'
-        expect({ moduleShape, eyeShape, split: api.eyePath !== '' }).toEqual({ moduleShape, eyeShape, split })
-        if (!split)
-          continue
+        expect({ moduleShape, eyeShape, split: api.eyePath !== '' }).toEqual({ moduleShape, eyeShape, split: true })
         // 码眼的 7×7 由 eyePath 管，modules 那条不许在那三块里落墨
         const painted = paintedOf(api.path, '', undefined)
         const near = api.margin
@@ -621,6 +705,13 @@ describe('缺省形状的 d 不变', () => {
             .toEqual({ moduleShape, eyeShape, ink: 0 })
         }
       }
+    }
+  })
+
+  it('没画出码时两条 d 都是空串', () => {
+    for (const props of [{ value: '' }, { value: 'x'.repeat(3000), level: 'H' as const }]) {
+      const api = connectQrCode(props, normalizeProps)
+      expect({ path: api.path, eyePath: api.eyePath }).toEqual({ path: '', eyePath: '' })
     }
   })
 })
@@ -840,6 +931,8 @@ describe('logo 挖空', () => {
         }
       }
       expect({ version, touched: touched.slice(0, 4) }).toEqual({ version, touched: [] })
+      // 唯一可能被压到的功能图形就是校正图形，api 上如实报出来
+      expect({ version, hits: api.logoDamage!.hitsFunctionPatterns }).toEqual({ version, hits: alignment > 0 })
       // 右下角那个校正图形是多数读码器建取样网格用的那一个，它离中心最远，整块永远碰不着
       const far = api.count - 7
       expect(alignments[far]?.[far] ?? false).toBe(version >= 2)
@@ -900,6 +993,10 @@ describe('logo 挖空', () => {
           }
         }
         const fraction = damaged.size / total
+        // api 报的比例必须与这里独立铺一遍码字得出的完全相同，量化才有意义
+        expect({ version, level, ratio: api.logoDamage!.ratio }).toEqual({ version, level, ratio: fraction })
+        expect({ version, level, modules: api.logoDamage!.modules })
+          .toEqual({ version, level, modules: area.size * area.size })
         if (fraction > worst[level].fraction)
           worst[level] = { fraction, version }
       }
@@ -933,6 +1030,99 @@ describe('logo 挖空', () => {
     expect(api.state).toBe('error')
     expect(api.logoArea).toBeUndefined()
     expect(api.getLogoProps()).toMatchObject({ width: 0, height: 0 })
+  })
+})
+
+describe('logo 损伤量与警告', () => {
+  it('没留 logo 位就没有损伤可报', () => {
+    for (const props of [
+      { value: '曦寒 UI' },
+      { value: '曦寒 UI', logo: false },
+      { value: '', logo: true },
+      // 内容超容量落到 error，一个模块都没铺，也就无从挖起
+      { value: 'x'.repeat(3000), level: 'H' as const, logo: true },
+    ]) {
+      expect(connectQrCode(props, normalizeProps).logoDamage).toBeUndefined()
+    }
+    expect(damageWarnings()).toEqual([])
+  })
+
+  it('2 版那张峰值码：25 个模块、44 个码字里的 6 个', () => {
+    // 挖空只跟版本走，四档纠错级别挖掉的是同一片；峰值在 2 版，L 级赔不起、M 起兜得住
+    const value = 'x'.repeat(qrCapacityBytes(2, 'L'))
+    const api = connectQrCode({ value, level: 'L', logo: true }, normalizeProps)
+    expect(api.version).toBe(2)
+    expect(api.logoDamage).toEqual({ modules: 25, ratio: 6 / 44, hitsFunctionPatterns: false })
+    expect(Number((6 / 44).toFixed(4))).toBe(0.1364)
+  })
+
+  it('损伤超出所选级别的余量才报警告，且只报一条', () => {
+    const warned: string[] = []
+    for (const version of [1, 2, 7, 20, 40] as const) {
+      for (const level of LEVELS) {
+        diagnostics = []
+        const value = 'x'.repeat(qrCapacityBytes(version, level))
+        const api = connectQrCode({ value, level, logo: true }, normalizeProps)
+        expect(api.version).toBe(version)
+        const over = api.logoDamage!.ratio > RECOVERY[level]
+        expect({ version, level, warned: damageWarnings().length }).toEqual({ version, level, warned: over ? 1 : 0 })
+        if (over)
+          warned.push(`${version}/${level}`)
+      }
+    }
+    // 判据得真的见过响与不响两侧，不然「按余量分流」这句什么都没验；
+    // 只有 L 级会响，且不是每个版本都响——挖空占的码字比例随版本变
+    expect(warned).toEqual(['1/L', '2/L'])
+  })
+
+  it('警告说清了怎么办：把 level 提到 Q 或 H', () => {
+    const value = 'x'.repeat(qrCapacityBytes(2, 'L'))
+    connectQrCode({ value, level: 'L', logo: true }, normalizeProps)
+    const [record] = damageWarnings()
+    expect(record).toBeDefined()
+    expect(DIAGNOSTIC_CODES.qrCodeLogoDamage).toBe(LOGO_DAMAGE_CODE)
+    expect({ code: record!.code, level: record!.level, scope: record!.scope })
+      .toEqual({ code: LOGO_DAMAGE_CODE, level: 'warn', scope: 'qr-code' })
+    // 两个数与那句怎么办都得在：只说"损伤了"而不给出路，读到的人还是不知道改什么
+    expect(record!.message).toContain('13.6%')
+    expect(record!.message).toContain('7%')
+    expect(record!.message).toContain('把 level 提到 Q 或 H')
+    // 浮点乘出来的 7.000000000000001% 不能露到文案里
+    expect(record!.message).not.toMatch(/\d\.0000/)
+    expect(record!.detail).toMatchObject({ level: 'L', version: 2, recoverable: RECOVERY.L })
+  })
+
+  it('警告不抛错：码照画，几何一条不少', () => {
+    // 这是可渲染但不明智的组合；抛在 Vue 的 computed 或 WC 的 wire 里会连累整棵树
+    const value = 'x'.repeat(qrCapacityBytes(2, 'L'))
+    const api = connectQrCode({ value, level: 'L', logo: true }, normalizeProps)
+    expect(damageWarnings()).toHaveLength(1)
+    expect({ state: api.state, error: api.error }).toEqual({ state: 'ready', error: undefined })
+    expect(api.path).not.toBe('')
+    expect(api.eyePath).not.toBe('')
+    expect(api.logoArea).toBeDefined()
+    // 报了警告也照样逐格画对
+    const got = readback({ value, level: 'L', logo: true })
+    expect(mismatches(got.ink, got.matrix, got.api.logoArea, got.api.margin)).toEqual([])
+  })
+
+  it('压到校正图形不拦：7 版与 10 版的正中格就是校正中心，只如实报出来', () => {
+    // 定位图形、分隔带、时序图形、格式信息、版本信息才是碰不得的，1/5 的边长上限已经保证够不着；
+    // 校正图形丢一个在多校正图形的版本上仍可恢复，拦住等于这些版本放不了居中 logo，
+    // 而居中正是 logo 唯一的摆法
+    for (const version of [7, 10] as const) {
+      const middle = (4 * version + 17 - 1) / 2
+      expect({ version, isAlignmentCenter: qrAlignmentPositions(version).includes(middle) })
+        .toEqual({ version, isAlignmentCenter: true })
+      const value = 'x'.repeat(qrCapacityBytes(version, 'H'))
+      const api = connectQrCode({ value, level: 'H', logo: true }, normalizeProps)
+      expect(api.version).toBe(version)
+      expect({ version, hits: api.logoDamage!.hitsFunctionPatterns, state: api.state })
+        .toEqual({ version, hits: true, state: 'ready' })
+      expect(api.path).not.toBe('')
+    }
+    // 压到校正图形本身不构成警告，只有损伤比例超余量才会响
+    expect(damageWarnings()).toEqual([])
   })
 })
 

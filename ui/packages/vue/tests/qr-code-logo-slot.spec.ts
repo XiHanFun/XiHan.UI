@@ -38,6 +38,6 @@ describe('xhQrCode 的 logo 插槽', () => {
     const wrapper = render(() => [h(XhQrCodeLogo, null, () => [h('rect')])])
     expect(wrapper.attributes('data-logo')).toBe('')
     const geoms = [...wrapper.element.children].map(node => node.getAttribute('data-xh-geom') ?? node.getAttribute('data-part'))
-    expect(geoms).toEqual(['modules', 'logo-clear', 'logo'])
+    expect(geoms).toEqual(['modules', 'eyes', 'logo-clear', 'logo'])
   })
 })

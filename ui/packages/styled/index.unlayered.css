@@ -2006,7 +2006,7 @@
   display: none;
 }
 
-/* 码眼那条 path：没单独指定就退回 currentColor，跟码点同色 */
+/* 码眼那条 path 恒在（与形状无关），没单独指定就退回 currentColor，跟码点同色 */
 [data-scope='qr-code'][data-part='root'] > [data-xh-geom='eyes'] {
   fill: var(--xh-qr-code-eye-fg, currentColor);
 }

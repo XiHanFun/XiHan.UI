@@ -26,8 +26,11 @@ function makeGeom(doc: Document, tag: string, name: string): Element {
  * 作者写一个空的 `<svg data-xh-part="root"></svg>`，几何由本元素生成：模块是算出来的派生数据，
  * 作者没法自己写。矩阵在 connectQrCode 里算一遍，这里只取现成的 path。
  *
+ * 几何恒是两条 `<path>`：除码眼外的模块一条、三个码眼一条，码眼那条另有 `--xh-qr-code-eye-fg` 可单独上色。
+ *
  * 要放中心 logo 就在 root 里写一个 `<svg data-xh-part="logo">` 并把图形放进去，落位与尺寸由本元素写上；
- * 那块底下会先铺一个底色矩形把模块挖空，作者的图形画在它上面。放了 logo 就把 level 提到 Q 或 H。
+ * 那块底下会先铺一个底色矩形把模块挖空，作者的图形画在它上面。放了 logo 就把 level 提到 Q 或 H：
+ * 挖掉的码字超出所选级别的纠错余量时，诊断通道会收到一条 `qr-code.logo-damage` 警告，码照画。
  *
  * 内容超出 40 版容量时不画任何模块，root 上落 `data-state="error"`：
  * 截断能画出一张扫得开的码，但扫出来的是半截内容。

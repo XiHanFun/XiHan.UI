@@ -1,9 +1,9 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { QrCodeApi, QrCodeLogoArea, QrCodeProps, QrCodeState, QrEyeShape, QrModuleShape } from './qr-code.types'
+import type { QrCodeApi, QrCodeLogoArea, QrCodeLogoDamage, QrCodeProps, QrCodeState, QrEyeShape, QrModuleShape } from './qr-code.types'
 import type { QrLevel } from './qr-encode'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr, DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 import { qrCodeAnatomy } from './qr-code.anatomy'
-import { qrAlignmentPositions, qrEncode } from './qr-encode'
+import { qrAlignmentPositions, qrDamage, qrEncode } from './qr-encode'
 
 const parts = qrCodeAnatomy.build()
 
@@ -30,6 +30,9 @@ const EYE_CORE_CORNER = 0.75
 /** logo 边长占每边模块数的上限：1/5 边长约合 4% 面积。 */
 const LOGO_SIDE_DIVISOR = 5
 
+/** 四个纠错级别标称可恢复的码字比例。 */
+const RECOVERY: Readonly<Record<QrLevel, number>> = { L: 0.07, M: 0.15, Q: 0.25, H: 0.3 }
+
 // 格子分三类：数据模块、一律保持方块的时序与校正图形、三个码眼的 7×7 块。
 const CELL_DATA = 0
 const CELL_FIXED = 1
@@ -37,30 +40,6 @@ const CELL_EYE = 2
 
 /** 没画出码时透出的空矩阵，恒等以免每次调用都换一个新数组。 */
 const EMPTY_MODULES: readonly (readonly boolean[])[] = []
-
-/**
- * 把矩阵合成一条路径的 d：每一行里连续的深色模块并成一个矩形子路径。
- * 一格一个 `<rect>` 的话，40 版满码是三万多个节点。
- */
-function buildPath(modules: readonly (readonly boolean[])[], margin: number): string {
-  const segments: string[] = []
-  for (let row = 0; row < modules.length; row++) {
-    const line = modules[row]!
-    let col = 0
-    while (col < line.length) {
-      if (!line[col]) {
-        col++
-        continue
-      }
-      let run = 1
-      while (col + run < line.length && line[col + run])
-        run++
-      segments.push(`M${col + margin} ${row + margin}h${run}v1h-${run}z`)
-      col += run
-    }
-  }
-  return segments.join('')
-}
 
 /**
  * 逐格标出三类：三个定位图形的 7×7 块、时序图形与校正图形、其余数据模块。
@@ -155,8 +134,8 @@ function buildEyePath(count: number, margin: number, shape: QrEyeShape): string 
 
 /**
  * 除码眼以外的模块合成一条 d：码眼那 3 块 7×7 留给 buildEyePath。
- * 方块码点、以及一律保持方块的时序与校正图形，横向连续的同类并成一个矩形；
- * 圆点与圆角码点一格一段。
+ * 方块码点、以及一律保持方块的时序与校正图形，横向连续的同类并成一个矩形——
+ * 一格一个 `<rect>` 的话，40 版满码是三万多个节点；圆点与圆角码点一格一段。
  */
 function buildShapedPath(
   modules: readonly (readonly boolean[])[],
@@ -220,15 +199,25 @@ function resolveNumber(value: number | undefined, fallback: number): number {
  *
  * 矩阵只在这里算一遍，适配器直接取 api 上现成的 `path` / `eyePath` / `logoArea` 画，两端不各算一次。
  *
- * 码点与码眼都是缺省形状时走合并路径，整张码（含三个码眼）合成 `path` 一条；
- * 任一形状不是缺省值时码眼另起 `eyePath`，两条分开是因为它们的形状与颜色都可能不同。
+ * 几何恒分两条：除码眼外的模块合成 `path`，三个码眼合成 `eyePath`。与形状无关地分开，
+ * 是因为码眼可以单独上色（皮肤里的 `--xh-qr-code-eye-fg` 铺在 `eyePath` 那个节点上）；
+ * 并成一条的话那个变量就没有能落地的节点，设了也不动。
  *
  * 编码失败（内容超出 40 版容量）不往外抛：抛在 Vue 的 computed 或 WC 的 wire 里会连累整棵树。
  * 改成落到 `state: 'error'` 并且一个模块都不铺——宁可什么都不画，也不画一张扫出半截内容的码。
  *
+ * 留了 logo 位时算一份 `logoDamage`；损伤比例超出所选纠错级别的余量就往诊断通道报一条警告，
+ * 但码照画：这是能渲染、只是不明智的组合，抛错会连累整棵树。
+ *
  * 命名分两态且互斥，与 Icon 同一套判据：
  * · 有名字 → role="img" + aria-label，不写 aria-hidden；
  * · 无名字（label 与 value 都是空白） → aria-hidden="true"，不写 role 与 aria-label。
+ *
+ * @example
+ * // 23 字节的 URL 落在 2 版（每边 25 模块）：挖空边长 5，盖住 25 个模块，压掉 44 个码字里的 6 个，
+ * // 于是 logoDamage 是 { modules: 25, ratio: 6 / 44, hitsFunctionPatterns: false }。
+ * // 13.6% 这一档，Q 级（25%）与缺省的 M 级（15%）都兜得住，L 级（7%）会报一条警告、码照画。
+ * connectQrCode({ value: 'https://ui.xihanfun.com', level: 'Q', logo: true }, normalize)
  */
 export function connectQrCode<T extends PropTypes>(
   props: QrCodeProps,
@@ -261,24 +250,40 @@ export function connectQrCode<T extends PropTypes>(
   const count = version === 0 ? 0 : 4 * version + 17
   const viewBox = `0 0 ${count + margin * 2} ${count + margin * 2}`
 
-  const splitEyes = moduleShape !== DEFAULT_MODULE_SHAPE || eyeShape !== DEFAULT_EYE_SHAPE
+  // 缺省形状全是轴对齐的整格矩形，带弧的那几种才需要精确几何
+  const curved = moduleShape !== DEFAULT_MODULE_SHAPE || eyeShape !== DEFAULT_EYE_SHAPE
   let path = ''
   let eyePath = ''
   if (version !== 0) {
-    if (splitEyes) {
-      path = buildShapedPath(modules, classifyCells(count, version), count, margin, moduleShape)
-      eyePath = buildEyePath(count, margin, eyeShape)
-    }
-    else {
-      path = buildPath(modules, margin)
-    }
+    path = buildShapedPath(modules, classifyCells(count, version), count, margin, moduleShape)
+    eyePath = buildEyePath(count, margin, eyeShape)
   }
 
   let logoArea: QrCodeLogoArea | undefined
+  let logoDamage: QrCodeLogoDamage | undefined
   if (props.logo === true && version !== 0) {
     const side = logoSideModules(count)
     const at = margin + (count - side) / 2
     logoArea = { x: at, y: at, size: side }
+
+    // 挖空压在码面正中，落位换算回不含静区的坐标
+    const damage = qrDamage(version, at - margin, at - margin, side)
+    logoDamage = {
+      modules: damage.modules,
+      ratio: damage.codewords / damage.total,
+      hitsFunctionPatterns: damage.hitsFunctionPatterns,
+    }
+    if (logoDamage.ratio > RECOVERY[level]) {
+      reportDiagnostic({
+        code: DIAGNOSTIC_CODES.qrCodeLogoDamage,
+        level: 'warn',
+        scope: qrCodeAnatomy.name,
+        message: `中心 logo 盖住了 ${damage.modules} 个模块，压掉 ${damage.total} 个码字里的 ${damage.codewords} 个`
+          + `（${(logoDamage.ratio * 100).toFixed(1)}%），超出 ${level} 级纠错能恢复的 ${(RECOVERY[level] * 100).toFixed(0)}%，`
+          + `这张码可能扫不出来；把 level 提到 Q 或 H，或者去掉 logo`,
+        detail: { level, version, ratio: logoDamage.ratio, recoverable: RECOVERY[level] },
+      })
+    }
   }
 
   // 空串与纯空白不算给过名字：认了它就得到一个有 role="img" 却没有名字的对象，读屏只报"图像"
@@ -294,6 +299,7 @@ export function connectQrCode<T extends PropTypes>(
     path,
     eyePath,
     logoArea,
+    logoDamage,
     state,
     error,
     label,
@@ -303,7 +309,7 @@ export function connectQrCode<T extends PropTypes>(
       'viewBox': viewBox,
       // 缺省形状全是轴对齐的方块，边界都落在整数坐标上，交给渲染器按整像素画，
       // 边缘不出现半透明的过渡带；带圆弧的形状按整像素画会变成锯齿，改走精确几何
-      'shape-rendering': splitEyes ? 'geometricPrecision' : 'crispEdges',
+      'shape-rendering': curved ? 'geometricPrecision' : 'crispEdges',
       'role': label === undefined ? undefined : 'img',
       'aria-label': label,
       'aria-hidden': label === undefined ? 'true' : undefined,

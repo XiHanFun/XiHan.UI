@@ -330,10 +330,16 @@ function drawVersion(grid: Grid, version: number): void {
   }
 }
 
-/** 码字按两列一组、自右向左蛇形铺进非功能格；铺不满的余数位留浅色。 */
-function placeCodewords(grid: Grid, codewords: readonly number[]): void {
-  const { size } = grid
-  let i = 0
+/**
+ * 按码字铺放次序走遍全部非功能格：两列一组、自右向左，方向逐组翻转。
+ * `bit` 是这一格在码字位串里的下标，`bit >>> 3` 即它属于第几个码字。
+ */
+function forEachDataModule(
+  size: number,
+  reserved: readonly (readonly boolean[])[],
+  visit: (row: number, col: number, bit: number) => void,
+): void {
+  let bit = 0
   for (let right = size - 1; right >= 1; right -= 2) {
     // 第 6 列是时序图形，整列跳过
     if (right === 6)
@@ -343,13 +349,89 @@ function placeCodewords(grid: Grid, codewords: readonly number[]): void {
         const col = right - j
         const upward = ((right + 1) & 2) === 0
         const row = upward ? size - 1 - vert : vert
-        if (!grid.reserved[row]![col] && i < codewords.length * 8) {
-          grid.modules[row]![col] = bitAt(codewords[i >>> 3]!, 7 - (i & 7))
-          i++
+        if (!reserved[row]![col]) {
+          visit(row, col, bit)
+          bit++
         }
       }
     }
   }
+}
+
+/** 码字按铺放次序写进非功能格；铺不满的余数位留浅色。 */
+function placeCodewords(grid: Grid, codewords: readonly number[]): void {
+  const limit = codewords.length * 8
+  forEachDataModule(grid.size, grid.reserved, (row, col, bit) => {
+    if (bit < limit)
+      grid.modules[row]![col] = bitAt(codewords[bit >>> 3]!, 7 - (bit & 7))
+  })
+}
+
+/**
+ * 该版本里功能图形与格式 / 版本信息占住的格子。
+ * 照常铺一遍功能格取占位表；格式信息占哪几格与它的内容无关，级别与掩模给什么都一样。
+ */
+function reservedModules(version: number): boolean[][] {
+  const size = 4 * version + 17
+  const grid: Grid = {
+    size,
+    modules: Array.from({ length: size }, () => Array.from<boolean>({ length: size }).fill(false)),
+    reserved: Array.from({ length: size }, () => Array.from<boolean>({ length: size }).fill(false)),
+  }
+  drawFunctionPatterns(grid, version)
+  drawFormat(grid, 'M', 0)
+  if (version >= 7)
+    drawVersion(grid, version)
+  return grid.reserved
+}
+
+/** 一片方形区域被底色盖住后的损伤量。 */
+export interface QrDamage {
+  /** 盖住的模块数。 */
+  readonly modules: number
+  /** 受损码字数：一个码字只要有一位落在区里，整个码字都算读不回来。 */
+  readonly codewords: number
+  /** 该版本的总码字数（数据 + 纠错）。 */
+  readonly total: number
+  /** 区里有没有功能图形，含格式信息与版本信息。 */
+  readonly hitsFunctionPatterns: boolean
+}
+
+/**
+ * 算一片方形区域被底色盖住后压掉了多少模块、多少码字。
+ * 坐标与边长的单位都是模块，原点在码面左上角，不含静区。
+ *
+ * 区里的深浅一律按读不回来算：读码器不知道那片是 logo，取到什么用什么，
+ * 盖住的浅色模块碰巧读对也只是碰巧。
+ */
+export function qrDamage(version: number, top: number, left: number, side: number): QrDamage {
+  const size = 4 * version + 17
+  const reserved = reservedModules(version)
+  const total = totalCodewords(version)
+  const bottom = top + side
+  const right = left + side
+
+  const damaged = new Set<number>()
+  forEachDataModule(size, reserved, (row, col, bit) => {
+    if (row < top || row >= bottom || col < left || col >= right)
+      return
+    const index = bit >>> 3
+    // 末尾凑不满一个码字的余数位不承载内容，不计进损伤
+    if (index < total)
+      damaged.add(index)
+  })
+
+  let hits = false
+  for (let row = top; row < bottom && !hits; row++) {
+    for (let col = left; col < right; col++) {
+      if (reserved[row]?.[col] === true) {
+        hits = true
+        break
+      }
+    }
+  }
+
+  return { modules: side * side, codewords: damaged.size, total, hitsFunctionPatterns: hits }
 }
 
 /** 掩模条件：成立的格子翻色。 */
