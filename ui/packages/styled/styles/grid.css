@@ -56,6 +56,211 @@
     --xh-_grid-cols: 12;
   }
 
+  /* —— 逐档列数 —— */
+  /* 移动优先：先按 data-cols 排定，视口每宽到一档就换成那一档的列数，没写的档沿用比它窄的那一档。
+     四档自窄到宽依次写，只用 min-width：媒体查询不改选择器权重，宽视口上同时命中好几档时由源码序决定谁生效。
+     宽度写字面量：自定义属性在 @media 条件里不参与求值，令牌变量写在这里等于没写条件。
+     每档都从一列写起：base 分多列、某一档收回一列同样是合法的一档。 */
+  @media (min-width: 640px) {
+    [data-scope='grid'][data-part='root'][data-cols-sm='1'] {
+      --xh-_grid-cols: 1;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-sm='2'] {
+      --xh-_grid-cols: 2;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-sm='3'] {
+      --xh-_grid-cols: 3;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-sm='4'] {
+      --xh-_grid-cols: 4;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-sm='5'] {
+      --xh-_grid-cols: 5;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-sm='6'] {
+      --xh-_grid-cols: 6;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-sm='7'] {
+      --xh-_grid-cols: 7;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-sm='8'] {
+      --xh-_grid-cols: 8;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-sm='9'] {
+      --xh-_grid-cols: 9;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-sm='10'] {
+      --xh-_grid-cols: 10;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-sm='11'] {
+      --xh-_grid-cols: 11;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-sm='12'] {
+      --xh-_grid-cols: 12;
+    }
+  }
+
+  @media (min-width: 768px) {
+    [data-scope='grid'][data-part='root'][data-cols-md='1'] {
+      --xh-_grid-cols: 1;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-md='2'] {
+      --xh-_grid-cols: 2;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-md='3'] {
+      --xh-_grid-cols: 3;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-md='4'] {
+      --xh-_grid-cols: 4;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-md='5'] {
+      --xh-_grid-cols: 5;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-md='6'] {
+      --xh-_grid-cols: 6;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-md='7'] {
+      --xh-_grid-cols: 7;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-md='8'] {
+      --xh-_grid-cols: 8;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-md='9'] {
+      --xh-_grid-cols: 9;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-md='10'] {
+      --xh-_grid-cols: 10;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-md='11'] {
+      --xh-_grid-cols: 11;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-md='12'] {
+      --xh-_grid-cols: 12;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    [data-scope='grid'][data-part='root'][data-cols-lg='1'] {
+      --xh-_grid-cols: 1;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-lg='2'] {
+      --xh-_grid-cols: 2;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-lg='3'] {
+      --xh-_grid-cols: 3;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-lg='4'] {
+      --xh-_grid-cols: 4;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-lg='5'] {
+      --xh-_grid-cols: 5;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-lg='6'] {
+      --xh-_grid-cols: 6;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-lg='7'] {
+      --xh-_grid-cols: 7;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-lg='8'] {
+      --xh-_grid-cols: 8;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-lg='9'] {
+      --xh-_grid-cols: 9;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-lg='10'] {
+      --xh-_grid-cols: 10;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-lg='11'] {
+      --xh-_grid-cols: 11;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-lg='12'] {
+      --xh-_grid-cols: 12;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    [data-scope='grid'][data-part='root'][data-cols-xl='1'] {
+      --xh-_grid-cols: 1;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-xl='2'] {
+      --xh-_grid-cols: 2;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-xl='3'] {
+      --xh-_grid-cols: 3;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-xl='4'] {
+      --xh-_grid-cols: 4;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-xl='5'] {
+      --xh-_grid-cols: 5;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-xl='6'] {
+      --xh-_grid-cols: 6;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-xl='7'] {
+      --xh-_grid-cols: 7;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-xl='8'] {
+      --xh-_grid-cols: 8;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-xl='9'] {
+      --xh-_grid-cols: 9;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-xl='10'] {
+      --xh-_grid-cols: 10;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-xl='11'] {
+      --xh-_grid-cols: 11;
+    }
+
+    [data-scope='grid'][data-part='root'][data-cols-xl='12'] {
+      --xh-_grid-cols: 12;
+    }
+  }
+
   /* —— 间距档位 —— */
   /* 每一档指向一个间距令牌，行与行之间也吃这同一份间距 */
   [data-scope='grid'][data-part='root'][data-gap='xs'] {

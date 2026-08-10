@@ -2,7 +2,8 @@
   /* 页面骨架排成三行两列：头与脚各横贯一整行，侧栏与内容并排占中间那一行。
      缺哪一段，对应的行/列就没有条目，宽高自动收成 0，不必为"少写一段"另立规则。
 
-     侧栏两档宽度声明在根上：sider 自己读这两个槽，换档只改这里。 */
+     侧栏两档宽度与头的高度声明在根上：各段自己读这些槽，换档只改这里。
+     头的高度之所以也归到根上：头吸顶时头这一行的轨道要按同一个值定高，两处必须同源。 */
   [data-scope='layout'][data-part='root'] {
     display: grid;
     grid-template-areas:
@@ -15,6 +16,9 @@
     color: var(--xh-layout-fg, var(--xh-fg-default));
     --xh-_layout-sider-w: var(--xh-layout-sider-width, 15rem);
     --xh-_layout-sider-collapsed-w: var(--xh-layout-sider-collapsed-width, 4rem);
+    --xh-_layout-header-h: var(--xh-layout-header-h, 3.5rem);
+    /* 侧栏吸附时钉在哪条线上：缺省贴滚动容器上沿，头也吸顶时改成让开头的高度 */
+    --xh-_layout-sider-offset: 0px;
   }
 
   /* 侧栏挂到行尾：两列对调，内容在前 */
@@ -32,7 +36,7 @@
     grid-area: header;
     align-items: center;
     gap: var(--xh-space-3);
-    block-size: var(--xh-layout-header-h, 3.5rem);
+    block-size: var(--xh-_layout-header-h);
     padding-inline: var(--xh-space-4);
     background: var(--xh-layout-header-bg, var(--xh-bg-surface));
   }
@@ -111,6 +115,50 @@
 
   [data-scope='layout'][data-part='root'][data-bordered] [data-scope='layout'][data-part='sider'][data-placement='end'] {
     border-inline-start: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-border-default));
+  }
+
+  /* —— 固定定位 —— */
+  /* 滚动容器的分工：滚动发生在骨架外面——root 的高度跟着内容长，页面（或作者套在外层的
+     那个定高盒子）才是滚动容器；content 不改成滚动容器。
+     两条理由：一是 content 自己滚的话头与侧栏本来就不会动，两个开关也就没有区别了；
+     二是 sticky 的行程被自己的包含块框住，root 一旦定高，行里的轨道就不再跟着内容长，
+     钉住的那一段滚过一屏后会被包含块拽走。
+     由此还有一条：给 root 写 overflow（比如为了圆角裁剪）会让它自己变成一个永远滚不动的
+     滚动容器，里面的 sticky 随之成为空操作——要固定就把 overflow 挪到 root 外面那层。 */
+
+  /* 头这一行改成定高：下面那条让头跨满所有行，行 1 就没有条目撑着它了 */
+  [data-scope='layout'][data-part='root'][data-header-fixed] {
+    grid-template-rows: var(--xh-_layout-header-h) minmax(0, 1fr) auto;
+  }
+
+  /* 跨满所有行只为把包含块撑到整副骨架那么高：头若只占行 1，包含块与它自己一样高，
+     sticky 的行程就是 0，钉住与不钉住看不出区别。
+     起始缘对齐把它按回行 1 的位置，视觉上与不固定时一样；高度被作者改成 auto 时也不会被拉满整块区域。
+     头的背景（--xh-layout-header-bg）要留实色，否则滚过去的正文会从头底下透出来。 */
+  [data-scope='layout'][data-part='header'][data-fixed] {
+    position: sticky;
+    z-index: var(--xh-layout-header-layer, var(--xh-layer-sticky));
+    grid-row: 1 / -1;
+    align-self: start;
+    inset-block-start: 0;
+  }
+
+  /* 头也吸顶时侧栏钉在头的下沿，两段不叠在一起 */
+  [data-scope='layout'][data-part='root'][data-header-fixed][data-sider-fixed] {
+    --xh-_layout-sider-offset: var(--xh-_layout-header-h);
+  }
+
+  /* 侧栏保持默认的拉伸对齐，只加一道高度上限：内容短时它照旧填满整列，内容长过一屏时它收成
+     可视区那么高，短出来的那一段就是 sticky 的行程。
+     上限量的是滚动容器可视区的高度，缺省按视口算；滚动容器不是视口时由作者把那个高度写进
+     --xh-layout-scrollport-h。视口取 dvh：移动端地址栏收放会改变可视高度，dvh 跟着变。
+     侧栏自己的条目多到装不下时在内部滚，横轴仍归上面那条 overflow: hidden 裁，
+     折叠态靠它把放不下的字裁掉；逻辑属性 overflow-block 尚无可用实现，写物理轴。 */
+  [data-scope='layout'][data-part='sider'][data-fixed] {
+    position: sticky;
+    inset-block-start: var(--xh-_layout-sider-offset);
+    max-block-size: calc(var(--xh-layout-scrollport-h, 100dvh) - var(--xh-_layout-sider-offset));
+    overflow-y: auto;
   }
 
   @media (prefers-reduced-motion: reduce) {

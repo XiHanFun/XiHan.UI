@@ -16,6 +16,8 @@ export const XhLayoutRoot = defineComponent({
     siderWidth: { type: String, default: undefined },
     siderCollapsedWidth: { type: String, default: undefined },
     siderPlacement: { type: String as PropType<LayoutSiderPlacement>, default: undefined },
+    headerFixed: Boolean,
+    siderFixed: Boolean,
     bordered: Boolean,
   },
   // sider-collapsed-change 携带 { collapsed }，update:siderCollapsed 携带裸布尔

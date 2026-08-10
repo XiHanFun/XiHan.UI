@@ -34,6 +34,18 @@ align 管每一项在自己那格里的块向落点，justify 管行内落点；
 
 <XhDemo src="grid/05-align-justify" />
 
+### 响应式列数
+
+cols 除了整数也收断点对象，逐档写各自的列数：窄视口一列，越宽排得越密，拖动窗口即可看到换档
+
+<XhDemo src="grid/06-responsive-cols" />
+
+### 断点档位一览
+
+四档断点取自令牌：sm 640px、md 768px、lg 1024px、xl 1280px；自窄到宽依次接管，视口到哪一档就用哪一档的列数
+
+<XhDemo src="grid/07-breakpoints" />
+
 ## 产物
 
 | 层 | 值 |

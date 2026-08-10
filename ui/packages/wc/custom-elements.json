@@ -9854,11 +9854,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-grid>` —— Light-DOM 行为宿主，无状态机，把 connectGrid 产出打到 root 与各 item 角色节点。\n列数、间距档位与两条对齐轴原样落成 data-*，排布规则写在皮肤里。\n\n每一格的跨列与错列写在 item 角色节点自己的 `span` / `offset` 属性上。\n运行期改写这两个属性不触发重新接线，需作者自行 requestUpdate。\n\n根上不写 role：容器只做排布，里面装的是列表还是一组卡片由作者自己声明。",
+          "description": "`<xh-grid>` —— Light-DOM 行为宿主，无状态机，把 connectGrid 产出打到 root 与各 item 角色节点。\n列数、间距档位与两条对齐轴原样落成 data-*，排布规则写在皮肤里。\n列数可以逐档写：`cols='{\"base\":1,\"md\":3}'` 落成 data-cols 与 data-cols-md，\n窄视口分一列、宽到 md 断点后分三列。\n\n每一格的跨列与错列写在 item 角色节点自己的 `span` / `offset` 属性上。\n运行期改写这两个属性不触发重新接线，需作者自行 requestUpdate。\n\n根上不写 role：容器只做排布，里面装的是列表还是一组卡片由作者自己声明。",
           "name": "XhGridElement",
           "cssParts": [
             {
-              "description": "排布容器，承载 data-cols / data-gap / data-align / data-justify",
+              "description": "排布容器，承载 data-cols（及逐档的 data-cols-sm/-md/-lg/-xl）/ data-gap / data-align / data-justify",
               "name": "root"
             },
             {
@@ -9881,7 +9881,7 @@
               "name": "cols",
               "privacy": "public",
               "type": {
-                "text": "number | undefined"
+                "text": "number | ColsByBreakpoint | undefined"
               },
               "attribute": "cols"
             },
@@ -9926,9 +9926,9 @@
           "attributes": [
             {
               "type": {
-                "text": "number | undefined"
+                "text": "number | ColsByBreakpoint | undefined"
               },
-              "description": "列数（1–12），不写按一列排",
+              "description": "列数（1–12），不写按一列排；写 JSON 对象则逐档给列数（base / sm / md / lg / xl）",
               "name": "cols",
               "fieldName": "cols"
             },
@@ -10985,19 +10985,19 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-layout>` —— 页面骨架的 Light-DOM 行为宿主，跑 layout 机器并把 connect 产出打到\nroot/header/sider/content/footer/sider-trigger 角色节点。\n\n除 root 外的部件全部可缺省。各段一律不带 role：地标该不该标、标在哪一段，\n取决于这套骨架在页面里的位置，由作者自己声明。\n\n侧栏宽度只写成 sider 上的内联 inline-size，宽度过渡由皮肤声明。",
+          "description": "`<xh-layout>` —— 页面骨架的 Light-DOM 行为宿主，跑 layout 机器并把 connect 产出打到\nroot/header/sider/content/footer/sider-trigger 角色节点。\n\n除 root 外的部件全部可缺省。各段一律不带 role：地标该不该标、标在哪一段，\n取决于这套骨架在页面里的位置，由作者自己声明。\n\n侧栏宽度只写成 sider 上的内联 inline-size，宽度过渡由皮肤声明。\n\n固定定位只落 data-fixed 标记：钉住的实现（含滚动容器的分工）归皮肤。",
           "name": "XhLayoutElement",
           "cssParts": [
             {
-              "description": "骨架根容器，承载 data-sider-placement / data-sider-collapsed / data-bordered",
+              "description": "骨架根容器，承载 data-sider-placement / data-sider-collapsed / data-header-fixed / data-sider-fixed / data-bordered",
               "name": "root"
             },
             {
-              "description": "顶部横幅区，横贯整行",
+              "description": "顶部横幅区，横贯整行；吸顶时带 data-fixed",
               "name": "header"
             },
             {
-              "description": "侧栏，宽度随折叠态在两档之间切换",
+              "description": "侧栏，宽度随折叠态在两档之间切换；吸附时带 data-fixed",
               "name": "sider"
             },
             {
@@ -11067,6 +11067,24 @@
                 "text": "LayoutSiderPlacement | undefined"
               },
               "attribute": "sider-placement"
+            },
+            {
+              "kind": "field",
+              "name": "headerFixed",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "header-fixed"
+            },
+            {
+              "kind": "field",
+              "name": "siderFixed",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "sider-fixed"
             },
             {
               "kind": "field",
@@ -11157,6 +11175,22 @@
               "description": "侧栏挂在行首还是行尾，缺省 start",
               "name": "sider-placement",
               "fieldName": "siderPlacement"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "头吸顶：滚动时头钉在滚动容器的上沿",
+              "name": "header-fixed",
+              "fieldName": "headerFixed"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "侧栏吸附：滚动时侧栏钉在滚动容器的上沿，头也吸顶时让开头那一条",
+              "name": "sider-fixed",
+              "fieldName": "siderFixed"
             },
             {
               "type": {

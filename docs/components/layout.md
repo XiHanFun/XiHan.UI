@@ -34,6 +34,18 @@ sider-placement 决定侧栏挂在行首还是行尾，分隔线也跟着换到�
 
 <XhDemo src="layout/05-sider-width" />
 
+### 吸顶与固定
+
+header-fixed 让头钉在滚动容器上沿，sider-fixed 让侧栏跟着钉住；两个一起用时侧栏自动让开头的高度
+
+<XhDemo src="layout/06-fixed" />
+
+### 分别固定
+
+两个开关各自独立：只写 header-fixed 时侧栏照常随内容滚走，只写 sider-fixed 时侧栏钉在滚动容器上沿、头照常滚走
+
+<XhDemo src="layout/07-fixed-independent" />
+
 ## 产物
 
 | 层 | 值 |
@@ -59,6 +71,8 @@ sider-placement 决定侧栏挂在行首还是行尾，分隔线也跟着换到�
 | `siderWidth` | `string` |  | 展开时侧栏的宽度，任意 CSS 长度；不写则用皮肤里的档位。 |
 | `siderCollapsedWidth` | `string` |  | 折叠时侧栏的宽度，任意 CSS 长度；不写则用皮肤里的档位。 |
 | `siderPlacement` | `LayoutSiderPlacement` |  | 侧栏挂在行首还是行尾，缺省 start。 |
+| `headerFixed` | `boolean` |  | 头吸顶：滚动时头钉在滚动容器的上沿。只落标记，钉住的实现归皮肤。 |
+| `siderFixed` | `boolean` |  | 侧栏吸附：滚动时侧栏钉在滚动容器的上沿，头也吸顶时让开头那一条。只落标记，钉住的实现归皮肤。 |
 | `bordered` | `boolean` |  | 在头、侧栏、脚与内容之间画分隔线。 |
 | `onSiderCollapsedChange` | `(details: LayoutSiderCollapsedChangeDetails) => void` |  | 折叠态变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 

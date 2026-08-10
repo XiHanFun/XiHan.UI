@@ -75,7 +75,7 @@ export type { FormApi, FormErrorPatch, FormErrors, FormErrorsChangeDetails, Form
 export { connectGradientText, gradientTextAnatomy, gradientTextKeyboard, gradientTextMeta } from './gradient-text'
 export type { GradientTextApi, GradientTextDirection, GradientTextProps } from './gradient-text'
 export { connectGrid, gridAnatomy, gridKeyboard, gridMeta } from './grid'
-export type { GridAlign, GridApi, GridGap, GridItemProps, GridJustify, GridProps } from './grid'
+export type { GridAlign, GridApi, GridBreakpoint, GridCols, GridColsByBreakpoint, GridGap, GridItemProps, GridJustify, GridProps } from './grid'
 export { connectHoverCard, hoverCardAnatomy, hoverCardKeyboard, hoverCardMachine, hoverCardMeta } from './hover-card'
 export type { HoverCardApi, HoverCardOpenChangeDetails, HoverCardRefs, HoverCardSchema } from './hover-card'
 export { connectIcon, iconAnatomy, iconKeyboard, iconMeta } from './icon'
