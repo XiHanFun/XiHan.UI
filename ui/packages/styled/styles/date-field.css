@@ -113,7 +113,7 @@
   [data-scope='date-field'][data-part='control']:focus-within {
     border-color: var(--xh-date-field-control-border-focus, var(--xh-_date-field-ring));
     outline: var(--xh-ring-width) solid var(--xh-_date-field-ring);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='date-field'][data-part='control'][data-invalid] {

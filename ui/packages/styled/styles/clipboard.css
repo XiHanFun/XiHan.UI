@@ -54,7 +54,7 @@
 
   [data-scope='clipboard'][data-part='input']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='clipboard'][data-part='trigger'] {
@@ -99,7 +99,7 @@
 
   [data-scope='clipboard'][data-part='trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 写入在途：按钮还在原地不动，只把它压暗一点，免得连点 */

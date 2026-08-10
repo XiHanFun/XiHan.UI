@@ -122,7 +122,7 @@
 
   [data-scope='navigation-menu'][data-part='trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='navigation-menu'][data-part='trigger'][data-state='open'] {
@@ -204,7 +204,7 @@
 
   [data-scope='navigation-menu'][data-part='link']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 指向当前页面的那一条：颜色与字重都变，不加下划线（下划线是"可点"的信号，它已经在这儿了） */

@@ -34,7 +34,7 @@
      那一刻必须画环，否则键盘用户看不出自己被送到了哪儿 */
   [data-scope='form'][data-part='field-group']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 提交失败后的错误汇总。role=alert 常挂，靠 hidden 显隐 */
@@ -90,7 +90,7 @@
 
   [data-scope='form'][data-part='error-summary-item']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 两颗按钮共用一份底子：它们是同一种东西，只是干的活不同，
@@ -137,7 +137,7 @@
   [data-scope='form'][data-part='submit-trigger']:focus-visible,
   [data-scope='form'][data-part='reset-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 单体控件用 :disabled（集合条目才用 [data-disabled]）：

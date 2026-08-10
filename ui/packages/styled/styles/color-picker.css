@@ -60,7 +60,7 @@
 
   [data-scope='color-picker'][data-part='trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 单体控件用原生 disabled（预设色板那些格子也是原生按钮，同一条规矩） */
@@ -171,7 +171,7 @@
 
   [data-scope='color-picker'][data-part='area'][data-disabled] {
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: var(--xh-state-disabled-opacity);
   }
 
   /* 两处拇指同一副长相：镂空的小圆环，中心正好落在值所在的比例点上。
@@ -208,7 +208,7 @@
   [data-scope='color-picker'][data-part='area-thumb']:focus-visible,
   [data-scope='color-picker'][data-part='channel-slider-thumb']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 只有手真正拖着的那一处带 data-dragging：放大与光标不会三处一起变。
@@ -255,7 +255,7 @@
 
   [data-scope='color-picker'][data-part='channel-slider'][data-disabled] {
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: var(--xh-state-disabled-opacity);
   }
 
   [data-scope='color-picker'][data-part='channel-slider'][data-readonly] {
@@ -314,7 +314,8 @@
   [data-scope='color-picker'][data-part='channel-input']:focus-visible {
     border-color: var(--xh-color-picker-input-border-focus, var(--xh-ring-focus));
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: -1px;
+    /* 往内收一道发丝：输入框贴着面板边排，环画在外沿会压到相邻通道 */
+    outline-offset: calc(-1 * var(--xh-stroke-thin));
   }
 
   /* 打到一半的串：框里留着草稿，但值没动——描边提示"这串还没被收下" */
@@ -358,7 +359,7 @@
 
   [data-scope='color-picker'][data-part='eye-dropper-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 取色途中按钮保持按下的样子：屏幕取色期间浮层多半被系统的取色镜头盖着，
@@ -392,17 +393,17 @@
   /* 正被选中的那一格：环画在盒子外面，不挤占色块本身的面积 */
   [data-scope='color-picker'][data-part='swatch-item'][data-state='checked'] {
     outline: var(--xh-ring-width) solid var(--xh-color-picker-swatch-ring, var(--xh-bg-brand));
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='color-picker'][data-part='swatch-item']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='color-picker'][data-part='swatch-item']:disabled {
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: var(--xh-state-disabled-opacity);
   }
 
   /* 任何 display 都会盖掉 UA 的 [hidden]{display:none}：

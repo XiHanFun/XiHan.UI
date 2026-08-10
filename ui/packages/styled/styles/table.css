@@ -2,7 +2,7 @@
   /* 加载态自己冒出来，用户没按任何键：一段极轻的呼吸就够，别抢走正在读表的注意力 */
   @keyframes xh-table-loading-pulse {
     from {
-      opacity: 0.5;
+      opacity: var(--xh-state-disabled-opacity);
     }
 
     to {
@@ -103,7 +103,7 @@
      透明的表头会让底下滚过的行透出来 */
   [data-scope='table'][data-part='header'][data-sticky] {
     position: sticky;
-    z-index: var(--xh-table-sticky-header-z, var(--xh-z-sticky));
+    z-index: var(--xh-table-sticky-header-z, var(--xh-layer-sticky));
     inset-block-start: 0;
   }
 

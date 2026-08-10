@@ -34,7 +34,7 @@
  */
 [data-scope='affix'][data-part='content'][data-affixed] {
   position: fixed;
-  z-index: var(--xh-affix-layer, var(--xh-z-sticky));
+  z-index: var(--xh-affix-layer, var(--xh-layer-sticky));
 }
 
 /* styles/avatar-group.css */
@@ -129,7 +129,7 @@
   position: fixed;
   inset-block-end: var(--xh-back-top-inset-block, var(--xh-space-8));
   inset-inline-end: var(--xh-back-top-inset-inline, var(--xh-space-8));
-  z-index: var(--xh-back-top-layer, var(--xh-z-sticky));
+  z-index: var(--xh-back-top-layer, var(--xh-layer-sticky));
 }
 
 /* —— 尺寸 —— */
@@ -1073,7 +1073,7 @@
 
 [data-scope='layout'][data-part='sider-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* —— 分隔线 —— */
@@ -2959,7 +2959,7 @@
 
 [data-scope='accordion'][data-part='trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='accordion'][data-part='trigger'][data-state='open'] {
@@ -2969,7 +2969,7 @@
 /* 禁用条目走 aria-disabled，仍留在 Tab 序里，只是不可操作 */
 [data-scope='accordion'][data-part='trigger'][data-disabled] {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: var(--xh-state-disabled-opacity);
 }
 
 [data-scope='accordion'][data-part='indicator'] {
@@ -3090,7 +3090,7 @@
 
 [data-scope='anchor'][data-part='link']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 当前那一节：颜色与字重都跟着变，不只靠指示条——
@@ -3326,7 +3326,7 @@
 
 [data-scope='breadcrumb'][data-part='link']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 当前页用字重与前景色区分，不加下划线：下划线是"可点"的信号，而它点不动 */
@@ -3403,13 +3403,13 @@
 
 [data-scope='button'][data-part='root']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='button'][data-part='root'][data-disabled],
 [data-scope='button'][data-part='root'][data-loading] {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: var(--xh-state-disabled-opacity);
 }
 
 /* —— 变体 —— */
@@ -3911,7 +3911,7 @@
 [data-scope='carousel'][data-part='next-trigger']:focus-visible,
 [data-scope='carousel'][data-part='indicator']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 两端到头时按钮是原生 disabled（不可聚焦、进不了 Tab 序列），所以这里必须用 :disabled；
@@ -4113,7 +4113,7 @@
    语气落在环上：没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色 */
 [data-scope='cascader'][data-part='trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='cascader'][data-part='trigger'][data-invalid] {
@@ -4209,7 +4209,7 @@
    留着是给程序化聚焦兜底，落焦时得看得见 */
 [data-scope='cascader'][data-part='clear-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 无选中、只读、整控件禁用三种情况下都按不动，用的是原生 disabled */
@@ -4425,12 +4425,12 @@
 
 [data-scope='checkbox'][data-part='root'][data-disabled] {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: var(--xh-state-disabled-opacity);
 }
 
 [data-scope='checkbox'][data-part='root']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* —— 尺寸 —— */
@@ -4527,7 +4527,7 @@
 
 [data-scope='checkbox-group'][data-part='item']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 条目禁用一律走 aria-disabled（原生 disabled 会让它从键盘用户眼里消失），
@@ -4535,7 +4535,7 @@
 [data-scope='checkbox-group'][data-part='item'][data-disabled] {
   color: var(--xh-checkbox-group-item-fg-disabled, var(--xh-fg-disabled));
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: var(--xh-state-disabled-opacity);
 }
 
 /* 只读整组都改不动，但不是禁用：颜色照常，只把"可点"这个暗示收回来。
@@ -4630,13 +4630,13 @@
 
 [data-scope='checkbox-group'][data-part='trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='checkbox-group'][data-part='trigger'][data-disabled] {
   color: var(--xh-checkbox-group-trigger-fg-disabled, var(--xh-fg-disabled));
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: var(--xh-state-disabled-opacity);
 }
 
 /* 只读与禁用会同时出现在 trigger 上（连接层两个属性各写各的），
@@ -4717,7 +4717,7 @@
 
 [data-scope='clipboard'][data-part='input']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='clipboard'][data-part='trigger'] {
@@ -4762,7 +4762,7 @@
 
 [data-scope='clipboard'][data-part='trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 写入在途：按钮还在原地不动，只把它压暗一点，免得连点 */
@@ -4925,12 +4925,12 @@
 
 [data-scope='collapsible'][data-part='trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='collapsible'][data-part='trigger'][data-disabled] {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: var(--xh-state-disabled-opacity);
 }
 
 [data-scope='collapsible'][data-part='content'] {
@@ -4998,7 +4998,7 @@
 
 [data-scope='color-picker'][data-part='trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 单体控件用原生 disabled（预设色板那些格子也是原生按钮，同一条规矩） */
@@ -5109,7 +5109,7 @@
 
 [data-scope='color-picker'][data-part='area'][data-disabled] {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: var(--xh-state-disabled-opacity);
 }
 
 /* 两处拇指同一副长相：镂空的小圆环，中心正好落在值所在的比例点上。
@@ -5146,7 +5146,7 @@
 [data-scope='color-picker'][data-part='area-thumb']:focus-visible,
 [data-scope='color-picker'][data-part='channel-slider-thumb']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 只有手真正拖着的那一处带 data-dragging：放大与光标不会三处一起变。
@@ -5193,7 +5193,7 @@
 
 [data-scope='color-picker'][data-part='channel-slider'][data-disabled] {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: var(--xh-state-disabled-opacity);
 }
 
 [data-scope='color-picker'][data-part='channel-slider'][data-readonly] {
@@ -5252,7 +5252,8 @@
 [data-scope='color-picker'][data-part='channel-input']:focus-visible {
   border-color: var(--xh-color-picker-input-border-focus, var(--xh-ring-focus));
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: -1px;
+  /* 往内收一道发丝：输入框贴着面板边排，环画在外沿会压到相邻通道 */
+  outline-offset: calc(-1 * var(--xh-stroke-thin));
 }
 
 /* 打到一半的串：框里留着草稿，但值没动——描边提示"这串还没被收下" */
@@ -5296,7 +5297,7 @@
 
 [data-scope='color-picker'][data-part='eye-dropper-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 取色途中按钮保持按下的样子：屏幕取色期间浮层多半被系统的取色镜头盖着，
@@ -5330,17 +5331,17 @@
 /* 正被选中的那一格：环画在盒子外面，不挤占色块本身的面积 */
 [data-scope='color-picker'][data-part='swatch-item'][data-state='checked'] {
   outline: var(--xh-ring-width) solid var(--xh-color-picker-swatch-ring, var(--xh-bg-brand));
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='color-picker'][data-part='swatch-item']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='color-picker'][data-part='swatch-item']:disabled {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: var(--xh-state-disabled-opacity);
 }
 
 /* 任何 display 都会盖掉 UA 的 [hidden]{display:none}：
@@ -5473,7 +5474,7 @@
 [data-scope='combobox'][data-part='control']:focus-within {
   border-color: var(--xh-combobox-control-border-focus, var(--xh-_combobox-ring));
   outline: var(--xh-ring-width) solid var(--xh-_combobox-ring);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='combobox'][data-part='control'][data-invalid] {
@@ -5589,7 +5590,7 @@
 [data-scope='combobox'][data-part='trigger']:focus-visible,
 [data-scope='combobox'][data-part='clear-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_combobox-ring);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='combobox'][data-part='trigger']:disabled,
@@ -5801,13 +5802,13 @@
 /* 焦点环画在整个框上；用 focus-within 使焦点落在发送按钮时同样点亮 */
 [data-scope='composer'][data-part='root']:focus-within {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 禁用态罩住整框，内部 textarea 与按钮另有原生 disabled 管交互 */
 [data-scope='composer'][data-part='root'][data-disabled] {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: var(--xh-state-disabled-opacity);
 }
 
 /* 无边框透明底，融进 root 的框里；min-inline-size: 0 防止长内容把弹性子项撑出容器 */
@@ -5888,7 +5889,7 @@
 
 [data-scope='composer'][data-part='submit-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 停止模式只换配色，从主色降到中性；文案与可访问名由连接层切换 */
@@ -6281,7 +6282,7 @@
 [data-scope='date-field'][data-part='control']:focus-within {
   border-color: var(--xh-date-field-control-border-focus, var(--xh-_date-field-ring));
   outline: var(--xh-ring-width) solid var(--xh-_date-field-ring);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='date-field'][data-part='control'][data-invalid] {
@@ -6428,7 +6429,7 @@
 [data-scope='date-picker'][data-part='control']:focus-within {
   border-color: var(--xh-date-picker-control-border-focus, var(--xh-ring-focus));
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='date-picker'][data-part='control'][data-invalid] {
@@ -6518,7 +6519,7 @@
 [data-scope='date-picker'][data-part='trigger']:focus-visible,
 [data-scope='date-picker'][data-part='clear-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='date-picker'][data-part='trigger']:disabled,
@@ -6719,7 +6720,7 @@
 
 [data-scope='dialog'][data-part='close-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* styles/drawer.css */
@@ -6866,7 +6867,7 @@
 
 [data-scope='drawer'][data-part='trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* trigger 是单体控件，禁用走原生 disabled */
@@ -7089,7 +7090,7 @@
 
 [data-scope='drawer'][data-part='close-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* styles/editable.css */
@@ -7189,7 +7190,7 @@
 /* 预览区是可聚焦节点（focus 模式下还占 Tab 位），焦点环不能省 */
 [data-scope='editable'][data-part='preview']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='editable'][data-part='input'] {
@@ -7230,7 +7231,7 @@
 
 [data-scope='editable'][data-part='input']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='editable'][data-part='input'][data-invalid] {
@@ -7310,7 +7311,7 @@
 [data-scope='editable'][data-part='submit-trigger']:focus-visible,
 [data-scope='editable'][data-part='cancel-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 单体控件用 :disabled（不是集合条目那套 [data-disabled]）：
@@ -7373,7 +7374,7 @@
 
 [data-scope='field'][data-part='control']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='field'][data-part='control'][data-invalid] {
@@ -7740,7 +7741,7 @@
    那一刻必须画环，否则键盘用户看不出自己被送到了哪儿 */
 [data-scope='form'][data-part='field-group']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 提交失败后的错误汇总。role=alert 常挂，靠 hidden 显隐 */
@@ -7796,7 +7797,7 @@
 
 [data-scope='form'][data-part='error-summary-item']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 两颗按钮共用一份底子：它们是同一种东西，只是干的活不同，
@@ -7843,7 +7844,7 @@
 [data-scope='form'][data-part='submit-trigger']:focus-visible,
 [data-scope='form'][data-part='reset-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 单体控件用 :disabled（集合条目才用 [data-disabled]）：
@@ -7915,7 +7916,7 @@
 
 [data-scope='hover-card'][data-part='trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
@@ -8319,7 +8320,7 @@
   position: fixed;
   inset-block-start: 0;
   inset-inline: 0;
-  z-index: var(--xh-loading-bar-layer, var(--xh-z-sticky));
+  z-index: var(--xh-loading-bar-layer, var(--xh-layer-sticky));
 
   /* 它只报进度，不吃点击：盖在顶栏上的一条带子若拦住指针，页面顶部就点不动了 */
   pointer-events: none;
@@ -8907,7 +8908,7 @@
 
 [data-scope='navigation-menu'][data-part='trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='navigation-menu'][data-part='trigger'][data-state='open'] {
@@ -8989,7 +8990,7 @@
 
 [data-scope='navigation-menu'][data-part='link']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 指向当前页面的那一条：颜色与字重都变，不加下划线（下划线是"可点"的信号，它已经在这儿了） */
@@ -9192,7 +9193,7 @@
 [data-scope='number-field'][data-part='input']:focus-visible {
   border-color: var(--xh-number-field-input-border-focus, var(--xh-_number-field-border-focus));
   outline: var(--xh-ring-width) solid var(--xh-_number-field-ring);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='number-field'][data-part='input'][data-invalid] {
@@ -9259,7 +9260,7 @@
 [data-scope='number-field'][data-part='increment-trigger']:focus-visible,
 [data-scope='number-field'][data-part='decrement-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_number-field-ring);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 贴到 min / max 时连接层给对应那一侧落原生 disabled：单体控件用 :disabled，
@@ -9381,7 +9382,7 @@
 [data-scope='pagination'][data-part='next-trigger']:focus-visible,
 [data-scope='pagination'][data-part='item']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 首末页的上一页 / 下一页是原生 disabled（不可聚焦、进不了 Tab 序列），
@@ -9540,7 +9541,7 @@
 [data-scope='pin-input'][data-part='input']:focus-visible {
   border-color: var(--xh-pin-input-box-border-focus, var(--xh-_pin-input-ring));
   outline: var(--xh-ring-width) solid var(--xh-_pin-input-ring);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='pin-input'][data-part='input'][data-invalid] {
@@ -9685,7 +9686,7 @@
 
 [data-scope='popover'][data-part='close-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 箭头是旋转 45° 的方块，只保留朝向锚点那两条边的描边；
@@ -9818,14 +9819,14 @@
 
 [data-scope='radio-group'][data-part='item']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled，条目仍可聚焦，样式由 data-disabled 表达 */
 [data-scope='radio-group'][data-part='item'][data-disabled] {
   color: var(--xh-radio-group-item-fg-disabled, var(--xh-fg-disabled));
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: var(--xh-state-disabled-opacity);
 }
 
 [data-scope='radio-group'][data-part='indicator'] {
@@ -9898,7 +9899,7 @@
 /* 整体压暗只做一次，落在最外层：星星逐颗再叠 opacity 会越叠越黑 */
 [data-scope='rating'][data-part='root'][data-disabled] {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: var(--xh-state-disabled-opacity);
 }
 
 [data-scope='rating'][data-part='label'] {
@@ -9980,7 +9981,7 @@
 
 [data-scope='rating'][data-part='item']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 只读仍进得了 Tab 序列、读屏也念得出，只是改不动：收掉手型，别暗示"点这儿能改" */
@@ -10286,7 +10287,7 @@
 
 [data-scope='select'][data-part='trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_select-ring);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* trigger 是单体控件，用原生 disabled（条目那边一律 aria-disabled） */
@@ -10488,7 +10489,7 @@
 /* 禁用的整体压暗只做一次，落在最外层：track / range / thumb 各自再叠一层 opacity 会越叠越黑 */
 [data-scope='slider'][data-part='root'][data-disabled] {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: var(--xh-state-disabled-opacity);
 }
 
 [data-scope='slider'][data-part='label'] {
@@ -10613,7 +10614,7 @@
 
 [data-scope='slider'][data-part='thumb']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 多拇指时只有手真正推着的那一个带 data-dragging，放大与光标因此不会全组一起变。
@@ -10847,7 +10848,7 @@
 /* 组内无锚点时 list 自己在 Tab 序列里（走到完成位就是这种情形），落焦要看得见 */
 [data-scope='steps'][data-part='list']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 每一步与它后面那截连接线一起占一格，等分整行；min-inline-size 允许被压缩，
@@ -10907,7 +10908,7 @@
 
 [data-scope='steps'][data-part='trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
@@ -11034,7 +11035,7 @@
 
 [data-scope='steps'][data-part='content']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* styles/switch.css */
@@ -11067,12 +11068,12 @@
 
 [data-scope='switch'][data-part='root'][data-disabled] {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: var(--xh-state-disabled-opacity);
 }
 
 [data-scope='switch'][data-part='root']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* —— 尺寸 —— */
@@ -11102,7 +11103,7 @@
 /* 加载态自己冒出来，用户没按任何键：一段极轻的呼吸就够，别抢走正在读表的注意力 */
 @keyframes xh-table-loading-pulse {
   from {
-    opacity: 0.5;
+    opacity: var(--xh-state-disabled-opacity);
   }
 
   to {
@@ -11201,7 +11202,7 @@
    透明的表头会让底下滚过的行透出来 */
 [data-scope='table'][data-part='header'][data-sticky] {
   position: sticky;
-  z-index: var(--xh-table-sticky-header-z, var(--xh-z-sticky));
+  z-index: var(--xh-table-sticky-header-z, var(--xh-layer-sticky));
   inset-block-start: 0;
 }
 
@@ -11597,7 +11598,7 @@
 /* 组内无锚点时 list 自己在 Tab 序列里，落焦要看得见 */
 [data-scope='tabs'][data-part='list']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='tabs'][data-part='trigger'] {
@@ -11626,7 +11627,7 @@
 
 [data-scope='tabs'][data-part='trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='tabs'][data-part='trigger'][data-state='active'] {
@@ -11654,7 +11655,7 @@
 
 [data-scope='tabs'][data-part='content']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* styles/tags-input.css */
@@ -11772,7 +11773,7 @@
    而真正持有焦点的是里面的 input（它自己那圈环因此让位，见下） */
 [data-scope='tags-input'][data-part='control']:focus-within {
   outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 顶到上限：再加进不去，边框先给个提示。放在 invalid 之前，
@@ -11931,7 +11932,8 @@
    留着焦点环是给程序化聚焦兜底——删完把焦点交回输入框之前，它确实短暂持有过焦点 */
 [data-scope='tags-input'][data-part='item-delete-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
-  outline-offset: 1px;
+  /* 比默认档窄一道：它长在胶囊里，按默认偏移画会压到相邻胶囊 */
+  outline-offset: var(--xh-stroke-thin);
 }
 
 /* 按钮是单体控件，禁用走原生 disabled */
@@ -11961,7 +11963,8 @@
    外层 control 的 :focus-within 环同时亮着也合理——焦点确实在框内 */
 [data-scope='tags-input'][data-part='item-input']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
-  outline-offset: 1px;
+  /* 比默认档窄一道：它长在胶囊里，按默认偏移画会压到相邻胶囊 */
+  outline-offset: var(--xh-stroke-thin);
 }
 
 [data-scope='tags-input'][data-part='item-input']:disabled {
@@ -12004,7 +12007,8 @@
 
 [data-scope='tags-input'][data-part='clear-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
-  outline-offset: 1px;
+  /* 比默认档窄一道：它长在胶囊里，按默认偏移画会压到相邻胶囊 */
+  outline-offset: var(--xh-stroke-thin);
 }
 
 /* 没东西可清、只读或禁用时按钮转灰但不收起：位置留着，加进第一个标签就亮 */
@@ -12133,7 +12137,7 @@
 [data-scope='text-field'][data-part='input']:focus-visible {
   border-color: var(--xh-text-field-input-border-focus, var(--xh-_text-field-border-focus));
   outline: var(--xh-ring-width) solid var(--xh-_text-field-ring);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 顶到字数上限：再敲进不去，边框先给个提示。放在 invalid 之前，
@@ -12199,7 +12203,7 @@
    留着是给程序化聚焦兜底，落焦时得看得见 */
 [data-scope='text-field'][data-part='clear-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_text-field-ring);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 框里没字、只读或禁用时按钮转灰但不收起：位置留着，敲进第一个字就亮 */
@@ -12299,7 +12303,7 @@
 
 [data-scope='thread'][data-part='scroll-button']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 视觉隐藏但仍参与播报：用 clip-path 裁到不可见，不能用 display:none 或 visibility:hidden；
@@ -12697,7 +12701,7 @@
 [data-scope='time-picker'][data-part='trigger']:focus-visible,
 [data-scope='time-picker'][data-part='clear-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 两个按钮都是单体控件，禁用走原生 :disabled（列里的格一律 data-disabled） */
@@ -12820,7 +12824,8 @@
 
 [data-scope='time-picker'][data-part='option']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: -2px;
+  /* 往内收：选项在滚动列里挨着排，环画在外沿会被列的溢出裁掉 */
+  outline-offset: calc(-1 * var(--xh-ring-offset));
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），
@@ -13009,7 +13014,7 @@
 
 [data-scope='toast'][data-part='action-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='toast'][data-part='close-trigger'] {
@@ -13050,7 +13055,7 @@
 
 [data-scope='toast'][data-part='close-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* styles/toaster.css */
@@ -13159,12 +13164,12 @@
 
 [data-scope='toggle'][data-part='root'][data-disabled] {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: var(--xh-state-disabled-opacity);
 }
 
 [data-scope='toggle'][data-part='root']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* —— 变体 —— */
@@ -13375,7 +13380,7 @@
 [data-scope='toggle-group'][data-part='item']:focus-visible {
   z-index: 2;
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
@@ -13514,7 +13519,7 @@
 
 [data-scope='tooltip'][data-part='trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 坐标由定位引擎写在行内 style 上，这里只兜底 SSR 首帧 */
@@ -13865,7 +13870,7 @@
 [data-scope='tour'][data-part='skip-trigger']:focus-visible,
 [data-scope='tour'][data-part='close-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 箭头是旋转 45° 的方块，只保留朝向目标那两条边的描边；
@@ -14162,7 +14167,7 @@
 
 [data-scope='transfer'][data-part='select-all-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='transfer'][data-part='select-all-trigger']:disabled {
@@ -14201,7 +14206,7 @@
 [data-scope='transfer'][data-part='to-target-trigger']:focus-visible,
 [data-scope='transfer'][data-part='to-source-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 搬运按钮是单体控件，禁用走原生 disabled */
@@ -14556,7 +14561,7 @@
    语气落在环上：没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色 */
 [data-scope='tree-select'][data-part='trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='tree-select'][data-part='trigger'][data-invalid] {
@@ -14655,7 +14660,7 @@
    留着是给程序化聚焦兜底，落焦时得看得见 */
 [data-scope='tree-select'][data-part='clear-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
-  outline-offset: 2px;
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* 无选中、只读、整控件禁用三种情况下都按不动，用的是原生 disabled */

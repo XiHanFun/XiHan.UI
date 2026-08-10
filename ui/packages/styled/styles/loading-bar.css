@@ -11,7 +11,7 @@
     position: fixed;
     inset-block-start: 0;
     inset-inline: 0;
-    z-index: var(--xh-loading-bar-layer, var(--xh-z-sticky));
+    z-index: var(--xh-loading-bar-layer, var(--xh-layer-sticky));
 
     /* 它只报进度，不吃点击：盖在顶栏上的一条带子若拦住指针，页面顶部就点不动了 */
     pointer-events: none;

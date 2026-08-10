@@ -112,7 +112,7 @@
   [data-scope='combobox'][data-part='control']:focus-within {
     border-color: var(--xh-combobox-control-border-focus, var(--xh-_combobox-ring));
     outline: var(--xh-ring-width) solid var(--xh-_combobox-ring);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='combobox'][data-part='control'][data-invalid] {
@@ -228,7 +228,7 @@
   [data-scope='combobox'][data-part='trigger']:focus-visible,
   [data-scope='combobox'][data-part='clear-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_combobox-ring);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='combobox'][data-part='trigger']:disabled,

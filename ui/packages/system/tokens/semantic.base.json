@@ -1,81 +1,256 @@
 {
   "control": {
-    "h-sm": { "$type": "dimension", "$value": "28px" },
-    "h-md": { "$type": "dimension", "$value": "32px" },
-    "h-lg": { "$type": "dimension", "$value": "40px" },
-    "px-sm": { "$type": "dimension", "$value": "{space.2}" },
-    "px-md": { "$type": "dimension", "$value": "{space.3}" },
-    "px-lg": { "$type": "dimension", "$value": "{space.4}" },
-    "gap-sm": { "$type": "dimension", "$value": "{space.1}" },
-    "gap-md": { "$type": "dimension", "$value": "{space.2}" },
-    "gap-lg": { "$type": "dimension", "$value": "{space.2}" },
-    "action-size": { "$type": "dimension", "$value": "1.5rem" },
-    "indicator-size": { "$type": "dimension", "$value": "1rem" }
+    "h-sm": {
+      "$type": "dimension",
+      "$value": "28px"
+    },
+    "h-md": {
+      "$type": "dimension",
+      "$value": "32px"
+    },
+    "h-lg": {
+      "$type": "dimension",
+      "$value": "40px"
+    },
+    "px-sm": {
+      "$type": "dimension",
+      "$value": "{space.2}"
+    },
+    "px-md": {
+      "$type": "dimension",
+      "$value": "{space.3}"
+    },
+    "px-lg": {
+      "$type": "dimension",
+      "$value": "{space.4}"
+    },
+    "gap-sm": {
+      "$type": "dimension",
+      "$value": "{space.1}"
+    },
+    "gap-md": {
+      "$type": "dimension",
+      "$value": "{space.2}"
+    },
+    "gap-lg": {
+      "$type": "dimension",
+      "$value": "{space.2}"
+    },
+    "action-size": {
+      "$type": "dimension",
+      "$value": "1.5rem"
+    },
+    "indicator-size": {
+      "$type": "dimension",
+      "$value": "1rem"
+    }
   },
   "glyph": {
-    "size-sm": { "$type": "dimension", "$value": "1rem" },
-    "size-md": { "$type": "dimension", "$value": "1.25rem" },
-    "size-lg": { "$type": "dimension", "$value": "1.5rem" },
-    "stroke-light": { "$type": "dimension", "$value": "1.5px" },
-    "stroke-regular": { "$type": "dimension", "$value": "2px" },
-    "stroke-bold": { "$type": "dimension", "$value": "2.5px" },
-    "baseline-shift": { "$type": "dimension", "$value": "-0.125em" }
+    "size-sm": {
+      "$type": "dimension",
+      "$value": "1rem"
+    },
+    "size-md": {
+      "$type": "dimension",
+      "$value": "1.25rem"
+    },
+    "size-lg": {
+      "$type": "dimension",
+      "$value": "1.5rem"
+    },
+    "stroke-light": {
+      "$type": "dimension",
+      "$value": "1.5px"
+    },
+    "stroke-regular": {
+      "$type": "dimension",
+      "$value": "2px"
+    },
+    "stroke-bold": {
+      "$type": "dimension",
+      "$value": "2.5px"
+    },
+    "baseline-shift": {
+      "$type": "dimension",
+      "$value": "-0.125em"
+    }
   },
   "field": {
-    "py": { "$type": "dimension", "$value": "{space.2}" }
+    "py": {
+      "$type": "dimension",
+      "$value": "{space.2}"
+    }
   },
   "shape": {
-    "control": { "$type": "dimension", "$value": "{radius.md}" },
-    "surface": { "$type": "dimension", "$value": "{radius.lg}" },
-    "pill": { "$type": "dimension", "$value": "{radius.full}" }
+    "control": {
+      "$type": "dimension",
+      "$value": "{radius.md}"
+    },
+    "surface": {
+      "$type": "dimension",
+      "$value": "{radius.lg}"
+    },
+    "pill": {
+      "$type": "dimension",
+      "$value": "{radius.full}"
+    }
   },
   "ring": {
-    "width": { "$type": "dimension", "$value": "{stroke.thick}" },
-    "offset": { "$type": "dimension", "$value": "{stroke.thin}" }
+    "width": {
+      "$type": "dimension",
+      "$value": "{stroke.thick}"
+    },
+    "offset": {
+      "$type": "dimension",
+      "$value": "2px"
+    }
+  },
+  "state": {
+    "disabled-opacity": {
+      "$type": "number",
+      "$value": 0.5
+    }
   },
   "elevation": {
-    "0": { "$type": "shadow", "$value": "none" },
-    "1": { "$type": "shadow", "$value": "{shadow.sm}" },
-    "2": { "$type": "shadow", "$value": "{shadow.md}" },
-    "3": { "$type": "shadow", "$value": "{shadow.lg}" },
-    "4": { "$type": "shadow", "$value": "{shadow.xl}" }
+    "0": {
+      "$type": "shadow",
+      "$value": "none"
+    },
+    "1": {
+      "$type": "shadow",
+      "$value": "{shadow.sm}"
+    },
+    "2": {
+      "$type": "shadow",
+      "$value": "{shadow.md}"
+    },
+    "3": {
+      "$type": "shadow",
+      "$value": "{shadow.lg}"
+    },
+    "4": {
+      "$type": "shadow",
+      "$value": "{shadow.xl}"
+    }
   },
   "motion": {
-    "duration-enter": { "$type": "duration", "$value": "{duration.normal}" },
-    "duration-exit": { "$type": "duration", "$value": "{duration.fast}" },
-    "duration-micro": { "$type": "duration", "$value": "{duration.fast}" },
-    "ease-enter": { "$type": "cubicBezier", "$value": "{ease.out}" },
-    "ease-exit": { "$type": "cubicBezier", "$value": "{ease.in}" }
+    "duration-enter": {
+      "$type": "duration",
+      "$value": "{duration.normal}"
+    },
+    "duration-exit": {
+      "$type": "duration",
+      "$value": "{duration.fast}"
+    },
+    "duration-micro": {
+      "$type": "duration",
+      "$value": "{duration.fast}"
+    },
+    "ease-enter": {
+      "$type": "cubicBezier",
+      "$value": "{ease.out}"
+    },
+    "ease-exit": {
+      "$type": "cubicBezier",
+      "$value": "{ease.in}"
+    }
   },
   "layer": {
-    "drawer": { "$type": "number", "$value": "{z.drawer}" },
-    "modal": { "$type": "number", "$value": "{z.modal}" },
-    "popover": { "$type": "number", "$value": "{z.popover}" },
-    "toast": { "$type": "number", "$value": "{z.toast}" },
-    "tooltip": { "$type": "number", "$value": "{z.tooltip}" }
+    "sticky": {
+      "$type": "number",
+      "$value": "{z.sticky}"
+    },
+    "drawer": {
+      "$type": "number",
+      "$value": "{z.drawer}"
+    },
+    "modal": {
+      "$type": "number",
+      "$value": "{z.modal}"
+    },
+    "popover": {
+      "$type": "number",
+      "$value": "{z.popover}"
+    },
+    "toast": {
+      "$type": "number",
+      "$value": "{z.toast}"
+    },
+    "tooltip": {
+      "$type": "number",
+      "$value": "{z.tooltip}"
+    }
   },
   "section": {
-    "py": { "$type": "dimension", "$value": "{space.5}" }
+    "py": {
+      "$type": "dimension",
+      "$value": "{space.5}"
+    }
   },
   "stack": {
-    "gap-md": { "$type": "dimension", "$value": "{space.4}" }
+    "gap-md": {
+      "$type": "dimension",
+      "$value": "{space.4}"
+    }
   },
   "overlay": {
-    "arrow-size": { "$type": "dimension", "$value": "{space.2}" },
-    "min-w": { "$type": "dimension", "$value": "12rem" },
-    "menu-min-w": { "$type": "dimension", "$value": "10rem" },
-    "max-w-sm": { "$type": "dimension", "$value": "16rem" },
-    "max-w": { "$type": "dimension", "$value": "20rem" },
-    "max-w-lg": { "$type": "dimension", "$value": "24rem" },
-    "max-h": { "$type": "dimension", "$value": "16rem" }
+    "arrow-size": {
+      "$type": "dimension",
+      "$value": "{space.2}"
+    },
+    "min-w": {
+      "$type": "dimension",
+      "$value": "12rem"
+    },
+    "menu-min-w": {
+      "$type": "dimension",
+      "$value": "10rem"
+    },
+    "max-w-sm": {
+      "$type": "dimension",
+      "$value": "16rem"
+    },
+    "max-w": {
+      "$type": "dimension",
+      "$value": "20rem"
+    },
+    "max-w-lg": {
+      "$type": "dimension",
+      "$value": "24rem"
+    },
+    "max-h": {
+      "$type": "dimension",
+      "$value": "16rem"
+    }
   },
   "text": {
-    "label-size": { "$type": "dimension", "$value": "{font-size.md}" },
-    "label-weight": { "$type": "number", "$value": "{font-weight.medium}" },
-    "body-size": { "$type": "dimension", "$value": "{font-size.md}" },
-    "body-leading": { "$type": "number", "$value": "{leading.normal}" },
-    "body-weight": { "$type": "number", "$value": "{font-weight.regular}" },
-    "heading-3-size": { "$type": "dimension", "$value": "{font-size.xl}" },
-    "heading-3-weight": { "$type": "number", "$value": "{font-weight.semibold}" }
+    "label-size": {
+      "$type": "dimension",
+      "$value": "{font-size.md}"
+    },
+    "label-weight": {
+      "$type": "number",
+      "$value": "{font-weight.medium}"
+    },
+    "body-size": {
+      "$type": "dimension",
+      "$value": "{font-size.md}"
+    },
+    "body-leading": {
+      "$type": "number",
+      "$value": "{leading.normal}"
+    },
+    "body-weight": {
+      "$type": "number",
+      "$value": "{font-weight.regular}"
+    },
+    "heading-3-size": {
+      "$type": "dimension",
+      "$value": "{font-size.xl}"
+    },
+    "heading-3-weight": {
+      "$type": "number",
+      "$value": "{font-weight.semibold}"
+    }
   }
 }

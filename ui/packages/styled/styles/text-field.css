@@ -117,7 +117,7 @@
   [data-scope='text-field'][data-part='input']:focus-visible {
     border-color: var(--xh-text-field-input-border-focus, var(--xh-_text-field-border-focus));
     outline: var(--xh-ring-width) solid var(--xh-_text-field-ring);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 顶到字数上限：再敲进不去，边框先给个提示。放在 invalid 之前，
@@ -183,7 +183,7 @@
      留着是给程序化聚焦兜底，落焦时得看得见 */
   [data-scope='text-field'][data-part='clear-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_text-field-ring);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 框里没字、只读或禁用时按钮转灰但不收起：位置留着，敲进第一个字就亮 */

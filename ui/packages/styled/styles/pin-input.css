@@ -118,7 +118,7 @@
   [data-scope='pin-input'][data-part='input']:focus-visible {
     border-color: var(--xh-pin-input-box-border-focus, var(--xh-_pin-input-ring));
     outline: var(--xh-ring-width) solid var(--xh-_pin-input-ring);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='pin-input'][data-part='input'][data-invalid] {

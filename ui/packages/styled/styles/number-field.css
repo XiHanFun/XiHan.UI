@@ -137,7 +137,7 @@
   [data-scope='number-field'][data-part='input']:focus-visible {
     border-color: var(--xh-number-field-input-border-focus, var(--xh-_number-field-border-focus));
     outline: var(--xh-ring-width) solid var(--xh-_number-field-ring);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='number-field'][data-part='input'][data-invalid] {
@@ -204,7 +204,7 @@
   [data-scope='number-field'][data-part='increment-trigger']:focus-visible,
   [data-scope='number-field'][data-part='decrement-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_number-field-ring);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 贴到 min / max 时连接层给对应那一侧落原生 disabled：单体控件用 :disabled，

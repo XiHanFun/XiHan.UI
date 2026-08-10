@@ -21,13 +21,13 @@
   /* 焦点环画在整个框上；用 focus-within 使焦点落在发送按钮时同样点亮 */
   [data-scope='composer'][data-part='root']:focus-within {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 禁用态罩住整框，内部 textarea 与按钮另有原生 disabled 管交互 */
   [data-scope='composer'][data-part='root'][data-disabled] {
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: var(--xh-state-disabled-opacity);
   }
 
   /* 无边框透明底，融进 root 的框里；min-inline-size: 0 防止长内容把弹性子项撑出容器 */
@@ -108,7 +108,7 @@
 
   [data-scope='composer'][data-part='submit-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 停止模式只换配色，从主色降到中性；文案与可访问名由连接层切换 */

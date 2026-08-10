@@ -87,7 +87,7 @@
 
   [data-scope='breadcrumb'][data-part='link']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 当前页用字重与前景色区分，不加下划线：下划线是"可点"的信号，而它点不动 */
