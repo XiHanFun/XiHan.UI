@@ -2,6 +2,7 @@ import type { Direction, Orientation } from '@xihan-ui/core'
 import type { TabsActivationMode, TabsNode, TabsNodeMeta, TabsSchema } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { slotPaints } from '../../runtime/slot-content'
 import { provideTabs, useTabsContext } from './context'
 import { useTabs } from './use-tabs'
 
@@ -32,9 +33,11 @@ export const XhTabsRoot = defineComponent({
     const ctx = useTabs(props as TabsProps, notify)
     provideTabs(ctx)
     return () => {
-      // 写了默认插槽就照旧交给作者；没写且给了 collection 才按数据铺开整套结构
-      const children = slots.default?.()
-        ?? (props.collection ? renderDefaultTree(ctx.api.value.collection, slots.panel) : undefined)
+      // 默认插槽里有真内容就照旧交给作者；只剩注释或空白时当没写，给了 collection 就按数据铺开整套结构
+      const authored = slots.default?.()
+      const children = slotPaints(authored)
+        ? authored
+        : (props.collection ? renderDefaultTree(ctx.api.value.collection, slots.panel) : undefined)
       return h('div', ctx.api.value.getRootProps() as Record<string, unknown>, children)
     }
   },

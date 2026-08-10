@@ -2,6 +2,7 @@ import type { IconNode, IconRecord } from '@xihan-ui/core'
 import type { IconProps, IconSize, IconWeight } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import { defineComponent, h } from 'vue'
+import { slotPaints } from '../../runtime/slot-content'
 import { useIcon } from './use-icon'
 
 /**
@@ -15,7 +16,8 @@ function renderNode(node: IconNode): VNode {
 /**
  * 根 `<svg>` 加一层 `<g>` 空壳，图元铺在空壳里。
  * 默认插槽给出了内容时改由插槽内容填充根，元素不再生成 glyph 与图元；
- * 判据是插槽的产出非空，不是插槽函数存不存在——宿主可能恒传一个产出为空的插槽。
+ * 判据是插槽产出里有真会画出东西的节点：既不是插槽函数存不存在（宿主可能恒传一个插槽），
+ * 也不是产出数组非空（`v-if` 为假时产出里还剩一个注释节点）。
  */
 export const XhIcon = defineComponent({
   name: 'XhIcon',
@@ -34,7 +36,7 @@ export const XhIcon = defineComponent({
       return h(
         'svg',
         ctx.api.value.getRootProps() as Record<string, unknown>,
-        authored?.length
+        slotPaints(authored)
           ? authored
           : [h(
               'g',
