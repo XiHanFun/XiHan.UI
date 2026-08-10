@@ -1,19 +1,100 @@
 {
-  "$comment": "分层依赖拓扑单一事实源。被 .dependency-cruiser.cjs 消费。键必须与 packages/ 下的目录一一对应，多一个少一个都会被门禁抛错。层级越低越基础，只能向下依赖。",
+  "$comment": "分层依赖拓扑单一事实源。被 .dependency-cruiser.cjs 消费。键是 packages/ 下的两级路径，必须与实际目录一一对应，多一个少一个都会被门禁抛错。层级越低越基础，只能向下依赖。",
   "layers": {
-    "core": { "level": 1, "canDependOn": [] },
-    "machine": { "level": 1, "canDependOn": ["core"] },
-    "system": { "level": 1, "canDependOn": [] },
-    "behavior": { "level": 2, "canDependOn": ["core", "machine"] },
-    "position": { "level": 2, "canDependOn": ["core"] },
-    "highlight": { "level": 2, "canDependOn": ["core"] },
-    "headless": { "level": 3, "canDependOn": ["core", "machine", "behavior", "system"] },
-    "styled": { "level": 3, "canDependOn": [] },
-    "visual": { "level": 3, "canDependOn": ["core", "behavior"] },
-    "vue": { "level": 4, "canDependOn": ["core", "machine", "behavior", "headless", "position", "highlight", "system", "visual"] },
-    "wc": { "level": 4, "canDependOn": ["core", "machine", "behavior", "headless", "position", "highlight", "system", "visual"] },
-    "ai": { "level": 2, "canDependOn": ["core"] },
-    "markdown": { "level": 2, "canDependOn": ["core"] },
-    "icons": { "level": 1, "canDependOn": [] }
+    "engine/kernel": {
+      "level": 1,
+      "canDependOn": []
+    },
+    "engine/machine": {
+      "level": 1,
+      "canDependOn": [
+        "engine/kernel"
+      ]
+    },
+    "design/tokens": {
+      "level": 1,
+      "canDependOn": []
+    },
+    "engine/behavior": {
+      "level": 2,
+      "canDependOn": [
+        "engine/kernel",
+        "engine/machine"
+      ]
+    },
+    "engine/position": {
+      "level": 2,
+      "canDependOn": [
+        "engine/kernel"
+      ]
+    },
+    "engine/code-highlight": {
+      "level": 2,
+      "canDependOn": [
+        "engine/kernel"
+      ]
+    },
+    "engine/headless": {
+      "level": 3,
+      "canDependOn": [
+        "engine/kernel",
+        "engine/machine",
+        "engine/behavior",
+        "design/tokens"
+      ]
+    },
+    "design/styles": {
+      "level": 3,
+      "canDependOn": []
+    },
+    "features/backgrounds": {
+      "level": 3,
+      "canDependOn": [
+        "engine/kernel",
+        "engine/behavior"
+      ]
+    },
+    "adapters/vue": {
+      "level": 4,
+      "canDependOn": [
+        "engine/kernel",
+        "engine/machine",
+        "engine/behavior",
+        "engine/headless",
+        "engine/position",
+        "engine/code-highlight",
+        "design/tokens",
+        "features/backgrounds"
+      ]
+    },
+    "adapters/web-components": {
+      "level": 4,
+      "canDependOn": [
+        "engine/kernel",
+        "engine/machine",
+        "engine/behavior",
+        "engine/headless",
+        "engine/position",
+        "engine/code-highlight",
+        "design/tokens",
+        "features/backgrounds"
+      ]
+    },
+    "features/chat-stream": {
+      "level": 2,
+      "canDependOn": [
+        "engine/kernel"
+      ]
+    },
+    "features/markdown": {
+      "level": 2,
+      "canDependOn": [
+        "engine/kernel"
+      ]
+    },
+    "design/icons": {
+      "level": 1,
+      "canDependOn": []
+    }
   }
 }

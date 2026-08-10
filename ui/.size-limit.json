@@ -1,109 +1,109 @@
 [
   {
     "name": "kernel",
-    "path": "packages/core/dist/index.js",
+    "path": "packages/engine/kernel/dist/index.js",
     "gzip": true,
     "limit": "3.3 kB"
   },
   {
     "name": "machine",
-    "path": "packages/machine/dist/index.js",
+    "path": "packages/engine/machine/dist/index.js",
     "gzip": true,
     "limit": "5.5 kB"
   },
   {
     "name": "tokens",
-    "path": "packages/system/dist/index.js",
+    "path": "packages/design/tokens/dist/index.js",
     "gzip": true,
     "limit": "2.4 kB"
   },
   {
     "name": "tokens/tokens.css",
-    "path": "packages/system/tokens.css",
+    "path": "packages/design/tokens/tokens.css",
     "gzip": true,
     "limit": "3 kB"
   },
   {
     "name": "behavior",
-    "path": "packages/behavior/dist/index.js",
+    "path": "packages/engine/behavior/dist/index.js",
     "gzip": true,
     "limit": "6 kB"
   },
   {
     "name": "position",
-    "path": "packages/position/dist/index.js",
+    "path": "packages/engine/position/dist/index.js",
     "gzip": true,
     "limit": "2.5 kB"
   },
   {
     "name": "code-highlight",
-    "path": "packages/highlight/dist/index.js",
+    "path": "packages/engine/code-highlight/dist/index.js",
     "gzip": true,
     "limit": "2.6 kB"
   },
   {
     "name": "chat-stream",
-    "path": "packages/ai/dist/index.js",
+    "path": "packages/features/chat-stream/dist/index.js",
     "gzip": true,
     "limit": "5.6 kB"
   },
   {
     "name": "markdown",
-    "path": "packages/markdown/dist/index.js",
+    "path": "packages/features/markdown/dist/index.js",
     "gzip": true,
     "limit": "8.5 kB"
   },
   {
     "name": "backgrounds",
-    "path": "packages/visual/dist/index.js",
+    "path": "packages/features/backgrounds/dist/index.js",
     "gzip": true,
     "limit": "21 kB"
   },
   {
     "name": "headless",
-    "path": "packages/headless/dist/index.js",
+    "path": "packages/engine/headless/dist/index.js",
     "gzip": true,
     "limit": "138 kB"
   },
   {
     "name": "vue",
-    "path": "packages/vue/dist/index.js",
+    "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
     "limit": "159 kB"
   },
   {
     "name": "vue/backgrounds",
-    "path": "packages/vue/dist/backgrounds.js",
+    "path": "packages/adapters/vue/dist/backgrounds.js",
     "gzip": true,
     "limit": "27 kB"
   },
   {
     "name": "web-components",
-    "path": "packages/wc/dist/index.js",
+    "path": "packages/adapters/web-components/dist/index.js",
     "gzip": true,
     "limit": "6.4 kB"
   },
   {
     "name": "web-components/define",
-    "path": "packages/wc/dist/define.js",
+    "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
     "limit": "149 kB"
   },
   {
     "name": "web-components/backgrounds",
-    "path": "packages/wc/dist/backgrounds.js",
+    "path": "packages/adapters/web-components/dist/backgrounds.js",
     "gzip": true,
     "limit": "19 kB"
   },
   {
     "name": "styles",
-    "path": "packages/styled/styles/*.css",
+    "path": "packages/design/styles/styles/*.css",
     "gzip": true,
     "limit": "68 kB"
   },
   {
     "name": "icons",
-    "path": "packages/icons/dist/index.mjs",
+    "path": "packages/design/icons/dist/index.mjs",
     "gzip": true,
     "limit": "1.4 kB"
   }

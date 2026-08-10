@@ -63,6 +63,6 @@ pnpm size         # 体积棘轮：先构建，再核对 .size-limit.json 里的
 ## 约定
 
 - 内部依赖一律 `workspace:*`；第三方版本只从 workspace catalog 取。
-- `packages/core` 与 `packages/machine` 运行时零依赖。
+- `packages/engine/kernel` 与 `packages/engine/machine` 运行时零依赖。
 - 分层顺序由 dependency-cruiser 强制，不靠自觉。
 - 提交遵循 conventional commits；发布走 changesets，所有库包同属一个 fixed 版本组。

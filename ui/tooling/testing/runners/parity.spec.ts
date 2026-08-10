@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import type { ConformanceSuite } from '../src'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createVueHarness } from '../../../packages/vue/tests/harness'
-import { createWcHarness } from '../../../packages/wc/tests/harness'
+import { createVueHarness } from '../../../packages/adapters/vue/tests/harness'
+import { createWcHarness } from '../../../packages/adapters/web-components/tests/harness'
 import {
   alertSuite,
   allSuites,

@@ -10,7 +10,7 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-const STYLES_DIR = 'packages/styled/styles'
+const STYLES_DIR = 'packages/design/styles/styles'
 const DISABLED_RULE = /([^{}]*(?:\[data-disabled\]|:disabled|\[aria-disabled=)[^{}]*)\{([^}]*)\}/g
 
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css'))

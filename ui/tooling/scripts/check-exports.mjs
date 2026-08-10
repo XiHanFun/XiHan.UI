@@ -8,13 +8,13 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join, relative } from 'node:path'
 
-const VUE_COMPONENTS = 'packages/vue/src/components'
-const VUE_SRC = 'packages/vue/src'
-const VUE_INDEX = 'packages/vue/src/index.ts'
-const WC_ELEMENTS = 'packages/wc/src/elements'
-const WC_DEFINE = 'packages/wc/src/define.ts'
-const HEADLESS_SRC = 'packages/headless/src'
-const HEADLESS_INDEX = 'packages/headless/src/index.ts'
+const VUE_COMPONENTS = 'packages/adapters/vue/src/components'
+const VUE_SRC = 'packages/adapters/vue/src'
+const VUE_INDEX = 'packages/adapters/vue/src/index.ts'
+const WC_ELEMENTS = 'packages/adapters/web-components/src/elements'
+const WC_DEFINE = 'packages/adapters/web-components/src/define.ts'
+const HEADLESS_SRC = 'packages/engine/headless/src'
+const HEADLESS_INDEX = 'packages/engine/headless/src/index.ts'
 
 /** 只在包内使用、不打算对外的名字，逐条写明理由。 */
 const EXEMPT = {
