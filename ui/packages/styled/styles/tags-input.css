@@ -113,7 +113,7 @@
      而真正持有焦点的是里面的 input（它自己那圈环因此让位，见下） */
   [data-scope='tags-input'][data-part='control']:focus-within {
     outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 顶到上限：再加进不去，边框先给个提示。放在 invalid 之前，
@@ -272,7 +272,8 @@
      留着焦点环是给程序化聚焦兜底——删完把焦点交回输入框之前，它确实短暂持有过焦点 */
   [data-scope='tags-input'][data-part='item-delete-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
-    outline-offset: 1px;
+    /* 比默认档窄一道：它长在胶囊里，按默认偏移画会压到相邻胶囊 */
+    outline-offset: var(--xh-stroke-thin);
   }
 
   /* 按钮是单体控件，禁用走原生 disabled */
@@ -302,7 +303,8 @@
      外层 control 的 :focus-within 环同时亮着也合理——焦点确实在框内 */
   [data-scope='tags-input'][data-part='item-input']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
-    outline-offset: 1px;
+    /* 比默认档窄一道：它长在胶囊里，按默认偏移画会压到相邻胶囊 */
+    outline-offset: var(--xh-stroke-thin);
   }
 
   [data-scope='tags-input'][data-part='item-input']:disabled {
@@ -345,7 +347,8 @@
 
   [data-scope='tags-input'][data-part='clear-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_tags-input-ring);
-    outline-offset: 1px;
+    /* 比默认档窄一道：它长在胶囊里，按默认偏移画会压到相邻胶囊 */
+    outline-offset: var(--xh-stroke-thin);
   }
 
   /* 没东西可清、只读或禁用时按钮转灰但不收起：位置留着，加进第一个标签就亮 */

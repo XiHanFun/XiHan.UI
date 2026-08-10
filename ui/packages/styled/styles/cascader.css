@@ -121,7 +121,7 @@
      语气落在环上：没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色 */
   [data-scope='cascader'][data-part='trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='cascader'][data-part='trigger'][data-invalid] {
@@ -217,7 +217,7 @@
      留着是给程序化聚焦兜底，落焦时得看得见 */
   [data-scope='cascader'][data-part='clear-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 无选中、只读、整控件禁用三种情况下都按不动，用的是原生 disabled */

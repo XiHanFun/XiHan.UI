@@ -26,7 +26,7 @@
 
   [data-scope='hover-card'][data-part='trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */

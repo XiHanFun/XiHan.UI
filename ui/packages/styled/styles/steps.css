@@ -60,7 +60,7 @@
   /* 组内无锚点时 list 自己在 Tab 序列里（走到完成位就是这种情形），落焦要看得见 */
   [data-scope='steps'][data-part='list']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 每一步与它后面那截连接线一起占一格，等分整行；min-inline-size 允许被压缩，
@@ -120,7 +120,7 @@
 
   [data-scope='steps'][data-part='trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
@@ -247,6 +247,6 @@
 
   [data-scope='steps'][data-part='content']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 }

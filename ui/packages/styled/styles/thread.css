@@ -88,7 +88,7 @@
 
   [data-scope='thread'][data-part='scroll-button']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 视觉隐藏但仍参与播报：用 clip-path 裁到不可见，不能用 display:none 或 visibility:hidden；

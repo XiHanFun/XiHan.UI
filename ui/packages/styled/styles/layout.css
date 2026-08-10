@@ -91,7 +91,7 @@
 
   [data-scope='layout'][data-part='sider-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* —— 分隔线 —— */

@@ -13,7 +13,7 @@
 
   [data-scope='tooltip'][data-part='trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 坐标由定位引擎写在行内 style 上，这里只兜底 SSR 首帧 */

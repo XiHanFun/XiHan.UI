@@ -22,6 +22,6 @@
    */
   [data-scope='affix'][data-part='content'][data-affixed] {
     position: fixed;
-    z-index: var(--xh-affix-layer, var(--xh-z-sticky));
+    z-index: var(--xh-affix-layer, var(--xh-layer-sticky));
   }
 }

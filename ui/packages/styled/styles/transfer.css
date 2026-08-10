@@ -249,7 +249,7 @@
 
   [data-scope='transfer'][data-part='select-all-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='transfer'][data-part='select-all-trigger']:disabled {
@@ -288,7 +288,7 @@
   [data-scope='transfer'][data-part='to-target-trigger']:focus-visible,
   [data-scope='transfer'][data-part='to-source-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 搬运按钮是单体控件，禁用走原生 disabled */

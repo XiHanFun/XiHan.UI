@@ -257,7 +257,7 @@
   [data-scope='tour'][data-part='skip-trigger']:focus-visible,
   [data-scope='tour'][data-part='close-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 箭头是旋转 45° 的方块，只保留朝向目标那两条边的描边；

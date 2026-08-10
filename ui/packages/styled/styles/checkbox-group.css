@@ -49,7 +49,7 @@
 
   [data-scope='checkbox-group'][data-part='item']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 条目禁用一律走 aria-disabled（原生 disabled 会让它从键盘用户眼里消失），
@@ -57,7 +57,7 @@
   [data-scope='checkbox-group'][data-part='item'][data-disabled] {
     color: var(--xh-checkbox-group-item-fg-disabled, var(--xh-fg-disabled));
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: var(--xh-state-disabled-opacity);
   }
 
   /* 只读整组都改不动，但不是禁用：颜色照常，只把"可点"这个暗示收回来。
@@ -152,13 +152,13 @@
 
   [data-scope='checkbox-group'][data-part='trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='checkbox-group'][data-part='trigger'][data-disabled] {
     color: var(--xh-checkbox-group-trigger-fg-disabled, var(--xh-fg-disabled));
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: var(--xh-state-disabled-opacity);
   }
 
   /* 只读与禁用会同时出现在 trigger 上（连接层两个属性各写各的），

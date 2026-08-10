@@ -95,7 +95,7 @@
   /* 组内无锚点时 list 自己在 Tab 序列里，落焦要看得见 */
   [data-scope='tabs'][data-part='list']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='tabs'][data-part='trigger'] {
@@ -124,7 +124,7 @@
 
   [data-scope='tabs'][data-part='trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='tabs'][data-part='trigger'][data-state='active'] {
@@ -152,6 +152,6 @@
 
   [data-scope='tabs'][data-part='content']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 }

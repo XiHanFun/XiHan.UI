@@ -60,7 +60,7 @@
   [data-scope='date-picker'][data-part='control']:focus-within {
     border-color: var(--xh-date-picker-control-border-focus, var(--xh-ring-focus));
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='date-picker'][data-part='control'][data-invalid] {
@@ -150,7 +150,7 @@
   [data-scope='date-picker'][data-part='trigger']:focus-visible,
   [data-scope='date-picker'][data-part='clear-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='date-picker'][data-part='trigger']:disabled,

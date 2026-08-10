@@ -104,7 +104,7 @@
 
   [data-scope='select'][data-part='trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_select-ring);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* trigger 是单体控件，用原生 disabled（条目那边一律 aria-disabled） */

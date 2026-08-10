@@ -95,7 +95,7 @@
   /* 预览区是可聚焦节点（focus 模式下还占 Tab 位），焦点环不能省 */
   [data-scope='editable'][data-part='preview']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='editable'][data-part='input'] {
@@ -136,7 +136,7 @@
 
   [data-scope='editable'][data-part='input']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   [data-scope='editable'][data-part='input'][data-invalid] {
@@ -216,7 +216,7 @@
   [data-scope='editable'][data-part='submit-trigger']:focus-visible,
   [data-scope='editable'][data-part='cancel-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: 2px;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 单体控件用 :disabled（不是集合条目那套 [data-disabled]）：

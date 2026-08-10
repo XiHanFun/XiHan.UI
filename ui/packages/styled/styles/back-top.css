@@ -8,7 +8,7 @@
     position: fixed;
     inset-block-end: var(--xh-back-top-inset-block, var(--xh-space-8));
     inset-inline-end: var(--xh-back-top-inset-inline, var(--xh-space-8));
-    z-index: var(--xh-back-top-layer, var(--xh-z-sticky));
+    z-index: var(--xh-back-top-layer, var(--xh-layer-sticky));
   }
 
   /* —— 尺寸 —— */
