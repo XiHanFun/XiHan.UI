@@ -1,14 +1,14 @@
 import { createThemeController } from '@xihan-ui/tokens/runtime'
-import { defineXhVisual } from '@xihan-ui/web-components/backgrounds'
+import { defineXhBackground } from '@xihan-ui/web-components/backgrounds'
 import { defineXhElements } from '@xihan-ui/web-components/define'
-import { mountVisualDemo, visualMarkup } from './visual-demo'
+import { backgroundMarkup, mountBackgroundDemo } from './background-demo'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
 // 注册自定义元素（惰性），并应用主题到根元素
 defineXhElements()
 // 视觉层单独注册：@xihan-ui/backgrounds 是可选 peer，不用就不必引这一行
-defineXhVisual()
+defineXhBackground()
 const theme = createThemeController({ storageKey: 'xh-wc-demo-theme' })
 
 const app = document.getElementById('app')!
@@ -23,7 +23,7 @@ app.innerHTML = `
     打开 DevTools 看 <code>&lt;xh-button&gt;</code>/<code>&lt;xh-dialog&gt;</code> 内被打上的 data-* / aria-*。
   </p>
 
-  ${visualMarkup()}
+  ${backgroundMarkup()}
 
   <section>
     <h2>Button</h2>
@@ -3704,4 +3704,4 @@ fillWcCodeBlock('wc-code-block-partial', `const stream = await client.chat({
     buffer +=`)
 
 // 视觉层示例的事件接线（模板串已在上面拼好）
-mountVisualDemo()
+mountBackgroundDemo()

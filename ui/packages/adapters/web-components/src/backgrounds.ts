@@ -4,21 +4,21 @@
 // 因为装了本包而多出一个 WebGL 引擎。用之前先装 @xihan-ui/backgrounds。
 //
 // ```html
-// <xh-visual effect="aurora" quality="balanced" style="height: 180px">
+// <xh-background effect="aurora" quality="balanced" style="height: 180px">
 //   <h3>卡片标题</h3>
-// </xh-visual>
+// </xh-background>
 // ```
 
 import type {
+  BackgroundEffect,
+  BackgroundQuality,
+  BackgroundSurface,
   MorphOptions,
   ParamValue,
   PointCloud,
-  VisualEffect,
-  VisualQuality,
-  VisualSurface,
 } from '@xihan-ui/backgrounds'
 import type { PropertyValues } from './reactive'
-import { createVisualSurface, registerBuiltinEffects } from '@xihan-ui/backgrounds'
+import { createBackgroundSurface, registerBuiltinEffects } from '@xihan-ui/backgrounds'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/kernel'
 import { version as VERSION } from '../package.json'
 import { XhReactiveElement } from './reactive'
@@ -31,13 +31,13 @@ const optionalBool = {
 }
 
 /**
- * `<xh-visual>` —— 视觉画面宿主。
+ * `<xh-background>` —— 视觉画面宿主。
  *
  * 元素自身就是画布的容器：内容照常写在里面，效果铺在内容底下，
  * 画布是 pointer-events: none，不会挡住里面的交互。
  *
- * @customElement xh-visual
- * @attr {string} effect - 效果名，须先注册（defineXhVisual 会把内置效果一并注册）
+ * @customElement xh-background
+ * @attr {string} effect - 效果名，须先注册（defineXhBackground 会把内置效果一并注册）
  * @attr {'auto'|'high'|'balanced'|'eco'} quality - 画质档位
  * @attr {object} params - 效果参数，JSON 对象
  * @attr {boolean} paused - 暂停绘制
@@ -45,7 +45,7 @@ const optionalBool = {
  * @attr {boolean} reduced-motion - 是否尊重系统的减弱动态效果，写 "false" 关闭
  * @attr {boolean} pause-offscreen - 滚出视口是否暂停，写 "false" 关闭
  */
-export class XhVisualElement extends XhReactiveElement {
+export class XhBackgroundElement extends XhReactiveElement {
   static override properties = {
     effect: {},
     quality: {},
@@ -56,18 +56,18 @@ export class XhVisualElement extends XhReactiveElement {
     pauseOffscreen: { attribute: 'pause-offscreen', converter: optionalBool },
   }
 
-  declare effect?: string | VisualEffect
-  declare quality?: VisualQuality
+  declare effect?: string | BackgroundEffect
+  declare quality?: BackgroundQuality
   declare params?: Record<string, ParamValue>
   declare paused?: boolean
   declare pointer?: boolean
   declare reducedMotion?: boolean
   declare pauseOffscreen?: boolean
 
-  private surface: VisualSurface | null = null
-  private appliedEffect: string | VisualEffect | undefined
+  private surface: BackgroundSurface | null = null
+  private appliedEffect: string | BackgroundEffect | undefined
   /** 记住上次生效的画质：setQuality 会重建着色器程序，不能每次更新都调一遍。 */
-  private appliedQuality: VisualQuality | undefined
+  private appliedQuality: BackgroundQuality | undefined
   /** 画面还没建起来时先收着，建好后补发。 */
   private pendingCloud: { cloud: PointCloud, options?: MorphOptions } | null = null
 
@@ -80,7 +80,7 @@ export class XhVisualElement extends XhReactiveElement {
   }
 
   /** 拿底层画面实例，用于自定义调度或调参。 */
-  getSurface(): VisualSurface | null {
+  getSurface(): BackgroundSurface | null {
     return this.surface
   }
 
@@ -104,7 +104,7 @@ export class XhVisualElement extends XhReactiveElement {
 
     if (this.surface === null) {
       try {
-        this.surface = createVisualSurface(this, {
+        this.surface = createBackgroundSurface(this, {
           effect: this.effect,
           params: this.params,
           quality: this.quality,
@@ -119,7 +119,7 @@ export class XhVisualElement extends XhReactiveElement {
         reportDiagnostic({
           code: DIAGNOSTIC_CODES.warn,
           level: 'error',
-          message: `[visual] <xh-visual> 创建失败：${(error as Error).message}`,
+          message: `[visual] <xh-background> 创建失败：${(error as Error).message}`,
         })
         return
       }
@@ -150,10 +150,10 @@ export class XhVisualElement extends XhReactiveElement {
 }
 
 /**
- * 注册 `<xh-visual>`，并把内置效果一并注册进效果注册表——
+ * 注册 `<xh-background>`，并把内置效果一并注册进效果注册表——
  * 元素只认效果名字，注册表空着的话任何 effect 属性都解析不出来。
  */
-export function defineXhVisual(): void {
+export function defineXhBackground(): void {
   registerBuiltinEffects()
-  defineElement('xh-visual', XhVisualElement, VERSION)
+  defineElement('xh-background', XhBackgroundElement, VERSION)
 }

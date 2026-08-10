@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ParamValue, PointCloud, ShapeName, VisualEffect } from '@xihan-ui/backgrounds'
+import type { BackgroundEffect, ParamValue, PointCloud, ShapeName } from '@xihan-ui/backgrounds'
 import {
   builtinEffects,
   defaultParams,
@@ -11,10 +11,10 @@ import {
   textToCloud,
 } from '@xihan-ui/backgrounds'
 import { XhButton } from '@xihan-ui/vue'
-import { vVisual, XhVisual } from '@xihan-ui/vue/backgrounds'
+import { vBackground, XhBackground } from '@xihan-ui/vue/backgrounds'
 import { computed, ref, shallowRef, watch } from 'vue'
 
-// 按名字取效果（如 v-visual="'mesh'"）要先把内置效果登记进注册表；
+// 按名字取效果（如 v-background="'mesh'"）要先把内置效果登记进注册表；
 // 直接传效果对象则不经过它
 registerBuiltinEffects()
 
@@ -25,7 +25,7 @@ registerBuiltinEffects()
 // grain 是叠在别的内容之上的透明噪点，particles 要喂点云才有东西，单独一张小卡片都看不出所以然。
 const galleryEffects = builtinEffects.filter(e => e.name !== 'grain' && e.name !== 'particles')
 
-const selected = shallowRef<VisualEffect>(builtinEffects[0]!)
+const selected = shallowRef<BackgroundEffect>(builtinEffects[0]!)
 const params = ref<Record<string, ParamValue>>(defaultParams(builtinEffects[0]!.params))
 
 // 换效果就换一整份默认参数：参数规格是效果自带的，两者必须一起换
@@ -72,7 +72,7 @@ async function useImage(event: Event): Promise<void> {
 
 // —— 指令用法：给现成组件铺背景 ——
 
-const buttonEffect = shallowRef<VisualEffect>(
+const buttonEffect = shallowRef<BackgroundEffect>(
   builtinEffects.find(e => e.name === 'aurora') ?? builtinEffects[0]!,
 )
 </script>
@@ -83,7 +83,7 @@ const buttonEffect = shallowRef<VisualEffect>(
     <p class="lead">
       内置十四个效果，这里列出自成画面的十二个（<code>grain</code> 是叠加用的透明噪点，
       <code>particles</code> 要喂点云，见下面两节）。点一张切到调参台。
-      每张卡片都是一个 <code>&lt;XhVisual&gt;</code>：画布铺满根元素且 <code>pointer-events: none</code>，
+      每张卡片都是一个 <code>&lt;XhBackground&gt;</code>：画布铺满根元素且 <code>pointer-events: none</code>，
       插槽内容浮在效果之上不会被挡住。卡片滚出视口自动停绘，所有画面共用同一条
       <code>requestAnimationFrame</code>。
     </p>
@@ -97,7 +97,7 @@ const buttonEffect = shallowRef<VisualEffect>(
         :aria-pressed="effect.name === selected.name"
         @click="selected = effect"
       >
-        <XhVisual :effect="effect" quality="eco" class="tile-canvas" />
+        <XhBackground :effect="effect" quality="eco" class="tile-canvas" />
         <span class="tile-name">{{ effect.name }}</span>
       </button>
     </div>
@@ -111,12 +111,12 @@ const buttonEffect = shallowRef<VisualEffect>(
       解析是宽容的：越界钳进区间、类型不对回落默认值、规格里没有的键直接丢掉。
     </p>
 
-    <XhVisual :effect="selected" :params="params" class="stage">
+    <XhBackground :effect="selected" :params="params" class="stage">
       <div class="stage-caption">
         <strong>{{ selected.name }}</strong>
         <span>{{ specs.length }} 个可调参数</span>
       </div>
-    </XhVisual>
+    </XhBackground>
 
     <div class="controls">
       <label v-for="[key, spec] in specs" :key="key" class="control">
@@ -153,7 +153,7 @@ const buttonEffect = shallowRef<VisualEffect>(
       坐标等比映射，图片不会被拉变形。
     </p>
 
-    <XhVisual
+    <XhBackground
       :effect="particlesEffect"
       :cloud="cloud"
       :params="{ backgroundOpacity: 0.85, pointSize: 2.4 }"
@@ -163,7 +163,7 @@ const buttonEffect = shallowRef<VisualEffect>(
         <strong>当前形态</strong>
         <span>{{ busy ? '采样中…' : cloudLabel }}</span>
       </div>
-    </XhVisual>
+    </XhBackground>
 
     <div class="row" style="margin-block-start: 12px;">
       <XhButton v-for="name in SHAPE_NAMES" :key="name" @click="useShape(name)">
@@ -184,14 +184,14 @@ const buttonEffect = shallowRef<VisualEffect>(
   </section>
 
   <section>
-    <h2>Visual · v-visual 指令</h2>
+    <h2>Visual · v-background 指令</h2>
     <p class="lead">
       指令用在组件上时 Vue 会把它落到该组件的单一根元素上，所以给现成组件加背景不必改动组件本身。
-      下面这颗按钮就是原封不动的 <code>&lt;XhButton&gt;</code>，只多了一个 <code>v-visual</code>。
+      下面这颗按钮就是原封不动的 <code>&lt;XhButton&gt;</code>，只多了一个 <code>v-background</code>。
     </p>
 
     <div class="row">
-      <XhButton v-visual="{ effect: buttonEffect, params: { opacity: 0.85 } }" class="fancy">
+      <XhButton v-background="{ effect: buttonEffect, params: { opacity: 0.85 } }" class="fancy">
         带流光的按钮
       </XhButton>
       <select v-model="buttonEffect" class="picker">

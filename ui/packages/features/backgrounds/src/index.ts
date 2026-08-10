@@ -1,7 +1,7 @@
 // @xihan-ui/backgrounds —— 视觉层：WebGL2 背景效果与数据驱动粒子点云，框架无关。
 //
 // 两条主线：
-//   1) 程序化效果 —— 传一个效果对象与一份参数，createVisualSurface 就把它铺在任意元素背景上；
+//   1) 程序化效果 —— 传一个效果对象与一份参数，createBackgroundSurface 就把它铺在任意元素背景上；
 //   2) 点云 —— 图片、文字、SVG、参数方程都能采样成 PointCloud，交给 particles 效果显示，
 //      两份点云之间自动形变过渡。
 //
@@ -43,7 +43,7 @@ export { joinScheduler, scheduledCount } from './engine/scheduler'
 
 export type { Tickable } from './engine/scheduler'
 
-export { createVisualSurface } from './engine/surface'
+export { createBackgroundSurface } from './engine/surface'
 
 export {
   bool,
@@ -87,6 +87,11 @@ export { textToCloud } from './sources/text'
 export type { TextCloudOptions } from './sources/text'
 
 export type {
+  BackgroundBackend,
+  BackgroundEffect,
+  BackgroundQuality,
+  BackgroundSurface,
+  BackgroundSurfaceOptions,
   BooleanParamSpec,
   CloudParticleSpec,
   ColorParamSpec,
@@ -104,9 +109,4 @@ export type {
   ProceduralParticleSpec,
   UniformMap,
   UniformValue,
-  VisualBackend,
-  VisualEffect,
-  VisualQuality,
-  VisualSurface,
-  VisualSurfaceOptions,
 } from './types'

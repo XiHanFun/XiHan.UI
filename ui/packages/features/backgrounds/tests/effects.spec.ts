@@ -1,4 +1,4 @@
-import type { VisualEffect } from '../src/types'
+import type { BackgroundEffect } from '../src/types'
 import { describe, expect, it } from 'vitest'
 import { builtinEffects } from '../src/effects/index'
 import {
@@ -29,7 +29,7 @@ const ENGINE_UNIFORMS = new Set([
 ])
 
 /** 取出一个效果实际会编译的全部着色器源码。 */
-function sourcesOf(effect: VisualEffect): string[] {
+function sourcesOf(effect: BackgroundEffect): string[] {
   const shared = effect.shared ?? ''
   const out: string[] = []
   if (effect.fragment !== undefined)
@@ -54,7 +54,7 @@ function declaredUniforms(source: string): Set<string> {
   return names
 }
 
-function fedUniforms(effect: VisualEffect): string[] {
+function fedUniforms(effect: BackgroundEffect): string[] {
   const params = defaultParams(effect.params)
   const map = effect.uniforms?.({ params, width: 320, height: 200, time: 1.5 }) ?? {}
   return Object.keys(map)

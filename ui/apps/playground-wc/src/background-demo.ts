@@ -1,7 +1,7 @@
 // 视觉层的 Web Components 示例。单独一个模块，免得 main.ts 那份模板串再长一截。
 
-import type { ParamSpec, ParamValue, ShapeName, VisualEffect } from '@xihan-ui/backgrounds'
-import type { XhVisualElement } from '@xihan-ui/web-components/backgrounds'
+import type { BackgroundEffect, ParamSpec, ParamValue, ShapeName } from '@xihan-ui/backgrounds'
+import type { XhBackgroundElement } from '@xihan-ui/web-components/backgrounds'
 import {
   builtinEffects,
   defaultParams,
@@ -17,10 +17,10 @@ import {
 const galleryEffects = builtinEffects.filter(e => e.name !== 'grain' && e.name !== 'particles')
 
 /** 这一段的 HTML，拼进 main.ts 的模板串里。 */
-export function visualMarkup(): string {
+export function backgroundMarkup(): string {
   const tiles = galleryEffects.map(effect => `
       <button type="button" class="v-tile" data-effect="${effect.name}" aria-pressed="false">
-        <xh-visual effect="${effect.name}" quality="eco" class="v-tile-canvas"></xh-visual>
+        <xh-background effect="${effect.name}" quality="eco" class="v-tile-canvas"></xh-background>
         <span class="v-tile-name">${effect.name}</span>
       </button>`).join('')
 
@@ -33,9 +33,9 @@ export function visualMarkup(): string {
     <p class="lead">
       内置十四个效果，这里列出自成画面的十二个（<code>grain</code> 是叠加用的透明噪点，
       <code>particles</code> 要喂点云，见下面两节）。
-      <code>&lt;xh-visual&gt;</code> 元素自身就是画布的容器：内容照常写在里面，效果铺在内容底下，
+      <code>&lt;xh-background&gt;</code> 元素自身就是画布的容器：内容照常写在里面，效果铺在内容底下，
       画布是 <code>pointer-events: none</code>，不挡里面的交互。效果名要先注册，
-      <code>defineXhVisual()</code> 会把内置的十四个一并注册好。
+      <code>defineXhBackground()</code> 会把内置的十四个一并注册好。
     </p>
     <div class="v-gallery">${tiles}</div>
   </section>
@@ -47,9 +47,9 @@ export function visualMarkup(): string {
       所以参数走 <code>.params</code> 这个 property；简单开关则可以直接写属性，比如
       <code>pointer="false"</code>、<code>paused</code>。
     </p>
-    <xh-visual id="v-stage" effect="fluid" class="v-stage">
+    <xh-background id="v-stage" effect="fluid" class="v-stage">
       <div class="v-caption"><strong id="v-stage-name">fluid</strong><span id="v-stage-count"></span></div>
-    </xh-visual>
+    </xh-background>
     <div class="v-controls" id="v-controls"></div>
     <div class="row end"><button type="button" class="v-btn" id="v-reset">恢复默认</button></div>
   </section>
@@ -60,9 +60,9 @@ export function visualMarkup(): string {
       图片、文字、参数方程都归一到同一种点云表示，换形态就是换一份点云，中间的形变由引擎补。
       点云是二进制数据，属性传不了，用 <code>el.setCloud(cloud)</code>。
     </p>
-    <xh-visual id="v-cloud" effect="particles" class="v-stage">
+    <xh-background id="v-cloud" effect="particles" class="v-stage">
       <div class="v-caption"><strong>当前形态</strong><span id="v-cloud-label">heart</span></div>
-    </xh-visual>
+    </xh-background>
     <div class="row" style="margin-block-start: 12px;">${shapes}</div>
     <div class="row" style="margin-block-start: 12px;">
       <input id="v-text" class="v-input" value="曦寒" placeholder="输入文字">
@@ -130,14 +130,14 @@ function readValue(input: HTMLInputElement | HTMLSelectElement): ParamValue {
   return input.value
 }
 
-export function mountVisualDemo(): void {
-  const stage = document.getElementById('v-stage') as XhVisualElement | null
-  const cloudStage = document.getElementById('v-cloud') as XhVisualElement | null
+export function mountBackgroundDemo(): void {
+  const stage = document.getElementById('v-stage') as XhBackgroundElement | null
+  const cloudStage = document.getElementById('v-cloud') as XhBackgroundElement | null
   const controls = document.getElementById('v-controls')
   if (!stage || !cloudStage || !controls)
     return
 
-  let selected: VisualEffect = builtinEffects[0]!
+  let selected: BackgroundEffect = builtinEffects[0]!
   let params: Record<string, ParamValue> = defaultParams(selected.params)
 
   function renderControls(): void {

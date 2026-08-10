@@ -17,9 +17,9 @@ defineXhElements() // 注册全部 69 个 xh-* 元素
 视觉层单独注册，不引就不会把 WebGL 引擎打进包：
 
 ```ts
-import { defineXhVisual } from '@xihan-ui/web-components/backgrounds'
+import { defineXhBackground } from '@xihan-ui/web-components/backgrounds'
 
-defineXhVisual()
+defineXhBackground()
 ```
 
 ## 结构由你写

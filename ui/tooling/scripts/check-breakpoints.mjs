@@ -8,7 +8,7 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-const STYLES = 'packages/design/styles/styles'
+const STYLES = 'packages/design/styles/css'
 const TOKENS = 'packages/design/tokens/tokens.json'
 
 /** 从令牌产物里取断点清单：`--xh-breakpoint-md` → `768px` */

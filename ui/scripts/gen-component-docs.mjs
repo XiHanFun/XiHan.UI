@@ -88,7 +88,7 @@ function adapterArtifacts(id) {
     .sort()
   const composable = vueExports.has(`use${P}`) ? `use${P}` : null
   const tag = wcTags.has(`xh-${id}`) ? `xh-${id}` : null
-  const skinPath = path.join(uiRoot, 'packages/design/styles/styles', `${id}.css`)
+  const skinPath = path.join(uiRoot, 'packages/design/styles/css', `${id}.css`)
   const skin = fs.existsSync(skinPath) ? `@xihan-ui/styles/${id}.css` : null
   return { components, composable, tag, skin }
 }

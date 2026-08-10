@@ -18,9 +18,9 @@ WebGL2 缺席时自动降级成 CSS 静态背景，不报错、不留白。
 ## 基础用法
 
 ```ts
-import { createVisualSurface } from '@xihan-ui/backgrounds'
+import { createBackgroundSurface } from '@xihan-ui/backgrounds'
 
-const surface = createVisualSurface(el, {
+const surface = createBackgroundSurface(el, {
   effect: 'aurora',
   params: { speed: 1.6 },
   quality: 'high',
@@ -44,20 +44,20 @@ Vue 侧的适配放在**单独的子入口** `@xihan-ui/vue/backgrounds`，三�
 
 ```vue
 <script setup lang="ts">
-import { useVisual, vVisual, XhVisual } from '@xihan-ui/vue/backgrounds'
+import { useBackground, vBackground, XhBackground } from '@xihan-ui/vue/backgrounds'
 
-const visual = useVisual({ effect: 'fluid' })
+const visual = useBackground({ effect: 'fluid' })
 </script>
 
 <template>
   <!-- 1. 指令：给任意元素或组件的根元素铺一层背景，一个字都不用改组件 -->
-  <XhButton v-visual="'aurora'">提交</XhButton>
-  <div v-visual="{ effect: 'aurora', params: { speed: 1.6 } }" />
+  <XhButton v-background="'aurora'">提交</XhButton>
+  <div v-background="{ effect: 'aurora', params: { speed: 1.6 } }" />
 
   <!-- 2. 组件：插槽内容浮在效果之上，画布 pointer-events: none 不挡交互 -->
-  <XhVisual effect="nebula" :params="{ density: 0.8 }">
+  <XhBackground effect="nebula" :params="{ density: 0.8 }">
     <h1>标题浮在效果上</h1>
-  </XhVisual>
+  </XhBackground>
 
   <!-- 3. 组合式函数：自己拿画面实例，接自定义调度或调参面板 -->
   <div :ref="visual.attach" />
@@ -69,9 +69,9 @@ const visual = useVisual({ effect: 'fluid' })
 同样是单独注册，不引这一行就不会把引擎打进包里：
 
 ```ts
-import { defineXhVisual } from '@xihan-ui/web-components/backgrounds'
+import { defineXhBackground } from '@xihan-ui/web-components/backgrounds'
 
-defineXhVisual()
+defineXhBackground()
 ```
 
 ## 点云
