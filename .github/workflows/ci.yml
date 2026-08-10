@@ -78,7 +78,7 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('ui/pnpm-lock.yaml') }}
       - name: Install Chromium
-        run: pnpm --filter @xihan-ui/vue exec playwright install --with-deps chromium
+        run: pnpm --fail-if-no-match --filter @xihan-ui/vue exec playwright install --with-deps chromium
       - name: Build
         run: pnpm build
       - name: Accessibility (real Chromium)
