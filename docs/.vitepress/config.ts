@@ -8,7 +8,11 @@ const { version } = require("../package.json");
 
 // 组件页由 ui/scripts/gen-component-docs.mjs 生成，侧栏读同一份清单，增删组件不用改这里
 const componentManifest: {
-  categories: { id: string; label: string; components: { id: string; name: string }[] }[];
+  categories: {
+    id: string;
+    label: string;
+    components: { id: string; name: string }[];
+  }[];
 } = require("../../ui/scripts/component-docs.manifest.json");
 
 const title: string = "曦寒视图组件文档";
