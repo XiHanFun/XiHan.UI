@@ -1,21 +1,21 @@
 // 效果注册表。按名字取效果是给配置化场景用的（参数存在数据库里、由界面下拉切换），
 // 直接传效果对象则完全不经过它——注册表不参与打包决策，没注册的效果会被摇掉。
 
-import type { VisualEffect } from '../types'
+import type { BackgroundEffect } from '../types'
 
-const registry = new Map<string, VisualEffect>()
+const registry = new Map<string, BackgroundEffect>()
 
 /** 注册一个效果；同名后注册的覆盖先注册的。 */
-export function registerEffect(effect: VisualEffect): void {
+export function registerEffect(effect: BackgroundEffect): void {
   registry.set(effect.name, effect)
 }
 
-export function registerEffects(effects: readonly VisualEffect[]): void {
+export function registerEffects(effects: readonly BackgroundEffect[]): void {
   for (const effect of effects)
     registerEffect(effect)
 }
 
-export function getEffect(name: string): VisualEffect | undefined {
+export function getEffect(name: string): BackgroundEffect | undefined {
   return registry.get(name)
 }
 
@@ -29,7 +29,7 @@ export function clearEffects(): void {
 }
 
 /** 把「效果对象或名字」统一成效果对象。名字没注册时抛错，因为拿不到效果就什么都画不了。 */
-export function resolveEffect(effect: VisualEffect | string): VisualEffect {
+export function resolveEffect(effect: BackgroundEffect | string): BackgroundEffect {
   if (typeof effect !== 'string')
     return effect
   const found = registry.get(effect)

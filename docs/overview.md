@@ -11,7 +11,7 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式只服务于一
 | 无头内核 | `packages/engine/headless/src/dialog/` | 解剖、状态机、键盘规格表、`connect` |
 | Vue 组件 | `packages/adapters/vue/src/components/dialog/` | `XhDialogRoot` 等一组 `defineComponent` |
 | 自定义元素 | `packages/adapters/web-components/src/elements/dialog.ts` | `<xh-dialog>`，Light-DOM 行为宿主 |
-| 皮肤 | `packages/design/styles/styles/dialog.css` | 纯 CSS，按 `data-*` 选中 |
+| 皮肤 | `packages/design/styles/css/dialog.css` | 纯 CSS，按 `data-*` 选中 |
 
 四份里只有第一份包含逻辑。后三份分别回答「怎么把属性挂到 Vue 的 vnode 上」「怎么把属性挂到作者手写的 DOM 上」「这些属性长什么样」。
 

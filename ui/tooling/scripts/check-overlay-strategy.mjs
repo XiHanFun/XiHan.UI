@@ -50,7 +50,7 @@ const problems = []
 for (const name of FAMILIES) {
   const machine = await read(`packages/engine/headless/src/${name}/${name}.machine.ts`)
   const connect = await read(`packages/engine/headless/src/${name}/${name}.connect.ts`)
-  const css = await read(`packages/design/styles/styles/${name}.css`)
+  const css = await read(`packages/design/styles/css/${name}.css`)
 
   if (machine == null || connect == null)
     problems.push(`${name}：源码缺失，清单与实际组件对不上`)

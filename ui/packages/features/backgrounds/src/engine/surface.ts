@@ -7,16 +7,16 @@
 // 片元着色器一律输出预乘 alpha，画布因此可以是半透明的，铺在组件背景上不挡住底下的内容。
 
 import type {
+  BackgroundEffect,
+  BackgroundQuality,
+  BackgroundSurface,
+  BackgroundSurfaceOptions,
   EffectContext,
   MorphOptions,
   ParamValue,
   ParamValues,
   PointCloud,
   UniformMap,
-  VisualEffect,
-  VisualQuality,
-  VisualSurface,
-  VisualSurfaceOptions,
 } from '../types'
 import type { GlProgram } from './program'
 import { onReducedMotionChange, prefersReducedMotion } from '@xihan-ui/behavior'
@@ -39,7 +39,7 @@ interface QualityProfile {
   readonly particles: number
 }
 
-const PROFILES: Record<Exclude<VisualQuality, 'auto'>, QualityProfile> = {
+const PROFILES: Record<Exclude<BackgroundQuality, 'auto'>, QualityProfile> = {
   high: { dpr: 2, particles: 1 },
   balanced: { dpr: 1.5, particles: 0.7 },
   eco: { dpr: 1, particles: 0.4 },
@@ -56,7 +56,7 @@ function autoProfile(): QualityProfile {
   return PROFILES.balanced
 }
 
-function profileOf(quality: VisualQuality): QualityProfile {
+function profileOf(quality: BackgroundQuality): QualityProfile {
   return quality === 'auto' ? autoProfile() : PROFILES[quality]
 }
 
@@ -70,12 +70,12 @@ const CLOUD_STRIDES = [3, 3, 3, 3, 2] as const
  * 所以它永远不会挡住宿主组件自己的交互；指针事件监听在容器上。
  * 容器的 position 为 static 时会被改成 relative，否则绝对定位的画布会跑到别的祖先上去。
  */
-export function createVisualSurface(
+export function createBackgroundSurface(
   target: HTMLElement,
-  options: VisualSurfaceOptions,
-): VisualSurface {
+  options: BackgroundSurfaceOptions,
+): BackgroundSurface {
   if (isSSR())
-    throw new Error('[visual] createVisualSurface 需要 DOM，请在客户端调用')
+    throw new Error('[visual] createBackgroundSurface 需要 DOM，请在客户端调用')
 
   let effect = resolveEffect(options.effect)
   /**
@@ -85,7 +85,7 @@ export function createVisualSurface(
    */
   let overrides: Record<string, ParamValue> = { ...options.params }
   let params = resolveParams(effect.params, overrides)
-  let quality: VisualQuality = options.quality ?? 'auto'
+  let quality: BackgroundQuality = options.quality ?? 'auto'
   let profile = profileOf(quality)
 
   const ownsCanvas = !(target instanceof HTMLCanvasElement)
@@ -422,16 +422,16 @@ export function createVisualSurface(
 
   const leaveScheduler = joinScheduler({ tick })
 
-  const surface: VisualSurface = {
+  const surface: BackgroundSurface = {
     canvas,
     backend: 'webgl2',
-    get effect(): VisualEffect {
+    get effect(): BackgroundEffect {
       return effect
     },
     get playing(): boolean {
       return playing
     },
-    setEffect(next: VisualEffect | string): void {
+    setEffect(next: BackgroundEffect | string): void {
       const resolved = resolveEffect(next)
       if (resolved === effect)
         return
@@ -457,7 +457,7 @@ export function createVisualSurface(
     getParams(): ParamValues {
       return { ...params }
     },
-    setQuality(next: VisualQuality): void {
+    setQuality(next: BackgroundQuality): void {
       quality = next
       profile = profileOf(quality)
       disposeCloudBuffers()
@@ -525,9 +525,9 @@ export function createVisualSurface(
 function createFallbackSurface(
   canvas: HTMLCanvasElement,
   ownsCanvas: boolean,
-  initialEffect: VisualEffect,
+  initialEffect: BackgroundEffect,
   initialOverrides: Record<string, ParamValue>,
-): VisualSurface {
+): BackgroundSurface {
   let effect = initialEffect
   let overrides = initialOverrides
   let params = resolveParams(effect.params, overrides)
@@ -540,11 +540,11 @@ function createFallbackSurface(
   return {
     canvas,
     backend: 'css',
-    get effect(): VisualEffect {
+    get effect(): BackgroundEffect {
       return effect
     },
     playing: false,
-    setEffect(next: VisualEffect | string): void {
+    setEffect(next: BackgroundEffect | string): void {
       effect = resolveEffect(next)
       params = resolveParams(effect.params, overrides)
       paint()

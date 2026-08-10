@@ -5,7 +5,7 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-const STYLES_DIR = 'packages/design/styles/styles'
+const STYLES_DIR = 'packages/design/styles/css'
 const TOKENS_CSS = 'packages/design/tokens/tokens.css'
 
 /** 组件私有槽：由皮肤自己声明或留给使用者覆盖，不在令牌产物里。 */

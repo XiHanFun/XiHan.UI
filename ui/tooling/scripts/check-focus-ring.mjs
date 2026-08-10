@@ -10,7 +10,7 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-const STYLES = 'packages/design/styles/styles'
+const STYLES = 'packages/design/styles/css'
 
 // 允许的写法：直接引令牌，或由令牌算出来（往内收的负偏移）
 const TOKEN_DRIVEN = /var\(--xh-[a-z-]+\)/

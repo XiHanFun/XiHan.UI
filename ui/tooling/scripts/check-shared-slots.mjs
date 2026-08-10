@@ -6,7 +6,7 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-const STYLES_DIR = 'packages/design/styles/styles'
+const STYLES_DIR = 'packages/design/styles/css'
 
 /** 不必令牌化的默认值：它们是 CSS 本身的语义，不是设计档位。 */
 const NOT_A_SCALE = new Set(['transparent', 'none', 'auto', 'inherit', 'currentColor', '0', '1', '100%'])

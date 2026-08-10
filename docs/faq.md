@@ -89,7 +89,7 @@ BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.x
 1. `packages/engine/headless/src/<name>/`——解剖、状态机、`connect`、键盘规格表、元数据；
 2. `packages/adapters/vue/src/components/<name>/`——组件与组合式函数；
 3. `packages/adapters/web-components/src/elements/<name>.ts`——自定义元素，并在 `define.ts` 注册；
-4. `packages/design/styles/styles/<name>.css`——皮肤，并在 `index.css` 引入。
+4. `packages/design/styles/css/<name>.css`——皮肤，并在 `index.css` 引入。
 
 然后补一致性套件（`tooling/testing/src/suites/<name>.suite.ts`），跑 `pnpm test`、`pnpm test:browser`、`pnpm gate`、`pnpm boundaries`、`pnpm gate:cem`。
 

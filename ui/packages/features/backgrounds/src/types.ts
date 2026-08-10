@@ -79,7 +79,7 @@ export interface CloudParticleSpec {
 
 export type ParticleSpec = ProceduralParticleSpec | CloudParticleSpec
 
-export interface VisualEffect {
+export interface BackgroundEffect {
   readonly name: string
   readonly params: ParamSpecMap
   /** 注入两个通道的公共 GLSL：uniform 声明与共享函数。 */
@@ -107,14 +107,14 @@ export interface PointCloud {
 }
 
 /** auto 按设备像素比与硬件并发数推断。 */
-export type VisualQuality = 'auto' | 'high' | 'balanced' | 'eco'
+export type BackgroundQuality = 'auto' | 'high' | 'balanced' | 'eco'
 
-export type VisualBackend = 'webgl2' | 'css'
+export type BackgroundBackend = 'webgl2' | 'css'
 
-export interface VisualSurfaceOptions {
-  readonly effect: VisualEffect | string
+export interface BackgroundSurfaceOptions {
+  readonly effect: BackgroundEffect | string
   readonly params?: Readonly<Record<string, ParamValue>>
-  readonly quality?: VisualQuality
+  readonly quality?: BackgroundQuality
   /** 自动绑定指针事件到画布。想自己喂坐标就关掉，改调 setPointer()。 */
   readonly pointer?: boolean
   /** 创建后立即播放，默认 true。 */
@@ -130,15 +130,15 @@ export interface MorphOptions {
   readonly duration?: number
 }
 
-export interface VisualSurface {
+export interface BackgroundSurface {
   readonly canvas: HTMLCanvasElement
-  readonly backend: VisualBackend
-  readonly effect: VisualEffect
+  readonly backend: BackgroundBackend
+  readonly effect: BackgroundEffect
   readonly playing: boolean
-  setEffect: (effect: VisualEffect | string) => void
+  setEffect: (effect: BackgroundEffect | string) => void
   setParams: (patch: Readonly<Record<string, ParamValue>>) => void
   getParams: () => ParamValues
-  setQuality: (quality: VisualQuality) => void
+  setQuality: (quality: BackgroundQuality) => void
   /** 指针位置，归一化到 0~1，原点在左下角。 */
   setPointer: (x: number, y: number, active?: boolean) => void
   /** 换点云。效果的粒子通道是 cloud 模式时才有意义。 */

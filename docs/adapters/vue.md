@@ -124,10 +124,10 @@ const { api } = useAccordion(
 Vue 侧的视觉适配在**单独的子入口**，不引就不会把 WebGL 引擎打进包：
 
 ```ts
-import { useVisual, vVisual, XhVisual } from '@xihan-ui/vue/backgrounds'
+import { useBackground, vBackground, XhBackground } from '@xihan-ui/vue/backgrounds'
 ```
 
-三种用法见[视觉层](../guide/visual#在-vue-里用)。
+三种用法见[视觉层](../guide/backgrounds#在-vue-里用)。
 
 ## 服务端渲染
 

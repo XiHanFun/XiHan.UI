@@ -4,20 +4,20 @@
 // 而多出一个 WebGL 引擎。用之前先装 @xihan-ui/backgrounds。
 //
 // 三种用法，从轻到重：
-//   v-visual   给任意元素或组件的根元素铺一层背景，一个字都不用改组件
-//   XhVisual   独立的视觉组件，插槽内容浮在效果之上
-//   useVisual  自己拿画面实例，接自定义调度或调参面板
+//   v-background   给任意元素或组件的根元素铺一层背景，一个字都不用改组件
+//   XhBackground   独立的视觉组件，插槽内容浮在效果之上
+//   useBackground  自己拿画面实例，接自定义调度或调参面板
 
 import type {
+  BackgroundEffect,
+  BackgroundQuality,
+  BackgroundSurface,
   MorphOptions,
   ParamValue,
   PointCloud,
-  VisualEffect,
-  VisualQuality,
-  VisualSurface,
 } from '@xihan-ui/backgrounds'
 import type { Directive, PropType, ShallowRef, VNodeRef } from 'vue'
-import { createVisualSurface } from '@xihan-ui/backgrounds'
+import { createBackgroundSurface } from '@xihan-ui/backgrounds'
 import {
   defineComponent,
   getCurrentScope,
@@ -26,10 +26,10 @@ import {
   shallowRef,
 } from 'vue'
 
-export interface UseVisualOptions {
-  effect: VisualEffect | string
+export interface UseBackgroundOptions {
+  effect: BackgroundEffect | string
   params?: Record<string, ParamValue>
-  quality?: VisualQuality
+  quality?: BackgroundQuality
   /** 自动绑定指针事件，默认 true。 */
   pointer?: boolean
   /** 创建后立即播放，默认 true。 */
@@ -40,14 +40,14 @@ export interface UseVisualOptions {
   pauseOffscreen?: boolean
 }
 
-export interface UseVisualReturn {
-  readonly surface: ShallowRef<VisualSurface | null>
+export interface UseBackgroundReturn {
+  readonly surface: ShallowRef<BackgroundSurface | null>
   /**
    * 挂载点。直接当模板 ref 用：`<div :ref="visual.attach">`，
    * 渲染器会在元素进出 DOM 时把元素或 null 交进来。
    */
   attach: (element: Element | null) => void
-  setEffect: (effect: VisualEffect | string) => void
+  setEffect: (effect: BackgroundEffect | string) => void
   setParams: (patch: Record<string, ParamValue>) => void
   setCloud: (cloud: PointCloud, options?: MorphOptions) => void
   play: () => void
@@ -62,8 +62,8 @@ export interface UseVisualReturn {
  * 不经过响应式与调度队列，因此不受 flush 时序影响，元素换了也一定收得到。
  * 组件卸载时自动销毁；在 setup 之外调用则需自己调 destroy。
  */
-export function useVisual(options: UseVisualOptions): UseVisualReturn {
-  const surface = shallowRef<VisualSurface | null>(null)
+export function useBackground(options: UseBackgroundOptions): UseBackgroundReturn {
+  const surface = shallowRef<BackgroundSurface | null>(null)
   // 元素没换就不动画面：函数式 ref 每次 patch 都会被再调一遍，
   // 不挡住的话每渲染一帧就销毁重建一次，画面永远停在创建时那份参数上
   let attached: HTMLElement | null = null
@@ -74,7 +74,7 @@ export function useVisual(options: UseVisualOptions): UseVisualReturn {
       return
     attached = el
     surface.value?.destroy()
-    surface.value = el === null ? null : createVisualSurface(el, options)
+    surface.value = el === null ? null : createBackgroundSurface(el, options)
   }
 
   function destroy(): void {
@@ -99,15 +99,15 @@ export function useVisual(options: UseVisualOptions): UseVisualReturn {
 }
 
 /**
- * `<XhVisual>` —— 独立视觉组件。默认插槽的内容浮在效果之上；
+ * `<XhBackground>` —— 独立视觉组件。默认插槽的内容浮在效果之上；
  * 画布铺满根元素且 pointer-events: none，不会挡住插槽里的交互。
  */
-export const XhVisual = defineComponent({
-  name: 'XhVisual',
+export const XhBackground = defineComponent({
+  name: 'XhBackground',
   props: {
-    effect: { type: [Object, String] as PropType<VisualEffect | string>, required: true },
+    effect: { type: [Object, String] as PropType<BackgroundEffect | string>, required: true },
     params: { type: Object as PropType<Record<string, ParamValue>>, default: undefined },
-    quality: { type: String as PropType<VisualQuality>, default: undefined },
+    quality: { type: String as PropType<BackgroundQuality>, default: undefined },
     /** 数据驱动点云。效果的粒子通道是 cloud 模式时才有意义。 */
     cloud: { type: Object as PropType<PointCloud | null>, default: null },
     /** 换点云时的形变时长（秒）。 */
@@ -120,7 +120,7 @@ export const XhVisual = defineComponent({
     as: { type: String, default: 'div' },
   },
   setup(props, { slots, expose }) {
-    const api = useVisual({
+    const api = useBackground({
       effect: props.effect,
       params: props.params,
       quality: props.quality,
@@ -130,8 +130,8 @@ export const XhVisual = defineComponent({
       pauseOffscreen: props.pauseOffscreen,
     })
 
-    let appliedEffect: VisualEffect | string | undefined
-    let appliedQuality: VisualQuality | undefined
+    let appliedEffect: BackgroundEffect | string | undefined
+    let appliedQuality: BackgroundQuality | undefined
     let appliedCloud: PointCloud | null = null
     let appliedAutoplay = props.autoplay
 
@@ -188,37 +188,37 @@ export const XhVisual = defineComponent({
       sync()
       return h(
         props.as,
-        { 'ref': mount, 'data-scope': 'visual', 'data-part': 'root' },
+        { 'ref': mount, 'data-scope': 'background', 'data-part': 'root' },
         slots.default?.(),
       )
     }
   },
 })
 
-export type VisualDirectiveValue = VisualEffect | string | UseVisualOptions
+export type BackgroundDirectiveValue = BackgroundEffect | string | UseBackgroundOptions
 
-function toOptions(value: VisualDirectiveValue): UseVisualOptions {
+function toOptions(value: BackgroundDirectiveValue): UseBackgroundOptions {
   if (typeof value === 'string')
     return { effect: value }
   return 'effect' in value ? value : { effect: value }
 }
 
-const mounted = new WeakMap<HTMLElement, { surface: VisualSurface, effect: VisualEffect | string }>()
+const mounted = new WeakMap<HTMLElement, { surface: BackgroundSurface, effect: BackgroundEffect | string }>()
 
 /**
- * `v-visual` —— 给任意元素铺一层视觉背景。
+ * `v-background` —— 给任意元素铺一层视觉背景。
  *
  * 用在组件上时，Vue 会把指令落到该组件的单一根元素上，所以给现成组件加背景不需要改组件：
  *
  * ```vue
- * <XhButton v-visual="fluidEffect">提交</XhButton>
- * <div v-visual="{ effect: 'aurora', params: { speed: 1.6 } }" />
+ * <XhButton v-background="fluidEffect">提交</XhButton>
+ * <div v-background="{ effect: 'aurora', params: { speed: 1.6 } }" />
  * ```
  */
-export const vVisual: Directive<HTMLElement, VisualDirectiveValue> = {
+export const vBackground: Directive<HTMLElement, BackgroundDirectiveValue> = {
   mounted(el, binding) {
     const options = toOptions(binding.value)
-    mounted.set(el, { surface: createVisualSurface(el, options), effect: options.effect })
+    mounted.set(el, { surface: createBackgroundSurface(el, options), effect: options.effect })
   },
   updated(el, binding) {
     const entry = mounted.get(el)

@@ -2,14 +2,14 @@
 // 顺带保证 min/max/step/default 一个都不会漏。
 
 import type {
+  BackgroundEffect,
   BooleanParamSpec,
   ColorParamSpec,
   EnumParamSpec,
   NumberParamSpec,
-  VisualEffect,
 } from '../types'
 
-export function defineEffect(effect: VisualEffect): VisualEffect {
+export function defineEffect(effect: BackgroundEffect): BackgroundEffect {
   return effect
 }
 

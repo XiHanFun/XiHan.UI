@@ -18,7 +18,7 @@
     "format": "prettier --write \"**/*.{json,css,scss,md,yaml,yml}\"",
     "size": "turbo run build && size-limit",
     "boundaries": "depcruise packages tooling apps",
-    "gate": "node tooling/scripts/check-runtime-deps.mjs && node tooling/scripts/check-exact-pins.mjs && node tooling/scripts/check-tokens-dist.mjs && node tooling/scripts/check-overlay-strategy.mjs && node tooling/scripts/check-token-refs.mjs && node tooling/scripts/check-shared-slots.mjs && node tooling/scripts/check-disabled-contrast.mjs && node tooling/scripts/check-breakpoints.mjs && node tooling/scripts/check-focus-ring.mjs && node tooling/scripts/check-part-wiring.mjs && node tooling/scripts/check-exports.mjs",
+    "gate": "node tooling/scripts/check-runtime-deps.mjs && node tooling/scripts/check-exact-pins.mjs && node tooling/scripts/check-tokens-dist.mjs && node tooling/scripts/check-overlay-strategy.mjs && node tooling/scripts/check-token-refs.mjs && node tooling/scripts/check-shared-slots.mjs && node tooling/scripts/check-disabled-contrast.mjs && node tooling/scripts/check-breakpoints.mjs && node tooling/scripts/check-focus-ring.mjs && node tooling/scripts/check-part-wiring.mjs && node tooling/scripts/check-exports.mjs && node tooling/scripts/check-package-roles.mjs",
     "gate:tokens": "pnpm --fail-if-no-match --filter @xihan-ui/tokens gen && git diff --exit-code packages/design/tokens",
     "gate:cem": "pnpm --fail-if-no-match --filter @xihan-ui/web-components cem && git diff --exit-code packages/adapters/web-components/custom-elements.json",
     "gate:styled": "pnpm --fail-if-no-match --filter @xihan-ui/styles gen && git diff --exit-code packages/design/styles/index.unlayered.css",

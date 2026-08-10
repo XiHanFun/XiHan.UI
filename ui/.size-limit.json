@@ -97,7 +97,7 @@
   },
   {
     "name": "styles",
-    "path": "packages/design/styles/styles/*.css",
+    "path": "packages/design/styles/css/*.css",
     "gzip": true,
     "limit": "68 kB"
   },
