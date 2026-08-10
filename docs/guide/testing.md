@@ -109,7 +109,7 @@ pnpm gate:publish # 逐包跑 publint 与 attw，校验 exports 条件与类型�
 pnpm size
 ```
 
-17 条产物各有上限（gzip 后），涨过线就红。几个参考值：`core` 3.3 kB、`machine` 5.5 kB、`position` 2.5 kB、`system/tokens.css` 1.6 kB、`headless` 138 kB、`wc/define` 149 kB。
+18 条产物各有上限（gzip 后），涨过线就红。预算一律按实测留一成余量。几个参考值：`kernel` 3.3 kB、`machine` 5.5 kB、`position` 2.6 kB、`tokens/tokens.css` 3 kB、`headless` 169 kB、`web-components/define` 184 kB。
 
 ## 相关
 

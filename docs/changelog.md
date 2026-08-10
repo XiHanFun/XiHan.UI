@@ -3,7 +3,7 @@
 本文件记录 XiHan.UI 各版本的变更。每条标注 **新增 / 修复 / 优化 / 调整 / 移除** 类别。
 
 ::: warning 当前处于重写后、首发前
-现在的 XiHan.UI 是 2026-07-25 起从零重写的框架无关设计系统运行时，13 个公开包（`@xihan-ui/*`）由 changesets 的 `fixed` 组锁步同版，当前版本 `0.0.0`，**尚未发布到 npm**，首个公开版本计划为 `1.0.0-alpha.0`。
+现在的 XiHan.UI 是 2026-07-25 起从零重写的框架无关设计系统运行时，14 个公开包（`@xihan-ui/*`）由 changesets 的 `fixed` 组锁步同版，当前版本 `0.0.0`，**尚未发布到 npm**，首个公开版本计划为 `1.0.0-alpha.0`。
 
 npm 上的 `xihan-ui` 是重写前的旧实现，最后一版 `0.9.8` 发布于 2025-05-25，六个版本已全部在 npm 上标记弃用。两者不是同一套东西，旧包不会再有更新。
 :::
@@ -30,7 +30,7 @@ npm 上的 `xihan-ui` 是重写前的旧实现，最后一版 `0.9.8` 发布于 
 
 ### 组件
 
-- **新增** 69 个组件逐批铺开，每个都同时产出无头内核、Vue 组件、自定义元素与默认皮肤：从 Button / Dialog 起，经 Switch、Checkbox / Collapsible / Separator、Toggle / Progress / Badge、RadioGroup / Tabs / Accordion、Tooltip / Popover、Menu、Select / Avatar / Field、NumberField，到日期族与最后一批，双适配器铺满
+- **新增** 102 个组件逐批铺开，每个都同时产出无头内核、Vue 组件、自定义元素与默认皮肤：从 Button / Dialog 起，经 Switch、Checkbox / Collapsible / Separator、Toggle / Progress / Badge、RadioGroup / Tabs / Accordion、Tooltip / Popover、Menu、Select / Avatar / Field、NumberField，到日期族与最后一批，双适配器铺满
 - **新增** alert / spinner / skeleton / empty-state 四个反馈类组件
 - **新增** Checkbox 三态
 - **调整** Select 支持多选，选中值由单值改为集合：`SelectValueChangeDetails.value` 由 `string | null` 变 `string[]`，`SelectApi` 的 `value` / `valueText` 变数组，`setValue` 签名变 `(next: string | string[]) => void`；Vue 侧 `update:value` 载荷与 WC 侧 `value-change` 的 `detail` 随之变化。见[选择器](./components/select)
@@ -90,7 +90,7 @@ npm 上的 `xihan-ui` 是重写前的旧实现，最后一版 `0.9.8` 发布于 
 - **调整** 皮肤层令牌成为唯一事实源，删掉全部字面量兜底，跨组件共享的默认值全部令牌化
 - **调整** 全仓注释改为只讲功能，不带设计过程引用
 - **调整** 行尾一律 LF（`.gitattributes`），署名统一为 XiHanFun and contributors
-- **新增** changesets 发布配置就绪：13 个公开包锁步同版，私有包不发布不计版
+- **新增** changesets 发布配置就绪：14 个公开包锁步同版，私有包不发布不计版
 
 ## 旧实现 · xihan-ui（2024-11 ~ 2025-07）
 

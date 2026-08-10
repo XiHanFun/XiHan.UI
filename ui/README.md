@@ -6,9 +6,9 @@
 
 Framework-agnostic component library. State machines and accessibility live in a headless core; each framework only gets a thin adapter.
 
-69 components, each shipping a headless core, a Vue component, a custom element, and a default skin.
+102 components, each shipping a headless core, a Vue component, a custom element, and a default skin.
 
-> **Experimental.** Not published to npm and no documentation site yet. Accessibility is scanned in real Chromium, but the first sweep left a backlog of recorded issues (17 components plus one global contrast problem). Do not depend on it in production.
+> **Experimental.** Not published to npm yet; the documentation site is live at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium, but the backlog is down to two recorded entries (WC-side `steps` required-children, plus one replay exemption for `breadcrumb`). Do not depend on it in production.
 
 ## Packages
 
@@ -17,7 +17,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 | `@xihan-ui/kernel` | Structural primitives: anatomy, `mergeProps`, `normalizeProps`, scope, context, ids |
 | `@xihan-ui/machine` | State machine runtime: `createMachine`, interpreter contract, controlled bindings |
 | `@xihan-ui/behavior` | Behavior primitives: dismissable layer, focus scope, scroll lock, presence, collection, typeahead |
-| `@xihan-ui/headless` | 69 components as anatomy + machine + `connect` — no styles, no framework |
+| `@xihan-ui/headless` | 102 components as anatomy + machine + `connect` — no styles, no framework |
 | `@xihan-ui/vue` | Vue 3 adapter |
 | `@xihan-ui/web-components` | Web Components adapter (own reactive base, no third-party runtime dep) |
 | `@xihan-ui/styles` | Default skins, layered CSS |
@@ -26,7 +26,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 | `@xihan-ui/chat-stream` | AI protocol core: SSE reading → protocol normalization → parts reduction → thread store (no DOM, no framework) |
 | `@xihan-ui/code-highlight` | Code highlighting — self-implemented coarse tokenizer, no third-party runtime dependency |
 | `@xihan-ui/markdown` | Streaming markdown renderer: incremental block splitting, stable keys, sanitization (CommonMark subset, 489/652) |
-| `@xihan-ui/backgrounds` | Visual layer: WebGL2 background effects and data-driven particle clouds, framework agnostic |
+| `@xihan-ui/backgrounds` | Background layer: WebGL2 effects and data-driven particle clouds, framework agnostic |
 | `@xihan-ui/icons` | First-party icon set: structured `IconRecord` data, rendered node by node, no runtime SVG string parsing |
 
 `tooling/*` holds internal build, lint, tsconfig, testing and script packages; they are never published.
