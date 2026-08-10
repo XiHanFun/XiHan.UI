@@ -2,6 +2,7 @@ import type { Direction, Orientation } from '@xihan-ui/core'
 import type { NavigationMenuNode, NavigationMenuNodeMeta, NavigationMenuSchema, NavigationMenuTranslations } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import { defineComponent, h } from 'vue'
+import { slotPaints } from '../../runtime/slot-content'
 import { provideNavigationMenu, useNavigationMenuContext } from './context'
 import { useNavigationMenu } from './use-navigation-menu'
 
@@ -34,9 +35,11 @@ export const XhNavigationMenuRoot = defineComponent({
     const ctx = useNavigationMenu(props as NavigationMenuProps, notify)
     provideNavigationMenu(ctx)
     return () => {
-      // 写了默认插槽就照旧交给作者；没写且给了 collection 才按数据铺开整套结构
-      const children = slots.default?.()
-        ?? (props.collection ? renderDefaultTree(ctx.api.value.collection, slots.panel) : undefined)
+      // 默认插槽里有真内容就照旧交给作者；只剩注释或空白时当没写，给了 collection 就按数据铺开整套结构
+      const authored = slots.default?.()
+      const children = slotPaints(authored)
+        ? authored
+        : (props.collection ? renderDefaultTree(ctx.api.value.collection, slots.panel) : undefined)
       return h('nav', ctx.api.value.getRootProps() as Record<string, unknown>, children)
     }
   },
