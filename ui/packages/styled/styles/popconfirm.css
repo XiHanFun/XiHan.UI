@@ -1,0 +1,150 @@
+@layer xihan.components {
+  /* 根只框住触发器：浮层树靠 positioner 的固定定位飞出去，不占根的盒子 */
+  [data-scope='popconfirm'][data-part='root'] {
+    display: inline-block;
+  }
+
+  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+  [data-scope='popconfirm'][data-part='positioner'] {
+    position: fixed;
+    z-index: var(--xh-layer-popover);
+    /* 空壳不吃指针，交互只发生在 content 上 */
+    pointer-events: none;
+  }
+
+  /* 锚点被滚出可视区：整个浮层随之收起 */
+  [data-scope='popconfirm'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  /* 面板排成三列：左列吃掉剩余宽度，右两列各摆一颗按钮。
+     标题、说明与作者塞进来的内容各占一整行，两颗按钮因此并排落在最后一行的右侧。 */
+  [data-scope='popconfirm'][data-part='content'] {
+    /* 尺寸档只换这三个私有槽 */
+    --xh-_popconfirm-py: var(--xh-space-3);
+    --xh-_popconfirm-px: var(--xh-control-px-md);
+    --xh-_popconfirm-max-w: var(--xh-overlay-max-w);
+
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: var(--xh-popconfirm-gap, var(--xh-space-2));
+    inline-size: max-content;
+    max-inline-size: var(--xh-popconfirm-max-w, var(--xh-_popconfirm-max-w));
+    padding-block: var(--xh-popconfirm-py, var(--xh-_popconfirm-py));
+    padding-inline: var(--xh-popconfirm-px, var(--xh-_popconfirm-px));
+    border: var(--xh-stroke-thin) solid var(--xh-popconfirm-border, var(--xh-border-default));
+    border-radius: var(--xh-popconfirm-radius, var(--xh-shape-surface));
+    background: var(--xh-popconfirm-bg, var(--xh-bg-surface));
+    color: var(--xh-popconfirm-fg, var(--xh-fg-default));
+    box-shadow: var(--xh-popconfirm-shadow, var(--xh-elevation-2));
+    pointer-events: auto;
+  }
+
+  [data-scope='popconfirm'][data-part='content'] > * {
+    grid-column: 1 / -1;
+  }
+
+  /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位 */
+  [data-scope='popconfirm'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  [data-scope='popconfirm'][data-part='content']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='popconfirm'][data-part='content'][data-state='open'] {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* —— 尺寸 —— */
+  /* 缺省档写在 content 的基础规则里；行内内缩取 control-px 那把尺，纵向按 space 档同步 */
+  [data-scope='popconfirm'][data-part='content'][data-size='sm'] {
+    --xh-_popconfirm-py: var(--xh-space-2);
+    --xh-_popconfirm-px: var(--xh-control-px-sm);
+    --xh-_popconfirm-max-w: var(--xh-overlay-max-w-sm);
+  }
+
+  [data-scope='popconfirm'][data-part='content'][data-size='lg'] {
+    --xh-_popconfirm-py: var(--xh-space-4);
+    --xh-_popconfirm-px: var(--xh-control-px-lg);
+    --xh-_popconfirm-max-w: var(--xh-overlay-max-w-lg);
+  }
+
+  [data-scope='popconfirm'][data-part='title'] {
+    margin: 0;
+    font-size: var(--xh-popconfirm-title-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-popconfirm-title-font-weight, var(--xh-font-weight-semibold));
+    color: var(--xh-popconfirm-title-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='popconfirm'][data-part='description'] {
+    margin: 0;
+    font-size: var(--xh-text-body-size);
+    line-height: var(--xh-leading-normal);
+    color: var(--xh-popconfirm-description-fg, var(--xh-fg-muted));
+  }
+
+  /* —— 两颗按钮 —— */
+  [data-scope='popconfirm'][data-part='confirm-trigger'],
+  [data-scope='popconfirm'][data-part='cancel-trigger'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    block-size: var(--xh-control-h-sm);
+    padding-inline: var(--xh-control-px-sm);
+    border: var(--xh-stroke-thin) solid transparent;
+    border-radius: var(--xh-shape-control);
+    font-size: var(--xh-font-size-sm);
+    font-weight: var(--xh-text-label-weight);
+    line-height: var(--xh-leading-none);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 并排落在最后一行的右侧两格；取消在左、确认在右 */
+  [data-scope='popconfirm'][data-part='content'] > [data-part='cancel-trigger'] {
+    grid-column: 2;
+  }
+
+  [data-scope='popconfirm'][data-part='content'] > [data-part='confirm-trigger'] {
+    grid-column: 3;
+  }
+
+  /* 确认是实心的主操作。底色走共享语气槽：作者在 content 上写 data-tone="danger"
+     就整体换成危险色，不写则用品牌色 */
+  [data-scope='popconfirm'][data-part='confirm-trigger'] {
+    background: var(--xh-popconfirm-confirm-bg, var(--xh-_tone, var(--xh-bg-brand)));
+    color: var(--xh-popconfirm-confirm-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+  }
+
+  [data-scope='popconfirm'][data-part='confirm-trigger']:hover {
+    background: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
+  }
+
+  [data-scope='popconfirm'][data-part='confirm-trigger']:active {
+    background: var(--xh-_tone-active, var(--xh-bg-brand-active));
+  }
+
+  /* 取消是次要出口，用淡底中性色，不参与语气 */
+  [data-scope='popconfirm'][data-part='cancel-trigger'] {
+    background: var(--xh-popconfirm-cancel-bg, var(--xh-bg-subtle));
+    color: var(--xh-popconfirm-cancel-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='popconfirm'][data-part='cancel-trigger']:hover {
+    background: var(--xh-bg-subtle-hover);
+  }
+
+  [data-scope='popconfirm'][data-part='cancel-trigger']:active {
+    background: var(--xh-bg-subtle-active);
+  }
+
+  [data-scope='popconfirm'][data-part='confirm-trigger']:focus-visible,
+  [data-scope='popconfirm'][data-part='cancel-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+}

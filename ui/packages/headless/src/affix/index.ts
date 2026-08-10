@@ -1,0 +1,15 @@
+export { affixAnatomy } from './affix.anatomy'
+export { connectAffix } from './affix.connect'
+export { affixKeyboard } from './affix.keyboard'
+export { AFFIX_DEFAULT_OFFSET, affixMachine, isAffixed } from './affix.machine'
+export type { AffixGeometry } from './affix.machine'
+export { affixMeta } from './affix.meta'
+export type {
+  AffixApi,
+  AffixChangeDetails,
+  AffixPin,
+  AffixRefs,
+  AffixSchema,
+  AffixSide,
+  AffixSize,
+} from './affix.types'

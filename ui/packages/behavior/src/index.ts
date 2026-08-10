@@ -25,5 +25,13 @@ export type { FocusOptions } from './focus-scope/tabbable'
 export { onReducedMotionChange, prefersReducedMotion } from './reduced-motion'
 export { acquireScrollLock } from './scroll-lock'
 export type { ScrollLockHandle, ScrollLockOptions } from './scroll-lock'
+export { createScrollTracker, createViewportEntry, readViewportRect, scrollBlockTo } from './scroll-position'
+export type {
+  ScrollMetrics,
+  ScrollTrackerHandle,
+  ScrollTrackerOptions,
+  ScrollViewportRect,
+  ViewportEntryOptions,
+} from './scroll-position'
 export { createStickToBottom, STICK_TO_BOTTOM_THRESHOLD } from './stick-to-bottom'
 export type { StickToBottomHandle, StickToBottomOptions, StickToBottomState } from './stick-to-bottom'

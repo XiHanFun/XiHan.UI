@@ -1,0 +1,82 @@
+@layer xihan.components {
+  /* 一排叠放的头像：后一枚压在前一枚上。
+     组内共用的直径与字号在容器上写一次，沿继承流给每一枚；自己写了档位的那一枚仍按自己的档走 */
+  [data-scope='avatar-group'][data-part='root'] {
+    /* 私有槽位：整组共用的直径、字号与叠放量，换档只改这三个 */
+    --xh-_avatar-group-size: var(--xh-avatar-group-size, var(--xh-control-h-md));
+    --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-font-size-sm));
+    --xh-_avatar-group-overlap: var(--xh-avatar-group-overlap, var(--xh-space-2_5));
+
+    /* 流给组内每一枚 */
+    --xh-avatar-size: var(--xh-_avatar-group-size);
+    --xh-avatar-font-size: var(--xh-_avatar-group-font-size);
+
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
+     不补的话作者给节点加 hidden 后它照样显示 */
+  [data-scope='avatar-group'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* —— 尺寸 —— */
+  /* 三档对齐控件档位，缺省档写在上面的基础规则里；
+     字号与叠放量跟着直径一起缩放，小头像里回退字放得下、大头像里压住的那段也按比例长 */
+  [data-scope='avatar-group'][data-part='root'][data-size='sm'] {
+    --xh-_avatar-group-size: var(--xh-avatar-group-size, var(--xh-control-h-sm));
+    --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-font-size-xs));
+    --xh-_avatar-group-overlap: var(--xh-avatar-group-overlap, var(--xh-space-2));
+  }
+
+  [data-scope='avatar-group'][data-part='root'][data-size='lg'] {
+    --xh-_avatar-group-size: var(--xh-avatar-group-size, var(--xh-control-h-lg));
+    --xh-_avatar-group-font-size: var(--xh-avatar-group-font-size, var(--xh-font-size-md));
+    --xh-_avatar-group-overlap: var(--xh-avatar-group-overlap, var(--xh-space-3));
+  }
+
+  /* —— 叠放 —— */
+  /* 谁压在谁上面得能指定，所以每一枚都是定位元素；
+     再描一圈底色，被压住的那条边才与上一枚分得开 */
+  [data-scope='avatar-group'][data-part='root'] > * {
+    position: relative;
+  }
+
+  [data-scope='avatar-group'][data-part='root'] > *,
+  [data-scope='avatar-group'][data-part='root'] > * [data-scope='avatar'][data-part='root'] {
+    box-shadow: 0 0 0 var(--xh-stroke-thick) var(--xh-avatar-group-ring, var(--xh-bg-surface));
+  }
+
+  /* 后一枚往回挪一段，压在前一枚上 */
+  [data-scope='avatar-group'][data-part='root'] > * + * {
+    margin-inline-start: calc(-1 * var(--xh-_avatar-group-overlap));
+  }
+
+  /* 指到哪一枚，哪一枚整个露出来 */
+  [data-scope='avatar-group'][data-part='root'] > *:hover {
+    z-index: 1;
+  }
+
+  /* —— 溢出计数 —— */
+  /* 「+N」是这一排里的又一枚：直径、形状与字号跟着组走，里面写什么由作者定 */
+  [data-scope='avatar-group'][data-part='overflow'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-_avatar-group-size);
+    block-size: var(--xh-_avatar-group-size);
+    border-radius: var(--xh-avatar-group-radius, var(--xh-shape-pill));
+    background: var(--xh-avatar-group-overflow-bg, var(--xh-bg-muted));
+    color: var(--xh-avatar-group-overflow-fg, var(--xh-fg-muted));
+    font-size: var(--xh-_avatar-group-font-size);
+    font-weight: var(--xh-avatar-group-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-leading-none);
+    user-select: none;
+  }
+
+  [data-scope='avatar-group'][data-part='overflow'][hidden] {
+    display: none;
+  }
+}

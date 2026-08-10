@@ -1,0 +1,64 @@
+@layer xihan.components {
+  /* 定直径的图标底座：图元在正中，底色、描边与形状由三轴决定。
+     直径与图元直径分两个槽位，底座换档时里面的图元跟着一起换 */
+  [data-scope='icon-wrapper'][data-part='root'] {
+    /* 私有槽位：底座直径与图元直径，换档只改这两个 */
+    --xh-_icon-wrapper-size: var(--xh-icon-wrapper-size, var(--xh-control-h-md));
+
+    /* 流给里面的图元；图元自己写了档位时仍按自己的档走 */
+    --xh-icon-size: var(--xh-icon-wrapper-glyph-size, var(--xh-glyph-size-md));
+
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-_icon-wrapper-size);
+    block-size: var(--xh-_icon-wrapper-size);
+    border: var(--xh-stroke-thin) solid transparent;
+    border-radius: var(--xh-icon-wrapper-radius, var(--xh-shape-pill));
+    background: var(--xh-icon-wrapper-bg, var(--xh-bg-subtle));
+    color: var(--xh-icon-wrapper-fg, var(--xh-fg-default));
+    line-height: var(--xh-leading-none);
+  }
+
+  /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
+     不补的话作者给节点加 hidden 后它照样显示 */
+  [data-scope='icon-wrapper'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* —— 形态 —— */
+  /* 形态只决定颜色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的品牌/中性配色 */
+  [data-scope='icon-wrapper'][data-part='root'][data-variant='solid'] {
+    background: var(--xh-_tone, var(--xh-bg-brand));
+    color: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  }
+
+  [data-scope='icon-wrapper'][data-part='root'][data-variant='subtle'] {
+    background: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    color: var(--xh-_tone-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='icon-wrapper'][data-part='root'][data-variant='outline'] {
+    border-color: var(--xh-_tone-border, var(--xh-border-default));
+    background: transparent;
+    color: var(--xh-_tone-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='icon-wrapper'][data-part='root'][data-variant='ghost'] {
+    background: transparent;
+    color: var(--xh-_tone-fg, var(--xh-fg-default));
+  }
+
+  /* —— 尺寸 —— */
+  /* 缺省档写在上面的基础规则里 */
+  [data-scope='icon-wrapper'][data-part='root'][data-size='sm'] {
+    --xh-_icon-wrapper-size: var(--xh-icon-wrapper-size, var(--xh-control-h-sm));
+    --xh-icon-size: var(--xh-icon-wrapper-glyph-size, var(--xh-glyph-size-sm));
+  }
+
+  [data-scope='icon-wrapper'][data-part='root'][data-size='lg'] {
+    --xh-_icon-wrapper-size: var(--xh-icon-wrapper-size, var(--xh-control-h-lg));
+    --xh-icon-size: var(--xh-icon-wrapper-glyph-size, var(--xh-glyph-size-lg));
+  }
+}

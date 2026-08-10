@@ -3,9 +3,20 @@
 @import '@xihan-ui/system/tokens.css';
 
 /* 层序声明必须最先，其余按层归属排列。 */
+@import './styles/affix.css';
+@import './styles/avatar-group.css';
+@import './styles/back-top.css';
+@import './styles/button-group.css';
+@import './styles/flex.css';
+@import './styles/icon-wrapper.css';
+@import './styles/infinite-scroll.css';
 @import './styles/layers.css';
+@import './styles/log.css';
+@import './styles/popconfirm.css';
+@import './styles/popselect.css';
 @import './styles/reset.css';
 @import './styles/motion.css';
+@import './styles/result.css';
 @import './styles/undefined.css';
 @import './styles/visually-hidden.css';
 @import './styles/tone.css';
@@ -20,6 +31,7 @@
 @import './styles/breadcrumb.css';
 @import './styles/button.css';
 @import './styles/calendar.css';
+@import './styles/card.css';
 @import './styles/carousel.css';
 @import './styles/cascader.css';
 @import './styles/checkbox.css';

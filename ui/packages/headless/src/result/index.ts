@@ -1,0 +1,5 @@
+export { resultAnatomy } from './result.anatomy'
+export { connectResult } from './result.connect'
+export { resultKeyboard } from './result.keyboard'
+export { resultMeta } from './result.meta'
+export type { ResultApi, ResultProps, ResultStatus } from './result.types'

@@ -1,0 +1,27 @@
+@layer xihan.components {
+  /* 占位盒就是 content 在常规流里占的那块地方。
+     这里不声明 display，也不写高度：吸住时冻结的高度由连接层量好写进内联样式（它量得到，样式表量不到），
+     没吸住时高度就该跟着内容走。不给 display，UA 的 [hidden]{display:none} 也仍然压得住 */
+  [data-scope='affix'][data-part='root'] {
+    /* 脱流后 content 不再撑开占位盒，宽度改从父级取 */
+    inline-size: 100%;
+  }
+
+  /* 没吸住时是常规流里普通的一块，不做任何定位 */
+  [data-scope='affix'][data-part='content'] {
+    inline-size: 100%;
+  }
+
+  /*
+   * 吸住：脱离常规流钉在视口上。
+   * 四个落位数（top / bottom / left / width）由连接层写成内联样式——它们是照占位盒的矩形实测出来的
+   * 物理量，换成逻辑属性会在 RTL 下贴反。这里只管「用哪种定位、压在第几层」。
+   * 另一件必须提防的事：fixed 认的是视口，祖先上一旦出现
+   * transform / filter / backdrop-filter / contain，包含块就被抢走，钉住的内容立刻贴错位置——
+   * 所以别往覆盖钩子里加这几个属性。
+   */
+  [data-scope='affix'][data-part='content'][data-affixed] {
+    position: fixed;
+    z-index: var(--xh-affix-layer, var(--xh-z-sticky));
+  }
+}

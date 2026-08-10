@@ -1,6 +1,6 @@
 # 组件总览
 
-70 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/wc`）与**默认皮肤**（`@xihan-ui/styled`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
+82 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/wc`）与**默认皮肤**（`@xihan-ui/styled`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
 
 本册每个组件一页，页内固定为：产物 · 示例 · 解剖 · Props · 状态机 · connect API · 键盘。除示例外全部由组件源码生成，不会与代码对不上。
 
@@ -20,6 +20,9 @@
 | [分隔线](./separator) | `separator` | 1 | 0 | 4 |
 | [代码块](./code-block) | `code-block` | 5 | 1 | 4 |
 | [剪贴板](./clipboard) | `clipboard` | 6 | 0 | 3 |
+| [按钮组](./button-group) | `button-group` | 1 | 0 | 4 |
+| [头像组](./avatar-group) | `avatar-group` | 2 | 0 | 4 |
+| [图标块](./icon-wrapper) | `icon-wrapper` | 1 | 0 | 4 |
 
 ## 数据录入
 
@@ -53,6 +56,7 @@
 | [日历](./calendar) | `calendar` | 12 | 12 | 4 |
 | [颜色选择器](./color-picker) | `color-picker` | 16 | 9 | 10 |
 | [文件上传](./file-upload) | `file-upload` | 12 | 5 | 10 |
+| [弹出选择](./popselect) | `popselect` | 7 | 9 | 5 |
 
 ## 数据展示
 
@@ -60,6 +64,7 @@
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
+| [卡片](./card) | `card` | 7 | 0 | 5 |
 | [表格](./table) | `table` | 15 | 10 | 16 |
 | [树](./tree) | `tree` | 12 | 10 | 10 |
 | [虚拟滚动](./virtualizer) | `virtualizer` | 4 | 0 | 4 |
@@ -70,6 +75,9 @@
 | [分栏](./splitter) | `splitter` | 3 | 7 | 6 |
 | [骨架屏](./skeleton) | `skeleton` | 2 | 0 | 4 |
 | [空状态](./empty-state) | `empty-state` | 5 | 0 | 5 |
+| [结果页](./result) | `result` | 5 | 0 | 5 |
+| [无限滚动](./infinite-scroll) | `infinite-scroll` | 2 | 0 | 4 |
+| [日志](./log) | `log` | 4 | 1 | 5 |
 
 ## 导航
 
@@ -88,6 +96,8 @@
 | [锚点](./anchor) | `anchor` | 5 | 2 | 9 |
 | [工具栏](./toolbar) | `toolbar` | 4 | 6 | 7 |
 | [引导](./tour) | `tour` | 13 | 4 | 3 |
+| [固钉](./affix) | `affix` | 2 | 0 | 4 |
+| [回到顶部](./back-top) | `back-top` | 2 | 2 | 4 |
 
 ## 反馈与浮层
 
@@ -106,6 +116,7 @@
 | [进度条](./progress) | `progress` | 3 | 0 | 6 |
 | [加载指示器](./spinner) | `spinner` | 2 | 0 | 6 |
 | [加载条](./loading-bar) | `loading-bar` | 3 | 0 | 6 |
+| [弹出确认](./popconfirm) | `popconfirm` | 8 | 4 | 5 |
 
 ## AI 对话
 
@@ -115,3 +126,11 @@ AI 对话界面的组件。
 | --- | --- | --- | --- | --- |
 | [会话线程](./thread) | `thread` | 5 | 2 | 8 |
 | [消息编辑器](./composer) | `composer` | 3 | 4 | 10 |
+
+## 布局
+
+不承载状态的排版容器，只把常用的一段 CSS 收成带默认皮肤的组件。
+
+| 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
+| --- | --- | --- | --- | --- |
+| [弹性布局](./flex) | `flex` | 1 | 0 | 5 |

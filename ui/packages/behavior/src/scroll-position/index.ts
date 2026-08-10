@@ -1,0 +1,6 @@
+export { readViewportRect, scrollBlockTo } from './scroll-source'
+export type { ScrollMetrics, ScrollViewportRect } from './scroll-source'
+export { createScrollTracker } from './scroll-tracker'
+export type { ScrollTrackerHandle, ScrollTrackerOptions } from './scroll-tracker'
+export { createViewportEntry } from './viewport-entry'
+export type { ViewportEntryOptions } from './viewport-entry'

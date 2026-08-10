@@ -1,0 +1,66 @@
+@layer xihan.components {
+  /* 行高是本组件的定尺基准：视口按行数定高、每行排版，都从这一个槽位来。
+     它的兜底值须与连接层内联高度里用的那份逐字一致，否则 rows 算出来的高度对不上行。 */
+  [data-scope='log'][data-part='root'] {
+    --xh-_log-line-h: var(--xh-log-line-height, 1.25rem);
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: var(--xh-stroke-thin) solid var(--xh-log-border, var(--xh-border-default));
+    border-radius: var(--xh-log-radius, var(--xh-shape-surface));
+    background: var(--xh-log-bg, var(--xh-bg-subtle));
+    color: var(--xh-log-fg, var(--xh-fg-default));
+  }
+
+  /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
+  [data-scope='log'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 滚动容器，粘底读的是它的 scrollTop / clientHeight / scrollHeight。
+     flex-basis 取 auto，连接层写的按行数高度才算数，同时外层给了高度时还能撑满；
+     min-block-size: 0 让它在弹性父级里能被压缩从而真的溢出；
+     两个轴都 auto：长行不折，横向也要能滚；
+     overscroll-behavior: contain 阻止滚动量传给页面；
+     scrollbar-gutter: stable 避免滚动条出现与消失时推动文字。 */
+  [data-scope='log'][data-part='viewport'] {
+    flex: 1 1 auto;
+    min-block-size: 0;
+    block-size: calc(var(--xh-_log-line-h) * var(--xh-log-rows, 16));
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+
+  /* 视口带 tabindex=0，需要焦点环；偏移取负画在内侧，避免被 root 裁掉 */
+  [data-scope='log'][data-part='viewport']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  /* 取行期间指针给出忙的反馈 */
+  [data-scope='log'][data-part='root'][data-loading] [data-scope='log'][data-part='viewport'] {
+    cursor: progress;
+  }
+
+  /* 等宽排版落在包裹层上，各行继承；行与行之间不留空隙，视口高度才等于整数行 */
+  [data-scope='log'][data-part='content'] {
+    display: block;
+    padding-inline: var(--xh-log-content-px, var(--xh-space-3));
+    font-family: var(--xh-log-font, var(--xh-font-family-mono));
+    font-size: var(--xh-log-font-size, var(--xh-font-size-sm));
+  }
+
+  [data-scope='log'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  /* 一行不折行，超出的部分由视口横向滚动；行高与定高基准同源 */
+  [data-scope='log'][data-part='line'] {
+    line-height: var(--xh-_log-line-h);
+    white-space: pre;
+    tab-size: var(--xh-log-tab-size, 4);
+  }
+}

@@ -44,6 +44,18 @@
         {
           "id": "clipboard",
           "name": "剪贴板"
+        },
+        {
+          "id": "button-group",
+          "name": "按钮组"
+        },
+        {
+          "id": "avatar-group",
+          "name": "头像组"
+        },
+        {
+          "id": "icon-wrapper",
+          "name": "图标块"
         }
       ]
     },
@@ -155,6 +167,10 @@
         {
           "id": "file-upload",
           "name": "文件上传"
+        },
+        {
+          "id": "popselect",
+          "name": "弹出选择"
         }
       ]
     },
@@ -163,6 +179,10 @@
       "label": "数据展示",
       "description": "把数据摆出来的组件：表格、树、折叠、虚拟滚动。",
       "components": [
+        {
+          "id": "card",
+          "name": "卡片"
+        },
         {
           "id": "table",
           "name": "表格"
@@ -202,6 +222,18 @@
         {
           "id": "empty-state",
           "name": "空状态"
+        },
+        {
+          "id": "result",
+          "name": "结果页"
+        },
+        {
+          "id": "infinite-scroll",
+          "name": "无限滚动"
+        },
+        {
+          "id": "log",
+          "name": "日志"
         }
       ]
     },
@@ -253,6 +285,14 @@
         {
           "id": "tour",
           "name": "引导"
+        },
+        {
+          "id": "affix",
+          "name": "固钉"
+        },
+        {
+          "id": "back-top",
+          "name": "回到顶部"
         }
       ]
     },
@@ -304,6 +344,10 @@
         {
           "id": "loading-bar",
           "name": "加载条"
+        },
+        {
+          "id": "popconfirm",
+          "name": "弹出确认"
         }
       ]
     },
@@ -319,6 +363,17 @@
         {
           "id": "composer",
           "name": "消息编辑器"
+        }
+      ]
+    },
+    {
+      "id": "layout",
+      "label": "布局",
+      "description": "不承载状态的排版容器，只把常用的一段 CSS 收成带默认皮肤的组件。",
+      "components": [
+        {
+          "id": "flex",
+          "name": "弹性布局"
         }
       ]
     }
