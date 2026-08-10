@@ -1,7 +1,8 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
-import type { ListboxItemProps, ListboxSchema, ListboxSelectionMode, ListboxValueChangeDetails } from '@xihan-ui/headless'
+import type { ListboxItemProps, ListboxNode, ListboxSchema, ListboxSelectionMode, ListboxValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectListbox, listboxAnatomy, listboxMachine, listboxMeta } from '@xihan-ui/headless'
+import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -25,6 +26,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  *
  * 选中值是集合：单选可以直接写 value="apple" 属性，多选只能走 property（`el.value = ['a','b']`），
  * 属性表达不了数组。
+ *
+ * 条目的禁用也可以交给数据：`el.collection = [{ value, label, disabled }]`，此时条目部件只需自报 value。
  *
  * @customElement xh-listbox
  * @attr {string} value - 受控选中值（单选简写）；缺省该属性即非受控，多选请用 property
@@ -54,6 +57,8 @@ export class XhListboxElement extends XhElement {
   // 同时让 dir 进 observedAttributes——运行期改 dir 才会重跑 wire 换掉按键处理器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    // 数组只走 property，属性表达不了；给了它条目的禁用即以数据为准
+    collection: { attribute: false },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     multiple: { type: Boolean },
@@ -65,6 +70,7 @@ export class XhListboxElement extends XhElement {
     typeahead: { converter: BOOLEAN_CONVERTER },
   }
 
+  declare collection?: ListboxNode[]
   declare value?: string | string[]
   declare defaultValue?: string | string[]
   declare multiple?: boolean
@@ -91,6 +97,7 @@ export class XhListboxElement extends XhElement {
 
   private machineProps(): Partial<ListboxSchema['props']> {
     return {
+      collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
       multiple: this.multiple ?? false,
@@ -123,8 +130,15 @@ export class XhListboxElement extends XhElement {
       send({ type: 'LIST.BLUR' })
   }
 
+  /** 作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺 */
+  private readonly declaredItemDisabled = createDeclaredDisabled()
+
   private itemProps(el: HTMLElement): ListboxItemProps {
     const value = el.getAttribute('value') ?? ''
+    // 给了 collection 就以数据为事实源：现读会读到 connect 上一帧写回的 aria-disabled，
+    // 「作者没写」表达不出 undefined，数据里的禁用就永远轮不到生效。
+    if (this.collection)
+      return { value, disabled: this.declaredItemDisabled(el) }
     const listDisabled = !!this.disabled
     // 只有「本帧与上一帧都没整列禁用」时，节点上的 aria-disabled 才等于作者声明：
     // 整列禁用那几帧 connect 把每个条目都写成了 true，解禁当帧 DOM 上还留着这些写回值，

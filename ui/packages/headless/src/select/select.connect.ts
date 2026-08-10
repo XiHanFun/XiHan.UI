@@ -1,7 +1,7 @@
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
-import type { SelectApi, SelectItemProps, SelectSchema } from './select.types'
+import type { SelectApi, SelectItemProps, SelectNodeMeta, SelectSchema } from './select.types'
 import { focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/core'
 import { selectAnatomy, selectItemQuery, selectItemText } from './select.anatomy'
@@ -40,8 +40,20 @@ export function connectSelect<T extends PropTypes>(
   const placement = position?.placement ?? prop('placement') ?? SELECT_DEFAULT_PLACEMENT
   const multiple = !!prop('multiple')
   const value = context.get('value')
-  // 机器保证与 value 逐项等长对齐，查不到条目的那一项已退回值本身
-  const valueText = context.get('valueText')
+
+  // collection 推出的条目元信息：显示文本与禁用都在这里定案，条目部件只报 value
+  const collection: SelectNodeMeta[] = (prop('collection') ?? []).map(node => ({
+    value: node.value,
+    label: node.label ?? node.value,
+    disabled: !!node.disabled,
+  }))
+  const metaOf = new Map(collection.map(meta => [meta.value, meta]))
+
+  // 给了 collection 就当场按数据算，首帧即准；没给才读机器现查 DOM 后回填的那一份。
+  // 两条路都保证与 value 逐项等长对齐，查不到的那一项退回值本身。
+  const valueText = prop('collection')
+    ? value.map(v => metaOf.get(v)?.label ?? v)
+    : context.get('valueText')
   const placeholder = prop('placeholder') ?? null
   // 多选把各项文本连起来显示；分隔符固定，作者要别的排版就自己渲染 valueText
   const displayText = valueText.length > 0 ? valueText.join(', ') : placeholder ?? ''
@@ -51,10 +63,14 @@ export function connectSelect<T extends PropTypes>(
   const loop = prop('loop') ?? true
   const dir = prop('dir')
 
+  /** 条目禁用：部件上写的优先，没写就回 collection 里查。 */
+  const itemDisabled = (item: SelectItemProps): boolean =>
+    item.disabled ?? metaOf.get(item.value)?.disabled ?? false
+
   // item / item-text / item-indicator 共用同一份状态标记，样式层各处一致
   const itemStateAttrs = (item: SelectItemProps): Record<string, string | undefined> => ({
     'data-state': value.includes(item.value) ? 'checked' : 'unchecked',
-    'data-disabled': dataAttr(item.disabled),
+    'data-disabled': dataAttr(itemDisabled(item)),
   })
 
   /**
@@ -98,6 +114,7 @@ export function connectSelect<T extends PropTypes>(
 
   return {
     open,
+    collection,
     value,
     valueText,
     displayText,
@@ -253,13 +270,13 @@ export function connectSelect<T extends PropTypes>(
       // 省略会让读屏无从区分「未选中」与「不是选项」
       'aria-selected': value.includes(item.value) ? 'true' : 'false',
       // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、也不派 click
-      'aria-disabled': item.disabled ? 'true' : 'false',
+      'aria-disabled': itemDisabled(item) ? 'true' : 'false',
       // 高亮是键盘焦点所在，与选中互相独立：可以高亮着未选中的条目
       'data-highlighted': dataAttr(highlighted === item.value),
       // roving tabindex：整组只有高亮条目留在 Tab 序列内；收起态无锚点
       'tabindex': highlighted === item.value ? 0 : -1,
       'onClick': () => {
-        if (!item.disabled)
+        if (!itemDisabled(item))
           send({ type: 'ITEM.SELECT', value: item.value })
       },
       // 焦点是事实不是许可：禁用条目被点到也记锚点，方向键才知道从哪儿起步

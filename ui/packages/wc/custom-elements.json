@@ -48,6 +48,14 @@
             },
             {
               "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "AccordionNode[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -2675,6 +2683,14 @@
             },
             {
               "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "CheckboxGroupNode[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -2785,6 +2801,13 @@
                   "text": "Partial<CheckboxGroupSchema['props']>"
                 }
               }
+            },
+            {
+              "kind": "field",
+              "name": "declaredItemDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "description": "作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺"
             },
             {
               "kind": "method",
@@ -4207,6 +4230,14 @@
             },
             {
               "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "ComboboxNode[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -4442,6 +4473,13 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<ComboboxSchema>( this, comboboxMachine, () => this.machineProps(), { scope: this.comboboxScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "declaredDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "description": "作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读"
             },
             {
               "kind": "method",
@@ -4996,6 +5034,14 @@
             },
             {
               "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "ContextMenuNode[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "open",
               "privacy": "public",
               "type": {
@@ -5135,6 +5181,13 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<ContextMenuSchema>( this, contextMenuMachine, () => this.machineProps(), { scope: this.menuScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "declaredDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "description": "作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读"
             },
             {
               "kind": "method",
@@ -9424,7 +9477,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-listbox>` —— Light-DOM 行为宿主：作者写 root/label/content 与若干 item 角色节点，\n元素跑 listbox 机器并把 connect 产出打上去。条目身份取自条目节点上的 value 属性，\n禁用由条目自报 aria-disabled（集合条目一律如此，原生 disabled 不可聚焦、也不派 click）。\n分组同样用 value 属性声明身份，分组标题的 id 由它派生。\n\n导航与选中在事件那一刻按 data-scope+data-part 查活 DOM，依赖 connect 回写的 data-value，\n因此 wire 必须先于交互跑过（基类 updated 已保证）。\n\n选中值是集合：单选可以直接写 value=\"apple\" 属性，多选只能走 property（`el.value = ['a','b']`），\n属性表达不了数组。",
+          "description": "`<xh-listbox>` —— Light-DOM 行为宿主：作者写 root/label/content 与若干 item 角色节点，\n元素跑 listbox 机器并把 connect 产出打上去。条目身份取自条目节点上的 value 属性，\n禁用由条目自报 aria-disabled（集合条目一律如此，原生 disabled 不可聚焦、也不派 click）。\n分组同样用 value 属性声明身份，分组标题的 id 由它派生。\n\n导航与选中在事件那一刻按 data-scope+data-part 查活 DOM，依赖 connect 回写的 data-value，\n因此 wire 必须先于交互跑过（基类 updated 已保证）。\n\n选中值是集合：单选可以直接写 value=\"apple\" 属性，多选只能走 property（`el.value = ['a','b']`），\n属性表达不了数组。\n\n条目的禁用也可以交给数据：`el.collection = [{ value, label, disabled }]`，此时条目部件只需自报 value。",
           "name": "XhListboxElement",
           "cssParts": [
             {
@@ -9469,6 +9522,14 @@
               },
               "static": true,
               "default": "{ anatomy: listboxAnatomy, meta: listboxMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "ListboxNode[] | undefined"
+              }
             },
             {
               "kind": "field",
@@ -9609,6 +9670,13 @@
                 }
               ],
               "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：\n容器判自己\"焦点在列表内\"退出 Tab 序列，又没有条目认领得了这个锚点，\n整组零个 Tab 停靠点，键盘用户再也进不来。这里替 DOM 把焦点离场如实上报。"
+            },
+            {
+              "kind": "field",
+              "name": "declaredItemDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "description": "作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺"
             },
             {
               "kind": "method",
@@ -10079,6 +10147,14 @@
             },
             {
               "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "MenuNode[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "open",
               "privacy": "public",
               "type": {
@@ -10200,6 +10276,13 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<MenuSchema>( this, menuMachine, () => this.machineProps(), { scope: this.menuScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "declaredDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "description": "作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读"
             },
             {
               "kind": "method",
@@ -10429,6 +10512,14 @@
               },
               "static": true,
               "default": "{ anatomy: menubarAnatomy, meta: menubarMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "MenubarNode[] | undefined"
+              }
             },
             {
               "kind": "field",
@@ -10884,6 +10975,14 @@
               },
               "static": true,
               "default": "{ anatomy: navigationMenuAnatomy, meta: navigationMenuMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "NavigationMenuNode[] | undefined"
+              }
             },
             {
               "kind": "field",
@@ -12610,6 +12709,14 @@
             },
             {
               "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "RadioGroupNode[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -12738,6 +12845,13 @@
                 }
               ],
               "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，这里替 DOM 上报焦点离场，免得焦点锚点停在已消失的值上。"
+            },
+            {
+              "kind": "field",
+              "name": "declaredItemDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "description": "作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺"
             },
             {
               "kind": "method",
@@ -13546,6 +13660,14 @@
             },
             {
               "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "SelectNode[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -13755,6 +13877,13 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<SelectSchema>( this, selectMachine, () => this.machineProps(), { scope: this.selectScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "declaredDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "description": "作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读"
             },
             {
               "kind": "method",
@@ -16107,6 +16236,14 @@
             },
             {
               "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "TabsNode[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -16198,6 +16335,13 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<TabsSchema>(this, tabsMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "field",
+              "name": "declaredDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "description": "作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读"
             },
             {
               "kind": "method",
@@ -18930,6 +19074,14 @@
             },
             {
               "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "ToggleGroupNode[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
@@ -19067,6 +19219,13 @@
                 }
               ],
               "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：\n容器判自己\"焦点在组内\"退出 Tab 序列，又没有条目认领得了这个锚点，\n整组零个 Tab 停靠点，键盘用户再也进不来。这里替 DOM 把焦点离场如实上报。"
+            },
+            {
+              "kind": "field",
+              "name": "declaredItemDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "description": "作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺"
             },
             {
               "kind": "method",

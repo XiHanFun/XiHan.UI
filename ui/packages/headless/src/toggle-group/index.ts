@@ -11,6 +11,8 @@ export { toggleGroupMeta } from './toggle-group.meta'
 export type {
   ToggleGroupApi,
   ToggleGroupItemProps,
+  ToggleGroupNode,
+  ToggleGroupNodeMeta,
   ToggleGroupSchema,
   ToggleGroupValue,
   ToggleGroupValueChangeDetails,

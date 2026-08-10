@@ -1,6 +1,6 @@
 import type { Direction, Orientation } from '@xihan-ui/core'
-import type { ListboxItemGroupProps, ListboxItemProps, ListboxSchema, ListboxSelectionMode } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { ListboxItemGroupProps, ListboxItemProps, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode } from '@xihan-ui/headless'
+import type { PropType, VNode } from 'vue'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import {
   provideListbox,
@@ -18,6 +18,9 @@ export const XhListboxRoot = defineComponent({
   name: 'XhListboxRoot',
   // 有 connect 兜底的 prop 一律 default: undefined
   props: {
+    collection: { type: Array as PropType<ListboxNode[]>, default: undefined },
+    /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
+    label: { type: String, default: undefined },
     value: { type: [String, Array] as PropType<string | string[]>, default: undefined },
     defaultValue: { type: [String, Array] as PropType<string | string[]>, default: undefined },
     multiple: Boolean,
@@ -37,15 +40,25 @@ export const XhListboxRoot = defineComponent({
     }
     const ctx = useListbox(props as ListboxProps, notify)
     provideListbox(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
-      value: ctx.api.value.value,
-      selectionMode: ctx.api.value.selectionMode,
-      focusedValue: ctx.api.value.focusedValue,
-      isSelected: ctx.api.value.isSelected,
-      setValue: ctx.api.value.setValue,
-      select: ctx.api.value.select,
-      toggle: ctx.api.value.toggle,
-    }))
+    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, [
+      ...(slots.default
+        ? slots.default({
+          value: ctx.api.value.value,
+          selectionMode: ctx.api.value.selectionMode,
+          focusedValue: ctx.api.value.focusedValue,
+          isSelected: ctx.api.value.isSelected,
+          setValue: ctx.api.value.setValue,
+          select: ctx.api.value.select,
+          toggle: ctx.api.value.toggle,
+        }) ?? []
+        : props.collection
+          ? renderDefaultTree(
+              ctx.api.value.collection,
+              slots.label?.() ?? (props.label != null ? [props.label] : null),
+              slots.item,
+            )
+          : []),
+    ])
   },
 })
 
@@ -91,7 +104,8 @@ export const XhListboxItem = defineComponent({
   name: 'XhListboxItem',
   props: {
     value: { type: String, required: true },
-    disabled: Boolean,
+    // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
+    disabled: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useListboxContext()
@@ -141,3 +155,23 @@ export const XhListboxItemIndicator = defineComponent({
     return () => h('span', ctx.api.value.getItemIndicatorProps(item.value) as Record<string, unknown>, slots.default?.())
   },
 })
+
+/**
+ * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
+ * 与手写部件产出的 DOM 完全一致，要改结构（分组、条目外的节点）就写默认插槽。
+ */
+function renderDefaultTree(
+  collection: readonly ListboxNodeMeta[],
+  label: (VNode | string)[] | null,
+  itemSlot?: (node: ListboxNodeMeta) => VNode[],
+): VNode[] {
+  return [
+    ...(label ? [h(XhListboxLabel, null, () => label)] : []),
+    h(XhListboxContent, null, () => collection.map(node =>
+      h(XhListboxItem, { key: node.value, value: node.value }, () => [
+        h(XhListboxItemText, null, () => itemSlot?.(node) ?? node.label),
+        h(XhListboxItemIndicator),
+      ]),
+    )),
+  ]
+}

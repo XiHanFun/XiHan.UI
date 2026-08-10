@@ -1,5 +1,5 @@
 import type { Direction, Placement } from '@xihan-ui/core'
-import type { SelectItemProps, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails } from '@xihan-ui/headless'
+import type { SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideSelect, provideSelectItem, useSelectContext, useSelectItemContext } from './context'
@@ -11,6 +11,9 @@ export const XhSelectRoot = defineComponent({
   name: 'XhSelectRoot',
   // 有 connect 兜底的 prop 一律 default: undefined
   props: {
+    collection: { type: Array as PropType<SelectNode[]>, default: undefined },
+    /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
+    label: { type: String, default: undefined },
     value: { type: [String, Array] as PropType<string | string[] | null>, default: undefined },
     defaultValue: { type: [String, Array] as PropType<string | string[] | null>, default: undefined },
     multiple: Boolean,
@@ -60,13 +63,21 @@ export const XhSelectRoot = defineComponent({
 
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, [
       hiddenSelect(),
-      ...(slots.default?.({
-        open: ctx.api.value.open,
-        value: ctx.api.value.value,
-        displayText: ctx.api.value.displayText,
-        setOpen: ctx.api.value.setOpen,
-        setValue: ctx.api.value.setValue,
-      }) ?? []),
+      ...(slots.default
+        ? slots.default({
+          open: ctx.api.value.open,
+          value: ctx.api.value.value,
+          displayText: ctx.api.value.displayText,
+          setOpen: ctx.api.value.setOpen,
+          setValue: ctx.api.value.setValue,
+        }) ?? []
+        : props.collection
+          ? renderDefaultTree(
+              ctx.api.value.collection,
+              slots.label?.() ?? (props.label != null ? [props.label] : null),
+              slots.item,
+            )
+          : []),
     ])
   },
 })
@@ -137,7 +148,8 @@ export const XhSelectItem = defineComponent({
   name: 'XhSelectItem',
   props: {
     value: { type: String, required: true },
-    disabled: Boolean,
+    // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
+    disabled: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useSelectContext()
@@ -187,3 +199,26 @@ export const XhSelectItemIndicator = defineComponent({
     return () => h('span', ctx.api.value.getItemIndicatorProps(item.value) as Record<string, unknown>, slots.default?.())
   },
 })
+
+/**
+ * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
+ * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
+ */
+function renderDefaultTree(
+  collection: readonly SelectNodeMeta[],
+  label: (VNode | string)[] | null,
+  itemSlot?: (node: SelectNodeMeta) => VNode[],
+): VNode[] {
+  return [
+    ...(label ? [h(XhSelectLabel, null, () => label)] : []),
+    h(XhSelectTrigger, null, () => [h(XhSelectValueText), h(XhSelectIndicator)]),
+    h(XhSelectPositioner, null, () => [
+      h(XhSelectContent, null, () => collection.map(node =>
+        h(XhSelectItem, { key: node.value, value: node.value }, () => [
+          h(XhSelectItemText, null, () => itemSlot?.(node) ?? node.label),
+          h(XhSelectItemIndicator),
+        ]),
+      )),
+    ]),
+  ]
+}

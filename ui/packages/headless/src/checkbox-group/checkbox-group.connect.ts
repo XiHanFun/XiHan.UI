@@ -5,6 +5,7 @@ import type {
   CheckboxGroupApi,
   CheckboxGroupCheckedState,
   CheckboxGroupItemProps,
+  CheckboxGroupNodeMeta,
   CheckboxGroupSchema,
 } from './checkbox-group.types'
 import { isItemDisabled, ITEM_VALUE_ATTR, itemValue, queryItems } from '@xihan-ui/behavior'
@@ -58,11 +59,23 @@ export function connectCheckboxGroup<T extends PropTypes>(
   const editable = !groupDisabled && !readOnly
   const checkedState = resolveCheckedState(value, prop('itemValues') ?? [])
 
+  // collection 推出的条目元信息：显示文本与禁用都在这里定案，条目部件只报 value
+  const collection: CheckboxGroupNodeMeta[] = (prop('collection') ?? []).map(node => ({
+    value: node.value,
+    label: node.label ?? node.value,
+    disabled: !!node.disabled,
+  }))
+  const metaOf = new Map(collection.map(meta => [meta.value, meta]))
+
+  /** 条目禁用：部件上写的优先，没写就回 collection 里查。 */
+  const itemDisabled = (item: CheckboxGroupItemProps): boolean =>
+    item.disabled ?? metaOf.get(item.value)?.disabled ?? false
+
   const isChecked = (v: string): boolean => value.includes(v)
   // 组禁用向下传导到每个条目；条目也能单独禁用
-  const isDisabled = (item: CheckboxGroupItemProps): boolean => groupDisabled || !!item.disabled
+  const isDisabled = (item: CheckboxGroupItemProps): boolean => groupDisabled || itemDisabled(item)
   // 能不能被用户改：整组闸门 + 条目自己的声明
-  const canToggle = (item: CheckboxGroupItemProps): boolean => editable && !item.disabled
+  const canToggle = (item: CheckboxGroupItemProps): boolean => editable && !itemDisabled(item)
 
   // item / item-control / item-text / item-hidden-input 共用同一份状态标记
   const stateAttrs = (item: CheckboxGroupItemProps): Record<string, string | undefined> => ({
@@ -91,6 +104,7 @@ export function connectCheckboxGroup<T extends PropTypes>(
 
   return {
     value,
+    collection,
     checkedState,
     disabled: groupDisabled,
     readOnly,

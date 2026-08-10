@@ -3,6 +3,7 @@ import type {
   ComboboxInputBehavior,
   ComboboxInputValueChangeDetails,
   ComboboxItemProps,
+  ComboboxNode,
   ComboboxOpenChangeDetails,
   ComboboxSchema,
   ComboboxValueChangeDetails,
@@ -12,6 +13,7 @@ import { isItemDisabled } from '@xihan-ui/behavior'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { comboboxAnatomy, comboboxMachine, comboboxMeta, connectCombobox } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -76,6 +78,8 @@ export class XhComboboxElement extends XhElement {
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    // 数组只走 property，属性表达不了；给了它候选的文本与禁用即以数据为准
+    collection: { attribute: false },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     inputValue: { converter: STRING_CONVERTER, attribute: 'input-value' },
@@ -98,6 +102,7 @@ export class XhComboboxElement extends XhElement {
     size: { converter: STRING_CONVERTER },
   }
 
+  declare collection?: ComboboxNode[]
   declare value?: string | string[]
   declare defaultValue?: string | string[]
   declare inputValue?: string
@@ -143,8 +148,12 @@ export class XhComboboxElement extends XhElement {
     { scope: this.comboboxScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
+  /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
+  private readonly declaredDisabled = createDeclaredDisabled()
+
   private machineProps(): Partial<ComboboxSchema['props']> {
     return {
+      collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
       inputValue: this.inputValue,
@@ -250,7 +259,7 @@ export class XhComboboxElement extends XhElement {
     for (const el of this.getParts('item')) {
       const item: ComboboxItemProps = {
         value: el.getAttribute('value') ?? '',
-        disabled: isItemDisabled(el),
+        disabled: this.collection ? this.declaredDisabled(el) : isItemDisabled(el),
       }
       this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
       for (const text of this.partsIn(el, 'item-text'))

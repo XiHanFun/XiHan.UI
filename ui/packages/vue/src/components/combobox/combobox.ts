@@ -1,6 +1,6 @@
 import type { Placement } from '@xihan-ui/core'
-import type { ComboboxInputBehavior, ComboboxItemGroupProps, ComboboxItemProps, ComboboxSchema } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { ComboboxInputBehavior, ComboboxItemGroupProps, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
+import type { PropType, VNode } from 'vue'
 import { computed, defineComponent, h, onMounted, onUnmounted, onUpdated, watch } from 'vue'
 import {
   provideCombobox,
@@ -18,6 +18,11 @@ export const XhComboboxRoot = defineComponent({
   name: 'XhComboboxRoot',
   // 有 connect 兜底的 prop 一律 default: undefined
   props: {
+    collection: { type: Array as PropType<ComboboxNode[]>, default: undefined },
+    /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
+    label: { type: String, default: undefined },
+    /** 无匹配时的提示语。给了它就不必再写 empty 部件；要放别的内容改用 empty 插槽。 */
+    empty: { type: String, default: undefined },
     value: { type: [String, Array] as PropType<string | string[]>, default: undefined },
     defaultValue: { type: [String, Array] as PropType<string | string[]>, default: undefined },
     inputValue: { type: String, default: undefined },
@@ -65,18 +70,31 @@ export const XhComboboxRoot = defineComponent({
     onMounted(ctx.syncItems)
     onUpdated(ctx.syncItems)
 
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
-      open: ctx.api.value.open,
-      value: ctx.api.value.value,
-      inputValue: ctx.api.value.inputValue,
-      highlightedValue: ctx.api.value.highlightedValue,
-      empty: ctx.api.value.empty,
-      isSelected: ctx.api.value.isSelected,
-      setOpen: ctx.api.value.setOpen,
-      setValue: ctx.api.value.setValue,
-      setInputValue: ctx.api.value.setInputValue,
-      clear: ctx.api.value.clear,
-    }))
+    return () => h(
+      'div',
+      ctx.api.value.getRootProps() as Record<string, unknown>,
+      slots.default
+        ? slots.default({
+            open: ctx.api.value.open,
+            value: ctx.api.value.value,
+            inputValue: ctx.api.value.inputValue,
+            highlightedValue: ctx.api.value.highlightedValue,
+            empty: ctx.api.value.empty,
+            isSelected: ctx.api.value.isSelected,
+            setOpen: ctx.api.value.setOpen,
+            setValue: ctx.api.value.setValue,
+            setInputValue: ctx.api.value.setInputValue,
+            clear: ctx.api.value.clear,
+          })
+        : props.collection
+          ? renderDefaultTree(
+              ctx.api.value.collection,
+              slots.label?.() ?? (props.label != null ? [props.label] : null),
+              slots.empty?.() ?? (props.empty != null ? [props.empty] : null),
+              slots.item,
+            )
+          : [],
+    )
   },
 })
 
@@ -175,7 +193,8 @@ export const XhComboboxItem = defineComponent({
   name: 'XhComboboxItem',
   props: {
     value: { type: String, required: true },
-    disabled: Boolean,
+    // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
+    disabled: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useComboboxContext()
@@ -216,3 +235,34 @@ export const XhComboboxEmpty = defineComponent({
     return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
   },
 })
+
+/**
+ * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
+ * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
+ * 过滤仍归调用方：collection 就是此刻该显示的那几条候选。
+ */
+function renderDefaultTree(
+  collection: readonly ComboboxNodeMeta[],
+  label: (VNode | string)[] | null,
+  empty: (VNode | string)[] | null,
+  itemSlot?: (node: ComboboxNodeMeta) => VNode[],
+): VNode[] {
+  return [
+    ...(label ? [h(XhComboboxLabel, null, () => label)] : []),
+    h(XhComboboxControl, null, () => [
+      h(XhComboboxInput),
+      h(XhComboboxTrigger),
+      h(XhComboboxClearTrigger),
+    ]),
+    h(XhComboboxPositioner, null, () => [
+      h(XhComboboxContent, null, () => collection.map(node =>
+        h(XhComboboxItem, { key: node.value, value: node.value }, () => [
+          h(XhComboboxItemText, null, () => itemSlot?.(node) ?? node.label),
+          h(XhComboboxItemIndicator),
+        ]),
+      )),
+      // 空态节点是 content 的兄弟，不进 role=listbox
+      h(XhComboboxEmpty, null, () => empty ?? []),
+    ]),
+  ]
+}

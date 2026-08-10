@@ -8,6 +8,8 @@ export type {
   ListboxFocusModel,
   ListboxItemGroupProps,
   ListboxItemProps,
+  ListboxNode,
+  ListboxNodeMeta,
   ListboxRefs,
   ListboxSchema,
   ListboxSelectionMode,

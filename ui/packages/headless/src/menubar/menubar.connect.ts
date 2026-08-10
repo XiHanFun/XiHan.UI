@@ -1,7 +1,7 @@
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, Orientation, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
-import type { MenubarApi, MenubarItemProps, MenubarSchema } from './menubar.types'
+import type { MenubarApi, MenubarItemProps, MenubarNode, MenubarNodeMeta, MenubarSchema, MenubarTriggerProps } from './menubar.types'
 import {
   focusItem,
   indexOfValue,
@@ -46,6 +46,31 @@ export function connectMenubar<T extends PropTypes>(
   /** 交叉轴：主轴用于 trigger 之间移动，交叉轴用于进入菜单。 */
   const crossAxis: Orientation = orientation === 'horizontal' ? 'vertical' : 'horizontal'
 
+  // collection 推出的节点元信息：显示文本与禁用都在这里定案，部件只报 value
+  const toMeta = (node: MenubarNode): MenubarNodeMeta => ({
+    value: node.value,
+    label: node.label ?? node.value,
+    disabled: !!node.disabled,
+    items: (node.items ?? []).map(toMeta),
+  })
+  const collection: MenubarNodeMeta[] = (prop('collection') ?? []).map(toMeta)
+  // 入口按 value 索引
+  const menuMetaOf = new Map(collection.map(meta => [meta.value, meta]))
+  // 条目跨菜单摊平成一张表，条目部件只报自己那一个 value；重名的以先出现的为准
+  const itemMetaOf = new Map<string, MenubarNodeMeta>()
+  for (const item of collection.flatMap(meta => meta.items)) {
+    if (!itemMetaOf.has(item.value))
+      itemMetaOf.set(item.value, item)
+  }
+
+  /** 入口禁用：部件上写的优先，没写就回 collection 里查。 */
+  const triggerDisabled = (item: MenubarTriggerProps): boolean =>
+    item.disabled ?? menuMetaOf.get(item.value)?.disabled ?? false
+
+  /** 条目禁用：部件上写的优先，没写就回 collection 里查。 */
+  const itemDisabled = (item: MenubarItemProps): boolean =>
+    item.disabled ?? itemMetaOf.get(item.value)?.disabled ?? false
+
   const triggerId = (target: string): string => scope.partId(menubarAnatomy.name, `trigger:${target}`)
   const contentId = (target: string): string => scope.partId(menubarAnatomy.name, `content:${target}`)
   const groupLabelId = (group: string): string => scope.partId(menubarAnatomy.name, `group-label:${group}`)
@@ -53,7 +78,7 @@ export function connectMenubar<T extends PropTypes>(
 
   // item / item-text / item-indicator 共用同一份状态标记
   const itemStateAttrs = (item: MenubarItemProps): Record<string, string | undefined> => ({
-    'data-disabled': dataAttr(item.disabled),
+    'data-disabled': dataAttr(itemDisabled(item)),
     // 子部件够不着条目自身的 :focus 伪类，只能读这个标记
     'data-highlighted': dataAttr(focusedItem === item.value),
   })
@@ -119,6 +144,7 @@ export function connectMenubar<T extends PropTypes>(
 
   return {
     value,
+    collection,
     open,
     focusedValue,
     focusedItem,
@@ -165,7 +191,7 @@ export function connectMenubar<T extends PropTypes>(
     /** 键盘处理挂在 trigger 上，而非 root。 */
     getTriggerProps: (item) => {
       const isOpen = item.value === value
-      const disabled = menubarDisabled || !!item.disabled
+      const disabled = menubarDisabled || triggerDisabled(item)
       return normalize.button({
         ...parts.trigger.attrs,
         // 导航与配对的身份标记
@@ -206,7 +232,7 @@ export function connectMenubar<T extends PropTypes>(
             focusTrigger(root, item.value, move)
             return
           }
-          if (item.disabled)
+          if (triggerDisabled(item))
             return
           // 交叉轴：展开本项并落到菜单首/末项；已展开则直接把焦点送进去
           const cross = navIntentFromKey(event, { axis: crossAxis, dir, home: false })
@@ -304,11 +330,11 @@ export function connectMenubar<T extends PropTypes>(
       [ITEM_VALUE_ATTR]: item.value,
       'role': 'menuitem',
       // 用 aria-disabled 而非原生 disabled，禁用条目仍可聚焦、仍能当方向键起点
-      'aria-disabled': item.disabled ? 'true' : 'false',
+      'aria-disabled': itemDisabled(item) ? 'true' : 'false',
       // roving tabindex：一张菜单里只有锚点条目留在 Tab 序列内
       'tabindex': focusedItem === item.value ? 0 : -1,
       'onClick': () => {
-        if (!item.disabled)
+        if (!itemDisabled(item))
           send({ type: 'ITEM.SELECT', value: item.value })
       },
       // 禁用条目被聚焦也记锚点，作为方向键起点

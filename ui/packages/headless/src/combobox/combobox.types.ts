@@ -49,12 +49,30 @@ export interface ComboboxInputValueChangeDetails {
   inputValue: string
 }
 
+/** 候选数据。给了 collection，显示文本与禁用就以它为准。 */
+export interface ComboboxNode {
+  value: string
+  /** 展示文本，也是选中后回填输入框的取字处；缺省退回 value。 */
+  label?: string
+  /** 候选禁用：方向键跳过它，点击与回车都不选中它。 */
+  disabled?: boolean
+}
+
+/** 单个候选的元信息，由 collection 推出，不含选中态与高亮态。 */
+export interface ComboboxNodeMeta {
+  value: string
+  /** node.label ?? node.value，恒为字符串。 */
+  label: string
+  disabled: boolean
+}
+
 /**
- * 条目自报家门：值与禁用由作者在部件上声明，connect 据此产出属性。
+ * 条目自报家门：值必报，禁用可由 collection 代为声明。
  * connect 不得反查 DOM：Vue 侧在 render 期求值（此时 DOM 不存在），WC 侧在 updated 后求值。
  */
 export interface ComboboxItemProps {
   value: string
+  /** 逐条覆盖禁用；缺省时回 collection 里查，两处都没有即为不禁用。 */
   disabled?: boolean
 }
 
@@ -65,6 +83,12 @@ export interface ComboboxItemGroupProps {
 
 export interface ComboboxSchema extends MachineSchema {
   props: {
+    /**
+     * 候选数据，显示文本与禁用的事实源。过滤仍归调用方：交进来的就是此刻该显示的那几条。
+     * 给了它，条目部件只需报 value，显示文本也不再从活 DOM 现查。
+     * 缺省即回到「文本写在条目里、现查 DOM」的老路。
+     */
+    collection?: ComboboxNode[]
     /**
      * 选中值。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。
      * 单选写成裸串是简写，内部一律归一成数组。
@@ -186,6 +210,8 @@ export interface ComboboxSchema extends MachineSchema {
 
 export interface ComboboxApi<T extends PropTypes = PropTypes> {
   open: boolean
+  /** collection 推出的候选元信息，按数据顺序排列；没给 collection 即空数组。 */
+  collection: readonly ComboboxNodeMeta[]
   /** 选中集合；单选模式下长度 ≤ 1，形状不随模式变。 */
   value: string[]
   /** 输入框里的字符串。 */

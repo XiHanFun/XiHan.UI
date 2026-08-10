@@ -1,7 +1,7 @@
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
-import type { MenuApi, MenuSchema } from './menu.types'
+import type { MenuApi, MenuItemProps, MenuNodeMeta, MenuSchema } from './menu.types'
 import { focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/core'
 import { menuAnatomy, menuItemQuery } from './menu.anatomy'
@@ -23,6 +23,19 @@ export function connectMenu<T extends PropTypes>(
   const anchor = context.get('focusedValue') ?? null
   const loop = prop('loop') ?? true
   const dir = prop('dir')
+
+  // collection 推出的条目元信息：显示文本与禁用都在这里定案，条目部件只报 value
+  const collection: MenuNodeMeta[] = (prop('collection') ?? []).map(node => ({
+    value: node.value,
+    label: node.label ?? node.value,
+    disabled: !!node.disabled,
+    separatorBefore: !!node.separatorBefore,
+  }))
+  const metaOf = new Map(collection.map(meta => [meta.value, meta]))
+
+  /** 条目禁用：部件上写的优先，没写就回 collection 里查。 */
+  const itemDisabled = (item: MenuItemProps): boolean =>
+    item.disabled ?? metaOf.get(item.value)?.disabled ?? false
 
   const setOpen = (next: boolean): void => {
     if (next !== open)
@@ -51,6 +64,7 @@ export function connectMenu<T extends PropTypes>(
 
   return {
     open,
+    collection,
     focusedValue: anchor,
     setOpen,
     getTriggerProps: () => normalize.button({
@@ -127,12 +141,12 @@ export function connectMenu<T extends PropTypes>(
       [ITEM_VALUE_ATTR]: item.value,
       'role': 'menuitem',
       // 用 aria-disabled 而非原生 disabled，禁用条目仍可聚焦
-      'aria-disabled': item.disabled ? 'true' : 'false',
-      'data-disabled': dataAttr(item.disabled),
+      'aria-disabled': itemDisabled(item) ? 'true' : 'false',
+      'data-disabled': dataAttr(itemDisabled(item)),
       // roving tabindex：整组只有锚点条目留在 Tab 序列内
       'tabindex': anchor === item.value ? 0 : -1,
       'onClick': () => {
-        if (!item.disabled)
+        if (!itemDisabled(item))
           send({ type: 'ITEM.SELECT', value: item.value })
       },
       // 禁用条目被聚焦也记锚点，作为方向键起点

@@ -160,8 +160,19 @@ export const selectMachine = createMachine({
           return
         send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
-      // 显示文本从活 DOM 现查；首帧条目可能还没挂上身份标记，查不到就推迟一拍重来
-      syncValueText: ({ refs, context, flush }) => {
+      // 给了 collection 就按数据取文本，一次算完；没给才回到活 DOM 现查那条老路，
+      // 那条路上首帧条目可能还没挂上身份标记，查不到就推迟一拍重来
+      syncValueText: ({ refs, prop, context, flush }) => {
+        const collection = prop('collection')
+        if (collection) {
+          const value = context.get('value')
+          const labelOf = new Map(collection.map(node => [node.value, node.label ?? node.value]))
+          // 数据里没有的那一项退回值本身：文本数组必须与 value 逐项等长对齐
+          const texts = value.map(v => labelOf.get(v) ?? v)
+          if (!sameValues(texts, context.get('valueText')))
+            context.set('valueText', texts)
+          return
+        }
         const resolve = (): boolean => {
           const content = refs.get('getContentEl')()
           if (!content)

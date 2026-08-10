@@ -1,7 +1,7 @@
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { Service } from '@xihan-ui/machine'
-import type { ContextMenuApi, ContextMenuItemProps, ContextMenuSchema } from './context-menu.types'
+import type { ContextMenuApi, ContextMenuItemProps, ContextMenuNodeMeta, ContextMenuSchema } from './context-menu.types'
 import {
   focusItem,
   indexOfValue,
@@ -41,12 +41,28 @@ export function connectContextMenu<T extends PropTypes>(
   const dir = prop('dir')
   const typeaheadOn = prop('typeahead') ?? true
 
+  // collection 推出的条目元信息：显示文本、禁用、标记位与分组都在这里定案，条目部件只报 value
+  const collection: ContextMenuNodeMeta[] = (prop('collection') ?? []).map(node => ({
+    value: node.value,
+    label: node.label ?? node.value,
+    disabled: !!node.disabled,
+    indicator: node.indicator ?? null,
+    group: node.group ?? null,
+    groupLabel: node.groupLabel ?? null,
+    separatorBefore: !!node.separatorBefore,
+  }))
+  const metaOf = new Map(collection.map(meta => [meta.value, meta]))
+
+  /** 条目禁用：部件上写的优先，没写就回 collection 里查。 */
+  const itemDisabled = (item: ContextMenuItemProps): boolean =>
+    item.disabled ?? metaOf.get(item.value)?.disabled ?? false
+
   const groupLabelId = (group: string): string =>
     scope.partId(contextMenuAnatomy.name, `group-label:${group}`)
 
   // item / item-text / item-indicator 共用同一份状态标记，样式层各处一致
   const itemStateAttrs = (item: ContextMenuItemProps): Record<string, string | undefined> => ({
-    'data-disabled': dataAttr(item.disabled),
+    'data-disabled': dataAttr(itemDisabled(item)),
     // 子部件够不着条目的 :focus 伪类，只能读这个标记
     'data-highlighted': dataAttr(anchor === item.value),
   })
@@ -87,6 +103,7 @@ export function connectContextMenu<T extends PropTypes>(
 
   return {
     open,
+    collection,
     pressing,
     point,
     focusedValue: anchor,
@@ -225,11 +242,11 @@ export function connectContextMenu<T extends PropTypes>(
       [ITEM_VALUE_ATTR]: item.value,
       'role': 'menuitem',
       // 集合条目一律 aria-disabled，原生 disabled 不可聚焦也不派发 click
-      'aria-disabled': item.disabled ? 'true' : 'false',
+      'aria-disabled': itemDisabled(item) ? 'true' : 'false',
       // roving tabindex：整组只有锚点条目留在 Tab 序列内；收起态无锚点
       'tabindex': anchor === item.value ? 0 : -1,
       'onClick': () => {
-        if (!item.disabled)
+        if (!itemDisabled(item))
           send({ type: 'ITEM.SELECT', value: item.value })
       },
       // 禁用条目被聚焦也记锚点，方向键才有起点

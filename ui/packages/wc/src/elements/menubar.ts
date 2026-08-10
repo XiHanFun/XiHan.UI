@@ -1,5 +1,5 @@
 import type { Cleanup, Direction, IdGenerator, Layer, Orientation, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/core'
-import type { MenubarItemProps, MenubarSchema, MenubarSelectDetails, MenubarValueChangeDetails } from '@xihan-ui/headless'
+import type { MenubarItemProps, MenubarNode, MenubarSchema, MenubarSelectDetails, MenubarValueChangeDetails } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
@@ -65,6 +65,8 @@ export class XhMenubarElement extends XhElement {
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    // 数组只走 property，属性表达不了；给了它入口与条目的文本与禁用即以数据为准
+    collection: { attribute: false },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     orientation: { converter: STRING_CONVERTER },
@@ -78,6 +80,7 @@ export class XhMenubarElement extends XhElement {
     size: { converter: STRING_CONVERTER },
   }
 
+  declare collection?: MenubarNode[]
   declare value?: string
   declare defaultValue?: string
   declare orientation?: Orientation
@@ -113,6 +116,7 @@ export class XhMenubarElement extends XhElement {
 
   private machineProps(): Partial<MenubarSchema['props']> {
     return {
+      collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
       orientation: this.orientation,

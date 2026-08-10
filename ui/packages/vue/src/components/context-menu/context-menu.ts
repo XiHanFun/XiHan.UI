@@ -1,6 +1,6 @@
 import type { Direction, Placement } from '@xihan-ui/core'
-import type { ContextMenuGroupProps, ContextMenuItemProps, ContextMenuSchema } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { ContextMenuGroupProps, ContextMenuItemProps, ContextMenuNode, ContextMenuNodeMeta, ContextMenuSchema } from '@xihan-ui/headless'
+import type { PropType, VNode } from 'vue'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import {
   provideContextMenu,
@@ -18,6 +18,7 @@ export const XhContextMenuRoot = defineComponent({
   name: 'XhContextMenuRoot',
   // 缺省值由 connect 与机器给出，这里一律 default: undefined
   props: {
+    collection: { type: Array as PropType<ContextMenuNode[]>, default: undefined },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     placement: { type: String as PropType<Placement>, default: undefined },
@@ -39,12 +40,20 @@ export const XhContextMenuRoot = defineComponent({
     const notifySelect: ContextMenuProps['onSelect'] = details => emit('select', details)
     const ctx = useContextMenu(props as ContextMenuProps, notifyOpen, notifySelect)
     provideContextMenu(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
-      open: ctx.api.value.open,
-      point: ctx.api.value.point,
-      setOpen: ctx.api.value.setOpen,
-      openAt: ctx.api.value.openAt,
-    }))
+    return () => h(
+      'div',
+      ctx.api.value.getRootProps() as Record<string, unknown>,
+      slots.default
+        ? slots.default({
+            open: ctx.api.value.open,
+            point: ctx.api.value.point,
+            setOpen: ctx.api.value.setOpen,
+            openAt: ctx.api.value.openAt,
+          })
+        : props.collection
+          ? renderDefaultTree(ctx.api.value.collection, slots.trigger?.() ?? null, slots.item)
+          : [],
+    )
   },
 })
 
@@ -108,7 +117,8 @@ export const XhContextMenuItem = defineComponent({
   name: 'XhContextMenuItem',
   props: {
     value: { type: String, required: true },
-    disabled: Boolean,
+    // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
+    disabled: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useContextMenuContext()
@@ -175,3 +185,75 @@ export const XhContextMenuArrow = defineComponent({
     return () => h('div', ctx.api.value.getArrowProps() as Record<string, unknown>)
   },
 })
+
+/** 一段连续的同组条目；不分组的条目各自单独成段。 */
+type NodeRun = [ContextMenuNodeMeta, ...ContextMenuNodeMeta[]]
+
+/**
+ * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
+ * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
+ * 触发区里放什么是作者的事，由 trigger 插槽给出。
+ */
+function renderDefaultTree(
+  collection: readonly ContextMenuNodeMeta[],
+  trigger: (VNode | string)[] | null,
+  itemSlot?: (node: ContextMenuNodeMeta) => VNode[],
+): VNode[] {
+  return [
+    h(XhContextMenuTrigger, null, () => trigger ?? []),
+    h(XhContextMenuPositioner, null, () => [
+      h(XhContextMenuContent, null, () => renderNodes(collection, itemSlot)),
+    ]),
+  ]
+}
+
+/** 相邻同 group 的条目并成一段，没写 group 的各自成段。 */
+function groupRuns(collection: readonly ContextMenuNodeMeta[]): NodeRun[] {
+  const runs: NodeRun[] = []
+  for (const meta of collection) {
+    const last = runs.at(-1)
+    if (last && meta.group != null && last[0].group === meta.group)
+      last.push(meta)
+    else
+      runs.push([meta])
+  }
+  return runs
+}
+
+/** content 的内容：分组段铺成 group，段首的分隔线落在 group 外面。 */
+function renderNodes(
+  collection: readonly ContextMenuNodeMeta[],
+  itemSlot?: (node: ContextMenuNodeMeta) => VNode[],
+): VNode[] {
+  return groupRuns(collection).flatMap((run, runIndex) => {
+    const head = run[0]
+    // 首条上的标记不产出分隔线：菜单开头不留一道空隔
+    const lead = runIndex > 0 && head.separatorBefore
+      ? [h(XhContextMenuSeparator, { key: `separator:${head.value}` })]
+      : []
+    if (head.group == null)
+      return [...lead, renderItem(head, itemSlot)]
+    const groupLabel = run.find(node => node.groupLabel != null)?.groupLabel ?? null
+    return [
+      ...lead,
+      h(XhContextMenuGroup, { key: `group:${head.group}`, value: head.group }, () => [
+        ...(groupLabel != null ? [h(XhContextMenuGroupLabel, null, () => groupLabel)] : []),
+        ...run.flatMap((node, index) => [
+          ...(index > 0 && node.separatorBefore ? [h(XhContextMenuSeparator, { key: `separator:${node.value}` })] : []),
+          renderItem(node, itemSlot),
+        ]),
+      ]),
+    ]
+  })
+}
+
+/** 单个条目：标记位排在文字前面，没给标记位就不铺那个部件。 */
+function renderItem(
+  meta: ContextMenuNodeMeta,
+  itemSlot?: (node: ContextMenuNodeMeta) => VNode[],
+): VNode {
+  return h(XhContextMenuItem, { key: meta.value, value: meta.value }, () => [
+    ...(meta.indicator != null ? [h(XhContextMenuItemIndicator, null, () => meta.indicator)] : []),
+    h(XhContextMenuItemText, null, () => itemSlot?.(meta) ?? meta.label),
+  ])
+}

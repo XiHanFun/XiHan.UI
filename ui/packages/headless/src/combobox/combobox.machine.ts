@@ -275,13 +275,24 @@ export const comboboxMachine = createMachine({
         })
       },
 
-      /** 单选选中项的显示文本，从活 DOM 现查；首帧条目可能还没挂上身份标记，查不到就推迟一拍再来一次。 */
-      syncValueText: ({ refs, context, flush }) => {
+      /**
+       * 单选选中项的显示文本。给了 collection 就按数据取，一次算完；
+       * 没给才回到活 DOM 现查那条老路，那条路上首帧条目可能还没挂上身份标记，查不到就推迟一拍再来一次。
+       */
+      syncValueText: ({ refs, prop, context, flush }) => {
         const resolve = (): boolean => {
           const value = context.get('value')
           // 多选没有「那一个」显示文本，恒为空；输入串在多选下只是筛选用的草稿
           if (value.length !== 1) {
             context.set('valueText', null)
+            return true
+          }
+          const collection = prop('collection')
+          if (collection) {
+            const node = collection.find(item => item.value === value[0])
+            // 数据里没有这一项（宿主已把它筛出候选）时留着上一次算出的文本，不改写
+            if (node)
+              context.set('valueText', node.label ?? node.value)
             return true
           }
           const content = refs.get('getContentEl')()

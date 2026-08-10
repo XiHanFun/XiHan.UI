@@ -1,6 +1,6 @@
 import type { Direction, Placement } from '@xihan-ui/core'
-import type { MenuSchema } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { MenuNode, MenuNodeMeta, MenuSchema } from '@xihan-ui/headless'
+import type { PropType, VNode } from 'vue'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideMenu, useMenuContext } from './context'
 import { useMenu } from './use-menu'
@@ -11,6 +11,7 @@ export const XhMenuRoot = defineComponent({
   name: 'XhMenuRoot',
   // 缺省值由 connect 给出，这里一律 default: undefined
   props: {
+    collection: { type: Array as PropType<MenuNode[]>, default: undefined },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     placement: { type: String as PropType<Placement>, default: undefined },
@@ -30,7 +31,11 @@ export const XhMenuRoot = defineComponent({
     const notifySelect: MenuProps['onSelect'] = details => emit('select', details)
     const ctx = useMenu(props as MenuProps, notifyOpen, notifySelect)
     provideMenu(ctx)
-    return () => slots.default?.({ open: ctx.api.value.open, setOpen: ctx.api.value.setOpen })
+    return () => (slots.default
+      ? slots.default({ open: ctx.api.value.open, setOpen: ctx.api.value.setOpen })
+      : props.collection
+        ? renderDefaultTree(ctx.api.value.collection, slots.trigger?.() ?? null, slots.item)
+        : [])
   },
 })
 
@@ -71,7 +76,8 @@ export const XhMenuItem = defineComponent({
   name: 'XhMenuItem',
   props: {
     value: { type: String, required: true },
-    disabled: Boolean,
+    // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
+    disabled: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useMenuContext()
@@ -118,3 +124,25 @@ export const XhMenuArrow = defineComponent({
     return () => h('div', ctx.api.value.getArrowProps() as Record<string, unknown>)
   },
 })
+
+/**
+ * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
+ * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
+ * 触发器内容归作者，由 trigger 插槽承载；条目内容缺省是 label，可由 item 插槽接管。
+ */
+function renderDefaultTree(
+  collection: readonly MenuNodeMeta[],
+  trigger: (VNode | string)[] | null,
+  itemSlot?: (node: MenuNodeMeta) => VNode[],
+): VNode[] {
+  return [
+    h(XhMenuTrigger, null, () => trigger ?? []),
+    h(XhMenuPositioner, null, () => [
+      h(XhMenuContent, null, () => collection.flatMap((node, index) => [
+        // 首条上的标记不产出分隔线：菜单开头不留一道空隔
+        ...(index > 0 && node.separatorBefore ? [h(XhMenuSeparator, { key: `separator:${node.value}` })] : []),
+        h(XhMenuItem, { key: node.value, value: node.value }, () => itemSlot?.(node) ?? node.label),
+      ])),
+    ]),
+  ]
+}

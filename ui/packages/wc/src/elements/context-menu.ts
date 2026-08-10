@@ -1,10 +1,11 @@
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/core'
-import type { ContextMenuItemProps, ContextMenuOpenChangeDetails, ContextMenuSchema, ContextMenuSelectDetails } from '@xihan-ui/headless'
+import type { ContextMenuItemProps, ContextMenuNode, ContextMenuOpenChangeDetails, ContextMenuSchema, ContextMenuSelectDetails } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectContextMenu, contextMenuAnatomy, contextMenuMachine, contextMenuMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
+import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -58,6 +59,8 @@ export class XhContextMenuElement extends XhElement {
   // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    // 数组只走 property，属性表达不了；给了它条目的禁用即以数据为准
+    collection: { attribute: false },
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     placement: { converter: STRING_CONVERTER },
@@ -70,6 +73,7 @@ export class XhContextMenuElement extends XhElement {
     size: { converter: STRING_CONVERTER },
   }
 
+  declare collection?: ContextMenuNode[]
   declare open?: boolean
   declare defaultOpen?: boolean
   declare placement?: Placement
@@ -101,8 +105,12 @@ export class XhContextMenuElement extends XhElement {
     { scope: this.menuScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
+  /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
+  private readonly declaredDisabled = createDeclaredDisabled()
+
   private machineProps(): Partial<ContextMenuSchema['props']> {
     return {
+      collection: this.collection,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       placement: this.placement,
@@ -215,7 +223,7 @@ export class XhContextMenuElement extends XhElement {
     for (const el of this.getParts('item')) {
       const item: ContextMenuItemProps = {
         value: el.getAttribute('value') ?? '',
-        disabled: isItemDisabled(el),
+        disabled: this.collection ? this.declaredDisabled(el) : isItemDisabled(el),
       }
       this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
       // 条目内的文本与标记位跟着同一份声明走，样式层各处状态一致

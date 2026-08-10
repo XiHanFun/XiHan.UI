@@ -39,11 +39,39 @@ export interface MenubarSelectDetails {
 }
 
 /**
- * 触发器属性：身份与禁用由作者声明。
+ * 菜单栏数据。顶层节点是一个入口，它的 items 是那张菜单里的条目。
+ * 给了 collection，显示文本与禁用就以它为准。
+ *
+ * 入口的 value 与条目的 value 各自在整条菜单栏内唯一：两者都是禁用回查的键，
+ * 条目按 value 跨菜单摊平索引，重名的以先出现的为准。
+ */
+export interface MenubarNode {
+  value: string
+  /** 展示文本，也是菜单内连打检索的取字处；缺省退回 value。 */
+  label?: string
+  /** 禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
+  disabled?: boolean
+  /** 这张菜单里的条目；只在顶层节点上读。 */
+  items?: MenubarNode[]
+}
+
+/** 单个节点的元信息，由 collection 推出，不含展开态与焦点态。 */
+export interface MenubarNodeMeta {
+  value: string
+  /** node.label ?? node.value，恒为字符串。 */
+  label: string
+  disabled: boolean
+  /** 这张菜单里的条目元信息；条目自身恒为空数组。 */
+  items: readonly MenubarNodeMeta[]
+}
+
+/**
+ * 触发器属性：值必报，禁用可由 collection 代为声明。
  * connect 据此产出属性，不反查 DOM：它在 Vue 的 render 期求值，此时 DOM 尚不存在。
  */
 export interface MenubarTriggerProps {
   value: string
+  /** 逐条覆盖禁用；缺省时回 collection 里查，两处都没有即为不禁用。 */
   disabled?: boolean
 }
 
@@ -54,6 +82,7 @@ export interface MenubarContentProps {
 
 export interface MenubarItemProps {
   value: string
+  /** 逐条覆盖禁用；缺省时回 collection 里查，两处都没有即为不禁用。 */
   disabled?: boolean
 }
 
@@ -64,6 +93,11 @@ export interface MenubarGroupProps {
 
 export interface MenubarSchema extends MachineSchema {
   props: {
+    /**
+     * 菜单栏数据，显示文本与禁用的事实源。给了它，入口与条目部件只需报 value。
+     * 缺省即回到「文本与禁用逐个写在部件上」的老路。
+     */
+    collection?: MenubarNode[]
     /** 当前展开项，给定即受控；null 表示都收起。 */
     value?: string | null
     defaultValue?: string | null
@@ -156,6 +190,8 @@ export interface MenubarSchema extends MachineSchema {
 export interface MenubarApi<T extends PropTypes = PropTypes> {
   /** 当前展开的那一项；都收起时为 null。 */
   value: string | null
+  /** collection 推出的入口元信息（各自带着它那张菜单的条目），按数据顺序排列；没给 collection 即空数组。 */
+  collection: readonly MenubarNodeMeta[]
   /** 有没有菜单展开着。 */
   open: boolean
   /** trigger 的 roving 锚点；焦点不在菜单栏内时为 null。 */

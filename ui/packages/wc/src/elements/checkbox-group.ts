@@ -1,7 +1,8 @@
 import type { Orientation } from '@xihan-ui/core'
-import type { CheckboxGroupItemProps, CheckboxGroupSchema, CheckboxGroupValueChangeDetails } from '@xihan-ui/headless'
+import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupSchema, CheckboxGroupValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled } from '@xihan-ui/behavior'
 import { checkboxGroupAnatomy, checkboxGroupMachine, checkboxGroupMeta, connectCheckboxGroup } from '@xihan-ui/headless'
+import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -48,6 +49,8 @@ export class XhCheckboxGroupElement extends XhElement {
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
+    // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准
+    collection: { attribute: false },
     value: { converter: LIST_CONVERTER },
     defaultValue: { converter: LIST_CONVERTER, attribute: 'default-value' },
     itemValues: { converter: LIST_CONVERTER, attribute: 'item-values' },
@@ -58,6 +61,7 @@ export class XhCheckboxGroupElement extends XhElement {
     name: { converter: STRING_CONVERTER },
   }
 
+  declare collection?: CheckboxGroupNode[]
   declare value?: string[]
   declare defaultValue?: string[]
   declare itemValues?: string[]
@@ -80,6 +84,7 @@ export class XhCheckboxGroupElement extends XhElement {
 
   private machineProps(): Partial<CheckboxGroupSchema['props']> {
     return {
+      collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
       itemValues: this.itemValues,
@@ -92,8 +97,15 @@ export class XhCheckboxGroupElement extends XhElement {
     }
   }
 
+  /** 作者声明的条目禁用，只认首见那一份；没写即 undefined，交给 collection 定夺 */
+  private readonly declaredItemDisabled = createDeclaredDisabled()
+
   private itemProps(el: HTMLElement): CheckboxGroupItemProps {
     const value = el.getAttribute('value') ?? ''
+    // 给了 collection 就以数据为事实源：现读会读到 connect 上一帧写回的 aria-disabled，
+    // 「作者没写」表达不出 undefined，数据里的禁用就永远轮不到生效。
+    if (this.collection)
+      return { value, disabled: this.declaredItemDisabled(el) }
     const groupDisabled = !!this.disabled
     // 首次见到该条目时 DOM 上只有作者写的东西，此刻现读即真声明
     if (!this.declaredDisabled.has(el)) {
