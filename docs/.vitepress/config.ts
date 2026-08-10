@@ -203,8 +203,8 @@ const nav: DefaultTheme.NavItem[] = [
         link: "https://gitee.com/XiHanFun/XiHan.UI",
       },
       {
-        text: "Atomgit同步备库(国内)",
-        link: "https://atomgit.com/XiHanFun/XiHan.UI",
+        text: "GitCode同步备库(国内)",
+        link: "https://gitcode.com/XiHanFun/XiHan.UI",
       },
     ],
   },
@@ -299,7 +299,7 @@ export default defineConfig({
     socialLinks: [
       { icon: "github", link: "https://github.com/XiHanFun/XiHan.UI" },
       { icon: "gitee", link: "https://gitee.com/XiHanFun/XiHan.UI" },
-      { icon: "git", link: "https://atomgit.com/XiHanFun/XiHan.UI" },
+      { icon: "gitcode", link: "https://gitcode.com/XiHanFun/XiHan.UI" },
     ],
     search: {
       provider: "local",
