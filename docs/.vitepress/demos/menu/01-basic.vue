@@ -1,14 +1,14 @@
-<!-- 基础用法 | trigger / content / item 三件缺一不可，positioner 负责摆位置 -->
+<!-- 基础用法 | collection 是条目的事实源：文本与禁用都写在数据里，trigger / positioner / content / item 由组件铺开 -->
 <script setup lang="ts">
 import { ref } from "vue";
-import {
-  XhMenuContent,
-  XhMenuItem,
-  XhMenuPositioner,
-  XhMenuRoot,
-  XhMenuSeparator,
-  XhMenuTrigger,
-} from "@xihan-ui/vue";
+import { XhMenuRoot } from "@xihan-ui/vue";
+
+const actions = [
+  { value: "copy", label: "复制" },
+  { value: "paste", label: "粘贴" },
+  // 禁用项会被方向键跳过，也选不中；separatorBefore 在它前面隔一道
+  { value: "delete", label: "删除", disabled: true, separatorBefore: true },
+];
 
 const picked = ref("");
 
@@ -18,17 +18,9 @@ function onSelect(details: { value: string }): void {
 </script>
 
 <template>
-  <XhMenuRoot @select="onSelect">
-    <XhMenuTrigger>操作</XhMenuTrigger>
-    <XhMenuPositioner>
-      <XhMenuContent>
-        <XhMenuItem value="copy">复制</XhMenuItem>
-        <XhMenuItem value="paste">粘贴</XhMenuItem>
-        <XhMenuSeparator />
-        <!-- 禁用项会被方向键跳过，也选不中 -->
-        <XhMenuItem value="delete" disabled>删除</XhMenuItem>
-      </XhMenuContent>
-    </XhMenuPositioner>
+  <!-- 触发器的内容归作者，走 trigger 插槽 -->
+  <XhMenuRoot :collection="actions" @select="onSelect">
+    <template #trigger>操作</template>
   </XhMenuRoot>
   <span>最近选中：{{ picked || "（无）" }}</span>
 </template>

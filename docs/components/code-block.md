@@ -22,6 +22,12 @@ complete 为 false 时默认不着色：半截代码的词法本来就不稳，�
 
 <XhDemo src="code-block/03-highlighter" />
 
+### 行号栏
+
+行号是作者摆在代码块旁边的一栏，对齐靠行高与内边距这几个公开变量，行数由原文自己数
+
+<XhDemo src="code-block/04-line-numbers" />
+
 ## 产物
 
 | 层 | 值 |

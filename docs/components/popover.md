@@ -28,6 +28,42 @@ placement 是请求值，空间不够时定位引擎会自动翻面；offset 调
 
 <XhDemo src="popover/04-size" />
 
+### 确认气泡
+
+标题、说明与两颗按钮拼成一次就地确认；两颗按钮都只调 setOpen 收起浮层
+
+<XhDemo src="popover/05-confirm" />
+
+### 长内容滚动
+
+浮层自己不限高，给里面的容器设上限并开滚动，标题与关闭按钮就不跟着滚
+
+<XhDemo src="popover/06-scroll" />
+
+### 模态浮层
+
+modal 让焦点陷在浮层里：Tab 到末尾回绕，旁边那颗按钮这时接不到焦点
+
+<XhDemo src="popover/07-modal" />
+
+### 事件
+
+open-change 带一份 { open }，报的是这次要落到的状态；非受控时内部开合也照发一次
+
+<XhDemo src="popover/08-event" />
+
+### 浮层与触发器同宽
+
+量出触发器的实际宽度写进 content 的行内样式，同时解掉最大宽度上限；触发器换了文案宽度也跟着走
+
+<XhDemo src="popover/09-trigger-width" />
+
+### 落在指针位置
+
+触发器缩成一个像素、按点击坐标固定摆放，浮层就钉在刚点到的那一点上；再点一下换个落点
+
+<XhDemo src="popover/10-point-anchor" />
+
 ## 产物
 
 | 层 | 值 |

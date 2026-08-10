@@ -10,15 +10,15 @@
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
-| [按钮](./button) | `button` | 5 | 1 | 5 |
-| [图标](./icon) | `icon` | 2 | 0 | 5 |
-| [切换按钮](./toggle) | `toggle` | 1 | 1 | 6 |
-| [切换按钮组](./toggle-group) | `toggle-group` | 2 | 6 | 4 |
-| [徽标](./badge) | `badge` | 1 | 0 | 5 |
-| [头像](./avatar) | `avatar` | 3 | 0 | 4 |
-| [图片](./image) | `image` | 3 | 0 | 3 |
-| [分隔线](./separator) | `separator` | 1 | 0 | 2 |
-| [代码块](./code-block) | `code-block` | 5 | 1 | 3 |
+| [按钮](./button) | `button` | 5 | 1 | 11 |
+| [图标](./icon) | `icon` | 2 | 0 | 6 |
+| [切换按钮](./toggle) | `toggle` | 1 | 1 | 9 |
+| [切换按钮组](./toggle-group) | `toggle-group` | 2 | 6 | 7 |
+| [徽标](./badge) | `badge` | 1 | 0 | 9 |
+| [头像](./avatar) | `avatar` | 3 | 0 | 10 |
+| [图片](./image) | `image` | 3 | 0 | 8 |
+| [分隔线](./separator) | `separator` | 1 | 0 | 4 |
+| [代码块](./code-block) | `code-block` | 5 | 1 | 4 |
 | [剪贴板](./clipboard) | `clipboard` | 6 | 0 | 3 |
 
 ## 数据录入
@@ -27,32 +27,32 @@
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
-| [表单字段](./field) | `field` | 5 | 0 | 3 |
-| [表单](./form) | `form` | 6 | 0 | 3 |
-| [文本输入](./text-field) | `text-field` | 4 | 1 | 7 |
-| [数字输入](./number-field) | `number-field` | 5 | 6 | 7 |
-| [分格输入](./pin-input) | `pin-input` | 4 | 6 | 7 |
-| [就地编辑](./editable) | `editable` | 9 | 3 | 4 |
-| [复选框](./checkbox) | `checkbox` | 2 | 1 | 4 |
-| [复选框组](./checkbox-group) | `checkbox-group` | 7 | 3 | 4 |
-| [单选组](./radio-group) | `radio-group` | 6 | 4 | 6 |
-| [开关](./switch) | `switch` | 2 | 1 | 5 |
-| [滑块](./slider) | `slider` | 7 | 6 | 6 |
-| [评分](./rating) | `rating` | 5 | 5 | 6 |
-| [选择器](./select) | `select` | 11 | 13 | 7 |
-| [列表框](./listbox) | `listbox` | 8 | 10 | 4 |
-| [组合框](./combobox) | `combobox` | 14 | 14 | 7 |
-| [级联选择](./cascader) | `cascader` | 12 | 12 | 7 |
-| [树选择](./tree-select) | `tree-select` | 19 | 14 | 6 |
-| [标签输入](./tags-input) | `tags-input` | 11 | 13 | 7 |
-| [穿梭框](./transfer) | `transfer` | 14 | 11 | 4 |
-| [日期输入](./date-field) | `date-field` | 5 | 8 | 7 |
-| [日期选择器](./date-picker) | `date-picker` | 9 | 5 | 3 |
-| [时间输入](./time-field) | `time-field` | 5 | 9 | 7 |
-| [时间选择器](./time-picker) | `time-picker` | 11 | 20 | 4 |
-| [日历](./calendar) | `calendar` | 12 | 12 | 3 |
-| [颜色选择器](./color-picker) | `color-picker` | 16 | 9 | 4 |
-| [文件上传](./file-upload) | `file-upload` | 12 | 5 | 4 |
+| [表单字段](./field) | `field` | 5 | 0 | 6 |
+| [表单](./form) | `form` | 6 | 0 | 10 |
+| [文本输入](./text-field) | `text-field` | 4 | 1 | 16 |
+| [数字输入](./number-field) | `number-field` | 5 | 6 | 13 |
+| [分格输入](./pin-input) | `pin-input` | 4 | 6 | 10 |
+| [就地编辑](./editable) | `editable` | 9 | 3 | 6 |
+| [复选框](./checkbox) | `checkbox` | 2 | 1 | 7 |
+| [复选框组](./checkbox-group) | `checkbox-group` | 7 | 3 | 8 |
+| [单选组](./radio-group) | `radio-group` | 6 | 4 | 7 |
+| [开关](./switch) | `switch` | 2 | 1 | 10 |
+| [滑块](./slider) | `slider` | 7 | 6 | 11 |
+| [评分](./rating) | `rating` | 5 | 5 | 9 |
+| [选择器](./select) | `select` | 11 | 13 | 17 |
+| [列表框](./listbox) | `listbox` | 8 | 10 | 7 |
+| [组合框](./combobox) | `combobox` | 14 | 14 | 13 |
+| [级联选择](./cascader) | `cascader` | 12 | 12 | 15 |
+| [树选择](./tree-select) | `tree-select` | 19 | 14 | 12 |
+| [标签输入](./tags-input) | `tags-input` | 11 | 13 | 12 |
+| [穿梭框](./transfer) | `transfer` | 14 | 11 | 8 |
+| [日期输入](./date-field) | `date-field` | 5 | 8 | 12 |
+| [日期选择器](./date-picker) | `date-picker` | 9 | 5 | 8 |
+| [时间输入](./time-field) | `time-field` | 5 | 9 | 9 |
+| [时间选择器](./time-picker) | `time-picker` | 11 | 20 | 8 |
+| [日历](./calendar) | `calendar` | 12 | 12 | 4 |
+| [颜色选择器](./color-picker) | `color-picker` | 16 | 9 | 10 |
+| [文件上传](./file-upload) | `file-upload` | 12 | 5 | 10 |
 
 ## 数据展示
 
@@ -60,16 +60,16 @@
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
-| [表格](./table) | `table` | 15 | 10 | 5 |
-| [树](./tree) | `tree` | 12 | 10 | 4 |
-| [虚拟滚动](./virtualizer) | `virtualizer` | 4 | 0 | 2 |
-| [滚动区域](./scroll-area) | `scroll-area` | 6 | 5 | 4 |
-| [手风琴](./accordion) | `accordion` | 6 | 6 | 6 |
-| [折叠区域](./collapsible) | `collapsible` | 3 | 1 | 4 |
-| [走马灯](./carousel) | `carousel` | 8 | 10 | 4 |
-| [分栏](./splitter) | `splitter` | 3 | 7 | 4 |
-| [骨架屏](./skeleton) | `skeleton` | 2 | 0 | 3 |
-| [空状态](./empty-state) | `empty-state` | 5 | 0 | 3 |
+| [表格](./table) | `table` | 15 | 10 | 16 |
+| [树](./tree) | `tree` | 12 | 10 | 10 |
+| [虚拟滚动](./virtualizer) | `virtualizer` | 4 | 0 | 4 |
+| [滚动区域](./scroll-area) | `scroll-area` | 6 | 5 | 5 |
+| [手风琴](./accordion) | `accordion` | 6 | 6 | 11 |
+| [折叠区域](./collapsible) | `collapsible` | 3 | 1 | 6 |
+| [走马灯](./carousel) | `carousel` | 8 | 10 | 9 |
+| [分栏](./splitter) | `splitter` | 3 | 7 | 6 |
+| [骨架屏](./skeleton) | `skeleton` | 2 | 0 | 4 |
+| [空状态](./empty-state) | `empty-state` | 5 | 0 | 5 |
 
 ## 导航
 
@@ -77,16 +77,16 @@
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
-| [菜单](./menu) | `menu` | 6 | 9 | 5 |
-| [菜单栏](./menubar) | `menubar` | 10 | 15 | 5 |
-| [右键菜单](./context-menu) | `context-menu` | 11 | 9 | 5 |
-| [导航菜单](./navigation-menu) | `navigation-menu` | 8 | 7 | 6 |
-| [标签页](./tabs) | `tabs` | 4 | 6 | 7 |
-| [步骤条](./steps) | `steps` | 9 | 6 | 6 |
-| [分页](./pagination) | `pagination` | 5 | 4 | 6 |
-| [面包屑](./breadcrumb) | `breadcrumb` | 6 | 2 | 5 |
-| [锚点](./anchor) | `anchor` | 5 | 2 | 6 |
-| [工具栏](./toolbar) | `toolbar` | 4 | 6 | 5 |
+| [菜单](./menu) | `menu` | 6 | 9 | 10 |
+| [菜单栏](./menubar) | `menubar` | 10 | 15 | 9 |
+| [右键菜单](./context-menu) | `context-menu` | 11 | 9 | 8 |
+| [导航菜单](./navigation-menu) | `navigation-menu` | 8 | 7 | 10 |
+| [标签页](./tabs) | `tabs` | 4 | 6 | 13 |
+| [步骤条](./steps) | `steps` | 9 | 6 | 8 |
+| [分页](./pagination) | `pagination` | 5 | 4 | 10 |
+| [面包屑](./breadcrumb) | `breadcrumb` | 6 | 2 | 6 |
+| [锚点](./anchor) | `anchor` | 5 | 2 | 9 |
+| [工具栏](./toolbar) | `toolbar` | 4 | 6 | 7 |
 | [引导](./tour) | `tour` | 13 | 4 | 3 |
 
 ## 反馈与浮层
@@ -95,17 +95,17 @@
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
-| [对话框](./dialog) | `dialog` | 7 | 4 | 4 |
-| [抽屉](./drawer) | `drawer` | 8 | 4 | 4 |
-| [气泡卡片](./popover) | `popover` | 7 | 4 | 4 |
-| [文字提示](./tooltip) | `tooltip` | 4 | 2 | 6 |
-| [悬浮卡片](./hover-card) | `hover-card` | 5 | 2 | 4 |
-| [警告提示](./alert) | `alert` | 5 | 1 | 3 |
-| [轻提示](./toast) | `toast` | 5 | 2 | 4 |
-| [轻提示容器](./toaster) | `toaster` | 2 | 0 | 4 |
-| [进度条](./progress) | `progress` | 3 | 0 | 5 |
-| [加载指示器](./spinner) | `spinner` | 2 | 0 | 4 |
-| [加载条](./loading-bar) | `loading-bar` | 3 | 0 | 5 |
+| [对话框](./dialog) | `dialog` | 7 | 4 | 8 |
+| [抽屉](./drawer) | `drawer` | 8 | 4 | 7 |
+| [气泡卡片](./popover) | `popover` | 7 | 4 | 10 |
+| [文字提示](./tooltip) | `tooltip` | 4 | 2 | 8 |
+| [悬浮卡片](./hover-card) | `hover-card` | 5 | 2 | 6 |
+| [警告提示](./alert) | `alert` | 5 | 1 | 5 |
+| [轻提示](./toast) | `toast` | 5 | 2 | 5 |
+| [轻提示容器](./toaster) | `toaster` | 2 | 0 | 6 |
+| [进度条](./progress) | `progress` | 3 | 0 | 6 |
+| [加载指示器](./spinner) | `spinner` | 2 | 0 | 6 |
+| [加载条](./loading-bar) | `loading-bar` | 3 | 0 | 6 |
 
 ## AI 对话
 
@@ -113,5 +113,5 @@ AI 对话界面的组件。
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
-| [会话线程](./thread) | `thread` | 5 | 2 | 3 |
-| [消息编辑器](./composer) | `composer` | 3 | 4 | 4 |
+| [会话线程](./thread) | `thread` | 5 | 2 | 8 |
+| [消息编辑器](./composer) | `composer` | 3 | 4 | 10 |

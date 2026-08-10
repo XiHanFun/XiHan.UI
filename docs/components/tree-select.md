@@ -40,6 +40,42 @@ size 换掉行高、内边距与字号，不写就是缺省档
 
 <XhDemo src="tree-select/06-size" />
 
+### 禁用、只读与校验失败
+
+disabled 连键盘入口都没有；readOnly 照常展开浏览但值改不动也清不掉；invalid 只报校验态，交互一切照旧
+
+<XhDemo src="tree-select/07-state" />
+
+### 异步加载子节点
+
+展开某个分支才去要它的子节点：先摆一行禁用占位，数据回来就地换掉，显示文本随之取到新 label
+
+<XhDemo src="tree-select/08-async" />
+
+### 浮层里的操作区
+
+content 里除了树还能放别的：在浮层内点按钮不算点在外面，浮层不会因此收起
+
+<XhDemo src="tree-select/09-action" />
+
+### 勾选与回显策略
+
+多选下选中值受控：宿主收到朴素切换后算出级联集合写回，触发框里的文本也由宿主按「整组选满只报组名」折叠
+
+<XhDemo src="tree-select/10-checkable" />
+
+### 浮层内关键词过滤
+
+输入框是树的兄弟节点，树的键盘处理器挂在 tree 上，打字不会被连打检索收走；换掉 collection 可见行与方向键顺序跟着重算
+
+<XhDemo src="tree-select/11-filter" />
+
+### 只挑文件不挑目录
+
+选中值与展开态双受控：目录的值不写回，紧跟着那一次收起意图也一并吞掉，点目录就只剩展开收起
+
+<XhDemo src="tree-select/12-file-picker" />
+
 ## 产物
 
 | 层 | 值 |

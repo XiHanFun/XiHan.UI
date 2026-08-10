@@ -46,6 +46,42 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 <XhDemo src="number-field/07-size" />
 
+### 只用输入框
+
+加减钮是可选部件，不渲染它照样能改值：方向键走 step，PageUp 与 PageDown 走 largeStep
+
+<XhDemo src="number-field/08-no-trigger" />
+
+### 加减钮排布
+
+两个触发器摆在哪儿由作者写模板决定，钮里放什么字符也一样；行为不随位置变
+
+<XhDemo src="number-field/09-trigger-placement" />
+
+### 校验态
+
+invalid 由宿主自己判定，不必挂在表单上；标出来之后值照样能改、加减钮照样能按
+
+<XhDemo src="number-field/10-invalid" />
+
+### 框内单位与货币符号
+
+前后缀压在输入框上，输入框自己让出内边距；加减钮照旧摆在包裹层里
+
+<XhDemo src="number-field/11-affix" />
+
+### 固定小数位
+
+步进本身带定点规整，宿主在离开输入框与松开加减钮时把值补齐到两位小数
+
+<XhDemo src="number-field/12-precision" />
+
+### 提交时机
+
+输入途中只动草稿，失焦或回车才把值交给业务模型；不合法就退回上一次提交的值
+
+<XhDemo src="number-field/13-change-timing" />
+
 ## 产物
 
 | 层 | 值 |

@@ -1,20 +1,7 @@
 <!-- 多选 | 选完不收起、输入串自动清空，候选立刻回到全集；框里空着时退格删掉最后一个已选项 -->
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import {
-  XhComboboxClearTrigger,
-  XhComboboxContent,
-  XhComboboxControl,
-  XhComboboxEmpty,
-  XhComboboxInput,
-  XhComboboxItem,
-  XhComboboxItemIndicator,
-  XhComboboxItemText,
-  XhComboboxLabel,
-  XhComboboxPositioner,
-  XhComboboxRoot,
-  XhComboboxTrigger,
-} from "@xihan-ui/vue";
+import { XhComboboxRoot } from "@xihan-ui/vue";
 
 const cities = [
   { value: "beijing", label: "Beijing 北京" },
@@ -35,24 +22,11 @@ const filtered = computed(() => {
   <XhComboboxRoot
     v-model:value="value"
     v-model:input-value="query"
+    :collection="filtered"
+    label="常去城市"
+    empty="无匹配城市"
     multiple
     placeholder="挑几个城市"
-  >
-    <XhComboboxLabel>常去城市</XhComboboxLabel>
-    <XhComboboxControl>
-      <XhComboboxInput />
-      <XhComboboxTrigger>▾</XhComboboxTrigger>
-      <XhComboboxClearTrigger>✕</XhComboboxClearTrigger>
-    </XhComboboxControl>
-    <XhComboboxPositioner>
-      <XhComboboxContent>
-        <XhComboboxItem v-for="c in filtered" :key="c.value" :value="c.value">
-          <XhComboboxItemText>{{ c.label }}</XhComboboxItemText>
-          <XhComboboxItemIndicator>✓</XhComboboxItemIndicator>
-        </XhComboboxItem>
-      </XhComboboxContent>
-      <XhComboboxEmpty>无匹配城市</XhComboboxEmpty>
-    </XhComboboxPositioner>
-  </XhComboboxRoot>
+  />
   <p>已选：{{ value.length ? value.join("、") : "（无）" }}</p>
 </template>

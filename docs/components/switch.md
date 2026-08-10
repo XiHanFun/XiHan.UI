@@ -34,6 +34,36 @@ size 同时缩放轨道与滑块，不写就是缺省档
 
 <XhDemo src="switch/05-size" />
 
+### 事件
+
+checked-change 带一份 { checked }，非受控时内部转移也照发一次
+
+<XhDemo src="switch/06-event" />
+
+### 自定义颜色
+
+开态轨道、关态轨道与滑块各是一个组件令牌，语气档之外的配色写在行内
+
+<XhDemo src="switch/07-color" />
+
+### 轨道内文案与滑块标记
+
+自渲外壳时子节点全由作者决定，data-state 同时打在轨道与滑块上
+
+<XhDemo src="switch/08-content" />
+
+### 异步提交
+
+受控开关在回执到达前不落位，提交期间 disabled 挡住重复点击
+
+<XhDemo src="switch/09-async" />
+
+### 形状
+
+轨道与滑块共用同一个形状令牌，在实例上覆盖一次两者一起变方
+
+<XhDemo src="switch/10-shape" />
+
 ## 产物
 
 | 层 | 值 |

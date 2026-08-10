@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-trigger 展开浮层，item 落值；条目自己声明 disabled，方向键与连打检索会跳过它
+collection 是条目的事实源：显示文本与禁用都写在数据里，结构由组件铺开
 
 <XhDemo src="select/01-basic" />
 
@@ -46,6 +46,66 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 <XhDemo src="select/07-size" />
 
+### 异步加载选项
+
+首次展开才去取数据：open-change 报出展开意图，数据到达前用一条禁用条目占位
+
+<XhDemo src="select/08-async" />
+
+### 宽度
+
+触发器与浮层各有自己的宽度槽位，写在根部件上即可；装不下的文本在行内以省略号收口
+
+<XhDemo src="select/09-width" />
+
+### 选项里的自定义内容
+
+条目与触发器显示都是插槽：内容想写什么写什么，选中与键盘行为不变
+
+<XhDemo src="select/10-custom-content" />
+
+### 插槽里的操作入口
+
+根部件把 open、value 与 setOpen、setValue 交给插槽，浮层之外的按钮据此展开或清空
+
+<XhDemo src="select/11-actions" />
+
+### 大量选项
+
+浮层高度封顶后自行滚动；敲首字母连打检索直接跳到该字母开头的条目，方向键照常可用
+
+<XhDemo src="select/12-many-options" />
+
+### 分组
+
+条目分段展示：段落壳与段标题由作者写，条目照旧归到同一份集合，方向键与连打检索跨段贯通
+
+<XhDemo src="select/13-group" />
+
+### 多选标签
+
+触发器的显示是插槽：只摆前两个标签、其余折成 +N；可删除的标签行放在触发器之外，删除按钮调根插槽的 setValue
+
+<XhDemo src="select/14-tags" />
+
+### 校验状态
+
+校验结论由宿主给出：告警描边写进触发器的使用者令牌，错误文案用 aria-describedby 挂到触发器上
+
+<XhDemo src="select/15-invalid" />
+
+### 滚动加载
+
+浮层的滚动容器就是 content：@scroll 直接落在它身上，滚到底就把下一页并进选项
+
+<XhDemo src="select/16-scroll-load" />
+
+### 命令式聚焦
+
+在触发器上取模板 ref，实例的 $el 就是那个按钮，focus 与 blur 直接调它
+
+<XhDemo src="select/17-focus" />
+
 ## 产物
 
 | 层 | 值 |
@@ -66,6 +126,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `collection` | `SelectNode[]` |  | 条目数据，显示文本与禁用的事实源。给了它，条目部件只需报 value， 显示文本也不再从活 DOM 现查。缺省即回到「文本写在条目里、现查 DOM」的老路。 |
 | `value` | `string \| string[] \| null` |  | 选中值。裸串是单选的简写，null 是「受控且无选中」，缺省（undefined）才是非受控；内部一律按数组处理。 受控时 cell 直读 prop，写只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string \| string[] \| null` |  | 非受控初始选中值。与 value 同样接受裸串与 null。 |
 | `multiple` | `boolean` |  | 允许选中多项。单选时选完即收起，多选时保持展开继续选。 |
@@ -100,6 +161,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
+| `collection` | `readonly SelectNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
 | `value` | `string[]` | 选中集合，按选中先后排列而非文档顺序。单选恒为长度 ≤ 1。 |
 | `valueText` | `string[]` | 选中项的文本，与 value 逐项等长对应；某项在 DOM 里查不到条目时该项退回值本身。 |
 | `displayText` | `string` | value-text 实际显示的文字：有选中取其文本（多选按半角逗号加空格连起来），否则取 placeholder。 |

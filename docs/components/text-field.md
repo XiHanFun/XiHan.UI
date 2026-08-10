@@ -46,6 +46,60 @@ size 只改高度、内边距与字号，标签与清空按钮一起跟着换档
 
 <XhDemo src="text-field/07-size" />
 
+### 程序化改值
+
+setValue 直接写值，只受禁用、只读与字数上限约束；clear 走清空意图，canClear 不成立时按兵不动
+
+<XhDemo src="text-field/08-programmatic" />
+
+### 原生属性
+
+写在 input 部件上的属性直接落到真正的输入框，自动填充与移动端键盘类型由它们决定
+
+<XhDemo src="text-field/09-native-attrs" />
+
+### 事件
+
+值的变化走 root 的 value-change，聚焦失焦这类原生事件直接写在 input 部件上
+
+<XhDemo src="text-field/10-events" />
+
+### 框内前后缀
+
+前后缀压在输入框上，输入框自己让出内边距，两者共用同一份边框与底色
+
+<XhDemo src="text-field/11-affix" />
+
+### 密码与明暗切换
+
+写在 input 部件上的 type 盖过默认的 text，明暗由宿主的一个布尔翻转
+
+<XhDemo src="text-field/12-password" />
+
+### 限制可输入的字符
+
+beforeinput 直接写在 input 部件上，非法字符进不了框，值与框里的内容始终一致
+
+<XhDemo src="text-field/13-filter" />
+
+### 聚焦与选区
+
+input 部件渲染出来就是一个 input，拿到它的节点就能聚焦、全选、把光标挪到末尾
+
+<XhDemo src="text-field/14-focus" />
+
+### 输入组
+
+圆角槽换成只留外侧的一组值，中缝用负外边距叠掉一条描边，相邻控件拼成一体
+
+<XhDemo src="text-field/15-input-group" />
+
+### 多行与自动长高
+
+组合式函数把同一份状态交给作者自写的多行部件，高度在每次输入后按内容重新量
+
+<XhDemo src="text-field/16-multiline" />
+
 ## 产物
 
 | 层 | 值 |

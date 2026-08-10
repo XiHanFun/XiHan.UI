@@ -1,13 +1,7 @@
 <!-- 基础用法 | 值是字符串数组，各选各的，再点一次即取消；组内有几项就有几个 Tab 停靠点 -->
 <script setup lang="ts">
 import { ref } from "vue";
-import {
-  XhCheckboxGroupItem,
-  XhCheckboxGroupItemControl,
-  XhCheckboxGroupItemText,
-  XhCheckboxGroupLabel,
-  XhCheckboxGroupRoot,
-} from "@xihan-ui/vue";
+import { XhCheckboxGroupRoot } from "@xihan-ui/vue";
 
 const toppings = ref<string[]>(["cheese"]);
 const items = [
@@ -18,12 +12,7 @@ const items = [
 </script>
 
 <template>
-  <XhCheckboxGroupRoot v-model:value="toppings" name="topping">
-    <XhCheckboxGroupLabel>配料</XhCheckboxGroupLabel>
-    <XhCheckboxGroupItem v-for="t in items" :key="t.value" :value="t.value">
-      <XhCheckboxGroupItemControl />
-      <XhCheckboxGroupItemText>{{ t.label }}</XhCheckboxGroupItemText>
-    </XhCheckboxGroupItem>
-  </XhCheckboxGroupRoot>
+  <!-- 交出 collection 即可，组标题与每个条目的方框、文本由组件按数据铺开 -->
+  <XhCheckboxGroupRoot v-model:value="toppings" :collection="items" label="配料" name="topping" />
   <span>当前：{{ toppings.join("、") || "（无）" }}</span>
 </template>

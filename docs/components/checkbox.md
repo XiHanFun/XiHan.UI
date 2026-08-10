@@ -28,6 +28,24 @@ size 同时缩放方框与勾选标记，不写就是缺省档
 
 <XhDemo src="checkbox/04-size" />
 
+### 事件
+
+checked-change 带一份 { checked }，非受控时内部翻转也照发一次
+
+<XhDemo src="checkbox/05-event" />
+
+### 业务取值
+
+checked 只认布尔，用一个可写 computed 在中间换一次，绑上去的就是业务值
+
+<XhDemo src="checkbox/06-value-mapping" />
+
+### 自渲外壳与命令式聚焦
+
+组合式函数只给属性，节点由作者自己写，DOM 引用因此拿得到
+
+<XhDemo src="checkbox/07-focus" />
+
 ## 产物
 
 | 层 | 值 |

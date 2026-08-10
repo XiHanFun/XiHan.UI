@@ -1,43 +1,29 @@
 <!-- 尺寸 | size 改条目间距与字号，不写即缺省中档 -->
 <script setup lang="ts">
-import {
-  XhRadioGroupItem,
-  XhRadioGroupItemText,
-  XhRadioGroupLabel,
-  XhRadioGroupRoot,
-} from "@xihan-ui/vue";
+import { XhRadioGroupRoot } from "@xihan-ui/vue";
+
+const plans = [
+  { value: "free", label: "免费版" },
+  { value: "standard", label: "标准版" },
+];
 </script>
 
 <template>
   <div style="display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-start">
-    <XhRadioGroupRoot default-value="standard" size="sm">
-      <XhRadioGroupLabel>sm</XhRadioGroupLabel>
-      <XhRadioGroupItem value="free">
-        <XhRadioGroupItemText>免费版</XhRadioGroupItemText>
-      </XhRadioGroupItem>
-      <XhRadioGroupItem value="standard">
-        <XhRadioGroupItemText>标准版</XhRadioGroupItemText>
-      </XhRadioGroupItem>
-    </XhRadioGroupRoot>
+    <XhRadioGroupRoot
+      :collection="plans"
+      default-value="standard"
+      label="sm"
+      size="sm"
+    />
 
-    <XhRadioGroupRoot default-value="standard">
-      <XhRadioGroupLabel>缺省</XhRadioGroupLabel>
-      <XhRadioGroupItem value="free">
-        <XhRadioGroupItemText>免费版</XhRadioGroupItemText>
-      </XhRadioGroupItem>
-      <XhRadioGroupItem value="standard">
-        <XhRadioGroupItemText>标准版</XhRadioGroupItemText>
-      </XhRadioGroupItem>
-    </XhRadioGroupRoot>
+    <XhRadioGroupRoot :collection="plans" default-value="standard" label="缺省" />
 
-    <XhRadioGroupRoot default-value="standard" size="lg">
-      <XhRadioGroupLabel>lg</XhRadioGroupLabel>
-      <XhRadioGroupItem value="free">
-        <XhRadioGroupItemText>免费版</XhRadioGroupItemText>
-      </XhRadioGroupItem>
-      <XhRadioGroupItem value="standard">
-        <XhRadioGroupItemText>标准版</XhRadioGroupItemText>
-      </XhRadioGroupItem>
-    </XhRadioGroupRoot>
+    <XhRadioGroupRoot
+      :collection="plans"
+      default-value="standard"
+      label="lg"
+      size="lg"
+    />
   </div>
 </template>

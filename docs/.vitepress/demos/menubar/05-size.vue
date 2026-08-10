@@ -1,18 +1,30 @@
 <!-- 尺寸 | size 一档换掉 trigger 与菜单条目的字号与内边距，写在 root 上、浮层里的条目一并跟着变 -->
 <script setup lang="ts">
-import {
-  XhMenubarContent,
-  XhMenubarItem,
-  XhMenubarItemText,
-  XhMenubarPositioner,
-  XhMenubarRoot,
-  XhMenubarTrigger,
-} from "@xihan-ui/vue";
+import { XhMenubarRoot } from "@xihan-ui/vue";
 
 const sizes = [
   { value: "sm", label: "sm" },
   { value: undefined, label: "缺省" },
   { value: "lg", label: "lg" },
+];
+
+const menus = [
+  {
+    value: "file",
+    label: "文件",
+    items: [
+      { value: "new", label: "新建" },
+      { value: "open", label: "打开" },
+    ],
+  },
+  {
+    value: "view",
+    label: "视图",
+    items: [
+      { value: "zoom-in", label: "放大" },
+      { value: "zoom-out", label: "缩小" },
+    ],
+  },
 ];
 </script>
 
@@ -25,32 +37,7 @@ const sizes = [
       style="display: flex; align-items: center; gap: 12px"
     >
       <span style="inline-size: 60px; flex: none">{{ s.label }}</span>
-      <XhMenubarRoot :size="s.value">
-        <XhMenubarTrigger value="file">文件</XhMenubarTrigger>
-        <XhMenubarTrigger value="view">视图</XhMenubarTrigger>
-
-        <XhMenubarPositioner value="file">
-          <XhMenubarContent>
-            <XhMenubarItem value="new">
-              <XhMenubarItemText>新建</XhMenubarItemText>
-            </XhMenubarItem>
-            <XhMenubarItem value="open">
-              <XhMenubarItemText>打开</XhMenubarItemText>
-            </XhMenubarItem>
-          </XhMenubarContent>
-        </XhMenubarPositioner>
-
-        <XhMenubarPositioner value="view">
-          <XhMenubarContent>
-            <XhMenubarItem value="zoom-in">
-              <XhMenubarItemText>放大</XhMenubarItemText>
-            </XhMenubarItem>
-            <XhMenubarItem value="zoom-out">
-              <XhMenubarItemText>缩小</XhMenubarItemText>
-            </XhMenubarItem>
-          </XhMenubarContent>
-        </XhMenubarPositioner>
-      </XhMenubarRoot>
+      <XhMenubarRoot :size="s.value" :collection="menus" />
     </div>
   </div>
 </template>

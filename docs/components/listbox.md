@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-焦点与选中是两条线：方向键只搬焦点，Enter 或空格才落值；整组只占一个 Tab 位
+交一份 collection 就够：方向键只搬焦点，Enter 或空格才落值；整组只占一个 Tab 位
 
 <XhDemo src="listbox/01-basic" />
 
@@ -28,6 +28,24 @@ selection-mode 直接指定三种模式，extended 是「单击换一条、Ctrl 
 
 <XhDemo src="listbox/04-selection-mode" />
 
+### 弹出式选择
+
+把列表装进浮层：触发器显示当前选中项，落值即收起，浮层底部还能放操作按钮
+
+<XhDemo src="listbox/05-popover" />
+
+### 定高滚动
+
+用 --xh-listbox-content-max-h 压住列表高度，条目多了就在容器里滚；方向键走到哪条，视图跟到哪条
+
+<XhDemo src="listbox/06-scroll" />
+
+### 空态
+
+条目筛空时收起列表、亮出空态节点：它挂在 content 之外，方向键、连打检索与全选都看不见它
+
+<XhDemo src="listbox/07-empty" />
+
 ## 产物
 
 | 层 | 值 |
@@ -48,6 +66,7 @@ selection-mode 直接指定三种模式，extended 是「单击换一条、Ctrl 
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `collection` | `ListboxNode[]` |  | 条目数据，显示文本与禁用的事实源。给了它，条目部件只需报 value。 缺省即回到「文本与禁用都写在条目部件上」的老路。 |
 | `value` | `string \| string[]` |  | 选中值，给定即受控；单选可写成裸串，内部归一成数组。 |
 | `defaultValue` | `string \| string[]` |  |  |
 | `multiple` | `boolean` |  | selectionMode='multiple' 的简写；两者同时给时以 selectionMode 为准。 |
@@ -72,6 +91,7 @@ selection-mode 直接指定三种模式，extended 是「单击换一条、Ctrl 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string[]` | 选中集合；单选模式下长度 ≤ 1。 |
+| `collection` | `readonly ListboxNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
 | `selectionMode` | `ListboxSelectionMode` | 生效的选择模式。 |
 | `focusedValue` | `string \| null` | 焦点锚点；焦点不在列表内时为 null。 |
 | `disabled` | `boolean` |  |

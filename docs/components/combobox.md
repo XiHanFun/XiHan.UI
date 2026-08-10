@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-过滤由宿主自己算：组件把输入串交给 input-value，筛出哪几条渲染成 item 是调用方的事
+过滤由宿主自己算：组件把输入串交给 input-value，筛出哪几条交给 collection 是调用方的事
 
 <XhDemo src="combobox/01-basic" />
 
@@ -46,6 +46,42 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 
 <XhDemo src="combobox/07-size" />
 
+### 受控展开
+
+传了 open 就由宿主说了算：组件只报展开意图，这里满两个字符才真的把浮层放出来
+
+<XhDemo src="combobox/08-controlled-open" />
+
+### 选中后清空输入
+
+选中值一变就把输入串清掉，候选立刻回到全集，接着挑下一个不用先删字
+
+<XhDemo src="combobox/09-clear-after-select" />
+
+### 校验状态
+
+invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定自己撤掉
+
+<XhDemo src="combobox/10-invalid" />
+
+### 异步候选
+
+输入串每变一次就重新去远端查一遍，等结果的这段时间候选为空、由空态节点顶上
+
+<XhDemo src="combobox/11-async" />
+
+### 候选里的自定义内容
+
+条目内容是插槽：主文本之外还能带副标题与标记，过滤与键盘行为一点不变
+
+<XhDemo src="combobox/12-custom-content" />
+
+### 随表单提交
+
+根插槽把选中值交出来：在根里补一个隐藏输入承接它，值随原生表单一并提交；浮层收起时回车留给表单
+
+<XhDemo src="combobox/13-form" />
+
 ## 产物
 
 | 层 | 值 |
@@ -66,6 +102,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `collection` | `ComboboxNode[]` |  | 候选数据，显示文本与禁用的事实源。过滤仍归调用方：交进来的就是此刻该显示的那几条。 给了它，条目部件只需报 value，显示文本也不再从活 DOM 现查。 缺省即回到「文本写在条目里、现查 DOM」的老路。 |
 | `value` | `string \| string[]` |  | 选中值。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 单选写成裸串是简写，内部一律归一成数组。 |
 | `defaultValue` | `string \| string[]` |  |  |
 | `inputValue` | `string` |  | 输入框里的字符串。给定即受控，与选中值各自独立。 过滤不由组件做：调用方拿这个串去筛条目，把筛完的结果重新渲染进来。 |
@@ -105,6 +142,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
+| `collection` | `readonly ComboboxNodeMeta[]` | collection 推出的候选元信息，按数据顺序排列；没给 collection 即空数组。 |
 | `value` | `string[]` | 选中集合；单选模式下长度 ≤ 1，形状不随模式变。 |
 | `inputValue` | `string` | 输入框里的字符串。 |
 | `valueText` | `string \| null` | 单选选中项的显示文本；无选中或多选时为 null。 |

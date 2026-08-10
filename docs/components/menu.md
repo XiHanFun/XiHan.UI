@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-trigger / content / item 三件缺一不可，positioner 负责摆位置
+collection 是条目的事实源：文本与禁用都写在数据里，trigger / positioner / content / item 由组件铺开
 
 <XhDemo src="menu/01-basic" />
 
@@ -34,6 +34,36 @@ size 换的是条目的内边距、间距与字号；三档各挂一个菜单，
 
 <XhDemo src="menu/05-size" />
 
+### 条目里的图标与快捷键
+
+条目内容归作者：前面挂图标、后面挂快捷键，皮肤把它们按 flex 排开
+
+<XhDemo src="menu/06-icon" />
+
+### 菜单里的非条目内容
+
+content 里可以直接放任意节点；不是 item 就不进方向键行程，也选不中
+
+<XhDemo src="menu/07-custom-content" />
+
+### 条目自带的属性与事件
+
+写在条目上的属性直接落到那一层 DOM：原生属性照样透传，自己的 click 与内部的选中处理并存
+
+<XhDemo src="menu/08-item-attrs" />
+
+### 悬停展开
+
+触发器与浮层各挂一对进出事件，进出各自延时；两边的延时都由宿主的定时器管
+
+<XhDemo src="menu/09-hover" />
+
+### 分组与标记位
+
+组标题与组内条目用 role="group" 加 aria-labelledby 对上；中间包一层不影响方向键行程，条目里标记位与文字各占一段
+
+<XhDemo src="menu/10-group" />
+
 ## 产物
 
 | 层 | 值 |
@@ -54,6 +84,7 @@ size 换的是条目的内边距、间距与字号；三档各挂一个菜单，
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `collection` | `MenuNode[]` |  | 条目数据，显示文本与禁用的事实源。给了它，条目部件只需报 value。 缺省即回到「文本与禁用都写在条目部件上」的老路。 |
 | `open` | `boolean` |  | 展开态，给定即受控；受控下内部不自改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
 | `placement` | `Placement` |  |  |
@@ -80,6 +111,7 @@ size 换的是条目的内边距、间距与字号；三档各挂一个菜单，
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
+| `collection` | `readonly MenuNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
 | `focusedValue` | `string \| null` | 焦点锚点；收起时为 null。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `getTriggerProps` | `() => T['button']` |  |

@@ -22,6 +22,36 @@
 
 <XhDemo src="date-picker/03-unavailable" />
 
+### 禁用 / 只读 / 校验失败
+
+禁用整条退出 Tab 序，只读仍能展开翻月只是落不了值，invalid 只改标注
+
+<XhDemo src="date-picker/04-state" />
+
+### 浮层里的快捷选项
+
+日历下面这排按钮是作者自己的节点，写值与收起都走根插槽给的入口
+
+<XhDemo src="date-picker/05-shortcuts" />
+
+### 受控展开与事件
+
+open 交给宿主持有，值、展开、聚焦日三条变化各自播报
+
+<XhDemo src="date-picker/06-events" />
+
+### 日期加时间
+
+浮层里日历下面接一台时间输入，选中日期不收起，两份值由宿主拼成一条
+
+<XhDemo src="date-picker/07-datetime" />
+
+### 按月选择
+
+浮层里换成年份翻页加十二个月，点完写值并收起；输入行只留年、月两段
+
+<XhDemo src="date-picker/08-month-panel" />
+
 ## 产物
 
 | 层 | 值 |

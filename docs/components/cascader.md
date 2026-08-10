@@ -46,6 +46,54 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 
 <XhDemo src="cascader/07-size" />
 
+### 校验状态
+
+invalid 让 trigger 报 aria-invalid、描边换成错误色；浮层照常展开，判定归宿主，这里是没选就报错
+
+<XhDemo src="cascader/08-invalid" />
+
+### 后端字段映射
+
+collection 只认 value / label / disabled / children 这几个名字，后端字段不一致就在进组件前转一道
+
+<XhDemo src="cascader/09-custom-field" />
+
+### 条目自定义内容
+
+条目里放什么由作者定：文本两侧各加一段，是不是分支直接读 item 的 branch
+
+<XhDemo src="cascader/10-rich-item" />
+
+### 子节点按需加载
+
+先给分支塞一个禁用的占位子节点让子列开得出来，展开到它时才去取真数据换掉占位
+
+<XhDemo src="cascader/11-lazy-load" />
+
+### 长列表只渲可视区
+
+列自己就是滚动容器：按滚动位置切一段挂出来，其余交给撑高块，焦点那一条无论在不在窗口里都挂着
+
+<XhDemo src="cascader/12-long-column" />
+
+### 父子联动勾选
+
+机器按点了哪条路径原样翻转，父子传导与回显折叠都在宿主这一侧算完再写回 value
+
+<XhDemo src="cascader/13-cascade-check" />
+
+### 浮层底栏
+
+content 的子节点全由作者写：列装进一层横排容器，底栏与它并列，就横跨了全部列
+
+<XhDemo src="cascader/14-content-footer" />
+
+### 命令式聚焦与展开
+
+trigger 部件渲染的就是原生按钮，模板 ref 拿到它即可 focus / blur；开合走根插槽的 setOpen
+
+<XhDemo src="cascader/15-imperative-focus" />
+
 ## 产物
 
 | 层 | 值 |

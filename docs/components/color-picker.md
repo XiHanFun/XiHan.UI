@@ -28,6 +28,42 @@ disabled 同时挡住触发器与面板内的所有交互
 
 <XhDemo src="color-picker/04-disabled" />
 
+### 透明度
+
+alpha 打开后多一条透明度滑杆，值串跟着带上透明度；关掉时透明度恒是不透明，那条滑杆整条不可用
+
+<XhDemo src="color-picker/05-alpha" />
+
+### 值串写法
+
+format 只决定对外的序列化，工作色始终是同一套；三种写法各挑一个色，改动后按各自的写法产出
+
+<XhDemo src="color-picker/06-format" />
+
+### 数值输入与屏幕取色
+
+四个数值框各管一路，回车才收下，收不下的留着草稿并标红；宿主环境没有取色接口时那个按钮自己禁用
+
+<XhDemo src="color-picker/07-inputs" />
+
+### 空态与面板按钮
+
+受控时「没有颜色」由宿主表达：值置空，触发器换成占位方框；面板底下的两个按钮是作者自己的，用插槽递出来的 setOpen 收起浮层
+
+<XhDemo src="color-picker/08-clearable" />
+
+### 随表单提交
+
+值串的表单出口由作者自己挂：插槽把当前值递出来，一份 input[type=hidden] 就带得走；浮层就地渲染，节点始终留在 form 里
+
+<XhDemo src="color-picker/09-form" />
+
+### 面板里切换写法
+
+format 只管对外的序列化：换过之后把当前值原样写回一次，值串就改按新写法产出，工作色一点不动
+
+<XhDemo src="color-picker/10-format-switch" />
+
 ## 产物
 
 | 层 | 值 |

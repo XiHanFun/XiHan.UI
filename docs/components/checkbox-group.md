@@ -28,6 +28,30 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 
 <XhDemo src="checkbox-group/04-disabled" />
 
+### 栅格排布
+
+组容器的行列只是缺省排布，行内把 display 改成 grid 就能摆成多列
+
+<XhDemo src="checkbox-group/05-grid" />
+
+### 受控与拦截
+
+传了 value 就由宿主说了算，value-change 只报意图；这里最多留两项
+
+<XhDemo src="checkbox-group/06-event" />
+
+### 整组换档
+
+方框边长、字号、间距与选中色都是组件令牌，写在组容器上整组一起生效
+
+<XhDemo src="checkbox-group/07-scale" />
+
+### 数字主键
+
+条目身份存在 DOM 属性上，值一律是字符串；数字主键在进出两侧各转一次
+
+<XhDemo src="checkbox-group/08-numeric-value" />
+
 ## 产物
 
 | 层 | 值 |
@@ -48,6 +72,7 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `collection` | `CheckboxGroupNode[]` |  | 条目数据，显示文本与禁用的事实源。给了它，条目部件只需报 value。 缺省即回到「文本与禁用都写在条目部件上」的老路。 |
 | `value` | `string[]` |  | 选中值集合。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string[]` |  |  |
 | `itemValues` | `string[]` |  | 组内全部条目的值，按书写顺序声明；不给时 checkedState 退化成 none / some 两态。 |
@@ -73,6 +98,7 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string[]` |  |
+| `collection` | `readonly CheckboxGroupNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
 | `checkedState` | `CheckboxGroupCheckedState` |  |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |

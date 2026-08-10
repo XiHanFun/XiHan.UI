@@ -1,24 +1,19 @@
-<!-- 基础用法 | 组内只有一个 Tab 停靠点，进组后四个方向键都能切换，隐藏输入与选中圆点由条目自行装配 -->
+<!-- 基础用法 | collection 是条目的事实源，交一组数据即铺开整组；组内只有一个 Tab 停靠点，进组后四个方向键都能切换 -->
 <script setup lang="ts">
-import {
-  XhRadioGroupItem,
-  XhRadioGroupItemText,
-  XhRadioGroupLabel,
-  XhRadioGroupRoot,
-} from "@xihan-ui/vue";
+import { XhRadioGroupRoot } from "@xihan-ui/vue";
+
+const plans = [
+  { value: "free", label: "免费版" },
+  { value: "standard", label: "标准版" },
+  { value: "pro", label: "专业版" },
+];
 </script>
 
 <template>
-  <XhRadioGroupRoot default-value="standard" name="plan">
-    <XhRadioGroupLabel>套餐</XhRadioGroupLabel>
-    <XhRadioGroupItem value="free">
-      <XhRadioGroupItemText>免费版</XhRadioGroupItemText>
-    </XhRadioGroupItem>
-    <XhRadioGroupItem value="standard">
-      <XhRadioGroupItemText>标准版</XhRadioGroupItemText>
-    </XhRadioGroupItem>
-    <XhRadioGroupItem value="pro">
-      <XhRadioGroupItemText>专业版</XhRadioGroupItemText>
-    </XhRadioGroupItem>
-  </XhRadioGroupRoot>
+  <XhRadioGroupRoot
+    :collection="plans"
+    default-value="standard"
+    label="套餐"
+    name="plan"
+  />
 </template>

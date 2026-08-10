@@ -34,6 +34,12 @@ tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里
 
 <XhDemo src="loading-bar/05-tone" />
 
+### 挂在局部
+
+条子默认贴视口顶边，改写成 absolute 再套一个相对定位的框子，它就只贴这块卡片的上沿
+
+<XhDemo src="loading-bar/06-container" />
+
 ## 产物
 
 | 层 | 值 |

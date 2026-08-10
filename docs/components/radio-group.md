@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-组内只有一个 Tab 停靠点，进组后四个方向键都能切换，隐藏输入与选中圆点由条目自行装配
+collection 是条目的事实源，交一组数据即铺开整组；组内只有一个 Tab 停靠点，进组后四个方向键都能切换
 
 <XhDemo src="radio-group/01-basic" />
 
@@ -40,6 +40,12 @@ size 改条目间距与字号，不写即缺省中档
 
 <XhDemo src="radio-group/06-size" />
 
+### 数据驱动
+
+自家字段叫什么由数据定，映射成 collection 的 value / label / disabled 即可
+
+<XhDemo src="radio-group/07-options" />
+
 ## 产物
 
 | 层 | 值 |
@@ -60,6 +66,7 @@ size 改条目间距与字号，不写即缺省中档
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `collection` | `RadioGroupNode[]` |  | 条目数据，显示文本与禁用的事实源。给了它，条目部件只需报 value。 缺省即回到「文本与禁用都写在条目部件上」的老路。 |
 | `value` | `string \| null` |  |  |
 | `defaultValue` | `string \| null` |  |  |
 | `disabled` | `boolean` |  |  |
@@ -83,6 +90,7 @@ size 改条目间距与字号，不写即缺省中档
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string \| null` |  |
+| `collection` | `readonly RadioGroupNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
 | `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
 | `setValue` | `(next: string) => void` |  |
 | `getRootProps` | `() => T['element']` |  |

@@ -46,6 +46,36 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 <XhDemo src="tags-input/07-size" />
 
+### 随表单提交
+
+写了 name 与 hidden-input 才参与提交，整份标签按断词符拼成一串；框里没内容时回车留给表单
+
+<XhDemo src="tags-input/08-form" />
+
+### 入库前统一改写
+
+给了 value 就由宿主说了算：组件只发变更意图，写回什么形状在这里定
+
+<XhDemo src="tags-input/09-normalize" />
+
+### 候选词一键添加
+
+根插槽给出 addValue 与 atMax：输入框之外再开一条加标签的路，上限一样管得住
+
+<XhDemo src="tags-input/10-suggest" />
+
+### 外部触发的输入会话
+
+输入部件平时收起，按「添加」才露面并聚焦；打字时给候选，选中即落标签，失焦按 blur-behavior 收尾
+
+<XhDemo src="tags-input/11-custom-input" />
+
+### 标签用对象
+
+组件里存的是标识那一份，显示哪一份由作者定：条目文本渲染 label，提交仍按标识拼串
+
+<XhDemo src="tags-input/12-option-value" />
+
 ## 产物
 
 | 层 | 值 |

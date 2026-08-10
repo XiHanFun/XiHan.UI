@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-单选分段控件：root 是 radiogroup、条目是 radio；整组只占一个 Tab 位，进组后四个方向键都能走
+单选分段控件：条目由 collection 铺开，root 是 radiogroup、条目是 radio；整组只占一个 Tab 位，进组后四个方向键都能走
 
 <XhDemo src="toggle-group/01-basic" />
 
@@ -28,6 +28,24 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 
 <XhDemo src="toggle-group/04-disabled" />
 
+### 条目来自数据
+
+条目由一份数组渲染，值、文案与禁用都写在数据里；运行期增删条目也照常，删掉的正好是选中项时由宿主把值收拾干净
+
+<XhDemo src="toggle-group/05-dynamic-items" />
+
+### 拦下一次切换
+
+受控时 value-change 是唯一出口：宿主不写回，值就原样不动，条件不满足的那一段永远切不过去
+
+<XhDemo src="toggle-group/06-guard" />
+
+### 整组换一档尺寸
+
+高度、内边距与字号各是一个组件令牌，写在 root 上由整组条目继承，不必逐个条目改
+
+<XhDemo src="toggle-group/07-size" />
+
 ## 产物
 
 | 层 | 值 |
@@ -48,6 +66,7 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `collection` | `ToggleGroupNode[]` |  | 条目数据，显示文本与禁用的事实源。给了它，条目部件只需报 value。 缺省即回到「文本与禁用都写在条目部件上」的老路。 |
 | `value` | `ToggleGroupValue` |  | 选中值。给定即受控：内部不再自改，只发 onValueChange。 |
 | `defaultValue` | `ToggleGroupValue` |  |  |
 | `multiple` | `boolean` |  | 允许多项同时选中；false 时选中一项即挤掉其余。 |
@@ -72,6 +91,7 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string[]` | 当前选中集合，恒为数组（单选时长度 ≤ 1）。 |
+| `collection` | `readonly ToggleGroupNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
 | `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
 | `multiple` | `boolean` |  |
 | `disabled` | `boolean` |  |

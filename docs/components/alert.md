@@ -22,6 +22,18 @@ closable 开启后才渲染关闭按钮；open 受控时由宿主决定去留
 
 <XhDemo src="alert/03-closable" />
 
+### 图标
+
+icon 部件排在标题前面，颜色取当前语气的强调色；内容由作者塞，字形与内联 svg 都行
+
+<XhDemo src="alert/04-icon" />
+
+### 自定义外观
+
+描边、底色、标题色、圆角各是一个组件令牌；描边槽位换成透明就只剩淡底，尺寸不变
+
+<XhDemo src="alert/05-custom" />
+
 ## 产物
 
 | 层 | 值 |

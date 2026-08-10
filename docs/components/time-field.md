@@ -46,6 +46,18 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 
 <XhDemo src="time-field/07-size" />
 
+### 外部写值与清空
+
+根插槽给出 setValue / clear 与空、越界两个判据，按钮照它们摆
+
+<XhDemo src="time-field/08-actions" />
+
+### 可选值白名单
+
+值交给宿主持有，写回来的时间被吸附到清单里的一格，上下键与数字键因此都落在清单上
+
+<XhDemo src="time-field/09-whitelist" />
+
 ## 产物
 
 | 层 | 值 |

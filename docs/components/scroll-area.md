@@ -28,6 +28,12 @@ orientation 关掉的那条轴滚动条恒不显形，视口那一向也不再�
 
 <XhDemo src="scroll-area/04-orientation" />
 
+### 收起的等待
+
+type 为 scroll 时滚动条停手后不立刻收起，scrollHideDelay 决定还留多少毫秒
+
+<XhDemo src="scroll-area/05-hide-delay" />
+
 ## 产物
 
 | 层 | 值 |

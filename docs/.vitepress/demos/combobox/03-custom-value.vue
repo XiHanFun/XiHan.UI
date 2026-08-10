@@ -1,20 +1,7 @@
 <!-- 允许自由文本 | allow-custom-value 让没匹配上候选的输入也能落值，适合标签、邮箱这类开放集合 -->
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import {
-  XhComboboxClearTrigger,
-  XhComboboxContent,
-  XhComboboxControl,
-  XhComboboxEmpty,
-  XhComboboxInput,
-  XhComboboxItem,
-  XhComboboxItemIndicator,
-  XhComboboxItemText,
-  XhComboboxLabel,
-  XhComboboxPositioner,
-  XhComboboxRoot,
-  XhComboboxTrigger,
-} from "@xihan-ui/vue";
+import { XhComboboxRoot } from "@xihan-ui/vue";
 
 const frameworks = [
   { value: "vue", label: "Vue" },
@@ -34,24 +21,11 @@ const filtered = computed(() => {
   <XhComboboxRoot
     v-model:value="value"
     v-model:input-value="query"
+    :collection="filtered"
+    label="技术栈"
+    empty="没有候选，按 Enter 直接用这串文本"
     allow-custom-value
     placeholder="选一个或直接打字"
-  >
-    <XhComboboxLabel>技术栈</XhComboboxLabel>
-    <XhComboboxControl>
-      <XhComboboxInput />
-      <XhComboboxTrigger>▾</XhComboboxTrigger>
-      <XhComboboxClearTrigger>✕</XhComboboxClearTrigger>
-    </XhComboboxControl>
-    <XhComboboxPositioner>
-      <XhComboboxContent>
-        <XhComboboxItem v-for="f in filtered" :key="f.value" :value="f.value">
-          <XhComboboxItemText>{{ f.label }}</XhComboboxItemText>
-          <XhComboboxItemIndicator>✓</XhComboboxItemIndicator>
-        </XhComboboxItem>
-      </XhComboboxContent>
-      <XhComboboxEmpty>没有候选，按 Enter 直接用这串文本</XhComboboxEmpty>
-    </XhComboboxPositioner>
-  </XhComboboxRoot>
+  />
   <p>当前值：{{ value[0] ?? "（未选）" }}</p>
 </template>

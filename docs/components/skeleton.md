@@ -22,6 +22,12 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 
 <XhDemo src="skeleton/03-loading" />
 
+### 按版面占位
+
+骨架条的宽高由内联样式与组件令牌定，占位形状贴着真内容将来的样子
+
+<XhDemo src="skeleton/04-layout" />
+
 ## 产物
 
 | 层 | 值 |

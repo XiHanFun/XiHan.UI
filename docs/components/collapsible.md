@@ -28,6 +28,18 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 
 <XhDemo src="collapsible/04-size" />
 
+### 自定义展开标记
+
+折叠区域不带指示器部件，标记由作者按 open 自己画，触发器两端对齐排
+
+<XhDemo src="collapsible/05-marker" />
+
+### 展开动画
+
+收起时节点不卸载，作者接管内容区的 display，用一条行高过渡就能平滑展开
+
+<XhDemo src="collapsible/06-transition" />
+
 ## 产物
 
 | 层 | 值 |

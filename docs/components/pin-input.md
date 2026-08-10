@@ -46,6 +46,24 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 <XhDemo src="pin-input/07-size" />
 
+### 分组排布
+
+格子由作者逐个写出，中间插什么都行；下标接着排，跳格与整串粘贴仍按文档序走
+
+<XhDemo src="pin-input/08-grouped" />
+
+### 填满才可提交
+
+complete 在每格都有字时为真，作者据此点亮提交按钮；clear 一次清空整组
+
+<XhDemo src="pin-input/09-complete" />
+
+### 只读
+
+格子带上原生 readonly，值走受控且宿主不回写：能聚焦、能选中复制，改不动
+
+<XhDemo src="pin-input/10-readonly" />
+
 ## 产物
 
 | 层 | 值 |

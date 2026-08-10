@@ -1,16 +1,6 @@
 <!-- 尺寸 | 不传 size 即默认档；行高、内边距与字号一起换档，浮层里的候选也跟着变 -->
 <script setup lang="ts">
-import {
-  XhComboboxContent,
-  XhComboboxControl,
-  XhComboboxInput,
-  XhComboboxItem,
-  XhComboboxItemText,
-  XhComboboxLabel,
-  XhComboboxPositioner,
-  XhComboboxRoot,
-  XhComboboxTrigger,
-} from "@xihan-ui/vue";
+import { XhComboboxRoot } from "@xihan-ui/vue";
 
 const sizes = [
   { size: "sm", label: "sm" },
@@ -31,22 +21,11 @@ const fruits = [
       v-for="s in sizes"
       :key="s.label"
       :size="s.size"
+      :collection="fruits"
+      :label="s.label"
       open-on-click
       placeholder="选择水果"
       style="width: 200px"
-    >
-      <XhComboboxLabel>{{ s.label }}</XhComboboxLabel>
-      <XhComboboxControl>
-        <XhComboboxInput />
-        <XhComboboxTrigger>▾</XhComboboxTrigger>
-      </XhComboboxControl>
-      <XhComboboxPositioner>
-        <XhComboboxContent>
-          <XhComboboxItem v-for="f in fruits" :key="f.value" :value="f.value">
-            <XhComboboxItemText>{{ f.label }}</XhComboboxItemText>
-          </XhComboboxItem>
-        </XhComboboxContent>
-      </XhComboboxPositioner>
-    </XhComboboxRoot>
+    />
   </div>
 </template>

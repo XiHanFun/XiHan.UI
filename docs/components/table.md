@@ -34,6 +34,72 @@ size 只落成 root 的 data-size，换的是单元格纵向内边距与字号�
 
 <XhDemo src="table/05-size" />
 
+### 空态与加载态
+
+两个状态节点常挂着只靠 hidden 显隐：表体为空且在取数时露加载态，取数完了没有行才露空态
+
+<XhDemo src="table/06-empty-loading" />
+
+### 脚注合计
+
+footer 把行号空间的最后一行留给脚注；脚注单元格不属于任何数据行，也就没有选中与禁用可言
+
+<XhDemo src="table/07-footer" />
+
+### 表头吸顶与列吸附
+
+root 自己就是那个滚动容器：stickyHeader 钉住表头，列上标 sticky 的钉住那一列
+
+<XhDemo src="table/08-sticky" />
+
+### 单选
+
+selectionMode 给 single：选中集合最多一个元素，点已选中的那行再点一次就清空，焦点行按空格同理
+
+<XhDemo src="table/09-single-selection" />
+
+### 跨列单元格
+
+colspan 从它自己那一列往后算，报成 aria-colspan；1 与省略同义，所以只在真跨了列时写
+
+<XhDemo src="table/10-colspan" />
+
+### 单元格就地编辑
+
+表体的方向键与 Home/End 是挂在 body 上的冒泡监听，可编辑控件上掐断冒泡这些键就回归输入框自己
+
+<XhDemo src="table/11-editable-cell" />
+
+### 多行表头与表头分组
+
+表头写几行就是几行；分组格的跨列数与两行表头的行号由标记自报，columns 仍只登记叶子列
+
+<XhDemo src="table/12-group-header" />
+
+### 列过滤
+
+过滤把手是列标题里的一段内容，过滤结果就是宿主算好后传进来的那份 rows；表头是表体的兄弟，把手上的按键不会被表体收走
+
+<XhDemo src="table/13-column-filter" />
+
+### 树形表格
+
+rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自报，缩进落在首格的内边距上
+
+<XhDemo src="table/14-tree-rows" />
+
+### 拖拽调列宽
+
+列宽的事实源是 columns[].width，把手只是列标题里的一段标记：按下量起点，移动改宽度，连接层随即写进列标题与整列单元格
+
+<XhDemo src="table/15-column-resize" />
+
+### 只渲窗口内的行
+
+全量 rows 照常交给 root（那只是行序与行号的元信息，不产生 DOM），标记里只渲可见那一段，首尾用两块空白撑出真实滚动高度
+
+<XhDemo src="table/16-virtual-rows" />
+
 ## 产物
 
 | 层 | 值 |

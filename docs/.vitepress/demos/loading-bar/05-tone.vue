@@ -1,5 +1,6 @@
 <!-- 语气 | tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里给它写死 absolute 并配一个相对定位的框子，六条才留在示例里而不是叠到页面顶边 -->
 <script setup lang="ts">
+import type { CSSProperties } from "vue";
 import {
   XhLoadingBarRange,
   XhLoadingBarRoot,
@@ -16,7 +17,7 @@ const tones = [
 ];
 
 // 框住条子：条子改走 absolute，inset 就落在这个框上
-const frameStyle = {
+const frameStyle: CSSProperties = {
   position: "relative",
   overflow: "hidden",
   inlineSize: "100%",

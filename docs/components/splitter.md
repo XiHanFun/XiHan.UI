@@ -28,6 +28,18 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 
 <XhDemo src="splitter/04-disabled" />
 
+### 嵌套
+
+面板里再放一套分栏即可拆出第二根轴，里外两层各管各的尺寸，互不干涉
+
+<XhDemo src="splitter/05-nested" />
+
+### 分隔条里放内容
+
+分隔条的默认插槽收作者写的把手，粗细由 --xh-splitter-trigger-thickness 让出位置
+
+<XhDemo src="splitter/06-trigger-content" />
+
 ## 产物
 
 | 层 | 值 |

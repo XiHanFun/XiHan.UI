@@ -40,6 +40,18 @@ size 换序号圆点的直径与标题、说明的字号，不传 size 即默认
 
 <XhDemo src="steps/06-size" />
 
+### 点击切步与禁用某步
+
+点标签直接切到那一步；单步标了 disabled 就点不动，方向键也跳过它
+
+<XhDemo src="steps/07-click" />
+
+### 出错的那一步
+
+步序只认下标，「这一步出错了」是宿主自己的数据：在那一步的 item 上换掉标记与颜色令牌
+
+<XhDemo src="steps/08-error-step" />
+
 ## 产物
 
 | 层 | 值 |

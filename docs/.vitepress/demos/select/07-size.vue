@@ -1,17 +1,6 @@
 <!-- 尺寸 | 触发器与浮层条目一起换档，不传 size 即默认档 -->
 <script setup lang="ts">
-import {
-  XhSelectContent,
-  XhSelectIndicator,
-  XhSelectItem,
-  XhSelectItemIndicator,
-  XhSelectItemText,
-  XhSelectLabel,
-  XhSelectPositioner,
-  XhSelectRoot,
-  XhSelectTrigger,
-  XhSelectValueText,
-} from "@xihan-ui/vue";
+import { XhSelectRoot } from "@xihan-ui/vue";
 
 // 中间一档不写 size，用 undefined 表达
 const sizes = [
@@ -32,22 +21,10 @@ const fruits = [
       v-for="s in sizes"
       :key="s.label"
       :size="s.size"
+      :collection="fruits"
       :default-value="['apple']"
+      :label="s.label"
       placeholder="请选择"
-    >
-      <XhSelectLabel>{{ s.label }}</XhSelectLabel>
-      <XhSelectTrigger>
-        <XhSelectValueText />
-        <XhSelectIndicator>▾</XhSelectIndicator>
-      </XhSelectTrigger>
-      <XhSelectPositioner>
-        <XhSelectContent>
-          <XhSelectItem v-for="f in fruits" :key="f.value" :value="f.value">
-            <XhSelectItemText>{{ f.label }}</XhSelectItemText>
-            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
-          </XhSelectItem>
-        </XhSelectContent>
-      </XhSelectPositioner>
-    </XhSelectRoot>
+    />
   </div>
 </template>

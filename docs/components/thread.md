@@ -22,6 +22,36 @@ status 由宿主持有，组件只把它透出成 data-status；viewport 恒 ari
 
 <XhDemo src="thread/03-status" />
 
+### 触底加载更多
+
+stick-change 报到底，宿主据此去取下一页；先往上滚一段再滚回底部，取回来的消息追加在后面
+
+<XhDemo src="thread/04-load-more" />
+
+### 自己画回到底部的入口
+
+root 的作用域插槽给出 showScrollButton 与 scrollToBottom，不用内置那颗浮动按钮也能拼出一条自己的提示栏
+
+<XhDemo src="thread/05-scroll-control" />
+
+### 会话页
+
+线程管滚动与粘底，编辑器管收话：发出去先落一条自己的消息，回话一段段写进来时消息区自动跟到底
+
+<XhDemo src="thread/06-chat" />
+
+### 向上加载更早的消息
+
+视口的滚动事件直接监听：滚到接近顶部就去取上一页，取回来的插在最前面
+
+<XhDemo src="thread/07-load-earlier" />
+
+### 跳到指定的一条
+
+视口节点与消息节点都在宿主手上：滚到顶、定位到某一条都是一次普通的 DOM 操作
+
+<XhDemo src="thread/08-scroll-to" />
+
 ## 产物
 
 | 层 | 值 |

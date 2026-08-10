@@ -28,6 +28,30 @@ size 落成 content 的 data-size，只改面板的最大宽度；三档各自�
 
 <XhDemo src="dialog/04-size" />
 
+### 内容滚动
+
+标题与底部操作留在原处，只有中间那块长文在自己的框里滚
+
+<XhDemo src="dialog/05-scroll" />
+
+### 异步确认
+
+提交期间按钮转圈，Esc 与点遮罩这两条出口一并封住，落定之后才把 open 写回 false
+
+<XhDemo src="dialog/06-async" />
+
+### 命令式确认框
+
+一次函数调用把描述符推进表里并展开对话框；拿回的对象随后可改标题、正文与按钮状态，表里就是当前所有实例
+
+<XhDemo src="dialog/07-imperative" />
+
+### 拖动标题栏挪窗口
+
+指针按在标题上，顺着 DOM 找到 content 部件，把累计位移写进它的 translate；入场动画走的是 transform，两者互不覆盖
+
+<XhDemo src="dialog/08-draggable" />
+
 ## 产物
 
 | 层 | 值 |

@@ -34,6 +34,12 @@ size 换整条路径的字号与各层之间的间距，不传 size 即默认档
 
 <XhDemo src="breadcrumb/05-size" />
 
+### 层级下拉
+
+某一层要换去处时，把菜单整套放进 item 里；面包屑只管这一层的排版
+
+<XhDemo src="breadcrumb/06-dropdown" />
+
 ## 产物
 
 | 层 | 值 |

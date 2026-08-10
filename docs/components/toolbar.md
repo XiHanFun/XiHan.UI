@@ -34,6 +34,18 @@ size 只换整条的内边距与条目间的间距，条目自身的高度与字
 
 <XhDemo src="toolbar/05-size" />
 
+### 图标条目
+
+只画图标的条目必须自带无障碍名：aria-label 直接写在条目上，透传到那一层 DOM
+
+<XhDemo src="toolbar/06-icon-item" />
+
+### 对齐与分布
+
+工具条只定主轴与条目间距，怎么分布交给 CSS：justify-content 一改，同一条就贴尾、居中或两端摊开
+
+<XhDemo src="toolbar/07-align" />
+
 ## 产物
 
 | 层 | 值 |

@@ -22,6 +22,36 @@
 
 <XhDemo src="image/03-size" />
 
+### 回退延迟与原生属性
+
+fallback-delay 决定回退内容多久才露面，Infinity 表示加载期间一直不露面、只有失败才显；写在 image 部件上的原生属性照常落到底层图片元素上
+
+<XhDemo src="image/04-fallback-delay" />
+
+### 按状态分流的回退内容
+
+根插槽把 status 交出来：加载中给占位、失败给提示与重试入口，两套内容共用同一个回退部件
+
+<XhDemo src="image/05-status-slot" />
+
+### 点开看大图
+
+缩略图的点击与键盘由属性透传自己接，放大层是一个对话框，里面再放一份独立的图片实例
+
+<XhDemo src="image/06-preview" />
+
+### 一组图共用一个预览层
+
+图与图之间不必互相认识：宿主拿着地址数组与当前下标，预览层里只放一份图片实例
+
+<XhDemo src="image/07-group-preview" />
+
+### 自己决定何时取图
+
+src 是响应式的：进入视口前不给地址，观察器命中再换上，机器立刻走一遍完整加载
+
+<XhDemo src="image/08-lazy-observer" />
+
 ## 产物
 
 | 层 | 值 |

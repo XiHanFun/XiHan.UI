@@ -40,6 +40,24 @@ size 只改高度、内边距与字号，不写就是缺省档
 
 <XhDemo src="toggle/06-size" />
 
+### 图标
+
+默认插槽收任意内容，图标与文字之间的空隙由 --xh-toggle-gap 给；只放图标时按钮没有可见文字，名字得由 aria-label 补上
+
+<XhDemo src="toggle/07-icon" />
+
+### 变化回调
+
+pressed-change 每次带着 details 报一次按下意图；不接 v-model 时它就是拿到新值的唯一出口
+
+<XhDemo src="toggle/08-events" />
+
+### 请求在途
+
+受控的 pressed 不写回就不会动，在途期间来的意图直接丢掉；忙碌反馈由 aria-busy 与一枚转圈补在按钮上
+
+<XhDemo src="toggle/09-pending" />
+
 ## 产物
 
 | 层 | 值 |

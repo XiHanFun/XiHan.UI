@@ -34,6 +34,12 @@ size 三档改直径、weight 三档改 stroke-width；缺省档不落 data-* �
 
 <XhDemo src="icon/05-tone" />
 
+### 前景分级
+
+图标没有底色，前景是一个组件令牌；跟正文取同一族文字色，图标就跟着排出主次
+
+<XhDemo src="icon/06-depth" />
+
 ## 产物
 
 | 层 | 值 |
