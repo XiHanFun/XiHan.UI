@@ -173,6 +173,30 @@ export const tabsSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '焦点从组外落到容器：已有选中项时落在选中项上，不是第一个',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: { defaultValue: 'three' },
+      steps: [
+        {
+          kind: 'focus',
+          part: 'list',
+          expect: {
+            // APG：焦点进入 tablist 时落在已激活的那个 tab 上。落第一个会让读屏
+            // 播报「标签 1，未选中」，与屏幕上高亮的第三个对不上
+            activeElement: { part: 'trigger[2]', exact: true },
+            parts: {
+              'list': { tabindex: '-1' },
+              'trigger[0]': { 'aria-selected': 'false', 'tabindex': '-1' },
+              'trigger[1]': { 'aria-selected': 'false', 'tabindex': '-1' },
+              'trigger[2]': { 'aria-selected': 'true', 'tabindex': '0', 'data-state': 'active' },
+            },
+            // 落焦不改选中，所以一个事件都不该发
+            events: [],
+          },
+        },
+      ],
+    },
+    {
       name: 'automatic：ArrowRight 移动焦点并顺带切换选中',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['tabs.kbd.next'],

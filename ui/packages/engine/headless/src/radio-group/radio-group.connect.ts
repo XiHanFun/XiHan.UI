@@ -2,7 +2,7 @@ import type { ItemQuery } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { RadioGroupApi, RadioGroupItemProps, RadioGroupNodeMeta, RadioGroupSchema } from './radio-group.types'
-import { focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
+import { anchorItem, focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/kernel'
 import { radioGroupAnatomy } from './radio-group.anatomy'
 
@@ -89,8 +89,9 @@ export function connectRadioGroup<T extends PropTypes>(
         // 只接管从组外进来的焦点
         if (contains(container, e.relatedTarget as Node | null))
           return
+        // 落在锚点上：APG 要求焦点进组时落在已选中的那个，没有选中项才落第一个
         const items = queryItems(container, ITEM_QUERY)
-        focusItem(navigateItems(items, null, 'first'))
+        focusItem(anchorItem(items, anchor) ?? navigateItems(items, null, 'first'))
       },
       'onFocusOut': (e: FocusEvent) => {
         const container = e.currentTarget as HTMLElement
