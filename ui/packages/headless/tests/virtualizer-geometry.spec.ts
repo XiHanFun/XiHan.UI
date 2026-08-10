@@ -290,34 +290,49 @@ describe('滚到某一条', () => {
   })
 })
 
+// 规模这一节量的是「做了多少功」而不是「跑了多少毫秒」：
+// 挂钟读数随机器忙闲浮动，在并行跑测时会随机翻红，量出来的也不是复杂度。
 describe('规模', () => {
-  /** 跑一次拿毫秒数，取三轮最快的一次，躲开 GC 抖动。 */
-  function fastest(run: () => void): number {
-    let best = Number.POSITIVE_INFINITY
-    for (let i = 0; i < 3; i++) {
-      const started = performance.now()
-      run()
-      best = Math.min(best, performance.now() - started)
-    }
-    return best
+  /** 整份重排一共问了几次尺寸。每条只算一遍，次数就恒等于条数；重扫一遍即翻倍。 */
+  function countSizeQueries(count: number): number {
+    let asked = 0
+    measureVirtualizerItems(
+      metrics({
+        count,
+        estimateSize: () => {
+          asked++
+          return 30
+        },
+      }),
+      NO_SIZES,
+    )
+    return asked
   }
 
-  it('整份重排是线性的：条数翻十倍，耗时不该翻几十倍', () => {
-    const small = fastest(() => measureVirtualizerItems(metrics({ count: 20_000 }), NO_SIZES))
-    const large = fastest(() => measureVirtualizerItems(metrics({ count: 200_000 }), NO_SIZES))
-    expect(large).toBeLessThan(400)
-    expect(large / Math.max(small, 0.05)).toBeLessThan(30)
+  /** 一次查找读了几次下标。二分只读对数级的次数，与总条数几乎无关。 */
+  function countProbes(items: readonly VirtualizerMeasurement[], offset: number): number {
+    let reads = 0
+    const counted = new Proxy(items as VirtualizerMeasurement[], {
+      get(target, key, receiver) {
+        if (typeof key === 'string' && Number.isInteger(Number(key)))
+          reads++
+        return Reflect.get(target, key, receiver)
+      },
+    })
+    findVirtualizerRange(counted, offset, 600, 1)
+    return reads
+  }
+
+  it('整份重排每条只算一遍：问尺寸的次数恒等于条数', () => {
+    expect(countSizeQueries(20_000)).toBe(20_000)
+    expect(countSizeQueries(200_000)).toBe(200_000)
   })
 
-  it('找区间与条数无关：二十万条上找一次不该比两万条慢出量级', () => {
+  it('找区间与条数无关：条数翻十倍，只多出二分那几层的探测', () => {
     const smallItems = measureVirtualizerItems(metrics({ count: 20_000 }), NO_SIZES)
     const largeItems = measureVirtualizerItems(metrics({ count: 200_000 }), NO_SIZES)
-    const small = fastest(() => {
-      for (let i = 0; i < 2000; i++) findVirtualizerRange(smallItems, i * 137, 600, 1)
-    })
-    const large = fastest(() => {
-      for (let i = 0; i < 2000; i++) findVirtualizerRange(largeItems, i * 137, 600, 1)
-    })
-    expect(large / Math.max(small, 0.05)).toBeLessThan(4)
+    // 同一滚动位置、同一视口，向前走的步数一样，差额只来自二分多出来的层数（log2(10) ≈ 3.3）
+    for (const offset of [0, 1000, 100_000, 500_000])
+      expect(countProbes(largeItems, offset) - countProbes(smallItems, offset)).toBeLessThanOrEqual(10)
   })
 })
