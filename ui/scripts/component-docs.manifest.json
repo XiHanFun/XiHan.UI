@@ -250,6 +250,10 @@
         {
           "id": "statistic",
           "name": "统计数值"
+        },
+        {
+          "id": "qr-code",
+          "name": "二维码"
         }
       ]
     },

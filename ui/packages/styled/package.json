@@ -74,6 +74,7 @@
     "./popover.css": "./styles/popover.css",
     "./popselect.css": "./styles/popselect.css",
     "./progress.css": "./styles/progress.css",
+    "./qr-code.css": "./styles/qr-code.css",
     "./radio-group.css": "./styles/radio-group.css",
     "./rating.css": "./styles/rating.css",
     "./result.css": "./styles/result.css",
