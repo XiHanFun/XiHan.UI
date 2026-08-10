@@ -1,7 +1,14 @@
 @layer xihan.components {
   /*
    * 根 <svg>。深浅两色取固定档而不是语义前景/背景：语义色跟着主题走，深色主题下整张码
-   * 会翻成浅底深模块的反相图，一部分读码器不认反相码。要换配色改这两个覆盖槽。
+   * 会翻成浅底深模块的反相图，一部分读码器不认反相码。要换配色改下面这三个覆盖槽。
+   *
+   * 换色只有一条硬约束：码点必须比底色深，且两者对比要足。反相（浅码点深底）与
+   * 深浅相近都会让一部分读码器扫不出来，而这件事肉眼看不出来。
+   *
+   *   --xh-qr-code-fg      码点色，同时经 currentColor 传给码眼
+   *   --xh-qr-code-bg      底色，挖空矩形也用它
+   *   --xh-qr-code-eye-fg  码眼色，缺省跟随码点色
    */
   [data-scope='qr-code'][data-part='root'] {
     display: block;
@@ -16,6 +23,19 @@
   /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
   [data-scope='qr-code'][data-part='root'][hidden] {
     display: none;
+  }
+
+  /* 码眼那条 path：没单独指定就退回 currentColor，跟码点同色 */
+  [data-scope='qr-code'][data-part='root'] > [data-xh-geom='eyes'] {
+    fill: var(--xh-qr-code-eye-fg, currentColor);
+  }
+
+  /*
+   * logo 底下那块挖空：填的必须与根的背景逐字同一个表达式，两处一起改。
+   * 差一点就会在 logo 四周露出一圈色差，读码器会把那圈当成模块边界。
+   */
+  [data-scope='qr-code'][data-part='root'] > [data-xh-geom='logo-clear'] {
+    fill: var(--xh-qr-code-bg, var(--xh-color-neutral-0));
   }
 
   /*

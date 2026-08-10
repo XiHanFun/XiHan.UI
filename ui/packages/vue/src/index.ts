@@ -440,7 +440,9 @@ export { XhPopselectContent, XhPopselectItem, XhPopselectItemIndicator, XhPopsel
 export { usePopselect } from './components/popselect/use-popselect'
 export type { PopselectContext } from './components/popselect/use-popselect'
 export { XhProgress } from './components/progress/progress'
-export { XhQrCode } from './components/qr-code/qr-code'
+export { provideQrCode, useQrCodeContext } from './components/qr-code/context'
+export type { QrCodeContext } from './components/qr-code/context'
+export { XhQrCode, XhQrCodeLogo } from './components/qr-code/qr-code'
 export {
   XhRadioGroupItem,
   XhRadioGroupItemText,

@@ -15748,12 +15748,16 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-qr-code>` —— 二维码宿主，无状态机，把命名与档位打到 root 上，把深色模块铺成一条 `<path>`。\n\n作者写一个空的 `<svg data-xh-part=\"root\"></svg>`，几何由本元素生成：模块是算出来的派生数据，\n作者没法自己写。矩阵在 connectQrCode 里算一遍，这里只取现成的 path。\n\n内容超出 40 版容量时不画任何模块，root 上落 `data-state=\"error\"`：\n截断能画出一张扫得开的码，但扫出来的是半截内容。",
+          "description": "`<xh-qr-code>` —— 二维码宿主，无状态机，把命名与档位打到 root 上，把几何铺进 root。\n\n作者写一个空的 `<svg data-xh-part=\"root\"></svg>`，几何由本元素生成：模块是算出来的派生数据，\n作者没法自己写。矩阵在 connectQrCode 里算一遍，这里只取现成的 path。\n\n要放中心 logo 就在 root 里写一个 `<svg data-xh-part=\"logo\">` 并把图形放进去，落位与尺寸由本元素写上；\n那块底下会先铺一个底色矩形把模块挖空，作者的图形画在它上面。放了 logo 就把 level 提到 Q 或 H。\n\n内容超出 40 版容量时不画任何模块，root 上落 `data-state=\"error\"`：\n截断能画出一张扫得开的码，但扫出来的是半截内容。",
           "name": "XhQrCodeElement",
           "cssParts": [
             {
-              "description": "根 `<svg>`，承载 viewBox / role=img / aria-label / data-level / data-version / data-modules / data-state",
+              "description": "根 `<svg>`，承载 viewBox / role=img / aria-label / data-level / data-version / data-modules / data-state / data-logo",
               "name": "root"
+            },
+            {
+              "description": "码面正中放 logo 的嵌套 `<svg>`，承载 x / y / width / height",
+              "name": "logo"
             }
           ],
           "members": [
@@ -15764,7 +15768,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: qrCodeAnatomy, meta: qrCodeMeta, // root 不是 <svg> 时 viewBox 会被小写成 viewbox 而静默失效，铺进去的 <path> 也不显示 tags: { root: ['svg'] }, }"
+              "default": "{ anatomy: qrCodeAnatomy, meta: qrCodeMeta, // root 不是 <svg> 时 viewBox 会被小写成 viewbox 而静默失效，铺进去的 <path> 也不显示； // logo 不是嵌套 <svg> 时 x / y / width / height 无处生效，那块图形会摊在整张码上 tags: { root: ['svg'], logo: ['svg'] }, }"
             },
             {
               "kind": "field",
@@ -15813,12 +15817,30 @@
             },
             {
               "kind": "field",
+              "name": "moduleShape",
+              "privacy": "public",
+              "type": {
+                "text": "ModuleShape | undefined"
+              },
+              "attribute": "module-shape"
+            },
+            {
+              "kind": "field",
+              "name": "eyeShape",
+              "privacy": "public",
+              "type": {
+                "text": "EyeShape | undefined"
+              },
+              "attribute": "eye-shape"
+            },
+            {
+              "kind": "field",
               "name": "#painted",
               "privacy": "private",
               "type": {
-                "text": "{ host: Element, path: string } | undefined"
+                "text": "{ host: Element, key: string } | undefined"
               },
-              "description": "上一次铺进哪个 root、铺的是哪条 d。"
+              "description": "上一次往哪个 root 铺过哪一版几何。"
             },
             {
               "kind": "method",
@@ -15847,13 +15869,13 @@
                   }
                 },
                 {
-                  "name": "path",
+                  "name": "api",
                   "type": {
-                    "text": "string"
+                    "text": "QrCodeApi"
                   }
                 }
               ],
-              "description": "把深色模块铺成 root 里唯一的一条 `<path>`。\n走 createElementNS 建节点：SVG 图元挂在非 SVG 命名空间下什么都不显示。\n子元素个数一并比，兜住外部代码清空过 root 的情形。"
+              "description": "把数据模块、码眼、logo 挖空铺进 root，三样都排在作者写的节点之前——\n挖空必须压在模块之上、又在 logo 之下。\n\n走 createElementNS 建节点：SVG 图元挂在非 SVG 命名空间下什么都不显示。\n只清 root 直属的、本元素自己标记过的几何节点：整个清空会连作者写的 logo 一起端掉。"
             }
           ],
           "attributes": [
@@ -15896,6 +15918,22 @@
               "description": "可及名字，缺省用 value",
               "name": "label",
               "fieldName": "label"
+            },
+            {
+              "type": {
+                "text": "ModuleShape | undefined"
+              },
+              "description": "码点形状，缺省 square",
+              "name": "module-shape",
+              "fieldName": "moduleShape"
+            },
+            {
+              "type": {
+                "text": "EyeShape | undefined"
+              },
+              "description": "码眼形状，缺省 square",
+              "name": "eye-shape",
+              "fieldName": "eyeShape"
             }
           ],
           "superclass": {
