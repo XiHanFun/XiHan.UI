@@ -82,7 +82,7 @@
 | [描述列表](./descriptions) | `descriptions` | 4 | 0 | 5 |
 | [时间线](./timeline) | `timeline` | 8 | 0 | 5 |
 | [统计数值](./statistic) | `statistic` | 5 | 0 | 5 |
-| [二维码](./qr-code) | `qr-code` | 1 | 0 | 4 |
+| [二维码](./qr-code) | `qr-code` | 2 | 0 | 8 |
 
 ## 导航
 

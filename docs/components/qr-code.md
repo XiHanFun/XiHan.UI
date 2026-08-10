@@ -28,12 +28,36 @@ size 是整块的像素边长；margin 的单位是模块数，静区含在里�
 
 <XhDemo src="qr-code/04-label" />
 
+### 码点形状
+
+square / dot / rounded；三种形状的墨都盖住每个模块的格心，读码器按格心取样
+
+<XhDemo src="qr-code/05-module-shape" />
+
+### 码眼形状
+
+只作用于三个定位图形，7×7 的外环加内心结构保持不变，读码器靠它找码
+
+<XhDemo src="qr-code/06-eye-shape" />
+
+### 中心 logo
+
+落位与尺寸由组件给出，那片模块先被底色挖空；放 logo 就把 level 提到 Q 或 H
+
+<XhDemo src="qr-code/07-logo" />
+
+### 换色
+
+颜色不是 props，写三个 CSS 变量即可：码点必须比底色深且对比要足，反相码一部分读码器不认
+
+<XhDemo src="qr-code/08-color" />
+
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-qr-code>` |
-| Vue 组件 | `XhQrCode` |
+| Vue 组件 | `XhQrCode` `XhQrCodeLogo` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styled/qr-code.css` |
 
@@ -41,7 +65,7 @@ size 是整块的像素边长；margin 的单位是模块数，静区含在里�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="qr-code"`：**`root`**
+`data-scope="qr-code"`：**`root`** · `logo`
 
 ## connect API
 
@@ -54,11 +78,14 @@ size 是整块的像素边长；margin 的单位是模块数，静区含在里�
 | `count` | `number` | 每边模块数，不含静区；没画出码时为 0。 |
 | `margin` | `number` | 解析后的静区宽度，单位是模块数。 |
 | `viewBox` | `string` | 根的 viewBox，含静区。 |
-| `path` | `string` | 深色模块合成的那条 `&lt;path&gt;` 的 d；没画出码时是空串，此时不该生成 path 节点。 |
+| `path` | `string` | 数据模块合成的那条 `&lt;path&gt;` 的 d；没画出码时是空串，此时不该生成 path 节点。 码点与码眼都是缺省形状时，三个码眼也并在这一条里。 |
+| `eyePath` | `string` | 三个码眼合成的那条 `&lt;path&gt;` 的 d；码点与码眼都是缺省形状时是空串，此时不该生成第二个 path 节点。 |
+| `logoArea` | `QrCodeLogoArea \| undefined` | logo 的落位与挖空矩形；没留位时为 undefined。 |
 | `state` | `QrCodeState` | 当前状态。 |
 | `error` | `string \| undefined` | 编码失败的原因；其余状态为 undefined。 |
 | `label` | `string \| undefined` | 解析后的可及名字；没给名字时为 undefined，此时根退出无障碍树。 |
 | `getRootProps` | `() => T['element']` |  |
+| `getLogoProps` | `() => T['element']` | 铺到 logo 部件上的落位；没留位时宽高都是 0，那块连同里面的图形一起不渲染。 |
 
 ## 键盘
 

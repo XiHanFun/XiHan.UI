@@ -1,6 +1,6 @@
 import { createAnatomy } from '@xihan-ui/core'
 
-// 只有一个角色节点：承载整张码的 <svg>。
-// 深色模块合成一条 <path> 铺在它里面，那条 path 是算出来的几何、不是角色节点，
-// 皮肤靠 root 上的 fill 继承给它上色。
-export const qrCodeAnatomy = createAnatomy('qr-code', ['root'])
+// 两个角色节点：承载整张码的 <svg> 是 root，摆在码面正中、由作者放自己图形的那块是 logo。
+// 深色模块与三个码眼各合成一条 <path>，logo 底下那块挖空是一个 <rect>——
+// 这三样是算出来的几何、不是角色节点，它们带 data-xh-geom 标记，皮肤据此上色。
+export const qrCodeAnatomy = createAnatomy('qr-code', ['root', 'logo'])

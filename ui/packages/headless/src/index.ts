@@ -119,7 +119,7 @@ export type { PopselectApi, PopselectItemProps, PopselectNode, PopselectNodeMeta
 export { connectProgress, progressAnatomy, progressKeyboard, progressMeta } from './progress'
 export type { ProgressApi, ProgressProps } from './progress'
 export { connectQrCode, QR_MAX_VERSION, qrAlignmentPositions, qrCapacityBytes, qrCodeAnatomy, qrCodeKeyboard, qrCodeMeta, qrEncode } from './qr-code'
-export type { QrCodeApi, QrCodeProps, QrCodeState, QrLevel, QrMatrix } from './qr-code'
+export type { QrCodeApi, QrCodeLogoArea, QrCodeProps, QrCodeState, QrEyeShape, QrLevel, QrMatrix, QrModuleShape } from './qr-code'
 export { connectRadioGroup, radioGroupAnatomy, radioGroupKeyboard, radioGroupMachine, radioGroupMeta } from './radio-group'
 export type { RadioGroupApi, RadioGroupItemProps, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema, RadioGroupValueChangeDetails } from './radio-group'
 export { clampRating, connectRating, RATING_COUNT, ratingAnatomy, ratingIntentFromKey, ratingKeyboard, ratingMachine, ratingMax, ratingMeta, ratingStep, ratingValueAtPointer, stepRating } from './rating'
