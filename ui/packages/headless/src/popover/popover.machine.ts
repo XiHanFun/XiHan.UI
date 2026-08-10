@@ -10,6 +10,8 @@ export const popoverMachine = createMachine({
   context: ({ cell }) => ({
     // 位置结果由 trackPosition 里的引擎回填；connect 只读这里，不碰 DOM
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
+    // 关闭时是否把焦点归还触发器；Tab 与层外交互关闭时让出，其余出口归还
+    returnFocus: cell<boolean>(() => ({ defaultValue: true })),
   }),
   refs: () => ({
     config: null,
@@ -28,12 +30,12 @@ export const popoverMachine = createMachine({
       on: {
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
         'OPEN': [
-          { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
-          { target: 'open', actions: ['invokeOnOpen'] },
+          { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnOpen'] },
+          { target: 'open', actions: ['setReturnFocus', 'invokeOnOpen'] },
         ],
         'TOGGLE': [
-          { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
-          { target: 'open', actions: ['invokeOnOpen'] },
+          { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnOpen'] },
+          { target: 'open', actions: ['setReturnFocus', 'invokeOnOpen'] },
         ],
         'CONTROLLED.OPEN': { target: 'open' },
       },
@@ -43,12 +45,12 @@ export const popoverMachine = createMachine({
       effects: ['trackPosition', 'trackLayer'],
       on: {
         'CLOSE': [
-          { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
-          { target: 'closed', actions: ['invokeOnClose'] },
+          { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnClose'] },
+          { target: 'closed', actions: ['setReturnFocus', 'invokeOnClose'] },
         ],
         'TOGGLE': [
-          { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
-          { target: 'closed', actions: ['invokeOnClose'] },
+          { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnClose'] },
+          { target: 'closed', actions: ['setReturnFocus', 'invokeOnClose'] },
         ],
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
@@ -61,6 +63,12 @@ export const popoverMachine = createMachine({
     actions: {
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
+      // Tab 与层外交互是「焦点已经去别处了」，再抢回触发器会把用户拽回来；其余出口一律归还
+      setReturnFocus: ({ context, event }) => {
+        const e = event.current()
+        const handedOff = e.type === 'CLOSE' && (e.src === 'tab' || e.src === 'interact-outside')
+        context.set('returnFocus', !handedOff)
+      },
       // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
       syncOpen: ({ prop, send }) => {
         const open = prop('open')
@@ -107,7 +115,7 @@ export const popoverMachine = createMachine({
         }
       },
       // 层与消解层、焦点域同生命周期；层只在展开期间入栈，常驻栈会占死栈顶、堵掉下层 Escape。
-      trackLayer: ({ refs, prop, send }) => {
+      trackLayer: ({ refs, prop, send, context }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
         // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
@@ -139,7 +147,7 @@ export const popoverMachine = createMachine({
           // 非模态浮层不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
           trapped: () => prop('modal') ?? false,
           loop: prop('modal') ?? false,
-          restoreFocus: () => true,
+          restoreFocus: () => context.get('returnFocus'),
         })
 
         // 逆序拆：先撤依赖层的两个订阅，最后才把层本身移出栈

@@ -43,6 +43,8 @@ export interface PopoverSchema extends MachineSchema {
   context: {
     /** 定位引擎回填的最新结果；connect 只读它，不碰 DOM 也不调引擎。 */
     position: PositionResult | null
+    /** 关闭时是否把焦点归还触发器；Tab 与层外交互关闭时为 false。 */
+    returnFocus: boolean
   }
   computed: Record<string, never>
   refs: PopoverRefs
@@ -50,13 +52,13 @@ export interface PopoverSchema extends MachineSchema {
   event:
     | { type: 'OPEN' }
     | { type: 'TOGGLE' }
-    | { type: 'CLOSE', src?: 'esc' | 'close-trigger' | 'interact-outside' }
+    | { type: 'CLOSE', src?: 'esc' | 'close-trigger' | 'interact-outside' | 'tab' }
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
   tag: never
   guard: 'isOpenControlled'
-  action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen'
+  action: 'invokeOnOpen' | 'invokeOnClose' | 'setReturnFocus' | 'syncOpen'
   effect: 'trackPosition' | 'trackLayer'
 }
 
