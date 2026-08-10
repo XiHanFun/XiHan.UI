@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /**
@@ -18,9 +18,9 @@ export interface CheckboxSchema extends MachineSchema {
     defaultChecked?: CheckboxCheckedState
     disabled?: boolean
     /** 语气：brand / neutral / success / warning / danger / info，决定选中态用哪族颜色。 */
-    tone?: string
+    tone?: Tone
     /** 尺寸：sm / md / lg，决定方框边长与勾的字号档位。 */
-    size?: string
+    size?: Size
     /** checked 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 */
     onCheckedChange?: (details: CheckboxCheckedChangeDetails) => void
   }

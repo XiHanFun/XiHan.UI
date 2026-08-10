@@ -64,9 +64,9 @@
 | `placement` | `Placement` |  |  |
 | `offset` | `number` |  |  |
 | `translations` | `MentionTranslations` |  |  |
-| `variant` | `string` |  | 形态：outline / subtle / ghost，决定输入框的描边与底色怎么用。 |
-| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与高亮用哪族颜色。 |
-| `size` | `string` |  | 尺寸：sm / md / lg，决定输入框内边距与字号档位。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框的描边与底色怎么用。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与高亮用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框内边距与字号档位。 |
 | `onValueChange` | `(details: MentionValueChangeDetails) => void` |  | 正文变化回调；受控时是唯一出口。 |
 | `onQueryChange` | `(details: MentionQueryChangeDetails) => void` |  | 查询串变化回调：调用方据此重新过滤候选。收起时报 null。 |
 | `onSelect` | `(details: MentionSelectDetails) => void` |  | 候选被插进正文时回调，带上是哪一条。 |

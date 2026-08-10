@@ -1,5 +1,5 @@
 import type { AccordionNode, AccordionNodeMeta, AccordionSchema } from '@xihan-ui/headless'
-import type { Direction, Orientation } from '@xihan-ui/kernel'
+import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import { defineComponent, h } from 'vue'
 import { provideAccordion, provideAccordionItem, useAccordionContext, useAccordionItem } from './context'
@@ -18,8 +18,8 @@ export const XhAccordionRoot = defineComponent({
     orientation: { type: String as PropType<Orientation>, default: undefined },
     // 只改水平轴上左右键的语义，不写进 DOM
     dir: { type: String as PropType<Direction>, default: undefined },
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸数组
   emits: ['value-change', 'update:value'],

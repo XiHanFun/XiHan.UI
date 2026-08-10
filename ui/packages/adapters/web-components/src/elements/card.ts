@@ -1,4 +1,5 @@
-import type { CardProps } from '@xihan-ui/headless'
+import type { CardProps, CardVariant } from '@xihan-ui/headless'
+import type { Size } from '@xihan-ui/kernel'
 import { cardAnatomy, cardMeta, connectCard } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -33,8 +34,8 @@ export class XhCardElement extends XhElement {
     segmented: { type: Boolean },
   }
 
-  declare variant?: string
-  declare size?: string
+  declare variant?: CardVariant
+  declare size?: Size
   declare hoverable?: boolean
   declare segmented?: boolean
 

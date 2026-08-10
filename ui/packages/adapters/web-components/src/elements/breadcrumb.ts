@@ -1,5 +1,5 @@
 import type { BreadcrumbProps, BreadcrumbTranslations } from '@xihan-ui/headless'
-import type { Direction } from '@xihan-ui/kernel'
+import type { Direction, Size, Tone } from '@xihan-ui/kernel'
 import { breadcrumbAnatomy, breadcrumbMeta, connectBreadcrumb } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -44,8 +44,8 @@ export class XhBreadcrumbElement extends XhElement {
   }
 
   declare direction?: Direction
-  declare tone?: string
-  declare size?: string
+  declare tone?: Tone
+  declare size?: Size
   declare translations?: Partial<BreadcrumbTranslations>
 
   protected wire(): void {

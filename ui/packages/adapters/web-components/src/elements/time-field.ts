@@ -1,4 +1,5 @@
 import type { TimeFieldSchema, TimeFieldValueChangeDetails, TimeGranularity, TimeHourCycle, TimeSegmentType } from '@xihan-ui/headless'
+import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import { connectTimeField, timeFieldAnatomy, timeFieldMachine, timeFieldMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -94,9 +95,9 @@ export class XhTimeFieldElement extends XhElement {
   declare required?: boolean
   declare name?: string
   declare placeholder?: string
-  declare variant?: string
-  declare tone?: string
-  declare size?: string
+  declare variant?: ControlVariant
+  declare tone?: Tone
+  declare size?: Size
 
   private readonly notifyChange = (details: TimeFieldValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))

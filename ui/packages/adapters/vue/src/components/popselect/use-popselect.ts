@@ -4,7 +4,7 @@ import type {
   PopselectApi,
   PopselectNode,
 } from '@xihan-ui/headless'
-import type { Cleanup, Direction, Layer, Placement, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, ControlVariant, Direction, Layer, Placement, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef, Ref } from 'vue'
 import { connectPopselect, listboxMachine, popoverMachine } from '@xihan-ui/headless'
@@ -31,9 +31,9 @@ export interface PopselectRootProps {
   offset?: number
   closeOnEscape?: boolean
   closeOnInteractOutside?: boolean
-  variant?: string
-  tone?: string
-  size?: string
+  variant?: ControlVariant
+  tone?: Tone
+  size?: Size
 }
 
 export interface PopselectContext {

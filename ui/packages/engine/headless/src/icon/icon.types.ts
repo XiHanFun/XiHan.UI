@@ -1,7 +1,6 @@
-import type { IconNode, IconRecord, PropTypes } from '@xihan-ui/kernel'
+import type { IconNode, IconRecord, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 
 /** 直径档位，缺省 md。 */
-export type IconSize = 'sm' | 'md' | 'lg'
 /** 描边粗细档位，缺省 regular；由皮肤用 CSS 的 stroke-width 盖掉记录里的呈现属性。 */
 export type IconWeight = 'light' | 'regular' | 'bold'
 
@@ -18,11 +17,11 @@ export interface IconProps {
    */
   label?: string
   /** 直径档位，缺省 md；缺省档不输出 data-size。 */
-  size?: IconSize
+  size?: Size
   /** 描边粗细档位，缺省 regular；缺省档不输出 data-weight。 */
   weight?: IconWeight
   /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 */
-  tone?: string
+  tone?: Tone
 }
 
 export interface IconApi<T extends PropTypes = PropTypes> {

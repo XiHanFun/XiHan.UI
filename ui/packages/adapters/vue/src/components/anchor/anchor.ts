@@ -1,5 +1,5 @@
 import type { AnchorSchema, AnchorTranslations } from '@xihan-ui/headless'
-import type { Direction, Orientation } from '@xihan-ui/kernel'
+import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { provideAnchor, useAnchorContext } from './context'
@@ -20,8 +20,8 @@ export const XhAnchorRoot = defineComponent({
     orientation: { type: String as PropType<Orientation>, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     translations: { type: Object as PropType<Partial<AnchorTranslations>>, default: undefined },
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
     /** 判定线所依附的滚动容器，缺省挂在窗口上；经 refs 交给观察器。 */
     scrollElement: { type: Object as PropType<HTMLElement | null>, default: undefined },
   },

@@ -1,5 +1,5 @@
 import type { BreadcrumbProps, BreadcrumbTranslations } from '@xihan-ui/headless'
-import type { Direction } from '@xihan-ui/kernel'
+import type { Direction, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { provideBreadcrumb, useBreadcrumbContext } from './context'
@@ -12,8 +12,8 @@ export const XhBreadcrumbRoot = defineComponent({
   props: {
     dir: { type: String as PropType<Direction>, default: undefined },
     translations: { type: Object as PropType<Partial<BreadcrumbTranslations>>, default: undefined },
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useBreadcrumb(props as BreadcrumbProps)

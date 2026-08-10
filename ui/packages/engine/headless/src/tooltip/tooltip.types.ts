@@ -1,4 +1,4 @@
-import type { Placement, PositionEnginePort, PositionResult, PropTypes } from '@xihan-ui/kernel'
+import type { Placement, PositionEnginePort, PositionResult, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface TooltipOpenChangeDetails {
@@ -32,9 +32,9 @@ export interface TooltipSchema extends MachineSchema {
     /** 只关闭提示本身，不影响被包裹控件的可用性。 */
     disabled?: boolean
     /** 语气：brand / neutral / success / warning / danger / info，决定提示的底色与其上的文字色。 */
-    tone?: string
+    tone?: Tone
     /** 尺寸：sm / md / lg，决定内边距与字号档位。 */
-    size?: string
+    size?: Size
     /** open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 */
     onOpenChange?: (details: TooltipOpenChangeDetails) => void
   }

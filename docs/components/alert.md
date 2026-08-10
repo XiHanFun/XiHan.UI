@@ -53,7 +53,7 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色，默认 info。 danger / warning 走 role="alert"，其余走 role="status"。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色，默认 info。 danger / warning 走 role="alert"，其余走 role="status"。 |
 | `closable` | `boolean` |  | 关闭按钮是否可用，默认 true。false 时该按钮同时被禁用与收起。 |
 | `open` | `boolean` |  | 受控显隐；缺省该 prop 即非受控。 |
 | `defaultOpen` | `boolean` |  | 非受控初始显隐，默认显示。 |

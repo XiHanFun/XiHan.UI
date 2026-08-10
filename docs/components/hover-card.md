@@ -68,7 +68,7 @@ disabled 只关掉卡片本身，触发器照样可点、可聚焦，也照样�
 | `closeDelay` | `number` |  | 指针离开 trigger 或 content 到收起的等待毫秒，默认 300。 |
 | `dir` | `Direction` |  | 文字方向，仅在显式给出时写到根节点上。 |
 | `disabled` | `boolean` |  | 只关掉卡片本身，不影响 trigger 元素自身的可用性。 |
-| `size` | `string` |  | 尺寸：sm / md / lg，决定卡片的内边距档位。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，决定卡片的内边距档位。 |
 | `onOpenChange` | `(details: HoverCardOpenChangeDetails) => void` |  | open 变化意图回调。 |
 
 ## 状态机

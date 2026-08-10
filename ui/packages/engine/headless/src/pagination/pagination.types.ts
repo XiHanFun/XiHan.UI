@@ -1,4 +1,4 @@
-import type { Direction, PropTypes } from '@xihan-ui/kernel'
+import type { Direction, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 import type { PaginationEntryRange, PaginationPage } from './pagination.range'
 
@@ -40,9 +40,9 @@ export interface PaginationSchema extends MachineSchema {
     dir?: Direction
     translations?: Partial<PaginationTranslations>
     /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
-    tone?: string
+    tone?: Tone
     /** 尺寸：sm / md / lg。 */
-    size?: string
+    size?: Size
     /** 页码变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onPageChange?: (details: PaginationPageChangeDetails) => void
   }

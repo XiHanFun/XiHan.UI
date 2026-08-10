@@ -1,5 +1,5 @@
 import type { MenuNode, MenuOpenChangeDetails, MenuSchema, MenuSelectDetails } from '@xihan-ui/headless'
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectMenu, menuAnatomy, menuMachine, menuMeta } from '@xihan-ui/headless'
@@ -67,8 +67,8 @@ export class XhMenuElement extends XhElement {
   declare offset?: number
   declare loop?: boolean
   declare direction?: Direction
-  declare tone?: string
-  declare size?: string
+  declare tone?: Tone
+  declare size?: Size
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly menuScope = createScope(null, this.idGen)

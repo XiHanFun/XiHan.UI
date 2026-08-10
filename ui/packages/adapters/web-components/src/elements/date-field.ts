@@ -1,4 +1,5 @@
 import type { DateFieldSchema, DateFieldValueChangeDetails, DateGranularity, DateSegmentType } from '@xihan-ui/headless'
+import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import { connectDateField, dateFieldAnatomy, dateFieldMachine, dateFieldMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -96,9 +97,9 @@ export class XhDateFieldElement extends XhElement {
   declare name?: string
   declare placeholder?: SegmentTexts
   declare translations?: SegmentTexts
-  declare variant?: string
-  declare tone?: string
-  declare size?: string
+  declare variant?: ControlVariant
+  declare tone?: Tone
+  declare size?: Size
 
   private readonly notifyChange = (details: DateFieldValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))

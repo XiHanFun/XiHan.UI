@@ -1,4 +1,5 @@
 import type { PinInputSchema, PinInputTranslations, PinInputType, PinInputValueChangeDetails } from '@xihan-ui/headless'
+import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import { connectPinInput, pinInputAnatomy, pinInputMachine, pinInputMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -84,9 +85,9 @@ export class XhPinInputElement extends XhElement {
   declare invalid?: boolean
   declare blurOnComplete?: boolean
   declare name?: string
-  declare variant?: string
-  declare tone?: string
-  declare size?: string
+  declare variant?: ControlVariant
+  declare tone?: Tone
+  declare size?: Size
   declare translations?: Partial<PinInputTranslations>
 
   private readonly notifyChange = (details: PinInputValueChangeDetails): void => {

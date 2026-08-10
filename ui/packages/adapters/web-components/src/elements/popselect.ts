@@ -6,7 +6,7 @@ import type {
   PopselectItemProps,
   PopselectNode,
 } from '@xihan-ui/headless'
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectPopselect, listboxMachine, popoverMachine, popselectAnatomy, popselectMeta } from '@xihan-ui/headless'
@@ -105,9 +105,9 @@ export class XhPopselectElement extends XhElement {
   declare offset?: number
   declare closeOnEscape?: boolean
   declare closeOnInteractOutside?: boolean
-  declare variant?: string
-  declare tone?: string
-  declare size?: string
+  declare variant?: ControlVariant
+  declare tone?: Tone
+  declare size?: Size
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   // 两台机器共用一个 scope：trigger 与 content 的 id 由它派生，aria-controls 才指得准

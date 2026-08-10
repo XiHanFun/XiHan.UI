@@ -1,4 +1,5 @@
 import type { CheckboxCheckedChangeDetails, CheckboxCheckedState, CheckboxSchema } from '@xihan-ui/headless'
+import type { Size, Tone } from '@xihan-ui/kernel'
 import { checkboxAnatomy, checkboxMachine, checkboxMeta, connectCheckbox } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -32,8 +33,8 @@ export class XhCheckboxElement extends XhElement {
   declare checked?: CheckboxCheckedState
   declare defaultChecked?: CheckboxCheckedState
   declare disabled?: boolean
-  declare tone?: string
-  declare size?: string
+  declare tone?: Tone
+  declare size?: Size
 
   private readonly notify = (details: CheckboxCheckedChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('checked-change', { detail: details, bubbles: true, composed: true }))

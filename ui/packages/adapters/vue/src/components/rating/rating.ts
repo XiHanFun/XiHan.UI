@@ -1,5 +1,5 @@
 import type { RatingSchema } from '@xihan-ui/headless'
-import type { Direction } from '@xihan-ui/kernel'
+import type { Direction, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideRating, useRatingContext } from './context'
@@ -20,8 +20,8 @@ export const XhRatingRoot = defineComponent({
     required: Boolean,
     name: { type: String, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸值；hover-change 是预览通道
   emits: ['value-change', 'update:value', 'hover-change'],

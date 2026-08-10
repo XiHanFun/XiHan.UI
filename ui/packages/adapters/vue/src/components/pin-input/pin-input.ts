@@ -1,4 +1,5 @@
 import type { PinInputSchema, PinInputTranslations, PinInputType } from '@xihan-ui/headless'
+import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { providePinInput, usePinInputContext } from './context'
@@ -22,9 +23,9 @@ export const XhPinInputRoot = defineComponent({
     invalid: Boolean,
     blurOnComplete: Boolean,
     name: { type: String, default: undefined },
-    variant: { type: String, default: undefined },
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    variant: { type: String as PropType<ControlVariant>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
     translations: { type: Object as PropType<Partial<PinInputTranslations>>, default: undefined },
   },
   // value-change 携带 { value, valueAsString }，update:value 携带裸数组

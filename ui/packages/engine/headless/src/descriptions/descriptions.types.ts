@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { PropTypes, Size } from '@xihan-ui/kernel'
 
 /** 每行摆几组「标签 + 取值」。皮肤逐档给出列数，一到六列。 */
 export type DescriptionsColumns = 1 | 2 | 3 | 4 | 5 | 6
@@ -7,7 +7,6 @@ export type DescriptionsColumns = 1 | 2 | 3 | 4 | 5 | 6
 export type DescriptionsPlacement = 'top' | 'left'
 
 /** 尺寸档位，只改每格的内边距、组与组的间距与整体字号。 */
-export type DescriptionsSize = 'sm' | 'md' | 'lg'
 
 export interface DescriptionsProps {
   /** 每行摆几组，一到六列；不写即每行一组。 */
@@ -17,7 +16,7 @@ export interface DescriptionsProps {
   /** 标签的位置：top / left；不写即标签在上。 */
   placement?: DescriptionsPlacement
   /** 尺寸：sm / md / lg。 */
-  size?: DescriptionsSize
+  size?: Size
 }
 
 export interface DescriptionsApi<T extends PropTypes = PropTypes> {

@@ -1,5 +1,5 @@
 import type { SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails } from '@xihan-ui/headless'
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectSelect, selectAnatomy, selectMachine, selectMeta } from '@xihan-ui/headless'
@@ -97,9 +97,9 @@ export class XhSelectElement extends XhElement {
   declare loop?: boolean
   declare multiple?: boolean
   declare direction?: Direction
-  declare variant?: string
-  declare tone?: string
-  declare size?: string
+  declare variant?: ControlVariant
+  declare tone?: Tone
+  declare size?: Size
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly selectScope = createScope(null, this.idGen)

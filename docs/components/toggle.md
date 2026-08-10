@@ -81,9 +81,9 @@ pressed-change 每次带着 details 报一次按下意图；不接 v-model 时�
 | `pressed` | `boolean` |  |  |
 | `defaultPressed` | `boolean` |  |  |
 | `disabled` | `boolean` |  |  |
-| `variant` | `string` |  | 形态：solid / subtle / outline / ghost，决定颜色怎么用 |
-| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
-| `size` | `string` |  | 尺寸：sm / md / lg |
+| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定颜色怎么用 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
+| `size` | `Size` |  | 尺寸：sm / md / lg |
 | `onPressedChange` | `(details: TogglePressedChangeDetails) => void` |  | pressed 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
 ## 状态机

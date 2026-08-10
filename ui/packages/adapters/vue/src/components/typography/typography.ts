@@ -1,4 +1,5 @@
-import type { TypographyLevel, TypographyProps } from '@xihan-ui/headless'
+import type { TypographyLevel, TypographyProps, TypographyVariant } from '@xihan-ui/headless'
+import type { Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectTypography } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -9,7 +10,7 @@ import { provideTypography, useTypographyContext } from './context'
 export const XhTypographyRoot = defineComponent({
   name: 'XhTypographyRoot',
   props: {
-    size: { type: String, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   setup(props, { slots }) {
     const api = computed(() => connectTypography(props as TypographyProps, vueNormalize))
@@ -53,8 +54,8 @@ export const XhTypographyParagraph = defineComponent({
 export const XhTypographyText = defineComponent({
   name: 'XhTypographyText',
   props: {
-    tone: { type: String, default: undefined },
-    variant: { type: String, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    variant: { type: String as PropType<TypographyVariant>, default: undefined },
     as: { type: String, default: 'span' },
   },
   setup(props, { slots }) {

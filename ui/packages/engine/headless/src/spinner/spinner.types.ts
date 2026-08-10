@@ -1,7 +1,6 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { PropTypes, Size, Tone } from '@xihan-ui/kernel'
 
 /** 直径档位，缺省 md。 */
-export type SpinnerSize = 'sm' | 'md' | 'lg'
 
 /** 读屏用的文案，默认英文。 */
 export interface SpinnerTranslations {
@@ -17,9 +16,9 @@ export interface SpinnerProps {
    */
   label?: string
   /** 直径档位，缺省 md；缺省档不输出 data-size。 */
-  size?: SpinnerSize
+  size?: Size
   /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 */
-  tone?: string
+  tone?: Tone
   translations?: Partial<SpinnerTranslations>
 }
 

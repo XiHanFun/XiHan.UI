@@ -1,4 +1,5 @@
 import type { LoadingBarSchema, LoadingBarTranslations } from '@xihan-ui/headless'
+import type { Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { provideLoadingBar, useLoadingBarContext } from './context'
@@ -15,7 +16,7 @@ export const XhLoadingBarRoot = defineComponent({
     loading: { type: Boolean, default: undefined },
     height: { type: [String, Number] as PropType<string | number>, default: undefined },
     color: { type: String, default: undefined },
-    tone: { type: String, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
     trickle: { type: Boolean, default: undefined },
     trickleSpeed: { type: Number, default: undefined },
     minimum: { type: Number, default: undefined },

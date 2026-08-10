@@ -1,11 +1,11 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { PropTypes, Size } from '@xihan-ui/kernel'
 
 /** 播报方式：polite 让 root 成为 role=status 活区，off 让它只是个普通容器。 */
 export type EmptyStateLive = 'polite' | 'off'
 
 export interface EmptyStateProps {
   /** 尺寸档位，只改留白与字号，不改语义。 */
-  size?: 'sm' | 'md' | 'lg'
+  size?: Size
   /** 缺省 polite。 */
   live?: EmptyStateLive
 }

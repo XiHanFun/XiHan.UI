@@ -1,5 +1,5 @@
 import type { TooltipOpenChangeDetails, TooltipSchema } from '@xihan-ui/headless'
-import type { Placement, PositionEnginePort } from '@xihan-ui/kernel'
+import type { Placement, PositionEnginePort, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { connectTooltip, tooltipAnatomy, tooltipMachine, tooltipMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
@@ -65,8 +65,8 @@ export class XhTooltipElement extends XhElement {
   declare openDelay?: number
   declare closeDelay?: number
   declare disabled?: boolean
-  declare tone?: string
-  declare size?: string
+  declare tone?: Tone
+  declare size?: Size
 
   private engine: PositionEnginePort | null = null
 

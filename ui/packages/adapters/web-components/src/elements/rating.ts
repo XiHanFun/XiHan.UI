@@ -1,5 +1,5 @@
 import type { RatingHoverChangeDetails, RatingItemProps, RatingSchema, RatingValueChangeDetails } from '@xihan-ui/headless'
-import type { Direction } from '@xihan-ui/kernel'
+import type { Direction, Size, Tone } from '@xihan-ui/kernel'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectRating, ratingAnatomy, ratingMachine, ratingMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -71,8 +71,8 @@ export class XhRatingElement extends XhElement {
   declare required?: boolean
   declare name?: string
   declare direction?: Direction
-  declare tone?: string
-  declare size?: string
+  declare tone?: Tone
+  declare size?: Size
 
   private readonly notifyValue = (details: RatingValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))

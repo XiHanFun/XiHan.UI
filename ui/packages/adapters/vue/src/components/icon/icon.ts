@@ -1,5 +1,5 @@
-import type { IconProps, IconSize, IconWeight } from '@xihan-ui/headless'
-import type { IconNode, IconRecord } from '@xihan-ui/kernel'
+import type { IconProps, IconWeight } from '@xihan-ui/headless'
+import type { IconNode, IconRecord, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import { defineComponent, h } from 'vue'
 import { slotPaints } from '../../runtime/slot-content'
@@ -25,9 +25,9 @@ export const XhIcon = defineComponent({
   props: {
     icon: { type: Object as PropType<IconRecord>, default: undefined },
     label: { type: String, default: undefined },
-    size: { type: String as PropType<IconSize>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
     weight: { type: String as PropType<IconWeight>, default: undefined },
-    tone: { type: String, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useIcon(props as IconProps)

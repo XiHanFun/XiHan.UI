@@ -140,9 +140,9 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `offset` | `number` |  |  |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
-| `variant` | `string` |  | 形态：outline / subtle / ghost，决定触发器的描边与底色怎么用。 |
-| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 |
-| `size` | `string` |  | 尺寸：sm / md / lg，决定触发器高度、内边距与字号档位。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发器的描边与底色怎么用。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，决定触发器高度、内边距与字号档位。 |
 | `onValueChange` | `(details: SelectValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onOpenChange` | `(details: SelectOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 

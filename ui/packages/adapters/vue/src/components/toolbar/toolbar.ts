@@ -1,5 +1,5 @@
 import type { ToolbarSchema } from '@xihan-ui/headless'
-import type { Direction, Orientation } from '@xihan-ui/kernel'
+import type { Direction, Orientation, Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideToolbar, useToolbarContext } from './context'
@@ -15,7 +15,7 @@ export const XhToolbarRoot = defineComponent({
     dir: { type: String as PropType<Direction>, default: undefined },
     loop: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
-    size: { type: String, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   // 无对外事件，条目的点击与切换由条目自行派发
   setup(props, { slots }) {

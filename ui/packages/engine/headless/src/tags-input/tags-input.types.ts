@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { ControlVariant, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface TagsInputValueChangeDetails {
@@ -70,11 +70,11 @@ export interface TagsInputSchema extends MachineSchema {
     /** 焦点离开整个组件时怎么处置输入框里的残留文本。 */
     blurBehavior?: TagsInputBlurBehavior | null
     /** 形态：outline / subtle / ghost，决定颜色怎么用。 */
-    variant?: string
+    variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
-    tone?: string
+    tone?: Tone
     /** 尺寸：sm / md / lg。 */
-    size?: string
+    size?: Size
     translations?: Partial<TagsInputTranslations>
     onValueChange?: (details: TagsInputValueChangeDetails) => void
     onInputValueChange?: (details: TagsInputInputValueChangeDetails) => void

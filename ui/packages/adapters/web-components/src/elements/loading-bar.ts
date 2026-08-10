@@ -1,4 +1,5 @@
 import type { LoadingBarSchema, LoadingBarTranslations, LoadingBarValueChangeDetails } from '@xihan-ui/headless'
+import type { Tone } from '@xihan-ui/kernel'
 import { connectLoadingBar, loadingBarAnatomy, loadingBarMachine, loadingBarMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -71,7 +72,7 @@ export class XhLoadingBarElement extends XhElement {
   declare loading?: boolean
   declare height?: string | number
   declare color?: string
-  declare tone?: string
+  declare tone?: Tone
   declare trickle?: boolean
   declare trickleSpeed?: number
   declare minimum?: number

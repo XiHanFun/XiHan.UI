@@ -1,5 +1,5 @@
 import type { PopselectItemProps, PopselectNode, PopselectNodeMeta } from '@xihan-ui/headless'
-import type { Direction, Placement } from '@xihan-ui/kernel'
+import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import type { PopselectNotifiers, PopselectRootProps } from './use-popselect'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
@@ -24,9 +24,9 @@ export const XhPopselectRoot = defineComponent({
     offset: { type: Number, default: undefined },
     closeOnEscape: { type: Boolean, default: undefined },
     closeOnInteractOutside: { type: Boolean, default: undefined },
-    variant: { type: String, default: undefined },
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    variant: { type: String as PropType<ControlVariant>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸值；回传的选中值恒为数组，单选时长度 ≤ 1
   emits: ['value-change', 'open-change', 'update:value', 'update:open'],

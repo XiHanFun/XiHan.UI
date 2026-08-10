@@ -1,4 +1,5 @@
 import type { AvatarGroupProps } from '@xihan-ui/headless'
+import type { Size } from '@xihan-ui/kernel'
 import { avatarGroupAnatomy, avatarGroupMeta, connectAvatarGroup } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -26,7 +27,7 @@ export class XhAvatarGroupElement extends XhElement {
   }
 
   declare max?: number
-  declare size?: string
+  declare size?: Size
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性

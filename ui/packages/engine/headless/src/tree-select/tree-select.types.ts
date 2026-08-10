@@ -1,5 +1,5 @@
 import type { Typeahead } from '@xihan-ui/behavior'
-import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, ControlVariant, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 import type { TreeNode, TreeVisibleNode } from '../tree'
 
@@ -79,11 +79,11 @@ export interface TreeSelectSchema extends MachineSchema {
     /** 校验失败：trigger 报 aria-invalid，各角色节点带 data-invalid。 */
     invalid?: boolean
     /** 形态：outline / subtle / ghost，决定触发框的描边与底色怎么用。 */
-    variant?: string
+    variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中用哪族颜色。 */
-    tone?: string
+    tone?: Tone
     /** 尺寸：sm / md / lg，决定触发框与树节点行的几何档位。 */
-    size?: string
+    size?: Size
     /** 无选中时 value-text 显示的占位文字。 */
     placeholder?: string
     placement?: Placement

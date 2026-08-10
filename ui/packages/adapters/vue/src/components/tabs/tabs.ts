@@ -1,5 +1,5 @@
-import type { TabsActivationMode, TabsNode, TabsNodeMeta, TabsSchema } from '@xihan-ui/headless'
-import type { Direction, Orientation } from '@xihan-ui/kernel'
+import type { TabsActivationMode, TabsNode, TabsNodeMeta, TabsSchema, TabsVariant } from '@xihan-ui/headless'
+import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { slotPaints } from '../../runtime/slot-content'
@@ -19,9 +19,9 @@ export const XhTabsRoot = defineComponent({
     dir: { type: String as PropType<Direction>, default: undefined },
     activationMode: { type: String as PropType<TabsActivationMode>, default: undefined },
     loop: { type: Boolean, default: undefined },
-    variant: { type: String, default: undefined },
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    variant: { type: String as PropType<TabsVariant>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸值
   emits: ['value-change', 'update:value'],

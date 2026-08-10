@@ -1,4 +1,5 @@
 import type { CollapsibleOpenChangeDetails, CollapsibleSchema } from '@xihan-ui/headless'
+import type { Size } from '@xihan-ui/kernel'
 import { collapsibleAnatomy, collapsibleMachine, collapsibleMeta, connectCollapsible } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -31,7 +32,7 @@ export class XhCollapsibleElement extends XhElement {
   declare open?: boolean
   declare defaultOpen?: boolean
   declare disabled?: boolean
-  declare size?: string
+  declare size?: Size
 
   private readonly notify = (details: CollapsibleOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))

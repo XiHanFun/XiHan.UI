@@ -86,7 +86,7 @@ status-change 在状态落位时通知，过渡态 idle 不通知；没给地址
 | --- | --- | --- | --- |
 | `src` | `string` |  |  |
 | `alt` | `string` |  |  |
-| `size` | `string` |  | 尺寸：sm / md / lg，缺省 md；缺省档不输出 data-size |
+| `size` | `Size` |  | 尺寸：sm / md / lg，缺省 md；缺省档不输出 data-size |
 | `onStatusChange` | `(details: AvatarStatusChangeDetails) => void` |  | 状态落位时通知，过渡态 idle 不通知。 |
 
 ## 状态机

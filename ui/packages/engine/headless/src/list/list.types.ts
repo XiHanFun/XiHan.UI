@@ -1,7 +1,6 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { PropTypes, Size } from '@xihan-ui/kernel'
 
 /** 尺寸档位，只改条目的内边距、图文间距与两行文字的字号。 */
-export type ListSize = 'sm' | 'md' | 'lg'
 
 export interface ListProps {
   /** 外框：给整份列表画一圈描边与圆角。 */
@@ -11,7 +10,7 @@ export interface ListProps {
   /** 条目之间画分隔线。 */
   split?: boolean
   /** 尺寸：sm / md / lg。 */
-  size?: ListSize
+  size?: Size
 }
 
 export interface ListApi<T extends PropTypes = PropTypes> {

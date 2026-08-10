@@ -1,4 +1,5 @@
 import type { ButtonProps } from '@xihan-ui/headless'
+import type { ActionVariant, Size, Tone } from '@xihan-ui/kernel'
 import { buttonAnatomy, buttonMeta, connectButton } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -30,9 +31,9 @@ export class XhButtonElement extends XhElement {
   declare type?: 'button' | 'submit' | 'reset'
   declare disabled?: boolean
   declare loading?: boolean
-  declare variant?: string
-  declare tone?: string
-  declare size?: string
+  declare variant?: ActionVariant
+  declare tone?: Tone
+  declare size?: Size
 
   protected wire(): void {
     const root = this.getPart('root')

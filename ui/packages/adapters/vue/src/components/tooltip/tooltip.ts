@@ -1,5 +1,5 @@
 import type { TooltipSchema } from '@xihan-ui/headless'
-import type { Placement } from '@xihan-ui/kernel'
+import type { Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { provideTooltip, useTooltipContext } from './context'
@@ -17,8 +17,8 @@ export const XhTooltipRoot = defineComponent({
     openDelay: { type: Number, default: undefined },
     closeDelay: { type: Number, default: undefined },
     disabled: Boolean,
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   // open-change 携带 { open }；update:open 携带裸布尔，支持 v-model:open
   emits: ['open-change', 'update:open'],

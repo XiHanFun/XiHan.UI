@@ -88,8 +88,8 @@ orientation 决定主轴：竖排时上下键在入口之间走，左右键改�
 | `typeahead` | `boolean` |  | 菜单内的连打检索，默认开。 |
 | `placement` | `Placement` |  |  |
 | `offset` | `number` |  |  |
-| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
-| `size` | `string` |  | 尺寸：sm / md / lg。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: MenubarValueChangeDetails) => void` |  | value 变化回调。 |
 | `onSelect` | `(details: MenubarSelectDetails) => void` |  | 条目被选中；菜单随之收起。 |
 

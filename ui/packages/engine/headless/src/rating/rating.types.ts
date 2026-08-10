@@ -1,4 +1,4 @@
-import type { Direction, PropTypes } from '@xihan-ui/kernel'
+import type { Direction, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface RatingValueChangeDetails {
@@ -50,9 +50,9 @@ export interface RatingSchema extends MachineSchema {
     /** 文字方向，缺省 'ltr'。只改写左右方向键与"指针落在哪半边"的语义。 */
     dir?: Direction
     /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
-    tone?: string
+    tone?: Tone
     /** 尺寸：sm / md / lg。 */
-    size?: string
+    size?: Size
     onValueChange?: (details: RatingValueChangeDetails) => void
     /** 悬停预览变化；指针离开时带 null。它不代表值变了。 */
     onHoverChange?: (details: RatingHoverChangeDetails) => void

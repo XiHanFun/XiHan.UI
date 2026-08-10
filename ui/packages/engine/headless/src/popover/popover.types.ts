@@ -1,4 +1,4 @@
-import type { Cleanup, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface PopoverTranslations {
@@ -36,7 +36,7 @@ export interface PopoverSchema extends MachineSchema {
     closeOnInteractOutside?: boolean
     translations?: Partial<PopoverTranslations>
     /** 尺寸：sm / md / lg，决定面板的内边距档位。 */
-    size?: string
+    size?: Size
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: PopoverOpenChangeDetails) => void
   }

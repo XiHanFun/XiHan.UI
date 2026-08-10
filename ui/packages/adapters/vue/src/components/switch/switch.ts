@@ -1,4 +1,6 @@
 import type { SwitchSchema } from '@xihan-ui/headless'
+import type { Size, Tone } from '@xihan-ui/kernel'
+import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { useSwitch } from './use-switch'
 
@@ -10,8 +12,8 @@ export const XhSwitch = defineComponent({
     checked: { type: Boolean, default: undefined },
     defaultChecked: Boolean,
     disabled: Boolean,
-    tone: String,
-    size: String,
+    tone: String as PropType<Tone>,
+    size: String as PropType<Size>,
   },
   // checked-change 携带 { checked }，update:checked 携带裸布尔
   emits: ['checked-change', 'update:checked'],

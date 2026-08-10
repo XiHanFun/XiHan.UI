@@ -1,4 +1,5 @@
 import type { BackTopBehavior, BackTopSchema, BackTopTranslations, BackTopVisibleChangeDetails } from '@xihan-ui/headless'
+import type { Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { backTopAnatomy, backTopMachine, backTopMeta, connectBackTop } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -42,8 +43,8 @@ export class XhBackTopElement extends XhElement {
 
   declare visibilityHeight?: number
   declare behavior?: BackTopBehavior
-  declare tone?: string
-  declare size?: string
+  declare tone?: Tone
+  declare size?: Size
   declare translations?: Partial<BackTopTranslations>
   declare target?: HTMLElement | null
 

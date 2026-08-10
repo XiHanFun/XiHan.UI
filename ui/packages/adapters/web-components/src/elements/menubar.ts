@@ -1,5 +1,5 @@
 import type { MenubarItemProps, MenubarNode, MenubarSchema, MenubarSelectDetails, MenubarValueChangeDetails } from '@xihan-ui/headless'
-import type { Cleanup, Direction, IdGenerator, Layer, Orientation, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, IdGenerator, Layer, Orientation, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectMenubar, menubarAnatomy, menubarMachine, menubarMeta } from '@xihan-ui/headless'
@@ -90,8 +90,8 @@ export class XhMenubarElement extends XhElement {
   declare typeahead?: boolean
   declare placement?: Placement
   declare offset?: number
-  declare tone?: string
-  declare size?: string
+  declare tone?: Tone
+  declare size?: Size
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   // trigger 与 content 按 value 逐对互指的 id 由 scope 派生

@@ -111,9 +111,9 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `addOnPaste` | `boolean` |  | 粘贴时接管：按 delimiter 拆成多个标签。默认关（交给浏览器照常粘进框里）。 |
 | `editable` | `boolean` |  | 允许双击标签就地改。默认关。 |
 | `blurBehavior` | `TagsInputBlurBehavior \| null` |  | 焦点离开整个组件时怎么处置输入框里的残留文本。 |
-| `variant` | `string` |  | 形态：outline / subtle / ghost，决定颜色怎么用。 |
-| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
-| `size` | `string` |  | 尺寸：sm / md / lg。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定颜色怎么用。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<TagsInputTranslations>` |  |  |
 | `onValueChange` | `(details: TagsInputValueChangeDetails) => void` |  |  |
 | `onInputValueChange` | `(details: TagsInputInputValueChangeDetails) => void` |  |  |

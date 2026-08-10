@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { PropTypes, Size } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 图片加载状态；idle 是来源决议前的过渡态。 */
@@ -13,7 +13,7 @@ export interface AvatarSchema extends MachineSchema {
     src?: string
     alt?: string
     /** 尺寸：sm / md / lg，缺省 md；缺省档不输出 data-size */
-    size?: string
+    size?: Size
     /** 状态落位时通知，过渡态 idle 不通知。 */
     onStatusChange?: (details: AvatarStatusChangeDetails) => void
   }

@@ -1,5 +1,5 @@
 import type { RadioGroupItemProps, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema } from '@xihan-ui/headless'
-import type { Direction, Orientation } from '@xihan-ui/kernel'
+import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideRadioGroup, provideRadioGroupItem, useRadioGroupContext, useRadioGroupItemContext } from './context'
@@ -19,8 +19,8 @@ export const XhRadioGroupRoot = defineComponent({
     orientation: { type: String as PropType<Orientation>, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     name: { type: String, default: undefined },
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸值
   emits: ['value-change', 'update:value'],

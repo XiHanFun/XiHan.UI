@@ -1,4 +1,5 @@
-import type { BadgeProps } from '@xihan-ui/headless'
+import type { BadgeProps, BadgeVariant } from '@xihan-ui/headless'
+import type { Size, Tone } from '@xihan-ui/kernel'
 import { badgeAnatomy, badgeMeta, connectBadge } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -22,9 +23,9 @@ export class XhBadgeElement extends XhElement {
     size: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
   }
 
-  declare variant?: string
-  declare tone?: string
-  declare size?: string
+  declare variant?: BadgeVariant
+  declare tone?: Tone
+  declare size?: Size
 
   protected wire(): void {
     const root = this.getPart('root')

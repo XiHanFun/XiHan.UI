@@ -1,5 +1,5 @@
 import type { StepsSchema } from '@xihan-ui/headless'
-import type { Direction, Orientation } from '@xihan-ui/kernel'
+import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideSteps, provideStepsItem, useStepsContext, useStepsItem } from './context'
@@ -18,8 +18,8 @@ export const XhStepsRoot = defineComponent({
     linear: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   // step-change 携带 { step }，update:step 携带裸下标
   emits: ['step-change', 'update:step'],

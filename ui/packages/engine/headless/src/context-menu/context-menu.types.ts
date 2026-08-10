@@ -1,5 +1,5 @@
 import type { Typeahead } from '@xihan-ui/behavior'
-import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /**
@@ -113,9 +113,9 @@ export interface ContextMenuSchema extends MachineSchema {
     /** 触摸端长按多久算触发（ms），默认 700。 */
     longPressDelay?: number
     /** 语气：brand / neutral / success / warning / danger / info，决定条目高亮与标记位用哪族颜色。 */
-    tone?: string
+    tone?: Tone
     /** 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 */
-    size?: string
+    size?: Size
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: ContextMenuOpenChangeDetails) => void
     /** 条目被选中；菜单随之关闭。 */

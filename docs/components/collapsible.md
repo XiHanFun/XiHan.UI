@@ -63,7 +63,7 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
 | `disabled` | `boolean` |  |  |
-| `size` | `string` |  | 尺寸：sm / md / lg。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onOpenChange` | `(details: CollapsibleOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
 ## 状态机

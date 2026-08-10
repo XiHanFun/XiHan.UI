@@ -69,8 +69,8 @@ checked 只认布尔，用一个可写 computed 在中间换一次，绑上去�
 | `checked` | `CheckboxCheckedState` |  |  |
 | `defaultChecked` | `CheckboxCheckedState` |  |  |
 | `disabled` | `boolean` |  |  |
-| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定选中态用哪族颜色。 |
-| `size` | `string` |  | 尺寸：sm / md / lg，决定方框边长与勾的字号档位。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定选中态用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，决定方框边长与勾的字号档位。 |
 | `onCheckedChange` | `(details: CheckboxCheckedChangeDetails) => void` |  | checked 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
 ## 状态机

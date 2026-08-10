@@ -11,7 +11,7 @@ import type {
   TableSortChangeDetails,
   TableSortDescriptor,
 } from '@xihan-ui/headless'
-import type { Direction } from '@xihan-ui/kernel'
+import type { Direction, Size } from '@xihan-ui/kernel'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectTable, tableAnatomy, tableMachine, tableMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -110,7 +110,7 @@ export class XhTableElement extends XhElement {
   declare footer?: boolean
   declare loop?: boolean
   declare direction?: Direction
-  declare size?: string
+  declare size?: Size
 
   private readonly notifySort = (details: TableSortChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('sort-change', { detail: details, bubbles: true, composed: true }))

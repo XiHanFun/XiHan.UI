@@ -1,4 +1,6 @@
 import type { ToggleSchema } from '@xihan-ui/headless'
+import type { ActionVariant, Size, Tone } from '@xihan-ui/kernel'
+import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { useToggle } from './use-toggle'
 
@@ -10,9 +12,9 @@ export const XhToggle = defineComponent({
     pressed: { type: Boolean, default: undefined },
     defaultPressed: Boolean,
     disabled: Boolean,
-    variant: String,
-    tone: String,
-    size: String,
+    variant: String as PropType<ActionVariant>,
+    tone: String as PropType<Tone>,
+    size: String as PropType<Size>,
   },
   // pressed-change 携带 { pressed }；update:pressed 携带裸布尔，支持 v-model:pressed
   emits: ['pressed-change', 'update:pressed'],

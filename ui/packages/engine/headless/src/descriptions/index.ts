@@ -7,5 +7,4 @@ export type {
   DescriptionsColumns,
   DescriptionsPlacement,
   DescriptionsProps,
-  DescriptionsSize,
 } from './descriptions.types'

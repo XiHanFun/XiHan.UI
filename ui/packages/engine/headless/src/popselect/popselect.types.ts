@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { ControlVariant, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ListboxSchema } from '../listbox'
 import type { PopoverSchema } from '../popover'
@@ -34,11 +34,11 @@ export interface PopselectItemProps {
 /** 三个视觉轴，只落在根上；触发器与浮层都从根继承私有槽。 */
 export interface PopselectProps {
   /** 形态：outline / subtle / ghost，决定触发器的描边与底色怎么用。 */
-  variant?: string
+  variant?: ControlVariant
   /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 */
-  tone?: string
+  tone?: Tone
   /** 尺寸：sm / md / lg，决定触发器高度、内边距与字号档位。 */
-  size?: string
+  size?: Size
 }
 
 /**

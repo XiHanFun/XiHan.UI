@@ -1,5 +1,5 @@
 import type { ContextMenuItemProps, ContextMenuNode, ContextMenuOpenChangeDetails, ContextMenuSchema, ContextMenuSelectDetails } from '@xihan-ui/headless'
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectContextMenu, contextMenuAnatomy, contextMenuMachine, contextMenuMeta } from '@xihan-ui/headless'
@@ -82,8 +82,8 @@ export class XhContextMenuElement extends XhElement {
   declare typeahead?: boolean
   declare direction?: Direction
   declare longPressDelay?: number
-  declare tone?: string
-  declare size?: string
+  declare tone?: Tone
+  declare size?: Size
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly menuScope = createScope(null, this.idGen)

@@ -91,9 +91,9 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | `required` | `boolean` |  | 必填标注（落到每段的 aria-required 上）。 |
 | `name` | `string` |  | 表单字段名；给了隐藏输入才带 name，值随表单一并提交。 |
 | `placeholder` | `string` |  | 空段的占位字符（单字符），按段宽重复，默认 '-'。 |
-| `variant` | `string` |  | 形态：outline / subtle / ghost，决定描边与底色怎么用。 |
-| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调用哪族颜色。 |
-| `size` | `string` |  | 尺寸：sm / md / lg。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定描边与底色怎么用。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: TimeFieldValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 
 ## 状态机

@@ -130,9 +130,9 @@ input 部件渲染出来就是一个 input，拿到它的节点就能聚焦、�
 | `name` | `string` |  | 表单字段名；给了才参与提交。 |
 | `maxLength` | `number` |  | 字符数上限。同时落成原生 maxlength 与机器侧的截断，两道都要。 |
 | `clearable` | `boolean` |  | 开启清空能力：清空按钮可用、Escape 接管。关掉时按钮带 hidden 收起。 |
-| `variant` | `string` |  | 形态：outline / subtle / ghost，决定输入框的底与描边怎么画。 |
-| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调用哪族颜色。 |
-| `size` | `string` |  | 尺寸：sm / md / lg，决定输入框与清空按钮的几何档位。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框的底与描边怎么画。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框与清空按钮的几何档位。 |
 | `onValueChange` | `(details: TextFieldValueChangeDetails) => void` |  |  |
 
 ## 状态机

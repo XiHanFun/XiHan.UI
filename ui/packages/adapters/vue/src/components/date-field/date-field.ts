@@ -1,4 +1,5 @@
 import type { DateFieldSchema, DateGranularity, DateSegmentType } from '@xihan-ui/headless'
+import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { provideDateField, useDateFieldContext } from './context'
@@ -25,9 +26,9 @@ export const XhDateFieldRoot = defineComponent({
     name: { type: String, default: undefined },
     placeholder: { type: Object as PropType<SegmentTexts>, default: undefined },
     translations: { type: Object as PropType<SegmentTexts>, default: undefined },
-    variant: { type: String, default: undefined },
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    variant: { type: String as PropType<ControlVariant>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸串
   emits: ['value-change', 'update:value'],

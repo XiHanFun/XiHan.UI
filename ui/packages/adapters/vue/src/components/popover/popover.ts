@@ -1,5 +1,5 @@
 import type { PopoverSchema } from '@xihan-ui/headless'
-import type { Placement } from '@xihan-ui/kernel'
+import type { Placement, Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { providePopover, usePopoverContext } from './context'
@@ -18,7 +18,7 @@ export const XhPopoverRoot = defineComponent({
     closeOnEscape: { type: Boolean, default: true },
     closeOnInteractOutside: { type: Boolean, default: true },
     translations: { type: Object as PropType<PopoverProps['translations']>, default: undefined },
-    size: { type: String, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
   emits: ['open-change', 'update:open'],

@@ -1,4 +1,6 @@
 import type { ProgressProps } from '@xihan-ui/headless'
+import type { Size, Tone } from '@xihan-ui/kernel'
+import type { PropType } from 'vue'
 import { connectProgress } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -8,8 +10,8 @@ export const XhProgress = defineComponent({
   props: {
     value: { type: Number, default: 0 },
     max: { type: Number, default: 100 },
-    tone: String,
-    size: String,
+    tone: String as PropType<Tone>,
+    size: String as PropType<Size>,
   },
   setup(props) {
     return () => {

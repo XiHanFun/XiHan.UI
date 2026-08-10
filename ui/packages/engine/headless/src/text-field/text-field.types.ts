@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { ControlVariant, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface TextFieldValueChangeDetails {
@@ -24,11 +24,11 @@ export interface TextFieldSchema extends MachineSchema {
     /** 开启清空能力：清空按钮可用、Escape 接管。关掉时按钮带 hidden 收起。 */
     clearable?: boolean
     /** 形态：outline / subtle / ghost，决定输入框的底与描边怎么画。 */
-    variant?: string
+    variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦强调用哪族颜色。 */
-    tone?: string
+    tone?: Tone
     /** 尺寸：sm / md / lg，决定输入框与清空按钮的几何档位。 */
-    size?: string
+    size?: Size
     onValueChange?: (details: TextFieldValueChangeDetails) => void
   }
   context: {

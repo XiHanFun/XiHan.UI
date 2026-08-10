@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { PropTypes, Size } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface CollapsibleOpenChangeDetails {
@@ -11,7 +11,7 @@ export interface CollapsibleSchema extends MachineSchema {
     defaultOpen?: boolean
     disabled?: boolean
     /** 尺寸：sm / md / lg。 */
-    size?: string
+    size?: Size
     /** open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 */
     onOpenChange?: (details: CollapsibleOpenChangeDetails) => void
   }

@@ -5,7 +5,7 @@ import type {
   CascaderSchema,
   CascaderValue,
 } from '@xihan-ui/headless'
-import type { Direction, Placement } from '@xihan-ui/kernel'
+import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, Ref } from 'vue'
 import type { CascaderContext } from './use-cascader'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
@@ -59,9 +59,9 @@ export const XhCascaderRoot = defineComponent({
     disabled: Boolean,
     readOnly: Boolean,
     invalid: Boolean,
-    variant: { type: String, default: undefined },
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    variant: { type: String as PropType<ControlVariant>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
     placeholder: { type: String, default: undefined },
     separator: { type: String, default: undefined },
     placement: { type: String as PropType<Placement>, default: undefined },

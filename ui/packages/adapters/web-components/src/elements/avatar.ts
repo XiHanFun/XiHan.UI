@@ -1,4 +1,5 @@
 import type { AvatarSchema, AvatarStatus, AvatarStatusChangeDetails } from '@xihan-ui/headless'
+import type { Size } from '@xihan-ui/kernel'
 import { avatarAnatomy, avatarMachine, avatarMeta, connectAvatar } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -31,7 +32,7 @@ export class XhAvatarElement extends XhElement {
 
   declare src?: string
   declare alt?: string
-  declare size?: string
+  declare size?: Size
 
   private readonly notify = (details: AvatarStatusChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('status-change', { detail: details, bubbles: true, composed: true }))
