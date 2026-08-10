@@ -6,14 +6,14 @@
     <title>表格 | 曦寒视图组件文档</title>
     <meta name="description" content="框架无关的设计系统运行时与组件库">
     <meta name="generator" content="VitePress v1.6.4">
-    <link rel="preload stylesheet" href="/assets/style.DdDObCQy.css" as="style">
+    <link rel="preload stylesheet" href="/assets/style.VV3FcmFB.css" as="style">
     <link rel="preload stylesheet" href="/vp-icons.css" as="style">
     
-    <script type="module" src="/assets/app.Crive8iT.js"></script>
+    <script type="module" src="/assets/app.W2-Biblx.js"></script>
     <link rel="preload" href="/assets/inter-roman-latin.Di8DUHzh.woff2" as="font" type="font/woff2" crossorigin="">
-    <link rel="modulepreload" href="/assets/chunks/theme.BKFOiq4e.js">
-    <link rel="modulepreload" href="/assets/chunks/framework.D7SS9GQA.js">
-    <link rel="modulepreload" href="/assets/components_table.md.HV3E9Ex8.lean.js">
+    <link rel="modulepreload" href="/assets/chunks/theme.D2majfKf.js">
+    <link rel="modulepreload" href="/assets/chunks/framework.BnnQLZ2t.js">
+    <link rel="modulepreload" href="/assets/components_table.md.CshfKbn1.lean.js">
     <meta name="author" content="XiHanFun">
     <meta name="keywords" content="曦寒,曦寒懿,视图组件,组件库,设计系统,Vue,Web Components,官方文档,开源,XiHanFun,XiHan.UI">
     <link rel="icon" href="/favicon.ico">
@@ -345,8 +345,907 @@ const densities = [
       &lt;/XhTableRoot&gt;
     &lt;/div&gt;
   &lt;/div&gt;
-&lt;/template&gt;</code></pre></div></div><h2 id="产物" tabindex="-1">产物 <a class="header-anchor" href="#产物" aria-label="Permalink to &quot;产物&quot;">​</a></h2><table tabindex="0"><thead><tr><th>层</th><th>值</th></tr></thead><tbody><tr><td>自定义元素</td><td><code>&lt;xh-table&gt;</code></td></tr><tr><td>Vue 组件</td><td><code>XhTableBody</code> <code>XhTableCaption</code> <code>XhTableCell</code> <code>XhTableColumnHeader</code> <code>XhTableEmptyState</code> <code>XhTableExpandTrigger</code> <code>XhTableExpandedRow</code> <code>XhTableFooter</code> <code>XhTableHeader</code> <code>XhTableLoadingState</code> <code>XhTableRoot</code> <code>XhTableRow</code> <code>XhTableRowSelectTrigger</code> <code>XhTableSelectAllTrigger</code> <code>XhTableSortTrigger</code></td></tr><tr><td>组合式函数</td><td><code>useTable</code></td></tr><tr><td>状态机</td><td><code>tableMachine</code></td></tr><tr><td>皮肤</td><td><code>@xihan-ui/styled/table.css</code></td></tr></tbody></table><h2 id="解剖" tabindex="-1">解剖 <a class="header-anchor" href="#解剖" aria-label="Permalink to &quot;解剖&quot;">​</a></h2><p>部件名即 <code>data-part</code> 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 <code>wc.missing-part</code>）。</p><p><code>data-scope=&quot;table&quot;</code>：<strong><code>root</code></strong> · <code>header</code> · <strong><code>body</code></strong> · <code>footer</code> · <code>row</code> · <code>column-header</code> · <code>cell</code> · <code>caption</code> · <code>select-all-trigger</code> · <code>row-select-trigger</code> · <code>sort-trigger</code> · <code>expand-trigger</code> · <code>expanded-row</code> · <code>empty-state</code> · <code>loading-state</code></p><h2 id="props" tabindex="-1">Props <a class="header-anchor" href="#props" aria-label="Permalink to &quot;Props&quot;">​</a></h2><table tabindex="0"><thead><tr><th>属性</th><th>类型</th><th>必填</th><th>说明</th></tr></thead><tbody><tr><td><code>columns</code></td><td><code>TableColumnDef[]</code></td><td></td><td>列定义，列号与列总数的唯一事实源。缺省为空表。</td></tr><tr><td><code>rows</code></td><td><code>TableRowDef[]</code></td><td></td><td>行定义，行序与行号的唯一事实源。缺省为空表。</td></tr><tr><td><code>sort</code></td><td><code>TableSortDescriptor[]</code></td><td></td><td>排序链。给定即受控：cell 直读 prop，写只发 onSortChange 不落内部值。</td></tr><tr><td><code>defaultSort</code></td><td><code>TableSortDescriptor[]</code></td><td></td><td></td></tr><tr><td><code>selection</code></td><td><code>TableSelection</code></td><td></td><td>选中集合。给定即受控，语义同上。</td></tr><tr><td><code>defaultSelection</code></td><td><code>TableSelection</code></td><td></td><td></td></tr><tr><td><code>expanded</code></td><td><code>string[]</code></td><td></td><td>展开集合。给定即受控，语义同上。</td></tr><tr><td><code>defaultExpanded</code></td><td><code>string[]</code></td><td></td><td></td></tr><tr><td><code>selectionMode</code></td><td><code>TableSelectionMode</code></td><td></td><td>默认 none：不声明则没有选择机制，行也不报 aria-selected。</td></tr><tr><td><code>loading</code></td><td><code>boolean</code></td><td></td><td>数据在路上：root 报 aria-busy，表体为空时加载态节点显形。</td></tr><tr><td><code>empty</code></td><td><code>boolean</code></td><td></td><td>显式声明表体为空；缺省按 rows 是否为空推导。</td></tr><tr><td><code>stickyHeader</code></td><td><code>boolean</code></td><td></td><td>表头吸顶：只落 data-sticky，钉住的实现归皮肤。</td></tr><tr><td><code>footer</code></td><td><code>boolean</code></td><td></td><td>表格带脚注行。行号空间的最后一行留给它，aria-rowcount 也把它算进去。</td></tr><tr><td><code>loop</code></td><td><code>boolean</code></td><td></td><td>上下键走到首尾是否回绕，默认 false。</td></tr><tr><td><code>dir</code></td><td><code>Direction</code></td><td></td><td>文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。</td></tr><tr><td><code>size</code></td><td><code>string</code></td><td></td><td>密度：sm / md / lg。只换单元格的纵向内边距与字号，列宽算法不受影响。</td></tr><tr><td><code>onSortChange</code></td><td><code>(details: TableSortChangeDetails) =&gt; void</code></td><td></td><td></td></tr><tr><td><code>onSelectionChange</code></td><td><code>(details: TableSelectionChangeDetails) =&gt; void</code></td><td></td><td></td></tr><tr><td><code>onExpandedChange</code></td><td><code>(details: TableExpandedChangeDetails) =&gt; void</code></td><td></td><td></td></tr></tbody></table><h2 id="状态机" tabindex="-1">状态机 <a class="header-anchor" href="#状态机" aria-label="Permalink to &quot;状态机&quot;">​</a></h2><p><strong>状态</strong>：<code>idle</code></p><p><strong>事件</strong>：<code>SORT.SET</code> · <code>SORT.TOGGLE</code> · <code>SELECTION.SET</code> · <code>ROW.SELECT</code> · <code>SELECTION.ALL_TOGGLE</code> · <code>EXPANDED.SET</code> · <code>ROW.EXPAND</code> · <code>ROW.COLLAPSE</code> · <code>ROW.EXPAND_TOGGLE</code> · <code>ROW.FOCUS</code> · <code>TABLE.BLUR</code></p><h2 id="connect-api" tabindex="-1">connect API <a class="header-anchor" href="#connect-api" aria-label="Permalink to &quot;connect API&quot;">​</a></h2><p><code>useTable</code> 产出的对象。<code>getXxxProps()</code> 铺到对应部件的宿主元素上，其余是可读状态与操作入口。</p><table tabindex="0"><thead><tr><th>成员</th><th>类型</th><th>说明</th></tr></thead><tbody><tr><td><code>columns</code></td><td><code>readonly TableColumnDef[]</code></td><td>作者给的列定义。</td></tr><tr><td><code>rows</code></td><td><code>readonly TableRowDef[]</code></td><td>作者给的行定义。</td></tr><tr><td><code>visibleRows</code></td><td><code>readonly TableVisibleRow[]</code></td><td>展开摊平后的可见行序列（详情行插在它所属数据行之后）。</td></tr><tr><td><code>sort</code></td><td><code>TableSortDescriptor[]</code></td><td></td></tr><tr><td><code>selection</code></td><td><code>TableSelection</code></td><td></td></tr><tr><td><code>selectionState</code></td><td><code>TableSelectionState</code></td><td>全选把手的三态，只按<strong>可选行</strong>（未禁用）算。</td></tr><tr><td><code>selectionMode</code></td><td><code>TableSelectionMode</code></td><td></td></tr><tr><td><code>expandedValue</code></td><td><code>string[]</code></td><td></td></tr><tr><td><code>focusedRow</code></td><td>`string</td><td>null`</td></tr><tr><td><code>loading</code></td><td><code>boolean</code></td><td></td></tr><tr><td><code>empty</code></td><td><code>boolean</code></td><td>表体为空（显式声明或 rows 为空）。</td></tr><tr><td><code>rowCount</code></td><td><code>number</code></td><td>aria-rowcount：表头行 + 可见行 + 脚注行。</td></tr><tr><td><code>columnCount</code></td><td><code>number</code></td><td>aria-colcount：列定义的条数。</td></tr><tr><td><code>isSelected</code></td><td><code>(value: string) =&gt; boolean</code></td><td></td></tr><tr><td><code>isExpanded</code></td><td><code>(value: string) =&gt; boolean</code></td><td></td></tr><tr><td><code>sortDirection</code></td><td>`(value: string) =&gt; TableSortDirection</td><td>null`</td></tr><tr><td><code>sortPriority</code></td><td><code>(value: string) =&gt; number</code></td><td>该列在排序链里的优先级，1 起算；不参与排序时为 0。</td></tr><tr><td><code>setSort</code></td><td><code>(next: TableSortDescriptor[]) =&gt; void</code></td><td></td></tr><tr><td><code>toggleSort</code></td><td><code>(value: string, options?: { append?: boolean }) =&gt; void</code></td><td></td></tr><tr><td><code>setSelection</code></td><td><code>(next: TableSelection) =&gt; void</code></td><td></td></tr><tr><td><code>selectRow</code></td><td><code>(value: string) =&gt; void</code></td><td></td></tr><tr><td><code>toggleSelectAll</code></td><td><code>() =&gt; void</code></td><td></td></tr><tr><td><code>setExpandedValue</code></td><td><code>(next: string[]) =&gt; void</code></td><td></td></tr><tr><td><code>expandRow</code></td><td><code>(value: string) =&gt; void</code></td><td></td></tr><tr><td><code>collapseRow</code></td><td><code>(value: string) =&gt; void</code></td><td></td></tr><tr><td><code>toggleExpandRow</code></td><td><code>(value: string) =&gt; void</code></td><td></td></tr><tr><td><code>getRootProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getCaptionProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getHeaderProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getBodyProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getFooterProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getHeaderRowProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td>表头那一行：恒占行号空间的第 1 行。</td></tr><tr><td><code>getFooterRowProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td>脚注那一行：占行号空间的最后一行。</td></tr><tr><td><code>getRowProps</code></td><td><code>(props: TableRowProps) =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getColumnHeaderProps</code></td><td><code>(props: TableColumnProps) =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getCellProps</code></td><td><code>(props: TableCellProps) =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getSelectAllTriggerProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getRowSelectTriggerProps</code></td><td><code>(props: TableRowProps) =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getSortTriggerProps</code></td><td><code>(props: TableColumnProps) =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getExpandTriggerProps</code></td><td><code>(props: TableRowProps) =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getExpandedRowProps</code></td><td><code>(props: TableRowProps) =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getEmptyStateProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getLoadingStateProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td></td></tr></tbody></table><h2 id="键盘" tabindex="-1">键盘 <a class="header-anchor" href="#键盘" aria-label="Permalink to &quot;键盘&quot;">​</a></h2><p>规格出处：<a href="https://www.w3.org/WAI/ARIA/apg/patterns/grid/#keyboardinteraction" target="_blank" rel="noreferrer">W3C APG</a></p><table tabindex="0"><thead><tr><th>按键</th><th>生效条件</th><th>行为</th></tr></thead><tbody><tr><td><code>Tab</code> / <code>Shift+Tab</code></td><td>focus outside the table body</td><td>表体只占一个 Tab 位：焦点进入锚点行，无锚点时先落 body 再由它转投；再按一次 Tab 整体离开表体</td></tr><tr><td><code>ArrowDown</code></td><td>focus in table body</td><td>焦点移到下一个可见数据行（禁用行跳过；详情行不是落点；loop 默认关，末行不回绕）</td></tr><tr><td><code>ArrowUp</code></td><td>focus in table body</td><td>焦点移到上一个可见数据行（禁用行跳过；loop 默认关，首行不回绕）</td></tr><tr><td><code>Home</code></td><td>focus in table body</td><td>焦点移到首个可见数据行</td></tr><tr><td><code>End</code></td><td>focus in table body</td><td>焦点移到末个可见数据行</td></tr><tr><td><code>Space</code></td><td>focus on row, selectionMode 非 none 且该行未禁用</td><td>切换焦点行的选中（单选替换、复选增删）；选不动时不吞这个键，页面照常滚动</td></tr><tr><td><code>ArrowRight</code></td><td>focus on 可展开且收起的行（dir=rtl 时改由 ArrowLeft 承担）</td><td>就地展开当前行，焦点不动；不可展开、已展开或禁用的行上什么都不做且不吞键</td></tr><tr><td><code>ArrowLeft</code></td><td>focus on 可展开且已展开的行（dir=rtl 时改由 ArrowRight 承担）</td><td>就地收起当前行，焦点不动；其余情形什么都不做且不吞键</td></tr><tr><td><code>Enter</code> / <code>Space</code></td><td>focus on sort-trigger, 该列 sortable</td><td>排序方向按 升序 → 降序 → 不排序 循环；按住 Shift 是追加到排序链而不是替换整条链</td></tr><tr><td><code>Enter</code> / <code>Space</code></td><td>focus on select-all-trigger, selectionMode=multiple</td><td>当前可选行全选中就整段清空，否则整段选上；三态由 aria-checked 报出（半选为 mixed）</td></tr></tbody></table></div></div></main><footer class="VPDocFooter" data-v-8de920f4 data-v-9f1a4103><!--[--><!--]--><div class="edit-info" data-v-9f1a4103><div class="edit-link" data-v-9f1a4103><a class="VPLink link vp-external-link-icon no-icon edit-link-button" href="https://github.com/XiHanFun/XiHan.UI/tree/main/docs/components/table.md" target="_blank" rel="noreferrer" data-v-9f1a4103><!--[--><span class="vpi-square-pen edit-link-icon" data-v-9f1a4103></span> 在 GitHub 上编辑此页<!--]--></a></div><div class="last-updated" data-v-9f1a4103><p class="VPLastUpdated" data-v-9f1a4103 data-v-2a7fc56b>最后更新于: <time datetime="2026-08-09T18:25:10.000Z" data-v-2a7fc56b></time></p></div></div><nav class="prev-next" aria-labelledby="doc-footer-aria-label" data-v-9f1a4103><span class="visually-hidden" id="doc-footer-aria-label" data-v-9f1a4103>Pager</span><div class="pager" data-v-9f1a4103><a class="VPLink link pager-link prev" href="/components/file-upload" data-v-9f1a4103><!--[--><span class="desc" data-v-9f1a4103>上一页</span><span class="title" data-v-9f1a4103>文件上传</span><!--]--></a></div><div class="pager" data-v-9f1a4103><a class="VPLink link pager-link next" href="/components/tree" data-v-9f1a4103><!--[--><span class="desc" data-v-9f1a4103>下一页</span><span class="title" data-v-9f1a4103>树</span><!--]--></a></div></nav></footer><!--[--><!--]--></div></div></div><!--[--><!--]--></div></div><footer class="VPFooter has-sidebar" data-v-7444b867 data-v-302810ea><div class="container" data-v-302810ea><p class="message" data-v-302810ea>Released under The <a href='https://opensource.org/license/MIT' target='_blank'>MIT</a> License</p><p class="copyright" data-v-302810ea>Copyright ©2021-Present <a href='https://www.xihanfun.com' target='_blank'>XiHanFun</a> and contributors.</p></div></footer><!--[--><!--]--></div></div>
-    <script>window.__VP_HASH_MAP__=JSON.parse("{\"adapters_vue.md\":\"uOHr0myd\",\"adapters_wc.md\":\"DxEptwWb\",\"changelog.md\":\"BOBqKd_d\",\"components_accordion.md\":\"D-WfqQcE\",\"components_alert.md\":\"B8eMIRog\",\"components_anchor.md\":\"DqiL6R76\",\"components_avatar.md\":\"B3g5KcWO\",\"components_badge.md\":\"CssS6Wjm\",\"components_breadcrumb.md\":\"4cyH9WKD\",\"components_button.md\":\"C_RJw6KH\",\"components_calendar.md\":\"BEkTqdxW\",\"components_carousel.md\":\"DnpBj1ny\",\"components_cascader.md\":\"3c5QRiRF\",\"components_checkbox-group.md\":\"DiOQaEIf\",\"components_checkbox.md\":\"CHSOMpKS\",\"components_clipboard.md\":\"DETt9lkN\",\"components_code-block.md\":\"DDCBdcTn\",\"components_collapsible.md\":\"Bv6a1_7b\",\"components_color-picker.md\":\"AD9AF8BO\",\"components_combobox.md\":\"w9aj8XwW\",\"components_composer.md\":\"C3PpxWPj\",\"components_context-menu.md\":\"BGSHEJfF\",\"components_date-field.md\":\"Dtg7C1zE\",\"components_date-picker.md\":\"B9dAsoz4\",\"components_dialog.md\":\"rftCEKng\",\"components_drawer.md\":\"CBWmurRd\",\"components_editable.md\":\"CsjTb9fr\",\"components_empty-state.md\":\"i4KLtTSD\",\"components_field.md\":\"BIJ4AUAo\",\"components_file-upload.md\":\"BP5ZSlFj\",\"components_form.md\":\"Cj3TQBMN\",\"components_hover-card.md\":\"RKEOcCk8\",\"components_icon.md\":\"CqXAKFJ4\",\"components_image.md\":\"DnDoGmVi\",\"components_index.md\":\"dyTZn_fj\",\"components_listbox.md\":\"BepdlAys\",\"components_loading-bar.md\":\"DsZpveMZ\",\"components_menu.md\":\"DYm5jKbj\",\"components_menubar.md\":\"BnD0hfTr\",\"components_navigation-menu.md\":\"2qjYBXoI\",\"components_number-field.md\":\"Bw7Ad5mw\",\"components_pagination.md\":\"BaKHJyy2\",\"components_pin-input.md\":\"BByP-1FI\",\"components_popover.md\":\"DTtoUG3c\",\"components_progress.md\":\"BCcaq7Rz\",\"components_radio-group.md\":\"CNeOfTLg\",\"components_rating.md\":\"DIZ8fn5m\",\"components_scroll-area.md\":\"DlJcJyE6\",\"components_select.md\":\"Cb5-K_Sa\",\"components_separator.md\":\"DexLd8q9\",\"components_skeleton.md\":\"DvSLMgGR\",\"components_slider.md\":\"Cdlqvp6h\",\"components_spinner.md\":\"CAJ4heA1\",\"components_splitter.md\":\"CZJZoKDW\",\"components_steps.md\":\"TQRR7ezi\",\"components_switch.md\":\"B0pOOSRB\",\"components_table.md\":\"HV3E9Ex8\",\"components_tabs.md\":\"-sOXWEDm\",\"components_tags-input.md\":\"Csu9cdWe\",\"components_text-field.md\":\"CBfHIiE8\",\"components_thread.md\":\"Bh-wSHrH\",\"components_time-field.md\":\"DKGS7PeM\",\"components_time-picker.md\":\"hM_so0uv\",\"components_toast.md\":\"DTZrelgS\",\"components_toaster.md\":\"BXujarLj\",\"components_toggle-group.md\":\"DgOEMDQl\",\"components_toggle.md\":\"BsiyLpL9\",\"components_toolbar.md\":\"CdadSCWh\",\"components_tooltip.md\":\"Crxki4xa\",\"components_tour.md\":\"DqwJH1Ml\",\"components_transfer.md\":\"BH6_es3j\",\"components_tree-select.md\":\"BKZ-bntK\",\"components_tree.md\":\"Ba3Adw7p\",\"components_virtualizer.md\":\"B5mbzEN4\",\"demo-check.md\":\"BOIw6d1O\",\"faq.md\":\"DkeyLPJZ\",\"guide_a11y.md\":\"BNNfdEhK\",\"guide_ai.md\":\"UJpxBhk-\",\"guide_anatomy.md\":\"DZLYmWFR\",\"guide_behavior.md\":\"CaarteI0\",\"guide_connect.md\":\"BhoG20WJ\",\"guide_diagnostics.md\":\"BaXytc9f\",\"guide_machine.md\":\"CmkgIId5\",\"guide_position.md\":\"BV6Bfhd0\",\"guide_styling.md\":\"Dx3Esv-l\",\"guide_testing.md\":\"CSgsP2cX\",\"guide_theme.md\":\"CmVrgJ2E\",\"guide_visual.md\":\"DiYPmHFQ\",\"index.md\":\"-Lp2QPVl\",\"installation.md\":\"BPxh3Ju-\",\"introduction.md\":\"BlAMsXUV\",\"npm-package-dependency.md\":\"-OiiG3sS\",\"overview.md\":\"BYY_gQ6h\",\"quickstart.md\":\"BE1mSsze\"}");window.__VP_SITE_DATA__=JSON.parse("{\"lang\":\"zh-CN\",\"dir\":\"ltr\",\"title\":\"曦寒视图组件文档\",\"description\":\"框架无关的设计系统运行时与组件库\",\"base\":\"/\",\"head\":[],\"router\":{\"prefetchLinks\":true},\"appearance\":true,\"themeConfig\":{\"logo\":\"/images/logo.png\",\"socialLinks\":[{\"icon\":\"github\",\"link\":\"https://github.com/XiHanFun/XiHan.UI\"},{\"icon\":\"gitee\",\"link\":\"https://gitee.com/XiHanFun/XiHan.UI\"},{\"icon\":\"git\",\"link\":\"https://atomgit.com/XiHanFun/XiHan.UI\"}],\"search\":{\"provider\":\"local\",\"options\":{\"placeholder\":\"搜索文档\",\"translations\":{\"button\":{\"buttonText\":\"搜索文档\",\"buttonAriaLabel\":\"搜索文档\"},\"modal\":{\"searchBox\":{\"resetButtonTitle\":\"清除查询条件\",\"resetButtonAriaLabel\":\"清除查询条件\",\"cancelButtonText\":\"取消\",\"cancelButtonAriaLabel\":\"取消\"},\"startScreen\":{\"recentSearchesTitle\":\"搜索历史\",\"noRecentSearchesText\":\"没有搜索历史\",\"saveRecentSearchButtonTitle\":\"保存至搜索历史\",\"removeRecentSearchButtonTitle\":\"从搜索历史中移除\",\"favoriteSearchesTitle\":\"收藏\",\"removeFavoriteSearchButtonTitle\":\"从收藏中移除\"},\"errorScreen\":{\"titleText\":\"无法获取结果\",\"helpText\":\"你可能需要检查你的网络连接\"},\"footer\":{\"selectText\":\"选择\",\"navigateText\":\"切换\",\"closeText\":\"关闭\",\"searchByText\":\"搜索提供者\"},\"noResultsScreen\":{\"noResultsText\":\"无法找到相关结果\",\"suggestedQueryText\":\"你可以尝试查询\",\"reportMissingResultsText\":\"你认为该查询应该有结果？\",\"reportMissingResultsLinkText\":\"点击反馈\"}}}}},\"nav\":[{\"text\":\"开始\",\"link\":\"/introduction\",\"activeMatch\":\"^/(introduction|overview|installation|quickstart|npm-package-dependency|faq)$\"},{\"text\":\"核心概念\",\"link\":\"/guide/anatomy\",\"activeMatch\":\"/guide/\"},{\"text\":\"适配器\",\"link\":\"/adapters/vue\",\"activeMatch\":\"/adapters/\"},{\"text\":\"组件参考\",\"link\":\"/components/\",\"activeMatch\":\"/components/\"},{\"text\":\"探索未知\",\"items\":[{\"text\":\"关于我们\",\"items\":[{\"text\":\"官方网站\",\"link\":\"https://www.xihanfun.com\"},{\"text\":\"组织文档\",\"link\":\"https://docs.xihanfun.com\"}]},{\"text\":\"生态文档\",\"items\":[{\"text\":\"后端 | 开发框架\",\"link\":\"https://framework.docs.xihanfun.com\"},{\"text\":\"用例 | 基础应用\",\"link\":\"https://basicapp.docs.xihanfun.com\"}]},{\"text\":\"引用下载\",\"items\":[{\"text\":\"后端 | nuget\",\"link\":\"https://www.nuget.org/profiles/XiHanFun\"},{\"text\":\"前端 | npm\",\"link\":\"https://www.npmjs.com/org/xihan-ui\"}]},{\"text\":\"在线体验\",\"items\":[{\"text\":\"后端 | 开发框架\",\"link\":\"https://framework.xihanfun.com\"},{\"text\":\"前端 | 视图组件\",\"link\":\"https://ui.xihanfun.com\"},{\"text\":\"用例 | 基础应用\",\"link\":\"https://basicapp.xihanfun.com\"}]}]},{\"text\":\"代码仓库\",\"items\":[{\"text\":\"Github主库(国际)\",\"link\":\"https://github.com/XiHanFun/XiHan.UI\"},{\"text\":\"Gitee同步备库(国内)\",\"link\":\"https://gitee.com/XiHanFun/XiHan.UI\"},{\"text\":\"Atomgit同步备库(国内)\",\"link\":\"https://atomgit.com/XiHanFun/XiHan.UI\"}]},{\"text\":\"参与贡献\",\"items\":[{\"text\":\"公约\",\"link\":\"https://docs.xihanfun.com/cosmos/code-of-conduct\"},{\"text\":\"指南\",\"link\":\"https://docs.xihanfun.com/cosmos/contributing\"},{\"text\":\"贡献者\",\"link\":\"https://docs.xihanfun.com/cosmos/contributors\"},{\"text\":\"支持&赞助\",\"link\":\"https://docs.xihanfun.com/cosmos/sponsor\"}]},{\"text\":\"v0.0.0\",\"items\":[{\"text\":\"更新日志\",\"link\":\"/changelog\"}]}],\"sidebar\":{\"/guide/\":[{\"text\":\"核心概念\",\"collapsed\":false,\"items\":[{\"text\":\"1. 解剖与部件契约\",\"link\":\"/guide/anatomy\"},{\"text\":\"2. 状态机运行时\",\"link\":\"/guide/machine\"},{\"text\":\"3. connect 与属性产出\",\"link\":\"/guide/connect\"},{\"text\":\"4. 行为原语\",\"link\":\"/guide/behavior\"},{\"text\":\"5. 浮层定位\",\"link\":\"/guide/position\"},{\"text\":\"6. 设计令牌与主题\",\"link\":\"/guide/theme\"},{\"text\":\"7. 皮肤与样式分层\",\"link\":\"/guide/styling\"},{\"text\":\"8. 无障碍与键盘规格\",\"link\":\"/guide/a11y\"},{\"text\":\"9. 诊断通道\",\"link\":\"/guide/diagnostics\"},{\"text\":\"10. AI 对话内核\",\"link\":\"/guide/ai\"},{\"text\":\"11. 视觉层\",\"link\":\"/guide/visual\"},{\"text\":\"12. 测试与质量门禁\",\"link\":\"/guide/testing\"}]}],\"/adapters/\":[{\"text\":\"适配器\",\"collapsed\":false,\"items\":[{\"text\":\"Vue 适配器\",\"link\":\"/adapters/vue\"},{\"text\":\"Web Components 适配器\",\"link\":\"/adapters/wc\"}]}],\"/components/\":[{\"text\":\"组件总览\",\"link\":\"/components/\"},{\"text\":\"通用（10）\",\"collapsed\":false,\"items\":[{\"text\":\"按钮\",\"link\":\"/components/button\"},{\"text\":\"图标\",\"link\":\"/components/icon\"},{\"text\":\"切换按钮\",\"link\":\"/components/toggle\"},{\"text\":\"切换按钮组\",\"link\":\"/components/toggle-group\"},{\"text\":\"徽标\",\"link\":\"/components/badge\"},{\"text\":\"头像\",\"link\":\"/components/avatar\"},{\"text\":\"图片\",\"link\":\"/components/image\"},{\"text\":\"分隔线\",\"link\":\"/components/separator\"},{\"text\":\"代码块\",\"link\":\"/components/code-block\"},{\"text\":\"剪贴板\",\"link\":\"/components/clipboard\"}]},{\"text\":\"数据录入（26）\",\"collapsed\":false,\"items\":[{\"text\":\"表单字段\",\"link\":\"/components/field\"},{\"text\":\"表单\",\"link\":\"/components/form\"},{\"text\":\"文本输入\",\"link\":\"/components/text-field\"},{\"text\":\"数字输入\",\"link\":\"/components/number-field\"},{\"text\":\"分格输入\",\"link\":\"/components/pin-input\"},{\"text\":\"就地编辑\",\"link\":\"/components/editable\"},{\"text\":\"复选框\",\"link\":\"/components/checkbox\"},{\"text\":\"复选框组\",\"link\":\"/components/checkbox-group\"},{\"text\":\"单选组\",\"link\":\"/components/radio-group\"},{\"text\":\"开关\",\"link\":\"/components/switch\"},{\"text\":\"滑块\",\"link\":\"/components/slider\"},{\"text\":\"评分\",\"link\":\"/components/rating\"},{\"text\":\"选择器\",\"link\":\"/components/select\"},{\"text\":\"列表框\",\"link\":\"/components/listbox\"},{\"text\":\"组合框\",\"link\":\"/components/combobox\"},{\"text\":\"级联选择\",\"link\":\"/components/cascader\"},{\"text\":\"树选择\",\"link\":\"/components/tree-select\"},{\"text\":\"标签输入\",\"link\":\"/components/tags-input\"},{\"text\":\"穿梭框\",\"link\":\"/components/transfer\"},{\"text\":\"日期输入\",\"link\":\"/components/date-field\"},{\"text\":\"日期选择器\",\"link\":\"/components/date-picker\"},{\"text\":\"时间输入\",\"link\":\"/components/time-field\"},{\"text\":\"时间选择器\",\"link\":\"/components/time-picker\"},{\"text\":\"日历\",\"link\":\"/components/calendar\"},{\"text\":\"颜色选择器\",\"link\":\"/components/color-picker\"},{\"text\":\"文件上传\",\"link\":\"/components/file-upload\"}]},{\"text\":\"数据展示（10）\",\"collapsed\":false,\"items\":[{\"text\":\"表格\",\"link\":\"/components/table\"},{\"text\":\"树\",\"link\":\"/components/tree\"},{\"text\":\"虚拟滚动\",\"link\":\"/components/virtualizer\"},{\"text\":\"滚动区域\",\"link\":\"/components/scroll-area\"},{\"text\":\"手风琴\",\"link\":\"/components/accordion\"},{\"text\":\"折叠区域\",\"link\":\"/components/collapsible\"},{\"text\":\"走马灯\",\"link\":\"/components/carousel\"},{\"text\":\"分栏\",\"link\":\"/components/splitter\"},{\"text\":\"骨架屏\",\"link\":\"/components/skeleton\"},{\"text\":\"空状态\",\"link\":\"/components/empty-state\"}]},{\"text\":\"导航（11）\",\"collapsed\":false,\"items\":[{\"text\":\"菜单\",\"link\":\"/components/menu\"},{\"text\":\"菜单栏\",\"link\":\"/components/menubar\"},{\"text\":\"右键菜单\",\"link\":\"/components/context-menu\"},{\"text\":\"导航菜单\",\"link\":\"/components/navigation-menu\"},{\"text\":\"标签页\",\"link\":\"/components/tabs\"},{\"text\":\"步骤条\",\"link\":\"/components/steps\"},{\"text\":\"分页\",\"link\":\"/components/pagination\"},{\"text\":\"面包屑\",\"link\":\"/components/breadcrumb\"},{\"text\":\"锚点\",\"link\":\"/components/anchor\"},{\"text\":\"工具栏\",\"link\":\"/components/toolbar\"},{\"text\":\"引导\",\"link\":\"/components/tour\"}]},{\"text\":\"反馈与浮层（11）\",\"collapsed\":false,\"items\":[{\"text\":\"对话框\",\"link\":\"/components/dialog\"},{\"text\":\"抽屉\",\"link\":\"/components/drawer\"},{\"text\":\"气泡卡片\",\"link\":\"/components/popover\"},{\"text\":\"文字提示\",\"link\":\"/components/tooltip\"},{\"text\":\"悬浮卡片\",\"link\":\"/components/hover-card\"},{\"text\":\"警告提示\",\"link\":\"/components/alert\"},{\"text\":\"轻提示\",\"link\":\"/components/toast\"},{\"text\":\"轻提示容器\",\"link\":\"/components/toaster\"},{\"text\":\"进度条\",\"link\":\"/components/progress\"},{\"text\":\"加载指示器\",\"link\":\"/components/spinner\"},{\"text\":\"加载条\",\"link\":\"/components/loading-bar\"}]},{\"text\":\"AI 对话（2）\",\"collapsed\":false,\"items\":[{\"text\":\"会话线程\",\"link\":\"/components/thread\"},{\"text\":\"消息编辑器\",\"link\":\"/components/composer\"}]}],\"/\":[{\"text\":\"开始\",\"collapsed\":false,\"items\":[{\"text\":\"组件库简介\",\"link\":\"/introduction\"},{\"text\":\"架构总览\",\"link\":\"/overview\"},{\"text\":\"安装与接入\",\"link\":\"/installation\"},{\"text\":\"快速上手\",\"link\":\"/quickstart\"}]},{\"text\":\"参考\",\"collapsed\":false,\"items\":[{\"text\":\"包与依赖关系\",\"link\":\"/npm-package-dependency\"},{\"text\":\"常见问题\",\"link\":\"/faq\"}]},{\"text\":\"更新日志\",\"link\":\"/changelog\"}]},\"docFooter\":{\"prev\":\"上一页\",\"next\":\"下一页\"},\"outline\":{\"label\":\"目录\",\"level\":\"deep\"},\"langMenuLabel\":\"多语言\",\"returnToTopLabel\":\"回到顶部\",\"sidebarMenuLabel\":\"菜单\",\"darkModeSwitchLabel\":\"主题\",\"lightModeSwitchTitle\":\"切换到浅色模式\",\"darkModeSwitchTitle\":\"切换到深色模式\",\"skipToContentLabel\":\"跳转到内容\",\"notFound\":{\"title\":\"页面未找到\",\"quote\":\"但如果你不改变方向，并且继续寻找，你可能最终会到达你所前往的地方。\",\"linkLabel\":\"前往首页\",\"linkText\":\"带我回首页\"},\"editLink\":{\"text\":\"在 GitHub 上编辑此页\",\"pattern\":\"https://github.com/XiHanFun/XiHan.UI/tree/main/docs/:path\"},\"lastUpdated\":{\"text\":\"最后更新于\"},\"footer\":{\"message\":\"Released under The <a href='https://opensource.org/license/MIT' target='_blank'>MIT</a> License\",\"copyright\":\"Copyright ©2021-Present <a href='https://www.xihanfun.com' target='_blank'>XiHanFun</a> and contributors.\"}},\"locales\":{},\"scrollOffset\":134,\"cleanUrls\":true}");</script>
+&lt;/template&gt;</code></pre></div></div><h3 id="空态与加载态" tabindex="-1">空态与加载态 <a class="header-anchor" href="#空态与加载态" aria-label="Permalink to &quot;空态与加载态&quot;">​</a></h3><p>两个状态节点常挂着只靠 hidden 显隐：表体为空且在取数时露加载态，取数完了没有行才露空态</p><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><div style="width:100%;max-width:480px;display:grid;gap:12px;" data-v-f91339c8><div style="display:flex;gap:8px;"><button type="button">取数</button><button type="button">清空</button></div><div data-scope="table" data-part="root" role="grid" aria-labelledby="table:v-7:caption" aria-rowcount="1" aria-colcount="2" aria-multiselectable="false" aria-busy="false" data-empty><div data-scope="table" data-part="header" role="rowgroup"><div data-scope="table" data-part="row" role="row" aria-rowindex="1" data-section="header"><!--[--><div data-scope="table" data-part="column-header" data-value="name" role="columnheader" aria-colindex="1" style="inline-size:10rem;">任务</div><div data-scope="table" data-part="column-header" data-value="owner" role="columnheader" aria-colindex="2">负责人</div><!--]--></div></div><div data-scope="table" data-part="body" role="rowgroup" tabindex="0" data-empty><!--[--><!--]--></div><div data-scope="table" data-part="loading-state" hidden>正在取数…</div><div data-scope="table" data-part="empty-state">还没有任务，点「取数」拉一份。</div></div></div></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { computed, ref } from &quot;vue&quot;;
+import {
+  XhTableBody,
+  XhTableCell,
+  XhTableColumnHeader,
+  XhTableEmptyState,
+  XhTableHeader,
+  XhTableLoadingState,
+  XhTableRoot,
+  XhTableRow,
+} from &quot;@xihan-ui/vue&quot;;
+
+interface Task {
+  id: string;
+  name: string;
+  owner: string;
+}
+
+const columns = [
+  { id: &quot;name&quot;, label: &quot;任务&quot;, width: &quot;10rem&quot; },
+  { id: &quot;owner&quot;, label: &quot;负责人&quot; },
+];
+
+const source: Task[] = [
+  { id: &quot;t1&quot;, name: &quot;构建流水线&quot;, owner: &quot;赵一&quot; },
+  { id: &quot;t2&quot;, name: &quot;组件回归&quot;, owner: &quot;钱二&quot; },
+  { id: &quot;t3&quot;, name: &quot;文档校订&quot;, owner: &quot;孙三&quot; },
+];
+
+const tasks = ref&lt;Task[]&gt;([]);
+const loading = ref(false);
+let timer = 0;
+
+function load(): void {
+  window.clearTimeout(timer);
+  tasks.value = [];
+  loading.value = true;
+  timer = window.setTimeout(() =&gt; {
+    tasks.value = source;
+    loading.value = false;
+  }, 1200);
+}
+
+function reset(): void {
+  window.clearTimeout(timer);
+  tasks.value = [];
+  loading.value = false;
+}
+
+// 表体为空与否按 rows 推导，不必另写 empty
+const rows = computed(() =&gt; tasks.value.map((t) =&gt; ({ id: t.id })));
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div style=&quot;width: 100%; max-width: 480px; display: grid; gap: 12px&quot;&gt;
+    &lt;div style=&quot;display: flex; gap: 8px&quot;&gt;
+      &lt;button type=&quot;button&quot; @click=&quot;load&quot;&gt;取数&lt;/button&gt;
+      &lt;button type=&quot;button&quot; @click=&quot;reset&quot;&gt;清空&lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;XhTableRoot :columns=&quot;columns&quot; :rows=&quot;rows&quot; :loading=&quot;loading&quot;&gt;
+      &lt;XhTableHeader&gt;
+        &lt;XhTableRow&gt;
+          &lt;XhTableColumnHeader v-for=&quot;col in columns&quot; :key=&quot;col.id&quot; :value=&quot;col.id&quot;&gt;
+            {{ col.label }}
+          &lt;/XhTableColumnHeader&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableHeader&gt;
+      &lt;XhTableBody&gt;
+        &lt;XhTableRow v-for=&quot;t in tasks&quot; :key=&quot;t.id&quot; :value=&quot;t.id&quot;&gt;
+          &lt;XhTableCell value=&quot;name&quot;&gt;{{ t.name }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;owner&quot;&gt;{{ t.owner }}&lt;/XhTableCell&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableBody&gt;
+      &lt;XhTableLoadingState&gt;正在取数…&lt;/XhTableLoadingState&gt;
+      &lt;XhTableEmptyState&gt;还没有任务，点「取数」拉一份。&lt;/XhTableEmptyState&gt;
+    &lt;/XhTableRoot&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</code></pre></div></div><h3 id="脚注合计" tabindex="-1">脚注合计 <a class="header-anchor" href="#脚注合计" aria-label="Permalink to &quot;脚注合计&quot;">​</a></h3><p>footer 把行号空间的最后一行留给脚注；脚注单元格不属于任何数据行，也就没有选中与禁用可言</p><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><div style="width:100%;max-width:560px;" data-v-f91339c8><div data-scope="table" data-part="root" role="grid" aria-labelledby="table:v-8:caption" aria-rowcount="5" aria-colcount="3" aria-multiselectable="false" aria-busy="false"><div data-scope="table" data-part="caption" id="table:v-8:caption">采购清单</div><div data-scope="table" data-part="header" role="rowgroup"><div data-scope="table" data-part="row" role="row" aria-rowindex="1" data-section="header"><!--[--><div data-scope="table" data-part="column-header" data-value="item" role="columnheader" aria-colindex="1" style="inline-size:10rem;">条目</div><div data-scope="table" data-part="column-header" data-value="count" role="columnheader" aria-colindex="2" style="inline-size:5rem;">数量</div><div data-scope="table" data-part="column-header" data-value="amount" role="columnheader" aria-colindex="3">金额</div><!--]--></div></div><div data-scope="table" data-part="body" role="rowgroup" tabindex="0"><!--[--><div data-scope="table" data-part="row" data-value="l1" role="row" aria-rowindex="2" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:10rem;">键盘</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:5rem;">2</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">¥ 1280</div></div><div data-scope="table" data-part="row" data-value="l2" role="row" aria-rowindex="3" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:10rem;">鼠标</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:5rem;">3</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">¥ 447</div></div><div data-scope="table" data-part="row" data-value="l3" role="row" aria-rowindex="4" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:10rem;">显示器支架</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:5rem;">1</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">¥ 320</div></div><!--]--></div><div data-scope="table" data-part="footer" role="rowgroup"><div data-scope="table" data-part="row" role="row" aria-rowindex="5" data-section="footer"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:10rem;">合计</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:5rem;">6</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">¥ 2047</div></div></div></div></div></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { computed } from &quot;vue&quot;;
+import {
+  XhTableBody,
+  XhTableCaption,
+  XhTableCell,
+  XhTableColumnHeader,
+  XhTableFooter,
+  XhTableHeader,
+  XhTableRoot,
+  XhTableRow,
+} from &quot;@xihan-ui/vue&quot;;
+
+const columns = [
+  { id: &quot;item&quot;, label: &quot;条目&quot;, width: &quot;10rem&quot; },
+  { id: &quot;count&quot;, label: &quot;数量&quot;, width: &quot;5rem&quot; },
+  { id: &quot;amount&quot;, label: &quot;金额&quot; },
+];
+
+const lines = [
+  { id: &quot;l1&quot;, item: &quot;键盘&quot;, count: 2, amount: 1280 },
+  { id: &quot;l2&quot;, item: &quot;鼠标&quot;, count: 3, amount: 447 },
+  { id: &quot;l3&quot;, item: &quot;显示器支架&quot;, count: 1, amount: 320 },
+];
+
+const rows = lines.map((l) =&gt; ({ id: l.id }));
+
+const totalCount = computed(() =&gt; lines.reduce((sum, l) =&gt; sum + l.count, 0));
+const totalAmount = computed(() =&gt; lines.reduce((sum, l) =&gt; sum + l.amount, 0));
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div style=&quot;width: 100%; max-width: 560px&quot;&gt;
+    &lt;XhTableRoot :columns=&quot;columns&quot; :rows=&quot;rows&quot; footer&gt;
+      &lt;XhTableCaption&gt;采购清单&lt;/XhTableCaption&gt;
+      &lt;XhTableHeader&gt;
+        &lt;XhTableRow&gt;
+          &lt;XhTableColumnHeader v-for=&quot;col in columns&quot; :key=&quot;col.id&quot; :value=&quot;col.id&quot;&gt;
+            {{ col.label }}
+          &lt;/XhTableColumnHeader&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableHeader&gt;
+      &lt;XhTableBody&gt;
+        &lt;XhTableRow v-for=&quot;l in lines&quot; :key=&quot;l.id&quot; :value=&quot;l.id&quot;&gt;
+          &lt;XhTableCell value=&quot;item&quot;&gt;{{ l.item }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;count&quot;&gt;{{ l.count }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;amount&quot;&gt;¥ {{ l.amount }}&lt;/XhTableCell&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableBody&gt;
+      &lt;XhTableFooter&gt;
+        &lt;!-- 脚注行不给 value：它占的是行号空间的最后一行 --&gt;
+        &lt;XhTableRow&gt;
+          &lt;XhTableCell value=&quot;item&quot;&gt;合计&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;count&quot;&gt;{{ totalCount }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;amount&quot;&gt;¥ {{ totalAmount }}&lt;/XhTableCell&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableFooter&gt;
+    &lt;/XhTableRoot&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</code></pre></div></div><h3 id="表头吸顶与列吸附" tabindex="-1">表头吸顶与列吸附 <a class="header-anchor" href="#表头吸顶与列吸附" aria-label="Permalink to &quot;表头吸顶与列吸附&quot;">​</a></h3><p>root 自己就是那个滚动容器：stickyHeader 钉住表头，列上标 sticky 的钉住那一列</p><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><div style="width:100%;max-width:420px;" data-v-f91339c8><div data-scope="table" data-part="root" role="grid" aria-labelledby="table:v-9:caption" aria-rowcount="17" aria-colcount="5" aria-multiselectable="false" aria-busy="false" data-sticky><div data-scope="table" data-part="header" role="rowgroup" data-sticky><div data-scope="table" data-part="row" role="row" aria-rowindex="1" data-section="header"><!--[--><div data-scope="table" data-part="column-header" data-value="name" role="columnheader" aria-colindex="1" data-sticky style="inline-size:7rem;">姓名</div><div data-scope="table" data-part="column-header" data-value="dept" role="columnheader" aria-colindex="2" style="inline-size:9rem;">部门</div><div data-scope="table" data-part="column-header" data-value="city" role="columnheader" aria-colindex="3" style="inline-size:7rem;">城市</div><div data-scope="table" data-part="column-header" data-value="ext" role="columnheader" aria-colindex="4" style="inline-size:7rem;">分机</div><div data-scope="table" data-part="column-header" data-value="mail" role="columnheader" aria-colindex="5" style="inline-size:13rem;">邮箱</div><!--]--></div></div><div data-scope="table" data-part="body" role="rowgroup" tabindex="0"><!--[--><div data-scope="table" data-part="row" data-value="u1" role="row" aria-rowindex="2" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" data-sticky style="inline-size:7rem;">员工 1</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">平台研发</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:7rem;">杭州</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="4" style="inline-size:7rem;">8100</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="5" style="inline-size:13rem;">member1@example.com</div></div><div data-scope="table" data-part="row" data-value="u2" role="row" aria-rowindex="3" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" data-sticky style="inline-size:7rem;">员工 2</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">前端体验</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:7rem;">上海</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="4" style="inline-size:7rem;">8101</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="5" style="inline-size:13rem;">member2@example.com</div></div><div data-scope="table" data-part="row" data-value="u3" role="row" aria-rowindex="4" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" data-sticky style="inline-size:7rem;">员工 3</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">基础架构</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:7rem;">北京</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="4" style="inline-size:7rem;">8102</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="5" style="inline-size:13rem;">member3@example.com</div></div><div data-scope="table" data-part="row" data-value="u4" role="row" aria-rowindex="5" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" data-sticky style="inline-size:7rem;">员工 4</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">质量保障</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:7rem;">成都</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="4" style="inline-size:7rem;">8103</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="5" style="inline-size:13rem;">member4@example.com</div></div><div data-scope="table" data-part="row" data-value="u5" role="row" aria-rowindex="6" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" data-sticky style="inline-size:7rem;">员工 5</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">平台研发</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:7rem;">杭州</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="4" style="inline-size:7rem;">8104</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="5" style="inline-size:13rem;">member5@example.com</div></div><div data-scope="table" data-part="row" data-value="u6" role="row" aria-rowindex="7" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" data-sticky style="inline-size:7rem;">员工 6</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">前端体验</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:7rem;">上海</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="4" style="inline-size:7rem;">8105</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="5" style="inline-size:13rem;">member6@example.com</div></div><div data-scope="table" data-part="row" data-value="u7" role="row" aria-rowindex="8" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" data-sticky style="inline-size:7rem;">员工 7</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">基础架构</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:7rem;">北京</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="4" style="inline-size:7rem;">8106</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="5" style="inline-size:13rem;">member7@example.com</div></div><div data-scope="table" data-part="row" data-value="u8" role="row" aria-rowindex="9" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" data-sticky style="inline-size:7rem;">员工 8</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">质量保障</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:7rem;">成都</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="4" style="inline-size:7rem;">8107</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="5" style="inline-size:13rem;">member8@example.com</div></div><div data-scope="table" data-part="row" data-value="u9" role="row" aria-rowindex="10" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" data-sticky style="inline-size:7rem;">员工 9</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">平台研发</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:7rem;">杭州</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="4" style="inline-size:7rem;">8108</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="5" style="inline-size:13rem;">member9@example.com</div></div><div data-scope="table" data-part="row" data-value="u10" role="row" aria-rowindex="11" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" data-sticky style="inline-size:7rem;">员工 10</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">前端体验</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:7rem;">上海</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="4" style="inline-size:7rem;">8109</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="5" style="inline-size:13rem;">member10@example.com</div></div><div data-scope="table" data-part="row" data-value="u11" role="row" aria-rowindex="12" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" data-sticky style="inline-size:7rem;">员工 11</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">基础架构</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:7rem;">北京</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="4" style="inline-size:7rem;">8110</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="5" style="inline-size:13rem;">member11@example.com</div></div><div data-scope="table" data-part="row" data-value="u12" role="row" aria-rowindex="13" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" data-sticky style="inline-size:7rem;">员工 12</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">质量保障</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:7rem;">成都</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="4" style="inline-size:7rem;">8111</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="5" style="inline-size:13rem;">member12@example.com</div></div><div data-scope="table" data-part="row" data-value="u13" role="row" aria-rowindex="14" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" data-sticky style="inline-size:7rem;">员工 13</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">平台研发</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:7rem;">杭州</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="4" style="inline-size:7rem;">8112</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="5" style="inline-size:13rem;">member13@example.com</div></div><div data-scope="table" data-part="row" data-value="u14" role="row" aria-rowindex="15" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" data-sticky style="inline-size:7rem;">员工 14</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">前端体验</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:7rem;">上海</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="4" style="inline-size:7rem;">8113</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="5" style="inline-size:13rem;">member14@example.com</div></div><div data-scope="table" data-part="row" data-value="u15" role="row" aria-rowindex="16" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" data-sticky style="inline-size:7rem;">员工 15</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">基础架构</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:7rem;">北京</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="4" style="inline-size:7rem;">8114</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="5" style="inline-size:13rem;">member15@example.com</div></div><div data-scope="table" data-part="row" data-value="u16" role="row" aria-rowindex="17" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" data-sticky style="inline-size:7rem;">员工 16</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">质量保障</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:7rem;">成都</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="4" style="inline-size:7rem;">8115</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="5" style="inline-size:13rem;">member16@example.com</div></div><!--]--></div></div></div></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import {
+  XhTableBody,
+  XhTableCell,
+  XhTableColumnHeader,
+  XhTableHeader,
+  XhTableRoot,
+  XhTableRow,
+} from &quot;@xihan-ui/vue&quot;;
+
+// 首列吸附，其余列给足宽度让表格横向溢出，滚起来才看得出钉住的效果
+const columns = [
+  { id: &quot;name&quot;, label: &quot;姓名&quot;, width: &quot;7rem&quot;, sticky: true },
+  { id: &quot;dept&quot;, label: &quot;部门&quot;, width: &quot;9rem&quot; },
+  { id: &quot;city&quot;, label: &quot;城市&quot;, width: &quot;7rem&quot; },
+  { id: &quot;ext&quot;, label: &quot;分机&quot;, width: &quot;7rem&quot; },
+  { id: &quot;mail&quot;, label: &quot;邮箱&quot;, width: &quot;13rem&quot; },
+];
+
+const depts = [&quot;平台研发&quot;, &quot;前端体验&quot;, &quot;基础架构&quot;, &quot;质量保障&quot;];
+const cities = [&quot;杭州&quot;, &quot;上海&quot;, &quot;北京&quot;, &quot;成都&quot;];
+
+const members = Array.from({ length: 16 }, (_, i) =&gt; ({
+  id: `u${i + 1}`,
+  name: `员工 ${i + 1}`,
+  dept: depts[i % depts.length],
+  city: cities[i % cities.length],
+  ext: `8${(100 + i).toString()}`,
+  mail: `member${i + 1}@example.com`,
+}));
+
+const rows = members.map((m) =&gt; ({ id: m.id }));
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div style=&quot;width: 100%; max-width: 420px&quot;&gt;
+    &lt;XhTableRoot :columns=&quot;columns&quot; :rows=&quot;rows&quot; sticky-header&gt;
+      &lt;XhTableHeader&gt;
+        &lt;XhTableRow&gt;
+          &lt;XhTableColumnHeader v-for=&quot;col in columns&quot; :key=&quot;col.id&quot; :value=&quot;col.id&quot;&gt;
+            {{ col.label }}
+          &lt;/XhTableColumnHeader&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableHeader&gt;
+      &lt;XhTableBody&gt;
+        &lt;XhTableRow v-for=&quot;m in members&quot; :key=&quot;m.id&quot; :value=&quot;m.id&quot;&gt;
+          &lt;XhTableCell value=&quot;name&quot;&gt;{{ m.name }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;dept&quot;&gt;{{ m.dept }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;city&quot;&gt;{{ m.city }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;ext&quot;&gt;{{ m.ext }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;mail&quot;&gt;{{ m.mail }}&lt;/XhTableCell&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableBody&gt;
+    &lt;/XhTableRoot&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</code></pre></div></div><h3 id="单选" tabindex="-1">单选 <a class="header-anchor" href="#单选" aria-label="Permalink to &quot;单选&quot;">​</a></h3><p>selectionMode 给 single：选中集合最多一个元素，点已选中的那行再点一次就清空，焦点行按空格同理</p><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><div style="width:100%;max-width:480px;display:grid;gap:12px;" data-v-f91339c8><div data-scope="table" data-part="root" role="grid" aria-labelledby="table:v-10:caption" aria-rowcount="4" aria-colcount="3" aria-multiselectable="false" aria-busy="false"><div data-scope="table" data-part="header" role="rowgroup"><div data-scope="table" data-part="row" role="row" aria-rowindex="1" data-section="header"><div data-scope="table" data-part="column-header" data-value="select" role="columnheader" aria-colindex="1" style="inline-size:3rem;"></div><div data-scope="table" data-part="column-header" data-value="plan" role="columnheader" aria-colindex="2" style="inline-size:8rem;">套餐</div><div data-scope="table" data-part="column-header" data-value="price" role="columnheader" aria-colindex="3">价格</div></div></div><div data-scope="table" data-part="body" role="rowgroup" tabindex="0"><!--[--><div data-scope="table" data-part="row" data-value="p1" role="row" aria-rowindex="2" aria-selected="false" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:3rem;"><span data-scope="table" data-part="row-select-trigger" aria-hidden="true" tabindex="-1">●</span></div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">入门版</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">¥ 0 / 月</div></div><div data-scope="table" data-part="row" data-selected data-value="p2" role="row" aria-rowindex="3" aria-selected="true" aria-disabled="false" tabindex="0" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" data-selected style="inline-size:3rem;"><span data-scope="table" data-part="row-select-trigger" data-selected aria-hidden="true" tabindex="-1">●</span></div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" data-selected style="inline-size:8rem;">团队版</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" data-selected>¥ 99 / 月</div></div><div data-scope="table" data-part="row" data-value="p3" role="row" aria-rowindex="4" aria-selected="false" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:3rem;"><span data-scope="table" data-part="row-select-trigger" aria-hidden="true" tabindex="-1">●</span></div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">企业版</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">¥ 399 / 月</div></div><!--]--></div></div><span>已选：p2</span></div></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref } from &quot;vue&quot;;
+import {
+  XhTableBody,
+  XhTableCell,
+  XhTableColumnHeader,
+  XhTableHeader,
+  XhTableRoot,
+  XhTableRow,
+  XhTableRowSelectTrigger,
+} from &quot;@xihan-ui/vue&quot;;
+
+// 单选下全选把手不生效，表头那一格空着即可
+const columns = [
+  { id: &quot;select&quot;, width: &quot;3rem&quot; },
+  { id: &quot;plan&quot;, label: &quot;套餐&quot;, width: &quot;8rem&quot; },
+  { id: &quot;price&quot;, label: &quot;价格&quot; },
+];
+
+const plans = [
+  { id: &quot;p1&quot;, plan: &quot;入门版&quot;, price: &quot;¥ 0 / 月&quot; },
+  { id: &quot;p2&quot;, plan: &quot;团队版&quot;, price: &quot;¥ 99 / 月&quot; },
+  { id: &quot;p3&quot;, plan: &quot;企业版&quot;, price: &quot;¥ 399 / 月&quot; },
+];
+
+const rows = plans.map((p) =&gt; ({ id: p.id }));
+
+const selection = ref&lt;string[]&gt;([&quot;p2&quot;]);
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div style=&quot;width: 100%; max-width: 480px; display: grid; gap: 12px&quot;&gt;
+    &lt;XhTableRoot
+      v-model:selection=&quot;selection&quot;
+      :columns=&quot;columns&quot;
+      :rows=&quot;rows&quot;
+      selection-mode=&quot;single&quot;
+    &gt;
+      &lt;XhTableHeader&gt;
+        &lt;XhTableRow&gt;
+          &lt;XhTableColumnHeader value=&quot;select&quot; /&gt;
+          &lt;XhTableColumnHeader value=&quot;plan&quot;&gt;套餐&lt;/XhTableColumnHeader&gt;
+          &lt;XhTableColumnHeader value=&quot;price&quot;&gt;价格&lt;/XhTableColumnHeader&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableHeader&gt;
+      &lt;XhTableBody&gt;
+        &lt;XhTableRow v-for=&quot;p in plans&quot; :key=&quot;p.id&quot; :value=&quot;p.id&quot;&gt;
+          &lt;XhTableCell value=&quot;select&quot;&gt;
+            &lt;XhTableRowSelectTrigger&gt;●&lt;/XhTableRowSelectTrigger&gt;
+          &lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;plan&quot;&gt;{{ p.plan }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;price&quot;&gt;{{ p.price }}&lt;/XhTableCell&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableBody&gt;
+    &lt;/XhTableRoot&gt;
+    &lt;span&gt;已选：{{ selection.length ? selection.join(&quot;、&quot;) : &quot;（无）&quot; }}&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</code></pre></div></div><h3 id="跨列单元格" tabindex="-1">跨列单元格 <a class="header-anchor" href="#跨列单元格" aria-label="Permalink to &quot;跨列单元格&quot;">​</a></h3><p>colspan 从它自己那一列往后算，报成 aria-colspan；1 与省略同义，所以只在真跨了列时写</p><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><div style="width:100%;max-width:520px;" data-v-f91339c8><div data-scope="table" data-part="root" role="grid" aria-labelledby="table:v-11:caption" aria-rowcount="4" aria-colcount="3" aria-multiselectable="false" aria-busy="false"><div data-scope="table" data-part="caption" id="table:v-11:caption">交付单量</div><div data-scope="table" data-part="header" role="rowgroup"><div data-scope="table" data-part="row" role="row" aria-rowindex="1" data-section="header"><!--[--><div data-scope="table" data-part="column-header" data-value="team" role="columnheader" aria-colindex="1" style="inline-size:8rem;">小组</div><div data-scope="table" data-part="column-header" data-value="h1" role="columnheader" aria-colindex="2">上半年</div><div data-scope="table" data-part="column-header" data-value="h2" role="columnheader" aria-colindex="3">下半年</div><!--]--></div></div><div data-scope="table" data-part="body" role="rowgroup" tabindex="0"><!--[--><div data-scope="table" data-part="row" data-value="t1" role="row" aria-rowindex="2" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:8rem;">平台研发</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2">42</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">51</div></div><div data-scope="table" data-part="row" data-value="t2" role="row" aria-rowindex="3" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:8rem;">前端体验</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2">36</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">39</div></div><!--]--><div data-scope="table" data-part="row" data-value="sum" role="row" aria-rowindex="4" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:8rem;">全年</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" aria-colspan="2">168</div></div></div></div></div></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import {
+  XhTableBody,
+  XhTableCaption,
+  XhTableCell,
+  XhTableColumnHeader,
+  XhTableHeader,
+  XhTableRoot,
+  XhTableRow,
+} from &quot;@xihan-ui/vue&quot;;
+
+const columns = [
+  { id: &quot;team&quot;, label: &quot;小组&quot;, width: &quot;8rem&quot; },
+  { id: &quot;h1&quot;, label: &quot;上半年&quot; },
+  { id: &quot;h2&quot;, label: &quot;下半年&quot; },
+];
+
+const teams = [
+  { id: &quot;t1&quot;, team: &quot;平台研发&quot;, h1: &quot;42&quot;, h2: &quot;51&quot; },
+  { id: &quot;t2&quot;, team: &quot;前端体验&quot;, h1: &quot;36&quot;, h2: &quot;39&quot; },
+];
+
+// 汇总行也占一个行号，只是它那格横跨了两列
+const rows = [...teams.map((t) =&gt; ({ id: t.id })), { id: &quot;sum&quot; }];
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div style=&quot;width: 100%; max-width: 520px&quot;&gt;
+    &lt;XhTableRoot :columns=&quot;columns&quot; :rows=&quot;rows&quot;&gt;
+      &lt;XhTableCaption&gt;交付单量&lt;/XhTableCaption&gt;
+      &lt;XhTableHeader&gt;
+        &lt;XhTableRow&gt;
+          &lt;XhTableColumnHeader v-for=&quot;col in columns&quot; :key=&quot;col.id&quot; :value=&quot;col.id&quot;&gt;
+            {{ col.label }}
+          &lt;/XhTableColumnHeader&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableHeader&gt;
+      &lt;XhTableBody&gt;
+        &lt;XhTableRow v-for=&quot;t in teams&quot; :key=&quot;t.id&quot; :value=&quot;t.id&quot;&gt;
+          &lt;XhTableCell value=&quot;team&quot;&gt;{{ t.team }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;h1&quot;&gt;{{ t.h1 }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;h2&quot;&gt;{{ t.h2 }}&lt;/XhTableCell&gt;
+        &lt;/XhTableRow&gt;
+        &lt;XhTableRow value=&quot;sum&quot;&gt;
+          &lt;XhTableCell value=&quot;team&quot;&gt;全年&lt;/XhTableCell&gt;
+          &lt;!-- 从 h1 起跨两列，这一行因此只写两个格子 --&gt;
+          &lt;XhTableCell value=&quot;h1&quot; :colspan=&quot;2&quot;&gt;168&lt;/XhTableCell&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableBody&gt;
+    &lt;/XhTableRoot&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</code></pre></div></div><h3 id="单元格就地编辑" tabindex="-1">单元格就地编辑 <a class="header-anchor" href="#单元格就地编辑" aria-label="Permalink to &quot;单元格就地编辑&quot;">​</a></h3><p>表体的方向键与 Home/End 是挂在 body 上的冒泡监听，可编辑控件上掐断冒泡这些键就回归输入框自己</p><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><div style="width:100%;max-width:560px;display:grid;gap:12px;" data-v-f91339c8><div data-scope="table" data-part="root" role="grid" aria-labelledby="table:v-12:caption" aria-rowcount="4" aria-colcount="3" aria-multiselectable="false" aria-busy="false"><div data-scope="table" data-part="caption" id="table:v-12:caption">采购清单</div><div data-scope="table" data-part="header" role="rowgroup"><div data-scope="table" data-part="row" role="row" aria-rowindex="1" data-section="header"><!--[--><div data-scope="table" data-part="column-header" data-value="item" role="columnheader" aria-colindex="1" style="inline-size:9rem;">条目</div><div data-scope="table" data-part="column-header" data-value="count" role="columnheader" aria-colindex="2" style="inline-size:6rem;">数量</div><div data-scope="table" data-part="column-header" data-value="note" role="columnheader" aria-colindex="3">备注</div><!--]--></div></div><div data-scope="table" data-part="body" role="rowgroup" tabindex="0"><!--[--><div data-scope="table" data-part="row" data-value="l1" role="row" aria-rowindex="2" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:9rem;">键盘</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:6rem;"><input type="number" min="0" aria-label="键盘 数量" style="inline-size:100%;min-inline-size:0;" value="2"></div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3"><input type="text" placeholder="可以打空格" aria-label="键盘 备注" style="inline-size:100%;min-inline-size:0;" value="机械轴"></div></div><div data-scope="table" data-part="row" data-value="l2" role="row" aria-rowindex="3" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:9rem;">鼠标</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:6rem;"><input type="number" min="0" aria-label="鼠标 数量" style="inline-size:100%;min-inline-size:0;" value="3"></div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3"><input type="text" placeholder="可以打空格" aria-label="鼠标 备注" style="inline-size:100%;min-inline-size:0;" value="无线"></div></div><div data-scope="table" data-part="row" data-value="l3" role="row" aria-rowindex="4" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:9rem;">显示器支架</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:6rem;"><input type="number" min="0" aria-label="显示器支架 数量" style="inline-size:100%;min-inline-size:0;" value="1"></div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3"><input type="text" placeholder="可以打空格" aria-label="显示器支架 备注" style="inline-size:100%;min-inline-size:0;" value></div></div><!--]--></div></div><span> 合计 6 件 </span></div></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref } from &quot;vue&quot;;
+import {
+  XhTableBody,
+  XhTableCaption,
+  XhTableCell,
+  XhTableColumnHeader,
+  XhTableHeader,
+  XhTableRoot,
+  XhTableRow,
+} from &quot;@xihan-ui/vue&quot;;
+
+const columns = [
+  { id: &quot;item&quot;, label: &quot;条目&quot;, width: &quot;9rem&quot; },
+  { id: &quot;count&quot;, label: &quot;数量&quot;, width: &quot;6rem&quot; },
+  { id: &quot;note&quot;, label: &quot;备注&quot; },
+];
+
+const lines = ref([
+  { id: &quot;l1&quot;, item: &quot;键盘&quot;, count: 2, note: &quot;机械轴&quot; },
+  { id: &quot;l2&quot;, item: &quot;鼠标&quot;, count: 3, note: &quot;无线&quot; },
+  { id: &quot;l3&quot;, item: &quot;显示器支架&quot;, count: 1, note: &quot;&quot; },
+]);
+
+// 行序不随编辑变化，rows 取一次即可
+const rows = lines.value.map((line) =&gt; ({ id: line.id }));
+
+// Escape 把焦点交还所在行，表体的方向键随即恢复
+function onEditKeydown(event: KeyboardEvent): void {
+  if (event.key !== &quot;Escape&quot;) return;
+  const input = event.currentTarget as HTMLElement;
+  input.closest&lt;HTMLElement&gt;(&quot;[data-part=&#39;row&#39;]&quot;)?.focus();
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div style=&quot;width: 100%; max-width: 560px; display: grid; gap: 12px&quot;&gt;
+    &lt;XhTableRoot :columns=&quot;columns&quot; :rows=&quot;rows&quot;&gt;
+      &lt;XhTableCaption&gt;采购清单&lt;/XhTableCaption&gt;
+      &lt;XhTableHeader&gt;
+        &lt;XhTableRow&gt;
+          &lt;XhTableColumnHeader v-for=&quot;col in columns&quot; :key=&quot;col.id&quot; :value=&quot;col.id&quot;&gt;
+            {{ col.label }}
+          &lt;/XhTableColumnHeader&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableHeader&gt;
+      &lt;XhTableBody&gt;
+        &lt;XhTableRow v-for=&quot;line in lines&quot; :key=&quot;line.id&quot; :value=&quot;line.id&quot;&gt;
+          &lt;XhTableCell value=&quot;item&quot;&gt;{{ line.item }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;count&quot;&gt;
+            &lt;!-- keydown 掐断冒泡：不然上下键与 Home/End 会被表体收走去搬焦点行 --&gt;
+            &lt;input
+              v-model.number=&quot;line.count&quot;
+              type=&quot;number&quot;
+              min=&quot;0&quot;
+              :aria-label=&quot;`${line.item} 数量`&quot;
+              style=&quot;inline-size: 100%; min-inline-size: 0&quot;
+              @keydown.stop=&quot;onEditKeydown&quot;
+            /&gt;
+          &lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;note&quot;&gt;
+            &lt;input
+              v-model=&quot;line.note&quot;
+              type=&quot;text&quot;
+              placeholder=&quot;可以打空格&quot;
+              :aria-label=&quot;`${line.item} 备注`&quot;
+              style=&quot;inline-size: 100%; min-inline-size: 0&quot;
+              @keydown.stop=&quot;onEditKeydown&quot;
+            /&gt;
+          &lt;/XhTableCell&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableBody&gt;
+    &lt;/XhTableRoot&gt;
+    &lt;span&gt;
+      合计 {{ lines.reduce((sum, line) =&gt; sum + (line.count || 0), 0) }} 件
+    &lt;/span&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</code></pre></div></div><h3 id="多行表头与表头分组" tabindex="-1">多行表头与表头分组 <a class="header-anchor" href="#多行表头与表头分组" aria-label="Permalink to &quot;多行表头与表头分组&quot;">​</a></h3><p>表头写几行就是几行；分组格的跨列数与两行表头的行号由标记自报，columns 仍只登记叶子列</p><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><div style="width:100%;max-width:620px;" data-v-f91339c8><div data-scope="table" data-part="root" role="grid" aria-labelledby="table:v-13:caption" aria-rowcount="5" aria-colcount="5" aria-multiselectable="false" aria-busy="false"><div data-scope="table" data-part="caption" id="table:v-13:caption">季度交付单量</div><div data-scope="table" data-part="header" role="rowgroup"><div data-scope="table" data-part="row" role="row" aria-rowindex="1" data-section="header"><div data-scope="table" data-part="column-header" data-value="team" role="columnheader" aria-colindex="1" style="inline-size:8rem;"></div><div data-scope="table" data-part="column-header" data-value="q1" role="columnheader" aria-colindex="2" style="inline-size:10rem;flex-grow:2;" aria-colspan="2"> 上半年 </div><div data-scope="table" data-part="column-header" data-value="q3" role="columnheader" aria-colindex="4" style="inline-size:10rem;flex-grow:2;" aria-colspan="2"> 下半年 </div></div><div data-scope="table" data-part="row" role="row" aria-rowindex="2" data-section="header"><!--[--><div data-scope="table" data-part="column-header" data-value="team" role="columnheader" aria-colindex="1" style="inline-size:8rem;">小组</div><div data-scope="table" data-part="column-header" data-value="q1" role="columnheader" aria-colindex="2" style="inline-size:5rem;">Q1</div><div data-scope="table" data-part="column-header" data-value="q2" role="columnheader" aria-colindex="3" style="inline-size:5rem;">Q2</div><div data-scope="table" data-part="column-header" data-value="q3" role="columnheader" aria-colindex="4" style="inline-size:5rem;">Q3</div><div data-scope="table" data-part="column-header" data-value="q4" role="columnheader" aria-colindex="5" style="inline-size:5rem;">Q4</div><!--]--></div></div><div data-scope="table" data-part="body" role="rowgroup" tabindex="0"><!--[--><div data-scope="table" data-part="row" data-value="t1" role="row" aria-rowindex="3" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:8rem;">平台研发</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:5rem;">12</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:5rem;">15</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="4" style="inline-size:5rem;">18</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="5" style="inline-size:5rem;">21</div></div><div data-scope="table" data-part="row" data-value="t2" role="row" aria-rowindex="4" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:8rem;">前端体验</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:5rem;">9</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:5rem;">11</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="4" style="inline-size:5rem;">14</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="5" style="inline-size:5rem;">16</div></div><div data-scope="table" data-part="row" data-value="t3" role="row" aria-rowindex="5" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:8rem;">基础架构</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:5rem;">7</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:5rem;">8</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="4" style="inline-size:5rem;">10</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="5" style="inline-size:5rem;">12</div></div><!--]--></div></div></div></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import {
+  XhTableBody,
+  XhTableCaption,
+  XhTableCell,
+  XhTableColumnHeader,
+  XhTableHeader,
+  XhTableRoot,
+  XhTableRow,
+} from &quot;@xihan-ui/vue&quot;;
+
+// 只有叶子列进 columns：列号与列总数按它算
+const columns = [
+  { id: &quot;team&quot;, label: &quot;小组&quot;, width: &quot;8rem&quot; },
+  { id: &quot;q1&quot;, label: &quot;Q1&quot;, width: &quot;5rem&quot; },
+  { id: &quot;q2&quot;, label: &quot;Q2&quot;, width: &quot;5rem&quot; },
+  { id: &quot;q3&quot;, label: &quot;Q3&quot;, width: &quot;5rem&quot; },
+  { id: &quot;q4&quot;, label: &quot;Q4&quot;, width: &quot;5rem&quot; },
+];
+
+const teams = [
+  { id: &quot;t1&quot;, team: &quot;平台研发&quot;, q1: 12, q2: 15, q3: 18, q4: 21 },
+  { id: &quot;t2&quot;, team: &quot;前端体验&quot;, q1: 9, q2: 11, q3: 14, q4: 16 },
+  { id: &quot;t3&quot;, team: &quot;基础架构&quot;, q1: 7, q2: 8, q3: 10, q4: 12 },
+];
+
+const rows = teams.map((t) =&gt; ({ id: t.id }));
+
+// 分组格宽度取两列之和，伸缩系数也翻倍，两行表头才对得齐
+const groupStyle = { inlineSize: &quot;10rem&quot;, flexGrow: 2 };
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div style=&quot;width: 100%; max-width: 620px&quot;&gt;
+    &lt;!-- 表头占两行，行号空间比缺省的多一行，总行数在这里自报 --&gt;
+    &lt;XhTableRoot :columns=&quot;columns&quot; :rows=&quot;rows&quot; :aria-rowcount=&quot;teams.length + 2&quot;&gt;
+      &lt;XhTableCaption&gt;季度交付单量&lt;/XhTableCaption&gt;
+      &lt;XhTableHeader&gt;
+        &lt;XhTableRow&gt;
+          &lt;XhTableColumnHeader value=&quot;team&quot; /&gt;
+          &lt;XhTableColumnHeader value=&quot;q1&quot; :style=&quot;groupStyle&quot; :aria-colspan=&quot;2&quot;&gt;
+            上半年
+          &lt;/XhTableColumnHeader&gt;
+          &lt;XhTableColumnHeader value=&quot;q3&quot; :style=&quot;groupStyle&quot; :aria-colspan=&quot;2&quot;&gt;
+            下半年
+          &lt;/XhTableColumnHeader&gt;
+        &lt;/XhTableRow&gt;
+        &lt;!-- 第二行表头自报行号：缺省那条恒为 1 --&gt;
+        &lt;XhTableRow :aria-rowindex=&quot;2&quot;&gt;
+          &lt;XhTableColumnHeader v-for=&quot;col in columns&quot; :key=&quot;col.id&quot; :value=&quot;col.id&quot;&gt;
+            {{ col.label }}
+          &lt;/XhTableColumnHeader&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableHeader&gt;
+      &lt;XhTableBody&gt;
+        &lt;!-- 数据行也往后挪一行 --&gt;
+        &lt;XhTableRow
+          v-for=&quot;(t, i) in teams&quot;
+          :key=&quot;t.id&quot;
+          :value=&quot;t.id&quot;
+          :aria-rowindex=&quot;i + 3&quot;
+        &gt;
+          &lt;XhTableCell value=&quot;team&quot;&gt;{{ t.team }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;q1&quot;&gt;{{ t.q1 }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;q2&quot;&gt;{{ t.q2 }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;q3&quot;&gt;{{ t.q3 }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;q4&quot;&gt;{{ t.q4 }}&lt;/XhTableCell&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableBody&gt;
+    &lt;/XhTableRoot&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</code></pre></div></div><h3 id="列过滤" tabindex="-1">列过滤 <a class="header-anchor" href="#列过滤" aria-label="Permalink to &quot;列过滤&quot;">​</a></h3><p>过滤把手是列标题里的一段内容，过滤结果就是宿主算好后传进来的那份 rows；表头是表体的兄弟，把手上的按键不会被表体收走</p><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><div style="width:100%;max-width:560px;display:grid;gap:12px;" data-v-f91339c8><div data-scope="table" data-part="root" role="grid" aria-labelledby="table:v-14:caption" aria-rowcount="7" aria-colcount="3" aria-multiselectable="false" aria-busy="false"><div data-scope="table" data-part="header" role="rowgroup"><div data-scope="table" data-part="row" role="row" aria-rowindex="1" data-section="header"><div data-scope="table" data-part="column-header" data-value="name" role="columnheader" aria-colindex="1" style="inline-size:7rem;">姓名</div><div data-scope="table" data-part="column-header" data-value="dept" role="columnheader" aria-colindex="2" style="inline-size:9rem;"> 部门 <!--[--><button data-scope="popover" data-part="trigger" id="popover:v-15:trigger" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="popover:v-15:content" data-state="closed" aria-label="按部门过滤">▾</button><div data-scope="popover" data-part="positioner" data-state="closed" data-placement="bottom-start" style="position:fixed;inset-inline-start:0px;inset-block-start:0px;"><div data-scope="popover" data-part="content" id="popover:v-15:content" role="dialog" tabindex="-1" aria-modal="false" aria-labelledby="popover:v-15:title" aria-describedby="popover:v-15:description" data-state="closed" data-placement="bottom-start" data-size="sm" hidden><h2 data-scope="popover" data-part="title" id="popover:v-15:title">按部门过滤</h2><div style="display:grid;gap:6px;min-inline-size:8rem;"><!--[--><label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" value="平台研发"> 平台研发</label><label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" value="前端体验"> 前端体验</label><label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" value="基础架构"> 基础架构</label><label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" value="质量保障"> 质量保障</label><!--]--><button type="button">不限</button></div></div></div><!--]--></div><div data-scope="table" data-part="column-header" data-value="city" role="columnheader" aria-colindex="3"> 城市 <!--[--><button data-scope="popover" data-part="trigger" id="popover:v-16:trigger" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="popover:v-16:content" data-state="closed" aria-label="按城市过滤">▾</button><div data-scope="popover" data-part="positioner" data-state="closed" data-placement="bottom-start" style="position:fixed;inset-inline-start:0px;inset-block-start:0px;"><div data-scope="popover" data-part="content" id="popover:v-16:content" role="dialog" tabindex="-1" aria-modal="false" aria-labelledby="popover:v-16:title" aria-describedby="popover:v-16:description" data-state="closed" data-placement="bottom-start" data-size="sm" hidden><h2 data-scope="popover" data-part="title" id="popover:v-16:title">按城市过滤</h2><div style="display:grid;gap:6px;min-inline-size:8rem;"><!--[--><label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" value="杭州"> 杭州</label><label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" value="上海"> 上海</label><label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" value="北京"> 北京</label><label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" value="成都"> 成都</label><!--]--><button type="button">不限</button></div></div></div><!--]--></div></div></div><div data-scope="table" data-part="body" role="rowgroup" tabindex="0"><!--[--><div data-scope="table" data-part="row" data-value="u1" role="row" aria-rowindex="2" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:7rem;">赵一</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">平台研发</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">杭州</div></div><div data-scope="table" data-part="row" data-value="u2" role="row" aria-rowindex="3" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:7rem;">钱二</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">前端体验</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">上海</div></div><div data-scope="table" data-part="row" data-value="u3" role="row" aria-rowindex="4" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:7rem;">孙三</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">基础架构</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">北京</div></div><div data-scope="table" data-part="row" data-value="u4" role="row" aria-rowindex="5" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:7rem;">李四</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">前端体验</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">杭州</div></div><div data-scope="table" data-part="row" data-value="u5" role="row" aria-rowindex="6" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:7rem;">周五</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">质量保障</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">成都</div></div><div data-scope="table" data-part="row" data-value="u6" role="row" aria-rowindex="7" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:7rem;">吴六</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:9rem;">平台研发</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">上海</div></div><!--]--></div><div data-scope="table" data-part="empty-state" hidden>这组条件下没有人。</div></div><span> 命中 6 / 6 人 · 部门：不限 · 城市：不限</span></div></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { computed, ref } from &quot;vue&quot;;
+import {
+  XhPopoverContent,
+  XhPopoverPositioner,
+  XhPopoverRoot,
+  XhPopoverTitle,
+  XhPopoverTrigger,
+  XhTableBody,
+  XhTableCell,
+  XhTableColumnHeader,
+  XhTableEmptyState,
+  XhTableHeader,
+  XhTableRoot,
+  XhTableRow,
+} from &quot;@xihan-ui/vue&quot;;
+
+const columns = [
+  { id: &quot;name&quot;, label: &quot;姓名&quot;, width: &quot;7rem&quot; },
+  { id: &quot;dept&quot;, label: &quot;部门&quot;, width: &quot;9rem&quot; },
+  { id: &quot;city&quot;, label: &quot;城市&quot; },
+];
+
+const members = [
+  { id: &quot;u1&quot;, name: &quot;赵一&quot;, dept: &quot;平台研发&quot;, city: &quot;杭州&quot; },
+  { id: &quot;u2&quot;, name: &quot;钱二&quot;, dept: &quot;前端体验&quot;, city: &quot;上海&quot; },
+  { id: &quot;u3&quot;, name: &quot;孙三&quot;, dept: &quot;基础架构&quot;, city: &quot;北京&quot; },
+  { id: &quot;u4&quot;, name: &quot;李四&quot;, dept: &quot;前端体验&quot;, city: &quot;杭州&quot; },
+  { id: &quot;u5&quot;, name: &quot;周五&quot;, dept: &quot;质量保障&quot;, city: &quot;成都&quot; },
+  { id: &quot;u6&quot;, name: &quot;吴六&quot;, dept: &quot;平台研发&quot;, city: &quot;上海&quot; },
+];
+
+const deptOptions = [...new Set(members.map((m) =&gt; m.dept))];
+const cityOptions = [...new Set(members.map((m) =&gt; m.city))];
+
+// 过滤态由宿主持有，一个都没勾就是不过滤
+const deptFilter = ref&lt;string[]&gt;([]);
+const cityFilter = ref&lt;string[]&gt;([]);
+
+const visible = computed(() =&gt;
+  members.filter(
+    (m) =&gt;
+      (deptFilter.value.length === 0 || deptFilter.value.includes(m.dept)) &amp;&amp;
+      (cityFilter.value.length === 0 || cityFilter.value.includes(m.city))
+  )
+);
+
+// 行序的事实源跟着过滤结果走
+const rows = computed(() =&gt; visible.value.map((m) =&gt; ({ id: m.id })));
+
+const menuStyle = { display: &quot;grid&quot;, gap: &quot;6px&quot;, minInlineSize: &quot;8rem&quot; };
+const optionStyle = { display: &quot;flex&quot;, alignItems: &quot;center&quot;, gap: &quot;6px&quot; };
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div style=&quot;width: 100%; max-width: 560px; display: grid; gap: 12px&quot;&gt;
+    &lt;XhTableRoot :columns=&quot;columns&quot; :rows=&quot;rows&quot;&gt;
+      &lt;XhTableHeader&gt;
+        &lt;XhTableRow&gt;
+          &lt;XhTableColumnHeader value=&quot;name&quot;&gt;姓名&lt;/XhTableColumnHeader&gt;
+          &lt;XhTableColumnHeader value=&quot;dept&quot;&gt;
+            部门
+            &lt;XhPopoverRoot placement=&quot;bottom-start&quot; size=&quot;sm&quot;&gt;
+              &lt;XhPopoverTrigger aria-label=&quot;按部门过滤&quot;&gt;
+                {{ deptFilter.length ? &quot;▾●&quot; : &quot;▾&quot; }}
+              &lt;/XhPopoverTrigger&gt;
+              &lt;XhPopoverPositioner&gt;
+                &lt;XhPopoverContent&gt;
+                  &lt;XhPopoverTitle&gt;按部门过滤&lt;/XhPopoverTitle&gt;
+                  &lt;div :style=&quot;menuStyle&quot;&gt;
+                    &lt;label v-for=&quot;d in deptOptions&quot; :key=&quot;d&quot; :style=&quot;optionStyle&quot;&gt;
+                      &lt;input v-model=&quot;deptFilter&quot; type=&quot;checkbox&quot; :value=&quot;d&quot; /&gt;
+                      {{ d }}
+                    &lt;/label&gt;
+                    &lt;button type=&quot;button&quot; @click=&quot;deptFilter = []&quot;&gt;不限&lt;/button&gt;
+                  &lt;/div&gt;
+                &lt;/XhPopoverContent&gt;
+              &lt;/XhPopoverPositioner&gt;
+            &lt;/XhPopoverRoot&gt;
+          &lt;/XhTableColumnHeader&gt;
+          &lt;XhTableColumnHeader value=&quot;city&quot;&gt;
+            城市
+            &lt;XhPopoverRoot placement=&quot;bottom-start&quot; size=&quot;sm&quot;&gt;
+              &lt;XhPopoverTrigger aria-label=&quot;按城市过滤&quot;&gt;
+                {{ cityFilter.length ? &quot;▾●&quot; : &quot;▾&quot; }}
+              &lt;/XhPopoverTrigger&gt;
+              &lt;XhPopoverPositioner&gt;
+                &lt;XhPopoverContent&gt;
+                  &lt;XhPopoverTitle&gt;按城市过滤&lt;/XhPopoverTitle&gt;
+                  &lt;div :style=&quot;menuStyle&quot;&gt;
+                    &lt;label v-for=&quot;c in cityOptions&quot; :key=&quot;c&quot; :style=&quot;optionStyle&quot;&gt;
+                      &lt;input v-model=&quot;cityFilter&quot; type=&quot;checkbox&quot; :value=&quot;c&quot; /&gt;
+                      {{ c }}
+                    &lt;/label&gt;
+                    &lt;button type=&quot;button&quot; @click=&quot;cityFilter = []&quot;&gt;不限&lt;/button&gt;
+                  &lt;/div&gt;
+                &lt;/XhPopoverContent&gt;
+              &lt;/XhPopoverPositioner&gt;
+            &lt;/XhPopoverRoot&gt;
+          &lt;/XhTableColumnHeader&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableHeader&gt;
+      &lt;XhTableBody&gt;
+        &lt;XhTableRow v-for=&quot;m in visible&quot; :key=&quot;m.id&quot; :value=&quot;m.id&quot;&gt;
+          &lt;XhTableCell value=&quot;name&quot;&gt;{{ m.name }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;dept&quot;&gt;{{ m.dept }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;city&quot;&gt;{{ m.city }}&lt;/XhTableCell&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableBody&gt;
+      &lt;XhTableEmptyState&gt;这组条件下没有人。&lt;/XhTableEmptyState&gt;
+    &lt;/XhTableRoot&gt;
+    &lt;span&gt;
+      命中 {{ visible.length }} / {{ members.length }} 人 · 部门：{{
+        deptFilter.length ? deptFilter.join(&quot;、&quot;) : &quot;不限&quot;
+      }}
+      · 城市：{{ cityFilter.length ? cityFilter.join(&quot;、&quot;) : &quot;不限&quot; }}
+    &lt;/span&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</code></pre></div></div><h3 id="树形表格" tabindex="-1">树形表格 <a class="header-anchor" href="#树形表格" aria-label="Permalink to &quot;树形表格&quot;">​</a></h3><p>rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自报，缩进落在首格的内边距上</p><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><div style="width:100%;max-width:520px;display:grid;gap:12px;" data-v-f91339c8><div data-scope="table" data-part="root" role="treegrid" aria-labelledby="table:v-17:caption" aria-rowcount="5" aria-colcount="2" aria-multiselectable="false" aria-busy="false"><div data-scope="table" data-part="header" role="rowgroup"><div data-scope="table" data-part="row" role="row" aria-rowindex="1" data-section="header"><!--[--><div data-scope="table" data-part="column-header" data-value="name" role="columnheader" aria-colindex="1" style="inline-size:13rem;">组织</div><div data-scope="table" data-part="column-header" data-value="owner" role="columnheader" aria-colindex="2">负责人</div><!--]--></div></div><div data-scope="table" data-part="body" role="rowgroup" tabindex="0"><!--[--><div data-scope="table" data-part="row" data-value="rd" role="row" aria-rowindex="2" aria-expanded="true" aria-level="1" aria-posinset="1" aria-setsize="2" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:13rem;padding-inline-start:16px;"><span aria-hidden="true" style="display:inline-flex;flex:none;align-items:center;justify-content:center;inline-size:1rem;block-size:1rem;cursor:pointer;">▾</span> 研发中心</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2">赵一</div></div><div data-scope="table" data-part="row" data-value="rd-web" role="row" aria-rowindex="3" aria-expanded="false" aria-level="2" aria-posinset="1" aria-setsize="2" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:13rem;padding-inline-start:32px;"><span aria-hidden="true" style="display:inline-flex;flex:none;align-items:center;justify-content:center;inline-size:1rem;block-size:1rem;cursor:pointer;">▸</span> 前端组</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2">钱二</div></div><div data-scope="table" data-part="row" data-value="rd-api" role="row" aria-rowindex="4" aria-level="2" aria-posinset="2" aria-setsize="2" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:13rem;padding-inline-start:32px;"><span aria-hidden="true" style="display:inline-flex;flex:none;align-items:center;justify-content:center;inline-size:1rem;block-size:1rem;cursor:pointer;"></span> 服务端组</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2">周五</div></div><div data-scope="table" data-part="row" data-value="ops" role="row" aria-rowindex="5" aria-expanded="false" aria-level="1" aria-posinset="2" aria-setsize="2" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:13rem;padding-inline-start:16px;"><span aria-hidden="true" style="display:inline-flex;flex:none;align-items:center;justify-content:center;inline-size:1rem;block-size:1rem;cursor:pointer;">▸</span> 运维中心</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2">吴六</div></div><!--]--></div></div><span>展开：rd</span></div></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { computed, ref } from &quot;vue&quot;;
+import {
+  XhTableBody,
+  XhTableCell,
+  XhTableColumnHeader,
+  XhTableHeader,
+  XhTableRoot,
+  XhTableRow,
+} from &quot;@xihan-ui/vue&quot;;
+
+interface Node {
+  id: string;
+  label: string;
+  owner: string;
+  children?: Node[];
+}
+
+const columns = [
+  { id: &quot;name&quot;, label: &quot;组织&quot;, width: &quot;13rem&quot; },
+  { id: &quot;owner&quot;, label: &quot;负责人&quot; },
+];
+
+const tree: Node[] = [
+  {
+    id: &quot;rd&quot;,
+    label: &quot;研发中心&quot;,
+    owner: &quot;赵一&quot;,
+    children: [
+      {
+        id: &quot;rd-web&quot;,
+        label: &quot;前端组&quot;,
+        owner: &quot;钱二&quot;,
+        children: [
+          { id: &quot;rd-web-1&quot;, label: &quot;组件库&quot;, owner: &quot;孙三&quot; },
+          { id: &quot;rd-web-2&quot;, label: &quot;控制台&quot;, owner: &quot;李四&quot; },
+        ],
+      },
+      { id: &quot;rd-api&quot;, label: &quot;服务端组&quot;, owner: &quot;周五&quot; },
+    ],
+  },
+  {
+    id: &quot;ops&quot;,
+    label: &quot;运维中心&quot;,
+    owner: &quot;吴六&quot;,
+    children: [{ id: &quot;ops-1&quot;, label: &quot;值班平台&quot;, owner: &quot;郑七&quot; }],
+  },
+];
+
+const expanded = ref&lt;string[]&gt;([&quot;rd&quot;]);
+
+interface FlatRow {
+  id: string;
+  label: string;
+  owner: string;
+  level: number;
+  pos: number;
+  size: number;
+  branch: boolean;
+  open: boolean;
+}
+
+// 收起分支的子树整段不出现在序列里，行号因此永远连续
+const flat = computed&lt;FlatRow[]&gt;(() =&gt; {
+  const out: FlatRow[] = [];
+  const walk = (nodes: Node[], level: number): void =&gt; {
+    nodes.forEach((node, i) =&gt; {
+      const branch = !!node.children?.length;
+      const open = branch &amp;&amp; expanded.value.includes(node.id);
+      out.push({
+        id: node.id,
+        label: node.label,
+        owner: node.owner,
+        level,
+        pos: i + 1,
+        size: nodes.length,
+        branch,
+        open,
+      });
+      if (open) walk(node.children!, level + 1);
+    });
+  };
+  walk(tree, 1);
+  return out;
+});
+
+const rows = computed(() =&gt; flat.value.map((row) =&gt; ({ id: row.id })));
+
+function toggle(id: string): void {
+  expanded.value = expanded.value.includes(id)
+    ? expanded.value.filter((v) =&gt; v !== id)
+    : [...expanded.value, id];
+}
+
+// 焦点行是父级时左右方向键切换开合；连接层遇到不可展开的行原样放行这两个键
+function onBodyKeydown(event: KeyboardEvent, focused: string | null): void {
+  if (focused == null) return;
+  const row = flat.value.find((r) =&gt; r.id === focused);
+  if (!row?.branch) return;
+  const wantOpen = event.key === &quot;ArrowRight&quot;;
+  const wantClose = event.key === &quot;ArrowLeft&quot;;
+  if ((wantOpen &amp;&amp; !row.open) || (wantClose &amp;&amp; row.open)) {
+    event.preventDefault();
+    toggle(focused);
+  }
+}
+
+const twistyStyle = {
+  display: &quot;inline-flex&quot;,
+  flex: &quot;none&quot;,
+  alignItems: &quot;center&quot;,
+  justifyContent: &quot;center&quot;,
+  inlineSize: &quot;1rem&quot;,
+  blockSize: &quot;1rem&quot;,
+  cursor: &quot;pointer&quot;,
+};
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div style=&quot;width: 100%; max-width: 520px; display: grid; gap: 12px&quot;&gt;
+    &lt;!-- 行有层级，root 报 treegrid --&gt;
+    &lt;XhTableRoot v-slot=&quot;{ focusedRow }&quot; :columns=&quot;columns&quot; :rows=&quot;rows&quot; role=&quot;treegrid&quot;&gt;
+      &lt;XhTableHeader&gt;
+        &lt;XhTableRow&gt;
+          &lt;XhTableColumnHeader v-for=&quot;col in columns&quot; :key=&quot;col.id&quot; :value=&quot;col.id&quot;&gt;
+            {{ col.label }}
+          &lt;/XhTableColumnHeader&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableHeader&gt;
+      &lt;XhTableBody @keydown=&quot;onBodyKeydown($event, focusedRow)&quot;&gt;
+        &lt;XhTableRow
+          v-for=&quot;row in flat&quot;
+          :key=&quot;row.id&quot;
+          :value=&quot;row.id&quot;
+          :aria-level=&quot;row.level&quot;
+          :aria-posinset=&quot;row.pos&quot;
+          :aria-setsize=&quot;row.size&quot;
+          :aria-expanded=&quot;row.branch ? String(row.open) : undefined&quot;
+        &gt;
+          &lt;!-- 缩进是首格的内边距，与层级号同源 --&gt;
+          &lt;XhTableCell
+            value=&quot;name&quot;
+            :style=&quot;{ paddingInlineStart: `${row.level * 16}px` }&quot;
+          &gt;
+            &lt;!-- 开合箭头只服务指针，键盘那一路走左右方向键，因此对读屏隐藏 --&gt;
+            &lt;span
+              v-if=&quot;row.branch&quot;
+              aria-hidden=&quot;true&quot;
+              :style=&quot;twistyStyle&quot;
+              @click=&quot;toggle(row.id)&quot;
+            &gt;
+              {{ row.open ? &quot;▾&quot; : &quot;▸&quot; }}
+            &lt;/span&gt;
+            &lt;span v-else aria-hidden=&quot;true&quot; :style=&quot;twistyStyle&quot; /&gt;
+            {{ row.label }}
+          &lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;owner&quot;&gt;{{ row.owner }}&lt;/XhTableCell&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableBody&gt;
+    &lt;/XhTableRoot&gt;
+    &lt;span&gt;展开：{{ expanded.length ? expanded.join(&quot;、&quot;) : &quot;（无）&quot; }}&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</code></pre></div></div><h3 id="拖拽调列宽" tabindex="-1">拖拽调列宽 <a class="header-anchor" href="#拖拽调列宽" aria-label="Permalink to &quot;拖拽调列宽&quot;">​</a></h3><p>列宽的事实源是 columns[].width，把手只是列标题里的一段标记：按下量起点，移动改宽度，连接层随即写进列标题与整列单元格</p><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><div style="width:100%;max-width:560px;display:grid;gap:12px;" data-v-f91339c8><div data-scope="table" data-part="root" role="grid" aria-labelledby="table:v-18:caption" aria-rowcount="5" aria-colcount="3" aria-multiselectable="false" aria-busy="false"><div data-scope="table" data-part="caption" id="table:v-18:caption">拖动列标题右侧那条竖线</div><div data-scope="table" data-part="header" role="rowgroup"><div data-scope="table" data-part="row" role="row" aria-rowindex="1" data-section="header"><!--[--><div data-scope="table" data-part="column-header" data-value="name" role="columnheader" aria-colindex="1" style="inline-size:120px;"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;">姓名</span><span aria-hidden="true" style="flex:none;align-self:stretch;inline-size:6px;cursor:col-resize;background:var(--xh-border-default);touch-action:none;"></span></div><div data-scope="table" data-part="column-header" data-value="dept" role="columnheader" aria-colindex="2" style="inline-size:150px;"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;">部门</span><span aria-hidden="true" style="flex:none;align-self:stretch;inline-size:6px;cursor:col-resize;background:var(--xh-border-default);touch-action:none;"></span></div><div data-scope="table" data-part="column-header" data-value="city" role="columnheader" aria-colindex="3" style="inline-size:120px;"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;">城市</span><span aria-hidden="true" style="flex:none;align-self:stretch;inline-size:6px;cursor:col-resize;background:var(--xh-border-default);touch-action:none;"></span></div><!--]--></div></div><div data-scope="table" data-part="body" role="rowgroup" tabindex="0"><!--[--><div data-scope="table" data-part="row" data-value="u1" role="row" aria-rowindex="2" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:120px;">赵一</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:150px;">平台研发</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:120px;">杭州</div></div><div data-scope="table" data-part="row" data-value="u2" role="row" aria-rowindex="3" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:120px;">钱二</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:150px;">前端体验</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:120px;">上海</div></div><div data-scope="table" data-part="row" data-value="u3" role="row" aria-rowindex="4" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:120px;">孙三</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:150px;">基础架构</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:120px;">北京</div></div><div data-scope="table" data-part="row" data-value="u4" role="row" aria-rowindex="5" aria-disabled="false" tabindex="-1" data-section="body"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:120px;">李四</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:150px;">质量保障</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3" style="inline-size:120px;">成都</div></div><!--]--></div></div><span>列宽：姓名 120px · 部门 150px · 城市 120px</span></div></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { ref } from &quot;vue&quot;;
+import {
+  XhTableBody,
+  XhTableCaption,
+  XhTableCell,
+  XhTableColumnHeader,
+  XhTableHeader,
+  XhTableRoot,
+  XhTableRow,
+} from &quot;@xihan-ui/vue&quot;;
+
+// 列宽写成数字即按 px 处理
+const columns = ref([
+  { id: &quot;name&quot;, label: &quot;姓名&quot;, width: 120 },
+  { id: &quot;dept&quot;, label: &quot;部门&quot;, width: 150 },
+  { id: &quot;city&quot;, label: &quot;城市&quot;, width: 120 },
+]);
+
+const members = [
+  { id: &quot;u1&quot;, name: &quot;赵一&quot;, dept: &quot;平台研发&quot;, city: &quot;杭州&quot; },
+  { id: &quot;u2&quot;, name: &quot;钱二&quot;, dept: &quot;前端体验&quot;, city: &quot;上海&quot; },
+  { id: &quot;u3&quot;, name: &quot;孙三&quot;, dept: &quot;基础架构&quot;, city: &quot;北京&quot; },
+  { id: &quot;u4&quot;, name: &quot;李四&quot;, dept: &quot;质量保障&quot;, city: &quot;成都&quot; },
+];
+
+const rows = members.map((m) =&gt; ({ id: m.id }));
+
+const MIN_WIDTH = 72;
+
+let grabbed: { id: string; startX: number; startWidth: number } | null = null;
+
+function onGrab(event: PointerEvent, id: string): void {
+  const col = columns.value.find((c) =&gt; c.id === id);
+  if (!col) return;
+  grabbed = { id, startX: event.clientX, startWidth: col.width };
+  // 捕获指针：手滑出把手后的 move / up 仍送到这里
+  (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+  event.preventDefault();
+}
+
+function onDrag(event: PointerEvent): void {
+  if (!grabbed) return;
+  const col = columns.value.find((c) =&gt; c.id === grabbed!.id);
+  if (!col) return;
+  col.width = Math.max(MIN_WIDTH, grabbed.startWidth + event.clientX - grabbed.startX);
+}
+
+function onRelease(): void {
+  grabbed = null;
+}
+
+const handleStyle = {
+  flex: &quot;none&quot;,
+  alignSelf: &quot;stretch&quot;,
+  inlineSize: &quot;6px&quot;,
+  cursor: &quot;col-resize&quot;,
+  background: &quot;var(--xh-border-default)&quot;,
+  touchAction: &quot;none&quot;,
+};
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div style=&quot;width: 100%; max-width: 560px; display: grid; gap: 12px&quot;&gt;
+    &lt;XhTableRoot :columns=&quot;columns&quot; :rows=&quot;rows&quot;&gt;
+      &lt;XhTableCaption&gt;拖动列标题右侧那条竖线&lt;/XhTableCaption&gt;
+      &lt;XhTableHeader&gt;
+        &lt;XhTableRow&gt;
+          &lt;XhTableColumnHeader v-for=&quot;col in columns&quot; :key=&quot;col.id&quot; :value=&quot;col.id&quot;&gt;
+            &lt;span style=&quot;flex: 1; overflow: hidden; text-overflow: ellipsis&quot;&gt;
+              {{ col.label }}
+            &lt;/span&gt;
+            &lt;!-- 把手与排序把手是兄弟节点，拖它不会连带触发排序 --&gt;
+            &lt;span
+              aria-hidden=&quot;true&quot;
+              :style=&quot;handleStyle&quot;
+              @pointerdown=&quot;onGrab($event, col.id)&quot;
+              @pointermove=&quot;onDrag&quot;
+              @pointerup=&quot;onRelease&quot;
+              @pointercancel=&quot;onRelease&quot;
+            /&gt;
+          &lt;/XhTableColumnHeader&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableHeader&gt;
+      &lt;XhTableBody&gt;
+        &lt;XhTableRow v-for=&quot;m in members&quot; :key=&quot;m.id&quot; :value=&quot;m.id&quot;&gt;
+          &lt;XhTableCell value=&quot;name&quot;&gt;{{ m.name }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;dept&quot;&gt;{{ m.dept }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;city&quot;&gt;{{ m.city }}&lt;/XhTableCell&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableBody&gt;
+    &lt;/XhTableRoot&gt;
+    &lt;span&gt;列宽：{{ columns.map((c) =&gt; `${c.label} ${c.width}px`).join(&quot; · &quot;) }}&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</code></pre></div></div><h3 id="只渲窗口内的行" tabindex="-1">只渲窗口内的行 <a class="header-anchor" href="#只渲窗口内的行" aria-label="Permalink to &quot;只渲窗口内的行&quot;">​</a></h3><p>全量 rows 照常交给 root（那只是行序与行号的元信息，不产生 DOM），标记里只渲可见那一段，首尾用两块空白撑出真实滚动高度</p><div class="xh-demo" data-v-f91339c8><div class="xh-demo__stage" data-v-f91339c8><div style="width:100%;max-width:520px;display:grid;gap:12px;" data-v-f91339c8><div data-scope="table" data-part="root" role="grid" aria-labelledby="table:v-19:caption" aria-rowcount="2001" aria-colcount="3" aria-multiselectable="false" aria-busy="false" data-sticky><div data-scope="table" data-part="header" role="rowgroup" data-sticky><div data-scope="table" data-part="row" role="row" aria-rowindex="1" data-section="header" style="block-size:36px;"><!--[--><div data-scope="table" data-part="column-header" data-value="no" role="columnheader" aria-colindex="1" style="inline-size:6rem;">编号</div><div data-scope="table" data-part="column-header" data-value="name" role="columnheader" aria-colindex="2" style="inline-size:8rem;">姓名</div><div data-scope="table" data-part="column-header" data-value="dept" role="columnheader" aria-colindex="3">部门</div><!--]--></div></div><div data-scope="table" data-part="body" role="rowgroup" tabindex="0" style="padding-block-start:0px;padding-block-end:71352px;"><!--[--><div data-scope="table" data-part="row" data-value="u1" role="row" aria-rowindex="2" aria-disabled="false" tabindex="-1" data-section="body" style="block-size:36px;"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:6rem;">#1</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">员工 1</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">平台研发</div></div><div data-scope="table" data-part="row" data-value="u2" role="row" aria-rowindex="3" aria-disabled="false" tabindex="-1" data-section="body" style="block-size:36px;"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:6rem;">#2</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">员工 2</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">前端体验</div></div><div data-scope="table" data-part="row" data-value="u3" role="row" aria-rowindex="4" aria-disabled="false" tabindex="-1" data-section="body" style="block-size:36px;"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:6rem;">#3</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">员工 3</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">基础架构</div></div><div data-scope="table" data-part="row" data-value="u4" role="row" aria-rowindex="5" aria-disabled="false" tabindex="-1" data-section="body" style="block-size:36px;"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:6rem;">#4</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">员工 4</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">质量保障</div></div><div data-scope="table" data-part="row" data-value="u5" role="row" aria-rowindex="6" aria-disabled="false" tabindex="-1" data-section="body" style="block-size:36px;"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:6rem;">#5</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">员工 5</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">平台研发</div></div><div data-scope="table" data-part="row" data-value="u6" role="row" aria-rowindex="7" aria-disabled="false" tabindex="-1" data-section="body" style="block-size:36px;"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:6rem;">#6</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">员工 6</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">前端体验</div></div><div data-scope="table" data-part="row" data-value="u7" role="row" aria-rowindex="8" aria-disabled="false" tabindex="-1" data-section="body" style="block-size:36px;"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:6rem;">#7</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">员工 7</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">基础架构</div></div><div data-scope="table" data-part="row" data-value="u8" role="row" aria-rowindex="9" aria-disabled="false" tabindex="-1" data-section="body" style="block-size:36px;"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:6rem;">#8</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">员工 8</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">质量保障</div></div><div data-scope="table" data-part="row" data-value="u9" role="row" aria-rowindex="10" aria-disabled="false" tabindex="-1" data-section="body" style="block-size:36px;"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:6rem;">#9</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">员工 9</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">平台研发</div></div><div data-scope="table" data-part="row" data-value="u10" role="row" aria-rowindex="11" aria-disabled="false" tabindex="-1" data-section="body" style="block-size:36px;"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:6rem;">#10</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">员工 10</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">前端体验</div></div><div data-scope="table" data-part="row" data-value="u11" role="row" aria-rowindex="12" aria-disabled="false" tabindex="-1" data-section="body" style="block-size:36px;"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:6rem;">#11</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">员工 11</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">基础架构</div></div><div data-scope="table" data-part="row" data-value="u12" role="row" aria-rowindex="13" aria-disabled="false" tabindex="-1" data-section="body" style="block-size:36px;"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:6rem;">#12</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">员工 12</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">质量保障</div></div><div data-scope="table" data-part="row" data-value="u13" role="row" aria-rowindex="14" aria-disabled="false" tabindex="-1" data-section="body" style="block-size:36px;"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:6rem;">#13</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">员工 13</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">平台研发</div></div><div data-scope="table" data-part="row" data-value="u14" role="row" aria-rowindex="15" aria-disabled="false" tabindex="-1" data-section="body" style="block-size:36px;"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:6rem;">#14</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">员工 14</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">前端体验</div></div><div data-scope="table" data-part="row" data-value="u15" role="row" aria-rowindex="16" aria-disabled="false" tabindex="-1" data-section="body" style="block-size:36px;"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:6rem;">#15</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">员工 15</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">基础架构</div></div><div data-scope="table" data-part="row" data-value="u16" role="row" aria-rowindex="17" aria-disabled="false" tabindex="-1" data-section="body" style="block-size:36px;"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:6rem;">#16</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">员工 16</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">质量保障</div></div><div data-scope="table" data-part="row" data-value="u17" role="row" aria-rowindex="18" aria-disabled="false" tabindex="-1" data-section="body" style="block-size:36px;"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:6rem;">#17</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">员工 17</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">平台研发</div></div><div data-scope="table" data-part="row" data-value="u18" role="row" aria-rowindex="19" aria-disabled="false" tabindex="-1" data-section="body" style="block-size:36px;"><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="1" style="inline-size:6rem;">#18</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="2" style="inline-size:8rem;">员工 18</div><div data-scope="table" data-part="cell" role="gridcell" aria-colindex="3">前端体验</div></div><!--]--></div></div><span> 共 2000 行，此刻在 DOM 里的是第 1 – 18 行 </span></div></div><div class="xh-demo__bar" data-v-f91339c8><button class="xh-demo__btn" type="button" aria-expanded="false" data-v-f91339c8>查看代码</button><button class="xh-demo__btn" type="button" data-v-f91339c8>复制</button></div><div class="xh-demo__code" style="display:none;" data-v-f91339c8><pre data-v-f91339c8><code data-v-f91339c8>&lt;script setup lang=&quot;ts&quot;&gt;
+import { computed, ref } from &quot;vue&quot;;
+import {
+  XhTableBody,
+  XhTableCell,
+  XhTableColumnHeader,
+  XhTableHeader,
+  XhTableRoot,
+  XhTableRow,
+} from &quot;@xihan-ui/vue&quot;;
+
+const columns = [
+  { id: &quot;no&quot;, label: &quot;编号&quot;, width: &quot;6rem&quot; },
+  { id: &quot;name&quot;, label: &quot;姓名&quot;, width: &quot;8rem&quot; },
+  { id: &quot;dept&quot;, label: &quot;部门&quot; },
+];
+
+const depts = [&quot;平台研发&quot;, &quot;前端体验&quot;, &quot;基础架构&quot;, &quot;质量保障&quot;];
+
+const people = Array.from({ length: 2000 }, (_, i) =&gt; ({
+  id: `u${i + 1}`,
+  no: `#${i + 1}`,
+  name: `员工 ${i + 1}`,
+  dept: depts[i % depts.length],
+}));
+
+// 行号与总数按全量算，与渲染了哪几行无关
+const rows = people.map((p) =&gt; ({ id: p.id }));
+
+// 行高写死才算得出窗口；上下各多渲几行做缓冲
+const ROW_H = 36;
+const WINDOW = 18;
+const OVERSCAN = 4;
+
+const start = ref(0);
+const end = computed(() =&gt; Math.min(people.length, start.value + WINDOW));
+const visible = computed(() =&gt; people.slice(start.value, end.value));
+
+const bodyStyle = computed(() =&gt; ({
+  paddingBlockStart: `${start.value * ROW_H}px`,
+  paddingBlockEnd: `${(people.length - end.value) * ROW_H}px`,
+}));
+
+const rowStyle = { blockSize: `${ROW_H}px` };
+
+function onScroll(event: Event): void {
+  const top = (event.target as HTMLElement).scrollTop;
+  const first = Math.floor(top / ROW_H) - OVERSCAN;
+  start.value = Math.min(Math.max(0, first), Math.max(0, people.length - WINDOW));
+}
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div style=&quot;width: 100%; max-width: 520px; display: grid; gap: 12px&quot;&gt;
+    &lt;!-- root 自己就是那个滚动容器，滚动量直接从它身上读 --&gt;
+    &lt;XhTableRoot :columns=&quot;columns&quot; :rows=&quot;rows&quot; sticky-header @scroll=&quot;onScroll&quot;&gt;
+      &lt;XhTableHeader&gt;
+        &lt;XhTableRow :style=&quot;rowStyle&quot;&gt;
+          &lt;XhTableColumnHeader v-for=&quot;col in columns&quot; :key=&quot;col.id&quot; :value=&quot;col.id&quot;&gt;
+            {{ col.label }}
+          &lt;/XhTableColumnHeader&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableHeader&gt;
+      &lt;XhTableBody :style=&quot;bodyStyle&quot;&gt;
+        &lt;XhTableRow v-for=&quot;p in visible&quot; :key=&quot;p.id&quot; :value=&quot;p.id&quot; :style=&quot;rowStyle&quot;&gt;
+          &lt;XhTableCell value=&quot;no&quot;&gt;{{ p.no }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;name&quot;&gt;{{ p.name }}&lt;/XhTableCell&gt;
+          &lt;XhTableCell value=&quot;dept&quot;&gt;{{ p.dept }}&lt;/XhTableCell&gt;
+        &lt;/XhTableRow&gt;
+      &lt;/XhTableBody&gt;
+    &lt;/XhTableRoot&gt;
+    &lt;span&gt;
+      共 {{ people.length }} 行，此刻在 DOM 里的是第 {{ start + 1 }} –
+      {{ end }} 行
+    &lt;/span&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</code></pre></div></div><h2 id="产物" tabindex="-1">产物 <a class="header-anchor" href="#产物" aria-label="Permalink to &quot;产物&quot;">​</a></h2><table tabindex="0"><thead><tr><th>层</th><th>值</th></tr></thead><tbody><tr><td>自定义元素</td><td><code>&lt;xh-table&gt;</code></td></tr><tr><td>Vue 组件</td><td><code>XhTableBody</code> <code>XhTableCaption</code> <code>XhTableCell</code> <code>XhTableColumnHeader</code> <code>XhTableEmptyState</code> <code>XhTableExpandTrigger</code> <code>XhTableExpandedRow</code> <code>XhTableFooter</code> <code>XhTableHeader</code> <code>XhTableLoadingState</code> <code>XhTableRoot</code> <code>XhTableRow</code> <code>XhTableRowSelectTrigger</code> <code>XhTableSelectAllTrigger</code> <code>XhTableSortTrigger</code></td></tr><tr><td>组合式函数</td><td><code>useTable</code></td></tr><tr><td>状态机</td><td><code>tableMachine</code></td></tr><tr><td>皮肤</td><td><code>@xihan-ui/styled/table.css</code></td></tr></tbody></table><h2 id="解剖" tabindex="-1">解剖 <a class="header-anchor" href="#解剖" aria-label="Permalink to &quot;解剖&quot;">​</a></h2><p>部件名即 <code>data-part</code> 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 <code>wc.missing-part</code>）。</p><p><code>data-scope=&quot;table&quot;</code>：<strong><code>root</code></strong> · <code>header</code> · <strong><code>body</code></strong> · <code>footer</code> · <code>row</code> · <code>column-header</code> · <code>cell</code> · <code>caption</code> · <code>select-all-trigger</code> · <code>row-select-trigger</code> · <code>sort-trigger</code> · <code>expand-trigger</code> · <code>expanded-row</code> · <code>empty-state</code> · <code>loading-state</code></p><h2 id="props" tabindex="-1">Props <a class="header-anchor" href="#props" aria-label="Permalink to &quot;Props&quot;">​</a></h2><table tabindex="0"><thead><tr><th>属性</th><th>类型</th><th>必填</th><th>说明</th></tr></thead><tbody><tr><td><code>columns</code></td><td><code>TableColumnDef[]</code></td><td></td><td>列定义，列号与列总数的唯一事实源。缺省为空表。</td></tr><tr><td><code>rows</code></td><td><code>TableRowDef[]</code></td><td></td><td>行定义，行序与行号的唯一事实源。缺省为空表。</td></tr><tr><td><code>sort</code></td><td><code>TableSortDescriptor[]</code></td><td></td><td>排序链。给定即受控：cell 直读 prop，写只发 onSortChange 不落内部值。</td></tr><tr><td><code>defaultSort</code></td><td><code>TableSortDescriptor[]</code></td><td></td><td></td></tr><tr><td><code>selection</code></td><td><code>TableSelection</code></td><td></td><td>选中集合。给定即受控，语义同上。</td></tr><tr><td><code>defaultSelection</code></td><td><code>TableSelection</code></td><td></td><td></td></tr><tr><td><code>expanded</code></td><td><code>string[]</code></td><td></td><td>展开集合。给定即受控，语义同上。</td></tr><tr><td><code>defaultExpanded</code></td><td><code>string[]</code></td><td></td><td></td></tr><tr><td><code>selectionMode</code></td><td><code>TableSelectionMode</code></td><td></td><td>默认 none：不声明则没有选择机制，行也不报 aria-selected。</td></tr><tr><td><code>loading</code></td><td><code>boolean</code></td><td></td><td>数据在路上：root 报 aria-busy，表体为空时加载态节点显形。</td></tr><tr><td><code>empty</code></td><td><code>boolean</code></td><td></td><td>显式声明表体为空；缺省按 rows 是否为空推导。</td></tr><tr><td><code>stickyHeader</code></td><td><code>boolean</code></td><td></td><td>表头吸顶：只落 data-sticky，钉住的实现归皮肤。</td></tr><tr><td><code>footer</code></td><td><code>boolean</code></td><td></td><td>表格带脚注行。行号空间的最后一行留给它，aria-rowcount 也把它算进去。</td></tr><tr><td><code>loop</code></td><td><code>boolean</code></td><td></td><td>上下键走到首尾是否回绕，默认 false。</td></tr><tr><td><code>dir</code></td><td><code>Direction</code></td><td></td><td>文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。</td></tr><tr><td><code>size</code></td><td><code>string</code></td><td></td><td>密度：sm / md / lg。只换单元格的纵向内边距与字号，列宽算法不受影响。</td></tr><tr><td><code>onSortChange</code></td><td><code>(details: TableSortChangeDetails) =&gt; void</code></td><td></td><td></td></tr><tr><td><code>onSelectionChange</code></td><td><code>(details: TableSelectionChangeDetails) =&gt; void</code></td><td></td><td></td></tr><tr><td><code>onExpandedChange</code></td><td><code>(details: TableExpandedChangeDetails) =&gt; void</code></td><td></td><td></td></tr></tbody></table><h2 id="状态机" tabindex="-1">状态机 <a class="header-anchor" href="#状态机" aria-label="Permalink to &quot;状态机&quot;">​</a></h2><p><strong>状态</strong>：<code>idle</code></p><p><strong>事件</strong>：<code>SORT.SET</code> · <code>SORT.TOGGLE</code> · <code>SELECTION.SET</code> · <code>ROW.SELECT</code> · <code>SELECTION.ALL_TOGGLE</code> · <code>EXPANDED.SET</code> · <code>ROW.EXPAND</code> · <code>ROW.COLLAPSE</code> · <code>ROW.EXPAND_TOGGLE</code> · <code>ROW.FOCUS</code> · <code>TABLE.BLUR</code></p><h2 id="connect-api" tabindex="-1">connect API <a class="header-anchor" href="#connect-api" aria-label="Permalink to &quot;connect API&quot;">​</a></h2><p><code>useTable</code> 产出的对象。<code>getXxxProps()</code> 铺到对应部件的宿主元素上，其余是可读状态与操作入口。</p><table tabindex="0"><thead><tr><th>成员</th><th>类型</th><th>说明</th></tr></thead><tbody><tr><td><code>columns</code></td><td><code>readonly TableColumnDef[]</code></td><td>作者给的列定义。</td></tr><tr><td><code>rows</code></td><td><code>readonly TableRowDef[]</code></td><td>作者给的行定义。</td></tr><tr><td><code>visibleRows</code></td><td><code>readonly TableVisibleRow[]</code></td><td>展开摊平后的可见行序列（详情行插在它所属数据行之后）。</td></tr><tr><td><code>sort</code></td><td><code>TableSortDescriptor[]</code></td><td></td></tr><tr><td><code>selection</code></td><td><code>TableSelection</code></td><td></td></tr><tr><td><code>selectionState</code></td><td><code>TableSelectionState</code></td><td>全选把手的三态，只按<strong>可选行</strong>（未禁用）算。</td></tr><tr><td><code>selectionMode</code></td><td><code>TableSelectionMode</code></td><td></td></tr><tr><td><code>expandedValue</code></td><td><code>string[]</code></td><td></td></tr><tr><td><code>focusedRow</code></td><td><code>string | null</code></td><td>焦点锚点；焦点不在表体里时为 null。</td></tr><tr><td><code>loading</code></td><td><code>boolean</code></td><td></td></tr><tr><td><code>empty</code></td><td><code>boolean</code></td><td>表体为空（显式声明或 rows 为空）。</td></tr><tr><td><code>rowCount</code></td><td><code>number</code></td><td>aria-rowcount：表头行 + 可见行 + 脚注行。</td></tr><tr><td><code>columnCount</code></td><td><code>number</code></td><td>aria-colcount：列定义的条数。</td></tr><tr><td><code>isSelected</code></td><td><code>(value: string) =&gt; boolean</code></td><td></td></tr><tr><td><code>isExpanded</code></td><td><code>(value: string) =&gt; boolean</code></td><td></td></tr><tr><td><code>sortDirection</code></td><td><code>(value: string) =&gt; TableSortDirection | null</code></td><td>该列当前的排序方向；不参与排序时为 null。</td></tr><tr><td><code>sortPriority</code></td><td><code>(value: string) =&gt; number</code></td><td>该列在排序链里的优先级，1 起算；不参与排序时为 0。</td></tr><tr><td><code>setSort</code></td><td><code>(next: TableSortDescriptor[]) =&gt; void</code></td><td></td></tr><tr><td><code>toggleSort</code></td><td><code>(value: string, options?: { append?: boolean }) =&gt; void</code></td><td></td></tr><tr><td><code>setSelection</code></td><td><code>(next: TableSelection) =&gt; void</code></td><td></td></tr><tr><td><code>selectRow</code></td><td><code>(value: string) =&gt; void</code></td><td></td></tr><tr><td><code>toggleSelectAll</code></td><td><code>() =&gt; void</code></td><td></td></tr><tr><td><code>setExpandedValue</code></td><td><code>(next: string[]) =&gt; void</code></td><td></td></tr><tr><td><code>expandRow</code></td><td><code>(value: string) =&gt; void</code></td><td></td></tr><tr><td><code>collapseRow</code></td><td><code>(value: string) =&gt; void</code></td><td></td></tr><tr><td><code>toggleExpandRow</code></td><td><code>(value: string) =&gt; void</code></td><td></td></tr><tr><td><code>getRootProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getCaptionProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getHeaderProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getBodyProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getFooterProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getHeaderRowProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td>表头那一行：恒占行号空间的第 1 行。</td></tr><tr><td><code>getFooterRowProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td>脚注那一行：占行号空间的最后一行。</td></tr><tr><td><code>getRowProps</code></td><td><code>(props: TableRowProps) =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getColumnHeaderProps</code></td><td><code>(props: TableColumnProps) =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getCellProps</code></td><td><code>(props: TableCellProps) =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getSelectAllTriggerProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getRowSelectTriggerProps</code></td><td><code>(props: TableRowProps) =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getSortTriggerProps</code></td><td><code>(props: TableColumnProps) =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getExpandTriggerProps</code></td><td><code>(props: TableRowProps) =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getExpandedRowProps</code></td><td><code>(props: TableRowProps) =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getEmptyStateProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td></td></tr><tr><td><code>getLoadingStateProps</code></td><td><code>() =&gt; T[&#39;element&#39;]</code></td><td></td></tr></tbody></table><h2 id="键盘" tabindex="-1">键盘 <a class="header-anchor" href="#键盘" aria-label="Permalink to &quot;键盘&quot;">​</a></h2><p>规格出处：<a href="https://www.w3.org/WAI/ARIA/apg/patterns/grid/#keyboardinteraction" target="_blank" rel="noreferrer">W3C APG</a></p><table tabindex="0"><thead><tr><th>按键</th><th>生效条件</th><th>行为</th></tr></thead><tbody><tr><td><code>Tab</code> / <code>Shift+Tab</code></td><td>focus outside the table body</td><td>表体只占一个 Tab 位：焦点进入锚点行，无锚点时先落 body 再由它转投；再按一次 Tab 整体离开表体</td></tr><tr><td><code>ArrowDown</code></td><td>focus in table body</td><td>焦点移到下一个可见数据行（禁用行跳过；详情行不是落点；loop 默认关，末行不回绕）</td></tr><tr><td><code>ArrowUp</code></td><td>focus in table body</td><td>焦点移到上一个可见数据行（禁用行跳过；loop 默认关，首行不回绕）</td></tr><tr><td><code>Home</code></td><td>focus in table body</td><td>焦点移到首个可见数据行</td></tr><tr><td><code>End</code></td><td>focus in table body</td><td>焦点移到末个可见数据行</td></tr><tr><td><code>Space</code></td><td>focus on row, selectionMode 非 none 且该行未禁用</td><td>切换焦点行的选中（单选替换、复选增删）；选不动时不吞这个键，页面照常滚动</td></tr><tr><td><code>ArrowRight</code></td><td>focus on 可展开且收起的行（dir=rtl 时改由 ArrowLeft 承担）</td><td>就地展开当前行，焦点不动；不可展开、已展开或禁用的行上什么都不做且不吞键</td></tr><tr><td><code>ArrowLeft</code></td><td>focus on 可展开且已展开的行（dir=rtl 时改由 ArrowRight 承担）</td><td>就地收起当前行，焦点不动；其余情形什么都不做且不吞键</td></tr><tr><td><code>Enter</code> / <code>Space</code></td><td>focus on sort-trigger, 该列 sortable</td><td>排序方向按 升序 → 降序 → 不排序 循环；按住 Shift 是追加到排序链而不是替换整条链</td></tr><tr><td><code>Enter</code> / <code>Space</code></td><td>focus on select-all-trigger, selectionMode=multiple</td><td>当前可选行全选中就整段清空，否则整段选上；三态由 aria-checked 报出（半选为 mixed）</td></tr></tbody></table></div></div></main><footer class="VPDocFooter" data-v-8de920f4 data-v-9f1a4103><!--[--><!--]--><div class="edit-info" data-v-9f1a4103><div class="edit-link" data-v-9f1a4103><a class="VPLink link vp-external-link-icon no-icon edit-link-button" href="https://github.com/XiHanFun/XiHan.UI/tree/main/docs/components/table.md" target="_blank" rel="noreferrer" data-v-9f1a4103><!--[--><span class="vpi-square-pen edit-link-icon" data-v-9f1a4103></span> 在 GitHub 上编辑此页<!--]--></a></div><div class="last-updated" data-v-9f1a4103><p class="VPLastUpdated" data-v-9f1a4103 data-v-2a7fc56b>最后更新于: <time datetime="2026-08-10T07:36:35.000Z" data-v-2a7fc56b></time></p></div></div><nav class="prev-next" aria-labelledby="doc-footer-aria-label" data-v-9f1a4103><span class="visually-hidden" id="doc-footer-aria-label" data-v-9f1a4103>Pager</span><div class="pager" data-v-9f1a4103><a class="VPLink link pager-link prev" href="/components/file-upload" data-v-9f1a4103><!--[--><span class="desc" data-v-9f1a4103>上一页</span><span class="title" data-v-9f1a4103>文件上传</span><!--]--></a></div><div class="pager" data-v-9f1a4103><a class="VPLink link pager-link next" href="/components/tree" data-v-9f1a4103><!--[--><span class="desc" data-v-9f1a4103>下一页</span><span class="title" data-v-9f1a4103>树</span><!--]--></a></div></nav></footer><!--[--><!--]--></div></div></div><!--[--><!--]--></div></div><footer class="VPFooter has-sidebar" data-v-7444b867 data-v-302810ea><div class="container" data-v-302810ea><p class="message" data-v-302810ea>Released under The <a href='https://opensource.org/license/MIT' target='_blank'>MIT</a> License</p><p class="copyright" data-v-302810ea>Copyright ©2021-Present <a href='https://www.xihanfun.com' target='_blank'>XiHanFun</a> and contributors.</p></div></footer><!--[--><!--]--></div></div>
+    <script>window.__VP_HASH_MAP__=JSON.parse("{\"adapters_vue.md\":\"BlcANc58\",\"adapters_wc.md\":\"BgjwXDmy\",\"changelog.md\":\"B4L6WJBN\",\"components_accordion.md\":\"uSNJdmxX\",\"components_alert.md\":\"D6gVUVNG\",\"components_anchor.md\":\"Ct786Mhj\",\"components_avatar.md\":\"GPt_77L7\",\"components_badge.md\":\"DsvU7XaF\",\"components_breadcrumb.md\":\"C5nQAI4b\",\"components_button.md\":\"BNEPslCf\",\"components_calendar.md\":\"CVTdeZB1\",\"components_carousel.md\":\"CO3IRGFi\",\"components_cascader.md\":\"CTMvELEU\",\"components_checkbox-group.md\":\"C2k7AIAw\",\"components_checkbox.md\":\"DBuhy-nj\",\"components_clipboard.md\":\"uKPoXVYe\",\"components_code-block.md\":\"BXqk94Of\",\"components_collapsible.md\":\"CSQ7kwma\",\"components_color-picker.md\":\"BUR03uIO\",\"components_combobox.md\":\"gtANOii5\",\"components_composer.md\":\"BZRomp8G\",\"components_context-menu.md\":\"Cfpv9l7U\",\"components_date-field.md\":\"BgoyRQAA\",\"components_date-picker.md\":\"CslLMl86\",\"components_dialog.md\":\"BvdrkUwd\",\"components_drawer.md\":\"bsDkWl_O\",\"components_editable.md\":\"CH3o33dy\",\"components_empty-state.md\":\"jH0x1HC7\",\"components_field.md\":\"BZfXpjCA\",\"components_file-upload.md\":\"BeUlXA1N\",\"components_form.md\":\"Bjs1F7sq\",\"components_hover-card.md\":\"DrML49dZ\",\"components_icon.md\":\"rARJlw37\",\"components_image.md\":\"Btx90ngH\",\"components_index.md\":\"BF6v9_QZ\",\"components_listbox.md\":\"BbsZGvox\",\"components_loading-bar.md\":\"CNldOTNF\",\"components_menu.md\":\"CEDuW3HO\",\"components_menubar.md\":\"yWp0RvPC\",\"components_navigation-menu.md\":\"Bz4DfeSW\",\"components_number-field.md\":\"BaKC2K6C\",\"components_pagination.md\":\"D4JRnRsw\",\"components_pin-input.md\":\"DOmHIJzQ\",\"components_popover.md\":\"DqNkIJ4y\",\"components_progress.md\":\"CB0ArRYE\",\"components_radio-group.md\":\"B3UC2WRj\",\"components_rating.md\":\"DzN4p2x4\",\"components_scroll-area.md\":\"DgcCUZp6\",\"components_select.md\":\"cvOfrvuv\",\"components_separator.md\":\"CUw3QvTA\",\"components_skeleton.md\":\"xDobN9IH\",\"components_slider.md\":\"KBiubNRq\",\"components_spinner.md\":\"BLTCbSjv\",\"components_splitter.md\":\"CA-5Jzam\",\"components_steps.md\":\"DJvPmGNQ\",\"components_switch.md\":\"qJcwpg_M\",\"components_table.md\":\"CshfKbn1\",\"components_tabs.md\":\"CCmPIBrk\",\"components_tags-input.md\":\"LyrBDPBx\",\"components_text-field.md\":\"DD2tJYM_\",\"components_thread.md\":\"DcV6OW5i\",\"components_time-field.md\":\"GvbQATYn\",\"components_time-picker.md\":\"CcBkzUJO\",\"components_toast.md\":\"rjnNPuaB\",\"components_toaster.md\":\"D5rw6Mb_\",\"components_toggle-group.md\":\"D5M7JNM4\",\"components_toggle.md\":\"BdjgDh0W\",\"components_toolbar.md\":\"BmONrP_b\",\"components_tooltip.md\":\"CmxpVc3J\",\"components_tour.md\":\"CpQ4bT9A\",\"components_transfer.md\":\"Bju2KZRu\",\"components_tree-select.md\":\"QccfsaBJ\",\"components_tree.md\":\"CygQ7bsi\",\"components_virtualizer.md\":\"BVA87rvi\",\"demo-check.md\":\"B-dPkUbb\",\"faq.md\":\"Cfyy-Dwr\",\"guide_a11y.md\":\"DWd4cIN4\",\"guide_ai.md\":\"Cwap-2tG\",\"guide_anatomy.md\":\"Z0VLLPl3\",\"guide_behavior.md\":\"DK0L3Hjn\",\"guide_connect.md\":\"DtyDwhf2\",\"guide_diagnostics.md\":\"euIP6xVg\",\"guide_machine.md\":\"CTRWaBdG\",\"guide_position.md\":\"BN-Awowv\",\"guide_styling.md\":\"BBSPZw3Z\",\"guide_testing.md\":\"HDSGs6Iv\",\"guide_theme.md\":\"BH4IOu1s\",\"guide_visual.md\":\"BMJK5g3v\",\"index.md\":\"CIuyiWSi\",\"installation.md\":\"iXLGAQu1\",\"introduction.md\":\"B1wmyh-h\",\"npm-package-dependency.md\":\"D7Nvvso8\",\"overview.md\":\"B5Gm0OX7\",\"quickstart.md\":\"CVh-A2sJ\"}");window.__VP_SITE_DATA__=JSON.parse("{\"lang\":\"zh-CN\",\"dir\":\"ltr\",\"title\":\"曦寒视图组件文档\",\"description\":\"框架无关的设计系统运行时与组件库\",\"base\":\"/\",\"head\":[],\"router\":{\"prefetchLinks\":true},\"appearance\":true,\"themeConfig\":{\"logo\":\"/images/logo.png\",\"socialLinks\":[{\"icon\":\"github\",\"link\":\"https://github.com/XiHanFun/XiHan.UI\"},{\"icon\":\"gitee\",\"link\":\"https://gitee.com/XiHanFun/XiHan.UI\"},{\"icon\":\"git\",\"link\":\"https://atomgit.com/XiHanFun/XiHan.UI\"}],\"search\":{\"provider\":\"local\",\"options\":{\"placeholder\":\"搜索文档\",\"translations\":{\"button\":{\"buttonText\":\"搜索文档\",\"buttonAriaLabel\":\"搜索文档\"},\"modal\":{\"searchBox\":{\"resetButtonTitle\":\"清除查询条件\",\"resetButtonAriaLabel\":\"清除查询条件\",\"cancelButtonText\":\"取消\",\"cancelButtonAriaLabel\":\"取消\"},\"startScreen\":{\"recentSearchesTitle\":\"搜索历史\",\"noRecentSearchesText\":\"没有搜索历史\",\"saveRecentSearchButtonTitle\":\"保存至搜索历史\",\"removeRecentSearchButtonTitle\":\"从搜索历史中移除\",\"favoriteSearchesTitle\":\"收藏\",\"removeFavoriteSearchButtonTitle\":\"从收藏中移除\"},\"errorScreen\":{\"titleText\":\"无法获取结果\",\"helpText\":\"你可能需要检查你的网络连接\"},\"footer\":{\"selectText\":\"选择\",\"navigateText\":\"切换\",\"closeText\":\"关闭\",\"searchByText\":\"搜索提供者\"},\"noResultsScreen\":{\"noResultsText\":\"无法找到相关结果\",\"suggestedQueryText\":\"你可以尝试查询\",\"reportMissingResultsText\":\"你认为该查询应该有结果？\",\"reportMissingResultsLinkText\":\"点击反馈\"}}}}},\"nav\":[{\"text\":\"开始\",\"link\":\"/introduction\",\"activeMatch\":\"^/(introduction|overview|installation|quickstart|npm-package-dependency|faq)$\"},{\"text\":\"核心概念\",\"link\":\"/guide/anatomy\",\"activeMatch\":\"/guide/\"},{\"text\":\"适配器\",\"link\":\"/adapters/vue\",\"activeMatch\":\"/adapters/\"},{\"text\":\"组件参考\",\"link\":\"/components/\",\"activeMatch\":\"/components/\"},{\"text\":\"探索未知\",\"items\":[{\"text\":\"关于我们\",\"items\":[{\"text\":\"官方网站\",\"link\":\"https://www.xihanfun.com\"},{\"text\":\"组织文档\",\"link\":\"https://docs.xihanfun.com\"}]},{\"text\":\"生态文档\",\"items\":[{\"text\":\"后端 | 开发框架\",\"link\":\"https://framework.docs.xihanfun.com\"},{\"text\":\"用例 | 基础应用\",\"link\":\"https://basicapp.docs.xihanfun.com\"}]},{\"text\":\"引用下载\",\"items\":[{\"text\":\"后端 | nuget\",\"link\":\"https://www.nuget.org/profiles/XiHanFun\"},{\"text\":\"前端 | npm\",\"link\":\"https://www.npmjs.com/org/xihan-ui\"}]},{\"text\":\"在线体验\",\"items\":[{\"text\":\"后端 | 开发框架\",\"link\":\"https://framework.xihanfun.com\"},{\"text\":\"前端 | 视图组件\",\"link\":\"https://ui.xihanfun.com\"},{\"text\":\"用例 | 基础应用\",\"link\":\"https://basicapp.xihanfun.com\"}]}]},{\"text\":\"代码仓库\",\"items\":[{\"text\":\"Github主库(国际)\",\"link\":\"https://github.com/XiHanFun/XiHan.UI\"},{\"text\":\"Gitee同步备库(国内)\",\"link\":\"https://gitee.com/XiHanFun/XiHan.UI\"},{\"text\":\"Atomgit同步备库(国内)\",\"link\":\"https://atomgit.com/XiHanFun/XiHan.UI\"}]},{\"text\":\"参与贡献\",\"items\":[{\"text\":\"公约\",\"link\":\"https://docs.xihanfun.com/cosmos/code-of-conduct\"},{\"text\":\"指南\",\"link\":\"https://docs.xihanfun.com/cosmos/contributing\"},{\"text\":\"贡献者\",\"link\":\"https://docs.xihanfun.com/cosmos/contributors\"},{\"text\":\"支持&赞助\",\"link\":\"https://docs.xihanfun.com/cosmos/sponsor\"}]},{\"text\":\"v0.0.0\",\"items\":[{\"text\":\"更新日志\",\"link\":\"/changelog\"}]}],\"sidebar\":{\"/guide/\":[{\"text\":\"核心概念\",\"collapsed\":false,\"items\":[{\"text\":\"1. 解剖与部件契约\",\"link\":\"/guide/anatomy\"},{\"text\":\"2. 状态机运行时\",\"link\":\"/guide/machine\"},{\"text\":\"3. connect 与属性产出\",\"link\":\"/guide/connect\"},{\"text\":\"4. 行为原语\",\"link\":\"/guide/behavior\"},{\"text\":\"5. 浮层定位\",\"link\":\"/guide/position\"},{\"text\":\"6. 设计令牌与主题\",\"link\":\"/guide/theme\"},{\"text\":\"7. 皮肤与样式分层\",\"link\":\"/guide/styling\"},{\"text\":\"8. 无障碍与键盘规格\",\"link\":\"/guide/a11y\"},{\"text\":\"9. 诊断通道\",\"link\":\"/guide/diagnostics\"},{\"text\":\"10. AI 对话内核\",\"link\":\"/guide/ai\"},{\"text\":\"11. 视觉层\",\"link\":\"/guide/visual\"},{\"text\":\"12. 测试与质量门禁\",\"link\":\"/guide/testing\"}]}],\"/adapters/\":[{\"text\":\"适配器\",\"collapsed\":false,\"items\":[{\"text\":\"Vue 适配器\",\"link\":\"/adapters/vue\"},{\"text\":\"Web Components 适配器\",\"link\":\"/adapters/wc\"}]}],\"/components/\":[{\"text\":\"组件总览\",\"link\":\"/components/\"},{\"text\":\"通用（10）\",\"collapsed\":false,\"items\":[{\"text\":\"按钮\",\"link\":\"/components/button\"},{\"text\":\"图标\",\"link\":\"/components/icon\"},{\"text\":\"切换按钮\",\"link\":\"/components/toggle\"},{\"text\":\"切换按钮组\",\"link\":\"/components/toggle-group\"},{\"text\":\"徽标\",\"link\":\"/components/badge\"},{\"text\":\"头像\",\"link\":\"/components/avatar\"},{\"text\":\"图片\",\"link\":\"/components/image\"},{\"text\":\"分隔线\",\"link\":\"/components/separator\"},{\"text\":\"代码块\",\"link\":\"/components/code-block\"},{\"text\":\"剪贴板\",\"link\":\"/components/clipboard\"}]},{\"text\":\"数据录入（26）\",\"collapsed\":false,\"items\":[{\"text\":\"表单字段\",\"link\":\"/components/field\"},{\"text\":\"表单\",\"link\":\"/components/form\"},{\"text\":\"文本输入\",\"link\":\"/components/text-field\"},{\"text\":\"数字输入\",\"link\":\"/components/number-field\"},{\"text\":\"分格输入\",\"link\":\"/components/pin-input\"},{\"text\":\"就地编辑\",\"link\":\"/components/editable\"},{\"text\":\"复选框\",\"link\":\"/components/checkbox\"},{\"text\":\"复选框组\",\"link\":\"/components/checkbox-group\"},{\"text\":\"单选组\",\"link\":\"/components/radio-group\"},{\"text\":\"开关\",\"link\":\"/components/switch\"},{\"text\":\"滑块\",\"link\":\"/components/slider\"},{\"text\":\"评分\",\"link\":\"/components/rating\"},{\"text\":\"选择器\",\"link\":\"/components/select\"},{\"text\":\"列表框\",\"link\":\"/components/listbox\"},{\"text\":\"组合框\",\"link\":\"/components/combobox\"},{\"text\":\"级联选择\",\"link\":\"/components/cascader\"},{\"text\":\"树选择\",\"link\":\"/components/tree-select\"},{\"text\":\"标签输入\",\"link\":\"/components/tags-input\"},{\"text\":\"穿梭框\",\"link\":\"/components/transfer\"},{\"text\":\"日期输入\",\"link\":\"/components/date-field\"},{\"text\":\"日期选择器\",\"link\":\"/components/date-picker\"},{\"text\":\"时间输入\",\"link\":\"/components/time-field\"},{\"text\":\"时间选择器\",\"link\":\"/components/time-picker\"},{\"text\":\"日历\",\"link\":\"/components/calendar\"},{\"text\":\"颜色选择器\",\"link\":\"/components/color-picker\"},{\"text\":\"文件上传\",\"link\":\"/components/file-upload\"}]},{\"text\":\"数据展示（10）\",\"collapsed\":false,\"items\":[{\"text\":\"表格\",\"link\":\"/components/table\"},{\"text\":\"树\",\"link\":\"/components/tree\"},{\"text\":\"虚拟滚动\",\"link\":\"/components/virtualizer\"},{\"text\":\"滚动区域\",\"link\":\"/components/scroll-area\"},{\"text\":\"手风琴\",\"link\":\"/components/accordion\"},{\"text\":\"折叠区域\",\"link\":\"/components/collapsible\"},{\"text\":\"走马灯\",\"link\":\"/components/carousel\"},{\"text\":\"分栏\",\"link\":\"/components/splitter\"},{\"text\":\"骨架屏\",\"link\":\"/components/skeleton\"},{\"text\":\"空状态\",\"link\":\"/components/empty-state\"}]},{\"text\":\"导航（11）\",\"collapsed\":false,\"items\":[{\"text\":\"菜单\",\"link\":\"/components/menu\"},{\"text\":\"菜单栏\",\"link\":\"/components/menubar\"},{\"text\":\"右键菜单\",\"link\":\"/components/context-menu\"},{\"text\":\"导航菜单\",\"link\":\"/components/navigation-menu\"},{\"text\":\"标签页\",\"link\":\"/components/tabs\"},{\"text\":\"步骤条\",\"link\":\"/components/steps\"},{\"text\":\"分页\",\"link\":\"/components/pagination\"},{\"text\":\"面包屑\",\"link\":\"/components/breadcrumb\"},{\"text\":\"锚点\",\"link\":\"/components/anchor\"},{\"text\":\"工具栏\",\"link\":\"/components/toolbar\"},{\"text\":\"引导\",\"link\":\"/components/tour\"}]},{\"text\":\"反馈与浮层（11）\",\"collapsed\":false,\"items\":[{\"text\":\"对话框\",\"link\":\"/components/dialog\"},{\"text\":\"抽屉\",\"link\":\"/components/drawer\"},{\"text\":\"气泡卡片\",\"link\":\"/components/popover\"},{\"text\":\"文字提示\",\"link\":\"/components/tooltip\"},{\"text\":\"悬浮卡片\",\"link\":\"/components/hover-card\"},{\"text\":\"警告提示\",\"link\":\"/components/alert\"},{\"text\":\"轻提示\",\"link\":\"/components/toast\"},{\"text\":\"轻提示容器\",\"link\":\"/components/toaster\"},{\"text\":\"进度条\",\"link\":\"/components/progress\"},{\"text\":\"加载指示器\",\"link\":\"/components/spinner\"},{\"text\":\"加载条\",\"link\":\"/components/loading-bar\"}]},{\"text\":\"AI 对话（2）\",\"collapsed\":false,\"items\":[{\"text\":\"会话线程\",\"link\":\"/components/thread\"},{\"text\":\"消息编辑器\",\"link\":\"/components/composer\"}]}],\"/\":[{\"text\":\"开始\",\"collapsed\":false,\"items\":[{\"text\":\"组件库简介\",\"link\":\"/introduction\"},{\"text\":\"架构总览\",\"link\":\"/overview\"},{\"text\":\"安装与接入\",\"link\":\"/installation\"},{\"text\":\"快速上手\",\"link\":\"/quickstart\"}]},{\"text\":\"参考\",\"collapsed\":false,\"items\":[{\"text\":\"包与依赖关系\",\"link\":\"/npm-package-dependency\"},{\"text\":\"常见问题\",\"link\":\"/faq\"}]},{\"text\":\"更新日志\",\"link\":\"/changelog\"}]},\"docFooter\":{\"prev\":\"上一页\",\"next\":\"下一页\"},\"outline\":{\"label\":\"目录\",\"level\":\"deep\"},\"langMenuLabel\":\"多语言\",\"returnToTopLabel\":\"回到顶部\",\"sidebarMenuLabel\":\"菜单\",\"darkModeSwitchLabel\":\"主题\",\"lightModeSwitchTitle\":\"切换到浅色模式\",\"darkModeSwitchTitle\":\"切换到深色模式\",\"skipToContentLabel\":\"跳转到内容\",\"notFound\":{\"title\":\"页面未找到\",\"quote\":\"但如果你不改变方向，并且继续寻找，你可能最终会到达你所前往的地方。\",\"linkLabel\":\"前往首页\",\"linkText\":\"带我回首页\"},\"editLink\":{\"text\":\"在 GitHub 上编辑此页\",\"pattern\":\"https://github.com/XiHanFun/XiHan.UI/tree/main/docs/:path\"},\"lastUpdated\":{\"text\":\"最后更新于\"},\"footer\":{\"message\":\"Released under The <a href='https://opensource.org/license/MIT' target='_blank'>MIT</a> License\",\"copyright\":\"Copyright ©2021-Present <a href='https://www.xihanfun.com' target='_blank'>XiHanFun</a> and contributors.\"}},\"locales\":{},\"scrollOffset\":134,\"cleanUrls\":true}");</script>
     
   </body>
 </html>
