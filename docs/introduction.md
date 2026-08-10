@@ -49,7 +49,7 @@ XiHan.UI 尚未发布到 npm（库包版本仍是 `0.0.0`），也还没有可�
 
 ## 相关
 
-- 源码仓库：[GitHub](https://github.com/XiHanFun/XiHan.UI) · [Gitee](https://gitee.com/XiHanFun/XiHan.UI) · [AtomGit](https://atomgit.com/XiHanFun/XiHan.UI)
+- 源码仓库：[GitHub](https://github.com/XiHanFun/XiHan.UI) · [Gitee](https://gitee.com/XiHanFun/XiHan.UI) · [GitCode](https://gitcode.com/XiHanFun/XiHan.UI)
 - 同生态的另外两个仓库：[XiHan.Framework 开发框架](https://framework.docs.xihanfun.com/)、[XiHan.BasicApp 基础应用](https://basicapp.docs.xihanfun.com/)
 
 ::: tip 与 XiHan.BasicApp 的关系
