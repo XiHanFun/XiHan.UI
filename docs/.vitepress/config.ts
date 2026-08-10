@@ -44,7 +44,7 @@ const guideChapters: [text: string, name: string][] = [
   ["无障碍与键盘规格", "a11y"],
   ["诊断通道", "diagnostics"],
   ["AI 对话内核", "ai"],
-  ["视觉层", "visual"],
+  ["背景层", "backgrounds"],
   ["测试与质量门禁", "testing"],
 ];
 
@@ -64,6 +64,7 @@ const startSidebar: DefaultTheme.SidebarItem[] = [
     collapsed: false,
     items: [
       { text: "包与依赖关系", link: "/npm-package-dependency" },
+      { text: "版本与兼容性政策", link: "/guide/versioning" },
       { text: "常见问题", link: "/faq" },
     ],
   },

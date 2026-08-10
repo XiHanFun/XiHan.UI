@@ -142,9 +142,9 @@
   },
   "files": [
     "CHANGELOG.md",
+    "css",
     "index.css",
-    "index.unlayered.css",
-    "styles"
+    "index.unlayered.css"
   ],
   "engines": {
     "node": ">=18"
