@@ -3,7 +3,8 @@ import { qrCodeAnatomy, qrCodeKeyboard } from '@xihan-ui/headless'
 
 // 二维码是一张图，APG 里对应的是"命名与描述"那一节；判据锁六件：
 // 命名两态互斥、版本与静区如实落到根上、没有可编码的内容时一个模块都不铺、
-// 缺省形状的几何逐字不变、换形状后每个深色模块的格心仍被墨盖住、放 logo 那块被挖空。
+// 码眼恒独立成一条 path（皮肤的 --xh-qr-code-eye-fg 要有落地的节点）、
+// 换形状后每个深色模块的格心仍被墨盖住、放 logo 那块被挖空。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/'
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
@@ -13,8 +14,8 @@ const URL_23 = 'https://ui.xihanfun.com'
 // 超出 40 版 H 级的 1273 字节上限
 const TOO_LONG = 'x'.repeat(1300)
 
-/** 不写形状时那条 d；"显式写缺省形状"那条用例先记后比，同一次录制里用完即弃。 */
-let defaultModulesD = ''
+/** 不写形状时那两条 d；"显式写缺省形状"那条用例先记后比，同一次录制里用完即弃。 */
+let defaultGeometry = { modules: '', eyes: '' }
 
 function rootEl(doc: Document): Element {
   const el = doc.querySelector('[data-scope="qr-code"][data-part="root"]')
@@ -46,18 +47,27 @@ function expectViewBox(viewBox: string) {
   }
 }
 
-/** 深色模块合成 root 下唯一一条 `<path>`。 */
-function expectModulesPainted({ doc, adapterName }: RawStepContext): void {
+/**
+ * 缺省形状下 root 下恰好两条 `<path>`：除码眼外的模块一条、三个码眼一条。
+ * 两条分开与形状无关：码眼那条要单独承 `--xh-qr-code-eye-fg`，并成一条那个变量就无处落地。
+ */
+function expectModulesPainted(ctx: RawStepContext): void {
+  const { doc, adapterName } = ctx
   const root = rootEl(doc)
-  if (root.childElementCount !== 1)
-    throw new Error(`${adapterName}: root 下有 ${root.childElementCount} 个元素，深色模块应当合成一条 <path>`)
-  const path = root.children[0]!
-  if (path.namespaceURI !== SVG_NS || path.localName !== 'path')
-    throw new Error(`${adapterName}: root 下那个元素是 ${path.namespaceURI} 的 <${path.localName}>；SVG 图元挂在非 SVG 命名空间里什么都不显示`)
-  const d = path.getAttribute('d') ?? ''
+  if (root.childElementCount !== 2)
+    throw new Error(`${adapterName}: root 下有 ${root.childElementCount} 个元素，模块与码眼应当各合成一条 <path>`)
+  for (const name of ['modules', 'eyes']) {
+    const path = geomEl(doc, name)
+    if (!path)
+      throw new Error(`${adapterName}: root 里没有 data-xh-geom="${name}" 这条 path`)
+    if (path.namespaceURI !== SVG_NS || path.localName !== 'path')
+      throw new Error(`${adapterName}: ${name} 那块是 ${path.namespaceURI} 的 <${path.localName}>；SVG 图元挂在非 SVG 命名空间里什么都不显示`)
+  }
+  const d = geomD(doc, 'modules', adapterName)
   // 每个深色游程一段 `M…h…v1h-…z`，至少得有一段
   if (!/^(?:M-?\d+ -?\d+h\d+v1h-\d+z)+$/.test(d))
-    throw new Error(`${adapterName}: <path> 的 d 是「${d.slice(0, 60)}」，不是一串矩形子路径`)
+    throw new Error(`${adapterName}: 模块那条 <path> 的 d 是「${d.slice(0, 60)}」，不是一串矩形子路径`)
+  expectEyeSegments(ctx)
 }
 
 /** root 下一个元素都没生成。 */
@@ -296,15 +306,18 @@ export const qrCodeSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '显式写缺省形状与不写等价：还是那一条合并路径，码眼不另起一条',
+      name: '显式写缺省形状与不写等价：两条 d 都逐字不变，码眼照旧自成一条',
       spec: { apg: APG },
       props: { value: URL_23 },
       steps: [
         {
           kind: 'raw',
-          why: '几何不进属性快照；先记下不写形状时的那条 d',
+          why: '几何不进属性快照；先记下不写形状时的那两条 d',
           run: ({ doc, adapterName }) => {
-            defaultModulesD = geomD(doc, 'modules', adapterName)
+            defaultGeometry = {
+              modules: geomD(doc, 'modules', adapterName),
+              eyes: geomD(doc, 'eyes', adapterName),
+            }
           },
         },
         {
@@ -313,13 +326,13 @@ export const qrCodeSuite: ConformanceSuite = {
         },
         {
           kind: 'raw',
-          why: '缺省形状的几何是向后兼容的硬要求，只能逐字比对那条 d',
+          why: '缺省形状的几何是向后兼容的硬要求，只能逐字比对那两条 d',
           run: (ctx) => {
-            const now = geomD(ctx.doc, 'modules', ctx.adapterName)
-            if (now !== defaultModulesD)
-              throw new Error(`${ctx.adapterName}: 显式写 square/square 后 d 变了；缺省形状必须与不写形状逐字相同`)
-            if (geomEl(ctx.doc, 'eyes'))
-              throw new Error(`${ctx.adapterName}: 缺省形状下码眼不该另起一条 path，它们并在数据模块那条里`)
+            for (const name of ['modules', 'eyes'] as const) {
+              const now = geomD(ctx.doc, name, ctx.adapterName)
+              if (now !== defaultGeometry[name])
+                throw new Error(`${ctx.adapterName}: 显式写 square/square 后 ${name} 那条 d 变了；缺省形状必须与不写形状逐字相同`)
+            }
             expectModulesPainted(ctx)
           },
         },

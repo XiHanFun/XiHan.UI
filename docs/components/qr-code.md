@@ -78,9 +78,10 @@ square / dot / rounded；三种形状的墨都盖住每个模块的格心，读�
 | `count` | `number` | 每边模块数，不含静区；没画出码时为 0。 |
 | `margin` | `number` | 解析后的静区宽度，单位是模块数。 |
 | `viewBox` | `string` | 根的 viewBox，含静区。 |
-| `path` | `string` | 数据模块合成的那条 `&lt;path&gt;` 的 d；没画出码时是空串，此时不该生成 path 节点。 码点与码眼都是缺省形状时，三个码眼也并在这一条里。 |
-| `eyePath` | `string` | 三个码眼合成的那条 `&lt;path&gt;` 的 d；码点与码眼都是缺省形状时是空串，此时不该生成第二个 path 节点。 |
+| `path` | `string` | 除三个码眼以外的模块合成的那条 `&lt;path&gt;` 的 d；没画出码时是空串，此时不该生成 path 节点。 码眼永远不在这一条里，与形状无关。 |
+| `eyePath` | `string` | 三个码眼合成的那条 `&lt;path&gt;` 的 d；没画出码时是空串，此时不该生成第二个 path 节点。 两条分开画与形状无关：码眼的颜色可以与码点不同，合成一条就没地方单独上色。 |
 | `logoArea` | `QrCodeLogoArea \| undefined` | logo 的落位与挖空矩形；没留位时为 undefined。 |
+| `logoDamage` | `QrCodeLogoDamage \| undefined` | 挖空对码面造成的损伤；没留 logo 位时为 undefined。 |
 | `state` | `QrCodeState` | 当前状态。 |
 | `error` | `string \| undefined` | 编码失败的原因；其余状态为 undefined。 |
 | `label` | `string \| undefined` | 解析后的可及名字；没给名字时为 undefined，此时根退出无障碍树。 |
