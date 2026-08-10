@@ -16,7 +16,7 @@
 pnpm changeset pre enter alpha
 
 # 2) 应用版本：13 包 → 1.0.0-alpha.0，生成 CHANGELOG，更新内部依赖范围
-pnpm version            # = changeset version
+pnpm run version            # = changeset version
 
 # 3) 提交版本改动
 git add -A && git commit -m "release: @xihan-ui/* 1.0.0-alpha.0"
@@ -29,5 +29,5 @@ pnpm release            # = turbo run build && changeset publish
 
 ## 后续
 
-- alpha 迭代：`pnpm changeset`（写变更）→ `pnpm version` → 提交 → `pnpm release`。
-- 转正式版：`pnpm changeset pre exit` → `pnpm version`（去掉 alpha 后缀）→ 提交 → `pnpm release`。
+- alpha 迭代：`pnpm changeset`（写变更）→ `pnpm run version` → 提交 → `pnpm release`。
+- 转正式版：`pnpm changeset pre exit` → `pnpm run version`（去掉 alpha 后缀）→ 提交 → `pnpm release`。

@@ -3,12 +3,27 @@
   "type": "module",
   "version": "0.0.0",
   "description": "XiHan.UI Web Components adapter — Light-DOM behavior hosts on XhReactiveElement.",
-  "license": "MIT",
-  "sideEffects": false,
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
+  "author": {
+    "name": "XiHanFun",
+    "url": "https://github.com/XiHanFun"
   },
+  "license": "MIT",
+  "homepage": "https://ui.docs.xihanfun.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/XiHanFun/XiHan.UI.git",
+    "directory": "ui/packages/adapters/web-components"
+  },
+  "bugs": {
+    "url": "https://github.com/XiHanFun/XiHan.UI/issues"
+  },
+  "keywords": [
+    "web-components",
+    "custom-elements",
+    "headless-ui",
+    "design-system"
+  ],
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -27,11 +42,19 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "customElements": "custom-elements.json",
   "files": [
+    "CHANGELOG.md",
     "custom-elements.json",
     "dist"
   ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "customElements": "custom-elements.json",
   "scripts": {
     "build": "tsdown",
     "cem": "cem analyze",
@@ -40,7 +63,7 @@
     "test:browser": "vitest run --config vitest.browser.config.ts"
   },
   "peerDependencies": {
-    "@xihan-ui/backgrounds": "workspace:*"
+    "@xihan-ui/backgrounds": "workspace:^"
   },
   "peerDependenciesMeta": {
     "@xihan-ui/backgrounds": {
@@ -48,12 +71,12 @@
     }
   },
   "dependencies": {
-    "@xihan-ui/behavior": "workspace:*",
-    "@xihan-ui/code-highlight": "workspace:*",
-    "@xihan-ui/headless": "workspace:*",
-    "@xihan-ui/kernel": "workspace:*",
-    "@xihan-ui/machine": "workspace:*",
-    "@xihan-ui/position": "workspace:*"
+    "@xihan-ui/behavior": "workspace:^",
+    "@xihan-ui/code-highlight": "workspace:^",
+    "@xihan-ui/headless": "workspace:^",
+    "@xihan-ui/kernel": "workspace:^",
+    "@xihan-ui/machine": "workspace:^",
+    "@xihan-ui/position": "workspace:^"
   },
   "devDependencies": {
     "@custom-elements-manifest/analyzer": "catalog:",

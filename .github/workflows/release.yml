@@ -36,7 +36,7 @@ jobs:
         with:
           cwd: ui
           publish: pnpm release
-          version: pnpm version
+          version: pnpm run version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: 'true'

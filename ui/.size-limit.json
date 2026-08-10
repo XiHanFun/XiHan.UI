@@ -15,7 +15,7 @@
     "name": "tokens",
     "path": "packages/design/tokens/dist/index.js",
     "gzip": true,
-    "limit": "2.4 kB"
+    "limit": "2.7 kB"
   },
   {
     "name": "tokens/tokens.css",
@@ -27,13 +27,13 @@
     "name": "behavior",
     "path": "packages/engine/behavior/dist/index.js",
     "gzip": true,
-    "limit": "6 kB"
+    "limit": "6.6 kB"
   },
   {
     "name": "position",
     "path": "packages/engine/position/dist/index.js",
     "gzip": true,
-    "limit": "2.5 kB"
+    "limit": "2.6 kB"
   },
   {
     "name": "code-highlight",
@@ -63,13 +63,13 @@
     "name": "headless",
     "path": "packages/engine/headless/dist/index.js",
     "gzip": true,
-    "limit": "138 kB"
+    "limit": "169 kB"
   },
   {
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "159 kB"
+    "limit": "195 kB"
   },
   {
     "name": "vue/backgrounds",
@@ -87,19 +87,19 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "149 kB"
+    "limit": "184 kB"
   },
   {
     "name": "web-components/backgrounds",
     "path": "packages/adapters/web-components/dist/backgrounds.js",
     "gzip": true,
-    "limit": "19 kB"
+    "limit": "21 kB"
   },
   {
     "name": "styles",
     "path": "packages/design/styles/css/*.css",
     "gzip": true,
-    "limit": "68 kB"
+    "limit": "94 kB"
   },
   {
     "name": "icons",

@@ -3,12 +3,29 @@
   "type": "module",
   "version": "0.0.0",
   "description": "XiHan.UI design tokens + theme runtime.",
-  "license": "MIT",
-  "sideEffects": ["./tokens.css"],
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
+  "author": {
+    "name": "XiHanFun",
+    "url": "https://github.com/XiHanFun"
   },
+  "license": "MIT",
+  "homepage": "https://ui.docs.xihanfun.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/XiHanFun/XiHan.UI.git",
+    "directory": "ui/packages/design/tokens"
+  },
+  "bugs": {
+    "url": "https://github.com/XiHanFun/XiHan.UI/issues"
+  },
+  "keywords": [
+    "design-tokens",
+    "dtcg",
+    "theming",
+    "css-variables"
+  ],
+  "sideEffects": [
+    "./tokens.css"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -24,7 +41,19 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist", "tokens.css", "tokens.json"],
+  "files": [
+    "CHANGELOG.md",
+    "dist",
+    "tokens.css",
+    "tokens.json"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "gen": "node build/emit-tokens.mjs",
     "build": "node build/emit-tokens.mjs && tsdown",
