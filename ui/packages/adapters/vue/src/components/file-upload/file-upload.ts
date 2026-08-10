@@ -1,5 +1,6 @@
 import type { FileUploadItemProps, FileUploadSchema, FileUploadTranslations } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import { provideFileUpload, provideFileUploadItem, useFileUploadContext, useFileUploadItemContext } from './context'
 import { useFileUpload } from './use-file-upload'
@@ -26,7 +27,12 @@ export const XhFileUploadRoot = defineComponent({
     translations: { type: Object as PropType<Partial<FileUploadTranslations>>, default: undefined },
   },
   // files-change 携带 { files }，update:files 携带裸数组；file-accept / file-reject 逐个文件报告
-  emits: ['files-change', 'update:files', 'file-accept', 'file-reject'],
+  emits: {
+    'files-change': (_details: PayloadOf<FileUploadProps, 'onFilesChange'>) => true,
+    'update:files': (_files: PayloadOf<FileUploadProps, 'onFilesChange'>['files']) => true,
+    'file-accept': (_details: PayloadOf<FileUploadProps, 'onFileAccept'>) => true,
+    'file-reject': (_details: PayloadOf<FileUploadProps, 'onFileReject'>) => true,
+  },
   setup(props, { slots, emit }) {
     const onFilesChange: FileUploadProps['onFilesChange'] = (details) => {
       emit('files-change', details)

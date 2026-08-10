@@ -1,5 +1,6 @@
 import type { LayoutSchema, LayoutSiderPlacement } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideLayout, useLayoutContext } from './context'
 import { useLayout } from './use-layout'
@@ -21,7 +22,10 @@ export const XhLayoutRoot = defineComponent({
     bordered: Boolean,
   },
   // sider-collapsed-change 携带 { collapsed }，update:siderCollapsed 携带裸布尔
-  emits: ['sider-collapsed-change', 'update:siderCollapsed'],
+  emits: {
+    'sider-collapsed-change': (_details: PayloadOf<LayoutProps, 'onSiderCollapsedChange'>) => true,
+    'update:siderCollapsed': (_siderCollapsed: PayloadOf<LayoutProps, 'onSiderCollapsedChange'>['collapsed']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: LayoutProps['onSiderCollapsedChange'] = (details) => {
       emit('sider-collapsed-change', details)

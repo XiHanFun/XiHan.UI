@@ -1,6 +1,7 @@
 import type { RatingSchema } from '@xihan-ui/headless'
 import type { Direction, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideRating, useRatingContext } from './context'
 import { useRating } from './use-rating'
@@ -24,7 +25,11 @@ export const XhRatingRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸值；hover-change 是预览通道
-  emits: ['value-change', 'update:value', 'hover-change'],
+  emits: {
+    'value-change': (_details: PayloadOf<RatingProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<RatingProps, 'onValueChange'>['value']) => true,
+    'hover-change': (_details: PayloadOf<RatingProps, 'onHoverChange'>) => true,
+  },
   setup(props, { slots, emit }) {
     const onValueChange: RatingProps['onValueChange'] = (details) => {
       emit('value-change', details)

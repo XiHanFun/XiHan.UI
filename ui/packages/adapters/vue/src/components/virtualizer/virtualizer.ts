@@ -1,5 +1,6 @@
 import type { VirtualizerChangeDetails, VirtualizerSchema } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, onMounted, onUpdated, ref } from 'vue'
 import { provideVirtualizer, useVirtualizerContext } from './context'
 import { useVirtualizer } from './use-virtualizer'
@@ -22,7 +23,9 @@ export const XhVirtualizerRoot = defineComponent({
     lanes: { type: Number, default: undefined },
   },
   // change 携带当前该渲染哪些条目的详情
-  emits: ['change'],
+  emits: {
+    change: (_details: PayloadOf<VirtualizerProps, 'onChange'>) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: VirtualizerProps['onChange'] = (details: VirtualizerChangeDetails) => emit('change', details)
     const ctx = useVirtualizer(props as VirtualizerProps, notify)

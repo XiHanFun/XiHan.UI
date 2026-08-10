@@ -1,4 +1,5 @@
 import type { EllipsisSchema } from '@xihan-ui/headless'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { useEllipsis } from './use-ellipsis'
 
@@ -20,7 +21,11 @@ export const XhEllipsis = defineComponent({
     tooltip: Boolean,
   },
   // expanded-change 携带 { expanded }，update:expanded 携带裸布尔
-  emits: ['expanded-change', 'update:expanded', 'overflow-change'],
+  emits: {
+    'expanded-change': (_details: PayloadOf<EllipsisProps, 'onExpandedChange'>) => true,
+    'update:expanded': (_expanded: PayloadOf<EllipsisProps, 'onExpandedChange'>['expanded']) => true,
+    'overflow-change': (_details: PayloadOf<EllipsisProps, 'onOverflowChange'>) => true,
+  },
   setup(props, { slots, emit }) {
     const ctx = useEllipsis(props as EllipsisProps, {
       onExpandedChange: (details) => {

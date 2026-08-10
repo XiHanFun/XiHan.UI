@@ -1,6 +1,7 @@
 import type { TourSchema, TourStep } from '@xihan-ui/headless'
 import type { Placement } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideTour, useTourContext } from './context'
 import { useTour } from './use-tour'
@@ -25,7 +26,14 @@ export const XhTourRoot = defineComponent({
     translations: { type: Object as PropType<TourProps['translations']>, default: undefined },
   },
   // open-change / step-change 携带对象；update:* 携带裸值，支持 v-model:open 与 v-model:step
-  emits: ['open-change', 'update:open', 'step-change', 'update:step', 'complete', 'skip'],
+  emits: {
+    'open-change': (_details: PayloadOf<TourProps, 'onOpenChange'>) => true,
+    'update:open': (_open: PayloadOf<TourProps, 'onOpenChange'>['open']) => true,
+    'step-change': (_details: PayloadOf<TourProps, 'onStepChange'>) => true,
+    'update:step': (_step: PayloadOf<TourProps, 'onStepChange'>['step']) => true,
+    'complete': (_details: PayloadOf<TourProps, 'onComplete'>) => true,
+    'skip': (_details: PayloadOf<TourProps, 'onSkip'>) => true,
+  },
   setup(props, { slots, emit }) {
     const ctx = useTour(props as TourProps, {
       onOpenChange: (details) => {

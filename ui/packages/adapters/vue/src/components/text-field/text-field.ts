@@ -1,6 +1,7 @@
 import type { TextFieldSchema } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideTextField, useTextFieldContext } from './context'
 import { useTextField } from './use-text-field'
@@ -26,7 +27,10 @@ export const XhTextFieldRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸串
-  emits: ['value-change', 'update:value'],
+  emits: {
+    'value-change': (_details: PayloadOf<TextFieldProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<TextFieldProps, 'onValueChange'>['value']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: TextFieldProps['onValueChange'] = (details) => {
       emit('value-change', details)

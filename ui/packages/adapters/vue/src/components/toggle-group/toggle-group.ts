@@ -1,6 +1,7 @@
 import type { ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupValue } from '@xihan-ui/headless'
 import type { Direction, Orientation } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideToggleGroup, useToggleGroupContext } from './context'
 import { useToggleGroup } from './use-toggle-group'
@@ -23,7 +24,10 @@ export const XhToggleGroupRoot = defineComponent({
     rovingFocus: { type: Boolean, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸值；裸值形态跟随 multiple，单选为字符串、多选为数组
-  emits: ['value-change', 'update:value'],
+  emits: {
+    'value-change': (_details: PayloadOf<ToggleGroupProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<ToggleGroupProps, 'onValueChange'>['value']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: ToggleGroupProps['onValueChange'] = (details) => {
       emit('value-change', details)

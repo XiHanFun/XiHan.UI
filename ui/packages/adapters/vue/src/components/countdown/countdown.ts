@@ -4,6 +4,7 @@ import type {
   CountdownSchema,
 } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { connectCountdown, countdownMachine } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -28,7 +29,9 @@ export const XhCountdown = defineComponent({
     precision: { type: Number, default: undefined },
     live: { type: String as PropType<CountdownLive>, default: undefined },
   },
-  emits: ['finish'],
+  emits: {
+    finish: (_details: PayloadOf<CountdownProps, 'onFinish'>) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: CountdownProps['onFinish'] = (details: CountdownFinishDetails) => {
       emit('finish', details)

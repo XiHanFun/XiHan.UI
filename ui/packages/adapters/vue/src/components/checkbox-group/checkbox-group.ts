@@ -1,6 +1,7 @@
 import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupNodeMeta, CheckboxGroupSchema } from '@xihan-ui/headless'
 import type { Orientation } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import {
   provideCheckboxGroup,
@@ -29,7 +30,10 @@ export const XhCheckboxGroupRoot = defineComponent({
     orientation: { type: String as PropType<Orientation>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸数组
-  emits: ['value-change', 'update:value'],
+  emits: {
+    'value-change': (_details: PayloadOf<CheckboxGroupProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<CheckboxGroupProps, 'onValueChange'>['value']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: CheckboxGroupProps['onValueChange'] = (details) => {
       emit('value-change', details)

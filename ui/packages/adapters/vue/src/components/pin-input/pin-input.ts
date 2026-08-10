@@ -1,6 +1,7 @@
 import type { PinInputSchema, PinInputTranslations, PinInputType } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { providePinInput, usePinInputContext } from './context'
 import { usePinInput } from './use-pin-input'
@@ -29,7 +30,11 @@ export const XhPinInputRoot = defineComponent({
     translations: { type: Object as PropType<Partial<PinInputTranslations>>, default: undefined },
   },
   // value-change 携带 { value, valueAsString }，update:value 携带裸数组
-  emits: ['value-change', 'value-complete', 'update:value'],
+  emits: {
+    'value-change': (_details: PayloadOf<PinInputProps, 'onValueChange'>) => true,
+    'value-complete': (_details: PayloadOf<PinInputProps, 'onValueComplete'>) => true,
+    'update:value': (_value: PayloadOf<PinInputProps, 'onValueChange'>['value']) => true,
+  },
   setup(props, { slots, emit }) {
     const onValueChange: PinInputProps['onValueChange'] = (details) => {
       emit('value-change', details)

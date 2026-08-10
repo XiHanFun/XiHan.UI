@@ -1,6 +1,7 @@
 import type { PopselectItemProps, PopselectNode, PopselectNodeMeta } from '@xihan-ui/headless'
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import type { PopselectNotifiers, PopselectRootProps } from './use-popselect'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { providePopselect, providePopselectItem, usePopselectContext, usePopselectItemContext } from './context'
@@ -29,7 +30,12 @@ export const XhPopselectRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸值；回传的选中值恒为数组，单选时长度 ≤ 1
-  emits: ['value-change', 'open-change', 'update:value', 'update:open'],
+  emits: {
+    'value-change': (_details: PayloadOf<PopselectNotifiers, 'onValueChange'>) => true,
+    'open-change': (_details: PayloadOf<PopselectNotifiers, 'onOpenChange'>) => true,
+    'update:value': (_value: PayloadOf<PopselectNotifiers, 'onValueChange'>['value']) => true,
+    'update:open': (_open: PayloadOf<PopselectNotifiers, 'onOpenChange'>['open']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: PopselectNotifiers = {
       onValueChange: (details) => {

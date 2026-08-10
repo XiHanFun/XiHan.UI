@@ -7,6 +7,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, Ref } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import type { CascaderContext } from './use-cascader'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideCascader, provideCascaderItem, useCascaderContext, useCascaderItemContext } from './context'
@@ -70,7 +71,12 @@ export const XhCascaderRoot = defineComponent({
     dir: { type: String as PropType<Direction>, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸值；选中值恒为路径数组，单选时长度 ≤ 1
-  emits: ['value-change', 'open-change', 'update:value', 'update:open'],
+  emits: {
+    'value-change': (_details: PayloadOf<CascaderProps, 'onValueChange'>) => true,
+    'open-change': (_details: PayloadOf<CascaderProps, 'onOpenChange'>) => true,
+    'update:value': (_value: PayloadOf<CascaderProps, 'onValueChange'>['value']) => true,
+    'update:open': (_open: PayloadOf<CascaderProps, 'onOpenChange'>['open']) => true,
+  },
   setup(props, { slots, emit }) {
     const notifyValue: CascaderProps['onValueChange'] = (details) => {
       emit('value-change', details)

@@ -1,6 +1,7 @@
 import type { AccordionNode, AccordionNodeMeta, AccordionSchema } from '@xihan-ui/headless'
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideAccordion, provideAccordionItem, useAccordionContext, useAccordionItem } from './context'
 import { useAccordion } from './use-accordion'
@@ -22,7 +23,10 @@ export const XhAccordionRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸数组
-  emits: ['value-change', 'update:value'],
+  emits: {
+    'value-change': (_details: PayloadOf<AccordionProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<AccordionProps, 'onValueChange'>['value']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: AccordionProps['onValueChange'] = (details) => {
       emit('value-change', details)

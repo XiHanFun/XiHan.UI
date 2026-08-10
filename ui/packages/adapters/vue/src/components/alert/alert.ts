@@ -1,6 +1,7 @@
 import type { AlertSchema, AlertTranslations } from '@xihan-ui/headless'
 import type { Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideAlert, useAlertContext } from './context'
 import { useAlert } from './use-alert'
@@ -18,7 +19,10 @@ export const XhAlertRoot = defineComponent({
     translations: Object as PropType<Partial<AlertTranslations>>,
   },
   // open-change 携带 { open }，update:open 携带裸布尔
-  emits: ['open-change', 'update:open'],
+  emits: {
+    'open-change': (_details: PayloadOf<AlertProps, 'onOpenChange'>) => true,
+    'update:open': (_open: PayloadOf<AlertProps, 'onOpenChange'>['open']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: AlertProps['onOpenChange'] = (details) => {
       emit('open-change', details)

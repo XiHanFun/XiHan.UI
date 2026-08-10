@@ -1,5 +1,6 @@
 import type { LogProps, LogTranslations, ThreadSchema } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideLog, useLogContext } from './context'
 import { useLog } from './use-log'
@@ -13,7 +14,9 @@ export const XhLogRoot = defineComponent({
     translations: { type: Object as PropType<Partial<LogTranslations>>, default: undefined },
   },
   // stick-change 携带 { atBottom, sticking }，无对应的 v-model
-  emits: ['stick-change'],
+  emits: {
+    'stick-change': (_details: PayloadOf<ThreadSchema['props'], 'onStickChange'>) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: ThreadSchema['props']['onStickChange'] = details => emit('stick-change', details)
     const ctx = useLog(props as LogProps, notify)

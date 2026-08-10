@@ -1,6 +1,7 @@
 import type { NumberAnimationEasing, NumberAnimationFinishDetails, NumberAnimationLive, NumberAnimationSchema } from '@xihan-ui/headless'
 import type { Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { connectNumberAnimation, numberAnimationMachine } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -30,7 +31,9 @@ export const XhNumberAnimation = defineComponent({
     tone: { type: String as PropType<Tone>, default: undefined },
     live: { type: String as PropType<NumberAnimationLive>, default: undefined },
   },
-  emits: ['finish'],
+  emits: {
+    finish: (_details: PayloadOf<NumberAnimationProps, 'onFinish'>) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: NumberAnimationProps['onFinish'] = (details: NumberAnimationFinishDetails) => {
       emit('finish', details)

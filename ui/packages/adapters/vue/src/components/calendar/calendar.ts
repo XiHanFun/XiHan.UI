@@ -1,5 +1,6 @@
 import type { CalendarCellProps, CalendarSchema, CalendarSelectionMode, CalendarWeekdayFormat } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import { provideCalendar, provideCalendarCell, useCalendarCellContext, useCalendarContext } from './context'
 import { useCalendar } from './use-calendar'
@@ -26,7 +27,12 @@ export const XhCalendarRoot = defineComponent({
     fixedWeeks: Boolean,
   },
   // *-change 携带 details 对象，update:* 携带裸值；选中值恒为数组，单选时长度 ≤ 1
-  emits: ['value-change', 'update:value', 'focused-value-change', 'update:focusedValue'],
+  emits: {
+    'value-change': (_details: PayloadOf<CalendarProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<CalendarProps, 'onValueChange'>['value']) => true,
+    'focused-value-change': (_details: PayloadOf<CalendarProps, 'onFocusedValueChange'>) => true,
+    'update:focusedValue': (_focusedValue: PayloadOf<CalendarProps, 'onFocusedValueChange'>['focusedValue']) => true,
+  },
   setup(props, { slots, emit }) {
     const notifyValue: CalendarProps['onValueChange'] = (details) => {
       emit('value-change', details)

@@ -7,6 +7,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { Placement } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import {
   provideTimePicker,
@@ -41,7 +42,12 @@ export const XhTimePickerRoot = defineComponent({
     offset: { type: Number, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸值
-  emits: ['value-change', 'open-change', 'update:value', 'update:open'],
+  emits: {
+    'value-change': (_details: PayloadOf<TimePickerProps, 'onValueChange'>) => true,
+    'open-change': (_details: PayloadOf<TimePickerProps, 'onOpenChange'>) => true,
+    'update:value': (_value: PayloadOf<TimePickerProps, 'onValueChange'>['value']) => true,
+    'update:open': (_open: PayloadOf<TimePickerProps, 'onOpenChange'>['open']) => true,
+  },
   setup(props, { slots, emit }) {
     const notifyValue: TimePickerProps['onValueChange'] = (details) => {
       emit('value-change', details)

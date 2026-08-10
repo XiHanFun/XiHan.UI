@@ -1,6 +1,7 @@
 import type { TooltipSchema } from '@xihan-ui/headless'
 import type { Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideTooltip, useTooltipContext } from './context'
 import { useTooltip } from './use-tooltip'
@@ -21,7 +22,10 @@ export const XhTooltipRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // open-change 携带 { open }；update:open 携带裸布尔，支持 v-model:open
-  emits: ['open-change', 'update:open'],
+  emits: {
+    'open-change': (_details: PayloadOf<TooltipProps, 'onOpenChange'>) => true,
+    'update:open': (_open: PayloadOf<TooltipProps, 'onOpenChange'>['open']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: TooltipProps['onOpenChange'] = (details) => {
       emit('open-change', details)

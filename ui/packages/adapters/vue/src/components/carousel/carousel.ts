@@ -1,6 +1,7 @@
 import type { CarouselSchema, CarouselTranslations } from '@xihan-ui/headless'
 import type { Direction, Orientation } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideCarousel, useCarouselContext } from './context'
 import { useCarousel } from './use-carousel'
@@ -26,7 +27,10 @@ export const XhCarouselRoot = defineComponent({
     translations: { type: Object as PropType<Partial<CarouselTranslations>>, default: undefined },
   },
   // page-change 携带 { page }，update:page 携带裸页码
-  emits: ['page-change', 'update:page'],
+  emits: {
+    'page-change': (_details: PayloadOf<CarouselProps, 'onPageChange'>) => true,
+    'update:page': (_page: PayloadOf<CarouselProps, 'onPageChange'>['page']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: CarouselProps['onPageChange'] = (details) => {
       emit('page-change', details)

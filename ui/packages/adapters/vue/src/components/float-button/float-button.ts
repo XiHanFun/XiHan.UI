@@ -7,6 +7,7 @@ import type {
   FloatButtonTranslations,
 } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideFloatButton, useFloatButtonContext } from './context'
 import { useFloatButton } from './use-float-button'
@@ -26,7 +27,10 @@ export const XhFloatButtonRoot = defineComponent({
     translations: { type: Object as PropType<Partial<FloatButtonTranslations>>, default: undefined },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
-  emits: ['open-change', 'update:open'],
+  emits: {
+    'open-change': (_details: PayloadOf<FloatButtonProps, 'onOpenChange'>) => true,
+    'update:open': (_open: PayloadOf<FloatButtonProps, 'onOpenChange'>['open']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: FloatButtonNotifiers = {
       onOpenChange: (details) => {

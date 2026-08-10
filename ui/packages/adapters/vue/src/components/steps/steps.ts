@@ -1,6 +1,7 @@
 import type { StepsSchema } from '@xihan-ui/headless'
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideSteps, provideStepsItem, useStepsContext, useStepsItem } from './context'
 import { useSteps } from './use-steps'
@@ -22,7 +23,10 @@ export const XhStepsRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // step-change 携带 { step }，update:step 携带裸下标
-  emits: ['step-change', 'update:step'],
+  emits: {
+    'step-change': (_details: PayloadOf<StepsProps, 'onStepChange'>) => true,
+    'update:step': (_step: PayloadOf<StepsProps, 'onStepChange'>['step']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: StepsProps['onStepChange'] = (details) => {
       emit('step-change', details)

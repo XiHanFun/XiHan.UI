@@ -1,6 +1,7 @@
 import type { ListboxItemGroupProps, ListboxItemProps, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode } from '@xihan-ui/headless'
 import type { Direction, Orientation } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import {
   provideListbox,
@@ -32,7 +33,10 @@ export const XhListboxRoot = defineComponent({
     orientation: { type: String as PropType<Orientation>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸集合；回传值恒为数组，单选时长度 ≤ 1
-  emits: ['value-change', 'update:value'],
+  emits: {
+    'value-change': (_details: PayloadOf<ListboxProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<ListboxProps, 'onValueChange'>['value']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: ListboxProps['onValueChange'] = (details) => {
       emit('value-change', details)

@@ -1,5 +1,6 @@
 import type { AffixSchema } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideAffix, useAffixContext } from './context'
 import { useAffix } from './use-affix'
@@ -16,7 +17,9 @@ export const XhAffixRoot = defineComponent({
     /** 滚动容器，缺省即整页滚动；经 refs 交给观察器。 */
     target: { type: Object as PropType<HTMLElement | null>, default: undefined },
   },
-  emits: ['affix-change'],
+  emits: {
+    'affix-change': (_details: PayloadOf<AffixProps, 'onAffixChange'>) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: AffixProps['onAffixChange'] = details => emit('affix-change', details)
     // 传响应式 props 对象本身而非快照，供机器每次读时重新展开

@@ -1,4 +1,5 @@
 import type { ClipboardSchema } from '@xihan-ui/headless'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideClipboard, useClipboardContext } from './context'
 import { useClipboard } from './use-clipboard'
@@ -13,7 +14,10 @@ export const XhClipboardRoot = defineComponent({
     timeout: { type: Number, default: undefined },
   },
   // status-change 携带 { status }；copy-error 携带 { error, value }
-  emits: ['status-change', 'copy-error'],
+  emits: {
+    'status-change': (_details: PayloadOf<ClipboardProps, 'onStatusChange'>) => true,
+    'copy-error': (_details: PayloadOf<ClipboardProps, 'onCopyError'>) => true,
+  },
   setup(props, { slots, emit }) {
     const ctx = useClipboard(props as ClipboardProps, {
       onStatusChange: details => emit('status-change', details),

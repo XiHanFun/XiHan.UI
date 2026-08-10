@@ -1,6 +1,7 @@
 import type { PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
 import type { Direction, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { providePagination, usePaginationContext } from './context'
 import { usePagination } from './use-pagination'
@@ -22,7 +23,10 @@ export const XhPaginationRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // page-change 携带 { page, pageSize }，update:page 携带裸页码
-  emits: ['page-change', 'update:page'],
+  emits: {
+    'page-change': (_details: PayloadOf<PaginationProps, 'onPageChange'>) => true,
+    'update:page': (_page: PayloadOf<PaginationProps, 'onPageChange'>['page']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: PaginationProps['onPageChange'] = (details) => {
       emit('page-change', details)

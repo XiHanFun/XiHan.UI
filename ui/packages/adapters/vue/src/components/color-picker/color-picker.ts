@@ -7,6 +7,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { Direction, Placement } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { colorPickerToChannel, colorPickerToInputChannel } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onUnmounted } from 'vue'
 import {
@@ -38,7 +39,12 @@ export const XhColorPickerRoot = defineComponent({
     translations: { type: Object as PropType<Partial<ColorPickerTranslations>>, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸值
-  emits: ['value-change', 'open-change', 'update:value', 'update:open'],
+  emits: {
+    'value-change': (_details: PayloadOf<ColorPickerProps, 'onValueChange'>) => true,
+    'open-change': (_details: PayloadOf<ColorPickerProps, 'onOpenChange'>) => true,
+    'update:value': (_value: PayloadOf<ColorPickerProps, 'onValueChange'>['value']) => true,
+    'update:open': (_open: PayloadOf<ColorPickerProps, 'onOpenChange'>['open']) => true,
+  },
   setup(props, { slots, emit }) {
     const notifyValue: ColorPickerProps['onValueChange'] = (details) => {
       emit('value-change', details)

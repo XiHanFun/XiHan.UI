@@ -1,5 +1,6 @@
 import type { FormErrorPatch, FormSchema, FormValidateOn, FormValues } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideForm, useFormContext } from './context'
 import { useForm } from './use-form'
@@ -20,7 +21,14 @@ export const XhFormRoot = defineComponent({
     readOnly: Boolean,
   },
   // *-change 携带 details 对象，update:* 携带裸表；submit 与 invalid 按校验结果二选一
-  emits: ['values-change', 'errors-change', 'submit', 'invalid', 'update:values', 'update:errors'],
+  emits: {
+    'values-change': (_details: PayloadOf<FormProps, 'onValuesChange'>) => true,
+    'errors-change': (_details: PayloadOf<FormProps, 'onErrorsChange'>) => true,
+    'submit': (_details: PayloadOf<FormProps, 'onSubmit'>) => true,
+    'invalid': (_details: PayloadOf<FormProps, 'onInvalid'>) => true,
+    'update:values': (_values: PayloadOf<FormProps, 'onValuesChange'>['values']) => true,
+    'update:errors': (_errors: PayloadOf<FormProps, 'onErrorsChange'>['errors']) => true,
+  },
   setup(props, { slots, emit }) {
     const ctx = useForm(props as FormProps, {
       onValuesChange: (details) => {

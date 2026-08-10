@@ -1,6 +1,7 @@
 import type { NumberFieldSchema } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideNumberField, useNumberFieldContext } from './context'
 import { useNumberField } from './use-number-field'
@@ -29,7 +30,10 @@ export const XhNumberFieldRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // value-change 携带 { value, valueAsNumber }，update:value 携带裸串
-  emits: ['value-change', 'update:value'],
+  emits: {
+    'value-change': (_details: PayloadOf<NumberFieldProps, 'onValueChange'>) => true,
+    'update:value': (_value: PayloadOf<NumberFieldProps, 'onValueChange'>['value']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: NumberFieldProps['onValueChange'] = (details) => {
       emit('value-change', details)

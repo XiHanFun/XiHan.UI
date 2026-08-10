@@ -1,6 +1,7 @@
 import type { HoverCardSchema } from '@xihan-ui/headless'
 import type { Direction, Placement, Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideHoverCard, useHoverCardContext } from './context'
 import { useHoverCard } from './use-hover-card'
@@ -22,7 +23,10 @@ export const XhHoverCardRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
-  emits: ['open-change', 'update:open'],
+  emits: {
+    'open-change': (_details: PayloadOf<HoverCardProps, 'onOpenChange'>) => true,
+    'update:open': (_open: PayloadOf<HoverCardProps, 'onOpenChange'>['open']) => true,
+  },
   setup(props, { slots, emit }) {
     const notify: HoverCardProps['onOpenChange'] = (details) => {
       emit('open-change', details)

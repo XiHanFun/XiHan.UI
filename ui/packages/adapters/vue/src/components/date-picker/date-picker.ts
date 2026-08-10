@@ -1,6 +1,7 @@
 import type { CalendarCellProps, CalendarSelectionMode, DatePickerApi, DatePickerFieldApi, DatePickerSchema } from '@xihan-ui/headless'
 import type { Placement } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import {
   provideDatePicker,
@@ -47,7 +48,13 @@ export const XhDatePickerRoot = defineComponent({
     closeOnSelect: { type: Boolean, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸值；选中值恒为数组，单选时长度 ≤ 1
-  emits: ['value-change', 'open-change', 'focused-value-change', 'update:value', 'update:open'],
+  emits: {
+    'value-change': (_details: PayloadOf<DatePickerProps, 'onValueChange'>) => true,
+    'open-change': (_details: PayloadOf<DatePickerProps, 'onOpenChange'>) => true,
+    'focused-value-change': (_details: PayloadOf<DatePickerProps, 'onFocusedValueChange'>) => true,
+    'update:value': (_value: PayloadOf<DatePickerProps, 'onValueChange'>['value']) => true,
+    'update:open': (_open: PayloadOf<DatePickerProps, 'onOpenChange'>['open']) => true,
+  },
   setup(props, { slots, emit }) {
     const notifyValue: DatePickerProps['onValueChange'] = (details) => {
       emit('value-change', details)
