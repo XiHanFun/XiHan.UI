@@ -1,0 +1,5 @@
+export { statisticAnatomy } from './statistic.anatomy'
+export { connectStatistic } from './statistic.connect'
+export { statisticKeyboard } from './statistic.keyboard'
+export { statisticMeta } from './statistic.meta'
+export type { StatisticApi, StatisticProps, StatisticSize, StatisticTone } from './statistic.types'

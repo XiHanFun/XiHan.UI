@@ -1,0 +1,67 @@
+@layer xihan.components {
+  /* 三个尺寸档只换这几个私有槽，各段从 root 继承它们，换档不必给每个部件各写一条选择器 */
+  [data-scope='statistic'][data-part='root'] {
+    --xh-_statistic-label-size: var(--xh-font-size-sm);
+    --xh-_statistic-value-size: var(--xh-font-size-2xl);
+    --xh-_statistic-affix-size: var(--xh-font-size-md);
+    --xh-_statistic-row-gap: var(--xh-space-1);
+
+    /* 折行排布：标签独占一行，前缀、数值、后缀在下一行按基线对齐排在一起 */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    /* 前后缀默认贴着数值：货币符号与百分号中间留白就不成一个数了，要间距的写法自己开槽 */
+    column-gap: var(--xh-statistic-gap, var(--xh-space-0));
+    row-gap: var(--xh-statistic-row-gap, var(--xh-_statistic-row-gap));
+    color: var(--xh-statistic-fg, var(--xh-fg-default));
+  }
+
+  /* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
+  [data-scope='statistic'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* —— 尺寸 —— */
+  [data-scope='statistic'][data-part='root'][data-size='sm'] {
+    --xh-_statistic-label-size: var(--xh-font-size-xs);
+    --xh-_statistic-value-size: var(--xh-font-size-xl);
+    --xh-_statistic-affix-size: var(--xh-font-size-sm);
+    --xh-_statistic-row-gap: var(--xh-space-0_5);
+  }
+
+  [data-scope='statistic'][data-part='root'][data-size='lg'] {
+    --xh-_statistic-label-size: var(--xh-font-size-md);
+    --xh-_statistic-value-size: var(--xh-font-size-3xl);
+    --xh-_statistic-affix-size: var(--xh-font-size-lg);
+    --xh-_statistic-row-gap: var(--xh-space-1_5);
+  }
+
+  /* —— 各段 —— */
+  /* 占满一整行，把前缀、数值、后缀挤到下一行去 */
+  [data-scope='statistic'][data-part='label'] {
+    flex: 0 0 100%;
+    color: var(--xh-statistic-label-fg, var(--xh-fg-muted));
+    font-size: var(--xh-statistic-label-font-size, var(--xh-_statistic-label-size));
+    font-weight: var(--xh-font-weight-regular);
+    line-height: var(--xh-leading-normal);
+  }
+
+  /* 等宽数字：逐位宽度一致，数值刷新时后面的字符不会左右挪动 */
+  [data-scope='statistic'][data-part='value'] {
+    color: var(--xh-statistic-value-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
+    font-size: var(--xh-statistic-value-font-size, var(--xh-_statistic-value-size));
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--xh-font-weight-semibold);
+    line-height: var(--xh-leading-tight);
+  }
+
+  /* 前后缀比数值小一档、跟着数值的语气走；没写语气时退成弱前景 */
+  [data-scope='statistic'][data-part='prefix'],
+  [data-scope='statistic'][data-part='suffix'] {
+    color: var(--xh-statistic-affix-fg, var(--xh-_tone-fg, var(--xh-fg-muted)));
+    font-size: var(--xh-statistic-affix-font-size, var(--xh-_statistic-affix-size));
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--xh-font-weight-regular);
+    line-height: var(--xh-leading-tight);
+  }
+}

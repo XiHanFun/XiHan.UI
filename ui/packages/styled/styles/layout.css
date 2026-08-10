@@ -1,0 +1,121 @@
+@layer xihan.components {
+  /* 页面骨架排成三行两列：头与脚各横贯一整行，侧栏与内容并排占中间那一行。
+     缺哪一段，对应的行/列就没有条目，宽高自动收成 0，不必为"少写一段"另立规则。
+
+     侧栏两档宽度声明在根上：sider 自己读这两个槽，换档只改这里。 */
+  [data-scope='layout'][data-part='root'] {
+    display: grid;
+    grid-template-areas:
+      'header header'
+      'sider content'
+      'footer footer';
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    background: var(--xh-layout-bg, var(--xh-bg-canvas));
+    color: var(--xh-layout-fg, var(--xh-fg-default));
+    --xh-_layout-sider-w: var(--xh-layout-sider-width, 15rem);
+    --xh-_layout-sider-collapsed-w: var(--xh-layout-sider-collapsed-width, 4rem);
+  }
+
+  /* 侧栏挂到行尾：两列对调，内容在前 */
+  [data-scope='layout'][data-part='root'][data-sider-placement='end'] {
+    grid-template-areas:
+      'header header'
+      'content sider'
+      'footer footer';
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  /* —— 各段 —— */
+  [data-scope='layout'][data-part='header'] {
+    display: flex;
+    grid-area: header;
+    align-items: center;
+    gap: var(--xh-space-3);
+    block-size: var(--xh-layout-header-h, 3.5rem);
+    padding-inline: var(--xh-space-4);
+    background: var(--xh-layout-header-bg, var(--xh-bg-surface));
+  }
+
+  /* 宽度过渡在这里声明一次，展开与折叠两档、以及 props 直接写进内联的宽度，走的都是这一条 */
+  [data-scope='layout'][data-part='sider'] {
+    grid-area: sider;
+    inline-size: var(--xh-_layout-sider-w);
+    overflow: hidden;
+    padding: var(--xh-space-3);
+    background: var(--xh-layout-sider-bg, var(--xh-bg-subtle));
+    transition: inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 折起来时不换行：窄到放不下的那几个字直接被 overflow 裁掉，不会挤成一列竖排 */
+  [data-scope='layout'][data-part='sider'][data-state='collapsed'] {
+    inline-size: var(--xh-_layout-sider-collapsed-w);
+    white-space: nowrap;
+  }
+
+  [data-scope='layout'][data-part='content'] {
+    grid-area: content;
+    /* 内容列已是 minmax(0, 1fr)，这里再声明一次，宽表格与长串文本才撑不破列 */
+    min-inline-size: 0;
+    padding: var(--xh-space-4);
+  }
+
+  [data-scope='layout'][data-part='footer'] {
+    grid-area: footer;
+    padding: var(--xh-space-3) var(--xh-space-4);
+    background: var(--xh-layout-footer-bg, var(--xh-bg-surface));
+    color: var(--xh-fg-muted);
+    font-size: var(--xh-font-size-sm);
+  }
+
+  /* —— 折叠把手 —— */
+  [data-scope='layout'][data-part='sider-trigger'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-control-gap-sm);
+    block-size: var(--xh-control-h-sm);
+    padding-inline: var(--xh-control-px-sm);
+    border: 0;
+    border-radius: var(--xh-layout-sider-trigger-radius, var(--xh-shape-control));
+    background: var(--xh-layout-sider-trigger-bg, transparent);
+    color: var(--xh-layout-sider-trigger-fg, var(--xh-fg-default));
+    font-size: var(--xh-font-size-sm);
+    line-height: var(--xh-leading-none);
+    cursor: pointer;
+  }
+
+  [data-scope='layout'][data-part='sider-trigger']:hover {
+    background: var(--xh-layout-sider-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='layout'][data-part='sider-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* —— 分隔线 —— */
+  /* 后代选择器带上 data-scope：骨架里装着整页内容，光凭 data-part 会连里面别的组件同名段一起画上线 */
+  [data-scope='layout'][data-part='root'][data-bordered] [data-scope='layout'][data-part='header'] {
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-border-default));
+  }
+
+  [data-scope='layout'][data-part='root'][data-bordered] [data-scope='layout'][data-part='footer'] {
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-border-default));
+  }
+
+  /* 侧栏只在挨着内容的那一边画线，另一边贴着骨架外沿，画了就是一条多出来的边框 */
+  [data-scope='layout'][data-part='root'][data-bordered] [data-scope='layout'][data-part='sider'][data-placement='start'] {
+    border-inline-end: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-border-default));
+  }
+
+  [data-scope='layout'][data-part='root'][data-bordered] [data-scope='layout'][data-part='sider'][data-placement='end'] {
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-border-default));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='layout'][data-part='sider'] {
+      transition: none;
+    }
+  }
+}

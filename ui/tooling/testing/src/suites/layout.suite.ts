@@ -1,0 +1,149 @@
+import type { ConformanceSuite } from '../conformance/types'
+import { layoutAnatomy, layoutKeyboard } from '@xihan-ui/headless'
+import { nativeActivation } from './shared/native-activation'
+
+// 骨架本身没有 APG 模式；能按的只有折叠把手，它照披露模式接线。
+const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/'
+
+export const layoutSuite: ConformanceSuite = {
+  component: 'layout',
+  anatomy: layoutAnatomy,
+  keyboard: layoutKeyboard,
+  // 把手摆在头部：它开合的是侧栏，位置由作者定，与它指向谁无关
+  fixture: {
+    part: 'root',
+    children: [
+      {
+        part: 'header',
+        children: [{ part: 'sider-trigger', tag: 'button', text: '折叠侧栏' }],
+      },
+      { part: 'sider', text: '导航' },
+      { part: 'content', text: '正文' },
+      { part: 'footer', text: '页脚' },
+    ],
+  },
+  cases: [
+    {
+      name: '缺省：侧栏展开、侧栏挂在行首，根上不写 role 也不写折叠标记',
+      spec: { apg: APG },
+      initial: {
+        order: ['root', 'header', 'sider-trigger', 'sider', 'content', 'footer'],
+        counts: { 'root': 1, 'header': 1, 'sider-trigger': 1, 'sider': 1, 'content': 1, 'footer': 1 },
+        parts: {
+          'root': {
+            'role': null,
+            'data-sider-placement': 'start',
+            'data-sider-collapsed': null,
+            'data-bordered': null,
+          },
+          'sider': {
+            'id': '@self',
+            'data-state': 'expanded',
+            'data-placement': 'start',
+          },
+          'sider-trigger': {
+            'type': 'button',
+            'aria-expanded': 'true',
+            'aria-controls': '@part(sider)',
+            'data-state': 'expanded',
+          },
+        },
+      },
+    },
+    {
+      name: 'Space / Enter 折叠：把手是原生 <button type="button">，激活交给平台',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['layout.kbd.toggle-sider'],
+      steps: [nativeActivation('layout', 'sider-trigger')],
+    },
+    {
+      name: '点击把手折叠：aria-expanded=false，侧栏与把手转 collapsed，根上落 data-sider-collapsed',
+      spec: { apg: APG },
+      steps: [
+        {
+          kind: 'click',
+          part: 'sider-trigger',
+          expect: {
+            parts: {
+              'root': { 'data-sider-collapsed': '' },
+              'sider': { 'data-state': 'collapsed' },
+              'sider-trigger': { 'aria-expanded': 'false', 'data-state': 'collapsed' },
+            },
+          },
+        },
+        {
+          kind: 'click',
+          part: 'sider-trigger',
+          expect: {
+            parts: {
+              'root': { 'data-sider-collapsed': null },
+              'sider': { 'data-state': 'expanded' },
+              'sider-trigger': { 'aria-expanded': 'true' },
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: '非受控初始折叠：defaultSiderCollapsed 只决定初始态',
+      spec: { adr: 'controlled-uncontrolled' },
+      props: { defaultSiderCollapsed: true },
+      initial: {
+        parts: {
+          'root': { 'data-sider-collapsed': '' },
+          'sider': { 'data-state': 'collapsed' },
+          'sider-trigger': { 'aria-expanded': 'false' },
+        },
+      },
+    },
+    {
+      name: '受控 siderCollapsed：点击不自改 DOM，父写回后侧栏才折起来',
+      spec: { adr: 'controlled-uncontrolled' },
+      props: { siderCollapsed: false },
+      steps: [
+        {
+          kind: 'click',
+          part: 'sider-trigger',
+          expect: {
+            parts: {
+              'sider': { 'data-state': 'expanded' },
+              'sider-trigger': { 'aria-expanded': 'true' },
+            },
+          },
+        },
+        { kind: 'setProps', props: { siderCollapsed: true } },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'sider', name: 'data-state', value: 'collapsed' } },
+          expect: {
+            parts: {
+              'root': { 'data-sider-collapsed': '' },
+              'sider-trigger': { 'aria-expanded': 'false' },
+            },
+          },
+        },
+      ],
+    },
+    {
+      name: '侧栏挂到行尾：根与侧栏都如实落成 end',
+      spec: { apg: APG },
+      props: { siderPlacement: 'end' },
+      initial: {
+        parts: {
+          root: { 'data-sider-placement': 'end' },
+          sider: { 'data-placement': 'end' },
+        },
+      },
+    },
+    {
+      name: 'bordered 落成 data-bordered，关掉时不留空属性',
+      spec: { apg: APG },
+      props: { bordered: true },
+      initial: {
+        parts: {
+          root: { 'data-bordered': '' },
+        },
+      },
+    },
+  ],
+}

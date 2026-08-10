@@ -311,6 +311,206 @@
   border-end-end-radius: var(--xh-button-group-radius, var(--xh-shape-control));
 }
 
+/* styles/descriptions.css */
+[data-scope='descriptions'][data-part='root'] {
+  /* 一个尺寸档只换这几个私有槽，每一格与格内两段都从根上继承它们，
+     换档不必给每个部件各写一条选择器 */
+  --xh-_descriptions-gap: var(--xh-space-3);
+  --xh-_descriptions-pair-gap: var(--xh-space-1);
+  --xh-_descriptions-label-gap: var(--xh-space-2);
+  --xh-_descriptions-py: var(--xh-space-2);
+  --xh-_descriptions-px: var(--xh-space-3);
+  --xh-_descriptions-font-size: var(--xh-text-body-size);
+  /* 标签在左时那一列的宽度：收到最长的那个标签 */
+  --xh-_descriptions-label-w: max-content;
+
+  display: grid;
+  /* 不写 columns 即每行一组；二到六列各有一条规则 */
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--xh-descriptions-gap, var(--xh-_descriptions-gap));
+  /* 根可能写成 dl，UA 的上下外边距在这里清掉 */
+  margin: 0;
+  color: var(--xh-descriptions-fg, var(--xh-fg-default));
+  font-size: var(--xh-descriptions-font-size, var(--xh-_descriptions-font-size));
+  line-height: var(--xh-text-body-leading);
+}
+
+/* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
+[data-scope='descriptions'][data-part='root'][hidden] {
+  display: none;
+}
+
+/* —— 列数 —— */
+[data-scope='descriptions'][data-part='root'][data-columns='2'] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+[data-scope='descriptions'][data-part='root'][data-columns='3'] {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+[data-scope='descriptions'][data-part='root'][data-columns='4'] {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+[data-scope='descriptions'][data-part='root'][data-columns='5'] {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+[data-scope='descriptions'][data-part='root'][data-columns='6'] {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+/* —— 尺寸 —— */
+[data-scope='descriptions'][data-part='root'][data-size='sm'] {
+  --xh-_descriptions-gap: var(--xh-space-2);
+  --xh-_descriptions-py: var(--xh-space-1);
+  --xh-_descriptions-px: var(--xh-space-2);
+  --xh-_descriptions-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='descriptions'][data-part='root'][data-size='lg'] {
+  --xh-_descriptions-gap: var(--xh-space-4);
+  --xh-_descriptions-pair-gap: var(--xh-space-2);
+  --xh-_descriptions-label-gap: var(--xh-space-3);
+  --xh-_descriptions-py: var(--xh-space-3);
+  --xh-_descriptions-px: var(--xh-space-4);
+  --xh-_descriptions-font-size: var(--xh-font-size-lg);
+}
+
+/* —— 每一格 —— */
+/* 一格自己也是网格：不写 placement 即标签一行、取值一行叠着排 */
+[data-scope='descriptions'][data-part='item'] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: var(--xh-descriptions-pair-gap, var(--xh-_descriptions-pair-gap));
+}
+
+/* 标签在左：一格分成「标签列 + 取值列」，两段的首行文字对齐同一条基线。
+   只认自己的直接子格，套在取值里的另一份描述由它自己的根管 */
+[data-scope='descriptions'][data-part='root'][data-placement='left']
+  > [data-scope='descriptions'][data-part='item'] {
+  grid-template-columns: var(--xh-descriptions-label-w, var(--xh-_descriptions-label-w)) minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: var(--xh-descriptions-label-gap, var(--xh-_descriptions-label-gap));
+}
+
+[data-scope='descriptions'][data-part='label'] {
+  color: var(--xh-descriptions-label-fg, var(--xh-fg-muted));
+  font-weight: var(--xh-descriptions-label-font-weight, var(--xh-text-label-weight));
+}
+
+[data-scope='descriptions'][data-part='value'] {
+  /* 取值可能写成 dd，UA 的左缩进在这里清掉 */
+  margin: 0;
+  /* 网格项默认不肯收到内容以下，这行让长文本能被压窄 */
+  min-inline-size: 0;
+  color: var(--xh-descriptions-value-fg, var(--xh-fg-default));
+}
+
+/* —— 外框与网格线 —— */
+[data-scope='descriptions'][data-part='root'][data-bordered] {
+  /* 网格线由每格自己的边线拼出来，格与格之间不能再留缝 */
+  gap: 0;
+  border: var(--xh-stroke-thin) solid var(--xh-descriptions-border, var(--xh-border-default));
+  border-radius: var(--xh-descriptions-radius, var(--xh-shape-surface));
+  background: var(--xh-descriptions-bg, var(--xh-bg-surface));
+  /* 四角的格子要被圆角裁住 */
+  overflow: hidden;
+}
+
+/* 每格自带上边线与左边线，行首与首行那几格再各自抹掉，相邻两格之间就只剩一条 */
+[data-scope='descriptions'][data-part='root'][data-bordered]
+  > [data-scope='descriptions'][data-part='item'] {
+  padding-block: var(--xh-descriptions-item-py, var(--xh-_descriptions-py));
+  padding-inline: var(--xh-descriptions-item-px, var(--xh-_descriptions-px));
+  border-block-start: var(--xh-stroke-thin) solid var(--xh-descriptions-border, var(--xh-border-subtle));
+  /* 每行一组时左边没有邻居，宽度按列数补回来 */
+  border-inline-start: 0 solid var(--xh-descriptions-border, var(--xh-border-subtle));
+}
+
+[data-scope='descriptions'][data-part='root'][data-bordered]
+  > [data-scope='descriptions'][data-part='item']:first-child {
+  border-block-start-width: 0;
+}
+
+/* 二到六列：左边线一律补上，再抹掉每行第一格的左边线与首行那几格的上边线 */
+[data-scope='descriptions'][data-part='root'][data-bordered][data-columns='2']
+  > [data-scope='descriptions'][data-part='item'] {
+  border-inline-start-width: var(--xh-stroke-thin);
+}
+
+[data-scope='descriptions'][data-part='root'][data-bordered][data-columns='2']
+  > [data-scope='descriptions'][data-part='item']:nth-child(2n + 1) {
+  border-inline-start-width: 0;
+}
+
+[data-scope='descriptions'][data-part='root'][data-bordered][data-columns='2']
+  > [data-scope='descriptions'][data-part='item']:nth-child(-n + 2) {
+  border-block-start-width: 0;
+}
+
+[data-scope='descriptions'][data-part='root'][data-bordered][data-columns='3']
+  > [data-scope='descriptions'][data-part='item'] {
+  border-inline-start-width: var(--xh-stroke-thin);
+}
+
+[data-scope='descriptions'][data-part='root'][data-bordered][data-columns='3']
+  > [data-scope='descriptions'][data-part='item']:nth-child(3n + 1) {
+  border-inline-start-width: 0;
+}
+
+[data-scope='descriptions'][data-part='root'][data-bordered][data-columns='3']
+  > [data-scope='descriptions'][data-part='item']:nth-child(-n + 3) {
+  border-block-start-width: 0;
+}
+
+[data-scope='descriptions'][data-part='root'][data-bordered][data-columns='4']
+  > [data-scope='descriptions'][data-part='item'] {
+  border-inline-start-width: var(--xh-stroke-thin);
+}
+
+[data-scope='descriptions'][data-part='root'][data-bordered][data-columns='4']
+  > [data-scope='descriptions'][data-part='item']:nth-child(4n + 1) {
+  border-inline-start-width: 0;
+}
+
+[data-scope='descriptions'][data-part='root'][data-bordered][data-columns='4']
+  > [data-scope='descriptions'][data-part='item']:nth-child(-n + 4) {
+  border-block-start-width: 0;
+}
+
+[data-scope='descriptions'][data-part='root'][data-bordered][data-columns='5']
+  > [data-scope='descriptions'][data-part='item'] {
+  border-inline-start-width: var(--xh-stroke-thin);
+}
+
+[data-scope='descriptions'][data-part='root'][data-bordered][data-columns='5']
+  > [data-scope='descriptions'][data-part='item']:nth-child(5n + 1) {
+  border-inline-start-width: 0;
+}
+
+[data-scope='descriptions'][data-part='root'][data-bordered][data-columns='5']
+  > [data-scope='descriptions'][data-part='item']:nth-child(-n + 5) {
+  border-block-start-width: 0;
+}
+
+[data-scope='descriptions'][data-part='root'][data-bordered][data-columns='6']
+  > [data-scope='descriptions'][data-part='item'] {
+  border-inline-start-width: var(--xh-stroke-thin);
+}
+
+[data-scope='descriptions'][data-part='root'][data-bordered][data-columns='6']
+  > [data-scope='descriptions'][data-part='item']:nth-child(6n + 1) {
+  border-inline-start-width: 0;
+}
+
+[data-scope='descriptions'][data-part='root'][data-bordered][data-columns='6']
+  > [data-scope='descriptions'][data-part='item']:nth-child(-n + 6) {
+  border-block-start-width: 0;
+}
+
 /* styles/flex.css */
 [data-scope='flex'][data-part='root'] {
   display: flex;
@@ -406,6 +606,291 @@
   gap: var(--xh-flex-gap, var(--xh-space-6));
 }
 
+/* styles/gradient-text.css */
+/* 渐变画在背景上，再用 background-clip 把背景裁进字形里；前景必须透明才透得出底下的渐变。
+   两条 background-clip 都写：WebKit 只认带前缀那条。
+   -webkit-text-fill-color 在 WebKit 里决定字形填充色并盖过 color，也要一并透明。 */
+[data-scope='gradient-text'][data-part='root'] {
+  /* 走向由 data-direction 换掉这一个槽，背景那条声明只写一遍 */
+  --xh-_gradient-text-dir: to right;
+
+  background-image: linear-gradient(
+    var(--xh-_gradient-text-dir),
+    var(--xh-gradient-text-from, var(--xh-color-brand-500)),
+    var(--xh-gradient-text-to, var(--xh-color-brand-700))
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* —— 走向 —— */
+/* 逐档换算成 CSS 的 to <边或角>，四条边加四个角 */
+[data-scope='gradient-text'][data-part='root'][data-direction='to-right'] {
+  --xh-_gradient-text-dir: to right;
+}
+
+[data-scope='gradient-text'][data-part='root'][data-direction='to-left'] {
+  --xh-_gradient-text-dir: to left;
+}
+
+[data-scope='gradient-text'][data-part='root'][data-direction='to-bottom'] {
+  --xh-_gradient-text-dir: to bottom;
+}
+
+[data-scope='gradient-text'][data-part='root'][data-direction='to-top'] {
+  --xh-_gradient-text-dir: to top;
+}
+
+[data-scope='gradient-text'][data-part='root'][data-direction='to-bottom-right'] {
+  --xh-_gradient-text-dir: to bottom right;
+}
+
+[data-scope='gradient-text'][data-part='root'][data-direction='to-bottom-left'] {
+  --xh-_gradient-text-dir: to bottom left;
+}
+
+[data-scope='gradient-text'][data-part='root'][data-direction='to-top-right'] {
+  --xh-_gradient-text-dir: to top right;
+}
+
+[data-scope='gradient-text'][data-part='root'][data-direction='to-top-left'] {
+  --xh-_gradient-text-dir: to top left;
+}
+
+/* 强制色模式下系统会禁掉背景图，留着透明前景整段字就彻底看不见了，这里把填充色还回去 */
+@media (forced-colors: active) {
+  [data-scope='gradient-text'][data-part='root'] {
+    background-image: none;
+    color: inherit;
+    -webkit-text-fill-color: currentColor;
+  }
+}
+
+/* styles/grid.css */
+[data-scope='grid'][data-part='root'] {
+  display: grid;
+  /* 各列等宽；下限写 0 而不是 auto，一段长文本才不会把自己那列撑宽 */
+  /* 使用者槽位排在档位之前，写死一份轨道表即盖过所有列数档 */
+  grid-template-columns: var(--xh-grid-columns, repeat(var(--xh-_grid-cols), minmax(0, 1fr)));
+  /* 不写 gap 档位就不留间距 */
+  gap: var(--xh-grid-gap, var(--xh-space-0));
+  /* 列数收在根上这一个槽位里，换档只改这里；每一层都声明一遍，嵌套时内层不吃外层的值 */
+  --xh-_grid-cols: 1;
+}
+
+/* —— 列数 —— */
+/* 一列是上面的缺省，这里从两列起逐档写 */
+[data-scope='grid'][data-part='root'][data-cols='2'] {
+  --xh-_grid-cols: 2;
+}
+
+[data-scope='grid'][data-part='root'][data-cols='3'] {
+  --xh-_grid-cols: 3;
+}
+
+[data-scope='grid'][data-part='root'][data-cols='4'] {
+  --xh-_grid-cols: 4;
+}
+
+[data-scope='grid'][data-part='root'][data-cols='5'] {
+  --xh-_grid-cols: 5;
+}
+
+[data-scope='grid'][data-part='root'][data-cols='6'] {
+  --xh-_grid-cols: 6;
+}
+
+[data-scope='grid'][data-part='root'][data-cols='7'] {
+  --xh-_grid-cols: 7;
+}
+
+[data-scope='grid'][data-part='root'][data-cols='8'] {
+  --xh-_grid-cols: 8;
+}
+
+[data-scope='grid'][data-part='root'][data-cols='9'] {
+  --xh-_grid-cols: 9;
+}
+
+[data-scope='grid'][data-part='root'][data-cols='10'] {
+  --xh-_grid-cols: 10;
+}
+
+[data-scope='grid'][data-part='root'][data-cols='11'] {
+  --xh-_grid-cols: 11;
+}
+
+[data-scope='grid'][data-part='root'][data-cols='12'] {
+  --xh-_grid-cols: 12;
+}
+
+/* —— 间距档位 —— */
+/* 每一档指向一个间距令牌，行与行之间也吃这同一份间距 */
+[data-scope='grid'][data-part='root'][data-gap='xs'] {
+  gap: var(--xh-grid-gap, var(--xh-space-1));
+}
+
+[data-scope='grid'][data-part='root'][data-gap='sm'] {
+  gap: var(--xh-grid-gap, var(--xh-space-2));
+}
+
+[data-scope='grid'][data-part='root'][data-gap='md'] {
+  gap: var(--xh-grid-gap, var(--xh-space-3));
+}
+
+[data-scope='grid'][data-part='root'][data-gap='lg'] {
+  gap: var(--xh-grid-gap, var(--xh-space-4));
+}
+
+[data-scope='grid'][data-part='root'][data-gap='xl'] {
+  gap: var(--xh-grid-gap, var(--xh-space-6));
+}
+
+/* —— 块向对齐 —— */
+/* 管的是每一项在自己那格里怎么摆，不是格子在容器里怎么摆：列宽由轨道表定死，容器不留富余 */
+[data-scope='grid'][data-part='root'][data-align='start'] {
+  align-items: start;
+}
+
+[data-scope='grid'][data-part='root'][data-align='center'] {
+  align-items: center;
+}
+
+[data-scope='grid'][data-part='root'][data-align='end'] {
+  align-items: end;
+}
+
+[data-scope='grid'][data-part='root'][data-align='stretch'] {
+  align-items: stretch;
+}
+
+[data-scope='grid'][data-part='root'][data-align='baseline'] {
+  align-items: baseline;
+}
+
+/* —— 行内对齐 —— */
+[data-scope='grid'][data-part='root'][data-justify='start'] {
+  justify-items: start;
+}
+
+[data-scope='grid'][data-part='root'][data-justify='center'] {
+  justify-items: center;
+}
+
+[data-scope='grid'][data-part='root'][data-justify='end'] {
+  justify-items: end;
+}
+
+[data-scope='grid'][data-part='root'][data-justify='stretch'] {
+  justify-items: stretch;
+}
+
+/* —— 格子 —— */
+[data-scope='grid'][data-part='item'] {
+  grid-column-start: var(--xh-_grid-start);
+  grid-column-end: span var(--xh-_grid-span);
+
+  /* 两个槽位在每一格上都声明一遍，嵌套时内层的格子不吃外层那一格的值 */
+  --xh-_grid-span: 1;
+  --xh-_grid-start: auto;
+}
+
+/* —— 跨列 —— */
+/* 占一列是上面的缺省，这里从跨两列起逐档写 */
+[data-scope='grid'][data-part='item'][data-span='2'] {
+  --xh-_grid-span: 2;
+}
+
+[data-scope='grid'][data-part='item'][data-span='3'] {
+  --xh-_grid-span: 3;
+}
+
+[data-scope='grid'][data-part='item'][data-span='4'] {
+  --xh-_grid-span: 4;
+}
+
+[data-scope='grid'][data-part='item'][data-span='5'] {
+  --xh-_grid-span: 5;
+}
+
+[data-scope='grid'][data-part='item'][data-span='6'] {
+  --xh-_grid-span: 6;
+}
+
+[data-scope='grid'][data-part='item'][data-span='7'] {
+  --xh-_grid-span: 7;
+}
+
+[data-scope='grid'][data-part='item'][data-span='8'] {
+  --xh-_grid-span: 8;
+}
+
+[data-scope='grid'][data-part='item'][data-span='9'] {
+  --xh-_grid-span: 9;
+}
+
+[data-scope='grid'][data-part='item'][data-span='10'] {
+  --xh-_grid-span: 10;
+}
+
+[data-scope='grid'][data-part='item'][data-span='11'] {
+  --xh-_grid-span: 11;
+}
+
+[data-scope='grid'][data-part='item'][data-span='12'] {
+  --xh-_grid-span: 12;
+}
+
+/* —— 错列 —— */
+/* 错 N 列 = 改从第 N+1 条列线起排，前面那 N 列空着。
+   列线跟着书写方向走，RTL 下自动从另一头数。
+   错的是列线不是「相对上一格再往后几格」：同一行里前面已经排到更后面时，这一格落到下一行的那条列线上。 */
+[data-scope='grid'][data-part='item'][data-offset='1'] {
+  --xh-_grid-start: 2;
+}
+
+[data-scope='grid'][data-part='item'][data-offset='2'] {
+  --xh-_grid-start: 3;
+}
+
+[data-scope='grid'][data-part='item'][data-offset='3'] {
+  --xh-_grid-start: 4;
+}
+
+[data-scope='grid'][data-part='item'][data-offset='4'] {
+  --xh-_grid-start: 5;
+}
+
+[data-scope='grid'][data-part='item'][data-offset='5'] {
+  --xh-_grid-start: 6;
+}
+
+[data-scope='grid'][data-part='item'][data-offset='6'] {
+  --xh-_grid-start: 7;
+}
+
+[data-scope='grid'][data-part='item'][data-offset='7'] {
+  --xh-_grid-start: 8;
+}
+
+[data-scope='grid'][data-part='item'][data-offset='8'] {
+  --xh-_grid-start: 9;
+}
+
+[data-scope='grid'][data-part='item'][data-offset='9'] {
+  --xh-_grid-start: 10;
+}
+
+[data-scope='grid'][data-part='item'][data-offset='10'] {
+  --xh-_grid-start: 11;
+}
+
+[data-scope='grid'][data-part='item'][data-offset='11'] {
+  --xh-_grid-start: 12;
+}
+
 /* styles/icon-wrapper.css */
 /* 定直径的图标底座：图元在正中，底色、描边与形状由三轴决定。
    直径与图元直径分两个槽位，底座换档时里面的图元跟着一起换 */
@@ -495,6 +980,244 @@
 /* styles/layers.css */
 /* 库层序单一真源：级联顺序由首次声明决定，与 @import 顺序解耦。 */
 
+/* styles/layout.css */
+/* 页面骨架排成三行两列：头与脚各横贯一整行，侧栏与内容并排占中间那一行。
+   缺哪一段，对应的行/列就没有条目，宽高自动收成 0，不必为"少写一段"另立规则。
+
+   侧栏两档宽度声明在根上：sider 自己读这两个槽，换档只改这里。 */
+[data-scope='layout'][data-part='root'] {
+  display: grid;
+  grid-template-areas:
+    'header header'
+    'sider content'
+    'footer footer';
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  background: var(--xh-layout-bg, var(--xh-bg-canvas));
+  color: var(--xh-layout-fg, var(--xh-fg-default));
+  --xh-_layout-sider-w: var(--xh-layout-sider-width, 15rem);
+  --xh-_layout-sider-collapsed-w: var(--xh-layout-sider-collapsed-width, 4rem);
+}
+
+/* 侧栏挂到行尾：两列对调，内容在前 */
+[data-scope='layout'][data-part='root'][data-sider-placement='end'] {
+  grid-template-areas:
+    'header header'
+    'content sider'
+    'footer footer';
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+/* —— 各段 —— */
+[data-scope='layout'][data-part='header'] {
+  display: flex;
+  grid-area: header;
+  align-items: center;
+  gap: var(--xh-space-3);
+  block-size: var(--xh-layout-header-h, 3.5rem);
+  padding-inline: var(--xh-space-4);
+  background: var(--xh-layout-header-bg, var(--xh-bg-surface));
+}
+
+/* 宽度过渡在这里声明一次，展开与折叠两档、以及 props 直接写进内联的宽度，走的都是这一条 */
+[data-scope='layout'][data-part='sider'] {
+  grid-area: sider;
+  inline-size: var(--xh-_layout-sider-w);
+  overflow: hidden;
+  padding: var(--xh-space-3);
+  background: var(--xh-layout-sider-bg, var(--xh-bg-subtle));
+  transition: inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+}
+
+/* 折起来时不换行：窄到放不下的那几个字直接被 overflow 裁掉，不会挤成一列竖排 */
+[data-scope='layout'][data-part='sider'][data-state='collapsed'] {
+  inline-size: var(--xh-_layout-sider-collapsed-w);
+  white-space: nowrap;
+}
+
+[data-scope='layout'][data-part='content'] {
+  grid-area: content;
+  /* 内容列已是 minmax(0, 1fr)，这里再声明一次，宽表格与长串文本才撑不破列 */
+  min-inline-size: 0;
+  padding: var(--xh-space-4);
+}
+
+[data-scope='layout'][data-part='footer'] {
+  grid-area: footer;
+  padding: var(--xh-space-3) var(--xh-space-4);
+  background: var(--xh-layout-footer-bg, var(--xh-bg-surface));
+  color: var(--xh-fg-muted);
+  font-size: var(--xh-font-size-sm);
+}
+
+/* —— 折叠把手 —— */
+[data-scope='layout'][data-part='sider-trigger'] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--xh-control-gap-sm);
+  block-size: var(--xh-control-h-sm);
+  padding-inline: var(--xh-control-px-sm);
+  border: 0;
+  border-radius: var(--xh-layout-sider-trigger-radius, var(--xh-shape-control));
+  background: var(--xh-layout-sider-trigger-bg, transparent);
+  color: var(--xh-layout-sider-trigger-fg, var(--xh-fg-default));
+  font-size: var(--xh-font-size-sm);
+  line-height: var(--xh-leading-none);
+  cursor: pointer;
+}
+
+[data-scope='layout'][data-part='sider-trigger']:hover {
+  background: var(--xh-layout-sider-trigger-bg-hover, var(--xh-bg-subtle-hover));
+}
+
+[data-scope='layout'][data-part='sider-trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: 2px;
+}
+
+/* —— 分隔线 —— */
+/* 后代选择器带上 data-scope：骨架里装着整页内容，光凭 data-part 会连里面别的组件同名段一起画上线 */
+[data-scope='layout'][data-part='root'][data-bordered] [data-scope='layout'][data-part='header'] {
+  border-block-end: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-border-default));
+}
+
+[data-scope='layout'][data-part='root'][data-bordered] [data-scope='layout'][data-part='footer'] {
+  border-block-start: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-border-default));
+}
+
+/* 侧栏只在挨着内容的那一边画线，另一边贴着骨架外沿，画了就是一条多出来的边框 */
+[data-scope='layout'][data-part='root'][data-bordered] [data-scope='layout'][data-part='sider'][data-placement='start'] {
+  border-inline-end: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-border-default));
+}
+
+[data-scope='layout'][data-part='root'][data-bordered] [data-scope='layout'][data-part='sider'][data-placement='end'] {
+  border-inline-start: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-border-default));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-scope='layout'][data-part='sider'] {
+    transition: none;
+  }
+}
+
+/* styles/list.css */
+[data-scope='list'][data-part='root'] {
+  /* 一个尺寸档只换这几个私有槽，条目与两行文字都从根上继承它们，
+     换档不必给每个部件各写一条选择器 */
+  --xh-_list-item-py: var(--xh-space-3);
+  --xh-_list-item-px: var(--xh-space-4);
+  --xh-_list-item-gap: var(--xh-space-3);
+  --xh-_list-title-size: var(--xh-font-size-md);
+  --xh-_list-description-size: var(--xh-font-size-sm);
+
+  display: flex;
+  flex-direction: column;
+  /* 根可能写成 ul/ol，UA 的项目符号与左缩进在这里清掉：换哪个标签都排成同一个样子 */
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--xh-list-fg, var(--xh-fg-default));
+}
+
+/* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
+[data-scope='list'][data-part='root'][hidden] {
+  display: none;
+}
+
+/* —— 尺寸 —— */
+[data-scope='list'][data-part='root'][data-size='sm'] {
+  --xh-_list-item-py: var(--xh-space-2);
+  --xh-_list-item-px: var(--xh-space-3);
+  --xh-_list-item-gap: var(--xh-space-2);
+  --xh-_list-title-size: var(--xh-font-size-sm);
+  --xh-_list-description-size: var(--xh-font-size-xs);
+}
+
+[data-scope='list'][data-part='root'][data-size='lg'] {
+  --xh-_list-item-py: var(--xh-space-4);
+  --xh-_list-item-px: var(--xh-space-5);
+  --xh-_list-item-gap: var(--xh-space-4);
+  --xh-_list-title-size: var(--xh-font-size-lg);
+}
+
+/* —— 外框 —— */
+[data-scope='list'][data-part='root'][data-bordered] {
+  border: var(--xh-stroke-thin) solid var(--xh-list-border, var(--xh-border-default));
+  border-radius: var(--xh-list-radius, var(--xh-shape-surface));
+  background: var(--xh-list-bg, var(--xh-bg-surface));
+  /* 首尾条目的悬停底色要被圆角裁住 */
+  overflow: hidden;
+}
+
+/* —— 条目 —— */
+[data-scope='list'][data-part='item'] {
+  display: flex;
+  align-items: center;
+  gap: var(--xh-list-item-gap, var(--xh-_list-item-gap));
+  padding-block: var(--xh-list-item-py, var(--xh-_list-item-py));
+  padding-inline: var(--xh-list-item-px, var(--xh-_list-item-px));
+}
+
+/* 分隔线画在后一条的上边，条与条之间才只有一条；第一条没有上邻居。
+   只认自己的直接子条目，套在条目里的另一份列表由它自己的根管 */
+[data-scope='list'][data-part='root'][data-split]
+  > [data-scope='list'][data-part='item']
+  + [data-scope='list'][data-part='item'] {
+  border-block-start: var(--xh-stroke-thin) solid var(--xh-list-border, var(--xh-border-subtle));
+}
+
+[data-scope='list'][data-part='root'][data-hoverable] > [data-scope='list'][data-part='item'] {
+  transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 悬停换底色：只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
+@media (hover: hover) {
+  [data-scope='list'][data-part='root'][data-hoverable] > [data-scope='list'][data-part='item']:hover {
+    background: var(--xh-list-item-bg-hover, var(--xh-bg-subtle-hover));
+  }
+}
+
+/* —— 条目内的四个位 —— */
+/* 媒体位不参与伸缩，宽度收到内容 */
+[data-scope='list'][data-part='item-media'] {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-scope='list'][data-part='item-content'] {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--xh-list-content-gap, var(--xh-space-1));
+  /* flex 项默认不肯收到内容以下，这行让长文本能被压窄 */
+  min-inline-size: 0;
+}
+
+[data-scope='list'][data-part='item-title'] {
+  color: var(--xh-list-title-fg, var(--xh-fg-default));
+  font-size: var(--xh-list-title-font-size, var(--xh-_list-title-size));
+  font-weight: var(--xh-list-title-font-weight, var(--xh-font-weight-medium));
+  line-height: var(--xh-leading-tight);
+}
+
+[data-scope='list'][data-part='item-description'] {
+  color: var(--xh-list-description-fg, var(--xh-fg-muted));
+  font-size: var(--xh-list-description-font-size, var(--xh-_list-description-size));
+  line-height: var(--xh-leading-normal);
+}
+
+/* 操作位推到条目末尾，宽度收到内容 */
+[data-scope='list'][data-part='item-action'] {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--xh-list-action-gap, var(--xh-space-2));
+  margin-inline-start: auto;
+}
+
 /* styles/log.css */
 /* 行高是本组件的定尺基准：视口按行数定高、每行排版，都从这一个槽位来。
    它的兜底值须与连接层内联高度里用的那份逐字一致，否则 rows 算出来的高度对不上行。 */
@@ -559,6 +1282,91 @@
   line-height: var(--xh-_log-line-h);
   white-space: pre;
   tab-size: var(--xh-log-tab-size, 4);
+}
+
+/* styles/page-header.css */
+[data-scope='page-header'][data-part='root'] {
+  /* 尺寸档只换这三个私有槽，各段从根上继承它们，换档不必给每个部件各写一条选择器 */
+  --xh-_page-header-py: var(--xh-space-4);
+  --xh-_page-header-row-gap: var(--xh-space-2);
+  --xh-_page-header-title-size: var(--xh-font-size-xl);
+
+  /* 一行排不下就折行；返回位、标题、副标题排在同一行，操作贴到行尾，页脚整行另起 */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--xh-page-header-column-gap, var(--xh-space-3));
+  row-gap: var(--xh-page-header-row-gap, var(--xh-_page-header-row-gap));
+  padding-block: var(--xh-page-header-py, var(--xh-_page-header-py));
+  color: var(--xh-page-header-fg, var(--xh-fg-default));
+}
+
+/* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
+[data-scope='page-header'][data-part='root'][hidden] {
+  display: none;
+}
+
+/* —— 尺寸 —— */
+[data-scope='page-header'][data-part='root'][data-size='sm'] {
+  --xh-_page-header-py: var(--xh-space-3);
+  --xh-_page-header-row-gap: var(--xh-space-1);
+  --xh-_page-header-title-size: var(--xh-font-size-lg);
+}
+
+[data-scope='page-header'][data-part='root'][data-size='lg'] {
+  --xh-_page-header-py: var(--xh-space-6);
+  --xh-_page-header-row-gap: var(--xh-space-3);
+  --xh-_page-header-title-size: var(--xh-font-size-2xl);
+}
+
+/* —— 分隔线 —— */
+[data-scope='page-header'][data-part='root'][data-bordered] {
+  border-block-end: var(--xh-stroke-thin) solid var(--xh-page-header-border, var(--xh-border-subtle));
+}
+
+/* —— 各段 —— */
+/* 返回位只摆位置与对齐，外观归作者自己的按钮 */
+[data-scope='page-header'][data-part='back-trigger'] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-scope='page-header'][data-part='title'] {
+  margin: 0;
+  flex: none;
+  color: var(--xh-page-header-title-fg, var(--xh-fg-default));
+  font-size: var(--xh-page-header-title-font-size, var(--xh-_page-header-title-size));
+  font-weight: var(--xh-page-header-title-font-weight, var(--xh-font-weight-semibold));
+  line-height: var(--xh-leading-tight);
+}
+
+/* 副标题吃掉标题与操作之间的剩余宽度，长文本在这里收窄换行 */
+[data-scope='page-header'][data-part='subtitle'] {
+  margin: 0;
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  color: var(--xh-page-header-subtitle-fg, var(--xh-fg-muted));
+  font-size: var(--xh-page-header-subtitle-font-size, var(--xh-font-size-sm));
+  line-height: var(--xh-leading-normal);
+}
+
+/* 操作区贴到行尾，没有副标题占位时也一样靠边 */
+[data-scope='page-header'][data-part='extra'] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--xh-page-header-extra-gap, var(--xh-space-2));
+  margin-inline-start: auto;
+}
+
+/* 页脚占满一整行，前面有内容时自然被挤到下一行 */
+[data-scope='page-header'][data-part='footer'] {
+  flex: 1 0 100%;
+  color: var(--xh-page-header-footer-fg, var(--xh-fg-muted));
+  font-size: var(--xh-page-header-footer-font-size, var(--xh-font-size-sm));
+  line-height: var(--xh-leading-normal);
 }
 
 /* styles/popconfirm.css */
@@ -1101,6 +1909,508 @@
   align-items: center;
   justify-content: center;
   gap: var(--xh-result-action-gap, var(--xh-space-2));
+}
+
+/* styles/statistic.css */
+/* 三个尺寸档只换这几个私有槽，各段从 root 继承它们，换档不必给每个部件各写一条选择器 */
+[data-scope='statistic'][data-part='root'] {
+  --xh-_statistic-label-size: var(--xh-font-size-sm);
+  --xh-_statistic-value-size: var(--xh-font-size-2xl);
+  --xh-_statistic-affix-size: var(--xh-font-size-md);
+  --xh-_statistic-row-gap: var(--xh-space-1);
+
+  /* 折行排布：标签独占一行，前缀、数值、后缀在下一行按基线对齐排在一起 */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  /* 前后缀默认贴着数值：货币符号与百分号中间留白就不成一个数了，要间距的写法自己开槽 */
+  column-gap: var(--xh-statistic-gap, var(--xh-space-0));
+  row-gap: var(--xh-statistic-row-gap, var(--xh-_statistic-row-gap));
+  color: var(--xh-statistic-fg, var(--xh-fg-default));
+}
+
+/* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
+[data-scope='statistic'][data-part='root'][hidden] {
+  display: none;
+}
+
+/* —— 尺寸 —— */
+[data-scope='statistic'][data-part='root'][data-size='sm'] {
+  --xh-_statistic-label-size: var(--xh-font-size-xs);
+  --xh-_statistic-value-size: var(--xh-font-size-xl);
+  --xh-_statistic-affix-size: var(--xh-font-size-sm);
+  --xh-_statistic-row-gap: var(--xh-space-0_5);
+}
+
+[data-scope='statistic'][data-part='root'][data-size='lg'] {
+  --xh-_statistic-label-size: var(--xh-font-size-md);
+  --xh-_statistic-value-size: var(--xh-font-size-3xl);
+  --xh-_statistic-affix-size: var(--xh-font-size-lg);
+  --xh-_statistic-row-gap: var(--xh-space-1_5);
+}
+
+/* —— 各段 —— */
+/* 占满一整行，把前缀、数值、后缀挤到下一行去 */
+[data-scope='statistic'][data-part='label'] {
+  flex: 0 0 100%;
+  color: var(--xh-statistic-label-fg, var(--xh-fg-muted));
+  font-size: var(--xh-statistic-label-font-size, var(--xh-_statistic-label-size));
+  font-weight: var(--xh-font-weight-regular);
+  line-height: var(--xh-leading-normal);
+}
+
+/* 等宽数字：逐位宽度一致，数值刷新时后面的字符不会左右挪动 */
+[data-scope='statistic'][data-part='value'] {
+  color: var(--xh-statistic-value-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
+  font-size: var(--xh-statistic-value-font-size, var(--xh-_statistic-value-size));
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--xh-font-weight-semibold);
+  line-height: var(--xh-leading-tight);
+}
+
+/* 前后缀比数值小一档、跟着数值的语气走；没写语气时退成弱前景 */
+[data-scope='statistic'][data-part='prefix'],
+[data-scope='statistic'][data-part='suffix'] {
+  color: var(--xh-statistic-affix-fg, var(--xh-_tone-fg, var(--xh-fg-muted)));
+  font-size: var(--xh-statistic-affix-font-size, var(--xh-_statistic-affix-size));
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--xh-font-weight-regular);
+  line-height: var(--xh-leading-tight);
+}
+
+/* styles/timeline.css */
+[data-scope='timeline'][data-part='root'] {
+  /* 尺寸档只换这几个私有槽，条目、圆点与文字都从 root 继承它们，
+     换档不必给每个部件各写一条选择器 */
+  --xh-_timeline-dot-size: 10px;
+  --xh-_timeline-gutter: var(--xh-space-3);
+  --xh-_timeline-item-gap: var(--xh-space-5);
+  --xh-_timeline-title-font-size: var(--xh-text-label-size);
+  --xh-_timeline-caption-font-size: var(--xh-font-size-xs);
+  /* 标题首行占多高。圆点按它居中下移，圆心才落在标题这一行的中线上 */
+  --xh-_timeline-line-h: calc(
+    var(--xh-timeline-title-font-size, var(--xh-_timeline-title-font-size)) * var(--xh-leading-tight)
+  );
+
+  /* 条目之间不设 gap：留白由 content 自己的边距撑出来，连线才连得到下一条的圆点。
+     ol 的项目符号与内外边距是 UA 给的，库里没有全局 preflight，只能在这儿自己抹平 */
+  display: flex;
+  margin: 0;
+  padding: 0;
+  color: var(--xh-timeline-fg, var(--xh-fg-default));
+  list-style: none;
+}
+
+[data-scope='timeline'][data-part='root'][hidden] {
+  display: none;
+}
+
+[data-scope='timeline'][data-part='root'][data-orientation='vertical'] {
+  flex-direction: column;
+}
+
+[data-scope='timeline'][data-part='root'][data-orientation='horizontal'] {
+  flex-direction: row;
+}
+
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里。圆点直径不在控件高度那把尺上，两侧直接给像素 */
+[data-scope='timeline'][data-part='root'][data-size='sm'] {
+  --xh-_timeline-dot-size: 8px;
+  --xh-_timeline-gutter: var(--xh-space-2);
+  --xh-_timeline-item-gap: var(--xh-space-4);
+  --xh-_timeline-title-font-size: var(--xh-font-size-sm);
+  /* 字号档最小就是 xs，时刻文本不再往下走，故不重声明 caption */
+}
+
+[data-scope='timeline'][data-part='root'][data-size='lg'] {
+  --xh-_timeline-dot-size: 12px;
+  --xh-_timeline-gutter: var(--xh-space-4);
+  --xh-_timeline-item-gap: var(--xh-space-6);
+  --xh-_timeline-title-font-size: var(--xh-font-size-lg);
+  --xh-_timeline-caption-font-size: var(--xh-font-size-sm);
+}
+
+/* —— 条目 —— */
+/* 圆点与连线占一列（横排时占一行），内容占另一列，用 grid 而不是再包一层节点：
+   解剖里没有那个包裹层，作者也不该被逼着多写一个 div */
+[data-scope='timeline'][data-part='item'] {
+  display: grid;
+  column-gap: var(--xh-timeline-gutter, var(--xh-_timeline-gutter));
+  /* 库里没有全局 preflight，列表项的外边距在这里自己抹平 */
+  margin: 0;
+  /* 允许被压缩，内容里的省略号才有生效的余地 */
+  min-inline-size: 0;
+}
+
+[data-scope='timeline'][data-part='item'][hidden] {
+  display: none;
+}
+
+[data-scope='timeline'][data-part='item'][data-orientation='vertical'] {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+/* 横排时每条等分整行 */
+[data-scope='timeline'][data-part='item'][data-orientation='horizontal'] {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  flex: 1;
+}
+
+/* —— 圆点 —— */
+[data-scope='timeline'][data-part='indicator'] {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--xh-timeline-indicator-size, var(--xh-_timeline-dot-size));
+  block-size: var(--xh-timeline-indicator-size, var(--xh-_timeline-dot-size));
+  border-radius: var(--xh-radius-full);
+  /* 使用者令牌排在语气之前；两者都没有时退回一个中性的实心点 */
+  background: var(--xh-timeline-indicator-bg, var(--xh-_tone-soft, var(--xh-fg-muted)));
+  color: var(--xh-timeline-indicator-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+  font-size: var(--xh-timeline-indicator-font-size, var(--xh-_timeline-caption-font-size));
+  line-height: var(--xh-leading-none);
+}
+
+[data-scope='timeline'][data-part='indicator'][hidden] {
+  display: none;
+}
+
+[data-scope='timeline'][data-part='item'][data-orientation='vertical'] [data-scope='timeline'][data-part='indicator'] {
+  grid-column: 1;
+  grid-row: 1;
+  /* 行高减去直径的一半：calc 里的除法要写成乘 0.5，除号在这儿是无效语法 */
+  margin-block-start: calc(
+    (var(--xh-_timeline-line-h) - var(--xh-timeline-indicator-size, var(--xh-_timeline-dot-size))) * 0.5
+  );
+}
+
+[data-scope='timeline'][data-part='item'][data-orientation='horizontal'] [data-scope='timeline'][data-part='indicator'] {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+/* —— 连线 —— */
+[data-scope='timeline'][data-part='connector'] {
+  border-radius: var(--xh-radius-full);
+  background: var(--xh-timeline-connector-bg, var(--xh-border-default));
+}
+
+[data-scope='timeline'][data-part='connector'][hidden] {
+  display: none;
+}
+
+/* 竖排：从圆点下沿一直伸到条目底边，接上下一条的圆点。
+   min-block-size 兜住内容极短的条目，那时也还看得见一截线 */
+[data-scope='timeline'][data-part='item'][data-orientation='vertical'] [data-scope='timeline'][data-part='connector'] {
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: center;
+  inline-size: var(--xh-timeline-connector-thickness, var(--xh-stroke-thick));
+  min-block-size: var(--xh-timeline-connector-min-length, var(--xh-space-4));
+  margin-block-start: var(--xh-space-1);
+}
+
+/* 横排：线转成横的一条，与圆点同一行 */
+[data-scope='timeline'][data-part='item'][data-orientation='horizontal'] [data-scope='timeline'][data-part='connector'] {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  min-inline-size: var(--xh-timeline-connector-min-length, var(--xh-space-4));
+  block-size: var(--xh-timeline-connector-thickness, var(--xh-stroke-thick));
+  margin-inline-start: var(--xh-space-1);
+}
+
+/* 末条后面没有下一件事，那截线不该占地方；作者不写它也一样，写了就替他收掉 */
+[data-scope='timeline'][data-part='item']:last-child [data-scope='timeline'][data-part='connector'] {
+  display: none;
+}
+
+/* —— 内容 —— */
+[data-scope='timeline'][data-part='content'] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-space-1);
+  min-inline-size: 0;
+}
+
+[data-scope='timeline'][data-part='content'][hidden] {
+  display: none;
+}
+
+/* 条目之间的留白由内容自己的边距撑出来，连线的那一列因此能一路连到下一条 */
+[data-scope='timeline'][data-part='item'][data-orientation='vertical'] [data-scope='timeline'][data-part='content'] {
+  grid-column: 2;
+  grid-row: 1 / -1;
+  padding-block-end: var(--xh-timeline-item-gap, var(--xh-_timeline-item-gap));
+}
+
+[data-scope='timeline'][data-part='item'][data-orientation='horizontal'] [data-scope='timeline'][data-part='content'] {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  padding-block-start: var(--xh-space-2);
+  padding-inline-end: var(--xh-timeline-item-gap, var(--xh-_timeline-item-gap));
+}
+
+/* 末条的留白同样收掉：它后面已经没有要隔开的东西 */
+[data-scope='timeline'][data-part='item'][data-orientation='vertical']:last-child [data-scope='timeline'][data-part='content'] {
+  padding-block-end: 0;
+}
+
+[data-scope='timeline'][data-part='item'][data-orientation='horizontal']:last-child [data-scope='timeline'][data-part='content'] {
+  padding-inline-end: 0;
+}
+
+/* —— 侧别 —— */
+/* 不写 placement 时内容落在结束侧，即上面那几条基础规则。
+   start 把线挪到结束侧、内容挪到起始侧，文字一并靠向线 */
+[data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='start'] {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+[data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='start'] [data-scope='timeline'][data-part='indicator'],
+[data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='start'] [data-scope='timeline'][data-part='connector'] {
+  grid-column: 2;
+}
+
+[data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='start'] [data-scope='timeline'][data-part='content'] {
+  grid-column: 1;
+  align-items: flex-end;
+  text-align: end;
+}
+
+/* alternate：线走中间，奇数条在结束侧、偶数条在起始侧 */
+[data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='alternate'] {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+[data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='alternate'] [data-scope='timeline'][data-part='indicator'],
+[data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='alternate'] [data-scope='timeline'][data-part='connector'] {
+  grid-column: 2;
+}
+
+[data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='alternate'] [data-scope='timeline'][data-part='content'] {
+  grid-column: 3;
+}
+
+[data-scope='timeline'][data-part='item'][data-orientation='vertical'][data-placement='alternate']:nth-child(even) [data-scope='timeline'][data-part='content'] {
+  grid-column: 1;
+  align-items: flex-end;
+  text-align: end;
+}
+
+/* 横排的 start 是把内容挪到线的上方，内容贴着线的那一边对齐 */
+[data-scope='timeline'][data-part='item'][data-orientation='horizontal'][data-placement='start'] {
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+
+[data-scope='timeline'][data-part='item'][data-orientation='horizontal'][data-placement='start'] [data-scope='timeline'][data-part='indicator'],
+[data-scope='timeline'][data-part='item'][data-orientation='horizontal'][data-placement='start'] [data-scope='timeline'][data-part='connector'] {
+  grid-row: 2;
+}
+
+[data-scope='timeline'][data-part='item'][data-orientation='horizontal'][data-placement='start'] [data-scope='timeline'][data-part='content'] {
+  grid-row: 1;
+  align-self: end;
+  padding-block-start: 0;
+  padding-block-end: var(--xh-space-2);
+}
+
+[data-scope='timeline'][data-part='item'][data-orientation='horizontal'][data-placement='alternate'] {
+  grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+[data-scope='timeline'][data-part='item'][data-orientation='horizontal'][data-placement='alternate'] [data-scope='timeline'][data-part='indicator'],
+[data-scope='timeline'][data-part='item'][data-orientation='horizontal'][data-placement='alternate'] [data-scope='timeline'][data-part='connector'] {
+  grid-row: 2;
+}
+
+[data-scope='timeline'][data-part='item'][data-orientation='horizontal'][data-placement='alternate'] [data-scope='timeline'][data-part='content'] {
+  grid-row: 3;
+  align-self: start;
+}
+
+[data-scope='timeline'][data-part='item'][data-orientation='horizontal'][data-placement='alternate']:nth-child(even) [data-scope='timeline'][data-part='content'] {
+  grid-row: 1;
+  align-self: end;
+  padding-block-start: 0;
+  padding-block-end: var(--xh-space-2);
+}
+
+/* —— 文字 —— */
+[data-scope='timeline'][data-part='title'] {
+  color: var(--xh-timeline-title-fg, var(--xh-fg-default));
+  font-size: var(--xh-timeline-title-font-size, var(--xh-_timeline-title-font-size));
+  font-weight: var(--xh-timeline-title-font-weight, var(--xh-text-label-weight));
+  line-height: var(--xh-leading-tight);
+}
+
+[data-scope='timeline'][data-part='description'] {
+  color: var(--xh-timeline-description-fg, var(--xh-fg-muted));
+  font-size: var(--xh-timeline-description-font-size, var(--xh-text-body-size));
+  line-height: var(--xh-leading-normal);
+}
+
+[data-scope='timeline'][data-part='time'] {
+  color: var(--xh-timeline-time-fg, var(--xh-fg-subtle));
+  font-size: var(--xh-timeline-time-font-size, var(--xh-_timeline-caption-font-size));
+  /* 等宽数字：时刻里的 1 与 7 在比例字体里宽度不同，不定住会让整列时间左右抖一格 */
+  font-variant-numeric: tabular-nums;
+  line-height: var(--xh-leading-normal);
+}
+
+/* styles/typography.css */
+[data-scope='typography'][data-part='root'] {
+  /* 尺寸档只换这几个私有槽，各段从根上继承它们，换档不必给每个部件各写一条选择器 */
+  --xh-_typography-body-size: var(--xh-text-body-size);
+  --xh-_typography-block-gap: var(--xh-space-4);
+  --xh-_typography-heading-gap: var(--xh-space-6);
+  --xh-_typography-h1: var(--xh-font-size-3xl);
+  --xh-_typography-h2: var(--xh-font-size-2xl);
+  --xh-_typography-h3: var(--xh-font-size-xl);
+  --xh-_typography-h4: var(--xh-font-size-lg);
+  --xh-_typography-h5: var(--xh-font-size-md);
+  --xh-_typography-h6: var(--xh-font-size-sm);
+  /* 读行宽度：整块正文不收窄就会拉成一行行难读的长句 */
+  --xh-_typography-measure: 68ch;
+  /* 行内代码跟着所在那行的字号缩，用相对单位而不是档位 */
+  --xh-_typography-code-size: 0.9em;
+
+  /* 建块级格式化上下文，段落的外边距不越过根往外塌 */
+  display: flow-root;
+  max-inline-size: var(--xh-typography-measure, var(--xh-_typography-measure));
+  color: var(--xh-typography-fg, var(--xh-fg-default));
+  font-size: var(--xh-typography-font-size, var(--xh-_typography-body-size));
+  font-weight: var(--xh-typography-font-weight, var(--xh-text-body-weight));
+  line-height: var(--xh-typography-leading, var(--xh-text-body-leading));
+}
+
+/* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
+[data-scope='typography'][data-part='root'][hidden] {
+  display: none;
+}
+
+/* —— 尺寸 —— */
+/* 小档整体降一级字号档位 */
+[data-scope='typography'][data-part='root'][data-size='sm'] {
+  --xh-_typography-body-size: var(--xh-font-size-sm);
+  --xh-_typography-block-gap: var(--xh-space-3);
+  --xh-_typography-heading-gap: var(--xh-space-5);
+  --xh-_typography-h1: var(--xh-font-size-2xl);
+  --xh-_typography-h2: var(--xh-font-size-xl);
+  --xh-_typography-h3: var(--xh-font-size-lg);
+  --xh-_typography-h4: var(--xh-font-size-md);
+  --xh-_typography-h5: var(--xh-font-size-sm);
+  --xh-_typography-h6: var(--xh-font-size-xs);
+}
+
+/* 大档只放大正文与段距：标题档位在 3xl 见顶，六档保持原样 */
+[data-scope='typography'][data-part='root'][data-size='lg'] {
+  --xh-_typography-body-size: var(--xh-font-size-lg);
+  --xh-_typography-block-gap: var(--xh-space-5);
+  --xh-_typography-heading-gap: var(--xh-space-8);
+}
+
+/* —— 块级段落 —— */
+/* 库里没有全局 preflight，作者写的 hN / p 带着 UA 外边距，在这儿抹平 */
+[data-scope='typography'][data-part='heading'],
+[data-scope='typography'][data-part='paragraph'] {
+  margin: 0;
+}
+
+[data-scope='typography'][data-part='heading'] {
+  color: var(--xh-typography-heading-fg, var(--xh-fg-default));
+  font-size: var(--xh-typography-heading-font-size, var(--xh-_typography-h3));
+  font-weight: var(--xh-typography-heading-font-weight, var(--xh-font-weight-semibold));
+  line-height: var(--xh-typography-heading-leading, var(--xh-leading-tight));
+  /* 标题折行时把各行拉得一样长 */
+  text-wrap: balance;
+}
+
+/* —— 标题档位 —— */
+/* 使用者槽位排在档位之前：写死一个值即盖过全部六档 */
+[data-scope='typography'][data-part='heading'][data-level='1'] {
+  font-size: var(--xh-typography-heading-font-size, var(--xh-_typography-h1));
+}
+
+[data-scope='typography'][data-part='heading'][data-level='2'] {
+  font-size: var(--xh-typography-heading-font-size, var(--xh-_typography-h2));
+}
+
+[data-scope='typography'][data-part='heading'][data-level='3'] {
+  font-size: var(--xh-typography-heading-font-size, var(--xh-_typography-h3));
+}
+
+[data-scope='typography'][data-part='heading'][data-level='4'] {
+  font-size: var(--xh-typography-heading-font-size, var(--xh-_typography-h4));
+}
+
+[data-scope='typography'][data-part='heading'][data-level='5'] {
+  font-size: var(--xh-typography-heading-font-size, var(--xh-_typography-h5));
+}
+
+[data-scope='typography'][data-part='heading'][data-level='6'] {
+  font-size: var(--xh-typography-heading-font-size, var(--xh-_typography-h6));
+}
+
+/* —— 段间距 —— */
+/* 间距画在后一块的上边，块与块之间只留一份，正文末尾也不多出一截 */
+[data-scope='typography']:is([data-part='heading'], [data-part='paragraph'])
+  + [data-scope='typography']:is([data-part='heading'], [data-part='paragraph']) {
+  margin-block-start: var(--xh-typography-block-gap, var(--xh-_typography-block-gap));
+}
+
+/* 标题上面留得更开，它带起的是下面一整段 */
+[data-scope='typography']:is([data-part='heading'], [data-part='paragraph'])
+  + [data-scope='typography'][data-part='heading'] {
+  margin-block-start: var(--xh-typography-heading-gap, var(--xh-_typography-heading-gap));
+}
+
+/* —— 行内文字 —— */
+/* 不写形态与语气时就是一段普通正文，这里只声明形态各自加的那一层 */
+[data-scope='typography'][data-part='text'][data-variant='muted'] {
+  color: var(--xh-typography-text-fg, var(--xh-fg-muted));
+}
+
+[data-scope='typography'][data-part='text'][data-variant='strong'] {
+  font-weight: var(--xh-typography-text-font-weight, var(--xh-font-weight-semibold));
+}
+
+[data-scope='typography'][data-part='text'][data-variant='code'] {
+  padding-block: var(--xh-typography-code-py, var(--xh-space-0_5));
+  padding-inline: var(--xh-typography-code-px, var(--xh-space-1));
+  border-radius: var(--xh-typography-code-radius, var(--xh-radius-sm));
+  background: var(--xh-typography-code-bg, var(--xh-bg-subtle));
+  font-family: var(--xh-font-family-mono);
+  font-size: var(--xh-typography-code-font-size, var(--xh-_typography-code-size));
+}
+
+/* 语气排在形态之后：两个轴一起写时，用哪族颜色由语气说了算 */
+[data-scope='typography'][data-part='text'][data-tone] {
+  color: var(--xh-typography-text-fg, var(--xh-_tone-fg));
+}
+
+/* —— 行内链接 —— */
+[data-scope='typography'][data-part='link'] {
+  border-radius: var(--xh-typography-link-radius, var(--xh-radius-sm));
+  color: var(--xh-typography-link-fg, var(--xh-fg-brand));
+  text-decoration: underline;
+  text-underline-offset: var(--xh-typography-link-underline-offset, var(--xh-space-0_5));
+}
+
+/* 悬停只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
+@media (hover: hover) {
+  [data-scope='typography'][data-part='link']:hover {
+    color: var(--xh-typography-link-fg-hover, var(--xh-fg-brand-strong));
+  }
+}
+
+[data-scope='typography'][data-part='link']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
 }
 
 /* styles/undefined.css */

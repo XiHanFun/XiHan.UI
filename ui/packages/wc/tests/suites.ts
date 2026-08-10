@@ -2,7 +2,7 @@
 // 若干组件的 fixture 与 Vue 侧不同构，需在此改写后再喂给运行方。
 // jsdom 一致性与浏览器无障碍扫描共用这一份，两边跑的是同一批组件。
 import type { ConformanceSuite, FixtureNode } from '@xihan-ui/testing'
-import { accordionSuite, alertSuite, anchorSuite, avatarSuite, badgeSuite, breadcrumbSuite, buttonSuite, calendarSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, codeBlockSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, composerSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, editableSuite, emptyStateSuite, fieldSuite, fileUploadSuite, formSuite, hoverCardSuite, iconSuite, imageSuite, listboxSuite, loadingBarSuite, menubarSuite, menuSuite, navigationMenuSuite, numberFieldSuite, paginationSuite, pinInputSuite, popoverSuite, progressSuite, radioGroupSuite, ratingSuite, scrollAreaSuite, selectSuite, separatorSuite, skeletonSuite, sliderSuite, spinnerSuite, splitterSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, textFieldSuite, threadSuite, timeFieldSuite, timePickerSuite, toasterSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, virtualizerSuite } from '@xihan-ui/testing'
+import { accordionSuite, affixSuite, alertSuite, anchorSuite, avatarGroupSuite, avatarSuite, backTopSuite, badgeSuite, breadcrumbSuite, buttonGroupSuite, buttonSuite, calendarSuite, cardSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, codeBlockSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, composerSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, descriptionsSuite, editableSuite, emptyStateSuite, fieldSuite, fileUploadSuite, flexSuite, formSuite, gradientTextSuite, gridSuite, hoverCardSuite, iconSuite, iconWrapperSuite, imageSuite, infiniteScrollSuite, layoutSuite, listboxSuite, listSuite, loadingBarSuite, logSuite, menubarSuite, menuSuite, navigationMenuSuite, numberFieldSuite, pageHeaderSuite, paginationSuite, pinInputSuite, popconfirmSuite, popoverSuite, popselectSuite, progressSuite, radioGroupSuite, ratingSuite, resultSuite, scrollAreaSuite, selectSuite, separatorSuite, skeletonSuite, sliderSuite, spinnerSuite, splitterSuite, statisticSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, textFieldSuite, threadSuite, timeFieldSuite, timelineSuite, timePickerSuite, toasterSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, typographySuite, virtualizerSuite } from '@xihan-ui/testing'
 
 // switch 无 portal/presence 分歧，复用共享用例、只把 fixture 换成 WC 行为宿主形态
 // （用户显式写 root/thumb 角色节点，Vue 版 XhSwitch 是内部渲染 thumb）。
@@ -300,4 +300,26 @@ export const wcSuites: readonly ConformanceSuite[]
     virtualizerSuite,
     wcTreeSuite,
     treeSelectSuite,
+    // 第一档与第二档新增的组件：部件全部由作者显式写，两侧 fixture 同构，整份复用
+    affixSuite,
+    avatarGroupSuite,
+    backTopSuite,
+    buttonGroupSuite,
+    cardSuite,
+    descriptionsSuite,
+    flexSuite,
+    gradientTextSuite,
+    gridSuite,
+    iconWrapperSuite,
+    infiniteScrollSuite,
+    layoutSuite,
+    listSuite,
+    logSuite,
+    pageHeaderSuite,
+    popconfirmSuite,
+    popselectSuite,
+    resultSuite,
+    statisticSuite,
+    timelineSuite,
+    typographySuite,
   ]

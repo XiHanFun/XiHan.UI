@@ -1,0 +1,11 @@
+export { descriptionsAnatomy } from './descriptions.anatomy'
+export { connectDescriptions } from './descriptions.connect'
+export { descriptionsKeyboard } from './descriptions.keyboard'
+export { descriptionsMeta } from './descriptions.meta'
+export type {
+  DescriptionsApi,
+  DescriptionsColumns,
+  DescriptionsPlacement,
+  DescriptionsProps,
+  DescriptionsSize,
+} from './descriptions.types'

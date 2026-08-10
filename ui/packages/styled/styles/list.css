@@ -1,0 +1,117 @@
+@layer xihan.components {
+  [data-scope='list'][data-part='root'] {
+    /* 一个尺寸档只换这几个私有槽，条目与两行文字都从根上继承它们，
+       换档不必给每个部件各写一条选择器 */
+    --xh-_list-item-py: var(--xh-space-3);
+    --xh-_list-item-px: var(--xh-space-4);
+    --xh-_list-item-gap: var(--xh-space-3);
+    --xh-_list-title-size: var(--xh-font-size-md);
+    --xh-_list-description-size: var(--xh-font-size-sm);
+
+    display: flex;
+    flex-direction: column;
+    /* 根可能写成 ul/ol，UA 的项目符号与左缩进在这里清掉：换哪个标签都排成同一个样子 */
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--xh-list-fg, var(--xh-fg-default));
+  }
+
+  /* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
+  [data-scope='list'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* —— 尺寸 —— */
+  [data-scope='list'][data-part='root'][data-size='sm'] {
+    --xh-_list-item-py: var(--xh-space-2);
+    --xh-_list-item-px: var(--xh-space-3);
+    --xh-_list-item-gap: var(--xh-space-2);
+    --xh-_list-title-size: var(--xh-font-size-sm);
+    --xh-_list-description-size: var(--xh-font-size-xs);
+  }
+
+  [data-scope='list'][data-part='root'][data-size='lg'] {
+    --xh-_list-item-py: var(--xh-space-4);
+    --xh-_list-item-px: var(--xh-space-5);
+    --xh-_list-item-gap: var(--xh-space-4);
+    --xh-_list-title-size: var(--xh-font-size-lg);
+  }
+
+  /* —— 外框 —— */
+  [data-scope='list'][data-part='root'][data-bordered] {
+    border: var(--xh-stroke-thin) solid var(--xh-list-border, var(--xh-border-default));
+    border-radius: var(--xh-list-radius, var(--xh-shape-surface));
+    background: var(--xh-list-bg, var(--xh-bg-surface));
+    /* 首尾条目的悬停底色要被圆角裁住 */
+    overflow: hidden;
+  }
+
+  /* —— 条目 —— */
+  [data-scope='list'][data-part='item'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-list-item-gap, var(--xh-_list-item-gap));
+    padding-block: var(--xh-list-item-py, var(--xh-_list-item-py));
+    padding-inline: var(--xh-list-item-px, var(--xh-_list-item-px));
+  }
+
+  /* 分隔线画在后一条的上边，条与条之间才只有一条；第一条没有上邻居。
+     只认自己的直接子条目，套在条目里的另一份列表由它自己的根管 */
+  [data-scope='list'][data-part='root'][data-split]
+    > [data-scope='list'][data-part='item']
+    + [data-scope='list'][data-part='item'] {
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-list-border, var(--xh-border-subtle));
+  }
+
+  [data-scope='list'][data-part='root'][data-hoverable] > [data-scope='list'][data-part='item'] {
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 悬停换底色：只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
+  @media (hover: hover) {
+    [data-scope='list'][data-part='root'][data-hoverable] > [data-scope='list'][data-part='item']:hover {
+      background: var(--xh-list-item-bg-hover, var(--xh-bg-subtle-hover));
+    }
+  }
+
+  /* —— 条目内的四个位 —— */
+  /* 媒体位不参与伸缩，宽度收到内容 */
+  [data-scope='list'][data-part='item-media'] {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  [data-scope='list'][data-part='item-content'] {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--xh-list-content-gap, var(--xh-space-1));
+    /* flex 项默认不肯收到内容以下，这行让长文本能被压窄 */
+    min-inline-size: 0;
+  }
+
+  [data-scope='list'][data-part='item-title'] {
+    color: var(--xh-list-title-fg, var(--xh-fg-default));
+    font-size: var(--xh-list-title-font-size, var(--xh-_list-title-size));
+    font-weight: var(--xh-list-title-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-leading-tight);
+  }
+
+  [data-scope='list'][data-part='item-description'] {
+    color: var(--xh-list-description-fg, var(--xh-fg-muted));
+    font-size: var(--xh-list-description-font-size, var(--xh-_list-description-size));
+    line-height: var(--xh-leading-normal);
+  }
+
+  /* 操作位推到条目末尾，宽度收到内容 */
+  [data-scope='list'][data-part='item-action'] {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--xh-list-action-gap, var(--xh-space-2));
+    margin-inline-start: auto;
+  }
+}

@@ -1,0 +1,5 @@
+export { gradientTextAnatomy } from './gradient-text.anatomy'
+export { connectGradientText } from './gradient-text.connect'
+export { gradientTextKeyboard } from './gradient-text.keyboard'
+export { gradientTextMeta } from './gradient-text.meta'
+export type { GradientTextApi, GradientTextDirection, GradientTextProps } from './gradient-text.types'

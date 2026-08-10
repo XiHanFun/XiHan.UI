@@ -1,0 +1,5 @@
+export { pageHeaderAnatomy } from './page-header.anatomy'
+export { connectPageHeader } from './page-header.connect'
+export { pageHeaderKeyboard } from './page-header.keyboard'
+export { pageHeaderMeta } from './page-header.meta'
+export type { PageHeaderApi, PageHeaderProps } from './page-header.types'

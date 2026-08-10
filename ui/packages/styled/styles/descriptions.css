@@ -1,0 +1,200 @@
+@layer xihan.components {
+  [data-scope='descriptions'][data-part='root'] {
+    /* 一个尺寸档只换这几个私有槽，每一格与格内两段都从根上继承它们，
+       换档不必给每个部件各写一条选择器 */
+    --xh-_descriptions-gap: var(--xh-space-3);
+    --xh-_descriptions-pair-gap: var(--xh-space-1);
+    --xh-_descriptions-label-gap: var(--xh-space-2);
+    --xh-_descriptions-py: var(--xh-space-2);
+    --xh-_descriptions-px: var(--xh-space-3);
+    --xh-_descriptions-font-size: var(--xh-text-body-size);
+    /* 标签在左时那一列的宽度：收到最长的那个标签 */
+    --xh-_descriptions-label-w: max-content;
+
+    display: grid;
+    /* 不写 columns 即每行一组；二到六列各有一条规则 */
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--xh-descriptions-gap, var(--xh-_descriptions-gap));
+    /* 根可能写成 dl，UA 的上下外边距在这里清掉 */
+    margin: 0;
+    color: var(--xh-descriptions-fg, var(--xh-fg-default));
+    font-size: var(--xh-descriptions-font-size, var(--xh-_descriptions-font-size));
+    line-height: var(--xh-text-body-leading);
+  }
+
+  /* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
+  [data-scope='descriptions'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* —— 列数 —— */
+  [data-scope='descriptions'][data-part='root'][data-columns='2'] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-columns='3'] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-columns='4'] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-columns='5'] {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-columns='6'] {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  /* —— 尺寸 —— */
+  [data-scope='descriptions'][data-part='root'][data-size='sm'] {
+    --xh-_descriptions-gap: var(--xh-space-2);
+    --xh-_descriptions-py: var(--xh-space-1);
+    --xh-_descriptions-px: var(--xh-space-2);
+    --xh-_descriptions-font-size: var(--xh-font-size-sm);
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-size='lg'] {
+    --xh-_descriptions-gap: var(--xh-space-4);
+    --xh-_descriptions-pair-gap: var(--xh-space-2);
+    --xh-_descriptions-label-gap: var(--xh-space-3);
+    --xh-_descriptions-py: var(--xh-space-3);
+    --xh-_descriptions-px: var(--xh-space-4);
+    --xh-_descriptions-font-size: var(--xh-font-size-lg);
+  }
+
+  /* —— 每一格 —— */
+  /* 一格自己也是网格：不写 placement 即标签一行、取值一行叠着排 */
+  [data-scope='descriptions'][data-part='item'] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    gap: var(--xh-descriptions-pair-gap, var(--xh-_descriptions-pair-gap));
+  }
+
+  /* 标签在左：一格分成「标签列 + 取值列」，两段的首行文字对齐同一条基线。
+     只认自己的直接子格，套在取值里的另一份描述由它自己的根管 */
+  [data-scope='descriptions'][data-part='root'][data-placement='left']
+    > [data-scope='descriptions'][data-part='item'] {
+    grid-template-columns: var(--xh-descriptions-label-w, var(--xh-_descriptions-label-w)) minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: var(--xh-descriptions-label-gap, var(--xh-_descriptions-label-gap));
+  }
+
+  [data-scope='descriptions'][data-part='label'] {
+    color: var(--xh-descriptions-label-fg, var(--xh-fg-muted));
+    font-weight: var(--xh-descriptions-label-font-weight, var(--xh-text-label-weight));
+  }
+
+  [data-scope='descriptions'][data-part='value'] {
+    /* 取值可能写成 dd，UA 的左缩进在这里清掉 */
+    margin: 0;
+    /* 网格项默认不肯收到内容以下，这行让长文本能被压窄 */
+    min-inline-size: 0;
+    color: var(--xh-descriptions-value-fg, var(--xh-fg-default));
+  }
+
+  /* —— 外框与网格线 —— */
+  [data-scope='descriptions'][data-part='root'][data-bordered] {
+    /* 网格线由每格自己的边线拼出来，格与格之间不能再留缝 */
+    gap: 0;
+    border: var(--xh-stroke-thin) solid var(--xh-descriptions-border, var(--xh-border-default));
+    border-radius: var(--xh-descriptions-radius, var(--xh-shape-surface));
+    background: var(--xh-descriptions-bg, var(--xh-bg-surface));
+    /* 四角的格子要被圆角裁住 */
+    overflow: hidden;
+  }
+
+  /* 每格自带上边线与左边线，行首与首行那几格再各自抹掉，相邻两格之间就只剩一条 */
+  [data-scope='descriptions'][data-part='root'][data-bordered]
+    > [data-scope='descriptions'][data-part='item'] {
+    padding-block: var(--xh-descriptions-item-py, var(--xh-_descriptions-py));
+    padding-inline: var(--xh-descriptions-item-px, var(--xh-_descriptions-px));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-descriptions-border, var(--xh-border-subtle));
+    /* 每行一组时左边没有邻居，宽度按列数补回来 */
+    border-inline-start: 0 solid var(--xh-descriptions-border, var(--xh-border-subtle));
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-bordered]
+    > [data-scope='descriptions'][data-part='item']:first-child {
+    border-block-start-width: 0;
+  }
+
+  /* 二到六列：左边线一律补上，再抹掉每行第一格的左边线与首行那几格的上边线 */
+  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='2']
+    > [data-scope='descriptions'][data-part='item'] {
+    border-inline-start-width: var(--xh-stroke-thin);
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='2']
+    > [data-scope='descriptions'][data-part='item']:nth-child(2n + 1) {
+    border-inline-start-width: 0;
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='2']
+    > [data-scope='descriptions'][data-part='item']:nth-child(-n + 2) {
+    border-block-start-width: 0;
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='3']
+    > [data-scope='descriptions'][data-part='item'] {
+    border-inline-start-width: var(--xh-stroke-thin);
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='3']
+    > [data-scope='descriptions'][data-part='item']:nth-child(3n + 1) {
+    border-inline-start-width: 0;
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='3']
+    > [data-scope='descriptions'][data-part='item']:nth-child(-n + 3) {
+    border-block-start-width: 0;
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='4']
+    > [data-scope='descriptions'][data-part='item'] {
+    border-inline-start-width: var(--xh-stroke-thin);
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='4']
+    > [data-scope='descriptions'][data-part='item']:nth-child(4n + 1) {
+    border-inline-start-width: 0;
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='4']
+    > [data-scope='descriptions'][data-part='item']:nth-child(-n + 4) {
+    border-block-start-width: 0;
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='5']
+    > [data-scope='descriptions'][data-part='item'] {
+    border-inline-start-width: var(--xh-stroke-thin);
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='5']
+    > [data-scope='descriptions'][data-part='item']:nth-child(5n + 1) {
+    border-inline-start-width: 0;
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='5']
+    > [data-scope='descriptions'][data-part='item']:nth-child(-n + 5) {
+    border-block-start-width: 0;
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='6']
+    > [data-scope='descriptions'][data-part='item'] {
+    border-inline-start-width: var(--xh-stroke-thin);
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='6']
+    > [data-scope='descriptions'][data-part='item']:nth-child(6n + 1) {
+    border-inline-start-width: 0;
+  }
+
+  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='6']
+    > [data-scope='descriptions'][data-part='item']:nth-child(-n + 6) {
+    border-block-start-width: 0;
+  }
+}

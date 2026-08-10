@@ -7183,6 +7183,142 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/descriptions.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-descriptions>` —— Light-DOM 行为宿主，无状态机，把 connectDescriptions 产出打到各角色节点。\n排版走 CSS Grid，columns 落成列数。\n\n标签由作者定，root 写 `<dl>`、label 写 `<dt>`、value 写 `<dd>` 时标签与取值天然成对；\n组件不补 role，也不用 `<table>`——这是一份描述列表，不是数据表。",
+          "name": "XhDescriptionsElement",
+          "cssParts": [
+            {
+              "description": "网格容器，承载 data-columns / data-placement / data-size / data-bordered",
+              "name": "root"
+            },
+            {
+              "description": "一组「标签 + 取值」，占网格里的一格",
+              "name": "item"
+            },
+            {
+              "description": "标签",
+              "name": "label"
+            },
+            {
+              "description": "取值",
+              "name": "value"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: descriptionsAnatomy, meta: descriptionsMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "columns",
+              "privacy": "public",
+              "type": {
+                "text": "DescriptionsColumns | undefined"
+              },
+              "attribute": "columns"
+            },
+            {
+              "kind": "field",
+              "name": "bordered",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "bordered"
+            },
+            {
+              "kind": "field",
+              "name": "placement",
+              "privacy": "public",
+              "type": {
+                "text": "DescriptionsPlacement | undefined"
+              },
+              "attribute": "placement"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "DescriptionsSize | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "DescriptionsColumns | undefined"
+              },
+              "description": "每行摆几组，如实落成根上的 data-columns；不写即每行一组",
+              "name": "columns",
+              "fieldName": "columns"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "画外框，并在格与格之间画网格线",
+              "name": "bordered",
+              "fieldName": "bordered"
+            },
+            {
+              "type": {
+                "text": "DescriptionsPlacement | undefined"
+              },
+              "description": "标签在上还是在左；不写即在上",
+              "name": "placement",
+              "fieldName": "placement"
+            },
+            {
+              "type": {
+                "text": "DescriptionsSize | undefined"
+              },
+              "description": "尺寸，决定每格的内边距、组与组的间距与整体字号",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-descriptions",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhDescriptionsElement",
+          "declaration": {
+            "name": "XhDescriptionsElement",
+            "module": "src/elements/descriptions.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/dialog.ts",
       "declarations": [
         {
@@ -9607,6 +9743,241 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/gradient-text.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-gradient-text>` —— Light-DOM 行为宿主，无状态机，把 connectGradientText 产出打到 root 角色节点。\n\n两端颜色写成 root 上的内联 CSS 变量，渐变怎么画、缺省用哪族颜色都在皮肤里；\n走向按档位落成 data-direction，皮肤逐档换算成 `to <边或角>`。\n\n给了 from 或 to 时 root 的内联 style 归本元素管，作者自己的内联样式请写在宿主元素上。",
+          "name": "XhGradientTextElement",
+          "cssParts": [
+            {
+              "description": "被上色的文字容器，承载 data-direction 与两端颜色变量",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: gradientTextAnatomy, meta: gradientTextMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "from",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "from"
+            },
+            {
+              "kind": "field",
+              "name": "to",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "to"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "GradientTextDirection | undefined"
+              },
+              "attribute": "direction"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "起点颜色，写成 root 上的 --xh-gradient-text-from",
+              "name": "from",
+              "fieldName": "from"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "终点颜色，写成 root 上的 --xh-gradient-text-to",
+              "name": "to",
+              "fieldName": "to"
+            },
+            {
+              "type": {
+                "text": "GradientTextDirection | undefined"
+              },
+              "description": "渐变走向档位，缺省 to-right",
+              "name": "direction",
+              "fieldName": "direction"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-gradient-text",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhGradientTextElement",
+          "declaration": {
+            "name": "XhGradientTextElement",
+            "module": "src/elements/gradient-text.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/grid.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-grid>` —— Light-DOM 行为宿主，无状态机，把 connectGrid 产出打到 root 与各 item 角色节点。\n列数、间距档位与两条对齐轴原样落成 data-*，排布规则写在皮肤里。\n\n每一格的跨列与错列写在 item 角色节点自己的 `span` / `offset` 属性上。\n运行期改写这两个属性不触发重新接线，需作者自行 requestUpdate。\n\n根上不写 role：容器只做排布，里面装的是列表还是一组卡片由作者自己声明。",
+          "name": "XhGridElement",
+          "cssParts": [
+            {
+              "description": "排布容器，承载 data-cols / data-gap / data-align / data-justify",
+              "name": "root"
+            },
+            {
+              "description": "一格，承载自报的 data-span / data-offset",
+              "name": "item"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: gridAnatomy, meta: gridMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "cols",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "cols"
+            },
+            {
+              "kind": "field",
+              "name": "gap",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "gap"
+            },
+            {
+              "kind": "field",
+              "name": "align",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "align"
+            },
+            {
+              "kind": "field",
+              "name": "justify",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "justify"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "列数（1–12），不写按一列排",
+              "name": "cols",
+              "fieldName": "cols"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "行列间距档位，逐档对应一个间距令牌",
+              "name": "gap",
+              "fieldName": "gap"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "每一项在自己那格里的块向对齐",
+              "name": "align",
+              "fieldName": "align"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "每一项在自己那格里的行内对齐",
+              "name": "justify",
+              "fieldName": "justify"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-grid",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhGridElement",
+          "declaration": {
+            "name": "XhGridElement",
+            "module": "src/elements/grid.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/hover-card.ts",
       "declarations": [
         {
@@ -10604,6 +10975,361 @@
           "declaration": {
             "name": "XhInfiniteScrollElement",
             "module": "src/elements/infinite-scroll.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-layout>` —— 页面骨架的 Light-DOM 行为宿主，跑 layout 机器并把 connect 产出打到\nroot/header/sider/content/footer/sider-trigger 角色节点。\n\n除 root 外的部件全部可缺省。各段一律不带 role：地标该不该标、标在哪一段，\n取决于这套骨架在页面里的位置，由作者自己声明。\n\n侧栏宽度只写成 sider 上的内联 inline-size，宽度过渡由皮肤声明。",
+          "name": "XhLayoutElement",
+          "cssParts": [
+            {
+              "description": "骨架根容器，承载 data-sider-placement / data-sider-collapsed / data-bordered",
+              "name": "root"
+            },
+            {
+              "description": "顶部横幅区，横贯整行",
+              "name": "header"
+            },
+            {
+              "description": "侧栏，宽度随折叠态在两档之间切换",
+              "name": "sider"
+            },
+            {
+              "description": "主内容区",
+              "name": "content"
+            },
+            {
+              "description": "底部区，横贯整行",
+              "name": "footer"
+            },
+            {
+              "description": "折叠把手（aria-expanded / aria-controls 所在）",
+              "name": "sider-trigger"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: layoutAnatomy, meta: layoutMeta, tags: { 'sider-trigger': ['button'] }, }"
+            },
+            {
+              "kind": "field",
+              "name": "siderCollapsed",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "sider-collapsed"
+            },
+            {
+              "kind": "field",
+              "name": "defaultSiderCollapsed",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-sider-collapsed"
+            },
+            {
+              "kind": "field",
+              "name": "siderWidth",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "sider-width"
+            },
+            {
+              "kind": "field",
+              "name": "siderCollapsedWidth",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "sider-collapsed-width"
+            },
+            {
+              "kind": "field",
+              "name": "siderPlacement",
+              "privacy": "public",
+              "type": {
+                "text": "LayoutSiderPlacement | undefined"
+              },
+              "attribute": "sider-placement"
+            },
+            {
+              "kind": "field",
+              "name": "bordered",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "bordered"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<LayoutSchema>(this, layoutMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<LayoutSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "折叠态变化；detail 为 `{ collapsed: boolean }`",
+              "name": "sider-collapsed-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控折叠态；缺省该属性即非受控",
+              "name": "sider-collapsed",
+              "fieldName": "siderCollapsed"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始为折叠",
+              "name": "default-sider-collapsed",
+              "fieldName": "defaultSiderCollapsed"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "展开时侧栏的宽度，任意 CSS 长度",
+              "name": "sider-width",
+              "fieldName": "siderWidth"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "折叠时侧栏的宽度，任意 CSS 长度",
+              "name": "sider-collapsed-width",
+              "fieldName": "siderCollapsedWidth"
+            },
+            {
+              "type": {
+                "text": "LayoutSiderPlacement | undefined"
+              },
+              "description": "侧栏挂在行首还是行尾，缺省 start",
+              "name": "sider-placement",
+              "fieldName": "siderPlacement"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "在头、侧栏、脚与内容之间画分隔线",
+              "name": "bordered",
+              "fieldName": "bordered"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-layout",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhLayoutElement",
+          "declaration": {
+            "name": "XhLayoutElement",
+            "module": "src/elements/layout.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/list.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-list>` —— Light-DOM 行为宿主，无状态机，把 connectList 产出打到各角色节点。\n除 root 外的部件全部可缺省：空列表、只有一行标题的条目都是合法形态。\n\n标签由作者定：root 写 `<ul>`/`<ol>` 就进读屏的列表语义，写 `<div>` 就只是一摞盒子；\nitem 同理。组件不补 role。",
+          "name": "XhListElement",
+          "cssParts": [
+            {
+              "description": "列表根容器，承载 data-size / data-bordered / data-hoverable / data-split",
+              "name": "root"
+            },
+            {
+              "description": "一条条目",
+              "name": "item"
+            },
+            {
+              "description": "条目最前的媒体位，放头像、图标或缩略图",
+              "name": "item-media"
+            },
+            {
+              "description": "条目的文字区，装标题与说明",
+              "name": "item-content"
+            },
+            {
+              "description": "条目标题",
+              "name": "item-title"
+            },
+            {
+              "description": "条目标题下的说明",
+              "name": "item-description"
+            },
+            {
+              "description": "条目末尾的操作位",
+              "name": "item-action"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: listAnatomy, meta: listMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "bordered",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "bordered"
+            },
+            {
+              "kind": "field",
+              "name": "hoverable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "hoverable"
+            },
+            {
+              "kind": "field",
+              "name": "split",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "split"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "ListSize | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "给整份列表画一圈描边与圆角",
+              "name": "bordered",
+              "fieldName": "bordered"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "指针悬停时条目换底色",
+              "name": "hoverable",
+              "fieldName": "hoverable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "条目之间画分隔线",
+              "name": "split",
+              "fieldName": "split"
+            },
+            {
+              "type": {
+                "text": "ListSize | undefined"
+              },
+              "description": "尺寸，决定条目的内边距、图文间距与两行文字的字号",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-list",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhListElement",
+          "declaration": {
+            "name": "XhListElement",
+            "module": "src/elements/list.ts"
           }
         }
       ]
@@ -12948,6 +13674,116 @@
           "declaration": {
             "name": "XhNumberFieldElement",
             "module": "src/elements/number-field.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/page-header.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-page-header>` —— Light-DOM 行为宿主，无状态机，把 connectPageHeader 产出打到各角色节点。\n除 root 外的部件全部可缺省：返回位、标题、副标题、操作、页脚按需摆。\n\n返回位只拿身份与位置：标签、type、可及名字、点了往哪走，全归作者自己的按钮。\nroot 上不写 role：这一块算不算 banner 地标取决于它摆在页面的哪一层，由作者自己声明。",
+          "name": "XhPageHeaderElement",
+          "cssParts": [
+            {
+              "description": "页头根容器，承载 data-size / data-bordered",
+              "name": "root"
+            },
+            {
+              "description": "返回位，作者自己的按钮，组件只摆位置",
+              "name": "back-trigger"
+            },
+            {
+              "description": "页面标题",
+              "name": "title"
+            },
+            {
+              "description": "与标题同行的补充信息",
+              "name": "subtitle"
+            },
+            {
+              "description": "行尾的操作区",
+              "name": "extra"
+            },
+            {
+              "description": "整行另起的附加区，装描述、标签页或一组摘要",
+              "name": "footer"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: pageHeaderAnatomy, meta: pageHeaderMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "bordered",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "bordered"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸，决定标题字号与整块的上下留白",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "底部画一条分隔线",
+              "name": "bordered",
+              "fieldName": "bordered"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-page-header",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhPageHeaderElement",
+          "declaration": {
+            "name": "XhPageHeaderElement",
+            "module": "src/elements/page-header.ts"
           }
         }
       ]
@@ -17573,6 +18409,112 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/statistic.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-statistic>` —— Light-DOM 行为宿主，无状态机，把 connectStatistic 产出打到各角色节点。\n\n除 root 外的部件全部可缺省：只摆一个数值也是一块合法的统计。\n数值由作者格式化好再塞进 value 槽，组件不做千分位、不做单位换算、不做动画。\n\nroot 上不写 role：一块统计数是不是列表项、要不要可及名字，由它被摆在哪里决定。",
+          "name": "XhStatisticElement",
+          "cssParts": [
+            {
+              "description": "承载 data-size 与 data-tone 的容器",
+              "name": "root"
+            },
+            {
+              "description": "数值上方的标签",
+              "name": "label"
+            },
+            {
+              "description": "数值本体，用等宽数字排版",
+              "name": "value"
+            },
+            {
+              "description": "数值前的货币符号或升降箭头",
+              "name": "prefix"
+            },
+            {
+              "description": "数值后的单位或百分号",
+              "name": "suffix"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: statisticAnatomy, meta: statisticMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "StatisticSize | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "StatisticTone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "StatisticSize | undefined"
+              },
+              "description": "尺寸档位，写到 root 的 data-size 上",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "StatisticTone | undefined"
+              },
+              "description": "语气，写到 root 的 data-tone 上",
+              "name": "tone",
+              "fieldName": "tone"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-statistic",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhStatisticElement",
+          "declaration": {
+            "name": "XhStatisticElement",
+            "module": "src/elements/statistic.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/steps.ts",
       "declarations": [
         {
@@ -20722,6 +21664,160 @@
           "declaration": {
             "name": "XhTimePickerElement",
             "module": "src/elements/time-picker.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/timeline.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-timeline>` —— 事件流行为宿主，无状态机，把 connectTimeline 产出打到角色节点上。\n\n作者写 root / item / indicator / connector / content / title / description / time 角色节点，\n元素只往上打属性，不替作者生成任何节点。\n标签上的建议：root 写 `<ol>`、item 写 `<li>`、time 写 `<time datetime=\"…\">`，\n机读时间归作者，元素不代填。\n\n这不是步骤条：`<xh-steps>` 表达「流程走到第几步」，有当前项与完成态；\n这里表达「按时间排的事件流」，条目已经发生、彼此平等，没有当前项，也就没有任何状态属性。\n一条与另一条的差别只有语气色，写在 item 节点的 `tone` 属性上，圆点向上找自己的 item 取用。\n运行期改写 item 上的 `tone` 不触发重新接线，需作者自行 requestUpdate。",
+          "name": "XhTimelineElement",
+          "cssParts": [
+            {
+              "description": "role=list 的容器，承载 data-orientation / data-placement / data-size",
+              "name": "root"
+            },
+            {
+              "description": "role=listitem 的单条事件；作者在此写 tone（这一条的语气色）",
+              "name": "item"
+            },
+            {
+              "description": "事件那一刻的圆点，对读屏隐藏，颜色随所属条目的 tone 走",
+              "name": "indicator"
+            },
+            {
+              "description": "圆点之间的连线，对读屏隐藏；长度与首尾裁切归皮肤",
+              "name": "connector"
+            },
+            {
+              "description": "这一条的文字容器",
+              "name": "content"
+            },
+            {
+              "description": "事件标题",
+              "name": "title"
+            },
+            {
+              "description": "标题下的说明",
+              "name": "description"
+            },
+            {
+              "description": "时刻文本",
+              "name": "time"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: timelineAnatomy, meta: timelineMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "orientation",
+              "privacy": "public",
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "attribute": "orientation"
+            },
+            {
+              "kind": "field",
+              "name": "placement",
+              "privacy": "public",
+              "type": {
+                "text": "TimelinePlacement | undefined"
+              },
+              "attribute": "placement"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "method",
+              "name": "itemProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "TimelineItemProps"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "取角色节点所属条目的语气：tone 写在 item 节点上，圆点向上找自己的 item。\n没有 item 包裹层时退回读节点自身，扁平结构也能用；\n越出本宿主的 item 不算数——时间线套时间线时内层圆点不会认外层条目。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "description": "事件排列方向，默认 vertical",
+              "name": "orientation",
+              "fieldName": "orientation"
+            },
+            {
+              "type": {
+                "text": "TimelinePlacement | undefined"
+              },
+              "description": "内容在线的哪一侧；alternate 逐条交替",
+              "name": "placement",
+              "fieldName": "placement"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸，决定圆点直径、条目间距与字号",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-timeline",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhTimelineElement",
+          "declaration": {
+            "name": "XhTimelineElement",
+            "module": "src/elements/timeline.ts"
           }
         }
       ]
@@ -24129,6 +25225,95 @@
           "declaration": {
             "name": "XhTreeElement",
             "module": "src/elements/tree.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/typography.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-typography>` —— Light-DOM 行为宿主，无状态机，把 connectTypography 产出打到各角色节点。\n\n标签全由作者写：`<h2 data-xh-part=\"heading\">`、`<p data-xh-part=\"paragraph\">`、\n`<span data-xh-part=\"text\">`、`<a data-xh-part=\"link\">`，皮肤认的是 data-scope + data-part。\n标题的字号档位取节点上的 `level`，行内文字的形态与语气取节点上的 `variant` 与 `tone`。\n运行期改写这三个属性不触发重新接线，需作者自行 requestUpdate。",
+          "name": "XhTypographyElement",
+          "cssParts": [
+            {
+              "description": "正文块容器，管段间距与最大行宽，承载 data-size",
+              "name": "root"
+            },
+            {
+              "description": "标题，写 level=\"1\"..\"6\" 换字号档位",
+              "name": "heading"
+            },
+            {
+              "description": "段落",
+              "name": "paragraph"
+            },
+            {
+              "description": "行内文字，写 variant=\"muted|strong|code\" 换形态、tone 换语气色",
+              "name": "text"
+            },
+            {
+              "description": "行内链接",
+              "name": "link"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: typographyAnatomy, meta: typographyMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "尺寸，整块正文的字号与段间距跟着换档",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-typography",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhTypographyElement",
+          "declaration": {
+            "name": "XhTypographyElement",
+            "module": "src/elements/typography.ts"
           }
         }
       ]

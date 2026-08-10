@@ -234,6 +234,22 @@
         {
           "id": "log",
           "name": "日志"
+        },
+        {
+          "id": "list",
+          "name": "列表"
+        },
+        {
+          "id": "descriptions",
+          "name": "描述列表"
+        },
+        {
+          "id": "timeline",
+          "name": "时间线"
+        },
+        {
+          "id": "statistic",
+          "name": "统计数值"
         }
       ]
     },
@@ -293,6 +309,10 @@
         {
           "id": "back-top",
           "name": "回到顶部"
+        },
+        {
+          "id": "page-header",
+          "name": "页头"
         }
       ]
     },
@@ -374,6 +394,22 @@
         {
           "id": "flex",
           "name": "弹性布局"
+        },
+        {
+          "id": "grid",
+          "name": "栅格"
+        },
+        {
+          "id": "typography",
+          "name": "排印"
+        },
+        {
+          "id": "gradient-text",
+          "name": "渐变文字"
+        },
+        {
+          "id": "layout",
+          "name": "布局"
         }
       ]
     }
