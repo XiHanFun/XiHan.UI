@@ -1,5 +1,5 @@
 import type { SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails } from '@xihan-ui/headless'
-import type { Direction, Placement } from '@xihan-ui/kernel'
+import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideSelect, provideSelectItem, useSelectContext, useSelectItemContext } from './context'
@@ -27,9 +27,9 @@ export const XhSelectRoot = defineComponent({
     offset: { type: Number, default: undefined },
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
-    variant: { type: String, default: undefined },
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    variant: { type: String as PropType<ControlVariant>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸值。
   // 校验函数恒真，只声明载荷类型：'update:value' 是 string[]，单选也是长度 1 的数组而非裸串。

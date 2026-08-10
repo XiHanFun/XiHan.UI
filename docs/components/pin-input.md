@@ -95,9 +95,9 @@ complete 在每格都有字时为真，作者据此点亮提交按钮；clear �
 | `invalid` | `boolean` |  | 校验失败标注。 |
 | `blurOnComplete` | `boolean` |  | 填满即把焦点撤走，常用于"填满就自动提交"的表单。 |
 | `name` | `string` |  | 表单字段名；给了隐藏输入才带 name，整串值随表单一并提交。 |
-| `variant` | `string` |  | 形态：outline / subtle / ghost，决定颜色怎么用。 |
-| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
-| `size` | `string` |  | 尺寸：sm / md / lg。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定颜色怎么用。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<PinInputTranslations>` |  |  |
 | `onValueChange` | `(details: PinInputValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onValueComplete` | `(details: PinInputValueChangeDetails) => void` |  | 每格都填满的那一刻触发；值没真变时不重复触发。 |

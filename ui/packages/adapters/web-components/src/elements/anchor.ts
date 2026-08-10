@@ -1,5 +1,5 @@
 import type { AnchorSchema, AnchorTranslations, AnchorValueChangeDetails } from '@xihan-ui/headless'
-import type { Direction, Orientation } from '@xihan-ui/kernel'
+import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { anchorAnatomy, anchorMachine, anchorMeta, connectAnchor } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -63,8 +63,8 @@ export class XhAnchorElement extends XhElement {
   declare smooth?: boolean
   declare orientation?: Orientation
   declare direction?: Direction
-  declare tone?: string
-  declare size?: string
+  declare tone?: Tone
+  declare size?: Size
   declare targets?: readonly string[]
   declare translations?: Partial<AnchorTranslations>
   declare scrollElement?: HTMLElement | null

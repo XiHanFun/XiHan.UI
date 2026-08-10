@@ -1,4 +1,4 @@
-import type { Direction, PropTypes } from '@xihan-ui/kernel'
+import type { Direction, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 
 /** 读屏用的文案，默认英文。 */
 export interface BreadcrumbTranslations {
@@ -11,9 +11,9 @@ export interface BreadcrumbProps {
   dir?: Direction
   translations?: Partial<BreadcrumbTranslations>
   /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
-  tone?: string
+  tone?: Tone
   /** 尺寸：sm / md / lg。 */
-  size?: string
+  size?: Size
 }
 
 /**

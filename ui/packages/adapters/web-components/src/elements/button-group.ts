@@ -1,4 +1,5 @@
 import type { ButtonGroupProps } from '@xihan-ui/headless'
+import type { ActionVariant, Size, Tone } from '@xihan-ui/kernel'
 import { buttonGroupAnatomy, buttonGroupMeta, connectButtonGroup } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -28,9 +29,9 @@ export class XhButtonGroupElement extends XhElement {
   }
 
   declare orientation?: string
-  declare variant?: string
-  declare tone?: string
-  declare size?: string
+  declare variant?: ActionVariant
+  declare tone?: Tone
+  declare size?: Size
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性

@@ -1,4 +1,5 @@
 import type { TagsInputBlurBehavior, TagsInputItemProps, TagsInputSchema, TagsInputTranslations } from '@xihan-ui/headless'
+import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideTagsInput, provideTagsInputItem, useTagsInputContext, useTagsInputItemContext } from './context'
@@ -26,9 +27,9 @@ export const XhTagsInputRoot = defineComponent({
     addOnPaste: Boolean,
     editable: Boolean,
     blurBehavior: { type: String as PropType<TagsInputBlurBehavior | null>, default: undefined },
-    variant: { type: String, default: undefined },
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    variant: { type: String as PropType<ControlVariant>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
     translations: { type: Object as PropType<Partial<TagsInputTranslations>>, default: undefined },
   },
   // value-change 携带 { value }，update:value 携带裸数组；输入文本走 input-value-change 一路

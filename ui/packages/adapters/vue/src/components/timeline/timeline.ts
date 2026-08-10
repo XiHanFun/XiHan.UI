@@ -1,5 +1,5 @@
 import type { TimelinePlacement, TimelineProps } from '@xihan-ui/headless'
-import type { Orientation } from '@xihan-ui/kernel'
+import type { Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectTimeline } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -13,7 +13,7 @@ export const XhTimelineRoot = defineComponent({
   props: {
     orientation: { type: String as PropType<Orientation>, default: undefined },
     placement: { type: String as PropType<TimelinePlacement>, default: undefined },
-    size: { type: String, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   setup(props, { slots }) {
     const api = computed(() => connectTimeline(props as TimelineProps, vueNormalize))
@@ -26,7 +26,7 @@ export const XhTimelineRoot = defineComponent({
 export const XhTimelineItem = defineComponent({
   name: 'XhTimelineItem',
   props: {
-    tone: { type: String, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useTimelineContext()

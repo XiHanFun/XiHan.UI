@@ -1,4 +1,5 @@
 import type { TextFieldSchema, TextFieldValueChangeDetails } from '@xihan-ui/headless'
+import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import { connectTextField, textFieldAnatomy, textFieldMachine, textFieldMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -71,9 +72,9 @@ export class XhTextFieldElement extends XhElement {
   declare name?: string
   declare maxLength?: number
   declare clearable?: boolean
-  declare variant?: string
-  declare tone?: string
-  declare size?: string
+  declare variant?: ControlVariant
+  declare tone?: Tone
+  declare size?: Size
 
   private readonly notify = (details: TextFieldValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))

@@ -1,4 +1,4 @@
-import type { Cleanup, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, ControlVariant, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /**
@@ -137,11 +137,11 @@ export interface ComboboxSchema extends MachineSchema {
     placement?: Placement
     offset?: number
     /** 形态：outline / subtle / ghost，决定输入行的描边与底色怎么用。 */
-    variant?: string
+    variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 */
-    tone?: string
+    tone?: Tone
     /** 尺寸：sm / md / lg，决定输入行高度、内边距与字号档位。 */
-    size?: string
+    size?: Size
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: ComboboxValueChangeDetails) => void
     /** 输入串变化回调：调用方据此重新过滤候选。 */

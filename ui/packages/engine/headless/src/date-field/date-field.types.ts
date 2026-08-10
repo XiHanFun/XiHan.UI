@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { ControlVariant, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 一段的身份。日期三段恒在，时间三段由 granularity 决定要不要。 */
@@ -87,11 +87,11 @@ export interface DateFieldSchema extends MachineSchema {
     /** 各段的读屏名字，逐段覆盖内置默认。段是 spinbutton，没有名字读屏只念得出一串数字。 */
     translations?: { readonly [K in DateSegmentType]?: string }
     /** 形态：outline / subtle / ghost，决定描边与底色怎么用。 */
-    variant?: string
+    variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调用哪族颜色。 */
-    tone?: string
+    tone?: Tone
     /** 尺寸：sm / md / lg。 */
-    size?: string
+    size?: Size
     onValueChange?: (details: DateFieldValueChangeDetails) => void
   }
   context: {

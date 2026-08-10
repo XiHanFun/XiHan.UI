@@ -1,3 +1,4 @@
+import type { Size, Tone } from '@xihan-ui/kernel'
 import { connectProgress, progressAnatomy, progressMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -26,8 +27,8 @@ export class XhProgressElement extends XhElement {
 
   declare value?: number
   declare max?: number
-  declare tone?: string
-  declare size?: string
+  declare tone?: Tone
+  declare size?: Size
 
   protected wire(): void {
     const api = connectProgress({ value: this.value, max: this.max, tone: this.tone, size: this.size }, wcNormalize)

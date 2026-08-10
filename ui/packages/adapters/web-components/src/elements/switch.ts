@@ -1,4 +1,5 @@
 import type { SwitchCheckedChangeDetails, SwitchSchema } from '@xihan-ui/headless'
+import type { Size, Tone } from '@xihan-ui/kernel'
 import { connectSwitch, switchAnatomy, switchMachine, switchMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -31,8 +32,8 @@ export class XhSwitchElement extends XhElement {
   declare checked?: boolean
   declare defaultChecked?: boolean
   declare disabled?: boolean
-  declare tone?: string
-  declare size?: string
+  declare tone?: Tone
+  declare size?: Size
 
   private readonly notify = (details: SwitchCheckedChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('checked-change', { detail: details, bubbles: true, composed: true }))

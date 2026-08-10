@@ -1,4 +1,6 @@
-import type { CardProps } from '@xihan-ui/headless'
+import type { CardProps, CardVariant } from '@xihan-ui/headless'
+import type { Size } from '@xihan-ui/kernel'
+import type { PropType } from 'vue'
 import { connectCard } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -8,8 +10,8 @@ export const XhCardRoot = defineComponent({
   name: 'XhCardRoot',
   // 有 connect 兜底的 prop 一律 default: undefined
   props: {
-    variant: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    variant: { type: String as PropType<CardVariant>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
     hoverable: Boolean,
     segmented: Boolean,
   },

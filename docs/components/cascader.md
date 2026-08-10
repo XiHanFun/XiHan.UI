@@ -125,9 +125,9 @@ trigger 部件渲染的就是原生按钮，模板 ref 拿到它即可 focus / b
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 用原生 disabled，浮层展不开。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开与浏览，但选中值改不动、也清不掉。 |
 | `invalid` | `boolean` |  | 校验失败：trigger 报 aria-invalid，各角色节点带 data-invalid。 |
-| `variant` | `string` |  | 形态：outline / subtle / ghost，决定触发框的描边与底色怎么用。 |
-| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中用哪族颜色。 |
-| `size` | `string` |  | 尺寸：sm / md / lg，决定触发框与条目的几何档位。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发框的描边与底色怎么用。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，决定触发框与条目的几何档位。 |
 | `placeholder` | `string` |  | 无选中时 value-text 显示的占位文字。 |
 | `separator` | `string` |  | 路径回显的连接符，默认 ' / '。 |
 | `placement` | `Placement` |  |  |

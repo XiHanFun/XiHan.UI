@@ -73,8 +73,8 @@ size 改条目间距与字号，不写即缺省中档
 | `orientation` | `Orientation` |  |  |
 | `dir` | `Direction` |  | 文字方向，缺省 'ltr'。 |
 | `name` | `string` |  | 表单字段名。 |
-| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
-| `size` | `string` |  | 尺寸：sm / md / lg。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: RadioGroupValueChangeDetails) => void` |  | value 变化回调。 |
 
 ## 状态机

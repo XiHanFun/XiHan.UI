@@ -1,5 +1,5 @@
 import type { NavigationMenuNode, NavigationMenuSchema, NavigationMenuTranslations, NavigationMenuValueChangeDetails } from '@xihan-ui/headless'
-import type { Direction, IdGenerator, Orientation } from '@xihan-ui/kernel'
+import type { Direction, IdGenerator, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { isItemDisabled } from '@xihan-ui/behavior'
 import { connectNavigationMenu, navigationMenuAnatomy, navigationMenuMachine, navigationMenuMeta } from '@xihan-ui/headless'
@@ -100,8 +100,8 @@ export class XhNavigationMenuElement extends XhElement {
   declare skipDelayDuration?: number
   declare direction?: Direction
   declare loop?: boolean
-  declare tone?: string
-  declare size?: string
+  declare tone?: Tone
+  declare size?: Size
   declare translations?: Partial<NavigationMenuTranslations>
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()

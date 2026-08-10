@@ -21,6 +21,4 @@ export type {
   NumberAnimationLive,
   NumberAnimationPhase,
   NumberAnimationSchema,
-  NumberAnimationSize,
-  NumberAnimationTone,
 } from './number-animation.types'

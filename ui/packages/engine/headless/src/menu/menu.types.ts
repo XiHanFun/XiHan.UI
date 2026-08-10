@@ -1,4 +1,4 @@
-import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 展开时的落焦端：'first'/'last' 从集合两端进，'none' 不预先挑锚点。 */
@@ -74,9 +74,9 @@ export interface MenuSchema extends MachineSchema {
     /** 文字方向，默认 ltr。 */
     dir?: Direction
     /** 语气：brand / neutral / success / warning / danger / info，决定条目高亮用哪族颜色。 */
-    tone?: string
+    tone?: Tone
     /** 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 */
-    size?: string
+    size?: Size
     /** open 变化回调。 */
     onOpenChange?: (details: MenuOpenChangeDetails) => void
     /** 条目被选中；菜单随之关闭。 */

@@ -1,5 +1,8 @@
-import type { Direction, Orientation, PropTypes } from '@xihan-ui/kernel'
+import type { Direction, Orientation, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
+
+/** 形态。取值与 tabs.css 的选择器一一对应。 */
+export type TabsVariant = 'card' | 'segment'
 
 export interface TabsValueChangeDetails {
   value: string | null
@@ -58,11 +61,11 @@ export interface TabsSchema extends MachineSchema {
     /** 方向键走到尽头是否回绕，默认 true。 */
     loop?: boolean
     /** 形态：line / card / segment，决定选中态怎么画。缺省是 line。 */
-    variant?: string
+    variant?: TabsVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
-    tone?: string
+    tone?: Tone
     /** 尺寸：sm / md / lg。 */
-    size?: string
+    size?: Size
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: TabsValueChangeDetails) => void
   }

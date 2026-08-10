@@ -1,5 +1,5 @@
 import type { SliderSchema, SliderValueTextDetails } from '@xihan-ui/headless'
-import type { Direction, Orientation } from '@xihan-ui/kernel'
+import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { computed, defineComponent, h } from 'vue'
 import { provideSlider, provideSliderThumb, useSliderContext, useSliderThumbContext } from './context'
@@ -23,8 +23,8 @@ export const XhSliderRoot = defineComponent({
     disabled: Boolean,
     readOnly: Boolean,
     invalid: Boolean,
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
     name: { type: String, default: undefined },
     getValueText: {
       type: Function as PropType<(details: SliderValueTextDetails) => string>,

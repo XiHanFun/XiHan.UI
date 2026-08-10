@@ -1,4 +1,4 @@
-import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface HoverCardOpenChangeDetails {
@@ -37,7 +37,7 @@ export interface HoverCardSchema extends MachineSchema {
     /** 只关掉卡片本身，不影响 trigger 元素自身的可用性。 */
     disabled?: boolean
     /** 尺寸：sm / md / lg，决定卡片的内边距档位。 */
-    size?: string
+    size?: Size
     /** open 变化意图回调。 */
     onOpenChange?: (details: HoverCardOpenChangeDetails) => void
   }

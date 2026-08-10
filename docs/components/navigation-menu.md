@@ -93,8 +93,8 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
 | `translations` | `Partial<NavigationMenuTranslations>` |  |  |
-| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
-| `size` | `string` |  | 尺寸：sm / md / lg。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: NavigationMenuValueChangeDetails) => void` |  | value 变化回调。 |
 
 ## 状态机

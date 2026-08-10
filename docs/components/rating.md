@@ -87,8 +87,8 @@ size 改星的大小与间距，不写即缺省中档
 | `required` | `boolean` |  |  |
 | `name` | `string` |  | 表单字段名；给了表单影子才带 name 并参与提交。 |
 | `dir` | `Direction` |  | 文字方向，缺省 'ltr'。只改写左右方向键与"指针落在哪半边"的语义。 |
-| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
-| `size` | `string` |  | 尺寸：sm / md / lg。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: RatingValueChangeDetails) => void` |  |  |
 | `onHoverChange` | `(details: RatingHoverChangeDetails) => void` |  | 悬停预览变化；指针离开时带 null。它不代表值变了。 |
 

@@ -1,11 +1,14 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { PropTypes, Size, Tone } from '@xihan-ui/kernel'
+
+/** 形态。取值与 badge.css 的选择器一一对应。 */
+export type BadgeVariant = 'outline' | 'solid' | 'subtle'
 
 export interface BadgeProps {
-  variant?: 'solid' | 'subtle' | 'outline'
+  variant?: BadgeVariant
   /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 */
-  tone?: string
+  tone?: Tone
   /** 尺寸：sm / md / lg */
-  size?: string
+  size?: Size
 }
 
 export interface BadgeApi<T extends PropTypes = PropTypes> {

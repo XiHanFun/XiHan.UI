@@ -9,7 +9,7 @@ import type {
   ComboboxSchema,
   ComboboxValueChangeDetails,
 } from '@xihan-ui/headless'
-import type { Cleanup, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, ControlVariant, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { isItemDisabled } from '@xihan-ui/behavior'
 import { comboboxAnatomy, comboboxMachine, comboboxMeta, connectCombobox } from '@xihan-ui/headless'
@@ -122,9 +122,9 @@ export class XhComboboxElement extends XhElement {
   declare inputBehavior?: ComboboxInputBehavior
   declare placement?: Placement
   declare offset?: number
-  declare variant?: string
-  declare tone?: string
-  declare size?: string
+  declare variant?: ControlVariant
+  declare tone?: Tone
+  declare size?: Size
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly comboboxScope = createScope(null, this.idGen)

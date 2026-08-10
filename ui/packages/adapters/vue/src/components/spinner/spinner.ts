@@ -1,4 +1,5 @@
-import type { SpinnerProps, SpinnerSize, SpinnerTranslations } from '@xihan-ui/headless'
+import type { SpinnerProps, SpinnerTranslations } from '@xihan-ui/headless'
+import type { Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { provideSpinner, useSpinnerContext } from './context'
@@ -10,8 +11,8 @@ export const XhSpinner = defineComponent({
   // 缺省值由 connect 给出，这里一律 default: undefined
   props: {
     label: { type: String, default: undefined },
-    size: { type: String as PropType<SpinnerSize>, default: undefined },
-    tone: { type: String, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
     translations: { type: Object as PropType<Partial<SpinnerTranslations>>, default: undefined },
   },
   setup(props, { slots }) {

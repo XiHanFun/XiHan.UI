@@ -1,4 +1,5 @@
 import type { BackTopBehavior, BackTopSchema, BackTopTranslations } from '@xihan-ui/headless'
+import type { Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { provideBackTop, useBackTopContext } from './context'
@@ -14,8 +15,8 @@ export const XhBackTopRoot = defineComponent({
     visibilityHeight: { type: Number, default: undefined },
     behavior: { type: String as PropType<BackTopBehavior>, default: undefined },
     translations: { type: Object as PropType<Partial<BackTopTranslations>>, default: undefined },
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
     /** 滚动容器，缺省即整页滚动；经 refs 交给观察器。 */
     target: { type: Object as PropType<HTMLElement | null>, default: undefined },
   },

@@ -1,4 +1,5 @@
 import type { IconWrapperProps } from '@xihan-ui/headless'
+import type { ActionVariant, Size, Tone } from '@xihan-ui/kernel'
 import { connectIconWrapper, iconWrapperAnatomy, iconWrapperMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -24,9 +25,9 @@ export class XhIconWrapperElement extends XhElement {
     size: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
   }
 
-  declare variant?: string
-  declare tone?: string
-  declare size?: string
+  declare variant?: ActionVariant
+  declare tone?: Tone
+  declare size?: Size
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性

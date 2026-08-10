@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 import type { TweenEasing } from '../shared/tween'
 
@@ -6,10 +6,8 @@ import type { TweenEasing } from '../shared/tween'
 export type NumberAnimationEasing = TweenEasing
 
 /** 尺寸档位，只改字号。 */
-export type NumberAnimationSize = 'sm' | 'md' | 'lg'
 
 /** 语气档位，决定数字用哪族颜色。 */
-export type NumberAnimationTone = 'brand' | 'neutral' | 'success' | 'warning' | 'danger' | 'info'
 
 /** 两段状态：在跑 / 停着，同时是 data-state 的取值。 */
 export type NumberAnimationPhase = 'idle' | 'running'
@@ -39,9 +37,9 @@ export interface NumberAnimationSchema extends MachineSchema {
     /** 是否在跑，缺省 true。翻假即停在当前值，翻真从当前值继续走向终点。 */
     active?: boolean
     /** 尺寸：sm / md / lg，只落成 root 的 data-size。 */
-    size?: NumberAnimationSize
+    size?: Size
     /** 语气：brand / neutral / success / warning / danger / info，只落成 root 的 data-tone。 */
-    tone?: NumberAnimationTone
+    tone?: Tone
     /** 读屏播报档位，缺省 off。 */
     live?: NumberAnimationLive
     /** 走到终点时通知一次。中途被停掉不通知。 */

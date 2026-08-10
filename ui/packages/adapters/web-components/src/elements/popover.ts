@@ -1,5 +1,5 @@
 import type { PopoverOpenChangeDetails, PopoverSchema, PopoverTranslations } from '@xihan-ui/headless'
-import type { Cleanup, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { connectPopover, popoverAnatomy, popoverMachine, popoverMeta } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
@@ -62,7 +62,7 @@ export class XhPopoverElement extends XhElement {
   declare modal?: boolean
   declare closeOnEscape?: boolean
   declare closeOnInteractOutside?: boolean
-  declare size?: string
+  declare size?: Size
   /** 关闭按钮的无障碍名；connect 每帧重写 aria-label，作者自己写在节点上会被盖掉，只能从这里给。 */
   declare translations?: Partial<PopoverTranslations>
 

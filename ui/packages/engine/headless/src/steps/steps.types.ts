@@ -1,4 +1,4 @@
-import type { Direction, Orientation, PropTypes } from '@xihan-ui/kernel'
+import type { Direction, Orientation, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface StepsStepChangeDetails {
@@ -56,9 +56,9 @@ export interface StepsSchema extends MachineSchema {
     /** 文字方向，默认 ltr；只影响水平轴上 ArrowLeft/ArrowRight 的前后语义。 */
     dir?: Direction
     /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
-    tone?: string
+    tone?: Tone
     /** 尺寸：sm / md / lg。 */
-    size?: string
+    size?: Size
     /** 步序变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onStepChange?: (details: StepsStepChangeDetails) => void
   }

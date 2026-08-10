@@ -1,5 +1,5 @@
 import type { HoverCardOpenChangeDetails, HoverCardSchema } from '@xihan-ui/headless'
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { connectHoverCard, hoverCardAnatomy, hoverCardMachine, hoverCardMeta } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
@@ -74,7 +74,7 @@ export class XhHoverCardElement extends XhElement {
   declare closeDelay?: number
   declare direction?: Direction
   declare disabled?: boolean
-  declare size?: string
+  declare size?: Size
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly hoverCardScope = createScope(null, this.idGen)

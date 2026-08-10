@@ -1,5 +1,5 @@
 import type { PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
-import type { Direction } from '@xihan-ui/kernel'
+import type { Direction, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { providePagination, usePaginationContext } from './context'
@@ -18,8 +18,8 @@ export const XhPaginationRoot = defineComponent({
     siblingCount: { type: Number, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     translations: { type: Object as PropType<Partial<PaginationTranslations>>, default: undefined },
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   // page-change 携带 { page, pageSize }，update:page 携带裸页码
   emits: ['page-change', 'update:page'],

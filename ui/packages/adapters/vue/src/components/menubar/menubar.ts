@@ -1,5 +1,5 @@
 import type { MenubarContentProps, MenubarGroupProps, MenubarItemProps, MenubarNode, MenubarNodeMeta, MenubarSchema } from '@xihan-ui/headless'
-import type { Direction, Orientation, Placement } from '@xihan-ui/kernel'
+import type { Direction, Orientation, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import type { MenubarPartRegistry } from './use-menubar'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
@@ -48,8 +48,8 @@ export const XhMenubarRoot = defineComponent({
     typeahead: { type: Boolean, default: undefined },
     placement: { type: String as PropType<Placement>, default: undefined },
     offset: { type: Number, default: undefined },
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   // value-change 携带 { value }、select 携带 { menu, value }，update:value 携带裸值
   emits: ['value-change', 'select', 'update:value'],

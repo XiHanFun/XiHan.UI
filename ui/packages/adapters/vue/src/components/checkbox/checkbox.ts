@@ -1,4 +1,5 @@
 import type { CheckboxCheckedState, CheckboxSchema } from '@xihan-ui/headless'
+import type { Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { useCheckbox } from './use-checkbox'
@@ -12,8 +13,8 @@ export const XhCheckbox = defineComponent({
     checked: { type: [Boolean, String] as PropType<CheckboxCheckedState>, default: undefined },
     defaultChecked: { type: [Boolean, String] as PropType<CheckboxCheckedState>, default: undefined },
     disabled: Boolean,
-    tone: String,
-    size: String,
+    tone: String as PropType<Tone>,
+    size: String as PropType<Size>,
   },
   // checked-change 携带 { checked }，update:checked 携带裸布尔
   emits: ['checked-change', 'update:checked'],

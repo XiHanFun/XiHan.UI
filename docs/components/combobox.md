@@ -126,9 +126,9 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `inputBehavior` | `ComboboxInputBehavior` |  | 输入行为，默认 none。 |
 | `placement` | `Placement` |  |  |
 | `offset` | `number` |  |  |
-| `variant` | `string` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色怎么用。 |
-| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 |
-| `size` | `string` |  | 尺寸：sm / md / lg，决定输入行高度、内边距与字号档位。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色怎么用。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，决定输入行高度、内边距与字号档位。 |
 | `onValueChange` | `(details: ComboboxValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onInputValueChange` | `(details: ComboboxInputValueChangeDetails) => void` |  | 输入串变化回调：调用方据此重新过滤候选。 |
 | `onOpenChange` | `(details: ComboboxOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |

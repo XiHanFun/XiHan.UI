@@ -1,4 +1,5 @@
 import type { AlertOpenChangeDetails, AlertSchema } from '@xihan-ui/headless'
+import type { Tone } from '@xihan-ui/kernel'
 import { alertAnatomy, alertMachine, alertMeta, connectAlert } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -37,7 +38,7 @@ export class XhAlertElement extends XhElement {
     translations: { attribute: false },
   }
 
-  declare tone?: string
+  declare tone?: Tone
   declare closable?: boolean
   declare open?: boolean
   declare defaultOpen?: boolean

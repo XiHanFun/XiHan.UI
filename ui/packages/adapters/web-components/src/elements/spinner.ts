@@ -1,4 +1,5 @@
-import type { SpinnerProps, SpinnerSize, SpinnerTranslations } from '@xihan-ui/headless'
+import type { SpinnerProps, SpinnerTranslations } from '@xihan-ui/headless'
+import type { Size, Tone } from '@xihan-ui/kernel'
 import { connectSpinner, spinnerAnatomy, spinnerMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -30,8 +31,8 @@ export class XhSpinnerElement extends XhElement {
   }
 
   declare label?: string
-  declare size?: SpinnerSize
-  declare tone?: string
+  declare size?: Size
+  declare tone?: Tone
   declare translations?: Partial<SpinnerTranslations>
 
   protected wire(): void {

@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { PropTypes, Size } from '@xihan-ui/kernel'
 
 export interface AvatarGroupProps {
   /**
@@ -8,7 +8,7 @@ export interface AvatarGroupProps {
    */
   max?: number
   /** 尺寸：sm / md / lg，落到根上沿继承流下发给组内每一枚。 */
-  size?: string
+  size?: Size
 }
 
 export interface AvatarGroupApi<T extends PropTypes = PropTypes> {

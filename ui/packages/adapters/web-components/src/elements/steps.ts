@@ -1,5 +1,5 @@
 import type { StepsItemProps, StepsSchema, StepsStepChangeDetails } from '@xihan-ui/headless'
-import type { Direction, Orientation } from '@xihan-ui/kernel'
+import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectSteps, stepsAnatomy, stepsMachine, stepsMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -80,8 +80,8 @@ export class XhStepsElement extends XhElement {
   declare linear?: boolean
   declare disabled?: boolean
   declare direction?: Direction
-  declare tone?: string
-  declare size?: string
+  declare tone?: Tone
+  declare size?: Size
 
   private readonly notify = (details: StepsStepChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('step-change', { detail: details, bubbles: true, composed: true }))

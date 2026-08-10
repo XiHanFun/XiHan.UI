@@ -1,4 +1,4 @@
-import type { Cleanup, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, ControlVariant, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 输入框渲染成哪个标签：多行 textarea（缺省）或单行 input。 */
@@ -126,11 +126,11 @@ export interface MentionSchema extends MachineSchema {
     offset?: number
     translations?: MentionTranslations
     /** 形态：outline / subtle / ghost，决定输入框的描边与底色怎么用。 */
-    variant?: string
+    variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与高亮用哪族颜色。 */
-    tone?: string
+    tone?: Tone
     /** 尺寸：sm / md / lg，决定输入框内边距与字号档位。 */
-    size?: string
+    size?: Size
     /** 正文变化回调；受控时是唯一出口。 */
     onValueChange?: (details: MentionValueChangeDetails) => void
     /** 查询串变化回调：调用方据此重新过滤候选。收起时报 null。 */

@@ -1,5 +1,5 @@
 import type { AccordionItemProps, AccordionNode, AccordionSchema, AccordionValueChangeDetails } from '@xihan-ui/headless'
-import type { Direction, Orientation } from '@xihan-ui/kernel'
+import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import { isItemDisabled } from '@xihan-ui/behavior'
 import { accordionAnatomy, accordionMachine, accordionMeta, connectAccordion } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -51,8 +51,8 @@ export class XhAccordionElement extends XhElement {
   declare collapsible?: boolean
   declare orientation?: Orientation
   declare textDir?: Direction
-  declare tone?: string
-  declare size?: string
+  declare tone?: Tone
+  declare size?: Size
 
   private readonly notify = (details: AccordionValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))

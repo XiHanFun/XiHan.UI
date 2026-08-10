@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { ControlVariant, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 每格接受的字符类别：决定字符过滤规则与移动端键盘类型。 */
@@ -49,11 +49,11 @@ export interface PinInputSchema extends MachineSchema {
     /** 表单字段名；给了隐藏输入才带 name，整串值随表单一并提交。 */
     name?: string
     /** 形态：outline / subtle / ghost，决定颜色怎么用。 */
-    variant?: string
+    variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
-    tone?: string
+    tone?: Tone
     /** 尺寸：sm / md / lg。 */
-    size?: string
+    size?: Size
     translations?: Partial<PinInputTranslations>
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: PinInputValueChangeDetails) => void

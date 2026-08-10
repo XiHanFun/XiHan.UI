@@ -8,7 +8,7 @@ import type {
   TableSelectionMode,
   TableSortDescriptor,
 } from '@xihan-ui/headless'
-import type { Direction } from '@xihan-ui/kernel'
+import type { Direction, Size } from '@xihan-ui/kernel'
 import type { PropType, Ref } from 'vue'
 import type { TableContext } from './use-table'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
@@ -68,7 +68,7 @@ export const XhTableRoot = defineComponent({
     footer: Boolean,
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
-    size: { type: String, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   // *-change 携带 { value }，update:* 携带裸值以支持 v-model
   emits: [

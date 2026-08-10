@@ -1,4 +1,6 @@
 import type { AvatarSchema } from '@xihan-ui/headless'
+import type { Size } from '@xihan-ui/kernel'
+import type { PropType } from 'vue'
 import { defineComponent, h, ref, watch } from 'vue'
 import { provideAvatar, useAvatarContext } from './context'
 import { useAvatar } from './use-avatar'
@@ -11,7 +13,7 @@ export const XhAvatarRoot = defineComponent({
     // 缺席即无来源，落回退态
     src: { type: String, default: undefined },
     alt: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   // status-change 携带 { status }
   emits: ['status-change'],

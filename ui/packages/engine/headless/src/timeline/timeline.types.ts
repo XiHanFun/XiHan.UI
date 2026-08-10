@@ -1,4 +1,4 @@
-import type { Orientation, PropTypes } from '@xihan-ui/kernel'
+import type { Orientation, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 
 /**
  * 内容落在线的哪一侧。
@@ -12,7 +12,7 @@ export interface TimelineProps {
   /** 内容在线的哪一侧：start / end / alternate，不写则内容落在结束侧。 */
   placement?: TimelinePlacement
   /** 尺寸：sm / md / lg，决定圆点直径、条目间距与字号。 */
-  size?: string
+  size?: Size
 }
 
 /**
@@ -21,7 +21,7 @@ export interface TimelineProps {
  */
 export interface TimelineItemProps {
   /** 这一条的语气：brand / neutral / success / warning / danger / info，只落在这一条的圆点上。 */
-  tone?: string
+  tone?: Tone
 }
 
 export interface TimelineApi<T extends PropTypes = PropTypes> {

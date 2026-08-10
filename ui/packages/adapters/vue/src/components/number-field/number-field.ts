@@ -1,4 +1,6 @@
 import type { NumberFieldSchema } from '@xihan-ui/headless'
+import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
+import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { provideNumberField, useNumberFieldContext } from './context'
 import { useNumberField } from './use-number-field'
@@ -22,9 +24,9 @@ export const XhNumberFieldRoot = defineComponent({
     name: { type: String, default: undefined },
     changeDelay: { type: Number, default: undefined },
     changeInterval: { type: Number, default: undefined },
-    variant: { type: String, default: undefined },
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    variant: { type: String as PropType<ControlVariant>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   // value-change 携带 { value, valueAsNumber }，update:value 携带裸串
   emits: ['value-change', 'update:value'],

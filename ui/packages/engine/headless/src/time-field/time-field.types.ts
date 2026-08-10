@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { ControlVariant, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 段的身份。dayPeriod 只在 12 小时制下存在，second 只在 granularity 为 second 时存在。 */
@@ -65,11 +65,11 @@ export interface TimeFieldSchema extends MachineSchema {
     /** 空段的占位字符（单字符），按段宽重复，默认 '-'。 */
     placeholder?: string
     /** 形态：outline / subtle / ghost，决定描边与底色怎么用。 */
-    variant?: string
+    variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调用哪族颜色。 */
-    tone?: string
+    tone?: Tone
     /** 尺寸：sm / md / lg。 */
-    size?: string
+    size?: Size
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: TimeFieldValueChangeDetails) => void
   }

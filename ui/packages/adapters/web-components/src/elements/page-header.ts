@@ -1,4 +1,5 @@
 import type { PageHeaderProps } from '@xihan-ui/headless'
+import type { Size } from '@xihan-ui/kernel'
 import { connectPageHeader, pageHeaderAnatomy, pageHeaderMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -32,7 +33,7 @@ export class XhPageHeaderElement extends XhElement {
     bordered: { type: Boolean },
   }
 
-  declare size?: string
+  declare size?: Size
   declare bordered?: boolean
 
   protected wire(): void {

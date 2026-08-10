@@ -6,7 +6,7 @@ import type {
   TreeSelectSchema,
   TreeSelectValueChangeDetails,
 } from '@xihan-ui/headless'
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectTreeSelect, treeSelectAnatomy, treeSelectMachine, treeSelectMeta } from '@xihan-ui/headless'
@@ -123,9 +123,9 @@ export class XhTreeSelectElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
-  declare variant?: string
-  declare tone?: string
-  declare size?: string
+  declare variant?: ControlVariant
+  declare tone?: Tone
+  declare size?: Size
   declare placeholder?: string
   declare placement?: Placement
   declare offset?: number

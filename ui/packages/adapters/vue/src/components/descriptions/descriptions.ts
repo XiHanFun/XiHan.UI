@@ -1,4 +1,5 @@
-import type { DescriptionsColumns, DescriptionsPlacement, DescriptionsSize } from '@xihan-ui/headless'
+import type { DescriptionsColumns, DescriptionsPlacement } from '@xihan-ui/headless'
+import type { Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectDescriptions } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -12,7 +13,7 @@ export const XhDescriptionsRoot = defineComponent({
     columns: { type: Number as PropType<DescriptionsColumns>, default: undefined },
     bordered: Boolean,
     placement: { type: String as PropType<DescriptionsPlacement>, default: undefined },
-    size: { type: String as PropType<DescriptionsSize>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
     /** 根渲染成哪个标签，默认 dl。 */
     as: { type: String, default: 'dl' },
   },

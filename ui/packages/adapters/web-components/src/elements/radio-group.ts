@@ -1,5 +1,5 @@
 import type { RadioGroupItemProps, RadioGroupNode, RadioGroupSchema, RadioGroupValueChangeDetails } from '@xihan-ui/headless'
-import type { Direction, Orientation } from '@xihan-ui/kernel'
+import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectRadioGroup, radioGroupAnatomy, radioGroupMachine, radioGroupMeta } from '@xihan-ui/headless'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
@@ -54,8 +54,8 @@ export class XhRadioGroupElement extends XhElement {
   declare orientation?: Orientation
   declare direction?: Direction
   declare name?: string
-  declare tone?: string
-  declare size?: string
+  declare tone?: Tone
+  declare size?: Size
 
   // 整组禁用期间的条目自身声明快照：connect 每帧把 aria-disabled 写回条目，回读分不清作者声明与自己的写回
   private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()

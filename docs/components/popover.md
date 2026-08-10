@@ -92,7 +92,7 @@ open-change 带一份 { open }，报的是这次要落到的状态；非受控�
 | `closeOnEscape` | `boolean` |  |  |
 | `closeOnInteractOutside` | `boolean` |  |  |
 | `translations` | `Partial<PopoverTranslations>` |  |  |
-| `size` | `string` |  | 尺寸：sm / md / lg，决定面板的内边距档位。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，决定面板的内边距档位。 |
 | `onOpenChange` | `(details: PopoverOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
 ## 状态机

@@ -1,5 +1,5 @@
 import type { MentionInputEl, MentionInputHost, MentionItemProps, MentionNode, MentionNodeMeta, MentionSchema, MentionTranslations } from '@xihan-ui/headless'
-import type { Placement } from '@xihan-ui/kernel'
+import type { ControlVariant, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import { computed, defineComponent, h, onMounted, onUnmounted, onUpdated, watch } from 'vue'
 import { provideMention, provideMentionItem, useMentionContext, useMentionItemContext } from './context'
@@ -21,9 +21,9 @@ export const XhMentionRoot = defineComponent({
     placement: { type: String as PropType<Placement>, default: undefined },
     offset: { type: Number, default: undefined },
     translations: { type: Object as PropType<MentionTranslations>, default: undefined },
-    variant: { type: String, default: undefined },
-    tone: { type: String, default: undefined },
-    size: { type: String, default: undefined },
+    variant: { type: String as PropType<ControlVariant>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸值
   emits: ['value-change', 'query-change', 'select', 'open-change', 'update:value'],

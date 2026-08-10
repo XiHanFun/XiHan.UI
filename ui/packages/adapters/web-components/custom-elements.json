@@ -111,7 +111,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -120,7 +120,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -218,7 +218,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -226,7 +226,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -446,7 +446,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -528,7 +528,7 @@
           "attributes": [
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气，决定实时区级别与配色",
               "name": "tone",
@@ -677,7 +677,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -686,7 +686,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -823,7 +823,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -831,7 +831,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -899,7 +899,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -925,7 +925,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸，决定组内每一枚的直径与字号",
               "name": "size",
@@ -1006,7 +1006,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -1088,7 +1088,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸档位，缺省 md",
               "name": "size",
@@ -1165,7 +1165,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -1174,7 +1174,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -1271,7 +1271,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -1279,7 +1279,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -1334,7 +1334,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "BadgeVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -1343,7 +1343,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -1352,7 +1352,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -1370,7 +1370,7 @@
           "attributes": [
             {
               "type": {
-                "text": "string | undefined"
+                "text": "BadgeVariant | undefined"
               },
               "description": "视觉变体",
               "name": "variant",
@@ -1378,7 +1378,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -1386,7 +1386,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -1470,7 +1470,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -1479,7 +1479,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -1513,7 +1513,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -1521,7 +1521,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -1585,7 +1585,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "ActionVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -1594,7 +1594,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -1603,7 +1603,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -1629,7 +1629,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "ActionVariant | undefined"
               },
               "description": "形态，决定底色、描边与前景怎么用",
               "name": "variant",
@@ -1637,7 +1637,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气，决定用哪族颜色",
               "name": "tone",
@@ -1645,7 +1645,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸，决定各段的高度、内边距与字号",
               "name": "size",
@@ -1727,7 +1727,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "ActionVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -1736,7 +1736,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -1745,7 +1745,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -1787,7 +1787,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "ActionVariant | undefined"
               },
               "description": "视觉变体",
               "name": "variant",
@@ -1795,7 +1795,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -1803,7 +1803,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -2302,7 +2302,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "CardVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -2311,7 +2311,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -2347,7 +2347,7 @@
           "attributes": [
             {
               "type": {
-                "text": "string | undefined"
+                "text": "CardVariant | undefined"
               },
               "description": "形态，决定描边、底色与投影怎么用",
               "name": "variant",
@@ -2355,7 +2355,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸，决定各段的内边距与标题字号",
               "name": "size",
@@ -2874,7 +2874,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -2883,7 +2883,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -2892,7 +2892,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -3249,7 +3249,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "description": "视觉变体",
               "name": "variant",
@@ -3257,7 +3257,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -3265,7 +3265,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -3744,7 +3744,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -3753,7 +3753,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -3824,7 +3824,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -3832,7 +3832,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -4252,7 +4252,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -4323,7 +4323,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -5100,7 +5100,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -5109,7 +5109,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -5118,7 +5118,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -5419,7 +5419,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "description": "视觉变体",
               "name": "variant",
@@ -5427,7 +5427,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -5435,7 +5435,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -5823,7 +5823,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -5832,7 +5832,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -6070,7 +6070,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -6078,7 +6078,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -6443,7 +6443,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -6452,7 +6452,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -6461,7 +6461,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -6604,7 +6604,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "description": "形态",
               "name": "variant",
@@ -6612,7 +6612,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -6620,7 +6620,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -7419,7 +7419,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "DescriptionsSize | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -7461,7 +7461,7 @@
             },
             {
               "type": {
-                "text": "DescriptionsSize | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸，决定每格的内边距、组与组的间距与整体字号",
               "name": "size",
@@ -7585,7 +7585,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -7755,7 +7755,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸：只换 content 的最大宽度，落在 content 上",
               "name": "size",
@@ -7901,7 +7901,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -8095,7 +8095,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸：横放时换面板宽度、竖放时换面板高度",
               "name": "size",
@@ -11073,7 +11073,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -11251,7 +11251,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -11306,7 +11306,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "ActionVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -11315,7 +11315,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -11324,7 +11324,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -11342,7 +11342,7 @@
           "attributes": [
             {
               "type": {
-                "text": "string | undefined"
+                "text": "ActionVariant | undefined"
               },
               "description": "形态，决定底色、描边与前景怎么用",
               "name": "variant",
@@ -11350,7 +11350,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气，决定用哪族颜色",
               "name": "tone",
@@ -11358,7 +11358,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸，决定底座直径与里面图元的直径",
               "name": "size",
@@ -11426,7 +11426,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "IconSize | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -11444,7 +11444,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -11588,7 +11588,7 @@
             },
             {
               "type": {
-                "text": "IconSize | undefined"
+                "text": "Size | undefined"
               },
               "description": "直径档位，缺省 md",
               "name": "size",
@@ -11604,7 +11604,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -12280,7 +12280,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "ListSize | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -12322,7 +12322,7 @@
             },
             {
               "type": {
-                "text": "ListSize | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸，决定条目的内边距、图文间距与两行文字的字号",
               "name": "size",
@@ -12789,7 +12789,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -12920,7 +12920,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气，决定进度段用哪族颜色；给了 color 就以 color 为准",
               "name": "tone",
@@ -13446,7 +13446,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -13455,7 +13455,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -13464,7 +13464,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -13703,7 +13703,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "description": "视觉变体",
               "name": "variant",
@@ -13711,7 +13711,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -13719,7 +13719,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -13856,7 +13856,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -13865,7 +13865,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -14063,7 +14063,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -14071,7 +14071,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -14251,7 +14251,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -14260,7 +14260,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -14534,7 +14534,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -14542,7 +14542,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -14696,7 +14696,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -14705,7 +14705,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -14849,7 +14849,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -14857,7 +14857,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -14975,7 +14975,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "NumberAnimationSize | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -14984,7 +14984,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "NumberAnimationTone | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -15096,7 +15096,7 @@
             },
             {
               "type": {
-                "text": "NumberAnimationSize | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸，只改字号",
               "name": "size",
@@ -15104,7 +15104,7 @@
             },
             {
               "type": {
-                "text": "NumberAnimationTone | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气，决定数字用哪族颜色",
               "name": "tone",
@@ -15300,7 +15300,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -15309,7 +15309,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -15318,7 +15318,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -15469,7 +15469,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "description": "视觉变体",
               "name": "variant",
@@ -15477,7 +15477,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -15485,7 +15485,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -15560,7 +15560,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -15587,7 +15587,7 @@
           "attributes": [
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸，决定标题字号与整块的上下留白",
               "name": "size",
@@ -15720,7 +15720,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -15729,7 +15729,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -15832,7 +15832,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -15840,7 +15840,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -16006,7 +16006,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -16015,7 +16015,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -16024,7 +16024,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -16177,7 +16177,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "description": "视觉变体",
               "name": "variant",
@@ -16185,7 +16185,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -16193,7 +16193,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -16330,7 +16330,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -16510,7 +16510,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -16652,7 +16652,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -16831,7 +16831,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -17035,7 +17035,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -17044,7 +17044,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -17053,7 +17053,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -17367,7 +17367,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "description": "形态，决定触发器的描边与底色怎么用",
               "name": "variant",
@@ -17375,7 +17375,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气，决定聚焦与选中强调用哪族颜色",
               "name": "tone",
@@ -17383,7 +17383,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸，决定触发器高度、内边距与字号档位",
               "name": "size",
@@ -17464,7 +17464,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -17473,7 +17473,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -17507,7 +17507,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -17515,7 +17515,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -17865,7 +17865,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -17874,7 +17874,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -18078,7 +18078,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -18086,7 +18086,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -18238,7 +18238,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -18247,7 +18247,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -18414,7 +18414,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -18422,7 +18422,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -18985,7 +18985,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -18994,7 +18994,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -19003,7 +19003,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -19359,7 +19359,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "description": "视觉变体",
               "name": "variant",
@@ -19367,7 +19367,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -19375,7 +19375,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -19746,7 +19746,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -19755,7 +19755,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -20001,7 +20001,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -20009,7 +20009,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -20085,7 +20085,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "SpinnerSize | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -20094,7 +20094,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -20128,7 +20128,7 @@
             },
             {
               "type": {
-                "text": "SpinnerSize | undefined"
+                "text": "Size | undefined"
               },
               "description": "直径档位，缺省 md",
               "name": "size",
@@ -20136,7 +20136,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -20498,7 +20498,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "StatisticSize | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -20507,7 +20507,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "StatisticTone | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -20525,7 +20525,7 @@
           "attributes": [
             {
               "type": {
-                "text": "StatisticSize | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸档位，写到 root 的 data-size 上",
               "name": "size",
@@ -20533,7 +20533,7 @@
             },
             {
               "type": {
-                "text": "StatisticTone | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气，写到 root 的 data-tone 上",
               "name": "tone",
@@ -20683,7 +20683,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -20692,7 +20692,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -20833,7 +20833,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -20841,7 +20841,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -20927,7 +20927,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -20936,7 +20936,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -21007,7 +21007,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -21015,7 +21015,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -21253,7 +21253,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -21475,7 +21475,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "密度：只换单元格的纵向内边距与字号，列宽不受影响",
               "name": "size",
@@ -21604,7 +21604,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "TabsVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -21613,7 +21613,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -21622,7 +21622,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -21743,7 +21743,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "TabsVariant | undefined"
               },
               "description": "形态，默认 line",
               "name": "variant",
@@ -21751,7 +21751,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -21759,7 +21759,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -21989,7 +21989,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -21998,7 +21998,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -22007,7 +22007,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -22227,7 +22227,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "description": "视觉变体",
               "name": "variant",
@@ -22235,7 +22235,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -22243,7 +22243,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -22400,7 +22400,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -22409,7 +22409,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -22418,7 +22418,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -22545,7 +22545,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "description": "视觉变体",
               "name": "variant",
@@ -22553,7 +22553,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -22561,7 +22561,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -22946,7 +22946,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -22955,7 +22955,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -22964,7 +22964,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -23148,7 +23148,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "description": "形态",
               "name": "variant",
@@ -23156,7 +23156,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -23164,7 +23164,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -23964,7 +23964,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -24017,7 +24017,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸，决定圆点直径、条目间距与字号",
               "name": "size",
@@ -25043,7 +25043,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "ActionVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -25052,7 +25052,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -25061,7 +25061,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -25132,7 +25132,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "ActionVariant | undefined"
               },
               "description": "视觉变体",
               "name": "variant",
@@ -25140,7 +25140,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -25148,7 +25148,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -25251,7 +25251,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -25372,7 +25372,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸：只换条目间距与整条内边距，条目自身的大小归条目",
               "name": "size",
@@ -25502,7 +25502,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -25511,7 +25511,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -25641,7 +25641,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -25649,7 +25649,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -26688,7 +26688,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -26697,7 +26697,7 @@
               "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "attribute": "tone"
             },
@@ -26706,7 +26706,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -27035,7 +27035,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "ControlVariant | undefined"
               },
               "description": "视觉变体",
               "name": "variant",
@@ -27043,7 +27043,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Tone | undefined"
               },
               "description": "语气",
               "name": "tone",
@@ -27051,7 +27051,7 @@
             },
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸",
               "name": "size",
@@ -27495,7 +27495,7 @@
               "name": "size",
               "privacy": "public",
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "attribute": "size"
             },
@@ -27513,7 +27513,7 @@
           "attributes": [
             {
               "type": {
-                "text": "string | undefined"
+                "text": "Size | undefined"
               },
               "description": "尺寸，整块正文的字号与段间距跟着换档",
               "name": "size",

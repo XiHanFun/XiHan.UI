@@ -1,5 +1,5 @@
 import type { DrawerOpenChangeDetails, DrawerSchema } from '@xihan-ui/headless'
-import type { Cleanup, IdGenerator, Layer, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, IdGenerator, Layer, RuntimeConfig, Size } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { connectDrawer, drawerAnatomy, drawerMachine, drawerMeta } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
@@ -63,7 +63,7 @@ export class XhDrawerElement extends XhElement {
   declare closeOnEscape?: boolean
   declare closeOnInteractOutside?: boolean
   declare restoreFocus?: boolean
-  declare size?: string
+  declare size?: Size
   declare translations?: DrawerSchema['props']['translations']
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()

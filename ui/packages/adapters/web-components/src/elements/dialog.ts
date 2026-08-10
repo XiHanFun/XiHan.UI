@@ -1,5 +1,5 @@
 import type { DialogOpenChangeDetails, DialogSchema } from '@xihan-ui/headless'
-import type { Cleanup, IdGenerator, Layer, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, IdGenerator, Layer, RuntimeConfig, Size } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { connectDialog, dialogAnatomy, dialogMachine, dialogMeta } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
@@ -51,7 +51,7 @@ export class XhDialogElement extends XhElement {
   declare modal?: boolean
   declare closeOnEscape?: boolean
   declare restoreFocus?: boolean
-  declare size?: string
+  declare size?: Size
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly dialogScope = createScope(null, this.idGen)

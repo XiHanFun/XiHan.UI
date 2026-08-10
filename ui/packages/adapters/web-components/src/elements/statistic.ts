@@ -1,4 +1,5 @@
-import type { StatisticProps, StatisticSize, StatisticTone } from '@xihan-ui/headless'
+import type { StatisticProps } from '@xihan-ui/headless'
+import type { Size, Tone } from '@xihan-ui/kernel'
 import { connectStatistic, statisticAnatomy, statisticMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -32,8 +33,8 @@ export class XhStatisticElement extends XhElement {
     tone: { converter: STRING_CONVERTER },
   }
 
-  declare size?: StatisticSize
-  declare tone?: StatisticTone
+  declare size?: Size
+  declare tone?: Tone
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性

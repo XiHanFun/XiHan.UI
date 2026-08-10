@@ -1,4 +1,5 @@
-import type { TypographyProps } from '@xihan-ui/headless'
+import type { TypographyProps, TypographyVariant } from '@xihan-ui/headless'
+import type { Size, Tone } from '@xihan-ui/kernel'
 import { connectTypography, typographyAnatomy, typographyMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -6,9 +7,14 @@ import { XhElement } from '../element-base'
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
-/** 读作者写在角色节点上的声明；属性缺席即 undefined。 */
-function authorValue(el: HTMLElement, name: string): string | undefined {
-  return el.getAttribute(name) ?? undefined
+/**
+ * 读作者写在角色节点上的声明；属性缺席即 undefined。
+ *
+ * 期望类型由调用方给：值来自 HTML，类型系统够不着，所以这里是断言不是校验。
+ * 写错值的后果是软的——它不匹配任何皮肤选择器，那一档样式不生效，不抛错也不降级。
+ */
+function authorValue<T extends string = string>(el: HTMLElement, name: string): T | undefined {
+  return (el.getAttribute(name) as T | null) ?? undefined
 }
 
 /**
@@ -35,7 +41,7 @@ export class XhTypographyElement extends XhElement {
     size: { converter: STRING_CONVERTER },
   }
 
-  declare size?: string
+  declare size?: Size
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
@@ -56,8 +62,8 @@ export class XhTypographyElement extends XhElement {
 
     for (const el of this.getParts('text')) {
       const attrs = api.getTextProps({
-        tone: authorValue(el, 'tone'),
-        variant: authorValue(el, 'variant'),
+        tone: authorValue<Tone>(el, 'tone'),
+        variant: authorValue<TypographyVariant>(el, 'variant'),
       })
       this.spreader.spread(el, attrs as Record<string, unknown>)
     }

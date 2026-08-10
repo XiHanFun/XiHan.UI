@@ -1,5 +1,5 @@
 import type { ToolbarItemProps, ToolbarSchema } from '@xihan-ui/headless'
-import type { Direction, Orientation } from '@xihan-ui/kernel'
+import type { Direction, Orientation, Size } from '@xihan-ui/kernel'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectToolbar, toolbarAnatomy, toolbarMachine, toolbarMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -58,7 +58,7 @@ export class XhToolbarElement extends XhElement {
   declare direction?: Direction
   declare loop?: boolean
   declare disabled?: boolean
-  declare size?: string
+  declare size?: Size
 
   // 整条禁用期间的条目自身声明快照。connect 每帧都把 aria-disabled 写回条目，整条禁用更是写满每一个，
   // 此时回读分不清「作者声明的」还是「自己上一帧写的」，解禁后条目就永远解不开。

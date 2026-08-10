@@ -1,4 +1,5 @@
 import type { NumberFieldSchema, NumberFieldValueChangeDetails } from '@xihan-ui/headless'
+import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import { connectNumberField, numberFieldAnatomy, numberFieldMachine, numberFieldMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -75,9 +76,9 @@ export class XhNumberFieldElement extends XhElement {
   declare name?: string
   declare changeDelay?: number
   declare changeInterval?: number
-  declare variant?: string
-  declare tone?: string
-  declare size?: string
+  declare variant?: ControlVariant
+  declare tone?: Tone
+  declare size?: Size
 
   private readonly notify = (details: NumberFieldValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))

@@ -1,4 +1,4 @@
-import type { ListSize } from '@xihan-ui/headless'
+import type { Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectList } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -12,7 +12,7 @@ export const XhListRoot = defineComponent({
     bordered: Boolean,
     hoverable: Boolean,
     split: Boolean,
-    size: { type: String as PropType<ListSize>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
     /** 根渲染成哪个标签，默认 ul；换成 div 即不进读屏的列表语义。 */
     as: { type: String, default: 'ul' },
   },

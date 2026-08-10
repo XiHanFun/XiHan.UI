@@ -1,5 +1,5 @@
 import type { Typeahead } from '@xihan-ui/behavior'
-import type { Cleanup, Direction, Layer, Orientation, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, Layer, Orientation, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 展开菜单时的落焦端：'first'/'last' 从集合两端进，'none' 焦点留在 trigger 上。 */
@@ -114,9 +114,9 @@ export interface MenubarSchema extends MachineSchema {
     placement?: Placement
     offset?: number
     /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
-    tone?: string
+    tone?: Tone
     /** 尺寸：sm / md / lg。 */
-    size?: string
+    size?: Size
     /** value 变化回调。 */
     onValueChange?: (details: MenubarValueChangeDetails) => void
     /** 条目被选中；菜单随之收起。 */

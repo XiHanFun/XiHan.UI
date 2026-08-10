@@ -1,4 +1,5 @@
 import type { TogglePressedChangeDetails, ToggleSchema } from '@xihan-ui/headless'
+import type { ActionVariant, Size, Tone } from '@xihan-ui/kernel'
 import { connectToggle, toggleAnatomy, toggleMachine, toggleMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -32,9 +33,9 @@ export class XhToggleElement extends XhElement {
   declare pressed?: boolean
   declare defaultPressed?: boolean
   declare disabled?: boolean
-  declare variant?: string
-  declare tone?: string
-  declare size?: string
+  declare variant?: ActionVariant
+  declare tone?: Tone
+  declare size?: Size
 
   private readonly notify = (details: TogglePressedChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('pressed-change', { detail: details, bubbles: true, composed: true }))

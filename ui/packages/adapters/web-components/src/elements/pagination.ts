@@ -1,5 +1,5 @@
 import type { PaginationPageChangeDetails, PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
-import type { Direction } from '@xihan-ui/kernel'
+import type { Direction, Size, Tone } from '@xihan-ui/kernel'
 import { connectPagination, paginationAnatomy, paginationMachine, paginationMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -67,8 +67,8 @@ export class XhPaginationElement extends XhElement {
   declare defaultPage?: number
   declare siblingCount?: number
   declare direction?: Direction
-  declare tone?: string
-  declare size?: string
+  declare tone?: Tone
+  declare size?: Size
   declare translations?: Partial<PaginationTranslations>
 
   private readonly notify = (details: PaginationPageChangeDetails): void => {

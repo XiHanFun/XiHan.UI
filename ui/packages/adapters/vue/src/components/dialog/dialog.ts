@@ -1,4 +1,5 @@
 import type { DialogSchema } from '@xihan-ui/headless'
+import type { Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h, Teleport } from 'vue'
 import { provideDialog, useDialogContext } from './context'
@@ -16,7 +17,7 @@ export const XhDialogRoot = defineComponent({
     closeOnEscape: { type: Boolean, default: true },
     closeOnInteractOutside: { type: Boolean, default: undefined },
     restoreFocus: { type: Boolean, default: true },
-    size: { type: String, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
     translations: { type: Object as PropType<DialogProps['translations']>, default: undefined },
   },
   // open-change 携带 { open }，update:open 携带裸布尔

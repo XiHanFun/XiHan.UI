@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/kernel'
+import type { PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 滚回顶部的方式：auto 一步到位，smooth 平滑滚过去。 */
@@ -29,9 +29,9 @@ export interface BackTopSchema extends MachineSchema {
     behavior?: BackTopBehavior
     translations?: Partial<BackTopTranslations>
     /** 语气：brand / neutral / success / warning / danger / info，决定按钮用哪族颜色。 */
-    tone?: string
+    tone?: Tone
     /** 尺寸：sm / md / lg。 */
-    size?: string
+    size?: Size
     /** 露面与否变化时回调。 */
     onVisibleChange?: (details: BackTopVisibleChangeDetails) => void
   }

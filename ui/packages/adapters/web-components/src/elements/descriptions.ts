@@ -1,4 +1,5 @@
-import type { DescriptionsColumns, DescriptionsPlacement, DescriptionsProps, DescriptionsSize } from '@xihan-ui/headless'
+import type { DescriptionsColumns, DescriptionsPlacement, DescriptionsProps } from '@xihan-ui/headless'
+import type { Size } from '@xihan-ui/kernel'
 import { connectDescriptions, descriptionsAnatomy, descriptionsMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -37,7 +38,7 @@ export class XhDescriptionsElement extends XhElement {
   declare columns?: DescriptionsColumns
   declare bordered?: boolean
   declare placement?: DescriptionsPlacement
-  declare size?: DescriptionsSize
+  declare size?: Size
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性

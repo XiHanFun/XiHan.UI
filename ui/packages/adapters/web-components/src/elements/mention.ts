@@ -10,7 +10,7 @@ import type {
   MentionTranslations,
   MentionValueChangeDetails,
 } from '@xihan-ui/headless'
-import type { Cleanup, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, ControlVariant, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { connectMention, mentionAnatomy, mentionMachine, mentionMeta } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
@@ -97,9 +97,9 @@ export class XhMentionElement extends XhElement {
   declare loop?: boolean
   declare placement?: Placement
   declare offset?: number
-  declare variant?: string
-  declare tone?: string
-  declare size?: string
+  declare variant?: ControlVariant
+  declare tone?: Tone
+  declare size?: Size
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly mentionScope = createScope(null, this.idGen)

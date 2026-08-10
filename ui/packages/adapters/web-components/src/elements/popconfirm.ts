@@ -1,5 +1,5 @@
 import type { PopconfirmIntents, PopoverOpenChangeDetails, PopoverSchema } from '@xihan-ui/headless'
-import type { Cleanup, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { connectPopconfirm, popconfirmAnatomy, popconfirmMeta, popoverMachine } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
@@ -63,7 +63,7 @@ export class XhPopconfirmElement extends XhElement {
   declare offset?: number
   declare closeOnEscape?: boolean
   declare closeOnInteractOutside?: boolean
-  declare size?: string
+  declare size?: Size
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly popconfirmScope = createScope(null, this.idGen)

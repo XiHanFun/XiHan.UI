@@ -5,6 +5,7 @@ import type {
   TagsInputSchema,
   TagsInputValueChangeDetails,
 } from '@xihan-ui/headless'
+import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectTagsInput, tagsInputAnatomy, tagsInputMachine, tagsInputMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -106,9 +107,9 @@ export class XhTagsInputElement extends XhElement {
   declare addOnPaste?: boolean
   declare editable?: boolean
   declare blurBehavior?: TagsInputBlurBehavior | null
-  declare variant?: string
-  declare tone?: string
-  declare size?: string
+  declare variant?: ControlVariant
+  declare tone?: Tone
+  declare size?: Size
 
   private readonly notifyValue = (details: TagsInputValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))

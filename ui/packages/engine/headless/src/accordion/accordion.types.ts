@@ -1,4 +1,4 @@
-import type { Direction, Orientation, PropTypes } from '@xihan-ui/kernel'
+import type { Direction, Orientation, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface AccordionValueChangeDetails {
@@ -53,9 +53,9 @@ export interface AccordionSchema extends MachineSchema {
     /** 文字方向，默认 ltr；影响水平轴上 ArrowLeft/ArrowRight 的语义。 */
     dir?: Direction
     /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
-    tone?: string
+    tone?: Tone
     /** 尺寸：sm / md / lg。 */
-    size?: string
+    size?: Size
     /** 展开集合变化回调。 */
     onValueChange?: (details: AccordionValueChangeDetails) => void
   }

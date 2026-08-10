@@ -1,4 +1,5 @@
-import type { ListProps, ListSize } from '@xihan-ui/headless'
+import type { ListProps } from '@xihan-ui/headless'
+import type { Size } from '@xihan-ui/kernel'
 import { connectList, listAnatomy, listMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -40,7 +41,7 @@ export class XhListElement extends XhElement {
   declare bordered?: boolean
   declare hoverable?: boolean
   declare split?: boolean
-  declare size?: ListSize
+  declare size?: Size
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性

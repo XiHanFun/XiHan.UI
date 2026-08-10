@@ -86,8 +86,8 @@ size 换条目的字号与左右内边距，不传 size 即默认档
 | `dir` | `Direction` |  | 文字方向，作用于排版与指示条的起始缘。 |
 | `orientation` | `Orientation` |  | 列表轴向，默认 vertical，只影响样式。 |
 | `translations` | `Partial<AnchorTranslations>` |  |  |
-| `tone` | `string` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
-| `size` | `string` |  | 尺寸：sm / md / lg。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: AnchorValueChangeDetails) => void` |  | value 变化意图回调。 |
 
 ## 状态机

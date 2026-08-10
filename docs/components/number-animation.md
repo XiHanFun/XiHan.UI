@@ -54,8 +54,8 @@ duration 定跑多久，easing 定快慢怎么分配；同一段距离四档并�
 | `precision` | `number` |  | 小数位，缺省 0。夹进 [0, 20]。 |
 | `separator` | `string` |  | 千位分隔符，缺省不分隔。 |
 | `active` | `boolean` |  | 是否在跑，缺省 true。翻假即停在当前值，翻真从当前值继续走向终点。 |
-| `size` | `NumberAnimationSize` |  | 尺寸：sm / md / lg，只落成 root 的 data-size。 |
-| `tone` | `NumberAnimationTone` |  | 语气：brand / neutral / success / warning / danger / info，只落成 root 的 data-tone。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，只落成 root 的 data-size。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，只落成 root 的 data-tone。 |
 | `live` | `NumberAnimationLive` |  | 读屏播报档位，缺省 off。 |
 | `onFinish` | `(details: NumberAnimationFinishDetails) => void` |  | 走到终点时通知一次。中途被停掉不通知。 |
 

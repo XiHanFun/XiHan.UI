@@ -1,5 +1,5 @@
-import type { TabsActivationMode, TabsNode, TabsSchema, TabsValueChangeDetails } from '@xihan-ui/headless'
-import type { Direction, Orientation } from '@xihan-ui/kernel'
+import type { TabsActivationMode, TabsNode, TabsSchema, TabsValueChangeDetails, TabsVariant } from '@xihan-ui/headless'
+import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectTabs, tabsAnatomy, tabsMachine, tabsMeta } from '@xihan-ui/headless'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
@@ -59,9 +59,9 @@ export class XhTabsElement extends XhElement {
   declare direction?: Direction
   declare activationMode?: TabsActivationMode
   declare loop?: boolean
-  declare variant?: string
-  declare tone?: string
-  declare size?: string
+  declare variant?: TabsVariant
+  declare tone?: Tone
+  declare size?: Size
 
   private readonly notify = (details: TabsValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))

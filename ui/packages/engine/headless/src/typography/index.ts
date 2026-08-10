@@ -8,4 +8,5 @@ export type {
   TypographyLevel,
   TypographyProps,
   TypographyTextProps,
+  TypographyVariant,
 } from './typography.types'

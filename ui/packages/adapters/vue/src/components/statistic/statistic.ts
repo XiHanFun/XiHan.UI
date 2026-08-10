@@ -1,4 +1,5 @@
-import type { StatisticProps, StatisticSize, StatisticTone } from '@xihan-ui/headless'
+import type { StatisticProps } from '@xihan-ui/headless'
+import type { Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectStatistic } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -9,8 +10,8 @@ export const XhStatisticRoot = defineComponent({
   name: 'XhStatisticRoot',
   // 有 connect 兜底的 prop 一律 default: undefined
   props: {
-    size: { type: String as PropType<StatisticSize>, default: undefined },
-    tone: { type: String as PropType<StatisticTone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
   },
   setup(props, { slots }) {
     const api = computed(() => connectStatistic(props as StatisticProps, vueNormalize))

@@ -1,11 +1,5 @@
-import type {
-  NumberAnimationEasing,
-  NumberAnimationFinishDetails,
-  NumberAnimationLive,
-  NumberAnimationSchema,
-  NumberAnimationSize,
-  NumberAnimationTone,
-} from '@xihan-ui/headless'
+import type { NumberAnimationEasing, NumberAnimationFinishDetails, NumberAnimationLive, NumberAnimationSchema } from '@xihan-ui/headless'
+import type { Size, Tone } from '@xihan-ui/kernel'
 import { connectNumberAnimation, numberAnimationAnatomy, numberAnimationMachine, numberAnimationMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -67,8 +61,8 @@ export class XhNumberAnimationElement extends XhElement {
   declare precision?: number
   declare separator?: string
   declare active?: boolean
-  declare size?: NumberAnimationSize
-  declare tone?: NumberAnimationTone
+  declare size?: Size
+  declare tone?: Tone
   declare live?: NumberAnimationLive
 
   private readonly notify = (details: NumberAnimationFinishDetails): void => {

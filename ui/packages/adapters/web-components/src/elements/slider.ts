@@ -1,5 +1,5 @@
 import type { SliderSchema, SliderValueChangeDetails, SliderValueChangeEndDetails, SliderValueTextDetails } from '@xihan-ui/headless'
-import type { Direction, IdGenerator, Orientation } from '@xihan-ui/kernel'
+import type { Direction, IdGenerator, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { connectSlider, sliderAnatomy, sliderMachine, sliderMeta } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/kernel'
@@ -102,8 +102,8 @@ export class XhSliderElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
-  declare tone?: string
-  declare size?: string
+  declare tone?: Tone
+  declare size?: Size
   declare name?: string
   declare getValueText?: (details: SliderValueTextDetails) => string
 

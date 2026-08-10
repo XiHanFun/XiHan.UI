@@ -1,5 +1,5 @@
-import type { IconApi, IconProps, IconSize, IconWeight } from '@xihan-ui/headless'
-import type { IconNode, IconRecord } from '@xihan-ui/kernel'
+import type { IconApi, IconProps, IconWeight } from '@xihan-ui/headless'
+import type { IconNode, IconRecord, Size, Tone } from '@xihan-ui/kernel'
 import { connectIcon, iconAnatomy, iconMeta } from '@xihan-ui/headless'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/kernel'
 import { wcNormalize } from '../dom/normalize'
@@ -62,9 +62,9 @@ export class XhIconElement extends XhElement {
   }
 
   declare label?: string
-  declare size?: IconSize
+  declare size?: Size
   declare weight?: IconWeight
-  declare tone?: string
+  declare tone?: Tone
   declare icon?: IconRecord
 
   /** 一个 glyph 节点归谁，首次见到时定死。 */

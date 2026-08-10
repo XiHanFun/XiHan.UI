@@ -1,5 +1,5 @@
 import type { TimelineItemProps, TimelinePlacement, TimelineProps } from '@xihan-ui/headless'
-import type { Orientation } from '@xihan-ui/kernel'
+import type { Orientation, Size, Tone } from '@xihan-ui/kernel'
 import { connectTimeline, timelineAnatomy, timelineMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -47,7 +47,7 @@ export class XhTimelineElement extends XhElement {
 
   declare orientation?: Orientation
   declare placement?: TimelinePlacement
-  declare size?: string
+  declare size?: Size
 
   /**
    * 取角色节点所属条目的语气：tone 写在 item 节点上，圆点向上找自己的 item。
@@ -57,7 +57,8 @@ export class XhTimelineElement extends XhElement {
   private itemProps(el: HTMLElement): TimelineItemProps {
     const owner = el.closest<HTMLElement>(ITEM_SELECTOR)
     const source = owner && owner !== this && this.contains(owner) ? owner : el
-    return { tone: source.getAttribute('tone') ?? undefined }
+    // tone 来自作者写在 HTML 上的属性，类型系统够不着；写错值只是不匹配任何皮肤选择器
+    return { tone: (source.getAttribute('tone') as Tone | null) ?? undefined }
   }
 
   protected wire(): void {

@@ -1,4 +1,6 @@
 import type { PageHeaderProps } from '@xihan-ui/headless'
+import type { Size } from '@xihan-ui/kernel'
+import type { PropType } from 'vue'
 import { connectPageHeader } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -8,7 +10,7 @@ import { providePageHeader, usePageHeaderContext } from './context'
 export const XhPageHeaderRoot = defineComponent({
   name: 'XhPageHeaderRoot',
   props: {
-    size: { type: String, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
     bordered: Boolean,
   },
   setup(props, { slots }) {
