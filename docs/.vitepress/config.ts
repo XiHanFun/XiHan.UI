@@ -295,7 +295,7 @@ export default defineConfig({
     // 改了库的源码它不会失效——本地构建会拿着旧产物继续渲染而且什么都不说。
     // 排除掉，示例渲染的永远是当前代码。
     optimizeDeps: {
-      exclude: ["@xihan-ui/vue", "@xihan-ui/styled"],
+      exclude: ["@xihan-ui/vue", "@xihan-ui/styles"],
     },
   },
   themeConfig: {

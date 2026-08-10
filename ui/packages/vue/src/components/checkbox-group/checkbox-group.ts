@@ -1,5 +1,5 @@
-import type { Orientation } from '@xihan-ui/core'
 import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupNodeMeta, CheckboxGroupSchema } from '@xihan-ui/headless'
+import type { Orientation } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import { computed, defineComponent, h } from 'vue'
 import {

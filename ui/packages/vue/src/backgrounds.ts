@@ -1,7 +1,7 @@
-// @xihan-ui/vue/visual —— 视觉层的 Vue 适配。
+// @xihan-ui/vue/backgrounds —— 视觉层的 Vue 适配。
 //
-// 与主入口分开：@xihan-ui/visual 是可选 peer，不用视觉效果的应用不会因为装了本包
-// 而多出一个 WebGL 引擎。用之前先装 @xihan-ui/visual。
+// 与主入口分开：@xihan-ui/backgrounds 是可选 peer，不用视觉效果的应用不会因为装了本包
+// 而多出一个 WebGL 引擎。用之前先装 @xihan-ui/backgrounds。
 //
 // 三种用法，从轻到重：
 //   v-visual   给任意元素或组件的根元素铺一层背景，一个字都不用改组件
@@ -15,9 +15,9 @@ import type {
   VisualEffect,
   VisualQuality,
   VisualSurface,
-} from '@xihan-ui/visual'
+} from '@xihan-ui/backgrounds'
 import type { Directive, PropType, ShallowRef, VNodeRef } from 'vue'
-import { createVisualSurface } from '@xihan-ui/visual'
+import { createVisualSurface } from '@xihan-ui/backgrounds'
 import {
   defineComponent,
   getCurrentScope,

@@ -48,7 +48,7 @@ size 三档改直径、weight 三档改 stroke-width；缺省档不落 data-* �
 | Vue 组件 | `XhIcon` |
 | 组合式函数 | `useIcon` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/icon.css` |
+| 皮肤 | `@xihan-ui/styles/icon.css` |
 
 ## 解剖
 

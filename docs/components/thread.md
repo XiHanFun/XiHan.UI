@@ -60,7 +60,7 @@ root 的作用域插槽给出 showScrollButton 与 scrollToBottom，不用内置
 | Vue 组件 | `XhThreadContent` `XhThreadLiveRegion` `XhThreadRoot` `XhThreadScrollButton` `XhThreadViewport` |
 | 组合式函数 | `useThread` |
 | 状态机 | `threadMachine` |
-| 皮肤 | `@xihan-ui/styled/thread.css` |
+| 皮肤 | `@xihan-ui/styles/thread.css` |
 
 ## 解剖
 

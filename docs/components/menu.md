@@ -72,7 +72,7 @@ content 里可以直接放任意节点；不是 item 就不进方向键行程，
 | Vue 组件 | `XhMenuArrow` `XhMenuContent` `XhMenuItem` `XhMenuPositioner` `XhMenuRoot` `XhMenuSeparator` `XhMenuTrigger` |
 | 组合式函数 | `useMenu` |
 | 状态机 | `menuMachine` |
-| 皮肤 | `@xihan-ui/styled/menu.css` |
+| 皮肤 | `@xihan-ui/styles/menu.css` |
 
 ## 解剖
 

@@ -1,4 +1,4 @@
-import type { PositionStrategy } from '@xihan-ui/core'
+import type { PositionStrategy } from '@xihan-ui/kernel'
 import type { PositionBox, PositionEdges } from './compute'
 
 /**

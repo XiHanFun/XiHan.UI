@@ -6,7 +6,7 @@
 // jsdom 不把样式表里的 animation 简写算进 getComputedStyle（animationName 恒为空串），
 // 所以这条路在 jsdom 里天然走不到，装真实皮肤跑组件也复现不出来。
 // 这里直接桩掉 getComputedStyle，把浏览器里的取值喂进来。
-import type { RuntimeConfig } from '@xihan-ui/core'
+import type { RuntimeConfig } from '@xihan-ui/kernel'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createPresence } from '../src/presence'
 import { attachCssExit } from '../src/presence/animation-end'

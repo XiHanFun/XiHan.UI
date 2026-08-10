@@ -2,8 +2,8 @@
 
 // 焦点域是无障碍库最基本的那条承诺，此前只有 tabbable / focus-guards 两个辅助件被测过，
 // createFocusScope 本体——陷阱装配、逃逸抢回、Tab 回绕、卸载归还——一条判据都没有。
-import type { Layer, LayerRegistry, RuntimeConfig } from '@xihan-ui/core'
-import { createCounterIdGenerator, createLayerRegistry, createRuntimeConfig, createScope, DATA_FOCUS_GUARD, EV_MOUNT_AUTO_FOCUS } from '@xihan-ui/core'
+import type { Layer, LayerRegistry, RuntimeConfig } from '@xihan-ui/kernel'
+import { createCounterIdGenerator, createLayerRegistry, createRuntimeConfig, createScope, DATA_FOCUS_GUARD, EV_MOUNT_AUTO_FOCUS } from '@xihan-ui/kernel'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createFocusScope } from '../src/focus-scope'
 

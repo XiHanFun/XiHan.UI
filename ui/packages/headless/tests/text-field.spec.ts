@@ -1,5 +1,5 @@
 import type { TextFieldSchema, TextFieldValueChangeDetails } from '../src/text-field/index'
-import { normalizeProps } from '@xihan-ui/core'
+import { normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { describe, expect, it, vi } from 'vitest'

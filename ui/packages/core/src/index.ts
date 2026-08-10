@@ -1,4 +1,4 @@
-// @xihan-ui/core —— Foundation 原语（框架无关，零运行时依赖）。
+// @xihan-ui/kernel —— Foundation 原语（框架无关，零运行时依赖）。
 
 // 组件解剖
 export type { Anatomy, AnatomyPart } from './anatomy'

@@ -1,6 +1,6 @@
 import type { ItemQuery } from '@xihan-ui/behavior'
 import { itemValue, queryItems } from '@xihan-ui/behavior'
-import { createAnatomy } from '@xihan-ui/core'
+import { createAnatomy } from '@xihan-ui/kernel'
 
 // data-part 直接用 kebab-case，与 CSS 选择器一致。
 // input 是多实例 part：时/分/秒/上下午各一个，段的身份由作者写在节点上，

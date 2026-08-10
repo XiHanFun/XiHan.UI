@@ -1,5 +1,5 @@
 import type { NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ContextMenuApi, ContextMenuItemProps, ContextMenuNodeMeta, ContextMenuSchema } from './context-menu.types'
 import {
@@ -13,7 +13,7 @@ import {
   navIntentFromKey,
   queryItems,
 } from '@xihan-ui/behavior'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { contextMenuAnatomy, contextMenuItemQuery, contextMenuItemText } from './context-menu.anatomy'
 import { CONTEXT_MENU_DEFAULT_PLACEMENT } from './context-menu.machine'
 

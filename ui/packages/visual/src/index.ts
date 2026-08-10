@@ -1,4 +1,4 @@
-// @xihan-ui/visual —— 视觉层：WebGL2 背景效果与数据驱动粒子点云，框架无关。
+// @xihan-ui/backgrounds —— 视觉层：WebGL2 背景效果与数据驱动粒子点云，框架无关。
 //
 // 两条主线：
 //   1) 程序化效果 —— 传一个效果对象与一份参数，createVisualSurface 就把它铺在任意元素背景上；

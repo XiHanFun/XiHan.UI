@@ -1,4 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { ProgressApi, ProgressProps } from './progress.types'
 import { progressAnatomy } from './progress.anatomy'
 

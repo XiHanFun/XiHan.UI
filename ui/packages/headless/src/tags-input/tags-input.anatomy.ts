@@ -1,5 +1,5 @@
-import type { Scope } from '@xihan-ui/core'
-import { createAnatomy } from '@xihan-ui/core'
+import type { Scope } from '@xihan-ui/kernel'
+import { createAnatomy } from '@xihan-ui/kernel'
 
 // data-part 直接用 kebab-case，与 CSS 选择器一致。
 // 一个标签底下分两套：item-preview 是平常那一套（文本 + 删除按钮），

@@ -1,9 +1,9 @@
-# @xihan-ui/visual
+# @xihan-ui/backgrounds
 
 WebGL2 视觉层：把一层会动的背景铺到任意元素上，或者把任意图片变成粒子。框架无关，零第三方依赖。
 
 ```ts
-import { createVisualSurface, fluidEffect } from '@xihan-ui/visual'
+import { createVisualSurface, fluidEffect } from '@xihan-ui/backgrounds'
 
 const surface = createVisualSurface(cardElement, {
   effect: fluidEffect,
@@ -50,7 +50,7 @@ const surface = createVisualSurface(cardElement, {
 按名字取用需要先注册；直接传效果对象则完全不经过注册表，没引到的效果会被打包器摇掉：
 
 ```ts
-import { createVisualSurface, registerBuiltinEffects } from '@xihan-ui/visual'
+import { createVisualSurface, registerBuiltinEffects } from '@xihan-ui/backgrounds'
 
 registerBuiltinEffects()
 createVisualSurface(el, { effect: 'aurora' })
@@ -76,7 +76,7 @@ fluidEffect.params.speed
 图片、文字、SVG、参数方程最终都归一到 `PointCloud`，于是「换形态」永远只是换一份点云：
 
 ```ts
-import { createVisualSurface, imageToCloud, particlesEffect, textToCloud } from '@xihan-ui/visual'
+import { createVisualSurface, imageToCloud, particlesEffect, textToCloud } from '@xihan-ui/backgrounds'
 
 const surface = createVisualSurface(el, { effect: particlesEffect })
 
@@ -133,7 +133,7 @@ interface PointCloud {
 | --- | --- |
 | 服务端调用 `createVisualSurface` | 抛错，它需要 DOM |
 | 没有 WebGL2 | 降级成 CSS 静态背景，`backend === 'css'` |
-| 着色器编译失败 | 走 `@xihan-ui/core` 的诊断通道报出来，不抛异常——一张背景画不出来不该把宿主组件带崩 |
+| 着色器编译失败 | 走 `@xihan-ui/kernel` 的诊断通道报出来，不抛异常——一张背景画不出来不该把宿主组件带崩 |
 | 跨源图片污染画布 | `imageToCloud` 返回空点云；需要服务端带 CORS 头，或改传 `Blob` |
 | 对非 `cloud` 模式的效果调 `setCloud` | 忽略并发一条诊断 |
 | 字体还没加载完就调 `textToCloud` | 按回退字形取样；需要精确字形请先 `await document.fonts.ready` |

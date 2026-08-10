@@ -72,7 +72,7 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | Vue 组件 | `XhNavigationMenuContent` `XhNavigationMenuIndicator` `XhNavigationMenuItem` `XhNavigationMenuLink` `XhNavigationMenuList` `XhNavigationMenuRoot` `XhNavigationMenuTrigger` `XhNavigationMenuViewport` |
 | 组合式函数 | `useNavigationMenu` |
 | 状态机 | `navigationMenuMachine` |
-| 皮肤 | `@xihan-ui/styled/navigation-menu.css` |
+| 皮肤 | `@xihan-ui/styles/navigation-menu.css` |
 
 ## 解剖
 

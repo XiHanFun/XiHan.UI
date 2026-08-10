@@ -1,5 +1,5 @@
-import type { Placement, PositionEnginePort } from '@xihan-ui/core'
 import type { TooltipOpenChangeDetails, TooltipSchema } from '@xihan-ui/headless'
+import type { Placement, PositionEnginePort } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { connectTooltip, tooltipAnatomy, tooltipMachine, tooltipMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'

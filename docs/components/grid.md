@@ -53,7 +53,7 @@ cols 除了整数也收断点对象，逐档写各自的列数：窄视口一列
 | 自定义元素 | `<xh-grid>` |
 | Vue 组件 | `XhGridItem` `XhGridRoot` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/grid.css` |
+| 皮肤 | `@xihan-ui/styles/grid.css` |
 
 ## 解剖
 

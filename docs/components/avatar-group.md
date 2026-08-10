@@ -35,7 +35,7 @@
 | 自定义元素 | `<xh-avatar-group>` |
 | Vue 组件 | `XhAvatarGroupOverflow` `XhAvatarGroupRoot` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/avatar-group.css` |
+| 皮肤 | `@xihan-ui/styles/avatar-group.css` |
 
 ## 解剖
 

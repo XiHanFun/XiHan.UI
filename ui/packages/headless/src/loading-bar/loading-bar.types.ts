@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 三段式：没在加载 / 在加载 / 冲到头正在淡出，同时是 data-state 的取值。 */

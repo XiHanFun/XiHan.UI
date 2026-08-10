@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/kernel'
 
 export interface CardProps {
   /** 形态：outline / subtle / elevated / ghost，决定描边、底色与投影怎么用。 */

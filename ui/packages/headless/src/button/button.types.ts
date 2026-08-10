@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/kernel'
 
 export interface ButtonProps {
   type?: 'button' | 'submit' | 'reset'

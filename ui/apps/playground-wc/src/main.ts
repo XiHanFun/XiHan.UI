@@ -1,13 +1,13 @@
-import { createThemeController } from '@xihan-ui/system/runtime'
-import { defineXhElements } from '@xihan-ui/wc/define'
-import { defineXhVisual } from '@xihan-ui/wc/visual'
+import { createThemeController } from '@xihan-ui/tokens/runtime'
+import { defineXhVisual } from '@xihan-ui/web-components/backgrounds'
+import { defineXhElements } from '@xihan-ui/web-components/define'
 import { mountVisualDemo, visualMarkup } from './visual-demo'
-import '@xihan-ui/system/tokens.css'
-import '@xihan-ui/styled'
+import '@xihan-ui/tokens/tokens.css'
+import '@xihan-ui/styles'
 
 // 注册自定义元素（惰性），并应用主题到根元素
 defineXhElements()
-// 视觉层单独注册：@xihan-ui/visual 是可选 peer，不用就不必引这一行
+// 视觉层单独注册：@xihan-ui/backgrounds 是可选 peer，不用就不必引这一行
 defineXhVisual()
 const theme = createThemeController({ storageKey: 'xh-wc-demo-theme' })
 

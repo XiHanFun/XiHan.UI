@@ -42,7 +42,7 @@ multiple 下落值是切换、浮层不收起，可以接着挑；收起交给 E
 | Vue 组件 | `XhPopselectContent` `XhPopselectItem` `XhPopselectItemIndicator` `XhPopselectItemText` `XhPopselectPositioner` `XhPopselectRoot` `XhPopselectTrigger` |
 | 组合式函数 | `usePopselect` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/popselect.css` |
+| 皮肤 | `@xihan-ui/styles/popselect.css` |
 
 ## 解剖
 

@@ -1,5 +1,5 @@
 import type { NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { TimeSegmentType } from '../time-field'
 import type { TimePickerApi, TimePickerColumnUnit, TimePickerSchema } from './time-picker.types'
@@ -13,7 +13,7 @@ import {
   navIntentFromKey,
   queryItems,
 } from '@xihan-ui/behavior'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import {
   appendSegmentDigit,
   isTimeOutOfRange,

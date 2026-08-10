@@ -1,4 +1,4 @@
-import type { Placement, PositionResult } from '@xihan-ui/core'
+import type { Placement, PositionResult } from '@xihan-ui/kernel'
 import type { MenuFocusIntent, MenuSchema } from './menu.types'
 import { createDismissLayer, createFocusScope, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'

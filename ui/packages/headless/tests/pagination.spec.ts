@@ -1,6 +1,6 @@
 import type { PaginationPage } from '../src/pagination'
 import type { PaginationSchema } from '../src/pagination/pagination.types'
-import { normalizeProps } from '@xihan-ui/core'
+import { normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { describe, expect, it, vi } from 'vitest'

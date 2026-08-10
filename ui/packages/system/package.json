@@ -1,5 +1,5 @@
 {
-  "name": "@xihan-ui/system",
+  "name": "@xihan-ui/tokens",
   "type": "module",
   "version": "0.0.0",
   "description": "XiHan.UI design tokens + theme runtime.",

@@ -1,4 +1,4 @@
-// @xihan-ui/ai 的公开出口：消息模型、Data Stream v1 归一、parts 归约、会话容器与 SSE 传输。
+// @xihan-ui/chat-stream 的公开出口：消息模型、Data Stream v1 归一、parts 归约、会话容器与 SSE 传输。
 
 export type { ChatRequest, Role, UIMessage } from './model/message'
 export {

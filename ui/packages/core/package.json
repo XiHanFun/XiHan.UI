@@ -1,5 +1,5 @@
 {
-  "name": "@xihan-ui/core",
+  "name": "@xihan-ui/kernel",
   "type": "module",
   "version": "0.0.0",
   "description": "XiHan.UI Foundation primitives — framework-agnostic, zero runtime dependencies.",

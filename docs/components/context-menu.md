@@ -60,7 +60,7 @@ longPressDelay 是触摸端按住多久算触发；typeahead 决定展开后的�
 | Vue 组件 | `XhContextMenuArrow` `XhContextMenuContent` `XhContextMenuGroup` `XhContextMenuGroupLabel` `XhContextMenuItem` `XhContextMenuItemIndicator` `XhContextMenuItemText` `XhContextMenuPositioner` `XhContextMenuRoot` `XhContextMenuSeparator` `XhContextMenuTrigger` |
 | 组合式函数 | `useContextMenu` |
 | 状态机 | `contextMenuMachine` |
-| 皮肤 | `@xihan-ui/styled/context-menu.css` |
+| 皮肤 | `@xihan-ui/styles/context-menu.css` |
 
 ## 解剖
 

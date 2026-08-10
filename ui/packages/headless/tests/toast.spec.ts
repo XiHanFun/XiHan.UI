@@ -1,5 +1,5 @@
 import type { ToastSchema, ToastStatusChangeDetails } from '../src/toast'
-import { normalizeProps } from '@xihan-ui/core'
+import { normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'

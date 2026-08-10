@@ -1,4 +1,3 @@
-import type { Direction } from '@xihan-ui/core'
 import type {
   TransferFilter,
   TransferItem,
@@ -7,6 +6,7 @@ import type {
   TransferSchema,
   TransferSide,
 } from '@xihan-ui/headless'
+import type { Direction } from '@xihan-ui/kernel'
 import type { PropType, Slots, VNode } from 'vue'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import {

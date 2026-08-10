@@ -1,5 +1,5 @@
-import type { Direction, Orientation, Placement } from '@xihan-ui/core'
 import type { MenubarContentProps, MenubarGroupProps, MenubarItemProps, MenubarNode, MenubarNodeMeta, MenubarSchema } from '@xihan-ui/headless'
+import type { Direction, Orientation, Placement } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import type { MenubarPartRegistry } from './use-menubar'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'

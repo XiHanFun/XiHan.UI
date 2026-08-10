@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/kernel'
 import type { QrLevel } from './qr-encode'
 
 /** 根的三态：画出了码 / 没有可编码的内容 / 内容装不下。 */

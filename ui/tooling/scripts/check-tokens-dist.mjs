@@ -28,7 +28,7 @@ for (const f of REQUIRED) {
     missing.push(f)
 }
 if (missing.length) {
-  console.error(`[check-tokens-dist] ✗ 缺少令牌产物：${missing.join(', ')}（跑 pnpm --filter @xihan-ui/system gen）`)
+  console.error(`[check-tokens-dist] ✗ 缺少令牌产物：${missing.join(', ')}（跑 pnpm --filter @xihan-ui/tokens gen）`)
   process.exit(1)
 }
 console.log('[check-tokens-dist] 通过：令牌产物齐全')

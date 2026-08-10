@@ -1,4 +1,4 @@
-import type { Direction, Orientation } from '@xihan-ui/core'
+import type { Direction, Orientation } from '@xihan-ui/kernel'
 
 // 集合导航的纯计算：把按键翻译成意图，把意图翻译成下标；不碰 DOM。
 

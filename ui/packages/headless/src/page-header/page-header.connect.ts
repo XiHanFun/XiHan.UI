@@ -1,6 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { PageHeaderApi, PageHeaderProps } from './page-header.types'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { pageHeaderAnatomy } from './page-header.anatomy'
 
 const parts = pageHeaderAnatomy.build()

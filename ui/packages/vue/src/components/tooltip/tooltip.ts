@@ -1,5 +1,5 @@
-import type { Placement } from '@xihan-ui/core'
 import type { TooltipSchema } from '@xihan-ui/headless'
+import type { Placement } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { provideTooltip, useTooltipContext } from './context'

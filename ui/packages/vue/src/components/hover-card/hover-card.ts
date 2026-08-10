@@ -1,5 +1,5 @@
-import type { Direction, Placement } from '@xihan-ui/core'
 import type { HoverCardSchema } from '@xihan-ui/headless'
+import type { Direction, Placement } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { provideHoverCard, useHoverCardContext } from './context'

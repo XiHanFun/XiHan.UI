@@ -17,12 +17,12 @@
       "inputs": ["src/**", "tests/**", "spec/**", "runners/**"],
       "outputs": ["coverage/**"]
     },
-    "@xihan-ui/styled#build": {
+    "@xihan-ui/styles#build": {
       "inputs": ["index.css", "styles/**", "build/**", "package.json"],
       "outputs": []
     },
     "@xihan-ui/testing#test": {
-      "dependsOn": ["^build", "@xihan-ui/vue#build", "@xihan-ui/wc#build"],
+      "dependsOn": ["^build", "@xihan-ui/vue#build", "@xihan-ui/web-components#build"],
       "inputs": ["src/**", "tests/**", "spec/**", "runners/**"],
       "outputs": ["coverage/**"]
     },

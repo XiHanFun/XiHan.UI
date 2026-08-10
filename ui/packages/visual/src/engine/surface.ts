@@ -20,7 +20,7 @@ import type {
 } from '../types'
 import type { GlProgram } from './program'
 import { onReducedMotionChange, prefersReducedMotion } from '@xihan-ui/behavior'
-import { DIAGNOSTIC_CODES, isSSR, reportDiagnostic } from '@xihan-ui/core'
+import { DIAGNOSTIC_CODES, isSSR, reportDiagnostic } from '@xihan-ui/kernel'
 import { resolveEffect } from '../effects/registry'
 import { num, resolveParams } from '../params'
 import { createRng, lerpArrays, resample, scatterShell } from '../sources/cloud'

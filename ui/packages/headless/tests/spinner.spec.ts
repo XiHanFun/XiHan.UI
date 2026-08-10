@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { SpinnerProps } from '../src/spinner'
-import { normalizeProps } from '@xihan-ui/core'
+import { normalizeProps } from '@xihan-ui/kernel'
 import { describe, expect, it } from 'vitest'
 // 直接指到组件目录：包主入口的导出由接线一并补，测试不等它
 import { connectSpinner, SPINNER_DEFAULT_LABEL, spinnerAnatomy, spinnerMeta } from '../src/spinner'

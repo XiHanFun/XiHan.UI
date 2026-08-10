@@ -1,8 +1,8 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ThreadSchema } from '../thread'
 import type { LogApi, LogProps } from './log.types'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { logAnatomy } from './log.anatomy'
 
 const parts = logAnatomy.build()

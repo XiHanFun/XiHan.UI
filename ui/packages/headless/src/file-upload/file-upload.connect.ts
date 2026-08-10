@@ -1,7 +1,7 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { FileUploadApi, FileUploadSchema } from './file-upload.types'
-import { contains, dataAttr, isHTMLElement } from '@xihan-ui/core'
+import { contains, dataAttr, isHTMLElement } from '@xihan-ui/kernel'
 import { fileUploadAnatomy, fileUploadHiddenInputId } from './file-upload.anatomy'
 import { acceptAttr, formatFileSize, normalizeMaxFiles } from './file-upload.machine'
 

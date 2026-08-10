@@ -1,5 +1,5 @@
-import type { Placement } from '@xihan-ui/core'
 import type { PopoverSchema } from '@xihan-ui/headless'
+import type { Placement } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
 import { providePopover, usePopoverContext } from './context'

@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
-import type { RuntimeConfig } from '@xihan-ui/core'
+import type { RuntimeConfig } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 // 直接指到组件目录：drawer 尚未接进 src/index.ts（统一接线由别处做），
 // 从子路径进也保证这份用例接的是本组件自己的实现。
 import type { DrawerSchema, DrawerSide } from '../src/drawer'
-import { createCounterIdGenerator, createRuntimeConfig, createScope, normalizeProps } from '@xihan-ui/core'
+import { createCounterIdGenerator, createRuntimeConfig, createScope, normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'

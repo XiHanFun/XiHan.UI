@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
-import type { DiagnosticRecord } from '@xihan-ui/core'
+import type { DiagnosticRecord } from '@xihan-ui/kernel'
 import {
   DIAGNOSTIC_CODES,
   onDiagnostic,
   resetDiagnostics,
   setDiagnosticsConsoleOutput,
   setDiagnosticsLevel,
-} from '@xihan-ui/core'
+} from '@xihan-ui/kernel'
 import { runConformance } from '@xihan-ui/testing'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createWcHarness } from './harness'

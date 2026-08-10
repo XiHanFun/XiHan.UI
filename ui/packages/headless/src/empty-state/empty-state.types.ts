@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/kernel'
 
 /** 播报方式：polite 让 root 成为 role=status 活区，off 让它只是个普通容器。 */
 export type EmptyStateLive = 'polite' | 'off'

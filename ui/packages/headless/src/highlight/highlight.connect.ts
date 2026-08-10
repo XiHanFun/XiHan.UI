@@ -1,6 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { HighlightApi, HighlightProps } from './highlight.types'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { highlightAnatomy } from './highlight.anatomy'
 import { normalizeHighlightKeywords, splitHighlight } from './highlight.split'
 

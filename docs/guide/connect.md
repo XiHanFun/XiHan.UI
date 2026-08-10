@@ -75,7 +75,7 @@ id 一律由 `scope` 派生而不是随手生成，这样同一页面挂多个�
 
 ```ts
 // 无头场景：恒等归一化，原样拿到属性字典
-import { normalizeProps } from '@xihan-ui/core'
+import { normalizeProps } from '@xihan-ui/kernel'
 
 const api = connectAccordion(service, normalizeProps)
 api.getTriggerProps({ value: 'a' })
@@ -116,7 +116,7 @@ const { api } = useAccordion({ multiple: true, defaultValue: ['a'] })
 完全脱离框架时自己建服务：
 
 ```ts
-import { createScope, createCounterIdGenerator, normalizeProps } from '@xihan-ui/core'
+import { createScope, createCounterIdGenerator, normalizeProps } from '@xihan-ui/kernel'
 import { accordionMachine, connectAccordion } from '@xihan-ui/headless'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'

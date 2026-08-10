@@ -1,7 +1,7 @@
-import type { NormalizeProps, Placement, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, Placement, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { HoverCardApi, HoverCardSchema } from './hover-card.types'
-import { contains, dataAttr } from '@xihan-ui/core'
+import { contains, dataAttr } from '@xihan-ui/kernel'
 import { hoverCardAnatomy } from './hover-card.anatomy'
 
 const parts = hoverCardAnatomy.build()

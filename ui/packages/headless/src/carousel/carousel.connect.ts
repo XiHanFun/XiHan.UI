@@ -1,8 +1,8 @@
-import type { Dict, NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { Dict, NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { CarouselApi, CarouselSchema } from './carousel.types'
 import { navIntentFromKey } from '@xihan-ui/behavior'
-import { dataAttr, isHTMLElement } from '@xihan-ui/core'
+import { dataAttr, isHTMLElement } from '@xihan-ui/kernel'
 import { carouselAnatomy } from './carousel.anatomy'
 import {
   carouselPageCount,

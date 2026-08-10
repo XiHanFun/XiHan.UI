@@ -35,7 +35,7 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 | 自定义元素 | `<xh-skeleton>` |
 | Vue 组件 | `XhSkeletonBone` `XhSkeletonRoot` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/skeleton.css` |
+| 皮肤 | `@xihan-ui/styles/skeleton.css` |
 
 ## 解剖
 

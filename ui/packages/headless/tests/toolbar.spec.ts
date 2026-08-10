@@ -6,7 +6,7 @@
 
 import type { Service } from '@xihan-ui/machine'
 import type { ToolbarItemProps, ToolbarSchema } from '../src/toolbar/index'
-import { normalizeProps } from '@xihan-ui/core'
+import { normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'

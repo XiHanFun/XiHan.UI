@@ -1,4 +1,4 @@
-import type { Direction, Orientation, PropTypes } from '@xihan-ui/core'
+import type { Direction, Orientation, PropTypes } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 读屏用的文案，默认英文。 */

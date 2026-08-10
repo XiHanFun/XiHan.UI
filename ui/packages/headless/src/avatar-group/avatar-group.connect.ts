@@ -1,4 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { AvatarGroupApi, AvatarGroupProps } from './avatar-group.types'
 import { avatarGroupAnatomy } from './avatar-group.anatomy'
 

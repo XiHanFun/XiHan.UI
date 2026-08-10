@@ -35,7 +35,7 @@ decorative 开启后读屏跳过它；只是排版用的横线应该这么写
 | 自定义元素 | `<xh-separator>` |
 | Vue 组件 | `XhSeparator` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/separator.css` |
+| 皮肤 | `@xihan-ui/styles/separator.css` |
 
 ## 解剖
 

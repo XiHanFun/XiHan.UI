@@ -1,4 +1,4 @@
-import type { CodeToken, HighlighterPort } from '@xihan-ui/core'
+import type { CodeToken, HighlighterPort } from '@xihan-ui/kernel'
 import { langSpecOf } from './languages'
 import { HIGHLIGHT_MAX_LENGTH, tokenizeCode } from './tokenize'
 

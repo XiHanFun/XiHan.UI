@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
-import type { Anchor, PositionEnginePort, PositionOptions, PositionRect } from '@xihan-ui/core'
+import type { Anchor, PositionEnginePort, PositionOptions, PositionRect } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { MenubarApi, MenubarSchema, MenubarSelectDetails, MenubarValueChangeDetails } from '../src/menubar'
-import { createRuntimeConfig, normalizeProps } from '@xihan-ui/core'
+import { createRuntimeConfig, normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { afterEach, describe, expect, it } from 'vitest'

@@ -96,7 +96,7 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | Vue 组件 | `XhComboboxClearTrigger` `XhComboboxContent` `XhComboboxControl` `XhComboboxEmpty` `XhComboboxInput` `XhComboboxItem` `XhComboboxItemGroup` `XhComboboxItemGroupLabel` `XhComboboxItemIndicator` `XhComboboxItemText` `XhComboboxLabel` `XhComboboxPositioner` `XhComboboxRoot` `XhComboboxTrigger` |
 | 组合式函数 | `useCombobox` |
 | 状态机 | `comboboxMachine` |
-| 皮肤 | `@xihan-ui/styled/combobox.css` |
+| 皮肤 | `@xihan-ui/styles/combobox.css` |
 
 ## 解剖
 

@@ -1,4 +1,4 @@
-import type { Scope } from '@xihan-ui/core'
+import type { Scope } from '@xihan-ui/kernel'
 
 /**
  * 这个节点此刻真的接得住焦点吗。

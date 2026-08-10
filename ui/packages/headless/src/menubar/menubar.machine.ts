@@ -1,4 +1,4 @@
-import type { Placement, PositionResult } from '@xihan-ui/core'
+import type { Placement, PositionResult } from '@xihan-ui/kernel'
 import type { MenubarFocusIntent, MenubarSchema } from './menubar.types'
 import {
   createDismissLayer,

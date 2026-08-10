@@ -54,7 +54,7 @@ header-fixed 让头钉在滚动容器上沿，sider-fixed 让侧栏跟着钉住�
 | Vue 组件 | `XhLayoutContent` `XhLayoutFooter` `XhLayoutHeader` `XhLayoutRoot` `XhLayoutSider` `XhLayoutSiderTrigger` |
 | 组合式函数 | `useLayout` |
 | 状态机 | `layoutMachine` |
-| 皮肤 | `@xihan-ui/styled/layout.css` |
+| 皮肤 | `@xihan-ui/styles/layout.css` |
 
 ## 解剖
 

@@ -1,9 +1,9 @@
 import type { ItemQuery } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { PinInputApi, PinInputSchema } from './pin-input.types'
 import { focusSafely, navIntentFromKey, queryItems, stepIndex } from '@xihan-ui/behavior'
-import { dataAttr, isComposingEvent } from '@xihan-ui/core'
+import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
 import { pinInputAnatomy } from './pin-input.anatomy'
 import { isPinComplete, padPinValue, pinLength, sanitizePin } from './pin-input.machine'
 

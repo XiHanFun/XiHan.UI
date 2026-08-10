@@ -10,10 +10,10 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@xihan-ui/styled": "workspace:*",
-    "@xihan-ui/system": "workspace:*",
-    "@xihan-ui/visual": "workspace:*",
-    "@xihan-ui/wc": "workspace:*"
+    "@xihan-ui/backgrounds": "workspace:*",
+    "@xihan-ui/styles": "workspace:*",
+    "@xihan-ui/tokens": "workspace:*",
+    "@xihan-ui/web-components": "workspace:*"
   },
   "devDependencies": {
     "typescript": "catalog:",

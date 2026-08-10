@@ -1,4 +1,4 @@
-import type { Direction, Orientation } from '@xihan-ui/core'
+import type { Direction, Orientation } from '@xihan-ui/kernel'
 import type { Params, Transition } from '@xihan-ui/machine'
 import type { ScrollAreaAxisMetrics } from './scroll-area.geometry'
 import type { ScrollAreaSchema, ScrollAreaType } from './scroll-area.types'

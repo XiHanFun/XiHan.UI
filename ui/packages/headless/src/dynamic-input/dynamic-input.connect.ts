@@ -1,7 +1,7 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { DynamicInputApi, DynamicInputItem, DynamicInputItemProps, DynamicInputSchema } from './dynamic-input.types'
-import { contains, dataAttr } from '@xihan-ui/core'
+import { contains, dataAttr } from '@xihan-ui/kernel'
 import { dynamicInputAnatomy, dynamicInputTriggerId } from './dynamic-input.anatomy'
 import { atRowMax, atRowMin, rowBound } from './dynamic-input.machine'
 

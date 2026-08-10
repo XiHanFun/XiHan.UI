@@ -1,13 +1,13 @@
 # Web Components 适配器
 
-`@xihan-ui/wc` 把同一套无头内核包成原生自定义元素。它有一个不常见的形态：**Light-DOM 行为宿主**——元素本身不渲染任何结构，结构由你手写，元素只负责发现角色节点并往上挂属性与事件。
+`@xihan-ui/web-components` 把同一套无头内核包成原生自定义元素。它有一个不常见的形态：**Light-DOM 行为宿主**——元素本身不渲染任何结构，结构由你手写，元素只负责发现角色节点并往上挂属性与事件。
 
 响应式基类是自研的（`XhReactiveElement`），不依赖任何第三方运行时。
 
 ## 注册
 
 ```ts
-import { defineXhElements } from '@xihan-ui/wc/define'
+import { defineXhElements } from '@xihan-ui/web-components/define'
 
 defineXhElements() // 注册全部 69 个 xh-* 元素
 ```
@@ -17,7 +17,7 @@ defineXhElements() // 注册全部 69 个 xh-* 元素
 视觉层单独注册，不引就不会把 WebGL 引擎打进包：
 
 ```ts
-import { defineXhVisual } from '@xihan-ui/wc/visual'
+import { defineXhVisual } from '@xihan-ui/web-components/backgrounds'
 
 defineXhVisual()
 ```
@@ -109,7 +109,7 @@ document.querySelector('xh-dialog')
 
 ## 升级前
 
-自定义元素在 JS 到达之前不会升级，那段时间 `data-scope` / `data-part` 都还没打上，浮层内容会以裸文本堆在页面流里。`@xihan-ui/styled` 的 `undefined.css` 用 `:not(:defined)` 配合作者写的 `data-xh-part` 先把浮层子树收起来，见[皮肤与样式分层](../guide/styling#升级前的形态)。
+自定义元素在 JS 到达之前不会升级，那段时间 `data-scope` / `data-part` 都还没打上，浮层内容会以裸文本堆在页面流里。`@xihan-ui/styles` 的 `undefined.css` 用 `:not(:defined)` 配合作者写的 `data-xh-part` 先把浮层子树收起来，见[皮肤与样式分层](../guide/styling#升级前的形态)。
 
 ## 自定义元素清单
 

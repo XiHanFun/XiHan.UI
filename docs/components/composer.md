@@ -72,7 +72,7 @@ root 里除输入与发送外还能放自己的节点；插槽给出的 value �
 | Vue 组件 | `XhComposerInput` `XhComposerRoot` `XhComposerSubmitTrigger` |
 | 组合式函数 | `useComposer` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/composer.css` |
+| 皮肤 | `@xihan-ui/styles/composer.css` |
 
 ## 解剖
 

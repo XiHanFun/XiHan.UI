@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/kernel'
 
 /** 结果类型：三个 HTTP 状态码与四种通用结果。 */
 export type ResultStatus = '404' | '403' | '500' | 'success' | 'warning' | 'error' | 'info'

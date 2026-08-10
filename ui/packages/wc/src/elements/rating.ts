@@ -1,5 +1,5 @@
-import type { Direction } from '@xihan-ui/core'
 import type { RatingHoverChangeDetails, RatingItemProps, RatingSchema, RatingValueChangeDetails } from '@xihan-ui/headless'
+import type { Direction } from '@xihan-ui/kernel'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectRating, ratingAnatomy, ratingMachine, ratingMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'

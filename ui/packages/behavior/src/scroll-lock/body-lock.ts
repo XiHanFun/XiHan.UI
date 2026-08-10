@@ -1,5 +1,5 @@
-import type { Cleanup, Disposable, RuntimeConfig } from '@xihan-ui/core'
-import { createPerDocumentRegistry } from '@xihan-ui/core'
+import type { Cleanup, Disposable, RuntimeConfig } from '@xihan-ui/kernel'
+import { createPerDocumentRegistry } from '@xihan-ui/kernel'
 
 export interface ScrollLockOptions {
   config: RuntimeConfig

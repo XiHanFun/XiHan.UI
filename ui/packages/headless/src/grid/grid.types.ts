@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/kernel'
 
 /** 每一项在自己那格里的块向对齐。 */
 export type GridAlign = 'start' | 'center' | 'end' | 'stretch' | 'baseline'

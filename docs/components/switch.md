@@ -72,7 +72,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | Vue 组件 | `XhSwitch` |
 | 组合式函数 | `useSwitch` |
 | 状态机 | `switchMachine` |
-| 皮肤 | `@xihan-ui/styled/switch.css` |
+| 皮肤 | `@xihan-ui/styles/switch.css` |
 
 ## 解剖
 

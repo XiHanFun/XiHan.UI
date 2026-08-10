@@ -60,7 +60,7 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | Vue 组件 | `XhTransferItem` `XhTransferItemCheckbox` `XhTransferItemText` `XhTransferList` `XhTransferPanelCount` `XhTransferPanelHeader` `XhTransferPanelTitle` `XhTransferRoot` `XhTransferSearch` `XhTransferSelectAllTrigger` `XhTransferSourcePanel` `XhTransferTargetPanel` `XhTransferToSourceTrigger` `XhTransferToTargetTrigger` |
 | 组合式函数 | `useTransfer` |
 | 状态机 | `transferMachine` |
-| 皮肤 | `@xihan-ui/styled/transfer.css` |
+| 皮肤 | `@xihan-ui/styles/transfer.css` |
 
 ## 解剖
 

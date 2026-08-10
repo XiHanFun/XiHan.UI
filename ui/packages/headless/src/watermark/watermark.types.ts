@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/kernel'
 
 /** 两态：算出了图样 / 没有可印的文字。empty 时皮肤整层不画。 */
 export type WatermarkState = 'ready' | 'empty'

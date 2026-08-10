@@ -1,4 +1,4 @@
-import type { Layer, LayerRegistry } from '@xihan-ui/core'
+import type { Layer, LayerRegistry } from '@xihan-ui/kernel'
 
 export interface InsideResult {
   inside: boolean

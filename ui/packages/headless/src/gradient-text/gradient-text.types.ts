@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/kernel'
 
 /**
  * 渐变走向档位，逐档对应 CSS 的 `to <边或角>`。

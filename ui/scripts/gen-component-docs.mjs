@@ -89,7 +89,7 @@ function adapterArtifacts(id) {
   const composable = vueExports.has(`use${P}`) ? `use${P}` : null
   const tag = wcTags.has(`xh-${id}`) ? `xh-${id}` : null
   const skinPath = path.join(uiRoot, 'packages/styled/styles', `${id}.css`)
-  const skin = fs.existsSync(skinPath) ? `@xihan-ui/styled/${id}.css` : null
+  const skin = fs.existsSync(skinPath) ? `@xihan-ui/styles/${id}.css` : null
   return { components, composable, tag, skin }
 }
 
@@ -368,7 +368,7 @@ function renderIndex() {
   const L = []
   L.push('# 组件总览', '')
   L.push(
-    `${total} 个组件，每个都同时提供**无头内核**（\`@xihan-ui/headless\`）、**Vue 组件**（\`@xihan-ui/vue\`）、**自定义元素**（\`@xihan-ui/wc\`）与**默认皮肤**（\`@xihan-ui/styled\`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。`,
+    `${total} 个组件，每个都同时提供**无头内核**（\`@xihan-ui/headless\`）、**Vue 组件**（\`@xihan-ui/vue\`）、**自定义元素**（\`@xihan-ui/web-components\`）与**默认皮肤**（\`@xihan-ui/styles\`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。`,
     '',
   )
   L.push(

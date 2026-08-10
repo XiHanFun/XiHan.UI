@@ -13,12 +13,12 @@ export default defineConfig({
   resolve: {
     alias: {
       // system 含 CSS 子路径（tokens.css 在包根不在 src），走 node_modules 的 exports 解析，不设 src 别名
-      '@xihan-ui/core': pkg('core'),
+      '@xihan-ui/kernel': pkg('core'),
       '@xihan-ui/machine': pkg('machine'),
       '@xihan-ui/behavior': pkg('behavior'),
       '@xihan-ui/headless': pkg('headless'),
       '@xihan-ui/position': pkg('position'),
-      '@xihan-ui/visual': pkg('visual'),
+      '@xihan-ui/backgrounds': pkg('visual'),
       '@xihan-ui/vue': pkg('vue'),
     },
   },

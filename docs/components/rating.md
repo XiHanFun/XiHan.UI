@@ -66,7 +66,7 @@ size 改星的大小与间距，不写即缺省中档
 | Vue 组件 | `XhRatingControl` `XhRatingHiddenInput` `XhRatingItem` `XhRatingLabel` `XhRatingRoot` |
 | 组合式函数 | `useRating` |
 | 状态机 | `ratingMachine` |
-| 皮肤 | `@xihan-ui/styled/rating.css` |
+| 皮肤 | `@xihan-ui/styles/rating.css` |
 
 ## 解剖
 

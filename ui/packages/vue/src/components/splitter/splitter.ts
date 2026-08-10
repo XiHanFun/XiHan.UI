@@ -1,5 +1,5 @@
-import type { Direction, Orientation } from '@xihan-ui/core'
 import type { SplitterPanelProps, SplitterSchema } from '@xihan-ui/headless'
+import type { Direction, Orientation } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { computed, defineComponent, h } from 'vue'
 import { provideSplitter, useSplitterContext } from './context'

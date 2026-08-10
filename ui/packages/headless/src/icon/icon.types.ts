@@ -1,4 +1,4 @@
-import type { IconNode, IconRecord, PropTypes } from '@xihan-ui/core'
+import type { IconNode, IconRecord, PropTypes } from '@xihan-ui/kernel'
 
 /** 直径档位，缺省 md。 */
 export type IconSize = 'sm' | 'md' | 'lg'

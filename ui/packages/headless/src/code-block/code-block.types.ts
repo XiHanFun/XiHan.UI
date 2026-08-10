@@ -1,4 +1,4 @@
-import type { CodeToken, HighlighterPort, PropTypes } from '@xihan-ui/core'
+import type { CodeToken, HighlighterPort, PropTypes } from '@xihan-ui/kernel'
 
 export interface CodeBlockProps {
   code: string

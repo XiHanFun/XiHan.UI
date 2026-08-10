@@ -47,7 +47,7 @@ tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到
 | 自定义元素 | `<xh-spinner>` |
 | Vue 组件 | `XhSpinner` `XhSpinnerLabel` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/spinner.css` |
+| 皮肤 | `@xihan-ui/styles/spinner.css` |
 
 ## 解剖
 

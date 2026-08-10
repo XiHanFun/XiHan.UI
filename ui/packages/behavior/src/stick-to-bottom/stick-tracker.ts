@@ -1,4 +1,4 @@
-import type { Disposable, RuntimeConfig } from '@xihan-ui/core'
+import type { Disposable, RuntimeConfig } from '@xihan-ui/kernel'
 
 /** 距底多少 px 起算「在底」的默认阈值。 */
 export const STICK_TO_BOTTOM_THRESHOLD = 64

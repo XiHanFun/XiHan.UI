@@ -1,5 +1,5 @@
-import type { Direction, Orientation } from '@xihan-ui/core'
 import type { AnchorSchema, AnchorTranslations, AnchorValueChangeDetails } from '@xihan-ui/headless'
+import type { Direction, Orientation } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { anchorAnatomy, anchorMachine, anchorMeta, connectAnchor } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'

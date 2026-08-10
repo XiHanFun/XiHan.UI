@@ -42,7 +42,7 @@
 | Vue 组件 | `XhMentionContent` `XhMentionInput` `XhMentionItem` `XhMentionItemText` `XhMentionPositioner` `XhMentionRoot` |
 | 组合式函数 | `useMention` |
 | 状态机 | `mentionMachine` |
-| 皮肤 | `@xihan-ui/styled/mention.css` |
+| 皮肤 | `@xihan-ui/styles/mention.css` |
 
 ## 解剖
 

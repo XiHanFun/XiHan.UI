@@ -54,7 +54,7 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | Vue 组件 | `XhToggleGroupItem` `XhToggleGroupRoot` |
 | 组合式函数 | `useToggleGroup` |
 | 状态机 | `toggleGroupMachine` |
-| 皮肤 | `@xihan-ui/styled/toggle-group.css` |
+| 皮肤 | `@xihan-ui/styles/toggle-group.css` |
 
 ## 解剖
 

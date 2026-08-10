@@ -1,7 +1,7 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ResolvedToast, ToasterApi, ToasterSchema, ToastPlacement, ToastRecord } from './toaster.types'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { TOAST_DURATION, TOAST_REMOVE_DELAY } from '../toast'
 import { toasterAnatomy } from './toaster.anatomy'
 import {

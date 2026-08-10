@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/kernel'
 
 export interface ProgressProps {
   /** 当前进度值，越界会被夹到 [0, max]。 */

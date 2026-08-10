@@ -1,7 +1,7 @@
-// @xihan-ui/wc/visual —— 视觉层的 Web Components 适配。
+// @xihan-ui/web-components/backgrounds —— 视觉层的 Web Components 适配。
 //
-// 与主入口和 /define 都分开：@xihan-ui/visual 是可选 peer，不用视觉效果的应用不会
-// 因为装了本包而多出一个 WebGL 引擎。用之前先装 @xihan-ui/visual。
+// 与主入口和 /define 都分开：@xihan-ui/backgrounds 是可选 peer，不用视觉效果的应用不会
+// 因为装了本包而多出一个 WebGL 引擎。用之前先装 @xihan-ui/backgrounds。
 //
 // ```html
 // <xh-visual effect="aurora" quality="balanced" style="height: 180px">
@@ -16,10 +16,10 @@ import type {
   VisualEffect,
   VisualQuality,
   VisualSurface,
-} from '@xihan-ui/visual'
+} from '@xihan-ui/backgrounds'
 import type { PropertyValues } from './reactive'
-import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
-import { createVisualSurface, registerBuiltinEffects } from '@xihan-ui/visual'
+import { createVisualSurface, registerBuiltinEffects } from '@xihan-ui/backgrounds'
+import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/kernel'
 import { version as VERSION } from '../package.json'
 import { XhReactiveElement } from './reactive'
 import { defineElement } from './runtime/registry'

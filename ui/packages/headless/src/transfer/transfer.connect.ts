@@ -1,5 +1,5 @@
 import type { NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type {
   TransferApi,
@@ -9,7 +9,7 @@ import type {
   TransferSide,
 } from './transfer.types'
 import { focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
-import { contains, dataAttr } from '@xihan-ui/core'
+import { contains, dataAttr } from '@xihan-ui/kernel'
 import { transferAnatomy, transferItemQuery } from './transfer.anatomy'
 import { transferFocusKey, transferOppositeSide, transferQueryKey } from './transfer.machine'
 import {

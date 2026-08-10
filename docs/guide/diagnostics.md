@@ -42,7 +42,7 @@ export const DIAGNOSTIC_CODES = {
 ## 用法
 
 ```ts
-import { onDiagnostic, setDiagnosticsLevel, setDiagnosticsConsoleOutput } from '@xihan-ui/core'
+import { onDiagnostic, setDiagnosticsLevel, setDiagnosticsConsoleOutput } from '@xihan-ui/kernel'
 
 // 订阅
 const off = onDiagnostic((record) => {
@@ -79,7 +79,7 @@ setDiagnosticsConsoleOutput(false)
 
 ## 隔离性
 
-- 通道挂在全局，同一页面里多份 `@xihan-ui/core` 副本共用一条通道；
+- 通道挂在全局，同一页面里多份 `@xihan-ui/kernel` 副本共用一条通道；
 - **订阅方抛错不会回流进组件**——你的上报逻辑炸了不会连累界面。
 
 ## 在测试里用
@@ -87,7 +87,7 @@ setDiagnosticsConsoleOutput(false)
 把阈值调到 `warn` 并订阅，就能把契约违约变成用例失败：
 
 ```ts
-import { onDiagnostic, resetDiagnostics, setDiagnosticsLevel } from '@xihan-ui/core'
+import { onDiagnostic, resetDiagnostics, setDiagnosticsLevel } from '@xihan-ui/kernel'
 
 beforeEach(() => {
   resetDiagnostics()

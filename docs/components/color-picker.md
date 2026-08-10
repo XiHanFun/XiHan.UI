@@ -72,7 +72,7 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | Vue 组件 | `XhColorPickerArea` `XhColorPickerAreaThumb` `XhColorPickerChannelInput` `XhColorPickerChannelSlider` `XhColorPickerChannelSliderThumb` `XhColorPickerChannelSliderTrack` `XhColorPickerContent` `XhColorPickerEyeDropperTrigger` `XhColorPickerLabel` `XhColorPickerPositioner` `XhColorPickerRoot` `XhColorPickerSwatch` `XhColorPickerSwatchGroup` `XhColorPickerSwatchItem` `XhColorPickerTrigger` `XhColorPickerValueText` |
 | 组合式函数 | `useColorPicker` |
 | 状态机 | `colorPickerMachine` |
-| 皮肤 | `@xihan-ui/styled/color-picker.css` |
+| 皮肤 | `@xihan-ui/styles/color-picker.css` |
 
 ## 解剖
 

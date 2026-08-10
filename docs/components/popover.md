@@ -72,7 +72,7 @@ open-change 带一份 { open }，报的是这次要落到的状态；非受控�
 | Vue 组件 | `XhPopoverArrow` `XhPopoverCloseTrigger` `XhPopoverContent` `XhPopoverDescription` `XhPopoverPositioner` `XhPopoverRoot` `XhPopoverTitle` `XhPopoverTrigger` |
 | 组合式函数 | `usePopover` |
 | 状态机 | `popoverMachine` |
-| 皮肤 | `@xihan-ui/styled/popover.css` |
+| 皮肤 | `@xihan-ui/styles/popover.css` |
 
 ## 解剖
 

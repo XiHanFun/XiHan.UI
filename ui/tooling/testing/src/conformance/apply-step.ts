@@ -1,4 +1,4 @@
-import type { Anatomy } from '@xihan-ui/core'
+import type { Anatomy } from '@xihan-ui/kernel'
 import type { AdapterHarness, ModifierKey, PartRef, SettleCondition, Step } from './types'
 
 export interface ApplyContext {

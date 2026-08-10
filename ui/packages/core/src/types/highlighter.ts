@@ -1,4 +1,4 @@
-// HighlighterPort：代码着色端口的类型契约，默认实现在 @xihan-ui/highlight。
+// HighlighterPort：代码着色端口的类型契约，默认实现在 @xihan-ui/code-highlight。
 
 /**
  * 记号种类。**刻意只有这几种**：这是一套粗粒度词法着色，

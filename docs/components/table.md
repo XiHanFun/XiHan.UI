@@ -108,7 +108,7 @@ rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自
 | Vue 组件 | `XhTableBody` `XhTableCaption` `XhTableCell` `XhTableColumnHeader` `XhTableEmptyState` `XhTableExpandTrigger` `XhTableExpandedRow` `XhTableFooter` `XhTableHeader` `XhTableLoadingState` `XhTableRoot` `XhTableRow` `XhTableRowSelectTrigger` `XhTableSelectAllTrigger` `XhTableSortTrigger` |
 | 组合式函数 | `useTable` |
 | 状态机 | `tableMachine` |
-| 皮肤 | `@xihan-ui/styled/table.css` |
+| 皮肤 | `@xihan-ui/styles/table.css` |
 
 ## 解剖
 

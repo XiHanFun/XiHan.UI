@@ -1,4 +1,3 @@
-import type { Direction, Placement } from '@xihan-ui/core'
 import type {
   ColorPickerChannel,
   ColorPickerFormat,
@@ -6,6 +5,7 @@ import type {
   ColorPickerSchema,
   ColorPickerTranslations,
 } from '@xihan-ui/headless'
+import type { Direction, Placement } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { colorPickerToChannel, colorPickerToInputChannel } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onUnmounted } from 'vue'

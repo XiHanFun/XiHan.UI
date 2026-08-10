@@ -48,7 +48,7 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 | Vue 组件 | `XhCollapsibleContent` `XhCollapsibleRoot` `XhCollapsibleTrigger` |
 | 组合式函数 | `useCollapsible` |
 | 状态机 | `collapsibleMachine` |
-| 皮肤 | `@xihan-ui/styled/collapsible.css` |
+| 皮肤 | `@xihan-ui/styles/collapsible.css` |
 
 ## 解剖
 

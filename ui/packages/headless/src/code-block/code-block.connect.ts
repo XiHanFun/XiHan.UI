@@ -1,6 +1,6 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { CodeBlockApi, CodeBlockProps } from './code-block.types'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { codeBlockAnatomy } from './code-block.anatomy'
 import { CODE_BLOCK_FALLBACK_LANG, countCodeLines } from './code-block.types'
 

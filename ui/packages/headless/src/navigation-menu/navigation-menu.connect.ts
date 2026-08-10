@@ -1,9 +1,9 @@
 import type { NavIntent } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { NavigationMenuApi, NavigationMenuNodeMeta, NavigationMenuSchema, NavigationMenuTriggerProps } from './navigation-menu.types'
 import { focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
-import { contains, dataAttr } from '@xihan-ui/core'
+import { contains, dataAttr } from '@xihan-ui/kernel'
 import { navigationMenuAnatomy, navigationMenuTriggerQuery } from './navigation-menu.anatomy'
 
 const parts = navigationMenuAnatomy.build()

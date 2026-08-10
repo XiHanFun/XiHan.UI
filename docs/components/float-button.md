@@ -36,7 +36,7 @@ shape 换圆角档，offset 决定距那两条边多远；translations 换掉读
 | Vue 组件 | `XhFloatButtonList` `XhFloatButtonRoot` `XhFloatButtonTrigger` |
 | 组合式函数 | `useFloatButton` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/float-button.css` |
+| 皮肤 | `@xihan-ui/styles/float-button.css` |
 
 ## 解剖
 

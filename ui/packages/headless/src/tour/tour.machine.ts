@@ -1,4 +1,4 @@
-import type { Placement, PositionResult, Scope } from '@xihan-ui/core'
+import type { Placement, PositionResult, Scope } from '@xihan-ui/kernel'
 import type { PropFn } from '@xihan-ui/machine'
 import type { TourSchema, TourSpotlightRect, TourStep } from './tour.types'
 import { canTakeFocus, createDismissLayer, createFocusScope } from '@xihan-ui/behavior'

@@ -1,4 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { IconWrapperApi, IconWrapperProps } from './icon-wrapper.types'
 import { iconWrapperAnatomy } from './icon-wrapper.anatomy'
 

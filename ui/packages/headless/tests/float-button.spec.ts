@@ -2,7 +2,7 @@
 import type { Service } from '@xihan-ui/machine'
 import type { CollapsibleSchema } from '../src/collapsible'
 import type { FloatButtonApi, FloatButtonAppearance } from '../src/float-button'
-import { normalizeProps } from '@xihan-ui/core'
+import { normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { afterEach, describe, expect, it } from 'vitest'

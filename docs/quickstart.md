@@ -124,9 +124,9 @@ const items = [
 ```
 
 ```ts
-import { defineXhElements } from '@xihan-ui/wc/define'
-import '@xihan-ui/system/tokens.css'
-import '@xihan-ui/styled'
+import { defineXhElements } from '@xihan-ui/web-components/define'
+import '@xihan-ui/tokens/tokens.css'
+import '@xihan-ui/styles'
 
 defineXhElements()
 ```
@@ -138,7 +138,7 @@ defineXhElements()
 三种用法共用同一套主题运行时。它把五个属性写到根元素上，皮肤按属性选择器命中：
 
 ```ts
-import { createThemeController } from '@xihan-ui/system/runtime'
+import { createThemeController } from '@xihan-ui/tokens/runtime'
 
 const theme = createThemeController({
   storageKey: 'app-theme', // 传了才持久化

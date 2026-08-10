@@ -1,9 +1,9 @@
-# @xihan-ui/highlight
+# @xihan-ui/code-highlight
 
 `HighlighterPort` 的默认实现：**粗粒度**词法着色，零第三方运行时依赖。
 
 ```ts
-import { createHighlighter } from '@xihan-ui/highlight'
+import { createHighlighter } from '@xihan-ui/code-highlight'
 
 createHighlighter().highlight('const x = 1', 'ts')
 // [{ text: 'const', kind: 'keyword' }, { text: ' x = ', kind: 'plain' }, ...]

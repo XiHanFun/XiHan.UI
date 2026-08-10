@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { TableApi, TableColumnDef, TableRowDef, TableSchema } from '../src/table'
-import { normalizeProps } from '@xihan-ui/core'
+import { normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'

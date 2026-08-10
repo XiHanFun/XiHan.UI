@@ -1,5 +1,5 @@
 // SSE 行协议解析：只把字节流切成帧，不涉及任何上层协议语义。
-import { warn } from '@xihan-ui/core'
+import { warn } from '@xihan-ui/kernel'
 
 /** 行缓冲字符数上限，超出即丢弃当前残帧。 */
 const MAX_BUFFER_CHARS = 8 * 1024 * 1024

@@ -108,7 +108,7 @@ input 部件渲染出来就是一个 input，拿到它的节点就能聚焦、�
 | Vue 组件 | `XhTextFieldClearTrigger` `XhTextFieldInput` `XhTextFieldLabel` `XhTextFieldRoot` |
 | 组合式函数 | `useTextField` |
 | 状态机 | `textFieldMachine` |
-| 皮肤 | `@xihan-ui/styled/text-field.css` |
+| 皮肤 | `@xihan-ui/styles/text-field.css` |
 
 ## 解剖
 

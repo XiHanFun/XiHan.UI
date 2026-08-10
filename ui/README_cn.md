@@ -14,19 +14,19 @@
 
 | 包 | 职责 |
 | --- | --- |
-| `@xihan-ui/core` | 结构原语：anatomy、`mergeProps`、`normalizeProps`、Scope、context、id |
+| `@xihan-ui/kernel` | 结构原语：anatomy、`mergeProps`、`normalizeProps`、Scope、context、id |
 | `@xihan-ui/machine` | 状态机运行时：`createMachine`、解释器契约、受控值绑定 |
 | `@xihan-ui/behavior` | 行为原语：dismissable layer、焦点域、滚动锁、进出场、集合、typeahead |
 | `@xihan-ui/headless` | 69 个组件的 anatomy + machine + `connect`，无样式、无框架 |
 | `@xihan-ui/vue` | Vue 3 适配器 |
-| `@xihan-ui/wc` | Web Components 适配器（自研响应式基类，无第三方运行时依赖） |
-| `@xihan-ui/styled` | 默认皮肤，按 `@layer` 分层的 CSS |
-| `@xihan-ui/system` | 设计令牌（源自 DTCG）与主题运行时（明暗 / 密度 / 书写方向） |
+| `@xihan-ui/web-components` | Web Components 适配器（自研响应式基类，无第三方运行时依赖） |
+| `@xihan-ui/styles` | 默认皮肤，按 `@layer` 分层的 CSS |
+| `@xihan-ui/tokens` | 设计令牌（源自 DTCG）与主题运行时（明暗 / 密度 / 书写方向） |
 | `@xihan-ui/position` | 浮层定位，自研实现，无第三方运行时依赖 |
-| `@xihan-ui/ai` | AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store（零 DOM、零框架） |
-| `@xihan-ui/highlight` | 代码着色，自研粗粒度词法器，无第三方运行时依赖 |
+| `@xihan-ui/chat-stream` | AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store（零 DOM、零框架） |
+| `@xihan-ui/code-highlight` | 代码着色，自研粗粒度词法器，无第三方运行时依赖 |
 | `@xihan-ui/markdown` | 流式 Markdown 渲染内核：增量切块 + 稳定 key + 消毒（CommonMark 子集，一致率 489/652） |
-| `@xihan-ui/visual` | 视觉层：WebGL2 背景效果与数据驱动的粒子云，框架无关 |
+| `@xihan-ui/backgrounds` | 视觉层：WebGL2 背景效果与数据驱动的粒子云，框架无关 |
 | `@xihan-ui/icons` | 首方图标集：`IconRecord` 结构化记录，渲染端逐节点建元素，运行期不解析 SVG 字符串 |
 
 `tooling/*` 放构建、lint、tsconfig、测试与脚本等内部包，不对外发布。

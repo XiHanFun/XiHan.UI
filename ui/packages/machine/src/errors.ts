@@ -1,5 +1,5 @@
 // 机器错误类型与错误码，以及投递进诊断通道的入口。
-import { DIAGNOSTIC_CODES, isDev, reportDiagnostic } from '@xihan-ui/core'
+import { DIAGNOSTIC_CODES, isDev, reportDiagnostic } from '@xihan-ui/kernel'
 
 export type MachineErrorCode
   = | 'DUPLICATE_STATE_ID'

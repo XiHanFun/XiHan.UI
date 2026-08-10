@@ -72,7 +72,7 @@ complete 在每格都有字时为真，作者据此点亮提交按钮；clear �
 | Vue 组件 | `XhPinInputHiddenInput` `XhPinInputInput` `XhPinInputLabel` `XhPinInputRoot` |
 | 组合式函数 | `usePinInput` |
 | 状态机 | `pinInputMachine` |
-| 皮肤 | `@xihan-ui/styled/pin-input.css` |
+| 皮肤 | `@xihan-ui/styles/pin-input.css` |
 
 ## 解剖
 

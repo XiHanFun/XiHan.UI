@@ -4,19 +4,19 @@
   "commit": false,
   "fixed": [
     [
-      "@xihan-ui/core",
+      "@xihan-ui/kernel",
       "@xihan-ui/machine",
       "@xihan-ui/behavior",
-      "@xihan-ui/system",
+      "@xihan-ui/tokens",
       "@xihan-ui/headless",
-      "@xihan-ui/styled",
+      "@xihan-ui/styles",
       "@xihan-ui/vue",
-      "@xihan-ui/wc",
-      "@xihan-ui/ai",
+      "@xihan-ui/web-components",
+      "@xihan-ui/chat-stream",
       "@xihan-ui/markdown",
-      "@xihan-ui/highlight",
+      "@xihan-ui/code-highlight",
       "@xihan-ui/position",
-      "@xihan-ui/visual"
+      "@xihan-ui/backgrounds"
     ]
   ],
   "linked": [],

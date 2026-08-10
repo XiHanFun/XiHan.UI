@@ -14,19 +14,19 @@ Framework-agnostic component library. State machines and accessibility live in a
 
 | Package | Responsibility |
 | --- | --- |
-| `@xihan-ui/core` | Structural primitives: anatomy, `mergeProps`, `normalizeProps`, scope, context, ids |
+| `@xihan-ui/kernel` | Structural primitives: anatomy, `mergeProps`, `normalizeProps`, scope, context, ids |
 | `@xihan-ui/machine` | State machine runtime: `createMachine`, interpreter contract, controlled bindings |
 | `@xihan-ui/behavior` | Behavior primitives: dismissable layer, focus scope, scroll lock, presence, collection, typeahead |
 | `@xihan-ui/headless` | 69 components as anatomy + machine + `connect` — no styles, no framework |
 | `@xihan-ui/vue` | Vue 3 adapter |
-| `@xihan-ui/wc` | Web Components adapter (own reactive base, no third-party runtime dep) |
-| `@xihan-ui/styled` | Default skins, layered CSS |
-| `@xihan-ui/system` | Design tokens (from DTCG sources) + theme runtime (color scheme / density / direction) |
+| `@xihan-ui/web-components` | Web Components adapter (own reactive base, no third-party runtime dep) |
+| `@xihan-ui/styles` | Default skins, layered CSS |
+| `@xihan-ui/tokens` | Design tokens (from DTCG sources) + theme runtime (color scheme / density / direction) |
 | `@xihan-ui/position` | Floating layer positioning — self-implemented, no third-party runtime dependency |
-| `@xihan-ui/ai` | AI protocol core: SSE reading → protocol normalization → parts reduction → thread store (no DOM, no framework) |
-| `@xihan-ui/highlight` | Code highlighting — self-implemented coarse tokenizer, no third-party runtime dependency |
+| `@xihan-ui/chat-stream` | AI protocol core: SSE reading → protocol normalization → parts reduction → thread store (no DOM, no framework) |
+| `@xihan-ui/code-highlight` | Code highlighting — self-implemented coarse tokenizer, no third-party runtime dependency |
 | `@xihan-ui/markdown` | Streaming markdown renderer: incremental block splitting, stable keys, sanitization (CommonMark subset, 489/652) |
-| `@xihan-ui/visual` | Visual layer: WebGL2 background effects and data-driven particle clouds, framework agnostic |
+| `@xihan-ui/backgrounds` | Visual layer: WebGL2 background effects and data-driven particle clouds, framework agnostic |
 | `@xihan-ui/icons` | First-party icon set: structured `IconRecord` data, rendered node by node, no runtime SVG string parsing |
 
 `tooling/*` holds internal build, lint, tsconfig, testing and script packages; they are never published.

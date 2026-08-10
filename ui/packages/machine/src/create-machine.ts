@@ -9,7 +9,7 @@ import type {
   TransitionMap,
 } from './types'
 // createMachine：构建状态索引、跑静态校验，原样返回配置。
-import { isDev } from '@xihan-ui/core'
+import { isDev } from '@xihan-ui/kernel'
 import { MachineError } from './errors'
 import { isCombinator } from './guards'
 import { ensureStateIndex } from './state'

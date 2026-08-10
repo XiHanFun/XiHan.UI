@@ -42,7 +42,7 @@ type 为 scroll 时滚动条停手后不立刻收起，scrollHideDelay 决定还
 | Vue 组件 | `XhScrollAreaContent` `XhScrollAreaCorner` `XhScrollAreaRoot` `XhScrollAreaScrollbar` `XhScrollAreaThumb` `XhScrollAreaViewport` |
 | 组合式函数 | `useScrollArea` |
 | 状态机 | `scrollAreaMachine` |
-| 皮肤 | `@xihan-ui/styled/scroll-area.css` |
+| 皮肤 | `@xihan-ui/styles/scroll-area.css` |
 
 ## 解剖
 

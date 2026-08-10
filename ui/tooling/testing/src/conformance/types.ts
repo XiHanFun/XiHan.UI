@@ -1,5 +1,5 @@
-import type { Anatomy } from '@xihan-ui/core'
 import type { KeyboardTable } from '@xihan-ui/headless'
+import type { Anatomy } from '@xihan-ui/kernel'
 
 export type AdapterName = 'vue' | 'wc' | 'react' | 'blazor'
 export type ModifierKey = 'Shift' | 'Control' | 'Alt' | 'Meta'

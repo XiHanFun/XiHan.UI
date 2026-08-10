@@ -1,4 +1,4 @@
-import type { PositionResult } from '@xihan-ui/core'
+import type { PositionResult } from '@xihan-ui/kernel'
 import type { Transition } from '@xihan-ui/machine'
 import type { HoverCardSchema } from './hover-card.types'
 import { createDismissLayer } from '@xihan-ui/behavior'

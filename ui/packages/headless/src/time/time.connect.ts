@@ -1,7 +1,7 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { TimeType } from './time.format'
 import type { TimeApi, TimeProps, TimeState } from './time.types'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { timeAnatomy } from './time.anatomy'
 import { formatRelativeTime, formatTimePattern, timeMachineStamp, timeWords, toTimeDate } from './time.format'
 

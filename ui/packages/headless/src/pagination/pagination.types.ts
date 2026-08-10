@@ -1,4 +1,4 @@
-import type { Direction, PropTypes } from '@xihan-ui/core'
+import type { Direction, PropTypes } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 import type { PaginationEntryRange, PaginationPage } from './pagination.range'
 

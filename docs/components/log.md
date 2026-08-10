@@ -42,7 +42,7 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 | Vue 组件 | `XhLogContent` `XhLogLine` `XhLogRoot` `XhLogViewport` |
 | 组合式函数 | `useLog` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/log.css` |
+| 皮肤 | `@xihan-ui/styles/log.css` |
 
 ## 解剖
 

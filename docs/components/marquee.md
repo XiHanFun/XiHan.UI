@@ -35,7 +35,7 @@ speed 是每秒像素；pauseOnHover 在指针停下或焦点落进窗口时停�
 | 自定义元素 | `<xh-marquee>` |
 | Vue 组件 | `XhMarqueeContent` `XhMarqueeRoot` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/marquee.css` |
+| 皮肤 | `@xihan-ui/styles/marquee.css` |
 
 ## 解剖
 

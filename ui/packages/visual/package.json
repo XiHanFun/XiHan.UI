@@ -1,5 +1,5 @@
 {
-  "name": "@xihan-ui/visual",
+  "name": "@xihan-ui/backgrounds",
   "type": "module",
   "version": "0.0.0",
   "description": "XiHan.UI visual layer — WebGL2 background effects and data-driven particle clouds, framework agnostic.",
@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@xihan-ui/behavior": "workspace:*",
-    "@xihan-ui/core": "workspace:*"
+    "@xihan-ui/kernel": "workspace:*"
   },
   "devDependencies": {
     "@xihan-ui/build": "workspace:*",

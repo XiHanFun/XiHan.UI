@@ -35,7 +35,7 @@ active 翻假即停在当前剩余量，翻真从那里接着走；改 value 就
 | 自定义元素 | `<xh-countdown>` |
 | Vue 组件 | `XhCountdown` |
 | 状态机 | `countdownMachine` |
-| 皮肤 | `@xihan-ui/styled/countdown.css` |
+| 皮肤 | `@xihan-ui/styles/countdown.css` |
 
 ## 解剖
 

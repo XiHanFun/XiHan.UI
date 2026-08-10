@@ -74,7 +74,7 @@ export default function xihanUi(options = {}, ...userConfigs) {
               '@lit-labs/*',
               '@angular/*',
             ],
-            message: 'foundation 层必须框架无关：不得 import 框架库；框架特定代码放对应适配器包（@xihan-ui/vue、@xihan-ui/wc 等）。',
+            message: 'foundation 层必须框架无关：不得 import 框架库；框架特定代码放对应适配器包（@xihan-ui/vue、@xihan-ui/web-components 等）。',
           }],
         }],
       },

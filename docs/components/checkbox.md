@@ -54,7 +54,7 @@ checked 只认布尔，用一个可写 computed 在中间换一次，绑上去�
 | Vue 组件 | `XhCheckbox` |
 | 组合式函数 | `useCheckbox` |
 | 状态机 | `checkboxMachine` |
-| 皮肤 | `@xihan-ui/styled/checkbox.css` |
+| 皮肤 | `@xihan-ui/styles/checkbox.css` |
 
 ## 解剖
 

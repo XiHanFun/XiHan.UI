@@ -2,7 +2,7 @@
 
 `@xihan-ui/behavior` 收的是**跨组件复用的交互机制**：对话框、抽屉、气泡、菜单、右键菜单、悬浮卡片……它们的差别在触发方式和视觉，但「点外面要关」「焦点要陷住」「背景不能滚」这些是同一套东西。写在这里一次，组件只管调用。
 
-配套的层栈与背景失活在 `@xihan-ui/core` 里（它们是结构原语，比行为更底层）。
+配套的层栈与背景失活在 `@xihan-ui/kernel` 里（它们是结构原语，比行为更底层）。
 
 ## 层栈
 
@@ -90,7 +90,7 @@ lock.dispose()
 ## 背景失活
 
 ```ts
-import { hideOutside } from '@xihan-ui/core'
+import { hideOutside } from '@xihan-ui/kernel'
 
 const restore = hideOutside([contentEl, ...branches], scope, {
   exemptSelectors: ['.my-portal-root'],

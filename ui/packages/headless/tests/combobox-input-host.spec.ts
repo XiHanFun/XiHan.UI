@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { ComboboxApi, ComboboxSchema } from '../src/combobox'
-import { createCounterIdGenerator, createScope, normalizeProps } from '@xihan-ui/core'
+import { createCounterIdGenerator, createScope, normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { describe, expect, it } from 'vitest'

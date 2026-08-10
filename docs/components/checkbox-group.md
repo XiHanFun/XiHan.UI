@@ -60,7 +60,7 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 | Vue 组件 | `XhCheckboxGroupItem` `XhCheckboxGroupItemControl` `XhCheckboxGroupItemText` `XhCheckboxGroupLabel` `XhCheckboxGroupRoot` `XhCheckboxGroupTrigger` |
 | 组合式函数 | `useCheckboxGroup` |
 | 状态机 | `checkboxGroupMachine` |
-| 皮肤 | `@xihan-ui/styled/checkbox-group.css` |
+| 皮肤 | `@xihan-ui/styles/checkbox-group.css` |
 
 ## 解剖
 

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import type { DateFieldSchema } from '../src/date-field'
 import { today } from '@internationalized/date'
-import { normalizeProps } from '@xihan-ui/core'
+import { normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'

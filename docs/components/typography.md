@@ -41,7 +41,7 @@ size 换的是整块正文的字号与段间距，不传 size 即默认档
 | 自定义元素 | `<xh-typography>` |
 | Vue 组件 | `XhTypographyHeading` `XhTypographyLink` `XhTypographyParagraph` `XhTypographyRoot` `XhTypographyText` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/typography.css` |
+| 皮肤 | `@xihan-ui/styles/typography.css` |
 
 ## 解剖
 

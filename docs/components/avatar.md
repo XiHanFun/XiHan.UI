@@ -72,7 +72,7 @@ status-change 在状态落位时通知，过渡态 idle 不通知；没给地址
 | Vue 组件 | `XhAvatarFallback` `XhAvatarImage` `XhAvatarRoot` |
 | 组合式函数 | `useAvatar` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/avatar.css` |
+| 皮肤 | `@xihan-ui/styles/avatar.css` |
 
 ## 解剖
 

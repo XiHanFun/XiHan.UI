@@ -35,7 +35,7 @@ duration 定跑多久，easing 定快慢怎么分配；同一段距离四档并�
 | 自定义元素 | `<xh-number-animation>` |
 | Vue 组件 | `XhNumberAnimation` |
 | 状态机 | `numberAnimationMachine` |
-| 皮肤 | `@xihan-ui/styled/number-animation.css` |
+| 皮肤 | `@xihan-ui/styles/number-animation.css` |
 
 ## 解剖
 

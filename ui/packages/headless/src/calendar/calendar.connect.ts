@@ -1,10 +1,10 @@
 import type { CalendarDate } from '@internationalized/date'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { CalendarApi, CalendarCellProps, CalendarSchema } from './calendar.types'
 import { DateFormatter, endOfMonth, getLocalTimeZone, startOfMonth, today } from '@internationalized/date'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { calendarAnatomy } from './calendar.anatomy'
 import {
   buildMonthGrid,

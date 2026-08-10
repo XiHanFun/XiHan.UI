@@ -84,7 +84,7 @@ value-change 每次带上整份 ISO 串，段位被清掉时它是 null
 | Vue 组件 | `XhDateFieldControl` `XhDateFieldHiddenInput` `XhDateFieldLabel` `XhDateFieldRoot` `XhDateFieldSegment` |
 | 组合式函数 | `useDateField` |
 | 状态机 | `dateFieldMachine` |
-| 皮肤 | `@xihan-ui/styled/date-field.css` |
+| 皮肤 | `@xihan-ui/styles/date-field.css` |
 
 ## 解剖
 

@@ -1,4 +1,3 @@
-import type { Placement } from '@xihan-ui/core'
 import type {
   TimeGranularity,
   TimeHourCycle,
@@ -6,6 +5,7 @@ import type {
   TimePickerSchema,
   TimeSegmentType,
 } from '@xihan-ui/headless'
+import type { Placement } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { computed, defineComponent, h } from 'vue'
 import {

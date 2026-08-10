@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-import type { IconRecord } from '@xihan-ui/core'
+import type { IconRecord } from '@xihan-ui/kernel'
 import type { IconProps } from '../src/icon'
-import { normalizeProps } from '@xihan-ui/core'
+import { normalizeProps } from '@xihan-ui/kernel'
 import { describe, expect, it } from 'vitest'
 // 直接指到组件目录：包主入口的导出由接线一并补，测试不等它
 import { connectIcon, iconAnatomy, iconKeyboard, iconMeta } from '../src/icon'

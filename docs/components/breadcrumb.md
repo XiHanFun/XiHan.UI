@@ -48,7 +48,7 @@ size 换整条路径的字号与各层之间的间距，不传 size 即默认档
 | Vue 组件 | `XhBreadcrumbEllipsis` `XhBreadcrumbItem` `XhBreadcrumbLink` `XhBreadcrumbList` `XhBreadcrumbRoot` `XhBreadcrumbSeparator` |
 | 组合式函数 | `useBreadcrumb` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/breadcrumb.css` |
+| 皮肤 | `@xihan-ui/styles/breadcrumb.css` |
 
 ## 解剖
 

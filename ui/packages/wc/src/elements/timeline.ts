@@ -1,5 +1,5 @@
-import type { Orientation } from '@xihan-ui/core'
 import type { TimelineItemProps, TimelinePlacement, TimelineProps } from '@xihan-ui/headless'
+import type { Orientation } from '@xihan-ui/kernel'
 import { connectTimeline, timelineAnatomy, timelineMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'

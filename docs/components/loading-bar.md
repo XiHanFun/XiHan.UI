@@ -48,7 +48,7 @@ tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里
 | Vue 组件 | `XhLoadingBarRange` `XhLoadingBarRoot` `XhLoadingBarTrack` |
 | 组合式函数 | `useLoadingBar` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/loading-bar.css` |
+| 皮肤 | `@xihan-ui/styles/loading-bar.css` |
 
 ## 解剖
 

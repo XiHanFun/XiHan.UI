@@ -1,6 +1,6 @@
 # 设计令牌与主题
 
-`@xihan-ui/system` 装两样东西：**设计令牌**（一份 CSS 自定义属性产物）与**主题运行时**（把用户偏好折算成根元素上的属性）。它是层 1 的包，不依赖任何东西。
+`@xihan-ui/tokens` 装两样东西：**设计令牌**（一份 CSS 自定义属性产物）与**主题运行时**（把用户偏好折算成根元素上的属性）。它是层 1 的包，不依赖任何东西。
 
 ## 令牌的两层
 
@@ -44,7 +44,7 @@ primitive  ──►  semantic  ──►  组件私有槽
 ## 主题运行时
 
 ```ts
-import { createThemeController } from '@xihan-ui/system/runtime'
+import { createThemeController } from '@xihan-ui/tokens/runtime'
 
 const theme = createThemeController({
   root: document.documentElement, // 默认就是它
@@ -113,10 +113,10 @@ interface ThemePreference {
 
 ```ts
 // 机读产物：生成 Figma 变量、Tailwind 主题、设计稿标注都可以用
-import tokens from '@xihan-ui/system/tokens.json' with { type: 'json' }
+import tokens from '@xihan-ui/tokens/tokens.json' with { type: 'json' }
 
 // TypeScript 侧带类型的令牌名
-import { tokens, type TokenName } from '@xihan-ui/system'
+import { tokens, type TokenName } from '@xihan-ui/tokens'
 ```
 
 ## 相关

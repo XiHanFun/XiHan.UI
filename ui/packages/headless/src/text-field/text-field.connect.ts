@@ -1,7 +1,7 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { TextFieldApi, TextFieldSchema } from './text-field.types'
-import { dataAttr, isComposingEvent } from '@xihan-ui/core'
+import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
 import { textFieldAnatomy } from './text-field.anatomy'
 import { isAtLimit } from './text-field.machine'
 

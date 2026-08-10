@@ -1,4 +1,4 @@
-import type { PropTypes } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/kernel'
 
 /** 尺寸档位，只改条目的内边距、图文间距与两行文字的字号。 */
 export type ListSize = 'sm' | 'md' | 'lg'

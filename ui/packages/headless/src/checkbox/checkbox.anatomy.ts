@@ -1,3 +1,3 @@
-import { createAnatomy } from '@xihan-ui/core'
+import { createAnatomy } from '@xihan-ui/kernel'
 
 export const checkboxAnatomy = createAnatomy('checkbox', ['root', 'indicator'])

@@ -35,7 +35,7 @@ direction 收的是档位，四条边加四个角共八档，逐档对应 CSS �
 | 自定义元素 | `<xh-gradient-text>` |
 | Vue 组件 | `XhGradientText` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/gradient-text.css` |
+| 皮肤 | `@xihan-ui/styles/gradient-text.css` |
 
 ## 解剖
 

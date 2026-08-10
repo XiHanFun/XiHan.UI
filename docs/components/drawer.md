@@ -54,7 +54,7 @@ size 落成 content 的 data-size，只改面板贴边方向上的厚度；三�
 | Vue 组件 | `XhDrawerCloseTrigger` `XhDrawerContent` `XhDrawerDescription` `XhDrawerRoot` `XhDrawerTitle` `XhDrawerTrigger` |
 | 组合式函数 | `useDrawer` |
 | 状态机 | `drawerMachine` |
-| 皮肤 | `@xihan-ui/styled/drawer.css` |
+| 皮肤 | `@xihan-ui/styles/drawer.css` |
 
 ## 解剖
 

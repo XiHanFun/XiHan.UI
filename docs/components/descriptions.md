@@ -41,7 +41,7 @@ size 换的是每格的内边距、组与组的间距与整体字号，不传 si
 | 自定义元素 | `<xh-descriptions>` |
 | Vue 组件 | `XhDescriptionsItem` `XhDescriptionsLabel` `XhDescriptionsRoot` `XhDescriptionsValue` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/descriptions.css` |
+| 皮肤 | `@xihan-ui/styles/descriptions.css` |
 
 ## 解剖
 

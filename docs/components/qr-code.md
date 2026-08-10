@@ -59,7 +59,7 @@ square / dot / rounded；三种形状的墨都盖住每个模块的格心，读�
 | 自定义元素 | `<xh-qr-code>` |
 | Vue 组件 | `XhQrCode` `XhQrCodeLogo` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/qr-code.css` |
+| 皮肤 | `@xihan-ui/styles/qr-code.css` |
 
 ## 解剖
 

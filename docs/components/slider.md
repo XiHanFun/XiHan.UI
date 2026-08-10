@@ -78,7 +78,7 @@ thumb 自己是定位上下文，气泡挂在它上方就跟着走位；dragging
 | Vue 组件 | `XhSliderControl` `XhSliderHiddenInput` `XhSliderLabel` `XhSliderRange` `XhSliderRoot` `XhSliderThumb` `XhSliderTrack` |
 | 组合式函数 | `useSlider` |
 | 状态机 | `sliderMachine` |
-| 皮肤 | `@xihan-ui/styled/slider.css` |
+| 皮肤 | `@xihan-ui/styles/slider.css` |
 
 ## 解剖
 

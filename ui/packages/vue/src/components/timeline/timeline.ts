@@ -1,5 +1,5 @@
-import type { Orientation } from '@xihan-ui/core'
 import type { TimelinePlacement, TimelineProps } from '@xihan-ui/headless'
+import type { Orientation } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { connectTimeline } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'

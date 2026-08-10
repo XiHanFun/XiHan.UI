@@ -1,4 +1,4 @@
-import type { Disposable, Scope } from '@xihan-ui/core'
+import type { Disposable, Scope } from '@xihan-ui/kernel'
 import type { ScrollMetrics } from './scroll-source'
 import { EMPTY_SCROLL_METRICS, readScrollMetrics, sameScrollMetrics, scrollEventTarget } from './scroll-source'
 

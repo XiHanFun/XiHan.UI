@@ -1,5 +1,5 @@
-import type { Direction } from '@xihan-ui/core'
 import type { TreeNode, TreeNodeProps, TreeSchema, TreeSelectionMode } from '@xihan-ui/headless'
+import type { Direction } from '@xihan-ui/kernel'
 import type { PropType, Ref } from 'vue'
 import type { TreeContext } from './use-tree'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'

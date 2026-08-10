@@ -1,4 +1,4 @@
-import { createAnatomy } from '@xihan-ui/core'
+import { createAnatomy } from '@xihan-ui/kernel'
 
 // data-part 直接用 kebab-case，与 CSS 选择器一致。
 // 两个角色节点：铺水印的那块地是 root，被盖住的那段内容是 content。

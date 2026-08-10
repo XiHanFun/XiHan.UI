@@ -1,4 +1,4 @@
-import type { PositionResult } from '@xihan-ui/core'
+import type { PositionResult } from '@xihan-ui/kernel'
 import type { Transition } from '@xihan-ui/machine'
 import type { TooltipSchema } from './tooltip.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/machine'

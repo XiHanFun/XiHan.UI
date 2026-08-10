@@ -1,4 +1,4 @@
-import type { Cleanup, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/core'
+import type { Cleanup, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
 import type { MachineSchema, Service } from '@xihan-ui/machine'
 import type { CalendarApi, CalendarSchema, CalendarSelectionMode } from '../calendar'
 import type { DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState } from '../date-field'

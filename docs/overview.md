@@ -79,7 +79,7 @@ service.send({ type: 'TRIGGER.CLICK' })            （machine）
 
 | 包 | 职责 |
 | --- | --- |
-| `@xihan-ui/core` | 结构原语：解剖、`mergeProps`、`normalizeProps`、Scope、层栈、诊断通道 |
+| `@xihan-ui/kernel` | 结构原语：解剖、`mergeProps`、`normalizeProps`、Scope、层栈、诊断通道 |
 | `@xihan-ui/machine` | 薄状态机运行时：`createMachine`、解释器契约、受控值绑定 |
 | `@xihan-ui/behavior` | 交互行为原语：消隐层、焦点域、滚动锁、进出场、集合导航、typeahead |
 | `@xihan-ui/position` | 浮层定位引擎，自研，零第三方依赖 |
@@ -90,24 +90,24 @@ service.send({ type: 'TRIGGER.CLICK' })            （machine）
 | --- | --- |
 | `@xihan-ui/headless` | 69 个组件的解剖 + 状态机 + `connect`，无样式、无框架 |
 | `@xihan-ui/vue` | Vue 3 适配器 |
-| `@xihan-ui/wc` | Web Components 适配器，自研响应式基类 |
+| `@xihan-ui/web-components` | Web Components 适配器，自研响应式基类 |
 
 **表现**
 
 | 包 | 职责 |
 | --- | --- |
-| `@xihan-ui/system` | 设计令牌（DTCG 源）与主题运行时（明暗 / 品牌 / 密度 / 对比度 / 书写方向） |
-| `@xihan-ui/styled` | 默认皮肤，按 `@layer` 分层的纯 CSS |
+| `@xihan-ui/tokens` | 设计令牌（DTCG 源）与主题运行时（明暗 / 品牌 / 密度 / 对比度 / 书写方向） |
+| `@xihan-ui/styles` | 默认皮肤，按 `@layer` 分层的纯 CSS |
 | `@xihan-ui/icons` | 图标集 |
 
 **内容与效果**
 
 | 包 | 职责 |
 | --- | --- |
-| `@xihan-ui/ai` | AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store |
+| `@xihan-ui/chat-stream` | AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store |
 | `@xihan-ui/markdown` | 流式 Markdown 渲染内核，增量切块 + 稳定 key |
-| `@xihan-ui/highlight` | 代码着色，自研粗粒度词法器 |
-| `@xihan-ui/visual` | WebGL2 背景效果与数据驱动粒子点云 |
+| `@xihan-ui/code-highlight` | 代码着色，自研粗粒度词法器 |
+| `@xihan-ui/backgrounds` | WebGL2 背景效果与数据驱动粒子点云 |
 
 `tooling/*` 下还有构建、lint、tsconfig、测试与门禁脚本等内部包，一律不发布。
 

@@ -1,7 +1,7 @@
-import type { NormalizeProps, Placement, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, Placement, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { TooltipApi, TooltipSchema } from './tooltip.types'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { tooltipAnatomy } from './tooltip.anatomy'
 
 const parts = tooltipAnatomy.build()

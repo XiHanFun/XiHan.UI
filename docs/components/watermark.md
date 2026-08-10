@@ -35,7 +35,7 @@ rotate 转整块图样，gap 决定两块之间留多少空白，fontSize 与 op
 | 自定义元素 | `<xh-watermark>` |
 | Vue 组件 | `XhWatermarkContent` `XhWatermarkRoot` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/watermark.css` |
+| 皮肤 | `@xihan-ui/styles/watermark.css` |
 
 ## 解剖
 

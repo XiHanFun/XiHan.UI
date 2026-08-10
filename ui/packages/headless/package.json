@@ -29,7 +29,7 @@
   "dependencies": {
     "@internationalized/date": "catalog:",
     "@xihan-ui/behavior": "workspace:*",
-    "@xihan-ui/core": "workspace:*",
+    "@xihan-ui/kernel": "workspace:*",
     "@xihan-ui/machine": "workspace:*"
   },
   "devDependencies": {

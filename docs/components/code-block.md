@@ -35,7 +35,7 @@ complete 为 false 时默认不着色：半截代码的词法本来就不稳，�
 | 自定义元素 | `<xh-code-block>` |
 | Vue 组件 | `XhCodeBlock` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/code-block.css` |
+| 皮肤 | `@xihan-ui/styles/code-block.css` |
 
 ## 解剖
 

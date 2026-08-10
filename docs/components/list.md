@@ -41,7 +41,7 @@ size 换的是条目的内边距、图文间距与两行文字的字号，不传
 | 自定义元素 | `<xh-list>` |
 | Vue 组件 | `XhListItem` `XhListItemAction` `XhListItemContent` `XhListItemDescription` `XhListItemMedia` `XhListItemTitle` `XhListRoot` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/list.css` |
+| 皮肤 | `@xihan-ui/styles/list.css` |
 
 ## 解剖
 

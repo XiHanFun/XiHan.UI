@@ -4,9 +4,9 @@
 
 | 包 | 职责 |
 | --- | --- |
-| `@xihan-ui/ai` | SSE 读取 → 协议归一 → parts 归约 → 会话 store |
+| `@xihan-ui/chat-stream` | SSE 读取 → 协议归一 → parts 归约 → 会话 store |
 | `@xihan-ui/markdown` | 流式 Markdown 渲染：增量切块、稳定 key、消毒 |
-| `@xihan-ui/highlight` | 代码着色，自研粗粒度词法器 |
+| `@xihan-ui/code-highlight` | 代码着色，自研粗粒度词法器 |
 
 配套的两个组件是[会话线程](../components/thread)与[消息编辑器](../components/composer)。
 
@@ -22,7 +22,7 @@ fetch(SSE)  ──►  sse-reader  ──►  normalize  ──►  reduce  ─�
 ## 传输
 
 ```ts
-import { createHttpSseTransport } from '@xihan-ui/ai'
+import { createHttpSseTransport } from '@xihan-ui/chat-stream'
 
 const transport = createHttpSseTransport({
   url: '/api/chat',
@@ -60,7 +60,7 @@ type UIMessagePart =
 流上来的是增量事件，界面要的是「此刻这条消息长什么样」。`reduceEvent` 负责这个折叠：
 
 ```ts
-import { createReduceState, reduceEvent } from '@xihan-ui/ai'
+import { createReduceState, reduceEvent } from '@xihan-ui/chat-stream'
 
 let state = createReduceState()
 for await (const event of transport.stream(req, signal))
@@ -74,7 +74,7 @@ for await (const event of transport.stream(req, signal))
 日常用的是封好的 store：
 
 ```ts
-import { createThreadStore } from '@xihan-ui/ai'
+import { createThreadStore } from '@xihan-ui/chat-stream'
 
 const store = createThreadStore({
   transport,
@@ -130,7 +130,7 @@ const blocks = renderer.render(fullText, { ended: false })
 ## 代码着色
 
 ```ts
-import { createHighlighter } from '@xihan-ui/highlight'
+import { createHighlighter } from '@xihan-ui/code-highlight'
 
 const highlighter = createHighlighter()
 const tokens = highlighter.highlight(code, 'typescript') // CodeToken[] | null
@@ -140,7 +140,7 @@ const tokens = highlighter.highlight(code, 'typescript') // CodeToken[] | null
 
 认不出的语言、超长代码一律返回 `null`，调用方原样渲染纯文本。
 
-`HighlighterPort` 同样是 `@xihan-ui/core` 里的端口。想要更高精度，把别的高亮库接到同一个端口上即可，`code-block` 组件侧不用改。
+`HighlighterPort` 同样是 `@xihan-ui/kernel` 里的端口。想要更高精度，把别的高亮库接到同一个端口上即可，`code-block` 组件侧不用改。
 
 ## 相关
 

@@ -41,7 +41,7 @@ size 换的是留白、图标框与标题字号，不传 size 即默认档
 | 自定义元素 | `<xh-result>` |
 | Vue 组件 | `XhResultAction` `XhResultDescription` `XhResultIcon` `XhResultRoot` `XhResultTitle` |
 | 状态机 | 无，`connect` 直接由 props 算属性 |
-| 皮肤 | `@xihan-ui/styled/result.css` |
+| 皮肤 | `@xihan-ui/styles/result.css` |
 
 ## 解剖
 

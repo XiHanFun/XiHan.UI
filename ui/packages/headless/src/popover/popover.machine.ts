@@ -1,4 +1,4 @@
-import type { PositionResult } from '@xihan-ui/core'
+import type { PositionResult } from '@xihan-ui/kernel'
 import type { PopoverSchema } from './popover.types'
 import { createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'

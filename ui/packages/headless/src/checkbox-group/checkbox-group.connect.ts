@@ -1,5 +1,5 @@
 import type { ItemQuery } from '@xihan-ui/behavior'
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type {
   CheckboxGroupApi,
@@ -9,7 +9,7 @@ import type {
   CheckboxGroupSchema,
 } from './checkbox-group.types'
 import { isItemDisabled, ITEM_VALUE_ATTR, itemValue, queryItems } from '@xihan-ui/behavior'
-import { dataAttr } from '@xihan-ui/core'
+import { dataAttr } from '@xihan-ui/kernel'
 import { checkboxGroupAnatomy } from './checkbox-group.anatomy'
 
 const parts = checkboxGroupAnatomy.build()

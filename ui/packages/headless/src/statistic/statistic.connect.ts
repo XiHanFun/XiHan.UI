@@ -1,4 +1,4 @@
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { StatisticApi, StatisticProps } from './statistic.types'
 import { statisticAnatomy } from './statistic.anatomy'
 

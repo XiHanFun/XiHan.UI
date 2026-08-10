@@ -60,7 +60,7 @@ size 换序号圆点的直径与标题、说明的字号，不传 size 即默认
 | Vue 组件 | `XhStepsContent` `XhStepsDescription` `XhStepsIndicator` `XhStepsItem` `XhStepsList` `XhStepsRoot` `XhStepsSeparator` `XhStepsTitle` `XhStepsTrigger` |
 | 组合式函数 | `useSteps` |
 | 状态机 | `stepsMachine` |
-| 皮肤 | `@xihan-ui/styled/steps.css` |
+| 皮肤 | `@xihan-ui/styles/steps.css` |
 
 ## 解剖
 

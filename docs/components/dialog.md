@@ -60,7 +60,7 @@ size 落成 content 的 data-size，只改面板的最大宽度；三档各自�
 | Vue 组件 | `XhDialogCloseTrigger` `XhDialogContent` `XhDialogDescription` `XhDialogRoot` `XhDialogTitle` `XhDialogTrigger` |
 | 组合式函数 | `useDialog` |
 | 状态机 | `dialogMachine` |
-| 皮肤 | `@xihan-ui/styled/dialog.css` |
+| 皮肤 | `@xihan-ui/styles/dialog.css` |
 
 ## 解剖
 
