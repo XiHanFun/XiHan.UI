@@ -31,6 +31,12 @@ jobs:
           cache-dependency-path: ui/pnpm-lock.yaml
           registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
+      # 发布前自己再验一遍产物契约：CI 那条链跑在 PR 与 push 上，与「这一刻要发出去的
+      # 这份产物」不是同一次构建。publint 与 attw 只在包已构建时才有意义，所以先 build
+      - name: Build
+        run: pnpm build
+      - name: Publish artifacts (publint + attw)
+        run: pnpm gate:publish
       - name: Create Release PR or Publish
         uses: changesets/action@v1
         with:

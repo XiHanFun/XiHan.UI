@@ -3,7 +3,7 @@
   "display": "@xihan-ui node (tooling/*)",
   "extends": "./base.json",
   "compilerOptions": {
-    "lib": ["ES2023"],
+    "lib": ["ES2022"],
     "types": ["node"],
     "allowJs": true,
     "noEmit": true
