@@ -249,6 +249,31 @@ export const radioGroupSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '焦点从组外落到容器：已有选中项时落在选中项上，不是第一个',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      // 选 c 不选 b：夹具里 b 是 aria-disabled 的，锚点落在禁用项上本来就该退回首个可停留项
+      props: { defaultValue: 'c' },
+      steps: [
+        {
+          kind: 'focus',
+          part: 'root',
+          expect: {
+            // APG：焦点进入 radiogroup 时落在已选中的那个，一个都没选中才落第一个
+            activeElement: { part: 'item[2]', exact: true },
+            parts: {
+              item: [
+                { 'aria-checked': 'false', 'tabindex': '-1' },
+                { 'aria-checked': 'false', 'tabindex': '-1' },
+                { 'aria-checked': 'true', 'tabindex': '0', 'data-state': 'checked' },
+              ],
+            },
+            // 落焦不改选中
+            events: [],
+          },
+        },
+      ],
+    },
+    {
       name: '受控 value：点击只发 value-change 不自改 DOM，父写回 value 后才切选中',
       spec: { adr: 'controlled-uncontrolled' },
       props: { value: 'a' },

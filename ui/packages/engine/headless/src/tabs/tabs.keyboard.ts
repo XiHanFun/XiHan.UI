@@ -11,6 +11,6 @@ export const tabsKeyboard: KeyboardTable = {
     { id: 'tabs.kbd.first', keys: ['Home'], when: 'focus in list', does: '焦点移到首个可停留 trigger' },
     { id: 'tabs.kbd.last', keys: ['End'], when: 'focus in list', does: '焦点移到末个可停留 trigger' },
     { id: 'tabs.kbd.activate', keys: ['Enter', 'Space'], when: 'focus in trigger, not disabled', does: '把选中切到焦点所在 trigger（manual 模式的确认键）' },
-    { id: 'tabs.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'focus in list', does: '整组只有锚点 trigger 留在 Tab 序列内，一次 Tab 进出；无锚点时由 list 兜底' },
+    { id: 'tabs.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'focus in list', does: '整组只有锚点 trigger 留在 Tab 序列内，一次 Tab 进出；无锚点时由 list 兜底，焦点进来后转投锚点 trigger（即选中项），锚点缺席或被禁用才落首个可停留项' },
   ],
 }

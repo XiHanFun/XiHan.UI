@@ -68,6 +68,28 @@ export interface NavigateOptions extends StepOptions {
   focusDisabled?: boolean
 }
 
+/**
+ * 锚点条目：值匹配上、且可以停留的那一个。
+ *
+ * 焦点从组外进来时该落在哪，问的就是这个——APG 对 roving tabindex 组的一致要求是
+ * 「落在选中项上，没有选中项才落第一个」。锚点缺席、值对不上任何条目、或那个条目
+ * 被禁用时返回 null，调用方自行退回 `navigateItems(items, null, 'first')`。
+ *
+ * 不要用 `navigateItems(items, anchor, 'first')` 代替：`'first'` 意图按定义就是
+ * 「从头找第一个可停留项」，它不读起点，anchor 传进去会被丢掉。
+ */
+export function anchorItem(
+  items: readonly HTMLElement[],
+  value: string | null,
+  options: Pick<NavigateOptions, 'focusDisabled'> = {},
+): HTMLElement | null {
+  const index = indexOfValue(items, value)
+  if (index < 0)
+    return null
+  const el = items[index]!
+  return options.focusDisabled === true || !isItemDisabled(el) ? el : null
+}
+
 /** 从 from 值出发走一步，返回目标条目元素；无处可去时返回 null。 */
 export function navigateItems(
   items: readonly HTMLElement[],

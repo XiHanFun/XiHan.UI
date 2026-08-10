@@ -2,7 +2,7 @@ import type { ItemQuery, NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { TabsApi, TabsNodeMeta, TabsSchema, TabsTriggerProps } from './tabs.types'
-import { focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
+import { anchorItem, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
 import { tabsAnatomy } from './tabs.anatomy'
 
@@ -105,8 +105,10 @@ export function connectTabs<T extends PropTypes>(
         // 只有从组外进入才转投；组内往外退（Shift+Tab）时转投会把人困在组里
         if (related && list.contains(related))
           return
+        // 落在锚点上：组内有焦点历史就是它，否则是选中项。锚点缺席或被禁用才退回首个。
         // 落点条目自己的 onFocus 会把锚点接过去
-        focusItem(navigateItems(queryItems(list, ITEM_QUERY), anchor, 'first', { loop }))
+        const items = queryItems(list, ITEM_QUERY)
+        focusItem(anchorItem(items, anchor) ?? navigateItems(items, null, 'first', { loop }))
       },
       'onFocusout': (event: FocusEvent) => {
         const list = event.currentTarget as HTMLElement
