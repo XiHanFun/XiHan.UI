@@ -68,9 +68,10 @@ export interface RadioGroupSchema extends MachineSchema {
     | { type: 'ITEM.SELECT', value: string }
     | { type: 'ITEM.FOCUS', value: string }
     | { type: 'GROUP.BLUR' }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: never
-  action: 'setValue' | 'setFocusedValue' | 'clearFocusedValue'
+  action: 'setValue' | 'setFocusedValue' | 'clearFocusedValue' | 'resetToDefault'
   effect: never
 }
 
