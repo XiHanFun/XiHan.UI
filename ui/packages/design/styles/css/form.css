@@ -104,7 +104,7 @@
     block-size: var(--xh-form-trigger-h, var(--xh-control-h-md));
     padding-block: 0;
     padding-inline: var(--xh-form-trigger-px, var(--xh-control-px-md));
-    border: var(--xh-stroke-thin) solid var(--xh-form-trigger-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-form-trigger-border, var(--xh-border-control));
     border-radius: var(--xh-form-trigger-radius, var(--xh-shape-control));
     background: var(--xh-form-trigger-bg, var(--xh-bg-subtle));
     color: var(--xh-form-trigger-fg, var(--xh-fg-default));
@@ -125,7 +125,7 @@
 
   [data-scope='form'][data-part='submit-trigger']:hover:not(:disabled),
   [data-scope='form'][data-part='reset-trigger']:hover:not(:disabled) {
-    border-color: var(--xh-form-trigger-border-hover, var(--xh-border-strong));
+    border-color: var(--xh-form-trigger-border-hover, var(--xh-border-control-hover));
     background: var(--xh-form-trigger-bg-hover, var(--xh-bg-subtle-hover));
   }
 

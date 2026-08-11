@@ -56,7 +56,7 @@
     inline-size: var(--xh-_float-button-size);
     block-size: var(--xh-_float-button-size);
     padding: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-float-button-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-float-button-border, var(--xh-border-control));
     border-radius: var(--xh-_float-button-radius);
     /* 使用者令牌排在缺省之前：写了覆盖钩子就以它为准，没写才退到中性缺省 */
     background: var(--xh-float-button-bg, var(--xh-bg-surface-raised));
@@ -72,7 +72,7 @@
   /* 悬停只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
   @media (hover: hover) {
     [data-scope='float-button'][data-part='trigger']:not([data-disabled]):hover {
-      border-color: var(--xh-float-button-border-hover, var(--xh-border-strong));
+      border-color: var(--xh-float-button-border-hover, var(--xh-border-control-hover));
       background: var(--xh-float-button-bg-hover, var(--xh-bg-subtle-hover));
     }
   }

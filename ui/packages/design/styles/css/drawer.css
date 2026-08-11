@@ -112,7 +112,7 @@
     gap: var(--xh-drawer-trigger-gap, var(--xh-control-gap-md));
     block-size: var(--xh-drawer-trigger-h, var(--xh-control-h-md));
     padding-inline: var(--xh-drawer-trigger-px, var(--xh-control-px-md));
-    border: var(--xh-stroke-thin) solid var(--xh-drawer-trigger-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-drawer-trigger-border, var(--xh-border-control));
     border-radius: var(--xh-drawer-trigger-radius, var(--xh-shape-control));
     background: var(--xh-drawer-trigger-bg, var(--xh-bg-canvas));
     color: var(--xh-drawer-trigger-fg, var(--xh-fg-default));
@@ -132,14 +132,14 @@
 
   [data-scope='drawer'][data-part='trigger']:hover:not(:disabled) {
     background: var(--xh-drawer-trigger-bg-hover, var(--xh-bg-subtle-hover));
-    border-color: var(--xh-drawer-trigger-border-hover, var(--xh-border-strong));
+    border-color: var(--xh-drawer-trigger-border-hover, var(--xh-border-control-hover));
   }
 
   /* 抽屉展开期间触发按钮压住不弹起：面板贴在视口边上，它和按钮往往离得很远，
      按钮自己得说明"这一扇是我开的"。 */
   [data-scope='drawer'][data-part='trigger'][data-state='open'] {
     background: var(--xh-drawer-trigger-bg-open, var(--xh-bg-subtle-active));
-    border-color: var(--xh-drawer-trigger-border-open, var(--xh-border-strong));
+    border-color: var(--xh-drawer-trigger-border-open, var(--xh-border-control-hover));
   }
 
   [data-scope='drawer'][data-part='trigger']:focus-visible {

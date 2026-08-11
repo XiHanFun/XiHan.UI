@@ -31,7 +31,7 @@
     --xh-_bg-hover: var(--xh-toggle-group-item-bg-hover, var(--xh-bg-subtle-hover));
     --xh-_bg-active: var(--xh-toggle-group-item-bg-active, var(--xh-bg-subtle-active));
     --xh-_fg: var(--xh-toggle-group-item-fg, var(--xh-fg-default));
-    --xh-_border: var(--xh-toggle-group-item-border, var(--xh-border-default));
+    --xh-_border: var(--xh-toggle-group-item-border, var(--xh-border-control));
 
     /* 相邻两段靠负外边距压掉一条重边，谁的描边浮在上面必须能指定，
        因此条目必须是定位元素——静态元素的 z-index 不生效 */

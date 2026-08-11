@@ -38,7 +38,7 @@
     block-size: var(--xh-clipboard-input-h, var(--xh-control-h-md));
     padding-inline: var(--xh-clipboard-input-px, var(--xh-control-px-md));
     padding-block: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-clipboard-input-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-clipboard-input-border, var(--xh-border-control));
     border-radius: var(--xh-clipboard-input-radius, var(--xh-shape-control));
     /* 只读态压低底色表示"改不动"，但仍可聚焦、可选中复制 */
     background: var(--xh-clipboard-input-bg, var(--xh-bg-subtle));
@@ -66,7 +66,7 @@
     block-size: var(--xh-clipboard-trigger-h, var(--xh-control-h-md));
     padding-inline: var(--xh-clipboard-trigger-px, var(--xh-control-px-md));
     padding-block: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-clipboard-trigger-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-clipboard-trigger-border, var(--xh-border-control));
     border-radius: var(--xh-clipboard-trigger-radius, var(--xh-shape-control));
     background: var(--xh-clipboard-trigger-bg, var(--xh-bg-canvas));
     color: var(--xh-clipboard-trigger-fg, var(--xh-fg-default));
@@ -89,7 +89,7 @@
   }
 
   [data-scope='clipboard'][data-part='trigger']:hover {
-    border-color: var(--xh-clipboard-trigger-border-hover, var(--xh-border-strong));
+    border-color: var(--xh-clipboard-trigger-border-hover, var(--xh-border-control-hover));
     background: var(--xh-clipboard-trigger-bg-hover, var(--xh-bg-subtle-hover));
   }
 

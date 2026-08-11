@@ -223,7 +223,7 @@
      切换选中不引起行宽抖动 */
   [data-scope='table'][data-part='select-all-trigger'],
   [data-scope='table'][data-part='row-select-trigger'] {
-    border: var(--xh-stroke-thin) solid var(--xh-table-trigger-border, var(--xh-border-strong));
+    border: var(--xh-stroke-thin) solid var(--xh-table-trigger-border, var(--xh-border-control));
     color: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
     visibility: visible;
   }

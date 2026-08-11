@@ -68,7 +68,7 @@
     --xh-_bg-pressed: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
     --xh-_fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
 
-    border-color: var(--xh-_tone-border, var(--xh-border-default));
+    border-color: var(--xh-_tone-border-control, var(--xh-border-control));
   }
 
   [data-scope='toggle'][data-part='root'][data-variant='ghost'] {

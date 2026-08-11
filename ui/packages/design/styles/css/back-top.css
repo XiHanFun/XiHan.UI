@@ -28,7 +28,7 @@
     inline-size: var(--xh-back-top-trigger-size, var(--xh-_back-top-size));
     block-size: var(--xh-back-top-trigger-size, var(--xh-_back-top-size));
     padding: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-back-top-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-back-top-border, var(--xh-border-control));
     border-radius: var(--xh-back-top-radius, var(--xh-shape-pill));
     /* 使用者令牌排在语气之前：写了覆盖钩子就以它为准，没写才退到语气，最后才是中性缺省 */
     background: var(--xh-back-top-bg, var(--xh-bg-surface-raised));
@@ -44,7 +44,7 @@
   /* 悬停只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
   @media (hover: hover) {
     [data-scope='back-top'][data-part='trigger']:hover {
-      border-color: var(--xh-back-top-border-hover, var(--xh-border-strong));
+      border-color: var(--xh-back-top-border-hover, var(--xh-border-control-hover));
       background: var(--xh-back-top-bg-hover, var(--xh-bg-subtle-hover));
     }
   }

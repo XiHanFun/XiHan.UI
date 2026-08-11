@@ -97,7 +97,7 @@
     block-size: var(--xh-transfer-search-h, var(--xh-control-h-sm));
     padding-inline: var(--xh-transfer-search-px, var(--xh-control-px-sm));
     border: 0;
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-transfer-panel-border, var(--xh-border-default));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-transfer-search-border, var(--xh-border-control));
     background: var(--xh-transfer-search-bg, transparent);
     color: var(--xh-transfer-search-fg, var(--xh-fg-default));
     font: inherit;
@@ -185,7 +185,7 @@
     justify-content: center;
     inline-size: var(--xh-transfer-checkbox-size, 16px);
     block-size: var(--xh-transfer-checkbox-size, 16px);
-    border: var(--xh-stroke-thin) solid var(--xh-transfer-checkbox-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-transfer-checkbox-border, var(--xh-border-control));
     border-radius: var(--xh-transfer-checkbox-radius, var(--xh-radius-sm));
     background: var(--xh-transfer-checkbox-bg, var(--xh-bg-canvas));
     color: var(--xh-transfer-checkbox-fg, var(--xh-fg-on-brand));

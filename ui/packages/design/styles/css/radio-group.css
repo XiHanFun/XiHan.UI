@@ -69,7 +69,7 @@
     justify-content: center;
     inline-size: 16px;
     block-size: 16px;
-    border: var(--xh-stroke-thin) solid var(--xh-radio-group-indicator-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-radio-group-indicator-border, var(--xh-border-control));
     border-radius: var(--xh-shape-pill);
     background: var(--xh-radio-group-indicator-bg, var(--xh-bg-canvas));
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);

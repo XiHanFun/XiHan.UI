@@ -12,8 +12,8 @@
     --xh-_tags-input-label-font-size: var(--xh-text-label-size);
     /* 形态档只换这三个私有槽，缺省这一份就是描边式（描边 + 画布底） */
     --xh-_tags-input-control-bg: var(--xh-bg-canvas);
-    --xh-_tags-input-control-border: var(--xh-border-default);
-    --xh-_tags-input-control-border-hover: var(--xh-border-strong);
+    --xh-_tags-input-control-border: var(--xh-border-control);
+    --xh-_tags-input-control-border-hover: var(--xh-border-control-hover);
     /* 聚焦环与标签块的强调色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的取值 */
     --xh-_tags-input-ring: var(--xh-ring-focus);
     --xh-_tags-input-accent: var(--xh-_tone, var(--xh-bg-brand));
@@ -35,22 +35,22 @@
      不做 solid：实心填充盖住了"这里能打字"这件事，输入框用不上它 */
   [data-scope='tags-input'][data-part='root'][data-variant='outline'] {
     --xh-_tags-input-control-bg: var(--xh-bg-canvas);
-    --xh-_tags-input-control-border: var(--xh-border-default);
-    --xh-_tags-input-control-border-hover: var(--xh-border-strong);
+    --xh-_tags-input-control-border: var(--xh-border-control);
+    --xh-_tags-input-control-border-hover: var(--xh-border-control-hover);
   }
 
   /* 填充式：底色圈出可输入的范围，描边让位给底色 */
   [data-scope='tags-input'][data-part='root'][data-variant='subtle'] {
     --xh-_tags-input-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_tags-input-control-border: transparent;
-    --xh-_tags-input-control-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+    --xh-_tags-input-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
   /* 无边框、透明底：静息时框完全隐入背景，可见反馈全靠悬停描边与聚焦环 */
   [data-scope='tags-input'][data-part='root'][data-variant='ghost'] {
     --xh-_tags-input-control-bg: transparent;
     --xh-_tags-input-control-border: transparent;
-    --xh-_tags-input-control-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+    --xh-_tags-input-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
   /* —— 尺寸 —— */
@@ -290,7 +290,7 @@
     max-inline-size: 100%;
     padding-block: var(--xh-tags-input-item-py, var(--xh-space-1));
     padding-inline: var(--xh-tags-input-item-px, var(--xh-space-2));
-    border: var(--xh-stroke-thin) solid var(--xh-tags-input-item-input-border, var(--xh-border-strong));
+    border: var(--xh-stroke-thin) solid var(--xh-tags-input-item-input-border, var(--xh-border-control));
     border-radius: var(--xh-tags-input-item-radius, var(--xh-shape-pill));
     background: var(--xh-tags-input-item-input-bg, var(--xh-bg-canvas));
     color: var(--xh-tags-input-item-input-fg, var(--xh-fg-default));

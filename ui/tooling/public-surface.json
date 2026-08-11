@@ -7196,6 +7196,7 @@
     "--xh-transfer-panel-border",
     "--xh-transfer-panel-radius",
     "--xh-transfer-search-bg",
+    "--xh-transfer-search-border",
     "--xh-transfer-search-fg",
     "--xh-transfer-search-font-size",
     "--xh-transfer-search-h",

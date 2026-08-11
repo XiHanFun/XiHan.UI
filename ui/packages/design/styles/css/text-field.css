@@ -13,13 +13,13 @@
 
     /* 形态档只换这三个私有槽：底、常态描边、悬停描边 */
     --xh-_text-field-bg: var(--xh-bg-canvas);
-    --xh-_text-field-border: var(--xh-border-default);
-    --xh-_text-field-border-hover: var(--xh-border-strong);
+    --xh-_text-field-border: var(--xh-border-control);
+    --xh-_text-field-border-hover: var(--xh-border-control-hover);
 
     /* 语气只落在聚焦这一处：环与聚焦态描边。正文颜色不归它管。
        没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色与常态描边 */
     --xh-_text-field-ring: var(--xh-ring-focus);
-    --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-default)));
+    --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-control)));
 
     display: inline-flex;
     flex-direction: column;
@@ -54,9 +54,9 @@
      输入框没有实心档：填满一个要往里打字的框，字与底就没法同时读 */
   [data-scope='text-field'][data-part='root'][data-variant='outline'] {
     --xh-_text-field-bg: var(--xh-bg-canvas);
-    --xh-_text-field-border: var(--xh-border-default);
-    --xh-_text-field-border-hover: var(--xh-border-strong);
-    --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-default)));
+    --xh-_text-field-border: var(--xh-border-control);
+    --xh-_text-field-border-hover: var(--xh-border-control-hover);
+    --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-control)));
   }
 
   /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
@@ -64,16 +64,16 @@
   [data-scope='text-field'][data-part='root'][data-variant='subtle'] {
     --xh-_text-field-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_text-field-border: transparent;
-    --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-default));
-    --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-default));
+    --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+    --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control));
   }
 
   /* 无框：底与描边都透明，平时只看得见字，悬停与聚焦才浮出边界 */
   [data-scope='text-field'][data-part='root'][data-variant='ghost'] {
     --xh-_text-field-bg: transparent;
     --xh-_text-field-border: transparent;
-    --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-default));
-    --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-default));
+    --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+    --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control));
   }
 
   [data-scope='text-field'][data-part='label'] {

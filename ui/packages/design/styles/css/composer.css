@@ -8,7 +8,7 @@
     align-items: flex-end;
     gap: var(--xh-composer-gap, var(--xh-control-gap-md));
     padding: var(--xh-composer-p, var(--xh-space-2));
-    border: var(--xh-stroke-thin) solid var(--xh-composer-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-composer-border, var(--xh-border-control));
     border-radius: var(--xh-composer-radius, var(--xh-shape-surface));
     background: var(--xh-composer-bg, var(--xh-bg-surface));
   }

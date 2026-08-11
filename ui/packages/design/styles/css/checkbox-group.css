@@ -78,7 +78,7 @@
     justify-content: center;
     inline-size: var(--xh-checkbox-group-indicator-size, 16px);
     block-size: var(--xh-checkbox-group-indicator-size, 16px);
-    border: var(--xh-stroke-thin) solid var(--xh-checkbox-group-indicator-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-checkbox-group-indicator-border, var(--xh-border-control));
     border-radius: var(--xh-checkbox-group-indicator-radius, var(--xh-radius-sm));
     background: var(--xh-checkbox-group-indicator-bg, var(--xh-bg-canvas));
     color: var(--xh-checkbox-group-indicator-fg, var(--xh-fg-on-brand));
@@ -99,7 +99,7 @@
      不排除就会在悬停时把 brand 描边换回灰色，方框看起来"缺了一圈" */
   [data-scope='checkbox-group'][data-part='item']:not([data-disabled]):hover
     [data-scope='checkbox-group'][data-part='indicator']:not([data-state='checked']) {
-    border-color: var(--xh-checkbox-group-indicator-border-hover, var(--xh-border-strong));
+    border-color: var(--xh-checkbox-group-indicator-border-hover, var(--xh-border-control-hover));
   }
 
   /* 选中即填色：条目是二态，全选格三态里 all 与 some 都算"有值"，共用同一副填色 */
