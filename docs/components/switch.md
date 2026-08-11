@@ -78,7 +78,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="switch"`：**`root`** · `thumb`
+`data-scope="switch"`：**`root`** · `thumb` · `hidden-input`
 
 ## Props
 
@@ -87,6 +87,8 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | `checked` | `boolean` |  |  |
 | `defaultChecked` | `boolean` |  |  |
 | `disabled` | `boolean` |  |  |
+| `name` | `string` |  | 表单字段名；给了 hidden-input 才带 name 并参与提交。 |
+| `value` | `string` |  | 提交出去的值，缺省 'on'，与原生复选框一致。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定选中态轨道用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定轨道与滑块的几何档位。 |
 | `onCheckedChange` | `(details: SwitchCheckedChangeDetails) => void` |  | checked 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
@@ -95,9 +97,9 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 
 **状态**：`off` · `on`
 
-**事件**：`TOGGLE` · `CONTROLLED.ON` · `CONTROLLED.OFF`
+**事件**：`TOGGLE` · `CONTROLLED.ON` · `CONTROLLED.OFF` · `FORM.RESET`
 
-**判据**：`isCheckedControlled`
+**判据**：`isCheckedControlled` · `defaultsToChecked`
 
 ## connect API
 
@@ -109,6 +111,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | `setChecked` | `(next: boolean) => void` |  |
 | `getRootProps` | `() => T['button']` |  |
 | `getThumbProps` | `() => T['element']` |  |
+| `getHiddenInputProps` | `() => T['input']` | 表单影子：勾上才提交。给了 name 才带 name，不给就不参与提交。 |
 
 ## 键盘
 

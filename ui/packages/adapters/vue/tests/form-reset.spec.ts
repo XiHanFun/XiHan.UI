@@ -2,7 +2,7 @@
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
-import { XhRadioGroupItem, XhRadioGroupRoot, XhRatingControl, XhRatingItem, XhRatingRoot, XhSelectContent, XhSelectItem, XhSelectItemText, XhSelectPositioner, XhSelectRoot, XhSelectTrigger, XhSelectValueText } from '../src'
+import { XhCheckbox, XhRadioGroupItem, XhRadioGroupRoot, XhRatingControl, XhRatingItem, XhRatingRoot, XhSelectContent, XhSelectItem, XhSelectItemText, XhSelectPositioner, XhSelectRoot, XhSelectTrigger, XhSelectValueText, XhSwitch } from '../src'
 
 /**
  * 组件的值攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置什么都不会发生。
@@ -272,6 +272,65 @@ describe('几个最容易做错的组件', () => {
     await tick()
     const 亮着 = stars.filter(s => s.getAttribute('data-highlighted') !== null).length
     expect(亮着).toBeLessThanOrEqual(2)
+    app.unmount()
+    host.remove()
+  })
+})
+
+describe('checkbox / switch 的表单影子', () => {
+  it('勾上才提交，半选按未勾处理，重置回到 defaultChecked', async () => {
+    const host = document.createElement('div')
+    document.body.appendChild(host)
+    const app = createApp({
+      setup: () => () =>
+        h('form', null, [
+          h(XhCheckbox, { name: '同意', defaultChecked: true }),
+          h(XhSwitch, { name: '开关', defaultChecked: false }),
+        ]),
+    })
+    app.mount(host)
+    const form = host.querySelector('form') as HTMLFormElement
+    await tick()
+    const 提交 = (): string[] => [...new FormData(form).keys()]
+
+    // 默认：checkbox 勾上进提交，switch 没开不进
+    expect(提交()).toEqual(['同意'])
+    expect(new FormData(form).get('同意')).toBe('on')
+
+    // 各自点一下翻面
+    const [cb, sw] = [...form.querySelectorAll<HTMLElement>('button')]
+    cb?.click()
+    sw?.click()
+    await tick()
+    expect(提交()).toEqual(['开关'])
+
+    form.reset()
+    await tick()
+    expect(提交()).toEqual(['同意'])
+  })
+
+  it('没给 name 就没有影子节点，既有 DOM 一个字节不变', async () => {
+    const host = document.createElement('div')
+    document.body.appendChild(host)
+    const app = createApp({ setup: () => () => h(XhSwitch, { defaultChecked: true }) })
+    app.mount(host)
+    await tick()
+    expect(host.querySelector('[data-part="hidden-input"]')).toBeNull()
+    expect(host.querySelector('button')?.children.length).toBe(1)
+    app.unmount()
+    host.remove()
+  })
+
+  it('半选：不提交', async () => {
+    const host = document.createElement('div')
+    document.body.appendChild(host)
+    const app = createApp({
+      setup: () => () => h('form', null, [h(XhCheckbox, { name: '部分', defaultChecked: 'indeterminate' })]),
+    })
+    app.mount(host)
+    const form = host.querySelector('form') as HTMLFormElement
+    await tick()
+    expect([...new FormData(form).keys()]).toEqual([])
     app.unmount()
     host.remove()
   })

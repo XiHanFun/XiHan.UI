@@ -17,6 +17,8 @@ import { MachineController } from '../runtime/machine-controller'
  * @fires checked-change - checked 状态变化；detail 为 `{ checked: boolean }`
  * @csspart root - role=switch 的按钮（承载 aria-checked / data-state）
  * @csspart thumb - 滑块
+ * @attr {string} name - 表单字段名；给了 hidden-input 才参与提交
+ * @csspart hidden-input - type=hidden 的表单出口，省略该节点即不参与表单
  */
 export class XhSwitchElement extends XhElement {
   static override partContract = { anatomy: switchAnatomy, meta: switchMeta }
@@ -25,6 +27,8 @@ export class XhSwitchElement extends XhElement {
     checked: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
     defaultChecked: { type: Boolean, attribute: 'default-checked' },
     disabled: { type: Boolean },
+    name: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
+    value: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     tone: {},
     size: {},
   }
@@ -32,6 +36,8 @@ export class XhSwitchElement extends XhElement {
   declare checked?: boolean
   declare defaultChecked?: boolean
   declare disabled?: boolean
+  declare name?: string
+  declare value?: string
   declare tone?: Tone
   declare size?: Size
 
@@ -48,6 +54,8 @@ export class XhSwitchElement extends XhElement {
       disabled: this.disabled ?? false,
       tone: this.tone,
       size: this.size,
+      name: this.name,
+      value: this.value,
       onCheckedChange: this.notify,
     }
   }
@@ -60,5 +68,8 @@ export class XhSwitchElement extends XhElement {
     const thumb = this.getPart('thumb')
     if (thumb)
       this.spreader.spread(thumb, api.getThumbProps() as Record<string, unknown>)
+    const hidden = this.getPart('hidden-input')
+    if (hidden)
+      this.spreader.spread(hidden, api.getHiddenInputProps() as Record<string, unknown>)
   }
 }
