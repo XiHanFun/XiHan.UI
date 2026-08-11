@@ -77,7 +77,7 @@ export function connectCheckboxGroup<T extends PropTypes>(
   // 能不能被用户改：整组闸门 + 条目自己的声明
   const canToggle = (item: CheckboxGroupItemProps): boolean => editable && !itemDisabled(item)
 
-  // item / item-control / item-text / item-hidden-input 共用同一份状态标记
+  // item / indicator / item-text / hidden-input 共用同一份状态标记
   const stateAttrs = (item: CheckboxGroupItemProps): Record<string, string | undefined> => ({
     'data-state': isChecked(item.value) ? 'checked' : 'unchecked',
     'data-disabled': dataAttr(isDisabled(item)),
@@ -154,8 +154,8 @@ export function connectCheckboxGroup<T extends PropTypes>(
     }),
 
     // 视觉方框，条目的可及名来自 item-text
-    getItemControlProps: item => normalize.element({
-      ...parts['item-control'].attrs,
+    getIndicatorProps: item => normalize.element({
+      ...parts.indicator.attrs,
       ...stateAttrs(item),
       'aria-hidden': 'true',
     }),
@@ -166,8 +166,8 @@ export function connectCheckboxGroup<T extends PropTypes>(
     }),
 
     // 表单出口：选中值靠这批原生输入随表单提交（同名多值），对键盘与读屏不可见。
-    getItemHiddenInputProps: item => normalize.input({
-      ...parts['item-hidden-input'].attrs,
+    getHiddenInputProps: item => normalize.input({
+      ...parts['hidden-input'].attrs,
       ...stateAttrs(item),
       // type 先于 checked 写入：改 type 会重置输入的选中态
       'type': 'checkbox',

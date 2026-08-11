@@ -3,7 +3,7 @@
 import { ref } from "vue";
 import {
   XhCheckboxGroupItem,
-  XhCheckboxGroupItemControl,
+  XhCheckboxGroupIndicator,
   XhCheckboxGroupItemText,
   XhCheckboxGroupLabel,
   XhCheckboxGroupRoot,
@@ -37,7 +37,7 @@ const toppings = ref<string[]>(["cheese"]);
       :value="t.value"
       :disabled="t.disabled"
     >
-      <XhCheckboxGroupItemControl />
+      <XhCheckboxGroupIndicator />
       <XhCheckboxGroupItemText>{{ t.label }}</XhCheckboxGroupItemText>
     </XhCheckboxGroupItem>
   </XhCheckboxGroupRoot>

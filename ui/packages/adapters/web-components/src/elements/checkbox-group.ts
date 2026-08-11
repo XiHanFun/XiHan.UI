@@ -21,7 +21,7 @@ const LIST_CONVERTER = {
 
 /**
  * `<xh-checkbox-group>` —— Light-DOM 行为宿主：作者写 root/label 与若干 item 角色节点，
- * 每个 item 内自带 item-hidden-input/item-control/item-text，元素跑 checkbox-group 机器
+ * 每个 item 内自带 hidden-input/indicator/item-text，元素跑 checkbox-group 机器
  * 并把 connect 产出打上去。条目身份取自条目节点上的 value 属性。
  *
  * 不做 roving tabindex：组内每一项都是独立的 Tab 停靠点（禁用项也保留），容器自己不占位。
@@ -39,9 +39,9 @@ const LIST_CONVERTER = {
  * @csspart root - role=group 容器
  * @csspart label - 组标题（aria-labelledby 目标）
  * @csspart item - role=checkbox 条目，作者用 value 属性声明身份
- * @csspart item-control - 条目的视觉方框（对读屏隐藏）
+ * @csspart indicator - 条目的视觉方框（对读屏隐藏）
  * @csspart item-text - 条目文本，条目的可及名来源
- * @csspart item-hidden-input - 条目的表单影子输入（必须是原生 input）
+ * @csspart hidden-input - 条目的表单影子输入（必须是原生 input）
  * @csspart trigger - 全选/半选的父复选框，须写在 root 之内
  */
 export class XhCheckboxGroupElement extends XhElement {
@@ -152,10 +152,10 @@ export class XhCheckboxGroupElement extends XhElement {
     for (const el of this.getParts('item')) {
       const item = this.itemProps(el)
       this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
-      for (const input of this.partsIn(el, 'item-hidden-input'))
-        this.spreadHiddenInput(input as HTMLInputElement, api.getItemHiddenInputProps(item) as Record<string, unknown>)
-      for (const control of this.partsIn(el, 'item-control'))
-        this.spreader.spread(control, api.getItemControlProps(item) as Record<string, unknown>)
+      for (const input of this.partsIn(el, 'hidden-input'))
+        this.spreadHiddenInput(input as HTMLInputElement, api.getHiddenInputProps(item) as Record<string, unknown>)
+      for (const control of this.partsIn(el, 'indicator'))
+        this.spreader.spread(control, api.getIndicatorProps(item) as Record<string, unknown>)
       for (const text of this.partsIn(el, 'item-text'))
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
     }

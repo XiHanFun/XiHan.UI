@@ -4,8 +4,8 @@ import { mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, h } from 'vue'
 import {
+  XhCheckboxGroupIndicator,
   XhCheckboxGroupItem,
-  XhCheckboxGroupItemControl,
   XhCheckboxGroupItemText,
   XhCheckboxGroupLabel,
   XhCheckboxGroupRoot,
@@ -50,7 +50,7 @@ function mountFromParts(value: string[]) {
       h(XhCheckboxGroupLabel, () => '配料'),
       ...COLLECTION.map(node =>
         h(XhCheckboxGroupItem, { key: node.value, value: node.value }, () => [
-          h(XhCheckboxGroupItemControl),
+          h(XhCheckboxGroupIndicator),
           h(XhCheckboxGroupItemText, () => node.label),
         ]),
       ),
@@ -93,16 +93,16 @@ describe('checkbox-group 的 collection', () => {
     expect(parts).toEqual([
       'label',
       'item',
-      'item-hidden-input',
-      'item-control',
+      'hidden-input',
+      'indicator',
       'item-text',
       'item',
-      'item-hidden-input',
-      'item-control',
+      'hidden-input',
+      'indicator',
       'item-text',
       'item',
-      'item-hidden-input',
-      'item-control',
+      'hidden-input',
+      'indicator',
       'item-text',
     ])
     w.unmount()
@@ -135,7 +135,7 @@ describe('checkbox-group 的 collection', () => {
 
   it('数据里的禁用让该条目的隐藏输入退出提交', () => {
     const w = mountFromCollection([])
-    const flags = [...w.element.querySelectorAll('[data-part="item-hidden-input"]')]
+    const flags = [...w.element.querySelectorAll('[data-part="hidden-input"]')]
       .map(el => (el as HTMLInputElement).disabled)
     expect(flags).toEqual([false, false, true])
     w.unmount()

@@ -3345,7 +3345,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-checkbox-group>` —— Light-DOM 行为宿主：作者写 root/label 与若干 item 角色节点，\n每个 item 内自带 item-hidden-input/item-control/item-text，元素跑 checkbox-group 机器\n并把 connect 产出打上去。条目身份取自条目节点上的 value 属性。\n\n不做 roving tabindex：组内每一项都是独立的 Tab 停靠点（禁用项也保留），容器自己不占位。",
+          "description": "`<xh-checkbox-group>` —— Light-DOM 行为宿主：作者写 root/label 与若干 item 角色节点，\n每个 item 内自带 hidden-input/indicator/item-text，元素跑 checkbox-group 机器\n并把 connect 产出打上去。条目身份取自条目节点上的 value 属性。\n\n不做 roving tabindex：组内每一项都是独立的 Tab 停靠点（禁用项也保留），容器自己不占位。",
           "name": "XhCheckboxGroupElement",
           "cssParts": [
             {
@@ -3362,7 +3362,7 @@
             },
             {
               "description": "条目的视觉方框（对读屏隐藏）",
-              "name": "item-control"
+              "name": "indicator"
             },
             {
               "description": "条目文本，条目的可及名来源",
@@ -3370,7 +3370,7 @@
             },
             {
               "description": "条目的表单影子输入（必须是原生 input）",
-              "name": "item-hidden-input"
+              "name": "hidden-input"
             },
             {
               "description": "全选/半选的父复选框，须写在 root 之内",

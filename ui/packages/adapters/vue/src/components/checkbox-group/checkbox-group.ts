@@ -80,19 +80,19 @@ export const XhCheckboxGroupItem = defineComponent({
     provideCheckboxGroupItem({ item })
     // 表单影子由条目自行装配，不暴露成独立组件，作者只写方框与文本
     return () => h('div', ctx.api.value.getItemProps(item.value) as Record<string, unknown>, [
-      h('input', ctx.api.value.getItemHiddenInputProps(item.value) as Record<string, unknown>),
+      h('input', ctx.api.value.getHiddenInputProps(item.value) as Record<string, unknown>),
       ...(slots.default?.() ?? []),
     ])
   },
 })
 
-export const XhCheckboxGroupItemControl = defineComponent({
-  name: 'XhCheckboxGroupItemControl',
+export const XhCheckboxGroupIndicator = defineComponent({
+  name: 'XhCheckboxGroupIndicator',
   setup(_, { slots }) {
     const ctx = useCheckboxGroupContext()
     const { item } = useCheckboxGroupItemContext()
     // 插槽留给作者放对勾图形，方框本身对读屏隐藏
-    return () => h('span', ctx.api.value.getItemControlProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getIndicatorProps(item.value) as Record<string, unknown>, slots.default?.())
   },
 })
 
@@ -128,7 +128,7 @@ function renderDefaultTree(
     ...(label ? [h(XhCheckboxGroupLabel, null, () => label)] : []),
     ...collection.map(node =>
       h(XhCheckboxGroupItem, { key: node.value, value: node.value }, () => [
-        h(XhCheckboxGroupItemControl),
+        h(XhCheckboxGroupIndicator),
         h(XhCheckboxGroupItemText, null, () => itemSlot?.(node) ?? node.label),
       ]),
     ),

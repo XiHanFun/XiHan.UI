@@ -99,10 +99,10 @@ export interface CheckboxGroupApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
   getItemProps: (props: CheckboxGroupItemProps) => T['element']
-  getItemControlProps: (props: CheckboxGroupItemProps) => T['element']
+  getIndicatorProps: (props: CheckboxGroupItemProps) => T['element']
   getItemTextProps: (props: CheckboxGroupItemProps) => T['element']
   /** 条目的表单影子：一份视觉隐藏的原生 checkbox，由条目内部渲染。 */
-  getItemHiddenInputProps: (props: CheckboxGroupItemProps) => T['input']
+  getHiddenInputProps: (props: CheckboxGroupItemProps) => T['input']
   /** 全选/半选的父复选框。必须写在 root 之内，它靠祖先链找到本组。 */
   getTriggerProps: () => T['element']
 }

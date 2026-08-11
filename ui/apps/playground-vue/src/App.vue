@@ -43,8 +43,8 @@ import {
   XhCarouselRoot,
   XhCarouselViewport,
   XhCheckbox,
+  XhCheckboxGroupIndicator,
   XhCheckboxGroupItem,
-  XhCheckboxGroupItemControl,
   XhCheckboxGroupItemText,
   XhCheckboxGroupLabel,
   XhCheckboxGroupRoot,
@@ -1417,7 +1417,7 @@ const codeBlockPartial = `const stream = await client.chat({
           :value="t.value"
           :disabled="t.disabled"
         >
-          <XhCheckboxGroupItemControl />
+          <XhCheckboxGroupIndicator />
           <XhCheckboxGroupItemText>{{ t.label }}</XhCheckboxGroupItemText>
         </XhCheckboxGroupItem>
       </XhCheckboxGroupRoot>

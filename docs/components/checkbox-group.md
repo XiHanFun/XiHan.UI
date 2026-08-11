@@ -57,7 +57,7 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-checkbox-group>` |
-| Vue 组件 | `XhCheckboxGroupItem` `XhCheckboxGroupItemControl` `XhCheckboxGroupItemText` `XhCheckboxGroupLabel` `XhCheckboxGroupRoot` `XhCheckboxGroupTrigger` |
+| Vue 组件 | `XhCheckboxGroupIndicator` `XhCheckboxGroupItem` `XhCheckboxGroupItemText` `XhCheckboxGroupLabel` `XhCheckboxGroupRoot` `XhCheckboxGroupTrigger` |
 | 组合式函数 | `useCheckboxGroup` |
 | 状态机 | `checkboxGroupMachine` |
 | 皮肤 | `@xihan-ui/styles/checkbox-group.css` |
@@ -66,7 +66,7 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="checkbox-group"`：**`root`** · `label` · **`item`** · `item-control` · `item-text` · `item-hidden-input` · `trigger`
+`data-scope="checkbox-group"`：**`root`** · `label` · **`item`** · `indicator` · `item-text` · `hidden-input` · `trigger`
 
 ## Props
 
@@ -109,9 +109,9 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: CheckboxGroupItemProps) => T['element']` |  |
-| `getItemControlProps` | `(props: CheckboxGroupItemProps) => T['element']` |  |
+| `getIndicatorProps` | `(props: CheckboxGroupItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: CheckboxGroupItemProps) => T['element']` |  |
-| `getItemHiddenInputProps` | `(props: CheckboxGroupItemProps) => T['input']` | 条目的表单影子：一份视觉隐藏的原生 checkbox，由条目内部渲染。 |
+| `getHiddenInputProps` | `(props: CheckboxGroupItemProps) => T['input']` | 条目的表单影子：一份视觉隐藏的原生 checkbox，由条目内部渲染。 |
 | `getTriggerProps` | `() => T['element']` | 全选/半选的父复选框。必须写在 root 之内，它靠祖先链找到本组。 |
 
 ## 键盘

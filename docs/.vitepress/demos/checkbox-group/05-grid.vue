@@ -3,7 +3,7 @@
 import { ref } from "vue";
 import {
   XhCheckboxGroupItem,
-  XhCheckboxGroupItemControl,
+  XhCheckboxGroupIndicator,
   XhCheckboxGroupItemText,
   XhCheckboxGroupLabel,
   XhCheckboxGroupRoot,
@@ -27,7 +27,7 @@ const cities = [
   >
     <XhCheckboxGroupLabel style="grid-column: 1 / -1">开通城市</XhCheckboxGroupLabel>
     <XhCheckboxGroupItem v-for="c in cities" :key="c.value" :value="c.value">
-      <XhCheckboxGroupItemControl />
+      <XhCheckboxGroupIndicator />
       <XhCheckboxGroupItemText>{{ c.label }}</XhCheckboxGroupItemText>
     </XhCheckboxGroupItem>
   </XhCheckboxGroupRoot>

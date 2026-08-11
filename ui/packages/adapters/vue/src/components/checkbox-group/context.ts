@@ -3,7 +3,7 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { CheckboxGroupContext } from './use-checkbox-group'
 import { inject, provide } from 'vue'
 
-/** 条目自报的值与禁用，供 item-control / item-text 这类子部件复用同一份声明。 */
+/** 条目自报的值与禁用，供 indicator / item-text 这类子部件复用同一份声明。 */
 export interface CheckboxGroupItemContext {
   item: ComputedRef<CheckboxGroupItemProps>
 }

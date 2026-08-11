@@ -34,3 +34,17 @@
 - Vue：`<XhTransferRoot :items="…">` 改成 `:collection="…"`。
 - WC：`el.items = […]` 改成 `el.collection = […]`（这个入口表达不成属性，本来就只能走 property）。
 - `TransferApi.items` → `TransferApi.collection`。
+
+**checkbox-group 的组内子部件对齐 radio-group。** 同一语义两套名字：checkbox-group 用
+`item-control` / `item-hidden-input`，radio-group 用 `indicator` / `hidden-input`。裸名是全仓
+多数（`indicator` 13 处、`hidden-input` 10 处），checkbox-group 随大流。`item-text` 不动
+（21 份解剖都这么叫）。
+
+迁移点：
+
+- `data-part='item-control'` → `'indicator'`，`data-part='item-hidden-input'` → `'hidden-input'`。
+- 皮肤覆盖槽 `--xh-checkbox-group-control-*` → `--xh-checkbox-group-indicator-*`（10 个），
+  与 radio-group 的 `--xh-radio-group-indicator-*` 对齐。
+- `CheckboxGroupApi.getItemControlProps` → `getIndicatorProps`，
+  `getItemHiddenInputProps` → `getHiddenInputProps`（两个名字 radio-group 早就在用）。
+- Vue 组件 `XhCheckboxGroupItemControl` → `XhCheckboxGroupIndicator`。
