@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/code-highlight",
   "type": "module",
-  "version": "0.0.0",
+  "version": "1.0.0-alpha.0",
   "description": "XiHan.UI code highlighter — coarse lexical tokenizer, no third-party runtime dependency.",
   "author": {
     "name": "XiHanFun",
