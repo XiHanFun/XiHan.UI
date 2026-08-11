@@ -21,10 +21,10 @@ function onSizeChangeEnd(details: { size: number[]; index: number }): void {
 <template>
   <div style="inline-size: 100%; display: grid; gap: 12px">
     <XhSplitterRoot
-      v-model:size="size"
+      v-model:sizes="size"
       :panels="panels"
       style="block-size: 140px"
-      @size-change-end="onSizeChangeEnd"
+      @sizes-change-end="onSizeChangeEnd"
     >
       <XhSplitterPanel :index="0">
         <p style="padding: 12px">侧栏</p>

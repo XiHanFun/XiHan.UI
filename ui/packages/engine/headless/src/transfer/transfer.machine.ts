@@ -83,7 +83,7 @@ export const transferMachine = createMachine({
       value: prop('selected'),
       defaultValue: prop('defaultSelected') ?? [],
       isEqual: sameValues,
-      onChange: selected => prop('onSelectedChange')?.({ selected }),
+      onChange: selected => prop('onSelectionChange')?.({ selected }),
     })),
     // 搜索串与焦点锚点都不受控、不对外通知：前者只影响看得见什么，后者只服务 roving tabindex
     sourceQuery: cell<string>(() => ({ defaultValue: '' })),

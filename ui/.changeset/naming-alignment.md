@@ -60,3 +60,29 @@ combobox 早就叫 `empty`。独立的 `empty-state` 组件本身不动。
 - `TableApi.getEmptyStateProps` → `getEmptyProps`。
 - Vue 组件 `XhTableEmptyState` → `XhTableEmpty`（`XhEmptyState*` 那一族是另一个组件，不变）。
 - WC 的 `::part(empty-state)` → `::part(empty)`。
+
+**transfer 的 `onSelectedChange` 改叫 `onSelectionChange`。** table 与 tree 都叫
+`onSelectionChange`。受控的 `selected` prop 与载荷字段 `{ selected }` 不动——那是「被勾中的值」，
+与回调名说的不是一回事。
+
+- `TransferSelectedChangeDetails` → `TransferSelectionChangeDetails`。
+- Vue 事件 `@selected-change` → `@selection-change`；WC 的 `selected-change` 事件同改。
+- `v-model:selected` 不变。
+
+**`size` 不再一名两用。** 三轴里的 `size` 是语气枚举，而 qr-code 的 `size` 是像素数值、
+splitter 的 `size` 是百分比数组——两者占着同一个名字却是完全不同的类型，使用者写
+`size="md"` 得到的是静默的错。
+
+- qr-code：`size` → `pixelSize`（WC 属性 `size` → `pixel-size`）。中心 logo 挖空区的
+  `QrCodeLogoArea.size` 是模块数标量，不动。
+- splitter：数组值的一律改复数——`size` → `sizes`、`defaultSize` → `defaultSizes`、
+  `onSizeChange` → `onSizesChange`、`onSizeChangeEnd` → `onSizesChangeEnd`、载荷字段
+  `{ size }` → `{ sizes }`、机器事件 `SIZE.SET` → `SIZES.SET`、Vue 的 `v-model:size` →
+  `v-model:sizes`、WC 属性 `size` → `sizes`。标量的不动：每块面板的 `collapsedSize`、
+  `BOUNDARY.SET` 的 `size`、`setPanelSize`、`SplitterPanelState.size`。
+
+**没有合并的一处，记在这里免得后人重新翻案。** 就绪度审计说 pin-input 的 `onValueComplete`、
+editable 的 `onValueCommit`、slider 的 `onValueChangeEnd` 是「三个名字表达同一语义」，
+逐条读过源码后判定不成立：`onValueComplete` 是「每格都填满的那一刻」（值的形状谓词），
+`onValueCommit` 是「提交那一刻」（用户显式确认），`onValueChangeEnd` 是「一次操作结束」
+（手势结束，splitter 的 `onSizesChangeEnd` 用的是同一套）。三件不同的事，合并会让 API 更差。

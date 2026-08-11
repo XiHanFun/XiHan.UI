@@ -20,8 +20,8 @@ export const XhSplitterRoot = defineComponent({
   name: 'XhSplitterRoot',
   props: {
     // 布局恒是数组；default: undefined 表示非受控
-    size: { type: Array as PropType<number[]>, default: undefined },
-    defaultSize: { type: Array as PropType<number[]>, default: undefined },
+    sizes: { type: Array as PropType<number[]>, default: undefined },
+    defaultSizes: { type: Array as PropType<number[]>, default: undefined },
     panels: { type: Array as PropType<SplitterPanelProps[]>, default: undefined },
     orientation: { type: String as PropType<Orientation>, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
@@ -29,19 +29,19 @@ export const XhSplitterRoot = defineComponent({
     step: { type: Number, default: undefined },
     largeStep: { type: Number, default: undefined },
   },
-  // size-change 携带 { size }，update:size 携带裸数组；size-change-end 只在操作收尾时发一次
+  // sizes-change 携带 { sizes }，update:sizes 携带裸数组；sizes-change-end 只在操作收尾时发一次
   emits: {
-    'size-change': (_details: PayloadOf<SplitterProps, 'onSizeChange'>) => true,
-    'update:size': (_size: PayloadOf<SplitterProps, 'onSizeChange'>['size']) => true,
-    'size-change-end': (_details: PayloadOf<SplitterProps, 'onSizeChangeEnd'>) => true,
+    'sizes-change': (_details: PayloadOf<SplitterProps, 'onSizesChange'>) => true,
+    'update:sizes': (_sizes: PayloadOf<SplitterProps, 'onSizesChange'>['sizes']) => true,
+    'sizes-change-end': (_details: PayloadOf<SplitterProps, 'onSizesChangeEnd'>) => true,
   },
   setup(props, { slots, emit }) {
-    const notify: SplitterProps['onSizeChange'] = (details) => {
-      emit('size-change', details)
-      emit('update:size', details.size)
+    const notify: SplitterProps['onSizesChange'] = (details) => {
+      emit('sizes-change', details)
+      emit('update:sizes', details.sizes)
     }
-    const notifyEnd: SplitterProps['onSizeChangeEnd'] = (details) => {
-      emit('size-change-end', details)
+    const notifyEnd: SplitterProps['onSizesChangeEnd'] = (details) => {
+      emit('sizes-change-end', details)
     }
     const ctx = useSplitter(props as SplitterProps, notify, notifyEnd)
     provideSplitter(ctx)
@@ -50,10 +50,10 @@ export const XhSplitterRoot = defineComponent({
       ...ctx.api.value.getRootProps() as Record<string, unknown>,
       ref: ctx.rootRef,
     }, slots.default?.({
-      size: ctx.api.value.size,
+      size: ctx.api.value.sizes,
       panels: ctx.api.value.panels,
       dragging: ctx.api.value.dragging,
-      setSize: ctx.api.value.setSize,
+      setSizes: ctx.api.value.setSizes,
       setPanelSize: ctx.api.value.setPanelSize,
       collapsePanel: ctx.api.value.collapsePanel,
       expandPanel: ctx.api.value.expandPanel,

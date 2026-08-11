@@ -18,13 +18,13 @@ export interface SplitterPanelProps {
   collapsedSize?: number
 }
 
-export interface SplitterSizeChangeDetails {
+export interface SplitterSizesChangeDetails {
   /** 每块面板的百分比，总和恒为 100。 */
-  size: number[]
+  sizes: number[]
 }
 
-export interface SplitterSizeChangeEndDetails {
-  size: number[]
+export interface SplitterSizesChangeEndDetails {
+  sizes: number[]
   /** 刚被推动的那条分隔条的下标。 */
   index: number
 }
@@ -45,15 +45,15 @@ export interface SplitterDragSession {
   /** 容器在排布轴上的像素长度；整场拖拽只量一次。 */
   extent: number
   /** 按下那一刻的百分比布局。 */
-  size: number[]
+  sizes: number[]
 }
 
 export interface SplitterSchema extends MachineSchema {
   props: {
-    /** 每块面板的百分比。给定即受控：内部不再自改，只发 onSizeChange。 */
-    size?: number[]
+    /** 每块面板的百分比。给定即受控：内部不再自改，只发 onSizesChange。 */
+    sizes?: number[]
     /** 非受控初值；不给就按面板数等分。 */
-    defaultSize?: number[]
+    defaultSizes?: number[]
     /** 逐块的约束；数组长度同时决定面板块数。 */
     panels?: SplitterPanelProps[]
     /** 面板的排布轴，默认 horizontal（并排，拖左右）；vertical 是上下堆叠，拖上下。 */
@@ -67,13 +67,13 @@ export interface SplitterSchema extends MachineSchema {
     /** Shift + 方向键的步长（百分比），默认 10。 */
     largeStep?: number
     /** 每次尺寸变化都发；拖动过程中会连续发很多次。 */
-    onSizeChange?: (details: SplitterSizeChangeDetails) => void
+    onSizesChange?: (details: SplitterSizesChangeDetails) => void
     /** 只在一次操作结束时发一次，适合拿来存布局。 */
-    onSizeChangeEnd?: (details: SplitterSizeChangeEndDetails) => void
+    onSizesChangeEnd?: (details: SplitterSizesChangeEndDetails) => void
   }
   context: {
     /** 每块面板的百分比，总和恒为 100。 */
-    size: number[]
+    sizes: number[]
     /** 正在被推动的分隔条下标：拖动期间是被抓住的那条，键盘操作时是聚焦的那条。 */
     activeIndex: number
   }
@@ -89,7 +89,7 @@ export interface SplitterSchema extends MachineSchema {
   state: 'idle' | 'dragging'
   event:
     /** 整份赋值（作者的命令式出口）；写入前会逐块夹进约束并把总和归位到 100。 */
-    | { type: 'SIZE.SET', size: number[] }
+    | { type: 'SIZES.SET', sizes: number[] }
     | { type: 'BOUNDARY.STEP', index: number, direction: 1 | -1, large?: boolean }
     | { type: 'BOUNDARY.TO_MIN', index: number }
     | { type: 'BOUNDARY.TO_MAX', index: number }
@@ -103,7 +103,7 @@ export interface SplitterSchema extends MachineSchema {
   tag: never
   guard: 'canResize'
   action:
-    | 'setSize'
+    | 'setSizes'
     | 'setActiveIndex'
     | 'stepBoundary'
     | 'boundaryToMin'
@@ -131,12 +131,12 @@ export interface SplitterPanelState {
 }
 
 export interface SplitterApi<T extends PropTypes = PropTypes> {
-  size: number[]
+  sizes: number[]
   panels: SplitterPanelState[]
   dragging: boolean
   disabled: boolean
   /** 整份赋值：逐块夹进约束、总和归位到 100 之后才落地。 */
-  setSize: (next: number[]) => void
+  setSizes: (next: number[]) => void
   /**
    * 把第 index 块调到 next，缺的那部分从它后面的面板里取。
    * 最后一块没有属于自己的分隔条，它的尺寸是其余面板的余数，调不动。

@@ -23,7 +23,7 @@ const gripStyle = {
 <template>
   <XhSplitterRoot
     :panels="panels"
-    :default-size="defaultSize"
+    :default-sizes="defaultSize"
     style="inline-size: 100%; block-size: 140px"
   >
     <XhSplitterPanel :index="0">

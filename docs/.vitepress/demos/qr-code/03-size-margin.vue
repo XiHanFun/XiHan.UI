@@ -8,16 +8,16 @@ const text = "https://ui.xihanfun.com";
 <template>
   <div style="display: flex; flex-wrap: wrap; align-items: end; gap: 16px">
     <div style="display: grid; gap: 6px; justify-items: center">
-      <XhQrCode :value="text" :size="96" />
+      <XhQrCode :value="text" :pixel-size="96" />
       <span style="font-size: 12px">96px · 静区 4</span>
     </div>
     <div style="display: grid; gap: 6px; justify-items: center">
-      <XhQrCode :value="text" :size="144" />
+      <XhQrCode :value="text" :pixel-size="144" />
       <span style="font-size: 12px">144px · 静区 4</span>
     </div>
     <!-- 静区归零后码面顶到边上；印刷或贴在深色底上时四周得自己再留白，否则扫不出来 -->
     <div style="display: grid; gap: 6px; justify-items: center">
-      <XhQrCode :value="text" :size="144" :margin="0" />
+      <XhQrCode :value="text" :pixel-size="144" :margin="0" />
       <span style="font-size: 12px">144px · 静区 0</span>
     </div>
   </div>

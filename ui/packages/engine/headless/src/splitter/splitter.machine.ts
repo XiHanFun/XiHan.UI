@@ -27,9 +27,9 @@ export const SPLITTER_DEFAULT_PANELS = 2
 type Props = SplitterSchema['props']
 type PropReader = <K extends keyof Props>(key: K) => Props[K]
 
-/** 面板块数的唯一判据：panels / size / defaultSize 谁先给就听谁的，都没给就是两栏。 */
+/** 面板块数的唯一判据：panels / size / defaultSizes 谁先给就听谁的，都没给就是两栏。 */
 export function panelCount(prop: PropReader): number {
-  const declared = prop('panels')?.length ?? prop('size')?.length ?? prop('defaultSize')?.length
+  const declared = prop('panels')?.length ?? prop('sizes')?.length ?? prop('defaultSizes')?.length
   return Math.max(1, declared ?? SPLITTER_DEFAULT_PANELS)
 }
 
@@ -56,18 +56,18 @@ function restoreSizeOf(
 export const splitterMachine = createMachine({
   name: 'splitter',
   context: ({ prop, cell }) => ({
-    // 布局是数组，走 cell 原生受控（size 给定即受控，写只发 onSizeChange 不落内部值）
-    size: cell<number[]>(() => {
-      const controlled = prop('size')
+    // 布局是数组，走 cell 原生受控（sizes 给定即受控，写只发 onSizesChange 不落内部值）
+    sizes: cell<number[]>(() => {
+      const controlled = prop('sizes')
       const constraints = splitterConstraints(prop)
       return {
         // 受控值也要过一遍归位：总和必须为 100
         value: controlled == null ? undefined : normalizeSizes(controlled, constraints),
-        defaultValue: normalizeSizes(prop('defaultSize') ?? equalSizes(panelCount(prop)), constraints),
+        defaultValue: normalizeSizes(prop('defaultSizes') ?? equalSizes(panelCount(prop)), constraints),
         // 数组每帧都是新引用，默认的 Object.is 会把"没变"也判成变了
         isEqual: (a, b) => Array.isArray(b) && a.length === b.length && a.every((v, i) => v === b[i]),
         // 通知必须挂在 cell 上：受控时 set 不写内部值，只有这条回调能把用户意图送出去
-        onChange: size => prop('onSizeChange')?.({ size }),
+        onChange: sizes => prop('onSizesChange')?.({ sizes }),
       }
     }),
     activeIndex: cell<number>(() => ({ defaultValue: 0 })),
@@ -80,7 +80,7 @@ export const splitterMachine = createMachine({
   initialState: () => 'idle',
   // 键盘与命令式出口从哪个状态发出都一样（拖动期间也可能有键盘事件），因此挂根级
   on: {
-    'SIZE.SET': { guard: 'canResize', actions: ['setSize'] },
+    'SIZES.SET': { guard: 'canResize', actions: ['setSizes'] },
     'BOUNDARY.STEP': { guard: 'canResize', actions: ['setActiveIndex', 'stepBoundary'] },
     'BOUNDARY.TO_MIN': { guard: 'canResize', actions: ['setActiveIndex', 'boundaryToMin'] },
     'BOUNDARY.TO_MAX': { guard: 'canResize', actions: ['setActiveIndex', 'boundaryToMax'] },
@@ -100,7 +100,7 @@ export const splitterMachine = createMachine({
       effects: ['trackPointer'],
       on: {
         'DRAG.MOVE': { actions: ['dragBoundary'] },
-        // 收尾通知只在这里发一次，拖动途中 onSizeChange 已连发多次
+        // 收尾通知只在这里发一次，拖动途中 onSizesChange 已连发多次
         'DRAG.END': { target: 'idle', actions: ['invokeChangeEnd'] },
       },
     },
@@ -110,11 +110,11 @@ export const splitterMachine = createMachine({
       canResize: ({ prop }) => !prop('disabled'),
     },
     actions: {
-      setSize: ({ context, prop, event }) => {
+      setSizes: ({ context, prop, event }) => {
         const e = event.current()
-        if (e.type !== 'SIZE.SET')
+        if (e.type !== 'SIZES.SET')
           return
-        context.set('size', normalizeSizes(e.size, splitterConstraints(prop)))
+        context.set('sizes', normalizeSizes(e.sizes, splitterConstraints(prop)))
       },
       /**
        * 带下标的事件一律先过这里，后面几个动作直接读 activeIndex，不再碰事件上的原值。
@@ -123,7 +123,7 @@ export const splitterMachine = createMachine({
       setActiveIndex: ({ context, event }) => {
         const e = event.current()
         if ('index' in e && typeof e.index === 'number')
-          context.set('activeIndex', clampIndex(e.index, context.get('size').length - 1))
+          context.set('activeIndex', clampIndex(e.index, context.get('sizes').length - 1))
       },
       stepBoundary: ({ context, prop, event }) => {
         const e = event.current()
@@ -132,7 +132,7 @@ export const splitterMachine = createMachine({
         const size = e.large
           ? (prop('largeStep') ?? SPLITTER_LARGE_STEP)
           : (prop('step') ?? SPLITTER_STEP)
-        context.set('size', resizePanels(context.get('size'), context.get('activeIndex'), e.direction * size, splitterConstraints(prop)))
+        context.set('sizes', resizePanels(context.get('sizes'), context.get('activeIndex'), e.direction * size, splitterConstraints(prop)))
       },
       // 端点取眼下真能走到的区间，不是纸面上的 min/max
       boundaryToMin: ({ context, prop, event }) => {
@@ -140,52 +140,52 @@ export const splitterMachine = createMachine({
         if (e.type !== 'BOUNDARY.TO_MIN')
           return
         const constraints = splitterConstraints(prop)
-        const sizes = context.get('size')
+        const sizes = context.get('sizes')
         const index = context.get('activeIndex')
-        context.set('size', setBoundarySize(sizes, index, panelRange(sizes, index, constraints).min, constraints))
+        context.set('sizes', setBoundarySize(sizes, index, panelRange(sizes, index, constraints).min, constraints))
       },
       boundaryToMax: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'BOUNDARY.TO_MAX')
           return
         const constraints = splitterConstraints(prop)
-        const sizes = context.get('size')
+        const sizes = context.get('sizes')
         const index = context.get('activeIndex')
-        context.set('size', setBoundarySize(sizes, index, panelRange(sizes, index, constraints).max, constraints))
+        context.set('sizes', setBoundarySize(sizes, index, panelRange(sizes, index, constraints).max, constraints))
       },
       setBoundary: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'BOUNDARY.SET')
           return
         const constraints = splitterConstraints(prop)
-        context.set('size', setBoundarySize(context.get('size'), context.get('activeIndex'), e.size, constraints))
+        context.set('sizes', setBoundarySize(context.get('sizes'), context.get('activeIndex'), e.size, constraints))
       },
       collapse: ({ context, prop, refs, event }) => {
         const e = event.current()
         if (e.type !== 'PANEL.COLLAPSE')
           return
         const constraints = splitterConstraints(prop)
-        const sizes = context.get('size')
+        const sizes = context.get('sizes')
         const c = constraints[e.index]
         const size = sizes[e.index]
         if (!c?.collapsible || size == null || isCollapsed(size, c))
           return
         // 折叠前记住当前尺寸，展开时照它还原
         refs.get('restore').set(e.index, size)
-        context.set('size', collapsePanel(sizes, e.index, constraints))
+        context.set('sizes', collapsePanel(sizes, e.index, constraints))
       },
       expand: ({ context, prop, refs, event }) => {
         const e = event.current()
         if (e.type !== 'PANEL.EXPAND')
           return
         const constraints = splitterConstraints(prop)
-        const sizes = context.get('size')
+        const sizes = context.get('sizes')
         const c = constraints[e.index]
         const size = sizes[e.index]
         if (!c?.collapsible || size == null || !isCollapsed(size, c))
           return
         const restore = restoreSizeOf(refs.get('restore'), e.index, c, sizes.length)
-        context.set('size', expandPanel(sizes, e.index, constraints, restore))
+        context.set('sizes', expandPanel(sizes, e.index, constraints, restore))
       },
       dragBoundary: ({ context, prop, refs, event }) => {
         const e = event.current()
@@ -203,11 +203,11 @@ export const splitterMachine = createMachine({
         const towards = !vertical && prop('dir') === 'rtl' ? -moved : moved
         const delta = towards / session.extent * SPLITTER_TOTAL
         // 基准是按下那一刻的布局，不是上一帧：增量累加在顶到 min 之后回不来
-        context.set('size', resizePanels(session.size, session.index, delta, splitterConstraints(prop)))
+        context.set('sizes', resizePanels(session.sizes, session.index, delta, splitterConstraints(prop)))
       },
       invokeChangeEnd: ({ context, prop }) => {
-        prop('onSizeChangeEnd')?.({
-          size: [...context.get('size')],
+        prop('onSizesChangeEnd')?.({
+          sizes: [...context.get('sizes')],
           index: context.get('activeIndex'),
         })
       },
@@ -229,7 +229,7 @@ export const splitterMachine = createMachine({
             index: context.get('activeIndex'),
             origin: start.point,
             extent: prop('orientation') === 'vertical' ? rect.height : rect.width,
-            size: [...context.get('size')],
+            sizes: [...context.get('sizes')],
           })
         }
         const doc = root?.ownerDocument ?? (typeof document === 'undefined' ? null : document)

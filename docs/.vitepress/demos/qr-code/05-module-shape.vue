@@ -14,7 +14,7 @@ const text = "https://ui.xihanfun.com/components/qr-code";
       style="display: grid; gap: 6px; justify-items: center"
     >
       <!-- 时序图形与校正图形不跟着变形：它们是透视校正的几何基准 -->
-      <XhQrCode :value="text" :module-shape="shape" :size="128" />
+      <XhQrCode :value="text" :module-shape="shape" :pixel-size="128" />
       <span style="font-size: 12px">{{ shape }}</span>
     </div>
   </div>

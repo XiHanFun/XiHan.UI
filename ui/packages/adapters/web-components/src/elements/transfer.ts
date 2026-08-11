@@ -2,7 +2,7 @@ import type {
   TransferFilter,
   TransferItem,
   TransferSchema,
-  TransferSelectedChangeDetails,
+  TransferSelectionChangeDetails,
   TransferSide,
   TransferValueChangeDetails,
 } from '@xihan-ui/headless'
@@ -58,7 +58,7 @@ function stripNativeDisabled(el: HTMLElement): void {
  * @attr {boolean} loop - 列表内方向键走到尽头回绕，默认 true；写 loop="false" 关掉
  * @attr {'ltr'|'rtl'} dir - 文字方向，决定列表内哪个横向方向键是"搬向对面"，默认 ltr
  * @fires value-change - 落在右侧的值变化；detail 为 `{ value: string[] }`
- * @fires selected-change - 勾选集合变化；detail 为 `{ selected: string[] }`
+ * @fires selection-change - 勾选集合变化；detail 为 `{ selected: string[] }`
  * @csspart root - 组件根容器（承载 data-disabled/data-one-way）
  * @csspart source-panel - 左侧面板容器，其内的角色节点一律归左侧
  * @csspart target-panel - 右侧面板容器，其内的角色节点一律归右侧
@@ -110,8 +110,8 @@ export class XhTransferElement extends XhElement {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly notifySelected = (details: TransferSelectedChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('selected-change', { detail: details, bubbles: true, composed: true }))
+  private readonly notifySelected = (details: TransferSelectionChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('selection-change', { detail: details, bubbles: true, composed: true }))
   }
 
   // transfer 机器无副作用、无 refs（两侧集合全部从 collection + value + 搜索串推导），
@@ -132,7 +132,7 @@ export class XhTransferElement extends XhElement {
       loop: this.loop,
       dir: this.direction,
       onValueChange: this.notifyValue,
-      onSelectedChange: this.notifySelected,
+      onSelectionChange: this.notifySelected,
     }
   }
 

@@ -35,7 +35,7 @@ export interface TransferValueChangeDetails {
   value: string[]
 }
 
-export interface TransferSelectedChangeDetails {
+export interface TransferSelectionChangeDetails {
   /** 两侧合起来被勾中的值（一个值只可能在一侧，因此一个扁平集合就够了）。 */
   selected: string[]
 }
@@ -80,7 +80,7 @@ export interface TransferSchema extends MachineSchema {
     /** 文字方向，默认 ltr；决定列表内哪个横向方向键是"搬向对面"。 */
     dir?: Direction
     onValueChange?: (details: TransferValueChangeDetails) => void
-    onSelectedChange?: (details: TransferSelectedChangeDetails) => void
+    onSelectionChange?: (details: TransferSelectionChangeDetails) => void
   }
   context: {
     /** target 侧的值，恒为数组。受控（value 给定）时 cell 直读 prop。 */

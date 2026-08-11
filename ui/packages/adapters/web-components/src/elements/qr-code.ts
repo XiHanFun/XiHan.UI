@@ -38,7 +38,7 @@ function makeGeom(doc: Document, tag: string, name: string): Element {
  * @customElement xh-qr-code
  * @attr {string} value - 要编码的内容，按 UTF-8 取字节走字节模式
  * @attr {'L'|'M'|'Q'|'H'} level - 纠错级别，缺省 M
- * @attr {number} size - 像素边长，缺省 160
+ * @attr {number} pixel-size - 像素边长，缺省 160
  * @attr {number} margin - 静区宽度（模块数），缺省 4
  * @attr {string} label - 可及名字，缺省用 value
  * @attr {'square'|'dot'|'rounded'} module-shape - 码点形状，缺省 square
@@ -60,7 +60,7 @@ export class XhQrCodeElement extends XhElement {
     value: { converter: STRING_CONVERTER },
     level: { converter: STRING_CONVERTER },
     label: { converter: STRING_CONVERTER },
-    size: { type: Number },
+    pixelSize: { type: Number, attribute: 'pixel-size' },
     margin: { type: Number },
     moduleShape: { converter: STRING_CONVERTER, attribute: 'module-shape' },
     eyeShape: { converter: STRING_CONVERTER, attribute: 'eye-shape' },
@@ -69,7 +69,7 @@ export class XhQrCodeElement extends XhElement {
   declare value?: string
   declare level?: QrLevel
   declare label?: string
-  declare size?: number
+  declare pixelSize?: number
   declare margin?: number
   declare moduleShape?: ModuleShape
   declare eyeShape?: EyeShape
@@ -88,7 +88,7 @@ export class XhQrCodeElement extends XhElement {
     const api = connectQrCode({
       value: this.value,
       level: this.level,
-      size: this.size,
+      pixelSize: this.pixelSize,
       margin: this.margin,
       label: this.label,
       moduleShape: this.moduleShape,

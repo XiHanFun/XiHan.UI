@@ -84,7 +84,7 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | `loop` | `boolean` |  | 列表内方向键走到尽头是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；决定列表内哪个横向方向键是"搬向对面"。 |
 | `onValueChange` | `(details: TransferValueChangeDetails) => void` |  |  |
-| `onSelectedChange` | `(details: TransferSelectedChangeDetails) => void` |  |  |
+| `onSelectionChange` | `(details: TransferSelectionChangeDetails) => void` |  |  |
 
 ## 状态机
 

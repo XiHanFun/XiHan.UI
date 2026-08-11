@@ -777,8 +777,8 @@ function formatSplitterSize(size: readonly number[]): string {
 }
 
 // 收尾只在松手那一下来一次，键盘推动不走这条路
-function onSplitterRowEnd(details: { size: number[], index: number }): void {
-  splitterRowEnd.value = `第 ${details.index} 条 → ${formatSplitterSize(details.size)}`
+function onSplitterRowEnd(details: { sizes: number[], index: number }): void {
+  splitterRowEnd.value = `第 ${details.index} 条 → ${formatSplitterSize(details.sizes)}`
 }
 
 // 三十行只为把内容撑得比视口长；每行文本各不相同，v-for 的 key 直接用它
@@ -2944,11 +2944,11 @@ const codeBlockPartial = `const stream = await client.chat({
       <!-- v-model:size 即受控：组件只发意图，宿主写回它才动。
            root 的高度是本页给的——分栏不给容器一个确定的跨轴尺寸就没什么可看的 -->
       <XhSplitterRoot
-        v-model:size="splitterRowSize"
+        v-model:sizes="splitterRowSize"
         :panels="splitterRowPanels"
         :disabled="splitterRowDisabled"
         style="block-size: 140px;"
-        @size-change-end="onSplitterRowEnd"
+        @sizes-change-end="onSplitterRowEnd"
       >
         <XhSplitterPanel :index="0">
           <p class="lead">
@@ -2978,7 +2978,7 @@ const codeBlockPartial = `const stream = await client.chat({
         分隔条报的 aria-valuemax 恒是眼下真走得到的那个数。
       </p>
       <XhSplitterRoot
-        v-model:size="splitterColSize"
+        v-model:sizes="splitterColSize"
         :panels="splitterColPanels"
         orientation="vertical"
         style="block-size: 220px;"
