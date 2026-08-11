@@ -30,7 +30,7 @@ const value = ref<string[]>(["he"]);
 
 <template>
   <div style="inline-size: 100%; max-inline-size: 560px">
-    <XhTransferRoot v-model:value="value" :items="members">
+    <XhTransferRoot v-model:value="value" :collection="members">
       <XhTransferSourcePanel>
         <XhTransferPanelHeader>
           <XhTransferPanelTitle>候选成员</XhTransferPanelTitle>

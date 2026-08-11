@@ -39,7 +39,7 @@ function operableOn(params: SetParams, side: TransferSide): string[] {
   const { prop, context } = params
   const query = prop('searchable') ? context.get(transferQueryKey(side)) : ''
   const visible = transferVisibleItems(
-    prop('items') ?? [],
+    prop('collection') ?? [],
     context.get('value'),
     side,
     query,

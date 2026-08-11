@@ -28,7 +28,7 @@ const value = ref<string[]>([]);
 
 <template>
   <div style="inline-size: 100%; max-inline-size: 520px">
-    <XhTransferRoot v-model:value="value" :items="items" one-way>
+    <XhTransferRoot v-model:value="value" :collection="items" one-way>
       <XhTransferSourcePanel>
         <XhTransferPanelHeader>
           <XhTransferPanelTitle>可订阅指标</XhTransferPanelTitle>

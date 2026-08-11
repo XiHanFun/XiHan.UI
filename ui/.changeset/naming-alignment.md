@@ -24,3 +24,13 @@
 - `TimePickerApi` 上：`getOptionProps` → `getItemProps`、`isOptionSelected` → `isItemSelected`、
   `isOptionDisabled` → `isItemDisabled`、`focusedOption` → `focusedItem`。
 - 键盘规格号 `time-picker.kbd.option-*` → `time-picker.kbd.item-*`。
+
+**transfer 的数据入口由 `items` 改叫 `collection`。** 另外 17 个集合组件的数据入口都叫
+`collection`。单条的类型名 `TransferItem`、某一侧看得见的条目 `visibleItems`、纯函数
+`transferVisibleItems` 都不动——它们说的是「条目」，不是「数据入口」。
+
+迁移点：
+
+- Vue：`<XhTransferRoot :items="…">` 改成 `:collection="…"`。
+- WC：`el.items = […]` 改成 `el.collection = […]`（这个入口表达不成属性，本来就只能走 property）。
+- `TransferApi.items` → `TransferApi.collection`。

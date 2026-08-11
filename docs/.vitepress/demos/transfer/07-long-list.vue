@@ -73,7 +73,7 @@ const value = ref<string[]>(["sku-3"]);
 
 <template>
   <div style="inline-size: 100%; max-inline-size: 560px">
-    <XhTransferRoot v-model:value="value" :items="items" searchable>
+    <XhTransferRoot v-model:value="value" :collection="items" searchable>
       <XhTransferSourcePanel v-slot="{ items: shown }">
         <XhTransferPanelHeader>
           <XhTransferPanelTitle>全部商品</XhTransferPanelTitle>

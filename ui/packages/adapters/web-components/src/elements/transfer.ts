@@ -25,7 +25,7 @@ const SIDES: readonly TransferSide[] = ['source', 'target']
 /**
  * 读条目节点上作者写的原生 disabled，顺手摘掉。
  *
- * 集合条目的禁用一律由 aria-disabled 表达（禁用声明的事实源是 items，不是标记）：
+ * 集合条目的禁用一律由 aria-disabled 表达（禁用声明的事实源是 collection，不是标记）：
  * 原生禁用的节点不可聚焦、也收不到 click，「禁用项仍是方向键起点、仍挡得住点击」
  * 这两条在原生 disabled 下根本无从成立。摘掉之后禁用态由 connect 写回的 aria-disabled 承接。
  */
@@ -39,7 +39,7 @@ function stripNativeDisabled(el: HTMLElement): void {
  * root/source-panel/target-panel/panel-header/panel-title/panel-count/search/list/item/...
  * 角色节点，元素跑 transfer 机器并把 connect 产出打上去。
  *
- * 条目全集由 `items` 属性（property）给出，它是标签与禁用的唯一事实源；
+ * 条目全集由 `collection` 属性（property）给出，它是标签与禁用的唯一事实源；
  * **两侧面板各挂一份全集**，不属于本侧、或被搜索筛掉的那一份由元素打上 hidden，
  * 节点不卸载。条目身份取节点上的 `value` 属性，归哪一侧则取它落在哪个面板里。
  *
@@ -48,8 +48,8 @@ function stripNativeDisabled(el: HTMLElement): void {
  * 导航与勾选在事件那一刻按 data-scope+data-part 查活 DOM，依赖 connect 回写的 data-value，
  * 因此 wire 必须先于交互跑过（基类 updated 已保证）。
  *
- * 集合类输入（items / value / selected / filter）都表达不成属性，只能走 property：
- * `el.items = [...]`、`el.value = ['a']`。
+ * 集合类输入（collection / value / selected / filter）都表达不成属性，只能走 property：
+ * `el.collection = [...]`、`el.value = ['a']`。
  *
  * @customElement xh-transfer
  * @attr {boolean} searchable - 每侧带一个搜索框；关掉时搜索框仍在 DOM 里但带 hidden
@@ -67,7 +67,7 @@ function stripNativeDisabled(el: HTMLElement): void {
  * @csspart panel-count - 计数节点，只带 data-count / data-checked-count，文案由作者写
  * @csspart search - 本侧搜索框，须是原生 input；searchable 关掉时带 hidden
  * @csspart list - role=listbox 容器，键盘在此收口，也是 roving tabindex 的兜底位
- * @csspart item - role=option 条目，须自带 value 属性标识身份；禁用写在 items 里，不写在节点上
+ * @csspart item - role=option 条目，须自带 value 属性标识身份；禁用写在 collection 里，不写在节点上
  * @csspart item-text - 条目文本
  * @csspart item-checkbox - 条目勾选标记（aria-hidden）；oneWay 下右侧的那一份带 hidden
  * @csspart select-all-trigger - 本侧全选格，须是原生 button；三态经 aria-checked 上报
@@ -81,7 +81,7 @@ export class XhTransferElement extends XhElement {
   // 同名声明既与基类类型冲突，也会盖掉原生反射。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
-    items: { attribute: false },
+    collection: { attribute: false },
     value: { attribute: false },
     defaultValue: { attribute: false },
     selected: { attribute: false },
@@ -94,7 +94,7 @@ export class XhTransferElement extends XhElement {
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
   }
 
-  declare items?: TransferItem[]
+  declare collection?: TransferItem[]
   declare value?: string[]
   declare defaultValue?: string[]
   declare selected?: string[]
@@ -114,13 +114,13 @@ export class XhTransferElement extends XhElement {
     this.dispatchEvent(new CustomEvent('selected-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  // transfer 机器无副作用、无 refs（两侧集合全部从 items + value + 搜索串推导），
+  // transfer 机器无副作用、无 refs（两侧集合全部从 collection + value + 搜索串推导），
   // 不需要 config / 定位引擎，故 controller 只带 props。
   private readonly ctrl = new MachineController<TransferSchema>(this, transferMachine, () => this.machineProps())
 
   private machineProps(): Partial<TransferSchema['props']> {
     return {
-      items: this.items,
+      collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue,
       selected: this.selected,

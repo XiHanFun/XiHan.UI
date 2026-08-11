@@ -29,7 +29,7 @@ const value = ref<string[]>(["owner"]);
 
 <template>
   <div style="inline-size: 100%; max-inline-size: 520px">
-    <XhTransferRoot v-model:value="value" :items="items">
+    <XhTransferRoot v-model:value="value" :collection="items">
       <XhTransferSourcePanel>
         <XhTransferPanelHeader>
           <XhTransferPanelTitle>待选</XhTransferPanelTitle>
