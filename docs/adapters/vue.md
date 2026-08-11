@@ -142,10 +142,10 @@ import { useBackground, vBackground, XhBackground } from '@xihan-ui/vue/backgrou
 
 两者跑同一个机器、同一份 `connect`，输出的 DOM 属性完全一致——跨适配器一致性测试逐帧比对归一化快照，抹不掉的差异即判失败。
 
-选哪个：Vue 项目用这个；需要在多个框架 / 无框架页面里复用同一套组件时用[自定义元素](./wc)。两者可以在同一页面共存。
+选哪个：Vue 项目用这个；需要在多个框架 / 无框架页面里复用同一套组件时用[自定义元素](./web-components)。两者可以在同一页面共存。
 
 ## 相关
 
 - [组件参考](../components/)：全部组件与部件
 - [connect 与属性产出](../guide/connect)
-- [Web Components 适配器](./wc)
+- [Web Components 适配器](./web-components)

@@ -42,7 +42,7 @@ BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.x
 
 因为它是 Light-DOM 行为宿主，不是 Shadow DOM 组件。Shadow DOM 会把结构封起来：改不了标签、插不进自己的节点、外部 CSS 进不去、表单关联与跨边界 `aria-*` 引用都要额外机制。这套库的定位是「行为可复用、外观完全由你定」。
 
-代价就是你得写结构。漏写必备部件不会静默失败——诊断通道会明确报出来。见 [Web Components 适配器](./adapters/wc)。
+代价就是你得写结构。漏写必备部件不会静默失败——诊断通道会明确报出来。见 [Web Components 适配器](./adapters/web-components)。
 
 ## 切换密度 / 高对比度 / 品牌为什么没效果
 

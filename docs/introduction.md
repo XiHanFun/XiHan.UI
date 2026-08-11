@@ -44,7 +44,7 @@ XiHan.UI 已发布到 npm，当前版本 `1.0.0-alpha.0`——这是预发布版
 | 写出第一个能跑的组件 | [快速上手](./quickstart) |
 | 查某个组件有哪些部件、支持哪些按键 | [组件总览](./components/) |
 | 改主题、改皮肤 | [设计令牌与主题](./guide/theme)、[皮肤与样式分层](./guide/styling) |
-| 用 Vue / 用原生自定义元素 | [Vue 适配器](./adapters/vue)、[Web Components 适配器](./adapters/wc) |
+| 用 Vue / 用原生自定义元素 | [Vue 适配器](./adapters/vue)、[Web Components 适配器](./adapters/web-components) |
 | 做 AI 对话界面 | [AI 协议内核](./guide/ai) |
 
 ## 相关

@@ -136,7 +136,8 @@ ui/
 | 位置 | 选型 |
 | --- | --- |
 | 语言 | TypeScript，ESM only（不提供 CJS） |
-| 运行时要求 | Node ≥ 24、pnpm ≥ 11 |
+| 运行时要求（消费端） | Node ≥ 18；浏览器为 2024 年常青版（皮肤用了 `@layer`、`color-mix`、`oklch`） |
+| 运行时要求（开发本仓） | Node ≥ 24、pnpm ≥ 11 |
 | 构建 | tsdown（库包）+ turbo（任务编排） |
 | 样式 | 原生 CSS，`@layer` 分层，`oklch` 色彩空间，无预处理器 |
 | 测试 | vitest（jsdom）+ Playwright（真实 Chromium） |

@@ -106,4 +106,4 @@ it('不应有契约违约', () => {
 ## 相关
 
 - [解剖与部件契约](./anatomy)：部件契约校验的内容
-- [Web Components 适配器](../adapters/wc)：三条 `wc.*` 码的来源
+- [Web Components 适配器](../adapters/web-components)：三条 `wc.*` 码的来源
