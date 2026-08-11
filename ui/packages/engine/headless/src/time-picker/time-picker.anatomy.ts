@@ -16,7 +16,7 @@ export const timePickerAnatomy = createAnatomy('time-picker', [
   'positioner',
   'content',
   'column',
-  'option',
+  'item',
   'hidden-input',
 ])
 
@@ -30,7 +30,7 @@ export const timePickerColumnQuery: ItemQuery = { scope: timePickerAnatomy.name,
  * 选项的集合：容器取所属的列。
  * queryItems 按归属过滤，隔壁列的同名选项（分列与秒列都有 '30'）不会串过来。
  */
-export const timePickerOptionQuery: ItemQuery = { scope: timePickerAnatomy.name, part: 'option' }
+export const timePickerItemQuery: ItemQuery = { scope: timePickerAnatomy.name, part: 'item' }
 
 /** 按单位找到列节点；无 DOM 环境或该列未渲染时为 null。 */
 export function findTimePickerColumn(content: HTMLElement | null, unit: string): HTMLElement | null {
@@ -38,7 +38,7 @@ export function findTimePickerColumn(content: HTMLElement | null, unit: string):
 }
 
 /** 按单位与值找到选项节点；焦点落位与确认键都在事件那一刻现查它。 */
-export function findTimePickerOption(content: HTMLElement | null, unit: string, value: string): HTMLElement | null {
-  return queryItems(findTimePickerColumn(content, unit), timePickerOptionQuery)
+export function findTimePickerItem(content: HTMLElement | null, unit: string, value: string): HTMLElement | null {
+  return queryItems(findTimePickerColumn(content, unit), timePickerItemQuery)
     .find(el => itemValue(el) === value) ?? null
 }

@@ -280,8 +280,8 @@ import {
   XhTimePickerControl,
   XhTimePickerHiddenInput,
   XhTimePickerInput,
+  XhTimePickerItem,
   XhTimePickerLabel,
-  XhTimePickerOption,
   XhTimePickerPositioner,
   XhTimePickerRoot,
   XhTimePickerTrigger,
@@ -2788,10 +2788,10 @@ const codeBlockPartial = `const stream = await client.chat({
               <!-- 可选值由 step 与小时制算出来，作者照它渲染；v-for 必带 key，
                    就地复用会让承载焦点的那一格换了身份 -->
               <XhTimePickerColumn v-slot="{ options }" unit="hour">
-                <XhTimePickerOption v-for="o in options" :key="o" :value="o" />
+                <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
               </XhTimePickerColumn>
               <XhTimePickerColumn v-slot="{ options }" unit="minute">
-                <XhTimePickerOption v-for="o in options" :key="o" :value="o" />
+                <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
               </XhTimePickerColumn>
             </XhTimePickerContent>
           </XhTimePickerPositioner>
@@ -2818,10 +2818,10 @@ const codeBlockPartial = `const stream = await client.chat({
           <XhTimePickerPositioner>
             <XhTimePickerContent>
               <XhTimePickerColumn v-slot="{ options }" unit="hour">
-                <XhTimePickerOption v-for="o in options" :key="o" :value="o" />
+                <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
               </XhTimePickerColumn>
               <XhTimePickerColumn v-slot="{ options }" unit="minute">
-                <XhTimePickerOption v-for="o in options" :key="o" :value="o" />
+                <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
               </XhTimePickerColumn>
             </XhTimePickerContent>
           </XhTimePickerPositioner>

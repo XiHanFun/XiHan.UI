@@ -171,8 +171,8 @@ export const XhTimePickerColumn = defineComponent({
   },
 })
 
-export const XhTimePickerOption = defineComponent({
-  name: 'XhTimePickerOption',
+export const XhTimePickerItem = defineComponent({
+  name: 'XhTimePickerItem',
   props: {
     /** 两位补零的显示串（'09' / '30'），与段上的文字同一套写法。 */
     value: { type: String, required: true },
@@ -183,7 +183,7 @@ export const XhTimePickerOption = defineComponent({
     // 有插槽用插槽，否则显示格子自己的值
     return () => h(
       'div',
-      ctx.api.value.getOptionProps({ unit: unit.value, value: props.value }) as Record<string, unknown>,
+      ctx.api.value.getItemProps({ unit: unit.value, value: props.value }) as Record<string, unknown>,
       slots.default?.() ?? props.value,
     )
   },

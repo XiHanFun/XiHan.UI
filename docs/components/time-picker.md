@@ -57,7 +57,7 @@ min / max 直接把界外的格从列里裁掉；分列还会随已选的时再�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-time-picker>` |
-| Vue 组件 | `XhTimePickerClearTrigger` `XhTimePickerColumn` `XhTimePickerContent` `XhTimePickerControl` `XhTimePickerHiddenInput` `XhTimePickerInput` `XhTimePickerLabel` `XhTimePickerOption` `XhTimePickerPositioner` `XhTimePickerRoot` `XhTimePickerTrigger` |
+| Vue 组件 | `XhTimePickerClearTrigger` `XhTimePickerColumn` `XhTimePickerContent` `XhTimePickerControl` `XhTimePickerHiddenInput` `XhTimePickerInput` `XhTimePickerItem` `XhTimePickerLabel` `XhTimePickerPositioner` `XhTimePickerRoot` `XhTimePickerTrigger` |
 | 组合式函数 | `useTimePicker` |
 | 状态机 | `timePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/time-picker.css` |
@@ -66,7 +66,7 @@ min / max 直接把界外的格从列里裁掉；分列还会随已选的时再�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="time-picker"`：**`root`** · `label` · **`control`** · **`input`** · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · `column` · `option` · `hidden-input`
+`data-scope="time-picker"`：**`root`** · `label` · **`control`** · **`input`** · **`trigger`** · `clear-trigger` · `positioner` · **`content`** · `column` · `item` · `hidden-input`
 
 ## Props
 
@@ -96,7 +96,7 @@ min / max 直接把界外的格从列里裁掉；分列还会随已选的时再�
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `VALUE.CLEAR` · `SEGMENT.STEP` · `SEGMENT.DIGIT` · `SEGMENT.CLEAR` · `SEGMENT.PERIOD` · `SEGMENT.FOCUS` · `SEGMENT.BLUR` · `OPTION.FOCUS` · `OPTION.SELECT`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `VALUE.CLEAR` · `SEGMENT.STEP` · `SEGMENT.DIGIT` · `SEGMENT.CLEAR` · `SEGMENT.PERIOD` · `SEGMENT.FOCUS` · `SEGMENT.BLUR` · `OPTION.FOCUS` · `ITEM.SELECT`
 
 **判据**：`isOpenControlled` · `canEdit`
 
@@ -120,11 +120,11 @@ min / max 直接把界外的格从列里裁掉；分列还会随已选的时再�
 | `focusedSegment` | `TimeSegmentType \| null` | 焦点所在段；焦点在分段输入外时为 null。 |
 | `columns` | `TimePickerColumn[]` | 此刻该排哪几列、每列有哪些可选值（已按 step 与 min/max 裁过）。作者据此渲染浮层。 |
 | `focusedColumn` | `TimePickerColumnUnit \| null` |  |
-| `focusedOption` | `string \| null` |  |
+| `focusedItem` | `string \| null` |  |
 | `canClear` | `boolean` | 清空按钮此刻可不可按。 |
 | `getSegmentText` | `(props: TimePickerInputProps) => string` | 某一段该显示的文字（空段是占位串）。两个适配器都拿它填文本，保证同构。 |
-| `isOptionSelected` | `(props: TimePickerOptionProps) => boolean` |  |
-| `isOptionDisabled` | `(props: TimePickerOptionProps) => boolean` | 落在 min/max 之外（或整个控件禁用）：仍在列表里，但不可选、方向键跳过。 |
+| `isItemSelected` | `(props: TimePickerItemProps) => boolean` |  |
+| `isItemDisabled` | `(props: TimePickerItemProps) => boolean` | 落在 min/max 之外（或整个控件禁用）：仍在列表里，但不可选、方向键跳过。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string) => void` |  |
 | `clear` | `() => void` |  |
@@ -137,7 +137,7 @@ min / max 直接把界外的格从列里裁掉；分列还会随已选的时再�
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getColumnProps` | `(props: TimePickerColumnProps) => T['element']` |  |
-| `getOptionProps` | `(props: TimePickerOptionProps) => T['element']` |  |
+| `getItemProps` | `(props: TimePickerItemProps) => T['element']` |  |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：一份 type=hidden 的原生输入，随表单提交 ISO 串。 |
 
 ## 键盘

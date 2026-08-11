@@ -7,7 +7,7 @@ import {
   XhTimePickerControl,
   XhTimePickerInput,
   XhTimePickerLabel,
-  XhTimePickerOption,
+  XhTimePickerItem,
   XhTimePickerPositioner,
   XhTimePickerRoot,
   XhTimePickerTrigger,
@@ -51,12 +51,12 @@ function snap(next: string) {
       <XhTimePickerContent>
         <!-- min / max 先裁一遍，这里再按自己的谓词裁一遍；格里的文案也自己写 -->
         <XhTimePickerColumn v-slot="{ options }" unit="hour">
-          <XhTimePickerOption v-for="o in bookable(options)" :key="o" :value="o">
+          <XhTimePickerItem v-for="o in bookable(options)" :key="o" :value="o">
             {{ Number(o) }} 点
-          </XhTimePickerOption>
+          </XhTimePickerItem>
         </XhTimePickerColumn>
         <XhTimePickerColumn v-slot="{ options }" unit="minute">
-          <XhTimePickerOption v-for="o in options" :key="o" :value="o" />
+          <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
         </XhTimePickerColumn>
       </XhTimePickerContent>
     </XhTimePickerPositioner>

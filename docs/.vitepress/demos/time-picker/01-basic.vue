@@ -9,7 +9,7 @@ import {
   XhTimePickerHiddenInput,
   XhTimePickerInput,
   XhTimePickerLabel,
-  XhTimePickerOption,
+  XhTimePickerItem,
   XhTimePickerPositioner,
   XhTimePickerRoot,
   XhTimePickerTrigger,
@@ -35,10 +35,10 @@ const value = ref("");
       <XhTimePickerContent>
         <!-- 可选值由 step 与小时制算出来，作者照它渲染 -->
         <XhTimePickerColumn v-slot="{ options }" unit="hour">
-          <XhTimePickerOption v-for="o in options" :key="o" :value="o" />
+          <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
         </XhTimePickerColumn>
         <XhTimePickerColumn v-slot="{ options }" unit="minute">
-          <XhTimePickerOption v-for="o in options" :key="o" :value="o" />
+          <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
         </XhTimePickerColumn>
       </XhTimePickerContent>
     </XhTimePickerPositioner>

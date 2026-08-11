@@ -29,7 +29,7 @@ import {
   to12Hour,
   to24Hour,
 } from '../time-field'
-import { findTimePickerOption } from './time-picker.anatomy'
+import { findTimePickerItem } from './time-picker.anatomy'
 
 const { createMachine } = setup<TimePickerSchema>()
 
@@ -43,7 +43,7 @@ const MINUTES_IN_HOUR = 60
 const SECONDS_IN_MINUTE = 60
 
 /** 列上的选项与段上的文字用同一套两位补零，选中比对才对得上。 */
-export function timePickerOptionValue(display: number): string {
+export function timePickerItemValue(display: number): string {
   return String(display).padStart(2, '0')
 }
 
@@ -121,7 +121,7 @@ export function timePickerColumns(options: TimePickerColumnsOptions = {}): TimeP
     // 12 小时制的时列写的是显示值，落到哪个真实小时上要看当前的上午/下午
     const h24 = hourCycle === 12 ? to24Hour(display, period) : display
     if (inRange([h24], lo, hi))
-      hours.push(timePickerOptionValue(display))
+      hours.push(timePickerItemValue(display))
   }
   const columns: TimePickerColumn[] = [{ unit: 'hour', options: hours }]
   if (granularity === 'hour')
@@ -130,7 +130,7 @@ export function timePickerColumns(options: TimePickerColumnsOptions = {}): TimeP
   const minutes: string[] = []
   for (let m = 0; m < MINUTES_IN_HOUR; m += step) {
     if (hour == null || inRange([hour, m], lo, hi))
-      minutes.push(timePickerOptionValue(m))
+      minutes.push(timePickerItemValue(m))
   }
   columns.push({ unit: 'minute', options: minutes })
   if (granularity !== 'second')
@@ -139,7 +139,7 @@ export function timePickerColumns(options: TimePickerColumnsOptions = {}): TimeP
   const seconds: string[] = []
   for (let s = 0; s < SECONDS_IN_MINUTE; s++) {
     if (hour == null || minute == null || inRange([hour, minute, s], lo, hi))
-      seconds.push(timePickerOptionValue(s))
+      seconds.push(timePickerItemValue(s))
   }
   columns.push({ unit: 'second', options: seconds })
   return columns
@@ -214,7 +214,7 @@ export const timePickerMachine = createMachine({
     focusedSegment: cell<TimeSegmentType | null>(() => ({ defaultValue: null })),
     typeBuffer: cell<string>(() => ({ defaultValue: '' })),
     focusedColumn: cell<TimePickerColumnUnit | null>(() => ({ defaultValue: null })),
-    focusedOption: cell<string | null>(() => ({ defaultValue: null })),
+    focusedItem: cell<string | null>(() => ({ defaultValue: null })),
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
   }),
   refs: () => ({
@@ -260,8 +260,8 @@ export const timePickerMachine = createMachine({
     },
     open: {
       // 锚点在进入展开态时就位：列是按当前值算出来的，不必等 DOM
-      entry: ['setInitialFocusedOption'],
-      exit: ['clearFocusedOption'],
+      entry: ['setInitialFocusedItem'],
+      exit: ['clearFocusedItem'],
       // 进入 open：定位 → 消解 + 焦点。退出时逆序拆
       effects: ['trackPosition', 'trackLayer'],
       on: {
@@ -273,9 +273,9 @@ export const timePickerMachine = createMachine({
           { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnClose'] },
           { target: 'closed', actions: ['setReturnFocus', 'invokeOnClose'] },
         ],
-        'OPTION.FOCUS': { actions: ['setFocusedOption'] },
+        'OPTION.FOCUS': { actions: ['setFocusedItem'] },
         // 选中不收起：时分秒是分列挑的，挑完一列还得接着挑下一列
-        'OPTION.SELECT': { guard: 'canEdit', actions: ['selectOption'] },
+        'ITEM.SELECT': { guard: 'canEdit', actions: ['selectItem'] },
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
     },
@@ -309,43 +309,43 @@ export const timePickerMachine = createMachine({
        * 展开那一刻焦点落在时列：已选的时仍在列里就停在它上面，否则退回首格。
        * 列由纯函数按当前值算出，这里不必查 DOM。
        */
-      setInitialFocusedOption: (params) => {
+      setInitialFocusedItem: (params) => {
         const first = currentColumns(params)[0]
         if (!first)
           return
         const current = segmentNumber(currentDraft(params), first.unit, currentHourCycle(params))
-        const selected = current == null ? null : timePickerOptionValue(current)
+        const selected = current == null ? null : timePickerItemValue(current)
         params.context.set('focusedColumn', first.unit)
         params.context.set(
-          'focusedOption',
+          'focusedItem',
           selected != null && first.options.includes(selected) ? selected : (first.options[0] ?? null),
         )
       },
 
-      setFocusedOption: ({ context, event }) => {
+      setFocusedItem: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'OPTION.FOCUS')
           return
         context.set('focusedColumn', e.unit)
-        context.set('focusedOption', e.value)
+        context.set('focusedItem', e.value)
       },
 
-      clearFocusedOption: ({ context }) => {
+      clearFocusedItem: ({ context }) => {
         context.set('focusedColumn', null)
-        context.set('focusedOption', null)
+        context.set('focusedItem', null)
       },
 
       /**
        * 浮层里选中一格：只改对应的那一段，其余段原样留着。
        * 走的是与分段输入同一个 setTimeSegment，12 小时制下按当前上午/下午换算回 0-23。
        */
-      selectOption: (params) => {
+      selectItem: (params) => {
         const e = params.event.current()
-        if (e.type !== 'OPTION.SELECT')
+        if (e.type !== 'ITEM.SELECT')
           return
         params.context.set('typeBuffer', '')
         params.context.set('focusedColumn', e.unit)
-        params.context.set('focusedOption', e.value)
+        params.context.set('focusedItem', e.value)
         commitDraft(
           params,
           setTimeSegment(currentDraft(params), e.unit, Number(e.value), currentHourCycle(params)),
@@ -501,10 +501,10 @@ export const timePickerMachine = createMachine({
           // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试
           initialFocus: () => {
             const unit = context.get('focusedColumn')
-            const value = context.get('focusedOption')
+            const value = context.get('focusedItem')
             if (unit == null || value == null)
               return null
-            return findTimePickerOption(refs.get('getContentEl')(), unit, value)
+            return findTimePickerItem(refs.get('getContentEl')(), unit, value)
           },
           restoreFocus: () => context.get('returnFocus'),
         })

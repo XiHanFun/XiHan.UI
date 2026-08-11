@@ -12,8 +12,8 @@ import {
   resolveTimeStep,
   timePickerColumns,
   timePickerColumnsFor,
+  timePickerItemValue,
   timePickerMachine,
-  timePickerOptionValue,
 } from '../src/time-picker'
 
 type Props = TimePickerSchema['props']
@@ -177,7 +177,7 @@ function mount(initial: Partial<Props> = {}): Harness {
       spread(el, current.getColumnProps({ unit }) as Record<string, unknown>)
     for (const [key, el] of options) {
       const [unit, value] = key.split(':') as [TimePickerColumnUnit, string]
-      spread(el, current.getOptionProps({ unit, value }) as Record<string, unknown>)
+      spread(el, current.getItemProps({ unit, value }) as Record<string, unknown>)
     }
     spread(hiddenInput, current.getHiddenInputProps() as Record<string, unknown>)
   }
@@ -349,10 +349,10 @@ describe('可选值列表（纯函数）', () => {
     expect(columns[0]!.options).toEqual(['01', '02', '03', '04', '05', '06', '12'])
   })
 
-  it('timePickerOptionValue 一律两位补零，与段上的文字同一套写法', () => {
-    expect(timePickerOptionValue(0)).toBe('00')
-    expect(timePickerOptionValue(9)).toBe('09')
-    expect(timePickerOptionValue(23)).toBe('23')
+  it('timePickerItemValue 一律两位补零，与段上的文字同一套写法', () => {
+    expect(timePickerItemValue(0)).toBe('00')
+    expect(timePickerItemValue(9)).toBe('09')
+    expect(timePickerItemValue(23)).toBe('23')
   })
 })
 
@@ -388,7 +388,7 @@ describe('开合', () => {
     const h = open({ defaultValue: '09:30' })
     h.trigger.click()
     expect(h.api().focusedColumn).toBe('hour')
-    expect(h.api().focusedOption).toBe('09')
+    expect(h.api().focusedItem).toBe('09')
   })
 
   it('焦点域把焦点交给锚点那一格，而不是落在容器上', async () => {
@@ -403,7 +403,7 @@ describe('开合', () => {
   it('已选的时被 min/max 裁掉时，锚点退回该列首格', () => {
     const h = open({ defaultValue: '02:30', min: '09:00', max: '11:00' })
     h.trigger.click()
-    expect(h.api().focusedOption).toBe('09')
+    expect(h.api().focusedItem).toBe('09')
   })
 
   it('禁用：触发器用原生 disabled，点不开', () => {
@@ -508,7 +508,7 @@ describe('浮层键盘', () => {
     h.trigger.click()
     pressKey(h.content, 'ArrowDown')
     expect(document.activeElement).toBe(h.option('hour', '01'))
-    expect(h.api().focusedOption).toBe('01')
+    expect(h.api().focusedItem).toBe('01')
     pressKey(h.content, 'ArrowUp')
     pressKey(h.content, 'ArrowUp')
     // 00 再往上回绕到末格
@@ -518,7 +518,7 @@ describe('浮层键盘', () => {
   it('上下键跳过被界裁掉的格', () => {
     const h = open({ min: '09:00', max: '11:00', defaultValue: '11:00' })
     h.trigger.click()
-    expect(h.api().focusedOption).toBe('11')
+    expect(h.api().focusedItem).toBe('11')
     // 11 是可选的末格，往下回绕应落到 09 而不是 12
     pressKey(h.content, 'ArrowDown')
     expect(document.activeElement).toBe(h.option('hour', '09'))
@@ -561,7 +561,7 @@ describe('浮层键盘', () => {
     h.trigger.click()
     pressKey(h.content, 'ArrowDown')
     pressKey(h.content, 'Enter')
-    expect(h.api().isOptionSelected({ unit: 'hour', value: '01' })).toBe(true)
+    expect(h.api().isItemSelected({ unit: 'hour', value: '01' })).toBe(true)
     expect(h.state()).toBe('open')
   })
 
@@ -570,9 +570,9 @@ describe('浮层键盘', () => {
     h.trigger.click()
     // 直接把焦点搁在被裁掉的 00 上（焦点是事实不是许可）
     h.option('hour', '00').focus()
-    expect(h.api().focusedOption).toBe('00')
+    expect(h.api().focusedItem).toBe('00')
     pressKey(h.content, 'Enter')
-    expect(h.api().isOptionSelected({ unit: 'hour', value: '00' })).toBe(false)
+    expect(h.api().isItemSelected({ unit: 'hour', value: '00' })).toBe(false)
   })
 })
 

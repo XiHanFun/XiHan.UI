@@ -47,7 +47,7 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
 
 /**
  * `<xh-time-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/input（多个）/trigger/
- * clear-trigger/positioner/content/column（多个）/option（多个）/hidden-input 角色节点，
+ * clear-trigger/positioner/content/column（多个）/item（多个）/hidden-input 角色节点，
  * 元素跑 time-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，
  * 锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。
  *
@@ -85,7 +85,7 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - 浮层容器（消解层与焦点域的根节点），收起时带 hidden
  * @csspart column - role=listbox 的一列，可自带 unit 属性声明单位，缺省按文档序
- * @csspart option - role=option 的一格，须自带 value 属性（两位补零的显示串）
+ * @csspart item - role=option 的一格，须自带 value 属性（两位补零的显示串）
  * @csspart hidden-input - type=hidden 的表单出口，值是完整 ISO 串
  */
 export class XhTimePickerElement extends XhElement {
@@ -259,10 +259,10 @@ export class XhTimePickerElement extends XhElement {
       const unit = declaredUnit(columnEl, position)
       this.spreader.spread(columnEl, api.getColumnProps({ unit }) as Record<string, unknown>)
       this.setPartHidden(columnEl, !api.columns.some(column => column.unit === unit))
-      for (const optionEl of this.getParts('option').filter(el => columnEl.contains(el))) {
-        const value = optionEl.getAttribute('value') ?? ''
-        this.spreader.spread(optionEl, api.getOptionProps({ unit, value }) as Record<string, unknown>)
-        this.fillText(optionEl, value)
+      for (const itemEl of this.getParts('item').filter(el => columnEl.contains(el))) {
+        const value = itemEl.getAttribute('value') ?? ''
+        this.spreader.spread(itemEl, api.getItemProps({ unit, value }) as Record<string, unknown>)
+        this.fillText(itemEl, value)
       }
     })
 
