@@ -1839,8 +1839,8 @@
       "SplitterPanelState",
       "SplitterPoint",
       "SplitterSchema",
-      "SplitterSizeChangeDetails",
-      "SplitterSizeChangeEndDetails",
+      "SplitterSizesChangeDetails",
+      "SplitterSizesChangeEndDetails",
       "StatisticApi",
       "StatisticProps",
       "StepStatus",
@@ -1996,7 +1996,7 @@
       "TransferMoveResult",
       "TransferPanelProps",
       "TransferSchema",
-      "TransferSelectedChangeDetails",
+      "TransferSelectionChangeDetails",
       "TransferSide",
       "TransferValueChangeDetails",
       "TreeApi",
@@ -7089,7 +7089,7 @@
         "level",
         "margin",
         "module-shape",
-        "size",
+        "pixel-size",
         "value"
       ],
       "events": []
@@ -7215,18 +7215,18 @@
     },
     "xh-splitter": {
       "attributes": [
-        "default-size",
+        "default-sizes",
         "dir",
         "disabled",
         "large-step",
         "orientation",
         "panels",
-        "size",
+        "sizes",
         "step"
       ],
       "events": [
-        "size-change",
-        "size-change-end"
+        "sizes-change",
+        "sizes-change-end"
       ]
     },
     "xh-statistic": {
@@ -7531,7 +7531,7 @@
         "searchable"
       ],
       "events": [
-        "selected-change",
+        "selection-change",
         "value-change"
       ]
     },

@@ -379,14 +379,14 @@ describe('连接层：初始形态', () => {
 describe('连接层：勾选与搬运', () => {
   it('点条目切换勾选，按钮随之解禁；搬完 value 变、勾选清空、按钮回到禁用', () => {
     const onValueChange = vi.fn()
-    const onSelectedChange = vi.fn()
-    const h = mount({ onValueChange, onSelectedChange })
+    const onSelectionChange = vi.fn()
+    const h = mount({ onValueChange, onSelectionChange })
 
     click(h.item('source', 'apple'))
     expect(h.selected()).toEqual(['apple'])
     expect(h.item('source', 'apple').getAttribute('aria-selected')).toBe('true')
     expect(h.toTarget.disabled).toBe(false)
-    expect(onSelectedChange).toHaveBeenLastCalledWith({ selected: ['apple'] })
+    expect(onSelectionChange).toHaveBeenLastCalledWith({ selected: ['apple'] })
 
     click(h.toTarget)
     expect(h.value()).toEqual(['apple'])
@@ -729,10 +729,10 @@ describe('连接层：整体禁用与受控', () => {
   })
 
   it('受控 selected：同样只发意图', () => {
-    const onSelectedChange = vi.fn()
-    const h = mount({ selected: [], onSelectedChange })
+    const onSelectionChange = vi.fn()
+    const h = mount({ selected: [], onSelectionChange })
     click(h.item('source', 'apple'))
-    expect(onSelectedChange).toHaveBeenLastCalledWith({ selected: ['apple'] })
+    expect(onSelectionChange).toHaveBeenLastCalledWith({ selected: ['apple'] })
     expect(h.item('source', 'apple').getAttribute('aria-selected')).toBe('false')
   })
 })

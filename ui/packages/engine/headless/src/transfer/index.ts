@@ -24,7 +24,7 @@ export type {
   TransferItemProps,
   TransferPanelProps,
   TransferSchema,
-  TransferSelectedChangeDetails,
+  TransferSelectionChangeDetails,
   TransferSide,
   TransferValueChangeDetails,
 } from './transfer.types'

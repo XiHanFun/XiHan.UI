@@ -13,12 +13,12 @@ const text = "https://ui.xihanfun.com/components/qr-code";
       :key="shape"
       style="display: grid; gap: 6px; justify-items: center"
     >
-      <XhQrCode :value="text" :eye-shape="shape" :size="128" />
+      <XhQrCode :value="text" :eye-shape="shape" :pixel-size="128" />
       <span style="font-size: 12px">{{ shape }}</span>
     </div>
     <!-- 码点与码眼各挑各的，两条 path 分开出几何 -->
     <div style="display: grid; gap: 6px; justify-items: center">
-      <XhQrCode :value="text" module-shape="dot" eye-shape="rounded" :size="128" />
+      <XhQrCode :value="text" module-shape="dot" eye-shape="rounded" :pixel-size="128" />
       <span style="font-size: 12px">dot + rounded</span>
     </div>
   </div>

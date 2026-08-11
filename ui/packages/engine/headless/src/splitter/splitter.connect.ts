@@ -16,7 +16,7 @@ export function connectSplitter<T extends PropTypes>(
 ): SplitterApi<T> {
   const { context, prop, send, scope, state } = service
 
-  const sizes = context.get('size')
+  const sizes = context.get('sizes')
   const constraints = splitterConstraints(prop)
   const activeIndex = context.get('activeIndex')
   const dragging = state.matches('dragging')
@@ -87,11 +87,11 @@ export function connectSplitter<T extends PropTypes>(
   const shrinkKey = vertical ? 'ArrowUp' : (flipHorizontal ? 'ArrowRight' : 'ArrowLeft')
 
   return {
-    size: sizes,
+    sizes,
     panels,
     dragging,
     disabled,
-    setSize: next => send({ type: 'SIZE.SET', size: next }),
+    setSizes: next => send({ type: 'SIZES.SET', sizes: next }),
     setPanelSize: (index, next) => send({ type: 'BOUNDARY.SET', index: clampBoundary(index), size: next }),
     collapsePanel: index => send({ type: 'PANEL.COLLAPSE', index: clampPanel(index) }),
     expandPanel: index => send({ type: 'PANEL.EXPAND', index: clampPanel(index) }),

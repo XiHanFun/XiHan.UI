@@ -226,7 +226,7 @@ export function connectQrCode<T extends PropTypes>(
   const value = props.value ?? ''
   const level = props.level ?? DEFAULT_LEVEL
   const margin = resolveNumber(props.margin, DEFAULT_MARGIN)
-  const size = resolveNumber(props.size, DEFAULT_SIZE)
+  const pixelSize = resolveNumber(props.pixelSize, DEFAULT_SIZE)
   const moduleShape = props.moduleShape ?? DEFAULT_MODULE_SHAPE
   const eyeShape = props.eyeShape ?? DEFAULT_EYE_SHAPE
 
@@ -320,7 +320,7 @@ export function connectQrCode<T extends PropTypes>(
       'data-state': state,
       // 码面上留了 logo 位；皮肤据此不做别的事，留给作者当选择器用
       'data-logo': dataAttr(logoArea !== undefined),
-      'style': { inlineSize: `${size}px`, blockSize: `${size}px` },
+      'style': { inlineSize: `${pixelSize}px`, blockSize: `${pixelSize}px` },
     }),
 
     // 没画出码时收成 0 宽 0 高：viewBox 里只剩静区，这块摆哪儿都不对，

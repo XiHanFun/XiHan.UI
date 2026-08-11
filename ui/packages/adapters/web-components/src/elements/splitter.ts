@@ -1,4 +1,4 @@
-import type { SplitterPanelProps, SplitterSchema, SplitterSizeChangeDetails, SplitterSizeChangeEndDetails } from '@xihan-ui/headless'
+import type { SplitterPanelProps, SplitterSchema, SplitterSizesChangeDetails, SplitterSizesChangeEndDetails } from '@xihan-ui/headless'
 import type { Direction, IdGenerator, Orientation } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { connectSplitter, splitterAnatomy, splitterMachine, splitterMeta } from '@xihan-ui/headless'
@@ -8,14 +8,14 @@ import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
-// （size 尤其：落成 null 就分不出"非受控"与"受控且当前为空"）。
+// （sizes 尤其：落成 null 就分不出"非受控"与"受控且当前为空"）。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
 // Lit 默认的 Boolean 转换器是 v !== null，缺省为真的开关会因此永远关不掉。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 /**
- * 布局是百分比数组，属性写成逗号分隔（两栏 size="30,70"）。
+ * 布局是百分比数组，属性写成逗号分隔（两栏 sizes="30,70"）。
  * 解析不出任何有限数就当没写：留下 NaN 会一路写进 aria-valuenow 与定位百分比。
  */
 const NUMBER_LIST_CONVERTER = {
@@ -61,16 +61,16 @@ const PANELS_CONVERTER = {
  * 第 index 条分隔条坐在第 index 与第 index+1 块面板之间，调整的是前一块。
  *
  * @customElement xh-splitter
- * @attr {string} size - 受控布局，逗号分隔的百分比（如 "30,70"）；缺省该属性即非受控
- * @attr {string} default-size - 非受控初值，同样逗号分隔；缺省时按面板数等分
+ * @attr {string} sizes - 受控布局，逗号分隔的百分比（如 "30,70"）；缺省该属性即非受控
+ * @attr {string} default-sizes - 非受控初值，同样逗号分隔；缺省时按面板数等分
  * @attr {string} panels - 逐块约束的 JSON 数组：id / min / max / collapsible / collapsedSize
  * @attr {'horizontal'|'vertical'} orientation - 面板排布轴，默认 horizontal（并排）
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调水平排布下左右两键与指针位移的正负，默认 ltr
  * @attr {boolean} disabled - 禁用：分隔条退出 Tab 序列、拖不动也推不动
  * @attr {number} step - 方向键的步长（百分比），默认 1
  * @attr {number} large-step - Shift + 方向键的步长（百分比），默认 10
- * @fires size-change - 布局变化（拖动途中会连发）；detail 为 `{ size: number[] }`
- * @fires size-change-end - 一次拖拽收尾发一次；detail 为 `{ size: number[], index: number }`
+ * @fires sizes-change - 布局变化（拖动途中会连发）；detail 为 `{ sizes: number[] }`
+ * @fires sizes-change-end - 一次拖拽收尾发一次；detail 为 `{ sizes: number[], index: number }`
  * @csspart root - 承载 data-orientation / data-disabled / data-dragging 的容器，矩形以它为准
  * @csspart panel - 一块面板；尺寸由内联 flex-basis 给出，折叠时带 data-collapsed
  * @csspart resize-trigger - role=separator 的分隔条，指针与键盘交互全在它身上
@@ -82,8 +82,8 @@ export class XhSplitterElement extends XhElement {
   // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
-    size: { converter: NUMBER_LIST_CONVERTER },
-    defaultSize: { converter: NUMBER_LIST_CONVERTER, attribute: 'default-size' },
+    sizes: { converter: NUMBER_LIST_CONVERTER },
+    defaultSizes: { converter: NUMBER_LIST_CONVERTER, attribute: 'default-sizes' },
     panels: { converter: PANELS_CONVERTER },
     orientation: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
@@ -92,8 +92,8 @@ export class XhSplitterElement extends XhElement {
     largeStep: { converter: NUMBER_CONVERTER, attribute: 'large-step' },
   }
 
-  declare size?: number[]
-  declare defaultSize?: number[]
+  declare sizes?: number[]
+  declare defaultSizes?: number[]
   declare panels?: SplitterPanelProps[]
   declare orientation?: Orientation
   declare direction?: Direction
@@ -104,12 +104,12 @@ export class XhSplitterElement extends XhElement {
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly splitterScope = createScope(null, this.idGen)
 
-  private readonly notifySize = (details: SplitterSizeChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('size-change', { detail: details, bubbles: true, composed: true }))
+  private readonly notifySize = (details: SplitterSizesChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('sizes-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly notifySizeEnd = (details: SplitterSizeChangeEndDetails): void => {
-    this.dispatchEvent(new CustomEvent('size-change-end', { detail: details, bubbles: true, composed: true }))
+  private readonly notifySizeEnd = (details: SplitterSizesChangeEndDetails): void => {
+    this.dispatchEvent(new CustomEvent('sizes-change-end', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<SplitterSchema>(
@@ -121,16 +121,16 @@ export class XhSplitterElement extends XhElement {
 
   private machineProps(): Partial<SplitterSchema['props']> {
     return {
-      size: this.size,
-      defaultSize: this.defaultSize,
+      sizes: this.sizes,
+      defaultSizes: this.defaultSizes,
       panels: this.panels,
       orientation: this.orientation,
       dir: this.direction,
       disabled: this.disabled ?? false,
       step: this.step,
       largeStep: this.largeStep,
-      onSizeChange: this.notifySize,
-      onSizeChangeEnd: this.notifySizeEnd,
+      onSizesChange: this.notifySize,
+      onSizesChangeEnd: this.notifySizeEnd,
     }
   }
 

@@ -352,46 +352,46 @@ describe('总和不变量', () => {
 
 describe('splitterMachine 布局', () => {
   it('三处声明都没给就是两栏等分', () => {
-    expect(makeService().context.get('size')).toEqual([50, 50])
+    expect(makeService().context.get('sizes')).toEqual([50, 50])
   })
 
-  it('面板块数听 panels / size / defaultSize 中先给的那个', () => {
-    expect(makeService({ panels: [{ id: 'a' }, { id: 'b' }, { id: 'c' }] }).context.get('size')).toHaveLength(3)
-    expect(makeService({ defaultSize: [20, 30, 25, 25] }).context.get('size')).toHaveLength(4)
+  it('面板块数听 panels / size / defaultSizes 中先给的那个', () => {
+    expect(makeService({ panels: [{ id: 'a' }, { id: 'b' }, { id: 'c' }] }).context.get('sizes')).toHaveLength(3)
+    expect(makeService({ defaultSizes: [20, 30, 25, 25] }).context.get('sizes')).toHaveLength(4)
   })
 
-  it('defaultSize 先过一遍归位再落地', () => {
-    expect(makeService({ defaultSize: [1, 3] }).context.get('size')).toEqual([25, 75])
+  it('defaultSizes 先过一遍归位再落地', () => {
+    expect(makeService({ defaultSizes: [1, 3] }).context.get('sizes')).toEqual([25, 75])
   })
 
   it('命令式赋值同样归位', () => {
     const s = makeService()
-    s.send({ type: 'SIZE.SET', size: [10, 10] })
-    expect(s.context.get('size')).toEqual([50, 50])
+    s.send({ type: 'SIZES.SET', sizes: [10, 10] })
+    expect(s.context.get('sizes')).toEqual([50, 50])
   })
 
   it('方向键步进走 step，Shift 走 largeStep', () => {
     const s = makeService({ step: 2, largeStep: 25 })
     s.send({ type: 'BOUNDARY.STEP', index: 0, direction: 1 })
-    expect(s.context.get('size')).toEqual([52, 48])
+    expect(s.context.get('sizes')).toEqual([52, 48])
     s.send({ type: 'BOUNDARY.STEP', index: 0, direction: 1, large: true })
-    expect(s.context.get('size')).toEqual([77, 23])
+    expect(s.context.get('sizes')).toEqual([77, 23])
   })
 
   it('步长缺省是 1% 与 10%', () => {
     const s = makeService()
     s.send({ type: 'BOUNDARY.STEP', index: 0, direction: 1 })
-    expect(s.context.get('size')).toEqual([51, 49])
+    expect(s.context.get('sizes')).toEqual([51, 49])
     s.send({ type: 'BOUNDARY.STEP', index: 0, direction: -1, large: true })
-    expect(s.context.get('size')).toEqual([41, 59])
+    expect(s.context.get('sizes')).toEqual([41, 59])
   })
 
   it('端点取眼下能走到的位置', () => {
     const s = makeService({ panels: [{ id: 'a', min: 25 }, { id: 'b', min: 40 }] })
     s.send({ type: 'BOUNDARY.TO_MAX', index: 0 })
-    expect(s.context.get('size')).toEqual([60, 40])
+    expect(s.context.get('sizes')).toEqual([60, 40])
     s.send({ type: 'BOUNDARY.TO_MIN', index: 0 })
-    expect(s.context.get('size')).toEqual([25, 75])
+    expect(s.context.get('sizes')).toEqual([25, 75])
   })
 
   it('disabled 时守卫挡住一切写入，包括命令式赋值', () => {
@@ -399,79 +399,79 @@ describe('splitterMachine 布局', () => {
     s.send({ type: 'BOUNDARY.STEP', index: 0, direction: 1 })
     s.send({ type: 'BOUNDARY.TO_MAX', index: 0 })
     s.send({ type: 'BOUNDARY.SET', index: 0, size: 90 })
-    s.send({ type: 'SIZE.SET', size: [10, 90] })
+    s.send({ type: 'SIZES.SET', sizes: [10, 90] })
     s.send({ type: 'PANEL.COLLAPSE', index: 0 })
-    expect(s.context.get('size')).toEqual([50, 50])
+    expect(s.context.get('sizes')).toEqual([50, 50])
   })
 
   it('折叠后展开回到折叠前的尺寸，而不是一个凭空的默认值', () => {
     const s = makeService({
-      defaultSize: [30, 70],
+      defaultSizes: [30, 70],
       panels: [{ id: 'a', min: 20, collapsible: true }, { id: 'b' }],
     })
     s.send({ type: 'PANEL.COLLAPSE', index: 0 })
-    expect(s.context.get('size')).toEqual([0, 100])
+    expect(s.context.get('sizes')).toEqual([0, 100])
     s.send({ type: 'PANEL.EXPAND', index: 0 })
-    expect(s.context.get('size')).toEqual([30, 70])
+    expect(s.context.get('sizes')).toEqual([30, 70])
   })
 
   it('一上来就是折叠态时展开退到 min', () => {
     const s = makeService({
-      defaultSize: [0, 100],
+      defaultSizes: [0, 100],
       panels: [{ id: 'a', min: 25, collapsible: true }, { id: 'b' }],
     })
     s.send({ type: 'PANEL.EXPAND', index: 0 })
-    expect(s.context.get('size')).toEqual([25, 75])
+    expect(s.context.get('sizes')).toEqual([25, 75])
   })
 
   it('不可折叠的面板收不下折叠事件', () => {
-    const s = makeService({ defaultSize: [30, 70] })
+    const s = makeService({ defaultSizes: [30, 70] })
     s.send({ type: 'PANEL.COLLAPSE', index: 0 })
-    expect(s.context.get('size')).toEqual([30, 70])
+    expect(s.context.get('sizes')).toEqual([30, 70])
   })
 
   it('重复的折叠 / 展开事件不会把记下的尺寸冲掉', () => {
     const s = makeService({
-      defaultSize: [30, 70],
+      defaultSizes: [30, 70],
       panels: [{ id: 'a', collapsible: true }, { id: 'b' }],
     })
     s.send({ type: 'PANEL.COLLAPSE', index: 0 })
     // 已经折叠着还再折一次：不该把 0 记成"折叠前的尺寸"
     s.send({ type: 'PANEL.COLLAPSE', index: 0 })
     s.send({ type: 'PANEL.EXPAND', index: 0 })
-    expect(s.context.get('size')).toEqual([30, 70])
+    expect(s.context.get('sizes')).toEqual([30, 70])
   })
 
-  it('受控 size：内部写入不落地，意图仍从 onSizeChange 送出去', () => {
-    const onSizeChange = vi.fn()
-    const props: Props = { size: [30, 70], onSizeChange }
+  it('受控 size：内部写入不落地，意图仍从 onSizesChange 送出去', () => {
+    const onSizesChange = vi.fn()
+    const props: Props = { sizes: [30, 70], onSizesChange }
     const s = makeService(props)
     s.send({ type: 'BOUNDARY.STEP', index: 0, direction: 1 })
-    expect(s.context.get('size')).toEqual([30, 70])
-    expect(onSizeChange).toHaveBeenCalledWith({ size: [31, 69] })
+    expect(s.context.get('sizes')).toEqual([30, 70])
+    expect(onSizesChange).toHaveBeenCalledWith({ sizes: [31, 69] })
 
     // 宿主写回来了，界面才跟着走
-    props.size = [31, 69]
-    expect(s.context.get('size')).toEqual([31, 69])
+    props.sizes = [31, 69]
+    expect(s.context.get('sizes')).toEqual([31, 69])
   })
 
   it('受控值也过归位：宿主写来一份凑不齐 100 的数组不会让布局塌掉', () => {
-    const props: Props = { size: [1, 1] }
+    const props: Props = { sizes: [1, 1] }
     const s = makeService(props)
-    expect(s.context.get('size')).toEqual([50, 50])
+    expect(s.context.get('sizes')).toEqual([50, 50])
   })
 
-  it('onSizeChangeEnd 只在一次拖拽收尾时发一次，并带上分隔条下标', () => {
-    const onSizeChangeEnd = vi.fn()
-    const s = makeService({ defaultSize: [30, 40, 30], onSizeChangeEnd })
+  it('onSizesChangeEnd 只在一次拖拽收尾时发一次，并带上分隔条下标', () => {
+    const onSizesChangeEnd = vi.fn()
+    const s = makeService({ defaultSizes: [30, 40, 30], onSizesChangeEnd })
     s.send({ type: 'BOUNDARY.STEP', index: 1, direction: 1 })
-    expect(onSizeChangeEnd).not.toHaveBeenCalled()
+    expect(onSizesChangeEnd).not.toHaveBeenCalled()
 
     const rig = mountRig(s, 2)
     rig.press(100, 1)
     document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
-    expect(onSizeChangeEnd).toHaveBeenCalledTimes(1)
-    expect(onSizeChangeEnd).toHaveBeenCalledWith({ size: [30, 41, 29], index: 1 })
+    expect(onSizesChangeEnd).toHaveBeenCalledTimes(1)
+    expect(onSizesChangeEnd).toHaveBeenCalledWith({ sizes: [30, 41, 29], index: 1 })
   })
 })
 
@@ -483,11 +483,11 @@ describe('splitterMachine 指针拖动', () => {
     rig.press(100)
     expect(s.state.get()).toBe('dragging')
     // 分隔条本来就在指针底下，按下这一刻不该跳
-    expect(s.context.get('size')).toEqual([50, 50])
+    expect(s.context.get('sizes')).toEqual([50, 50])
 
     movePointer(150)
     // 200px 容器里挪了 50px = 25 个百分点
-    expect(s.context.get('size')).toEqual([75, 25])
+    expect(s.context.get('sizes')).toEqual([75, 25])
 
     document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
     expect(s.state.get()).toBe('idle')
@@ -500,9 +500,9 @@ describe('splitterMachine 指针拖动', () => {
     const rig = mountRig(s)
     rig.press(100)
     movePointer(20) // 想推到 10%，被 min 顶在 40
-    expect(s.context.get('size')).toEqual([40, 60])
+    expect(s.context.get('sizes')).toEqual([40, 60])
     movePointer(120) // 相对起点 +10 个百分点
-    expect(s.context.get('size')).toEqual([60, 40])
+    expect(s.context.get('sizes')).toEqual([60, 40])
   })
 
   it('竖直排布看的是纵坐标', () => {
@@ -510,7 +510,7 @@ describe('splitterMachine 指针拖动', () => {
     const rig = mountRig(s, 1, true)
     rig.press(100)
     movePointer(100, 150)
-    expect(s.context.get('size')).toEqual([75, 25])
+    expect(s.context.get('sizes')).toEqual([75, 25])
   })
 
   it('从右往左排版时指针右移是把前一块压小', () => {
@@ -518,7 +518,7 @@ describe('splitterMachine 指针拖动', () => {
     const rig = mountRig(s)
     rig.press(100)
     movePointer(150)
-    expect(s.context.get('size')).toEqual([25, 75])
+    expect(s.context.get('sizes')).toEqual([25, 75])
   })
 
   it('容器还没布局（量出来是 0）时原地不动，不产生 Infinity', () => {
@@ -527,7 +527,7 @@ describe('splitterMachine 指针拖动', () => {
     rig.root.getBoundingClientRect = () => ({ x: 0, y: 0, width: 0, height: 0, top: 0, left: 0, right: 0, bottom: 0, toJSON: () => ({}) }) as DOMRect
     rig.press(100)
     movePointer(150)
-    expect(s.context.get('size')).toEqual([50, 50])
+    expect(s.context.get('sizes')).toEqual([50, 50])
   })
 
   it('松手后文档上的监听器逐个撤干净，指针再动布局也不跟了', () => {
@@ -549,7 +549,7 @@ describe('splitterMachine 指针拖动', () => {
     }
 
     movePointer(20)
-    expect(s.context.get('size')).toEqual([50, 50])
+    expect(s.context.get('sizes')).toEqual([50, 50])
     added.mockRestore()
     removed.mockRestore()
   })
@@ -571,14 +571,14 @@ describe('splitterMachine 指针拖动', () => {
   })
 
   it('按下的是哪条就拖哪条，焦点跟着落上去', () => {
-    const s = makeService({ defaultSize: [30, 40, 30] })
+    const s = makeService({ defaultSizes: [30, 40, 30] })
     const rig = mountRig(s, 2)
     rig.press(100, 1)
     expect(s.context.get('activeIndex')).toBe(1)
     expect(document.activeElement).toBe(rig.triggers[1])
     movePointer(120)
     // 只动第 1 条两侧的那两块，第 0 块纹丝不动
-    expect(s.context.get('size')).toEqual([30, 50, 20])
+    expect(s.context.get('sizes')).toEqual([30, 50, 20])
   })
 
   it('禁用时按下不进 dragging，也不装监听器', () => {
@@ -587,7 +587,7 @@ describe('splitterMachine 指针拖动', () => {
     rig.press(100)
     expect(s.state.get()).toBe('idle')
     movePointer(150)
-    expect(s.context.get('size')).toEqual([50, 50])
+    expect(s.context.get('sizes')).toEqual([50, 50])
   })
 
   it('右键与中键不当拖动：只有主键才推得动', () => {
@@ -595,7 +595,7 @@ describe('splitterMachine 指针拖动', () => {
     const rig = mountRig(s)
     rig.triggers[0]!.dispatchEvent(new PointerEvent('pointerdown', { clientX: 100, clientY: 100, button: 2, bubbles: true, cancelable: true }))
     expect(s.state.get()).toBe('idle')
-    expect(s.context.get('size')).toEqual([50, 50])
+    expect(s.context.get('sizes')).toEqual([50, 50])
   })
 })
 
@@ -605,74 +605,74 @@ describe('connectSplitter 键盘', () => {
   it('水平排布认左右两键，按 step 推动并拦住默认行为', () => {
     const s = makeService({ step: 5 })
     expect(pressKey(s, 'ArrowRight').defaultPrevented).toBe(true)
-    expect(s.context.get('size')).toEqual([55, 45])
+    expect(s.context.get('sizes')).toEqual([55, 45])
     pressKey(s, 'ArrowLeft')
-    expect(s.context.get('size')).toEqual([50, 50])
+    expect(s.context.get('sizes')).toEqual([50, 50])
   })
 
   it('shift + 方向键走 largeStep', () => {
     const s = makeService()
     pressKey(s, 'ArrowRight', 0, { shiftKey: true })
-    expect(s.context.get('size')).toEqual([60, 40])
+    expect(s.context.get('sizes')).toEqual([60, 40])
     pressKey(s, 'ArrowLeft', 0, { shiftKey: true })
-    expect(s.context.get('size')).toEqual([50, 50])
+    expect(s.context.get('sizes')).toEqual([50, 50])
   })
 
   it('水平排布不接上下两键：不动布局也不吞键', () => {
     const s = makeService()
     const event = pressKey(s, 'ArrowDown')
     expect(event.defaultPrevented).toBe(false)
-    expect(s.context.get('size')).toEqual([50, 50])
+    expect(s.context.get('sizes')).toEqual([50, 50])
   })
 
   it('竖直排布反过来：认上下、不接左右', () => {
     const s = makeService({ orientation: 'vertical' })
     expect(pressKey(s, 'ArrowDown').defaultPrevented).toBe(true)
-    expect(s.context.get('size')).toEqual([51, 49])
+    expect(s.context.get('sizes')).toEqual([51, 49])
     expect(pressKey(s, 'ArrowRight').defaultPrevented).toBe(false)
-    expect(s.context.get('size')).toEqual([51, 49])
+    expect(s.context.get('sizes')).toEqual([51, 49])
   })
 
   it('从右往左排版只对调左右两键，语义恒是"撑大前一块"', () => {
     const s = makeService({ dir: 'rtl' })
     pressKey(s, 'ArrowLeft')
-    expect(s.context.get('size')).toEqual([51, 49])
+    expect(s.context.get('sizes')).toEqual([51, 49])
     pressKey(s, 'ArrowRight')
-    expect(s.context.get('size')).toEqual([50, 50])
+    expect(s.context.get('sizes')).toEqual([50, 50])
   })
 
   it('竖直排布不吃 rtl 的对调', () => {
     const s = makeService({ dir: 'rtl', orientation: 'vertical' })
     pressKey(s, 'ArrowDown')
-    expect(s.context.get('size')).toEqual([51, 49])
+    expect(s.context.get('sizes')).toEqual([51, 49])
   })
 
   it('home / End 推到该面板眼下能到的两端', () => {
     const s = makeService({ panels: [{ id: 'a', min: 20, max: 80 }, { id: 'b' }] })
     expect(pressKey(s, 'End').defaultPrevented).toBe(true)
-    expect(s.context.get('size')).toEqual([80, 20])
+    expect(s.context.get('sizes')).toEqual([80, 20])
     pressKey(s, 'Home')
-    expect(s.context.get('size')).toEqual([20, 80])
+    expect(s.context.get('sizes')).toEqual([20, 80])
   })
 
   it('enter 在可折叠的面板上折叠 / 展开', () => {
     const s = makeService({
-      defaultSize: [30, 70],
+      defaultSizes: [30, 70],
       panels: [{ id: 'a', min: 20, collapsible: true }, { id: 'b' }],
     })
     expect(pressKey(s, 'Enter').defaultPrevented).toBe(true)
-    expect(s.context.get('size')).toEqual([0, 100])
+    expect(s.context.get('sizes')).toEqual([0, 100])
     expect(api(s).panels[0]!.collapsed).toBe(true)
     pressKey(s, 'Enter')
-    expect(s.context.get('size')).toEqual([30, 70])
+    expect(s.context.get('sizes')).toEqual([30, 70])
     expect(api(s).panels[0]!.collapsed).toBe(false)
   })
 
   it('面板不可折叠时 Enter 原样放行', () => {
-    const s = makeService({ defaultSize: [30, 70] })
+    const s = makeService({ defaultSizes: [30, 70] })
     const event = pressKey(s, 'Enter')
     expect(event.defaultPrevented).toBe(false)
-    expect(s.context.get('size')).toEqual([30, 70])
+    expect(s.context.get('sizes')).toEqual([30, 70])
   })
 
   it('带 Ctrl / Meta / Alt 的组合一律放行', () => {
@@ -680,21 +680,21 @@ describe('connectSplitter 键盘', () => {
     expect(pressKey(s, 'Home', 0, { ctrlKey: true }).defaultPrevented).toBe(false)
     expect(pressKey(s, 'ArrowRight', 0, { metaKey: true }).defaultPrevented).toBe(false)
     expect(pressKey(s, 'ArrowRight', 0, { altKey: true }).defaultPrevented).toBe(false)
-    expect(s.context.get('size')).toEqual([50, 50])
+    expect(s.context.get('sizes')).toEqual([50, 50])
   })
 
   it('禁用时连键都不接：不 preventDefault 也不动布局', () => {
     const s = makeService({ disabled: true })
     expect(pressKey(s, 'ArrowRight').defaultPrevented).toBe(false)
     expect(pressKey(s, 'Home').defaultPrevented).toBe(false)
-    expect(s.context.get('size')).toEqual([50, 50])
+    expect(s.context.get('sizes')).toEqual([50, 50])
   })
 
   it('按方向键的同时把 activeIndex 挪到这条分隔条上', () => {
-    const s = makeService({ defaultSize: [30, 40, 30] })
+    const s = makeService({ defaultSizes: [30, 40, 30] })
     pressKey(s, 'ArrowRight', 1)
     expect(s.context.get('activeIndex')).toBe(1)
-    expect(s.context.get('size')).toEqual([30, 41, 29])
+    expect(s.context.get('sizes')).toEqual([30, 41, 29])
   })
 })
 
@@ -709,7 +709,7 @@ describe('connectSplitter 属性输出', () => {
   })
 
   it('分隔条是 separator，三个 aria-value* 与 aria-controls 都写全', () => {
-    const s = makeService({ defaultSize: [40, 60], panels: [{ id: 'main', min: 20, max: 80 }, { id: 'side' }] })
+    const s = makeService({ defaultSizes: [40, 60], panels: [{ id: 'main', min: 20, max: 80 }, { id: 'side' }] })
     const trigger = triggerProps(s)
     expect(trigger.role).toBe('separator')
     expect(trigger['aria-valuenow']).toBe('40')
@@ -720,7 +720,7 @@ describe('connectSplitter 属性输出', () => {
   })
 
   it('aria-controls 指向它调整的那块面板，不是随便哪一块', () => {
-    const s = makeService({ defaultSize: [30, 40, 30], panels: [{ id: 'a' }, { id: 'b' }, { id: 'c' }] })
+    const s = makeService({ defaultSizes: [30, 40, 30], panels: [{ id: 'a' }, { id: 'b' }, { id: 'c' }] })
     expect(triggerProps(s, 0)['aria-controls']).toBe(panelProps(s, 0).id)
     expect(triggerProps(s, 1)['aria-controls']).toBe(panelProps(s, 1).id)
     // 指的是前一块，不是后一块
@@ -739,7 +739,7 @@ describe('connectSplitter 属性输出', () => {
   })
 
   it('aria-valuenow 跟着布局走', () => {
-    const s = makeService({ defaultSize: [40, 60] })
+    const s = makeService({ defaultSizes: [40, 60] })
     pressKey(s, 'ArrowRight')
     expect(triggerProps(s)['aria-valuenow']).toBe('41')
   })
@@ -757,13 +757,13 @@ describe('connectSplitter 属性输出', () => {
   })
 
   it('面板尺寸写进内联样式，比例由 flex-basis 承担', () => {
-    const s = makeService({ defaultSize: [30, 70] })
+    const s = makeService({ defaultSizes: [30, 70] })
     expect(panelProps(s, 0).style).toEqual({ flexBasis: '30%', flexGrow: '0', flexShrink: '1' })
     expect(panelProps(s, 1).style).toEqual({ flexBasis: '70%', flexGrow: '0', flexShrink: '1' })
   })
 
   it('折叠的面板带 data-collapsed', () => {
-    const s = makeService({ defaultSize: [30, 70], panels: [{ id: 'a', collapsible: true }, { id: 'b' }] })
+    const s = makeService({ defaultSizes: [30, 70], panels: [{ id: 'a', collapsible: true }, { id: 'b' }] })
     expect(panelProps(s, 0)['data-collapsed']).toBeUndefined()
     s.send({ type: 'PANEL.COLLAPSE', index: 0 })
     expect(panelProps(s, 0)['data-collapsed']).toBe('')
@@ -771,7 +771,7 @@ describe('connectSplitter 属性输出', () => {
   })
 
   it('拖动期间只有被抓住的那条带 data-dragging', () => {
-    const s = makeService({ defaultSize: [30, 40, 30] })
+    const s = makeService({ defaultSizes: [30, 40, 30] })
     const rig = mountRig(s, 2)
     rig.press(100, 1)
     expect(api(s).dragging).toBe(true)
@@ -781,45 +781,45 @@ describe('connectSplitter 属性输出', () => {
   })
 
   it('作者多写的部件不产 NaN：下标夹回真实存在的位置', () => {
-    const s = makeService({ defaultSize: [30, 70] })
+    const s = makeService({ defaultSizes: [30, 70] })
     expect(panelProps(s, 5)['data-index']).toBe('1')
     expect(panelProps(s, Number.NaN)['data-index']).toBe('0')
     expect(panelProps(s, -3)['data-index']).toBe('0')
     // 两栏只有一条分隔条：多写的那条被夹回第 0 条，推它也只推真实存在的那条
     expect(triggerProps(s, 4)['data-index']).toBe('0')
     pressKey(s, 'ArrowRight', 4)
-    expect(s.context.get('size')).toEqual([31, 69])
+    expect(s.context.get('sizes')).toEqual([31, 69])
   })
 
   it('api 的命令式出口走同一条归位规则', () => {
     const s = makeService({ panels: [{ id: 'a', max: 70 }, { id: 'b' }] })
-    api(s).setSize([1, 1])
-    expect(s.context.get('size')).toEqual([50, 50])
+    api(s).setSizes([1, 1])
+    expect(s.context.get('sizes')).toEqual([50, 50])
     api(s).setPanelSize(0, 90)
-    expect(s.context.get('size')).toEqual([70, 30])
+    expect(s.context.get('sizes')).toEqual([70, 30])
   })
 
   it('togglePanel 在不可折叠的面板上是空操作', () => {
-    const s = makeService({ defaultSize: [30, 70] })
+    const s = makeService({ defaultSizes: [30, 70] })
     api(s).togglePanel(0)
-    expect(s.context.get('size')).toEqual([30, 70])
+    expect(s.context.get('sizes')).toEqual([30, 70])
   })
 
   it('程序化送来的越界分界线下标被夹住，不把尺寸数组撑长', () => {
     // 分界线比面板少一条：三块面板只有 0、1 两条分界线
-    const s = makeService({ defaultSize: [30, 40, 30] })
+    const s = makeService({ defaultSizes: [30, 40, 30] })
     s.send({ type: 'BOUNDARY.SET', index: 99, size: 10 })
-    expect(s.context.get('size')).toHaveLength(3)
+    expect(s.context.get('sizes')).toHaveLength(3)
     expect(s.context.get('activeIndex')).toBe(1)
 
     s.send({ type: 'BOUNDARY.SET', index: -3, size: 10 })
-    expect(s.context.get('size')).toHaveLength(3)
-    expect(s.context.get('size')[0]).toBe(10)
+    expect(s.context.get('sizes')).toHaveLength(3)
+    expect(s.context.get('sizes')[0]).toBe(10)
   })
 
   it('panels 把每块的尺寸、可达区间与折叠态算好交给作者', () => {
-    const a = api(makeService({ defaultSize: [30, 70], panels: [{ id: 'main', min: 20 }, { id: 'side', min: 10 }] }))
-    expect(a.size).toEqual([30, 70])
+    const a = api(makeService({ defaultSizes: [30, 70], panels: [{ id: 'main', min: 20 }, { id: 'side', min: 10 }] }))
+    expect(a.sizes).toEqual([30, 70])
     expect(a.panels.map(p => p.id)).toEqual(['main', 'side'])
     expect(a.panels[0]).toMatchObject({ index: 0, size: 30, min: 20, max: 90, collapsible: false, collapsed: false })
   })

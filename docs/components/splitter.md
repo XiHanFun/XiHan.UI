@@ -60,22 +60,22 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `size` | `number[]` |  | 每块面板的百分比。给定即受控：内部不再自改，只发 onSizeChange。 |
-| `defaultSize` | `number[]` |  | 非受控初值；不给就按面板数等分。 |
+| `sizes` | `number[]` |  | 每块面板的百分比。给定即受控：内部不再自改，只发 onSizesChange。 |
+| `defaultSizes` | `number[]` |  | 非受控初值；不给就按面板数等分。 |
 | `panels` | `SplitterPanelProps[]` |  | 逐块的约束；数组长度同时决定面板块数。 |
 | `orientation` | `Orientation` |  | 面板的排布轴，默认 horizontal（并排，拖左右）；vertical 是上下堆叠，拖上下。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调水平排布下的左右两键与指针位移的正负。 |
 | `disabled` | `boolean` |  | 禁用：分隔条退出 Tab 序列、拖不动也推不动。 |
 | `step` | `number` |  | 方向键的步长（百分比），默认 1。 |
 | `largeStep` | `number` |  | Shift + 方向键的步长（百分比），默认 10。 |
-| `onSizeChange` | `(details: SplitterSizeChangeDetails) => void` |  | 每次尺寸变化都发；拖动过程中会连续发很多次。 |
-| `onSizeChangeEnd` | `(details: SplitterSizeChangeEndDetails) => void` |  | 只在一次操作结束时发一次，适合拿来存布局。 |
+| `onSizesChange` | `(details: SplitterSizesChangeDetails) => void` |  | 每次尺寸变化都发；拖动过程中会连续发很多次。 |
+| `onSizesChangeEnd` | `(details: SplitterSizesChangeEndDetails) => void` |  | 只在一次操作结束时发一次，适合拿来存布局。 |
 
 ## 状态机
 
 **状态**：`idle` · `dragging`
 
-**事件**：`SIZE.SET` · `BOUNDARY.STEP` · `BOUNDARY.TO_MIN` · `BOUNDARY.TO_MAX` · `BOUNDARY.SET` · `BOUNDARY.FOCUS` · `PANEL.COLLAPSE` · `PANEL.EXPAND` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END`
+**事件**：`SIZES.SET` · `BOUNDARY.STEP` · `BOUNDARY.TO_MIN` · `BOUNDARY.TO_MAX` · `BOUNDARY.SET` · `BOUNDARY.FOCUS` · `PANEL.COLLAPSE` · `PANEL.EXPAND` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END`
 
 **判据**：`canResize`
 
@@ -85,11 +85,11 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `size` | `number[]` |  |
+| `sizes` | `number[]` |  |
 | `panels` | `SplitterPanelState[]` |  |
 | `dragging` | `boolean` |  |
 | `disabled` | `boolean` |  |
-| `setSize` | `(next: number[]) => void` | 整份赋值：逐块夹进约束、总和归位到 100 之后才落地。 |
+| `setSizes` | `(next: number[]) => void` | 整份赋值：逐块夹进约束、总和归位到 100 之后才落地。 |
 | `setPanelSize` | `(index: number, next: number) => void` | 把第 index 块调到 next，缺的那部分从它后面的面板里取。 最后一块没有属于自己的分隔条，它的尺寸是其余面板的余数，调不动。 |
 | `collapsePanel` | `(index: number) => void` |  |
 | `expandPanel` | `(index: number) => void` |  |

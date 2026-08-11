@@ -17,14 +17,14 @@ export interface SplitterContext {
 
 export function useSplitter(
   props: SplitterSchema['props'],
-  onSizeChange?: SplitterSchema['props']['onSizeChange'],
-  onSizeChangeEnd?: SplitterSchema['props']['onSizeChangeEnd'],
+  onSizesChange?: SplitterSchema['props']['onSizesChange'],
+  onSizesChangeEnd?: SplitterSchema['props']['onSizesChangeEnd'],
 ): SplitterContext {
   const rootRef = ref<HTMLElement | null>(null)
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(splitterMachine, () => ({ ...props, onSizeChange, onSizeChangeEnd }), scope)
+  const service = useMachine(splitterMachine, () => ({ ...props, onSizesChange, onSizesChangeEnd }), scope)
 
   // 传 getter 而非节点，ref 在挂载后才有值
   service.refs.set('getRootEl', () => rootRef.value)

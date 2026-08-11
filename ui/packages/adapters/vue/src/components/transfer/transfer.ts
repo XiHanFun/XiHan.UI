@@ -41,22 +41,22 @@ export const XhTransferRoot = defineComponent({
   // *-change 携带 details 对象，update:* 携带裸集合以支持 v-model
   emits: {
     'value-change': (_details: PayloadOf<TransferProps, 'onValueChange'>) => true,
-    'selected-change': (_details: PayloadOf<TransferProps, 'onSelectedChange'>) => true,
+    'selection-change': (_details: PayloadOf<TransferProps, 'onSelectionChange'>) => true,
     'update:value': (_value: PayloadOf<TransferProps, 'onValueChange'>['value']) => true,
-    'update:selected': (_selected: PayloadOf<TransferProps, 'onSelectedChange'>['selected']) => true,
+    'update:selected': (_selected: PayloadOf<TransferProps, 'onSelectionChange'>['selected']) => true,
   },
   setup(props, { slots, emit }) {
     const notifyValue: TransferProps['onValueChange'] = (details) => {
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const notifySelected: TransferProps['onSelectedChange'] = (details) => {
-      emit('selected-change', details)
+    const notifySelected: TransferProps['onSelectionChange'] = (details) => {
+      emit('selection-change', details)
       emit('update:selected', details.selected)
     }
     const ctx = useTransfer(props as TransferProps, {
       onValueChange: notifyValue,
-      onSelectedChange: notifySelected,
+      onSelectionChange: notifySelected,
     })
     provideTransfer(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({

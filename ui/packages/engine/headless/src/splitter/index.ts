@@ -32,6 +32,6 @@ export type {
   SplitterPanelState,
   SplitterPoint,
   SplitterSchema,
-  SplitterSizeChangeDetails,
-  SplitterSizeChangeEndDetails,
+  SplitterSizesChangeDetails,
+  SplitterSizesChangeEndDetails,
 } from './splitter.types'

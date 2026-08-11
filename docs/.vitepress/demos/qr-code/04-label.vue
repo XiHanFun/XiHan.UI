@@ -15,6 +15,6 @@ const text = ref("https://ui.xihanfun.com");
       style="inline-size: 320px; max-inline-size: 100%"
     />
     <!-- 内容清空时不画码，读屏也读不到这块 -->
-    <XhQrCode :value="text" :size="140" label="曦寒 UI 文档站二维码" />
+    <XhQrCode :value="text" :pixel-size="140" label="曦寒 UI 文档站二维码" />
   </div>
 </template>

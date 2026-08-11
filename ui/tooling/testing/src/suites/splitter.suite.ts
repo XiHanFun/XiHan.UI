@@ -85,7 +85,7 @@ export const splitterSuite: ConformanceSuite = {
     {
       name: '默认：root 是 group，分隔条是 separator 且 aria-controls 指向它调整的那块面板',
       spec: { apg: `${APG}#wai-ariaroles,statesandproperties` },
-      props: { defaultSize: [40, 60], panels: [{ id: 'side', min: 20, max: 80 }, { id: 'main' }] },
+      props: { defaultSizes: [40, 60], panels: [{ id: 'side', min: 20, max: 80 }, { id: 'main' }] },
       initial: {
         order: ['root', 'panel[0]', 'resize-trigger', 'panel[1]'],
         counts: { 'root': 1, 'panel': 2, 'resize-trigger': 1 },
@@ -122,7 +122,7 @@ export const splitterSuite: ConformanceSuite = {
       name: '方向键按 step 推动；水平排布只认左右两键',
       spec: { apg: APG_KBD },
       covers: ['splitter.kbd.grow', 'splitter.kbd.shrink'],
-      props: { defaultSize: [50, 50], step: 5 },
+      props: { defaultSizes: [50, 50], step: 5 },
       steps: [
         { kind: 'focus', part: 'resize-trigger' },
         { kind: 'key', key: 'ArrowRight', expect: { parts: { 'resize-trigger': { 'aria-valuenow': '55' } } } },
@@ -135,7 +135,7 @@ export const splitterSuite: ConformanceSuite = {
       name: 'Shift + 方向键走 largeStep，未指定时是 10%',
       spec: { apg: APG_KBD },
       covers: ['splitter.kbd.large-grow', 'splitter.kbd.large-shrink'],
-      props: { defaultSize: [50, 50] },
+      props: { defaultSizes: [50, 50] },
       steps: [
         { kind: 'focus', part: 'resize-trigger' },
         { kind: 'key', key: 'ArrowRight', modifiers: ['Shift'], expect: { parts: { 'resize-trigger': { 'aria-valuenow': '60' } } } },
@@ -146,7 +146,7 @@ export const splitterSuite: ConformanceSuite = {
       name: 'Home / End 推到该面板眼下能到的两端，且不越过约束',
       spec: { apg: APG_KBD },
       covers: ['splitter.kbd.min', 'splitter.kbd.max'],
-      props: { defaultSize: [50, 50], panels: [{ id: 'side', min: 20, max: 80 }, { id: 'main', min: 30 }] },
+      props: { defaultSizes: [50, 50], panels: [{ id: 'side', min: 20, max: 80 }, { id: 'main', min: 30 }] },
       steps: [
         { kind: 'focus', part: 'resize-trigger' },
         // 正文最少 30，所以侧栏最多只到 70——不是它自己写的 80
@@ -160,7 +160,7 @@ export const splitterSuite: ConformanceSuite = {
       name: 'Enter 在可折叠的面板上折叠 / 展开，展开回到折叠前的尺寸',
       spec: { apg: APG },
       covers: ['splitter.kbd.toggle'],
-      props: { defaultSize: [30, 70], panels: [{ id: 'side', min: 20, collapsible: true }, { id: 'main' }] },
+      props: { defaultSizes: [30, 70], panels: [{ id: 'side', min: 20, collapsible: true }, { id: 'main' }] },
       steps: [
         { kind: 'focus', part: 'resize-trigger' },
         {
@@ -188,7 +188,7 @@ export const splitterSuite: ConformanceSuite = {
     {
       name: '面板不可折叠时 Enter 不归它管',
       spec: { apg: APG },
-      props: { defaultSize: [30, 70] },
+      props: { defaultSizes: [30, 70] },
       steps: [
         { kind: 'focus', part: 'resize-trigger' },
         { kind: 'key', key: 'Enter', expect: { parts: { 'resize-trigger': { 'aria-valuenow': '30' } } } },
@@ -197,7 +197,7 @@ export const splitterSuite: ConformanceSuite = {
     {
       name: '竖直排布：分隔条自身变横的，方向键跟着换轴',
       spec: { apg: `${APG}#wai-ariaroles,statesandproperties` },
-      props: { defaultSize: [50, 50], orientation: 'vertical' },
+      props: { defaultSizes: [50, 50], orientation: 'vertical' },
       initial: {
         parts: {
           'root': { 'aria-orientation': null, 'data-orientation': 'vertical' },
@@ -215,7 +215,7 @@ export const splitterSuite: ConformanceSuite = {
     {
       name: '从右往左排版只对调左右两键：语义恒是"撑大前一块"',
       spec: { apg: APG_KBD },
-      props: { defaultSize: [50, 50], dir: 'rtl' },
+      props: { defaultSizes: [50, 50], dir: 'rtl' },
       steps: [
         { kind: 'focus', part: 'resize-trigger' },
         { kind: 'key', key: 'ArrowLeft', expect: { parts: { 'resize-trigger': { 'aria-valuenow': '51' } } } },
@@ -225,7 +225,7 @@ export const splitterSuite: ConformanceSuite = {
     {
       name: 'disabled：推不动、退出 Tab 序列，且不吞按键',
       spec: { apg: APG },
-      props: { defaultSize: [30, 70], disabled: true },
+      props: { defaultSizes: [30, 70], disabled: true },
       initial: {
         parts: {
           'root': { 'data-disabled': '' },
@@ -254,9 +254,9 @@ export const splitterSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '受控 size：宿主不写回则布局纹丝不动',
+      name: '受控 sizes：宿主不写回则布局纹丝不动',
       spec: { apg: APG },
-      props: { size: [20, 80] },
+      props: { sizes: [20, 80] },
       steps: [
         { kind: 'focus', part: 'resize-trigger' },
         {
@@ -266,7 +266,7 @@ export const splitterSuite: ConformanceSuite = {
         },
         {
           kind: 'setProps',
-          props: { size: [70, 30] },
+          props: { sizes: [70, 30] },
           expect: { parts: { 'resize-trigger': { 'aria-valuenow': '70' } } },
         },
       ],
@@ -275,7 +275,7 @@ export const splitterSuite: ConformanceSuite = {
       name: '三栏：每条分隔条各管自己那一块，前面的面板不受牵连',
       spec: { apg: APG },
       fixture: threePanels,
-      props: { defaultSize: [30, 40, 30], step: 10 },
+      props: { defaultSizes: [30, 40, 30], step: 10 },
       initial: {
         order: ['root', 'panel[0]', 'resize-trigger[0]', 'panel[1]', 'resize-trigger[1]', 'panel[2]'],
         counts: { 'panel': 3, 'resize-trigger': 2 },
@@ -303,7 +303,7 @@ export const splitterSuite: ConformanceSuite = {
     {
       name: '拖拽：按下不跳、跟着指针走、松手收尾，且松手后再动指针也不跟',
       spec: { apg: APG },
-      props: { defaultSize: [50, 50] },
+      props: { defaultSizes: [50, 50] },
       steps: [
         {
           kind: 'raw',

@@ -16,7 +16,7 @@ export interface TransferContext {
 
 export function useTransfer(
   props: TransferSchema['props'],
-  handlers: Pick<TransferSchema['props'], 'onValueChange' | 'onSelectedChange'> = {},
+  handlers: Pick<TransferSchema['props'], 'onValueChange' | 'onSelectionChange'> = {},
 ): TransferContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)

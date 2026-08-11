@@ -67,7 +67,7 @@ export interface QrCodeProps {
   /** 纠错级别 L / M / Q / H，缺省 M。 */
   level?: QrLevel
   /** 像素边长，缺省 160；写成根上的内联宽高。 */
-  size?: number
+  pixelSize?: number
   /** 静区宽度，单位是模块数，缺省 4；静区含在 viewBox 里，不占额外尺寸。 */
   margin?: number
   /** 可及名字，缺省用 value；给了全空白的名字等于没给。 */

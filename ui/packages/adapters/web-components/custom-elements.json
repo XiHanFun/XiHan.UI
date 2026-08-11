@@ -17598,12 +17598,12 @@
             },
             {
               "kind": "field",
-              "name": "size",
+              "name": "pixelSize",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "size"
+              "attribute": "pixel-size"
             },
             {
               "kind": "field",
@@ -17699,8 +17699,8 @@
                 "text": "number | undefined"
               },
               "description": "像素边长，缺省 160",
-              "name": "size",
-              "fieldName": "size"
+              "name": "pixel-size",
+              "fieldName": "pixelSize"
             },
             {
               "type": {
@@ -20196,21 +20196,21 @@
             },
             {
               "kind": "field",
-              "name": "size",
+              "name": "sizes",
               "privacy": "public",
               "type": {
                 "text": "number[] | undefined"
               },
-              "attribute": "size"
+              "attribute": "sizes"
             },
             {
               "kind": "field",
-              "name": "defaultSize",
+              "name": "defaultSizes",
               "privacy": "public",
               "type": {
                 "text": "number[] | undefined"
               },
-              "attribute": "default-size"
+              "attribute": "default-sizes"
             },
             {
               "kind": "field",
@@ -20360,12 +20360,12 @@
           ],
           "events": [
             {
-              "description": "布局变化（拖动途中会连发）；detail 为 `{ size: number[] }`",
-              "name": "size-change"
+              "description": "布局变化（拖动途中会连发）；detail 为 `{ sizes: number[] }`",
+              "name": "sizes-change"
             },
             {
-              "description": "一次拖拽收尾发一次；detail 为 `{ size: number[], index: number }`",
-              "name": "size-change-end"
+              "description": "一次拖拽收尾发一次；detail 为 `{ sizes: number[], index: number }`",
+              "name": "sizes-change-end"
             }
           ],
           "attributes": [
@@ -20374,16 +20374,16 @@
                 "text": "number[] | undefined"
               },
               "description": "受控布局，逗号分隔的百分比（如 \"30,70\"）；缺省该属性即非受控",
-              "name": "size",
-              "fieldName": "size"
+              "name": "sizes",
+              "fieldName": "sizes"
             },
             {
               "type": {
                 "text": "number[] | undefined"
               },
               "description": "非受控初值，同样逗号分隔；缺省时按面板数等分",
-              "name": "default-size",
-              "fieldName": "defaultSize"
+              "name": "default-sizes",
+              "fieldName": "defaultSizes"
             },
             {
               "type": {
@@ -26427,7 +26427,7 @@
             },
             {
               "description": "勾选集合变化；detail 为 `{ selected: string[] }`",
-              "name": "selected-change"
+              "name": "selection-change"
             }
           ],
           "attributes": [

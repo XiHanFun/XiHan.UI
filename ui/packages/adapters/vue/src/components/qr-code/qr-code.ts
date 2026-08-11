@@ -23,7 +23,7 @@ export const XhQrCode = defineComponent({
   props: {
     value: { type: String, default: undefined },
     level: { type: String as PropType<QrLevel>, default: undefined },
-    size: { type: Number, default: undefined },
+    pixelSize: { type: Number, default: undefined },
     margin: { type: Number, default: undefined },
     label: { type: String, default: undefined },
     moduleShape: { type: String as PropType<ModuleShape>, default: undefined },
@@ -36,7 +36,7 @@ export const XhQrCode = defineComponent({
     const api = computed(() => connectQrCode({
       value: props.value,
       level: props.level,
-      size: props.size,
+      pixelSize: props.pixelSize,
       margin: props.margin,
       label: props.label,
       moduleShape: props.moduleShape,

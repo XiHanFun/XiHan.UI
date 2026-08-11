@@ -9,7 +9,7 @@ const text = "https://ui.xihanfun.com/components/qr-code";
 <template>
   <div style="display: flex; flex-wrap: wrap; gap: 16px">
     <div v-for="level in levels" :key="level" style="display: grid; gap: 6px; justify-items: center">
-      <XhQrCode :value="text" :level="level" :size="120" />
+      <XhQrCode :value="text" :level="level" :pixel-size="120" />
       <span style="font-size: 12px">{{ level }}</span>
     </div>
   </div>
