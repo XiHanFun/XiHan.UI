@@ -7,7 +7,7 @@ import type {
   DateSegmentType,
 } from './date-field.types'
 import { CalendarDate, getLocalTimeZone, parseDateTime, Time, today } from '@internationalized/date'
-import { setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<DateFieldSchema>()
 
@@ -465,6 +465,7 @@ export const dateFieldMachine = createMachine({
     track([context.dep('value')], () => action(['syncSegmentsFromValue']))
   },
   on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.CLEAR': { actions: ['clearValue'] },
     'SEGMENT.STEP': { guard: 'canEdit', actions: ['stepSegment'] },
@@ -483,6 +484,12 @@ export const dateFieldMachine = createMachine({
       canEdit: ({ prop }) => !prop('disabled') && !prop('readOnly'),
     },
     actions: {
+      resetToDefault: (params) => {
+        resetDeclaredValue(params, 'value', 'value', 'defaultValue')
+        params.context.reset('segments')
+        params.context.reset('typing')
+      },
+
       /**
        * 值变了就把段位对齐过去。
        * 判据是段位现在算出来的串，不是段位空不空：按空判会在清掉日时把年月一并抹掉。

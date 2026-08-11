@@ -8,7 +8,7 @@ import type {
   TimePickerSchema,
 } from './time-picker.types'
 import { createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 import {
   appendSegmentDigit,
   clearTimeSegment,
@@ -234,6 +234,7 @@ export const timePickerMachine = createMachine({
   },
   // 分段输入与值这几件事与开合无关，两个状态里都得认
   on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.CLEAR': { guard: 'canEdit', actions: ['clearValue'] },
     'SEGMENT.STEP': { guard: 'canEdit', actions: ['stepSegment'] },
@@ -287,6 +288,12 @@ export const timePickerMachine = createMachine({
       canEdit: ({ prop }) => !prop('disabled') && !prop('readOnly'),
     },
     actions: {
+      resetToDefault: (params) => {
+        resetDeclaredValue(params, 'value', 'value', 'defaultValue')
+        params.context.reset('draft')
+        params.context.reset('typeBuffer')
+      },
+
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
 

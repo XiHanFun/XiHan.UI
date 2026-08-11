@@ -1,5 +1,5 @@
 import type { SliderPoint, SliderSchema } from './slider.types'
-import { setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 import { clamp, clampIndex } from '../shared/number'
 import { closestThumb, pointToValue, setThumbValue, snapToStep } from './slider.geometry'
 
@@ -71,6 +71,7 @@ export const sliderMachine = createMachine({
   initialState: () => 'idle',
   // 键盘推动从哪个状态发出都一样（拖动期间也可能有键盘事件），因此挂根级
   on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
     // 命令式赋值与用户推动共用同一道守卫，禁用/只读期间值不变
     'VALUE.SET': { guard: 'canDrag', actions: ['setValue'] },
     'THUMB.STEP': { guard: 'canDrag', actions: ['setActiveIndex', 'stepThumb'] },
@@ -100,6 +101,8 @@ export const sliderMachine = createMachine({
       canDrag: ({ prop }) => !prop('disabled') && !prop('readOnly'),
     },
     actions: {
+      resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
+
       setValue: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'VALUE.SET')

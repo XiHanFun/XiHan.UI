@@ -5,7 +5,7 @@ import type { DateFieldSchema, DateGranularity } from '../date-field'
 import type { DatePickerSchema, DatePickerValueSource } from './date-picker.types'
 import { getLocalTimeZone, today } from '@internationalized/date'
 import { createDismissLayer, createFocusScope, itemValue } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 import { calendarAnatomy } from '../calendar'
 
 const { createMachine, guards } = setup<DatePickerSchema>()
@@ -219,6 +219,7 @@ export const datePickerMachine = createMachine({
   },
   // 两个状态都要认；展开态另行声明的 VALUE.SET 会盖过这里这一条
   on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue', 'syncFocusedValue'] },
     'VALUE.CLEAR': { actions: ['clearValue'] },
     'FOCUSED.SET': { actions: ['setFocusedValue'] },
@@ -287,6 +288,11 @@ export const datePickerMachine = createMachine({
       },
     },
     actions: {
+      resetToDefault: (params) => {
+        resetDeclaredValue(params, 'value', 'value', 'defaultValue')
+        params.context.reset('focusedValue')
+      },
+
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
 

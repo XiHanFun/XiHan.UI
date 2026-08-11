@@ -77,9 +77,10 @@ export interface CheckboxGroupSchema extends MachineSchema {
     | { type: 'ITEM.TOGGLE', value: string }
     /** values 是事件发生那一刻现查到的可用条目值。 */
     | { type: 'ALL.TOGGLE', values: string[] }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: 'editable'
-  action: 'setValue' | 'toggleItem' | 'toggleAll'
+  action: 'setValue' | 'toggleItem' | 'toggleAll' | 'resetToDefault'
   effect: never
 }
 

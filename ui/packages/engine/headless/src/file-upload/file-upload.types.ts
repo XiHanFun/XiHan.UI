@@ -111,9 +111,10 @@ export interface FileUploadSchema extends MachineSchema {
     | { type: 'DRAG.OVER' }
     | { type: 'DRAG.LEAVE' }
     | { type: 'DROP', files: File[] }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: 'canChange' | 'canDrop'
-  action: 'setFiles' | 'addFiles' | 'deleteFile' | 'clearFiles' | 'openFilePicker'
+  action: 'setFiles' | 'addFiles' | 'deleteFile' | 'clearFiles' | 'openFilePicker' | 'resetToDefault'
   effect: never
 }
 

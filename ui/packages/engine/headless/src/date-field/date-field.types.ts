@@ -127,6 +127,7 @@ export interface DateFieldSchema extends MachineSchema {
     | { type: 'SEGMENT.CLEAR', segment: DateSegmentType }
     | { type: 'SEGMENT.FOCUS', segment: DateSegmentType }
     | { type: 'SEGMENT.BLUR' }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: 'canEdit'
   action:
@@ -139,6 +140,7 @@ export interface DateFieldSchema extends MachineSchema {
     | 'finalizeTyping'
     | 'setFocusedSegment'
     | 'clearFocusedSegment'
+    | 'resetToDefault'
   effect: never
 }
 

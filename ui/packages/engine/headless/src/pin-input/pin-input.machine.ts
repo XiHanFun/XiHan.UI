@@ -1,6 +1,6 @@
 import type { Params } from '@xihan-ui/machine'
 import type { PinInputSchema, PinInputType } from './pin-input.types'
-import { setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<PinInputSchema>()
 
@@ -86,6 +86,11 @@ export const pinInputMachine = createMachine({
     focusedIndex: cell<number>(() => ({ defaultValue: -1 })),
   }),
   initialState: () => 'idle',
+  // 表单重置从任何状态都要认，所以挂根级。不设禁用/只读守卫：原生表单的重置算法
+  // 不看这两个标志，禁用的字段一样回落点；要拦是表单那侧 preventDefault 的事
+  on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
+  },
   states: {
     idle: {
       // 省略 target：只跑 actions，不换状态
@@ -105,6 +110,8 @@ export const pinInputMachine = createMachine({
       canEdit: ({ prop }) => !prop('disabled'),
     },
     actions: {
+      resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
+
       setValue: (params) => {
         const e = params.event.current()
         if (e.type !== 'VALUE.SET')

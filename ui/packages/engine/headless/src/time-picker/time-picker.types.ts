@@ -160,6 +160,7 @@ export interface TimePickerSchema extends MachineSchema {
     | { type: 'OPTION.FOCUS', unit: TimePickerColumnUnit, value: string }
     /** 选中某列的一个值：只改那一段，浮层不收起（其余列还要接着挑）。 */
     | { type: 'ITEM.SELECT', unit: TimePickerColumnUnit, value: string }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: 'isOpenControlled' | 'canEdit'
   action:
@@ -180,6 +181,7 @@ export interface TimePickerSchema extends MachineSchema {
     | 'setFocusedSegment'
     | 'clearFocusedSegment'
     | 'syncDraft'
+    | 'resetToDefault'
   effect: 'trackPosition' | 'trackLayer'
 }
 

@@ -1,6 +1,6 @@
 import type { Params } from '@xihan-ui/machine'
 import type { TagsInputSchema } from './tags-input.types'
-import { setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 import { tagsInputEditInputId } from './tags-input.anatomy'
 
 const { createMachine } = setup<TagsInputSchema>()
@@ -140,6 +140,7 @@ export const tagsInputMachine = createMachine({
   initialState: () => 'idle',
   // 这几条从哪个状态发出都一样，挂根级
   on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
     'TAG.ADD': { guard: 'canEdit', actions: ['addTags'] },
     'VALUE.CLEAR': { guard: 'canEdit', target: 'idle', actions: ['clearAll'] },
@@ -210,6 +211,13 @@ export const tagsInputMachine = createMachine({
       },
     },
     actions: {
+      resetToDefault: (params) => {
+        resetDeclaredValue(params, 'value', 'value', 'defaultValue')
+        resetDeclaredValue(params, 'inputValue', 'inputValue', 'defaultInputValue')
+        params.context.reset('focusedValue')
+        params.context.reset('editedValue')
+      },
+
       // 作者的整份替换：只做去重去空白，不夹 max
       setValue: ({ context, event }) => {
         const e = event.current()

@@ -75,6 +75,7 @@ export interface SliderSchema extends MachineSchema {
     | { type: 'DRAG.START', point: SliderPoint }
     | { type: 'DRAG.MOVE', point: SliderPoint }
     | { type: 'DRAG.END' }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: 'canDrag'
   action:
@@ -87,6 +88,7 @@ export interface SliderSchema extends MachineSchema {
     | 'grabNearestThumb'
     | 'dragThumb'
     | 'invokeChangeEnd'
+    | 'resetToDefault'
   effect: 'trackPointer'
 }
 

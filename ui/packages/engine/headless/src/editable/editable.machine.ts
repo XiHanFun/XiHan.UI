@@ -1,7 +1,7 @@
 import type { Scope } from '@xihan-ui/kernel'
 import type { EditableSchema, EditableSubmitMode } from './editable.types'
 import { focusSafely } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 
 const { createMachine, guards } = setup<EditableSchema>()
 const { and, not } = guards
@@ -73,6 +73,7 @@ export const editableMachine = createMachine({
   watch: ({ track, prop, action }) => track([() => prop('edit')], () => action(['syncEdit'])),
   // 写值不分状态：预览态也能程序化改值
   on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { guard: 'canEdit', actions: ['setValue'] },
   },
   states: {
@@ -122,6 +123,11 @@ export const editableMachine = createMachine({
       submitsOnLeave: ({ prop }) => submitsOnLeave(prop('submitMode')),
     },
     actions: {
+      resetToDefault: (params) => {
+        if (resetDeclaredValue(params, 'value', 'value', 'defaultValue'))
+          params.context.set('committedValue', params.context.get('value'))
+      },
+
       setValue: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type === 'VALUE.SET')

@@ -136,6 +136,7 @@ export interface DatePickerSchema extends MachineSchema {
     | { type: 'VALUE.CLEAR' }
     /** 聚焦日改写：日历里移动焦点、翻月都会经它回到编排机。 */
     | { type: 'FOCUSED.SET', value: string }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: 'isOpenControlled' | 'closesOnSelect'
   action:
@@ -148,6 +149,7 @@ export interface DatePickerSchema extends MachineSchema {
     | 'setFocusedValue'
     | 'syncFocusedValue'
     | 'focusSelectedDay'
+    | 'resetToDefault'
   effect: 'trackPosition' | 'trackLayer'
 }
 

@@ -5,7 +5,7 @@ import type {
   FileUploadSchema,
   FileUploadValidationResult,
 } from './file-upload.types'
-import { setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 import { fileUploadHiddenInputId } from './file-upload.anatomy'
 
 const { createMachine } = setup<FileUploadSchema>()
@@ -185,6 +185,7 @@ export const fileUploadMachine = createMachine({
   initialState: () => 'idle',
   // 增删改与打开选择框在任何状态下行为一致，挂根级
   on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
     'FILES.SET': { guard: 'canChange', actions: ['setFiles'] },
     'FILES.ADD': { guard: 'canChange', actions: ['addFiles'] },
     'FILE.DELETE': { guard: 'canChange', actions: ['deleteFile'] },
@@ -217,6 +218,8 @@ export const fileUploadMachine = createMachine({
       canDrop: ({ prop }) => !prop('disabled') && (prop('allowDrop') ?? true),
     },
     actions: {
+      resetToDefault: params => void resetDeclaredValue(params, 'acceptedFiles', 'files', 'defaultFiles'),
+
       setFiles: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'FILES.SET')

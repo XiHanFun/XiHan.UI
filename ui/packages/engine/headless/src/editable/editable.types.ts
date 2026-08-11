@@ -117,6 +117,7 @@ export interface EditableSchema extends MachineSchema {
     // 受控回写：宿主改 edit prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.EDIT' }
     | { type: 'CONTROLLED.PREVIEW' }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: 'isEditControlled' | 'canEdit' | 'submitsOnLeave'
   action:
@@ -127,6 +128,7 @@ export interface EditableSchema extends MachineSchema {
     | 'invokeEditOn'
     | 'invokeEditOff'
     | 'syncEdit'
+    | 'resetToDefault'
   effect: 'trackEditFocus'
 }
 

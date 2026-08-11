@@ -1,5 +1,5 @@
 import type { NumberFieldSchema } from './number-field.types'
-import { setIntervalEffect, setTimeoutEffect, setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setIntervalEffect, setTimeoutEffect, setup } from '@xihan-ui/machine'
 import { normalizeValue, parseValue, stepValue } from '../shared/number'
 
 const { createMachine } = setup<NumberFieldSchema>()
@@ -23,6 +23,7 @@ export const numberFieldMachine = createMachine({
   initialState: () => 'idle',
   // 步进与取端点在 idle 与 spinning 下行为一致，挂根级
   on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.STEP': { guard: 'canStep', actions: ['stepValue'] },
     'VALUE.TO_MIN': { guard: 'canStep', actions: ['toMin'] },
@@ -49,6 +50,8 @@ export const numberFieldMachine = createMachine({
       canStep: ({ prop }) => !prop('disabled') && !prop('readOnly'),
     },
     actions: {
+      resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
+
       setValue: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'VALUE.SET')

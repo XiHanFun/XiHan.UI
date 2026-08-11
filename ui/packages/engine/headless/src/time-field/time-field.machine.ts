@@ -8,7 +8,7 @@ import type {
   TimeSegmentType,
 } from './time-field.types'
 import { parseTime, Time } from '@internationalized/date'
-import { setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<TimeFieldSchema>()
 
@@ -365,6 +365,7 @@ export const timeFieldMachine = createMachine({
   watch: ({ track, context, action }) => track([context.dep('value')], () => action(['syncDraft'])),
   // 这些事从哪个状态发出都一样（机器本来也只有一个状态），因此挂根级
   on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.CLEAR': { guard: 'canEdit', actions: ['clearValue'] },
     'SEGMENT.STEP': { guard: 'canEdit', actions: ['stepSegment'] },
@@ -383,6 +384,12 @@ export const timeFieldMachine = createMachine({
       canEdit: ({ prop }) => !prop('disabled') && !prop('readOnly'),
     },
     actions: {
+      resetToDefault: (params) => {
+        resetDeclaredValue(params, 'value', 'value', 'defaultValue')
+        params.context.reset('draft')
+        params.context.reset('typeBuffer')
+      },
+
       setValue: (params) => {
         const e = params.event.current()
         if (e.type !== 'VALUE.SET')

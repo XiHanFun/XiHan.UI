@@ -102,6 +102,7 @@ export interface TimeFieldSchema extends MachineSchema {
     | { type: 'SEGMENT.PERIOD', period: TimeDayPeriod }
     | { type: 'SEGMENT.FOCUS', segment: TimeSegmentType }
     | { type: 'SEGMENT.BLUR' }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: 'canEdit'
   action:
@@ -114,6 +115,7 @@ export interface TimeFieldSchema extends MachineSchema {
     | 'setFocusedSegment'
     | 'clearFocusedSegment'
     | 'syncDraft'
+    | 'resetToDefault'
   effect: never
 }
 

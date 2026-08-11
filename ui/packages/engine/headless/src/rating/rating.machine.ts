@@ -1,5 +1,5 @@
 import type { RatingSchema } from './rating.types'
-import { setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<RatingSchema>()
 
@@ -59,6 +59,11 @@ export const ratingMachine = createMachine({
     focusedValue: cell<number | null>(() => ({ defaultValue: null })),
   }),
   initialState: () => 'idle',
+  // 表单重置从任何状态都要认，所以挂根级。不设禁用/只读守卫：原生表单的重置算法
+  // 不看这两个标志，禁用的字段一样回落点；要拦是表单那侧 preventDefault 的事
+  on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
+  },
   states: {
     idle: {
       on: {
@@ -82,6 +87,11 @@ export const ratingMachine = createMachine({
       canInteract: ({ prop }) => !prop('disabled') && !prop('readOnly'),
     },
     actions: {
+      resetToDefault: (params) => {
+        resetDeclaredValue(params, 'value', 'value', 'defaultValue')
+        params.context.reset('hoveredValue')
+      },
+
       setValue: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'VALUE.SET' && e.type !== 'ITEM.SELECT')

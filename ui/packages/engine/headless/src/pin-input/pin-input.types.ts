@@ -80,9 +80,10 @@ export interface PinInputSchema extends MachineSchema {
     | { type: 'VALUE.CLEAR' }
     | { type: 'INPUT.FOCUS', index: number }
     | { type: 'INPUT.BLUR' }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: 'canEdit'
-  action: 'setValue' | 'fillValue' | 'clearValueAt' | 'clearValue' | 'setFocusedIndex' | 'clearFocusedIndex'
+  action: 'setValue' | 'fillValue' | 'clearValueAt' | 'clearValue' | 'setFocusedIndex' | 'clearFocusedIndex' | 'resetToDefault'
   effect: never
 }
 

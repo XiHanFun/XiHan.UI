@@ -43,9 +43,10 @@ export interface TextFieldSchema extends MachineSchema {
     | { type: 'VALUE.SET', value: string }
     /** 清空意图（Escape 或清空按钮）；不满足清空条件时整条被守卫挡下。 */
     | { type: 'VALUE.CLEAR' }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: 'canEdit' | 'canClear'
-  action: 'setValue' | 'clearValue'
+  action: 'setValue' | 'clearValue' | 'resetToDefault'
   effect: never
 }
 
