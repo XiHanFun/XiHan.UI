@@ -25,6 +25,7 @@
     "gen:docs": "node scripts/gen-component-docs.mjs",
     "lint": "oxlint . && eslint . && stylelint \"packages/**/*.css\"",
     "lint:fix": "eslint . --fix",
+    "prepare": "node scripts/install-git-hooks.mjs",
     "release": "turbo run build && changeset publish --no-git-tag",
     "size": "turbo run build && size-limit",
     "surface:update": "node tooling/scripts/build-public-surface.mjs",
@@ -48,7 +49,6 @@
     "oxlint": "catalog:",
     "prettier": "catalog:",
     "publint": "catalog:",
-    "simple-git-hooks": "catalog:",
     "size-limit": "catalog:",
     "stylelint": "catalog:",
     "tsdown": "catalog:",
@@ -56,7 +56,7 @@
     "typescript": "catalog:",
     "vue-tsc": "catalog:"
   },
-  "simple-git-hooks": {
+  "gitHooks": {
     "commit-msg": "npx --no -- commitlint --edit $1"
   }
 }
