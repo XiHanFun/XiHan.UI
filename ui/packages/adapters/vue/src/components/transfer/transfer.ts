@@ -84,7 +84,8 @@ function panelSetup(side: TransferSide): (props: unknown, ctx: { slots: Slots })
     provideTransferPanel({ panel })
     return () => h('div', ctx.api.value.getPanelProps(panel.value) as Record<string, unknown>, slots.default?.({
       side,
-      collection: ctx.api.value.visibleItems(side),
+      // 这一侧当下看得见的条目（分侧 + 搜索之后），不是数据入口：入口叫 collection，是整份全集
+      items: ctx.api.value.visibleItems(side),
       checkState: ctx.api.value.checkState(side),
       query: ctx.api.value.query(side),
     }))
