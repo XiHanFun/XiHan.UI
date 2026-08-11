@@ -141,6 +141,7 @@ export {
   XhColorPickerChannelSliderTrack,
   XhColorPickerContent,
   XhColorPickerEyeDropperTrigger,
+  XhColorPickerHiddenInput,
   XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,

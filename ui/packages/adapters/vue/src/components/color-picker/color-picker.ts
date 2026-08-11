@@ -33,6 +33,7 @@ export const XhColorPickerRoot = defineComponent({
     readOnly: Boolean,
     alpha: Boolean,
     swatches: { type: Array as PropType<string[]>, default: undefined },
+    name: { type: String, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     placement: { type: String as PropType<Placement>, default: undefined },
     offset: { type: Number, default: undefined },
@@ -244,5 +245,13 @@ export const XhColorPickerSwatchItem = defineComponent({
       ctx.api.value.getSwatchItemProps({ value: props.value }) as Record<string, unknown>,
       slots.default?.(),
     )
+  },
+})
+
+export const XhColorPickerHiddenInput = defineComponent({
+  name: 'XhColorPickerHiddenInput',
+  setup() {
+    const ctx = useColorPickerContext()
+    return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
   },
 })

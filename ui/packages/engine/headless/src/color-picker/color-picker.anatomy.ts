@@ -17,4 +17,5 @@ export const colorPickerAnatomy = createAnatomy('color-picker', [
   'eye-dropper-trigger',
   'swatch-group',
   'swatch-item',
+  'hidden-input',
 ])
