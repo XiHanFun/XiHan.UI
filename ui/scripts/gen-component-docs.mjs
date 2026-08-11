@@ -106,12 +106,16 @@ const typeFiles = fs
       .map(f => path.join(dir, f))
   })
 
+// 开模块解析：popconfirm 与 float-button 的 props 是从别的组件 Omit 出来的类型别名，
+// 不跟着 import 走就取不到成员。其余组件的抽取只读语法树，解析与否不影响产出。
 const program = ts.createProgram(typeFiles, {
   target: ts.ScriptTarget.ESNext,
   module: ts.ModuleKind.ESNext,
-  noResolve: true,
+  moduleResolution: ts.ModuleResolutionKind.Bundler,
   skipLibCheck: true,
+  strict: false,
 })
+const checker = program.getTypeChecker()
 
 /** 取声明前的 JSDoc 正文，多行合成一行 */
 function jsdoc(node, sf) {
@@ -172,11 +176,11 @@ function typeMeta(id) {
     if (!typeFiles.includes(path.normalize(sf.fileName)))
       continue
     ts.forEachChild(sf, (node) => {
-      if (!ts.isInterfaceDeclaration(node))
+      if (!ts.isInterfaceDeclaration(node) && !ts.isTypeAliasDeclaration(node))
         return
       const name = node.name.text
 
-      if (name === `${P}Schema`) {
+      if (ts.isInterfaceDeclaration(node) && name === `${P}Schema`) {
         for (const member of node.members) {
           if (!ts.isPropertySignature(member) || !member.type)
             continue
@@ -202,7 +206,25 @@ function typeMeta(id) {
         }
       }
 
-      if (name === `${P}Api`) {
+      // 少数组件没有自己的机器，props 写成 `Omit<别人Schema['props'], …> & …` 这样的类型别名
+      // （popconfirm、float-button）。只认 interface 的读法会让它们的 Props 表整页缺席。
+      if (result.props.length === 0 && ts.isTypeAliasDeclaration(node) && name === `${P}Props`) {
+        for (const sym of checker.getPropertiesOfType(checker.getTypeAtLocation(node.type))) {
+          const decl = sym.declarations?.[0]
+          if (!decl || !ts.isPropertySignature(decl) || !decl.type)
+            continue
+          const declSf = decl.getSourceFile()
+          result.props.push({
+            name: sym.name,
+            type: typeText(decl.type, declSf),
+            optional: Boolean(decl.questionToken),
+            doc: jsdoc(decl, declSf),
+          })
+        }
+        result.props.sort((a, b) => a.name.localeCompare(b.name))
+      }
+
+      if (ts.isInterfaceDeclaration(node) && name === `${P}Api`) {
         for (const member of node.members) {
           if (!ts.isPropertySignature(member) || !member.type)
             continue

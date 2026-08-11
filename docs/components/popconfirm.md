@@ -50,6 +50,21 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 
 `data-scope="popconfirm"`：**`root`** · **`trigger`** · `positioner` · **`content`** · `title` · `description` · **`confirm-trigger`** · **`cancel-trigger`**
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `closeOnEscape` | `boolean` |  |  |
+| `closeOnInteractOutside` | `boolean` |  |  |
+| `defaultOpen` | `boolean` |  |  |
+| `offset` | `number` |  |  |
+| `onCancel` | `() => void` |  | 点了取消按钮，随后浮层收起。Escape 与层外交互只发 onOpenChange，不发这条。 |
+| `onConfirm` | `() => void` |  | 点了确认按钮，随后浮层收起。 |
+| `onOpenChange` | `(details: PopoverOpenChangeDetails) => void` |  | open 变化意图；受控时是唯一出口，非受控时随内部转移一并通知。 |
+| `open` | `boolean` |  |  |
+| `placement` | `Placement` |  |  |
+| `size` | `Size` |  | 尺寸：sm / md / lg，决定面板的内边距档位。 |
+
 ## connect API
 
 `usePopconfirm` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

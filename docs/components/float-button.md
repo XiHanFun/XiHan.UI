@@ -44,6 +44,20 @@ shape 换圆角档，offset 决定距那两条边多远；translations 换掉读
 
 `data-scope="float-button"`：**`root`** · **`trigger`** · **`list`**
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `defaultOpen` | `boolean` |  |  |
+| `disabled` | `boolean` |  |  |
+| `expandTrigger` | `FloatButtonExpandTrigger` |  | 展开方式，默认 click。 |
+| `offset` | `number` |  | 距那两条边的距离（px），默认 24。 |
+| `onOpenChange` | `(details: CollapsibleOpenChangeDetails) => void` |  | open 变化意图；受控时是唯一出口，非受控时随内部转移一并通知。 |
+| `open` | `boolean` |  |  |
+| `placement` | `FloatButtonPlacement` |  | 钉在哪一角，默认 bottom-end。 |
+| `shape` | `FloatButtonShape` |  | 触发器外形，默认 circle。 |
+| `translations` | `Partial<FloatButtonTranslations>` |  |  |
+
 ## connect API
 
 `useFloatButton` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
