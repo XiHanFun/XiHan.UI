@@ -173,6 +173,8 @@ export const tokens = {
   "--xh-border-default": "var(--xh-color-neutral-200)",
   "--xh-border-subtle": "var(--xh-color-neutral-100)",
   "--xh-border-strong": "var(--xh-color-neutral-300)",
+  "--xh-border-control": "var(--xh-color-neutral-450)",
+  "--xh-border-control-hover": "var(--xh-color-neutral-500)",
   "--xh-ring-focus": "var(--xh-color-brand-500)"
 } as const
 

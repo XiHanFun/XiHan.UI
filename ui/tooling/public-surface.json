@@ -5279,6 +5279,8 @@
     "--xh-bg-subtle-hover",
     "--xh-bg-surface",
     "--xh-bg-surface-raised",
+    "--xh-border-control",
+    "--xh-border-control-hover",
     "--xh-border-default",
     "--xh-border-strong",
     "--xh-border-subtle",
