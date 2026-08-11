@@ -176,8 +176,8 @@
   }
 
   [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator'] {
-    border-color: var(--xh-fg-disabled);
-    color: var(--xh-fg-disabled);
+    border-color: var(--xh-steps-indicator-border-disabled, var(--xh-fg-disabled));
+    color: var(--xh-steps-indicator-fg-disabled, var(--xh-fg-disabled));
   }
 
   /* 标题与说明都在右列：不给 display，网格布局会替它们块级化，

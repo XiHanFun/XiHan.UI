@@ -238,12 +238,12 @@
   }
 
   [data-scope='editable'][data-part='submit-trigger']:hover:not(:disabled) {
-    border-color: var(--xh-editable-submit-bg-hover, var(--xh-bg-brand-hover));
+    border-color: var(--xh-editable-submit-border-hover, var(--xh-editable-submit-bg-hover, var(--xh-bg-brand-hover)));
     background: var(--xh-editable-submit-bg-hover, var(--xh-bg-brand-hover));
   }
 
   [data-scope='editable'][data-part='submit-trigger']:active:not(:disabled) {
-    border-color: var(--xh-editable-submit-bg-active, var(--xh-bg-brand-active));
+    border-color: var(--xh-editable-submit-border-active, var(--xh-editable-submit-bg-active, var(--xh-bg-brand-active)));
     background: var(--xh-editable-submit-bg-active, var(--xh-bg-brand-active));
   }
 }

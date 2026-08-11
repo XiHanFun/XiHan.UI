@@ -8465,12 +8465,12 @@
 }
 
 [data-scope='editable'][data-part='submit-trigger']:hover:not(:disabled) {
-  border-color: var(--xh-editable-submit-bg-hover, var(--xh-bg-brand-hover));
+  border-color: var(--xh-editable-submit-border-hover, var(--xh-editable-submit-bg-hover, var(--xh-bg-brand-hover)));
   background: var(--xh-editable-submit-bg-hover, var(--xh-bg-brand-hover));
 }
 
 [data-scope='editable'][data-part='submit-trigger']:active:not(:disabled) {
-  border-color: var(--xh-editable-submit-bg-active, var(--xh-bg-brand-active));
+  border-color: var(--xh-editable-submit-border-active, var(--xh-editable-submit-bg-active, var(--xh-bg-brand-active)));
   background: var(--xh-editable-submit-bg-active, var(--xh-bg-brand-active));
 }
 
@@ -8991,18 +8991,18 @@
 
 /* 提交是这一组里的主操作，给它一层实心底色区分开 */
 [data-scope='form'][data-part='submit-trigger']:not(:disabled) {
-  border-color: var(--xh-form-submit-bg, var(--xh-bg-brand));
+  border-color: var(--xh-form-submit-border, var(--xh-form-submit-bg, var(--xh-bg-brand)));
   background: var(--xh-form-submit-bg, var(--xh-bg-brand));
   color: var(--xh-form-submit-fg, var(--xh-fg-on-brand));
 }
 
 [data-scope='form'][data-part='submit-trigger']:hover:not(:disabled) {
-  border-color: var(--xh-form-submit-bg-hover, var(--xh-bg-brand-hover));
+  border-color: var(--xh-form-submit-border-hover, var(--xh-form-submit-bg-hover, var(--xh-bg-brand-hover)));
   background: var(--xh-form-submit-bg-hover, var(--xh-bg-brand-hover));
 }
 
 [data-scope='form'][data-part='submit-trigger']:active:not(:disabled) {
-  border-color: var(--xh-form-submit-bg-active, var(--xh-bg-brand-active));
+  border-color: var(--xh-form-submit-border-active, var(--xh-form-submit-bg-active, var(--xh-bg-brand-active)));
   background: var(--xh-form-submit-bg-active, var(--xh-bg-brand-active));
 }
 
@@ -12096,8 +12096,8 @@
 }
 
 [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator'] {
-  border-color: var(--xh-fg-disabled);
-  color: var(--xh-fg-disabled);
+  border-color: var(--xh-steps-indicator-border-disabled, var(--xh-fg-disabled));
+  color: var(--xh-steps-indicator-fg-disabled, var(--xh-fg-disabled));
 }
 
 /* 标题与说明都在右列：不给 display，网格布局会替它们块级化，
@@ -12461,7 +12461,7 @@
 
 [data-scope='table'][data-part='select-all-trigger']:is([data-state='all'], [data-state='some']),
 [data-scope='table'][data-part='row-select-trigger'][data-selected] {
-  border-color: var(--xh-table-trigger-bg-checked, var(--xh-bg-brand));
+  border-color: var(--xh-table-trigger-border-checked, var(--xh-table-trigger-bg-checked, var(--xh-bg-brand)));
   background: var(--xh-table-trigger-bg-checked, var(--xh-bg-brand));
 }
 
