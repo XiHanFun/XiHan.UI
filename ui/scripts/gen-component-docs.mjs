@@ -64,11 +64,12 @@ const vueIndex = fs.readFileSync(
   path.join(uiRoot, 'packages/adapters/vue/dist/index.d.ts'),
   'utf8',
 )
-const vueExports = new Set(
-  [...vueIndex.matchAll(/declare (?:const|function) (Xh[A-Za-z0-9]+|use[A-Za-z0-9]+)/g)].map(
-    m => m[1],
-  ),
-)
+// 产物按模块拆开之后 barrel 里不再有 declare，公开名散在 import 与末尾那条 export 列表里。
+// 两种形态都收：只认 declare 会让整列 Vue 组件在文档里凭空消失
+const vueExports = new Set([
+  ...[...vueIndex.matchAll(/declare (?:const|function) (Xh[A-Za-z0-9]+|use[A-Za-z0-9]+)/g)].map(m => m[1]),
+  ...[...vueIndex.matchAll(/\b(Xh[A-Z][A-Za-z0-9]*|use[A-Z][A-Za-z0-9]*)\b/g)].map(m => m[1]),
+])
 
 const wcDefine = fs.readFileSync(path.join(uiRoot, 'packages/adapters/web-components/src/define.ts'), 'utf8')
 const wcTags = new Set([...wcDefine.matchAll(/['"`](xh-[a-z0-9-]+)['"`]/g)].map(m => m[1]))

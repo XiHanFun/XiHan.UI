@@ -2,6 +2,9 @@
 import { describe, expect, it } from 'vitest'
 
 // 主入口在无 DOM 的 Node 下必须可 import 且不注册元素、不崩。
+//
+// 超时同样放到 30s：产物按模块拆开之后主入口要冷解析上百个文件，全仓并行跑时会超过默认的 5s，
+// 那是机器负载不是缺陷。
 describe('node import smoke（无 DOM 惰性注册）', () => {
   it('主入口可 import，导出运行时原语，不触碰 HTMLElement', async () => {
     const mod = await import('../src/index')
@@ -10,7 +13,7 @@ describe('node import smoke（无 DOM 惰性注册）', () => {
     expect(typeof mod.defineElement).toBe('function')
     expect(typeof mod.createSpreader).toBe('function')
     expect(typeof mod.wcNormalize).toBe('object')
-  })
+  }, 30_000)
 
   it('defineElement 在无 customElements 时静默跳过', async () => {
     const { defineElement } = await import('../src/index')

@@ -5,6 +5,7 @@ import { defineConfig } from 'tsdown'
  * @property {import('tsdown').Options['entry']} [entry] 入口，默认 { index: 'src/index.ts' }。
  * @property {boolean} [dts] 是否生成 .d.ts，默认 true。
  * @property {(string|RegExp)[]} [external] 额外 external。
+ * @property {boolean} [unbundle] 保留模块结构（每个源文件一个产物），默认 false。
  * @property {Partial<import('tsdown').Options>} [overrides] 透传给 tsdown 的其余选项。
  */
 
@@ -13,7 +14,7 @@ import { defineConfig } from 'tsdown'
  * @param {XihanPackageOptions} [options]
  */
 export function defineXihanPackage(options = {}) {
-  const { entry = { index: 'src/index.ts' }, dts = true, external = [], overrides = {} } = options
+  const { entry = { index: 'src/index.ts' }, dts = true, external = [], unbundle = false, overrides = {} } = options
   return defineConfig({
     entry,
     format: ['esm'],
@@ -21,6 +22,7 @@ export function defineXihanPackage(options = {}) {
     dts,
     clean: true,
     treeshake: true,
+    unbundle,
     external: [/^@xihan-ui\//, 'vue', /^@lit\//, ...external],
     ...overrides,
   })

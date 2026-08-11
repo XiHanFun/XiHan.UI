@@ -1,3 +1,3 @@
 import { defineXihanPackage } from '@xihan-ui/build'
 
-export default defineXihanPackage()
+export default defineXihanPackage({ unbundle: true })

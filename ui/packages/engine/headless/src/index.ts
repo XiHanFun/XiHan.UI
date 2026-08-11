@@ -17,8 +17,8 @@ export type { BackTopApi, BackTopBehavior, BackTopRefs, BackTopSchema, BackTopTr
 export { badgeAnatomy, badgeKeyboard, badgeMeta, connectBadge } from './badge'
 export type { BadgeApi, BadgeProps, BadgeVariant } from './badge'
 export { breadcrumbAnatomy, breadcrumbKeyboard, breadcrumbMeta, connectBreadcrumb } from './breadcrumb'
-
 export type { BreadcrumbApi, BreadcrumbLinkProps, BreadcrumbProps, BreadcrumbTranslations } from './breadcrumb'
+
 export { buttonAnatomy, buttonKeyboard, buttonMeta, connectButton } from './button'
 export type { ButtonApi, ButtonProps } from './button'
 export { buttonGroupAnatomy, buttonGroupKeyboard, buttonGroupMeta, connectButtonGroup } from './button-group'
@@ -54,8 +54,8 @@ export type { CountdownApi, CountdownFinishDetails, CountdownLive, CountdownPart
 export { applySegmentDigit, clampSegment, compareDateSegments, connectDateField, constrainSegments, DATE_FIELD_GRANULARITY, DATE_FIELD_LOCALE, DATE_FIELD_YEAR_MAX, DATE_FIELD_YEAR_MIN, DATE_FIELD_YEAR_PIVOT, DATE_SEGMENT_LABEL, DATE_SEGMENT_PLACEHOLDER, dateFieldAnatomy, dateFieldKeyboard, dateFieldMachine, dateFieldMeta, dateSegmentOrder, dateSegmentRange, dateSegmentText, granularitySegments, localeDateOrder, parseBoundary, parseIsoSegments, resolveTwoDigitYear, sameSegments, segmentMaxDigits, segmentsToIso, stepSegment, todaySegments, toValueString, wrapSegment } from './date-field'
 export type { DateDigitResult, DateFieldApi, DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState, DateFieldValueChangeDetails, DateGranularity, DateSegmentRange, DateSegments, DateSegmentType, DateTypingBuffer } from './date-field'
 export { connectDatePicker, DATE_PICKER_DEFAULT_PLACEMENT, DATE_PICKER_GRANULARITY, datePickerAnatomy, datePickerCalendarProps, datePickerFieldEndProps, datePickerFieldProps, datePickerFocusedValue, datePickerKeyboard, datePickerMachine, datePickerMeta, findDatePickerCellEl } from './date-picker'
-
 export type { DatePickerApi, DatePickerFieldApi, DatePickerFocusChangeDetails, DatePickerInputProps, DatePickerOpenChangeDetails, DatePickerRefs, DatePickerSchema, DatePickerServices, DatePickerTranslations, DatePickerValueChangeDetails, DatePickerValueSource } from './date-picker'
+
 export { connectDescriptions, descriptionsAnatomy, descriptionsKeyboard, descriptionsMeta } from './descriptions'
 export type { DescriptionsApi, DescriptionsColumns, DescriptionsPlacement, DescriptionsProps } from './descriptions'
 export { connectDialog, dialogAnatomy, dialogKeyboard, dialogMachine, dialogMeta } from './dialog'
@@ -148,6 +148,8 @@ export { connectSelect, SELECT_DEFAULT_PLACEMENT, selectAnatomy, selectItemQuery
 export type { SelectApi, SelectFocusIntent, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectRefs, SelectSchema, SelectValueChangeDetails } from './select'
 export { connectSeparator, separatorAnatomy, separatorKeyboard, separatorMeta } from './separator'
 export type { SeparatorApi, SeparatorProps } from './separator'
+// 补间缓动的取值。NumberAnimationEasing 是它的别名，别名要能被命名，这一支就必须公开
+export type { TweenEasing } from './shared/tween'
 export { connectSkeleton, skeletonAnatomy, skeletonKeyboard, skeletonMeta } from './skeleton'
 export type { SkeletonApi, SkeletonBoneProps, SkeletonProps, SkeletonVariant } from './skeleton'
 export { closestThumb, connectSlider, percentToValue, pointToValue, rangeExtent, setThumbValue, SLIDER_MAX, SLIDER_MIN, SLIDER_STEP, sliderAnatomy, sliderKeyboard, sliderMachine, sliderMeta, snapToStep, thumbBounds, valueToPercent } from './slider'
