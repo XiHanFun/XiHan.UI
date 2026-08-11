@@ -105,7 +105,7 @@ item-preview 是个空方框，作者往里塞什么都行；塞进去的图会�
 
 **状态**：`idle` · `dragging`
 
-**事件**：`FILES.SET` · `FILES.ADD` · `FILE.DELETE` · `FILES.CLEAR` · `PICKER.OPEN` · `DRAG.OVER` · `DRAG.LEAVE` · `DROP`
+**事件**：`FILES.SET` · `FILES.ADD` · `FILE.DELETE` · `FILES.CLEAR` · `PICKER.OPEN` · `DRAG.OVER` · `DRAG.LEAVE` · `DROP` · `FORM.RESET`
 
 **判据**：`canChange` · `canDrop`
 

@@ -87,7 +87,7 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.TOGGLE` · `ALL.TOGGLE`
+**事件**：`VALUE.SET` · `ITEM.TOGGLE` · `ALL.TOGGLE` · `FORM.RESET`
 
 **判据**：`editable`
 

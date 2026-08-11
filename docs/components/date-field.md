@@ -119,7 +119,7 @@ value-change 每次带上整份 ISO 串，段位被清掉时它是 null
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `VALUE.CLEAR` · `SEGMENT.STEP` · `SEGMENT.TYPE` · `SEGMENT.CLEAR` · `SEGMENT.FOCUS` · `SEGMENT.BLUR`
+**事件**：`VALUE.SET` · `VALUE.CLEAR` · `SEGMENT.STEP` · `SEGMENT.TYPE` · `SEGMENT.CLEAR` · `SEGMENT.FOCUS` · `SEGMENT.BLUR` · `FORM.RESET`
 
 **判据**：`canEdit`
 

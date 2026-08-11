@@ -106,7 +106,7 @@ complete 在每格都有字时为真，作者据此点亮提交按钮；clear �
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `VALUE.FILL` · `VALUE.CLEAR_AT` · `VALUE.CLEAR` · `INPUT.FOCUS` · `INPUT.BLUR`
+**事件**：`VALUE.SET` · `VALUE.FILL` · `VALUE.CLEAR_AT` · `VALUE.CLEAR` · `INPUT.FOCUS` · `INPUT.BLUR` · `FORM.RESET`
 
 **判据**：`canEdit`
 

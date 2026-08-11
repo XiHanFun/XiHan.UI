@@ -124,7 +124,7 @@ invalid 由宿主自己判定，不必挂在表单上；标出来之后值照样
 
 **状态**：`idle` · `spinning`
 
-**事件**：`VALUE.SET` · `VALUE.STEP` · `VALUE.TO_MIN` · `VALUE.TO_MAX` · `INPUT.BLUR` · `PRESS.START` · `PRESS.END` · `after.changeInterval`
+**事件**：`VALUE.SET` · `VALUE.STEP` · `VALUE.TO_MIN` · `VALUE.TO_MAX` · `INPUT.BLUR` · `PRESS.START` · `PRESS.END` · `after.changeInterval` · `FORM.RESET`
 
 **判据**：`canStep`
 

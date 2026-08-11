@@ -139,7 +139,7 @@ input 部件渲染出来就是一个 input，拿到它的节点就能聚焦、�
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `VALUE.CLEAR`
+**事件**：`VALUE.SET` · `VALUE.CLEAR` · `FORM.RESET`
 
 **判据**：`canEdit` · `canClear`
 

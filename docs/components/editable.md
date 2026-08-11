@@ -83,7 +83,7 @@ edit 受控就由宿主统一调度：一个开关把整张表切进编辑，放
 
 **状态**：`preview` · `edit`
 
-**事件**：`EDIT.START` · `EDIT.SUBMIT` · `EDIT.CANCEL` · `EDIT.LEAVE` · `VALUE.SET` · `CONTROLLED.EDIT` · `CONTROLLED.PREVIEW`
+**事件**：`EDIT.START` · `EDIT.SUBMIT` · `EDIT.CANCEL` · `EDIT.LEAVE` · `VALUE.SET` · `CONTROLLED.EDIT` · `CONTROLLED.PREVIEW` · `FORM.RESET`
 
 **判据**：`isEditControlled` · `canEdit` · `submitsOnLeave`
 
