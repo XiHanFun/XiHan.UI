@@ -81,7 +81,7 @@ size 改条目间距与字号，不写即缺省中档
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.FOCUS` · `GROUP.BLUR`
+**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.FOCUS` · `GROUP.BLUR` · `FORM.RESET`
 
 ## connect API
 
