@@ -9,6 +9,16 @@ const HEADLESS = 'packages/engine/headless/src'
 /** 带 name 却不认重置的，必须写明理由。 */
 const EXEMPT = {}
 
+/**
+ * 两个适配器各自唯一的接入点。17 条逐组件声明全靠这两座桥兑现，
+ * 桥一拆，17 个组件的重置同时变成空转而每一条声明看着都还在。
+ */
+const BRIDGES = [
+  ['packages/adapters/vue/src/runtime/use-machine.ts', 'attachFormReset('],
+  ['packages/adapters/vue/src/runtime/attach-form-reset.ts', 'createFormResetBridge('],
+  ['packages/adapters/web-components/src/runtime/machine-controller.ts', 'createFormResetBridge('],
+]
+
 const dirs = (await readdir(HEADLESS, { withFileTypes: true }))
   .filter(d => d.isDirectory())
   .map(d => d.name)
@@ -84,4 +94,19 @@ if (staleExempt.length) {
   process.exit(1)
 }
 
-console.log(`[check-form-reset] 通过：${fields.length} 个表单字段组件都认表单重置`)
+// 总闸：桥断了，上面 17 条逐组件的声明会一起变成空转，而每一条看着都还在
+const brokenBridges = []
+for (const [path, needle] of BRIDGES) {
+  const text = await read(path)
+  if (text == null || !text.includes(needle))
+    brokenBridges.push(`${path} 里找不到 ${needle}`)
+}
+if (brokenBridges.length) {
+  console.error('[check-form-reset] ✗ 适配器把宿主表单的 reset 送进机器的那座桥断了：')
+  for (const b of brokenBridges)
+    console.error(`  ${b}`)
+  console.error('机器那侧的声明还在，但事件永远送不进去——17 个组件的重置会一起静默失效。')
+  process.exit(1)
+}
+
+console.log(`[check-form-reset] 通过：${fields.length} 个表单字段组件都认表单重置，两个适配器的桥都在`)
