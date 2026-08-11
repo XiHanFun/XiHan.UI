@@ -266,6 +266,8 @@ export const mentionMachine = createMachine({
               offset: prop('offset'),
               // positioner 渲染成 fixed，坐标系必须跟着走视口系
               strategy: 'fixed',
+              // start / end 是逻辑对齐，RTL 下行内轴要翻过来
+              dir: prop('dir'),
             },
             result => context.set('position', result),
           )

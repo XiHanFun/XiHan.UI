@@ -65,6 +65,7 @@ export function createPositionEngine(): PositionEnginePort {
           flip: options.flip ?? DEFAULTS.flip,
           shift: options.shift ?? DEFAULTS.shift,
           padding: SHIFT_PADDING,
+          dir: options.dir,
         })
 
         // hidden 问的是锚点还看得见吗，与浮层落在哪儿无关，因此按锚点自己的裁剪祖先算

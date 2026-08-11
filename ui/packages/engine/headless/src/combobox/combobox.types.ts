@@ -1,4 +1,4 @@
-import type { Cleanup, ControlVariant, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
+import type { Cleanup, ControlVariant, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /**
@@ -137,6 +137,8 @@ export interface ComboboxSchema extends MachineSchema {
     /** 输入行为，默认 none。 */
     inputBehavior?: ComboboxInputBehavior
     placement?: Placement
+    /** 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 */
+    dir?: Direction
     offset?: number
     /** 形态：outline / subtle / ghost，决定输入行的描边与底色怎么用。 */
     variant?: ControlVariant

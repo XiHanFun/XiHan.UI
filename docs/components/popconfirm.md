@@ -57,6 +57,7 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | `closeOnEscape` | `boolean` |  |  |
 | `closeOnInteractOutside` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
+| `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
 | `onCancel` | `() => void` |  | 点了取消按钮，随后浮层收起。Escape 与层外交互只发 onOpenChange，不发这条。 |
 | `onConfirm` | `() => void` |  | 点了确认按钮，随后浮层收起。 |

@@ -48,6 +48,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
 | `placement` | `Placement` |  | 整份引导的首选放置位，默认 bottom；单步可用自己的 placement 覆盖。 |
+| `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  | 浮层与目标的间距（px）。 |
 | `closeOnEscape` | `boolean` |  |  |
 | `closeOnInteractOutside` | `boolean` |  | 层外交互关闭，默认 false：引导要退出得走 skip 或 close 这两个明确出口。 |

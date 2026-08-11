@@ -89,6 +89,7 @@ open 交给宿主持有，值、展开、聚焦日三条变化各自播报
 | `name` | `string` |  | 表单字段名；给了隐藏输入才带 name，ISO 串随表单一并提交。区间模式下是起点那一份。 |
 | `endName` | `string` |  | 区间终点那份隐藏输入的表单字段名；不给即终点不参与提交。 |
 | `placement` | `Placement` |  |  |
+| `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
 | `translations` | `Partial<DatePickerTranslations>` |  |  |
 | `closeOnSelect` | `boolean` |  | 选完即收起，默认 true。区间模式下要两端都落定才算选完。 |

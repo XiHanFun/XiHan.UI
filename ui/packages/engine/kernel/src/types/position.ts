@@ -1,3 +1,5 @@
+import type { Direction } from '../types'
+
 // PositionEnginePort：浮层定位端口的类型契约，实现在 @xihan-ui/position。
 
 export type Side = 'top' | 'right' | 'bottom' | 'left'
@@ -34,6 +36,11 @@ export interface PositionOptions {
   shift?: boolean
   /** 默认 absolute。 */
   strategy?: PositionStrategy
+  /**
+   * 文字方向，缺省 ltr。只改写行内轴上 start 与 end 的落点：RTL 下 start 与锚点右缘齐平。
+   * 块轴（left / right 两侧的纵向对齐）不受方向影响。
+   */
+  dir?: Direction
 }
 
 /** 虚拟锚点（右键菜单 / 文本选区）：只需能给出矩形。 */

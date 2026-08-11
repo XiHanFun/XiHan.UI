@@ -1,4 +1,4 @@
-import type { Cleanup, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 一步引导的声明。整份清单由作者给出，组件只按下标取用，不反查 DOM。 */
@@ -79,6 +79,8 @@ export interface TourSchema extends MachineSchema {
     defaultOpen?: boolean
     /** 整份引导的首选放置位，默认 bottom；单步可用自己的 placement 覆盖。 */
     placement?: Placement
+    /** 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 */
+    dir?: Direction
     /** 浮层与目标的间距（px）。 */
     offset?: number
     closeOnEscape?: boolean

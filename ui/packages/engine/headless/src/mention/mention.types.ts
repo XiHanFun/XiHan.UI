@@ -1,4 +1,4 @@
-import type { Cleanup, ControlVariant, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
+import type { Cleanup, ControlVariant, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 输入框渲染成哪个标签：多行 textarea（缺省）或单行 input。 */
@@ -123,6 +123,8 @@ export interface MentionSchema extends MachineSchema {
     /** 方向键走到尽头是否回绕，默认 true。 */
     loop?: boolean
     placement?: Placement
+    /** 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 */
+    dir?: Direction
     offset?: number
     translations?: MentionTranslations
     /** 形态：outline / subtle / ghost，决定输入框的描边与底色怎么用。 */
