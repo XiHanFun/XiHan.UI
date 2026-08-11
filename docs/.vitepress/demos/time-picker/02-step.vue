@@ -8,7 +8,7 @@ import {
   XhTimePickerControl,
   XhTimePickerInput,
   XhTimePickerLabel,
-  XhTimePickerOption,
+  XhTimePickerItem,
   XhTimePickerPositioner,
   XhTimePickerRoot,
   XhTimePickerTrigger,
@@ -31,10 +31,10 @@ const value = ref("09:30");
       <XhTimePickerContent>
         <!-- 时列 24 格装不下，方向键走到列尾它自己滚起来，滚的是那一列不是整个面板 -->
         <XhTimePickerColumn v-slot="{ options }" unit="hour">
-          <XhTimePickerOption v-for="o in options" :key="o" :value="o" />
+          <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
         </XhTimePickerColumn>
         <XhTimePickerColumn v-slot="{ options }" unit="minute">
-          <XhTimePickerOption v-for="o in options" :key="o" :value="o" />
+          <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
         </XhTimePickerColumn>
       </XhTimePickerContent>
     </XhTimePickerPositioner>

@@ -28,21 +28,21 @@ const DAY_PERIOD_SEG = 'input[3]'
 const HOUR_COL = 'column[0]'
 const MINUTE_COL = 'column[1]'
 const SECOND_COL = 'column[2]'
-const HOUR_08 = 'option[0]'
-const HOUR_09 = 'option[1]'
-const HOUR_10 = 'option[2]'
-const HOUR_11 = 'option[3]'
-const MINUTE_00 = 'option[4]'
-const MINUTE_30 = 'option[5]'
-const SECOND_00 = 'option[6]'
+const HOUR_08 = 'item[0]'
+const HOUR_09 = 'item[1]'
+const HOUR_10 = 'item[2]'
+const HOUR_11 = 'item[3]'
+const MINUTE_00 = 'item[4]'
+const MINUTE_30 = 'item[5]'
+const SECOND_00 = 'item[6]'
 
 const segment = (name: string): FixtureNode => ({ part: 'input', tag: 'span', attrs: { segment: name } })
-const option = (value: string): FixtureNode => ({ part: 'option', attrs: { value } })
+const item = (value: string): FixtureNode => ({ part: 'item', attrs: { value } })
 function column(unit: string, values: readonly string[]): FixtureNode {
   return {
     part: 'column',
     attrs: { unit },
-    children: values.map(option),
+    children: values.map(item),
   }
 }
 
@@ -129,10 +129,10 @@ export const timePickerSuite: ConformanceSuite = {
           MINUTE_30,
           SECOND_COL,
           SECOND_00,
-          'option[7]',
+          'item[7]',
           'hidden-input',
         ],
-        counts: { input: 4, column: 3, option: 8 },
+        counts: { input: 4, column: 3, item: 8 },
         activeElement: null,
         parts: {
           'root': { 'data-state': 'closed', 'data-empty': '', 'data-disabled': null, 'data-invalid': null },
@@ -296,7 +296,7 @@ export const timePickerSuite: ConformanceSuite = {
     {
       name: '上下键在列内走、Home/End 到首末格',
       spec: { apg: `${APG}#keyboardinteraction` },
-      covers: ['time-picker.kbd.option-next', 'time-picker.kbd.option-prev', 'time-picker.kbd.option-first', 'time-picker.kbd.option-last'],
+      covers: ['time-picker.kbd.item-next', 'time-picker.kbd.item-prev', 'time-picker.kbd.item-first', 'time-picker.kbd.item-last'],
       props: { ...BASE, defaultValue: '09:30' },
       steps: [
         { kind: 'click', part: 'trigger' },

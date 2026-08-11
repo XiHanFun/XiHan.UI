@@ -7,7 +7,7 @@ import {
   XhTimePickerControl,
   XhTimePickerInput,
   XhTimePickerLabel,
-  XhTimePickerOption,
+  XhTimePickerItem,
   XhTimePickerPositioner,
   XhTimePickerRoot,
   XhTimePickerTrigger,
@@ -29,10 +29,10 @@ const value = ref("");
       <XhTimePickerContent>
         <!-- 时列只剩 09 到 18；选到 18 时分列就只剩 00 -->
         <XhTimePickerColumn v-slot="{ options }" unit="hour">
-          <XhTimePickerOption v-for="o in options" :key="o" :value="o" />
+          <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
         </XhTimePickerColumn>
         <XhTimePickerColumn v-slot="{ options }" unit="minute">
-          <XhTimePickerOption v-for="o in options" :key="o" :value="o" />
+          <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
         </XhTimePickerColumn>
       </XhTimePickerContent>
     </XhTimePickerPositioner>

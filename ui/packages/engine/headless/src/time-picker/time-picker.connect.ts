@@ -30,13 +30,13 @@ import {
   timePickerAnatomy,
   timePickerColumnQuery,
   timePickerInputQuery,
-  timePickerOptionQuery,
+  timePickerItemQuery,
 } from './time-picker.anatomy'
 import {
   resolveTimeStep,
   TIME_PICKER_DEFAULT_PLACEMENT,
   timePickerColumnsFor,
-  timePickerOptionValue,
+  timePickerItemValue,
 } from './time-picker.machine'
 
 const parts = timePickerAnatomy.build()
@@ -90,7 +90,7 @@ export function connectTimePicker<T extends PropTypes>(
 
   const focusedSegment = context.get('focusedSegment')
   const focusedColumn = context.get('focusedColumn')
-  const focusedOption = context.get('focusedOption')
+  const focusedItem = context.get('focusedItem')
 
   /**
    * 段间 roving tabindex 的唯一锚点：焦点在组内跟焦点走，否则落在第一段。
@@ -115,7 +115,7 @@ export function connectTimePicker<T extends PropTypes>(
   /** 这一列此刻选中的那个值（两位补零）；该段还空着时为 null。 */
   const selectedIn = (unit: TimePickerColumnUnit): string | null => {
     const current = segmentNumber(draft, unit, hourCycle)
-    return current == null ? null : timePickerOptionValue(current)
+    return current == null ? null : timePickerItemValue(current)
   }
 
   /**
@@ -124,19 +124,19 @@ export function connectTimePicker<T extends PropTypes>(
    */
   const anchorOf = (unit: TimePickerColumnUnit): string | null => {
     const options = optionsOf(unit)
-    if (focusedColumn === unit && focusedOption != null && options.includes(focusedOption))
-      return focusedOption
+    if (focusedColumn === unit && focusedItem != null && options.includes(focusedItem))
+      return focusedItem
     const selected = selectedIn(unit)
     if (selected != null && options.includes(selected))
       return selected
     return options[0] ?? null
   }
 
-  const isOptionSelected = ({ unit, value: option }: { unit: TimePickerColumnUnit, value: string }): boolean =>
+  const itemSelected = ({ unit, value: option }: { unit: TimePickerColumnUnit, value: string }): boolean =>
     selectedIn(unit) === option
 
   // 落在 min/max 之外的值不在生成列表里；整个控件禁用时全列都不可选
-  const isOptionDisabled = ({ unit, value: option }: { unit: TimePickerColumnUnit, value: string }): boolean =>
+  const itemDisabled = ({ unit, value: option }: { unit: TimePickerColumnUnit, value: string }): boolean =>
     disabled || !optionsOf(unit).includes(option)
 
   const segmentTextOf = (segment: TimeSegmentType): string =>
@@ -163,15 +163,15 @@ export function connectTimePicker<T extends PropTypes>(
 
   // ── 浮层：列内上下走、列间左右换，集合同样只在事件那一刻现查 ──
 
-  const optionsIn = (column: HTMLElement | null): HTMLElement[] =>
-    queryItems(column, timePickerOptionQuery)
+  const itemsIn = (column: HTMLElement | null): HTMLElement[] =>
+    queryItems(column, timePickerItemQuery)
 
   /** 列内移动，走到尽头回绕；被裁掉的那些格自报 aria-disabled，自动跳过。 */
   const moveInColumn = (content: HTMLElement, intent: NavIntent): void => {
     const unit = focusedColumn ?? columns[0]?.unit ?? null
     if (unit == null)
       return
-    const list = optionsIn(findTimePickerColumn(content, unit))
+    const list = itemsIn(findTimePickerColumn(content, unit))
     focusItem(navigateItems(list, anchorOf(unit), intent, { loop: true }))
   }
 
@@ -182,20 +182,20 @@ export function connectTimePicker<T extends PropTypes>(
     const unit = itemValue(target) as TimePickerColumnUnit | null
     if (!target || unit == null)
       return
-    const list = optionsIn(target)
+    const list = itemsIn(target)
     const anchor = anchorOf(unit)
     focusItem(list.find(el => itemValue(el) === anchor) ?? navigateItems(list, null, 'first'))
   }
 
   /** 确认键：认焦点当下所在的那一格，自报禁用的不认。 */
   const commitFocused = (content: HTMLElement): void => {
-    if (focusedColumn == null || focusedOption == null)
+    if (focusedColumn == null || focusedItem == null)
       return
-    const el = optionsIn(findTimePickerColumn(content, focusedColumn))
-      .find(option => itemValue(option) === focusedOption)
+    const el = itemsIn(findTimePickerColumn(content, focusedColumn))
+      .find(option => itemValue(option) === focusedItem)
     if (!el || isItemDisabled(el))
       return
-    send({ type: 'OPTION.SELECT', unit: focusedColumn, value: focusedOption })
+    send({ type: 'ITEM.SELECT', unit: focusedColumn, value: focusedItem })
   }
 
   return {
@@ -213,11 +213,11 @@ export function connectTimePicker<T extends PropTypes>(
     focusedSegment,
     columns,
     focusedColumn,
-    focusedOption,
+    focusedItem,
     canClear,
     getSegmentText: ({ segment }) => segmentTextOf(segment),
-    isOptionSelected,
-    isOptionDisabled,
+    isItemSelected: itemSelected,
+    isItemDisabled: itemDisabled,
     setOpen: (next) => {
       if (next !== open)
         send(next ? { type: 'OPEN' } : { type: 'CLOSE' })
@@ -492,11 +492,11 @@ export function connectTimePicker<T extends PropTypes>(
       })
     },
 
-    getOptionProps: ({ unit, value: option }) => {
-      const selected = isOptionSelected({ unit, value: option })
-      const optionDisabled = isOptionDisabled({ unit, value: option })
+    getItemProps: ({ unit, value: option }) => {
+      const selected = itemSelected({ unit, value: option })
+      const optionDisabled = itemDisabled({ unit, value: option })
       return normalize.element({
-        ...parts.option.attrs,
+        ...parts.item.attrs,
         // 导航与选中都以此为选项身份
         [ITEM_VALUE_ATTR]: option,
         'role': 'option',
@@ -507,12 +507,12 @@ export function connectTimePicker<T extends PropTypes>(
         'data-state': selected ? 'checked' : 'unchecked',
         'data-disabled': dataAttr(optionDisabled),
         // 焦点所在与选中互相独立：可以停在一个没被选中的格上
-        'data-highlighted': dataAttr(focusedColumn === unit && focusedOption === option),
+        'data-highlighted': dataAttr(focusedColumn === unit && focusedItem === option),
         // roving tabindex：每列只有锚点那一格留在 Tab 序列内
         'tabindex': anchorOf(unit) === option ? 0 : -1,
         'onClick': () => {
           if (!optionDisabled)
-            send({ type: 'OPTION.SELECT', unit, value: option })
+            send({ type: 'ITEM.SELECT', unit, value: option })
         },
         // 焦点是事实不是许可：禁用的格被点到也记锚点，方向键才知道从哪儿起步
         'onFocus': () => send({ type: 'OPTION.FOCUS', unit, value: option }),

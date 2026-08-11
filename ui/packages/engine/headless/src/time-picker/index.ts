@@ -1,10 +1,10 @@
 export {
   findTimePickerColumn,
-  findTimePickerOption,
+  findTimePickerItem,
   timePickerAnatomy,
   timePickerColumnQuery,
   timePickerInputQuery,
-  timePickerOptionQuery,
+  timePickerItemQuery,
 } from './time-picker.anatomy'
 export { connectTimePicker } from './time-picker.connect'
 export { timePickerKeyboard } from './time-picker.keyboard'
@@ -14,8 +14,8 @@ export {
   TIME_PICKER_STEP,
   timePickerColumns,
   timePickerColumnsFor,
+  timePickerItemValue,
   timePickerMachine,
-  timePickerOptionValue,
 } from './time-picker.machine'
 export { timePickerMeta } from './time-picker.meta'
 export type {
@@ -25,8 +25,8 @@ export type {
   TimePickerColumnsOptions,
   TimePickerColumnUnit,
   TimePickerInputProps,
+  TimePickerItemProps,
   TimePickerOpenChangeDetails,
-  TimePickerOptionProps,
   TimePickerRefs,
   TimePickerSchema,
   TimePickerValueChangeDetails,

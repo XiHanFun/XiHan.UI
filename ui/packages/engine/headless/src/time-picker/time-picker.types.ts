@@ -69,7 +69,7 @@ export interface TimePickerColumnProps {
 }
 
 /** 选项自报所属的列与自己的值（两位补零的显示串）。 */
-export interface TimePickerOptionProps {
+export interface TimePickerItemProps {
   unit: TimePickerColumnUnit
   value: string
 }
@@ -128,7 +128,7 @@ export interface TimePickerSchema extends MachineSchema {
     /** 焦点所在的列；浮层收起时为 null。 */
     focusedColumn: TimePickerColumnUnit | null
     /** 焦点所在列里的那个选项值；浮层收起时为 null。 */
-    focusedOption: string | null
+    focusedItem: string | null
     /** 关闭时是否把焦点归还触发器；Tab 与层外交互关闭时为 false。 */
     returnFocus: boolean
   }
@@ -159,7 +159,7 @@ export interface TimePickerSchema extends MachineSchema {
     /** 焦点落到某个选项上（roving tabindex 的锚点跟着它走）。 */
     | { type: 'OPTION.FOCUS', unit: TimePickerColumnUnit, value: string }
     /** 选中某列的一个值：只改那一段，浮层不收起（其余列还要接着挑）。 */
-    | { type: 'OPTION.SELECT', unit: TimePickerColumnUnit, value: string }
+    | { type: 'ITEM.SELECT', unit: TimePickerColumnUnit, value: string }
   tag: never
   guard: 'isOpenControlled' | 'canEdit'
   action:
@@ -167,10 +167,10 @@ export interface TimePickerSchema extends MachineSchema {
     | 'invokeOnClose'
     | 'syncOpen'
     | 'setReturnFocus'
-    | 'setInitialFocusedOption'
-    | 'setFocusedOption'
-    | 'clearFocusedOption'
-    | 'selectOption'
+    | 'setInitialFocusedItem'
+    | 'setFocusedItem'
+    | 'clearFocusedItem'
+    | 'selectItem'
     | 'setValue'
     | 'clearValue'
     | 'stepSegment'
@@ -206,14 +206,14 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
   /** 此刻该排哪几列、每列有哪些可选值（已按 step 与 min/max 裁过）。作者据此渲染浮层。 */
   columns: TimePickerColumn[]
   focusedColumn: TimePickerColumnUnit | null
-  focusedOption: string | null
+  focusedItem: string | null
   /** 清空按钮此刻可不可按。 */
   canClear: boolean
   /** 某一段该显示的文字（空段是占位串）。两个适配器都拿它填文本，保证同构。 */
   getSegmentText: (props: TimePickerInputProps) => string
-  isOptionSelected: (props: TimePickerOptionProps) => boolean
+  isItemSelected: (props: TimePickerItemProps) => boolean
   /** 落在 min/max 之外（或整个控件禁用）：仍在列表里，但不可选、方向键跳过。 */
-  isOptionDisabled: (props: TimePickerOptionProps) => boolean
+  isItemDisabled: (props: TimePickerItemProps) => boolean
   setOpen: (next: boolean) => void
   setValue: (next: string) => void
   clear: () => void
@@ -227,7 +227,7 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
   getColumnProps: (props: TimePickerColumnProps) => T['element']
-  getOptionProps: (props: TimePickerOptionProps) => T['element']
+  getItemProps: (props: TimePickerItemProps) => T['element']
   /** 表单出口：一份 type=hidden 的原生输入，随表单提交 ISO 串。 */
   getHiddenInputProps: () => T['input']
 }

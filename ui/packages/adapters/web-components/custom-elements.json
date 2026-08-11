@@ -23196,7 +23196,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-time-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/input（多个）/trigger/\nclear-trigger/positioner/content/column（多个）/option（多个）/hidden-input 角色节点，\n元素跑 time-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。\n\n两条改值的路写同一份值：输入行里逐段敲（每段是 role=spinbutton，上下键加减、数字直输自动跳段），\n浮层里按列挑（每列是一个 listbox，上下键在列内走、左右键换列、Enter 选中）。\n\n段与格子上的文字由元素填；作者自己写了内容的不碰。",
+          "description": "`<xh-time-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/input（多个）/trigger/\nclear-trigger/positioner/content/column（多个）/item（多个）/hidden-input 角色节点，\n元素跑 time-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。\n\n两条改值的路写同一份值：输入行里逐段敲（每段是 role=spinbutton，上下键加减、数字直输自动跳段），\n浮层里按列挑（每列是一个 listbox，上下键在列内走、左右键换列、Enter 选中）。\n\n段与格子上的文字由元素填；作者自己写了内容的不碰。",
           "name": "XhTimePickerElement",
           "cssParts": [
             {
@@ -23237,7 +23237,7 @@
             },
             {
               "description": "role=option 的一格，须自带 value 属性（两位补零的显示串）",
-              "name": "option"
+              "name": "item"
             },
             {
               "description": "type=hidden 的表单出口，值是完整 ISO 串",
