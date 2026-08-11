@@ -35,7 +35,7 @@
     block-size: var(--xh-time-picker-control-h, var(--xh-control-h-md));
     padding-inline: var(--xh-time-picker-control-px, var(--xh-control-px-md));
     padding-block: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-time-picker-control-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-time-picker-control-border, var(--xh-border-control));
     border-radius: var(--xh-time-picker-control-radius, var(--xh-shape-control));
     background: var(--xh-time-picker-control-bg, var(--xh-bg-canvas));
     color: var(--xh-time-picker-control-fg, var(--xh-fg-default));
@@ -54,7 +54,7 @@
 
   /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
   [data-scope='time-picker'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
-    border-color: var(--xh-time-picker-control-border-hover, var(--xh-border-strong));
+    border-color: var(--xh-time-picker-control-border-hover, var(--xh-border-control-hover));
   }
 
   /* 焦点真正落在段或按钮上，但整块看起来才是一个控件：内部有焦点时整框亮起来。

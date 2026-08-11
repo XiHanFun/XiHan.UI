@@ -211,7 +211,7 @@
   }
 
   [data-scope='tour'][data-part='prev-trigger'] {
-    border-color: var(--xh-border-default);
+    border-color: var(--xh-border-control);
     color: var(--xh-fg-default);
   }
 

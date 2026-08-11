@@ -32,7 +32,7 @@
     min-block-size: var(--xh-file-upload-dropzone-min-h, 8rem);
     padding-block: var(--xh-file-upload-dropzone-py, var(--xh-space-5));
     padding-inline: var(--xh-file-upload-dropzone-px, var(--xh-space-4));
-    border: var(--xh-stroke-thick) dashed var(--xh-file-upload-dropzone-border, var(--xh-border-default));
+    border: var(--xh-stroke-thick) dashed var(--xh-file-upload-dropzone-border, var(--xh-border-control));
     border-radius: var(--xh-file-upload-dropzone-radius, var(--xh-shape-surface));
     background: var(--xh-file-upload-dropzone-bg, var(--xh-bg-canvas));
     color: var(--xh-file-upload-dropzone-fg, var(--xh-fg-muted));
@@ -51,7 +51,7 @@
 
   /* hover 只在中性态换描边：invalid 与 dragging 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
   [data-scope='file-upload'][data-part='dropzone']:hover:not([data-disabled], [data-invalid], [data-dragging]) {
-    border-color: var(--xh-file-upload-dropzone-border-hover, var(--xh-border-strong));
+    border-color: var(--xh-file-upload-dropzone-border-hover, var(--xh-border-control-hover));
   }
 
   /* 投放区自己承载焦点（它就是那个大按钮），所以画环而不是 outline:none */
@@ -86,7 +86,7 @@
     gap: var(--xh-file-upload-trigger-gap, var(--xh-control-gap-md));
     block-size: var(--xh-file-upload-trigger-h, var(--xh-control-h-md));
     padding-inline: var(--xh-file-upload-trigger-px, var(--xh-control-px-md));
-    border: var(--xh-stroke-thin) solid var(--xh-file-upload-trigger-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-file-upload-trigger-border, var(--xh-border-control));
     border-radius: var(--xh-file-upload-trigger-radius, var(--xh-shape-control));
     background: var(--xh-file-upload-trigger-bg, var(--xh-bg-surface));
     color: var(--xh-file-upload-trigger-fg, var(--xh-fg-default));

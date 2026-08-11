@@ -188,7 +188,7 @@
 
   /* 今天：只描一圈边，不占用选中色——今天与被选中是两件事，得能同时看得出来 */
   [data-scope='calendar'][data-part='cell-trigger'][data-today] {
-    border-color: var(--xh-calendar-today-border, var(--xh-border-strong));
+    border-color: var(--xh-calendar-today-border, var(--xh-border-control));
   }
 
   [data-scope='calendar'][data-part='cell-trigger'][data-selected] {

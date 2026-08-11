@@ -117,7 +117,7 @@
     gap: var(--xh-dynamic-input-action-gap, var(--xh-space-1));
     block-size: var(--xh-dynamic-input-add-height, var(--xh-control-h-md));
     padding-inline: var(--xh-dynamic-input-add-px, var(--xh-control-px-md));
-    border: var(--xh-stroke-thin) dashed var(--xh-dynamic-input-add-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) dashed var(--xh-dynamic-input-add-border, var(--xh-border-control));
     border-radius: var(--xh-dynamic-input-add-radius, var(--xh-shape-control));
     background: var(--xh-dynamic-input-add-bg, transparent);
     color: var(--xh-dynamic-input-add-fg, var(--xh-fg-brand));
@@ -135,7 +135,7 @@
   }
 
   [data-scope='dynamic-input'][data-part='add-trigger']:hover:not([aria-disabled='true']) {
-    border-color: var(--xh-dynamic-input-add-border-hover, var(--xh-border-strong));
+    border-color: var(--xh-dynamic-input-add-border-hover, var(--xh-border-control-hover));
     background: var(--xh-dynamic-input-add-bg-hover, var(--xh-bg-subtle-hover));
   }
 

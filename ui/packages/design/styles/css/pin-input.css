@@ -8,8 +8,8 @@
     --xh-_pin-input-label-font-size: var(--xh-text-label-size);
     /* 形态档只换这三个私有槽，缺省这一份就是描边式（描边 + 画布底） */
     --xh-_pin-input-box-bg: var(--xh-bg-canvas);
-    --xh-_pin-input-box-border: var(--xh-border-default);
-    --xh-_pin-input-box-border-hover: var(--xh-border-strong);
+    --xh-_pin-input-box-border: var(--xh-border-control);
+    --xh-_pin-input-box-border-hover: var(--xh-border-control-hover);
     /* 聚焦环与填满态的强调色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的取值 */
     --xh-_pin-input-ring: var(--xh-ring-focus);
     --xh-_pin-input-accent: var(--xh-_tone, var(--xh-bg-brand));
@@ -29,22 +29,22 @@
      不做 solid：实心填充盖住了"这里能打字"这件事，输入框用不上它 */
   [data-scope='pin-input'][data-part='root'][data-variant='outline'] {
     --xh-_pin-input-box-bg: var(--xh-bg-canvas);
-    --xh-_pin-input-box-border: var(--xh-border-default);
-    --xh-_pin-input-box-border-hover: var(--xh-border-strong);
+    --xh-_pin-input-box-border: var(--xh-border-control);
+    --xh-_pin-input-box-border-hover: var(--xh-border-control-hover);
   }
 
   /* 填充式：底色说明这里是一格输入位，描边让位给底色 */
   [data-scope='pin-input'][data-part='root'][data-variant='subtle'] {
     --xh-_pin-input-box-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_pin-input-box-border: transparent;
-    --xh-_pin-input-box-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+    --xh-_pin-input-box-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
   /* 无边框、透明底：静息时格子完全隐入背景，可见反馈全靠悬停描边与聚焦环 */
   [data-scope='pin-input'][data-part='root'][data-variant='ghost'] {
     --xh-_pin-input-box-bg: transparent;
     --xh-_pin-input-box-border: transparent;
-    --xh-_pin-input-box-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+    --xh-_pin-input-box-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
   /* —— 尺寸 —— */

@@ -12,18 +12,18 @@
 
     /* 形态档只换这几个私有槽：输入框的底与描边，加减钮的底与描边 */
     --xh-_number-field-bg: var(--xh-bg-canvas);
-    --xh-_number-field-border: var(--xh-border-default);
-    --xh-_number-field-border-hover: var(--xh-border-strong);
+    --xh-_number-field-border: var(--xh-border-control);
+    --xh-_number-field-border-hover: var(--xh-border-control-hover);
     --xh-_number-field-trigger-bg: var(--xh-bg-subtle);
     --xh-_number-field-trigger-bg-hover: var(--xh-bg-subtle-hover);
     --xh-_number-field-trigger-bg-active: var(--xh-bg-subtle-active);
-    --xh-_number-field-trigger-border: var(--xh-border-default);
-    --xh-_number-field-trigger-border-hover: var(--xh-border-strong);
+    --xh-_number-field-trigger-border: var(--xh-border-control);
+    --xh-_number-field-trigger-border-hover: var(--xh-border-control-hover);
 
     /* 语气只落在聚焦这一处：环与聚焦态描边。框里的数字不归它管。
        没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色与常态描边 */
     --xh-_number-field-ring: var(--xh-ring-focus);
-    --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, var(--xh-border-default)));
+    --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, var(--xh-border-control)));
 
     display: inline-flex;
     flex-direction: column;
@@ -58,14 +58,14 @@
      输入框没有实心档：填满一个要往里打字的框，字与底就没法同时读 */
   [data-scope='number-field'][data-part='root'][data-variant='outline'] {
     --xh-_number-field-bg: var(--xh-bg-canvas);
-    --xh-_number-field-border: var(--xh-border-default);
-    --xh-_number-field-border-hover: var(--xh-border-strong);
+    --xh-_number-field-border: var(--xh-border-control);
+    --xh-_number-field-border-hover: var(--xh-border-control-hover);
     --xh-_number-field-trigger-bg: var(--xh-bg-subtle);
     --xh-_number-field-trigger-bg-hover: var(--xh-bg-subtle-hover);
     --xh-_number-field-trigger-bg-active: var(--xh-bg-subtle-active);
-    --xh-_number-field-trigger-border: var(--xh-border-default);
-    --xh-_number-field-trigger-border-hover: var(--xh-border-strong);
-    --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, var(--xh-border-default)));
+    --xh-_number-field-trigger-border: var(--xh-border-control);
+    --xh-_number-field-trigger-border-hover: var(--xh-border-control-hover);
+    --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, var(--xh-border-control)));
   }
 
   /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
@@ -73,26 +73,26 @@
   [data-scope='number-field'][data-part='root'][data-variant='subtle'] {
     --xh-_number-field-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_number-field-border: transparent;
-    --xh-_number-field-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+    --xh-_number-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
     --xh-_number-field-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_number-field-trigger-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
     --xh-_number-field-trigger-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
     --xh-_number-field-trigger-border: transparent;
-    --xh-_number-field-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-default));
-    --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-default));
+    --xh-_number-field-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+    --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control));
   }
 
   /* 无框：底与描边都透明，平时只看得见数字，悬停与聚焦才浮出边界 */
   [data-scope='number-field'][data-part='root'][data-variant='ghost'] {
     --xh-_number-field-bg: transparent;
     --xh-_number-field-border: transparent;
-    --xh-_number-field-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+    --xh-_number-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
     --xh-_number-field-trigger-bg: transparent;
     --xh-_number-field-trigger-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-hover));
     --xh-_number-field-trigger-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
     --xh-_number-field-trigger-border: transparent;
-    --xh-_number-field-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-default));
-    --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-default));
+    --xh-_number-field-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+    --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control));
   }
 
   [data-scope='number-field'][data-part='label'] {

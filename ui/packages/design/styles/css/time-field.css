@@ -8,8 +8,8 @@
     --xh-_time-field-label-font-size: var(--xh-text-label-size);
     /* 形态档只换这三个私有槽：底色与两档描边 */
     --xh-_time-field-control-bg: var(--xh-bg-canvas);
-    --xh-_time-field-control-border: var(--xh-border-default);
-    --xh-_time-field-control-border-hover: var(--xh-border-strong);
+    --xh-_time-field-control-border: var(--xh-border-control);
+    --xh-_time-field-control-border-hover: var(--xh-border-control-hover);
     /* 聚焦描边与段位反白随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回原来的焦点色与品牌色 */
     --xh-_time-field-ring: var(--xh-ring-focus);
     --xh-_time-field-segment-bg: var(--xh-_tone, var(--xh-bg-brand));
@@ -39,15 +39,15 @@
   /* 描边式：与缺省等价，写出来是为了三档形态在皮肤里都看得见 */
   [data-scope='time-field'][data-part='root'][data-variant='outline'] {
     --xh-_time-field-control-bg: var(--xh-bg-canvas);
-    --xh-_time-field-control-border: var(--xh-border-default);
-    --xh-_time-field-control-border-hover: var(--xh-border-strong);
+    --xh-_time-field-control-border: var(--xh-border-control);
+    --xh-_time-field-control-border-hover: var(--xh-border-control-hover);
   }
 
   /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
   [data-scope='time-field'][data-part='root'][data-variant='subtle'] {
     --xh-_time-field-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_time-field-control-border: transparent;
-    --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+    --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
   /* 无框式：底与边都让开，可见反馈只剩聚焦那一档 */

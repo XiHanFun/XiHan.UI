@@ -149,7 +149,7 @@
   inline-size: var(--xh-back-top-trigger-size, var(--xh-_back-top-size));
   block-size: var(--xh-back-top-trigger-size, var(--xh-_back-top-size));
   padding: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-back-top-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-back-top-border, var(--xh-border-control));
   border-radius: var(--xh-back-top-radius, var(--xh-shape-pill));
   /* 使用者令牌排在语气之前：写了覆盖钩子就以它为准，没写才退到语气，最后才是中性缺省 */
   background: var(--xh-back-top-bg, var(--xh-bg-surface-raised));
@@ -165,7 +165,7 @@
 /* 悬停只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
 @media (hover: hover) {
   [data-scope='back-top'][data-part='trigger']:hover {
-    border-color: var(--xh-back-top-border-hover, var(--xh-border-strong));
+    border-color: var(--xh-back-top-border-hover, var(--xh-border-control-hover));
     background: var(--xh-back-top-bg-hover, var(--xh-bg-subtle-hover));
   }
 }
@@ -257,7 +257,7 @@
 /* 段的描边归组画（两个适配器各一条选择器：Vue 的段就是直接子节点，WC 的段在行为宿主里面）：合边本来就是组的事，按钮那边没有描边色的槽位可以流 */
 [data-scope='button-group'][data-part='root'][data-variant='outline'] > *,
 [data-scope='button-group'][data-part='root'][data-variant='outline'] > * [data-scope='button'][data-part='root'] {
-  border-color: var(--xh-_tone-border, var(--xh-border-default));
+  border-color: var(--xh-_tone-border, var(--xh-border-control));
 }
 
 /* —— 合边 —— */
@@ -651,7 +651,7 @@
   gap: var(--xh-dynamic-input-action-gap, var(--xh-space-1));
   block-size: var(--xh-dynamic-input-add-height, var(--xh-control-h-md));
   padding-inline: var(--xh-dynamic-input-add-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) dashed var(--xh-dynamic-input-add-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) dashed var(--xh-dynamic-input-add-border, var(--xh-border-control));
   border-radius: var(--xh-dynamic-input-add-radius, var(--xh-shape-control));
   background: var(--xh-dynamic-input-add-bg, transparent);
   color: var(--xh-dynamic-input-add-fg, var(--xh-fg-brand));
@@ -669,7 +669,7 @@
 }
 
 [data-scope='dynamic-input'][data-part='add-trigger']:hover:not([aria-disabled='true']) {
-  border-color: var(--xh-dynamic-input-add-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-dynamic-input-add-border-hover, var(--xh-border-control-hover));
   background: var(--xh-dynamic-input-add-bg-hover, var(--xh-bg-subtle-hover));
 }
 
@@ -883,7 +883,7 @@
   inline-size: var(--xh-_float-button-size);
   block-size: var(--xh-_float-button-size);
   padding: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-float-button-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-float-button-border, var(--xh-border-control));
   border-radius: var(--xh-_float-button-radius);
   /* 使用者令牌排在缺省之前：写了覆盖钩子就以它为准，没写才退到中性缺省 */
   background: var(--xh-float-button-bg, var(--xh-bg-surface-raised));
@@ -899,7 +899,7 @@
 /* 悬停只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
 @media (hover: hover) {
   [data-scope='float-button'][data-part='trigger']:not([data-disabled]):hover {
-    border-color: var(--xh-float-button-border-hover, var(--xh-border-strong));
+    border-color: var(--xh-float-button-border-hover, var(--xh-border-control-hover));
     background: var(--xh-float-button-bg-hover, var(--xh-bg-subtle-hover));
   }
 }
@@ -2089,8 +2089,8 @@
 
   /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
   --xh-_mention-input-bg: var(--xh-bg-canvas);
-  --xh-_mention-input-border: var(--xh-border-default);
-  --xh-_mention-input-border-hover: var(--xh-border-strong);
+  --xh-_mention-input-border: var(--xh-border-control);
+  --xh-_mention-input-border-hover: var(--xh-border-control-hover);
 
   /* 强调色随语气走，只落在聚焦与高亮上，正文文字色不动。
      没写 data-tone 时 --xh-_tone 没被声明，三处都退回原来的取值 */
@@ -2127,21 +2127,21 @@
    形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
 [data-scope='mention'][data-part='root'][data-variant='outline'] {
   --xh-_mention-input-bg: var(--xh-bg-canvas);
-  --xh-_mention-input-border: var(--xh-border-default);
-  --xh-_mention-input-border-hover: var(--xh-border-strong);
+  --xh-_mention-input-border: var(--xh-border-control);
+  --xh-_mention-input-border-hover: var(--xh-border-control-hover);
 }
 
 /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
 [data-scope='mention'][data-part='root'][data-variant='subtle'] {
   --xh-_mention-input-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_mention-input-border: transparent;
-  --xh-_mention-input-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_mention-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 [data-scope='mention'][data-part='root'][data-variant='ghost'] {
   --xh-_mention-input-bg: transparent;
   --xh-_mention-input-border: transparent;
-  --xh-_mention-input-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_mention-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 /* 框与聚焦环都长在输入框自己身上：这里没有把输入框和别的控件裹成一体的输入行，
@@ -2578,8 +2578,8 @@
 
   /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
   --xh-_popselect-trigger-bg: var(--xh-bg-canvas);
-  --xh-_popselect-trigger-border: var(--xh-border-default);
-  --xh-_popselect-trigger-border-hover: var(--xh-border-strong);
+  --xh-_popselect-trigger-border: var(--xh-border-control);
+  --xh-_popselect-trigger-border-hover: var(--xh-border-control-hover);
 
   /* 强调色随语气走，只落在聚焦与选中上，正文文字色不动。
      没写 data-tone 时 --xh-_tone 没被声明，三处都退回原来的取值 */
@@ -2611,21 +2611,21 @@
 /* 形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
 [data-scope='popselect'][data-part='root'][data-variant='outline'] {
   --xh-_popselect-trigger-bg: var(--xh-bg-canvas);
-  --xh-_popselect-trigger-border: var(--xh-border-default);
-  --xh-_popselect-trigger-border-hover: var(--xh-border-strong);
+  --xh-_popselect-trigger-border: var(--xh-border-control);
+  --xh-_popselect-trigger-border-hover: var(--xh-border-control-hover);
 }
 
 /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
 [data-scope='popselect'][data-part='root'][data-variant='subtle'] {
   --xh-_popselect-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_popselect-trigger-border: transparent;
-  --xh-_popselect-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_popselect-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 [data-scope='popselect'][data-part='root'][data-variant='ghost'] {
   --xh-_popselect-trigger-bg: transparent;
   --xh-_popselect-trigger-border: transparent;
-  --xh-_popselect-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_popselect-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 [data-scope='popselect'][data-part='trigger'] {
@@ -4552,7 +4552,7 @@
   --xh-_bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
   --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
 
-  border-color: var(--xh-_tone-border, var(--xh-border-default));
+  border-color: var(--xh-_tone-border, var(--xh-border-control));
 }
 
 [data-scope='button'][data-part='root'][data-variant='ghost'] {
@@ -4770,7 +4770,7 @@
 
 /* 今天：只描一圈边，不占用选中色——今天与被选中是两件事，得能同时看得出来 */
 [data-scope='calendar'][data-part='cell-trigger'][data-today] {
-  border-color: var(--xh-calendar-today-border, var(--xh-border-strong));
+  border-color: var(--xh-calendar-today-border, var(--xh-border-control));
 }
 
 [data-scope='calendar'][data-part='cell-trigger'][data-selected] {
@@ -4999,7 +4999,7 @@
   justify-content: center;
   inline-size: var(--xh-carousel-trigger-size, var(--xh-control-h-md));
   block-size: var(--xh-carousel-trigger-size, var(--xh-control-h-md));
-  border: var(--xh-stroke-thin) solid var(--xh-carousel-trigger-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-carousel-trigger-border, var(--xh-border-control));
   border-radius: var(--xh-carousel-trigger-radius, var(--xh-shape-pill));
   background: var(--xh-carousel-trigger-bg, var(--xh-bg-surface));
   color: var(--xh-carousel-trigger-fg, var(--xh-fg-default));
@@ -5081,7 +5081,7 @@
   padding: 0;
   border: 0;
   border-radius: var(--xh-carousel-indicator-radius, var(--xh-radius-full));
-  background: var(--xh-carousel-indicator-bg, var(--xh-border-strong));
+  background: var(--xh-carousel-indicator-bg, var(--xh-border-control));
   font-size: 0;
   cursor: pointer;
   transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -5122,8 +5122,8 @@
 
   /* 形态档只换触发框的描边与底色这三个槽，浮层与列不跟着变：
      变的是「这是个输入位」的表达方式，不是弹出内容的表达方式 */
-  --xh-_cascader-border: var(--xh-border-default);
-  --xh-_cascader-border-hover: var(--xh-border-strong);
+  --xh-_cascader-border: var(--xh-border-control);
+  --xh-_cascader-border-hover: var(--xh-border-control-hover);
   --xh-_cascader-bg: var(--xh-bg-canvas);
 
   /* 选中条目的文字色随语气走，没写 data-tone 时退回品牌强调色 */
@@ -5144,15 +5144,15 @@
 /* 形态只决定描边与底色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的中性配色 */
 /* outline 就是缺省那一身：描边加画布底，写出来只为让三档并列可读 */
 [data-scope='cascader'][data-part='root'][data-variant='outline'] {
-  --xh-_cascader-border: var(--xh-border-default);
-  --xh-_cascader-border-hover: var(--xh-border-strong);
+  --xh-_cascader-border: var(--xh-border-control);
+  --xh-_cascader-border-hover: var(--xh-border-control-hover);
   --xh-_cascader-bg: var(--xh-bg-canvas);
 }
 
 /* subtle 是填充式：底色接过「这里能点」的表达，描边随之让位 */
 [data-scope='cascader'][data-part='root'][data-variant='subtle'] {
   --xh-_cascader-border: transparent;
-  --xh-_cascader-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_cascader-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_cascader-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
 }
 
@@ -5523,7 +5523,7 @@
   inline-size: var(--xh-_checkbox-box);
   block-size: var(--xh-_checkbox-box);
   padding: 0;
-  border: 1px solid var(--xh-checkbox-border, var(--xh-border-default));
+  border: 1px solid var(--xh-checkbox-border, var(--xh-border-control));
   border-radius: var(--xh-radius-sm);
   background: var(--xh-checkbox-bg, var(--xh-bg-canvas));
   color: var(--xh-checkbox-fg, var(--xh-_checkbox-on-accent));
@@ -5674,7 +5674,7 @@
   justify-content: center;
   inline-size: var(--xh-checkbox-group-indicator-size, 16px);
   block-size: var(--xh-checkbox-group-indicator-size, 16px);
-  border: var(--xh-stroke-thin) solid var(--xh-checkbox-group-indicator-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-checkbox-group-indicator-border, var(--xh-border-control));
   border-radius: var(--xh-checkbox-group-indicator-radius, var(--xh-radius-sm));
   background: var(--xh-checkbox-group-indicator-bg, var(--xh-bg-canvas));
   color: var(--xh-checkbox-group-indicator-fg, var(--xh-fg-on-brand));
@@ -5695,7 +5695,7 @@
    不排除就会在悬停时把 brand 描边换回灰色，方框看起来"缺了一圈" */
 [data-scope='checkbox-group'][data-part='item']:not([data-disabled]):hover
   [data-scope='checkbox-group'][data-part='indicator']:not([data-state='checked']) {
-  border-color: var(--xh-checkbox-group-indicator-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-checkbox-group-indicator-border-hover, var(--xh-border-control-hover));
 }
 
 /* 选中即填色：条目是二态，全选格三态里 all 与 some 都算"有值"，共用同一副填色 */
@@ -5819,7 +5819,7 @@
   block-size: var(--xh-clipboard-input-h, var(--xh-control-h-md));
   padding-inline: var(--xh-clipboard-input-px, var(--xh-control-px-md));
   padding-block: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-clipboard-input-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-clipboard-input-border, var(--xh-border-control));
   border-radius: var(--xh-clipboard-input-radius, var(--xh-shape-control));
   /* 只读态压低底色表示"改不动"，但仍可聚焦、可选中复制 */
   background: var(--xh-clipboard-input-bg, var(--xh-bg-subtle));
@@ -5847,7 +5847,7 @@
   block-size: var(--xh-clipboard-trigger-h, var(--xh-control-h-md));
   padding-inline: var(--xh-clipboard-trigger-px, var(--xh-control-px-md));
   padding-block: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-clipboard-trigger-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-clipboard-trigger-border, var(--xh-border-control));
   border-radius: var(--xh-clipboard-trigger-radius, var(--xh-shape-control));
   background: var(--xh-clipboard-trigger-bg, var(--xh-bg-canvas));
   color: var(--xh-clipboard-trigger-fg, var(--xh-fg-default));
@@ -5870,7 +5870,7 @@
 }
 
 [data-scope='clipboard'][data-part='trigger']:hover {
-  border-color: var(--xh-clipboard-trigger-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-clipboard-trigger-border-hover, var(--xh-border-control-hover));
   background: var(--xh-clipboard-trigger-bg-hover, var(--xh-bg-subtle-hover));
 }
 
@@ -6099,7 +6099,7 @@
   min-inline-size: var(--xh-color-picker-trigger-min-w, 9rem);
   block-size: var(--xh-color-picker-trigger-h, var(--xh-control-h-md));
   padding-inline: var(--xh-color-picker-trigger-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid var(--xh-color-picker-trigger-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-color-picker-trigger-border, var(--xh-border-control));
   border-radius: var(--xh-color-picker-trigger-radius, var(--xh-shape-control));
   background: var(--xh-color-picker-trigger-bg, var(--xh-bg-canvas));
   color: var(--xh-color-picker-trigger-fg, var(--xh-fg-default));
@@ -6111,7 +6111,7 @@
 }
 
 [data-scope='color-picker'][data-part='trigger']:hover:not(:disabled) {
-  border-color: var(--xh-color-picker-trigger-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-color-picker-trigger-border-hover, var(--xh-border-control-hover));
 }
 
 [data-scope='color-picker'][data-part='trigger']:focus-visible {
@@ -6357,7 +6357,7 @@
   min-inline-size: 0;
   block-size: var(--xh-color-picker-input-h, var(--xh-control-h-sm));
   padding-inline: var(--xh-color-picker-input-px, var(--xh-control-px-sm));
-  border: var(--xh-stroke-thin) solid var(--xh-color-picker-input-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-color-picker-input-border, var(--xh-border-control));
   border-radius: var(--xh-color-picker-input-radius, var(--xh-shape-control));
   background: var(--xh-color-picker-input-bg, var(--xh-bg-canvas));
   color: inherit;
@@ -6397,7 +6397,7 @@
   inline-size: var(--xh-color-picker-action-size, 1.75rem);
   block-size: var(--xh-color-picker-action-size, 1.75rem);
   padding: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-color-picker-action-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-color-picker-action-border, var(--xh-border-control));
   border-radius: var(--xh-color-picker-action-radius, var(--xh-shape-control));
   background: var(--xh-color-picker-action-bg, transparent);
   color: var(--xh-color-picker-action-fg, var(--xh-fg-muted));
@@ -6441,7 +6441,7 @@
   inline-size: var(--xh-color-picker-swatch-item-size, 1.25rem);
   block-size: var(--xh-color-picker-swatch-item-size, 1.25rem);
   padding: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-color-picker-swatch-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-color-picker-swatch-border, var(--xh-border-control));
   border-radius: var(--xh-color-picker-swatch-radius, var(--xh-radius-sm));
   cursor: pointer;
 }
@@ -6506,8 +6506,8 @@
 
   /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
   --xh-_combobox-control-bg: var(--xh-bg-canvas);
-  --xh-_combobox-control-border: var(--xh-border-default);
-  --xh-_combobox-control-border-hover: var(--xh-border-strong);
+  --xh-_combobox-control-border: var(--xh-border-control);
+  --xh-_combobox-control-border-hover: var(--xh-border-control-hover);
 
   /* 强调色随语气走，只落在聚焦与选中上，正文文字色不动。
      没写 data-tone 时 --xh-_tone 没被声明，三处都退回原来的取值 */
@@ -6549,21 +6549,21 @@
    形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
 [data-scope='combobox'][data-part='root'][data-variant='outline'] {
   --xh-_combobox-control-bg: var(--xh-bg-canvas);
-  --xh-_combobox-control-border: var(--xh-border-default);
-  --xh-_combobox-control-border-hover: var(--xh-border-strong);
+  --xh-_combobox-control-border: var(--xh-border-control);
+  --xh-_combobox-control-border-hover: var(--xh-border-control-hover);
 }
 
 /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
 [data-scope='combobox'][data-part='root'][data-variant='subtle'] {
   --xh-_combobox-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_combobox-control-border: transparent;
-  --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 [data-scope='combobox'][data-part='root'][data-variant='ghost'] {
   --xh-_combobox-control-bg: transparent;
   --xh-_combobox-control-border: transparent;
-  --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 [data-scope='combobox'][data-part='label'] {
@@ -6937,7 +6937,7 @@
   align-items: flex-end;
   gap: var(--xh-composer-gap, var(--xh-control-gap-md));
   padding: var(--xh-composer-p, var(--xh-space-2));
-  border: var(--xh-stroke-thin) solid var(--xh-composer-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-composer-border, var(--xh-border-control));
   border-radius: var(--xh-composer-radius, var(--xh-shape-surface));
   background: var(--xh-composer-bg, var(--xh-bg-surface));
 }
@@ -7325,8 +7325,8 @@
   --xh-_date-field-label-font-size: var(--xh-text-label-size);
   /* 形态档只换这三个私有槽：底色与两档描边 */
   --xh-_date-field-control-bg: var(--xh-bg-canvas);
-  --xh-_date-field-control-border: var(--xh-border-default);
-  --xh-_date-field-control-border-hover: var(--xh-border-strong);
+  --xh-_date-field-control-border: var(--xh-border-control);
+  --xh-_date-field-control-border-hover: var(--xh-border-control-hover);
   /* 聚焦环与段位反白随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回原来的焦点色与品牌色 */
   --xh-_date-field-ring: var(--xh-ring-focus);
   --xh-_date-field-segment-bg: var(--xh-_tone, var(--xh-bg-brand));
@@ -7356,15 +7356,15 @@
 /* 描边式：与缺省等价，写出来是为了三档形态在皮肤里都看得见 */
 [data-scope='date-field'][data-part='root'][data-variant='outline'] {
   --xh-_date-field-control-bg: var(--xh-bg-canvas);
-  --xh-_date-field-control-border: var(--xh-border-default);
-  --xh-_date-field-control-border-hover: var(--xh-border-strong);
+  --xh-_date-field-control-border: var(--xh-border-control);
+  --xh-_date-field-control-border-hover: var(--xh-border-control-hover);
 }
 
 /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
 [data-scope='date-field'][data-part='root'][data-variant='subtle'] {
   --xh-_date-field-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_date-field-control-border: transparent;
-  --xh-_date-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_date-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 /* 无框式：底与边都让开，可见反馈只剩聚焦那一档 */
@@ -7556,7 +7556,7 @@
   block-size: var(--xh-date-picker-control-h, var(--xh-control-h-md));
   padding-inline: var(--xh-date-picker-control-px, var(--xh-control-px-md));
   padding-block: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-date-picker-control-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-date-picker-control-border, var(--xh-border-control));
   border-radius: var(--xh-date-picker-control-radius, var(--xh-shape-control));
   background: var(--xh-date-picker-control-bg, var(--xh-bg-canvas));
   color: var(--xh-date-picker-control-fg, var(--xh-fg-default));
@@ -7569,7 +7569,7 @@
 
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='date-picker'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
-  border-color: var(--xh-date-picker-control-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-date-picker-control-border-hover, var(--xh-border-control-hover));
 }
 
 /* 焦点落在某一段或某个按钮上，而边框长在 control 上：焦点环得由内向外借一层。
@@ -7983,7 +7983,7 @@
   gap: var(--xh-drawer-trigger-gap, var(--xh-control-gap-md));
   block-size: var(--xh-drawer-trigger-h, var(--xh-control-h-md));
   padding-inline: var(--xh-drawer-trigger-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid var(--xh-drawer-trigger-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-drawer-trigger-border, var(--xh-border-control));
   border-radius: var(--xh-drawer-trigger-radius, var(--xh-shape-control));
   background: var(--xh-drawer-trigger-bg, var(--xh-bg-canvas));
   color: var(--xh-drawer-trigger-fg, var(--xh-fg-default));
@@ -8003,14 +8003,14 @@
 
 [data-scope='drawer'][data-part='trigger']:hover:not(:disabled) {
   background: var(--xh-drawer-trigger-bg-hover, var(--xh-bg-subtle-hover));
-  border-color: var(--xh-drawer-trigger-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-drawer-trigger-border-hover, var(--xh-border-control-hover));
 }
 
 /* 抽屉展开期间触发按钮压住不弹起：面板贴在视口边上，它和按钮往往离得很远，
    按钮自己得说明"这一扇是我开的"。 */
 [data-scope='drawer'][data-part='trigger'][data-state='open'] {
   background: var(--xh-drawer-trigger-bg-open, var(--xh-bg-subtle-active));
-  border-color: var(--xh-drawer-trigger-border-open, var(--xh-border-strong));
+  border-color: var(--xh-drawer-trigger-border-open, var(--xh-border-control-hover));
 }
 
 [data-scope='drawer'][data-part='trigger']:focus-visible {
@@ -8346,7 +8346,7 @@
   block-size: var(--xh-editable-input-h, var(--xh-control-h-md));
   padding-inline: var(--xh-editable-input-px, var(--xh-control-px-md));
   padding-block: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-editable-input-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-editable-input-border, var(--xh-border-control));
   border-radius: var(--xh-editable-input-radius, var(--xh-shape-control));
   background: var(--xh-editable-input-bg, var(--xh-bg-canvas));
   color: var(--xh-editable-input-fg, var(--xh-fg-default));
@@ -8374,7 +8374,7 @@
 
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='editable'][data-part='input']:hover:not(:disabled, [data-invalid]) {
-  border-color: var(--xh-editable-input-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-editable-input-border-hover, var(--xh-border-control-hover));
 }
 
 [data-scope='editable'][data-part='input']:focus-visible {
@@ -8421,7 +8421,7 @@
   block-size: var(--xh-editable-trigger-h, var(--xh-control-h-sm));
   padding-inline: var(--xh-editable-trigger-px, var(--xh-control-px-sm));
   padding-block: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-editable-trigger-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-editable-trigger-border, var(--xh-border-control));
   border-radius: var(--xh-editable-trigger-radius, var(--xh-shape-control));
   background: var(--xh-editable-trigger-bg, var(--xh-bg-subtle));
   color: var(--xh-editable-trigger-fg, var(--xh-fg-default));
@@ -8445,7 +8445,7 @@
 [data-scope='editable'][data-part='edit-trigger']:hover:not(:disabled),
 [data-scope='editable'][data-part='submit-trigger']:hover:not(:disabled),
 [data-scope='editable'][data-part='cancel-trigger']:hover:not(:disabled) {
-  border-color: var(--xh-editable-trigger-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-editable-trigger-border-hover, var(--xh-border-control-hover));
   background: var(--xh-editable-trigger-bg-hover, var(--xh-bg-subtle-hover));
 }
 
@@ -8513,7 +8513,7 @@
   inline-size: 100%;
   block-size: var(--xh-field-control-h, var(--xh-control-h-md));
   padding-inline: var(--xh-field-control-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid var(--xh-field-control-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-field-control-border, var(--xh-border-control));
   border-radius: var(--xh-field-control-radius, var(--xh-shape-control));
   background: var(--xh-field-control-bg, var(--xh-bg-canvas));
   color: var(--xh-field-control-fg, var(--xh-fg-default));
@@ -8589,7 +8589,7 @@
   min-block-size: var(--xh-file-upload-dropzone-min-h, 8rem);
   padding-block: var(--xh-file-upload-dropzone-py, var(--xh-space-5));
   padding-inline: var(--xh-file-upload-dropzone-px, var(--xh-space-4));
-  border: var(--xh-stroke-thick) dashed var(--xh-file-upload-dropzone-border, var(--xh-border-default));
+  border: var(--xh-stroke-thick) dashed var(--xh-file-upload-dropzone-border, var(--xh-border-control));
   border-radius: var(--xh-file-upload-dropzone-radius, var(--xh-shape-surface));
   background: var(--xh-file-upload-dropzone-bg, var(--xh-bg-canvas));
   color: var(--xh-file-upload-dropzone-fg, var(--xh-fg-muted));
@@ -8608,7 +8608,7 @@
 
 /* hover 只在中性态换描边：invalid 与 dragging 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='file-upload'][data-part='dropzone']:hover:not([data-disabled], [data-invalid], [data-dragging]) {
-  border-color: var(--xh-file-upload-dropzone-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-file-upload-dropzone-border-hover, var(--xh-border-control-hover));
 }
 
 /* 投放区自己承载焦点（它就是那个大按钮），所以画环而不是 outline:none */
@@ -8643,7 +8643,7 @@
   gap: var(--xh-file-upload-trigger-gap, var(--xh-control-gap-md));
   block-size: var(--xh-file-upload-trigger-h, var(--xh-control-h-md));
   padding-inline: var(--xh-file-upload-trigger-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid var(--xh-file-upload-trigger-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-file-upload-trigger-border, var(--xh-border-control));
   border-radius: var(--xh-file-upload-trigger-radius, var(--xh-shape-control));
   background: var(--xh-file-upload-trigger-bg, var(--xh-bg-surface));
   color: var(--xh-file-upload-trigger-fg, var(--xh-fg-default));
@@ -8959,7 +8959,7 @@
   block-size: var(--xh-form-trigger-h, var(--xh-control-h-md));
   padding-block: 0;
   padding-inline: var(--xh-form-trigger-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid var(--xh-form-trigger-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-form-trigger-border, var(--xh-border-control));
   border-radius: var(--xh-form-trigger-radius, var(--xh-shape-control));
   background: var(--xh-form-trigger-bg, var(--xh-bg-subtle));
   color: var(--xh-form-trigger-fg, var(--xh-fg-default));
@@ -8980,7 +8980,7 @@
 
 [data-scope='form'][data-part='submit-trigger']:hover:not(:disabled),
 [data-scope='form'][data-part='reset-trigger']:hover:not(:disabled) {
-  border-color: var(--xh-form-trigger-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-form-trigger-border-hover, var(--xh-border-control-hover));
   background: var(--xh-form-trigger-bg-hover, var(--xh-bg-subtle-hover));
 }
 
@@ -10216,18 +10216,18 @@
 
   /* 形态档只换这几个私有槽：输入框的底与描边，加减钮的底与描边 */
   --xh-_number-field-bg: var(--xh-bg-canvas);
-  --xh-_number-field-border: var(--xh-border-default);
-  --xh-_number-field-border-hover: var(--xh-border-strong);
+  --xh-_number-field-border: var(--xh-border-control);
+  --xh-_number-field-border-hover: var(--xh-border-control-hover);
   --xh-_number-field-trigger-bg: var(--xh-bg-subtle);
   --xh-_number-field-trigger-bg-hover: var(--xh-bg-subtle-hover);
   --xh-_number-field-trigger-bg-active: var(--xh-bg-subtle-active);
-  --xh-_number-field-trigger-border: var(--xh-border-default);
-  --xh-_number-field-trigger-border-hover: var(--xh-border-strong);
+  --xh-_number-field-trigger-border: var(--xh-border-control);
+  --xh-_number-field-trigger-border-hover: var(--xh-border-control-hover);
 
   /* 语气只落在聚焦这一处：环与聚焦态描边。框里的数字不归它管。
      没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色与常态描边 */
   --xh-_number-field-ring: var(--xh-ring-focus);
-  --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, var(--xh-border-default)));
+  --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, var(--xh-border-control)));
 
   display: inline-flex;
   flex-direction: column;
@@ -10262,14 +10262,14 @@
    输入框没有实心档：填满一个要往里打字的框，字与底就没法同时读 */
 [data-scope='number-field'][data-part='root'][data-variant='outline'] {
   --xh-_number-field-bg: var(--xh-bg-canvas);
-  --xh-_number-field-border: var(--xh-border-default);
-  --xh-_number-field-border-hover: var(--xh-border-strong);
+  --xh-_number-field-border: var(--xh-border-control);
+  --xh-_number-field-border-hover: var(--xh-border-control-hover);
   --xh-_number-field-trigger-bg: var(--xh-bg-subtle);
   --xh-_number-field-trigger-bg-hover: var(--xh-bg-subtle-hover);
   --xh-_number-field-trigger-bg-active: var(--xh-bg-subtle-active);
-  --xh-_number-field-trigger-border: var(--xh-border-default);
-  --xh-_number-field-trigger-border-hover: var(--xh-border-strong);
-  --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, var(--xh-border-default)));
+  --xh-_number-field-trigger-border: var(--xh-border-control);
+  --xh-_number-field-trigger-border-hover: var(--xh-border-control-hover);
+  --xh-_number-field-border-focus: var(--xh-number-field-input-border, var(--xh-_tone, var(--xh-border-control)));
 }
 
 /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
@@ -10277,26 +10277,26 @@
 [data-scope='number-field'][data-part='root'][data-variant='subtle'] {
   --xh-_number-field-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_number-field-border: transparent;
-  --xh-_number-field-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_number-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_number-field-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_number-field-trigger-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_number-field-trigger-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
   --xh-_number-field-trigger-border: transparent;
-  --xh-_number-field-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-default));
-  --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-default));
+  --xh-_number-field-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+  --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control));
 }
 
 /* 无框：底与描边都透明，平时只看得见数字，悬停与聚焦才浮出边界 */
 [data-scope='number-field'][data-part='root'][data-variant='ghost'] {
   --xh-_number-field-bg: transparent;
   --xh-_number-field-border: transparent;
-  --xh-_number-field-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_number-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_number-field-trigger-bg: transparent;
   --xh-_number-field-trigger-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-hover));
   --xh-_number-field-trigger-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
   --xh-_number-field-trigger-border: transparent;
-  --xh-_number-field-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-default));
-  --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-default));
+  --xh-_number-field-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+  --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control));
 }
 
 [data-scope='number-field'][data-part='label'] {
@@ -10579,8 +10579,8 @@
   --xh-_pin-input-label-font-size: var(--xh-text-label-size);
   /* 形态档只换这三个私有槽，缺省这一份就是描边式（描边 + 画布底） */
   --xh-_pin-input-box-bg: var(--xh-bg-canvas);
-  --xh-_pin-input-box-border: var(--xh-border-default);
-  --xh-_pin-input-box-border-hover: var(--xh-border-strong);
+  --xh-_pin-input-box-border: var(--xh-border-control);
+  --xh-_pin-input-box-border-hover: var(--xh-border-control-hover);
   /* 聚焦环与填满态的强调色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的取值 */
   --xh-_pin-input-ring: var(--xh-ring-focus);
   --xh-_pin-input-accent: var(--xh-_tone, var(--xh-bg-brand));
@@ -10600,22 +10600,22 @@
    不做 solid：实心填充盖住了"这里能打字"这件事，输入框用不上它 */
 [data-scope='pin-input'][data-part='root'][data-variant='outline'] {
   --xh-_pin-input-box-bg: var(--xh-bg-canvas);
-  --xh-_pin-input-box-border: var(--xh-border-default);
-  --xh-_pin-input-box-border-hover: var(--xh-border-strong);
+  --xh-_pin-input-box-border: var(--xh-border-control);
+  --xh-_pin-input-box-border-hover: var(--xh-border-control-hover);
 }
 
 /* 填充式：底色说明这里是一格输入位，描边让位给底色 */
 [data-scope='pin-input'][data-part='root'][data-variant='subtle'] {
   --xh-_pin-input-box-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_pin-input-box-border: transparent;
-  --xh-_pin-input-box-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_pin-input-box-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 /* 无边框、透明底：静息时格子完全隐入背景，可见反馈全靠悬停描边与聚焦环 */
 [data-scope='pin-input'][data-part='root'][data-variant='ghost'] {
   --xh-_pin-input-box-bg: transparent;
   --xh-_pin-input-box-border: transparent;
-  --xh-_pin-input-box-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_pin-input-box-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 /* —— 尺寸 —— */
@@ -10984,7 +10984,7 @@
   justify-content: center;
   inline-size: 16px;
   block-size: 16px;
-  border: var(--xh-stroke-thin) solid var(--xh-radio-group-indicator-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-radio-group-indicator-border, var(--xh-border-control));
   border-radius: var(--xh-shape-pill);
   background: var(--xh-radio-group-indicator-bg, var(--xh-bg-canvas));
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -11341,8 +11341,8 @@
 
   /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
   --xh-_select-trigger-bg: var(--xh-bg-canvas);
-  --xh-_select-trigger-border: var(--xh-border-default);
-  --xh-_select-trigger-border-hover: var(--xh-border-strong);
+  --xh-_select-trigger-border: var(--xh-border-control);
+  --xh-_select-trigger-border-hover: var(--xh-border-control-hover);
 
   /* 强调色随语气走，只落在聚焦与选中上，正文文字色不动。
      没写 data-tone 时 --xh-_tone 没被声明，三处都退回原来的取值 */
@@ -11381,21 +11381,21 @@
    形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
 [data-scope='select'][data-part='root'][data-variant='outline'] {
   --xh-_select-trigger-bg: var(--xh-bg-canvas);
-  --xh-_select-trigger-border: var(--xh-border-default);
-  --xh-_select-trigger-border-hover: var(--xh-border-strong);
+  --xh-_select-trigger-border: var(--xh-border-control);
+  --xh-_select-trigger-border-hover: var(--xh-border-control-hover);
 }
 
 /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
 [data-scope='select'][data-part='root'][data-variant='subtle'] {
   --xh-_select-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_select-trigger-border: transparent;
-  --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 [data-scope='select'][data-part='root'][data-variant='ghost'] {
   --xh-_select-trigger-bg: transparent;
   --xh-_select-trigger-border: transparent;
-  --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 [data-scope='select'][data-part='label'] {
@@ -12470,7 +12470,7 @@
    切换选中不引起行宽抖动 */
 [data-scope='table'][data-part='select-all-trigger'],
 [data-scope='table'][data-part='row-select-trigger'] {
-  border: var(--xh-stroke-thin) solid var(--xh-table-trigger-border, var(--xh-border-strong));
+  border: var(--xh-stroke-thin) solid var(--xh-table-trigger-border, var(--xh-border-control));
   color: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
   visibility: visible;
 }
@@ -12820,8 +12820,8 @@
   --xh-_tags-input-label-font-size: var(--xh-text-label-size);
   /* 形态档只换这三个私有槽，缺省这一份就是描边式（描边 + 画布底） */
   --xh-_tags-input-control-bg: var(--xh-bg-canvas);
-  --xh-_tags-input-control-border: var(--xh-border-default);
-  --xh-_tags-input-control-border-hover: var(--xh-border-strong);
+  --xh-_tags-input-control-border: var(--xh-border-control);
+  --xh-_tags-input-control-border-hover: var(--xh-border-control-hover);
   /* 聚焦环与标签块的强调色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的取值 */
   --xh-_tags-input-ring: var(--xh-ring-focus);
   --xh-_tags-input-accent: var(--xh-_tone, var(--xh-bg-brand));
@@ -12843,22 +12843,22 @@
    不做 solid：实心填充盖住了"这里能打字"这件事，输入框用不上它 */
 [data-scope='tags-input'][data-part='root'][data-variant='outline'] {
   --xh-_tags-input-control-bg: var(--xh-bg-canvas);
-  --xh-_tags-input-control-border: var(--xh-border-default);
-  --xh-_tags-input-control-border-hover: var(--xh-border-strong);
+  --xh-_tags-input-control-border: var(--xh-border-control);
+  --xh-_tags-input-control-border-hover: var(--xh-border-control-hover);
 }
 
 /* 填充式：底色圈出可输入的范围，描边让位给底色 */
 [data-scope='tags-input'][data-part='root'][data-variant='subtle'] {
   --xh-_tags-input-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_tags-input-control-border: transparent;
-  --xh-_tags-input-control-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_tags-input-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 /* 无边框、透明底：静息时框完全隐入背景，可见反馈全靠悬停描边与聚焦环 */
 [data-scope='tags-input'][data-part='root'][data-variant='ghost'] {
   --xh-_tags-input-control-bg: transparent;
   --xh-_tags-input-control-border: transparent;
-  --xh-_tags-input-control-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_tags-input-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 /* —— 尺寸 —— */
@@ -13098,7 +13098,7 @@
   max-inline-size: 100%;
   padding-block: var(--xh-tags-input-item-py, var(--xh-space-1));
   padding-inline: var(--xh-tags-input-item-px, var(--xh-space-2));
-  border: var(--xh-stroke-thin) solid var(--xh-tags-input-item-input-border, var(--xh-border-strong));
+  border: var(--xh-stroke-thin) solid var(--xh-tags-input-item-input-border, var(--xh-border-control));
   border-radius: var(--xh-tags-input-item-radius, var(--xh-shape-pill));
   background: var(--xh-tags-input-item-input-bg, var(--xh-bg-canvas));
   color: var(--xh-tags-input-item-input-fg, var(--xh-fg-default));
@@ -13181,13 +13181,13 @@
 
   /* 形态档只换这三个私有槽：底、常态描边、悬停描边 */
   --xh-_text-field-bg: var(--xh-bg-canvas);
-  --xh-_text-field-border: var(--xh-border-default);
-  --xh-_text-field-border-hover: var(--xh-border-strong);
+  --xh-_text-field-border: var(--xh-border-control);
+  --xh-_text-field-border-hover: var(--xh-border-control-hover);
 
   /* 语气只落在聚焦这一处：环与聚焦态描边。正文颜色不归它管。
      没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色与常态描边 */
   --xh-_text-field-ring: var(--xh-ring-focus);
-  --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-default)));
+  --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-control)));
 
   display: inline-flex;
   flex-direction: column;
@@ -13222,9 +13222,9 @@
    输入框没有实心档：填满一个要往里打字的框，字与底就没法同时读 */
 [data-scope='text-field'][data-part='root'][data-variant='outline'] {
   --xh-_text-field-bg: var(--xh-bg-canvas);
-  --xh-_text-field-border: var(--xh-border-default);
-  --xh-_text-field-border-hover: var(--xh-border-strong);
-  --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-default)));
+  --xh-_text-field-border: var(--xh-border-control);
+  --xh-_text-field-border-hover: var(--xh-border-control-hover);
+  --xh-_text-field-border-focus: var(--xh-text-field-input-border, var(--xh-_tone, var(--xh-border-control)));
 }
 
 /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
@@ -13232,16 +13232,16 @@
 [data-scope='text-field'][data-part='root'][data-variant='subtle'] {
   --xh-_text-field-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_text-field-border: transparent;
-  --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-default));
-  --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-default));
+  --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+  --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control));
 }
 
 /* 无框：底与描边都透明，平时只看得见字，悬停与聚焦才浮出边界 */
 [data-scope='text-field'][data-part='root'][data-variant='ghost'] {
   --xh-_text-field-bg: transparent;
   --xh-_text-field-border: transparent;
-  --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-default));
-  --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-default));
+  --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+  --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control));
 }
 
 [data-scope='text-field'][data-part='label'] {
@@ -13420,7 +13420,7 @@
   min-inline-size: var(--xh-thread-scroll-button-h, var(--xh-control-h-md));
   block-size: var(--xh-thread-scroll-button-h, var(--xh-control-h-md));
   padding-inline: var(--xh-thread-scroll-button-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid var(--xh-thread-scroll-button-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-thread-scroll-button-border, var(--xh-border-control));
   border-radius: var(--xh-thread-scroll-button-radius, var(--xh-shape-pill));
   background: var(--xh-thread-scroll-button-bg, var(--xh-bg-surface));
   color: var(--xh-thread-scroll-button-fg, var(--xh-fg-default));
@@ -13478,8 +13478,8 @@
   --xh-_time-field-label-font-size: var(--xh-text-label-size);
   /* 形态档只换这三个私有槽：底色与两档描边 */
   --xh-_time-field-control-bg: var(--xh-bg-canvas);
-  --xh-_time-field-control-border: var(--xh-border-default);
-  --xh-_time-field-control-border-hover: var(--xh-border-strong);
+  --xh-_time-field-control-border: var(--xh-border-control);
+  --xh-_time-field-control-border-hover: var(--xh-border-control-hover);
   /* 聚焦描边与段位反白随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回原来的焦点色与品牌色 */
   --xh-_time-field-ring: var(--xh-ring-focus);
   --xh-_time-field-segment-bg: var(--xh-_tone, var(--xh-bg-brand));
@@ -13509,15 +13509,15 @@
 /* 描边式：与缺省等价，写出来是为了三档形态在皮肤里都看得见 */
 [data-scope='time-field'][data-part='root'][data-variant='outline'] {
   --xh-_time-field-control-bg: var(--xh-bg-canvas);
-  --xh-_time-field-control-border: var(--xh-border-default);
-  --xh-_time-field-control-border-hover: var(--xh-border-strong);
+  --xh-_time-field-control-border: var(--xh-border-control);
+  --xh-_time-field-control-border-hover: var(--xh-border-control-hover);
 }
 
 /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
 [data-scope='time-field'][data-part='root'][data-variant='subtle'] {
   --xh-_time-field-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_time-field-control-border: transparent;
-  --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 /* 无框式：底与边都让开，可见反馈只剩聚焦那一档 */
@@ -13705,7 +13705,7 @@
   block-size: var(--xh-time-picker-control-h, var(--xh-control-h-md));
   padding-inline: var(--xh-time-picker-control-px, var(--xh-control-px-md));
   padding-block: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-time-picker-control-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-time-picker-control-border, var(--xh-border-control));
   border-radius: var(--xh-time-picker-control-radius, var(--xh-shape-control));
   background: var(--xh-time-picker-control-bg, var(--xh-bg-canvas));
   color: var(--xh-time-picker-control-fg, var(--xh-fg-default));
@@ -13724,7 +13724,7 @@
 
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='time-picker'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
-  border-color: var(--xh-time-picker-control-border-hover, var(--xh-border-strong));
+  border-color: var(--xh-time-picker-control-border-hover, var(--xh-border-control-hover));
 }
 
 /* 焦点真正落在段或按钮上，但整块看起来才是一个控件：内部有焦点时整框亮起来。
@@ -14345,7 +14345,7 @@
   --xh-_bg-pressed: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
   --xh-_fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
 
-  border-color: var(--xh-_tone-border, var(--xh-border-default));
+  border-color: var(--xh-_tone-border-control, var(--xh-border-control));
 }
 
 [data-scope='toggle'][data-part='root'][data-variant='ghost'] {
@@ -14411,7 +14411,7 @@
   --xh-_bg-hover: var(--xh-toggle-group-item-bg-hover, var(--xh-bg-subtle-hover));
   --xh-_bg-active: var(--xh-toggle-group-item-bg-active, var(--xh-bg-subtle-active));
   --xh-_fg: var(--xh-toggle-group-item-fg, var(--xh-fg-default));
-  --xh-_border: var(--xh-toggle-group-item-border, var(--xh-border-default));
+  --xh-_border: var(--xh-toggle-group-item-border, var(--xh-border-control));
 
   /* 相邻两段靠负外边距压掉一条重边，谁的描边浮在上面必须能指定，
      因此条目必须是定位元素——静态元素的 z-index 不生效 */
@@ -14972,7 +14972,7 @@
 }
 
 [data-scope='tour'][data-part='prev-trigger'] {
-  border-color: var(--xh-border-default);
+  border-color: var(--xh-border-control);
   color: var(--xh-fg-default);
 }
 
@@ -15163,7 +15163,7 @@
   block-size: var(--xh-transfer-search-h, var(--xh-control-h-sm));
   padding-inline: var(--xh-transfer-search-px, var(--xh-control-px-sm));
   border: 0;
-  border-block-end: var(--xh-stroke-thin) solid var(--xh-transfer-panel-border, var(--xh-border-default));
+  border-block-end: var(--xh-stroke-thin) solid var(--xh-transfer-search-border, var(--xh-border-control));
   background: var(--xh-transfer-search-bg, transparent);
   color: var(--xh-transfer-search-fg, var(--xh-fg-default));
   font: inherit;
@@ -15251,7 +15251,7 @@
   justify-content: center;
   inline-size: var(--xh-transfer-checkbox-size, 16px);
   block-size: var(--xh-transfer-checkbox-size, 16px);
-  border: var(--xh-stroke-thin) solid var(--xh-transfer-checkbox-border, var(--xh-border-default));
+  border: var(--xh-stroke-thin) solid var(--xh-transfer-checkbox-border, var(--xh-border-control));
   border-radius: var(--xh-transfer-checkbox-radius, var(--xh-radius-sm));
   background: var(--xh-transfer-checkbox-bg, var(--xh-bg-canvas));
   color: var(--xh-transfer-checkbox-fg, var(--xh-fg-on-brand));
@@ -15600,8 +15600,8 @@
 
   /* 形态档只换触发框的描边与底色这三个槽，浮层与树不跟着变：
      变的是「这是个输入位」的表达方式，不是弹出内容的表达方式 */
-  --xh-_tree-select-border: var(--xh-border-default);
-  --xh-_tree-select-border-hover: var(--xh-border-strong);
+  --xh-_tree-select-border: var(--xh-border-control);
+  --xh-_tree-select-border-hover: var(--xh-border-control-hover);
   --xh-_tree-select-bg: var(--xh-bg-canvas);
 
   /* 选中行的文字色随语气走，没写 data-tone 时退回品牌强调色 */
@@ -15622,15 +15622,15 @@
 /* 形态只决定描边与底色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的中性配色 */
 /* outline 就是缺省那一身：描边加画布底，写出来只为让三档并列可读 */
 [data-scope='tree-select'][data-part='root'][data-variant='outline'] {
-  --xh-_tree-select-border: var(--xh-border-default);
-  --xh-_tree-select-border-hover: var(--xh-border-strong);
+  --xh-_tree-select-border: var(--xh-border-control);
+  --xh-_tree-select-border-hover: var(--xh-border-control-hover);
   --xh-_tree-select-bg: var(--xh-bg-canvas);
 }
 
 /* subtle 是填充式：底色接过「这里能点」的表达，描边随之让位 */
 [data-scope='tree-select'][data-part='root'][data-variant='subtle'] {
   --xh-_tree-select-border: transparent;
-  --xh-_tree-select-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+  --xh-_tree-select-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_tree-select-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
 }
 

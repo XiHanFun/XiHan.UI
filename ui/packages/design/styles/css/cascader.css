@@ -12,8 +12,8 @@
 
     /* 形态档只换触发框的描边与底色这三个槽，浮层与列不跟着变：
        变的是「这是个输入位」的表达方式，不是弹出内容的表达方式 */
-    --xh-_cascader-border: var(--xh-border-default);
-    --xh-_cascader-border-hover: var(--xh-border-strong);
+    --xh-_cascader-border: var(--xh-border-control);
+    --xh-_cascader-border-hover: var(--xh-border-control-hover);
     --xh-_cascader-bg: var(--xh-bg-canvas);
 
     /* 选中条目的文字色随语气走，没写 data-tone 时退回品牌强调色 */
@@ -34,15 +34,15 @@
   /* 形态只决定描边与底色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的中性配色 */
   /* outline 就是缺省那一身：描边加画布底，写出来只为让三档并列可读 */
   [data-scope='cascader'][data-part='root'][data-variant='outline'] {
-    --xh-_cascader-border: var(--xh-border-default);
-    --xh-_cascader-border-hover: var(--xh-border-strong);
+    --xh-_cascader-border: var(--xh-border-control);
+    --xh-_cascader-border-hover: var(--xh-border-control-hover);
     --xh-_cascader-bg: var(--xh-bg-canvas);
   }
 
   /* subtle 是填充式：底色接过「这里能点」的表达，描边随之让位 */
   [data-scope='cascader'][data-part='root'][data-variant='subtle'] {
     --xh-_cascader-border: transparent;
-    --xh-_cascader-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+    --xh-_cascader-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
     --xh-_cascader-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   }
 

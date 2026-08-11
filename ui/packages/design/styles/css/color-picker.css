@@ -43,7 +43,7 @@
     min-inline-size: var(--xh-color-picker-trigger-min-w, 9rem);
     block-size: var(--xh-color-picker-trigger-h, var(--xh-control-h-md));
     padding-inline: var(--xh-color-picker-trigger-px, var(--xh-control-px-md));
-    border: var(--xh-stroke-thin) solid var(--xh-color-picker-trigger-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-color-picker-trigger-border, var(--xh-border-control));
     border-radius: var(--xh-color-picker-trigger-radius, var(--xh-shape-control));
     background: var(--xh-color-picker-trigger-bg, var(--xh-bg-canvas));
     color: var(--xh-color-picker-trigger-fg, var(--xh-fg-default));
@@ -55,7 +55,7 @@
   }
 
   [data-scope='color-picker'][data-part='trigger']:hover:not(:disabled) {
-    border-color: var(--xh-color-picker-trigger-border-hover, var(--xh-border-strong));
+    border-color: var(--xh-color-picker-trigger-border-hover, var(--xh-border-control-hover));
   }
 
   [data-scope='color-picker'][data-part='trigger']:focus-visible {
@@ -301,7 +301,7 @@
     min-inline-size: 0;
     block-size: var(--xh-color-picker-input-h, var(--xh-control-h-sm));
     padding-inline: var(--xh-color-picker-input-px, var(--xh-control-px-sm));
-    border: var(--xh-stroke-thin) solid var(--xh-color-picker-input-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-color-picker-input-border, var(--xh-border-control));
     border-radius: var(--xh-color-picker-input-radius, var(--xh-shape-control));
     background: var(--xh-color-picker-input-bg, var(--xh-bg-canvas));
     color: inherit;
@@ -341,7 +341,7 @@
     inline-size: var(--xh-color-picker-action-size, 1.75rem);
     block-size: var(--xh-color-picker-action-size, 1.75rem);
     padding: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-color-picker-action-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-color-picker-action-border, var(--xh-border-control));
     border-radius: var(--xh-color-picker-action-radius, var(--xh-shape-control));
     background: var(--xh-color-picker-action-bg, transparent);
     color: var(--xh-color-picker-action-fg, var(--xh-fg-muted));
@@ -385,7 +385,7 @@
     inline-size: var(--xh-color-picker-swatch-item-size, 1.25rem);
     block-size: var(--xh-color-picker-swatch-item-size, 1.25rem);
     padding: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-color-picker-swatch-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-color-picker-swatch-border, var(--xh-border-control));
     border-radius: var(--xh-color-picker-swatch-radius, var(--xh-radius-sm));
     cursor: pointer;
   }

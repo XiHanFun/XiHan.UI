@@ -82,7 +82,7 @@
     justify-content: center;
     inline-size: var(--xh-carousel-trigger-size, var(--xh-control-h-md));
     block-size: var(--xh-carousel-trigger-size, var(--xh-control-h-md));
-    border: var(--xh-stroke-thin) solid var(--xh-carousel-trigger-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-carousel-trigger-border, var(--xh-border-control));
     border-radius: var(--xh-carousel-trigger-radius, var(--xh-shape-pill));
     background: var(--xh-carousel-trigger-bg, var(--xh-bg-surface));
     color: var(--xh-carousel-trigger-fg, var(--xh-fg-default));
@@ -164,7 +164,7 @@
     padding: 0;
     border: 0;
     border-radius: var(--xh-carousel-indicator-radius, var(--xh-radius-full));
-    background: var(--xh-carousel-indicator-bg, var(--xh-border-strong));
+    background: var(--xh-carousel-indicator-bg, var(--xh-border-control));
     font-size: 0;
     cursor: pointer;
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);

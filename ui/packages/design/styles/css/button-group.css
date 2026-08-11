@@ -75,7 +75,7 @@
   /* 段的描边归组画（两个适配器各一条选择器：Vue 的段就是直接子节点，WC 的段在行为宿主里面）：合边本来就是组的事，按钮那边没有描边色的槽位可以流 */
   [data-scope='button-group'][data-part='root'][data-variant='outline'] > *,
   [data-scope='button-group'][data-part='root'][data-variant='outline'] > * [data-scope='button'][data-part='root'] {
-    border-color: var(--xh-_tone-border, var(--xh-border-default));
+    border-color: var(--xh-_tone-border, var(--xh-border-control));
   }
 
   /* —— 合边 —— */

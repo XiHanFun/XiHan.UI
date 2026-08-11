@@ -10,8 +10,8 @@
 
     /* 形态档只换这三个槽：缺省即 outline（描边 + 画布底） */
     --xh-_select-trigger-bg: var(--xh-bg-canvas);
-    --xh-_select-trigger-border: var(--xh-border-default);
-    --xh-_select-trigger-border-hover: var(--xh-border-strong);
+    --xh-_select-trigger-border: var(--xh-border-control);
+    --xh-_select-trigger-border-hover: var(--xh-border-control-hover);
 
     /* 强调色随语气走，只落在聚焦与选中上，正文文字色不动。
        没写 data-tone 时 --xh-_tone 没被声明，三处都退回原来的取值 */
@@ -50,21 +50,21 @@
      形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
   [data-scope='select'][data-part='root'][data-variant='outline'] {
     --xh-_select-trigger-bg: var(--xh-bg-canvas);
-    --xh-_select-trigger-border: var(--xh-border-default);
-    --xh-_select-trigger-border-hover: var(--xh-border-strong);
+    --xh-_select-trigger-border: var(--xh-border-control);
+    --xh-_select-trigger-border-hover: var(--xh-border-control-hover);
   }
 
   /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
   [data-scope='select'][data-part='root'][data-variant='subtle'] {
     --xh-_select-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_select-trigger-border: transparent;
-    --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+    --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
   [data-scope='select'][data-part='root'][data-variant='ghost'] {
     --xh-_select-trigger-bg: transparent;
     --xh-_select-trigger-border: transparent;
-    --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-default));
+    --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
   [data-scope='select'][data-part='label'] {

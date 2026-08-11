@@ -103,7 +103,7 @@
     block-size: var(--xh-editable-input-h, var(--xh-control-h-md));
     padding-inline: var(--xh-editable-input-px, var(--xh-control-px-md));
     padding-block: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-editable-input-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-editable-input-border, var(--xh-border-control));
     border-radius: var(--xh-editable-input-radius, var(--xh-shape-control));
     background: var(--xh-editable-input-bg, var(--xh-bg-canvas));
     color: var(--xh-editable-input-fg, var(--xh-fg-default));
@@ -131,7 +131,7 @@
 
   /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
   [data-scope='editable'][data-part='input']:hover:not(:disabled, [data-invalid]) {
-    border-color: var(--xh-editable-input-border-hover, var(--xh-border-strong));
+    border-color: var(--xh-editable-input-border-hover, var(--xh-border-control-hover));
   }
 
   [data-scope='editable'][data-part='input']:focus-visible {
@@ -178,7 +178,7 @@
     block-size: var(--xh-editable-trigger-h, var(--xh-control-h-sm));
     padding-inline: var(--xh-editable-trigger-px, var(--xh-control-px-sm));
     padding-block: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-editable-trigger-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-editable-trigger-border, var(--xh-border-control));
     border-radius: var(--xh-editable-trigger-radius, var(--xh-shape-control));
     background: var(--xh-editable-trigger-bg, var(--xh-bg-subtle));
     color: var(--xh-editable-trigger-fg, var(--xh-fg-default));
@@ -202,7 +202,7 @@
   [data-scope='editable'][data-part='edit-trigger']:hover:not(:disabled),
   [data-scope='editable'][data-part='submit-trigger']:hover:not(:disabled),
   [data-scope='editable'][data-part='cancel-trigger']:hover:not(:disabled) {
-    border-color: var(--xh-editable-trigger-border-hover, var(--xh-border-strong));
+    border-color: var(--xh-editable-trigger-border-hover, var(--xh-border-control-hover));
     background: var(--xh-editable-trigger-bg-hover, var(--xh-bg-subtle-hover));
   }
 

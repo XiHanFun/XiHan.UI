@@ -39,7 +39,7 @@
     block-size: var(--xh-date-picker-control-h, var(--xh-control-h-md));
     padding-inline: var(--xh-date-picker-control-px, var(--xh-control-px-md));
     padding-block: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-date-picker-control-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-date-picker-control-border, var(--xh-border-control));
     border-radius: var(--xh-date-picker-control-radius, var(--xh-shape-control));
     background: var(--xh-date-picker-control-bg, var(--xh-bg-canvas));
     color: var(--xh-date-picker-control-fg, var(--xh-fg-default));
@@ -52,7 +52,7 @@
 
   /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
   [data-scope='date-picker'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
-    border-color: var(--xh-date-picker-control-border-hover, var(--xh-border-strong));
+    border-color: var(--xh-date-picker-control-border-hover, var(--xh-border-control-hover));
   }
 
   /* 焦点落在某一段或某个按钮上，而边框长在 control 上：焦点环得由内向外借一层。
