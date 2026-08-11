@@ -35,6 +35,7 @@ export const tokens = {
   "--xh-color-success-700": "oklch(0.51 0.15 149)",
   "--xh-color-warning-500": "oklch(0.795 0.161 86)",
   "--xh-color-warning-600": "oklch(0.705 0.16 70)",
+  "--xh-color-warning-700": "oklch(0.62 0.15 70)",
   "--xh-color-info-500": "oklch(0.685 0.156 237)",
   "--xh-color-info-600": "oklch(0.62 0.16 237)",
   "--xh-space-0": "0px",

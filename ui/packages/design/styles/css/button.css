@@ -68,7 +68,7 @@
     --xh-_bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
     --xh-_fg: var(--xh-_tone-fg, var(--xh-fg-default));
 
-    border-color: var(--xh-_tone-border, var(--xh-border-control));
+    border-color: var(--xh-_tone-border-control, var(--xh-border-control));
   }
 
   [data-scope='button'][data-part='root'][data-variant='ghost'] {

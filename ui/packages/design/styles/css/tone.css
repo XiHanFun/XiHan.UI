@@ -38,6 +38,9 @@
     --xh-_tone-subtle-hover: color-mix(in oklab, var(--xh-_tone) 20%, var(--xh-bg-surface));
     --xh-_tone-subtle-active: color-mix(in oklab, var(--xh-_tone) 28%, var(--xh-bg-surface));
     --xh-_tone-border: color-mix(in oklab, var(--xh-_tone) 40%, var(--xh-bg-surface));
+    /* 控件的可操作区边界要 3:1，兑了底色的 --xh-_tone-border 六族全在 1.44–2.18，够不着。
+       这一支直接取主色本体；两族在各自的底上仍不够，在下面按主题单独兜 */
+    --xh-_tone-border-control: var(--xh-_tone);
     /* 在普通背景上表达该语气的文字色：往前景色兑，浅色态变深、深色态变浅 */
     --xh-_tone-fg: color-mix(in oklab, var(--xh-_tone) 72%, var(--xh-fg-default));
   }
@@ -81,5 +84,24 @@
     --xh-_tone-soft: var(--xh-color-info-500);
     --xh-_tone-on: var(--xh-color-neutral-950);
     --xh-_tone-shift: var(--xh-color-neutral-0);
+  }
+
+  /* 主色本体在各自的底上有两族够不到 3:1：黄在白底上只有 2.70，中性在深色底上只有 2.54。
+     语气色是固定原语、不随主题翻，所以这两族只能按主题各兜一次。
+     浅色是缺省态（不写 data-theme 也算浅色），深色靠属性选择器压过它 */
+  [data-tone='warning'] {
+    --xh-_tone-border-control: var(--xh-color-warning-700);
+  }
+
+  [data-theme='dark'] [data-tone='warning'] {
+    --xh-_tone-border-control: var(--xh-color-warning-600);
+  }
+
+  [data-tone='neutral'] {
+    --xh-_tone-border-control: var(--xh-color-neutral-600);
+  }
+
+  [data-theme='dark'] [data-tone='neutral'] {
+    --xh-_tone-border-control: var(--xh-color-neutral-550);
   }
 }
