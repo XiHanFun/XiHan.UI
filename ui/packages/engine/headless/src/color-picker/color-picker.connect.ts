@@ -453,5 +453,16 @@ export function connectColorPicker<T extends PropTypes>(
         },
       })
     },
+
+    getHiddenInputProps: () => normalize.input({
+      ...parts['hidden-input'].attrs,
+      // type 先于 value 写入：改 type 会重置输入的值
+      type: 'hidden',
+      // name 缺省即不产出该属性，此时这份输入不参与提交
+      name: prop('name'),
+      value,
+      // 禁用的控件不该提交出值。只读照常提交
+      disabled: disabled || undefined,
+    }),
   }
 }

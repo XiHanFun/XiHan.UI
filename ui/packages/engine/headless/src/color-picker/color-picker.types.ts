@@ -98,6 +98,8 @@ export interface ColorPickerSchema extends MachineSchema {
     readOnly?: boolean
     /** 预设色板。作者据此渲染 swatch-item，组件只负责标出哪一格正被选中。 */
     swatches?: string[]
+    /** 表单字段名；给了表单影子才带 name 并参与提交。 */
+    name?: string
     /** 带透明度，默认关。关掉时值串恒不透明，透明度那条滑杆与输入框整条禁用。 */
     alpha?: boolean
     /** 文字方向。只改写横轴（取色区的饱和度、通道滑杆）上左右两键与指针的语义。 */
@@ -231,4 +233,6 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   getEyeDropperTriggerProps: () => T['button']
   getSwatchGroupProps: () => T['element']
   getSwatchItemProps: (props: ColorPickerSwatchItemProps) => T['button']
+  /** 表单影子：值随表单提交。给了 name 才带 name，不给就不参与提交。 */
+  getHiddenInputProps: () => T['input']
 }

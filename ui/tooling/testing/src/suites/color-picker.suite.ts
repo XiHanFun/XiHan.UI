@@ -28,6 +28,21 @@ function typeInto(doc: Document, index: number, text: string): void {
   input.dispatchEvent(new Event('input', { bubbles: true }))
 }
 
+/** 表单影子由作者写在 root 里，只有需要提交的用例才声明它。 */
+function withHiddenInput(base: FixtureNode): FixtureNode {
+  return { ...base, children: [...(base.children ?? []), { part: 'hidden-input', tag: 'input' }] }
+}
+
+/** name/value/disabled 里只有 name 进得了归一化快照（value 只落 DOM property），表单出口只能直接读 DOM。 */
+function assertHiddenInput(doc: Document, expected: readonly [string, string, boolean]): void {
+  const el = doc.querySelector<HTMLInputElement>(`${SCOPE}[data-part="hidden-input"]`)
+  if (!el)
+    throw new Error('找不到 hidden-input 部件')
+  const actual = [el.name, el.value, el.disabled] as const
+  if (JSON.stringify(actual) !== JSON.stringify(expected))
+    throw new Error(`隐藏输入的 name/value/disabled 不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
+}
+
 function channelSlider(channel: string): FixtureNode {
   return {
     part: 'channel-slider',
@@ -548,6 +563,56 @@ export const colorPickerSuite: ConformanceSuite = {
             'disabled': '',
             'data-disabled': '',
           },
+        },
+      },
+    },
+    {
+      // 影子只在本用例的 fixture 里出现：作者不写这个部件就不该有它，
+      // 其余用例的 order / counts 因此一条都不用改
+      name: '表单影子：给了 name 才带 name，值跟着改，禁用时不提交',
+      spec: { apg: APG_DIALOG },
+      fixture: withHiddenInput,
+      props: { defaultValue: '#3b82f6', name: 'theme' },
+      initial: {
+        parts: {
+          'hidden-input': { type: 'hidden', name: 'theme' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'value 只落 DOM property，进不了归一化快照',
+          run: ({ doc }) => assertHiddenInput(doc, ['theme', '#3b82f6', false]),
+        },
+        {
+          kind: 'setProps',
+          props: { value: '#00ff00' },
+        },
+        {
+          kind: 'raw',
+          why: '同上：值跟着受控 prop 走',
+          run: ({ doc }) => assertHiddenInput(doc, ['theme', '#00ff00', false]),
+        },
+        {
+          kind: 'setProps',
+          props: { disabled: true },
+          expect: { parts: { 'hidden-input': { disabled: '' } } },
+        },
+        {
+          kind: 'raw',
+          why: '禁用的控件不该提交出值',
+          run: ({ doc }) => assertHiddenInput(doc, ['theme', '#00ff00', true]),
+        },
+      ],
+    },
+    {
+      name: '表单影子：没给 name 就不带 name，这份输入不参与提交',
+      spec: { apg: APG_DIALOG },
+      fixture: withHiddenInput,
+      props: { defaultValue: '#3b82f6' },
+      initial: {
+        parts: {
+          'hidden-input': { type: 'hidden', name: null },
         },
       },
     },

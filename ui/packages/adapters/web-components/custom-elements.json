@@ -4421,6 +4421,10 @@
             {
               "description": "预设色板一格，须是原生 button 且自带 value 属性",
               "name": "swatch-item"
+            },
+            {
+              "description": "type=hidden 的表单出口，值是当前颜色串；作者不写这个部件就不参与提交",
+              "name": "hidden-input"
             }
           ],
           "members": [
@@ -4513,6 +4517,15 @@
                 "text": "string[] | undefined"
               },
               "attribute": "swatches"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
             },
             {
               "kind": "field",
@@ -4837,6 +4850,14 @@
               "description": "浮层与锚点的间距（px）",
               "name": "offset",
               "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "表单字段名；给了 hidden-input 才带 name 并参与提交",
+              "name": "name",
+              "fieldName": "name"
             }
           ],
           "superclass": {

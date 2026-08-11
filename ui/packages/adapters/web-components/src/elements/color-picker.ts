@@ -55,6 +55,7 @@ const STRING_LIST_CONVERTER = {
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写横轴上左右两键与指针的语义，默认 ltr
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
+ * @attr {string} name - 表单字段名；给了 hidden-input 才带 name 并参与提交
  * @fires value-change - 颜色变化；detail 为 `{ value: string }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly）
@@ -73,6 +74,7 @@ const STRING_LIST_CONVERTER = {
  * @csspart eye-dropper-trigger - 屏幕取色按钮，须是原生 button；环境不支持时自动禁用
  * @csspart swatch-group - role=group 的预设色板容器
  * @csspart swatch-item - 预设色板一格，须是原生 button 且自带 value 属性
+ * @csspart hidden-input - type=hidden 的表单出口，值是当前颜色串；作者不写这个部件就不参与提交
  */
 export class XhColorPickerElement extends XhElement {
   static override partContract = { anatomy: colorPickerAnatomy, meta: colorPickerMeta }
@@ -89,6 +91,7 @@ export class XhColorPickerElement extends XhElement {
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     alpha: { converter: BOOLEAN_CONVERTER },
     swatches: { converter: STRING_LIST_CONVERTER },
+    name: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
@@ -105,6 +108,7 @@ export class XhColorPickerElement extends XhElement {
   declare readOnly?: boolean
   declare alpha?: boolean
   declare swatches?: string[]
+  declare name?: string
   declare direction?: Direction
   declare placement?: Placement
   declare offset?: number
@@ -141,6 +145,7 @@ export class XhColorPickerElement extends XhElement {
       readOnly: this.readOnly ?? false,
       alpha: this.alpha ?? false,
       swatches: this.swatches,
+      name: this.name,
       dir: this.direction,
       placement: this.placement,
       offset: this.offset,
@@ -238,6 +243,7 @@ export class XhColorPickerElement extends XhElement {
     put('area-thumb', api.getAreaThumbProps() as Record<string, unknown>)
     put('eye-dropper-trigger', api.getEyeDropperTriggerProps() as Record<string, unknown>)
     put('swatch-group', api.getSwatchGroupProps() as Record<string, unknown>)
+    put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
 
     // 值串的显示由元素代填（作者只需给出空节点）；作者写了内容就归作者，元素不再改写
     const valueText = this.getPart('value-text')

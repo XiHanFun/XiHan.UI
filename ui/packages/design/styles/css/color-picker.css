@@ -421,4 +421,20 @@
   [data-scope='color-picker'][data-part='swatch-group'][hidden] {
     display: none;
   }
+
+  /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底
+     （作者手写的是一个普通 input，升级完成前它是可见的文本框）。
+     刻意不写 display：写了反而会盖掉 UA 对 type=hidden 的收起，把它显出来 */
+  [data-scope='color-picker'][data-part='hidden-input'] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    pointer-events: none;
+  }
 }
