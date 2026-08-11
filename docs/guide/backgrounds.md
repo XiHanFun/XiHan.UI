@@ -126,4 +126,4 @@ registerEffect(myEffect)
 ## 相关
 
 - [Vue 适配器](../adapters/vue)
-- [Web Components 适配器](../adapters/wc)
+- [Web Components 适配器](../adapters/web-components)

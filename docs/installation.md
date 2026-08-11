@@ -148,7 +148,7 @@ createThemeController({ storageKey: 'app-theme' })
 </xh-button>
 ```
 
-详见 [Web Components 适配器](./adapters/wc)。
+详见 [Web Components 适配器](./adapters/web-components)。
 
 ## 样式的三种接法
 

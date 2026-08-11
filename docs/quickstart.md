@@ -165,4 +165,4 @@ theme.subscribe(state => console.log(state.mode, state.density, state.dir))
 2. [状态机运行时](./guide/machine)——组件的行为长什么样，受控值是怎么接的；
 3. [connect 与属性产出](./guide/connect)——从机器状态到 DOM 属性的那一步。
 
-然后按需求挑：[Vue 适配器](./adapters/vue)、[Web Components 适配器](./adapters/wc)、[皮肤与样式分层](./guide/styling)、[无障碍与键盘规格](./guide/a11y)。
+然后按需求挑：[Vue 适配器](./adapters/vue)、[Web Components 适配器](./adapters/web-components)、[皮肤与样式分层](./guide/styling)、[无障碍与键盘规格](./guide/a11y)。
