@@ -10,7 +10,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
-  XhTableEmptyState,
+  XhTableEmpty,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -108,7 +108,7 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
           <XhTableCell value="city">{{ m.city }}</XhTableCell>
         </XhTableRow>
       </XhTableBody>
-      <XhTableEmptyState>这组条件下没有人。</XhTableEmptyState>
+      <XhTableEmpty>这组条件下没有人。</XhTableEmpty>
     </XhTableRoot>
     <span>
       命中 {{ visible.length }} / {{ members.length }} 人 · 部门：{{

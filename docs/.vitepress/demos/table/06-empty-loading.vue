@@ -5,7 +5,7 @@ import {
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
-  XhTableEmptyState,
+  XhTableEmpty,
   XhTableHeader,
   XhTableLoadingState,
   XhTableRoot,
@@ -75,7 +75,7 @@ const rows = computed(() => tasks.value.map((t) => ({ id: t.id })));
         </XhTableRow>
       </XhTableBody>
       <XhTableLoadingState>正在取数…</XhTableLoadingState>
-      <XhTableEmptyState>还没有任务，点「取数」拉一份。</XhTableEmptyState>
+      <XhTableEmpty>还没有任务，点「取数」拉一份。</XhTableEmpty>
     </XhTableRoot>
   </div>
 </template>

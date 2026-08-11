@@ -48,3 +48,15 @@
 - `CheckboxGroupApi.getItemControlProps` → `getIndicatorProps`，
   `getItemHiddenInputProps` → `getHiddenInputProps`（两个名字 radio-group 早就在用）。
 - Vue 组件 `XhCheckboxGroupItemControl` → `XhCheckboxGroupIndicator`。
+
+**table 的空态部件由 `empty-state` 改叫 `empty`。** 部件名不该与组件的 scope 名撞车——
+`empty-state` 是一个独立组件的 `data-scope`，再拿它当 table 的部件名，写皮肤时
+`[data-part='empty-state']` 与 `[data-scope='empty-state']` 混在一起读不出谁是谁。
+combobox 早就叫 `empty`。独立的 `empty-state` 组件本身不动。
+
+迁移点：
+
+- `data-part='empty-state'` → `'empty'`。
+- `TableApi.getEmptyStateProps` → `getEmptyProps`。
+- Vue 组件 `XhTableEmptyState` → `XhTableEmpty`（`XhEmptyState*` 那一族是另一个组件，不变）。
+- WC 的 `::part(empty-state)` → `::part(empty)`。

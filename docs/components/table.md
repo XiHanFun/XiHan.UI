@@ -105,7 +105,7 @@ rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-table>` |
-| Vue 组件 | `XhTableBody` `XhTableCaption` `XhTableCell` `XhTableColumnHeader` `XhTableEmptyState` `XhTableExpandTrigger` `XhTableExpandedRow` `XhTableFooter` `XhTableHeader` `XhTableLoadingState` `XhTableRoot` `XhTableRow` `XhTableRowSelectTrigger` `XhTableSelectAllTrigger` `XhTableSortTrigger` |
+| Vue 组件 | `XhTableBody` `XhTableCaption` `XhTableCell` `XhTableColumnHeader` `XhTableEmpty` `XhTableExpandTrigger` `XhTableExpandedRow` `XhTableFooter` `XhTableHeader` `XhTableLoadingState` `XhTableRoot` `XhTableRow` `XhTableRowSelectTrigger` `XhTableSelectAllTrigger` `XhTableSortTrigger` |
 | 组合式函数 | `useTable` |
 | 状态机 | `tableMachine` |
 | 皮肤 | `@xihan-ui/styles/table.css` |
@@ -114,7 +114,7 @@ rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="table"`：**`root`** · `header` · **`body`** · `footer` · `row` · `column-header` · `cell` · `caption` · `select-all-trigger` · `row-select-trigger` · `sort-trigger` · `expand-trigger` · `expanded-row` · `empty-state` · `loading-state`
+`data-scope="table"`：**`root`** · `header` · **`body`** · `footer` · `row` · `column-header` · `cell` · `caption` · `select-all-trigger` · `row-select-trigger` · `sort-trigger` · `expand-trigger` · `expanded-row` · `empty` · `loading-state`
 
 ## Props
 
@@ -193,7 +193,7 @@ rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自
 | `getSortTriggerProps` | `(props: TableColumnProps) => T['element']` |  |
 | `getExpandTriggerProps` | `(props: TableRowProps) => T['element']` |  |
 | `getExpandedRowProps` | `(props: TableRowProps) => T['element']` |  |
-| `getEmptyStateProps` | `() => T['element']` |  |
+| `getEmptyProps` | `() => T['element']` |  |
 | `getLoadingStateProps` | `() => T['element']` |  |
 
 ## 键盘

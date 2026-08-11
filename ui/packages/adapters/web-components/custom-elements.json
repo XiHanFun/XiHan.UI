@@ -21104,7 +21104,7 @@
             },
             {
               "description": "空态节点，表体为空且不在加载时显形",
-              "name": "empty-state"
+              "name": "empty"
             },
             {
               "description": "加载态节点，表体为空且正在加载时显形",

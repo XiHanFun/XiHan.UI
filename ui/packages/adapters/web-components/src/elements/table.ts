@@ -68,7 +68,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @csspart sort-trigger - 排序把手，自占一个 Tab 位；按住 Shift 点是追加到排序链
  * @csspart expand-trigger - 展开把手（aria-hidden 且不占 Tab 位，键盘那一路由左右方向键承担）
  * @csspart expanded-row - role=row 详情行，须自带 value 属性与它所属的数据行配对，内部须放一个 cell 承载详情；收起时 hidden
- * @csspart empty-state - 空态节点，表体为空且不在加载时显形
+ * @csspart empty - 空态节点，表体为空且不在加载时显形
  * @csspart loading-state - 加载态节点，表体为空且正在加载时显形
  */
 export class XhTableElement extends XhElement {
@@ -209,9 +209,9 @@ export class XhTableElement extends XhElement {
     put('body', api.getBodyProps() as Record<string, unknown>)
     put('footer', api.getFooterProps() as Record<string, unknown>)
     // 两个状态节点的显隐直接读连接层给的 hidden
-    const emptyProps = api.getEmptyStateProps() as Record<string, unknown>
+    const emptyProps = api.getEmptyProps() as Record<string, unknown>
     const loadingProps = api.getLoadingStateProps() as Record<string, unknown>
-    put('empty-state', emptyProps)
+    put('empty', emptyProps)
     put('loading-state', loadingProps)
 
     // 集合类 part 逐个 spread，身份由节点自报，不依赖下标。
@@ -255,7 +255,7 @@ export class XhTableElement extends XhElement {
     // 节点常驻，用内联 display 收起（作者层的 display 声明会盖过 [hidden]）
     for (const el of this.getParts('expanded-row'))
       this.setPartHidden(el, !api.isExpanded(el.getAttribute('value') ?? ''))
-    this.setPartHidden(this.getPart('empty-state'), !!emptyProps.hidden)
+    this.setPartHidden(this.getPart('empty'), !!emptyProps.hidden)
     this.setPartHidden(this.getPart('loading-state'), !!loadingProps.hidden)
   }
 }

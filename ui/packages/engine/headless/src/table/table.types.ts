@@ -255,6 +255,6 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   getSortTriggerProps: (props: TableColumnProps) => T['element']
   getExpandTriggerProps: (props: TableRowProps) => T['element']
   getExpandedRowProps: (props: TableRowProps) => T['element']
-  getEmptyStateProps: () => T['element']
+  getEmptyProps: () => T['element']
   getLoadingStateProps: () => T['element']
 }
