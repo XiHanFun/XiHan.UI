@@ -28,7 +28,9 @@
   "border": {
     "default": { "$type": "color", "$value": "{color.neutral.200}" },
     "subtle": { "$type": "color", "$value": "{color.neutral.100}" },
-    "strong": { "$type": "color", "$value": "{color.neutral.300}" }
+    "strong": { "$type": "color", "$value": "{color.neutral.300}" },
+    "control": { "$type": "color", "$value": "{color.neutral.450}" },
+    "control-hover": { "$type": "color", "$value": "{color.neutral.500}" }
   },
   "ring": {
     "focus": { "$type": "color", "$value": "{color.brand.500}" }

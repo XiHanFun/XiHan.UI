@@ -183,6 +183,8 @@
     --xh-border-default: var(--xh-color-neutral-200);
     --xh-border-subtle: var(--xh-color-neutral-100);
     --xh-border-strong: var(--xh-color-neutral-300);
+    --xh-border-control: var(--xh-color-neutral-450);
+    --xh-border-control-hover: var(--xh-color-neutral-500);
     --xh-ring-focus: var(--xh-color-brand-500);
   }
 
@@ -214,6 +216,8 @@
     --xh-border-default: var(--xh-color-neutral-200);
     --xh-border-subtle: var(--xh-color-neutral-100);
     --xh-border-strong: var(--xh-color-neutral-300);
+    --xh-border-control: var(--xh-color-neutral-450);
+    --xh-border-control-hover: var(--xh-color-neutral-500);
     --xh-ring-focus: var(--xh-color-brand-500);
   }
 
@@ -245,6 +249,26 @@
     --xh-border-default: var(--xh-color-neutral-700);
     --xh-border-subtle: var(--xh-color-neutral-800);
     --xh-border-strong: var(--xh-color-neutral-600);
+    --xh-border-control: var(--xh-color-neutral-550);
+    --xh-border-control-hover: var(--xh-color-neutral-500);
     --xh-ring-focus: var(--xh-color-brand-400);
+  }
+
+  /* contrast 轴 · 高对比档。三块全是 :where()（特指度 0），谁在后面谁赢，
+     所以这两块必须排在两个 mode 块之后：深色 + 高对比时先被浅色档覆盖一次，再被下面这块盖回来 */
+  :where([data-contrast='more']) {
+    --xh-border-default: var(--xh-color-neutral-550);
+    --xh-border-subtle: var(--xh-color-neutral-500);
+    --xh-border-strong: var(--xh-color-neutral-600);
+    --xh-border-control: var(--xh-color-neutral-600);
+    --xh-border-control-hover: var(--xh-color-neutral-700);
+  }
+
+  :where([data-theme='dark'][data-contrast='more']) {
+    --xh-border-default: var(--xh-color-neutral-400);
+    --xh-border-subtle: var(--xh-color-neutral-450);
+    --xh-border-strong: var(--xh-color-neutral-300);
+    --xh-border-control: var(--xh-color-neutral-400);
+    --xh-border-control-hover: var(--xh-color-neutral-300);
   }
 }

@@ -14,9 +14,26 @@ function loadJson(name: string): Record<string, unknown> {
 }
 
 const primitive = loadJson('primitive.json')
+
+/** 高对比档只写覆盖项，按组浅合并到基础档上，得到那一档的完整取值。 */
+function withOverrides(
+  base: Record<string, unknown>,
+  more: Record<string, unknown>,
+): Record<string, unknown> {
+  const out = { ...base }
+  for (const [group, tokens] of Object.entries(more)) {
+    if (group.startsWith('$'))
+      continue
+    out[group] = { ...(base[group] as object), ...(tokens as object) }
+  }
+  return out
+}
+
 const themes = {
-  light: loadJson('semantic.light.json'),
-  dark: loadJson('semantic.dark.json'),
+  'light': loadJson('semantic.light.json'),
+  'dark': loadJson('semantic.dark.json'),
+  'light-more': withOverrides(loadJson('semantic.light.json'), loadJson('semantic.light.more.json')),
+  'dark-more': withOverrides(loadJson('semantic.dark.json'), loadJson('semantic.dark.more.json')),
 } as const
 
 function at(root: unknown, path: string): TokenNode | undefined {
@@ -143,18 +160,47 @@ const OUTSIDE_CONTROL_PAIRS: ReadonlyArray<[keyof typeof themes, string, string]
   ['dark', 'fg.subtle', 'bg.surface-raised'],
 ]
 
-// 控件边界，WCAG 1.4.11 要求 3:1。当前一条都不达标，先按棘轮钉住不许更差；
-// 达标要引一支专供控件边界的令牌并改皮肤，那是一次带视觉确认的改动。
+// 控件边界走 border.control，WCAG 1.4.11 的 3:1 是硬门槛。
+// 这一族的取值判据是「中性色阶里第一个过 3:1 的档」：再退一档浅色掉到 2.59、深色掉到 2.54，
+// 再进一档浅色跳到 4.73（已是正文级重量，1px 描边取到那里整屏会发硬）。
+const CONTROL_BORDER_PAIRS: ReadonlyArray<[keyof typeof themes, string, string]> = [
+  ['light', 'border.control', 'bg.canvas'],
+  ['light', 'border.control', 'bg.surface'],
+  ['light', 'border.control-hover', 'bg.canvas'],
+  ['light', 'border.control-hover', 'bg.surface'],
+  ['dark', 'border.control', 'bg.canvas'],
+  ['dark', 'border.control', 'bg.surface'],
+  ['dark', 'border.control-hover', 'bg.canvas'],
+  ['dark', 'border.control-hover', 'bg.surface'],
+]
+
+// 悬停必须比静息更重，否则「悬停反而变淡」——这条比绝对值更容易在改色时被破坏。
+const HOVER_ORDER: ReadonlyArray<[keyof typeof themes, string]> = [
+  ['light', 'bg.canvas'],
+  ['light', 'bg.surface'],
+  ['dark', 'bg.canvas'],
+  ['dark', 'bg.surface'],
+]
+
+// 装饰性边框（分隔线、容器描边）不在 1.4.11 的范围内，但也不许悄悄变淡：按棘轮钉住。
+// 12 组一个不落——此前只钉了 8 组，surface 底那 4 组没钉。
 const BORDER_RATCHET: ReadonlyArray<[keyof typeof themes, string, string, number]> = [
   ['light', 'border.default', 'bg.canvas', 1.26],
   ['light', 'border.default', 'bg.surface', 1.26],
   ['light', 'border.strong', 'bg.canvas', 1.48],
+  ['light', 'border.strong', 'bg.surface', 1.48],
   ['light', 'border.subtle', 'bg.canvas', 1.1],
+  ['light', 'border.subtle', 'bg.surface', 1.1],
   ['dark', 'border.default', 'bg.canvas', 1.91],
   ['dark', 'border.default', 'bg.surface', 1.71],
   ['dark', 'border.strong', 'bg.canvas', 2.54],
+  ['dark', 'border.strong', 'bg.surface', 2.28],
   ['dark', 'border.subtle', 'bg.canvas', 1.31],
+  ['dark', 'border.subtle', 'bg.surface', 1.18],
 ]
+
+// 高对比档（data-contrast='more'）的判据：每条边界对两种底都不低于正文 AA 的那条线。
+const MORE_BORDERS = ['border.default', 'border.subtle', 'border.strong', 'border.control', 'border.control-hover']
 
 describe('文字对比度（WCAG 1.4.3 AA，4.5:1）', () => {
   for (const [theme, fg, bg] of TEXT_PAIRS) {
@@ -181,10 +227,43 @@ describe('禁用态按 1.4.3 豁免，只钉住不比正文更差', () => {
   })
 })
 
-describe('边界对比度棘轮（目标 SC 1.4.11 的 3:1，当前未达标）', () => {
+describe('控件边界（WCAG 1.4.11，3:1）', () => {
+  for (const [theme, fg, bg] of CONTROL_BORDER_PAIRS) {
+    it(`${theme} ${fg} / ${bg}`, () => {
+      expect(round(contrast(theme, fg, bg))).toBeGreaterThanOrEqual(3)
+    })
+  }
+
+  for (const [theme, bg] of HOVER_ORDER) {
+    it(`${theme} 悬停档比静息档更重（${bg}）`, () => {
+      expect(contrast(theme, 'border.control-hover', bg)).toBeGreaterThan(contrast(theme, 'border.control', bg))
+    })
+  }
+})
+
+describe('装饰性边框棘轮（不在 1.4.11 范围内，只钉住不许更淡）', () => {
   for (const [theme, fg, bg, baseline] of BORDER_RATCHET) {
     it(`${theme} ${fg} / ${bg} 不低于 ${baseline}`, () => {
       expect(round(contrast(theme, fg, bg))).toBeGreaterThanOrEqual(baseline)
     })
   }
+})
+
+describe('高对比档（data-contrast=\'more\'）：每条边界都不低于 4.5', () => {
+  for (const theme of ['light-more', 'dark-more'] as const) {
+    for (const token of MORE_BORDERS) {
+      for (const bg of ['bg.canvas', 'bg.surface']) {
+        it(`${theme} ${token} / ${bg}`, () => {
+          expect(round(contrast(theme, token, bg))).toBeGreaterThanOrEqual(4.5)
+        })
+      }
+    }
+  }
+
+  it('高对比档确实比常规档更重', () => {
+    for (const [base, more] of [['light', 'light-more'], ['dark', 'dark-more']] as const) {
+      for (const token of MORE_BORDERS)
+        expect(contrast(more, token, 'bg.canvas')).toBeGreaterThan(contrast(base, token, 'bg.canvas'))
+    }
+  })
 })
