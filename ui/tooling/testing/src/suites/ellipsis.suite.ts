@@ -60,9 +60,10 @@ function assertTitle(expected: string | null): StepWithExpect {
     why: 'title 不在快照采集的属性集里（既非 data- 也非 aria-），只能直接读节点',
     run: async ({ doc, flush }) => {
       await flush()
-      const actual = partEl(doc, 'root').getAttribute('title')
+      const el = partEl(doc, 'root')
+      const actual = el.getAttribute('title')
       if (actual !== expected)
-        throw new Error(`title 期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
+        throw new Error(`title 期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}（expanded=${el.getAttribute('data-expanded')} overflowing=${el.getAttribute('data-overflowing')} scrollW=${el.scrollWidth} clientW=${el.clientWidth}）`)
     },
   }
 }
@@ -185,6 +186,9 @@ export const ellipsisSuite: ConformanceSuite = {
       spec: { apg: APG },
       props: { tooltip: true, expandable: true },
       steps: [
+        // 先量成放得下：「还没被裁」必须是量出来的，不能指望挂载那一刻恰好不溢出——
+        // 真实浏览器里这段字在默认视口下本来就放不下
+        measureStep(101, 100, false),
         assertTitle(null),
         measureStep(400, 100, true),
         assertTitle(TEXT),
