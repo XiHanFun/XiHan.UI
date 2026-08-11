@@ -3,6 +3,21 @@ import { comboboxAnatomy, comboboxKeyboard } from '@xihan-ui/headless'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/combobox/'
 
+/** 表单影子由作者写在 root 里，只有需要提交的用例才声明它。 */
+function withHiddenInput(base: FixtureNode): FixtureNode {
+  return { ...base, children: [...(base.children ?? []), { part: 'hidden-input', tag: 'input' }] }
+}
+
+/** value 只落 DOM property、进不了归一化快照，表单出口只能直接读 DOM。 */
+function assertHiddenInput(doc: Document, expected: readonly [string, string, boolean]): void {
+  const el = doc.querySelector<HTMLInputElement>('[data-scope="combobox"][data-part="hidden-input"]')
+  if (!el)
+    throw new Error('找不到 hidden-input 部件')
+  const actual = [el.name, el.value, el.disabled] as const
+  if (JSON.stringify(actual) !== JSON.stringify(expected))
+    throw new Error(`表单影子期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
+}
+
 const INPUT = '[data-scope="combobox"][data-part="input"]'
 
 /**
@@ -763,6 +778,51 @@ export const comboboxSuite: ConformanceSuite = {
           root: { 'data-invalid': '' },
           input: { 'aria-invalid': 'true', 'data-invalid': '' },
           control: { 'data-invalid': '' },
+        },
+      },
+    },
+    {
+      // 影子只在本用例的 fixture 里出现：作者不写这个部件就不该有它，
+      // 其余用例的 order / counts 因此一条都不用改
+      name: '表单影子：给了 name 才带 name，多选按逗号拼成一串，禁用时不提交',
+      spec: { apg: APG },
+      fixture: withHiddenInput,
+      props: { name: 'fruit', defaultValue: 'apple' },
+      initial: {
+        parts: {
+          'hidden-input': { type: 'hidden', name: 'fruit' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'value 只落 DOM property，进不了归一化快照',
+          run: ({ doc }) => assertHiddenInput(doc, ['fruit', 'apple', false]),
+        },
+        {
+          kind: 'setProps',
+          props: { multiple: true, value: ['apple', 'banana'] },
+        },
+        {
+          kind: 'raw',
+          why: '多选拼成一串，与 tree-select 同法',
+          run: ({ doc }) => assertHiddenInput(doc, ['fruit', 'apple,banana', false]),
+        },
+        {
+          kind: 'setProps',
+          props: { disabled: true },
+          expect: { parts: { 'hidden-input': { disabled: '' } } },
+        },
+      ],
+    },
+    {
+      name: '表单影子：没给 name 就不带 name，这份输入不参与提交',
+      spec: { apg: APG },
+      fixture: withHiddenInput,
+      props: { defaultValue: 'apple' },
+      initial: {
+        parts: {
+          'hidden-input': { type: 'hidden', name: null },
         },
       },
     },

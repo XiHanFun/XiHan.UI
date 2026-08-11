@@ -44,7 +44,7 @@
 | [评分](./rating) | `rating` | 5 | 5 | 9 |
 | [选择器](./select) | `select` | 11 | 13 | 17 |
 | [列表框](./listbox) | `listbox` | 8 | 10 | 7 |
-| [组合框](./combobox) | `combobox` | 14 | 14 | 14 |
+| [组合框](./combobox) | `combobox` | 15 | 14 | 14 |
 | [级联选择](./cascader) | `cascader` | 12 | 12 | 15 |
 | [树选择](./tree-select) | `tree-select` | 19 | 14 | 12 |
 | [标签输入](./tags-input) | `tags-input` | 11 | 13 | 12 |

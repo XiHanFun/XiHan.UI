@@ -1,7 +1,7 @@
 import type { Placement, PositionResult } from '@xihan-ui/kernel'
 import type { ComboboxFocusIntent, ComboboxSchema } from './combobox.types'
 import { createDismissLayer, isItemDisabled, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 import { comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 
 const { createMachine } = setup<ComboboxSchema>()
@@ -73,6 +73,7 @@ export const comboboxMachine = createMachine({
     track([context.dep('value')], () => action(['syncValueText']))
   },
   on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
     // 这几件事与开合无关，两个状态里都得认
     'VALUE.SET': { actions: ['setValue', 'syncValueText'] },
     'VALUE.CLEAR': { actions: ['clearValue'] },
@@ -151,6 +152,14 @@ export const comboboxMachine = createMachine({
       hasHighlight: ({ context }) => context.get('highlightedValue') != null,
     },
     actions: {
+      // 值与输入串是两条独立受控轴，各判各的；高亮锚点指向的条目可能已被过滤掉
+      resetToDefault: (params) => {
+        resetDeclaredValue(params, 'value', 'value', 'defaultValue')
+        resetDeclaredValue(params, 'inputValue', 'inputValue', 'defaultInputValue')
+        params.context.reset('highlightedValue')
+        params.action(['syncValueText'])
+      },
+
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
 

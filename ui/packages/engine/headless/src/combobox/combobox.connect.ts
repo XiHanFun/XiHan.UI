@@ -431,5 +431,17 @@ export function connectCombobox<T extends PropTypes>(
       'data-state': stateAttr,
       'hidden': !empty || undefined,
     }),
+
+    getHiddenInputProps: () => normalize.input({
+      // type 先于 value 写入：改 type 会重置输入的值
+      type: 'hidden',
+      ...parts['hidden-input'].attrs,
+      // name 缺省即不产出该属性，此时不参与提交
+      name: prop('name'),
+      // 多选按逗号拼成一串，与 tree-select 同法
+      value: value.join(','),
+      // 单体控件用原生 disabled，禁用时不提交值
+      disabled: disabled || undefined,
+    }),
   }
 }
