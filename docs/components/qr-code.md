@@ -18,7 +18,7 @@ L / M / Q / H 依次能容忍更多污损，同样的内容也因此占更多模
 
 ### 边长与静区
 
-size 是整块的像素边长；margin 的单位是模块数，静区含在里面不额外占地方
+pixelSize 是整块的像素边长；margin 的单位是模块数，静区含在里面不额外占地方
 
 <XhDemo src="qr-code/03-size-margin" />
 
@@ -66,6 +66,19 @@ square / dot / rounded；三种形状的墨都盖住每个模块的格心，读�
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
 `data-scope="qr-code"`：**`root`** · `logo`
+
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `eyeShape` | `QrEyeShape` |  | 码眼形状，缺省 square。时序图形与校正图形不受它影响，一律保持方块——它们是透视校正的几何基准。 |
+| `label` | `string` |  | 可及名字，缺省用 value；给了全空白的名字等于没给。 |
+| `level` | `QrLevel` |  | 纠错级别 L / M / Q / H，缺省 M。 |
+| `logo` | `boolean` |  | 码面正中是否留一块给 logo。 留出来的那片模块会被底色盖住，对读码器而言等于人为污损：放 logo 就把 level 提到 Q 或 H， L 与 M 那点纠错余量赔不起这一块。损伤量见 `logoDamage`；超出所选级别的余量时 会往诊断通道报一条 `qr-code.logo-damage` 警告，码照画。 |
+| `margin` | `number` |  | 静区宽度，单位是模块数，缺省 4；静区含在 viewBox 里，不占额外尺寸。 |
+| `moduleShape` | `QrModuleShape` |  | 码点形状，缺省 square。 |
+| `pixelSize` | `number` |  | 像素边长，缺省 160；写成根上的内联宽高。 |
+| `value` | `string` |  | 要编码的内容，按 UTF-8 取字节走字节模式；空串不画码。 |
 
 ## connect API
 

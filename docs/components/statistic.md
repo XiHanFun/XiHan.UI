@@ -49,6 +49,13 @@ tone 决定数值与前后缀用哪族颜色，标签始终保持弱前景
 
 `data-scope="statistic"`：**`root`** · `label` · `value` · `prefix` · `suffix`
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `size` | `Size` |  | 尺寸：sm / md / lg，只落成 root 的 data-size。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，只落成 root 的 data-tone。 |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

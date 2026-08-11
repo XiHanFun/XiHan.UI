@@ -31,15 +31,15 @@
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
 | [表单字段](./field) | `field` | 5 | 0 | 6 |
-| [表单](./form) | `form` | 6 | 0 | 10 |
+| [表单](./form) | `form` | 6 | 0 | 11 |
 | [文本输入](./text-field) | `text-field` | 4 | 1 | 16 |
 | [数字输入](./number-field) | `number-field` | 5 | 6 | 13 |
 | [分格输入](./pin-input) | `pin-input` | 4 | 6 | 10 |
 | [就地编辑](./editable) | `editable` | 9 | 3 | 6 |
-| [复选框](./checkbox) | `checkbox` | 3 | 1 | 7 |
+| [复选框](./checkbox) | `checkbox` | 3 | 1 | 8 |
 | [复选框组](./checkbox-group) | `checkbox-group` | 7 | 3 | 8 |
 | [单选组](./radio-group) | `radio-group` | 6 | 4 | 7 |
-| [开关](./switch) | `switch` | 3 | 1 | 10 |
+| [开关](./switch) | `switch` | 3 | 1 | 11 |
 | [滑块](./slider) | `slider` | 7 | 6 | 11 |
 | [评分](./rating) | `rating` | 5 | 5 | 9 |
 | [选择器](./select) | `select` | 11 | 13 | 17 |
@@ -120,7 +120,7 @@
 | --- | --- | --- | --- | --- |
 | [对话框](./dialog) | `dialog` | 7 | 4 | 8 |
 | [抽屉](./drawer) | `drawer` | 8 | 4 | 7 |
-| [气泡卡片](./popover) | `popover` | 7 | 4 | 10 |
+| [气泡卡片](./popover) | `popover` | 7 | 4 | 11 |
 | [文字提示](./tooltip) | `tooltip` | 4 | 2 | 8 |
 | [悬浮卡片](./hover-card) | `hover-card` | 5 | 2 | 6 |
 | [警告提示](./alert) | `alert` | 5 | 1 | 5 |

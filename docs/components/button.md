@@ -85,6 +85,17 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 
 `data-scope="button"`：**`root`** · `label` · `indicator` · `prefix` · `suffix`
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `disabled` | `boolean` |  |  |
+| `loading` | `boolean` |  | 加载态：用 aria-disabled + 拦截事件表达，保留焦点。 |
+| `size` | `Size` |  |  |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
+| `type` | `'button' \| 'submit' \| 'reset'` |  |  |
+| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定颜色怎么用 |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

@@ -43,6 +43,13 @@ decorative 开启后读屏跳过它；只是排版用的横线应该这么写
 
 `data-scope="separator"`：**`root`**
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `decorative` | `boolean` |  | 装饰性分隔：仅视觉分组，不进无障碍树（role=none，无 aria-orientation）。 |
+| `orientation` | `'horizontal' \| 'vertical'` |  |  |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

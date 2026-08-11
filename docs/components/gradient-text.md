@@ -43,6 +43,14 @@ direction 收的是档位，四条边加四个角共八档，逐档对应 CSS �
 
 `data-scope="gradient-text"`：**`root`**
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `direction` | `GradientTextDirection` |  | 渐变走向档位，缺省 to-right。 |
+| `from` | `string` |  | 起点颜色，写成 CSS 变量交给皮肤；不给则用品牌色族。 |
+| `to` | `string` |  | 终点颜色，写成 CSS 变量交给皮肤；不给则用品牌色族。 |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

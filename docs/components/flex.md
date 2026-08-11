@@ -49,6 +49,17 @@ wrap 让放不下的子项换行、行与行之间同样吃 gap；inline 让容�
 
 `data-scope="flex"`：**`root`**
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `align` | `FlexAlign` |  | 交叉轴对齐：start / center / end / stretch / baseline，不写则由皮肤的缺省对齐决定。 |
+| `direction` | `FlexDirection` |  | 主轴方向：row 横排、column 竖排，缺省 row。 |
+| `gap` | `FlexGap` |  | 子项间距档位：xs / sm / md / lg / xl，不写则不留间距。档位换算成多少由皮肤定。 |
+| `inline` | `boolean` |  | 容器按行内盒排版，宽度收到内容。 |
+| `justify` | `FlexJustify` |  | 主轴分布：start / center / end / between / around / evenly，不写则子项从主轴起点排起。 |
+| `wrap` | `boolean` |  | 一行放不下时折行。 |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

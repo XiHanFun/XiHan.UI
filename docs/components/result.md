@@ -49,6 +49,13 @@ size 换的是留白、图标框与标题字号，不传 size 即默认档
 
 `data-scope="result"`：**`root`** · `icon` · `title` · `description` · `action`
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `size` | `Size` |  | 尺寸档位，只改留白与字号，不改语义。 |
+| `status` | `ResultStatus` |  | 结果类型，只落成 root 的 data-status；图标画什么由作者塞进图标槽。 |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

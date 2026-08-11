@@ -43,6 +43,14 @@
 
 `data-scope="highlight"`：**`root`** · `mark`
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `caseSensitive` | `boolean` |  | 区分大小写，缺省不区分。 |
+| `keyword` | `string \| readonly string[]` |  | 关键词，一个或一组。空串会被丢掉。 |
+| `text` | `string` |  | 要显示的整段文本。命中位置按这个串逐字符算出来。 |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

@@ -46,6 +46,12 @@ checked 只认布尔，用一个可写 computed 在中间换一次，绑上去�
 
 <XhDemo src="checkbox/07-focus" />
 
+### 随表单提交
+
+给了 name 才生出表单影子：勾上才提交，半选按未勾处理，与原生复选框一致
+
+<XhDemo src="checkbox/08-form" />
+
 ## 产物
 
 | 层 | 值 |

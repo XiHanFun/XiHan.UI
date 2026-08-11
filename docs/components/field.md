@@ -56,6 +56,15 @@ Field 的 disabled 只把 data-disabled 铺到各部件上；真正改不动还�
 
 `data-scope="field"`：**`root`** · `label` · **`control`** · `description` · `error-text`
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `controlId` | `string` |  | 控件 id；作者接管时以它为准。 |
+| `disabled` | `boolean` |  |  |
+| `invalid` | `boolean` |  | 校验失败态：控件上 aria-invalid=true，错误文案接入描述链并显出。 |
+| `required` | `boolean` |  | 必填：控件上 aria-required=true。 |
+
 ## connect API
 
 `useField` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

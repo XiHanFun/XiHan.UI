@@ -207,10 +207,16 @@ function typeMeta(id) {
         }
       }
 
-      // 少数组件没有自己的机器，props 写成 `Omit<别人Schema['props'], …> & …` 这样的类型别名
-      // （popconfirm、float-button）。只认 interface 的读法会让它们的 Props 表整页缺席。
-      if (result.props.length === 0 && ts.isTypeAliasDeclaration(node) && name === `${P}Props`) {
-        for (const sym of checker.getPropertiesOfType(checker.getTypeAtLocation(node.type))) {
+      // 没有自己机器的组件，props 不在 Schema 里，而是单独一个 XxxProps：
+      // 有的写成 `Omit<别人Schema['props'], …> & …` 这样的类型别名（popconfirm、float-button），
+      // 更多的直接写成 interface（qr-code、badge、card 等 30 余个）。两种形态都要认，
+      // 少认一种就是整页 Props 表缺席——qr-code 的 pixelSize 曾因此全站无处可查。
+      if (result.props.length === 0
+        && (ts.isTypeAliasDeclaration(node) || ts.isInterfaceDeclaration(node))
+        && name === `${P}Props`) {
+        // 别名取它右边那个类型，接口取声明自身
+        const target = ts.isTypeAliasDeclaration(node) ? node.type : node
+        for (const sym of checker.getPropertiesOfType(checker.getTypeAtLocation(target))) {
           const decl = sym.declarations?.[0]
           if (!decl || !ts.isPropertySignature(decl) || !decl.type)
             continue
