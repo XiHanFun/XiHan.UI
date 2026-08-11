@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 // 采集全部公开面，产出 tooling/public-surface.json。
 //
-// 采集的是「使用者能写下来的名字」，跨五种介质：JS/TS 导出、解剖属性、data-* 状态属性、
-// CSS 令牌与层名、自定义元素标签与 attribute。这份产物入库，由 check-public-surface
-// 拿它当基线比对——**基线里有而当前没有，就是删了或改名了，一律失败**。
+// 采集的是「使用者能写下来的名字」，跨六种介质：JS/TS 导出、解剖属性、组件 props 名、
+// data-* 状态属性、CSS 令牌与层名、自定义元素标签与 attribute。这份产物入库，由
+// check-public-surface 拿它当基线比对——**基线里有而当前没有，就是删了或改名了，一律失败**。
 //
 // 为什么需要它：仓里其余门禁全是「重新生成 + git diff --exit-code」形态，只能发现
 // 「改了源忘了跑生成」。改名会在同一个提交里同时改源与产物，diff 干净、CI 全绿。
 // 实测把 switch 的 thumb 改名 knob，12 道 gate 加 boundaries 全部通过。
 import { readdir, readFile, writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
+import ts from 'typescript'
 
 const PACKAGES = 'packages'
 const HEADLESS = 'packages/engine/headless/src'
@@ -104,10 +105,83 @@ for (const entry of await readdir(HEADLESS, { withFileTypes: true })) {
   catch {
     continue
   }
-  const call = src.match(/createAnatomy\(\s*'([^']+)'\s*,\s*\[([^\]]*)\]/s)
+  const call = src.match(/createAnatomy\(\s*'([^']+)'\s*,\s*\[([^\]]*)\]/)
   if (!call)
     continue
   anatomy[call[1]] = sorted(new Set([...call[2].matchAll(/'([^']+)'/g)].map(m => m[1])))
+}
+
+// ── 三点五、组件 props 名 ──
+//
+// 事实源取 headless 的 <组件>Schema['props']（没有机器的组件取 <组件>Props）——两个适配器的
+// props 都是照它铺的。
+//
+// 走类型检查器而不是读语法树：popconfirm 与 float-button 的 props 是
+// `Omit<PopoverSchema['props'], …> & …` 这样的类型别名，只认 interface 的读法会把它们整个漏掉，
+// 而且是静默漏掉。解析不出成员的组件一律报错，不允许有「采不到就跳过」的口子。
+const componentProps = {}
+{
+  const typeFiles = []
+  for (const entry of await readdir(HEADLESS, { withFileTypes: true })) {
+    if (!entry.isDirectory())
+      continue
+    const file = join(HEADLESS, entry.name, `${entry.name}.types.ts`)
+    if (await readFile(file, 'utf8').then(() => true, () => false))
+      typeFiles.push({ component: entry.name, file: resolve(file) })
+  }
+
+  const program = ts.createProgram(typeFiles.map(t => t.file), {
+    target: ts.ScriptTarget.ESNext,
+    module: ts.ModuleKind.ESNext,
+    moduleResolution: ts.ModuleResolutionKind.Bundler,
+    skipLibCheck: true,
+    strict: false,
+  })
+  const checker = program.getTypeChecker()
+
+  /** 类型上的全部成员名；解析不出来返回空集。 */
+  const propsOf = (typeNode) => {
+    const type = checker.getTypeAtLocation(typeNode)
+    return new Set(checker.getPropertiesOfType(type).map(s => s.name))
+  }
+
+  const unresolved = []
+  for (const { component, file } of typeFiles) {
+    const sf = program.getSourceFile(file)
+    if (!sf) {
+      unresolved.push(`${component}（类型文件没进编译单元）`)
+      continue
+    }
+    const pascal = component.replace(/(^|-)(\w)/g, (_, __, c) => c.toUpperCase())
+    let names = null
+    let fallback = null
+    ts.forEachChild(sf, (node) => {
+      if (ts.isInterfaceDeclaration(node) && node.name.text === `${pascal}Schema`) {
+        for (const member of node.members) {
+          if (ts.isPropertySignature(member) && member.name.getText(sf) === 'props' && member.type)
+            names = propsOf(member.type)
+        }
+      }
+      // 没有机器的组件把 props 单独写成接口或类型别名
+      const isPropsDecl = (ts.isInterfaceDeclaration(node) || ts.isTypeAliasDeclaration(node))
+        && node.name.text === `${pascal}Props`
+      if (isPropsDecl)
+        fallback = propsOf(ts.isTypeAliasDeclaration(node) ? node.type : node.name)
+    })
+
+    const resolved = names?.size ? names : fallback
+    if (!resolved?.size) {
+      unresolved.push(component)
+      continue
+    }
+    componentProps[component] = sorted(resolved)
+  }
+
+  if (unresolved.length) {
+    console.error(`[build-public-surface] ✗ 这些组件的 props 解析不出来，公开面会缺这一块：${unresolved.join('、')}`)
+    console.error('  props 的事实源是 <组件>Schema[\'props\'] 或 <组件>Props；换了写法就把这里的读法一起改。')
+    process.exit(1)
+  }
 }
 
 // ── 四、connect 产出的 data-* 属性名 ──
@@ -172,6 +246,7 @@ const surface = {
   packages,
   exports: exportsByPackage,
   anatomy,
+  componentProps,
   dataAttributes: sorted(dataAttrs),
   dataStateValues: sorted(stateValues),
   tokens,
@@ -187,6 +262,7 @@ console.log(`[build-public-surface] 已写入 ${OUT}`)
 console.log(`  包 ${Object.keys(packages).length} 个 · 子入口 ${count(packages)} 条`)
 console.log(`  导出名 ${count(exportsByPackage)} 个`)
 console.log(`  解剖 ${Object.keys(anatomy).length} 个 scope · 部件配对 ${count(anatomy)} 条`)
+console.log(`  组件 props ${Object.keys(componentProps).length} 个组件 · ${count(componentProps)} 个名字`)
 console.log(`  data-* 属性 ${surface.dataAttributes.length} 种 · data-state 取值 ${surface.dataStateValues.length} 个`)
 console.log(`  令牌 ${tokens.length} 个 · @layer ${surface.cssLayers.length} 个 · 组件槽 ${surface.cssSlots.length} 个`)
 console.log(`  自定义元素 ${Object.keys(elements).length} 个`)

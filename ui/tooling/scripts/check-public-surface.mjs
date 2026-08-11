@@ -52,6 +52,7 @@ function diffMap(label, before, after, inner) {
 diffMap('包子入口', baseline.packages, current.packages, diffList)
 diffMap('导出名', baseline.exports, current.exports, diffList)
 diffMap('解剖部件', baseline.anatomy, current.anatomy, diffList)
+diffMap('组件 prop', baseline.componentProps, current.componentProps, diffList)
 diffList('data-* 属性', baseline.dataAttributes, current.dataAttributes)
 diffList('data-state 取值', baseline.dataStateValues, current.dataStateValues)
 diffList('令牌', baseline.tokens, current.tokens)
@@ -76,4 +77,5 @@ if (missing.length > 0) {
 const total = baseline.tokens.length + baseline.dataAttributes.length + baseline.cssSlots.length
   + Object.values(baseline.exports).reduce((n, v) => n + v.length, 0)
   + Object.values(baseline.anatomy).reduce((n, v) => n + v.length, 0)
+  + Object.values(baseline.componentProps ?? {}).reduce((n, v) => n + v.length, 0)
 console.log(`[check-public-surface] 通过：基线里的 ${total} 个名字一个都没少`)
