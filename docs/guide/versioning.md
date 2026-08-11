@@ -398,16 +398,21 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 
 ### 已经焊死的
 
-**五种介质的「改名 = major」现在有门禁兜着。** `pnpm gate` 里的 `check-public-surface`
-拿一份入库的基线（`ui/tooling/public-surface.json`，5729 个名字）比对当前状态：
+**六种介质的「改名 = major」现在有门禁兜着。** `pnpm gate` 里的 `check-public-surface`
+拿一份入库的基线（`ui/tooling/public-surface.json`，6665 个名字）比对当前状态：
 **基线里有而当前没有，就是删了或改名了，构建失败**。新增一律放行，因为那是 minor。
 
 覆盖：包名与 133 条子入口、3017 个导出名、102 个 `data-scope` 与 569 条部件配对、
-114 种 `data-*`、22 个 `data-state` 取值、173 个令牌、5 个 `@layer` 名、
-1856 个组件覆盖槽、102 个自定义元素及其 attribute 与事件。
+102 个组件的 936 个 prop 名、114 种 `data-*`、22 个 `data-state` 取值、173 个令牌、
+5 个 `@layer` 名、1856 个组件覆盖槽、102 个自定义元素及其 attribute 与事件。
+
+prop 名那一维是后补的：在它进来之前，改一个 prop 名（实测 `transfer` 的 `items` 改
+`collection`、`splitter` 的 `size` 改 `sizes`）13 道门禁全程沉默。它的事实源是无头内核的
+`<组件>Schema['props']`，两个适配器的 props 都照它铺。
 
 它存在的理由可以复现：把 `switch` 的 `thumb` 改名 `knob`，其余 12 道门禁全部通过，
-只有这一道拦下来。删一个语义令牌、改一个组件覆盖槽名同理。
+只有这一道拦下来；把 `switch` 的 `checked` 改名 `isChecked`，同样只有它报出
+「组件 prop switch: checked」。删一个语义令牌、改一个组件覆盖槽名同理。
 
 真要做破坏性变更时，跑 `pnpm surface:update` 推基线并在 changeset 里说清——
 门禁拦的是「无意中删掉」，不是「有意的 major」。
