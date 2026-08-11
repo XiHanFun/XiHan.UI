@@ -1,0 +1,35 @@
+{
+  "mode": "pre",
+  "tag": "alpha",
+  "initialVersions": {
+    "@xihan-ui/playground-vue": "0.0.0",
+    "@xihan-ui/playground-wc": "0.0.0",
+    "@xihan-ui/vue": "0.0.0",
+    "@xihan-ui/web-components": "0.0.0",
+    "@xihan-ui/icons": "0.0.0",
+    "@xihan-ui/styles": "0.0.0",
+    "@xihan-ui/tokens": "0.0.0",
+    "@xihan-ui/behavior": "0.0.0",
+    "@xihan-ui/code-highlight": "0.0.0",
+    "@xihan-ui/headless": "0.0.0",
+    "@xihan-ui/kernel": "0.0.0",
+    "@xihan-ui/machine": "0.0.0",
+    "@xihan-ui/position": "0.0.0",
+    "@xihan-ui/backgrounds": "0.0.0",
+    "@xihan-ui/chat-stream": "0.0.0",
+    "@xihan-ui/markdown": "0.0.0",
+    "@xihan-ui/build": "0.0.0",
+    "@xihan-ui/eslint-config": "0.0.0",
+    "@xihan-ui/scripts": "0.0.0",
+    "@xihan-ui/stylelint-config": "0.0.0",
+    "@xihan-ui/testing": "0.0.0",
+    "@xihan-ui/tsconfig": "0.0.0"
+  },
+  "changesets": [
+    "first-public-alpha",
+    "icon-primitive",
+    "select-multiple",
+    "visual-adapters",
+    "visual-layer"
+  ]
+}
