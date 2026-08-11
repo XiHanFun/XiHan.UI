@@ -4,7 +4,7 @@ import { checkboxGroupAnatomy, checkboxGroupKeyboard } from '@xihan-ui/headless'
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/'
 
 const ITEM = '[data-scope="checkbox-group"][data-part="item"]'
-const HIDDEN_INPUT = '[data-scope="checkbox-group"][data-part="item-hidden-input"]'
+const HIDDEN_INPUT = '[data-scope="checkbox-group"][data-part="hidden-input"]'
 const ROOT = '[data-scope="checkbox-group"][data-part="root"]'
 
 /**
@@ -45,7 +45,7 @@ function allEnabled(base: FixtureNode): FixtureNode {
   }
 }
 
-// item-hidden-input 由 item 内部装配，不作为独立 fixture 节点；采集器仍会抓到它。
+// hidden-input 由 item 内部装配，不作为独立 fixture 节点；采集器仍会抓到它。
 // 条目 b 用 aria-disabled 表达禁用（不是原生 disabled），点不动但仍可聚焦、仍占 Tab 位。
 export const checkboxGroupSuite: ConformanceSuite = {
   component: 'checkbox-group',
@@ -59,17 +59,17 @@ export const checkboxGroupSuite: ConformanceSuite = {
       {
         part: 'item',
         attrs: { value: 'a' },
-        children: [{ part: 'item-control' }, { part: 'item-text', text: 'A' }],
+        children: [{ part: 'indicator' }, { part: 'item-text', text: 'A' }],
       },
       {
         part: 'item',
         attrs: { value: 'b', disabled: '' },
-        children: [{ part: 'item-control' }, { part: 'item-text', text: 'B' }],
+        children: [{ part: 'indicator' }, { part: 'item-text', text: 'B' }],
       },
       {
         part: 'item',
         attrs: { value: 'c' },
-        children: [{ part: 'item-control' }, { part: 'item-text', text: 'C' }],
+        children: [{ part: 'indicator' }, { part: 'item-text', text: 'C' }],
       },
     ],
   },
@@ -90,16 +90,16 @@ export const checkboxGroupSuite: ConformanceSuite = {
           'label',
           'trigger',
           'item[0]',
-          'item-hidden-input[0]',
-          'item-control[0]',
+          'hidden-input[0]',
+          'indicator[0]',
           'item-text[0]',
           'item[1]',
-          'item-hidden-input[1]',
-          'item-control[1]',
+          'hidden-input[1]',
+          'indicator[1]',
           'item-text[1]',
           'item[2]',
-          'item-hidden-input[2]',
-          'item-control[2]',
+          'hidden-input[2]',
+          'indicator[2]',
           'item-text[2]',
         ],
         counts: {
@@ -107,9 +107,9 @@ export const checkboxGroupSuite: ConformanceSuite = {
           'label': 1,
           'trigger': 1,
           'item': 3,
-          'item-control': 3,
+          'indicator': 3,
           'item-text': 3,
-          'item-hidden-input': 3,
+          'hidden-input': 3,
         },
         parts: {
           'root': {
@@ -171,7 +171,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
               'disabled': null,
             },
           ],
-          'item-control': [
+          'indicator': [
             { 'aria-hidden': 'true', 'data-state': 'unchecked' },
             { 'aria-hidden': 'true', 'data-state': 'unchecked', 'data-disabled': '' },
             { 'aria-hidden': 'true', 'data-state': 'unchecked' },
@@ -183,7 +183,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
             { 'data-state': 'unchecked', 'aria-hidden': null },
           ],
           // 隐藏输入与 item 相反：单体输入用原生 disabled，禁用项不该提交出值
-          'item-hidden-input': [
+          'hidden-input': [
             { 'type': 'checkbox', 'aria-hidden': 'true', 'tabindex': '-1', 'data-state': 'unchecked', 'disabled': null },
             { 'type': 'checkbox', 'aria-hidden': 'true', 'tabindex': '-1', 'data-state': 'unchecked', 'disabled': '' },
             { 'type': 'checkbox', 'aria-hidden': 'true', 'tabindex': '-1', 'data-state': 'unchecked', 'disabled': null },
@@ -206,7 +206,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
                 { 'aria-checked': 'false' },
                 { 'aria-checked': 'false' },
               ],
-              'item-control': [{ 'data-state': 'checked' }, { 'data-state': 'unchecked' }, { 'data-state': 'unchecked' }],
+              'indicator': [{ 'data-state': 'checked' }, { 'data-state': 'unchecked' }, { 'data-state': 'unchecked' }],
               'item-text': [{ 'data-state': 'checked' }, { 'data-state': 'unchecked' }, { 'data-state': 'unchecked' }],
             },
             activeElement: { part: 'item[0]', exact: true },
@@ -539,9 +539,9 @@ export const checkboxGroupSuite: ConformanceSuite = {
       spec: { apg: `${APG}#wai-ariaroles,states,andproperties` },
       props: { name: 'topping', defaultValue: ['a'] },
       initial: {
-        counts: { 'item-hidden-input': 3 },
+        counts: { 'hidden-input': 3 },
         parts: {
-          'item-hidden-input': [
+          'hidden-input': [
             { 'type': 'checkbox', 'aria-hidden': 'true', 'tabindex': '-1', 'data-state': 'checked', 'name': 'topping' },
             { 'type': 'checkbox', 'aria-hidden': 'true', 'tabindex': '-1', 'data-state': 'unchecked', 'disabled': '' },
             { 'type': 'checkbox', 'aria-hidden': 'true', 'tabindex': '-1', 'data-state': 'unchecked' },
@@ -559,7 +559,7 @@ export const checkboxGroupSuite: ConformanceSuite = {
           part: 'item[2]',
           expect: {
             parts: {
-              'item-hidden-input': [
+              'hidden-input': [
                 { 'data-state': 'checked' },
                 { 'data-state': 'unchecked' },
                 { 'data-state': 'checked' },

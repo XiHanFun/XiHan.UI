@@ -250,7 +250,7 @@ describe('connectCheckboxGroup：条目', () => {
 describe('connectCheckboxGroup：条目的表单影子与装饰件', () => {
   it('隐藏输入带 type/name/value/checked，禁用项用原生 disabled', () => {
     const s = makeService({ name: 'topping', defaultValue: ['a'] })
-    const on = api(s).getItemHiddenInputProps({ value: 'a' }) as Record<string, unknown>
+    const on = api(s).getHiddenInputProps({ value: 'a' }) as Record<string, unknown>
     expect(on.type).toBe('checkbox')
     expect(on.name).toBe('topping')
     expect(on.value).toBe('a')
@@ -263,19 +263,19 @@ describe('connectCheckboxGroup：条目的表单影子与装饰件', () => {
     const keys = Object.keys(on)
     expect(keys.indexOf('type')).toBeLessThan(keys.indexOf('checked'))
 
-    const off = api(s).getItemHiddenInputProps({ value: 'b', disabled: true }) as Record<string, unknown>
+    const off = api(s).getHiddenInputProps({ value: 'b', disabled: true }) as Record<string, unknown>
     expect(off.checked).toBe(false)
     expect(off.disabled).toBe(true)
   })
 
   it('name 缺省时隐藏输入不带 name，不参与提交', () => {
-    const input = api(makeService()).getItemHiddenInputProps({ value: 'a' }) as Record<string, unknown>
+    const input = api(makeService()).getHiddenInputProps({ value: 'a' }) as Record<string, unknown>
     expect(input.name).toBeUndefined()
   })
 
-  it('item-control 对读屏隐藏，item-control / item-text 与条目共用状态标记', () => {
+  it('indicator 对读屏隐藏，indicator / item-text 与条目共用状态标记', () => {
     const s = makeService({ defaultValue: ['a'] })
-    const control = api(s).getItemControlProps({ value: 'a' }) as Record<string, unknown>
+    const control = api(s).getIndicatorProps({ value: 'a' }) as Record<string, unknown>
     const text = api(s).getItemTextProps({ value: 'a' }) as Record<string, unknown>
     expect(control['aria-hidden']).toBe('true')
     expect(control['data-state']).toBe('checked')

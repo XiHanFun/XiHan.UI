@@ -4,8 +4,8 @@ export const checkboxGroupAnatomy = createAnatomy('checkbox-group', [
   'root',
   'label',
   'item',
-  'item-control',
+  'indicator',
   'item-text',
-  'item-hidden-input',
+  'hidden-input',
   'trigger',
 ])

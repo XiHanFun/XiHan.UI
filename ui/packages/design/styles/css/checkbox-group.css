@@ -70,19 +70,19 @@
   /* 全选格与条目格共用同一套盒子，并成一条规则写：分开写迟早只改到一半，两个方框就此走形。
      尺寸与选中态照 checkbox 的 root 搬，同一份视觉语言在单体与集合里必须一致。
      trigger 那格没有对应的角色节点（anatomy 到 trigger 为止），只能由伪元素补出来 */
-  [data-scope='checkbox-group'][data-part='item-control'],
+  [data-scope='checkbox-group'][data-part='indicator'],
   [data-scope='checkbox-group'][data-part='trigger']::before {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-checkbox-group-control-size, 16px);
-    block-size: var(--xh-checkbox-group-control-size, 16px);
-    border: var(--xh-stroke-thin) solid var(--xh-checkbox-group-control-border, var(--xh-border-default));
-    border-radius: var(--xh-checkbox-group-control-radius, var(--xh-radius-sm));
-    background: var(--xh-checkbox-group-control-bg, var(--xh-bg-canvas));
-    color: var(--xh-checkbox-group-control-fg, var(--xh-fg-on-brand));
-    font-size: var(--xh-checkbox-group-control-font-size, 12px);
+    inline-size: var(--xh-checkbox-group-indicator-size, 16px);
+    block-size: var(--xh-checkbox-group-indicator-size, 16px);
+    border: var(--xh-stroke-thin) solid var(--xh-checkbox-group-indicator-border, var(--xh-border-default));
+    border-radius: var(--xh-checkbox-group-indicator-radius, var(--xh-radius-sm));
+    background: var(--xh-checkbox-group-indicator-bg, var(--xh-bg-canvas));
+    color: var(--xh-checkbox-group-indicator-fg, var(--xh-fg-on-brand));
+    font-size: var(--xh-checkbox-group-indicator-font-size, 12px);
     line-height: var(--xh-leading-none);
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -90,7 +90,7 @@
   }
 
   /* content 只能给伪元素，绝不能并进上面那条：content 落在普通元素上会顶掉它的全部子节点，
-     item-control 里作者写的图标就此消失 */
+     indicator 里作者写的图标就此消失 */
   [data-scope='checkbox-group'][data-part='trigger']::before {
     content: '';
   }
@@ -98,19 +98,19 @@
   /* 悬停只加深空方框的描边。已选中的那一格必须排除：这条选择器的权重高过下面那条填色规则，
      不排除就会在悬停时把 brand 描边换回灰色，方框看起来"缺了一圈" */
   [data-scope='checkbox-group'][data-part='item']:not([data-disabled]):hover
-    [data-scope='checkbox-group'][data-part='item-control']:not([data-state='checked']) {
-    border-color: var(--xh-checkbox-group-control-border-hover, var(--xh-border-strong));
+    [data-scope='checkbox-group'][data-part='indicator']:not([data-state='checked']) {
+    border-color: var(--xh-checkbox-group-indicator-border-hover, var(--xh-border-strong));
   }
 
   /* 选中即填色：条目是二态，全选格三态里 all 与 some 都算"有值"，共用同一副填色 */
-  [data-scope='checkbox-group'][data-part='item-control'][data-state='checked'],
+  [data-scope='checkbox-group'][data-part='indicator'][data-state='checked'],
   [data-scope='checkbox-group'][data-part='trigger']:is([data-state='all'], [data-state='some'])::before {
-    border-color: var(--xh-checkbox-group-control-border-checked, var(--xh-bg-brand));
-    background: var(--xh-checkbox-group-control-bg-checked, var(--xh-bg-brand));
+    border-color: var(--xh-checkbox-group-indicator-border-checked, var(--xh-bg-brand));
+    background: var(--xh-checkbox-group-indicator-bg-checked, var(--xh-bg-brand));
   }
 
-  /* 勾号由皮肤补，作者不必自己往 item-control 里塞字符 */
-  [data-scope='checkbox-group'][data-part='item-control'][data-state='checked']::before {
+  /* 勾号由皮肤补，作者不必自己往 indicator 里塞字符 */
+  [data-scope='checkbox-group'][data-part='indicator'][data-state='checked']::before {
     content: '✓';
   }
 
@@ -126,8 +126,8 @@
 
   /* 校验失败标在每个方框上：root 上的 data-invalid 是唯一出处，条目自己不带这个属性 */
   [data-scope='checkbox-group'][data-part='root'][data-invalid]
-    [data-scope='checkbox-group'][data-part='item-control'] {
-    border-color: var(--xh-checkbox-group-control-border-invalid, var(--xh-color-danger-500));
+    [data-scope='checkbox-group'][data-part='indicator'] {
+    border-color: var(--xh-checkbox-group-indicator-border-invalid, var(--xh-color-danger-500));
   }
 
   [data-scope='checkbox-group'][data-part='item-text'] {
@@ -170,7 +170,7 @@
   /* 表单出口：连接层已经把整套视觉隐藏写进内联 style（absolute + 1px + clip-path），
      这里绝不能再补 display:none——那份输入必须留在布局里，原生校验提示要有处可贴。
      只补一条不吃指针，免得它挡住条目的点击 */
-  [data-scope='checkbox-group'][data-part='item-hidden-input'] {
+  [data-scope='checkbox-group'][data-part='hidden-input'] {
     pointer-events: none;
   }
 
@@ -178,7 +178,7 @@
      不补的话作者给节点加 hidden 后它照样显示 */
   [data-scope='checkbox-group'][data-part='root'][hidden],
   [data-scope='checkbox-group'][data-part='item'][hidden],
-  [data-scope='checkbox-group'][data-part='item-control'][hidden],
+  [data-scope='checkbox-group'][data-part='indicator'][hidden],
   [data-scope='checkbox-group'][data-part='trigger'][hidden] {
     display: none;
   }

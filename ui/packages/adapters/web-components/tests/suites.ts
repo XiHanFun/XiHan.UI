@@ -182,20 +182,20 @@ const wcRatingSuite = authorDisabled(ratingSuite)
 // checkbox-group 另有一处与 radio-group 相同的分歧：每个条目里那份随表单提交的隐藏
 // checkbox，Vue 版由 XhCheckboxGroupItem 自己装配，WC 版要作者手写；位置也得对齐到
 // 条目的第一个子节点，因为 order 断言是逐字比对的。
-function withItemHiddenInput(node: FixtureNode): FixtureNode {
+function withHiddenInput(node: FixtureNode): FixtureNode {
   if (node.part === 'item')
-    return { ...node, children: [{ part: 'item-hidden-input', tag: 'input' }, ...(node.children ?? [])] }
+    return { ...node, children: [{ part: 'hidden-input', tag: 'input' }, ...(node.children ?? [])] }
   if (!node.children)
     return node
-  return { ...node, children: node.children.map(withItemHiddenInput) }
+  return { ...node, children: node.children.map(withHiddenInput) }
 }
 
 const wcCheckboxGroupSuite = authorDisabled({
   ...checkboxGroupSuite,
-  fixture: withItemHiddenInput(checkboxGroupSuite.fixture),
+  fixture: withHiddenInput(checkboxGroupSuite.fixture),
   cases: checkboxGroupSuite.cases.map((c) => {
     const derive = c.fixture
-    return derive ? { ...c, fixture: (base: FixtureNode) => withItemHiddenInput(derive(base)) } : c
+    return derive ? { ...c, fixture: (base: FixtureNode) => withHiddenInput(derive(base)) } : c
   }),
 })
 const listboxSuiteWc = authorDisabled(listboxSuite)
