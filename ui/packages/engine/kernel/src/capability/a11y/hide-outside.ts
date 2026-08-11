@@ -18,10 +18,12 @@ export interface HideOutsideOptions {
 
 /**
  * 把 body 下除 targets、豁免节点外的直接子元素设为 inert。
- * @param targets 必须包含所有 branch 节点，漏传会误伤 portal 出去的嵌套浮层。
+ * @param getTargets 每次施加 inert 时求值一次；必须包含所有 branch 节点与栈中位于自己之上
+ * 的层，漏传会误伤 portal 出去的嵌套浮层。晚于本次调用才挂载的节点也要能被算进来，
+ * 所以取的是函数而不是数组。
  * @returns Cleanup：还原被改动的 inert 状态并停止监控。
  */
-export function hideOutside(targets: Element[], scope: Scope, options: HideOutsideOptions = {}): Cleanup {
+export function hideOutside(getTargets: () => Element[], scope: Scope, options: HideOutsideOptions = {}): Cleanup {
   const doc = scope.getDoc()
   const body = doc.body
   const exemptSelector = [...DEFAULT_EXEMPT_SELECTORS, ...(options.exemptSelectors ?? [])].join(',')
@@ -30,7 +32,7 @@ export function hideOutside(targets: Element[], scope: Scope, options: HideOutsi
   const touched = new Map<HTMLElement, boolean>()
 
   const isTargetContainer = (el: Element): boolean =>
-    targets.some(t => el === t || el.contains(t) || t.contains(el))
+    getTargets().some(t => el === t || el.contains(t) || t.contains(el))
 
   const applyTo = (el: Element): void => {
     if (!(el instanceof HTMLElement))

@@ -1,7 +1,9 @@
 // 机器类型系统的类型契约。
-import type { Scope } from '@xihan-ui/kernel'
+import type { Dict, Scope } from '@xihan-ui/kernel'
 
-export type Dict = Record<string, any>
+// Dict 从 kernel 取：同一个锁步版本族里两个包对同一个名字给出不同泛型元数，
+// 从哪个包导入会决定 Dict<string> 编不编得过
+export type { Dict }
 
 export interface EventObject {
   type: string
@@ -14,10 +16,10 @@ export interface EventObject {
 
 /** machine 的全部泛型参数打包成一个 schema。全部字段必填，未用到的从 BaseSchema 继承宽松默认。 */
 export interface MachineSchema {
-  props: Dict
-  context: Dict
-  computed: Dict
-  refs: Dict
+  props: Dict<any>
+  context: Dict<any>
+  computed: Dict<any>
+  refs: Dict<any>
   /** 状态路径字面量联合，如 "closed" | "open" | "open.interacting"。 */
   state: string
   event: EventObject
@@ -252,7 +254,7 @@ export interface InspectionEvent<T extends MachineSchema> {
 
 export interface ServiceOptions<T extends MachineSchema> {
   /** 用户 props 的 getter，必须保持 getter 形态以维持响应性。 */
-  props: () => Partial<Slice<T, 'props'>> & { id?: string, ids?: Dict, getRootNode?: () => Node }
+  props: () => Partial<Slice<T, 'props'>> & { id?: string, ids?: Dict<any>, getRootNode?: () => Node }
   runtime: ReactiveRuntime
   /** 宿主 DOM 环境；不传则内部用计数器 id 生成器建一个（无 DOM 场景/测试）。 */
   scope?: Scope

@@ -7,7 +7,9 @@ export interface EnvSignals {
   subscribe: (fn: () => void) => () => void
 }
 
-export function createEnvSignals(win: Window = window): EnvSignals {
+// 默认窗口走 globalThis.window 而不是裸 window：默认参数在 hasMM 守卫之前求值，
+// 无 window 的宿主里裸 window 会抛 ReferenceError 而不是回落到无媒体查询那一支。
+export function createEnvSignals(win: Window | undefined = globalThis.window): EnvSignals {
   const hasMM = typeof win?.matchMedia === 'function'
   const dark = hasMM ? win.matchMedia('(prefers-color-scheme: dark)') : null
   const more = hasMM ? win.matchMedia('(prefers-contrast: more)') : null

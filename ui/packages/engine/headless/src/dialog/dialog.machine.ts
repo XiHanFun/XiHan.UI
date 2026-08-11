@@ -119,6 +119,14 @@ export const dialogMachine = createMachine({
           const lock = acquireScrollLock({ config })
           disposers.push(() => lock.dispose())
 
+          // 栈中位于本层之上的层一并算作目标：内层浮层 portal 到 body 之后也是 body 的
+          // 直接子元素，不排除会被本层的 MutationObserver 打上 inert
+          const getTargets = (): Element[] => [
+            getContentEl(),
+            ...refs.get('branches')(),
+            ...config.layerRegistry.elementsAbove(layer),
+          ].filter(Boolean) as Element[]
+
           // 背景失活推迟到宿主提交那一帧之后：进入 open 时 content 尚未渲染，
           // 此刻 targets 为空会导致背景永不 inert
           let hidden: (() => void) | undefined
@@ -126,9 +134,8 @@ export const dialogMachine = createMachine({
           flush(() => {
             if (!alive)
               return
-            const targets = [getContentEl(), ...refs.get('branches')()].filter(Boolean) as Element[]
-            if (targets.length)
-              hidden = hideOutside(targets, config.scope)
+            if (getTargets().length)
+              hidden = hideOutside(getTargets, config.scope)
           })
           // flush 回调可能在效应拆除之后才跑，用存活标志挡住
           disposers.push(() => {
