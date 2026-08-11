@@ -18,7 +18,7 @@ export function transferMatchesQuery(item: TransferItem, query: string): boolean
 
 /**
  * 某一侧当下看得见的条目：先按 value 分侧，再套搜索。
- * 顺序恒为 items 原序；连接层按这个序列去活 DOM 里取节点，方向键才不会走进被隐去的条目。
+ * 顺序恒为 collection 原序；连接层按这个序列去活 DOM 里取节点，方向键才不会走进被隐去的条目。
  * 纯空白的搜索串按没搜处理。
  */
 export function transferVisibleItems(

@@ -56,8 +56,8 @@ const FIXTURE: FixtureNode = {
   ],
 }
 
-/** 条目的标签与禁用只由 items 决定，标记里没有第二份，每个用例都要给全集。 */
-const BASE = { items: ITEMS }
+/** 条目的标签与禁用只由 collection 决定，标记里没有第二份，每个用例都要给全集。 */
+const BASE = { collection: ITEMS }
 
 /** 八个条目节点（左四右四）的期望；逐个写全才咬得住另一侧同值节点。 */
 function itemsOn(right: readonly string[], checked: readonly string[]): readonly AttrExpectation[] {

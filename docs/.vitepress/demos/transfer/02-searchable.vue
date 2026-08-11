@@ -42,7 +42,7 @@ function filter(item: { value: string; label: string }, query: string) {
   <div style="inline-size: 100%; max-inline-size: 520px">
     <XhTransferRoot
       v-model:value="value"
-      :items="items"
+      :collection="items"
       :filter="filter"
       searchable
     >

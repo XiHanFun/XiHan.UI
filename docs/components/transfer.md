@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-items 是条目全集的唯一事实源，value 只装落在右侧的那批
+collection 是条目全集的唯一事实源，value 只装落在右侧的那批
 
 <XhDemo src="transfer/01-basic" />
 
@@ -72,7 +72,7 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `items` | `TransferItem[]` |  | 条目全集，元信息的唯一事实源。缺省为空。 |
+| `collection` | `TransferItem[]` |  | 条目全集，元信息的唯一事实源。缺省为空。 |
 | `value` | `string[]` |  | 落在 target 侧的值。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string[]` |  |  |
 | `selected` | `string[]` |  | 两侧合起来被勾中的值（用于搬运）。给定即受控，语义同上。 |
@@ -98,13 +98,13 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `items` | `readonly TransferItem[]` | 条目全集（作者给的那份，原样透出）。 |
+| `collection` | `readonly TransferItem[]` | 条目全集（作者给的那份，原样透出）。 |
 | `value` | `string[]` | 落在 target 侧的值。 |
 | `selected` | `string[]` | 两侧合起来被勾中的值。 |
 | `disabled` | `boolean` |  |
 | `oneWay` | `boolean` |  |
 | `searchable` | `boolean` |  |
-| `visibleItems` | `(side: TransferSide) => readonly TransferItem[]` | 某一侧当下看得见的条目（分侧 + 搜索之后），顺序恒为 items 原序。 |
+| `visibleItems` | `(side: TransferSide) => readonly TransferItem[]` | 某一侧当下看得见的条目（分侧 + 搜索之后），顺序恒为 collection 原序。 |
 | `checkedValues` | `(side: TransferSide) => string[]` | 某一侧此刻真正勾中的值（只算可见且未禁用的那些，与三态、搬运同一口径）。 |
 | `checkState` | `(side: TransferSide) => TransferCheckState` |  |
 | `query` | `(side: TransferSide) => string` |  |

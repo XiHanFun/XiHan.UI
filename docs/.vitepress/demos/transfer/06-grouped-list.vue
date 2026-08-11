@@ -49,7 +49,7 @@ const value = ref<string[]>(["list"]);
 
 <template>
   <div style="inline-size: 100%; max-inline-size: 520px">
-    <XhTransferRoot v-model:value="value" :items="permissions" searchable>
+    <XhTransferRoot v-model:value="value" :collection="permissions" searchable>
       <XhTransferSourcePanel v-slot="{ items }">
         <XhTransferPanelHeader>
           <XhTransferPanelTitle>可授予</XhTransferPanelTitle>

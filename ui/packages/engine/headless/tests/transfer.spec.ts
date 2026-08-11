@@ -72,7 +72,7 @@ interface PanelEls {
   selectAll: HTMLButtonElement
   search: HTMLInputElement
   list: HTMLElement
-  items: Map<string, { item: HTMLElement, text: HTMLElement, checkbox: HTMLElement }>
+  collection: Map<string, { item: HTMLElement, text: HTMLElement, checkbox: HTMLElement }>
 }
 
 interface Harness {
@@ -88,9 +88,9 @@ interface Harness {
 }
 
 function mount(initial: Partial<Props> = {}): Harness {
-  const props: Partial<Props> = { items: ITEMS, ...initial }
+  const props: Partial<Props> = { collection: ITEMS, ...initial }
   // 作者标记镜像的是机器手上的那份 items：两侧都挂全集，不属于本侧的那一份由 connect 隐去
-  const items = props.items!
+  const collection = props.collection!
   const runtime = createVanillaRuntime()
   const service = createService(transferMachine, { props: () => props, runtime })
   runtime.start()
@@ -109,7 +109,7 @@ function mount(initial: Partial<Props> = {}): Harness {
     header.append(title, count, selectAll)
     panel.append(header, search, list)
     const map = new Map<string, { item: HTMLElement, text: HTMLElement, checkbox: HTMLElement }>()
-    for (const spec of items) {
+    for (const spec of collection) {
       const item = doc.createElement('div')
       const checkbox = doc.createElement('span')
       const text = doc.createElement('span')
@@ -118,7 +118,7 @@ function mount(initial: Partial<Props> = {}): Harness {
       list.appendChild(item)
       map.set(spec.value, { item, text, checkbox })
     }
-    return { panel, title, count, selectAll, search, list, items: map }
+    return { panel, title, count, selectAll, search, list, collection: map }
   }
 
   const panels: Record<TransferSide, PanelEls> = { source: build(), target: build() }
@@ -141,7 +141,7 @@ function mount(initial: Partial<Props> = {}): Harness {
       spread(p.selectAll, api.getSelectAllTriggerProps({ side }) as Record<string, unknown>)
       spread(p.search, api.getSearchProps({ side }) as Record<string, unknown>)
       spread(p.list, api.getListProps({ side }) as Record<string, unknown>)
-      for (const [value, els] of p.items) {
+      for (const [value, els] of p.collection) {
         const item = { value, side }
         spread(els.item, api.getItemProps(item) as Record<string, unknown>)
         spread(els.text, api.getItemTextProps(item) as Record<string, unknown>)
@@ -159,7 +159,7 @@ function mount(initial: Partial<Props> = {}): Harness {
     api: () => connectTransfer(service, normalizeProps),
     root,
     side: s => panels[s],
-    item: (s, v) => panels[s].items.get(v)!.item,
+    item: (s, v) => panels[s].collection.get(v)!.item,
     toTarget,
     toSource,
     setProps: (next) => {
@@ -214,8 +214,8 @@ describe('两侧集合的推导', () => {
     expect(transferSideOf(['apple'], 'cherry')).toBe('source')
   })
 
-  it('分侧之后顺序恒为 items 原序，与 value 里的排列无关', () => {
-    // value 故意倒着写：右侧仍按 items 原序出，两个适配器才不会各排各的
+  it('分侧之后顺序恒为 collection 原序，与 value 里的排列无关', () => {
+    // value 故意倒着写：右侧仍按 collection 原序出，两个适配器才不会各排各的
     const target = transferVisibleItems(ITEMS, ['durian', 'apple'], 'target')
     expect(target.map(i => i.value)).toEqual(['apple', 'durian'])
     expect(transferVisibleItems(ITEMS, ['durian', 'apple'], 'source').map(i => i.value))
@@ -633,8 +633,8 @@ describe('连接层：oneWay', () => {
     expect(h.toSource.disabled).toBe(true)
     expect(h.side('target').list.getAttribute('aria-multiselectable')).toBe('false')
     expect(h.side('target').selectAll.disabled).toBe(true)
-    expect(h.side('target').items.get('cherry')!.checkbox.hasAttribute('hidden')).toBe(true)
-    expect(h.side('source').items.get('apple')!.checkbox.hasAttribute('hidden')).toBe(false)
+    expect(h.side('target').collection.get('cherry')!.checkbox.hasAttribute('hidden')).toBe(true)
+    expect(h.side('source').collection.get('apple')!.checkbox.hasAttribute('hidden')).toBe(false)
 
     click(h.item('target', 'cherry'))
     expect(h.selected()).toEqual([])

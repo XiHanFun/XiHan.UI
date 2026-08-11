@@ -26174,7 +26174,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-transfer>` —— Light-DOM 行为宿主：作者写\nroot/source-panel/target-panel/panel-header/panel-title/panel-count/search/list/item/...\n角色节点，元素跑 transfer 机器并把 connect 产出打上去。\n\n条目全集由 `items` 属性（property）给出，它是标签与禁用的唯一事实源；\n**两侧面板各挂一份全集**，不属于本侧、或被搜索筛掉的那一份由元素打上 hidden，\n节点不卸载。条目身份取节点上的 `value` 属性，归哪一侧则取它落在哪个面板里。\n\n过滤由本元素做，不是作者做：搜索串住在机器里，作者最多给一个 `filter` 谓词。\n\n导航与勾选在事件那一刻按 data-scope+data-part 查活 DOM，依赖 connect 回写的 data-value，\n因此 wire 必须先于交互跑过（基类 updated 已保证）。\n\n集合类输入（items / value / selected / filter）都表达不成属性，只能走 property：\n`el.items = [...]`、`el.value = ['a']`。",
+          "description": "`<xh-transfer>` —— Light-DOM 行为宿主：作者写\nroot/source-panel/target-panel/panel-header/panel-title/panel-count/search/list/item/...\n角色节点，元素跑 transfer 机器并把 connect 产出打上去。\n\n条目全集由 `collection` 属性（property）给出，它是标签与禁用的唯一事实源；\n**两侧面板各挂一份全集**，不属于本侧、或被搜索筛掉的那一份由元素打上 hidden，\n节点不卸载。条目身份取节点上的 `value` 属性，归哪一侧则取它落在哪个面板里。\n\n过滤由本元素做，不是作者做：搜索串住在机器里，作者最多给一个 `filter` 谓词。\n\n导航与勾选在事件那一刻按 data-scope+data-part 查活 DOM，依赖 connect 回写的 data-value，\n因此 wire 必须先于交互跑过（基类 updated 已保证）。\n\n集合类输入（collection / value / selected / filter）都表达不成属性，只能走 property：\n`el.collection = [...]`、`el.value = ['a']`。",
           "name": "XhTransferElement",
           "cssParts": [
             {
@@ -26210,7 +26210,7 @@
               "name": "list"
             },
             {
-              "description": "role=option 条目，须自带 value 属性标识身份；禁用写在 items 里，不写在节点上",
+              "description": "role=option 条目，须自带 value 属性标识身份；禁用写在 collection 里，不写在节点上",
               "name": "item"
             },
             {
@@ -26246,7 +26246,7 @@
             },
             {
               "kind": "field",
-              "name": "items",
+              "name": "collection",
               "privacy": "public",
               "type": {
                 "text": "TransferItem[] | undefined"

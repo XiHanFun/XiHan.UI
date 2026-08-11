@@ -20,7 +20,7 @@ export function useTransfer(
 ): TransferContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  // 两侧集合全由 items + value + 搜索串推导，适配器不必注入 refs
+  // 两侧集合全由 collection + value + 搜索串推导，适配器不必注入 refs
   const service = useMachine(transferMachine, () => ({ ...props, ...handlers }), scope)
   const api = computed(() => connectTransfer(service, vueNormalize))
   return { api, service }

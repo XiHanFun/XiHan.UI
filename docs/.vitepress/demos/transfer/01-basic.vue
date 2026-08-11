@@ -1,4 +1,4 @@
-<!-- 基础用法 | items 是条目全集的唯一事实源，value 只装落在右侧的那批 -->
+<!-- 基础用法 | collection 是条目全集的唯一事实源，value 只装落在右侧的那批 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
@@ -30,7 +30,7 @@ const value = ref<string[]>(["read"]);
 
 <template>
   <div style="inline-size: 100%; max-inline-size: 520px">
-    <XhTransferRoot v-model:value="value" :items="items">
+    <XhTransferRoot v-model:value="value" :collection="items">
       <XhTransferSourcePanel>
         <XhTransferPanelHeader>
           <XhTransferPanelTitle>待选权限</XhTransferPanelTitle>

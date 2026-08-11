@@ -26,7 +26,7 @@ export const XhTransferRoot = defineComponent({
   name: 'XhTransferRoot',
   // 有 connect 兜底的 prop 一律 default: undefined
   props: {
-    items: { type: Array as PropType<TransferItem[]>, default: undefined },
+    collection: { type: Array as PropType<TransferItem[]>, default: undefined },
     value: { type: Array as PropType<string[]>, default: undefined },
     defaultValue: { type: Array as PropType<string[]>, default: undefined },
     selected: { type: Array as PropType<string[]>, default: undefined },
@@ -84,7 +84,7 @@ function panelSetup(side: TransferSide): (props: unknown, ctx: { slots: Slots })
     provideTransferPanel({ panel })
     return () => h('div', ctx.api.value.getPanelProps(panel.value) as Record<string, unknown>, slots.default?.({
       side,
-      items: ctx.api.value.visibleItems(side),
+      collection: ctx.api.value.visibleItems(side),
       checkState: ctx.api.value.checkState(side),
       query: ctx.api.value.query(side),
     }))
@@ -165,7 +165,7 @@ export const XhTransferItem = defineComponent({
   setup(props, { slots }) {
     const ctx = useTransferContext()
     const { panel } = useTransferPanelContext()
-    // 条目只报值与所属面板，禁用与标签回 items 里查；同一 value 的两侧节点靠 side 分身份
+    // 条目只报值与所属面板，禁用与标签回 collection 里查；同一 value 的两侧节点靠 side 分身份
     const item = computed<TransferItemProps>(() => ({ value: props.value, side: panel.value.side }))
     provideTransferItem({ item })
     // 本条目持有焦点时，value 变更重报焦点条目，卸载时上报列表失焦

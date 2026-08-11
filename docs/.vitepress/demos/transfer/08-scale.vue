@@ -48,7 +48,7 @@ const loose = ref<string[]>(["read"]);
   >
     <div>
       <p style="margin-block-end: 8px; font-size: 13px">紧凑</p>
-      <XhTransferRoot v-model:value="tight" :items="items" searchable :style="compact">
+      <XhTransferRoot v-model:value="tight" :collection="items" searchable :style="compact">
         <XhTransferSourcePanel>
           <XhTransferPanelHeader>
             <XhTransferPanelTitle>待选权限</XhTransferPanelTitle>
@@ -92,7 +92,7 @@ const loose = ref<string[]>(["read"]);
 
     <div>
       <p style="margin-block-end: 8px; font-size: 13px">宽松</p>
-      <XhTransferRoot v-model:value="loose" :items="items" searchable :style="roomy">
+      <XhTransferRoot v-model:value="loose" :collection="items" searchable :style="roomy">
         <XhTransferSourcePanel>
           <XhTransferPanelHeader>
             <XhTransferPanelTitle>待选权限</XhTransferPanelTitle>

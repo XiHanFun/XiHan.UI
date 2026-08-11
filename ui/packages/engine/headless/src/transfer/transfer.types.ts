@@ -46,7 +46,7 @@ export interface TransferPanelProps {
 }
 
 /**
- * 条目自报家门：值 + 它挂在哪一侧的面板里；禁用与标签一律回 items 里查。
+ * 条目自报家门：值 + 它挂在哪一侧的面板里；禁用与标签一律回 collection 里查。
  * 两侧面板各挂一份全集，不属于本侧的条目由连接层打上 hidden 而非卸载，
  * 所以同一个 value 会有两个节点，side 就是它们各自的身份。
  */
@@ -58,7 +58,7 @@ export interface TransferItemProps {
 export interface TransferSchema extends MachineSchema {
   props: {
     /** 条目全集，元信息的唯一事实源。缺省为空。 */
-    items?: TransferItem[]
+    collection?: TransferItem[]
     /**
      * 落在 target 侧的值。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。
      */
@@ -132,7 +132,7 @@ export interface TransferSchema extends MachineSchema {
 
 export interface TransferApi<T extends PropTypes = PropTypes> {
   /** 条目全集（作者给的那份，原样透出）。 */
-  items: readonly TransferItem[]
+  collection: readonly TransferItem[]
   /** 落在 target 侧的值。 */
   value: string[]
   /** 两侧合起来被勾中的值。 */
@@ -140,7 +140,7 @@ export interface TransferApi<T extends PropTypes = PropTypes> {
   disabled: boolean
   oneWay: boolean
   searchable: boolean
-  /** 某一侧当下看得见的条目（分侧 + 搜索之后），顺序恒为 items 原序。 */
+  /** 某一侧当下看得见的条目（分侧 + 搜索之后），顺序恒为 collection 原序。 */
   visibleItems: (side: TransferSide) => readonly TransferItem[]
   /** 某一侧此刻真正勾中的值（只算可见且未禁用的那些，与三态、搬运同一口径）。 */
   checkedValues: (side: TransferSide) => string[]

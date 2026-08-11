@@ -35,7 +35,7 @@ export function connectTransfer<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): TransferApi<T> {
   const { context, prop, send, scope } = service
-  const items = prop('items') ?? []
+  const collection = prop('collection') ?? []
   const value = context.get('value')
   const selected = context.get('selected')
   const disabled = !!prop('disabled')
@@ -49,13 +49,13 @@ export function connectTransfer<T extends PropTypes>(
   const titleId: BySide<string> = { source: ids['source-title'], target: ids['target-title'] }
   const listId: BySide<string> = { source: ids['source-list'], target: ids['target-list'] }
 
-  /** 条目元信息的唯一事实源是 items，不是标记。 */
-  const index = new Map(items.map(item => [item.value, item]))
+  /** 条目元信息的唯一事实源是 collection，不是标记。 */
+  const index = new Map(collection.map(item => [item.value, item]))
 
   const queries = bySide<string>(side => (searchable ? context.get(transferQueryKey(side)) : ''))
 
   // connect 在 render 期求值，此时 DOM 尚不存在，不得读 DOM
-  const visible = bySide(side => transferVisibleItems(items, value, side, queries[side], filter))
+  const visible = bySide(side => transferVisibleItems(collection, value, side, queries[side], filter))
   const operable = bySide(side => transferOperableValues(visible[side]))
   const checked = bySide(side => transferCheckedValues(operable[side], selected))
   const checkStates = bySide<TransferCheckState>(side => transferCheckState(operable[side], selected))
@@ -115,7 +115,7 @@ export function connectTransfer<T extends PropTypes>(
     return panel?.querySelector<HTMLElement>(parts.list.selector) ?? null
   }
 
-  /** 某一侧看得见的条目元素，按推导序（items 原序）排列；文档序里混着 hidden 条目，不能用。 */
+  /** 某一侧看得见的条目元素，按推导序（collection 原序）排列；文档序里混着 hidden 条目，不能用。 */
   const visibleEls = (list: HTMLElement, side: TransferSide): HTMLElement[] => {
     const byValue = new Map<string, HTMLElement>()
     for (const el of queryItems(list, transferItemQuery)) {
@@ -159,7 +159,7 @@ export function connectTransfer<T extends PropTypes>(
   }
 
   return {
-    items,
+    collection,
     value,
     selected,
     disabled,
