@@ -54,9 +54,10 @@ export interface NumberFieldSchema extends MachineSchema {
     | { type: 'PRESS.START', direction: 1 | -1 }
     | { type: 'PRESS.END' }
     | { type: 'after.changeInterval' }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: 'canStep'
-  action: 'setValue' | 'stepValue' | 'toMin' | 'toMax' | 'normalize' | 'setDirection'
+  action: 'setValue' | 'stepValue' | 'toMin' | 'toMax' | 'normalize' | 'setDirection' | 'resetToDefault'
   effect: 'spin'
 }
 

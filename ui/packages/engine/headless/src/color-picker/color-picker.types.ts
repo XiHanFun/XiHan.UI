@@ -159,6 +159,7 @@ export interface ColorPickerSchema extends MachineSchema {
     | { type: 'EYE_DROPPER.RESULT', value: string }
     /** 用户按 Esc 放弃取色、或接口报错。 */
     | { type: 'EYE_DROPPER.CANCEL' }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: 'isOpenControlled' | 'canInteract' | 'canPick'
   action:
@@ -180,6 +181,7 @@ export interface ColorPickerSchema extends MachineSchema {
     | 'dragMove'
     | 'endDrag'
     | 'setValueFromEyeDropper'
+    | 'resetToDefault'
   effect: 'trackPosition' | 'trackLayer' | 'trackPointer' | 'runEyeDropper'
 }
 

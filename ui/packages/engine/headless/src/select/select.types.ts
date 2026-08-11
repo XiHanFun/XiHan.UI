@@ -137,6 +137,7 @@ export interface SelectSchema extends MachineSchema {
     | { type: 'ITEM.SELECT', value: string }
     /** 整体改写选中集合（收起态连打检索、外部 setValue 都走它）。裸串同 props 一样按单选简写处理。 */
     | { type: 'VALUE.SET', value: string | string[] }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: 'isOpenControlled' | 'isMultiple'
   action:
@@ -152,6 +153,7 @@ export interface SelectSchema extends MachineSchema {
     | 'setInitialHighlightedValue'
     | 'clearHighlightedValue'
     | 'clearTypeahead'
+    | 'resetToDefault'
   effect: 'trackPosition' | 'trackLayer'
 }
 

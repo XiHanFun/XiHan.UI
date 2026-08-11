@@ -4,7 +4,7 @@ import type { ColorPickerChannel, ColorPickerHsva } from './color-picker.color'
 import type { ColorPickerPoint } from './color-picker.geometry'
 import type { ColorPickerDragTarget, ColorPickerSchema } from './color-picker.types'
 import { createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 import {
   COLOR_PICKER_FALLBACK,
   colorPickerApplyInput,
@@ -150,6 +150,7 @@ export const colorPickerMachine = createMachine({
   watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),
   // 改值与开合无关，收起态下 api.setValue 同样要认
   on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { guard: 'canInteract', actions: ['setValue'] },
     'AREA.SET': { guard: 'canInteract', actions: ['setArea'] },
     'AREA.STEP': { guard: 'canInteract', actions: ['stepArea'] },
@@ -227,6 +228,13 @@ export const colorPickerMachine = createMachine({
         !prop('disabled') && !prop('readOnly') && context.get('eyeDropperSupported'),
     },
     actions: {
+      resetToDefault: (params) => {
+        if (params.prop('value') === undefined)
+          params.context.reset('anchor')
+        resetDeclaredValue(params, 'value', 'value', 'defaultValue')
+        params.context.reset('draft')
+      },
+
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
 

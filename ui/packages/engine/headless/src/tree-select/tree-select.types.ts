@@ -138,6 +138,7 @@ export interface TreeSelectSchema extends MachineSchema {
     | { type: 'BRANCH.EXPAND', value: string }
     | { type: 'BRANCH.COLLAPSE', value: string }
     | { type: 'BRANCH.TOGGLE', value: string }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: 'isOpenControlled' | 'isMultiple'
   action:
@@ -157,6 +158,7 @@ export interface TreeSelectSchema extends MachineSchema {
     | 'expandBranch'
     | 'collapseBranch'
     | 'toggleBranch'
+    | 'resetToDefault'
   effect: 'trackPosition' | 'trackLayer'
 }
 

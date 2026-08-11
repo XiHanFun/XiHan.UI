@@ -78,6 +78,7 @@ export interface RatingSchema extends MachineSchema {
     | { type: 'ITEM.HOVER', value: number }
     | { type: 'HOVER.CLEAR' }
     | { type: 'CONTROL.BLUR' }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: 'canInteract'
   action:
@@ -89,6 +90,7 @@ export interface RatingSchema extends MachineSchema {
     | 'clearHovered'
     | 'setFocused'
     | 'clearFocused'
+    | 'resetToDefault'
   effect: never
 }
 

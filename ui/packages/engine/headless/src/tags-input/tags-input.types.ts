@@ -119,6 +119,7 @@ export interface TagsInputSchema extends MachineSchema {
     | { type: 'EDIT.CANCEL' }
     /** 适配器补报：承载焦点的标签节点被移出 DOM，浏览器不会为此派 focusout。 */
     | { type: 'ITEM.FOCUS_LOST' }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: 'canEdit' | 'canEditTag' | 'canDeleteWithPrev' | 'hasHighlightTarget'
   action:
@@ -135,6 +136,7 @@ export interface TagsInputSchema extends MachineSchema {
     | 'setEditedValue'
     | 'commitEdit'
     | 'cancelEdit'
+    | 'resetToDefault'
   effect: 'focusEditInput'
 }
 

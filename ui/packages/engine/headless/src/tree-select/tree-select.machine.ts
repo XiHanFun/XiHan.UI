@@ -2,7 +2,7 @@ import type { Placement, PositionResult } from '@xihan-ui/kernel'
 import type { TreeVisibleNode } from '../tree'
 import type { TreeSelectFocusIntent, TreeSelectSchema } from './tree-select.types'
 import { createDismissLayer, createFocusScope, createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 import { flattenTree } from '../tree'
 import { treeSelectBranchQuery, treeSelectItemQuery } from './tree-select.anatomy'
 
@@ -107,6 +107,7 @@ export const treeSelectMachine = createMachine({
   },
   // 这几件事与开合无关，两个状态里都得认；展开态另行声明的 NODE.SELECT 会盖过这里那一条。
   on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue'] },
     'VALUE.CLEAR': { actions: ['clearValue'] },
     'EXPANDED.SET': { actions: ['setExpanded'] },
@@ -166,6 +167,8 @@ export const treeSelectMachine = createMachine({
       isMultiple: ({ prop }) => !!prop('multiple'),
     },
     actions: {
+      resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
+
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
 

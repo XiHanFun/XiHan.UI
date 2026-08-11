@@ -2,7 +2,7 @@
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
-import { XhRadioGroupItem, XhRadioGroupRoot } from '../src'
+import { XhRadioGroupItem, XhRadioGroupRoot, XhRatingControl, XhRatingItem, XhRatingRoot, XhSelectContent, XhSelectItem, XhSelectItemText, XhSelectPositioner, XhSelectRoot, XhSelectTrigger, XhSelectValueText } from '../src'
 
 /**
  * 组件的值攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置什么都不会发生。
@@ -194,5 +194,85 @@ describe('边界', () => {
     app.unmount()
     host.remove()
     别人.remove()
+  })
+})
+
+describe('几个最容易做错的组件', () => {
+  it('select：重置回默认值，触发器文字与表单影子都跟着回去', async () => {
+    const host = document.createElement('div')
+    document.body.appendChild(host)
+    const app = createApp({
+      setup: () => () =>
+        h('form', null, [
+          h(XhSelectRoot, {
+            name: 'fruit',
+            defaultValue: 'apple',
+            collection: [{ value: 'apple', label: '苹果' }, { value: 'pear', label: '梨' }],
+          }, {
+            default: () => [
+              h(XhSelectTrigger, null, () => [h(XhSelectValueText)]),
+              h(XhSelectPositioner, null, () => [
+                h(XhSelectContent, null, () => [
+                  h(XhSelectItem, { value: 'apple' }, () => [h(XhSelectItemText, null, () => '苹果')]),
+                  h(XhSelectItem, { value: 'pear' }, () => [h(XhSelectItemText, null, () => '梨')]),
+                ]),
+              ]),
+            ],
+          }),
+        ]),
+    })
+    app.mount(host)
+    const form = host.querySelector('form') as HTMLFormElement
+    await tick()
+    const text = (): string => host.querySelector('[data-part="value-text"]')?.textContent ?? ''
+    expect(text()).toBe('苹果')
+
+    const svc = host.querySelector('[data-part="hidden-select"]') as HTMLSelectElement | null
+    expect(svc?.value ?? '').toBe('apple')
+
+    // 改成梨再重置
+    host.querySelector<HTMLElement>('[data-part="trigger"]')?.click()
+    await tick()
+    const pear = [...document.querySelectorAll('[data-scope="select"][data-part="item"]')]
+      .find(e => e.getAttribute('data-value') === 'pear') as HTMLElement | undefined
+    pear?.click()
+    await tick()
+    expect(text()).toBe('梨')
+
+    form.reset()
+    await tick()
+    expect(text()).toBe('苹果')
+
+    app.unmount()
+    host.remove()
+  })
+
+  it('rating：重置时把悬停缓冲一并清掉，否则指针悬着会盖住结果', async () => {
+    const host = document.createElement('div')
+    document.body.appendChild(host)
+    const app = createApp({
+      setup: () => () =>
+        h('form', null, [
+          h(XhRatingRoot, { name: 'stars', defaultValue: 2, count: 5 }, {
+            default: () => [h(XhRatingControl, null, () => [1, 2, 3, 4, 5].map(i => h(XhRatingItem, { value: i })))],
+          }),
+        ]),
+    })
+    app.mount(host)
+    const form = host.querySelector('form') as HTMLFormElement
+    await tick()
+    const stars = [...form.querySelectorAll<HTMLElement>('[data-scope="rating"] [data-part="item"]')]
+    stars[4]?.click()
+    await tick()
+    // 指针停在第 5 颗上
+    stars[4]?.dispatchEvent(new MouseEvent('pointermove', { bubbles: true }))
+    await tick()
+
+    form.reset()
+    await tick()
+    const 亮着 = stars.filter(s => s.getAttribute('data-highlighted') !== null).length
+    expect(亮着).toBeLessThanOrEqual(2)
+    app.unmount()
+    host.remove()
   })
 })

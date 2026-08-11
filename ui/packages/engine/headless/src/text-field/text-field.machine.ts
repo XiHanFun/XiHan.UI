@@ -1,5 +1,5 @@
 import type { TextFieldSchema } from './text-field.types'
-import { setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<TextFieldSchema>()
 
@@ -36,6 +36,7 @@ export const textFieldMachine = createMachine({
   initialState: () => 'idle',
   // 只有一个状态，两条事件挂在根级
   on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { guard: 'canEdit', actions: ['setValue'] },
     'VALUE.CLEAR': { guard: 'canClear', actions: ['clearValue'] },
   },
@@ -50,6 +51,8 @@ export const textFieldMachine = createMachine({
         !!prop('clearable') && !prop('disabled') && !prop('readOnly') && context.get('value') !== '',
     },
     actions: {
+      resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
+
       setValue: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type === 'VALUE.SET')

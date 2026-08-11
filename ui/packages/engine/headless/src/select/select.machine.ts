@@ -1,7 +1,7 @@
 import type { Placement, PositionResult } from '@xihan-ui/kernel'
 import type { SelectFocusIntent, SelectSchema } from './select.types'
 import { createDismissLayer, createFocusScope, createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
-import { setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 import { selectItemQuery, selectItemText } from './select.anatomy'
 
 const { createMachine } = setup<SelectSchema>()
@@ -74,6 +74,7 @@ export const selectMachine = createMachine({
   },
   // 只改值不动开合，收起态连打与外部 setValue 两个状态都认
   on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { actions: ['setValue', 'syncValueText'] },
   },
   states: {
@@ -128,6 +129,13 @@ export const selectMachine = createMachine({
       isMultiple: ({ prop }) => !!prop('multiple'),
     },
     actions: {
+      resetToDefault: (params) => {
+        resetDeclaredValue(params, 'value', 'value', 'defaultValue')
+        // 与 VALUE.SET、ITEM.SELECT 一样显式跟一次：内部写值路径都自己同步文本，
+        // 第 69 行那条 watch 只兜宿主侧写入
+        params.action(['syncValueText'])
+      },
+
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
       setValue: ({ context, prop, event }) => {
