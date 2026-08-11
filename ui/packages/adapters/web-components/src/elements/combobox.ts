@@ -73,6 +73,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart item-indicator - 候选选中标记（aria-hidden）
  * @csspart item-group - role=group 分组容器，须自带 value 属性标识身份
  * @csspart item-group-label - 分组标题（本组 aria-labelledby 的目标）
+ * @attr {string} name - 表单字段名；给了 hidden-input 才参与提交（多选按逗号拼成一串）
+ * @csspart hidden-input - type=hidden 的表单出口，省略该节点即不参与表单
  * @csspart empty - 无匹配项提示；须放在 positioner 里当 content 的兄弟（列表内只允许 option 与 group）
  */
 export class XhComboboxElement extends XhElement {
@@ -82,6 +84,7 @@ export class XhComboboxElement extends XhElement {
   static override properties = {
     // 数组只走 property，属性表达不了；给了它候选的文本与禁用即以数据为准
     collection: { attribute: false },
+    name: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     inputValue: { converter: STRING_CONVERTER, attribute: 'input-value' },
@@ -116,6 +119,7 @@ export class XhComboboxElement extends XhElement {
   declare readOnly?: boolean
   declare invalid?: boolean
   declare loop?: boolean
+  declare name?: string
   declare placeholder?: string
   declare allowCustomValue?: boolean
   declare openOnClick?: boolean
@@ -167,6 +171,7 @@ export class XhComboboxElement extends XhElement {
       readOnly: this.readOnly ?? false,
       invalid: this.invalid ?? false,
       loop: this.loop,
+      name: this.name,
       placeholder: this.placeholder,
       allowCustomValue: this.allowCustomValue ?? false,
       openOnClick: this.openOnClick ?? false,
@@ -249,6 +254,7 @@ export class XhComboboxElement extends XhElement {
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
     put('empty', api.getEmptyProps() as Record<string, unknown>)
+    put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
 
     for (const el of this.getParts('item-group')) {
       const group = { value: el.getAttribute('value') ?? '' }

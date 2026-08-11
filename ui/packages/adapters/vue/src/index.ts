@@ -158,6 +158,7 @@ export {
   XhComboboxContent,
   XhComboboxControl,
   XhComboboxEmpty,
+  XhComboboxHiddenInput,
   XhComboboxInput,
   XhComboboxItem,
   XhComboboxItemGroup,

@@ -117,6 +117,8 @@ export interface ComboboxSchema extends MachineSchema {
     open?: boolean
     defaultOpen?: boolean
     /** 多选：选中是集合，选中后列表不收起、输入串清空以便接着筛。 */
+    /** 表单字段名；给了 hidden-input 才带 name 并参与提交。多选按逗号拼成一串。 */
+    name?: string
     multiple?: boolean
     /** 整个控件禁用：输入框与两个按钮都用原生 disabled。 */
     disabled?: boolean
@@ -197,6 +199,7 @@ export interface ComboboxSchema extends MachineSchema {
      * 适配器每次提交完 DOM 都要发一次——过滤是调用方做的，机器无从预知何时变。
      */
     | { type: 'ITEMS.SYNC' }
+    | { type: 'FORM.RESET' }
   tag: never
   guard: 'isOpenControlled' | 'isMultiple' | 'hasHighlight'
   action:
@@ -217,6 +220,7 @@ export interface ComboboxSchema extends MachineSchema {
     | 'setValue'
     | 'clearValue'
     | 'reconcileInput'
+    | 'resetToDefault'
   effect: 'trackPosition' | 'trackLayer'
 }
 
@@ -260,4 +264,6 @@ export interface ComboboxApi<T extends PropTypes = PropTypes> {
   getItemTextProps: (props: ComboboxItemProps) => T['element']
   getItemIndicatorProps: (props: ComboboxItemProps) => T['element']
   getEmptyProps: () => T['element']
+  /** 表单影子：选中值随表单提交。给了 name 才带 name，不给就不参与提交。 */
+  getHiddenInputProps: () => T['input']
 }

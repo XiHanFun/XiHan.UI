@@ -4941,6 +4941,10 @@
               "name": "item-group-label"
             },
             {
+              "description": "type=hidden 的表单出口，省略该节点即不参与表单",
+              "name": "hidden-input"
+            },
+            {
               "description": "无匹配项提示；须放在 positioner 里当 content 的兄弟（列表内只允许 option 与 group）",
               "name": "empty"
             }
@@ -5061,6 +5065,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
             },
             {
               "kind": "field",
@@ -5461,6 +5474,14 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "表单字段名；给了 hidden-input 才参与提交（多选按逗号拼成一串）",
+              "name": "name",
+              "fieldName": "name"
             }
           ],
           "superclass": {
