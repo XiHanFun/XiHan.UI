@@ -10,30 +10,48 @@ const ALLOWLIST = {
   '@xihan-ui/headless': {
     '@internationalized/date': '历法与时区运算；目标浏览器基线普遍支持 Temporal 后摘除',
   },
+  '@xihan-ui/vue': {
+    vue: '适配器的宿主框架，由使用者自带；这个包存在的意义就是接它，摘不掉',
+  },
 }
+
+// 第三方 peer 也要登记：使用者装它是本库要求的，与直接依赖同样是长期维护面。
+const RUNTIME_FIELDS = ['dependencies', 'peerDependencies', 'optionalDependencies']
 
 async function readJson(path) {
   return JSON.parse(await readFile(path, 'utf8'))
 }
 
+/** packages/<角色组>/<包>：两级。按一级枚举会一个包都扫不到，而且照常打印通过。 */
+async function packageDirs() {
+  const out = []
+  for (const group of await readdir(PACKAGES_DIR, { withFileTypes: true })) {
+    if (!group.isDirectory())
+      continue
+    for (const leaf of await readdir(join(PACKAGES_DIR, group.name), { withFileTypes: true })) {
+      if (leaf.isDirectory())
+        out.push(join(PACKAGES_DIR, group.name, leaf.name))
+    }
+  }
+  return out
+}
+
 const violations = []
 const staleAllowlist = []
+let checked = 0
 
-const entries = await readdir(PACKAGES_DIR, { withFileTypes: true })
-for (const entry of entries) {
-  if (!entry.isDirectory())
-    continue
-
+for (const dir of await packageDirs()) {
   let pkg
   try {
-    pkg = await readJson(join(PACKAGES_DIR, entry.name, 'package.json'))
+    pkg = await readJson(join(dir, 'package.json'))
   }
   catch {
     continue
   }
+  checked++
 
   const allowed = ALLOWLIST[pkg.name] ?? {}
-  const deps = pkg.dependencies ?? {}
+  const deps = Object.fromEntries(RUNTIME_FIELDS.flatMap(f => Object.entries(pkg[f] ?? {})))
 
   for (const [dep, range] of Object.entries(deps)) {
     if (range.startsWith('workspace:'))
@@ -65,4 +83,10 @@ if (staleAllowlist.length) {
   process.exit(1)
 }
 
-console.log('[check-runtime-deps] 通过：库包运行时依赖只有 workspace 兄弟包与登记在案的第三方')
+// 目录层级一变，按老路径枚举的门禁会一个包都扫不到却照样绿；这条挡住那种空转
+if (checked === 0) {
+  console.error(`[check-runtime-deps] ✗ 一个包都没扫到，${PACKAGES_DIR}/ 的目录层级变了`)
+  process.exit(1)
+}
+
+console.log(`[check-runtime-deps] 通过：${checked} 个库包的运行时依赖只有 workspace 兄弟包与登记在案的第三方`)

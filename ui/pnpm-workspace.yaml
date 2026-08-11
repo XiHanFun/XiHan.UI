@@ -12,7 +12,6 @@ packages:
 allowBuilds:
   esbuild: true
   rs-module-lexer: true
-  simple-git-hooks: false
 
 # 依赖目录（单一版本事实源）。包内一律用 catalog: 引用，升级只改这里一处。
 # 版本基线截至 2026-07，与消费方 XiHan.BasicApp/frontend 已验证组合对齐；
@@ -57,7 +56,6 @@ catalog:
   playwright: ^1.62.0
   axe-core: ^4.12.1
   publint: ^0.3.21
-  simple-git-hooks: ^2.13.0
   size-limit: ^12.1.0
   stylelint: ^16.19.0
   # —— 语言 / 运行时（Vue 侧锁 TS 6：TS 7 无公开编译器 API，vue-tsc 暂不可用）——
