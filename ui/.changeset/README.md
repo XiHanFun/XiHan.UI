@@ -8,27 +8,45 @@ markdown / position / code-highlight / backgrounds / icons）
 新增一个对外发布的包时，除了建包本身，还要把它加进 `.changeset/config.json` 的 `fixed` 组——
 漏了它就会自己走一套版本号，与其余包脱节。
 
-## 首个公开 alpha（14 包 → 1.0.0-alpha.0，已完成）
+## 职责划分
 
-当时在 `ui/` 目录依次执行：
+| 动作 | 由谁做 |
+| --- | --- |
+| 写变更集、`changeset version` 定版本、生成 CHANGELOG | 人，在本地 |
+| git tag、GitHub Release | 人，手工 |
+| 发到 npm | `.github/workflows/release.yml` |
+
+changesets 自己的打 tag 行为已用 `--no-git-tag` 关掉，所以不会再出现一个包一个
+`@xihan-ui/xxx@x.y.z` tag；工作流里也没有创建 Release 的步骤。一次发版对应一个自己
+起名的 tag（如 `v1.0.0-alpha.1`）和一篇自己写的 Release。
+
+## 发一个版本
+
+在 `ui/` 目录：
 
 ```bash
-# 1) 一次性进入 alpha 预发布模式（生成 .changeset/pre.json）
-pnpm changeset pre enter alpha
+# 1) 写变更集（选包、选 patch/minor/major、写条目）
+pnpm changeset
 
-# 2) 应用版本：14 包 → 1.0.0-alpha.0，生成 CHANGELOG，更新内部依赖范围
+# 2) 应用版本：锁步同版，生成 CHANGELOG，更新内部依赖范围
 pnpm run version            # = changeset version
 
-# 3) 提交版本改动
-git add -A && git commit -m "release: @xihan-ui/* 1.0.0-alpha.0"
-
-# 4) 构建全部包并发布到 npm（需先 npm login；access=public 已在配置里）
-pnpm release            # = turbo run build && changeset publish
+# 3) 提交版本改动并推到 main
+git add -A && git commit -m "release: @xihan-ui/* 1.0.0-alpha.1"
 ```
 
-> 发布（`changeset publish` / `npm publish`）是对外动作，请自行确认后执行。
+推到 `main` 之后，在仓库根打自己的 tag 触发发布：
 
-## 后续
+```bash
+git tag v1.0.0-alpha.1 && git push origin v1.0.0-alpha.1
+```
 
-- alpha 迭代：`pnpm changeset`（写变更）→ `pnpm run version` → 提交 → `pnpm release`。
-- 转正式版：`pnpm changeset pre exit` → `pnpm run version`（去掉 alpha 后缀）→ 提交 → `pnpm release`。
+`v*` tag 推上去后工作流构建、跑 publint / attw、把 npm 上还没有的版本发出去；
+也可以在 Actions 页手动 `Run workflow`（`workflow_dispatch`）发布当前 `main`。
+GitHub Release 之后自己在 Releases 页新建。
+
+首个公开 alpha 之前执行过一次性的 `pnpm changeset pre enter alpha`（生成
+`.changeset/pre.json`）；转正式版时执行 `pnpm changeset pre exit` 再走上面的流程，
+版本号会去掉 alpha 后缀。
+
+> 本地也能直接 `pnpm release` 发布（需先 npm login），但那样拿不到 npm provenance。
