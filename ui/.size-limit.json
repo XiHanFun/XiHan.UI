@@ -106,5 +106,26 @@
     "path": "packages/design/icons/dist/index.mjs",
     "gzip": true,
     "limit": "1.4 kB"
+  },
+  {
+    "name": "vue：只用 XhBadge",
+    "path": "packages/adapters/vue/dist/index.js",
+    "import": "{ XhBadge }",
+    "gzip": true,
+    "limit": "4.3 kB"
+  },
+  {
+    "name": "vue：只用 XhButton",
+    "path": "packages/adapters/vue/dist/index.js",
+    "import": "{ XhButton }",
+    "gzip": true,
+    "limit": "6.2 kB"
+  },
+  {
+    "name": "vue：只用 XhDialogRoot",
+    "path": "packages/adapters/vue/dist/index.js",
+    "import": "{ XhDialogRoot }",
+    "gzip": true,
+    "limit": "24 kB"
   }
 ]

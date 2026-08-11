@@ -85,7 +85,9 @@ for (const dir of await packageDirs()) {
     }
     for (const m of dts.matchAll(/^export declare (?:const|function|class|abstract class) (\w+)/gm))
       names.add(m[1])
-    for (const m of dts.matchAll(/^(?:export )?(?:declare )?(?:type|interface) (\w+)/gm))
+    // export 不可省：产物里同样躺着没导出的内部类型别名（打包版 d.ts 会把它们内联进来），
+    // 少了这个词就会把「使用者根本 import 不到的名字」也算进受 semver 约束的公开面
+    for (const m of dts.matchAll(/^export (?:declare )?(?:type|interface) (\w+)/gm))
       names.add(m[1])
     void sub
   }
