@@ -1,6 +1,6 @@
 # @xihan-ui/backgrounds
 
-WebGL2 视觉层：把一层会动的背景铺到任意元素上，或者把任意图片变成粒子。框架无关，零第三方依赖。
+WebGL2 背景层：把一层会动的背景铺到任意元素上，或者把任意图片变成粒子。框架无关，零第三方依赖。
 
 ```ts
 import { createBackgroundSurface, fluidEffect } from '@xihan-ui/backgrounds'

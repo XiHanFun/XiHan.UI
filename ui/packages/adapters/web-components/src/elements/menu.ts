@@ -203,7 +203,7 @@ export class XhMenuElement extends XhElement {
     for (const el of this.getParts('separator'))
       this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>)
 
-    // Light DOM content 常驻，WC 自管可见性。读 styled/styles/menu.css 的结论：
+    // Light DOM content 常驻，WC 自管可见性。读 styles/css/menu.css 的结论：
     // content 是 display:flex，positioner 只声明 position/z-index/pointer-events、没有 display，
     // connect 也不给 positioner 发 hidden——所以只兜 content 这一处。
     // 该文件自己带了 [data-part=content][hidden]{display:none} 压住那条 flex，

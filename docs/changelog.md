@@ -2,13 +2,13 @@
 
 本文件记录 XiHan.UI 各版本的变更。每条标注 **新增 / 修复 / 优化 / 调整 / 移除** 类别。
 
-::: warning 当前处于重写后、首发前
-现在的 XiHan.UI 是 2026-07-25 起从零重写的框架无关设计系统运行时，14 个公开包（`@xihan-ui/*`）由 changesets 的 `fixed` 组锁步同版，当前版本 `0.0.0`，**尚未发布到 npm**，首个公开版本计划为 `1.0.0-alpha.0`。
+::: warning 当前是 alpha 预发布
+现在的 XiHan.UI 是 2026-07-25 起从零重写的框架无关设计系统运行时，14 个公开包（`@xihan-ui/*`）由 changesets 的 `fixed` 组锁步同版，当前版本 `1.0.0-alpha.0`，**已发布到 npm**（`latest` 与 `alpha` 两个 dist-tag 都指向它）。它是预发布：不承诺语义化版本，接口还会变，不要用于生产。
 
 npm 上的 `xihan-ui` 是重写前的旧实现，最后一版 `0.9.8` 发布于 2025-05-25，六个版本已全部在 npm 上标记弃用。两者不是同一套东西，旧包不会再有更新。
 :::
 
-## 未发布 · 框架无关重写（2026-07-25 起）
+## 1.0.0-alpha.0 · 框架无关重写（2026-07-25 起，2026-08-11 发布）
 
 ### 基座
 
@@ -25,7 +25,7 @@ npm 上的 `xihan-ui` 是重写前的旧实现，最后一版 `0.9.8` 发布于 
 - **新增** `@xihan-ui/web-components` Web Components 适配器，Light DOM 行为宿主；`xh-dialog` 把「有状态组件也能框架无关」这件事验证掉
 - **新增** WC 侧观察 Light DOM 增删并重新接线，抹平「运行期增删条目」上的适配器分叉
 - **新增** WC 角色节点契约校验与 Custom Elements Manifest 生成，两者都进门禁
-- **新增** 跨适配器一致性套件（conformance）：同一批判据在两套宿主上逐帧比对归一化后的 DOM，套件数从 1 个扩到 42 个，排除项改为显式登记
+- **新增** 跨适配器一致性套件（conformance）：同一批判据在两套宿主上逐帧比对归一化后的 DOM，套件数从 1 个扩到 102 个，排除项改为显式登记
 - **调整** playground 拆成 `playground-vue` 与 `playground-wc` 两个独立包，一环境一包
 
 ### 组件
@@ -42,6 +42,7 @@ npm 上的 `xihan-ui` 是重写前的旧实现，最后一版 `0.9.8` 发布于 
 - **调整** 实心底上的前景色按实测对比度分派而非统一白字：600 档上白字对 brand 5.08、neutral 7.80、danger 4.83 达标，而 success 3.04、warning 2.70、info 3.47 都不到 4.5，这三族配深字
 - **调整** 破坏性变更：`alert` 的 `variant` 改名为 `tone`。它原本的取值是 `success` / `warning` / `danger`——那是语气不是形态，与全库词汇表冲突。取值不变，只改属性名；同时移除公开导出的 `AlertVariant` 类型
 - **调整** `toast` 的配色改走共享语气层，由 `type` 内部派生（`error` → `danger`，`loading` → 中性），公开 API 不变
+- **调整** 三条轴由裸 `string` 收成联合类型，从 `@xihan-ui/kernel` 导出：`Tone`（六档）、`Size`（`sm` / `md` / `lg`）、`ControlVariant`（`outline` / `subtle` / `ghost`，十二个输入控件）与 `ActionVariant`（前者再加 `solid`，按钮族）
 - **修复** `checkbox` 半选态的横杠此前不可见：方框只在全选时填色，半选保持画布底，而横杠用的是实心底上的前景色，白压白等于没画
 
 ### 自研替换第三方

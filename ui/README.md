@@ -8,7 +8,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 
 102 components, each shipping a headless core, a Vue component, a custom element, and a default skin.
 
-> **Experimental.** Not published to npm yet; the documentation site is live at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium, but the backlog is down to two recorded entries (WC-side `steps` required-children, plus one replay exemption for `breadcrumb`). Do not depend on it in production.
+> **Experimental.** Published to npm as `1.0.0-alpha.0` — a pre-release: no semver guarantees, the API can still change. The documentation site is live at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium, but the backlog is down to two recorded entries (WC-side `steps` required-children, plus one replay exemption for `breadcrumb`). Do not depend on it in production.
 
 ## Packages
 
@@ -57,12 +57,12 @@ pnpm typecheck
 pnpm lint
 pnpm boundaries   # layered dependency gate (dependency-cruiser)
 pnpm build
-pnpm size         # bundle size ratchet — builds, then checks the 17 budgets in .size-limit.json
+pnpm size         # bundle size ratchet — builds, then checks the 18 budgets in .size-limit.json
 ```
 
 ## Conventions
 
-- Internal dependencies are always `workspace:*`; third-party versions come from the workspace catalog only.
+- Internal runtime dependencies are always `workspace:^` (dev-only ones use `workspace:*`); third-party versions come from the workspace catalog only.
 - `packages/engine/kernel` and `packages/engine/machine` have zero runtime dependencies.
 - Layer order is enforced by dependency-cruiser, not by convention.
 - Commits follow conventional commits; releases go through changesets as one fixed version group.

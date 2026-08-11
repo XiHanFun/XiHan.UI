@@ -1,4 +1,4 @@
-# 视觉层
+# 背景层
 
 `@xihan-ui/backgrounds` 是一层 WebGL2 背景效果与数据驱动粒子点云，框架无关、零第三方依赖。它是**可选**的：适配器把它声明为 optional peer，不用视觉效果的应用不会因为装了 `@xihan-ui/vue` 而多出一个 WebGL 引擎。
 
@@ -11,7 +11,7 @@ WebGL2 缺席时自动降级成 CSS 静态背景，不报错、不留白。
 
 ## 内置效果
 
-14 个：`aurora` `beam` `flowField` `fluid` `glass` `grain` `mesh` `nebula` `orb` `particles` `plasma` `ripple` `starfield` `wave`。
+14 个：`aurora` `beam` `flow-field` `fluid` `glass` `grain` `mesh` `nebula` `orb` `particles` `plasma` `ripple` `starfield` `wave`。
 
 每个效果自带参数规格（数值、布尔、枚举、颜色四类），可以据此自动生成调参面板——playground 里的效果画廊就是这么做的。
 

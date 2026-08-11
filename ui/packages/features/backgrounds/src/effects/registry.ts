@@ -34,6 +34,6 @@ export function resolveEffect(effect: BackgroundEffect | string): BackgroundEffe
     return effect
   const found = registry.get(effect)
   if (found === undefined)
-    throw new Error(`[visual] 未注册的效果：${effect}。先调用 registerEffect() 或直接传效果对象。`)
+    throw new Error(`[backgrounds] 未注册的效果：${effect}。先调用 registerEffect() 或直接传效果对象。`)
   return found
 }

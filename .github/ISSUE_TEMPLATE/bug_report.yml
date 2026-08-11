@@ -37,7 +37,7 @@ body:
       label: 复现步骤 / 最小可复现示例
       description: 请提供可稳定复现的步骤，并尽量附上在线复现链接或最小代码片段
       placeholder: |
-        1. 使用 <XButton disabled> 组件
+        1. 使用 <XhButton disabled> 组件
         2. 点击按钮
         3. click 事件被触发…
 
@@ -67,19 +67,19 @@ body:
       label: 影响范围
       description: 该问题主要涉及的包 / 领域
       options:
-        - 结构原语（core）
+        - 结构原语（kernel）
         - 状态机运行时（machine）
-        - 设计令牌 / 主题（system）
+        - 设计令牌 / 主题（tokens）
         - 交互行为（behavior）
         - 浮层定位（position）
-        - 代码着色（highlight）
+        - 代码着色（code-highlight）
         - 流式 Markdown（markdown）
-        - AI 协议内核（ai）
-        - 视觉效果（visual）
+        - AI 协议内核（chat-stream）
+        - 背景层（backgrounds）
         - 无头组件内核（headless）
-        - 默认皮肤（styled）
+        - 默认皮肤（styles）
         - Vue 适配器（vue）
-        - Web Components 适配器（wc）
+        - Web Components 适配器（web-components）
         - 图标（icons）
         - 构建 / 工程（tooling / turbo / vite）
         - 演示应用（playground-vue / playground-wc）
@@ -102,7 +102,7 @@ body:
     attributes:
       label: 版本
       description: 出现问题的 npm 包版本或 commit
-      placeholder: 0.0.x
+      placeholder: 1.0.0-alpha.0
     validations:
       required: true
 

@@ -21,7 +21,7 @@ function compile(gl: WebGL2RenderingContext, type: number, source: string, label
     reportDiagnostic({
       code: DIAGNOSTIC_CODES.warn,
       level: 'error',
-      message: `[visual] 着色器编译失败（${label}）：${gl.getShaderInfoLog(shader) ?? ''}`,
+      message: `[backgrounds] 着色器编译失败（${label}）：${gl.getShaderInfoLog(shader) ?? ''}`,
     })
     gl.deleteShader(shader)
     return null
@@ -62,7 +62,7 @@ export function createProgram(
     reportDiagnostic({
       code: DIAGNOSTIC_CODES.warn,
       level: 'error',
-      message: `[visual] 着色器链接失败（${label}）：${gl.getProgramInfoLog(handle) ?? ''}`,
+      message: `[backgrounds] 着色器链接失败（${label}）：${gl.getProgramInfoLog(handle) ?? ''}`,
     })
     gl.deleteProgram(handle)
     return null

@@ -1,13 +1,37 @@
 # 安装与接入
 
-## 现状：还不能从 npm 装
+## 从 npm 安装（当前是 alpha）
 
-XiHan.UI 的库包**尚未发布到 npm**，版本号仍是 `0.0.0`。`npm install @xihan-ui/vue` 现在装不到东西。
+XiHan.UI 的 14 个公开包都已发布到 npm，当前版本 `1.0.0-alpha.0`，`latest` 与 `alpha` 两个 dist-tag 都指向它。
 
-在发布之前有两条可用路径：
+::: warning
+alpha 的含义是：能装、能跑，但接口还会变，**不承诺语义化版本**，不建议用于生产。要让行为可复现，请把版本写成精确值而不是区间。
+:::
 
-1. **克隆仓库直接开发**——推荐，playground 里 102 个组件都能跑；
-2. **本地构建后链接进你的项目**——想先试用的话走这条。
+装哪几个包取决于你用哪个适配器：
+
+```bash
+# Vue 3 项目：适配器 + 默认皮肤
+pnpm add @xihan-ui/vue @xihan-ui/styles
+
+# 原生 / 非 Vue 项目：自定义元素 + 默认皮肤
+pnpm add @xihan-ui/web-components @xihan-ui/styles
+
+# 只要设计令牌，皮肤自己写
+pnpm add @xihan-ui/tokens
+
+# 背景层是可选 peer，用到才装
+pnpm add @xihan-ui/backgrounds
+```
+
+`@xihan-ui/styles` 不是必需的：组件不依赖默认皮肤，只拿令牌自己写样式是完全可行的一条路，见下文「样式的三种接法」。
+
+适配器的引擎侧依赖（`kernel` / `machine` / `behavior` / `headless` / `position` / `code-highlight`）写在 `dependencies` 里，装适配器就一并带进来，不用单独列。`@xihan-ui/vue` 的 peer 依赖是 `vue@^3.5.0`，由你的项目提供。
+
+除了从 npm 装，还有两条本地路径：
+
+1. **克隆仓库直接开发**——playground 里 102 个组件都能跑；
+2. **本地构建后链接进你的项目**——想跟着仓库最新改动走的话走这条。
 
 ::: warning
 `@xihan-ui/icons` 只收录自研的一等图标集，量还很少。要成套图标请自行准备，或用 `XhIcon` 接任何图标源。
@@ -17,8 +41,8 @@ XiHan.UI 的库包**尚未发布到 npm**，版本号仍是 `0.0.0`。`npm insta
 
 | 项 | 要求 |
 | --- | --- |
-| Node | ≥ 24.0.0 |
-| pnpm | ≥ 11.0.0 |
+| Node（装包使用） | ≥ 18，包的 `engines` 声明的就是这条 |
+| Node / pnpm（参与本仓开发） | ≥ 24.0.0 / ≥ 11.0.0 |
 | 模块格式 | ESM only，**不提供 CJS** |
 | 浏览器 | 支持 `oklch()`、`@layer`、`:where()` 的现代浏览器 |
 
@@ -42,7 +66,7 @@ pnpm lint         # oxlint + eslint + stylelint
 pnpm test         # 单元测试与跨适配器一致性测试（jsdom）
 pnpm test:browser # 真实 Chromium 里的无障碍扫描与浮层定位契约
 pnpm boundaries   # 分层依赖门禁
-pnpm gate         # 八项结构门禁
+pnpm gate         # 十三项结构门禁
 pnpm size         # 产物体积棘轮
 ```
 
@@ -72,7 +96,7 @@ cd XiHan.UI/ui && pnpm build
 }
 ```
 
-`@xihan-ui/vue` 会顺着 `dependencies` 把 `core` / `machine` / `behavior` / `headless` / `position` / `highlight` 一并带进来，这几个不用单独链接。`vue` 本身是它的 peer 依赖，由你的项目提供。
+`@xihan-ui/vue` 会顺着 `dependencies` 把 `kernel` / `machine` / `behavior` / `headless` / `position` / `code-highlight` 一并带进来，这几个不用单独链接。`vue` 本身是它的 peer 依赖，由你的项目提供。
 
 ## 接入 Vue 项目
 

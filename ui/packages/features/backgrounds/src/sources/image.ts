@@ -50,7 +50,7 @@ export function drawableToCloud(
 export function loadImage(src: string, crossOrigin: string | null = 'anonymous'): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     if (isSSR()) {
-      reject(new Error('[visual] 服务端无法加载图片'))
+      reject(new Error('[backgrounds] 服务端无法加载图片'))
       return
     }
     const img = new Image()
@@ -58,7 +58,7 @@ export function loadImage(src: string, crossOrigin: string | null = 'anonymous')
       img.crossOrigin = crossOrigin
     img.decoding = 'async'
     img.onload = (): void => resolve(img)
-    img.onerror = (): void => reject(new Error(`[visual] 图片加载失败：${src}`))
+    img.onerror = (): void => reject(new Error(`[backgrounds] 图片加载失败：${src}`))
     img.src = src
   })
 }

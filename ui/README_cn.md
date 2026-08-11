@@ -8,7 +8,7 @@
 
 102 个组件，每个都有 headless 内核、Vue 组件、自定义元素与默认皮肤。
 
-> **实验阶段**：尚未发布到 npm；文档站已上线（https://ui.docs.xihanfun.com）。无障碍扫描跑在真实 Chromium 上，存量违规登记表只剩两条（WC 侧 steps 的必需子节点、breadcrumb 的步骤重放豁免）。请勿在生产环境依赖。
+> **实验阶段**：npm 上是 `1.0.0-alpha.0` 预发布版，不承诺语义化版本、接口仍会变；文档站已上线（https://ui.docs.xihanfun.com）。无障碍扫描跑在真实 Chromium 上，存量违规登记表只剩两条（WC 侧 steps 的必需子节点、breadcrumb 的步骤重放豁免）。请勿在生产环境依赖。
 
 ## 包一览
 
@@ -62,7 +62,7 @@ pnpm size         # 体积棘轮：先构建，再核对 .size-limit.json 里的
 
 ## 约定
 
-- 内部依赖一律 `workspace:*`；第三方版本只从 workspace catalog 取。
+- 内部运行时依赖一律 `workspace:^`（开发期依赖用 `workspace:*`）；第三方版本只从 workspace catalog 取。
 - `packages/engine/kernel` 与 `packages/engine/machine` 运行时零依赖。
 - 分层顺序由 dependency-cruiser 强制，不靠自觉。
 - 提交遵循 conventional commits；发布走 changesets，所有库包同属一个 fixed 版本组。

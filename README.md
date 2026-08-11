@@ -16,7 +16,7 @@
   <img alt="Vue" src="https://img.shields.io/badge/Vue-3.5-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white" />
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-6.0-3178C6?style=flat-square&logo=typescript&logoColor=white" />
   <img alt="Components" src="https://img.shields.io/badge/Components-102-1f6feb?style=flat-square" />
-  <img alt="npm" src="https://img.shields.io/badge/npm-unpublished-orange?style=flat-square&logo=npm&logoColor=white" />
+  <a href="https://www.npmjs.com/package/@xihan-ui/vue"><img alt="npm" src="https://img.shields.io/npm/v/@xihan-ui/vue?style=flat-square&logo=npm&logoColor=white" /></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/XiHanFun/XiHan.UI?style=flat-square&color=green" /></a>
 </p>
 
@@ -28,7 +28,7 @@
 
 </div>
 
-> **实验性项目**：102 个组件的无头内核、双适配器与默认皮肤均已实现，但**尚未发布到 npm**，请勿在生产环境依赖。
+> **实验性项目**：102 个组件的无头内核、双适配器与默认皮肤均已实现，npm 上是 `1.0.0-alpha.0` **预发布版**，不承诺语义化版本、接口仍会变，请勿在生产环境依赖。
 
 ## 简介
 
@@ -46,7 +46,7 @@ XiHan.UI 以框架无关的 Headless Core 为核心：一个组件的状态、�
 
 ## 安装
 
-尚未发布至 npm，眼下只能在本仓 workspace 内使用。下面的导入路径即最终形态。
+14 个公开包均已发布至 npm，当前版本 `1.0.0-alpha.0`（`latest` 与 `alpha` 两个 tag 同指这一版）。
 
 ```bash
 pnpm add @xihan-ui/vue @xihan-ui/tokens @xihan-ui/styles
@@ -130,7 +130,7 @@ pnpm build
 
 已经能用的：102 个组件的内核与双适配器、默认皮肤、设计令牌与主题运行时、跨适配器一致性套件、真实 Chromium 里的无障碍扫描与浮层定位契约、文档站。
 
-还没做的：npm 发布、组件文案国际化（内置英文，可经 `translations` 逐条覆盖）、令牌浏览器、AI 组件族的 MarkdownStream / Reasoning 与 ToolCall 折叠 / 工具审批、企业业务组件。
+还没做的：组件文案国际化（内置英文，可经 `translations` 逐条覆盖）、令牌浏览器、AI 组件族的 MarkdownStream / Reasoning 与 ToolCall 折叠 / 工具审批、企业业务组件。
 
 ## 相关项目
 
