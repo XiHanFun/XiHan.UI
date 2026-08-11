@@ -1,8 +1,9 @@
-import type { Scope } from '@xihan-ui/kernel'
+import type { Disposable, Scope } from '@xihan-ui/kernel'
 import type { MachineConfig, MachineSchema, Service } from '@xihan-ui/machine'
 import type { ReactiveController, ReactiveControllerHost } from '../reactive'
 import type { LitRuntime } from './lit-runtime'
-import { createService } from '@xihan-ui/machine'
+import { createFormResetBridge } from '@xihan-ui/behavior'
+import { createService, declaresFormReset, FORM_RESET_EVENT } from '@xihan-ui/machine'
 import { createLitRuntime } from './lit-runtime'
 
 export interface MachineControllerOptions<T extends MachineSchema> {
@@ -16,6 +17,7 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
   service!: Service<T>
   private runtime: LitRuntime | undefined
   private started = false
+  private formReset: Disposable | undefined
 
   constructor(
     private readonly host: ReactiveControllerHost,
@@ -40,6 +42,24 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
       this.started = true
     }
     this.runtime!.mount()
+    // 必须在 mount 之后：桥一挂就可能送事件进来，而 mount 之前送会撞上 SEND_BEFORE_MOUNT
+    this.attachFormReset()
+  }
+
+  /** 元素自己就是锚点（Light DOM）。重连时重建，指向新那台机器。 */
+  private attachFormReset(): void {
+    if (this.formReset || !declaresFormReset(this.machine))
+      return
+    const host = this.host as unknown
+    if (!(host instanceof Element))
+      return
+    this.formReset = createFormResetBridge({
+      getNode: () => host,
+      onReset: () => {
+        if (this.service.getStatus() === 'Started')
+          this.service.send({ type: FORM_RESET_EVENT } as T['event'])
+      },
+    })
   }
 
   hostUpdate(): void {
@@ -47,6 +67,8 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
   }
 
   hostDisconnected(): void {
+    this.formReset?.dispose()
+    this.formReset = undefined
     this.runtime?.unmount()
   }
 }
