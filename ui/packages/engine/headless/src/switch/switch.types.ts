@@ -10,6 +10,10 @@ export interface SwitchSchema extends MachineSchema {
     checked?: boolean
     defaultChecked?: boolean
     disabled?: boolean
+    /** 表单字段名；给了 hidden-input 才带 name 并参与提交。 */
+    name?: string
+    /** 提交出去的值，缺省 'on'，与原生复选框一致。 */
+    value?: string
     /** 语气：brand / neutral / success / warning / danger / info，决定选中态轨道用哪族颜色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg，决定轨道与滑块的几何档位。 */
@@ -26,9 +30,10 @@ export interface SwitchSchema extends MachineSchema {
     // 受控回写：宿主改 checked 后由 watch 派发，无条件跳转、不再通知
     | { type: 'CONTROLLED.ON' }
     | { type: 'CONTROLLED.OFF' }
+    | { type: 'FORM.RESET' }
   tag: never
-  guard: 'isCheckedControlled'
-  action: 'invokeOnCheck' | 'invokeOnUncheck' | 'syncChecked'
+  guard: 'isCheckedControlled' | 'defaultsToChecked'
+  action: 'invokeOnCheck' | 'invokeOnUncheck' | 'syncChecked' | 'invokeReset'
   effect: never
 }
 
@@ -37,4 +42,6 @@ export interface SwitchApi<T extends PropTypes = PropTypes> {
   setChecked: (next: boolean) => void
   getRootProps: () => T['button']
   getThumbProps: () => T['element']
+  /** 表单影子：勾上才提交。给了 name 才带 name，不给就不参与提交。 */
+  getHiddenInputProps: () => T['input']
 }

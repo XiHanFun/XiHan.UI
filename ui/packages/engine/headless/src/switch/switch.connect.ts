@@ -43,5 +43,16 @@ export function connectSwitch<T extends PropTypes>(
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
     }),
+
+    getHiddenInputProps: () => normalize.input({
+      // type 先于 value 写入：改 type 会重置输入的值
+      type: 'hidden',
+      ...parts['hidden-input'].attrs,
+      // 没勾上就不带 name，整条不参与提交——与原生复选框一致
+      name: checked ? prop('name') : undefined,
+      value: prop('value') ?? 'on',
+      // 单体控件用原生 disabled，禁用时不提交值
+      disabled: disabled || undefined,
+    }),
   }
 }

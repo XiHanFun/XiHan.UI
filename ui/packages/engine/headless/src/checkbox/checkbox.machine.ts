@@ -15,6 +15,16 @@ export const checkboxMachine = createMachine({
   name: 'checkbox',
   initialState: ({ prop }) => initialFrom(prop('checked') ?? prop('defaultChecked')),
   watch: ({ track, prop, action }) => track([() => prop('checked')], () => action(['syncChecked'])),
+  // 表单重置从三个状态都要认，所以挂根级。状态就是值，回落靠转移而不是写 context：
+  // 受控时只发意图（第一条命中即止），非受控才真的转过去
+  on: {
+    'FORM.RESET': [
+      { guard: 'isCheckedControlled', actions: ['invokeReset'] },
+      { guard: 'defaultsToIndeterminate', target: 'indeterminate', actions: ['invokeReset'] },
+      { guard: 'defaultsToChecked', target: 'on', actions: ['invokeReset'] },
+      { target: 'off', actions: ['invokeReset'] },
+    ],
+  },
   states: {
     off: {
       on: {
@@ -67,10 +77,26 @@ export const checkboxMachine = createMachine({
   implementations: {
     guards: {
       isCheckedControlled: ({ prop }) => prop('checked') !== undefined,
+      defaultsToIndeterminate: ({ prop }) => prop('defaultChecked') === 'indeterminate',
+      defaultsToChecked: ({ prop }) => prop('defaultChecked') === true,
     },
     actions: {
       invokeOnCheck: ({ prop }) => prop('onCheckedChange')?.({ checked: true }),
       invokeOnUncheck: ({ prop }) => prop('onCheckedChange')?.({ checked: false }),
+      // 受控且宿主没声明 defaultChecked 时不发：那句兜底的 off 是组件的空值、不是宿主说过的默认值
+      invokeReset: ({ prop, state }) => {
+        if (prop('checked') !== undefined && prop('defaultChecked') === undefined)
+          return
+        const next = initialFrom(prop('defaultChecked'))
+        // 已经停在默认态就不白发一次：原生重置也不会为没变的控件派事件
+        if (state.matches(next))
+          return
+        // 回落点是半选时不通知：onCheckedChange 的载荷刻意只有布尔，表达不了半选。
+        // 状态照常转过去，屏幕是对的；受控且默认半选的组合因此拿不到重置，这是已知限制
+        if (next === 'indeterminate')
+          return
+        prop('onCheckedChange')?.({ checked: next === 'on' })
+      },
       syncChecked: ({ prop, send }) => {
         const checked = prop('checked')
         if (checked === undefined)

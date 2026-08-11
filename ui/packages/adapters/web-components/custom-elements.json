@@ -3700,6 +3700,10 @@
             {
               "description": "选中标记",
               "name": "indicator"
+            },
+            {
+              "description": "type=hidden 的表单出口，省略该节点即不参与表单",
+              "name": "hidden-input"
             }
           ],
           "members": [
@@ -3738,6 +3742,24 @@
                 "text": "boolean | undefined"
               },
               "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "value"
             },
             {
               "kind": "field",
@@ -3837,6 +3859,21 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "表单字段名；给了 hidden-input 才参与提交",
+              "name": "name",
+              "fieldName": "name"
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string | undefined"
+              },
+              "fieldName": "value"
             }
           ],
           "superclass": {
@@ -20925,6 +20962,10 @@
             {
               "description": "滑块",
               "name": "thumb"
+            },
+            {
+              "description": "type=hidden 的表单出口，省略该节点即不参与表单",
+              "name": "hidden-input"
             }
           ],
           "members": [
@@ -20963,6 +21004,24 @@
                 "text": "boolean | undefined"
               },
               "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "value"
             },
             {
               "kind": "field",
@@ -21062,6 +21121,21 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "表单字段名；给了 hidden-input 才参与提交",
+              "name": "name",
+              "fieldName": "name"
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string | undefined"
+              },
+              "fieldName": "value"
             }
           ],
           "superclass": {

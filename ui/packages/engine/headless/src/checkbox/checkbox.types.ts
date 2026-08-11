@@ -17,6 +17,10 @@ export interface CheckboxSchema extends MachineSchema {
     checked?: CheckboxCheckedState
     defaultChecked?: CheckboxCheckedState
     disabled?: boolean
+    /** 表单字段名；给了 hidden-input 才带 name 并参与提交。 */
+    name?: string
+    /** 提交出去的值，缺省 'on'，与原生复选框一致。 */
+    value?: string
     /** 语气：brand / neutral / success / warning / danger / info，决定选中态用哪族颜色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg，决定方框边长与勾的字号档位。 */
@@ -38,9 +42,10 @@ export interface CheckboxSchema extends MachineSchema {
     | { type: 'CONTROLLED.ON' }
     | { type: 'CONTROLLED.OFF' }
     | { type: 'CONTROLLED.INDETERMINATE' }
+    | { type: 'FORM.RESET' }
   tag: never
-  guard: 'isCheckedControlled'
-  action: 'invokeOnCheck' | 'invokeOnUncheck' | 'syncChecked'
+  guard: 'isCheckedControlled' | 'defaultsToChecked' | 'defaultsToIndeterminate'
+  action: 'invokeOnCheck' | 'invokeOnUncheck' | 'syncChecked' | 'invokeReset'
   effect: never
 }
 
@@ -50,4 +55,6 @@ export interface CheckboxApi<T extends PropTypes = PropTypes> {
   setChecked: (next: boolean) => void
   getRootProps: () => T['button']
   getIndicatorProps: () => T['element']
+  /** 表单影子：勾上才提交，半选按未勾处理。给了 name 才带 name。 */
+  getHiddenInputProps: () => T['input']
 }

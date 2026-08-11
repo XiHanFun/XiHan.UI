@@ -60,7 +60,7 @@ checked 只认布尔，用一个可写 computed 在中间换一次，绑上去�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="checkbox"`：**`root`** · `indicator`
+`data-scope="checkbox"`：**`root`** · `indicator` · `hidden-input`
 
 ## Props
 
@@ -69,6 +69,8 @@ checked 只认布尔，用一个可写 computed 在中间换一次，绑上去�
 | `checked` | `CheckboxCheckedState` |  |  |
 | `defaultChecked` | `CheckboxCheckedState` |  |  |
 | `disabled` | `boolean` |  |  |
+| `name` | `string` |  | 表单字段名；给了 hidden-input 才带 name 并参与提交。 |
+| `value` | `string` |  | 提交出去的值，缺省 'on'，与原生复选框一致。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定选中态用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定方框边长与勾的字号档位。 |
 | `onCheckedChange` | `(details: CheckboxCheckedChangeDetails) => void` |  | checked 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
@@ -77,9 +79,9 @@ checked 只认布尔，用一个可写 computed 在中间换一次，绑上去�
 
 **状态**：`off` · `on` · `indeterminate`
 
-**事件**：`TOGGLE` · `CHECK` · `UNCHECK` · `CONTROLLED.ON` · `CONTROLLED.OFF` · `CONTROLLED.INDETERMINATE`
+**事件**：`TOGGLE` · `CHECK` · `UNCHECK` · `CONTROLLED.ON` · `CONTROLLED.OFF` · `CONTROLLED.INDETERMINATE` · `FORM.RESET`
 
-**判据**：`isCheckedControlled`
+**判据**：`isCheckedControlled` · `defaultsToChecked` · `defaultsToIndeterminate`
 
 ## connect API
 
@@ -91,6 +93,7 @@ checked 只认布尔，用一个可写 computed 在中间换一次，绑上去�
 | `setChecked` | `(next: boolean) => void` | 半选只能由 checked prop 给出，这里只接受全选 / 全不选。 |
 | `getRootProps` | `() => T['button']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
+| `getHiddenInputProps` | `() => T['input']` | 表单影子：勾上才提交，半选按未勾处理。给了 name 才带 name。 |
 
 ## 键盘
 

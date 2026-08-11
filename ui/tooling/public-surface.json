@@ -3325,6 +3325,7 @@
       "value-text"
     ],
     "checkbox": [
+      "hidden-input",
       "indicator",
       "root"
     ],
@@ -3794,6 +3795,7 @@
       "trigger"
     ],
     "switch": [
+      "hidden-input",
       "root",
       "thumb"
     ],
@@ -4142,9 +4144,11 @@
       "checked",
       "defaultChecked",
       "disabled",
+      "name",
       "onCheckedChange",
       "size",
-      "tone"
+      "tone",
+      "value"
     ],
     "checkbox-group": [
       "collection",
@@ -4839,9 +4843,11 @@
       "checked",
       "defaultChecked",
       "disabled",
+      "name",
       "onCheckedChange",
       "size",
-      "tone"
+      "tone",
+      "value"
     ],
     "table": [
       "columns",
@@ -7535,8 +7541,10 @@
         "checked",
         "default-checked",
         "disabled",
+        "name",
         "size",
-        "tone"
+        "tone",
+        "value"
       ],
       "events": [
         "checked-change"
@@ -8424,8 +8432,10 @@
         "checked",
         "default-checked",
         "disabled",
+        "name",
         "size",
-        "tone"
+        "tone",
+        "value"
       ],
       "events": [
         "checked-change"
