@@ -4,49 +4,78 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createVueHarness } from '../../../packages/adapters/vue/tests/harness'
 import { createWcHarness } from '../../../packages/adapters/web-components/tests/harness'
 import {
+  affixSuite,
   alertSuite,
   allSuites,
   anchorSuite,
+  avatarGroupSuite,
   avatarSuite,
+  backTopSuite,
   badgeSuite,
   breadcrumbSuite,
+  buttonGroupSuite,
   buttonSuite,
   calendarSuite,
+  cardSuite,
   carouselSuite,
   cascaderSuite,
   clipboardSuite,
   collapsibleSuite,
+  countdownSuite,
   dateFieldSuite,
   datePickerSuite,
+  descriptionsSuite,
+  dynamicInputSuite,
   editableSuite,
+  ellipsisSuite,
   emptyStateSuite,
   fieldSuite,
   fileUploadSuite,
+  flexSuite,
+  floatButtonSuite,
   formSuite,
+  gradientTextSuite,
+  gridSuite,
+  highlightSuite,
   hoverCardSuite,
+  iconWrapperSuite,
   imageSuite,
+  infiniteScrollSuite,
+  layoutSuite,
+  listSuite,
   loadingBarSuite,
+  logSuite,
+  marqueeSuite,
   menubarSuite,
   navigationMenuSuite,
+  numberAnimationSuite,
   numberFieldSuite,
+  pageHeaderSuite,
   paginationSuite,
   pinInputSuite,
+  popconfirmSuite,
   popoverSuite,
+  popselectSuite,
+  qrCodeSuite,
   ratingSuite,
+  resultSuite,
   runParity,
-
   scrollAreaSuite,
   separatorSuite,
   skeletonSuite,
   sliderSuite,
   spinnerSuite,
+
   splitterSuite,
+  statisticSuite,
   tableSuite,
   tagsInputSuite,
   textFieldSuite,
   threadSuite,
   timeFieldSuite,
+  timelineSuite,
   timePickerSuite,
+  timeSuite,
   toasterSuite,
   toastSuite,
   toggleSuite,
@@ -55,7 +84,9 @@ import {
   transferSuite,
   treeSelectSuite,
   treeSuite,
+  typographySuite,
   virtualizerSuite,
+  watermarkSuite,
 } from '../src'
 
 beforeEach(() => {
@@ -130,6 +161,37 @@ const SUITES: readonly ConformanceSuite[] = [
   treeSuite,
   treeSelectSuite,
   virtualizerSuite,
+  affixSuite,
+  avatarGroupSuite,
+  backTopSuite,
+  buttonGroupSuite,
+  cardSuite,
+  countdownSuite,
+  descriptionsSuite,
+  dynamicInputSuite,
+  ellipsisSuite,
+  flexSuite,
+  floatButtonSuite,
+  gradientTextSuite,
+  gridSuite,
+  highlightSuite,
+  iconWrapperSuite,
+  infiniteScrollSuite,
+  layoutSuite,
+  listSuite,
+  logSuite,
+  marqueeSuite,
+  numberAnimationSuite,
+  pageHeaderSuite,
+  popconfirmSuite,
+  popselectSuite,
+  qrCodeSuite,
+  resultSuite,
+  statisticSuite,
+  timeSuite,
+  timelineSuite,
+  typographySuite,
+  watermarkSuite,
 ]
 
 /** 暂不做逐帧比对的套件与理由。它们的跨适配器保证由两侧各自跑同一份 conformance 规格提供。 */
@@ -146,6 +208,7 @@ const EXCLUDED: Readonly<Record<string, string>> = {
   'icon': 'WC 侧 glyph 空壳由作者手写，Vue 版组件内部渲染，fixture 不同构',
   'drawer': '同 dialog',
   'listbox': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
+  'mention': '同集合族：候选的禁用声明两端不同，WC 侧 disabled 落成 DOM 属性，Vue 侧被 prop 消费',
   'menu': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
   'progress': 'WC 侧 track/range 由作者手写，Vue 版组件内部渲染，fixture 不同构',
   'radio-group': '两端作者侧的禁用声明 API 不同：Vue 是组件 prop（被消费、不落 DOM），WC 要作者写 aria-disabled，逐帧比对不适用',
@@ -159,11 +222,23 @@ const EXCLUDED: Readonly<Record<string, string>> = {
 
 runParity([createVueHarness(), createWcHarness()], SUITES, { describe, it })
 
+/** 套件全集取自目录，不取 allSuites：拿被审对象当分母，漏登记的组件根本不进等式。 */
+function suiteFilesOnDisk(): string[] {
+  return Object.keys(import.meta.glob('../src/suites/*.suite.ts'))
+    .map(p => p.slice(p.lastIndexOf('/') + 1).replace('.suite.ts', ''))
+    .sort()
+}
+
 describe('parity 覆盖登记', () => {
+  it('磁盘上的每份套件都登记进了 allSuites', () => {
+    const registered = allSuites.map(s => s.component).sort()
+    expect(registered).toEqual(suiteFilesOnDisk())
+  })
+
   it('每个套件要么在跑，要么写明了为什么不跑', () => {
     const running = new Set(SUITES.map(s => s.component))
     const excluded = new Set(Object.keys(EXCLUDED))
-    const all = allSuites.map(s => s.component)
+    const all = suiteFilesOnDisk()
 
     expect(all.filter(c => !running.has(c) && !excluded.has(c))).toEqual([])
     expect([...excluded].filter(c => !all.includes(c))).toEqual([])
