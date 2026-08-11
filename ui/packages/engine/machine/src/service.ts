@@ -78,6 +78,7 @@ export function createService<T extends MachineSchema>(
     get: key => contextBindables[key as string]?.get() as never,
     set: (key, value) => contextBindables[key as string]?.set(value as never),
     initial: key => contextBindables[key as string]?.initial as never,
+    reset: key => contextBindables[key as string]?.reset() as never,
     dep: key => () => contextBindables[key as string]?.version(),
   }
 

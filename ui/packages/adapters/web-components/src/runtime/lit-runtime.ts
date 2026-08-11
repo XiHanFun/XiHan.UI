@@ -36,18 +36,28 @@ export function createLitRuntime(host: ReactiveControllerHost): LitRuntime {
     let version = 0
     const isControlled = (): boolean => params().value !== undefined
     const read = (): V => (isControlled() ? (params().value as V) : inner)
+    const set = (next: V | ((prev: V) => V)): void => {
+      const prev = read()
+      const value = typeof next === 'function' ? (next as (p: V) => V)(prev) : next
+      if (eq(value, prev))
+        return
+      if (!isControlled())
+        inner = value
+      params().onChange?.(value, prev)
+      host.requestUpdate()
+    }
     return {
       initial,
       get: read,
-      set(next) {
-        const prev = read()
-        const value = typeof next === 'function' ? (next as (p: V) => V)(prev) : next
-        if (eq(value, prev))
-          return
-        if (!isControlled())
-          inner = value
-        params().onChange?.(value, prev)
-        host.requestUpdate()
+      set,
+      // 落点按当下 props 重算，不用挂载时冻结的 initial：宿主换了 defaultValue
+      // （比如切去编辑另一条记录）就该回到新的那一份
+      reset() {
+        const next = params().defaultValue
+        if (next === undefined)
+          return undefined
+        set(next)
+        return next
       },
       notify: () => host.requestUpdate(),
       // 版本号按值拉取比对，受控值不经过 set。

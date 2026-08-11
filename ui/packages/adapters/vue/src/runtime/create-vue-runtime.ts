@@ -18,16 +18,27 @@ export function createVueRuntime(): ReactiveRuntime {
       const isControlled = (): boolean => params().value !== undefined
       const read = (): V => (isControlled() ? (params().value as V) : inner.value)
 
+      const set = (next: V | ((prev: V) => V)): void => {
+        const prev = read()
+        const value = typeof next === 'function' ? (next as (p: V) => V)(prev) : next
+        if (!isControlled())
+          inner.value = value
+        if (!eq(value, prev))
+          params().onChange?.(value, prev)
+      }
+
       return {
         initial,
         get: read,
-        set(next) {
-          const prev = read()
-          const value = typeof next === 'function' ? (next as (p: V) => V)(prev) : next
-          if (!isControlled())
-            inner.value = value
-          if (!eq(value, prev))
-            params().onChange?.(value, prev)
+        set,
+        // 落点按当下 props 重算，不用挂载时冻结的 initial：宿主换了 defaultValue
+        // （比如切去编辑另一条记录）就该回到新的那一份
+        reset() {
+          const next = params().defaultValue
+          if (next === undefined)
+            return undefined
+          set(next)
+          return next
         },
         notify() {
           triggerRef(inner)

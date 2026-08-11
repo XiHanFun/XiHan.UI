@@ -53,6 +53,11 @@ export interface ContextFacade<T extends MachineSchema> {
     value: Slice<T, 'context'>[K] | ((prev: Slice<T, 'context'>[K]) => Slice<T, 'context'>[K]),
   ) => void
   initial: <K extends keyof Slice<T, 'context'>>(key: K) => Slice<T, 'context'>[K] | undefined
+  /**
+   * 把该 cell 变回它此刻挂载会得到的值：重新求一遍它自己的 defaultValue 表达式再走原来的 set。
+   * 落点因此与 cell 定义是同一份代码，不会各写一份而漂移。受控时照常只发意图。
+   */
+  reset: <K extends keyof Slice<T, 'context'>>(key: K) => Slice<T, 'context'>[K] | undefined
   /** 产出可安全用于 track 的依赖项：cell 版本号（真变才自增）。 */
   dep: <K extends keyof Slice<T, 'context'>>(key: K) => Dep
 }
@@ -204,6 +209,11 @@ export interface Bindable<V> {
   notify: () => void
   /** 版本号：真变（isEqual 判定）才自增。 */
   version: () => number
+  /**
+   * 重新求一遍 defaultValue 并写回，返回这次算出的落点。
+   * 没有默认值就不写。受控时与 set 一样只发意图、不落内部值。
+   */
+  reset: () => V | undefined
 }
 
 export interface CellParams<V> {

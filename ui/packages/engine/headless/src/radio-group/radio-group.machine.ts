@@ -1,5 +1,5 @@
 import type { RadioGroupSchema } from './radio-group.types'
-import { setup } from '@xihan-ui/machine'
+import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<RadioGroupSchema>()
 
@@ -15,6 +15,11 @@ export const radioGroupMachine = createMachine({
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   initialState: () => 'idle',
+  // 表单重置从任何状态都要认，所以挂根级。不设禁用/只读守卫：原生表单的重置算法
+  // 不看这两个标志，禁用的字段一样回落点；要拦是表单那侧 preventDefault 的事
+  on: {
+    'FORM.RESET': { actions: ['resetToDefault'] },
+  },
   states: {
     idle: {
       on: {
@@ -27,6 +32,10 @@ export const radioGroupMachine = createMachine({
   },
   implementations: {
     actions: {
+      // 落点即 value cell 自己的 defaultValue 表达式，不另抄一份。
+      // 焦点锚点不动：原生重置不碰非表单的 UI 状态
+      resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
+
       setValue: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'VALUE.SET' || e.type === 'ITEM.SELECT')
