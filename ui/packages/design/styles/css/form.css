@@ -152,18 +152,18 @@
 
   /* 提交是这一组里的主操作，给它一层实心底色区分开 */
   [data-scope='form'][data-part='submit-trigger']:not(:disabled) {
-    border-color: var(--xh-form-submit-bg, var(--xh-bg-brand));
+    border-color: var(--xh-form-submit-border, var(--xh-form-submit-bg, var(--xh-bg-brand)));
     background: var(--xh-form-submit-bg, var(--xh-bg-brand));
     color: var(--xh-form-submit-fg, var(--xh-fg-on-brand));
   }
 
   [data-scope='form'][data-part='submit-trigger']:hover:not(:disabled) {
-    border-color: var(--xh-form-submit-bg-hover, var(--xh-bg-brand-hover));
+    border-color: var(--xh-form-submit-border-hover, var(--xh-form-submit-bg-hover, var(--xh-bg-brand-hover)));
     background: var(--xh-form-submit-bg-hover, var(--xh-bg-brand-hover));
   }
 
   [data-scope='form'][data-part='submit-trigger']:active:not(:disabled) {
-    border-color: var(--xh-form-submit-bg-active, var(--xh-bg-brand-active));
+    border-color: var(--xh-form-submit-border-active, var(--xh-form-submit-bg-active, var(--xh-bg-brand-active)));
     background: var(--xh-form-submit-bg-active, var(--xh-bg-brand-active));
   }
 }

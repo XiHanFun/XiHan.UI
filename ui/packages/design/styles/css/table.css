@@ -230,7 +230,7 @@
 
   [data-scope='table'][data-part='select-all-trigger']:is([data-state='all'], [data-state='some']),
   [data-scope='table'][data-part='row-select-trigger'][data-selected] {
-    border-color: var(--xh-table-trigger-bg-checked, var(--xh-bg-brand));
+    border-color: var(--xh-table-trigger-border-checked, var(--xh-table-trigger-bg-checked, var(--xh-bg-brand)));
     background: var(--xh-table-trigger-bg-checked, var(--xh-bg-brand));
   }
 
