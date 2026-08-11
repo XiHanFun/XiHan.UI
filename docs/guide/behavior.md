@@ -28,6 +28,8 @@ export interface Layer {
 
 同一文档共用一个注册表；不同文档（iframe、画中画窗口）各有一份。
 
+注册表还给出 `elementsAbove(layer)`：栈中位于该层之上的各层的全部节点（`node` + `branches` + `surfaces`）。背景失活要用它把上层排除在自己的管辖之外。
+
 ## 消隐层
 
 ```ts
@@ -92,12 +94,14 @@ lock.dispose()
 ```ts
 import { hideOutside } from '@xihan-ui/kernel'
 
-const restore = hideOutside([contentEl, ...branches], scope, {
+const restore = hideOutside(() => [contentEl, ...branches, ...registry.elementsAbove(layer)], scope, {
   exemptSelectors: ['.my-portal-root'],
 })
 ```
 
-给 `body` 下除目标与豁免节点外的直接子元素加 `inert`，背景内容对读屏与键盘一并消失。**目标数组必须包含全部分支节点**，漏传会把 portal 出去的嵌套浮层一起 inert 掉。
+给 `body` 下除目标与豁免节点外的直接子元素加 `inert`，背景内容对读屏与键盘一并消失。
+
+第一个参数取的是函数而不是数组：施加 `inert` 的时机横跨整个展开期（`MutationObserver` 盯着后来新增到 `body` 的节点），晚于调用时刻才挂载的节点必须也能被算进目标。**目标必须包含全部分支节点，以及栈中位于自己之上的层**（`registry.elementsAbove(layer)`），漏传会把 portal 出去的嵌套浮层一起 inert 掉——看得见、点不动。
 
 带 `data-xh-inert-exempt` 的元素默认豁免。
 

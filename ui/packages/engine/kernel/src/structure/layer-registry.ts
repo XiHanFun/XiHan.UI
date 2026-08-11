@@ -29,6 +29,8 @@ export interface LayerRegistry {
   indexOf: (layer: Layer) => number
   /** 给定 DOM 节点，返回它归属的最高层。 */
   layerOf: (node: Node) => { layer: Layer, via: 'node' | 'branch' | 'surface' } | undefined
+  /** 栈中位于给定层之上的各层的全部节点（node + branches + surfaces）。 */
+  elementsAbove: (layer: Layer) => Element[]
   /** 订阅栈变化。 */
   subscribe: (fn: (layers: readonly Layer[]) => void) => Cleanup
 }
@@ -82,12 +84,28 @@ export function createLayerRegistry(_doc: Document): LayerRegistry {
     return undefined
   }
 
+  const elementsAbove: LayerRegistry['elementsAbove'] = (layer) => {
+    const from = layers.indexOf(layer)
+    if (from === -1)
+      return []
+    const out: Element[] = []
+    for (let i = from + 1; i < layers.length; i++) {
+      const above = layers[i]!
+      const node = above.node()
+      if (node)
+        out.push(node)
+      out.push(...above.branches(), ...above.surfaces())
+    }
+    return out
+  }
+
   return {
     register,
     list: () => layers,
     top: () => layers[layers.length - 1],
     indexOf: layer => layers.indexOf(layer),
     layerOf,
+    elementsAbove,
     subscribe: (fn) => {
       subs.add(fn)
       return () => void subs.delete(fn)

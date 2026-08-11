@@ -25,11 +25,14 @@ export function useDrawer(
 ): DrawerContext {
   const contentRef = ref<HTMLElement | null>(null)
   const backdropRef = ref<HTMLElement | null>(null)
-  const rendered = ref(false)
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const service = useMachine(drawerMachine, () => ({ ...props, onOpenChange }), scope)
+
+  // 初值取状态而不是 false：presence 只在有 DOM 时才建，服务端拿不到它。
+  // 服务端算不出 rendered 就只发一个空占位，客户端水合时补出整棵子树 = mismatch。
+  const rendered = ref(service.state.get() === 'open')
 
   if (typeof document !== 'undefined') {
     const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
