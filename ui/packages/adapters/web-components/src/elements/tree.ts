@@ -175,7 +175,7 @@ export class XhTreeElement extends XhElement {
     putAll('branch-content', BRANCH_SELECTOR, node => api.getBranchContentProps(node))
 
     // Light DOM 子层常驻，WC 自管可见性：收起时隐藏 branch-content。
-    // connect 已置 hidden，但 styled 给 [data-part=branch-content] 设了 display，
+    // connect 已置 hidden，但 styles 给 [data-part=branch-content] 设了 display，
     // 会盖过 UA 的 [hidden]{display:none}；内联 style.display 优先级更高，压得住。
     for (const el of this.getParts('branch-content'))
       this.setPartHidden(el, !api.isExpanded(this.nodeOf(el, BRANCH_SELECTOR).value))

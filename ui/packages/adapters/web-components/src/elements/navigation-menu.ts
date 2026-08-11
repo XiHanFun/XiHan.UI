@@ -169,7 +169,7 @@ export class XhNavigationMenuElement extends XhElement {
       this.spreader.spread(el, props as Record<string, unknown>)
     }
 
-    // 面板常挂，未展开的由 connect 输出 hidden；styled 给 content 设了 display，
+    // 面板常挂，未展开的由 connect 输出 hidden；styles 给 content 设了 display，
     // 那条声明会盖过 UA 的 [hidden]{display:none}，得用内联 style.display 压住。
     // 判据直接取 connect 这一帧的产出，不另起一套：两边各判一次迟早会说岔。
     for (const el of this.getParts('content')) {

@@ -21,27 +21,25 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式只服务于一
 
 | 层 | 包 | 可依赖 |
 | --- | --- | --- |
-| 1 | `core` | —（零运行时依赖） |
-| 1 | `machine` | `core`（零运行时依赖） |
-| 1 | `system` | — |
+| 1 | `kernel` | —（零运行时依赖） |
+| 1 | `machine` | `kernel`（零运行时依赖） |
+| 1 | `tokens` | — |
 | 1 | `icons` | — |
-| 2 | `behavior` | `core` `machine` |
-| 2 | `position` | `core` |
-| 2 | `highlight` | `core` |
-| 2 | `ai` | `core` |
-| 2 | `markdown` | `core` |
-| 3 | `headless` | `core` `machine` `behavior` `system` |
-| 3 | `styled` | —（纯 CSS，不得依赖任何 JS 包） |
-| 3 | `visual` | `core` `behavior` |
-| 4 | `vue` / `wc` | 上述除 `styled` 外全部 |
-
-还有两个已在拓扑里占位、但仓库里尚无实现的层：`i18n`（层 1）与 `pro`（层 5，业务级组合件）。
+| 2 | `behavior` | `kernel` `machine` |
+| 2 | `position` | `kernel` |
+| 2 | `code-highlight` | `kernel` |
+| 2 | `chat-stream` | `kernel` |
+| 2 | `markdown` | `kernel` |
+| 3 | `headless` | `kernel` `machine` `behavior` `tokens` |
+| 3 | `styles` | —（纯 CSS，不得依赖任何 JS 包） |
+| 3 | `backgrounds` | `kernel` `behavior` |
+| 4 | `vue` / `web-components` | `kernel` `machine` `behavior` `headless` `position` `code-highlight` `tokens` `backgrounds` |
 
 除分层外还有三条硬规则，同样由门禁执行：
 
 - **库包的运行时代码不得引第三方。** 唯一登记在案的例外是 `@internationalized/date`，只有 `headless` 的日期族在用。
-- **`styled` 是纯 CSS。** 它不依赖任何 JS 包，因此可以脱离整个 JS 层单独使用。
-- **依赖版本只从 workspace catalog 取。** 包内一律写 `catalog:` 或 `workspace:*`，不得内联版本号。
+- **`styles` 是纯 CSS。** 它不依赖任何 JS 包，因此可以脱离整个 JS 层单独使用。
+- **依赖版本只从 workspace catalog 取。** 包内一律写 `catalog:` 或 `workspace:` 协议引用，不得内联版本号。
 
 ## 一次交互经过哪些层
 
@@ -51,7 +49,7 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式只服务于一
 用户点击
    │
    ▼
-适配器把 DOM 事件交给 connect 产出的 onClick        （vue / wc）
+适配器把 DOM 事件交给 connect 产出的 onClick        （vue / web-components）
    │
    ▼
 service.send({ type: 'TRIGGER.CLICK' })            （machine）
@@ -66,7 +64,7 @@ service.send({ type: 'TRIGGER.CLICK' })            （machine）
 适配器重新读 connect，把新的 aria-* / data-* 铺到部件上
    │
    ▼
-皮肤按 [data-state='open'] 命中新规则，动画播放      （styled）
+皮肤按 [data-state='open'] 命中新规则，动画播放      （styles）
 ```
 
 关键在于中间那三步与框架无关。Vue 适配器和 Web Components 适配器各自只负责最外两步。
@@ -115,7 +113,11 @@ service.send({ type: 'TRIGGER.CLICK' })            （machine）
 
 ```
 ui/
-├── packages/            # 对外发布的库包
+├── packages/            # 对外发布的库包，按角色分四组
+│   ├── adapters/        # vue · web-components——你选一个
+│   ├── design/          # tokens · styles · icons——外观
+│   ├── features/        # markdown · chat-stream · backgrounds——按需自选
+│   └── engine/          # kernel · machine · behavior · position · code-highlight · headless
 ├── tooling/             # 内部构建与质量工具
 │   ├── build/           # 打包配置与 exports 回写
 │   ├── eslint-config/   # lint 规则 + 分层拓扑事实源

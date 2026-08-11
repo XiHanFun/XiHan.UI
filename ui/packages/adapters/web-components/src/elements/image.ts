@@ -96,7 +96,7 @@ export class XhImageElement extends XhElement {
     put('fallback', api.getFallbackProps() as Record<string, unknown>)
 
     // 两个节点都常挂、互斥显隐，WC 自管可见性。connect 已置 hidden，但宿主不能指望作者装了
-    // styled 那份样式：任何一句 `img { display: block }`、`[data-part=fallback] { display: flex }`
+    // styles 那份样式：任何一句 `img { display: block }`、`[data-part=fallback] { display: flex }`
     // 都是 author 层，优先级高于 UA 的 [hidden]{display:none}，hidden 压不住；内联样式才压得住。
     this.setPartHidden(this.getPart('image'), !api.loaded)
     this.setPartHidden(this.getPart('fallback'), !api.showFallback)

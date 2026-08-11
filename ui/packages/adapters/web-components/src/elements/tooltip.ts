@@ -129,7 +129,7 @@ export class XhTooltipElement extends XhElement {
     // positioner 的 style 是坐标对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     // 提示内容常挂，收起时由 connect 输出 hidden。这里不做内联 display 兜底：
-    // styled 的 [data-part=content] 只设 pointer-events/尺寸/配色，
+    // styles 的 [data-part=content] 只设 pointer-events/尺寸/配色，
     // [data-part=positioner] 只设 position/inset/z-index/pointer-events，两处都没有 display 声明，
     // UA 的 [hidden]{display:none} 压得住（collapsible/dialog 那两处 author 层给了 display，
     // 才必须用内联样式盖过）。

@@ -75,7 +75,7 @@ export function createBackgroundSurface(
   options: BackgroundSurfaceOptions,
 ): BackgroundSurface {
   if (isSSR())
-    throw new Error('[visual] createBackgroundSurface 需要 DOM，请在客户端调用')
+    throw new Error('[backgrounds] createBackgroundSurface 需要 DOM，请在客户端调用')
 
   let effect = resolveEffect(options.effect)
   /**
@@ -116,7 +116,7 @@ export function createBackgroundSurface(
     reportDiagnostic({
       code: DIAGNOSTIC_CODES.warn,
       level: 'warn',
-      message: '[visual] 当前环境不支持 WebGL2，已降级为静态背景',
+      message: '[backgrounds] 当前环境不支持 WebGL2，已降级为静态背景',
     })
     return createFallbackSurface(canvas, ownsCanvas, effect, overrides)
   }
@@ -337,7 +337,7 @@ export function createBackgroundSurface(
     reportDiagnostic({
       code: DIAGNOSTIC_CODES.warn,
       level: 'warn',
-      message: `[visual] WebGL 上下文丢失（${effect.name}）。同一页面上的画面过多时最早创建的会被丢弃，用不到的请及时 destroy()`,
+      message: `[backgrounds] WebGL 上下文丢失（${effect.name}）。同一页面上的画面过多时最早创建的会被丢弃，用不到的请及时 destroy()`,
     })
   }
 
@@ -477,7 +477,7 @@ export function createBackgroundSurface(
         reportDiagnostic({
           code: DIAGNOSTIC_CODES.warn,
           level: 'warn',
-          message: `[visual] 效果 ${effect.name} 不使用点云，setCloud 被忽略`,
+          message: `[backgrounds] 效果 ${effect.name} 不使用点云，setCloud 被忽略`,
         })
         return
       }

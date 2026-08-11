@@ -28,7 +28,10 @@ import {
 值类组件同时发两个事件：
 
 ```ts
-emits: ['value-change', 'update:value']
+emits: {
+  'value-change': (details: PayloadOf<AccordionProps, 'onValueChange'>) => true,
+  'update:value': (value: PayloadOf<AccordionProps, 'onValueChange'>['value']) => true,
+}
 ```
 
 | 事件 | 载荷 | 用途 |
@@ -119,7 +122,7 @@ const { api } = useAccordion(
 
 `useMachine(machine, props, scope)` 把它包起来。props 传的是 getter 而不是对象，每次展开成新对象让机器的身份缓存失效——这样在模板里原地改某个 prop 也收得到。
 
-## 视觉层
+## 背景层
 
 Vue 侧的视觉适配在**单独的子入口**，不引就不会把 WebGL 引擎打进包：
 
@@ -127,7 +130,7 @@ Vue 侧的视觉适配在**单独的子入口**，不引就不会把 WebGL 引�
 import { useBackground, vBackground, XhBackground } from '@xihan-ui/vue/backgrounds'
 ```
 
-三种用法见[视觉层](../guide/backgrounds#在-vue-里用)。
+三种用法见[背景层](../guide/backgrounds#在-vue-里用)。
 
 ## 服务端渲染
 

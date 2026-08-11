@@ -34,10 +34,11 @@ export const DIAGNOSTIC_CODES = {
   wcMissingPart: 'wc.missing-part', // 作者未渲染必需的角色节点
   wcUnknownPart: 'wc.unknown-part', // 角色节点的 part 名不在组件解剖内
   wcWrongPartTag: 'wc.wrong-part-tag', // 角色节点的标签不满足要求，原生语义会静默失效
+  qrCodeLogoDamage: 'qr-code.logo-damage', // 中心 logo 挖掉的码字超出纠错级别能恢复的量
 }
 ```
 
-后三条是 Web Components 适配器的部件契约校验，也是日常最容易撞上的三条——手写 DOM 时漏一个 `data-xh-part` 或者写错名字，通道会明确告诉你哪个节点、哪个部件。
+三条 `wc.*` 是 Web Components 适配器的部件契约校验，也是日常最容易撞上的三条——手写 DOM 时漏一个 `data-xh-part` 或者写错名字，通道会明确告诉你哪个节点、哪个部件。
 
 ## 用法
 

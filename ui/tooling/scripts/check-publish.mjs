@@ -6,7 +6,7 @@ import { join } from 'node:path'
 
 const PACKAGES_DIR = 'packages'
 
-// 按包声明的支持面校验：ESM-only、engines node>=24，不提供 CJS，也不承诺 node10 的
+// 按包声明的支持面校验：ESM-only、engines node>=18，不提供 CJS，也不承诺 node10 的
 // 旧式解析（它不认 exports，子路径一律解析失败）。profile 收窄到 esm-only 后
 // 校验的是 node16-from-ESM 与 bundler 两列。
 const ATTW_PROFILE = 'esm-only'

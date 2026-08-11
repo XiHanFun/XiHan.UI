@@ -1,4 +1,4 @@
-// @xihan-ui/web-components/backgrounds —— 视觉层的 Web Components 适配。
+// @xihan-ui/web-components/backgrounds —— 背景层的 Web Components 适配。
 //
 // 与主入口和 /define 都分开：@xihan-ui/backgrounds 是可选 peer，不用视觉效果的应用不会
 // 因为装了本包而多出一个 WebGL 引擎。用之前先装 @xihan-ui/backgrounds。
@@ -119,7 +119,7 @@ export class XhBackgroundElement extends XhReactiveElement {
         reportDiagnostic({
           code: DIAGNOSTIC_CODES.warn,
           level: 'error',
-          message: `[visual] <xh-background> 创建失败：${(error as Error).message}`,
+          message: `[backgrounds] <xh-background> 创建失败：${(error as Error).message}`,
         })
         return
       }

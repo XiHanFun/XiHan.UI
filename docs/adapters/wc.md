@@ -14,7 +14,7 @@ defineXhElements() // 注册全部 102 个 xh-* 元素
 
 主入口的 `import` 本身**不注册**，必须显式调这一行。注册是幂等的：同版本重复调直接返回；同标签不同版本、或标签已被非 XiHan.UI 代码占用，都会抛错而不是静默覆盖。无 `customElements` 的环境（SSR）静默跳过。
 
-视觉层单独注册，不引就不会把 WebGL 引擎打进包：
+背景层单独注册，不引就不会把 WebGL 引擎打进包：
 
 ```ts
 import { defineXhBackground } from '@xihan-ui/web-components/backgrounds'

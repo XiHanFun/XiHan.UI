@@ -11,9 +11,9 @@ Web Components 适配器：把框架无关的 headless（anatomy + machine + con
   元素类的定义式不再在模块求值那一刻取 `HTMLElement`；`defineElement` 无 `customElements` 时静默跳过。
   判据在 `tests/node-smoke.spec.ts`。
 - **升级前的形态**：收起态由元素在 `wire()` 里用内联 display 做，`data-scope` / `data-part` 也是
-  那一刻才打上，所以 JS 到达前浮层子树既没有皮肤也没有收起。styled 的 `styles/undefined.css`
+  那一刻才打上，所以 JS 到达前浮层子树既没有皮肤也没有收起。styles 的 `css/undefined.css`
   按作者写的 `data-xh-part` 把浮层族的 backdrop / content / positioner / viewport 收起来，
-  SSR 直出的首屏不会把浮层内容倾泻进页面流。不引 styled 的宿主需自行处理这一段。
+  SSR 直出的首屏不会把浮层内容倾泻进页面流。不引 styles 的宿主需自行处理这一段。
 - 基类在 `src/reactive/`：属性 → 字段的单向转换、批量异步更新、控制器生命周期。
   `tests/reactive-parity.spec.ts` 是差分判据，逐条对拍 `@lit/reactive-element`（仅 devDependency）。
 
@@ -21,7 +21,7 @@ Web Components 适配器：把框架无关的 headless（anatomy + machine + con
 
 - **Presence 模型不同（已知差异，非缺陷）**：Vue 用 Presence 卸载 content（关闭即从 DOM 移除）；
   WC 是 Light DOM，不能删用户节点，content **常驻**，关闭态只由 `data-state="closed"` 标记，
-  视觉隐藏交给 styled 层的 `[data-state='closed']{display:none}`。因此两端关闭态 DOM 不同
+  视觉隐藏交给 styles 层的 `[data-state='closed']{display:none}`。因此两端关闭态 DOM 不同
   （Vue 无 content 节点，WC 有 content[data-state=closed]），Button 可做逐帧 parity、
   Dialog 暂用各自 conformance（Dialog 全量 parity 需 presence 容差，留待后续）。
 - **顶层/Portal**：真机可给 content 加 Popover API 上顶层；jsdom 无 Popover，当前只靠

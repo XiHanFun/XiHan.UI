@@ -79,7 +79,7 @@ interface DomSnapshot {
 
 ## 结构门禁
 
-`pnpm gate` 跑八项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
+`pnpm gate` 跑十三项结构检查，它们查的是**判据查不到的东西**——静默失效、悬空承诺、没被命名的决策：
 
 | 门禁 | 拦什么 |
 | --- | --- |
@@ -91,17 +91,24 @@ interface DomSnapshot {
 | `check-shared-slots` | 同一字面量在多个组件里当默认值，却没立语义令牌 |
 | `check-disabled-contrast` | 禁用态前景色令牌上又叠 `opacity`，对比度被压到读不出字 |
 | `check-part-wiring` | 解剖声明、`connect` 产出、适配器却不接线的部件 |
+| `check-breakpoints` | 皮肤 `@media` 里的断点字面量不在令牌清单里（自定义属性在媒体条件里不生效，只能写字面量） |
+| `check-focus-ring` | 聚焦环的粗细、颜色、偏移写了字面量而不是令牌，主题与全局调整对它无效 |
+| `check-exports` | 实现了却忘了从包级入口导出，包外拿不到它，而构建与类型检查照过 |
+| `check-package-roles` | 包所在的角色组与它 `package.json` 里的依赖声明对不上 |
+| `check-public-surface` | 公开面基线里有而当前没有的名字——被删了或改名了 |
 
-另有四项单独的门禁：
+另有分层依赖检查与五项单独的门禁：
 
 ```bash
-pnpm boundaries   # 分层依赖 + 禁循环 + styled 不依赖 JS + 库包不引第三方
+pnpm boundaries   # 分层依赖 + 禁循环 + styles 不依赖 JS + 库包不引第三方
 pnpm gate:tokens  # 重跑令牌生成后比对，改源忘了跑生成会被拦下
+pnpm gate:styled  # 重新生成皮肤的无层版产物后比对
 pnpm gate:cem     # 重新生成自定义元素清单后比对
+pnpm gate:docs    # 重新生成组件文档页后比对
 pnpm gate:publish # 逐包跑 publint 与 attw，校验 exports 条件与类型解析
 ```
 
-`gate:publish` 按包声明的支持面校验：ESM-only、`engines.node >= 24`，不提供 CJS，也不承诺 node10 的旧式解析。
+`gate:publish` 按包声明的支持面校验：ESM-only、`engines.node >= 18`，不提供 CJS，也不承诺 node10 的旧式解析。
 
 ## 体积棘轮
 

@@ -1,21 +1,22 @@
 # Changesets · 发布流程
 
 版本与发布由 [changesets](https://github.com/changesets/changesets) 驱动。**14 个公开包**
-（core / machine / behavior / system / headless / styled / vue / wc / ai / markdown / position / highlight / visual）
+（kernel / machine / behavior / tokens / headless / styles / vue / web-components / chat-stream /
+markdown / position / code-highlight / backgrounds / icons）
 经 `fixed` 组**锁步同版**；私有包（testing / playground-* / tooling-*）不发布、不计版。
 
 新增一个对外发布的包时，除了建包本身，还要把它加进 `.changeset/config.json` 的 `fixed` 组——
 漏了它就会自己走一套版本号，与其余包脱节。
 
-## 首个公开 alpha（13 包 → 1.0.0-alpha.0）
+## 首个公开 alpha（14 包 → 1.0.0-alpha.0，已完成）
 
-在 `ui/` 目录依次执行：
+当时在 `ui/` 目录依次执行：
 
 ```bash
 # 1) 一次性进入 alpha 预发布模式（生成 .changeset/pre.json）
 pnpm changeset pre enter alpha
 
-# 2) 应用版本：13 包 → 1.0.0-alpha.0，生成 CHANGELOG，更新内部依赖范围
+# 2) 应用版本：14 包 → 1.0.0-alpha.0，生成 CHANGELOG，更新内部依赖范围
 pnpm run version            # = changeset version
 
 # 3) 提交版本改动

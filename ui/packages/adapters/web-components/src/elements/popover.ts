@@ -160,7 +160,7 @@ export class XhPopoverElement extends XhElement {
     put('close-trigger', api.getCloseTriggerProps() as Record<string, unknown>)
     put('arrow', api.getArrowProps() as Record<string, unknown>)
 
-    // Light DOM content 常驻，WC 自管可见性。读 styled/styles/popover.css 的结论：
+    // Light DOM content 常驻，WC 自管可见性。读 styles/css/popover.css 的结论：
     // content 是 display:flex，positioner 只声明 position/z-index/pointer-events、没有 display，
     // connect 也不给 positioner 发 hidden——所以只兜 content 这一处。
     // 该文件自己带了 [data-part=content][hidden]{display:none} 压住那条 flex，

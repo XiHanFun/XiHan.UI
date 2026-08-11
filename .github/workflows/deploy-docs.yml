@@ -43,7 +43,7 @@ jobs:
       - name: 安装 pnpm
         run: npm install -g pnpm@11
 
-      # 文档站以 link: 引用 ui/packages/{vue,styled}，示例要渲染就得先有 dist
+      # 文档站以 link: 引用 ui/packages/adapters/vue 与 ui/packages/design/styles，示例要渲染就得先有 dist
       - name: 安装组件库依赖
         working-directory: ./ui/
         run: pnpm install --frozen-lockfile
