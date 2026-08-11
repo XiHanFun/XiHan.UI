@@ -293,11 +293,11 @@ export const XhTableExpandedRow = defineComponent({
   },
 })
 
-export const XhTableEmptyState = defineComponent({
-  name: 'XhTableEmptyState',
+export const XhTableEmpty = defineComponent({
+  name: 'XhTableEmpty',
   setup(_, { slots }) {
     const ctx = useTableContext()
-    return () => h('div', ctx.api.value.getEmptyStateProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

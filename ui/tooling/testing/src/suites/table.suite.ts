@@ -117,7 +117,7 @@ const FIXTURE: FixtureNode = {
         },
       ],
     },
-    { part: 'empty-state', text: '暂无数据' },
+    { part: 'empty', text: '暂无数据' },
     { part: 'loading-state', text: '加载中' },
   ],
 }
@@ -221,7 +221,7 @@ export const tableSuite: ConformanceSuite = {
           'sort-trigger': 2,
           'expand-trigger': 4,
           'expanded-row': 3,
-          'empty-state': 1,
+          'empty': 1,
           'loading-state': 1,
         },
         parts: {
@@ -345,7 +345,7 @@ export const tableSuite: ConformanceSuite = {
             'aria-setsize': '1',
           },
           // 表体有数据：两个状态节点都收着
-          'empty-state': { hidden: '' },
+          'empty': { hidden: '' },
           'loading-state': { hidden: '' },
         },
       },
@@ -705,7 +705,7 @@ export const tableSuite: ConformanceSuite = {
           // 一行都没有，也就没有可展开的行：平表格报 grid
           'root': { 'role': 'grid', 'data-empty': '', 'aria-busy': 'false', 'aria-rowcount': '2' },
           'body': { 'data-empty': '' },
-          'empty-state': { hidden: null },
+          'empty': { hidden: null },
           'loading-state': { hidden: '' },
         },
       },
@@ -716,7 +716,7 @@ export const tableSuite: ConformanceSuite = {
           expect: {
             parts: {
               'root': { 'data-empty': '', 'data-loading': '', 'aria-busy': 'true' },
-              'empty-state': { hidden: '' },
+              'empty': { hidden: '' },
               'loading-state': { hidden: null },
             },
           },
@@ -728,7 +728,7 @@ export const tableSuite: ConformanceSuite = {
             parts: {
               // 装进可展开的行，角色跟着换
               'root': { 'role': 'treegrid', 'data-empty': null, 'aria-busy': 'true' },
-              'empty-state': { hidden: '' },
+              'empty': { hidden: '' },
               'loading-state': { hidden: '' },
             },
           },

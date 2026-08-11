@@ -204,7 +204,7 @@ function mount(initial: Partial<Props> = {}): Harness {
       for (const column of columns)
         spread(els.cells[column.id]!, api.getCellProps({ value: column.id, row: id }) as Record<string, unknown>)
     }
-    spread(emptyState, api.getEmptyStateProps() as Record<string, unknown>)
+    spread(emptyState, api.getEmptyProps() as Record<string, unknown>)
     spread(loadingState, api.getLoadingStateProps() as Record<string, unknown>)
   }
 

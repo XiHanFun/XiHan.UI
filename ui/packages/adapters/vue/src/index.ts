@@ -557,7 +557,7 @@ export {
   XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
-  XhTableEmptyState,
+  XhTableEmpty,
   XhTableExpandedRow,
   XhTableExpandTrigger,
   XhTableFooter,

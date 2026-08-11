@@ -379,7 +379,7 @@
   }
 
   /* 两个状态节点常挂，只在表体为空时才显形 */
-  [data-scope='table'][data-part='empty-state'],
+  [data-scope='table'][data-part='empty'],
   [data-scope='table'][data-part='loading-state'] {
     display: flex;
     flex-direction: column;
@@ -393,7 +393,7 @@
     text-align: center;
   }
 
-  [data-scope='table'][data-part='empty-state'][hidden],
+  [data-scope='table'][data-part='empty'][hidden],
   [data-scope='table'][data-part='loading-state'][hidden] {
     display: none;
   }

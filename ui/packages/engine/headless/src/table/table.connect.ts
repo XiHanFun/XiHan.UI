@@ -513,8 +513,8 @@ export function connectTable<T extends PropTypes>(
 
     // 两个状态节点不带 role：grid 系角色的子节点只能是 row 与 rowgroup；
     // 加载态的播报由 root 的 aria-busy 承担。节点常挂，只靠 hidden 显隐。
-    getEmptyStateProps: () => normalize.element({
-      ...parts['empty-state'].attrs,
+    getEmptyProps: () => normalize.element({
+      ...parts.empty.attrs,
       hidden: !showEmpty || undefined,
     }),
 
