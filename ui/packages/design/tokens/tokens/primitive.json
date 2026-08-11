@@ -144,6 +144,10 @@
       "600": {
         "$type": "color",
         "$value": "oklch(0.705 0.16 70)"
+      },
+      "700": {
+        "$type": "color",
+        "$value": "oklch(0.62 0.15 70)"
       }
     },
     "info": {

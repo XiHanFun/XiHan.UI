@@ -5327,6 +5327,7 @@
     "--xh-color-success-700",
     "--xh-color-warning-500",
     "--xh-color-warning-600",
+    "--xh-color-warning-700",
     "--xh-control-action-size",
     "--xh-control-gap-lg",
     "--xh-control-gap-md",
