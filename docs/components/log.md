@@ -50,6 +50,14 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 
 `data-scope="log"`：**`root`** · **`viewport`** · **`content`** · `line`
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `loading` | `boolean` |  | 行还在路上：日志区报 aria-busy，根落 data-loading。 |
+| `rows` | `number` |  | 视口按多少行定高；缺省时高度由皮肤给。 |
+| `translations` | `Partial<LogTranslations>` |  |  |
+
 ## connect API
 
 `useLog` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

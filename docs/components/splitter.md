@@ -12,7 +12,7 @@ panels 数组的长度决定面板块数，每条分隔条调的是它前面那�
 
 ### 受控
 
-传了 size 就由宿主说了算；size-change 拖动途中连着发，size-change-end 松手才发一次
+传了 sizes 就由宿主说了算；sizes-change 拖动途中连着发，sizes-change-end 松手才发一次
 
 <XhDemo src="splitter/02-controlled" />
 

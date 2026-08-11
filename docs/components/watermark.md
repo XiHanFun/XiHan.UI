@@ -43,6 +43,16 @@ rotate 转整块图样，gap 决定两块之间留多少空白，fontSize 与 op
 
 `data-scope="watermark"`：**`root`** · `content`
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `fontSize` | `number` |  | 字号，单位像素，缺省 14。 |
+| `gap` | `number` |  | 两块图样之间留的空白，单位像素，缺省 24。 |
+| `opacity` | `number` |  | 印子的深浅，0 到 1，缺省 0.15。 |
+| `rotate` | `number` |  | 倾斜角度，单位度，缺省 -22。 |
+| `text` | `string \| string[]` |  | 水印文字。给数组就是多行，单个字符串里的换行同样断行； 去掉空白行——它只让图样长高，印不出任何东西。 |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

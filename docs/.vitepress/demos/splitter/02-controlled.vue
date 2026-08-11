@@ -1,4 +1,4 @@
-<!-- 受控 | 传了 size 就由宿主说了算；size-change 拖动途中连着发，size-change-end 松手才发一次 -->
+<!-- 受控 | 传了 sizes 就由宿主说了算；sizes-change 拖动途中连着发，sizes-change-end 松手才发一次 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

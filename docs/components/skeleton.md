@@ -43,6 +43,13 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 
 `data-scope="skeleton"`：**`root`** · **`bone`**
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `loading` | `boolean` |  | 是否还在加载，默认 true。 |
+| `variant` | `SkeletonVariant` |  | 容器内骨架条的默认形状，默认 'text'。 |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

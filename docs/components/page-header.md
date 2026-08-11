@@ -49,6 +49,13 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 
 `data-scope="page-header"`：**`root`** · `back-trigger` · `title` · `subtitle` · `extra` · `footer`
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `bordered` | `boolean` |  | 底部画一条分隔线，把页头与下面的内容分开。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，决定标题字号与整块的上下留白。 |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

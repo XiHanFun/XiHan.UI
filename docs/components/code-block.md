@@ -43,6 +43,16 @@ complete 为 false 时默认不着色：半截代码的词法本来就不稳，�
 
 `data-scope="code-block"`：**`root`** · `lang-label` · **`pre`** · **`code`** · `token`
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `code` | `string` | 是 |  |
+| `complete` | `boolean` |  | 代码块是否已闭合，未闭合时按行数预撑高度。 |
+| `highlighter` | `HighlighterPort` |  | 着色实现。不给就是纯文本，给了也允许它返回 null（语言不认识之类），同样退回纯文本。 未闭合的块默认不着色，见 {@link highlightWhileStreaming}。 |
+| `highlightWhileStreaming` | `boolean` |  | 块还没闭合时也着色，默认 false。 默认关是因为半截代码的词法本来就不稳——引号、括号随时会配上， 每来一个 token 整块变一次色，看着比不着色更糟。 |
+| `lang` | `string` |  | 围栏语言标注，为空时按 plaintext 处理。 |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

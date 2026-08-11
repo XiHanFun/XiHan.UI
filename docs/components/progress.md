@@ -55,6 +55,15 @@ size 只改轨道厚度，不写即缺省中档
 
 `data-scope="progress"`：**`root`** · `track` · `range`
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `max` | `number` |  | 满值上限，默认 100。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，决定轨道厚度 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
+| `value` | `number` |  | 当前进度值，越界会被夹到 [0, max]。 |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

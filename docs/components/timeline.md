@@ -49,6 +49,14 @@ size 换的是圆点直径、条目间距与字号，不传 size 即默认档
 
 `data-scope="timeline"`：**`root`** · **`item`** · `indicator` · `connector` · `content` · `title` · `description` · `time`
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `orientation` | `Orientation` |  | 事件排列方向：vertical 自上而下、horizontal 自起点向终点，缺省 vertical。 |
+| `placement` | `TimelinePlacement` |  | 内容在线的哪一侧：start / end / alternate，不写则内容落在结束侧。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，决定圆点直径、条目间距与字号。 |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

@@ -49,6 +49,13 @@ size 只换留白与字号，语义一点不动；不传即 md
 
 `data-scope="empty-state"`：**`root`** · `icon` · `title` · `description` · `action`
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `live` | `EmptyStateLive` |  | 缺省 polite。 |
+| `size` | `Size` |  | 尺寸档位，只改留白与字号，不改语义。 |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

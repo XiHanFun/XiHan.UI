@@ -43,6 +43,15 @@ speed 是每秒像素；pauseOnHover 在指针停下或焦点落进窗口时停�
 
 `data-scope="marquee"`：**`root`** · **`content`**
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `autoFill` | `boolean` |  | 内容不足时重复铺满：轨道里铺两份内容，走完一份正好接上第二份。 |
+| `direction` | `MarqueeDirection` |  | 滚动方向，缺省 left。 |
+| `pauseOnHover` | `boolean` |  | 指针停在窗口上时暂停；键盘焦点落进窗口时同样暂停。 |
+| `speed` | `number` |  | 每秒滚过的像素数。写成根上的内联变量，皮肤拿一份内容的长度除以它换成一圈的时长。 只收有限正数；其余值不写出，退回皮肤缺省。 |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

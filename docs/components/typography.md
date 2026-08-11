@@ -49,6 +49,12 @@ size 换的是整块正文的字号与段间距，不传 size 即默认档
 
 `data-scope="typography"`：**`root`** · `heading` · `paragraph` · `text` · `link`
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `size` | `Size` |  | 尺寸：sm / md / lg，整块正文的字号与段间距跟着换档。 |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

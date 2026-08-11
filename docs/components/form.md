@@ -64,6 +64,12 @@ validate 拿到的是整张值表，可以写两个字段互相约束的规则�
 
 <XhDemo src="form/10-nested" />
 
+### 重置回默认值
+
+复合控件的值攥在组件里，原生重置只还原原生控件——它们各自认这条事件，一起回到 defaultValue
+
+<XhDemo src="form/11-reset" />
+
 ## 产物
 
 | 层 | 值 |

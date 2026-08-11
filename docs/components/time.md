@@ -43,6 +43,16 @@ date 只到日、datetime 到秒、relative 说成「几分钟前」；datetime 
 
 `data-scope="time"`：**`root`**
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `format` | `string` |  | 自定义格式串，记号是 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s。 给了就顶掉该 locale 的缺省格式串；relative 型下只在退回绝对日期时用得上。 |
+| `locale` | `TimeLocale` |  | 用词：zh-CN 或 en，缺省 zh-CN。它只换给人看的文本，datetime 恒是同一种写法。 |
+| `now` | `TimeValue` |  | 算相对说法时的参照时刻，缺省取当前时刻。给定后整个组件的产出完全由入参决定。 |
+| `type` | `TimeType` |  | 呈现方式：date 只到日、datetime 到秒、relative 说成「几分钟前」，缺省 datetime。 |
+| `value` | `TimeValue` |  | 要显示的时刻。只写年月日的串按本地零点解读。 |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。

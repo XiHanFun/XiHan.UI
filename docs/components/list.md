@@ -49,6 +49,15 @@ size 换的是条目的内边距、图文间距与两行文字的字号，不传
 
 `data-scope="list"`：**`root`** · `item` · `item-media` · `item-content` · `item-title` · `item-description` · `item-action`
 
+## Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `bordered` | `boolean` |  | 外框：给整份列表画一圈描边与圆角。 |
+| `hoverable` | `boolean` |  | 指针悬停时条目换底色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `split` | `boolean` |  | 条目之间画分隔线。 |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
