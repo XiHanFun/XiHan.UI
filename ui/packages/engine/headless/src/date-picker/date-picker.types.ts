@@ -1,4 +1,4 @@
-import type { Cleanup, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
 import type { MachineSchema, Service } from '@xihan-ui/machine'
 import type { CalendarApi, CalendarSchema, CalendarSelectionMode } from '../calendar'
 import type { DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState } from '../date-field'
@@ -91,6 +91,8 @@ export interface DatePickerSchema extends MachineSchema {
     /** 区间终点那份隐藏输入的表单字段名；不给即终点不参与提交。 */
     endName?: string
     placement?: Placement
+    /** 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 */
+    dir?: Direction
     offset?: number
     translations?: Partial<DatePickerTranslations>
     /** 选完即收起，默认 true。区间模式下要两端都落定才算选完。 */

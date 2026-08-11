@@ -126,6 +126,7 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `openOnClick` | `boolean` |  | 点输入框即展开，默认 false（只有触发按钮与方向键展开）。 |
 | `inputBehavior` | `ComboboxInputBehavior` |  | 输入行为，默认 none。 |
 | `placement` | `Placement` |  |  |
+| `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色怎么用。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 |

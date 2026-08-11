@@ -88,6 +88,7 @@ min / max 直接把界外的格从列里裁掉；分列还会随已选的时再�
 | `required` | `boolean` |  | 必填标注（落到每段的 aria-required 上）。 |
 | `name` | `string` |  | 表单字段名；给了隐藏输入才带 name，值随表单一并提交。 |
 | `placement` | `Placement` |  |  |
+| `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
 | `onValueChange` | `(details: TimePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onOpenChange` | `(details: TimePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |

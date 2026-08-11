@@ -62,6 +62,7 @@
 | `placeholder` | `string` |  | 输入框占位文字。不给就整条不输出，作者写在 input 部件上的那份因此留得住。 |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
 | `placement` | `Placement` |  |  |
+| `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
 | `translations` | `MentionTranslations` |  |  |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框的描边与底色怎么用。 |

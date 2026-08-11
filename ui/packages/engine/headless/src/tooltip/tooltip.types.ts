@@ -1,4 +1,4 @@
-import type { Placement, PositionEnginePort, PositionResult, PropTypes, Size, Tone } from '@xihan-ui/kernel'
+import type { Direction, Placement, PositionEnginePort, PositionResult, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface TooltipOpenChangeDetails {
@@ -23,6 +23,8 @@ export interface TooltipSchema extends MachineSchema {
     defaultOpen?: boolean
     /** 请求的浮层朝向，默认 bottom；空间不足时由定位引擎避让。 */
     placement?: Placement
+    /** 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 */
+    dir?: Direction
     /** 浮层与锚点的间距（px）。 */
     offset?: number
     /** 悬停进入到展开的等待毫秒，默认 700。 */

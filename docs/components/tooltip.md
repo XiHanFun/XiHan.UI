@@ -75,6 +75,7 @@ disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
 | `placement` | `Placement` |  | 请求的浮层朝向，默认 bottom；空间不足时由定位引擎避让。 |
+| `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  | 浮层与锚点的间距（px）。 |
 | `openDelay` | `number` |  | 悬停进入到展开的等待毫秒，默认 700。 |
 | `closeDelay` | `number` |  | 悬停移出到收起的等待毫秒，默认 300。 |

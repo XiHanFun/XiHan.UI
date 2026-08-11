@@ -1,4 +1,4 @@
-import type { Align, Placement, Side } from '@xihan-ui/kernel'
+import type { Align, Direction, Placement, Side } from '@xihan-ui/kernel'
 
 /**
  * 摆放浮层的纯计算层：给定锚点矩形、浮层尺寸与可用区域，算出浮层该落在哪儿。
@@ -33,6 +33,11 @@ export interface ComputeInput {
   shift: boolean
   /** shift 贴边时留出的余量。 */
   padding: number
+  /**
+   * 文字方向，缺省 ltr。只改写行内轴（top / bottom 两侧）上 start 与 end 的落点：
+   * RTL 下 start 与锚点的右缘齐平。块轴（left / right 两侧）不受方向影响。
+   */
+  dir?: Direction
 }
 
 export interface ComputeOutput {
@@ -72,14 +77,25 @@ function alignOn(anchorStart: number, anchorSize: number, floatingSize: number, 
   return anchorStart + anchorSize / 2 - floatingSize / 2
 }
 
+/**
+ * 行内轴上把逻辑对齐解析成物理对齐：RTL 下 start 在右、end 在左。
+ * 块轴（left / right 两侧的纵向对齐）不受文字方向影响，不走这里。
+ */
+function inlineAlign(align: Align, dir: Direction | undefined): Align {
+  if (dir !== 'rtl' || align === 'center')
+    return align
+  return align === 'start' ? 'end' : 'start'
+}
+
 /** 某一侧的落点，不含任何避让。 */
 function coordsFor(input: ComputeInput, side: Side, align: Align): { x: number, y: number } {
   const { anchor, floating, offset } = input
+  const inline = inlineAlign(align, input.dir)
   switch (side) {
     case 'top':
-      return { x: alignOn(anchor.x, anchor.width, floating.width, align), y: anchor.y - floating.height - offset }
+      return { x: alignOn(anchor.x, anchor.width, floating.width, inline), y: anchor.y - floating.height - offset }
     case 'bottom':
-      return { x: alignOn(anchor.x, anchor.width, floating.width, align), y: anchor.y + anchor.height + offset }
+      return { x: alignOn(anchor.x, anchor.width, floating.width, inline), y: anchor.y + anchor.height + offset }
     case 'left':
       return { x: anchor.x - floating.width - offset, y: alignOn(anchor.y, anchor.height, floating.height, align) }
     case 'right':

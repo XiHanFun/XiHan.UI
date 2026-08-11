@@ -87,6 +87,7 @@ open-change 带一份 { open }，报的是这次要落到的状态；非受控�
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
 | `placement` | `Placement` |  |  |
+| `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
 | `modal` | `boolean` |  | 模态浮层陷住焦点；默认 false（非模态，Tab 可离开）。 |
 | `closeOnEscape` | `boolean` |  |  |

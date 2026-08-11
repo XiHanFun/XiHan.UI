@@ -1,4 +1,4 @@
-import type { Cleanup, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface PopoverTranslations {
@@ -29,6 +29,8 @@ export interface PopoverSchema extends MachineSchema {
     open?: boolean
     defaultOpen?: boolean
     placement?: Placement
+    /** 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 */
+    dir?: Direction
     offset?: number
     /** 模态浮层陷住焦点；默认 false（非模态，Tab 可离开）。 */
     modal?: boolean
