@@ -163,6 +163,12 @@ export function connectMenu<T extends PropTypes>(
       },
       // 禁用条目被聚焦也记锚点，作为方向键起点
       'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
+      // 指针划过即把焦点搬来：活动项只有一个，hover 与键盘高亮不再各亮各的
+      'onPointerenter': (event: PointerEvent) => {
+        const el = event.currentTarget as HTMLElement
+        if (!isItemDisabled(el) && anchor !== item.value)
+          focusItem(el)
+      },
     }),
     // 双重身份：value 是它在父菜单里的条目身份（父层导航与高亮照常认），
     // 其余属性都是本子菜单的触发器。父层的选中经 aria-haspopup 嗅探跳过它。
@@ -184,6 +190,11 @@ export function connectMenu<T extends PropTypes>(
         const triggerEl = event.currentTarget as HTMLElement
         triggerEl.focus()
         send({ type: 'TOGGLE', focus: 'none' })
+      },
+      'onPointerenter': (event: PointerEvent) => {
+        const el = event.currentTarget as HTMLElement
+        if (!isItemDisabled(el))
+          focusItem(el)
       },
       'onKeydown': (event: KeyboardEvent) => {
         if (event.defaultPrevented || itemDisabled(item))
