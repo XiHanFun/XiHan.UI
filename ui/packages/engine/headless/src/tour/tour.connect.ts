@@ -64,6 +64,7 @@ export function connectTour<T extends PropTypes>(
     goToNextStep: () => send({ type: 'STEP.NEXT' }),
     goToPrevStep: () => send({ type: 'STEP.PREV' }),
     skip: () => send({ type: 'SKIP' }),
+    remeasure: () => send({ type: 'GEOMETRY.SYNC' }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,

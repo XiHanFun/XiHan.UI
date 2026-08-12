@@ -24,6 +24,7 @@ export const XhTourRoot = defineComponent({
     closeOnInteractOutside: { type: Boolean, default: undefined },
     showBackdrop: { type: Boolean, default: undefined },
     spotlightPadding: { type: Number, default: undefined },
+    autoScroll: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<TourProps['translations']>, default: undefined },
   },
   // open-change / step-change 携带对象；update:* 携带裸值，支持 v-model:open 与 v-model:step
@@ -63,6 +64,7 @@ export const XhTourRoot = defineComponent({
       goToNextStep: ctx.api.value.goToNextStep,
       goToPrevStep: ctx.api.value.goToPrevStep,
       skip: ctx.api.value.skip,
+      remeasure: ctx.api.value.remeasure,
     }))
   },
 })

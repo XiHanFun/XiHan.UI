@@ -54,6 +54,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `closeOnInteractOutside` | `boolean` |  | 层外交互关闭，默认 false：引导要退出得走 skip 或 close 这两个明确出口。 |
 | `showBackdrop` | `boolean` |  | 画遮罩，默认 true。 |
 | `spotlightPadding` | `number` |  | 高亮框在目标四周留出的空白（px），默认 8。 |
+| `autoScroll` | `boolean` |  | 展开与换步时自动把目标滚进视口（nearest，已可见时不动），默认 true。 |
 | `translations` | `Partial<TourTranslations>` |  |  |
 | `onStepChange` | `(details: TourStepChangeDetails) => void` |  | 步序变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onOpenChange` | `(details: TourOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
@@ -64,7 +65,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `CLOSE` · `STEP.SET` · `STEP.PREV` · `STEP.NEXT` · `SKIP` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
+**事件**：`OPEN` · `CLOSE` · `STEP.SET` · `STEP.PREV` · `STEP.NEXT` · `SKIP` · `GEOMETRY.SYNC` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
 
 **判据**：`isOpenControlled` · `isLastStep` · `isLastStepOpenControlled`
 
@@ -87,6 +88,7 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `goToNextStep` | `() => void` | 末步再走一步 = 完成：先发 onComplete，再关闭。 |
 | `goToPrevStep` | `() => void` |  |
 | `skip` | `() => void` | 放弃引导：先发 onSkip，再关闭。 |
+| `remeasure` | `() => void` | 重量高亮框与浮层位置：目标节点被外部改动（换位、变尺寸）后调它校准。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getBackdropProps` | `() => T['element']` |  |
 | `getSpotlightProps` | `() => T['element']` |  |

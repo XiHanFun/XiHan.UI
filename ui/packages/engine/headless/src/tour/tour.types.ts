@@ -92,6 +92,8 @@ export interface TourSchema extends MachineSchema {
     showBackdrop?: boolean
     /** 高亮框在目标四周留出的空白（px），默认 8。 */
     spotlightPadding?: number
+    /** 展开与换步时自动把目标滚进视口（nearest，已可见时不动），默认 true。 */
+    autoScroll?: boolean
     translations?: Partial<TourTranslations>
     /** 步序变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onStepChange?: (details: TourStepChangeDetails) => void
@@ -120,6 +122,8 @@ export interface TourSchema extends MachineSchema {
     | { type: 'STEP.PREV' }
     | { type: 'STEP.NEXT' }
     | { type: 'SKIP' }
+    /** 重量几何：目标节点被外部改动（换位、变尺寸）后由宿主触发。 */
+    | { type: 'GEOMETRY.SYNC' }
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
@@ -137,6 +141,7 @@ export interface TourSchema extends MachineSchema {
     | 'measureSpotlight'
     | 'reanchorPosition'
     | 'clearGeometry'
+    | 'scrollTargetIntoView'
   effect: 'trackPosition' | 'trackSpotlight' | 'trackLayer'
 }
 
@@ -163,6 +168,8 @@ export interface TourApi<T extends PropTypes = PropTypes> {
   goToPrevStep: () => void
   /** 放弃引导：先发 onSkip，再关闭。 */
   skip: () => void
+  /** 重量高亮框与浮层位置：目标节点被外部改动（换位、变尺寸）后调它校准。 */
+  remeasure: () => void
   getRootProps: () => T['element']
   getBackdropProps: () => T['element']
   getSpotlightProps: () => T['element']
