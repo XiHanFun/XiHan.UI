@@ -1,5 +1,7 @@
 // @xihan-ui/behavior —— 交互行为原语（依赖 core）。
 
+export { cascadeState, cascadeToggle, collapseChecked } from './collection/cascade'
+export type { CascadeNodeLike, CascadeState, CascadeStrategy } from './collection/cascade'
 export { anchorItem, declaredItemDisabled, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, queryItems } from './collection/items'
 export type { ItemQuery, NavigateOptions } from './collection/items'
 export { navIntentFromKey, stepIndex } from './collection/navigate'
