@@ -108,6 +108,7 @@
     "./scroll-area.css": "./css/scroll-area.css",
     "./select.css": "./css/select.css",
     "./separator.css": "./css/separator.css",
+    "./side-nav.css": "./css/side-nav.css",
     "./skeleton.css": "./css/skeleton.css",
     "./slider.css": "./css/slider.css",
     "./spinner.css": "./css/spinner.css",

@@ -1,0 +1,19 @@
+import type { ItemQuery } from '@xihan-ui/behavior'
+import { createAnatomy } from '@xihan-ui/kernel'
+
+// data-part 直接用 kebab-case，与 CSS 选择器一致。
+export const sideNavAnatomy = createAnatomy('side-nav', [
+  'root',
+  'list',
+  'group',
+  'group-label',
+  'branch',
+  'branch-trigger',
+  'branch-indicator',
+  'branch-content',
+  'link',
+])
+
+// 方向键的集合由分支行与链接共同组成，归属过滤隔开嵌套的另一套侧栏。
+export const sideNavTriggerQuery: ItemQuery = { scope: sideNavAnatomy.name, part: 'branch-trigger' }
+export const sideNavLinkQuery: ItemQuery = { scope: sideNavAnatomy.name, part: 'link' }

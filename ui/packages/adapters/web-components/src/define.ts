@@ -73,6 +73,7 @@ import { XhResultElement } from './elements/result'
 import { XhScrollAreaElement } from './elements/scroll-area'
 import { XhSelectElement } from './elements/select'
 import { XhSeparatorElement } from './elements/separator'
+import { XhSideNavElement } from './elements/side-nav'
 import { XhSkeletonElement } from './elements/skeleton'
 import { XhSliderElement } from './elements/slider'
 import { XhSpinnerElement } from './elements/spinner'
@@ -182,6 +183,7 @@ export function defineXhElements(): void {
   defineElement('xh-scroll-area', XhScrollAreaElement, VERSION)
   defineElement('xh-select', XhSelectElement, VERSION)
   defineElement('xh-separator', XhSeparatorElement, VERSION)
+  defineElement('xh-side-nav', XhSideNavElement, VERSION)
   defineElement('xh-slider', XhSliderElement, VERSION)
   defineElement('xh-splitter', XhSplitterElement, VERSION)
   defineElement('xh-statistic', XhStatisticElement, VERSION)
@@ -259,6 +261,7 @@ export {
   XhScrollAreaElement,
   XhSelectElement,
   XhSeparatorElement,
+  XhSideNavElement,
   XhSkeletonElement,
   XhSliderElement,
   XhSpinnerElement,
