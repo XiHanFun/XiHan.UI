@@ -130,6 +130,7 @@ export const comboboxMachine = createMachine({
           { target: 'closed', actions: ['reconcileInput', 'invokeOnClose'] },
         ],
         'ITEM.HIGHLIGHT': { actions: ['setHighlightedValue'] },
+        'HIGHLIGHT.CLEAR': { actions: ['clearHighlightedValue'] },
         // 多选选完接着筛：列表不收起。单选选完即收起，走与 CLOSE 相同的收口
         'ITEM.SELECT': [
           { guard: 'isMultiple', actions: ['selectItem'] },

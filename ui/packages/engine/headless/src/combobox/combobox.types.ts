@@ -188,6 +188,7 @@ export interface ComboboxSchema extends MachineSchema {
     /** 焦点离开整个组件：收起并把输入串与选中值对齐。 */
     | { type: 'INPUT.BLUR' }
     | { type: 'ITEM.HIGHLIGHT', value: string }
+    | { type: 'HIGHLIGHT.CLEAR' }
     /** 选中候选。label 是条目当下的显示文本，由调用方在事件那一刻从 DOM 取。 */
     | { type: 'ITEM.SELECT', value: string, label?: string }
     /** 把输入串本身收成选中值（allowCustomValue 才生效）。 */

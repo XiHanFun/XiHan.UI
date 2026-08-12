@@ -117,6 +117,7 @@ export const selectMachine = createMachine({
           { target: 'closed', actions: ['setValue', 'syncValueText', 'setReturnFocus', 'invokeOnClose'] },
         ],
         'ITEM.HIGHLIGHT': { actions: ['setHighlightedValue'] },
+        'HIGHLIGHT.CLEAR': { actions: ['clearHighlightedValue'] },
         // 高亮条目被移出 DOM，锚点悬空，就地重挑一个，否则没有条目认领 tabindex=0
         'ITEM.LOST': { actions: ['clearHighlightedValue', 'setInitialHighlightedValue'] },
         'CONTROLLED.CLOSE': { target: 'closed' },

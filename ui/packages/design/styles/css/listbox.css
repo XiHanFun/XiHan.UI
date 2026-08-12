@@ -111,9 +111,13 @@
     display: none;
   }
 
-  /* 键盘高亮与指针高亮共用一套底色：条目本身承载焦点，不另画描边。
+  /* 指针划过与键盘高亮分两档底色：hover 浅一档、随指针即走即消，
      data-highlighted 跟的是连接层记的焦点条目，与选中互相独立 */
-  [data-scope='listbox'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
+  [data-scope='listbox'][data-part='item']:not([data-disabled]):hover {
+    background: var(--xh-listbox-item-bg-hover, var(--xh-bg-subtle));
+  }
+
+  [data-scope='listbox'][data-part='item']:not([data-disabled])[data-highlighted] {
     background: var(--xh-listbox-item-bg-highlight, var(--xh-bg-subtle-hover));
   }
 

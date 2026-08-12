@@ -112,6 +112,7 @@ export interface ListboxSchema extends MachineSchema {
     /** 切换这一个的选中态，并记为区间起点。 */
     | { type: 'ITEM.TOGGLE', value: string }
     | { type: 'ITEM.FOCUS', value: string }
+    | { type: 'FOCUS.CLEAR' }
     /** 焦点离开列表，或持有焦点的条目被移出 DOM（后者由适配器上报）。 */
     | { type: 'LIST.BLUR' }
   tag: never

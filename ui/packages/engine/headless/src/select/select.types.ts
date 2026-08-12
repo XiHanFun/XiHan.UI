@@ -131,6 +131,7 @@ export interface SelectSchema extends MachineSchema {
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
     | { type: 'ITEM.HIGHLIGHT', value: string }
+    | { type: 'HIGHLIGHT.CLEAR' }
     /** 持有焦点的条目离开了 DOM：浏览器不派 focusout，由适配器如实上报。 */
     | { type: 'ITEM.LOST' }
     /** 选中条目。单选选完即收起，多选保持展开并在集合里增删该项。 */

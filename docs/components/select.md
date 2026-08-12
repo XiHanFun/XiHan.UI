@@ -150,7 +150,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.HIGHLIGHT` · `ITEM.LOST` · `ITEM.SELECT` · `VALUE.SET` · `FORM.RESET`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.HIGHLIGHT` · `HIGHLIGHT.CLEAR` · `ITEM.LOST` · `ITEM.SELECT` · `VALUE.SET` · `FORM.RESET`
 
 **判据**：`isOpenControlled` · `isMultiple`
 

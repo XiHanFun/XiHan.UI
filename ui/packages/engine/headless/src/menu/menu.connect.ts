@@ -2,12 +2,15 @@ import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { MenuApi, MenuItemProps, MenuNodeMeta, MenuSchema } from './menu.types'
-import { focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
+import { focusItem, focusSafely, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
 import { menuAnatomy, menuItemQuery } from './menu.anatomy'
 import { menuFallbackPlacement } from './menu.machine'
 
 const parts = menuAnatomy.build()
+
+// 指针亲手点亮过的条目：pointerleave 只收自己点的漆，键盘建立的锚点被指针路过不受影响
+const pointerHot = new WeakSet<Element>()
 
 export function connectMenu<T extends PropTypes>(
   service: Service<MenuSchema>,
@@ -119,6 +122,11 @@ export function connectMenu<T extends PropTypes>(
       'data-size': prop('size'),
       // 收起时留在 DOM 只隐藏
       'hidden': !open || undefined,
+      // content 自身拿到焦点＝没有活动条目：锚点清空，Tab 停靠点回容器兜底
+      'onFocus': (event: FocusEvent) => {
+        if (event.target === event.currentTarget)
+          send({ type: 'FOCUS.CLEAR' })
+      },
       'onKeydown': (event: KeyboardEvent) => {
         if (event.defaultPrevented)
           return
@@ -163,11 +171,27 @@ export function connectMenu<T extends PropTypes>(
       },
       // 禁用条目被聚焦也记锚点，作为方向键起点
       'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
-      // 指针划过即把焦点搬来：活动项只有一个，hover 与键盘高亮不再各亮各的
+      // 指针划过即把焦点搬来：活动项只有一个，hover 与键盘高亮不再各亮各的；
+      // 只聚焦不滚动，滚动留给键盘导航
       'onPointerenter': (event: PointerEvent) => {
         const el = event.currentTarget as HTMLElement
-        if (!isItemDisabled(el) && anchor !== item.value)
-          focusItem(el)
+        if (isItemDisabled(el) || anchor === item.value)
+          return
+        pointerHot.add(el)
+        focusSafely(el)
+      },
+      // 指针离开且没落到本菜单的其他位置：焦点还给 content，锚点随其 onFocus 清空。
+      // 触摸 tap 序列里的 leave 不作数；子菜单触发条目在子层展开时保持高亮标记打开路径
+      'onPointerleave': (event: PointerEvent) => {
+        const el = event.currentTarget as HTMLElement
+        if (event.pointerType === 'touch' || !pointerHot.delete(el))
+          return
+        if (el.getAttribute('aria-expanded') === 'true' || el.ownerDocument.activeElement !== el)
+          return
+        const content = el.ownerDocument.getElementById(ids.content)
+        if (!content || content.contains(event.relatedTarget as Node | null))
+          return
+        content.focus()
       },
     }),
     // 双重身份：value 是它在父菜单里的条目身份（父层导航与高亮照常认），
@@ -194,7 +218,7 @@ export function connectMenu<T extends PropTypes>(
       'onPointerenter': (event: PointerEvent) => {
         const el = event.currentTarget as HTMLElement
         if (!isItemDisabled(el))
-          focusItem(el)
+          focusSafely(el)
       },
       'onKeydown': (event: KeyboardEvent) => {
         if (event.defaultPrevented || itemDisabled(item))
