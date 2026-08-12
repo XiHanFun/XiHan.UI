@@ -3,6 +3,7 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideAnchor, useAnchorContext } from './context'
 import { useAnchor } from './use-anchor'
 
@@ -37,7 +38,7 @@ export const XhAnchorRoot = defineComponent({
       emit('update:value', details.value)
     }
     // 传响应式 props 对象本身而非快照，供机器每次读时重新展开
-    const ctx = useAnchor(props as AnchorProps, notify, () => props.scrollElement ?? null)
+    const ctx = useAnchor(withXhConfig('anchor', props) as AnchorProps, notify, () => props.scrollElement ?? null)
     provideAnchor(ctx)
     return () => h('nav', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

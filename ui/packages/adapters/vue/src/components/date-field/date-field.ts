@@ -3,6 +3,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideDateField, useDateFieldContext } from './context'
 import { useDateField } from './use-date-field'
 
@@ -41,7 +42,7 @@ export const XhDateFieldRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useDateField(props as DateFieldProps, { onValueChange })
+    const ctx = useDateField(withXhConfig('date-field', props) as DateFieldProps, { onValueChange })
     provideDateField(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,

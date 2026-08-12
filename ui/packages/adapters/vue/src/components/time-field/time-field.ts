@@ -3,6 +3,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideTimeField, useTimeFieldContext } from './context'
 import { useTimeField } from './use-time-field'
 
@@ -40,7 +41,7 @@ export const XhTimeFieldRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useTimeField(props as TimeFieldProps, { onValueChange })
+    const ctx = useTimeField(withXhConfig('time-field', props) as TimeFieldProps, { onValueChange })
     provideTimeField(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,

@@ -3,6 +3,7 @@ import type { Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, Teleport } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideDrawer, useDrawerContext } from './context'
 import { useDrawer } from './use-drawer'
 
@@ -33,7 +34,7 @@ export const XhDrawerRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useDrawer(props as DrawerProps, notify)
+    const ctx = useDrawer(withXhConfig('drawer', props) as DrawerProps, notify)
     provideDrawer(ctx)
     // root 是真实节点，content 会被 portal 到 body，data-side 挂在这里供页面内的部分读取
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({

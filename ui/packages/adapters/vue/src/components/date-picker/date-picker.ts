@@ -3,6 +3,7 @@ import type { Placement } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import {
   provideDatePicker,
   provideDatePickerCell,
@@ -66,7 +67,7 @@ export const XhDatePickerRoot = defineComponent({
     }
     // 聚焦日只对外播报，不提供 v-model
     const notifyFocus: DatePickerProps['onFocusedValueChange'] = details => emit('focused-value-change', details)
-    const ctx = useDatePicker(props as DatePickerProps, {
+    const ctx = useDatePicker(withXhConfig('date-picker', props) as DatePickerProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
       onFocusedValueChange: notifyFocus,

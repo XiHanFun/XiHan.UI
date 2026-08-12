@@ -2,6 +2,7 @@ import type { ComposerRunStatus, ComposerSchema, ComposerTranslations } from '@x
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideComposer, useComposerContext } from './context'
 import { useComposer } from './use-composer'
 
@@ -27,7 +28,7 @@ export const XhComposerRoot = defineComponent({
     'stop': () => true,
   },
   setup(props, { slots, emit }) {
-    const ctx = useComposer(props as ComposerProps, {
+    const ctx = useComposer(withXhConfig('composer', props) as ComposerProps, {
       onValueChange: (details) => {
         emit('value-change', details)
         emit('update:value', details.value)

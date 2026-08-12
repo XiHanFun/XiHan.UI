@@ -2,6 +2,7 @@ import type { FileUploadItemProps, FileUploadSchema, FileUploadTranslations } fr
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideFileUpload, provideFileUploadItem, useFileUploadContext, useFileUploadItemContext } from './context'
 import { useFileUpload } from './use-file-upload'
 
@@ -40,7 +41,7 @@ export const XhFileUploadRoot = defineComponent({
     }
     const onFileAccept: FileUploadProps['onFileAccept'] = details => emit('file-accept', details)
     const onFileReject: FileUploadProps['onFileReject'] = details => emit('file-reject', details)
-    const ctx = useFileUpload(props as FileUploadProps, { onFilesChange, onFileAccept, onFileReject })
+    const ctx = useFileUpload(withXhConfig('file-upload', props) as FileUploadProps, { onFilesChange, onFileAccept, onFileReject })
     provideFileUpload(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       acceptedFiles: ctx.api.value.acceptedFiles,

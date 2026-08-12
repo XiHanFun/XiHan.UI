@@ -3,6 +3,7 @@ import type { Direction, Orientation } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideCarousel, useCarouselContext } from './context'
 import { useCarousel } from './use-carousel'
 
@@ -36,7 +37,7 @@ export const XhCarouselRoot = defineComponent({
       emit('page-change', details)
       emit('update:page', details.page)
     }
-    const ctx = useCarousel(props as CarouselProps, notify)
+    const ctx = useCarousel(withXhConfig('carousel', props) as CarouselProps, notify)
     provideCarousel(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       page: ctx.api.value.page,

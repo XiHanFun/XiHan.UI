@@ -2,6 +2,7 @@ import type { ToasterSchema, ToasterTranslations, ToastPlacement, ToastRecord } 
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, Fragment, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideToaster, useToasterContext } from './context'
 import { useToaster } from './use-toaster'
 
@@ -31,7 +32,7 @@ export const XhToasterRoot = defineComponent({
       emit('toasts-change', details)
       emit('update:toasts', details.toasts)
     }
-    const ctx = useToaster(props as ToasterProps, notify)
+    const ctx = useToaster(withXhConfig('toaster', props) as ToasterProps, notify)
     provideToaster(ctx)
     // 根节点是地标容器，插槽作用域里一并暴露队列与增删改命令
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({

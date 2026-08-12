@@ -3,6 +3,7 @@ import type { Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideAlert, useAlertContext } from './context'
 import { useAlert } from './use-alert'
 
@@ -28,7 +29,7 @@ export const XhAlertRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useAlert(props as AlertProps, notify)
+    const ctx = useAlert(withXhConfig('alert', props) as AlertProps, notify)
     provideAlert(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

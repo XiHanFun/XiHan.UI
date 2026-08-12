@@ -3,6 +3,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideTagsInput, provideTagsInputItem, useTagsInputContext, useTagsInputItemContext } from './context'
 import { useTagsInput } from './use-tags-input'
 
@@ -49,7 +50,7 @@ export const XhTagsInputRoot = defineComponent({
       emit('input-value-change', details)
       emit('update:inputValue', details.inputValue)
     }
-    const ctx = useTagsInput(props as TagsInputProps, { onValueChange, onInputValueChange })
+    const ctx = useTagsInput(withXhConfig('tags-input', props) as TagsInputProps, { onValueChange, onInputValueChange })
     provideTagsInput(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,

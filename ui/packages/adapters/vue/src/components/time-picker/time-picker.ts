@@ -9,6 +9,7 @@ import type { Placement } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import {
   provideTimePicker,
   provideTimePickerColumn,
@@ -57,7 +58,7 @@ export const XhTimePickerRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useTimePicker(props as TimePickerProps, {
+    const ctx = useTimePicker(withXhConfig('time-picker', props) as TimePickerProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
     })

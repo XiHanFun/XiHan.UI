@@ -9,6 +9,7 @@ import type {
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideFloatButton, useFloatButtonContext } from './context'
 import { useFloatButton } from './use-float-button'
 
@@ -38,7 +39,7 @@ export const XhFloatButtonRoot = defineComponent({
         emit('update:open', details.open)
       },
     }
-    const ctx = useFloatButton(props as FloatButtonProps, notify)
+    const ctx = useFloatButton(withXhConfig('float-button', props) as FloatButtonProps, notify)
     provideFloatButton(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       open: ctx.api.value.open,

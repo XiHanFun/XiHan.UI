@@ -10,6 +10,7 @@ import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { colorPickerToChannel, colorPickerToInputChannel } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onUnmounted } from 'vue'
+import { withXhConfig } from '../../config/config'
 import {
   provideColorPicker,
   provideColorPickerChannel,
@@ -55,7 +56,7 @@ export const XhColorPickerRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useColorPicker(props as ColorPickerProps, {
+    const ctx = useColorPicker(withXhConfig('color-picker', props) as ColorPickerProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
     })

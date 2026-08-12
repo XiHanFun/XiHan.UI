@@ -3,6 +3,7 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { slotPaints } from '../../runtime/slot-content'
 import { provideNavigationMenu, useNavigationMenuContext } from './context'
 import { useNavigationMenu } from './use-navigation-menu'
@@ -36,7 +37,7 @@ export const XhNavigationMenuRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useNavigationMenu(props as NavigationMenuProps, notify)
+    const ctx = useNavigationMenu(withXhConfig('navigation-menu', props) as NavigationMenuProps, notify)
     provideNavigationMenu(ctx)
     return () => {
       // 默认插槽里有真内容就照旧交给作者；只剩注释或空白时当没写，给了 collection 就按数据铺开整套结构

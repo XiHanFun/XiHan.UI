@@ -2,6 +2,7 @@ import type { CalendarCellProps, CalendarSchema, CalendarSelectionMode, Calendar
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideCalendar, provideCalendarCell, useCalendarCellContext, useCalendarContext } from './context'
 import { useCalendar } from './use-calendar'
 
@@ -42,7 +43,7 @@ export const XhCalendarRoot = defineComponent({
       emit('focused-value-change', details)
       emit('update:focusedValue', details.focusedValue)
     }
-    const ctx = useCalendar(props as CalendarProps, notifyValue, notifyFocus)
+    const ctx = useCalendar(withXhConfig('calendar', props) as CalendarProps, notifyValue, notifyFocus)
     provideCalendar(ctx)
     // 网格与表头由作者照插槽里的 weeks / weekDays 自行渲染
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({

@@ -2,6 +2,7 @@ import type { ThreadSchema, ThreadStatus, ThreadTranslations } from '@xihan-ui/h
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideThread, useThreadContext } from './context'
 import { useThread } from './use-thread'
 
@@ -21,7 +22,7 @@ export const XhThreadRoot = defineComponent({
   },
   setup(props, { slots, emit }) {
     const notify: ThreadProps['onStickChange'] = details => emit('stick-change', details)
-    const ctx = useThread(props as ThreadProps, notify)
+    const ctx = useThread(withXhConfig('thread', props) as ThreadProps, notify)
     provideThread(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       status: ctx.api.value.status,

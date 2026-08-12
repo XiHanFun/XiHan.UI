@@ -3,6 +3,7 @@ import type { ControlVariant, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onMounted, onUnmounted, onUpdated, watch } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideMention, provideMentionItem, useMentionContext, useMentionItemContext } from './context'
 import { useMention } from './use-mention'
 
@@ -43,7 +44,7 @@ export const XhMentionRoot = defineComponent({
     const notifySelect: MentionProps['onSelect'] = details => emit('select', details)
     const notifyOpen: MentionProps['onOpenChange'] = details => emit('open-change', details)
 
-    const ctx = useMention(props as MentionProps, {
+    const ctx = useMention(withXhConfig('mention', props) as MentionProps, {
       onValueChange: notifyValue,
       onQueryChange: notifyQuery,
       onSelect: notifySelect,

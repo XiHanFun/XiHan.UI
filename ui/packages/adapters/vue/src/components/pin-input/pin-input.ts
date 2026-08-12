@@ -3,6 +3,7 @@ import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { providePinInput, usePinInputContext } from './context'
 import { usePinInput } from './use-pin-input'
 
@@ -41,7 +42,7 @@ export const XhPinInputRoot = defineComponent({
       emit('update:value', details.value)
     }
     const onValueComplete: PinInputProps['onValueComplete'] = details => emit('value-complete', details)
-    const ctx = usePinInput(props as PinInputProps, { onValueChange, onValueComplete })
+    const ctx = usePinInput(withXhConfig('pin-input', props) as PinInputProps, { onValueChange, onValueComplete })
     providePinInput(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,
