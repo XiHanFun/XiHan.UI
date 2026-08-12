@@ -11735,6 +11735,51 @@
   display: none;
 }
 
+/* 多选标签：淡底小药丸；放触发器里是纯展示，放外面配 tag-remove 可删 */
+[data-scope='select'][data-part='tag'] {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--xh-select-tag-gap, var(--xh-space-1));
+  padding-block: 0;
+  padding-inline: var(--xh-select-tag-px, var(--xh-space-2));
+  border-radius: var(--xh-select-tag-radius, var(--xh-shape-pill));
+  background: var(--xh-select-tag-bg, var(--xh-bg-subtle));
+  color: var(--xh-select-tag-fg, var(--xh-fg-default));
+  font-size: var(--xh-select-tag-font-size, var(--xh-font-size-xs));
+  line-height: var(--xh-leading-normal);
+  white-space: nowrap;
+}
+
+[data-scope='select'][data-part='tag'][data-disabled] {
+  color: var(--xh-fg-disabled);
+}
+
+[data-scope='select'][data-part='tag-remove'] {
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  border-radius: var(--xh-shape-pill);
+  background: none;
+  color: var(--xh-select-tag-remove-fg, var(--xh-fg-subtle));
+  font-size: inherit;
+  cursor: pointer;
+}
+
+[data-scope='select'][data-part='tag-remove']:hover {
+  color: var(--xh-select-tag-remove-fg-hover, var(--xh-fg-default));
+}
+
+[data-scope='select'][data-part='tag-remove']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-_select-ring);
+  outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope='select'][data-part='tag-remove'][data-disabled] {
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
 [data-scope='select'][data-part='trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_select-ring);
   outline-offset: var(--xh-ring-offset);

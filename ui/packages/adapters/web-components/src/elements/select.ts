@@ -32,6 +32,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {boolean} disabled - 整个控件禁用：trigger 用原生 disabled，表单影子不参与提交
  * @attr {boolean} invalid - 校验错误态：trigger 标红并输出 aria-invalid
+ * @attr {number} max-tag-count - 多选标签最多摆几个，其余折进 api 的 overflowCount；缺省全摆
  * @attr {boolean} required - 原生表单校验：无选中值时提交被拦下；多选下的门槛是至少选中一项
  * @attr {string} name - 表单字段名；给定后表单影子才带 name 并参与提交
  * @attr {string} placeholder - 无选中时 value-text 显示的占位文字
@@ -51,6 +52,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart value-text - 选中项文本的显示位；留空即由元素填入 displayText，作者写了内容则归作者
  * @csspart indicator - 展开指示符（aria-hidden，data-state 随开合）
  * @csspart clear-trigger - 清空按钮：trigger 的兄弟节点，没选中或禁用时带 hidden；可及名走 translations.clear
+ * @csspart tag - 多选标签，须自带 value 属性标识选中值；放触发器里是纯展示，放外面配 tag-remove 可删
+ * @csspart tag-remove - 标签删除按钮，须放在 tag 里；点按摘掉所在标签的选中值，可及名走 translations.removeTag
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - role=listbox 容器（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
  * @csspart item - role=option 条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
@@ -84,6 +87,7 @@ export class XhSelectElement extends XhElement {
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     translations: { attribute: false },
+    maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
   }
 
   // 属性只递得进单值，多选集合走 property
@@ -107,6 +111,7 @@ export class XhSelectElement extends XhElement {
   declare size?: Size
   /** 读屏文案（clear 等）；对象进不了属性，只作为 property 暴露。 */
   declare translations?: SelectSchema['props']['translations']
+  declare maxTagCount?: number
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly selectScope = createScope(null, this.idGen)
@@ -157,6 +162,7 @@ export class XhSelectElement extends XhElement {
       tone: this.tone,
       size: this.size,
       translations: this.translations,
+      maxTagCount: this.maxTagCount,
       onValueChange: this.notifyValue,
       onOpenChange: this.notifyOpen,
     }
@@ -281,6 +287,14 @@ export class XhSelectElement extends XhElement {
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     put('indicator', api.getIndicatorProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
+
+    // 标签是多实例 part：身份取自己（或所在 tag）的 value 属性
+    for (const el of this.getParts('tag'))
+      this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+    for (const el of this.getParts('tag-remove')) {
+      const owner = el.closest<HTMLElement>('[data-xh-part="tag"]')
+      this.spreader.spread(el, api.getTagRemoveProps({ value: owner?.getAttribute('value') ?? '' }) as Record<string, unknown>)
+    }
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)

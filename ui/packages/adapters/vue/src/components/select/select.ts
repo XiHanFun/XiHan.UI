@@ -3,7 +3,7 @@ import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui
 import type { PropType, VNode } from 'vue'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
-import { provideSelect, provideSelectItem, useSelectContext, useSelectItemContext } from './context'
+import { provideSelect, provideSelectItem, provideSelectTag, useSelectContext, useSelectItemContext, useSelectTagContext } from './context'
 import { useSelect } from './use-select'
 
 type SelectProps = SelectSchema['props']
@@ -25,6 +25,7 @@ export const XhSelectRoot = defineComponent({
     required: Boolean,
     name: { type: String, default: undefined },
     translations: { type: Object as PropType<SelectProps['translations']>, default: undefined },
+    maxTagCount: { type: Number, default: undefined },
     placeholder: { type: String, default: undefined },
     placement: { type: String as PropType<Placement>, default: undefined },
     offset: { type: Number, default: undefined },
@@ -71,8 +72,12 @@ export const XhSelectRoot = defineComponent({
           open: ctx.api.value.open,
           value: ctx.api.value.value,
           displayText: ctx.api.value.displayText,
+          tags: ctx.api.value.tags,
+          overflowCount: ctx.api.value.overflowCount,
           setOpen: ctx.api.value.setOpen,
           setValue: ctx.api.value.setValue,
+          clear: ctx.api.value.clear,
+          deselect: ctx.api.value.deselect,
         }) ?? []
         : props.collection
           ? renderDefaultTree(
@@ -131,6 +136,28 @@ export const XhSelectClearTrigger = defineComponent({
     const ctx = useSelectContext()
     // 节点常挂，没选中或禁用时靠 hidden 藏掉
     return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhSelectTag = defineComponent({
+  name: 'XhSelectTag',
+  props: {
+    /** 它代表哪个选中值。 */
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useSelectContext()
+    provideSelectTag({ value: () => props.value })
+    return () => h('span', ctx.api.value.getTagProps({ value: props.value }) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhSelectTagRemove = defineComponent({
+  name: 'XhSelectTagRemove',
+  setup(_, { slots }) {
+    const ctx = useSelectContext()
+    const tag = useSelectTagContext()
+    return () => h('button', ctx.api.value.getTagRemoveProps({ value: tag.value() }) as Record<string, unknown>, slots.default?.())
   },
 })
 

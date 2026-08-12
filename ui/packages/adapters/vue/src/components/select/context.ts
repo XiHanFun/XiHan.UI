@@ -32,3 +32,21 @@ export function useSelectItemContext(): SelectItemContext {
     throw new Error('[xh] Select 条目子部件必须用在 XhSelectItem 内')
   return ctx
 }
+
+/** 标签自报的值，供 tag-remove 复用同一份声明。 */
+export interface SelectTagContext {
+  value: () => string
+}
+
+const TAG_KEY: InjectionKey<SelectTagContext> = Symbol('xh-select-tag')
+
+export function provideSelectTag(ctx: SelectTagContext): void {
+  provide(TAG_KEY, ctx)
+}
+
+export function useSelectTagContext(): SelectTagContext {
+  const ctx = inject(TAG_KEY, null)
+  if (!ctx)
+    throw new Error('[xh] Select 标签子部件必须用在 XhSelectTag 内')
+  return ctx
+}

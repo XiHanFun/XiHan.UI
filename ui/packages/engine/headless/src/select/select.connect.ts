@@ -60,6 +60,12 @@ export function connectSelect<T extends PropTypes>(
   const placeholder = prop('placeholder') ?? null
   // 多选把各项文本连起来显示；分隔符固定，作者要别的排版就自己渲染 valueText
   const displayText = valueText.length > 0 ? valueText.join(', ') : placeholder ?? ''
+  // 标签形态：与 value/valueText 同序，maxTagCount 只截可见的、余数进 overflowCount
+  const allTags = value.map((v, i) => ({ value: v, label: valueText[i] ?? v }))
+  const maxTagCount = prop('maxTagCount')
+  const tags = maxTagCount === undefined ? allTags : allTags.slice(0, Math.max(0, maxTagCount))
+  const overflowCount = allTags.length - tags.length
+  const tagLabel = (v: string): string => allTags.find(tag => tag.value === v)?.label ?? v
   // roving tabindex 与方向键起点共用这一个锚点；收起时为 null（条目此刻不可达）
   const highlighted = context.get('highlightedValue') ?? null
   const disabled = !!prop('disabled')
@@ -124,6 +130,8 @@ export function connectSelect<T extends PropTypes>(
     displayText,
     multiple,
     invalid,
+    tags,
+    overflowCount,
     highlightedValue: highlighted,
     setOpen: (next) => {
       if (next !== open)
@@ -131,6 +139,7 @@ export function connectSelect<T extends PropTypes>(
     },
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     clear: () => send({ type: 'VALUE.SET', value: [] }),
+    deselect: v => send({ type: 'VALUE.SET', value: value.filter(x => x !== v) }),
     // 三个视觉轴只落在根上：触发器与条目都从这里继承私有槽，子部件不重复标注
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -207,6 +216,21 @@ export function connectSelect<T extends PropTypes>(
       'aria-hidden': 'true',
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
+    }),
+    getTagProps: ({ value: v }) => normalize.element({
+      ...parts.tag.attrs,
+      'data-value': v,
+      'data-disabled': dataAttr(disabled),
+    }),
+    getTagRemoveProps: ({ value: v }) => normalize.button({
+      ...parts['tag-remove'].attrs,
+      'type': 'button',
+      'aria-label': (prop('translations')?.removeTag ?? 'Remove {label}').replace('{label}', tagLabel(v)),
+      'data-disabled': dataAttr(disabled),
+      'onClick': () => {
+        if (!disabled)
+          send({ type: 'VALUE.SET', value: value.filter(x => x !== v) })
+      },
     }),
     // 清空按钮是 trigger 的兄弟节点（按钮不能套按钮），点按只清值不碰开合
     getClearTriggerProps: () => normalize.button({

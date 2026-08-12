@@ -540,6 +540,8 @@ export {
   XhSelectLabel,
   XhSelectPositioner,
   XhSelectRoot,
+  XhSelectTag,
+  XhSelectTagRemove,
   XhSelectTrigger,
   XhSelectValueText,
 } from './components/select/select'
