@@ -13,6 +13,7 @@ export const XhSwitch = defineComponent({
     checked: { type: Boolean, default: undefined },
     defaultChecked: Boolean,
     disabled: Boolean,
+    loading: { type: Boolean, default: undefined },
     /** 表单字段名；给了 hidden-input 才带 name 并参与提交 */
     name: { type: String, default: undefined },
     value: { type: String, default: undefined },

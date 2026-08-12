@@ -13,6 +13,7 @@ export function connectSwitch<T extends PropTypes>(
   const { state, prop, send } = service
   const checked = state.get() === 'on'
   const disabled = !!prop('disabled')
+  const loading = !!prop('loading')
   const stateAttr = checked ? 'checked' : 'unchecked'
 
   const setChecked = (next: boolean): void => {
@@ -22,19 +23,23 @@ export function connectSwitch<T extends PropTypes>(
 
   return {
     checked,
+    loading,
     setChecked,
     getRootProps: () => normalize.button({
       ...parts.root.attrs,
       'type': 'button',
       'role': 'switch',
       'aria-checked': checked ? 'true' : 'false',
+      // 提交中不算禁用：仍可聚焦，读屏经 aria-busy 知道在忙
+      'aria-busy': loading ? 'true' : undefined,
       'disabled': disabled || undefined,
       'data-state': stateAttr,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
+      'data-loading': dataAttr(loading),
       'onClick': () => {
-        if (!disabled)
+        if (!disabled && !loading)
           send({ type: 'TOGGLE' })
       },
     }),
@@ -42,6 +47,7 @@ export function connectSwitch<T extends PropTypes>(
       ...parts.thumb.attrs,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
+      'data-loading': dataAttr(loading),
     }),
 
     getHiddenInputProps: () => normalize.input({
