@@ -83,6 +83,8 @@ export interface SelectSchema extends MachineSchema {
     defaultOpen?: boolean
     /** 整个控件禁用：trigger 用原生 disabled，隐藏 select 不参与提交。 */
     disabled?: boolean
+    /** 校验错误态：trigger 标红并输出 aria-invalid。 */
+    invalid?: boolean
     /** 原生表单校验：无选中值时提交被拦下。 */
     required?: boolean
     /** 表单字段名。给定后隐藏 select 才带 name，选中值随表单一并提交。 */
@@ -170,6 +172,8 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   displayText: string
   /** 是否允许多选。 */
   multiple: boolean
+  /** 校验错误态。 */
+  invalid: boolean
   /** 高亮锚点；收起时为 null。 */
   highlightedValue: string | null
   setOpen: (next: boolean) => void

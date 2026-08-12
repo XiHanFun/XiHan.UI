@@ -20,6 +20,7 @@ export const XhSelectRoot = defineComponent({
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     disabled: Boolean,
+    invalid: { type: Boolean, default: undefined },
     required: Boolean,
     name: { type: String, default: undefined },
     placeholder: { type: String, default: undefined },
