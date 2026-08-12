@@ -49,6 +49,8 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @attr {boolean} open - 受控开合；缺省该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {boolean} multiple - 多选：选中后浮层不收起，焦点留在树里
+ * @attr {boolean} cascade - 多选下父子级联勾选（整枝传导/半选/禁用冻结），默认 false
+ * @attr {string} checked-strategy - 级联下对外值的收敛策略：child（默认）/ parent / all
  * @attr {boolean} disabled - 整个控件禁用：trigger 用原生 disabled，表单出口不参与提交
  * @attr {boolean} read-only - 只读：浮层照常展开、树照常浏览，但选中值改不动、也清不掉
  * @attr {boolean} invalid - 校验失败标注
@@ -98,6 +100,8 @@ export class XhTreeSelectElement extends XhElement {
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     multiple: { type: Boolean },
+    cascade: { type: Boolean },
+    checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
     disabled: { type: Boolean },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
@@ -120,6 +124,8 @@ export class XhTreeSelectElement extends XhElement {
   declare open?: boolean
   declare defaultOpen?: boolean
   declare multiple?: boolean
+  declare cascade?: boolean
+  declare checkedStrategy?: TreeSelectSchema['props']['checkedStrategy']
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
@@ -171,6 +177,8 @@ export class XhTreeSelectElement extends XhElement {
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       multiple: this.multiple ?? false,
+      cascade: this.cascade,
+      checkedStrategy: this.checkedStrategy,
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,
       invalid: this.invalid ?? false,

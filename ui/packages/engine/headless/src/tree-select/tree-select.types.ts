@@ -1,4 +1,4 @@
-import type { Typeahead } from '@xihan-ui/behavior'
+import type { CascadeStrategy, Typeahead } from '@xihan-ui/behavior'
 import type { Cleanup, ControlVariant, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 import type { TreeNode, TreeVisibleNode } from '../tree'
@@ -69,6 +69,13 @@ export interface TreeSelectSchema extends MachineSchema {
     defaultOpen?: boolean
     /** 多选：选中是集合，选中后浮层不收起、焦点留在树里以便接着挑。 */
     multiple?: boolean
+    /**
+     * 多选下父子级联勾选：点分支整枝传导、子全勾父勾、部分勾中半选，
+     * 禁用子树整棵冻结。默认 false（朴素切换）；单选下无效。
+     */
+    cascade?: boolean
+    /** 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾中节点。 */
+    checkedStrategy?: CascadeStrategy
     /** 整个控件禁用：trigger 用原生 disabled，表单出口不参与提交。 */
     disabled?: boolean
     /**
@@ -187,6 +194,8 @@ export interface TreeSelectApi<T extends PropTypes = PropTypes> {
   /** 清空按钮此刻可不可按。 */
   canClear: boolean
   isSelected: (value: string) => boolean
+  /** 级联模式下该分支是否半选（有效叶后代有勾有不勾）；非级联恒 false。 */
+  isIndeterminate: (value: string) => boolean
   isExpanded: (value: string) => boolean
   setOpen: (next: boolean) => void
   setValue: (next: string[]) => void

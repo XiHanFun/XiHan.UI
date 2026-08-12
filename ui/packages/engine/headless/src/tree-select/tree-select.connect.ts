@@ -3,7 +3,7 @@ import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { TreeNodeMeta, TreeVisibleNode } from '../tree'
 import type { TreeSelectApi, TreeSelectSchema } from './tree-select.types'
-import { focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey } from '@xihan-ui/behavior'
+import { cascadeState, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/kernel'
 import { flattenTree, indexTree } from '../tree'
 import { treeSelectAnatomy } from './tree-select.anatomy'
@@ -47,7 +47,11 @@ export function connectTreeSelect<T extends PropTypes>(
   const focusedValue = rawFocused != null && visible.has(rawFocused) ? rawFocused : null
 
   const metaOf = (v: string): TreeNodeMeta | undefined => metaIndex.get(v)
-  const isSelected = (v: string): boolean => value.includes(v)
+  // 级联模式下选中态从值集聚合得出：父随子勾、部分勾中半选
+  const cascade = multiple && !!prop('cascade')
+  const cascaded = cascade ? cascadeState(collection, value) : null
+  const isSelected = (v: string): boolean => (cascaded ? cascaded.checked.has(v) : value.includes(v))
+  const isIndeterminate = (v: string): boolean => cascaded?.indeterminate.has(v) ?? false
   const isExpanded = (v: string): boolean => expandedValue.includes(v)
   // 控件级禁用向下传导，节点也可在 collection 里单独禁用
   const isDisabled = (v: string): boolean => disabled || !!metaOf(v)?.disabled
@@ -71,6 +75,8 @@ export function connectTreeSelect<T extends PropTypes>(
       'aria-setsize': meta?.setSize,
       // 未选中也显式输出 false
       'aria-selected': isSelected(v) ? 'true' : 'false',
+      // 级联勾选是三态：读屏靠 aria-checked 报半选，非级联不输出该属性
+      'aria-checked': cascade ? (isSelected(v) ? 'true' : isIndeterminate(v) ? 'mixed' : 'false') : undefined,
       // 集合条目用 aria-disabled 而非原生 disabled，禁用节点仍可作为方向键起点
       'aria-disabled': isDisabled(v) ? 'true' : 'false',
       // roving tabindex：只有锚点节点留在 Tab 序列内
@@ -81,6 +87,7 @@ export function connectTreeSelect<T extends PropTypes>(
   /** 叶子一系（item / item-text / item-indicator）共用的状态标记。 */
   const nodeState = (v: string): Record<string, string | undefined> => ({
     'data-selected': dataAttr(isSelected(v)),
+    'data-indeterminate': dataAttr(isIndeterminate(v)),
     'data-disabled': dataAttr(isDisabled(v)),
     'data-highlighted': dataAttr(focusedValue === v),
   })
@@ -149,6 +156,7 @@ export function connectTreeSelect<T extends PropTypes>(
     invalid,
     canClear,
     isSelected,
+    isIndeterminate,
     isExpanded,
     setOpen: (next) => {
       if (next !== open)

@@ -1,7 +1,7 @@
 import type { Placement, PositionResult } from '@xihan-ui/kernel'
 import type { TreeVisibleNode } from '../tree'
 import type { TreeSelectFocusIntent, TreeSelectSchema } from './tree-select.types'
-import { createDismissLayer, createFocusScope, createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
+import { cascadeToggle, collapseChecked, createDismissLayer, createFocusScope, createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
 import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 import { flattenTree } from '../tree'
 import { treeSelectBranchQuery, treeSelectItemQuery } from './tree-select.anatomy'
@@ -244,6 +244,13 @@ export const treeSelectMachine = createMachine({
           return
         const current = context.get('value')
         if (prop('multiple')) {
+          // 级联：整枝传导后按收敛策略落对外值；朴素切换只动被点的那一个
+          if (prop('cascade')) {
+            const roots = prop('collection') ?? []
+            const state = cascadeToggle(roots, current, e.value)
+            context.set('value', collapseChecked(roots, state.checked, prop('checkedStrategy') ?? 'child'))
+            return
+          }
           context.set('value', current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value])
           return
         }
