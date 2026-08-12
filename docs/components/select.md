@@ -106,6 +106,12 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 <XhDemo src="select/17-focus" />
 
+### 清空按钮
+
+XhSelectClearTrigger 放在触发器旁边：有选中才显形，点按清空全部选中、不展开浮层；可及名走 translations.clear
+
+<XhDemo src="select/18-clear" />
+
 ## 产物
 
 | 层 | 值 |
@@ -120,7 +126,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="select"`：`root` · `label` · **`trigger`** · `value-text` · `indicator` · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `hidden-select`
+`data-scope="select"`：`root` · `label` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `hidden-select`
 
 ## Props
 
@@ -134,6 +140,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `defaultOpen` | `boolean` |  |  |
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 用原生 disabled，隐藏 select 不参与提交。 |
 | `invalid` | `boolean` |  | 校验错误态：trigger 标红并输出 aria-invalid。 |
+| `translations` | `Partial<SelectTranslations>` |  | 读屏用的文案，默认英文。 |
 | `required` | `boolean` |  | 原生表单校验：无选中值时提交被拦下。 |
 | `name` | `string` |  | 表单字段名。给定后隐藏 select 才带 name，选中值随表单一并提交。 |
 | `placeholder` | `string` |  | 无选中时 value-text 显示的占位文字。 |
@@ -171,11 +178,13 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `highlightedValue` | `string \| null` | 高亮锚点；收起时为 null。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string \| string[]) => void` |  |
+| `clear` | `() => void` | 清空全部选中。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getValueTextProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
+| `getClearTriggerProps` | `() => T['button']` | 清空按钮：没选中或禁用时整个藏掉；点按清空全部选中、不展开浮层。 |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: SelectItemProps) => T['element']` |  |

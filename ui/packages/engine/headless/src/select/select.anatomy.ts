@@ -8,6 +8,7 @@ export const selectAnatomy = createAnatomy('select', [
   'trigger',
   'value-text',
   'indicator',
+  'clear-trigger',
   'positioner',
   'content',
   'item',

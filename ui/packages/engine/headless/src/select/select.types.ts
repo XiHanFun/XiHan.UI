@@ -45,6 +45,12 @@ export interface SelectNode {
 }
 
 /** 单个条目的元信息，由 collection 推出，不含选中态与高亮态。 */
+/** 读屏用的文案，默认英文。 */
+export interface SelectTranslations {
+  /** 清空按钮的可及名。 */
+  clear: string
+}
+
 export interface SelectNodeMeta {
   value: string
   /** node.label ?? node.value，恒为字符串。 */
@@ -85,6 +91,8 @@ export interface SelectSchema extends MachineSchema {
     disabled?: boolean
     /** 校验错误态：trigger 标红并输出 aria-invalid。 */
     invalid?: boolean
+    /** 读屏用的文案，默认英文。 */
+    translations?: Partial<SelectTranslations>
     /** 原生表单校验：无选中值时提交被拦下。 */
     required?: boolean
     /** 表单字段名。给定后隐藏 select 才带 name，选中值随表单一并提交。 */
@@ -178,11 +186,15 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   highlightedValue: string | null
   setOpen: (next: boolean) => void
   setValue: (next: string | string[]) => void
+  /** 清空全部选中。 */
+  clear: () => void
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
   getTriggerProps: () => T['button']
   getValueTextProps: () => T['element']
   getIndicatorProps: () => T['element']
+  /** 清空按钮：没选中或禁用时整个藏掉；点按清空全部选中、不展开浮层。 */
+  getClearTriggerProps: () => T['button']
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
   getItemProps: (props: SelectItemProps) => T['element']

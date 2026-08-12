@@ -50,6 +50,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart trigger - 触发按钮（aria-haspopup=listbox/aria-expanded/aria-controls 所在），同时是定位锚点，须是原生 button
  * @csspart value-text - 选中项文本的显示位；留空即由元素填入 displayText，作者写了内容则归作者
  * @csspart indicator - 展开指示符（aria-hidden，data-state 随开合）
+ * @csspart clear-trigger - 清空按钮：trigger 的兄弟节点，没选中或禁用时带 hidden；可及名走 translations.clear
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - role=listbox 容器（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
  * @csspart item - role=option 条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
@@ -82,6 +83,7 @@ export class XhSelectElement extends XhElement {
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    translations: { attribute: false },
   }
 
   // 属性只递得进单值，多选集合走 property
@@ -103,6 +105,8 @@ export class XhSelectElement extends XhElement {
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
+  /** 读屏文案（clear 等）；对象进不了属性，只作为 property 暴露。 */
+  declare translations?: SelectSchema['props']['translations']
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly selectScope = createScope(null, this.idGen)
@@ -152,6 +156,7 @@ export class XhSelectElement extends XhElement {
       variant: this.variant,
       tone: this.tone,
       size: this.size,
+      translations: this.translations,
       onValueChange: this.notifyValue,
       onOpenChange: this.notifyOpen,
     }
@@ -275,6 +280,7 @@ export class XhSelectElement extends XhElement {
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     put('indicator', api.getIndicatorProps() as Record<string, unknown>)
+    put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
