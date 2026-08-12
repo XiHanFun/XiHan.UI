@@ -3,6 +3,7 @@ import type { Service } from '@xihan-ui/machine'
 import type { TextFieldApi, TextFieldSchema } from './text-field.types'
 import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
 import { textFieldAnatomy } from './text-field.anatomy'
+import { autoSizeTextarea } from './text-field.autosize'
 import { isAtLimit } from './text-field.machine'
 
 const parts = textFieldAnatomy.build()
@@ -23,6 +24,7 @@ export function connectTextField<T extends PropTypes>(
   const maxLength = prop('maxLength')
   const editable = !disabled && !readOnly
   const atLimit = isAtLimit(value, maxLength)
+  const autoSize = prop('autoSize') ?? false
   // 与机器里 canClear 守卫同义。两处都要：这里决定按钮长什么样，那里挡住绕过 DOM 的调用
   const canClear = clearable && editable && !empty
 
@@ -35,6 +37,7 @@ export function connectTextField<T extends PropTypes>(
     clearable,
     atLimit,
     canClear,
+    autoSize,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     clear: () => send({ type: 'VALUE.CLEAR' }),
 
@@ -59,13 +62,16 @@ export function connectTextField<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
     }),
 
-    getInputProps: () => normalize.input({
+    getInputProps: (input = {}) => normalize.input({
       ...parts.input.attrs,
       'id': ids.input,
-      'type': 'text',
+      // textarea 没有 type 属性
+      'type': (input.as ?? 'input') === 'textarea' ? undefined : 'text',
       'name': prop('name'),
       'value': value,
       'placeholder': prop('placeholder'),
+      // 多行宿主首帧先按 minRows 站好，量高补在挂载后
+      'rows': (input.as ?? 'input') === 'textarea' && typeof autoSize === 'object' ? autoSize.minRows : undefined,
       // 原生 maxlength 挡键盘输入，机器侧的截断挡绕过键盘的那一路，两道并存
       'maxlength': maxLength,
       'disabled': disabled || undefined,
@@ -75,11 +81,17 @@ export function connectTextField<T extends PropTypes>(
       'aria-labelledby': ids.label,
       // 显式 true/false：省略是没说，显式 false 是明确说了不是
       'aria-invalid': invalid ? 'true' : 'false',
+      // 皮肤只认 data-*、不认标签名，多行宿主的排版靠这一条认出来
+      'data-multiline': dataAttr((input.as ?? 'input') === 'textarea'),
+      'data-autosize': dataAttr((input.as ?? 'input') === 'textarea' && !!autoSize),
       'data-disabled': dataAttr(disabled),
       'data-invalid': dataAttr(invalid),
       'data-at-limit': dataAttr(atLimit),
       'onInput': (event: Event) => {
-        send({ type: 'VALUE.SET', value: (event.target as HTMLInputElement).value })
+        const el = event.target as HTMLInputElement | HTMLTextAreaElement
+        send({ type: 'VALUE.SET', value: el.value })
+        if ((input.as ?? 'input') === 'textarea')
+          autoSizeTextarea(el as HTMLTextAreaElement, autoSize)
       },
       'onKeyDown': (event: KeyboardEvent) => {
         // 组合期间的按键属于输入法候选框，组件一律不接

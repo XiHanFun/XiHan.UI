@@ -1,6 +1,6 @@
 import type { TextFieldSchema, TextFieldValueChangeDetails } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
-import { connectTextField, textFieldAnatomy, textFieldMachine, textFieldMeta } from '@xihan-ui/headless'
+import { autoSizeTextarea, connectTextField, textFieldAnatomy, textFieldMachine, textFieldMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -33,6 +33,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} name - 表单字段名；给了才参与提交
  * @attr {number} max-length - 字符数上限；同时落成原生 maxlength 与机器侧截断
  * @attr {boolean} clearable - 开启清空：清空按钮显出并在有值时可用，Escape 接管
+ * @attr {boolean} auto-size - 多行宿主（input 部件写成 textarea）的自动高度；行数界限对象经 autoSize property 赋
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -57,6 +58,7 @@ export class XhTextFieldElement extends XhElement {
     name: { converter: STRING_CONVERTER },
     maxLength: { converter: NUMBER_CONVERTER, attribute: 'max-length' },
     clearable: { converter: BOOLEAN_CONVERTER },
+    autoSize: { converter: BOOLEAN_CONVERTER, attribute: 'auto-size' },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
@@ -72,6 +74,8 @@ export class XhTextFieldElement extends XhElement {
   declare name?: string
   declare maxLength?: number
   declare clearable?: boolean
+  /** 布尔走 auto-size 属性；行数界限对象进不了属性，只作为 property 赋。 */
+  declare autoSize?: TextFieldSchema['props']['autoSize']
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
@@ -94,6 +98,7 @@ export class XhTextFieldElement extends XhElement {
       name: this.name,
       maxLength: this.maxLength,
       clearable: this.clearable ?? false,
+      autoSize: this.autoSize,
       variant: this.variant,
       tone: this.tone,
       size: this.size,
@@ -111,7 +116,13 @@ export class XhTextFieldElement extends XhElement {
     }
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
-    put('input', api.getInputProps() as Record<string, unknown>)
+    // 作者把 input 部件写成 <textarea> 即多行宿主：connect 撤掉 type、接上自动高度
+    const inputEl = this.getPart('input')
+    const host = inputEl?.tagName === 'TEXTAREA' ? 'textarea' as const : 'input' as const
+    put('input', api.getInputProps({ as: host }) as Record<string, unknown>)
+    // 程序化写值不触发 input 事件，spread 后补量一次
+    if (host === 'textarea' && inputEl)
+      autoSizeTextarea(inputEl as HTMLTextAreaElement, api.autoSize)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     // 输入框的 value 不必在这里另外回写：spreader 把 value/checked/selected 三个键
     // 当 property 写（dom/spread.ts 的 PROP_KEYS），属性写法只管初值、盖不住用户输入过的框

@@ -13807,6 +13807,19 @@
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
+/* 多行宿主：定高换成行数撑高，纵向留出内边距；autoSize 接管高度后拉柄与滚动都收掉 */
+[data-scope='text-field'][data-part='input'][data-multiline] {
+  block-size: auto;
+  min-block-size: var(--xh-text-field-input-h, var(--xh-_text-field-h));
+  padding-block: var(--xh-text-field-textarea-py, var(--xh-space-2));
+  resize: vertical;
+}
+
+[data-scope='text-field'][data-part='input'][data-multiline][data-autosize] {
+  overflow: hidden;
+  resize: none;
+}
+
 [data-scope='text-field'][data-part='input']::placeholder {
   color: var(--xh-text-field-placeholder-fg, var(--xh-fg-subtle));
 }

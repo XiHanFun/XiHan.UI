@@ -1,48 +1,24 @@
-<!-- 多行与自动长高 | 组合式函数把同一份状态交给作者自写的多行部件，高度在每次输入后按内容重新量 -->
+<!-- 多行与自动长高 | XhTextFieldInput 写 as="textarea" 即多行宿主；autoSize 让高度跟内容走，对象形态钉行数上下限（顶到 maxRows 后内部滚动） -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { useTextField } from "@xihan-ui/vue";
+import { ref } from "vue";
+import { XhTextFieldInput, XhTextFieldLabel, XhTextFieldRoot } from "@xihan-ui/vue";
 
-const { api } = useTextField({ placeholder: "说点什么", maxLength: 120 });
-
-const rootProps = computed(() => api.value.getRootProps());
-const labelProps = computed(() => api.value.getLabelProps());
-
-// type 是给单行输入框的，多行部件不要它
-const inputProps = computed(() => {
-  const props = { ...(api.value.getInputProps() as Record<string, unknown>) };
-  delete props.type;
-  return props;
-});
-
-const count = computed(() => api.value.value.length);
-const atLimit = computed(() => api.value.atLimit);
-
-const height = ref("64px");
-
-function autosize(event: Event) {
-  const el = event.target as HTMLTextAreaElement;
-  // 先收回自动高度再量，内容变少时才缩得回去
-  el.style.blockSize = "auto";
-  height.value = `${el.scrollHeight}px`;
-}
+const note = ref("");
 </script>
 
 <template>
-  <div v-bind="rootProps">
-    <label v-bind="labelProps">留言</label>
-    <textarea
-      v-bind="inputProps"
-      :style="{
-        inlineSize: '260px',
-        blockSize: height,
-        paddingBlock: '6px',
-        lineHeight: '1.6',
-        overflow: 'hidden',
-        resize: 'none',
-      }"
-      @input="autosize"
-    />
-    <span>{{ count }} / 120{{ atLimit ? "（已到上限）" : "" }}</span>
+  <div style="display: grid; gap: 16px; inline-size: 320px">
+    <XhTextFieldRoot v-model:value="note" v-slot="{ value, atLimit }" :auto-size="{ minRows: 2, maxRows: 6 }" :max-length="120" placeholder="说点什么">
+      <XhTextFieldLabel>备注（2-6 行自动长高）</XhTextFieldLabel>
+      <XhTextFieldInput as="textarea" />
+      <p style="margin: 4px 0 0; font-size: 12px" :style="{ color: atLimit ? 'var(--xh-fg-danger)' : 'var(--xh-fg-subtle)' }">
+        {{ value.length }} / 120
+      </p>
+    </XhTextFieldRoot>
+
+    <XhTextFieldRoot auto-size placeholder="不设行数界限，完全跟内容走">
+      <XhTextFieldLabel>随写随长</XhTextFieldLabel>
+      <XhTextFieldInput as="textarea" />
+    </XhTextFieldRoot>
   </div>
 </template>
