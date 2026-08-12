@@ -10,6 +10,8 @@ export interface SwitchSchema extends MachineSchema {
     checked?: boolean
     defaultChecked?: boolean
     disabled?: boolean
+    /** 提交中：交互挂起、滑块转圈，但不呈现为禁用（仍可聚焦、对比度不降）。 */
+    loading?: boolean
     /** 表单字段名；给了 hidden-input 才带 name 并参与提交。 */
     name?: string
     /** 提交出去的值，缺省 'on'，与原生复选框一致。 */
@@ -39,6 +41,8 @@ export interface SwitchSchema extends MachineSchema {
 
 export interface SwitchApi<T extends PropTypes = PropTypes> {
   checked: boolean
+  /** 提交中。 */
+  loading: boolean
   setChecked: (next: boolean) => void
   getRootProps: () => T['button']
   getThumbProps: () => T['element']

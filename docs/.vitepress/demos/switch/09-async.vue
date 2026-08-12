@@ -1,7 +1,7 @@
-<!-- 异步提交 | 受控开关在回执到达前不落位，提交期间 disabled 挡住重复点击 -->
+<!-- 异步提交 | 受控开关在回执到达前不落位；loading 让提交期呈现为「处理中」而非禁用——交互挂起、滑块转圈、仍可聚焦 -->
 <script setup lang="ts">
 import { ref } from "vue";
-import { XhSpinner, XhSwitch } from "@xihan-ui/vue";
+import { XhSwitch } from "@xihan-ui/vue";
 
 const enabled = ref(false);
 const pending = ref(false);
@@ -18,8 +18,7 @@ function onCheckedChange(details: { checked: boolean }) {
 
 <template>
   <div style="display: flex; align-items: center; gap: 10px">
-    <XhSwitch :checked="enabled" :disabled="pending" @checked-change="onCheckedChange" />
-    <XhSpinner v-if="pending" size="sm" label="提交中" />
-    <span v-else>{{ enabled ? "已开启" : "已关闭" }}</span>
+    <XhSwitch :checked="enabled" :loading="pending" @checked-change="onCheckedChange" />
+    <span>{{ pending ? "提交中…" : enabled ? "已开启" : "已关闭" }}</span>
   </div>
 </template>

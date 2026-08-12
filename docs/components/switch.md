@@ -54,7 +54,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 
 ### 异步提交
 
-受控开关在回执到达前不落位，提交期间 disabled 挡住重复点击
+受控开关在回执到达前不落位；loading 让提交期呈现为「处理中」而非禁用——交互挂起、滑块转圈、仍可聚焦
 
 <XhDemo src="switch/09-async" />
 
@@ -93,6 +93,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | `checked` | `boolean` |  |  |
 | `defaultChecked` | `boolean` |  |  |
 | `disabled` | `boolean` |  |  |
+| `loading` | `boolean` |  | 提交中：交互挂起、滑块转圈，但不呈现为禁用（仍可聚焦、对比度不降）。 |
 | `name` | `string` |  | 表单字段名；给了 hidden-input 才带 name 并参与提交。 |
 | `value` | `string` |  | 提交出去的值，缺省 'on'，与原生复选框一致。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定选中态轨道用哪族颜色。 |
@@ -114,6 +115,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `checked` | `boolean` |  |
+| `loading` | `boolean` | 提交中。 |
 | `setChecked` | `(next: boolean) => void` |  |
 | `getRootProps` | `() => T['button']` |  |
 | `getThumbProps` | `() => T['element']` |  |
