@@ -2,11 +2,14 @@ export { sliderAnatomy } from './slider.anatomy'
 export { connectSlider } from './slider.connect'
 export {
   closestThumb,
+  normalizeMarkValues,
   percentToValue,
   pointToValue,
   rangeExtent,
   setThumbValue,
+  snapToMarkValues,
   snapToStep,
+  stepMarkValue,
   thumbBounds,
   valueToPercent,
 } from './slider.geometry'
@@ -16,6 +19,9 @@ export { SLIDER_MAX, SLIDER_MIN, SLIDER_STEP, sliderMachine } from './slider.mac
 export { sliderMeta } from './slider.meta'
 export type {
   SliderApi,
+  SliderMark,
+  SliderMarkMeta,
+  SliderMarkProps,
   SliderPoint,
   SliderSchema,
   SliderThumbState,

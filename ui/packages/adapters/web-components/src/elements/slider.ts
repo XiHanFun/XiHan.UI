@@ -46,6 +46,7 @@ const NUMBER_LIST_CONVERTER = {
  * @attr {number} step - 方向键与吸附网格的步长，默认 1
  * @attr {number} large-step - PageUp/PageDown 的步长，默认 10 倍 step
  * @attr {number} min-steps-between-thumbs - 相邻滑块至少隔几格，默认 0
+ * @attr {boolean} snap-to-marks - 只认刻度落点：拖动、点按与键盘都吸到最近/下一档刻度；刻度表经 marks property 赋
  * @attr {'horizontal'|'vertical'} orientation - 轨道朝向，默认 horizontal
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写水平轨道上左右两键与指针的语义，默认 ltr
  * @attr {boolean} disabled - 禁用：拇指退出 Tab 序列、推不动、不参与表单提交
@@ -61,6 +62,9 @@ const NUMBER_LIST_CONVERTER = {
  * @csspart control - 指针命中区，按下即跳到落点并接管拖动
  * @csspart track - 轨道本体，值与坐标的换算以它的矩形为准
  * @csspart range - 已选区间，起止由内联逻辑属性给出
+ * @csspart marks - 刻度容器
+ * @csspart mark - 刻度点（纯装饰），须自带 value 属性；落进已选区间带 data-active
+ * @csspart mark-label - 刻度文案，须自带 value 属性；点按把最近的滑块跳到这一档
  * @csspart thumb - role=slider 的拇指，键盘交互全在它身上；多滑块须写 index 属性
  * @csspart hidden-input - 拇指内的表单影子（须是原生 input）
  */
@@ -78,6 +82,8 @@ export class XhSliderElement extends XhElement {
     step: { converter: NUMBER_CONVERTER },
     largeStep: { converter: NUMBER_CONVERTER, attribute: 'large-step' },
     minStepsBetweenThumbs: { converter: NUMBER_CONVERTER, attribute: 'min-steps-between-thumbs' },
+    snapToMarks: { converter: BOOLEAN_CONVERTER, attribute: 'snap-to-marks' },
+    marks: { attribute: false },
     orientation: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     disabled: { converter: BOOLEAN_CONVERTER },
@@ -97,6 +103,9 @@ export class XhSliderElement extends XhElement {
   declare step?: number
   declare largeStep?: number
   declare minStepsBetweenThumbs?: number
+  /** 刻度表；数组进不了属性，只作为 property 暴露。 */
+  declare marks?: SliderSchema['props']['marks']
+  declare snapToMarks?: boolean
   declare orientation?: Orientation
   declare direction?: Direction
   declare disabled?: boolean
@@ -134,6 +143,8 @@ export class XhSliderElement extends XhElement {
       step: this.step,
       largeStep: this.largeStep,
       minStepsBetweenThumbs: this.minStepsBetweenThumbs,
+      marks: this.marks,
+      snapToMarks: this.snapToMarks,
       orientation: this.orientation,
       dir: this.direction,
       disabled: this.disabled ?? false,
@@ -181,6 +192,13 @@ export class XhSliderElement extends XhElement {
     put('control', api.getControlProps() as Record<string, unknown>)
     put('track', api.getTrackProps() as Record<string, unknown>)
     put('range', api.getRangeProps() as Record<string, unknown>)
+    put('marks', api.getMarksProps() as Record<string, unknown>)
+
+    // 刻度是多实例 part：身份取节点自报的 value 属性
+    for (const el of this.getParts('mark'))
+      this.spreader.spread(el, api.getMarkProps({ value: Number(el.getAttribute('value')) }) as Record<string, unknown>)
+    for (const el of this.getParts('mark-label'))
+      this.spreader.spread(el, api.getMarkLabelProps({ value: Number(el.getAttribute('value')) }) as Record<string, unknown>)
 
     for (const el of this.getParts('thumb')) {
       const index = this.thumbIndex(el)

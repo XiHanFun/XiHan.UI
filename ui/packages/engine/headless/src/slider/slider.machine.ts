@@ -1,7 +1,7 @@
 import type { SliderPoint, SliderSchema } from './slider.types'
 import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 import { clamp, clampIndex } from '../shared/number'
-import { closestThumb, pointToValue, setThumbValue, snapToStep } from './slider.geometry'
+import { closestThumb, normalizeMarkValues, pointToValue, setThumbValue, snapToMarkValues, snapToStep, stepMarkValue } from './slider.geometry'
 
 const { createMachine } = setup<SliderSchema>()
 
@@ -17,17 +17,22 @@ interface Bounds {
   max: number
   step: number
   minStepsBetweenThumbs?: number
+  /** 只认刻度落点时的刻度值表；未开 snapToMarks 时缺席。 */
+  markValues?: number[]
 }
 
 type AxisBounds = Bounds & Pick<Props, 'orientation' | 'dir'>
 
 /** 区间与步长的缺省收在一处。 */
 function bounds(prop: PropReader): Bounds {
+  const min = prop('min') ?? SLIDER_MIN
+  const max = prop('max') ?? SLIDER_MAX
   return {
-    min: prop('min') ?? SLIDER_MIN,
-    max: prop('max') ?? SLIDER_MAX,
+    min,
+    max,
     step: prop('step') ?? SLIDER_STEP,
     minStepsBetweenThumbs: prop('minStepsBetweenThumbs'),
+    markValues: prop('snapToMarks') ? normalizeMarkValues(prop('marks') ?? [], min, max) : undefined,
   }
 }
 
@@ -44,7 +49,8 @@ function normalizeValues(values: readonly number[], o: Bounds): number[] {
   const gap = (o.minStepsBetweenThumbs ?? 0) * o.step
   const out: number[] = []
   for (let i = 0; i < values.length; i++) {
-    const snapped = snapToStep(values[i]!, o.min, o.max, o.step)
+    const stepped = snapToStep(values[i]!, o.min, o.max, o.step)
+    const snapped = o.markValues?.length ? snapToMarkValues(stepped, o.markValues) : stepped
     const lower = i > 0 ? out[i - 1]! + gap : o.min
     out.push(clamp(snapped, lower, o.max))
   }
@@ -54,10 +60,11 @@ function normalizeValues(values: readonly number[], o: Bounds): number[] {
 export const sliderMachine = createMachine({
   name: 'slider',
   context: ({ prop, cell }) => ({
-    // 值是数组，走 cell 原生受控：单滑块是长度 1 的数组，与多滑块同一条路
+    // 值是数组，走 cell 原生受控：单滑块是长度 1 的数组，与多滑块同一条路。
+    // 受控读与初值都过归一化：吸 step/刻度、按邻居顺序归位，与 VALUE.SET 同一套口径
     value: cell<number[]>(() => ({
-      value: prop('value'),
-      defaultValue: prop('defaultValue') ?? [prop('min') ?? SLIDER_MIN],
+      value: prop('value') ? normalizeValues(prop('value')!, bounds(prop)) : undefined,
+      defaultValue: normalizeValues(prop('defaultValue') ?? [prop('min') ?? SLIDER_MIN], bounds(prop)),
       // 数组每帧都是新引用，默认的 Object.is 会把"没变"也判成变了
       isEqual: (a, b) => Array.isArray(b) && a.length === b.length && a.every((v, i) => v === b[i]),
       // 通知必须挂在 cell 上：受控时 set 不写内部值，只有这条回调能把用户意图送出去
@@ -124,7 +131,11 @@ export const sliderMachine = createMachine({
         const values = context.get('value')
         const index = context.get('activeIndex')
         const current = values[index] ?? o.min
-        context.set('value', setThumbValue(values, index, current + e.direction * size, o))
+        // 只认刻度落点时键盘走「下一档刻度」，否则加完一步吸附会弹回原地
+        const target = o.markValues?.length
+          ? stepMarkValue(current, e.direction, o.markValues)
+          : current + e.direction * size
+        context.set('value', setThumbValue(values, index, target, o))
       },
       thumbToMin: ({ context, prop, event }) => {
         const e = event.current()

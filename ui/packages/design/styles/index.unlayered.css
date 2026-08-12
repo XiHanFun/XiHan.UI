@@ -12346,6 +12346,61 @@
   --xh-_track-thickness: var(--xh-slider-track-thickness, var(--xh-space-2));
 }
 
+/* —— 刻度：圆点钉在轨道上、文案排在轨道外侧，坐标由连接层按百分比内联给出 —— */
+[data-scope='slider'][data-part='marks'] {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+[data-scope='slider'][data-part='mark'] {
+  position: absolute;
+  inset-block-start: 50%;
+  inline-size: var(--xh-slider-mark-size, var(--xh-space-1));
+  block-size: var(--xh-slider-mark-size, var(--xh-space-1));
+  border-radius: var(--xh-shape-pill);
+  background: var(--xh-slider-mark-bg, var(--xh-border-strong));
+  translate: -50% -50%;
+}
+
+/* 落进已选区间的刻度点跟 range 同色 */
+[data-scope='slider'][data-part='mark'][data-active] {
+  background: var(--xh-slider-mark-bg-active, var(--xh-_tone, var(--xh-bg-brand)));
+}
+
+[data-scope='slider'][data-part='mark-label'] {
+  position: absolute;
+  inset-block-start: 100%;
+  margin-block-start: var(--xh-slider-mark-label-gap, var(--xh-space-1));
+  color: var(--xh-slider-mark-label-fg, var(--xh-fg-subtle));
+  font-size: var(--xh-slider-mark-label-font-size, var(--xh-font-size-xs));
+  line-height: var(--xh-leading-none);
+  white-space: nowrap;
+  translate: -50% 0;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+}
+
+[data-scope='slider'][data-part='mark-label'][data-active] {
+  color: var(--xh-slider-mark-label-fg-active, var(--xh-fg-default));
+}
+
+/* 竖直轨道：点与文案换轴，坐标由连接层写在 block 轴上 */
+[data-scope='slider'][data-part='root'][data-orientation='vertical'] [data-part='mark'] {
+  inset-block-start: auto;
+  inset-inline-start: 50%;
+  translate: -50% 50%;
+}
+
+[data-scope='slider'][data-part='root'][data-orientation='vertical'] [data-part='mark-label'] {
+  inset-block-start: auto;
+  inset-inline-start: 100%;
+  margin-block-start: 0;
+  margin-inline-start: var(--xh-slider-mark-label-gap, var(--xh-space-1));
+  translate: 0 50%;
+}
+
 /* display 会盖掉 UA 的 [hidden]{display:none}，凡是被赋了 display 的角色节点都要显式让位 */
 [data-scope='slider'][data-part='root'][hidden],
 [data-scope='slider'][data-part='control'][hidden] {

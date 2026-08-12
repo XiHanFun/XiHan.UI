@@ -80,15 +80,55 @@ export function thumbBounds(
   return upper < lower ? { min: lower, max: lower } : { min: lower, max: upper }
 }
 
+/** 刻度值收口：夹进区间、升序去重。 */
+export function normalizeMarkValues(marks: ReadonlyArray<{ value: number }>, min: number, max: number): number[] {
+  return [...new Set(marks.map(mark => mark.value).filter(v => v >= min && v <= max))].sort((a, b) => a - b)
+}
+
+/** 吸到最近刻度；刻度表为空原样返回，并列取先遇到的那档。 */
+export function snapToMarkValues(value: number, markValues: readonly number[]): number {
+  let best = value
+  let bestDist = Number.POSITIVE_INFINITY
+  for (const v of markValues) {
+    const dist = Math.abs(v - value)
+    if (dist < bestDist) {
+      bestDist = dist
+      best = v
+    }
+  }
+  return markValues.length > 0 ? best : value
+}
+
+/** 沿方向取下一档刻度；已在尽头原地不动。 */
+export function stepMarkValue(current: number, direction: 1 | -1, markValues: readonly number[]): number {
+  if (markValues.length === 0)
+    return current
+  if (direction === 1) {
+    for (const v of markValues) {
+      if (v > current)
+        return v
+    }
+    return current
+  }
+  for (let i = markValues.length - 1; i >= 0; i--) {
+    if (markValues[i]! < current)
+      return markValues[i]!
+  }
+  return current
+}
+
 /** 把第 index 个滑块挪到 next，夹在邻居之间；返回新的整组值（原数组不动）。 */
 export function setThumbValue(
   values: readonly number[],
   index: number,
   next: number,
-  o: { min: number, max: number, step: number, minStepsBetweenThumbs?: number },
+  o: { min: number, max: number, step: number, minStepsBetweenThumbs?: number, markValues?: readonly number[] },
 ): number[] {
   const bounds = thumbBounds(values, index, o)
-  const snapped = clamp(snapToStep(next, o.min, o.max, o.step), bounds.min, bounds.max)
+  // 先吸 step 网格，再吸刻度（只认刻度落点的形态），最后让位给邻居
+  const stepped = snapToStep(next, o.min, o.max, o.step)
+  const marked = o.markValues?.length ? snapToMarkValues(stepped, o.markValues) : stepped
+  const snapped = clamp(marked, bounds.min, bounds.max)
   const out = [...values]
   out[index] = snapped
   return out

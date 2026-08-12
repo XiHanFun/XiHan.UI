@@ -54,7 +54,7 @@ thumb 是个普通容器，往里放什么都由作者说了算；放得下靠 -
 
 ### 轨道刻度
 
-刻度是作者写进 track 里的普通节点：按值算出百分比绝对定位；轨道不裁剪，刻度线与文字都露得出来，内容随便写
+XhSliderMarks 按 marks 整组自动铺：圆点钉在轨道上、文案排在下方且点按跳值，落进已选区间的刻度分段上色；snapToMarks 让拖动/点按/键盘只认刻度落点
 
 <XhDemo src="slider/09-marks" />
 
@@ -84,7 +84,7 @@ thumb 自己是定位上下文，气泡挂在它上方就跟着走位；dragging
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="slider"`：**`root`** · `label` · **`control`** · **`track`** · `range` · **`thumb`** · `hidden-input`
+`data-scope="slider"`：**`root`** · `label` · **`control`** · **`track`** · `range` · **`thumb`** · `marks` · `mark` · `mark-label` · `hidden-input`
 
 ## Props
 
@@ -105,6 +105,8 @@ thumb 自己是定位上下文，气泡挂在它上方就跟着走位；dragging
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定拇指直径与轨道厚度 |
 | `name` | `string` |  | 表单字段名；多滑块时逐个 append。 |
 | `minStepsBetweenThumbs` | `number` |  | 相邻滑块至少隔几格，默认 0（可以贴在一起但不能交换顺序）。 |
+| `marks` | `SliderMark[]` |  | 刻度表：轨道上的圆点与文案，点文案即跳值。 |
+| `snapToMarks` | `boolean` |  | 只认刻度落点：拖动、点按与键盘都吸到最近/下一档刻度。 |
 | `getValueText` | `(details: SliderValueTextDetails) => string` |  | 把值翻成人话，产出写进拇指的 aria-valuetext。 不给就不写这个属性，读屏退回念 aria-valuenow。 |
 | `onValueChange` | `(details: SliderValueChangeDetails) => void` |  | 每次推动都发；拖动过程中会连续发很多次。 |
 | `onValueChangeEnd` | `(details: SliderValueChangeEndDetails) => void` |  | 只在一次操作结束时发一次，适合拿来发请求。 |
@@ -126,6 +128,7 @@ thumb 自己是定位上下文，气泡挂在它上方就跟着走位；dragging
 | `value` | `number[]` |  |
 | `range` | `{ start: number, end: number }` | 已选区间在轨道上的起止，0-1。 |
 | `thumbs` | `SliderThumbState[]` |  |
+| `marks` | `SliderMarkMeta[]` | 刻度呈现数据：夹进区间、升序去重，带位置与分段上色标记。 |
 | `dragging` | `boolean` |  |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
@@ -137,6 +140,9 @@ thumb 自己是定位上下文，气泡挂在它上方就跟着走位；dragging
 | `getTrackProps` | `() => T['element']` |  |
 | `getRangeProps` | `() => T['element']` |  |
 | `getThumbProps` | `(index: number) => T['element']` |  |
+| `getMarksProps` | `() => T['element']` | 刻度容器。 |
+| `getMarkProps` | `(props: SliderMarkProps) => T['element']` | 刻度点：轨道上的圆点，纯装饰。 |
+| `getMarkLabelProps` | `(props: SliderMarkProps) => T['element']` | 刻度文案：点按把最近的滑块跳到这一档。 |
 | `getHiddenInputProps` | `(index: number) => T['input']` |  |
 
 ## 键盘

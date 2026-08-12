@@ -1,4 +1,4 @@
-import type { SliderSchema, SliderValueTextDetails } from '@xihan-ui/headless'
+import type { SliderMark, SliderSchema, SliderValueTextDetails } from '@xihan-ui/headless'
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -19,6 +19,8 @@ export const XhSliderRoot = defineComponent({
     step: { type: Number, default: undefined },
     largeStep: { type: Number, default: undefined },
     minStepsBetweenThumbs: { type: Number, default: undefined },
+    marks: { type: Array as PropType<SliderMark[]>, default: undefined },
+    snapToMarks: { type: Boolean, default: undefined },
     orientation: { type: String as PropType<Orientation>, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     disabled: Boolean,
@@ -84,6 +86,22 @@ export const XhSliderTrack = defineComponent({
       ...ctx.api.value.getTrackProps() as Record<string, unknown>,
       ref: ctx.trackRef,
     }, slots.default?.())
+  },
+})
+
+export const XhSliderMarks = defineComponent({
+  name: 'XhSliderMarks',
+  setup(_, { slots }) {
+    const ctx = useSliderContext()
+    // 刻度整组自动铺：圆点 + 文案（点文案跳值）；mark 插槽可换文案内容
+    return () => h('div', ctx.api.value.getMarksProps() as Record<string, unknown>, ctx.api.value.marks.flatMap(mark => [
+      h('span', { ...ctx.api.value.getMarkProps({ value: mark.value }) as Record<string, unknown>, key: `dot-${mark.value}` }),
+      h(
+        'span',
+        { ...ctx.api.value.getMarkLabelProps({ value: mark.value }) as Record<string, unknown>, key: `label-${mark.value}` },
+        slots.mark ? slots.mark({ mark }) : mark.label,
+      ),
+    ]))
   },
 })
 

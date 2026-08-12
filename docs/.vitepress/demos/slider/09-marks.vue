@@ -1,85 +1,52 @@
-<!-- 轨道刻度 | 刻度是作者写进 track 里的普通节点：按值算出百分比绝对定位；轨道不裁剪，刻度线与文字都露得出来，内容随便写 -->
+<!-- 轨道刻度 | XhSliderMarks 按 marks 整组自动铺：圆点钉在轨道上、文案排在下方且点按跳值，落进已选区间的刻度分段上色；snapToMarks 让拖动/点按/键盘只认刻度落点 -->
 <script setup lang="ts">
-import type { CSSProperties } from "vue";
+import type { SliderMark } from "@xihan-ui/headless";
 import { ref } from "vue";
 import {
   XhSliderControl,
   XhSliderHiddenInput,
   XhSliderLabel,
+  XhSliderMarks,
   XhSliderRange,
   XhSliderRoot,
   XhSliderThumb,
   XhSliderTrack,
 } from "@xihan-ui/vue";
 
-const min = 0;
-const max = 200;
-
-const volume = ref([120]);
-
-const marks = [
-  { value: 0, text: "静音" },
-  { value: 60, text: "60" },
-  { value: 120, text: "★ 推荐" },
-  { value: 200, text: "200" },
+const marks: SliderMark[] = [
+  { value: 0, label: "0°C" },
+  { value: 26, label: "26°C" },
+  { value: 37, label: "37°C" },
+  { value: 100, label: "沸腾" },
 ];
 
-// 值在轨道上的位置
-function offset(value: number) {
-  return `${((value - min) / (max - min)) * 100}%`;
-}
-
-const mark: CSSProperties = {
-  position: "absolute",
-  insetBlockStart: "-2px",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  gap: "8px",
-  transform: "translateX(-50%)",
-  whiteSpace: "nowrap",
-  // 刻度只是装饰，指针照旧交给轨道
-  pointerEvents: "none",
-};
-
-const tick: CSSProperties = {
-  inlineSize: "2px",
-  blockSize: "10px",
-  borderRadius: "1px",
-  background: "var(--xh-border-strong)",
-};
-
-const text: CSSProperties = {
-  fontSize: "11px",
-  color: "var(--xh-fg-muted)",
-};
+const free = ref([26]);
+const snapped = ref([37]);
 </script>
 
 <template>
-  <div style="inline-size: 320px; padding-block-end: 24px">
-    <XhSliderRoot
-      v-model:value="volume"
-      :min="min"
-      :max="max"
-      :step="10"
-      name="volume"
-    >
-      <XhSliderLabel>音量：{{ volume[0] }}</XhSliderLabel>
+  <div style="display: grid; gap: 40px; inline-size: 320px">
+    <XhSliderRoot v-model:value="free" :marks="marks">
+      <XhSliderLabel>自由落点（点文案跳值）</XhSliderLabel>
       <XhSliderControl>
         <XhSliderTrack>
           <XhSliderRange />
-          <span
-            v-for="item in marks"
-            :key="item.value"
-            :style="[mark, { insetInlineStart: offset(item.value) }]"
-          >
-            <span :style="tick"></span>
-            <span :style="text">{{ item.text }}</span>
-          </span>
         </XhSliderTrack>
-        <XhSliderThumb>
-          <XhSliderHiddenInput />
-        </XhSliderThumb>
+        <XhSliderMarks />
+        <XhSliderThumb :index="0" />
+        <XhSliderHiddenInput :index="0" />
+      </XhSliderControl>
+    </XhSliderRoot>
+
+    <XhSliderRoot v-model:value="snapped" :marks="marks" snap-to-marks>
+      <XhSliderLabel>只认刻度（拖动与方向键都吸档）</XhSliderLabel>
+      <XhSliderControl>
+        <XhSliderTrack>
+          <XhSliderRange />
+        </XhSliderTrack>
+        <XhSliderMarks />
+        <XhSliderThumb :index="0" />
+        <XhSliderHiddenInput :index="0" />
       </XhSliderControl>
     </XhSliderRoot>
   </div>
