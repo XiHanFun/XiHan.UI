@@ -1,3 +1,4 @@
+import type { CascadeStrategy } from '@xihan-ui/behavior'
 import type { Cleanup, ControlVariant, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
@@ -121,6 +122,13 @@ export interface CascaderSchema extends MachineSchema {
     changeOnSelect?: boolean
     /** 多选：选中是路径集合，选中后浮层不收起、焦点留在列里以便接着挑。 */
     multiple?: boolean
+    /**
+     * 多选下父子级联勾选：点分支整枝传导、子全勾父勾、部分勾中半选，
+     * 禁用子树整棵冻结。默认 false（按路径原样翻转）；单选下无效。
+     */
+    cascade?: boolean
+    /** 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾中节点。 */
+    checkedStrategy?: CascadeStrategy
     /** 整个控件禁用：trigger 用原生 disabled，浮层展不开。 */
     disabled?: boolean
     /** 只读：浮层照常展开与浏览，但选中值改不动、也清不掉。 */
@@ -240,6 +248,8 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   canClear: boolean
   /** 该条目是否是某条选中路径的末项。 */
   isSelected: (value: string) => boolean
+  /** 级联模式下该分支是否半选（有效叶后代有勾有不勾）；非级联恒 false。 */
+  isIndeterminate: (value: string) => boolean
   /** 该条目是否落在展开路径上（它的子列开着，或它自己就是最后一站）。 */
   isActive: (value: string) => boolean
   /** 该条目此刻是否落在某个可见列里。 */
