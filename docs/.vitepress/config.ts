@@ -296,9 +296,18 @@ export default defineConfig({
   vite: {
     // 组件库是 link: 进来的，Vite 的依赖预打包缓存只认 package.json 与锁文件，
     // 改了库的源码它不会失效——本地构建会拿着旧产物继续渲染而且什么都不说。
-    // 排除掉，示例渲染的永远是当前代码。
+    // 排除掉，示例渲染的永远是当前代码；传递依赖也要列全，漏一个它就带着旧代码进缓存
     optimizeDeps: {
-      exclude: ["@xihan-ui/vue", "@xihan-ui/styles"],
+      exclude: [
+        "@xihan-ui/vue",
+        "@xihan-ui/styles",
+        "@xihan-ui/headless",
+        "@xihan-ui/behavior",
+        "@xihan-ui/kernel",
+        "@xihan-ui/machine",
+        "@xihan-ui/position",
+        "@xihan-ui/code-highlight",
+      ],
     },
   },
   themeConfig: {
