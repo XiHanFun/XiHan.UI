@@ -146,10 +146,12 @@
     display: none;
   }
 
-  /* 进了 control 就嵌进触发器右端（与展开指示符同位），平时不占位也不接指针 */
+  /* 进了 control 就嵌进触发器右端（与展开指示符同位），纵向钉在正中；平时不占位也不接指针 */
   [data-scope='select'][data-part='control'] [data-part='clear-trigger'] {
     position: absolute;
+    inset-block-start: 50%;
     inset-inline-end: var(--xh-select-trigger-px, var(--xh-_select-px));
+    translate: 0 -50%;
     opacity: 0;
     pointer-events: none;
   }
