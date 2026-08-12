@@ -33,8 +33,9 @@ const snapped = ref([37]);
           <XhSliderRange />
         </XhSliderTrack>
         <XhSliderMarks />
-        <XhSliderThumb :index="0" />
-        <XhSliderHiddenInput :index="0" />
+        <XhSliderThumb>
+          <XhSliderHiddenInput />
+        </XhSliderThumb>
       </XhSliderControl>
     </XhSliderRoot>
 
@@ -45,8 +46,9 @@ const snapped = ref([37]);
           <XhSliderRange />
         </XhSliderTrack>
         <XhSliderMarks />
-        <XhSliderThumb :index="0" />
-        <XhSliderHiddenInput :index="0" />
+        <XhSliderThumb>
+          <XhSliderHiddenInput />
+        </XhSliderThumb>
       </XhSliderControl>
     </XhSliderRoot>
   </div>
