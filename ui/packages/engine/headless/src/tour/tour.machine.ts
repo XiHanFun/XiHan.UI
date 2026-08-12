@@ -89,8 +89,9 @@ export const tourMachine = createMachine({
   watch: ({ track, prop, context, action }) => {
     // 受控时用户事件只发意图回调、不自改状态；宿主写回 open 后由这里派发 CONTROLLED.* 无条件回写
     track([() => prop('open')], () => action(['syncOpen']))
-    // 步序变了要换锚点、重量高亮框；挂在 watch 上，受控时步序是宿主写进来的，不经过走步动作
-    track([context.dep('step')], () => action(['reanchorPosition', 'measureSpotlight']))
+    // 步序变了要先把目标滚进视口，再换锚点、重量高亮框；挂在 watch 上，
+    // 受控时步序是宿主写进来的，不经过走步动作
+    track([context.dep('step')], () => action(['scrollTargetIntoView', 'reanchorPosition', 'measureSpotlight']))
   },
   states: {
     closed: {
@@ -125,6 +126,7 @@ export const tourMachine = createMachine({
           { guard: 'isOpenControlled', actions: ['invokeOnSkip', 'invokeOnClose'] },
           { target: 'closed', actions: ['invokeOnSkip', 'invokeOnClose'] },
         ],
+        'GEOMETRY.SYNC': { actions: ['reanchorPosition', 'measureSpotlight'] },
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
     },
@@ -173,6 +175,14 @@ export const tourMachine = createMachine({
         context.set('spotlight', null)
       },
       reanchorPosition: ({ refs }) => refs.get('reanchor')?.(),
+      // 目标不在视口内先滚进来（nearest：已可见时不动）；量测与定位随后按滚完的布局取
+      scrollTargetIntoView: ({ prop, context, scope }) => {
+        if (prop('autoScroll') === false)
+          return
+        const step = currentTourStep(prop('steps'), stepOf(prop, context.get('step')))
+        const target = resolveTourTarget(scope, step)
+        target?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' })
+      },
       /**
        * 量高亮框，量两遍：同步那遍照顾展开态里换步，推迟那遍照顾首帧、目标节点刚挂上来、
        * 以及从收起转到展开的那一拍（效应在状态位落定之前挂载，同步那遍读到的还是旧状态）。
@@ -258,21 +268,36 @@ export const tourMachine = createMachine({
         }
       },
       /**
-       * 高亮框跟随窗口尺寸变化。读 DOM 由 measureSpotlight 自己推迟，这里不必再包一层 flush；
-       * disposed 标记仍要留，监听器与 cleanup 之间总有一帧可能被触发。
+       * 高亮框跟随窗口尺寸与滚动。滚动走捕获段，嵌套滚动容器的滚动也收得到；
+       * 高频事件按帧合并，一帧至多量一次。读 DOM 由 measureSpotlight 自己推迟，
+       * 这里不必再包一层 flush；disposed 标记仍要留，监听器与 cleanup 之间总有一帧可能被触发。
        */
       trackSpotlight: ({ scope, action }) => {
         let disposed = false
+        let frame = 0
         const win = scope.getWin()
         const onResize = (): void => {
           if (!disposed)
             action(['measureSpotlight'])
         }
-        action(['measureSpotlight'])
+        const onScroll = (): void => {
+          if (disposed || frame)
+            return
+          frame = win.requestAnimationFrame(() => {
+            frame = 0
+            if (!disposed)
+              action(['measureSpotlight'])
+          })
+        }
+        action(['scrollTargetIntoView', 'measureSpotlight'])
         win.addEventListener('resize', onResize)
+        win.addEventListener('scroll', onScroll, { capture: true, passive: true })
         return () => {
           disposed = true
+          if (frame)
+            win.cancelAnimationFrame(frame)
           win.removeEventListener('resize', onResize)
+          win.removeEventListener('scroll', onScroll, { capture: true })
         }
       },
       // 层与消解层、焦点域绑在同一个效应里，三者生命周期必须一致；

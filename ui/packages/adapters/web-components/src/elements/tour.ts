@@ -39,6 +39,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} close-on-interact-outside - 层外交互关闭，默认 false；写 "true" 打开
  * @attr {boolean} show-backdrop - 画遮罩，默认 true；写 show-backdrop="false" 关掉
  * @attr {number} spotlight-padding - 高亮框在目标四周留出的空白（px），默认 8
+ * @attr {boolean} auto-scroll - 展开与换步时自动把目标滚进视口（nearest），默认 true；写 auto-scroll="false" 关掉
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires step-change - 步序变化；detail 为 `{ step: number }`
  * @fires complete - 末步再按下一步；detail 为 `{ step: number }`
@@ -72,6 +73,7 @@ export class XhTourElement extends XhElement {
     closeOnInteractOutside: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-interact-outside' },
     showBackdrop: { converter: BOOLEAN_CONVERTER, attribute: 'show-backdrop' },
     spotlightPadding: { converter: NUMBER_CONVERTER, attribute: 'spotlight-padding' },
+    autoScroll: { converter: BOOLEAN_CONVERTER, attribute: 'auto-scroll' },
     // 对象值进不了属性，只作为 property 暴露
     steps: { attribute: false },
     translations: { attribute: false },
@@ -87,6 +89,7 @@ export class XhTourElement extends XhElement {
   declare closeOnInteractOutside?: boolean
   declare showBackdrop?: boolean
   declare spotlightPadding?: number
+  declare autoScroll?: boolean
   /** 步骤清单。它是步序的上界，也是读屏"第 m 步，共 n 步"的分母。 */
   declare steps?: TourStep[]
   /** 关闭按钮的无障碍名与进度文案；connect 每帧重写，作者写在节点上会被盖掉，只能从这里给。 */
@@ -130,6 +133,7 @@ export class XhTourElement extends XhElement {
       closeOnInteractOutside: this.closeOnInteractOutside,
       showBackdrop: this.showBackdrop,
       spotlightPadding: this.spotlightPadding,
+      autoScroll: this.autoScroll,
       translations: this.translations,
       onOpenChange: this.notifyOpen,
       onStepChange: this.notifyStep,
@@ -205,6 +209,11 @@ export class XhTourElement extends XhElement {
 
   protected wire(): void {
     this.wireWith(this.ctrl.service)
+  }
+
+  /** 重量高亮框与浮层位置：目标节点被外部改动（换位、变尺寸）后调它校准。 */
+  remeasure(): void {
+    this.ctrl?.service.send({ type: 'GEOMETRY.SYNC' })
   }
 
   // service 由参数传入：机器启动前的那次接线发生在 this.ctrl 赋值之前，取不到 this.ctrl.service
