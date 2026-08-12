@@ -1,5 +1,6 @@
-<!-- 异步校验 | 核验结果落在宿主自己的表里，validate 同步读它；核验回来直接写受控错误表，提交这一路照样拦得住 -->
+<!-- 异步校验 | 规则里的 validator 直接返回 Promise：提交时机器等它回来再放行或拦下，期间 validating 置真可用来标忙 -->
 <script setup lang="ts">
+import type { FormRules } from "@xihan-ui/headless";
 import { ref } from "vue";
 import {
   XhFieldControl,
@@ -13,40 +14,20 @@ import {
 } from "@xihan-ui/vue";
 
 const taken = ["admin", "root", "xihan"];
-// 已经核验过的名字：名字 → 错误文案，空串表示这个名字可用
-const checked = ref<Record<string, string>>({});
-const checking = ref(false);
-const errors = ref<Record<string, string>>({});
 const submitted = ref("（还没提交过）");
 
-let timer = 0;
-
-// 值一改就发起核验，回来后把结论写进受控错误表
-function onValuesChange(details: { values: Record<string, unknown> }) {
-  const name = String(details.values.username ?? "").trim();
-  window.clearTimeout(timer);
-  if (!name || Object.hasOwn(checked.value, name)) {
-    checking.value = false;
-    return;
-  }
-  checking.value = true;
-  timer = window.setTimeout(() => {
-    const message = taken.includes(name) ? "这个用户名已经有人用了" : "";
-    checked.value = { ...checked.value, [name]: message };
-    errors.value = { ...errors.value, username: message };
-    checking.value = false;
-  }, 700);
-}
-
-// 校验函数是同步的：这里只读核验结果，还没回来就先把提交拦下
-function validate(values: Record<string, unknown>) {
-  const name = String(values.username ?? "").trim();
-  if (!name)
-    return { username: "用户名不能为空" };
-  if (!Object.hasOwn(checked.value, name))
-    return { username: "还在核验，稍等一下再提交" };
-  return { username: checked.value[name] };
-}
+// 远程唯一性核验：这里用定时器模拟服务端往返
+const rules: FormRules = {
+  username: [
+    { required: true, message: "用户名不能为空" },
+    {
+      validator: async (value) => {
+        await new Promise((r) => setTimeout(r, 700));
+        return taken.includes(String(value).trim()) ? "这个用户名已经有人用了" : undefined;
+      },
+    },
+  ],
+};
 
 function onSubmit(details: { values: Record<string, unknown> }) {
   submitted.value = String(details.values.username ?? "");
@@ -55,11 +36,10 @@ function onSubmit(details: { values: Record<string, unknown> }) {
 
 <template>
   <XhFormRoot
-    v-model:errors="errors"
+    v-slot="{ validating }"
     :default-values="{ username: '' }"
-    :validate="validate"
-    style="inline-size: 320px;"
-    @values-change="onValuesChange"
+    :rules="rules"
+    style="inline-size: 320px"
     @submit="onSubmit"
   >
     <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" value="username">
@@ -72,12 +52,12 @@ function onSubmit(details: { values: Record<string, unknown> }) {
             @input="setValue(($event.target as HTMLInputElement).value)"
           />
         </XhFieldControl>
-        <XhFieldDescription>{{ checking ? "正在核验…" : "改动后自动核验，占用的名字会被挡下" }}</XhFieldDescription>
+        <XhFieldDescription>{{ validating ? "正在核验…" : "提交时先问一次服务端，占用的名字会被挡下" }}</XhFieldDescription>
         <XhFieldErrorText>{{ error }}</XhFieldErrorText>
       </XhFieldRoot>
     </XhFormFieldGroup>
 
-    <XhFormSubmitTrigger>提交</XhFormSubmitTrigger>
-    <p style="margin: 0; font-size: 13px;">已提交：{{ submitted }}</p>
+    <XhFormSubmitTrigger>{{ validating ? "核验中…" : "提交" }}</XhFormSubmitTrigger>
+    <p style="margin: 0; font-size: 13px">已提交：{{ submitted }}</p>
   </XhFormRoot>
 </template>

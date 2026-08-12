@@ -75,6 +75,8 @@ export class XhFormElement extends XhElement {
     errors: { attribute: false },
     defaultErrors: { attribute: false },
     validate: { attribute: false },
+    rules: { attribute: false },
+    validateMessages: { attribute: false },
     validateOn: { converter: STRING_CONVERTER, attribute: 'validate-on' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
@@ -85,6 +87,9 @@ export class XhFormElement extends XhElement {
   declare errors?: FormErrorPatch
   declare defaultErrors?: FormErrorPatch
   declare validate?: FormSchema['props']['validate']
+  /** 声明式校验规则；对象进不了属性，只作为 property 暴露。 */
+  declare rules?: FormSchema['props']['rules']
+  declare validateMessages?: FormSchema['props']['validateMessages']
   declare validateOn?: FormValidateOn
   declare disabled?: boolean
   declare readOnly?: boolean
@@ -123,6 +128,8 @@ export class XhFormElement extends XhElement {
       errors: this.errors,
       defaultErrors: this.defaultErrors,
       validate: this.validate,
+      rules: this.rules,
+      validateMessages: this.validateMessages,
       validateOn: this.validateOn,
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,

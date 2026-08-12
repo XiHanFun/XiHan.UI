@@ -5,6 +5,7 @@ import { focusFirst, focusSafely, getTabbables, queryItems } from '@xihan-ui/beh
 import { setup } from '@xihan-ui/machine'
 import { formFieldGroupQuery, formFieldName } from './form.anatomy'
 import { firstFormErrorName, formErrorNames, mergeFormErrors, normalizeFormErrors, sameFormErrors } from './form.errors'
+import { runFormRules } from './form.rules'
 
 const { createMachine, guards } = setup<FormSchema>()
 const { not } = guards
@@ -71,13 +72,33 @@ export function focusFormField(root: HTMLElement | null, name: string): boolean 
 
 /**
  * 跑一次整表校验（校验可能带跨字段规则），但只把 name 这一条写回错误表。
+ * 转异步时置 validating，晚到的结果按字段各自的批次号判弃。
  */
 function validateOneField(params: Params<FormSchema>, values: FormValues, name: string): void {
   const validate = params.prop('validate')
-  if (!validate)
+  const rules = params.prop('rules')
+  if (!validate && !rules?.[name])
     return
-  const all = normalizeFormErrors(validate(values))
-  params.context.set('errors', mergeFormErrors(params.context.get('errors'), { [name]: all[name] }))
+  const tracker = params.refs.get('validation')
+  const seq = (tracker.fieldSeq[name] = (tracker.fieldSeq[name] ?? 0) + 1)
+  const settle = (all: FormErrors): void => {
+    if (tracker.fieldSeq[name] !== seq)
+      return
+    params.context.set('validating', false)
+    params.context.set('errors', mergeFormErrors(params.context.get('errors'), { [name]: all[name] }))
+  }
+  const outcome = runFormRules(
+    rules?.[name] ? { [name]: rules[name]! } : undefined,
+    validate,
+    values,
+    params.prop('validateMessages'),
+  )
+  if (outcome instanceof Promise) {
+    params.context.set('validating', true)
+    void outcome.then(settle)
+    return
+  }
+  settle(outcome)
 }
 
 // 值表与错误表住在 context 的 cell 里（给定 prop 即受控：读直取 prop、写只发回调不落内部值）。
@@ -86,6 +107,7 @@ export const formMachine = createMachine({
   name: 'form',
   refs: () => ({
     getRootEl: () => null,
+    validation: { seq: 0, fieldSeq: {} },
   }),
   context: ({ prop, cell }) => ({
     values: cell<FormValues>(() => ({
@@ -101,6 +123,7 @@ export const formMachine = createMachine({
       isEqual: sameFormErrors,
       onChange: errors => prop('onErrorsChange')?.({ errors }),
     })),
+    validating: cell<boolean>(() => ({ defaultValue: false })),
   }),
   // 挂载即 idle：作者预置的 defaultErrors 不该让错误摘要一上来就显形
   initialState: () => 'idle',
@@ -183,17 +206,36 @@ export const formMachine = createMachine({
       },
 
       /**
-       * 提交这一路：整表跑、整表替换，与 validateOn 无关。
-       * 没给 validate 就沿用当下的错误表，作者可能自己在管错误（如服务端返回的）。
+       * 提交这一路：整表跑（声明式规则 + validate 函数）、整表替换，与 validateOn 无关。
+       * 两边都没给就沿用当下的错误表，作者可能自己在管错误（如服务端返回的）。
+       * 转异步时置 validating；再次提交或重置把批次号顶掉，晚到的旧结果整批作废。
        */
-      runValidation: ({ prop, context, send }) => {
+      runValidation: ({ prop, context, refs, send }) => {
         const values = context.get('values')
         const validate = prop('validate')
-        const errors = validate ? normalizeFormErrors(validate(values)) : context.get('errors')
-        context.set('errors', errors)
-        send(formErrorNames(errors).length > 0
-          ? { type: 'VALIDATION.FAIL', errors, values }
-          : { type: 'VALIDATION.PASS', errors, values })
+        const rules = prop('rules')
+        const tracker = refs.get('validation')
+        const seq = ++tracker.seq
+        const settle = (errors: FormErrors): void => {
+          if (tracker.seq !== seq)
+            return
+          context.set('validating', false)
+          context.set('errors', errors)
+          send(formErrorNames(errors).length > 0
+            ? { type: 'VALIDATION.FAIL', errors, values }
+            : { type: 'VALIDATION.PASS', errors, values })
+        }
+        if (!validate && !rules) {
+          settle(context.get('errors'))
+          return
+        }
+        const outcome = runFormRules(rules, validate, values, prop('validateMessages'))
+        if (outcome instanceof Promise) {
+          context.set('validating', true)
+          void outcome.then(settle)
+          return
+        }
+        settle(outcome)
       },
 
       invokeSubmit: ({ prop, event }) => {
@@ -257,8 +299,14 @@ export const formMachine = createMachine({
       /**
        * 回到初始。落点取 prop 的当下值而不是挂载时的快照，
        * 宿主换了 defaultValues（如编辑另一条记录）时重置回到新的那一份。
+       * 批次号整体顶掉：还在天上飞的异步校验结果落地时一律作废。
        */
-      resetForm: ({ prop, context }) => {
+      resetForm: ({ prop, context, refs }) => {
+        const tracker = refs.get('validation')
+        tracker.seq++
+        for (const name of Object.keys(tracker.fieldSeq))
+          tracker.fieldSeq[name]!++
+        context.set('validating', false)
         context.set('values', { ...(prop('defaultValues') ?? {}) })
         context.set('errors', normalizeFormErrors(prop('defaultErrors')))
       },

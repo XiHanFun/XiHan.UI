@@ -1,6 +1,7 @@
 import type { PropTypes } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 import type { FormErrorPatch, FormErrors } from './form.errors'
+import type { FormRules, FormValidateMessages } from './form.rules'
 
 /** 字段名 → 值。表单不解读值的类型，只负责搬运与交给 validate。 */
 export type FormValues = Record<string, unknown>
@@ -56,6 +57,8 @@ export interface FormErrorSummaryItemProps {
 export interface FormRefs {
   /** 表单根节点（那个 `<form>`）：字段容器的现查范围与落焦的起点。 */
   getRootEl: () => HTMLElement | null
+  /** 运行中的校验批次号，晚到的异步结果按它判弃；整表与逐字段各记各的。 */
+  validation: { seq: number, fieldSeq: Record<string, number> }
 }
 
 export interface FormSchema extends MachineSchema {
@@ -68,10 +71,15 @@ export interface FormSchema extends MachineSchema {
     errors?: FormErrorPatch
     defaultErrors?: FormErrorPatch
     /**
-     * 校验函数。同步返回「字段名 → 错误文案」，没错的字段给空串或干脆不写。
-     * 不给这个函数即没有校验，提交时沿用当下的错误表。
+     * 校验函数。返回「字段名 → 错误文案」，没错的字段给空串或干脆不写；
+     * 允许返回 Promise（远程校验），期间 validating 置真。
+     * 与 rules 并用时同字段两边都报错按 rules 的文案算。
      */
-    validate?: (values: FormValues) => FormErrorPatch
+    validate?: (values: FormValues) => FormErrorPatch | Promise<FormErrorPatch>
+    /** 声明式校验规则：字段名 → 一条或一组规则，与 validate 可并用。 */
+    rules?: FormRules
+    /** 规则文案模板，{name}/{min}/{max} 现场代入；缺省用内置英文模板。 */
+    validateMessages?: FormValidateMessages
     /** 校验时机，默认 submit。 */
     validateOn?: FormValidateOn
     /** 整个表单禁用：提交、重置、写值一概不发生，两颗按钮带原生 disabled。 */
@@ -92,6 +100,8 @@ export interface FormSchema extends MachineSchema {
     values: FormValues
     /** 当下的错误表，已清理（在表里 = 此刻有错）。受控（errors 给定）时 cell 直读 prop。 */
     errors: FormErrors
+    /** 异步校验进行中；全同步的校验不碰它。 */
+    validating: boolean
   }
   computed: Record<string, never>
   refs: FormRefs
@@ -151,6 +161,8 @@ export interface FormApi<T extends PropTypes = PropTypes> {
   invalid: boolean
   /** 上一次提交被拦下了：错误摘要据此显形。 */
   submitFailed: boolean
+  /** 异步校验进行中（提交或逐字段都算）。 */
+  validating: boolean
   disabled: boolean
   readOnly: boolean
   validateOn: FormValidateOn
