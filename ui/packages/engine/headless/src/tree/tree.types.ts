@@ -1,4 +1,4 @@
-import type { Typeahead } from '@xihan-ui/behavior'
+import type { CascadeStrategy, Typeahead } from '@xihan-ui/behavior'
 import type { Direction, PropTypes } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
@@ -97,6 +97,13 @@ export interface TreeSchema extends MachineSchema {
     defaultSelectedValue?: string[]
     /** 默认 single。 */
     selectionMode?: TreeSelectionMode
+    /**
+     * multiple 下父子级联勾选：点分支整枝传导、子全勾父勾、部分勾中半选，
+     * 禁用子树整棵冻结。默认 false（朴素切换）；single 下无效。
+     */
+    cascade?: boolean
+    /** 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾中节点。 */
+    checkedStrategy?: CascadeStrategy
     /** 点分支行是否顺带展开/收起，默认 true。关掉后只有 branch-trigger 与左右方向键能改展开态。 */
     expandOnClick?: boolean
     /** 整棵树禁用：所有节点转 aria-disabled，键盘与点击都不再改展开/选中。 */
@@ -165,6 +172,8 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   disabled: boolean
   isExpanded: (value: string) => boolean
   isSelected: (value: string) => boolean
+  /** 级联模式下该分支是否半选（有效叶后代有勾有不勾）；非级联恒 false。 */
+  isIndeterminate: (value: string) => boolean
   setExpandedValue: (next: string[]) => void
   setSelectedValue: (next: string[]) => void
   expand: (value: string) => void

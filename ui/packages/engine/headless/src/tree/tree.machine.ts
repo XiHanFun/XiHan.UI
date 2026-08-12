@@ -1,5 +1,5 @@
 import type { TreeNode, TreeNodeMeta, TreeSchema, TreeSelectionMode, TreeVisibleNode } from './tree.types'
-import { createTypeahead } from '@xihan-ui/behavior'
+import { cascadeToggle, collapseChecked, createTypeahead } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<TreeSchema>()
@@ -182,6 +182,13 @@ export const treeMachine = createMachine({
         // 单选没有取消选中这回事，点两下不会把树点空
         if (treeSelectionMode(prop('selectionMode')) === 'single') {
           context.set('selectedValue', [e.value])
+          return
+        }
+        // 级联：整枝传导后按收敛策略落对外值；朴素切换只动被点的那一个
+        if (prop('cascade')) {
+          const roots = prop('collection') ?? []
+          const state = cascadeToggle(roots, current, e.value)
+          context.set('selectedValue', collapseChecked(roots, state.checked, prop('checkedStrategy') ?? 'child'))
           return
         }
         context.set(

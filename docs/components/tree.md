@@ -52,9 +52,9 @@ collection 换一份树就换一棵：标记跟着数据用 v-for 渲，过滤�
 
 <XhDemo src="tree/08-leaf-only" />
 
-### 勾选与父子级联
+### 级联勾选
 
-复选下机器只做朴素切换，级联与半选由宿主在受控回调里算：勾选框本身就是行里的一段标记
+selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；勾选框是行里的一段标记，态从插槽作用域取
 
 <XhDemo src="tree/09-checkable" />
 
@@ -90,6 +90,8 @@ collection 换一份树就换一棵：标记跟着数据用 v-for 渲，过滤�
 | `selectedValue` | `string[]` |  | 选中集合。给定即受控，语义同上。 |
 | `defaultSelectedValue` | `string[]` |  |  |
 | `selectionMode` | `TreeSelectionMode` |  | 默认 single。 |
+| `cascade` | `boolean` |  | multiple 下父子级联勾选：点分支整枝传导、子全勾父勾、部分勾中半选， 禁用子树整棵冻结。默认 false（朴素切换）；single 下无效。 |
+| `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾中节点。 |
 | `expandOnClick` | `boolean` |  | 点分支行是否顺带展开/收起，默认 true。关掉后只有 branch-trigger 与左右方向键能改展开态。 |
 | `disabled` | `boolean` |  | 整棵树禁用：所有节点转 aria-disabled，键盘与点击都不再改展开/选中。 |
 | `loop` | `boolean` |  | 上下键走到首尾是否回绕，默认 false。 |
@@ -119,6 +121,7 @@ collection 换一份树就换一棵：标记跟着数据用 v-for 渲，过滤�
 | `disabled` | `boolean` |  |
 | `isExpanded` | `(value: string) => boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |
+| `isIndeterminate` | `(value: string) => boolean` | 级联模式下该分支是否半选（有效叶后代有勾有不勾）；非级联恒 false。 |
 | `setExpandedValue` | `(next: string[]) => void` |  |
 | `setSelectedValue` | `(next: string[]) => void` |  |
 | `expand` | `(value: string) => void` |  |
