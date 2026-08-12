@@ -96,7 +96,7 @@ XhContextMenuSub 在右键菜单里嵌一台子菜单：触发条目双重身份
 
 **状态**：`closed` · `pressing` · `open`
 
-**事件**：`CONTEXT.MENU` · `OPEN` · `CLOSE` · `PRESS.START` · `PRESS.MOVE` · `PRESS.END` · `after.longPressDelay` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.FOCUS` · `ITEM.LOST` · `ITEM.SELECT`
+**事件**：`CONTEXT.MENU` · `OPEN` · `CLOSE` · `PRESS.START` · `PRESS.MOVE` · `PRESS.END` · `after.longPressDelay` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.FOCUS` · `FOCUS.CLEAR` · `ITEM.LOST` · `ITEM.SELECT`
 
 **判据**：`isOpenControlled` · `movedBeyondTolerance`
 

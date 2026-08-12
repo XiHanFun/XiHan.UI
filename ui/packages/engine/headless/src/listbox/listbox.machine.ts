@@ -55,6 +55,7 @@ export const listboxMachine = createMachine({
         'ITEM.SELECT': { actions: ['selectItem'] },
         'ITEM.TOGGLE': { actions: ['toggleItem'] },
         'ITEM.FOCUS': { actions: ['setFocusedValue'] },
+        'FOCUS.CLEAR': { actions: ['clearFocusedValue'] },
         'LIST.BLUR': { actions: ['clearFocusedValue'] },
       },
     },

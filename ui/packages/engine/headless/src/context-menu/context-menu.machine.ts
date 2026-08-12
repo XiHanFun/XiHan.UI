@@ -111,6 +111,7 @@ export const contextMenuMachine = createMachine({
           { target: 'closed', actions: ['invokeOnSelect', 'setReturnFocus', 'invokeOnClose'] },
         ],
         'ITEM.FOCUS': { actions: ['setFocusedValue'] },
+        'FOCUS.CLEAR': { actions: ['clearFocusedValue'] },
         // 焦点条目被移出 DOM 时锚点悬空，重挑一个，否则没有条目认领 tabindex=0、方向键也没有起点
         'ITEM.LOST': { actions: ['clearFocusedValue', 'setInitialFocusedValue'] },
         'CONTROLLED.CLOSE': { target: 'closed' },

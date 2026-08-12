@@ -4,6 +4,7 @@ import type { Service } from '@xihan-ui/machine'
 import type { ContextMenuApi, ContextMenuItemProps, ContextMenuNodeMeta, ContextMenuSchema } from './context-menu.types'
 import {
   focusItem,
+  focusSafely,
   indexOfValue,
   isItemDisabled,
   ITEM_VALUE_ATTR,
@@ -18,6 +19,9 @@ import { contextMenuAnatomy, contextMenuItemQuery, contextMenuItemText } from '.
 import { CONTEXT_MENU_DEFAULT_PLACEMENT } from './context-menu.machine'
 
 const parts = contextMenuAnatomy.build()
+
+// 指针亲手点亮过的条目：pointerleave 只收自己点的漆，键盘建立的锚点被指针路过不受影响
+const pointerHot = new WeakSet<Element>()
 
 /** 右键那一下的 button 值；它不算「点到别处」。 */
 const SECONDARY_BUTTON = 2
@@ -206,6 +210,11 @@ export function connectContextMenu<T extends PropTypes>(
       'data-placement': placement,
       // 收起时留在 DOM 只隐藏，不卸载作者节点
       'hidden': !open || undefined,
+      // content 自身拿到焦点＝没有活动条目：锚点清空，Tab 停靠点回容器兜底
+      'onFocus': (event: FocusEvent) => {
+        if (event.target === event.currentTarget)
+          send({ type: 'FOCUS.CLEAR' })
+      },
       'onKeyDown': (event: KeyboardEvent) => {
         const content = event.currentTarget as HTMLElement
         // 纵向菜单：左右键返回 null，放行给页面滚动
@@ -254,11 +263,27 @@ export function connectContextMenu<T extends PropTypes>(
       },
       // 禁用条目被聚焦也记锚点，方向键才有起点
       'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
-      // 指针划过即把焦点搬来：活动项只有一个，hover 与键盘高亮不再各亮各的
+      // 指针划过即把焦点搬来：活动项只有一个，hover 与键盘高亮不再各亮各的；
+      // 只聚焦不滚动，滚动留给键盘导航
       'onPointerenter': (event: PointerEvent) => {
         const el = event.currentTarget as HTMLElement
-        if (!isItemDisabled(el) && anchor !== item.value)
-          focusItem(el)
+        if (isItemDisabled(el) || anchor === item.value)
+          return
+        pointerHot.add(el)
+        focusSafely(el)
+      },
+      // 指针离开且没落到本菜单的其他位置：焦点还给 content，锚点随其 onFocus 清空。
+      // 触摸 tap 序列里的 leave 不作数；子菜单触发条目在子层展开时保持高亮标记打开路径
+      'onPointerleave': (event: PointerEvent) => {
+        const el = event.currentTarget as HTMLElement
+        if (event.pointerType === 'touch' || !pointerHot.delete(el))
+          return
+        if (el.getAttribute('aria-expanded') === 'true' || el.ownerDocument.activeElement !== el)
+          return
+        const content = el.ownerDocument.getElementById(ids.content)
+        if (!content || content.contains(event.relatedTarget as Node | null))
+          return
+        content.focus()
       },
     }),
 

@@ -9,6 +9,9 @@ import { COMBOBOX_DEFAULT_PLACEMENT } from './combobox.machine'
 
 const parts = comboboxAnatomy.build()
 
+// 指针亲手点亮过的条目：pointerleave 只收自己点的漆，键盘/打字建立的高亮被指针路过不受影响
+const pointerHot = new WeakSet<Element>()
+
 /**
  * 输入宿主是不是多行。
  *
@@ -406,9 +409,23 @@ export function connectCombobox<T extends PropTypes>(
         send({ type: 'ITEM.SELECT', value: item.value, label: comboboxItemText(event.currentTarget as HTMLElement) })
       },
       // 指针划过即高亮：不同步的话，鼠标停在 A 上、回车却提交了键盘高亮的 B
-      'onPointerMove': () => {
-        if (interactive && !itemDisabled(item) && highlighted !== item.value)
+      'onPointerMove': (event: PointerEvent) => {
+        if (interactive && !itemDisabled(item) && highlighted !== item.value) {
+          pointerHot.add(event.currentTarget as Element)
           send({ type: 'ITEM.HIGHLIGHT', value: item.value })
+        }
+      },
+      // 指针离开且没落到别的可用条目上：收掉高亮，hover 不留漆。
+      // 触摸 tap 序列里的 leave 不作数；打字建立的高亮被指针路过不受影响
+      'onPointerLeave': (event: PointerEvent) => {
+        if (event.pointerType === 'touch' || !pointerHot.delete(event.currentTarget as Element))
+          return
+        if (!interactive || highlighted !== item.value)
+          return
+        const to = (event.relatedTarget as HTMLElement | null)?.closest<HTMLElement>(parts.item.selector)
+        if (to && !to.hasAttribute('data-disabled'))
+          return
+        send({ type: 'HIGHLIGHT.CLEAR' })
       },
     }),
 

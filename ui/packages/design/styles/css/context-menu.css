@@ -149,7 +149,7 @@
   /* 键盘高亮与指针高亮共用一套底色：条目本身承载焦点，不另画描边。
      data-highlighted 跟的是连接层记的焦点条目，与 :focus 说的是同一件事，
      子部件够不着那个伪类，只能读这个标记 */
-  [data-scope='context-menu'][data-part='item']:not([data-disabled]):is(:hover, :focus, [data-highlighted]) {
+  [data-scope='context-menu'][data-part='item']:not([data-disabled]):is(:hover, :focus, [data-highlighted], [data-state='open']) {
     background: var(--xh-context-menu-item-bg-highlight, var(--xh-_context-menu-item-highlight-bg));
   }
 

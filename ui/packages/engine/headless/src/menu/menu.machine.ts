@@ -74,6 +74,7 @@ export const menuMachine = createMachine({
           { target: 'closed', actions: ['invokeOnSelect', 'setReturnFocus', 'invokeOnClose'] },
         ],
         'ITEM.FOCUS': { actions: ['setFocusedValue'] },
+        'FOCUS.CLEAR': { actions: ['clearFocusedValue'] },
         // 焦点条目被移出 DOM 时重挑锚点
         'ITEM.LOST': { actions: ['clearFocusedValue', 'setInitialFocusedValue'] },
         'CONTROLLED.CLOSE': { target: 'closed' },
@@ -155,7 +156,16 @@ export const menuMachine = createMachine({
             openDelay: prop('hoverOpenDelay'),
             closeDelay: prop('hoverCloseDelay'),
             onOpenIntent: () => send({ type: 'OPEN', focus: 'none' }),
-            onCloseIntent: () => send({ type: 'CLOSE', src: 'hover' }),
+            onCloseIntent: () => {
+              send({ type: 'CLOSE', src: 'hover' })
+              // 悬停收口时焦点若还留在触发条目或本层 content 上，让渡给父层 content：
+              // 父层 content 的 onFocus 会把父层锚点清掉，触发条目不残留高亮
+              const trigger = refs.get('getAnchorEl')()
+              const content = refs.get('getContentEl')()
+              const active = trigger?.ownerDocument.activeElement
+              if (trigger && (active === trigger || (content != null && active === content)))
+                trigger.closest<HTMLElement>('[data-part="content"]')?.focus()
+            },
           })
         })
         return () => {

@@ -1,11 +1,14 @@
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { PopselectApi, PopselectItemProps, PopselectNodeMeta, PopselectService } from './popselect.types'
-import { focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
+import { focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/kernel'
 import { popselectAnatomy, popselectItemQuery, popselectItemText } from './popselect.anatomy'
 
 const parts = popselectAnatomy.build()
+
+// 指针亲手点亮过的条目：pointerleave 只收自己点的漆，键盘建立的高亮被指针路过不受影响
+const pointerHot = new WeakSet<Element>()
 
 export function connectPopselect<T extends PropTypes>(
   service: PopselectService,
@@ -252,10 +255,29 @@ export function connectPopselect<T extends PropTypes>(
       },
       // 焦点是事实不是许可：禁用条目被聚焦也记锚点，作为方向键起点
       'onFocus': () => listbox.send({ type: 'ITEM.FOCUS', value: item.value }),
-      // 指针划过即高亮：不同步的话，鼠标停在 A 上、回车却提交了键盘高亮的 B
-      'onPointerMove': () => {
-        if (!itemDisabled(item) && focusedValue !== item.value)
-          listbox.send({ type: 'ITEM.FOCUS', value: item.value })
+      // 指针划过即把焦点连同高亮一起搬来：不同步的话，鼠标停在 A 上、回车却提交了键盘高亮的 B；
+      // 只聚焦不滚动，滚动留给键盘导航
+      'onPointerMove': (event: PointerEvent) => {
+        if (itemDisabled(item) || focusedValue === item.value)
+          return
+        const el = event.currentTarget as HTMLElement
+        pointerHot.add(el)
+        focusSafely(el)
+        listbox.send({ type: 'ITEM.FOCUS', value: item.value })
+      },
+      // 指针离开且没落到别的可用条目上：收掉高亮、焦点还给 content，hover 不留漆。
+      // 触摸 tap 序列里的 leave 不作数
+      'onPointerLeave': (event: PointerEvent) => {
+        const el = event.currentTarget as HTMLElement
+        if (event.pointerType === 'touch' || !pointerHot.delete(el))
+          return
+        if (focusedValue !== item.value)
+          return
+        const to = (event.relatedTarget as HTMLElement | null)?.closest<HTMLElement>(parts.item.selector)
+        if (to && !to.hasAttribute('data-disabled'))
+          return
+        el.closest<HTMLElement>(parts.content.selector)?.focus()
+        listbox.send({ type: 'FOCUS.CLEAR' })
       },
     }),
 

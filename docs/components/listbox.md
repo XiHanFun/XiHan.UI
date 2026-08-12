@@ -82,7 +82,7 @@ selection-mode 直接指定三种模式，extended 是「单击换一条、Ctrl 
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `LIST.BLUR`
+**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `FOCUS.CLEAR` · `LIST.BLUR`
 
 ## connect API
 

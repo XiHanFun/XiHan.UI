@@ -2,12 +2,15 @@ import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { SelectApi, SelectItemProps, SelectNodeMeta, SelectSchema } from './select.types'
-import { focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
+import { focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
 import { selectAnatomy, selectItemQuery, selectItemText } from './select.anatomy'
 import { SELECT_DEFAULT_PLACEMENT } from './select.machine'
 
 const parts = selectAnatomy.build()
+
+// 指针亲手点亮过的条目：pointerleave 只收自己点的漆，键盘建立的高亮被指针路过不受影响
+const pointerHot = new WeakSet<Element>()
 
 // 隐藏 select 要留在布局与表单里，不能 display:none——原生校验提示需要一个可定位的框。
 const HIDDEN_SELECT_STYLE = {
@@ -281,10 +284,29 @@ export function connectSelect<T extends PropTypes>(
       },
       // 焦点是事实不是许可：禁用条目被点到也记锚点，方向键才知道从哪儿起步
       'onFocus': () => send({ type: 'ITEM.HIGHLIGHT', value: item.value }),
-      // 指针划过即高亮：不同步的话，鼠标停在 A 上、回车却提交了键盘高亮的 B
-      'onPointerMove': () => {
-        if (!itemDisabled(item) && highlighted !== item.value)
-          send({ type: 'ITEM.HIGHLIGHT', value: item.value })
+      // 指针划过即把焦点连同高亮一起搬来：不同步的话，鼠标停在 A 上、回车却提交了键盘高亮的 B；
+      // 只聚焦不滚动，滚动留给键盘导航
+      'onPointerMove': (event: PointerEvent) => {
+        if (itemDisabled(item) || highlighted === item.value)
+          return
+        const el = event.currentTarget as HTMLElement
+        pointerHot.add(el)
+        focusSafely(el)
+        send({ type: 'ITEM.HIGHLIGHT', value: item.value })
+      },
+      // 指针离开且没落到别的可用条目上：收掉高亮、焦点还给 content，hover 不留漆。
+      // 触摸 tap 序列里的 leave 不作数
+      'onPointerLeave': (event: PointerEvent) => {
+        const el = event.currentTarget as HTMLElement
+        if (event.pointerType === 'touch' || !pointerHot.delete(el))
+          return
+        if (highlighted !== item.value)
+          return
+        const to = (event.relatedTarget as HTMLElement | null)?.closest<HTMLElement>(parts.item.selector)
+        if (to && !to.hasAttribute('data-disabled'))
+          return
+        send({ type: 'HIGHLIGHT.CLEAR' })
+        el.ownerDocument.getElementById(ids.content)?.focus()
       },
     }),
     getItemTextProps: item => normalize.element({
