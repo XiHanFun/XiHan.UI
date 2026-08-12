@@ -1,0 +1,24 @@
+{
+  "$description": "density 轴 · compact 档：只写与 comfortable 基线不同的覆盖项。收的是盒子（高度/内距/间隙），不动字号与字形，可读性不随密度掉。",
+  "control": {
+    "h-sm": { "$type": "dimension", "$value": "24px" },
+    "h-md": { "$type": "dimension", "$value": "28px" },
+    "h-lg": { "$type": "dimension", "$value": "36px" },
+    "px-sm": { "$type": "dimension", "$value": "{space.1_5}" },
+    "px-md": { "$type": "dimension", "$value": "{space.2}" },
+    "px-lg": { "$type": "dimension", "$value": "{space.3}" },
+    "gap-md": { "$type": "dimension", "$value": "{space.1_5}" },
+    "gap-lg": { "$type": "dimension", "$value": "{space.1_5}" },
+    "action-size": { "$type": "dimension", "$value": "1.25rem" },
+    "indicator-size": { "$type": "dimension", "$value": "0.875rem" }
+  },
+  "field": {
+    "py": { "$type": "dimension", "$value": "{space.1_5}" }
+  },
+  "section": {
+    "py": { "$type": "dimension", "$value": "{space.4}" }
+  },
+  "stack": {
+    "gap-md": { "$type": "dimension", "$value": "{space.3}" }
+  }
+}
