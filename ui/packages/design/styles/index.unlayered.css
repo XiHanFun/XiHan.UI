@@ -11931,17 +11931,32 @@
   white-space: nowrap;
 }
 
-/* 折叠成图标栏：文字与展开指示整个藏掉、行内容居中，不裁半个字 */
-[data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='branch-text'],
-[data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='link-text'],
-[data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='branch-indicator'] {
+/* 折叠成图标栏：文字与展开指示整个藏掉、行内容居中，不裁半个字。
+   弹出面板里的行不在此列——面板是正常宽度的浮层，文字照常显示 */
+[data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='branch-text']:not([data-popout] *),
+[data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='link-text']:not([data-popout] *),
+[data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='branch-indicator']:not([data-popout] *) {
   display: none;
 }
 
-[data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='branch-trigger'],
-[data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='link'] {
+[data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='branch-trigger']:not([data-popout] *),
+[data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='link']:not([data-popout] *) {
   justify-content: center;
   padding-inline: 0;
+}
+
+/* 折叠态的弹出面板：贴着触发按钮旁侧的浮层卡片，坐标由连接层写在行内样式上。
+   面板自己不吃子层缩进（padding 整圈盖掉），面板内的嵌套子层照常缩进 */
+[data-scope='side-nav'][data-part='branch-content'][data-popout] {
+  z-index: var(--xh-side-nav-popout-layer, var(--xh-layer-popover));
+  min-inline-size: var(--xh-side-nav-popout-min-w, var(--xh-overlay-menu-min-w));
+  max-inline-size: var(--xh-side-nav-popout-max-w, var(--xh-overlay-max-w));
+  padding: var(--xh-side-nav-popout-p, var(--xh-space-1));
+  border: var(--xh-stroke-thin) solid var(--xh-side-nav-popout-border, var(--xh-border-default));
+  border-radius: var(--xh-side-nav-popout-radius, var(--xh-shape-surface));
+  background: var(--xh-side-nav-popout-bg, var(--xh-bg-surface));
+  box-shadow: var(--xh-side-nav-popout-shadow, var(--xh-elevation-2));
+  pointer-events: auto;
 }
 
 [data-scope='side-nav'][data-part='branch-indicator'] {

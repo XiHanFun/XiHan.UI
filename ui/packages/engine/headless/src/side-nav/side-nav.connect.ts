@@ -9,11 +9,14 @@ import { sideNavAnatomy, sideNavLinkQuery, sideNavTriggerQuery } from './side-na
 
 const parts = sideNavAnatomy.build()
 
+// 悬停弹出的延时句柄：整页同时只有一个指针，单句柄即可
+let popoutHoverTimer: ReturnType<typeof setTimeout> | undefined
+
 export function connectSideNav<T extends PropTypes>(
   service: Service<SideNavSchema>,
   normalize: NormalizeProps<T>,
 ): SideNavApi<T> {
-  const { context, prop, send, scope } = service
+  const { context, prop, send, scope, state } = service
   const collection = prop('collection') ?? []
   const value = context.get('value')
   const expandedValue = context.get('expandedValue')
@@ -21,6 +24,14 @@ export function connectSideNav<T extends PropTypes>(
   const disabled = !!prop('disabled')
   const loop = prop('loop') ?? false
   const dir = prop('dir') ?? 'ltr'
+  // 折叠态下顶层分支换装浮层弹出；collapsedPopout 关掉即回到纯图标栏。
+  // 弹出与否看状态位：context 里的 popoutValue 在关闭后留给效应拆除用，不外露
+  const popoutEnabled = collapsed && (prop('collapsedPopout') ?? true)
+  const popoutValue = popoutEnabled && state.get() === 'popout' ? context.get('popoutValue') : null
+  const popoutPosition = context.get('popoutPosition')
+  /** 事件回调里现读的弹出分支；渲染期快照失效后仍然准确。 */
+  const livePopout = (): string | null =>
+    state.get() === 'popout' ? context.get('popoutValue') ?? null : null
 
   // 摊平与索引都是纯函数；折叠成图标栏时内嵌展开整体收起，可见行只剩顶层
   const rows = flattenTree(collection, collapsed ? [] : expandedValue)
@@ -54,6 +65,29 @@ export function connectSideNav<T extends PropTypes>(
   // 配对 id 由 scope 派生，同页多实例不相撞
   const groupLabelId = (v: string): string => scope.partId('side-nav', `group-label-${v}`)
   const contentId = (v: string): string => scope.partId('side-nav', `content-${v}`)
+  const triggerId = (v: string): string => scope.partId('side-nav', `trigger-${v}`)
+
+  const isTopLevel = (v: string): boolean => (metaOf(v)?.parent ?? null) == null
+  /** 该分支行在折叠态下是弹出面板的触发按钮。 */
+  const isPopoutTrigger = (v: string): boolean => popoutEnabled && isTopLevel(v)
+  /** 该子层容器在折叠态下渲染成弹出面板（顶层）；面板内的嵌套子层静态常开。 */
+  const isPopoutPanel = isPopoutTrigger
+
+  /** 面板里的行集合：分支按钮与链接按文档序混排。 */
+  const panelRows = (panel: HTMLElement): HTMLElement[] =>
+    [...panel.querySelectorAll<HTMLElement>(
+      '[data-scope="side-nav"][data-part="branch-trigger"], [data-scope="side-nav"][data-part="link"]',
+    )]
+
+  /** 弹出某顶层分支：开着别的分支时先关再开，效应随状态重挂换锚。 */
+  const openPopout = (v: string, focus: 'first' | 'none'): void => {
+    if (disabled)
+      return
+    const current = livePopout()
+    if (current != null && current !== v)
+      send({ type: 'POPOUT.CLOSE' })
+    send({ type: 'POPOUT.OPEN', value: v, focus })
+  }
 
   /** 可见行对应的行元素，按可见序排列，只在事件那一刻读活 DOM。 */
   const visibleEls = (root: HTMLElement): HTMLElement[] => {
@@ -99,6 +133,45 @@ export function connectSideNav<T extends PropTypes>(
     const expandKey = dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight'
     const collapseKey = dir === 'rtl' ? 'ArrowRight' : 'ArrowLeft'
 
+    // 折叠态：顶层分支的确认/展开键弹出面板并落焦第一行，收起键收面板
+    if (branch && isPopoutTrigger(v)) {
+      if (event.key === expandKey || event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault()
+        if (popoutValue !== v) {
+          openPopout(v, 'first')
+          return
+        }
+        // 已开着再按：进面板第一行
+        const panel = root.ownerDocument.getElementById(contentId(v))
+        if (panel)
+          focusItem(navigateItems(panelRows(panel), null, 'first'))
+        return
+      }
+      if (event.key === collapseKey && popoutValue === v) {
+        event.preventDefault()
+        send({ type: 'POPOUT.CLOSE', src: 'keyboard' })
+        return
+      }
+    }
+
+    // 折叠态：弹出面板内的行走面板内序列，收起键把面板收回（焦点归还触发按钮）
+    if (popoutEnabled && !isTopLevel(v)) {
+      const panel = (event.currentTarget as HTMLElement).closest<HTMLElement>('[data-part="branch-content"][data-popout]')
+      if (panel) {
+        if (event.key === collapseKey) {
+          event.preventDefault()
+          send({ type: 'POPOUT.CLOSE', src: 'keyboard' })
+          return
+        }
+        const intent = navIntentFromKey(event, { axis: 'vertical', dir })
+        if (intent) {
+          event.preventDefault()
+          focusItem(navigateItems(panelRows(panel), itemValue(event.currentTarget as HTMLElement), intent, { loop: false }))
+        }
+        return
+      }
+    }
+
     if (event.key === expandKey) {
       event.preventDefault()
       if (branch && !isExpanded(v)) {
@@ -135,6 +208,7 @@ export function connectSideNav<T extends PropTypes>(
     value,
     expandedValue: collapsed ? [] : expandedValue,
     collapsed,
+    popoutValue,
     focusedValue,
     isSelected,
     isExpanded,
@@ -144,6 +218,11 @@ export function connectSideNav<T extends PropTypes>(
     setExpandedValue: next => send({ type: 'EXPANDED.SET', value: next }),
     expand: v => send({ type: 'BRANCH.EXPAND', value: v }),
     collapse: v => send({ type: 'BRANCH.COLLAPSE', value: v }),
+    openPopout: (v) => {
+      if (isPopoutTrigger(v))
+        openPopout(v, 'none')
+    },
+    closePopout: () => send({ type: 'POPOUT.CLOSE' }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -178,21 +257,55 @@ export function connectSideNav<T extends PropTypes>(
       'data-disabled': dataAttr(isDisabled(v)),
     }),
 
-    getBranchTriggerProps: ({ value: v }) => normalize.button({
-      ...parts['branch-trigger'].attrs,
-      'type': 'button',
-      'data-value': v,
-      'aria-expanded': isExpanded(v) ? 'true' : 'false',
-      'aria-controls': contentId(v),
-      'data-state': isExpanded(v) ? 'open' : 'closed',
-      'data-active': dataAttr(isActiveBranch(v)),
-      'data-disabled': dataAttr(isDisabled(v)),
-      'disabled': isDisabled(v) || undefined,
-      'tabindex': anchor === v ? 0 : -1,
-      'onClick': () => send({ type: 'BRANCH.TOGGLE', value: v }),
-      'onFocus': () => send({ type: 'NODE.FOCUS', value: v }),
-      'onKeydown': (event: KeyboardEvent) => onNodeKeydown(event, v),
-    }),
+    getBranchTriggerProps: ({ value: v }) => {
+      // 折叠态三种形态：顶层分支=弹出触发按钮；面板内嵌套分支=静态展开的组头；平铺照旧
+      const popoutTrigger = isPopoutTrigger(v)
+      const staticOpen = popoutEnabled && !isTopLevel(v)
+      const expandedAttr = popoutTrigger ? popoutValue === v : (staticOpen || isExpanded(v))
+      return normalize.button({
+        ...parts['branch-trigger'].attrs,
+        'type': 'button',
+        'id': triggerId(v),
+        'data-value': v,
+        'aria-expanded': expandedAttr ? 'true' : 'false',
+        'aria-controls': contentId(v),
+        'data-state': expandedAttr ? 'open' : 'closed',
+        'data-active': dataAttr(isActiveBranch(v)),
+        'data-disabled': dataAttr(isDisabled(v)),
+        'disabled': isDisabled(v) || undefined,
+        'tabindex': anchor === v ? 0 : -1,
+        'onClick': () => {
+          if (popoutTrigger) {
+            if (popoutValue === v)
+              send({ type: 'POPOUT.CLOSE', src: 'select' })
+            else
+              openPopout(v, 'none')
+            return
+          }
+          if (staticOpen)
+            return
+          send({ type: 'BRANCH.TOGGLE', value: v })
+        },
+        // 悬停延时弹出；触摸没有悬停，tap 走 click
+        'onPointerenter': (event: PointerEvent) => {
+          if (!popoutTrigger || event.pointerType === 'touch' || isDisabled(v))
+            return
+          clearTimeout(popoutHoverTimer)
+          if (livePopout() === v)
+            return
+          popoutHoverTimer = setTimeout(() => {
+            if (livePopout() !== v)
+              openPopout(v, 'none')
+          }, 100)
+        },
+        'onPointerleave': () => {
+          if (popoutTrigger)
+            clearTimeout(popoutHoverTimer)
+        },
+        'onFocus': () => send({ type: 'NODE.FOCUS', value: v }),
+        'onKeydown': (event: KeyboardEvent) => onNodeKeydown(event, v),
+      })
+    },
 
     getBranchTextProps: () => normalize.element({
       ...parts['branch-text'].attrs,
@@ -201,15 +314,47 @@ export function connectSideNav<T extends PropTypes>(
     getBranchIndicatorProps: ({ value: v }) => normalize.element({
       ...parts['branch-indicator'].attrs,
       'aria-hidden': 'true',
-      'data-state': isExpanded(v) ? 'open' : 'closed',
+      'data-state': (popoutEnabled && !isTopLevel(v)) || isExpanded(v) ? 'open' : 'closed',
     }),
 
-    getBranchContentProps: ({ value: v }) => normalize.element({
-      ...parts['branch-content'].attrs,
-      'id': contentId(v),
-      'data-state': isExpanded(v) ? 'open' : 'closed',
-      'hidden': !isExpanded(v) || undefined,
-    }),
+    getBranchContentProps: ({ value: v }) => {
+      // 折叠态：顶层子层是被定位的弹出面板；面板内的嵌套子层静态常开。
+      // 关闭与平铺分支都显式清空定位声明（逐属性清而非摘掉整个 style），
+      // 折叠开关来回切换时不残留 fixed 坐标，作者写的其他内联样式不受波及
+      const clearPosition = { position: '', insetInlineStart: '', insetBlockStart: '' }
+      if (isPopoutPanel(v)) {
+        const open = popoutValue === v
+        return normalize.element({
+          ...parts['branch-content'].attrs,
+          'id': contentId(v),
+          'data-popout': '',
+          'data-state': open ? 'open' : 'closed',
+          'data-placement': popoutPosition?.placement ?? (dir === 'rtl' ? 'left-start' : 'right-start'),
+          'hidden': !open || undefined,
+          'style': open
+            ? {
+                position: 'fixed',
+                insetInlineStart: `${popoutPosition?.x ?? 0}px`,
+                insetBlockStart: `${popoutPosition?.y ?? 0}px`,
+              }
+            : clearPosition,
+        })
+      }
+      if (popoutEnabled && !isTopLevel(v)) {
+        return normalize.element({
+          ...parts['branch-content'].attrs,
+          'id': contentId(v),
+          'data-state': 'open',
+        })
+      }
+      return normalize.element({
+        ...parts['branch-content'].attrs,
+        'id': contentId(v),
+        'data-state': isExpanded(v) ? 'open' : 'closed',
+        'hidden': !isExpanded(v) || undefined,
+        'style': isTopLevel(v) ? clearPosition : undefined,
+      })
+    },
 
     getLinkProps: ({ value: v }) => normalize.element({
       ...parts.link.attrs,

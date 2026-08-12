@@ -12,7 +12,7 @@
 
 ### 手风琴与折叠
 
-accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整体收起，文字部件整个隐藏只剩图标），折叠态的子级弹出待浮层子菜单机制落地
+accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整体收起，文字部件整个隐藏只剩图标），折叠态下悬停/点按/右方向键在旁侧弹出子级面板，面板内选中即落值收起；collapsedPopout 设为 false 可关掉弹出
 
 <XhDemo src="side-nav/02-accordion-collapsed" />
 
@@ -42,7 +42,8 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | `expandedValue` | `string[]` |  | 展开集合。给定即受控，语义同上。 |
 | `defaultExpandedValue` | `string[]` |  |  |
 | `accordion` | `boolean` |  | 同层手风琴：展开一枝时收起同层其余分支，默认 false（可多开）。 |
-| `collapsed` | `boolean` |  | 折叠成图标栏：内嵌展开整体收起、文字由皮肤藏掉，只剩图标一列。 折叠态下分支的子级弹出（浮层子菜单）尚未提供，先保持纯视觉档。 |
+| `collapsed` | `boolean` |  | 折叠成图标栏：内嵌展开整体收起、文字由皮肤藏掉，只剩图标一列。 顶层分支换装浮层弹出：悬停/点按/右方向键在旁侧弹出子级面板。 |
+| `collapsedPopout` | `boolean` |  | 折叠态下顶层分支是否弹出子级面板，默认 true；关掉即回到纯图标栏。 |
 | `disabled` | `boolean` |  | 整个侧栏禁用。 |
 | `loop` | `boolean` |  | 上下键走到首尾是否回绕，默认 false。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 |
@@ -52,11 +53,11 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 
 ## 状态机
 
-**状态**：`idle`
+**状态**：`idle` · `popout`
 
-**事件**：`VALUE.SET` · `LINK.SELECT` · `EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `FOCUS.CLEAR`
+**事件**：`VALUE.SET` · `LINK.SELECT` · `EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `NODE.FOCUS` · `FOCUS.CLEAR` · `POPOUT.OPEN` · `POPOUT.CLOSE`
 
-**判据**：`canChange`
+**判据**：`canChange` · `canPopout`
 
 ## connect API
 
@@ -66,7 +67,10 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | --- | --- | --- |
 | `value` | `string \| null` | 选中的叶子；尚未选中为 null。 |
 | `expandedValue` | `string[]` |  |
-| `collapsed` | `boolean` | 折叠成图标栏（纯视觉档）。 |
+| `collapsed` | `boolean` | 折叠成图标栏；顶层分支改为浮层弹出子级面板。 |
+| `popoutValue` | `string \| null` | 折叠态下正弹出子级面板的顶层分支；没弹出为 null。 |
+| `openPopout` | `(value: string) => void` | 弹出某顶层分支的子级面板（仅折叠态有效）。 |
+| `closePopout` | `() => void` |  |
 | `focusedValue` | `string \| null` | roving tabindex 的锚点；无可见锚点为 null。 |
 | `isSelected` | `(value: string) => boolean` |  |
 | `isExpanded` | `(value: string) => boolean` |  |
@@ -102,3 +106,5 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | `ArrowLeft` | focus in 展开的分支行 | 收起该枝；叶子或已收起时回父分支（RTL 与 ArrowRight 对调） |
 | `Home` | focus in 行 | 第一可见行 |
 | `End` | focus in 行 | 最后一可见行 |
+| `ArrowRight` / `Enter` / `Space` | focus in 折叠态顶层分支行 | 弹出子级面板并落焦第一行（RTL 与 ArrowLeft 对调） |
+| `ArrowLeft` / `Escape` | focus in 弹出面板 | 收回面板，焦点还给触发按钮（RTL 与 ArrowRight 对调；Escape 归消解层） |
