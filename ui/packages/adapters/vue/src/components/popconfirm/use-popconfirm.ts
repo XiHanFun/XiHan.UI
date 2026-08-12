@@ -66,10 +66,19 @@ export function usePopconfirm(
     service.refs.set('getContentEl', () => contentRef.value)
   }
 
-  // 每次点击现读 notify，宿主换回调也立刻生效
+  // 异步确认的挂起布尔住在这儿，connect 只发变化意图
+  const pending = ref(false)
+
+  // 每次点击现读 notify，宿主换回调也立刻生效；onConfirm 的返回值原样透传，异步门靠它
   const intents: PopconfirmIntents = {
-    onConfirm: () => { notify?.onConfirm?.() },
+    onConfirm: () => notify?.onConfirm?.(),
     onCancel: () => { notify?.onCancel?.() },
+    get pending() {
+      return pending.value
+    },
+    onPendingChange: (next) => {
+      pending.value = next
+    },
   }
 
   const api = computed(() => connectPopconfirm(service, intents, vueNormalize))

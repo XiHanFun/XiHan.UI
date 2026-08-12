@@ -7,6 +7,9 @@ import { popconfirmAnatomy } from './popconfirm.anatomy'
 
 const parts = popconfirmAnatomy.build()
 
+// 在途的异步确认批次号：取消或新一轮确认把它顶掉，晚到的兑现整批作废
+const confirmSeq = new WeakMap<object, number>()
+
 /**
  * 气泡确认跑 popover 机器：开合、定位、消解层与焦点域全在那里，本组件只贴自己的解剖与角色属性。
  * 确认与取消这两个意图不入机器——它们除了收起浮层不改任何状态，由这里转给回调后再请求收起。
@@ -29,20 +32,52 @@ export function connectPopconfirm<T extends PropTypes>(
       send({ type: next ? 'OPEN' : 'CLOSE' })
   }
 
+  const pending = !!props.pending
+  const bumpSeq = (): number => {
+    const next = (confirmSeq.get(service) ?? 0) + 1
+    confirmSeq.set(service, next)
+    return next
+  }
+
   // 先把意图交出去再请求收起：受控时收起要等宿主写回 open，两件事的先后不能反过来。
-  // CLOSE 不带 src——src 的取值域属于 popover 机器，气泡确认按下按钮这件事它认不出来
+  // CLOSE 不带 src——src 的取值域属于 popover 机器，气泡确认按下按钮这件事它认不出来。
+  // 回调返回 Promise 即挂起确认门：兑现才收起，落空留在原地；挂起中再点无效
   const confirm = (): void => {
-    props.onConfirm?.()
+    if (pending)
+      return
+    const outcome = props.onConfirm?.()
+    if (outcome instanceof Promise) {
+      const seq = bumpSeq()
+      props.onPendingChange?.(true)
+      outcome.then(
+        () => {
+          if (confirmSeq.get(service) !== seq)
+            return
+          props.onPendingChange?.(false)
+          send({ type: 'CLOSE' })
+        },
+        () => {
+          if (confirmSeq.get(service) === seq)
+            props.onPendingChange?.(false)
+        },
+      )
+      return
+    }
     send({ type: 'CLOSE' })
   }
 
   const cancel = (): void => {
+    // 挂起中的确认结果随取消作废
+    bumpSeq()
+    if (pending)
+      props.onPendingChange?.(false)
     props.onCancel?.()
     send({ type: 'CLOSE' })
   }
 
   return {
     open,
+    pending,
     setOpen,
     confirm,
     cancel,
@@ -92,8 +127,11 @@ export function connectPopconfirm<T extends PropTypes>(
     getDescriptionProps: () => normalize.element({ ...parts.description.attrs, id: ids.description }),
     getConfirmTriggerProps: () => normalize.button({
       ...parts['confirm-trigger'].attrs,
-      type: 'button',
-      onClick: confirm,
+      'type': 'button',
+      // 挂起不算禁用：仍可聚焦，读屏经 aria-busy 知道在忙
+      'aria-busy': pending ? 'true' : undefined,
+      'data-loading': dataAttr(pending),
+      'onClick': confirm,
     }),
     getCancelTriggerProps: () => normalize.button({
       ...parts['cancel-trigger'].attrs,

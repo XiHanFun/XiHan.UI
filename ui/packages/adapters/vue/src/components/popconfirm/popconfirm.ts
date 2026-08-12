@@ -16,12 +16,17 @@ export const XhPopconfirmRoot = defineComponent({
     closeOnEscape: { type: Boolean, default: true },
     closeOnInteractOutside: { type: Boolean, default: true },
     size: { type: String as PropType<Size>, default: undefined },
+    /**
+     * 确认回调走函数 prop 而非 emit：emit 拿不到监听函数的返回值，而异步门就吃它——
+     * 返回 Promise 即挂起（浮层等兑现才收、确认按钮转圈），落空留在原地。
+     * 模板里照旧写 @confirm，Vue 会把它落到这个 prop 上。
+     */
+    onConfirm: { type: Function as PropType<PopconfirmNotifiers['onConfirm']>, default: undefined },
   },
-  // open-change 携带 { open }，update:open 携带裸布尔；confirm / cancel 不带载荷
+  // open-change 携带 { open }，update:open 携带裸布尔；cancel 不带载荷
   emits: {
     'open-change': (_details: PayloadOf<PopconfirmProps, 'onOpenChange'>) => true,
     'update:open': (_open: PayloadOf<PopconfirmProps, 'onOpenChange'>['open']) => true,
-    'confirm': () => true,
     'cancel': () => true,
   },
   setup(props, { slots, emit }) {
@@ -30,13 +35,14 @@ export const XhPopconfirmRoot = defineComponent({
         emit('open-change', details)
         emit('update:open', details.open)
       },
-      onConfirm: () => { emit('confirm') },
+      onConfirm: () => props.onConfirm?.(),
       onCancel: () => { emit('cancel') },
     }
     const ctx = usePopconfirm(props as PopconfirmOverlayProps, notify)
     providePopconfirm(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       open: ctx.api.value.open,
+      pending: ctx.api.value.pending,
       setOpen: ctx.api.value.setOpen,
       confirm: ctx.api.value.confirm,
       cancel: ctx.api.value.cancel,

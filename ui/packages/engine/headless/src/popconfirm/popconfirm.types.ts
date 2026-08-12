@@ -11,21 +11,33 @@ export type PopconfirmOverlayProps = Omit<PopoverSchema['props'], 'modal' | 'tra
 export interface PopconfirmNotifiers {
   /** open 变化意图；受控时是唯一出口，非受控时随内部转移一并通知。 */
   onOpenChange?: (details: PopoverOpenChangeDetails) => void
-  /** 点了确认按钮，随后浮层收起。 */
-  onConfirm?: () => void
-  /** 点了取消按钮，随后浮层收起。Escape 与层外交互只发 onOpenChange，不发这条。 */
+  /**
+   * 点了确认按钮。返回 Promise 即挂起确认门：浮层等它兑现才收起、
+   * 确认按钮转圈且再点无效，落空（reject）则留在原地不收。同步返回照旧立即收起。
+   */
+  onConfirm?: () => void | Promise<unknown>
+  /** 点了取消按钮，随后浮层收起；挂起中的确认结果随之作废。Escape 与层外交互只发 onOpenChange，不发这条。 */
   onCancel?: () => void
 }
 
-/** connect 用得上的那两个：确认与取消不改开合以外的状态，因此不入机器，由 connect 直接转交。 */
-export type PopconfirmIntents = Pick<PopconfirmNotifiers, 'onConfirm' | 'onCancel'>
+/** 确认动作的挂起通道：布尔由适配器持有并回传，connect 只发变化意图。 */
+export interface PopconfirmPendingChannel {
+  /** 异步确认进行中。 */
+  pending?: boolean
+  onPendingChange?: (pending: boolean) => void
+}
+
+/** connect 用得上的部分：确认与取消不改开合以外的状态，因此不入机器，由 connect 直接转交。 */
+export type PopconfirmIntents = Pick<PopconfirmNotifiers, 'onConfirm' | 'onCancel'> & PopconfirmPendingChannel
 
 export type PopconfirmProps = PopconfirmOverlayProps & PopconfirmNotifiers
 
 export interface PopconfirmApi<T extends PropTypes = PropTypes> {
   open: boolean
+  /** 异步确认进行中：确认按钮转圈、再点无效。 */
+  pending: boolean
   setOpen: (next: boolean) => void
-  /** 发确认意图并请求收起。 */
+  /** 发确认意图并请求收起；异步确认挂起期间再调无效。 */
   confirm: () => void
   /** 发取消意图并请求收起。 */
   cancel: () => void

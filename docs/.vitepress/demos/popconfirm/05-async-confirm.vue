@@ -1,4 +1,4 @@
-<!-- 受控与异步确认 | 传了 open 就由宿主说了算：确认先跑提交，跑完才写回收起 -->
+<!-- 异步确认 | @confirm 返回 Promise 即挂起确认门：浮层等兑现才收起、确认按钮转圈且再点无效，落空（reject）留在原地；不必再手动受控拦收起 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
@@ -12,37 +12,23 @@ import {
   XhPopconfirmTrigger,
 } from "@xihan-ui/vue";
 
-const open = ref(false);
-const submitting = ref(false);
 const result = ref("尚未提交");
 
-// confirm 先到、收起意图后到，所以这里立起的标记来得及拦住那一次收起
+// 返回 Promise：兑现浮层才收；这里用定时器模拟服务端往返
 function onConfirm() {
-  submitting.value = true;
   result.value = "提交中…";
-  window.setTimeout(() => {
-    submitting.value = false;
-    result.value = "已提交";
-    open.value = false;
-  }, 900);
-}
-
-// 提交期间不放行收起：Escape、点外部与确认发出的那一次都按住
-function onOpenChange(details: { open: boolean }) {
-  if (submitting.value) {
-    return;
-  }
-  open.value = details.open;
+  return new Promise<void>((resolve) => {
+    window.setTimeout(() => {
+      result.value = "已提交";
+      resolve();
+    }, 900);
+  });
 }
 </script>
 
 <template>
   <div style="display: flex; align-items: center; gap: 16px">
-    <XhPopconfirmRoot
-      :open="open"
-      @open-change="onOpenChange"
-      @confirm="onConfirm"
-    >
+    <XhPopconfirmRoot v-slot="{ pending }" :on-confirm="onConfirm">
       <XhPopconfirmTrigger>提交审核</XhPopconfirmTrigger>
       <XhPopconfirmPositioner>
         <XhPopconfirmContent>
@@ -52,7 +38,7 @@ function onOpenChange(details: { open: boolean }) {
           </XhPopconfirmDescription>
           <XhPopconfirmCancelTrigger>再看看</XhPopconfirmCancelTrigger>
           <XhPopconfirmConfirmTrigger>
-            {{ submitting ? "提交中…" : "提交" }}
+            {{ pending ? "提交中…" : "提交" }}
           </XhPopconfirmConfirmTrigger>
         </XhPopconfirmContent>
       </XhPopconfirmPositioner>

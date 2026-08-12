@@ -7,5 +7,6 @@ export type {
   PopconfirmIntents,
   PopconfirmNotifiers,
   PopconfirmOverlayProps,
+  PopconfirmPendingChannel,
   PopconfirmProps,
 } from './popconfirm.types'
