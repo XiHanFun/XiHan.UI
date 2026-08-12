@@ -77,6 +77,17 @@ export interface MenuSchema extends MachineSchema {
     tone?: Tone
     /** 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 */
     size?: Size
+    /**
+     * 本菜单是另一张菜单的子菜单：触发器渲染成父菜单的条目形态
+     * （经 getSubmenuTriggerProps），缺省落位换到侧向，悬停触发缺省打开。
+     */
+    submenu?: boolean
+    /** 悬停触发：进触发器延时展开、经安全三角离开才收。子菜单缺省开，普通菜单缺省关。 */
+    openOnHover?: boolean
+    /** 悬停到展开的延时（ms），默认 100。 */
+    hoverOpenDelay?: number
+    /** 离开到收起的延时（ms），也是安全三角里的停滞上限，默认 300。 */
+    hoverCloseDelay?: number
     /** open 变化回调。 */
     onOpenChange?: (details: MenuOpenChangeDetails) => void
     /** 条目被选中；菜单随之关闭。 */
@@ -98,7 +109,7 @@ export interface MenuSchema extends MachineSchema {
   event:
     | { type: 'OPEN', focus?: MenuFocusIntent }
     | { type: 'TOGGLE', focus?: MenuFocusIntent }
-    | { type: 'CLOSE', src?: 'esc' | 'tab' | 'interact-outside' }
+    | { type: 'CLOSE', src?: 'esc' | 'tab' | 'interact-outside' | 'hover' }
     // 受控回写：宿主改 open prop 后由 watch 派发
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
@@ -118,7 +129,7 @@ export interface MenuSchema extends MachineSchema {
     | 'setFocusedValue'
     | 'setInitialFocusedValue'
     | 'clearFocusedValue'
-  effect: 'trackPosition' | 'trackLayer'
+  effect: 'trackPosition' | 'trackLayer' | 'trackHover'
 }
 
 export interface MenuApi<T extends PropTypes = PropTypes> {
@@ -132,6 +143,12 @@ export interface MenuApi<T extends PropTypes = PropTypes> {
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
   getItemProps: (props: MenuItemProps) => T['element']
+  /**
+   * 子菜单触发条目（submenu 模式）：既是父菜单里的一条 item（value 是它在父菜单
+   * 里的身份，父层的方向键与高亮照常认它），又是本子菜单的触发器（aria-haspopup、
+   * 悬停/点按/右方向键展开）。父层的选中会跳过带 aria-haspopup 的条目。
+   */
+  getSubmenuTriggerProps: (props: MenuItemProps) => T['element']
   getSeparatorProps: () => T['element']
   getArrowProps: () => T['element']
 }
