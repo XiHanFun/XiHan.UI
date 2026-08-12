@@ -40,6 +40,12 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 
 <XhDemo src="toaster/06-per-toast-placement" />
 
+### 全局服务
+
+createToastService 自带宿主与默认模板，模块作用域随处可调（请求拦截器、store）；组件树内的组合用法见前几例
+
+<XhDemo src="toaster/07-global-service" />
+
 ## 产物
 
 | 层 | 值 |
