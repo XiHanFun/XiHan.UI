@@ -31,6 +31,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} open - 受控开合；缺省该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {boolean} disabled - 整个控件禁用：trigger 用原生 disabled，表单影子不参与提交
+ * @attr {boolean} invalid - 校验错误态：trigger 标红并输出 aria-invalid
  * @attr {boolean} required - 原生表单校验：无选中值时提交被拦下；多选下的门槛是至少选中一项
  * @attr {string} name - 表单字段名；给定后表单影子才带 name 并参与提交
  * @attr {string} placeholder - 无选中时 value-text 显示的占位文字
@@ -69,6 +70,7 @@ export class XhSelectElement extends XhElement {
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     disabled: { type: Boolean },
+    invalid: { type: Boolean },
     required: { type: Boolean },
     name: { converter: STRING_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
@@ -89,6 +91,7 @@ export class XhSelectElement extends XhElement {
   declare open?: boolean
   declare defaultOpen?: boolean
   declare disabled?: boolean
+  declare invalid?: boolean
   declare required?: boolean
   declare name?: string
   declare placeholder?: string
@@ -137,6 +140,7 @@ export class XhSelectElement extends XhElement {
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       disabled: this.disabled ?? false,
+      invalid: this.invalid ?? false,
       required: this.required ?? false,
       name: this.name,
       placeholder: this.placeholder,

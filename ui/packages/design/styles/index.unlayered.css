@@ -11632,8 +11632,13 @@
   cursor: pointer;
 }
 
-[data-scope='select'][data-part='trigger']:hover:not(:disabled) {
+/* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+[data-scope='select'][data-part='trigger']:hover:not(:disabled, [data-invalid]) {
   border-color: var(--xh-select-trigger-border-hover, var(--xh-_select-trigger-border-hover));
+}
+
+[data-scope='select'][data-part='trigger'][data-invalid] {
+  border-color: var(--xh-select-trigger-border-invalid, var(--xh-color-danger-500));
 }
 
 [data-scope='select'][data-part='trigger']:focus-visible {

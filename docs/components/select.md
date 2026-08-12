@@ -90,7 +90,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 ### 校验状态
 
-校验结论由宿主给出：告警描边写进触发器的使用者令牌，错误文案用 aria-describedby 挂到触发器上
+校验结论由宿主给出：invalid 让触发器标红并输出 aria-invalid，错误文案用 aria-describedby 挂到触发器上
 
 <XhDemo src="select/15-invalid" />
 
@@ -133,6 +133,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `open` | `boolean` |  | 展开态。给定即受控：内部不再自改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 用原生 disabled，隐藏 select 不参与提交。 |
+| `invalid` | `boolean` |  | 校验错误态：trigger 标红并输出 aria-invalid。 |
 | `required` | `boolean` |  | 原生表单校验：无选中值时提交被拦下。 |
 | `name` | `string` |  | 表单字段名。给定后隐藏 select 才带 name，选中值随表单一并提交。 |
 | `placeholder` | `string` |  | 无选中时 value-text 显示的占位文字。 |
@@ -166,6 +167,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `valueText` | `string[]` | 选中项的文本，与 value 逐项等长对应；某项在 DOM 里查不到条目时该项退回值本身。 |
 | `displayText` | `string` | value-text 实际显示的文字：有选中取其文本（多选按半角逗号加空格连起来），否则取 placeholder。 |
 | `multiple` | `boolean` | 是否允许多选。 |
+| `invalid` | `boolean` | 校验错误态。 |
 | `highlightedValue` | `string \| null` | 高亮锚点；收起时为 null。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string \| string[]) => void` |  |

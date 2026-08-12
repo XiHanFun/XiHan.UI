@@ -63,6 +63,7 @@ export function connectSelect<T extends PropTypes>(
   // roving tabindex 与方向键起点共用这一个锚点；收起时为 null（条目此刻不可达）
   const highlighted = context.get('highlightedValue') ?? null
   const disabled = !!prop('disabled')
+  const invalid = !!prop('invalid')
   const loop = prop('loop') ?? true
   const dir = prop('dir')
 
@@ -122,6 +123,7 @@ export function connectSelect<T extends PropTypes>(
     valueText,
     displayText,
     multiple,
+    invalid,
     highlightedValue: highlighted,
     setOpen: (next) => {
       if (next !== open)
@@ -136,6 +138,7 @@ export function connectSelect<T extends PropTypes>(
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
+      'data-invalid': dataAttr(invalid),
     }),
     getLabelProps: () => normalize.element({
       ...parts.label.attrs,
@@ -155,8 +158,10 @@ export function connectSelect<T extends PropTypes>(
       // 名字 = 标签 + 当前值：aria-labelledby 优先级高于元素内容，只指 label 会挤掉 value-text。
       // 作者没写 label 时那段是悬空 IDREF，按 accname 规则跳过。
       'aria-labelledby': `${ids.label} ${ids['value-text']}`,
+      'aria-invalid': invalid ? 'true' : 'false',
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
+      'data-invalid': dataAttr(invalid),
       'data-placeholder': dataAttr(value.length === 0),
       'onClick': () => send({ type: 'TOGGLE', focus: 'selected' }),
       'onKeydown': (event: KeyboardEvent) => {
