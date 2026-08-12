@@ -1,30 +1,31 @@
-<!-- 再点一次清空 | 点中当前那一档就清回“还没评”，靠指针按下时的快照与本次落点比对 -->
+<!-- 再点一次清空 | allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在最低档再往下走一步同样清零；设为 false 关掉 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/vue";
 
 const score = ref(3);
-// 条目内部的点击会先把评分改掉，旧值得在指针按下那一刻先记住
-const before = ref(0);
-
-function clearIfSame(index: number) {
-  if (before.value === index) score.value = 0;
-}
+const sticky = ref(3);
 </script>
 
 <template>
-  <XhRatingRoot v-slot="{ items }" v-model:value="score">
-    <XhRatingLabel>整体满意度</XhRatingLabel>
-    <XhRatingControl>
-      <XhRatingItem
-        v-for="i in items"
-        :key="i"
-        :value="i"
-        @pointerdown="before = score"
-        @click="clearIfSame(i)"
-      >★</XhRatingItem>
-    </XhRatingControl>
-  </XhRatingRoot>
-  <p>当前：{{ score === 0 ? "还没评" : score }}</p>
-  <button type="button" @click="score = 0">清空</button>
+  <div style="display: grid; gap: 12px">
+    <div>
+      <XhRatingRoot v-slot="{ items }" v-model:value="score">
+        <XhRatingLabel>整体满意度（可清空）</XhRatingLabel>
+        <XhRatingControl>
+          <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        </XhRatingControl>
+      </XhRatingRoot>
+      <p style="margin: 4px 0 0; font-size: 13px">当前：{{ score === 0 ? "还没评" : score }}</p>
+    </div>
+    <div>
+      <XhRatingRoot v-slot="{ items }" v-model:value="sticky" :allow-clear="false">
+        <XhRatingLabel>关掉清空（再点不清）</XhRatingLabel>
+        <XhRatingControl>
+          <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        </XhRatingControl>
+      </XhRatingRoot>
+      <p style="margin: 4px 0 0; font-size: 13px">当前：{{ sticky }}</p>
+    </div>
+  </div>
 </template>

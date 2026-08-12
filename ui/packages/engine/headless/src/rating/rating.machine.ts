@@ -31,7 +31,7 @@ export function clampRating(value: number, count?: number, allowHalf?: boolean):
   return Math.min(Math.round(value / step) * step, max)
 }
 
-/** 键盘走一档，下界为一档而非 0；清空需宿主调 setValue(0)。 */
+/** 键盘走一档，下界为一档而非 0；清零由 stepValue 动作按 allowClear 另判。 */
 export function stepRating(value: number, direction: 1 | -1, count?: number, allowHalf?: boolean): number {
   const max = ratingMax(count)
   if (max <= 0)
@@ -96,13 +96,26 @@ export const ratingMachine = createMachine({
         const e = event.current()
         if (e.type !== 'VALUE.SET' && e.type !== 'ITEM.SELECT')
           return
-        context.set('value', clampRating(e.value, prop('count'), prop('allowHalf')))
+        const next = clampRating(e.value, prop('count'), prop('allowHalf'))
+        // 再点当前档位即清零（allowClear，默认开）；命令式 VALUE.SET 不走这条
+        if (e.type === 'ITEM.SELECT' && (prop('allowClear') ?? true) && next === context.get('value')) {
+          context.set('value', 0)
+          return
+        }
+        context.set('value', next)
       },
       stepValue: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'VALUE.STEP')
           return
-        context.set('value', stepRating(context.get('value'), e.direction, prop('count'), prop('allowHalf')))
+        const current = context.get('value')
+        const step = ratingStep(prop('allowHalf'))
+        // allowClear（默认开）：已在最低档再往下走一步即清零，键盘也能清
+        if ((prop('allowClear') ?? true) && e.direction === -1 && current > 0 && current <= step) {
+          context.set('value', 0)
+          return
+        }
+        context.set('value', stepRating(current, e.direction, prop('count'), prop('allowHalf')))
       },
       toMin: ({ context, prop }) => {
         const max = ratingMax(prop('count'))
