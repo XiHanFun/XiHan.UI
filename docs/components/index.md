@@ -97,7 +97,7 @@
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
-| [菜单](./menu) | `menu` | 6 | 9 | 10 |
+| [菜单](./menu) | `menu` | 6 | 9 | 11 |
 | [菜单栏](./menubar) | `menubar` | 10 | 15 | 9 |
 | [右键菜单](./context-menu) | `context-menu` | 11 | 9 | 8 |
 | [导航菜单](./navigation-menu) | `navigation-menu` | 8 | 7 | 10 |

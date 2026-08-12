@@ -58,6 +58,10 @@ export class XhMenuElement extends XhElement {
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    submenu: { converter: BOOLEAN_CONVERTER },
+    openOnHover: { converter: BOOLEAN_CONVERTER, attribute: 'open-on-hover' },
+    hoverOpenDelay: { converter: NUMBER_CONVERTER, attribute: 'hover-open-delay' },
+    hoverCloseDelay: { converter: NUMBER_CONVERTER, attribute: 'hover-close-delay' },
   }
 
   declare collection?: MenuNode[]
@@ -69,6 +73,10 @@ export class XhMenuElement extends XhElement {
   declare direction?: Direction
   declare tone?: Tone
   declare size?: Size
+  declare submenu?: boolean
+  declare openOnHover?: boolean
+  declare hoverOpenDelay?: number
+  declare hoverCloseDelay?: number
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly menuScope = createScope(null, this.idGen)
@@ -104,6 +112,10 @@ export class XhMenuElement extends XhElement {
       dir: this.direction,
       tone: this.tone,
       size: this.size,
+      submenu: this.submenu,
+      openOnHover: this.openOnHover,
+      hoverOpenDelay: this.hoverOpenDelay,
+      hoverCloseDelay: this.hoverCloseDelay,
       onOpenChange: this.notifyOpen,
       onSelect: this.notifySelect,
     }
@@ -180,7 +192,14 @@ export class XhMenuElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
+    // 子菜单形态的触发器是父菜单里的一条 item（双重身份），身份取节点自报的 value
+    const triggerEl = this.getPart('trigger')
+    if (this.submenu && triggerEl) {
+      this.spreader.spread(triggerEl, api.getSubmenuTriggerProps({ value: triggerEl.getAttribute('value') ?? '' }) as Record<string, unknown>)
+    }
+    else {
+      put('trigger', api.getTriggerProps() as Record<string, unknown>)
+    }
     // positioner 的 style 是对象（position/insetInlineStart/insetBlockStart），
     // spreader 见对象 style 会逐条写内联样式，直接 spread 即可。
     put('positioner', api.getPositionerProps() as Record<string, unknown>)

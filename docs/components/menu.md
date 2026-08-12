@@ -52,9 +52,9 @@ content 里可以直接放任意节点；不是 item 就不进方向键行程，
 
 <XhDemo src="menu/08-item-attrs" />
 
-### 悬停展开
+### 悬停触发
 
-触发器与浮层各挂一对进出事件，进出各自延时；两边的延时都由宿主的定时器管
+open-on-hover 一个 prop：进触发器延时展开，离开后指针经安全三角赶往浮层不误收，走岔或停滞才收起；延时可调
 
 <XhDemo src="menu/09-hover" />
 
@@ -64,12 +64,18 @@ content 里可以直接放任意节点；不是 item 就不进方向键行程，
 
 <XhDemo src="menu/10-group" />
 
+### 二级子菜单
+
+XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照常走、右方向键进子层、子层左方向键退回），悬停经安全三角斜穿不误收，任意层级选中都发根的 select 并整链关闭
+
+<XhDemo src="menu/10-submenu" />
+
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-menu>` |
-| Vue 组件 | `XhMenuArrow` `XhMenuContent` `XhMenuItem` `XhMenuPositioner` `XhMenuRoot` `XhMenuSeparator` `XhMenuTrigger` |
+| Vue 组件 | `XhMenuArrow` `XhMenuContent` `XhMenuItem` `XhMenuPositioner` `XhMenuRoot` `XhMenuSeparator` `XhMenuSub` `XhMenuSubTrigger` `XhMenuTrigger` |
 | 组合式函数 | `useMenu` |
 | 状态机 | `menuMachine` |
 | 皮肤 | `@xihan-ui/styles/menu.css` |
@@ -93,6 +99,10 @@ content 里可以直接放任意节点；不是 item 就不进方向键行程，
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定条目高亮用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 |
+| `submenu` | `boolean` |  | 本菜单是另一张菜单的子菜单：触发器渲染成父菜单的条目形态 （经 getSubmenuTriggerProps），缺省落位换到侧向，悬停触发缺省打开。 |
+| `openOnHover` | `boolean` |  | 悬停触发：进触发器延时展开、经安全三角离开才收。子菜单缺省开，普通菜单缺省关。 |
+| `hoverOpenDelay` | `number` |  | 悬停到展开的延时（ms），默认 100。 |
+| `hoverCloseDelay` | `number` |  | 离开到收起的延时（ms），也是安全三角里的停滞上限，默认 300。 |
 | `onOpenChange` | `(details: MenuOpenChangeDetails) => void` |  | open 变化回调。 |
 | `onSelect` | `(details: MenuSelectDetails) => void` |  | 条目被选中；菜单随之关闭。 |
 
@@ -118,6 +128,7 @@ content 里可以直接放任意节点；不是 item 就不进方向键行程，
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: MenuItemProps) => T['element']` |  |
+| `getSubmenuTriggerProps` | `(props: MenuItemProps) => T['element']` | 子菜单触发条目（submenu 模式）：既是父菜单里的一条 item（value 是它在父菜单 里的身份，父层的方向键与高亮照常认它），又是本子菜单的触发器（aria-haspopup、 悬停/点按/右方向键展开）。父层的选中会跳过带 aria-haspopup 的条目。 |
 | `getSeparatorProps` | `() => T['element']` |  |
 | `getArrowProps` | `() => T['element']` |  |
 

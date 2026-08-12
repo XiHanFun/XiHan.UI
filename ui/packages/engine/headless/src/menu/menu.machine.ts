@@ -1,6 +1,6 @@
 import type { Placement, PositionResult } from '@xihan-ui/kernel'
 import type { MenuFocusIntent, MenuSchema } from './menu.types'
-import { createDismissLayer, createFocusScope, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
+import { createDismissLayer, createFocusScope, itemValue, navigateItems, queryItems, trackHoverIntent } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
 import { menuItemQuery } from './menu.anatomy'
 
@@ -8,6 +8,13 @@ const { createMachine } = setup<MenuSchema>()
 
 /** 未指定 placement 时的默认落位。 */
 export const MENU_DEFAULT_PLACEMENT: Placement = 'bottom-start'
+
+/** 子菜单贴着触发条目的侧向展开，其余菜单从触发器下方展开。 */
+export function menuFallbackPlacement(submenu: boolean | undefined, dir: string | undefined): Placement {
+  if (!submenu)
+    return MENU_DEFAULT_PLACEMENT
+  return dir === 'rtl' ? 'left-start' : 'right-start'
+}
 
 export const menuMachine = createMachine({
   name: 'menu',
@@ -28,6 +35,8 @@ export const menuMachine = createMachine({
     getContentEl: () => null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  // 悬停意图跟机器不跟状态位：关着要接得住进入、开着要接得住离开
+  effects: ['trackHover'],
   // 受控时用户事件只发意图，宿主写回 open 后由 watch 派发 CONTROLLED.*
   watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),
   states: {
@@ -98,7 +107,7 @@ export const menuMachine = createMachine({
       // Tab 与层外交互时不归还焦点；Escape、选中条目、再点 trigger 一律归还
       setReturnFocus: ({ context, event }) => {
         const e = event.current()
-        const handedOff = e.type === 'CLOSE' && (e.src === 'tab' || e.src === 'interact-outside')
+        const handedOff = e.type === 'CLOSE' && (e.src === 'tab' || e.src === 'interact-outside' || e.src === 'hover')
         context.set('returnFocus', !handedOff)
       },
       setFocusedValue: ({ context, event }) => {
@@ -130,6 +139,30 @@ export const menuMachine = createMachine({
       clearFocusedValue: ({ context }) => context.set('focusedValue', null),
     },
     effects: {
+      // 悬停触发：进锚点延时开、经安全三角离开才收。挂载后推迟一拍再接线，
+      // 机器启动那一刻锚点元素还没就位
+      trackHover: ({ refs, prop, send, flush }) => {
+        if (!(prop('openOnHover') ?? !!prop('submenu')))
+          return undefined
+        let cleanup: (() => void) | undefined
+        let disposed = false
+        flush(() => {
+          if (disposed)
+            return
+          cleanup = trackHoverIntent({
+            getTriggerEl: () => refs.get('getAnchorEl')(),
+            getContentEl: () => refs.get('getContentEl')(),
+            openDelay: prop('hoverOpenDelay'),
+            closeDelay: prop('hoverCloseDelay'),
+            onOpenIntent: () => send({ type: 'OPEN', focus: 'none' }),
+            onCloseIntent: () => send({ type: 'CLOSE', src: 'hover' }),
+          })
+        })
+        return () => {
+          disposed = true
+          cleanup?.()
+        }
+      },
       // 挂载定位引擎，结果写进 context 供 connect 读
       trackPosition: ({ refs, prop, context, flush }) => {
         const engine = refs.get('position')
@@ -152,7 +185,7 @@ export const menuMachine = createMachine({
             anchor,
             floating,
             {
-              placement: prop('placement') ?? MENU_DEFAULT_PLACEMENT,
+              placement: prop('placement') ?? menuFallbackPlacement(prop('submenu'), prop('dir')),
               offset: prop('offset'),
               // positioner 渲染成 fixed，坐标系必须跟着走视口系
               strategy: 'fixed',

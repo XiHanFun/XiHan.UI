@@ -398,6 +398,8 @@ export type { MentionItemContext } from './components/mention/context'
 export { XhMentionContent, XhMentionInput, XhMentionItem, XhMentionItemText, XhMentionPositioner, XhMentionRoot } from './components/mention/mention'
 export { useMention } from './components/mention/use-mention'
 export type { MentionContext } from './components/mention/use-mention'
+export { provideMenu, provideMenuChain, provideMenuSub, useMenuChain, useMenuContext, useMenuSubContext } from './components/menu/context'
+export type { MenuChain, MenuSubHandle } from './components/menu/context'
 export {
   XhMenuArrow,
   XhMenuContent,
@@ -405,6 +407,8 @@ export {
   XhMenuPositioner,
   XhMenuRoot,
   XhMenuSeparator,
+  XhMenuSub,
+  XhMenuSubTrigger,
   XhMenuTrigger,
 } from './components/menu/menu'
 export { useMenu } from './components/menu/use-menu'

@@ -2,8 +2,9 @@ import type { MenuNode, MenuNodeMeta, MenuSchema } from '@xihan-ui/headless'
 import type { Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { mergeProps } from '@xihan-ui/kernel'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
-import { provideMenu, useMenuContext } from './context'
+import { provideMenu, provideMenuChain, provideMenuSub, useMenuChain, useMenuContext, useMenuSubContext } from './context'
 import { useMenu } from './use-menu'
 
 type MenuProps = MenuSchema['props']
@@ -21,6 +22,9 @@ export const XhMenuRoot = defineComponent({
     dir: { type: String as PropType<Direction>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
+    openOnHover: { type: Boolean, default: undefined },
+    hoverOpenDelay: { type: Number, default: undefined },
+    hoverCloseDelay: { type: Number, default: undefined },
   },
   // open-change 携带 { open }、select 携带 { value }，update:open 携带裸布尔
   emits: {
@@ -36,6 +40,13 @@ export const XhMenuRoot = defineComponent({
     const notifySelect: MenuProps['onSelect'] = details => emit('select', details)
     const ctx = useMenu(props as MenuProps, notifyOpen, notifySelect)
     provideMenu(ctx)
+    // 任意层级子菜单的选中都汇到根：先发根的 select 再关根，各级随父关闭级联收起
+    provideMenuChain({
+      notifySelect: (details) => {
+        emit('select', details)
+        ctx.api.value.setOpen(false)
+      },
+    })
     return () => (slots.default
       ? slots.default({ open: ctx.api.value.open, setOpen: ctx.api.value.setOpen })
       : props.collection
@@ -111,6 +122,63 @@ export const XhMenuItem = defineComponent({
       { ...ctx.api.value.getItemProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>, ref: itemEl },
       slots.default?.(),
     )
+  },
+})
+
+/**
+ * 子菜单：内部再跑一台 menu 机器（submenu 模式），触发条目由 XhMenuSubTrigger
+ * 渲染成「父菜单条目 + 本子菜单触发器」的双重身份。本身不渲染节点。
+ */
+export const XhMenuSub = defineComponent({
+  name: 'XhMenuSub',
+  props: {
+    /** 它在父菜单里的条目身份。 */
+    value: { type: String, required: true },
+    disabled: { type: Boolean, default: undefined },
+    collection: { type: Array as PropType<MenuNode[]>, default: undefined },
+    placement: { type: String as PropType<Placement>, default: undefined },
+    offset: { type: Number, default: undefined },
+    loop: { type: Boolean, default: undefined },
+    openOnHover: { type: Boolean, default: undefined },
+    hoverOpenDelay: { type: Number, default: undefined },
+    hoverCloseDelay: { type: Number, default: undefined },
+  },
+  setup(props, { slots }) {
+    const parent = useMenuContext()
+    const chain = useMenuChain()
+    const ctx = useMenu(
+      { ...props, submenu: true } as MenuProps,
+      undefined,
+      // 子层的选中汇到根：根发 select 并关根，各级随父关闭级联收起
+      details => chain.notifySelect(details),
+    )
+    // 覆盖菜单上下文：本子树内的部件都归子机器
+    provideMenu(ctx)
+    provideMenuSub({ parent, value: props.value, disabled: props.disabled })
+    // 父层收起（Escape、外点、选中）时本层跟着收，层层传导
+    watch(() => parent.api.value.open, (open) => {
+      if (!open)
+        ctx.api.value.setOpen(false)
+    })
+    return () => slots.default?.({ open: ctx.api.value.open, setOpen: ctx.api.value.setOpen })
+  },
+})
+
+export const XhMenuSubTrigger = defineComponent({
+  name: 'XhMenuSubTrigger',
+  setup(_, { slots }) {
+    const sub = useMenuSubContext()
+    const ctx = useMenuContext()
+    return () => h('div', {
+      ...mergeProps(
+        sub.parent.api.value.getItemProps({ value: sub.value, disabled: sub.disabled }) as Record<string, unknown>,
+        ctx.api.value.getSubmenuTriggerProps({ value: sub.value, disabled: sub.disabled }) as Record<string, unknown>,
+      ),
+      // 子菜单的定位锚点就是这一条
+      ref: (el: unknown) => {
+        ctx.triggerRef.value = el as HTMLElement
+      },
+    }, slots.default?.())
   },
 })
 
