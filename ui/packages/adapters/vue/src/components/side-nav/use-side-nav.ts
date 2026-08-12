@@ -1,7 +1,9 @@
 import type { SideNavApi, SideNavSchema } from '@xihan-ui/headless'
+import type { Cleanup, Layer, RuntimeConfig } from '@xihan-ui/kernel'
 import type { ComputedRef } from 'vue'
 import { connectSideNav, sideNavMachine } from '@xihan-ui/headless'
-import { createScope } from '@xihan-ui/kernel'
+import { createRuntimeConfig, createScope } from '@xihan-ui/kernel'
+import { createPositionEngine } from '@xihan-ui/position'
 import { computed } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
@@ -19,6 +21,35 @@ export function useSideNav(
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const service = useMachine(sideNavMachine, () => ({ ...props, ...handlers }), scope)
+
+  if (typeof document !== 'undefined') {
+    const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
+
+    // 弹出面板与触发按钮按当前弹出分支现查：配对 id 由 connect 派生，同一 scope 算得出来
+    const popoutEl = (kind: 'trigger' | 'content'): HTMLElement | null => {
+      const v = service.context.get('popoutValue')
+      return v == null ? null : document.getElementById(scope.partId('side-nav', `${kind}-${v}`))
+    }
+
+    // 只提供注册函数，入栈出栈由机器的 trackPopoutLayer 效应按弹出态驱动
+    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
+      kind: 'popover',
+      node: () => popoutEl('content'),
+      // 触发按钮记为本层分支，点它算层内交互
+      branches: () => [popoutEl('trigger')].filter(Boolean) as Element[],
+      isModal: () => false,
+      setModal: () => {},
+      surfaces: () => [],
+    })
+
+    // 定位引擎由适配器注入，机器只经端口驱动
+    service.refs.set('config', config)
+    service.refs.set('registerLayer', registerLayer)
+    service.refs.set('position', createPositionEngine())
+    service.refs.set('getPopoutAnchorEl', () => popoutEl('trigger'))
+    service.refs.set('getPopoutContentEl', () => popoutEl('content'))
+  }
+
   const api = computed(() => connectSideNav(service, vueNormalize))
   return { api }
 }

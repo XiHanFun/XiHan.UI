@@ -1,4 +1,4 @@
-<!-- 手风琴与折叠 | accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整体收起，文字部件整个隐藏只剩图标），折叠态的子级弹出待浮层子菜单机制落地 -->
+<!-- 手风琴与折叠 | accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整体收起，文字部件整个隐藏只剩图标），折叠态下悬停/点按/右方向键在旁侧弹出子级面板，面板内选中即落值收起；collapsedPopout 设为 false 可关掉弹出 -->
 <script setup lang="ts">
 import type { SideNavNode } from "@xihan-ui/headless";
 import { ref } from "vue";

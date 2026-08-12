@@ -14,5 +14,7 @@ export const sideNavKeyboard: KeyboardTable = {
     { id: 'side-nav.kbd.collapse', keys: ['ArrowLeft'], when: 'focus in 展开的分支行', does: '收起该枝；叶子或已收起时回父分支（RTL 与 ArrowRight 对调）' },
     { id: 'side-nav.kbd.home', keys: ['Home'], when: 'focus in 行', does: '第一可见行' },
     { id: 'side-nav.kbd.end', keys: ['End'], when: 'focus in 行', does: '最后一可见行' },
+    { id: 'side-nav.kbd.popout-open', keys: ['ArrowRight', 'Enter', 'Space'], when: 'focus in 折叠态顶层分支行', does: '弹出子级面板并落焦第一行（RTL 与 ArrowLeft 对调）' },
+    { id: 'side-nav.kbd.popout-close', keys: ['ArrowLeft', 'Escape'], when: 'focus in 弹出面板', does: '收回面板，焦点还给触发按钮（RTL 与 ArrowRight 对调；Escape 归消解层）' },
   ],
 }

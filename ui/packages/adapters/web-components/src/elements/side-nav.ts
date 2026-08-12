@@ -1,5 +1,9 @@
 import type { SideNavExpandedChangeDetails, SideNavNode, SideNavNodeProps, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails } from '@xihan-ui/headless'
+import type { Cleanup, IdGenerator, Layer, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Service } from '@xihan-ui/machine'
 import { connectSideNav, sideNavAnatomy, sideNavMachine, sideNavMeta } from '@xihan-ui/headless'
+import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
+import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -23,7 +27,8 @@ const GROUP_SELECTOR = '[data-xh-part="group"]'
  * @attr {string} value - 受控选中的叶子；缺省该属性即非受控
  * @attr {string} default-value - 非受控初始选中
  * @attr {boolean} accordion - 同层手风琴：展开一枝收起同层其余，默认 false
- * @attr {boolean} collapsed - 折叠成图标栏（内嵌展开整体收起、文字由皮肤藏掉）
+ * @attr {boolean} collapsed - 折叠成图标栏（内嵌展开整体收起、文字由皮肤藏掉；顶层分支换装浮层弹出）
+ * @attr {boolean} collapsed-popout - 折叠态下顶层分支是否弹出子级面板，默认 true
  * @attr {boolean} disabled - 整个侧栏禁用
  * @attr {boolean} loop - 上下键走到首尾回绕，默认关
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义，默认 ltr
@@ -50,6 +55,7 @@ export class XhSideNavElement extends XhElement {
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     accordion: { converter: BOOLEAN_CONVERTER },
     collapsed: { converter: BOOLEAN_CONVERTER },
+    collapsedPopout: { converter: BOOLEAN_CONVERTER, attribute: 'collapsed-popout' },
     disabled: { converter: BOOLEAN_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
@@ -64,6 +70,7 @@ export class XhSideNavElement extends XhElement {
   declare defaultValue?: string
   declare accordion?: boolean
   declare collapsed?: boolean
+  declare collapsedPopout?: boolean
   declare disabled?: boolean
   declare loop?: boolean
   declare direction?: SideNavSchema['props']['dir']
@@ -81,7 +88,17 @@ export class XhSideNavElement extends XhElement {
     this.dispatchEvent(new CustomEvent('expanded-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly ctrl = new MachineController<SideNavSchema>(this, sideNavMachine, () => this.machineProps())
+  private readonly idGen: IdGenerator = createCounterIdGenerator()
+  private readonly navScope = createScope(null, this.idGen)
+  private readonly positionEngine: PositionEnginePort = createPositionEngine()
+  private config: RuntimeConfig | null = null
+
+  private readonly ctrl = new MachineController<SideNavSchema>(
+    this,
+    sideNavMachine,
+    () => this.machineProps(),
+    { scope: this.navScope, onBuilt: svc => this.injectRefs(svc) },
+  )
 
   private machineProps(): Partial<SideNavSchema['props']> {
     return {
@@ -92,6 +109,7 @@ export class XhSideNavElement extends XhElement {
       defaultExpandedValue: this.defaultExpandedValue,
       accordion: this.accordion,
       collapsed: this.collapsed,
+      collapsedPopout: this.collapsedPopout,
       disabled: this.disabled,
       loop: this.loop,
       dir: this.direction,
@@ -101,10 +119,59 @@ export class XhSideNavElement extends XhElement {
     }
   }
 
+  private ensureConfig(): void {
+    if (this.config)
+      return
+    this.config = createRuntimeConfig({ scope: this.navScope, idGenerator: this.idGen })
+  }
+
+  /** 当前弹出分支名下的角色节点：按归属分支的 value 现查。 */
+  private findPopoutPart(svc: Service<SideNavSchema>, name: string): HTMLElement | null {
+    const v = svc.context.get('popoutValue')
+    if (v == null)
+      return null
+    for (const el of this.getParts(name)) {
+      if (this.nodeOf(el, BRANCH_SELECTOR).value === v)
+        return el
+    }
+    return null
+  }
+
+  // 只交注册函数、不在连接期注册：层的入栈出栈跟着弹出态走（机器的 trackPopoutLayer 效应负责）
+  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
+    this.ensureConfig()
+    const svc = this.ctrl.service
+    return this.config!.layerRegistry.register({
+      kind: 'popover',
+      node: () => this.findPopoutPart(svc, 'branch-content'),
+      // 触发按钮记为本层分支，点它算层内交互
+      branches: () => [this.findPopoutPart(svc, 'branch-trigger')].filter(Boolean) as Element[],
+      isModal: () => false,
+      setModal: () => {},
+      surfaces: () => [],
+    })
+  }
+
+  // onBuilt 在机器构建那一刻回调，service 由参数传入
+  private injectRefs(svc: Service<SideNavSchema>): void {
+    this.ensureConfig()
+    svc.refs.set('config', this.config)
+    svc.refs.set('registerLayer', this.registerLayer)
+    svc.refs.set('position', this.positionEngine)
+    svc.refs.set('getPopoutAnchorEl', () => this.findPopoutPart(svc, 'branch-trigger'))
+    svc.refs.set('getPopoutContentEl', () => this.findPopoutPart(svc, 'branch-content'))
+  }
+
   private nodeOf(el: HTMLElement, selector: string): SideNavNodeProps {
     const owner = el.closest<HTMLElement>(selector)
     const source = owner && owner !== this && this.contains(owner) ? owner : el
     return { value: source.getAttribute('value') ?? '' }
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback()
+    // 层由弹出态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
+    this.config = null // 重连时 ensureConfig 重建
   }
 
   protected wire(): void {

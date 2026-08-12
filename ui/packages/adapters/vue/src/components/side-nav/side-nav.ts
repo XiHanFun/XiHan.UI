@@ -19,6 +19,7 @@ export const XhSideNavRoot = defineComponent({
     defaultExpandedValue: { type: Array as PropType<string[]>, default: undefined },
     accordion: Boolean,
     collapsed: { type: Boolean, default: undefined },
+    collapsedPopout: { type: Boolean, default: undefined },
     disabled: Boolean,
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<SideNavProps['dir']>, default: undefined },
@@ -48,6 +49,7 @@ export const XhSideNavRoot = defineComponent({
       value: ctx.api.value.value,
       expandedValue: ctx.api.value.expandedValue,
       collapsed: ctx.api.value.collapsed,
+      popoutValue: ctx.api.value.popoutValue,
       isSelected: ctx.api.value.isSelected,
       isExpanded: ctx.api.value.isExpanded,
       isActiveBranch: ctx.api.value.isActiveBranch,
@@ -56,6 +58,8 @@ export const XhSideNavRoot = defineComponent({
       setExpandedValue: ctx.api.value.setExpandedValue,
       expand: ctx.api.value.expand,
       collapse: ctx.api.value.collapse,
+      openPopout: ctx.api.value.openPopout,
+      closePopout: ctx.api.value.closePopout,
     }))
   },
 })
