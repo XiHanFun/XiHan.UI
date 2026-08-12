@@ -33,6 +33,7 @@ export type {
   FormErrorSummaryItemProps,
   FormFieldGroupProps,
   FormInvalidDetails,
+  FormLayout,
   FormRefs,
   FormSchema,
   FormSubmitDetails,

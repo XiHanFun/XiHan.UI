@@ -7,6 +7,14 @@ import type { FormRules, FormValidateMessages } from './form.rules'
 export type FormValues = Record<string, unknown>
 
 /**
+ * 表单排布：
+ * - vertical：竖排一列（默认）。
+ * - horizontal：标签左置成两列，整表标签列宽统一对齐。
+ * - inline：字段横排一行流，放不下自动折行。
+ */
+export type FormLayout = 'vertical' | 'horizontal' | 'inline'
+
+/**
  * 什么时候跑校验：
  * - submit：只在提交时跑，整表替换（默认）。
  * - blur：字段失去焦点时跑一次，只更新这一个字段的错误。
@@ -82,6 +90,12 @@ export interface FormSchema extends MachineSchema {
     validateMessages?: FormValidateMessages
     /** 校验时机，默认 submit。 */
     validateOn?: FormValidateOn
+    /** 排布，默认 vertical。 */
+    layout?: FormLayout
+    /** horizontal 下标签列宽（number 视作 px），整表统一、字段据此对齐。 */
+    labelWidth?: number | string
+    /** horizontal 下标签文字的对齐缘，默认 end（贴着控件）。 */
+    labelAlign?: 'start' | 'end'
     /** 整个表单禁用：提交、重置、写值一概不发生，两颗按钮带原生 disabled。 */
     disabled?: boolean
     /** 只读：写值与重置不发生，但仍可提交。 */
@@ -166,6 +180,8 @@ export interface FormApi<T extends PropTypes = PropTypes> {
   disabled: boolean
   readOnly: boolean
   validateOn: FormValidateOn
+  /** 当下的排布档。 */
+  layout: FormLayout
   /** 字段容器的 DOM id；错误摘要的链接指向它。 */
   getFieldId: (name: string) => string
   getFieldValue: (name: string) => unknown

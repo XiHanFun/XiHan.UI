@@ -50,6 +50,9 @@ function fieldNameOf(el: HTMLElement): string {
  *
  * @customElement xh-form
  * @attr {string} validate-on - 校验时机：submit（默认）/ blur / change
+ * @attr {string} layout - 排布：vertical（默认）/ horizontal（标签左置两列）/ inline（横排一行流）
+ * @attr {string} label-width - horizontal 下标签列宽（CSS 长度），整表统一对齐
+ * @attr {string} label-align - horizontal 下标签对齐缘：end（默认，贴控件）/ start
  * @attr {boolean} disabled - 整个表单禁用：提交、重置、写值一概不发生，两颗按钮带原生 disabled
  * @attr {boolean} read-only - 只读：写值与重置不发生，但仍可提交
  * @fires values-change - 值表变化；detail 为 `{ values }`
@@ -79,6 +82,9 @@ export class XhFormElement extends XhElement {
     rules: { attribute: false },
     validateMessages: { attribute: false },
     validateOn: { converter: STRING_CONVERTER, attribute: 'validate-on' },
+    layout: { converter: STRING_CONVERTER },
+    labelWidth: { converter: STRING_CONVERTER, attribute: 'label-width' },
+    labelAlign: { converter: STRING_CONVERTER, attribute: 'label-align' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
   }
@@ -92,6 +98,9 @@ export class XhFormElement extends XhElement {
   declare rules?: FormSchema['props']['rules']
   declare validateMessages?: FormSchema['props']['validateMessages']
   declare validateOn?: FormValidateOn
+  declare layout?: FormSchema['props']['layout']
+  declare labelWidth?: string
+  declare labelAlign?: FormSchema['props']['labelAlign']
   declare disabled?: boolean
   declare readOnly?: boolean
 
@@ -132,6 +141,9 @@ export class XhFormElement extends XhElement {
       rules: this.rules,
       validateMessages: this.validateMessages,
       validateOn: this.validateOn,
+      layout: this.layout,
+      labelWidth: this.labelWidth,
+      labelAlign: this.labelAlign,
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,
       onValuesChange: this.notifyValues,

@@ -43,6 +43,7 @@ export function connectForm<T extends PropTypes>(
     disabled,
     readOnly,
     validateOn,
+    layout: prop('layout') ?? 'vertical',
     getFieldId: name => formFieldId(scope, name),
     getFieldValue: name => values[name],
     getFieldError: fieldError,
@@ -60,6 +61,12 @@ export function connectForm<T extends PropTypes>(
       // 值写空串不写 true：两个适配器对布尔属性的落法不同，空串两侧落出的 DOM 才逐字相同
       'novalidate': '',
       'data-state': stateAttr,
+      'data-layout': prop('layout'),
+      'data-label-align': prop('labelAlign'),
+      // 标签列宽写成 CSS 变量：横排下整表字段照它对齐
+      'style': prop('labelWidth') != null
+        ? { '--xh-form-label-w': typeof prop('labelWidth') === 'number' ? `${prop('labelWidth')}px` : String(prop('labelWidth')) }
+        : undefined,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),

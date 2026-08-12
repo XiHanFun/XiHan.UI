@@ -5,6 +5,30 @@
     gap: var(--xh-field-gap, var(--xh-space-1));
   }
 
+  /* 表单横排（标签左置）：字段转两列网格，标签列宽由表单的 --xh-form-label-w 统一给，
+     整表据此对齐；描述与错误文案跟着控件走第二列 */
+  [data-scope='form'][data-part='root'][data-layout='horizontal'] [data-scope='field'][data-part='root'] {
+    display: grid;
+    grid-template-columns: var(--xh-form-label-w) minmax(0, 1fr);
+    column-gap: var(--xh-field-label-gap, var(--xh-space-3));
+    align-items: start;
+  }
+
+  [data-scope='form'][data-part='root'][data-layout='horizontal'] [data-scope='field'][data-part='label'] {
+    grid-column: 1;
+    justify-self: end;
+    /* 与控件的首行文字对齐：按控件高度撑一行再居中 */
+    line-height: var(--xh-control-h-md);
+  }
+
+  [data-scope='form'][data-part='root'][data-layout='horizontal'][data-label-align='start'] [data-scope='field'][data-part='label'] {
+    justify-self: start;
+  }
+
+  [data-scope='form'][data-part='root'][data-layout='horizontal'] [data-scope='field'][data-part='root'] > :not([data-part='label']) {
+    grid-column: 2;
+  }
+
   [data-scope='field'][data-part='label'] {
     color: var(--xh-field-label-fg, var(--xh-fg-default));
     font-size: var(--xh-field-label-font-size, var(--xh-text-label-size));
