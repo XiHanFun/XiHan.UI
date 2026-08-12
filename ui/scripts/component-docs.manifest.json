@@ -34,6 +34,10 @@
           "name": "图片"
         },
         {
+          "id": "image-viewer",
+          "name": "图片预览"
+        },
+        {
           "id": "separator",
           "name": "分隔线"
         },

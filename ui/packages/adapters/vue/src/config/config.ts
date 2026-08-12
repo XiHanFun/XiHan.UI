@@ -15,6 +15,7 @@ import type {
   DynamicInputTranslations,
   FileUploadTranslations,
   FloatButtonTranslations,
+  ImageViewerTranslations,
   LoadingBarTranslations,
   LogTranslations,
   MentionTranslations,
@@ -47,6 +48,7 @@ export interface XhTranslationOverrides {
   'drawer'?: Partial<DrawerTranslations>
   'dynamic-input'?: Partial<DynamicInputTranslations>
   'file-upload'?: Partial<FileUploadTranslations>
+  'image-viewer'?: Partial<ImageViewerTranslations>
   'float-button'?: Partial<FloatButtonTranslations>
   'loading-bar'?: Partial<LoadingBarTranslations>
   'log'?: Partial<LogTranslations>

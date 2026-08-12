@@ -75,6 +75,7 @@
     "./icon-wrapper.css": "./css/icon-wrapper.css",
     "./icon.css": "./css/icon.css",
     "./image.css": "./css/image.css",
+    "./image-viewer.css": "./css/image-viewer.css",
     "./index.css": "./index.css",
     "./index.unlayered.css": "./index.unlayered.css",
     "./infinite-scroll.css": "./css/infinite-scroll.css",

@@ -94,6 +94,8 @@ export { connectIconWrapper, iconWrapperAnatomy, iconWrapperKeyboard, iconWrappe
 export type { IconWrapperApi, IconWrapperProps } from './icon-wrapper'
 export { connectImage, imageAnatomy, imageKeyboard, imageMachine, imageMeta, resolveFallbackDelay } from './image'
 export type { ImageApi, ImageSchema, ImageStatus, ImageStatusChangeDetails } from './image'
+export { clampImageViewerIndex, connectImageViewer, IMAGE_VIEWER_IDENTITY, IMAGE_VIEWER_MAX_SCALE, IMAGE_VIEWER_MIN_SCALE, IMAGE_VIEWER_ZOOM_STEP, imageViewerAnatomy, imageViewerCount, imageViewerCounterText, imageViewerKeyboard, imageViewerMachine, imageViewerMeta, stepImageViewerIndex } from './image-viewer'
+export type { ImageViewerApi, ImageViewerIndexChangeDetails, ImageViewerItem, ImageViewerOpenChangeDetails, ImageViewerRefs, ImageViewerSchema, ImageViewerTransform, ImageViewerTranslations } from './image-viewer'
 export { connectInfiniteScroll, infiniteScrollAnatomy, infiniteScrollKeyboard, infiniteScrollMachine, infiniteScrollMeta, resolveInfiniteScrollPhase } from './infinite-scroll'
 export type { InfiniteScrollApi, InfiniteScrollPhase, InfiniteScrollRefs, InfiniteScrollSchema } from './infinite-scroll'
 export { connectLayout, layoutAnatomy, layoutKeyboard, layoutMachine, layoutMeta } from './layout'
