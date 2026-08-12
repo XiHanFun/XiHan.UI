@@ -1,11 +1,11 @@
 import type { ItemQuery } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
-import type { SliderApi, SliderSchema, SliderThumbState } from './slider.types'
+import type { SliderApi, SliderMarkMeta, SliderSchema, SliderThumbState } from './slider.types'
 import { focusItem, queryItems } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
 import { sliderAnatomy } from './slider.anatomy'
-import { rangeExtent, thumbBounds, valueToPercent } from './slider.geometry'
+import { closestThumb, normalizeMarkValues, rangeExtent, thumbBounds, valueToPercent } from './slider.geometry'
 import { SLIDER_MAX, SLIDER_MIN, SLIDER_STEP } from './slider.machine'
 
 const parts = sliderAnatomy.build()
@@ -85,10 +85,29 @@ export function connectSlider<T extends PropTypes>(
     ? { insetInlineStart: '', inlineSize: '', insetBlockEnd: pct(start), blockSize: size == null ? '' : pct(size) }
     : { insetBlockEnd: '', blockSize: '', insetInlineStart: pct(start), inlineSize: size == null ? '' : pct(size) }
 
+  // 刻度：夹进区间、升序去重；active 供分段上色（单滑块＝小于等于当前值，多滑块＝落在区间里）
+  const markDefs = prop('marks') ?? []
+  const sortedValues = [...values].sort((a, b) => a - b)
+  const markActive = (v: number): boolean => values.length === 1
+    ? v <= (values[0] ?? min)
+    : v >= (sortedValues[0] ?? min) && v <= (sortedValues[sortedValues.length - 1] ?? min)
+  const marks: SliderMarkMeta[] = normalizeMarkValues(markDefs, min, max).map(v => ({
+    value: v,
+    label: markDefs.find(mark => mark.value === v)?.label,
+    percent: valueToPercent(v, min, max),
+    active: markActive(v),
+  }))
+
+  /** 点刻度文案：最近的滑块跳到这一档。 */
+  const jumpToMark = (v: number): void => {
+    send({ type: 'THUMB.SET', index: closestThumb(values, v), value: v })
+  }
+
   return {
     value: values,
     range,
     thumbs,
+    marks,
     dragging,
     disabled,
     readOnly,
@@ -189,6 +208,26 @@ export function connectSlider<T extends PropTypes>(
         },
       })
     },
+
+    getMarksProps: () => normalize.element({
+      ...parts.marks.attrs,
+      ...stateAttrs(),
+    }),
+
+    getMarkProps: ({ value: v }) => normalize.element({
+      ...parts.mark.attrs,
+      'aria-hidden': 'true',
+      'data-active': dataAttr(markActive(v)),
+      'style': axisStyle(valueToPercent(v, min, max)),
+    }),
+
+    getMarkLabelProps: ({ value: v }) => normalize.element({
+      ...parts['mark-label'].attrs,
+      'data-active': dataAttr(markActive(v)),
+      'style': axisStyle(valueToPercent(v, min, max)),
+      // 点文案把最近的滑块跳到这一档；禁用/只读由机器守卫拦
+      'onClick': () => jumpToMark(v),
+    }),
 
     // 表单出口：值靠这份原生输入随表单提交；多拇指时逐个同名 append。
     getHiddenInputProps: (index) => {

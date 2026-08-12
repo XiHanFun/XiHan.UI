@@ -570,6 +570,7 @@ export {
   XhSliderControl,
   XhSliderHiddenInput,
   XhSliderLabel,
+  XhSliderMarks,
   XhSliderRange,
   XhSliderRoot,
   XhSliderThumb,

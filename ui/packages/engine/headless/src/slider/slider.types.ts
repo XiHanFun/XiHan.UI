@@ -44,6 +44,10 @@ export interface SliderSchema extends MachineSchema {
     name?: string
     /** 相邻滑块至少隔几格，默认 0（可以贴在一起但不能交换顺序）。 */
     minStepsBetweenThumbs?: number
+    /** 刻度表：轨道上的圆点与文案，点文案即跳值。 */
+    marks?: SliderMark[]
+    /** 只认刻度落点：拖动、点按与键盘都吸到最近/下一档刻度。 */
+    snapToMarks?: boolean
     /**
      * 把值翻成人话，产出写进拇指的 aria-valuetext。
      * 不给就不写这个属性，读屏退回念 aria-valuenow。
@@ -92,6 +96,27 @@ export interface SliderSchema extends MachineSchema {
   effect: 'trackPointer'
 }
 
+/** 一档刻度：落点值与可选文案。 */
+export interface SliderMark {
+  value: number
+  label?: string
+}
+
+/** 刻度部件自报家门：它代表哪个落点。 */
+export interface SliderMarkProps {
+  value: number
+}
+
+/** 刻度的呈现数据。 */
+export interface SliderMarkMeta {
+  value: number
+  label: string | undefined
+  /** 在轨道上的位置，0-1。 */
+  percent: number
+  /** 落在已选区间里（单滑块＝小于等于当前值），皮肤据此分段上色。 */
+  active: boolean
+}
+
 export interface SliderThumbState {
   index: number
   value: number
@@ -107,6 +132,8 @@ export interface SliderApi<T extends PropTypes = PropTypes> {
   /** 已选区间在轨道上的起止，0-1。 */
   range: { start: number, end: number }
   thumbs: SliderThumbState[]
+  /** 刻度呈现数据：夹进区间、升序去重，带位置与分段上色标记。 */
+  marks: SliderMarkMeta[]
   dragging: boolean
   disabled: boolean
   readOnly: boolean
@@ -118,5 +145,11 @@ export interface SliderApi<T extends PropTypes = PropTypes> {
   getTrackProps: () => T['element']
   getRangeProps: () => T['element']
   getThumbProps: (index: number) => T['element']
+  /** 刻度容器。 */
+  getMarksProps: () => T['element']
+  /** 刻度点：轨道上的圆点，纯装饰。 */
+  getMarkProps: (props: SliderMarkProps) => T['element']
+  /** 刻度文案：点按把最近的滑块跳到这一档。 */
+  getMarkLabelProps: (props: SliderMarkProps) => T['element']
   getHiddenInputProps: (index: number) => T['input']
 }
