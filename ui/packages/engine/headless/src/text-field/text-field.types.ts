@@ -6,6 +6,21 @@ export interface TextFieldValueChangeDetails {
   value: string
 }
 
+/** 输入框渲染成哪个标签：单行 input（缺省）或多行 textarea。 */
+export type TextFieldInputHost = 'input' | 'textarea'
+
+/** 自动高度的行数界限；不给即完全跟内容走。 */
+export interface TextFieldAutoSize {
+  minRows?: number
+  maxRows?: number
+}
+
+/** 输入部件自报宿主标签，connect 据此决定写不写 type 并接自动高度。 */
+export interface TextFieldInputProps {
+  /** 缺省 input。 */
+  as?: TextFieldInputHost
+}
+
 export interface TextFieldSchema extends MachineSchema {
   props: {
     /** 受控值；给了就由宿主说了算，机器不自改。 */
@@ -23,6 +38,8 @@ export interface TextFieldSchema extends MachineSchema {
     maxLength?: number
     /** 开启清空能力：清空按钮可用、Escape 接管。关掉时按钮带 hidden 收起。 */
     clearable?: boolean
+    /** 多行宿主的自动高度：跟内容长高；对象形态钉行数上下限，顶到 maxRows 后内部滚动。 */
+    autoSize?: boolean | TextFieldAutoSize
     /** 形态：outline / subtle / ghost，决定输入框的底与描边怎么画。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦强调用哪族颜色。 */
@@ -66,8 +83,11 @@ export interface TextFieldApi<T extends PropTypes = PropTypes> {
   setValue: (next: string) => void
   /** 走清空意图，受 canClear 约束；无条件清空请用 setValue('')。 */
   clear: () => void
+  /** 自动高度配置的原样透传；适配器在程序化写值后据此补量一次。 */
+  autoSize: boolean | TextFieldAutoSize
   getRootProps: () => T['element']
   getLabelProps: () => T['label']
-  getInputProps: () => T['input']
+  /** 传 as: 'textarea' 即多行宿主：撤掉 type、接上自动高度。 */
+  getInputProps: (props?: TextFieldInputProps) => T['input']
   getClearTriggerProps: () => T['button']
 }

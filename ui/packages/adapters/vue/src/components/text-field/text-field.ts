@@ -1,8 +1,9 @@
-import type { TextFieldSchema } from '@xihan-ui/headless'
+import type { TextFieldInputHost, TextFieldSchema } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h } from 'vue'
+import { autoSizeTextarea } from '@xihan-ui/headless'
+import { defineComponent, h, onMounted, ref, watch } from 'vue'
 import { provideTextField, useTextFieldContext } from './context'
 import { useTextField } from './use-text-field'
 
@@ -22,6 +23,7 @@ export const XhTextFieldRoot = defineComponent({
     name: { type: String, default: undefined },
     maxLength: { type: Number, default: undefined },
     clearable: Boolean,
+    autoSize: { type: [Boolean, Object] as PropType<TextFieldProps['autoSize']>, default: undefined },
     variant: { type: String as PropType<ControlVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
@@ -60,10 +62,29 @@ export const XhTextFieldLabel = defineComponent({
 
 export const XhTextFieldInput = defineComponent({
   name: 'XhTextFieldInput',
-  setup() {
+  props: {
+    /** 输入框渲染成哪个标签，默认 input；写 textarea 即多行宿主，接上 autoSize 自动高度。 */
+    as: { type: String as PropType<TextFieldInputHost>, default: 'input' },
+  },
+  setup(props) {
     const ctx = useTextFieldContext()
-    // 自己渲染 <input>，label 的 for 指向这个节点
-    return () => h('input', ctx.api.value.getInputProps() as Record<string, unknown>)
+    const el = ref<HTMLTextAreaElement | null>(null)
+    // 程序化写值（setValue / 表单重置 / 受控回写）不触发 input 事件，量高在渲染后补一次
+    watch(() => [ctx.api.value.value, props.as], () => {
+      if (props.as === 'textarea' && el.value)
+        autoSizeTextarea(el.value, ctx.api.value.autoSize)
+    }, { flush: 'post' })
+    onMounted(() => {
+      if (props.as === 'textarea' && el.value)
+        autoSizeTextarea(el.value, ctx.api.value.autoSize)
+    })
+    // 自己渲染宿主节点，label 的 for 指向它
+    return () => h(props.as, {
+      ...ctx.api.value.getInputProps({ as: props.as }) as Record<string, unknown>,
+      ref: (node: unknown) => {
+        el.value = props.as === 'textarea' ? node as HTMLTextAreaElement : null
+      },
+    })
   },
 })
 

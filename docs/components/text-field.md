@@ -96,7 +96,7 @@ input 部件渲染出来就是一个 input，拿到它的节点就能聚焦、�
 
 ### 多行与自动长高
 
-组合式函数把同一份状态交给作者自写的多行部件，高度在每次输入后按内容重新量
+XhTextFieldInput 写 as="textarea" 即多行宿主；autoSize 让高度跟内容走，对象形态钉行数上下限（顶到 maxRows 后内部滚动）
 
 <XhDemo src="text-field/16-multiline" />
 
@@ -130,6 +130,7 @@ input 部件渲染出来就是一个 input，拿到它的节点就能聚焦、�
 | `name` | `string` |  | 表单字段名；给了才参与提交。 |
 | `maxLength` | `number` |  | 字符数上限。同时落成原生 maxlength 与机器侧的截断，两道都要。 |
 | `clearable` | `boolean` |  | 开启清空能力：清空按钮可用、Escape 接管。关掉时按钮带 hidden 收起。 |
+| `autoSize` | `boolean \| TextFieldAutoSize` |  | 多行宿主的自动高度：跟内容长高；对象形态钉行数上下限，顶到 maxRows 后内部滚动。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框的底与描边怎么画。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框与清空按钮的几何档位。 |
@@ -159,9 +160,10 @@ input 部件渲染出来就是一个 input，拿到它的节点就能聚焦、�
 | `canClear` | `boolean` | 清空按钮此刻是否可用（开了 clearable、可编辑、且有值）。 |
 | `setValue` | `(next: string) => void` | 直接写值，只受 disabled/readOnly 与 maxLength 约束，与 clearable 无关。 |
 | `clear` | `() => void` | 走清空意图，受 canClear 约束；无条件清空请用 setValue('')。 |
+| `autoSize` | `boolean \| TextFieldAutoSize` | 自动高度配置的原样透传；适配器在程序化写值后据此补量一次。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
-| `getInputProps` | `() => T['input']` |  |
+| `getInputProps` | `(props?: TextFieldInputProps) => T['input']` | 传 as: 'textarea' 即多行宿主：撤掉 type、接上自动高度。 |
 | `getClearTriggerProps` | `() => T['button']` |  |
 
 ## 键盘
