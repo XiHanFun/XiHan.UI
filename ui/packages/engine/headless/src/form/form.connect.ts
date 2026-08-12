@@ -5,6 +5,7 @@ import { contains, dataAttr } from '@xihan-ui/kernel'
 import { FORM_FIELD_NAME_ATTR, formAnatomy, formFieldId } from './form.anatomy'
 import { formErrorNames } from './form.errors'
 import { formValidateOn } from './form.machine'
+import { hasRequiredRule } from './form.rules'
 
 const parts = formAnatomy.build()
 
@@ -46,6 +47,7 @@ export function connectForm<T extends PropTypes>(
     getFieldValue: name => values[name],
     getFieldError: fieldError,
     isFieldInvalid: name => fieldError(name) !== undefined,
+    isFieldRequired: name => hasRequiredRule(prop('rules')?.[name]),
     setFieldValue: (name, value) => send({ type: 'FIELD.SET', name, value }),
     setFieldError: (name, message) => send({ type: 'ERROR.SET', name, message }),
     clearErrors: () => send({ type: 'ERRORS.CLEAR' }),

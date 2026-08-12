@@ -2,7 +2,7 @@ import type { FormErrorPatch, FormSchema, FormValidateOn, FormValues } from '@xi
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
-import { provideForm, useFormContext } from './context'
+import { provideForm, provideFormField, useFormContext } from './context'
 import { useForm } from './use-form'
 
 type FormProps = FormSchema['props']
@@ -76,6 +76,8 @@ export const XhFormFieldGroup = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useFormContext()
+    // 后代 Field 据此从表单上下文自取校验态，省掉逐字段搬运
+    provideFormField({ name: () => props.value })
     // 作用域插槽暴露本字段的值、错误与写入方法
     return () => h(
       'div',

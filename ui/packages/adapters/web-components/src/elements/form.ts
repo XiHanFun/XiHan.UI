@@ -57,7 +57,8 @@ function fieldNameOf(el: HTMLElement): string {
  * @fires submit - 校验通过才派发；detail 为 `{ values }`
  * @fires invalid - 校验不通过时派发；detail 为 `{ errors, values }`
  * @csspart root - 表单根容器，必须是原生 `<form>`（承载 data-state/data-disabled/data-readonly/data-invalid）
- * @csspart field-group - 单个字段的容器，须自带 value 属性标识字段名；带 id 供摘要链接指向
+ * @csspart field-group - 单个字段的容器，须自带 value 属性标识字段名；带 id 供摘要链接指向。
+ *   组里的 `<xh-field>` 由表单驱动 invalid/required/disabled，作者显式设的会被顶掉
  * @csspart error-summary - role=alert 的错误汇总，提交失败且仍有错误时才显形
  * @csspart error-summary-item - 摘要里的一条，须是原生 `<a>` 且自带 value 属性标识字段名；无对应错误时带 hidden
  * @csspart submit-trigger - 提交键，须是原生 button（连接层写成 type=submit）
@@ -221,8 +222,17 @@ export class XhFormElement extends XhElement {
     put('reset-trigger', api.getResetTriggerProps() as Record<string, unknown>)
 
     // 字段容器与摘要条目都是多实例 part，逐个打：身份取作者写的 value 属性
-    for (const el of this.getParts('field-group'))
-      this.spreader.spread(el, api.getFieldGroupProps({ name: fieldNameOf(el) }) as Record<string, unknown>)
+    for (const el of this.getParts('field-group')) {
+      const name = fieldNameOf(el)
+      this.spreader.spread(el, api.getFieldGroupProps({ name }) as Record<string, unknown>)
+      // Form-Field 打通：组里的 xh-field 由表单驱动校验态与必填标记，
+      // 表单不禁用时 disabled 交还元素自己的缺省
+      for (const field of el.querySelectorAll<HTMLElement & { invalid?: boolean, required?: boolean, disabled?: boolean }>('xh-field')) {
+        field.invalid = api.isFieldInvalid(name)
+        field.required = api.isFieldRequired(name) || undefined
+        field.disabled = api.disabled || undefined
+      }
+    }
 
     for (const el of this.getParts('error-summary-item')) {
       this.spreader.spread(el, api.getErrorSummaryItemProps({ name: fieldNameOf(el) }) as Record<string, unknown>)
