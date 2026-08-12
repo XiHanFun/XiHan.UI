@@ -72,9 +72,15 @@ validate 拿到的是整张值表，可以写两个字段互相约束的规则�
 
 ### 声明式规则
 
-rules 按字段声明 required/min/max/pattern/type，一个字段多条规则首败即停；文案取 rule.message，再退 validateMessages 模板（{name}/{min}/{max} 现场代入）
+rules 按字段声明 required/min/max/pattern/type，一个字段多条规则首败即停；文案取 rule.message，再退 validateMessages 模板（{name}/{min}/{max} 现场代入）。组里的 Field 自取校验态：invalid/必填星号/错误文案都不用手接
 
 <XhDemo src="form/12-rules" />
+
+### 排布
+
+layout 三档：vertical 竖排（默认）、horizontal 标签左置两列（labelWidth 统一列宽、labelAlign 换对齐缘）、inline 横排一行流；整表标签对齐一个开关搞定，不必逐字段写栅格
+
+<XhDemo src="form/13-layout" />
 
 ## 产物
 
@@ -104,6 +110,9 @@ rules 按字段声明 required/min/max/pattern/type，一个字段多条规则�
 | `rules` | `FormRules` |  | 声明式校验规则：字段名 → 一条或一组规则，与 validate 可并用。 |
 | `validateMessages` | `FormValidateMessages` |  | 规则文案模板，{name}/{min}/{max} 现场代入；缺省用内置英文模板。 |
 | `validateOn` | `FormValidateOn` |  | 校验时机，默认 submit。 |
+| `layout` | `FormLayout` |  | 排布，默认 vertical。 |
+| `labelWidth` | `number \| string` |  | horizontal 下标签列宽（number 视作 px），整表统一、字段据此对齐。 |
+| `labelAlign` | `'start' \| 'end'` |  | horizontal 下标签文字的对齐缘，默认 end（贴着控件）。 |
 | `disabled` | `boolean` |  | 整个表单禁用：提交、重置、写值一概不发生，两颗按钮带原生 disabled。 |
 | `readOnly` | `boolean` |  | 只读：写值与重置不发生，但仍可提交。 |
 | `onValuesChange` | `(details: FormValuesChangeDetails) => void` |  | 值表变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
@@ -135,6 +144,7 @@ rules 按字段声明 required/min/max/pattern/type，一个字段多条规则�
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `validateOn` | `FormValidateOn` |  |
+| `layout` | `FormLayout` | 当下的排布档。 |
 | `getFieldId` | `(name: string) => string` | 字段容器的 DOM id；错误摘要的链接指向它。 |
 | `getFieldValue` | `(name: string) => unknown` |  |
 | `getFieldError` | `(name: string) => string \| undefined` | 该字段此刻的错误文案；没错时为 undefined。 |

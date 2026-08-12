@@ -8519,6 +8519,30 @@
   gap: var(--xh-field-gap, var(--xh-space-1));
 }
 
+/* 表单横排（标签左置）：字段转两列网格，标签列宽由表单的 --xh-form-label-w 统一给，
+   整表据此对齐；描述与错误文案跟着控件走第二列 */
+[data-scope='form'][data-part='root'][data-layout='horizontal'] [data-scope='field'][data-part='root'] {
+  display: grid;
+  grid-template-columns: var(--xh-form-label-w) minmax(0, 1fr);
+  column-gap: var(--xh-field-label-gap, var(--xh-space-3));
+  align-items: start;
+}
+
+[data-scope='form'][data-part='root'][data-layout='horizontal'] [data-scope='field'][data-part='label'] {
+  grid-column: 1;
+  justify-self: end;
+  /* 与控件的首行文字对齐：按控件高度撑一行再居中 */
+  line-height: var(--xh-control-h-md);
+}
+
+[data-scope='form'][data-part='root'][data-layout='horizontal'][data-label-align='start'] [data-scope='field'][data-part='label'] {
+  justify-self: start;
+}
+
+[data-scope='form'][data-part='root'][data-layout='horizontal'] [data-scope='field'][data-part='root'] > :not([data-part='label']) {
+  grid-column: 2;
+}
+
 [data-scope='field'][data-part='label'] {
   color: var(--xh-field-label-fg, var(--xh-fg-default));
   font-size: var(--xh-field-label-font-size, var(--xh-text-label-size));
@@ -8894,6 +8918,18 @@
 /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
 [data-scope='form'][data-part='root'][hidden] {
   display: none;
+}
+
+/* 标签左置：标签列宽的缺省档在这儿，labelWidth 会以行内样式盖过它 */
+[data-scope='form'][data-part='root'][data-layout='horizontal'] {
+  --xh-form-label-w: 30%;
+}
+
+/* 横排一行流：字段并肩排，放不下自动折行 */
+[data-scope='form'][data-part='root'][data-layout='inline'] {
+  flex-flow: row wrap;
+  align-items: start;
+  column-gap: var(--xh-form-inline-gap, var(--xh-space-4));
 }
 
 /* 字段容器只管排版与状态标记：标题、控件、描述、错误文案都是里面那个 Field 的活儿 */

@@ -66,9 +66,19 @@ export function createSpreader(): Spreader {
         }
         continue
       }
-      // style 传对象时逐条写内联样式。
+      // style 传对象时逐条写内联样式；自定义属性（--开头）走 setProperty，Object.assign 写不进去
       if (key === 'style' && value !== null && typeof value === 'object') {
-        Object.assign(node.style, value as Record<string, string>)
+        for (const [styleKey, styleValue] of Object.entries(value as Record<string, string | undefined>)) {
+          if (styleKey.startsWith('--')) {
+            if (styleValue == null || styleValue === '')
+              node.style.removeProperty(styleKey)
+            else
+              node.style.setProperty(styleKey, String(styleValue))
+          }
+          else {
+            (node.style as unknown as Record<string, unknown>)[styleKey] = styleValue
+          }
+        }
         continue
       }
       if (value === undefined || value === null || value === false) {
