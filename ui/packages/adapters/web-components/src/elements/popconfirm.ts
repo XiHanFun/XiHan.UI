@@ -32,7 +32,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} close-on-interact-outside - 层外交互关闭，默认 true；写 "false" 关掉
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
- * @fires confirm - 点了确认按钮；随后浮层收起
+ * @fires confirm - 点了确认按钮；随后浮层收起。异步门走 confirmAction 属性：
+ *   事件拿不到监听函数的返回值，给元素赋 `confirmAction = () => Promise` 即挂起确认门
+ *   （浮层等兑现才收、确认按钮转圈，落空留在原地），confirm 事件照发只作通知
  * @fires cancel - 点了取消按钮；随后浮层收起
  * @csspart root - 框住触发器的根容器，承载 data-state
  * @csspart trigger - 触发按钮（aria-haspopup/aria-expanded/aria-controls 所在），同时是定位锚点
@@ -74,12 +76,27 @@ export class XhPopconfirmElement extends XhElement {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
   }
 
+  /**
+   * 异步确认动作：事件拿不到监听函数的返回值，异步门走这个属性——
+   * 返回 Promise 即挂起（浮层等兑现才收、确认按钮转圈），落空留在原地。
+   * confirm 事件照发，只作通知。
+   */
+  declare confirmAction?: () => void | Promise<unknown>
+
+  /** 异步确认的挂起布尔；变化时重打属性。 */
+  private pendingState = false
+
   private readonly intents: PopconfirmIntents = {
     onConfirm: () => {
       this.dispatchEvent(new CustomEvent('confirm', { bubbles: true, composed: true }))
+      return this.confirmAction?.()
     },
     onCancel: () => {
       this.dispatchEvent(new CustomEvent('cancel', { bubbles: true, composed: true }))
+    },
+    onPendingChange: (next) => {
+      this.pendingState = next
+      this.requestUpdate()
     },
   }
 
@@ -148,7 +165,8 @@ export class XhPopconfirmElement extends XhElement {
   }
 
   protected wire(): void {
-    const api = connectPopconfirm(this.ctrl.service, this.intents, wcNormalize)
+    // 挂起布尔按 wire 那一刻现读
+    const api = connectPopconfirm(this.ctrl.service, { ...this.intents, pending: this.pendingState }, wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {
       const el = this.getPart(name)

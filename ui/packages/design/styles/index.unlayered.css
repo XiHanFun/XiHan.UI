@@ -2539,6 +2539,29 @@
   color: var(--xh-popconfirm-confirm-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
 }
 
+/* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
+@keyframes xh-popconfirm-rotate {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* 异步确认挂起：按钮转圈、指针挂起；不是禁用，焦点与对比度都保持 */
+[data-scope='popconfirm'][data-part='confirm-trigger'][data-loading] {
+  cursor: wait;
+}
+
+[data-scope='popconfirm'][data-part='confirm-trigger'][data-loading]::before {
+  content: '';
+  inline-size: 1em;
+  block-size: 1em;
+  margin-inline-end: var(--xh-space-1);
+  border: var(--xh-stroke-thin) solid transparent;
+  border-block-start-color: currentcolor;
+  border-radius: var(--xh-shape-pill);
+  animation: xh-popconfirm-rotate var(--xh-popconfirm-loading-duration, calc(var(--xh-duration-slow) * 2)) linear infinite;
+}
+
 [data-scope='popconfirm'][data-part='confirm-trigger']:hover {
   background: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
 }

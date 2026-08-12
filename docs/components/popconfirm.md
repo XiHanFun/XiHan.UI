@@ -28,9 +28,9 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 
 <XhDemo src="popconfirm/04-tone" />
 
-### 受控与异步确认
+### 异步确认
 
-传了 open 就由宿主说了算：确认先跑提交，跑完才写回收起
+@confirm 返回 Promise 即挂起确认门：浮层等兑现才收起、确认按钮转圈且再点无效，落空（reject）留在原地；不必再手动受控拦收起
 
 <XhDemo src="popconfirm/05-async-confirm" />
 
@@ -59,8 +59,8 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | `defaultOpen` | `boolean` |  |  |
 | `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
-| `onCancel` | `() => void` |  | 点了取消按钮，随后浮层收起。Escape 与层外交互只发 onOpenChange，不发这条。 |
-| `onConfirm` | `() => void` |  | 点了确认按钮，随后浮层收起。 |
+| `onCancel` | `() => void` |  | 点了取消按钮，随后浮层收起；挂起中的确认结果随之作废。Escape 与层外交互只发 onOpenChange，不发这条。 |
+| `onConfirm` | `() => void \| Promise<unknown>` |  | 点了确认按钮。返回 Promise 即挂起确认门：浮层等它兑现才收起、 确认按钮转圈且再点无效，落空（reject）则留在原地不收。同步返回照旧立即收起。 |
 | `onOpenChange` | `(details: PopoverOpenChangeDetails) => void` |  | open 变化意图；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `open` | `boolean` |  |  |
 | `placement` | `Placement` |  |  |
@@ -73,8 +73,9 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
+| `pending` | `boolean` | 异步确认进行中：确认按钮转圈、再点无效。 |
 | `setOpen` | `(next: boolean) => void` |  |
-| `confirm` | `() => void` | 发确认意图并请求收起。 |
+| `confirm` | `() => void` | 发确认意图并请求收起；异步确认挂起期间再调无效。 |
 | `cancel` | `() => void` | 发取消意图并请求收起。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |

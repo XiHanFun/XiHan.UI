@@ -129,7 +129,7 @@ export type { PaginationApi, PaginationEntryRange, PaginationItemProps, Paginati
 export { connectPinInput, isPinComplete, padPinValue, PIN_INPUT_LENGTH, pinInputAnatomy, pinInputKeyboard, pinInputMachine, pinInputMeta, pinLength, samePinValue, sanitizePin } from './pin-input'
 export type { PinInputApi, PinInputInputProps, PinInputSchema, PinInputTranslations, PinInputType, PinInputValueChangeDetails } from './pin-input'
 export { connectPopconfirm, popconfirmAnatomy, popconfirmKeyboard, popconfirmMeta } from './popconfirm'
-export type { PopconfirmApi, PopconfirmIntents, PopconfirmNotifiers, PopconfirmOverlayProps, PopconfirmProps } from './popconfirm'
+export type { PopconfirmApi, PopconfirmIntents, PopconfirmNotifiers, PopconfirmOverlayProps, PopconfirmPendingChannel, PopconfirmProps } from './popconfirm'
 export { connectPopover, popoverAnatomy, popoverKeyboard, popoverMachine, popoverMeta } from './popover'
 export type { PopoverApi, PopoverOpenChangeDetails, PopoverRefs, PopoverSchema, PopoverTranslations } from './popover'
 export { connectPopselect, popselectAnatomy, popselectItemQuery, popselectItemText, popselectKeyboard, popselectMeta } from './popselect'
