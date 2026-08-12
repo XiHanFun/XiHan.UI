@@ -38,6 +38,7 @@ export function connectForm<T extends PropTypes>(
     errorCount,
     invalid,
     submitFailed,
+    validating: context.get('validating'),
     disabled,
     readOnly,
     validateOn,

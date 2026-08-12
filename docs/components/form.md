@@ -36,7 +36,7 @@ disabled 把提交、重置、写值三条路一起封死；read-only 只封写�
 
 ### 异步校验
 
-核验结果落在宿主自己的表里，validate 同步读它；核验回来直接写受控错误表，提交这一路照样拦得住
+规则里的 validator 直接返回 Promise：提交时机器等它回来再放行或拦下，期间 validating 置真可用来标忙
 
 <XhDemo src="form/06-async" />
 
@@ -70,6 +70,12 @@ validate 拿到的是整张值表，可以写两个字段互相约束的规则�
 
 <XhDemo src="form/11-reset" />
 
+### 声明式规则
+
+rules 按字段声明 required/min/max/pattern/type，一个字段多条规则首败即停；文案取 rule.message，再退 validateMessages 模板（{name}/{min}/{max} 现场代入）
+
+<XhDemo src="form/12-rules" />
+
 ## 产物
 
 | 层 | 值 |
@@ -94,7 +100,9 @@ validate 拿到的是整张值表，可以写两个字段互相约束的规则�
 | `defaultValues` | `FormValues` |  | 非受控初值，同时也是 reset 的落点。 |
 | `errors` | `FormErrorPatch` |  | 受控错误表；给定即受控。空串会被清理掉（空串不是一条错误）。 |
 | `defaultErrors` | `FormErrorPatch` |  |  |
-| `validate` | `(values: FormValues) => FormErrorPatch` |  | 校验函数。同步返回「字段名 → 错误文案」，没错的字段给空串或干脆不写。 不给这个函数即没有校验，提交时沿用当下的错误表。 |
+| `validate` | `(values: FormValues) => FormErrorPatch \| Promise<FormErrorPatch>` |  | 校验函数。返回「字段名 → 错误文案」，没错的字段给空串或干脆不写； 允许返回 Promise（远程校验），期间 validating 置真。 与 rules 并用时同字段两边都报错按 rules 的文案算。 |
+| `rules` | `FormRules` |  | 声明式校验规则：字段名 → 一条或一组规则，与 validate 可并用。 |
+| `validateMessages` | `FormValidateMessages` |  | 规则文案模板，{name}/{min}/{max} 现场代入；缺省用内置英文模板。 |
 | `validateOn` | `FormValidateOn` |  | 校验时机，默认 submit。 |
 | `disabled` | `boolean` |  | 整个表单禁用：提交、重置、写值一概不发生，两颗按钮带原生 disabled。 |
 | `readOnly` | `boolean` |  | 只读：写值与重置不发生，但仍可提交。 |
@@ -123,6 +131,7 @@ validate 拿到的是整张值表，可以写两个字段互相约束的规则�
 | `errorCount` | `number` |  |
 | `invalid` | `boolean` | 错误表非空。与"提交失败过"无关，挂载时作者塞进来的错误也算。 |
 | `submitFailed` | `boolean` | 上一次提交被拦下了：错误摘要据此显形。 |
+| `validating` | `boolean` | 异步校验进行中（提交或逐字段都算）。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `validateOn` | `FormValidateOn` |  |

@@ -32,7 +32,7 @@
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
 | [表单字段](./field) | `field` | 5 | 0 | 6 |
-| [表单](./form) | `form` | 6 | 0 | 11 |
+| [表单](./form) | `form` | 6 | 0 | 12 |
 | [文本输入](./text-field) | `text-field` | 4 | 1 | 16 |
 | [数字输入](./number-field) | `number-field` | 5 | 6 | 13 |
 | [分格输入](./pin-input) | `pin-input` | 4 | 6 | 10 |
