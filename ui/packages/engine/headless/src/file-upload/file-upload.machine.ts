@@ -1,8 +1,10 @@
-import type { ContextFacade, PropFn } from '@xihan-ui/machine'
+import type { ActionFn, ContextFacade, PropFn } from '@xihan-ui/machine'
 import type {
   FileRejectReason,
   FileUploadRejection,
+  FileUploadRemoteFile,
   FileUploadSchema,
+  FileUploadSnapshot,
   FileUploadValidationResult,
 } from './file-upload.types'
 import { resetDeclaredValue, setup } from '@xihan-ui/machine'
@@ -156,7 +158,8 @@ function intake(
     maxFiles: prop('maxFiles'),
     maxFileSize: prop('maxFileSize'),
     minFileSize: prop('minFileSize'),
-    existingCount: base.length,
+    // 名额是全列表共享的：服务器已有附件占掉的名额本批不能再用
+    existingCount: base.length + context.get('remoteFiles').length,
   })
   if (accepted.length) {
     context.set('acceptedFiles', [...base, ...accepted])
@@ -164,6 +167,79 @@ function intake(
   }
   if (rejected.length)
     prop('onFileReject')?.({ files: rejected })
+}
+
+type UploadActionParams = Parameters<ActionFn<FileUploadSchema>>[0]
+
+/** 远程附件列表按元素比，语义同 sameFiles。 */
+export function sameRemoteFiles(a: readonly FileUploadRemoteFile[], b: readonly FileUploadRemoteFile[] | undefined): boolean {
+  return !!b && a.length === b.length && a.every((file, i) => file === b[i])
+}
+
+/** 取（或发）文件的内部 id：文件对象是身份，同一个 File 恒拿同一个 id。 */
+function fileKeyOf(refs: UploadActionParams['refs'], file: File): string {
+  const ids = refs.get('fileIds')
+  let id = ids.get(file)
+  if (!id) {
+    const seq = refs.get('fileSeq')
+    seq.n += 1
+    id = `file-${seq.n}`
+    ids.set(file, id)
+  }
+  return id
+}
+
+function patchUpload(context: ContextFacade<FileUploadSchema>, id: string, patch: Partial<FileUploadSnapshot>): void {
+  const uploads = context.get('uploads')
+  const current = uploads[id] ?? { status: 'idle' as const, progress: 0 }
+  context.set('uploads', { ...uploads, [id]: { ...current, ...patch } })
+}
+
+/**
+ * 给一个文件开传：置 uploading、调 upload 实现、把进度与成败写回快照。
+ * 已在传、已传完与已失败的这里都不再动——失败要走 UPLOAD.START 显式重试，
+ * 否则每次列表变化都会把失败的又拉起来。
+ */
+function beginUpload(params: UploadActionParams, file: File): void {
+  const { context, prop, refs } = params
+  const upload = prop('upload')
+  if (!upload)
+    return
+  const id = fileKeyOf(refs, file)
+  const controllers = refs.get('uploadControllers')
+  if (controllers.has(id))
+    return
+  const status = context.get('uploads')[id]?.status
+  if (status === 'uploading' || status === 'done' || status === 'error')
+    return
+
+  const controller = new AbortController()
+  controllers.set(id, controller)
+  patchUpload(context, id, { status: 'uploading', progress: 0, url: undefined, error: undefined })
+
+  const onProgress = (progress: number): void => {
+    if (controller.signal.aborted)
+      return
+    const clamped = Number.isFinite(progress) ? Math.min(100, Math.max(0, progress)) : 0
+    patchUpload(context, id, { progress: clamped })
+  }
+
+  Promise.resolve()
+    .then(() => upload({ file, onProgress, signal: controller.signal }))
+    .then((result) => {
+      controllers.delete(id)
+      if (controller.signal.aborted)
+        return
+      patchUpload(context, id, { status: 'done', progress: 100, url: result?.url ?? undefined })
+      prop('onUploadComplete')?.({ file, url: result?.url ?? undefined })
+    })
+    .catch((error) => {
+      controllers.delete(id)
+      if (controller.signal.aborted)
+        return
+      patchUpload(context, id, { status: 'error', error })
+      prop('onUploadError')?.({ file, error })
+    })
 }
 
 // 文件列表住在 context 的 cell 里而非 FSM 状态，cell 收口受控与非受控；
@@ -181,8 +257,29 @@ export const fileUploadMachine = createMachine({
         onChange: files => prop('onFilesChange')?.({ files }),
       }
     }),
+    remoteFiles: cell<FileUploadRemoteFile[]>(() => {
+      const controlled = prop('remoteFiles')
+      return {
+        value: controlled ? [...controlled] : undefined,
+        defaultValue: prop('defaultRemoteFiles') ? [...prop('defaultRemoteFiles')!] : [],
+        isEqual: sameRemoteFiles,
+        onChange: files => prop('onRemoteFilesChange')?.({ files }),
+      }
+    }),
+    uploads: cell<Record<string, FileUploadSnapshot>>(() => ({ defaultValue: {} })),
+  }),
+  refs: () => ({
+    fileIds: new WeakMap<File, string>(),
+    fileSeq: { n: 0 },
+    uploadControllers: new Map<string, AbortController>(),
   }),
   initialState: () => 'idle',
+  watch: ({ track, context, action }) => {
+    // 列表变了要对齐传输：新收下的按 autoUpload 开传，移出的中止并清快照
+    track([context.dep('acceptedFiles')], () => action(['syncUploads']))
+  },
+  // 传输的生命周期跟机器不跟状态位：拖拽切态不能打断在传的
+  effects: ['trackUploads'],
   // 增删改与打开选择框在任何状态下行为一致，挂根级
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
@@ -191,6 +288,8 @@ export const fileUploadMachine = createMachine({
     'FILE.DELETE': { guard: 'canChange', actions: ['deleteFile'] },
     'FILES.CLEAR': { guard: 'canChange', actions: ['clearFiles'] },
     'PICKER.OPEN': { guard: 'canChange', actions: ['openFilePicker'] },
+    'UPLOAD.START': { guard: 'canChange', actions: ['startUpload'] },
+    'REMOTE.DELETE': { guard: 'canChange', actions: ['deleteRemoteFile'] },
   },
   states: {
     idle: {
@@ -218,7 +317,62 @@ export const fileUploadMachine = createMachine({
       canDrop: ({ prop }) => !prop('disabled') && (prop('allowDrop') ?? true),
     },
     actions: {
-      resetToDefault: params => void resetDeclaredValue(params, 'acceptedFiles', 'files', 'defaultFiles'),
+      resetToDefault: (params) => {
+        resetDeclaredValue(params, 'acceptedFiles', 'files', 'defaultFiles')
+        resetDeclaredValue(params, 'remoteFiles', 'remoteFiles', 'defaultRemoteFiles')
+      },
+
+      // 对齐传输与列表：移出的中止并清快照，在列的按 autoUpload 开传
+      syncUploads: (params) => {
+        const { context, prop, refs } = params
+        const files = context.get('acceptedFiles')
+        const present = new Set(files.map(file => fileKeyOf(refs, file)))
+        const controllers = refs.get('uploadControllers')
+        for (const [id, controller] of [...controllers]) {
+          if (!present.has(id)) {
+            controller.abort()
+            controllers.delete(id)
+          }
+        }
+        const uploads = context.get('uploads')
+        const kept: Record<string, FileUploadSnapshot> = {}
+        let dropped = false
+        for (const [id, snapshot] of Object.entries(uploads)) {
+          if (present.has(id))
+            kept[id] = snapshot
+          else dropped = true
+        }
+        if (dropped)
+          context.set('uploads', kept)
+        if (prop('autoUpload') ?? true) {
+          for (const file of files)
+            beginUpload(params, file)
+        }
+      },
+
+      startUpload: (params) => {
+        const { context, event, refs } = params
+        const e = event.current()
+        if (e.type !== 'UPLOAD.START')
+          return
+        if (!context.get('acceptedFiles').includes(e.file))
+          return
+        const id = fileKeyOf(refs, e.file)
+        const status = context.get('uploads')[id]?.status
+        if (status === 'uploading' || status === 'done')
+          return
+        // 失败的先归零再开：beginUpload 对 error 不自动重试
+        if (status === 'error')
+          patchUpload(context, id, { status: 'idle', progress: 0, error: undefined })
+        beginUpload(params, e.file)
+      },
+
+      deleteRemoteFile: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'REMOTE.DELETE')
+          return
+        context.set('remoteFiles', context.get('remoteFiles').filter(file => file.id !== e.id))
+      },
 
       setFiles: ({ context, prop, event }) => {
         const e = event.current()
@@ -243,12 +397,25 @@ export const fileUploadMachine = createMachine({
         const next = context.get('acceptedFiles').filter(file => file !== e.file)
         context.set('acceptedFiles', next)
       },
+      // 清空是对整个列表说的：本地与远程一起清
       clearFiles: ({ context }) => {
         context.set('acceptedFiles', [])
+        context.set('remoteFiles', [])
       },
       // 打开选择框要调 input.click()，属 DOM 操作，connect 是纯函数故落在这里。
       openFilePicker: ({ scope }) => {
         scope.getRootNode().getElementById(fileUploadHiddenInputId(scope))?.click()
+      },
+    },
+    effects: {
+      // 挂载时对齐一遍（defaultFiles / 受控初值也要开传）；停机中止所有在传的
+      trackUploads: (params) => {
+        params.action(['syncUploads'])
+        return () => {
+          const controllers = params.refs.get('uploadControllers')
+          for (const controller of controllers.values()) controller.abort()
+          controllers.clear()
+        }
       },
     },
   },

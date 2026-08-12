@@ -55,7 +55,7 @@
 | [时间选择器](./time-picker) | `time-picker` | 11 | 20 | 8 |
 | [日历](./calendar) | `calendar` | 12 | 12 | 4 |
 | [颜色选择器](./color-picker) | `color-picker` | 17 | 9 | 10 |
-| [文件上传](./file-upload) | `file-upload` | 12 | 5 | 10 |
+| [文件上传](./file-upload) | `file-upload` | 12 | 5 | 11 |
 | [弹出选择](./popselect) | `popselect` | 7 | 9 | 5 |
 | [动态录入](./dynamic-input) | `dynamic-input` | 8 | 0 | 5 |
 | [提及](./mention) | `mention` | 6 | 9 | 5 |

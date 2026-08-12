@@ -1,4 +1,4 @@
-import type { FileUploadItemProps, FileUploadSchema, FileUploadTranslations } from '@xihan-ui/headless'
+import type { FileUploadFile, FileUploadItemProps, FileUploadRemoteFile, FileUploadSchema, FileUploadTranslations } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
@@ -15,6 +15,10 @@ export const XhFileUploadRoot = defineComponent({
     // default: undefined 表示非受控
     files: { type: Array as PropType<File[]>, default: undefined },
     defaultFiles: { type: Array as PropType<File[]>, default: undefined },
+    remoteFiles: { type: Array as PropType<FileUploadRemoteFile[]>, default: undefined },
+    defaultRemoteFiles: { type: Array as PropType<FileUploadRemoteFile[]>, default: undefined },
+    upload: { type: Function as PropType<FileUploadProps['upload']>, default: undefined },
+    autoUpload: { type: Boolean, default: undefined },
     accept: { type: [String, Array] as PropType<string | string[]>, default: undefined },
     maxFiles: { type: Number, default: undefined },
     maxFileSize: { type: Number, default: undefined },
@@ -33,6 +37,10 @@ export const XhFileUploadRoot = defineComponent({
     'update:files': (_files: PayloadOf<FileUploadProps, 'onFilesChange'>['files']) => true,
     'file-accept': (_details: PayloadOf<FileUploadProps, 'onFileAccept'>) => true,
     'file-reject': (_details: PayloadOf<FileUploadProps, 'onFileReject'>) => true,
+    'remote-files-change': (_details: PayloadOf<FileUploadProps, 'onRemoteFilesChange'>) => true,
+    'update:remoteFiles': (_files: PayloadOf<FileUploadProps, 'onRemoteFilesChange'>['files']) => true,
+    'upload-complete': (_details: PayloadOf<FileUploadProps, 'onUploadComplete'>) => true,
+    'upload-error': (_details: PayloadOf<FileUploadProps, 'onUploadError'>) => true,
   },
   setup(props, { slots, emit }) {
     const onFilesChange: FileUploadProps['onFilesChange'] = (details) => {
@@ -41,10 +49,20 @@ export const XhFileUploadRoot = defineComponent({
     }
     const onFileAccept: FileUploadProps['onFileAccept'] = details => emit('file-accept', details)
     const onFileReject: FileUploadProps['onFileReject'] = details => emit('file-reject', details)
-    const ctx = useFileUpload(withXhConfig('file-upload', props) as FileUploadProps, { onFilesChange, onFileAccept, onFileReject })
+    const onRemoteFilesChange: FileUploadProps['onRemoteFilesChange'] = (details) => {
+      emit('remote-files-change', details)
+      emit('update:remoteFiles', details.files)
+    }
+    const onUploadComplete: FileUploadProps['onUploadComplete'] = details => emit('upload-complete', details)
+    const onUploadError: FileUploadProps['onUploadError'] = details => emit('upload-error', details)
+    const ctx = useFileUpload(withXhConfig('file-upload', props) as FileUploadProps, { onFilesChange, onFileAccept, onFileReject, onRemoteFilesChange, onUploadComplete, onUploadError })
     provideFileUpload(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       acceptedFiles: ctx.api.value.acceptedFiles,
+      remoteFiles: ctx.api.value.remoteFiles,
+      allFiles: ctx.api.value.allFiles,
+      uploadOf: ctx.api.value.uploadOf,
+      startUpload: ctx.api.value.startUpload,
       dragging: ctx.api.value.dragging,
       empty: ctx.api.value.empty,
       disabled: ctx.api.value.disabled,
@@ -103,22 +121,22 @@ export const XhFileUploadItemGroup = defineComponent({
 export const XhFileUploadItem = defineComponent({
   name: 'XhFileUploadItem',
   props: {
-    /** 这一行显示哪个文件。 */
-    file: { type: Object as PropType<File>, default: undefined },
-    /** 改用下标从 acceptedFiles 里取文件，兼收字符串以支持模板里写 index="0"。 */
+    /** 这一行显示哪个文件（本地或远程附件）。 */
+    file: { type: Object as PropType<FileUploadFile>, default: undefined },
+    /** 改用下标从 allFiles（远程在前、本地在后）里取文件，兼收字符串以支持模板里写 index="0"。 */
     index: { type: [Number, String] as PropType<number | string>, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useFileUploadContext()
-    const file = computed<File | undefined>(() => {
+    const file = computed<FileUploadFile | undefined>(() => {
       if (props.file)
         return props.file
       if (props.index == null)
         return undefined
-      return ctx.api.value.acceptedFiles[Math.trunc(Number(props.index))]
+      return ctx.api.value.allFiles[Math.trunc(Number(props.index))]
     })
     // 条目上下文，子部件从中取文件
-    const item = computed<FileUploadItemProps>(() => ({ file: file.value as File }))
+    const item = computed<FileUploadItemProps>(() => ({ file: file.value as FileUploadFile }))
     provideFileUploadItem({ item })
     return () => {
       // 下标指向的文件不存在时只渲染空壳，不打组件属性也不渲染子部件

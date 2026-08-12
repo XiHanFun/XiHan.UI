@@ -781,3 +781,12 @@ export { createDialogService } from './services/dialog-service'
 export type { AlertOptions, ConfirmOptions, DialogService, DialogServiceOptions } from './services/dialog-service'
 export { createToastService } from './services/toast-service'
 export type { ToastMessageOptions, ToastService, ToastServiceOptions } from './services/toast-service'
+// 使用者写 upload 实现与远程附件时要用的形状，从 headless 转发，docs 与应用不必另装依赖
+export type {
+  FileUploadFile,
+  FileUploadRemoteFile,
+  FileUploadRequest,
+  FileUploadResult,
+  FileUploadSnapshot,
+  FileUploadStatus,
+} from '@xihan-ui/headless'
