@@ -5,6 +5,7 @@ import { createAnatomy } from '@xihan-ui/kernel'
 export const selectAnatomy = createAnatomy('select', [
   'root',
   'label',
+  'control',
   'trigger',
   'value-text',
   'indicator',

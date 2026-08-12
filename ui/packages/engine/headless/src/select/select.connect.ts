@@ -155,6 +155,12 @@ export function connectSelect<T extends PropTypes>(
       'id': ids.label,
       'data-disabled': dataAttr(disabled),
     }),
+    getControlProps: () => normalize.element({
+      ...parts.control.attrs,
+      'data-state': stateAttr,
+      'data-disabled': dataAttr(disabled),
+      'data-invalid': dataAttr(invalid),
+    }),
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
       'id': ids.trigger,

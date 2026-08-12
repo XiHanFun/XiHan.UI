@@ -1,9 +1,10 @@
-<!-- 清空按钮 | XhSelectClearTrigger 放在触发器旁边：有选中才显形，点按清空全部选中、不展开浮层；可及名走 translations.clear -->
+<!-- 清空按钮 | XhSelectControl 收纳触发器与清空按钮：清空钮嵌在触发器右端、悬停时替换下拉箭头；有选中才显形，点按清空全部选中、不展开浮层；可及名走 translations.clear -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
   XhSelectClearTrigger,
   XhSelectContent,
+  XhSelectControl,
   XhSelectIndicator,
   XhSelectItem,
   XhSelectItemIndicator,
@@ -21,7 +22,7 @@ const teams = [
   { value: "server", label: "服务端组" },
 ];
 
-const picked = ref<string[]>(["frontend"]);
+const picked = ref<string[]>(["design"]);
 </script>
 
 <template>
@@ -32,13 +33,13 @@ const picked = ref<string[]>(["frontend"]);
     style="inline-size: 240px"
   >
     <XhSelectLabel>所属小组</XhSelectLabel>
-    <div style="display: flex; align-items: center; gap: 4px">
-      <XhSelectTrigger style="flex: 1">
+    <XhSelectControl>
+      <XhSelectTrigger>
         <XhSelectValueText />
         <XhSelectIndicator>▾</XhSelectIndicator>
       </XhSelectTrigger>
       <XhSelectClearTrigger>✕</XhSelectClearTrigger>
-    </div>
+    </XhSelectControl>
     <XhSelectPositioner>
       <XhSelectContent>
         <XhSelectItem v-for="t in teams" :key="t.value" :value="t.value">

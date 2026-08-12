@@ -108,7 +108,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 ### 清空按钮
 
-XhSelectClearTrigger 放在触发器旁边：有选中才显形，点按清空全部选中、不展开浮层；可及名走 translations.clear
+XhSelectControl 收纳触发器与清空按钮：清空钮嵌在触发器右端、悬停时替换下拉箭头；有选中才显形，点按清空全部选中、不展开浮层；可及名走 translations.clear
 
 <XhDemo src="select/18-clear" />
 
@@ -117,7 +117,7 @@ XhSelectClearTrigger 放在触发器旁边：有选中才显形，点按清空�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-select>` |
-| Vue 组件 | `XhSelectClearTrigger` `XhSelectContent` `XhSelectIndicator` `XhSelectItem` `XhSelectItemIndicator` `XhSelectItemText` `XhSelectLabel` `XhSelectPositioner` `XhSelectRoot` `XhSelectTrigger` `XhSelectValueText` |
+| Vue 组件 | `XhSelectClearTrigger` `XhSelectContent` `XhSelectIndicator` `XhSelectItem` `XhSelectItemIndicator` `XhSelectItemText` `XhSelectLabel` `XhSelectPositioner` `XhSelectRoot` `XhSelectTag` `XhSelectTagRemove` `XhSelectTrigger` `XhSelectValueText` |
 | 组合式函数 | `useSelect` |
 | 状态机 | `selectMachine` |
 | 皮肤 | `@xihan-ui/styles/select.css` |
@@ -126,7 +126,7 @@ XhSelectClearTrigger 放在触发器旁边：有选中才显形，点按清空�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="select"`：`root` · `label` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `tag` · `tag-remove` · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `hidden-select`
+`data-scope="select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `tag` · `tag-remove` · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `hidden-select`
 
 ## Props
 
@@ -185,6 +185,7 @@ XhSelectClearTrigger 放在触发器旁边：有选中才显形，点按清空�
 | `deselect` | `(value: string) => void` | 摘掉一个选中值。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
+| `getControlProps` | `() => T['element']` | 触发器与清空按钮的收纳容器兼定位基准：清空钮据此嵌进触发器右端、悬停时替换展开指示符。 |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getValueTextProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
