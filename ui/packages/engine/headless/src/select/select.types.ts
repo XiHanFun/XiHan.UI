@@ -211,6 +211,8 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   deselect: (value: string) => void
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
+  /** 触发器与清空按钮的收纳容器兼定位基准：清空钮据此嵌进触发器右端、悬停时替换展开指示符。 */
+  getControlProps: () => T['element']
   getTriggerProps: () => T['button']
   getValueTextProps: () => T['element']
   getIndicatorProps: () => T['element']

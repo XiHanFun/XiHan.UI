@@ -107,6 +107,17 @@
     border-color: var(--xh-select-trigger-border-invalid, var(--xh-color-danger-500));
   }
 
+  /* 收纳容器：触发器与清空按钮的定位基准，触发器在里面占满一行 */
+  [data-scope='select'][data-part='control'] {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  [data-scope='select'][data-part='control'] > [data-part='trigger'] {
+    flex: 1;
+  }
+
   /* 清空按钮：trigger 的兄弟节点，幽灵小圆钮；没选中或禁用时连接层给 hidden */
   [data-scope='select'][data-part='clear-trigger'] {
     display: inline-grid;
@@ -133,6 +144,27 @@
 
   [data-scope='select'][data-part='clear-trigger'][hidden] {
     display: none;
+  }
+
+  /* 进了 control 就嵌进触发器右端（与展开指示符同位），平时不占位也不接指针 */
+  [data-scope='select'][data-part='control'] [data-part='clear-trigger'] {
+    position: absolute;
+    inset-inline-end: var(--xh-select-trigger-px, var(--xh-_select-px));
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* 悬停或键盘聚到清空钮上时显形 */
+  [data-scope='select'][data-part='control']:hover [data-part='clear-trigger']:not([hidden]),
+  [data-scope='select'][data-part='control'] [data-part='clear-trigger']:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* 清空钮显形期间展开指示符让位，两个图标不叠在一起 */
+  [data-scope='select'][data-part='control']:hover:has([data-part='clear-trigger']:not([hidden])) [data-part='indicator'],
+  [data-scope='select'][data-part='control']:has([data-part='clear-trigger']:focus-visible) [data-part='indicator'] {
+    opacity: 0;
   }
 
   /* 多选标签：淡底小药丸；放触发器里是纯展示，放外面配 tag-remove 可删 */

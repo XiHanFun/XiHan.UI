@@ -98,6 +98,15 @@ export const XhSelectLabel = defineComponent({
   },
 })
 
+export const XhSelectControl = defineComponent({
+  name: 'XhSelectControl',
+  setup(_, { slots }) {
+    const ctx = useSelectContext()
+    // 触发器与清空按钮的收纳容器：清空钮据此嵌进触发器右端
+    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhSelectTrigger = defineComponent({
   name: 'XhSelectTrigger',
   setup(_, { slots }) {

@@ -51,7 +51,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart trigger - 触发按钮（aria-haspopup=listbox/aria-expanded/aria-controls 所在），同时是定位锚点，须是原生 button
  * @csspart value-text - 选中项文本的显示位；留空即由元素填入 displayText，作者写了内容则归作者
  * @csspart indicator - 展开指示符（aria-hidden，data-state 随开合）
- * @csspart clear-trigger - 清空按钮：trigger 的兄弟节点，没选中或禁用时带 hidden；可及名走 translations.clear
+ * @csspart control - 触发器与清空按钮的收纳容器兼定位基准；清空钮据此嵌进触发器右端、悬停时替换展开指示符
+ * @csspart clear-trigger - 清空按钮：trigger 的兄弟节点（放进 control 即内嵌形态），没选中或禁用时带 hidden；可及名走 translations.clear
  * @csspart tag - 多选标签，须自带 value 属性标识选中值；放触发器里是纯展示，放外面配 tag-remove 可删
  * @csspart tag-remove - 标签删除按钮，须放在 tag 里；点按摘掉所在标签的选中值，可及名走 translations.removeTag
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
@@ -284,6 +285,7 @@ export class XhSelectElement extends XhElement {
     }
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
+    put('control', api.getControlProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     put('indicator', api.getIndicatorProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)

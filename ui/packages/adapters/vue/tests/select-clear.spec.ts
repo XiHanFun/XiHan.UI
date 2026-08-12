@@ -5,6 +5,7 @@ import { createApp, h, nextTick } from 'vue'
 import {
   XhSelectClearTrigger,
   XhSelectContent,
+  XhSelectControl,
   XhSelectItem,
   XhSelectItemText,
   XhSelectPositioner,
@@ -34,8 +35,10 @@ function mountSelect(props: Record<string, unknown> = {}): { change: ReturnType<
   const app = createApp({
     setup: () => () =>
       h(XhSelectRoot, { 'collection': [{ value: 'a', label: '甲' }, { value: 'b', label: '乙' }], 'onValue-change': change, ...props }, () => [
-        h(XhSelectTrigger),
-        h(XhSelectClearTrigger, () => '✕'),
+        h(XhSelectControl, null, () => [
+          h(XhSelectTrigger),
+          h(XhSelectClearTrigger, () => '✕'),
+        ]),
         h(XhSelectPositioner, null, () => [
           h(XhSelectContent, null, () => [
             h(XhSelectItem, { value: 'a' }, () => [h(XhSelectItemText, () => '甲')]),
@@ -63,6 +66,14 @@ const CLEAR = '[data-scope="select"][data-part="clear-trigger"]'
 const CONTENT = '[data-scope="select"][data-part="content"]'
 
 describe('select 清空按钮', () => {
+  it('control 收纳容器带 part 标记，清空钮在其中', async () => {
+    mountSelect({ defaultValue: 'a' })
+    await tick()
+    const control = el('[data-scope="select"][data-part="control"]')
+    expect(control.querySelector('[data-part="clear-trigger"]')).toBeTruthy()
+    expect(control.querySelector('[data-part="trigger"]')).toBeTruthy()
+  })
+
   it('有选中才显形；点按清空且不展开浮层', async () => {
     const m = mountSelect({ defaultValue: 'a' })
     await tick()
