@@ -84,7 +84,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 ### 多选标签
 
-触发器的显示是插槽：只摆前两个标签、其余折成 +N；可删除的标签行放在触发器之外，删除按钮调根插槽的 setValue
+内建标签形态：api 的 tags 受 maxTagCount 截断、余数在 overflowCount；触发器里 XhSelectTag 纯展示，触发器外配 XhSelectTagRemove 即可删
 
 <XhDemo src="select/14-tags" />
 
@@ -117,7 +117,7 @@ XhSelectClearTrigger 放在触发器旁边：有选中才显形，点按清空�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-select>` |
-| Vue 组件 | `XhSelectContent` `XhSelectIndicator` `XhSelectItem` `XhSelectItemIndicator` `XhSelectItemText` `XhSelectLabel` `XhSelectPositioner` `XhSelectRoot` `XhSelectTrigger` `XhSelectValueText` |
+| Vue 组件 | `XhSelectClearTrigger` `XhSelectContent` `XhSelectIndicator` `XhSelectItem` `XhSelectItemIndicator` `XhSelectItemText` `XhSelectLabel` `XhSelectPositioner` `XhSelectRoot` `XhSelectTrigger` `XhSelectValueText` |
 | 组合式函数 | `useSelect` |
 | 状态机 | `selectMachine` |
 | 皮肤 | `@xihan-ui/styles/select.css` |
@@ -126,7 +126,7 @@ XhSelectClearTrigger 放在触发器旁边：有选中才显形，点按清空�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="select"`：`root` · `label` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `hidden-select`
+`data-scope="select"`：`root` · `label` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `tag` · `tag-remove` · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `hidden-select`
 
 ## Props
 
@@ -141,6 +141,7 @@ XhSelectClearTrigger 放在触发器旁边：有选中才显形，点按清空�
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 用原生 disabled，隐藏 select 不参与提交。 |
 | `invalid` | `boolean` |  | 校验错误态：trigger 标红并输出 aria-invalid。 |
 | `translations` | `Partial<SelectTranslations>` |  | 读屏用的文案，默认英文。 |
+| `maxTagCount` | `number` |  | 多选标签最多摆几个，其余折进 overflowCount；缺省全摆。 |
 | `required` | `boolean` |  | 原生表单校验：无选中值时提交被拦下。 |
 | `name` | `string` |  | 表单字段名。给定后隐藏 select 才带 name，选中值随表单一并提交。 |
 | `placeholder` | `string` |  | 无选中时 value-text 显示的占位文字。 |
@@ -175,16 +176,21 @@ XhSelectClearTrigger 放在触发器旁边：有选中才显形，点按清空�
 | `displayText` | `string` | value-text 实际显示的文字：有选中取其文本（多选按半角逗号加空格连起来），否则取 placeholder。 |
 | `multiple` | `boolean` | 是否允许多选。 |
 | `invalid` | `boolean` | 校验错误态。 |
+| `tags` | `SelectTagMeta[]` | 可见标签（受 maxTagCount 截断），与 value/valueText 同序。 |
+| `overflowCount` | `number` | 被 maxTagCount 折起来的标签数；作者据此渲染 +N。 |
 | `highlightedValue` | `string \| null` | 高亮锚点；收起时为 null。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string \| string[]) => void` |  |
 | `clear` | `() => void` | 清空全部选中。 |
+| `deselect` | `(value: string) => void` | 摘掉一个选中值。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getValueTextProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
 | `getClearTriggerProps` | `() => T['button']` | 清空按钮：没选中或禁用时整个藏掉；点按清空全部选中、不展开浮层。 |
+| `getTagProps` | `(props: SelectTagProps) => T['element']` | 标签：一个选中值一枚；放触发器里就是纯展示，放外面配 tag-remove 可删。 |
+| `getTagRemoveProps` | `(props: SelectTagProps) => T['button']` | 标签删除按钮：点按摘掉所在标签的选中值；须放在 tag 部件里。 |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: SelectItemProps) => T['element']` |  |

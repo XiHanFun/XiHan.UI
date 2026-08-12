@@ -9,6 +9,8 @@ export const selectAnatomy = createAnatomy('select', [
   'value-text',
   'indicator',
   'clear-trigger',
+  'tag',
+  'tag-remove',
   'positioner',
   'content',
   'item',

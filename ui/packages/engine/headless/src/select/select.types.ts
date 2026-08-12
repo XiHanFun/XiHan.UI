@@ -49,6 +49,19 @@ export interface SelectNode {
 export interface SelectTranslations {
   /** 清空按钮的可及名。 */
   clear: string
+  /** 标签删除按钮的可及名模板，{label} 现场代入。 */
+  removeTag: string
+}
+
+/** 标签自报家门：它代表哪个选中值。 */
+export interface SelectTagProps {
+  value: string
+}
+
+/** 可见标签的数据：值与显示文本。 */
+export interface SelectTagMeta {
+  value: string
+  label: string
 }
 
 export interface SelectNodeMeta {
@@ -93,6 +106,8 @@ export interface SelectSchema extends MachineSchema {
     invalid?: boolean
     /** 读屏用的文案，默认英文。 */
     translations?: Partial<SelectTranslations>
+    /** 多选标签最多摆几个，其余折进 overflowCount；缺省全摆。 */
+    maxTagCount?: number
     /** 原生表单校验：无选中值时提交被拦下。 */
     required?: boolean
     /** 表单字段名。给定后隐藏 select 才带 name，选中值随表单一并提交。 */
@@ -182,12 +197,18 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   multiple: boolean
   /** 校验错误态。 */
   invalid: boolean
+  /** 可见标签（受 maxTagCount 截断），与 value/valueText 同序。 */
+  tags: SelectTagMeta[]
+  /** 被 maxTagCount 折起来的标签数；作者据此渲染 +N。 */
+  overflowCount: number
   /** 高亮锚点；收起时为 null。 */
   highlightedValue: string | null
   setOpen: (next: boolean) => void
   setValue: (next: string | string[]) => void
   /** 清空全部选中。 */
   clear: () => void
+  /** 摘掉一个选中值。 */
+  deselect: (value: string) => void
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
   getTriggerProps: () => T['button']
@@ -195,6 +216,10 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   getIndicatorProps: () => T['element']
   /** 清空按钮：没选中或禁用时整个藏掉；点按清空全部选中、不展开浮层。 */
   getClearTriggerProps: () => T['button']
+  /** 标签：一个选中值一枚；放触发器里就是纯展示，放外面配 tag-remove 可删。 */
+  getTagProps: (props: SelectTagProps) => T['element']
+  /** 标签删除按钮：点按摘掉所在标签的选中值；须放在 tag 部件里。 */
+  getTagRemoveProps: (props: SelectTagProps) => T['button']
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
   getItemProps: (props: SelectItemProps) => T['element']
