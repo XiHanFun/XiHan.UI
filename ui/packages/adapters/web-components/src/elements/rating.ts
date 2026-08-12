@@ -25,6 +25,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {number} default-value - 非受控初值，缺省 0（还没评）
  * @attr {number} count - 星星颗数，默认 5
  * @attr {boolean} allow-half - 允许半颗星：档位从 1 变成 0.5
+ * @attr {boolean} allow-clear - 再点当前档位清零，键盘最低档再往下也清；默认开，写 "false" 关
  * @attr {boolean} disabled - 整个不可交互：整条带子退出 Tab 序列，指针与键盘都不认
  * @attr {boolean} read-only - 只读：仍可聚焦与朗读，但改不动，也没有悬停预览
  * @attr {boolean} required - 必填标注；表单影子据此参与原生校验
@@ -53,6 +54,7 @@ export class XhRatingElement extends XhElement {
     defaultValue: { converter: NUMBER_CONVERTER, attribute: 'default-value' },
     count: { converter: NUMBER_CONVERTER },
     allowHalf: { converter: BOOLEAN_CONVERTER, attribute: 'allow-half' },
+    allowClear: { converter: BOOLEAN_CONVERTER, attribute: 'allow-clear' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     required: { converter: BOOLEAN_CONVERTER },
@@ -66,6 +68,7 @@ export class XhRatingElement extends XhElement {
   declare defaultValue?: number
   declare count?: number
   declare allowHalf?: boolean
+  declare allowClear?: boolean
   declare disabled?: boolean
   declare readOnly?: boolean
   declare required?: boolean
@@ -90,6 +93,7 @@ export class XhRatingElement extends XhElement {
       defaultValue: this.defaultValue,
       count: this.count,
       allowHalf: this.allowHalf ?? false,
+      allowClear: this.allowClear,
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,
       required: this.required ?? false,

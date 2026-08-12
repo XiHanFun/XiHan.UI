@@ -54,7 +54,7 @@ size 改星的大小与间距，不写即缺省中档
 
 ### 再点一次清空
 
-点中当前那一档就清回“还没评”，靠指针按下时的快照与本次落点比对
+allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在最低档再往下走一步同样清零；设为 false 关掉
 
 <XhDemo src="rating/09-clearable" />
 
@@ -82,6 +82,7 @@ size 改星的大小与间距，不写即缺省中档
 | `defaultValue` | `number` |  | 非受控初值，缺省 0（还没评）。 |
 | `count` | `number` |  | 星星颗数，默认 5。 |
 | `allowHalf` | `boolean` |  | 允许半颗星：档位从 1 变成 0.5。 |
+| `allowClear` | `boolean` |  | 再点当前档位即清零，键盘在最低档再往下走一步同样清零；默认开。 |
 | `disabled` | `boolean` |  | 整个不可交互：退出 Tab 序列，指针与键盘都不认。 |
 | `readOnly` | `boolean` |  | 只读：仍可聚焦、仍能被读屏念出，但改不动，也不给悬停预览。 |
 | `required` | `boolean` |  |  |

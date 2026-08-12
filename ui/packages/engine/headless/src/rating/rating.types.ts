@@ -40,6 +40,8 @@ export interface RatingSchema extends MachineSchema {
     count?: number
     /** 允许半颗星：档位从 1 变成 0.5。 */
     allowHalf?: boolean
+    /** 再点当前档位即清零，键盘在最低档再往下走一步同样清零；默认开。 */
+    allowClear?: boolean
     /** 整个不可交互：退出 Tab 序列，指针与键盘都不认。 */
     disabled?: boolean
     /** 只读：仍可聚焦、仍能被读屏念出，但改不动，也不给悬停预览。 */
