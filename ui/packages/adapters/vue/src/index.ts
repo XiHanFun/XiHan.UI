@@ -537,6 +537,20 @@ export {
 export { useSelect } from './components/select/use-select'
 export type { SelectContext } from './components/select/use-select'
 export { XhSeparator } from './components/separator/separator'
+export { provideSideNav, provideSideNavNode, useSideNavContext, useSideNavNodeContext } from './components/side-nav/context'
+export {
+  XhSideNavBranch,
+  XhSideNavBranchContent,
+  XhSideNavBranchIndicator,
+  XhSideNavBranchTrigger,
+  XhSideNavGroup,
+  XhSideNavGroupLabel,
+  XhSideNavLink,
+  XhSideNavList,
+  XhSideNavRoot,
+} from './components/side-nav/side-nav'
+export { useSideNav } from './components/side-nav/use-side-nav'
+export type { SideNavContext } from './components/side-nav/use-side-nav'
 export { XhSkeletonBone, XhSkeletonRoot } from './components/skeleton/skeleton'
 export {
   XhSliderControl,
@@ -811,4 +825,5 @@ export type {
   FileUploadResult,
   FileUploadSnapshot,
   FileUploadStatus,
+  SideNavNode,
 } from '@xihan-ui/headless'

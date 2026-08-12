@@ -1,6 +1,6 @@
 # 组件总览
 
-103 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/web-components`）与**默认皮肤**（`@xihan-ui/styles`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
+104 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/web-components`）与**默认皮肤**（`@xihan-ui/styles`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
 
 本册每个组件一页，页内固定为：产物 · 示例 · 解剖 · Props · 状态机 · connect API · 键盘。除示例外全部由组件源码生成，不会与代码对不上。
 
@@ -101,6 +101,7 @@
 | [菜单栏](./menubar) | `menubar` | 10 | 15 | 9 |
 | [右键菜单](./context-menu) | `context-menu` | 11 | 9 | 8 |
 | [导航菜单](./navigation-menu) | `navigation-menu` | 8 | 7 | 10 |
+| [侧栏导航](./side-nav) | `side-nav` | 9 | 8 | 2 |
 | [标签页](./tabs) | `tabs` | 4 | 6 | 13 |
 | [步骤条](./steps) | `steps` | 9 | 6 | 8 |
 | [分页](./pagination) | `pagination` | 5 | 4 | 10 |

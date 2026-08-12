@@ -1,0 +1,128 @@
+@layer xihan.components {
+  [data-scope='side-nav'][data-part='root'] {
+    inline-size: var(--xh-side-nav-w, 240px);
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-side-nav-gap, var(--xh-space-1));
+    padding: var(--xh-side-nav-p, var(--xh-space-2));
+    color: var(--xh-side-nav-fg, var(--xh-fg-default));
+  }
+
+  /* 折叠成图标栏：整栏收窄，文字随行宽被裁掉 */
+  [data-scope='side-nav'][data-part='root'][data-collapsed] {
+    inline-size: var(--xh-side-nav-collapsed-w, 56px);
+  }
+
+  [data-scope='side-nav'][data-part='list'],
+  [data-scope='side-nav'][data-part='branch-content'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-side-nav-gap, var(--xh-space-1));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* 子层靠嵌套缩进，层级越深自然越靠里 */
+  [data-scope='side-nav'][data-part='branch-content'] {
+    padding-inline-start: var(--xh-side-nav-indent, var(--xh-space-4));
+  }
+
+  [data-scope='side-nav'][data-part='branch-content'][hidden] {
+    display: none;
+  }
+
+  [data-scope='side-nav'][data-part='group'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-side-nav-gap, var(--xh-space-1));
+    list-style: none;
+  }
+
+  [data-scope='side-nav'][data-part='group-label'] {
+    padding-block: var(--xh-space-1);
+    padding-inline: var(--xh-control-px-md);
+    font-size: var(--xh-font-size-xs);
+    color: var(--xh-fg-subtle);
+    user-select: none;
+  }
+
+  /* 折叠时分组标题没有落点，藏掉 */
+  [data-scope='side-nav'][data-part='group-label'][data-collapsed] {
+    display: none;
+  }
+
+  [data-scope='side-nav'][data-part='branch'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-side-nav-gap, var(--xh-space-1));
+    list-style: none;
+  }
+
+  /* —— 行：分支按钮与链接同一副长相 —— */
+  [data-scope='side-nav'][data-part='branch-trigger'],
+  [data-scope='side-nav'][data-part='link'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-control-gap-md);
+    inline-size: 100%;
+    min-block-size: var(--xh-control-h-md);
+    padding-inline: var(--xh-control-px-md);
+    border: none;
+    border-radius: var(--xh-shape-control);
+    background: none;
+    color: inherit;
+    font-size: var(--xh-text-body-size);
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  [data-scope='side-nav'][data-part='branch-trigger']:hover,
+  [data-scope='side-nav'][data-part='link']:hover {
+    background: var(--xh-bg-subtle-hover);
+  }
+
+  [data-scope='side-nav'][data-part='branch-trigger']:focus-visible,
+  [data-scope='side-nav'][data-part='link']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 选中的那条：品牌淡底 + 强调字 */
+  [data-scope='side-nav'][data-part='link'][data-selected] {
+    background: var(--xh-bg-brand-subtle);
+    color: var(--xh-fg-brand);
+    font-weight: var(--xh-font-weight-medium);
+  }
+
+  /* 选中项的祖先枝：只染字色，一路指到当前页 */
+  [data-scope='side-nav'][data-part='branch-trigger'][data-active] {
+    color: var(--xh-fg-brand);
+  }
+
+  [data-scope='side-nav'][data-part='branch-trigger'][data-disabled],
+  [data-scope='side-nav'][data-part='link'][data-disabled] {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='side-nav'][data-part='branch-indicator'] {
+    margin-inline-start: auto;
+    display: inline-flex;
+    flex: none;
+    transition: rotate var(--xh-duration-fast) var(--xh-ease-standard);
+  }
+
+  [data-scope='side-nav'][data-part='branch-indicator'][data-state='open'] {
+    rotate: 90deg;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='side-nav'][data-part='branch-indicator'] {
+      transition: none;
+    }
+  }
+}

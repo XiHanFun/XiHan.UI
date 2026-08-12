@@ -148,6 +148,8 @@ export { connectScrollArea, isOverflowing, maxScrollOffset, pointerDelta, SCROLL
 export type { ScrollAreaApi, ScrollAreaAxis, ScrollAreaAxisGeometry, ScrollAreaAxisMetrics, ScrollAreaAxisState, ScrollAreaDragSession, ScrollAreaOrientation, ScrollAreaPoint, ScrollAreaRect, ScrollAreaRefs, ScrollAreaSchema, ScrollAreaScrollbarProps, ScrollAreaType } from './scroll-area'
 export { connectSelect, SELECT_DEFAULT_PLACEMENT, selectAnatomy, selectItemQuery, selectItemText, selectKeyboard, selectMachine, selectMeta } from './select'
 export type { SelectApi, SelectFocusIntent, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectRefs, SelectSchema, SelectValueChangeDetails } from './select'
+export { accordionSiblings, connectSideNav, sideNavAnatomy, sideNavKeyboard, sideNavLinkQuery, sideNavMachine, sideNavMeta, sideNavTriggerQuery } from './side-nav'
+export type { SideNavApi, SideNavExpandedChangeDetails, SideNavNode, SideNavNodeProps, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails } from './side-nav'
 export { connectSeparator, separatorAnatomy, separatorKeyboard, separatorMeta } from './separator'
 export type { SeparatorApi, SeparatorProps } from './separator'
 // 补间缓动的取值。NumberAnimationEasing 是它的别名，别名要能被命名，这一支就必须公开
