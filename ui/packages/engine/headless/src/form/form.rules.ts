@@ -62,6 +62,13 @@ const DEFAULT_MESSAGES: Required<Omit<FormValidateMessages, 'type'>> & { type: R
   pattern: '{name} does not match the required pattern',
 }
 
+/** 这组规则里有没有 required：字段的必填标记（aria-required 与星号）从这里推。 */
+export function hasRequiredRule(rules: FormRule | FormRule[] | undefined): boolean {
+  if (!rules)
+    return false
+  return (Array.isArray(rules) ? rules : [rules]).some(rule => !!rule.required)
+}
+
 /** 空值判定：required 拦的就是这些。 */
 export function isEmptyFormValue(value: unknown): boolean {
   if (value === undefined || value === null || value === '')

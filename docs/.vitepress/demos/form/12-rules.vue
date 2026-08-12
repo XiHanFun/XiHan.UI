@@ -1,4 +1,4 @@
-<!-- 声明式规则 | rules 按字段声明 required/min/max/pattern/type，一个字段多条规则首败即停；文案取 rule.message，再退 validateMessages 模板（{name}/{min}/{max} 现场代入） -->
+<!-- 声明式规则 | rules 按字段声明 required/min/max/pattern/type，一个字段多条规则首败即停；文案取 rule.message，再退 validateMessages 模板（{name}/{min}/{max} 现场代入）。组里的 Field 自取校验态：invalid/必填星号/错误文案都不用手接 -->
 <script setup lang="ts">
 import type { FormRules, FormValidateMessages } from "@xihan-ui/headless";
 import { ref } from "vue";
@@ -58,10 +58,11 @@ function onSubmit(details: { values: Record<string, unknown> }) {
     <XhFormFieldGroup
       v-for="f in fields"
       :key="f.name"
-      v-slot="{ value, error, invalid, setValue }"
+      v-slot="{ value, setValue }"
       :value="f.name"
     >
-      <XhFieldRoot :invalid="invalid">
+      <!-- Field 不接任何校验 props：invalid、必填星号与错误文案全部从表单上下文自取 -->
+      <XhFieldRoot>
         <XhFieldLabel>{{ f.label }}</XhFieldLabel>
         <XhFieldControl>
           <input
@@ -70,7 +71,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
             @input="setValue(($event.target as HTMLInputElement).value)"
           />
         </XhFieldControl>
-        <XhFieldErrorText>{{ error }}</XhFieldErrorText>
+        <XhFieldErrorText />
       </XhFieldRoot>
     </XhFormFieldGroup>
 

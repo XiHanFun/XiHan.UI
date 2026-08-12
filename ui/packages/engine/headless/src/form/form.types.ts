@@ -172,6 +172,8 @@ export interface FormApi<T extends PropTypes = PropTypes> {
   /** 该字段此刻的错误文案；没错时为 undefined。 */
   getFieldError: (name: string) => string | undefined
   isFieldInvalid: (name: string) => boolean
+  /** 该字段的规则里声明了 required：字段的必填标记从这里推。 */
+  isFieldRequired: (name: string) => boolean
   /** 写一个字段的值；禁用或只读时不动。 */
   setFieldValue: (name: string, value: unknown) => void
   /** 写一个字段的错误；不给文案（或给空串）即清掉这一条。 */

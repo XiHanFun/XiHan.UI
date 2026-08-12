@@ -1,6 +1,7 @@
 import type { FieldProps } from '@xihan-ui/headless'
 import type { VNode } from 'vue'
 import { cloneVNode, Comment, defineComponent, h, Text } from 'vue'
+import { useOptionalFormContext, useOptionalFormField } from '../form/context'
 import { provideField, useFieldContext } from './context'
 import { useField } from './use-field'
 
@@ -11,15 +12,33 @@ function attributable(nodes: readonly VNode[]): VNode[] {
 
 export const XhFieldRoot = defineComponent({
   name: 'XhFieldRoot',
+  // 三个布尔缺省 undefined：在 XhFormFieldGroup 里没写就从表单上下文自取，写了以写的为准
   props: {
-    invalid: Boolean,
-    required: Boolean,
-    disabled: Boolean,
+    invalid: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
+    disabled: { type: Boolean, default: undefined },
     // 控件节点的 id，不占用根节点自己的 DOM id
     controlId: { type: String, default: undefined },
   },
   setup(props, { slots }) {
-    const ctx = useField(props as FieldProps)
+    const form = useOptionalFormContext()
+    const handle = useOptionalFormField()
+    // getter 透传保住响应性：props 与表单 api 谁变都会带动 connect 重算
+    const merged: FieldProps = {
+      get invalid() {
+        return props.invalid ?? (form && handle ? form.api.value.isFieldInvalid(handle.name()) : undefined)
+      },
+      get required() {
+        return props.required ?? (form && handle ? form.api.value.isFieldRequired(handle.name()) : undefined)
+      },
+      get disabled() {
+        return props.disabled ?? (form && handle ? form.api.value.disabled : undefined)
+      },
+      get controlId() {
+        return props.controlId
+      },
+    }
+    const ctx = useField(merged)
     provideField(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },
@@ -60,7 +79,15 @@ export const XhFieldErrorText = defineComponent({
   name: 'XhFieldErrorText',
   setup(_, { slots }) {
     const ctx = useFieldContext()
-    // 节点常挂，靠 hidden 显隐
-    return () => h('p', ctx.api.value.getErrorTextProps() as Record<string, unknown>, slots.default?.())
+    const form = useOptionalFormContext()
+    const handle = useOptionalFormField()
+    // 节点常挂，靠 hidden 显隐；插槽没给内容时在表单里自取该字段的错误文案
+    return () => {
+      const kids = slots.default?.()
+      const auto = (!kids || kids.length === 0) && form && handle
+        ? form.api.value.getFieldError(handle.name())
+        : undefined
+      return h('p', ctx.api.value.getErrorTextProps() as Record<string, unknown>, kids?.length ? kids : auto)
+    }
   },
 })
