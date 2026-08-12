@@ -43,6 +43,7 @@ function declarations(entries, indent = '    ') {
 async function main() {
   const primitive = flatten(await load('primitive.json'))
   const base = flatten(await load('semantic.base.json'))
+  const compact = flatten(await load('semantic.compact.json'))
   const light = flatten(await load('semantic.light.json'))
   const dark = flatten(await load('semantic.dark.json'))
   const lightMore = flatten(await load('semantic.light.more.json'))
@@ -59,6 +60,12 @@ ${declarations(primitive)}
   /* 非模式语义（密度等轴的基线合并写法） */
   :where(:root), :where([data-density='comfortable']) {
 ${declarations(base)}
+  }
+
+  /* density 轴 · compact 档：只覆盖收紧的盒尺寸。排在基线合并块之后，
+     同为零特指度时靠书写顺序压过基线；嵌套换档靠元素自身声明压过继承 */
+  :where([data-density='compact']) {
+${declarations(compact)}
   }
 
   /* mode 轴 · 浅色基线块 */
@@ -107,7 +114,7 @@ export type TokenName = keyof typeof tokens
   await mkdir(join(ROOT, 'src', 'generated'), { recursive: true })
   await writeFile(join(ROOT, 'src', 'generated', 'tokens.ts'), generatedTs)
 
-  console.log(`[emit-tokens] primitive ${primitive.length} · base ${base.length} · light ${light.length} · dark ${dark.length} → tokens.css / tokens.json / src/generated/tokens.ts`)
+  console.log(`[emit-tokens] primitive ${primitive.length} · base ${base.length} · compact ${compact.length} · light ${light.length} · dark ${dark.length} → tokens.css / tokens.json / src/generated/tokens.ts`)
 }
 
 main()

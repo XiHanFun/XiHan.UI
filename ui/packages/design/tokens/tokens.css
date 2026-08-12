@@ -156,6 +156,24 @@
     --xh-text-heading-3-weight: var(--xh-font-weight-semibold);
   }
 
+  /* density 轴 · compact 档：只覆盖收紧的盒尺寸。排在基线合并块之后，
+     同为零特指度时靠书写顺序压过基线；嵌套换档靠元素自身声明压过继承 */
+  :where([data-density='compact']) {
+    --xh-control-h-sm: 24px;
+    --xh-control-h-md: 28px;
+    --xh-control-h-lg: 36px;
+    --xh-control-px-sm: var(--xh-space-1_5);
+    --xh-control-px-md: var(--xh-space-2);
+    --xh-control-px-lg: var(--xh-space-3);
+    --xh-control-gap-md: var(--xh-space-1_5);
+    --xh-control-gap-lg: var(--xh-space-1_5);
+    --xh-control-action-size: 1.25rem;
+    --xh-control-indicator-size: 0.875rem;
+    --xh-field-py: var(--xh-space-1_5);
+    --xh-section-py: var(--xh-space-4);
+    --xh-stack-gap-md: var(--xh-space-3);
+  }
+
   /* mode 轴 · 浅色基线块 */
   :where(:root) {
     color-scheme: light;
