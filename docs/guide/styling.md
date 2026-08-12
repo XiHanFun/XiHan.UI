@@ -85,9 +85,8 @@ CSS 的级联顺序由 `@layer` 声明的**首次出现顺序**决定，与 `@im
 ## 覆盖样式的三种粒度
 
 ```css
-/* 1. 改语义令牌：全库统一 */
+/* 1. 改语义令牌：影响所有直接消费它的规则 */
 :root {
-  --xh-bg-brand: oklch(0.55 0.2 150);
   --xh-shape-control: 10px;
 }
 
@@ -106,6 +105,27 @@ CSS 的级联顺序由 `@layer` 声明的**首次出现顺序**决定，与 `@im
 ```
 
 优先选前两种。写死规则会绕开令牌体系，深色模式、密度切换这些跟着一起失效。
+
+## 换品牌色
+
+品牌色的唯一真源是 **原语梯度** `--xh-color-brand-50…950`：语义令牌（`--xh-bg-brand` 等）与语气层（`data-tone='brand'`）都从它取值。所以换品牌色要换整套原语，而不是只改 `--xh-bg-brand`——那只影响没写 `data-tone` 的缺省路径，写了 `data-tone='brand'` 的组件（实心按钮、开关、进度条这些）不会跟着变。
+
+一枚种子色就够，运行时会派生整套梯度：
+
+```ts
+import { brandId, createThemeController, registerBrand } from '@xihan-ui/tokens'
+
+// 注册：从种子色派生 11 档原语，注入 [data-brand='acme'] 取值块
+registerBrand('acme', '#16a34a')
+
+// 切换：品牌是主题五维之一
+const theme = createThemeController({ storageKey: 'app-theme' })
+theme.setPreference({ brand: brandId('acme') })
+```
+
+派生只取种子的**色相与彩度**，明度曲线沿用基线——库里所有建立在明度上的对比度保证（实心底白字 4.5:1 这类）对任何种子色都继续成立。种子会被锚定到 600 档（实心底与强调文字的档位）。
+
+要逐档手调，把整套梯度直接交给 `registerBrand('acme', { 50: '...', ..., 950: '...' })`。SSR 场景用 `brandScaleCss(id, seed)` 拿到取值块字符串，随首屏 HTML 下发，客户端不必再注册。
 
 ## 动画与进出场
 

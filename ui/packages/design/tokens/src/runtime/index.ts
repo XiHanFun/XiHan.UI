@@ -1,4 +1,6 @@
 export { applyThemeAttrs, toThemeAttrs } from './apply'
+export type { BrandScale, BrandStep, RegisterBrandOptions } from './brand'
+export { brandScaleCss, deriveBrandScale, parseColorToOklch, registerBrand } from './brand'
 export type { ThemeController, ThemeControllerOptions } from './controller'
 export { createThemeController } from './controller'
 // @xihan-ui/tokens/runtime —— 主题运行时。
