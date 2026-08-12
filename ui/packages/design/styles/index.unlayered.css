@@ -11729,6 +11729,10 @@
   border-radius: var(--xh-shape-pill);
   background: none;
   color: var(--xh-select-clear-fg, var(--xh-fg-subtle));
+
+  /* 字号行高钉死：继承页面字号会让行框高过按钮，字形被基线顶离正中 */
+  font-size: var(--xh-select-clear-font-size, var(--xh-font-size-xs));
+  line-height: var(--xh-leading-none);
   cursor: pointer;
 }
 
