@@ -30,6 +30,8 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  *
  * @customElement xh-tree
  * @attr {'single'|'multiple'} selection-mode - 选择模式，默认 single
+ * @attr {boolean} cascade - multiple 下父子级联勾选（整枝传导/半选/禁用冻结），默认 false
+ * @attr {string} checked-strategy - 级联下对外值的收敛策略：child（默认）/ parent / all
  * @attr {boolean} expand-on-click - 点分支行顺带展开/收起，默认开；写 expand-on-click="false" 关掉
  * @attr {boolean} disabled - 整棵树禁用：所有节点转 aria-disabled，键盘与点击都改不了展开与选中
  * @attr {boolean} loop - 上下键走到首尾回绕，默认关；写 loop="true" 打开
@@ -64,6 +66,8 @@ export class XhTreeElement extends XhElement {
     selectedValue: { attribute: false },
     defaultSelectedValue: { attribute: false },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
+    cascade: { type: Boolean },
+    checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
     expandOnClick: { converter: BOOLEAN_CONVERTER, attribute: 'expand-on-click' },
     disabled: { type: Boolean },
     loop: { converter: BOOLEAN_CONVERTER },
@@ -77,6 +81,8 @@ export class XhTreeElement extends XhElement {
   declare selectedValue?: string[]
   declare defaultSelectedValue?: string[]
   declare selectionMode?: TreeSelectionMode
+  declare cascade?: boolean
+  declare checkedStrategy?: TreeSchema['props']['checkedStrategy']
   declare expandOnClick?: boolean
   declare disabled?: boolean
   declare loop?: boolean
@@ -104,6 +110,8 @@ export class XhTreeElement extends XhElement {
       selectedValue: this.selectedValue,
       defaultSelectedValue: this.defaultSelectedValue,
       selectionMode: this.selectionMode,
+      cascade: this.cascade,
+      checkedStrategy: this.checkedStrategy,
       expandOnClick: this.expandOnClick,
       disabled: this.disabled ?? false,
       loop: this.loop,
