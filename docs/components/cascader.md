@@ -76,9 +76,9 @@ collection 只认 value / label / disabled / children 这几个名字，后端�
 
 <XhDemo src="cascader/12-long-column" />
 
-### 父子联动勾选
+### 级联勾选与回显策略
 
-机器按点了哪条路径原样翻转，父子传导与回显折叠都在宿主这一侧算完再写回 value
+multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；对外值按 checked-strategy 收敛（默认只收叶），半选标记从插槽作用域的 isIndeterminate 取
 
 <XhDemo src="cascader/13-cascade-check" />
 
@@ -122,6 +122,8 @@ trigger 部件渲染的就是原生按钮，模板 ref 拿到它即可 focus / b
 | `expandTrigger` | `CascaderExpandTrigger` |  | 子列由什么展开，默认 click。 |
 | `changeOnSelect` | `boolean` |  | 中间层（分支）也能落值。关掉时点分支只展开子列，不改选中值。 |
 | `multiple` | `boolean` |  | 多选：选中是路径集合，选中后浮层不收起、焦点留在列里以便接着挑。 |
+| `cascade` | `boolean` |  | 多选下父子级联勾选：点分支整枝传导、子全勾父勾、部分勾中半选， 禁用子树整棵冻结。默认 false（按路径原样翻转）；单选下无效。 |
+| `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾中节点。 |
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 用原生 disabled，浮层展不开。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开与浏览，但选中值改不动、也清不掉。 |
 | `invalid` | `boolean` |  | 校验失败：trigger 报 aria-invalid，各角色节点带 data-invalid。 |
@@ -167,6 +169,7 @@ trigger 部件渲染的就是原生按钮，模板 ref 拿到它即可 focus / b
 | `invalid` | `boolean` |  |
 | `canClear` | `boolean` | 清空按钮此刻可不可按。 |
 | `isSelected` | `(value: string) => boolean` | 该条目是否是某条选中路径的末项。 |
+| `isIndeterminate` | `(value: string) => boolean` | 级联模式下该分支是否半选（有效叶后代有勾有不勾）；非级联恒 false。 |
 | `isActive` | `(value: string) => boolean` | 该条目是否落在展开路径上（它的子列开着，或它自己就是最后一站）。 |
 | `isVisible` | `(value: string) => boolean` | 该条目此刻是否落在某个可见列里。 |
 | `setOpen` | `(next: boolean) => void` |  |

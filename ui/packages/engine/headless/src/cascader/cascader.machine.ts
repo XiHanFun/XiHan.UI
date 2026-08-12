@@ -1,10 +1,11 @@
 import type { Placement, PositionResult } from '@xihan-ui/kernel'
 import type { CascaderFocusIntent, CascaderNodeMeta, CascaderSchema, CascaderValue } from './cascader.types'
-import { createDismissLayer, createFocusScope, itemValue, queryItems } from '@xihan-ui/behavior'
+import { cascadeToggle, collapseChecked, createDismissLayer, createFocusScope, itemValue, queryItems } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
 import { cascaderItemQuery } from './cascader.anatomy'
 import {
   cascaderBuildColumns,
+  cascaderIndexNodes,
   cascaderNodeAt,
   cascaderPathKey,
   cascaderSamePath,
@@ -271,12 +272,24 @@ export const cascaderMachine = createMachine({
         if (e.type !== 'ITEM.SELECT' || e.path.length === 0)
           return
         const meta = cascaderNodeAt(prop('collection') ?? [], e.path)
-        // 分支只有在 changeOnSelect 打开时才落值；关掉时点分支纯粹是展开子列
-        if (meta?.branch && !prop('changeOnSelect'))
+        // 分支只有在 changeOnSelect 或级联勾选打开时才落值；否则点分支纯粹是展开子列
+        if (meta?.branch && !prop('changeOnSelect') && !(prop('multiple') && prop('cascade')))
           return
         const path = [...e.path]
         const current = context.get('value')
         if (prop('multiple')) {
+          // 级联：按尾值走级联原语，再把收敛后的值映射回各自的完整路径
+          if (prop('cascade')) {
+            const roots = prop('collection') ?? []
+            const state = cascadeToggle(roots, current.map(p => p[p.length - 1]!), path[path.length - 1]!)
+            const collapsed = collapseChecked(roots, state.checked, prop('checkedStrategy') ?? 'child')
+            const index = cascaderIndexNodes(roots)
+            context.set('value', collapsed.flatMap((v) => {
+              const meta2 = index.get(v)
+              return meta2 ? [[...meta2.path]] : []
+            }))
+            return
+          }
           const key = cascaderPathKey(path)
           const hit = current.some(item => cascaderPathKey(item) === key)
           context.set('value', hit ? current.filter(item => cascaderPathKey(item) !== key) : [...current, path])

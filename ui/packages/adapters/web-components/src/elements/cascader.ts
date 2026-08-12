@@ -50,6 +50,8 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @attr {'click'|'hover'} expand-trigger - 子列由点还是悬停展开，默认 click
  * @attr {boolean} change-on-select - 中间层（分支）也能落值
  * @attr {boolean} multiple - 多选：选中后浮层不收起，焦点留在列里
+ * @attr {boolean} cascade - 多选下父子级联勾选（整枝传导/半选/禁用冻结），默认 false
+ * @attr {string} checked-strategy - 级联下对外值的收敛策略：child（默认）/ parent / all
  * @attr {boolean} disabled - 整个控件禁用：trigger 用原生 disabled，浮层展不开
  * @attr {boolean} read-only - 只读：浮层照常展开、列照常浏览，但选中值改不动、也清不掉
  * @attr {boolean} invalid - 校验失败标注
@@ -91,6 +93,8 @@ export class XhCascaderElement extends XhElement {
     expandTrigger: { converter: STRING_CONVERTER, attribute: 'expand-trigger' },
     changeOnSelect: { converter: BOOLEAN_CONVERTER, attribute: 'change-on-select' },
     multiple: { type: Boolean },
+    cascade: { type: Boolean },
+    checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
     disabled: { type: Boolean },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
@@ -113,6 +117,8 @@ export class XhCascaderElement extends XhElement {
   declare expandTrigger?: CascaderExpandTrigger
   declare changeOnSelect?: boolean
   declare multiple?: boolean
+  declare cascade?: boolean
+  declare checkedStrategy?: CascaderSchema['props']['checkedStrategy']
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
@@ -159,6 +165,8 @@ export class XhCascaderElement extends XhElement {
       expandTrigger: this.expandTrigger,
       changeOnSelect: this.changeOnSelect ?? false,
       multiple: this.multiple ?? false,
+      cascade: this.cascade,
+      checkedStrategy: this.checkedStrategy,
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,
       invalid: this.invalid ?? false,

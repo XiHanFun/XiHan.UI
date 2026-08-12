@@ -2,7 +2,7 @@ import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { CascaderApi, CascaderNodeMeta, CascaderSchema } from './cascader.types'
-import { focusItem, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/behavior'
+import { cascadeState, focusItem, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/kernel'
 import { cascaderAnatomy } from './cascader.anatomy'
 import {
@@ -73,12 +73,18 @@ export function connectCascader<T extends PropTypes>(
   const focusedPath = focusedMeta ? [...focusedMeta.path] : null
 
   const selectedKeys = new Set(value.map(cascaderPathKey))
+  // 级联模式下选中态从尾值集聚合得出：父随子勾、部分勾中半选
+  const cascadeOn = multiple && !!prop('cascade')
+  const cascaded = cascadeOn ? cascadeState(collection, value.map(p => p[p.length - 1]!)) : null
   // 整个控件禁用向下传导到每个条目，条目也能在 collection 里单独禁用
   const isDisabled = (meta: CascaderNodeMeta): boolean => disabled || meta.disabled
   const isSelected = (v: string): boolean => {
+    if (cascaded)
+      return cascaded.checked.has(v)
     const meta = metaOf(v)
     return !!meta && selectedKeys.has(cascaderPathKey(meta.path))
   }
+  const isIndeterminate = (v: string): boolean => cascaded?.indeterminate.has(v) ?? false
   // 落在展开路径上：它的子列开着，或它自己就是最后一站
   const isActive = (v: string): boolean => {
     const meta = metaOf(v)
@@ -131,6 +137,7 @@ export function connectCascader<T extends PropTypes>(
     const meta = metaOf(v)
     return {
       'data-selected': dataAttr(isSelected(v)),
+      'data-indeterminate': dataAttr(isIndeterminate(v)),
       'data-disabled': dataAttr(!!meta && isDisabled(meta)),
       // 焦点所在与选中互相独立
       'data-highlighted': dataAttr(!!focusedMeta && focusedMeta.value === v),
@@ -156,6 +163,7 @@ export function connectCascader<T extends PropTypes>(
     invalid,
     canClear,
     isSelected,
+    isIndeterminate,
     isActive,
     isVisible,
     setOpen: (next) => {
@@ -409,6 +417,8 @@ export function connectCascader<T extends PropTypes>(
         'data-level': meta ? String(meta.level) : undefined,
         // listbox 的选中语义是 aria-selected；未选中也显式输出 false
         'aria-selected': isSelected(item.value) ? 'true' : 'false',
+        // 级联勾选是三态：读屏靠 aria-checked 报半选，非级联不输出该属性
+        'aria-checked': cascadeOn ? (isSelected(item.value) ? 'true' : isIndeterminate(item.value) ? 'mixed' : 'false') : undefined,
         // 集合条目用 aria-disabled 而非原生 disabled，禁用条目仍要能当方向键的起点
         'aria-disabled': meta && isDisabled(meta) ? 'true' : 'false',
         // 分支报「激活它会露出一个列表框」：子列是右边另起的一列，不长在条目里面，
