@@ -1,6 +1,6 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
-import type { FileUploadApi, FileUploadSchema } from './file-upload.types'
+import type { FileUploadApi, FileUploadFile, FileUploadSchema, FileUploadSnapshot } from './file-upload.types'
 import { contains, dataAttr, isHTMLElement } from '@xihan-ui/kernel'
 import { fileUploadAnatomy, fileUploadHiddenInputId } from './file-upload.anatomy'
 import { acceptAttr, formatFileSize, normalizeMaxFiles } from './file-upload.machine'
@@ -39,13 +39,18 @@ export function connectFileUpload<T extends PropTypes>(
 ): FileUploadApi<T> {
   const { state, context, prop, send, scope } = service
   const acceptedFiles = context.get('acceptedFiles')
+  const remoteFiles = context.get('remoteFiles')
+  const uploads = context.get('uploads')
+  const hasUploader = !!prop('upload')
+  /** 远程附件没有本地字节，靠 id 立身份。 */
+  const isRemote = (file: FileUploadFile): file is Exclude<FileUploadFile, File> => !(file instanceof File)
   const dragging = state.get() === 'dragging'
   const disabled = !!prop('disabled')
   const invalid = !!prop('invalid')
   const allowDrop = prop('allowDrop') ?? true
   const canDrop = allowDrop && !disabled
   const maxFiles = normalizeMaxFiles(prop('maxFiles'))
-  const empty = acceptedFiles.length === 0
+  const empty = acceptedFiles.length === 0 && remoteFiles.length === 0
   const ids = scope.ids('file-upload', 'label', 'dropzone')
   const hiddenInputId = fileUploadHiddenInputId(scope)
 
@@ -74,7 +79,7 @@ export function connectFileUpload<T extends PropTypes>(
   const translations = prop('translations')
   const label = {
     dropzone: translations?.dropzone ?? 'Drop files here',
-    deleteFile: translations?.deleteFile ?? ((file: File) => `Delete ${file.name}`),
+    deleteFile: translations?.deleteFile ?? ((file: FileUploadFile) => `Delete ${file.name}`),
     clearFiles: translations?.clearFiles ?? 'Clear all files',
   }
 
@@ -82,17 +87,33 @@ export function connectFileUpload<T extends PropTypes>(
   const fromInteractivePart = (target: EventTarget | null): boolean =>
     isHTMLElement(target) && target.closest(INTERACTIVE_SELECTOR) != null
 
+  /** 本地文件的传输快照；远程附件恒 done。 */
+  const uploadOf = (file: FileUploadFile): FileUploadSnapshot | null => {
+    if (isRemote(file))
+      return { status: 'done', progress: 100, url: file.url }
+    if (!hasUploader)
+      return null
+    // 快照按内部 id 记；还没进过传输引擎的就是 idle
+    const ids2 = service.refs.get('fileIds')
+    const id = ids2.get(file)
+    return (id ? uploads[id] : undefined) ?? { status: 'idle', progress: 0 }
+  }
+
   return {
     acceptedFiles,
+    remoteFiles,
+    allFiles: [...remoteFiles, ...acceptedFiles],
+    uploadOf,
+    startUpload: file => send({ type: 'UPLOAD.START', file }),
     dragging,
     disabled,
     invalid,
     empty,
     maxFiles,
-    getFileSizeText: file => formatFileSize(file.size),
+    getFileSizeText: file => (isRemote(file) ? (file.size == null ? '' : formatFileSize(file.size)) : formatFileSize(file.size)),
     setFiles: files => send({ type: 'FILES.SET', files }),
     addFiles: files => send({ type: 'FILES.ADD', files }),
-    deleteFile: file => send({ type: 'FILE.DELETE', file }),
+    deleteFile: file => (isRemote(file) ? send({ type: 'REMOTE.DELETE', id: file.id }) : send({ type: 'FILE.DELETE', file })),
     clearFiles: () => send({ type: 'FILES.CLEAR' }),
     openFilePicker: () => send({ type: 'PICKER.OPEN' }),
 
@@ -219,7 +240,11 @@ export function connectFileUpload<T extends PropTypes>(
       ...parts.item.attrs,
       'role': 'listitem',
       'data-file-name': file.name,
-      'data-file-size': String(file.size),
+      // 远程附件可以没报大小，那就不写这个属性
+      'data-file-size': isRemote(file) ? (file.size == null ? undefined : String(file.size)) : String(file.size),
+      'data-remote': dataAttr(isRemote(file)),
+      // 传输快照落成属性供皮肤与选择器用；纯选择器（无 upload）不输出
+      'data-status': uploadOf(file)?.status,
       'data-disabled': dataAttr(disabled),
     }),
 
@@ -232,7 +257,7 @@ export function connectFileUpload<T extends PropTypes>(
 
     getItemSizeTextProps: ({ file }) => normalize.element({
       ...parts['item-size-text'].attrs,
-      'data-file-size': String(file.size),
+      'data-file-size': isRemote(file) ? (file.size == null ? undefined : String(file.size)) : String(file.size),
       'data-disabled': dataAttr(disabled),
     }),
 
@@ -241,7 +266,7 @@ export function connectFileUpload<T extends PropTypes>(
       // 纯装饰，对读屏隐藏
       'aria-hidden': 'true',
       // 系统给不出 MIME 时写 unknown，留空串会让未知类型与属性没写在选择器里分不开
-      'data-file-type': file.type || 'unknown',
+      'data-file-type': (isRemote(file) ? file.type ?? '' : file.type) || 'unknown',
       'data-disabled': dataAttr(disabled),
     }),
 
@@ -257,7 +282,9 @@ export function connectFileUpload<T extends PropTypes>(
         // 判据是本节点当下正持有焦点：删完按钮就没了，焦点会掉到 body 上。
         // 落点必须在送事件之前算好——那之后这棵子树可能已经离开文档，再也 closest 不到 root
         const restore = holdsFocus(el) ? focusAfterDelete(el) : null
-        send({ type: 'FILE.DELETE', file })
+        if (isRemote(file))
+          send({ type: 'REMOTE.DELETE', id: file.id })
+        else send({ type: 'FILE.DELETE', file })
         restore?.focus()
       },
     }),

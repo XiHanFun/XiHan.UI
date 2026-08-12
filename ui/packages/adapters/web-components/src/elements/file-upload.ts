@@ -1,8 +1,12 @@
 import type {
   FileUploadApi,
+  FileUploadCompleteDetails,
+  FileUploadErrorDetails,
   FileUploadFileAcceptDetails,
   FileUploadFileRejectDetails,
   FileUploadFilesChangeDetails,
+  FileUploadRemoteFile,
+  FileUploadRemoteFilesChangeDetails,
   FileUploadSchema,
   FileUploadTranslations,
 } from '@xihan-ui/headless'
@@ -53,7 +57,11 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {boolean} allow-drop - 是否接受拖拽投放，默认 true；写 allow-drop="false" 关掉
  * @attr {boolean} directory - 选目录而不是选文件（隐藏输入带 webkitdirectory）
  * @attr {'user'|'environment'} capture - 移动端直接调用摄像头/麦克风采集
+ * @attr {boolean} auto-upload - 收下即自动开传（须配 upload 实现），默认 true；写 auto-upload="false" 关掉
  * @fires files-change - 列表变化；detail 为 `{ files: File[] }`
+ * @fires remote-files-change - 远程附件列表变化；detail 为 `{ files: FileUploadRemoteFile[] }`
+ * @fires upload-complete - 单个文件传完；detail 为 `{ file, url? }`
+ * @fires upload-error - 单个文件传败；detail 为 `{ file, error }`
  * @fires file-accept - 本次收下了哪些；detail 为 `{ files: File[] }`
  * @fires file-reject - 本次拒了哪些、各自为什么；detail 为 `{ files: { file, reasons }[] }`
  * @csspart root - 组件根容器，承载 data-dragging / data-disabled / data-invalid / data-empty
@@ -77,6 +85,10 @@ export class XhFileUploadElement extends XhElement {
     // 文件与文案是对象，只走 property；files 给了即受控，内部写入只发 files-change
     files: { attribute: false },
     defaultFiles: { attribute: false },
+    remoteFiles: { attribute: false },
+    defaultRemoteFiles: { attribute: false },
+    upload: { attribute: false },
+    autoUpload: { converter: BOOLEAN_CONVERTER, attribute: 'auto-upload' },
     accept: { converter: STRING_CONVERTER },
     maxFiles: { converter: NUMBER_CONVERTER, attribute: 'max-files' },
     maxFileSize: { converter: NUMBER_CONVERTER, attribute: 'max-file-size' },
@@ -92,6 +104,10 @@ export class XhFileUploadElement extends XhElement {
 
   declare files?: File[]
   declare defaultFiles?: File[]
+  declare remoteFiles?: FileUploadRemoteFile[]
+  declare defaultRemoteFiles?: FileUploadRemoteFile[]
+  declare upload?: FileUploadSchema['props']['upload']
+  declare autoUpload?: boolean
   declare accept?: string | string[]
   declare maxFiles?: number
   declare maxFileSize?: number
@@ -119,6 +135,18 @@ export class XhFileUploadElement extends XhElement {
     this.dispatchEvent(new CustomEvent('file-reject', { detail: details, bubbles: true, composed: true }))
   }
 
+  private readonly notifyRemoteChange = (details: FileUploadRemoteFilesChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('remote-files-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyUploadComplete = (details: FileUploadCompleteDetails): void => {
+    this.dispatchEvent(new CustomEvent('upload-complete', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyUploadError = (details: FileUploadErrorDetails): void => {
+    this.dispatchEvent(new CustomEvent('upload-error', { detail: details, bubbles: true, composed: true }))
+  }
+
   // file-upload 机器无常驻副作用，controller 只带 props 与 scope。
   private readonly ctrl = new MachineController<FileUploadSchema>(
     this,
@@ -131,6 +159,10 @@ export class XhFileUploadElement extends XhElement {
     return {
       files: this.files,
       defaultFiles: this.defaultFiles,
+      remoteFiles: this.remoteFiles,
+      defaultRemoteFiles: this.defaultRemoteFiles,
+      upload: this.upload,
+      autoUpload: this.autoUpload,
       accept: this.accept,
       maxFiles: this.maxFiles,
       maxFileSize: this.maxFileSize,
@@ -143,6 +175,9 @@ export class XhFileUploadElement extends XhElement {
       capture: this.capture,
       translations: this.translations,
       onFilesChange: this.notifyChange,
+      onRemoteFilesChange: this.notifyRemoteChange,
+      onUploadComplete: this.notifyUploadComplete,
+      onUploadError: this.notifyUploadError,
       onFileAccept: this.notifyAccept,
       onFileReject: this.notifyReject,
     }
