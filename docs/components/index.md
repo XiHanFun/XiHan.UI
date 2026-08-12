@@ -118,14 +118,14 @@
 
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
-| [对话框](./dialog) | `dialog` | 7 | 4 | 8 |
+| [对话框](./dialog) | `dialog` | 7 | 4 | 9 |
 | [抽屉](./drawer) | `drawer` | 8 | 4 | 7 |
 | [气泡卡片](./popover) | `popover` | 7 | 4 | 11 |
 | [文字提示](./tooltip) | `tooltip` | 4 | 2 | 8 |
 | [悬浮卡片](./hover-card) | `hover-card` | 5 | 2 | 6 |
 | [警告提示](./alert) | `alert` | 5 | 1 | 5 |
 | [轻提示](./toast) | `toast` | 5 | 2 | 5 |
-| [轻提示容器](./toaster) | `toaster` | 2 | 0 | 6 |
+| [轻提示容器](./toaster) | `toaster` | 2 | 0 | 7 |
 | [进度条](./progress) | `progress` | 3 | 0 | 6 |
 | [加载指示器](./spinner) | `spinner` | 2 | 0 | 6 |
 | [加载条](./loading-bar) | `loading-bar` | 3 | 0 | 6 |

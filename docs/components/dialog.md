@@ -52,6 +52,12 @@ size 落成 content 的 data-size，只改面板的最大宽度；三档各自�
 
 <XhDemo src="dialog/08-draggable" />
 
+### 命令式服务
+
+createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk 返回 Promise 时确认钮自动 pending 并拦住关闭；多次调用排队顺次弹
+
+<XhDemo src="dialog/09-service" />
+
 ## 产物
 
 | 层 | 值 |
