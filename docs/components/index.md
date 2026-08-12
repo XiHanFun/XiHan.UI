@@ -1,6 +1,6 @@
 # 组件总览
 
-102 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/web-components`）与**默认皮肤**（`@xihan-ui/styles`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
+103 个组件，每个都同时提供**无头内核**（`@xihan-ui/headless`）、**Vue 组件**（`@xihan-ui/vue`）、**自定义元素**（`@xihan-ui/web-components`）与**默认皮肤**（`@xihan-ui/styles`）四份产物。四者同源：内核是唯一的行为定义，另外三份不重新实现任何逻辑。
 
 本册每个组件一页，页内固定为：产物 · 示例 · 解剖 · Props · 状态机 · connect API · 键盘。除示例外全部由组件源码生成，不会与代码对不上。
 
@@ -17,6 +17,7 @@
 | [徽标](./badge) | `badge` | 1 | 0 | 9 |
 | [头像](./avatar) | `avatar` | 3 | 0 | 10 |
 | [图片](./image) | `image` | 3 | 0 | 8 |
+| [图片预览](./image-viewer) | `image-viewer` | 18 | 6 | 3 |
 | [分隔线](./separator) | `separator` | 1 | 0 | 4 |
 | [代码块](./code-block) | `code-block` | 5 | 1 | 4 |
 | [剪贴板](./clipboard) | `clipboard` | 6 | 0 | 3 |

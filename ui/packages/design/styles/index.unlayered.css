@@ -9303,6 +9303,182 @@
   display: none;
 }
 
+/* styles/image-viewer.css */
+[data-scope='image-viewer'][data-part='backdrop'] {
+  position: fixed;
+  inset: 0;
+  z-index: var(--xh-layer-modal);
+  /* 看片要压住页面底色，遮罩比普通对话框更深 */
+  background: var(--xh-image-viewer-backdrop-bg, color-mix(in oklab, var(--xh-color-neutral-950) 78%, transparent));
+}
+
+[data-scope='image-viewer'][data-part='backdrop'][data-state='open'] {
+  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+}
+
+[data-scope='image-viewer'][data-part='backdrop'][data-state='closed'] {
+  animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit);
+}
+
+[data-scope='image-viewer'][data-part='positioner'] {
+  position: fixed;
+  inset: 0;
+  z-index: var(--xh-layer-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-scope='image-viewer'][data-part='content'] {
+  position: relative;
+  inline-size: 100%;
+  block-size: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  /* 深色底上的工具条与计数固定用浅字，不随主题翻 */
+  color: var(--xh-image-viewer-fg, var(--xh-color-neutral-0));
+}
+
+[data-scope='image-viewer'][data-part='content'][data-state='open'] {
+  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+}
+
+[data-scope='image-viewer'][data-part='content'][data-state='closed'] {
+  animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit);
+}
+
+[data-scope='image-viewer'][data-part='content'][hidden] {
+  display: none;
+}
+
+[data-scope='image-viewer'][data-part='viewport'] {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: grab;
+  /* 平移与滚轮都归指针会话，浏览器手势不抢 */
+  touch-action: none;
+}
+
+[data-scope='image-viewer'][data-part='viewport'][data-panning] {
+  cursor: grabbing;
+}
+
+[data-scope='image-viewer'][data-part='image'] {
+  max-inline-size: 90%;
+  max-block-size: 85%;
+  user-select: none;
+  /* 变换是内联 style 写的，只给缩放旋转一点缓动；拖拽平移要跟手，不缓 */
+  transition: transform var(--xh-duration-fast) var(--xh-ease-out);
+}
+
+[data-scope='image-viewer'][data-part='image'][data-panning] {
+  transition: none;
+}
+
+/* —— 悬浮件共用：半透明深底加浅字 —— */
+[data-scope='image-viewer'][data-part='toolbar'],
+[data-scope='image-viewer'][data-part='counter'],
+[data-scope='image-viewer'][data-part='prev-trigger'],
+[data-scope='image-viewer'][data-part='next-trigger'],
+[data-scope='image-viewer'][data-part='close-trigger'] {
+  position: absolute;
+  z-index: 1;
+  background: var(--xh-image-viewer-chrome-bg, color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent));
+  color: inherit;
+  border: none;
+  border-radius: var(--xh-shape-pill);
+}
+
+[data-scope='image-viewer'][data-part='toolbar'] {
+  inset-block-end: var(--xh-space-6);
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: var(--xh-space-1);
+  padding: var(--xh-space-1_5) var(--xh-space-3);
+}
+
+/* 工具条里的按钮：底色交给工具条，本体只管命中区 */
+[data-scope='image-viewer'][data-part='toolbar'] > [data-part] {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--xh-control-action-size);
+  block-size: var(--xh-control-action-size);
+  background: none;
+  border: none;
+  border-radius: var(--xh-shape-control);
+  color: inherit;
+  font-size: var(--xh-glyph-size-sm);
+  cursor: pointer;
+}
+
+[data-scope='image-viewer'][data-part='counter'] {
+  inset-block-start: var(--xh-space-6);
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  padding: var(--xh-space-1) var(--xh-space-3);
+  font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='image-viewer'][data-part='prev-trigger'],
+[data-scope='image-viewer'][data-part='next-trigger'],
+[data-scope='image-viewer'][data-part='close-trigger'] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--xh-control-h-lg);
+  block-size: var(--xh-control-h-lg);
+  font-size: var(--xh-glyph-size-md);
+  cursor: pointer;
+}
+
+[data-scope='image-viewer'][data-part='prev-trigger'] {
+  inset-inline-start: var(--xh-space-6);
+  inset-block-start: 50%;
+  translate: 0 -50%;
+}
+
+[data-scope='image-viewer'][data-part='next-trigger'] {
+  inset-inline-end: var(--xh-space-6);
+  inset-block-start: 50%;
+  translate: 0 -50%;
+}
+
+[data-scope='image-viewer'][data-part='close-trigger'] {
+  inset-block-start: var(--xh-space-6);
+  inset-inline-end: var(--xh-space-6);
+}
+
+[data-scope='image-viewer'] button[data-part]:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope='image-viewer'] button[data-part]:disabled {
+  opacity: var(--xh-state-disabled-opacity);
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-scope='image-viewer'][data-part='backdrop'],
+  [data-scope='image-viewer'][data-part='content'] {
+    animation-duration: 0.01ms;
+  }
+
+  [data-scope='image-viewer'][data-part='image'] {
+    transition: none;
+  }
+}
+
 /* styles/listbox.css */
 [data-scope='listbox'][data-part='root'] {
   display: flex;

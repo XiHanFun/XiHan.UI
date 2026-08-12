@@ -11,8 +11,9 @@ const HEADLESS = 'packages/engine/headless/src'
  * 名单之外的 positioner 一律受本门禁管辖——族成员从解剖里扫出来，手写清单会漏。
  */
 const NOT_ENGINE_POSITIONED = {
-  dialog: '居中由皮肤的 inset + flex 排布，不问引擎要坐标',
-  drawer: '贴边由皮肤的 inset 排布，不问引擎要坐标',
+  'dialog': '居中由皮肤的 inset + flex 排布，不问引擎要坐标',
+  'drawer': '贴边由皮肤的 inset 排布，不问引擎要坐标',
+  'image-viewer': '全屏居中由皮肤的 inset + flex 排布，不问引擎要坐标',
 }
 
 /** 没有自己机器、跑别人机器的：坐标系由被复用的那台机器决定，查那一台。 */

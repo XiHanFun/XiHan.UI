@@ -45,6 +45,7 @@ import { XhHoverCardElement } from './elements/hover-card'
 import { XhIconElement } from './elements/icon'
 import { XhIconWrapperElement } from './elements/icon-wrapper'
 import { XhImageElement } from './elements/image'
+import { XhImageViewerElement } from './elements/image-viewer'
 import { XhInfiniteScrollElement } from './elements/infinite-scroll'
 import { XhLayoutElement } from './elements/layout'
 import { XhListElement } from './elements/list'
@@ -165,6 +166,7 @@ export function defineXhElements(): void {
   defineElement('xh-hover-card', XhHoverCardElement, VERSION)
   defineElement('xh-icon', XhIconElement, VERSION)
   defineElement('xh-image', XhImageElement, VERSION)
+  defineElement('xh-image-viewer', XhImageViewerElement, VERSION)
   defineElement('xh-listbox', XhListboxElement, VERSION)
   defineElement('xh-loading-bar', XhLoadingBarElement, VERSION)
   defineElement('xh-menu', XhMenuElement, VERSION)
@@ -241,6 +243,7 @@ export {
   XhHoverCardElement,
   XhIconElement,
   XhImageElement,
+  XhImageViewerElement,
   XhListboxElement,
   XhLoadingBarElement,
   XhMenubarElement,

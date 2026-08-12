@@ -327,6 +327,28 @@ export { XhIconWrapper } from './components/icon-wrapper/icon-wrapper'
 export { XhIcon } from './components/icon/icon'
 export { useIcon } from './components/icon/use-icon'
 export type { IconContext } from './components/icon/use-icon'
+export { provideImageViewer, useImageViewerContext } from './components/image-viewer/context'
+export {
+  XhImageViewerCloseTrigger,
+  XhImageViewerContent,
+  XhImageViewerCounter,
+  XhImageViewerFlipHorizontalTrigger,
+  XhImageViewerFlipVerticalTrigger,
+  XhImageViewerImage,
+  XhImageViewerNextTrigger,
+  XhImageViewerPrevTrigger,
+  XhImageViewerResetTrigger,
+  XhImageViewerRoot,
+  XhImageViewerRotateLeftTrigger,
+  XhImageViewerRotateRightTrigger,
+  XhImageViewerToolbar,
+  XhImageViewerTrigger,
+  XhImageViewerViewport,
+  XhImageViewerZoomInTrigger,
+  XhImageViewerZoomOutTrigger,
+} from './components/image-viewer/image-viewer'
+export { useImageViewer } from './components/image-viewer/use-image-viewer'
+export type { ImageViewerContext } from './components/image-viewer/use-image-viewer'
 export {
   XhImageFallback,
   XhImageImage,
