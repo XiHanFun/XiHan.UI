@@ -125,7 +125,11 @@ export interface SideNavApi<T extends PropTypes = PropTypes> {
   getGroupLabelProps: (props: SideNavNodeProps) => T['element']
   getBranchProps: (props: SideNavNodeProps) => T['element']
   getBranchTriggerProps: (props: SideNavNodeProps) => T['button']
+  /** 行文字的载体：折叠成图标栏时由皮肤整个藏掉，不会裁出半个字。 */
+  getBranchTextProps: () => T['element']
   getBranchIndicatorProps: (props: SideNavNodeProps) => T['element']
   getBranchContentProps: (props: SideNavNodeProps) => T['element']
   getLinkProps: (props: SideNavNodeProps) => T['element']
+  /** 链接文字的载体：折叠时由皮肤整个藏掉。 */
+  getLinkTextProps: () => T['element']
 }

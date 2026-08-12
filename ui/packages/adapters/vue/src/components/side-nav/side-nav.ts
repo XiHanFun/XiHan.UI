@@ -112,6 +112,14 @@ export const XhSideNavBranchTrigger = defineComponent({
   },
 })
 
+export const XhSideNavBranchText = defineComponent({
+  name: 'XhSideNavBranchText',
+  setup(_, { slots }) {
+    const ctx = useSideNavContext()
+    return () => h('span', ctx.api.value.getBranchTextProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhSideNavBranchIndicator = defineComponent({
   name: 'XhSideNavBranchIndicator',
   setup(_, { slots }) {
@@ -127,6 +135,14 @@ export const XhSideNavBranchContent = defineComponent({
     const ctx = useSideNavContext()
     const node = useSideNavNodeContext()
     return () => h('ul', ctx.api.value.getBranchContentProps({ value: node.value }) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhSideNavLinkText = defineComponent({
+  name: 'XhSideNavLinkText',
+  setup(_, { slots }) {
+    const ctx = useSideNavContext()
+    return () => h('span', ctx.api.value.getLinkTextProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

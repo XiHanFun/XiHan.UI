@@ -6,8 +6,10 @@ import {
   XhSideNavBranch,
   XhSideNavBranchContent,
   XhSideNavBranchIndicator,
+  XhSideNavBranchText,
   XhSideNavBranchTrigger,
   XhSideNavLink,
+  XhSideNavLinkText,
   XhSideNavList,
   XhSideNavRoot,
 } from "@xihan-ui/vue";
@@ -43,15 +45,15 @@ const value = ref<string | null>("user-list");
     style="border: 1px solid var(--xh-border-default); border-radius: 8px"
   >
     <XhSideNavList>
-      <XhSideNavLink value="dashboard">工作台</XhSideNavLink>
+      <XhSideNavLink value="dashboard"><XhSideNavLinkText>工作台</XhSideNavLinkText></XhSideNavLink>
       <XhSideNavBranch v-for="branch in collection.filter((n) => n.children)" :key="branch.value" :value="branch.value">
         <XhSideNavBranchTrigger>
-          {{ branch.label }}
+          <XhSideNavBranchText>{{ branch.label }}</XhSideNavBranchText>
           <XhSideNavBranchIndicator>›</XhSideNavBranchIndicator>
         </XhSideNavBranchTrigger>
         <XhSideNavBranchContent>
           <XhSideNavLink v-for="leaf in branch.children" :key="leaf.value" :value="leaf.value">
-            {{ leaf.label }}
+            <XhSideNavLinkText>{{ leaf.label }}</XhSideNavLinkText>
           </XhSideNavLink>
         </XhSideNavBranchContent>
       </XhSideNavBranch>

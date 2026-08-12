@@ -9,9 +9,11 @@ export const sideNavAnatomy = createAnatomy('side-nav', [
   'group-label',
   'branch',
   'branch-trigger',
+  'branch-text',
   'branch-indicator',
   'branch-content',
   'link',
+  'link-text',
 ])
 
 // 方向键的集合由分支行与链接共同组成，归属过滤隔开嵌套的另一套侧栏。

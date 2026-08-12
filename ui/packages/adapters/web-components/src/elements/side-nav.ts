@@ -35,9 +35,11 @@ const GROUP_SELECTOR = '[data-xh-part="group"]'
  * @csspart group-label - 分组标题（aria-labelledby 目标）
  * @csspart branch - 分支行容器，须自带 value 属性；它裹着自己的 branch-content
  * @csspart branch-trigger - 展开/收起按钮（aria-expanded / aria-controls）
+ * @csspart branch-text - 行文字载体，折叠成图标栏时隐藏
  * @csspart branch-indicator - 展开方向指示符（aria-hidden）
  * @csspart branch-content - 内嵌子层容器，收起时隐藏
  * @csspart link - 去处链接，须自带 value 属性；选中输出 aria-current="page"
+ * @csspart link-text - 链接文字载体，折叠成图标栏时隐藏
  */
 export class XhSideNavElement extends XhElement {
   static override partContract = { anatomy: sideNavAnatomy, meta: sideNavMeta }
@@ -126,6 +128,10 @@ export class XhSideNavElement extends XhElement {
     putAll('branch', BRANCH_SELECTOR, node => api.getBranchProps(node))
     putAll('branch-trigger', BRANCH_SELECTOR, node => api.getBranchTriggerProps(node))
     putAll('branch-indicator', BRANCH_SELECTOR, node => api.getBranchIndicatorProps(node))
+    for (const el of this.getParts('branch-text'))
+      this.spreader.spread(el, api.getBranchTextProps() as Record<string, unknown>)
+    for (const el of this.getParts('link-text'))
+      this.spreader.spread(el, api.getLinkTextProps() as Record<string, unknown>)
     putAll('branch-content', BRANCH_SELECTOR, node => api.getBranchContentProps(node))
     putAll('link', '[data-xh-part="link"]', node => api.getLinkProps(node))
 

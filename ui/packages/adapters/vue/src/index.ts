@@ -546,10 +546,12 @@ export {
   XhSideNavBranch,
   XhSideNavBranchContent,
   XhSideNavBranchIndicator,
+  XhSideNavBranchText,
   XhSideNavBranchTrigger,
   XhSideNavGroup,
   XhSideNavGroupLabel,
   XhSideNavLink,
+  XhSideNavLinkText,
   XhSideNavList,
   XhSideNavRoot,
 } from './components/side-nav/side-nav'

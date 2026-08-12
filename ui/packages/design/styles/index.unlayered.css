@@ -11886,8 +11886,6 @@
   text-align: start;
   text-decoration: none;
   cursor: pointer;
-  overflow: hidden;
-  white-space: nowrap;
 }
 
 [data-scope='side-nav'][data-part='branch-trigger']:hover,
@@ -11917,6 +11915,28 @@
 [data-scope='side-nav'][data-part='link'][data-disabled] {
   color: var(--xh-fg-disabled);
   cursor: not-allowed;
+}
+
+[data-scope='side-nav'][data-part='branch-text'],
+[data-scope='side-nav'][data-part='link-text'] {
+  flex: 1;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 折叠成图标栏：文字与展开指示整个藏掉、行内容居中，不裁半个字 */
+[data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='branch-text'],
+[data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='link-text'],
+[data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='branch-indicator'] {
+  display: none;
+}
+
+[data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='branch-trigger'],
+[data-scope='side-nav'][data-part='root'][data-collapsed] [data-part='link'] {
+  justify-content: center;
+  padding-inline: 0;
 }
 
 [data-scope='side-nav'][data-part='branch-indicator'] {
