@@ -252,6 +252,11 @@ export function connectPopselect<T extends PropTypes>(
       },
       // 焦点是事实不是许可：禁用条目被聚焦也记锚点，作为方向键起点
       'onFocus': () => listbox.send({ type: 'ITEM.FOCUS', value: item.value }),
+      // 指针划过即高亮：不同步的话，鼠标停在 A 上、回车却提交了键盘高亮的 B
+      'onPointerMove': () => {
+        if (!itemDisabled(item) && focusedValue !== item.value)
+          listbox.send({ type: 'ITEM.FOCUS', value: item.value })
+      },
     }),
 
     getItemTextProps: item => normalize.element({

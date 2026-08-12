@@ -325,10 +325,15 @@
     display: none;
   }
 
-  /* 键盘高亮与指针高亮共用一套底色。data-highlighted 跟的是连接层记的焦点行，
-     与选中互相独立：可以停在一个没被选中的节点上 */
-  [data-scope='tree-select'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]),
-  [data-scope='tree-select'][data-part='branch-control']:not([data-disabled]):is(:hover, [data-highlighted]) {
+  /* 指针悬停是轻一档的洗底，键盘高亮更深：两者可同时出现且分得清谁是谁。
+     data-highlighted 跟的是连接层记的焦点行，与选中互相独立 */
+  [data-scope='tree-select'][data-part='item']:not([data-disabled]):hover,
+  [data-scope='tree-select'][data-part='branch-control']:not([data-disabled]):hover {
+    background: var(--xh-tree-select-row-bg-hover, var(--xh-bg-subtle));
+  }
+
+  [data-scope='tree-select'][data-part='item']:not([data-disabled])[data-highlighted],
+  [data-scope='tree-select'][data-part='branch-control']:not([data-disabled])[data-highlighted] {
     background: var(--xh-tree-select-row-bg-highlight, var(--xh-bg-subtle-hover));
   }
 

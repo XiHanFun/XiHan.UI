@@ -254,6 +254,12 @@ export function connectContextMenu<T extends PropTypes>(
       },
       // 禁用条目被聚焦也记锚点，方向键才有起点
       'onFocus': () => send({ type: 'ITEM.FOCUS', value: item.value }),
+      // 指针划过即把焦点搬来：活动项只有一个，hover 与键盘高亮不再各亮各的
+      'onPointerenter': (event: PointerEvent) => {
+        const el = event.currentTarget as HTMLElement
+        if (!isItemDisabled(el) && anchor !== item.value)
+          focusItem(el)
+      },
     }),
 
     getItemTextProps: item => normalize.element({

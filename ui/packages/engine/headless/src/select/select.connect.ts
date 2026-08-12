@@ -281,6 +281,11 @@ export function connectSelect<T extends PropTypes>(
       },
       // 焦点是事实不是许可：禁用条目被点到也记锚点，方向键才知道从哪儿起步
       'onFocus': () => send({ type: 'ITEM.HIGHLIGHT', value: item.value }),
+      // 指针划过即高亮：不同步的话，鼠标停在 A 上、回车却提交了键盘高亮的 B
+      'onPointerMove': () => {
+        if (!itemDisabled(item) && highlighted !== item.value)
+          send({ type: 'ITEM.HIGHLIGHT', value: item.value })
+      },
     }),
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
