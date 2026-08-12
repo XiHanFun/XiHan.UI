@@ -179,6 +179,8 @@ export {
 } from './components/composer/composer'
 export { useComposer } from './components/composer/use-composer'
 export type { ComposerCallbacks, ComposerContext } from './components/composer/use-composer'
+export { provideContextMenuChain, provideContextMenuSub, useContextMenuChain, useContextMenuSubContext } from './components/context-menu/context'
+export type { ContextMenuChain, ContextMenuSubHandle } from './components/context-menu/context'
 export {
   XhContextMenuArrow,
   XhContextMenuContent,
@@ -190,6 +192,8 @@ export {
   XhContextMenuPositioner,
   XhContextMenuRoot,
   XhContextMenuSeparator,
+  XhContextMenuSub,
+  XhContextMenuSubTrigger,
   XhContextMenuTrigger,
 } from './components/context-menu/context-menu'
 export { useContextMenu } from './components/context-menu/use-context-menu'
