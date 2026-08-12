@@ -2,6 +2,7 @@ import type { ToastSchema, ToastTranslations, ToastType } from '@xihan-ui/headle
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideToast, useToastContext } from './context'
 import { useToast } from './use-toast'
 
@@ -34,7 +35,7 @@ export const XhToastRoot = defineComponent({
     const notifyAction: ToastProps['onAction'] = (details) => {
       emit('action', details)
     }
-    const ctx = useToast(props as ToastProps, notifyStatus, notifyAction)
+    const ctx = useToast(withXhConfig('toast', props) as ToastProps, notifyStatus, notifyAction)
     provideToast(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       id: ctx.api.value.id,

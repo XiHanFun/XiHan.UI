@@ -3,6 +3,7 @@ import type { Placement } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideTour, useTourContext } from './context'
 import { useTour } from './use-tour'
 
@@ -35,7 +36,7 @@ export const XhTourRoot = defineComponent({
     'skip': (_details: PayloadOf<TourProps, 'onSkip'>) => true,
   },
   setup(props, { slots, emit }) {
-    const ctx = useTour(props as TourProps, {
+    const ctx = useTour(withXhConfig('tour', props) as TourProps, {
       onOpenChange: (details) => {
         emit('open-change', details)
         emit('update:open', details.open)

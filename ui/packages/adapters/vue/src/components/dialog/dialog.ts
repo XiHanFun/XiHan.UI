@@ -3,6 +3,7 @@ import type { Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, Teleport } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideDialog, useDialogContext } from './context'
 import { useDialog } from './use-dialog'
 
@@ -31,7 +32,7 @@ export const XhDialogRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useDialog(props as DialogProps, notify)
+    const ctx = useDialog(withXhConfig('dialog', props) as DialogProps, notify)
     provideDialog(ctx)
     return () => slots.default?.({ open: ctx.api.value.open, setOpen: ctx.api.value.setOpen })
   },

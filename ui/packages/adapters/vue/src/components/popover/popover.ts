@@ -3,6 +3,7 @@ import type { Placement, Size } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { providePopover, usePopoverContext } from './context'
 import { usePopover } from './use-popover'
 
@@ -31,7 +32,7 @@ export const XhPopoverRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = usePopover(props as PopoverProps, notify)
+    const ctx = usePopover(withXhConfig('popover', props) as PopoverProps, notify)
     providePopover(ctx)
     return () => slots.default?.({ open: ctx.api.value.open, setOpen: ctx.api.value.setOpen })
   },

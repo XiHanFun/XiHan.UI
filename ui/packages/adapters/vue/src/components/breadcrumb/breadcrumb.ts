@@ -2,6 +2,7 @@ import type { BreadcrumbProps, BreadcrumbTranslations } from '@xihan-ui/headless
 import type { Direction, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideBreadcrumb, useBreadcrumbContext } from './context'
 import { useBreadcrumb } from './use-breadcrumb'
 
@@ -16,7 +17,7 @@ export const XhBreadcrumbRoot = defineComponent({
     size: { type: String as PropType<Size>, default: undefined },
   },
   setup(props, { slots }) {
-    const ctx = useBreadcrumb(props as BreadcrumbProps)
+    const ctx = useBreadcrumb(withXhConfig('breadcrumb', props) as BreadcrumbProps)
     provideBreadcrumb(ctx)
     return () => h('nav', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

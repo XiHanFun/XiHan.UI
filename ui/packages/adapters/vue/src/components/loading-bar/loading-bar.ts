@@ -3,6 +3,7 @@ import type { Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideLoadingBar, useLoadingBarContext } from './context'
 import { useLoadingBar } from './use-loading-bar'
 
@@ -34,7 +35,7 @@ export const XhLoadingBarRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useLoadingBar(props as LoadingBarProps, notify)
+    const ctx = useLoadingBar(withXhConfig('loading-bar', props) as LoadingBarProps, notify)
     provideLoadingBar(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       phase: ctx.api.value.phase,

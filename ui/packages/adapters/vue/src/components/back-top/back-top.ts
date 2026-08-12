@@ -3,6 +3,7 @@ import type { Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideBackTop, useBackTopContext } from './context'
 import { useBackTop } from './use-back-top'
 
@@ -27,7 +28,7 @@ export const XhBackTopRoot = defineComponent({
   setup(props, { slots, emit }) {
     const notify: BackTopProps['onVisibleChange'] = details => emit('visible-change', details)
     // 传响应式 props 对象本身而非快照，供机器每次读时重新展开
-    const ctx = useBackTop(props as BackTopProps, notify, () => props.target ?? null)
+    const ctx = useBackTop(withXhConfig('back-top', props) as BackTopProps, notify, () => props.target ?? null)
     provideBackTop(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       visible: ctx.api.value.visible,

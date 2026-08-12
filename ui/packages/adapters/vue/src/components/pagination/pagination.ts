@@ -3,6 +3,7 @@ import type { Direction, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { providePagination, usePaginationContext } from './context'
 import { usePagination } from './use-pagination'
 
@@ -32,7 +33,7 @@ export const XhPaginationRoot = defineComponent({
       emit('page-change', details)
       emit('update:page', details.page)
     }
-    const ctx = usePagination(props as PaginationProps, notify)
+    const ctx = usePagination(withXhConfig('pagination', props) as PaginationProps, notify)
     providePagination(ctx)
     // 根节点渲染为 nav 地标
     return () => h('nav', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({

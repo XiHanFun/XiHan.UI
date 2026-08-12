@@ -2,6 +2,7 @@ import type { TimeLocale, TimeProps, TimeType, TimeValue } from '@xihan-ui/headl
 import type { PropType } from 'vue'
 import { connectTime } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { slotPaints } from '../../runtime/slot-content'
 
@@ -22,12 +23,13 @@ export const XhTime = defineComponent({
     now: { type: [String, Number, Date] as PropType<TimeValue>, default: undefined },
   },
   setup(props, { slots }) {
+    const merged = withXhConfig('time', props)
     const api = computed(() => connectTime({
-      value: props.value,
-      type: props.type,
-      format: props.format,
-      locale: props.locale,
-      now: props.now,
+      value: merged.value,
+      type: merged.type,
+      format: merged.format,
+      locale: merged.locale,
+      now: merged.now,
     } satisfies TimeProps, vueNormalize))
 
     return () => {

@@ -2,6 +2,7 @@ import type { DynamicInputItemProps, DynamicInputSchema, DynamicInputTranslation
 import type { PropType } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideDynamicInput, provideDynamicInputItem, useDynamicInputContext, useDynamicInputItemContext } from './context'
 import { useDynamicInput } from './use-dynamic-input'
 
@@ -31,7 +32,7 @@ export const XhDynamicInputRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useDynamicInput(props as DynamicInputProps, { onValueChange })
+    const ctx = useDynamicInput(withXhConfig('dynamic-input', props) as DynamicInputProps, { onValueChange })
     provideDynamicInput(ctx)
     // items 里每一项都带 key，作者铺行时直接 :key="row.key"
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
