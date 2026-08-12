@@ -58,9 +58,9 @@ content 里除了树还能放别的：在浮层内点按钮不算点在外面，
 
 <XhDemo src="tree-select/09-action" />
 
-### 勾选与回显策略
+### 级联勾选与回显策略
 
-多选下选中值受控：宿主收到朴素切换后算出级联集合写回，触发框里的文本也由宿主按「整组选满只报组名」折叠
+multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；对外值按 checked-strategy 收敛，parent 档整组选满只报组名
 
 <XhDemo src="tree-select/10-checkable" />
 
@@ -104,6 +104,8 @@ content 里除了树还能放别的：在浮层内点按钮不算点在外面，
 | `open` | `boolean` |  | 展开态。给定即受控：内部不再自改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
 | `multiple` | `boolean` |  | 多选：选中是集合，选中后浮层不收起、焦点留在树里以便接着挑。 |
+| `cascade` | `boolean` |  | 多选下父子级联勾选：点分支整枝传导、子全勾父勾、部分勾中半选， 禁用子树整棵冻结。默认 false（朴素切换）；单选下无效。 |
+| `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾中节点。 |
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 用原生 disabled，表单出口不参与提交。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开、树照常浏览与展开收起，但选中值改不动、也清不掉。 disabled 则连键盘入口都没有。 |
 | `invalid` | `boolean` |  | 校验失败：trigger 报 aria-invalid，各角色节点带 data-invalid。 |
@@ -148,6 +150,7 @@ content 里除了树还能放别的：在浮层内点按钮不算点在外面，
 | `invalid` | `boolean` |  |
 | `canClear` | `boolean` | 清空按钮此刻可不可按。 |
 | `isSelected` | `(value: string) => boolean` |  |
+| `isIndeterminate` | `(value: string) => boolean` | 级联模式下该分支是否半选（有效叶后代有勾有不勾）；非级联恒 false。 |
 | `isExpanded` | `(value: string) => boolean` |  |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string[]) => void` |  |

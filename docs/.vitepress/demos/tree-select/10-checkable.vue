@@ -1,6 +1,6 @@
-<!-- 勾选与回显策略 | 多选下选中值受控：宿主收到朴素切换后算出级联集合写回，触发框里的文本也由宿主按「整组选满只报组名」折叠 -->
+<!-- 级联勾选与回显策略 | multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；对外值按 checked-strategy 收敛，parent 档整组选满只报组名 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import {
   XhTreeSelectBranch,
   XhTreeSelectBranchContent,
@@ -39,65 +39,7 @@ const collection = [
   },
 ];
 
-const childrenOf = new Map<string, string[]>();
-const parentOf = new Map<string, string>();
-for (const group of collection) {
-  childrenOf.set(
-    group.value,
-    group.children.map((item) => item.value)
-  );
-  for (const item of group.children) parentOf.set(item.value, group.value);
-}
-
 const value = ref<string[]>(["user:view"]);
-
-// 机器给的是「这一下切了谁」的朴素结果，宿主据此把整组与父级一并改写
-function onValueChange(details: { value: string[] }): void {
-  const prev = new Set(value.value);
-  const toggled =
-    details.value.find((v) => !prev.has(v)) ??
-    value.value.find((v) => !details.value.includes(v));
-  if (toggled == null) return;
-
-  const on = !prev.has(toggled);
-  const next = new Set(prev);
-  for (const v of [toggled, ...(childrenOf.get(toggled) ?? [])]) {
-    if (on) next.add(v);
-    else next.delete(v);
-  }
-
-  const parent = parentOf.get(toggled);
-  if (parent) {
-    const kids = childrenOf.get(parent) ?? [];
-    if (kids.every((k) => next.has(k))) next.add(parent);
-    else next.delete(parent);
-  }
-
-  value.value = [...next];
-}
-
-// 整组选满只报组名，否则逐条报「组名 / 条目」
-const summary = computed(() => {
-  const picked = new Set(value.value);
-  const parts: string[] = [];
-  for (const group of collection) {
-    const kids = childrenOf.get(group.value) ?? [];
-    if (kids.length > 0 && kids.every((k) => picked.has(k))) {
-      parts.push(group.label);
-      continue;
-    }
-    for (const item of group.children) {
-      if (picked.has(item.value)) parts.push(`${group.label} / ${item.label}`);
-    }
-  }
-  return parts.join("、");
-});
-
-function mark(target: string): string {
-  if (value.value.includes(target)) return "✓";
-  const kids = childrenOf.get(target) ?? [];
-  return kids.some((k) => value.value.includes(k)) ? "–" : "";
-}
 
 const boxStyle = {
   display: "inline-flex",
@@ -115,17 +57,19 @@ const boxStyle = {
 
 <template>
   <XhTreeSelectRoot
+    v-slot="{ isSelected, isIndeterminate }"
+    v-model:value="value"
     :collection="collection"
-    :value="value"
     :default-expanded-value="['user', 'order']"
     multiple
+    cascade
+    checked-strategy="parent"
     style="max-inline-size: 340px"
-    @value-change="onValueChange"
   >
     <XhTreeSelectLabel>权限</XhTreeSelectLabel>
     <XhTreeSelectTrigger>
-      <!-- 写了插槽就归作者：折叠后的文本从这里给 -->
-      <XhTreeSelectValueText>{{ summary || "选择权限" }}</XhTreeSelectValueText>
+      <!-- parent 收敛下整组选满值就是组名，缺省显示文本直接可用 -->
+      <XhTreeSelectValueText />
       <XhTreeSelectIndicator>▾</XhTreeSelectIndicator>
     </XhTreeSelectTrigger>
     <XhTreeSelectPositioner>
@@ -138,7 +82,9 @@ const boxStyle = {
           >
             <XhTreeSelectBranchControl>
               <XhTreeSelectBranchTrigger>▸</XhTreeSelectBranchTrigger>
-              <span aria-hidden="true" :style="boxStyle">{{ mark(group.value) }}</span>
+              <span aria-hidden="true" :style="boxStyle">
+                {{ isSelected(group.value) ? "✓" : isIndeterminate(group.value) ? "–" : "" }}
+              </span>
               <XhTreeSelectBranchText>{{ group.label }}</XhTreeSelectBranchText>
             </XhTreeSelectBranchControl>
             <XhTreeSelectBranchContent>
@@ -147,7 +93,9 @@ const boxStyle = {
                 :key="item.value"
                 :value="item.value"
               >
-                <span aria-hidden="true" :style="boxStyle">{{ mark(item.value) }}</span>
+                <span aria-hidden="true" :style="boxStyle">
+                  {{ isSelected(item.value) ? "✓" : "" }}
+                </span>
                 <XhTreeSelectItemText>{{ item.label }}</XhTreeSelectItemText>
               </XhTreeSelectItem>
             </XhTreeSelectBranchContent>
@@ -156,5 +104,5 @@ const boxStyle = {
       </XhTreeSelectContent>
     </XhTreeSelectPositioner>
   </XhTreeSelectRoot>
-  <p>选中值：{{ value.length ? value.join("、") : "（无）" }}</p>
+  <p>对外值（parent 收敛）：{{ value.length ? value.join("、") : "（无）" }}</p>
 </template>
