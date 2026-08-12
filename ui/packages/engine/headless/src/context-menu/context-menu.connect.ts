@@ -91,11 +91,11 @@ export function connectContextMenu<T extends PropTypes>(
     send({ type: 'ITEM.FOCUS', value: next })
   }
 
-  /** 确认键：认焦点当下所在的条目，自报禁用的不认。 */
+  /** 确认键：认焦点当下所在的条目，自报禁用的不认；子菜单触发条目（带 aria-haspopup）归子层管。 */
   const activate = (event: KeyboardEvent): void => {
     const item = (event.target as HTMLElement).closest<HTMLElement>(parts.item.selector)
     const next = itemValue(item)
-    if (!item || next == null || isItemDisabled(item))
+    if (!item || next == null || isItemDisabled(item) || item.hasAttribute('aria-haspopup'))
       return
     event.preventDefault()
     send({ type: 'ITEM.SELECT', value: next })
@@ -245,7 +245,10 @@ export function connectContextMenu<T extends PropTypes>(
       'aria-disabled': itemDisabled(item) ? 'true' : 'false',
       // roving tabindex：整组只有锚点条目留在 Tab 序列内；收起态无锚点
       'tabindex': anchor === item.value ? 0 : -1,
-      'onClick': () => {
+      'onClick': (event: MouseEvent) => {
+        // 子菜单触发条目（带 aria-haspopup）的点按归子层：只展开不选中
+        if ((event.currentTarget as HTMLElement).hasAttribute('aria-haspopup'))
+          return
         if (!itemDisabled(item))
           send({ type: 'ITEM.SELECT', value: item.value })
       },

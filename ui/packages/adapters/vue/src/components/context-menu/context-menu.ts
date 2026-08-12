@@ -2,14 +2,21 @@ import type { ContextMenuGroupProps, ContextMenuItemProps, ContextMenuNode, Cont
 import type { Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { mergeProps } from '@xihan-ui/kernel'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { provideMenu, useMenuContext } from '../menu/context'
+import { useMenu } from '../menu/use-menu'
 import {
   provideContextMenu,
+  provideContextMenuChain,
   provideContextMenuGroup,
   provideContextMenuItem,
+  provideContextMenuSub,
+  useContextMenuChain,
   useContextMenuContext,
   useContextMenuGroupContext,
   useContextMenuItemContext,
+  useContextMenuSubContext,
 } from './context'
 import { useContextMenu } from './use-context-menu'
 
@@ -45,6 +52,13 @@ export const XhContextMenuRoot = defineComponent({
     const notifySelect: ContextMenuProps['onSelect'] = details => emit('select', details)
     const ctx = useContextMenu(props as ContextMenuProps, notifyOpen, notifySelect)
     provideContextMenu(ctx)
+    // 子菜单任意层级的选中都汇到根：先发根的 select 再关根，各级随父关闭级联收起
+    provideContextMenuChain({
+      notifySelect: (details) => {
+        emit('select', details)
+        ctx.api.value.setOpen(false)
+      },
+    })
     return () => h(
       'div',
       ctx.api.value.getRootProps() as Record<string, unknown>,
@@ -154,6 +168,63 @@ export const XhContextMenuItem = defineComponent({
       { ...ctx.api.value.getItemProps(item.value) as Record<string, unknown>, ref: itemEl },
       slots.default?.(),
     )
+  },
+})
+
+/**
+ * 右键菜单里的子菜单：子层跑一台 submenu 模式的 menu 机器，触发条目由
+ * XhContextMenuSubTrigger 渲染成「父层条目 + 子层触发器」的双重身份。
+ * 子层内部用 XhMenu 系部件（再往深嵌套即 menu 套 menu）。本身不渲染节点。
+ */
+export const XhContextMenuSub = defineComponent({
+  name: 'XhContextMenuSub',
+  props: {
+    /** 它在父右键菜单里的条目身份。 */
+    value: { type: String, required: true },
+    disabled: { type: Boolean, default: undefined },
+    placement: { type: String as PropType<Placement>, default: undefined },
+    offset: { type: Number, default: undefined },
+    loop: { type: Boolean, default: undefined },
+    openOnHover: { type: Boolean, default: undefined },
+    hoverOpenDelay: { type: Number, default: undefined },
+    hoverCloseDelay: { type: Number, default: undefined },
+  },
+  setup(props, { slots }) {
+    const parent = useContextMenuContext()
+    const chain = useContextMenuChain()
+    const sub = useMenu(
+      { ...props, submenu: true },
+      undefined,
+      details => chain.notifySelect(details),
+    )
+    // 子树内的 XhMenu 系部件都归子机器
+    provideMenu(sub)
+    provideContextMenuSub({ parent, value: props.value, disabled: props.disabled })
+    // 父层收起（Escape、外点、选中）时本层跟着收，层层传导
+    watch(() => parent.api.value.open, (open) => {
+      if (!open)
+        sub.api.value.setOpen(false)
+    })
+    return () => slots.default?.({ open: sub.api.value.open, setOpen: sub.api.value.setOpen })
+  },
+})
+
+export const XhContextMenuSubTrigger = defineComponent({
+  name: 'XhContextMenuSubTrigger',
+  setup(_, { slots }) {
+    const handle = useContextMenuSubContext()
+    const sub = useMenuContext()
+    return () => h('div', {
+      // 合并序=子先父后：父层的 data-scope/data-part 胜出，父层的方向键与选中照常认它
+      ...mergeProps(
+        sub.api.value.getSubmenuTriggerProps({ value: handle.value, disabled: handle.disabled }) as Record<string, unknown>,
+        handle.parent.api.value.getItemProps({ value: handle.value, disabled: handle.disabled }) as Record<string, unknown>,
+      ),
+      // 子菜单的定位锚点就是这一条
+      ref: (el: unknown) => {
+        sub.triggerRef.value = el as HTMLElement
+      },
+    }, slots.default?.())
   },
 })
 
