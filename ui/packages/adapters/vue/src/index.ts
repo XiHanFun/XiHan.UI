@@ -531,6 +531,7 @@ export {
 export { useScrollArea } from './components/scroll-area/use-scroll-area'
 export type { ScrollAreaContext } from './components/scroll-area/use-scroll-area'
 export {
+  XhSelectClearTrigger,
   XhSelectContent,
   XhSelectIndicator,
   XhSelectItem,

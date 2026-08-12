@@ -130,6 +130,7 @@ export function connectSelect<T extends PropTypes>(
         send(next ? { type: 'OPEN', focus: 'selected' } : { type: 'CLOSE' })
     },
     setValue: next => send({ type: 'VALUE.SET', value: next }),
+    clear: () => send({ type: 'VALUE.SET', value: [] }),
     // 三个视觉轴只落在根上：触发器与条目都从这里继承私有槽，子部件不重复标注
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -206,6 +207,15 @@ export function connectSelect<T extends PropTypes>(
       'aria-hidden': 'true',
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
+    }),
+    // 清空按钮是 trigger 的兄弟节点（按钮不能套按钮），点按只清值不碰开合
+    getClearTriggerProps: () => normalize.button({
+      ...parts['clear-trigger'].attrs,
+      'type': 'button',
+      'aria-label': prop('translations')?.clear ?? 'Clear',
+      'hidden': value.length === 0 || disabled || undefined,
+      'data-state': stateAttr,
+      'onClick': () => send({ type: 'VALUE.SET', value: [] }),
     }),
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,

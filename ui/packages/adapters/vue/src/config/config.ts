@@ -23,6 +23,7 @@ import type {
   PaginationTranslations,
   PinInputTranslations,
   PopoverTranslations,
+  SelectTranslations,
   SideNavTranslations,
   SpinnerTranslations,
   TagsInputTranslations,
@@ -58,6 +59,7 @@ export interface XhTranslationOverrides {
   'pagination'?: Partial<PaginationTranslations>
   'pin-input'?: Partial<PinInputTranslations>
   'side-nav'?: Partial<SideNavTranslations>
+  'select'?: Partial<SelectTranslations>
   'popover'?: Partial<PopoverTranslations>
   'spinner'?: Partial<SpinnerTranslations>
   'tags-input'?: Partial<TagsInputTranslations>

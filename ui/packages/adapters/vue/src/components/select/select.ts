@@ -2,6 +2,7 @@ import type { SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetai
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideSelect, provideSelectItem, useSelectContext, useSelectItemContext } from './context'
 import { useSelect } from './use-select'
 
@@ -23,6 +24,7 @@ export const XhSelectRoot = defineComponent({
     invalid: { type: Boolean, default: undefined },
     required: Boolean,
     name: { type: String, default: undefined },
+    translations: { type: Object as PropType<SelectProps['translations']>, default: undefined },
     placeholder: { type: String, default: undefined },
     placement: { type: String as PropType<Placement>, default: undefined },
     offset: { type: Number, default: undefined },
@@ -49,7 +51,7 @@ export const XhSelectRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useSelect(props as SelectProps, notifyValue, notifyOpen)
+    const ctx = useSelect(withXhConfig('select', props) as SelectProps, notifyValue, notifyOpen)
     provideSelect(ctx)
 
     // 表单影子由根部件装配：空串选项打底，每个选中值一个 selected 选项，供 required 判定。
@@ -120,6 +122,15 @@ export const XhSelectIndicator = defineComponent({
   setup(_, { slots }) {
     const ctx = useSelectContext()
     return () => h('span', ctx.api.value.getIndicatorProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhSelectClearTrigger = defineComponent({
+  name: 'XhSelectClearTrigger',
+  setup(_, { slots }) {
+    const ctx = useSelectContext()
+    // 节点常挂，没选中或禁用时靠 hidden 藏掉
+    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
 
