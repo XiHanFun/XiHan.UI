@@ -12,7 +12,7 @@
 
 ### 手风琴与折叠
 
-accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整体收起，文字随行宽裁掉），折叠态的子级弹出待浮层子菜单机制落地
+accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整体收起，文字部件整个隐藏只剩图标），折叠态的子级弹出待浮层子菜单机制落地
 
 <XhDemo src="side-nav/02-accordion-collapsed" />
 
@@ -21,7 +21,7 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-side-nav>` |
-| Vue 组件 | `XhSideNavBranch` `XhSideNavBranchContent` `XhSideNavBranchIndicator` `XhSideNavBranchTrigger` `XhSideNavGroup` `XhSideNavGroupLabel` `XhSideNavLink` `XhSideNavList` `XhSideNavRoot` |
+| Vue 组件 | `XhSideNavBranch` `XhSideNavBranchContent` `XhSideNavBranchIndicator` `XhSideNavBranchText` `XhSideNavBranchTrigger` `XhSideNavGroup` `XhSideNavGroupLabel` `XhSideNavLink` `XhSideNavLinkText` `XhSideNavList` `XhSideNavRoot` |
 | 组合式函数 | `useSideNav` |
 | 状态机 | `sideNavMachine` |
 | 皮肤 | `@xihan-ui/styles/side-nav.css` |
@@ -30,7 +30,7 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="side-nav"`：**`root`** · **`list`** · `group` · `group-label` · `branch` · `branch-trigger` · `branch-indicator` · `branch-content` · **`link`**
+`data-scope="side-nav"`：**`root`** · **`list`** · `group` · `group-label` · `branch` · `branch-trigger` · `branch-text` · `branch-indicator` · `branch-content` · **`link`** · `link-text`
 
 ## Props
 
@@ -82,9 +82,11 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | `getGroupLabelProps` | `(props: SideNavNodeProps) => T['element']` |  |
 | `getBranchProps` | `(props: SideNavNodeProps) => T['element']` |  |
 | `getBranchTriggerProps` | `(props: SideNavNodeProps) => T['button']` |  |
+| `getBranchTextProps` | `() => T['element']` | 行文字的载体：折叠成图标栏时由皮肤整个藏掉，不会裁出半个字。 |
 | `getBranchIndicatorProps` | `(props: SideNavNodeProps) => T['element']` |  |
 | `getBranchContentProps` | `(props: SideNavNodeProps) => T['element']` |  |
 | `getLinkProps` | `(props: SideNavNodeProps) => T['element']` |  |
+| `getLinkTextProps` | `() => T['element']` | 链接文字的载体：折叠时由皮肤整个藏掉。 |
 
 ## 键盘
 

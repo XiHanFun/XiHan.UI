@@ -101,7 +101,7 @@
 | [菜单栏](./menubar) | `menubar` | 10 | 15 | 9 |
 | [右键菜单](./context-menu) | `context-menu` | 11 | 9 | 8 |
 | [导航菜单](./navigation-menu) | `navigation-menu` | 8 | 7 | 10 |
-| [侧栏导航](./side-nav) | `side-nav` | 9 | 8 | 2 |
+| [侧栏导航](./side-nav) | `side-nav` | 11 | 8 | 2 |
 | [标签页](./tabs) | `tabs` | 4 | 6 | 13 |
 | [步骤条](./steps) | `steps` | 9 | 6 | 8 |
 | [分页](./pagination) | `pagination` | 5 | 4 | 10 |

@@ -1,4 +1,4 @@
-<!-- 手风琴与折叠 | accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整体收起，文字随行宽裁掉），折叠态的子级弹出待浮层子菜单机制落地 -->
+<!-- 手风琴与折叠 | accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整体收起，文字部件整个隐藏只剩图标），折叠态的子级弹出待浮层子菜单机制落地 -->
 <script setup lang="ts">
 import type { SideNavNode } from "@xihan-ui/headless";
 import { ref } from "vue";
@@ -7,8 +7,10 @@ import {
   XhSideNavBranch,
   XhSideNavBranchContent,
   XhSideNavBranchIndicator,
+  XhSideNavBranchText,
   XhSideNavBranchTrigger,
   XhSideNavLink,
+  XhSideNavLinkText,
   XhSideNavList,
   XhSideNavRoot,
 } from "@xihan-ui/vue";
@@ -52,12 +54,12 @@ const collapsed = ref(false);
         <XhSideNavBranch v-for="branch in collection" :key="branch.value" :value="branch.value">
           <XhSideNavBranchTrigger>
             <span aria-hidden="true">▦</span>
-            {{ branch.label }}
+            <XhSideNavBranchText>{{ branch.label }}</XhSideNavBranchText>
             <XhSideNavBranchIndicator>›</XhSideNavBranchIndicator>
           </XhSideNavBranchTrigger>
           <XhSideNavBranchContent>
             <XhSideNavLink v-for="leaf in branch.children" :key="leaf.value" :value="leaf.value">
-              {{ leaf.label }}
+              <XhSideNavLinkText>{{ leaf.label }}</XhSideNavLinkText>
             </XhSideNavLink>
           </XhSideNavBranchContent>
         </XhSideNavBranch>

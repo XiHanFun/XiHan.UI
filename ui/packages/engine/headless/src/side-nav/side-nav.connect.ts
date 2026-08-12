@@ -194,6 +194,10 @@ export function connectSideNav<T extends PropTypes>(
       'onKeydown': (event: KeyboardEvent) => onNodeKeydown(event, v),
     }),
 
+    getBranchTextProps: () => normalize.element({
+      ...parts['branch-text'].attrs,
+    }),
+
     getBranchIndicatorProps: ({ value: v }) => normalize.element({
       ...parts['branch-indicator'].attrs,
       'aria-hidden': 'true',
@@ -229,6 +233,10 @@ export function connectSideNav<T extends PropTypes>(
         // 链接上按 Enter 走原生激活；方向键交给共用处理
         onNodeKeydown(event, v)
       },
+    }),
+
+    getLinkTextProps: () => normalize.element({
+      ...parts['link-text'].attrs,
     }),
   }
 }
