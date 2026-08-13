@@ -287,7 +287,7 @@ export const cascaderSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '点 trigger 展开：焦点落到首个条目，它的子列随之开着（焦点在哪儿，开着的就是哪一串列）',
+      name: '点 trigger 展开：锚点落到首个条目但不预展开它的子列，只开根列',
       spec: { apg: `${APG_COMBOBOX}#roles_states_properties` },
       props: props(),
       steps: [
@@ -299,13 +299,12 @@ export const cascaderSuite: ConformanceSuite = {
               'trigger': { 'aria-expanded': 'true', 'data-state': 'open' },
               'indicator': { 'data-state': 'open' },
               'content': { 'hidden': null, 'data-state': 'open' },
-              'column': columnsShown(2),
-              // 第 1 列的名字改指展开它的那个条目
-              'column[1]': { 'aria-labelledby': '@part(item[0])' },
-              'item[0]': { 'tabindex': '0', 'data-highlighted': '', 'data-active': '' },
+              'column': columnsShown(1),
+              // 展开路径为空，第 1 列没有父条目，名字退回组件标题
+              'column[1]': { 'aria-labelledby': '@part(label)' },
+              'item[0]': { 'tabindex': '0', 'data-highlighted': '', 'data-active': null },
               'item[1]': { 'tabindex': '-1', 'data-highlighted': null, 'data-active': null },
-              // jiangsu 的子节点 nanjing 不属于当前列，仍收着
-              'item': itemsShown('zhejiang', 'jiangsu', 'taiwan', 'macau', 'hangzhou', 'ningbo', 'wenzhou'),
+              'item': itemsShown('zhejiang', 'jiangsu', 'taiwan', 'macau'),
             },
             events: [{ type: 'open-change', detail: { open: true } }],
           },
@@ -325,6 +324,21 @@ export const cascaderSuite: ConformanceSuite = {
       steps: [
         { kind: 'click', part: 'trigger' },
         { kind: 'settle', until: { activeElement: 'item[0]' } },
+        // 打开不预展开，先点 zhejiang 铺开第 1 列
+        {
+          kind: 'click',
+          part: 'item[0]',
+          expect: {
+            parts: {
+              'column': columnsShown(2),
+              // 第 1 列的名字改指展开它的那个条目
+              'column[1]': { 'aria-labelledby': '@part(item[0])' },
+              'item': itemsShown('zhejiang', 'jiangsu', 'taiwan', 'macau', 'hangzhou', 'ningbo', 'wenzhou'),
+              'item[0]': { 'data-active': '' },
+            },
+            events: [],
+          },
+        },
         // 走到第 1 列的 hangzhou：第 2 列露出它的两个子节点
         {
           kind: 'click',
@@ -459,7 +473,7 @@ export const cascaderSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'ArrowLeft',
-          expect: { activeElement: { part: 'item[0]', exact: true }, parts: { column: columnsShown(2) } },
+          expect: { activeElement: { part: 'item[0]', exact: true }, parts: { column: columnsShown(1) } },
         },
         { kind: 'key', key: 'End', expect: { activeElement: { part: 'item[3]', exact: true } } },
         {
@@ -480,6 +494,12 @@ export const cascaderSuite: ConformanceSuite = {
       steps: [
         { kind: 'click', part: 'trigger' },
         { kind: 'settle', until: { activeElement: 'item[0]' } },
+        // 第一按先铺开子列，第二按才走进去
+        {
+          kind: 'key',
+          key: 'ArrowLeft',
+          expect: { activeElement: { part: 'item[0]', exact: true }, parts: { column: columnsShown(2) } },
+        },
         { kind: 'key', key: 'ArrowLeft', expect: { activeElement: { part: 'item[4]', exact: true } } },
         { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'item[0]', exact: true } } },
       ],
@@ -536,6 +556,8 @@ export const cascaderSuite: ConformanceSuite = {
           },
         },
         { kind: 'settle', until: { activeElement: 'item[0]' } },
+        // 第一按铺开子列，之后每按一次走进一列
+        { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'item[0]', exact: true } } },
         { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'item[4]', exact: true } } },
         { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'item[8]', exact: true } } },
         {
@@ -765,6 +787,12 @@ export const cascaderSuite: ConformanceSuite = {
       steps: [
         { kind: 'click', part: 'trigger' },
         { kind: 'settle', until: { activeElement: 'item[0]' } },
+        // 右键铺开第 1 列（点分支在 changeOnSelect 下会落值，污染后面的选中断言）
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          expect: { parts: { column: columnsShown(2) }, events: [] },
+        },
         // 条目用 aria-disabled 表达禁用，click 仍派得出去，这一步走到连接层的禁用守卫
         {
           kind: 'click',

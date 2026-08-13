@@ -182,6 +182,7 @@ export interface CascaderSchema extends MachineSchema {
     /**
      * 展开路径：并排开着哪几列由它决定（列数 = 它走得通的段数 + 1），与选中值互相独立。
      * 键盘导航下恒等于焦点路径；指针悬停展开时只有它动，不碰焦点。
+     * 打开落点不预展开：没有选中值时它为空，锚点条目只作方向键起点，不带出子列。
      */
     activePath: string[]
     /** roving tabindex 的锚点，同时是方向键与确认键的起点；收起即清空。 */

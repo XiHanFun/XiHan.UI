@@ -3,7 +3,7 @@ import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { CascaderApi, CascaderNodeMeta, CascaderSchema, CascaderSearchResult } from './cascader.types'
 import { cascadeState, focusItem, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/behavior'
-import { contains, dataAttr } from '@xihan-ui/kernel'
+import { contains, dataAttr, isComposingEvent } from '@xihan-ui/kernel'
 import { cascaderAnatomy } from './cascader.anatomy'
 import {
   cascaderBuildColumns,
@@ -123,13 +123,15 @@ export function connectCascader<T extends PropTypes>(
   }
 
   /**
-   * 确认键与点条目的落点：先认领焦点与展开，再报选中意图。
+   * 确认键与点条目的落点：先认领焦点、把子列铺到这条路径上，再报选中意图。
+   * 展开显式发：焦点回落到既有锚点那一拍不带展开，点选的展开只能自己声明。
    * 分支是否落值由机器按 changeOnSelect 判定。
    */
   const activate = (meta: CascaderNodeMeta): void => {
     if (!interactive || isDisabled(meta))
       return
     send({ type: 'ITEM.FOCUS', level: meta.level, value: meta.value })
+    send({ type: 'ITEM.EXPAND', level: meta.level, value: meta.value })
     send({ type: 'ITEM.SELECT', path: [...meta.path] })
   }
 
@@ -359,10 +361,10 @@ export function connectCascader<T extends PropTypes>(
           // 叶子右边没有列，不吞这个键
           if (!focusedMeta?.branch)
             return
-          // 展开路径被悬停带偏过时先把它拉回焦点条目，子列才是焦点条目自己的
+          // 展开路径不在焦点条目上（悬停带偏过、或打开落点还没铺列）时先把子列铺到它上面
           if (!cascaderSamePath(activePath, focusedMeta.path)) {
             event.preventDefault()
-            send({ type: 'ITEM.FOCUS', level: focusedMeta.level, value: focusedMeta.value })
+            send({ type: 'ITEM.EXPAND', level: focusedMeta.level, value: focusedMeta.value })
             return
           }
           // 走到这里子列已经开着
@@ -429,6 +431,9 @@ export function connectCascader<T extends PropTypes>(
         send({ type: 'INPUT.CHANGE', value: (event.target as HTMLInputElement).value })
       },
       'onKeyDown': (event: KeyboardEvent) => {
+        // 组合期间的按键属于输入法候选框，组件一律不接
+        if (isComposingEvent(event))
+          return
         // 横向键与 Home/End 留给光标；stopPropagation 挡掉 content 的跨列导航
         if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'Home' || event.key === 'End') {
           event.stopPropagation()

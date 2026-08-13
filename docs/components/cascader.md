@@ -105,7 +105,7 @@ searchable 让 XhCascaderInput 可用：输入后整条路径连缀过滤，XhCa
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-cascader>` |
-| Vue 组件 | `XhCascaderClearTrigger` `XhCascaderColumn` `XhCascaderContent` `XhCascaderIndicator` `XhCascaderItem` `XhCascaderItemIndicator` `XhCascaderItemText` `XhCascaderLabel` `XhCascaderPositioner` `XhCascaderRoot` `XhCascaderTrigger` `XhCascaderValueText` |
+| Vue 组件 | `XhCascaderClearTrigger` `XhCascaderColumn` `XhCascaderContent` `XhCascaderIndicator` `XhCascaderInput` `XhCascaderItem` `XhCascaderItemIndicator` `XhCascaderItemText` `XhCascaderLabel` `XhCascaderPositioner` `XhCascaderRoot` `XhCascaderSearchList` `XhCascaderTrigger` `XhCascaderValueText` |
 | 组合式函数 | `useCascader` |
 | 状态机 | `cascaderMachine` |
 | 皮肤 | `@xihan-ui/styles/cascader.css` |
