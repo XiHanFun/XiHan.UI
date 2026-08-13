@@ -26,7 +26,6 @@ export {
 } from './form.machine'
 export { formMeta } from './form.meta'
 export { isEmptyFormValue, runFieldRules, runFormRules } from './form.rules'
-export type { FormRule, FormRules, FormRuleType, FormValidateMessages } from './form.rules'
 export type {
   FormApi,
   FormErrorsChangeDetails,
@@ -35,8 +34,12 @@ export type {
   FormInvalidDetails,
   FormLayout,
   FormRefs,
+  FormRule,
+  FormRules,
+  FormRuleType,
   FormSchema,
   FormSubmitDetails,
+  FormValidateMessages,
   FormValidateOn,
   FormValues,
   FormValuesChangeDetails,
