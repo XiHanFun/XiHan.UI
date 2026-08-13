@@ -5,6 +5,7 @@ import type {
   TimePickerColumn,
   TimePickerColumnsOptions,
   TimePickerColumnUnit,
+  TimePickerFocusIntent,
   TimePickerSchema,
 } from './time-picker.types'
 import { createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
@@ -29,7 +30,7 @@ import {
   to12Hour,
   to24Hour,
 } from '../time-field'
-import { findTimePickerItem } from './time-picker.anatomy'
+import { findTimePickerColumn, findTimePickerItem } from './time-picker.anatomy'
 
 const { createMachine } = setup<TimePickerSchema>()
 
@@ -215,6 +216,7 @@ export const timePickerMachine = createMachine({
     typeBuffer: cell<string>(() => ({ defaultValue: '' })),
     focusedColumn: cell<TimePickerColumnUnit | null>(() => ({ defaultValue: null })),
     focusedItem: cell<string | null>(() => ({ defaultValue: null })),
+    focusIntent: cell<TimePickerFocusIntent>(() => ({ defaultValue: 'selected' })),
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
   }),
   refs: () => ({
@@ -247,14 +249,15 @@ export const timePickerMachine = createMachine({
   states: {
     closed: {
       on: {
-        // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
+        // 受控命中 → 只发意图；非受控 → 落 target 并一并通知。
+        // 落点意图先记进 context：受控那一拍走 CONTROLLED.OPEN，读不到原按键事件
         'OPEN': [
-          { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnOpen'] },
-          { target: 'open', actions: ['setReturnFocus', 'invokeOnOpen'] },
+          { guard: 'isOpenControlled', actions: ['setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
+          { target: 'open', actions: ['setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
         ],
         'TOGGLE': [
-          { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnOpen'] },
-          { target: 'open', actions: ['setReturnFocus', 'invokeOnOpen'] },
+          { guard: 'isOpenControlled', actions: ['setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
+          { target: 'open', actions: ['setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
         ],
         'CONTROLLED.OPEN': { target: 'open' },
       },
@@ -312,8 +315,14 @@ export const timePickerMachine = createMachine({
         context.set('returnFocus', !handedOff)
       },
 
+      setFocusIntent: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'OPEN' || e.type === 'TOGGLE')
+          context.set('focusIntent', e.focus ?? 'selected')
+      },
+
       /**
-       * 展开那一刻焦点落在时列：已选的时仍在列里就停在它上面，否则退回首格。
+       * 展开那一刻焦点落在时列：这一段已填的值仍在列里就停在它上面，否则退回意图那一端。
        * 列由纯函数按当前值算出，这里不必查 DOM。
        */
       setInitialFocusedItem: (params) => {
@@ -322,10 +331,16 @@ export const timePickerMachine = createMachine({
           return
         const current = segmentNumber(currentDraft(params), first.unit, currentHourCycle(params))
         const selected = current == null ? null : timePickerItemValue(current)
+        // 指针打开且这一段还空着：不落锚点，焦点由焦点域交给列容器，
+        // 展开这一刻不能有格子看着像被选中；键盘入口要预落锚点得自带 first/last 意图
+        const intent = params.context.get('focusIntent')
+        if (intent === 'selected' && selected == null)
+          return
+        const edge = intent === 'last' ? first.options.at(-1) : first.options[0]
         params.context.set('focusedColumn', first.unit)
         params.context.set(
           'focusedItem',
-          selected != null && first.options.includes(selected) ? selected : (first.options[0] ?? null),
+          selected != null && first.options.includes(selected) ? selected : (edge ?? null),
         )
       },
 
@@ -482,7 +497,8 @@ export const timePickerMachine = createMachine({
 
       // 层与消解层、焦点域绑在同一个效应里，三者生命周期必须一致；
       // 层只在展开期间入栈，常驻会占死栈顶把下面各层的 Escape 堵死
-      trackLayer: ({ refs, context, send }) => {
+      trackLayer: (params) => {
+        const { refs, context, send } = params
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
         // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
@@ -506,14 +522,27 @@ export const timePickerMachine = createMachine({
           // 浮层不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
           trapped: () => false,
           loop: false,
-          // 显式指定落焦点为锚点选项：Tab 序列探测只会落到容器上。
+          // 显式指定落焦点，两种落点都不交给 Tab 序列探测：探测按文档序取 content 的可 tab 后代，
+          // 作者放在列前面的输入框会把焦点抢走，而键盘处理器挂在 content 上，方向键就此失灵。
           // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试
           initialFocus: () => {
+            const content = refs.get('getContentEl')()
+            if (!content)
+              return null
             const unit = context.get('focusedColumn')
             const value = context.get('focusedItem')
-            if (unit == null || value == null)
+            if (unit != null && value != null)
+              return findTimePickerItem(content, unit, value)
+            // 判据与 setInitialFocusedItem 同一条：只有「指针入口且首列那一段还空着」才真的没有锚点。
+            // 其余情形是本轮该有锚点却还没挑出来（效应先于 entry 动作挂载），
+            // 返回 null 让焦点域重试，别滑到列上定死——落焦一旦成功就不再重试
+            const first = currentColumns(params)[0]
+            const empty = !first || segmentNumber(currentDraft(params), first.unit, currentHourCycle(params)) == null
+            if (!first || !empty || context.get('focusIntent') !== 'selected')
               return null
-            return findTimePickerItem(refs.get('getContentEl')(), unit, value)
+            // 确实不该有锚点：焦点落到首列，它是 role=listbox 且有名字，
+            // 读屏据此进焦点模式，此刻也正认领着 Tab 位
+            return findTimePickerColumn(content, first.unit)
           },
           restoreFocus: () => context.get('returnFocus'),
         })

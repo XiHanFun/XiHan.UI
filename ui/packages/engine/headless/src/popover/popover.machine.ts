@@ -20,6 +20,7 @@ export const popoverMachine = createMachine({
     getAnchorEl: () => null,
     getFloatingEl: () => null,
     getContentEl: () => null,
+    getInitialFocusEl: () => null,
   }),
   initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
   // 受控（open prop 给定）时，用户事件只发意图回调、不自改状态；宿主写回 open 后
@@ -149,6 +150,10 @@ export const popoverMachine = createMachine({
           // 非模态浮层不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
           trapped: () => prop('modal') ?? false,
           loop: prop('modal') ?? false,
+          // 缺省返回 null，落点仍由焦点域的 Tab 序列探测决定；
+          // 浮层里排着集合的组合件填这一条把落点收口（见 getInitialFocusEl）。
+          // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位
+          initialFocus: () => refs.get('getInitialFocusEl')(),
           restoreFocus: () => context.get('returnFocus'),
         })
 
