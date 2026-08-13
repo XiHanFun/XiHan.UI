@@ -204,11 +204,11 @@
     display: none;
   }
 
-  /* 展开时箭头翻个面，指向与列表的去向一致；transition 要重写全份，只补一条会覆盖掉上面那条 */
-  [data-scope='combobox'][data-part='trigger'] {
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  /* 展开时箭头翻个面，指向与列表的去向一致。转的是字形或作者塞的图形，不转按钮本体：
+     按钮自带悬停底色，整个按钮转会带着底色一起转 */
+  [data-scope='combobox'][data-part='trigger']:empty::before,
+  [data-scope='combobox'][data-part='trigger'] > * {
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
@@ -221,7 +221,8 @@
     content: '✕';
   }
 
-  [data-scope='combobox'][data-part='trigger'][data-state='open'] {
+  [data-scope='combobox'][data-part='trigger'][data-state='open']:empty::before,
+  [data-scope='combobox'][data-part='trigger'][data-state='open'] > * {
     rotate: 180deg;
   }
 
