@@ -1,6 +1,6 @@
 {
   "name": "xihan-ui-docs",
-  "version": "0.0.0",
+  "version": "1.0.0-alpha.1",
   "type": "module",
   "description": "XiHan.UI document site. Framework-agnostic design system runtime with Vue and Web Components adapters.",
   "author": {
