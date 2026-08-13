@@ -2743,8 +2743,24 @@
               "name": "positioner"
             },
             {
-              "description": "浮层壳（焦点域与消解层的根节点），键盘在此收口，收起时带 hidden",
+              "description": "浮层壳（焦点域与消解层的根节点），键盘在此收口，收起时带 hidden；根列没有条目时带 data-empty",
               "name": "content"
+            },
+            {
+              "description": "搜索框（content 顶部）；没开 searchable 时带 hidden。上下键走候选、Enter 选中、Escape 先清词",
+              "name": "input"
+            },
+            {
+              "description": "候选列表容器；不在搜索视图时带 hidden，无候选时带 data-empty",
+              "name": "search-list"
+            },
+            {
+              "description": "一条候选，须用 value 属性写整条路径的 JSON 数组串（如 value='[\"a\",\"b\"]'）；词换了不匹配的带 hidden",
+              "name": "search-item"
+            },
+            {
+              "description": "空态占位（可缺省）：搜索无候选或 collection 为空时露面，其余时候带 hidden；文案归作者",
+              "name": "empty"
             },
             {
               "description": "role=listbox 的一列，须自带 level 属性标识它是第几列；砍掉时带 hidden",
@@ -2841,6 +2857,33 @@
                 "text": "boolean | undefined"
               },
               "attribute": "multiple"
+            },
+            {
+              "kind": "field",
+              "name": "searchable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "searchable"
+            },
+            {
+              "kind": "field",
+              "name": "cascade",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "cascade"
+            },
+            {
+              "kind": "field",
+              "name": "checkedStrategy",
+              "privacy": "public",
+              "type": {
+                "text": "CascaderSchema['props']['checkedStrategy'] | undefined"
+              },
+              "attribute": "checked-strategy"
             },
             {
               "kind": "field",
@@ -3222,6 +3265,30 @@
               "description": "多选：选中后浮层不收起，焦点留在列里",
               "name": "multiple",
               "fieldName": "multiple"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "开启搜索：input 部件可用，输入后整条路径连缀过滤、候选替换列视图",
+              "name": "searchable",
+              "fieldName": "searchable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "多选下父子级联勾选（整枝传导/半选/禁用冻结），默认 false",
+              "name": "cascade",
+              "fieldName": "cascade"
+            },
+            {
+              "type": {
+                "text": "CascaderSchema['props']['checkedStrategy'] | undefined"
+              },
+              "description": "级联下对外值的收敛策略：child（默认）/ parent / all",
+              "name": "checked-strategy",
+              "fieldName": "checkedStrategy"
             },
             {
               "type": {
@@ -6775,6 +6842,18 @@
               "name": "calendar"
             },
             {
+              "description": "showTime 的时间列，须自带 unit 属性（hour/minute/second）；没开时带 hidden",
+              "name": "time-column"
+            },
+            {
+              "description": "时间选项，须自带 value 属性（两位补零串）；点按把该单位写进值",
+              "name": "time-item"
+            },
+            {
+              "description": "showTime 的收口按钮；没开时带 hidden",
+              "name": "confirm-trigger"
+            },
+            {
               "description": "日历标题栏外壳（data-scope=\"calendar\"）",
               "name": "header"
             },
@@ -7002,6 +7081,24 @@
                 "text": "boolean | undefined"
               },
               "attribute": "close-on-select"
+            },
+            {
+              "kind": "field",
+              "name": "showTime",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "show-time"
+            },
+            {
+              "kind": "field",
+              "name": "timeGranularity",
+              "privacy": "public",
+              "type": {
+                "text": "DatePickerSchema['props']['timeGranularity'] | undefined"
+              },
+              "attribute": "time-granularity"
             },
             {
               "kind": "field",
@@ -7409,6 +7506,20 @@
               "description": "选完即收起，默认 true；写 close-on-select=\"false\" 关掉",
               "name": "close-on-select",
               "fieldName": "closeOnSelect"
+            },
+            {
+              "name": "show-time",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "fieldName": "showTime"
+            },
+            {
+              "name": "time-granularity",
+              "type": {
+                "text": "DatePickerSchema['props']['timeGranularity'] | undefined"
+              },
+              "fieldName": "timeGranularity"
             }
           ],
           "superclass": {
@@ -9412,6 +9523,39 @@
             },
             {
               "kind": "field",
+              "name": "remoteFiles",
+              "privacy": "public",
+              "type": {
+                "text": "FileUploadRemoteFile[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultRemoteFiles",
+              "privacy": "public",
+              "type": {
+                "text": "FileUploadRemoteFile[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "upload",
+              "privacy": "public",
+              "type": {
+                "text": "FileUploadSchema['props']['upload'] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "autoUpload",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "auto-upload"
+            },
+            {
+              "kind": "field",
               "name": "accept",
               "privacy": "public",
               "type": {
@@ -9532,6 +9676,24 @@
             {
               "kind": "field",
               "name": "notifyReject",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyRemoteChange",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyUploadComplete",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyUploadError",
               "privacy": "private",
               "readonly": true
             },
@@ -9750,6 +9912,18 @@
               "name": "files-change"
             },
             {
+              "description": "远程附件列表变化；detail 为 `{ files: FileUploadRemoteFile[] }`",
+              "name": "remote-files-change"
+            },
+            {
+              "description": "单个文件传完；detail 为 `{ file, url? }`",
+              "name": "upload-complete"
+            },
+            {
+              "description": "单个文件传败；detail 为 `{ file, error }`",
+              "name": "upload-error"
+            },
+            {
               "description": "本次收下了哪些；detail 为 `{ files: File[] }`",
               "name": "file-accept"
             },
@@ -9838,6 +10012,14 @@
               "description": "移动端直接调用摄像头/麦克风采集",
               "name": "capture",
               "fieldName": "capture"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "收下即自动开传（须配 upload 实现），默认 true；写 auto-upload=\"false\" 关掉",
+              "name": "auto-upload",
+              "fieldName": "autoUpload"
             }
           ],
           "superclass": {
@@ -10266,7 +10448,7 @@
               "name": "root"
             },
             {
-              "description": "单个字段的容器，须自带 value 属性标识字段名；带 id 供摘要链接指向",
+              "description": "单个字段的容器，须自带 value 属性标识字段名；带 id 供摘要链接指向。 组里的 `<xh-field>` 由表单驱动 invalid/required/disabled，作者显式设的会被顶掉",
               "name": "field-group"
             },
             {
@@ -10338,12 +10520,56 @@
             },
             {
               "kind": "field",
+              "name": "rules",
+              "privacy": "public",
+              "type": {
+                "text": "FormSchema['props']['rules'] | undefined"
+              },
+              "description": "声明式校验规则；对象进不了属性，只作为 property 暴露。"
+            },
+            {
+              "kind": "field",
+              "name": "validateMessages",
+              "privacy": "public",
+              "type": {
+                "text": "FormSchema['props']['validateMessages'] | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "validateOn",
               "privacy": "public",
               "type": {
                 "text": "FormValidateOn | undefined"
               },
               "attribute": "validate-on"
+            },
+            {
+              "kind": "field",
+              "name": "layout",
+              "privacy": "public",
+              "type": {
+                "text": "FormSchema['props']['layout'] | undefined"
+              },
+              "attribute": "layout"
+            },
+            {
+              "kind": "field",
+              "name": "labelWidth",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label-width"
+            },
+            {
+              "kind": "field",
+              "name": "labelAlign",
+              "privacy": "public",
+              "type": {
+                "text": "FormSchema['props']['labelAlign'] | undefined"
+              },
+              "attribute": "label-align"
             },
             {
               "kind": "field",
@@ -10618,6 +10844,30 @@
               "description": "校验时机：submit（默认）/ blur / change",
               "name": "validate-on",
               "fieldName": "validateOn"
+            },
+            {
+              "type": {
+                "text": "FormSchema['props']['layout'] | undefined"
+              },
+              "description": "排布：vertical（默认）/ horizontal（标签左置两列）/ inline（横排一行流）",
+              "name": "layout",
+              "fieldName": "layout"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "horizontal 下标签列宽（CSS 长度），整表统一对齐",
+              "name": "label-width",
+              "fieldName": "labelWidth"
+            },
+            {
+              "type": {
+                "text": "FormSchema['props']['labelAlign'] | undefined"
+              },
+              "description": "horizontal 下标签对齐缘：end（默认，贴控件）/ start",
+              "name": "label-align",
+              "fieldName": "labelAlign"
             },
             {
               "type": {
@@ -11705,6 +11955,460 @@
           "declaration": {
             "name": "XhIconElement",
             "module": "src/elements/icon.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/image-viewer.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-image-viewer>` —— Light-DOM 行为宿主，跑 image-viewer 机器：\n模态看片浮层，滚轮缩放、拖拽平移、旋转翻转与多图翻页。",
+          "name": "XhImageViewerElement",
+          "cssParts": [
+            {
+              "description": "触发按钮",
+              "name": "trigger"
+            },
+            {
+              "description": "遮罩层",
+              "name": "backdrop"
+            },
+            {
+              "description": "浮层定位容器",
+              "name": "positioner"
+            },
+            {
+              "description": "看片容器（role=dialog + aria-modal；方向键翻页在这里）",
+              "name": "content"
+            },
+            {
+              "description": "手势视口（滚轮缩放、拖拽平移）",
+              "name": "viewport"
+            },
+            {
+              "description": "当前那张图（src/alt/transform 由元素代填）",
+              "name": "image"
+            },
+            {
+              "description": "工具条容器",
+              "name": "toolbar"
+            },
+            {
+              "description": "放大",
+              "name": "zoom-in-trigger"
+            },
+            {
+              "description": "缩小",
+              "name": "zoom-out-trigger"
+            },
+            {
+              "description": "左转 90°",
+              "name": "rotate-left-trigger"
+            },
+            {
+              "description": "右转 90°",
+              "name": "rotate-right-trigger"
+            },
+            {
+              "description": "水平翻转",
+              "name": "flip-horizontal-trigger"
+            },
+            {
+              "description": "垂直翻转",
+              "name": "flip-vertical-trigger"
+            },
+            {
+              "description": "变换归零",
+              "name": "reset-trigger"
+            },
+            {
+              "description": "上一张",
+              "name": "prev-trigger"
+            },
+            {
+              "description": "下一张",
+              "name": "next-trigger"
+            },
+            {
+              "description": "「第 n / 共 m」计数（元素代填）",
+              "name": "counter"
+            },
+            {
+              "description": "关闭",
+              "name": "close-trigger"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: imageViewerAnatomy, meta: imageViewerMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "defaultOpen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-open"
+            },
+            {
+              "kind": "field",
+              "name": "index",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "index"
+            },
+            {
+              "kind": "field",
+              "name": "defaultIndex",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "default-index"
+            },
+            {
+              "kind": "field",
+              "name": "loop",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "zoomStep",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "zoom-step"
+            },
+            {
+              "kind": "field",
+              "name": "minScale",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "min-scale"
+            },
+            {
+              "kind": "field",
+              "name": "maxScale",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-scale"
+            },
+            {
+              "kind": "field",
+              "name": "closeOnEscape",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "close-on-escape"
+            },
+            {
+              "kind": "field",
+              "name": "closeOnInteractOutside",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "close-on-interact-outside"
+            },
+            {
+              "kind": "field",
+              "name": "restoreFocus",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "restore-focus"
+            },
+            {
+              "kind": "field",
+              "name": "items",
+              "privacy": "public",
+              "type": {
+                "text": "ImageViewerItem[] | undefined"
+              },
+              "description": "图片清单。看单张就给长度 1 的数组。"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<ImageViewerTranslations> | undefined"
+              },
+              "description": "工具条按钮的可及名与计数文案；connect 每帧重写，只能从这里给。"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "viewerScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "contentNode",
+              "type": {
+                "text": "HTMLElement | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "backdropNode",
+              "type": {
+                "text": "HTMLElement | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "counterOwned",
+              "type": {
+                "text": "boolean | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "counter 的文本归属：首帧为空才代填，作者写过内容就不碰。"
+            },
+            {
+              "kind": "field",
+              "name": "notifyOpen",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyIndex",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<ImageViewerSchema>( this, imageViewerMachine, () => this.machineProps(), { scope: this.viewerScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<ImageViewerSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "registerLayer",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<ImageViewerSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "open 状态变化；detail 为 `{ open: boolean }`",
+              "name": "open-change"
+            },
+            {
+              "description": "下标变化；detail 为 `{ index: number }`",
+              "name": "index-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控开合；缺省该属性即非受控",
+              "name": "open",
+              "fieldName": "open"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始为打开",
+              "name": "default-open",
+              "fieldName": "defaultOpen"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "受控下标（0 起）",
+              "name": "index",
+              "fieldName": "index"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "非受控初始下标，默认 0",
+              "name": "default-index",
+              "fieldName": "defaultIndex"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "前后翻页到头回绕，默认 true；写 loop=\"false\" 关掉",
+              "name": "loop",
+              "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "缩放步长（加法），默认 0.5",
+              "name": "zoom-step",
+              "fieldName": "zoomStep"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "缩放下限，默认 0.25",
+              "name": "min-scale",
+              "fieldName": "minScale"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "缩放上限，默认 8",
+              "name": "max-scale",
+              "fieldName": "maxScale"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "Esc 关闭，默认 true",
+              "name": "close-on-escape",
+              "fieldName": "closeOnEscape"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "点遮罩关闭，默认 true",
+              "name": "close-on-interact-outside",
+              "fieldName": "closeOnInteractOutside"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "关闭后把焦点归还触发元素，默认 true",
+              "name": "restore-focus",
+              "fieldName": "restoreFocus"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-image-viewer",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhImageViewerElement",
+          "declaration": {
+            "name": "XhImageViewerElement",
+            "module": "src/elements/image-viewer.ts"
           }
         }
       ]
@@ -13950,6 +14654,42 @@
             },
             {
               "kind": "field",
+              "name": "submenu",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "submenu"
+            },
+            {
+              "kind": "field",
+              "name": "openOnHover",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "open-on-hover"
+            },
+            {
+              "kind": "field",
+              "name": "hoverOpenDelay",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "hover-open-delay"
+            },
+            {
+              "kind": "field",
+              "name": "hoverCloseDelay",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "hover-close-delay"
+            },
+            {
+              "kind": "field",
               "name": "idGen",
               "type": {
                 "text": "IdGenerator"
@@ -14155,6 +14895,34 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "name": "submenu",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "fieldName": "submenu"
+            },
+            {
+              "name": "open-on-hover",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "fieldName": "openOnHover"
+            },
+            {
+              "name": "hover-open-delay",
+              "type": {
+                "text": "number | undefined"
+              },
+              "fieldName": "hoverOpenDelay"
+            },
+            {
+              "name": "hover-close-delay",
+              "type": {
+                "text": "number | undefined"
+              },
+              "fieldName": "hoverCloseDelay"
             }
           ],
           "superclass": {
@@ -16454,13 +17222,31 @@
             },
             {
               "kind": "field",
+              "name": "confirmAction",
+              "type": {
+                "text": "() => void | Promise<unknown> | undefined"
+              },
+              "description": "异步确认动作：事件拿不到监听函数的返回值，异步门走这个属性——\n返回 Promise 即挂起（浮层等兑现才收、确认按钮转圈），落空留在原地。\nconfirm 事件照发，只作通知。"
+            },
+            {
+              "kind": "field",
+              "name": "pendingState",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false",
+              "description": "异步确认的挂起布尔；变化时重打属性。"
+            },
+            {
+              "kind": "field",
               "name": "intents",
               "type": {
                 "text": "PopconfirmIntents"
               },
               "privacy": "private",
               "readonly": true,
-              "default": "{ onConfirm: () => { this.dispatchEvent(new CustomEvent('confirm', { bubbles: true, composed: true })) }, onCancel: () => { this.dispatchEvent(new CustomEvent('cancel', { bubbles: true, composed: true })) }, }"
+              "default": "{ onConfirm: () => { this.dispatchEvent(new CustomEvent('confirm', { bubbles: true, composed: true })) return this.confirmAction?.() }, onCancel: () => { this.dispatchEvent(new CustomEvent('cancel', { bubbles: true, composed: true })) }, onPendingChange: (next) => { this.pendingState = next this.requestUpdate() }, }"
             },
             {
               "kind": "field",
@@ -16530,7 +17316,7 @@
               "name": "open-change"
             },
             {
-              "description": "点了确认按钮；随后浮层收起",
+              "description": "点了确认按钮；随后浮层收起。异步门走 confirmAction 属性： 事件拿不到监听函数的返回值，给元素赋 `confirmAction = () => Promise` 即挂起确认门 （浮层等兑现才收、确认按钮转圈，落空留在原地），confirm 事件照发只作通知",
               "name": "confirm"
             },
             {
@@ -18269,6 +19055,15 @@
             },
             {
               "kind": "field",
+              "name": "allowClear",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "allow-clear"
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "privacy": "public",
               "type": {
@@ -18450,6 +19245,14 @@
               "description": "允许半颗星：档位从 1 变成 0.5",
               "name": "allow-half",
               "fieldName": "allowHalf"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "再点当前档位清零，键盘最低档再往下也清；默认开，写 \"false\" 关",
+              "name": "allow-clear",
+              "fieldName": "allowClear"
             },
             {
               "type": {
@@ -18900,6 +19703,22 @@
               "name": "indicator"
             },
             {
+              "description": "触发器与清空按钮的收纳容器兼定位基准；清空钮据此嵌进触发器右端、悬停时替换展开指示符",
+              "name": "control"
+            },
+            {
+              "description": "清空按钮：trigger 的兄弟节点（放进 control 即内嵌形态），没选中或禁用时带 hidden；可及名走 translations.clear",
+              "name": "clear-trigger"
+            },
+            {
+              "description": "多选标签，须自带 value 属性标识选中值；放触发器里是纯展示，放外面配 tag-remove 可删",
+              "name": "tag"
+            },
+            {
+              "description": "标签删除按钮，须放在 tag 里；点按摘掉所在标签的选中值，可及名走 translations.removeTag",
+              "name": "tag-remove"
+            },
+            {
               "description": "浮层定位容器，坐标由引擎写成内联样式",
               "name": "positioner"
             },
@@ -18986,6 +19805,15 @@
                 "text": "boolean | undefined"
               },
               "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
             },
             {
               "kind": "field",
@@ -19085,6 +19913,24 @@
                 "text": "Size | undefined"
               },
               "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "SelectSchema['props']['translations'] | undefined"
+              },
+              "description": "读屏文案（clear 等）；对象进不了属性，只作为 property 暴露。"
+            },
+            {
+              "kind": "field",
+              "name": "maxTagCount",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-tag-count"
             },
             {
               "kind": "field",
@@ -19376,6 +20222,22 @@
               "type": {
                 "text": "boolean | undefined"
               },
+              "description": "校验错误态：trigger 标红并输出 aria-invalid",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "多选标签最多摆几个，其余折进 api 的 overflowCount；缺省全摆",
+              "name": "max-tag-count",
+              "fieldName": "maxTagCount"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
               "description": "原生表单校验：无选中值时提交被拦下；多选下的门槛是至少选中一项",
               "name": "required",
               "fieldName": "required"
@@ -19572,6 +20434,426 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/side-nav.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-side-nav>` —— Light-DOM 行为宿主：管理后台侧栏导航。\n作者写 root/list 与若干 branch / link 角色节点，元素跑 side-nav 机器并把 connect 产出打上去。\n节点身份取自节点上的 value 属性；href 与禁用查 `collection` 这份树数据。",
+          "name": "XhSideNavElement",
+          "cssParts": [
+            {
+              "description": "nav 地标根容器（aria-label 由 translations.root 给）",
+              "name": "root"
+            },
+            {
+              "description": "顶层列表容器",
+              "name": "list"
+            },
+            {
+              "description": "role=group 分组，须自带 value 属性",
+              "name": "group"
+            },
+            {
+              "description": "分组标题（aria-labelledby 目标）",
+              "name": "group-label"
+            },
+            {
+              "description": "分支行容器，须自带 value 属性；它裹着自己的 branch-content",
+              "name": "branch"
+            },
+            {
+              "description": "展开/收起按钮（aria-expanded / aria-controls）",
+              "name": "branch-trigger"
+            },
+            {
+              "description": "行文字载体，折叠成图标栏时隐藏",
+              "name": "branch-text"
+            },
+            {
+              "description": "展开方向指示符（aria-hidden）",
+              "name": "branch-indicator"
+            },
+            {
+              "description": "内嵌子层容器，收起时隐藏",
+              "name": "branch-content"
+            },
+            {
+              "description": "去处链接，须自带 value 属性；选中输出 aria-current=\"page\"",
+              "name": "link"
+            },
+            {
+              "description": "链接文字载体，折叠成图标栏时隐藏",
+              "name": "link-text"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: sideNavAnatomy, meta: sideNavMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "default-value"
+            },
+            {
+              "kind": "field",
+              "name": "accordion",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "accordion"
+            },
+            {
+              "kind": "field",
+              "name": "collapsed",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "collapsed"
+            },
+            {
+              "kind": "field",
+              "name": "collapsedPopout",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "collapsed-popout"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "loop",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "SideNavSchema['props']['dir'] | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "SideNavNode[] | undefined"
+              },
+              "description": "入口树，href/禁用/层级的唯一事实源，须与标记同源。"
+            },
+            {
+              "kind": "field",
+              "name": "expandedValue",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultExpandedValue",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<SideNavTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "notifyValue",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyExpanded",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "navScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "positionEngine",
+              "type": {
+                "text": "PositionEnginePort"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<SideNavSchema>( this, sideNavMachine, () => this.machineProps(), { scope: this.navScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<SideNavSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "findPopoutPart",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<SideNavSchema>"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "当前弹出分支名下的角色节点：按归属分支的 value 现查。"
+            },
+            {
+              "kind": "field",
+              "name": "registerLayer",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<SideNavSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "nodeOf",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "SideNavNodeProps"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "selector",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "选中变化；detail 为 `{ value: string | null }`",
+              "name": "value-change"
+            },
+            {
+              "description": "展开集合变化；detail 为 `{ value: string[] }`",
+              "name": "expanded-change"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "受控选中的叶子；缺省该属性即非受控",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "非受控初始选中",
+              "name": "default-value",
+              "fieldName": "defaultValue"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "同层手风琴：展开一枝收起同层其余，默认 false",
+              "name": "accordion",
+              "fieldName": "accordion"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "折叠成图标栏（内嵌展开整体收起、文字由皮肤藏掉；顶层分支换装浮层弹出）",
+              "name": "collapsed",
+              "fieldName": "collapsed"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "折叠态下顶层分支是否弹出子级面板，默认 true",
+              "name": "collapsed-popout",
+              "fieldName": "collapsedPopout"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "整个侧栏禁用",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "上下键走到首尾回绕，默认关",
+              "name": "loop",
+              "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "SideNavSchema['props']['dir'] | undefined"
+              },
+              "description": "文字方向，只对调左右方向键的展开/收起语义，默认 ltr",
+              "name": "dir",
+              "fieldName": "direction"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-side-nav",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhSideNavElement",
+          "declaration": {
+            "name": "XhSideNavElement",
+            "module": "src/elements/side-nav.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/skeleton.ts",
       "declarations": [
         {
@@ -19694,6 +20976,18 @@
               "name": "range"
             },
             {
+              "description": "刻度容器",
+              "name": "marks"
+            },
+            {
+              "description": "刻度点（纯装饰），须自带 value 属性；落进已选区间带 data-active",
+              "name": "mark"
+            },
+            {
+              "description": "刻度文案，须自带 value 属性；点按把最近的滑块跳到这一档",
+              "name": "mark-label"
+            },
+            {
               "description": "role=slider 的拇指，键盘交互全在它身上；多滑块须写 index 属性",
               "name": "thumb"
             },
@@ -19774,6 +21068,24 @@
                 "text": "number | undefined"
               },
               "attribute": "min-steps-between-thumbs"
+            },
+            {
+              "kind": "field",
+              "name": "marks",
+              "privacy": "public",
+              "type": {
+                "text": "SliderSchema['props']['marks'] | undefined"
+              },
+              "description": "刻度表；数组进不了属性，只作为 property 暴露。"
+            },
+            {
+              "kind": "field",
+              "name": "snapToMarks",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "snap-to-marks"
             },
             {
               "kind": "field",
@@ -20037,6 +21349,14 @@
               "description": "相邻滑块至少隔几格，默认 0",
               "name": "min-steps-between-thumbs",
               "fieldName": "minStepsBetweenThumbs"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只认刻度落点：拖动、点按与键盘都吸到最近/下一档刻度；刻度表经 marks property 赋",
+              "name": "snap-to-marks",
+              "fieldName": "snapToMarks"
             },
             {
               "type": {
@@ -21007,6 +22327,15 @@
             },
             {
               "kind": "field",
+              "name": "loading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loading"
+            },
+            {
+              "kind": "field",
               "name": "name",
               "privacy": "public",
               "type": {
@@ -21105,6 +22434,14 @@
               "description": "禁用",
               "name": "disabled",
               "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "提交中：交互挂起、滑块转圈，仍可聚焦（aria-busy）",
+              "name": "loading",
+              "fieldName": "loading"
             },
             {
               "type": {
@@ -22513,6 +23850,16 @@
             },
             {
               "kind": "field",
+              "name": "autoSize",
+              "privacy": "public",
+              "type": {
+                "text": "TextFieldSchema['props']['autoSize'] | undefined"
+              },
+              "description": "布尔走 auto-size 属性；行数界限对象进不了属性，只作为 property 赋。",
+              "attribute": "auto-size"
+            },
+            {
+              "kind": "field",
               "name": "variant",
               "privacy": "public",
               "type": {
@@ -22658,6 +24005,14 @@
               "description": "开启清空：清空按钮显出并在有值时可用，Escape 接管",
               "name": "clearable",
               "fieldName": "clearable"
+            },
+            {
+              "type": {
+                "text": "TextFieldSchema['props']['autoSize'] | undefined"
+              },
+              "description": "布尔走 auto-size 属性；行数界限对象进不了属性，只作为 property 赋。",
+              "name": "auto-size",
+              "fieldName": "autoSize"
             },
             {
               "type": {
@@ -25955,6 +27310,15 @@
             },
             {
               "kind": "field",
+              "name": "autoScroll",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "auto-scroll"
+            },
+            {
+              "kind": "field",
               "name": "steps",
               "privacy": "public",
               "type": {
@@ -26148,6 +27512,16 @@
             },
             {
               "kind": "method",
+              "name": "remeasure",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "重量高亮框与浮层位置：目标节点被外部改动（换位、变尺寸）后调它校准。"
+            },
+            {
+              "kind": "method",
               "name": "wireWith",
               "privacy": "private",
               "return": {
@@ -26263,6 +27637,14 @@
               "description": "高亮框在目标四周留出的空白（px），默认 8",
               "name": "spotlight-padding",
               "fieldName": "spotlightPadding"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "展开与换步时自动把目标滚进视口（nearest），默认 true；写 auto-scroll=\"false\" 关掉",
+              "name": "auto-scroll",
+              "fieldName": "autoScroll"
             }
           ],
           "superclass": {
@@ -26774,6 +28156,24 @@
             },
             {
               "kind": "field",
+              "name": "cascade",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "cascade"
+            },
+            {
+              "kind": "field",
+              "name": "checkedStrategy",
+              "privacy": "public",
+              "type": {
+                "text": "TreeSelectSchema['props']['checkedStrategy'] | undefined"
+              },
+              "attribute": "checked-strategy"
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "privacy": "public",
               "type": {
@@ -27129,6 +28529,22 @@
               "type": {
                 "text": "boolean | undefined"
               },
+              "description": "多选下父子级联勾选（整枝传导/半选/禁用冻结），默认 false",
+              "name": "cascade",
+              "fieldName": "cascade"
+            },
+            {
+              "type": {
+                "text": "TreeSelectSchema['props']['checkedStrategy'] | undefined"
+              },
+              "description": "级联下对外值的收敛策略：child（默认）/ parent / all",
+              "name": "checked-strategy",
+              "fieldName": "checkedStrategy"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
               "description": "整个控件禁用：trigger 用原生 disabled，表单出口不参与提交",
               "name": "disabled",
               "fieldName": "disabled"
@@ -27360,6 +28776,24 @@
             },
             {
               "kind": "field",
+              "name": "cascade",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "cascade"
+            },
+            {
+              "kind": "field",
+              "name": "checkedStrategy",
+              "privacy": "public",
+              "type": {
+                "text": "TreeSchema['props']['checkedStrategy'] | undefined"
+              },
+              "attribute": "checked-strategy"
+            },
+            {
+              "kind": "field",
               "name": "expandOnClick",
               "privacy": "public",
               "type": {
@@ -27505,6 +28939,22 @@
               "description": "选择模式，默认 single",
               "name": "selection-mode",
               "fieldName": "selectionMode"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "multiple 下父子级联勾选（整枝传导/半选/禁用冻结），默认 false",
+              "name": "cascade",
+              "fieldName": "cascade"
+            },
+            {
+              "type": {
+                "text": "TreeSchema['props']['checkedStrategy'] | undefined"
+              },
+              "description": "级联下对外值的收敛策略：child（默认）/ parent / all",
+              "name": "checked-strategy",
+              "fieldName": "checkedStrategy"
             },
             {
               "type": {

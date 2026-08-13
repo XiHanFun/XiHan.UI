@@ -3,6 +3,7 @@ import type {
   CascaderItemProps,
   CascaderNode,
   CascaderSchema,
+  CascaderTranslations,
   CascaderValue,
 } from '@xihan-ui/headless'
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
@@ -10,6 +11,7 @@ import type { PropType, Ref } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { CascaderContext } from './use-cascader'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { provideCascader, provideCascaderItem, useCascaderContext, useCascaderItemContext } from './context'
 import { useCascader } from './use-cascader'
 
@@ -63,6 +65,7 @@ export const XhCascaderRoot = defineComponent({
     disabled: Boolean,
     readOnly: Boolean,
     invalid: Boolean,
+    translations: { type: Object as PropType<Partial<CascaderTranslations>>, default: undefined },
     variant: { type: String as PropType<ControlVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
@@ -89,7 +92,7 @@ export const XhCascaderRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useCascader(props as CascaderProps, {
+    const ctx = useCascader(withXhConfig('cascader', props) as CascaderProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
     })
@@ -183,10 +186,21 @@ export const XhCascaderContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useCascaderContext()
     // 收起时只隐藏不卸载；跨列的键盘导航也在这一层处理
-    return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
-      ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
-    }, slots.default?.())
+    return () => {
+      const api = ctx.api.value
+      return h('div', {
+        ...api.getContentProps() as Record<string, unknown>,
+        ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
+      }, [
+        slots.default?.(),
+        // 空态占位常挂在列后，露不露面归连接层；empty 插槽可换内容，缺省文案按视图取无匹配或无数据
+        h(
+          'div',
+          api.getEmptyProps() as Record<string, unknown>,
+          slots.empty ? slots.empty() : (api.searching ? api.translations.noMatch : api.translations.empty),
+        ),
+      ])
+    }
   },
 })
 

@@ -975,3 +975,36 @@ describe('roving tabindex 与 ARIA 骨架', () => {
     expect(macau.indicator.getAttribute('aria-hidden')).toBe('true')
   })
 })
+
+describe('空态占位', () => {
+  const emptyProps = (h: Harness): Record<string, unknown> => h.api().getEmptyProps() as Record<string, unknown>
+
+  it('collection 为空：content 标 data-empty，占位露面', () => {
+    const h = mount({ collection: [], defaultOpen: true })
+    expect(h.content.getAttribute('data-empty')).toBe('')
+    expect(emptyProps(h).hidden).toBeUndefined()
+  })
+
+  it('有数据时占位收着，content 不标 data-empty', () => {
+    const h = mount({ defaultOpen: true })
+    expect(h.content.hasAttribute('data-empty')).toBe(false)
+    expect(emptyProps(h).hidden).toBe(true)
+  })
+
+  it('搜索视图看候选：无匹配时露面且候选列表标 data-empty，有匹配即收起', () => {
+    const h = mount({ searchable: true, defaultOpen: true })
+    h.send({ type: 'INPUT.CHANGE', value: '找不到的词' })
+    expect((h.api().getSearchListProps() as Record<string, unknown>)['data-empty']).toBe('')
+    expect(emptyProps(h).hidden).toBeUndefined()
+    h.send({ type: 'INPUT.CHANGE', value: 'Xihu' })
+    expect((h.api().getSearchListProps() as Record<string, unknown>)['data-empty']).toBeUndefined()
+    expect(emptyProps(h).hidden).toBe(true)
+  })
+
+  it('文案默认英文，translations 逐键覆盖', () => {
+    const h = mount()
+    expect(h.api().translations).toEqual({ empty: 'No data', noMatch: 'No matches' })
+    h.setProps({ translations: { empty: '暂无数据' } })
+    expect(h.api().translations).toEqual({ empty: '暂无数据', noMatch: 'No matches' })
+  })
+})

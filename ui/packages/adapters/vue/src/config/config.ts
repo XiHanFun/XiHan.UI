@@ -7,6 +7,7 @@ import type {
   BackTopTranslations,
   BreadcrumbTranslations,
   CarouselTranslations,
+  CascaderTranslations,
   ColorPickerTranslations,
   ComposerTranslations,
   DatePickerTranslations,
@@ -42,6 +43,7 @@ export interface XhTranslationOverrides {
   'back-top'?: Partial<BackTopTranslations>
   'breadcrumb'?: Partial<BreadcrumbTranslations>
   'carousel'?: Partial<CarouselTranslations>
+  'cascader'?: Partial<CascaderTranslations>
   'color-picker'?: Partial<ColorPickerTranslations>
   'composer'?: Partial<ComposerTranslations>
   'date-field'?: Partial<DatePickerTranslations>

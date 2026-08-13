@@ -17,6 +17,7 @@ export const cascaderAnatomy = createAnatomy('cascader', [
   'item',
   'item-text',
   'item-indicator',
+  'empty',
 ])
 
 /**

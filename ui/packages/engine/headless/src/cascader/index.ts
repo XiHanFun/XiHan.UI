@@ -38,6 +38,7 @@ export type {
   CascaderSchema,
   CascaderSearchItemProps,
   CascaderSearchResult,
+  CascaderTranslations,
   CascaderValue,
   CascaderValueChangeDetails,
 } from './cascader.types'

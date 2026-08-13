@@ -46,7 +46,7 @@
 | [选择器](./select) | `select` | 15 | 13 | 18 |
 | [列表框](./listbox) | `listbox` | 8 | 10 | 7 |
 | [组合框](./combobox) | `combobox` | 15 | 14 | 14 |
-| [级联选择](./cascader) | `cascader` | 15 | 12 | 16 |
+| [级联选择](./cascader) | `cascader` | 16 | 12 | 16 |
 | [树选择](./tree-select) | `tree-select` | 19 | 14 | 12 |
 | [标签输入](./tags-input) | `tags-input` | 11 | 13 | 12 |
 | [穿梭框](./transfer) | `transfer` | 14 | 11 | 8 |
