@@ -2,7 +2,7 @@
 
 ## 从 npm 安装（当前是 alpha）
 
-XiHan.UI 的 14 个公开包都已发布到 npm，当前版本 `1.0.0-alpha.0`，`latest` 与 `alpha` 两个 dist-tag 都指向它。
+XiHan.UI 的 15 个公开包都已发布到 npm，当前版本 `1.0.0-alpha.1`，`latest` 与 `alpha` 两个 dist-tag 都指向它。
 
 ::: warning
 alpha 的含义是：能装、能跑，但接口还会变，**不承诺语义化版本**，不建议用于生产。要让行为可复现，请把版本写成精确值而不是区间。
@@ -30,7 +30,7 @@ pnpm add @xihan-ui/backgrounds
 
 除了从 npm 装，还有两条本地路径：
 
-1. **克隆仓库直接开发**——playground 里 102 个组件都能跑；
+1. **克隆仓库直接开发**——playground 里 104 个组件都能跑；
 2. **本地构建后链接进你的项目**——想跟着仓库最新改动走的话走这条。
 
 ::: warning
@@ -66,7 +66,7 @@ pnpm lint         # oxlint + eslint + stylelint
 pnpm test         # 单元测试与跨适配器一致性测试（jsdom）
 pnpm test:browser # 真实 Chromium 里的无障碍扫描与浮层定位契约
 pnpm boundaries   # 分层依赖门禁
-pnpm gate         # 十三项结构门禁
+pnpm gate         # 十五项结构门禁
 pnpm size         # 产物体积棘轮
 ```
 

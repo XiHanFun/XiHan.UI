@@ -6,23 +6,24 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 | 包 | 版本 | 依赖 | peer 依赖 | 层 |
 | --- | --- | --- | --- | --- |
-| `@xihan-ui/kernel` | `1.0.0-alpha.0` | — | — | 1 |
-| `@xihan-ui/machine` | `1.0.0-alpha.0` | `kernel` | — | 1 |
-| `@xihan-ui/tokens` | `1.0.0-alpha.0` | — | — | 1 |
-| `@xihan-ui/icons` | `1.0.0-alpha.0` | — | — | 1 |
-| `@xihan-ui/behavior` | `1.0.0-alpha.0` | `kernel` | — | 2 |
-| `@xihan-ui/position` | `1.0.0-alpha.0` | `kernel` | — | 2 |
-| `@xihan-ui/code-highlight` | `1.0.0-alpha.0` | `kernel` | — | 2 |
-| `@xihan-ui/chat-stream` | `1.0.0-alpha.0` | `kernel` | — | 2 |
-| `@xihan-ui/markdown` | `1.0.0-alpha.0` | — | — | 2 |
-| `@xihan-ui/headless` | `1.0.0-alpha.0` | `kernel` `machine` `behavior` + `@internationalized/date` | — | 3 |
-| `@xihan-ui/styles` | `1.0.0-alpha.0` | `tokens`（只取其 CSS 产物） | — | 3 |
-| `@xihan-ui/backgrounds` | `1.0.0-alpha.0` | `kernel` `behavior` | — | 3 |
-| `@xihan-ui/vue` | `1.0.0-alpha.0` | `kernel` `machine` `behavior` `headless` `position` `code-highlight` | `vue`、`backgrounds`（可选） | 4 |
-| `@xihan-ui/web-components` | `1.0.0-alpha.0` | `kernel` `machine` `behavior` `headless` `position` `code-highlight` | `backgrounds`（可选） | 4 |
+| `@xihan-ui/kernel` | `1.0.0-alpha.1` | — | — | 1 |
+| `@xihan-ui/machine` | `1.0.0-alpha.1` | `kernel` | — | 1 |
+| `@xihan-ui/tokens` | `1.0.0-alpha.1` | — | — | 1 |
+| `@xihan-ui/icons` | `1.0.0-alpha.1` | — | — | 1 |
+| `@xihan-ui/behavior` | `1.0.0-alpha.1` | `kernel` | — | 2 |
+| `@xihan-ui/position` | `1.0.0-alpha.1` | `kernel` | — | 2 |
+| `@xihan-ui/code-highlight` | `1.0.0-alpha.1` | `kernel` | — | 2 |
+| `@xihan-ui/chat-stream` | `1.0.0-alpha.1` | `kernel` | — | 2 |
+| `@xihan-ui/markdown` | `1.0.0-alpha.1` | — | — | 2 |
+| `@xihan-ui/sound` | `1.0.0-alpha.1` | `kernel` | — | 2 |
+| `@xihan-ui/headless` | `1.0.0-alpha.1` | `kernel` `machine` `behavior` + `@internationalized/date` | — | 3 |
+| `@xihan-ui/styles` | `1.0.0-alpha.1` | `tokens`（只取其 CSS 产物） | — | 3 |
+| `@xihan-ui/backgrounds` | `1.0.0-alpha.1` | `kernel` `behavior` | — | 3 |
+| `@xihan-ui/vue` | `1.0.0-alpha.1` | `kernel` `machine` `behavior` `headless` `position` `code-highlight` | `vue`、`backgrounds`（可选）、`sound`（可选） | 4 |
+| `@xihan-ui/web-components` | `1.0.0-alpha.1` | `kernel` `machine` `behavior` `headless` `position` `code-highlight` | `backgrounds`（可选） | 4 |
 
 ::: warning 版本状态
-14 个包都已发布到 npm，版本 `1.0.0-alpha.0`，`latest` 与 `alpha` 两个 dist-tag 都指向它。这是 **alpha 预发布**：不承诺语义化版本，接口还会变，不要用于生产。
+15 个包都已发布到 npm，版本 `1.0.0-alpha.1`，`latest` 与 `alpha` 两个 dist-tag 都指向它。这是 **alpha 预发布**：不承诺语义化版本，接口还会变，不要用于生产。
 
 发布走 changesets，所有库包同属一个 fixed 版本组，一起升到同一个版本号。
 :::
@@ -33,7 +34,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 ```
 层 4   ┌─────────────┐       ┌──────────────────┐
-       │     vue     │       │  web-components  │  peer: backgrounds（可选）；vue 另有 peer: vue
+       │     vue     │       │  web-components  │  peer: backgrounds·sound（可选）；vue 另有 peer: vue
        └──────┬──────┘       └────────┬─────────┘
               │  kernel · machine · behavior · headless · position · code-highlight
               └───────────┬───────────┘
@@ -45,10 +46,10 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
         + @internationalized/date
               │                 │
               ▼                 ▼
-层 2   ┌──────────┐ ┌──────────┐ ┌────────────────┐ ┌─────────────┐ ┌──────────┐
-       │ behavior │ │ position │ │ code-highlight │ │ chat-stream │ │ markdown │
-       └────┬─────┘ └────┬─────┘ └───────┬────────┘ └──────┬──────┘ └──────────┘
-            └────────────┴───────────────┴─────────────────┘           无依赖
+层 2   ┌──────────┐ ┌──────────┐ ┌────────────────┐ ┌─────────────┐ ┌───────┐ ┌──────────┐
+       │ behavior │ │ position │ │ code-highlight │ │ chat-stream │ │ sound │ │ markdown │
+       └────┬─────┘ └────┬─────┘ └───────┬────────┘ └──────┬──────┘ └───┬───┘ └──────────┘
+            └────────────┴───────────────┴─────────────────┴────────────┘       无依赖
                           ▼
 层 1   ┌──────────┐  ┌──────────┐   ┌──────────┐  ┌───────┐
        │  kernel  │◄─┤ machine  │   │  tokens  │  │ icons │
@@ -97,7 +98,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 ## 版本约定
 
-- 内部运行时依赖一律 `workspace:^`（发布时展开为 `^1.0.0-alpha.0` 区间），内部开发期依赖用 `workspace:*`；
+- 内部运行时依赖一律 `workspace:^`（发布时展开为 `^1.0.0-alpha.1` 区间），内部开发期依赖用 `workspace:*`；
 - 第三方版本只从 workspace catalog 取，包内写 `catalog:`，**不得内联版本号**（`check-exact-pins` 门禁）；
 - 升级只改 `pnpm-workspace.yaml` 的 catalog 一处。
 
@@ -121,9 +122,9 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/tokens` | `./runtime` `./tokens.css` `./tokens.json` |
 | `@xihan-ui/machine` | `./vanilla` |
 | `@xihan-ui/behavior` | `./presence` |
-| `@xihan-ui/vue` | `./backgrounds` |
+| `@xihan-ui/vue` | `./backgrounds` `./sound` |
 | `@xihan-ui/web-components` | `./define` `./backgrounds` `./custom-elements.json` |
-| `@xihan-ui/styles` | 每份皮肤一条 CSS，共 108 条，另有 `./index.css` 与 `./index.unlayered.css` 两个整包入口 |
+| `@xihan-ui/styles` | 每份皮肤一条 CSS，共 110 条，另有 `./index.css` 与 `./index.unlayered.css` 两个整包入口 |
 
 组件**没有**单独的子路径导出——按需引入靠 tree-shaking，不靠手写路径。
 
