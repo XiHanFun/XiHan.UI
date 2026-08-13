@@ -3,7 +3,8 @@
   "packages": {
     "@xihan-ui/vue": [
       ".",
-      "./backgrounds"
+      "./backgrounds",
+      "./sound"
     ],
     "@xihan-ui/web-components": [
       ".",
@@ -163,6 +164,9 @@
     ],
     "@xihan-ui/markdown": [
       "."
+    ],
+    "@xihan-ui/sound": [
+      "."
     ]
   },
   "exports": {
@@ -198,6 +202,8 @@
       "DialogContext",
       "DialogService",
       "DialogServiceOptions",
+      "DialogSoundKey",
+      "DialogSoundOptions",
       "DrawerContext",
       "DynamicInputContext",
       "DynamicInputItemContext",
@@ -253,6 +259,9 @@
       "SideNavContext",
       "SideNavNode",
       "SliderContext",
+      "SoundChoice",
+      "SoundDirectiveOptions",
+      "SoundDirectiveValue",
       "SplitterContext",
       "StatisticContext",
       "StepsContext",
@@ -269,6 +278,7 @@
       "ToastMessageOptions",
       "ToastService",
       "ToastServiceOptions",
+      "ToastSoundOptions",
       "ToasterContext",
       "ToggleContext",
       "ToggleGroupContext",
@@ -901,6 +911,7 @@
       "createToastService",
       "createVueIdGenerator",
       "createVueRuntime",
+      "getSoundPlayer",
       "provideAffix",
       "provideAvatarGroup",
       "provideBackTop",
@@ -936,6 +947,7 @@
       "provideTypography",
       "provideWatermark",
       "provideXhConfig",
+      "setSoundPlayer",
       "useAccordion",
       "useAffix",
       "useAffixContext",
@@ -1048,7 +1060,10 @@
       "useWatermarkContext",
       "useXhConfig",
       "vBackground",
+      "vSound",
       "vueNormalize",
+      "withDialogSound",
+      "withToastSound",
       "withXhConfig"
     ],
     "@xihan-ui/web-components": [
@@ -1487,6 +1502,7 @@
       "ContextMenuRefs",
       "ContextMenuSchema",
       "ContextMenuSelectDetails",
+      "ContextMenuTranslations",
       "CountdownApi",
       "CountdownFinishDetails",
       "CountdownLive",
@@ -1785,6 +1801,7 @@
       "PAGINATION_PAGE_SIZE",
       "PAGINATION_SIBLING_COUNT",
       "PIN_INPUT_LENGTH",
+      "PROGRESS_VIEW",
       "PageHeaderApi",
       "PageHeaderProps",
       "PaginationApi",
@@ -1819,7 +1836,10 @@
       "PopselectProps",
       "PopselectService",
       "ProgressApi",
+      "ProgressGapPosition",
       "ProgressProps",
+      "ProgressRing",
+      "ProgressVariant",
       "PropTypes",
       "QR_MAX_VERSION",
       "QrCodeApi",
@@ -2011,6 +2031,7 @@
       "TimePickerColumnProps",
       "TimePickerColumnUnit",
       "TimePickerColumnsOptions",
+      "TimePickerFocusIntent",
       "TimePickerInputProps",
       "TimePickerItemProps",
       "TimePickerOpenChangeDetails",
@@ -2097,6 +2118,7 @@
       "TreeSelectOpenChangeDetails",
       "TreeSelectRefs",
       "TreeSelectSchema",
+      "TreeSelectTranslations",
       "TreeSelectValueChangeDetails",
       "TreeSelectionChangeDetails",
       "TreeSelectionMode",
@@ -2670,6 +2692,7 @@
       "popoverMachine",
       "popoverMeta",
       "popselectAnatomy",
+      "popselectInitialFocus",
       "popselectItemQuery",
       "popselectItemText",
       "popselectKeyboard",
@@ -2677,6 +2700,7 @@
       "progressAnatomy",
       "progressKeyboard",
       "progressMeta",
+      "progressRing",
       "qrAlignmentPositions",
       "qrCapacityBytes",
       "qrCodeAnatomy",
@@ -3026,6 +3050,8 @@
       "Orientation",
       "PerDocumentRegistry",
       "Placement",
+      "PositionArrow",
+      "PositionArrowOptions",
       "PositionEnginePort",
       "PositionOptions",
       "PositionRect",
@@ -3326,6 +3352,37 @@
       "createStreamRenderer",
       "fenceLang",
       "isFenceClosed"
+    ],
+    "@xihan-ui/sound": [
+      "BUILTIN_SOUND_NAMES",
+      "BuiltinSoundName",
+      "EnvelopePoint",
+      "FREQ_MAX",
+      "FREQ_MIN",
+      "FilterSpec",
+      "MAX_ENVELOPE_POINTS",
+      "MAX_LAYERS",
+      "MAX_TIME",
+      "NoiseLayer",
+      "OscillatorLayer",
+      "PlayOptions",
+      "SoundLayer",
+      "SoundPlayer",
+      "SoundPlayerOptions",
+      "SoundSpec",
+      "SoundTheme",
+      "clampSpec",
+      "createSoundPlayer",
+      "defaultSoundTheme",
+      "defineSoundSpec",
+      "defineSoundTheme",
+      "flat",
+      "glide",
+      "isAudioSupported",
+      "minimalSoundTheme",
+      "softSoundTheme",
+      "specDuration",
+      "strike"
     ]
   },
   "anatomy": {
@@ -3839,6 +3896,8 @@
       "trigger"
     ],
     "progress": [
+      "canvas",
+      "label",
       "range",
       "root",
       "track"
@@ -4415,6 +4474,7 @@
       "placement",
       "size",
       "tone",
+      "translations",
       "typeahead"
     ],
     "countdown": [
@@ -4907,10 +4967,15 @@
       "variant"
     ],
     "progress": [
+      "gapDegree",
+      "gapPosition",
       "max",
       "size",
+      "strokeWidth",
       "tone",
-      "value"
+      "value",
+      "valueText",
+      "variant"
     ],
     "qr-code": [
       "eyeShape",
@@ -5351,6 +5416,7 @@
       "readOnly",
       "size",
       "tone",
+      "translations",
       "value",
       "variant"
     ],
@@ -6900,7 +6966,11 @@
     "--xh-popselect-trigger-h",
     "--xh-popselect-trigger-px",
     "--xh-popselect-trigger-radius",
+    "--xh-progress-label-fg",
+    "--xh-progress-label-font-size",
+    "--xh-progress-linecap",
     "--xh-progress-range",
+    "--xh-progress-size",
     "--xh-progress-thickness",
     "--xh-progress-track",
     "--xh-qr-code-bg",
@@ -8599,10 +8669,15 @@
     },
     "xh-progress": {
       "attributes": [
+        "gap-degree",
+        "gap-position",
         "max",
         "size",
+        "stroke-width",
         "tone",
-        "value"
+        "value",
+        "value-text",
+        "variant"
       ],
       "events": []
     },
