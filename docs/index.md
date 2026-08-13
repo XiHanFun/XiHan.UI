@@ -6,7 +6,7 @@ titleTemplate: 快速 轻量 高效 用心的框架无关跨端组件库
 hero:
   name: 曦寒视图组件
   text: 框架无关的跨端组件库
-  tagline: 快速、轻量、高效、用心 · 102 个组件 · 无头内核 + Vue / Web Components 双适配器
+  tagline: 快速、轻量、高效、用心 · 104 个组件 · 无头内核 + Vue / Web Components 双适配器
   image:
     src: /images/logo.png
     alt: 曦寒视图组件
@@ -38,7 +38,7 @@ features:
 
   - title: 无障碍是判据
     icon: ♿
-    details: 每个组件都有一份机读的键盘规格表，共 375 条，它同时是测试的分母——用例少覆盖一条即判套件失败。扫描跑在真实 Chromium 上。
+    details: 每个组件都有一份机读的键盘规格表，共 391 条，它同时是测试的分母——用例少覆盖一条即判套件失败。扫描跑在真实 Chromium 上。
     link: /guide/a11y
     linkText: "了解无障碍规格"
 
@@ -62,5 +62,5 @@ features:
 ---
 
 ::: warning 实验阶段
-库包已发布到 npm，当前版本 `1.0.0-alpha.0`。这是预发布版本：不承诺语义化版本，接口仍会调整，**请勿在生产环境依赖**。当前进度与边界见[组件库简介](/introduction)。
+库包已发布到 npm，当前版本 `1.0.0-alpha.1`。这是预发布版本：不承诺语义化版本，接口仍会调整，**请勿在生产环境依赖**。当前进度与边界见[组件库简介](/introduction)。
 :::

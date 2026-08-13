@@ -2,13 +2,13 @@
 
 ## 现在能用吗
 
-不能用于生产。库包已发布到 npm，当前版本 `1.0.0-alpha.0`——这是预发布版本，不承诺语义化版本，接口还会变。无障碍存量违规已清空，只剩两条登记在案（WC 侧 steps 的必需子节点，加一条 breadcrumb 的步骤重放豁免）。
+不能用于生产。库包已发布到 npm，当前版本 `1.0.0-alpha.1`——这是预发布版本，不承诺语义化版本，接口还会变。无障碍存量违规已清空，只剩两条登记在案（WC 侧 steps 的必需子节点，加一条 breadcrumb 的步骤重放豁免）。
 
 能做的是：从 npm 装一份试用、克隆仓库跑 playground 看行为、读源码。见[安装与接入](./installation)。
 
 ## `npm install` 能装到哪些包
 
-14 个公开包都在 npm 上，`latest` 与 `alpha` 两个 dist-tag 都指向 `1.0.0-alpha.0`。发布走 changesets，全部库包同属一个 fixed 版本组，一起升到同一版本号，所以内部依赖区间总是对齐的。
+15 个公开包都在 npm 上，`latest` 与 `alpha` 两个 dist-tag 都指向 `1.0.0-alpha.1`。发布走 changesets，全部库包同属一个 fixed 版本组，一起升到同一版本号，所以内部依赖区间总是对齐的。
 
 ## 和 XiHan.BasicApp 的前端是什么关系
 
@@ -18,7 +18,7 @@ BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.x
 
 ## 到底有多少个组件
 
-**102 个**。每个组件同时有无头内核、Vue 组件、自定义元素与默认皮肤四份产物，本文档的[组件总览](./components/)按分类列全，每个组件一页。
+**104 个**。每个组件同时有无头内核、Vue 组件、自定义元素与默认皮肤四份产物，本文档的[组件总览](./components/)按分类列全，每个组件一页。
 
 ## 组件的 props 有哪些？文档里怎么没有
 
@@ -102,4 +102,4 @@ BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.x
 ## 还有别的问题
 
 - 源码仓库：[GitHub](https://github.com/XiHanFun/XiHan.UI) · [Gitee](https://gitee.com/XiHanFun/XiHan.UI) · [GitCode](https://gitcode.com/XiHanFun/XiHan.UI)
-- 两个 playground 覆盖全部 102 个组件，行为问题优先在那里复现
+- 两个 playground 覆盖全部 104 个组件，行为问题优先在那里复现

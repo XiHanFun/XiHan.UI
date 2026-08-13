@@ -28,9 +28,9 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 
 版本号本身走标准语义化版本：`major.minor.patch`。受约束的东西改了走 major，新增走 minor，只修行为不改名字走 patch。
 
-## 14 个包必须同版本安装
+## 15 个包必须同版本安装
 
-14 个包锁步发布：任何一个包发新版本，全部 14 个包一起发同一个号。
+15 个包锁步发布：任何一个包发新版本，全部 15 个包一起发同一个号。
 
 ```
 @xihan-ui/kernel   @xihan-ui/machine        @xihan-ui/behavior
@@ -49,7 +49,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 
 ## 一、JS / TS 导出面
 
-14 个包中 13 个出 JS，共 19 个带类型的入口。
+15 个包中 14 个出 JS，共 21 个带类型的入口。
 
 ### 受约束
 
@@ -57,7 +57,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 | --- | --- | --- |
 | 包名 | 14 | 把代码从一个包挪到另一个包 = major |
 | `exports` 子路径 | 19 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）被 Node 与打包器一并挡住，那些路径不是 API |
-| Vue 组件导出 `Xh*` | 568（102 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
+| Vue 组件导出 `Xh*` | 614（104 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
 | Vue 组合式函数 `use<家族>` | 72 | `useSelect`、`useCombobox`。这是「不用我的部件、自己写标记」的唯一入口 |
 | Vue 指令 | 1 | `vBackground`（在 `@xihan-ui/vue/backgrounds` 子入口，依赖可选 peer） |
 | 无头内核 `connect*` | 102 | `connectAccordion` 及其参数顺序、返回的 getter 名 |
@@ -76,7 +76,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 | 类别 | 数量 | 说明 |
 | --- | --- | --- |
 | Vue 上下文类型 `*Context` / `*Callbacks` | 92 | 用于给透传的 `api` 标注类型。**只保证可读，不保证可构造**——往里加可选字段不算破坏，所以别写 `const c: SelectContext = { … }` 这种字面量赋值 |
-| `custom-elements.json`（CEM） | 1 份 / 102 个元素 | 已经进过清单的 `tagName` / `attribute` / `event` 条目不会消失；字段完备性与结构细节不承诺（今天 `events` 没有 `type`、`cssProperties` 是空的，后续会补，补充算 minor） |
+| `custom-elements.json`（CEM） | 1 份 / 104 个元素 | 已经进过清单的 `tagName` / `attribute` / `event` 条目不会消失；字段完备性与结构细节不承诺（今天 `events` 没有 `type`、`cssProperties` 是空的，后续会补，补充算 minor） |
 
 ### 排除
 
@@ -229,7 +229,7 @@ brand  neutral  success  warning  danger  info
 
 几条与包结构有关的事实，也在承诺内：
 
-- 元素在 `@xihan-ui/web-components/define`，不在包主入口。`defineXhElements()` 是全有全无——调它就注册全部 102 个元素，没有逐个的 `defineXhButton()`。（补细粒度 define 是 minor；补完之后 `defineXhElements` 的「全量」语义就成了承诺。）
+- 元素在 `@xihan-ui/web-components/define`，不在包主入口。`defineXhElements()` 是全有全无——调它就注册全部 104 个元素，没有逐个的 `defineXhButton()`。（补细粒度 define 是 minor；补完之后 `defineXhElements` 的「全量」语义就成了承诺。）
 - `xh-background` 单独在 `@xihan-ui/web-components/backgrounds`，因为它依赖可选 peer。把它挪进 `./define` 会强制所有人装 WebGL 引擎，属于破坏性变更。
 - 元素全部是 **Light DOM**，没有 shadow root，`::part()` 永远不生效。CEM 里的 `cssParts` 条目在本包读作 `data-xh-part`，不是 shadow part。
 
@@ -370,11 +370,11 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 
 | 包 | 说明 |
 | --- | --- |
-| `@xihan-ui/vue` | 568 个组件、72 个组合式函数 |
-| `@xihan-ui/web-components` | 103 个自定义元素 |
+| `@xihan-ui/vue` | 614 个组件、111 个组合式函数 |
+| `@xihan-ui/web-components` | 104 个自定义元素 |
 | `@xihan-ui/headless` | `connect*` / `*Machine` / 各类公开类型；内部算子在排除清单里 |
-| `@xihan-ui/styles` | 108 份皮肤、5 个层名 |
-| `@xihan-ui/tokens` | 173 个令牌名 |
+| `@xihan-ui/styles` | 104 份组件皮肤、5 个层名 |
+| `@xihan-ui/tokens` | 176 个令牌名 |
 | `@xihan-ui/icons` | 图标集 |
 | `@xihan-ui/kernel` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则） |
 | `@xihan-ui/machine` | 同上 |
@@ -402,9 +402,9 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 拿一份入库的基线（`ui/tooling/public-surface.json`，6665 个名字）比对当前状态：
 **基线里有而当前没有，就是删了或改名了，构建失败**。新增一律放行，因为那是 minor。
 
-覆盖：包名与 133 条子入口、3017 个导出名、102 个 `data-scope` 与 569 条部件配对、
-102 个组件的 936 个 prop 名、114 种 `data-*`、22 个 `data-state` 取值、173 个令牌、
-5 个 `@layer` 名、1856 个组件覆盖槽、102 个自定义元素及其 attribute 与事件。
+覆盖：包名与 137 条子入口、3185 个导出名、104 个 `data-scope` 与 618 条部件配对、
+104 个组件的 1021 个 prop 名、122 种 `data-*`、22 个 `data-state` 取值、176 个令牌、
+5 个 `@layer` 名、1940 个组件覆盖槽、104 个自定义元素及其 attribute 与事件。
 
 prop 名那一维是后补的：在它进来之前，改一个 prop 名（实测 `transfer` 的 `items` 改
 `collection`、`splitter` 的 `size` 改 `sizes`）13 道门禁全程沉默。它的事实源是无头内核的
@@ -430,6 +430,6 @@ prop 名那一维是后补的：在它进来之前，改一个 prop 名（实测
 | Vue 作用域插槽载荷 | 没有一个组件声明 `slots:` 选项，`<template #default="s">` 里的 `s` 是隐式 `any` | 补 `slots:` 声明 |
 | 废弃提示（CSS / `data-*` / attribute / 层名） | 这四种介质没有任何提示机制，废弃只能靠更新日志 | dev 构建下经诊断通道发 `warn` |
 | 浏览器硬底线 | 仓库里没有 `browserslist`，也没有 CSS 特性白名单。写一个 `@container` 就能把底线从 2023-03 抬到 2023-09，没有一条门禁会响 | `.browserslistrc` + 无兜底新特性的拒绝名单 |
-| 「14 个包必须同版本」 | 兄弟包是普通 `dependencies` 而非 `peerDependencies`，包管理器不会阻止你装出混版组合 | 提成 peer，或在入口加运行期版本一致性检查 |
+| 「15 个包必须同版本」 | 兄弟包是普通 `dependencies` 而非 `peerDependencies`，包管理器不会阻止你装出混版组合 | 提成 peer，或在入口加运行期版本一致性检查 |
 
 发现本页写的和实际行为对不上，按缺陷处理——请提 issue，不要当成「政策就是这样」。
