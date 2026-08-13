@@ -59,7 +59,7 @@
     gap: var(--xh-transfer-header-gap, var(--xh-control-gap-md));
     align-items: center;
     padding-block: var(--xh-transfer-header-py, var(--xh-space-2));
-    padding-inline: var(--xh-transfer-header-px, var(--xh-control-px-sm));
+    padding-inline: var(--xh-transfer-header-px, var(--xh-control-px-md));
     border-block-end: var(--xh-stroke-thin) solid var(--xh-transfer-panel-border, var(--xh-border-default));
   }
 
@@ -95,7 +95,7 @@
     display: block;
     inline-size: 100%;
     block-size: var(--xh-transfer-search-h, var(--xh-control-h-sm));
-    padding-inline: var(--xh-transfer-search-px, var(--xh-control-px-sm));
+    padding-inline: var(--xh-transfer-search-px, var(--xh-control-px-md));
     border: 0;
     border-block-end: var(--xh-stroke-thin) solid var(--xh-transfer-search-border, var(--xh-border-control));
     background: var(--xh-transfer-search-bg, transparent);
@@ -136,8 +136,8 @@
     flex: none;
     gap: var(--xh-transfer-item-gap, var(--xh-control-gap-md));
     align-items: center;
-    padding-block: var(--xh-transfer-item-py, var(--xh-space-1));
-    padding-inline: var(--xh-transfer-item-px, var(--xh-control-px-sm));
+    padding-block: var(--xh-transfer-item-py, var(--xh-space-1_5));
+    padding-inline: var(--xh-transfer-item-px, var(--xh-control-px-md));
     border-radius: var(--xh-transfer-item-radius, var(--xh-shape-control));
     color: var(--xh-transfer-item-fg, var(--xh-fg-default));
     font-size: var(--xh-transfer-item-font-size, var(--xh-text-body-size));
@@ -146,13 +146,15 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 键盘高亮与指针悬停共用一套底色：条目本身承载焦点，不另画描边。
+  /* 悬停与键盘锚点共用中性灰轻档：条目本身承载焦点，不另画描边。
      data-highlighted 跟的是连接层记的焦点条目，与勾选互相独立 */
   [data-scope='transfer'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
-    background: var(--xh-transfer-item-bg-highlight, var(--xh-bg-subtle-hover));
+    background: var(--xh-transfer-item-bg-hover, var(--xh-bg-subtle));
   }
 
   [data-scope='transfer'][data-part='item']:focus-visible {

@@ -265,15 +265,19 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    padding-block: var(--xh-time-picker-item-py, var(--xh-space-1));
-    padding-inline: var(--xh-time-picker-item-px, var(--xh-space-2));
+    padding-block: var(--xh-time-picker-item-py, var(--xh-space-1_5));
+    padding-inline: var(--xh-time-picker-item-px, var(--xh-control-px-md));
     border-radius: var(--xh-time-picker-item-radius, var(--xh-shape-control));
     color: var(--xh-time-picker-item-fg, var(--xh-fg-default));
     font-size: var(--xh-time-picker-item-font-size, var(--xh-text-body-size));
+    /* 居中的单个数字格没有截断层，行高保持紧排，列内多露几格 */
     line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 作者自己藏掉某几格时要让位，有 display 就得补这条 */
@@ -281,10 +285,10 @@
     display: none;
   }
 
-  /* 焦点所在与选中互相独立：可以停在一个没被选中的格上 */
+  /* 悬停与键盘锚点共用中性灰轻档；焦点所在与选中互相独立：可以停在一个没被选中的格上 */
   [data-scope='time-picker'][data-part='item'][data-highlighted]:not([data-disabled]),
   [data-scope='time-picker'][data-part='item']:hover:not([data-disabled]) {
-    background: var(--xh-time-picker-item-bg-highlight, var(--xh-bg-subtle-hover));
+    background: var(--xh-time-picker-item-bg-hover, var(--xh-bg-subtle));
   }
 
   [data-scope='time-picker'][data-part='item'][data-state='checked'] {
@@ -293,11 +297,11 @@
     font-weight: var(--xh-time-picker-item-weight-checked, var(--xh-font-weight-medium));
   }
 
-  /* 选中格上再落焦点或悬停时，底色留在品牌色一侧：上面那条中性高亮的选择器更具体，
+  /* 选中格上再落焦点或悬停时，底色留在品牌色一侧：上面那条中性轻档的选择器更具体，
      不写这条就只有底色被换走、文字仍是品牌底上的反白色 */
   [data-scope='time-picker'][data-part='item'][data-state='checked'][data-highlighted]:not([data-disabled]),
   [data-scope='time-picker'][data-part='item'][data-state='checked']:hover:not([data-disabled]) {
-    background: var(--xh-time-picker-item-bg-checked-highlight, var(--xh-bg-brand-hover));
+    background: var(--xh-time-picker-item-bg-checked-hover, var(--xh-bg-brand-hover));
   }
 
   [data-scope='time-picker'][data-part='item']:focus-visible {

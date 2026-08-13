@@ -5,14 +5,14 @@
        换档不必给每个部件各写一条选择器。菜单浮层在 positioner 里、也是 root 的后代，一并继承 */
     --xh-_menubar-trigger-py: var(--xh-space-1);
     --xh-_menubar-trigger-px: var(--xh-control-px-sm);
-    --xh-_menubar-item-py: var(--xh-space-2);
-    --xh-_menubar-item-px: var(--xh-control-px-sm);
+    --xh-_menubar-item-py: var(--xh-space-1_5);
+    --xh-_menubar-item-px: var(--xh-control-px-md);
     --xh-_menubar-font-size: var(--xh-text-body-size);
 
-    /* 高亮底随语气走：展开着的那张菜单的 trigger 与菜单里的高亮条目共用这一档。
-       没写 data-tone 时 --xh-_tone-subtle-hover 没被声明，退回原来的中性底。
+    /* 展开着的那张菜单的 trigger 走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底。
+       悬停与键盘焦点恒中性灰轻档、不接语气槽——两档同色相的话哪张开着就认不出来了。
        聚焦环不在其列，它恒是 --xh-ring-focus */
-    --xh-_menubar-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+    --xh-_menubar-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
 
     display: flex;
     align-items: center;
@@ -34,21 +34,21 @@
   }
 
   /* —— 尺寸 —— */
-  /* 缺省档写在上面的基础规则里。内边距的缺省档已经落在控件内边距尺的 sm 那一格，
-     往下没有更小的一格，sm 档改取空间尺；lg 档回到控件尺的下一格 */
+  /* 缺省档写在上面的基础规则里。trigger 的行内内缩缺省落在控件尺 sm 档、再往下取空间尺；
+     条目纵向走 space 档、行内内缩走 control-px 档（随密度轴），换档各挪一级 */
   [data-scope='menubar'][data-part='root'][data-size='sm'] {
     --xh-_menubar-trigger-py: var(--xh-space-0_5);
     --xh-_menubar-trigger-px: var(--xh-space-1_5);
-    --xh-_menubar-item-py: var(--xh-space-1_5);
-    --xh-_menubar-item-px: var(--xh-space-1_5);
+    --xh-_menubar-item-py: var(--xh-space-1);
+    --xh-_menubar-item-px: var(--xh-control-px-sm);
     --xh-_menubar-font-size: var(--xh-font-size-sm);
   }
 
   [data-scope='menubar'][data-part='root'][data-size='lg'] {
     --xh-_menubar-trigger-py: var(--xh-space-2);
     --xh-_menubar-trigger-px: var(--xh-control-px-md);
-    --xh-_menubar-item-py: var(--xh-space-3);
-    --xh-_menubar-item-px: var(--xh-control-px-md);
+    --xh-_menubar-item-py: var(--xh-space-2);
+    --xh-_menubar-item-px: var(--xh-control-px-lg);
     --xh-_menubar-font-size: var(--xh-font-size-lg);
   }
 
@@ -78,15 +78,23 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='menubar'][data-part='trigger'][hidden] {
     display: none;
   }
 
-  /* 展开着的那一项与指针悬停共用一套底色：菜单栏里"哪一张开着"必须一眼看得出来 */
-  [data-scope='menubar'][data-part='trigger']:not([data-disabled]):is(:hover, [data-state='open']) {
-    background: var(--xh-menubar-trigger-bg-active, var(--xh-_menubar-highlight-bg));
+  /* 指针悬停走中性灰轻档 */
+  [data-scope='menubar'][data-part='trigger']:not([data-disabled]):hover {
+    background: var(--xh-menubar-trigger-bg-hover, var(--xh-bg-subtle));
+  }
+
+  /* 展开着的那一张是打开路径，走品牌淡底强档：菜单栏里"哪一张开着"必须一眼看得出来。
+     不加粗：横排的栏加粗会推挤相邻触发器。
+     必须排在轻档之后：指针回到它身上时同特指度靠书写顺序压过轻档 */
+  [data-scope='menubar'][data-part='trigger']:not([data-disabled])[data-state='open'] {
+    background: var(--xh-menubar-trigger-bg-active, var(--xh-_menubar-active-bg));
   }
 
   /* trigger 自带 Tab 位（整条菜单栏唯一的那个），必须画得出焦点 */
@@ -189,10 +197,13 @@
     border-radius: var(--xh-menubar-item-radius, var(--xh-shape-control));
     color: var(--xh-menubar-item-fg, var(--xh-fg-default));
     font-size: var(--xh-menubar-item-font-size, var(--xh-_menubar-font-size));
-    line-height: var(--xh-leading-none);
+    line-height: var(--xh-menubar-item-leading, var(--xh-leading-normal));
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 条目可以按需收起（按上下文过滤掉的命令），有 display 就得补这条 */
@@ -200,11 +211,11 @@
     display: none;
   }
 
-  /* 键盘高亮与指针高亮共用一套底色：条目本身承载焦点，不另画描边。
+  /* 悬停与键盘焦点共用中性灰轻档：条目本身承载焦点，不另画描边。
      data-highlighted 跟的是连接层记的焦点条目，与 :focus 说的是同一件事，
      子部件够不着那个伪类，只能读这个标记 */
   [data-scope='menubar'][data-part='item']:not([data-disabled]):is(:hover, :focus, [data-highlighted]) {
-    background: var(--xh-menubar-item-bg-highlight, var(--xh-_menubar-highlight-bg));
+    background: var(--xh-menubar-item-bg-hover, var(--xh-bg-subtle));
   }
 
   [data-scope='menubar'][data-part='item']:focus {

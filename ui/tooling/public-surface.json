@@ -1405,6 +1405,7 @@
       "CascaderSearchCandidate",
       "CascaderSearchItemProps",
       "CascaderSearchResult",
+      "CascaderTranslations",
       "CascaderValue",
       "CascaderValueChangeDetails",
       "CheckboxApi",
@@ -3425,6 +3426,7 @@
       "clear-trigger",
       "column",
       "content",
+      "empty",
       "indicator",
       "input",
       "item",
@@ -4297,6 +4299,7 @@
       "separator",
       "size",
       "tone",
+      "translations",
       "value",
       "variant"
     ],
@@ -5885,6 +5888,9 @@
     "--xh-cascader-content-max-w",
     "--xh-cascader-content-radius",
     "--xh-cascader-content-shadow",
+    "--xh-cascader-empty-fg",
+    "--xh-cascader-empty-min-h",
+    "--xh-cascader-empty-p",
     "--xh-cascader-gap",
     "--xh-cascader-indicator-fg",
     "--xh-cascader-input-font-size",
@@ -6159,12 +6165,15 @@
     "--xh-context-menu-group-label-font-weight",
     "--xh-context-menu-group-label-px",
     "--xh-context-menu-group-label-py",
-    "--xh-context-menu-item-bg-highlight",
+    "--xh-context-menu-item-active-font-weight",
+    "--xh-context-menu-item-bg-active",
+    "--xh-context-menu-item-bg-hover",
     "--xh-context-menu-item-fg",
     "--xh-context-menu-item-font-size",
     "--xh-context-menu-item-gap",
     "--xh-context-menu-item-indicator-fg",
     "--xh-context-menu-item-indicator-size",
+    "--xh-context-menu-item-leading",
     "--xh-context-menu-item-px",
     "--xh-context-menu-item-py",
     "--xh-context-menu-item-radius",
@@ -6645,11 +6654,9 @@
     "--xh-mention-input-px",
     "--xh-mention-input-py",
     "--xh-mention-input-radius",
-    "--xh-mention-item-bg-highlight",
+    "--xh-mention-item-bg-hover",
     "--xh-mention-item-fg",
-    "--xh-mention-item-fg-highlight",
     "--xh-mention-item-font-size",
-    "--xh-mention-item-font-weight-highlight",
     "--xh-mention-item-gap",
     "--xh-mention-item-leading",
     "--xh-mention-item-px",
@@ -6687,12 +6694,13 @@
     "--xh-menubar-group-label-font-weight",
     "--xh-menubar-group-label-px",
     "--xh-menubar-group-label-py",
-    "--xh-menubar-item-bg-highlight",
+    "--xh-menubar-item-bg-hover",
     "--xh-menubar-item-fg",
     "--xh-menubar-item-font-size",
     "--xh-menubar-item-gap",
     "--xh-menubar-item-indicator-fg",
     "--xh-menubar-item-indicator-size",
+    "--xh-menubar-item-leading",
     "--xh-menubar-item-px",
     "--xh-menubar-item-py",
     "--xh-menubar-item-radius",
@@ -6712,6 +6720,7 @@
     "--xh-menubar-separator-my",
     "--xh-menubar-separator-thickness",
     "--xh-menubar-trigger-bg-active",
+    "--xh-menubar-trigger-bg-hover",
     "--xh-menubar-trigger-font-size",
     "--xh-menubar-trigger-gap",
     "--xh-menubar-trigger-px",
@@ -7137,7 +7146,7 @@
     "--xh-table-max-h",
     "--xh-table-radius",
     "--xh-table-row-bg",
-    "--xh-table-row-bg-highlight",
+    "--xh-table-row-bg-hover",
     "--xh-table-row-bg-selected",
     "--xh-table-row-border",
     "--xh-table-sort-fg",
@@ -7329,8 +7338,8 @@
     "--xh-time-picker-font-size",
     "--xh-time-picker-gap",
     "--xh-time-picker-item-bg-checked",
-    "--xh-time-picker-item-bg-checked-highlight",
-    "--xh-time-picker-item-bg-highlight",
+    "--xh-time-picker-item-bg-checked-hover",
+    "--xh-time-picker-item-bg-hover",
     "--xh-time-picker-item-fg",
     "--xh-time-picker-item-fg-checked",
     "--xh-time-picker-item-font-size",
@@ -7499,7 +7508,7 @@
     "--xh-transfer-header-gap",
     "--xh-transfer-header-px",
     "--xh-transfer-header-py",
-    "--xh-transfer-item-bg-highlight",
+    "--xh-transfer-item-bg-hover",
     "--xh-transfer-item-fg",
     "--xh-transfer-item-font-size",
     "--xh-transfer-item-gap",
@@ -7803,7 +7812,9 @@
     },
     "xh-cascader": {
       "attributes": [
+        "cascade",
         "change-on-select",
+        "checked-strategy",
         "default-open",
         "dir",
         "disabled",
@@ -7816,6 +7827,7 @@
         "placeholder",
         "placement",
         "read-only",
+        "searchable",
         "separator",
         "size",
         "tone",
@@ -8020,6 +8032,8 @@
         "read-only",
         "required",
         "selection-mode",
+        "show-time",
+        "time-granularity",
         "time-zone",
         "value"
       ],
@@ -8136,6 +8150,7 @@
       "attributes": [
         "accept",
         "allow-drop",
+        "auto-upload",
         "capture",
         "directory",
         "disabled",
@@ -8148,7 +8163,10 @@
       "events": [
         "file-accept",
         "file-reject",
-        "files-change"
+        "files-change",
+        "remote-files-change",
+        "upload-complete",
+        "upload-error"
       ]
     },
     "xh-flex": {
@@ -8179,6 +8197,9 @@
     "xh-form": {
       "attributes": [
         "disabled",
+        "label-align",
+        "label-width",
+        "layout",
         "read-only",
         "validate-on"
       ],
@@ -8246,6 +8267,25 @@
         "weight"
       ],
       "events": []
+    },
+    "xh-image-viewer": {
+      "attributes": [
+        "close-on-escape",
+        "close-on-interact-outside",
+        "default-index",
+        "default-open",
+        "index",
+        "loop",
+        "max-scale",
+        "min-scale",
+        "open",
+        "restore-focus",
+        "zoom-step"
+      ],
+      "events": [
+        "index-change",
+        "open-change"
+      ]
     },
     "xh-image": {
       "attributes": [
@@ -8367,11 +8407,15 @@
       "attributes": [
         "default-open",
         "dir",
+        "hover-close-delay",
+        "hover-open-delay",
         "loop",
         "offset",
         "open",
+        "open-on-hover",
         "placement",
         "size",
+        "submenu",
         "tone"
       ],
       "events": [
@@ -8591,6 +8635,7 @@
     },
     "xh-rating": {
       "attributes": [
+        "allow-clear",
         "allow-half",
         "count",
         "default-value",
@@ -8630,7 +8675,9 @@
         "default-value",
         "dir",
         "disabled",
+        "invalid",
         "loop",
+        "max-tag-count",
         "multiple",
         "name",
         "offset",
@@ -8655,6 +8702,22 @@
       ],
       "events": []
     },
+    "xh-side-nav": {
+      "attributes": [
+        "accordion",
+        "collapsed",
+        "collapsed-popout",
+        "default-value",
+        "dir",
+        "disabled",
+        "loop",
+        "value"
+      ],
+      "events": [
+        "expanded-change",
+        "value-change"
+      ]
+    },
     "xh-skeleton": {
       "attributes": [
         "loading",
@@ -8676,6 +8739,7 @@
         "orientation",
         "read-only",
         "size",
+        "snap-to-marks",
         "step",
         "tone",
         "value"
@@ -8737,6 +8801,7 @@
         "checked",
         "default-checked",
         "disabled",
+        "loading",
         "name",
         "size",
         "tone",
@@ -8807,6 +8872,7 @@
     },
     "xh-text-field": {
       "attributes": [
+        "auto-size",
         "clearable",
         "default-value",
         "disabled",
@@ -8986,6 +9052,7 @@
     },
     "xh-tour": {
       "attributes": [
+        "auto-scroll",
         "close-on-escape",
         "close-on-interact-outside",
         "default-open",
@@ -9019,6 +9086,8 @@
     },
     "xh-tree-select": {
       "attributes": [
+        "cascade",
+        "checked-strategy",
         "default-open",
         "default-value",
         "dir",
@@ -9045,6 +9114,8 @@
     },
     "xh-tree": {
       "attributes": [
+        "cascade",
+        "checked-strategy",
         "dir",
         "disabled",
         "expand-on-click",
