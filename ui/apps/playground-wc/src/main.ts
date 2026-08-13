@@ -2,8 +2,8 @@ import { createThemeController } from '@xihan-ui/tokens/runtime'
 import { defineXhBackground } from '@xihan-ui/web-components/backgrounds'
 import { defineXhElements } from '@xihan-ui/web-components/define'
 import { backgroundMarkup, mountBackgroundDemo } from './background-demo'
-import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
+import '@xihan-ui/tokens/tokens.css'
 
 // 注册自定义元素（惰性），并应用主题到根元素
 defineXhElements()
