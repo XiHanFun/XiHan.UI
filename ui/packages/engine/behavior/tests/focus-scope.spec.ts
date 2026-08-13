@@ -301,6 +301,51 @@ describe('卸载归还', () => {
     expect(document.activeElement).toBe(document.body)
   })
 
+  // 指针入口下「创建前的持有者」取决于点按那一刻浏览器把焦点放在哪，各平台不一致；
+  // 承诺焦点归还触发器的层把落点显式交进来，快照只当兜底
+  it('给了 restoreTarget 就还给它，不认创建前的快照', async () => {
+    const h = setup()
+    const trigger = document.createElement('button')
+    document.body.appendChild(trigger)
+    // 快照落在别处（指针入口下常是 body）
+    h.outside.focus()
+    const scope = open(h, { restoreTarget: () => trigger })
+    await frames(2)
+    scope.dispose()
+    await frames(2)
+    expect(document.activeElement).toBe(trigger)
+  })
+
+  it('restoreTarget 返回 null 或那个元素已离场时，退回创建前的快照', async () => {
+    const h = setup()
+    h.outside.focus()
+    const scope = open(h, { restoreTarget: () => null })
+    await frames(2)
+    scope.dispose()
+    await frames(2)
+    expect(document.activeElement).toBe(h.outside)
+
+    const gone = setup()
+    const detached = document.createElement('button')
+    gone.outside.focus()
+    const second = open(gone, { restoreTarget: () => detached })
+    await frames(2)
+    second.dispose()
+    await frames(2)
+    expect(document.activeElement).toBe(gone.outside)
+  })
+
+  it('restoreFocus 为假时 restoreTarget 也不出面：交接式出口不抢焦点', async () => {
+    const h = setup()
+    const trigger = document.createElement('button')
+    document.body.appendChild(trigger)
+    const scope = open(h, { restoreFocus: () => false, restoreTarget: () => trigger })
+    await frames(2)
+    scope.dispose()
+    await frames(2)
+    expect(document.activeElement).toBe(h.buttons[0])
+  })
+
   it('卸载后不再抢回焦点', async () => {
     const h = setup()
     const scope = open(h)

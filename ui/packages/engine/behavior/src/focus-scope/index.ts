@@ -16,8 +16,16 @@ export interface FocusScopeOptions {
   onMountAutoFocus?: (e: CustomEvent) => void
   onUnmountAutoFocus?: (e: CustomEvent) => void
   initialFocus?: () => HTMLElement | null
-  /** 卸载时是否把焦点归还给创建前的元素；默认 true。 */
+  /** 卸载时是否归还焦点；默认 true。 */
   restoreFocus?: () => boolean
+  /**
+   * 归还焦点的落点。返回 null（或那个元素已离场）才回落到创建前的焦点持有者。
+   *
+   * 指针入口下「创建前的持有者」取决于点按那一刻浏览器把焦点放在哪，各平台不一致
+   * （Safari 点按不给按钮焦点），落到 body 上时 Escape 之后 Tab 得从头开始。
+   * 契约里承诺焦点归还触发器的层，把触发器显式交到这里。
+   */
+  restoreTarget?: () => HTMLElement | null
 }
 
 // 在场的焦点域，按建立先后编号。焦点归还要据此判断「有没有更晚的域接手了焦点」。
@@ -210,8 +218,11 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
         const anchor = container() ?? doc.body
         if (dispatchCancelable(anchor, EV_UNMOUNT_AUTO_FOCUS, {})) {
           o.onUnmountAutoFocus?.(new CustomEvent(EV_UNMOUNT_AUTO_FOCUS))
-          if (previouslyFocused?.isConnected) {
-            focusSafely(previouslyFocused, { select: true })
+          // 显式落点优先于创建前的快照：快照是「点按那一刻焦点在哪」，指针入口下它常是 body
+          const explicit = o.restoreTarget?.() ?? null
+          const back = explicit?.isConnected ? explicit : previouslyFocused
+          if (back?.isConnected) {
+            focusSafely(back, { select: true })
             return
           }
           // 原持有者已离场。不能靠 body.focus()——body 不在各引擎一致的可聚焦集合里，

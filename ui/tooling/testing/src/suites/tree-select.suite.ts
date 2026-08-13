@@ -773,6 +773,34 @@ export const treeSelectSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'Escape 收起：点开那一下没把焦点交给 trigger，焦点仍归还它',
+      spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
+      props: props(),
+      steps: [
+        {
+          kind: 'raw',
+          why: '点按不先给焦点：Safari 上按钮点按本就不落焦点，焦点域记下的创建前快照此刻停在 body 上',
+          run: ({ doc }) => {
+            const trigger = doc.querySelector<HTMLElement>(`${SCOPE}[data-part="trigger"]`)
+            if (!trigger)
+              throw new Error('触发器不存在')
+            trigger.click()
+          },
+        },
+        { kind: 'settle', until: { activeElement: 'tree' } },
+        {
+          kind: 'key',
+          key: 'Escape',
+          expect: { events: [{ type: 'open-change', detail: { open: false } }] },
+        },
+        {
+          kind: 'settle',
+          until: { activeElement: 'trigger' },
+          expect: { activeElement: 'trigger' },
+        },
+      ],
+    },
+    {
       // 浮层壳自带内边距又可被点中（tabindex=-1）：焦点歇在它身上时按键从壳发出，
       // 里层的树收不到——键盘必须收在壳上
       name: '焦点歇在浮层壳上：方向键照样进得去树',
