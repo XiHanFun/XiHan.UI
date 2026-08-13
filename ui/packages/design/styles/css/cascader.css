@@ -19,6 +19,9 @@
     /* 选中条目的文字色随语气走，没写 data-tone 时退回品牌强调色 */
     --xh-_cascader-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 
+    /* 展开路径的底色：随语气走淡底，没写 data-tone 时退回品牌淡底 */
+    --xh-_cascader-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
@@ -118,9 +121,9 @@
   }
 
   /* trigger 是整个控件唯一的 Tab 停靠点（展开后停靠点才移进列里），落焦必须看得见。
-     语气落在环上：没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色 */
+     聚焦环恒用固定环色，不随语气走 */
   [data-scope='cascader'][data-part='trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
   }
 
@@ -171,6 +174,11 @@
     display: none;
   }
 
+  /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
+  [data-scope='cascader'][data-part='indicator']:empty::before {
+    content: '▾';
+  }
+
   [data-scope='cascader'][data-part='indicator'][data-state='open'] {
     rotate: 180deg;
   }
@@ -216,7 +224,7 @@
   /* 清空按钮退出了 Tab 序列（tabindex=-1），正常操作走不到这里；
      留着是给程序化聚焦兜底，落焦时得看得见 */
   [data-scope='cascader'][data-part='clear-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
   }
 
@@ -268,16 +276,24 @@
   }
 
   [data-scope='cascader'][data-part='content'][data-state='open'] {
+    /* 入场横移沿书写方向起始缘：位移量经私有槽供给关键帧，rtl 只翻符号 */
+    --xh-_cascader-slide: -0.25rem;
+
     animation: xh-cascader-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
-  /* 一列：自己定宽、自己滚。列与列之间用一条分隔线，比留白更能说明「这是下一级」 */
+  [dir='rtl'] [data-scope='cascader'][data-part='content'][data-state='open'] {
+    --xh-_cascader-slide: 0.25rem;
+  }
+
+  /* 一列：宽度由内容撑出、设下限防塌，高度定死——切换展开路径时浮层不上下跳动，
+     溢出的条目在列内自己滚。列与列之间用一条分隔线，比留白更能说明「这是下一级」 */
   [data-scope='cascader'][data-part='column'] {
     display: flex;
     flex: none;
     flex-direction: column;
-    inline-size: var(--xh-cascader-column-w, 11rem);
-    max-block-size: var(--xh-cascader-column-max-h, 16rem);
+    min-inline-size: var(--xh-cascader-column-min-w, 7rem);
+    block-size: var(--xh-cascader-column-h, 11.25rem);
     padding-block: var(--xh-cascader-column-py, var(--xh-space-1));
     padding-inline: var(--xh-cascader-column-px, var(--xh-space-1));
     overflow-y: auto;
@@ -304,8 +320,9 @@
     display: flex;
     align-items: center;
     gap: var(--xh-cascader-row-gap, var(--xh-_cascader-gap));
-    padding-block: var(--xh-cascader-row-py, var(--xh-space-1));
-    padding-inline: var(--xh-cascader-row-px, var(--xh-control-px-sm));
+    max-inline-size: var(--xh-cascader-row-max-w, 25rem);
+    padding-block: var(--xh-cascader-row-py, var(--xh-space-1_5));
+    padding-inline: var(--xh-cascader-row-px, var(--xh-control-px-md));
     border-radius: var(--xh-cascader-row-radius, var(--xh-shape-control));
     color: var(--xh-cascader-row-fg, var(--xh-fg-default));
     font-size: var(--xh-cascader-row-font-size, var(--xh-_cascader-font-size));
@@ -314,6 +331,9 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 条目常挂不卸载：不属于当前这一列的那些靠 hidden 收起。
@@ -322,19 +342,21 @@
     display: none;
   }
 
-  /* 底色分两档，强档只归展开路径一家：打开落点与 hover 只亮轻档，键盘导航时
-     锚点随展开路径同走；悬停展开把路径挪走后留在原地的锚点也降轻档，
-     任何时刻至多一条强高亮 */
+  /* 底色分两档、靠色相分家：悬停与键盘锚点是中性灰轻档，展开路径是品牌淡底加粗。
+     hover 恒中性灰、不接语气槽——两档同色相的话路径就认不出来了。
+     悬停展开把路径挪走后留在原地的锚点降回轻档，每列至多一条路径高亮 */
   [data-scope='cascader'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
     background: var(--xh-cascader-row-bg-hover, var(--xh-bg-subtle));
   }
 
+  /* 必须排在轻档之后：锚点走到路径上时同特指度靠书写顺序压过轻档 */
   [data-scope='cascader'][data-part='item']:not([data-disabled])[data-active] {
-    background: var(--xh-cascader-row-bg-highlight, var(--xh-bg-subtle-hover));
+    background: var(--xh-cascader-row-bg-active, var(--xh-_cascader-active-bg));
+    font-weight: var(--xh-cascader-row-active-font-weight, var(--xh-font-weight-semibold));
   }
 
-  /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给悬停，
-     两者因此能同时看见 */
+  /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色强档归展开路径、轻档归悬停，
+     三者因此能同时看见 */
   [data-scope='cascader'][data-part='item'][data-selected] {
     color: var(--xh-cascader-row-fg-selected, var(--xh-_cascader-selected-fg));
     font-weight: var(--xh-cascader-row-selected-font-weight, var(--xh-font-weight-medium));
@@ -342,7 +364,7 @@
 
   /* 条目自己就是 option，环直接画在它身上；往内收，行是撑满列宽的，环画在外沿会被裁掉 */
   [data-scope='cascader'][data-part='item']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: calc(-1 * var(--xh-ring-width));
   }
 
@@ -351,6 +373,28 @@
   [data-scope='cascader'][data-part='item'][data-disabled] {
     color: var(--xh-fg-disabled);
     cursor: not-allowed;
+  }
+
+  /* 分支条目行尾画右向小箭头：不点开也看得出还有下一级。
+     全边框描好后抹掉块末与行首两边，剩下的直角旋成箭头；位置由 item-text 的 flex:1 顶到行尾 */
+  [data-scope='cascader'][data-part='item'][data-branch]::after {
+    content: '';
+    flex: none;
+    inline-size: var(--xh-cascader-branch-arrow-size, var(--xh-space-1_5));
+    block-size: var(--xh-cascader-branch-arrow-size, var(--xh-space-1_5));
+    border: var(--xh-glyph-stroke-light) solid var(--xh-cascader-branch-arrow-fg, var(--xh-fg-subtle));
+    border-block-end: 0;
+    border-inline-start: 0;
+    rotate: 45deg;
+  }
+
+  /* rtl 下剩下的是块首与行末（物理左上）两边，反向旋 45 度才指向行进方向 */
+  [dir='rtl'] [data-scope='cascader'][data-part='item'][data-branch]::after {
+    rotate: -45deg;
+  }
+
+  [data-scope='cascader'][data-part='item'][data-branch][data-disabled]::after {
+    border-color: var(--xh-fg-disabled);
   }
 
   [data-scope='cascader'][data-part='item-text'] {
@@ -367,7 +411,7 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-cascader-indicator-size, var(--xh-control-indicator-size));
+    inline-size: var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size));
     color: var(--xh-cascader-item-indicator-fg, var(--xh-_tone, var(--xh-bg-brand)));
     visibility: hidden;
   }
@@ -376,31 +420,31 @@
     display: none;
   }
 
+  /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
+  [data-scope='cascader'][data-part='item-indicator']:empty::before {
+    content: '✓';
+  }
+
   [data-scope='cascader'][data-part='item-indicator'][data-selected] {
     visibility: visible;
+  }
+
+  /* 级联勾选的半选态只在皮肤自绘（:empty）时露面画横杠：
+     作者塞了自己的选中图形时，半选放出来会顶着一个语义相反的勾，表达交还作者 */
+  [data-scope='cascader'][data-part='item-indicator'][data-indeterminate]:empty {
+    visibility: visible;
+  }
+
+  [data-scope='cascader'][data-part='item-indicator'][data-indeterminate]:not([data-selected]):empty::before {
+    content: '−';
+    font-weight: var(--xh-font-weight-semibold);
   }
 
   [data-scope='cascader'][data-part='item-indicator'][data-disabled] {
     color: var(--xh-fg-disabled);
   }
-}
 
-@layer xihan.motion {
-  /* 浮层是横向长出来的：淡入之外再沿书写方向起始缘推一小段，观感上像列被「拉开」。
-     关键帧写在本文件里、名字带组件前缀，不动公共的那一份 */
-  @keyframes xh-cascader-in {
-    from {
-      opacity: 0;
-      translate: -0.25rem 0;
-    }
-
-    to {
-      opacity: 1;
-      translate: 0 0;
-    }
-  }
-
-  /* —— 搜索：输入框横占整行排在列上方，候选列表替换列视图 —— */
+  /* —— 搜索视图：输入框横占整行排在列上方，候选列表替换列视图 —— */
   [data-scope='cascader'][data-part='content']:has([data-part='input']:not([hidden])) {
     flex-wrap: wrap;
   }
@@ -408,8 +452,8 @@
   [data-scope='cascader'][data-part='input'] {
     flex-basis: 100%;
     min-inline-size: 0;
-    padding-block: var(--xh-space-2);
-    padding-inline: var(--xh-control-px-sm);
+    padding-block: var(--xh-cascader-input-py, var(--xh-space-2));
+    padding-inline: var(--xh-cascader-input-px, var(--xh-control-px-md));
     border: none;
     border-block-end: var(--xh-stroke-thin) solid var(--xh-cascader-content-border, var(--xh-border-default));
     border-start-start-radius: inherit;
@@ -417,7 +461,7 @@
     background: none;
     color: inherit;
     font-family: inherit;
-    font-size: var(--xh-text-body-size);
+    font-size: var(--xh-cascader-input-font-size, var(--xh-_cascader-font-size));
     line-height: var(--xh-leading-normal);
   }
 
@@ -433,8 +477,8 @@
     display: flex;
     flex-basis: 100%;
     flex-direction: column;
-    max-block-size: var(--xh-cascader-search-max-h, 16rem);
-    padding: var(--xh-space-1);
+    max-block-size: var(--xh-cascader-search-max-h, 11.25rem);
+    padding: var(--xh-cascader-search-p, var(--xh-space-1));
     overflow-y: auto;
   }
 
@@ -447,22 +491,24 @@
     display: none;
   }
 
+  /* 候选与列内条目同一套行度量，虚拟高亮与悬停同用轻档 */
   [data-scope='cascader'][data-part='search-item'] {
-    padding-block: var(--xh-space-2);
-    padding-inline: var(--xh-control-px-sm);
+    padding-block: var(--xh-cascader-row-py, var(--xh-space-1_5));
+    padding-inline: var(--xh-cascader-row-px, var(--xh-control-px-md));
     overflow: hidden;
-    border-radius: var(--xh-shape-control);
-    font-size: var(--xh-text-body-size);
-    line-height: var(--xh-leading-none);
+    border-radius: var(--xh-cascader-row-radius, var(--xh-shape-control));
+    color: var(--xh-cascader-row-fg, var(--xh-fg-default));
+    font-size: var(--xh-cascader-row-font-size, var(--xh-_cascader-font-size));
+    line-height: var(--xh-cascader-row-leading, var(--xh-leading-normal));
     text-overflow: ellipsis;
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 候选的虚拟高亮与列内条目同一张底 */
-  [data-scope='cascader'][data-part='search-item'][data-highlighted]:not([data-disabled]) {
-    background: var(--xh-cascader-row-bg-highlight, var(--xh-bg-subtle-hover));
+  [data-scope='cascader'][data-part='search-item']:not([data-disabled]):is(:hover, [data-highlighted]) {
+    background: var(--xh-cascader-row-bg-hover, var(--xh-bg-subtle));
   }
 
   [data-scope='cascader'][data-part='search-item'][data-disabled] {
@@ -472,5 +518,22 @@
 
   [data-scope='cascader'][data-part='search-item'][hidden] {
     display: none;
+  }
+}
+
+@layer xihan.motion {
+  /* 浮层是横向长出来的：淡入之外再沿书写方向起始缘推一小段，观感上像列被「拉开」。
+     位移量从 content 上的私有槽取，rtl 侧翻符号后同一份关键帧两个方向都对。
+     关键帧写在本文件里、名字带组件前缀，不动公共的那一份 */
+  @keyframes xh-cascader-in {
+    from {
+      opacity: 0;
+      translate: var(--xh-_cascader-slide, -0.25rem) 0;
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
   }
 }

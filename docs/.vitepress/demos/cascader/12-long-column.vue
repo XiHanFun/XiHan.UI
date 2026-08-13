@@ -138,7 +138,8 @@ const shelf = ref<string[][]>([]);
             :key="col.level"
             :level="col.level"
             style="
-              --xh-cascader-column-max-h: 256px;
+              --xh-cascader-column-h: 256px;
+              --xh-cascader-column-min-w: 11rem;
               position: relative;
               padding-block: 0;
             "
