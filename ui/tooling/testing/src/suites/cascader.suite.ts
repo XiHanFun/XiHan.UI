@@ -287,7 +287,7 @@ export const cascaderSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '点 trigger 展开：锚点落到首个条目但不预展开它的子列，只开根列',
+      name: '点 trigger 展开：无选中值不预落锚点也不铺列，Tab 位由 content 兜底',
       spec: { apg: `${APG_COMBOBOX}#roles_states_properties` },
       props: props(),
       steps: [
@@ -298,11 +298,12 @@ export const cascaderSuite: ConformanceSuite = {
             parts: {
               'trigger': { 'aria-expanded': 'true', 'data-state': 'open' },
               'indicator': { 'data-state': 'open' },
-              'content': { 'hidden': null, 'data-state': 'open' },
+              'content': { 'hidden': null, 'data-state': 'open', 'tabindex': '0' },
               'column': columnsShown(1),
               // 展开路径为空，第 1 列没有父条目，名字退回组件标题
               'column[1]': { 'aria-labelledby': '@part(label)' },
-              'item[0]': { 'tabindex': '0', 'data-highlighted': '', 'data-active': null },
+              // 指针打开不预落高亮：没有条目看着像被选中
+              'item[0]': { 'tabindex': '-1', 'data-highlighted': null, 'data-active': null },
               'item[1]': { 'tabindex': '-1', 'data-highlighted': null, 'data-active': null },
               'item': itemsShown('zhejiang', 'jiangsu', 'taiwan', 'macau'),
             },
@@ -311,10 +312,24 @@ export const cascaderSuite: ConformanceSuite = {
         },
         {
           kind: 'settle',
-          until: { activeElement: 'item[0]' },
-          expect: { activeElement: { part: 'item[0]', exact: true }, events: [] },
+          until: { activeElement: 'content' },
+          expect: { activeElement: 'content', events: [] },
         },
         expectTabStops(1),
+        // 第一按方向键落地到首个条目：只落锚点，不带出它的子列
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          expect: {
+            activeElement: { part: 'item[0]', exact: true },
+            parts: {
+              'content': { tabindex: '-1' },
+              'item[0]': { 'tabindex': '0', 'data-highlighted': '', 'data-active': null },
+              'column': columnsShown(1),
+            },
+            events: [],
+          },
+        },
       ],
     },
     {
@@ -323,7 +338,7 @@ export const cascaderSuite: ConformanceSuite = {
       props: props(),
       steps: [
         { kind: 'click', part: 'trigger' },
-        { kind: 'settle', until: { activeElement: 'item[0]' } },
+        { kind: 'settle', until: { activeElement: 'content' } },
         // 打开不预展开，先点 zhejiang 铺开第 1 列
         {
           kind: 'click',
@@ -416,7 +431,9 @@ export const cascaderSuite: ConformanceSuite = {
         'cascader.kbd.back',
       ],
       steps: [
-        { kind: 'click', part: 'trigger' },
+        // 键盘打开才预落锚点，方向键从它起步
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
         { kind: 'settle', until: { activeElement: 'item[0]' } },
         {
           kind: 'key',
@@ -468,7 +485,8 @@ export const cascaderSuite: ConformanceSuite = {
       spec: { apg: `${APG_LISTBOX}#keyboardinteraction` },
       props: props(),
       steps: [
-        { kind: 'click', part: 'trigger' },
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
         { kind: 'settle', until: { activeElement: 'item[0]' } },
         {
           kind: 'key',
@@ -492,7 +510,8 @@ export const cascaderSuite: ConformanceSuite = {
       spec: { apg: `${APG_LISTBOX}#keyboardinteraction` },
       props: props({ dir: 'rtl' }),
       steps: [
-        { kind: 'click', part: 'trigger' },
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
         { kind: 'settle', until: { activeElement: 'item[0]' } },
         // 第一按先铺开子列，第二按才走进去
         {
@@ -623,7 +642,7 @@ export const cascaderSuite: ConformanceSuite = {
       props: props(),
       steps: [
         { kind: 'click', part: 'trigger' },
-        { kind: 'settle', until: { activeElement: 'item[0]' } },
+        { kind: 'settle', until: { activeElement: 'content' } },
         {
           kind: 'click',
           part: 'item[0]',
@@ -660,7 +679,9 @@ export const cascaderSuite: ConformanceSuite = {
       spec: { adr: 'cascader-expand-trigger' },
       props: props({ expandTrigger: 'hover' }),
       steps: [
-        { kind: 'click', part: 'trigger' },
+        // 键盘打开预落锚点，才验得出「悬停不抢焦点」
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
         { kind: 'settle', until: { activeElement: 'item[0]' } },
         {
           kind: 'raw',
@@ -687,7 +708,7 @@ export const cascaderSuite: ConformanceSuite = {
       initial: { parts: { 'column[0]': { 'aria-multiselectable': 'true' } } },
       steps: [
         { kind: 'click', part: 'trigger' },
-        { kind: 'settle', until: { activeElement: 'item[0]' } },
+        { kind: 'settle', until: { activeElement: 'content' } },
         {
           kind: 'click',
           part: 'item[3]',
@@ -756,7 +777,8 @@ export const cascaderSuite: ConformanceSuite = {
       props: props(),
       covers: ['cascader.kbd.tab'],
       steps: [
-        { kind: 'click', part: 'trigger' },
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
         { kind: 'settle', until: { activeElement: 'item[0]' } },
         {
           kind: 'key',
@@ -785,7 +807,8 @@ export const cascaderSuite: ConformanceSuite = {
       spec: { apg: APG_LISTBOX },
       props: props({ changeOnSelect: true }),
       steps: [
-        { kind: 'click', part: 'trigger' },
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
         { kind: 'settle', until: { activeElement: 'item[0]' } },
         // 右键铺开第 1 列（点分支在 changeOnSelect 下会落值，污染后面的选中断言）
         {

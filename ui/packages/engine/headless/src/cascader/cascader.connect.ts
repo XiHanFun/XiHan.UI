@@ -3,7 +3,7 @@ import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { CascaderApi, CascaderNodeMeta, CascaderSchema, CascaderSearchResult, CascaderTranslations } from './cascader.types'
 import { cascadeState, focusItem, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/behavior'
-import { contains, dataAttr, isComposingEvent } from '@xihan-ui/kernel'
+import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
 import { cascaderAnatomy } from './cascader.anatomy'
 import {
   cascaderBuildColumns,
@@ -263,10 +263,11 @@ export function connectCascader<T extends PropTypes>(
           send({ type: 'OPEN', focus: intent })
           return
         }
-        // 吞掉 Enter 与空格，否则按钮的默认激活会再合成一次 click 把浮层关掉
+        // 吞掉 Enter 与空格，否则按钮的默认激活会再合成一次 click 把浮层关掉。
+        // 键盘打开要有可见落点：无选中值时锚定根列首项，有选中仍定位到选中路径末项
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault()
-          send({ type: 'OPEN', focus: 'selected' })
+          send({ type: 'OPEN', focus: value.length ? 'selected' : 'first' })
         }
       },
     }),
@@ -406,17 +407,6 @@ export function connectCascader<T extends PropTypes>(
           event.preventDefault()
           activate(focusedMeta)
         }
-      },
-      'onFocus': (event: FocusEvent) => {
-        const content = event.currentTarget as HTMLElement
-        // 只接管从浮层外进来的焦点，否则浮层内 Shift+Tab 往外退会被困住
-        if (contains(content, event.relatedTarget as Node | null))
-          return
-        // 焦点落到容器上说明还没有锚点，就地补一次落到最后一列的首个可停留条目
-        const column = columns[columns.length - 1]
-        if (!column)
-          return
-        focusItem(findCascaderItemEl(content, cascaderStepColumn(column.items, null, 'first', { loop })?.value ?? null))
       },
     }),
 

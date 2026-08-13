@@ -228,6 +228,13 @@ export const cascaderMachine = createMachine({
         const collection = prop('collection') ?? []
         const intent = context.get('focusIntent')
         const selected = context.get('value')[0] ?? []
+        // 指针打开且没有选中值：不落锚点也不铺列，焦点由焦点域兜底歇在 content 上，
+        // 打开这一刻不能有条目看着像被选中；键盘入口要预落锚点得自带 first/next 意图
+        if (intent === 'selected' && selected.length === 0) {
+          context.set('activePath', [])
+          context.set('focusedPath', null)
+          return
+        }
         const fromRoot = intent === 'first' || intent === 'last'
         const anchorPath = fromRoot ? [] : [...selected]
         const columns = cascaderBuildColumns(collection, anchorPath)
@@ -256,8 +263,8 @@ export const cascaderMachine = createMachine({
           // next/prev 从选中条目走一步；无选中值时 from 为空，落到本列边界
           picked = cascaderStepColumn(column.items, from, intent, { loop })
         }
-        // 有选中值才把列铺到落点上；没有选中值时锚点照落（方向键从它起步），
-        // 列一层不展开——打开这一刻不能有条目看着像被选中
+        // 有选中值才把列铺到落点上；键盘意图（first/last/next/prev）在无选中值时
+        // 只落锚点不铺列
         context.set('activePath', picked && selected.length ? [...picked.path] : [])
         context.set('focusedPath', picked ? [...picked.path] : null)
       },
@@ -275,7 +282,9 @@ export const cascaderMachine = createMachine({
           return
         const path = cascaderTruncatePath(context.get('activePath'), e.level, e.value)
         const anchored = context.get('focusedPath')
-        if (!anchored || !cascaderSamePath(path, anchored))
+        // 锚点间的真实移动才拖动展开路径；落地（此前无锚点）与回落到既有锚点都只记锚点，
+        // 打开后的首次落焦不带出子列——展开由导航移动、点选与右方向键各自声明
+        if (anchored && !cascaderSamePath(path, anchored))
           context.set('activePath', path)
         context.set('focusedPath', path)
       },
