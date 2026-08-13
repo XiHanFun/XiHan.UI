@@ -7,7 +7,7 @@ import type {
 import type { Cleanup, ControlVariant, Direction, Layer, Placement, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef, Ref } from 'vue'
-import { connectPopselect, listboxMachine, popoverMachine } from '@xihan-ui/headless'
+import { connectPopselect, listboxMachine, popoverMachine, popselectInitialFocus } from '@xihan-ui/headless'
 import { createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
@@ -108,6 +108,8 @@ export function usePopselect(props: PopselectRootProps, notify: PopselectNotifie
     popover.refs.set('getAnchorEl', () => triggerRef.value)
     popover.refs.set('getFloatingEl', () => positionerRef.value)
     popover.refs.set('getContentEl', () => contentRef.value)
+    // 落焦点由 popselect 这一侧收口：有锚点条目就落它，没有就落列表容器
+    popover.refs.set('getInitialFocusEl', () => popselectInitialFocus(listbox, contentRef.value))
   }
 
   const api = computed(() => connectPopselect({
