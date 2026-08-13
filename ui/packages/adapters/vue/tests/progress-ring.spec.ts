@@ -27,7 +27,7 @@ function mount(props: Record<string, unknown>, label?: string): HTMLElement {
   return host
 }
 
-const part = (host: HTMLElement, name: string): HTMLElement => {
+function part(host: HTMLElement, name: string): HTMLElement {
   const el = host.querySelector<HTMLElement>(`[data-scope="progress"][data-part="${name}"]`)
   if (!el)
     throw new Error(`找不到 ${name}`)
