@@ -188,14 +188,14 @@ multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父�
 | `Enter` / `Space` | closed, focus in trigger | 展开浮层并把焦点落到选中节点（无选中或它藏在收起的分支里则落首个可用行） |
 | `ArrowDown` | closed, focus in trigger | 展开浮层并把焦点落到选中节点的下一个可用行 |
 | `ArrowUp` | closed, focus in trigger | 展开浮层并把焦点落到选中节点的上一个可用行 |
-| `ArrowDown` | open, focus in tree | 焦点移到下一个可见行（禁用行跳过；loop 默认关，末行不回绕） |
-| `ArrowUp` | open, focus in tree | 焦点移到上一个可见行（禁用行跳过；loop 默认关，首行不回绕） |
-| `Home` | open, focus in tree | 焦点移到首个可见行 |
-| `End` | open, focus in tree | 焦点移到末个可见行（展开着的子树也算行） |
+| `ArrowDown` | open, focus in content | 焦点移到下一个可见行（禁用行跳过；loop 默认关，末行不回绕） |
+| `ArrowUp` | open, focus in content | 焦点移到上一个可见行（禁用行跳过；loop 默认关，首行不回绕） |
+| `Home` | open, focus in content | 焦点移到首个可见行 |
+| `End` | open, focus in content | 焦点移到末个可见行（展开着的子树也算行） |
 | `ArrowRight` | open, focus on branch（dir=rtl 时改由 ArrowLeft 承担） | 收起的分支就地展开；已展开则把焦点移到首个子节点；叶子上什么都不做且不吞键 |
-| `ArrowLeft` | open, focus in tree（dir=rtl 时改由 ArrowRight 承担） | 展开的分支就地收起；收起的分支与叶子则把焦点移到父节点；根层的行什么都不做 |
+| `ArrowLeft` | open, focus in content（dir=rtl 时改由 ArrowRight 承担） | 展开的分支就地收起；收起的分支与叶子则把焦点移到父节点；根层的行什么都不做 |
 | `Enter` / `Space` | open, 焦点节点未禁用 | 选中焦点节点：单选替换并收起浮层、焦点归还 trigger；多选切换且浮层不收起 |
-| `*` | open, focus in tree | 展开与焦点行同一父级的全部分支（已展开与禁用的不动）；同级没有可展开的分支时不吞这个键 |
-| `单个可打印字符` | open, focus in tree | 连打检索在可见行上按 label 首字母搬焦点，不改选中值，也不展开任何分支 |
+| `*` | open, focus in content | 展开与焦点行同一父级的全部分支（已展开与禁用的不动）；同级没有可展开的分支时不吞这个键 |
+| `单个可打印字符` | open, focus in content | 连打检索在可见行上按 label 首字母搬焦点，不改选中值，也不展开任何分支 |
 | `Escape` | open | 收起浮层并把焦点归还 trigger，选中值与展开集合都不变 |
 | `Tab` / `Shift+Tab` | open | 收起浮层，焦点不归还 trigger，按 Tab 序列自然离开 |

@@ -28027,11 +28027,11 @@
               "name": "positioner"
             },
             {
-              "description": "浮层壳（焦点域与消解层的根节点），收起时带 hidden",
+              "description": "浮层壳（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden",
               "name": "content"
             },
             {
-              "description": "role=tree 容器，键盘在此收口，也是没有锚点时的 Tab 兜底位",
+              "description": "role=tree 容器，没有锚点时的 Tab 兜底位与落焦点",
               "name": "tree"
             },
             {

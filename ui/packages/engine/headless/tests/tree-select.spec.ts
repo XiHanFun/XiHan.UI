@@ -538,6 +538,25 @@ describe('树内键盘导航', () => {
     return h
   }
 
+  // 浮层壳自带内边距又可被点中（tabindex=-1）：焦点歇在它身上时按键从壳发出，
+  // 里层的树收不到——键盘必须收在壳上
+  it('焦点歇在浮层壳上：方向键、检索与确认键照样进得去树', async () => {
+    const h = mount({ defaultExpandedValue: ['src'] })
+    h.trigger.focus()
+    click(h.trigger)
+    await settle()
+    // 点在壳的内边距上就是这个效果
+    h.content.focus()
+    expect(document.activeElement).toBe(h.content)
+
+    expect(press(active(), 'ArrowDown').defaultPrevented).toBe(true)
+    expect(focusedValue()).toBe('src')
+    press(active(), 'l')
+    expect(focusedValue()).toBe('license')
+    expect(press(active(), 'Enter').defaultPrevented).toBe(true)
+    expect(h.value()).toEqual(['license'])
+  })
+
   it('上下键走可见行，禁用行跳过，loop 默认关所以首尾不回绕', async () => {
     const h = await open({ defaultExpandedValue: ['src'] })
     expect(focusedValue()).toBe('src')

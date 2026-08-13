@@ -110,13 +110,13 @@ export function connectTreeSelect<T extends PropTypes>(
   }
 
   /** 方向键落点：起点用锚点，终点在可见行上算，禁用节点自动跳过。 */
-  const focusBy = (tree: HTMLElement, intent: NavIntent): void => {
-    focusValue(navigateItems(treeSelectNodeEls(tree, rows), focusedValue, intent, { loop }))
+  const focusBy = (container: HTMLElement, intent: NavIntent): void => {
+    focusValue(navigateItems(treeSelectNodeEls(container, rows), focusedValue, intent, { loop }))
   }
 
   /** 按值把焦点搬到某一行。 */
-  const focusOn = (tree: HTMLElement, v: string): void => {
-    focusValue(treeSelectNodeEls(tree, rows).find(el => itemValue(el) === v) ?? null)
+  const focusOn = (container: HTMLElement, v: string): void => {
+    focusValue(treeSelectNodeEls(container, rows).find(el => itemValue(el) === v) ?? null)
   }
 
   /** 连打检索的取字处是 collection 里的 label，不是节点 textContent。 */
@@ -126,8 +126,8 @@ export function connectTreeSelect<T extends PropTypes>(
   }
 
   /** 连打检索落点：从当前锚点的下一个绕一圈找，禁用节点跳过；未命中保持原状。 */
-  const focusMatch = (tree: HTMLElement, query: string): void => {
-    const list = treeSelectNodeEls(tree, rows)
+  const focusMatch = (container: HTMLElement, query: string): void => {
+    const list = treeSelectNodeEls(container, rows)
     focusValue(matchTypeahead(list, indexOfValue(list, focusedValue), query, {
       text: nodeText,
       skip: isItemDisabled,
@@ -282,6 +282,10 @@ export function connectTreeSelect<T extends PropTypes>(
       },
     }),
 
+    // 键盘全在 content 上收口，与 select / cascader 同一落点：content 自带内边距又可被点中
+    // （tabindex=-1），焦点歇在它身上时按键从这里发出，挂在里层 tree 上收不到。
+    // 节点集合按部件归属过滤，查询容器传 content 与传 tree 等价。
+    // Escape 归消解层管，不在这里收
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
       'id': ids.content,
@@ -291,26 +295,11 @@ export function connectTreeSelect<T extends PropTypes>(
       'data-placement': placement,
       // 收起时留在 DOM 只隐藏
       'hidden': !open || undefined,
-    }),
-
-    // 键盘在 tree 上收口；Escape 归消解层处理
-    getTreeProps: () => normalize.element({
-      ...parts.tree.attrs,
-      'id': ids.tree,
-      'role': 'tree',
-      'aria-labelledby': ids.label,
-      // 复选与否显式输出
-      'aria-multiselectable': multiple ? 'true' : 'false',
-      'aria-disabled': disabled ? 'true' : 'false',
-      // 展开但无锚点时由容器兜底承担 Tab 位；判据用 focusedValue 而非锚点元素
-      'tabindex': open && focusedValue == null ? 0 : -1,
-      'data-state': stateAttr,
-      'data-disabled': dataAttr(disabled),
       'onKeyDown': (event: KeyboardEvent) => {
         // 收起态不响应按键
         if (!open || disabled)
           return
-        const tree = event.currentTarget as HTMLElement
+        const container = event.currentTarget as HTMLElement
         const key = event.key
         // 带 Ctrl/Cmd/Alt 的组合不归树管，也不进连打检索
         if (event.ctrlKey || event.metaKey || event.altKey)
@@ -326,7 +315,7 @@ export function connectTreeSelect<T extends PropTypes>(
         const intent = navIntentFromKey(event, { axis: 'vertical' })
         if (intent) {
           event.preventDefault()
-          focusBy(tree, intent)
+          focusBy(container, intent)
           return
         }
 
@@ -351,7 +340,7 @@ export function connectTreeSelect<T extends PropTypes>(
           if (!child)
             return
           event.preventDefault()
-          focusOn(tree, child.value)
+          focusOn(container, child.value)
           return
         }
 
@@ -367,7 +356,7 @@ export function connectTreeSelect<T extends PropTypes>(
           if (row?.parent == null)
             return
           event.preventDefault()
-          focusOn(tree, row.parent)
+          focusOn(container, row.parent)
           return
         }
 
@@ -398,7 +387,7 @@ export function connectTreeSelect<T extends PropTypes>(
         const query = refs.get('typeahead').push(key)
         if (query != null) {
           event.preventDefault()
-          focusMatch(tree, query)
+          focusMatch(container, query)
           return
         }
         if (key === ' ') {
@@ -408,6 +397,20 @@ export function connectTreeSelect<T extends PropTypes>(
           activate(row)
         }
       },
+    }),
+
+    getTreeProps: () => normalize.element({
+      ...parts.tree.attrs,
+      'id': ids.tree,
+      'role': 'tree',
+      'aria-labelledby': ids.label,
+      // 复选与否显式输出
+      'aria-multiselectable': multiple ? 'true' : 'false',
+      'aria-disabled': disabled ? 'true' : 'false',
+      // 展开但无锚点时由容器兜底承担 Tab 位；判据用 focusedValue 而非锚点元素
+      'tabindex': open && focusedValue == null ? 0 : -1,
+      'data-state': stateAttr,
+      'data-disabled': dataAttr(disabled),
     }),
 
     getItemProps: node => normalize.element({
