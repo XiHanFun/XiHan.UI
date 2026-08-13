@@ -1,5 +1,15 @@
 # @xihan-ui/chat-stream
 
+## 1.0.0-alpha.1
+
+### Patch Changes
+
+- Updated dependencies [239eb5d]
+- Updated dependencies [89d8c54]
+- Updated dependencies [24721f4]
+- Updated dependencies [4b949c2]
+  - @xihan-ui/kernel@1.0.0-alpha.1
+
 ## 1.0.0-alpha.0
 
 ### Major Changes
