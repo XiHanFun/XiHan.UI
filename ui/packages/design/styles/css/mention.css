@@ -12,11 +12,8 @@
     --xh-_mention-input-border: var(--xh-border-control);
     --xh-_mention-input-border-hover: var(--xh-border-control-hover);
 
-    /* 强调色随语气走，只落在聚焦与高亮上，正文文字色不动。
-       没写 data-tone 时 --xh-_tone 没被声明，三处都退回原来的取值 */
+    /* 聚焦环恒用固定环色，不随语气走 */
     --xh-_mention-ring: var(--xh-ring-focus);
-    --xh-_mention-item-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-    --xh-_mention-item-highlight-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 
     display: block;
   }
@@ -166,8 +163,8 @@
     display: flex;
     align-items: center;
     gap: var(--xh-mention-item-gap, var(--xh-_mention-gap));
-    padding-block: var(--xh-mention-item-py, var(--xh-space-1));
-    padding-inline: var(--xh-mention-item-px, var(--xh-control-px-sm));
+    padding-block: var(--xh-mention-item-py, var(--xh-space-1_5));
+    padding-inline: var(--xh-mention-item-px, var(--xh-control-px-md));
     border-radius: var(--xh-mention-item-radius, var(--xh-shape-control));
     color: var(--xh-mention-item-fg, var(--xh-fg-default));
     font-size: var(--xh-mention-item-font-size, var(--xh-_mention-font-size));
@@ -176,18 +173,19 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='mention'][data-part='item'][hidden] {
     display: none;
   }
 
-  /* 只认 data-highlighted，不写 :hover：指针划过时连接层已经把高亮搬过来了，
+  /* 键盘锚点走中性灰轻档。只认 data-highlighted，不写 :hover：指针划过时连接层已经把高亮搬过来了，
      两套底色各画各的会出现"鼠标停在 A 上、回车却插进了 B" */
   [data-scope='mention'][data-part='item'][data-highlighted]:not([data-disabled]) {
-    background: var(--xh-mention-item-bg-highlight, var(--xh-_mention-item-highlight-bg));
-    color: var(--xh-mention-item-fg-highlight, var(--xh-_mention-item-highlight-fg));
-    font-weight: var(--xh-mention-item-font-weight-highlight, var(--xh-font-weight-medium));
+    background: var(--xh-mention-item-bg-hover, var(--xh-bg-subtle));
   }
 
   /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），
@@ -208,12 +206,6 @@
 
   [data-scope='mention'][data-part='item-text'][hidden] {
     display: none;
-  }
-
-  /* 候选行里除文本以外的部分（作者摆的头像、副标题）由作者自己画；
-     这里只把强调色透出去，作者要用就取它 */
-  [data-scope='mention'][data-part='item'][data-highlighted] [data-part='item-text'] {
-    color: var(--xh-mention-item-fg-highlight, var(--xh-_mention-item-highlight-fg));
   }
 
   [data-scope='mention'][data-part='item'][data-disabled] [data-part='item-text'] {

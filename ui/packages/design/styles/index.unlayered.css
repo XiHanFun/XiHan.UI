@@ -2094,11 +2094,8 @@
   --xh-_mention-input-border: var(--xh-border-control);
   --xh-_mention-input-border-hover: var(--xh-border-control-hover);
 
-  /* 强调色随语气走，只落在聚焦与高亮上，正文文字色不动。
-     没写 data-tone 时 --xh-_tone 没被声明，三处都退回原来的取值 */
+  /* 聚焦环恒用固定环色，不随语气走 */
   --xh-_mention-ring: var(--xh-ring-focus);
-  --xh-_mention-item-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-  --xh-_mention-item-highlight-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 
   display: block;
 }
@@ -2248,8 +2245,8 @@
   display: flex;
   align-items: center;
   gap: var(--xh-mention-item-gap, var(--xh-_mention-gap));
-  padding-block: var(--xh-mention-item-py, var(--xh-space-1));
-  padding-inline: var(--xh-mention-item-px, var(--xh-control-px-sm));
+  padding-block: var(--xh-mention-item-py, var(--xh-space-1_5));
+  padding-inline: var(--xh-mention-item-px, var(--xh-control-px-md));
   border-radius: var(--xh-mention-item-radius, var(--xh-shape-control));
   color: var(--xh-mention-item-fg, var(--xh-fg-default));
   font-size: var(--xh-mention-item-font-size, var(--xh-_mention-font-size));
@@ -2258,18 +2255,19 @@
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='mention'][data-part='item'][hidden] {
   display: none;
 }
 
-/* 只认 data-highlighted，不写 :hover：指针划过时连接层已经把高亮搬过来了，
+/* 键盘锚点走中性灰轻档。只认 data-highlighted，不写 :hover：指针划过时连接层已经把高亮搬过来了，
    两套底色各画各的会出现"鼠标停在 A 上、回车却插进了 B" */
 [data-scope='mention'][data-part='item'][data-highlighted]:not([data-disabled]) {
-  background: var(--xh-mention-item-bg-highlight, var(--xh-_mention-item-highlight-bg));
-  color: var(--xh-mention-item-fg-highlight, var(--xh-_mention-item-highlight-fg));
-  font-weight: var(--xh-mention-item-font-weight-highlight, var(--xh-font-weight-medium));
+  background: var(--xh-mention-item-bg-hover, var(--xh-bg-subtle));
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），
@@ -2290,12 +2288,6 @@
 
 [data-scope='mention'][data-part='item-text'][hidden] {
   display: none;
-}
-
-/* 候选行里除文本以外的部分（作者摆的头像、副标题）由作者自己画；
-   这里只把强调色透出去，作者要用就取它 */
-[data-scope='mention'][data-part='item'][data-highlighted] [data-part='item-text'] {
-  color: var(--xh-mention-item-fg-highlight, var(--xh-_mention-item-highlight-fg));
 }
 
 [data-scope='mention'][data-part='item'][data-disabled] [data-part='item-text'] {
@@ -7280,13 +7272,16 @@
   /* 尺寸档只换这四个私有槽，条目与分组标题都从 root 继承它们，
      换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承
      （display:contents 不影响继承：自定义属性沿 DOM 树传） */
-  --xh-_context-menu-item-py: var(--xh-space-2);
-  --xh-_context-menu-item-px: var(--xh-control-px-sm);
+  --xh-_context-menu-item-py: var(--xh-space-1_5);
+  --xh-_context-menu-item-px: var(--xh-control-px-md);
   --xh-_context-menu-item-gap: var(--xh-control-gap-md);
   --xh-_context-menu-font-size: var(--xh-text-body-size);
 
-  /* 条目高亮底与标记位强调色随语气走。没写 data-tone 时这两个语气槽没被声明，各自退回原来的取值 */
-  --xh-_context-menu-item-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+  /* 打开子菜单的触发条目走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底。
+     悬停与键盘焦点恒中性灰轻档、不接语气槽——两档同色相的话打开路径就认不出来了 */
+  --xh-_context-menu-item-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+
+  /* 标记位强调色随语气走，没写 data-tone 时退回原来的取值 */
   --xh-_context-menu-accent: var(--xh-_tone, var(--xh-fg-subtle));
 
   display: contents;
@@ -7297,18 +7292,18 @@
 }
 
 /* —— 尺寸 —— */
-/* 缺省档写在上面的基础规则里。条目内外边距缺省档本就不在 control-h/px 那把尺上
-   （高度由 padding 撑出来、行内内缩取的是 sm 档），故按 space 档上下各挪一级 */
+/* 缺省档写在上面的基础规则里。条目高度由 padding 撑出来：
+   纵向走 space 档、行内内缩走 control-px 档（随密度轴），换档各挪一级 */
 [data-scope='context-menu'][data-part='root'][data-size='sm'] {
   --xh-_context-menu-item-py: var(--xh-space-1);
-  --xh-_context-menu-item-px: var(--xh-space-1);
+  --xh-_context-menu-item-px: var(--xh-control-px-sm);
   --xh-_context-menu-item-gap: var(--xh-control-gap-sm);
   --xh-_context-menu-font-size: var(--xh-font-size-sm);
 }
 
 [data-scope='context-menu'][data-part='root'][data-size='lg'] {
-  --xh-_context-menu-item-py: var(--xh-space-3);
-  --xh-_context-menu-item-px: var(--xh-space-3);
+  --xh-_context-menu-item-py: var(--xh-space-2);
+  --xh-_context-menu-item-px: var(--xh-control-px-lg);
   --xh-_context-menu-item-gap: var(--xh-control-gap-lg);
   --xh-_context-menu-font-size: var(--xh-font-size-lg);
 }
@@ -7411,10 +7406,13 @@
   border-radius: var(--xh-context-menu-item-radius, var(--xh-shape-control));
   color: var(--xh-context-menu-item-fg, var(--xh-fg-default));
   font-size: var(--xh-context-menu-item-font-size, var(--xh-_context-menu-font-size));
-  line-height: var(--xh-leading-none);
+  line-height: var(--xh-context-menu-item-leading, var(--xh-leading-normal));
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 条目可以按需收起（按上下文过滤掉的命令），有 display 就得补这条 */
@@ -7422,11 +7420,18 @@
   display: none;
 }
 
-/* 键盘高亮与指针高亮共用一套底色：条目本身承载焦点，不另画描边。
+/* 悬停与键盘焦点共用中性灰轻档：条目本身承载焦点，不另画描边。
    data-highlighted 跟的是连接层记的焦点条目，与 :focus 说的是同一件事，
    子部件够不着那个伪类，只能读这个标记 */
-[data-scope='context-menu'][data-part='item']:not([data-disabled]):is(:hover, :focus, [data-highlighted], [data-state='open']) {
-  background: var(--xh-context-menu-item-bg-highlight, var(--xh-_context-menu-item-highlight-bg));
+[data-scope='context-menu'][data-part='item']:not([data-disabled]):is(:hover, :focus, [data-highlighted]) {
+  background: var(--xh-context-menu-item-bg-hover, var(--xh-bg-subtle));
+}
+
+/* 打开子菜单的触发条目是展开路径，走品牌淡底加粗强档。
+   必须排在轻档之后：悬停或焦点回到它身上时同特指度靠书写顺序压过轻档 */
+[data-scope='context-menu'][data-part='item']:not([data-disabled])[data-state='open'] {
+  background: var(--xh-context-menu-item-bg-active, var(--xh-_context-menu-item-active-bg));
+  font-weight: var(--xh-context-menu-item-active-font-weight, var(--xh-font-weight-semibold));
 }
 
 [data-scope='context-menu'][data-part='item']:focus {
@@ -10189,14 +10194,14 @@
      换档不必给每个部件各写一条选择器。菜单浮层在 positioner 里、也是 root 的后代，一并继承 */
   --xh-_menubar-trigger-py: var(--xh-space-1);
   --xh-_menubar-trigger-px: var(--xh-control-px-sm);
-  --xh-_menubar-item-py: var(--xh-space-2);
-  --xh-_menubar-item-px: var(--xh-control-px-sm);
+  --xh-_menubar-item-py: var(--xh-space-1_5);
+  --xh-_menubar-item-px: var(--xh-control-px-md);
   --xh-_menubar-font-size: var(--xh-text-body-size);
 
-  /* 高亮底随语气走：展开着的那张菜单的 trigger 与菜单里的高亮条目共用这一档。
-     没写 data-tone 时 --xh-_tone-subtle-hover 没被声明，退回原来的中性底。
+  /* 展开着的那张菜单的 trigger 走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底。
+     悬停与键盘焦点恒中性灰轻档、不接语气槽——两档同色相的话哪张开着就认不出来了。
      聚焦环不在其列，它恒是 --xh-ring-focus */
-  --xh-_menubar-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+  --xh-_menubar-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
 
   display: flex;
   align-items: center;
@@ -10218,21 +10223,21 @@
 }
 
 /* —— 尺寸 —— */
-/* 缺省档写在上面的基础规则里。内边距的缺省档已经落在控件内边距尺的 sm 那一格，
-   往下没有更小的一格，sm 档改取空间尺；lg 档回到控件尺的下一格 */
+/* 缺省档写在上面的基础规则里。trigger 的行内内缩缺省落在控件尺 sm 档、再往下取空间尺；
+   条目纵向走 space 档、行内内缩走 control-px 档（随密度轴），换档各挪一级 */
 [data-scope='menubar'][data-part='root'][data-size='sm'] {
   --xh-_menubar-trigger-py: var(--xh-space-0_5);
   --xh-_menubar-trigger-px: var(--xh-space-1_5);
-  --xh-_menubar-item-py: var(--xh-space-1_5);
-  --xh-_menubar-item-px: var(--xh-space-1_5);
+  --xh-_menubar-item-py: var(--xh-space-1);
+  --xh-_menubar-item-px: var(--xh-control-px-sm);
   --xh-_menubar-font-size: var(--xh-font-size-sm);
 }
 
 [data-scope='menubar'][data-part='root'][data-size='lg'] {
   --xh-_menubar-trigger-py: var(--xh-space-2);
   --xh-_menubar-trigger-px: var(--xh-control-px-md);
-  --xh-_menubar-item-py: var(--xh-space-3);
-  --xh-_menubar-item-px: var(--xh-control-px-md);
+  --xh-_menubar-item-py: var(--xh-space-2);
+  --xh-_menubar-item-px: var(--xh-control-px-lg);
   --xh-_menubar-font-size: var(--xh-font-size-lg);
 }
 
@@ -10262,15 +10267,23 @@
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='menubar'][data-part='trigger'][hidden] {
   display: none;
 }
 
-/* 展开着的那一项与指针悬停共用一套底色：菜单栏里"哪一张开着"必须一眼看得出来 */
-[data-scope='menubar'][data-part='trigger']:not([data-disabled]):is(:hover, [data-state='open']) {
-  background: var(--xh-menubar-trigger-bg-active, var(--xh-_menubar-highlight-bg));
+/* 指针悬停走中性灰轻档 */
+[data-scope='menubar'][data-part='trigger']:not([data-disabled]):hover {
+  background: var(--xh-menubar-trigger-bg-hover, var(--xh-bg-subtle));
+}
+
+/* 展开着的那一张是打开路径，走品牌淡底强档：菜单栏里"哪一张开着"必须一眼看得出来。
+   不加粗：横排的栏加粗会推挤相邻触发器。
+   必须排在轻档之后：指针回到它身上时同特指度靠书写顺序压过轻档 */
+[data-scope='menubar'][data-part='trigger']:not([data-disabled])[data-state='open'] {
+  background: var(--xh-menubar-trigger-bg-active, var(--xh-_menubar-active-bg));
 }
 
 /* trigger 自带 Tab 位（整条菜单栏唯一的那个），必须画得出焦点 */
@@ -10373,10 +10386,13 @@
   border-radius: var(--xh-menubar-item-radius, var(--xh-shape-control));
   color: var(--xh-menubar-item-fg, var(--xh-fg-default));
   font-size: var(--xh-menubar-item-font-size, var(--xh-_menubar-font-size));
-  line-height: var(--xh-leading-none);
+  line-height: var(--xh-menubar-item-leading, var(--xh-leading-normal));
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 条目可以按需收起（按上下文过滤掉的命令），有 display 就得补这条 */
@@ -10384,11 +10400,11 @@
   display: none;
 }
 
-/* 键盘高亮与指针高亮共用一套底色：条目本身承载焦点，不另画描边。
+/* 悬停与键盘焦点共用中性灰轻档：条目本身承载焦点，不另画描边。
    data-highlighted 跟的是连接层记的焦点条目，与 :focus 说的是同一件事，
    子部件够不着那个伪类，只能读这个标记 */
 [data-scope='menubar'][data-part='item']:not([data-disabled]):is(:hover, :focus, [data-highlighted]) {
-  background: var(--xh-menubar-item-bg-highlight, var(--xh-_menubar-highlight-bg));
+  background: var(--xh-menubar-item-bg-hover, var(--xh-bg-subtle));
 }
 
 [data-scope='menubar'][data-part='item']:focus {
@@ -13262,10 +13278,10 @@
   border-block-end: none;
 }
 
-/* 键盘高亮与指针高亮共用一套底色。data-highlighted 跟的是连接层记的焦点行，
+/* 悬停与键盘锚点共用中性灰轻档。data-highlighted 跟的是连接层记的焦点行，
    与选中互相独立：可以停在一个没被选中的行上 */
 [data-scope='table'][data-part='body'] > [data-scope='table'][data-part='row']:not([data-disabled]):is(:hover, [data-highlighted]) {
-  background: var(--xh-table-row-bg-highlight, var(--xh-bg-subtle-hover));
+  background: var(--xh-table-row-bg-hover, var(--xh-bg-subtle));
 }
 
 /* 选中比高亮更"实"：它表达的是数据状态，翻页回来还在 */
@@ -14828,15 +14844,19 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  padding-block: var(--xh-time-picker-item-py, var(--xh-space-1));
-  padding-inline: var(--xh-time-picker-item-px, var(--xh-space-2));
+  padding-block: var(--xh-time-picker-item-py, var(--xh-space-1_5));
+  padding-inline: var(--xh-time-picker-item-px, var(--xh-control-px-md));
   border-radius: var(--xh-time-picker-item-radius, var(--xh-shape-control));
   color: var(--xh-time-picker-item-fg, var(--xh-fg-default));
   font-size: var(--xh-time-picker-item-font-size, var(--xh-text-body-size));
+  /* 居中的单个数字格没有截断层，行高保持紧排，列内多露几格 */
   line-height: var(--xh-leading-none);
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 作者自己藏掉某几格时要让位，有 display 就得补这条 */
@@ -14844,10 +14864,10 @@
   display: none;
 }
 
-/* 焦点所在与选中互相独立：可以停在一个没被选中的格上 */
+/* 悬停与键盘锚点共用中性灰轻档；焦点所在与选中互相独立：可以停在一个没被选中的格上 */
 [data-scope='time-picker'][data-part='item'][data-highlighted]:not([data-disabled]),
 [data-scope='time-picker'][data-part='item']:hover:not([data-disabled]) {
-  background: var(--xh-time-picker-item-bg-highlight, var(--xh-bg-subtle-hover));
+  background: var(--xh-time-picker-item-bg-hover, var(--xh-bg-subtle));
 }
 
 [data-scope='time-picker'][data-part='item'][data-state='checked'] {
@@ -14856,11 +14876,11 @@
   font-weight: var(--xh-time-picker-item-weight-checked, var(--xh-font-weight-medium));
 }
 
-/* 选中格上再落焦点或悬停时，底色留在品牌色一侧：上面那条中性高亮的选择器更具体，
+/* 选中格上再落焦点或悬停时，底色留在品牌色一侧：上面那条中性轻档的选择器更具体，
    不写这条就只有底色被换走、文字仍是品牌底上的反白色 */
 [data-scope='time-picker'][data-part='item'][data-state='checked'][data-highlighted]:not([data-disabled]),
 [data-scope='time-picker'][data-part='item'][data-state='checked']:hover:not([data-disabled]) {
-  background: var(--xh-time-picker-item-bg-checked-highlight, var(--xh-bg-brand-hover));
+  background: var(--xh-time-picker-item-bg-checked-hover, var(--xh-bg-brand-hover));
 }
 
 [data-scope='time-picker'][data-part='item']:focus-visible {
@@ -16018,7 +16038,7 @@
   gap: var(--xh-transfer-header-gap, var(--xh-control-gap-md));
   align-items: center;
   padding-block: var(--xh-transfer-header-py, var(--xh-space-2));
-  padding-inline: var(--xh-transfer-header-px, var(--xh-control-px-sm));
+  padding-inline: var(--xh-transfer-header-px, var(--xh-control-px-md));
   border-block-end: var(--xh-stroke-thin) solid var(--xh-transfer-panel-border, var(--xh-border-default));
 }
 
@@ -16054,7 +16074,7 @@
   display: block;
   inline-size: 100%;
   block-size: var(--xh-transfer-search-h, var(--xh-control-h-sm));
-  padding-inline: var(--xh-transfer-search-px, var(--xh-control-px-sm));
+  padding-inline: var(--xh-transfer-search-px, var(--xh-control-px-md));
   border: 0;
   border-block-end: var(--xh-stroke-thin) solid var(--xh-transfer-search-border, var(--xh-border-control));
   background: var(--xh-transfer-search-bg, transparent);
@@ -16095,8 +16115,8 @@
   flex: none;
   gap: var(--xh-transfer-item-gap, var(--xh-control-gap-md));
   align-items: center;
-  padding-block: var(--xh-transfer-item-py, var(--xh-space-1));
-  padding-inline: var(--xh-transfer-item-px, var(--xh-control-px-sm));
+  padding-block: var(--xh-transfer-item-py, var(--xh-space-1_5));
+  padding-inline: var(--xh-transfer-item-px, var(--xh-control-px-md));
   border-radius: var(--xh-transfer-item-radius, var(--xh-shape-control));
   color: var(--xh-transfer-item-fg, var(--xh-fg-default));
   font-size: var(--xh-transfer-item-font-size, var(--xh-text-body-size));
@@ -16105,13 +16125,15 @@
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-/* 键盘高亮与指针悬停共用一套底色：条目本身承载焦点，不另画描边。
+/* 悬停与键盘锚点共用中性灰轻档：条目本身承载焦点，不另画描边。
    data-highlighted 跟的是连接层记的焦点条目，与勾选互相独立 */
 [data-scope='transfer'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
-  background: var(--xh-transfer-item-bg-highlight, var(--xh-bg-subtle-hover));
+  background: var(--xh-transfer-item-bg-hover, var(--xh-bg-subtle));
 }
 
 [data-scope='transfer'][data-part='item']:focus-visible {

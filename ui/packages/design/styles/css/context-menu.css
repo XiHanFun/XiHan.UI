@@ -4,13 +4,16 @@
     /* 尺寸档只换这四个私有槽，条目与分组标题都从 root 继承它们，
        换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承
        （display:contents 不影响继承：自定义属性沿 DOM 树传） */
-    --xh-_context-menu-item-py: var(--xh-space-2);
-    --xh-_context-menu-item-px: var(--xh-control-px-sm);
+    --xh-_context-menu-item-py: var(--xh-space-1_5);
+    --xh-_context-menu-item-px: var(--xh-control-px-md);
     --xh-_context-menu-item-gap: var(--xh-control-gap-md);
     --xh-_context-menu-font-size: var(--xh-text-body-size);
 
-    /* 条目高亮底与标记位强调色随语气走。没写 data-tone 时这两个语气槽没被声明，各自退回原来的取值 */
-    --xh-_context-menu-item-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+    /* 打开子菜单的触发条目走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底。
+       悬停与键盘焦点恒中性灰轻档、不接语气槽——两档同色相的话打开路径就认不出来了 */
+    --xh-_context-menu-item-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+
+    /* 标记位强调色随语气走，没写 data-tone 时退回原来的取值 */
     --xh-_context-menu-accent: var(--xh-_tone, var(--xh-fg-subtle));
 
     display: contents;
@@ -21,18 +24,18 @@
   }
 
   /* —— 尺寸 —— */
-  /* 缺省档写在上面的基础规则里。条目内外边距缺省档本就不在 control-h/px 那把尺上
-     （高度由 padding 撑出来、行内内缩取的是 sm 档），故按 space 档上下各挪一级 */
+  /* 缺省档写在上面的基础规则里。条目高度由 padding 撑出来：
+     纵向走 space 档、行内内缩走 control-px 档（随密度轴），换档各挪一级 */
   [data-scope='context-menu'][data-part='root'][data-size='sm'] {
     --xh-_context-menu-item-py: var(--xh-space-1);
-    --xh-_context-menu-item-px: var(--xh-space-1);
+    --xh-_context-menu-item-px: var(--xh-control-px-sm);
     --xh-_context-menu-item-gap: var(--xh-control-gap-sm);
     --xh-_context-menu-font-size: var(--xh-font-size-sm);
   }
 
   [data-scope='context-menu'][data-part='root'][data-size='lg'] {
-    --xh-_context-menu-item-py: var(--xh-space-3);
-    --xh-_context-menu-item-px: var(--xh-space-3);
+    --xh-_context-menu-item-py: var(--xh-space-2);
+    --xh-_context-menu-item-px: var(--xh-control-px-lg);
     --xh-_context-menu-item-gap: var(--xh-control-gap-lg);
     --xh-_context-menu-font-size: var(--xh-font-size-lg);
   }
@@ -135,10 +138,13 @@
     border-radius: var(--xh-context-menu-item-radius, var(--xh-shape-control));
     color: var(--xh-context-menu-item-fg, var(--xh-fg-default));
     font-size: var(--xh-context-menu-item-font-size, var(--xh-_context-menu-font-size));
-    line-height: var(--xh-leading-none);
+    line-height: var(--xh-context-menu-item-leading, var(--xh-leading-normal));
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 条目可以按需收起（按上下文过滤掉的命令），有 display 就得补这条 */
@@ -146,11 +152,18 @@
     display: none;
   }
 
-  /* 键盘高亮与指针高亮共用一套底色：条目本身承载焦点，不另画描边。
+  /* 悬停与键盘焦点共用中性灰轻档：条目本身承载焦点，不另画描边。
      data-highlighted 跟的是连接层记的焦点条目，与 :focus 说的是同一件事，
      子部件够不着那个伪类，只能读这个标记 */
-  [data-scope='context-menu'][data-part='item']:not([data-disabled]):is(:hover, :focus, [data-highlighted], [data-state='open']) {
-    background: var(--xh-context-menu-item-bg-highlight, var(--xh-_context-menu-item-highlight-bg));
+  [data-scope='context-menu'][data-part='item']:not([data-disabled]):is(:hover, :focus, [data-highlighted]) {
+    background: var(--xh-context-menu-item-bg-hover, var(--xh-bg-subtle));
+  }
+
+  /* 打开子菜单的触发条目是展开路径，走品牌淡底加粗强档。
+     必须排在轻档之后：悬停或焦点回到它身上时同特指度靠书写顺序压过轻档 */
+  [data-scope='context-menu'][data-part='item']:not([data-disabled])[data-state='open'] {
+    background: var(--xh-context-menu-item-bg-active, var(--xh-_context-menu-item-active-bg));
+    font-weight: var(--xh-context-menu-item-active-font-weight, var(--xh-font-weight-semibold));
   }
 
   [data-scope='context-menu'][data-part='item']:focus {

@@ -135,10 +135,10 @@
     border-block-end: none;
   }
 
-  /* 键盘高亮与指针高亮共用一套底色。data-highlighted 跟的是连接层记的焦点行，
+  /* 悬停与键盘锚点共用中性灰轻档。data-highlighted 跟的是连接层记的焦点行，
      与选中互相独立：可以停在一个没被选中的行上 */
   [data-scope='table'][data-part='body'] > [data-scope='table'][data-part='row']:not([data-disabled]):is(:hover, [data-highlighted]) {
-    background: var(--xh-table-row-bg-highlight, var(--xh-bg-subtle-hover));
+    background: var(--xh-table-row-bg-hover, var(--xh-bg-subtle));
   }
 
   /* 选中比高亮更"实"：它表达的是数据状态，翻页回来还在 */
