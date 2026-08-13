@@ -117,10 +117,9 @@
     border-color: var(--xh-tree-select-trigger-border-hover, var(--xh-_tree-select-border-hover));
   }
 
-  /* trigger 是整个控件唯一的 Tab 停靠点（展开后停靠点才移进树里），落焦必须看得见。
-     语气落在环上：没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色 */
+  /* trigger 是整个控件唯一的 Tab 停靠点（展开后停靠点才移进树里），落焦必须看得见 */
   [data-scope='tree-select'][data-part='trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
   }
 
@@ -219,7 +218,7 @@
   /* 清空按钮退出了 Tab 序列（tabindex=-1），正常操作走不到这里；
      留着是给程序化聚焦兜底，落焦时得看得见 */
   [data-scope='tree-select'][data-part='clear-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
   }
 
@@ -297,7 +296,7 @@
   }
 
   [data-scope='tree-select'][data-part='branch']:focus-visible > [data-scope='tree-select'][data-part='branch-control'] {
-    outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     /* 往内收：行是撑满宽度的，环画在外沿会被容器裁掉 */
     outline-offset: calc(-1 * var(--xh-ring-width));
   }
@@ -347,7 +346,7 @@
 
   /* 叶子自己就是 treeitem，环直接画在它身上 */
   [data-scope='tree-select'][data-part='item']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-_tone, var(--xh-ring-focus));
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: calc(-1 * var(--xh-ring-width));
   }
 
