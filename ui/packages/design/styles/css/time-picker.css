@@ -242,8 +242,7 @@
     max-block-size: var(--xh-time-picker-column-max-h, 12rem);
     padding-inline: var(--xh-time-picker-column-px, var(--xh-space-1));
     overflow-y: auto;
-    /* 滚动容器在某些浏览器里会被自动塞进 Tab 序列，落焦时不画环——
-       焦点该落在格上，列只在整列被界卡空时才兜底占一个 Tab 位 */
+    /* 滚动容器在某些浏览器里会被自动塞进 Tab 序列，是否画环见下方按 tabindex 分档的两条 */
     scrollbar-width: thin;
   }
 
@@ -256,7 +255,14 @@
     border-inline-start: var(--xh-stroke-thin) solid var(--xh-time-picker-column-divider, var(--xh-border-subtle));
   }
 
-  [data-scope='time-picker'][data-part='column']:focus-visible {
+  /* 焦点落在列上有两种情形：指针打开、这一段还空着、还没有任何格当锚点，或整列被界裁空。
+     那一刻它认领着 Tab 位，环画在列内沿；有锚点时环长在格上，列不再画 */
+  [data-scope='time-picker'][data-part='column'][tabindex='0']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  [data-scope='time-picker'][data-part='column']:not([tabindex='0']):focus-visible {
     outline: none;
   }
 
