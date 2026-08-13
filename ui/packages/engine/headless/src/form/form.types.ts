@@ -1,10 +1,49 @@
 import type { PropTypes } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 import type { FormErrorPatch, FormErrors } from './form.errors'
-import type { FormRules, FormValidateMessages } from './form.rules'
 
 /** 字段名 → 值。表单不解读值的类型，只负责搬运与交给 validate。 */
 export type FormValues = Record<string, unknown>
+
+/** 内置类型检查档位。 */
+export type FormRuleType = 'string' | 'number' | 'integer' | 'email' | 'url' | 'array'
+
+/** 一条声明式规则；各检查项都可缺省，validator 支持异步。 */
+export interface FormRule {
+  /** 必填：空值（undefined / null / 空串 / 空数组）拦下。 */
+  required?: boolean
+  /** 类型检查档位；数值/整数会把字符串数字也认作数。 */
+  type?: FormRuleType
+  /** 下限：字符串/数组比长度，数值比大小。 */
+  min?: number
+  /** 上限：语义同 min。 */
+  max?: number
+  /** 正则检查；只对字符串值生效。 */
+  pattern?: RegExp
+  /**
+   * 自定义检查：返回错误文案即失败，返回空即通过；允许返回 Promise（远程校验）。
+   * 第二参是整表值，跨字段规则从这里读。
+   */
+  validator?: (value: unknown, values: FormValues) => string | undefined | null | Promise<string | undefined | null>
+  /** 本条规则的文案，赢过模板。 */
+  message?: string
+}
+
+/** 字段名 → 一条或一组规则。 */
+export type FormRules = Record<string, FormRule | FormRule[]>
+
+/** 文案模板，{name}/{min}/{max} 现场代入；缺省用内置英文模板。 */
+export interface FormValidateMessages {
+  required?: string
+  type?: Partial<Record<FormRuleType, string>>
+  /** 字符串/数组的长度下限模板。 */
+  minLength?: string
+  maxLength?: string
+  /** 数值的大小界限模板。 */
+  minNumber?: string
+  maxNumber?: string
+  pattern?: string
+}
 
 /**
  * 表单排布：
