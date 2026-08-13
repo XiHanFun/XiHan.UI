@@ -50,6 +50,7 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @attr {'click'|'hover'} expand-trigger - 子列由点还是悬停展开，默认 click
  * @attr {boolean} change-on-select - 中间层（分支）也能落值
  * @attr {boolean} multiple - 多选：选中后浮层不收起，焦点留在列里
+ * @attr {boolean} searchable - 开启搜索：input 部件可用，输入后整条路径连缀过滤、候选替换列视图
  * @attr {boolean} cascade - 多选下父子级联勾选（整枝传导/半选/禁用冻结），默认 false
  * @attr {string} checked-strategy - 级联下对外值的收敛策略：child（默认）/ parent / all
  * @attr {boolean} disabled - 整个控件禁用：trigger 用原生 disabled，浮层展不开
@@ -74,6 +75,9 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位且对读屏隐藏
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - 浮层壳（焦点域与消解层的根节点），键盘在此收口，收起时带 hidden
+ * @csspart input - 搜索框（content 顶部）；没开 searchable 时带 hidden。上下键走候选、Enter 选中、Escape 先清词
+ * @csspart search-list - 候选列表容器；不在搜索视图时带 hidden
+ * @csspart search-item - 一条候选，须用 value 属性写整条路径的 JSON 数组串（如 value='["a","b"]'）；词换了不匹配的带 hidden
  * @csspart column - role=listbox 的一列，须自带 level 属性标识它是第几列；砍掉时带 hidden
  * @csspart item - role=option 的条目，须自带 value 属性标识身份；不在当前列里时带 hidden
  * @csspart item-text - 条目文本
@@ -93,6 +97,7 @@ export class XhCascaderElement extends XhElement {
     expandTrigger: { converter: STRING_CONVERTER, attribute: 'expand-trigger' },
     changeOnSelect: { converter: BOOLEAN_CONVERTER, attribute: 'change-on-select' },
     multiple: { type: Boolean },
+    searchable: { type: Boolean },
     cascade: { type: Boolean },
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
     disabled: { type: Boolean },
@@ -117,6 +122,7 @@ export class XhCascaderElement extends XhElement {
   declare expandTrigger?: CascaderExpandTrigger
   declare changeOnSelect?: boolean
   declare multiple?: boolean
+  declare searchable?: boolean
   declare cascade?: boolean
   declare checkedStrategy?: CascaderSchema['props']['checkedStrategy']
   declare disabled?: boolean
@@ -165,6 +171,7 @@ export class XhCascaderElement extends XhElement {
       expandTrigger: this.expandTrigger,
       changeOnSelect: this.changeOnSelect ?? false,
       multiple: this.multiple ?? false,
+      searchable: this.searchable ?? false,
       cascade: this.cascade,
       checkedStrategy: this.checkedStrategy,
       disabled: this.disabled ?? false,
@@ -295,6 +302,23 @@ export class XhCascaderElement extends XhElement {
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
+    put('input', api.getInputProps() as Record<string, unknown>)
+    put('search-list', api.getSearchListProps() as Record<string, unknown>)
+
+    // 候选是多实例 part：身份用 value 属性自报整条路径（JSON 数组串，与 cascaderPathKey 同构）
+    for (const el of this.getParts('search-item')) {
+      const raw = el.getAttribute('value') ?? '[]'
+      let path: string[] = []
+      try {
+        const parsed: unknown = JSON.parse(raw)
+        if (Array.isArray(parsed))
+          path = parsed.map(String)
+      }
+      catch {
+        path = []
+      }
+      this.spreader.spread(el, api.getSearchItemProps({ path }) as Record<string, unknown>)
+    }
 
     // 属性先落，显示文字随后
     const valueText = this.getPart('value-text')

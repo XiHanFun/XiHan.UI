@@ -1,7 +1,7 @@
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
-import type { CascaderApi, CascaderNodeMeta, CascaderSchema } from './cascader.types'
+import type { CascaderApi, CascaderNodeMeta, CascaderSchema, CascaderSearchResult } from './cascader.types'
 import { cascadeState, focusItem, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/kernel'
 import { cascaderAnatomy } from './cascader.anatomy'
@@ -15,6 +15,7 @@ import {
   cascaderStepColumn,
 } from './cascader.columns'
 import { CASCADER_DEFAULT_PLACEMENT, CASCADER_DEFAULT_SEPARATOR, findCascaderItemEl } from './cascader.machine'
+import { cascaderFilterCandidates, cascaderSearchCandidates } from './cascader.search'
 
 const parts = cascaderAnatomy.build()
 
@@ -24,7 +25,7 @@ export function connectCascader<T extends PropTypes>(
 ): CascaderApi<T> {
   const { state, prop, send, context, refs, scope } = service
   const open = state.get() === 'open'
-  const ids = scope.ids('cascader', 'label', 'trigger', 'value-text', 'content')
+  const ids = scope.ids('cascader', 'label', 'trigger', 'value-text', 'content', 'input', 'search-list')
 
   const collection = prop('collection') ?? []
   const activePath = context.get('activePath')
@@ -146,6 +147,25 @@ export function connectCascader<T extends PropTypes>(
     }
   }
 
+  // —— 搜索视图：整条路径连缀过滤，候选替换列视图 ——
+  const searchable = !!prop('searchable')
+  const inputValue = context.get('inputValue')
+  const searching = searchable && inputValue.trim() !== ''
+  const searchResults: CascaderSearchResult[] = searching
+    ? cascaderFilterCandidates(cascaderSearchCandidates(collection, !!prop('changeOnSelect')), inputValue)
+        .map(candidate => ({ ...candidate, key: cascaderPathKey(candidate.path) }))
+    : []
+  const searchHighlightIndex = searchResults.length === 0
+    ? -1
+    : Math.min(context.get('searchIndex'), searchResults.length - 1)
+  const searchItemId = (key: string): string => scope.partId('cascader', `search-item-${key}`)
+
+  /** 选中一条候选：与点列内条目同一语义；禁用整条不认。 */
+  const selectSearchResult = (result: CascaderSearchResult | undefined): void => {
+    if (result && !result.disabled)
+      send({ type: 'ITEM.SELECT', path: result.path })
+  }
+
   return {
     open,
     collection,
@@ -162,10 +182,15 @@ export function connectCascader<T extends PropTypes>(
     readOnly,
     invalid,
     canClear,
+    searching,
+    inputValue,
+    searchResults,
+    searchHighlightIndex,
     isSelected,
     isIndeterminate,
     isActive,
     isVisible,
+    setInputValue: next => send({ type: 'INPUT.CHANGE', value: next }),
     setOpen: (next) => {
       if (next !== open)
         send(next ? { type: 'OPEN', focus: 'selected' } : { type: 'CLOSE' })
@@ -296,11 +321,16 @@ export function connectCascader<T extends PropTypes>(
       'tabindex': open && focusedPath == null ? 0 : -1,
       'data-state': stateAttr,
       'data-placement': placement,
+      // 皮肤据此把列视图让位给候选列表
+      'data-searching': dataAttr(searching),
       // 收起时留在 DOM 只隐藏，不卸载作者节点
       'hidden': !open || undefined,
       'onKeyDown': (event: KeyboardEvent) => {
         // 收起态按键不改任何东西，守卫防的是程序化派发
         if (!open || disabled)
+          return
+        // 搜索框里的按键归它自己（光标移动、候选导航都在那儿处理），列导航不抢
+        if ((event.target as HTMLElement).closest(parts.input.selector))
           return
         const key = event.key
         // 带 Ctrl/Cmd/Alt 的组合不归浮层管
@@ -378,6 +408,86 @@ export function connectCascader<T extends PropTypes>(
         focusItem(findCascaderItemEl(content, cascaderStepColumn(column.items, null, 'first', { loop })?.value ?? null))
       },
     }),
+
+    getInputProps: () => normalize.input({
+      ...parts.input.attrs,
+      'id': ids.input,
+      'type': 'text',
+      'value': inputValue,
+      'disabled': disabled || undefined,
+      // 没开 searchable 就整个藏掉，作者不必条件渲染
+      'hidden': !searchable || undefined,
+      'autocomplete': 'off',
+      'autocapitalize': 'none',
+      'aria-autocomplete': 'list',
+      'aria-controls': ids['search-list'],
+      // 没有高亮可指时属性整个缺席
+      'aria-activedescendant': searching && searchHighlightIndex >= 0
+        ? searchItemId(searchResults[searchHighlightIndex]!.key)
+        : undefined,
+      'onInput': (event: Event) => {
+        send({ type: 'INPUT.CHANGE', value: (event.target as HTMLInputElement).value })
+      },
+      'onKeyDown': (event: KeyboardEvent) => {
+        // 横向键与 Home/End 留给光标；stopPropagation 挡掉 content 的跨列导航
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'Home' || event.key === 'End') {
+          event.stopPropagation()
+          return
+        }
+        if (event.key === 'Escape') {
+          // 先清词回列视图，词已空才放行给消解层收浮层
+          if (inputValue !== '') {
+            event.stopPropagation()
+            send({ type: 'INPUT.CHANGE', value: '' })
+          }
+          return
+        }
+        if (!searching)
+          return
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+          event.preventDefault()
+          event.stopPropagation()
+          const step = event.key === 'ArrowDown' ? 1 : -1
+          const next = Math.min(Math.max(searchHighlightIndex + step, 0), searchResults.length - 1)
+          send({ type: 'SEARCH.HIGHLIGHT', index: next })
+          return
+        }
+        if (event.key === 'Enter') {
+          event.preventDefault()
+          event.stopPropagation()
+          selectSearchResult(searchResults[searchHighlightIndex])
+        }
+      },
+    }),
+
+    getSearchListProps: () => normalize.element({
+      ...parts['search-list'].attrs,
+      id: ids['search-list'],
+      role: 'listbox',
+      hidden: !searching || undefined,
+    }),
+
+    getSearchItemProps: ({ path }) => {
+      const key = cascaderPathKey(path)
+      const index = searchResults.findIndex(result => result.key === key)
+      const result = index >= 0 ? searchResults[index] : undefined
+      return normalize.element({
+        ...parts['search-item'].attrs,
+        'id': searchItemId(key),
+        'role': 'option',
+        'aria-selected': selectedKeys.has(key) ? 'true' : 'false',
+        'aria-disabled': result?.disabled ? 'true' : 'false',
+        // 不在当前候选里（词换了）整个藏掉：WC 的候选节点常驻 DOM，靠这条过滤
+        'hidden': !searching || index < 0 || undefined,
+        'data-highlighted': dataAttr(index >= 0 && index === searchHighlightIndex),
+        'data-disabled': dataAttr(!!result?.disabled),
+        'onClick': () => selectSearchResult(result),
+        'onPointerMove': () => {
+          if (index >= 0 && index !== searchHighlightIndex && !result?.disabled)
+            send({ type: 'SEARCH.HIGHLIGHT', index })
+        },
+      })
+    },
 
     getColumnProps: (column) => {
       // 子列的名字取展开它的那个条目；父条目不在任何可见列里时退回组件标题，避免悬空 IDREF

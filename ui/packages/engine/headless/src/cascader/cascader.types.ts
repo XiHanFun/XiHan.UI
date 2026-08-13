@@ -20,6 +20,22 @@ export interface CascaderNode {
   children?: CascaderNode[]
 }
 
+/** 候选部件自报家门：它代表哪条整路径。 */
+export interface CascaderSearchItemProps {
+  path: string[]
+}
+
+/** 一条过滤后的候选。 */
+export interface CascaderSearchResult {
+  path: string[]
+  /** 整条路径逐段的显示名。 */
+  labels: string[]
+  /** 路径上任何一段禁用即整条禁用，点按不落值。 */
+  disabled: boolean
+  /** cascaderPathKey(path)，作 DOM id 与比对键。 */
+  key: string
+}
+
 /** 单个条目的元信息，由 collection 推出，不含选中态与展开态。 */
 export interface CascaderNodeMeta {
   value: string
@@ -122,6 +138,8 @@ export interface CascaderSchema extends MachineSchema {
     changeOnSelect?: boolean
     /** 多选：选中是路径集合，选中后浮层不收起、焦点留在列里以便接着挑。 */
     multiple?: boolean
+    /** 开启搜索：input 部件可用，输入后整条路径连缀过滤、候选替换列视图。 */
+    searchable?: boolean
     /**
      * 多选下父子级联勾选：点分支整枝传导、子全勾父勾、部分勾中半选，
      * 禁用子树整棵冻结。默认 false（按路径原样翻转）；单选下无效。
@@ -172,6 +190,10 @@ export interface CascaderSchema extends MachineSchema {
     focusIntent: CascaderFocusIntent
     /** 关闭时是否把焦点归还 trigger；Tab 与层外交互关闭时为 false。 */
     returnFocus: boolean
+    /** 搜索框里的原始串；非空即进搜索视图。收起与选中都会清掉。 */
+    inputValue: string
+    /** 搜索候选里的虚拟高亮下标，随输入重置为 0。 */
+    searchIndex: number
   }
   computed: Record<string, never>
   refs: CascaderRefs
@@ -201,6 +223,10 @@ export interface CascaderSchema extends MachineSchema {
     | { type: 'VALUE.CLEAR' }
     /** 整体改写展开路径（外部 setActivePath 走它）。 */
     | { type: 'PATH.SET', path: string[] }
+    /** 搜索框输入；随之把候选高亮重置到第 0 条。 */
+    | { type: 'INPUT.CHANGE', value: string }
+    /** 搜索候选的虚拟高亮换到第 index 条。 */
+    | { type: 'SEARCH.HIGHLIGHT', index: number }
   tag: never
   guard: 'isOpenControlled' | 'isMultiple' | 'staysOpenOnSelect'
   action:
@@ -217,6 +243,9 @@ export interface CascaderSchema extends MachineSchema {
     | 'selectPath'
     | 'setValue'
     | 'clearValue'
+    | 'setInputValue'
+    | 'setSearchIndex'
+    | 'clearInput'
   effect: 'trackPosition' | 'trackLayer'
 }
 
@@ -254,6 +283,15 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   isActive: (value: string) => boolean
   /** 该条目此刻是否落在某个可见列里。 */
   isVisible: (value: string) => boolean
+  /** 正处在搜索视图（开了 searchable 且输入非空）：列视图让位给候选列表。 */
+  searching: boolean
+  /** 搜索框里的原始串。 */
+  inputValue: string
+  /** 过滤后的候选：整条路径连缀匹配，带 pathKey 与禁用标记。 */
+  searchResults: readonly CascaderSearchResult[]
+  /** 候选里的虚拟高亮下标（已夹进候选长度）；没有候选为 -1。 */
+  searchHighlightIndex: number
+  setInputValue: (next: string) => void
   setOpen: (next: boolean) => void
   setValue: (next: string[][]) => void
   setActivePath: (next: string[]) => void
@@ -268,6 +306,12 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   getClearTriggerProps: () => T['button']
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
+  /** 搜索框：放在 content 顶部；输入即过滤，上下键走候选、Enter 选中、Escape 先清词。 */
+  getInputProps: () => T['input']
+  /** 候选列表容器；不在搜索视图时带 hidden。 */
+  getSearchListProps: () => T['element']
+  /** 一条候选：身份是整条路径；点按选中（与点列内条目同一语义）。 */
+  getSearchItemProps: (props: CascaderSearchItemProps) => T['element']
   getColumnProps: (props: CascaderColumnProps) => T['element']
   getItemProps: (props: CascaderItemProps) => T['element']
   getItemTextProps: (props: CascaderItemProps) => T['element']

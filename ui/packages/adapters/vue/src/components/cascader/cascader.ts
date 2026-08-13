@@ -57,6 +57,7 @@ export const XhCascaderRoot = defineComponent({
     expandTrigger: { type: String as PropType<CascaderExpandTrigger>, default: undefined },
     changeOnSelect: Boolean,
     multiple: Boolean,
+    searchable: { type: Boolean, default: undefined },
     cascade: Boolean,
     checkedStrategy: { type: String as PropType<CascaderProps['checkedStrategy']>, default: undefined },
     disabled: Boolean,
@@ -186,6 +187,30 @@ export const XhCascaderContent = defineComponent({
       ...ctx.api.value.getContentProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
     }, slots.default?.())
+  },
+})
+
+export const XhCascaderInput = defineComponent({
+  name: 'XhCascaderInput',
+  setup() {
+    const ctx = useCascaderContext()
+    // 搜索框放在 content 顶部；没开 searchable 时连接层给 hidden
+    return () => h('input', ctx.api.value.getInputProps() as Record<string, unknown>)
+  },
+})
+
+export const XhCascaderSearchList = defineComponent({
+  name: 'XhCascaderSearchList',
+  setup(_, { slots }) {
+    const ctx = useCascaderContext()
+    // 候选整组自动铺：整条路径连缀成一行；item 插槽可换内容
+    return () => h('div', ctx.api.value.getSearchListProps() as Record<string, unknown>, ctx.api.value.searchResults.map(result =>
+      h(
+        'div',
+        { ...ctx.api.value.getSearchItemProps({ path: result.path }) as Record<string, unknown>, key: result.key },
+        slots.item ? slots.item({ result }) : result.labels.join(' / '),
+      ),
+    ))
   },
 })
 

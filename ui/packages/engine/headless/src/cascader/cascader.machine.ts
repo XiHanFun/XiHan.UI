@@ -90,6 +90,8 @@ export const cascaderMachine = createMachine({
     })),
     focusIntent: cell<CascaderFocusIntent>(() => ({ defaultValue: 'selected' })),
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
+    inputValue: cell<string>(() => ({ defaultValue: '' })),
+    searchIndex: cell<number>(() => ({ defaultValue: 0 })),
   }),
   refs: () => ({
     config: null,
@@ -132,7 +134,7 @@ export const cascaderMachine = createMachine({
     open: {
       // 展开那一刻把列一路铺到选中路径上并挑好焦点锚点，全程纯计算
       entry: ['setInitialFocusedPath'],
-      exit: ['clearFocusedPath'],
+      exit: ['clearFocusedPath', 'clearInput'],
       // 定位 → 消解 → 焦点；退出时逆序清理
       effects: ['trackPosition', 'trackLayer'],
       on: {
@@ -144,13 +146,16 @@ export const cascaderMachine = createMachine({
           { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnClose'] },
           { target: 'closed', actions: ['setReturnFocus', 'invokeOnClose'] },
         ],
-        // 多选与分支选完都不收起，焦点留在列里；只有叶子走与 CLOSE 相同的收口
+        // 多选与分支选完都不收起，焦点留在列里；只有叶子走与 CLOSE 相同的收口。
+        // 停留在展开态的选中要把搜索词清掉，候选视图随之让位回列视图
         'ITEM.SELECT': [
-          { guard: 'isMultiple', actions: ['selectPath'] },
-          { guard: 'staysOpenOnSelect', actions: ['selectPath'] },
+          { guard: 'isMultiple', actions: ['selectPath', 'clearInput'] },
+          { guard: 'staysOpenOnSelect', actions: ['selectPath', 'clearInput'] },
           { guard: 'isOpenControlled', actions: ['selectPath', 'setReturnFocus', 'invokeOnClose'] },
           { target: 'closed', actions: ['selectPath', 'setReturnFocus', 'invokeOnClose'] },
         ],
+        'INPUT.CHANGE': { actions: ['setInputValue'] },
+        'SEARCH.HIGHLIGHT': { actions: ['setSearchIndex'] },
         // 持有焦点的条目被移出 DOM，锚点悬空，就地按当前数据重挑一个
         'ITEM.LOST': { actions: ['clearFocusedPath', 'setInitialFocusedPath'] },
         'CONTROLLED.CLOSE': { target: 'closed' },
@@ -172,6 +177,25 @@ export const cascaderMachine = createMachine({
     actions: {
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
+
+      setInputValue: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'INPUT.CHANGE')
+          return
+        context.set('inputValue', e.value)
+        // 候选随词换，高亮回到第 0 条
+        context.set('searchIndex', 0)
+      },
+      setSearchIndex: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'SEARCH.HIGHLIGHT')
+          context.set('searchIndex', Math.max(0, e.index))
+      },
+      clearInput: ({ context }) => {
+        if (context.get('inputValue') !== '')
+          context.set('inputValue', '')
+        context.set('searchIndex', 0)
+      },
 
       // 只在 open 为布尔时回写；变回 undefined 即转非受控，不强制关闭
       syncOpen: ({ prop, send }) => {
@@ -364,8 +388,14 @@ export const cascaderMachine = createMachine({
         const dismiss = createDismissLayer({
           config,
           layer,
-          onDismiss: reason =>
-            send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
+          onDismiss: (reason) => {
+            // Escape 分两拍：搜索词还在就先清词回列视图，词已空才收浮层
+            if (reason === 'escape-key' && context.get('inputValue') !== '') {
+              send({ type: 'INPUT.CHANGE', value: '' })
+              return
+            }
+            send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' })
+          },
         })
 
         const focus = createFocusScope({
