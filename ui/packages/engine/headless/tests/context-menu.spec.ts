@@ -425,16 +425,23 @@ describe('connectContextMenu 属性输出', () => {
     expect(h.trigger.getAttribute('data-state')).toBe('closed')
   })
 
-  it('content 是 menu 且由触发区命名；收起只 hidden，不卸载作者节点', () => {
+  it('content 是 menu 且自带名字；收起只 hidden，不卸载作者节点', () => {
     const h = mount()
     expect(h.content.getAttribute('role')).toBe('menu')
-    expect(h.content.getAttribute('aria-labelledby')).toBe(h.trigger.id)
+    // 触发区是作者的一整块内容且不带 role：指过去会把整块区域的文字算成菜单名
+    expect(h.content.hasAttribute('aria-labelledby')).toBe(false)
+    expect(h.content.getAttribute('aria-label')).toBe('Context menu')
     expect(h.content.hasAttribute('hidden')).toBe(true)
     expect(h.item('copy').isConnected).toBe(true)
     rightClick(h.trigger)
     expect(h.content.hasAttribute('hidden')).toBe(false)
     expect(h.positioner.getAttribute('data-state')).toBe('open')
     expect(h.positioner.getAttribute('data-placement')).toBe('bottom-start')
+  })
+
+  it('菜单名字可写：translations 覆盖默认那一份', () => {
+    const h = mount({ translations: { content: '行操作' } })
+    expect(h.content.getAttribute('aria-label')).toBe('行操作')
   })
 
   it('条目：role=menuitem，禁用走 aria-disabled 而非原生 disabled', () => {
@@ -710,7 +717,9 @@ describe('虚拟锚点定位', () => {
     expect(h.engine.calls[0]!.rect).toEqual({ x: 120, y: 80, width: 0, height: 0 })
     // 引擎缺省间距是 8px（那是给"贴着一个触发按钮"准备的），右键菜单必须显式压成 0。
     // strategy 必须与 connect 产出的内联 position 同为 fixed：一处走岔就整族偏掉一个 scrollY。
-    expect(h.engine.calls[0]!.options).toEqual({ placement: 'bottom-start', offset: 0, strategy: 'fixed' })
+    expect(h.engine.calls[0]!.options).toMatchObject({ placement: 'bottom-start', offset: 0, strategy: 'fixed' })
+    // 箭头的量也交了出去：引擎量不到箭头，不交就算不出落点
+    expect(h.engine.calls[0]!.options.arrow).toMatchObject({ size: expect.any(Number), padding: expect.any(Number) })
   })
 
   it('展开期间换坐标：重挂到新的一点，且先撤掉旧订阅', async () => {

@@ -266,7 +266,11 @@ export function connectSelect<T extends PropTypes>(
       ...parts.content.attrs,
       'id': ids.content,
       'role': 'listbox',
-      'aria-labelledby': ids.label,
+      // 名字与 trigger 同源（标签 + 当前值）：无锚点时焦点歇在这儿，读屏只报得出容器的名字与角色。
+      // 作者没渲染 label / value-text 时两段都是悬空 IDREF，按 accname 规则整条落空，
+      // 名字退回下面那个可写的兜底
+      'aria-labelledby': `${ids.label} ${ids['value-text']}`,
+      'aria-label': prop('translations')?.content ?? 'Options',
       // 多选语义显式报出，读屏据此播报「可多选」
       'aria-multiselectable': multiple ? 'true' : 'false',
       // 有锚点时 Tab 位归高亮条目；展开却无锚点时由容器兜底，否则列表没有任何 Tab 停靠点。

@@ -21,4 +21,5 @@ export type {
   ContextMenuRefs,
   ContextMenuSchema,
   ContextMenuSelectDetails,
+  ContextMenuTranslations,
 } from './context-menu.types'

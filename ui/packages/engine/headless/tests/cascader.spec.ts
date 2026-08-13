@@ -981,6 +981,17 @@ describe('roving tabindex 与 ARIA 骨架', () => {
     // 子列的名字取展开它的那个条目，读屏才播报得出「浙江，列表」
     expect(h.column(1).getAttribute('aria-labelledby')).toBe(h.item('zhejiang').item.getAttribute('id'))
     expect(h.column(0).getAttribute('aria-labelledby')).not.toBe(h.column(1).getAttribute('aria-labelledby'))
+    // 名字实打实指得到，子列不必再挂兜底
+    expect(h.column(1).hasAttribute('aria-label')).toBe(false)
+  })
+
+  // 指针打开不预落锚点，焦点歇在根列上：那一刻读屏只报得出它的名字与角色
+  it('根列的名字与 trigger 同源；两个名字部件都没渲染时退回可写的兜底名', () => {
+    const h = mount({ defaultOpen: true, defaultValue: ['zhejiang'] })
+    expect(h.column(0).getAttribute('aria-labelledby')).toBe(h.trigger.getAttribute('aria-labelledby'))
+    expect(h.column(0).getAttribute('aria-label')).toBe('Options')
+    h.setProps({ translations: { column: '省份' } })
+    expect(h.column(0).getAttribute('aria-label')).toBe('省份')
   })
 
   it('trigger 扮演 combobox，名字取标题加当前值', () => {
@@ -1029,8 +1040,8 @@ describe('空态占位', () => {
 
   it('文案默认英文，translations 逐键覆盖', () => {
     const h = mount()
-    expect(h.api().translations).toEqual({ empty: 'No data', noMatch: 'No matches' })
+    expect(h.api().translations).toEqual({ empty: 'No data', noMatch: 'No matches', column: 'Options' })
     h.setProps({ translations: { empty: '暂无数据' } })
-    expect(h.api().translations).toEqual({ empty: '暂无数据', noMatch: 'No matches' })
+    expect(h.api().translations).toEqual({ empty: '暂无数据', noMatch: 'No matches', column: 'Options' })
   })
 })

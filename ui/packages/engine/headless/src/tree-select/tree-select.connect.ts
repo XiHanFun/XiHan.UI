@@ -403,7 +403,11 @@ export function connectTreeSelect<T extends PropTypes>(
       ...parts.tree.attrs,
       'id': ids.tree,
       'role': 'tree',
-      'aria-labelledby': ids.label,
+      // 名字与 trigger 同源（标签 + 当前值）：无锚点时焦点歇在这儿，读屏只报得出容器的名字与角色。
+      // 作者没渲染 label / value-text 时两段都是悬空 IDREF，按 accname 规则整条落空，
+      // 名字退回下面那个可写的兜底
+      'aria-labelledby': `${ids.label} ${ids['value-text']}`,
+      'aria-label': prop('translations')?.tree ?? 'Tree options',
       // 复选与否显式输出
       'aria-multiselectable': multiple ? 'true' : 'false',
       'aria-disabled': disabled ? 'true' : 'false',

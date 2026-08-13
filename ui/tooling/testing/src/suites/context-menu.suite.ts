@@ -151,7 +151,9 @@ export const contextMenuSuite: ConformanceSuite = {
           'content': {
             'role': 'menu',
             'tabindex': '-1',
-            'aria-labelledby': '@part(trigger)',
+            // 名字自己给：触发区是作者的一整块内容且不带 role，指过去会把整块区域的文字算成菜单名
+            'aria-labelledby': null,
+            'aria-label': 'Context menu',
             'hidden': '',
             'data-state': 'closed',
           },

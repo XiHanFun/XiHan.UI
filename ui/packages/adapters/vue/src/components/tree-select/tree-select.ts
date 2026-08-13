@@ -52,6 +52,7 @@ export const XhTreeSelectRoot = defineComponent({
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
     placeholder: { type: String, default: undefined },
+    translations: { type: Object as PropType<TreeSelectProps['translations']>, default: undefined },
     placement: { type: String as PropType<Placement>, default: undefined },
     offset: { type: Number, default: undefined },
     loop: { type: Boolean, default: undefined },

@@ -959,6 +959,15 @@ describe('aRIA 契约', () => {
     expect(h.trigger.getAttribute('aria-labelledby')).toBe(`${h.root.querySelector('[data-part="label"]')!.id} ${h.valueText.id}`)
   })
 
+  // 指针打开不预落锚点，焦点歇在树容器上：那一刻读屏只报得出它的名字与角色
+  it('树容器的名字与 trigger 同源；两个名字部件都没渲染时退回可写的兜底名', () => {
+    const h = mount({ defaultValue: 'license' })
+    expect(h.treeEl.getAttribute('aria-labelledby')).toBe(h.trigger.getAttribute('aria-labelledby'))
+    expect(h.treeEl.getAttribute('aria-label')).toBe('Tree options')
+    h.setProps({ translations: { tree: '目录树' } })
+    expect(h.treeEl.getAttribute('aria-label')).toBe('目录树')
+  })
+
   it('复选与否显式说出来，不靠省略表达', () => {
     expect(mount().treeEl.getAttribute('aria-multiselectable')).toBe('false')
     expect(mount({ multiple: true }).treeEl.getAttribute('aria-multiselectable')).toBe('true')

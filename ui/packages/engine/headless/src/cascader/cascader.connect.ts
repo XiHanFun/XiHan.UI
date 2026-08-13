@@ -168,10 +168,12 @@ export function connectCascader<T extends PropTypes>(
       send({ type: 'ITEM.SELECT', path: result.path })
   }
 
-  // 空态占位的文案：实例覆盖并入默认；露不露面由 getEmptyProps 按当前视图判定
+  // 读屏与空态占位的文案：实例覆盖并入默认。
+  // 两条占位露不露面由 getEmptyProps 按当前视图判定，根列的兜底名字见 getColumnProps
   const translations: CascaderTranslations = {
     empty: prop('translations')?.empty ?? 'No data',
     noMatch: prop('translations')?.noMatch ?? 'No matches',
+    column: prop('translations')?.column ?? 'Options',
   }
 
   return {
@@ -514,7 +516,12 @@ export function connectCascader<T extends PropTypes>(
         // 显式输出复选与否，省略时读屏无从区分
         'aria-multiselectable': multiple ? 'true' : 'false',
         'aria-disabled': disabled ? 'true' : 'false',
-        'aria-labelledby': parent == null ? ids.label : itemId(parent),
+        // 没有父条目可指的列（根列，以及展开路径砍短后收起的那几列）名字与 trigger 同源：
+        // 标签 + 当前值。指针打开时焦点歇在根列上，读屏此刻只报得出它的名字与角色；
+        // 作者没渲染 label / value-text 时两段都是悬空 IDREF，按 accname 规则整条落空，
+        // 名字退回下面那个可写的兜底
+        'aria-labelledby': parent == null ? `${ids.label} ${ids['value-text']}` : itemId(parent),
+        'aria-label': parent == null ? translations.column : undefined,
         'data-level': String(column.level),
         // 没有锚点条目时（指针打开且无选中值）由根列认领 Tab 位并接住焦点：
         // 它是 role=listbox 且有名字，读屏据此进焦点模式；浮层壳没有角色，接不了这个班。

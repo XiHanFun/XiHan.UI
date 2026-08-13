@@ -33,6 +33,7 @@ export const XhContextMenuRoot = defineComponent({
     offset: { type: Number, default: undefined },
     loop: { type: Boolean, default: undefined },
     typeahead: { type: Boolean, default: undefined },
+    translations: { type: Object as PropType<ContextMenuProps['translations']>, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
     longPressDelay: { type: Number, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },

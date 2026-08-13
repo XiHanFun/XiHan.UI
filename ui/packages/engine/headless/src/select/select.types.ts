@@ -52,6 +52,8 @@ export interface SelectTranslations {
   clear: string
   /** 标签删除按钮的可及名模板，{label} 现场代入。 */
   removeTag: string
+  /** 列表框容器的兜底名字，作者两个名字部件（label / value-text）都没渲染时才出面。 */
+  content: string
 }
 
 /** 标签自报家门：它代表哪个选中值。 */

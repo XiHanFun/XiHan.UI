@@ -67,6 +67,7 @@ export class XhContextMenuElement extends XhElement {
     offset: { converter: NUMBER_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
     typeahead: { converter: BOOLEAN_CONVERTER },
+    translations: { attribute: false },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     longPressDelay: { converter: NUMBER_CONVERTER, attribute: 'long-press-delay' },
     tone: { converter: STRING_CONVERTER },
@@ -80,6 +81,8 @@ export class XhContextMenuElement extends XhElement {
   declare offset?: number
   declare loop?: boolean
   declare typeahead?: boolean
+  /** 读屏文案（菜单名字）；对象进不了属性，只作为 property 暴露。 */
+  declare translations?: ContextMenuSchema['props']['translations']
   declare direction?: Direction
   declare longPressDelay?: number
   declare tone?: Tone
@@ -117,6 +120,7 @@ export class XhContextMenuElement extends XhElement {
       offset: this.offset,
       loop: this.loop,
       typeahead: this.typeahead,
+      translations: this.translations,
       dir: this.direction,
       longPressDelay: this.longPressDelay,
       tone: this.tone,
