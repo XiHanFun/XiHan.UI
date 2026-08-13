@@ -322,9 +322,13 @@
     display: none;
   }
 
-  /* 指针悬停、键盘高亮与展开路径共用同一张底：三者都是「此刻停在这儿」，
-     data-highlighted 跟的是连接层记的焦点条目 */
-  [data-scope='cascader'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted], [data-active]) {
+  /* 指针划过与「键盘高亮/展开路径」分两档底色：hover 浅一档、随指针即走即消，
+     展开路径亮着时划过别的条目不会呈现两条同色高亮 */
+  [data-scope='cascader'][data-part='item']:not([data-disabled]):hover {
+    background: var(--xh-cascader-row-bg-hover, var(--xh-bg-subtle));
+  }
+
+  [data-scope='cascader'][data-part='item']:not([data-disabled]):is([data-highlighted], [data-active]) {
     background: var(--xh-cascader-row-bg-highlight, var(--xh-bg-subtle-hover));
   }
 
