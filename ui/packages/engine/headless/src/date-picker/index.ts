@@ -9,9 +9,19 @@ export {
   datePickerFieldProps,
   datePickerFocusedValue,
   datePickerMachine,
+  datePickerShowTime,
+  datePickerTimeGranularity,
   findDatePickerCellEl,
 } from './date-picker.machine'
 export { datePickerMeta } from './date-picker.meta'
+export {
+  datePickerDatePart,
+  datePickerJoinDateTime,
+  datePickerSetTimeUnit,
+  datePickerTimePart,
+  datePickerZeroTime,
+} from './date-picker.time'
+export type { DatePickerTimeGranularity } from './date-picker.time'
 export type {
   DatePickerApi,
   DatePickerFieldApi,
@@ -21,6 +31,8 @@ export type {
   DatePickerRefs,
   DatePickerSchema,
   DatePickerServices,
+  DatePickerTimeColumnProps,
+  DatePickerTimeItemProps,
   DatePickerTranslations,
   DatePickerValueChangeDetails,
   DatePickerValueSource,

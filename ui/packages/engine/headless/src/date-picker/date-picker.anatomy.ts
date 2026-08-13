@@ -17,4 +17,7 @@ export const datePickerAnatomy = createAnatomy('date-picker', [
   'positioner',
   'content',
   'calendar',
+  'time-column',
+  'time-item',
+  'confirm-trigger',
 ])

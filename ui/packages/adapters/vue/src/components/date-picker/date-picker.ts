@@ -47,6 +47,8 @@ export const XhDatePickerRoot = defineComponent({
     placement: { type: String as PropType<Placement>, default: undefined },
     offset: { type: Number, default: undefined },
     closeOnSelect: { type: Boolean, default: undefined },
+    showTime: { type: Boolean, default: undefined },
+    timeGranularity: { type: String as PropType<DatePickerSchema['props']['timeGranularity']>, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸值；选中值恒为数组，单选时长度 ≤ 1
   emits: {
@@ -208,6 +210,35 @@ export const XhDatePickerCalendar = defineComponent({
     const ctx = useDatePickerContext()
     // 内嵌日历的挂载点，同时是日历的根节点
     return () => h('div', ctx.api.value.getCalendarProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhDatePickerTimePanel = defineComponent({
+  name: 'XhDatePickerTimePanel',
+  setup() {
+    const ctx = useDatePickerContext()
+    // 时间列整组自动铺：时/分[/秒]各一列，选项点按写值；没开 showTime 时整组带 hidden
+    return () => ctx.api.value.timeColumns.map(column =>
+      h(
+        'div',
+        { ...ctx.api.value.getTimeColumnProps({ unit: column.unit }) as Record<string, unknown>, key: column.unit },
+        column.options.map(option =>
+          h(
+            'div',
+            { ...ctx.api.value.getTimeItemProps({ unit: column.unit, value: option }) as Record<string, unknown>, key: option },
+            option,
+          ),
+        ),
+      ),
+    )
+  },
+})
+
+export const XhDatePickerConfirmTrigger = defineComponent({
+  name: 'XhDatePickerConfirmTrigger',
+  setup(_, { slots }) {
+    const ctx = useDatePickerContext()
+    return () => h('button', ctx.api.value.getConfirmTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

@@ -85,6 +85,9 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - role=dialog 浮层（消解层的根节点），收起时带 hidden
  * @csspart calendar - 内嵌日历的挂载点，同时充当日历的根节点
+ * @csspart time-column - showTime 的时间列，须自带 unit 属性（hour/minute/second）；没开时带 hidden
+ * @csspart time-item - 时间选项，须自带 value 属性（两位补零串）；点按把该单位写进值
+ * @csspart confirm-trigger - showTime 的收口按钮；没开时带 hidden
  * @csspart header - 日历标题栏外壳（data-scope="calendar"）
  * @csspart prev-trigger - 上一月；越过 min 时转原生 disabled
  * @csspart next-trigger - 下一月；越过 max 时转原生 disabled
@@ -128,6 +131,8 @@ export class XhDatePickerElement extends XhElement {
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
     closeOnSelect: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-select' },
+    showTime: { converter: BOOLEAN_CONVERTER, attribute: 'show-time' },
+    timeGranularity: { converter: STRING_CONVERTER, attribute: 'time-granularity' },
     // 判定函数只走 property
     isDateUnavailable: { attribute: false },
   }
@@ -151,6 +156,8 @@ export class XhDatePickerElement extends XhElement {
   declare placement?: Placement
   declare offset?: number
   declare closeOnSelect?: boolean
+  declare showTime?: boolean
+  declare timeGranularity?: DatePickerSchema['props']['timeGranularity']
   declare isDateUnavailable?: (value: string) => boolean
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
@@ -240,6 +247,8 @@ export class XhDatePickerElement extends XhElement {
       placement: this.placement,
       offset: this.offset,
       closeOnSelect: this.closeOnSelect,
+      showTime: this.showTime,
+      timeGranularity: this.timeGranularity,
       onValueChange: this.notifyValue,
       onOpenChange: this.notifyOpen,
       onFocusedValueChange: this.notifyFocus,
@@ -350,6 +359,17 @@ export class XhDatePickerElement extends XhElement {
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
     put('calendar', api.getCalendarProps() as Record<string, unknown>)
+    put('confirm-trigger', api.getConfirmTriggerProps() as Record<string, unknown>)
+
+    // 时间列是多实例 part：列自报 unit、选项自报 unit+value
+    for (const el of this.getParts('time-column'))
+      this.spreader.spread(el, api.getTimeColumnProps({ unit: (el.getAttribute('unit') ?? 'hour') as 'hour' | 'minute' | 'second' }) as Record<string, unknown>)
+    for (const el of this.getParts('time-item')) {
+      this.spreader.spread(el, api.getTimeItemProps({
+        unit: (el.closest('[data-xh-part="time-column"]')?.getAttribute('unit') ?? 'hour') as 'hour' | 'minute' | 'second',
+        value: el.getAttribute('value') ?? '',
+      }) as Record<string, unknown>)
+    }
 
     // 起止两组各自成组：段位与隐藏输入按所属 input 归组，跨组不共用下标。
     // input 可缺省，作者没写就拿宿主自身当归组容器，段位全归起点那一组
