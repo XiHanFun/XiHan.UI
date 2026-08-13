@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { FileUploadFile } from '@xihan-ui/vue'
 import { createThemeController } from '@xihan-ui/tokens/runtime'
 import {
   XhAccordionContent,
@@ -523,7 +524,7 @@ function onSignatureCommit(details: { value: string }): void {
 // 写在模板里每渲染一次都是个新对象，白白惊动一轮 props
 const uploadTranslations = {
   dropzone: '把文件拖到这里，或点开系统选择框',
-  deleteFile: (file: File) => `删除 ${file.name}`,
+  deleteFile: (file: FileUploadFile) => `删除 ${file.name}`,
   clearFiles: '清空全部文件',
 }
 const uploadRejectText: Record<string, string> = {
