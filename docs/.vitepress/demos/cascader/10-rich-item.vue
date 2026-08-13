@@ -1,4 +1,4 @@
-<!-- 条目自定义内容 | 条目里放什么由作者定：文本两侧各加一段，是不是分支直接读 item 的 branch -->
+<!-- 条目自定义内容 | 条目里放什么由作者定：文本后面加一段附加信息，分支箭头由皮肤自动画 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
@@ -63,9 +63,6 @@ const dept = ref<string[][]>([]);
       <XhCascaderContent>
         <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">
           <XhCascaderItem v-for="node in lv.items" :key="node.value" :value="node.value">
-            <span aria-hidden="true" style="flex: none; color: var(--xh-fg-subtle)">
-              {{ node.branch ? "▸" : "·" }}
-            </span>
             <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
             <span style="flex: none; color: var(--xh-fg-subtle); font-size: 12px">
               {{ headcount[node.value] }} 人
