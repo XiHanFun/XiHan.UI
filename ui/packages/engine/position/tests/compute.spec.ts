@@ -170,6 +170,91 @@ describe('交叉轴避让', () => {
   })
 })
 
+describe('箭头落点', () => {
+  // 判据一律写成「箭头中心对着锚点中心」：落点 + arrow 应当等于锚点中心的那一坐标
+  const ARROW = { size: 8, padding: 4 }
+
+  it('没要箭头就不算', () => {
+    expect(place({ placement: 'bottom' }).arrow).toBeUndefined()
+  })
+
+  it('三种对齐下箭头都对着锚点中心，而不是浮层中点', () => {
+    for (const placement of ['bottom', 'bottom-start', 'bottom-end'] as const) {
+      const result = place({ placement, arrow: ARROW })
+      expect(result.x + result.arrow!.x!).toBe(ANCHOR.x + ANCHOR.width / 2)
+    }
+  })
+
+  it('上下两侧只给行内轴，左右两侧只给块轴', () => {
+    const vertical = place({ placement: 'bottom', arrow: ARROW }).arrow!
+    expect(vertical.y).toBeUndefined()
+    const horizontal = place({ placement: 'right', arrow: ARROW }).arrow!
+    expect(horizontal.x).toBeUndefined()
+    expect(horizontal.y).toBeDefined()
+  })
+
+  it('左右两侧对着锚点纵向中心', () => {
+    const result = place({ placement: 'right', arrow: ARROW })
+    expect(result.y + result.arrow!.y!).toBe(ANCHOR.y + ANCHOR.height / 2)
+  })
+
+  it('翻面只动主轴，交叉轴上的箭头落点不变', () => {
+    const flipped = place({
+      clip: { top: 0, right: 1000, bottom: 130, left: 0 },
+      placement: 'bottom',
+      flip: true,
+      arrow: ARROW,
+    })
+    expect(flipped.placement).toBe('top')
+    expect(flipped.x + flipped.arrow!.x!).toBe(ANCHOR.x + ANCHOR.width / 2)
+  })
+
+  it('交叉轴挪位之后箭头跟着走，仍旧对着锚点中心', () => {
+    const result = place({
+      anchor: { x: 0, y: 100, width: 40, height: 40 },
+      floating: { width: 100, height: 20 },
+      clip: { top: 0, right: 200, bottom: 1000, left: 0 },
+      placement: 'bottom',
+      shift: true,
+      arrow: ARROW,
+    })
+    // 浮层被挪到 x=4，锚点中心在 20：箭头得站在浮层内的 16 处
+    expect(result.x).toBe(4)
+    expect(result.x + result.arrow!.x!).toBe(20)
+  })
+
+  it('锚点远在浮层之外时钳在两端余量上，不许指到浮层外面去', () => {
+    const margin = ARROW.size / 2 + ARROW.padding
+    const width = 200
+    // end 对齐把浮层右缘钉在这个 4px 窄锚点上，锚点中心因此远在浮层左缘之外
+    const end = place({
+      anchor: { x: 0, y: 100, width: 4, height: 40 },
+      floating: { width, height: 20 },
+      placement: 'bottom-end',
+      arrow: ARROW,
+    })
+    expect(end.arrow!.x).toBe(width - margin)
+
+    // start 对齐则相反：锚点中心落在浮层右缘之外，钳到起始那一端
+    const start = place({
+      anchor: { x: 0, y: 100, width: 4, height: 40 },
+      floating: { width, height: 20 },
+      placement: 'bottom-start',
+      arrow: ARROW,
+    })
+    expect(start.arrow!.x).toBe(margin)
+  })
+
+  it('浮层比两端余量加起来还窄时退回浮层中点', () => {
+    const result = place({
+      floating: { width: 12, height: 20 },
+      placement: 'bottom',
+      arrow: ARROW,
+    })
+    expect(result.arrow!.x).toBe(6)
+  })
+})
+
 describe('placement 拆装', () => {
   it('无后缀即居中', () => {
     expect(splitPlacement('bottom')).toEqual({ side: 'bottom', align: 'center' })

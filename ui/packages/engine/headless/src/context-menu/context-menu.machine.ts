@@ -2,6 +2,7 @@ import type { Placement, PositionResult, VirtualAnchor } from '@xihan-ui/kernel'
 import type { ContextMenuFocusIntent, ContextMenuPoint, ContextMenuSchema } from './context-menu.types'
 import { createDismissLayer, createFocusScope, createTypeahead, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
 import { setTimeoutEffect, setup } from '@xihan-ui/machine'
+import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE } from '../shared/overlay'
 import { contextMenuItemQuery } from './context-menu.anatomy'
 
 const { createMachine } = setup<ContextMenuSchema>()
@@ -264,6 +265,8 @@ export const contextMenuMachine = createMachine({
               strategy: 'fixed',
               // start / end 是逻辑对齐，RTL 下行内轴要翻过来
               dir: prop('dir'),
+              // 引擎量不到箭头，尺寸与让开圆角的余量由这里交进去
+              arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
             },
             result => context.set('position', result),
           )

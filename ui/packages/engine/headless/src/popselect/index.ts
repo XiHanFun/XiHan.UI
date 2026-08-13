@@ -1,5 +1,5 @@
 export { popselectAnatomy, popselectItemQuery, popselectItemText } from './popselect.anatomy'
-export { connectPopselect, popselectInitialFocus } from './popselect.connect'
+export { connectPopselect } from './popselect.connect'
 export { popselectKeyboard } from './popselect.keyboard'
 export { popselectMeta } from './popselect.meta'
 export type {

@@ -53,7 +53,7 @@ export function createPositionEngine(): PositionEnginePort {
         const clipViewport = clipChain
           .reduce((edges, ancestor) => intersectEdges(edges, paddingEdgesOf(ancestor)), view)
 
-        const { x, y, placement } = computePlacement({
+        const { x, y, placement, arrow } = computePlacement({
           anchor: boxToFrame(anchorViewport, frame),
           floating: {
             width: floatingRect.width / frame.scaleX,
@@ -66,13 +66,14 @@ export function createPositionEngine(): PositionEnginePort {
           shift: options.shift ?? DEFAULTS.shift,
           padding: SHIFT_PADDING,
           dir: options.dir,
+          arrow: options.arrow,
         })
 
         // hidden 问的是锚点还看得见吗，与浮层落在哪儿无关，因此按锚点自己的裁剪祖先算
         const anchorClip = clippingAncestors(anchorEl)
           .reduce((edges, ancestor) => intersectEdges(edges, paddingEdgesOf(ancestor)), view)
 
-        onResult({ x, y, placement, hidden: isFullyClipped(anchorViewport, anchorClip) })
+        onResult({ x, y, placement, arrow, hidden: isFullyClipped(anchorViewport, anchorClip) })
       }
 
       const stop = observePosition(anchorEl, floating, update)

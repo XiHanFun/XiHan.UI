@@ -3,6 +3,7 @@ import type { PropFn } from '@xihan-ui/machine'
 import type { TourSchema, TourSpotlightRect, TourStep } from './tour.types'
 import { canTakeFocus, createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
+import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE } from '../shared/overlay'
 import { sameTourSpotlight, tourSpotlightBox } from './tour.spotlight'
 
 const { createMachine } = setup<TourSchema>()
@@ -244,6 +245,8 @@ export const tourMachine = createMachine({
               // 否则页面一滚气泡就整体偏掉一个 scrollY
               strategy: 'fixed',
               dir: prop('dir'),
+              // 引擎量不到箭头，尺寸与让开圆角的余量由这里交进去
+              arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
             },
             result => context.set('position', result),
           )

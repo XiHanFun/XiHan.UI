@@ -71,6 +71,8 @@ export type {
   Align,
   Anchor,
   Placement,
+  PositionArrow,
+  PositionArrowOptions,
   PositionEnginePort,
   PositionOptions,
   PositionRect,

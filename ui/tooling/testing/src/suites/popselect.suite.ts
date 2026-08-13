@@ -138,7 +138,7 @@ export const popselectSuite: ConformanceSuite = {
       },
     },
     {
-      name: '点击 trigger 展开：content 去掉 hidden，两端 ARIA 互指，无选中值不预落锚点',
+      name: '点击 trigger 展开：content 去掉 hidden，两端 ARIA 互指，派发 open-change',
       spec: { apg: `${APG}#roles_states_properties` },
       steps: [
         {
@@ -146,73 +146,20 @@ export const popselectSuite: ConformanceSuite = {
           part: 'trigger',
           expect: {
             parts: {
-              'trigger': {
+              trigger: {
                 'aria-expanded': 'true',
                 'aria-controls': '@part(content)',
                 'data-state': 'open',
               },
-              'content': {
+              content: {
                 'role': 'listbox',
                 'aria-labelledby': '@part(trigger)',
                 'hidden': null,
                 'data-state': 'open',
-                // 没有条目认领 Tab 位时由容器兜底，它本来就是那个列表框
-                'tabindex': '0',
               },
-              // 指针打开不预落锚点：浮层弹出那一刻一个条目都不高亮
-              'item[0]': { 'tabindex': '-1', 'data-highlighted': null },
-              'item[1]': { tabindex: '-1' },
-              'item[2]': { tabindex: '-1' },
             },
             events: [{ type: 'open-change', detail: { open: true } }],
           },
-        },
-        {
-          kind: 'settle',
-          until: { activeElement: 'content' },
-          expect: { activeElement: { part: 'content', exact: true }, events: [] },
-        },
-        // 第一按方向键才锚定首个条目，roving tabindex 随之移交
-        {
-          kind: 'key',
-          key: 'ArrowDown',
-          expect: {
-            activeElement: { part: 'item[0]', exact: true },
-            parts: {
-              'content': { tabindex: '-1' },
-              'item[0]': { 'tabindex': '0', 'data-highlighted': '' },
-            },
-            events: [],
-          },
-        },
-      ],
-    },
-    {
-      name: 'Enter / Space 翻出来的那次 click 认得出自己是键盘入口，落点补在首个条目上',
-      spec: { apg: `${APG}#keyboardinteraction` },
-      steps: [
-        {
-          kind: 'raw',
-          why: 'jsdom 不把 Enter 翻成 click，平台那一步只能手写：keydown 先到，紧接着才是那次 click',
-          run: ({ doc }) => {
-            const trigger = doc.querySelector<HTMLElement>('[data-scope="popselect"][data-part="trigger"]')!
-            trigger.focus()
-            trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
-            trigger.click()
-          },
-          expect: {
-            parts: {
-              // 键盘入口要有可见落点，与指针点开那一路正相反
-              'content': { hidden: null, tabindex: '-1' },
-              'item[0]': { 'tabindex': '0', 'data-highlighted': '' },
-            },
-            events: [{ type: 'open-change', detail: { open: true } }],
-          },
-        },
-        {
-          kind: 'settle',
-          until: { activeElement: 'item[0]' },
-          expect: { activeElement: { part: 'item[0]', exact: true } },
         },
       ],
     },
@@ -225,8 +172,7 @@ export const popselectSuite: ConformanceSuite = {
         parts: { 'item[1]': { tabindex: '0' }, 'item[0]': { tabindex: '-1' } },
       },
       steps: [
-        // 有选中值时两种入口都定位到选中项，指针这一路也不例外；容器随之让出 Tab 位
-        { kind: 'click', part: 'trigger', expect: { parts: { content: { tabindex: '-1' } } } },
+        { kind: 'click', part: 'trigger' },
         {
           kind: 'settle',
           until: { activeElement: 'content' },
@@ -235,7 +181,7 @@ export const popselectSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '收起态在 trigger 上按下键即展开，锚点落到首个条目',
+      name: '收起态在 trigger 上按方向键即展开',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['popselect.kbd.open'],
       steps: [
@@ -245,10 +191,8 @@ export const popselectSuite: ConformanceSuite = {
           key: 'ArrowDown',
           expect: {
             parts: {
-              'trigger': { 'aria-expanded': 'true', 'data-state': 'open' },
-              // 键盘入口预落锚点，Tab 位归条目，容器不再兜底
-              'content': { 'data-state': 'open', 'hidden': null, 'tabindex': '-1' },
-              'item[0]': { 'tabindex': '0', 'data-highlighted': '' },
+              trigger: { 'aria-expanded': 'true', 'data-state': 'open' },
+              content: { 'data-state': 'open', 'hidden': null },
             },
             events: [{ type: 'open-change', detail: { open: true } }],
           },
@@ -261,37 +205,12 @@ export const popselectSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '收起态按上键展开：反向入口从末尾进',
-      spec: { apg: `${APG}#keyboardinteraction` },
-      steps: [
-        { kind: 'focus', part: 'trigger' },
-        {
-          kind: 'key',
-          key: 'ArrowUp',
-          expect: {
-            parts: {
-              'item[2]': { 'tabindex': '0', 'data-highlighted': '' },
-              'item[0]': { tabindex: '-1' },
-            },
-            events: [{ type: 'open-change', detail: { open: true } }],
-          },
-        },
-        {
-          kind: 'settle',
-          until: { activeElement: 'content' },
-          expect: { activeElement: { part: 'item[2]', exact: true } },
-        },
-      ],
-    },
-    {
       name: '方向键在列表内搬焦点：尽头回绕，Home / End 到端点，一路不落值',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['popselect.kbd.next', 'popselect.kbd.prev', 'popselect.kbd.first', 'popselect.kbd.last'],
       steps: [
-        // 键盘打开才预落锚点：方向键、确认键与连打检索都要有起点
-        { kind: 'focus', part: 'trigger' },
-        { kind: 'key', key: 'ArrowDown' },
-        { kind: 'settle', until: { activeElement: 'item[0]' } },
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { activeElement: 'content' } },
         {
           kind: 'key',
           key: 'ArrowDown',
@@ -326,10 +245,8 @@ export const popselectSuite: ConformanceSuite = {
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['popselect.kbd.select'],
       steps: [
-        // 键盘打开才预落锚点：确认键作用在锚点条目上
-        { kind: 'focus', part: 'trigger' },
-        { kind: 'key', key: 'ArrowDown' },
-        { kind: 'settle', until: { activeElement: 'item[0]' } },
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { activeElement: 'content' } },
         {
           kind: 'key',
           key: 'Enter',
@@ -360,10 +277,8 @@ export const popselectSuite: ConformanceSuite = {
       props: { multiple: true },
       initial: { parts: { content: { 'aria-multiselectable': 'true' } } },
       steps: [
-        // 键盘打开才预落锚点：确认键作用在锚点条目上
-        { kind: 'focus', part: 'trigger' },
-        { kind: 'key', key: 'ArrowDown' },
-        { kind: 'settle', until: { activeElement: 'item[0]' } },
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { activeElement: 'content' } },
         {
           kind: 'key',
           key: 'Space',
@@ -432,12 +347,12 @@ export const popselectSuite: ConformanceSuite = {
         // 用 raw 是因为 settle 的条件只表达得了「焦点落在某个部件上」，表达不了「不落在某个部件上」
         {
           kind: 'raw',
-          why: 'settle 只判定焦点落在哪个部件，判定不了「焦点没被抢回去」；等两帧让焦点域走完撤销再看。焦点仍留在列表容器上是对的：jsdom 不实现 Tab 的原生焦点移动，组件这边只要不去动它，真实浏览器就会把焦点接着送去下一个可聚焦元素',
+          why: 'settle 只判定焦点落在哪个部件，判定不了「焦点没被抢回去」；等两帧让焦点域走完撤销再看。焦点仍在条目上是对的：jsdom 不实现 Tab 的原生焦点移动，组件这边只要不去动它，真实浏览器就会把焦点接着送去下一个可聚焦元素',
           run: async ({ flush }) => {
             await flush()
             await flush()
           },
-          expect: { activeElement: { part: 'content', exact: true } },
+          expect: { activeElement: 'item' },
         },
       ],
     },

@@ -21,6 +21,9 @@ export function connectTooltip<T extends PropTypes>(
   const stateAttr = open ? 'open' : 'closed'
   // 定位结果由 trackPosition 效应写进 context，这里只读结果，不查 DOM、不调引擎
   const position = context.get('position')
+  const placement = position?.placement ?? prop('placement') ?? DEFAULT_PLACEMENT
+  // 箭头落点：引擎没算（尚未落位）时缺席，皮肤退回居中
+  const arrowAt = position?.arrow
 
   const setOpen = (next: boolean): void => {
     if (next !== open)
@@ -52,8 +55,8 @@ export function connectTooltip<T extends PropTypes>(
     }),
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
-      // 落定后的朝向（可能被引擎翻转），供箭头与动画方向使用
-      'data-placement': position?.placement ?? prop('placement') ?? DEFAULT_PLACEMENT,
+      // 落定后的朝向（可能被引擎翻转），供动画方向使用
+      'data-placement': placement,
       // 锚点被滚出可视区时置位，样式据此隐藏浮层
       'data-hidden': dataAttr(position?.hidden),
       'data-state': stateAttr,
@@ -80,6 +83,14 @@ export function connectTooltip<T extends PropTypes>(
     getArrowProps: () => normalize.element({
       ...parts.arrow.attrs,
       'aria-hidden': 'true',
+      // 箭头自报朝向，皮肤据此贴边，不必再从祖先 positioner 上找
+      'data-placement': placement,
+      // 箭头交叉轴上的落点由定位引擎给：上下两侧走行内轴、左右两侧走块轴。
+      // 两根轴每帧都写，翻面后另一根不会留着上一帧的值；空串即撤掉声明，皮肤退回居中
+      'style': {
+        '--xh-_tooltip-arrow-x': arrowAt?.x != null ? `${arrowAt.x}px` : '',
+        '--xh-_tooltip-arrow-y': arrowAt?.y != null ? `${arrowAt.y}px` : '',
+      },
     }),
   }
 }

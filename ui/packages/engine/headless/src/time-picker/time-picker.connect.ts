@@ -41,11 +41,6 @@ import {
 
 const parts = timePickerAnatomy.build()
 
-// 这次激活来自 Enter / Space 的触发器：原生按钮把这两个键翻成一次 click，
-// 那次 click 与指针点出来的长得一样，只能靠「按下时记一笔、激活时取走」把两条入口分开。
-// 指针按下会把标记撤掉，键按下后没等来激活（按住空格再 Tab 走开）也不会留给下一次点击
-const keyActivated = new WeakSet<Element>()
-
 /**
  * 段与列的读屏名字。写死英文语义名，不走 Intl.DisplayNames：
  * 后者依赖运行环境的默认 locale 与 ICU 数据完整度，同一份代码会产出不同 DOM。
@@ -94,9 +89,8 @@ export function connectTimePicker<T extends PropTypes>(
   const placement = position?.placement ?? prop('placement') ?? TIME_PICKER_DEFAULT_PLACEMENT
 
   const focusedSegment = context.get('focusedSegment')
-  // 从未写过的 cell 读出来是 undefined，对外一律归一成 null
-  const focusedColumn = context.get('focusedColumn') ?? null
-  const focusedItem = context.get('focusedItem') ?? null
+  const focusedColumn = context.get('focusedColumn')
+  const focusedItem = context.get('focusedItem')
 
   /**
    * 段间 roving tabindex 的唯一锚点：焦点在组内跟焦点走，否则落在第一段。
@@ -125,18 +119,17 @@ export function connectTimePicker<T extends PropTypes>(
   }
 
   /**
-   * 每列各自的 roving 锚点：焦点在本列就跟焦点走，否则停在本列选中的那一格。
-   * 两条都拿生成出来的列核对过，锚点指向被 min/max 裁掉的值会让这一列没有 Tab 位。
-   *
-   * 都没有就是没有锚点（指针打开且这一段还空着）：不预落到首格，
-   * 展开那一刻不能有格子看着像被选中，Tab 位与落焦此时归列容器（见 getColumnProps）。
+   * 每列各自的 roving 锚点：焦点在本列就跟焦点走，否则停在本列选中的那一格，再没有就停首格。
+   * 三条都拿生成出来的列核对过，锚点指向被 min/max 裁掉的值会让这一列没有 Tab 位。
    */
   const anchorOf = (unit: TimePickerColumnUnit): string | null => {
     const options = optionsOf(unit)
     if (focusedColumn === unit && focusedItem != null && options.includes(focusedItem))
       return focusedItem
     const selected = selectedIn(unit)
-    return selected != null && options.includes(selected) ? selected : null
+    if (selected != null && options.includes(selected))
+      return selected
+    return options[0] ?? null
   }
 
   const itemSelected = ({ unit, value: option }: { unit: TimePickerColumnUnit, value: string }): boolean =>
@@ -384,31 +377,17 @@ export function connectTimePicker<T extends PropTypes>(
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       // 原生 disabled 的按钮不派 click，但程序化派发的 click 照样送得到，故这里再守一次
-      'onClick': (event: MouseEvent) => {
-        if (disabled)
-          return
-        // 键盘激活的这一路要有可见落点；指针点开一路不补，展开那一刻不能有格子看着像被选中
-        const byKey = keyActivated.delete(event.currentTarget as Element)
-        send({ type: 'TOGGLE', focus: byKey ? 'first' : undefined })
-      },
-      // 指针按下即撤掉键盘标记：这一次激活是指针的，之前那次按键没等来激活也就此作废
-      'onPointerDown': (event: PointerEvent) => {
-        keyActivated.delete(event.currentTarget as Element)
+      'onClick': () => {
+        if (!disabled)
+          send({ type: 'TOGGLE' })
       },
       'onKeyDown': (event: KeyboardEvent) => {
-        if (open || disabled)
-          return
-        // 上下键直接展开，落点跟着方向走：下键落首格、上键落末格
+        // 上下键展开；Enter / Space 不在这里接，按钮默认激活会再合成一次 click，两处都收会一开一关
         const intent = navIntentFromKey(event, { axis: 'vertical', home: false })
-        if (intent) {
-          event.preventDefault()
-          send({ type: 'OPEN', focus: intent === 'prev' ? 'last' : 'first' })
+        if (!intent || open || disabled)
           return
-        }
-        // Enter / Space 不在这里接，按钮默认激活会再合成一次 click，两处都收会一开一关；
-        // 这里只记下入口是键盘，那次 click 才认得出自己不是指针点的
-        if (event.key === 'Enter' || event.key === ' ')
-          keyActivated.add(event.currentTarget as Element)
+        event.preventDefault()
+        send({ type: 'OPEN' })
       },
     }),
 
@@ -504,8 +483,7 @@ export function connectTimePicker<T extends PropTypes>(
         // 单选与否必须显式说，省略只是没说
         'aria-multiselectable': 'false',
         'aria-disabled': disabled ? 'true' : 'false',
-        // 有锚点时 Tab 位归那一格；没有锚点（指针打开且这一段还空着，或整列被界裁空）时
-        // 由列本身认领并接住焦点——它是 role=listbox 且有名字，否则这一列没有 Tab 停靠点
+        // 有锚点时 Tab 位归那一格；整列被 min/max 裁空时由列本身兜底，否则这一列没有 Tab 停靠点
         'tabindex': active && anchorOf(unit) == null ? 0 : -1,
         'data-state': stateAttr,
         'data-disabled': dataAttr(disabled),

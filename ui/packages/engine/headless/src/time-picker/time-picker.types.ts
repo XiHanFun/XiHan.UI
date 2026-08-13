@@ -5,14 +5,6 @@ import type { TimeDayPeriod, TimeDraft, TimeGranularity, TimeHourCycle, TimeSegm
 /** 浮层里成列排布的单位。上午/下午不单独成列——它由分段输入里的那一段决定。 */
 export type TimePickerColumnUnit = 'hour' | 'minute' | 'second'
 
-/**
- * 展开那一刻焦点落在时列的哪一格：
- * - selected 停在这一段已填的那个值（它被 min/max 裁掉时退回首格；这一段还空着则不落锚点，
- *   焦点歇在列容器上——指针打开走这条，不能有格子看着像被选中）
- * - first / last 从列的两端进（键盘的下键走 first、上键走 last；这一段已填仍停在它上面）
- */
-export type TimePickerFocusIntent = 'selected' | 'first' | 'last'
-
 /** 一列可选值。value 是两位补零的显示串（'09' / '30'），与段上的文字同一套写法。 */
 export interface TimePickerColumn {
   readonly unit: TimePickerColumnUnit
@@ -139,8 +131,6 @@ export interface TimePickerSchema extends MachineSchema {
     focusedColumn: TimePickerColumnUnit | null
     /** 焦点所在列里的那个选项值；浮层收起时为 null。 */
     focusedItem: string | null
-    /** 本轮展开是从哪个入口来的，决定要不要预落锚点。指针与命令式入口都是 selected。 */
-    focusIntent: TimePickerFocusIntent
     /** 关闭时是否把焦点归还触发器；Tab 与层外交互关闭时为 false。 */
     returnFocus: boolean
   }
@@ -148,9 +138,8 @@ export interface TimePickerSchema extends MachineSchema {
   refs: TimePickerRefs
   state: 'open' | 'closed'
   event:
-    // focus 是本次展开的落点意图，缺省 selected（指针与命令式入口都走它）
-    | { type: 'OPEN', focus?: TimePickerFocusIntent }
-    | { type: 'TOGGLE', focus?: TimePickerFocusIntent }
+    | { type: 'OPEN' }
+    | { type: 'TOGGLE' }
     | { type: 'CLOSE', src?: 'esc' | 'tab' | 'interact-outside' }
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
@@ -181,7 +170,6 @@ export interface TimePickerSchema extends MachineSchema {
     | 'invokeOnClose'
     | 'syncOpen'
     | 'setReturnFocus'
-    | 'setFocusIntent'
     | 'setInitialFocusedItem'
     | 'setFocusedItem'
     | 'clearFocusedItem'

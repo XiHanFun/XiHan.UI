@@ -261,11 +261,15 @@
   }
 
   /* 箭头是旋转 45° 的方块，只保留朝向目标那两条边的描边；
-     引擎不产出箭头偏移，因此沿交叉轴固定居中。居中步没有锚点，连接层会给它发 hidden */
+     交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中。居中步没有锚点，连接层会给它发 hidden */
   [data-scope='tour'][data-part='arrow'] {
+    --xh-_tour-arrow-size: var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size));
+    --xh-_tour-arrow-x: 50%;
+    --xh-_tour-arrow-y: 50%;
+
     position: absolute;
-    inline-size: var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size));
-    block-size: var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size));
+    inline-size: var(--xh-_tour-arrow-size);
+    block-size: var(--xh-_tour-arrow-size);
     background: var(--xh-tour-bg, var(--xh-bg-surface));
     border: var(--xh-stroke-thin) solid var(--xh-tour-border, var(--xh-border-default));
     rotate: 45deg;
@@ -276,29 +280,29 @@
   }
 
   [data-scope='tour'][data-part='arrow'][data-placement^='bottom'] {
-    inset-block-start: calc(var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-    inset-inline-start: calc(50% - var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+    inset-block-start: calc(var(--xh-_tour-arrow-size) / -2);
+    inset-inline-start: calc(var(--xh-_tour-arrow-x) - var(--xh-_tour-arrow-size) / 2);
     border-block-end: 0;
     border-inline-end: 0;
   }
 
   [data-scope='tour'][data-part='arrow'][data-placement^='top'] {
-    inset-block-end: calc(var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-    inset-inline-start: calc(50% - var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+    inset-block-end: calc(var(--xh-_tour-arrow-size) / -2);
+    inset-inline-start: calc(var(--xh-_tour-arrow-x) - var(--xh-_tour-arrow-size) / 2);
     border-block-start: 0;
     border-inline-start: 0;
   }
 
   [data-scope='tour'][data-part='arrow'][data-placement^='right'] {
-    inset-inline-start: calc(var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-    inset-block-start: calc(50% - var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+    inset-inline-start: calc(var(--xh-_tour-arrow-size) / -2);
+    inset-block-start: calc(var(--xh-_tour-arrow-y) - var(--xh-_tour-arrow-size) / 2);
     border-block-start: 0;
     border-inline-end: 0;
   }
 
   [data-scope='tour'][data-part='arrow'][data-placement^='left'] {
-    inset-inline-end: calc(var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-    inset-block-start: calc(50% - var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+    inset-inline-end: calc(var(--xh-_tour-arrow-size) / -2);
+    inset-block-start: calc(var(--xh-_tour-arrow-y) - var(--xh-_tour-arrow-size) / 2);
     border-block-end: 0;
     border-inline-start: 0;
   }
