@@ -53,5 +53,25 @@ export const progressSuite: ConformanceSuite = {
         },
       },
     },
+    {
+      name: '环形：形态落在 root 上，值与语义不随形态变',
+      spec: { apg: APG },
+      props: { value: 50, variant: 'circle' },
+      initial: {
+        parts: {
+          root: { 'data-variant': 'circle', 'aria-valuenow': '50', 'data-state': 'loading' },
+        },
+      },
+    },
+    {
+      name: 'valueText：进度不是百分比时读屏念作者给的那句话',
+      spec: { apg: APG },
+      props: { value: 3, max: 8, valueText: '第 3 步，共 8 步' },
+      initial: {
+        parts: {
+          root: { 'aria-valuetext': '第 3 步，共 8 步', 'aria-valuenow': '3', 'aria-valuemax': '8' },
+        },
+      },
+    },
   ],
 }

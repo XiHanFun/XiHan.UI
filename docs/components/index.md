@@ -128,7 +128,7 @@
 | [警告提示](./alert) | `alert` | 5 | 1 | 5 |
 | [轻提示](./toast) | `toast` | 5 | 2 | 5 |
 | [轻提示容器](./toaster) | `toaster` | 2 | 0 | 7 |
-| [进度条](./progress) | `progress` | 3 | 0 | 6 |
+| [进度条](./progress) | `progress` | 5 | 0 | 10 |
 | [加载指示器](./spinner) | `spinner` | 2 | 0 | 6 |
 | [加载条](./loading-bar) | `loading-bar` | 3 | 0 | 6 |
 | [弹出确认](./popconfirm) | `popconfirm` | 8 | 4 | 5 |

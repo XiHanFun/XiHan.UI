@@ -1,5 +1,7 @@
 export { progressAnatomy } from './progress.anatomy'
 export { connectProgress } from './progress.connect'
+export { PROGRESS_VIEW, progressRing } from './progress.geometry'
+export type { ProgressRing } from './progress.geometry'
 export { progressKeyboard } from './progress.keyboard'
 export { progressMeta } from './progress.meta'
-export type { ProgressApi, ProgressProps } from './progress.types'
+export type { ProgressApi, ProgressGapPosition, ProgressProps, ProgressVariant } from './progress.types'
