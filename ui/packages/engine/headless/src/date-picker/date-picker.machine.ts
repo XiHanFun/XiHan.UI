@@ -7,6 +7,7 @@ import { getLocalTimeZone, today } from '@internationalized/date'
 import { createDismissLayer, createFocusScope, itemValue } from '@xihan-ui/behavior'
 import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 import { calendarAnatomy } from '../calendar'
+import { datePickerDatePart, datePickerJoinDateTime, datePickerTimePart } from './date-picker.time'
 
 const { createMachine, guards } = setup<DatePickerSchema>()
 const { and } = guards
@@ -96,16 +97,30 @@ function timeZoneOf(service: Service<DatePickerSchema>): string {
  * 恒返回非空串：日历的 focusedValue 须始终受控，不得在受控与非受控之间切换。
  */
 export function datePickerFocusedValue(service: Service<DatePickerSchema>): string {
+  const fallback = firstValue(service.context.get('value'))
   return service.context.get('focusedValue')
-    ?? firstValue(service.context.get('value'))
+    // showTime 下选中值带时间段，聚焦日只要日期段
+    ?? (fallback != null ? datePickerDatePart(fallback) : null)
     ?? today(timeZoneOf(service)).toString()
+}
+
+/** showTime 生效（只支持单选，其余模式维持纯日期值）。 */
+export function datePickerShowTime(service: Service<DatePickerSchema>): boolean {
+  return !!service.prop('showTime') && (service.prop('selectionMode') ?? 'single') === 'single'
+}
+
+/** showTime 的时间段精度，默认分钟。 */
+export function datePickerTimeGranularity(service: Service<DatePickerSchema>): 'minute' | 'second' {
+  return service.prop('timeGranularity') ?? 'minute'
 }
 
 /** 喂给内嵌日历的那份 props：值与聚焦日受控，选中与聚焦经回调送回编排机。 */
 export function datePickerCalendarProps(service: Service<DatePickerSchema>): CalendarSchema['props'] {
   const { prop, context, send } = service
+  const withTime = datePickerShowTime(service)
   return {
-    value: context.get('value'),
+    // showTime 下值带时间段，日历只认日期段
+    value: withTime ? context.get('value').map(datePickerDatePart) : context.get('value'),
     focusedValue: datePickerFocusedValue(service),
     selectionMode: prop('selectionMode'),
     min: prop('min'),
@@ -115,7 +130,20 @@ export function datePickerCalendarProps(service: Service<DatePickerSchema>): Cal
     isDateUnavailable: prop('isDateUnavailable'),
     disabled: prop('disabled'),
     readOnly: prop('readOnly'),
-    onValueChange: ({ value }) => send({ type: 'VALUE.SET', value, src: 'calendar' }),
+    onValueChange: ({ value }) => {
+      if (!withTime) {
+        send({ type: 'VALUE.SET', value, src: 'calendar' })
+        return
+      }
+      // 选日保时：新挑的日子接上原来的时间段，还没有时间就落零点
+      const time = datePickerTimePart(firstValue(context.get('value')) ?? '')
+      const granularity = datePickerTimeGranularity(service)
+      send({
+        type: 'VALUE.SET',
+        value: value.map(v => datePickerJoinDateTime(v, time, granularity)),
+        src: 'calendar',
+      })
+    },
     onFocusedValueChange: ({ focusedValue }) => send({ type: 'FOCUSED.SET', value: focusedValue }),
   }
 }
@@ -133,8 +161,11 @@ function datePickerFieldPropsAt(
   const range = (prop('selectionMode') ?? 'single') === 'range'
   const src: DatePickerValueSource = index === 0 ? 'field' : 'field-end'
   const spare = index === 1 && !range
+  const withTime = datePickerShowTime(service)
+  const rawValue = spare ? null : valueAt(context.get('value'), index)
   return {
-    value: spare ? null : valueAt(context.get('value'), index),
+    // showTime 下值带时间段，段位只认日期段
+    value: rawValue != null && withTime ? datePickerDatePart(rawValue) : rawValue,
     granularity: DATE_PICKER_GRANULARITY,
     min: prop('min'),
     max: prop('max'),
@@ -149,10 +180,18 @@ function datePickerFieldPropsAt(
       // 非区间模式下终点那台不参与写值
       if (spare)
         return
+      // 改日保时：段位敲的是日期段，原来的时间段接回去
+      const merged = value != null && withTime
+        ? datePickerJoinDateTime(
+            value,
+            datePickerTimePart(firstValue(context.get('value')) ?? ''),
+            datePickerTimeGranularity(service),
+          )
+        : value
       const current = context.get('value')
       const next = range
-        ? writeRangeAt(current, index, value)
-        : (value == null ? current.slice(1) : [value, ...current.slice(1)])
+        ? writeRangeAt(current, index, merged)
+        : (merged == null ? current.slice(1) : [merged, ...current.slice(1)])
       send({ type: 'VALUE.SET', value: next, src })
     },
   }
@@ -274,10 +313,15 @@ export const datePickerMachine = createMachine({
     guards: {
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
 
-      /** 这一次写值该不该收起浮层：只认日历那一路，多选不收起，区间要两端都落定。 */
+      /**
+       * 这一次写值该不该收起浮层：只认日历那一路，多选不收起，区间要两端都落定。
+       * showTime 下选完日子还要挑时间，收口交给确认按钮。
+       */
       closesOnSelect: ({ prop, event }) => {
         const e = event.current()
         if (e.type !== 'VALUE.SET' || e.src !== 'calendar')
+          return false
+        if (prop('showTime') && (prop('selectionMode') ?? 'single') === 'single')
           return false
         if ((prop('closeOnSelect') ?? true) === false)
           return false

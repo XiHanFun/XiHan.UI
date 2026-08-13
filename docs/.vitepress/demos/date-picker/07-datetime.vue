@@ -1,11 +1,11 @@
-<!-- 日期加时间 | 浮层里日历下面接一台时间输入，选中日期不收起，两份值由宿主拼成一条 -->
+<!-- 日期加时间 | show-time 让值升格为一体化 datetime：日历右侧多出时/分列（XhDatePickerTimePanel 整组自动铺），选完日子不收起、时间列点选写值、XhDatePickerConfirmTrigger 收口 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import {
-  XhButton,
   XhDatePickerCalendar,
   XhDatePickerCell,
   XhDatePickerCellTrigger,
+  XhDatePickerConfirmTrigger,
   XhDatePickerContent,
   XhDatePickerControl,
   XhDatePickerGrid,
@@ -20,31 +20,17 @@ import {
   XhDatePickerPrevTrigger,
   XhDatePickerRoot,
   XhDatePickerSegment,
+  XhDatePickerTimePanel,
   XhDatePickerTrigger,
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
-  XhTimeFieldControl,
-  XhTimeFieldLabel,
-  XhTimeFieldRoot,
-  XhTimeFieldSegment,
 } from "@xihan-ui/vue";
 
-const date = ref<string[]>([]);
-const time = ref("09:00");
-
-// 两份值各自受控，对外那条由宿主拼
-const stamp = computed(() =>
-  date.value[0] && time.value ? `${date.value[0]}T${time.value}` : "（未选完）",
-);
+const stamp = ref<string[]>([]);
 </script>
 
 <template>
-  <XhDatePickerRoot
-    v-slot="{ weeks, weekDays, setOpen }"
-    v-model:value="date"
-    :close-on-select="false"
-    locale="zh-CN"
-  >
+  <XhDatePickerRoot v-slot="{ weeks, weekDays }" v-model:value="stamp" show-time locale="zh-CN">
     <XhDatePickerLabel>会议开始</XhDatePickerLabel>
     <XhDatePickerControl>
       <XhDatePickerInput>
@@ -58,58 +44,35 @@ const stamp = computed(() =>
     </XhDatePickerControl>
     <XhDatePickerPositioner>
       <XhDatePickerContent>
-        <XhDatePickerCalendar>
-          <XhDatePickerHeader>
-            <XhDatePickerPrevTrigger aria-label="上个月">‹</XhDatePickerPrevTrigger>
-            <XhDatePickerHeading />
-            <XhDatePickerNextTrigger aria-label="下个月">›</XhDatePickerNextTrigger>
-          </XhDatePickerHeader>
-          <XhDatePickerGrid>
-            <XhDatePickerGridHead>
-              <XhDatePickerWeekRow>
-                <XhDatePickerWeekDay
-                  v-for="d in weekDays"
-                  :key="d.value"
-                  :value="d.value"
-                />
-              </XhDatePickerWeekRow>
-            </XhDatePickerGridHead>
-            <XhDatePickerGridBody>
-              <XhDatePickerWeekRow v-for="week in weeks" :key="week[0].value">
-                <XhDatePickerCell
-                  v-for="day in week"
-                  :key="day.value"
-                  :value="day.value"
-                >
-                  <XhDatePickerCellTrigger>{{ day.day }}</XhDatePickerCellTrigger>
-                </XhDatePickerCell>
-              </XhDatePickerWeekRow>
-            </XhDatePickerGridBody>
-          </XhDatePickerGrid>
-        </XhDatePickerCalendar>
-
-        <!-- 浮层里的时间输入是作者自己的节点，从日期格按 Tab 就走得过来 -->
-        <div
-          style="
-            display: flex;
-            align-items: flex-end;
-            gap: 12px;
-            margin-block-start: 12px;
-          "
-        >
-          <XhTimeFieldRoot v-model:value="time" size="sm">
-            <XhTimeFieldLabel>时间</XhTimeFieldLabel>
-            <XhTimeFieldControl>
-              <XhTimeFieldSegment segment="hour" />
-              <span>:</span>
-              <XhTimeFieldSegment segment="minute" />
-            </XhTimeFieldControl>
-          </XhTimeFieldRoot>
-          <XhButton size="sm" @click="setOpen(false)">确定</XhButton>
+        <div style="display: flex; align-items: stretch">
+          <XhDatePickerCalendar>
+            <XhDatePickerHeader>
+              <XhDatePickerPrevTrigger aria-label="上个月">‹</XhDatePickerPrevTrigger>
+              <XhDatePickerHeading />
+              <XhDatePickerNextTrigger aria-label="下个月">›</XhDatePickerNextTrigger>
+            </XhDatePickerHeader>
+            <XhDatePickerGrid>
+              <XhDatePickerGridHead>
+                <XhDatePickerWeekRow>
+                  <XhDatePickerWeekDay v-for="d in weekDays" :key="d.value" :value="d.value" />
+                </XhDatePickerWeekRow>
+              </XhDatePickerGridHead>
+              <XhDatePickerGridBody>
+                <XhDatePickerWeekRow v-for="week in weeks" :key="week[0].value">
+                  <XhDatePickerCell v-for="day in week" :key="day.value" :value="day.value">
+                    <XhDatePickerCellTrigger>{{ day.day }}</XhDatePickerCellTrigger>
+                  </XhDatePickerCell>
+                </XhDatePickerWeekRow>
+              </XhDatePickerGridBody>
+            </XhDatePickerGrid>
+          </XhDatePickerCalendar>
+          <XhDatePickerTimePanel />
+        </div>
+        <div style="display: flex; justify-content: flex-end; margin-block-start: 8px">
+          <XhDatePickerConfirmTrigger>确定</XhDatePickerConfirmTrigger>
         </div>
       </XhDatePickerContent>
     </XhDatePickerPositioner>
   </XhDatePickerRoot>
-
-  <span style="font-size: 13px">拼出来的值：{{ stamp }}</span>
+  <p>已选：{{ stamp[0] ?? "（未选）" }}</p>
 </template>

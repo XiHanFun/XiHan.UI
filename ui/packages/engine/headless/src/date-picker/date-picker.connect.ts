@@ -19,8 +19,10 @@ import {
   parseBoundary,
   segmentMaxDigits,
 } from '../date-field'
+import { timePickerColumns } from '../time-picker'
 import { datePickerAnatomy } from './date-picker.anatomy'
 import { DATE_PICKER_DEFAULT_PLACEMENT } from './date-picker.machine'
+import { datePickerDatePart, datePickerJoinDateTime, datePickerSetTimeUnit, datePickerTimePart } from './date-picker.time'
 
 const parts = datePickerAnatomy.build()
 /** 段位的 CSS 选择器，取自分段输入那一份解剖。 */
@@ -67,6 +69,21 @@ export function connectDatePicker<T extends PropTypes>(
 
   // 内嵌日历：整份 api 原样转发
   const calendar = connectCalendar(services.calendar, normalize)
+
+  // —— showTime：值升格为 datetime，面板里多出时间列，收口交给确认按钮 ——
+  const showTime = !!prop('showTime') && selectionMode === 'single'
+  const timeGranularity = prop('timeGranularity') ?? 'minute'
+  const timeColumns = showTime ? timePickerColumns({ granularity: timeGranularity, hourCycle: 24 }) : []
+  const timeValue = showTime && filled[0] != null ? datePickerTimePart(filled[0]) : null
+
+  /** 点时间选项：该单位写进值；还没有日期时以聚焦日起值。 */
+  const pickTimeUnit = (unit: 'hour' | 'minute' | 'second', next: string): void => {
+    if (!interactive)
+      return
+    const date = filled[0] != null ? datePickerDatePart(filled[0]) : calendar.focusedValue
+    const nextTime = datePickerSetTimeUnit(timeValue, unit, next, timeGranularity)
+    send({ type: 'VALUE.SET', value: [datePickerJoinDateTime(date, nextTime, timeGranularity)], src: 'api' })
+  }
 
   /**
    * 内嵌分段输入用恒等归一化连一次，拿到原始 prop 字典。
@@ -129,10 +146,11 @@ export function connectDatePicker<T extends PropTypes>(
     return !!result?.complete
   }
 
-  /** 把一组段位包成对外那一面：换段在这里补，其余原样转发。 */
+  /** 把一组段位包成对外那一面：换段在这里补，其余原样转发。hiddenValue 覆盖表单出口（showTime 提交 datetime）。 */
   const toFieldApi = (
     service: Service<DateFieldSchema>,
     raw: DateFieldApi,
+    hiddenValue?: string,
   ): DatePickerFieldApi<T> => ({
     value: raw.value,
     segments: raw.segments,
@@ -169,10 +187,14 @@ export function connectDatePicker<T extends PropTypes>(
       })
     },
 
-    getHiddenInputProps: () => normalize.input(raw.getHiddenInputProps() as Dict),
+    getHiddenInputProps: () => normalize.input({
+      ...raw.getHiddenInputProps() as Dict,
+      ...(hiddenValue !== undefined ? { value: hiddenValue } : {}),
+    }),
   })
 
-  const field = toFieldApi(services.field, fieldRaw)
+  // showTime 下表单提交整个 datetime，段位里只显示日期段
+  const field = toFieldApi(services.field, fieldRaw, showTime ? (filled[0] ?? '') : undefined)
   // 终点那一组只在区间模式下露出
   const fieldEnd = range && services.fieldEnd && fieldEndRaw
     ? toFieldApi(services.fieldEnd, fieldEndRaw)
@@ -189,6 +211,9 @@ export function connectDatePicker<T extends PropTypes>(
     readOnly,
     invalid,
     canClear,
+    showTime,
+    timeColumns,
+    timeValue,
     calendar,
     field,
     fieldEnd,
@@ -329,6 +354,36 @@ export function connectDatePicker<T extends PropTypes>(
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
+    }),
+
+    getTimeColumnProps: ({ unit }) => normalize.element({
+      ...parts['time-column'].attrs,
+      'role': 'listbox',
+      'aria-label': unit,
+      'data-unit': unit,
+      'hidden': !showTime || undefined,
+    }),
+
+    getTimeItemProps: ({ unit, value: v }) => {
+      const at = unit === 'hour' ? 0 : unit === 'minute' ? 1 : 2
+      const selected = timeValue?.split(':')[at] === v
+      return normalize.element({
+        ...parts['time-item'].attrs,
+        'role': 'option',
+        'aria-selected': selected ? 'true' : 'false',
+        'data-unit': unit,
+        'data-value': v,
+        'data-selected': dataAttr(selected),
+        'onClick': () => pickTimeUnit(unit, v),
+      })
+    },
+
+    // showTime 的收口：选完日子与时间由它收浮层
+    getConfirmTriggerProps: () => normalize.button({
+      ...parts['confirm-trigger'].attrs,
+      type: 'button',
+      hidden: !showTime || undefined,
+      onClick: () => send({ type: 'CLOSE' }),
     }),
   }
 }

@@ -2,6 +2,8 @@ import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, Position
 import type { MachineSchema, Service } from '@xihan-ui/machine'
 import type { CalendarApi, CalendarSchema, CalendarSelectionMode } from '../calendar'
 import type { DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState } from '../date-field'
+import type { TimePickerColumn, TimePickerColumnUnit } from '../time-picker'
+import type { DatePickerTimeGranularity } from './date-picker.time'
 
 /**
  * 值的来源；只有 calendar 一路参与「选完即收起」判定。
@@ -21,6 +23,17 @@ export interface DatePickerTranslations {
 export interface DatePickerInputProps {
   /** 默认 0。 */
   index?: 0 | 1
+}
+
+/** 时间列自报自己是哪一个单位。 */
+export interface DatePickerTimeColumnProps {
+  unit: TimePickerColumnUnit
+}
+
+/** 时间选项自报所属的列与自己的值（两位补零的显示串）。 */
+export interface DatePickerTimeItemProps {
+  unit: TimePickerColumnUnit
+  value: string
 }
 
 export interface DatePickerOpenChangeDetails {
@@ -97,6 +110,13 @@ export interface DatePickerSchema extends MachineSchema {
     translations?: Partial<DatePickerTranslations>
     /** 选完即收起，默认 true。区间模式下要两端都落定才算选完。 */
     closeOnSelect?: boolean
+    /**
+     * 一体化时间：值升格为 'YYYY-MM-DDTHH:mm[:ss]'，面板里多出时间列，
+     * 选完日子不收起、由确认按钮收口。只在单选模式下生效。
+     */
+    showTime?: boolean
+    /** showTime 的时间段精度，默认 minute。 */
+    timeGranularity?: DatePickerTimeGranularity
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: DatePickerValueChangeDetails) => void
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
@@ -210,6 +230,12 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   setOpen: (next: boolean) => void
   setValue: (next: string[]) => void
   clear: () => void
+  /** showTime 生效（开了且是单选模式）。 */
+  showTime: boolean
+  /** 时间列（时/分[/秒]）；没开 showTime 时为空数组。 */
+  timeColumns: readonly TimePickerColumn[]
+  /** 当前时间段（'HH:mm[:ss]'）；还没有值时为 null。 */
+  timeValue: string | null
   /** 内嵌日历：选日期、翻月、键盘导航都在它身上。 */
   calendar: CalendarApi<T>
   /** 内嵌分段输入，区间模式下是起点那一组。 */
@@ -227,4 +253,10 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   getContentProps: () => T['element']
   /** 内嵌日历的挂载点，同时充当日历的根节点。 */
   getCalendarProps: () => T['element']
+  /** 时间列容器（时/分[/秒]各一列）；没开 showTime 时带 hidden。 */
+  getTimeColumnProps: (props: DatePickerTimeColumnProps) => T['element']
+  /** 时间选项：点按把该单位写进值（没有日期时以聚焦日为日期段起值）。 */
+  getTimeItemProps: (props: DatePickerTimeItemProps) => T['element']
+  /** 确认按钮：showTime 的收口；没开 showTime 时带 hidden。 */
+  getConfirmTriggerProps: () => T['button']
 }
