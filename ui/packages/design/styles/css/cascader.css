@@ -311,8 +311,14 @@
     border-inline-start: var(--xh-stroke-thin) solid var(--xh-cascader-column-divider, var(--xh-border-subtle));
   }
 
-  /* 列不进 Tab 序列也不承载焦点，落焦不画环：高亮永远长在条目上 */
-  [data-scope='cascader'][data-part='column']:focus-visible {
+  /* 焦点落在根列上只有一种情形：指针打开、无选中值、还没有任何条目当锚点。
+     那一刻它认领着 Tab 位，环画在列内沿；有锚点时环长在条目上，列不再画 */
+  [data-scope='cascader'][data-part='column'][tabindex='0']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  [data-scope='cascader'][data-part='column']:not([tabindex='0']):focus-visible {
     outline: none;
   }
 
