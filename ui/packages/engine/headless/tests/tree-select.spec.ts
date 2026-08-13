@@ -104,6 +104,8 @@ interface Harness {
   clear: HTMLButtonElement
   content: HTMLElement
   treeEl: HTMLElement
+  /** 作者放在树上方的搜索框，用来钉住落点不被 Tab 序列探测抢走。 */
+  searchBox: HTMLInputElement
   hiddenInput: HTMLInputElement
   branch: (value: string) => BranchEls
   item: (value: string) => ItemEls
@@ -150,7 +152,11 @@ function mount(initial: Partial<Props> = {}): Harness {
   const content = doc.createElement('div')
   const treeEl = doc.createElement('div')
   const hiddenInput = doc.createElement('input')
-  content.appendChild(treeEl)
+  // 作者常在树上方放一个搜索框（docs 的过滤示例即如此）。它排在树前面，
+  // 焦点域若把落点交给 Tab 序列探测就会先撞上它——用例据此钉住「落点是树而不是它」
+  const searchBox = doc.createElement('input')
+  searchBox.type = 'search'
+  content.append(searchBox, treeEl)
   positioner.appendChild(content)
   root.append(hiddenInput, label, trigger, clear, positioner)
 
@@ -256,6 +262,7 @@ function mount(initial: Partial<Props> = {}): Harness {
     clear: clear as HTMLButtonElement,
     content,
     treeEl,
+    searchBox: searchBox as HTMLInputElement,
     hiddenInput: hiddenInput as HTMLInputElement,
     branch: v => branches.get(v)!,
     item: v => items.get(v)!,
@@ -444,10 +451,32 @@ describe('展开集合（复用 Tree 的摊平模型）', () => {
 })
 
 describe('展开那一刻的焦点落点', () => {
-  it('无选中：落到首个可见行', async () => {
+  it('无选中、指针打开：不落锚点，Tab 位由树容器兜底', async () => {
     const h = mount()
     h.trigger.focus()
     click(h.trigger)
+    await settle()
+    expect(h.api().focusedValue).toBeNull()
+    expect(h.treeEl.getAttribute('tabindex')).toBe('0')
+  })
+
+  it('无选中、指针打开：落点是树而不是浮层里排在它前面的搜索框', async () => {
+    const h = mount()
+    h.trigger.focus()
+    click(h.trigger)
+    await settle()
+    // 焦点域若把落点交给 Tab 序列探测，按文档序先撞上的就是搜索框；
+    // 而键盘处理器挂在树上，落到搜索框上方向键就此失灵
+    expect(document.activeElement).toBe(h.treeEl)
+    expect(document.activeElement).not.toBe(h.searchBox)
+    press(active(), 'ArrowDown')
+    expect(h.focused()).toBe('src')
+  })
+
+  it('无选中、键盘打开：落到首个可见行', async () => {
+    const h = mount()
+    h.trigger.focus()
+    press(h.trigger, 'Enter')
     await settle()
     expect(h.focused()).toBe('src')
     expect(focusedValue()).toBe('src')
@@ -503,7 +532,8 @@ describe('树内键盘导航', () => {
   async function open(initial: Partial<Props> = {}): Promise<Harness> {
     const h = mount(initial)
     h.trigger.focus()
-    click(h.trigger)
+    // 键盘打开才预落锚点：方向键、确认键与连打检索都要有起点
+    press(h.trigger, 'Enter')
     await settle()
     return h
   }
@@ -610,7 +640,8 @@ describe('选中', () => {
   async function open(initial: Partial<Props> = {}): Promise<Harness> {
     const h = mount(initial)
     h.trigger.focus()
-    click(h.trigger)
+    // 键盘打开才预落锚点：方向键、确认键与连打检索都要有起点
+    press(h.trigger, 'Enter')
     await settle()
     return h
   }
@@ -801,6 +832,9 @@ describe('roving tabindex', () => {
     h.trigger.focus()
     click(h.trigger)
     await settle()
+    // 指针打开不预落锚点：第一按落到首行，第二按才走到它的子节点
+    press(active(), 'ArrowDown')
+    expect(h.focused()).toBe('src')
     press(active(), 'ArrowDown')
     expect(h.focused()).toBe('index')
     expect(h.node('index').getAttribute('tabindex')).toBe('0')
@@ -817,6 +851,9 @@ describe('roving tabindex', () => {
     h.trigger.focus()
     click(h.trigger)
     await settle()
+    // 指针打开不预落锚点：第一按落到首行，第二按才走到它的子节点
+    press(active(), 'ArrowDown')
+    expect(h.focused()).toBe('src')
     press(active(), 'ArrowDown')
     expect(h.focused()).toBe('index')
 

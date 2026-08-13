@@ -20,12 +20,28 @@ export interface FocusScopeOptions {
   restoreFocus?: () => boolean
 }
 
+// 在场的焦点域，按建立先后编号。焦点归还要据此判断「有没有更晚的域接手了焦点」。
+let focusScopeSeq = 0
+const liveFocusScopes = new Set<number>()
+
+/** 有比 seq 更晚建立、且此刻仍在场的焦点域吗。 */
+function hasNewerScope(seq: number): boolean {
+  for (const live of liveFocusScopes) {
+    if (live > seq)
+      return true
+  }
+  return false
+}
+
 export function createFocusScope(o: FocusScopeOptions): Disposable {
   const { config, layer, container } = o
   const scope = config.scope
   const doc = scope.getDoc()
   const win = scope.getWin()
   const registry = config.layerRegistry
+
+  const mountSeq = ++focusScopeSeq
+  liveFocusScopes.add(mountSeq)
 
   let disposed = false
   let paused = registry.top() !== layer
@@ -175,6 +191,7 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
       if (disposed)
         return
       disposed = true
+      liveFocusScopes.delete(mountSeq)
       doc.removeEventListener('focusin', onFocusIn, { capture: true })
       doc.removeEventListener('focusout', onFocusOut, { capture: true })
       doc.removeEventListener('keydown', onKeyDown, { capture: true })
@@ -183,6 +200,12 @@ export function createFocusScope(o: FocusScopeOptions): Disposable {
       // 焦点返还延后一帧
       win.requestAnimationFrame(() => {
         if (!(o.restoreFocus?.() ?? true))
+          return
+        // 比本域更晚建立的焦点域还活着：焦点是它的，不抢。
+        // 归还排在拆除后一帧，这一帧里「关掉又立刻开一个」的新域已经把焦点安排好了，
+        // 无条件归还会把它拽回旧触发器。子层先于父层拆除的常见顺序不受影响：
+        // 父层拆时子层已不在场，没有更晚的域，照常归还
+        if (hasNewerScope(mountSeq))
           return
         const anchor = container() ?? doc.body
         if (dispatchCancelable(anchor, EV_UNMOUNT_AUTO_FOCUS, {})) {

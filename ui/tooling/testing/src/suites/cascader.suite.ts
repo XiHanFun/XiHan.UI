@@ -287,7 +287,7 @@ export const cascaderSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '点 trigger 展开：无选中值不预落锚点也不铺列，Tab 位由 content 兜底',
+      name: '点 trigger 展开：无选中值不预落锚点也不铺列，Tab 位由根列兜底',
       spec: { apg: `${APG_COMBOBOX}#roles_states_properties` },
       props: props(),
       steps: [
@@ -298,8 +298,10 @@ export const cascaderSuite: ConformanceSuite = {
             parts: {
               'trigger': { 'aria-expanded': 'true', 'data-state': 'open' },
               'indicator': { 'data-state': 'open' },
-              'content': { 'hidden': null, 'data-state': 'open', 'tabindex': '0' },
+              // 浮层壳没有角色，接不了焦点：Tab 位与落焦都归根列（role=listbox 且有名字）
+              'content': { 'hidden': null, 'data-state': 'open', 'tabindex': '-1' },
               'column': columnsShown(1),
+              'column[0]': { tabindex: '0' },
               // 展开路径为空，第 1 列没有父条目，名字退回组件标题
               'column[1]': { 'aria-labelledby': '@part(label)' },
               // 指针打开不预落高亮：没有条目看着像被选中
@@ -312,8 +314,8 @@ export const cascaderSuite: ConformanceSuite = {
         },
         {
           kind: 'settle',
-          until: { activeElement: 'content' },
-          expect: { activeElement: 'content', events: [] },
+          until: { activeElement: 'column[0]' },
+          expect: { activeElement: { part: 'column[0]', exact: true }, events: [] },
         },
         expectTabStops(1),
         // 第一按方向键落地到首个条目：只落锚点，不带出它的子列
@@ -323,7 +325,7 @@ export const cascaderSuite: ConformanceSuite = {
           expect: {
             activeElement: { part: 'item[0]', exact: true },
             parts: {
-              'content': { tabindex: '-1' },
+              'column[0]': { tabindex: '-1' },
               'item[0]': { 'tabindex': '0', 'data-highlighted': '', 'data-active': null },
               'column': columnsShown(1),
             },
@@ -338,7 +340,7 @@ export const cascaderSuite: ConformanceSuite = {
       props: props(),
       steps: [
         { kind: 'click', part: 'trigger' },
-        { kind: 'settle', until: { activeElement: 'content' } },
+        { kind: 'settle', until: { activeElement: 'column[0]' } },
         // 打开不预展开，先点 zhejiang 铺开第 1 列
         {
           kind: 'click',
@@ -642,7 +644,7 @@ export const cascaderSuite: ConformanceSuite = {
       props: props(),
       steps: [
         { kind: 'click', part: 'trigger' },
-        { kind: 'settle', until: { activeElement: 'content' } },
+        { kind: 'settle', until: { activeElement: 'column[0]' } },
         {
           kind: 'click',
           part: 'item[0]',
@@ -708,7 +710,7 @@ export const cascaderSuite: ConformanceSuite = {
       initial: { parts: { 'column[0]': { 'aria-multiselectable': 'true' } } },
       steps: [
         { kind: 'click', part: 'trigger' },
-        { kind: 'settle', until: { activeElement: 'content' } },
+        { kind: 'settle', until: { activeElement: 'column[0]' } },
         {
           kind: 'click',
           part: 'item[3]',

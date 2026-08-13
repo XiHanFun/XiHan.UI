@@ -2,7 +2,7 @@ import type { Placement, PositionResult } from '@xihan-ui/kernel'
 import type { CascaderFocusIntent, CascaderNodeMeta, CascaderSchema, CascaderValue } from './cascader.types'
 import { cascadeToggle, collapseChecked, createDismissLayer, createFocusScope, itemValue, queryItems } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
-import { cascaderItemQuery } from './cascader.anatomy'
+import { cascaderAnatomy, cascaderItemQuery } from './cascader.anatomy'
 import {
   cascaderBuildColumns,
   cascaderIndexNodes,
@@ -157,7 +157,7 @@ export const cascaderMachine = createMachine({
         'INPUT.CHANGE': { actions: ['setInputValue'] },
         'SEARCH.HIGHLIGHT': { actions: ['setSearchIndex'] },
         // 持有焦点的条目被移出 DOM，锚点悬空，就地按当前数据重挑一个
-        'ITEM.LOST': { actions: ['clearFocusedPath', 'setInitialFocusedPath'] },
+        'ITEM.LOST': { actions: ['setInitialFocusedPath'] },
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
     },
@@ -224,13 +224,18 @@ export const cascaderMachine = createMachine({
        * 有选中路径就一路展到它所在的那一列，焦点落在它自己身上；它已禁用或路径过期时
        * 退回本列首个可停留条目。first/last 两个意图从根列进，不理会选中值。
        */
-      setInitialFocusedPath: ({ prop, context }) => {
+      setInitialFocusedPath: ({ prop, context, event }) => {
         const collection = prop('collection') ?? []
         const intent = context.get('focusIntent')
         const selected = context.get('value')[0] ?? []
+        // 锚点条目离场后的重挑：只在此前真有过锚点时补，判据取自机器自己的状态而不是事件类型——
+        // 适配器误报时凭空补一个，会点亮一个本轮不该高亮的条目并把 Tab 位从容器上摘走
+        const repick = event.current().type === 'ITEM.LOST'
+        if (repick && context.get('focusedPath') == null)
+          return
         // 指针打开且没有选中值：不落锚点也不铺列，焦点由焦点域兜底歇在 content 上，
         // 打开这一刻不能有条目看着像被选中；键盘入口要预落锚点得自带 first/next 意图
-        if (intent === 'selected' && selected.length === 0) {
+        if (intent === 'selected' && selected.length === 0 && !repick) {
           context.set('activePath', [])
           context.set('focusedPath', null)
           return
@@ -420,13 +425,23 @@ export const cascaderMachine = createMachine({
           // 各列不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
           trapped: () => false,
           loop: false,
-          // 显式指定落焦点为锚点条目，不交给 Tab 序列探测：探测走的是
+          // 显式指定落焦点，两种落点都不交给 Tab 序列探测：探测走的是
           // focusFirst(removeLinks(...))，条目写成 <a> 时会被整体过滤掉，
-          // 落焦就会掉到容器上而不是锚点条目。
+          // 且容器自身从来不是候选——只靠它焦点要等到最后一帧才落位。
           // 这里每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位
           initialFocus: () => {
+            const content = refs.get('getContentEl')()
+            if (!content)
+              return null
             const path = context.get('focusedPath')
-            return findCascaderItemEl(refs.get('getContentEl')(), path?.[path.length - 1] ?? null)
+            const anchor = path?.[path.length - 1] ?? null
+            if (anchor != null)
+              return findCascaderItemEl(content, anchor)
+            // 本轮该有锚点却还没挑出来：返回 null 让焦点域重试，别滑到列上定死
+            if (!(context.get('focusIntent') === 'selected' && context.get('value').length === 0))
+              return null
+            // 确实不该有锚点（指针打开且无选中值）：焦点落到根列，它是 role=listbox 且认领着 Tab 位
+            return content.querySelector<HTMLElement>(`${cascaderAnatomy.build().column.selector}[data-level='0']`)
           },
           restoreFocus: () => context.get('returnFocus'),
         })

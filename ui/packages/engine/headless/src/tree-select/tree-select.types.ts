@@ -5,8 +5,9 @@ import type { TreeNode, TreeVisibleNode } from '../tree'
 
 /**
  * 展开那一刻焦点落在哪一行：
- * - selected 停在首个「可见的」选中节点（无选中、或它藏在收起的分支里时退回首个可停留行）
- * - first / last 从可见行两端进
+ * - selected 停在首个「可见的」选中节点（它藏在收起的分支里时退回首个可停留行；无选中则
+ *   不落锚点，焦点歇在 content 上——指针打开走这条，不能有节点看着像被选中）
+ * - first / last 从可见行两端进（键盘确认键在无选中时走 first）
  * - next / prev 从当前选中节点起步走一步（收起态在 trigger 上按上下键即走这条）
  */
 export type TreeSelectFocusIntent = 'selected' | 'first' | 'last' | 'next' | 'prev'

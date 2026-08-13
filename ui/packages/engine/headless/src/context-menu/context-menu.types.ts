@@ -3,8 +3,9 @@ import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, Position
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /**
- * 展开时焦点落在集合的哪一端：ArrowUp 那类反向入口从末尾进，其余入口从首个可用条目进。
- * 'none' 是命令式入口的落点——不预先挑锚点，展开那一刻一个条目都不带高亮。
+ * 展开时焦点落在集合的哪一端：ArrowUp 那类反向入口从末尾进，键盘入口从首个可用条目进。
+ * 'none' 是指针与命令式入口的落点，也是缺省值——不预先挑锚点，展开那一刻一个条目都不带高亮，
+ * 焦点由焦点域兜底歇在 content 上。
  */
 export type ContextMenuFocusIntent = 'first' | 'last' | 'none'
 

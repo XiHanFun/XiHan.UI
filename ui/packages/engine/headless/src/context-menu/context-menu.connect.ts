@@ -143,9 +143,10 @@ export function connectContextMenu<T extends PropTypes>(
       'data-state': stateAttr,
       'data-pressing': dataAttr(pressing),
       'onContextMenu': (event: MouseEvent) => {
-        // 浏览器自带的右键菜单必须让位，否则两张菜单叠在一起
+        // 浏览器自带的右键菜单必须让位，否则两张菜单叠在一起。
+        // 指针打开不预落锚点：菜单弹出那一刻不能有条目看着像被选中
         event.preventDefault()
-        send({ type: 'CONTEXT.MENU', x: event.clientX, y: event.clientY, focus: 'first' })
+        send({ type: 'CONTEXT.MENU', x: event.clientX, y: event.clientY, focus: 'none' })
       },
       'onPointerDown': (event: PointerEvent) => {
         // 浮层若被作者嵌在触发区内部，点条目会一路冒泡到这里；那是层内交互，不该关
