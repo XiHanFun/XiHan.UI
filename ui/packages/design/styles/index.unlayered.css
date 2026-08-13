@@ -5477,9 +5477,9 @@
   display: none;
 }
 
-/* 底色分两档，强档只归展开路径一家：键盘导航下焦点锚点恒落在展开路径上，
-   指针悬停展开把路径挪走后，留在原地的锚点降到轻档，任何时刻只有一条强高亮。
-   hover 同为轻档、随指针即走即消 */
+/* 底色分两档，强档只归展开路径一家：打开落点与 hover 只亮轻档，键盘导航时
+   锚点随展开路径同走；悬停展开把路径挪走后留在原地的锚点也降轻档，
+   任何时刻至多一条强高亮 */
 [data-scope='cascader'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
   background: var(--xh-cascader-row-bg-hover, var(--xh-bg-subtle));
 }

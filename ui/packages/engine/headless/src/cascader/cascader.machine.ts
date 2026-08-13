@@ -256,8 +256,9 @@ export const cascaderMachine = createMachine({
           // next/prev 从选中条目走一步；无选中值时 from 为空，落到本列边界
           picked = cascaderStepColumn(column.items, from, intent, { loop })
         }
-        // 展开路径跟着落点走，不跟着选中值走
-        context.set('activePath', picked ? [...picked.path] : [])
+        // 有选中值才把列铺到落点上；没有选中值时锚点照落（方向键从它起步），
+        // 列一层不展开——打开这一刻不能有条目看着像被选中
+        context.set('activePath', picked && selected.length ? [...picked.path] : [])
         context.set('focusedPath', picked ? [...picked.path] : null)
       },
 
@@ -265,13 +266,17 @@ export const cascaderMachine = createMachine({
        * 焦点落到第 level 列的某个条目上：展开路径就地截到第 level 段并换成它，
        * 它右边原有的列一律砍掉，它自己的子列随之顶上。
        * 焦点与展开必须同一拍完成：慢一拍的话右方向键要落进的那一列还带着 hidden，焦点会掉回 body。
+       * 焦点回落到既有锚点（打开落焦、focusMeta 的补写）不动展开路径，
+       * 打开落点才能停在「锚点在、列不展开」上；点选与右方向键的展开各自显式发 ITEM.EXPAND。
        */
       setFocusedPath: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'ITEM.FOCUS')
           return
         const path = cascaderTruncatePath(context.get('activePath'), e.level, e.value)
-        context.set('activePath', path)
+        const anchored = context.get('focusedPath')
+        if (!anchored || !cascaderSamePath(path, anchored))
+          context.set('activePath', path)
         context.set('focusedPath', path)
       },
 

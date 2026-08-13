@@ -46,12 +46,12 @@
 | [选择器](./select) | `select` | 15 | 13 | 18 |
 | [列表框](./listbox) | `listbox` | 8 | 10 | 7 |
 | [组合框](./combobox) | `combobox` | 15 | 14 | 14 |
-| [级联选择](./cascader) | `cascader` | 12 | 12 | 15 |
+| [级联选择](./cascader) | `cascader` | 15 | 12 | 16 |
 | [树选择](./tree-select) | `tree-select` | 19 | 14 | 12 |
 | [标签输入](./tags-input) | `tags-input` | 11 | 13 | 12 |
 | [穿梭框](./transfer) | `transfer` | 14 | 11 | 8 |
 | [日期输入](./date-field) | `date-field` | 5 | 8 | 12 |
-| [日期选择器](./date-picker) | `date-picker` | 9 | 5 | 8 |
+| [日期选择器](./date-picker) | `date-picker` | 12 | 5 | 8 |
 | [时间输入](./time-field) | `time-field` | 5 | 9 | 9 |
 | [时间选择器](./time-picker) | `time-picker` | 11 | 20 | 8 |
 | [日历](./calendar) | `calendar` | 12 | 12 | 4 |

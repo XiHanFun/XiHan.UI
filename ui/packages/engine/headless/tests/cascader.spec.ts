@@ -533,13 +533,14 @@ describe('选中路径与回显', () => {
 })
 
 describe('列的展开与截断', () => {
-  it('展开即把焦点落到首个条目，它的子列随之开着（焦点在哪儿，开着的就是哪一串列）', () => {
+  it('无选中值展开：锚点落到首个条目但不带出它的子列，只开根列', () => {
     const h = mount()
     click(h.trigger)
     expect(h.focusedPath()).toEqual(['zhejiang'])
-    expect(h.activePath()).toEqual(['zhejiang'])
-    expect(h.shownColumns()).toEqual([0, 1])
-    expect(h.shownItems(1)).toEqual(['hangzhou', 'ningbo', 'wenzhou'])
+    expect(h.activePath()).toEqual([])
+    expect(h.shownColumns()).toEqual([0])
+    expect(h.item('zhejiang').item.getAttribute('data-highlighted')).toBe('')
+    expect(h.item('zhejiang').item.getAttribute('data-active')).toBeNull()
   })
 
   it('首个条目是叶子时只开根列', () => {
@@ -659,6 +660,7 @@ describe('悬停展开', () => {
 
   it('expandTrigger=click（缺省）时划过不改变任何列', () => {
     const h = mount({ defaultOpen: true })
+    click(h.item('zhejiang').item)
     hover(h.item('jiangsu').item)
     expect(h.activePath()).toEqual(['zhejiang'])
     expect(h.shownItems(1)).toEqual(['hangzhou', 'ningbo', 'wenzhou'])
@@ -698,10 +700,15 @@ describe('键盘：列内走、进子列、回上一列', () => {
     expect(h.state()).toBe('open')
   })
 
-  it('右键进子列的首个可停留条目，左键退回上一列并把当前列收掉', () => {
+  it('右键先把子列铺到焦点条目上，再按一次才走进去；左键退回上一列并把当前列收掉', () => {
     const h = mount({ defaultOpen: true })
     h.focusAnchor()
+    expect(h.shownColumns()).toEqual([0])
+    press(active(), 'ArrowRight')
+    expect(focusedValue()).toBe('zhejiang')
+    expect(h.activePath()).toEqual(['zhejiang'])
     expect(h.shownColumns()).toEqual([0, 1])
+
     press(active(), 'ArrowRight')
     expect(focusedValue()).toBe('hangzhou')
     expect(h.activePath()).toEqual(['zhejiang', 'hangzhou'])
@@ -716,6 +723,7 @@ describe('键盘：列内走、进子列、回上一列', () => {
   it('上下键走到别的条目时，它右边原有的列跟着换成新条目的子列', () => {
     const h = mount({ defaultOpen: true })
     h.focusAnchor()
+    press(active(), 'ArrowRight')
     press(active(), 'ArrowRight')
     press(active(), 'ArrowDown')
     expect(focusedValue()).toBe('ningbo')
@@ -740,6 +748,9 @@ describe('键盘：列内走、进子列、回上一列', () => {
   it('dir=rtl 把左右键整体对调', () => {
     const h = mount({ defaultOpen: true, dir: 'rtl' })
     h.focusAnchor()
+    press(active(), 'ArrowLeft')
+    expect(focusedValue()).toBe('zhejiang')
+    expect(h.activePath()).toEqual(['zhejiang'])
     press(active(), 'ArrowLeft')
     expect(focusedValue()).toBe('hangzhou')
     press(active(), 'ArrowRight')
@@ -771,6 +782,7 @@ describe('选中：叶子落值收起，分支看 changeOnSelect', () => {
     const onOpenChange = vi.fn()
     const h = mount({ defaultOpen: true, onValueChange, onOpenChange })
     h.focusAnchor()
+    press(active(), 'ArrowRight')
     press(active(), 'ArrowRight')
     press(active(), 'ArrowRight')
     expect(focusedValue()).toBe('xihu')
@@ -933,6 +945,7 @@ describe('roving tabindex 与 ARIA 骨架', () => {
 
   it('列是 listbox、条目是 option，层号与 id 都产出得出来', () => {
     const h = mount({ defaultOpen: true })
+    click(h.item('zhejiang').item)
     expect(h.column(0).getAttribute('role')).toBe('listbox')
     expect(h.column(0).getAttribute('aria-orientation')).toBe('vertical')
     expect(h.column(0).getAttribute('aria-multiselectable')).toBe('false')
