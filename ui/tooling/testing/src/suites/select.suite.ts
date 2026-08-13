@@ -205,7 +205,7 @@ export const selectSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '点击 trigger 展开：content 去掉 hidden，三处 ARIA 互指，高亮落到首个条目，派发 open-change',
+      name: '点击 trigger 展开：content 去掉 hidden，三处 ARIA 互指，无选中值不预落高亮，派发 open-change',
       spec: { apg: `${APG}#roles_states_properties` },
       steps: [
         {
@@ -223,9 +223,11 @@ export const selectSuite: ConformanceSuite = {
                 'aria-labelledby': '@part(label)',
                 'hidden': null,
                 'data-state': 'open',
+                // 没有条目认领 Tab 位时由容器兜底
+                'tabindex': '0',
               },
-              // roving tabindex：整组只有高亮条目留在 Tab 序列内
-              'item[0]': { 'tabindex': '0', 'data-highlighted': '' },
+              // 指针打开不预落高亮：没有条目看着像被选中
+              'item[0]': { 'tabindex': '-1', 'data-highlighted': null },
               'item[1]': { 'tabindex': '-1', 'data-highlighted': null },
               'item[2]': { 'tabindex': '-1', 'data-highlighted': null },
             },
@@ -234,8 +236,21 @@ export const selectSuite: ConformanceSuite = {
         },
         {
           kind: 'settle',
-          until: { activeElement: 'item[0]' },
-          expect: { activeElement: { part: 'item[0]', exact: true }, events: [] },
+          until: { activeElement: 'content' },
+          expect: { activeElement: 'content', events: [] },
+        },
+        // 第一按方向键才锚定首个条目，roving tabindex 随之移交
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          expect: {
+            activeElement: { part: 'item[0]', exact: true },
+            parts: {
+              'content': { tabindex: '-1' },
+              'item[0]': { 'tabindex': '0', 'data-highlighted': '' },
+            },
+            events: [],
+          },
         },
       ],
     },
@@ -335,7 +350,9 @@ export const selectSuite: ConformanceSuite = {
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['select.kbd.first', 'select.kbd.last'],
       steps: [
-        { kind: 'click', part: 'trigger' },
+        // 键盘打开才预落锚点，Home/End 的起点由它给出
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'ArrowDown' },
         { kind: 'settle', until: { activeElement: 'item[0]' } },
         {
           kind: 'key',
@@ -405,7 +422,9 @@ export const selectSuite: ConformanceSuite = {
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['select.kbd.typeahead'],
       steps: [
-        { kind: 'click', part: 'trigger' },
+        // 键盘打开预落锚点，连打的起点由它给出
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'ArrowDown' },
         { kind: 'settle', until: { activeElement: 'item[0]' } },
         {
           kind: 'key',

@@ -245,6 +245,10 @@ export const selectMachine = createMachine({
           })
           const selected = itemValue(firstSelected ?? null)
           if (intent === 'selected') {
+            // 没有选中值就不落锚点：焦点由焦点域兜底歇在 content 上，
+            // 打开这一刻不能有条目看着像被选中；键盘入口要预落锚点得自带 first/next 意图
+            if (selection.length === 0)
+              return
             // 选中项仍在集合里且可停留就停在它上面，否则退回首个可停留条目
             const current = firstSelected && !isItemDisabled(firstSelected) ? firstSelected : null
             context.set('highlightedValue', itemValue(current ?? navigateItems(items, null, 'first')))

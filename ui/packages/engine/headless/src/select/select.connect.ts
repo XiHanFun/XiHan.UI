@@ -188,10 +188,11 @@ export function connectSelect<T extends PropTypes>(
           send({ type: 'OPEN', focus: intent })
           return
         }
-        // Enter 必须吞掉：按钮默认激活会再合成一次 click，展开会被那次 TOGGLE 关掉
+        // Enter 必须吞掉：按钮默认激活会再合成一次 click，展开会被那次 TOGGLE 关掉。
+        // 键盘打开要有可见落点：无选中值时锚定首个条目，有选中仍定位到选中项
         if (event.key === 'Enter') {
           event.preventDefault()
-          send({ type: 'OPEN', focus: 'selected' })
+          send({ type: 'OPEN', focus: value.length ? 'selected' : 'first' })
           return
         }
         // 收起态连打直接改选中值，不展开；缓冲区空时空格不算字符，落到下面按展开处理
@@ -205,7 +206,7 @@ export function connectSelect<T extends PropTypes>(
         }
         if (event.key === ' ') {
           event.preventDefault()
-          send({ type: 'OPEN', focus: 'selected' })
+          send({ type: 'OPEN', focus: value.length ? 'selected' : 'first' })
         }
       },
     }),
