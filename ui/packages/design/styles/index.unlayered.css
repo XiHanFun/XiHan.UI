@@ -4,11 +4,16 @@
  * 无层 reset/normalize 时使用。取舍见文档站的「安装与接入」。
  */
 
+/* 层序声明必须最先：级联层的先后由首次出现定死，layers.css 打头才立得住序。 */
+
+/* styles/layers.css */
+/* 库层序单一真源：级联顺序由首次声明决定，与 @import 顺序解耦。 */
+
 /* 令牌先于一切：皮肤里不写兜底值，令牌缺席就是缺陷，不是降级。
    tokens.css 自带 @layer xihan.tokens，层序由 layers.css 定。 */
 @import '@xihan-ui/tokens/tokens.css';
 
-/* 层序声明必须最先，其余按层归属排列。 */
+/* 其余按层归属排列。 */
 
 /* styles/affix.css */
 /* 占位盒就是 content 在常规流里占的那块地方。
@@ -1542,9 +1547,6 @@
 [data-scope='infinite-scroll'][data-part='sentinel'][hidden] {
   display: none;
 }
-
-/* styles/layers.css */
-/* 库层序单一真源：级联顺序由首次声明决定，与 @import 顺序解耦。 */
 
 /* styles/layout.css */
 /* 页面骨架排成三行两列：头与脚各横贯一整行，侧栏与内容并排占中间那一行。
@@ -7918,19 +7920,6 @@
   display: none;
 }
 
-/* 浮层进场：淡入 + 轻微上浮。名字带组件前缀，不与公共关键帧抢名 */
-@keyframes xh-date-picker-in {
-  from {
-    opacity: 0;
-    translate: 0 -4px;
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
 /* —— showTime：时间列贴在日历右侧、逐列滚动，确认按钮收口 ——
    content 是 block，作者把日历与时间列包进一行排布；列自身只管滚与选项画法 */
 [data-scope='date-picker'][data-part='time-column'] {
@@ -7993,6 +7982,19 @@
 
 [data-scope='date-picker'][data-part='confirm-trigger'][hidden] {
   display: none;
+}
+
+/* 浮层进场：淡入 + 轻微上浮。名字带组件前缀，不与公共关键帧抢名 */
+@keyframes xh-date-picker-in {
+  from {
+    opacity: 0;
+    translate: 0 -4px;
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
 }
 
 /* styles/dialog.css */

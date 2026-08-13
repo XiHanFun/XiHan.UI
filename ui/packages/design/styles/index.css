@@ -1,8 +1,11 @@
+/* 层序声明必须最先：级联层的先后由首次出现定死，layers.css 打头才立得住序。 */
+@import './css/layers.css';
+
 /* 令牌先于一切：皮肤里不写兜底值，令牌缺席就是缺陷，不是降级。
    tokens.css 自带 @layer xihan.tokens，层序由 layers.css 定。 */
 @import '@xihan-ui/tokens/tokens.css';
 
-/* 层序声明必须最先，其余按层归属排列。 */
+/* 其余按层归属排列。 */
 @import './css/affix.css';
 @import './css/avatar-group.css';
 @import './css/back-top.css';
@@ -18,7 +21,6 @@
 @import './css/highlight.css';
 @import './css/icon-wrapper.css';
 @import './css/infinite-scroll.css';
-@import './css/layers.css';
 @import './css/layout.css';
 @import './css/list.css';
 @import './css/log.css';
