@@ -70,8 +70,9 @@ export interface CascaderLevel {
 
 /**
  * 展开那一刻焦点落在哪一个条目：
- * - selected 停在选中路径的末项（无选中、或它已禁用时退回所在列的首个可停留条目）
- * - first / last 从根列两端进
+ * - selected 停在选中路径的末项（它已禁用时退回所在列的首个可停留条目；无选中则不落
+ *   锚点、列也不铺，焦点歇在 content 上——指针打开走这条，不能有条目看着像被选中）
+ * - first / last 从根列两端进（键盘确认键在无选中时走 first）
  * - next / prev 从选中路径的末项在它自己那一列里走一步
  */
 export type CascaderFocusIntent = 'selected' | 'first' | 'last' | 'next' | 'prev'

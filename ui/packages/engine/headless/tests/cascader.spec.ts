@@ -533,9 +533,19 @@ describe('选中路径与回显', () => {
 })
 
 describe('列的展开与截断', () => {
-  it('无选中值展开：锚点落到首个条目但不带出它的子列，只开根列', () => {
+  it('指针展开且无选中值：不落锚点也不铺列，Tab 位由 content 兜底', () => {
     const h = mount()
     click(h.trigger)
+    expect(h.focusedPath()).toBeNull()
+    expect(h.activePath()).toEqual([])
+    expect(h.shownColumns()).toEqual([0])
+    expect(h.item('zhejiang').item.getAttribute('data-highlighted')).toBeNull()
+    expect(h.content.getAttribute('tabindex')).toBe('0')
+  })
+
+  it('键盘展开（Enter）且无选中值：锚点落到首个条目但不带出它的子列', () => {
+    const h = mount()
+    press(h.trigger, 'Enter')
     expect(h.focusedPath()).toEqual(['zhejiang'])
     expect(h.activePath()).toEqual([])
     expect(h.shownColumns()).toEqual([0])
@@ -676,7 +686,8 @@ describe('悬停展开', () => {
 
 describe('键盘：列内走、进子列、回上一列', () => {
   it('上下键只在当前这一列里走，禁用条目跳过', () => {
-    const h = mount({ defaultOpen: true })
+    const h = mount()
+    press(h.trigger, 'Enter')
     h.focusAnchor()
     expect(focusedValue()).toBe('zhejiang')
     press(active(), 'ArrowDown')
@@ -693,7 +704,8 @@ describe('键盘：列内走、进子列、回上一列', () => {
   })
 
   it('loop=false 时首尾不回绕', () => {
-    const h = mount({ defaultOpen: true, loop: false })
+    const h = mount({ loop: false })
+    press(h.trigger, 'Enter')
     h.focusAnchor()
     press(active(), 'ArrowUp')
     expect(focusedValue()).toBe('zhejiang')
@@ -701,7 +713,8 @@ describe('键盘：列内走、进子列、回上一列', () => {
   })
 
   it('右键先把子列铺到焦点条目上，再按一次才走进去；左键退回上一列并把当前列收掉', () => {
-    const h = mount({ defaultOpen: true })
+    const h = mount()
+    press(h.trigger, 'Enter')
     h.focusAnchor()
     expect(h.shownColumns()).toEqual([0])
     press(active(), 'ArrowRight')
@@ -721,7 +734,8 @@ describe('键盘：列内走、进子列、回上一列', () => {
   })
 
   it('上下键走到别的条目时，它右边原有的列跟着换成新条目的子列', () => {
-    const h = mount({ defaultOpen: true })
+    const h = mount()
+    press(h.trigger, 'Enter')
     h.focusAnchor()
     press(active(), 'ArrowRight')
     press(active(), 'ArrowRight')
@@ -731,7 +745,8 @@ describe('键盘：列内走、进子列、回上一列', () => {
   })
 
   it('叶子上的右键与根列上的左键都不吞，放行给页面', () => {
-    const h = mount({ defaultOpen: true })
+    const h = mount()
+    press(h.trigger, 'Enter')
     h.focusAnchor()
     const back = press(active(), 'ArrowLeft')
     expect(back.defaultPrevented).toBe(false)
@@ -746,7 +761,8 @@ describe('键盘：列内走、进子列、回上一列', () => {
   })
 
   it('dir=rtl 把左右键整体对调', () => {
-    const h = mount({ defaultOpen: true, dir: 'rtl' })
+    const h = mount({ dir: 'rtl' })
+    press(h.trigger, 'Enter')
     h.focusAnchor()
     press(active(), 'ArrowLeft')
     expect(focusedValue()).toBe('zhejiang')
@@ -759,7 +775,8 @@ describe('键盘：列内走、进子列、回上一列', () => {
   })
 
   it('tab 收起浮层但不吞键，焦点按序列自然离开', () => {
-    const h = mount({ defaultOpen: true })
+    const h = mount()
+    press(h.trigger, 'Enter')
     h.focusAnchor()
     const event = press(active(), 'Tab')
     expect(event.defaultPrevented).toBe(false)
@@ -767,7 +784,8 @@ describe('键盘：列内走、进子列、回上一列', () => {
   })
 
   it('带 Ctrl/Meta 的组合一概不归浮层管', () => {
-    const h = mount({ defaultOpen: true })
+    const h = mount()
+    press(h.trigger, 'Enter')
     h.focusAnchor()
     const event = press(active(), 'ArrowDown', { ctrlKey: true })
     expect(event.defaultPrevented).toBe(false)
@@ -780,7 +798,8 @@ describe('选中：叶子落值收起，分支看 changeOnSelect', () => {
   it('enter 选中叶子：落值、收起、先值后开合', () => {
     const onValueChange = vi.fn()
     const onOpenChange = vi.fn()
-    const h = mount({ defaultOpen: true, onValueChange, onOpenChange })
+    const h = mount({ onValueChange, onOpenChange })
+    press(h.trigger, 'Enter')
     h.focusAnchor()
     press(active(), 'ArrowRight')
     press(active(), 'ArrowRight')
@@ -916,13 +935,17 @@ describe('禁用、只读与清空', () => {
 })
 
 describe('roving tabindex 与 ARIA 骨架', () => {
-  it('收起态整个控件只剩 trigger 一个入口；展开后恰好一个条目认领 Tab 位', () => {
-    const h = mount()
-    expect(h.tabStops()).toEqual([])
-    click(h.trigger)
-    expect(h.tabStops()).toEqual(['item'])
-    expect(h.item('zhejiang').item.getAttribute('tabindex')).toBe('0')
-    expect(h.item('jiangsu').item.getAttribute('tabindex')).toBe('-1')
+  it('收起态整个控件只剩 trigger 一个入口；指针展开由 content 兜底 Tab 位，键盘展开由锚点条目认领', () => {
+    const pointer = mount()
+    expect(pointer.tabStops()).toEqual([])
+    click(pointer.trigger)
+    expect(pointer.tabStops()).toEqual(['content'])
+
+    const keyboard = mount()
+    press(keyboard.trigger, 'Enter')
+    expect(keyboard.tabStops()).toEqual(['item'])
+    expect(keyboard.item('zhejiang').item.getAttribute('tabindex')).toBe('0')
+    expect(keyboard.item('jiangsu').item.getAttribute('tabindex')).toBe('-1')
   })
 
   it('数据空到一个条目都没有时，由 content 兜底进 Tab 序列', () => {
@@ -932,7 +955,8 @@ describe('roving tabindex 与 ARIA 骨架', () => {
   })
 
   it('持有焦点的条目被移出 DOM：锚点重挑，Tab 位不会一个都不剩', () => {
-    const h = mount({ defaultOpen: true })
+    // 带选中值挂载，锚点才有初始落点（无选中的指针展开本就无锚点可丢）
+    const h = mount({ defaultOpen: true, defaultValue: ['zhejiang'] })
     expect(h.focusedPath()).toEqual(['zhejiang'])
     h.removeItem('zhejiang')
     h.send({ type: 'ITEM.LOST' })
