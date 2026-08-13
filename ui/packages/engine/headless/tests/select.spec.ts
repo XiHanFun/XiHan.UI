@@ -426,7 +426,10 @@ describe('selectMachine 多选', () => {
   it('确认键 Enter 与 Space 都切换高亮条目的选中态且不收起列表', async () => {
     const h = mount({ multiple: true, defaultOpen: true })
     await tick()
-    // 先把锚点从首项挪开，证明确认键认的是高亮而不是第一项
+    // 无选中值打开不预落锚点，第一按先锚定首项；再按一次挪到次项，
+    // 证明确认键认的是高亮而不是第一项
+    press(h.content, 'ArrowDown')
+    expect(h.highlighted()).toBe('apple')
     press(h.content, 'ArrowDown')
     expect(h.highlighted()).toBe('banana')
 

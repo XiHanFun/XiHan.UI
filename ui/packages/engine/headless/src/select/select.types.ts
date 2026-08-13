@@ -4,8 +4,9 @@ import type { MachineSchema } from '@xihan-ui/machine'
 
 /**
  * 展开那一刻高亮落在哪里：
- * - selected 停在当前选中项（无选中或该项禁用时退回首个可停留条目）
- * - first / last 从集合两端进
+ * - selected 停在当前选中项（该项禁用时退回首个可停留条目；无选中则不落锚点，
+ *   焦点歇在 content 上——指针打开走这条，打开那一刻不能有条目看着像被选中）
+ * - first / last 从集合两端进（键盘确认键在无选中时走 first）
  * - next / prev 从当前选中项起步走一步（收起态的上下键即走这条）
  */
 export type SelectFocusIntent = 'selected' | 'first' | 'last' | 'next' | 'prev'
