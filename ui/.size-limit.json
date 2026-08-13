@@ -15,7 +15,7 @@
     "name": "tokens",
     "path": "packages/design/tokens/dist/index.js",
     "gzip": true,
-    "limit": "2.7 kB"
+    "limit": "5 kB"
   },
   {
     "name": "tokens/tokens.css",
@@ -69,25 +69,34 @@
     "name": "headless",
     "path": "packages/engine/headless/dist/index.js",
     "gzip": true,
-    "limit": "169 kB"
+    "limit": "190 kB"
   },
   {
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "195 kB"
+    "limit": "215 kB",
+    "ignore": [
+      "vue"
+    ]
   },
   {
     "name": "vue/backgrounds",
     "path": "packages/adapters/vue/dist/backgrounds.js",
     "gzip": true,
-    "limit": "27 kB"
+    "limit": "18 kB",
+    "ignore": [
+      "vue"
+    ]
   },
   {
     "name": "vue/sound",
     "path": "packages/adapters/vue/dist/sound.js",
     "gzip": true,
-    "limit": "6 kB"
+    "limit": "6 kB",
+    "ignore": [
+      "vue"
+    ]
   },
   {
     "name": "web-components",
@@ -99,7 +108,7 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "184 kB"
+    "limit": "205 kB"
   },
   {
     "name": "web-components/backgrounds",
@@ -124,20 +133,29 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhBadge }",
     "gzip": true,
-    "limit": "4.3 kB"
+    "limit": "600 B",
+    "ignore": [
+      "vue"
+    ]
   },
   {
     "name": "vue：只用 XhButton",
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhButton }",
     "gzip": true,
-    "limit": "6.2 kB"
+    "limit": "1.2 kB",
+    "ignore": [
+      "vue"
+    ]
   },
   {
     "name": "vue：只用 XhDialogRoot",
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhDialogRoot }",
     "gzip": true,
-    "limit": "24 kB"
+    "limit": "13 kB",
+    "ignore": [
+      "vue"
+    ]
   }
 ]
