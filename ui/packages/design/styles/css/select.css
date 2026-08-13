@@ -296,8 +296,14 @@
     display: none;
   }
 
-  /* 容器只是焦点域兜底落点，落焦不画环：高亮永远长在条目上 */
-  [data-scope='select'][data-part='content']:focus-visible {
+  /* 焦点落在容器上只有一种情形：指针打开、无选中值、还没有任何条目当锚点。
+     那一刻它认领着 Tab 位，环画在浮层内沿；有锚点时环长在条目上，容器不再画 */
+  [data-scope='select'][data-part='content'][tabindex='0']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  [data-scope='select'][data-part='content']:not([tabindex='0']):focus-visible {
     outline: none;
   }
 
@@ -336,7 +342,14 @@
     font-weight: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-medium));
   }
 
-  [data-scope='select'][data-part='item']:focus {
+  /* 键盘走到条目上要画环：轻档底色对白底只有 1.1:1，够不上焦点指示器的对比度要求。
+     指针悬停走的是程序化聚焦，鼠标模态下 :focus-visible 不匹配，不会误画 */
+  [data-scope='select'][data-part='item']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  [data-scope='select'][data-part='item']:focus:not(:focus-visible) {
     outline: none;
   }
 

@@ -284,8 +284,14 @@
     display: none;
   }
 
-  /* 没有锚点时容器自己进 Tab 序列兜底，落焦不画环：高亮永远长在行上 */
-  [data-scope='tree-select'][data-part='tree']:focus-visible {
+  /* 焦点落在树容器上只有一种情形：指针打开、还没有任何行当锚点。那一刻它认领着 Tab 位，
+     环画在内沿，用户才看得出键盘此刻在哪儿；有锚点时环长在行上，容器不再画 */
+  [data-scope='tree-select'][data-part='tree'][tabindex='0']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  [data-scope='tree-select'][data-part='tree']:not([tabindex='0']):focus-visible {
     outline: none;
   }
 

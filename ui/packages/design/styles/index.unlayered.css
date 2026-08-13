@@ -5462,8 +5462,14 @@
   border-inline-start: var(--xh-stroke-thin) solid var(--xh-cascader-column-divider, var(--xh-border-subtle));
 }
 
-/* 列不进 Tab 序列也不承载焦点，落焦不画环：高亮永远长在条目上 */
-[data-scope='cascader'][data-part='column']:focus-visible {
+/* 焦点落在根列上只有一种情形：指针打开、无选中值、还没有任何条目当锚点。
+   那一刻它认领着 Tab 位，环画在列内沿；有锚点时环长在条目上，列不再画 */
+[data-scope='cascader'][data-part='column'][tabindex='0']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-width));
+}
+
+[data-scope='cascader'][data-part='column']:not([tabindex='0']):focus-visible {
   outline: none;
 }
 
@@ -7354,8 +7360,14 @@
   display: none;
 }
 
-/* 容器只是焦点域兜底落点，落焦不画环：高亮永远长在条目上 */
-[data-scope='context-menu'][data-part='content']:focus-visible {
+/* 焦点落在容器上只有一种情形：指针打开、还没有任何条目当锚点。那一刻它认领着 Tab 位，
+   环画在浮层内沿，用户才看得出键盘此刻在哪儿；有锚点时环长在条目上，容器不再画 */
+[data-scope='context-menu'][data-part='content'][tabindex='0']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-width));
+}
+
+[data-scope='context-menu'][data-part='content']:not([tabindex='0']):focus-visible {
   outline: none;
 }
 
@@ -7435,7 +7447,14 @@
   font-weight: var(--xh-context-menu-item-active-font-weight, var(--xh-font-weight-semibold));
 }
 
-[data-scope='context-menu'][data-part='item']:focus {
+/* 键盘走到条目上要画环：轻档底色只有 1.1:1，够不上焦点指示器的对比度要求。
+   指针悬停走的是程序化聚焦，鼠标模态下 :focus-visible 不匹配，不会误画 */
+[data-scope='context-menu'][data-part='item']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-width));
+}
+
+[data-scope='context-menu'][data-part='item']:focus:not(:focus-visible) {
   outline: none;
 }
 
@@ -12161,8 +12180,14 @@
   display: none;
 }
 
-/* 容器只是焦点域兜底落点，落焦不画环：高亮永远长在条目上 */
-[data-scope='select'][data-part='content']:focus-visible {
+/* 焦点落在容器上只有一种情形：指针打开、无选中值、还没有任何条目当锚点。
+   那一刻它认领着 Tab 位，环画在浮层内沿；有锚点时环长在条目上，容器不再画 */
+[data-scope='select'][data-part='content'][tabindex='0']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-width));
+}
+
+[data-scope='select'][data-part='content']:not([tabindex='0']):focus-visible {
   outline: none;
 }
 
@@ -12201,7 +12226,14 @@
   font-weight: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-medium));
 }
 
-[data-scope='select'][data-part='item']:focus {
+/* 键盘走到条目上要画环：轻档底色对白底只有 1.1:1，够不上焦点指示器的对比度要求。
+   指针悬停走的是程序化聚焦，鼠标模态下 :focus-visible 不匹配，不会误画 */
+[data-scope='select'][data-part='item']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-width));
+}
+
+[data-scope='select'][data-part='item']:focus:not(:focus-visible) {
   outline: none;
 }
 
@@ -16791,8 +16823,14 @@
   display: none;
 }
 
-/* 没有锚点时容器自己进 Tab 序列兜底，落焦不画环：高亮永远长在行上 */
-[data-scope='tree-select'][data-part='tree']:focus-visible {
+/* 焦点落在树容器上只有一种情形：指针打开、还没有任何行当锚点。那一刻它认领着 Tab 位，
+   环画在内沿，用户才看得出键盘此刻在哪儿；有锚点时环长在行上，容器不再画 */
+[data-scope='tree-select'][data-part='tree'][tabindex='0']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-width));
+}
+
+[data-scope='tree-select'][data-part='tree']:not([tabindex='0']):focus-visible {
   outline: none;
 }
 
