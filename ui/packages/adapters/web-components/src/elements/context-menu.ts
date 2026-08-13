@@ -160,6 +160,8 @@ export class XhContextMenuElement extends XhElement {
     svc.refs.set('registerLayer', this.registerLayer)
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
+    // 触发区不当定位锚点，但收起时焦点要归还它
+    svc.refs.set('getTriggerEl', () => this.getPart('trigger'))
     svc.refs.set('getContentEl', () => this.getPart('content'))
   }
 

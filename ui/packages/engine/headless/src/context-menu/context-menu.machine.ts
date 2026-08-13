@@ -41,6 +41,7 @@ export const contextMenuMachine = createMachine({
     registerLayer: null,
     position: null,
     getFloatingEl: () => null,
+    getTriggerEl: () => null,
     getContentEl: () => null,
     typeahead: createTypeahead(),
     reanchor: null,
@@ -330,6 +331,9 @@ export const contextMenuMachine = createMachine({
             return content
           },
           restoreFocus: () => context.get('returnFocus'),
+          // 归还落点显式给触发区：右键那一下浏览器未必把焦点放在它身上（各平台不一致），
+          // 靠焦点域的创建前快照会把 Escape 之后的 Tab 起点丢到 body 上
+          restoreTarget: () => refs.get('getTriggerEl')(),
         })
 
         // 逆序拆：先撤依赖层的两个订阅，最后才把层本身移出栈

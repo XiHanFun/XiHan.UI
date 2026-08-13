@@ -581,6 +581,28 @@ export const contextMenuSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'escape 关闭：右键那一下没把焦点交给触发区，焦点仍归还它',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      steps: [
+        {
+          kind: 'raw',
+          why: '不先 focus 触发区：右键是否落焦各平台不一致，焦点域记下的创建前快照此刻停在 body 上',
+          run: rightClickAt(10, 10),
+        },
+        { kind: 'settle', until: { activeElement: 'content' } },
+        {
+          kind: 'key',
+          key: 'Escape',
+          expect: { events: [{ type: 'open-change', detail: { open: false } }] },
+        },
+        {
+          kind: 'settle',
+          until: { activeElement: 'trigger' },
+          expect: { activeElement: 'trigger' },
+        },
+      ],
+    },
+    {
       name: 'tab 关闭：焦点不被抢回触发区，按 Tab 序列自然离开',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['context-menu.kbd.tab'],

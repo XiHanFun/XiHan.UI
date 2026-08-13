@@ -801,6 +801,21 @@ describe('收起的出口', () => {
     expect(document.activeElement).toBe(h.trigger)
   })
 
+  // 归还落点显式取 trigger，不认焦点域创建前的快照：指针打开那一刻焦点未必在 trigger 上
+  it('打开时 trigger 没拿到焦点（Safari 点按即如此），escape 照样把焦点归还它', async () => {
+    const h = mount()
+    // 不先 h.trigger.focus()：此刻焦点在 body 上，快照记下的就是它
+    click(h.trigger)
+    await settle()
+    await tick()
+    expect(document.activeElement).toBe(h.treeEl)
+
+    press(active(), 'Escape')
+    expect(h.state()).toBe('closed')
+    await settle()
+    expect(document.activeElement).toBe(h.trigger)
+  })
+
   it('收起即丢焦点锚点与连打缓冲：下次展开的第一个字母不会被拼进上一轮的查询串', async () => {
     const h = mount({ defaultExpandedValue: ['src'] })
     h.trigger.focus()

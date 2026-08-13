@@ -24,6 +24,8 @@ export interface ContextMenuRefs {
   position: PositionEnginePort | null
   /** 被定位的浮层容器，通常是 positioner。锚点是光标坐标，不是元素，故没有 getAnchorEl。 */
   getFloatingEl: () => HTMLElement | null
+  /** 触发区，收起时焦点归还它；缺省即回落到焦点域创建前的持有者。 */
+  getTriggerEl: () => HTMLElement | null
   /** 焦点域容器、消解层节点，同时是条目集合的查询容器。 */
   getContentEl: () => HTMLElement | null
   /** 连打检索缓冲，随服务存活；放模块变量会让同页两个菜单共用一个缓冲。 */

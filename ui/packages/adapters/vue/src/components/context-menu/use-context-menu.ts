@@ -50,6 +50,8 @@ export function useContextMenu(
     service.refs.set('registerLayer', registerLayer)
     service.refs.set('position', createPositionEngine())
     service.refs.set('getFloatingEl', () => positionerRef.value)
+    // 触发区不当定位锚点，但收起时焦点要归还它
+    service.refs.set('getTriggerEl', () => triggerRef.value)
     service.refs.set('getContentEl', () => contentRef.value)
   }
 
