@@ -2759,7 +2759,7 @@
               "name": "search-item"
             },
             {
-              "description": "空态占位（可缺省）：搜索无候选或 collection 为空时露面，其余时候带 hidden；文案归作者",
+              "description": "空态占位：搜索无候选或 collection 为空时露面，其余时候带 hidden。标记里没写就由元素在 content 末尾补一个并填缺省文案；写了就用作者那份，文案也归作者",
               "name": "empty"
             },
             {
@@ -2995,6 +2995,14 @@
             },
             {
               "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "CascaderSchema['props']['translations'] | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "idGen",
               "type": {
                 "text": "IdGenerator"
@@ -3033,6 +3041,14 @@
               "readonly": true,
               "default": "new WeakMap<HTMLElement, boolean>()",
               "description": "value-text 是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。"
+            },
+            {
+              "kind": "field",
+              "name": "ownsEmptyText",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()",
+              "description": "空态占位的文案是否归元素填，判定同 ownsValueText。"
             },
             {
               "kind": "field",
@@ -3181,7 +3197,7 @@
             },
             {
               "kind": "method",
-              "name": "fillValueText",
+              "name": "fillOwnedText",
               "privacy": "private",
               "return": {
                 "type": {
@@ -3189,6 +3205,12 @@
                 }
               },
               "parameters": [
+                {
+                  "name": "owns",
+                  "type": {
+                    "text": "WeakMap<HTMLElement, boolean>"
+                  }
+                },
                 {
                   "name": "el",
                   "type": {
@@ -3202,7 +3224,18 @@
                   }
                 }
               ],
-              "description": "把整条路径的文字填进 value-text；首次见到该节点时若已有内容则判为归作者，之后一概不碰。"
+              "description": "把文字填进角色节点；首次见到该节点时若已有内容则判为归作者，之后一概不碰。"
+            },
+            {
+              "kind": "method",
+              "name": "ensureEmpty",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | null"
+                }
+              },
+              "description": "取空态占位；标记里没写就在 content 末尾补一个，位置与 Vue 侧一致。\n作者写了就用作者那份，只接线不新建。补出来的节点下一轮由 discoverParts 收进 partMap。"
             },
             {
               "kind": "method",

@@ -14,6 +14,7 @@ import { cascaderAnatomy, cascaderMachine, cascaderMeta, connectCascader } from 
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
+import { PART_ATTR } from '../dom/parts'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
@@ -78,7 +79,7 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @csspart input - 搜索框（content 顶部）；没开 searchable 时带 hidden。上下键走候选、Enter 选中、Escape 先清词
  * @csspart search-list - 候选列表容器；不在搜索视图时带 hidden，无候选时带 data-empty
  * @csspart search-item - 一条候选，须用 value 属性写整条路径的 JSON 数组串（如 value='["a","b"]'）；词换了不匹配的带 hidden
- * @csspart empty - 空态占位（可缺省）：搜索无候选或 collection 为空时露面，其余时候带 hidden；文案归作者
+ * @csspart empty - 空态占位：搜索无候选或 collection 为空时露面，其余时候带 hidden。标记里没写就由元素在 content 末尾补一个并填缺省文案；写了就用作者那份，文案也归作者
  * @csspart column - role=listbox 的一列，须自带 level 属性标识它是第几列；砍掉时带 hidden
  * @csspart item - role=option 的条目，须自带 value 属性标识身份；不在当前列里时带 hidden
  * @csspart item-text - 条目文本
@@ -109,6 +110,7 @@ export class XhCascaderElement extends XhElement {
     size: { converter: STRING_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
     separator: { converter: STRING_CONVERTER },
+    translations: { attribute: false },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
@@ -138,6 +140,7 @@ export class XhCascaderElement extends XhElement {
   declare offset?: number
   declare loop?: boolean
   declare direction?: Direction
+  declare translations?: CascaderSchema['props']['translations']
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly cascaderScope = createScope(null, this.idGen)
@@ -146,6 +149,9 @@ export class XhCascaderElement extends XhElement {
 
   /** value-text 是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */
   private readonly ownsValueText = new WeakMap<HTMLElement, boolean>()
+
+  /** 空态占位的文案是否归元素填，判定同 ownsValueText。 */
+  private readonly ownsEmptyText = new WeakMap<HTMLElement, boolean>()
 
   private readonly notifyValue = (details: CascaderValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -187,6 +193,7 @@ export class XhCascaderElement extends XhElement {
       offset: this.offset,
       loop: this.loop,
       dir: this.direction,
+      translations: this.translations,
       onValueChange: this.notifyValue,
       onOpenChange: this.notifyOpen,
     }
@@ -275,16 +282,33 @@ export class XhCascaderElement extends XhElement {
       el.removeAttribute('disabled')
   }
 
-  /** 把整条路径的文字填进 value-text；首次见到该节点时若已有内容则判为归作者，之后一概不碰。 */
-  private fillValueText(el: HTMLElement, text: string): void {
-    let owned = this.ownsValueText.get(el)
+  /** 把文字填进角色节点；首次见到该节点时若已有内容则判为归作者，之后一概不碰。 */
+  private fillOwnedText(owns: WeakMap<HTMLElement, boolean>, el: HTMLElement, text: string): void {
+    let owned = owns.get(el)
     if (owned === undefined) {
       owned = (el.textContent ?? '').trim() === ''
-      this.ownsValueText.set(el, owned)
+      owns.set(el, owned)
     }
     if (!owned || el.textContent === text)
       return
     el.textContent = text
+  }
+
+  /**
+   * 取空态占位；标记里没写就在 content 末尾补一个，位置与 Vue 侧一致。
+   * 作者写了就用作者那份，只接线不新建。补出来的节点下一轮由 discoverParts 收进 partMap。
+   */
+  private ensureEmpty(): HTMLElement | null {
+    const existing = this.getPart('empty')
+    if (existing)
+      return existing
+    const content = this.getPart('content')
+    if (!content)
+      return null
+    const el = this.ownerDocument.createElement('div')
+    el.setAttribute(PART_ATTR, 'empty')
+    content.append(el)
+    return el
   }
 
   protected wire(): void {
@@ -305,7 +329,13 @@ export class XhCascaderElement extends XhElement {
     put('content', api.getContentProps() as Record<string, unknown>)
     put('input', api.getInputProps() as Record<string, unknown>)
     put('search-list', api.getSearchListProps() as Record<string, unknown>)
-    put('empty', api.getEmptyProps() as Record<string, unknown>)
+
+    // 空态占位标记里没写就补一个：露不露面归连接层，文案按当前视图取无匹配或无数据
+    const empty = this.ensureEmpty()
+    if (empty) {
+      this.spreader.spread(empty, api.getEmptyProps() as Record<string, unknown>)
+      this.fillOwnedText(this.ownsEmptyText, empty, api.searching ? api.translations.noMatch : api.translations.empty)
+    }
 
     // 候选是多实例 part：身份用 value 属性自报整条路径（JSON 数组串，与 cascaderPathKey 同构）
     for (const el of this.getParts('search-item')) {
@@ -326,7 +356,7 @@ export class XhCascaderElement extends XhElement {
     const valueText = this.getPart('value-text')
     if (valueText) {
       this.spreader.spread(valueText, api.getValueTextProps() as Record<string, unknown>)
-      this.fillValueText(valueText, api.displayText)
+      this.fillOwnedText(this.ownsValueText, valueText, api.displayText)
     }
 
     // 集合类 part 逐个 spread，身份由节点自报，不依赖下标。
