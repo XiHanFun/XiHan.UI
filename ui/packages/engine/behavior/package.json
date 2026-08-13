@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/behavior",
   "type": "module",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha.1",
   "description": "XiHan.UI interaction behaviors — dismissable layer, focus scope, scroll lock, stick to bottom, presence.",
   "author": {
     "name": "XiHanFun",
