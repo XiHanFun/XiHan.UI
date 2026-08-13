@@ -11,5 +11,6 @@ export type {
   TreeSelectOpenChangeDetails,
   TreeSelectRefs,
   TreeSelectSchema,
+  TreeSelectTranslations,
   TreeSelectValueChangeDetails,
 } from './tree-select.types'

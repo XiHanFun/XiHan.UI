@@ -86,6 +86,7 @@ XhContextMenuSub 在右键菜单里嵌一台子菜单：触发条目双重身份
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
 | `typeahead` | `boolean` |  | 连打检索，默认开。关掉后可打印字符一律放行给页面。 |
+| `translations` | `Partial<ContextMenuTranslations>` |  | 读屏用的文案，默认英文。 |
 | `longPressDelay` | `number` |  | 触摸端长按多久算触发（ms），默认 700。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定条目高亮与标记位用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 |

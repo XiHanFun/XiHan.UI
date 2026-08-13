@@ -5948,6 +5948,15 @@
             },
             {
               "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "ContextMenuSchema['props']['translations'] | undefined"
+              },
+              "description": "读屏文案（菜单名字）；对象进不了属性，只作为 property 暴露。"
+            },
+            {
+              "kind": "field",
               "name": "direction",
               "privacy": "public",
               "type": {
@@ -28234,6 +28243,15 @@
                 "text": "string | undefined"
               },
               "attribute": "placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "TreeSelectSchema['props']['translations'] | undefined"
+              },
+              "description": "读屏文案（树容器兜底名字）；对象进不了属性，只作为 property 暴露。"
             },
             {
               "kind": "field",

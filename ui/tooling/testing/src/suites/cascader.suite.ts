@@ -240,14 +240,16 @@ export const cascaderSuite: ConformanceSuite = {
             // 显式 false，不省略
             'aria-multiselectable': 'false',
             'aria-disabled': 'false',
-            'aria-labelledby': '@part(label)',
+            // 名字与 trigger 同源；两段都悬空时退回可写的兜底名
+            'aria-labelledby': '@part(label) @part(value-text)',
+            'aria-label': 'Options',
             'data-level': '0',
             'tabindex': '-1',
             'hidden': null,
           },
           // 展开路径为空，右边两列没有父条目，名字退回组件标题
-          'column[1]': { 'hidden': '', 'aria-labelledby': '@part(label)', 'data-level': '1' },
-          'column[2]': { 'hidden': '', 'aria-labelledby': '@part(label)', 'data-level': '2' },
+          'column[1]': { 'hidden': '', 'aria-labelledby': '@part(label) @part(value-text)', 'data-level': '1' },
+          'column[2]': { 'hidden': '', 'aria-labelledby': '@part(label) @part(value-text)', 'data-level': '2' },
           'item[0]': {
             'role': 'option',
             'aria-selected': 'false',
@@ -303,7 +305,7 @@ export const cascaderSuite: ConformanceSuite = {
               'column': columnsShown(1),
               'column[0]': { tabindex: '0' },
               // 展开路径为空，第 1 列没有父条目，名字退回组件标题
-              'column[1]': { 'aria-labelledby': '@part(label)' },
+              'column[1]': { 'aria-labelledby': '@part(label) @part(value-text)' },
               // 指针打开不预落高亮：没有条目看着像被选中
               'item[0]': { 'tabindex': '-1', 'data-highlighted': null, 'data-active': null },
               'item[1]': { 'tabindex': '-1', 'data-highlighted': null, 'data-active': null },

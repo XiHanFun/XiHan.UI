@@ -109,6 +109,7 @@ export class XhTreeSelectElement extends XhElement {
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
+    translations: { attribute: false },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
     loop: { converter: BOOLEAN_CONVERTER },
@@ -133,6 +134,8 @@ export class XhTreeSelectElement extends XhElement {
   declare tone?: Tone
   declare size?: Size
   declare placeholder?: string
+  /** 读屏文案（树容器兜底名字）；对象进不了属性，只作为 property 暴露。 */
+  declare translations?: TreeSelectSchema['props']['translations']
   declare placement?: Placement
   declare offset?: number
   declare loop?: boolean
@@ -186,6 +189,7 @@ export class XhTreeSelectElement extends XhElement {
       tone: this.tone,
       size: this.size,
       placeholder: this.placeholder,
+      translations: this.translations,
       placement: this.placement,
       offset: this.offset,
       loop: this.loop,

@@ -91,6 +91,12 @@ export interface ContextMenuGroupProps {
   value: string
 }
 
+/** 读屏用的文案，默认英文。 */
+export interface ContextMenuTranslations {
+  /** 菜单容器的名字。触发区是作者的任意一块内容，名字只能由这里给。 */
+  content: string
+}
+
 export interface ContextMenuSchema extends MachineSchema {
   props: {
     /**
@@ -111,6 +117,8 @@ export interface ContextMenuSchema extends MachineSchema {
     dir?: Direction
     /** 连打检索，默认开。关掉后可打印字符一律放行给页面。 */
     typeahead?: boolean
+    /** 读屏用的文案，默认英文。 */
+    translations?: Partial<ContextMenuTranslations>
     /** 触摸端长按多久算触发（ms），默认 700。 */
     longPressDelay?: number
     /** 语气：brand / neutral / success / warning / danger / info，决定条目高亮与标记位用哪族颜色。 */

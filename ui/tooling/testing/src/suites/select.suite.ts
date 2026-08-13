@@ -156,7 +156,9 @@ export const selectSuite: ConformanceSuite = {
           'content': {
             'role': 'listbox',
             'tabindex': '-1',
-            'aria-labelledby': '@part(label)',
+            // 名字与 trigger 同源；两段都悬空时退回可写的兜底名
+            'aria-labelledby': '@part(label) @part(value-text)',
+            'aria-label': 'Options',
             // 单选的 listbox 显式报不可多选：读屏据此播报「单选」，不靠属性缺席去猜
             'aria-multiselectable': 'false',
             'hidden': '',
@@ -220,7 +222,7 @@ export const selectSuite: ConformanceSuite = {
               },
               'content': {
                 'role': 'listbox',
-                'aria-labelledby': '@part(label)',
+                'aria-labelledby': '@part(label) @part(value-text)',
                 'hidden': null,
                 'data-state': 'open',
                 // 没有条目认领 Tab 位时由容器兜底

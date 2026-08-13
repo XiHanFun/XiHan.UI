@@ -37,6 +37,8 @@ export function connectContextMenu<T extends PropTypes>(
   const stateAttr = open ? 'open' : 'closed'
   // 位置由引擎写进 context，这里只读结果，不量 DOM、不调引擎
   const position = context.get('position')
+  // 箭头落点：引擎没算（没要箭头 / 尚未落位）时缺席，皮肤退回居中
+  const arrowAt = position?.arrow
   const point = context.get('point')
   const placement = position?.placement ?? prop('placement') ?? CONTEXT_MENU_DEFAULT_PLACEMENT
   // roving tabindex 与方向键起点共用这一个锚点，菜单没有选中态；收起时为 null
@@ -204,7 +206,10 @@ export function connectContextMenu<T extends PropTypes>(
       ...parts.content.attrs,
       'id': ids.content,
       'role': 'menu',
-      'aria-labelledby': ids.trigger,
+      // 名字只能自己给：触发区是作者的一整块内容且不带 role，指过去会把整块区域的文字
+      // 算成菜单名（右键一个表格行 = 把整行念一遍）。无锚点时焦点歇在这儿，
+      // 读屏此刻只报得出容器的名字与角色
+      'aria-label': prop('translations')?.content ?? 'Context menu',
       // 有锚点时 Tab 位归锚点条目；展开着却没有锚点时由容器兜底，否则整个菜单没有 Tab 停靠点
       'tabindex': open && anchor == null ? 0 : -1,
       'data-state': stateAttr,
@@ -322,6 +327,12 @@ export function connectContextMenu<T extends PropTypes>(
       ...parts.arrow.attrs,
       'aria-hidden': 'true',
       'data-placement': placement,
+      // 箭头交叉轴上的落点由定位引擎给：上下两侧走行内轴、左右两侧走块轴。
+      // 两根轴每帧都写，翻面后另一根不会留着上一帧的值；空串即撤掉声明，皮肤退回居中
+      'style': {
+        '--xh-_context-menu-arrow-x': arrowAt?.x != null ? `${arrowAt.x}px` : '',
+        '--xh-_context-menu-arrow-y': arrowAt?.y != null ? `${arrowAt.y}px` : '',
+      },
     }),
   }
 }

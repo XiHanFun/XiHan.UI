@@ -288,7 +288,9 @@ export const treeSelectSuite: ConformanceSuite = {
           'tree': {
             'id': '@self',
             'role': 'tree',
-            'aria-labelledby': '@part(label)',
+            // 名字与 trigger 同源；两段都悬空时退回可写的兜底名
+            'aria-labelledby': '@part(label) @part(value-text)',
+            'aria-label': 'Tree options',
             // 显式 false，不省略
             'aria-multiselectable': 'false',
             'aria-disabled': 'false',

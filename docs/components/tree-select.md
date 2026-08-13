@@ -113,6 +113,7 @@ multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父�
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定触发框与树节点行的几何档位。 |
 | `placeholder` | `string` |  | 无选中时 value-text 显示的占位文字。 |
+| `translations` | `Partial<TreeSelectTranslations>` |  | 读屏用的文案，默认英文。 |
 | `placement` | `Placement` |  |  |
 | `offset` | `number` |  |  |
 | `loop` | `boolean` |  | 上下键走到首尾是否回绕，默认 false。 |

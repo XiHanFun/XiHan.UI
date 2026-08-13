@@ -588,6 +588,25 @@ describe('selectSelect 原生表单提交', () => {
   })
 })
 
+describe('selectSelect 列表框的名字', () => {
+  const labelId = (h: Harness): string => h.root.querySelector('[data-part="label"]')!.id
+
+  it('名字与 trigger 同源：标题 + 当前值', () => {
+    const h = mount({ defaultValue: 'apple' })
+    expect(h.content.getAttribute('role')).toBe('listbox')
+    expect(h.content.getAttribute('aria-labelledby')).toBe(`${labelId(h)} ${h.valueTextEl.id}`)
+    expect(h.content.getAttribute('aria-labelledby')).toBe(h.trigger.getAttribute('aria-labelledby'))
+  })
+
+  // 指针打开不预落锚点，焦点歇在容器上：那一刻读屏只报得出它的名字与角色
+  it('两个名字部件都没渲染时退回可写的兜底名，不留一个没名字的列表框', () => {
+    const h = mount()
+    expect(h.content.getAttribute('aria-label')).toBe('Options')
+    h.setProps({ translations: { content: '城市' } })
+    expect(h.content.getAttribute('aria-label')).toBe('城市')
+  })
+})
+
 describe('selectSelect 收起态连打检索', () => {
   it('单选整体替换选中值且不展开', () => {
     const h = mount()

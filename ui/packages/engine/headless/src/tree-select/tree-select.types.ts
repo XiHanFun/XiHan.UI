@@ -52,6 +52,12 @@ export interface TreeSelectNodeProps {
   value: string
 }
 
+/** 读屏用的文案，默认英文。 */
+export interface TreeSelectTranslations {
+  /** 树容器的兜底名字，作者两个名字部件（label / value-text）都没渲染时才出面。 */
+  tree: string
+}
+
 export interface TreeSelectSchema extends MachineSchema {
   props: {
     /** 树数据，层级元信息与显示文本的唯一事实源。缺省为空树。 */
@@ -94,6 +100,8 @@ export interface TreeSelectSchema extends MachineSchema {
     size?: Size
     /** 无选中时 value-text 显示的占位文字。 */
     placeholder?: string
+    /** 读屏用的文案，默认英文。 */
+    translations?: Partial<TreeSelectTranslations>
     placement?: Placement
     offset?: number
     /** 上下键走到首尾是否回绕，默认 false。 */
