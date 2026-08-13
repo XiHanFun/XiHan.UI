@@ -13,11 +13,10 @@
     --xh-_combobox-control-border: var(--xh-border-control);
     --xh-_combobox-control-border-hover: var(--xh-border-control-hover);
 
-    /* 强调色随语气走，只落在聚焦与选中上，正文文字色不动。
-       没写 data-tone 时 --xh-_tone 没被声明，三处都退回原来的取值 */
+    /* 聚焦环恒用固定环色；强调色随语气走，只落在勾选标记与选中文字上，正文文字色不动。
+       没写 data-tone 时 --xh-_tone 没被声明，两处都退回原来的取值 */
     --xh-_combobox-ring: var(--xh-ring-focus);
     --xh-_combobox-accent: var(--xh-_tone, var(--xh-bg-brand));
-    --xh-_combobox-item-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
     --xh-_combobox-item-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 
     display: inline-flex;
@@ -315,7 +314,7 @@
   [data-scope='combobox'][data-part='item-group-label'] {
     display: block;
     padding-block: var(--xh-combobox-group-label-py, var(--xh-space-1));
-    padding-inline: var(--xh-combobox-group-label-px, var(--xh-control-px-sm));
+    padding-inline: var(--xh-combobox-group-label-px, var(--xh-control-px-md));
     color: var(--xh-combobox-group-label-fg, var(--xh-fg-subtle));
     font-size: var(--xh-combobox-group-label-font-size, var(--xh-font-size-xs));
     font-weight: var(--xh-combobox-group-label-font-weight, var(--xh-font-weight-medium));
@@ -331,8 +330,8 @@
     display: flex;
     align-items: center;
     gap: var(--xh-combobox-item-gap, var(--xh-_combobox-gap));
-    padding-block: var(--xh-combobox-item-py, var(--xh-space-1));
-    padding-inline: var(--xh-combobox-item-px, var(--xh-control-px-sm));
+    padding-block: var(--xh-combobox-item-py, var(--xh-space-1_5));
+    padding-inline: var(--xh-combobox-item-px, var(--xh-control-px-md));
     border-radius: var(--xh-combobox-item-radius, var(--xh-shape-control));
     color: var(--xh-combobox-item-fg, var(--xh-fg-default));
     font-size: var(--xh-combobox-item-font-size, var(--xh-_combobox-font-size));
@@ -341,6 +340,9 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 候选按需收起（作者自己藏掉某几条）时要让位，有 display 就得补这条 */
@@ -348,10 +350,10 @@
     display: none;
   }
 
-  /* 只认 data-highlighted，不写 :hover：指针划过时连接层已经把高亮搬过来了，
+  /* 键盘锚点走中性灰轻档。只认 data-highlighted，不写 :hover：指针划过时连接层已经把高亮搬过来了，
      两套底色各画各的会出现"鼠标停在 A 上、回车提交的却是 B" */
   [data-scope='combobox'][data-part='item'][data-highlighted]:not([data-disabled]) {
-    background: var(--xh-combobox-item-bg-highlight, var(--xh-_combobox-item-highlight-bg));
+    background: var(--xh-combobox-item-bg-hover, var(--xh-bg-subtle));
   }
 
   /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
