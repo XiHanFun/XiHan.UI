@@ -4,7 +4,7 @@ import type { Service } from '@xihan-ui/machine'
 import type { TreeNodeMeta, TreeVisibleNode } from '../tree'
 import type { TreeSelectApi, TreeSelectSchema } from './tree-select.types'
 import { cascadeState, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey } from '@xihan-ui/behavior'
-import { contains, dataAttr } from '@xihan-ui/kernel'
+import { dataAttr } from '@xihan-ui/kernel'
 import { flattenTree, indexTree } from '../tree'
 import { treeSelectAnatomy } from './tree-select.anatomy'
 import { TREE_SELECT_DEFAULT_PLACEMENT, treeSelectNodeEls } from './tree-select.machine'
@@ -223,10 +223,11 @@ export function connectTreeSelect<T extends PropTypes>(
           send({ type: 'OPEN', focus: intent })
           return
         }
-        // 吞掉 Enter 与空格，避免按钮默认激活再合成一次 click
+        // 吞掉 Enter 与空格，避免按钮默认激活再合成一次 click。
+        // 键盘打开要有可见落点：无选中值时锚定首行，有选中仍定位到选中节点
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault()
-          send({ type: 'OPEN', focus: 'selected' })
+          send({ type: 'OPEN', focus: value.length ? 'selected' : 'first' })
         }
       },
     }),
@@ -406,20 +407,6 @@ export function connectTreeSelect<T extends PropTypes>(
           event.preventDefault()
           activate(row)
         }
-      },
-      'onFocus': (event: FocusEvent) => {
-        const tree = event.currentTarget as HTMLElement
-        // 只接管从树外进来的焦点
-        if (contains(tree, event.relatedTarget as Node | null))
-          return
-        const list = treeSelectNodeEls(tree, rows)
-        // 焦点落到容器说明锚点尚未挑出，就地补一次：优先选中行，否则首个可停留行
-        const selected = list.find((el) => {
-          const v = itemValue(el)
-          return v != null && isSelected(v) && !isItemDisabled(el)
-        })
-        // 落点节点自己的 onFocus 会把锚点接过去
-        focusItem(selected ?? navigateItems(list, null, 'first'))
       },
     }),
 

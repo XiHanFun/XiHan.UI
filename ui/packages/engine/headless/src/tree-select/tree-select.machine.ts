@@ -4,7 +4,7 @@ import type { TreeSelectFocusIntent, TreeSelectSchema } from './tree-select.type
 import { cascadeToggle, collapseChecked, createDismissLayer, createFocusScope, createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
 import { resetDeclaredValue, setup } from '@xihan-ui/machine'
 import { flattenTree } from '../tree'
-import { treeSelectBranchQuery, treeSelectItemQuery } from './tree-select.anatomy'
+import { treeSelectAnatomy, treeSelectBranchQuery, treeSelectItemQuery } from './tree-select.anatomy'
 
 const { createMachine } = setup<TreeSelectSchema>()
 
@@ -156,7 +156,7 @@ export const treeSelectMachine = createMachine({
           { target: 'closed', actions: ['selectNode', 'setReturnFocus', 'invokeOnClose'] },
         ],
         // 持有焦点的节点被移出 DOM，锚点悬空，就地重挑一个，否则没有节点认领 tabindex=0
-        'NODE.LOST': { actions: ['clearFocusedValue', 'setInitialFocusedValue'] },
+        'NODE.LOST': { actions: ['setInitialFocusedValue'] },
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
     },
@@ -198,7 +198,15 @@ export const treeSelectMachine = createMachine({
        * 藏在收起分支里的节点虽在 DOM 中但 hidden、聚不了焦。
        * 摊平在这里现算而不复用 connect 的结果：动作跑在事件那一刻，connect 是渲染期求值的。
        */
-      setInitialFocusedValue: ({ refs, prop, context, state, flush }) => {
+      setInitialFocusedValue: ({ refs, prop, context, state, event, flush }) => {
+        // 锚点节点离场后的重挑：只在此前真有过锚点时补，判据取自机器自己的状态而不是事件类型——
+        // 适配器误报时凭空补一个，会点亮一个本轮不该高亮的节点并把 Tab 位从容器上摘走
+        const repick = event.current().type === 'NODE.LOST'
+        if (repick) {
+          if (context.get('focusedValue') == null)
+            return
+          context.set('focusedValue', null)
+        }
         const pick = (): void => {
           const content = refs.get('getContentEl')()
           // 无 DOM 环境：锚点留空，状态转移不受影响
@@ -209,6 +217,10 @@ export const treeSelectMachine = createMachine({
           const intent = context.get('focusIntent')
           const selected = context.get('value')
           if (intent === 'selected') {
+            // 没有选中值就不落锚点：焦点由焦点域兜底歇在 content 上，
+            // 打开这一刻不能有节点看着像被选中；键盘入口要预落锚点得自带 first/next 意图
+            if (selected.length === 0 && !repick)
+              return
             // 选中节点仍可停留就停在它上面，否则退回首个可停留行
             const current = els.find((el) => {
               const v = itemValue(el)
@@ -370,7 +382,22 @@ export const treeSelectMachine = createMachine({
           loop: false,
           // 显式指定落焦点为锚点节点：Tab 序列探测会过滤掉写成 <a> 的节点。
           // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试。
-          initialFocus: () => findTreeSelectNodeEl(refs.get('getContentEl')(), context.get('focusedValue')),
+          // 无锚点（指针打开且无选中值）时落到 tree 部件自己身上，它此刻正认领着 Tab 位。
+          // 不能留给焦点域的 Tab 序列探测：那条路按文档序取 content 的全部可 tab 后代，
+          // 作者放在树前面的搜索框会把焦点抢走，而键盘处理器挂在树上，方向键就此失灵
+          initialFocus: () => {
+            const content = refs.get('getContentEl')()
+            if (!content)
+              return null
+            const anchor = context.get('focusedValue')
+            if (anchor != null)
+              return findTreeSelectNodeEl(content, anchor)
+            // 本轮该有锚点却还没挑出来（节点身份标记晚一拍写上）：返回 null 让焦点域重试，
+            // 别滑到容器上定死——落焦一旦成功就不再重试
+            if (!(context.get('focusIntent') === 'selected' && context.get('value').length === 0))
+              return null
+            return content.querySelector<HTMLElement>(treeSelectAnatomy.build().tree.selector)
+          },
           restoreFocus: () => context.get('returnFocus'),
         })
 

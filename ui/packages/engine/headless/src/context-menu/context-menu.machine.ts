@@ -33,7 +33,7 @@ export const contextMenuMachine = createMachine({
     pressPoint: cell<ContextMenuPoint | null>(() => ({ defaultValue: null, isEqual: samePoint })),
     // 焦点锚点：不受控、不对外通知，只服务 roving tabindex 与方向键起点
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
-    focusIntent: cell<ContextMenuFocusIntent>(() => ({ defaultValue: 'first' })),
+    focusIntent: cell<ContextMenuFocusIntent>(() => ({ defaultValue: 'none' })),
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
   }),
   refs: () => ({
@@ -113,7 +113,7 @@ export const contextMenuMachine = createMachine({
         'ITEM.FOCUS': { actions: ['setFocusedValue'] },
         'FOCUS.CLEAR': { actions: ['clearFocusedValue'] },
         // 焦点条目被移出 DOM 时锚点悬空，重挑一个，否则没有条目认领 tabindex=0、方向键也没有起点
-        'ITEM.LOST': { actions: ['clearFocusedValue', 'setInitialFocusedValue'] },
+        'ITEM.LOST': { actions: ['setInitialFocusedValue'] },
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
     },
@@ -166,12 +166,14 @@ export const contextMenuMachine = createMachine({
         if (e.type === 'PRESS.START')
           context.set('pressPoint', { x: e.x, y: e.y })
       },
+      // 长按走完（else 分支）与右键同属指针入口，一律不预落锚点；
+      // 要落点的键盘入口自带 first/last 意图
       setFocusIntent: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'CONTEXT.MENU' || e.type === 'OPEN')
-          context.set('focusIntent', e.focus ?? 'first')
+          context.set('focusIntent', e.focus ?? 'none')
         else
-          context.set('focusIntent', 'first')
+          context.set('focusIntent', 'none')
       },
       // Tab 与层外交互关闭时不归还焦点（用户已经去了别处），其余出口一律归还触发区
       setReturnFocus: ({ context, event }) => {
@@ -184,19 +186,28 @@ export const contextMenuMachine = createMachine({
         if (e.type === 'ITEM.FOCUS')
           context.set('focusedValue', e.value)
       },
-      setInitialFocusedValue: ({ refs, context, state, flush }) => {
+      setInitialFocusedValue: ({ refs, context, state, event, flush }) => {
+        // 锚点条目离场后的重挑：只在此前真有过锚点时补，判据取自机器自己的状态而不是事件类型——
+        // 适配器误报时凭空补一个，会点亮一个本轮不该高亮的条目并把 Tab 位从容器上摘走
+        const repick = event.current().type === 'ITEM.LOST'
+        if (repick) {
+          if (context.get('focusedValue') == null)
+            return
+          context.set('focusedValue', null)
+        }
         const pick = (): void => {
           const intent = context.get('focusIntent')
           // intent 为 none 时锚点留空，焦点由焦点域兜底落到 content 上
-          if (intent === 'none')
+          if (intent === 'none' && !repick)
             return
           const content = refs.get('getContentEl')()
           // 无 DOM 环境时锚点留空，状态转移不受影响
           if (!content)
             return
           const items = queryItems(content, contextMenuItemQuery)
-          // first/last 都从边界起步找第一个可停留条目，禁用项自动跳过，与 loop 无关
-          context.set('focusedValue', itemValue(navigateItems(items, null, intent)))
+          // first/last 都从边界起步找第一个可停留条目，禁用项自动跳过，与 loop 无关；
+          // 重挑时本次展开的意图可能是 none，落点退回首个可停留条目
+          context.set('focusedValue', itemValue(navigateItems(items, null, intent === 'none' ? 'first' : intent)))
         }
         pick()
         // 初始即展开时 WC 侧条目的身份标记要等首次 wire() 才写上，这一刻查不到条目，推迟一拍再挑一次
@@ -301,14 +312,22 @@ export const contextMenuMachine = createMachine({
           // 菜单不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
           trapped: () => false,
           loop: false,
-          // 显式指定落焦点为锚点条目：Tab 序列探测走 focusFirst(removeLinks(...))，条目写成 <a> 会被整体过滤掉。
+          // 显式指定落焦点，两种落点都不交给 Tab 序列探测：探测走 focusFirst(removeLinks(...))，
+          // 条目写成 <a> 会被整体过滤掉，且容器自身从来不是候选——只靠它焦点要等到最后一帧才落位。
           // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试到 DOM 就位
           initialFocus: () => {
             const content = refs.get('getContentEl')()
-            const anchor = context.get('focusedValue')
-            if (!content || anchor == null)
+            if (!content)
               return null
-            return queryItems(content, contextMenuItemQuery).find(el => itemValue(el) === anchor) ?? null
+            const anchor = context.get('focusedValue')
+            if (anchor != null)
+              return queryItems(content, contextMenuItemQuery).find(el => itemValue(el) === anchor) ?? null
+            // 本轮该有锚点却还没挑出来（WC 侧条目身份标记要等首次 wire()）：返回 null 让焦点域重试，
+            // 别滑到容器上定死——落焦一旦成功就不再重试
+            if (context.get('focusIntent') !== 'none')
+              return null
+            // 确实不该有锚点（指针打开）：焦点歇在菜单容器上，它此刻正认领着 Tab 位
+            return content
           },
           restoreFocus: () => context.get('returnFocus'),
         })

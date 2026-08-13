@@ -326,9 +326,10 @@ export function connectCascader<T extends PropTypes>(
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
       'id': ids.content,
-      // 浮层壳只是焦点域与消解层的根节点，列表框语义在每一列上。
-      // 有锚点时 Tab 位归锚点条目，展开着却没有锚点时由容器兜底
-      'tabindex': open && focusedPath == null ? 0 : -1,
+      // 浮层壳只是焦点域与消解层的根节点，列表框语义在每一列上，它自己不承载焦点：
+      // 有锚点时 Tab 位归锚点条目，没有锚点时归根列（见 getColumnProps）。
+      // 集合为空时连根列都没有条目可停，才由壳自己兜底，否则浮层里一个 Tab 位都不剩
+      'tabindex': open && focusedPath == null && collection.length === 0 ? 0 : -1,
       'data-state': stateAttr,
       'data-placement': placement,
       // 皮肤据此把列视图让位给候选列表
@@ -515,8 +516,10 @@ export function connectCascader<T extends PropTypes>(
         'aria-disabled': disabled ? 'true' : 'false',
         'aria-labelledby': parent == null ? ids.label : itemId(parent),
         'data-level': String(column.level),
-        // 列不进 Tab 序也不承载焦点；显式写 -1，可滚动容器会被某些浏览器自动塞进 Tab 序
-        'tabindex': -1,
+        // 没有锚点条目时（指针打开且无选中值）由根列认领 Tab 位并接住焦点：
+        // 它是 role=listbox 且有名字，读屏据此进焦点模式；浮层壳没有角色，接不了这个班。
+        // 其余情况一律 -1——可滚动容器会被某些浏览器自动塞进 Tab 序
+        'tabindex': open && focusedPath == null && column.level === 0 ? 0 : -1,
         'data-state': stateAttr,
         // 展开路径砍短后右边这些列收起，只加 hidden 不卸载
         'hidden': column.level >= columns.length || undefined,

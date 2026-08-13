@@ -185,7 +185,7 @@ export const contextMenuSuite: ConformanceSuite = {
       },
     },
     {
-      name: '右键展开：content 去掉 hidden，锚点落到首个条目，派发 open-change',
+      name: '右键展开：content 去掉 hidden，不预落锚点，派发 open-change',
       spec: { apg: `${APG}#roles_states_properties` },
       steps: [
         { kind: 'focus', part: 'trigger' },
@@ -201,20 +201,35 @@ export const contextMenuSuite: ConformanceSuite = {
                 'role': 'menu',
                 'hidden': null,
                 'data-state': 'open',
+                // 没有条目认领 Tab 位时由容器兜底
+                'tabindex': '0',
               },
-              // roving tabindex：整组只有锚点条目留在 Tab 序列内
-              'item[0]': { 'tabindex': '0', 'data-highlighted': '' },
+              // 指针打开不预落锚点：菜单弹出那一刻一个条目都不高亮
+              'item[0]': { 'tabindex': '-1', 'data-highlighted': null },
               'item[1]': { tabindex: '-1' },
               'item[2]': { tabindex: '-1' },
-              'item-text[0]': { 'data-highlighted': '' },
+              'item-text[0]': { 'data-highlighted': null },
             },
             events: [{ type: 'open-change', detail: { open: true } }],
           },
         },
         {
           kind: 'settle',
-          until: { activeElement: 'item[0]' },
-          expect: { activeElement: { part: 'item[0]', exact: true }, events: [] },
+          until: { activeElement: 'content' },
+          expect: { activeElement: 'content', events: [] },
+        },
+        // 第一按方向键才锚定首个条目，roving tabindex 随之移交
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          expect: {
+            activeElement: { part: 'item[0]', exact: true },
+            parts: {
+              'content': { tabindex: '-1' },
+              'item[0]': { 'tabindex': '0', 'data-highlighted': '' },
+            },
+            events: [],
+          },
         },
       ],
     },
@@ -224,7 +239,7 @@ export const contextMenuSuite: ConformanceSuite = {
       steps: [
         { kind: 'focus', part: 'trigger' },
         { kind: 'raw', why: '同上：contextmenu 只能手写', run: rightClickAt(10, 10) },
-        { kind: 'settle', until: { activeElement: 'item[0]' } },
+        { kind: 'settle', until: { activeElement: 'content' } },
         {
           kind: 'raw',
           why: '第二次右键落在另一处坐标，验的正是"不关不开"——关一次再开一次会在事件流里留下两条记录',
@@ -245,7 +260,7 @@ export const contextMenuSuite: ConformanceSuite = {
       steps: [
         { kind: 'focus', part: 'trigger' },
         { kind: 'raw', why: '同上：contextmenu 只能手写', run: rightClickAt(10, 10) },
-        { kind: 'settle', until: { activeElement: 'item[0]' } },
+        { kind: 'settle', until: { activeElement: 'content' } },
         {
           kind: 'raw',
           why: '左键按下要带 button=0 与 pointerType=mouse，声明式的 click 步骤给不出这些',
@@ -617,9 +632,9 @@ export const contextMenuSuite: ConformanceSuite = {
           expect: {
             parts: {
               'trigger': { 'data-state': 'open' },
-              'content': { 'data-state': 'open', 'hidden': null },
-              // 受控回写走影子事件，落焦端仍取自当初那次右键
-              'item[0]': { tabindex: '0' },
+              'content': { 'data-state': 'open', 'hidden': null, 'tabindex': '0' },
+              // 受控回写走影子事件，落焦端仍取自当初那次右键：指针入口不预落锚点
+              'item[0]': { 'tabindex': '-1', 'data-highlighted': null },
             },
           },
         },

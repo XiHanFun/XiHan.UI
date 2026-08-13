@@ -533,14 +533,16 @@ describe('选中路径与回显', () => {
 })
 
 describe('列的展开与截断', () => {
-  it('指针展开且无选中值：不落锚点也不铺列，Tab 位由 content 兜底', () => {
+  it('指针展开且无选中值：不落锚点也不铺列，Tab 位由根列兜底', () => {
     const h = mount()
     click(h.trigger)
     expect(h.focusedPath()).toBeNull()
     expect(h.activePath()).toEqual([])
     expect(h.shownColumns()).toEqual([0])
     expect(h.item('zhejiang').item.getAttribute('data-highlighted')).toBeNull()
-    expect(h.content.getAttribute('tabindex')).toBe('0')
+    // 根列是 role=listbox 且有名字，读屏据此进焦点模式；无角色的浮层壳接不了这个班
+    expect(h.column(0).getAttribute('tabindex')).toBe('0')
+    expect(h.content.getAttribute('tabindex')).toBe('-1')
   })
 
   it('键盘展开（Enter）且无选中值：锚点落到首个条目但不带出它的子列', () => {
@@ -935,11 +937,11 @@ describe('禁用、只读与清空', () => {
 })
 
 describe('roving tabindex 与 ARIA 骨架', () => {
-  it('收起态整个控件只剩 trigger 一个入口；指针展开由 content 兜底 Tab 位，键盘展开由锚点条目认领', () => {
+  it('收起态整个控件只剩 trigger 一个入口；指针展开由根列兜底 Tab 位，键盘展开由锚点条目认领', () => {
     const pointer = mount()
     expect(pointer.tabStops()).toEqual([])
     click(pointer.trigger)
-    expect(pointer.tabStops()).toEqual(['content'])
+    expect(pointer.tabStops()).toEqual(['column'])
 
     const keyboard = mount()
     press(keyboard.trigger, 'Enter')

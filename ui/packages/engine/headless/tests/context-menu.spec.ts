@@ -209,6 +209,13 @@ function rightClick(el: HTMLElement, x = 120, y = 80): MouseEvent {
   return event
 }
 
+/** 右键的键盘等价物：与指针入口不同，它要预落锚点，方向键与确认键才有起点。 */
+function menuKey(el: HTMLElement): KeyboardEvent {
+  const event = new KeyboardEvent('keydown', { key: 'ContextMenu', bubbles: true, cancelable: true })
+  el.dispatchEvent(event)
+  return event
+}
+
 function pointer(el: HTMLElement, type: string, init: PointerEventInit = {}): void {
   el.dispatchEvent(new PointerEvent(type, { bubbles: true, cancelable: true, ...init }))
 }
@@ -451,7 +458,7 @@ describe('connectContextMenu 属性输出', () => {
 
   it('条目文本与标记位跟着条目走同一份状态标记', () => {
     const h = mount()
-    rightClick(h.trigger)
+    menuKey(h.trigger)
     expect(h.itemText('copy').getAttribute('data-highlighted')).toBe('')
     expect(h.itemText('paste').getAttribute('data-disabled')).toBe('')
     expect(h.itemText('delete').hasAttribute('data-highlighted')).toBe(false)
@@ -459,9 +466,18 @@ describe('connectContextMenu 属性输出', () => {
 })
 
 describe('roving tabindex 与焦点锚点', () => {
-  it('展开即把锚点落到首个可用条目，整组只留一个 Tab 位', () => {
+  it('右键展开不预落锚点：一个条目都不高亮，Tab 位由 content 兜底', () => {
     const h = mount()
     rightClick(h.trigger)
+    expect(h.api().focusedValue).toBeNull()
+    expect(h.item('copy').getAttribute('tabindex')).toBe('-1')
+    expect(h.item('copy').hasAttribute('data-highlighted')).toBe(false)
+    expect(h.content.getAttribute('tabindex')).toBe('0')
+  })
+
+  it('键盘展开把锚点落到首个可用条目，整组只留一个 Tab 位', () => {
+    const h = mount()
+    menuKey(h.trigger)
     expect(h.api().focusedValue).toBe('copy')
     expect(h.item('copy').getAttribute('tabindex')).toBe('0')
     expect(h.item('paste').getAttribute('tabindex')).toBe('-1')
@@ -489,7 +505,7 @@ describe('roving tabindex 与焦点锚点', () => {
     // 浏览器不会为"被移除的节点带走了焦点"派 focusout（Chrome 如此），机器读不到这件事。
     // 两个适配器因此都在条目离场时补报 ITEM.LOST —— 这条用例钉的正是"不补报会怎样"。
     const h = mount()
-    rightClick(h.trigger)
+    menuKey(h.trigger)
     expect(h.api().focusedValue).toBe('copy')
     h.item('copy').remove()
     h.render()
@@ -507,7 +523,7 @@ describe('roving tabindex 与焦点锚点', () => {
 describe('方向键导航', () => {
   it('跳过禁用条目并跨分组走，尽头回绕', () => {
     const h = mount()
-    rightClick(h.trigger)
+    menuKey(h.trigger)
     press(h.content, 'ArrowDown')
     // paste 禁用，delete 在另一个分组里，中间还隔着分隔线
     expect(focused()).toBe('delete')
@@ -519,7 +535,7 @@ describe('方向键导航', () => {
 
   it('loop=false 时走到尽头原地不动', () => {
     const h = mount({ loop: false })
-    rightClick(h.trigger)
+    menuKey(h.trigger)
     press(h.content, 'ArrowUp')
     expect(h.api().focusedValue).toBe('copy')
   })
@@ -544,7 +560,7 @@ describe('方向键导航', () => {
 
   it('左右键不归纵向菜单管，也就绝不吞掉', () => {
     const h = mount()
-    rightClick(h.trigger)
+    menuKey(h.trigger)
     const event = press(h.content, 'ArrowRight')
     expect(event.defaultPrevented).toBe(false)
     expect(h.api().focusedValue).toBe('copy')
@@ -639,7 +655,7 @@ describe('连打检索', () => {
 
   it('跳过禁用条目：敲 p 落不到 paste 上', () => {
     const h = mount()
-    rightClick(h.trigger)
+    menuKey(h.trigger)
     press(h.content, 'p')
     expect(h.api().focusedValue).toBe('copy')
   })
@@ -658,7 +674,7 @@ describe('连打检索', () => {
 
   it('typeahead 关掉后可打印字符一律放行', () => {
     const h = mount({ typeahead: false })
-    rightClick(h.trigger)
+    menuKey(h.trigger)
     const event = press(h.content, 'd')
     expect(event.defaultPrevented).toBe(false)
     expect(h.api().focusedValue).toBe('copy')
@@ -678,7 +694,7 @@ describe('连打检索', () => {
 
   it('带 Ctrl 的组合不归检索管，也就绝不吞掉', () => {
     const h = mount()
-    rightClick(h.trigger)
+    menuKey(h.trigger)
     const event = press(h.content, 'f', { ctrlKey: true })
     expect(event.defaultPrevented).toBe(false)
     expect(h.api().focusedValue).toBe('copy')

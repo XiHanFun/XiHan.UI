@@ -119,7 +119,7 @@ export const selectMachine = createMachine({
         'ITEM.HIGHLIGHT': { actions: ['setHighlightedValue'] },
         'HIGHLIGHT.CLEAR': { actions: ['clearHighlightedValue'] },
         // 高亮条目被移出 DOM，锚点悬空，就地重挑一个，否则没有条目认领 tabindex=0
-        'ITEM.LOST': { actions: ['clearHighlightedValue', 'setInitialHighlightedValue'] },
+        'ITEM.LOST': { actions: ['setInitialHighlightedValue'] },
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
     },
@@ -229,7 +229,15 @@ export const selectMachine = createMachine({
         if (e.type === 'ITEM.HIGHLIGHT')
           context.set('highlightedValue', e.value)
       },
-      setInitialHighlightedValue: ({ refs, prop, context, state, flush }) => {
+      setInitialHighlightedValue: ({ refs, prop, context, state, event, flush }) => {
+        // 锚点条目离场后的重挑：只在此前真有过锚点时补，判据取自机器自己的状态而不是事件类型——
+        // 适配器误报时凭空补一个，会点亮一个本轮不该高亮的条目并把 Tab 位从容器上摘走
+        const repick = event.current().type === 'ITEM.LOST'
+        if (repick) {
+          if (context.get('highlightedValue') == null)
+            return
+          context.set('highlightedValue', null)
+        }
         const pick = (): void => {
           const content = refs.get('getContentEl')()
           // 无 DOM 环境（纯逻辑测试）：锚点留空，状态转移不受影响
@@ -247,7 +255,7 @@ export const selectMachine = createMachine({
           if (intent === 'selected') {
             // 没有选中值就不落锚点：焦点由焦点域兜底歇在 content 上，
             // 打开这一刻不能有条目看着像被选中；键盘入口要预落锚点得自带 first/next 意图
-            if (selection.length === 0)
+            if (selection.length === 0 && !repick)
               return
             // 选中项仍在集合里且可停留就停在它上面，否则退回首个可停留条目
             const current = firstSelected && !isItemDisabled(firstSelected) ? firstSelected : null
@@ -333,14 +341,22 @@ export const selectMachine = createMachine({
           // 列表不陷焦点也不回绕：Tab 能走出去，走出去即由消解层判定是否关闭
           trapped: () => false,
           loop: false,
-          // 显式指定落焦点为高亮条目：Tab 序列探测会过滤掉写成 <a> 的条目。
+          // 显式指定落焦点，两种落点都不交给 Tab 序列探测：探测会过滤掉写成 <a> 的条目，
+          // 也会把焦点送给作者放进浮层的输入框。
           // 每次求值都现查，content 仍带 hidden 的那一帧返回 null，焦点域会自行重试。
           initialFocus: () => {
             const content = refs.get('getContentEl')()
-            const anchor = context.get('highlightedValue')
-            if (!content || anchor == null)
+            if (!content)
               return null
-            return queryItems(content, selectItemQuery).find(el => itemValue(el) === anchor) ?? null
+            const anchor = context.get('highlightedValue')
+            if (anchor != null)
+              return queryItems(content, selectItemQuery).find(el => itemValue(el) === anchor) ?? null
+            // 本轮该有锚点却还没挑出来（条目身份标记晚一拍写上）：返回 null 让焦点域重试，
+            // 别滑到容器上定死——落焦一旦成功就不再重试
+            if (!(context.get('focusIntent') === 'selected' && context.get('value').length === 0))
+              return null
+            // 确实不该有锚点（指针打开且无选中值）：焦点歇在列表容器上，它此刻正认领着 Tab 位
+            return content
           },
           restoreFocus: () => context.get('returnFocus'),
         })

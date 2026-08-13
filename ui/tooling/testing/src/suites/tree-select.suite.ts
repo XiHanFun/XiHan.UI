@@ -370,7 +370,7 @@ export const treeSelectSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '点击 trigger 展开：content 去掉 hidden、trigger 报展开，焦点锚点落到首个可见行',
+      name: '点击 trigger 展开：content 去掉 hidden、trigger 报展开，无选中值不预落锚点',
       spec: { apg: `${APG_COMBOBOX}#roles_states_properties` },
       props: props(),
       steps: [
@@ -382,9 +382,9 @@ export const treeSelectSuite: ConformanceSuite = {
               'trigger': { 'aria-expanded': 'true', 'data-state': 'open' },
               'indicator': { 'data-state': 'open' },
               'content': { 'hidden': null, 'data-state': 'open' },
-              // 有锚点时 Tab 位归锚点节点，容器让位
-              'tree': { tabindex: '-1' },
-              'branch[0]': { 'tabindex': '0', 'data-highlighted': '' },
+              // 指针打开不预落锚点：没有节点看着像被选中，Tab 位由树容器兜底
+              'tree': { tabindex: '0' },
+              'branch[0]': { 'tabindex': '-1', 'data-highlighted': null },
               'branch[2]': { 'tabindex': '-1', 'data-highlighted': null },
               // src 还收着，子树内没有节点认领 Tab 位
               'item[0]': { 'tabindex': '-1', 'data-highlighted': null },
@@ -394,10 +394,23 @@ export const treeSelectSuite: ConformanceSuite = {
         },
         {
           kind: 'settle',
-          until: { activeElement: 'branch[0]' },
-          expect: { activeElement: { part: 'branch[0]', exact: true }, events: [] },
+          until: { activeElement: 'tree' },
+          expect: { activeElement: 'tree', events: [] },
         },
         expectTabStops(1),
+        // 第一按方向键才锚定首行，roving tabindex 随之移交
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          expect: {
+            activeElement: { part: 'branch[0]', exact: true },
+            parts: {
+              'tree': { tabindex: '-1' },
+              'branch[0]': { 'tabindex': '0', 'data-highlighted': '' },
+            },
+            events: [],
+          },
+        },
       ],
     },
     {
@@ -519,7 +532,8 @@ export const treeSelectSuite: ConformanceSuite = {
       props: props(),
       covers: ['tree-select.kbd.expand', 'tree-select.kbd.collapse'],
       steps: [
-        { kind: 'click', part: 'trigger' },
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
         { kind: 'settle', until: { activeElement: 'branch[0]' } },
         {
           kind: 'key',
@@ -561,7 +575,8 @@ export const treeSelectSuite: ConformanceSuite = {
       spec: { apg: `${APG_TREE}#keyboardinteraction` },
       props: props({ dir: 'rtl' }),
       steps: [
-        { kind: 'click', part: 'trigger' },
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
         { kind: 'settle', until: { activeElement: 'branch[0]' } },
         {
           kind: 'key',
@@ -581,7 +596,8 @@ export const treeSelectSuite: ConformanceSuite = {
       props: props(),
       covers: ['tree-select.kbd.expand-siblings'],
       steps: [
-        { kind: 'click', part: 'trigger' },
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
         { kind: 'settle', until: { activeElement: 'branch[0]' } },
         {
           kind: 'key',
@@ -650,7 +666,8 @@ export const treeSelectSuite: ConformanceSuite = {
       props: props({ multiple: true, defaultExpandedValue: ['src'] }),
       initial: { parts: { tree: { 'aria-multiselectable': 'true' } } },
       steps: [
-        { kind: 'click', part: 'trigger' },
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
         { kind: 'settle', until: { activeElement: 'branch[0]' } },
         { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'item[0]', exact: true } } },
         // 空格与 Enter 同义
@@ -699,7 +716,8 @@ export const treeSelectSuite: ConformanceSuite = {
       props: props({ defaultExpandedValue: ['src'] }),
       covers: ['tree-select.kbd.typeahead'],
       steps: [
-        { kind: 'click', part: 'trigger' },
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
         { kind: 'settle', until: { activeElement: 'branch[0]' } },
         {
           kind: 'type',
@@ -724,7 +742,8 @@ export const treeSelectSuite: ConformanceSuite = {
       props: props({ defaultExpandedValue: ['src'], defaultValue: 'index' }),
       covers: ['tree-select.kbd.escape'],
       steps: [
-        { kind: 'click', part: 'trigger' },
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
         { kind: 'settle', until: { activeElement: 'item[0]' } },
         {
           kind: 'key',
@@ -757,7 +776,8 @@ export const treeSelectSuite: ConformanceSuite = {
       props: props(),
       covers: ['tree-select.kbd.tab'],
       steps: [
-        { kind: 'click', part: 'trigger' },
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
         { kind: 'settle', until: { activeElement: 'branch[0]' } },
         {
           kind: 'key',
@@ -791,7 +811,8 @@ export const treeSelectSuite: ConformanceSuite = {
       spec: { apg: APG_TREE },
       props: props({ multiple: true }),
       steps: [
-        { kind: 'click', part: 'trigger' },
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
         { kind: 'settle', until: { activeElement: 'branch[0]' } },
         // 先把焦点挪开：branch-control 不占 tabindex
         { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'branch[2]', exact: true } } },
@@ -838,7 +859,8 @@ export const treeSelectSuite: ConformanceSuite = {
       spec: { apg: APG_TREE },
       props: props({ defaultExpandedValue: ['src'], defaultValue: 'index' }),
       steps: [
-        { kind: 'click', part: 'trigger' },
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
         { kind: 'settle', until: { activeElement: 'item[0]' } },
         // 节点用 aria-disabled 表达禁用，click 仍派得出去，这一步走到连接层的禁用守卫
         {
@@ -1050,7 +1072,8 @@ export const treeSelectSuite: ConformanceSuite = {
       spec: { adr: 'controlled-uncontrolled' },
       props: props({ expandedValue: [] }),
       steps: [
-        { kind: 'click', part: 'trigger' },
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'Enter' },
         { kind: 'settle', until: { activeElement: 'branch[0]' } },
         {
           kind: 'key',
