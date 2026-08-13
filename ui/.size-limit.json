@@ -60,6 +60,12 @@
     "limit": "21 kB"
   },
   {
+    "name": "sound",
+    "path": "packages/features/sound/dist/index.js",
+    "gzip": true,
+    "limit": "5 kB"
+  },
+  {
     "name": "headless",
     "path": "packages/engine/headless/dist/index.js",
     "gzip": true,

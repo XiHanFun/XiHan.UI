@@ -6,7 +6,7 @@
 packages/
   adapters/   vue  web-components                                   ← 你选一个
   design/     tokens  styles  icons                                 ← 你的外观
-  features/   markdown  chat-stream  backgrounds                    ← 按需自选
+  features/   markdown  chat-stream  backgrounds  sound             ← 按需自选
   engine/     kernel  machine  behavior  position  code-highlight  headless   ← 你不用管
 ```
 
