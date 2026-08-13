@@ -7518,11 +7518,15 @@
 }
 
 /* 箭头是旋转 45° 的方块，只保留朝向锚点那两条边的描边；
-   引擎不产出箭头偏移，因此沿交叉轴固定居中 */
+   交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
 [data-scope='context-menu'][data-part='arrow'] {
+  --xh-_context-menu-arrow-size: var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size));
+  --xh-_context-menu-arrow-x: 50%;
+  --xh-_context-menu-arrow-y: 50%;
+
   position: absolute;
-  inline-size: var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size));
-  block-size: var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size));
+  inline-size: var(--xh-_context-menu-arrow-size);
+  block-size: var(--xh-_context-menu-arrow-size);
   background: var(--xh-context-menu-bg, var(--xh-bg-surface));
   border: var(--xh-stroke-thin) solid var(--xh-context-menu-border, var(--xh-border-default));
   rotate: 45deg;
@@ -7533,29 +7537,29 @@
 }
 
 [data-scope='context-menu'][data-part='arrow'][data-placement^='bottom'] {
-  inset-block-start: calc(var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-inline-start: calc(50% - var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-block-start: calc(var(--xh-_context-menu-arrow-size) / -2);
+  inset-inline-start: calc(var(--xh-_context-menu-arrow-x) - var(--xh-_context-menu-arrow-size) / 2);
   border-block-end: 0;
   border-inline-end: 0;
 }
 
 [data-scope='context-menu'][data-part='arrow'][data-placement^='top'] {
-  inset-block-end: calc(var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-inline-start: calc(50% - var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-block-end: calc(var(--xh-_context-menu-arrow-size) / -2);
+  inset-inline-start: calc(var(--xh-_context-menu-arrow-x) - var(--xh-_context-menu-arrow-size) / 2);
   border-block-start: 0;
   border-inline-start: 0;
 }
 
 [data-scope='context-menu'][data-part='arrow'][data-placement^='right'] {
-  inset-inline-start: calc(var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-block-start: calc(50% - var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-inline-start: calc(var(--xh-_context-menu-arrow-size) / -2);
+  inset-block-start: calc(var(--xh-_context-menu-arrow-y) - var(--xh-_context-menu-arrow-size) / 2);
   border-block-start: 0;
   border-inline-end: 0;
 }
 
 [data-scope='context-menu'][data-part='arrow'][data-placement^='left'] {
-  inset-inline-end: calc(var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-block-start: calc(50% - var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-inline-end: calc(var(--xh-_context-menu-arrow-size) / -2);
+  inset-block-start: calc(var(--xh-_context-menu-arrow-y) - var(--xh-_context-menu-arrow-size) / 2);
   border-block-end: 0;
   border-inline-start: 0;
 }
@@ -9503,40 +9507,44 @@
 }
 
 /* 箭头是旋转 45° 的方块，只保留朝向锚点那两条边的描边；
-   引擎不产出箭头偏移，因此沿交叉轴固定居中 */
+   交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
 [data-scope='hover-card'][data-part='arrow'] {
+  --xh-_hover-card-arrow-size: var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size));
+  --xh-_hover-card-arrow-x: 50%;
+  --xh-_hover-card-arrow-y: 50%;
+
   position: absolute;
-  inline-size: var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size));
-  block-size: var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size));
+  inline-size: var(--xh-_hover-card-arrow-size);
+  block-size: var(--xh-_hover-card-arrow-size);
   border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-border-default));
   background: var(--xh-hover-card-bg, var(--xh-bg-surface));
   rotate: 45deg;
 }
 
 [data-scope='hover-card'][data-part='arrow'][data-placement^='bottom'] {
-  inset-block-start: calc(var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-inline-start: calc(50% - var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-block-start: calc(var(--xh-_hover-card-arrow-size) / -2);
+  inset-inline-start: calc(var(--xh-_hover-card-arrow-x) - var(--xh-_hover-card-arrow-size) / 2);
   border-block-end: 0;
   border-inline-end: 0;
 }
 
 [data-scope='hover-card'][data-part='arrow'][data-placement^='top'] {
-  inset-block-end: calc(var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-inline-start: calc(50% - var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-block-end: calc(var(--xh-_hover-card-arrow-size) / -2);
+  inset-inline-start: calc(var(--xh-_hover-card-arrow-x) - var(--xh-_hover-card-arrow-size) / 2);
   border-block-start: 0;
   border-inline-start: 0;
 }
 
 [data-scope='hover-card'][data-part='arrow'][data-placement^='right'] {
-  inset-inline-start: calc(var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-block-start: calc(50% - var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-inline-start: calc(var(--xh-_hover-card-arrow-size) / -2);
+  inset-block-start: calc(var(--xh-_hover-card-arrow-y) - var(--xh-_hover-card-arrow-size) / 2);
   border-block-start: 0;
   border-inline-end: 0;
 }
 
 [data-scope='hover-card'][data-part='arrow'][data-placement^='left'] {
-  inset-inline-end: calc(var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-block-start: calc(50% - var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-inline-end: calc(var(--xh-_hover-card-arrow-size) / -2);
+  inset-block-start: calc(var(--xh-_hover-card-arrow-y) - var(--xh-_hover-card-arrow-size) / 2);
   border-block-end: 0;
   border-inline-start: 0;
 }
@@ -10182,40 +10190,44 @@
 }
 
 /* 箭头是旋转 45° 的方块，只保留朝向锚点那两条边的描边；
-   引擎不产出箭头偏移，因此沿交叉轴固定居中 */
+   交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
 [data-scope='menu'][data-part='arrow'] {
+  --xh-_menu-arrow-size: var(--xh-menu-arrow-size, var(--xh-overlay-arrow-size));
+  --xh-_menu-arrow-x: 50%;
+  --xh-_menu-arrow-y: 50%;
+
   position: absolute;
-  inline-size: var(--xh-menu-arrow-size, var(--xh-overlay-arrow-size));
-  block-size: var(--xh-menu-arrow-size, var(--xh-overlay-arrow-size));
+  inline-size: var(--xh-_menu-arrow-size);
+  block-size: var(--xh-_menu-arrow-size);
   background: var(--xh-menu-bg, var(--xh-bg-surface));
   border: var(--xh-stroke-thin) solid var(--xh-menu-border, var(--xh-border-default));
   rotate: 45deg;
 }
 
 [data-scope='menu'][data-part='arrow'][data-placement^='bottom'] {
-  inset-block-start: calc(var(--xh-menu-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-inline-start: calc(50% - var(--xh-menu-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-block-start: calc(var(--xh-_menu-arrow-size) / -2);
+  inset-inline-start: calc(var(--xh-_menu-arrow-x) - var(--xh-_menu-arrow-size) / 2);
   border-block-end: 0;
   border-inline-end: 0;
 }
 
 [data-scope='menu'][data-part='arrow'][data-placement^='top'] {
-  inset-block-end: calc(var(--xh-menu-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-inline-start: calc(50% - var(--xh-menu-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-block-end: calc(var(--xh-_menu-arrow-size) / -2);
+  inset-inline-start: calc(var(--xh-_menu-arrow-x) - var(--xh-_menu-arrow-size) / 2);
   border-block-start: 0;
   border-inline-start: 0;
 }
 
 [data-scope='menu'][data-part='arrow'][data-placement^='right'] {
-  inset-inline-start: calc(var(--xh-menu-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-block-start: calc(50% - var(--xh-menu-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-inline-start: calc(var(--xh-_menu-arrow-size) / -2);
+  inset-block-start: calc(var(--xh-_menu-arrow-y) - var(--xh-_menu-arrow-size) / 2);
   border-block-start: 0;
   border-inline-end: 0;
 }
 
 [data-scope='menu'][data-part='arrow'][data-placement^='left'] {
-  inset-inline-end: calc(var(--xh-menu-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-block-start: calc(50% - var(--xh-menu-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-inline-end: calc(var(--xh-_menu-arrow-size) / -2);
+  inset-block-start: calc(var(--xh-_menu-arrow-y) - var(--xh-_menu-arrow-size) / 2);
   border-block-end: 0;
   border-inline-start: 0;
 }
@@ -11404,40 +11416,44 @@
 }
 
 /* 箭头是旋转 45° 的方块，只保留朝向锚点那两条边的描边；
-   引擎不产出箭头偏移，因此沿交叉轴固定居中 */
+   交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
 [data-scope='popover'][data-part='arrow'] {
+  --xh-_popover-arrow-size: var(--xh-popover-arrow-size, var(--xh-overlay-arrow-size));
+  --xh-_popover-arrow-x: 50%;
+  --xh-_popover-arrow-y: 50%;
+
   position: absolute;
-  inline-size: var(--xh-popover-arrow-size, var(--xh-overlay-arrow-size));
-  block-size: var(--xh-popover-arrow-size, var(--xh-overlay-arrow-size));
+  inline-size: var(--xh-_popover-arrow-size);
+  block-size: var(--xh-_popover-arrow-size);
   background: var(--xh-popover-bg, var(--xh-bg-surface));
   border: var(--xh-stroke-thin) solid var(--xh-popover-border, var(--xh-border-default));
   rotate: 45deg;
 }
 
 [data-scope='popover'][data-part='arrow'][data-placement^='bottom'] {
-  inset-block-start: calc(var(--xh-popover-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-inline-start: calc(50% - var(--xh-popover-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-block-start: calc(var(--xh-_popover-arrow-size) / -2);
+  inset-inline-start: calc(var(--xh-_popover-arrow-x) - var(--xh-_popover-arrow-size) / 2);
   border-block-end: 0;
   border-inline-end: 0;
 }
 
 [data-scope='popover'][data-part='arrow'][data-placement^='top'] {
-  inset-block-end: calc(var(--xh-popover-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-inline-start: calc(50% - var(--xh-popover-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-block-end: calc(var(--xh-_popover-arrow-size) / -2);
+  inset-inline-start: calc(var(--xh-_popover-arrow-x) - var(--xh-_popover-arrow-size) / 2);
   border-block-start: 0;
   border-inline-start: 0;
 }
 
 [data-scope='popover'][data-part='arrow'][data-placement^='right'] {
-  inset-inline-start: calc(var(--xh-popover-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-block-start: calc(50% - var(--xh-popover-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-inline-start: calc(var(--xh-_popover-arrow-size) / -2);
+  inset-block-start: calc(var(--xh-_popover-arrow-y) - var(--xh-_popover-arrow-size) / 2);
   border-block-start: 0;
   border-inline-end: 0;
 }
 
 [data-scope='popover'][data-part='arrow'][data-placement^='left'] {
-  inset-inline-end: calc(var(--xh-popover-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-block-start: calc(50% - var(--xh-popover-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-inline-end: calc(var(--xh-_popover-arrow-size) / -2);
+  inset-block-start: calc(var(--xh-_popover-arrow-y) - var(--xh-_popover-arrow-size) / 2);
   border-block-end: 0;
   border-inline-start: 0;
 }
@@ -11470,13 +11486,80 @@
 }
 
 /* —— 尺寸 —— */
-/* 只有厚度分档；中间档不写规则，缺省即中档 */
+/* 线形只有厚度分档；中间档不写规则，缺省即中档 */
 [data-scope='progress'][data-part='root'][data-size='sm'] {
   --xh-_thickness: var(--xh-progress-thickness, var(--xh-space-1));
 }
 
 [data-scope='progress'][data-part='root'][data-size='lg'] {
   --xh-_thickness: var(--xh-progress-thickness, var(--xh-space-2));
+}
+
+/* —— 环形 —— */
+/* 环画在固定的 100×100 viewBox 里，直径由这里的尺寸决定；
+   画面与环心文字叠在同一格上，文字因此恒在圆心 */
+[data-scope='progress'][data-part='root'][data-variant='circle'],
+[data-scope='progress'][data-part='root'][data-variant='dashboard'] {
+  --xh-_diameter: var(--xh-progress-size, 7.5rem);
+
+  display: inline-grid;
+  place-items: center;
+  inline-size: var(--xh-_diameter);
+  block-size: var(--xh-_diameter);
+}
+
+[data-scope='progress'][data-part='root'][data-variant='circle'][data-size='sm'],
+[data-scope='progress'][data-part='root'][data-variant='dashboard'][data-size='sm'] {
+  --xh-_diameter: var(--xh-progress-size, 5rem);
+}
+
+[data-scope='progress'][data-part='root'][data-variant='circle'][data-size='lg'],
+[data-scope='progress'][data-part='root'][data-variant='dashboard'][data-size='lg'] {
+  --xh-_diameter: var(--xh-progress-size, 10rem);
+}
+
+[data-scope='progress'][data-part='canvas'],
+[data-scope='progress'][data-part='label'] {
+  grid-area: 1 / 1;
+}
+
+[data-scope='progress'][data-part='canvas'] {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+/* 环心文字：占位不撑格子，长内容自己换行由作者定 */
+[data-scope='progress'][data-part='label'] {
+  color: var(--xh-progress-label-fg, var(--xh-fg-default));
+  font-size: var(--xh-progress-label-font-size, var(--xh-text-body-size));
+  line-height: var(--xh-leading-none);
+  text-align: center;
+}
+
+/* 圆心、半径与那两段虚线都由连接层算好写进内联样式，这里只上色。
+   底槽不跟着语气换族：只有已完成的那段换色，才读得出"完成了多少" */
+[data-scope='progress'][data-part='track'][data-variant='circle'],
+[data-scope='progress'][data-part='track'][data-variant='dashboard'] {
+  stroke: var(--xh-progress-track, var(--xh-bg-subtle-active));
+}
+
+[data-scope='progress'][data-part='range'][data-variant='circle'],
+[data-scope='progress'][data-part='range'][data-variant='dashboard'] {
+  stroke: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
+  stroke-linecap: var(--xh-progress-linecap, round);
+  transition: stroke-dashoffset var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 零进度：圆角端点会在长度为 0 处画出一个圆点，收掉它 */
+[data-scope='progress'][data-part='range'][data-empty] {
+  visibility: hidden;
+}
+
+/* 关掉动效的用户不该被进度条的补间晃一下；这里只管本组件 */
+@media (prefers-reduced-motion: reduce) {
+  [data-scope='progress'][data-part='range'] {
+    transition-duration: 0.01ms;
+  }
 }
 
 /* styles/radio-group.css */
@@ -15691,33 +15774,38 @@
   --xh-_tooltip-font-size: var(--xh-font-size-md);
 }
 
-/* 箭头是旋转 45° 的方块，按落定朝向贴在 content 对侧边的中点 */
+/* 箭头是旋转 45° 的方块，按自报的落定朝向贴在 content 对侧边上；
+   交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
 [data-scope='tooltip'][data-part='arrow'] {
+  --xh-_tooltip-arrow-size: var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size));
+  --xh-_tooltip-arrow-x: 50%;
+  --xh-_tooltip-arrow-y: 50%;
+
   position: absolute;
-  inline-size: var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size));
-  block-size: var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size));
+  inline-size: var(--xh-_tooltip-arrow-size);
+  block-size: var(--xh-_tooltip-arrow-size);
   background: var(--xh-tooltip-bg, var(--xh-_tone, var(--xh-fg-default)));
   transform: rotate(45deg);
 }
 
-[data-scope='tooltip'][data-part='positioner'][data-placement^='bottom'] [data-scope='tooltip'][data-part='arrow'] {
-  inset-block-start: calc(var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-inline-start: calc(50% - var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+[data-scope='tooltip'][data-part='arrow'][data-placement^='bottom'] {
+  inset-block-start: calc(var(--xh-_tooltip-arrow-size) / -2);
+  inset-inline-start: calc(var(--xh-_tooltip-arrow-x) - var(--xh-_tooltip-arrow-size) / 2);
 }
 
-[data-scope='tooltip'][data-part='positioner'][data-placement^='top'] [data-scope='tooltip'][data-part='arrow'] {
-  inset-block-end: calc(var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-inline-start: calc(50% - var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+[data-scope='tooltip'][data-part='arrow'][data-placement^='top'] {
+  inset-block-end: calc(var(--xh-_tooltip-arrow-size) / -2);
+  inset-inline-start: calc(var(--xh-_tooltip-arrow-x) - var(--xh-_tooltip-arrow-size) / 2);
 }
 
-[data-scope='tooltip'][data-part='positioner'][data-placement^='left'] [data-scope='tooltip'][data-part='arrow'] {
-  inset-block-start: calc(50% - var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size)) / 2);
-  inset-inline-end: calc(var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size)) / -2);
+[data-scope='tooltip'][data-part='arrow'][data-placement^='left'] {
+  inset-block-start: calc(var(--xh-_tooltip-arrow-y) - var(--xh-_tooltip-arrow-size) / 2);
+  inset-inline-end: calc(var(--xh-_tooltip-arrow-size) / -2);
 }
 
-[data-scope='tooltip'][data-part='positioner'][data-placement^='right'] [data-scope='tooltip'][data-part='arrow'] {
-  inset-block-start: calc(50% - var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size)) / 2);
-  inset-inline-start: calc(var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size)) / -2);
+[data-scope='tooltip'][data-part='arrow'][data-placement^='right'] {
+  inset-block-start: calc(var(--xh-_tooltip-arrow-y) - var(--xh-_tooltip-arrow-size) / 2);
+  inset-inline-start: calc(var(--xh-_tooltip-arrow-size) / -2);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -15987,11 +16075,15 @@
 }
 
 /* 箭头是旋转 45° 的方块，只保留朝向目标那两条边的描边；
-   引擎不产出箭头偏移，因此沿交叉轴固定居中。居中步没有锚点，连接层会给它发 hidden */
+   交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中。居中步没有锚点，连接层会给它发 hidden */
 [data-scope='tour'][data-part='arrow'] {
+  --xh-_tour-arrow-size: var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size));
+  --xh-_tour-arrow-x: 50%;
+  --xh-_tour-arrow-y: 50%;
+
   position: absolute;
-  inline-size: var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size));
-  block-size: var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size));
+  inline-size: var(--xh-_tour-arrow-size);
+  block-size: var(--xh-_tour-arrow-size);
   background: var(--xh-tour-bg, var(--xh-bg-surface));
   border: var(--xh-stroke-thin) solid var(--xh-tour-border, var(--xh-border-default));
   rotate: 45deg;
@@ -16002,29 +16094,29 @@
 }
 
 [data-scope='tour'][data-part='arrow'][data-placement^='bottom'] {
-  inset-block-start: calc(var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-inline-start: calc(50% - var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-block-start: calc(var(--xh-_tour-arrow-size) / -2);
+  inset-inline-start: calc(var(--xh-_tour-arrow-x) - var(--xh-_tour-arrow-size) / 2);
   border-block-end: 0;
   border-inline-end: 0;
 }
 
 [data-scope='tour'][data-part='arrow'][data-placement^='top'] {
-  inset-block-end: calc(var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-inline-start: calc(50% - var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-block-end: calc(var(--xh-_tour-arrow-size) / -2);
+  inset-inline-start: calc(var(--xh-_tour-arrow-x) - var(--xh-_tour-arrow-size) / 2);
   border-block-start: 0;
   border-inline-start: 0;
 }
 
 [data-scope='tour'][data-part='arrow'][data-placement^='right'] {
-  inset-inline-start: calc(var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-block-start: calc(50% - var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-inline-start: calc(var(--xh-_tour-arrow-size) / -2);
+  inset-block-start: calc(var(--xh-_tour-arrow-y) - var(--xh-_tour-arrow-size) / 2);
   border-block-start: 0;
   border-inline-end: 0;
 }
 
 [data-scope='tour'][data-part='arrow'][data-placement^='left'] {
-  inset-inline-end: calc(var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-  inset-block-start: calc(50% - var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+  inset-inline-end: calc(var(--xh-_tour-arrow-size) / -2);
+  inset-block-start: calc(var(--xh-_tour-arrow-y) - var(--xh-_tour-arrow-size) / 2);
   border-block-end: 0;
   border-inline-start: 0;
 }
