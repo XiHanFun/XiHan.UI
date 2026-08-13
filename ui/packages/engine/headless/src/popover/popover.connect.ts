@@ -17,6 +17,8 @@ export function connectPopover<T extends PropTypes>(
   const stateAttr = open ? 'open' : 'closed'
   // 位置由引擎写进 context，这里只读结果，不量 DOM、不调引擎
   const position = context.get('position')
+  // 箭头落点：引擎没算（没要箭头 / 尚未落位）时缺席，皮肤退回居中
+  const arrowAt = position?.arrow
   const placement = position?.placement ?? prop('placement') ?? 'bottom'
 
   const setOpen = (next: boolean): void => {
@@ -76,6 +78,12 @@ export function connectPopover<T extends PropTypes>(
       ...parts.arrow.attrs,
       'aria-hidden': 'true',
       'data-placement': placement,
+      // 箭头交叉轴上的落点由定位引擎给：上下两侧走行内轴、左右两侧走块轴。
+      // 两根轴每帧都写，翻面后另一根不会留着上一帧的值；空串即撤掉声明，皮肤退回居中
+      'style': {
+        '--xh-_popover-arrow-x': arrowAt?.x != null ? `${arrowAt.x}px` : '',
+        '--xh-_popover-arrow-y': arrowAt?.y != null ? `${arrowAt.y}px` : '',
+      },
     }),
   }
 }

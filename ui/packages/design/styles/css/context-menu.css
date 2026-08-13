@@ -230,11 +230,15 @@
   }
 
   /* 箭头是旋转 45° 的方块，只保留朝向锚点那两条边的描边；
-     引擎不产出箭头偏移，因此沿交叉轴固定居中 */
+     交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
   [data-scope='context-menu'][data-part='arrow'] {
+    --xh-_context-menu-arrow-size: var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size));
+    --xh-_context-menu-arrow-x: 50%;
+    --xh-_context-menu-arrow-y: 50%;
+
     position: absolute;
-    inline-size: var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size));
-    block-size: var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size));
+    inline-size: var(--xh-_context-menu-arrow-size);
+    block-size: var(--xh-_context-menu-arrow-size);
     background: var(--xh-context-menu-bg, var(--xh-bg-surface));
     border: var(--xh-stroke-thin) solid var(--xh-context-menu-border, var(--xh-border-default));
     rotate: 45deg;
@@ -245,29 +249,29 @@
   }
 
   [data-scope='context-menu'][data-part='arrow'][data-placement^='bottom'] {
-    inset-block-start: calc(var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-    inset-inline-start: calc(50% - var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+    inset-block-start: calc(var(--xh-_context-menu-arrow-size) / -2);
+    inset-inline-start: calc(var(--xh-_context-menu-arrow-x) - var(--xh-_context-menu-arrow-size) / 2);
     border-block-end: 0;
     border-inline-end: 0;
   }
 
   [data-scope='context-menu'][data-part='arrow'][data-placement^='top'] {
-    inset-block-end: calc(var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-    inset-inline-start: calc(50% - var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+    inset-block-end: calc(var(--xh-_context-menu-arrow-size) / -2);
+    inset-inline-start: calc(var(--xh-_context-menu-arrow-x) - var(--xh-_context-menu-arrow-size) / 2);
     border-block-start: 0;
     border-inline-start: 0;
   }
 
   [data-scope='context-menu'][data-part='arrow'][data-placement^='right'] {
-    inset-inline-start: calc(var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-    inset-block-start: calc(50% - var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+    inset-inline-start: calc(var(--xh-_context-menu-arrow-size) / -2);
+    inset-block-start: calc(var(--xh-_context-menu-arrow-y) - var(--xh-_context-menu-arrow-size) / 2);
     border-block-start: 0;
     border-inline-end: 0;
   }
 
   [data-scope='context-menu'][data-part='arrow'][data-placement^='left'] {
-    inset-inline-end: calc(var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size)) / -2);
-    inset-block-start: calc(50% - var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size)) / 2);
+    inset-inline-end: calc(var(--xh-_context-menu-arrow-size) / -2);
+    inset-block-start: calc(var(--xh-_context-menu-arrow-y) - var(--xh-_context-menu-arrow-size) / 2);
     border-block-end: 0;
     border-inline-start: 0;
   }

@@ -1,7 +1,5 @@
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
-import type { Service } from '@xihan-ui/machine'
-import type { ListboxSchema } from '../listbox'
 import type { PopselectApi, PopselectItemProps, PopselectNodeMeta, PopselectService } from './popselect.types'
 import { focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
 import { contains, dataAttr } from '@xihan-ui/kernel'
@@ -11,31 +9,6 @@ const parts = popselectAnatomy.build()
 
 // 指针亲手点亮过的条目：pointerleave 只收自己点的漆，键盘建立的高亮被指针路过不受影响
 const pointerHot = new WeakSet<Element>()
-
-// 这次激活来自 Enter / Space 的触发器：原生按钮把这两个键翻成一次 click，
-// 那次 click 与指针点出来的长得一样，只能靠「按下时记一笔、激活时取走」把两条入口分开。
-// 指针按下会把标记撤掉，键按下后没等来激活（按住空格再 Tab 走开）也不会留给下一次点击
-const keyActivated = new WeakSet<Element>()
-
-/**
- * 展开那一刻的落焦点：有锚点条目就落它，没有就落列表容器（此刻正是它认领着 Tab 位）。
- *
- * 不能留给焦点域的 Tab 序列探测：那条路按文档序取 content 的全部可 tab 后代，
- * 作者放在列表前面的搜索框会把焦点抢走，而键盘处理器挂在 content 上，方向键就此失灵。
- * 本轮该有锚点却还没查到（条目身份标记晚一拍写上）时返回 null，焦点域会自行重试。
- */
-export function popselectInitialFocus(
-  listbox: Service<ListboxSchema>,
-  content: HTMLElement | null,
-): HTMLElement | null {
-  if (!content)
-    return null
-  // 与 connect 里的 roving 锚点同一条规则，落焦与 tabindex 才指得上同一个条目
-  const anchor = listbox.context.get('focusedValue') ?? listbox.context.get('value')[0] ?? null
-  if (anchor == null)
-    return content
-  return queryItems(content, popselectItemQuery).find(el => itemValue(el) === anchor) ?? null
-}
 
 export function connectPopselect<T extends PropTypes>(
   service: PopselectService,
@@ -84,7 +57,7 @@ export function connectPopselect<T extends PropTypes>(
   })
 
   /** 按文档序现读条目集合；仅在事件回调中调用。 */
-  const items = (content: HTMLElement | null): HTMLElement[] => queryItems(content, popselectItemQuery)
+  const items = (content: HTMLElement): HTMLElement[] => queryItems(content, popselectItemQuery)
 
   const focusValue = (el: HTMLElement | null): void => {
     const next = itemValue(el)
@@ -106,19 +79,6 @@ export function connectPopselect<T extends PropTypes>(
       text: popselectItemText,
       skip: isItemDisabled,
     }))
-  }
-
-  /**
-   * 键盘入口的落点：无选中值时按意图从集合两端进（下键落首行、上键落末行）。
-   * 有选中值时锚点已经是它，两种入口都定位到选中项，这里不插手。
-   * 收起态条目虽 hidden 但仍在文档里，查询照样命中；只记锚点不搬焦点，落焦归焦点域
-   */
-  const landAnchor = (intent: NavIntent): void => {
-    if (value.length > 0)
-      return
-    const next = itemValue(navigateItems(items(popover.refs.get('getContentEl')()), null, intent))
-    if (next != null)
-      listbox.send({ type: 'ITEM.FOCUS', value: next })
   }
 
   /** 落值：单选替换并收起浮层，多选切换并保持展开继续挑。 */
@@ -176,29 +136,16 @@ export function connectPopselect<T extends PropTypes>(
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-placeholder': dataAttr(value.length === 0),
-      'onClick': (event: MouseEvent) => {
-        // 键盘激活的这一路要有可见落点；指针点开一路不补，展开那一刻不能有条目看着像被选中
-        if (keyActivated.delete(event.currentTarget as Element) && !open)
-          landAnchor('next')
-        popover.send({ type: 'TOGGLE' })
-      },
-      // 指针按下即撤掉键盘标记：这一次激活是指针的，之前那次按键没等来激活也就此作废
-      'onPointerDown': (event: PointerEvent) => {
-        keyActivated.delete(event.currentTarget as Element)
-      },
+      'onClick': () => popover.send({ type: 'TOGGLE' }),
       'onKeyDown': (event: KeyboardEvent) => {
-        // 收起态的上下键直接展开；Enter / Space 由原生按钮激活翻成 click，这里只记下入口是键盘
+        // 收起态的上下键直接展开；Enter / Space 由原生按钮激活翻成 click，这里不接
         if (open)
           return
         const intent = navIntentFromKey(event, { axis: 'vertical', home: false })
-        if (intent) {
-          event.preventDefault()
-          landAnchor(intent)
-          popover.send({ type: 'OPEN' })
+        if (!intent)
           return
-        }
-        if (event.key === 'Enter' || event.key === ' ')
-          keyActivated.add(event.currentTarget as Element)
+        event.preventDefault()
+        popover.send({ type: 'OPEN' })
       },
     }),
 
@@ -225,9 +172,9 @@ export function connectPopselect<T extends PropTypes>(
       // 省略与显式 false 不是一回事：前者是「没说」，后者是「明确说了不是多选」
       'aria-multiselectable': multiple ? 'true' : 'false',
       'aria-disabled': disabled ? 'true' : 'false',
-      // 展开却无锚点时（指针打开且无选中值）容器认领 Tab 位并接住焦点，它就是列表框本身；
+      // 展开却无锚点时容器兜底进 Tab 序列，其 onFocus 再转投给条目；
       // 收起态 content 带 hidden，本就不可聚焦，不必兜底
-      'tabindex': open && anchor == null ? 0 : -1,
+      'tabindex': open && focusedValue == null ? 0 : -1,
       'data-state': stateAttr,
       'data-placement': placement,
       // 收起时留在 DOM 只隐藏，不卸载作者节点
@@ -267,6 +214,20 @@ export function connectPopselect<T extends PropTypes>(
           event.preventDefault()
           commit(content)
         }
+      },
+      'onFocus': (event: FocusEvent) => {
+        const content = event.currentTarget as HTMLElement
+        // 只接管从列表外进来的焦点
+        if (contains(content, event.relatedTarget as Node | null))
+          return
+        const list = items(content)
+        // 焦点落在首个可停留的选中项上，取不到则退回首个可停留条目
+        const selected = list.find((el) => {
+          const v = itemValue(el)
+          return v != null && isSelected(v) && !isItemDisabled(el)
+        })
+        // 落点条目自己的 onFocus 会把锚点接过去
+        focusItem(selected ?? navigateItems(list, null, 'first'))
       },
       'onFocusOut': (event: FocusEvent) => {
         const content = event.currentTarget as HTMLElement

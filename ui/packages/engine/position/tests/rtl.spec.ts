@@ -52,3 +52,35 @@ describe('块轴：left / right 两侧的纵向对齐与方向无关', () => {
       expect(at(p, 'rtl').x).toBe(at(p).x)
   })
 })
+
+describe('箭头落点随方向翻面', () => {
+  const arrow = { size: 8, padding: 4 }
+  function arrowAt(placement: string, dir?: 'ltr' | 'rtl') {
+    return computePlacement({ ...base, placement: placement as never, dir, arrow }).arrow!
+  }
+
+  // 落点量的是距行首缘的距离：LTR 下行首在左，RTL 下在右。
+  // 两种方向下都该指着锚点中心——换算回物理坐标验它，而不是拿两个方向互比：
+  // RTL 会把浮层自己也挪到另一侧，两者不是简单镜像
+  it('rTL 下换算回物理坐标仍对着锚点中心', () => {
+    // 浮层取得比锚点宽，锚点中心必落在浮层内，钳位不介入，指向关系才验得干净
+    const wide = { width: 240, height: 30 }
+    for (const p of ['bottom', 'bottom-start', 'bottom-end']) {
+      const result = computePlacement({ ...base, floating: wide, placement: p as never, dir: 'rtl', arrow })
+      const physical = result.x + (wide.width - result.arrow!.x!)
+      expect(physical).toBe(anchor.x + anchor.width / 2)
+    }
+  })
+
+  it('锚点落在浮层之外时钳到最近的合法点，绝不指到浮层外面', () => {
+    const margin = arrow.size / 2 + arrow.padding
+    const result = computePlacement({ ...base, placement: 'bottom-start', dir: 'rtl', arrow })
+    // RTL 的 start 把浮层挪到锚点右缘，锚点中心因此落在浮层行首缘之外
+    expect(result.arrow!.x).toBe(floating.width - margin)
+  })
+
+  it('块轴不翻：left / right 两侧的落点与 LTR 逐字相同', () => {
+    for (const p of ['left', 'right', 'right-start'])
+      expect(arrowAt(p, 'rtl').y).toBe(arrowAt(p).y)
+  })
+})

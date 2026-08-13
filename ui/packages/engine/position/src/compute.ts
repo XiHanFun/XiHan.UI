@@ -38,6 +38,8 @@ export interface ComputeInput {
    * RTL 下 start 与锚点的右缘齐平。块轴（left / right 两侧）不受方向影响。
    */
   dir?: Direction
+  /** 要箭头落点就把箭头的量交进来；不给则不算。 */
+  arrow?: { size: number, padding?: number }
 }
 
 export interface ComputeOutput {
@@ -45,6 +47,8 @@ export interface ComputeOutput {
   y: number
   /** 落定后的 placement。翻面时与请求的不同。 */
   placement: Placement
+  /** 箭头中心距浮层起始缘的距离，只给交叉轴那一根；没要箭头时缺席。 */
+  arrow?: { x?: number, y?: number }
 }
 
 const OPPOSITE: Record<Side, Side> = {
@@ -127,6 +131,33 @@ function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(value, max))
 }
 
+/**
+ * 箭头中心在浮层里的落点：对准锚点中心，两端各留出半个箭头与圆角的余量。
+ * 取的是落定后的 coords，翻面与挪位的位移都已经算在里面，不必另外补偿。
+ */
+function arrowOn(
+  input: ComputeInput,
+  side: Side,
+  coords: { x: number, y: number },
+): { x?: number, y?: number } | undefined {
+  const spec = input.arrow
+  if (!spec)
+    return undefined
+  const margin = spec.size / 2 + Math.max(0, spec.padding ?? 0)
+  if (isVertical(side)) {
+    const width = input.floating.width
+    const center = input.anchor.x + input.anchor.width / 2 - coords.x
+    // 浮层比两端余量加起来还窄：钳不出区间，退回浮层中点
+    const x = width < margin * 2 ? width / 2 : clamp(center, margin, width - margin)
+    // 皮肤用 inset-inline-start 消费，RTL 下它量的是距右缘
+    return { x: input.dir === 'rtl' ? width - x : x }
+  }
+  const height = input.floating.height
+  const center = input.anchor.y + input.anchor.height / 2 - coords.y
+  // 块轴与文字方向无关，不翻
+  return { y: height < margin * 2 ? height / 2 : clamp(center, margin, height - margin) }
+}
+
 export function computePlacement(input: ComputeInput): ComputeOutput {
   const requested = splitPlacement(input.placement)
   let side = requested.side
@@ -163,7 +194,8 @@ export function computePlacement(input: ComputeInput): ComputeOutput {
     }
   }
 
-  return { x: coords.x, y: coords.y, placement: joinPlacement(side, align) }
+  // 箭头算在最后：side 已翻定、coords 已挪定，锚点中心减落点就是箭头该站的地方
+  return { x: coords.x, y: coords.y, placement: joinPlacement(side, align), arrow: arrowOn(input, side, coords) }
 }
 
 /** 两个区域的交集。不相交时给出的区域宽高为负，调用方按空处理。 */

@@ -9,7 +9,7 @@ import type {
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
-import { connectPopselect, listboxMachine, popoverMachine, popselectAnatomy, popselectInitialFocus, popselectMeta } from '@xihan-ui/headless'
+import { connectPopselect, listboxMachine, popoverMachine, popselectAnatomy, popselectMeta } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
@@ -201,9 +201,6 @@ export class XhPopselectElement extends XhElement {
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
     svc.refs.set('getContentEl', () => this.getPart('content'))
-    // 落焦点由 popselect 这一侧收口：有锚点条目就落它，没有就落列表容器
-    svc.refs.set('getInitialFocusEl', () =>
-      popselectInitialFocus(this.listboxCtrl.service, this.getPart('content')))
   }
 
   /**

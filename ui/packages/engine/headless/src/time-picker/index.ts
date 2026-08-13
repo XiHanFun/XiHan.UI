@@ -24,7 +24,6 @@ export type {
   TimePickerColumnProps,
   TimePickerColumnsOptions,
   TimePickerColumnUnit,
-  TimePickerFocusIntent,
   TimePickerInputProps,
   TimePickerItemProps,
   TimePickerOpenChangeDetails,

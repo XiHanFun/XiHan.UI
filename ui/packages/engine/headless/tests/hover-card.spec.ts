@@ -507,6 +507,22 @@ describe('connectHoverCard', () => {
     expect((makeCard().api().getArrowProps() as Record<string, unknown>)['aria-hidden']).toBe('true')
   })
 
+  it('引擎给的箭头落点原样写成内联自定义属性；没给那一根轴就撤掉声明', () => {
+    const c = makeCard()
+    const styleOf = (): Record<string, string> =>
+      (c.api().getArrowProps() as Record<string, unknown>).style as Record<string, string>
+    // 没有定位结果：两根轴都空着，皮肤退回居中
+    expect(styleOf()).toEqual({ '--xh-_hover-card-arrow-x': '', '--xh-_hover-card-arrow-y': '' })
+
+    // 上下两侧只给行内轴
+    c.service.context.set('position', { x: 0, y: 0, placement: 'bottom-start', hidden: false, arrow: { x: 12 } })
+    expect(styleOf()).toEqual({ '--xh-_hover-card-arrow-x': '12px', '--xh-_hover-card-arrow-y': '' })
+
+    // 翻到左右两侧：另一根轴要跟着换，旧值不许留在上一根轴上
+    c.service.context.set('position', { x: 0, y: 0, placement: 'right', hidden: false, arrow: { y: 30 } })
+    expect(styleOf()).toEqual({ '--xh-_hover-card-arrow-x': '', '--xh-_hover-card-arrow-y': '30px' })
+  })
+
   it('dir 只在作者给了才写；disabled 只在 root/trigger 上留标记，不输出原生 disabled', () => {
     const bare = makeCard().api()
     expect((bare.getRootProps() as Record<string, unknown>).dir).toBeUndefined()

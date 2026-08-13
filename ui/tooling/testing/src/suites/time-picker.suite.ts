@@ -180,8 +180,8 @@ export const timePickerSuite: ConformanceSuite = {
             'aria-orientation': 'vertical',
             'aria-multiselectable': 'false',
             'hidden': null,
-            // 这一段还空着，没有格子当锚点：Tab 位由列本身兜底
-            'tabindex': '0',
+            // 有锚点时 Tab 位归那一格，列自己让位
+            'tabindex': '-1',
           },
           [MINUTE_COL]: { 'data-value': 'minute', 'hidden': null },
           [SECOND_COL]: { 'data-value': 'second', 'hidden': '' },
@@ -191,9 +191,8 @@ export const timePickerSuite: ConformanceSuite = {
             'aria-selected': 'false',
             'aria-disabled': 'false',
             'data-state': 'unchecked',
-            // 无选中就不预落锚点：首格不认领 Tab 位，也不带高亮
-            'tabindex': '-1',
-            'data-highlighted': null,
+            // 无选中时锚点落在首格
+            'tabindex': '0',
           },
           [HOUR_09]: { tabindex: '-1' },
           'hidden-input': { type: 'hidden', name: 'start' },
@@ -212,8 +211,6 @@ export const timePickerSuite: ConformanceSuite = {
           [MINUTE_SEG]: { 'aria-valuenow': '30' },
           [HOUR_09]: { 'aria-selected': 'true', 'data-state': 'checked', 'tabindex': '0' },
           [HOUR_08]: { 'aria-selected': 'false', 'tabindex': '-1' },
-          // 有锚点格时列让出 Tab 位
-          [HOUR_COL]: { tabindex: '-1' },
           // 焦点不在分列上，它的锚点落在自己选中的那一格
           [MINUTE_30]: { 'aria-selected': 'true', 'tabindex': '0' },
           'clear-trigger': { disabled: null },
@@ -254,108 +251,13 @@ export const timePickerSuite: ConformanceSuite = {
     },
 
     {
-      name: '点触发器展开且这一段还空着：不预落锚点，Tab 位与落焦都归时列容器',
-      spec: { apg: `${APG}#keyboardinteraction` },
-      props: { ...BASE },
-      steps: [
-        {
-          kind: 'click',
-          part: 'trigger',
-          expect: {
-            parts: {
-              // 指针打开不预落锚点：浮层弹出那一刻一个格子都不高亮
-              [HOUR_08]: { 'tabindex': '-1', 'data-highlighted': null },
-              [HOUR_COL]: { tabindex: '0' },
-            },
-            events: [{ type: 'open-change', detail: { open: true } }],
-          },
-        },
-        {
-          kind: 'settle',
-          until: { activeElement: HOUR_COL },
-          expect: { activeElement: { part: HOUR_COL, exact: true }, events: [] },
-        },
-        // 第一按方向键才锚定首格，roving tabindex 随之移交
-        {
-          kind: 'key',
-          key: 'ArrowDown',
-          expect: {
-            activeElement: { part: HOUR_08, exact: true },
-            parts: {
-              [HOUR_COL]: { tabindex: '-1' },
-              [HOUR_08]: { 'tabindex': '0', 'data-highlighted': '' },
-            },
-            events: [],
-          },
-        },
-      ],
-    },
-
-    {
-      name: '触发器上按下键展开，锚点落到首格',
+      name: '触发器上按上下键展开',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['time-picker.kbd.open'],
       props: { ...BASE },
       steps: [
         { kind: 'focus', part: 'trigger' },
-        {
-          kind: 'key',
-          key: 'ArrowDown',
-          expect: {
-            parts: {
-              trigger: { 'aria-expanded': 'true' },
-              [HOUR_08]: { 'tabindex': '0', 'data-highlighted': '' },
-              [HOUR_COL]: { tabindex: '-1' },
-            },
-          },
-        },
-        { kind: 'settle', until: { activeElement: HOUR_08 } },
-      ],
-    },
-
-    {
-      name: '触发器上按上键展开：反向入口从末格进',
-      spec: { apg: `${APG}#keyboardinteraction` },
-      props: { ...BASE },
-      steps: [
-        { kind: 'focus', part: 'trigger' },
-        {
-          kind: 'key',
-          key: 'ArrowUp',
-          expect: {
-            parts: {
-              [HOUR_11]: { 'tabindex': '0', 'data-highlighted': '' },
-              [HOUR_08]: { tabindex: '-1' },
-            },
-          },
-        },
-        { kind: 'settle', until: { activeElement: HOUR_11 } },
-      ],
-    },
-
-    {
-      name: 'Enter / Space 翻出来的那次 click 认得出自己是键盘入口，落点补在首格上',
-      spec: { apg: BUTTON },
-      props: { ...BASE },
-      steps: [
-        {
-          kind: 'raw',
-          why: 'jsdom 不把 Enter 翻成 click，平台那一步只能手写：keydown 先到，紧接着才是那次 click',
-          run: ({ doc }) => {
-            const trigger = doc.querySelector<HTMLElement>(`${SCOPE}[data-part="trigger"]`)!
-            trigger.focus()
-            trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
-            trigger.click()
-          },
-          expect: {
-            parts: {
-              // 键盘入口要有可见落点，与指针点开那一路正相反
-              [HOUR_COL]: { tabindex: '-1' },
-              [HOUR_08]: { 'tabindex': '0', 'data-highlighted': '' },
-            },
-            events: [{ type: 'open-change', detail: { open: true } }],
-          },
-        },
+        { kind: 'key', key: 'ArrowDown', expect: { parts: { trigger: { 'aria-expanded': 'true' } } } },
         { kind: 'settle', until: { activeElement: HOUR_08 } },
       ],
     },
@@ -437,9 +339,7 @@ export const timePickerSuite: ConformanceSuite = {
       covers: ['time-picker.kbd.select'],
       props: { ...BASE, name: 'start' },
       steps: [
-        // 键盘打开才预落锚点：确认键作用在锚点那一格上
-        { kind: 'focus', part: 'trigger' },
-        { kind: 'key', key: 'ArrowDown' },
+        { kind: 'click', part: 'trigger' },
         { kind: 'settle', until: { activeElement: HOUR_08 } },
         {
           kind: 'key',
@@ -774,15 +674,12 @@ export const timePickerSuite: ConformanceSuite = {
       initial: {
         parts: {
           [HOUR_08]: { 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null, 'tabindex': '-1' },
-          // 这一段还空着，没有格子当锚点，Tab 位归列本身
-          [HOUR_09]: { 'aria-disabled': 'false', 'tabindex': '-1' },
-          [HOUR_COL]: { tabindex: '0' },
+          // 首个可选的格接过锚点
+          [HOUR_09]: { 'aria-disabled': 'false', 'tabindex': '0' },
         },
       },
       steps: [
-        // 键盘打开：被裁掉的格不算首格，锚点落到首个可选的 09
-        { kind: 'focus', part: 'trigger' },
-        { kind: 'key', key: 'ArrowDown' },
+        { kind: 'click', part: 'trigger' },
         { kind: 'settle', until: { activeElement: HOUR_09 } },
         // 首格被裁掉了，往上回绕落到末格而不是它
         { kind: 'key', key: 'ArrowUp', expect: { activeElement: { part: HOUR_11, exact: true } } },
