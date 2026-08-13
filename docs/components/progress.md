@@ -40,6 +40,30 @@ size 只改轨道厚度，不写即缺省中档
 
 <XhDemo src="progress/06-custom-appearance" />
 
+### 环形
+
+variant="circle" 把同一份进度画成环，尺寸档改的是直径
+
+<XhDemo src="progress/07-circle" />
+
+### 仪表盘
+
+variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定它多大、朝哪
+
+<XhDemo src="progress/08-dashboard" />
+
+### 环心文字
+
+组件只负责把内容摆到环心，写什么由使用者决定
+
+<XhDemo src="progress/09-circle-label" />
+
+### 环的外观
+
+直径、颜色与端点走令牌，线宽走 strokeWidth：它改的是几何，半径跟着往里收
+
+<XhDemo src="progress/10-circle-appearance" />
+
 ## 产物
 
 | 层 | 值 |
@@ -53,16 +77,21 @@ size 只改轨道厚度，不写即缺省中档
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="progress"`：**`root`** · `track` · `range`
+`data-scope="progress"`：**`root`** · `canvas` · `track` · `range` · `label`
 
 ## Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `max` | `number` |  | 满值上限，默认 100。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，决定轨道厚度 |
+| `gapDegree` | `number` |  | 缺口角度，默认 75。只对 dashboard 生效。 |
+| `gapPosition` | `ProgressGapPosition` |  | 缺口朝向，默认 bottom。只对 dashboard 生效。 |
+| `max` | `number` |  | 满值上限，默认 100；非有限值或不为正时回落 100。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。线形改轨道厚度，环形改直径 |
+| `strokeWidth` | `number` |  | 环的线宽，走 viewBox 单位（整个环画在 100×100 里），默认 6。 只对 circle / dashboard 生效——它改的是几何（半径跟着往里收），所以是 prop 不是令牌； 线形的厚度仍走 --xh-progress-thickness。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
-| `value` | `number` |  | 当前进度值，越界会被夹到 [0, max]。 |
+| `value` | `number` |  | 当前进度值，越界会被夹到 [0, max]；非有限值按 0 处理。 |
+| `valueText` | `string` |  | 读屏播报的文字，覆盖默认的数值播报（进度不是百分比时用，如「第 3 步，共 8 步」）。 |
+| `variant` | `ProgressVariant` |  | 形态，默认 line。circle 画整环，dashboard 在环上留一个缺口。 |
 
 ## connect API
 
@@ -70,9 +99,14 @@ size 只改轨道厚度，不写即缺省中档
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
+| `variant` | `ProgressVariant` | 落定后的形态。 |
+| `ratio` | `number` | 进度比例，[0,1]。 |
+| `percent` | `number` | 进度百分比，取整。 |
 | `getRootProps` | `() => T['element']` |  |
+| `getCanvasProps` | `() => T['element']` | 承载环的 &lt;svg&gt;；线形不渲染它。 |
 | `getTrackProps` | `() => T['element']` |  |
 | `getRangeProps` | `() => T['element']` |  |
+| `getLabelProps` | `() => T['element']` | 环心那一块：落位归皮肤，写什么归作者。线形用不到。 |
 
 ## 键盘
 

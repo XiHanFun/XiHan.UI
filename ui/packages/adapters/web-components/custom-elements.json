@@ -18289,7 +18289,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-progress>` —— Light-DOM 行为宿主，无状态机，把 connectProgress 产出打到 root/track/range 角色节点。",
+          "description": "`<xh-progress>` —— Light-DOM 行为宿主，无状态机，把 connectProgress 产出打到各角色节点。\n\n线形写三层 div（root > track > range）；环形要把 track 与 range 写成 `<circle>`、\n外面套一层 `<svg>` 当 canvas，环心的文字放进 label：\n\n```html\n<xh-progress variant=\"circle\" value=\"60\">\n  <div data-part=\"root\">\n    <svg data-part=\"canvas\"><circle data-part=\"track\" /><circle data-part=\"range\" /></svg>\n    <div data-part=\"label\">60%</div>\n  </div>\n</xh-progress>\n```",
           "name": "XhProgressElement",
           "cssParts": [
             {
@@ -18297,12 +18297,20 @@
               "name": "root"
             },
             {
-              "description": "进度轨道（满长背景）",
+              "description": "承载环的 svg（线形不用）",
+              "name": "canvas"
+            },
+            {
+              "description": "进度轨道：线形是满长背景，环形是整段弧",
               "name": "track"
             },
             {
-              "description": "已完成区段，长度按百分比写成内联 inline-size",
+              "description": "已完成区段：线形写内联 inline-size，环形写 stroke-dashoffset",
               "name": "range"
+            },
+            {
+              "description": "环心那一块，写什么由使用者决定（线形不用）",
+              "name": "label"
             }
           ],
           "members": [
@@ -18332,6 +18340,51 @@
                 "text": "number | undefined"
               },
               "attribute": "max"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ProgressVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "strokeWidth",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "stroke-width"
+            },
+            {
+              "kind": "field",
+              "name": "gapDegree",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "gap-degree"
+            },
+            {
+              "kind": "field",
+              "name": "gapPosition",
+              "privacy": "public",
+              "type": {
+                "text": "ProgressGapPosition | undefined"
+              },
+              "attribute": "gap-position"
+            },
+            {
+              "kind": "field",
+              "name": "valueText",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "value-text"
             },
             {
               "kind": "field",
@@ -18381,6 +18434,46 @@
             },
             {
               "type": {
+                "text": "ProgressVariant | undefined"
+              },
+              "description": "形态，默认 line",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "环的线宽（viewBox 单位），默认 6；只对 circle / dashboard 生效",
+              "name": "stroke-width",
+              "fieldName": "strokeWidth"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "缺口角度，默认 75；只对 dashboard 生效",
+              "name": "gap-degree",
+              "fieldName": "gapDegree"
+            },
+            {
+              "type": {
+                "text": "ProgressGapPosition | undefined"
+              },
+              "description": "缺口朝向，默认 bottom；只对 dashboard 生效",
+              "name": "gap-position",
+              "fieldName": "gapPosition"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "读屏播报的文字，覆盖默认的数值播报",
+              "name": "value-text",
+              "fieldName": "valueText"
+            },
+            {
+              "type": {
                 "text": "Tone | undefined"
               },
               "description": "语气",
@@ -18391,7 +18484,7 @@
               "type": {
                 "text": "Size | undefined"
               },
-              "description": "尺寸",
+              "description": "尺寸：线形改厚度，环形改直径",
               "name": "size",
               "fieldName": "size"
             }
