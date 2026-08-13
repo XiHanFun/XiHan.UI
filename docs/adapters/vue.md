@@ -2,7 +2,7 @@
 
 `@xihan-ui/vue` 是无头内核的 Vue 3 外壳。它做三件事：把机器接到 Vue 的响应式上、把部件包成组件、把 `connect` 产出的 props 展开到 vnode 上。**不实现任何组件逻辑。**
 
-依赖：`vue` 是 peer 依赖（由你的项目提供）；`@xihan-ui/backgrounds` 是**可选** peer，不用视觉效果就不必装。
+依赖：`vue` 是 peer 依赖（由你的项目提供）；`@xihan-ui/backgrounds` 与 `@xihan-ui/sound` 是**可选** peer，不用视觉效果或音效就不必装。
 
 ## 组件命名
 
@@ -131,6 +131,16 @@ import { useBackground, vBackground, XhBackground } from '@xihan-ui/vue/backgrou
 ```
 
 三种用法见[背景层](../guide/backgrounds#在-vue-里用)。
+
+## 声音层
+
+同样是单独的子入口。`withToastSound` / `withDialogSound` 给命令式反馈服务配上声音，调用点一行都不用改；`v-sound` 给单个元素配声：
+
+```ts
+import { setSoundPlayer, vSound, withToastSound } from '@xihan-ui/vue/sound'
+```
+
+默认映射与开关见[声音层](../guide/sound#在-vue-里用)。
 
 ## 服务端渲染
 

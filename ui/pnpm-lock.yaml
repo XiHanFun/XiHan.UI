@@ -254,6 +254,9 @@ importers:
       '@xihan-ui/build':
         specifier: workspace:*
         version: link:../../../tooling/build
+      '@xihan-ui/sound':
+        specifier: workspace:*
+        version: link:../../features/sound
       '@xihan-ui/styles':
         specifier: workspace:*
         version: link:../../design/styles

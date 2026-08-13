@@ -33,6 +33,10 @@
     "./backgrounds": {
       "types": "./dist/backgrounds.d.ts",
       "import": "./dist/backgrounds.js"
+    },
+    "./sound": {
+      "types": "./dist/sound.d.ts",
+      "import": "./dist/sound.js"
     }
   },
   "main": "./dist/index.js",
@@ -57,10 +61,14 @@
   },
   "peerDependencies": {
     "@xihan-ui/backgrounds": "workspace:^",
+    "@xihan-ui/sound": "workspace:^",
     "vue": "^3.5.0"
   },
   "peerDependenciesMeta": {
     "@xihan-ui/backgrounds": {
+      "optional": true
+    },
+    "@xihan-ui/sound": {
       "optional": true
     }
   },
@@ -78,6 +86,7 @@
     "@vue/test-utils": "catalog:",
     "@xihan-ui/backgrounds": "workspace:*",
     "@xihan-ui/build": "workspace:*",
+    "@xihan-ui/sound": "workspace:*",
     "@xihan-ui/styles": "workspace:*",
     "@xihan-ui/testing": "workspace:*",
     "@xihan-ui/tokens": "workspace:*",

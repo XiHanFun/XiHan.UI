@@ -78,6 +78,70 @@ sound.dispose()
 
 音频上下文**惰性创建**：第一次真正播放才建，从不出声的页面不为它付任何代价。SSR 或没有 Web Audio 的环境里所有调用静默退化成空操作，不用条件守卫。
 
+## 在 Vue 里用
+
+Vue 侧的适配放在**单独的子入口** `@xihan-ui/vue/sound`，两种用法：给命令式反馈服务配声，或给单个元素配声。
+
+### 给通知与确认框配声
+
+`withToastSound` / `withDialogSound` 包一层现成的服务，**调用点一行都不用改**：
+
+```ts
+import { createSoundPlayer, softSoundTheme } from '@xihan-ui/sound'
+import { createDialogService, createToastService } from '@xihan-ui/vue'
+import { setSoundPlayer, withDialogSound, withToastSound } from '@xihan-ui/vue/sound'
+
+// 换主题、接用户偏好；不设置就用一个默认播放器
+setSoundPlayer(createSoundPlayer({ theme: softSoundTheme, enabled: userPrefs.sound }))
+
+export const toast = withToastSound(createToastService())
+export const dialog = withDialogSound(createDialogService())
+
+toast.success('已保存') // 视觉 + 听觉，返回值与原服务完全一致
+await dialog.confirm({ title: '删除这条记录？' })
+```
+
+默认映射：
+
+| 调用 | 声音 |
+| --- | --- |
+| `toast.info/success/warning/error` | 同名语义声 |
+| `toast.loading` | 不发声（加载中只是过渡态） |
+| `toast.update(id, { type })` | 新类型的声音，`loading` 除外——上传完成那一刻该响，改文案不该响 |
+| `dialog.confirm` | `open` |
+| `dialog.info/success/warning/error` | 同名语义声 |
+| 关闭、消失 | 不发声 |
+
+逐项改写，给 `null` 即这一类静音：
+
+```ts
+withToastSound(createToastService(), {
+  sounds: { success: 'complete', error: null },
+})
+```
+
+这两个服务挂在 body 下的独立应用里，拿不到组件树的注入——音效开关要么走 `setSoundPlayer` 的那个播放器，要么给 `options.player` 单独传一个。
+
+服务默认还会在**首次用户手势**时解锁音频上下文（`autoUnlock`），因为通知常来自请求拦截器或推送这类非手势场景，不解锁就发不出声。
+
+### 给单个元素配声
+
+```vue
+<script setup lang="ts">
+import { vSound } from '@xihan-ui/vue/sound'
+</script>
+
+<template>
+  <XhButton v-sound>提交</XhButton>
+  <XhButton v-sound="'send'">发送</XhButton>
+  <div v-sound="{ sound: 'toggle-on', volume: 0.6 }" />
+</template>
+```
+
+指令挂在 `click` 上而不是 `pointerdown`：键盘敲 Enter / Space 激活也要响，按下又拖开取消的那种不该响。带 `disabled` / `aria-disabled` / `data-disabled` 的元素不发声。
+
+`@xihan-ui/sound` 是**可选** peer：不装它，主入口一行都不引，应用里不会多出一个音频引擎。
+
 ## 自动播放策略
 
 浏览器要求用户先与页面交互，音频上下文才允许出声。播放器对此的态度：
