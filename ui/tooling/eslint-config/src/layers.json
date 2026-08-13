@@ -64,7 +64,8 @@
         "engine/position",
         "engine/code-highlight",
         "design/tokens",
-        "features/backgrounds"
+        "features/backgrounds",
+        "features/sound"
       ]
     },
     "adapters/web-components": {
