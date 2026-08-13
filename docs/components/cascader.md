@@ -94,6 +94,12 @@ trigger 部件渲染的就是原生按钮，模板 ref 拿到它即可 focus / b
 
 <XhDemo src="cascader/15-imperative-focus" />
 
+### 搜索
+
+searchable 让 XhCascaderInput 可用：输入后整条路径连缀过滤，XhCascaderSearchList 的候选替换列视图；上下键走候选、Enter 选中、Escape 先清词再收浮层
+
+<XhDemo src="cascader/16-search" />
+
 ## 产物
 
 | 层 | 值 |
@@ -108,7 +114,7 @@ trigger 部件渲染的就是原生按钮，模板 ref 拿到它即可 focus / b
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="cascader"`：`root` · `label` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · **`column`** · **`item`** · `item-text` · `item-indicator`
+`data-scope="cascader"`：`root` · `label` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · `input` · `search-list` · `search-item` · **`column`** · **`item`** · `item-text` · `item-indicator`
 
 ## Props
 
@@ -122,6 +128,7 @@ trigger 部件渲染的就是原生按钮，模板 ref 拿到它即可 focus / b
 | `expandTrigger` | `CascaderExpandTrigger` |  | 子列由什么展开，默认 click。 |
 | `changeOnSelect` | `boolean` |  | 中间层（分支）也能落值。关掉时点分支只展开子列，不改选中值。 |
 | `multiple` | `boolean` |  | 多选：选中是路径集合，选中后浮层不收起、焦点留在列里以便接着挑。 |
+| `searchable` | `boolean` |  | 开启搜索：input 部件可用，输入后整条路径连缀过滤、候选替换列视图。 |
 | `cascade` | `boolean` |  | 多选下父子级联勾选：点分支整枝传导、子全勾父勾、部分勾中半选， 禁用子树整棵冻结。默认 false（按路径原样翻转）；单选下无效。 |
 | `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾中节点。 |
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 用原生 disabled，浮层展不开。 |
@@ -143,7 +150,7 @@ trigger 部件渲染的就是原生按钮，模板 ref 拿到它即可 focus / b
 
 **状态**：`open` · `closed`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.FOCUS` · `ITEM.EXPAND` · `ITEM.LOST` · `ITEM.SELECT` · `VALUE.SET` · `VALUE.CLEAR` · `PATH.SET`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `ITEM.FOCUS` · `ITEM.EXPAND` · `ITEM.LOST` · `ITEM.SELECT` · `VALUE.SET` · `VALUE.CLEAR` · `PATH.SET` · `INPUT.CHANGE` · `SEARCH.HIGHLIGHT`
 
 **判据**：`isOpenControlled` · `isMultiple` · `staysOpenOnSelect`
 
@@ -172,6 +179,11 @@ trigger 部件渲染的就是原生按钮，模板 ref 拿到它即可 focus / b
 | `isIndeterminate` | `(value: string) => boolean` | 级联模式下该分支是否半选（有效叶后代有勾有不勾）；非级联恒 false。 |
 | `isActive` | `(value: string) => boolean` | 该条目是否落在展开路径上（它的子列开着，或它自己就是最后一站）。 |
 | `isVisible` | `(value: string) => boolean` | 该条目此刻是否落在某个可见列里。 |
+| `searching` | `boolean` | 正处在搜索视图（开了 searchable 且输入非空）：列视图让位给候选列表。 |
+| `inputValue` | `string` | 搜索框里的原始串。 |
+| `searchResults` | `readonly CascaderSearchResult[]` | 过滤后的候选：整条路径连缀匹配，带 pathKey 与禁用标记。 |
+| `searchHighlightIndex` | `number` | 候选里的虚拟高亮下标（已夹进候选长度）；没有候选为 -1。 |
+| `setInputValue` | `(next: string) => void` |  |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string[][]) => void` |  |
 | `setActivePath` | `(next: string[]) => void` |  |
@@ -185,6 +197,9 @@ trigger 部件渲染的就是原生按钮，模板 ref 拿到它即可 focus / b
 | `getClearTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
+| `getInputProps` | `() => T['input']` | 搜索框：放在 content 顶部；输入即过滤，上下键走候选、Enter 选中、Escape 先清词。 |
+| `getSearchListProps` | `() => T['element']` | 候选列表容器；不在搜索视图时带 hidden。 |
+| `getSearchItemProps` | `(props: CascaderSearchItemProps) => T['element']` | 一条候选：身份是整条路径；点按选中（与点列内条目同一语义）。 |
 | `getColumnProps` | `(props: CascaderColumnProps) => T['element']` |  |
 | `getItemProps` | `(props: CascaderItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: CascaderItemProps) => T['element']` |  |

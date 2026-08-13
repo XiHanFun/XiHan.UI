@@ -41,9 +41,9 @@
 | [复选框组](./checkbox-group) | `checkbox-group` | 7 | 3 | 8 |
 | [单选组](./radio-group) | `radio-group` | 6 | 4 | 7 |
 | [开关](./switch) | `switch` | 3 | 1 | 11 |
-| [滑块](./slider) | `slider` | 7 | 6 | 11 |
+| [滑块](./slider) | `slider` | 10 | 6 | 11 |
 | [评分](./rating) | `rating` | 5 | 5 | 9 |
-| [选择器](./select) | `select` | 11 | 13 | 17 |
+| [选择器](./select) | `select` | 15 | 13 | 18 |
 | [列表框](./listbox) | `listbox` | 8 | 10 | 7 |
 | [组合框](./combobox) | `combobox` | 15 | 14 | 14 |
 | [级联选择](./cascader) | `cascader` | 12 | 12 | 15 |

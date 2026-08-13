@@ -5548,6 +5548,80 @@
   }
 }
 
+/* —— 搜索：输入框横占整行排在列上方，候选列表替换列视图 —— */
+[data-scope='cascader'][data-part='content']:has([data-part='input']:not([hidden])) {
+  flex-wrap: wrap;
+}
+
+[data-scope='cascader'][data-part='input'] {
+  flex-basis: 100%;
+  min-inline-size: 0;
+  padding-block: var(--xh-space-2);
+  padding-inline: var(--xh-control-px-sm);
+  border: none;
+  border-block-end: var(--xh-stroke-thin) solid var(--xh-cascader-content-border, var(--xh-border-default));
+  border-start-start-radius: inherit;
+  border-start-end-radius: inherit;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: var(--xh-text-body-size);
+  line-height: var(--xh-leading-normal);
+}
+
+[data-scope='cascader'][data-part='input']:focus-visible {
+  outline: none;
+}
+
+[data-scope='cascader'][data-part='input'][hidden] {
+  display: none;
+}
+
+[data-scope='cascader'][data-part='search-list'] {
+  display: flex;
+  flex-basis: 100%;
+  flex-direction: column;
+  max-block-size: var(--xh-cascader-search-max-h, 16rem);
+  padding: var(--xh-space-1);
+  overflow-y: auto;
+}
+
+[data-scope='cascader'][data-part='search-list'][hidden] {
+  display: none;
+}
+
+/* 搜索视图里列整体让位 */
+[data-scope='cascader'][data-part='content'][data-searching] [data-part='column'] {
+  display: none;
+}
+
+[data-scope='cascader'][data-part='search-item'] {
+  padding-block: var(--xh-space-2);
+  padding-inline: var(--xh-control-px-sm);
+  overflow: hidden;
+  border-radius: var(--xh-shape-control);
+  font-size: var(--xh-text-body-size);
+  line-height: var(--xh-leading-none);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 候选的虚拟高亮与列内条目同一张底 */
+[data-scope='cascader'][data-part='search-item'][data-highlighted]:not([data-disabled]) {
+  background: var(--xh-cascader-row-bg-highlight, var(--xh-bg-subtle-hover));
+}
+
+[data-scope='cascader'][data-part='search-item'][data-disabled] {
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+[data-scope='cascader'][data-part='search-item'][hidden] {
+  display: none;
+}
+
 /* styles/checkbox.css */
 [data-scope='checkbox'][data-part='root'] {
   /* 尺寸档只换方框边长这一个私有槽，勾的字号按边长的比例跟着走；

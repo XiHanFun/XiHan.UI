@@ -21,6 +21,8 @@ export {
   findCascaderItemEl,
 } from './cascader.machine'
 export { cascaderMeta } from './cascader.meta'
+export { cascaderFilterCandidates, cascaderSearchCandidates } from './cascader.search'
+export type { CascaderSearchCandidate } from './cascader.search'
 export type {
   CascaderApi,
   CascaderColumn,
@@ -34,6 +36,8 @@ export type {
   CascaderOpenChangeDetails,
   CascaderRefs,
   CascaderSchema,
+  CascaderSearchItemProps,
+  CascaderSearchResult,
   CascaderValue,
   CascaderValueChangeDetails,
 } from './cascader.types'
