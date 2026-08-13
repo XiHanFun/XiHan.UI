@@ -73,8 +73,8 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @csspart indicator - 展开指示符（aria-hidden，data-state 随开合）
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位且对读屏隐藏
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
- * @csspart content - 浮层壳（焦点域与消解层的根节点），收起时带 hidden
- * @csspart tree - role=tree 容器，键盘在此收口，也是没有锚点时的 Tab 兜底位
+ * @csspart content - 浮层壳（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
+ * @csspart tree - role=tree 容器，没有锚点时的 Tab 兜底位与落焦点
  * @csspart item - role=treeitem 叶子，须自带 value 属性标识身份
  * @csspart item-text - 叶子文本
  * @csspart item-indicator - 叶子选中标记（aria-hidden）

@@ -771,6 +771,29 @@ export const treeSelectSuite: ConformanceSuite = {
       ],
     },
     {
+      // 浮层壳自带内边距又可被点中（tabindex=-1）：焦点歇在它身上时按键从壳发出，
+      // 里层的树收不到——键盘必须收在壳上
+      name: '焦点歇在浮层壳上：方向键照样进得去树',
+      spec: { apg: `${APG_TREE}#keyboardinteraction` },
+      props: props({ defaultExpandedValue: ['src'] }),
+      covers: ['tree-select.kbd.next'],
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { activeElement: 'tree' } },
+        // 点在壳的内边距上就是这个效果
+        { kind: 'focus', part: 'content' },
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          expect: {
+            activeElement: { part: 'branch[0]', exact: true },
+            parts: { 'branch[0]': { 'tabindex': '0', 'data-highlighted': '' } },
+            events: [],
+          },
+        },
+      ],
+    },
+    {
       name: 'Tab 收起：浮层让开但焦点不归还 trigger',
       spec: { apg: `${APG_COMBOBOX}#keyboardinteraction` },
       props: props(),
