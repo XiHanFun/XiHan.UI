@@ -13,11 +13,10 @@
     --xh-_select-trigger-border: var(--xh-border-control);
     --xh-_select-trigger-border-hover: var(--xh-border-control-hover);
 
-    /* 强调色随语气走，只落在聚焦与选中上，正文文字色不动。
-       没写 data-tone 时 --xh-_tone 没被声明，三处都退回原来的取值 */
+    /* 聚焦环恒用固定环色；强调色随语气走，只落在勾选标记与选中文字上，正文文字色不动。
+       没写 data-tone 时 --xh-_tone 没被声明，两处都退回原来的取值 */
     --xh-_select-ring: var(--xh-ring-focus);
     --xh-_select-accent: var(--xh-_tone, var(--xh-bg-brand));
-    --xh-_select-item-highlight-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
     --xh-_select-item-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 
     display: inline-flex;
@@ -310,8 +309,8 @@
     display: flex;
     align-items: center;
     gap: var(--xh-select-item-gap, var(--xh-_select-gap));
-    padding-block: var(--xh-select-item-py, var(--xh-space-1));
-    padding-inline: var(--xh-select-item-px, var(--xh-control-px-sm));
+    padding-block: var(--xh-select-item-py, var(--xh-space-1_5));
+    padding-inline: var(--xh-select-item-px, var(--xh-control-px-md));
     border-radius: var(--xh-select-item-radius, var(--xh-shape-control));
     color: var(--xh-select-item-fg, var(--xh-fg-default));
     font-size: var(--xh-select-item-font-size, var(--xh-_select-font-size));
@@ -320,11 +319,14 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 键盘高亮与指针高亮共用一套底色：条目本身承载焦点，不另画描边 */
+  /* 悬停与键盘锚点共用中性灰轻档：条目本身承载焦点，不另画描边 */
   [data-scope='select'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
-    background: var(--xh-select-item-bg-highlight, var(--xh-_select-item-highlight-bg));
+    background: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
   }
 
   /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，

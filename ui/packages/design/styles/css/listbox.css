@@ -74,7 +74,7 @@
   [data-scope='listbox'][data-part='item-group-label'] {
     display: block;
     padding-block: var(--xh-listbox-group-label-py, var(--xh-space-1));
-    padding-inline: var(--xh-listbox-group-label-px, var(--xh-control-px-sm));
+    padding-inline: var(--xh-listbox-group-label-px, var(--xh-control-px-md));
     color: var(--xh-listbox-group-label-fg, var(--xh-fg-subtle));
     font-size: var(--xh-listbox-group-label-font-size, var(--xh-font-size-xs));
     font-weight: var(--xh-listbox-group-label-font-weight, var(--xh-font-weight-medium));
@@ -94,8 +94,8 @@
     display: flex;
     align-items: center;
     gap: var(--xh-listbox-item-gap, var(--xh-control-gap-md));
-    padding-block: var(--xh-listbox-item-py, var(--xh-space-1));
-    padding-inline: var(--xh-listbox-item-px, var(--xh-control-px-sm));
+    padding-block: var(--xh-listbox-item-py, var(--xh-space-1_5));
+    padding-inline: var(--xh-listbox-item-px, var(--xh-control-px-md));
     border-radius: var(--xh-listbox-item-radius, var(--xh-shape-control));
     color: var(--xh-listbox-item-fg, var(--xh-fg-default));
     font-size: var(--xh-listbox-item-font-size, var(--xh-text-body-size));
@@ -104,6 +104,9 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 条目可以按需收起（过滤掉的选项），有 display 就得补这条 */
@@ -111,14 +114,10 @@
     display: none;
   }
 
-  /* 指针划过与键盘高亮分两档底色：hover 浅一档、随指针即走即消，
-     data-highlighted 跟的是连接层记的焦点条目，与选中互相独立 */
-  [data-scope='listbox'][data-part='item']:not([data-disabled]):hover {
+  /* 悬停与键盘锚点共用中性灰轻档：data-highlighted 跟的是连接层记的焦点条目，
+     与选中互相独立 */
+  [data-scope='listbox'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
     background: var(--xh-listbox-item-bg-hover, var(--xh-bg-subtle));
-  }
-
-  [data-scope='listbox'][data-part='item']:not([data-disabled])[data-highlighted] {
-    background: var(--xh-listbox-item-bg-highlight, var(--xh-bg-subtle-hover));
   }
 
   /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，

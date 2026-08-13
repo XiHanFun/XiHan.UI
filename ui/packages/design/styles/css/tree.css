@@ -70,8 +70,8 @@
     display: flex;
     align-items: center;
     gap: var(--xh-tree-row-gap, var(--xh-control-gap-md));
-    padding-block: var(--xh-tree-row-py, var(--xh-space-1));
-    padding-inline: var(--xh-tree-row-px, var(--xh-control-px-sm));
+    padding-block: var(--xh-tree-row-py, var(--xh-space-1_5));
+    padding-inline: var(--xh-tree-row-px, var(--xh-control-px-md));
     border-radius: var(--xh-tree-row-radius, var(--xh-shape-control));
     color: var(--xh-tree-row-fg, var(--xh-fg-default));
     font-size: var(--xh-tree-row-font-size, var(--xh-text-body-size));
@@ -80,6 +80,9 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='tree'][data-part='item'][hidden],
@@ -87,16 +90,11 @@
     display: none;
   }
 
-  /* 指针悬停是轻一档的洗底，键盘高亮更深：两者可同时出现且分得清谁是谁。
-     data-highlighted 跟的是连接层记的焦点行，与选中互相独立 */
-  [data-scope='tree'][data-part='item']:not([data-disabled]):hover,
-  [data-scope='tree'][data-part='branch-control']:not([data-disabled]):hover {
+  /* 悬停与键盘锚点共用中性灰轻档：data-highlighted 跟的是连接层记的焦点行，
+     与选中互相独立，键盘落焦另有聚焦环标记位置 */
+  [data-scope='tree'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]),
+  [data-scope='tree'][data-part='branch-control']:not([data-disabled]):is(:hover, [data-highlighted]) {
     background: var(--xh-tree-row-bg-hover, var(--xh-bg-subtle));
-  }
-
-  [data-scope='tree'][data-part='item']:not([data-disabled])[data-highlighted],
-  [data-scope='tree'][data-part='branch-control']:not([data-disabled])[data-highlighted] {
-    background: var(--xh-tree-row-bg-highlight, var(--xh-bg-subtle-hover));
   }
 
   /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
