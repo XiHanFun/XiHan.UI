@@ -308,6 +308,8 @@ export default defineConfig({
         "@xihan-ui/machine",
         "@xihan-ui/position",
         "@xihan-ui/code-highlight",
+        "@xihan-ui/sound",
+        "@xihan-ui/vue/sound",
       ],
     },
   },

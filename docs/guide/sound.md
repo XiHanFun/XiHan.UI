@@ -4,6 +4,10 @@
 
 它是**独立**的：不依赖任何适配器，任何框架（或没有框架）都直接装、直接用。
 
+下面的示例都会真的出声，先把音量调小一点。
+
+<XhDemo src="sound/01-play" />
+
 ## 声音是配方，不是文件
 
 一段声音是一份可 JSON 序列化的声明式配方（`SoundSpec`）：若干并行发声层，每层一条增益包络，可带音高包络、滤波与混响送出。
@@ -28,7 +32,10 @@ const ding: SoundSpec = {
 }
 ```
 
-配方是纯数据，这带来三件事：主题可以整套替换、用户配置可以持久化再回放、调音界面可以直接编辑它。播放前配方一律过一道钳制（`clampSpec`）：越界钳住、类型不对回落、未知形态丢弃，坏数据不炸播放、也不会产出刺耳或超长的声音。
+配方是纯数据，这带来三件事：主题可以整套替换、用户配置可以持久化再回放、调音界面可以直接编辑它——比如下面这个：
+
+<XhDemo src="sound/04-designer" />
+播放前配方一律过一道钳制（`clampSpec`）：越界钳住、类型不对回落、未知形态丢弃，坏数据不炸播放、也不会产出刺耳或超长的声音。
 
 ## 语义名与主题
 
@@ -101,6 +108,8 @@ toast.success('已保存') // 视觉 + 听觉，返回值与原服务完全一�
 await dialog.confirm({ title: '删除这条记录？' })
 ```
 
+<XhDemo src="sound/02-toast" />
+
 默认映射：
 
 | 调用 | 声音 |
@@ -126,17 +135,7 @@ withToastSound(createToastService(), {
 
 ### 给单个元素配声
 
-```vue
-<script setup lang="ts">
-import { vSound } from '@xihan-ui/vue/sound'
-</script>
-
-<template>
-  <XhButton v-sound>提交</XhButton>
-  <XhButton v-sound="'send'">发送</XhButton>
-  <div v-sound="{ sound: 'toggle-on', volume: 0.6 }" />
-</template>
-```
+<XhDemo src="sound/03-directive" />
 
 指令挂在 `click` 上而不是 `pointerdown`：键盘敲 Enter / Space 激活也要响，按下又拖开取消的那种不该响。带 `disabled` / `aria-disabled` / `data-disabled` 的元素不发声。
 

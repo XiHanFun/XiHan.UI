@@ -27,6 +27,7 @@
     "rebuild": "pnpm run clean && pnpm run build"
   },
   "dependencies": {
+    "@xihan-ui/sound": "link:../ui/packages/features/sound",
     "@xihan-ui/styles": "link:../ui/packages/design/styles",
     "@xihan-ui/vue": "link:../ui/packages/adapters/vue",
     "vue": "^3.5.39",
