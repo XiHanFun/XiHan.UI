@@ -1,7 +1,7 @@
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
-import type { CascaderApi, CascaderNodeMeta, CascaderSchema, CascaderSearchResult } from './cascader.types'
+import type { CascaderApi, CascaderNodeMeta, CascaderSchema, CascaderSearchResult, CascaderTranslations } from './cascader.types'
 import { cascadeState, focusItem, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/behavior'
 import { contains, dataAttr, isComposingEvent } from '@xihan-ui/kernel'
 import { cascaderAnatomy } from './cascader.anatomy'
@@ -168,6 +168,12 @@ export function connectCascader<T extends PropTypes>(
       send({ type: 'ITEM.SELECT', path: result.path })
   }
 
+  // 空态占位的文案：实例覆盖并入默认；露不露面由 getEmptyProps 按当前视图判定
+  const translations: CascaderTranslations = {
+    empty: prop('translations')?.empty ?? 'No data',
+    noMatch: prop('translations')?.noMatch ?? 'No matches',
+  }
+
   return {
     open,
     collection,
@@ -188,6 +194,7 @@ export function connectCascader<T extends PropTypes>(
     inputValue,
     searchResults,
     searchHighlightIndex,
+    translations,
     isSelected,
     isIndeterminate,
     isActive,
@@ -325,6 +332,8 @@ export function connectCascader<T extends PropTypes>(
       'data-placement': placement,
       // 皮肤据此把列视图让位给候选列表
       'data-searching': dataAttr(searching),
+      // 根列没有条目（collection 为空）：皮肤据此把列让位给空态占位
+      'data-empty': dataAttr(collection.length === 0),
       // 收起时留在 DOM 只隐藏，不卸载作者节点
       'hidden': !open || undefined,
       'onKeyDown': (event: KeyboardEvent) => {
@@ -467,9 +476,11 @@ export function connectCascader<T extends PropTypes>(
 
     getSearchListProps: () => normalize.element({
       ...parts['search-list'].attrs,
-      id: ids['search-list'],
-      role: 'listbox',
-      hidden: !searching || undefined,
+      'id': ids['search-list'],
+      'role': 'listbox',
+      'hidden': !searching || undefined,
+      // 无候选：皮肤据此收掉列表自身的占位，空态由 empty 部件出面
+      'data-empty': dataAttr(searchResults.length === 0),
     }),
 
     getSearchItemProps: ({ path }) => {
@@ -493,6 +504,12 @@ export function connectCascader<T extends PropTypes>(
         },
       })
     },
+
+    // 空态占位：搜索视图看候选、列视图看根列，哪边有条目就藏起来
+    getEmptyProps: () => normalize.element({
+      ...parts.empty.attrs,
+      hidden: (searching ? searchResults.length > 0 : collection.length > 0) || undefined,
+    }),
 
     getColumnProps: (column) => {
       // 子列的名字取展开它的那个条目；父条目不在任何可见列里时退回组件标题，避免悬空 IDREF

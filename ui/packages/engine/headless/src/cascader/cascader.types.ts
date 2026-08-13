@@ -85,6 +85,14 @@ export type CascaderExpandTrigger = 'click' | 'hover'
  */
 export type CascaderValue = readonly string[] | readonly (readonly string[])[]
 
+/** 空态占位的内建文案，默认英文。 */
+export interface CascaderTranslations {
+  /** collection 为空（根列没有条目）时的占位文案。 */
+  empty: string
+  /** 搜索无匹配（候选为空）时的占位文案。 */
+  noMatch: string
+}
+
 // 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter；缺省时副作用短路，机器状态照常转移。
 export interface CascaderRefs {
   config: RuntimeConfig | null
@@ -153,6 +161,8 @@ export interface CascaderSchema extends MachineSchema {
     readOnly?: boolean
     /** 校验失败：trigger 报 aria-invalid，各角色节点带 data-invalid。 */
     invalid?: boolean
+    /** 空态占位的文案覆盖，默认英文。 */
+    translations?: Partial<CascaderTranslations>
     /** 形态：outline / subtle / ghost，决定触发框的描边与底色怎么用。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中用哪族颜色。 */
@@ -292,6 +302,8 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   searchResults: readonly CascaderSearchResult[]
   /** 候选里的虚拟高亮下标（已夹进候选长度）；没有候选为 -1。 */
   searchHighlightIndex: number
+  /** 空态占位的文案：实例覆盖并入默认后的完整一份。 */
+  translations: CascaderTranslations
   setInputValue: (next: string) => void
   setOpen: (next: boolean) => void
   setValue: (next: string[][]) => void
@@ -313,6 +325,8 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   getSearchListProps: () => T['element']
   /** 一条候选：身份是整条路径；点按选中（与点列内条目同一语义）。 */
   getSearchItemProps: (props: CascaderSearchItemProps) => T['element']
+  /** 空态占位：当前视图没有条目（搜索无候选，或根列没有条目）时露面，其余时候带 hidden。 */
+  getEmptyProps: () => T['element']
   getColumnProps: (props: CascaderColumnProps) => T['element']
   getItemProps: (props: CascaderItemProps) => T['element']
   getItemTextProps: (props: CascaderItemProps) => T['element']

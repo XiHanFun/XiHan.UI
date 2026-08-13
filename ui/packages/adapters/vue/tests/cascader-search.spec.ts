@@ -87,6 +87,7 @@ function el(selector: string): HTMLElement {
 const INPUT = '[data-scope="cascader"][data-part="input"]'
 const LIST = '[data-scope="cascader"][data-part="search-list"]'
 const CONTENT = '[data-scope="cascader"][data-part="content"]'
+const EMPTY = '[data-scope="cascader"][data-part="empty"]'
 
 async function openAndType(query: string): Promise<void> {
   el('[data-scope="cascader"][data-part="trigger"]').click()
@@ -161,5 +162,29 @@ describe('cascader 搜索', () => {
     await openAndType('杭州')
     const items = [...document.querySelectorAll<HTMLElement>('[data-part="search-item"]')]
     expect(items.map(i => i.textContent)).toContain('浙江 / 杭州')
+  })
+
+  it('无匹配：候选列表标 data-empty，空态占位露面并给缺省文案', async () => {
+    mountCascader()
+    await tick()
+    await openAndType('苏州')
+    expect(document.querySelectorAll('[data-part="search-item"]').length).toBe(0)
+    expect(el(LIST).getAttribute('data-empty')).toBe('')
+    const empty = el(EMPTY)
+    expect(empty.hasAttribute('hidden')).toBe(false)
+    expect(empty.textContent).toBe('No matches')
+  })
+
+  it('有候选时空态占位收着；translations 换无匹配文案', async () => {
+    mountCascader({ translations: { noMatch: '未找到匹配地区' } })
+    await tick()
+    await openAndType('西湖')
+    expect(el(EMPTY).hasAttribute('hidden')).toBe(true)
+    const input = el(INPUT) as HTMLInputElement
+    input.value = '苏州'
+    input.dispatchEvent(new Event('input', { bubbles: true }))
+    await tick()
+    expect(el(EMPTY).hasAttribute('hidden')).toBe(false)
+    expect(el(EMPTY).textContent).toBe('未找到匹配地区')
   })
 })

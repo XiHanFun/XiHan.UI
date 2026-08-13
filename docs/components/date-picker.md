@@ -57,7 +57,7 @@ show-time 让值升格为一体化 datetime：日历右侧多出时/分列（XhD
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-date-picker>` |
-| Vue 组件 | `XhDatePickerCalendar` `XhDatePickerCell` `XhDatePickerCellTrigger` `XhDatePickerClearTrigger` `XhDatePickerContent` `XhDatePickerControl` `XhDatePickerGrid` `XhDatePickerGridBody` `XhDatePickerGridHead` `XhDatePickerHeader` `XhDatePickerHeading` `XhDatePickerHiddenInput` `XhDatePickerInput` `XhDatePickerLabel` `XhDatePickerNextTrigger` `XhDatePickerPositioner` `XhDatePickerPrevTrigger` `XhDatePickerRoot` `XhDatePickerSegment` `XhDatePickerTrigger` `XhDatePickerWeekDay` `XhDatePickerWeekRow` |
+| Vue 组件 | `XhDatePickerCalendar` `XhDatePickerCell` `XhDatePickerCellTrigger` `XhDatePickerClearTrigger` `XhDatePickerConfirmTrigger` `XhDatePickerContent` `XhDatePickerControl` `XhDatePickerGrid` `XhDatePickerGridBody` `XhDatePickerGridHead` `XhDatePickerHeader` `XhDatePickerHeading` `XhDatePickerHiddenInput` `XhDatePickerInput` `XhDatePickerLabel` `XhDatePickerNextTrigger` `XhDatePickerPositioner` `XhDatePickerPrevTrigger` `XhDatePickerRoot` `XhDatePickerSegment` `XhDatePickerTimePanel` `XhDatePickerTrigger` `XhDatePickerWeekDay` `XhDatePickerWeekRow` |
 | 组合式函数 | `useDatePicker` |
 | 状态机 | `datePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/date-picker.css` |

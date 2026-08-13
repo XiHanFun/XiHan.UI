@@ -74,10 +74,11 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @csspart indicator - 展开指示符（aria-hidden，data-state 随开合）
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位且对读屏隐藏
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
- * @csspart content - 浮层壳（焦点域与消解层的根节点），键盘在此收口，收起时带 hidden
+ * @csspart content - 浮层壳（焦点域与消解层的根节点），键盘在此收口，收起时带 hidden；根列没有条目时带 data-empty
  * @csspart input - 搜索框（content 顶部）；没开 searchable 时带 hidden。上下键走候选、Enter 选中、Escape 先清词
- * @csspart search-list - 候选列表容器；不在搜索视图时带 hidden
+ * @csspart search-list - 候选列表容器；不在搜索视图时带 hidden，无候选时带 data-empty
  * @csspart search-item - 一条候选，须用 value 属性写整条路径的 JSON 数组串（如 value='["a","b"]'）；词换了不匹配的带 hidden
+ * @csspart empty - 空态占位（可缺省）：搜索无候选或 collection 为空时露面，其余时候带 hidden；文案归作者
  * @csspart column - role=listbox 的一列，须自带 level 属性标识它是第几列；砍掉时带 hidden
  * @csspart item - role=option 的条目，须自带 value 属性标识身份；不在当前列里时带 hidden
  * @csspart item-text - 条目文本
@@ -304,6 +305,7 @@ export class XhCascaderElement extends XhElement {
     put('content', api.getContentProps() as Record<string, unknown>)
     put('input', api.getInputProps() as Record<string, unknown>)
     put('search-list', api.getSearchListProps() as Record<string, unknown>)
+    put('empty', api.getEmptyProps() as Record<string, unknown>)
 
     // 候选是多实例 part：身份用 value 属性自报整条路径（JSON 数组串，与 cascaderPathKey 同构）
     for (const el of this.getParts('search-item')) {

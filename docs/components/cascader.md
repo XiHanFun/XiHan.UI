@@ -60,7 +60,7 @@ collection 只认 value / label / disabled / children 这几个名字，后端�
 
 ### 条目自定义内容
 
-条目里放什么由作者定：文本两侧各加一段，是不是分支直接读 item 的 branch
+条目里放什么由作者定：文本后面加一段附加信息，分支箭头由皮肤自动画
 
 <XhDemo src="cascader/10-rich-item" />
 
@@ -96,7 +96,7 @@ trigger 部件渲染的就是原生按钮，模板 ref 拿到它即可 focus / b
 
 ### 搜索
 
-searchable 让 XhCascaderInput 可用：输入后整条路径连缀过滤，XhCascaderSearchList 的候选替换列视图；上下键走候选、Enter 选中、Escape 先清词再收浮层
+searchable 让 XhCascaderInput 可用：输入后整条路径连缀过滤，XhCascaderSearchList 的候选替换列视图；上下键走候选、Enter 选中、Escape 先清词再收浮层。无匹配（试试输入「苏州」）时空态占位露面，文案经 translations 覆盖
 
 <XhDemo src="cascader/16-search" />
 
@@ -114,7 +114,7 @@ searchable 让 XhCascaderInput 可用：输入后整条路径连缀过滤，XhCa
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="cascader"`：`root` · `label` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · `input` · `search-list` · `search-item` · **`column`** · **`item`** · `item-text` · `item-indicator`
+`data-scope="cascader"`：`root` · `label` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · `input` · `search-list` · `search-item` · **`column`** · **`item`** · `item-text` · `item-indicator` · `empty`
 
 ## Props
 
@@ -134,6 +134,7 @@ searchable 让 XhCascaderInput 可用：输入后整条路径连缀过滤，XhCa
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 用原生 disabled，浮层展不开。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开与浏览，但选中值改不动、也清不掉。 |
 | `invalid` | `boolean` |  | 校验失败：trigger 报 aria-invalid，各角色节点带 data-invalid。 |
+| `translations` | `Partial<CascaderTranslations>` |  | 空态占位的文案覆盖，默认英文。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发框的描边与底色怎么用。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定触发框与条目的几何档位。 |
@@ -183,6 +184,7 @@ searchable 让 XhCascaderInput 可用：输入后整条路径连缀过滤，XhCa
 | `inputValue` | `string` | 搜索框里的原始串。 |
 | `searchResults` | `readonly CascaderSearchResult[]` | 过滤后的候选：整条路径连缀匹配，带 pathKey 与禁用标记。 |
 | `searchHighlightIndex` | `number` | 候选里的虚拟高亮下标（已夹进候选长度）；没有候选为 -1。 |
+| `translations` | `CascaderTranslations` | 空态占位的文案：实例覆盖并入默认后的完整一份。 |
 | `setInputValue` | `(next: string) => void` |  |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string[][]) => void` |  |
@@ -200,6 +202,7 @@ searchable 让 XhCascaderInput 可用：输入后整条路径连缀过滤，XhCa
 | `getInputProps` | `() => T['input']` | 搜索框：放在 content 顶部；输入即过滤，上下键走候选、Enter 选中、Escape 先清词。 |
 | `getSearchListProps` | `() => T['element']` | 候选列表容器；不在搜索视图时带 hidden。 |
 | `getSearchItemProps` | `(props: CascaderSearchItemProps) => T['element']` | 一条候选：身份是整条路径；点按选中（与点列内条目同一语义）。 |
+| `getEmptyProps` | `() => T['element']` | 空态占位：当前视图没有条目（搜索无候选，或根列没有条目）时露面，其余时候带 hidden。 |
 | `getColumnProps` | `(props: CascaderColumnProps) => T['element']` |  |
 | `getItemProps` | `(props: CascaderItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: CascaderItemProps) => T['element']` |  |
@@ -218,7 +221,7 @@ searchable 让 XhCascaderInput 可用：输入后整条路径连缀过滤，XhCa
 | `ArrowUp` | open, focus in content | 焦点移到当前列的上一个条目（禁用条目跳过；loop 默认开，首项回绕到末项） |
 | `Home` | open, focus in content | 焦点移到当前列的首个可用条目 |
 | `End` | open, focus in content | 焦点移到当前列的末个可用条目 |
-| `ArrowRight` | open, 焦点条目有子节点（dir=rtl 时改由 ArrowLeft 承担） | 焦点移进右边那一列的首个可用条目；叶子上什么都不做且不吞键 |
+| `ArrowRight` | open, 焦点条目有子节点（dir=rtl 时改由 ArrowLeft 承担） | 子列没开时先把它铺出来（焦点不动），已开时焦点移进它的首个可用条目；叶子上什么都不做且不吞键 |
 | `ArrowLeft` | open, 焦点不在根列（dir=rtl 时改由 ArrowRight 承担） | 焦点退回上一列的父条目，当前这一列随之收起；根列上什么都不做且不吞键 |
 | `Enter` / `Space` | open, 焦点条目未禁用 | 叶子：落值并收起浮层、焦点归还 trigger。分支：展开它的子列且浮层不收起，changeOnSelect 打开时同时落值 |
 | `Escape` | open | 收起浮层并把焦点归还 trigger，选中值不变 |

@@ -486,6 +486,11 @@
     display: none;
   }
 
+  /* 无候选时列表自身不占位，空态交给 empty 部件出面 */
+  [data-scope='cascader'][data-part='search-list'][data-empty] {
+    padding: 0;
+  }
+
   /* 搜索视图里列整体让位 */
   [data-scope='cascader'][data-part='content'][data-searching] [data-part='column'] {
     display: none;
@@ -517,6 +522,28 @@
   }
 
   [data-scope='cascader'][data-part='search-item'][hidden] {
+    display: none;
+  }
+
+  /* —— 空态：当前视图没有条目时由 empty 部件出面，文案由适配器或作者供给，皮肤只管排版 —— */
+  /* 根列没有条目时那条空列让位，占位面接管整个浮层 */
+  [data-scope='cascader'][data-part='content'][data-empty] [data-part='column'] {
+    display: none;
+  }
+
+  [data-scope='cascader'][data-part='empty'] {
+    display: flex;
+    flex: 1 1 100%;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: var(--xh-cascader-column-min-w, 7rem);
+    min-block-size: var(--xh-cascader-empty-min-h, 5rem);
+    padding: var(--xh-cascader-empty-p, var(--xh-space-3));
+    color: var(--xh-cascader-empty-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-cascader-row-font-size, var(--xh-_cascader-font-size));
+  }
+
+  [data-scope='cascader'][data-part='empty'][hidden] {
     display: none;
   }
 }
