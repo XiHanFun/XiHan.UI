@@ -17,6 +17,7 @@
       "@xihan-ui/code-highlight",
       "@xihan-ui/position",
       "@xihan-ui/backgrounds",
+      "@xihan-ui/sound",
       "@xihan-ui/icons"
     ]
   ],

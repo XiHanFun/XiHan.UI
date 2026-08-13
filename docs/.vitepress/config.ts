@@ -47,6 +47,7 @@ const guideChapters: [text: string, name: string][] = [
   ["诊断通道", "diagnostics"],
   ["AI 对话内核", "ai"],
   ["背景层", "backgrounds"],
+  ["声音层", "sound"],
   ["测试与质量门禁", "testing"],
 ];
 

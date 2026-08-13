@@ -92,6 +92,12 @@
         "engine/kernel"
       ]
     },
+    "features/sound": {
+      "level": 2,
+      "canDependOn": [
+        "engine/kernel"
+      ]
+    },
     "design/icons": {
       "level": 1,
       "canDependOn": []

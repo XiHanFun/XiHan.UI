@@ -21,6 +21,7 @@ export default {
         'backgrounds',
         'chat-stream',
         'markdown',
+        'sound',
         'vue',
         'web-components',
         // —— 工程 ——
