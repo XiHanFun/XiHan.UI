@@ -106,9 +106,4 @@
     inset-inline-start: calc(var(--xh-_tooltip-arrow-size) / -2);
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='tooltip'][data-part='content'] {
-      animation-duration: 0.01ms !important;
-    }
-  }
 }

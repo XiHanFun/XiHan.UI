@@ -3,7 +3,7 @@
   @keyframes xh-navigation-menu-in {
     from {
       opacity: 0;
-      translate: 0 -4px;
+      translate: 0 calc(-1 * var(--xh-motion-distance-sm));
     }
 
     to {

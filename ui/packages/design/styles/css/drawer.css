@@ -86,11 +86,6 @@
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='drawer'][data-part] {
-      animation-duration: 0.01ms !important;
-    }
-  }
 }
 
 @layer xihan.components {

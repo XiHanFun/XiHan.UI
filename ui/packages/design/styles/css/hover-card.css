@@ -142,9 +142,4 @@
     border-inline-start: 0;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='hover-card'][data-part='content'] {
-      animation-duration: 0.01ms !important;
-    }
-  }
 }

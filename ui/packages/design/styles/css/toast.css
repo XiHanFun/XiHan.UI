@@ -7,34 +7,31 @@
   @keyframes xh-toast-in {
     from {
       opacity: 0;
-      transform: translateY(8px) scale(0.98);
+      translate: 0 var(--xh-motion-distance-md);
+      scale: var(--xh-motion-scale-enter);
     }
 
     to {
       opacity: 1;
-      transform: none;
+      translate: 0 0;
+      scale: 1;
     }
   }
 
   @keyframes xh-toast-out {
     from {
       opacity: 1;
-      transform: none;
+      translate: 0 0;
+      scale: 1;
     }
 
     to {
       opacity: 0;
-      transform: translateY(4px) scale(0.96);
+      translate: 0 var(--xh-motion-distance-sm);
+      scale: var(--xh-motion-scale-enter);
     }
   }
 
-  /* 通知是自己冒出来的，用户没按任何键：减弱动效的诉求在这里比别处更硬。
-     !important 在低层里反而更强（重要声明的层序是反的），足以压住组件层的动画。 */
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='toast'][data-part] {
-      animation-duration: 0.01ms !important;
-    }
-  }
 }
 
 @layer xihan.components {
