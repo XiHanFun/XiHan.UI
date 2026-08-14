@@ -1,4 +1,4 @@
-// 提交规范：Conventional Commits。scope-enum 为手写数组（不再脚本生成，见 §16）。
+// 提交规范：Conventional Commits。scope-enum 为手写数组。
 export default {
   extends: ['@commitlint/config-conventional'],
   rules: {
@@ -12,6 +12,7 @@ export default {
         'kernel',
         'machine',
         'behavior',
+        'motion',
         'position',
         'code-highlight',
         'headless',
@@ -22,6 +23,7 @@ export default {
         'chat-stream',
         'markdown',
         'sound',
+        'animations',
         'vue',
         'web-components',
         // —— 工程 ——

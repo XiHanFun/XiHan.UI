@@ -1,7 +1,6 @@
 import type { NumberAnimationSchema } from './number-animation.types'
 import { setup } from '@xihan-ui/machine'
-import { frameLoop, frameNow } from '../shared/frame'
-import { isTweenDone, tweenValueAt } from '../shared/tween'
+import { frameLoop, frameNow, isTweenDone, tweenValueAt } from '@xihan-ui/motion'
 
 const { createMachine } = setup<NumberAnimationSchema>()
 

@@ -30,6 +30,12 @@
     "limit": "6.6 kB"
   },
   {
+    "name": "motion",
+    "path": "packages/engine/motion/dist/index.js",
+    "gzip": true,
+    "limit": "3 kB"
+  },
+  {
     "name": "position",
     "path": "packages/engine/position/dist/index.js",
     "gzip": true,
@@ -64,6 +70,12 @@
     "path": "packages/features/sound/dist/index.js",
     "gzip": true,
     "limit": "5 kB"
+  },
+  {
+    "name": "animations",
+    "path": "packages/features/animations/dist/index.js",
+    "gzip": true,
+    "limit": "3.9 kB"
   },
   {
     "name": "headless",

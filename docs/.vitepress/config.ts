@@ -48,6 +48,8 @@ const guideChapters: [text: string, name: string][] = [
   ["AI 对话内核", "ai"],
   ["背景层", "backgrounds"],
   ["声音层", "sound"],
+  ["动效原语", "motion"],
+  ["动画层", "animations"],
   ["测试与质量门禁", "testing"],
 ];
 
@@ -310,6 +312,8 @@ export default defineConfig({
         "@xihan-ui/code-highlight",
         "@xihan-ui/sound",
         "@xihan-ui/vue/sound",
+        "@xihan-ui/motion",
+        "@xihan-ui/animations",
       ],
     },
   },

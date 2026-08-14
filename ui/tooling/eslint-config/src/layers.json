@@ -15,11 +15,16 @@
       "level": 1,
       "canDependOn": []
     },
+    "engine/motion": {
+      "level": 1,
+      "canDependOn": []
+    },
     "engine/behavior": {
       "level": 2,
       "canDependOn": [
         "engine/kernel",
-        "engine/machine"
+        "engine/machine",
+        "engine/motion"
       ]
     },
     "engine/position": {
@@ -40,7 +45,8 @@
         "engine/kernel",
         "engine/machine",
         "engine/behavior",
-        "design/tokens"
+        "design/tokens",
+        "engine/motion"
       ]
     },
     "design/styles": {
@@ -65,7 +71,8 @@
         "engine/code-highlight",
         "design/tokens",
         "features/backgrounds",
-        "features/sound"
+        "features/sound",
+        "engine/motion"
       ]
     },
     "adapters/web-components": {
@@ -78,7 +85,8 @@
         "engine/position",
         "engine/code-highlight",
         "design/tokens",
-        "features/backgrounds"
+        "features/backgrounds",
+        "engine/motion"
       ]
     },
     "features/chat-stream": {
@@ -97,6 +105,13 @@
       "level": 2,
       "canDependOn": [
         "engine/kernel"
+      ]
+    },
+    "features/animations": {
+      "level": 2,
+      "canDependOn": [
+        "engine/kernel",
+        "engine/motion"
       ]
     },
     "design/icons": {
