@@ -1,10 +1,13 @@
-import type { LogProps, LogTranslations, ThreadSchema } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { LogApi, LogProps, LogTranslations, ThreadSchema } from '@xihan-ui/headless'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideLog, useLogContext } from './context'
 import { useLog } from './use-log'
+
+/** 默认插槽的载荷：行数与载入态、粘底状态，以及滚到底部的句柄。 */
+export type LogRootSlotProps = Pick<LogApi, 'rows' | 'loading' | 'atBottom' | 'sticking' | 'scrollToBottom'>
 
 export const XhLogRoot = defineComponent({
   name: 'XhLogRoot',
@@ -18,6 +21,9 @@ export const XhLogRoot = defineComponent({
   emits: {
     'stick-change': (_details: PayloadOf<ThreadSchema['props'], 'onStickChange'>) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: LogRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: ThreadSchema['props']['onStickChange'] = details => emit('stick-change', details)
     const ctx = useLog(withXhConfig('log', props) as LogProps, notify)

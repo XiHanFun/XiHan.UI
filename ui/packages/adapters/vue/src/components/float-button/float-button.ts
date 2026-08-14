@@ -1,4 +1,5 @@
 import type {
+  FloatButtonApi,
   FloatButtonExpandTrigger,
   FloatButtonNotifiers,
   FloatButtonPlacement,
@@ -6,12 +7,15 @@ import type {
   FloatButtonShape,
   FloatButtonTranslations,
 } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideFloatButton, useFloatButtonContext } from './context'
 import { useFloatButton } from './use-float-button'
+
+/** 默认插槽的载荷：展开的那一组此刻露不露面，以及改写展开状态的动作。 */
+export type FloatButtonRootSlotProps = Pick<FloatButtonApi, 'open' | 'setOpen'>
 
 /** 根节点是定位壳：把整组钉在视口一角，悬停展开时进出它才算数。 */
 export const XhFloatButtonRoot = defineComponent({
@@ -32,6 +36,9 @@ export const XhFloatButtonRoot = defineComponent({
     'open-change': (_details: PayloadOf<FloatButtonProps, 'onOpenChange'>) => true,
     'update:open': (_open: PayloadOf<FloatButtonProps, 'onOpenChange'>['open']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: FloatButtonRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: FloatButtonNotifiers = {
       onOpenChange: (details) => {

@@ -1,4 +1,5 @@
 import type {
+  TableApi,
   TableColumnDef,
   TableColumnProps,
   TableRowDef,
@@ -9,7 +10,7 @@ import type {
   TableSortDescriptor,
 } from '@xihan-ui/headless'
 import type { Direction, Size } from '@xihan-ui/kernel'
-import type { PropType, Ref } from 'vue'
+import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { TableContext } from './use-table'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
@@ -50,6 +51,27 @@ function reportRowFocus(ctx: TableContext, el: Ref<HTMLElement | null>, value: (
   })
 }
 
+/** 默认插槽的载荷：可见行与排序、选中、展开三态，以及逐行查询与改写它们的句柄。 */
+export type TableRootSlotProps = Pick<
+  TableApi,
+  | 'visibleRows'
+  | 'sort'
+  | 'selection'
+  | 'selectionState'
+  | 'expandedValue'
+  | 'focusedRow'
+  | 'empty'
+  | 'loading'
+  | 'isSelected'
+  | 'isExpanded'
+  | 'sortDirection'
+  | 'sortPriority'
+  | 'toggleSort'
+  | 'selectRow'
+  | 'toggleSelectAll'
+  | 'toggleExpandRow'
+>
+
 export const XhTableRoot = defineComponent({
   name: 'XhTableRoot',
   // 有机器侧兜底的 prop 一律 default: undefined，缺省值由 connect 与机器决定
@@ -80,6 +102,9 @@ export const XhTableRoot = defineComponent({
     'expanded-change': (_details: PayloadOf<TableProps, 'onExpandedChange'>) => true,
     'update:expanded': (_expanded: PayloadOf<TableProps, 'onExpandedChange'>['value']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: TableRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const onSortChange: TableProps['onSortChange'] = (details) => {
       emit('sort-change', details)

@@ -1,12 +1,15 @@
-import type { TooltipSchema } from '@xihan-ui/headless'
+import type { TooltipApi, TooltipSchema } from '@xihan-ui/headless'
 import type { Placement, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideTooltip, useTooltipContext } from './context'
 import { useTooltip } from './use-tooltip'
 
 type TooltipProps = TooltipSchema['props']
+
+/** 默认插槽的载荷：展开状态与开合方法。 */
+export type TooltipRootSlotProps = Pick<TooltipApi, 'open' | 'setOpen'>
 
 export const XhTooltipRoot = defineComponent({
   name: 'XhTooltipRoot',
@@ -26,6 +29,9 @@ export const XhTooltipRoot = defineComponent({
     'open-change': (_details: PayloadOf<TooltipProps, 'onOpenChange'>) => true,
     'update:open': (_open: PayloadOf<TooltipProps, 'onOpenChange'>['open']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: TooltipRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: TooltipProps['onOpenChange'] = (details) => {
       emit('open-change', details)

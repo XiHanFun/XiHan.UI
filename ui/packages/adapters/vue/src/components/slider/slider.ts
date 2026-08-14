@@ -1,12 +1,23 @@
-import type { SliderMark, SliderSchema, SliderValueTextDetails } from '@xihan-ui/headless'
+import type { SliderApi, SliderMark, SliderMarkMeta, SliderSchema, SliderValueTextDetails } from '@xihan-ui/headless'
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import { provideSlider, provideSliderThumb, useSliderContext, useSliderThumbContext } from './context'
 import { useSlider } from './use-slider'
 
 type SliderProps = SliderSchema['props']
+
+/** 默认插槽的载荷：当前值、逐个滑块的状态、已选区间与拖动标记，以及整份改值与单个滑块改值。 */
+export type SliderRootSlotProps = Pick<
+  SliderApi,
+  'value' | 'thumbs' | 'range' | 'dragging' | 'setValue' | 'setThumbValue'
+>
+
+/** mark 插槽的载荷：这一档刻度的呈现数据。 */
+export interface SliderMarksMarkSlotProps {
+  mark: SliderMarkMeta
+}
 
 export const XhSliderRoot = defineComponent({
   name: 'XhSliderRoot',
@@ -40,6 +51,9 @@ export const XhSliderRoot = defineComponent({
     'update:value': (_value: PayloadOf<SliderProps, 'onValueChange'>['value']) => true,
     'value-change-end': (_details: PayloadOf<SliderProps, 'onValueChangeEnd'>) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: SliderRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: SliderProps['onValueChange'] = (details) => {
       emit('value-change', details)
@@ -91,6 +105,9 @@ export const XhSliderTrack = defineComponent({
 
 export const XhSliderMarks = defineComponent({
   name: 'XhSliderMarks',
+  slots: Object as SlotsType<{
+    mark?: (props: SliderMarksMarkSlotProps) => VNode[]
+  }>,
   setup(_, { slots }) {
     const ctx = useSliderContext()
     // 刻度整组自动铺：圆点 + 文案（点文案跳值）；mark 插槽可换文案内容

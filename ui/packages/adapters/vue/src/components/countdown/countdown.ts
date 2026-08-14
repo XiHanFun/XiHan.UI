@@ -1,9 +1,11 @@
 import type {
+  CountdownApi,
   CountdownFinishDetails,
   CountdownLive,
+  CountdownParts,
   CountdownSchema,
 } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { connectCountdown, countdownMachine } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -12,6 +14,9 @@ import { slotPaints } from '../../runtime/slot-content'
 import { useMachine } from '../../runtime/use-machine'
 
 type CountdownProps = CountdownSchema['props']
+
+/** 默认插槽的载荷：量化后的剩余毫秒、按模板铺好的文本，以及拆开的时分秒毫秒。 */
+export type CountdownSlotProps = Pick<CountdownApi, 'value' | 'text'> & CountdownParts
 
 /**
  * 一段自己往下走的时间：剩余毫秒逐帧递减，按模板铺成时分秒写进根里。
@@ -32,6 +37,9 @@ export const XhCountdown = defineComponent({
   emits: {
     finish: (_details: PayloadOf<CountdownProps, 'onFinish'>) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: CountdownSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: CountdownProps['onFinish'] = (details: CountdownFinishDetails) => {
       emit('finish', details)

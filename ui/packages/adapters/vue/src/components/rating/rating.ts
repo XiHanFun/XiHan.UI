@@ -1,12 +1,28 @@
-import type { RatingSchema } from '@xihan-ui/headless'
+import type { RatingApi, RatingItemState, RatingSchema } from '@xihan-ui/headless'
 import type { Direction, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideRating, useRatingContext } from './context'
 import { useRating } from './use-rating'
 
 type RatingProps = RatingSchema['props']
+
+/** 默认插槽的载荷：评分与预览值、星星序号表，以及取单颗星状态与改写评分的句柄。 */
+export type RatingRootSlotProps = Pick<
+  RatingApi,
+  | 'value'
+  | 'hoveredValue'
+  | 'highlightedValue'
+  | 'count'
+  | 'empty'
+  | 'items'
+  | 'getItemState'
+  | 'setValue'
+>
+
+/** 条目默认插槽的载荷：这一颗星的选中、点亮与半亮状态。 */
+export type RatingItemSlotProps = RatingItemState
 
 export const XhRatingRoot = defineComponent({
   name: 'XhRatingRoot',
@@ -31,6 +47,9 @@ export const XhRatingRoot = defineComponent({
     'update:value': (_value: PayloadOf<RatingProps, 'onValueChange'>['value']) => true,
     'hover-change': (_details: PayloadOf<RatingProps, 'onHoverChange'>) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: RatingRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const onValueChange: RatingProps['onValueChange'] = (details) => {
       emit('value-change', details)
@@ -77,6 +96,9 @@ export const XhRatingItem = defineComponent({
     // 星序号，兼收字符串；往下传前统一归成数字
     value: { type: [Number, String] as PropType<number | string>, required: true },
   },
+  slots: Object as SlotsType<{
+    default?: (props: RatingItemSlotProps) => VNode[]
+  }>,
   setup(props, { slots }) {
     const ctx = useRatingContext()
     const item = computed(() => ({ value: Number(props.value) }))

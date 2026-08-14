@@ -1,6 +1,6 @@
-import type { TextFieldInputHost, TextFieldSchema } from '@xihan-ui/headless'
+import type { TextFieldApi, TextFieldInputHost, TextFieldSchema } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { autoSizeTextarea } from '@xihan-ui/headless'
 import { defineComponent, h, onMounted, ref, watch } from 'vue'
@@ -8,6 +8,12 @@ import { provideTextField, useTextFieldContext } from './context'
 import { useTextField } from './use-text-field'
 
 type TextFieldProps = TextFieldSchema['props']
+
+/** 默认插槽的载荷：当前值、值状态标志与写值方法。 */
+export type TextFieldRootSlotProps = Pick<
+  TextFieldApi,
+  'value' | 'empty' | 'atLimit' | 'canClear' | 'setValue' | 'clear'
+>
 
 export const XhTextFieldRoot = defineComponent({
   name: 'XhTextFieldRoot',
@@ -33,6 +39,9 @@ export const XhTextFieldRoot = defineComponent({
     'value-change': (_details: PayloadOf<TextFieldProps, 'onValueChange'>) => true,
     'update:value': (_value: PayloadOf<TextFieldProps, 'onValueChange'>['value']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: TextFieldRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: TextFieldProps['onValueChange'] = (details) => {
       emit('value-change', details)

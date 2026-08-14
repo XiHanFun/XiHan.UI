@@ -1,12 +1,18 @@
-import type { SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails } from '@xihan-ui/headless'
+import type { SelectApi, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType, VNode } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideSelect, provideSelectItem, provideSelectTag, useSelectContext, useSelectItemContext, useSelectTagContext } from './context'
 import { useSelect } from './use-select'
 
 type SelectProps = SelectSchema['props']
+
+/** 默认插槽的载荷：展开态、选中集合与显示文字、可见标签与被折起的个数，以及改展开、改值、清空、摘值四个动作。 */
+export type SelectRootSlotProps = Pick<
+  SelectApi,
+  'open' | 'value' | 'displayText' | 'tags' | 'overflowCount' | 'setOpen' | 'setValue' | 'clear' | 'deselect'
+>
 
 export const XhSelectRoot = defineComponent({
   name: 'XhSelectRoot',
@@ -43,6 +49,11 @@ export const XhSelectRoot = defineComponent({
     'update:value': (_value: string[]) => true,
     'update:open': (_open: boolean) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: SelectRootSlotProps) => VNode[]
+    label?: () => VNode[]
+    item?: (node: SelectNodeMeta) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notifyValue: SelectProps['onValueChange'] = (details) => {
       emit('value-change', details)

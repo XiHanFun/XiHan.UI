@@ -1,6 +1,6 @@
-import type { PopoverSchema } from '@xihan-ui/headless'
+import type { PopoverApi, PopoverSchema } from '@xihan-ui/headless'
 import type { Placement, Size } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -8,6 +8,9 @@ import { providePopover, usePopoverContext } from './context'
 import { usePopover } from './use-popover'
 
 type PopoverProps = PopoverSchema['props']
+
+/** 默认插槽的载荷：浮层的展开态与开合命令。 */
+export type PopoverRootSlotProps = Pick<PopoverApi, 'open' | 'setOpen'>
 
 export const XhPopoverRoot = defineComponent({
   name: 'XhPopoverRoot',
@@ -27,6 +30,9 @@ export const XhPopoverRoot = defineComponent({
     'open-change': (_details: PayloadOf<PopoverProps, 'onOpenChange'>) => true,
     'update:open': (_open: PayloadOf<PopoverProps, 'onOpenChange'>['open']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: PopoverRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: PopoverProps['onOpenChange'] = (details) => {
       emit('open-change', details)

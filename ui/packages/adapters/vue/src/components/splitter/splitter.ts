@@ -1,12 +1,24 @@
-import type { SplitterPanelProps, SplitterSchema } from '@xihan-ui/headless'
+import type { SplitterApi, SplitterPanelProps, SplitterPanelState, SplitterSchema } from '@xihan-ui/headless'
 import type { Direction, Orientation } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import { provideSplitter, useSplitterContext } from './context'
 import { useSplitter } from './use-splitter'
 
 type SplitterProps = SplitterSchema['props']
+
+/** 默认插槽的载荷：各面板的百分比与逐块状态、拖拽态，以及整份赋值、单块调整、折叠展开的命令。 */
+export interface SplitterRootSlotProps {
+  size: number[]
+  panels: SplitterPanelState[]
+  dragging: boolean
+  setSizes: SplitterApi['setSizes']
+  setPanelSize: SplitterApi['setPanelSize']
+  collapsePanel: SplitterApi['collapsePanel']
+  expandPanel: SplitterApi['expandPanel']
+  togglePanel: SplitterApi['togglePanel']
+}
 
 /** 部件上的下标声明，兼收字符串以支持 DOM 属性写法。 */
 const INDEX_PROP = { index: { type: [Number, String] as PropType<number | string>, default: 0 } }
@@ -35,6 +47,9 @@ export const XhSplitterRoot = defineComponent({
     'update:sizes': (_sizes: PayloadOf<SplitterProps, 'onSizesChange'>['sizes']) => true,
     'sizes-change-end': (_details: PayloadOf<SplitterProps, 'onSizesChangeEnd'>) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: SplitterRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: SplitterProps['onSizesChange'] = (details) => {
       emit('sizes-change', details)

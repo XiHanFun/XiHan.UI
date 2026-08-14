@@ -1,6 +1,6 @@
-import type { TimeFieldSchema, TimeGranularity, TimeHourCycle, TimeSegmentType } from '@xihan-ui/headless'
+import type { TimeFieldApi, TimeFieldSchema, TimeGranularity, TimeHourCycle, TimeSegmentType } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -8,6 +8,12 @@ import { provideTimeField, useTimeFieldContext } from './context'
 import { useTimeField } from './use-time-field'
 
 type TimeFieldProps = TimeFieldSchema['props']
+
+/** 默认插槽的载荷：当前值、值状态标志、参与显示的段与写值方法。 */
+export type TimeFieldRootSlotProps = Pick<
+  TimeFieldApi,
+  'value' | 'empty' | 'outOfRange' | 'segments' | 'focusedSegment' | 'hourCycle' | 'granularity' | 'setValue' | 'clear'
+>
 
 export const XhTimeFieldRoot = defineComponent({
   name: 'XhTimeFieldRoot',
@@ -36,6 +42,9 @@ export const XhTimeFieldRoot = defineComponent({
     'value-change': (_details: PayloadOf<TimeFieldProps, 'onValueChange'>) => true,
     'update:value': (_value: PayloadOf<TimeFieldProps, 'onValueChange'>['value']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: TimeFieldRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const onValueChange: TimeFieldProps['onValueChange'] = (details) => {
       emit('value-change', details)

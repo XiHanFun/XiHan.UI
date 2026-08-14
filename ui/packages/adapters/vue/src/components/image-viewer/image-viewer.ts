@@ -1,5 +1,5 @@
-import type { imageViewerCounterText as counterTextFn, ImageViewerItem, ImageViewerSchema } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { imageViewerCounterText as counterTextFn, ImageViewerApi, ImageViewerItem, ImageViewerSchema } from '@xihan-ui/headless'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { imageViewerCounterText } from '@xihan-ui/headless'
 import { defineComponent, h, Teleport } from 'vue'
@@ -8,6 +8,30 @@ import { provideImageViewer, useImageViewerContext } from './context'
 import { useImageViewer } from './use-image-viewer'
 
 type ImageViewerProps = ImageViewerSchema['props']
+
+/** 默认插槽的载荷：当前图与下标、变换与可翻页状态，以及翻页、缩放、旋转、翻转、归零等命令。 */
+export type ImageViewerRootSlotProps = Pick<
+  ImageViewerApi,
+  | 'open'
+  | 'index'
+  | 'count'
+  | 'currentItem'
+  | 'transform'
+  | 'canPrev'
+  | 'canNext'
+  | 'setOpen'
+  | 'setIndex'
+  | 'next'
+  | 'prev'
+  | 'zoomIn'
+  | 'zoomOut'
+  | 'setScale'
+  | 'rotateLeft'
+  | 'rotateRight'
+  | 'flipHorizontal'
+  | 'flipVertical'
+  | 'reset'
+>
 
 export const XhImageViewerRoot = defineComponent({
   name: 'XhImageViewerRoot',
@@ -34,6 +58,9 @@ export const XhImageViewerRoot = defineComponent({
     'index-change': (_details: PayloadOf<ImageViewerProps, 'onIndexChange'>) => true,
     'update:index': (_index: PayloadOf<ImageViewerProps, 'onIndexChange'>['index']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: ImageViewerRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const ctx = useImageViewer(withXhConfig('image-viewer', props) as ImageViewerProps, {
       onOpenChange: (details) => {

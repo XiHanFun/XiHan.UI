@@ -1,11 +1,14 @@
-import type { ToolbarSchema } from '@xihan-ui/headless'
+import type { ToolbarApi, ToolbarSchema } from '@xihan-ui/headless'
 import type { Direction, Orientation, Size } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideToolbar, useToolbarContext } from './context'
 import { useToolbar } from './use-toolbar'
 
 type ToolbarProps = ToolbarSchema['props']
+
+/** 默认插槽的载荷：焦点锚点、生效的主轴与整条工具条的禁用态。 */
+export type ToolbarRootSlotProps = Pick<ToolbarApi, 'focusedValue' | 'orientation' | 'disabled'>
 
 export const XhToolbarRoot = defineComponent({
   name: 'XhToolbarRoot',
@@ -17,6 +20,9 @@ export const XhToolbarRoot = defineComponent({
     disabled: { type: Boolean, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
   },
+  slots: Object as SlotsType<{
+    default?: (props: ToolbarRootSlotProps) => VNode[]
+  }>,
   // 无对外事件，条目的点击与切换由条目自行派发
   setup(props, { slots }) {
     const ctx = useToolbar(props as ToolbarProps)

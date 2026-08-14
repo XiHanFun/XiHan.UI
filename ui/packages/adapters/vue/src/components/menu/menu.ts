@@ -1,6 +1,6 @@
-import type { MenuNode, MenuNodeMeta, MenuSchema } from '@xihan-ui/headless'
+import type { MenuApi, MenuNode, MenuNodeMeta, MenuSchema } from '@xihan-ui/headless'
 import type { Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType, VNode } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { mergeProps } from '@xihan-ui/kernel'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
@@ -8,6 +8,9 @@ import { provideMenu, provideMenuChain, provideMenuSub, useMenuChain, useMenuCon
 import { useMenu } from './use-menu'
 
 type MenuProps = MenuSchema['props']
+
+/** 默认插槽的载荷：展开态与改展开的动作。 */
+export type MenuRootSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
 
 export const XhMenuRoot = defineComponent({
   name: 'XhMenuRoot',
@@ -32,6 +35,11 @@ export const XhMenuRoot = defineComponent({
     'select': (_details: PayloadOf<MenuProps, 'onSelect'>) => true,
     'update:open': (_open: PayloadOf<MenuProps, 'onOpenChange'>['open']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: MenuRootSlotProps) => VNode[]
+    trigger?: () => VNode[]
+    item?: (node: MenuNodeMeta) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notifyOpen: MenuProps['onOpenChange'] = (details) => {
       emit('open-change', details)
@@ -125,6 +133,9 @@ export const XhMenuItem = defineComponent({
   },
 })
 
+/** 默认插槽的载荷：本层子菜单的展开态与改展开的动作。 */
+export type MenuSubSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
+
 /**
  * 子菜单：内部再跑一台 menu 机器（submenu 模式），触发条目由 XhMenuSubTrigger
  * 渲染成「父菜单条目 + 本子菜单触发器」的双重身份。本身不渲染节点。
@@ -143,6 +154,9 @@ export const XhMenuSub = defineComponent({
     hoverOpenDelay: { type: Number, default: undefined },
     hoverCloseDelay: { type: Number, default: undefined },
   },
+  slots: Object as SlotsType<{
+    default?: (props: MenuSubSlotProps) => VNode[]
+  }>,
   setup(props, { slots }) {
     const parent = useMenuContext()
     const chain = useMenuChain()

@@ -1,6 +1,6 @@
-import type { ListboxItemGroupProps, ListboxItemProps, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode } from '@xihan-ui/headless'
+import type { ListboxApi, ListboxItemGroupProps, ListboxItemProps, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode } from '@xihan-ui/headless'
 import type { Direction, Orientation } from '@xihan-ui/kernel'
-import type { PropType, VNode } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import {
@@ -14,6 +14,12 @@ import {
 import { useListbox } from './use-listbox'
 
 type ListboxProps = ListboxSchema['props']
+
+/** 默认插槽的载荷：选中集合、选择模式与焦点锚点，以及判定选中与整份赋值、单选、切换的命令。 */
+export type ListboxRootSlotProps = Pick<
+  ListboxApi,
+  'value' | 'selectionMode' | 'focusedValue' | 'isSelected' | 'setValue' | 'select' | 'toggle'
+>
 
 export const XhListboxRoot = defineComponent({
   name: 'XhListboxRoot',
@@ -37,6 +43,11 @@ export const XhListboxRoot = defineComponent({
     'value-change': (_details: PayloadOf<ListboxProps, 'onValueChange'>) => true,
     'update:value': (_value: PayloadOf<ListboxProps, 'onValueChange'>['value']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: ListboxRootSlotProps) => VNode[]
+    label?: () => VNode[]
+    item?: (node: ListboxNodeMeta) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: ListboxProps['onValueChange'] = (details) => {
       emit('value-change', details)

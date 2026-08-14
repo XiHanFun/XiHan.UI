@@ -1,6 +1,6 @@
-import type { NumberAnimationEasing, NumberAnimationFinishDetails, NumberAnimationLive, NumberAnimationSchema } from '@xihan-ui/headless'
+import type { NumberAnimationApi, NumberAnimationEasing, NumberAnimationFinishDetails, NumberAnimationLive, NumberAnimationSchema } from '@xihan-ui/headless'
 import type { Size, Tone } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { connectNumberAnimation, numberAnimationMachine } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -9,6 +9,9 @@ import { slotPaints } from '../../runtime/slot-content'
 import { useMachine } from '../../runtime/use-machine'
 
 type NumberAnimationProps = NumberAnimationSchema['props']
+
+/** 默认插槽的载荷：当前帧的数值，以及它按 precision 与 separator 铺好的文本。 */
+export type NumberAnimationSlotProps = Pick<NumberAnimationApi, 'value' | 'text'>
 
 /**
  * 一段会自己走的数字：从 from 补间到 to，逐帧算值，格式化后写进根里。
@@ -34,6 +37,9 @@ export const XhNumberAnimation = defineComponent({
   emits: {
     finish: (_details: PayloadOf<NumberAnimationProps, 'onFinish'>) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: NumberAnimationSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: NumberAnimationProps['onFinish'] = (details: NumberAnimationFinishDetails) => {
       emit('finish', details)

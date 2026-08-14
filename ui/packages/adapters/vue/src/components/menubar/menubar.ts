@@ -1,6 +1,6 @@
-import type { MenubarContentProps, MenubarGroupProps, MenubarItemProps, MenubarNode, MenubarNodeMeta, MenubarSchema } from '@xihan-ui/headless'
+import type { MenubarApi, MenubarContentProps, MenubarGroupProps, MenubarItemProps, MenubarNode, MenubarNodeMeta, MenubarSchema } from '@xihan-ui/headless'
 import type { Direction, Orientation, Placement, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType, VNode } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { MenubarPartRegistry } from './use-menubar'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
@@ -34,6 +34,9 @@ function useMenubarPart(register: MenubarPartRegistry, value: () => string): (el
   }
 }
 
+/** 默认插槽的载荷：当前展开的那一项、有没有菜单展开着，与切换展开项的命令。 */
+export type MenubarRootSlotProps = Pick<MenubarApi, 'value' | 'open' | 'setValue'>
+
 /** role=menubar 根节点：trigger 的 roving tabindex 作用域，各菜单浮层也挂在其内 */
 export const XhMenubarRoot = defineComponent({
   name: 'XhMenubarRoot',
@@ -58,6 +61,10 @@ export const XhMenubarRoot = defineComponent({
     'select': (_details: PayloadOf<MenubarProps, 'onSelect'>) => true,
     'update:value': (_value: PayloadOf<MenubarProps, 'onValueChange'>['value']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: MenubarRootSlotProps) => VNode[]
+    item?: (node: MenubarNodeMeta) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notifyValue: MenubarProps['onValueChange'] = (details) => {
       emit('value-change', details)

@@ -1,6 +1,6 @@
-import type { DrawerSchema, DrawerSide } from '@xihan-ui/headless'
+import type { DrawerApi, DrawerSchema, DrawerSide } from '@xihan-ui/headless'
 import type { Size } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -8,6 +8,9 @@ import { provideDrawer, useDrawerContext } from './context'
 import { useDrawer } from './use-drawer'
 
 type DrawerProps = DrawerSchema['props']
+
+/** 默认插槽的载荷：展开状态、已解析的滑出边，与开合命令。 */
+export type DrawerRootSlotProps = Pick<DrawerApi, 'open' | 'side' | 'setOpen'>
 
 export const XhDrawerRoot = defineComponent({
   name: 'XhDrawerRoot',
@@ -29,6 +32,9 @@ export const XhDrawerRoot = defineComponent({
     'open-change': (_details: PayloadOf<DrawerProps, 'onOpenChange'>) => true,
     'update:open': (_open: PayloadOf<DrawerProps, 'onOpenChange'>['open']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: DrawerRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: DrawerProps['onOpenChange'] = (details) => {
       emit('open-change', details)

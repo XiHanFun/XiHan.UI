@@ -1,10 +1,14 @@
-import type { ClipboardSchema } from '@xihan-ui/headless'
+import type { ClipboardApi, ClipboardSchema } from '@xihan-ui/headless'
+import type { SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideClipboard, useClipboardContext } from './context'
 import { useClipboard } from './use-clipboard'
 
 type ClipboardProps = ClipboardSchema['props']
+
+/** 默认插槽的载荷：复制状态、当前要复制的文本，以及走一次复制的句柄。 */
+export type ClipboardRootSlotProps = Pick<ClipboardApi, 'status' | 'copied' | 'value' | 'copy'>
 
 export const XhClipboardRoot = defineComponent({
   name: 'XhClipboardRoot',
@@ -18,6 +22,9 @@ export const XhClipboardRoot = defineComponent({
     'status-change': (_details: PayloadOf<ClipboardProps, 'onStatusChange'>) => true,
     'copy-error': (_details: PayloadOf<ClipboardProps, 'onCopyError'>) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: ClipboardRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const ctx = useClipboard(props as ClipboardProps, {
       onStatusChange: details => emit('status-change', details),

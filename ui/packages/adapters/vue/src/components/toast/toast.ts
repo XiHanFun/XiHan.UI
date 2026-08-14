@@ -1,5 +1,5 @@
-import type { ToastSchema, ToastTranslations, ToastType } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { ToastApi, ToastSchema, ToastTranslations, ToastType } from '@xihan-ui/headless'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -7,6 +7,12 @@ import { provideToast, useToastContext } from './context'
 import { useToast } from './use-toast'
 
 type ToastProps = ToastSchema['props']
+
+/** 默认插槽的载荷：这一条的身份、状态、计时剩余与生命周期方法。 */
+export type ToastRootSlotProps = Pick<
+  ToastApi,
+  'id' | 'status' | 'type' | 'paused' | 'remaining' | 'dismiss' | 'pause' | 'resume'
+>
 
 export const XhToastRoot = defineComponent({
   name: 'XhToastRoot',
@@ -28,6 +34,9 @@ export const XhToastRoot = defineComponent({
     'status-change': (_details: PayloadOf<ToastProps, 'onStatusChange'>) => true,
     'action': (_details: PayloadOf<ToastProps, 'onAction'>) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: ToastRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notifyStatus: ToastProps['onStatusChange'] = (details) => {
       emit('status-change', details)

@@ -1,10 +1,14 @@
-import type { ImageSchema } from '@xihan-ui/headless'
+import type { ImageApi, ImageSchema } from '@xihan-ui/headless'
+import type { SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, ref, watch } from 'vue'
 import { provideImage, useImageContext } from './context'
 import { useImage } from './use-image'
 
 type ImageProps = ImageSchema['props']
+
+/** 默认插槽的载荷：加载状态、是否已加载完，以及回退内容此刻该不该露面。 */
+export type ImageRootSlotProps = Pick<ImageApi, 'status' | 'loaded' | 'showFallback'>
 
 export const XhImageRoot = defineComponent({
   name: 'XhImageRoot',
@@ -18,6 +22,9 @@ export const XhImageRoot = defineComponent({
   emits: {
     'status-change': (_details: PayloadOf<ImageProps, 'onStatusChange'>) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: ImageRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: ImageProps['onStatusChange'] = details => emit('status-change', details)
     const ctx = useImage(props as ImageProps, notify)

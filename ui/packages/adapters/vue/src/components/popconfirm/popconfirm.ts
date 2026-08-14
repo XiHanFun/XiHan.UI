@@ -1,10 +1,16 @@
-import type { PopconfirmNotifiers, PopconfirmOverlayProps, PopconfirmProps } from '@xihan-ui/headless'
+import type { PopconfirmApi, PopconfirmNotifiers, PopconfirmOverlayProps, PopconfirmProps } from '@xihan-ui/headless'
 import type { Placement, Size } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { providePopconfirm, usePopconfirmContext } from './context'
 import { usePopconfirm } from './use-popconfirm'
+
+/** 默认插槽的载荷：浮层开合与异步确认挂起两个状态，以及开合、确认、取消三个动作。 */
+export type PopconfirmRootSlotProps = Pick<
+  PopconfirmApi,
+  'open' | 'pending' | 'setOpen' | 'confirm' | 'cancel'
+>
 
 export const XhPopconfirmRoot = defineComponent({
   name: 'XhPopconfirmRoot',
@@ -29,6 +35,9 @@ export const XhPopconfirmRoot = defineComponent({
     'update:open': (_open: PayloadOf<PopconfirmProps, 'onOpenChange'>['open']) => true,
     'cancel': () => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: PopconfirmRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: PopconfirmNotifiers = {
       onOpenChange: (details) => {

@@ -1,6 +1,6 @@
-import type { DialogSchema } from '@xihan-ui/headless'
+import type { DialogApi, DialogSchema } from '@xihan-ui/headless'
 import type { Size } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -8,6 +8,9 @@ import { provideDialog, useDialogContext } from './context'
 import { useDialog } from './use-dialog'
 
 type DialogProps = DialogSchema['props']
+
+/** 默认插槽的载荷：展开态与改展开的动作。 */
+export type DialogRootSlotProps = Pick<DialogApi, 'open' | 'setOpen'>
 
 export const XhDialogRoot = defineComponent({
   name: 'XhDialogRoot',
@@ -27,6 +30,9 @@ export const XhDialogRoot = defineComponent({
     'open-change': (_details: PayloadOf<DialogProps, 'onOpenChange'>) => true,
     'update:open': (_open: PayloadOf<DialogProps, 'onOpenChange'>['open']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: DialogRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: DialogProps['onOpenChange'] = (details) => {
       emit('open-change', details)

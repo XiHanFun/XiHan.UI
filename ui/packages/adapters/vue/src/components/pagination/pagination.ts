@@ -1,6 +1,6 @@
-import type { PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
+import type { PaginationApi, PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
 import type { Direction, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -8,6 +8,23 @@ import { providePagination, usePaginationContext } from './context'
 import { usePagination } from './use-pagination'
 
 type PaginationProps = PaginationSchema['props']
+
+/** 默认插槽的载荷：当前页与总量口径、页码序列与条目区间、前后页页码，以及翻页与按当前页切数据的动作。 */
+export type PaginationRootSlotProps = Pick<
+  PaginationApi,
+  | 'page'
+  | 'pageSize'
+  | 'count'
+  | 'totalPages'
+  | 'pages'
+  | 'pageRange'
+  | 'previousPage'
+  | 'nextPage'
+  | 'setPage'
+  | 'goToPrevPage'
+  | 'goToNextPage'
+  | 'slice'
+>
 
 export const XhPaginationRoot = defineComponent({
   name: 'XhPaginationRoot',
@@ -28,6 +45,9 @@ export const XhPaginationRoot = defineComponent({
     'page-change': (_details: PayloadOf<PaginationProps, 'onPageChange'>) => true,
     'update:page': (_page: PayloadOf<PaginationProps, 'onPageChange'>['page']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: PaginationRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: PaginationProps['onPageChange'] = (details) => {
       emit('page-change', details)

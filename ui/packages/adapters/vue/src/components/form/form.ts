@@ -1,11 +1,48 @@
-import type { FormErrorPatch, FormSchema, FormValidateOn, FormValues } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { FormApi, FormErrorPatch, FormSchema, FormValidateOn, FormValues } from '@xihan-ui/headless'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideForm, provideFormField, useFormContext } from './context'
 import { useForm } from './use-form'
 
 type FormProps = FormSchema['props']
+
+/** 默认插槽的载荷：整表的值与错误、校验态，以及逐字段读写、清错、提交、重置的命令。 */
+export type FormRootSlotProps = Pick<
+  FormApi,
+  | 'values'
+  | 'errors'
+  | 'errorNames'
+  | 'invalid'
+  | 'submitFailed'
+  | 'validating'
+  | 'getFieldId'
+  | 'getFieldError'
+  | 'setFieldValue'
+  | 'setFieldError'
+  | 'clearErrors'
+  | 'submit'
+  | 'reset'
+>
+
+/** 字段容器默认插槽的载荷：这一个字段的名字、值、错误与控件 id，以及写值的命令。 */
+export interface FormFieldGroupSlotProps {
+  name: string
+  value: unknown
+  error: string | undefined
+  invalid: boolean
+  controlId: string
+  setValue: (next: unknown) => void
+}
+
+/** 错误摘要默认插槽的载荷：整表的错误、出错字段名与条数。 */
+export type FormErrorSummarySlotProps = Pick<FormApi, 'errors' | 'errorNames' | 'errorCount'>
+
+/** 错误摘要单条默认插槽的载荷：这一条指向的字段名与它的错误文案。 */
+export interface FormErrorSummaryItemSlotProps {
+  name: string
+  error: string | undefined
+}
 
 export const XhFormRoot = defineComponent({
   name: 'XhFormRoot',
@@ -34,6 +71,9 @@ export const XhFormRoot = defineComponent({
     'update:values': (_values: PayloadOf<FormProps, 'onValuesChange'>['values']) => true,
     'update:errors': (_errors: PayloadOf<FormProps, 'onErrorsChange'>['errors']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: FormRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const ctx = useForm(props as FormProps, {
       onValuesChange: (details) => {
@@ -77,6 +117,9 @@ export const XhFormFieldGroup = defineComponent({
     /** 字段名，与 values / errors 表里的键一致。 */
     value: { type: String, required: true },
   },
+  slots: Object as SlotsType<{
+    default?: (props: FormFieldGroupSlotProps) => VNode[]
+  }>,
   setup(props, { slots }) {
     const ctx = useFormContext()
     // 后代 Field 据此从表单上下文自取校验态，省掉逐字段搬运
@@ -99,6 +142,9 @@ export const XhFormFieldGroup = defineComponent({
 
 export const XhFormErrorSummary = defineComponent({
   name: 'XhFormErrorSummary',
+  slots: Object as SlotsType<{
+    default?: (props: FormErrorSummarySlotProps) => VNode[]
+  }>,
   setup(_, { slots }) {
     const ctx = useFormContext()
     return () => h('div', ctx.api.value.getErrorSummaryProps() as Record<string, unknown>, slots.default?.({
@@ -115,6 +161,9 @@ export const XhFormErrorSummaryItem = defineComponent({
     /** 这一条指向哪个字段。 */
     value: { type: String, required: true },
   },
+  slots: Object as SlotsType<{
+    default?: (props: FormErrorSummaryItemSlotProps) => VNode[]
+  }>,
   setup(props, { slots }) {
     const ctx = useFormContext()
     // 渲染为原生 a，href 指向字段容器的 id

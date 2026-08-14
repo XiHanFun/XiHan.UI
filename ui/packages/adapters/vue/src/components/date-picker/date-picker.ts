@@ -1,6 +1,14 @@
-import type { CalendarCellProps, CalendarSelectionMode, DatePickerApi, DatePickerFieldApi, DatePickerSchema } from '@xihan-ui/headless'
+import type {
+  CalendarApi,
+  CalendarCellProps,
+  CalendarSelectionMode,
+  DateFieldSegmentState,
+  DatePickerApi,
+  DatePickerFieldApi,
+  DatePickerSchema,
+} from '@xihan-ui/headless'
 import type { Placement } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -19,6 +27,39 @@ type DatePickerProps = DatePickerSchema['props']
 /** 按组号取那一组分段输入；非区间模式下终点那组缺席。 */
 function fieldOf(api: DatePickerApi, index: 0 | 1): DatePickerFieldApi | null {
   return index === 1 ? api.fieldEnd : api.field
+}
+
+/** 默认插槽的载荷：选择器的开合与选中值、内嵌日历的展示数据、两组段位，以及改写值的句柄。 */
+export type DatePickerRootSlotProps
+  = & Pick<
+    DatePickerApi,
+    | 'open'
+    | 'value'
+    | 'valueAsString'
+    | 'focusedValue'
+    | 'canClear'
+    | 'setOpen'
+    | 'setValue'
+    | 'clear'
+  >
+  & Pick<
+    CalendarApi,
+    | 'visibleMonth'
+    | 'weeks'
+    | 'weekDays'
+    | 'headingLabel'
+    | 'canGoPrev'
+    | 'canGoNext'
+  >
+  & {
+    segments: DateFieldSegmentState[]
+    /** 区间终点那组段位；非区间模式为空数组。 */
+    endSegments: DateFieldSegmentState[]
+  }
+
+/** 段位默认插槽的载荷：本段的投影；下标越界时缺席。 */
+export interface DatePickerSegmentSlotProps {
+  segment: DateFieldSegmentState | undefined
 }
 
 export const XhDatePickerRoot = defineComponent({
@@ -58,6 +99,9 @@ export const XhDatePickerRoot = defineComponent({
     'update:value': (_value: PayloadOf<DatePickerProps, 'onValueChange'>['value']) => true,
     'update:open': (_open: PayloadOf<DatePickerProps, 'onOpenChange'>['open']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: DatePickerRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notifyValue: DatePickerProps['onValueChange'] = (details) => {
       emit('value-change', details)
@@ -144,6 +188,9 @@ export const XhDatePickerSegment = defineComponent({
     // 段位下标，兼收字符串以支持模板里写 index="0"
     index: { type: [Number, String] as PropType<number | string>, required: true },
   },
+  slots: Object as SlotsType<{
+    default?: (props: DatePickerSegmentSlotProps) => VNode[]
+  }>,
   setup(props, { slots }) {
     const ctx = useDatePickerContext()
     const group = useDatePickerInputContext()

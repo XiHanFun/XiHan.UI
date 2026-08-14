@@ -79,7 +79,30 @@ emits: {
 </template>
 ```
 
-## 组合式函数
+### 载荷有类型
+
+插槽载荷都写进了组件的 `SlotsType`，所以 `vue-tsc` 接得住两类拼写错误：
+
+```vue
+<template>
+  <XhTabsRoot :collection="tabs">
+    <!-- ✓ node 是 TabsNodeMeta，字段可补全 -->
+    <template #panel="node">{{ node.label }}</template>
+
+    <!-- ✗ TS2551: Property 'lable' does not exist on type 'TabsNodeMeta'. Did you mean 'label'? -->
+    <template #panel="node">{{ node.lable }}</template>
+
+    <!-- ✗ TS2339: 组件没有这个插槽 -->
+    <template #panle>…</template>
+  </XhTabsRoot>
+</template>
+```
+
+载荷类型本身也从主入口导出（`TabsPanelSlotProps`、`StepsRootSlotProps` 这样命名），
+需要把插槽内容拆成子组件时可以直接拿来标注 props。
+
+插槽键在类型上一律是**可选**的：组件内部靠「作者写没写这个插槽」决定要不要按 `collection` 铺开默认结构，
+键若非可选，那条判断在类型上就恒为真了。
 
 不想用现成 DOM 结构时，直接拿 `api` 自己渲染：
 

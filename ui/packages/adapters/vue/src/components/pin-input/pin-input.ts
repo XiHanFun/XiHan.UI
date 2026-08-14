@@ -1,6 +1,6 @@
-import type { PinInputSchema, PinInputTranslations, PinInputType } from '@xihan-ui/headless'
+import type { PinInputApi, PinInputSchema, PinInputTranslations, PinInputType } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -8,6 +8,12 @@ import { providePinInput, usePinInputContext } from './context'
 import { usePinInput } from './use-pin-input'
 
 type PinInputProps = PinInputSchema['props']
+
+/** 默认插槽的载荷：逐格的值与拼好的串、填满与否、格数与焦点所在格，与改值、清空的命令。 */
+export type PinInputRootSlotProps = Pick<
+  PinInputApi,
+  'value' | 'valueAsString' | 'complete' | 'length' | 'focusedIndex' | 'setValue' | 'clear'
+>
 
 export const XhPinInputRoot = defineComponent({
   name: 'XhPinInputRoot',
@@ -36,6 +42,9 @@ export const XhPinInputRoot = defineComponent({
     'value-complete': (_details: PayloadOf<PinInputProps, 'onValueComplete'>) => true,
     'update:value': (_value: PayloadOf<PinInputProps, 'onValueChange'>['value']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: PinInputRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const onValueChange: PinInputProps['onValueChange'] = (details) => {
       emit('value-change', details)

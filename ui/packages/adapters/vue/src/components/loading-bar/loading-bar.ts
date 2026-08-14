@@ -1,6 +1,6 @@
-import type { LoadingBarSchema, LoadingBarTranslations } from '@xihan-ui/headless'
+import type { LoadingBarApi, LoadingBarSchema, LoadingBarTranslations } from '@xihan-ui/headless'
 import type { Tone } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -8,6 +8,9 @@ import { provideLoadingBar, useLoadingBarContext } from './context'
 import { useLoadingBar } from './use-loading-bar'
 
 type LoadingBarProps = LoadingBarSchema['props']
+
+/** 默认插槽的载荷：条子的阶段、进度值、是否露面与是否不确定进度。 */
+export type LoadingBarRootSlotProps = Pick<LoadingBarApi, 'phase' | 'value' | 'visible' | 'indeterminate'>
 
 export const XhLoadingBarRoot = defineComponent({
   name: 'XhLoadingBarRoot',
@@ -30,6 +33,9 @@ export const XhLoadingBarRoot = defineComponent({
     'value-change': (_details: PayloadOf<LoadingBarProps, 'onValueChange'>) => true,
     'update:value': (_value: PayloadOf<LoadingBarProps, 'onValueChange'>['value']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: LoadingBarRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: LoadingBarProps['onValueChange'] = (details) => {
       emit('value-change', details)

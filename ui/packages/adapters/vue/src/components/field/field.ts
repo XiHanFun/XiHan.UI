@@ -1,5 +1,5 @@
 import type { FieldProps } from '@xihan-ui/headless'
-import type { VNode } from 'vue'
+import type { SlotsType, VNode } from 'vue'
 import { cloneVNode, Comment, defineComponent, h, Text } from 'vue'
 import { useOptionalFormContext, useOptionalFormField } from '../form/context'
 import { provideField, useFieldContext } from './context'
@@ -52,8 +52,14 @@ export const XhFieldLabel = defineComponent({
   },
 })
 
+/** 默认插槽的载荷：控件节点该挂的那组属性，作者把它交给自己渲染的控件。 */
+export type FieldControlSlotProps = Record<string, unknown>
+
 export const XhFieldControl = defineComponent({
   name: 'XhFieldControl',
+  slots: Object as SlotsType<{
+    default?: (props: FieldControlSlotProps) => VNode[]
+  }>,
   setup(_, { slots }) {
     const ctx = useFieldContext()
     return () => {
