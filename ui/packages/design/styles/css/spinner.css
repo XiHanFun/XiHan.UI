@@ -1,4 +1,4 @@
-@layer xihan.components {
+@layer xihan.motion {
   /* 转圈的关键帧定义在本文件里。皮肤可以按需单独引入，
      引用别处文件里的动画名时那份文件不一定在场，动画会静默地整个不跑 */
   @keyframes xh-spinner-rotate {
@@ -6,6 +6,9 @@
       transform: rotate(1turn);
     }
   }
+}
+
+@layer xihan.components {
 
   /* 圆环画在伪元素上，root 自身不转：转的只是图形，同一行里的文案要留在原地读得动 */
   [data-scope='spinner'][data-part='root'] {

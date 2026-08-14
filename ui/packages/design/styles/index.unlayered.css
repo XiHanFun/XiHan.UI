@@ -2081,6 +2081,18 @@
 }
 
 /* styles/mention.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 [data-scope='mention'][data-part='root'] {
   /* 尺寸档只换这四个私有槽，输入框与候选都从 root 继承它们，换档不必给每个部件各写一条选择器。
      浮层在 positioner 里、也是 root 的后代，一并继承 */
@@ -2412,6 +2424,25 @@
 }
 
 /* styles/popconfirm.css */
+/* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
+@keyframes xh-popconfirm-rotate {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 /* 根只框住触发器：浮层树靠 positioner 的固定定位飞出去，不占根的盒子 */
 [data-scope='popconfirm'][data-part='root'] {
   display: inline-block;
@@ -2533,13 +2564,6 @@
   color: var(--xh-popconfirm-confirm-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
 }
 
-/* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
-@keyframes xh-popconfirm-rotate {
-  to {
-    transform: rotate(1turn);
-  }
-}
-
 /* 异步确认挂起：按钮转圈、指针挂起；不是禁用，焦点与对比度都保持 */
 [data-scope='popconfirm'][data-part='confirm-trigger'][data-loading] {
   cursor: wait;
@@ -2585,6 +2609,18 @@
 }
 
 /* styles/popselect.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 [data-scope='popselect'][data-part='root'] {
   /* 尺寸档只换这四个私有槽，触发器与条目都从 root 继承它们，换档不必给每个部件各写一条选择器。
      浮层在 positioner 里、也是 root 的后代，一并继承 */
@@ -2877,63 +2913,6 @@
 [data-scope]:where(button, input, optgroup, select, textarea) {
   font: inherit;
   letter-spacing: inherit;
-}
-
-/* styles/motion.css */
-@keyframes xh-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes xh-fade-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes xh-fade-out {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
-}
-
-/* 幅度走令牌，减弱动效时由令牌层归零；位移与缩放用独立属性而非 transform 简写，
-   两者互不覆盖，手势期间写 translate 也不会把 scale 抹掉 */
-@keyframes xh-dialog-in {
-  from {
-    opacity: 0;
-    translate: 0 var(--xh-motion-distance-md);
-    scale: var(--xh-motion-scale-enter);
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-    scale: 1;
-  }
-}
-
-@keyframes xh-dialog-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    translate: 0 var(--xh-motion-distance-md);
-    scale: var(--xh-motion-scale-enter);
-  }
 }
 
 /* styles/result.css */
@@ -4536,6 +4515,14 @@
 }
 
 /* styles/button.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 [data-scope='button'][data-part='root'] {
   /* 私有槽位：组件令牌 → 语义令牌两级回退，变体只改这几个槽位 */
   --xh-_bg: var(--xh-button-bg, var(--xh-bg-subtle));
@@ -6723,6 +6710,18 @@
 }
 
 /* styles/combobox.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 [data-scope='combobox'][data-part='root'] {
   /* 尺寸档只换这五个私有槽，输入行、标题与候选都从 root 继承它们，
      换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承 */
@@ -8063,6 +8062,58 @@
 }
 
 /* styles/dialog.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes xh-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+/* 幅度走令牌，减弱动效时由令牌层归零；位移与缩放用独立属性而非 transform 简写，
+   两者互不覆盖，手势期间写 translate 也不会把 scale 抹掉 */
+@keyframes xh-dialog-in {
+  from {
+    opacity: 0;
+    translate: 0 var(--xh-motion-distance-md);
+    scale: var(--xh-motion-scale-enter);
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+@keyframes xh-dialog-out {
+  from {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+
+  to {
+    opacity: 0;
+    translate: 0 var(--xh-motion-distance-md);
+    scale: var(--xh-motion-scale-enter);
+  }
+}
+
 [data-scope='dialog'][data-part='backdrop'] {
   position: fixed;
   inset: 0;
@@ -8191,6 +8242,28 @@
 }
 
 /* styles/drawer.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes xh-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
 /* 四条边各一对滑入/滑出。位移量用 translate 的百分比，参照的是面板自己的边框盒，
    所以不管 --xh-drawer-size 被改成多少，"正好推到视口外"这件事都成立。
 
@@ -9393,6 +9466,18 @@
 }
 
 /* styles/hover-card.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 /* 根节点只把 trigger 与浮层收在一处，不参与定位（坐标系仍由祖先的定位上下文决定） */
 [data-scope='hover-card'][data-part='root'] {
   display: inline-block;
@@ -9636,6 +9721,28 @@
 }
 
 /* styles/image-viewer.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes xh-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
 [data-scope='image-viewer'][data-part='backdrop'] {
   position: fixed;
   inset: 0;
@@ -10046,6 +10153,18 @@
 }
 
 /* styles/menu.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='menu'][data-part='positioner'] {
   position: fixed;
@@ -11270,6 +11389,18 @@
 }
 
 /* styles/popover.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='popover'][data-part='positioner'] {
   position: fixed;
@@ -11938,6 +12069,18 @@
 }
 
 /* styles/select.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 [data-scope='select'][data-part='root'] {
   /* 尺寸档只换这五个私有槽，触发器、标题与条目都从 root 继承它们，
      换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承 */
@@ -13144,6 +13287,13 @@
 }
 
 /* styles/switch.css */
+/* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
+@keyframes xh-switch-rotate {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
 [data-scope='switch'][data-part='root'] {
   /* 尺寸档只换轨道高度这一个私有槽，其余几何都从它算出来：
      滑块边长 = 轨道高 − 两条留白，轨道宽 = 两倍轨道高 − 两条留白，滑块行程因此正好等于自身边长 */
@@ -13202,13 +13352,6 @@
 
 [data-scope='switch'][data-part='thumb'][data-state='checked'] {
   translate: var(--xh-_switch-thumb-size) 0;
-}
-
-/* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
-@keyframes xh-switch-rotate {
-  to {
-    transform: rotate(1turn);
-  }
 }
 
 /* 提交中：指针挂起、滑块里转圈；不是禁用，焦点与对比度都保持 */
@@ -15656,6 +15799,18 @@
 }
 
 /* styles/tooltip.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 [data-scope='tooltip'][data-part='trigger'] {
   display: inline-flex;
   align-items: center;
@@ -15764,6 +15919,28 @@
 }
 
 /* styles/tour.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes xh-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
 /* 气泡贴着目标探出来：纯淡入分不清它是从哪个元素长出来的 */
 @keyframes xh-tour-content-in {
   from {
@@ -16591,6 +16768,18 @@
 }
 
 /* styles/tree-select.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 /* 解剖里没有把「触发器 + 清空按钮」裹在一起的 control 部件，一行是靠 flex-wrap 分出来的：
    标签占满整行把后面的挤到下一行，触发器与清空按钮就并排落在同一行上。
    这样作者少写标签、少写清空按钮，剩下的部件也不会塌 */

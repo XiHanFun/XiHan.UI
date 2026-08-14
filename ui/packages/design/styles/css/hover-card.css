@@ -1,3 +1,17 @@
+@layer xihan.motion {
+  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+  @keyframes xh-fade-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+}
+
 @layer xihan.components {
   /* 根节点只把 trigger 与浮层收在一处，不参与定位（坐标系仍由祖先的定位上下文决定） */
   [data-scope='hover-card'][data-part='root'] {
@@ -141,5 +155,4 @@
     border-block-end: 0;
     border-inline-start: 0;
   }
-
 }

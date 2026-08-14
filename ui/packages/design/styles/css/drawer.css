@@ -1,4 +1,26 @@
 @layer xihan.motion {
+  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+  @keyframes xh-fade-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes xh-fade-out {
+    from {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
+    }
+  }
+
   /* 四条边各一对滑入/滑出。位移量用 translate 的百分比，参照的是面板自己的边框盒，
      所以不管 --xh-drawer-size 被改成多少，"正好推到视口外"这件事都成立。
 
@@ -85,7 +107,6 @@
       translate: 0 var(--xh-_drawer-shift-block, 100%);
     }
   }
-
 }
 
 @layer xihan.components {
