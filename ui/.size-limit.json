@@ -135,10 +135,17 @@
     "limit": "94 kB"
   },
   {
-    "name": "icons",
+    "name": "icons：只用 CheckIcon",
+    "path": "packages/design/icons/dist/index.mjs",
+    "import": "{ CheckIcon }",
+    "gzip": true,
+    "limit": "220 B"
+  },
+  {
+    "name": "icons：整集合",
     "path": "packages/design/icons/dist/index.mjs",
     "gzip": true,
-    "limit": "1.4 kB"
+    "limit": "2.2 kB"
   },
   {
     "name": "vue：只用 XhBadge",

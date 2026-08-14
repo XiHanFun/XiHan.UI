@@ -34,7 +34,8 @@ pnpm add @xihan-ui/backgrounds
 2. **本地构建后链接进你的项目**——想跟着仓库最新改动走的话走这条。
 
 ::: warning
-`@xihan-ui/icons` 只收录自研的一等图标集，量还很少。要成套图标请自行准备，或用 `XhIcon` 接任何图标源。
+`@xihan-ui/icons` 只收录自研的一等图标集，当前 45 枚，覆盖的是组件与常见界面用得上的那批，不追求成套。
+要整套图标请自行准备，或用 `XhIcon` 接任何图标源——它收的是 `IconRecord` 纯数据，任何来源都能转过来。
 :::
 
 ## 环境要求
@@ -66,7 +67,7 @@ pnpm lint         # oxlint + eslint + stylelint
 pnpm test         # 单元测试与跨适配器一致性测试（jsdom）
 pnpm test:browser # 真实 Chromium 里的无障碍扫描与浮层定位契约
 pnpm boundaries   # 分层依赖门禁
-pnpm gate         # 十六项结构门禁
+pnpm gate         # 十七项结构门禁
 pnpm size         # 产物体积棘轮
 ```
 
