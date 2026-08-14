@@ -7,6 +7,7 @@
       "@xihan-ui/kernel",
       "@xihan-ui/machine",
       "@xihan-ui/behavior",
+      "@xihan-ui/motion",
       "@xihan-ui/tokens",
       "@xihan-ui/headless",
       "@xihan-ui/styles",
@@ -18,7 +19,8 @@
       "@xihan-ui/position",
       "@xihan-ui/backgrounds",
       "@xihan-ui/sound",
-      "@xihan-ui/icons"
+      "@xihan-ui/icons",
+      "@xihan-ui/animations"
     ]
   ],
   "linked": [],

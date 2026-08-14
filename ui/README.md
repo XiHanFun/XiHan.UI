@@ -17,6 +17,7 @@ Framework-agnostic component library. State machines and accessibility live in a
 | `@xihan-ui/kernel` | Structural primitives: anatomy, `mergeProps`, `normalizeProps`, scope, context, ids |
 | `@xihan-ui/machine` | State machine runtime: `createMachine`, interpreter contract, controlled bindings |
 | `@xihan-ui/behavior` | Behavior primitives: dismissable layer, focus scope, scroll lock, presence, collection, typeahead |
+| `@xihan-ui/motion` | Motion primitives: easing single source, tweening, frame loop, reduced-motion preference, closed-form springs, Web Animations wrapper |
 | `@xihan-ui/headless` | 102 components as anatomy + machine + `connect` — no styles, no framework |
 | `@xihan-ui/vue` | Vue 3 adapter |
 | `@xihan-ui/web-components` | Web Components adapter (own reactive base, no third-party runtime dep) |
@@ -27,6 +28,8 @@ Framework-agnostic component library. State machines and accessibility live in a
 | `@xihan-ui/code-highlight` | Code highlighting — self-implemented coarse tokenizer, no third-party runtime dependency |
 | `@xihan-ui/markdown` | Streaming markdown renderer: incremental block splitting, stable keys, sanitization (CommonMark subset, 489/652) |
 | `@xihan-ui/backgrounds` | Background layer: WebGL2 effects and data-driven particle clouds, framework agnostic |
+| `@xihan-ui/sound` | Procedural UI sounds synthesized with the Web Audio API — zero audio files, framework agnostic |
+| `@xihan-ui/animations` | Animation layer: serializable motion recipes, built-in enter and attention effects, stagger, text splitting |
 | `@xihan-ui/icons` | First-party icon set: structured `IconRecord` data, rendered node by node, no runtime SVG string parsing |
 
 `tooling/*` holds internal build, lint, tsconfig, testing and script packages; they are never published.
@@ -57,7 +60,7 @@ pnpm typecheck
 pnpm lint
 pnpm boundaries   # layered dependency gate (dependency-cruiser)
 pnpm build
-pnpm size         # bundle size ratchet — builds, then checks the 18 budgets in .size-limit.json
+pnpm size         # bundle size ratchet — builds, then checks the 25 budgets in .size-limit.json
 ```
 
 ## Conventions

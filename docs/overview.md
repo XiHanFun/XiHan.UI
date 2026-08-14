@@ -80,6 +80,7 @@ service.send({ type: 'TRIGGER.CLICK' })            （machine）
 | `@xihan-ui/kernel` | 结构原语：解剖、`mergeProps`、`normalizeProps`、Scope、层栈、诊断通道 |
 | `@xihan-ui/machine` | 薄状态机运行时：`createMachine`、解释器契约、受控值绑定 |
 | `@xihan-ui/behavior` | 交互行为原语：消隐层、焦点域、滚动锁、进出场、集合导航、typeahead |
+| `@xihan-ui/motion` | 动效原语：缓动单一真源、纯补间、帧循环、减弱动效偏好、解析解弹簧 |
 | `@xihan-ui/position` | 浮层定位引擎，自研，零第三方依赖 |
 
 **组件与适配器**
@@ -106,6 +107,8 @@ service.send({ type: 'TRIGGER.CLICK' })            （machine）
 | `@xihan-ui/markdown` | 流式 Markdown 渲染内核，增量切块 + 稳定 key |
 | `@xihan-ui/code-highlight` | 代码着色，自研粗粒度词法器 |
 | `@xihan-ui/backgrounds` | WebGL2 背景效果与数据驱动粒子点云 |
+| `@xihan-ui/sound` | 纯 Web Audio 程序化 UI 音效，零音频文件 |
+| `@xihan-ui/animations` | 现成的进场与注意动效、错开起播、文字拆分 |
 
 `tooling/*` 下还有构建、lint、tsconfig、测试与门禁脚本等内部包，一律不发布。
 
@@ -116,8 +119,8 @@ ui/
 ├── packages/            # 对外发布的库包，按角色分四组
 │   ├── adapters/        # vue · web-components——你选一个
 │   ├── design/          # tokens · styles · icons——外观
-│   ├── features/        # markdown · chat-stream · backgrounds——按需自选
-│   └── engine/          # kernel · machine · behavior · position · code-highlight · headless
+│   ├── features/        # markdown · chat-stream · backgrounds · sound · animations——按需自选
+│   └── engine/          # kernel · machine · motion · behavior · position · code-highlight · headless
 ├── tooling/             # 内部构建与质量工具
 │   ├── build/           # 打包配置与 exports 回写
 │   ├── eslint-config/   # lint 规则 + 分层拓扑事实源

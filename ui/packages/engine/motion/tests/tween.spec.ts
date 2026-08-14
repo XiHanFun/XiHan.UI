@@ -5,7 +5,7 @@ import {
   tweenEasings,
   tweenProgress,
   tweenValueAt,
-} from '../src/shared/tween'
+} from '../src/tween'
 
 describe('tweenProgress', () => {
   it('落在 [0,1]，两端都取得到', () => {
@@ -41,6 +41,17 @@ describe('tweenEasings', () => {
     for (const [name, fn] of Object.entries(tweenEasings)) {
       expect(fn(0), `${name} 在 0 处`).toBe(0)
       expect(fn(1), `${name} 在 1 处`).toBe(1)
+    }
+  })
+
+  it('每一档在区间内单调不减', () => {
+    for (const [name, fn] of Object.entries(tweenEasings)) {
+      let previous = -1
+      for (let i = 0; i <= 50; i++) {
+        const value = fn(i / 50)
+        expect(value, name).toBeGreaterThanOrEqual(previous)
+        previous = value
+      }
     }
   })
 
@@ -92,6 +103,9 @@ describe('tweenValueAt', () => {
   it('端点是非有限数时不把 NaN 传下去：NaN 一路写进文本就是一个"NaN"', () => {
     expect(tweenValueAt({ from: Number.NaN, to: 20, duration: 100 }, 0)).toBe(20)
     expect(tweenValueAt({ from: 0, to: Number.NaN, duration: 100 }, 50)).toBe(0)
+    expect(tweenValueAt({ from: 5, to: Number.NaN, duration: 100 }, 100)).toBe(0)
+    expect(tweenValueAt({ from: 5, to: Number.NaN, duration: 100 }, 50)).toBe(2.5)
+    expect(tweenValueAt({ from: Number.NaN, to: Number.NaN, duration: 100 }, 50)).toBe(0)
   })
 
   it('缓动只改路径不改两端', () => {

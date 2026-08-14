@@ -150,8 +150,6 @@ export { connectSelect, SELECT_DEFAULT_PLACEMENT, selectAnatomy, selectItemQuery
 export type { SelectApi, SelectFocusIntent, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectRefs, SelectSchema, SelectTagMeta, SelectTagProps, SelectTranslations, SelectValueChangeDetails } from './select'
 export { connectSeparator, separatorAnatomy, separatorKeyboard, separatorMeta } from './separator'
 export type { SeparatorApi, SeparatorProps } from './separator'
-// 补间缓动的取值。NumberAnimationEasing 是它的别名，别名要能被命名，这一支就必须公开
-export type { TweenEasing } from './shared/tween'
 export { accordionSiblings, connectSideNav, sideNavAnatomy, sideNavKeyboard, sideNavLinkQuery, sideNavMachine, sideNavMeta, sideNavTriggerQuery } from './side-nav'
 export type { SideNavApi, SideNavExpandedChangeDetails, SideNavNode, SideNavNodeProps, SideNavSchema, SideNavTranslations, SideNavValueChangeDetails } from './side-nav'
 export { connectSkeleton, skeletonAnatomy, skeletonKeyboard, skeletonMeta } from './skeleton'
@@ -202,8 +200,8 @@ export type { TooltipApi, TooltipOpenChangeDetails, TooltipRefs, TooltipSchema }
 export { clampTourStep, connectTour, currentTourStep, isTourLastStep, sameTourSpotlight, TOUR_DEFAULT_OFFSET, TOUR_DEFAULT_PLACEMENT, TOUR_DEFAULT_SPOTLIGHT_PADDING, tourAnatomy, tourKeyboard, tourMachine, tourMeta, tourSpotlightBox, tourStepCount } from './tour'
 export type { TourApi, TourCompleteDetails, TourOpenChangeDetails, TourRefs, TourSchema, TourSkipDetails, TourSpotlightRect, TourStep, TourStepChangeDetails, TourTranslations } from './tour'
 export { connectTransfer, transferAnatomy, transferCheckedValues, transferCheckState, transferFocusKey, transferIsCheckable, transferItemQuery, transferKeyboard, transferMachine, transferMatchesQuery, transferMeta, transferMove, transferOperableValues, transferOppositeSide, transferQueryKey, transferSideOf, transferToggleAll, transferToggleValue, transferVisibleItems } from './transfer'
-
 export type { TransferApi, TransferCheckState, TransferFilter, TransferItem, TransferItemProps, TransferMoveInput, TransferMoveResult, TransferPanelProps, TransferSchema, TransferSelectionChangeDetails, TransferSide, TransferValueChangeDetails } from './transfer'
+
 export { connectTree, flattenTree, indexTree, treeAnatomy, treeBranchQuery, treeItemQuery, treeKeyboard, treeMachine, treeMeta, treeSelectionMode } from './tree'
 export type { TreeApi, TreeExpandedChangeDetails, TreeFocusModel, TreeNode, TreeNodeMeta, TreeNodeProps, TreeRefs, TreeSchema, TreeSelectionChangeDetails, TreeSelectionMode, TreeVisibleNode } from './tree'
 export { connectTreeSelect, findTreeSelectNodeEl, TREE_SELECT_DEFAULT_PLACEMENT, treeSelectAnatomy, treeSelectBranchQuery, treeSelectItemQuery, treeSelectKeyboard, treeSelectMachine, treeSelectMeta, treeSelectNodeEls } from './tree-select'
@@ -213,6 +211,8 @@ export { connectTypography, typographyAnatomy, typographyKeyboard, typographyMet
 export type { TypographyApi, TypographyHeadingProps, TypographyLevel, TypographyProps, TypographyTextProps, TypographyVariant } from './typography'
 export { connectVirtualizer, createVirtualizerKernel, expandVirtualizerRange, findVirtualizerItem, findVirtualizerRange, measureVirtualizerItems, normalizeVirtualizerMetrics, resolveVirtualizerCount, resolveVirtualizerEstimate, resolveVirtualizerLanes, resolveVirtualizerOverscan, VIRTUALIZER_DEFAULT_OVERSCAN, VIRTUALIZER_EMPTY_SNAPSHOT, VIRTUALIZER_INDEX_ATTRIBUTE, VIRTUALIZER_SCROLL_IDLE_DELAY, virtualizerAnatomy, virtualizerContentStyle, virtualizerItemStyle, virtualizerKeyboard, virtualizerMachine, virtualizerMeta, virtualizerOffsetForItem, virtualizerSnapshotEqual, virtualizerTotalSize } from './virtualizer'
 export type { VirtualizerAlign, VirtualizerApi, VirtualizerChangeDetails, VirtualizerCore, VirtualizerItemProps, VirtualizerItemState, VirtualizerKernel, VirtualizerKernelOptions, VirtualizerMeasurement, VirtualizerMetrics, VirtualizerRange, VirtualizerRefs, VirtualizerSchema, VirtualizerScrollToOptions, VirtualizerSnapshot, VirtualizerWindow } from './virtualizer'
-
 export { connectWatermark, watermarkAnatomy, watermarkKeyboard, watermarkMeta } from './watermark'
+
 export type { WatermarkApi, WatermarkProps, WatermarkState, WatermarkTile } from './watermark'
+// 补间缓动的取值。NumberAnimationEasing 是它的别名，别名要能被命名，这一支就必须公开
+export type { TweenEasing } from '@xihan-ui/motion'

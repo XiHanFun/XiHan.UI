@@ -54,7 +54,8 @@
     "@internationalized/date": "catalog:",
     "@xihan-ui/behavior": "workspace:^",
     "@xihan-ui/kernel": "workspace:^",
-    "@xihan-ui/machine": "workspace:^"
+    "@xihan-ui/machine": "workspace:^",
+    "@xihan-ui/motion": "workspace:^"
   },
   "devDependencies": {
     "@xihan-ui/build": "workspace:*",

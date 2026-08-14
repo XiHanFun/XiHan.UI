@@ -1,8 +1,8 @@
 {
-  "name": "@xihan-ui/behavior",
+  "name": "@xihan-ui/animations",
   "type": "module",
   "version": "1.0.0-alpha.1",
-  "description": "XiHan.UI interaction behaviors — dismissable layer, focus scope, scroll lock, stick to bottom, presence.",
+  "description": "XiHan.UI animation layer — serializable motion recipes, built-in enter and attention effects, stagger and text splitting, framework agnostic.",
   "author": {
     "name": "XiHanFun",
     "url": "https://github.com/XiHanFun"
@@ -12,27 +12,23 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/XiHanFun/XiHan.UI.git",
-    "directory": "ui/packages/engine/behavior"
+    "directory": "ui/packages/features/animations"
   },
   "bugs": {
     "url": "https://github.com/XiHanFun/XiHan.UI/issues"
   },
   "keywords": [
-    "focus-trap",
-    "dismissable-layer",
-    "scroll-lock",
-    "headless-ui",
-    "accessibility"
+    "animation",
+    "motion",
+    "stagger",
+    "reveal",
+    "web-animations"
   ],
   "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    },
-    "./presence": {
-      "types": "./dist/presence.d.ts",
-      "import": "./dist/presence.js"
     }
   },
   "main": "./dist/index.js",

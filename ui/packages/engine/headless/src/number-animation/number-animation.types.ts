@@ -1,6 +1,6 @@
 import type { PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
-import type { TweenEasing } from '../shared/tween'
+import type { TweenEasing } from '@xihan-ui/motion'
 
 /** 缓动档位，取值与共用补间的档位一致。 */
 export type NumberAnimationEasing = TweenEasing

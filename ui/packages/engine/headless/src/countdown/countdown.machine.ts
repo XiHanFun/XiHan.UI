@@ -1,7 +1,6 @@
 import type { CountdownSchema } from './countdown.types'
 import { setup } from '@xihan-ui/machine'
-import { frameLoop, frameNow } from '../shared/frame'
-import { isTweenDone, tweenValueAt } from '../shared/tween'
+import { frameLoop, frameNow, isTweenDone, tweenValueAt } from '@xihan-ui/motion'
 import { resolveCountdownValue } from './countdown.format'
 
 const { createMachine } = setup<CountdownSchema>()
