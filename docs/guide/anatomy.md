@@ -61,6 +61,25 @@ export const accordionMeta: ComponentMeta = {
 
 每个组件的必备部件在[组件参考](../components/)里加粗标出。
 
+## collection 管不管铺开结构
+
+不少组件收一个 `collection`（或 `columns` / `rows`）当数据入口。**收了数据不等于会替你渲染结构**，
+这里分三档，写代码前先对号入座：
+
+| 档 | 传了数据之后 | 哪些组件 |
+| --- | --- | --- |
+| **根级代铺** | `<XhXxxRoot :collection>` 单独就能用，整套部件由组件铺开；写了默认插槽就整体接管 | `accordion` `checkbox-group` `combobox` `context-menu` `listbox` `mention` `menu` `menubar` `navigation-menu` `radio-group` `select` `tabs` `toggle-group` |
+| **内容级代铺** | 浮层外壳（trigger / positioner / content）仍要自己写，条目由 content 铺开 | `popselect` |
+| **仅元信息** | 一个节点都不铺，结构全部手写；数据只供组件内部判断禁用、层级、选中这些 | `tree` `tree-select` `cascader` `transfer` `side-nav` `table`（`columns` / `rows`）`steps`（`count`） |
+
+判据是**结构的自由度**：扁平集合的 DOM 形状是确定的，代铺不会挡住任何写法；
+层级与多区（树、级联、穿梭框）的结构有太多合理变体，代铺一份出来只会逼作者推翻重写。
+
+代铺的那两档有一条硬约束，由 `tests/collection-required-parts.spec.ts` 逐个组件钉住：
+**铺出来的结构必须凑齐该组件的必备部件**，与手写全套部件产出的 DOM 一致。
+少一个部件就是渲染出一个看着正常、其实不工作的组件——浮层打不开、方向键找不到条目、
+读屏在自定义元素那侧直接报 `wc.missing-part`。给新组件加代铺时，先往那份测试里加一行。
+
 ## 两套适配器怎么用它
 
 **Vue 适配器**把部件包成组件。`XhAccordionContent` 内部就是把 `api.getContentProps()` 展开到一个 `<div>` 上，属性由 `connect` 给，你看不见 `data-part`，但它在。
