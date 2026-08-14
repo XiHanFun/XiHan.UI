@@ -31,6 +31,8 @@ export function registerBuiltinEffects(): void {
   registerEffects(builtinEffects)
 }
 
+export { BUILTIN_EFFECT_NAMES } from './builtin-names'
+export type { BuiltinEffectName } from './builtin-names'
 export { particlesEffect } from './cloud'
 export {
   boolSpec,

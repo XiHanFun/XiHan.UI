@@ -2,6 +2,7 @@
 // 直接传效果对象则完全不经过它——注册表不参与打包决策，没注册的效果会被摇掉。
 
 import type { BackgroundEffect } from '../types'
+import { BUILTIN_EFFECT_NAMES } from './builtin-names'
 
 const registry = new Map<string, BackgroundEffect>()
 
@@ -28,12 +29,27 @@ export function clearEffects(): void {
   registry.clear()
 }
 
+/** 效果名对应的导出标识符：flow-field → flowFieldEffect。 */
+function effectIdentifier(name: string): string {
+  return `${name.replace(/-(.)/g, (_, char: string) => char.toUpperCase())}Effect`
+}
+
 /** 把「效果对象或名字」统一成效果对象。名字没注册时抛错，因为拿不到效果就什么都画不了。 */
 export function resolveEffect(effect: BackgroundEffect | string): BackgroundEffect {
   if (typeof effect !== 'string')
     return effect
   const found = registry.get(effect)
-  if (found === undefined)
+  if (found === undefined) {
+    // 内置名字单独给一条：registerEffect() 收的是效果对象，照它写名字连类型都不过
+    if ((BUILTIN_EFFECT_NAMES as readonly string[]).includes(effect)) {
+      const identifier = effectIdentifier(effect)
+      throw new Error(
+        `[backgrounds] 未注册的效果：${effect}。它是内置效果，按名字取用前须注册：`
+        + `registerBuiltinEffects() 注册全部内置效果，registerEffects([${identifier}]) 只注册这一个；`
+        + `也可以把 ${identifier} 直接传给 effect，那条路不经过注册表。`,
+      )
+    }
     throw new Error(`[backgrounds] 未注册的效果：${effect}。先调用 registerEffect() 或直接传效果对象。`)
+  }
   return found
 }

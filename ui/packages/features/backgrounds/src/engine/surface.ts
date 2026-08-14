@@ -63,12 +63,63 @@ function profileOf(quality: BackgroundQuality): QualityProfile {
 const CLOUD_ATTRIBUTES = ['a_from', 'a_to', 'a_colorFrom', 'a_colorTo', 'a_meta'] as const
 const CLOUD_STRIDES = [3, 3, 3, 3, 2] as const
 
+const CANVAS_CSS = 'position:absolute;inset:0;display:block;width:100%;height:100%;pointer-events:none'
+
+/**
+ * 把画布挂到宿主上，并保证宿主是它的定位祖先。返回撤销观察的函数。
+ *
+ * 宿主已带非 static 定位就直接挂；量到 static 才写一句内联 relative。
+ * 宿主还没进文档时两者都判不出来（getComputedStyle 此时什么都算不出），
+ * 这时**不挂也不写**：不在文档树里的画布逃不到别的祖先上，宿主的定位也就不必现在定。
+ * 宿主进文档拿到盒子的那一刻 ResizeObserver 响一次，届时再定。
+ */
+function attachCanvas(host: HTMLElement, canvas: HTMLCanvasElement): () => void {
+  canvas.style.cssText = CANVAS_CSS
+  let attached = false
+
+  function settle(): boolean {
+    if (attached)
+      return true
+    const inline = host.style.position
+    if (inline === '' || inline === 'static') {
+      if (!host.isConnected)
+        return false
+      // 空串按 static 处理：算不出定位的环境（如不实现该属性的测试环境）同样需要兜底
+      const computed = getComputedStyle(host).position
+      if (computed === '' || computed === 'static')
+        host.style.position = 'relative'
+    }
+    host.appendChild(canvas)
+    attached = true
+    return true
+  }
+
+  if (settle())
+    return (): void => {}
+
+  // 没有 ResizeObserver 就没有第二次机会，退回「先写下兜底定位」
+  if (typeof ResizeObserver !== 'function') {
+    host.style.position = 'relative'
+    host.appendChild(canvas)
+    attached = true
+    return (): void => {}
+  }
+
+  const observer = new ResizeObserver(() => {
+    if (settle())
+      observer.disconnect()
+  })
+  observer.observe(host)
+  return (): void => observer.disconnect()
+}
+
 /**
  * 建一张视觉画面。
  *
  * target 传容器元素时内部会插一张铺满的画布并设为 pointer-events: none，
  * 所以它永远不会挡住宿主组件自己的交互；指针事件监听在容器上。
- * 容器的 position 为 static 时会被改成 relative，否则绝对定位的画布会跑到别的祖先上去。
+ * 容器量出来是 static 时会被写一句内联 position: relative，否则绝对定位的画布会跑到别的祖先上去；
+ * 容器自己已有定位（含用类名写的）则一个字都不动。
  */
 export function createBackgroundSurface(
   target: HTMLElement,
@@ -92,16 +143,7 @@ export function createBackgroundSurface(
   const canvas = ownsCanvas ? document.createElement('canvas') : target
   const host = target
 
-  if (ownsCanvas) {
-    canvas.style.cssText
-      = 'position:absolute;inset:0;display:block;width:100%;height:100%;pointer-events:none'
-    // 空串要和 static 一样处理：宿主此刻可能还没进文档，那时 getComputedStyle 什么都算不出来，
-    // 只认 'static' 会让这行悄悄不执行，画布随后定位到更上层的祖先上，铺满半个页面
-    const position = host.style.position || getComputedStyle(host).position
-    if (position === '' || position === 'static')
-      host.style.position = 'relative'
-    host.appendChild(canvas)
-  }
+  const detachCanvas = ownsCanvas ? attachCanvas(host, canvas) : (): void => {}
 
   const gl = canvas.getContext('webgl2', {
     alpha: true,
@@ -118,7 +160,7 @@ export function createBackgroundSurface(
       level: 'warn',
       message: '[backgrounds] 当前环境不支持 WebGL2，已降级为静态背景',
     })
-    return createFallbackSurface(canvas, ownsCanvas, effect, overrides)
+    return createFallbackSurface(canvas, ownsCanvas, effect, overrides, detachCanvas)
   }
 
   const context = gl
@@ -513,6 +555,7 @@ export function createBackgroundSurface(
       backgroundProgram?.dispose()
       particleProgram?.dispose()
       context.getExtension('WEBGL_lose_context')?.loseContext()
+      detachCanvas()
       if (ownsCanvas)
         canvas.remove()
     },
@@ -527,6 +570,7 @@ function createFallbackSurface(
   ownsCanvas: boolean,
   initialEffect: BackgroundEffect,
   initialOverrides: Record<string, ParamValue>,
+  detachCanvas: () => void,
 ): BackgroundSurface {
   let effect = initialEffect
   let overrides = initialOverrides
@@ -562,6 +606,7 @@ function createFallbackSurface(
     pause: (): void => {},
     resize: (): void => {},
     destroy(): void {
+      detachCanvas()
       if (ownsCanvas)
         canvas.remove()
       else

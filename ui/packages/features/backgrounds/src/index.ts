@@ -9,6 +9,7 @@
 
 export {
   boolSpec,
+  BUILTIN_EFFECT_NAMES,
   builtinEffects,
   clearEffects,
   colorSpec,
@@ -22,6 +23,8 @@ export {
   registerEffects,
   resolveEffect,
 } from './effects/index'
+
+export type { BuiltinEffectName } from './effects/index'
 
 export {
   auroraEffect,
