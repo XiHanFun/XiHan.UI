@@ -12,7 +12,7 @@
   }
 
   [data-scope='image-viewer'][data-part='backdrop'][data-state='closed'] {
-    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit);
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   [data-scope='image-viewer'][data-part='positioner'] {
@@ -41,11 +41,7 @@
   }
 
   [data-scope='image-viewer'][data-part='content'][data-state='closed'] {
-    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit);
-  }
-
-  [data-scope='image-viewer'][data-part='content'][hidden] {
-    display: none;
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   [data-scope='image-viewer'][data-part='viewport'] {

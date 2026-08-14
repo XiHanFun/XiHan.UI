@@ -213,9 +213,9 @@
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致。
      收起态连接层会给 content 打 hidden，而上面这条 display: flex 正是要盖掉
      UA 的 [hidden]{display:none}——退场动画得先能播：
-     Vue 侧 presence 读的是 content 的 animationName，读到就申领租约、等 animationend
-     才卸载；一旦 display: none，动画根本不会启动，animationend 永不到达，
-     租约挂死，面板就永久留在 DOM 里（每开合一次多一份）。
+     presence 读的是 content 的 animationName，读到就申领租约、等 animationend 才卸载；
+     一旦 display: none，元素不生成盒子、动画根本不启动，退场探测器会直接放弃申领
+     （否则就要等一个永不到来的 animationend），面板不播动画就地卸载。
      真正的收起两个适配器各自兜住了：Vue 卸载整棵，WC 写内联 style.display。
      其余声明了 display 的角色节点仍补了 [hidden]，那几处没有退场动画，作者手写 hidden 要生效。 */
 

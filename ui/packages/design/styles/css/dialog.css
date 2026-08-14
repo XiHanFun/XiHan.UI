@@ -10,8 +10,9 @@
     animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
+  /* 退场补 forwards：动画播完到宿主真正卸载之间还有一帧，不定住终态遮罩会闪回全黑 */
   [data-scope='dialog'][data-part='backdrop'][data-state='closed'] {
-    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit);
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   [data-scope='dialog'][data-part='positioner'] {
@@ -48,12 +49,13 @@
     box-shadow: var(--xh-dialog-shadow, var(--xh-elevation-3));
   }
 
-  /* 收起态：connect 会给 content 打 hidden，但上面那条 display 会盖掉 UA 的
-     [hidden]{display:none}。meta 里 positioner 并非必需部件，按最小合规结构
-     （只有 trigger + content）写时，没有这一条收起的对话框就一直摊在页面上。 */
-  [data-scope='dialog'][data-part='content'][hidden] {
-    display: none;
-  }
+  /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 drawer 一致：
+     收起态连接层会给 content 打 hidden，而上面那条 display: flex 正是要盖掉 UA 的
+     [hidden]{display:none}——退场动画得先能播。presence 读的是 content 的 animationName，
+     读到才申领租约、等 animationend 才卸载；一旦 display: none，元素不生成盒子、
+     动画根本不启动，探测器直接放弃租约，退场动画一帧都播不出来。
+     真正的收起由适配器兜住：Vue 卸载整棵，WC 写内联 style.display。
+     其余声明了 display 的角色节点仍补 [hidden]，那几处没有退场动画。 */
 
   /* —— 尺寸 —— */
   /* 只有最大宽度分档；中间档不写规则，缺省即中档。
@@ -70,13 +72,12 @@
     outline: none;
   }
 
-  /* 入场用 @starting-style 只驱动动画名切换；退场由 presence 保留 DOM 后播放 */
   [data-scope='dialog'][data-part='content'][data-state='open'] {
     animation: xh-dialog-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   [data-scope='dialog'][data-part='content'][data-state='closed'] {
-    animation: xh-dialog-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit);
+    animation: xh-dialog-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   [data-scope='dialog'][data-part='title'] {
