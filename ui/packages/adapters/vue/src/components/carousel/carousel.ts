@@ -1,6 +1,6 @@
-import type { CarouselSchema, CarouselTranslations } from '@xihan-ui/headless'
+import type { CarouselApi, CarouselSchema, CarouselTranslations } from '@xihan-ui/headless'
 import type { Direction, Orientation } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -8,6 +8,28 @@ import { provideCarousel, useCarouselContext } from './context'
 import { useCarousel } from './use-carousel'
 
 type CarouselProps = CarouselSchema['props']
+
+/** 默认插槽的载荷：当前页与翻页区间、自动播放与拖拽状态，以及翻页、播放的命令。 */
+export type CarouselRootSlotProps = Pick<
+  CarouselApi,
+  | 'page'
+  | 'totalPages'
+  | 'slideCount'
+  | 'slideRange'
+  | 'pageSnapPoints'
+  | 'canScrollPrev'
+  | 'canScrollNext'
+  | 'autoplaying'
+  | 'paused'
+  | 'dragging'
+  | 'isInView'
+  | 'setPage'
+  | 'goToPrev'
+  | 'goToNext'
+  | 'play'
+  | 'pause'
+  | 'resume'
+>
 
 export const XhCarouselRoot = defineComponent({
   name: 'XhCarouselRoot',
@@ -32,6 +54,9 @@ export const XhCarouselRoot = defineComponent({
     'page-change': (_details: PayloadOf<CarouselProps, 'onPageChange'>) => true,
     'update:page': (_page: PayloadOf<CarouselProps, 'onPageChange'>['page']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: CarouselRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: CarouselProps['onPageChange'] = (details) => {
       emit('page-change', details)

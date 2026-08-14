@@ -1,6 +1,6 @@
-import type { MentionInputEl, MentionInputHost, MentionItemProps, MentionNode, MentionNodeMeta, MentionSchema, MentionTranslations } from '@xihan-ui/headless'
+import type { MentionApi, MentionInputEl, MentionInputHost, MentionItemProps, MentionNode, MentionNodeMeta, MentionSchema, MentionTranslations } from '@xihan-ui/headless'
 import type { ControlVariant, Placement, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType, VNode } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onMounted, onUnmounted, onUpdated, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -8,6 +8,18 @@ import { provideMention, provideMentionItem, useMentionContext, useMentionItemCo
 import { useMention } from './use-mention'
 
 type MentionProps = MentionSchema['props']
+
+/** 默认插槽的载荷：浮层开合、正文与查询串、高亮候选，以及改写正文与收起浮层的句柄。 */
+export type MentionRootSlotProps = Pick<
+  MentionApi,
+  | 'open'
+  | 'value'
+  | 'query'
+  | 'activePrefix'
+  | 'highlightedValue'
+  | 'setValue'
+  | 'close'
+>
 
 export const XhMentionRoot = defineComponent({
   name: 'XhMentionRoot',
@@ -35,6 +47,11 @@ export const XhMentionRoot = defineComponent({
     'open-change': (_details: PayloadOf<MentionProps, 'onOpenChange'>) => true,
     'update:value': (_value: PayloadOf<MentionProps, 'onValueChange'>['value']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: MentionRootSlotProps) => VNode[]
+    /** 铺开 collection 时每条候选的文本插槽。 */
+    item?: (props: MentionNodeMeta) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notifyValue: MentionProps['onValueChange'] = (details) => {
       emit('value-change', details)

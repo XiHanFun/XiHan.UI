@@ -1,6 +1,6 @@
-import type { BackTopBehavior, BackTopSchema, BackTopTranslations } from '@xihan-ui/headless'
+import type { BackTopApi, BackTopBehavior, BackTopSchema, BackTopTranslations } from '@xihan-ui/headless'
 import type { Size, Tone } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -8,6 +8,9 @@ import { provideBackTop, useBackTopContext } from './context'
 import { useBackTop } from './use-back-top'
 
 type BackTopProps = BackTopSchema['props']
+
+/** 默认插槽的载荷：按钮此刻露不露面。 */
+export type BackTopRootSlotProps = Pick<BackTopApi, 'visible'>
 
 /** 根节点是定位壳：把按钮钉在视口一角，收起时整块让位。 */
 export const XhBackTopRoot = defineComponent({
@@ -25,6 +28,9 @@ export const XhBackTopRoot = defineComponent({
   emits: {
     'visible-change': (_details: PayloadOf<BackTopProps, 'onVisibleChange'>) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: BackTopRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: BackTopProps['onVisibleChange'] = details => emit('visible-change', details)
     // 传响应式 props 对象本身而非快照，供机器每次读时重新展开

@@ -1,11 +1,17 @@
-import type { PopselectItemProps, PopselectNode, PopselectNodeMeta } from '@xihan-ui/headless'
+import type { PopselectApi, PopselectItemProps, PopselectNode, PopselectNodeMeta } from '@xihan-ui/headless'
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType, VNode } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { PopselectNotifiers, PopselectRootProps } from './use-popselect'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { providePopselect, providePopselectItem, usePopselectContext, usePopselectItemContext } from './context'
 import { usePopselect } from './use-popselect'
+
+/** 默认插槽的载荷：浮层开合、选中集合与条目数据，以及改动它们的方法。 */
+export type PopselectRootSlotProps = Pick<
+  PopselectApi,
+  'open' | 'value' | 'collection' | 'focusedValue' | 'isSelected' | 'setOpen' | 'setValue' | 'select'
+>
 
 export const XhPopselectRoot = defineComponent({
   name: 'XhPopselectRoot',
@@ -36,6 +42,9 @@ export const XhPopselectRoot = defineComponent({
     'update:value': (_value: PayloadOf<PopselectNotifiers, 'onValueChange'>['value']) => true,
     'update:open': (_open: PayloadOf<PopselectNotifiers, 'onOpenChange'>['open']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: PopselectRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: PopselectNotifiers = {
       onValueChange: (details) => {

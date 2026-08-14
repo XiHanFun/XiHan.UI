@@ -1,13 +1,15 @@
 import type {
+  CascaderApi,
   CascaderExpandTrigger,
   CascaderItemProps,
   CascaderNode,
   CascaderSchema,
+  CascaderSearchResult,
   CascaderTranslations,
   CascaderValue,
 } from '@xihan-ui/headless'
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType, Ref } from 'vue'
+import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { CascaderContext } from './use-cascader'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
@@ -47,6 +49,29 @@ function reportItemFocus(
   })
 }
 
+/** 默认插槽的载荷：级联的展开态、选中态与列数据，以及改动它们的方法。 */
+export type CascaderRootSlotProps = Pick<
+  CascaderApi,
+  | 'open'
+  | 'levels'
+  | 'columns'
+  | 'value'
+  | 'valuePath'
+  | 'activePath'
+  | 'focusedPath'
+  | 'displayText'
+  | 'canClear'
+  | 'isSelected'
+  | 'isIndeterminate'
+  | 'isActive'
+  | 'isVisible'
+  | 'setOpen'
+  | 'setValue'
+  | 'setActivePath'
+  | 'select'
+  | 'clear'
+>
+
 export const XhCascaderRoot = defineComponent({
   name: 'XhCascaderRoot',
   // 有 connect 兜底的 prop 一律 default: undefined
@@ -83,6 +108,9 @@ export const XhCascaderRoot = defineComponent({
     'update:value': (_value: PayloadOf<CascaderProps, 'onValueChange'>['value']) => true,
     'update:open': (_open: PayloadOf<CascaderProps, 'onOpenChange'>['open']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: CascaderRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notifyValue: CascaderProps['onValueChange'] = (details) => {
       emit('value-change', details)
@@ -213,8 +241,16 @@ export const XhCascaderInput = defineComponent({
   },
 })
 
+/** item 插槽的载荷：一条搜索候选。 */
+export interface CascaderSearchListItemSlotProps {
+  result: CascaderSearchResult
+}
+
 export const XhCascaderSearchList = defineComponent({
   name: 'XhCascaderSearchList',
+  slots: Object as SlotsType<{
+    item?: (props: CascaderSearchListItemSlotProps) => VNode[]
+  }>,
   setup(_, { slots }) {
     const ctx = useCascaderContext()
     // 候选整组自动铺：整条路径连缀成一行；item 插槽可换内容

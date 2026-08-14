@@ -1,5 +1,5 @@
-import type { ThreadSchema, ThreadStatus, ThreadTranslations } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { ThreadApi, ThreadSchema, ThreadStatus, ThreadTranslations } from '@xihan-ui/headless'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -7,6 +7,16 @@ import { provideThread, useThreadContext } from './context'
 import { useThread } from './use-thread'
 
 type ThreadProps = ThreadSchema['props']
+
+/** 默认插槽的载荷：这轮流的状态、粘底与回到底部按钮的露面情况，以及回到底部的动作。 */
+export type ThreadRootSlotProps = Pick<
+  ThreadApi,
+  | 'status'
+  | 'atBottom'
+  | 'sticking'
+  | 'showScrollButton'
+  | 'scrollToBottom'
+>
 
 export const XhThreadRoot = defineComponent({
   name: 'XhThreadRoot',
@@ -20,6 +30,9 @@ export const XhThreadRoot = defineComponent({
   emits: {
     'stick-change': (_details: PayloadOf<ThreadProps, 'onStickChange'>) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: ThreadRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: ThreadProps['onStickChange'] = details => emit('stick-change', details)
     const ctx = useThread(withXhConfig('thread', props) as ThreadProps, notify)

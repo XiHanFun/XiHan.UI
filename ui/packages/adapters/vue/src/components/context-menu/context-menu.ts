@@ -1,6 +1,6 @@
-import type { ContextMenuGroupProps, ContextMenuItemProps, ContextMenuNode, ContextMenuNodeMeta, ContextMenuSchema } from '@xihan-ui/headless'
+import type { ContextMenuApi, ContextMenuGroupProps, ContextMenuItemProps, ContextMenuNode, ContextMenuNodeMeta, ContextMenuSchema, MenuApi } from '@xihan-ui/headless'
 import type { Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType, VNode } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { mergeProps } from '@xihan-ui/kernel'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
@@ -21,6 +21,12 @@ import {
 import { useContextMenu } from './use-context-menu'
 
 type ContextMenuProps = ContextMenuSchema['props']
+
+/** 默认插槽的载荷：右键菜单的展开态与锚点坐标，以及开合、按坐标展开的命令。 */
+export type ContextMenuRootSlotProps = Pick<ContextMenuApi, 'open' | 'point' | 'setOpen' | 'openAt'>
+
+/** 子菜单默认插槽的载荷：这一层子菜单自己的展开态与开合命令。 */
+export type ContextMenuSubSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
 
 export const XhContextMenuRoot = defineComponent({
   name: 'XhContextMenuRoot',
@@ -45,6 +51,11 @@ export const XhContextMenuRoot = defineComponent({
     'select': (_details: PayloadOf<ContextMenuProps, 'onSelect'>) => true,
     'update:open': (_open: PayloadOf<ContextMenuProps, 'onOpenChange'>['open']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: ContextMenuRootSlotProps) => VNode[]
+    trigger?: () => VNode[]
+    item?: (node: ContextMenuNodeMeta) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notifyOpen: ContextMenuProps['onOpenChange'] = (details) => {
       emit('open-change', details)
@@ -190,6 +201,9 @@ export const XhContextMenuSub = defineComponent({
     hoverOpenDelay: { type: Number, default: undefined },
     hoverCloseDelay: { type: Number, default: undefined },
   },
+  slots: Object as SlotsType<{
+    default?: (props: ContextMenuSubSlotProps) => VNode[]
+  }>,
   setup(props, { slots }) {
     const parent = useContextMenuContext()
     const chain = useContextMenuChain()

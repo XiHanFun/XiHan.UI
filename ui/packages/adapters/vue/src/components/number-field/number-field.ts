@@ -1,12 +1,18 @@
-import type { NumberFieldSchema } from '@xihan-ui/headless'
+import type { NumberFieldApi, NumberFieldSchema } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideNumberField, useNumberFieldContext } from './context'
 import { useNumberField } from './use-number-field'
 
 type NumberFieldProps = NumberFieldSchema['props']
+
+/** 默认插槽的载荷：原始输入串与其数值、增减是否还走得动，以及写值、增减的命令。 */
+export type NumberFieldRootSlotProps = Pick<
+  NumberFieldApi,
+  'value' | 'valueAsNumber' | 'empty' | 'canIncrement' | 'canDecrement' | 'setValue' | 'increment' | 'decrement'
+>
 
 export const XhNumberFieldRoot = defineComponent({
   name: 'XhNumberFieldRoot',
@@ -34,6 +40,9 @@ export const XhNumberFieldRoot = defineComponent({
     'value-change': (_details: PayloadOf<NumberFieldProps, 'onValueChange'>) => true,
     'update:value': (_value: PayloadOf<NumberFieldProps, 'onValueChange'>['value']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: NumberFieldRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: NumberFieldProps['onValueChange'] = (details) => {
       emit('value-change', details)

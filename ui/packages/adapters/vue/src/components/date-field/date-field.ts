@@ -1,6 +1,6 @@
-import type { DateFieldSchema, DateGranularity, DateSegmentType } from '@xihan-ui/headless'
+import type { DateFieldApi, DateFieldSchema, DateFieldSegmentState, DateGranularity, DateSegmentType } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -9,6 +9,25 @@ import { useDateField } from './use-date-field'
 
 type DateFieldProps = DateFieldSchema['props']
 type SegmentTexts = { readonly [K in DateSegmentType]?: string }
+
+/** 默认插槽的载荷：整份值、逐段投影、填写状态，以及改写与清空的句柄。 */
+export type DateFieldRootSlotProps = Pick<
+  DateFieldApi,
+  | 'value'
+  | 'valueAsDate'
+  | 'segments'
+  | 'complete'
+  | 'empty'
+  | 'outOfRange'
+  | 'focusedSegment'
+  | 'setValue'
+  | 'clear'
+>
+
+/** 段位默认插槽的载荷：本段的投影；下标越界时缺席。 */
+export interface DateFieldSegmentSlotProps {
+  segment: DateFieldSegmentState | undefined
+}
 
 export const XhDateFieldRoot = defineComponent({
   name: 'XhDateFieldRoot',
@@ -37,6 +56,9 @@ export const XhDateFieldRoot = defineComponent({
     'value-change': (_details: PayloadOf<DateFieldProps, 'onValueChange'>) => true,
     'update:value': (_value: PayloadOf<DateFieldProps, 'onValueChange'>['value']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: DateFieldRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const onValueChange: DateFieldProps['onValueChange'] = (details) => {
       emit('value-change', details)
@@ -81,6 +103,9 @@ export const XhDateFieldSegment = defineComponent({
     // 下标由作者声明，是哪一段由 locale 与 granularity 算出；兼收字符串
     index: { type: [Number, String] as PropType<number | string>, required: true },
   },
+  slots: Object as SlotsType<{
+    default?: (props: DateFieldSegmentSlotProps) => VNode[]
+  }>,
   setup(props, { slots }) {
     const ctx = useDateFieldContext()
     return () => {

@@ -1,9 +1,13 @@
-import type { EllipsisSchema } from '@xihan-ui/headless'
+import type { EllipsisApi, EllipsisSchema } from '@xihan-ui/headless'
+import type { SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { useEllipsis } from './use-ellipsis'
 
 type EllipsisProps = EllipsisSchema['props']
+
+/** 默认插槽的载荷：展开态与量出来的溢出与否，以及展开与重量一次的方法。 */
+export type EllipsisSlotProps = Pick<EllipsisApi, 'expanded' | 'overflowing' | 'setExpanded' | 'measure'>
 
 /**
  * 一段夹住的文字：单行收成省略号，多行按行数裁。
@@ -26,6 +30,9 @@ export const XhEllipsis = defineComponent({
     'update:expanded': (_expanded: PayloadOf<EllipsisProps, 'onExpandedChange'>['expanded']) => true,
     'overflow-change': (_details: PayloadOf<EllipsisProps, 'onOverflowChange'>) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: EllipsisSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const ctx = useEllipsis(props as EllipsisProps, {
       onExpandedChange: (details) => {

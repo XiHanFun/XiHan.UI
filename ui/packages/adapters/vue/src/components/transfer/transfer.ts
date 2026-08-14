@@ -1,4 +1,5 @@
 import type {
+  TransferCheckState,
   TransferFilter,
   TransferItem,
   TransferItemProps,
@@ -7,7 +8,7 @@ import type {
   TransferSide,
 } from '@xihan-ui/headless'
 import type { Direction } from '@xihan-ui/kernel'
-import type { PropType, Slots, VNode } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import {
@@ -21,6 +22,35 @@ import {
 import { useTransfer } from './use-transfer'
 
 type TransferProps = TransferSchema['props']
+
+/** 默认插槽的载荷：目标侧的值与两侧的勾选、两侧当下可见的条目，以及勾选、写值与搬运的动作。 */
+export interface TransferRootSlotProps {
+  value: string[]
+  selected: string[]
+  sourceItems: readonly TransferItem[]
+  targetItems: readonly TransferItem[]
+  canMove: (to: TransferSide) => boolean
+  checkState: (side: TransferSide) => TransferCheckState
+  isChecked: (value: string) => boolean
+  setValue: (next: string[]) => void
+  setSelected: (next: string[]) => void
+  toggle: (value: string) => void
+  toggleAll: (side: TransferSide) => void
+  move: (to: TransferSide) => void
+}
+
+/** 面板默认插槽的载荷：这一侧的身份、当下可见的条目、这一侧的全选三态与搜索词。 */
+export interface TransferPanelSlotProps {
+  side: TransferSide
+  items: readonly TransferItem[]
+  checkState: TransferCheckState
+  query: string
+}
+
+/** 源/目标两个面板部件共用的插槽集合。 */
+interface TransferPanelSlots {
+  default?: (props: TransferPanelSlotProps) => VNode[]
+}
 
 export const XhTransferRoot = defineComponent({
   name: 'XhTransferRoot',
@@ -45,6 +75,9 @@ export const XhTransferRoot = defineComponent({
     'update:value': (_value: PayloadOf<TransferProps, 'onValueChange'>['value']) => true,
     'update:selected': (_selected: PayloadOf<TransferProps, 'onSelectionChange'>['selected']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: TransferRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notifyValue: TransferProps['onValueChange'] = (details) => {
       emit('value-change', details)
@@ -77,8 +110,8 @@ export const XhTransferRoot = defineComponent({
 })
 
 /** 生成源/目标面板共用的 setup，两侧只在 side 上不同 */
-function panelSetup(side: TransferSide): (props: unknown, ctx: { slots: Slots }) => () => VNode {
-  return (_: unknown, { slots }: { slots: Slots }) => {
+function panelSetup(side: TransferSide): (props: unknown, ctx: { slots: TransferPanelSlots }) => () => VNode {
+  return (_: unknown, { slots }: { slots: TransferPanelSlots }) => {
     const ctx = useTransferContext()
     const panel = computed<TransferPanelProps>(() => ({ side }))
     provideTransferPanel({ panel })
@@ -94,11 +127,13 @@ function panelSetup(side: TransferSide): (props: unknown, ctx: { slots: Slots })
 
 export const XhTransferSourcePanel = defineComponent({
   name: 'XhTransferSourcePanel',
+  slots: Object as SlotsType<TransferPanelSlots>,
   setup: panelSetup('source'),
 })
 
 export const XhTransferTargetPanel = defineComponent({
   name: 'XhTransferTargetPanel',
+  slots: Object as SlotsType<TransferPanelSlots>,
   setup: panelSetup('target'),
 })
 

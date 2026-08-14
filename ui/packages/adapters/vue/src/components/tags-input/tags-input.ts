@@ -1,6 +1,6 @@
-import type { TagsInputBlurBehavior, TagsInputItemProps, TagsInputSchema, TagsInputTranslations } from '@xihan-ui/headless'
+import type { TagsInputApi, TagsInputBlurBehavior, TagsInputItemProps, TagsInputSchema, TagsInputTranslations } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -8,6 +8,27 @@ import { provideTagsInput, provideTagsInputItem, useTagsInputContext, useTagsInp
 import { useTagsInput } from './use-tags-input'
 
 type TagsInputProps = TagsInputSchema['props']
+
+/** 默认插槽的载荷：标签集合与输入文本、数量与越界标志、光标与编辑锚点，以及增删改与清空的动作。 */
+export type TagsInputRootSlotProps = Pick<
+  TagsInputApi,
+  | 'value'
+  | 'count'
+  | 'inputValue'
+  | 'empty'
+  | 'atMax'
+  | 'overflow'
+  | 'highlightedValue'
+  | 'editedValue'
+  | 'canClear'
+  | 'setValue'
+  | 'addValue'
+  | 'deleteValue'
+  | 'clear'
+  | 'setInputValue'
+  | 'highlight'
+  | 'edit'
+>
 
 export const XhTagsInputRoot = defineComponent({
   name: 'XhTagsInputRoot',
@@ -41,6 +62,9 @@ export const XhTagsInputRoot = defineComponent({
     'input-value-change': (_details: PayloadOf<TagsInputProps, 'onInputValueChange'>) => true,
     'update:inputValue': (_inputValue: PayloadOf<TagsInputProps, 'onInputValueChange'>['inputValue']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: TagsInputRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const onValueChange: TagsInputProps['onValueChange'] = (details) => {
       emit('value-change', details)

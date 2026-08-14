@@ -1,6 +1,12 @@
-import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupNodeMeta, CheckboxGroupSchema } from '@xihan-ui/headless'
+import type {
+  CheckboxGroupApi,
+  CheckboxGroupItemProps,
+  CheckboxGroupNode,
+  CheckboxGroupNodeMeta,
+  CheckboxGroupSchema,
+} from '@xihan-ui/headless'
 import type { Orientation } from '@xihan-ui/kernel'
-import type { PropType, VNode } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import {
@@ -12,6 +18,12 @@ import {
 import { useCheckboxGroup } from './use-checkbox-group'
 
 type CheckboxGroupProps = CheckboxGroupSchema['props']
+
+/** 默认插槽的载荷：整组的选中集合与全选态，以及整体替换与翻转单值的方法。 */
+export type CheckboxGroupRootSlotProps = Pick<
+  CheckboxGroupApi,
+  'value' | 'checkedState' | 'isChecked' | 'setValue' | 'toggleValue'
+>
 
 export const XhCheckboxGroupRoot = defineComponent({
   name: 'XhCheckboxGroupRoot',
@@ -34,6 +46,11 @@ export const XhCheckboxGroupRoot = defineComponent({
     'value-change': (_details: PayloadOf<CheckboxGroupProps, 'onValueChange'>) => true,
     'update:value': (_value: PayloadOf<CheckboxGroupProps, 'onValueChange'>['value']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: CheckboxGroupRootSlotProps) => VNode[]
+    label?: () => VNode[]
+    item?: (props: CheckboxGroupNodeMeta) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: CheckboxGroupProps['onValueChange'] = (details) => {
       emit('value-change', details)

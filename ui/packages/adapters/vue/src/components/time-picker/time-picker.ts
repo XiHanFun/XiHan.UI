@@ -1,12 +1,14 @@
 import type {
   TimeGranularity,
   TimeHourCycle,
+  TimePickerApi,
+  TimePickerColumn,
   TimePickerColumnUnit,
   TimePickerSchema,
   TimeSegmentType,
 } from '@xihan-ui/headless'
 import type { Placement } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -19,6 +21,26 @@ import {
 import { useTimePicker } from './use-time-picker'
 
 type TimePickerProps = TimePickerSchema['props']
+
+/** 默认插槽的载荷：浮层开合与当前值、值状态标志、此刻的段与列，以及开合、写值、清空的动作。 */
+export type TimePickerRootSlotProps = Pick<
+  TimePickerApi,
+  | 'open'
+  | 'value'
+  | 'empty'
+  | 'outOfRange'
+  | 'segments'
+  | 'columns'
+  | 'canClear'
+  | 'setOpen'
+  | 'setValue'
+  | 'clear'
+>
+
+/** 默认插槽的载荷：这一列此刻的可选值。 */
+export interface TimePickerColumnSlotProps {
+  options: TimePickerColumn['options']
+}
 
 export const XhTimePickerRoot = defineComponent({
   name: 'XhTimePickerRoot',
@@ -49,6 +71,9 @@ export const XhTimePickerRoot = defineComponent({
     'update:value': (_value: PayloadOf<TimePickerProps, 'onValueChange'>['value']) => true,
     'update:open': (_open: PayloadOf<TimePickerProps, 'onOpenChange'>['open']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: TimePickerRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notifyValue: TimePickerProps['onValueChange'] = (details) => {
       emit('value-change', details)
@@ -159,6 +184,9 @@ export const XhTimePickerColumn = defineComponent({
   props: {
     unit: { type: String as PropType<TimePickerColumnUnit>, required: true },
   },
+  slots: Object as SlotsType<{
+    default?: (props: TimePickerColumnSlotProps) => VNode[]
+  }>,
   setup(props, { slots }) {
     const ctx = useTimePickerContext()
     const unit = computed(() => props.unit)

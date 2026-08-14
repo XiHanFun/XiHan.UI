@@ -1,11 +1,17 @@
-import type { EditableActivationMode, EditableSchema, EditableSubmitMode } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { EditableActivationMode, EditableApi, EditableSchema, EditableSubmitMode } from '@xihan-ui/headless'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideEditable, useEditableContext } from './context'
 import { useEditable } from './use-editable'
 
 type EditableProps = EditableSchema['props']
+
+/** 默认插槽的载荷：当下的值与预览文字、编辑态，以及写值、进入编辑、提交、撤销的命令。 */
+export type EditableRootSlotProps = Pick<
+  EditableApi,
+  'value' | 'displayValue' | 'editing' | 'empty' | 'setValue' | 'edit' | 'submit' | 'cancel'
+>
 
 export const XhEditableRoot = defineComponent({
   name: 'XhEditableRoot',
@@ -35,6 +41,9 @@ export const XhEditableRoot = defineComponent({
     'edit-change': (_details: PayloadOf<EditableProps, 'onEditChange'>) => true,
     'update:edit': (_edit: PayloadOf<EditableProps, 'onEditChange'>['edit']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: EditableRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const ctx = useEditable(props as EditableProps, {
       onValueChange: (details) => {

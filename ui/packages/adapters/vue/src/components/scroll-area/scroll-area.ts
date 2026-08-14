@@ -1,6 +1,6 @@
-import type { ScrollAreaOrientation, ScrollAreaSchema, ScrollAreaScrollbarProps, ScrollAreaType } from '@xihan-ui/headless'
+import type { ScrollAreaApi, ScrollAreaOrientation, ScrollAreaSchema, ScrollAreaScrollbarProps, ScrollAreaType } from '@xihan-ui/headless'
 import type { Direction, Orientation } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import { computed, defineComponent, h } from 'vue'
 import {
   provideScrollArea,
@@ -12,6 +12,9 @@ import { useScrollArea } from './use-scroll-area'
 
 type ScrollAreaProps = ScrollAreaSchema['props']
 
+/** 默认插槽的载荷：两条轴的滚动条状态、正被拖动的那条轴，以及右下角补丁该不该显形。 */
+export type ScrollAreaRootSlotProps = Pick<ScrollAreaApi, 'vertical' | 'horizontal' | 'draggingAxis' | 'cornerVisible'>
+
 export const XhScrollAreaRoot = defineComponent({
   name: 'XhScrollAreaRoot',
   // 缺省值由机器与 connect 给出，这里一律 default: undefined
@@ -21,6 +24,9 @@ export const XhScrollAreaRoot = defineComponent({
     orientation: { type: String as PropType<ScrollAreaOrientation>, default: undefined },
     dir: { type: String as PropType<Direction>, default: undefined },
   },
+  slots: Object as SlotsType<{
+    default?: (props: ScrollAreaRootSlotProps) => VNode[]
+  }>,
   // 组件不对外报事件，滚动是原生的，宿主直接在视口上监听
   setup(props, { slots }) {
     const ctx = useScrollArea(props as ScrollAreaProps)

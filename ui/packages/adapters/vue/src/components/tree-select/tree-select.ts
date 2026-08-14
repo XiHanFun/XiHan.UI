@@ -1,6 +1,6 @@
-import type { TreeNode, TreeSelectNodeProps, TreeSelectSchema } from '@xihan-ui/headless'
+import type { TreeNode, TreeSelectApi, TreeSelectNodeProps, TreeSelectSchema } from '@xihan-ui/headless'
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType, Ref } from 'vue'
+import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { TreeSelectContext } from './use-tree-select'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
@@ -8,6 +8,28 @@ import { provideTreeSelect, provideTreeSelectNode, useTreeSelectContext, useTree
 import { useTreeSelect } from './use-tree-select'
 
 type TreeSelectProps = TreeSelectSchema['props']
+
+/** 默认插槽的载荷：展开与选中状态、可见行序列、节点状态判定与写值方法。 */
+export type TreeSelectRootSlotProps = Pick<
+  TreeSelectApi,
+  | 'open'
+  | 'value'
+  | 'expandedValue'
+  | 'visibleNodes'
+  | 'focusedValue'
+  | 'displayText'
+  | 'canClear'
+  | 'isSelected'
+  | 'isIndeterminate'
+  | 'isExpanded'
+  | 'setOpen'
+  | 'setValue'
+  | 'setExpandedValue'
+  | 'expand'
+  | 'collapse'
+  | 'select'
+  | 'clear'
+>
 
 /** 本节点持有焦点时，value 变更重报焦点节点，卸载时上报焦点丢失 */
 function reportNodeFocus(ctx: TreeSelectContext, el: Ref<HTMLElement | null>, value: () => string): void {
@@ -68,6 +90,9 @@ export const XhTreeSelectRoot = defineComponent({
     'update:expandedValue': (_value: PayloadOf<TreeSelectProps, 'onExpandedChange'>['value']) => true,
     'update:open': (_open: PayloadOf<TreeSelectProps, 'onOpenChange'>['open']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: TreeSelectRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notifyValue: TreeSelectProps['onValueChange'] = (details) => {
       emit('value-change', details)

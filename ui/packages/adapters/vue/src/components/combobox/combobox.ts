@@ -1,6 +1,6 @@
-import type { ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxItemGroupProps, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
+import type { ComboboxApi, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxItemGroupProps, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
 import type { ControlVariant, Placement, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType, VNode } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, onMounted, onUnmounted, onUpdated, watch } from 'vue'
 import {
@@ -14,6 +14,12 @@ import {
 import { useCombobox } from './use-combobox'
 
 type ComboboxProps = ComboboxSchema['props']
+
+/** 默认插槽的载荷：展开状态、选中值、输入串、高亮候选、空态，与改这些的命令。 */
+export type ComboboxRootSlotProps = Pick<
+  ComboboxApi,
+  'open' | 'value' | 'inputValue' | 'highlightedValue' | 'empty' | 'isSelected' | 'setOpen' | 'setValue' | 'setInputValue' | 'clear'
+>
 
 export const XhComboboxRoot = defineComponent({
   name: 'XhComboboxRoot',
@@ -56,6 +62,12 @@ export const XhComboboxRoot = defineComponent({
     'update:inputValue': (_inputValue: PayloadOf<ComboboxProps, 'onInputValueChange'>['inputValue']) => true,
     'update:open': (_open: PayloadOf<ComboboxProps, 'onOpenChange'>['open']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: ComboboxRootSlotProps) => VNode[]
+    label?: () => VNode[]
+    empty?: () => VNode[]
+    item?: (node: ComboboxNodeMeta) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notifyValue: ComboboxProps['onValueChange'] = (details) => {
       emit('value-change', details)

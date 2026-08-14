@@ -1,5 +1,5 @@
-import type { ToasterSchema, ToasterTranslations, ToastPlacement, ToastRecord } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { ResolvedToast, ToasterSchema, ToasterTranslations, ToastOptions, ToastPlacement, ToastRecord } from '@xihan-ui/headless'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, Fragment, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -7,6 +7,18 @@ import { provideToaster, useToasterContext } from './context'
 import { useToaster } from './use-toaster'
 
 type ToasterProps = ToasterSchema['props']
+
+/** 默认插槽的载荷：当前可见的通知队列与它的落位分组，以及入队、改写、关闭的命令。 */
+export interface ToasterRootSlotProps {
+  toasts: ResolvedToast[]
+  placements: ToastPlacement[]
+  count: number
+  getToastsByPlacement: (placement: ToastPlacement) => ResolvedToast[]
+  create: (options?: ToastOptions) => string
+  update: (id: string, options: Partial<ToastOptions>) => void
+  dismiss: (id: string) => void
+  dismissAll: () => void
+}
 
 export const XhToasterRoot = defineComponent({
   name: 'XhToasterRoot',
@@ -27,6 +39,9 @@ export const XhToasterRoot = defineComponent({
     'toasts-change': (_details: PayloadOf<ToasterProps, 'onToastsChange'>) => true,
     'update:toasts': (_toasts: PayloadOf<ToasterProps, 'onToastsChange'>['toasts']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: ToasterRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: ToasterProps['onToastsChange'] = (details) => {
       emit('toasts-change', details)
@@ -48,12 +63,20 @@ export const XhToasterRoot = defineComponent({
   },
 })
 
+/** 默认插槽的载荷：这一组里逐条铺开的通知。 */
+export interface ToasterGroupSlotProps {
+  toast: ResolvedToast
+}
+
 export const XhToasterGroup = defineComponent({
   name: 'XhToasterGroup',
   props: {
     // 不写就用 toaster 的 placement；写了就只收这个位置上的条目
     placement: { type: String as PropType<ToastPlacement>, default: undefined },
   },
+  slots: Object as SlotsType<{
+    default?: (props: ToasterGroupSlotProps) => VNode[]
+  }>,
   setup(props, { slots }) {
     const ctx = useToasterContext()
     return () => {

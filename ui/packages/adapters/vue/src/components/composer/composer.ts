@@ -1,5 +1,5 @@
-import type { ComposerRunStatus, ComposerSchema, ComposerTranslations } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { ComposerApi, ComposerRunStatus, ComposerSchema, ComposerTranslations } from '@xihan-ui/headless'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -7,6 +7,12 @@ import { provideComposer, useComposerContext } from './context'
 import { useComposer } from './use-composer'
 
 type ComposerProps = ComposerSchema['props']
+
+/** 默认插槽的载荷：草稿文本与输入法、可提交、流式、禁用四个状态，以及改写、提交、停止三个动作。 */
+export type ComposerRootSlotProps = Pick<
+  ComposerApi,
+  'value' | 'isComposing' | 'canSubmit' | 'streaming' | 'disabled' | 'setValue' | 'submit' | 'stop'
+>
 
 export const XhComposerRoot = defineComponent({
   name: 'XhComposerRoot',
@@ -27,6 +33,9 @@ export const XhComposerRoot = defineComponent({
     'submit': (_details: PayloadOf<ComposerProps, 'onSubmit'>) => true,
     'stop': () => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: ComposerRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const ctx = useComposer(withXhConfig('composer', props) as ComposerProps, {
       onValueChange: (details) => {

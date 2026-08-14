@@ -1,12 +1,15 @@
-import type { HoverCardSchema } from '@xihan-ui/headless'
+import type { HoverCardApi, HoverCardSchema } from '@xihan-ui/headless'
 import type { Direction, Placement, Size } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideHoverCard, useHoverCardContext } from './context'
 import { useHoverCard } from './use-hover-card'
 
 type HoverCardProps = HoverCardSchema['props']
+
+/** 默认插槽的载荷：浮层的开合状态与程序化开合的方法。 */
+export type HoverCardRootSlotProps = Pick<HoverCardApi, 'open' | 'setOpen'>
 
 export const XhHoverCardRoot = defineComponent({
   name: 'XhHoverCardRoot',
@@ -27,6 +30,9 @@ export const XhHoverCardRoot = defineComponent({
     'open-change': (_details: PayloadOf<HoverCardProps, 'onOpenChange'>) => true,
     'update:open': (_open: PayloadOf<HoverCardProps, 'onOpenChange'>['open']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: HoverCardRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: HoverCardProps['onOpenChange'] = (details) => {
       emit('open-change', details)

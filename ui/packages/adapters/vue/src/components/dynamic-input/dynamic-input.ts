@@ -1,5 +1,5 @@
-import type { DynamicInputItemProps, DynamicInputSchema, DynamicInputTranslations } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { DynamicInputApi, DynamicInputItemProps, DynamicInputSchema, DynamicInputTranslations } from '@xihan-ui/headless'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -7,6 +7,24 @@ import { provideDynamicInput, provideDynamicInputItem, useDynamicInputContext, u
 import { useDynamicInput } from './use-dynamic-input'
 
 type DynamicInputProps = DynamicInputSchema['props']
+
+/** 默认插槽的载荷：逐行投影与整份值、行数与上下限状态，以及整份替换、增删、移动的动作。 */
+export type DynamicInputRootSlotProps = Pick<
+  DynamicInputApi,
+  | 'items'
+  | 'value'
+  | 'count'
+  | 'empty'
+  | 'atMin'
+  | 'atMax'
+  | 'canAdd'
+  | 'setValue'
+  | 'add'
+  | 'remove'
+  | 'move'
+  | 'moveUp'
+  | 'moveDown'
+>
 
 export const XhDynamicInputRoot = defineComponent({
   name: 'XhDynamicInputRoot',
@@ -27,6 +45,9 @@ export const XhDynamicInputRoot = defineComponent({
     'value-change': (_details: PayloadOf<DynamicInputProps, 'onValueChange'>) => true,
     'update:value': (_value: PayloadOf<DynamicInputProps, 'onValueChange'>['value']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: DynamicInputRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const onValueChange: DynamicInputProps['onValueChange'] = (details) => {
       emit('value-change', details)

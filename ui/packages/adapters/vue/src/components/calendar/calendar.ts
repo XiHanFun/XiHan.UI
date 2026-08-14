@@ -1,5 +1,5 @@
-import type { CalendarCellProps, CalendarSchema, CalendarSelectionMode, CalendarWeekdayFormat } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { CalendarApi, CalendarCellProps, CalendarSchema, CalendarSelectionMode, CalendarWeekdayFormat } from '@xihan-ui/headless'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -7,6 +7,26 @@ import { provideCalendar, provideCalendarCell, useCalendarCellContext, useCalend
 import { useCalendar } from './use-calendar'
 
 type CalendarProps = CalendarSchema['props']
+
+/** 默认插槽的载荷：选中值与聚焦日、展示月的日期矩阵与表头，以及选中、聚焦、翻月的动作。 */
+export type CalendarRootSlotProps = Pick<
+  CalendarApi,
+  | 'value'
+  | 'focusedValue'
+  | 'visibleMonth'
+  | 'weeks'
+  | 'weekDays'
+  | 'headingLabel'
+  | 'canGoPrev'
+  | 'canGoNext'
+  | 'isSelected'
+  | 'isUnavailable'
+  | 'setValue'
+  | 'select'
+  | 'focus'
+  | 'goToPrevMonth'
+  | 'goToNextMonth'
+>
 
 export const XhCalendarRoot = defineComponent({
   name: 'XhCalendarRoot',
@@ -34,6 +54,9 @@ export const XhCalendarRoot = defineComponent({
     'focused-value-change': (_details: PayloadOf<CalendarProps, 'onFocusedValueChange'>) => true,
     'update:focusedValue': (_focusedValue: PayloadOf<CalendarProps, 'onFocusedValueChange'>['focusedValue']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: CalendarRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notifyValue: CalendarProps['onValueChange'] = (details) => {
       emit('value-change', details)

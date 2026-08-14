@@ -1,5 +1,5 @@
-import type { SideNavNode, SideNavSchema } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { SideNavApi, SideNavNode, SideNavSchema } from '@xihan-ui/headless'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -7,6 +7,25 @@ import { provideSideNav, provideSideNavNode, useSideNavContext, useSideNavNodeCo
 import { useSideNav } from './use-side-nav'
 
 type SideNavProps = SideNavSchema['props']
+
+/** 默认插槽的载荷：选中项、展开集合、折叠与浮层状态、逐节点的状态判定，与选中、展开、折叠、弹出等命令。 */
+export type SideNavRootSlotProps = Pick<
+  SideNavApi,
+  | 'value'
+  | 'expandedValue'
+  | 'collapsed'
+  | 'popoutValue'
+  | 'isSelected'
+  | 'isExpanded'
+  | 'isActiveBranch'
+  | 'select'
+  | 'setValue'
+  | 'setExpandedValue'
+  | 'expand'
+  | 'collapse'
+  | 'openPopout'
+  | 'closePopout'
+>
 
 export const XhSideNavRoot = defineComponent({
   name: 'XhSideNavRoot',
@@ -32,6 +51,9 @@ export const XhSideNavRoot = defineComponent({
     'expanded-change': (_details: PayloadOf<SideNavProps, 'onExpandedChange'>) => true,
     'update:expandedValue': (_value: PayloadOf<SideNavProps, 'onExpandedChange'>['value']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: SideNavRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const ctx = useSideNav(withXhConfig('side-nav', props) as SideNavProps, {
       onValueChange: (details) => {

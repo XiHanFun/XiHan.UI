@@ -1883,8 +1883,8 @@ const codeBlockPartial = `const stream = await client.chat({
         </div>
         <XhFileUploadHiddenInput />
         <XhFileUploadItemGroup>
-          <!-- key 取 File 本身：同名同大小的两个文件是两份不同的文件，拿文件名当 key 会撞 -->
-          <XhFileUploadItem v-for="f in acceptedFiles" :key="f" :file="f">
+          <!-- key 取名字加大小加改动时间：同名同大小的两个文件是两份不同的文件，光拿文件名会撞 -->
+          <XhFileUploadItem v-for="f in acceptedFiles" :key="`${f.name}:${f.size}:${f.lastModified}`" :file="f">
             <XhFileUploadItemPreview />
             <XhFileUploadItemName />
             <XhFileUploadItemSizeText />
@@ -2688,7 +2688,7 @@ const codeBlockPartial = `const stream = await client.chat({
                   </XhDatePickerGridHead>
                   <XhDatePickerGridBody>
                     <!-- v-for 必带 key：就地复用会让承载焦点的那一格换了身份，翻月后焦点无处可落 -->
-                    <XhDatePickerWeekRow v-for="week in weeks" :key="week[0].value">
+                    <XhDatePickerWeekRow v-for="week in weeks" :key="week[0]!.value">
                       <XhDatePickerCell v-for="day in week" :key="day.value" :value="day.value">
                         <XhDatePickerCellTrigger>{{ day.day }}</XhDatePickerCellTrigger>
                       </XhDatePickerCell>
@@ -2743,7 +2743,7 @@ const codeBlockPartial = `const stream = await client.chat({
                     </XhDatePickerWeekRow>
                   </XhDatePickerGridHead>
                   <XhDatePickerGridBody>
-                    <XhDatePickerWeekRow v-for="week in weeks" :key="week[0].value">
+                    <XhDatePickerWeekRow v-for="week in weeks" :key="week[0]!.value">
                       <XhDatePickerCell v-for="day in week" :key="day.value" :value="day.value">
                         <XhDatePickerCellTrigger>{{ day.day }}</XhDatePickerCellTrigger>
                       </XhDatePickerCell>

@@ -1,12 +1,18 @@
-import type { StepsSchema } from '@xihan-ui/headless'
+import type { StepsApi, StepsSchema } from '@xihan-ui/headless'
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideSteps, provideStepsItem, useStepsContext, useStepsItem } from './context'
 import { useSteps } from './use-steps'
 
 type StepsProps = StepsSchema['props']
+
+/** 默认插槽的载荷：当前步序、总步数、是否走完，以及跳步与前进后退的方法。 */
+export type StepsRootSlotProps = Pick<
+  StepsApi,
+  'step' | 'count' | 'complete' | 'setStep' | 'goToNextStep' | 'goToPrevStep'
+>
 
 export const XhStepsRoot = defineComponent({
   name: 'XhStepsRoot',
@@ -27,6 +33,9 @@ export const XhStepsRoot = defineComponent({
     'step-change': (_details: PayloadOf<StepsProps, 'onStepChange'>) => true,
     'update:step': (_step: PayloadOf<StepsProps, 'onStepChange'>['step']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: StepsRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: StepsProps['onStepChange'] = (details) => {
       emit('step-change', details)

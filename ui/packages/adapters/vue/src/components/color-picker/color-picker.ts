@@ -1,4 +1,5 @@
 import type {
+  ColorPickerApi,
   ColorPickerChannel,
   ColorPickerFormat,
   ColorPickerInputChannel,
@@ -6,7 +7,7 @@ import type {
   ColorPickerTranslations,
 } from '@xihan-ui/headless'
 import type { Direction, Placement } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { colorPickerToChannel, colorPickerToInputChannel } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onUnmounted } from 'vue'
@@ -20,6 +21,12 @@ import {
 import { useColorPicker } from './use-color-picker'
 
 type ColorPickerProps = ColorPickerSchema['props']
+
+/** 默认插槽的载荷：展开态、当前颜色的各式表示、预设色板、屏幕取色状态，以及改展开与改值两个动作。 */
+export type ColorPickerRootSlotProps = Pick<
+  ColorPickerApi,
+  'open' | 'value' | 'rgba' | 'hsva' | 'swatches' | 'picking' | 'eyeDropperSupported' | 'setOpen' | 'setValue'
+>
 
 export const XhColorPickerRoot = defineComponent({
   name: 'XhColorPickerRoot',
@@ -47,6 +54,9 @@ export const XhColorPickerRoot = defineComponent({
     'update:value': (_value: PayloadOf<ColorPickerProps, 'onValueChange'>['value']) => true,
     'update:open': (_open: PayloadOf<ColorPickerProps, 'onOpenChange'>['open']) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: ColorPickerRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notifyValue: ColorPickerProps['onValueChange'] = (details) => {
       emit('value-change', details)

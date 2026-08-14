@@ -1,6 +1,6 @@
-import type { TourSchema, TourStep } from '@xihan-ui/headless'
+import type { TourApi, TourSchema, TourStep } from '@xihan-ui/headless'
 import type { Placement } from '@xihan-ui/kernel'
-import type { PropType } from 'vue'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -8,6 +8,24 @@ import { provideTour, useTourContext } from './context'
 import { useTour } from './use-tour'
 
 type TourProps = TourSchema['props']
+
+/** 默认插槽的载荷：引导的开合与步序状态，以及开关、走步、放弃与校准位置的动作。 */
+export type TourRootSlotProps = Pick<
+  TourApi,
+  | 'open'
+  | 'step'
+  | 'count'
+  | 'currentStep'
+  | 'firstStep'
+  | 'lastStep'
+  | 'progressText'
+  | 'setOpen'
+  | 'setStep'
+  | 'goToNextStep'
+  | 'goToPrevStep'
+  | 'skip'
+  | 'remeasure'
+>
 
 export const XhTourRoot = defineComponent({
   name: 'XhTourRoot',
@@ -36,6 +54,9 @@ export const XhTourRoot = defineComponent({
     'complete': (_details: PayloadOf<TourProps, 'onComplete'>) => true,
     'skip': (_details: PayloadOf<TourProps, 'onSkip'>) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: TourRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const ctx = useTour(withXhConfig('tour', props) as TourProps, {
       onOpenChange: (details) => {

@@ -1,10 +1,13 @@
-import type { InfiniteScrollSchema } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { InfiniteScrollApi, InfiniteScrollSchema } from '@xihan-ui/headless'
+import type { PropType, SlotsType, VNode } from 'vue'
 import { defineComponent, h } from 'vue'
 import { provideInfiniteScroll, useInfiniteScrollContext } from './context'
 import { useInfiniteScroll } from './use-infinite-scroll'
 
 type InfiniteScrollProps = InfiniteScrollSchema['props']
+
+/** 默认插槽的载荷：取数所处的阶段，以及正在取数与已关掉两个状态。 */
+export type InfiniteScrollRootSlotProps = Pick<InfiniteScrollApi, 'phase' | 'loading' | 'disabled'>
 
 /** 根节点是列表的外壳，状态挂在它身上；滚动本身走浏览器原生通路，组件不接管。 */
 export const XhInfiniteScrollRoot = defineComponent({
@@ -20,6 +23,9 @@ export const XhInfiniteScrollRoot = defineComponent({
   emits: {
     load: () => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: InfiniteScrollRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: InfiniteScrollProps['onLoad'] = () => emit('load')
     // 传响应式 props 对象本身而非快照，供机器每次读时重新展开

@@ -1,11 +1,25 @@
-import type { VirtualizerChangeDetails, VirtualizerSchema } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { VirtualizerApi, VirtualizerChangeDetails, VirtualizerSchema } from '@xihan-ui/headless'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, onMounted, onUpdated, ref } from 'vue'
 import { provideVirtualizer, useVirtualizerContext } from './context'
 import { useVirtualizer } from './use-virtualizer'
 
 type VirtualizerProps = VirtualizerSchema['props']
+
+/** 默认插槽的载荷：此刻该渲染的条目与总长、可视区首末下标与滚动态，以及滚动与量尺寸的动作。 */
+export type VirtualizerRootSlotProps = Pick<
+  VirtualizerApi,
+  | 'virtualItems'
+  | 'totalSize'
+  | 'startIndex'
+  | 'endIndex'
+  | 'scrolling'
+  | 'lanes'
+  | 'scrollToIndex'
+  | 'measureElement'
+  | 'measure'
+>
 
 export const XhVirtualizerRoot = defineComponent({
   name: 'XhVirtualizerRoot',
@@ -26,6 +40,9 @@ export const XhVirtualizerRoot = defineComponent({
   emits: {
     change: (_details: PayloadOf<VirtualizerProps, 'onChange'>) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: VirtualizerRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: VirtualizerProps['onChange'] = (details: VirtualizerChangeDetails) => emit('change', details)
     const ctx = useVirtualizer(props as VirtualizerProps, notify)

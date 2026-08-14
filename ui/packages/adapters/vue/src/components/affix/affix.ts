@@ -1,11 +1,14 @@
-import type { AffixSchema } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { AffixApi, AffixSchema } from '@xihan-ui/headless'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { provideAffix, useAffixContext } from './context'
 import { useAffix } from './use-affix'
 
 type AffixProps = AffixSchema['props']
+
+/** 默认插槽的载荷：此刻是不是吸住了。 */
+export type AffixRootSlotProps = Pick<AffixApi, 'affixed'>
 
 /** 根节点是占位盒：content 吸住时脱流，它留在原位撑住那块空间。 */
 export const XhAffixRoot = defineComponent({
@@ -20,6 +23,9 @@ export const XhAffixRoot = defineComponent({
   emits: {
     'affix-change': (_details: PayloadOf<AffixProps, 'onAffixChange'>) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: AffixRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const notify: AffixProps['onAffixChange'] = details => emit('affix-change', details)
     // 传响应式 props 对象本身而非快照，供机器每次读时重新展开

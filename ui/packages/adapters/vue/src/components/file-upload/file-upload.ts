@@ -1,5 +1,5 @@
-import type { FileUploadFile, FileUploadItemProps, FileUploadRemoteFile, FileUploadSchema, FileUploadTranslations } from '@xihan-ui/headless'
-import type { PropType } from 'vue'
+import type { FileUploadApi, FileUploadFile, FileUploadItemProps, FileUploadRemoteFile, FileUploadSchema, FileUploadTranslations } from '@xihan-ui/headless'
+import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
@@ -7,6 +7,26 @@ import { provideFileUpload, provideFileUploadItem, useFileUploadContext, useFile
 import { useFileUpload } from './use-file-upload'
 
 type FileUploadProps = FileUploadSchema['props']
+
+/** 默认插槽的载荷：文件清单与传输快照、投放区与数量状态，与增删清空、开传、拉起选择器等命令。 */
+export type FileUploadRootSlotProps = Pick<
+  FileUploadApi,
+  | 'acceptedFiles'
+  | 'remoteFiles'
+  | 'allFiles'
+  | 'uploadOf'
+  | 'startUpload'
+  | 'dragging'
+  | 'empty'
+  | 'disabled'
+  | 'maxFiles'
+  | 'getFileSizeText'
+  | 'setFiles'
+  | 'addFiles'
+  | 'deleteFile'
+  | 'clearFiles'
+  | 'openFilePicker'
+>
 
 export const XhFileUploadRoot = defineComponent({
   name: 'XhFileUploadRoot',
@@ -42,6 +62,9 @@ export const XhFileUploadRoot = defineComponent({
     'upload-complete': (_details: PayloadOf<FileUploadProps, 'onUploadComplete'>) => true,
     'upload-error': (_details: PayloadOf<FileUploadProps, 'onUploadError'>) => true,
   },
+  slots: Object as SlotsType<{
+    default?: (props: FileUploadRootSlotProps) => VNode[]
+  }>,
   setup(props, { slots, emit }) {
     const onFilesChange: FileUploadProps['onFilesChange'] = (details) => {
       emit('files-change', details)
