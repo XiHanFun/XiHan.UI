@@ -134,6 +134,9 @@
     --xh-motion-duration-micro: var(--xh-duration-fast);
     --xh-motion-ease-enter: var(--xh-ease-out);
     --xh-motion-ease-exit: var(--xh-ease-in);
+    --xh-motion-distance-sm: var(--xh-space-1);
+    --xh-motion-distance-md: var(--xh-space-2);
+    --xh-motion-scale-enter: 0.96;
     --xh-layer-sticky: var(--xh-z-sticky);
     --xh-layer-drawer: var(--xh-z-drawer);
     --xh-layer-modal: var(--xh-z-modal);
@@ -291,5 +294,18 @@
     --xh-border-strong: var(--xh-color-neutral-300);
     --xh-border-control: var(--xh-color-neutral-400);
     --xh-border-control-hover: var(--xh-color-neutral-300);
+  }
+
+  /* 减弱动效：动效降级的唯一通道。排在全部取值块之后，同为零特指度时靠书写顺序压过基线。
+     皮肤不必各写各的 @media——只要幅度与时长都引这几个语义令牌，降级自动穿透 */
+  @media (prefers-reduced-motion: reduce) {
+    :where(:root) {
+      --xh-motion-duration-enter: 1ms;
+      --xh-motion-duration-exit: 1ms;
+      --xh-motion-duration-micro: 1ms;
+      --xh-motion-distance-sm: 0px;
+      --xh-motion-distance-md: 0px;
+      --xh-motion-scale-enter: 1;
+    }
   }
 }
