@@ -1,0 +1,29 @@
+{
+  "$description": "prefers-reduced-motion: reduce 档。只重映射动效语义令牌，不动 primitive——duration.* 与 space.* 还被非动效场景共用。时长取 1ms 而非 0：动画名照常变化、animationend 照常派发，进出场时序不分叉。",
+  "motion": {
+    "duration-enter": {
+      "$type": "duration",
+      "$value": "1ms"
+    },
+    "duration-exit": {
+      "$type": "duration",
+      "$value": "1ms"
+    },
+    "duration-micro": {
+      "$type": "duration",
+      "$value": "1ms"
+    },
+    "distance-sm": {
+      "$type": "dimension",
+      "$value": "0px"
+    },
+    "distance-md": {
+      "$type": "dimension",
+      "$value": "0px"
+    },
+    "scale-enter": {
+      "$type": "number",
+      "$value": 1
+    }
+  }
+}

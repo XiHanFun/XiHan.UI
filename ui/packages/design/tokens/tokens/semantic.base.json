@@ -153,6 +153,18 @@
     "ease-exit": {
       "$type": "cubicBezier",
       "$value": "{ease.in}"
+    },
+    "distance-sm": {
+      "$type": "dimension",
+      "$value": "{space.1}"
+    },
+    "distance-md": {
+      "$type": "dimension",
+      "$value": "{space.2}"
+    },
+    "scale-enter": {
+      "$type": "number",
+      "$value": 0.96
     }
   },
   "layer": {
