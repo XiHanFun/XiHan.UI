@@ -1,3 +1,26 @@
+@layer xihan.motion {
+  /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
+  @keyframes xh-popconfirm-rotate {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+}
+
+@layer xihan.motion {
+  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+  @keyframes xh-fade-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+}
+
 @layer xihan.components {
   /* 根只框住触发器：浮层树靠 positioner 的固定定位飞出去，不占根的盒子 */
   [data-scope='popconfirm'][data-part='root'] {
@@ -118,13 +141,6 @@
   [data-scope='popconfirm'][data-part='confirm-trigger'] {
     background: var(--xh-popconfirm-confirm-bg, var(--xh-_tone, var(--xh-bg-brand)));
     color: var(--xh-popconfirm-confirm-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
-  }
-
-  /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
-  @keyframes xh-popconfirm-rotate {
-    to {
-      transform: rotate(1turn);
-    }
   }
 
   /* 异步确认挂起：按钮转圈、指针挂起；不是禁用，焦点与对比度都保持 */

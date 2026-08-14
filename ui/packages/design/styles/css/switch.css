@@ -1,3 +1,12 @@
+@layer xihan.motion {
+  /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
+  @keyframes xh-switch-rotate {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+}
+
 @layer xihan.components {
   [data-scope='switch'][data-part='root'] {
     /* 尺寸档只换轨道高度这一个私有槽，其余几何都从它算出来：
@@ -57,13 +66,6 @@
 
   [data-scope='switch'][data-part='thumb'][data-state='checked'] {
     translate: var(--xh-_switch-thumb-size) 0;
-  }
-
-  /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
-  @keyframes xh-switch-rotate {
-    to {
-      transform: rotate(1turn);
-    }
   }
 
   /* 提交中：指针挂起、滑块里转圈；不是禁用，焦点与对比度都保持 */
