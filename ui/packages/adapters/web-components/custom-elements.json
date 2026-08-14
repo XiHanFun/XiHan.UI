@@ -7856,6 +7856,15 @@
             },
             {
               "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
               "name": "backdropNode",
               "type": {
                 "text": "HTMLElement | null"
@@ -7895,6 +7904,17 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "ensureExit",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "OverlayExit"
+                }
+              },
+              "description": "退场闸门建一次；presence 不是响应式 cell，退场结束要显式排一次更新才轮得到收起。"
             },
             {
               "kind": "field",
@@ -8180,6 +8200,15 @@
             },
             {
               "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
               "name": "backdropNode",
               "type": {
                 "text": "HTMLElement | null"
@@ -8219,6 +8248,17 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "ensureExit",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "OverlayExit"
+                }
+              },
+              "description": "退场闸门建一次；presence 不是响应式 cell，退场结束要显式排一次更新才轮得到收起。"
             },
             {
               "kind": "field",
@@ -12245,6 +12285,15 @@
             },
             {
               "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
               "name": "backdropNode",
               "type": {
                 "text": "HTMLElement | null"
@@ -12300,6 +12349,17 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "ensureExit",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "OverlayExit"
+                }
+              },
+              "description": "退场闸门建一次；presence 不是响应式 cell，退场结束要显式排一次更新才轮得到收起。"
             },
             {
               "kind": "field",

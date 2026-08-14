@@ -1,10 +1,12 @@
 import type { DrawerOpenChangeDetails, DrawerSchema } from '@xihan-ui/headless'
 import type { Cleanup, IdGenerator, Layer, RuntimeConfig, Size } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
+import type { OverlayExit } from '../overlay-exit'
 import { connectDrawer, drawerAnatomy, drawerMachine, drawerMeta } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 
 // 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
@@ -70,6 +72,7 @@ export class XhDrawerElement extends XhElement {
   private readonly drawerScope = createScope(null, this.idGen)
   private config: RuntimeConfig | null = null
   private contentNode: HTMLElement | null = null
+  private exit: OverlayExit | null = null
   private backdropNode: HTMLElement | null = null
 
   private readonly notify = (details: DrawerOpenChangeDetails): void => {
@@ -103,6 +106,17 @@ export class XhDrawerElement extends XhElement {
     if (this.config)
       return
     this.config = createRuntimeConfig({ scope: this.drawerScope, idGenerator: this.idGen })
+  }
+
+  /** 退场闸门建一次；presence 不是响应式 cell，退场结束要显式排一次更新才轮得到收起。 */
+  private ensureExit(): OverlayExit {
+    this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: this.ctrl.service.state.get() === 'open',
+      onExitComplete: () => this.requestUpdate(),
+    })
+    return this.exit
   }
 
   // 只交注册函数，层的入栈出栈由机器的 trackOverlay 效应跟着展开态做。
@@ -151,18 +165,31 @@ export class XhDrawerElement extends XhElement {
     put('description', api.getDescriptionProps() as Record<string, unknown>)
     put('close-trigger', api.getCloseTriggerProps() as Record<string, unknown>)
 
-    // 关闭时用内联 display 隐藏浮层子树，优先级高于样式表对 [hidden] 的覆盖
+    // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
+    // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
+    const exit = this.ensureExit()
+    exit.track(this.contentNode)
+    exit.update(open)
+    const visible = exit.visible
+
+    // 收起用内联 display，优先级高于样式表对 [hidden] 的覆盖
     const positioner = this.getPart('positioner')
     if (positioner)
-      this.setPartHidden(positioner, !open)
+      this.setPartHidden(positioner, !visible)
     if (this.backdropNode)
-      this.setPartHidden(this.backdropNode, !open)
+      this.setPartHidden(this.backdropNode, !visible)
     // positioner 不是必需部件，content 自己也要收起
-    this.setPartHidden(this.contentNode, !open)
+    this.setPartHidden(this.contentNode, !visible)
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
+    // 退场没播完就离场：立刻结清并把子树收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上。
+    // 只在机器已经收起时才强收——元素被移动（remove 后立刻 append）时展开态不该被打断
+    this.exit?.dispose()
+    this.exit = null
+    if (this.ctrl.service.state.get() !== 'open')
+      this.setPartHidden(this.contentNode, true)
     this.config = null // 重连时 ensureConfig 重建
   }
 }
