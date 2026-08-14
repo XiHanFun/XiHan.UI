@@ -102,13 +102,6 @@
     animation: xh-context-menu-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
-  /* 关掉动效的用户不该被涨开动画晃一下；这里只管本组件，公共那份不动 */
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='context-menu'][data-part='content'][data-state='open'] {
-      animation-duration: 0.01ms;
-    }
-  }
-
   [data-scope='context-menu'][data-part='group'] {
     display: flex;
     flex-direction: column;
@@ -282,7 +275,7 @@
   @keyframes xh-context-menu-in {
     from {
       opacity: 0;
-      scale: 0.96;
+      scale: var(--xh-motion-scale-enter);
     }
 
     to {

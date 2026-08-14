@@ -12,11 +12,6 @@
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='scroll-area'] [data-part] {
-      animation-duration: 0.01ms !important;
-    }
-  }
 }
 
 @layer xihan.components {

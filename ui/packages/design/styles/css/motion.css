@@ -25,34 +25,33 @@
     }
   }
 
+  /* 幅度走令牌，减弱动效时由令牌层归零；位移与缩放用独立属性而非 transform 简写，
+     两者互不覆盖，手势期间写 translate 也不会把 scale 抹掉 */
   @keyframes xh-dialog-in {
     from {
       opacity: 0;
-      transform: translateY(8px) scale(0.98);
+      translate: 0 var(--xh-motion-distance-md);
+      scale: var(--xh-motion-scale-enter);
     }
 
     to {
       opacity: 1;
-      transform: none;
+      translate: 0 0;
+      scale: 1;
     }
   }
 
   @keyframes xh-dialog-out {
     from {
       opacity: 1;
-      transform: none;
+      translate: 0 0;
+      scale: 1;
     }
 
     to {
       opacity: 0;
-      transform: translateY(8px) scale(0.98);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='dialog'] [data-part],
-    [data-scope='button'] [data-part] {
-      animation-duration: 0.01ms !important;
+      translate: 0 var(--xh-motion-distance-md);
+      scale: var(--xh-motion-scale-enter);
     }
   }
 }

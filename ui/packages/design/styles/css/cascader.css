@@ -277,13 +277,13 @@
 
   [data-scope='cascader'][data-part='content'][data-state='open'] {
     /* 入场横移沿书写方向起始缘：位移量经私有槽供给关键帧，rtl 只翻符号 */
-    --xh-_cascader-slide: -0.25rem;
+    --xh-_cascader-slide: calc(-1 * var(--xh-motion-distance-sm));
 
     animation: xh-cascader-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   [dir='rtl'] [data-scope='cascader'][data-part='content'][data-state='open'] {
-    --xh-_cascader-slide: 0.25rem;
+    --xh-_cascader-slide: var(--xh-motion-distance-sm);
   }
 
   /* 一列：宽度由内容撑出、设下限防塌，高度定死——切换展开路径时浮层不上下跳动，
@@ -561,7 +561,7 @@
   @keyframes xh-cascader-in {
     from {
       opacity: 0;
-      translate: var(--xh-_cascader-slide, -0.25rem) 0;
+      translate: var(--xh-_cascader-slide, calc(-1 * var(--xh-motion-distance-sm))) 0;
     }
 
     to {

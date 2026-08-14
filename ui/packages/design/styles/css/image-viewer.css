@@ -164,11 +164,6 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    [data-scope='image-viewer'][data-part='backdrop'],
-    [data-scope='image-viewer'][data-part='content'] {
-      animation-duration: 0.01ms;
-    }
-
     [data-scope='image-viewer'][data-part='image'] {
       transition: none;
     }

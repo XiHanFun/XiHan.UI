@@ -2,7 +2,7 @@
   @keyframes xh-color-picker-fade-in {
     from {
       opacity: 0;
-      scale: 0.98;
+      scale: var(--xh-motion-scale-enter);
     }
 
     to {
