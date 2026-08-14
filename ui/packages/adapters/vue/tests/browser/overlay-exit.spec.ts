@@ -48,7 +48,7 @@ async function settle(): Promise<void> {
 /** 等一次自己的 animationend，超时即放弃（返回 false）。 */
 function animationEnd(el: HTMLElement, timeout = 2000): Promise<boolean> {
   return new Promise((resolve) => {
-    const timer = setTimeout(() => resolve(false), timeout)
+    const timer = setTimeout(resolve, timeout, false)
     el.addEventListener('animationend', (e) => {
       if (e.target !== el)
         return
