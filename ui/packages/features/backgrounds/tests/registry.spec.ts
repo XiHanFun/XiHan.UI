@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
+import { BUILTIN_EFFECT_NAMES } from '../src/effects/builtin-names'
 import { defineEffect, numberSpec } from '../src/effects/define'
 import { builtinEffects, registerBuiltinEffects } from '../src/effects/index'
 import {
@@ -33,6 +34,20 @@ describe('注册表', () => {
 
   it('取未注册的名字抛错，而不是静默返回空让画面莫名其妙全黑', () => {
     expect(() => resolveEffect('不存在')).toThrow(/未注册的效果/)
+  })
+
+  it('名字清单与内置效果一一对应', () => {
+    expect([...BUILTIN_EFFECT_NAMES].sort()).toEqual(builtinEffects.map(effect => effect.name).sort())
+  })
+
+  it('内置效果名没注册时，错误信息点名 registerBuiltinEffects 与导出标识符', () => {
+    expect(() => resolveEffect('aurora')).toThrow(/registerBuiltinEffects\(\)/)
+    expect(() => resolveEffect('aurora')).toThrow(/auroraEffect/)
+    expect(() => resolveEffect('flow-field')).toThrow(/flowFieldEffect/)
+  })
+
+  it('非内置名字仍指向 registerEffect', () => {
+    expect(() => resolveEffect('不存在')).toThrow(/先调用 registerEffect\(\)/)
   })
 
   it('同名后注册的覆盖先注册的', () => {

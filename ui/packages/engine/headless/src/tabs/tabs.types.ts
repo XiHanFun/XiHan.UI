@@ -1,8 +1,8 @@
 import type { Direction, Orientation, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
-/** 形态。取值与 tabs.css 的选择器一一对应。 */
-export type TabsVariant = 'card' | 'segment'
+/** 形态。line 是缺省档，皮肤里没有它的选择器，根规则画的就是它。 */
+export type TabsVariant = 'line' | 'card' | 'segment'
 
 export interface TabsValueChangeDetails {
   value: string | null

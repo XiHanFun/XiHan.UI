@@ -125,7 +125,6 @@ const items = [
 
 ```ts
 import { defineXhElements } from '@xihan-ui/web-components/define'
-import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
 defineXhElements()

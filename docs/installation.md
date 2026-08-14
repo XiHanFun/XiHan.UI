@@ -66,7 +66,7 @@ pnpm lint         # oxlint + eslint + stylelint
 pnpm test         # 单元测试与跨适配器一致性测试（jsdom）
 pnpm test:browser # 真实 Chromium 里的无障碍扫描与浮层定位契约
 pnpm boundaries   # 分层依赖门禁
-pnpm gate         # 十五项结构门禁
+pnpm gate         # 十六项结构门禁
 pnpm size         # 产物体积棘轮
 ```
 
@@ -106,8 +106,7 @@ import { createThemeController } from '@xihan-ui/tokens/runtime'
 import { createApp } from 'vue'
 import App from './App.vue'
 
-// 令牌必须在皮肤之前：皮肤里不写兜底值，令牌缺席就是缺陷，不是降级
-import '@xihan-ui/tokens/tokens.css'
+// 皮肤入口自带层序声明与令牌，只引这一行；单独引 tokens.css 是「只要令牌不要皮肤」那条路
 import '@xihan-ui/styles'
 
 // 把主题的五个属性写到 <html> 上，并持久化用户偏好
@@ -132,7 +131,6 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from '@
 import { createThemeController } from '@xihan-ui/tokens/runtime'
 import { defineXhElements } from '@xihan-ui/web-components/define'
 
-import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
 // 注册全部 xh-* 元素。主入口 import 本身不注册，必须显式调用这一行
@@ -158,7 +156,7 @@ createThemeController({ storageKey: 'app-theme' })
 // 1. 全量：令牌 + 层序 + reset + 全部组件皮肤
 import '@xihan-ui/styles'
 
-// 2. 按组件挑（层序声明必须最先引，否则级联顺序不成立）
+// 2. 按组件挑（layers.css 与 tokens.css 各自都带完整层序声明，先引任一条即可；组件皮肤不能排在它们之前）
 import '@xihan-ui/styles/layers.css'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles/button.css'
@@ -168,7 +166,7 @@ import '@xihan-ui/styles/dialog.css'
 import '@xihan-ui/tokens/tokens.css'
 ```
 
-第三种是完全可行的：组件不依赖默认皮肤，它只往 DOM 上打 `data-scope` / `data-part` / `data-state` 等属性，样式全由你决定。参见[皮肤与样式分层](./guide/styling)。
+第三种同样立得住层序：tokens.css 自己带一份完整的层序声明，自己写的皮肤直接写进 `@layer xihan.overrides` 即可。组件不依赖默认皮肤，它只往 DOM 上打 `data-scope` / `data-part` / `data-state` 等属性，样式全由你决定。参见[皮肤与样式分层](./guide/styling)。
 
 令牌的机读形式也可直接取用，用于生成 Figma 变量、Tailwind 主题或别的产物：
 

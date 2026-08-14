@@ -57,6 +57,7 @@
   "devDependencies": {
     "@xihan-ui/build": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",
+    "jsdom": "catalog:",
     "vitest": "catalog:"
   }
 }
