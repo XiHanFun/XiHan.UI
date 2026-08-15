@@ -17,8 +17,35 @@ describe('codegen 子路径的声明与运行期一致', () => {
     expect([...declared].sort()).toEqual([...exported].sort())
   })
 
-  it('声明里不引 kernel——它只在 devDependencies 里，消费方解析不到', async () => {
+  it('声明里不引 kernel，也不引 dist——前者消费方解析不到，后者源码树里还不存在', async () => {
     const source = await readFile(fileURLToPath(new URL('../build/index.d.mts', import.meta.url)), 'utf8')
     expect(source).not.toContain('@xihan-ui/kernel')
+    expect(source).not.toMatch(/from '\.\.\/dist\//)
+  })
+
+  it('自带的 IconRecord / IconNode 与 kernel 那份逐字段一致', async () => {
+    const local = await readFile(fileURLToPath(new URL('../build/index.d.mts', import.meta.url)), 'utf8')
+    const core = await readFile(
+      fileURLToPath(new URL('../../../engine/kernel/src/types/icon.ts', import.meta.url)),
+      'utf8',
+    )
+
+    // 只比字段：注释与 IconTag 这类本地不复刻的具名类型不参与
+    const fieldsOf = (source: string, name: string): string[] => {
+      const body = source.match(new RegExp(`export interface ${name} \\{([\\s\\S]*?)\\n\\}`))?.[1] ?? ''
+      return body
+        // 块注释跨行，必须在整段上剥掉，逐行剥是剥不干净的
+        .replace(/\/\*[\s\S]*?\*\//g, '')
+        .split('\n')
+        .map(line => line.replace(/\/\/.*/g, '').trim())
+        .filter(Boolean)
+        .map(line => line.replace(/IconTag/g, 'string'))
+        .sort()
+    }
+
+    for (const name of ['IconRecord', 'IconNode']) {
+      expect(fieldsOf(local, name), name).not.toEqual([])
+      expect(fieldsOf(local, name), name).toEqual(fieldsOf(core, name))
+    }
   })
 })
