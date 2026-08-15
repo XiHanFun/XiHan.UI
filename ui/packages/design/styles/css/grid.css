@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='grid'] {
+    --xh-grid-skin: 1;
+  }
+
   [data-scope='grid'][data-part='root'] {
     display: grid;
     /* 各列等宽；下限写 0 而不是 auto，一段长文本才不会把自己那列撑宽 */

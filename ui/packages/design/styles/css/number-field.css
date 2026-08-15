@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='number-field'] {
+    --xh-number-field-skin: 1;
+  }
+
   /* 与文本框同一套堆叠：标签一行、输入行一行。
      加减钮与输入框中间那层包裹归作者，这里不碰，三者各自把高度对齐即可成一体 */
   [data-scope='number-field'][data-part='root'] {

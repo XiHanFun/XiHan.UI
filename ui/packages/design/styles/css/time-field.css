@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='time-field'] {
+    --xh-time-field-skin: 1;
+  }
+
   /* 与文本框、数字框同一套堆叠：标签一行、控件一行 */
   [data-scope='time-field'][data-part='root'] {
     /* 尺寸档只换这四个私有槽，标题与控件都从 root 继承它们，换档不必给每个部件各写一条选择器 */

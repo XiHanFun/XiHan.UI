@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='menubar'] {
+    --xh-menubar-skin: 1;
+  }
+
   /* 一排 trigger。主轴跟着 data-orientation 走：菜单栏本身可以横排也可以竖排 */
   [data-scope='menubar'][data-part='root'] {
     /* 尺寸档只换这五个私有槽，trigger 与菜单里的条目都从 root 继承它们，

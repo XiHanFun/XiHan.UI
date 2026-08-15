@@ -110,6 +110,11 @@
 }
 
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='drawer'] {
+    --xh-drawer-skin: 1;
+  }
+
   /* root 留在页面原地，只是 data-side / data-state 的落点，不该凭空多出一层盒子把
      trigger 从作者的 flex / grid 行里挤出去，故 display: contents。 */
   [data-scope='drawer'][data-part='root'] {

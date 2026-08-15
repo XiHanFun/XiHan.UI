@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='toggle-group'] {
+    --xh-toggle-group-skin: 1;
+  }
+
   /* 分段控件：段与段之间不留缝，靠共边连成一体，所以 root 不设 gap。
      排布只能读 data-orientation——aria-orientation 在多选模式下连接层根本不输出（role=group 不收） */
   [data-scope='toggle-group'][data-part='root'] {

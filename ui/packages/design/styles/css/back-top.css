@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='back-top'] {
+    --xh-back-top-skin: 1;
+  }
+
   /* 定位壳：钉在视口的尾下角，用逻辑属性，RTL 下自动换到另一侧。
      不声明 display —— 收起态由连接层写 hidden，UA 的 [hidden]{display:none} 得压得住 */
   [data-scope='back-top'][data-part='root'] {

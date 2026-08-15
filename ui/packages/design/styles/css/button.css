@@ -9,6 +9,11 @@
 }
 
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='button'] {
+    --xh-button-skin: 1;
+  }
+
   [data-scope='button'][data-part='root'] {
     /* 私有槽位：组件令牌 → 语义令牌两级回退，变体只改这几个槽位 */
     --xh-_bg: var(--xh-button-bg, var(--xh-bg-subtle));

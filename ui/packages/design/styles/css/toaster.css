@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='toaster'] {
+    --xh-toaster-skin: 1;
+  }
+
   /* 地标容器不占布局：通知落在哪儿由九个 group 各自的 fixed 说了算，
      root 只是给读屏一个可跳转的落点。它若留下一个块盒，写在页面中段的用法
      （按钮和队列摆在一起）就会凭空多出一行空白。

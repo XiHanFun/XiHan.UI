@@ -14,6 +14,11 @@
 }
 
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='navigation-menu'] {
+    --xh-navigation-menu-skin: 1;
+  }
+
   /* 根节点是 nav 地标，不参与排版；给 relative 是为了让共享外壳（viewport）有个定位参照系。
      这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
   [data-scope='navigation-menu'][data-part='root'] {

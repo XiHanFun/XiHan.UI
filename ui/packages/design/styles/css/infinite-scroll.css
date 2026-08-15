@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='infinite-scroll'] {
+    --xh-infinite-scroll-skin: 1;
+  }
+
   /*
    * 列表外壳这一层刻意不给盒模型：滚的是页面还是作者自己的 overflow 容器、列表长什么样，
    * 都归作者的布局管，组件只往它身上挂 data-state / data-loading / data-disabled 供作者取用。

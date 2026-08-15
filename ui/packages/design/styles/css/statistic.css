@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='statistic'] {
+    --xh-statistic-skin: 1;
+  }
+
   /* 三个尺寸档只换这几个私有槽，各段从 root 继承它们，换档不必给每个部件各写一条选择器 */
   [data-scope='statistic'][data-part='root'] {
     --xh-_statistic-label-size: var(--xh-font-size-sm);

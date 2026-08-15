@@ -8,6 +8,11 @@
 }
 
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='switch'] {
+    --xh-switch-skin: 1;
+  }
+
   [data-scope='switch'][data-part='root'] {
     /* 尺寸档只换轨道高度这一个私有槽，其余几何都从它算出来：
        滑块边长 = 轨道高 − 两条留白，轨道宽 = 两倍轨道高 − 两条留白，滑块行程因此正好等于自身边长 */

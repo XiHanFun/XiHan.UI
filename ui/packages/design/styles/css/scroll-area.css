@@ -14,6 +14,11 @@
 }
 
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='scroll-area'] {
+    --xh-scroll-area-skin: 1;
+  }
+
   /* 定位分工：滑块在**主轴**上的起点与长度由连接层每帧写进内联样式——
      竖向是 inset-block-start / block-size，横向是 inset-inline-start / inline-size。
      这份皮肤一个都不碰：内联优先级高于样式表，写了不但是死声明，

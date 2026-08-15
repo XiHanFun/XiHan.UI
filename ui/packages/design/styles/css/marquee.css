@@ -25,6 +25,11 @@
 }
 
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='marquee'] {
+    --xh-marquee-skin: 1;
+  }
+
   /*
    * 窗口：只露出轨道的一段。
    *

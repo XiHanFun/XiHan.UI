@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='number-animation'] {
+    --xh-number-animation-skin: 1;
+  }
+
   [data-scope='number-animation'][data-part='root'] {
     /* 不写尺寸就跟着上下文的字号走：这个数常常摆在别人的标题、卡片标题或统计数值槽里，
        自带一个字号只会跟摆放它的地方打架。三个档位各自换掉这个私有槽 */

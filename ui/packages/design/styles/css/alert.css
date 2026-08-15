@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='alert'] {
+    --xh-alert-skin: 1;
+  }
+
   [data-scope='alert'][data-part='root'] {
     /* 强调色随语气走，底色/描边/图标色都由它推导出来，换语气不必逐条属性各写一遍。
        没写 data-tone 时 --xh-_tone 没被声明，退回原来的 info 蓝 */

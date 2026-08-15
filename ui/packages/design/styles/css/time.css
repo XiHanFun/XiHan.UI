@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='time'] {
+    --xh-time-skin: 1;
+  }
+
   [data-scope='time'][data-part='root'] {
     color: var(--xh-time-fg, var(--xh-fg-default));
     /* 等宽数字：秒数跳动时后面的字符不会左右挪 */

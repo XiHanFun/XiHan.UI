@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='progress'] {
+    --xh-progress-skin: 1;
+  }
+
   /* 私有槽位：组件令牌 → 中档字面量两级回退。厚度写在 root 上而不是 track 上，
      尺寸档才改得动一处就够，track 靠继承拿到值。 */
   [data-scope='progress'][data-part='root'] {

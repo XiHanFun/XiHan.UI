@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='checkbox'] {
+    --xh-checkbox-skin: 1;
+  }
+
   [data-scope='checkbox'][data-part='root'] {
     /* 尺寸档只换方框边长这一个私有槽，勾的字号按边长的比例跟着走；
        指示器从 root 继承这两个槽，换档不必给每个部件各写一条选择器 */

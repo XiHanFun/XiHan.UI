@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='avatar-group'] {
+    --xh-avatar-group-skin: 1;
+  }
+
   /* 一排叠放的头像：后一枚压在前一枚上。
      组内共用的直径与字号在容器上写一次，沿继承流给每一枚；自己写了档位的那一枚仍按自己的档走 */
   [data-scope='avatar-group'][data-part='root'] {

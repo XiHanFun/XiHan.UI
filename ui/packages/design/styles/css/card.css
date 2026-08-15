@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='card'] {
+    --xh-card-skin: 1;
+  }
+
   [data-scope='card'][data-part='root'] {
     display: flex;
     flex-direction: column;

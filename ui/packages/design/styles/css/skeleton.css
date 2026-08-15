@@ -13,6 +13,11 @@
 }
 
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='skeleton'] {
+    --xh-skeleton-skin: 1;
+  }
+
   /* 骨架容器：竖着码放各根骨架条 */
   [data-scope='skeleton'][data-part='root'] {
     display: flex;

@@ -9,6 +9,11 @@
 }
 
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='spinner'] {
+    --xh-spinner-skin: 1;
+  }
+
 
   /* 圆环画在伪元素上，root 自身不转：转的只是图形，同一行里的文案要留在原地读得动 */
   [data-scope='spinner'][data-part='root'] {

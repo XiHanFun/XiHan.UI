@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='descriptions'] {
+    --xh-descriptions-skin: 1;
+  }
+
   [data-scope='descriptions'][data-part='root'] {
     /* 一个尺寸档只换这几个私有槽，每一格与格内两段都从根上继承它们，
        换档不必给每个部件各写一条选择器 */

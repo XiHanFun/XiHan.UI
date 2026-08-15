@@ -13,6 +13,11 @@
 }
 
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='hover-card'] {
+    --xh-hover-card-skin: 1;
+  }
+
   /* 根节点只把 trigger 与浮层收在一处，不参与定位（坐标系仍由祖先的定位上下文决定） */
   [data-scope='hover-card'][data-part='root'] {
     display: inline-block;

@@ -13,6 +13,11 @@
 }
 
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='color-picker'] {
+    --xh-color-picker-skin: 1;
+  }
+
   /* 定位分工：取色区拇指的两条轴（inset-inline-start / inset-block-start）、
      通道拇指的主轴（inset-inline-start）、浮层坐标、取色区底色、透明度轨道的渐变，
      全都由连接层每帧写进内联样式。这份皮肤一个都不碰：内联优先级高于样式表，
