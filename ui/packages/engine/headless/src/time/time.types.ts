@@ -33,3 +33,6 @@ export interface TimeApi<T extends PropTypes = PropTypes> {
   relative: boolean
   getRootProps: () => T['element']
 }
+
+/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+export interface TimeTranslations {}

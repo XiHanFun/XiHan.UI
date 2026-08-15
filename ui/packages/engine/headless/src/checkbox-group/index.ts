@@ -3,12 +3,4 @@ export { connectCheckboxGroup, resolveCheckedState } from './checkbox-group.conn
 export { checkboxGroupKeyboard } from './checkbox-group.keyboard'
 export { checkboxGroupMachine, toggleAllValues, toggleItemValue } from './checkbox-group.machine'
 export { checkboxGroupMeta } from './checkbox-group.meta'
-export type {
-  CheckboxGroupApi,
-  CheckboxGroupCheckedState,
-  CheckboxGroupItemProps,
-  CheckboxGroupNode,
-  CheckboxGroupNodeMeta,
-  CheckboxGroupSchema,
-  CheckboxGroupValueChangeDetails,
-} from './checkbox-group.types'
+export type { CheckboxGroupApi, CheckboxGroupCheckedState, CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupNodeMeta, CheckboxGroupSchema, CheckboxGroupTranslations, CheckboxGroupValueChangeDetails } from './checkbox-group.types'

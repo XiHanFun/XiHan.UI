@@ -121,3 +121,6 @@ export interface QrCodeApi<T extends PropTypes = PropTypes> {
   /** 铺到 logo 部件上的落位；没留位时宽高都是 0，那块连同里面的图形一起不渲染。 */
   getLogoProps: () => T['element']
 }
+
+/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+export interface QrCodeTranslations {}

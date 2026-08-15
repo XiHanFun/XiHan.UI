@@ -90,3 +90,6 @@ export interface RadioGroupApi<T extends PropTypes = PropTypes> {
   /** 条目对应的隐藏原生 radio 输入，用于表单提交。 */
   getHiddenInputProps: (props: RadioGroupItemProps) => T['input']
 }
+
+/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+export interface RadioGroupTranslations {}

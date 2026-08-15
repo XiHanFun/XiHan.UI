@@ -4,4 +4,4 @@ export { formatRelativeTime, formatTimePattern, TIME_RELATIVE_LIMIT, timeMachine
 export type { TimeLocale, TimeType, TimeValue } from './time.format'
 export { timeKeyboard } from './time.keyboard'
 export { timeMeta } from './time.meta'
-export type { TimeApi, TimeProps, TimeState } from './time.types'
+export type { TimeApi, TimeProps, TimeState, TimeTranslations } from './time.types'

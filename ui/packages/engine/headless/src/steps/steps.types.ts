@@ -111,3 +111,6 @@ export interface StepsApi<T extends PropTypes = PropTypes> {
   /** 面板按 index 与当前步配对；未命中的常挂并带 hidden。 */
   getContentProps: (props: StepsItemProps) => T['element']
 }
+
+/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+export interface StepsTranslations {}

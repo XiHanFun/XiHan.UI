@@ -22,15 +22,4 @@ export type {
 export { calendarKeyboard } from './calendar.keyboard'
 export { calendarMachine } from './calendar.machine'
 export { calendarMeta } from './calendar.meta'
-export type {
-  CalendarApi,
-  CalendarCellProps,
-  CalendarFocusChangeDetails,
-  CalendarFocusModel,
-  CalendarRefs,
-  CalendarSchema,
-  CalendarSelectionMode,
-  CalendarValueChangeDetails,
-  CalendarWeekdayFormat,
-  CalendarWeekDayProps,
-} from './calendar.types'
+export type { CalendarApi, CalendarCellProps, CalendarFocusChangeDetails, CalendarFocusModel, CalendarRefs, CalendarSchema, CalendarSelectionMode, CalendarTranslations, CalendarValueChangeDetails, CalendarWeekdayFormat, CalendarWeekDayProps } from './calendar.types'

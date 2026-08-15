@@ -166,3 +166,6 @@ export interface CalendarApi<T extends PropTypes = PropTypes> {
   getCellProps: (props: CalendarCellProps) => T['element']
   getCellTriggerProps: (props: CalendarCellProps) => T['element']
 }
+
+/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+export interface CalendarTranslations {}

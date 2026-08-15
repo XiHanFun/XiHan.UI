@@ -103,3 +103,6 @@ export interface TabsApi<T extends PropTypes = PropTypes> {
   getTriggerProps: (props: TabsTriggerProps) => T['button']
   getContentProps: (props: TabsContentProps) => T['element']
 }
+
+/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+export interface TabsTranslations {}

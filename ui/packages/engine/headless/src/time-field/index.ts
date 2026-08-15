@@ -29,14 +29,4 @@ export {
   to24Hour,
 } from './time-field.machine'
 export { timeFieldMeta } from './time-field.meta'
-export type {
-  TimeDayPeriod,
-  TimeDraft,
-  TimeFieldApi,
-  TimeFieldSchema,
-  TimeFieldSegmentProps,
-  TimeFieldValueChangeDetails,
-  TimeGranularity,
-  TimeHourCycle,
-  TimeSegmentType,
-} from './time-field.types'
+export type { TimeDayPeriod, TimeDraft, TimeFieldApi, TimeFieldSchema, TimeFieldSegmentProps, TimeFieldTranslations, TimeFieldValueChangeDetails, TimeGranularity, TimeHourCycle, TimeSegmentType } from './time-field.types'

@@ -107,3 +107,6 @@ export interface CheckboxGroupApi<T extends PropTypes = PropTypes> {
   /** 全选/半选的父复选框。必须写在 root 之内，它靠祖先链找到本组。 */
   getTriggerProps: () => T['element']
 }
+
+/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+export interface CheckboxGroupTranslations {}

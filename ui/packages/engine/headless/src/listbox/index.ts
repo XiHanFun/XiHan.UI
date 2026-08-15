@@ -3,15 +3,4 @@ export { connectListbox } from './listbox.connect'
 export { listboxKeyboard } from './listbox.keyboard'
 export { listboxMachine, listboxSelectionMode } from './listbox.machine'
 export { listboxMeta } from './listbox.meta'
-export type {
-  ListboxApi,
-  ListboxFocusModel,
-  ListboxItemGroupProps,
-  ListboxItemProps,
-  ListboxNode,
-  ListboxNodeMeta,
-  ListboxRefs,
-  ListboxSchema,
-  ListboxSelectionMode,
-  ListboxValueChangeDetails,
-} from './listbox.types'
+export type { ListboxApi, ListboxFocusModel, ListboxItemGroupProps, ListboxItemProps, ListboxNode, ListboxNodeMeta, ListboxRefs, ListboxSchema, ListboxSelectionMode, ListboxTranslations, ListboxValueChangeDetails } from './listbox.types'

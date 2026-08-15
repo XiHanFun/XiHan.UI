@@ -49,3 +49,6 @@ export interface SwitchApi<T extends PropTypes = PropTypes> {
   /** 表单影子：勾上才提交。给了 name 才带 name，不给就不参与提交。 */
   getHiddenInputProps: () => T['input']
 }
+
+/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+export interface SwitchTranslations {}

@@ -151,3 +151,6 @@ export interface SplitterApi<T extends PropTypes = PropTypes> {
   /** 第 index 条分隔条坐在第 index 与第 index+1 块面板之间，调整的是前一块。 */
   getResizeTriggerProps: (index: number) => T['element']
 }
+
+/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+export interface SplitterTranslations {}

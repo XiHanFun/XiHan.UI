@@ -14,11 +14,4 @@ export {
   resolveNumberAnimationDuration,
 } from './number-animation.machine'
 export { numberAnimationMeta } from './number-animation.meta'
-export type {
-  NumberAnimationApi,
-  NumberAnimationEasing,
-  NumberAnimationFinishDetails,
-  NumberAnimationLive,
-  NumberAnimationPhase,
-  NumberAnimationSchema,
-} from './number-animation.types'
+export type { NumberAnimationApi, NumberAnimationEasing, NumberAnimationFinishDetails, NumberAnimationLive, NumberAnimationPhase, NumberAnimationSchema, NumberAnimationTranslations } from './number-animation.types'
