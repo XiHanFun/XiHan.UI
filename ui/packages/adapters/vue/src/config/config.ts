@@ -2,74 +2,12 @@
 // 取值优先级：实例 props > 这里注入的全局值 > 组件内建默认（英文）。
 // 注入是可选的——不 provide 时组件走原路，零开销。
 import type {
-  AlertTranslations,
-  AnchorTranslations,
-  BackTopTranslations,
-  BreadcrumbTranslations,
-  CarouselTranslations,
-  CascaderTranslations,
-  ColorPickerTranslations,
-  ComposerTranslations,
-  DatePickerTranslations,
-  DialogTranslations,
-  DrawerTranslations,
-  DynamicInputTranslations,
-  FileUploadTranslations,
-  FloatButtonTranslations,
-  ImageViewerTranslations,
-  LoadingBarTranslations,
-  LogTranslations,
-  MentionTranslations,
-  NavigationMenuTranslations,
-  PaginationTranslations,
-  PinInputTranslations,
-  PopoverTranslations,
-  SelectTranslations,
-  SideNavTranslations,
-  SpinnerTranslations,
-  TagsInputTranslations,
-  ThreadTranslations,
-  ToasterTranslations,
-  ToastTranslations,
-  TourTranslations,
+  XhTranslationOverrides,
 } from '@xihan-ui/headless'
 import type { ComputedRef, InjectionKey, MaybeRefOrGetter } from 'vue'
 import { computed, inject, provide, toValue } from 'vue'
 
-/** 按组件收纳的文案覆盖；date-field 与 date-picker 同一份文案。 */
-export interface XhTranslationOverrides {
-  'alert'?: Partial<AlertTranslations>
-  'anchor'?: Partial<AnchorTranslations>
-  'back-top'?: Partial<BackTopTranslations>
-  'breadcrumb'?: Partial<BreadcrumbTranslations>
-  'carousel'?: Partial<CarouselTranslations>
-  'cascader'?: Partial<CascaderTranslations>
-  'color-picker'?: Partial<ColorPickerTranslations>
-  'composer'?: Partial<ComposerTranslations>
-  'date-field'?: Partial<DatePickerTranslations>
-  'date-picker'?: Partial<DatePickerTranslations>
-  'dialog'?: Partial<DialogTranslations>
-  'drawer'?: Partial<DrawerTranslations>
-  'dynamic-input'?: Partial<DynamicInputTranslations>
-  'file-upload'?: Partial<FileUploadTranslations>
-  'image-viewer'?: Partial<ImageViewerTranslations>
-  'float-button'?: Partial<FloatButtonTranslations>
-  'loading-bar'?: Partial<LoadingBarTranslations>
-  'log'?: Partial<LogTranslations>
-  'mention'?: Partial<MentionTranslations>
-  'navigation-menu'?: Partial<NavigationMenuTranslations>
-  'pagination'?: Partial<PaginationTranslations>
-  'pin-input'?: Partial<PinInputTranslations>
-  'side-nav'?: Partial<SideNavTranslations>
-  'select'?: Partial<SelectTranslations>
-  'popover'?: Partial<PopoverTranslations>
-  'spinner'?: Partial<SpinnerTranslations>
-  'tags-input'?: Partial<TagsInputTranslations>
-  'thread'?: Partial<ThreadTranslations>
-  'toast'?: Partial<ToastTranslations>
-  'toaster'?: Partial<ToasterTranslations>
-  'tour'?: Partial<TourTranslations>
-}
+export type { XhTranslationOverrides }
 
 export interface XhConfig {
   /** BCP 47 语言标记，喂给日期时间系组件（calendar / date-* / time-*）。 */

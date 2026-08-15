@@ -1,3 +1,4 @@
+export type { XhTranslationOverrides } from './config/translations'
 // @xihan-ui/headless —— 无头组件（anatomy + machine + connect，无样式）。
 
 export { accordionAnatomy, accordionKeyboard, accordionMachine, accordionMeta, connectAccordion } from './accordion'

@@ -4,6 +4,8 @@ import type { ReactiveController, ReactiveControllerHost } from '../reactive'
 import type { LitRuntime } from './lit-runtime'
 import { createFormResetBridge } from '@xihan-ui/behavior'
 import { createService, declaresFormReset, FORM_RESET_EVENT } from '@xihan-ui/machine'
+import { onXhConfigChange, withXhConfig } from '../config'
+
 import { createLitRuntime } from './lit-runtime'
 
 export interface MachineControllerOptions<T extends MachineSchema> {
@@ -19,12 +21,17 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
   private started = false
   private formReset: Disposable | undefined
 
+  private readonly props: () => Partial<T['props']>
+  private stopConfigWatch: (() => void) | undefined
+
   constructor(
     private readonly host: ReactiveControllerHost,
     private readonly machine: MachineConfig<T>,
-    private readonly props: () => Partial<T['props']>,
+    props: () => Partial<T['props']>,
     private readonly opts: MachineControllerOptions<T> = {},
   ) {
+    // 全局配置在这一处并进来：31 个元素都从这里取 props，不必逐个接线
+    this.props = () => withXhConfig(machine.name, props())
     host.addController(this)
     // 延到 hostConnected 再 build，构造期 attribute 尚未反射到 reactive property。
   }
@@ -41,6 +48,7 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
       this.build()
       this.started = true
     }
+    this.stopConfigWatch ??= onXhConfigChange(() => this.host.requestUpdate())
     this.runtime!.mount()
     // 必须在 mount 之后：桥一挂就可能送事件进来，而 mount 之前送会撞上 SEND_BEFORE_MOUNT
     this.attachFormReset()
@@ -67,6 +75,8 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
   }
 
   hostDisconnected(): void {
+    this.stopConfigWatch?.()
+    this.stopConfigWatch = undefined
     this.formReset?.dispose()
     this.formReset = undefined
     this.runtime?.unmount()
