@@ -27,13 +27,21 @@
     ".": {
       "types": "./dist/index.d.mts",
       "import": "./dist/index.mjs"
+    },
+    "./codegen": {
+      "types": "./build/index.d.mts",
+      "import": "./build/index.mjs"
     }
   },
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
+  "bin": {
+    "xihan-icons": "./build/cli.mjs"
+  },
   "files": [
     "CHANGELOG.md",
+    "build",
     "dist"
   ],
   "engines": {

@@ -65,24 +65,41 @@ function toIconNode(node) {
 }
 
 /** 递归收下一棵子树；返回中间节点或 null（整棵被丢）。 */
-function take(raw, where, transform) {
+function take(raw, where, transform, ctx) {
   if (raw.text !== undefined)
     fail(where, `图元里出现文本 ${JSON.stringify(raw.text)}，记录没有文本变体`)
 
+  // 标签层在两种模式下都严格：图元里出现 use / text / style 意味着它的样子依赖记录表达不了的东西，
+  // 丢掉它会产出一枚画错的图标，报错才是诚实的
   if (classifyTag(raw.tag, where) === 'drop')
     return null
 
   const attrs = new Map()
   const refs = []
   for (const [name, value] of raw.attrs) {
-    const key = assertAttrName(name, where)
-    refs.push(...assertAttrValue(key, value, where))
+    const key = assertAttrName(name, where, { lenient: ctx.lenient })
+    if (key === null) {
+      ctx.notes.push(`丢弃 <${raw.tag}> 上的 ${name}`)
+      continue
+    }
+    if (ctx.lenient) {
+      try {
+        refs.push(...assertAttrValue(key, value, where))
+      }
+      catch {
+        ctx.notes.push(`丢弃 <${raw.tag}> 上取值不合规的 ${key}`)
+        continue
+      }
+    }
+    else {
+      refs.push(...assertAttrValue(key, value, where))
+    }
     attrs.set(key, transform ? transformAttr(raw.tag, key, value, transform, where) : value)
   }
 
   const children = []
   for (const child of raw.children) {
-    const kept = take(child, where, transform)
+    const kept = take(child, where, transform, ctx)
     if (kept)
       children.push(kept)
   }
@@ -97,12 +114,13 @@ function take(raw, where, transform) {
  *
  * @returns {{ record: import('@xihan-ui/kernel').IconRecord, notes: string[] }}
  */
-export function svgToIconRecord(source, name, file = `${name}.svg`) {
+export function svgToIconRecord(source, name, file = `${name}.svg`, { lenient = false } = {}) {
   if (!NAME_RE.test(name))
     fail(file, `图标名 ${JSON.stringify(name)} 必须是小写连字符分段`)
 
   const { root, notes } = parseSvg(source, file)
   const where = file
+  const ctx = { lenient, notes }
 
   if (root.tag !== 'svg')
     fail(where, `根元素必须是 <svg>，收到 <${root.tag}>`)
@@ -115,7 +133,11 @@ export function svgToIconRecord(source, name, file = `${name}.svg`) {
       notes.push(`丢弃根上的 ${rawName}`)
       continue
     }
-    const key = assertAttrName(rawName, where, { rootOnly: true })
+    const key = assertAttrName(rawName, where, { rootOnly: true, lenient })
+    if (key === null) {
+      notes.push(`丢弃根上的 ${rawName}`)
+      continue
+    }
     if (key === 'id')
       fail(where, '根 <svg> 不接受 id')
     rootRefs.push(...assertAttrValue(key, value, where))
@@ -133,7 +155,7 @@ export function svgToIconRecord(source, name, file = `${name}.svg`) {
 
   const nodes = []
   for (const child of root.children) {
-    const kept = take(child, where, transform)
+    const kept = take(child, where, transform, ctx)
     if (kept)
       nodes.push(kept)
   }

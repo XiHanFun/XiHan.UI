@@ -16,6 +16,7 @@ export {
   TYPES_HEADER,
 } from './emit.mjs'
 export { IconPipelineError } from './error.mjs'
+export { ingestIconDir, toIconName } from './ingest.mjs'
 export { svgToIconRecord } from './to-record.mjs'
 
 /**
