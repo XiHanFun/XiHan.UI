@@ -19,3 +19,6 @@ export interface HighlightApi<T extends PropTypes = PropTypes> {
   /** 铺到每个命中片段上的属性；每段都一样，命中的是哪个关键词不落到 DOM 上。 */
   getMarkProps: () => T['element']
 }
+
+/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+export interface HighlightTranslations {}

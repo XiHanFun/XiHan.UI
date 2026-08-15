@@ -25,13 +25,4 @@ export {
   SPLITTER_TOTAL,
 } from './splitter.sizing'
 export type { PanelConstraint } from './splitter.sizing'
-export type {
-  SplitterApi,
-  SplitterDragSession,
-  SplitterPanelProps,
-  SplitterPanelState,
-  SplitterPoint,
-  SplitterSchema,
-  SplitterSizesChangeDetails,
-  SplitterSizesChangeEndDetails,
-} from './splitter.types'
+export type { SplitterApi, SplitterDragSession, SplitterPanelProps, SplitterPanelState, SplitterPoint, SplitterSchema, SplitterSizesChangeDetails, SplitterSizesChangeEndDetails, SplitterTranslations } from './splitter.types'

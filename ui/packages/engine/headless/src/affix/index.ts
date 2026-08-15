@@ -4,12 +4,4 @@ export { affixKeyboard } from './affix.keyboard'
 export { AFFIX_DEFAULT_OFFSET, affixMachine, isAffixed } from './affix.machine'
 export type { AffixGeometry } from './affix.machine'
 export { affixMeta } from './affix.meta'
-export type {
-  AffixApi,
-  AffixChangeDetails,
-  AffixPin,
-  AffixRefs,
-  AffixSchema,
-  AffixSide,
-  AffixSize,
-} from './affix.types'
+export type { AffixApi, AffixChangeDetails, AffixPin, AffixRefs, AffixSchema, AffixSide, AffixSize, AffixTranslations } from './affix.types'

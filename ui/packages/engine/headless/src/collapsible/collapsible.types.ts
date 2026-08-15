@@ -39,3 +39,6 @@ export interface CollapsibleApi<T extends PropTypes = PropTypes> {
   getTriggerProps: () => T['button']
   getContentProps: () => T['element']
 }
+
+/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+export interface CollapsibleTranslations {}

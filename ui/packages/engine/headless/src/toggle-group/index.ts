@@ -8,12 +8,4 @@ export {
   toToggleGroupChangeValue,
 } from './toggle-group.machine'
 export { toggleGroupMeta } from './toggle-group.meta'
-export type {
-  ToggleGroupApi,
-  ToggleGroupItemProps,
-  ToggleGroupNode,
-  ToggleGroupNodeMeta,
-  ToggleGroupSchema,
-  ToggleGroupValue,
-  ToggleGroupValueChangeDetails,
-} from './toggle-group.types'
+export type { ToggleGroupApi, ToggleGroupItemProps, ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupTranslations, ToggleGroupValue, ToggleGroupValueChangeDetails } from './toggle-group.types'

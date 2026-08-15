@@ -119,3 +119,6 @@ export interface RatingApi<T extends PropTypes = PropTypes> {
   /** 表单出口：一份视觉隐藏的原生输入，随表单提交当前评分。 */
   getHiddenInputProps: () => T['input']
 }
+
+/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+export interface RatingTranslations {}

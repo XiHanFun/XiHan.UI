@@ -23,14 +23,4 @@ export type {
 export { scrollAreaKeyboard } from './scroll-area.keyboard'
 export { SCROLL_AREA_DEFAULT_TYPE, SCROLL_AREA_HIDE_DELAY, scrollAreaMachine } from './scroll-area.machine'
 export { scrollAreaMeta } from './scroll-area.meta'
-export type {
-  ScrollAreaApi,
-  ScrollAreaAxisState,
-  ScrollAreaDragSession,
-  ScrollAreaOrientation,
-  ScrollAreaPoint,
-  ScrollAreaRefs,
-  ScrollAreaSchema,
-  ScrollAreaScrollbarProps,
-  ScrollAreaType,
-} from './scroll-area.types'
+export type { ScrollAreaApi, ScrollAreaAxisState, ScrollAreaDragSession, ScrollAreaOrientation, ScrollAreaPoint, ScrollAreaRefs, ScrollAreaSchema, ScrollAreaScrollbarProps, ScrollAreaTranslations, ScrollAreaType } from './scroll-area.types'

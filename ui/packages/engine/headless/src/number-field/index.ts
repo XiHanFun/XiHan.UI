@@ -8,4 +8,4 @@ export {
   numberFieldMachine,
 } from './number-field.machine'
 export { numberFieldMeta } from './number-field.meta'
-export type { NumberFieldApi, NumberFieldSchema, NumberFieldValueChangeDetails } from './number-field.types'
+export type { NumberFieldApi, NumberFieldSchema, NumberFieldTranslations, NumberFieldValueChangeDetails } from './number-field.types'

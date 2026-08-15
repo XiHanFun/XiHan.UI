@@ -13,11 +13,4 @@ export {
 export { countdownKeyboard } from './countdown.keyboard'
 export { countdownMachine } from './countdown.machine'
 export { countdownMeta } from './countdown.meta'
-export type {
-  CountdownApi,
-  CountdownFinishDetails,
-  CountdownLive,
-  CountdownParts,
-  CountdownPhase,
-  CountdownSchema,
-} from './countdown.types'
+export type { CountdownApi, CountdownFinishDetails, CountdownLive, CountdownParts, CountdownPhase, CountdownSchema, CountdownTranslations } from './countdown.types'

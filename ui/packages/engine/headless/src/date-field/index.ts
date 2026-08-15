@@ -32,15 +32,4 @@ export {
 } from './date-field.machine'
 export type { DateDigitResult } from './date-field.machine'
 export { dateFieldMeta } from './date-field.meta'
-export type {
-  DateFieldApi,
-  DateFieldSchema,
-  DateFieldSegmentProps,
-  DateFieldSegmentState,
-  DateFieldValueChangeDetails,
-  DateGranularity,
-  DateSegmentRange,
-  DateSegments,
-  DateSegmentType,
-  DateTypingBuffer,
-} from './date-field.types'
+export type { DateFieldApi, DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState, DateFieldTranslations, DateFieldValueChangeDetails, DateGranularity, DateSegmentRange, DateSegments, DateSegmentType, DateTypingBuffer } from './date-field.types'

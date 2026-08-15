@@ -18,17 +18,4 @@ export {
   timePickerMachine,
 } from './time-picker.machine'
 export { timePickerMeta } from './time-picker.meta'
-export type {
-  TimePickerApi,
-  TimePickerColumn,
-  TimePickerColumnProps,
-  TimePickerColumnsOptions,
-  TimePickerColumnUnit,
-  TimePickerFocusIntent,
-  TimePickerInputProps,
-  TimePickerItemProps,
-  TimePickerOpenChangeDetails,
-  TimePickerRefs,
-  TimePickerSchema,
-  TimePickerValueChangeDetails,
-} from './time-picker.types'
+export type { TimePickerApi, TimePickerColumn, TimePickerColumnProps, TimePickerColumnsOptions, TimePickerColumnUnit, TimePickerFocusIntent, TimePickerInputProps, TimePickerItemProps, TimePickerOpenChangeDetails, TimePickerRefs, TimePickerSchema, TimePickerTranslations, TimePickerValueChangeDetails } from './time-picker.types'

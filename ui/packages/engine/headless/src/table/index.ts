@@ -19,22 +19,4 @@ export {
   tableToggleSort,
 } from './table.sort'
 export type { TableToggleSortOptions } from './table.sort'
-export type {
-  TableApi,
-  TableCellProps,
-  TableColumnDef,
-  TableColumnProps,
-  TableExpandedChangeDetails,
-  TableFocusModel,
-  TableRowDef,
-  TableRowProps,
-  TableSchema,
-  TableSelection,
-  TableSelectionChangeDetails,
-  TableSelectionMode,
-  TableSelectionState,
-  TableSortChangeDetails,
-  TableSortDescriptor,
-  TableSortDirection,
-  TableVisibleRow,
-} from './table.types'
+export type { TableApi, TableCellProps, TableColumnDef, TableColumnProps, TableExpandedChangeDetails, TableFocusModel, TableRowDef, TableRowProps, TableSchema, TableSelection, TableSelectionChangeDetails, TableSelectionMode, TableSelectionState, TableSortChangeDetails, TableSortDescriptor, TableSortDirection, TableTranslations, TableVisibleRow } from './table.types'

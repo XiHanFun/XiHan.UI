@@ -2,11 +2,4 @@ export { popselectAnatomy, popselectItemQuery, popselectItemText } from './popse
 export { connectPopselect, popselectInitialFocus } from './popselect.connect'
 export { popselectKeyboard } from './popselect.keyboard'
 export { popselectMeta } from './popselect.meta'
-export type {
-  PopselectApi,
-  PopselectItemProps,
-  PopselectNode,
-  PopselectNodeMeta,
-  PopselectProps,
-  PopselectService,
-} from './popselect.types'
+export type { PopselectApi, PopselectItemProps, PopselectNode, PopselectNodeMeta, PopselectProps, PopselectService, PopselectTranslations } from './popselect.types'
