@@ -20,8 +20,9 @@ function stripComments(css) {
 function blockEnd(css, open) {
   let depth = 0
   for (let i = open; i < css.length; i++) {
-    if (css[i] === '{')
+    if (css[i] === '{') {
       depth++
+    }
     else if (css[i] === '}') {
       depth--
       if (depth === 0)
