@@ -1,5 +1,96 @@
 # @xihan-ui/vue
 
+## 1.0.0-alpha.2
+
+### Minor Changes
+
+- 466f143: 新增两个包：`@xihan-ui/motion` 收动效原语，`@xihan-ui/animations` 收现成的动效。
+
+  动效的东西原先散在三处：缓动表与减弱动效探测在 `behavior`，补间与帧循环在 `headless/src/shared`，两套缓动的档名和值还对不上。`@xihan-ui/motion` 把它们收成一处，并补上真正缺的两样——解析解弹簧与 Web Animations 的薄封装。缓动从此只有一份来源：CSS 侧的 cubic-bezier 串与 JS 侧的采样函数同名同源。弹簧按阻尼比分三支算沉降时长，与 dt=0.1ms 的四阶龙格-库塔积分逐点对拍。减弱动效在系统偏好之上叠了一层应用级 override，接得上产品自己的"减弱动效"设置项。
+
+  `behavior` 与 `headless` 原样重新导出搬走的名字，公开面一个没少。
+
+  `@xihan-ui/animations` 是建在上面的效果层：11 个进场预设、6 个注意预设、错开起播与文字拆分。一段动画是一份可 JSON 序列化的配方，能存进数据库、由界面下拉切换。减弱动效的降级由 `motion` 统一兜住，这一层不另开通道——降级只影响中间帧存不存在，不影响控制流。
+
+### Patch Changes
+
+- 09b5ad8: 「collection 铺开的结构凑齐必备部件」这条判据改成机检，并把三档语义写进文档。
+
+  `collection` 收了数据不等于会替你渲染结构，而这件事此前既没有对外判据、也没有任何东西守着：
+  14 个组件里 13 个在根上代铺、popselect 只在 content 里铺，使用者只能一个个试。
+  官网落地时那棵树就是把数据写了一遍、DOM 又手码了一遍，两份得自己保持同步。
+
+  新增 `tests/collection-required-parts.spec.ts`：逐个组件只交 `collection`、不写任何部件，
+  断言铺出来的 DOM 含该组件 `meta.requiredParts` 里的每一个部件。少一个就是渲染出一个
+  看着正常、其实不工作的组件——浮层打不开、方向键找不到条目、同一份结构写到自定义元素那侧
+  会报 `wc.missing-part`。给新组件加代铺时先往这份测试加一行，铺漏了当场红。
+
+  顺带查出并钉住两处此前没人测的差别：`popselect` 的铺开落在 content 部件里而不是根上
+  （`<XhPopselectRoot :collection>` 单独用什么都不出），`mention` 的候选浮层没有 `defaultOpen`、
+  敲下前缀字符才铺开。
+
+  `guide/anatomy.md` 补「collection 管不管铺开结构」一节，三档逐个列出组件名，
+  并写明判据是结构的自由度：扁平集合的 DOM 形状是确定的，代铺挡不住任何写法；
+  层级与多区（`tree` / `cascader` / `transfer`）的结构有太多合理变体，代铺只会逼作者推翻重写。
+
+- ae21590: 75 个组件的插槽写上真类型，`vue-tsc` 从此接得住插槽名与载荷键名的拼写错误。
+
+  组件是渲染函数写的，`.d.ts` 里插槽泛型一直是空的（`DefineComponent` 的 `S` 位是 `{}`），
+  于是 `#panel="node"`、`v-slot="{ pages, page }"` 这些载荷在消费端全是 `any`：
+  键名写错不报、插槽名写错不报，只在运行期渲染出 `undefined`。props 与 emits 早就有完整类型，
+  唯独插槽这一层没有对外描述——而无头库恰恰是靠插槽把控制权交回作者的。
+
+  现在每个带载荷的插槽都有具名载荷类型（`TabsPanelSlotProps`、`StepsRootSlotProps` 这样命名，
+  均从主入口导出），组件上声明 `slots: Object as SlotsType<…>`：
+
+  ```vue
+  <template #panel="node">{{ node.lable }}</template>
+  <!-- TS2551: Property 'lable' does not exist on type 'TabsNodeMeta'. Did you mean 'label'? -->
+  ```
+
+  两条形状上的取舍值得写下来：
+
+  - **键一律可选**。非可选时 `slots.default ? 作者内容 : 按 collection 铺开` 这类判断在类型上恒为真，
+    而它承载的正是「没写默认插槽就铺开整套结构」的核心行为——类型不能对着它撒谎。
+  - **值一律写成函数类型**而不是裸载荷类型。Vue 的 `UnwrapSlotsType` 对函数类型原样保留、
+    对裸类型套一层 `Slot<T>`，而 `Slot<T>` 的实参元组在 `T` 不 extends `undefined` 时是 `[T]`
+    ——零参调用会变成非法，而库里到处是 `slots.default?.()`。
+
+  新增 `check-slot-types` 门禁盯住这两条与「带载荷就必须声明」，`pnpm gate` 由十七项变十八项。
+
+- ba3b3aa: 自定义元素补上全局文案层：`setXhConfig`。
+
+  `provideXhConfig` 一直只有 Vue 适配器有。自定义元素拿不到 provide/inject，文案又是对象、
+  只能走 property 不能走 attribute，于是 31 个元素只能在 JS 里逐实例各设一次 `.translations`——
+  一个中文应用要为此写几十行。而 `guide/i18n.md` 通篇把 `provideXhConfig` 当作「这套机制」讲，
+  一次都没提 Web Components，读的人会以为两端通用。
+
+  现在两端各有一处全局出口，取值优先级一致：**实例 → 全局 → 组件内建默认（英文）**，
+  `translations` 逐键合并。切语言再调一次 `setXhConfig` 即可，已挂载的元素跟着重渲。
+
+  接线落在 `MachineController` 一处——31 个元素的机器 props 都从那里过，不必逐个改。
+
+  `XhTranslationOverrides` 那张 31 条的映射表下沉到 `@xihan-ui/headless`，两个适配器共用一份。
+  在 WC 侧另抄一份是唯一的替代方案，而两份 31 条的表迟早会漂。Vue 侧原样再导出，导出名不变。
+
+  与 Vue 侧的两处差别写进文档了：`setXhConfig` 是整份替换而非深合并；它是模块级的，
+  没有「只在某棵子树里换语言」的能力。
+
+- Updated dependencies [3469066]
+- Updated dependencies [466f143]
+- Updated dependencies [7a5d898]
+- Updated dependencies [52729a1]
+- Updated dependencies [ba3b3aa]
+  - @xihan-ui/backgrounds@1.0.0-alpha.2
+  - @xihan-ui/headless@1.0.0-alpha.2
+  - @xihan-ui/motion@1.0.0-alpha.2
+  - @xihan-ui/behavior@1.0.0-alpha.2
+  - @xihan-ui/kernel@1.0.0-alpha.2
+  - @xihan-ui/machine@1.0.0-alpha.2
+  - @xihan-ui/code-highlight@1.0.0-alpha.2
+  - @xihan-ui/position@1.0.0-alpha.2
+  - @xihan-ui/sound@1.0.0-alpha.2
+
 ## 1.0.0-alpha.1
 
 ### Major Changes

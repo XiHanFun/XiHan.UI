@@ -1,5 +1,12 @@
 # @xihan-ui/sound
 
+## 1.0.0-alpha.2
+
+### Patch Changes
+
+- Updated dependencies [7a5d898]
+  - @xihan-ui/kernel@1.0.0-alpha.2
+
 ## 1.0.0-alpha.1
 
 ### Minor Changes

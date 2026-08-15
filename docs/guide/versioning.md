@@ -28,9 +28,9 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 
 版本号本身走标准语义化版本：`major.minor.patch`。受约束的东西改了走 major，新增走 minor，只修行为不改名字走 patch。
 
-## 15 个包必须同版本安装
+## 17 个包必须同版本安装
 
-15 个包锁步发布：任何一个包发新版本，全部 15 个包一起发同一个号。
+17 个包锁步发布：任何一个包发新版本，全部 17 个包一起发同一个号。
 
 ```
 @xihan-ui/kernel   @xihan-ui/machine        @xihan-ui/behavior
@@ -38,6 +38,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 @xihan-ui/headless @xihan-ui/icons          @xihan-ui/vue
 @xihan-ui/web-components  @xihan-ui/chat-stream
 @xihan-ui/markdown @xihan-ui/code-highlight @xihan-ui/backgrounds
+@xihan-ui/sound    @xihan-ui/motion         @xihan-ui/animations
 ```
 
 两条后果，都要知道：
@@ -49,7 +50,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 
 ## 一、JS / TS 导出面
 
-15 个包中 14 个出 JS，共 21 个带类型的入口。
+17 个包中 16 个出 JS，共 25 个带类型的入口。
 
 ### 受约束
 
@@ -430,6 +431,6 @@ prop 名那一维是后补的：在它进来之前，改一个 prop 名（实测
 | Vue 作用域插槽载荷 | 没有一个组件声明 `slots:` 选项，`<template #default="s">` 里的 `s` 是隐式 `any` | 补 `slots:` 声明 |
 | 废弃提示（CSS / `data-*` / attribute / 层名） | 这四种介质没有任何提示机制，废弃只能靠更新日志 | dev 构建下经诊断通道发 `warn` |
 | 浏览器硬底线 | 仓库里没有 `browserslist`，也没有 CSS 特性白名单。写一个 `@container` 就能把底线从 2023-03 抬到 2023-09，没有一条门禁会响 | `.browserslistrc` + 无兜底新特性的拒绝名单 |
-| 「15 个包必须同版本」 | 兄弟包是普通 `dependencies` 而非 `peerDependencies`，包管理器不会阻止你装出混版组合 | 提成 peer，或在入口加运行期版本一致性检查 |
+| 「17 个包必须同版本」 | 兄弟包是普通 `dependencies` 而非 `peerDependencies`，包管理器不会阻止你装出混版组合 | 提成 peer，或在入口加运行期版本一致性检查 |
 
 发现本页写的和实际行为对不上，按缺陷处理——请提 issue，不要当成「政策就是这样」。

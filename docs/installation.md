@@ -2,7 +2,7 @@
 
 ## 从 npm 安装（当前是 alpha）
 
-XiHan.UI 的 15 个公开包都已发布到 npm，当前版本 `1.0.0-alpha.1`，`latest` 与 `alpha` 两个 dist-tag 都指向它。
+XiHan.UI 的 17 个公开包都已发布到 npm，当前版本 `1.0.0-alpha.2`，`latest` 与 `alpha` 两个 dist-tag 都指向它。
 
 ::: warning
 alpha 的含义是：能装、能跑，但接口还会变，**不承诺语义化版本**，不建议用于生产。要让行为可复现，请把版本写成精确值而不是区间。
