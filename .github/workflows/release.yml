@@ -2,6 +2,9 @@ name: Release
 
 # 只做一件事：把当前提交里的包发到 npm。
 # 版本号、CHANGELOG、git tag、GitHub Release 全部由人手工完成。
+#
+# 只有 main 上的版本标签能发包。标签本身不带分支信息，所以由 guard job 验证
+# 被标记的提交确实在 main 的历史里——打在 dev 或任何别处的 v* 标签一律拒发。
 on:
   workflow_dispatch:
   push:
@@ -14,7 +17,31 @@ defaults:
     working-directory: ui
 
 jobs:
+  guard:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # 要拿完整历史才能判断祖先关系
+          fetch-depth: 0
+      - name: 只放行 main 上的版本标签
+        working-directory: .
+        run: |
+          if [ "$GITHUB_REF_TYPE" != "tag" ]; then
+            echo "::error::Release 只接受版本标签触发，收到 $GITHUB_REF_TYPE $GITHUB_REF_NAME"
+            exit 1
+          fi
+          git fetch --no-tags origin main:refs/remotes/origin/main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" refs/remotes/origin/main; then
+            echo "::error::标签 $GITHUB_REF_NAME 指向的提交 $GITHUB_SHA 不在 main 的历史里，拒绝发布。请先把要发布的提交合进 main，再在 main 上打标签。"
+            exit 1
+          fi
+          echo "标签 $GITHUB_REF_NAME 在 main 上，放行"
+
   publish:
+    needs: guard
     runs-on: ubuntu-latest
     permissions:
       contents: read
