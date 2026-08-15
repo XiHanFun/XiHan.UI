@@ -67,7 +67,7 @@ pnpm lint         # oxlint + eslint + stylelint
 pnpm test         # 单元测试与跨适配器一致性测试（jsdom）
 pnpm test:browser # 真实 Chromium 里的无障碍扫描与浮层定位契约
 pnpm boundaries   # 分层依赖门禁
-pnpm gate         # 十八项结构门禁
+pnpm gate         # 十九项结构门禁
 pnpm size         # 产物体积棘轮
 ```
 
@@ -174,6 +174,17 @@ import '@xihan-ui/tokens/tokens.css'
 ```
 
 第三种同样立得住层序：tokens.css 自己带一份完整的层序声明，自己写的皮肤直接写进 `@layer xihan.overrides` 即可。组件不依赖默认皮肤，它只往 DOM 上打 `data-scope` / `data-part` / `data-state` 等属性，样式全由你决定。参见[皮肤与样式分层](./guide/styling)。
+
+::: warning 第二种有两条要自己扛的
+1. **漏引是静默的。** 少引一份皮肤，那个组件的 `data-scope` / `data-part` 照常都在、别的皮肤也确实加载了，
+   只有它渲染成没有内边距、没有底色的裸元素。查的时候很难往「少引了一行」上想。
+2. **顺序要照 `index.css` 的相对顺序来。** 同一个 `@layer xihan.components` 内，等特异性的规则靠源序定胜负。
+   自己另起一套排序（按字母、按目录读取序）今天可能看不出差别，将来加进一条跨组件规则就会与全量引入的人渲染不同。
+   要按需，就把 `index.css` 的 `@import` 清单过滤一遍，别自己排。
+
+全量是 51 kB gzip（含令牌与 109 份皮肤）。没有明确的体积压力就用第一种——省下来的那点体积，
+不值得拿上面两条风险换。
+:::
 
 令牌的机读形式也可直接取用，用于生成 Figma 变量、Tailwind 主题或别的产物：
 
