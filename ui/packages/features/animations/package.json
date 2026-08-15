@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/animations",
   "type": "module",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "XiHan.UI animation layer — serializable motion recipes, built-in enter and attention effects, stagger and text splitting, framework agnostic.",
   "author": {
     "name": "XiHanFun",

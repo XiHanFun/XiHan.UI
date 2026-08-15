@@ -2,13 +2,13 @@
 
 ## 现在能用吗
 
-不能用于生产。库包已发布到 npm，当前版本 `1.0.0-alpha.1`——这是预发布版本，不承诺语义化版本，接口还会变。无障碍存量违规已清空，只剩两条登记在案（WC 侧 steps 的必需子节点，加一条 breadcrumb 的步骤重放豁免）。
+不能用于生产。库包已发布到 npm，当前版本 `1.0.0-alpha.2`——这是预发布版本，不承诺语义化版本，接口还会变。无障碍存量违规已清空，只剩两条登记在案（WC 侧 steps 的必需子节点，加一条 breadcrumb 的步骤重放豁免）。
 
 能做的是：从 npm 装一份试用、克隆仓库跑 playground 看行为、读源码。见[安装与接入](./installation)。
 
 ## `npm install` 能装到哪些包
 
-15 个公开包都在 npm 上，`latest` 与 `alpha` 两个 dist-tag 都指向 `1.0.0-alpha.1`。发布走 changesets，全部库包同属一个 fixed 版本组，一起升到同一版本号，所以内部依赖区间总是对齐的。
+17 个公开包都在 npm 上，`latest` 与 `alpha` 两个 dist-tag 都指向 `1.0.0-alpha.2`。发布走 changesets，全部库包同属一个 fixed 版本组，一起升到同一版本号，所以内部依赖区间总是对齐的。
 
 ## 和 XiHan.BasicApp 的前端是什么关系
 

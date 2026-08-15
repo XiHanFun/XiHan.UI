@@ -1,5 +1,92 @@
 # @xihan-ui/headless
 
+## 1.0.0-alpha.2
+
+### Minor Changes
+
+- 466f143: 新增两个包：`@xihan-ui/motion` 收动效原语，`@xihan-ui/animations` 收现成的动效。
+
+  动效的东西原先散在三处：缓动表与减弱动效探测在 `behavior`，补间与帧循环在 `headless/src/shared`，两套缓动的档名和值还对不上。`@xihan-ui/motion` 把它们收成一处，并补上真正缺的两样——解析解弹簧与 Web Animations 的薄封装。缓动从此只有一份来源：CSS 侧的 cubic-bezier 串与 JS 侧的采样函数同名同源。弹簧按阻尼比分三支算沉降时长，与 dt=0.1ms 的四阶龙格-库塔积分逐点对拍。减弱动效在系统偏好之上叠了一层应用级 override，接得上产品自己的"减弱动效"设置项。
+
+  `behavior` 与 `headless` 原样重新导出搬走的名字，公开面一个没少。
+
+  `@xihan-ui/animations` 是建在上面的效果层：11 个进场预设、6 个注意预设、错开起播与文字拆分。一段动画是一份可 JSON 序列化的配方，能存进数据库、由界面下拉切换。减弱动效的降级由 `motion` 统一兜住，这一层不另开通道——降级只影响中间帧存不存在，不影响控制流。
+
+### Patch Changes
+
+- 3469066: 官网作为第一个真实消费方落地时暴露的四条问题，全部改代码，文档随后如实描述。
+
+  **背景层不再压掉宿主用类名写的定位。** `createBackgroundSurface` 原先在建面时就无条件量一次宿主定位，
+  量到 `static`（或算不出来的空串）就写一句内联 `position: relative`。而 Vue 的函数式 ref 在元素进文档
+  之前触发，此时 `getComputedStyle` 什么都算不出，于是这一句必写——内联样式压过任何层里的规则，
+  宿主用类名写的 `position: absolute` 从此再也赢不回来，塌成高度 0，画布跟着 100% × 0，
+  不报错、不告警、什么都不画。
+
+  改为：宿主自带定位（内联或类名）一个字不动；量出来是 `static` 才写兜底；**还没进文档时既不写定位、
+  也不挂画布**——不在文档树里的画布逃不到别的祖先上，那句投机性写入因此整个不必发生。
+  宿主进文档拿到盒子的那一刻由 `ResizeObserver` 定夺，销毁时撤销观察。
+  没有 `ResizeObserver` 的环境退回原行为。
+
+  **未注册的内置效果名，错误信息不再给行不通的建议。** 原先一律指向 `registerEffect()`，可它收的是
+  效果对象不是名字，照着写连类型都不过，也不提示这个效果本就在包里、导出名叫什么。
+  现在内置名单独给一条，点名 `registerBuiltinEffects()` / `registerEffects([xxxEffect])` 与直接传对象三条路。
+  内置效果仍然不自动注册——注册表一旦静态引上这 14 个，每个用到 `createBackgroundSurface` 的应用都要
+  多吃约 35 kB（gzip 约 8.6 kB），占整包四成。新增 `BUILTIN_EFFECT_NAMES` 纯字符串清单供校验用。
+
+  **`TabsVariant` 补上 `line`。** 文档一直写「line / card / segment，缺省是 line」，类型里却只有两档，
+  使用者自然写下的 `variant="line"` 编译不过。line 是缺省档、皮肤里没有它的选择器，
+  显式写与不写渲染逐值相同。
+
+  **`tokens.css` 自带完整层序声明。** 级联层的顺序由首次声明定死，而 `tokens.css` 原先只有
+  `@layer xihan.tokens { }` 取值块。先引令牌再引皮肤（此前文档推荐的顺序）会让 `xihan.tokens`
+  抢在 `xihan.reset` 前面注册，实际层序与 `layers.css` 声明的不符。现在两份入口各自带一份逐字相同的
+  完整声明，谁先被引到层序都成立；重复声明幂等。新增 `check-layer-order` 门禁盯住两份不许漂移，
+  `pnpm gate` 由十五项变十六项。
+
+- 52729a1: 104 个组件全部留出 `<Comp>Translations` 的位，哪怕眼下一句文案都没有。
+
+  原先只有 32 个组件有 `Translations` 类型，其余 72 个什么都没有。将来某个组件要外露一句读屏文案时，
+  得同时补：类型、子入口导出、包级 barrel、`XhTranslationOverrides` 的一行、两个适配器的全局配置能否命中。
+  五处漏一处就是「配了没生效」，而且不报错。
+
+  现在类型一律先在，空接口也是接口：
+
+  ```ts
+  /** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+  export interface BadgeTranslations {}
+  ```
+
+  `XhTranslationOverrides` 相应从 31 条扩到 104 条，全局配置对每个组件都有落点。
+  `date-field` 与 `date-picker` 共用一份文案的既有映射原样保留。
+
+  新增 `check-translations-slots` 门禁守住两件事：每个组件都有自己的 `Translations`、
+  且都挂进了覆盖表。加了新组件却忘了留位，当场红。`pnpm gate` 二十项 → 二十一项。
+
+- ba3b3aa: 自定义元素补上全局文案层：`setXhConfig`。
+
+  `provideXhConfig` 一直只有 Vue 适配器有。自定义元素拿不到 provide/inject，文案又是对象、
+  只能走 property 不能走 attribute，于是 31 个元素只能在 JS 里逐实例各设一次 `.translations`——
+  一个中文应用要为此写几十行。而 `guide/i18n.md` 通篇把 `provideXhConfig` 当作「这套机制」讲，
+  一次都没提 Web Components，读的人会以为两端通用。
+
+  现在两端各有一处全局出口，取值优先级一致：**实例 → 全局 → 组件内建默认（英文）**，
+  `translations` 逐键合并。切语言再调一次 `setXhConfig` 即可，已挂载的元素跟着重渲。
+
+  接线落在 `MachineController` 一处——31 个元素的机器 props 都从那里过，不必逐个改。
+
+  `XhTranslationOverrides` 那张 31 条的映射表下沉到 `@xihan-ui/headless`，两个适配器共用一份。
+  在 WC 侧另抄一份是唯一的替代方案，而两份 31 条的表迟早会漂。Vue 侧原样再导出，导出名不变。
+
+  与 Vue 侧的两处差别写进文档了：`setXhConfig` 是整份替换而非深合并；它是模块级的，
+  没有「只在某棵子树里换语言」的能力。
+
+- Updated dependencies [466f143]
+- Updated dependencies [7a5d898]
+  - @xihan-ui/motion@1.0.0-alpha.2
+  - @xihan-ui/behavior@1.0.0-alpha.2
+  - @xihan-ui/kernel@1.0.0-alpha.2
+  - @xihan-ui/machine@1.0.0-alpha.2
+
 ## 1.0.0-alpha.1
 
 ### Major Changes

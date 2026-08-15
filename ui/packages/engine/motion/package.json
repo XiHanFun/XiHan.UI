@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/motion",
   "type": "module",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "XiHan.UI motion primitives — easing, tweening, frame loop, reduced-motion preference, closed-form springs and a Web Animations wrapper.",
   "author": {
     "name": "XiHanFun",

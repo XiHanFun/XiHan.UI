@@ -1,5 +1,85 @@
 # @xihan-ui/styles
 
+## 1.0.0-alpha.2
+
+### Major Changes
+
+- 934e126: 每份皮肤现在都能单独引入了，动画不再指望别处的文件在场。
+
+  `styles` 的 exports 逐组件铺了一百多条子入口，`import '@xihan-ui/styles/dialog.css'` 是受支持的用法。但 `xh-fade-in`、`xh-fade-out`、`xh-spin`、`xh-dialog-in/out` 这五支关键帧住在 `motion.css` 里，被 15 份别的皮肤引用——单独引入其中任何一份，动画名都查不到。`@keyframes` 的名字查找只认「文档里有没有这个名字」，查不到既不报错也不降级，看上去就是「这个组件没做动效」。`spinner.css` / `switch.css` / `popconfirm.css` 三处注释早就写明了这条理由，只是这五支没照办。
+
+  现在每份皮肤都自带它用到的关键帧。`motion.css` 因此空了，**已删除，`./motion.css` 子入口一并移除**——如果你显式引过它，删掉那行即可，它提供的关键帧已经跟着各组件走了。
+
+  新增 `check-keyframe-refs` 门禁盯住三件事：引用的动画名必须在同一份皮肤里定义、同名的多份定义必须逐字一致（名字是全局的，两份不同内容会互相覆盖）、关键帧必须写在 `@layer xihan.motion` 里（使用者按层覆盖时才盖得住）。
+
+  产物只大了 60 B：重复的关键帧对 gzip 几乎是免费的。
+
+### Minor Changes
+
+- 091bbef: 补上动效地基的四个缺口。
+
+  **减弱动效此前基本是失效的。** `tokens.css` 里一个 `prefers-reduced-motion` 都没有，降级靠 19 份皮肤各写各的 `@media`，而它们只把 `animation-duration` 压到 `0.01ms`——位移与缩放是写死的字面量，压时长压不掉。前庭不适恰恰来自大位移与缩放，所以「减弱动效」的用户看到的是瞬间跳完整段位移。现在幅度走 `--xh-motion-distance-sm/-md` 与 `--xh-motion-scale-enter`，令牌层在 reduce 下把它们归零，皮肤不必自带 `@media`。删掉 8 份已经冗余的降级块（含 8 条 `!important`）；marquee / skeleton / spinner 那几处有讲得通的自定义降级，保留。
+
+  **dialog 与 image-viewer 的退场动画从来没播过。** 皮肤给挂着退场动画的 `content` 补了 `[hidden]{display:none}`，收起时元素当场不生成盒子，动画不启动，退场探测器放弃申领租约、就地卸载。drawer 早就绕开了这个坑，它的注释还写着「与 dialog 一致」——而 dialog 恰恰是反的。现在真的一致了，四条退场动画同时补上 `forwards`。
+
+  **Web Components 端全域没有退场动画。** 三个浮层元素把收起写死在展开态上，与 `data-state="closed"` 同帧写内联 `display:none`。现在收起跟着 presence 走；Light DOM 下被拉长的不是节点存在的时间，而是可见的时间。
+
+  **破坏性程度**：进场缩放统一到 `0.96`（此前 0.98 与 0.96 混用），dialog / toast 进场 / color-picker 的起势略明显一点。button 的加载转圈不再被压成 `0.01ms`——转圈是「系统还在做事」的唯一可感知信号，压掉等于把加载态变成假死。
+
+  回归测试进了 `tests/browser/`：jsdom 不把样式表里的 animation 算进 `getComputedStyle`，这三件事在 jsdom 里结构性测不到。
+
+### Patch Changes
+
+- 7a5d898: 漏引皮肤不再静默：新增 `startSkinCheck()` 开发期探测与 `styles.missing-skin` 诊断码。
+
+  按需引皮肤时漏掉一行原本是这个库最难查的失效：那个组件的 `data-scope` / `data-part` 照常都在、
+  别的皮肤也确实加载了，只有它渲染成没有内边距、没有底色的裸元素，看起来像组件坏了而不是少引了一行。
+  这一条正是「按组件挑」在真实项目里立不住的根本原因。
+
+  每份组件皮肤现在在自己的 `[data-scope='X']` 上落一个 `--xh-X-skin` 标记（104 份）。
+  `startSkinCheck()` 扫页面上出现过的每个 scope，取不到标记就报诊断：
+
+  ```ts
+  if (import.meta.env.DEV) {
+    const { startSkinCheck } = await import("@xihan-ui/kernel/skin-check");
+    startSkinCheck();
+  }
+  ```
+
+  ```
+  [xh][button] [styles] button 的皮肤没引：import '@xihan-ui/styles/button.css'，或改引全量的 '@xihan-ui/styles'
+  ```
+
+  两处刻意的取舍：
+
+  - **每个 scope 只探一次。** 探测要读计算样式，逐实例探是真实的强制样式重算；一个 scope 的皮肤
+    在不在场与实例数无关，探一次就够。
+  - **标记落在 `[data-scope='X']` 而不是 root 部件上。** 浮层族的 `content` 被 portal 到 body，
+    不在 root 的子树里，只在 root 上声明的话自定义属性继承不过去，这些部件会误报。
+
+  探测器走 `@xihan-ui/kernel/skin-check` 子路径而不是主入口：它是开发期工具，不该躺在每个消费方都会打包的那条入口里（放主入口会让 kernel 的体积棘轮超 118 B，那条棘轮量的正是整包）。
+
+  新增 `check-skin-markers` 门禁守住 104 份皮肤的标记齐全——漏一份，那个组件就退回静默失效，
+  而且探测器还一声不吭。`pnpm gate` 十九项 → 二十项。
+
+- 59c86fa: 新增 `check-style-entries` 门禁：每份皮肤都必须进得了全量入口、也够得着按需入口。
+
+  `index.css` 的 `@import` 清单是手工维护的，`package.json` 的子路径导出也是。两处任何一处漏了，
+  结果都是静默的：漏进 `index.css`，全量引入的人拿不到那份皮肤，组件渲染成裸元素；
+  漏了子路径导出，按需引入的人根本 import 不到它。今天 109 份皮肤两处齐全，但没有任何东西守着。
+
+  门禁同时把「按需产物的顺序只能由 `index.css` 过滤得来」钉在这里。同一个 `@layer xihan.components`
+  内，等特异性的规则靠源序定胜负；另起一套排序（按字母、按目录读取序）今天看不出差别——
+  当前仅有的 3 处跨 scope 规则在两种排序下相对次序恰好一致——但那正是它危险的地方：
+  将来加进第四处，按需引入的人就会与全量引入的人渲染不同，而且全绿。
+
+  `installation.md` 的「样式的三种接法」如实补上第二种要自己扛的两条风险，并给出体积口径
+  （全量 51 kB gzip，含令牌与 109 份皮肤），建议没有明确体积压力就用全量。
+
+- Updated dependencies [3469066]
+- Updated dependencies [091bbef]
+  - @xihan-ui/tokens@1.0.0-alpha.2
+
 ## 1.0.0-alpha.1
 
 ### Major Changes
