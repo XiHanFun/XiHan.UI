@@ -1,6 +1,6 @@
 # @xihan-ui/icons
 
-首方图标集。产物是结构化的 `IconRecord` 数据，运行期不经任何 HTML/XML 解析。
+首方图标集，外加一条把任意 SVG 目录转成同种数据的构建期管线。产物是结构化的 `IconRecord`，运行期不经任何 HTML/XML 解析。
 
 ```ts
 import { CheckIcon } from '@xihan-ui/icons'
@@ -8,12 +8,21 @@ import { CheckIcon } from '@xihan-ui/icons'
 
 每个图标是一个顶层 `export const`，值是纯对象字面量，打包器能逐个证明未被引用并摇掉。
 
+首方集只收组件自身用得上的那些。要更多图标就把别的集子交给转换器：
+
+```bash
+npx xihan-icons ./node_modules/lucide-static/icons --out src/icons.mjs --dts
+```
+
+或用 `@xihan-ui/icons/codegen` 接进自己的构建脚本（`ingestIconDir` / `renderModule` / `renderDeclaration`）。使用者视角的说明在[图标集](https://ui.docs.xihanfun.com/guide/icons)一章。
+
 ## 目录
 
 | 路径 | 内容 |
 |---|---|
 | `src/svg/*.svg` | 手画的源图标，24×24 网格、单色描边、`stroke-width="2"`、round 端点与连接 |
-| `build/*.mjs` | 生成管线（零第三方依赖：自己的 SVG 标记扫描器 + 白名单 + 坐标归一 + 产物拼装） |
+| `build/*.mjs` | 生成管线（零第三方依赖：自己的 SVG 标记扫描器 + 白名单 + 坐标归一 + 产物拼装），随包发布为 `./codegen` 子路径与 `xihan-icons` 命令 |
+| `build/index.d.mts` | `./codegen` 的类型声明。手写——管线是 `.mjs`，没有 TS 源可发射；`tests/codegen-surface.spec.ts` 盯着它别与运行期导出漂移 |
 | `tests/*.spec.ts` | 对抗测试，按「输入这段 SVG，产出里不得出现 X」写，不引用管线内部函数 |
 | `dist/` | 生成物：`index.mjs`、`index.d.mts`、`types.d.mts`、`types.mjs` |
 
@@ -34,12 +43,18 @@ interface IconRecord {
 
 ## 管线的处置策略
 
-两档，没有第三档：
+首方集走**严格模式**（`buildIconSet`），两档：
 
 - **构建期报错并中止**：白名单外的标签、属性名、属性值。静默丢弃会产出「看起来对但少一块」的图标。
 - **静默丢弃**：注释、CDATA 壳、XML 声明、DOCTYPE、`<title>`、`<desc>`、空白文本，以及根 `<svg>` 上的 `width` / `height` / `xmlns*` / `version`。
 
 `<title>` / `<desc>` 必须丢：可及名字只从 `IconProps.label` 来，记录里留一个 title 会与 `aria-label` 双重命名。
+
+外部图标集走**宽松模式**（`ingestIconDir`，或 `svgToIconRecord(..., { lenient: true })`），只在**属性层**放宽：白名单外的属性名、取值不合规的属性，从「报错」降为「丢弃 + 记进 `notes`」。外部集普遍带 `class` / `width` / `height`，逐个报错就一枚都进不来，而丢掉它们正是想要的。
+
+**标签层在两种模式下都严格**。`<use>` / `<text>` / `<style>` 出现在图元里，意味着这枚图标的样子依赖记录表达不了的东西，收下它就是产出一枚画错的图标——画错比缺一枚更难被发现，所以报错。
+
+宽松模式下单枚失败不掀桌：`ingestIconDir` 把它收进 `skipped`（带文件名与原因）继续跑，`xihan-icons` 会逐条打出来。
 
 ## 白名单
 

@@ -143,20 +143,31 @@ function checkUrlReferences(name, value, where) {
   return refs
 }
 
-/** 属性名过白名单，返回规范化后的名字。 */
-export function assertAttrName(name, where, { rootOnly = false } = {}) {
+/**
+ * 属性名过白名单，返回规范化后的名字。
+ *
+ * lenient 下不收的属性返回 null 由调用方丢弃，用于摄取外部图标集——那些集子普遍带 class、
+ * width、height 这类样式与尺寸属性，逐个报错就一枚都进不来，而丢掉它们正是我们想要的。
+ */
+export function assertAttrName(name, where, { rootOnly = false, lenient = false } = {}) {
   const trimmed = name.trim()
+  const reject = (message) => {
+    if (lenient)
+      return null
+    fail(where, message)
+  }
+
   for (const [hit, reason] of NAMED_BANS) {
     if (hit(trimmed))
-      fail(where, `属性 ${JSON.stringify(name)} 不收：${reason}`)
+      return reject(`属性 ${JSON.stringify(name)} 不收：${reason}`)
   }
   if (ROOT_ONLY_ATTRS.has(trimmed)) {
     if (!rootOnly)
-      fail(where, `属性 ${trimmed} 只允许出现在根 <svg> 上`)
+      return reject(`属性 ${trimmed} 只允许出现在根 <svg> 上`)
     return trimmed
   }
   if (!ALLOWED_ATTRS.has(trimmed))
-    fail(where, `属性 ${JSON.stringify(name)} 不在白名单里`)
+    return reject(`属性 ${JSON.stringify(name)} 不在白名单里`)
   return trimmed
 }
 
