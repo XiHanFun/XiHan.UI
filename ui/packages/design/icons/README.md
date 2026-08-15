@@ -8,7 +8,7 @@ import { CheckIcon } from '@xihan-ui/icons'
 
 每个图标是一个顶层 `export const`，值是纯对象字面量，打包器能逐个证明未被引用并摇掉。
 
-首方集只收组件自身用得上的那些。要更多图标就把别的集子交给转换器：
+首方集覆盖中后台界面的常用语义（方向、文件、编辑、媒体、通信、状态、图表、系统、商业九类），逐枚手绘。它不打算穷尽——要别的图标就把那套集子交给转换器：
 
 ```bash
 npx xihan-icons ./node_modules/lucide-static/icons --out src/icons.mjs --dts
