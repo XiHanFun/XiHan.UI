@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='icon'] {
+    --xh-icon-skin: 1;
+  }
+
   /*
    * 根 <svg>。直径、描边粗细、行内位置都由这里给，记录只带几何。
    * 不写 fill / stroke：记录里那两条呈现属性取 currentColor，改这里会把

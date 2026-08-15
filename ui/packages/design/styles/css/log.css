@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='log'] {
+    --xh-log-skin: 1;
+  }
+
   /* 行高是本组件的定尺基准：视口按行数定高、每行排版，都从这一个槽位来。
      它的兜底值须与连接层内联高度里用的那份逐字一致，否则 rows 算出来的高度对不上行。 */
   [data-scope='log'][data-part='root'] {

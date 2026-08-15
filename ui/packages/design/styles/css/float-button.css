@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='float-button'] {
+    --xh-float-button-skin: 1;
+  }
+
   /* 定位壳：钉在视口一角。贴边距离由连接层写进这个盒子的内联 style，
      样式表这一行只是它缺席时的落点；贴的是哪两条边看 data-placement。
      另一件必须提防的事：fixed 认的是视口，祖先上一旦出现

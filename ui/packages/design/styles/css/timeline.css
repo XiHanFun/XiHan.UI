@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='timeline'] {
+    --xh-timeline-skin: 1;
+  }
+
   [data-scope='timeline'][data-part='root'] {
     /* 尺寸档只换这几个私有槽，条目、圆点与文字都从 root 继承它们，
        换档不必给每个部件各写一条选择器 */

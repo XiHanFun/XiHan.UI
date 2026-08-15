@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='watermark'] {
+    --xh-watermark-skin: 1;
+  }
+
   /*
    * 盖水印的那块地。层叠上下文就地隔离，印子只压在这块地里，不会盖到组件外面去。
    */

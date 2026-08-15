@@ -67,7 +67,7 @@ pnpm lint         # oxlint + eslint + stylelint
 pnpm test         # 单元测试与跨适配器一致性测试（jsdom）
 pnpm test:browser # 真实 Chromium 里的无障碍扫描与浮层定位契约
 pnpm boundaries   # 分层依赖门禁
-pnpm gate         # 十九项结构门禁
+pnpm gate         # 二十项结构门禁
 pnpm size         # 产物体积棘轮
 ```
 
@@ -176,15 +176,35 @@ import '@xihan-ui/tokens/tokens.css'
 第三种同样立得住层序：tokens.css 自己带一份完整的层序声明，自己写的皮肤直接写进 `@layer xihan.overrides` 即可。组件不依赖默认皮肤，它只往 DOM 上打 `data-scope` / `data-part` / `data-state` 等属性，样式全由你决定。参见[皮肤与样式分层](./guide/styling)。
 
 ::: warning 第二种有两条要自己扛的
-1. **漏引是静默的。** 少引一份皮肤，那个组件的 `data-scope` / `data-part` 照常都在、别的皮肤也确实加载了，
-   只有它渲染成没有内边距、没有底色的裸元素。查的时候很难往「少引了一行」上想。
+1. **漏引原本是静默的。** 少引一份皮肤，那个组件的 `data-scope` / `data-part` 照常都在、别的皮肤
+   也确实加载了，只有它渲染成没有内边距、没有底色的裸元素。开发模式下开着下面那个探测器就不会漏掉。
 2. **顺序要照 `index.css` 的相对顺序来。** 同一个 `@layer xihan.components` 内，等特异性的规则靠源序定胜负。
    自己另起一套排序（按字母、按目录读取序）今天可能看不出差别，将来加进一条跨组件规则就会与全量引入的人渲染不同。
    要按需，就把 `index.css` 的 `@import` 清单过滤一遍，别自己排。
 
-全量是 51 kB gzip（含令牌与 109 份皮肤）。没有明确的体积压力就用第一种——省下来的那点体积，
-不值得拿上面两条风险换。
+全量是 51 kB gzip（含令牌与 109 份皮肤）。没有明确的体积压力就用第一种。
 :::
+
+### 开发模式下查漏引
+
+每份组件皮肤在自己的 `[data-scope='X']` 上落了一个 `--xh-X-skin` 标记。
+`startSkinCheck()` 扫页面上出现过的每个 scope，取不到标记就说明那份 CSS 不在场：
+
+```ts
+if (import.meta.env.DEV) {
+  const { startSkinCheck } = await import('@xihan-ui/kernel/skin-check')
+  startSkinCheck()
+}
+```
+
+报进[诊断通道](./guide/diagnostics)，码是 `styles.missing-skin`：
+
+```
+[xh][button] [styles] button 的皮肤没引：import '@xihan-ui/styles/button.css'，或改引全量的 '@xihan-ui/styles'
+```
+
+每个 scope 只探一次（探测要读计算样式，逐实例探是真实的强制样式重算），
+用 `MutationObserver` 接住后续进来的节点，返回值是停止函数。全量引入的人开着它也没有额外产出。
 
 令牌的机读形式也可直接取用，用于生成 Figma 变量、Tailwind 主题或别的产物：
 

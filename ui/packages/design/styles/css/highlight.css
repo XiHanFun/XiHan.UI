@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='highlight'] {
+    --xh-highlight-skin: 1;
+  }
+
   /* 文本按原样显示：命中位置是按原串逐字符算的，折叠掉连续空格与换行会让看到的
      与算出来的对不上。pre-wrap 保留空白但仍在容器边界换行 */
   [data-scope='highlight'][data-part='root'] {

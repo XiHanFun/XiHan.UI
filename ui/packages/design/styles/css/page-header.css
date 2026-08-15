@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='page-header'] {
+    --xh-page-header-skin: 1;
+  }
+
   [data-scope='page-header'][data-part='root'] {
     /* 尺寸档只换这三个私有槽，各段从根上继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_page-header-py: var(--xh-space-4);

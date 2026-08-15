@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='form'] {
+    --xh-form-skin: 1;
+  }
+
   /* 表单是一列字段：竖排、字段之间留一档间距。root 就是那个原生 <form> */
   [data-scope='form'][data-part='root'] {
     display: flex;

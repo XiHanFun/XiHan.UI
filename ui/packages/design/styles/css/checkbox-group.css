@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='checkbox-group'] {
+    --xh-checkbox-group-skin: 1;
+  }
+
   /* 组容器：label、trigger、条目都是它的直接子节点，排布方式只能读 data-orientation——
      连接层明说了 role=group 不接受 aria-orientation，那个属性它根本没输出 */
   [data-scope='checkbox-group'][data-part='root'] {

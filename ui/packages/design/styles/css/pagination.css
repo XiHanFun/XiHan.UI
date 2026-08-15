@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='pagination'] {
+    --xh-pagination-skin: 1;
+  }
+
   /* 根节点是 nav 地标，只负责把上一页 / 页码 / 下一页排成一行。
      页数为 0 时连接层会打 data-empty，这里不拿它做隐藏：作者常把「第 x-y 条」这类
      区间回显也写在 nav 里，整块藏掉会连那行字一起吞了，是否隐藏交给作者决定 */

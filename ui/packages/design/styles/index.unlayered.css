@@ -16,6 +16,11 @@
 /* 其余按层归属排列。 */
 
 /* styles/affix.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='affix'] {
+  --xh-affix-skin: 1;
+}
+
 /* 占位盒就是 content 在常规流里占的那块地方。
    这里不声明 display，也不写高度：吸住时冻结的高度由连接层量好写进内联样式（它量得到，样式表量不到），
    没吸住时高度就该跟着内容走。不给 display，UA 的 [hidden]{display:none} 也仍然压得住 */
@@ -43,6 +48,11 @@
 }
 
 /* styles/avatar-group.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='avatar-group'] {
+  --xh-avatar-group-skin: 1;
+}
+
 /* 一排叠放的头像：后一枚压在前一枚上。
    组内共用的直径与字号在容器上写一次，沿继承流给每一枚；自己写了档位的那一枚仍按自己的档走 */
 [data-scope='avatar-group'][data-part='root'] {
@@ -125,6 +135,11 @@
 }
 
 /* styles/back-top.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='back-top'] {
+  --xh-back-top-skin: 1;
+}
+
 /* 定位壳：钉在视口的尾下角，用逻辑属性，RTL 下自动换到另一侧。
    不声明 display —— 收起态由连接层写 hidden，UA 的 [hidden]{display:none} 得压得住 */
 [data-scope='back-top'][data-part='root'] {
@@ -186,6 +201,11 @@
 }
 
 /* styles/button-group.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='button-group'] {
+  --xh-button-group-skin: 1;
+}
+
 /* 一组按钮连成一条：段与段之间不留缝，靠共边接上，所以不设 gap。
    排布只能读 data-orientation——role=group 不收 aria-orientation，连接层根本不输出它。
    圆角槽位在容器上先收成 0，组内每段都取得到，两端的圆角再逐段补回来 */
@@ -317,6 +337,11 @@
 }
 
 /* styles/countdown.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='countdown'] {
+  --xh-countdown-skin: 1;
+}
+
 [data-scope='countdown'][data-part='root'] {
   display: inline-block;
   color: var(--xh-countdown-fg, var(--xh-fg-default));
@@ -338,6 +363,11 @@
 }
 
 /* styles/descriptions.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='descriptions'] {
+  --xh-descriptions-skin: 1;
+}
+
 [data-scope='descriptions'][data-part='root'] {
   /* 一个尺寸档只换这几个私有槽，每一格与格内两段都从根上继承它们，
      换档不必给每个部件各写一条选择器 */
@@ -538,6 +568,11 @@
 }
 
 /* styles/dynamic-input.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='dynamic-input'] {
+  --xh-dynamic-input-skin: 1;
+}
+
 /* 一行一条，纵向堆叠；新增把手跟在最后一行下面 */
 [data-scope='dynamic-input'][data-part='root'] {
   display: flex;
@@ -695,6 +730,11 @@
 }
 
 /* styles/ellipsis.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='ellipsis'] {
+  --xh-ellipsis-skin: 1;
+}
+
 /* 单行：一行装不下就收成省略号。
    行数由连接层写进这个盒子的内联 style，样式表这一行只是它缺席时的落点 */
 [data-scope='ellipsis'][data-part='root'] {
@@ -736,6 +776,11 @@
 }
 
 /* styles/flex.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='flex'] {
+  --xh-flex-skin: 1;
+}
+
 [data-scope='flex'][data-part='root'] {
   display: flex;
   flex-wrap: nowrap;
@@ -831,6 +876,11 @@
 }
 
 /* styles/float-button.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='float-button'] {
+  --xh-float-button-skin: 1;
+}
+
 /* 定位壳：钉在视口一角。贴边距离由连接层写进这个盒子的内联 style，
    样式表这一行只是它缺席时的落点；贴的是哪两条边看 data-placement。
    另一件必须提防的事：fixed 认的是视口，祖先上一旦出现
@@ -952,6 +1002,11 @@
 }
 
 /* styles/gradient-text.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='gradient-text'] {
+  --xh-gradient-text-skin: 1;
+}
+
 /* 渐变画在背景上，再用 background-clip 把背景裁进字形里；前景必须透明才透得出底下的渐变。
    两条 background-clip 都写：WebKit 只认带前缀那条。
    -webkit-text-fill-color 在 WebKit 里决定字形填充色并盖过 color，也要一并透明。 */
@@ -1014,6 +1069,11 @@
 }
 
 /* styles/grid.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='grid'] {
+  --xh-grid-skin: 1;
+}
+
 [data-scope='grid'][data-part='root'] {
   display: grid;
   /* 各列等宽；下限写 0 而不是 auto，一段长文本才不会把自己那列撑宽 */
@@ -1442,6 +1502,11 @@
 }
 
 /* styles/highlight.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='highlight'] {
+  --xh-highlight-skin: 1;
+}
+
 /* 文本按原样显示：命中位置是按原串逐字符算的，折叠掉连续空格与换行会让看到的
    与算出来的对不上。pre-wrap 保留空白但仍在容器边界换行 */
 [data-scope='highlight'][data-part='root'] {
@@ -1463,6 +1528,11 @@
 }
 
 /* styles/icon-wrapper.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='icon-wrapper'] {
+  --xh-icon-wrapper-skin: 1;
+}
+
 /* 定直径的图标底座：图元在正中，底色、描边与形状由三轴决定。
    直径与图元直径分两个槽位，底座换档时里面的图元跟着一起换 */
 [data-scope='icon-wrapper'][data-part='root'] {
@@ -1527,6 +1597,11 @@
 }
 
 /* styles/infinite-scroll.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='infinite-scroll'] {
+  --xh-infinite-scroll-skin: 1;
+}
+
 /*
  * 列表外壳这一层刻意不给盒模型：滚的是页面还是作者自己的 overflow 容器、列表长什么样，
  * 都归作者的布局管，组件只往它身上挂 data-state / data-loading / data-disabled 供作者取用。
@@ -1549,6 +1624,11 @@
 }
 
 /* styles/layout.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='layout'] {
+  --xh-layout-skin: 1;
+}
+
 /* 页面骨架排成三行两列：头与脚各横贯一整行，侧栏与内容并排占中间那一行。
    缺哪一段，对应的行/列就没有条目，宽高自动收成 0，不必为"少写一段"另立规则。
 
@@ -1718,6 +1798,11 @@
 }
 
 /* styles/list.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='list'] {
+  --xh-list-skin: 1;
+}
+
 [data-scope='list'][data-part='root'] {
   /* 一个尺寸档只换这几个私有槽，条目与两行文字都从根上继承它们，
      换档不必给每个部件各写一条选择器 */
@@ -1835,6 +1920,11 @@
 }
 
 /* styles/log.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='log'] {
+  --xh-log-skin: 1;
+}
+
 /* 行高是本组件的定尺基准：视口按行数定高、每行排版，都从这一个槽位来。
    它的兜底值须与连接层内联高度里用的那份逐字一致，否则 rows 算出来的高度对不上行。 */
 [data-scope='log'][data-part='root'] {
@@ -1923,6 +2013,11 @@
   to {
     transform: translateY(var(--xh-_marquee-to));
   }
+}
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='marquee'] {
+  --xh-marquee-skin: 1;
 }
 
 /*
@@ -2091,6 +2186,11 @@
   to {
     opacity: 1;
   }
+}
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='mention'] {
+  --xh-mention-skin: 1;
 }
 
 [data-scope='mention'][data-part='root'] {
@@ -2307,6 +2407,11 @@
 }
 
 /* styles/number-animation.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='number-animation'] {
+  --xh-number-animation-skin: 1;
+}
+
 [data-scope='number-animation'][data-part='root'] {
   /* 不写尺寸就跟着上下文的字号走：这个数常常摆在别人的标题、卡片标题或统计数值槽里，
      自带一个字号只会跟摆放它的地方打架。三个档位各自换掉这个私有槽 */
@@ -2339,6 +2444,11 @@
 }
 
 /* styles/page-header.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='page-header'] {
+  --xh-page-header-skin: 1;
+}
+
 [data-scope='page-header'][data-part='root'] {
   /* 尺寸档只换这三个私有槽，各段从根上继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_page-header-py: var(--xh-space-4);
@@ -2441,6 +2551,11 @@
   to {
     opacity: 1;
   }
+}
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='popconfirm'] {
+  --xh-popconfirm-skin: 1;
 }
 
 /* 根只框住触发器：浮层树靠 positioner 的固定定位飞出去，不占根的盒子 */
@@ -2619,6 +2734,11 @@
   to {
     opacity: 1;
   }
+}
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='popselect'] {
+  --xh-popselect-skin: 1;
 }
 
 [data-scope='popselect'][data-part='root'] {
@@ -2843,6 +2963,11 @@
 }
 
 /* styles/qr-code.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='qr-code'] {
+  --xh-qr-code-skin: 1;
+}
+
 /*
  * 根 <svg>。深浅两色取固定档而不是语义前景/背景：语义色跟着主题走，深色主题下整张码
  * 会翻成浅底深模块的反相图，一部分读码器不认反相码。要换配色改下面这三个覆盖槽。
@@ -2916,6 +3041,11 @@
 }
 
 /* styles/result.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='result'] {
+  --xh-result-skin: 1;
+}
+
 [data-scope='result'][data-part='root'] {
   /* 三个尺寸档只换这几个私有槽，图标与标题都从 root 继承它们，
      换档不必给每个部件各写一条选择器 */
@@ -3020,6 +3150,11 @@
 }
 
 /* styles/statistic.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='statistic'] {
+  --xh-statistic-skin: 1;
+}
+
 /* 三个尺寸档只换这几个私有槽，各段从 root 继承它们，换档不必给每个部件各写一条选择器 */
 [data-scope='statistic'][data-part='root'] {
   --xh-_statistic-label-size: var(--xh-font-size-sm);
@@ -3087,6 +3222,11 @@
 }
 
 /* styles/time.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='time'] {
+  --xh-time-skin: 1;
+}
+
 [data-scope='time'][data-part='root'] {
   color: var(--xh-time-fg, var(--xh-fg-default));
   /* 等宽数字：秒数跳动时后面的字符不会左右挪 */
@@ -3107,6 +3247,11 @@
 }
 
 /* styles/timeline.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='timeline'] {
+  --xh-timeline-skin: 1;
+}
+
 [data-scope='timeline'][data-part='root'] {
   /* 尺寸档只换这几个私有槽，条目、圆点与文字都从 root 继承它们，
      换档不必给每个部件各写一条选择器 */
@@ -3391,6 +3536,11 @@
 }
 
 /* styles/typography.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='typography'] {
+  --xh-typography-skin: 1;
+}
+
 [data-scope='typography'][data-part='root'] {
   /* 尺寸档只换这几个私有槽，各段从根上继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_typography-body-size: var(--xh-text-body-size);
@@ -3702,6 +3852,11 @@
 }
 
 /* styles/alert.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='alert'] {
+  --xh-alert-skin: 1;
+}
+
 [data-scope='alert'][data-part='root'] {
   /* 强调色随语气走，底色/描边/图标色都由它推导出来，换语气不必逐条属性各写一遍。
      没写 data-tone 时 --xh-_tone 没被声明，退回原来的 info 蓝 */
@@ -3810,6 +3965,11 @@
 }
 
 /* styles/empty-state.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='empty-state'] {
+  --xh-empty-state-skin: 1;
+}
+
 [data-scope='empty-state'][data-part='root'] {
   /* 三个尺寸档只换这几个私有槽，图标与标题都从 root 继承它们，
      换档不必给每个部件各写一条选择器 */
@@ -3900,6 +4060,11 @@
   }
 }
 
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='skeleton'] {
+  --xh-skeleton-skin: 1;
+}
+
 /* 骨架容器：竖着码放各根骨架条 */
 [data-scope='skeleton'][data-part='root'] {
   display: flex;
@@ -3972,6 +4137,11 @@
   }
 }
 
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='spinner'] {
+  --xh-spinner-skin: 1;
+}
+
 /* 圆环画在伪元素上，root 自身不转：转的只是图形，同一行里的文案要留在原地读得动 */
 [data-scope='spinner'][data-part='root'] {
   display: inline-flex;
@@ -4038,6 +4208,11 @@
 }
 
 /* styles/accordion.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='accordion'] {
+  --xh-accordion-skin: 1;
+}
+
 [data-scope='accordion'][data-part='root'] {
   /* 尺寸档只换这四个私有槽，标题栏从 root 继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_accordion-trigger-h: var(--xh-control-h-md);
@@ -4146,6 +4321,11 @@
 }
 
 /* styles/anchor.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='anchor'] {
+  --xh-anchor-skin: 1;
+}
+
 /* 根节点是 nav 地标，不参与排版：整条目录的布局全在 list 上，
    这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
 [data-scope='anchor'][data-part='root'] {
@@ -4283,6 +4463,11 @@
 }
 
 /* styles/avatar.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='avatar'] {
+  --xh-avatar-skin: 1;
+}
+
 [data-scope='avatar'][data-part='root'] {
   position: relative;
   display: inline-flex;
@@ -4338,6 +4523,11 @@
 }
 
 /* styles/badge.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='badge'] {
+  --xh-badge-skin: 1;
+}
+
 [data-scope='badge'][data-part='root'] {
   display: inline-flex;
   align-items: center;
@@ -4388,6 +4578,11 @@
 }
 
 /* styles/breadcrumb.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='breadcrumb'] {
+  --xh-breadcrumb-skin: 1;
+}
+
 /* 根节点是 nav 地标，不参与排版：整条路径的行为全在 list 上，
    这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
 [data-scope='breadcrumb'][data-part='root'] {
@@ -4523,6 +4718,11 @@
   }
 }
 
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='button'] {
+  --xh-button-skin: 1;
+}
+
 [data-scope='button'][data-part='root'] {
   /* 私有槽位：组件令牌 → 语义令牌两级回退，变体只改这几个槽位 */
   --xh-_bg: var(--xh-button-bg, var(--xh-bg-subtle));
@@ -4621,6 +4821,11 @@
 }
 
 /* styles/calendar.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='calendar'] {
+  --xh-calendar-skin: 1;
+}
+
 [data-scope='calendar'][data-part='root'] {
   display: flex;
   flex-direction: column;
@@ -4840,6 +5045,11 @@
 }
 
 /* styles/card.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='card'] {
+  --xh-card-skin: 1;
+}
+
 [data-scope='card'][data-part='root'] {
   display: flex;
   flex-direction: column;
@@ -4956,6 +5166,11 @@
 }
 
 /* styles/carousel.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='carousel'] {
+  --xh-carousel-skin: 1;
+}
+
 /* 根节点是 region 地标：把上一张 / 视口 / 下一张排成一行，指示点另起一行。
    两端按钮浮在视口上还是排在两侧由作者定，这里只给最朴素的一版排布 */
 [data-scope='carousel'][data-part='root'] {
@@ -5149,6 +5364,11 @@
 }
 
 /* styles/cascader.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='cascader'] {
+  --xh-cascader-skin: 1;
+}
+
 /* 解剖里没有把「触发器 + 清空按钮」裹在一起的 control 部件，一行是靠 flex-wrap 分出来的：
    标签占满整行把后面的挤到下一行，触发器与清空按钮就并排落在同一行上。
    这样作者少写标签、少写清空按钮，剩下的部件也不会塌 */
@@ -5719,6 +5939,11 @@
 }
 
 /* styles/checkbox.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='checkbox'] {
+  --xh-checkbox-skin: 1;
+}
+
 [data-scope='checkbox'][data-part='root'] {
   /* 尺寸档只换方框边长这一个私有槽，勾的字号按边长的比例跟着走；
      指示器从 root 继承这两个槽，换档不必给每个部件各写一条选择器 */
@@ -5810,6 +6035,11 @@
 }
 
 /* styles/checkbox-group.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='checkbox-group'] {
+  --xh-checkbox-group-skin: 1;
+}
+
 /* 组容器：label、trigger、条目都是它的直接子节点，排布方式只能读 data-orientation——
    连接层明说了 role=group 不接受 aria-orientation，那个属性它根本没输出 */
 [data-scope='checkbox-group'][data-part='root'] {
@@ -5995,6 +6225,11 @@
 }
 
 /* styles/clipboard.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='clipboard'] {
+  --xh-clipboard-skin: 1;
+}
+
 /* 与文本框同一套堆叠：标签一行、输入行一行 */
 [data-scope='clipboard'][data-part='root'] {
   display: inline-flex;
@@ -6128,6 +6363,11 @@
 }
 
 /* styles/code-block.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='code-block'] {
+  --xh-code-block-skin: 1;
+}
+
 /* overflow: hidden 让内部 <pre> 的滚动内容沿圆角收边；不设 display，排布由作者决定 */
 [data-scope='code-block'][data-part='root'] {
   overflow: hidden;
@@ -6209,6 +6449,11 @@
 }
 
 /* styles/collapsible.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='collapsible'] {
+  --xh-collapsible-skin: 1;
+}
+
 /* 根容器自己不排版，这条只声明尺寸档的私有槽：触发按钮从 root 继承它们，
    换档不必给部件各写一条选择器 */
 [data-scope='collapsible'][data-part='root'] {
@@ -6282,6 +6527,11 @@
     opacity: 1;
     scale: 1;
   }
+}
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='color-picker'] {
+  --xh-color-picker-skin: 1;
 }
 
 /* 定位分工：取色区拇指的两条轴（inset-inline-start / inset-block-start）、
@@ -6722,6 +6972,11 @@
   }
 }
 
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='combobox'] {
+  --xh-combobox-skin: 1;
+}
+
 [data-scope='combobox'][data-part='root'] {
   /* 尺寸档只换这五个私有槽，输入行、标题与候选都从 root 继承它们，
      换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承 */
@@ -7158,6 +7413,11 @@
 }
 
 /* styles/composer.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='composer'] {
+  --xh-composer-skin: 1;
+}
+
 /* 边框画在 root 上，内部 textarea 无边框；align-items: flex-end 让按钮随输入框长高贴着底边 */
 [data-scope='composer'][data-part='root'] {
   /* 输入与发送按钮共用的控件高度 */
@@ -7285,6 +7545,11 @@
 }
 
 /* styles/context-menu.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='context-menu'] {
+  --xh-context-menu-skin: 1;
+}
+
 /* 根只是把触发区与浮层圈在一起做作用域，不该在作者布局里多插一层盒子 */
 [data-scope='context-menu'][data-part='root'] {
   /* 尺寸档只换这四个私有槽，条目与分组标题都从 root 继承它们，
@@ -7569,6 +7834,11 @@
 }
 
 /* styles/date-field.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='date-field'] {
+  --xh-date-field-skin: 1;
+}
+
 /* 与文本框、数字框同一套堆叠：标签一行、分段框一行 */
 [data-scope='date-field'][data-part='root'] {
   /* 尺寸档只换这四个私有槽，标题与分段框都从 root 继承它们，换档不必给每个部件各写一条选择器 */
@@ -7769,6 +8039,11 @@
 }
 
 /* styles/date-picker.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='date-picker'] {
+  --xh-date-picker-skin: 1;
+}
+
 /* 与文本框、分段日期同一套堆叠：标签一行、输入行一行 */
 [data-scope='date-picker'][data-part='root'] {
   display: inline-flex;
@@ -8114,6 +8389,11 @@
   }
 }
 
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='dialog'] {
+  --xh-dialog-skin: 1;
+}
+
 [data-scope='dialog'][data-part='backdrop'] {
   position: fixed;
   inset: 0;
@@ -8349,6 +8629,11 @@
   to {
     translate: 0 var(--xh-_drawer-shift-block, 100%);
   }
+}
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='drawer'] {
+  --xh-drawer-skin: 1;
 }
 
 /* root 留在页面原地，只是 data-side / data-state 的落点，不该凭空多出一层盒子把
@@ -8628,6 +8913,11 @@
 }
 
 /* styles/editable.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='editable'] {
+  --xh-editable-skin: 1;
+}
+
 /* 就地编辑是"一行文字里的一处可改内容"：标题、显示区与按钮天然同行，
    所以根是一条横向的行，而不是文本框那种"标题一行、控件一行"的竖排。
    要竖排的作者把 flex-direction 覆盖掉即可，其余尺寸都长在各自的角色节点上 */
@@ -8877,6 +9167,11 @@
 }
 
 /* styles/field.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='field'] {
+  --xh-field-skin: 1;
+}
+
 [data-scope='field'][data-part='root'] {
   display: flex;
   flex-direction: column;
@@ -8973,6 +9268,11 @@
 }
 
 /* styles/file-upload.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='file-upload'] {
+  --xh-file-upload-skin: 1;
+}
+
 [data-scope='file-upload'][data-part='root'] {
   display: flex;
   flex-direction: column;
@@ -9271,6 +9571,11 @@
 }
 
 /* styles/form.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='form'] {
+  --xh-form-skin: 1;
+}
+
 /* 表单是一列字段：竖排、字段之间留一档间距。root 就是那个原生 <form> */
 [data-scope='form'][data-part='root'] {
   display: flex;
@@ -9478,6 +9783,11 @@
   }
 }
 
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='hover-card'] {
+  --xh-hover-card-skin: 1;
+}
+
 /* 根节点只把 trigger 与浮层收在一处，不参与定位（坐标系仍由祖先的定位上下文决定） */
 [data-scope='hover-card'][data-part='root'] {
   display: inline-block;
@@ -9622,6 +9932,11 @@
 }
 
 /* styles/icon.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='icon'] {
+  --xh-icon-skin: 1;
+}
+
 /*
  * 根 <svg>。直径、描边粗细、行内位置都由这里给，记录只带几何。
  * 不写 fill / stroke：记录里那两条呈现属性取 currentColor，改这里会把
@@ -9676,6 +9991,11 @@
 }
 
 /* styles/image.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='image'] {
+  --xh-image-skin: 1;
+}
+
 /* 尺寸交给三个变量而不是写死：这个组件既要能当封面图，也要能当头图与缩略图。
    给了 --xh-image-ratio 才有确定高度，回退内容与图片在同一个盒子里换人时不会跳。 */
 [data-scope='image'][data-part='root'] {
@@ -9741,6 +10061,11 @@
   to {
     opacity: 0;
   }
+}
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='image-viewer'] {
+  --xh-image-viewer-skin: 1;
 }
 
 [data-scope='image-viewer'][data-part='backdrop'] {
@@ -9910,6 +10235,11 @@
 }
 
 /* styles/listbox.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='listbox'] {
+  --xh-listbox-skin: 1;
+}
+
 [data-scope='listbox'][data-part='root'] {
   display: flex;
   flex-direction: column;
@@ -10087,6 +10417,11 @@
 }
 
 /* styles/loading-bar.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='loading-bar'] {
+  --xh-loading-bar-skin: 1;
+}
+
 /*
  * 贴在视口顶边的一条细带。厚度那条轴（block-size）由连接层写进内联样式——
  * height 这个 prop 的缺省值在 connect 里收口，这里再声明一次只会被内联盖掉，
@@ -10163,6 +10498,11 @@
   to {
     opacity: 1;
   }
+}
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='menu'] {
+  --xh-menu-skin: 1;
 }
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
@@ -10324,6 +10664,11 @@
 }
 
 /* styles/menubar.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='menubar'] {
+  --xh-menubar-skin: 1;
+}
+
 /* 一排 trigger。主轴跟着 data-orientation 走：菜单栏本身可以横排也可以竖排 */
 [data-scope='menubar'][data-part='root'] {
   /* 尺寸档只换这五个私有槽，trigger 与菜单里的条目都从 root 继承它们，
@@ -10610,6 +10955,11 @@
   }
 }
 
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='navigation-menu'] {
+  --xh-navigation-menu-skin: 1;
+}
+
 /* 根节点是 nav 地标，不参与排版；给 relative 是为了让共享外壳（viewport）有个定位参照系。
    这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
 [data-scope='navigation-menu'][data-part='root'] {
@@ -10865,6 +11215,11 @@
 }
 
 /* styles/number-field.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='number-field'] {
+  --xh-number-field-skin: 1;
+}
+
 /* 与文本框同一套堆叠：标签一行、输入行一行。
    加减钮与输入框中间那层包裹归作者，这里不碰，三者各自把高度对齐即可成一体 */
 [data-scope='number-field'][data-part='root'] {
@@ -11084,6 +11439,11 @@
 }
 
 /* styles/pagination.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='pagination'] {
+  --xh-pagination-skin: 1;
+}
+
 /* 根节点是 nav 地标，只负责把上一页 / 页码 / 下一页排成一行。
    页数为 0 时连接层会打 data-empty，这里不拿它做隐藏：作者常把「第 x-y 条」这类
    区间回显也写在 nav 里，整块藏掉会连那行字一起吞了，是否隐藏交给作者决定 */
@@ -11232,6 +11592,11 @@
 }
 
 /* styles/pin-input.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='pin-input'] {
+  --xh-pin-input-skin: 1;
+}
+
 /* 与文本框、数字框同一套堆叠：标签一行、格子一行 */
 [data-scope='pin-input'][data-part='root'] {
   /* 尺寸档只换这四个私有槽，标题与格子都从 root 继承它们，换档不必给每个部件各写一条选择器 */
@@ -11401,6 +11766,11 @@
   }
 }
 
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='popover'] {
+  --xh-popover-skin: 1;
+}
+
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='popover'][data-part='positioner'] {
   position: fixed;
@@ -11555,6 +11925,11 @@
 }
 
 /* styles/progress.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='progress'] {
+  --xh-progress-skin: 1;
+}
+
 /* 私有槽位：组件令牌 → 中档字面量两级回退。厚度写在 root 上而不是 track 上，
    尺寸档才改得动一处就够，track 靠继承拿到值。 */
 [data-scope='progress'][data-part='root'] {
@@ -11659,6 +12034,11 @@
 }
 
 /* styles/radio-group.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='radio-group'] {
+  --xh-radio-group-skin: 1;
+}
+
 [data-scope='radio-group'][data-part='root'] {
   /* 尺寸档只换这两个私有槽，标题与条目都从 root 继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_radio-group-item-gap: var(--xh-control-gap-md);
@@ -11760,6 +12140,11 @@
 }
 
 /* styles/rating.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='rating'] {
+  --xh-rating-skin: 1;
+}
+
 /* position 是给表单影子做定位基准的：那份输入被连接层内联写成绝对定位，
    根上不留基准它就会贴到更外层的定位祖先上，原生校验提示跟着飘到页面别处。 */
 [data-scope='rating'][data-part='root'] {
@@ -11912,6 +12297,11 @@
   to {
     opacity: 1;
   }
+}
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='scroll-area'] {
+  --xh-scroll-area-skin: 1;
 }
 
 /* 定位分工：滑块在**主轴**上的起点与长度由连接层每帧写进内联样式——
@@ -12079,6 +12469,11 @@
   to {
     opacity: 1;
   }
+}
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='select'] {
+  --xh-select-skin: 1;
 }
 
 [data-scope='select'][data-part='root'] {
@@ -12476,6 +12871,11 @@
 }
 
 /* styles/separator.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='separator'] {
+  --xh-separator-skin: 1;
+}
+
 [data-scope='separator'][data-part='root'] {
   border: 0;
   background: var(--xh-separator-color, var(--xh-border-default));
@@ -12493,6 +12893,11 @@
 }
 
 /* styles/side-nav.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='side-nav'] {
+  --xh-side-nav-skin: 1;
+}
+
 [data-scope='side-nav'][data-part='root'] {
   inline-size: var(--xh-side-nav-w, 240px);
   display: flex;
@@ -12656,6 +13061,11 @@
 }
 
 /* styles/slider.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='slider'] {
+  --xh-slider-skin: 1;
+}
+
 /* 定位分工：已选区间与拇指在**主轴**上的起点与长度，由连接层每帧写进内联样式——
    水平是 inset-inline-start / inline-size，竖直是 inset-block-end / block-size。
    这份皮肤一个都不碰：内联优先级高于样式表，写了不但是死声明，
@@ -12908,6 +13318,11 @@
    这里一条声明都不给：给了 display / 尺寸反而会把它拽回布局里，在拇指内部撑出一块空白。 */
 
 /* styles/splitter.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='splitter'] {
+  --xh-splitter-skin: 1;
+}
+
 /* 分工：**面板在排布轴上的尺寸**由连接层每帧写进内联样式（flex-basis / flex-grow / flex-shrink）。
    这份皮肤一条都不碰——内联优先级高于样式表，写了不但是死声明，
    还会在切换 orientation 的那一帧跟连接层抢位置。皮肤只管排布方向、跨轴尺寸、
@@ -13035,6 +13450,11 @@
 }
 
 /* styles/steps.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='steps'] {
+  --xh-steps-skin: 1;
+}
+
 [data-scope='steps'][data-part='root'] {
   /* 尺寸档只换这三个私有槽，序号圆点、标题与说明都从 root 继承它们，
      换档不必给每个部件各写一条选择器 */
@@ -13294,6 +13714,11 @@
   }
 }
 
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='switch'] {
+  --xh-switch-skin: 1;
+}
+
 [data-scope='switch'][data-part='root'] {
   /* 尺寸档只换轨道高度这一个私有槽，其余几何都从它算出来：
      滑块边长 = 轨道高 − 两条留白，轨道宽 = 两倍轨道高 − 两条留白，滑块行程因此正好等于自身边长 */
@@ -13390,6 +13815,11 @@
   [data-scope='table'][data-part='loading-state'] {
     animation-duration: 0.01ms !important;
   }
+}
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='table'] {
+  --xh-table-skin: 1;
 }
 
 /* 表格自己滚动：吸顶表头与横向吸附列都要一个确定的滚动容器才钉得住 */
@@ -13777,6 +14207,11 @@
 }
 
 /* styles/tabs.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='tabs'] {
+  --xh-tabs-skin: 1;
+}
+
 [data-scope='tabs'][data-part='root'] {
   /* 尺寸档只换这三个私有槽，标签从 root 继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_tabs-trigger-h: var(--xh-control-h-md);
@@ -13934,6 +14369,11 @@
 }
 
 /* styles/tags-input.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='tags-input'] {
+  --xh-tags-input-skin: 1;
+}
+
 /* root 只负责纵向堆叠：标题一行、控件一行。可见的那个"框"长在 control 上，
    因为标签、输入框、清空按钮都在它里面，边框必须把三者一起圈住 */
 [data-scope='tags-input'][data-part='root'] {
@@ -14294,6 +14734,11 @@
 }
 
 /* styles/text-field.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='text-field'] {
+  --xh-text-field-skin: 1;
+}
+
 /* root 只负责纵向堆叠：标签一行、输入行一行。
    输入框与清空按钮中间那层包裹是作者自己写的、不在角色表里，
    所以尺寸与间距一律长在各自的角色节点上，不去假设那层存在 */
@@ -14502,6 +14947,11 @@
 }
 
 /* styles/thread.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='thread'] {
+  --xh-thread-skin: 1;
+}
+
 /* 自建定位上下文，作为绝对定位的回到底部按钮的参照系；
    block-size: 100% 让高度由外部决定，使滚动发生在内部。 */
 [data-scope='thread'][data-part='root'] {
@@ -14609,6 +15059,11 @@
 }
 
 /* styles/time-field.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='time-field'] {
+  --xh-time-field-skin: 1;
+}
+
 /* 与文本框、数字框同一套堆叠：标签一行、控件一行 */
 [data-scope='time-field'][data-part='root'] {
   /* 尺寸档只换这四个私有槽，标题与控件都从 root 继承它们，换档不必给每个部件各写一条选择器 */
@@ -14809,6 +15264,11 @@
 }
 
 /* styles/time-picker.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='time-picker'] {
+  --xh-time-picker-skin: 1;
+}
+
 /* 与文本框、时间输入同一套堆叠：标签一行、控件一行 */
 [data-scope='time-picker'][data-part='root'] {
   display: inline-flex;
@@ -15197,6 +15657,11 @@
   }
 }
 
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='toast'] {
+  --xh-toast-skin: 1;
+}
+
 [data-scope='toast'][data-part='root'] {
   display: flex;
   flex-direction: column;
@@ -15353,6 +15818,11 @@
 }
 
 /* styles/toaster.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='toaster'] {
+  --xh-toaster-skin: 1;
+}
+
 /* 地标容器不占布局：通知落在哪儿由九个 group 各自的 fixed 说了算，
    root 只是给读屏一个可跳转的落点。它若留下一个块盒，写在页面中段的用法
    （按钮和队列摆在一起）就会凭空多出一行空白。
@@ -15422,6 +15892,11 @@
 }
 
 /* styles/toggle.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='toggle'] {
+  --xh-toggle-skin: 1;
+}
+
 [data-scope='toggle'][data-part='root'] {
   /* 私有槽位：组件令牌 → 语义令牌两级回退，变体只改这几个槽位 */
   --xh-_bg: var(--xh-toggle-bg, transparent);
@@ -15525,6 +16000,11 @@
 }
 
 /* styles/toggle-group.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='toggle-group'] {
+  --xh-toggle-group-skin: 1;
+}
+
 /* 分段控件：段与段之间不留缝，靠共边连成一体，所以 root 不设 gap。
    排布只能读 data-orientation——aria-orientation 在多选模式下连接层根本不输出（role=group 不收） */
 [data-scope='toggle-group'][data-part='root'] {
@@ -15685,6 +16165,11 @@
 }
 
 /* styles/toolbar.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='toolbar'] {
+  --xh-toolbar-skin: 1;
+}
+
 /* 一条控件带：条目之间留固定间距，分隔线再把它们切成语义上的几段。
    排布只能读 data-orientation——它与 aria-orientation 同源，但样式不该去读 ARIA */
 [data-scope='toolbar'][data-part='root'] {
@@ -15809,6 +16294,11 @@
   to {
     opacity: 1;
   }
+}
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='tooltip'] {
+  --xh-tooltip-skin: 1;
 }
 
 [data-scope='tooltip'][data-part='trigger'] {
@@ -15965,6 +16455,11 @@
     opacity: 1;
     scale: 1;
   }
+}
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='tour'] {
+  --xh-tour-skin: 1;
 }
 
 /* 根节点只是几个浮层的归属容器，不参与排版。
@@ -16241,6 +16736,11 @@
 }
 
 /* styles/transfer.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='transfer'] {
+  --xh-transfer-skin: 1;
+}
+
 /* 三栏栅格：两侧面板各占一栏、跨两行，中间那栏上下各放一个搬运按钮，
    两个按钮在中线处相遇。栅格的列号本身就是随书写方向走的（第 1 栏永远在行首侧），
    dir=rtl 时整块自动镜像，不必另写一套。
@@ -16561,6 +17061,11 @@
 }
 
 /* styles/tree.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='tree'] {
+  --xh-tree-skin: 1;
+}
+
 [data-scope='tree'][data-part='root'] {
   display: flex;
   flex-direction: column;
@@ -16778,6 +17283,11 @@
   to {
     opacity: 1;
   }
+}
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='tree-select'] {
+  --xh-tree-select-skin: 1;
 }
 
 /* 解剖里没有把「触发器 + 清空按钮」裹在一起的 control 部件，一行是靠 flex-wrap 分出来的：
@@ -17229,6 +17739,11 @@
 }
 
 /* styles/virtualizer.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='virtualizer'] {
+  --xh-virtualizer-skin: 1;
+}
+
 /* 定位分工：条目在**主轴**上的位移、以及 content 在主轴上的总长，
    由连接层每帧写进内联样式（竖向是 inset-block-start / block-size，横向是
    inset-inline-start / inline-size）。这份皮肤一个都不碰：内联优先级高于样式表，
@@ -17333,6 +17848,11 @@
 }
 
 /* styles/watermark.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='watermark'] {
+  --xh-watermark-skin: 1;
+}
+
 /*
  * 盖水印的那块地。层叠上下文就地隔离，印子只压在这块地里，不会盖到组件外面去。
  */

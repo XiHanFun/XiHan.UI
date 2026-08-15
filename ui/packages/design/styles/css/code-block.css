@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='code-block'] {
+    --xh-code-block-skin: 1;
+  }
+
   /* overflow: hidden 让内部 <pre> 的滚动内容沿圆角收边；不设 display，排布由作者决定 */
   [data-scope='code-block'][data-part='root'] {
     overflow: hidden;

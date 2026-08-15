@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='icon-wrapper'] {
+    --xh-icon-wrapper-skin: 1;
+  }
+
   /* 定直径的图标底座：图元在正中，底色、描边与形状由三轴决定。
      直径与图元直径分两个槽位，底座换档时里面的图元跟着一起换 */
   [data-scope='icon-wrapper'][data-part='root'] {

@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='thread'] {
+    --xh-thread-skin: 1;
+  }
+
   /* 自建定位上下文，作为绝对定位的回到底部按钮的参照系；
      block-size: 100% 让高度由外部决定，使滚动发生在内部。 */
   [data-scope='thread'][data-part='root'] {

@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='typography'] {
+    --xh-typography-skin: 1;
+  }
+
   [data-scope='typography'][data-part='root'] {
     /* 尺寸档只换这几个私有槽，各段从根上继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_typography-body-size: var(--xh-text-body-size);

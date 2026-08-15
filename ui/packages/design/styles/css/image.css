@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='image'] {
+    --xh-image-skin: 1;
+  }
+
   /* 尺寸交给三个变量而不是写死：这个组件既要能当封面图，也要能当头图与缩略图。
      给了 --xh-image-ratio 才有确定高度，回退内容与图片在同一个盒子里换人时不会跳。 */
   [data-scope='image'][data-part='root'] {

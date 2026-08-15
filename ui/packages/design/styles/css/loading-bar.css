@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='loading-bar'] {
+    --xh-loading-bar-skin: 1;
+  }
+
   /*
    * 贴在视口顶边的一条细带。厚度那条轴（block-size）由连接层写进内联样式——
    * height 这个 prop 的缺省值在 connect 里收口，这里再声明一次只会被内联盖掉，

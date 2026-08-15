@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='composer'] {
+    --xh-composer-skin: 1;
+  }
+
   /* 边框画在 root 上，内部 textarea 无边框；align-items: flex-end 让按钮随输入框长高贴着底边 */
   [data-scope='composer'][data-part='root'] {
     /* 输入与发送按钮共用的控件高度 */

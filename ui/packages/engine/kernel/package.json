@@ -29,6 +29,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./skin-check": {
+      "types": "./dist/skin-check.d.ts",
+      "import": "./dist/skin-check.js"
     }
   },
   "main": "./dist/index.js",

@@ -17,6 +17,8 @@ export const DIAGNOSTIC_CODES = {
   wcWrongPartTag: 'wc.wrong-part-tag',
   /** 二维码中心 logo 挖掉的码字超出所选纠错级别能恢复的量。 */
   qrCodeLogoDamage: 'qr-code.logo-damage',
+  /** 页面上出现了某个组件，但它那份皮肤没被引入。 */
+  stylesMissingSkin: 'styles.missing-skin',
 } as const
 
 export type DiagnosticCode = (typeof DIAGNOSTIC_CODES)[keyof typeof DIAGNOSTIC_CODES]

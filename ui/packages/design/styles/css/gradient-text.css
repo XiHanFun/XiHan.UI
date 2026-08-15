@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='gradient-text'] {
+    --xh-gradient-text-skin: 1;
+  }
+
   /* 渐变画在背景上，再用 background-clip 把背景裁进字形里；前景必须透明才透得出底下的渐变。
      两条 background-clip 都写：WebKit 只认带前缀那条。
      -webkit-text-fill-color 在 WebKit 里决定字形填充色并盖过 color，也要一并透明。 */

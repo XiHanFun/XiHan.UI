@@ -22,6 +22,11 @@
 }
 
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='popconfirm'] {
+    --xh-popconfirm-skin: 1;
+  }
+
   /* 根只框住触发器：浮层树靠 positioner 的固定定位飞出去，不占根的盒子 */
   [data-scope='popconfirm'][data-part='root'] {
     display: inline-block;

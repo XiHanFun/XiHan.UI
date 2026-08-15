@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='context-menu'] {
+    --xh-context-menu-skin: 1;
+  }
+
   /* 根只是把触发区与浮层圈在一起做作用域，不该在作者布局里多插一层盒子 */
   [data-scope='context-menu'][data-part='root'] {
     /* 尺寸档只换这四个私有槽，条目与分组标题都从 root 继承它们，

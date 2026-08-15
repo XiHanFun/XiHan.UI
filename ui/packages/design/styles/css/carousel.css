@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='carousel'] {
+    --xh-carousel-skin: 1;
+  }
+
   /* 根节点是 region 地标：把上一张 / 视口 / 下一张排成一行，指示点另起一行。
      两端按钮浮在视口上还是排在两侧由作者定，这里只给最朴素的一版排布 */
   [data-scope='carousel'][data-part='root'] {

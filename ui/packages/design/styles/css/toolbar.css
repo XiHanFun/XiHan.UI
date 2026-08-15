@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='toolbar'] {
+    --xh-toolbar-skin: 1;
+  }
+
   /* 一条控件带：条目之间留固定间距，分隔线再把它们切成语义上的几段。
      排布只能读 data-orientation——它与 aria-orientation 同源，但样式不该去读 ARIA */
   [data-scope='toolbar'][data-part='root'] {

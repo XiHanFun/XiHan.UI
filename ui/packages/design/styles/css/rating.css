@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='rating'] {
+    --xh-rating-skin: 1;
+  }
+
   /* position 是给表单影子做定位基准的：那份输入被连接层内联写成绝对定位，
      根上不留基准它就会贴到更外层的定位祖先上，原生校验提示跟着飘到页面别处。 */
   [data-scope='rating'][data-part='root'] {

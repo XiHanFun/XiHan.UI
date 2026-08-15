@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='affix'] {
+    --xh-affix-skin: 1;
+  }
+
   /* 占位盒就是 content 在常规流里占的那块地方。
      这里不声明 display，也不写高度：吸住时冻结的高度由连接层量好写进内联样式（它量得到，样式表量不到），
      没吸住时高度就该跟着内容走。不给 display，UA 的 [hidden]{display:none} 也仍然压得住 */

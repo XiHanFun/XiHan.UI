@@ -13,6 +13,11 @@
 }
 
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='combobox'] {
+    --xh-combobox-skin: 1;
+  }
+
   [data-scope='combobox'][data-part='root'] {
     /* 尺寸档只换这五个私有槽，输入行、标题与候选都从 root 继承它们，
        换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承 */

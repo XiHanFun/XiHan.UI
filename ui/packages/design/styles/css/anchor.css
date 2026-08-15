@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='anchor'] {
+    --xh-anchor-skin: 1;
+  }
+
   /* 根节点是 nav 地标，不参与排版：整条目录的布局全在 list 上，
      这里不给 display，UA 的 [hidden]{display:none} 就仍然压得住 */
   [data-scope='anchor'][data-part='root'] {

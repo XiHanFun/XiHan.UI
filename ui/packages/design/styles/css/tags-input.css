@@ -1,4 +1,9 @@
 @layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='tags-input'] {
+    --xh-tags-input-skin: 1;
+  }
+
   /* root 只负责纵向堆叠：标题一行、控件一行。可见的那个"框"长在 control 上，
      因为标签、输入框、清空按钮都在它里面，边框必须把三者一起圈住 */
   [data-scope='tags-input'][data-part='root'] {
