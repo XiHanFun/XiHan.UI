@@ -302,7 +302,7 @@ brand  neutral  success  warning  danger  info
 | --- | --- |
 | JS / TS 导出 | 源码标 `@deprecated`，IDE 划删除线；类型上仍可用 |
 | Vue prop / emit / 插槽 | 同上，另在组件文档页标注 |
-| `data-*`、CSS 自定义属性、`@layer` 名、元素 attribute | 这四种介质**没有 IDE 提示**。废弃只能通过更新日志的「废弃」小节告知，dev 构建下经 [诊断通道](./diagnostics) 发 `warn`（此项尚未落地，见下节） |
+| `data-*`、CSS 自定义属性、`@layer` 名、元素 attribute | 这四种介质**没有 IDE 提示**。废弃经更新日志的「废弃」小节告知，并在 dev 构建下经 [诊断通道](./diagnostics) 发 `warn`：把废弃名登记进 `@xihan-ui/kernel` 的废弃登记表（`registerDeprecation`），两个适配器 dev 里自动启动探测，消费方的旧用法会收到带迁移方向的诊断（机制已落地，登记表当前为空，发废弃时随 changeset 一起登记） |
 
 保留期：**标记废弃后，至少保留到下一个 major，且不少于两个 minor 版本，取更长者。** 例如在 `1.3.0` 标废弃，最早也要等到 `2.0.0` 才能删；如果 `2.0.0` 紧跟在 `1.3.0` 之后发布，则顺延到 `1.5.0` 之后的那个 major。
 
@@ -418,6 +418,12 @@ prop 名那一维是后补的：在它进来之前，改一个 prop 名（实测
 真要做破坏性变更时，跑 `pnpm surface:update` 推基线并在 changeset 里说清——
 门禁拦的是「无意中删掉」，不是「有意的 major」。
 
+**还有三道门禁把「只靠自觉」的条款焊成了机器检查。** `check-css-floor` 守着浏览器硬底线：
+`.browserslistrc` 书面记录地板，拒绝名单拦住 `@container` 这类无兜底的抬底线特性，
+`light-dark()` / `dvh` 必须带级联兜底。`check-version-lock` 守着 17 包锁步：任何一个
+package.json 的 version 与其余不同，门禁直接失败。`check-wiring` 守着检查系统自身：新增的
+check 脚本不接进 `pnpm gate` 就等于没写，死引用同样被拦下。
+
 **三条视觉轴已收成联合类型**，`tone` / `size` / `variant` 不再是裸 `string`，
 写错值编译期就报错。**Vue 事件载荷也有类型了**，69 个组件的 `emits` 改成对象式，
 产物里 `(...args: any[]) => any` 从 188 处降到 0。
@@ -428,9 +434,9 @@ prop 名那一维是后补的：在它进来之前，改一个 prop 名（实测
 
 | 条款 | 现状 | 计划补的机制 |
 | --- | --- | --- |
-| Vue 作用域插槽载荷 | 没有一个组件声明 `slots:` 选项，`<template #default="s">` 里的 `s` 是隐式 `any` | 补 `slots:` 声明 |
-| 废弃提示（CSS / `data-*` / attribute / 层名） | 这四种介质没有任何提示机制，废弃只能靠更新日志 | dev 构建下经诊断通道发 `warn` |
-| 浏览器硬底线 | 仓库里没有 `browserslist`，也没有 CSS 特性白名单。写一个 `@container` 就能把底线从 2023-03 抬到 2023-09，没有一条门禁会响 | `.browserslistrc` + 无兜底新特性的拒绝名单 |
-| 「17 个包必须同版本」 | 兄弟包是普通 `dependencies` 而非 `peerDependencies`，包管理器不会阻止你装出混版组合 | 提成 peer，或在入口加运行期版本一致性检查 |
+| Vue 作用域插槽载荷 | 带载荷的插槽已声明 `slots:` 选项，`check-slot-types` 门禁四条判据兜着（缺声明 / 键非可选 / 值非函数 / 声明未用）。仅渲染无载荷插槽的部件仍不声明，消费方写错 slot 名不会报 | 无载荷插槽也补声明，或明确「只有带载荷的插槽进契约」 |
+| 废弃提示（CSS / `data-*` / attribute / 层名） | 已落地：`@xihan-ui/kernel` 的 `registerDeprecation` + `startDeprecationScan`，适配器 dev 里自动启动，五种介质经诊断通道发 `warn`（见 [诊断通道](./diagnostics#废弃提示)）；登记表当前为空 | 首次废弃时随 changeset 登记第一条，验证真实迁移链路 |
+| 浏览器硬底线 | 已落地：`.browserslistrc` 记录硬底线，`check-css-floor` 门禁拒绝抬底线的无兜底特性（`@container` 等），并校验 `light-dark()` / `dvh` 的级联兜底 | 拒绝名单改动时联动本页支持面表格的提醒 |
+| 「17 个包必须同版本」 | `check-version-lock` 门禁保证 17 个 package.json 同版本；运行期混装（绕过包管理器的组合）仍无检查 | 提成 peer，或在入口加运行期版本一致性检查 |
 
 发现本页写的和实际行为对不上，按缺陷处理——请提 issue，不要当成「政策就是这样」。

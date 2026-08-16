@@ -35,6 +35,12 @@ export const DIAGNOSTIC_CODES = {
   wcUnknownPart: 'wc.unknown-part', // 角色节点的 part 名不在组件解剖内
   wcWrongPartTag: 'wc.wrong-part-tag', // 角色节点的标签不满足要求，原生语义会静默失效
   qrCodeLogoDamage: 'qr-code.logo-damage', // 中心 logo 挖掉的码字超出纠错级别能恢复的量
+  stylesMissingSkin: 'styles.missing-skin', // 页面上出现了组件，但它那份皮肤没被引入
+  deprecatedCssVar: 'deprecated.css-var', // 样式表里用到了已废弃的 CSS 自定义属性
+  deprecatedLayer: 'deprecated.layer', // 样式表里用到了已废弃的 @layer 名
+  deprecatedSelector: 'deprecated.selector', // 样式表里用到了已废弃的 data-* 选择器
+  deprecatedAttribute: 'deprecated.attribute', // 自定义元素上挂了已废弃的 attribute
+  deprecatedPart: 'deprecated.part', // 作者写了已废弃的 data-xh-part 角色名
 }
 ```
 
@@ -103,7 +109,46 @@ it('不应有契约违约', () => {
 })
 ```
 
+## 废弃提示
+
+四种**没有 IDE 提示**的介质——CSS 自定义属性、`data-*` 选择器、`@layer` 名、自定义元素 attribute——的废弃只能靠更新日志告知。现在有机器提示：维护者把废弃名登记进 `@xihan-ui/kernel` 的废弃登记表，dev 构建下消费方的旧用法会经诊断通道变成一条带迁移方向的 `warn`（五种 `deprecated.*` 码，见上表）。
+
+登记表当前为空；发废弃时随 changeset 一起登记，格式：
+
+```ts
+import { registerDeprecation } from '@xihan-ui/kernel'
+
+// 五种介质：css-var / layer / selector / attribute / part
+registerDeprecation({
+  medium: 'css-var',
+  match: '--xh-button-bg',            // 匹配串：旧名
+  message: '--xh-button-bg 已废弃',   // 迁移说明，原样进诊断 message
+  replaceWith: '--xh-button-surface', // 换成什么（没有就省略）
+  until: '2.0.0',                     // 计划移除的版本，纯提示
+})
+```
+
+探测面与两个适配器的启动方式：
+
+| 介质 | 探测面 | 谁在查 |
+| --- | --- | --- |
+| `css-var` / `layer` / `selector` | 样式表（`<style>` 文本与 CSSOM，跨域样式表静默跳过） | `startDeprecationScan()` |
+| `attribute` | DOM 里 `xh-*` 元素上的 attribute | `startDeprecationScan()` |
+| `part` | 作者写的 `data-xh-part` 角色名 | Web Components 适配器的部件契约校验 |
+
+**两个适配器都在 dev 里自动启动探测**：Vue 在第一个组件建机器时借路启动一次，Web Components 在 `defineXhElements()` 里启动；生产构建跳过。登记表为空时扫描器直接早退，零开销。也可以手动控制：
+
+```ts
+import { startDeprecationScan } from '@xihan-ui/kernel'
+
+const stop = startDeprecationScan() // 返回停止函数；只该在 dev 调用
+stop()
+```
+
+DOM 侧先扫一遍已有节点，再用 MutationObserver 接住后续进来的节点与 `<style>`；跨域 `<link>` 样式表走 CSSOM 只扫一遍，之后动态注入的样式表不在观察范围内。同一个废弃名无论命中多少条规则只报一次（通道去重）。
+
 ## 相关
 
 - [解剖与部件契约](./anatomy)：部件契约校验的内容
 - [Web Components 适配器](../adapters/web-components)：三条 `wc.*` 码的来源
+- [版本与兼容性政策](./versioning)：废弃流程与保留期
