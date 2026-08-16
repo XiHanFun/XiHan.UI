@@ -57,7 +57,7 @@
   "customElements": "custom-elements.json",
   "scripts": {
     "build": "tsdown",
-    "cem": "cem analyze",
+    "cem": "cem analyze && node scripts/enrich-cem.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
     "test:browser": "vitest run --config vitest.browser.config.ts"
