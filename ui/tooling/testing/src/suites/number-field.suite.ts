@@ -33,8 +33,8 @@ export const numberFieldSuite: ConformanceSuite = {
       {
         part: 'control',
         children: [
-          { part: 'input', tag: 'input' },
           { part: 'decrement-trigger', tag: 'button', text: '−' },
+          { part: 'input', tag: 'input' },
           { part: 'increment-trigger', tag: 'button', text: '+' },
         ],
       },
@@ -46,7 +46,7 @@ export const numberFieldSuite: ConformanceSuite = {
       spec: { apg: APG },
       props: { min: 0, max: 10 },
       initial: {
-        order: ['root', 'label', 'control', 'input', 'decrement-trigger', 'increment-trigger'],
+        order: ['root', 'label', 'control', 'decrement-trigger', 'input', 'increment-trigger'],
         parts: {
           'root': {
             'data-empty': '',

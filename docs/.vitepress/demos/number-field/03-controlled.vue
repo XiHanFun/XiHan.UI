@@ -23,8 +23,8 @@ const asNumber = ref(3);
   >
     <XhNumberFieldLabel>数量</XhNumberFieldLabel>
     <XhNumberFieldControl>
-      <XhNumberFieldInput style="inline-size: 80px; text-align: center" />
       <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+      <XhNumberFieldInput style="inline-size: 80px; text-align: center" />
       <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
     </XhNumberFieldControl>
   </XhNumberFieldRoot>
