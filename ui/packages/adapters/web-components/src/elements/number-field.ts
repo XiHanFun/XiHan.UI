@@ -36,7 +36,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @fires value-change - 值变化；detail 为 `{ value: string, valueAsNumber: number }`
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty 的容器
  * @csspart label - 标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动
- * @csspart control - 输入框与加减钮的包裹层；皮肤把视觉盒画在它身上，两个按钮叠进框内
+ * @csspart control - 输入框与加减钮的包裹层；皮肤把视觉盒画在它身上，减在左、加在右、输入框居中
  * @csspart input - role=spinbutton 的输入框，键盘交互全在它身上
  * @csspart increment-trigger - 加一步；贴住 max 时转 disabled
  * @csspart decrement-trigger - 减一步；贴住 min 时转 disabled

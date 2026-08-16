@@ -54,7 +54,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 ### 加减钮排布
 
-触发器位置由作者写模板决定：放进 control 即叠进框内右侧（一体式），不写 control 则照旧排在输入框两侧
+触发器位置由作者写模板决定：放进 control 即减在左、加在右、输入框居中的一体式，不写 control 则照旧三件并排
 
 <XhDemo src="number-field/09-trigger-placement" />
 
@@ -66,7 +66,7 @@ invalid 由宿主自己判定，不必挂在表单上；标出来之后值照样
 
 ### 框内单位与货币符号
 
-前后缀压在输入框上：control 本身就是定位参照，符号绝对定位进框，输入框让出内边距
+前后缀图标/文字直接流式插进 control：减在左、加在右、输入框居中，前后缀排在输入框两侧
 
 <XhDemo src="number-field/11-affix" />
 
@@ -87,7 +87,7 @@ invalid 由宿主自己判定，不必挂在表单上；标出来之后值照样
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-number-field>` |
-| Vue 组件 | `XhNumberFieldDecrementTrigger` `XhNumberFieldIncrementTrigger` `XhNumberFieldInput` `XhNumberFieldLabel` `XhNumberFieldRoot` |
+| Vue 组件 | `XhNumberFieldControl` `XhNumberFieldDecrementTrigger` `XhNumberFieldIncrementTrigger` `XhNumberFieldInput` `XhNumberFieldLabel` `XhNumberFieldRoot` |
 | 组合式函数 | `useNumberField` |
 | 状态机 | `numberFieldMachine` |
 | 皮肤 | `@xihan-ui/styles/number-field.css` |
@@ -147,7 +147,7 @@ invalid 由宿主自己判定，不必挂在表单上；标出来之后值照样
 | `decrement` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
-| `getControlProps` | `() => T['element']` | 输入框与加减钮的包裹层：皮肤把视觉盒画在它身上，两个按钮叠进输入框内。 |
+| `getControlProps` | `() => T['element']` | 输入框与加减钮的包裹层：皮肤把视觉盒画在它身上，减在左、加在右、输入框居中。 |
 | `getInputProps` | `() => T['input']` |  |
 | `getIncrementTriggerProps` | `() => T['button']` |  |
 | `getDecrementTriggerProps` | `() => T['button']` |  |

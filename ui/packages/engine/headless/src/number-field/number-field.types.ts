@@ -76,7 +76,7 @@ export interface NumberFieldApi<T extends PropTypes = PropTypes> {
   decrement: () => void
   getRootProps: () => T['element']
   getLabelProps: () => T['label']
-  /** 输入框与加减钮的包裹层：皮肤把视觉盒画在它身上，两个按钮叠进输入框内。 */
+  /** 输入框与加减钮的包裹层：皮肤把视觉盒画在它身上，减在左、加在右、输入框居中。 */
   getControlProps: () => T['element']
   getInputProps: () => T['input']
   getIncrementTriggerProps: () => T['button']
