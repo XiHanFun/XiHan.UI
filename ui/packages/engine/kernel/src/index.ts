@@ -35,15 +35,8 @@ export {
 } from './diagnostics/channel'
 export type { DiagnosticCode } from './diagnostics/codes'
 export { DIAGNOSTIC_CODES } from './diagnostics/codes'
-// 废弃登记与探测
-export type { DeprecatedEntry, DeprecationMedium, DeprecationScanOptions } from './diagnostics/deprecations'
-export {
-  deprecationEntries,
-  findDeprecatedPart,
-  registerDeprecation,
-  resetDeprecations,
-  startDeprecationScan,
-} from './diagnostics/deprecations'
+// 废弃登记与探测在 ./deprecations 子路径:它是开发期工具,不该躺在每个消费方都会打包的主入口里
+// (与 ./skin-check 同理,见 .size-limit.json 里 kernel 与 vue 各入口的棘轮)
 export type {
   DiagnosticHandler,
   DiagnosticLevel,
@@ -51,8 +44,7 @@ export type {
   Diagnostics,
   DiagnosticThreshold,
 } from './diagnostics/types'
-// 锁步版本检查
-export { checkLockstepVersion } from './diagnostics/version'
+// 锁步版本检查与框架元数据同在 ./metadata 子路径,主入口只留结构原语与 VERSION
 // 守卫与探测
 export { contains, isDocument, isElement, isFunction, isHTMLElement, isShadowRoot, isSSR, isWindow } from './guards'
 // 环境抽象
@@ -60,24 +52,8 @@ export type { IdGenerator } from './id-generator'
 
 export { createCounterIdGenerator } from './id-generator'
 export { mergeProps } from './merge-props'
-// 框架元数据
-export type { RuntimeHostInfo, RuntimeInfo, VersionInfo } from './metadata'
-export {
-  getMetadataDetails,
-  getMetadataSummary,
-  getRuntimeHost,
-  getRuntimeInfo,
-  isMetadataAutoPrint,
-  printMetadataBannerOnce,
-  printMetadataDetails,
-  printMetadataSummary,
-  registerRuntimeHost,
-  resetMetadataBanner,
-  resetRuntimeHost,
-  setMetadataAutoPrint,
-  XIHAN_UI_METADATA,
-  XIHAN_UI_VERSION,
-} from './metadata'
+// 框架元数据在 ./metadata 子路径:与 Framework 的独立 Metadata 包同理,主入口只留
+// 结构原语与 VERSION(见 .size-limit.json 里 kernel 主入口 3.3 kB 的棘轮)
 export type { NormalizeProps, PropTypes } from './normalize-props'
 export { createNormalizer, normalizeProps } from './normalize-props'
 export type { RuntimeConfig } from './runtime-config'

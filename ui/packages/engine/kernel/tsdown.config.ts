@@ -5,5 +5,7 @@ export default defineXihanPackage({
   entry: {
     'index': 'src/index.ts',
     'skin-check': 'src/diagnostics/skin-check.ts',
+    'deprecations': 'src/diagnostics/deprecations.ts',
+    'metadata': 'src/metadata.ts',
   },
 })

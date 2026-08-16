@@ -33,6 +33,14 @@
     "./skin-check": {
       "types": "./dist/skin-check.d.ts",
       "import": "./dist/skin-check.js"
+    },
+    "./deprecations": {
+      "types": "./dist/deprecations.d.ts",
+      "import": "./dist/deprecations.js"
+    },
+    "./metadata": {
+      "types": "./dist/metadata.d.ts",
+      "import": "./dist/metadata.js"
     }
   },
   "main": "./dist/index.js",

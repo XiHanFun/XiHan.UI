@@ -1,6 +1,7 @@
 import type { DiagnosticRecord } from '../src'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { checkLockstepVersion, DIAGNOSTIC_CODES, onDiagnostic, resetDiagnostics, VERSION } from '../src'
+import { DIAGNOSTIC_CODES, onDiagnostic, resetDiagnostics, VERSION } from '../src'
+import { checkLockstepVersion } from '../src/metadata'
 
 const seen: DiagnosticRecord[] = []
 let off: (() => void) | undefined

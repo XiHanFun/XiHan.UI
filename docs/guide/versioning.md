@@ -435,7 +435,7 @@ check 脚本不接进 `pnpm gate` 就等于没写，死引用同样被拦下。
 | 条款 | 现状 | 计划补的机制 |
 | --- | --- | --- |
 | Vue 作用域插槽载荷 | 带载荷的插槽已声明 `slots:` 选项，`check-slot-types` 门禁四条判据兜着（缺声明 / 键非可选 / 值非函数 / 声明未用）。仅渲染无载荷插槽的部件仍不声明，消费方写错 slot 名不会报 | 无载荷插槽也补声明，或明确「只有带载荷的插槽进契约」 |
-| 废弃提示（CSS / `data-*` / attribute / 层名） | 已落地：`@xihan-ui/kernel` 的 `registerDeprecation` + `startDeprecationScan`，适配器 dev 里自动启动，五种介质经诊断通道发 `warn`（见 [诊断通道](./diagnostics#废弃提示)）；登记表当前为空 | 首次废弃时随 changeset 登记第一条，验证真实迁移链路 |
+| 废弃提示（CSS / `data-*` / attribute / 层名） | 已落地：`@xihan-ui/kernel/deprecations` 的 `registerDeprecation` + `startDeprecationScan`，Web Components 侧在 `defineXhElements()` 自动启动，Vue 侧按需手动启动（避免进组件树摇入口的体积棘轮），五种介质经诊断通道发 `warn`（见 [诊断通道](./diagnostics#废弃提示)）；登记表当前为空 | 首次废弃时随 changeset 登记第一条，验证真实迁移链路 |
 | 浏览器硬底线 | 已落地：`.browserslistrc` 记录硬底线，`check-css-floor` 门禁拒绝抬底线的无兜底特性（`@container` 等），并校验 `light-dark()` / `dvh` 的级联兜底 | 拒绝名单改动时联动本页支持面表格的提醒 |
 | 「17 个包必须同版本」 | `check-version-lock` 门禁保证 17 个 package.json 同版本；运行期混装（绕过包管理器的组合）仍无检查 | 提成 peer，或在入口加运行期版本一致性检查 |
 

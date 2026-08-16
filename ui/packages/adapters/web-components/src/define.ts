@@ -1,4 +1,6 @@
-import { checkLockstepVersion, isDev, VERSION as KERNEL_VERSION, printMetadataBannerOnce, registerRuntimeHost, startDeprecationScan } from '@xihan-ui/kernel'
+import { isDev, VERSION as KERNEL_VERSION } from '@xihan-ui/kernel'
+import { startDeprecationScan } from '@xihan-ui/kernel/deprecations'
+import { checkLockstepVersion, printMetadataBannerOnce, registerRuntimeHost } from '@xihan-ui/kernel/metadata'
 import { version as VERSION } from '../package.json'
 import { XhAccordionElement } from './elements/accordion'
 import { XhAffixElement } from './elements/affix'

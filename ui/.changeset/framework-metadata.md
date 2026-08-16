@@ -6,7 +6,7 @@
 
 框架元数据：名称、版本与运行时信息的单一事实源，与 XiHan.Framework 的 `XiHanMetadata` 同构。
 
-`@xihan-ui/kernel` 新增 `XIHAN_UI_METADATA` 与 `XIHAN_UI_VERSION`：
+`@xihan-ui/kernel/metadata` 子路径新增 `XIHAN_UI_METADATA` 与 `XIHAN_UI_VERSION`（与 Framework 的独立 Metadata 包同理，主入口保持结构原语，不背它的体积棘轮）：
 
 - **静态常量集中维护**：名称 / 显示名 / 版权 / 作者 / 组织 / 仓库 / 文档 / 许可证 / 关键词 /
   支持平台 / 适配器清单 / 标志 / 寄语，全部 `Object.freeze`。

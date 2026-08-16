@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import type { DiagnosticRecord } from '../src'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { DIAGNOSTIC_CODES, findDeprecatedPart, onDiagnostic, registerDeprecation, resetDeprecations, resetDiagnostics } from '../src'
-import { startDeprecationScan } from '../src/diagnostics/deprecations'
+import { DIAGNOSTIC_CODES, onDiagnostic, resetDiagnostics } from '../src'
+import { findDeprecatedPart, registerDeprecation, resetDeprecations, startDeprecationScan } from '../src/diagnostics/deprecations'
 
 const seen: DiagnosticRecord[] = []
 let stopSubscribe: (() => void) | undefined
