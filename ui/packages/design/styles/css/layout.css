@@ -156,12 +156,14 @@
   /* 侧栏保持默认的拉伸对齐，只加一道高度上限：内容短时它照旧填满整列，内容长过一屏时它收成
      可视区那么高，短出来的那一段就是 sticky 的行程。
      上限量的是滚动容器可视区的高度，缺省按视口算；滚动容器不是视口时由作者把那个高度写进
-     --xh-layout-scrollport-h。视口取 dvh：移动端地址栏收放会改变可视高度，dvh 跟着变。
+     --xh-layout-scrollport-h。视口取 dvh：移动端地址栏收放会改变可视高度，dvh 跟着变；
+     不认 dvh 的引擎由级联回落到前一条的 vh。
      侧栏自己的条目多到装不下时在内部滚，横轴仍归上面那条 overflow: hidden 裁，
      折叠态靠它把放不下的字裁掉；逻辑属性 overflow-block 尚无可用实现，写物理轴。 */
   [data-scope='layout'][data-part='sider'][data-fixed] {
     position: sticky;
     inset-block-start: var(--xh-_layout-sider-offset);
+    max-block-size: calc(var(--xh-layout-scrollport-h, 100vh) - var(--xh-_layout-sider-offset));
     max-block-size: calc(var(--xh-layout-scrollport-h, 100dvh) - var(--xh-_layout-sider-offset));
     overflow-y: auto;
   }
