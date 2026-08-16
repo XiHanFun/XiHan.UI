@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 // 门禁：Vue 组件凡是给插槽传了载荷，就必须声明 SlotsType，且键可选、值写成函数类型。
 //
-// 三条判据分别对应一种会静默出错的写法：
+// 四条判据分别对应一种会静默出错的写法：
 //   缺声明   → 消费方拿到 any，插槽名与载荷键名拼错都不报
 //   键非可选 → slots.x ? A : B 这类守卫在类型上恒为真，而它承载着 collection 的默认铺开行为
 //   值非函数 → 走 Slot<T> 包装，零参调用变非法
+//   声明未用 → 写进 SlotsType 却从不渲染，消费方合法传进来的 #slot 被静默吞掉
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -65,14 +66,18 @@ for (const file of await walk(ROOT)) {
       if (!rest.trimStart().startsWith(')'))
         used.add(call[1])
     }
-    if (used.size === 0)
-      continue
+    // 反向判据的引用集：名字出现即算「用过」——slots.item 整体传给 helper 的裸引用也算，
+    // 只有调用形态会漏掉 collection 族把插槽按引用透传的用法
+    const referenced = new Set([...section.matchAll(/slots\.(\w+)/g)].map(m => m[1]))
 
     const declared = declarationOf(section, 0)
     if (declared === null) {
-      errors.push(`${file} ${name}：给插槽 ${[...used].join(' / ')} 传了载荷，却没有 slots: Object as SlotsType<…> 声明`)
+      if (used.size > 0)
+        errors.push(`${file} ${name}：给插槽 ${[...used].join(' / ')} 传了载荷，却没有 slots: Object as SlotsType<…> 声明`)
       continue
     }
+    if (used.size === 0 && referenced.size === 0)
+      continue
 
     // 逐键校验：形如 `key?: (props: T) => VNode[]`
     const keys = new Map()
@@ -88,6 +93,8 @@ for (const file of await walk(ROOT)) {
         errors.push(`${file} ${name}：插槽 ${key} 的键要带 ?，非可选会让 slots.${key} 的存在性守卫在类型上恒为真`)
       if (!meta.type.includes('=>'))
         errors.push(`${file} ${name}：插槽 ${key} 的值要写成函数类型（如 (props: T) => VNode[]），裸类型会走 Slot<T> 包装`)
+      if (!referenced.has(key))
+        errors.push(`${file} ${name}：插槽 ${key} 写进了 SlotsType 但组件从不碰它——消费方传 #${key} 会被静默吞掉，别让声明撒谎`)
     }
   }
 }

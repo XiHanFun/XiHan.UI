@@ -1,0 +1,6 @@
+# 浏览器硬底线:低于它皮肤整体无样式(无兜底,见 docs/guide/versioning.md「支持面」)。
+# check-css-floor.mjs 的拒绝名单按此地板取特性——任何高于地板的无兜底特性都会抬底线。
+# 完整保真:Chrome 111 / Firefox 121(:has)/ Safari 16.4。
+chrome >= 111
+firefox >= 113
+safari >= 16.2
