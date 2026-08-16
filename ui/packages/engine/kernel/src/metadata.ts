@@ -1,7 +1,6 @@
 import { version } from '../package.json'
 // 框架元数据:名称、版本、版权与运行时信息的单一事实源。
 //
-// 与 XiHan.Framework 的 XiHanMetadata 同构:静态常量集中在这一份文件里维护,
 // 版本从 package.json 派生(17 包锁步,kernel 的版本就是整套库的版本,改版本只改
 // package.json 一处),运行时信息(dev/prod 模式、SSR、适配器宿主)由调用方登记。
 // getSummary() / getDetails() 返回格式化文本,print 版只在 dev 出声,生产静默。
@@ -40,7 +39,7 @@ export const XIHAN_UI_METADATA = Object.freeze({
   /** 框架名称 */
   name: 'XiHan.UI',
   /** 框架显示名称 */
-  displayName: '曦寒视图',
+  displayName: '曦寒视图组件',
   /** 框架版本(字符串形态,与 XIHAN_UI_VERSION.version 同源) */
   version: XIHAN_UI_VERSION.version,
   /** 框架主要版本 */
@@ -52,11 +51,11 @@ export const XIHAN_UI_METADATA = Object.freeze({
   /** 框架预发布标识 */
   prerelease: XIHAN_UI_VERSION.prerelease,
   /** 框架描述 */
-  description: '框架无关的组件库:状态机与无障碍住在 headless 内核,每个框架只配一个薄适配器。',
+  description: '快速、轻量、高效、用心的框架无关跨端组件库。',
   /** 框架版权信息 */
   copyright: 'Copyright (c) 2021-Present XiHanFun and contributors.',
   /** 框架作者 */
-  author: 'XiHanFun',
+  author: 'XiHanFun and contributors',
   /** 框架组织 */
   organization: 'XiHanFun',
   /** 框架组织网址 */
