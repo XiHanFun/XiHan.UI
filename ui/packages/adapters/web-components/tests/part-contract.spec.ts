@@ -5,6 +5,8 @@ import { dialogAnatomy, dialogMeta } from '@xihan-ui/headless'
 import {
   DIAGNOSTIC_CODES,
   onDiagnostic,
+  registerDeprecation,
+  resetDeprecations,
   resetDiagnostics,
   setDiagnosticsConsoleOutput,
   setDiagnosticsLevel,
@@ -30,6 +32,7 @@ beforeEach(() => {
 afterEach(() => {
   document.body.innerHTML = ''
   resetDiagnostics()
+  resetDeprecations()
 })
 
 function part(name: string, tag = 'div'): HTMLElement {
@@ -81,6 +84,22 @@ describe('角色节点契约', () => {
     expect(hits).toHaveLength(1)
     expect(hits[0]).toMatchObject({ level: 'warn', scope: 'dialog', part: 'conten' })
     expect(hits[0]!.node).toBe(stray)
+  })
+
+  it('废弃的 part 名同时报 deprecated.part 与「不会被接线」', async () => {
+    registerDeprecation({ medium: 'part', match: 'conten', message: 'conten 是旧部件名', replaceWith: 'content', until: '2.0.0' })
+    const stray = part('conten')
+    await mountDialog([part('trigger', 'button'), part('content'), stray])
+
+    const hits = codes(DIAGNOSTIC_CODES.deprecatedPart)
+    expect(hits).toHaveLength(1)
+    expect(hits[0]).toMatchObject({ level: 'warn', scope: 'dialog', part: 'conten' })
+    expect(hits[0]!.node).toBe(stray)
+    expect(hits[0]!.message).toContain('data-xh-part="content"')
+    expect(hits[0]!.detail).toMatchObject({ replaceWith: 'content', until: '2.0.0' })
+
+    // 依旧按解剖外处理，两条各有去向
+    expect(codes(DIAGNOSTIC_CODES.wcUnknownPart)).toHaveLength(1)
   })
 
   it('同一实例的同一问题重复渲染只报一次', async () => {

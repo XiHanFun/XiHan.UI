@@ -33,6 +33,15 @@ export {
 } from './diagnostics/channel'
 export type { DiagnosticCode } from './diagnostics/codes'
 export { DIAGNOSTIC_CODES } from './diagnostics/codes'
+// 废弃登记与探测
+export type { DeprecatedEntry, DeprecationMedium, DeprecationScanOptions } from './diagnostics/deprecations'
+export {
+  deprecationEntries,
+  findDeprecatedPart,
+  registerDeprecation,
+  resetDeprecations,
+  startDeprecationScan,
+} from './diagnostics/deprecations'
 export type {
   DiagnosticHandler,
   DiagnosticLevel,
