@@ -71,6 +71,15 @@ export const XhNumberFieldLabel = defineComponent({
   },
 })
 
+export const XhNumberFieldControl = defineComponent({
+  name: 'XhNumberFieldControl',
+  setup(_, { slots }) {
+    const ctx = useNumberFieldContext()
+    // 视觉盒：输入框与加减钮都放进来，皮肤把描边、底色、聚焦环画在它身上
+    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhNumberFieldInput = defineComponent({
   name: 'XhNumberFieldInput',
   setup() {

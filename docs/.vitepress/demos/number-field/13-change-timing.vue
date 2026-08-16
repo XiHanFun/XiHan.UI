@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
+  XhNumberFieldControl,
   XhNumberFieldDecrementTrigger,
   XhNumberFieldIncrementTrigger,
   XhNumberFieldInput,
@@ -27,15 +28,15 @@ function commit() {
 <template>
   <XhNumberFieldRoot v-model:value="draft" :min="1" :max="99">
     <XhNumberFieldLabel>数量</XhNumberFieldLabel>
-    <div style="display: flex; gap: 4px">
-      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+    <XhNumberFieldControl>
       <XhNumberFieldInput
         style="inline-size: 80px; text-align: center"
         @blur="commit"
         @keydown.enter="commit"
       />
+      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
       <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
-    </div>
+    </XhNumberFieldControl>
     <span>草稿：{{ draft || "（空）" }} · 已提交：{{ model }}</span>
   </XhNumberFieldRoot>
 </template>

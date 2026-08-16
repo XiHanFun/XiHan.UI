@@ -1,6 +1,7 @@
 <!-- 形态 | variant 只改皮肤怎么用颜色，加减与键盘行为三档完全一致 -->
 <script setup lang="ts">
 import {
+  XhNumberFieldControl,
   XhNumberFieldDecrementTrigger,
   XhNumberFieldIncrementTrigger,
   XhNumberFieldInput,
@@ -15,11 +16,11 @@ const variants = ["outline", "subtle", "ghost"] as const;
   <div style="display: flex; flex-wrap: wrap; gap: 16px">
     <XhNumberFieldRoot v-for="v in variants" :key="v" :variant="v" default-value="1">
       <XhNumberFieldLabel>{{ v }}</XhNumberFieldLabel>
-      <div style="display: flex; gap: 4px">
-        <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+      <XhNumberFieldControl>
         <XhNumberFieldInput style="inline-size: 72px; text-align: center" />
+        <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
         <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
-      </div>
+      </XhNumberFieldControl>
     </XhNumberFieldRoot>
   </div>
 </template>

@@ -1,6 +1,7 @@
 <!-- 区间与步长 | 方向键走 step，PageUp 与 PageDown 走 largeStep，Home 与 End 取端点；贴到边界时对应按钮转灰 -->
 <script setup lang="ts">
 import {
+  XhNumberFieldControl,
   XhNumberFieldDecrementTrigger,
   XhNumberFieldIncrementTrigger,
   XhNumberFieldInput,
@@ -19,11 +20,11 @@ import {
     :large-step="10"
   >
     <XhNumberFieldLabel>数量（0 – 20，每档 2）</XhNumberFieldLabel>
-    <div style="display: flex; gap: 4px">
-      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+    <XhNumberFieldControl>
       <XhNumberFieldInput style="inline-size: 80px; text-align: center" />
+      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
       <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
-    </div>
+    </XhNumberFieldControl>
     <span>
       数值：{{ Number.isNaN(valueAsNumber) ? "（空）" : valueAsNumber }} ·
       可加：{{ canIncrement ? "是" : "否" }} · 可减：{{ canDecrement ? "是" : "否" }}

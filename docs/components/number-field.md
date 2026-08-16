@@ -54,7 +54,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 ### 加减钮排布
 
-两个触发器摆在哪儿由作者写模板决定，钮里放什么字符也一样；行为不随位置变
+触发器位置由作者写模板决定：放进 control 即叠进框内右侧（一体式），不写 control 则照旧排在输入框两侧
 
 <XhDemo src="number-field/09-trigger-placement" />
 
@@ -66,7 +66,7 @@ invalid 由宿主自己判定，不必挂在表单上；标出来之后值照样
 
 ### 框内单位与货币符号
 
-前后缀压在输入框上，输入框自己让出内边距；加减钮照旧摆在包裹层里
+前后缀压在输入框上：control 本身就是定位参照，符号绝对定位进框，输入框让出内边距
 
 <XhDemo src="number-field/11-affix" />
 
@@ -96,7 +96,7 @@ invalid 由宿主自己判定，不必挂在表单上；标出来之后值照样
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="number-field"`：**`root`** · `label` · **`input`** · `increment-trigger` · `decrement-trigger`
+`data-scope="number-field"`：**`root`** · `label` · `control` · **`input`** · `increment-trigger` · `decrement-trigger`
 
 ## Props
 
@@ -147,6 +147,7 @@ invalid 由宿主自己判定，不必挂在表单上；标出来之后值照样
 | `decrement` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
+| `getControlProps` | `() => T['element']` | 输入框与加减钮的包裹层：皮肤把视觉盒画在它身上，两个按钮叠进输入框内。 |
 | `getInputProps` | `() => T['input']` |  |
 | `getIncrementTriggerProps` | `() => T['button']` |  |
 | `getDecrementTriggerProps` | `() => T['button']` |  |

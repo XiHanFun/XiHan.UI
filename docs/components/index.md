@@ -34,7 +34,7 @@
 | [表单字段](./field) | `field` | 5 | 0 | 6 |
 | [表单](./form) | `form` | 6 | 0 | 13 |
 | [文本输入](./text-field) | `text-field` | 4 | 1 | 16 |
-| [数字输入](./number-field) | `number-field` | 5 | 6 | 13 |
+| [数字输入](./number-field) | `number-field` | 6 | 6 | 13 |
 | [分格输入](./pin-input) | `pin-input` | 4 | 6 | 10 |
 | [就地编辑](./editable) | `editable` | 9 | 3 | 6 |
 | [复选框](./checkbox) | `checkbox` | 3 | 1 | 8 |

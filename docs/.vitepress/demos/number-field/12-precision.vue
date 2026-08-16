@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
+  XhNumberFieldControl,
   XhNumberFieldDecrementTrigger,
   XhNumberFieldIncrementTrigger,
   XhNumberFieldInput,
@@ -21,11 +22,11 @@ function pad() {
 <template>
   <XhNumberFieldRoot v-model:value="price" :min="0" :max="999" :step="0.1">
     <XhNumberFieldLabel>单价（每档 0.1）</XhNumberFieldLabel>
-    <div style="display: flex; gap: 4px">
-      <XhNumberFieldDecrementTrigger @pointerup="pad">−</XhNumberFieldDecrementTrigger>
+    <XhNumberFieldControl>
       <XhNumberFieldInput style="inline-size: 96px; text-align: center" @blur="pad" />
+      <XhNumberFieldDecrementTrigger @pointerup="pad">−</XhNumberFieldDecrementTrigger>
       <XhNumberFieldIncrementTrigger @pointerup="pad">+</XhNumberFieldIncrementTrigger>
-    </div>
+    </XhNumberFieldControl>
     <span>当前：{{ price || "（空）" }}</span>
   </XhNumberFieldRoot>
 </template>

@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
+  XhNumberFieldControl,
   XhNumberFieldDecrementTrigger,
   XhNumberFieldIncrementTrigger,
   XhNumberFieldInput,
@@ -21,11 +22,11 @@ const asNumber = ref(3);
     @value-change="asNumber = $event.valueAsNumber"
   >
     <XhNumberFieldLabel>数量</XhNumberFieldLabel>
-    <div style="display: flex; gap: 4px">
-      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+    <XhNumberFieldControl>
       <XhNumberFieldInput style="inline-size: 80px; text-align: center" />
+      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
       <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
-    </div>
+    </XhNumberFieldControl>
   </XhNumberFieldRoot>
   <span>输入串：{{ qty === "" ? "（空）" : qty }} · 数值：{{ asNumber }}</span>
 </template>

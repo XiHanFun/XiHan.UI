@@ -30,9 +30,14 @@ export const numberFieldSuite: ConformanceSuite = {
     part: 'root',
     children: [
       { part: 'label', text: '数量' },
-      { part: 'input', tag: 'input' },
-      { part: 'decrement-trigger', tag: 'button', text: '−' },
-      { part: 'increment-trigger', tag: 'button', text: '+' },
+      {
+        part: 'control',
+        children: [
+          { part: 'input', tag: 'input' },
+          { part: 'decrement-trigger', tag: 'button', text: '−' },
+          { part: 'increment-trigger', tag: 'button', text: '+' },
+        ],
+      },
     ],
   },
   cases: [
@@ -41,7 +46,7 @@ export const numberFieldSuite: ConformanceSuite = {
       spec: { apg: APG },
       props: { min: 0, max: 10 },
       initial: {
-        order: ['root', 'label', 'input', 'decrement-trigger', 'increment-trigger'],
+        order: ['root', 'label', 'control', 'input', 'decrement-trigger', 'increment-trigger'],
         parts: {
           'root': {
             'data-empty': '',
@@ -50,6 +55,11 @@ export const numberFieldSuite: ConformanceSuite = {
             'data-invalid': null,
           },
           'label': { for: '@part(input)' },
+          'control': {
+            'data-disabled': null,
+            'data-readonly': null,
+            'data-invalid': null,
+          },
           'input': {
             'role': 'spinbutton',
             'type': 'text',

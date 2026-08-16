@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {
+  XhNumberFieldControl,
   XhNumberFieldDecrementTrigger,
   XhNumberFieldIncrementTrigger,
   XhNumberFieldInput,
@@ -26,11 +27,11 @@ function onValueChange(details: { valueAsNumber: number }) {
     @value-change="onValueChange"
   >
     <XhNumberFieldLabel>购买数量</XhNumberFieldLabel>
-    <div style="display: flex; gap: 4px">
-      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+    <XhNumberFieldControl>
       <XhNumberFieldInput style="inline-size: 80px; text-align: center" />
+      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
       <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
-    </div>
+    </XhNumberFieldControl>
     <span>{{ qty > stock ? "库存只有 " + stock + " 件" : "库存充足" }}</span>
   </XhNumberFieldRoot>
 </template>
