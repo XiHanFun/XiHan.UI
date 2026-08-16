@@ -29,6 +29,8 @@ export const DIAGNOSTIC_CODES = {
   deprecatedAttribute: 'deprecated.attribute',
   /** 作者写了已废弃的 data-xh-part 角色名。 */
   deprecatedPart: 'deprecated.part',
+  /** 适配器与 kernel 的版本不一致，锁步发版被打破。 */
+  versionMismatch: 'core.version-mismatch',
 } as const
 
 export type DiagnosticCode = (typeof DIAGNOSTIC_CODES)[keyof typeof DIAGNOSTIC_CODES]
