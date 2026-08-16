@@ -1,7 +1,10 @@
 // @xihan-ui/kernel —— Foundation 原语（框架无关，零运行时依赖）。
 
+// 版本号:适配器做运行期锁步检查用(17 包同版本是硬承诺,混装会静默失效)
+export { version as VERSION } from '../package.json'
 // 组件解剖
 export type { Anatomy, AnatomyPart } from './anatomy'
+
 export { createAnatomy } from './anatomy'
 
 // 属性归一化
@@ -10,7 +13,6 @@ export { dataAttr, dataState } from './attrs'
 export type { LabellingInput, LabellingResult } from './capability/a11y/aria-labelling'
 
 export { resolveLabelling } from './capability/a11y/aria-labelling'
-
 // 能力：无障碍
 export type { HideOutsideOptions } from './capability/a11y/hide-outside'
 export { hideOutside } from './capability/a11y/hide-outside'
@@ -49,6 +51,8 @@ export type {
   Diagnostics,
   DiagnosticThreshold,
 } from './diagnostics/types'
+// 锁步版本检查
+export { checkLockstepVersion } from './diagnostics/version'
 // 守卫与探测
 export { contains, isDocument, isElement, isFunction, isHTMLElement, isShadowRoot, isSSR, isWindow } from './guards'
 // 环境抽象

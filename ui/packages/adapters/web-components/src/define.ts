@@ -1,4 +1,4 @@
-import { isDev, startDeprecationScan } from '@xihan-ui/kernel'
+import { VERSION as KERNEL_VERSION, checkLockstepVersion, isDev, startDeprecationScan } from '@xihan-ui/kernel'
 import { version as VERSION } from '../package.json'
 import { XhAccordionElement } from './elements/accordion'
 import { XhAffixElement } from './elements/affix'
@@ -214,8 +214,10 @@ export function defineXhElements(): void {
   defineElement('xh-watermark', XhWatermarkElement, VERSION)
 
   // dev 里启动废弃探测：登记表非空时才有动作，空表零开销（早退在扫描器内部）
-  if (isDev())
+  if (isDev()) {
+    checkLockstepVersion('web-components', VERSION, KERNEL_VERSION)
     startDeprecationScan()
+  }
 }
 
 export {
