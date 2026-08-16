@@ -46,6 +46,7 @@ const guideChapters: [text: string, name: string][] = [
   ["表单参与与重置", "forms"],
   ["无障碍与键盘规格", "a11y"],
   ["诊断通道", "diagnostics"],
+  ["框架元数据", "metadata"],
   ["AI 对话内核", "ai"],
   ["背景层", "backgrounds"],
   ["声音层", "sound"],

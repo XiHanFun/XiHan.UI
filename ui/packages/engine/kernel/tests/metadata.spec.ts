@@ -1,0 +1,122 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  getMetadataDetails,
+  getMetadataSummary,
+  getRuntimeHost,
+  getRuntimeInfo,
+  printMetadataBannerOnce,
+  printMetadataDetails,
+  printMetadataSummary,
+  registerRuntimeHost,
+  resetMetadataBanner,
+  resetRuntimeHost,
+  setMetadataAutoPrint,
+  XIHAN_UI_METADATA,
+  XIHAN_UI_VERSION,
+} from '../src'
+
+beforeEach(() => {
+  resetRuntimeHost()
+  resetMetadataBanner()
+  setMetadataAutoPrint(true)
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
+
+describe('框架元数据', () => {
+  it('版本从 package.json 派生并拆出主/次/修订号', () => {
+    expect(XIHAN_UI_VERSION.version).toMatch(/^\d+\.\d+\.\d+(?:-.+)?$/)
+    expect(XIHAN_UI_METADATA.version).toBe(XIHAN_UI_VERSION.version)
+    expect(XIHAN_UI_METADATA.majorVersion).toBe(XIHAN_UI_VERSION.major)
+    expect(XIHAN_UI_METADATA.minorVersion).toBe(XIHAN_UI_VERSION.minor)
+    expect(XIHAN_UI_METADATA.patchVersion).toBe(XIHAN_UI_VERSION.patch)
+    expect(XIHAN_UI_METADATA.prerelease).toBe(XIHAN_UI_VERSION.prerelease)
+  })
+
+  it('静态常量与 Framework 侧同源,仓库/文档/许可齐全', () => {
+    expect(XIHAN_UI_METADATA.name).toBe('XiHan.UI')
+    expect(XIHAN_UI_METADATA.displayName).toBe('曦寒视图')
+    expect(XIHAN_UI_METADATA.author).toBe('XiHanFun')
+    expect(XIHAN_UI_METADATA.organizationUrl).toBe('https://github.com/XiHanFun')
+    expect(XIHAN_UI_METADATA.repositoryUrl).toBe('https://github.com/XiHanFun/XiHan.UI')
+    expect(XIHAN_UI_METADATA.documentationUrl).toBe('https://ui.docs.xihanfun.com')
+    expect(XIHAN_UI_METADATA.license).toBe('MIT')
+    expect(XIHAN_UI_METADATA.keywords).toContain('headless-ui')
+    expect(XIHAN_UI_METADATA.supportedPlatforms).toContain('Safari')
+    expect(XIHAN_UI_METADATA.adapters).toEqual(['vue', 'web-components'])
+  })
+
+  it('元数据对象被冻结,集中维护点不可被消费方改坏', () => {
+    expect(Object.isFrozen(XIHAN_UI_METADATA)).toBe(true)
+    expect(Object.isFrozen(XIHAN_UI_METADATA.keywords)).toBe(true)
+  })
+
+  it('未登记宿主时运行时信息报出环境与空宿主', () => {
+    const info = getRuntimeInfo()
+    expect(info.mode).toBe('development')
+    expect(typeof info.ssr).toBe('boolean')
+    expect(info.host).toBeNull()
+    expect(getRuntimeHost()).toBeNull()
+  })
+
+  it('适配器登记宿主后,摘要与详情都报出宿主与锁步一致性', () => {
+    registerRuntimeHost('vue', XIHAN_UI_METADATA.version)
+    expect(getRuntimeHost()).toEqual({ name: 'vue', version: XIHAN_UI_METADATA.version })
+
+    const summary = getMetadataSummary()
+    expect(summary).toContain(`XiHan.UI 曦寒视图 v${XIHAN_UI_METADATA.version}`)
+    expect(summary).toContain('宿主:vue')
+    expect(summary).toContain('锁步一致')
+
+    const details = getMetadataDetails()
+    expect(details).toContain('作者: XiHanFun')
+    expect(details).toContain('仓库: https://github.com/XiHanFun/XiHan.UI')
+    expect(details).toContain('环境: development')
+  })
+
+  it('宿主版本与 kernel 不一致时,详情里如实报锁步不一致', () => {
+    registerRuntimeHost('vue', '9.9.9')
+    const details = getMetadataDetails()
+    expect(details).toContain('锁步不一致')
+    expect(details).toContain('9.9.9')
+  })
+
+  it('print 版只在 dev 出声,且不抛错', () => {
+    const spy = vi.spyOn(console, 'info').mockImplementation(() => {})
+    printMetadataSummary()
+    printMetadataDetails()
+    expect(spy).toHaveBeenCalledTimes(2)
+  })
+
+  it('resetRuntimeHost 清掉登记', () => {
+    registerRuntimeHost('web-components', XIHAN_UI_METADATA.version)
+    resetRuntimeHost()
+    expect(getRuntimeHost()).toBeNull()
+    expect(getMetadataDetails()).toContain('未登记')
+  })
+
+  it('引用即打印:横幅整页只打一次,标志与摘要各一条,reset 后可再打', () => {
+    const spy = vi.spyOn(console, 'info').mockImplementation(() => {})
+    printMetadataBannerOnce()
+    printMetadataBannerOnce()
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy.mock.calls[0]![0]).toContain(XIHAN_UI_METADATA.logo.split('\n')[0])
+
+    resetMetadataBanner()
+    printMetadataBannerOnce()
+    expect(spy).toHaveBeenCalledTimes(4)
+  })
+
+  it('setMetadataAutoPrint(false) 关掉自动横幅,手动 print 不受影响', () => {
+    const spy = vi.spyOn(console, 'info').mockImplementation(() => {})
+    setMetadataAutoPrint(false)
+    resetMetadataBanner()
+    printMetadataBannerOnce()
+    expect(spy).not.toHaveBeenCalled()
+
+    printMetadataSummary()
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
+})

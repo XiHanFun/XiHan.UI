@@ -1,4 +1,4 @@
-import { VERSION as KERNEL_VERSION, checkLockstepVersion, isDev, startDeprecationScan } from '@xihan-ui/kernel'
+import { checkLockstepVersion, isDev, VERSION as KERNEL_VERSION, printMetadataBannerOnce, registerRuntimeHost, startDeprecationScan } from '@xihan-ui/kernel'
 import { version as VERSION } from '../package.json'
 import { XhAccordionElement } from './elements/accordion'
 import { XhAffixElement } from './elements/affix'
@@ -212,6 +212,11 @@ export function defineXhElements(): void {
   defineElement('xh-typography', XhTypographyElement, VERSION)
   defineElement('xh-virtualizer', XhVirtualizerElement, VERSION)
   defineElement('xh-watermark', XhWatermarkElement, VERSION)
+
+  // 宿主登记不分 dev/prod：元数据要能报出运行在哪个适配器上
+  registerRuntimeHost('web-components', VERSION)
+  // 引用即打印：注册全部元素时打一次启动横幅（内部 dev 门禁 + 每页一次）
+  printMetadataBannerOnce()
 
   // dev 里启动废弃探测：登记表非空时才有动作，空表零开销（早退在扫描器内部）
   if (isDev()) {
