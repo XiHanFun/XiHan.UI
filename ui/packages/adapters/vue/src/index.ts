@@ -483,6 +483,7 @@ export type { NavigationMenuContext } from './components/navigation-menu/use-nav
 export { XhNumberAnimation } from './components/number-animation/number-animation'
 export type { NumberAnimationSlotProps } from './components/number-animation/number-animation'
 export {
+  XhNumberFieldControl,
   XhNumberFieldDecrementTrigger,
   XhNumberFieldIncrementTrigger,
   XhNumberFieldInput,

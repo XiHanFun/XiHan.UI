@@ -1,6 +1,7 @@
 <!-- 尺寸 | 输入框高度与加减按钮一起换档，不传 size 即默认档 -->
 <script setup lang="ts">
 import {
+  XhNumberFieldControl,
   XhNumberFieldDecrementTrigger,
   XhNumberFieldIncrementTrigger,
   XhNumberFieldInput,
@@ -20,11 +21,11 @@ const sizes = [
   <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px">
     <XhNumberFieldRoot v-for="s in sizes" :key="s.label" :size="s.size" default-value="1">
       <XhNumberFieldLabel>{{ s.label }}</XhNumberFieldLabel>
-      <div style="display: flex; gap: 4px">
-        <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+      <XhNumberFieldControl>
         <XhNumberFieldInput style="inline-size: 72px; text-align: center" />
+        <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
         <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
-      </div>
+      </XhNumberFieldControl>
     </XhNumberFieldRoot>
   </div>
 </template>

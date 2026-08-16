@@ -1,6 +1,7 @@
 <!-- 禁用与只读 | 两者都改不动值，禁用还会把加减按钮一并关掉、值也不再随表单提交 -->
 <script setup lang="ts">
 import {
+  XhNumberFieldControl,
   XhNumberFieldDecrementTrigger,
   XhNumberFieldIncrementTrigger,
   XhNumberFieldInput,
@@ -12,19 +13,19 @@ import {
 <template>
   <XhNumberFieldRoot default-value="5" disabled>
     <XhNumberFieldLabel>禁用</XhNumberFieldLabel>
-    <div style="display: flex; gap: 4px">
-      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+    <XhNumberFieldControl>
       <XhNumberFieldInput style="inline-size: 80px; text-align: center" />
+      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
       <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
-    </div>
+    </XhNumberFieldControl>
   </XhNumberFieldRoot>
 
   <XhNumberFieldRoot default-value="5" read-only>
     <XhNumberFieldLabel>只读</XhNumberFieldLabel>
-    <div style="display: flex; gap: 4px">
-      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
+    <XhNumberFieldControl>
       <XhNumberFieldInput style="inline-size: 80px; text-align: center" />
+      <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
       <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
-    </div>
+    </XhNumberFieldControl>
   </XhNumberFieldRoot>
 </template>

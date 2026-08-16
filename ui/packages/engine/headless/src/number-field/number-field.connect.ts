@@ -87,6 +87,15 @@ export function connectNumberField<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
     }),
 
+    // control 是纯视觉包裹：盒子的描边/底色/聚焦环都从它身上画，
+    // 三个状态属性供皮肤按禁用/只读/校验切换盒观感
+    getControlProps: () => normalize.element({
+      ...parts.control.attrs,
+      'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(invalid),
+    }),
+
     getInputProps: () => normalize.input({
       ...parts.input.attrs,
       'id': ids.input,
