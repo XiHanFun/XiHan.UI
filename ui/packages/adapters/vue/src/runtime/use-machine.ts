@@ -1,7 +1,7 @@
 import type { Scope } from '@xihan-ui/kernel'
 import type { MachineConfig, MachineSchema, Service } from '@xihan-ui/machine'
 import type { MaybeRefOrGetter } from 'vue'
-import { VERSION as KERNEL_VERSION, checkLockstepVersion, isDev, startDeprecationScan } from '@xihan-ui/kernel'
+import { checkLockstepVersion, isDev, VERSION as KERNEL_VERSION, printMetadataBannerOnce, registerRuntimeHost, startDeprecationScan } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { toValue } from 'vue'
 import { version as VUE_VERSION } from '../../package.json'
@@ -16,6 +16,10 @@ function ensureDevChecks(): void {
   if (devChecksStarted)
     return
   devChecksStarted = true
+  // 宿主登记不分 dev/prod:元数据要能报出运行在哪个适配器上
+  registerRuntimeHost('vue', VUE_VERSION)
+  // 引用即打印:首次建组件时打一次启动横幅(内部 dev 门禁 + 每页一次)
+  printMetadataBannerOnce()
   if (isDev()) {
     checkLockstepVersion('vue', VUE_VERSION, KERNEL_VERSION)
     startDeprecationScan()

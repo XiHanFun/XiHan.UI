@@ -60,6 +60,24 @@ export type { IdGenerator } from './id-generator'
 
 export { createCounterIdGenerator } from './id-generator'
 export { mergeProps } from './merge-props'
+// 框架元数据
+export type { RuntimeHostInfo, RuntimeInfo, VersionInfo } from './metadata'
+export {
+  getMetadataDetails,
+  getMetadataSummary,
+  getRuntimeHost,
+  getRuntimeInfo,
+  isMetadataAutoPrint,
+  printMetadataBannerOnce,
+  printMetadataDetails,
+  printMetadataSummary,
+  registerRuntimeHost,
+  resetMetadataBanner,
+  resetRuntimeHost,
+  setMetadataAutoPrint,
+  XIHAN_UI_METADATA,
+  XIHAN_UI_VERSION,
+} from './metadata'
 export type { NormalizeProps, PropTypes } from './normalize-props'
 export { createNormalizer, normalizeProps } from './normalize-props'
 export type { RuntimeConfig } from './runtime-config'
