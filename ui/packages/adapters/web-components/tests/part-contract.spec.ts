@@ -5,12 +5,11 @@ import { dialogAnatomy, dialogMeta } from '@xihan-ui/headless'
 import {
   DIAGNOSTIC_CODES,
   onDiagnostic,
-  registerDeprecation,
-  resetDeprecations,
   resetDiagnostics,
   setDiagnosticsConsoleOutput,
   setDiagnosticsLevel,
 } from '@xihan-ui/kernel'
+import { registerDeprecation, resetDeprecations } from '@xihan-ui/kernel/deprecations'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../src/define'
 import { XhDialogElement } from '../src/elements/dialog'

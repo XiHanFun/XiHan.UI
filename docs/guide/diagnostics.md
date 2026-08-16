@@ -116,7 +116,7 @@ it('不应有契约违约', () => {
 登记表当前为空；发废弃时随 changeset 一起登记，格式：
 
 ```ts
-import { registerDeprecation } from '@xihan-ui/kernel'
+import { registerDeprecation } from '@xihan-ui/kernel/deprecations'
 
 // 五种介质：css-var / layer / selector / attribute / part
 registerDeprecation({
@@ -136,13 +136,15 @@ registerDeprecation({
 | `attribute` | DOM 里 `xh-*` 元素上的 attribute | `startDeprecationScan()` |
 | `part` | 作者写的 `data-xh-part` 角色名 | Web Components 适配器的部件契约校验 |
 
-**两个适配器都在 dev 里自动启动探测**：Vue 在第一个组件建机器时借路启动一次，Web Components 在 `defineXhElements()` 里启动；生产构建跳过。登记表为空时扫描器直接早退，零开销。也可以手动控制：
+**启动方式**：Web Components 在 `defineXhElements()` 里自动启动。Vue 侧不自动启动——扫描器挂在每个组件的共享路径上会进所有组件树摇入口（约 1.8 kB gzip），组件级体积棘轮量得出来；需要时两行手动启动（登记表为空时扫描器直接早退，零开销）：
 
 ```ts
-import { startDeprecationScan } from '@xihan-ui/kernel'
+import { startDeprecationScan } from '@xihan-ui/kernel/deprecations'
 
-const stop = startDeprecationScan() // 返回停止函数；只该在 dev 调用
-stop()
+if (import.meta.env.DEV) {
+  const stop = startDeprecationScan() // 返回停止函数
+  stop()
+}
 ```
 
 DOM 侧先扫一遍已有节点，再用 MutationObserver 接住后续进来的节点与 `<style>`；跨域 `<link>` 样式表走 CSSOM 只扫一遍，之后动态注入的样式表不在观察范围内。同一个废弃名无论命中多少条规则只报一次（通道去重）。

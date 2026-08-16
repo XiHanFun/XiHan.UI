@@ -9,6 +9,10 @@ function pkg(name: string): string {
 export default defineConfig({
   resolve: {
     alias: {
+      // kernel 的子路径入口在 src 深处，src 别名解析不到，逐条指到具体文件（须排在通用别名之前）
+      '@xihan-ui/kernel/skin-check': fileURLToPath(new URL('../../packages/engine/kernel/src/diagnostics/skin-check.ts', import.meta.url)),
+      '@xihan-ui/kernel/deprecations': fileURLToPath(new URL('../../packages/engine/kernel/src/diagnostics/deprecations.ts', import.meta.url)),
+      '@xihan-ui/kernel/metadata': fileURLToPath(new URL('../../packages/engine/kernel/src/metadata.ts', import.meta.url)),
       // tokens 含 CSS 子路径（tokens.css 在包根不在 src），走 exports 解析，不设 src 别名
       '@xihan-ui/kernel': pkg('engine/kernel'),
       '@xihan-ui/machine': pkg('engine/machine'),

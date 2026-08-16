@@ -4,6 +4,8 @@ import { version } from '../package.json'
 // 版本从 package.json 派生(17 包锁步,kernel 的版本就是整套库的版本,改版本只改
 // package.json 一处),运行时信息(dev/prod 模式、SSR、适配器宿主)由调用方登记。
 // getSummary() / getDetails() 返回格式化文本,print 版只在 dev 出声,生产静默。
+import { reportDiagnostic } from './diagnostics/channel'
+import { DIAGNOSTIC_CODES } from './diagnostics/codes'
 import { isSSR } from './guards'
 import { isDev } from './utils/dev'
 
@@ -134,6 +136,22 @@ let runtimeHost: RuntimeHostInfo | null = null
 /** 适配器在启动时登记自己,getSummary / getDetails 据此报出运行时宿主。 */
 export function registerRuntimeHost(name: string, version: string): void {
   runtimeHost = { name, version }
+}
+
+/**
+ * 锁步版本一致性检查:17 包同版本是硬承诺(见 docs/guide/versioning.md),混装会
+ * 类型对不上甚至运行时挂掉。适配器 dev 启动时拿自身版本与 kernel 比对,不一致经
+ * 诊断通道发一条 warn;版本信息归元数据管,所以与 Framework 一样住在这个模块里。
+ */
+export function checkLockstepVersion(name: string, version: string, kernelVersion: string): void {
+  if (version === kernelVersion)
+    return
+  reportDiagnostic({
+    code: DIAGNOSTIC_CODES.versionMismatch,
+    level: 'warn',
+    message: `${name} ${version} 与 kernel ${kernelVersion} 版本不一致——17 个包锁步发版,混装会类型对不上甚至运行时挂掉,请统一到同一版本`,
+    detail: { name, version, kernelVersion },
+  })
 }
 
 export function getRuntimeHost(): Readonly<RuntimeHostInfo> | null {

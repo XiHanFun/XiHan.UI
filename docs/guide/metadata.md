@@ -5,10 +5,10 @@
 ## 元数据对象
 
 ```ts
-import { XIHAN_UI_METADATA, XIHAN_UI_VERSION } from '@xihan-ui/kernel'
+import { XIHAN_UI_METADATA, XIHAN_UI_VERSION } from '@xihan-ui/kernel/metadata'
 
 XIHAN_UI_METADATA.name            // 'XiHan.UI'
-XIHAN_UI_METADATA.displayName     // '曦寒视图'
+XIHAN_UI_METADATA.displayName     // '曦寒视图组件'
 XIHAN_UI_METADATA.version         // 与 package.json 同源，17 包锁步下即整套库的版本
 XIHAN_UI_METADATA.majorVersion    // 主版本号（数字）
 XIHAN_UI_METADATA.minorVersion    // 次版本号
@@ -34,7 +34,7 @@ XIHAN_UI_METADATA.sendWord        // 曦寒寄语
 ## 运行时信息
 
 ```ts
-import { getRuntimeInfo, getRuntimeHost } from '@xihan-ui/kernel'
+import { getRuntimeInfo, getRuntimeHost } from '@xihan-ui/kernel/metadata'
 
 getRuntimeInfo()
 // { mode: 'development' | 'production', ssr: boolean, host: { name, version } | null }
@@ -48,7 +48,7 @@ getRuntimeInfo()
 与 Framework 的 `GetSummary()` / `GetDetails()` 同款：
 
 ```ts
-import { getMetadataSummary, getMetadataDetails, printMetadataSummary } from '@xihan-ui/kernel'
+import { getMetadataSummary, getMetadataDetails, printMetadataSummary } from '@xihan-ui/kernel/metadata'
 
 const summary = getMetadataSummary()
 // XiHan.UI 曦寒视图 v1.0.0-alpha.2
@@ -96,7 +96,7 @@ XiHan.UI 曦寒视图 v1.0.0-alpha.2
 不想要时关掉（只影响之后的启动，手动 print 不受影响）：
 
 ```ts
-import { setMetadataAutoPrint } from '@xihan-ui/kernel'
+import { setMetadataAutoPrint } from '@xihan-ui/kernel/metadata'
 
 setMetadataAutoPrint(false)
 ```

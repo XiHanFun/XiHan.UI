@@ -13,7 +13,7 @@ import {
   setMetadataAutoPrint,
   XIHAN_UI_METADATA,
   XIHAN_UI_VERSION,
-} from '../src'
+} from '../src/metadata'
 
 beforeEach(() => {
   resetRuntimeHost()
@@ -37,8 +37,8 @@ describe('框架元数据', () => {
 
   it('静态常量与 Framework 侧同源,仓库/文档/许可齐全', () => {
     expect(XIHAN_UI_METADATA.name).toBe('XiHan.UI')
-    expect(XIHAN_UI_METADATA.displayName).toBe('曦寒视图')
-    expect(XIHAN_UI_METADATA.author).toBe('XiHanFun')
+    expect(XIHAN_UI_METADATA.displayName).toBe('曦寒视图组件')
+    expect(XIHAN_UI_METADATA.author).toBe('XiHanFun and contributors')
     expect(XIHAN_UI_METADATA.organizationUrl).toBe('https://github.com/XiHanFun')
     expect(XIHAN_UI_METADATA.repositoryUrl).toBe('https://github.com/XiHanFun/XiHan.UI')
     expect(XIHAN_UI_METADATA.documentationUrl).toBe('https://ui.docs.xihanfun.com')
@@ -66,12 +66,12 @@ describe('框架元数据', () => {
     expect(getRuntimeHost()).toEqual({ name: 'vue', version: XIHAN_UI_METADATA.version })
 
     const summary = getMetadataSummary()
-    expect(summary).toContain(`XiHan.UI 曦寒视图 v${XIHAN_UI_METADATA.version}`)
+    expect(summary).toContain(`XiHan.UI 曦寒视图组件 v${XIHAN_UI_METADATA.version}`)
     expect(summary).toContain('宿主:vue')
     expect(summary).toContain('锁步一致')
 
     const details = getMetadataDetails()
-    expect(details).toContain('作者: XiHanFun')
+    expect(details).toContain('作者: XiHanFun and contributors')
     expect(details).toContain('仓库: https://github.com/XiHanFun/XiHan.UI')
     expect(details).toContain('环境: development')
   })
