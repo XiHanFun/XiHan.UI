@@ -1,6 +1,6 @@
 // 角色节点契约校验：作者写的 Light DOM 与组件解剖对不上时投递诊断。
 import type { ComponentMeta } from '@xihan-ui/headless'
-import { DIAGNOSTIC_CODES, getDiagnostics, reportDiagnostic } from '@xihan-ui/kernel'
+import { DIAGNOSTIC_CODES, findDeprecatedPart, getDiagnostics, reportDiagnostic } from '@xihan-ui/kernel'
 
 /** 只取校验用得上的两项，避免把 `Anatomy<具体 part 联合>` 收窄成 `Anatomy<string>` 时不可赋值。 */
 export interface PartContract {
@@ -59,6 +59,25 @@ export function validatePartContract(
   for (const part of parts.keys()) {
     if (known.has(part))
       continue
+    // 解剖外的 part 名里可能混着已废弃的旧名：废弃提示（warn）与「不会被接线」（warn）两条都报，
+    // 前者给迁移方向，后者陈述事实；各自经通道去重，同一条只出现一次
+    const deprecated = findDeprecatedPart(part)
+    if (deprecated) {
+      reportDiagnostic({
+        code: DIAGNOSTIC_CODES.deprecatedPart,
+        level: 'warn',
+        message: `角色节点 data-xh-part="${part}" 已废弃：${deprecated.message}${deprecated.replaceWith ? `，改用 data-xh-part="${deprecated.replaceWith}"` : ''}`,
+        scope,
+        instanceId,
+        part,
+        node: parts.get(part)?.[0] ?? host,
+        detail: {
+          tag: host.tagName.toLowerCase(),
+          replaceWith: deprecated.replaceWith ?? null,
+          until: deprecated.until ?? null,
+        },
+      })
+    }
     reportDiagnostic({
       code: DIAGNOSTIC_CODES.wcUnknownPart,
       level: 'warn',
