@@ -1,10 +1,13 @@
 import type { TooltipOpenChangeDetails, TooltipSchema } from '@xihan-ui/headless'
 import type { Placement, PositionEnginePort, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
+import type { OverlayExit } from '../overlay-exit'
 import { connectTooltip, tooltipAnatomy, tooltipMachine, tooltipMeta } from '@xihan-ui/headless'
+import { createRuntimeConfig } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 
 // 字符串属性统一走这个转换器：属性缺席即 undefined，缺省值的唯一事实源留在机器。
@@ -44,6 +47,9 @@ const NUMBER_CONVERTER = {
  */
 export class XhTooltipElement extends XhElement {
   static override partContract = { anatomy: tooltipAnatomy, meta: tooltipMeta }
+
+  /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
+  private exit: OverlayExit | null = null
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
@@ -140,8 +146,27 @@ export class XhTooltipElement extends XhElement {
     // 作者层只要给 content 来一句 display（Tailwind 的 flex/block 也算），
     // 就会盖过 UA 的 [hidden]{display:none}，收起态的提示框会永久悬在页面上。
     // 与 dialog/collapsible/popover 一致，用内联样式兜底。
+    // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
+    // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画。
+    // 本元素不挂消解层、没有别处要用的 config，这里就地建一份最小的（只用到 reducedMotion）
     const content = this.getPart('content')
+    this.exit ??= createOverlayExit({
+      config: createRuntimeConfig(),
+      open: api.open,
+      onExitComplete: () => this.requestUpdate(),
+    })
+    this.exit.track(content)
+    this.exit.update(api.open)
     if (content)
-      this.setPartHidden(content, !api.open)
+      this.setPartHidden(content, !this.exit.visible)
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback()
+    // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
+    this.exit?.dispose()
+    this.exit = null
+    if (this.ctrl.service.state.get() !== 'open')
+      this.setPartHidden(this.getPart('content'), true)
   }
 }

@@ -190,3 +190,32 @@ describe('wc popover 退场', () => {
     expect(getComputedStyle(content).animationName).toBe('xh-pop-in')
   })
 })
+
+const TOOLTIP = `
+  <xh-tooltip open>
+    <button data-xh-part="trigger">锚</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">提示</div>
+    </div>
+  </xh-tooltip>
+`
+
+describe('wc tooltip 退场', () => {
+  it('收起时在播退场，播完才真收', async () => {
+    const el = mount(TOOLTIP)
+    await settle()
+
+    const content = part('tooltip', 'content')!
+    expect(content.style.display).not.toBe('none')
+
+    el.setAttribute('open', 'false')
+    await settle()
+
+    expect(content.style.display, '退场动画播完之前不能写 display:none').not.toBe('none')
+    expect(getComputedStyle(content).animationName).toBe('xh-pop-out')
+
+    expect(await animationEnd(content), '退场动画应当真的结束一次').toBe(true)
+    await settle()
+    expect(content.style.display, '动画结束后应当收起').toBe('none')
+  })
+})

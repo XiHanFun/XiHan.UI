@@ -2,11 +2,12 @@ import type { TooltipApi, TooltipSchema } from '@xihan-ui/headless'
 import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef, Ref } from 'vue'
 import { connectTooltip, tooltipMachine } from '@xihan-ui/headless'
-import { createScope } from '@xihan-ui/kernel'
+import { createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
+import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface TooltipContext {
@@ -16,6 +17,10 @@ export interface TooltipContext {
   triggerRef: Ref<HTMLElement | null>
   /** 被定位的浮层。 */
   positionerRef: Ref<HTMLElement | null>
+  /** 浮层本体，退场动画从它身上探测。 */
+  contentRef: Ref<HTMLElement | null>
+  /** 此刻该不该可见：退场动画播完之前仍为真。 */
+  visible: Ref<boolean>
 }
 
 export function useTooltip(
@@ -24,6 +29,7 @@ export function useTooltip(
 ): TooltipContext {
   const triggerRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
+  const contentRef = ref<HTMLElement | null>(null)
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
@@ -37,5 +43,14 @@ export function useTooltip(
   service.refs.set('getFloatingEl', () => positionerRef.value)
 
   const api = computed(() => connectTooltip(service, vueNormalize))
-  return { service, api, triggerRef, positionerRef }
+
+  // 退场闸门：收起从跟着 open 走，改成跟着 presence 走。
+  // 本组件不挂消解层、没有别处要用的 config，这里就地建一份最小的（只用到 reducedMotion）
+  const visible = useOverlayExit({
+    config: typeof document === 'undefined' ? null : createRuntimeConfig(),
+    isOpen: () => api.value.open,
+    contentRef,
+  })
+
+  return { service, api, triggerRef, positionerRef, contentRef, visible }
 }

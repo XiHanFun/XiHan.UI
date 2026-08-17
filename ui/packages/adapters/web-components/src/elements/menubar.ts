@@ -1,12 +1,14 @@
 import type { MenubarItemProps, MenubarNode, MenubarSchema, MenubarSelectDetails, MenubarValueChangeDetails } from '@xihan-ui/headless'
 import type { Cleanup, Direction, IdGenerator, Layer, Orientation, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
+import type { OverlayExit } from '../overlay-exit'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { connectMenubar, menubarAnatomy, menubarMachine, menubarMeta } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -60,6 +62,11 @@ function authorDisabled(el: HTMLElement): boolean {
  * @csspart group-label - 分组标题，靠 id 被同组 group 的 aria-labelledby 指着
  */
 export class XhMenubarElement extends XhElement {
+  /** 逐个 content 一份退场闸门：一个菜单一份，它们各开各的。 */
+  private readonly exits = new Map<HTMLElement, OverlayExit>()
+  /** 闸门只用到 reducedMotion，本元素别处不需要 config，建一份共用即可。 */
+  private exitConfig: ReturnType<typeof createRuntimeConfig> | null = null
+
   static override partContract = { anatomy: menubarAnatomy, meta: menubarMeta }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
@@ -229,7 +236,21 @@ export class XhMenubarElement extends XhElement {
     for (const el of this.getParts('content')) {
       const props = api.getContentProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>
       this.spreader.spread(el, props)
-      this.setPartHidden(el, props.hidden === true)
+      // 退场动画播完之前先别收。一个菜单一份闸门：它们各开各的、动画各跑各的，
+      // 一份闸门管不过来。必须排在 spread 之后——data-state 得先落进 DOM，探测器才读得到
+      const open = props.hidden !== true
+      let gate = this.exits.get(el)
+      if (!gate) {
+        gate = createOverlayExit({
+          config: this.exitConfig ??= createRuntimeConfig(),
+          open,
+          onExitComplete: () => this.requestUpdate(),
+        })
+        this.exits.set(el, gate)
+      }
+      gate.track(el)
+      gate.update(open)
+      this.setPartHidden(el, !gate.visible)
     }
 
     for (const el of this.getParts('group')) {
@@ -259,6 +280,12 @@ export class XhMenubarElement extends XhElement {
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
+    // 退场没播完就离场：立刻结清并收起
+    for (const [el, gate] of this.exits) {
+      gate.dispose()
+      this.setPartHidden(el, true)
+    }
+    this.exits.clear()
     // 层随机器停机一并撤掉，此处不再管
     this.config = null // 重连时 ensureConfig 重建
   }

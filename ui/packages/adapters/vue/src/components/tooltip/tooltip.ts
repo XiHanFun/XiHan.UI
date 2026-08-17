@@ -69,7 +69,13 @@ export const XhTooltipContent = defineComponent({
   name: 'XhTooltipContent',
   setup(_, { slots }) {
     const ctx = useTooltipContext()
-    return () => h('div', ctx.api.value.getContentProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', {
+      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      // 收起跟着退场闸门走：皮肤给 content 声明了 display 来盖掉 UA 的 [hidden]{display:none}
+      // （盒子得先在，退场才播得出来），所以真正的收起落成内联 display
+      style: ctx.visible.value ? undefined : { display: 'none' },
+      ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
+    }, slots.default?.())
   },
 })
 
