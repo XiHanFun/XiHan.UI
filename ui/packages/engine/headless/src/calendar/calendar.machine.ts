@@ -5,7 +5,13 @@ import { getLocalTimeZone, startOfMonth, today } from '@internationalized/date'
 import { focusItem, itemValue, queryItems } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
 import { calendarCellTriggerQuery } from './calendar.anatomy'
-import { calendarPageMonths, calendarPeriodStart, parseCalendarDate, visibleCountOf } from './calendar.grid'
+import {
+  calendarPageMonths,
+  calendarPeriodOf,
+  calendarPeriodStart,
+  parseCalendarDate,
+  visibleCountOf,
+} from './calendar.grid'
 
 const { createMachine } = setup<CalendarSchema>()
 
@@ -26,14 +32,14 @@ function initialVisibleStart(prop: (key: 'focusedValue' | 'defaultFocusedValue' 
  */
 function alignVisibleStart(
   context: { get: (key: 'visibleStart') => string | null, set: (key: 'visibleStart', value: string) => void },
-  prop: ((key: 'visibleCount') => number | undefined) & ((key: 'view') => CalendarView | undefined),
+  prop: (key: 'visibleCount') => number | undefined,
+  view: CalendarView,
   value: string,
 ): void {
   const target = parseCalendarDate(value)
   const start = parseCalendarDate(context.get('visibleStart'))
   if (!target || !start)
     return
-  const view = prop('view') ?? 'day'
   // 一页跨多少个月由视图定；按月算会把落在窗内的格子判成走出去，于是每点一下就整窗翻一页
   const page = calendarPageMonths(view)
   const align = (d: CalendarDate): CalendarDate => (view === 'day' ? startOfMonth(d) : calendarPeriodStart(d, view))
@@ -94,6 +100,12 @@ export const calendarMachine = createMachine({
           prop('onFocusedValueChange')?.({ focusedValue })
       },
     })),
+    // 人钻到了哪一层。缺省即作者要挑的那一档——没人点标题时两者一直相等
+    activeView: cell<CalendarView>(() => ({
+      value: prop('activeView'),
+      defaultValue: prop('defaultActiveView') ?? prop('view') ?? 'day',
+      onChange: activeView => prop('onActiveViewChange')?.({ activeView }),
+    })),
     // 视窗起点不受控、不对外通知：它是纯粹的浏览位置。
     // 建机器时就钉住——内嵌进 date-picker 时日历的 focusedValue 是受控的，
     // 点格子那一下宿主会先把它改成刚点的那天，懒到那时再钉就钉错了月份
@@ -110,6 +122,10 @@ export const calendarMachine = createMachine({
   }),
   initialState: () => 'idle',
   effects: ['trackLiveness'],
+  // 作者换了要挑的粒度（日历从按天挑改成按月挑），人钻到哪一层就得跟着回到那一档
+  watch: ({ track, prop, action }) => {
+    track([() => prop('view')], () => action(['syncActiveView']))
+  },
   states: {
     idle: {
       // 省略 target：只跑 actions，不换状态
@@ -117,6 +133,8 @@ export const calendarMachine = createMachine({
         'VALUE.SET': { actions: ['setValue'] },
         'CELL.SELECT': { actions: ['selectCell'] },
         'FOCUS.SET': { actions: ['setFocusedValue', 'pageVisibleStart', 'focusVisibleCell'] },
+        // 钻层要顺带把视窗对到新那一档的跨度上：一页的长度变了，旧起点会与格子错开
+        'VIEW.SET': { actions: ['setActiveView', 'focusVisibleCell'] },
         'HOVER.SET': { actions: ['setHoveredValue'] },
         'HOVER.CLEAR': { actions: ['clearHoveredValue'] },
       },
@@ -178,7 +196,24 @@ export const calendarMachine = createMachine({
           return
         // 新落点走出视窗才把视窗挪过去；落在窗内一动不动——
         // 多面板下点第二个面板里的日子正是这一路
-        alignVisibleStart(context, prop, e.value)
+        alignVisibleStart(context, prop, context.get('activeView'), e.value)
+      },
+
+      /**
+       * 钻到另一层。视窗跟着对到新那一档的跨度上——
+       * 一页从「一个月」变成「一个十年」，旧起点与新格子对不齐，标题就会与格子各说各话。
+       */
+      setActiveView: ({ context, prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'VIEW.SET')
+          return
+        context.set('activeView', e.activeView)
+        // 受控时宿主可能不写回，那一刻视窗也不该动
+        if (context.get('activeView') !== e.activeView)
+          return
+        const focused = context.get('focusedValue')
+        if (focused != null)
+          alignVisibleStart(context, prop, e.activeView, focused)
       },
 
       /**
@@ -205,6 +240,11 @@ export const calendarMachine = createMachine({
         context.set('visibleStart', startOfMonth(start).add({ months: e.months }).toString())
       },
 
+      /** 作者换了 view：钻到哪一层的记录随之作废，回到新的那一档。 */
+      syncActiveView: ({ context, prop }) => {
+        context.set('activeView', prop('view') ?? 'day')
+      },
+
       setHoveredValue: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'HOVER.SET')
@@ -219,15 +259,17 @@ export const calendarMachine = createMachine({
        */
       focusVisibleCell: ({ refs, context, event, flush }) => {
         const e = event.current()
-        if (e.type !== 'FOCUS.SET' || !e.restoreFocus)
+        if ((e.type !== 'FOCUS.SET' && e.type !== 'VIEW.SET') || !e.restoreFocus)
           return
         flush(() => {
           if (!refs.get('alive'))
             return
-          const next = context.get('focusedValue')
+          const focused = context.get('focusedValue')
           const container = refs.get('getGridEl')()
-          if (next == null || !container)
+          if (focused == null || !container)
             return
+          // 粗粒度视图里格子的值是「那段时间的第一天」，拿聚焦日直接比一格都对不上
+          const next = calendarPeriodOf(focused, context.get('activeView'))
           // 现查节点：缓存下来的数组会是上一个月的
           const cell = queryItems(container, calendarCellTriggerQuery).find(el => itemValue(el) === next)
           focusItem(cell ?? null)

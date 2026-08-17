@@ -6,18 +6,26 @@ export {
   buildWeekDays,
   CALENDAR_FIXED_WEEKS,
   CALENDAR_LOCALE,
+  CALENDAR_PERIOD_COLUMNS,
   CALENDAR_WEEK_LENGTH,
   CALENDAR_YEARS_PER_PAGE,
+  calendarDrillAnchor,
+  calendarHeadingPieces,
   calendarNavFromKey,
   calendarNavTarget,
   calendarPageMonths,
+  calendarPeriodIndex,
+  calendarPeriodMonths,
+  calendarPeriodOf,
   calendarPeriodStart,
   calendarWeekRange,
+  calendarZoomIn,
   isoWeekNumber,
   parseCalendarDate,
 } from './calendar.grid'
 export type {
   CalendarDay,
+  CalendarHeadingPieces,
   CalendarMonthGrid,
   CalendarMonthGridOptions,
   CalendarNavIntent,
@@ -32,4 +40,4 @@ export type {
 export { calendarKeyboard } from './calendar.keyboard'
 export { calendarMachine } from './calendar.machine'
 export { calendarMeta } from './calendar.meta'
-export type { CalendarApi, CalendarCellProps, CalendarFocusChangeDetails, CalendarFocusModel, CalendarPanel, CalendarPanelProps, CalendarRefs, CalendarSchema, CalendarSelectionMode, CalendarTranslations, CalendarValueChangeDetails, CalendarWeekdayFormat, CalendarWeekDayProps } from './calendar.types'
+export type { CalendarApi, CalendarCellProps, CalendarFocusChangeDetails, CalendarFocusModel, CalendarPanel, CalendarPanelProps, CalendarRefs, CalendarSchema, CalendarSelectionMode, CalendarTranslations, CalendarValueChangeDetails, CalendarViewChangeDetails, CalendarWeekdayFormat, CalendarWeekDayProps, CalendarWeekNumberProps } from './calendar.types'

@@ -7,6 +7,7 @@ import type {
   DatePickerApi,
   DatePickerFieldApi,
   DatePickerSchema,
+  DateSegmentSet,
 } from '@xihan-ui/headless'
 import type { ControlVariant, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
@@ -77,8 +78,12 @@ export const XhDatePickerRoot = defineComponent({
     locale: { type: String, default: undefined },
     timeZone: { type: String, default: undefined },
     selectionMode: { type: String as PropType<CalendarSelectionMode>, default: undefined },
-    /** 面板粒度：天（默认）/ 月 / 季度 / 年。 */
+    /** 挑的粒度：天（默认）/ 月 / 季度 / 年。输入行铺哪几段也跟着它走。 */
     view: { type: String as PropType<CalendarView>, default: undefined },
+    /** 面板此刻钻到了哪一层；给定即受控，缺省跟着 view。 */
+    activeView: { type: String as PropType<CalendarView>, default: undefined },
+    /** 输入行铺哪几段；不给就按 view 推。 */
+    segments: { type: Array as PropType<DateSegmentSet>, default: undefined },
     /** 周选：点任意一天选中它所在的整周。只在 view=day 且区间模式下生效。 */
     weekSelection: { type: Boolean, default: undefined },
     /** 并排展示几页；缺省单选 1、区间 2。 */
@@ -107,8 +112,10 @@ export const XhDatePickerRoot = defineComponent({
     'value-change': (_details: PayloadOf<DatePickerProps, 'onValueChange'>) => true,
     'open-change': (_details: PayloadOf<DatePickerProps, 'onOpenChange'>) => true,
     'focused-value-change': (_details: PayloadOf<DatePickerProps, 'onFocusedValueChange'>) => true,
+    'active-view-change': (_details: PayloadOf<DatePickerProps, 'onActiveViewChange'>) => true,
     'update:value': (_value: PayloadOf<DatePickerProps, 'onValueChange'>['value']) => true,
     'update:open': (_open: PayloadOf<DatePickerProps, 'onOpenChange'>['open']) => true,
+    'update:activeView': (_view: PayloadOf<DatePickerProps, 'onActiveViewChange'>['activeView']) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: DatePickerRootSlotProps) => VNode[]
@@ -124,10 +131,15 @@ export const XhDatePickerRoot = defineComponent({
     }
     // 聚焦日只对外播报，不提供 v-model
     const notifyFocus: DatePickerProps['onFocusedValueChange'] = details => emit('focused-value-change', details)
+    const notifyActiveView: DatePickerProps['onActiveViewChange'] = (details) => {
+      emit('active-view-change', details)
+      emit('update:activeView', details.activeView)
+    }
     const ctx = useDatePicker(withXhConfig('date-picker', props) as DatePickerProps, {
       onValueChange: notifyValue,
       onOpenChange: notifyOpen,
       onFocusedValueChange: notifyFocus,
+      onActiveViewChange: notifyActiveView,
     })
     provideDatePicker(ctx)
     // 网格与段位由作者照插槽里的 weeks / segments 自行渲染
@@ -354,6 +366,39 @@ export const XhDatePickerHeading = defineComponent({
       'div',
       ctx.api.value.calendar.getHeadingProps({ index: props.index }) as Record<string, unknown>,
       slots.default?.() ?? (ctx.api.value.calendar.panels[props.index]?.headingLabel ?? ctx.api.value.calendar.headingLabel),
+    )
+  },
+})
+
+export const XhDatePickerHeadingYearTrigger = defineComponent({
+  name: 'XhDatePickerHeadingYearTrigger',
+  props: {
+    /** 属于第几个面板，默认 0。单面板时不用写。 */
+    index: { type: Number, default: 0 },
+  },
+  setup(props, { slots }) {
+    const ctx = useDatePickerContext()
+    // 有插槽用插槽，否则渲染标题里年那一截；年视图下它是整个十年跨度
+    return () => h(
+      'button',
+      ctx.api.value.calendar.getHeadingYearTriggerProps({ index: props.index }) as Record<string, unknown>,
+      slots.default?.() ?? ctx.api.value.calendar.panels[props.index]?.headingYear,
+    )
+  },
+})
+
+export const XhDatePickerHeadingMonthTrigger = defineComponent({
+  name: 'XhDatePickerHeadingMonthTrigger',
+  props: {
+    /** 属于第几个面板，默认 0。单面板时不用写。 */
+    index: { type: Number, default: 0 },
+  },
+  setup(props, { slots }) {
+    const ctx = useDatePickerContext()
+    return () => h(
+      'button',
+      ctx.api.value.calendar.getHeadingMonthTriggerProps({ index: props.index }) as Record<string, unknown>,
+      slots.default?.() ?? ctx.api.value.calendar.panels[props.index]?.headingMonth,
     )
   },
 })

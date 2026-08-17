@@ -37,6 +37,46 @@
     user-select: none;
   }
 
+  /* 标题里的年与月：点它们逐级钻上去（年 → 十年格、月 → 月格）。
+     长得像标题而不像按钮——它本来就是标题，只是可点 */
+  [data-scope='calendar'][data-part='heading-year-trigger']:not([hidden]),
+  [data-scope='calendar'][data-part='heading-month-trigger']:not([hidden]) {
+    display: inline-flex;
+    align-items: center;
+    padding-inline: var(--xh-calendar-heading-trigger-px, var(--xh-space-1));
+    border: var(--xh-stroke-thin) solid transparent;
+    border-radius: var(--xh-calendar-heading-trigger-radius, var(--xh-shape-control));
+    background: transparent;
+    color: var(--xh-calendar-heading-fg, var(--xh-fg-default));
+    font-size: var(--xh-calendar-heading-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-calendar-heading-font-weight, var(--xh-font-weight-semibold));
+    line-height: var(--xh-leading-none);
+    cursor: pointer;
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='calendar'][data-part='heading-year-trigger'][hidden],
+  [data-scope='calendar'][data-part='heading-month-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='calendar'][data-part='heading-year-trigger']:hover:not(:disabled),
+  [data-scope='calendar'][data-part='heading-month-trigger']:hover:not(:disabled) {
+    color: var(--xh-calendar-heading-trigger-fg-hover, var(--xh-fg-brand));
+  }
+
+  /* 到顶那一层（年视图的年那一截）只作标题显示：不再是可点的东西，光标也别装成能点 */
+  [data-scope='calendar'][data-part='heading-year-trigger']:disabled,
+  [data-scope='calendar'][data-part='heading-month-trigger']:disabled {
+    cursor: default;
+  }
+
+  [data-scope='calendar'][data-part='heading-year-trigger']:focus-visible,
+  [data-scope='calendar'][data-part='heading-month-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
   [data-scope='calendar'][data-part='prev-year-trigger'],
   [data-scope='calendar'][data-part='prev-trigger'],
   [data-scope='calendar'][data-part='next-year-trigger'],

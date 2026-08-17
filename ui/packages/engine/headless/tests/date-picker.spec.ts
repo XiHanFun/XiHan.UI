@@ -14,6 +14,7 @@ import {
   datePickerFieldEndProps,
   datePickerFieldProps,
   datePickerMachine,
+  datePickerSegmentSet,
   findDatePickerCellEl,
 } from '../src/date-picker'
 
@@ -941,5 +942,107 @@ describe('findDatePickerCellEl', () => {
     expect(findDatePickerCellEl(h.content, '1999-01-01')).toBeNull()
     expect(findDatePickerCellEl(h.content, null)).toBeNull()
     expect(findDatePickerCellEl(null, '2026-07-28')).toBeNull()
+  })
+})
+
+describe('view 与输入行段集联动', () => {
+  it('挑的粒度决定输入行铺哪几块', () => {
+    expect(datePickerSegmentSet('month')).toEqual(['year', 'month'])
+    expect(datePickerSegmentSet('quarter')).toEqual(['year', 'quarter'])
+    expect(datePickerSegmentSet('year')).toEqual(['year'])
+    // 按天挑不给段集：留空才走 granularity 那条路，年月日按 locale 排
+    expect(datePickerSegmentSet('day')).toBeUndefined()
+    expect(datePickerSegmentSet(undefined)).toBeUndefined()
+    // 周选挑的是整周，日号在输入行里没有意义
+    expect(datePickerSegmentSet('day', true)).toEqual(['year', 'week'])
+  })
+
+  it('按月挑：输入行出「2026-05」，段位只剩两块', () => {
+    const h = mount({ view: 'month', defaultValue: '2026-05-01' })
+    const segments = h.api().field.segments
+    expect(segments.map(s => s.type)).toEqual(['year', 'month'])
+    expect(segments.map(s => s.text)).toEqual(['2026', '05'])
+  })
+
+  it('按季度挑：输入行出「2026-Q2」', () => {
+    const h = mount({ view: 'quarter', defaultValue: '2026-04-01' })
+    expect(h.api().field.segments.map(s => s.text)).toEqual(['2026', 'Q2'])
+  })
+
+  it('按年挑：输入行只剩年那一块', () => {
+    const h = mount({ view: 'year', defaultValue: '2026-01-01' })
+    expect(h.api().field.segments.map(s => s.text)).toEqual(['2026'])
+  })
+
+  it('按天挑照旧走 locale 那条路，段序不变', () => {
+    expect(mount({ view: 'day', defaultValue: '2026-08-17' }).api().field.segments.map(s => s.type))
+      .toEqual(['year', 'month', 'day'])
+    expect(mount({ locale: 'en-US', defaultValue: '2026-08-17' }).api().field.segments.map(s => s.type))
+      .toEqual(['month', 'day', 'year'])
+  })
+
+  it('作者显式给 segments 时压过按 view 推出来的那一份', () => {
+    const h = mount({ view: 'month', segments: ['year'], defaultValue: '2026-05-01' })
+    expect(h.api().field.segments.map(s => s.type)).toEqual(['year'])
+  })
+
+  it('段位里改季度，值落到那一季的头一天', () => {
+    const h = mount({ view: 'quarter', defaultValue: '2026-04-01' })
+    // 段位第 1 格是季度
+    h.segments()[1]!.focus()
+    press(h.segments()[1]!, '4')
+    expect(h.value()).toEqual(['2026-10-01'])
+  })
+
+  it('周选：两端各出周序号，改终点那一格落的是那一周的周末日', () => {
+    const h = mount({
+      selectionMode: 'range',
+      weekSelection: true,
+      defaultValue: ['2026-08-10', '2026-09-13'],
+    })
+    // 起点是第 33 周，终点是第 37 周（2026-09-13 是周日，第 37 周的末日）
+    expect(h.api().field.segments.map(s => s.text)).toEqual(['2026', '33'])
+    expect(h.api().fieldEnd!.segments.map(s => s.text)).toEqual(['2026', '37'])
+    // 把终点改成第 40 周：落的是那一周的周末日，不是周首日
+    h.segmentsEnd()[1]!.focus()
+    press(h.segmentsEnd()[1]!, '4')
+    press(h.segmentsEnd()[1]!, '0')
+    expect(h.value()).toEqual(['2026-08-10', '2026-10-04'])
+  })
+})
+
+describe('浮层里的标题钻取', () => {
+  it('日历的钻取经编排机收口，两边看到的是同一层', async () => {
+    const h = await open({ defaultValue: '2026-02-18' })
+    expect(h.api().activeView).toBe('day')
+    h.api().setActiveView('year')
+    expect(h.api().activeView).toBe('year')
+    expect(h.api().calendar.activeView).toBe('year')
+    expect(h.api().calendar.panels[0]!.headingLabel).toBe('2020年-2029年')
+  })
+
+  it('收起再展开回到作者要的那一档，不停在钻上去的那一层', async () => {
+    const h = await open({ defaultValue: '2026-02-18' })
+    h.api().setActiveView('year')
+    expect(h.api().activeView).toBe('year')
+    h.api().setOpen(false)
+    await tick()
+    h.api().setOpen(true)
+    await tick()
+    expect(h.api().activeView).toBe('day')
+  })
+
+  it('按月挑时展开就在月那一档', async () => {
+    const h = await open({ view: 'month', defaultValue: '2026-05-01' })
+    expect(h.api().activeView).toBe('month')
+    expect(h.api().calendar.canZoomOutMonth).toBe(false)
+    expect(h.api().calendar.canZoomOutYear).toBe(true)
+  })
+
+  it('钻到的层对外播报，宿主接得到', async () => {
+    const onActiveViewChange = vi.fn()
+    const h = await open({ defaultValue: '2026-02-18', onActiveViewChange })
+    h.api().setActiveView('month')
+    expect(onActiveViewChange).toHaveBeenLastCalledWith({ activeView: 'month' })
   })
 })

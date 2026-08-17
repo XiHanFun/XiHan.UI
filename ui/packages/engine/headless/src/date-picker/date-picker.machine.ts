@@ -1,12 +1,12 @@
 import type { Placement, PositionResult } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
-import type { CalendarSchema, CalendarSelectionMode } from '../calendar'
-import type { DateFieldSchema, DateGranularity } from '../date-field'
+import type { CalendarSchema, CalendarSelectionMode, CalendarView } from '../calendar'
+import type { DateFieldSchema, DateGranularity, DateSegmentSet } from '../date-field'
 import type { DatePickerSchema, DatePickerValueSource } from './date-picker.types'
 import { getLocalTimeZone, today } from '@internationalized/date'
 import { createDismissLayer, createFocusScope, itemValue } from '@xihan-ui/behavior'
 import { resetDeclaredValue, setup } from '@xihan-ui/machine'
-import { calendarAnatomy } from '../calendar'
+import { calendarAnatomy, calendarWeekRange } from '../calendar'
 import { datePickerDatePart, datePickerJoinDateTime, datePickerTimePart } from './date-picker.time'
 
 const { createMachine, guards } = setup<DatePickerSchema>()
@@ -15,8 +15,27 @@ const { and } = guards
 /** 未指定 placement 时的默认落位，定位引擎与 connect 共用。 */
 export const DATE_PICKER_DEFAULT_PLACEMENT: Placement = 'bottom-start'
 
-/** 内嵌分段输入的精度：天，值格式 YYYY-MM-DD。 */
+/** 内嵌分段输入的精度：天，值格式 YYYY-MM-DD。按天挑时走它，其余粒度改走段集。 */
 export const DATE_PICKER_GRANULARITY: DateGranularity = 'day'
+
+/**
+ * 挑的粒度 → 输入行默认铺哪几块。
+ *
+ * 按天挑时不给段集：留空才走 granularity 那条路，年月日按 locale 排（en-US 是月日年）。
+ * 周选出「年 + 周」——它挑的是整周，日号在输入行里没有意义。
+ */
+export function datePickerSegmentSet(
+  view: CalendarView | undefined,
+  weekSelection?: boolean,
+): DateSegmentSet | undefined {
+  if (view === 'month')
+    return ['year', 'month']
+  if (view === 'quarter')
+    return ['year', 'quarter']
+  if (view === 'year')
+    return ['year']
+  return weekSelection ? ['year', 'week'] : undefined
+}
 
 /** 日期格子的 CSS 选择器，取自日历解剖。 */
 const CELL_TRIGGER_SELECTOR = calendarAnatomy.build()['cell-trigger'].selector
@@ -124,6 +143,9 @@ export function datePickerCalendarProps(service: Service<DatePickerSchema>): Cal
     focusedValue: datePickerFocusedValue(service),
     selectionMode: prop('selectionMode'),
     view: prop('view'),
+    // 钻到哪一层由编排机持有：日历是内嵌的，收起再展开要回到作者要的那一档
+    activeView: context.get('activeView'),
+    onActiveViewChange: ({ activeView }) => send({ type: 'VIEW.SET', activeView }),
     weekSelection: prop('weekSelection'),
     // 区间默认两个面板：起止常跨月，一个面板要来回翻页
     visibleCount: prop('visibleCount') ?? (prop('selectionMode') === 'range' ? 2 : 1),
@@ -167,10 +189,22 @@ function datePickerFieldPropsAt(
   const spare = index === 1 && !range
   const withTime = datePickerShowTime(service)
   const rawValue = spare ? null : valueAt(context.get('value'), index)
+  const weekSelection = !!prop('weekSelection') && (prop('view') ?? 'day') === 'day' && range
+  /**
+   * 周选时段位两端一律说「那一周的周首日」，编排机这边才存真正的两端（终点是周末日）。
+   *
+   * 不归一的话终点那一组每敲一位都会退回去：段位是受控的，它拿自己算出来的串与宿主写回的
+   * 那一份对账，对不上就判成「这次改动没被接受」而整份回滚——于是第二位数字永远接不上。
+   */
+  const weekStart = (iso: string): string => calendarWeekRange(iso, prop('locale'))[0]
   return {
     // showTime 下值带时间段，段位只认日期段
-    value: rawValue != null && withTime ? datePickerDatePart(rawValue) : rawValue,
+    value: rawValue == null
+      ? rawValue
+      : weekSelection ? weekStart(rawValue) : (withTime ? datePickerDatePart(rawValue) : rawValue),
     granularity: DATE_PICKER_GRANULARITY,
+    // 段集在场时 granularity 让路；不给就走老路，年月日按 locale 排
+    segments: prop('segments') ?? datePickerSegmentSet(prop('view'), prop('weekSelection')),
     min: prop('min'),
     max: prop('max'),
     locale: prop('locale'),
@@ -184,14 +218,19 @@ function datePickerFieldPropsAt(
       // 非区间模式下终点那台不参与写值
       if (spare)
         return
+      // 周选：段位交出来的是那一周的周首日，终点这一端要摊到周末日上——
+      // 不摊，选出来的就不是「第 33 周到第 37 周」而是「某天到某天」
+      const byWeek = value != null && weekSelection
+        ? calendarWeekRange(value, prop('locale'))[index]
+        : value
       // 改日保时：段位敲的是日期段，原来的时间段接回去
-      const merged = value != null && withTime
+      const merged = byWeek != null && withTime
         ? datePickerJoinDateTime(
-            value,
+            byWeek,
             datePickerTimePart(firstValue(context.get('value')) ?? ''),
             datePickerTimeGranularity(service),
           )
-        : value
+        : byWeek
       const current = context.get('value')
       const next = range
         ? writeRangeAt(current, index, merged)
@@ -244,6 +283,12 @@ export const datePickerMachine = createMachine({
           prop('onFocusedValueChange')?.({ focusedValue })
       },
     })),
+    // 人钻到了哪一层。缺省即作者要挑的那一档，每次展开都拨回去
+    activeView: cell<CalendarView>(() => ({
+      value: prop('activeView'),
+      defaultValue: prop('view') ?? 'day',
+      onChange: activeView => prop('onActiveViewChange')?.({ activeView }),
+    })),
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
     // 缺省搬：触发钮、键盘与命令式入口都要把焦点送进浮层
     moveFocusIn: cell<boolean>(() => ({ defaultValue: true })),
@@ -268,6 +313,7 @@ export const datePickerMachine = createMachine({
     'VALUE.SET': { actions: ['setValue', 'syncFocusedValue'] },
     'VALUE.CLEAR': { actions: ['clearValue'] },
     'FOCUSED.SET': { actions: ['setFocusedValue'] },
+    'VIEW.SET': { actions: ['setActiveView'] },
   },
   states: {
     closed: {
@@ -285,8 +331,8 @@ export const datePickerMachine = createMachine({
       },
     },
     open: {
-      // 焦点域靠这个值去活 DOM 里找落点格子
-      entry: ['focusSelectedDay'],
+      // 焦点域靠这个值去活 DOM 里找落点格子；钻到哪一层也一并拨回作者要的那一档
+      entry: ['focusSelectedDay', 'resetActiveView'],
       // 进入顺序：定位 → 消解 + 焦点；退出时逆序拆，焦点归还发生在消解层撤销之后
       effects: ['trackPosition', 'trackLayer'],
       on: {
@@ -402,6 +448,17 @@ export const datePickerMachine = createMachine({
         const next = e.src === 'field-end' ? valueAt(values, 1) : firstValue(values)
         if (next != null)
           context.set('focusedValue', next)
+      },
+
+      setActiveView: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'VIEW.SET')
+          context.set('activeView', e.activeView)
+      },
+
+      /** 展开那一刻回到作者要的那一档：上次钻上去看年份，这次展开不该还停在十年格上。 */
+      resetActiveView: ({ context, prop }) => {
+        context.set('activeView', prop('view') ?? 'day')
       },
 
       /** 展开那一刻把聚焦日拉回当前选中值；没有选中就落到今天。 */

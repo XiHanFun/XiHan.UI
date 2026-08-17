@@ -9,6 +9,7 @@ export {
   datePickerFieldProps,
   datePickerFocusedValue,
   datePickerMachine,
+  datePickerSegmentSet,
   datePickerShowTime,
   datePickerTimeGranularity,
   findDatePickerCellEl,

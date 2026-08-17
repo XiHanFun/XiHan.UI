@@ -19,6 +19,41 @@ const WEEK_DAYS = buildWeekDays({ reference: GRID.monthStart, locale: LOCALE, ti
 /** 网格里全部日期，文档序；下标即 cell/cell-trigger 的 part 下标。 */
 const DAYS = GRID.weeks.flat().map(d => d.value)
 
+/** 某个角色节点的可见文字。段位与标题那几截的文字是文本节点，进不了归一化快照。 */
+function expectText(doc: Document, part: string, want: string, why: string): void {
+  const got = doc.querySelector<HTMLElement>(`[data-scope="calendar"][data-part="${part}"]`)?.textContent ?? ''
+  if (got !== want)
+    throw new Error(`${why}：期望 "${want}"，实际 "${got}"`)
+}
+
+/**
+ * 把标题里的文字换成「年 + 月」两个可点的钮。标题壳子留着——它仍是网格的可及名字来源。
+ * 只有要验钻取的用例用这一版：其余用例照旧写一条不可点的 heading，两条路都得能走。
+ */
+function withHeadingTriggers(base: FixtureNode): FixtureNode {
+  const children = base.children
+  const header = children?.[0]
+  if (!children || !header?.children)
+    throw new Error('fixture 的头一个子节点该是 header')
+  return {
+    ...base,
+    children: children.map((child, index) => (index !== 0
+      ? child
+      : {
+          ...header,
+          children: header.children!.map(node => (node.part !== 'heading'
+            ? node
+            : {
+                part: 'heading',
+                children: [
+                  { part: 'heading-year-trigger', tag: 'button' },
+                  { part: 'heading-month-trigger', tag: 'button' },
+                ],
+              })),
+        })),
+  }
+}
+
 /** 日期 → part 下标。写死数字没人看得懂，也经不起换月份。 */
 function at(value: string): number {
   const i = DAYS.indexOf(value)
@@ -574,6 +609,92 @@ export const calendarSuite: ConformanceSuite = {
           expect: { parts: selection('2024-02-16') },
         },
       ],
+    },
+    {
+      name: '标题拆成年、月两个钮：点年那一截钻到十年格',
+      spec: { apg: APG },
+      props: BASE_PROPS,
+      fixture: withHeadingTriggers,
+      initial: {
+        counts: { 'heading-year-trigger': 1, 'heading-month-trigger': 1 },
+        parts: {
+          // 日视图：两截都在，都按得动
+          'heading-year-trigger': { 'data-view': 'day', 'disabled': null, 'hidden': null },
+          'heading-month-trigger': { 'data-view': 'day', 'disabled': null, 'hidden': null },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '两截的文字是文本节点，进不了归一化快照',
+          run: ({ doc }) => {
+            expectText(doc, 'heading-year-trigger', '2024年', '年那一截带上「年」字')
+            expectText(doc, 'heading-month-trigger', '2月', '月那一截是标题里那个 2月，不是独立形的「二月」')
+          },
+        },
+        {
+          kind: 'click',
+          part: 'heading-year-trigger',
+          expect: {
+            parts: {
+              // 钻到顶了：那一截只作标题显示，不再可按；月那一截整个收起
+              'heading-year-trigger': { 'data-view': 'year', 'disabled': '', 'data-disabled': '' },
+              'heading-month-trigger': { 'data-view': 'year', 'hidden': '' },
+              'grid': { 'data-view': 'year' },
+            },
+          },
+        },
+        {
+          kind: 'raw',
+          why: '标题文字换成了十年跨度',
+          run: ({ doc }) => expectText(doc, 'heading-year-trigger', '2020年-2029年', '年视图的标题是整个十年'),
+        },
+      ],
+    },
+    {
+      name: '一开始就在十年格：年那一截到顶按不动，月那一截压根没有',
+      spec: { apg: APG },
+      props: { ...BASE_PROPS, defaultActiveView: 'year' },
+      fixture: withHeadingTriggers,
+      initial: {
+        parts: {
+          'heading-year-trigger': { 'disabled': '', 'data-view': 'year' },
+          'heading-month-trigger': { 'hidden': '', 'data-view': 'year' },
+          'grid': { 'data-view': 'year' },
+        },
+      },
+    },
+    {
+      name: '按月挑：月那一截没有可点的位，年那一截照旧钻得上去',
+      spec: { apg: APG },
+      props: { ...BASE_PROPS, view: 'month' },
+      fixture: withHeadingTriggers,
+      initial: {
+        parts: {
+          'heading-year-trigger': { 'disabled': null, 'data-view': 'month' },
+          'heading-month-trigger': { hidden: '' },
+          'grid': { 'data-view': 'month' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '年那一截此刻是本年',
+          run: ({ doc }) => expectText(doc, 'heading-year-trigger', '2024年', '月视图的标题是本年'),
+        },
+      ],
+    },
+    {
+      name: '整张禁用：标题两截都按不动',
+      spec: { apg: APG },
+      props: { ...BASE_PROPS, disabled: true },
+      fixture: withHeadingTriggers,
+      initial: {
+        parts: {
+          'heading-year-trigger': { 'disabled': '', 'data-disabled': '' },
+          'heading-month-trigger': { 'disabled': '', 'data-disabled': '' },
+        },
+      },
     },
     {
       name: 'fixedWeeks：恒六行四十二格，翻月时网格高度不跳',

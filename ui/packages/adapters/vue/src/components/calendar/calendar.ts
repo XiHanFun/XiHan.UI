@@ -47,8 +47,12 @@ export const XhCalendarRoot = defineComponent({
     readOnly: Boolean,
     weekdayFormat: { type: String as PropType<CalendarWeekdayFormat>, default: undefined },
     fixedWeeks: Boolean,
-    /** 面板粒度：天（默认）/ 月 / 季度 / 年。 */
+    /** 挑的粒度：天（默认）/ 月 / 季度 / 年。这一档也是「点一格即选中」的那一档。 */
     view: { type: String as PropType<CalendarView>, default: undefined },
+    /** 面板此刻钻到了哪一层；给定即受控，缺省跟着 view。 */
+    activeView: { type: String as PropType<CalendarView>, default: undefined },
+    /** 非受控初值，缺省同 view。 */
+    defaultActiveView: { type: String as PropType<CalendarView>, default: undefined },
     /** 周选：点任意一天选中它所在的整周。只在 view=day 且区间模式下生效。 */
     weekSelection: { type: Boolean, default: undefined },
     /** 并排展示几页，默认 1。 */
@@ -60,6 +64,8 @@ export const XhCalendarRoot = defineComponent({
     'update:value': (_value: PayloadOf<CalendarProps, 'onValueChange'>['value']) => true,
     'focused-value-change': (_details: PayloadOf<CalendarProps, 'onFocusedValueChange'>) => true,
     'update:focusedValue': (_focusedValue: PayloadOf<CalendarProps, 'onFocusedValueChange'>['focusedValue']) => true,
+    'active-view-change': (_details: PayloadOf<CalendarProps, 'onActiveViewChange'>) => true,
+    'update:activeView': (_activeView: PayloadOf<CalendarProps, 'onActiveViewChange'>['activeView']) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: CalendarRootSlotProps) => VNode[]
@@ -73,7 +79,11 @@ export const XhCalendarRoot = defineComponent({
       emit('focused-value-change', details)
       emit('update:focusedValue', details.focusedValue)
     }
-    const ctx = useCalendar(withXhConfig('calendar', props) as CalendarProps, notifyValue, notifyFocus)
+    const notifyActiveView: CalendarProps['onActiveViewChange'] = (details) => {
+      emit('active-view-change', details)
+      emit('update:activeView', details.activeView)
+    }
+    const ctx = useCalendar(withXhConfig('calendar', props) as CalendarProps, notifyValue, notifyFocus, notifyActiveView)
     provideCalendar(ctx)
     // 网格与表头由作者照插槽里的 weeks / weekDays 自行渲染
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
@@ -150,6 +160,39 @@ export const XhCalendarHeading = defineComponent({
       'div',
       ctx.api.value.getHeadingProps({ index: props.index }) as Record<string, unknown>,
       slots.default?.() ?? (ctx.api.value.panels[props.index]?.headingLabel ?? ctx.api.value.headingLabel),
+    )
+  },
+})
+
+export const XhCalendarHeadingYearTrigger = defineComponent({
+  name: 'XhCalendarHeadingYearTrigger',
+  props: {
+    /** 属于第几个面板，默认 0。单面板时不用写。 */
+    index: { type: Number, default: 0 },
+  },
+  setup(props, { slots }) {
+    const ctx = useCalendarContext()
+    // 有插槽用插槽，否则渲染标题里年那一截；年视图下它是整个十年跨度
+    return () => h(
+      'button',
+      ctx.api.value.getHeadingYearTriggerProps({ index: props.index }) as Record<string, unknown>,
+      slots.default?.() ?? ctx.api.value.panels[props.index]?.headingYear,
+    )
+  },
+})
+
+export const XhCalendarHeadingMonthTrigger = defineComponent({
+  name: 'XhCalendarHeadingMonthTrigger',
+  props: {
+    /** 属于第几个面板，默认 0。单面板时不用写。 */
+    index: { type: Number, default: 0 },
+  },
+  setup(props, { slots }) {
+    const ctx = useCalendarContext()
+    return () => h(
+      'button',
+      ctx.api.value.getHeadingMonthTriggerProps({ index: props.index }) as Record<string, unknown>,
+      slots.default?.() ?? ctx.api.value.panels[props.index]?.headingMonth,
     )
   },
 })

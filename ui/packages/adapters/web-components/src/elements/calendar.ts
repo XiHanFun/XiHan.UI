@@ -5,6 +5,7 @@ import type {
   CalendarSelectionMode,
   CalendarValueChangeDetails,
   CalendarView,
+  CalendarViewChangeDetails,
   CalendarWeekDay,
   CalendarWeekdayFormat,
 } from '@xihan-ui/headless'
@@ -41,11 +42,14 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {boolean} read-only - 只读：翻月与移动焦点照常，只是选不动值
  * @attr {'narrow'|'short'} weekday-format - 表头缩写粒度，默认 short
  * @attr {boolean} fixed-weeks - 恒渲染六行
- * @attr {'day'|'month'|'quarter'|'year'} view - 面板粒度，默认 day
+ * @attr {'day'|'month'|'quarter'|'year'} view - 挑的粒度，默认 day；这一档也是「点一格即选中」的那一档
+ * @attr {'day'|'month'|'quarter'|'year'} active-view - 受控：面板此刻钻到了哪一层；缺省跟着 view
+ * @attr {'day'|'month'|'quarter'|'year'} default-active-view - 非受控初值，缺省同 view
  * @attr {boolean} week-selection - 周选：点任意一天选中它所在的整周（view=day 且区间模式下生效）
  * @attr {number} visible-count - 并排展示几页
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
  * @fires focused-value-change - 聚焦日变化；detail 为 `{ focusedValue: string }`
+ * @fires active-view-change - 钻到了另一层；detail 为 `{ activeView: 'day'|'month'|'quarter'|'year' }`
  * @csspart root - 组件根容器
  * @csspart header - 标题栏外壳
  * @csspart prev-year-trigger - 快速往前翻一大步（日视图一年、粗粒度十页）；可选
@@ -53,6 +57,8 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart next-trigger - 下一月；越过 max 时转原生 disabled
  * @csspart next-year-trigger - 快速往后翻一大步；可选
  * @csspart heading - 展示月标题（grid 的 aria-labelledby 目标）
+ * @csspart heading-year-trigger - 标题里年那一截，点它钻到十年格；文字由元素填。年视图下已到顶，转原生 disabled；可选
+ * @csspart heading-month-trigger - 标题里月那一截，点它钻到月格；只有日视图有这一截，其余层带 hidden；可选
  * @csspart grid - role=grid 容器，键盘在此收口
  * @csspart grid-head - role=rowgroup 表头组，里面套一个 week-row
  * @csspart week-day - role=columnheader 列头，须自带 value 属性标明列序 0-6
@@ -89,6 +95,8 @@ export class XhCalendarElement extends XhElement {
     readOnly: { type: Boolean, attribute: 'read-only' },
     fixedWeeks: { type: Boolean, attribute: 'fixed-weeks' },
     view: { converter: STRING_CONVERTER },
+    activeView: { converter: STRING_CONVERTER, attribute: 'active-view' },
+    defaultActiveView: { converter: STRING_CONVERTER, attribute: 'default-active-view' },
     weekSelection: { converter: BOOLEAN_CONVERTER, attribute: 'week-selection' },
     visibleCount: { converter: NUMBER_CONVERTER, attribute: 'visible-count' },
     // 判定函数只走 property
@@ -109,6 +117,8 @@ export class XhCalendarElement extends XhElement {
   declare readOnly?: boolean
   declare fixedWeeks?: boolean
   declare view?: CalendarView
+  declare activeView?: CalendarView
+  declare defaultActiveView?: CalendarView
   declare weekSelection?: boolean
   declare visibleCount?: number
   declare isDateUnavailable?: (value: string) => boolean
@@ -119,6 +129,10 @@ export class XhCalendarElement extends XhElement {
 
   private readonly notifyFocus = (details: CalendarFocusChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('focused-value-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyActiveView = (details: CalendarViewChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('active-view-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<CalendarSchema>(
@@ -150,10 +164,13 @@ export class XhCalendarElement extends XhElement {
       weekdayFormat: this.weekdayFormat,
       fixedWeeks: this.fixedWeeks ?? false,
       view: this.view,
+      activeView: this.activeView,
+      defaultActiveView: this.defaultActiveView,
       weekSelection: this.weekSelection,
       visibleCount: this.visibleCount,
       onValueChange: this.notifyValue,
       onFocusedValueChange: this.notifyFocus,
+      onActiveViewChange: this.notifyActiveView,
     }
   }
 
@@ -194,6 +211,23 @@ export class XhCalendarElement extends XhElement {
     // 面板逐个打：下标取作者写的 index，没写就按文档序（第 N 张就是第 N 个面板）
     this.getParts('heading').forEach((el, position) => {
       this.spreader.spread(el, api.getHeadingProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)
+    })
+    // 标题里的年与月两个钮：属性由 connect 打，文字归元素填（spreader 只管属性与事件）
+    this.getParts('heading-year-trigger').forEach((el, position) => {
+      const index = declaredIndex(el, position)
+      this.spreader.spread(el, api.getHeadingYearTriggerProps({ index }) as Record<string, unknown>)
+      const text = api.panels[index]?.headingYear ?? ''
+      if (el.textContent !== text)
+        el.textContent = text
+    })
+    this.getParts('heading-month-trigger').forEach((el, position) => {
+      const index = declaredIndex(el, position)
+      this.spreader.spread(el, api.getHeadingMonthTriggerProps({ index }) as Record<string, unknown>)
+      const text = api.panels[index]?.headingMonth ?? ''
+      if (el.textContent !== text)
+        el.textContent = text
+      // connect 已置 hidden，但作者若给它设了 display 就会盖过 UA 的 [hidden]{display:none}
+      this.setPartHidden(el, !api.canZoomOutMonth)
     })
     this.getParts('grid').forEach((el, position) => {
       this.spreader.spread(el, api.getGridProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)

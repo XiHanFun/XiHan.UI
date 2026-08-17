@@ -29,7 +29,7 @@ export interface DatePickerContext {
 
 export function useDatePicker(
   props: DatePickerSchema['props'],
-  handlers: Pick<DatePickerSchema['props'], 'onValueChange' | 'onOpenChange' | 'onFocusedValueChange'> = {},
+  handlers: Pick<DatePickerSchema['props'], 'onValueChange' | 'onOpenChange' | 'onFocusedValueChange' | 'onActiveViewChange'> = {},
 ): DatePickerContext {
   const controlRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
