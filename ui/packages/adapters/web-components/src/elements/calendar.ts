@@ -58,6 +58,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart week-day - role=columnheader 列头，须自带 value 属性标明列序 0-6
  * @csspart grid-body - role=rowgroup 日期组
  * @csspart week-row - role=row 周行，表头与日期行共用
+ * @csspart week-number - 行首的周序号格（role=rowheader），须自带 value 属性（行首那天）；可选
  * @csspart cell - role=gridcell 日期格，承载 aria-selected；须自带 value 属性（ISO 串）标明是哪一天
  * @csspart cell-trigger - 可点可聚焦层，承载 aria-disabled 与 roving tabindex
  */
@@ -201,6 +202,16 @@ export class XhCalendarElement extends XhElement {
     put('grid-body', api.getGridBodyProps() as Record<string, unknown>)
 
     // 表头行与日期行共用 role=row，一并打
+    // 周序号格：身份取行首那天，文字由元素填
+    for (const el of this.getParts('week-number')) {
+      const value = el.getAttribute('value') ?? ''
+      this.spreader.spread(el, api.getWeekNumberProps({ value }) as Record<string, unknown>)
+      // 文字归元素写，比对后再赋值
+      const text = api.getWeekNumberText({ value })
+      if (el.textContent !== text)
+        el.textContent = text
+    }
+
     for (const el of this.getParts('week-row'))
       this.spreader.spread(el, api.getWeekRowProps() as Record<string, unknown>)
 

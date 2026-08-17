@@ -421,6 +421,18 @@ export function connectCalendar<T extends PropTypes>(
       role: 'row',
     }),
 
+    // 周序号格：在 role=grid 里，一行的标号语义上就是这一行的表头
+    getWeekNumberProps: ({ value }) => normalize.element({
+      ...parts['week-number'].attrs,
+      'role': 'rowheader',
+      [ITEM_VALUE_ATTR]: value,
+      // 它只是标号，不是可选的格子；读屏念行时带上它即可，不必单独停留
+      'aria-hidden': true,
+    }),
+
+    // 表头那一格是占位、不带值：解析不了就给空串,让它只占住列宽
+    getWeekNumberText: ({ value }) => (parseCalendarDate(value) ? String(isoWeekNumber(value)) : ''),
+
     getWeekDayProps: (day) => {
       const meta = weekDays[day.value]
       return normalize.element({

@@ -429,6 +429,7 @@
       "XhCalendarPrevYearTrigger",
       "XhCalendarRoot",
       "XhCalendarWeekDay",
+      "XhCalendarWeekNumber",
       "XhCalendarWeekRow",
       "XhCardBody",
       "XhCardCover",
@@ -556,6 +557,7 @@
       "XhDatePickerTimePanel",
       "XhDatePickerTrigger",
       "XhDatePickerWeekDay",
+      "XhDatePickerWeekNumber",
       "XhDatePickerWeekRow",
       "XhDescriptionsItem",
       "XhDescriptionsLabel",
@@ -3906,6 +3908,7 @@
       "prev-year-trigger",
       "root",
       "week-day",
+      "week-number",
       "week-row"
     ],
     "card": [
@@ -6385,6 +6388,9 @@
     "--xh-calendar-week-day-font-size",
     "--xh-calendar-week-day-font-weight",
     "--xh-calendar-week-day-h",
+    "--xh-calendar-week-number-fg",
+    "--xh-calendar-week-number-font-size",
+    "--xh-calendar-week-number-w",
     "--xh-card-bg",
     "--xh-card-border",
     "--xh-card-fg",

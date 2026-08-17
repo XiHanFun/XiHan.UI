@@ -33,7 +33,7 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-calendar>` |
-| Vue 组件 | `XhCalendarCell` `XhCalendarCellTrigger` `XhCalendarGrid` `XhCalendarGridBody` `XhCalendarGridHead` `XhCalendarHeader` `XhCalendarHeading` `XhCalendarNextTrigger` `XhCalendarNextYearTrigger` `XhCalendarPrevTrigger` `XhCalendarPrevYearTrigger` `XhCalendarRoot` `XhCalendarWeekDay` `XhCalendarWeekRow` |
+| Vue 组件 | `XhCalendarCell` `XhCalendarCellTrigger` `XhCalendarGrid` `XhCalendarGridBody` `XhCalendarGridHead` `XhCalendarHeader` `XhCalendarHeading` `XhCalendarNextTrigger` `XhCalendarNextYearTrigger` `XhCalendarPrevTrigger` `XhCalendarPrevYearTrigger` `XhCalendarRoot` `XhCalendarWeekDay` `XhCalendarWeekNumber` `XhCalendarWeekRow` |
 | 组合式函数 | `useCalendar` |
 | 状态机 | `calendarMachine` |
 | 皮肤 | `@xihan-ui/styles/calendar.css` |
@@ -42,7 +42,7 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="calendar"`：`root` · `header` · `prev-year-trigger` · `prev-trigger` · `next-trigger` · `next-year-trigger` · `heading` · **`grid`** · `grid-head` · `week-day` · `grid-body` · `week-row` · **`cell`** · **`cell-trigger`**
+`data-scope="calendar"`：`root` · `header` · `prev-year-trigger` · `prev-trigger` · `next-trigger` · `next-year-trigger` · `heading` · **`grid`** · `grid-head` · `week-day` · `grid-body` · `week-row` · `week-number` · **`cell`** · **`cell-trigger`**
 
 ## Props
 
@@ -115,6 +115,8 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `getWeekDayProps` | `(props: CalendarWeekDayProps) => T['element']` |  |
 | `getGridBodyProps` | `() => T['element']` |  |
 | `getWeekRowProps` | `() => T['element']` |  |
+| `getWeekNumberProps` | `(props: CalendarWeekNumberProps) => T['element']` | 周序号格：行首那一列，语义上是这一行的表头（role=rowheader）。 |
+| `getWeekNumberText` | `(props: CalendarWeekNumberProps) => string` | 这一行该显示的周序号文字。两个适配器都拿它填文本，保证同构。 |
 | `getCellProps` | `(props: CalendarCellProps) => T['element']` |  |
 | `getCellTriggerProps` | `(props: CalendarCellProps) => T['element']` |  |
 

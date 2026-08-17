@@ -47,6 +47,11 @@ export interface CalendarCellProps {
   index?: number
 }
 
+/** 周序号格自报它是哪一行：值取那一行行首那天的 ISO 串。 */
+export interface CalendarWeekNumberProps {
+  value: string
+}
+
 /** 表头列自报身份：列序号 0-6，行首为 0。 */
 export interface CalendarWeekDayProps {
   value: number
@@ -232,6 +237,10 @@ export interface CalendarApi<T extends PropTypes = PropTypes> {
   getWeekDayProps: (props: CalendarWeekDayProps) => T['element']
   getGridBodyProps: () => T['element']
   getWeekRowProps: () => T['element']
+  /** 周序号格：行首那一列，语义上是这一行的表头（role=rowheader）。 */
+  getWeekNumberProps: (props: CalendarWeekNumberProps) => T['element']
+  /** 这一行该显示的周序号文字。两个适配器都拿它填文本，保证同构。 */
+  getWeekNumberText: (props: CalendarWeekNumberProps) => string
   getCellProps: (props: CalendarCellProps) => T['element']
   getCellTriggerProps: (props: CalendarCellProps) => T['element']
 }

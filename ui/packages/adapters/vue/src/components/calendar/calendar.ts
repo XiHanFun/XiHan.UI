@@ -199,6 +199,23 @@ export const XhCalendarWeekRow = defineComponent({
   },
 })
 
+export const XhCalendarWeekNumber = defineComponent({
+  name: 'XhCalendarWeekNumber',
+  props: {
+    /** 这一行行首那天的 ISO 串。 */
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useCalendarContext()
+    // 有插槽用插槽，否则显示这一行的周序号
+    return () => h(
+      'span',
+      ctx.api.value.getWeekNumberProps({ value: props.value }) as Record<string, unknown>,
+      slots.default?.() ?? ctx.api.value.getWeekNumberText({ value: props.value }),
+    )
+  },
+})
+
 export const XhCalendarWeekDay = defineComponent({
   name: 'XhCalendarWeekDay',
   props: {

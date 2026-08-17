@@ -63,6 +63,7 @@ export {
   XhCalendarPrevYearTrigger,
   XhCalendarRoot,
   XhCalendarWeekDay,
+  XhCalendarWeekNumber,
   XhCalendarWeekRow,
 } from './components/calendar/calendar'
 export type { CalendarRootSlotProps } from './components/calendar/calendar'
@@ -251,6 +252,7 @@ export {
   XhDatePickerTimePanel,
   XhDatePickerTrigger,
   XhDatePickerWeekDay,
+  XhDatePickerWeekNumber,
   XhDatePickerWeekRow,
 } from './components/date-picker/date-picker'
 export type { DatePickerRootSlotProps, DatePickerSegmentSlotProps } from './components/date-picker/date-picker'
