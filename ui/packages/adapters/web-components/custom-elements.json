@@ -8744,6 +8744,33 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "placement",
               "privacy": "public",
               "type": {
@@ -9178,6 +9205,30 @@
               "description": "区间终点那份隐藏输入的表单字段名；不给即终点不参与提交",
               "name": "end-name",
               "fieldName": "endName"
+            },
+            {
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "description": "视觉变体",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             },
             {
               "type": {
@@ -30399,6 +30450,33 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "placement",
               "privacy": "public",
               "type": {
@@ -30691,6 +30769,30 @@
               "description": "表单字段名；给了隐藏输入才带 name",
               "name": "name",
               "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "description": "视觉变体",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
             },
             {
               "type": {

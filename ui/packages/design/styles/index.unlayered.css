@@ -8051,9 +8051,69 @@
 
 /* 与文本框、分段日期同一套堆叠：标签一行、输入行一行 */
 [data-scope='date-picker'][data-part='root'] {
+  /* 尺寸档只换这几个私有槽，标题、输入行与浮层里的部件都从 root 继承它们，
+     换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承 */
+  --xh-_date-picker-control-h: var(--xh-control-h-md);
+  --xh-_date-picker-control-px: var(--xh-control-px-md);
+  --xh-_date-picker-font-size: var(--xh-text-body-size);
+  --xh-_date-picker-label-font-size: var(--xh-text-label-size);
+
+  /* 形态档只换这三个私有槽：底色与两档描边 */
+  --xh-_date-picker-control-bg: var(--xh-bg-canvas);
+  --xh-_date-picker-control-border: var(--xh-border-control);
+  --xh-_date-picker-control-border-hover: var(--xh-border-control-hover);
+
+  /* 聚焦环、时间列选中与确认按钮随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，
+     退回原来的焦点色与品牌色 */
+  --xh-_date-picker-ring: var(--xh-ring-focus);
+  --xh-_date-picker-accent: var(--xh-_tone, var(--xh-bg-brand));
+  --xh-_date-picker-accent-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
+  --xh-_date-picker-accent-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  --xh-_date-picker-accent-subtle: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-date-picker-gap, var(--xh-space-1));
+}
+
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里 */
+[data-scope='date-picker'][data-part='root'][data-size='sm'] {
+  --xh-_date-picker-control-h: var(--xh-control-h-sm);
+  --xh-_date-picker-control-px: var(--xh-control-px-sm);
+  --xh-_date-picker-font-size: var(--xh-font-size-sm);
+  --xh-_date-picker-label-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='date-picker'][data-part='root'][data-size='lg'] {
+  --xh-_date-picker-control-h: var(--xh-control-h-lg);
+  --xh-_date-picker-control-px: var(--xh-control-px-lg);
+  --xh-_date-picker-font-size: var(--xh-font-size-lg);
+  --xh-_date-picker-label-font-size: var(--xh-font-size-lg);
+}
+
+/* —— 形态 —— */
+/* 输入类不做实心档：填满一个要往里打字的框，字与底就没法同时读。
+   形态只决定底与描边怎么画，用哪族颜色由 data-tone 决定 */
+[data-scope='date-picker'][data-part='root'][data-variant='outline'] {
+  --xh-_date-picker-control-bg: var(--xh-bg-canvas);
+  --xh-_date-picker-control-border: var(--xh-border-control);
+  --xh-_date-picker-control-border-hover: var(--xh-border-control-hover);
+}
+
+/* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
+   与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
+[data-scope='date-picker'][data-part='root'][data-variant='subtle'] {
+  --xh-_date-picker-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_date-picker-control-border: transparent;
+  --xh-_date-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+}
+
+/* 无框：底与描边都透明，平时只看得见日期，悬停与聚焦才浮出边界 */
+[data-scope='date-picker'][data-part='root'][data-variant='ghost'] {
+  --xh-_date-picker-control-bg: transparent;
+  --xh-_date-picker-control-border: transparent;
+  --xh-_date-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -8063,7 +8123,7 @@
 
 [data-scope='date-picker'][data-part='label'] {
   color: var(--xh-date-picker-label-fg, var(--xh-fg-default));
-  font-size: var(--xh-date-picker-label-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-date-picker-label-font-size, var(--xh-_date-picker-label-font-size));
   font-weight: var(--xh-date-picker-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
   /* 点标题会把焦点送进首段，指针得说明这件事 */
@@ -8086,12 +8146,12 @@
   align-items: center;
   gap: var(--xh-date-picker-control-gap, var(--xh-control-gap-md));
   min-inline-size: var(--xh-date-picker-control-min-w, var(--xh-overlay-min-w));
-  block-size: var(--xh-date-picker-control-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-date-picker-control-px, var(--xh-control-px-md));
+  block-size: var(--xh-date-picker-control-h, var(--xh-_date-picker-control-h));
+  padding-inline: var(--xh-date-picker-control-px, var(--xh-_date-picker-control-px));
   padding-block: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-date-picker-control-border, var(--xh-border-control));
+  border: var(--xh-stroke-thin) solid var(--xh-date-picker-control-border, var(--xh-_date-picker-control-border));
   border-radius: var(--xh-date-picker-control-radius, var(--xh-shape-control));
-  background: var(--xh-date-picker-control-bg, var(--xh-bg-canvas));
+  background: var(--xh-date-picker-control-bg, var(--xh-_date-picker-control-bg));
   color: var(--xh-date-picker-control-fg, var(--xh-fg-default));
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -8102,14 +8162,14 @@
 
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='date-picker'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
-  border-color: var(--xh-date-picker-control-border-hover, var(--xh-border-control-hover));
+  border-color: var(--xh-date-picker-control-border-hover, var(--xh-_date-picker-control-border-hover));
 }
 
 /* 焦点落在某一段或某个按钮上，而边框长在 control 上：焦点环得由内向外借一层。
    control 自己不占 Tab 位，:focus-within 是它唯一能感知组内焦点的方式 */
 [data-scope='date-picker'][data-part='control']:focus-within {
-  border-color: var(--xh-date-picker-control-border-focus, var(--xh-ring-focus));
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  border-color: var(--xh-date-picker-control-border-focus, var(--xh-_date-picker-ring));
+  outline: var(--xh-ring-width) solid var(--xh-_date-picker-ring);
   outline-offset: var(--xh-ring-offset);
 }
 
@@ -8139,7 +8199,7 @@
   color: inherit;
   /* 表单控件不继承页面字体，只给字号会让段位用 UA 默认字族，与周围文本对不上 */
   font-family: inherit;
-  font-size: var(--xh-date-picker-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-date-picker-font-size, var(--xh-_date-picker-font-size));
   line-height: var(--xh-leading-none);
 }
 
@@ -8199,7 +8259,7 @@
 /* trigger 在 Tab 序列里（清空按钮不在，它是 tabindex=-1 的兜底），落焦时必须看得见 */
 [data-scope='date-picker'][data-part='trigger']:focus-visible,
 [data-scope='date-picker'][data-part='clear-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_date-picker-ring);
   outline-offset: var(--xh-ring-offset);
 }
 
@@ -8296,7 +8356,7 @@
 }
 
 [data-scope='date-picker'][data-part='time-item'][data-selected] {
-  background: var(--xh-date-picker-time-item-bg-selected, var(--xh-bg-brand-subtle));
+  background: var(--xh-date-picker-time-item-bg-selected, var(--xh-_date-picker-accent-subtle));
   color: var(--xh-date-picker-time-item-fg-selected, var(--xh-fg-brand));
   font-weight: var(--xh-font-weight-medium);
 }
@@ -8309,18 +8369,18 @@
   padding-inline: var(--xh-control-px-sm);
   border: none;
   border-radius: var(--xh-shape-control);
-  background: var(--xh-date-picker-confirm-bg, var(--xh-bg-brand));
-  color: var(--xh-date-picker-confirm-fg, var(--xh-fg-on-brand));
+  background: var(--xh-date-picker-confirm-bg, var(--xh-_date-picker-accent));
+  color: var(--xh-date-picker-confirm-fg, var(--xh-_date-picker-accent-fg));
   font-size: var(--xh-font-size-sm);
   cursor: pointer;
 }
 
 [data-scope='date-picker'][data-part='confirm-trigger']:hover {
-  background: var(--xh-date-picker-confirm-bg-hover, var(--xh-bg-brand-hover));
+  background: var(--xh-date-picker-confirm-bg-hover, var(--xh-_date-picker-accent-hover));
 }
 
 [data-scope='date-picker'][data-part='confirm-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_date-picker-ring);
   outline-offset: var(--xh-ring-offset);
 }
 
@@ -15445,9 +15505,71 @@
 
 /* 与文本框、时间输入同一套堆叠：标签一行、控件一行 */
 [data-scope='time-picker'][data-part='root'] {
+  /* 尺寸档只换这几个私有槽，标题、输入行与浮层里的格子都从 root 继承它们，
+     换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承 */
+  --xh-_time-picker-control-h: var(--xh-control-h-md);
+  --xh-_time-picker-control-px: var(--xh-control-px-md);
+  --xh-_time-picker-font-size: var(--xh-text-body-size);
+  --xh-_time-picker-label-font-size: var(--xh-text-label-size);
+  --xh-_time-picker-item-px: var(--xh-control-px-md);
+
+  /* 形态档只换这三个私有槽：底色与两档描边 */
+  --xh-_time-picker-control-bg: var(--xh-bg-canvas);
+  --xh-_time-picker-control-border: var(--xh-border-control);
+  --xh-_time-picker-control-border-hover: var(--xh-border-control-hover);
+
+  /* 聚焦环、段位反白与列里的选中随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，
+     退回原来的焦点色与品牌色 */
+  --xh-_time-picker-ring: var(--xh-ring-focus);
+  --xh-_time-picker-accent: var(--xh-_tone, var(--xh-bg-brand));
+  --xh-_time-picker-accent-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
+  --xh-_time-picker-accent-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-time-picker-gap, var(--xh-space-1));
+}
+
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里 */
+[data-scope='time-picker'][data-part='root'][data-size='sm'] {
+  --xh-_time-picker-control-h: var(--xh-control-h-sm);
+  --xh-_time-picker-control-px: var(--xh-control-px-sm);
+  --xh-_time-picker-font-size: var(--xh-font-size-sm);
+  --xh-_time-picker-label-font-size: var(--xh-font-size-sm);
+  --xh-_time-picker-item-px: var(--xh-control-px-sm);
+}
+
+[data-scope='time-picker'][data-part='root'][data-size='lg'] {
+  --xh-_time-picker-control-h: var(--xh-control-h-lg);
+  --xh-_time-picker-control-px: var(--xh-control-px-lg);
+  --xh-_time-picker-font-size: var(--xh-font-size-lg);
+  --xh-_time-picker-label-font-size: var(--xh-font-size-lg);
+  --xh-_time-picker-item-px: var(--xh-control-px-lg);
+}
+
+/* —— 形态 —— */
+/* 输入类不做实心档：填满一个要往里打字的框，字与底就没法同时读。
+   形态只决定底与描边怎么画，用哪族颜色由 data-tone 决定 */
+[data-scope='time-picker'][data-part='root'][data-variant='outline'] {
+  --xh-_time-picker-control-bg: var(--xh-bg-canvas);
+  --xh-_time-picker-control-border: var(--xh-border-control);
+  --xh-_time-picker-control-border-hover: var(--xh-border-control-hover);
+}
+
+/* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
+   与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
+[data-scope='time-picker'][data-part='root'][data-variant='subtle'] {
+  --xh-_time-picker-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_time-picker-control-border: transparent;
+  --xh-_time-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+}
+
+/* 无框：底与描边都透明，平时只看得见时间，悬停与聚焦才浮出边界 */
+[data-scope='time-picker'][data-part='root'][data-variant='ghost'] {
+  --xh-_time-picker-control-bg: transparent;
+  --xh-_time-picker-control-border: transparent;
+  --xh-_time-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -15457,7 +15579,7 @@
 
 [data-scope='time-picker'][data-part='label'] {
   color: var(--xh-time-picker-label-fg, var(--xh-fg-default));
-  font-size: var(--xh-time-picker-label-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-time-picker-label-font-size, var(--xh-_time-picker-label-font-size));
   font-weight: var(--xh-time-picker-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
   /* 点标题会把焦点送到第一段（段不是能被 for 指向的原生控件，这条由连接层接管），
@@ -15476,16 +15598,16 @@
   display: inline-flex;
   align-items: center;
   gap: var(--xh-time-picker-control-gap, var(--xh-control-gap-md));
-  block-size: var(--xh-time-picker-control-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-time-picker-control-px, var(--xh-control-px-md));
+  block-size: var(--xh-time-picker-control-h, var(--xh-_time-picker-control-h));
+  padding-inline: var(--xh-time-picker-control-px, var(--xh-_time-picker-control-px));
   padding-block: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-time-picker-control-border, var(--xh-border-control));
+  border: var(--xh-stroke-thin) solid var(--xh-time-picker-control-border, var(--xh-_time-picker-control-border));
   border-radius: var(--xh-time-picker-control-radius, var(--xh-shape-control));
-  background: var(--xh-time-picker-control-bg, var(--xh-bg-canvas));
+  background: var(--xh-time-picker-control-bg, var(--xh-_time-picker-control-bg));
   color: var(--xh-time-picker-control-fg, var(--xh-fg-default));
   /* 表单控件不继承页面字体，只给字号会让它用 UA 默认字族，与周围文本对不上 */
   font-family: inherit;
-  font-size: var(--xh-time-picker-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-time-picker-font-size, var(--xh-_time-picker-font-size));
   /* 等宽数字：各位字宽不一时逐段填入会让整行左右跳 */
   font-variant-numeric: tabular-nums;
   line-height: var(--xh-leading-normal);
@@ -15498,13 +15620,13 @@
 
 /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
 [data-scope='time-picker'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
-  border-color: var(--xh-time-picker-control-border-hover, var(--xh-border-control-hover));
+  border-color: var(--xh-time-picker-control-border-hover, var(--xh-_time-picker-control-border-hover));
 }
 
 /* 焦点真正落在段或按钮上，但整块看起来才是一个控件：内部有焦点时整框亮起来。
    control 自己不占 Tab 位，所以这里写的是 focus-within 而不是 focus-visible */
 [data-scope='time-picker'][data-part='control']:focus-within:not([data-disabled]) {
-  border-color: var(--xh-time-picker-control-border-focus, var(--xh-ring-focus));
+  border-color: var(--xh-time-picker-control-border-focus, var(--xh-_time-picker-ring));
 }
 
 [data-scope='time-picker'][data-part='control'][data-invalid] {
@@ -15555,14 +15677,14 @@
    data-focus 由机器给（它知道谁是当前段），:focus-visible 兜住机器状态还没回流的那一帧 */
 [data-scope='time-picker'][data-part='input'][data-focus]:not([data-disabled]),
 [data-scope='time-picker'][data-part='input']:focus-visible {
-  background: var(--xh-time-picker-segment-bg-focus, var(--xh-bg-brand));
-  color: var(--xh-time-picker-segment-fg-focus, var(--xh-fg-on-brand));
+  background: var(--xh-time-picker-segment-bg-focus, var(--xh-_time-picker-accent));
+  color: var(--xh-time-picker-segment-fg-focus, var(--xh-_time-picker-accent-fg));
   outline: none;
 }
 
 /* 焦点态用了品牌底色之后，占位符那条弱色会被它盖住，这里明确让位给焦点态 */
 [data-scope='time-picker'][data-part='input'][data-focus][data-placeholder]:not([data-disabled]) {
-  color: var(--xh-time-picker-segment-fg-focus, var(--xh-fg-on-brand));
+  color: var(--xh-time-picker-segment-fg-focus, var(--xh-_time-picker-accent-fg));
 }
 
 [data-scope='time-picker'][data-part='input']:hover:not([data-focus], [data-disabled]) {
@@ -15622,7 +15744,7 @@
    这条是给程序化聚焦兜底 */
 [data-scope='time-picker'][data-part='trigger']:focus-visible,
 [data-scope='time-picker'][data-part='clear-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_time-picker-ring);
   outline-offset: var(--xh-ring-offset);
 }
 
@@ -15702,7 +15824,7 @@
 /* 焦点落在列上有两种情形：指针打开、这一段还空着、还没有任何格当锚点，或整列被界裁空。
    那一刻它认领着 Tab 位，环画在列内沿；有锚点时环长在格上，列不再画 */
 [data-scope='time-picker'][data-part='column'][tabindex='0']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_time-picker-ring);
   outline-offset: calc(-1 * var(--xh-ring-width));
 }
 
@@ -15716,10 +15838,10 @@
   align-items: center;
   justify-content: center;
   padding-block: var(--xh-time-picker-item-py, var(--xh-space-1_5));
-  padding-inline: var(--xh-time-picker-item-px, var(--xh-control-px-md));
+  padding-inline: var(--xh-time-picker-item-px, var(--xh-_time-picker-item-px));
   border-radius: var(--xh-time-picker-item-radius, var(--xh-shape-control));
   color: var(--xh-time-picker-item-fg, var(--xh-fg-default));
-  font-size: var(--xh-time-picker-item-font-size, var(--xh-text-body-size));
+  font-size: var(--xh-time-picker-item-font-size, var(--xh-_time-picker-font-size));
   /* 居中的单个数字格没有截断层，行高保持紧排，列内多露几格 */
   line-height: var(--xh-leading-none);
   white-space: nowrap;
@@ -15742,8 +15864,8 @@
 }
 
 [data-scope='time-picker'][data-part='item'][data-state='checked'] {
-  background: var(--xh-time-picker-item-bg-checked, var(--xh-bg-brand));
-  color: var(--xh-time-picker-item-fg-checked, var(--xh-fg-on-brand));
+  background: var(--xh-time-picker-item-bg-checked, var(--xh-_time-picker-accent));
+  color: var(--xh-time-picker-item-fg-checked, var(--xh-_time-picker-accent-fg));
   font-weight: var(--xh-time-picker-item-weight-checked, var(--xh-font-weight-medium));
 }
 
@@ -15751,11 +15873,11 @@
    不写这条就只有底色被换走、文字仍是品牌底上的反白色 */
 [data-scope='time-picker'][data-part='item'][data-state='checked'][data-highlighted]:not([data-disabled]),
 [data-scope='time-picker'][data-part='item'][data-state='checked']:hover:not([data-disabled]) {
-  background: var(--xh-time-picker-item-bg-checked-hover, var(--xh-bg-brand-hover));
+  background: var(--xh-time-picker-item-bg-checked-hover, var(--xh-_time-picker-accent-hover));
 }
 
 [data-scope='time-picker'][data-part='item']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline: var(--xh-ring-width) solid var(--xh-_time-picker-ring);
   /* 往内收：选项在滚动列里挨着排，环画在外沿会被列的溢出裁掉 */
   outline-offset: calc(-1 * var(--xh-ring-offset));
 }

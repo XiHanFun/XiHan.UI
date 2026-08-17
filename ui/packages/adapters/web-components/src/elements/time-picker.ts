@@ -7,7 +7,7 @@ import type {
   TimePickerValueChangeDetails,
   TimeSegmentType,
 } from '@xihan-ui/headless'
-import type { Cleanup, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, ControlVariant, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { connectTimePicker, timePickerAnatomy, timePickerMachine, timePickerMeta } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
@@ -72,6 +72,9 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @attr {boolean} invalid - 校验失败标注
  * @attr {boolean} required - 必填标注，落到每段的 aria-required 上
  * @attr {string} name - 表单字段名；给了隐藏输入才带 name
+ * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
  * @fires value-change - 值变化；detail 为 `{ value: string }`
@@ -108,6 +111,9 @@ export class XhTimePickerElement extends XhElement {
     invalid: { converter: BOOLEAN_CONVERTER },
     required: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
+    variant: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
   }
@@ -127,6 +133,9 @@ export class XhTimePickerElement extends XhElement {
   declare invalid?: boolean
   declare required?: boolean
   declare name?: string
+  declare variant?: ControlVariant
+  declare tone?: Tone
+  declare size?: Size
   declare placement?: Placement
   declare offset?: number
 
@@ -167,6 +176,9 @@ export class XhTimePickerElement extends XhElement {
       invalid: this.invalid ?? false,
       required: this.required ?? false,
       name: this.name,
+      variant: this.variant,
+      tone: this.tone,
+      size: this.size,
       placement: this.placement,
       offset: this.offset,
       onValueChange: this.notifyValue,

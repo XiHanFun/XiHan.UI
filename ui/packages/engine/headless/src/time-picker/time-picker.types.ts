@@ -1,4 +1,4 @@
-import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, ControlVariant, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 import type { TimeDayPeriod, TimeDraft, TimeGranularity, TimeHourCycle, TimeSegmentType } from '../time-field'
 
@@ -119,6 +119,12 @@ export interface TimePickerSchema extends MachineSchema {
     required?: boolean
     /** 表单字段名；给了隐藏输入才带 name，值随表单一并提交。 */
     name?: string
+    /** 形态：outline / subtle / ghost，决定输入行的描边与底色怎么用。 */
+    variant?: ControlVariant
+    /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 */
+    tone?: Tone
+    /** 尺寸：sm / md / lg，输入行与浮层里的格子一并换档。 */
+    size?: Size
     placement?: Placement
     /** 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 */
     dir?: Direction

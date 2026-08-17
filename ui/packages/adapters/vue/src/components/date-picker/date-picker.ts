@@ -7,7 +7,7 @@ import type {
   DatePickerFieldApi,
   DatePickerSchema,
 } from '@xihan-ui/headless'
-import type { Placement } from '@xihan-ui/kernel'
+import type { ControlVariant, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
@@ -85,6 +85,9 @@ export const XhDatePickerRoot = defineComponent({
     endName: { type: String, default: undefined },
     // 区间模式下两组段位各自的读屏名字
     translations: { type: Object as PropType<DatePickerProps['translations']>, default: undefined },
+    variant: { type: String as PropType<ControlVariant>, default: undefined },
+    tone: { type: String as PropType<Tone>, default: undefined },
+    size: { type: String as PropType<Size>, default: undefined },
     placement: { type: String as PropType<Placement>, default: undefined },
     offset: { type: Number, default: undefined },
     closeOnSelect: { type: Boolean, default: undefined },

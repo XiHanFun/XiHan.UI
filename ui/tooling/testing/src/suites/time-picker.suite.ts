@@ -107,6 +107,21 @@ export const timePickerSuite: ConformanceSuite = {
   },
   cases: [
     {
+      name: '三轴接线到 root 的 data-*：只落一处，输入行与浮层都从它继承',
+      spec: { apg: APG },
+      props: { variant: 'subtle', tone: 'success', size: 'lg' },
+      initial: {
+        parts: { root: { 'data-variant': 'subtle', 'data-tone': 'success', 'data-size': 'lg' } },
+      },
+    },
+    {
+      name: '三轴都不给时一个属性都不写出来，皮肤据此走缺省档',
+      spec: { apg: APG },
+      initial: {
+        parts: { root: { 'data-variant': null, 'data-tone': null, 'data-size': null } },
+      },
+    },
+    {
       name: '初始收起：control 是 group、每段是 spinbutton、每列是 listbox；秒段与秒列收起',
       spec: { apg: `${APG}#roles_states_properties` },
       props: { ...BASE, name: 'start' },

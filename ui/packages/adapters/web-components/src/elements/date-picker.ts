@@ -11,7 +11,7 @@ import type {
   DatePickerServices,
   DatePickerValueChangeDetails,
 } from '@xihan-ui/headless'
-import type { Cleanup, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, ControlVariant, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import { calendarAnatomy, calendarMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldEndProps, datePickerFieldProps, datePickerMachine, datePickerMeta } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
@@ -69,6 +69,9 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {boolean} required - 必填标注，落到每段的 aria-required 上
  * @attr {string} name - 表单字段名；给了隐藏输入才带 name。区间模式下是起点那一份
  * @attr {string} end-name - 区间终点那份隐藏输入的表单字段名；不给即终点不参与提交
+ * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
+ * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
  * @attr {boolean} close-on-select - 选完即收起，默认 true；写 close-on-select="false" 关掉
@@ -128,6 +131,9 @@ export class XhDatePickerElement extends XhElement {
     endName: { converter: STRING_CONVERTER, attribute: 'end-name' },
     // 文案是对象，只能走 property
     translations: { attribute: false },
+    variant: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    size: { converter: STRING_CONVERTER },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
     closeOnSelect: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-select' },
@@ -153,6 +159,9 @@ export class XhDatePickerElement extends XhElement {
   declare name?: string
   declare endName?: string
   declare translations?: DatePickerSchema['props']['translations']
+  declare variant?: ControlVariant
+  declare tone?: Tone
+  declare size?: Size
   declare placement?: Placement
   declare offset?: number
   declare closeOnSelect?: boolean
@@ -244,6 +253,9 @@ export class XhDatePickerElement extends XhElement {
       name: this.name,
       endName: this.endName,
       translations: this.translations,
+      variant: this.variant,
+      tone: this.tone,
+      size: this.size,
       placement: this.placement,
       offset: this.offset,
       closeOnSelect: this.closeOnSelect,
