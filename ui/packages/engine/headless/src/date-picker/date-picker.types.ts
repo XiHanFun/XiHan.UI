@@ -25,14 +25,17 @@ export interface DatePickerInputProps {
   index?: 0 | 1
 }
 
+/** 内嵌时间面板的列单位：这份面板恒为 24 小时制，没有上下午那一列。 */
+export type DatePickerTimeUnit = Exclude<TimePickerColumnUnit, 'dayPeriod'>
+
 /** 时间列自报自己是哪一个单位。 */
 export interface DatePickerTimeColumnProps {
-  unit: TimePickerColumnUnit
+  unit: DatePickerTimeUnit
 }
 
 /** 时间选项自报所属的列与自己的值（两位补零的显示串）。 */
 export interface DatePickerTimeItemProps {
-  unit: TimePickerColumnUnit
+  unit: DatePickerTimeUnit
   value: string
 }
 
@@ -233,7 +236,7 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   /** showTime 生效（开了且是单选模式）。 */
   showTime: boolean
   /** 时间列（时/分[/秒]）；没开 showTime 时为空数组。 */
-  timeColumns: readonly TimePickerColumn[]
+  timeColumns: readonly TimePickerColumn<DatePickerTimeUnit>[]
   /** 当前时间段（'HH:mm[:ss]'）；还没有值时为 null。 */
   timeValue: string | null
   /** 内嵌日历：选日期、翻月、键盘导航都在它身上。 */

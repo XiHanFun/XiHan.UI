@@ -2,10 +2,12 @@ import type { NavIntent } from '@xihan-ui/behavior'
 import type { Dict, NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { DateFieldApi, DateFieldSchema, DateSegmentType } from '../date-field'
+import type { TimePickerColumn } from '../time-picker'
 import type {
   DatePickerApi,
   DatePickerFieldApi,
   DatePickerServices,
+  DatePickerTimeUnit,
   DatePickerTranslations,
 } from './date-picker.types'
 import { focusSafely, navIntentFromKey, stepIndex } from '@xihan-ui/behavior'
@@ -73,7 +75,11 @@ export function connectDatePicker<T extends PropTypes>(
   // —— showTime：值升格为 datetime，面板里多出时间列，收口交给确认按钮 ——
   const showTime = !!prop('showTime') && selectionMode === 'single'
   const timeGranularity = prop('timeGranularity') ?? 'minute'
-  const timeColumns = showTime ? timePickerColumns({ granularity: timeGranularity, hourCycle: 24 }) : []
+  // 内嵌面板恒为 24 小时制，生成函数因此不会给出上下午那一列；滤一道把这件事写进类型里
+  const timeColumns: readonly TimePickerColumn<DatePickerTimeUnit>[] = showTime
+    ? timePickerColumns({ granularity: timeGranularity, hourCycle: 24 })
+        .filter((column): column is TimePickerColumn<DatePickerTimeUnit> => column.unit !== 'dayPeriod')
+    : []
   const timeValue = showTime && filled[0] != null ? datePickerTimePart(filled[0]) : null
 
   /** 点时间选项：该单位写进值；还没有日期时以聚焦日起值。 */

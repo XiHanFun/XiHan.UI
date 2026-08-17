@@ -16,6 +16,7 @@ import {
 import { dataAttr } from '@xihan-ui/kernel'
 import {
   appendSegmentDigit,
+  dayPeriodLabel,
   isTimeOutOfRange,
   resolveHourCycle,
   resolveTimeDraft,
@@ -149,6 +150,15 @@ export function connectTimePicker<T extends PropTypes>(
   const segmentTextOf = (segment: TimeSegmentType): string =>
     timeSegmentText(draft, segment, { hourCycle, locale })
 
+  /**
+   * 格子上的文字。数字列写的就是显示串本身；上下午列的值是 '00' / '01'，
+   * 与这一段在 aria-valuenow 上报的数同一个域，要落到「上午 / 下午」得按 locale 现译。
+   */
+  const itemTextOf = ({ unit, value: option }: { unit: TimePickerColumnUnit, value: string }): string =>
+    unit === 'dayPeriod'
+      ? dayPeriodLabel(Number(option) >= 1 ? 'pm' : 'am', locale)
+      : option
+
   // ── 分段输入：集合在事件那一刻现查，收起的段（granularity/hourCycle 关掉的）不参与移动 ──
 
   const liveSegments = (from: HTMLElement): HTMLElement[] =>
@@ -223,6 +233,7 @@ export function connectTimePicker<T extends PropTypes>(
     focusedItem,
     canClear,
     getSegmentText: ({ segment }) => segmentTextOf(segment),
+    getItemText: itemTextOf,
     isItemSelected: itemSelected,
     isItemDisabled: itemDisabled,
     setOpen: (next) => {

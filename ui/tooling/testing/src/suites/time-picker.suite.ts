@@ -24,10 +24,11 @@ const MINUTE_SEG = 'input[1]'
 const SECOND_SEG = 'input[2]'
 const DAY_PERIOD_SEG = 'input[3]'
 
-/** 列与格的下标寻址：时列 4 格（08-11）、分列 2 格（00/30）、秒列 2 格（00/30）。 */
+/** 列与格的下标寻址：时列 4 格（08-11）、分列 2 格（00/30）、秒列 2 格（00/30）、上下午列 2 格。 */
 const HOUR_COL = 'column[0]'
 const MINUTE_COL = 'column[1]'
 const SECOND_COL = 'column[2]'
+const DAY_PERIOD_COL = 'column[3]'
 const HOUR_08 = 'item[0]'
 const HOUR_09 = 'item[1]'
 const HOUR_10 = 'item[2]'
@@ -35,6 +36,8 @@ const HOUR_11 = 'item[3]'
 const MINUTE_00 = 'item[4]'
 const MINUTE_30 = 'item[5]'
 const SECOND_00 = 'item[6]'
+const PERIOD_AM = 'item[8]'
+const PERIOD_PM = 'item[9]'
 
 const segment = (name: string): FixtureNode => ({ part: 'input', tag: 'span', attrs: { segment: name } })
 const item = (value: string): FixtureNode => ({ part: 'item', attrs: { value } })
@@ -68,7 +71,7 @@ export const timePickerSuite: ConformanceSuite = {
   component: 'time-picker',
   anatomy: timePickerAnatomy,
   keyboard: timePickerKeyboard,
-  // 四段与三列全写出来：granularity / hourCycle 关掉的那些由连接层打 hidden 收起，不删作者节点
+  // 四段与四列全写出来：granularity / hourCycle 关掉的那些由连接层打 hidden 收起，不删作者节点
   fixture: {
     part: 'root',
     children: [
@@ -94,6 +97,7 @@ export const timePickerSuite: ConformanceSuite = {
               column('hour', ['08', '09', '10', '11']),
               column('minute', ['00', '30']),
               column('second', ['00', '30']),
+              column('dayPeriod', ['00', '01']),
             ],
           },
         ],
@@ -130,9 +134,12 @@ export const timePickerSuite: ConformanceSuite = {
           SECOND_COL,
           SECOND_00,
           'item[7]',
+          DAY_PERIOD_COL,
+          PERIOD_AM,
+          PERIOD_PM,
           'hidden-input',
         ],
-        counts: { input: 4, column: 3, item: 8 },
+        counts: { input: 4, column: 4, item: 10 },
         activeElement: null,
         parts: {
           'root': { 'data-state': 'closed', 'data-empty': '', 'data-disabled': null, 'data-invalid': null },
@@ -185,6 +192,8 @@ export const timePickerSuite: ConformanceSuite = {
           },
           [MINUTE_COL]: { 'data-value': 'minute', 'hidden': null },
           [SECOND_COL]: { 'data-value': 'second', 'hidden': '' },
+          // 24 小时制下没有上下午可挑，这一列与上下午段一并收起
+          [DAY_PERIOD_COL]: { 'data-value': 'dayPeriod', 'aria-label': 'AM/PM', 'hidden': '' },
           [HOUR_08]: {
             'role': 'option',
             'data-value': '08',
@@ -728,6 +737,79 @@ export const timePickerSuite: ConformanceSuite = {
           why: '段上的文字是文本节点',
           run: ({ doc }) => expectTexts(doc, ['09', '30', 'AM'], '12 小时制多出上下午段'),
         },
+      ],
+    },
+
+    {
+      // 上界放宽到 23:00：BASE 的 11:00 会把下午整段裁掉，那条由下一个用例专门验
+      name: '12 小时制：上下午也成列，浮层里挑它与段上按 a/p 写的是同一个值',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: { ...BASE, max: '23:00', hourCycle: 12, defaultValue: '09:30' },
+      initial: {
+        parts: {
+          [DAY_PERIOD_COL]: { 'data-value': 'dayPeriod', 'hidden': null },
+          [PERIOD_AM]: { 'role': 'option', 'data-value': '00', 'aria-selected': 'true', 'data-state': 'checked' },
+          [PERIOD_PM]: { 'aria-selected': 'false', 'data-state': 'unchecked' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '格上的文字是文本节点，没给 locale 时是 AM / PM',
+          run: ({ doc }) => {
+            const items = [...doc.querySelectorAll<HTMLElement>(`${SCOPE}[data-part="item"]`)]
+            const texts = [items[8]?.textContent ?? '', items[9]?.textContent ?? '']
+            if (texts.join('|') !== 'AM|PM')
+              throw new Error(`上下午两格期望 [AM,PM]，实际 [${texts.join(',')}]`)
+          },
+        },
+        { kind: 'click', part: 'trigger' },
+        {
+          kind: 'click',
+          part: PERIOD_PM,
+          expect: {
+            parts: {
+              [PERIOD_PM]: { 'aria-selected': 'true', 'data-state': 'checked' },
+              [PERIOD_AM]: { 'aria-selected': 'false' },
+              // 时段显示的仍是 09，翻面动的是它背后的那个数
+              [DAY_PERIOD_SEG]: { 'aria-valuenow': '1', 'aria-valuetext': 'PM' },
+              [HOUR_SEG]: { 'aria-valuenow': '9' },
+              // 21:30 仍在 08:00-23:00 之内
+              root: { 'data-out-of-range': null },
+            },
+            events: [{ type: 'value-change', detail: { value: '21:30' } }],
+          },
+        },
+        {
+          kind: 'click',
+          part: PERIOD_AM,
+          expect: {
+            parts: {
+              [PERIOD_AM]: { 'aria-selected': 'true' },
+              [DAY_PERIOD_SEG]: { 'aria-valuenow': '0', 'aria-valuetext': 'AM' },
+            },
+            events: [{ type: 'value-change', detail: { value: '09:30' } }],
+          },
+        },
+      ],
+    },
+
+    {
+      // 段上按 p 只是标注越界（值照写），列里则直接裁掉——两条路对越界的处置本就不同
+      name: '上下午列跟着界收窄：当前小时翻到下午即出界时，那一格不可选',
+      spec: { apg: `${APG}#roles_states_properties` },
+      props: { ...BASE, hourCycle: 12, defaultValue: '09:30' },
+      initial: {
+        parts: {
+          [PERIOD_AM]: { 'aria-disabled': 'false' },
+          // 上界是 11:00，9 点翻到下午是 21 点，出界
+          [PERIOD_PM]: { 'aria-disabled': 'true' },
+        },
+      },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        // 不可选的格点了不认，值纹丝不动
+        { kind: 'click', part: PERIOD_PM, expect: { events: [], parts: { [DAY_PERIOD_SEG]: { 'aria-valuenow': '0' } } } },
       ],
     },
 

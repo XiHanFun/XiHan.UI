@@ -126,7 +126,7 @@ show-time 让值升格为一体化 datetime：日历右侧多出时/分列（XhD
 | `setValue` | `(next: string[]) => void` |  |
 | `clear` | `() => void` |  |
 | `showTime` | `boolean` | showTime 生效（开了且是单选模式）。 |
-| `timeColumns` | `readonly TimePickerColumn[]` | 时间列（时/分[/秒]）；没开 showTime 时为空数组。 |
+| `timeColumns` | `readonly TimePickerColumn<DatePickerTimeUnit>[]` | 时间列（时/分[/秒]）；没开 showTime 时为空数组。 |
 | `timeValue` | `string \| null` | 当前时间段（'HH:mm[:ss]'）；还没有值时为 null。 |
 | `calendar` | `CalendarApi<T>` | 内嵌日历：选日期、翻月、键盘导航都在它身上。 |
 | `field` | `DatePickerFieldApi<T>` | 内嵌分段输入，区间模式下是起点那一组。 |
