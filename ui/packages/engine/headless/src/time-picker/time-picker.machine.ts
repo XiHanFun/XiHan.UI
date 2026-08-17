@@ -233,6 +233,8 @@ export const timePickerMachine = createMachine({
     focusedItem: cell<string | null>(() => ({ defaultValue: null })),
     focusIntent: cell<TimePickerFocusIntent>(() => ({ defaultValue: 'selected' })),
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
+    // 缺省搬：触发钮、键盘与命令式入口都要把焦点送进浮层
+    moveFocusIn: cell<boolean>(() => ({ defaultValue: true })),
   }),
   refs: () => ({
     config: null,
@@ -267,12 +269,12 @@ export const timePickerMachine = createMachine({
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知。
         // 落点意图先记进 context：受控那一拍走 CONTROLLED.OPEN，读不到原按键事件
         'OPEN': [
-          { guard: 'isOpenControlled', actions: ['setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
-          { target: 'open', actions: ['setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
+          { guard: 'isOpenControlled', actions: ['setFocusIntent', 'setMoveFocusIn', 'setReturnFocus', 'invokeOnOpen'] },
+          { target: 'open', actions: ['setFocusIntent', 'setMoveFocusIn', 'setReturnFocus', 'invokeOnOpen'] },
         ],
         'TOGGLE': [
-          { guard: 'isOpenControlled', actions: ['setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
-          { target: 'open', actions: ['setFocusIntent', 'setReturnFocus', 'invokeOnOpen'] },
+          { guard: 'isOpenControlled', actions: ['setFocusIntent', 'setMoveFocusIn', 'setReturnFocus', 'invokeOnOpen'] },
+          { target: 'open', actions: ['setFocusIntent', 'setMoveFocusIn', 'setReturnFocus', 'invokeOnOpen'] },
         ],
         'CONTROLLED.OPEN': { target: 'open' },
       },
@@ -328,6 +330,13 @@ export const timePickerMachine = createMachine({
         const e = event.current()
         const handedOff = e.type === 'CLOSE' && (e.src === 'tab' || e.src === 'interact-outside')
         context.set('returnFocus', !handedOff)
+      },
+
+      /** 点输入行展开的那一路不搬焦点，其余（触发钮、键盘、命令式）照搬。 */
+      setMoveFocusIn: ({ context, event }) => {
+        const e = event.current()
+        const src = e.type === 'OPEN' || e.type === 'TOGGLE' ? e.src : undefined
+        context.set('moveFocusIn', src !== 'control')
       },
 
       setFocusIntent: ({ context, event }) => {
@@ -544,6 +553,14 @@ export const timePickerMachine = createMachine({
             const content = refs.get('getContentEl')()
             if (!content)
               return null
+            // 点输入行展开：焦点本来就在某个段位上，把它原样交回去——
+            // 焦点域一拿到非空落点就认账，既不搬走焦点，也不会退回去聚焦浮层里头一个可聚焦元素
+            if (!context.get('moveFocusIn')) {
+              const anchor = refs.get('getAnchorEl')()
+              const active = config.scope.getActiveElement()
+              if (anchor && active instanceof HTMLElement && anchor.contains(active))
+                return active
+            }
             const unit = context.get('focusedColumn')
             const value = context.get('focusedItem')
             if (unit != null && value != null)

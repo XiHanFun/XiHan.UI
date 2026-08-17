@@ -254,12 +254,24 @@ export function connectDatePicker<T extends PropTypes>(
     }),
 
     // 输入行整体，同时是浮层的定位锚点
+    // 点输入行就展开：日期这种东西多数人是来挑的，不该逼着先去点那个小箭头。
+    // 触发钮仍是可选部件，留着给键盘与读屏用户一个明写的入口（它才带 aria-haspopup / aria-expanded）
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
+      'onClick': (event: MouseEvent) => {
+        if (disabled || open)
+          return
+        // 触发钮与清空钮各有自己的处理器，落在它们身上的这一下不归这里
+        const el = event.target as Element | null
+        if (el?.closest(parts.trigger.selector) || el?.closest(parts['clear-trigger'].selector))
+          return
+        // src=control：这一下的用意是编辑段位，焦点得留在段上，不搬进浮层
+        send({ type: 'OPEN', src: 'control' })
+      },
     }),
 
     // 分段容器：role=group 把一排段位兜成整体。单值时名字由 label 提供，
@@ -283,6 +295,14 @@ export function connectDatePicker<T extends PropTypes>(
         'data-empty': dataAttr(!!raw?.empty),
         'data-complete': dataAttr(!!raw?.complete),
         'data-out-of-range': dataAttr(outOfRange),
+        // 触发钮是可选部件，键盘那条入口不能只挂在它身上：Alt+ArrowDown 是下拉类控件通用的展开键。
+        // 挂在分段容器而不是段位上——段位属于分段输入那份解剖，keydown 冒到这儿一样收得到
+        'onKeyDown': (event: KeyboardEvent) => {
+          if (disabled || open || !event.altKey || event.key !== 'ArrowDown')
+            return
+          event.preventDefault()
+          send({ type: 'OPEN', src: 'trigger' })
+        },
       })
     },
 
@@ -302,7 +322,7 @@ export function connectDatePicker<T extends PropTypes>(
       'onClick': () => {
         // 守卫防程序化派发（原生 disabled 不派 click）
         if (!disabled)
-          send({ type: 'TOGGLE' })
+          send({ type: 'TOGGLE', src: 'trigger' })
       },
     }),
 

@@ -156,14 +156,20 @@ export interface TimePickerSchema extends MachineSchema {
     focusIntent: TimePickerFocusIntent
     /** 关闭时是否把焦点归还触发器；Tab 与层外交互关闭时为 false。 */
     returnFocus: boolean
+    /**
+     * 这一轮展开要不要把焦点搬进浮层。
+     * 点输入行展开时为假：那一下的用意是编辑段位，抢走焦点就打不了字了。
+     */
+    moveFocusIn: boolean
   }
   computed: Record<string, never>
   refs: TimePickerRefs
   state: 'open' | 'closed'
   event:
-    // focus 是本次展开的落点意图，缺省 selected（指针与命令式入口都走它）
-    | { type: 'OPEN', focus?: TimePickerFocusIntent }
-    | { type: 'TOGGLE', focus?: TimePickerFocusIntent }
+    // focus 是本次展开的落点意图，缺省 selected（指针与命令式入口都走它）；
+    // src 记下这次是从哪儿展开的：点输入行那一路不把焦点搬进浮层（用户点段位是为了打字）
+    | { type: 'OPEN', focus?: TimePickerFocusIntent, src?: 'trigger' | 'control' }
+    | { type: 'TOGGLE', focus?: TimePickerFocusIntent, src?: 'trigger' | 'control' }
     | { type: 'CLOSE', src?: 'esc' | 'tab' | 'interact-outside' }
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
@@ -195,6 +201,7 @@ export interface TimePickerSchema extends MachineSchema {
     | 'syncOpen'
     | 'setReturnFocus'
     | 'setFocusIntent'
+    | 'setMoveFocusIn'
     | 'setInitialFocusedItem'
     | 'setFocusedItem'
     | 'clearFocusedItem'

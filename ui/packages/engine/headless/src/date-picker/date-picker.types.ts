@@ -156,13 +156,19 @@ export interface DatePickerSchema extends MachineSchema {
     focusedValue: string | null
     /** 收起时是否把焦点归还给展开前那个控件；Tab 与层外交互关闭时为 false。 */
     returnFocus: boolean
+    /**
+     * 这一轮展开要不要把焦点搬进浮层。
+     * 点输入行展开时为假：那一下的用意是编辑段位，抢走焦点就打不了字了。
+     */
+    moveFocusIn: boolean
   }
   computed: Record<string, never>
   refs: DatePickerRefs
   state: 'open' | 'closed'
   event:
-    | { type: 'OPEN' }
-    | { type: 'TOGGLE' }
+    // src 记下这次是从哪儿展开的：点输入行那一路不把焦点搬进浮层（用户点段位是为了打字）
+    | { type: 'OPEN', src?: 'trigger' | 'control' }
+    | { type: 'TOGGLE', src?: 'trigger' | 'control' }
     | { type: 'CLOSE', src?: 'esc' | 'tab' | 'interact-outside' }
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
@@ -180,6 +186,7 @@ export interface DatePickerSchema extends MachineSchema {
     | 'invokeOnClose'
     | 'syncOpen'
     | 'setReturnFocus'
+    | 'setMoveFocusIn'
     | 'setValue'
     | 'clearValue'
     | 'setFocusedValue'

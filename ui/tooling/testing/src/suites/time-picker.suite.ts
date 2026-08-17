@@ -107,6 +107,16 @@ export const timePickerSuite: ConformanceSuite = {
   },
   cases: [
     {
+      name: '段上 Alt+ArrowDown 展开：触发钮是可选部件，键盘那条入口不能只挂在它身上',
+      spec: { apg: APG },
+      covers: ['time-picker.kbd.segment-open'],
+      props: BASE,
+      steps: [
+        { kind: 'focus', part: 'input[0]' },
+        { kind: 'key', key: 'ArrowDown', modifiers: ['Alt'], expect: { parts: { content: { hidden: null } } } },
+      ],
+    },
+    {
       name: '三轴接线到 root 的 data-*：只落一处，输入行与浮层都从它继承',
       spec: { apg: APG },
       props: { variant: 'subtle', tone: 'success', size: 'lg' },

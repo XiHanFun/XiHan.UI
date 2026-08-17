@@ -243,6 +243,8 @@ export const datePickerMachine = createMachine({
       },
     })),
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
+    // 缺省搬：触发钮、键盘与命令式入口都要把焦点送进浮层
+    moveFocusIn: cell<boolean>(() => ({ defaultValue: true })),
   }),
   refs: () => ({
     config: null,
@@ -270,12 +272,12 @@ export const datePickerMachine = createMachine({
       on: {
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
         'OPEN': [
-          { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnOpen'] },
-          { target: 'open', actions: ['setReturnFocus', 'invokeOnOpen'] },
+          { guard: 'isOpenControlled', actions: ['setMoveFocusIn', 'setReturnFocus', 'invokeOnOpen'] },
+          { target: 'open', actions: ['setMoveFocusIn', 'setReturnFocus', 'invokeOnOpen'] },
         ],
         'TOGGLE': [
-          { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnOpen'] },
-          { target: 'open', actions: ['setReturnFocus', 'invokeOnOpen'] },
+          { guard: 'isOpenControlled', actions: ['setMoveFocusIn', 'setReturnFocus', 'invokeOnOpen'] },
+          { target: 'open', actions: ['setMoveFocusIn', 'setReturnFocus', 'invokeOnOpen'] },
         ],
         'CONTROLLED.OPEN': { target: 'open' },
       },
@@ -348,6 +350,13 @@ export const datePickerMachine = createMachine({
         if (open === undefined)
           return
         send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
+      },
+
+      /** 点输入行展开的那一路不搬焦点，其余（触发钮、键盘、命令式）照搬。 */
+      setMoveFocusIn: ({ context, event }) => {
+        const e = event.current()
+        const src = e.type === 'OPEN' || e.type === 'TOGGLE' ? e.src : undefined
+        context.set('moveFocusIn', src !== 'control')
       },
 
       // Tab 关闭与层外交互不归还焦点：焦点已落在别处，抢回会把光标从新落点拽走；其余出口归还
@@ -468,7 +477,17 @@ export const datePickerMachine = createMachine({
           loop: false,
           // 落点显式指定为聚焦日那一格，交给 Tab 序列探测会停在第一个可聚焦元素。
           // 每次求值都现查：content 仍带 hidden 的那一帧返回 null，焦点域会重试到 DOM 就位
-          initialFocus: () => findDatePickerCellEl(refs.get('getContentEl')(), context.get('focusedValue')),
+          initialFocus: () => {
+            // 点输入行展开:焦点本来就在某个段位上,把它原样交回去——焦点域一拿到非空落点
+            // 就认账,于是既不搬走焦点,也不会退回去聚焦浮层里的头一个可聚焦元素
+            if (!context.get('moveFocusIn')) {
+              const anchor = refs.get('getAnchorEl')()
+              const active = config.scope.getActiveElement()
+              if (anchor && active instanceof HTMLElement && anchor.contains(active))
+                return active
+            }
+            return findDatePickerCellEl(refs.get('getContentEl')(), context.get('focusedValue'))
+          },
           restoreFocus: () => context.get('returnFocus'),
         })
 

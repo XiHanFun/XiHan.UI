@@ -682,6 +682,58 @@ describe('段位之间的移动（编排机自己接管的那一段）', () => {
   })
 })
 
+describe('点输入行即展开', () => {
+  it('点段位就展开，且焦点留在段上——那一下的用意是打字，不是挑日子', async () => {
+    const h = mount({ defaultValue: '2026-07-28' })
+    const segment = h.segments()[0]!
+    segment.focus()
+    click(segment)
+    await settle()
+    await tick()
+    expect(h.state()).toBe('open')
+    // 关键断言：焦点没被搬进浮层
+    expect(active()).toBe(segment)
+    expect(active()).not.toBe(h.cell('2026-07-28'))
+  })
+
+  it('已经展开时再点输入行不会把它关掉：正在编辑段位', async () => {
+    const h = await open({ defaultValue: '2026-07-28' })
+    click(h.segments()[0]!)
+    await tick()
+    expect(h.state()).toBe('open')
+  })
+
+  it('点触发钮那一路照旧把焦点送进浮层', async () => {
+    const h = await open({ defaultValue: '2026-07-28' })
+    expect(active()).toBe(h.cell('2026-07-28'))
+  })
+
+  it('点清空钮不当成展开', async () => {
+    const h = mount({ defaultValue: '2026-07-28' })
+    click(h.clear)
+    await tick()
+    expect(h.state()).toBe('closed')
+  })
+
+  it('段上 Alt+ArrowDown 展开并把焦点送进浮层——触发钮是可选部件，键盘不能只靠它', async () => {
+    const h = mount({ defaultValue: '2026-07-28' })
+    const segment = h.segments()[0]!
+    segment.focus()
+    press(segment, 'ArrowDown', { altKey: true })
+    await settle()
+    await tick()
+    expect(h.state()).toBe('open')
+    expect(active()).toBe(h.cell('2026-07-28'))
+  })
+
+  it('禁用时点输入行推不开', async () => {
+    const h = mount({ disabled: true })
+    click(h.segments()[0]!)
+    await tick()
+    expect(h.state()).toBe('closed')
+  })
+})
+
 describe('浮层：焦点、消解与归还', () => {
   it('展开后焦点落到聚焦日那一格，不是浮层里第一个可聚焦元素', async () => {
     const h = await open({ defaultValue: '2026-07-28' })
