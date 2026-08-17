@@ -9,6 +9,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
+import type { OverlayExit } from '../overlay-exit'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { cascaderAnatomy, cascaderMachine, cascaderMeta, connectCascader } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
@@ -16,6 +17,7 @@ import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { PART_ATTR } from '../dom/parts'
 import { XhElement } from '../element-base'
+import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定；Lit 自带转换器会把缺席落成 null/false，表达不了"未指定"。
@@ -146,6 +148,8 @@ export class XhCascaderElement extends XhElement {
   private readonly cascaderScope = createScope(null, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
+  /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
+  private exit: OverlayExit | null = null
 
   /** value-text 是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。 */
   private readonly ownsValueText = new WeakMap<HTMLElement, boolean>()
@@ -374,7 +378,17 @@ export class XhCascaderElement extends XhElement {
       this.spreader.spread(el, api.getItemIndicatorProps(this.itemOf(el)) as Record<string, unknown>)
 
     // 节点常驻，用内联 display 收起（作者层的 display 声明会盖过 [hidden]）
-    this.setPartHidden(this.getPart('content'), !api.open)
+    // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
+    // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
+    this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: api.open,
+      onExitComplete: () => this.requestUpdate(),
+    })
+    this.exit.track(this.getPart('content'))
+    this.exit.update(api.open)
+    this.setPartHidden(this.getPart('content'), !this.exit.visible)
     this.getParts('column').forEach((el, position) => {
       this.setPartHidden(el, this.levelOf(el, position) >= api.columns.length)
     })
@@ -384,6 +398,11 @@ export class XhCascaderElement extends XhElement {
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
+    // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
+    this.exit?.dispose()
+    this.exit = null
+    if (this.ctrl.service.state.get() !== 'open')
+      this.setPartHidden(this.getPart('content'), true)
     this.config = null // 重连时 ensureConfig 重建
   }
 }

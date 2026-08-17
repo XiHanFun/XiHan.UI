@@ -8,6 +8,7 @@ import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
+import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface PopoverContext {
@@ -16,6 +17,8 @@ export interface PopoverContext {
   triggerRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
+  /** 此刻该不该渲染：退场动画播完之前仍为真。 */
+  visible: Ref<boolean>
 }
 
 export function usePopover(
@@ -30,11 +33,14 @@ export function usePopover(
   const scope = createScope(null, idGen)
   const service = useMachine(popoverMachine, () => ({ ...props, onOpenChange }), scope)
 
+  // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
+  let config: RuntimeConfig | null = null
+
   if (typeof document !== 'undefined') {
-    const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
+    config = createRuntimeConfig({ scope, idGenerator: idGen })
 
     // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按展开态驱动
-    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
+    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
       kind: 'popover',
       node: () => contentRef.value,
       // trigger 记为本层分支，点它算层内交互
@@ -45,7 +51,7 @@ export function usePopover(
     })
 
     // 定位引擎由适配器注入，机器只经端口驱动
-    service.refs.set('config', config)
+    service.refs.set('config', config!)
     service.refs.set('registerLayer', registerLayer)
     service.refs.set('position', createPositionEngine())
     service.refs.set('getAnchorEl', () => triggerRef.value)
@@ -54,5 +60,8 @@ export function usePopover(
   }
 
   const api = computed(() => connectPopover(service, vueNormalize))
-  return { service, api, triggerRef, positionerRef, contentRef }
+  // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
+  const visible = useOverlayExit({ config, isOpen: () => api.value.open, contentRef })
+
+  return { visible, service, api, triggerRef, positionerRef, contentRef }
 }

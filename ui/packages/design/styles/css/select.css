@@ -12,6 +12,17 @@
       scale: 1;
     }
   }
+  @keyframes xh-pop-out {
+    from {
+      opacity: 1;
+      scale: 1;
+    }
+
+    to {
+      opacity: 0;
+      scale: var(--xh-motion-scale-enter);
+    }
+  }
 }
 
 @layer xihan.components {
@@ -345,10 +356,11 @@
     display: none;
   }
 
-  /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位 */
-  [data-scope='select'][data-part='content'][hidden] {
-    display: none;
-  }
+  /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
+     收起态连接层会给 content 打 hidden，而上面那条 display 正是要盖掉 UA 的
+     [hidden]{display:none}——退场动画得先能播。presence 读的是 content 的 animationName，
+     真正的收起由宿主在退场结束后落成内联 display:none（Vue 那边直接不渲染）。
+     其余声明了 display 的角色节点仍补 [hidden]，那几处没有退场动画。 */
 
   /* 焦点落在容器上只有一种情形：指针打开、无选中值、还没有任何条目当锚点。
      那一刻它认领着 Tab 位，环画在浮层内沿；有锚点时环长在条目上，容器不再画 */
@@ -363,6 +375,12 @@
 
   [data-scope='select'][data-part='content'][data-state='open'] {
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
+     免得动画结束到真收起之间闪一下原样 */
+  [data-scope='select'][data-part='content'][data-state='closed'] {
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   [data-scope='select'][data-part='item'] {

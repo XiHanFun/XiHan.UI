@@ -41,6 +41,10 @@ export function attachCssExit(
     if (style.display === 'none' || style.contentVisibility === 'hidden')
       return
 
+    // 这一轮退场认哪几支动画。收起发生在进场还没播完时，进场那支会先抛一个 animationcancel；
+    // 不认名字就会把它当成「退场结束了」，于是退场一帧都不播——开得越快关，越是收得越突然。
+    const exiting = new Set(name.split(',').map(part => part.trim()).filter(Boolean))
+
     // 动画也可能被作者中途换掉或从没触发，届时 animationend 同样不来。
     // 按算出来的时长给一张兜底票，过期即归还——租约不能没有回收路径。
     const lease = presence.claimExit('css-animation', exitTimeoutMs(style))
@@ -51,6 +55,9 @@ export function attachCssExit(
     function finish(e: AnimationEvent): void {
       // 只吃自己的动画，不吃子元素冒泡上来的
       if (e.target !== node)
+        return
+      // 也只吃这一轮退场那几支：进场被打断时抛的那个 cancel 不算数
+      if (!exiting.has(e.animationName))
         return
       cleanup()
       lease.done()

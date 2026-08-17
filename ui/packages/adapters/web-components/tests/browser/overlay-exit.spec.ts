@@ -135,3 +135,58 @@ describe('wc dialog 退场', () => {
     expect(content.style.display, '离场时必须强制结清').toBe('none')
   })
 })
+
+const POPOVER = `
+  <xh-popover open>
+    <button data-xh-part="trigger">开</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <h2 data-xh-part="title">标题</h2>
+      </div>
+    </div>
+  </xh-popover>
+`
+
+describe('wc popover 退场', () => {
+  it('收起后 content 不立刻被写成 display:none，而是在播退场动画', async () => {
+    const el = mount(POPOVER)
+    await settle()
+
+    const content = part('popover', 'content')!
+    expect(content, '展开时 content 应已接线').not.toBeNull()
+    expect(content.style.display).not.toBe('none')
+
+    el.setAttribute('open', 'false')
+    await settle()
+    expect(content.style.display, '退场动画播完之前不能写 display:none').not.toBe('none')
+    expect(getComputedStyle(content).animationName).toBe('xh-pop-out')
+  })
+
+  it('动画结束后才真的收起', async () => {
+    const el = mount(POPOVER)
+    await settle()
+
+    const content = part('popover', 'content')!
+    el.setAttribute('open', 'false')
+    await settle()
+
+    expect(await animationEnd(content), '退场动画应当真的结束一次').toBe(true)
+    await settle()
+
+    expect(content.style.display, '动画结束后应当收起').toBe('none')
+  })
+
+  it('退场中途重新展开，收起不会迟到落下来', async () => {
+    const el = mount(POPOVER)
+    await settle()
+
+    const content = part('popover', 'content')!
+    el.setAttribute('open', 'false')
+    await settle()
+    el.setAttribute('open', '')
+    await settle()
+
+    expect(content.style.display).not.toBe('none')
+    expect(getComputedStyle(content).animationName).toBe('xh-pop-in')
+  })
+})
