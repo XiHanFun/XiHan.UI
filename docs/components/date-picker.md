@@ -64,6 +64,18 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 
 <XhDemo src="date-picker/10-trigger" />
 
+### 按月 / 季度 / 年挑
+
+view 只换网格与「一页是多久」；格子的值仍是那段时间的第一天，min/max 与区间逻辑原样复用
+
+<XhDemo src="date-picker/11-view" />
+
+### 按周挑
+
+week-selection 打开后，点任意一天落的是它所在的整整一周（两端一起给），周首日随 locale
+
+<XhDemo src="date-picker/12-week" />
+
 ## 产物
 
 | 层 | 值 |
@@ -100,6 +112,8 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `required` | `boolean` |  | 必填标注，落到每一段的 aria-required 上。 |
 | `name` | `string` |  | 表单字段名；给了隐藏输入才带 name，ISO 串随表单一并提交。区间模式下是起点那一份。 |
 | `endName` | `string` |  | 区间终点那份隐藏输入的表单字段名；不给即终点不参与提交。 |
+| `view` | `CalendarView` |  | 面板按什么粒度挑：天（默认）、月、季度、年。格子的值仍是 ISO 日期串 （那段时间的第一天），min/max 与区间逻辑因此原样复用。 |
+| `weekSelection` | `boolean` |  | 周选：点任意一天选中它所在的整周。只在 view=day 且区间模式下生效。 |
 | `visibleCount` | `number` |  | 并排展示几个连续月，默认单选 1、区间 2。 区间的起止常跨月，一个面板要来回翻页才挑得完,两个并排才顺手。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色怎么用。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 |

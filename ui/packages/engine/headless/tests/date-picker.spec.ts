@@ -696,9 +696,20 @@ describe('点输入行即展开', () => {
     expect(active()).not.toBe(h.cell('2026-07-28'))
   })
 
-  it('已经展开时再点输入行不会把它关掉：正在编辑段位', async () => {
-    const h = await open({ defaultValue: '2026-07-28' })
-    click(h.segments()[0]!)
+  it('再点输入行收起：点开与收起对称，指针那条路才有出口', async () => {
+    const h = mount({ defaultValue: '2026-07-28' })
+    const segment = h.segments()[0]!
+    segment.focus()
+    click(segment)
+    await settle()
+    await tick()
+    expect(h.state()).toBe('open')
+    click(segment)
+    await tick()
+    expect(h.state()).toBe('closed')
+    // 再点一下还能开回来
+    click(segment)
+    await settle()
     await tick()
     expect(h.state()).toBe('open')
   })

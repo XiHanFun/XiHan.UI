@@ -4,6 +4,7 @@ import type {
   CalendarSchema,
   CalendarSelectionMode,
   CalendarValueChangeDetails,
+  CalendarView,
   CalendarWeekDay,
   CalendarWeekdayFormat,
 } from '@xihan-ui/headless'
@@ -14,6 +15,9 @@ import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
+// 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true
+const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
+const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
  * `<xh-calendar>` —— 日历行为宿主。
@@ -37,6 +41,9 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {boolean} read-only - 只读：翻月与移动焦点照常，只是选不动值
  * @attr {'narrow'|'short'} weekday-format - 表头缩写粒度，默认 short
  * @attr {boolean} fixed-weeks - 恒渲染六行
+ * @attr {'day'|'month'|'quarter'|'year'} view - 面板粒度，默认 day
+ * @attr {boolean} week-selection - 周选：点任意一天选中它所在的整周（view=day 且区间模式下生效）
+ * @attr {number} visible-count - 并排展示几页
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
  * @fires focused-value-change - 聚焦日变化；detail 为 `{ focusedValue: string }`
  * @csspart root - 组件根容器
@@ -78,6 +85,9 @@ export class XhCalendarElement extends XhElement {
     disabled: { type: Boolean },
     readOnly: { type: Boolean, attribute: 'read-only' },
     fixedWeeks: { type: Boolean, attribute: 'fixed-weeks' },
+    view: { converter: STRING_CONVERTER },
+    weekSelection: { converter: BOOLEAN_CONVERTER, attribute: 'week-selection' },
+    visibleCount: { converter: NUMBER_CONVERTER, attribute: 'visible-count' },
     // 判定函数只走 property
     isDateUnavailable: { attribute: false },
   }
@@ -95,6 +105,9 @@ export class XhCalendarElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare fixedWeeks?: boolean
+  declare view?: CalendarView
+  declare weekSelection?: boolean
+  declare visibleCount?: number
   declare isDateUnavailable?: (value: string) => boolean
 
   private readonly notifyValue = (details: CalendarValueChangeDetails): void => {
@@ -133,6 +146,9 @@ export class XhCalendarElement extends XhElement {
       readOnly: this.readOnly ?? false,
       weekdayFormat: this.weekdayFormat,
       fixedWeeks: this.fixedWeeks ?? false,
+      view: this.view,
+      weekSelection: this.weekSelection,
+      visibleCount: this.visibleCount,
       onValueChange: this.notifyValue,
       onFocusedValueChange: this.notifyFocus,
     }

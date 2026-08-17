@@ -6,10 +6,14 @@ import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   buildMonthGrid,
+  buildPeriodGrid,
   buildWeekDays,
   calendarMachine,
   calendarNavFromKey,
   calendarNavTarget,
+  calendarPageMonths,
+  calendarPeriodStart,
+  calendarWeekRange,
   connectCalendar,
   parseCalendarDate,
 } from '../src/calendar'
@@ -336,6 +340,90 @@ describe('parseCalendarDate 脏值兜底', () => {
     expect(parseCalendarDate('昨天')).toBeNull()
     expect(parseCalendarDate('')).toBeNull()
     expect(parseCalendarDate(null)).toBeNull()
+  })
+})
+
+describe('面板粒度：月 / 季度 / 年 / 周', () => {
+  it('月面板一年 12 格，值是每个月的头一天', () => {
+    const g = buildPeriodGrid('2026-08-17', 'month', { locale: 'zh-CN' })
+    expect(g.cells).toHaveLength(12)
+    expect(g.cells[0]!.value).toBe('2026-01-01')
+    expect(g.cells[7]!.value).toBe('2026-08-01')
+    expect(g.startValue).toBe('2026-01-01')
+    expect(g.headingLabel).toContain('2026')
+  })
+
+  it('季度面板 4 格，值是每季的头一天', () => {
+    const g = buildPeriodGrid('2026-08-17', 'quarter', { locale: 'zh-CN' })
+    expect(g.cells.map(c => [c.label, c.value])).toEqual([
+      ['Q1', '2026-01-01'],
+      ['Q2', '2026-04-01'],
+      ['Q3', '2026-07-01'],
+      ['Q4', '2026-10-01'],
+    ])
+  })
+
+  it('年面板一页十年，两端各带一格邻十年（与日视图带邻月同一套做法）', () => {
+    const g = buildPeriodGrid('2026-08-17', 'year', { locale: 'zh-CN' })
+    expect(g.cells).toHaveLength(12)
+    expect(g.cells[0]!.label).toBe('2019')
+    expect(g.cells[0]!.inView).toBe(false)
+    expect(g.cells[1]!.label).toBe('2020')
+    expect(g.cells[1]!.inView).toBe(true)
+    expect(g.cells[10]!.label).toBe('2029')
+    expect(g.cells[11]!.inView).toBe(false)
+    // zh-CN 的年份带「年」字，标题因此是 2020年-2029年
+    expect(g.headingLabel).toBe('2020年-2029年')
+  })
+
+  it('一页走多少个月：日 1、月与季度 12、年 120', () => {
+    expect(calendarPageMonths('day')).toBe(1)
+    expect(calendarPageMonths('month')).toBe(12)
+    expect(calendarPageMonths('quarter')).toBe(12)
+    expect(calendarPageMonths('year')).toBe(120)
+  })
+
+  it('跨度起点：月/季度归到当年 1 月，年归到当个十年的头一年', () => {
+    expect(calendarPeriodStart(parseCalendarDate('2026-08-17')!, 'month').toString()).toBe('2026-01-01')
+    expect(calendarPeriodStart(parseCalendarDate('2026-08-17')!, 'year').toString()).toBe('2020-01-01')
+    expect(calendarPeriodStart(parseCalendarDate('2019-05-02')!, 'year').toString()).toBe('2010-01-01')
+  })
+
+  it('周的起止按 locale 的周首日切', () => {
+    // zh-CN 周一起
+    expect(calendarWeekRange('2026-08-13', 'zh-CN')).toEqual(['2026-08-10', '2026-08-16'])
+    // en-US 周日起
+    expect(calendarWeekRange('2026-08-13', 'en-US')).toEqual(['2026-08-09', '2026-08-15'])
+  })
+
+  it('连接层按 view 铺面板：月视图给 cells 不给 weeks，翻页整年走', () => {
+    const h = mount({ defaultFocusedValue: '2026-08-17', view: 'month', visibleCount: 2 })
+    const api = h.api()
+    expect(api.panels).toHaveLength(2)
+    expect(api.panels[0]!.weeks).toEqual([])
+    expect(api.panels[0]!.cells).toHaveLength(12)
+    expect(api.panels.map(p => p.year)).toEqual([2026, 2027])
+    h.api().goToNextMonth()
+    expect(h.api().panels.map(p => p.year)).toEqual([2027, 2028])
+  })
+
+  it('年视图翻一页走十年', () => {
+    const h = mount({ defaultFocusedValue: '2026-08-17', view: 'year' })
+    expect(h.api().panels[0]!.headingLabel).toBe('2020年-2029年')
+    h.api().goToNextMonth()
+    expect(h.api().panels[0]!.headingLabel).toBe('2030年-2039年')
+  })
+
+  it('周选：点任意一天落的是整整一周的两端', () => {
+    const h = mount({ defaultFocusedValue: '2026-08-13', selectionMode: 'range', weekSelection: true, locale: 'zh-CN' })
+    h.api().select('2026-08-13')
+    expect(h.value()).toEqual(['2026-08-10', '2026-08-16'])
+  })
+
+  it('周选只在日视图 + 区间下生效，其余照旧只落这一天', () => {
+    const single = mount({ defaultFocusedValue: '2026-08-13', weekSelection: true })
+    single.api().select('2026-08-13')
+    expect(single.value()).toEqual(['2026-08-13'])
   })
 })
 

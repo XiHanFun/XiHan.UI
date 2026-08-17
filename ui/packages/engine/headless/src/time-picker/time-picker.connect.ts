@@ -287,12 +287,18 @@ export function connectTimePicker<T extends PropTypes>(
       // 点输入行就展开：时间这种东西多数人是来挑的，不该逼着先去点那个小箭头。
       // 触发钮仍是可选部件，留着给键盘与读屏用户一个明写的入口（它才带 aria-haspopup / aria-expanded）
       'onClick': (event: MouseEvent) => {
-        if (disabled || open)
+        if (disabled)
           return
         // 触发钮与清空钮各有自己的处理器，落在它们身上的这一下不归这里
         const el = event.target as Element | null
         if (el?.closest(parts.trigger.selector) || el?.closest(parts['clear-trigger'].selector))
           return
+        // 再点一下收起：点开与收起对称，不然浮层展开后指针那条路就没有出口了
+        // （段位敲出来的值不触发"选完即收"，触发钮又是可选部件）
+        if (open) {
+          send({ type: 'CLOSE' })
+          return
+        }
         // src=control：这一下的用意是编辑段位，焦点得留在段上，不搬进浮层
         send({ type: 'OPEN', src: 'control' })
       },

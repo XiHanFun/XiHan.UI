@@ -2,6 +2,7 @@ import type {
   CalendarDay,
   CalendarSchema,
   CalendarSelectionMode,
+  CalendarView,
   CalendarWeekDay,
   DateFieldSchema,
   DatePickerFieldApi,
@@ -63,6 +64,9 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {string} locale - 决定周首日、月份文案与段位先后，默认 zh-CN（段序默认 en-US 由分段输入自定）
  * @attr {string} time-zone - 判定"今天"与格式化用的时区，默认宿主本地时区
  * @attr {'single'|'multiple'|'range'} selection-mode - 选择模式，默认 single
+ * @attr {'day'|'month'|'quarter'|'year'} view - 面板粒度，默认 day
+ * @attr {boolean} week-selection - 周选：点任意一天选中它所在的整周（view=day 且区间模式下生效）
+ * @attr {number} visible-count - 并排展示几页
  * @attr {boolean} disabled - 整个控件禁用：trigger 转原生 disabled，段位退出 Tab 序
  * @attr {boolean} read-only - 只读：浮层照常展开、日历照常浏览，但选中值改不动
  * @attr {boolean} invalid - 校验失败标注
@@ -123,6 +127,9 @@ export class XhDatePickerElement extends XhElement {
     locale: { converter: STRING_CONVERTER },
     timeZone: { converter: STRING_CONVERTER, attribute: 'time-zone' },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
+    view: { converter: STRING_CONVERTER },
+    weekSelection: { converter: BOOLEAN_CONVERTER, attribute: 'week-selection' },
+    visibleCount: { converter: NUMBER_CONVERTER, attribute: 'visible-count' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
@@ -152,6 +159,9 @@ export class XhDatePickerElement extends XhElement {
   declare locale?: string
   declare timeZone?: string
   declare selectionMode?: CalendarSelectionMode
+  declare view?: CalendarView
+  declare weekSelection?: boolean
+  declare visibleCount?: number
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
@@ -245,6 +255,9 @@ export class XhDatePickerElement extends XhElement {
       locale: this.locale,
       timeZone: this.timeZone,
       selectionMode: this.selectionMode,
+      view: this.view,
+      weekSelection: this.weekSelection,
+      visibleCount: this.visibleCount,
       isDateUnavailable: this.isDateUnavailable,
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,

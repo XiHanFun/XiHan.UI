@@ -2,6 +2,7 @@ import type {
   CalendarApi,
   CalendarCellProps,
   CalendarSelectionMode,
+  CalendarView,
   DateFieldSegmentState,
   DatePickerApi,
   DatePickerFieldApi,
@@ -76,6 +77,12 @@ export const XhDatePickerRoot = defineComponent({
     locale: { type: String, default: undefined },
     timeZone: { type: String, default: undefined },
     selectionMode: { type: String as PropType<CalendarSelectionMode>, default: undefined },
+    /** 面板粒度：天（默认）/ 月 / 季度 / 年。 */
+    view: { type: String as PropType<CalendarView>, default: undefined },
+    /** 周选：点任意一天选中它所在的整周。只在 view=day 且区间模式下生效。 */
+    weekSelection: { type: Boolean, default: undefined },
+    /** 并排展示几页；缺省单选 1、区间 2。 */
+    visibleCount: { type: Number, default: undefined },
     isDateUnavailable: { type: Function as PropType<(value: string) => boolean>, default: undefined },
     disabled: Boolean,
     readOnly: Boolean,

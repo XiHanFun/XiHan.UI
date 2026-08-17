@@ -1628,6 +1628,7 @@
       "CALENDAR_FIXED_WEEKS",
       "CALENDAR_LOCALE",
       "CALENDAR_WEEK_LENGTH",
+      "CALENDAR_YEARS_PER_PAGE",
       "CAROUSEL_AUTOPLAY_INTERVAL",
       "CAROUSEL_DRAG_THRESHOLD",
       "CASCADER_DEFAULT_PLACEMENT",
@@ -1655,11 +1656,15 @@
       "CalendarNavKeyEventLike",
       "CalendarPanel",
       "CalendarPanelProps",
+      "CalendarPeriodCell",
+      "CalendarPeriodGrid",
+      "CalendarPeriodGridOptions",
       "CalendarRefs",
       "CalendarSchema",
       "CalendarSelectionMode",
       "CalendarTranslations",
       "CalendarValueChangeDetails",
+      "CalendarView",
       "CalendarWeekDay",
       "CalendarWeekDayProps",
       "CalendarWeekDaysOptions",
@@ -2533,6 +2538,7 @@
       "breadcrumbMeta",
       "buildMonthGrid",
       "buildPageSequence",
+      "buildPeriodGrid",
       "buildWeekDays",
       "buttonAnatomy",
       "buttonGroupAnatomy",
@@ -2547,6 +2553,9 @@
       "calendarMeta",
       "calendarNavFromKey",
       "calendarNavTarget",
+      "calendarPageMonths",
+      "calendarPeriodStart",
+      "calendarWeekRange",
       "cardAnatomy",
       "cardKeyboard",
       "cardMeta",
@@ -4746,7 +4755,9 @@
       "selectionMode",
       "timeZone",
       "value",
+      "view",
       "visibleCount",
+      "weekSelection",
       "weekdayFormat"
     ],
     "card": [
@@ -4971,7 +4982,9 @@
       "translations",
       "value",
       "variant",
-      "visibleCount"
+      "view",
+      "visibleCount",
+      "weekSelection"
     ],
     "descriptions": [
       "bordered",
@@ -6012,6 +6025,7 @@
     "data-value",
     "data-variant",
     "data-version",
+    "data-view",
     "data-visible",
     "data-weight",
     "data-wrap"
@@ -6355,6 +6369,8 @@
     "--xh-calendar-nav-fg",
     "--xh-calendar-nav-radius",
     "--xh-calendar-nav-size",
+    "--xh-calendar-period-gap",
+    "--xh-calendar-period-py",
     "--xh-calendar-range-bg",
     "--xh-calendar-row-gap",
     "--xh-calendar-today-border",
@@ -8549,7 +8565,10 @@
         "time-zone",
         "tone",
         "value",
-        "variant"
+        "variant",
+        "view",
+        "visible-count",
+        "week-selection"
       ],
       "events": [
         "focused-value-change",

@@ -2324,6 +2324,33 @@
             },
             {
               "kind": "field",
+              "name": "view",
+              "privacy": "public",
+              "type": {
+                "text": "CalendarView | undefined"
+              },
+              "attribute": "view"
+            },
+            {
+              "kind": "field",
+              "name": "weekSelection",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "week-selection"
+            },
+            {
+              "kind": "field",
+              "name": "visibleCount",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "visible-count"
+            },
+            {
+              "kind": "field",
               "name": "isDateUnavailable",
               "privacy": "public",
               "type": {
@@ -2513,6 +2540,27 @@
                 "text": "boolean | undefined"
               },
               "fieldName": "fixedWeeks"
+            },
+            {
+              "name": "view",
+              "type": {
+                "text": "CalendarView | undefined"
+              },
+              "fieldName": "view"
+            },
+            {
+              "name": "week-selection",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "fieldName": "weekSelection"
+            },
+            {
+              "name": "visible-count",
+              "type": {
+                "text": "number | undefined"
+              },
+              "fieldName": "visibleCount"
             }
           ],
           "superclass": {
@@ -8518,6 +8566,33 @@
             },
             {
               "kind": "field",
+              "name": "view",
+              "privacy": "public",
+              "type": {
+                "text": "CalendarView | undefined"
+              },
+              "attribute": "view"
+            },
+            {
+              "kind": "field",
+              "name": "weekSelection",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "week-selection"
+            },
+            {
+              "kind": "field",
+              "name": "visibleCount",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "visible-count"
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "privacy": "public",
               "type": {
@@ -8993,6 +9068,30 @@
               "description": "选择模式，默认 single",
               "name": "selection-mode",
               "fieldName": "selectionMode"
+            },
+            {
+              "type": {
+                "text": "CalendarView | undefined"
+              },
+              "description": "面板粒度，默认 day",
+              "name": "view",
+              "fieldName": "view"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "周选：点任意一天选中它所在的整周（view=day 且区间模式下生效）",
+              "name": "week-selection",
+              "fieldName": "weekSelection"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "并排展示几页",
+              "name": "visible-count",
+              "fieldName": "visibleCount"
             },
             {
               "type": {

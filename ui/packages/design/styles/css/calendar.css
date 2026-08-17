@@ -83,6 +83,27 @@
     gap: var(--xh-calendar-grid-gap, var(--xh-space-1));
   }
 
+  /* 粗粒度视图：格子直接铺进网格，不再有周行那一层。
+     月 3 列 × 4 行、季度 4 列一行、年 3 列——与常见日期控件同一套排布 */
+  [data-scope='calendar'][data-part='grid'][data-view='month'],
+  [data-scope='calendar'][data-part='grid'][data-view='year'] {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--xh-calendar-period-gap, var(--xh-space-1));
+  }
+
+  [data-scope='calendar'][data-part='grid'][data-view='quarter'] {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--xh-calendar-period-gap, var(--xh-space-1));
+  }
+
+  /* 粗粒度的格子比日子宽，文字居中、留出上下气口 */
+  [data-scope='calendar'][data-part='grid']:is([data-view='month'], [data-view='quarter'], [data-view='year']) [data-part='cell-trigger'] {
+    padding-block: var(--xh-calendar-period-py, var(--xh-space-2));
+    inline-size: 100%;
+  }
+
   [data-scope='calendar'][data-part='grid'][hidden] {
     display: none;
   }

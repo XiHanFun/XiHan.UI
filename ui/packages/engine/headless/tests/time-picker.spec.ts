@@ -466,13 +466,16 @@ describe('开合', () => {
     expect(document.activeElement).not.toBe(h.option('hour', '09'))
   })
 
-  it('已经展开时再点输入行不会把它关掉：正在编辑段位', async () => {
+  it('再点输入行收起：点开与收起对称，指针那条路才有出口', async () => {
     const h = open({ defaultValue: '09:30' })
-    h.trigger.click()
+    const segment = h.segment('hour')
+    segment.focus()
+    segment.click()
     await flushFrames(3)
-    h.segment('hour').click()
-    await flushFrames(1)
     expect(h.state()).toBe('open')
+    segment.click()
+    await flushFrames(1)
+    expect(h.state()).toBe('closed')
   })
 
   it('段上 Enter 收起：敲出来的值不触发选完即收，得给一个我填完了的手势', async () => {
