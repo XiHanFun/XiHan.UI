@@ -1653,6 +1653,8 @@
       "CalendarMonthGridOptions",
       "CalendarNavIntent",
       "CalendarNavKeyEventLike",
+      "CalendarPanel",
+      "CalendarPanelProps",
       "CalendarRefs",
       "CalendarSchema",
       "CalendarSelectionMode",
@@ -4744,6 +4746,7 @@
       "selectionMode",
       "timeZone",
       "value",
+      "visibleCount",
       "weekdayFormat"
     ],
     "card": [
@@ -4967,7 +4970,8 @@
       "tone",
       "translations",
       "value",
-      "variant"
+      "variant",
+      "visibleCount"
     ],
     "descriptions": [
       "bordered",
@@ -6761,6 +6765,8 @@
     "--xh-date-picker-label-fg-disabled",
     "--xh-date-picker-label-font-size",
     "--xh-date-picker-label-font-weight",
+    "--xh-date-picker-panel-divider",
+    "--xh-date-picker-panel-gap",
     "--xh-date-picker-time-column-h",
     "--xh-date-picker-time-item-bg-hover",
     "--xh-date-picker-time-item-bg-selected",
@@ -8287,27 +8293,6 @@
         "variant"
       ],
       "events": []
-    },
-    "xh-calendar": {
-      "attributes": [
-        "default-focused-value",
-        "default-value",
-        "disabled",
-        "fixed-weeks",
-        "focused-value",
-        "locale",
-        "max",
-        "min",
-        "read-only",
-        "selection-mode",
-        "time-zone",
-        "value",
-        "weekday-format"
-      ],
-      "events": [
-        "focused-value-change",
-        "value-change"
-      ]
     },
     "xh-card": {
       "attributes": [

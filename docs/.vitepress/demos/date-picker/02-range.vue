@@ -1,4 +1,4 @@
-<!-- 区间选择 | 起止各一组段位，两端都能敲；只落一端浮层不收，两端都在才算选完 -->
+<!-- 区间选择 | 默认并排两个连续月：起止常跨月，一个面板要来回翻页才挑得完。翻页整窗一起走一个月 -->
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import {
@@ -40,7 +40,7 @@ const text = computed(() => {
 
 <template>
   <XhDatePickerRoot
-    v-slot="{ weeks, weekDays }"
+    v-slot="{ panels, weekDays }"
     v-model:value="value"
     :translations="translations"
     locale="zh-CN"
@@ -70,13 +70,14 @@ const text = computed(() => {
     </XhDatePickerControl>
     <XhDatePickerPositioner>
       <XhDatePickerContent>
-        <XhDatePickerCalendar>
+        <XhDatePickerCalendar v-for="panel in panels" :key="panel.index">
           <XhDatePickerHeader>
-            <XhDatePickerPrevTrigger aria-label="上个月">‹</XhDatePickerPrevTrigger>
-            <XhDatePickerHeading />
-            <XhDatePickerNextTrigger aria-label="下个月">›</XhDatePickerNextTrigger>
+            <!-- 往前只在最左那张、往后只在最右那张：整窗一起走，两张各摆一套会让人以为能各翻各的 -->
+            <XhDatePickerPrevTrigger v-if="panel.index === 0" aria-label="上个月">‹</XhDatePickerPrevTrigger>
+            <XhDatePickerHeading :index="panel.index" />
+            <XhDatePickerNextTrigger v-if="panel.index === panels.length - 1" aria-label="下个月">›</XhDatePickerNextTrigger>
           </XhDatePickerHeader>
-          <XhDatePickerGrid>
+          <XhDatePickerGrid :index="panel.index">
             <XhDatePickerGridHead>
               <XhDatePickerWeekRow>
                 <XhDatePickerWeekDay
@@ -87,11 +88,13 @@ const text = computed(() => {
               </XhDatePickerWeekRow>
             </XhDatePickerGridHead>
             <XhDatePickerGridBody>
-              <XhDatePickerWeekRow v-for="week in weeks" :key="week[0].value">
+              <XhDatePickerWeekRow v-for="week in panel.weeks" :key="week[0].value">
+                <!-- index 必须给：同一天会同时出现在两个面板里，是不是本月要连着面板一起判 -->
                 <XhDatePickerCell
                   v-for="day in week"
                   :key="day.value"
                   :value="day.value"
+                  :index="panel.index"
                 >
                   <XhDatePickerCellTrigger>{{ day.day }}</XhDatePickerCellTrigger>
                 </XhDatePickerCell>

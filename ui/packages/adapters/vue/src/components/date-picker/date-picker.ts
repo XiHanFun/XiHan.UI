@@ -45,6 +45,7 @@ export type DatePickerRootSlotProps
   & Pick<
     CalendarApi,
     | 'visibleMonth'
+    | 'panels'
     | 'weeks'
     | 'weekDays'
     | 'headingLabel'
@@ -129,6 +130,7 @@ export const XhDatePickerRoot = defineComponent({
       valueAsString: ctx.api.value.valueAsString,
       focusedValue: ctx.api.value.focusedValue,
       visibleMonth: ctx.api.value.calendar.visibleMonth,
+      panels: ctx.api.value.calendar.panels,
       weeks: ctx.api.value.calendar.weeks,
       weekDays: ctx.api.value.calendar.weekDays,
       headingLabel: ctx.api.value.calendar.headingLabel,
@@ -318,24 +320,36 @@ export const XhDatePickerNextTrigger = defineComponent({
 
 export const XhDatePickerHeading = defineComponent({
   name: 'XhDatePickerHeading',
-  setup(_, { slots }) {
+  props: {
+    /** 属于第几个面板，默认 0。单面板时不用写。 */
+    index: { type: Number, default: 0 },
+  },
+  setup(props, { slots }) {
     const ctx = useDatePickerContext()
-    // 有插槽用插槽，否则渲染 headingLabel
+    // 有插槽用插槽，否则渲染本面板的标题
     return () => h(
       'div',
-      ctx.api.value.calendar.getHeadingProps() as Record<string, unknown>,
-      slots.default?.() ?? ctx.api.value.calendar.headingLabel,
+      ctx.api.value.calendar.getHeadingProps({ index: props.index }) as Record<string, unknown>,
+      slots.default?.() ?? (ctx.api.value.calendar.panels[props.index]?.headingLabel ?? ctx.api.value.calendar.headingLabel),
     )
   },
 })
 
 export const XhDatePickerGrid = defineComponent({
   name: 'XhDatePickerGrid',
-  setup(_, { slots }) {
+  props: {
+    /** 属于第几个面板，默认 0。单面板时不用写。 */
+    index: { type: Number, default: 0 },
+  },
+  setup(props, { slots }) {
     const ctx = useDatePickerContext()
     return () => h(
       'div',
-      { ...ctx.api.value.calendar.getGridProps() as Record<string, unknown>, ref: ctx.gridRef },
+      {
+        ...ctx.api.value.calendar.getGridProps({ index: props.index }) as Record<string, unknown>,
+        // 键盘在首个网格上收口；其余面板只渲染，方向键仍能跨面板走（落点按值现查）
+        ref: props.index === 0 ? ctx.gridRef : undefined,
+      },
       slots.default?.(),
     )
   },
@@ -388,10 +402,15 @@ export const XhDatePickerCell = defineComponent({
   props: {
     /** ISO 日期串。 */
     value: { type: String, required: true },
+    /**
+     * 属于第几个面板，默认 0。多面板时必须给：同一天会同时出现在两个面板里
+     * （8 月末那几天也铺在 9 月的首行），「是不是本月」只有连着面板一起看才判得出来。
+     */
+    index: { type: Number, default: 0 },
   },
   setup(props, { slots }) {
     const ctx = useDatePickerContext()
-    const cell = computed<CalendarCellProps>(() => ({ value: props.value }))
+    const cell = computed<CalendarCellProps>(() => ({ value: props.value, index: props.index }))
     provideDatePickerCell({ cell })
     // 不上报格子卸载，翻月后由日历机器按聚焦日重新落点
     return () => h('div', ctx.api.value.calendar.getCellProps(cell.value) as Record<string, unknown>, slots.default?.())

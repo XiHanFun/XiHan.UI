@@ -14,6 +14,7 @@ export type CalendarRootSlotProps = Pick<
   | 'value'
   | 'focusedValue'
   | 'visibleMonth'
+  | 'panels'
   | 'weeks'
   | 'weekDays'
   | 'headingLabel'
@@ -73,6 +74,7 @@ export const XhCalendarRoot = defineComponent({
       value: ctx.api.value.value,
       focusedValue: ctx.api.value.focusedValue,
       visibleMonth: ctx.api.value.visibleMonth,
+      panels: ctx.api.value.panels,
       weeks: ctx.api.value.weeks,
       weekDays: ctx.api.value.weekDays,
       headingLabel: ctx.api.value.headingLabel,
@@ -115,24 +117,36 @@ export const XhCalendarNextTrigger = defineComponent({
 
 export const XhCalendarHeading = defineComponent({
   name: 'XhCalendarHeading',
-  setup(_, { slots }) {
+  props: {
+    /** 属于第几个面板，默认 0。单面板时不用写。 */
+    index: { type: Number, default: 0 },
+  },
+  setup(props, { slots }) {
     const ctx = useCalendarContext()
-    // 有插槽用插槽，否则渲染 headingLabel
+    // 有插槽用插槽，否则渲染本面板的标题
     return () => h(
       'div',
-      ctx.api.value.getHeadingProps() as Record<string, unknown>,
-      slots.default?.() ?? ctx.api.value.headingLabel,
+      ctx.api.value.getHeadingProps({ index: props.index }) as Record<string, unknown>,
+      slots.default?.() ?? (ctx.api.value.panels[props.index]?.headingLabel ?? ctx.api.value.headingLabel),
     )
   },
 })
 
 export const XhCalendarGrid = defineComponent({
   name: 'XhCalendarGrid',
-  setup(_, { slots }) {
+  props: {
+    /** 属于第几个面板，默认 0。单面板时不用写。 */
+    index: { type: Number, default: 0 },
+  },
+  setup(props, { slots }) {
     const ctx = useCalendarContext()
     return () => h(
       'div',
-      { ...ctx.api.value.getGridProps() as Record<string, unknown>, ref: ctx.gridRef },
+      {
+        ...ctx.api.value.getGridProps({ index: props.index }) as Record<string, unknown>,
+        // 键盘在首个网格上收口；其余面板只渲染，方向键仍能跨面板走（落点按值现查）
+        ref: props.index === 0 ? ctx.gridRef : undefined,
+      },
       slots.default?.(),
     )
   },
@@ -185,10 +199,15 @@ export const XhCalendarCell = defineComponent({
   props: {
     /** ISO 日期串。 */
     value: { type: String, required: true },
+    /**
+     * 属于第几个面板，默认 0。多面板时必须给：同一天会同时出现在两个面板里
+     * （8 月末那几天也铺在 9 月的首行），「是不是本月」只有连着面板一起看才判得出来。
+     */
+    index: { type: Number, default: 0 },
   },
   setup(props, { slots }) {
     const ctx = useCalendarContext()
-    const cell = computed<CalendarCellProps>(() => ({ value: props.value }))
+    const cell = computed<CalendarCellProps>(() => ({ value: props.value, index: props.index }))
     provideCalendarCell({ cell })
     // 不上报格子卸载，翻月后由机器按聚焦日重新落点
     return () => h('div', ctx.api.value.getCellProps(cell.value) as Record<string, unknown>, slots.default?.())

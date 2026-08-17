@@ -106,6 +106,11 @@ export interface DatePickerSchema extends MachineSchema {
     name?: string
     /** 区间终点那份隐藏输入的表单字段名；不给即终点不参与提交。 */
     endName?: string
+    /**
+     * 并排展示几个连续月，默认单选 1、区间 2。
+     * 区间的起止常跨月，一个面板要来回翻页才挑得完,两个并排才顺手。
+     */
+    visibleCount?: number
     /** 形态：outline / subtle / ghost，决定输入行的描边与底色怎么用。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 */

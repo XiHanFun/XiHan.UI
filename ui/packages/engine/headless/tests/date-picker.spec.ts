@@ -743,6 +743,19 @@ describe('浮层：焦点、消解与归还', () => {
   })
 })
 
+describe('区间默认两个面板', () => {
+  it('单选一个面板，区间两个——起止常跨月，一个面板要来回翻页', () => {
+    expect(mount({ defaultFocusedValue: '2026-08-17' }).api().calendar.panels).toHaveLength(1)
+    const range = mount({ selectionMode: 'range', defaultFocusedValue: '2026-08-17' }).api()
+    expect(range.calendar.panels.map(p => [p.year, p.month])).toEqual([[2026, 8], [2026, 9]])
+  })
+
+  it('visibleCount 显式给了以它为准，两种模式都听它的', () => {
+    expect(mount({ visibleCount: 3, defaultFocusedValue: '2026-08-17' }).api().calendar.panels).toHaveLength(3)
+    expect(mount({ selectionMode: 'range', visibleCount: 1, defaultFocusedValue: '2026-08-17' }).api().calendar.panels).toHaveLength(1)
+  })
+})
+
 describe('内嵌日历原样复用，不重写一条', () => {
   it('翻月按钮与方向键都归日历，编排机只是跟着记聚焦日', () => {
     const h = mount({ defaultOpen: true, defaultValue: '2026-07-28' })

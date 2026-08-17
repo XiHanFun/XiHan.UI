@@ -12,7 +12,7 @@
 
 ### 区间选择
 
-起止各一组段位，两端都能敲；只落一端浮层不收，两端都在才算选完
+默认并排两个连续月：起止常跨月，一个面板要来回翻页才挑得完。翻页整窗一起走一个月
 
 <XhDemo src="date-picker/02-range" />
 
@@ -94,6 +94,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `required` | `boolean` |  | 必填标注，落到每一段的 aria-required 上。 |
 | `name` | `string` |  | 表单字段名；给了隐藏输入才带 name，ISO 串随表单一并提交。区间模式下是起点那一份。 |
 | `endName` | `string` |  | 区间终点那份隐藏输入的表单字段名；不给即终点不参与提交。 |
+| `visibleCount` | `number` |  | 并排展示几个连续月，默认单选 1、区间 2。 区间的起止常跨月，一个面板要来回翻页才挑得完,两个并排才顺手。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色怎么用。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，输入行与浮层里的日历格一并换档。 |

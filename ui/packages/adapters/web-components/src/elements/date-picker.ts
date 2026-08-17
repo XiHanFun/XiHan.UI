@@ -407,8 +407,13 @@ export class XhDatePickerElement extends XhElement {
     put('header', api.calendar.getHeaderProps() as Record<string, unknown>)
     put('prev-trigger', api.calendar.getPrevTriggerProps() as Record<string, unknown>)
     put('next-trigger', api.calendar.getNextTriggerProps() as Record<string, unknown>)
-    put('heading', api.calendar.getHeadingProps() as Record<string, unknown>)
-    put('grid', api.calendar.getGridProps() as Record<string, unknown>)
+    // 面板逐个打：下标取作者写的 index，没写就按文档序（第 N 张就是第 N 个面板）
+    this.getParts('heading').forEach((el, position) => {
+      this.spreader.spread(el, api.calendar.getHeadingProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)
+    })
+    this.getParts('grid').forEach((el, position) => {
+      this.spreader.spread(el, api.calendar.getGridProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)
+    })
     put('grid-head', api.calendar.getGridHeadProps() as Record<string, unknown>)
     put('grid-body', api.calendar.getGridBodyProps() as Record<string, unknown>)
 
@@ -424,8 +429,15 @@ export class XhDatePickerElement extends XhElement {
     }
 
     // 日期格逐个打，身份取 cell 上的 value，格内 trigger 跟着同一份声明走
+    const gridEls = this.getParts('grid')
     for (const el of this.getParts('cell')) {
-      const cell = { value: el.getAttribute('value') ?? '' }
+      // 格子归哪个面板：找它所在的那张 grid，取 grid 的下标（作者不必逐格再写一遍）
+      const owner = gridEls.findIndex(grid => grid.contains(el))
+      const ownerGrid = owner < 0 ? null : gridEls[owner]!
+      const cell = {
+        value: el.getAttribute('value') ?? '',
+        index: ownerGrid ? declaredIndex(ownerGrid, owner) : 0,
+      }
       this.spreader.spread(el, api.calendar.getCellProps(cell) as Record<string, unknown>)
       for (const trigger of this.partsIn(el, 'cell-trigger'))
         this.spreader.spread(trigger, api.calendar.getCellTriggerProps(cell) as Record<string, unknown>)

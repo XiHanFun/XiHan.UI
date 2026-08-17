@@ -2193,58 +2193,8 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-calendar>` —— 日历行为宿主。\n\n网格由作者渲染，元素不生成节点：读 `weeks` / `weekDays` / `headingLabel` 三个只读属性，\n听 `focused-value-change` 重画（须在收到事件的同一拍内完成）。日期身份取 cell 上的\n`value`（ISO 串），cell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）。\n翻月按钮的可及名字由作者给。",
+          "description": "",
           "name": "XhCalendarElement",
-          "cssParts": [
-            {
-              "description": "组件根容器",
-              "name": "root"
-            },
-            {
-              "description": "标题栏外壳",
-              "name": "header"
-            },
-            {
-              "description": "上一月；越过 min 时转原生 disabled",
-              "name": "prev-trigger"
-            },
-            {
-              "description": "下一月；越过 max 时转原生 disabled",
-              "name": "next-trigger"
-            },
-            {
-              "description": "展示月标题（grid 的 aria-labelledby 目标）",
-              "name": "heading"
-            },
-            {
-              "description": "role=grid 容器，键盘在此收口",
-              "name": "grid"
-            },
-            {
-              "description": "role=rowgroup 表头组，里面套一个 week-row",
-              "name": "grid-head"
-            },
-            {
-              "description": "role=columnheader 列头，须自带 value 属性标明列序 0-6",
-              "name": "week-day"
-            },
-            {
-              "description": "role=rowgroup 日期组",
-              "name": "grid-body"
-            },
-            {
-              "description": "role=row 周行，表头与日期行共用",
-              "name": "week-row"
-            },
-            {
-              "description": "role=gridcell 日期格，承载 aria-selected；须自带 value 属性（ISO 串）标明是哪一天",
-              "name": "cell"
-            },
-            {
-              "description": "可点可聚焦层，承载 aria-disabled 与 roving tabindex",
-              "name": "cell-trigger"
-            }
-          ],
           "members": [
             {
               "kind": "field",
@@ -2472,217 +2422,103 @@
               }
             }
           ],
-          "events": [
-            {
-              "description": "选中集合变化；detail 为 `{ value: string[] }`",
-              "name": "value-change",
-              "type": {
-                "text": "CalendarValueChangeDetails"
-              }
-            },
-            {
-              "description": "聚焦日变化；detail 为 `{ focusedValue: string }`",
-              "name": "focused-value-change",
-              "type": {
-                "text": "CalendarFocusChangeDetails"
-              }
-            }
-          ],
           "attributes": [
             {
+              "name": "value",
               "type": {
                 "text": "string | string[] | undefined"
               },
-              "description": "受控选中值（单选简写，ISO 串）；缺省即非受控，多选/区间用 property",
-              "name": "value",
               "fieldName": "value"
             },
             {
+              "name": "default-value",
               "type": {
                 "text": "string | string[] | undefined"
               },
-              "description": "非受控初始选中值",
-              "name": "default-value",
               "fieldName": "defaultValue"
             },
             {
+              "name": "selection-mode",
               "type": {
                 "text": "CalendarSelectionMode | undefined"
               },
-              "description": "选择模式，默认 single",
-              "name": "selection-mode",
               "fieldName": "selectionMode"
             },
             {
+              "name": "focused-value",
               "type": {
                 "text": "string | undefined"
               },
-              "description": "受控聚焦日（ISO 串），同时决定展示哪个月",
-              "name": "focused-value",
               "fieldName": "focusedValue"
             },
             {
+              "name": "default-focused-value",
               "type": {
                 "text": "string | undefined"
               },
-              "description": "非受控初始聚焦日；缺省时退回首个选中值，再退回今天",
-              "name": "default-focused-value",
               "fieldName": "defaultFocusedValue"
             },
             {
+              "name": "min",
               "type": {
                 "text": "string | undefined"
               },
-              "description": "可选范围下界（含当天），界外的日子转 aria-disabled 但仍可聚焦",
-              "name": "min",
               "fieldName": "min"
             },
             {
+              "name": "max",
               "type": {
                 "text": "string | undefined"
               },
-              "description": "可选范围上界（含当天）",
-              "name": "max",
               "fieldName": "max"
             },
             {
+              "name": "locale",
               "type": {
                 "text": "string | undefined"
               },
-              "description": "决定周首日与文案，默认 zh-CN",
-              "name": "locale",
               "fieldName": "locale"
             },
             {
+              "name": "time-zone",
               "type": {
                 "text": "string | undefined"
               },
-              "description": "判定今天与格式化用的时区，默认宿主本地时区",
-              "name": "time-zone",
               "fieldName": "timeZone"
             },
             {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "整张禁用：翻月按钮转原生 disabled，格子全转 aria-disabled",
-              "name": "disabled",
-              "fieldName": "disabled"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "只读：翻月与移动焦点照常，只是选不动值",
-              "name": "read-only",
-              "fieldName": "readOnly"
-            },
-            {
+              "name": "weekday-format",
               "type": {
                 "text": "CalendarWeekdayFormat | undefined"
               },
-              "description": "表头缩写粒度，默认 short",
-              "name": "weekday-format",
               "fieldName": "weekdayFormat"
             },
             {
+              "name": "disabled",
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "恒渲染六行",
+              "fieldName": "disabled"
+            },
+            {
+              "name": "read-only",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "fieldName": "readOnly"
+            },
+            {
               "name": "fixed-weeks",
+              "type": {
+                "text": "boolean | undefined"
+              },
               "fieldName": "fixedWeeks"
             }
           ],
           "superclass": {
             "name": "XhElement",
             "module": "/src/element-base"
-          },
-          "tagName": "xh-calendar",
-          "customElement": true,
-          "cssProperties": [
-            {
-              "name": "--xh-calendar-cell-bg-hover"
-            },
-            {
-              "name": "--xh-calendar-cell-bg-selected"
-            },
-            {
-              "name": "--xh-calendar-cell-fg"
-            },
-            {
-              "name": "--xh-calendar-cell-fg-outside"
-            },
-            {
-              "name": "--xh-calendar-cell-fg-selected"
-            },
-            {
-              "name": "--xh-calendar-cell-font-size"
-            },
-            {
-              "name": "--xh-calendar-cell-gap"
-            },
-            {
-              "name": "--xh-calendar-cell-radius"
-            },
-            {
-              "name": "--xh-calendar-cell-size"
-            },
-            {
-              "name": "--xh-calendar-gap"
-            },
-            {
-              "name": "--xh-calendar-grid-gap"
-            },
-            {
-              "name": "--xh-calendar-header-gap"
-            },
-            {
-              "name": "--xh-calendar-heading-fg"
-            },
-            {
-              "name": "--xh-calendar-heading-font-size"
-            },
-            {
-              "name": "--xh-calendar-heading-font-weight"
-            },
-            {
-              "name": "--xh-calendar-nav-bg"
-            },
-            {
-              "name": "--xh-calendar-nav-bg-hover"
-            },
-            {
-              "name": "--xh-calendar-nav-fg"
-            },
-            {
-              "name": "--xh-calendar-nav-radius"
-            },
-            {
-              "name": "--xh-calendar-nav-size"
-            },
-            {
-              "name": "--xh-calendar-range-bg"
-            },
-            {
-              "name": "--xh-calendar-row-gap"
-            },
-            {
-              "name": "--xh-calendar-today-border"
-            },
-            {
-              "name": "--xh-calendar-week-day-fg"
-            },
-            {
-              "name": "--xh-calendar-week-day-font-size"
-            },
-            {
-              "name": "--xh-calendar-week-day-font-weight"
-            },
-            {
-              "name": "--xh-calendar-week-day-h"
-            }
-          ]
+          }
         }
       ],
       "exports": [
@@ -9386,6 +9222,12 @@
             },
             {
               "name": "--xh-date-picker-label-font-weight"
+            },
+            {
+              "name": "--xh-date-picker-panel-divider"
+            },
+            {
+              "name": "--xh-date-picker-panel-gap"
             },
             {
               "name": "--xh-date-picker-time-column-h"
