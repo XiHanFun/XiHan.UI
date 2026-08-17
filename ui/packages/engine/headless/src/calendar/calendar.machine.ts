@@ -1,9 +1,11 @@
+import type { CalendarDate } from '@internationalized/date'
+import type { CalendarView } from './calendar.grid'
 import type { CalendarSchema, CalendarSelectionMode } from './calendar.types'
 import { getLocalTimeZone, startOfMonth, today } from '@internationalized/date'
 import { focusItem, itemValue, queryItems } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
 import { calendarCellTriggerQuery } from './calendar.anatomy'
-import { parseCalendarDate, visibleCountOf } from './calendar.grid'
+import { calendarPageMonths, calendarPeriodStart, parseCalendarDate, visibleCountOf } from './calendar.grid'
 
 const { createMachine } = setup<CalendarSchema>()
 
@@ -24,22 +26,26 @@ function initialVisibleStart(prop: (key: 'focusedValue' | 'defaultFocusedValue' 
  */
 function alignVisibleStart(
   context: { get: (key: 'visibleStart') => string | null, set: (key: 'visibleStart', value: string) => void },
-  prop: (key: 'visibleCount') => number | undefined,
+  prop: ((key: 'visibleCount') => number | undefined) & ((key: 'view') => CalendarView | undefined),
   value: string,
 ): void {
   const target = parseCalendarDate(value)
   const start = parseCalendarDate(context.get('visibleStart'))
   if (!target || !start)
     return
-  const first = startOfMonth(start)
-  const month = startOfMonth(target)
-  const count = visibleCountOf(prop('visibleCount'))
-  if (month.compare(first) < 0) {
-    context.set('visibleStart', month.toString())
+  const view = prop('view') ?? 'day'
+  // 一页跨多少个月由视图定；按月算会把落在窗内的格子判成走出去，于是每点一下就整窗翻一页
+  const page = calendarPageMonths(view)
+  const align = (d: CalendarDate): CalendarDate => (view === 'day' ? startOfMonth(d) : calendarPeriodStart(d, view))
+  const first = align(start)
+  const cell = align(target)
+  const span = (visibleCountOf(prop('visibleCount')) - 1) * page
+  if (cell.compare(first) < 0) {
+    context.set('visibleStart', cell.toString())
     return
   }
-  if (month.compare(first.add({ months: count - 1 })) > 0)
-    context.set('visibleStart', month.subtract({ months: count - 1 }).toString())
+  if (cell.compare(first.add({ months: span })) > 0)
+    context.set('visibleStart', cell.subtract({ months: span }).toString())
 }
 
 /** 裸串是单选的简写，内部一律按数组处理；undefined 要原样透传，cell 靠它区分受控与否。 */
@@ -131,6 +137,8 @@ export const calendarMachine = createMachine({
         if (e.type !== 'VALUE.SET')
           return
         context.set('value', normalizeSelection(e.value, prop('selectionMode') ?? 'single'))
+        // 整份替换即一次落定，挑到一半的那个起点作废——否则下一次点还以为在续上一段
+        context.set('rangeAnchor', null)
       },
 
       selectCell: ({ context, prop, event }) => {

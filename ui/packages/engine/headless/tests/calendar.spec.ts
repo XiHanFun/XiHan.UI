@@ -15,6 +15,7 @@ import {
   calendarPeriodStart,
   calendarWeekRange,
   connectCalendar,
+  isoWeekNumber,
   parseCalendarDate,
 } from '../src/calendar'
 
@@ -462,10 +463,31 @@ describe('面板粒度：月 / 季度 / 年 / 周', () => {
     expect(h.api().panels[0]!.headingLabel).toBe('2030年-2039年')
   })
 
-  it('周选：点任意一天落的是整整一周的两端', () => {
+  it('周选：一次点落起点周，两次点落「起点周 → 终点周」的外缘', () => {
     const h = mount({ defaultFocusedValue: '2026-08-13', selectionMode: 'range', weekSelection: true, locale: 'zh-CN' })
+    // 第一下只落起点：这一周的首日
     h.api().select('2026-08-13')
-    expect(h.value()).toEqual(['2026-08-10', '2026-08-16'])
+    expect(h.value()).toEqual(['2026-08-10'])
+    // 第二下落到另一周，两端取各自朝外那一头——第 33 周到第 37 周
+    h.api().select('2026-09-09')
+    expect(h.value()).toEqual(['2026-08-10', '2026-09-13'])
+    expect(isoWeekNumber('2026-08-10')).toBe(33)
+    expect(isoWeekNumber('2026-09-13')).toBe(37)
+  })
+
+  it('周选反着挑也对：先点靠后那周，再点靠前的', () => {
+    const h = mount({ defaultFocusedValue: '2026-09-09', selectionMode: 'range', weekSelection: true, locale: 'zh-CN' })
+    h.api().select('2026-09-09')
+    h.api().select('2026-08-13')
+    expect(h.value()).toEqual(['2026-08-10', '2026-09-13'])
+  })
+
+  it('iSO 周序号：周一起算，含当年第一个周四那周是第 1 周', () => {
+    expect(isoWeekNumber('2026-01-01')).toBe(1)
+    expect(isoWeekNumber('2026-08-10')).toBe(33)
+    expect(isoWeekNumber('2026-12-31')).toBe(53)
+    // 跨年那几天归上一年的末周：2027-01-01 是周五，仍属 2026 的第 53 周
+    expect(isoWeekNumber('2027-01-01')).toBe(53)
   })
 
   it('周选只在日视图 + 区间下生效，其余照旧只落这一天', () => {

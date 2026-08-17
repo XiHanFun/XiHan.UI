@@ -330,3 +330,21 @@ export function calendarWeekRange(value: string, locale = CALENDAR_LOCALE): [str
   const date = parseDate(value)
   return [startOfWeek(date, locale).toString(), endOfWeek(date, locale).toString()]
 }
+
+/**
+ * ISO 8601 周序号：周一起算，含当年第一个周四的那一周是第 1 周。
+ *
+ * 自己算而不走 Intl：`Intl.DateTimeFormat` 至今没有周序号字段，
+ * 各家 polyfill 的口径也不统一（有按周日起算的），而周选的标签必须与 min/max 的判断同源。
+ */
+export function isoWeekNumber(value: string): number {
+  const date = parseDate(value)
+  // 挪到本周周四：ISO 规定「这一周归哪一年」看的就是周四落在哪一年
+  const day = date.toDate('UTC').getUTCDay()
+  const thursday = date.add({ days: ((day === 0 ? 7 : day) * -1) + 4 })
+  const jan1 = thursday.set({ month: 1, day: 1 })
+  const days = Math.round(
+    (thursday.toDate('UTC').getTime() - jan1.toDate('UTC').getTime()) / 86400000,
+  )
+  return Math.floor(days / 7) + 1
+}
