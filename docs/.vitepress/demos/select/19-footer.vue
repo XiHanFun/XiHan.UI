@@ -1,8 +1,10 @@
-<!-- 受控 | 传了 value 就由宿主说了算：组件只发 value-change，宿主写回它才变，这里把樱桃挡在门外 -->
+<!-- 浮层底部的操作区 | footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打检索走到 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
+  XhButton,
   XhSelectContent,
+  XhSelectFooter,
   XhSelectIndicator,
   XhSelectItem,
   XhSelectItemIndicator,
@@ -15,23 +17,22 @@ import {
   XhSelectValueText,
 } from "@xihan-ui/vue";
 
-const value = ref<string[]>(["banana"]);
-const rejected = ref(false);
-const fruits = [
+const picked = ref<string[]>([]);
+const fruits = ref([
   { value: "apple", label: "苹果" },
   { value: "banana", label: "香蕉" },
-  { value: "cherry", label: "樱桃（选不中）" },
-];
+  { value: "cherry", label: "樱桃" },
+]);
 
-// 只有通过校验的值才写回，未写回则界面停在原值
-function onValueChange(details: { value: string[] }) {
-  rejected.value = details.value.includes("cherry");
-  if (!rejected.value) value.value = details.value;
+let seq = 0;
+function addOne() {
+  seq += 1;
+  fruits.value.push({ value: `new-${seq}`, label: `新水果 ${seq}` });
 }
 </script>
 
 <template>
-  <XhSelectRoot :value="value" placeholder="请选择" @value-change="onValueChange">
+  <XhSelectRoot v-model:value="picked" placeholder="请选择">
     <XhSelectLabel>水果</XhSelectLabel>
     <XhSelectTrigger>
       <XhSelectValueText />
@@ -39,14 +40,20 @@ function onValueChange(details: { value: string[] }) {
     </XhSelectTrigger>
     <XhSelectPositioner>
       <XhSelectContent>
+        <!-- 条目住在 list 里：role=listbox 只许拥有 option -->
         <XhSelectList>
           <XhSelectItem v-for="f in fruits" :key="f.value" :value="f.value">
             <XhSelectItemText>{{ f.label }}</XhSelectItemText>
             <XhSelectItemIndicator>✓</XhSelectItemIndicator>
           </XhSelectItem>
         </XhSelectList>
+        <!-- 按钮放这里才不违反 listbox 的子节点约束；条目多到要滚时它也贴在下沿不动 -->
+        <XhSelectFooter>
+          <XhButton variant="ghost" size="sm" @click="addOne">＋ 新建</XhButton>
+        </XhSelectFooter>
       </XhSelectContent>
     </XhSelectPositioner>
   </XhSelectRoot>
-  <p>宿主持有的值：{{ value.join("、") }}{{ rejected ? " · 上一次选择被拒绝" : "" }}</p>
+
+  <p>当前值：{{ picked[0] ?? "（未选）" }}</p>
 </template>

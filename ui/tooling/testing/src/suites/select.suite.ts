@@ -83,9 +83,17 @@ function selectTree(disabled?: string): FixtureNode {
           {
             part: 'content',
             children: [
-              item(VALUES[0], 'Apple'),
-              item(VALUES[1], 'Banana'),
-              item(VALUES[2], 'Cherry'),
+              {
+                part: 'list',
+                children: [
+                  item(VALUES[0], 'Apple'),
+                  item(VALUES[1], 'Banana'),
+                  item(VALUES[2], 'Cherry'),
+                ],
+              },
+              // 底部操作区里放一个真按钮：它必须待在 list 之外，否则既违反 listbox 的拥有关系，
+              // 又会被方向键与连打检索走到
+              { part: 'footer', children: [{ tag: 'button', text: '新建', attrs: { 'data-testid': 'footer-action' } }] },
             ],
           },
         ],
@@ -117,6 +125,7 @@ export const selectSuite: ConformanceSuite = {
           'indicator',
           'positioner',
           'content',
+          'list',
           'item[0]',
           'item-text[0]',
           'item-indicator[0]',
@@ -126,6 +135,7 @@ export const selectSuite: ConformanceSuite = {
           'item[2]',
           'item-text[2]',
           'item-indicator[2]',
+          'footer',
         ],
         counts: {
           'root': 1,
@@ -135,6 +145,8 @@ export const selectSuite: ConformanceSuite = {
           'indicator': 1,
           'positioner': 1,
           'content': 1,
+          'list': 1,
+          'footer': 1,
           'hidden-select': 1,
           'item': 3,
           'item-text': 3,
@@ -145,7 +157,7 @@ export const selectSuite: ConformanceSuite = {
             'type': 'button',
             'aria-haspopup': 'listbox',
             'aria-expanded': 'false',
-            'aria-controls': '@part(content)',
+            'aria-controls': '@part(list)',
             // 名字 = 标签 + 当前值：只指 label 的话读屏念不出用户选了什么
             'aria-labelledby': '@part(label) @part(value-text)',
             'data-state': 'closed',
@@ -154,6 +166,12 @@ export const selectSuite: ConformanceSuite = {
           },
           'value-text': { 'data-placeholder': '', 'data-disabled': null },
           'content': {
+            'hidden': '',
+            'data-state': 'closed',
+            // 列表框语义在 list 身上，外壳不该再报一遍
+            'role': null,
+          },
+          'list': {
             'role': 'listbox',
             'tabindex': '-1',
             // 名字与 trigger 同源；两段都悬空时退回可写的兜底名
@@ -161,9 +179,10 @@ export const selectSuite: ConformanceSuite = {
             'aria-label': 'Options',
             // 单选的 listbox 显式报不可多选：读屏据此播报「单选」，不靠属性缺席去猜
             'aria-multiselectable': 'false',
-            'hidden': '',
             'data-state': 'closed',
           },
+          // 底部操作区的按钮不在列表框里，方向键与连打检索都走不到它
+          'footer': { 'data-state': 'closed' },
           'positioner': {
             'data-state': 'closed',
             'data-placement': 'bottom-start',
@@ -217,15 +236,15 @@ export const selectSuite: ConformanceSuite = {
             parts: {
               'trigger': {
                 'aria-expanded': 'true',
-                'aria-controls': '@part(content)',
+                'aria-controls': '@part(list)',
                 'data-state': 'open',
               },
-              'content': {
+              'content': { 'hidden': null, 'data-state': 'open' },
+              'list': {
                 'role': 'listbox',
                 'aria-labelledby': '@part(label) @part(value-text)',
-                'hidden': null,
                 'data-state': 'open',
-                // 没有条目认领 Tab 位时由容器兜底
+                // 没有条目认领 Tab 位时由列表框兜底
                 'tabindex': '0',
               },
               // 指针打开不预落高亮：没有条目看着像被选中
@@ -238,8 +257,8 @@ export const selectSuite: ConformanceSuite = {
         },
         {
           kind: 'settle',
-          until: { activeElement: 'content' },
-          expect: { activeElement: 'content', events: [] },
+          until: { activeElement: 'list' },
+          expect: { activeElement: 'list', events: [] },
         },
         // 第一按方向键才锚定首个条目，roving tabindex 随之移交
         {
@@ -248,7 +267,7 @@ export const selectSuite: ConformanceSuite = {
           expect: {
             activeElement: { part: 'item[0]', exact: true },
             parts: {
-              'content': { tabindex: '-1' },
+              'list': { tabindex: '-1' },
               'item[0]': { 'tabindex': '0', 'data-highlighted': '' },
             },
             events: [],
@@ -302,6 +321,33 @@ export const selectSuite: ConformanceSuite = {
           kind: 'settle',
           until: { activeElement: 'item[2]' },
           expect: { activeElement: { part: 'item[2]', exact: true } },
+        },
+      ],
+    },
+    {
+      name: '底部操作区在列表框之外：方向键与连打检索都走不到它，End 停在末个条目',
+      spec: { apg: `${APG}#roles_states_properties` },
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'ArrowDown' },
+        { kind: 'settle', until: { activeElement: 'item[0]' } },
+        // 末个条目之后没有别的落点：footer 里的按钮不在 listbox 的拥有关系里
+        { kind: 'key', key: 'End', expect: { activeElement: { part: 'item[2]', exact: true } } },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'item[0]', exact: true } } },
+        {
+          kind: 'raw',
+          why: '「按钮没被走到」是个否定断言，只能直读 DOM 的从属关系',
+          run: ({ doc }) => {
+            const action = doc.querySelector<HTMLElement>('[data-testid="footer-action"]')
+            if (!action)
+              throw new Error('底部操作区里的按钮没渲染出来')
+            if (action.closest('[data-scope="select"][data-part="list"]'))
+              throw new Error('底部操作区落进了 list 里：listbox 只许拥有 option')
+            if (!action.closest('[data-scope="select"][data-part="content"]'))
+              throw new Error('底部操作区跑出了浮层外壳')
+            if (doc.activeElement === action)
+              throw new Error('方向键把焦点走到了底部操作区的按钮上')
+          },
         },
       ],
     },
@@ -663,7 +709,7 @@ export const selectSuite: ConformanceSuite = {
       name: '多选：选中后列表不收起、再点已选项即取消，content 报 aria-multiselectable',
       spec: { apg: `${APG}#roles_states_properties` },
       props: { multiple: true, name: 'fruit', placeholder: '请选择' },
-      initial: { parts: { content: { 'aria-multiselectable': 'true' } } },
+      initial: { parts: { list: { 'aria-multiselectable': 'true' } } },
       steps: [
         { kind: 'click', part: 'trigger' },
         {

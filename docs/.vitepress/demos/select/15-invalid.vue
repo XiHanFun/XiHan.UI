@@ -8,6 +8,7 @@ import {
   XhSelectItemIndicator,
   XhSelectItemText,
   XhSelectLabel,
+  XhSelectList,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTrigger,
@@ -33,10 +34,12 @@ const invalid = computed(() => picked.value.length === 0);
     </XhSelectTrigger>
     <XhSelectPositioner>
       <XhSelectContent>
-        <XhSelectItem v-for="d in departments" :key="d.value" :value="d.value">
-          <XhSelectItemText>{{ d.label }}</XhSelectItemText>
-          <XhSelectItemIndicator>✓</XhSelectItemIndicator>
-        </XhSelectItem>
+        <XhSelectList>
+          <XhSelectItem v-for="d in departments" :key="d.value" :value="d.value">
+            <XhSelectItemText>{{ d.label }}</XhSelectItemText>
+            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+          </XhSelectItem>
+        </XhSelectList>
       </XhSelectContent>
     </XhSelectPositioner>
   </XhSelectRoot>

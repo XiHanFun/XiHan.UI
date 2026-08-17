@@ -203,6 +203,25 @@ export const XhSelectContent = defineComponent({
   },
 })
 
+export const XhSelectList = defineComponent({
+  name: 'XhSelectList',
+  setup(_, { slots }) {
+    const ctx = useSelectContext()
+    // 列表框本体：条目放这里面。滚动也在这一层，底部操作区因此不随条目滚走
+    return () => h('div', ctx.api.value.getListProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhSelectFooter = defineComponent({
+  name: 'XhSelectFooter',
+  setup(_, { slots }) {
+    const ctx = useSelectContext()
+    // 浮层底部的操作区：是 list 的兄弟，不进列表框的拥有关系，
+    // 放在里面的按钮既不违反 listbox 的子节点约束，也不会被方向键与连打检索走到
+    return () => h('div', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhSelectItem = defineComponent({
   name: 'XhSelectItem',
   props: {
@@ -272,12 +291,12 @@ function renderDefaultTree(
     ...(label ? [h(XhSelectLabel, null, () => label)] : []),
     h(XhSelectTrigger, null, () => [h(XhSelectValueText), h(XhSelectIndicator)]),
     h(XhSelectPositioner, null, () => [
-      h(XhSelectContent, null, () => collection.map(node =>
+      h(XhSelectContent, null, () => h(XhSelectList, null, () => collection.map(node =>
         h(XhSelectItem, { key: node.value, value: node.value }, () => [
           h(XhSelectItemText, null, () => itemSlot?.(node) ?? node.label),
           h(XhSelectItemIndicator),
         ]),
-      )),
+      ))),
     ]),
   ]
 }

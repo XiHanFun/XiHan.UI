@@ -12892,21 +12892,54 @@
   visibility: hidden;
 }
 
+/* 浮层外壳：描边、底色、阴影与整体尺寸归它。它自己不滚——滚的是里面的 list，
+   底部操作区因此留在视口里，不随条目滚走 */
 [data-scope='select'][data-part='content'] {
   display: flex;
   flex-direction: column;
   min-inline-size: var(--xh-select-content-min-w, var(--xh-overlay-min-w));
   max-inline-size: var(--xh-select-content-max-w, var(--xh-overlay-max-w));
   max-block-size: var(--xh-select-content-max-h, var(--xh-overlay-max-h));
-  padding-block: var(--xh-select-content-py, var(--xh-space-1));
-  padding-inline: var(--xh-select-content-px, var(--xh-space-1));
   border: var(--xh-stroke-thin) solid var(--xh-select-content-border, var(--xh-border-default));
   border-radius: var(--xh-select-content-radius, var(--xh-shape-surface));
   background: var(--xh-select-content-bg, var(--xh-bg-surface));
   color: var(--xh-select-content-fg, var(--xh-fg-default));
   box-shadow: var(--xh-select-content-shadow, var(--xh-elevation-2));
-  overflow-y: auto;
+  /* 条目的悬停底色是方角，滚到两端时会探出外壳的圆角 */
+  overflow: hidden;
   pointer-events: auto;
+}
+
+/* 列表框本体：条目的内边距长在这一层，滚动也在这一层。
+   min-block-size: 0 是 flex 子项能真正滚动的前提——不给的话它按内容撑高，
+   外壳的 max-block-size 就只会把溢出的部分裁掉而不是交给它滚 */
+[data-scope='select'][data-part='list'] {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-block-size: 0;
+  padding-block: var(--xh-select-content-py, var(--xh-space-1));
+  padding-inline: var(--xh-select-content-px, var(--xh-space-1));
+  overflow-y: auto;
+}
+
+/* 底部操作区：贴在列表下沿，用一道分隔线与条目断开。
+   作者往里放什么由作者定，这里只管位置、留白与那条线 */
+[data-scope='select'][data-part='footer'] {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--xh-select-footer-gap, var(--xh-space-2));
+  padding-block: var(--xh-select-footer-py, var(--xh-space-2));
+  padding-inline: var(--xh-select-footer-px, var(--xh-space-2));
+  border-block-start: var(--xh-stroke-thin) solid var(--xh-select-footer-border, var(--xh-border-subtle));
+  color: var(--xh-select-footer-fg, var(--xh-fg-muted));
+  font-size: var(--xh-select-footer-font-size, var(--xh-font-size-sm));
+}
+
+/* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
+[data-scope='select'][data-part='footer'][hidden] {
+  display: none;
 }
 
 /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位 */
@@ -12916,12 +12949,12 @@
 
 /* 焦点落在容器上只有一种情形：指针打开、无选中值、还没有任何条目当锚点。
    那一刻它认领着 Tab 位，环画在浮层内沿；有锚点时环长在条目上，容器不再画 */
-[data-scope='select'][data-part='content'][tabindex='0']:focus-visible {
+[data-scope='select'][data-part='list'][tabindex='0']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: calc(-1 * var(--xh-ring-width));
 }
 
-[data-scope='select'][data-part='content']:not([tabindex='0']):focus-visible {
+[data-scope='select'][data-part='list']:not([tabindex='0']):focus-visible {
   outline: none;
 }
 

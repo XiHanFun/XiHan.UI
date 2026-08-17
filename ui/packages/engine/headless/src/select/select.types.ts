@@ -226,7 +226,12 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   /** 标签删除按钮：点按摘掉所在标签的选中值；须放在 tag 部件里。 */
   getTagRemoveProps: (props: SelectTagProps) => T['button']
   getPositionerProps: () => T['element']
+  /** 浮层外壳：描边、底色、阴影与键盘收口都在它身上。 */
   getContentProps: () => T['element']
+  /** 列表框本体，滚动在这一层；role=listbox 与条目的拥有关系都归它。 */
+  getListProps: () => T['element']
+  /** 浮层底部的操作区，是 list 的兄弟；不在列表框的拥有关系里，也不参与方向键与连打检索。 */
+  getFooterProps: () => T['element']
   getItemProps: (props: SelectItemProps) => T['element']
   getItemTextProps: (props: SelectItemProps) => T['element']
   getItemIndicatorProps: (props: SelectItemProps) => T['element']

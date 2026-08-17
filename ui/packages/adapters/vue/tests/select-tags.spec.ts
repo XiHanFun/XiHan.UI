@@ -7,6 +7,7 @@ import {
   XhSelectContent,
   XhSelectItem,
   XhSelectItemText,
+  XhSelectList,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTag,
@@ -57,9 +58,9 @@ function mountSelect(props: Record<string, unknown> = {}): { change: ReturnType<
               h(XhSelectTagRemove, () => '✕'),
             ])),
             h(XhSelectPositioner, null, () => [
-              h(XhSelectContent, null, () => COLLECTION.map(o =>
+              h(XhSelectContent, null, () => h(XhSelectList, null, () => COLLECTION.map(o =>
                 h(XhSelectItem, { key: o.value, value: o.value }, () => [h(XhSelectItemText, () => o.label)]),
-              )),
+              ))),
             ]),
           ]
         },

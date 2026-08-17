@@ -6,6 +6,7 @@ import {
   XhSelectContent,
   XhSelectItem,
   XhSelectItemText,
+  XhSelectList,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTrigger,
@@ -34,9 +35,9 @@ function mountSelect(props: Record<string, unknown> = {}): void {
       h(XhSelectRoot, { collection: [{ value: 'a', label: '甲' }], ...props }, () => [
         h(XhSelectTrigger),
         h(XhSelectPositioner, null, () => [
-          h(XhSelectContent, null, () => [
+          h(XhSelectContent, null, () => h(XhSelectList, null, () => [
             h(XhSelectItem, { value: 'a' }, () => [h(XhSelectItemText, () => '甲')]),
-          ]),
+          ])),
         ]),
       ]),
   })

@@ -9,6 +9,7 @@ import {
   XhSelectItemIndicator,
   XhSelectItemText,
   XhSelectLabel,
+  XhSelectList,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTrigger,
@@ -45,10 +46,12 @@ function blurTrigger(): void {
     </XhSelectTrigger>
     <XhSelectPositioner>
       <XhSelectContent>
-        <XhSelectItem v-for="l in levels" :key="l.value" :value="l.value">
-          <XhSelectItemText>{{ l.label }}</XhSelectItemText>
-          <XhSelectItemIndicator>✓</XhSelectItemIndicator>
-        </XhSelectItem>
+        <XhSelectList>
+          <XhSelectItem v-for="l in levels" :key="l.value" :value="l.value">
+            <XhSelectItemText>{{ l.label }}</XhSelectItemText>
+            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+          </XhSelectItem>
+        </XhSelectList>
       </XhSelectContent>
     </XhSelectPositioner>
   </XhSelectRoot>
