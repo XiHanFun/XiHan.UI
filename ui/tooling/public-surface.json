@@ -4961,10 +4961,13 @@
       "required",
       "selectionMode",
       "showTime",
+      "size",
       "timeGranularity",
       "timeZone",
+      "tone",
       "translations",
-      "value"
+      "value",
+      "variant"
     ],
     "descriptions": [
       "bordered",
@@ -5701,8 +5704,11 @@
       "placement",
       "readOnly",
       "required",
+      "size",
       "step",
-      "value"
+      "tone",
+      "value",
+      "variant"
     ],
     "timeline": [
       "orientation",
@@ -8551,9 +8557,12 @@
         "required",
         "selection-mode",
         "show-time",
+        "size",
         "time-granularity",
         "time-zone",
-        "value"
+        "tone",
+        "value",
+        "variant"
       ],
       "events": [
         "focused-value-change",
@@ -9464,8 +9473,11 @@
         "placement",
         "read-only",
         "required",
+        "size",
         "step",
-        "value"
+        "tone",
+        "value",
+        "variant"
       ],
       "events": [
         "open-change",

@@ -207,6 +207,21 @@ export const datePickerSuite: ConformanceSuite = {
   fixture: FIXTURE,
   cases: [
     {
+      name: '三轴接线到 root 的 data-*：只落一处，输入行与浮层都从它继承',
+      spec: { apg: APG },
+      props: { variant: 'subtle', tone: 'success', size: 'lg' },
+      initial: {
+        parts: { root: { 'data-variant': 'subtle', 'data-tone': 'success', 'data-size': 'lg' } },
+      },
+    },
+    {
+      name: '三轴都不给时一个属性都不写出来，皮肤据此走缺省档',
+      spec: { apg: APG },
+      initial: {
+        parts: { root: { 'data-variant': null, 'data-tone': null, 'data-size': null } },
+      },
+    },
+    {
       name: '初始收起：trigger 自报浮层是对话框，content 带 hidden，分段容器由标题命名',
       spec: { apg: APG },
       props: BASE_PROPS,
