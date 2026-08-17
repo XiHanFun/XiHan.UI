@@ -10,6 +10,17 @@
       scale: 1;
     }
   }
+  @keyframes xh-pop-out {
+    from {
+      opacity: 1;
+      scale: 1;
+    }
+
+    to {
+      opacity: 0;
+      scale: var(--xh-motion-scale-enter);
+    }
+  }
 }
 
 @layer xihan.components {
@@ -131,6 +142,12 @@
 
   [data-scope='color-picker'][data-part='content'][data-state='open'] {
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
+     免得动画结束到真收起之间闪一下原样 */
+  [data-scope='color-picker'][data-part='content'][data-state='closed'] {
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 浮层本身只是个容器（tabindex=-1 是焦点域的兜底落点），落焦时不画环 */

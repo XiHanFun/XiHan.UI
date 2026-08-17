@@ -15,6 +15,7 @@ import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
+import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface DatePickerContext {
@@ -24,6 +25,8 @@ export interface DatePickerContext {
   controlRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
+  /** 此刻该不该渲染：退场动画播完之前仍为真。 */
+  visible: Ref<boolean>
   gridRef: Ref<HTMLElement | null>
 }
 
@@ -48,11 +51,14 @@ export function useDatePicker(
   const fieldEnd = useMachine<DateFieldSchema>(dateFieldMachine, () => datePickerFieldEndProps(root), scope)
   const services: DatePickerServices = { root, calendar, field, fieldEnd }
 
+  // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
+  let config: RuntimeConfig | null = null
+
   if (typeof document !== 'undefined') {
-    const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
+    config = createRuntimeConfig({ scope, idGenerator: idGen })
 
     // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按展开态驱动
-    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
+    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
       kind: 'popover',
       node: () => contentRef.value,
       // 整个输入行记为本层分支，点 trigger 或段位算层内交互
@@ -63,7 +69,7 @@ export function useDatePicker(
     })
 
     // 定位引擎由适配器注入，机器只经端口驱动；锚点取整个输入行
-    root.refs.set('config', config)
+    root.refs.set('config', config!)
     root.refs.set('registerLayer', registerLayer)
     root.refs.set('position', createPositionEngine())
     root.refs.set('getAnchorEl', () => controlRef.value)
@@ -75,5 +81,8 @@ export function useDatePicker(
   calendar.refs.set('getGridEl', () => gridRef.value)
 
   const api = computed(() => connectDatePicker(services, vueNormalize))
-  return { api, services, controlRef, positionerRef, contentRef, gridRef }
+  // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
+  const visible = useOverlayExit({ config, isOpen: () => api.value.open, contentRef })
+
+  return { visible, api, services, controlRef, positionerRef, contentRef, gridRef }
 }

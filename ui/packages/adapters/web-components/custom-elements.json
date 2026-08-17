@@ -3481,6 +3481,16 @@
             },
             {
               "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "ownsValueText",
               "privacy": "private",
               "readonly": true,
@@ -5656,6 +5666,16 @@
             },
             {
               "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -6441,6 +6461,16 @@
               },
               "privacy": "private",
               "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
             },
             {
               "kind": "field",
@@ -7443,6 +7473,16 @@
               },
               "privacy": "private",
               "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
             },
             {
               "kind": "field",
@@ -8860,6 +8900,16 @@
               },
               "privacy": "private",
               "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
             },
             {
               "kind": "field",
@@ -14328,6 +14378,16 @@
             },
             {
               "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -17577,6 +17637,16 @@
             },
             {
               "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -18112,6 +18182,16 @@
               },
               "privacy": "private",
               "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
             },
             {
               "kind": "field",
@@ -21224,6 +21304,16 @@
             },
             {
               "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -21629,6 +21719,16 @@
               },
               "privacy": "private",
               "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
             },
             {
               "kind": "field",
@@ -22068,6 +22168,16 @@
               },
               "privacy": "private",
               "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
             },
             {
               "kind": "field",
@@ -24481,6 +24591,16 @@
               },
               "privacy": "private",
               "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
             },
             {
               "kind": "field",
@@ -30608,6 +30728,16 @@
             },
             {
               "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
               "name": "notifyValue",
               "privacy": "private",
               "readonly": true
@@ -34833,6 +34963,16 @@
               },
               "privacy": "private",
               "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
             },
             {
               "kind": "field",

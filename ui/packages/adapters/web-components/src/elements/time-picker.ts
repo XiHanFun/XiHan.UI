@@ -9,11 +9,13 @@ import type {
 } from '@xihan-ui/headless'
 import type { Cleanup, ControlVariant, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
+import type { OverlayExit } from '../overlay-exit'
 import { connectTimePicker, timePickerAnatomy, timePickerMachine, timePickerMeta } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，以此区分受控与非受控。
@@ -143,6 +145,8 @@ export class XhTimePickerElement extends XhElement {
   private readonly pickerScope = createScope(null, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
+  /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
+  private exit: OverlayExit | null = null
 
   private readonly notifyValue = (details: TimePickerValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -279,11 +283,26 @@ export class XhTimePickerElement extends XhElement {
     })
 
     // 节点常驻，用内联 display 收起（作者层的 display 声明会盖过 [hidden]）
-    this.setPartHidden(this.getPart('content'), !api.open)
+    // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
+    // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
+    this.ensureConfig()
+    this.exit ??= createOverlayExit({
+      config: this.config!,
+      open: api.open,
+      onExitComplete: () => this.requestUpdate(),
+    })
+    this.exit.track(this.getPart('content'))
+    this.exit.update(api.open)
+    this.setPartHidden(this.getPart('content'), !this.exit.visible)
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
+    // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
+    this.exit?.dispose()
+    this.exit = null
+    if (this.ctrl.service.state.get() !== 'open')
+      this.setPartHidden(this.getPart('content'), true)
     // 层随机器停机一并撤掉，此处不再管
     this.config = null // 重连时 ensureConfig 重建
   }

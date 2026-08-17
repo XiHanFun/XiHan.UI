@@ -8,6 +8,7 @@ import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
+import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface ColorPickerContext {
@@ -17,6 +18,8 @@ export interface ColorPickerContext {
   triggerRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
+  /** 此刻该不该渲染：退场动画播完之前仍为真。 */
+  visible: Ref<boolean>
   /** 二维取色区，机器在指针事件里拿它量矩形。 */
   areaRef: Ref<HTMLElement | null>
   /** 逐条登记通道轨道节点，由滑杆部件自报是哪一条。 */
@@ -38,11 +41,14 @@ export function useColorPicker(
   const scope = createScope(null, idGen)
   const service = useMachine(colorPickerMachine, () => ({ ...props, ...handlers }), scope)
 
+  // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
+  let config: RuntimeConfig | null = null
+
   if (typeof document !== 'undefined') {
-    const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
+    config = createRuntimeConfig({ scope, idGenerator: idGen })
 
     // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按展开态驱动
-    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
+    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
       kind: 'popover',
       node: () => contentRef.value,
       // 触发器记为本层分支，点它算层内交互
@@ -54,7 +60,7 @@ export function useColorPicker(
     })
 
     // 定位引擎由适配器注入，机器只经端口驱动
-    service.refs.set('config', config)
+    service.refs.set('config', config!)
     service.refs.set('registerLayer', registerLayer)
     service.refs.set('position', createPositionEngine())
     service.refs.set('getAnchorEl', () => triggerRef.value)
@@ -66,7 +72,11 @@ export function useColorPicker(
   }
 
   const api = computed(() => connectColorPicker(service, vueNormalize))
+  // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
+  const visible = useOverlayExit({ config, isOpen: () => api.value.open, contentRef })
+
   return {
+    visible,
     service,
     api,
     triggerRef,

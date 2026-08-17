@@ -38,6 +38,13 @@ function mount(): HTMLElement {
   return el
 }
 
+/** 造一个带 animationName 的动画事件:jsdom 未必有 AnimationEvent 构造器。 */
+function animationEvent(type: string, animationName: string): AnimationEvent {
+  const ev = new Event(type) as AnimationEvent
+  Object.defineProperty(ev, 'animationName', { value: animationName })
+  return ev
+}
+
 describe('attachCssExit', () => {
   it('没有退场动画时不申领租约，关闭即卸载', () => {
     const el = mount()
@@ -68,8 +75,25 @@ describe('attachCssExit', () => {
     p.update(false)
     expect(p.rendered, '动画期间要留在 DOM 里').toBe(true)
 
-    const ev = new Event('animationend') as AnimationEvent
-    el.dispatchEvent(ev)
+    el.dispatchEvent(animationEvent('animationend', 'xh-dialog-out'))
+    expect(p.rendered).toBe(false)
+  })
+
+  // 收起发生在进场还没播完时,进场那支会先抛一个 animationcancel。拿它当退场结束,
+  // 退场就一帧都不播——开得越快关,收得越突然
+  it('进场被打断抛出的 animationcancel 不算退场结束', () => {
+    const el = mount()
+    stubStyle(el, { animationName: 'xh-pop-out', animationDuration: '0.12s' })
+    const p = createPresence({ config: fakeConfig(), open: true, onRenderedChange: () => {} })
+    attachCssExit(el, p, { win: window })
+    p.update(false)
+
+    // 进场那支被取消:名字对不上,租约不该归还
+    el.dispatchEvent(animationEvent('animationcancel', 'xh-pop-in'))
+    expect(p.rendered, '进场那支的取消不该把退场收掉').toBe(true)
+
+    // 退场那支真的结束了才算数
+    el.dispatchEvent(animationEvent('animationend', 'xh-pop-out'))
     expect(p.rendered).toBe(false)
   })
 
