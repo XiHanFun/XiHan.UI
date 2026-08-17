@@ -84,7 +84,7 @@
     inline-size: var(--xh-checkbox-group-indicator-size, 16px);
     block-size: var(--xh-checkbox-group-indicator-size, 16px);
     border: var(--xh-stroke-thin) solid var(--xh-checkbox-group-indicator-border, var(--xh-border-control));
-    border-radius: var(--xh-checkbox-group-indicator-radius, var(--xh-radius-sm));
+    border-radius: var(--xh-checkbox-group-indicator-radius, var(--xh-shape-inset));
     background: var(--xh-checkbox-group-indicator-bg, var(--xh-bg-canvas));
     color: var(--xh-checkbox-group-indicator-fg, var(--xh-fg-on-brand));
     font-size: var(--xh-checkbox-group-indicator-font-size, 12px);

@@ -123,7 +123,7 @@
   [data-scope='typography'][data-part='text'][data-variant='code'] {
     padding-block: var(--xh-typography-code-py, var(--xh-space-0_5));
     padding-inline: var(--xh-typography-code-px, var(--xh-space-1));
-    border-radius: var(--xh-typography-code-radius, var(--xh-radius-sm));
+    border-radius: var(--xh-typography-code-radius, var(--xh-shape-inset));
     background: var(--xh-typography-code-bg, var(--xh-bg-subtle));
     font-family: var(--xh-font-family-mono);
     font-size: var(--xh-typography-code-font-size, var(--xh-_typography-code-size));
@@ -136,7 +136,7 @@
 
   /* —— 行内链接 —— */
   [data-scope='typography'][data-part='link'] {
-    border-radius: var(--xh-typography-link-radius, var(--xh-radius-sm));
+    border-radius: var(--xh-typography-link-radius, var(--xh-shape-inset));
     color: var(--xh-typography-link-fg, var(--xh-fg-brand));
     text-decoration: underline;
     text-underline-offset: var(--xh-typography-link-underline-offset, var(--xh-space-0_5));

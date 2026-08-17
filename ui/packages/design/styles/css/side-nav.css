@@ -153,7 +153,7 @@
     margin-inline-start: auto;
     display: inline-flex;
     flex: none;
-    transition: rotate var(--xh-duration-fast) var(--xh-ease-standard);
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='side-nav'][data-part='branch-indicator'][data-state='open'] {

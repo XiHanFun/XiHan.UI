@@ -157,7 +157,7 @@
   /* 展开时轻微涨开。只在切换到别张菜单时不重播——那由 data-state 的翻转天然保证：
      一张关一张开，动画各跑各的 */
   [data-scope='menubar'][data-part='content'][data-state='open'] {
-    animation: xh-menubar-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   [data-scope='menubar'][data-part='group'] {
@@ -266,7 +266,7 @@
 
 @layer xihan.motion {
   /* 自带前缀独占一个名字，不动公共的那份关键帧 */
-  @keyframes xh-menubar-in {
+  @keyframes xh-pop-in {
     from {
       opacity: 0;
       scale: var(--xh-motion-scale-enter);

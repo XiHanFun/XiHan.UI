@@ -117,7 +117,7 @@
     margin: 0;
     inset-inline-start: calc(var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick)) * -1);
     inline-size: var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick));
-    border-radius: var(--xh-anchor-indicator-radius, var(--xh-radius-full));
+    border-radius: var(--xh-anchor-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-anchor-indicator-color, var(--xh-_anchor-accent));
     transition:
       inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),

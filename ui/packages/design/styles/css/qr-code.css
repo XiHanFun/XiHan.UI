@@ -17,7 +17,7 @@
    */
   [data-scope='qr-code'][data-part='root'] {
     display: block;
-    border-radius: var(--xh-qr-code-radius, var(--xh-radius-md));
+    border-radius: var(--xh-qr-code-radius, var(--xh-shape-control));
     background: var(--xh-qr-code-bg, var(--xh-color-neutral-0));
 
     /* 模块那条 path 不带自己的填充色，从这里继承下去 */

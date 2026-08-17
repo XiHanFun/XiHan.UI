@@ -72,8 +72,8 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: 16px;
-    block-size: 16px;
+    inline-size: var(--xh-radio-group-indicator-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-radio-group-indicator-size, var(--xh-control-indicator-size));
     border: var(--xh-stroke-thin) solid var(--xh-radio-group-indicator-border, var(--xh-border-control));
     border-radius: var(--xh-shape-pill);
     background: var(--xh-radio-group-indicator-bg, var(--xh-bg-canvas));
@@ -84,11 +84,12 @@
     border-color: var(--xh-radio-group-indicator-border-checked, var(--xh-_radio-group-accent));
   }
 
-  /* 圆点用 scale 收放，选中态切换不引起布局抖动 */
+  /* 圆点用 scale 收放，选中态切换不引起布局抖动。
+     直径取指示器的一半：换尺寸档时圈与点一起走，比例不散 */
   [data-scope='radio-group'][data-part='indicator']::before {
     content: '';
-    inline-size: 8px;
-    block-size: 8px;
+    inline-size: calc(var(--xh-radio-group-indicator-size, var(--xh-control-indicator-size)) / 2);
+    block-size: calc(var(--xh-radio-group-indicator-size, var(--xh-control-indicator-size)) / 2);
     border-radius: var(--xh-shape-pill);
     background: var(--xh-radio-group-indicator-dot, var(--xh-_radio-group-accent));
     scale: 0;

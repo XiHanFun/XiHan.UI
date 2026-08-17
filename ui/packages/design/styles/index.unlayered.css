@@ -1517,7 +1517,7 @@
    配的黑字也不随主题走；这里整份换成随主题走的品牌淡底 */
 [data-scope='highlight'][data-part='mark'] {
   padding-inline: var(--xh-space-0_5);
-  border-radius: var(--xh-highlight-radius, var(--xh-radius-sm));
+  border-radius: var(--xh-highlight-radius, var(--xh-shape-inset));
   background: var(--xh-highlight-bg, var(--xh-bg-brand-subtle));
   color: var(--xh-highlight-fg, var(--xh-fg-brand-strong));
   font-weight: var(--xh-font-weight-medium);
@@ -2180,13 +2180,15 @@
 /* styles/mention.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-fade-in {
+@keyframes xh-pop-in {
   from {
     opacity: 0;
+    scale: var(--xh-motion-scale-enter);
   }
 
   to {
     opacity: 1;
+    scale: 1;
   }
 }
 
@@ -2352,7 +2354,7 @@
 }
 
 [data-scope='mention'][data-part='content'][data-state='open'] {
-  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 [data-scope='mention'][data-part='item'] {
@@ -2545,13 +2547,15 @@
 
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-fade-in {
+@keyframes xh-pop-in {
   from {
     opacity: 0;
+    scale: var(--xh-motion-scale-enter);
   }
 
   to {
     opacity: 1;
+    scale: 1;
   }
 }
 
@@ -2616,7 +2620,7 @@
 }
 
 [data-scope='popconfirm'][data-part='content'][data-state='open'] {
-  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 /* —— 尺寸 —— */
@@ -2728,13 +2732,15 @@
 /* styles/popselect.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-fade-in {
+@keyframes xh-pop-in {
   from {
     opacity: 0;
+    scale: var(--xh-motion-scale-enter);
   }
 
   to {
     opacity: 1;
+    scale: 1;
   }
 }
 
@@ -2885,7 +2891,7 @@
 }
 
 [data-scope='popselect'][data-part='content'][data-state='open'] {
-  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 [data-scope='popselect'][data-part='item'] {
@@ -2983,7 +2989,7 @@
  */
 [data-scope='qr-code'][data-part='root'] {
   display: block;
-  border-radius: var(--xh-qr-code-radius, var(--xh-radius-md));
+  border-radius: var(--xh-qr-code-radius, var(--xh-shape-control));
   background: var(--xh-qr-code-bg, var(--xh-color-neutral-0));
 
   /* 模块那条 path 不带自己的填充色，从这里继承下去 */
@@ -3342,7 +3348,7 @@
   justify-content: center;
   inline-size: var(--xh-timeline-indicator-size, var(--xh-_timeline-dot-size));
   block-size: var(--xh-timeline-indicator-size, var(--xh-_timeline-dot-size));
-  border-radius: var(--xh-radius-full);
+  border-radius: var(--xh-shape-pill);
   /* 使用者令牌排在语气之前；两者都没有时退回一个中性的实心点 */
   background: var(--xh-timeline-indicator-bg, var(--xh-_tone-soft, var(--xh-fg-muted)));
   color: var(--xh-timeline-indicator-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
@@ -3370,7 +3376,7 @@
 
 /* —— 连线 —— */
 [data-scope='timeline'][data-part='connector'] {
-  border-radius: var(--xh-radius-full);
+  border-radius: var(--xh-shape-pill);
   background: var(--xh-timeline-connector-bg, var(--xh-border-default));
 }
 
@@ -3662,7 +3668,7 @@
 [data-scope='typography'][data-part='text'][data-variant='code'] {
   padding-block: var(--xh-typography-code-py, var(--xh-space-0_5));
   padding-inline: var(--xh-typography-code-px, var(--xh-space-1));
-  border-radius: var(--xh-typography-code-radius, var(--xh-radius-sm));
+  border-radius: var(--xh-typography-code-radius, var(--xh-shape-inset));
   background: var(--xh-typography-code-bg, var(--xh-bg-subtle));
   font-family: var(--xh-font-family-mono);
   font-size: var(--xh-typography-code-font-size, var(--xh-_typography-code-size));
@@ -3675,7 +3681,7 @@
 
 /* —— 行内链接 —— */
 [data-scope='typography'][data-part='link'] {
-  border-radius: var(--xh-typography-link-radius, var(--xh-radius-sm));
+  border-radius: var(--xh-typography-link-radius, var(--xh-shape-inset));
   color: var(--xh-typography-link-fg, var(--xh-fg-brand));
   text-decoration: underline;
   text-underline-offset: var(--xh-typography-link-underline-offset, var(--xh-space-0_5));
@@ -4441,7 +4447,7 @@
   margin: 0;
   inset-inline-start: calc(var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick)) * -1);
   inline-size: var(--xh-anchor-indicator-thickness, var(--xh-stroke-thick));
-  border-radius: var(--xh-anchor-indicator-radius, var(--xh-radius-full));
+  border-radius: var(--xh-anchor-indicator-radius, var(--xh-shape-pill));
   background: var(--xh-anchor-indicator-color, var(--xh-_anchor-accent));
   transition:
     inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
@@ -4819,7 +4825,8 @@
 
 [data-scope='button'][data-part='indicator'] {
   display: inline-flex;
-  animation: xh-spin 0.6s linear infinite;
+  /* 连续旋转不归动效令牌管（那三档是给进退场与微交互的），照 spinner 那份取慢档的两倍 */
+  animation: xh-spin var(--xh-button-spin-duration, calc(var(--xh-duration-slow) * 2)) linear infinite;
 }
 
 /* styles/calendar.css */
@@ -5428,7 +5435,7 @@
   /* 圆点本身没有文字，按钮里的文案（页码）交给作者，默认不显示 */
   padding: 0;
   border: 0;
-  border-radius: var(--xh-carousel-indicator-radius, var(--xh-radius-full));
+  border-radius: var(--xh-carousel-indicator-radius, var(--xh-shape-pill));
   background: var(--xh-carousel-indicator-bg, var(--xh-border-control));
   font-size: 0;
   cursor: pointer;
@@ -5739,14 +5746,7 @@
 }
 
 [data-scope='cascader'][data-part='content'][data-state='open'] {
-  /* 入场横移沿书写方向起始缘：位移量经私有槽供给关键帧，rtl 只翻符号 */
-  --xh-_cascader-slide: calc(-1 * var(--xh-motion-distance-sm));
-
-  animation: xh-cascader-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-}
-
-[dir='rtl'] [data-scope='cascader'][data-part='content'][data-state='open'] {
-  --xh-_cascader-slide: var(--xh-motion-distance-sm);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 /* 一列：宽度由内容撑出、设下限防塌，高度定死——切换展开路径时浮层不上下跳动，
@@ -6019,15 +6019,15 @@
 /* 浮层是横向长出来的：淡入之外再沿书写方向起始缘推一小段，观感上像列被「拉开」。
    位移量从 content 上的私有槽取，rtl 侧翻符号后同一份关键帧两个方向都对。
    关键帧写在本文件里、名字带组件前缀，不动公共的那一份 */
-@keyframes xh-cascader-in {
+@keyframes xh-pop-in {
   from {
     opacity: 0;
-    translate: var(--xh-_cascader-slide, calc(-1 * var(--xh-motion-distance-sm))) 0;
+    scale: var(--xh-motion-scale-enter);
   }
 
   to {
     opacity: 1;
-    translate: 0 0;
+    scale: 1;
   }
 }
 
@@ -6057,7 +6057,7 @@
   block-size: var(--xh-_checkbox-box);
   padding: 0;
   border: 1px solid var(--xh-checkbox-border, var(--xh-border-control));
-  border-radius: var(--xh-radius-sm);
+  border-radius: var(--xh-shape-inset);
   background: var(--xh-checkbox-bg, var(--xh-bg-canvas));
   color: var(--xh-checkbox-fg, var(--xh-_checkbox-on-accent));
   cursor: pointer;
@@ -6122,7 +6122,7 @@
   position: absolute;
   inline-size: 60%;
   block-size: var(--xh-stroke-thick);
-  border-radius: var(--xh-radius-full);
+  border-radius: var(--xh-shape-pill);
   background: var(--xh-checkbox-indicator-fg, var(--xh-_checkbox-on-accent));
   content: '';
 }
@@ -6213,7 +6213,7 @@
   inline-size: var(--xh-checkbox-group-indicator-size, 16px);
   block-size: var(--xh-checkbox-group-indicator-size, 16px);
   border: var(--xh-stroke-thin) solid var(--xh-checkbox-group-indicator-border, var(--xh-border-control));
-  border-radius: var(--xh-checkbox-group-indicator-radius, var(--xh-radius-sm));
+  border-radius: var(--xh-checkbox-group-indicator-radius, var(--xh-shape-inset));
   background: var(--xh-checkbox-group-indicator-bg, var(--xh-bg-canvas));
   color: var(--xh-checkbox-group-indicator-fg, var(--xh-fg-on-brand));
   font-size: var(--xh-checkbox-group-indicator-font-size, 12px);
@@ -6613,7 +6613,7 @@
 }
 
 /* styles/color-picker.css */
-@keyframes xh-color-picker-fade-in {
+@keyframes xh-pop-in {
   from {
     opacity: 0;
     scale: var(--xh-motion-scale-enter);
@@ -6701,7 +6701,7 @@
   inline-size: var(--xh-color-picker-swatch-size, 1.125rem);
   block-size: var(--xh-color-picker-swatch-size, 1.125rem);
   border: var(--xh-stroke-thin) solid var(--xh-color-picker-swatch-border, var(--xh-border-default));
-  border-radius: var(--xh-color-picker-swatch-radius, var(--xh-radius-sm));
+  border-radius: var(--xh-color-picker-swatch-radius, var(--xh-shape-inset));
 }
 
 [data-scope='color-picker'][data-part='value-text'] {
@@ -6742,7 +6742,7 @@
 }
 
 [data-scope='color-picker'][data-part='content'][data-state='open'] {
-  animation: xh-color-picker-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 /* 浮层本身只是个容器（tabindex=-1 是焦点域的兜底落点），落焦时不画环 */
@@ -6759,7 +6759,7 @@
   position: relative;
   display: block;
   block-size: var(--xh-color-picker-area-h, 9rem);
-  border-radius: var(--xh-color-picker-area-radius, var(--xh-radius-md));
+  border-radius: var(--xh-color-picker-area-radius, var(--xh-shape-control));
   cursor: crosshair;
 }
 
@@ -7003,7 +7003,7 @@
   block-size: var(--xh-color-picker-swatch-item-size, 1.25rem);
   padding: 0;
   border: var(--xh-stroke-thin) solid var(--xh-color-picker-swatch-border, var(--xh-border-control));
-  border-radius: var(--xh-color-picker-swatch-radius, var(--xh-radius-sm));
+  border-radius: var(--xh-color-picker-swatch-radius, var(--xh-shape-inset));
   cursor: pointer;
 }
 
@@ -7058,13 +7058,15 @@
 /* styles/combobox.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-fade-in {
+@keyframes xh-pop-in {
   from {
     opacity: 0;
+    scale: var(--xh-motion-scale-enter);
   }
 
   to {
     opacity: 1;
+    scale: 1;
   }
 }
 
@@ -7368,7 +7370,7 @@
 }
 
 [data-scope='combobox'][data-part='content'][data-state='open'] {
-  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 [data-scope='combobox'][data-part='item-group'] {
@@ -7746,7 +7748,7 @@
 /* 展开时轻微涨开：菜单是被光标"点出来"的，纯淡入显得它一直都在
    （不设 transform-origin：那个属性没有逻辑关键字，写死方向会在 RTL 下反着涨） */
 [data-scope='context-menu'][data-part='content'][data-state='open'] {
-  animation: xh-context-menu-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 [data-scope='context-menu'][data-part='group'] {
@@ -7917,7 +7919,7 @@
 }
 
 /* 自带前缀独占一个名字，不动公共的那份关键帧 */
-@keyframes xh-context-menu-in {
+@keyframes xh-pop-in {
   from {
     opacity: 0;
     scale: var(--xh-motion-scale-enter);
@@ -8073,7 +8075,7 @@
   display: inline-block;
   padding-inline: var(--xh-date-field-segment-px, var(--xh-space-1));
   padding-block: var(--xh-date-field-segment-py, var(--xh-space-0));
-  border-radius: var(--xh-date-field-segment-radius, var(--xh-radius-sm));
+  border-radius: var(--xh-date-field-segment-radius, var(--xh-shape-inset));
   color: inherit;
   font: inherit;
   /* 等宽数字：各位字宽不一时，上下键连按会让整行数字左右跳 */
@@ -8397,7 +8399,7 @@
 }
 
 [data-scope='date-picker'][data-part='content'][data-state='open'] {
-  animation: xh-date-picker-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 /* 内嵌日历的挂载点同时充当日历的根节点：日历那份样式的 root 规则落在
@@ -8435,7 +8437,7 @@
 [data-scope='date-picker'][data-part='time-column'] {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--xh-date-picker-time-column-gap, var(--xh-space-0_5));
   max-block-size: var(--xh-date-picker-time-column-h, 14rem);
   padding: var(--xh-space-1);
   overflow-y: auto;
@@ -8495,15 +8497,15 @@
 }
 
 /* 浮层进场：淡入 + 轻微上浮。名字带组件前缀，不与公共关键帧抢名 */
-@keyframes xh-date-picker-in {
+@keyframes xh-pop-in {
   from {
     opacity: 0;
-    translate: 0 calc(-1 * var(--xh-motion-distance-sm));
+    scale: var(--xh-motion-scale-enter);
   }
 
   to {
     opacity: 1;
-    translate: 0 0;
+    scale: 1;
   }
 }
 
@@ -9952,13 +9954,15 @@
 /* styles/hover-card.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-fade-in {
+@keyframes xh-pop-in {
   from {
     opacity: 0;
+    scale: var(--xh-motion-scale-enter);
   }
 
   to {
     opacity: 1;
+    scale: 1;
   }
 }
 
@@ -10049,7 +10053,7 @@
 }
 
 [data-scope='hover-card'][data-part='content'][data-state='open'] {
-  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 /* —— 尺寸 —— */
@@ -10184,7 +10188,7 @@
   inline-size: var(--xh-image-w, 100%);
   block-size: var(--xh-image-h, auto);
   aspect-ratio: var(--xh-image-ratio, auto);
-  border-radius: var(--xh-image-radius, var(--xh-radius-md));
+  border-radius: var(--xh-image-radius, var(--xh-shape-control));
   background: var(--xh-image-bg, var(--xh-bg-subtle));
 }
 
@@ -10313,7 +10317,7 @@
   max-block-size: 85%;
   user-select: none;
   /* 变换是内联 style 写的，只给缩放旋转一点缓动；拖拽平移要跟手，不缓 */
-  transition: transform var(--xh-duration-fast) var(--xh-ease-out);
+  transition: transform var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='image-viewer'][data-part='image'][data-panning] {
@@ -10669,13 +10673,15 @@
 /* styles/menu.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-fade-in {
+@keyframes xh-pop-in {
   from {
     opacity: 0;
+    scale: var(--xh-motion-scale-enter);
   }
 
   to {
     opacity: 1;
+    scale: 1;
   }
 }
 
@@ -10734,7 +10740,7 @@
 }
 
 [data-scope='menu'][data-part='content'][data-state='open'] {
-  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 /* —— 尺寸 —— */
@@ -11001,7 +11007,7 @@
 /* 展开时轻微涨开。只在切换到别张菜单时不重播——那由 data-state 的翻转天然保证：
    一张关一张开，动画各跑各的 */
 [data-scope='menubar'][data-part='content'][data-state='open'] {
-  animation: xh-menubar-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 [data-scope='menubar'][data-part='group'] {
@@ -11108,7 +11114,7 @@
 }
 
 /* 自带前缀独占一个名字，不动公共的那份关键帧 */
-@keyframes xh-menubar-in {
+@keyframes xh-pop-in {
   from {
     opacity: 0;
     scale: var(--xh-motion-scale-enter);
@@ -11122,15 +11128,15 @@
 
 /* styles/navigation-menu.css */
 /* 面板往下探一小截再落位：纯淡入看不出它是从哪条 trigger 长出来的 */
-@keyframes xh-navigation-menu-in {
+@keyframes xh-pop-in {
   from {
     opacity: 0;
-    translate: 0 calc(-1 * var(--xh-motion-distance-sm));
+    scale: var(--xh-motion-scale-enter);
   }
 
   to {
     opacity: 1;
-    translate: 0 0;
+    scale: 1;
   }
 }
 
@@ -11295,7 +11301,7 @@
 }
 
 [data-scope='navigation-menu'][data-part='content'][data-state='open'] {
-  animation: xh-navigation-menu-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 /* 面板整批塞进共享外壳时，落位归外壳管，面板自己回到静态流里——
@@ -11347,7 +11353,7 @@
   margin: 0;
   inset-block-end: calc(var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick)) * -1);
   block-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
-  border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-radius-full));
+  border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-shape-pill));
   background: var(--xh-navigation-menu-indicator-color, var(--xh-_navigation-menu-accent));
   transition:
     inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
@@ -12071,13 +12077,15 @@
 /* styles/popover.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-fade-in {
+@keyframes xh-pop-in {
   from {
     opacity: 0;
+    scale: var(--xh-motion-scale-enter);
   }
 
   to {
     opacity: 1;
+    scale: 1;
   }
 }
 
@@ -12132,7 +12140,7 @@
 }
 
 [data-scope='popover'][data-part='content'][data-state='open'] {
-  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 /* —— 尺寸 —— */
@@ -12341,13 +12349,6 @@
   visibility: hidden;
 }
 
-/* 关掉动效的用户不该被进度条的补间晃一下；这里只管本组件 */
-@media (prefers-reduced-motion: reduce) {
-  [data-scope='progress'][data-part='range'] {
-    transition-duration: 0.01ms;
-  }
-}
-
 /* styles/radio-group.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='radio-group'] {
@@ -12422,8 +12423,8 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  inline-size: 16px;
-  block-size: 16px;
+  inline-size: var(--xh-radio-group-indicator-size, var(--xh-control-indicator-size));
+  block-size: var(--xh-radio-group-indicator-size, var(--xh-control-indicator-size));
   border: var(--xh-stroke-thin) solid var(--xh-radio-group-indicator-border, var(--xh-border-control));
   border-radius: var(--xh-shape-pill);
   background: var(--xh-radio-group-indicator-bg, var(--xh-bg-canvas));
@@ -12434,11 +12435,12 @@
   border-color: var(--xh-radio-group-indicator-border-checked, var(--xh-_radio-group-accent));
 }
 
-/* 圆点用 scale 收放，选中态切换不引起布局抖动 */
+/* 圆点用 scale 收放，选中态切换不引起布局抖动。
+   直径取指示器的一半：换尺寸档时圈与点一起走，比例不散 */
 [data-scope='radio-group'][data-part='indicator']::before {
   content: '';
-  inline-size: 8px;
-  block-size: 8px;
+  inline-size: calc(var(--xh-radio-group-indicator-size, var(--xh-control-indicator-size)) / 2);
+  block-size: calc(var(--xh-radio-group-indicator-size, var(--xh-control-indicator-size)) / 2);
   border-radius: var(--xh-shape-pill);
   background: var(--xh-radio-group-indicator-dot, var(--xh-_radio-group-accent));
   scale: 0;
@@ -12776,13 +12778,15 @@
 /* styles/select.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-fade-in {
+@keyframes xh-pop-in {
   from {
     opacity: 0;
+    scale: var(--xh-motion-scale-enter);
   }
 
   to {
     opacity: 1;
+    scale: 1;
   }
 }
 
@@ -13133,7 +13137,7 @@
 }
 
 [data-scope='select'][data-part='content'][data-state='open'] {
-  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 [data-scope='select'][data-part='item'] {
@@ -13395,7 +13399,7 @@
   margin-inline-start: auto;
   display: inline-flex;
   flex: none;
-  transition: rotate var(--xh-duration-fast) var(--xh-ease-standard);
+  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='side-nav'][data-part='branch-indicator'][data-state='open'] {
@@ -13948,7 +13952,7 @@
   inline-size: var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size));
   block-size: var(--xh-steps-indicator-size, var(--xh-_steps-indicator-size));
   border: var(--xh-stroke-thin) solid var(--xh-steps-indicator-border, var(--xh-border-strong));
-  border-radius: var(--xh-radius-full);
+  border-radius: var(--xh-shape-pill);
   background: var(--xh-steps-indicator-bg, transparent);
   color: var(--xh-steps-indicator-fg, var(--xh-fg-muted));
   font-size: var(--xh-steps-indicator-font-size, var(--xh-_steps-caption-font-size));
@@ -14016,7 +14020,7 @@
   flex: 1;
   min-inline-size: var(--xh-steps-separator-min-length, var(--xh-space-4));
   block-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thick));
-  border-radius: var(--xh-radius-full);
+  border-radius: var(--xh-shape-pill);
   background: var(--xh-steps-separator-bg, var(--xh-border-default));
   transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -14402,7 +14406,7 @@
   position: absolute;
   inline-size: 60%;
   block-size: var(--xh-stroke-thick);
-  border-radius: var(--xh-radius-full);
+  border-radius: var(--xh-shape-pill);
   background: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
   content: '';
 }
@@ -14963,7 +14967,7 @@
   block-size: var(--xh-tags-input-delete-size, 1rem);
   padding: 0;
   border: 0;
-  border-radius: var(--xh-radius-full);
+  border-radius: var(--xh-shape-pill);
   background: var(--xh-tags-input-delete-bg, transparent);
   color: var(--xh-tags-input-delete-fg, var(--xh-fg-muted));
   font-family: inherit;
@@ -15045,7 +15049,7 @@
   block-size: var(--xh-tags-input-clear-size, 1.25rem);
   padding: 0;
   border: 0;
-  border-radius: var(--xh-radius-full);
+  border-radius: var(--xh-shape-pill);
   background: var(--xh-tags-input-clear-bg, transparent);
   color: var(--xh-tags-input-clear-fg, var(--xh-fg-muted));
   font-family: inherit;
@@ -15548,7 +15552,7 @@
   display: inline-block;
   padding-inline: var(--xh-time-field-segment-px, var(--xh-space-0_5));
   padding-block: 0;
-  border-radius: var(--xh-time-field-segment-radius, var(--xh-radius-sm));
+  border-radius: var(--xh-time-field-segment-radius, var(--xh-shape-inset));
   color: inherit;
   font-variant-numeric: inherit;
   text-align: center;
@@ -15765,7 +15769,7 @@
   display: inline-block;
   padding-inline: var(--xh-time-picker-segment-px, var(--xh-space-0_5));
   padding-block: 0;
-  border-radius: var(--xh-time-picker-segment-radius, var(--xh-radius-sm));
+  border-radius: var(--xh-time-picker-segment-radius, var(--xh-shape-inset));
   color: inherit;
   font-variant-numeric: inherit;
   text-align: center;
@@ -15909,7 +15913,7 @@
 }
 
 [data-scope='time-picker'][data-part='content'][data-state='open'] {
-  animation: xh-time-picker-panel-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 /* 一列一个滚动区：列与列之间用细分隔线，视觉上"时 | 分 | 秒"三栏分明 */
@@ -16021,15 +16025,15 @@
 
 /* 浮层进场：淡入 + 轻微上浮，方向与它从输入行下方展开一致。
    关键帧写在自己文件里并带组件前缀，不去动共享的 motion.css */
-@keyframes xh-time-picker-panel-in {
+@keyframes xh-pop-in {
   from {
     opacity: 0;
-    translate: 0 calc(-1 * var(--xh-motion-distance-sm));
+    scale: var(--xh-motion-scale-enter);
   }
 
   to {
     opacity: 1;
-    translate: 0 0;
+    scale: 1;
   }
 }
 
@@ -16677,7 +16681,7 @@
 [data-scope='toolbar'][data-part='separator'] {
   flex: none;
   align-self: stretch;
-  border-radius: var(--xh-toolbar-separator-radius, var(--xh-radius-full));
+  border-radius: var(--xh-toolbar-separator-radius, var(--xh-shape-pill));
   background: var(--xh-toolbar-separator-color, var(--xh-border-default));
 }
 
@@ -16696,13 +16700,15 @@
 /* styles/tooltip.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-fade-in {
+@keyframes xh-pop-in {
   from {
     opacity: 0;
+    scale: var(--xh-motion-scale-enter);
   }
 
   to {
     opacity: 1;
+    scale: 1;
   }
 }
 
@@ -16766,7 +16772,7 @@
 }
 
 [data-scope='tooltip'][data-part='content'][data-state='open'] {
-  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 /* —— 尺寸 —— */
@@ -17340,7 +17346,7 @@
   inline-size: var(--xh-transfer-checkbox-size, 16px);
   block-size: var(--xh-transfer-checkbox-size, 16px);
   border: var(--xh-stroke-thin) solid var(--xh-transfer-checkbox-border, var(--xh-border-control));
-  border-radius: var(--xh-transfer-checkbox-radius, var(--xh-radius-sm));
+  border-radius: var(--xh-transfer-checkbox-radius, var(--xh-shape-inset));
   background: var(--xh-transfer-checkbox-bg, var(--xh-bg-canvas));
   color: var(--xh-transfer-checkbox-fg, var(--xh-fg-on-brand));
   font-size: var(--xh-transfer-checkbox-font-size, 12px);
@@ -17685,13 +17691,15 @@
 /* styles/tree-select.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-fade-in {
+@keyframes xh-pop-in {
   from {
     opacity: 0;
+    scale: var(--xh-motion-scale-enter);
   }
 
   to {
     opacity: 1;
+    scale: 1;
   }
 }
 
@@ -17972,7 +17980,7 @@
 }
 
 [data-scope='tree-select'][data-part='content'][data-state='open'] {
-  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 /* 边框、底色与滚动都归 content，树本身只把行竖着排开 */

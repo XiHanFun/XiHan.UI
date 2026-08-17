@@ -24,7 +24,7 @@
     block-size: var(--xh-_checkbox-box);
     padding: 0;
     border: 1px solid var(--xh-checkbox-border, var(--xh-border-control));
-    border-radius: var(--xh-radius-sm);
+    border-radius: var(--xh-shape-inset);
     background: var(--xh-checkbox-bg, var(--xh-bg-canvas));
     color: var(--xh-checkbox-fg, var(--xh-_checkbox-on-accent));
     cursor: pointer;
@@ -89,7 +89,7 @@
     position: absolute;
     inline-size: 60%;
     block-size: var(--xh-stroke-thick);
-    border-radius: var(--xh-radius-full);
+    border-radius: var(--xh-shape-pill);
     background: var(--xh-checkbox-indicator-fg, var(--xh-_checkbox-on-accent));
     content: '';
   }

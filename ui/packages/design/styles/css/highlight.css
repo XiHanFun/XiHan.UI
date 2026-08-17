@@ -14,7 +14,7 @@
      配的黑字也不随主题走；这里整份换成随主题走的品牌淡底 */
   [data-scope='highlight'][data-part='mark'] {
     padding-inline: var(--xh-space-0_5);
-    border-radius: var(--xh-highlight-radius, var(--xh-radius-sm));
+    border-radius: var(--xh-highlight-radius, var(--xh-shape-inset));
     background: var(--xh-highlight-bg, var(--xh-bg-brand-subtle));
     color: var(--xh-highlight-fg, var(--xh-fg-brand-strong));
     font-weight: var(--xh-font-weight-medium);

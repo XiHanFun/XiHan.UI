@@ -255,7 +255,7 @@
     position: absolute;
     inline-size: 60%;
     block-size: var(--xh-stroke-thick);
-    border-radius: var(--xh-radius-full);
+    border-radius: var(--xh-shape-pill);
     background: var(--xh-table-trigger-fg, var(--xh-fg-on-brand));
     content: '';
   }

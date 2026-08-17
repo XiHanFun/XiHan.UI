@@ -94,7 +94,7 @@
     max-block-size: 85%;
     user-select: none;
     /* 变换是内联 style 写的，只给缩放旋转一点缓动；拖拽平移要跟手，不缓 */
-    transition: transform var(--xh-duration-fast) var(--xh-ease-out);
+    transition: transform var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='image-viewer'][data-part='image'][data-panning] {
