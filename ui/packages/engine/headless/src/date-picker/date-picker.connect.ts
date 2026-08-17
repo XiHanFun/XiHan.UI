@@ -213,6 +213,8 @@ export function connectDatePicker<T extends PropTypes>(
     selectionMode,
     // 取日历已收口的结果（宿主设过的 → 首个选中值 → 今天），不在这里重算
     focusedValue: calendar.focusedValue,
+    view: calendar.view,
+    activeView: calendar.activeView,
     disabled,
     readOnly,
     invalid,
@@ -229,6 +231,7 @@ export function connectDatePicker<T extends PropTypes>(
     },
     setValue: next => send({ type: 'VALUE.SET', value: next, src: 'api' }),
     clear: () => send({ type: 'VALUE.CLEAR' }),
+    setActiveView: next => send({ type: 'VIEW.SET', activeView: next }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,

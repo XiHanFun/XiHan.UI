@@ -1,4 +1,4 @@
-<!-- 五种粒度 | 天 / 周 / 月 / 季度 / 年一套结构走完：view 只换网格与「一页是多久」，值恒是那段时间的第一天 -->
+<!-- 五种粒度 | 天 / 周 / 月 / 季度 / 年一套结构走完：输入行铺哪几段跟着 view 走，标题里的年与月可点，逐级钻上去 -->
 <script setup lang="ts">
 import type { CalendarView } from "@xihan-ui/headless";
 import { ref } from "vue";
@@ -14,6 +14,8 @@ import {
   XhDatePickerGridHead,
   XhDatePickerHeader,
   XhDatePickerHeading,
+  XhDatePickerHeadingMonthTrigger,
+  XhDatePickerHeadingYearTrigger,
   XhDatePickerInput,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
@@ -28,13 +30,13 @@ import {
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
 
-// 段位渲染几段由作者定：按年挑就只留年那一段，不必把用不上的段摆出来
+// 段位不必再手数几段：铺哪几块由 view 推出来，作者照 segments 铺就是
 const kinds = [
-  { key: "day", label: "按天", view: "day" as CalendarView, week: false, segments: 3 },
-  { key: "week", label: "按周", view: "day" as CalendarView, week: true, segments: 3 },
-  { key: "month", label: "按月", view: "month" as CalendarView, week: false, segments: 2 },
-  { key: "quarter", label: "按季度", view: "quarter" as CalendarView, week: false, segments: 2 },
-  { key: "year", label: "按年", view: "year" as CalendarView, week: false, segments: 1 },
+  { key: "day", label: "按天", view: "day" as CalendarView, week: false },
+  { key: "week", label: "按周", view: "day" as CalendarView, week: true },
+  { key: "month", label: "按月", view: "month" as CalendarView, week: false },
+  { key: "quarter", label: "按季度", view: "quarter" as CalendarView, week: false },
+  { key: "year", label: "按年", view: "year" as CalendarView, week: false },
 ];
 
 const values = ref<Record<string, string[]>>({
@@ -51,7 +53,7 @@ const values = ref<Record<string, string[]>>({
     <XhDatePickerRoot
       v-for="k in kinds"
       :key="k.key"
-      v-slot="{ panels, weekDays }"
+      v-slot="{ panels, weekDays, segments }"
       v-model:value="values[k.key]"
       :view="k.view"
       :week-selection="k.week"
@@ -61,9 +63,11 @@ const values = ref<Record<string, string[]>>({
       <XhDatePickerLabel>{{ k.label }}</XhDatePickerLabel>
       <XhDatePickerControl>
         <XhDatePickerInput>
-          <template v-for="i in k.segments" :key="i">
-            <span v-if="i > 1">-</span>
-            <XhDatePickerSegment :index="i - 1" />
+          <!-- 「-」与「周」是普通节点，与「年 / 月 / 日」一样由作者写在段位旁边 -->
+          <template v-for="(seg, i) in segments" :key="seg.type">
+            <span v-if="i > 0">-</span>
+            <XhDatePickerSegment :index="i" />
+            <span v-if="seg.type === 'week'">周</span>
           </template>
         </XhDatePickerInput>
         <XhDatePickerClearTrigger>✕</XhDatePickerClearTrigger>
@@ -75,13 +79,19 @@ const values = ref<Record<string, string[]>>({
               <!-- « 与 » 走大步：日视图一年，粗粒度视图十页 -->
               <XhDatePickerPrevYearTrigger aria-label="快退">«</XhDatePickerPrevYearTrigger>
               <XhDatePickerPrevTrigger aria-label="上一页">‹</XhDatePickerPrevTrigger>
-              <XhDatePickerHeading :index="panel.index" />
+              <XhDatePickerHeading :index="panel.index">
+                <!-- 年与月各是一个钮：点年进十年格、点月进月格；到顶那一截自动按不动，
+                     没有的那一截自动收起 -->
+                <XhDatePickerHeadingYearTrigger :index="panel.index" />
+                <XhDatePickerHeadingMonthTrigger :index="panel.index" />
+              </XhDatePickerHeading>
               <XhDatePickerNextTrigger aria-label="下一页">›</XhDatePickerNextTrigger>
               <XhDatePickerNextYearTrigger aria-label="快进">»</XhDatePickerNextYearTrigger>
             </XhDatePickerHeader>
             <XhDatePickerGrid :index="panel.index">
-              <!-- 日视图铺周行，粗粒度视图把格子直接铺进网格 -->
-              <template v-if="k.view === 'day'">
+              <!-- 日视图铺周行，粗粒度视图把格子直接铺进网格。钻上去之后铺的也是格子，
+                   所以这里看 panel.weeks 有没有东西，不看 view -->
+              <template v-if="panel.weeks.length > 0">
                 <XhDatePickerGridHead>
                   <XhDatePickerWeekRow>
                     <!-- 周选时行首多一列周序号，表头也得空出这一格 -->

@@ -33,7 +33,7 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-calendar>` |
-| Vue 组件 | `XhCalendarCell` `XhCalendarCellTrigger` `XhCalendarGrid` `XhCalendarGridBody` `XhCalendarGridHead` `XhCalendarHeader` `XhCalendarHeading` `XhCalendarNextTrigger` `XhCalendarNextYearTrigger` `XhCalendarPrevTrigger` `XhCalendarPrevYearTrigger` `XhCalendarRoot` `XhCalendarWeekDay` `XhCalendarWeekNumber` `XhCalendarWeekRow` |
+| Vue 组件 | `XhCalendarCell` `XhCalendarCellTrigger` `XhCalendarGrid` `XhCalendarGridBody` `XhCalendarGridHead` `XhCalendarHeader` `XhCalendarHeading` `XhCalendarHeadingMonthTrigger` `XhCalendarHeadingYearTrigger` `XhCalendarNextTrigger` `XhCalendarNextYearTrigger` `XhCalendarPrevTrigger` `XhCalendarPrevYearTrigger` `XhCalendarRoot` `XhCalendarWeekDay` `XhCalendarWeekNumber` `XhCalendarWeekRow` |
 | 组合式函数 | `useCalendar` |
 | 状态机 | `calendarMachine` |
 | 皮肤 | `@xihan-ui/styles/calendar.css` |
@@ -42,7 +42,7 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="calendar"`：`root` · `header` · `prev-year-trigger` · `prev-trigger` · `next-trigger` · `next-year-trigger` · `heading` · **`grid`** · `grid-head` · `week-day` · `grid-body` · `week-row` · `week-number` · **`cell`** · **`cell-trigger`**
+`data-scope="calendar"`：`root` · `header` · `prev-year-trigger` · `prev-trigger` · `next-trigger` · `next-year-trigger` · `heading` · `heading-year-trigger` · `heading-month-trigger` · **`grid`** · `grid-head` · `week-day` · `grid-body` · `week-row` · `week-number` · **`cell`** · **`cell-trigger`**
 
 ## Props
 
@@ -62,17 +62,20 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `readOnly` | `boolean` |  | 只读：翻月与移动焦点照常，只是选不动值。 |
 | `weekdayFormat` | `CalendarWeekdayFormat` |  | 表头缩写粒度，默认 short。 |
 | `fixedWeeks` | `boolean` |  | 恒渲染六行，默认按当月实际周数。开着能让翻月时网格高度不跳。 |
-| `view` | `CalendarView` |  | 面板按什么粒度挑：天（默认）、月、季度、年。 格子的值一律是「那段时间的第一天」的 ISO 串，不另立一套值形态—— min/max 比较、区间逻辑、不可用判定、表单出口于是全都原样复用。 |
+| `view` | `CalendarView` |  | 挑的粒度：天（默认）、月、季度、年。这一档也是「点一格就是选中」的那一档。 格子的值一律是「那段时间的第一天」的 ISO 串，不另立一套值形态—— min/max 比较、区间逻辑、不可用判定、表单出口于是全都原样复用。 |
+| `activeView` | `CalendarView` |  | 面板此刻铺的是哪一档格子。给定即受控（date-picker 就是这么持有它的）。 它与 view 是两件事：view 是作者要挑的粒度，这个是人钻到了哪一层。 点标题里的年会把它抬到 year，再点一格就往 view 那一档钻回去；到了 view 那一档， 点一格才是选中。缺省即等于 view。 |
+| `defaultActiveView` | `CalendarView` |  | 非受控初值，缺省同 view。 |
 | `weekSelection` | `boolean` |  | 周选：点任意一天选中它所在的整周，值落成 [周首日, 周末日]。 只在 view=day 且 selectionMode=range 下生效。 |
 | `visibleCount` | `number` |  | 并排展示几个连续月，默认 1。区间选择给 2 才好挑——起止常跨月， 一个面板要来回翻页。翻页时整窗一起走一个月，不是各翻各的。 小于 1 的写法回落到 1。 |
 | `onValueChange` | `(details: CalendarValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onFocusedValueChange` | `(details: CalendarFocusChangeDetails) => void` |  | 聚焦日变化（方向键、翻页、点了邻月的日子都会发）；受控时是唯一出口。 |
+| `onActiveViewChange` | `(details: CalendarViewChangeDetails) => void` |  | 面板钻到了哪一层（点标题钻上、点格子钻下都会发）；受控时是唯一出口。 |
 
 ## 状态机
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `CELL.SELECT` · `FOCUS.SET` · `HOVER.SET` · `HOVER.CLEAR`
+**事件**：`VALUE.SET` · `CELL.SELECT` · `FOCUS.SET` · `VIEW.SET` · `HOVER.SET` · `HOVER.CLEAR`
 
 ## connect API
 
@@ -88,6 +91,11 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `weeks` | `CalendarDay[][]` | 首个面板的日期矩阵。多面板请改用 panels。 |
 | `weekDays` | `CalendarWeekDay[]` | 七列表头，作者照它渲染 week-day。 |
 | `headingLabel` | `string` | 首个面板的标题文案（如 2024年2月）。多面板请改用 panels。 |
+| `view` | `CalendarView` | 作者要挑的粒度。 |
+| `activeView` | `CalendarView` | 面板此刻铺的是哪一档格子。等于 view 时点一格就是选中，粗过 view 时点一格是往下钻。 |
+| `headingOrder` | `readonly ('year' \| 'month')[]` | 标题里年与月在这个语言里的先后（zh-CN 是年在前，en-US 是月在前）。 手写标记时照它摆两个钮的顺序，标题读起来才顺。 |
+| `canZoomOutYear` | `boolean` | 点标题里的年钻不钻得上去：年视图已到顶，钻不上去。 |
+| `canZoomOutMonth` | `boolean` | 点标题里的月钻不钻得上去：只有日视图有月这一截。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |
@@ -99,6 +107,7 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `setValue` | `(next: string[]) => void` |  |
 | `select` | `(value: string) => void` |  |
 | `focus` | `(value: string) => void` | 改写聚焦日；跨月会连带换掉展示月。 |
+| `setActiveView` | `(next: CalendarView) => void` | 直接钻到某一层。 |
 | `goToPrevMonth` | `() => void` |  |
 | `goToNextMonth` | `() => void` |  |
 | `goToPrevYear` | `() => void` | 大步翻：日视图走一年，月/季度走十年，年视图走一百年。 |
@@ -110,6 +119,8 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `getNextTriggerProps` | `() => T['button']` |  |
 | `getNextYearTriggerProps` | `() => T['button']` |  |
 | `getHeadingProps` | `(props?: CalendarPanelProps) => T['element']` |  |
+| `getHeadingYearTriggerProps` | `(props?: CalendarPanelProps) => T['button']` | 标题里年那一截，点它钻到十年格。年视图下已到顶，转原生 disabled。 |
+| `getHeadingMonthTriggerProps` | `(props?: CalendarPanelProps) => T['button']` | 标题里月那一截，点它钻到月格。不在日视图时带 hidden（那一层没有月这一截）。 |
 | `getGridProps` | `(props?: CalendarPanelProps) => T['element']` |  |
 | `getGridHeadProps` | `() => T['element']` |  |
 | `getWeekDayProps` | `(props: CalendarWeekDayProps) => T['element']` |  |
@@ -127,14 +138,14 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Tab` / `Shift+Tab` | focus outside the grid | 整张网格只占一个 Tab 位：焦点进入聚焦日那一格 |
-| `ArrowLeft` | focus in grid | 焦点前移一天；越过月首即翻到上一月并落在那一天 |
-| `ArrowRight` | focus in grid | 焦点后移一天；越过月末即翻到下一月并落在那一天 |
-| `ArrowUp` | focus in grid | 焦点上移一周（减七天），跨月照样翻页 |
-| `ArrowDown` | focus in grid | 焦点下移一周（加七天），跨月照样翻页 |
-| `Home` | focus in grid | 焦点移到本周第一天；周首日随 locale 变 |
-| `End` | focus in grid | 焦点移到本周最后一天 |
-| `PageUp` | focus in grid | 退一个月，日号不变（月末日被目标月夹住：3 月 31 日退成 2 月 29 日） |
-| `PageDown` | focus in grid | 进一个月，日号不变 |
-| `Shift+PageUp` | focus in grid | 退一年 |
-| `Shift+PageDown` | focus in grid | 进一年 |
-| `Enter` / `Space` | focus in grid, 聚焦日可用且非只读 | 选中聚焦日：单选替换、多选切换、区间先落起点再落终点 |
+| `ArrowLeft` | focus in grid | 焦点前移一天；越过月首即翻到上一月并落在那一天。粗粒度视图里走一格（一个月 / 一季 / 一年） |
+| `ArrowRight` | focus in grid | 焦点后移一天；越过月末即翻到下一月并落在那一天。粗粒度视图里走一格 |
+| `ArrowUp` | focus in grid | 焦点上移一周（减七天），跨月照样翻页。粗粒度视图里上移一行 |
+| `ArrowDown` | focus in grid | 焦点下移一周（加七天），跨月照样翻页。粗粒度视图里下移一行 |
+| `Home` | focus in grid | 焦点移到本周第一天；周首日随 locale 变。粗粒度视图里移到本行头一格 |
+| `End` | focus in grid | 焦点移到本周最后一天。粗粒度视图里移到本行末一格 |
+| `PageUp` | focus in grid | 退一个月，日号不变（月末日被目标月夹住：3 月 31 日退成 2 月 29 日）。粗粒度视图里退一整页 |
+| `PageDown` | focus in grid | 进一个月，日号不变。粗粒度视图里进一整页 |
+| `Shift+PageUp` | focus in grid | 退一年；粗粒度视图里退十页 |
+| `Shift+PageDown` | focus in grid | 进一年；粗粒度视图里进十页 |
+| `Enter` / `Space` | focus in grid, 聚焦日可用且非只读 | 选中聚焦日：单选替换、多选切换、区间先落起点再落终点。还没钻到 view 那一档时这一下是往下钻一层 |

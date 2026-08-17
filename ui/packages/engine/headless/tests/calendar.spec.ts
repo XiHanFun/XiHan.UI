@@ -8,12 +8,19 @@ import {
   buildMonthGrid,
   buildPeriodGrid,
   buildWeekDays,
+  CALENDAR_PERIOD_COLUMNS,
+  calendarDrillAnchor,
+  calendarHeadingPieces,
   calendarMachine,
   calendarNavFromKey,
   calendarNavTarget,
   calendarPageMonths,
+  calendarPeriodIndex,
+  calendarPeriodMonths,
+  calendarPeriodOf,
   calendarPeriodStart,
   calendarWeekRange,
+  calendarZoomIn,
   connectCalendar,
   isoWeekNumber,
   parseCalendarDate,
@@ -1039,5 +1046,361 @@ describe('网格结构', () => {
   it('fixedWeeks 打开后恒六行四十二格', () => {
     const h = mount({ defaultFocusedValue: '2024-02-15', locale: 'zh-CN', fixedWeeks: true })
     expect(h.rendered()).toHaveLength(42)
+  })
+})
+
+describe('标题钻取的纯函数', () => {
+  it('钻回去的下一站：到了（或深过）作者要的那一档就该选中，不再往下钻', () => {
+    // 按天挑：年 → 月 → 日
+    expect(calendarZoomIn('year', 'day')).toBe('month')
+    expect(calendarZoomIn('month', 'day')).toBe('day')
+    expect(calendarZoomIn('day', 'day')).toBeNull()
+    // 按月挑：年 → 月，到了月就是选中
+    expect(calendarZoomIn('year', 'month')).toBe('month')
+    expect(calendarZoomIn('month', 'month')).toBeNull()
+    // 按季度挑：年 → 季度（不经月这一层）
+    expect(calendarZoomIn('year', 'quarter')).toBe('quarter')
+    expect(calendarZoomIn('quarter', 'quarter')).toBeNull()
+    // 按年挑：已在顶上，点一格就是选中
+    expect(calendarZoomIn('year', 'year')).toBeNull()
+  })
+
+  it('这一天归哪一格：格子的值是那段时间的第一天', () => {
+    expect(calendarPeriodOf('2026-08-17', 'day')).toBe('2026-08-17')
+    expect(calendarPeriodOf('2026-08-17', 'month')).toBe('2026-08-01')
+    expect(calendarPeriodOf('2026-08-17', 'quarter')).toBe('2026-07-01')
+    expect(calendarPeriodOf('2026-08-17', 'year')).toBe('2026-01-01')
+    // 脏值原样交回，不抛——它在焦点恢复那一路上跑
+    expect(calendarPeriodOf('不是日期', 'month')).toBe('不是日期')
+  })
+
+  it('这一天在本页第几格', () => {
+    expect(calendarPeriodIndex('2026-08-17', 'month')).toBe(7)
+    expect(calendarPeriodIndex('2026-08-17', 'quarter')).toBe(2)
+    // 2026 落在 2020-2029 这一页的第 6 格
+    expect(calendarPeriodIndex('2026-08-17', 'year')).toBe(6)
+  })
+
+  it('一格跨多少个月', () => {
+    expect(calendarPeriodMonths('day')).toBe(1)
+    expect(calendarPeriodMonths('month')).toBe(1)
+    expect(calendarPeriodMonths('quarter')).toBe(3)
+    expect(calendarPeriodMonths('year')).toBe(12)
+  })
+
+  it('钻下一层时细的位沿用原落点，越界的日号被夹住', () => {
+    // 在 2026-02-18 上点 2020 那一格：钻到月视图后人还落在 2 月 18 日
+    expect(calendarDrillAnchor('2026-02-18', '2020-01-01', 'month')).toBe('2020-02-18')
+    expect(calendarDrillAnchor('2026-02-18', '2020-01-01', 'quarter')).toBe('2020-02-18')
+    // 从月视图点 2 月：日号沿用
+    expect(calendarDrillAnchor('2026-01-18', '2026-02-01', 'day')).toBe('2026-02-18')
+    // 31 日落到 2 月：夹到 28（2026 不是闰年）
+    expect(calendarDrillAnchor('2026-01-31', '2026-02-01', 'day')).toBe('2026-02-28')
+    // 认不出来的串就用刚点那一格
+    expect(calendarDrillAnchor('坏值', '2026-02-01', 'day')).toBe('2026-02-01')
+  })
+
+  it('标题拆成年月两截，先后随 locale', () => {
+    const date = parseCalendarDate('2026-02-18')!
+    // zh-CN：两截各带自己的单位，年在前
+    expect(calendarHeadingPieces(date, 'zh-CN', 'UTC')).toEqual({
+      year: '2026年',
+      month: '2月',
+      order: ['year', 'month'],
+    })
+    // en-US：月在前，月名是格式上下文里那一个（不是独立形）
+    expect(calendarHeadingPieces(date, 'en-US', 'UTC')).toEqual({
+      year: '2026',
+      month: 'February',
+      order: ['month', 'year'],
+    })
+  })
+})
+
+describe('粗粒度视图的方向键走格子', () => {
+  it('月视图：左右一格一个月，上下一行三个月', () => {
+    expect(calendarNavTarget('2026-08-17', 'day.next', 'zh-CN', 'month')).toBe('2026-09-17')
+    expect(calendarNavTarget('2026-08-17', 'day.prev', 'zh-CN', 'month')).toBe('2026-07-17')
+    expect(CALENDAR_PERIOD_COLUMNS.month).toBe(3)
+    expect(calendarNavTarget('2026-08-17', 'week.next', 'zh-CN', 'month')).toBe('2026-11-17')
+    expect(calendarNavTarget('2026-08-17', 'week.prev', 'zh-CN', 'month')).toBe('2026-05-17')
+  })
+
+  it('月视图：Home / End 到本行两头，翻页键走一整年', () => {
+    // 8 月是第 7 格，落在第 3 行（6、7、8 月）：行头是 7 月、行尾是 9 月
+    expect(calendarNavTarget('2026-08-17', 'week.start', 'zh-CN', 'month')).toBe('2026-07-17')
+    expect(calendarNavTarget('2026-08-17', 'week.end', 'zh-CN', 'month')).toBe('2026-09-17')
+    expect(calendarNavTarget('2026-08-17', 'month.next', 'zh-CN', 'month')).toBe('2027-08-17')
+    // Shift+翻页走十页，与 « » 那对大步按钮同档
+    expect(calendarNavTarget('2026-08-17', 'year.next', 'zh-CN', 'month')).toBe('2036-08-17')
+  })
+
+  it('季度视图：一格一季，一页四格排一行', () => {
+    expect(calendarNavTarget('2026-08-17', 'day.next', 'zh-CN', 'quarter')).toBe('2026-11-17')
+    expect(calendarNavTarget('2026-08-17', 'day.prev', 'zh-CN', 'quarter')).toBe('2026-05-17')
+    expect(CALENDAR_PERIOD_COLUMNS.quarter).toBe(4)
+    // 一行装得下整年，行头是 Q1 那一格
+    expect(calendarNavTarget('2026-08-17', 'week.start', 'zh-CN', 'quarter')).toBe('2026-02-17')
+  })
+
+  it('年视图：一格一年，一行三格，翻页走十年', () => {
+    expect(calendarNavTarget('2026-08-17', 'day.next', 'zh-CN', 'year')).toBe('2027-08-17')
+    expect(calendarNavTarget('2026-08-17', 'week.next', 'zh-CN', 'year')).toBe('2029-08-17')
+    expect(calendarNavTarget('2026-08-17', 'month.next', 'zh-CN', 'year')).toBe('2036-08-17')
+  })
+
+  it('日视图一步不差：view 缺省即从前那套', () => {
+    expect(calendarNavTarget('2024-02-01', 'day.prev')).toBe(calendarNavTarget('2024-02-01', 'day.prev', 'zh-CN', 'day'))
+    expect(calendarNavTarget('2024-02-01', 'week.next', 'zh-CN', 'day')).toBe('2024-02-08')
+  })
+})
+
+/**
+ * 会跟着 activeView 重画的日历：钻到哪一层就铺那一层的格子，标题里的年与月各是一个钮。
+ * 钻取必须验渲染结果——只验 activeView 这个字段，看不出「钻上去之后网格还有没有 Tab 位」。
+ */
+function mountDrill(initial: Partial<Props> = {}) {
+  const runtime = createVanillaRuntime()
+  // props 挂在 signal 上：换 view 那一路要靠 watch 里的 track 复查，
+  // 直接改一个普通对象，track 压根不会跑
+  const props = runtime.signal<Partial<Props>>({ ...initial })
+  const service = createService(calendarMachine, { props: () => props.get(), runtime })
+
+  const doc = document
+  const root = doc.createElement('div')
+  const header = doc.createElement('div')
+  const yearTrigger = doc.createElement('button')
+  const monthTrigger = doc.createElement('button')
+  header.append(yearTrigger, monthTrigger)
+  const grid = doc.createElement('div')
+  root.append(header, grid)
+  doc.body.appendChild(root)
+
+  service.refs.set('getGridEl', () => grid)
+  runtime.start()
+
+  const triggers = new Map<string, HTMLElement>()
+  let painted = ''
+
+  const render = (): void => {
+    const api = connectCalendar(service, normalizeProps)
+    // 日视图铺周行，粗粒度视图把格子直接铺进网格
+    const items = api.activeView === 'day'
+      ? api.panels[0]!.weeks.flat().map(d => d.value)
+      : api.panels[0]!.cells.map(c => c.value)
+    const key = `${api.activeView}|${items.join()}`
+    if (key !== painted) {
+      painted = key
+      grid.textContent = ''
+      triggers.clear()
+      for (const value of items) {
+        const cell = doc.createElement('div')
+        const trigger = doc.createElement('div')
+        cell.appendChild(trigger)
+        grid.appendChild(cell)
+        triggers.set(value, trigger)
+      }
+    }
+    spread(root, api.getRootProps() as Record<string, unknown>)
+    spread(yearTrigger, api.getHeadingYearTriggerProps() as Record<string, unknown>)
+    yearTrigger.textContent = api.panels[0]!.headingYear
+    spread(monthTrigger, api.getHeadingMonthTriggerProps() as Record<string, unknown>)
+    monthTrigger.textContent = api.panels[0]!.headingMonth
+    spread(grid, api.getGridProps() as Record<string, unknown>)
+    for (const [value, trigger] of triggers)
+      spread(trigger, api.getCellTriggerProps({ value }) as Record<string, unknown>)
+  }
+
+  runtime.subscribe(render)
+  render()
+
+  return {
+    api: () => connectCalendar(service, normalizeProps),
+    grid,
+    yearTrigger,
+    monthTrigger,
+    cell: (value: string) => {
+      const el = triggers.get(value)
+      if (!el)
+        throw new Error(`网格里没有 ${value} 这一格（此刻铺的是 ${connectCalendar(service, normalizeProps).activeView}）`)
+      return el
+    },
+    rendered: () => [...triggers.keys()],
+    setProps: (next: Partial<Props>) => props.set({ ...props.get(), ...next }),
+    value: () => service.context.get('value'),
+  }
+}
+
+describe('标题钻取', () => {
+  it('缺省钻到的层就是作者要挑的那一档', () => {
+    expect(mountDrill({ defaultFocusedValue: '2026-02-18' }).api().activeView).toBe('day')
+    expect(mountDrill({ defaultFocusedValue: '2026-02-18', view: 'month' }).api().activeView).toBe('month')
+  })
+
+  it('日视图的标题拆成两截，各自可点', () => {
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', locale: 'zh-CN' })
+    expect(h.yearTrigger.textContent).toBe('2026年')
+    expect(h.monthTrigger.textContent).toBe('2月')
+    expect(h.yearTrigger.hasAttribute('disabled')).toBe(false)
+    expect(h.monthTrigger.hasAttribute('hidden')).toBe(false)
+  })
+
+  it('点年那一截钻到十年格，那一页含原来的落点', () => {
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', locale: 'zh-CN' })
+    click(h.yearTrigger)
+    expect(h.api().activeView).toBe('year')
+    // 十年格铺的是 2019-2030（两端各带一格邻十年）
+    expect(h.rendered()).toContain('2026-01-01')
+    expect(h.api().panels[0]!.headingLabel).toBe('2020年-2029年')
+    // 到顶了：那一截只作标题显示，不再可点；月那一截整个收起
+    expect(h.yearTrigger.textContent).toBe('2020年-2029年')
+    expect(h.yearTrigger.hasAttribute('disabled')).toBe(true)
+    expect(h.monthTrigger.hasAttribute('hidden')).toBe(true)
+  })
+
+  it('钻上去之后网格仍有一个 Tab 位：聚焦的是含落点那一格', () => {
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', locale: 'zh-CN' })
+    click(h.yearTrigger)
+    // 落点还是 2026-02-18，而年格的值是 2026-01-01——两者不等，靠「归哪一格」才对得上
+    expect(h.cell('2026-01-01').getAttribute('tabindex')).toBe('0')
+    expect(h.cell('2026-01-01').getAttribute('data-focused')).toBe('')
+    expect(h.cell('2027-01-01').getAttribute('tabindex')).toBe('-1')
+  })
+
+  it('一路钻回来：年 → 月 → 日，细的位一直沿用', () => {
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', locale: 'zh-CN' })
+    click(h.yearTrigger)
+    // 点 2020 那一格：这一下是导航，不是选中
+    click(h.cell('2020-01-01'))
+    expect(h.api().activeView).toBe('month')
+    expect(h.value()).toEqual([])
+    // 日号与月份沿用，落点成了 2020-02-18
+    expect(h.api().focusedValue).toBe('2020-02-18')
+    expect(h.cell('2020-02-01').getAttribute('tabindex')).toBe('0')
+
+    // 点 8 月那一格：钻回日视图
+    click(h.cell('2020-08-01'))
+    expect(h.api().activeView).toBe('day')
+    expect(h.value()).toEqual([])
+    expect(h.api().focusedValue).toBe('2020-08-18')
+    // 这一下起才是选中
+    click(h.cell('2020-08-20'))
+    expect(h.value()).toEqual(['2020-08-20'])
+  })
+
+  it('按月挑的日历点一个月就是选中，不往下钻', () => {
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', view: 'month', locale: 'zh-CN' })
+    expect(h.api().activeView).toBe('month')
+    click(h.cell('2026-08-01'))
+    expect(h.value()).toEqual(['2026-08-01'])
+    expect(h.api().activeView).toBe('month')
+  })
+
+  it('按月挑时钻上去看年份，点回一年落回月那一档而不是选中', () => {
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', view: 'month', locale: 'zh-CN' })
+    click(h.yearTrigger)
+    expect(h.api().activeView).toBe('year')
+    click(h.cell('2030-01-01'))
+    expect(h.api().activeView).toBe('month')
+    expect(h.value()).toEqual([])
+    // 这一下才落值
+    click(h.cell('2030-05-01'))
+    expect(h.value()).toEqual(['2030-05-01'])
+  })
+
+  it('按季度挑时年那一层直接钻回季度，不经月', () => {
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', view: 'quarter', locale: 'zh-CN' })
+    click(h.yearTrigger)
+    click(h.cell('2026-01-01'))
+    expect(h.api().activeView).toBe('quarter')
+    click(h.cell('2026-10-01'))
+    expect(h.value()).toEqual(['2026-10-01'])
+  })
+
+  it('月/季度那两层没有「月」那一截可点', () => {
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', view: 'month', locale: 'zh-CN' })
+    expect(h.monthTrigger.hasAttribute('hidden')).toBe(true)
+    expect(h.yearTrigger.textContent).toBe('2026年')
+    expect(h.yearTrigger.hasAttribute('disabled')).toBe(false)
+  })
+
+  it('点月那一截钻到月格，再点一个月就回到日视图', () => {
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', locale: 'zh-CN' })
+    click(h.monthTrigger)
+    expect(h.api().activeView).toBe('month')
+    expect(h.api().panels[0]!.headingLabel).toBe('2026年')
+    click(h.cell('2026-11-01'))
+    expect(h.api().activeView).toBe('day')
+    expect(h.api().focusedValue).toBe('2026-11-18')
+  })
+
+  it('确认键在还没钻到那一档时也是往下钻', () => {
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', locale: 'zh-CN' })
+    click(h.yearTrigger)
+    press(h.grid, 'Enter')
+    expect(h.api().activeView).toBe('month')
+    expect(h.value()).toEqual([])
+  })
+
+  it('方向键在十年格里一格一年走，落点跟着换格', () => {
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', locale: 'zh-CN' })
+    click(h.yearTrigger)
+    press(h.grid, 'ArrowRight')
+    expect(h.api().focusedValue).toBe('2027-02-18')
+    expect(h.cell('2027-01-01').getAttribute('tabindex')).toBe('0')
+    // 上下一行三格
+    press(h.grid, 'ArrowDown')
+    expect(h.api().focusedValue).toBe('2030-02-18')
+  })
+
+  it('钻取不受只读拦阻，也不受粗粒度格子的可用性拦阻', () => {
+    // min 落在 7 月末：7 月 1 日那一格算「不可用」，但 7 月里仍有挑得了的日子
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', min: '2026-07-28', readOnly: true, locale: 'zh-CN' })
+    click(h.monthTrigger)
+    expect(h.cell('2026-07-01').getAttribute('data-disabled')).toBe('')
+    click(h.cell('2026-07-01'))
+    // 拦住的话就再也钻不进 7 月了
+    expect(h.api().activeView).toBe('day')
+    expect(h.api().focusedValue).toBe('2026-07-18')
+  })
+
+  it('整张禁用时标题两截都按不动', () => {
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', disabled: true, locale: 'zh-CN' })
+    expect(h.yearTrigger.hasAttribute('disabled')).toBe(true)
+    expect(h.monthTrigger.hasAttribute('disabled')).toBe(true)
+    click(h.yearTrigger)
+    expect(h.api().activeView).toBe('day')
+  })
+
+  it('受控 activeView：宿主不写回就纹丝不动，回调照发', () => {
+    const onActiveViewChange = vi.fn()
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', activeView: 'day', onActiveViewChange, locale: 'zh-CN' })
+    click(h.yearTrigger)
+    expect(h.api().activeView).toBe('day')
+    expect(onActiveViewChange).toHaveBeenCalledWith({ activeView: 'year' })
+    h.setProps({ activeView: 'year' })
+    expect(h.api().activeView).toBe('year')
+  })
+
+  it('作者换了要挑的粒度，钻到哪一层的记录随之作废', () => {
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', locale: 'zh-CN' })
+    click(h.yearTrigger)
+    expect(h.api().activeView).toBe('year')
+    h.setProps({ view: 'month' })
+    expect(h.api().activeView).toBe('month')
+  })
+
+  it('setActiveView 是命令式的同一条路', () => {
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', locale: 'zh-CN' })
+    h.api().setActiveView('quarter')
+    expect(h.api().activeView).toBe('quarter')
+    expect(h.rendered()).toEqual(['2026-01-01', '2026-04-01', '2026-07-01', '2026-10-01'])
+  })
+
+  it('标题两截的先后由 locale 给出，作者照它摆钮', () => {
+    expect(mountDrill({ defaultFocusedValue: '2026-02-18', locale: 'zh-CN' }).api().headingOrder)
+      .toEqual(['year', 'month'])
+    expect(mountDrill({ defaultFocusedValue: '2026-02-18', locale: 'en-US' }).api().headingOrder)
+      .toEqual(['month', 'year'])
   })
 })

@@ -32,6 +32,11 @@ export interface CalendarFocusChangeDetails {
   focusedValue: string
 }
 
+export interface CalendarViewChangeDetails {
+  /** 面板此刻铺的是哪一档格子。 */
+  activeView: CalendarView
+}
+
 /**
  * 格子自报家门：哪一天由作者在部件上声明，connect 据此产出属性。
  * connect 在 render 期求值，此时 DOM 尚不存在，不得读 DOM。
@@ -82,6 +87,13 @@ export interface CalendarPanel {
   cells: CalendarPeriodCell[]
   /** 这个面板的标题文案（2024年2月 / 2024年 / 2020-2029）。 */
   headingLabel: string
+  /**
+   * 标题里年那一截（2026年 / 2026）。年视图下是整个十年跨度（2020年-2029年）——
+   * 那一层已经到顶，钻不上去了。
+   */
+  headingYear: string
+  /** 标题里月那一截（2月 / February）。不在日视图时是空串。 */
+  headingMonth: string
 }
 
 export interface CalendarRefs {
@@ -125,12 +137,22 @@ export interface CalendarSchema extends MachineSchema {
     /** 恒渲染六行，默认按当月实际周数。开着能让翻月时网格高度不跳。 */
     fixedWeeks?: boolean
     /**
-     * 面板按什么粒度挑：天（默认）、月、季度、年。
+     * 挑的粒度：天（默认）、月、季度、年。这一档也是「点一格就是选中」的那一档。
      *
      * 格子的值一律是「那段时间的第一天」的 ISO 串，不另立一套值形态——
      * min/max 比较、区间逻辑、不可用判定、表单出口于是全都原样复用。
      */
     view?: CalendarView
+    /**
+     * 面板此刻铺的是哪一档格子。给定即受控（date-picker 就是这么持有它的）。
+     *
+     * 它与 view 是两件事：view 是作者要挑的粒度，这个是人钻到了哪一层。
+     * 点标题里的年会把它抬到 year，再点一格就往 view 那一档钻回去；到了 view 那一档，
+     * 点一格才是选中。缺省即等于 view。
+     */
+    activeView?: CalendarView
+    /** 非受控初值，缺省同 view。 */
+    defaultActiveView?: CalendarView
     /**
      * 周选：点任意一天选中它所在的整周，值落成 [周首日, 周末日]。
      * 只在 view=day 且 selectionMode=range 下生效。
@@ -146,6 +168,8 @@ export interface CalendarSchema extends MachineSchema {
     onValueChange?: (details: CalendarValueChangeDetails) => void
     /** 聚焦日变化（方向键、翻页、点了邻月的日子都会发）；受控时是唯一出口。 */
     onFocusedValueChange?: (details: CalendarFocusChangeDetails) => void
+    /** 面板钻到了哪一层（点标题钻上、点格子钻下都会发）；受控时是唯一出口。 */
+    onActiveViewChange?: (details: CalendarViewChangeDetails) => void
   }
   context: {
     /** 选中集合，恒为数组。受控（value 给定）时 cell 直读 prop。 */
@@ -160,6 +184,8 @@ export interface CalendarSchema extends MachineSchema {
      * 看着就像「点一下翻一页、选不中」。
      */
     visibleStart: string | null
+    /** 面板此刻铺哪一档格子。受控（activeView 给定）时 cell 直读 prop。 */
+    activeView: CalendarView
     /** 区间挑选的起点：已落下起点、还没落终点时非空。 */
     rangeAnchor: string | null
     /** 指针悬停的那天，只在挑区间时用来预览；不受控、不对外通知。 */
@@ -181,11 +207,13 @@ export interface CalendarSchema extends MachineSchema {
      * 而重渲发生在读 DOM 之前还是之后取决于宿主调度。
      */
     | { type: 'FOCUS.SET', value: string, months?: number, restoreFocus?: boolean }
+    /** 钻到另一层：点标题往上、点格子往下。restoreFocus 表示这一下是键盘/指针操作，焦点要跟到新格子上。 */
+    | { type: 'VIEW.SET', activeView: CalendarView, restoreFocus?: boolean }
     | { type: 'HOVER.SET', value: string }
     | { type: 'HOVER.CLEAR' }
   tag: never
   guard: never
-  action: 'setValue' | 'selectCell' | 'setFocusedValue' | 'pageVisibleStart' | 'setHoveredValue' | 'clearHoveredValue' | 'focusVisibleCell'
+  action: 'setValue' | 'selectCell' | 'setFocusedValue' | 'setActiveView' | 'syncActiveView' | 'pageVisibleStart' | 'setHoveredValue' | 'clearHoveredValue' | 'focusVisibleCell'
   effect: 'trackLiveness'
 }
 
@@ -205,6 +233,19 @@ export interface CalendarApi<T extends PropTypes = PropTypes> {
   weekDays: CalendarWeekDay[]
   /** 首个面板的标题文案（如 2024年2月）。多面板请改用 panels。 */
   headingLabel: string
+  /** 作者要挑的粒度。 */
+  view: CalendarView
+  /** 面板此刻铺的是哪一档格子。等于 view 时点一格就是选中，粗过 view 时点一格是往下钻。 */
+  activeView: CalendarView
+  /**
+   * 标题里年与月在这个语言里的先后（zh-CN 是年在前，en-US 是月在前）。
+   * 手写标记时照它摆两个钮的顺序，标题读起来才顺。
+   */
+  headingOrder: readonly ('year' | 'month')[]
+  /** 点标题里的年钻不钻得上去：年视图已到顶，钻不上去。 */
+  canZoomOutYear: boolean
+  /** 点标题里的月钻不钻得上去：只有日视图有月这一截。 */
+  canZoomOutMonth: boolean
   disabled: boolean
   readOnly: boolean
   isSelected: (value: string) => boolean
@@ -220,6 +261,8 @@ export interface CalendarApi<T extends PropTypes = PropTypes> {
   select: (value: string) => void
   /** 改写聚焦日；跨月会连带换掉展示月。 */
   focus: (value: string) => void
+  /** 直接钻到某一层。 */
+  setActiveView: (next: CalendarView) => void
   goToPrevMonth: () => void
   goToNextMonth: () => void
   /** 大步翻：日视图走一年，月/季度走十年，年视图走一百年。 */
@@ -232,6 +275,10 @@ export interface CalendarApi<T extends PropTypes = PropTypes> {
   getNextTriggerProps: () => T['button']
   getNextYearTriggerProps: () => T['button']
   getHeadingProps: (props?: CalendarPanelProps) => T['element']
+  /** 标题里年那一截，点它钻到十年格。年视图下已到顶，转原生 disabled。 */
+  getHeadingYearTriggerProps: (props?: CalendarPanelProps) => T['button']
+  /** 标题里月那一截，点它钻到月格。不在日视图时带 hidden（那一层没有月这一截）。 */
+  getHeadingMonthTriggerProps: (props?: CalendarPanelProps) => T['button']
   getGridProps: (props?: CalendarPanelProps) => T['element']
   getGridHeadProps: () => T['element']
   getWeekDayProps: (props: CalendarWeekDayProps) => T['element']

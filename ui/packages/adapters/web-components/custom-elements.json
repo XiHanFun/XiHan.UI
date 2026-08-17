@@ -2333,6 +2333,24 @@
             },
             {
               "kind": "field",
+              "name": "activeView",
+              "privacy": "public",
+              "type": {
+                "text": "CalendarView | undefined"
+              },
+              "attribute": "active-view"
+            },
+            {
+              "kind": "field",
+              "name": "defaultActiveView",
+              "privacy": "public",
+              "type": {
+                "text": "CalendarView | undefined"
+              },
+              "attribute": "default-active-view"
+            },
+            {
+              "kind": "field",
               "name": "weekSelection",
               "privacy": "public",
               "type": {
@@ -2366,6 +2384,12 @@
             {
               "kind": "field",
               "name": "notifyFocus",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyActiveView",
               "privacy": "private",
               "readonly": true
             },
@@ -2547,6 +2571,20 @@
                 "text": "CalendarView | undefined"
               },
               "fieldName": "view"
+            },
+            {
+              "name": "active-view",
+              "type": {
+                "text": "CalendarView | undefined"
+              },
+              "fieldName": "activeView"
+            },
+            {
+              "name": "default-active-view",
+              "type": {
+                "text": "CalendarView | undefined"
+              },
+              "fieldName": "defaultActiveView"
             },
             {
               "name": "week-selection",
@@ -8466,6 +8504,14 @@
               "name": "heading"
             },
             {
+              "description": "标题里年那一截，点它钻到十年格；可选",
+              "name": "heading-year-trigger"
+            },
+            {
+              "description": "标题里月那一截，点它钻到月格；只有日视图有这一截；可选",
+              "name": "heading-month-trigger"
+            },
+            {
               "description": "role=grid 容器，网格键盘在此收口",
               "name": "grid"
             },
@@ -8601,6 +8647,23 @@
                 "text": "CalendarView | undefined"
               },
               "attribute": "view"
+            },
+            {
+              "kind": "field",
+              "name": "activeView",
+              "privacy": "public",
+              "type": {
+                "text": "CalendarView | undefined"
+              },
+              "attribute": "active-view"
+            },
+            {
+              "kind": "field",
+              "name": "segments",
+              "privacy": "public",
+              "type": {
+                "text": "DateSegmentSet | undefined"
+              }
             },
             {
               "kind": "field",
@@ -8804,6 +8867,12 @@
             {
               "kind": "field",
               "name": "notifyOpen",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyActiveView",
               "privacy": "private",
               "readonly": true
             },
@@ -9023,6 +9092,13 @@
               "type": {
                 "text": "DatePickerFocusChangeDetails"
               }
+            },
+            {
+              "description": "钻到了另一层（点标题钻上、点格子钻下）；detail 为 `{ activeView: 'day'|'month'|'quarter'|'year' }`，作者据此重画网格",
+              "name": "active-view-change",
+              "type": {
+                "text": "CalendarViewChangeDetails"
+              }
             }
           ],
           "attributes": [
@@ -9102,9 +9178,17 @@
               "type": {
                 "text": "CalendarView | undefined"
               },
-              "description": "面板粒度，默认 day",
+              "description": "挑的粒度，默认 day；输入行铺哪几段也跟着它走",
               "name": "view",
               "fieldName": "view"
+            },
+            {
+              "type": {
+                "text": "CalendarView | undefined"
+              },
+              "description": "受控：面板此刻钻到了哪一层；缺省跟着 view，每次展开都拨回去",
+              "name": "active-view",
+              "fieldName": "activeView"
             },
             {
               "type": {

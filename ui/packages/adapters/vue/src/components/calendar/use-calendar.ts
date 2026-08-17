@@ -19,11 +19,12 @@ export function useCalendar(
   props: CalendarSchema['props'],
   onValueChange?: CalendarSchema['props']['onValueChange'],
   onFocusedValueChange?: CalendarSchema['props']['onFocusedValueChange'],
+  onActiveViewChange?: CalendarSchema['props']['onActiveViewChange'],
 ): CalendarContext {
   const gridRef = ref<HTMLElement | null>(null)
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(calendarMachine, () => ({ ...props, onValueChange, onFocusedValueChange }), scope)
+  const service = useMachine(calendarMachine, () => ({ ...props, onValueChange, onFocusedValueChange, onActiveViewChange }), scope)
 
   // 跨月后的焦点落点要等重渲，机器推迟一拍再从这里取网格现查
   service.refs.set('getGridEl', () => gridRef.value)

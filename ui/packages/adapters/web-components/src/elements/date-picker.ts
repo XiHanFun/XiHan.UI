@@ -3,6 +3,7 @@ import type {
   CalendarSchema,
   CalendarSelectionMode,
   CalendarView,
+  CalendarViewChangeDetails,
   CalendarWeekDay,
   DateFieldSchema,
   DatePickerFieldApi,
@@ -11,6 +12,7 @@ import type {
   DatePickerSchema,
   DatePickerServices,
   DatePickerValueChangeDetails,
+  DateSegmentSet,
 } from '@xihan-ui/headless'
 import type { Cleanup, ControlVariant, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
@@ -64,7 +66,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {string} locale - 决定周首日、月份文案与段位先后，默认 zh-CN（段序默认 en-US 由分段输入自定）
  * @attr {string} time-zone - 判定"今天"与格式化用的时区，默认宿主本地时区
  * @attr {'single'|'multiple'|'range'} selection-mode - 选择模式，默认 single
- * @attr {'day'|'month'|'quarter'|'year'} view - 面板粒度，默认 day
+ * @attr {'day'|'month'|'quarter'|'year'} view - 挑的粒度，默认 day；输入行铺哪几段也跟着它走
+ * @attr {'day'|'month'|'quarter'|'year'} active-view - 受控：面板此刻钻到了哪一层；缺省跟着 view，每次展开都拨回去
  * @attr {boolean} week-selection - 周选：点任意一天选中它所在的整周（view=day 且区间模式下生效）
  * @attr {number} visible-count - 并排展示几页
  * @attr {boolean} disabled - 整个控件禁用：trigger 转原生 disabled，段位退出 Tab 序
@@ -82,6 +85,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires focused-value-change - 聚焦日变化（意味着展示月可能换了）；detail 为 `{ focusedValue: string }`，作者据此重画网格
+ * @fires active-view-change - 钻到了另一层（点标题钻上、点格子钻下）；detail 为 `{ activeView: 'day'|'month'|'quarter'|'year' }`，作者据此重画网格
  * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid）
  * @csspart label - 标题；点它把焦点送进首段。刻意不是原生 label（段位是 div，标不了）
  * @csspart control - 输入行容器，同时是浮层的定位锚点
@@ -101,6 +105,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart next-trigger - 下一月；越过 max 时转原生 disabled
  * @csspart next-year-trigger - 快速往后翻一大步；可选
  * @csspart heading - 展示月标题（grid 的 aria-labelledby 目标）
+ * @csspart heading-year-trigger - 标题里年那一截，点它钻到十年格；可选
+ * @csspart heading-month-trigger - 标题里月那一截，点它钻到月格；只有日视图有这一截；可选
  * @csspart grid - role=grid 容器，网格键盘在此收口
  * @csspart grid-head - role=rowgroup 表头组，里面套一个 week-row
  * @csspart week-day - role=columnheader 列头，须自带 value 属性标明列序 0-6
@@ -131,6 +137,8 @@ export class XhDatePickerElement extends XhElement {
     timeZone: { converter: STRING_CONVERTER, attribute: 'time-zone' },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
     view: { converter: STRING_CONVERTER },
+    activeView: { converter: STRING_CONVERTER, attribute: 'active-view' },
+    segments: { attribute: false },
     weekSelection: { converter: BOOLEAN_CONVERTER, attribute: 'week-selection' },
     visibleCount: { converter: NUMBER_CONVERTER, attribute: 'visible-count' },
     disabled: { converter: BOOLEAN_CONVERTER },
@@ -163,6 +171,8 @@ export class XhDatePickerElement extends XhElement {
   declare timeZone?: string
   declare selectionMode?: CalendarSelectionMode
   declare view?: CalendarView
+  declare activeView?: CalendarView
+  declare segments?: DateSegmentSet
   declare weekSelection?: boolean
   declare visibleCount?: number
   declare disabled?: boolean
@@ -197,6 +207,10 @@ export class XhDatePickerElement extends XhElement {
   }
 
   // 网格由作者渲染，这条是「该重画了」的信号
+  private readonly notifyActiveView = (details: CalendarViewChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('active-view-change', { detail: details, bubbles: true, composed: true }))
+  }
+
   private readonly notifyFocus = (details: DatePickerFocusChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('focused-value-change', { detail: details, bubbles: true, composed: true }))
   }
@@ -259,6 +273,8 @@ export class XhDatePickerElement extends XhElement {
       timeZone: this.timeZone,
       selectionMode: this.selectionMode,
       view: this.view,
+      activeView: this.activeView,
+      segments: this.segments,
       weekSelection: this.weekSelection,
       visibleCount: this.visibleCount,
       isDateUnavailable: this.isDateUnavailable,
@@ -280,6 +296,7 @@ export class XhDatePickerElement extends XhElement {
       onValueChange: this.notifyValue,
       onOpenChange: this.notifyOpen,
       onFocusedValueChange: this.notifyFocus,
+      onActiveViewChange: this.notifyActiveView,
     }
   }
 
@@ -428,6 +445,23 @@ export class XhDatePickerElement extends XhElement {
     // 面板逐个打：下标取作者写的 index，没写就按文档序（第 N 张就是第 N 个面板）
     this.getParts('heading').forEach((el, position) => {
       this.spreader.spread(el, api.calendar.getHeadingProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)
+    })
+    // 标题里的年与月两个钮：属性由 connect 打，文字归元素填
+    this.getParts('heading-year-trigger').forEach((el, position) => {
+      const index = declaredIndex(el, position)
+      this.spreader.spread(el, api.calendar.getHeadingYearTriggerProps({ index }) as Record<string, unknown>)
+      const text = api.calendar.panels[index]?.headingYear ?? ''
+      if (el.textContent !== text)
+        el.textContent = text
+    })
+    this.getParts('heading-month-trigger').forEach((el, position) => {
+      const index = declaredIndex(el, position)
+      this.spreader.spread(el, api.calendar.getHeadingMonthTriggerProps({ index }) as Record<string, unknown>)
+      const text = api.calendar.panels[index]?.headingMonth ?? ''
+      if (el.textContent !== text)
+        el.textContent = text
+      // connect 已置 hidden，但作者若设了 display 就会盖过 UA 的 [hidden]{display:none}
+      this.setPartHidden(el, !api.calendar.canZoomOutMonth)
     })
     this.getParts('grid').forEach((el, position) => {
       this.spreader.spread(el, api.calendar.getGridProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)

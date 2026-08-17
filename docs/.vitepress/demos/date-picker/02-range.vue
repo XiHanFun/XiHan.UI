@@ -29,11 +29,11 @@ import {
 } from "@xihan-ui/vue";
 
 const kinds = [
-  { key: "day", label: "按天", view: "day" as CalendarView, week: false, segments: 3 },
-  { key: "week", label: "按周", view: "day" as CalendarView, week: true, segments: 3 },
-  { key: "month", label: "按月", view: "month" as CalendarView, week: false, segments: 2 },
-  { key: "quarter", label: "按季度", view: "quarter" as CalendarView, week: false, segments: 2 },
-  { key: "year", label: "按年", view: "year" as CalendarView, week: false, segments: 1 },
+  { key: "day", label: "按天", view: "day" as CalendarView, week: false },
+  { key: "week", label: "按周", view: "day" as CalendarView, week: true },
+  { key: "month", label: "按月", view: "month" as CalendarView, week: false },
+  { key: "quarter", label: "按季度", view: "quarter" as CalendarView, week: false },
+  { key: "year", label: "按年", view: "year" as CalendarView, week: false },
 ];
 
 const values = ref<Record<string, string[]>>({
@@ -59,7 +59,7 @@ function text(v: string[]): string {
     <XhDatePickerRoot
       v-for="k in kinds"
       :key="k.key"
-      v-slot="{ panels, weekDays }"
+      v-slot="{ panels, weekDays, segments, endSegments }"
       v-model:value="values[k.key]"
       :translations="translations"
       :view="k.view"
@@ -71,9 +71,11 @@ function text(v: string[]): string {
       <XhDatePickerControl>
         <!-- 组号定这组段位认领哪一端：0 起点、1 终点 -->
         <XhDatePickerInput v-for="end in 2" :key="end" :index="end - 1">
-          <template v-for="i in k.segments" :key="i">
-            <span v-if="i > 1">-</span>
-            <XhDatePickerSegment :index="i - 1" />
+          <!-- 铺哪几块由 view 推；「-」与「周」是普通节点，作者写在段位旁边 -->
+          <template v-for="(seg, i) in end === 1 ? segments : endSegments" :key="seg.type">
+            <span v-if="i > 0">-</span>
+            <XhDatePickerSegment :index="i" />
+            <span v-if="seg.type === 'week'">周</span>
           </template>
         </XhDatePickerInput>
         <XhDatePickerClearTrigger>✕</XhDatePickerClearTrigger>
@@ -101,7 +103,7 @@ function text(v: string[]): string {
               </XhDatePickerNextYearTrigger>
             </XhDatePickerHeader>
             <XhDatePickerGrid :index="panel.index">
-              <template v-if="k.view === 'day'">
+              <template v-if="panel.weeks.length > 0">
                 <XhDatePickerGridHead>
                   <XhDatePickerWeekRow>
                     <!-- 周选时行首多一列周序号，表头也得空出这一格 -->

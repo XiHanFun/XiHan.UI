@@ -1,6 +1,7 @@
 import type { CalendarDate } from '@internationalized/date'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
+import type { CalendarView } from './calendar.grid'
 import type { CalendarApi, CalendarCellProps, CalendarPanel, CalendarSchema } from './calendar.types'
 import { DateFormatter, endOfMonth, getLocalTimeZone, startOfMonth, today } from '@internationalized/date'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
@@ -11,11 +12,15 @@ import {
   buildPeriodGrid,
   buildWeekDays,
   CALENDAR_LOCALE,
+  calendarDrillAnchor,
+  calendarHeadingPieces,
   calendarNavFromKey,
   calendarNavTarget,
   calendarPageMonths,
+  calendarPeriodOf,
   calendarPeriodStart,
   calendarWeekRange,
+  calendarZoomIn,
   isoWeekNumber,
   parseCalendarDate,
   visibleCountOf,
@@ -61,7 +66,11 @@ export function connectCalendar<T extends PropTypes>(
   const focusedValue = anchor.toString()
   const todayValue = today(timeZone).toString()
 
-  const view = prop('view') ?? 'day'
+  // 两件事：base 是作者要挑的粒度（点一格即选中的那一档），view 是人此刻钻到了哪一层
+  const base = prop('view') ?? 'day'
+  const view = context.get('activeView')
+  // 钻回 base 的下一站；非空即「点一格是往下钻，不是选中」
+  const zoomIn = calendarZoomIn(view, base)
   // 周选只在日视图 + 区间下讲得通：它落的是两端
   const weekSelection = !!prop('weekSelection') && view === 'day' && mode === 'range'
   // 翻一页走多少个月：日视图一个月，月/季度一年，年视图十年
@@ -97,6 +106,7 @@ export function connectCalendar<T extends PropTypes>(
   const panels: CalendarPanel[] = Array.from({ length: visibleCount }, (_, index) => {
     // 一页跨多少个月由视图定：日视图一个月，月/季度一年，年视图十年
     const start = visibleStart.add({ months: index * pageMonths })
+    const pieces = calendarHeadingPieces(start, locale, timeZone)
     if (view === 'day') {
       const g = buildMonthGrid(start.toString(), { locale, fixedWeeks: !!prop('fixedWeeks') })
       return {
@@ -109,6 +119,8 @@ export function connectCalendar<T extends PropTypes>(
         weekNumbers: g.weeks.map(row => isoWeekNumber(row[0]!.value)),
         cells: [],
         headingLabel: headingFormatter.format(start.toDate(timeZone)),
+        headingYear: pieces.year,
+        headingMonth: pieces.month,
       }
     }
     const g = buildPeriodGrid(start.toString(), view, { locale, timeZone })
@@ -122,6 +134,10 @@ export function connectCalendar<T extends PropTypes>(
       weekNumbers: [],
       cells: g.cells,
       headingLabel: g.headingLabel,
+      // 年视图的标题是整个十年跨度（2020年-2029年），钻不上去了，那一截就是它
+      headingYear: view === 'year' ? g.headingLabel : pieces.year,
+      // 月与季度这两层没有「月」那一截可点
+      headingMonth: '',
     }
   })
   const grid = panels[0]!
@@ -192,6 +208,14 @@ export function connectCalendar<T extends PropTypes>(
   const panelOf = (item: { index?: number }): CalendarPanel =>
     panels[Math.min(Math.max(Math.trunc(item.index ?? 0), 0), panels.length - 1)]!
 
+  /**
+   * 哪一格算「聚焦的那一格」。
+   *
+   * 粗粒度视图里格子的值是「那段时间的第一天」，而聚焦日是具体某一天，两者一般不等；
+   * 直接比会让一页里一格都对不上，于是整张网格连一个 Tab 位都不剩、键盘进不去。
+   */
+  const focusedCell = calendarPeriodOf(focusedValue, view)
+
   const cellState = (item: CalendarCellProps): CellState => {
     const date = parseCalendarDate(item.value)
     const inRange = !!(rangeEnds && date
@@ -203,7 +227,7 @@ export function connectCalendar<T extends PropTypes>(
       // 邻月的日子照样可点可聚焦，标出来供皮肤区分
       outsideMonth: !date || date.year !== panelOf(item).year || date.month !== panelOf(item).month,
       isToday: item.value === todayValue,
-      focused: item.value === focusedValue,
+      focused: item.value === focusedCell,
       inRange,
       // 两端也算 in-range
       rangeStart: !!(rangeEnds && date && date.compare(rangeEnds[0]) === 0),
@@ -236,6 +260,15 @@ export function connectCalendar<T extends PropTypes>(
   const canGoPrevYear = !calendarDisabled && (min == null || prevYearEnd.compare(min) >= 0)
   const canGoNextYear = !calendarDisabled && (max == null || nextYearStart.compare(max) <= 0)
 
+  /**
+   * 钻上去还有没有地方可去。
+   *
+   * 年视图已经到顶（没有世纪那一层），那一截只作标题显示、不可按；
+   * 月这一截只有日视图才有——月/季度/年那三层里压根没有「某个月」这个位。
+   */
+  const canZoomOutYear = !calendarDisabled && view !== 'year'
+  const canZoomOutMonth = !calendarDisabled && view === 'day'
+
   /** 面板各自的标题 id。首个面板沿用原来那一份，旧标记不受影响。 */
   const headingId = (index?: number): string => {
     const i = panelOf({ index }).index
@@ -259,6 +292,20 @@ export function connectCalendar<T extends PropTypes>(
   const stepYear = (amount: 1 | -1): void => {
     const months = amount * bigMonths
     send({ type: 'FOCUS.SET', value: anchor.add({ months }).toString(), months })
+  }
+
+  /** 钻到某一层。restoreFocus 让焦点跟到新那一档的格子上。 */
+  const zoomTo = (next: CalendarView): void =>
+    send({ type: 'VIEW.SET', activeView: next, restoreFocus: true })
+
+  /**
+   * 点一格是「往下钻」而不是「选中」时走这一路：把落点挪进刚点的那一段，再钻下一层。
+   *
+   * 先挪落点再换层：换层那一下机器要拿落点把视窗对到新跨度上，落点得先是新的那个。
+   */
+  const drillInto = (value: string, next: CalendarView): void => {
+    focusInGrid(calendarDrillAnchor(focusedValue, value, next))
+    zoomTo(next)
   }
 
   /**
@@ -287,6 +334,11 @@ export function connectCalendar<T extends PropTypes>(
 
   /** 确认键：选中聚焦日。只读与不可用的日子不认，禁用的日历整条不进来。 */
   const commit = (): void => {
+    // 还没钻到作者要的那一档：确认键的意思是「进这一格看看」，不是选中它
+    if (zoomIn) {
+      drillInto(focusedCell, zoomIn)
+      return
+    }
     if (readOnly || isUnavailable(focusedValue))
       return
     selectAt(focusedValue)
@@ -301,6 +353,11 @@ export function connectCalendar<T extends PropTypes>(
     weeks: grid.weeks,
     weekDays,
     headingLabel,
+    view: base,
+    activeView: view,
+    headingOrder: calendarHeadingPieces(visibleStart, locale, timeZone).order,
+    canZoomOutYear,
+    canZoomOutMonth,
     disabled: calendarDisabled,
     readOnly,
     isSelected,
@@ -312,6 +369,7 @@ export function connectCalendar<T extends PropTypes>(
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     select: v => selectAt(v),
     focus: focusAt,
+    setActiveView: next => send({ type: 'VIEW.SET', activeView: next }),
     goToPrevMonth: () => stepMonth(-1),
     goToNextMonth: () => stepMonth(1),
     goToPrevYear: () => stepYear(-1),
@@ -368,6 +426,37 @@ export function connectCalendar<T extends PropTypes>(
       // 每个面板一份 id：两张网格各由自己那行标题命名，读屏才报得出这是哪个月那张
       'id': headingId(panel.index),
       'data-index': panelOf(panel).index,
+      'data-view': view,
+    }),
+
+    // 标题里的年与月各是一个钮，点它钻上一层。两个都是可选部件：只写 heading 就是从前那条不可点的路。
+    // 用原生 disabled 而不是 aria-disabled：它们是单体控件，到顶了就该退出 Tab 序列
+    getHeadingYearTriggerProps: (panel = {}) => normalize.button({
+      ...parts['heading-year-trigger'].attrs,
+      'type': 'button',
+      'data-index': panelOf(panel).index,
+      'data-view': view,
+      'disabled': !canZoomOutYear || undefined,
+      'data-disabled': dataAttr(!canZoomOutYear),
+      'onClick': () => {
+        if (canZoomOutYear)
+          zoomTo('year')
+      },
+    }),
+
+    getHeadingMonthTriggerProps: (panel = {}) => normalize.button({
+      ...parts['heading-month-trigger'].attrs,
+      'type': 'button',
+      'data-index': panelOf(panel).index,
+      'data-view': view,
+      // 只有日视图有月这一截；其余层收起而不是卸载，钻回来时要原地复现
+      'hidden': !canZoomOutMonth || undefined,
+      'disabled': !canZoomOutMonth || undefined,
+      'data-disabled': dataAttr(!canZoomOutMonth),
+      'onClick': () => {
+        if (canZoomOutMonth)
+          zoomTo('month')
+      },
     }),
 
     // 键盘全在 grid 上收口，格子只管声明自己
@@ -391,7 +480,8 @@ export function connectCalendar<T extends PropTypes>(
         const intent = calendarNavFromKey(event)
         if (intent) {
           event.preventDefault()
-          focusInGrid(calendarNavTarget(focusedValue, intent, locale))
+          // 粗粒度视图走的是格子：一格一格、一行一行，不是一天一天
+          focusInGrid(calendarNavTarget(focusedValue, intent, locale, view))
           return
         }
         if (event.key === 'Enter' || event.key === ' ') {
@@ -475,6 +565,13 @@ export function connectCalendar<T extends PropTypes>(
         'onClick': () => {
           if (calendarDisabled)
             return
+          // 还没钻到作者要的那一档：这一下是导航，往下钻一层。
+          // 不看 disabled——粗粒度格子的可用性按「那一段的第一天」判，7 月 1 日界外
+          // 不等于整个 7 月都挑不了，拦住就再也钻不进去了
+          if (zoomIn) {
+            drillInto(item.value, zoomIn)
+            return
+          }
           // 焦点锚点无条件跟着点击走（点了邻月的日子就翻到那个月），选中另过只读与可用性两道
           focusInGrid(item.value)
           if (readOnly || state.disabled)

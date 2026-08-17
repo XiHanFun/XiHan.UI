@@ -1,7 +1,7 @@
 import type { Cleanup, ControlVariant, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema, Service } from '@xihan-ui/machine'
-import type { CalendarApi, CalendarSchema, CalendarSelectionMode, CalendarView } from '../calendar'
-import type { DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState } from '../date-field'
+import type { CalendarApi, CalendarSchema, CalendarSelectionMode, CalendarView, CalendarViewChangeDetails } from '../calendar'
+import type { DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState, DateSegmentSet } from '../date-field'
 import type { TimePickerColumn, TimePickerColumnUnit } from '../time-picker'
 import type { DatePickerTimeGranularity } from './date-picker.time'
 
@@ -107,10 +107,22 @@ export interface DatePickerSchema extends MachineSchema {
     /** 区间终点那份隐藏输入的表单字段名；不给即终点不参与提交。 */
     endName?: string
     /**
-     * 面板按什么粒度挑：天（默认）、月、季度、年。格子的值仍是 ISO 日期串
+     * 挑的粒度：天（默认）、月、季度、年。格子的值仍是 ISO 日期串
      * （那段时间的第一天），min/max 与区间逻辑因此原样复用。
+     *
+     * 输入行铺哪几段也跟着它走（按季度挑就出「2026-Q2」），要另铺见 segments。
      */
     view?: CalendarView
+    /**
+     * 面板此刻钻到了哪一层。给定即受控；缺省跟着 view，每次展开都回到 view 那一档。
+     * 点标题里的年 / 月会改它。
+     */
+    activeView?: CalendarView
+    /**
+     * 输入行铺哪几段。不给就按 view 推：按月挑出「2026-05」、按季度出「2026-Q2」、
+     * 按年出「2026」、周选出「2026-33」，按天挑则按 locale 排年月日。
+     */
+    segments?: DateSegmentSet
     /** 周选：点任意一天选中它所在的整周。只在 view=day 且区间模式下生效。 */
     weekSelection?: boolean
     /**
@@ -147,6 +159,8 @@ export interface DatePickerSchema extends MachineSchema {
      * 网格由外部渲染，不监听这条日历不会换月。
      */
     onFocusedValueChange?: (details: DatePickerFocusChangeDetails) => void
+    /** 面板钻到了哪一层（点标题钻上、点格子钻下都会发）；受控时是唯一出口。 */
+    onActiveViewChange?: (details: CalendarViewChangeDetails) => void
   }
   context: {
     /** 定位引擎回填的最新结果；connect 只读它，不碰 DOM 也不调引擎。 */
@@ -161,6 +175,8 @@ export interface DatePickerSchema extends MachineSchema {
      * null 表示还没定过，由连接层退回选中值或今天。
      */
     focusedValue: string | null
+    /** 面板此刻钻到了哪一层。受控（activeView 给定）时 cell 直读 prop。 */
+    activeView: CalendarView
     /** 收起时是否把焦点归还给展开前那个控件；Tab 与层外交互关闭时为 false。 */
     returnFocus: boolean
     /**
@@ -185,6 +201,8 @@ export interface DatePickerSchema extends MachineSchema {
     | { type: 'VALUE.CLEAR' }
     /** 聚焦日改写：日历里移动焦点、翻月都会经它回到编排机。 */
     | { type: 'FOCUSED.SET', value: string }
+    /** 钻到另一层：点标题往上、点格子往下，都由日历经它回到编排机。 */
+    | { type: 'VIEW.SET', activeView: CalendarView }
     | { type: 'FORM.RESET' }
   tag: never
   guard: 'isOpenControlled' | 'closesOnSelect'
@@ -198,6 +216,8 @@ export interface DatePickerSchema extends MachineSchema {
     | 'clearValue'
     | 'setFocusedValue'
     | 'syncFocusedValue'
+    | 'setActiveView'
+    | 'resetActiveView'
     | 'focusSelectedDay'
     | 'resetToDefault'
   effect: 'trackPosition' | 'trackLayer'
@@ -250,6 +270,10 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   selectionMode: CalendarSelectionMode
   /** 生效聚焦日（三路收口后的结果），恒非空。日历展示哪个月由它决定。 */
   focusedValue: string
+  /** 作者要挑的粒度。 */
+  view: CalendarView
+  /** 面板此刻钻到了哪一层。 */
+  activeView: CalendarView
   disabled: boolean
   readOnly: boolean
   invalid: boolean
@@ -258,6 +282,8 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   setOpen: (next: boolean) => void
   setValue: (next: string[]) => void
   clear: () => void
+  /** 直接钻到某一层。 */
+  setActiveView: (next: CalendarView) => void
   /** showTime 生效（开了且是单选模式）。 */
   showTime: boolean
   /** 时间列（时/分[/秒]）；没开 showTime 时为空数组。 */
