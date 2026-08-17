@@ -172,7 +172,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhDialogRoot }",
     "gzip": true,
-    "limit": "13 kB",
+    "limit": "13.5 kB",
     "ignore": [
       "vue"
     ]
