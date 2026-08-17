@@ -33,6 +33,8 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
+ * @prop {(text: string) => number} parse - 显示串 → 数（千位分隔符、单位后缀这类靠它读回来）；只走 property
+ * @prop {(value: number) => string} format - 数 → 显示串，只在步进/取端点/失焦规范化时用；只走 property
  * @fires value-change - 值变化；detail 为 `{ value: string, valueAsNumber: number }`
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty 的容器
  * @csspart label - 标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动
@@ -62,6 +64,9 @@ export class XhNumberFieldElement extends XhElement {
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    // 函数交不成 attribute，只走 property（el.parse = fn）
+    parse: { attribute: false },
+    format: { attribute: false },
   }
 
   declare value?: string
@@ -80,6 +85,8 @@ export class XhNumberFieldElement extends XhElement {
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
+  declare parse?: NumberFieldSchema['props']['parse']
+  declare format?: NumberFieldSchema['props']['format']
 
   private readonly notify = (details: NumberFieldValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -105,6 +112,8 @@ export class XhNumberFieldElement extends XhElement {
       variant: this.variant,
       tone: this.tone,
       size: this.size,
+      parse: this.parse,
+      format: this.format,
       onValueChange: this.notify,
     }
   }

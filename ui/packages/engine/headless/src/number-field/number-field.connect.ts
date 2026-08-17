@@ -2,7 +2,7 @@ import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { NumberFieldApi, NumberFieldSchema } from './number-field.types'
 import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
-import { parseValue } from '../shared/number'
+import { decodeNumber } from '../shared/number'
 import { numberFieldAnatomy } from './number-field.anatomy'
 
 const parts = numberFieldAnatomy.build()
@@ -15,7 +15,7 @@ export function connectNumberField<T extends PropTypes>(
   const ids = scope.ids('number-field', 'label', 'input')
 
   const value = context.get('value')
-  const valueAsNumber = parseValue(value)
+  const valueAsNumber = decodeNumber(value, { parse: prop('parse'), format: prop('format') })
   const empty = !Number.isFinite(valueAsNumber)
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')

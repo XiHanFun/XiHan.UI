@@ -34,6 +34,8 @@ export const XhNumberFieldRoot = defineComponent({
     variant: { type: String as PropType<ControlVariant>, default: undefined },
     tone: { type: String as PropType<Tone>, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
+    parse: { type: Function as PropType<NumberFieldProps['parse']>, default: undefined },
+    format: { type: Function as PropType<NumberFieldProps['format']>, default: undefined },
   },
   // value-change 携带 { value, valueAsNumber }，update:value 携带裸串
   emits: {
