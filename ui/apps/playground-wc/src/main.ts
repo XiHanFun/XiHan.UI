@@ -424,11 +424,10 @@ app.innerHTML = `
     <xh-number-field id="wc-number" default-value="3" min="0" max="20" step="1" name="qty">
       <div data-xh-part="root">
         <label data-xh-part="label">数量</label>
-        <!-- 加减钮与输入框中间这层包裹归作者：皮肤只把三者做成同高同圆角，
-             gap 归零它们才贴成一体（.row 自带 10px，得就地压掉） -->
-        <div class="row" style="gap: 0;">
+        <!-- 三件放进 control：描边、底色、圆角、聚焦环整体画在这一层，盒内三段都是透明的 -->
+        <div data-xh-part="control">
           <button data-xh-part="decrement-trigger">−</button>
-          <input data-xh-part="input" style="inline-size: 80px; text-align: center;">
+          <input data-xh-part="input">
           <button data-xh-part="increment-trigger">+</button>
         </div>
       </div>

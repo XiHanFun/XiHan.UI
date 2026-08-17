@@ -15,7 +15,7 @@ import {
     <XhNumberFieldLabel>一体式（control）</XhNumberFieldLabel>
     <XhNumberFieldControl>
       <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
-      <XhNumberFieldInput style="inline-size: 80px; text-align: center" />
+      <XhNumberFieldInput />
       <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
     </XhNumberFieldControl>
   </XhNumberFieldRoot>

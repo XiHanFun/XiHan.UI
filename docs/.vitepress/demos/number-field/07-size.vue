@@ -23,7 +23,7 @@ const sizes = [
       <XhNumberFieldLabel>{{ s.label }}</XhNumberFieldLabel>
       <XhNumberFieldControl>
         <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
-        <XhNumberFieldInput style="inline-size: 72px; text-align: center" />
+        <XhNumberFieldInput />
         <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
       </XhNumberFieldControl>
     </XhNumberFieldRoot>

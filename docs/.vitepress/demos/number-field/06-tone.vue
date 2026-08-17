@@ -18,7 +18,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
       <XhNumberFieldLabel>{{ t }}</XhNumberFieldLabel>
       <XhNumberFieldControl>
         <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
-        <XhNumberFieldInput style="inline-size: 72px; text-align: center" />
+        <XhNumberFieldInput />
         <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
       </XhNumberFieldControl>
     </XhNumberFieldRoot>

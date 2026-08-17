@@ -17,6 +17,11 @@
     --xh-_number-field-label-font-size: var(--xh-text-label-size);
     --xh-_number-field-trigger-font-size: var(--xh-text-body-size);
 
+    /* 盒子的圆角与盒内分段的圆角：分段贴在描边里侧，圆角要减去描边自己占的那一道，
+       写同一个值会让分段的底色顶到圆角外面去 */
+    --xh-_number-field-radius: var(--xh-number-field-input-radius, var(--xh-shape-control));
+    --xh-_number-field-seg-radius: calc(var(--xh-_number-field-radius) - var(--xh-stroke-thin));
+
     /* 形态档只换这几个私有槽：输入框的底与描边，加减钮的底与描边 */
     --xh-_number-field-bg: var(--xh-bg-canvas);
     --xh-_number-field-border: var(--xh-border-control);
@@ -114,16 +119,19 @@
   }
 
   /* —— 一体式 control：输入框与加减钮同框 —— */
-  /* control 是视觉盒：描边、底色、聚焦环全画在它身上；盒内 input 退成透明，
-     减钮与加钮分列两端、input 居中，前后缀内容直接流式插在框里。
+  /* control 是唯一的视觉盒：描边、底色、圆角、聚焦环全画在它身上，盒内三件都退成透明分段，
+     整枚控件从头到尾只有这一道描边。减钮在前、input 居中、加钮在后（作者在模板里的顺序决定），
+     前后缀内容直接流式插在框里。
      focus-within 而不是 :focus 上的聚焦态：按钮也能触发聚焦环 */
   [data-scope='number-field'][data-part='control'] {
     position: relative;
     display: inline-flex;
-    align-items: stretch;
+    /* 居中而不是拉伸：作者插在框里的前后缀是一行文字，被拉满整框高度后字会贴着框顶。
+       要占满整框高度的只有 input 与加减钮，它们各自明写 */
+    align-items: center;
     block-size: var(--xh-number-field-input-h, var(--xh-_number-field-h));
     border: var(--xh-stroke-thin) solid var(--xh-number-field-input-border, var(--xh-_number-field-border));
-    border-radius: var(--xh-number-field-input-radius, var(--xh-shape-control));
+    border-radius: var(--xh-_number-field-radius);
     background: var(--xh-number-field-input-bg, var(--xh-_number-field-bg));
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -151,15 +159,19 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 盒内 input：无边框无底，观感全归 control；两侧只需半档内边距，
+  /* 盒内 input：无边框无底无圆角，观感全归 control；两侧只需半档内边距。
+     数字居中排在两个按钮之间；给一个成型的默认宽度，作者不写 style 也是一枚齐整的步进器。
      前后缀图标/文字直接流式排在 input 两侧，不用再绝对定位 */
   [data-scope='number-field'][data-part='control'] [data-part='input'] {
-    flex: 1;
+    flex: 1 1 auto;
+    inline-size: var(--xh-number-field-input-w, 5em);
     min-inline-size: 0;
     block-size: 100%;
     padding-inline: calc(var(--xh-number-field-input-px, var(--xh-_number-field-px)) / 2);
     border: 0;
+    border-radius: 0;
     background: transparent;
+    text-align: var(--xh-number-field-input-align, center);
   }
 
   /* 盒内 input 不再自己画各态，全部交还 control。hover 这条带上与基础规则同样的
@@ -182,29 +194,57 @@
     background: transparent;
   }
 
-  /* 盒内按钮：常规流分列两端——减在前、输入框居中、加在后（作者在模板里的顺序决定）。
-     与盒边齐平、竖向撑满：按钮是盒子的两端，不是浮在盒里的独立方块。
-     外角随盒子的圆角，贴着输入框的内角取直；悬停/按下/贴边禁用的底色仍由下方基础规则提供 */
+  /* 盒内按钮：与盒边齐平、竖向撑满，是盒子的两端而不是浮在盒里的独立方块。
+     底与描边都交还 control——按钮自带一块底色就会把一个盒子读成三块拼起来的；
+     常态只剩符号，符号取次级前景，悬停与按下才浮出底色 */
   [data-scope='number-field'][data-part='control'] [data-part='increment-trigger'],
   [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger'] {
-    position: static;
     margin: 0;
     align-self: stretch;
     inline-size: var(--xh-number-field-trigger-size, var(--xh-_number-field-h));
     block-size: auto;
     border: 0;
-    border-radius: inherit;
+    border-radius: 0;
+    background: transparent;
+    color: var(--xh-number-field-trigger-fg, var(--xh-fg-muted));
   }
 
-  /* 贴着输入框的内角取直（逻辑角,dir 翻转时跟着走） */
-  [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger'] {
-    border-start-end-radius: 0;
-    border-end-end-radius: 0;
+  /* 两端那一段取盒子的内圆角——盒子的圆角减去它自己那道描边；中间各段一律取直。
+     按位置认而不是按角色认：模板里三件的先后由作者定，减钮不一定就在最前面。
+     逻辑角，dir 翻转时跟着走 */
+  [data-scope='number-field'][data-part='control'] > :first-child {
+    border-start-start-radius: var(--xh-_number-field-seg-radius);
+    border-end-start-radius: var(--xh-_number-field-seg-radius);
   }
 
-  [data-scope='number-field'][data-part='control'] [data-part='increment-trigger'] {
-    border-start-start-radius: 0;
-    border-end-start-radius: 0;
+  [data-scope='number-field'][data-part='control'] > :last-child {
+    border-start-end-radius: var(--xh-_number-field-seg-radius);
+    border-end-end-radius: var(--xh-_number-field-seg-radius);
+  }
+
+  /* 悬停只在分段自己身上浮出一块底色与更实的符号，盒子的描边纹丝不动 */
+  [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:hover:not(:disabled),
+  [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:hover:not(:disabled) {
+    background: var(--xh-number-field-trigger-bg-hover, var(--xh-_number-field-trigger-bg-hover));
+    color: var(--xh-number-field-trigger-fg-hover, var(--xh-fg-default));
+  }
+
+  [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:active:not(:disabled),
+  [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:active:not(:disabled) {
+    background: var(--xh-number-field-trigger-bg-active, var(--xh-_number-field-trigger-bg-active));
+  }
+
+  /* 焦点落到盒内按钮时 control 已经 focus-within 起了环，按钮自己再画一圈就是框里套框 */
+  [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:focus-visible,
+  [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:focus-visible {
+    outline: none;
+  }
+
+  /* 贴住 min / max 的那一侧只把符号压灰，不铺一块灰底：铺了底就又成了框上贴着的一个方块 */
+  [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:disabled,
+  [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:disabled {
+    background: transparent;
+    color: var(--xh-fg-disabled);
   }
 
   [data-scope='number-field'][data-part='input'] {
@@ -212,7 +252,7 @@
     padding-inline: var(--xh-number-field-input-px, var(--xh-_number-field-px));
     padding-block: 0;
     border: var(--xh-stroke-thin) solid var(--xh-number-field-input-border, var(--xh-_number-field-border));
-    border-radius: var(--xh-number-field-input-radius, var(--xh-shape-control));
+    border-radius: var(--xh-_number-field-radius);
     background: var(--xh-number-field-input-bg, var(--xh-_number-field-bg));
     color: var(--xh-number-field-input-fg, var(--xh-fg-default));
     /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族 */
