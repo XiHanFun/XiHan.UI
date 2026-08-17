@@ -1197,3 +1197,59 @@ describe('connectDateField 段集渲染', () => {
     expect(m.seg.slice(0, 2).map(el => el.getAttribute('tabindex'))).toEqual(['-1', '0'])
   })
 })
+
+describe('段位按段名认领', () => {
+  it('segmentOf：按下标与按段名落到同一段', () => {
+    const m = open({ locale: 'zh-CN', segments: ['year', 'quarter'], defaultValue: '2026-04-01' })
+    const api = m.api()
+    expect(api.segmentOf({ index: 1 })?.type).toBe('quarter')
+    expect(api.segmentOf({ segment: 'quarter' })?.index).toBe(1)
+    expect(api.segmentOf({ segment: 'quarter' })?.text).toBe('Q2')
+    // 段集里没有这一块：与下标越界同一条路
+    expect(api.segmentOf({ segment: 'day' })).toBeUndefined()
+    expect(api.segmentOf({ index: 5 })).toBeUndefined()
+    // 一句都不写等同越界
+    expect(api.segmentOf({})).toBeUndefined()
+  })
+
+  it('两个都写时按段名算：它更具体', () => {
+    const m = open({ locale: 'zh-CN', segments: ['year', 'quarter'] })
+    expect(m.api().segmentOf({ index: 0, segment: 'quarter' })?.type).toBe('quarter')
+  })
+
+  it('按段名声明的那一格照常出全套属性', () => {
+    const m = open({ locale: 'zh-CN', segments: ['year', 'quarter'], defaultValue: '2026-04-01' })
+    const seg = m.api().getSegmentProps({ segment: 'quarter' }) as Record<string, unknown>
+    expect(seg['data-segment']).toBe('quarter')
+    expect(seg['data-index']).toBe('1')
+    expect(seg.role).toBe('spinbutton')
+    expect(seg['aria-valuemax']).toBe('4')
+    expect(seg.hidden).toBeUndefined()
+  })
+
+  it('段集里没有这一块时那一格收起，且不再自称 spinbutton', () => {
+    const m = open({ locale: 'zh-CN', segments: ['year', 'quarter'] })
+    const seg = m.api().getSegmentProps({ segment: 'day' }) as Record<string, unknown>
+    expect(seg.hidden).toBe(true)
+    expect(seg.role).toBeUndefined()
+    expect(seg['data-segment']).toBeUndefined()
+    // 落不到任何一段时那个下标没有意义，不产出
+    expect(seg['data-index']).toBeUndefined()
+  })
+
+  it('同一份按段名的标记换 locale 不重排：段名写死了就是那一段', () => {
+    for (const locale of ['zh-CN', 'en-US', 'de-DE']) {
+      const m = open({ locale, defaultValue: '2026-07-28' })
+      expect(m.api().segmentOf({ segment: 'day' })?.text).toBe('28')
+      expect(m.api().segmentOf({ segment: 'month' })?.text).toBe('07')
+    }
+  })
+
+  it('老路照旧：没给段集时按段名也认得出年月日', () => {
+    const m = open({ locale: 'en-US', granularity: 'minute', defaultValue: '2026-07-28T13:45' })
+    expect(m.api().segmentOf({ segment: 'hour' })?.text).toBe('13')
+    expect(m.api().segmentOf({ segment: 'minute' })?.text).toBe('45')
+    // en-US 段序是月日年，按段名声明的那一格与下标那条路指的是同一段
+    expect(m.api().segmentOf({ segment: 'year' })?.index).toBe(2)
+  })
+})

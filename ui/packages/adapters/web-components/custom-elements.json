@@ -7961,7 +7961,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-date-field>` —— Light-DOM 行为宿主：作者写 root/label/control/segment（多个）/hidden-input\n角色节点，元素跑 date-field 机器并把 connect 产出打上去。\n\n每一段是一个 role=spinbutton 的可聚焦节点：上下键加减并在段区间里回绕、左右键与 Home/End 换段、\n数字键直填且敲满自动跳下一段、Backspace 清掉本段。是哪一段由 locale（zh-CN 年月日、\nen-US 月日年）与 granularity 算出来，作者只声明下标，不声明段名——同一份标记换个 locale\n就换一副面孔。精度用不上的段带 hidden 留在文档里，不卸载作者节点。\n\n段位没填齐时整份值是 null；填齐了才拼出 ISO 串，由 hidden-input 随表单提交。\n\n占位串与读屏名字是逐段的对象，属性表达不了，只能走 property\n（`el.placeholder = { year: '年' }`）。",
+          "description": "`<xh-date-field>` —— Light-DOM 行为宿主：作者写 root/label/control/segment（多个）/hidden-input\n角色节点，元素跑 date-field 机器并把 connect 产出打上去。\n\n每一段是一个 role=spinbutton 的可聚焦节点：上下键加减并在段区间里回绕、左右键与 Home/End 换段、\n数字键直填且敲满自动跳下一段、Backspace 清掉本段。\n\n是哪一段有两种写法：只声明下标（`index`，或按文档序），是哪一段由 locale（zh-CN 年月日、\nen-US 月日年）与段集算出来——同一份标记换个 locale 就换一副面孔；或按段名写死\n（`segment=\"quarter\"`），段集里没有这一块时那一格收起。用不上的段带 hidden 留在文档里，\n不卸载作者节点。\n\n段位没填齐时整份值是 null；填齐了才拼出 ISO 串，由 hidden-input 随表单提交。\n\n占位串与读屏名字是逐段的对象，属性表达不了，只能走 property\n（`el.placeholder = { year: '年' }`）。",
           "name": "XhDateFieldElement",
           "cssParts": [
             {
@@ -7977,7 +7977,7 @@
               "name": "control"
             },
             {
-              "description": "一段一个的 spinbutton 节点，可自带 index 属性声明下标，缺省按文档序",
+              "description": "一段一个的 spinbutton 节点。可自带 segment 属性按段名认领（segment=\"quarter\"）， 或自带 index 属性声明下标，两者都没写按文档序",
               "name": "segment"
             },
             {
@@ -8424,7 +8424,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-date-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/input/segment/trigger/\nclear-trigger/positioner/content/calendar 角色节点，calendar 之内再照日历那套写\nheader/prev-trigger/next-trigger/heading/grid/grid-head/week-day/grid-body/week-row/cell/cell-trigger。\n\n本元素是编排机，只持有开合与「分段输入 ↔ 日历」之间的值同步；选日期、翻月、网格键盘导航\n委派给内嵌日历，分段输入委派给内嵌分段输入，两部件之内的 DOM 各戴各自的 data-scope。\n\n网格由作者渲染，元素不生成节点：读 `weeks` / `weekDays` / `headingLabel` 三个只读属性，\n听 `focused-value-change` 重画。日期身份取 cell 节点上的 `value`（ISO 串），\ncell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）；\n段位可自带 `index` 属性声明下标，缺省按所在 input 之内的文档序。\n\n区间模式（selection-mode=\"range\"）下 input 写两个：文档序在前的是起点、在后的是终点，\n各自内部写一整套段位。段位与 hidden-input 按所在 input 归组，方向键不跨组；\nhidden-input 写在 input 之外（如与 control 平级）时按文档序对应起止两端。\n其余模式只认第一个 input。",
+          "description": "`<xh-date-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/input/segment/trigger/\nclear-trigger/positioner/content/calendar 角色节点，calendar 之内再照日历那套写\nheader/prev-trigger/next-trigger/heading/grid/grid-head/week-day/grid-body/week-row/cell/cell-trigger。\n\n本元素是编排机，只持有开合与「分段输入 ↔ 日历」之间的值同步；选日期、翻月、网格键盘导航\n委派给内嵌日历，分段输入委派给内嵌分段输入，两部件之内的 DOM 各戴各自的 data-scope。\n\n网格由作者渲染，元素不生成节点：读 `weeks` / `weekDays` / `headingLabel` 三个只读属性，\n听 `focused-value-change` 重画。日期身份取 cell 节点上的 `value`（ISO 串），\ncell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）；\n段位可自带 `segment` 属性按段名认领（`segment=\"quarter\"`），或自带 `index` 属性声明下标，\n两者都没写按所在 input 之内的文档序。\n\n区间模式（selection-mode=\"range\"）下 input 写两个：文档序在前的是起点、在后的是终点，\n各自内部写一整套段位。段位与 hidden-input 按所在 input 归组，方向键不跨组；\nhidden-input 写在 input 之外（如与 control 平级）时按文档序对应起止两端。\n其余模式只认第一个 input。",
           "name": "XhDatePickerElement",
           "cssParts": [
             {
@@ -8444,7 +8444,7 @@
               "name": "input"
             },
             {
-              "description": "一段一个的 spinbutton 节点（data-scope=\"date-field\"），可自带 index 属性；下标在所属 input 组内数",
+              "description": "一段一个的 spinbutton 节点（data-scope=\"date-field\"）。可自带 segment 属性按段名认领 （segment=\"quarter\"），或自带 index 属性声明下标（在所属 input 组内数），两者都没写按文档序",
               "name": "segment"
             },
             {

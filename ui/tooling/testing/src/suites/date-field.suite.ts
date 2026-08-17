@@ -41,6 +41,26 @@ function segment(index: number): FixtureNode {
   }
 }
 
+/**
+ * 换成按段名认领的写法。刻意把季度写在年前面：
+ * 落点该由段名定，不由书写顺序定——否则这条用例证明不了什么。
+ */
+function byName(base: FixtureNode): FixtureNode {
+  return {
+    ...base,
+    children: base.children?.map(child => (child.part !== 'control'
+      ? child
+      : {
+          ...child,
+          children: ['quarter', 'year', 'day'].map(name => ({
+            part: 'segment',
+            tag: 'div',
+            attrs: { segment: name },
+          })),
+        })),
+  }
+}
+
 export const dateFieldSuite: ConformanceSuite = {
   component: 'date-field',
   anatomy: dateFieldAnatomy,
@@ -631,6 +651,50 @@ export const dateFieldSuite: ConformanceSuite = {
             // 值没动，但要哪几块变了：8 月落在第 3 季
             parts: { 'segment[1]': { 'data-segment': 'quarter', 'aria-valuenow': '3', 'aria-valuetext': 'Q3' } },
             events: [],
+          },
+        },
+      ],
+    },
+    {
+      name: '按段名认领：段位写 segment="quarter" 就是季度那一格，不必数下标',
+      spec: { apg: APG },
+      props: { locale: 'zh-CN', segments: ['year', 'quarter'], defaultValue: '2026-04-01' },
+      fixture: byName,
+      initial: {
+        parts: {
+          // fixture 的书写顺序是「季度在前、年在后」，落点仍由段名定
+          'segment[0]': { 'data-segment': 'quarter', 'data-index': '1', 'aria-valuemax': '4', 'hidden': null },
+          'segment[1]': { 'data-segment': 'year', 'data-index': '0', 'aria-valuemax': '9999', 'hidden': null },
+          // 段集里没有的那一块：收起，且不再自称 spinbutton
+          'segment[2]': { 'data-segment': null, 'data-index': null, 'hidden': '', 'role': null },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '段位的文字是文本节点，进不了归一化快照',
+          run: ({ doc }) => expectTexts(doc, ['Q2', '2026', ''], '按段名认领的两格各自渲染自己那一段'),
+        },
+      ],
+    },
+    {
+      name: '按段名声明的那一格照常可编辑，Tab 锚点仍按段序不按书写序',
+      spec: { apg: APG },
+      covers: ['date-field.kbd.digit'],
+      props: { locale: 'zh-CN', segments: ['year', 'quarter'], defaultValue: '2026-04-01', name: 'q' },
+      fixture: byName,
+      initial: {
+        // 锚点落在段集的首段（年），而它在文档里排第二
+        parts: { 'segment[0]': { tabindex: '-1' }, 'segment[1]': { tabindex: '0' } },
+      },
+      steps: [
+        { kind: 'focus', part: 'segment[0]' },
+        {
+          kind: 'key',
+          key: '3',
+          expect: {
+            parts: { 'segment[0]': { 'aria-valuenow': '3', 'aria-valuetext': 'Q3' } },
+            events: [{ type: 'value-change', detail: { value: '2026-07-01' } }],
           },
         },
       ],

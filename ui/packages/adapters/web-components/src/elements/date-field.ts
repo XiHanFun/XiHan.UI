@@ -1,4 +1,4 @@
-import type { DateFieldSchema, DateFieldValueChangeDetails, DateGranularity, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
+import type { DateFieldSchema, DateFieldSegmentProps, DateFieldValueChangeDetails, DateGranularity, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import { connectDateField, dateFieldAnatomy, dateFieldMachine, dateFieldMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -22,6 +22,19 @@ const SEGMENT_SET_CONVERTER = {
 
 type SegmentTexts = { readonly [K in DateSegmentType]?: string }
 
+/** 九块段位的名字，按段名声明时照它认。 */
+const SEGMENT_TYPES: readonly DateSegmentType[] = [
+  'year',
+  'quarter',
+  'month',
+  'week',
+  'day',
+  'hour',
+  'minute',
+  'second',
+  'dayPeriod',
+]
+
 /** 作者写在段位上的下标。缺席或写坏了就退回文档序——手写 HTML 时把段位按顺序排下来本身就是声明。 */
 function declaredIndex(el: HTMLElement, position: number): number {
   const raw = el.getAttribute('index')
@@ -32,13 +45,27 @@ function declaredIndex(el: HTMLElement, position: number): number {
 }
 
 /**
+ * 作者写在段位上的那一句声明：`segment="quarter"` 按段名认，否则按下标（缺省退回文档序）。
+ * 段名写坏了当没写，退回下标那条路。
+ */
+function declaredSegment(el: HTMLElement, position: number): DateFieldSegmentProps {
+  const raw = el.getAttribute('segment')?.trim()
+  if (raw && (SEGMENT_TYPES as readonly string[]).includes(raw))
+    return { segment: raw as DateSegmentType }
+  return { index: declaredIndex(el, position) }
+}
+
+/**
  * `<xh-date-field>` —— Light-DOM 行为宿主：作者写 root/label/control/segment（多个）/hidden-input
  * 角色节点，元素跑 date-field 机器并把 connect 产出打上去。
  *
  * 每一段是一个 role=spinbutton 的可聚焦节点：上下键加减并在段区间里回绕、左右键与 Home/End 换段、
- * 数字键直填且敲满自动跳下一段、Backspace 清掉本段。是哪一段由 locale（zh-CN 年月日、
- * en-US 月日年）与 granularity 算出来，作者只声明下标，不声明段名——同一份标记换个 locale
- * 就换一副面孔。精度用不上的段带 hidden 留在文档里，不卸载作者节点。
+ * 数字键直填且敲满自动跳下一段、Backspace 清掉本段。
+ *
+ * 是哪一段有两种写法：只声明下标（`index`，或按文档序），是哪一段由 locale（zh-CN 年月日、
+ * en-US 月日年）与段集算出来——同一份标记换个 locale 就换一副面孔；或按段名写死
+ * （`segment="quarter"`），段集里没有这一块时那一格收起。用不上的段带 hidden 留在文档里，
+ * 不卸载作者节点。
  *
  * 段位没填齐时整份值是 null；填齐了才拼出 ISO 串，由 hidden-input 随表单提交。
  *
@@ -68,7 +95,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart root - 最外层，承载 data-disabled / data-invalid / data-complete / data-out-of-range
  * @csspart label - 标题；点它把焦点送进首段
  * @csspart control - role=group 的分段容器
- * @csspart segment - 一段一个的 spinbutton 节点，可自带 index 属性声明下标，缺省按文档序
+ * @csspart segment - 一段一个的 spinbutton 节点。可自带 segment 属性按段名认领（segment="quarter"），
+ *   或自带 index 属性声明下标，两者都没写按文档序
  * @csspart hidden-input - type=hidden 的表单出口，值是 ISO 串
  */
 export class XhDateFieldElement extends XhElement {
@@ -162,9 +190,9 @@ export class XhDateFieldElement extends XhElement {
     // 段位是多实例 part，逐个打。打上去的 data-scope/data-part 正是换段在事件那一刻
     // 现查 DOM 的依据，所以 wire 必须先于事件跑过——updated() 已保证。
     this.getParts('segment').forEach((el, position) => {
-      const index = declaredIndex(el, position)
-      this.spreader.spread(el, api.getSegmentProps({ index }) as Record<string, unknown>)
-      const state = api.segments[index]
+      const declared = declaredSegment(el, position)
+      this.spreader.spread(el, api.getSegmentProps(declared) as Record<string, unknown>)
+      const state = api.segmentOf(declared)
       // 段位的文字归元素写：spreader 只管属性与事件，写不了文本。
       // 比一次再写：无谓的赋值会清掉这个节点里的选区，还会白白惊动一次变更记录
       const text = state?.text ?? ''

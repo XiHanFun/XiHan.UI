@@ -64,9 +64,17 @@ export interface DateFieldValueChangeDetails {
   value: string | null
 }
 
-/** 段位自报家门：下标由作者在部件上声明，connect 据此算出这一格是哪一段。 */
+/**
+ * 段位自报家门。两种写法任选其一：
+ *
+ * - 按下标：`index`，是哪一段由 locale 与段集算出来——同一份标记换个 locale 就换一副面孔；
+ * - 按段名：`segment`，写死这一格就是季度/周/上下午。段集里没有这一块时该节点收起。
+ *
+ * 两个都给时按段名算：它更具体。都不给等同于下标越界，那一格收起。
+ */
 export interface DateFieldSegmentProps {
-  index: number
+  index?: number
+  segment?: DateSegmentType
 }
 
 /** 单段的对外投影，作者据此渲染文字与皮肤。 */
@@ -210,6 +218,8 @@ export interface DateFieldApi<T extends PropTypes = PropTypes> {
   getLabelProps: () => T['element']
   /** role=group 的分段容器。 */
   getControlProps: () => T['element']
+  /** 作者的那一句声明落在哪一段上；段集里没有这一块（或下标越界）时缺席。文字由适配器照它渲染。 */
+  segmentOf: (props: DateFieldSegmentProps) => DateFieldSegmentState | undefined
   getSegmentProps: (props: DateFieldSegmentProps) => T['element']
   /** 表单出口：一份 type=hidden 的原生输入，值是 ISO 串。 */
   getHiddenInputProps: () => T['input']

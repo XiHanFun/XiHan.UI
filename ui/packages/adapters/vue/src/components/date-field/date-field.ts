@@ -102,8 +102,10 @@ export const XhDateFieldControl = defineComponent({
 export const XhDateFieldSegment = defineComponent({
   name: 'XhDateFieldSegment',
   props: {
-    // 下标由作者声明，是哪一段由 locale 与 granularity 算出；兼收字符串
-    index: { type: [Number, String] as PropType<number | string>, required: true },
+    // 下标由作者声明，是哪一段由 locale 与段集算出；兼收字符串
+    index: { type: [Number, String] as PropType<number | string>, default: undefined },
+    /** 按段名声明这一格。段集里没有这一块时它收起；与 index 二选一，两个都写按段名算。 */
+    segment: { type: String as PropType<DateSegmentType>, default: undefined },
   },
   slots: Object as SlotsType<{
     default?: (props: DateFieldSegmentSlotProps) => VNode[]
@@ -111,13 +113,16 @@ export const XhDateFieldSegment = defineComponent({
   setup(props, { slots }) {
     const ctx = useDateFieldContext()
     return () => {
-      const index = Math.trunc(Number(props.index))
       const api = ctx.api.value
-      const state = api.segments[index]
+      // 落点由连接层算：按下标还是按段名是同一条路，适配器这边不重写一份
+      const declared = props.segment != null
+        ? { segment: props.segment }
+        : { index: Math.trunc(Number(props.index)) }
+      const state = api.segmentOf(declared)
       // 有插槽用插槽，否则渲染连接层算好的段位文本
       return h(
         'div',
-        api.getSegmentProps({ index }) as Record<string, unknown>,
+        api.getSegmentProps(declared) as Record<string, unknown>,
         slots.default ? slots.default({ segment: state }) : state?.text,
       )
     }

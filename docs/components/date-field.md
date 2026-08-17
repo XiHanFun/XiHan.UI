@@ -76,6 +76,12 @@ value-change 每次带上整份 ISO 串，段位被清掉时它是 null
 
 <XhDemo src="date-field/12-value-format" />
 
+### 段位可拼装
+
+segments 决定这份控件由哪几块组成；段位可按段名认领，不必数下标
+
+<XhDemo src="date-field/13-segments" />
+
 ## 产物
 
 | 层 | 值 |
@@ -147,6 +153,7 @@ value-change 每次带上整份 ISO 串，段位被清掉时它是 null
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` | 标题不是原生 label（段位是 div，不可被 label 标注），点它由连接层代为把焦点送进首段。 |
 | `getControlProps` | `() => T['element']` | role=group 的分段容器。 |
+| `segmentOf` | `(props: DateFieldSegmentProps) => DateFieldSegmentState \| undefined` | 作者的那一句声明落在哪一段上；段集里没有这一块（或下标越界）时缺席。文字由适配器照它渲染。 |
 | `getSegmentProps` | `(props: DateFieldSegmentProps) => T['element']` |  |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：一份 type=hidden 的原生输入，值是 ISO 串。 |
 

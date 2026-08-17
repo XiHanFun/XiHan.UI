@@ -4,6 +4,7 @@ import type { Service } from '@xihan-ui/machine'
 import type {
   DateFieldApi,
   DateFieldSchema,
+  DateFieldSegmentProps,
   DateFieldSegmentState,
   DateSegments,
   DateSegmentType,
@@ -94,6 +95,14 @@ export function connectDateField<T extends PropTypes>(
 
   const segmentStates = order.map(state)
 
+  /**
+   * 作者的声明 → 这一格是第几段。
+   *
+   * 按段名声明时，段集里没有这一块就给 -1——与下标越界同一条路：那一格收起，不卸载作者节点。
+   */
+  const indexOf = (props: DateFieldSegmentProps): number =>
+    props.segment != null ? order.indexOf(props.segment) : Math.trunc(props.index ?? -1)
+
   // 焦点锚点：焦点在组内就是它，否则退回首段；整组只占一个 Tab 位。
   // 锚点落在已不属于当前 granularity 的段上时要回到首段，否则整组一个 Tab 位都不剩
   const anchor = focusedSegment != null && order.includes(focusedSegment) ? focusedSegment : order[0]
@@ -174,7 +183,10 @@ export function connectDateField<T extends PropTypes>(
       'data-invalid': dataAttr(invalid),
     }),
 
-    getSegmentProps: ({ index }) => {
+    segmentOf: props => segmentStates[indexOf(props)],
+
+    getSegmentProps: (props) => {
+      const index = indexOf(props)
       const type = order[index]
       const item = type ? state(type, index) : null
       // 多余的段位收起而不是卸载。键一个不少地照出、只是取值为空：
@@ -182,7 +194,8 @@ export function connectDateField<T extends PropTypes>(
       const spare = item == null
       return normalize.element({
         ...parts.segment.attrs,
-        'data-index': String(index),
+        // 按段名声明而段集里没有这一块时下标是 -1，那个数没有意义，不产出
+        'data-index': index >= 0 ? String(index) : undefined,
         'data-segment': item?.type,
         'data-placeholder': dataAttr(!!item?.empty),
         'data-disabled': dataAttr(!spare && disabled),
