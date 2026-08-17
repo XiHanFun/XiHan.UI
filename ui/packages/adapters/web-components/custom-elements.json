@@ -8469,6 +8469,10 @@
               "name": "week-row"
             },
             {
+              "description": "行首的周序号格（role=rowheader），须自带 value 属性（行首那天）；可选",
+              "name": "week-number"
+            },
+            {
               "description": "role=gridcell 日期格，承载 aria-selected；须自带 value 属性（ISO 串）",
               "name": "cell"
             },

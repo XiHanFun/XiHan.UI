@@ -106,6 +106,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart week-day - role=columnheader 列头，须自带 value 属性标明列序 0-6
  * @csspart grid-body - role=rowgroup 日期组
  * @csspart week-row - role=row 周行，表头与日期行共用
+ * @csspart week-number - 行首的周序号格（role=rowheader），须自带 value 属性（行首那天）；可选
  * @csspart cell - role=gridcell 日期格，承载 aria-selected；须自带 value 属性（ISO 串）
  * @csspart cell-trigger - 真正可点可聚焦的那一层，承载 aria-disabled 与 roving tabindex
  * @csspart hidden-input - type=hidden 的表单出口，值是 ISO 串；区间模式下起止各一份
@@ -435,6 +436,16 @@ export class XhDatePickerElement extends XhElement {
     put('grid-body', api.calendar.getGridBodyProps() as Record<string, unknown>)
 
     // 表头行与日期行共用 role=row，一并打
+    // 周序号格：身份取行首那天，文字由元素填
+    for (const el of this.getParts('week-number')) {
+      const value = el.getAttribute('value') ?? ''
+      this.spreader.spread(el, api.calendar.getWeekNumberProps({ value }) as Record<string, unknown>)
+      // 文字归元素写，比对后再赋值（这份元素没有 fillText，与段位那处同一套写法）
+      const text = api.calendar.getWeekNumberText({ value })
+      if (el.textContent !== text)
+        el.textContent = text
+    }
+
     for (const el of this.getParts('week-row'))
       this.spreader.spread(el, api.calendar.getWeekRowProps() as Record<string, unknown>)
 

@@ -15,6 +15,7 @@ export const calendarAnatomy = createAnatomy('calendar', [
   'week-day',
   'grid-body',
   'week-row',
+  'week-number',
   'cell',
   'cell-trigger',
 ])

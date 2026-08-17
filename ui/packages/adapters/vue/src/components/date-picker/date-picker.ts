@@ -403,6 +403,23 @@ export const XhDatePickerWeekRow = defineComponent({
   },
 })
 
+export const XhDatePickerWeekNumber = defineComponent({
+  name: 'XhDatePickerWeekNumber',
+  props: {
+    /** 这一行行首那天的 ISO 串。 */
+    value: { type: String, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useDatePickerContext()
+    // 有插槽用插槽，否则显示这一行的周序号
+    return () => h(
+      'span',
+      ctx.api.value.calendar.getWeekNumberProps({ value: props.value }) as Record<string, unknown>,
+      slots.default?.() ?? ctx.api.value.calendar.getWeekNumberText({ value: props.value }),
+    )
+  },
+})
+
 export const XhDatePickerWeekDay = defineComponent({
   name: 'XhDatePickerWeekDay',
   props: {

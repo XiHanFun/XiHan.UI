@@ -482,6 +482,16 @@ describe('面板粒度：月 / 季度 / 年 / 周', () => {
     expect(h.value()).toEqual(['2026-08-10', '2026-09-13'])
   })
 
+  it('周序号格是这一行的表头，文字由连接层给；不带值时给空串占住列宽', () => {
+    const h = mount({ defaultFocusedValue: '2026-08-13', locale: 'zh-CN' })
+    const props = h.api().getWeekNumberProps({ value: '2026-08-10' }) as Record<string, unknown>
+    expect(props.role).toBe('rowheader')
+    expect(props['data-value']).toBe('2026-08-10')
+    expect(h.api().getWeekNumberText({ value: '2026-08-10' })).toBe('33')
+    // 表头那一格是占位，解析不了不抛、给空串
+    expect(h.api().getWeekNumberText({ value: '' })).toBe('')
+  })
+
   it('iSO 周序号：周一起算，含当年第一个周四那周是第 1 周', () => {
     expect(isoWeekNumber('2026-01-01')).toBe(1)
     expect(isoWeekNumber('2026-08-10')).toBe(33)

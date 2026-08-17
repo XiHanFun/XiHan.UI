@@ -4965,6 +4965,26 @@
   grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 
+/* 摆了周序号格的行多让出行首一列。写 :not([hidden]) 而不是靠顺序压过下面那条兜底——
+   同特指度的规则谁在后面谁赢,收起态会被这条 display 掀开 */
+[data-scope='calendar'][data-part='week-row']:not([hidden]):has(> [data-part='week-number']) {
+  display: grid;
+  grid-template-columns: var(--xh-calendar-week-number-w, 2.25rem) repeat(7, minmax(0, 1fr));
+}
+
+/* 周序号只是行的标号:比日子小一号、颜色压下去,不跟着选中态走 */
+[data-scope='calendar'][data-part='week-number'] {
+  display: grid;
+  place-items: center;
+  color: var(--xh-calendar-week-number-fg, var(--xh-fg-subtle));
+  font-size: var(--xh-calendar-week-number-font-size, var(--xh-font-size-xs));
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+
+[data-scope='calendar'][data-part='week-number'][hidden] {
+  display: none;
+}
 [data-scope='calendar'][data-part='week-row'][hidden] {
   display: none;
 }
