@@ -1,4 +1,4 @@
-import type { DateFieldSchema, DateFieldValueChangeDetails, DateGranularity, DateSegmentType } from '@xihan-ui/headless'
+import type { DateFieldSchema, DateFieldValueChangeDetails, DateGranularity, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import { connectDateField, dateFieldAnatomy, dateFieldMachine, dateFieldMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -10,6 +10,15 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
 // Lit 默认的 Boolean 转换器判的是 v !== null，写 disabled="false" 反而成了真
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
+// 段集用属性也表达得了：逗号分隔的段名。空串与只剩分隔符的写法等同于没给
+const SEGMENT_SET_CONVERTER = {
+  fromAttribute: (v: string | null): DateSegmentSet | undefined => {
+    if (v === null)
+      return undefined
+    const list = v.split(',').map(part => part.trim()).filter(Boolean) as DateSegmentType[]
+    return list.length > 0 ? list : undefined
+  },
+}
 
 type SegmentTexts = { readonly [K in DateSegmentType]?: string }
 
@@ -44,6 +53,9 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {string} locale - BCP 47 语言标记，决定年月日三段的先后，默认 en-US
  * @attr {string} time-zone - IANA 时区名，只用来取"今天"（空段按上下键时的起点）
  * @attr {'day'|'hour'|'minute'|'second'} granularity - 精度，决定一共几段，默认 day
+ * @attr {string} segments - 段集，逗号分隔的段名（`year,quarter`）；给了它 granularity 让路。
+ *   可选的九块：year / quarter / month / week / day / hour / minute / second / dayPeriod。
+ *   季度与月、周与日两两互斥，都写时留细的那个
  * @attr {boolean} disabled - 禁用：整组退出 Tab 序，隐藏输入不参与提交
  * @attr {boolean} read-only - 只读：可聚焦、可换段，但改不动
  * @attr {boolean} invalid - 校验失败标注
@@ -71,6 +83,7 @@ export class XhDateFieldElement extends XhElement {
     locale: { converter: STRING_CONVERTER },
     timeZone: { converter: STRING_CONVERTER, attribute: 'time-zone' },
     granularity: { converter: STRING_CONVERTER },
+    segments: { converter: SEGMENT_SET_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
@@ -90,6 +103,7 @@ export class XhDateFieldElement extends XhElement {
   declare locale?: string
   declare timeZone?: string
   declare granularity?: DateGranularity
+  declare segments?: DateSegmentSet
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
@@ -117,6 +131,7 @@ export class XhDateFieldElement extends XhElement {
       locale: this.locale,
       timeZone: this.timeZone,
       granularity: this.granularity,
+      segments: this.segments,
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,
       invalid: this.invalid ?? false,

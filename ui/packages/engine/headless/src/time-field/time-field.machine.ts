@@ -9,6 +9,7 @@ import type {
 } from './time-field.types'
 import { parseTime, Time } from '@internationalized/date'
 import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { dayPeriodLabel } from '../shared/day-period'
 
 const { createMachine } = setup<TimeFieldSchema>()
 
@@ -271,24 +272,6 @@ export function resolveHourCycle(hourCycle?: TimeHourCycle, locale?: string): Ti
   }
   catch {
     return TIME_FIELD_HOUR_CYCLE
-  }
-}
-
-/**
- * 上午/下午在这个语言里怎么写。没给 locale 时用 AM/PM，
- * 不落到运行环境默认 locale，否则同一份代码在不同机器上产出不同的 DOM。
- */
-export function dayPeriodLabel(period: TimeDayPeriod, locale?: string): string {
-  const fallback = period === 'am' ? 'AM' : 'PM'
-  if (!locale)
-    return fallback
-  try {
-    const date = new Date(Date.UTC(2020, 0, 1, period === 'am' ? 6 : 18))
-    const parts = new Intl.DateTimeFormat(locale, { hour: 'numeric', hour12: true, timeZone: 'UTC' }).formatToParts(date)
-    return parts.find(p => p.type === 'dayPeriod')?.value ?? fallback
-  }
-  catch {
-    return fallback
   }
 }
 

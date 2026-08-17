@@ -493,6 +493,149 @@ export const dateFieldSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '段集决定段序与段数：写 year + quarter 就只剩两段，其余收起',
+      spec: { apg: APG },
+      // 段集给了就以它为准，granularity 让路；段序不随 locale 变
+      props: { locale: 'en-US', segments: ['quarter', 'year'] },
+      initial: {
+        parts: {
+          'segment[0]': { 'data-segment': 'year', 'aria-valuemax': '9999', 'hidden': null, 'tabindex': '0' },
+          'segment[1]': { 'data-segment': 'quarter', 'aria-valuemin': '1', 'aria-valuemax': '4', 'hidden': null },
+          'segment[2]': { 'data-segment': null, 'hidden': '', 'role': null },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '段位的文字是文本节点，进不了归一化快照',
+          run: ({ doc }) => expectTexts(doc, ['yyyy', 'Qq', '', '', '', ''], '未填时季度显示 Qq'),
+        },
+      ],
+    },
+    {
+      name: '季度：一位就敲满，值落在那一季的头一天',
+      spec: { apg: APG },
+      covers: ['date-field.kbd.digit'],
+      props: { locale: 'zh-CN', segments: ['year', 'quarter'], defaultValue: '2026-01-01', name: 'q' },
+      initial: {
+        parts: { 'segment[1]': { 'aria-valuenow': '1', 'aria-valuetext': 'Q1' } },
+      },
+      steps: [
+        { kind: 'focus', part: 'segment[1]' },
+        {
+          kind: 'key',
+          key: '2',
+          expect: {
+            parts: { 'segment[1]': { 'aria-valuenow': '2', 'aria-valuetext': 'Q2' } },
+            events: [{ type: 'value-change', detail: { value: '2026-04-01' } }],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '隐藏输入的 value 是 property',
+          run: ({ doc }) => {
+            expectTexts(doc, ['2026', 'Q2'], '季度段带上 Q')
+            expectHidden(doc, '2026-04-01', '季度落在那一季的头一天')
+          },
+        },
+      ],
+    },
+    {
+      name: '周：上界随年报给读屏，值落在那一周的周首日',
+      spec: { apg: APG },
+      covers: ['date-field.kbd.digit'],
+      props: { locale: 'zh-CN', segments: ['year', 'week'], defaultValue: '2026-01-05', name: 'w' },
+      initial: {
+        // 2026 有 53 周（周一起算）
+        parts: { 'segment[1]': { 'data-segment': 'week', 'aria-valuemax': '53', 'aria-valuenow': '2' } },
+      },
+      steps: [
+        { kind: 'focus', part: 'segment[1]' },
+        { kind: 'key', key: '3' },
+        {
+          kind: 'key',
+          key: '3',
+          expect: { parts: { 'segment[1]': { 'aria-valuenow': '33', 'aria-valuetext': '33' } } },
+        },
+        {
+          kind: 'raw',
+          why: '隐藏输入的 value 是 property',
+          run: ({ doc }) => expectHidden(doc, '2026-08-10', '第 33 周的周首日'),
+        },
+      ],
+    },
+    {
+      name: '上下午：a / p 直接指定，改写的是小时；数字键不归它',
+      spec: { apg: APG },
+      covers: ['date-field.kbd.day-period'],
+      props: {
+        locale: 'zh-CN',
+        segments: ['year', 'month', 'day', 'hour', 'dayPeriod'],
+        defaultValue: '2026-08-17T09',
+        name: 'at',
+      },
+      initial: {
+        parts: {
+          // 段集里带上下午，小时段收的是 12 时制的那个数
+          'segment[3]': { 'data-segment': 'hour', 'aria-valuemin': '1', 'aria-valuemax': '12', 'aria-valuenow': '9' },
+          'segment[4]': { 'data-segment': 'dayPeriod', 'aria-valuemin': '0', 'aria-valuemax': '1', 'aria-valuenow': '0' },
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'segment[4]' },
+        {
+          kind: 'key',
+          key: 'p',
+          expect: {
+            parts: {
+              // 小时段上显示的数不动，改的是整份值
+              'segment[3]': { 'aria-valuenow': '9' },
+              'segment[4]': { 'aria-valuenow': '1', 'aria-valuetext': '下午' },
+            },
+            events: [{ type: 'value-change', detail: { value: '2026-08-17T21' } }],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '隐藏输入的 value 是 property',
+          run: ({ doc }) => {
+            expectTexts(doc, ['2026', '08', '17', '09', '下午'], '小时是 12 时制的那个数')
+            expectHidden(doc, '2026-08-17T21', '下午 9 点是 21 点')
+          },
+        },
+        {
+          kind: 'key',
+          key: 'a',
+          expect: { events: [{ type: 'value-change', detail: { value: '2026-08-17T09' } }] },
+        },
+        {
+          // 上下午没有数字位：这一下什么都不该发生
+          kind: 'key',
+          key: '1',
+          expect: { parts: { 'segment[4]': { 'aria-valuenow': '0' } }, events: [] },
+        },
+      ],
+    },
+    {
+      name: '段集换掉时照当前值重新派生：月换成季度',
+      spec: { apg: APG },
+      props: { locale: 'zh-CN', segments: ['year', 'month'], defaultValue: '2026-08-01' },
+      initial: {
+        parts: { 'segment[1]': { 'data-segment': 'month', 'aria-valuenow': '8' } },
+      },
+      steps: [
+        {
+          kind: 'setProps',
+          props: { segments: ['year', 'quarter'] },
+          expect: {
+            // 值没动，但要哪几块变了：8 月落在第 3 季
+            parts: { 'segment[1]': { 'data-segment': 'quarter', 'aria-valuenow': '3', 'aria-valuetext': 'Q3' } },
+            events: [],
+          },
+        },
+      ],
+    },
+    {
       name: 'placeholder / translations 逐段覆盖内置默认',
       spec: { apg: APG },
       props: {

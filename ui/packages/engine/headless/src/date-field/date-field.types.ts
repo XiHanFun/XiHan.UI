@@ -18,12 +18,26 @@ export type DateSegmentType
     | 'second'
     | 'dayPeriod'
 
+/**
+ * 一份段集：作者要哪几块就写哪几块。
+ * 归一后是有序的（年 季度 月 周 日 时 分 秒 上下午），乱序写也排得回来。
+ *
+ * 季度与周不另立值形态，各自派生出月与日（季度取那一季的头一个月、周取那一周的周首日），
+ * 缺的粗段按「那一段的头」补：只有年就是 1 月 1 日。季度与月、周与日两两互斥，都写时留细的那个。
+ */
+export type DateSegmentSet = readonly DateSegmentType[]
+
 /** 精度：决定一共有几段，也决定产出的 ISO 串截到哪一位。 */
 export type DateGranularity = 'day' | 'hour' | 'minute' | 'second'
 
+/** 半天：上午或下午。上下午段收的就是这两个。 */
+export type DateDayPeriod = 'am' | 'pm'
+
 /**
  * 各段的值，缺键即这一段还没填。
- * 只有当 granularity 要求的段全部填齐，才拼得出一个 ISO 串。
+ * 只有当此刻在用的那几段全部填齐，才拼得出一个 ISO 串。
+ *
+ * 段集里带上下午时，hour 存的是 12 时制的那个数（1-12），24 时制的小时由它与上下午合出来。
  */
 export type DateSegments = { readonly [K in DateSegmentType]?: number }
 
@@ -88,8 +102,14 @@ export interface DateFieldSchema extends MachineSchema {
     locale?: string
     /** IANA 时区名，只用来取「今天」：空段上按上下键时从今天的对应位起步。 */
     timeZone?: string
-    /** 精度，默认 day（只有年月日三段）。 */
+    /** 精度，默认 day（只有年月日三段）。给了 segments 时它不再作数。 */
     granularity?: DateGranularity
+    /**
+     * 段集：这份控件由哪几块组成，给了就以它为准，granularity 让路。写 `['year', 'quarter']`
+     * 得到「2026 Q2」、`['year', 'week']` 得到「2026 33」。归一后为空（如 `[]`）视同没给。
+     * 值仍是 ISO 日期（时间）串，故段集里必须有 year，否则段位编辑得动但拼不出值。
+     */
+    segments?: DateSegmentSet
     disabled?: boolean
     readOnly?: boolean
     invalid?: boolean
@@ -137,8 +157,10 @@ export interface DateFieldSchema extends MachineSchema {
     | { type: 'SEGMENT.STEP', segment: DateSegmentType, delta: 1 | -1 }
     /** 数字键：往某段里再敲一位。越界的那一位被当成新的一位重来。 */
     | { type: 'SEGMENT.TYPE', segment: DateSegmentType, digit: string }
-    /** 清掉某一段（Backspace）。 */
+    /** 清掉某一段（Backspace）。上下午段没有独立的量，清它是空操作。 */
     | { type: 'SEGMENT.CLEAR', segment: DateSegmentType }
+    /** 直接指定上午/下午（a / p 键）：改写的是小时，不落独立的量。 */
+    | { type: 'SEGMENT.PERIOD', period: DateDayPeriod }
     | { type: 'SEGMENT.FOCUS', segment: DateSegmentType }
     | { type: 'SEGMENT.BLUR' }
     | { type: 'FORM.RESET' }
@@ -146,11 +168,13 @@ export interface DateFieldSchema extends MachineSchema {
   guard: 'canEdit'
   action:
     | 'syncSegmentsFromValue'
+    | 'syncSegmentsFromSet'
     | 'setValue'
     | 'clearValue'
     | 'stepSegment'
     | 'typeSegment'
     | 'clearSegment'
+    | 'setDayPeriod'
     | 'finalizeTyping'
     | 'setFocusedSegment'
     | 'clearFocusedSegment'
@@ -163,7 +187,7 @@ export interface DateFieldApi<T extends PropTypes = PropTypes> {
   value: string | null
   /** 同一个值的原生 Date；空值或算不出来时为 null。按 timeZone 换算。 */
   valueAsDate: Date | null
-  /** 逐段投影，文档序即 locale 决定的段序。 */
+  /** 逐段投影，文档序即此刻的段序（给了 segments 就是它归一后的顺序，否则由 locale 排）。 */
   segments: DateFieldSegmentState[]
   /** 段位填齐了（value 非 null）。 */
   complete: boolean

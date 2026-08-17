@@ -2,9 +2,12 @@ import { CalendarDate } from '@internationalized/date'
 import { describe, expect, it } from 'vitest'
 import {
   applyDayPeriod,
+  blockRange,
   blocksFilled,
+  blocksReference,
   blocksToDate,
   blocksToIso,
+  constrainBlocks,
   hasTimeSegment,
   isoToBlocks,
   isoWeekOf,
@@ -12,7 +15,9 @@ import {
   isoWeekStart,
   monthToQuarter,
   normalizeSegmentSet,
+  pickBlocks,
   quarterToMonth,
+  splitDayPeriod,
 } from '../src/date-field/date-field.blocks'
 
 const ZH = 'zh-CN'
@@ -78,11 +83,29 @@ describe('iSO 周与日期互推', () => {
   })
 
   it('一年 52 周还是 53 周算得出来', () => {
-    // 2026 年是 53 周年（1 月 1 日是周四）
-    expect(isoWeeksInYear(2026)).toBe(53)
-    expect(isoWeeksInYear(2025)).toBe(52)
+    // 周一起算（en-GB）时 2026 年是 53 周年：1 月 1 日是周四
+    expect(isoWeeksInYear(2026, 'en-GB')).toBe(53)
+    expect(isoWeeksInYear(2025, 'en-GB')).toBe(52)
     // 年还没填时给上界，免得把可选值先限死
-    expect(isoWeeksInYear(undefined)).toBe(53)
+    expect(isoWeeksInYear(undefined, 'en-GB')).toBe(53)
+  })
+
+  it('周数随 locale 变：周首日不同，同一年跨的周数就不同', () => {
+    // 周日起算（en-US）与周一起算（en-GB / zh-CN）在同一年上给出的周数不同，
+    // 拿写死的口径算上界会让最后一周翻到下一年去
+    expect(isoWeeksInYear(2026, 'en-US')).toBe(52)
+    expect(isoWeeksInYear(2026, 'en-GB')).toBe(53)
+    expect(isoWeeksInYear(2025, 'en-US')).toBe(53)
+    expect(isoWeeksInYear(2025, 'en-GB')).toBe(52)
+  })
+
+  it('上界与往返口径一致：末周推回去还是末周，不许翻到下一年', () => {
+    for (const locale of [ZH, 'en-GB', 'en-US']) {
+      for (const year of [2024, 2025, 2026, 2027]) {
+        const last = isoWeeksInYear(year, locale)
+        expect(isoWeekOf(isoWeekStart(year, last, locale), locale)).toBe(last)
+      }
+    }
   })
 })
 
@@ -161,11 +184,22 @@ describe('iSO 串 → 段集', () => {
     expect(isoToBlocks('2026-08-17', ['year', 'month'], ZH)).toEqual({ year: 2026, month: 8 })
   })
 
-  it('上下午从小时推', () => {
+  it('上下午从小时推，小时落 12 时制的那个数', () => {
+    // 21 点在带上下午的段集里显示成「09 下午」，不是「21 下午」
     expect(isoToBlocks('2026-08-17T21:30', ['hour', 'minute', 'dayPeriod'], ZH))
-      .toEqual({ hour: 21, minute: 30, dayPeriod: 1 })
+      .toEqual({ hour: 9, minute: 30, dayPeriod: 1 })
     expect(isoToBlocks('2026-08-17T09:30', ['hour', 'dayPeriod'], ZH))
       .toEqual({ hour: 9, dayPeriod: 0 })
+    // 0 点与 12 点都显示 12，靠上下午分辨
+    expect(isoToBlocks('2026-08-17T00:00', ['hour', 'dayPeriod'], ZH))
+      .toEqual({ hour: 12, dayPeriod: 0 })
+    expect(isoToBlocks('2026-08-17T12:00', ['hour', 'dayPeriod'], ZH))
+      .toEqual({ hour: 12, dayPeriod: 1 })
+  })
+
+  it('段集里没有上下午时小时仍是 24 时制的', () => {
+    expect(isoToBlocks('2026-08-17T21:30', ['hour', 'minute'], ZH))
+      .toEqual({ hour: 21, minute: 30 })
   })
 
   it('写坏的串给空段集，不抛', () => {
@@ -194,5 +228,83 @@ describe('往返一致', () => {
 describe('applyDayPeriod', () => {
   it('没给上下午时小时原样不动', () => {
     expect(applyDayPeriod(21, undefined)).toBe(21)
+  })
+
+  it('对 24 时制的小时重复施加也不漂', () => {
+    // 21 点配下午还是 21 点：段位里存的是 12 时制的 9，但存成 21 也算得对
+    expect(applyDayPeriod(21, 1)).toBe(21)
+    expect(applyDayPeriod(applyDayPeriod(9, 1), 1)).toBe(21)
+  })
+
+  it('splitDayPeriod 是它的逆：24 时制 → 12 时制那个数 + 上下午', () => {
+    expect(splitDayPeriod(0)).toEqual({ hour: 12, dayPeriod: 0 })
+    expect(splitDayPeriod(9)).toEqual({ hour: 9, dayPeriod: 0 })
+    expect(splitDayPeriod(12)).toEqual({ hour: 12, dayPeriod: 1 })
+    expect(splitDayPeriod(21)).toEqual({ hour: 9, dayPeriod: 1 })
+    for (let hour = 0; hour < 24; hour++) {
+      const half = splitDayPeriod(hour)
+      expect(applyDayPeriod(half.hour, half.dayPeriod)).toBe(hour)
+    }
+  })
+})
+
+describe('块的取值区间', () => {
+  const opts = (set: readonly ('year' | 'quarter' | 'month' | 'week' | 'day' | 'hour' | 'minute' | 'second' | 'dayPeriod')[]) =>
+    ({ set, locale: ZH })
+
+  it('季度四档、上下午两档', () => {
+    expect(blockRange('quarter', {}, opts(['year', 'quarter']))).toEqual({ min: 1, max: 4 })
+    expect(blockRange('dayPeriod', {}, opts(['hour', 'dayPeriod']))).toEqual({ min: 0, max: 1 })
+  })
+
+  it('周的上界随年变，年没填时放到 53', () => {
+    expect(blockRange('week', { year: 2026 }, opts(['year', 'week']))).toEqual({ min: 1, max: 53 })
+    expect(blockRange('week', { year: 2025 }, opts(['year', 'week']))).toEqual({ min: 1, max: 52 })
+    expect(blockRange('week', {}, opts(['year', 'week']))).toEqual({ min: 1, max: 53 })
+  })
+
+  it('周的上界也随 locale 变', () => {
+    expect(blockRange('week', { year: 2026 }, { set: ['year', 'week'], locale: 'en-US' }))
+      .toEqual({ min: 1, max: 52 })
+  })
+
+  it('段集里带上下午时小时收 1-12，不带时不归块管', () => {
+    expect(blockRange('hour', {}, opts(['hour', 'dayPeriod']))).toEqual({ min: 1, max: 12 })
+    expect(blockRange('hour', {}, opts(['hour', 'minute']))).toBeNull()
+  })
+
+  it('不归块管的段一律给 null，由原有的天然区间接手', () => {
+    for (const type of ['year', 'month', 'day', 'minute', 'second'] as const)
+      expect(blockRange(type, { year: 2026, month: 2 }, opts(['year', 'month', 'day']))).toBeNull()
+  })
+})
+
+describe('段集换掉与收敛', () => {
+  it('pickBlocks 只留新段集要的那几块', () => {
+    expect(pickBlocks({ year: 2026, month: 8, day: 17 }, ['year', 'quarter'])).toEqual({ year: 2026 })
+    expect(pickBlocks({ year: 2026, month: 8 }, ['year', 'month'])).toEqual({ year: 2026, month: 8 })
+    // 显式写成 undefined 的键不算填了
+    expect(pickBlocks({ year: 2026, month: undefined }, ['year', 'month'])).toEqual({ year: 2026 })
+  })
+
+  it('constrainBlocks 把周序号夹进当年的周数', () => {
+    // 2025 只有 52 周（周一起算），第 53 周会翻到 2026 年去
+    expect(constrainBlocks({ year: 2025, week: 53 }, ['year', 'week'], ZH)).toEqual({ year: 2025, week: 52 })
+    // 站得住的原样返回（同一个引用，省掉一次无谓的写）
+    const ok = { year: 2026, week: 53 }
+    expect(constrainBlocks(ok, ['year', 'week'], ZH)).toBe(ok)
+    // 段集里没有周时不插手
+    const spare = { year: 2025, week: 53 }
+    expect(constrainBlocks(spare, ['year', 'month'], ZH)).toBe(spare)
+  })
+
+  it('blocksReference 把参照日换到块空间', () => {
+    const today = { year: 2026, month: 8, day: 17, hour: 0, minute: 0, second: 0 }
+    expect(blocksReference(today, ['year', 'quarter'], ZH)).toMatchObject({ quarter: 3 })
+    expect(blocksReference(today, ['year', 'week'], ZH)).toMatchObject({ week: 34 })
+    // 带上下午时零点的参照位是 12 上午，不是 0
+    expect(blocksReference(today, ['hour', 'dayPeriod'], ZH)).toMatchObject({ hour: 12, dayPeriod: 0 })
+    // 段集里没有新块时原样返回，granularity 那条老路一步不差
+    expect(blocksReference(today, ['year', 'month', 'day', 'hour'], ZH)).toBe(today)
   })
 })

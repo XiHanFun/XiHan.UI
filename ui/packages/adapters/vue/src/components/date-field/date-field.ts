@@ -1,4 +1,4 @@
-import type { DateFieldApi, DateFieldSchema, DateFieldSegmentState, DateGranularity, DateSegmentType } from '@xihan-ui/headless'
+import type { DateFieldApi, DateFieldSchema, DateFieldSegmentState, DateGranularity, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -40,6 +40,8 @@ export const XhDateFieldRoot = defineComponent({
     locale: { type: String, default: undefined },
     timeZone: { type: String, default: undefined },
     granularity: { type: String as PropType<DateGranularity>, default: undefined },
+    // 段集：给了就以它为准，granularity 让路。段位节点仍按下标认段，段集是有序的
+    segments: { type: Array as PropType<DateSegmentSet>, default: undefined },
     disabled: Boolean,
     readOnly: Boolean,
     invalid: Boolean,

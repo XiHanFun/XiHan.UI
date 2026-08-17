@@ -12,6 +12,7 @@ import { getLocalTimeZone, parseDateTime } from '@internationalized/date'
 import { focusSafely, navIntentFromKey, queryItems, stepIndex } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
 import { dateFieldAnatomy } from './date-field.anatomy'
+import { isMetaSegment } from './date-field.blocks'
 import {
   applySegmentDigit,
   compareDateSegments,
@@ -19,10 +20,11 @@ import {
   DATE_FIELD_LOCALE,
   DATE_SEGMENT_LABEL,
   DATE_SEGMENT_PLACEHOLDER,
-  dateSegmentOrder,
   dateSegmentRange,
   dateSegmentText,
   parseBoundary,
+  parseIsoSegments,
+  resolveSegmentSet,
   segmentMaxDigits,
 } from './date-field.machine'
 
@@ -49,7 +51,8 @@ export function connectDateField<T extends PropTypes>(
   const editable = !disabled && !readOnly
   const bounds = { min: parseBoundary(prop('min')), max: parseBoundary(prop('max')) }
 
-  const order = dateSegmentOrder(locale, granularity)
+  // 段集给了就以它为准，没给退回 granularity 那条老路
+  const order = resolveSegmentSet(prop('segments'), locale, granularity)
   const segments = context.get('segments')
   const typing = context.get('typing')
   const focusedSegment = context.get('focusedSegment')
@@ -57,7 +60,9 @@ export function connectDateField<T extends PropTypes>(
   const value = rawValue === '' ? null : rawValue
   const complete = value != null
   const empty = order.every(type => segments[type] == null)
-  const outOfRange = complete && isOutOfRange(segments, bounds)
+  // 拿算出来的值回读再比，不直接比段位：段集在场时段位里带着季度/周这些派生块，
+  // 而边界只有年月日，逐段比会把「季度 2 对边界的 0」当成越界
+  const outOfRange = complete && isOutOfRange(parseIsoSegments(value, 'second'), bounds)
   const ids = scope.ids('date-field', 'label', 'control')
 
   const placeholderOf = (type: DateSegmentType): string =>
@@ -68,7 +73,7 @@ export function connectDateField<T extends PropTypes>(
 
   const state = (type: DateSegmentType, index: number): DateFieldSegmentState => {
     const raw = segments[type]
-    const range = dateSegmentRange(type, segments, bounds)
+    const range = dateSegmentRange(type, segments, { ...bounds, set: order, locale })
     return {
       index,
       type,
@@ -76,6 +81,7 @@ export function connectDateField<T extends PropTypes>(
       text: dateSegmentText(type, raw, {
         typing: typing?.segment === type ? typing.digits : null,
         placeholder: placeholderOf(type),
+        locale,
       }),
       placeholder: placeholderOf(type),
       label: labelOf(type),
@@ -233,6 +239,21 @@ export function connectDateField<T extends PropTypes>(
                 return
               }
 
+              // 上下午段收 a / p 直接指定，与上下键的翻面并行；它没有数字位，数字键在这儿不作数。
+              // 换段与上下键仍归它，所以这一段只吃掉这两类键，其余照常往下走
+              if (isMetaSegment(item.type)) {
+                const period = key === 'a' || key === 'A' ? 'am' : key === 'p' || key === 'P' ? 'pm' : null
+                if (period) {
+                  if (!editable)
+                    return
+                  event.preventDefault()
+                  send({ type: 'SEGMENT.PERIOD', period })
+                  return
+                }
+                if (DIGIT.test(key))
+                  return
+              }
+
               if (DIGIT.test(key)) {
                 if (!editable)
                   return
@@ -243,7 +264,10 @@ export function connectDateField<T extends PropTypes>(
                 const result = applySegmentDigit(
                   buffer?.segment === item.type ? buffer.digits : '',
                   key,
-                  { range: dateSegmentRange(item.type, live, bounds), maxDigits: segmentMaxDigits(item.type) },
+                  {
+                    range: dateSegmentRange(item.type, live, { ...bounds, set: order, locale }),
+                    maxDigits: segmentMaxDigits(item.type),
+                  },
                 )
                 send({ type: 'SEGMENT.TYPE', segment: item.type, digit: key })
                 if (result?.complete)

@@ -4,10 +4,22 @@ import type {
   DateGranularity,
   DateSegmentRange,
   DateSegments,
+  DateSegmentSet,
   DateSegmentType,
 } from './date-field.types'
 import { CalendarDate, getLocalTimeZone, parseDateTime, Time, today } from '@internationalized/date'
 import { resetDeclaredValue, setup } from '@xihan-ui/machine'
+import { dayPeriodLabel } from '../shared/day-period'
+import {
+  blockRange,
+  blocksReference,
+  blocksToIso,
+  constrainBlocks,
+  isMetaSegment,
+  isoToBlocks,
+  normalizeSegmentSet,
+  pickBlocks,
+} from './date-field.blocks'
 
 const { createMachine } = setup<DateFieldSchema>()
 
@@ -74,8 +86,27 @@ const TIME_SEGMENTS: Readonly<Record<DateGranularity, readonly DateSegmentType[]
 
 const DATE_SEGMENTS: readonly DateSegmentType[] = ['year', 'month', 'day']
 
-/** 全部段位，逐段比对用。 */
-const ALL_SEGMENTS: readonly DateSegmentType[] = [...DATE_SEGMENTS, ...TIME_SEGMENTS.second]
+/**
+ * 全部九块，逐段比内容用。
+ * 少比一块就等于「那一块改了也算没改」——季度改了会被 commitSegments 当成原地不动而丢掉。
+ */
+const ALL_SEGMENTS: readonly DateSegmentType[] = [
+  'year',
+  'quarter',
+  'month',
+  'week',
+  'day',
+  'hour',
+  'minute',
+  'second',
+  'dayPeriod',
+]
+
+/**
+ * ISO 串上真有的那几段，比先后只看它们。
+ * 季度、周与上下午是派生块，混进来会与只有年月日的 min/max 比错位（边界那边根本没有季度）。
+ */
+const ISO_SEGMENTS: readonly DateSegmentType[] = [...DATE_SEGMENTS, ...TIME_SEGMENTS.second]
 
 /** Intl 认不出 locale、或它排不出齐整三段时的兜底排法。 */
 const DATE_ORDER_FALLBACK: readonly DateSegmentType[] = ['year', 'month', 'day']
@@ -128,6 +159,48 @@ export function granularitySegments(granularity: DateGranularity = DATE_FIELD_GR
   return [...DATE_SEGMENTS, ...(TIME_SEGMENTS[granularity] ?? [])]
 }
 
+/** 作者给的段集算不算数：归一后还剩东西才算。写 `[]` 与压根没写是一回事。 */
+export function hasSegmentSet(set: DateSegmentSet | undefined): boolean {
+  return !!set && normalizeSegmentSet(set).length > 0
+}
+
+/**
+ * 此刻这份控件由哪几段组成，文档序。
+ *
+ * 给了段集就以它为准（归一后的顺序，不随 locale 变——「2026 Q2」没有别的排法）；
+ * 没给则退回 granularity 那条老路，年月日按 locale 排、时刻段按精度追加。
+ */
+export function resolveSegmentSet(
+  set: DateSegmentSet | undefined,
+  locale: string = DATE_FIELD_LOCALE,
+  granularity: DateGranularity = DATE_FIELD_GRANULARITY,
+): DateSegmentType[] {
+  return hasSegmentSet(set) ? normalizeSegmentSet(set!) : dateSegmentOrder(locale, granularity)
+}
+
+/** 一份控件的段位口径：两条路（段集 / granularity）都从这里分岔。 */
+export interface DateSegmentOptions {
+  set?: DateSegmentSet
+  locale?: string
+  granularity?: DateGranularity
+}
+
+/** ISO 串 → 逐段的值。段集在场时按块派生，否则走 granularity 那条老路。 */
+export function isoToSegments(iso: string | null | undefined, options: DateSegmentOptions = {}): DateSegments {
+  const { set, locale = DATE_FIELD_LOCALE, granularity } = options
+  return hasSegmentSet(set)
+    ? isoToBlocks(iso, set!, locale)
+    : parseIsoSegments(iso, granularity)
+}
+
+/** 逐段的值 → ISO 串；要求的段缺一个就是 null。同上，两条路各走各的。 */
+export function segmentsToValue(segments: DateSegments, options: DateSegmentOptions = {}): string | null {
+  const { set, locale = DATE_FIELD_LOCALE, granularity } = options
+  return hasSegmentSet(set)
+    ? blocksToIso(segments, set!, locale)
+    : segmentsToIso(segments, granularity)
+}
+
 /** 该段最多敲几位。 */
 export function segmentMaxDigits(type: DateSegmentType): number {
   return SEGMENT_DIGITS[type]
@@ -157,7 +230,7 @@ export function sameSegments(a: DateSegments, b: DateSegments | undefined): bool
  * 因此只精确到天的值与带时刻的边界比较时，落在当天的零点上。
  */
 export function compareDateSegments(a: DateSegments, b: DateSegments): number {
-  for (const key of ALL_SEGMENTS) {
+  for (const key of ISO_SEGMENTS) {
     const diff = (a[key] ?? 0) - (b[key] ?? 0)
     if (diff !== 0)
       return diff
@@ -251,13 +324,22 @@ export function parseBoundary(iso: string | undefined): DateSegments | null {
  *
  * 年月日三段会被 min/max 收窄，但只在高位全都贴着边界时才收：min 是 2026-07-28 时，
  * 2026 年的月份下界才是 7；月份一旦选到 8，日的下界退回 1。时分秒不收窄，用天然区间。
+ *
+ * 季度、周与上下午一律用天然区间：它们只定到「那一季/那一周的头」，收窄到边界所在的那一季
+ * 也仍会算出一个早于边界的日子，收了反倒给出「这一档能选」的错觉。越界由 outOfRange 标注。
  */
 export function dateSegmentRange(
   type: DateSegmentType,
   segments: DateSegments,
-  options: { min?: DateSegments | null, max?: DateSegments | null } = {},
+  options: { min?: DateSegments | null, max?: DateSegments | null } & DateSegmentOptions = {},
 ): DateSegmentRange {
   const { min, max } = options
+  const block = blockRange(type, segments, {
+    set: options.set ?? [],
+    locale: options.locale ?? DATE_FIELD_LOCALE,
+  })
+  if (block)
+    return block
   const natural = naturalRange(type, segments)
   if (type === 'hour' || type === 'minute' || type === 'second')
     return natural
@@ -289,6 +371,7 @@ export function dateSegmentRange(
   return lo > hi ? natural : { min: lo, max: hi }
 }
 
+/** 不归块管的那几段的天然区间；季度、周与上下午在 blockRange 里，走不到这儿。 */
 function naturalRange(type: DateSegmentType, segments: DateSegments): DateSegmentRange {
   switch (type) {
     case 'year':
@@ -375,16 +458,25 @@ export function resolveTwoDigitYear(digits: string): number {
   return value <= DATE_FIELD_YEAR_PIVOT ? 2000 + value : 1900 + value
 }
 
-/** 某段该显示的文字。正在敲就把原始数字串原样显示（补零会让刚敲的 "2" 变成 "0002"）。 */
+/**
+ * 某段该显示的文字。正在敲就把原始数字串原样显示（补零会让刚敲的 "2" 变成 "0002"）。
+ *
+ * 季度带上 Q（占位串 `Qq` 也是两个字符，宽度对得上）；上下午出的是这个语言里的写法；
+ * 周只出数字，「周」字与「年 / 月 / 日」一样由作者写在段位旁边。
+ */
 export function dateSegmentText(
   type: DateSegmentType,
   value: number | undefined,
-  options: { typing?: string | null, placeholder: string },
+  options: { typing?: string | null, placeholder: string, locale?: string },
 ): string {
   if (options.typing != null)
-    return options.typing
+    return type === 'quarter' ? `Q${options.typing}` : options.typing
   if (value == null)
     return options.placeholder
+  if (type === 'quarter')
+    return `Q${value}`
+  if (type === 'dayPeriod')
+    return dayPeriodLabel(value >= 1 ? 'pm' : 'am', options.locale)
   return pad(value, SEGMENT_DIGITS[type])
 }
 
@@ -404,8 +496,32 @@ export function todaySegments(timeZone: string): DateSegments {
   return { year: now.year, month: now.month, day: now.day, hour: 0, minute: 0, second: 0 }
 }
 
+/** 段集 prop 的指纹：归一后的段名串。没给（或写成空）时是空串，两者本就同义。 */
+function setKeyOf(set: DateSegmentSet | undefined): string {
+  return hasSegmentSet(set) ? normalizeSegmentSet(set!).join(',') : ''
+}
+
 function granularityOf(params: Params<DateFieldSchema>): DateGranularity {
   return params.prop('granularity') ?? DATE_FIELD_GRANULARITY
+}
+
+function localeOf(params: Params<DateFieldSchema>): string {
+  return params.prop('locale') ?? DATE_FIELD_LOCALE
+}
+
+/** 这份控件此刻的段位口径。值往返、区间与参照日都从它分岔。 */
+function optionsOf(params: Params<DateFieldSchema>): DateSegmentOptions {
+  return {
+    set: params.prop('segments'),
+    locale: localeOf(params),
+    granularity: granularityOf(params),
+  }
+}
+
+/** 此刻在用的那几段，文档序。 */
+function setOf(params: Params<DateFieldSchema>): DateSegmentType[] {
+  const options = optionsOf(params)
+  return resolveSegmentSet(options.set, options.locale, options.granularity)
 }
 
 function boundsOf(params: Params<DateFieldSchema>): { min: DateSegments | null, max: DateSegments | null } {
@@ -413,7 +529,11 @@ function boundsOf(params: Params<DateFieldSchema>): { min: DateSegments | null, 
 }
 
 function rangeOf(params: Params<DateFieldSchema>, type: DateSegmentType, segments: DateSegments): DateSegmentRange {
-  return dateSegmentRange(type, segments, boundsOf(params))
+  return dateSegmentRange(type, segments, {
+    ...boundsOf(params),
+    set: setOf(params),
+    locale: localeOf(params),
+  })
 }
 
 /**
@@ -426,15 +546,15 @@ function commitSegments(params: Params<DateFieldSchema>, next: DateSegments): vo
   const { context } = params
   if (sameSegments(next, context.get('segments')))
     return
-  const granularity = granularityOf(params)
-  context.set('segments', constrainSegments(next))
-  const iso = segmentsToIso(context.get('segments'), granularity) ?? ''
+  const options = optionsOf(params)
+  context.set('segments', constrainBlocks(constrainSegments(next), setOf(params), localeOf(params)))
+  const iso = segmentsToValue(context.get('segments'), options) ?? ''
   if (iso !== context.get('value'))
     context.set('value', iso)
   const settled = context.get('value')
   if (iso === settled)
     return
-  context.set('segments', parseIsoSegments(settled, granularity))
+  context.set('segments', isoToSegments(settled, options))
   context.set('typing', null)
 }
 
@@ -465,9 +585,9 @@ export const dateFieldMachine = createMachine({
     })),
     // 段位不受控：它允许不完整，而受控的 value 只表达得了完整的日期
     segments: cell<DateSegments>(() => ({
-      defaultValue: parseIsoSegments(
+      defaultValue: isoToSegments(
         prop('value') === undefined ? prop('defaultValue') : prop('value'),
-        prop('granularity') ?? DATE_FIELD_GRANULARITY,
+        { set: prop('segments'), locale: prop('locale'), granularity: prop('granularity') },
       ),
       isEqual: sameSegments,
     })),
@@ -475,9 +595,12 @@ export const dateFieldMachine = createMachine({
     focusedSegment: cell<DateSegmentType | null>(() => ({ defaultValue: null })),
   }),
   initialState: () => 'idle',
-  watch: ({ track, context, action }) => {
+  watch: ({ track, context, prop, action }) => {
     // 这条 watch 兜的是宿主侧的写入；自己写进去的那一次段位算出的串与 value 相等，同步自行让路
     track([context.dep('value')], () => action(['syncSegmentsFromValue']))
+    // 段集换了（date-picker 按视图换段集）也要重派生：值没动，但要哪几块变了。
+    // 指纹取归一后的段名串，作者每帧新建一个同内容的数组不该白惊动一次
+    track([() => setKeyOf(prop('segments'))], () => action(['syncSegmentsFromSet']))
   },
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
@@ -486,6 +609,7 @@ export const dateFieldMachine = createMachine({
     'SEGMENT.STEP': { guard: 'canEdit', actions: ['stepSegment'] },
     'SEGMENT.TYPE': { guard: 'canEdit', actions: ['typeSegment'] },
     'SEGMENT.CLEAR': { guard: 'canEdit', actions: ['clearSegment'] },
+    'SEGMENT.PERIOD': { guard: 'canEdit', actions: ['setDayPeriod'] },
     // 换段先给上一段收尾，两位年份补全挂在这一步
     'SEGMENT.FOCUS': { actions: ['finalizeTyping', 'setFocusedSegment'] },
     'SEGMENT.BLUR': { actions: ['finalizeTyping', 'clearFocusedSegment'] },
@@ -512,10 +636,26 @@ export const dateFieldMachine = createMachine({
       syncSegmentsFromValue: (params) => {
         const { context } = params
         const value = context.get('value')
-        const granularity = granularityOf(params)
-        if ((segmentsToIso(context.get('segments'), granularity) ?? '') === value)
+        const options = optionsOf(params)
+        if ((segmentsToValue(context.get('segments'), options) ?? '') === value)
           return
-        context.set('segments', parseIsoSegments(value, granularity))
+        context.set('segments', isoToSegments(value, options))
+        context.set('typing', null)
+      },
+
+      /**
+       * 段集换了就重新派生段位。
+       *
+       * 不能沿用「算出来的串一样就不动」那道判据：串可能恰好没变而块的口径变了
+       * （加上上下午之后小时收的是 12 时制的那个数）。已有完整的值就照它重算；
+       * 还没凑出值时段位是填了一半的草稿，只摘掉新段集不要的那几块，不整份抹掉。
+       */
+      syncSegmentsFromSet: (params) => {
+        const { context } = params
+        const value = context.get('value')
+        context.set('segments', value === ''
+          ? pickBlocks(context.get('segments'), setOf(params))
+          : isoToSegments(value, optionsOf(params)))
         context.set('typing', null)
       },
       setValue: (params) => {
@@ -523,7 +663,7 @@ export const dateFieldMachine = createMachine({
         if (e.type !== 'VALUE.SET')
           return
         params.context.set('typing', null)
-        commitSegments(params, parseIsoSegments(e.value, granularityOf(params)))
+        commitSegments(params, isoToSegments(e.value, optionsOf(params)))
       },
       clearValue: (params) => {
         params.context.set('typing', null)
@@ -539,7 +679,12 @@ export const dateFieldMachine = createMachine({
         const segments = context.get('segments')
         const next = stepSegment(segments, e.segment, e.delta, {
           range: rangeOf(params, e.segment, segments),
-          reference: todaySegments(params.prop('timeZone') ?? getLocalTimeZone()),
+          // 参照日要先换到块空间：段集要季度/周时，「今天的对应位」是今天落在第几季、第几周
+          reference: blocksReference(
+            todaySegments(params.prop('timeZone') ?? getLocalTimeZone()),
+            setOf(params),
+            localeOf(params),
+          ),
         })
         commitSegments(params, { ...segments, [e.segment]: next })
       },
@@ -573,10 +718,27 @@ export const dateFieldMachine = createMachine({
         if (e.type !== 'SEGMENT.CLEAR')
           return
         params.context.set('typing', null)
+        // 上下午没有独立的量，清它清不出「既不是上午也不是下午」这种状态，
+        // 清了只会让段位显示占位而值仍是上午。缺席即上午，清它是空操作
+        if (isMetaSegment(e.segment))
+          return
         const segments = params.context.get('segments')
         if (segments[e.segment] == null)
           return
         commitSegments(params, { ...segments, [e.segment]: undefined })
+      },
+
+      /** 直接指定上午/下午。段集里没有这一块时无处落，直接放过。 */
+      setDayPeriod: (params) => {
+        const e = params.event.current()
+        if (e.type !== 'SEGMENT.PERIOD')
+          return
+        const { context } = params
+        context.set('typing', null)
+        if (!setOf(params).includes('dayPeriod'))
+          return
+        const segments = context.get('segments')
+        commitSegments(params, { ...segments, dayPeriod: e.period === 'pm' ? 1 : 0 })
       },
       finalizeTyping: params => finalize(params),
       setFocusedSegment: ({ context, event }) => {

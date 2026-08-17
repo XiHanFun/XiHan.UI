@@ -8022,6 +8022,15 @@
             },
             {
               "kind": "field",
+              "name": "segments",
+              "privacy": "public",
+              "type": {
+                "text": "DateSegmentSet | undefined"
+              },
+              "attribute": "segments"
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "privacy": "public",
               "type": {
@@ -8207,6 +8216,14 @@
               "description": "精度，决定一共几段，默认 day",
               "name": "granularity",
               "fieldName": "granularity"
+            },
+            {
+              "type": {
+                "text": "DateSegmentSet | undefined"
+              },
+              "description": "段集，逗号分隔的段名（`year,quarter`）；给了它 granularity 让路。 可选的九块：year / quarter / month / week / day / hour / minute / second / dayPeriod。 季度与月、周与日两两互斥，都写时留细的那个",
+              "name": "segments",
+              "fieldName": "segments"
             },
             {
               "type": {
