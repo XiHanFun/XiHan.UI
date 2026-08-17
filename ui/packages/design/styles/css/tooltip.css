@@ -12,6 +12,18 @@
       scale: 1;
     }
   }
+
+  @keyframes xh-pop-out {
+    from {
+      opacity: 1;
+      scale: 1;
+    }
+
+    to {
+      opacity: 0;
+      scale: var(--xh-motion-scale-enter);
+    }
+  }
 }
 
 @layer xihan.components {
@@ -61,6 +73,9 @@
 
     /* 与 positioner 相反：浮层本体要能接指针，指针停在提示上就不该收起
        （长文案需要停留细看）。positioner 仍是 none，空白区域照样点得穿。 */
+    /* 显式声明 display 是为了盖掉 UA 的 [hidden]{display:none}：收起那一帧 content 仍带 hidden，
+       盒子得先在,退场动画才播得出来。真正的收起由宿主在退场结束后落成内联 display */
+    display: block;
     pointer-events: auto;
     max-inline-size: var(--xh-tooltip-max-w, var(--xh-overlay-max-w));
     padding-block: var(--xh-tooltip-py, var(--xh-_tooltip-py));
@@ -76,6 +91,12 @@
 
   [data-scope='tooltip'][data-part='content'][data-state='open'] {
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
+     免得动画结束到真收起之间闪一下原样 */
+  [data-scope='tooltip'][data-part='content'][data-state='closed'] {
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* —— 尺寸 —— */

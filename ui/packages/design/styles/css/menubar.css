@@ -145,9 +145,9 @@
 
   /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位。
      连接层给 content 发 hidden，这一条漏了整张菜单就永远收不起来 */
-  [data-scope='menubar'][data-part='content'][hidden] {
-    display: none;
-  }
+  /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
+     收起态连接层会给 content 打 hidden，而上面那条 display 正是要盖掉 UA 的
+     [hidden]{display:none}——退场动画得先能播。真正的收起由宿主在退场结束后落成内联 display。 */
 
   /* 容器只是"没有条目锚点时"的 Tab 兜底落点，落焦不画环：高亮永远长在条目上 */
   [data-scope='menubar'][data-part='content']:focus-visible {
@@ -158,6 +158,11 @@
      一张关一张开，动画各跑各的 */
   [data-scope='menubar'][data-part='content'][data-state='open'] {
     animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来 */
+  [data-scope='menubar'][data-part='content'][data-state='closed'] {
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   [data-scope='menubar'][data-part='group'] {
@@ -275,6 +280,18 @@
     to {
       opacity: 1;
       scale: 1;
+    }
+  }
+
+  @keyframes xh-pop-out {
+    from {
+      opacity: 1;
+      scale: 1;
+    }
+
+    to {
+      opacity: 0;
+      scale: var(--xh-motion-scale-enter);
     }
   }
 }

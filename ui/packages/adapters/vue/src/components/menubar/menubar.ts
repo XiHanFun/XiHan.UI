@@ -3,7 +3,9 @@ import type { Direction, Orientation, Placement, Size, Tone } from '@xihan-ui/ke
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { MenubarPartRegistry } from './use-menubar'
+import { createRuntimeConfig } from '@xihan-ui/kernel'
 import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import {
   provideMenubar,
   provideMenubarGroup,
@@ -137,9 +139,23 @@ export const XhMenubarContent = defineComponent({
       throw new Error('[xh] XhMenubarContent 必须写在 XhMenubarPositioner 内，或自带 value')
     const menu = computed<MenubarContentProps>(() => ({ value: props.value ?? inherited!.menu.value.value }))
     const setEl = useMenubarPart(ctx.registerContent, () => menu.value.value)
+    // 一个菜单一份退场闸门：它们各开各的、动画各跑各的，一份管不过来。
+    // 开合判据直接取 connect 这一帧的产出，不另起一套——两边各判一次迟早会说岔
+    const contentRef = ref<HTMLElement | null>(null)
+    const visible = useOverlayExit({
+      config: typeof document === 'undefined' ? null : createRuntimeConfig(),
+      isOpen: () => (ctx.api.value.getContentProps(menu.value) as Record<string, unknown>).hidden !== true,
+      contentRef,
+    })
     return () => h('div', {
       ...ctx.api.value.getContentProps(menu.value) as Record<string, unknown>,
-      ref: (el: unknown) => setEl(el as HTMLElement | null),
+      // 收起跟着闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场就一帧都
+      // 播不出来），所以真正的收起落成内联 display
+      style: visible.value ? undefined : { display: 'none' },
+      ref: (el: unknown) => {
+        contentRef.value = el as HTMLElement | null
+        setEl(el as HTMLElement | null)
+      },
     }, slots.default?.())
   },
 })

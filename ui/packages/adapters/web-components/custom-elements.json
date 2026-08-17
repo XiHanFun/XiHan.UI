@@ -18546,6 +18546,24 @@
           "members": [
             {
               "kind": "field",
+              "name": "exits",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new Map<HTMLElement, OverlayExit>()",
+              "description": "逐个 content 一份退场闸门：一个菜单一份，它们各开各的。"
+            },
+            {
+              "kind": "field",
+              "name": "exitConfig",
+              "type": {
+                "text": "ReturnType<typeof createRuntimeConfig> | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "闸门只用到 reducedMotion，本元素别处不需要 config，建一份共用即可。"
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -19135,6 +19153,24 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "exits",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new Map<HTMLElement, OverlayExit>()",
+              "description": "逐个 content 一份退场闸门：一个菜单一份，它们各开各的。"
+            },
+            {
+              "kind": "field",
+              "name": "exitConfig",
+              "type": {
+                "text": "ReturnType<typeof createRuntimeConfig> | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "闸门只用到 reducedMotion，本元素别处不需要 config，建一份共用即可。"
+            },
             {
               "kind": "field",
               "name": "partContract",
@@ -33246,6 +33282,16 @@
               },
               "static": true,
               "default": "{ anatomy: tooltipAnatomy, meta: tooltipMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
             },
             {
               "kind": "field",

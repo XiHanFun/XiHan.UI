@@ -1,11 +1,13 @@
 import type { NavigationMenuNode, NavigationMenuSchema, NavigationMenuTranslations, NavigationMenuValueChangeDetails } from '@xihan-ui/headless'
 import type { Direction, IdGenerator, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
+import type { OverlayExit } from '../overlay-exit'
 import { isItemDisabled } from '@xihan-ui/behavior'
 import { connectNavigationMenu, navigationMenuAnatomy, navigationMenuMachine, navigationMenuMeta } from '@xihan-ui/headless'
-import { createCounterIdGenerator, createScope } from '@xihan-ui/kernel'
+import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -71,6 +73,11 @@ function authorDisabled(el: HTMLElement): boolean {
  * @csspart viewport - 可选的共享面板外壳，放在 root 里；都收起时 hidden
  */
 export class XhNavigationMenuElement extends XhElement {
+  /** 逐个 content 一份退场闸门：一个菜单一份，它们各开各的。 */
+  private readonly exits = new Map<HTMLElement, OverlayExit>()
+  /** 闸门只用到 reducedMotion，本元素别处不需要 config，建一份共用即可。 */
+  private exitConfig: ReturnType<typeof createRuntimeConfig> | null = null
+
   static override partContract = { anatomy: navigationMenuAnatomy, meta: navigationMenuMeta }
 
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
@@ -175,7 +182,21 @@ export class XhNavigationMenuElement extends XhElement {
     for (const el of this.getParts('content')) {
       const props = api.getContentProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>
       this.spreader.spread(el, props)
-      this.setPartHidden(el, props.hidden === true)
+      // 退场动画播完之前先别收。一个菜单一份闸门：它们各开各的、动画各跑各的，
+      // 一份闸门管不过来。必须排在 spread 之后——data-state 得先落进 DOM，探测器才读得到
+      const open = props.hidden !== true
+      let gate = this.exits.get(el)
+      if (!gate) {
+        gate = createOverlayExit({
+          config: this.exitConfig ??= createRuntimeConfig(),
+          open,
+          onExitComplete: () => this.requestUpdate(),
+        })
+        this.exits.set(el, gate)
+      }
+      gate.track(el)
+      gate.update(open)
+      this.setPartHidden(el, !gate.visible)
     }
 
     for (const el of this.getParts('link'))
@@ -194,5 +215,15 @@ export class XhNavigationMenuElement extends XhElement {
       this.spreader.spread(viewport, props)
       this.setPartHidden(viewport, props.hidden === true)
     }
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback()
+    // 退场没播完就离场：立刻结清并收起
+    for (const [el, gate] of this.exits) {
+      gate.dispose()
+      this.setPartHidden(el, true)
+    }
+    this.exits.clear()
   }
 }
