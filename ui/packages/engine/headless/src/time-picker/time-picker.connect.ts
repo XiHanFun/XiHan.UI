@@ -284,6 +284,18 @@ export function connectTimePicker<T extends PropTypes>(
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(flagged),
       'data-empty': dataAttr(empty),
+      // 点输入行就展开：时间这种东西多数人是来挑的，不该逼着先去点那个小箭头。
+      // 触发钮仍是可选部件，留着给键盘与读屏用户一个明写的入口（它才带 aria-haspopup / aria-expanded）
+      'onClick': (event: MouseEvent) => {
+        if (disabled || open)
+          return
+        // 触发钮与清空钮各有自己的处理器，落在它们身上的这一下不归这里
+        const el = event.target as Element | null
+        if (el?.closest(parts.trigger.selector) || el?.closest(parts['clear-trigger'].selector))
+          return
+        // src=control：这一下的用意是编辑段位，焦点得留在段上，不搬进浮层
+        send({ type: 'OPEN', src: 'control' })
+      },
     }),
 
     getInputProps: ({ segment }) => {
@@ -324,7 +336,16 @@ export function connectTimePicker<T extends PropTypes>(
             send({ type: 'SEGMENT.BLUR' })
         },
         'onKeyDown': (event: KeyboardEvent) => {
-          if (disabled || event.ctrlKey || event.metaKey || event.altKey)
+          if (disabled)
+            return
+          // 触发钮是可选部件，键盘那条入口不能只挂在它身上：Alt+ArrowDown 是下拉类控件
+          // 通用的展开键，段上原本就不认它（下面那条 altKey 早退会直接丢掉）
+          if (event.altKey && event.key === 'ArrowDown' && !open) {
+            event.preventDefault()
+            send({ type: 'OPEN', focus: 'selected', src: 'trigger' })
+            return
+          }
+          if (event.ctrlKey || event.metaKey || event.altKey)
             return
           const el = event.currentTarget as HTMLElement
           const key = event.key
@@ -404,7 +425,7 @@ export function connectTimePicker<T extends PropTypes>(
           return
         // 键盘激活的这一路要有可见落点；指针点开一路不补，展开那一刻不能有格子看着像被选中
         const byKey = keyActivated.delete(event.currentTarget as Element)
-        send({ type: 'TOGGLE', focus: byKey ? 'first' : undefined })
+        send({ type: 'TOGGLE', focus: byKey ? 'first' : undefined, src: 'trigger' })
       },
       // 指针按下即撤掉键盘标记：这一次激活是指针的，之前那次按键没等来激活也就此作废
       'onPointerDown': (event: PointerEvent) => {
@@ -417,7 +438,7 @@ export function connectTimePicker<T extends PropTypes>(
         const intent = navIntentFromKey(event, { axis: 'vertical', home: false })
         if (intent) {
           event.preventDefault()
-          send({ type: 'OPEN', focus: intent === 'prev' ? 'last' : 'first' })
+          send({ type: 'OPEN', focus: intent === 'prev' ? 'last' : 'first', src: 'trigger' })
           return
         }
         // Enter / Space 不在这里接，按钮默认激活会再合成一次 click，两处都收会一开一关；

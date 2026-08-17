@@ -454,6 +454,44 @@ describe('开合', () => {
     expect(h.api().focusedItem).toBe('09')
   })
 
+  it('点段位就展开，且焦点留在段上——那一下的用意是打字，不是挑时间', async () => {
+    const h = open({ defaultValue: '09:30' })
+    const segment = h.segment('hour')
+    segment.focus()
+    segment.click()
+    await flushFrames(3)
+    expect(h.state()).toBe('open')
+    // 关键断言：焦点没被搬进浮层
+    expect(document.activeElement).toBe(segment)
+    expect(document.activeElement).not.toBe(h.option('hour', '09'))
+  })
+
+  it('已经展开时再点输入行不会把它关掉：正在编辑段位', async () => {
+    const h = open({ defaultValue: '09:30' })
+    h.trigger.click()
+    await flushFrames(3)
+    h.segment('hour').click()
+    await flushFrames(1)
+    expect(h.state()).toBe('open')
+  })
+
+  it('段上 Alt+ArrowDown 展开——触发钮是可选部件，键盘不能只靠它', async () => {
+    const h = open({ defaultValue: '09:30' })
+    const segment = h.segment('hour')
+    segment.focus()
+    pressKey(segment, 'ArrowDown', { altKey: true })
+    await flushFrames(3)
+    expect(h.state()).toBe('open')
+    expect(document.activeElement).toBe(h.option('hour', '09'))
+  })
+
+  it('禁用时点输入行推不开', async () => {
+    const h = open({ disabled: true })
+    h.segment('hour').click()
+    await flushFrames(1)
+    expect(h.state()).toBe('closed')
+  })
+
   it('指针点开且无锚点时，焦点域把焦点交给时列容器而不是首格', async () => {
     const h = open()
     h.trigger.click()

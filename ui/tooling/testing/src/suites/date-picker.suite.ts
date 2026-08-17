@@ -207,6 +207,31 @@ export const datePickerSuite: ConformanceSuite = {
   fixture: FIXTURE,
   cases: [
     {
+      name: '段上 Alt+ArrowDown 展开：触发钮是可选部件，键盘那条入口不能只挂在它身上',
+      spec: { apg: APG },
+      covers: ['date-picker.kbd.segment-open'],
+      props: BASE_PROPS,
+      steps: [
+        {
+          kind: 'raw',
+          // 段位属于分段输入那份解剖（data-scope=date-field），不在本组件的 part 表里，
+          // 寻址不到；而 key 步骤只往 activeElement 上派，所以这一步只能直接取真节点
+          why: '要把键派在真正可聚焦的段位上，而段位不是本组件的 part',
+          run: async (ctx) => {
+            const segment = ctx.doc.querySelector<HTMLElement>('[data-scope="date-field"][data-part="segment"]')
+            if (!segment)
+              throw new Error('找不到段位节点')
+            segment.focus()
+            segment.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', altKey: true, bubbles: true, cancelable: true }))
+            await ctx.flush()
+            const content = ctx.doc.querySelector<HTMLElement>('[data-scope="date-picker"][data-part="content"]')
+            if (content?.hasAttribute('hidden'))
+              throw new Error('段上按 Alt+ArrowDown 没能把浮层展开')
+          },
+        },
+      ],
+    },
+    {
       name: '三轴接线到 root 的 data-*：只落一处，输入行与浮层都从它继承',
       spec: { apg: APG },
       props: { variant: 'subtle', tone: 'success', size: 'lg' },

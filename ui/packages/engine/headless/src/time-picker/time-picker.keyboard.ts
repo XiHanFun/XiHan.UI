@@ -28,5 +28,6 @@ export const timePickerKeyboard: KeyboardTable = {
     { id: 'time-picker.kbd.segment-digit', keys: ['0-9'], when: 'focus in 数字段, not disabled/readOnly', does: '把数字并进本段；本段再吃不下第二位时自动跳到下一段' },
     { id: 'time-picker.kbd.segment-clear', keys: ['Backspace', 'Delete'], when: 'focus in 某一段, not disabled/readOnly', does: '清掉本段；小时被清时上下午段仍保留原来的上午/下午' },
     { id: 'time-picker.kbd.segment-period', keys: ['a', 'p'], when: 'focus in 上下午段, 12 小时制, not disabled/readOnly', does: 'a 取上午、p 取下午（不区分大小写）' },
+    { id: 'time-picker.kbd.segment-open', keys: ['Alt+ArrowDown'], when: 'focus in 某一段, closed, not disabled', does: '展开浮层并把焦点送进去；触发钮是可选部件，键盘那条入口不能只挂在它身上' },
   ],
 }
