@@ -11,7 +11,6 @@ import {
   XhTimePickerLabel,
   XhTimePickerPositioner,
   XhTimePickerRoot,
-  XhTimePickerTrigger,
 } from "@xihan-ui/vue";
 
 const variants: ControlVariant[] = ["outline", "subtle", "ghost"];
@@ -39,7 +38,6 @@ const sizes: Size[] = ["sm", "md", "lg"];
           <XhTimePickerInput segment="hour" />
           <span>:</span>
           <XhTimePickerInput segment="minute" />
-          <XhTimePickerTrigger>▾</XhTimePickerTrigger>
           <XhTimePickerClearTrigger>✕</XhTimePickerClearTrigger>
         </XhTimePickerControl>
         <XhTimePickerPositioner>

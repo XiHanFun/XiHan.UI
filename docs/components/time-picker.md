@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-段位与列写的是同一个值：段上敲、列里挑，另一边当场跟着改口
+点输入行任意处即展开，不必再去点小箭头；段位与列写的是同一个值，段上敲、列里挑，另一边当场跟着改口
 
 <XhDemo src="time-picker/01-basic" />
 
@@ -57,6 +57,12 @@ min / max 直接把界外的格从列里裁掉；分列还会随已选的时再�
 variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几何档；三者只落在 root，浮层里的格子一并跟着换
 
 <XhDemo src="time-picker/09-axes" />
+
+### 可选的触发钮
+
+点输入行本来就展开，这个按钮不是必需的；要它是因为它才带 aria-haspopup / aria-expanded
+
+<XhDemo src="time-picker/10-trigger" />
 
 ## 产物
 

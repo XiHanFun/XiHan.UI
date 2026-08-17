@@ -106,7 +106,6 @@ import {
   XhDatePickerPrevTrigger,
   XhDatePickerRoot,
   XhDatePickerSegment,
-  XhDatePickerTrigger,
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
   XhDialogCloseTrigger,
@@ -287,7 +286,6 @@ import {
   XhTimePickerLabel,
   XhTimePickerPositioner,
   XhTimePickerRoot,
-  XhTimePickerTrigger,
   XhToastActionTrigger,
   XhToastCloseTrigger,
   XhToastDescription,
@@ -2671,7 +2669,6 @@ const codeBlockPartial = `const stream = await client.chat({
               <XhDatePickerSegment :index="2" />
             </XhDatePickerInput>
             <XhDatePickerClearTrigger>✕</XhDatePickerClearTrigger>
-            <XhDatePickerTrigger>▾</XhDatePickerTrigger>
           </XhDatePickerControl>
           <!-- 表单出口：随表单提交的是 ISO 串，给了 name 才带 name -->
           <XhDatePickerHiddenInput />
@@ -2730,7 +2727,6 @@ const codeBlockPartial = `const stream = await client.chat({
               <XhDatePickerSegment :index="2" />
             </XhDatePickerInput>
             <XhDatePickerClearTrigger>✕</XhDatePickerClearTrigger>
-            <XhDatePickerTrigger>▾</XhDatePickerTrigger>
           </XhDatePickerControl>
           <XhDatePickerPositioner>
             <XhDatePickerContent>
@@ -2785,7 +2781,6 @@ const codeBlockPartial = `const stream = await client.chat({
             <XhTimePickerInput segment="hour" />
             <span>:</span>
             <XhTimePickerInput segment="minute" />
-            <XhTimePickerTrigger>▾</XhTimePickerTrigger>
             <XhTimePickerClearTrigger>✕</XhTimePickerClearTrigger>
           </XhTimePickerControl>
           <!-- 表单出口：随表单提交的是完整 ISO 串 -->
@@ -2820,7 +2815,6 @@ const codeBlockPartial = `const stream = await client.chat({
             <span>:</span>
             <XhTimePickerInput segment="minute" />
             <XhTimePickerInput segment="dayPeriod" />
-            <XhTimePickerTrigger>▾</XhTimePickerTrigger>
             <XhTimePickerClearTrigger>✕</XhTimePickerClearTrigger>
           </XhTimePickerControl>
           <XhTimePickerPositioner>

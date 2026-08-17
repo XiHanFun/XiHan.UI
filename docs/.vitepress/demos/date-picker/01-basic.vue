@@ -1,4 +1,4 @@
-<!-- 基础用法 | 段位与日历写的是同一个值，改哪边另一边当场跟着改口 -->
+<!-- 基础用法 | 点输入行任意处即展开，不必再去点小箭头；段位与日历写的是同一个值，改哪边另一边当场跟着改口 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
@@ -21,7 +21,6 @@ import {
   XhDatePickerPrevTrigger,
   XhDatePickerRoot,
   XhDatePickerSegment,
-  XhDatePickerTrigger,
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
@@ -47,7 +46,6 @@ const value = ref<string[]>([]);
         <XhDatePickerSegment :index="2" />
       </XhDatePickerInput>
       <XhDatePickerClearTrigger>✕</XhDatePickerClearTrigger>
-      <XhDatePickerTrigger>▾</XhDatePickerTrigger>
     </XhDatePickerControl>
     <!-- 表单出口：随表单提交的是 ISO 串 -->
     <XhDatePickerHiddenInput />

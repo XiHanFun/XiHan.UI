@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-段位与日历写的是同一个值，改哪边另一边当场跟着改口
+点输入行任意处即展开，不必再去点小箭头；段位与日历写的是同一个值，改哪边另一边当场跟着改口
 
 <XhDemo src="date-picker/01-basic" />
 
@@ -57,6 +57,12 @@ show-time 让值升格为一体化 datetime：日历右侧多出时/分列（XhD
 variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几何档；三者只落在 root，浮层里的日历一并跟着换
 
 <XhDemo src="date-picker/09-axes" />
+
+### 可选的触发钮
+
+点输入行本来就展开，这个按钮不是必需的；要它是因为它才带 aria-haspopup / aria-expanded
+
+<XhDemo src="date-picker/10-trigger" />
 
 ## 产物
 

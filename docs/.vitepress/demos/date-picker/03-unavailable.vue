@@ -20,7 +20,6 @@ import {
   XhDatePickerPrevTrigger,
   XhDatePickerRoot,
   XhDatePickerSegment,
-  XhDatePickerTrigger,
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
@@ -51,7 +50,6 @@ function isWeekend(iso: string) {
         <XhDatePickerSegment :index="2" />
       </XhDatePickerInput>
       <XhDatePickerClearTrigger>✕</XhDatePickerClearTrigger>
-      <XhDatePickerTrigger>▾</XhDatePickerTrigger>
     </XhDatePickerControl>
     <XhDatePickerPositioner>
       <XhDatePickerContent>
