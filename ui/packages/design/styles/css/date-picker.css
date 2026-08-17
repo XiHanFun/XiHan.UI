@@ -267,6 +267,21 @@
   /* 内嵌日历的挂载点同时充当日历的根节点：日历那份样式的 root 规则落在
      [data-scope='calendar'][data-part='root'] 上，而这里没有那个节点，
      所以网格外层该有的排布得在这儿补齐（网格内部的皮仍归 calendar 那一份） */
+  /* 真的摆了两张日历才横过来。写成 :has 而不是无条件 flex 行:
+     showTime 那套结构里 content 直属子节点是作者自己的包裹块与确认行,
+     无条件横排会把它们并到日历旁边去 */
+  [data-scope='date-picker'][data-part='content']:has(> [data-part='calendar'] + [data-part='calendar']) {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  /* 第二个起的面板画一道左分隔线：两张网格挨着排时要有条界，
+     否则 8 月末与 9 月初那两列看着像同一张表 */
+  [data-scope='date-picker'][data-part='calendar'] + [data-scope='date-picker'][data-part='calendar'] {
+    padding-inline-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-panel-divider, var(--xh-border-subtle));
+  }
+
   [data-scope='date-picker'][data-part='calendar'] {
     display: flex;
     flex-direction: column;

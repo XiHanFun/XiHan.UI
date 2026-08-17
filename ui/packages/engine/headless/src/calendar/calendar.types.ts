@@ -39,11 +39,37 @@ export interface CalendarFocusChangeDetails {
 export interface CalendarCellProps {
   /** ISO 日期串。 */
   value: string
+  /**
+   * 这一格属于第几个面板，默认 0。多面板时必须给：
+   * 同一天会同时出现在两个面板里（8 月末那几天也铺在 9 月的首行），
+   * 「是不是本月」只有连着面板一起看才判得出来。
+   */
+  index?: number
 }
 
 /** 表头列自报身份：列序号 0-6，行首为 0。 */
 export interface CalendarWeekDayProps {
   value: number
+}
+
+/** 面板自报自己是第几个，默认 0。 */
+export interface CalendarPanelProps {
+  index?: number
+}
+
+/** 并排展示的一个面板。单面板时就是 panels[0]。 */
+export interface CalendarPanel {
+  /** 第几个，0 起。 */
+  index: number
+  year: number
+  /** 1-12。 */
+  month: number
+  /** 月首日 ISO 串。 */
+  startValue: string
+  /** 这个面板的日期矩阵。 */
+  weeks: CalendarDay[][]
+  /** 这个面板的标题文案（如 2024年2月）。 */
+  headingLabel: string
 }
 
 export interface CalendarRefs {
@@ -86,6 +112,12 @@ export interface CalendarSchema extends MachineSchema {
     weekdayFormat?: CalendarWeekdayFormat
     /** 恒渲染六行，默认按当月实际周数。开着能让翻月时网格高度不跳。 */
     fixedWeeks?: boolean
+    /**
+     * 并排展示几个连续月，默认 1。区间选择给 2 才好挑——起止常跨月，
+     * 一个面板要来回翻页。翻页时整窗一起走一个月，不是各翻各的。
+     * 小于 1 的写法回落到 1。
+     */
+    visibleCount?: number
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: CalendarValueChangeDetails) => void
     /** 聚焦日变化（方向键、翻页、点了邻月的日子都会发）；受控时是唯一出口。 */
@@ -131,13 +163,15 @@ export interface CalendarApi<T extends PropTypes = PropTypes> {
   selectionMode: CalendarSelectionMode
   /** 生效的聚焦日（三路收口后的结果），恒非空。 */
   focusedValue: string
-  /** 展示月：年、月（1-12）、月首日 ISO。 */
+  /** 并排展示的面板，长度即 visibleCount。作者照它渲染几张网格。 */
+  panels: CalendarPanel[]
+  /** 首个面板的展示月：年、月（1-12）、月首日 ISO。多面板时是最左那个。 */
   visibleMonth: { year: number, month: number, startValue: string }
-  /** 日期矩阵，作者照它渲染 week-row / cell / cell-trigger。 */
+  /** 首个面板的日期矩阵。多面板请改用 panels。 */
   weeks: CalendarDay[][]
   /** 七列表头，作者照它渲染 week-day。 */
   weekDays: CalendarWeekDay[]
-  /** 展示月的标题文案（如 2024年2月），作者写进 heading 部件。 */
+  /** 首个面板的标题文案（如 2024年2月）。多面板请改用 panels。 */
   headingLabel: string
   disabled: boolean
   readOnly: boolean
@@ -157,8 +191,8 @@ export interface CalendarApi<T extends PropTypes = PropTypes> {
   getHeaderProps: () => T['element']
   getPrevTriggerProps: () => T['button']
   getNextTriggerProps: () => T['button']
-  getHeadingProps: () => T['element']
-  getGridProps: () => T['element']
+  getHeadingProps: (props?: CalendarPanelProps) => T['element']
+  getGridProps: (props?: CalendarPanelProps) => T['element']
   getGridHeadProps: () => T['element']
   getWeekDayProps: (props: CalendarWeekDayProps) => T['element']
   getGridBodyProps: () => T['element']

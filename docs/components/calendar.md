@@ -62,6 +62,7 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `readOnly` | `boolean` |  | 只读：翻月与移动焦点照常，只是选不动值。 |
 | `weekdayFormat` | `CalendarWeekdayFormat` |  | 表头缩写粒度，默认 short。 |
 | `fixedWeeks` | `boolean` |  | 恒渲染六行，默认按当月实际周数。开着能让翻月时网格高度不跳。 |
+| `visibleCount` | `number` |  | 并排展示几个连续月，默认 1。区间选择给 2 才好挑——起止常跨月， 一个面板要来回翻页。翻页时整窗一起走一个月，不是各翻各的。 小于 1 的写法回落到 1。 |
 | `onValueChange` | `(details: CalendarValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onFocusedValueChange` | `(details: CalendarFocusChangeDetails) => void` |  | 聚焦日变化（方向键、翻页、点了邻月的日子都会发）；受控时是唯一出口。 |
 
@@ -80,10 +81,11 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `value` | `string[]` | 选中集合，ISO 串；形状不随模式变。 |
 | `selectionMode` | `CalendarSelectionMode` |  |
 | `focusedValue` | `string` | 生效的聚焦日（三路收口后的结果），恒非空。 |
-| `visibleMonth` | `{ year: number, month: number, startValue: string }` | 展示月：年、月（1-12）、月首日 ISO。 |
-| `weeks` | `CalendarDay[][]` | 日期矩阵，作者照它渲染 week-row / cell / cell-trigger。 |
+| `panels` | `CalendarPanel[]` | 并排展示的面板，长度即 visibleCount。作者照它渲染几张网格。 |
+| `visibleMonth` | `{ year: number, month: number, startValue: string }` | 首个面板的展示月：年、月（1-12）、月首日 ISO。多面板时是最左那个。 |
+| `weeks` | `CalendarDay[][]` | 首个面板的日期矩阵。多面板请改用 panels。 |
 | `weekDays` | `CalendarWeekDay[]` | 七列表头，作者照它渲染 week-day。 |
-| `headingLabel` | `string` | 展示月的标题文案（如 2024年2月），作者写进 heading 部件。 |
+| `headingLabel` | `string` | 首个面板的标题文案（如 2024年2月）。多面板请改用 panels。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |
@@ -99,8 +101,8 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `getHeaderProps` | `() => T['element']` |  |
 | `getPrevTriggerProps` | `() => T['button']` |  |
 | `getNextTriggerProps` | `() => T['button']` |  |
-| `getHeadingProps` | `() => T['element']` |  |
-| `getGridProps` | `() => T['element']` |  |
+| `getHeadingProps` | `(props?: CalendarPanelProps) => T['element']` |  |
+| `getGridProps` | `(props?: CalendarPanelProps) => T['element']` |  |
 | `getGridHeadProps` | `() => T['element']` |  |
 | `getWeekDayProps` | `(props: CalendarWeekDayProps) => T['element']` |  |
 | `getGridBodyProps` | `() => T['element']` |  |

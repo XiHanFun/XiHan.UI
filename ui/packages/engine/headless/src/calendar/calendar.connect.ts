@@ -1,7 +1,7 @@
 import type { CalendarDate } from '@internationalized/date'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
-import type { CalendarApi, CalendarCellProps, CalendarSchema } from './calendar.types'
+import type { CalendarApi, CalendarCellProps, CalendarPanel, CalendarSchema } from './calendar.types'
 import { DateFormatter, endOfMonth, getLocalTimeZone, startOfMonth, today } from '@internationalized/date'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
@@ -55,16 +55,32 @@ export function connectCalendar<T extends PropTypes>(
   const focusedValue = anchor.toString()
   const todayValue = today(timeZone).toString()
 
-  const grid = buildMonthGrid(focusedValue, { locale, fixedWeeks: !!prop('fixedWeeks') })
+  const visibleStart = startOfMonth(anchor)
+  // 面板数只认 >= 1 的整数，写坏了回落到 1
+  const rawCount = Math.trunc(prop('visibleCount') ?? 1)
+  const visibleCount = Number.isFinite(rawCount) && rawCount >= 1 ? rawCount : 1
+  const headingFormatter = new DateFormatter(locale, { year: 'numeric', month: 'long', timeZone })
+  // 一个锚点铺出 N 个连续月：翻页只动锚点，整窗一起走
+  const panels: CalendarPanel[] = Array.from({ length: visibleCount }, (_, index) => {
+    const start = visibleStart.add({ months: index })
+    const g = buildMonthGrid(start.toString(), { locale, fixedWeeks: !!prop('fixedWeeks') })
+    return {
+      index,
+      year: g.year,
+      month: g.month,
+      startValue: g.monthStart,
+      weeks: g.weeks,
+      headingLabel: headingFormatter.format(start.toDate(timeZone)),
+    }
+  })
+  const grid = panels[0]!
   const weekDays = buildWeekDays({
-    reference: grid.monthStart,
+    reference: grid.startValue,
     locale,
     weekdayFormat: prop('weekdayFormat') ?? 'short',
     timeZone,
   })
-  const visibleStart = startOfMonth(anchor)
-  const headingLabel = new DateFormatter(locale, { year: 'numeric', month: 'long', timeZone })
-    .format(visibleStart.toDate(timeZone))
+  const headingLabel = grid.headingLabel
   const cellLabelFormatter = new DateFormatter(locale, {
     weekday: 'long',
     year: 'numeric',
@@ -103,6 +119,10 @@ export function connectCalendar<T extends PropTypes>(
     return !!isDateUnavailable?.(v)
   }
 
+  /** 这一格挂在哪个面板上。作者没声明就按首个面板算，单面板时与从前一致。 */
+  const panelOf = (item: { index?: number }): CalendarPanel =>
+    panels[Math.min(Math.max(Math.trunc(item.index ?? 0), 0), panels.length - 1)]!
+
   const cellState = (item: CalendarCellProps): CellState => {
     const date = parseCalendarDate(item.value)
     const inRange = !!(rangeEnds && date
@@ -112,7 +132,7 @@ export function connectCalendar<T extends PropTypes>(
       selected: isSelected(item.value),
       disabled: isUnavailable(item.value),
       // 邻月的日子照样可点可聚焦，标出来供皮肤区分
-      outsideMonth: !date || date.year !== grid.year || date.month !== grid.month,
+      outsideMonth: !date || date.year !== panelOf(item).year || date.month !== panelOf(item).month,
       isToday: item.value === todayValue,
       focused: item.value === focusedValue,
       inRange,
@@ -137,9 +157,16 @@ export function connectCalendar<T extends PropTypes>(
   // 上/下一月按不按得动只看边界：整月都落在 min 之前（或 max 之后）即不可用。
   // 用相邻月的月末/月首判，不拿聚焦日加减一个月（1 月 31 日退一月会被夹成 12 月 31 日）
   const prevMonthEnd = endOfMonth(visibleStart.subtract({ months: 1 }))
-  const nextMonthStart = startOfMonth(visibleStart.add({ months: 1 }))
+  // 往后翻新露出来的是窗口末尾再往后一个月；单面板时 visibleCount 为 1，与从前逐字一致
+  const nextMonthStart = startOfMonth(visibleStart.add({ months: visibleCount }))
   const canGoPrev = !calendarDisabled && (min == null || prevMonthEnd.compare(min) >= 0)
   const canGoNext = !calendarDisabled && (max == null || nextMonthStart.compare(max) <= 0)
+
+  /** 面板各自的标题 id。首个面板沿用原来那一份，旧标记不受影响。 */
+  const headingId = (index?: number): string => {
+    const i = panelOf({ index }).index
+    return i === 0 ? ids.heading : `${ids.heading}-${i}`
+  }
 
   const focusAt = (next: string): void => send({ type: 'FOCUS.SET', value: next })
   /**
@@ -162,7 +189,8 @@ export function connectCalendar<T extends PropTypes>(
     value,
     selectionMode: mode,
     focusedValue,
-    visibleMonth: { year: grid.year, month: grid.month, startValue: grid.monthStart },
+    panels,
+    visibleMonth: { year: grid.year, month: grid.month, startValue: grid.startValue },
     weeks: grid.weeks,
     weekDays,
     headingLabel,
@@ -207,16 +235,19 @@ export function connectCalendar<T extends PropTypes>(
     }),
 
     // 标题是网格的可及名字来源
-    getHeadingProps: () => normalize.element({
+    getHeadingProps: (panel = {}) => normalize.element({
       ...parts.heading.attrs,
-      id: ids.heading,
+      // 每个面板一份 id：两张网格各由自己那行标题命名，读屏才报得出这是哪个月那张
+      'id': headingId(panel.index),
+      'data-index': panelOf(panel).index,
     }),
 
     // 键盘全在 grid 上收口，格子只管声明自己
-    getGridProps: () => normalize.element({
+    getGridProps: (panel = {}) => normalize.element({
       ...parts.grid.attrs,
       'role': 'grid',
-      'aria-labelledby': ids.heading,
+      'aria-labelledby': headingId(panel.index),
+      'data-index': panelOf(panel).index,
       // 三条状态都显式给，不省略
       'aria-multiselectable': mode === 'single' ? 'false' : 'true',
       'aria-disabled': calendarDisabled ? 'true' : 'false',

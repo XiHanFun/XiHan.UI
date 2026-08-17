@@ -339,6 +339,79 @@ describe('parseCalendarDate 脏值兜底', () => {
   })
 })
 
+describe('多面板', () => {
+  it('缺省一个面板，panels[0] 与旧的 weeks / visibleMonth / headingLabel 同源', () => {
+    const h = mount({ defaultFocusedValue: '2024-02-15' })
+    const api = h.api()
+    expect(api.panels).toHaveLength(1)
+    expect(api.panels[0]!.index).toBe(0)
+    expect(api.panels[0]!.year).toBe(2024)
+    expect(api.panels[0]!.month).toBe(2)
+    expect(api.panels[0]!.weeks).toEqual(api.weeks)
+    expect(api.panels[0]!.headingLabel).toBe(api.headingLabel)
+    expect(api.visibleMonth).toEqual({ year: 2024, month: 2, startValue: '2024-02-01' })
+  })
+
+  it('visibleCount=2 铺出两个连续月，标题各是各的', () => {
+    const api = mount({ defaultFocusedValue: '2024-02-15', visibleCount: 2 }).api()
+    expect(api.panels.map(p => [p.year, p.month])).toEqual([[2024, 2], [2024, 3]])
+    expect(api.panels[0]!.headingLabel).not.toBe(api.panels[1]!.headingLabel)
+    // 旧字段仍指首个面板，老标记不受影响
+    expect(api.weeks).toEqual(api.panels[0]!.weeks)
+  })
+
+  it('跨年也连着排：12 月的下一个面板是次年 1 月', () => {
+    const api = mount({ defaultFocusedValue: '2024-12-10', visibleCount: 2 }).api()
+    expect(api.panels.map(p => [p.year, p.month])).toEqual([[2024, 12], [2025, 1]])
+  })
+
+  it('翻页整窗一起走一个月，不是各翻各的', () => {
+    const h = mount({ defaultFocusedValue: '2024-02-15', visibleCount: 2 })
+    h.api().goToNextMonth()
+    expect(h.api().panels.map(p => [p.year, p.month])).toEqual([[2024, 3], [2024, 4]])
+    h.api().goToPrevMonth()
+    h.api().goToPrevMonth()
+    expect(h.api().panels.map(p => [p.year, p.month])).toEqual([[2024, 1], [2024, 2]])
+  })
+
+  it('面板数写坏了回落到 1', () => {
+    for (const bad of [0, -3, Number.NaN]) {
+      const api = mount({ defaultFocusedValue: '2024-02-15', visibleCount: bad }).api()
+      expect(api.panels).toHaveLength(1)
+    }
+  })
+
+  it('同一天出现在两个面板里时，是不是本月按各自的面板判', () => {
+    // 2024-03-01 既在 2 月网格的末行，也在 3 月网格里
+    const api = mount({ defaultFocusedValue: '2024-02-15', visibleCount: 2 }).api()
+    const inFeb = api.getCellProps({ value: '2024-03-01', index: 0 }) as Record<string, unknown>
+    const inMar = api.getCellProps({ value: '2024-03-01', index: 1 }) as Record<string, unknown>
+    expect(inFeb['data-outside-month']).toBe('')
+    expect(inMar['data-outside-month']).toBeUndefined()
+  })
+
+  it('每个面板的网格各由自己那行标题命名', () => {
+    const api = mount({ defaultFocusedValue: '2024-02-15', visibleCount: 2 }).api()
+    const g0 = api.getGridProps({ index: 0 }) as Record<string, unknown>
+    const g1 = api.getGridProps({ index: 1 }) as Record<string, unknown>
+    const h0 = api.getHeadingProps({ index: 0 }) as Record<string, unknown>
+    const h1 = api.getHeadingProps({ index: 1 }) as Record<string, unknown>
+    expect(g0['aria-labelledby']).toBe(h0.id)
+    expect(g1['aria-labelledby']).toBe(h1.id)
+    expect(h0.id).not.toBe(h1.id)
+    // 不给下标即首个面板，旧调用一字不改
+    expect((api.getGridProps() as Record<string, unknown>)['aria-labelledby']).toBe(h0.id)
+  })
+
+  it('往后翻的边界按整窗算：窗口末尾之后没有可看的月份就按不动', () => {
+    // 两个面板显示 2 月与 3 月，上界卡在 3 月底：再往后新露出的是 4 月，已出界
+    const api = mount({ defaultFocusedValue: '2024-02-15', visibleCount: 2, max: '2024-03-31' }).api()
+    expect(api.canGoNext).toBe(false)
+    // 单面板同样的界还翻得动（3 月本身还没显出来）
+    expect(mount({ defaultFocusedValue: '2024-02-15', max: '2024-03-31' }).api().canGoNext).toBe(true)
+  })
+})
+
 describe('connectCalendar 属性输出', () => {
   it('grid 是 grid：多选/禁用/只读三态都显式给出，标题关联到 heading', () => {
     const h = mount({ defaultFocusedValue: '2024-02-15' })
