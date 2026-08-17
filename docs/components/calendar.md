@@ -33,7 +33,7 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-calendar>` |
-| Vue 组件 | `XhCalendarCell` `XhCalendarCellTrigger` `XhCalendarGrid` `XhCalendarGridBody` `XhCalendarGridHead` `XhCalendarHeader` `XhCalendarHeading` `XhCalendarNextTrigger` `XhCalendarPrevTrigger` `XhCalendarRoot` `XhCalendarWeekDay` `XhCalendarWeekRow` |
+| Vue 组件 | `XhCalendarCell` `XhCalendarCellTrigger` `XhCalendarGrid` `XhCalendarGridBody` `XhCalendarGridHead` `XhCalendarHeader` `XhCalendarHeading` `XhCalendarNextTrigger` `XhCalendarNextYearTrigger` `XhCalendarPrevTrigger` `XhCalendarPrevYearTrigger` `XhCalendarRoot` `XhCalendarWeekDay` `XhCalendarWeekRow` |
 | 组合式函数 | `useCalendar` |
 | 状态机 | `calendarMachine` |
 | 皮肤 | `@xihan-ui/styles/calendar.css` |
@@ -42,7 +42,7 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="calendar"`：`root` · `header` · `prev-trigger` · `next-trigger` · `heading` · **`grid`** · `grid-head` · `week-day` · `grid-body` · `week-row` · **`cell`** · **`cell-trigger`**
+`data-scope="calendar"`：`root` · `header` · `prev-year-trigger` · `prev-trigger` · `next-trigger` · `next-year-trigger` · `heading` · **`grid`** · `grid-head` · `week-day` · `grid-body` · `week-row` · **`cell`** · **`cell-trigger`**
 
 ## Props
 
@@ -92,17 +92,23 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `readOnly` | `boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |
 | `isUnavailable` | `(value: string) => boolean` | 界外或作者判定不可用。禁用的日历下恒为真。 |
-| `canGoPrev` | `boolean` | 上一月是否还有可看的日子（整张禁用或整月都在 min 之前即为假）。 |
+| `canGoPrev` | `boolean` | 上一页是否还有可看的日子（整张禁用或整页都在 min 之前即为假）。 |
 | `canGoNext` | `boolean` |  |
+| `canGoPrevYear` | `boolean` | 大步翻（« / »）此刻能不能按。判据同上，只是步长换成大步。 |
+| `canGoNextYear` | `boolean` |  |
 | `setValue` | `(next: string[]) => void` |  |
 | `select` | `(value: string) => void` |  |
 | `focus` | `(value: string) => void` | 改写聚焦日；跨月会连带换掉展示月。 |
 | `goToPrevMonth` | `() => void` |  |
 | `goToNextMonth` | `() => void` |  |
+| `goToPrevYear` | `() => void` | 大步翻：日视图走一年，月/季度走十年，年视图走一百年。 |
+| `goToNextYear` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getHeaderProps` | `() => T['element']` |  |
+| `getPrevYearTriggerProps` | `() => T['button']` |  |
 | `getPrevTriggerProps` | `() => T['button']` |  |
 | `getNextTriggerProps` | `() => T['button']` |  |
+| `getNextYearTriggerProps` | `() => T['button']` |  |
 | `getHeadingProps` | `(props?: CalendarPanelProps) => T['element']` |  |
 | `getGridProps` | `(props?: CalendarPanelProps) => T['element']` |  |
 | `getGridHeadProps` | `() => T['element']` |  |

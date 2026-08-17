@@ -200,19 +200,27 @@ export interface CalendarApi<T extends PropTypes = PropTypes> {
   isSelected: (value: string) => boolean
   /** 界外或作者判定不可用。禁用的日历下恒为真。 */
   isUnavailable: (value: string) => boolean
-  /** 上一月是否还有可看的日子（整张禁用或整月都在 min 之前即为假）。 */
+  /** 上一页是否还有可看的日子（整张禁用或整页都在 min 之前即为假）。 */
   canGoPrev: boolean
   canGoNext: boolean
+  /** 大步翻（« / »）此刻能不能按。判据同上，只是步长换成大步。 */
+  canGoPrevYear: boolean
+  canGoNextYear: boolean
   setValue: (next: string[]) => void
   select: (value: string) => void
   /** 改写聚焦日；跨月会连带换掉展示月。 */
   focus: (value: string) => void
   goToPrevMonth: () => void
   goToNextMonth: () => void
+  /** 大步翻：日视图走一年，月/季度走十年，年视图走一百年。 */
+  goToPrevYear: () => void
+  goToNextYear: () => void
   getRootProps: () => T['element']
   getHeaderProps: () => T['element']
+  getPrevYearTriggerProps: () => T['button']
   getPrevTriggerProps: () => T['button']
   getNextTriggerProps: () => T['button']
+  getNextYearTriggerProps: () => T['button']
   getHeadingProps: (props?: CalendarPanelProps) => T['element']
   getGridProps: (props?: CalendarPanelProps) => T['element']
   getGridHeadProps: () => T['element']

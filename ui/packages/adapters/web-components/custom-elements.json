@@ -8429,12 +8429,20 @@
               "name": "header"
             },
             {
+              "description": "快速往前翻一大步（日视图一年、粗粒度十页）；可选",
+              "name": "prev-year-trigger"
+            },
+            {
               "description": "上一月；越过 min 时转原生 disabled",
               "name": "prev-trigger"
             },
             {
               "description": "下一月；越过 max 时转原生 disabled",
               "name": "next-trigger"
+            },
+            {
+              "description": "快速往后翻一大步；可选",
+              "name": "next-year-trigger"
             },
             {
               "description": "展示月标题（grid 的 aria-labelledby 目标）",

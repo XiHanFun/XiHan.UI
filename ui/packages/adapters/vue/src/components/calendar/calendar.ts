@@ -105,6 +105,14 @@ export const XhCalendarHeader = defineComponent({
   },
 })
 
+export const XhCalendarPrevYearTrigger = defineComponent({
+  name: 'XhCalendarPrevYearTrigger',
+  setup(_, { slots }) {
+    const ctx = useCalendarContext()
+    return () => h('button', ctx.api.value.getPrevYearTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhCalendarPrevTrigger = defineComponent({
   name: 'XhCalendarPrevTrigger',
   setup(_, { slots }) {
@@ -118,6 +126,14 @@ export const XhCalendarNextTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useCalendarContext()
     return () => h('button', ctx.api.value.getNextTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhCalendarNextYearTrigger = defineComponent({
+  name: 'XhCalendarNextYearTrigger',
+  setup(_, { slots }) {
+    const ctx = useCalendarContext()
+    return () => h('button', ctx.api.value.getNextYearTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
 

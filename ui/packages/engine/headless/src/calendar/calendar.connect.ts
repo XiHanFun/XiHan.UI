@@ -65,6 +65,8 @@ export function connectCalendar<T extends PropTypes>(
   const weekSelection = !!prop('weekSelection') && view === 'day' && mode === 'range'
   // 翻一页走多少个月：日视图一个月，月/季度一年，年视图十年
   const pageMonths = calendarPageMonths(view)
+  // 大步翻（« / »）：日视图走一年，粗粒度视图走十页——月/季度即十年，年视图即一百年
+  const bigMonths = view === 'day' ? 12 : pageMonths * 10
   const visibleCount = visibleCountOf(prop('visibleCount'))
   /**
    * 视窗最左那个月。
@@ -140,6 +142,15 @@ export function connectCalendar<T extends PropTypes>(
   const rangeEnds = ((): [CalendarDate, CalendarDate] | null => {
     if (mode !== 'range')
       return null
+    // 周选：一格一格拉出来的区间在这里讲不通——落下去的恒是整整一周。
+    // 悬停时就整周预览，指针扫过哪一行哪一行亮，与点下去的结果对得上
+    if (weekSelection) {
+      const preview = hovered ?? (rangeAnchor ? null : parseCalendarDate(value[0]))
+      if (preview) {
+        const [from, to] = calendarWeekRange(preview.toString(), locale)
+        return [parseCalendarDate(from)!, parseCalendarDate(to)!]
+      }
+    }
     if (rangeAnchor) {
       const end = hovered ?? anchor
       return rangeAnchor.compare(end) <= 0 ? [rangeAnchor, end] : [end, rangeAnchor]
@@ -206,6 +217,11 @@ export function connectCalendar<T extends PropTypes>(
   const nextMonthStart = startOfMonth(visibleStart.add({ months: visibleCount * pageMonths }))
   const canGoPrev = !calendarDisabled && (min == null || prevMonthEnd.compare(min) >= 0)
   const canGoNext = !calendarDisabled && (max == null || nextMonthStart.compare(max) <= 0)
+  // 大步翻的边界同理，只是把步长换成大步
+  const prevYearEnd = endOfMonth(visibleStart.subtract({ months: bigMonths }))
+  const nextYearStart = startOfMonth(visibleStart.add({ months: visibleCount * pageMonths + bigMonths - pageMonths }))
+  const canGoPrevYear = !calendarDisabled && (min == null || prevYearEnd.compare(min) >= 0)
+  const canGoNextYear = !calendarDisabled && (max == null || nextYearStart.compare(max) <= 0)
 
   /** 面板各自的标题 id。首个面板沿用原来那一份，旧标记不受影响。 */
   const headingId = (index?: number): string => {
@@ -223,6 +239,12 @@ export function connectCalendar<T extends PropTypes>(
   // 多面板下翻一页只挪一个月，落点仍在窗内，靠「走出去才挪」是推不动窗的
   const stepMonth = (amount: 1 | -1): void => {
     const months = amount * pageMonths
+    send({ type: 'FOCUS.SET', value: anchor.add({ months }).toString(), months })
+  }
+
+  /** 大步翻：与 stepMonth 同一条路，只是步长换成 bigMonths。 */
+  const stepYear = (amount: 1 | -1): void => {
+    const months = amount * bigMonths
     send({ type: 'FOCUS.SET', value: anchor.add({ months }).toString(), months })
   }
 
@@ -261,11 +283,15 @@ export function connectCalendar<T extends PropTypes>(
     isUnavailable,
     canGoPrev,
     canGoNext,
+    canGoPrevYear,
+    canGoNextYear,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     select: v => selectAt(v),
     focus: focusAt,
     goToPrevMonth: () => stepMonth(-1),
     goToNextMonth: () => stepMonth(1),
+    goToPrevYear: () => stepYear(-1),
+    goToNextYear: () => stepYear(1),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -279,6 +305,15 @@ export function connectCalendar<T extends PropTypes>(
 
     // 翻月是单体控件，用原生 disabled（不可聚焦、不进 Tab 序列）；日期格子才用 aria-disabled。
     // 可及名字由作者写在按钮里（文案或 aria-label）
+    // 快速翻年：与上下一页同一副长相，只是步子大。两个都是可选部件，不写即不渲染
+    getPrevYearTriggerProps: () => normalize.button({
+      ...parts['prev-year-trigger'].attrs,
+      'type': 'button',
+      'disabled': !canGoPrevYear || undefined,
+      'data-disabled': dataAttr(!canGoPrevYear),
+      'onClick': () => stepYear(-1),
+    }),
+
     getPrevTriggerProps: () => normalize.button({
       ...parts['prev-trigger'].attrs,
       'type': 'button',
@@ -293,6 +328,14 @@ export function connectCalendar<T extends PropTypes>(
       'disabled': !canGoNext || undefined,
       'data-disabled': dataAttr(!canGoNext),
       'onClick': () => stepMonth(1),
+    }),
+
+    getNextYearTriggerProps: () => normalize.button({
+      ...parts['next-year-trigger'].attrs,
+      'type': 'button',
+      'disabled': !canGoNextYear || undefined,
+      'data-disabled': dataAttr(!canGoNextYear),
+      'onClick': () => stepYear(1),
     }),
 
     // 标题是网格的可及名字来源

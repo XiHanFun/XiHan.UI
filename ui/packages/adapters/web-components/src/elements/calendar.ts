@@ -48,8 +48,10 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @fires focused-value-change - 聚焦日变化；detail 为 `{ focusedValue: string }`
  * @csspart root - 组件根容器
  * @csspart header - 标题栏外壳
+ * @csspart prev-year-trigger - 快速往前翻一大步（日视图一年、粗粒度十页）；可选
  * @csspart prev-trigger - 上一月；越过 min 时转原生 disabled
  * @csspart next-trigger - 下一月；越过 max 时转原生 disabled
+ * @csspart next-year-trigger - 快速往后翻一大步；可选
  * @csspart heading - 展示月标题（grid 的 aria-labelledby 目标）
  * @csspart grid - role=grid 容器，键盘在此收口
  * @csspart grid-head - role=rowgroup 表头组，里面套一个 week-row
@@ -184,8 +186,10 @@ export class XhCalendarElement extends XhElement {
     }
     put('root', api.getRootProps() as Record<string, unknown>)
     put('header', api.getHeaderProps() as Record<string, unknown>)
+    put('prev-year-trigger', api.getPrevYearTriggerProps() as Record<string, unknown>)
     put('prev-trigger', api.getPrevTriggerProps() as Record<string, unknown>)
     put('next-trigger', api.getNextTriggerProps() as Record<string, unknown>)
+    put('next-year-trigger', api.getNextYearTriggerProps() as Record<string, unknown>)
     // 面板逐个打：下标取作者写的 index，没写就按文档序（第 N 张就是第 N 个面板）
     this.getParts('heading').forEach((el, position) => {
       this.spreader.spread(el, api.getHeadingProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)

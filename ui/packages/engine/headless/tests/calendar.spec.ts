@@ -343,6 +343,54 @@ describe('parseCalendarDate 脏值兜底', () => {
   })
 })
 
+describe('大步翻与周选预览', () => {
+  it('« / » 的步长跟着视图走：日一年、月与季度十年、年一百年', () => {
+    const day = mount({ defaultFocusedValue: '2026-08-17' })
+    day.api().goToNextYear()
+    expect(day.api().visibleMonth).toMatchObject({ year: 2027, month: 8 })
+    day.api().goToPrevYear()
+    day.api().goToPrevYear()
+    expect(day.api().visibleMonth).toMatchObject({ year: 2025, month: 8 })
+
+    const month = mount({ defaultFocusedValue: '2026-08-17', view: 'month' })
+    month.api().goToNextYear()
+    expect(month.api().panels[0]!.year).toBe(2036)
+
+    const year = mount({ defaultFocusedValue: '2026-08-17', view: 'year' })
+    year.api().goToNextYear()
+    expect(year.api().panels[0]!.headingLabel).toBe('2120年-2129年')
+  })
+
+  it('大步翻的边界按大步算，与上下一页各判各的', () => {
+    // 上界卡在明年之内：整年跳出去就没得看了，但下一页还翻得动
+    const h = mount({ defaultFocusedValue: '2026-08-17', max: '2026-12-31' })
+    expect(h.api().canGoNext).toBe(true)
+    expect(h.api().canGoNextYear).toBe(false)
+    expect(h.api().canGoPrevYear).toBe(true)
+  })
+
+  it('整张禁用时两个大步钮都按不动', () => {
+    const h = mount({ defaultFocusedValue: '2026-08-17', disabled: true })
+    expect(h.api().canGoPrevYear).toBe(false)
+    expect(h.api().canGoNextYear).toBe(false)
+  })
+
+  it('周选悬停：预览的是整整一周，不是从起点拉到悬停点', () => {
+    const h = mount({ defaultFocusedValue: '2026-08-17', selectionMode: 'range', weekSelection: true, locale: 'zh-CN' })
+    hover(h.cell('2026-08-13'))
+    const lit = h.rendered().filter(v => h.gridcell(v).hasAttribute('data-in-range'))
+    expect(lit).toEqual(['2026-08-10', '2026-08-11', '2026-08-12', '2026-08-13', '2026-08-14', '2026-08-15', '2026-08-16'])
+  })
+
+  it('不开周选时，悬停照旧是「起点 → 悬停点」那一段', () => {
+    const h = mount({ defaultFocusedValue: '2026-08-17', selectionMode: 'range' })
+    h.api().select('2026-08-11')
+    hover(h.cell('2026-08-13'))
+    const lit = h.rendered().filter(v => h.gridcell(v).hasAttribute('data-in-range'))
+    expect(lit).toEqual(['2026-08-11', '2026-08-12', '2026-08-13'])
+  })
+})
+
 describe('面板粒度：月 / 季度 / 年 / 周', () => {
   it('月面板一年 12 格，值是每个月的头一天', () => {
     const g = buildPeriodGrid('2026-08-17', 'month', { locale: 'zh-CN' })

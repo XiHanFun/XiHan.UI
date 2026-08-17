@@ -1,6 +1,7 @@
-<!-- 区间选择 | 默认并排两个连续月：起止常跨月，一个面板要来回翻页才挑得完。翻页整窗一起走一个月 -->
+<!-- 区间选择 | 五种粒度都能挑区间：默认并排两个连续页，翻页整窗一起走；« » 走大步 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import type { CalendarView } from "@xihan-ui/headless";
+import { ref } from "vue";
 import {
   XhDatePickerCalendar,
   XhDatePickerCell,
@@ -16,93 +17,124 @@ import {
   XhDatePickerInput,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
+  XhDatePickerNextYearTrigger,
   XhDatePickerPositioner,
   XhDatePickerPrevTrigger,
+  XhDatePickerPrevYearTrigger,
   XhDatePickerRoot,
   XhDatePickerSegment,
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
 
-const value = ref<string[]>([]);
+const kinds = [
+  { key: "day", label: "按天", view: "day" as CalendarView, week: false, segments: 3 },
+  { key: "week", label: "按周", view: "day" as CalendarView, week: true, segments: 3 },
+  { key: "month", label: "按月", view: "month" as CalendarView, week: false, segments: 2 },
+  { key: "quarter", label: "按季度", view: "quarter" as CalendarView, week: false, segments: 2 },
+  { key: "year", label: "按年", view: "year" as CalendarView, week: false, segments: 1 },
+];
+
+const values = ref<Record<string, string[]>>({
+  day: [],
+  week: [],
+  month: [],
+  quarter: [],
+  year: [],
+});
 
 // 两组段位各自的读屏名字，区间模式下替掉指向 label 的那份
-const translations = { startDate: "开始日期", endDate: "结束日期" };
+const translations = { startDate: "开始", endDate: "结束" };
 
-const text = computed(() => {
-  if (value.value.length === 0) return "（未选）";
-  // 对外的值滤掉了空缺那一端，只剩一个值时不分起止
-  if (value.value.length === 1) return `${value.value[0]}（另一端待定）`;
-  return `${value.value[0]} → ${value.value[1]}`;
-});
+function text(v: string[]): string {
+  if (v.length === 0) return "（未选）";
+  if (v.length === 1) return `${v[0]}（另一端待定）`;
+  return `${v[0]} → ${v[1]}`;
+}
 </script>
 
 <template>
-  <XhDatePickerRoot
-    v-slot="{ panels, weekDays }"
-    v-model:value="value"
-    :translations="translations"
-    locale="zh-CN"
-    selection-mode="range"
-  >
-    <XhDatePickerLabel>起止日期</XhDatePickerLabel>
-    <XhDatePickerControl>
-      <!-- 组号定这组段位认领哪一端：0 起点、1 终点 -->
-      <XhDatePickerInput :index="0">
-        <XhDatePickerSegment :index="0" />
-        <span>-</span>
-        <XhDatePickerSegment :index="1" />
-        <span>-</span>
-        <XhDatePickerSegment :index="2" />
-      </XhDatePickerInput>
-      <!-- 装饰性分隔符，不进读屏 -->
-      <span aria-hidden="true">→</span>
-      <XhDatePickerInput :index="1">
-        <XhDatePickerSegment :index="0" />
-        <span>-</span>
-        <XhDatePickerSegment :index="1" />
-        <span>-</span>
-        <XhDatePickerSegment :index="2" />
-      </XhDatePickerInput>
-      <XhDatePickerClearTrigger>✕</XhDatePickerClearTrigger>
-    </XhDatePickerControl>
-    <XhDatePickerPositioner>
-      <XhDatePickerContent>
-        <XhDatePickerCalendar v-for="panel in panels" :key="panel.index">
-          <XhDatePickerHeader>
-            <!-- 往前只在最左那张、往后只在最右那张：整窗一起走，两张各摆一套会让人以为能各翻各的 -->
-            <XhDatePickerPrevTrigger v-if="panel.index === 0" aria-label="上个月">‹</XhDatePickerPrevTrigger>
-            <XhDatePickerHeading :index="panel.index" />
-            <XhDatePickerNextTrigger v-if="panel.index === panels.length - 1" aria-label="下个月">›</XhDatePickerNextTrigger>
-          </XhDatePickerHeader>
-          <XhDatePickerGrid :index="panel.index">
-            <XhDatePickerGridHead>
-              <XhDatePickerWeekRow>
-                <XhDatePickerWeekDay
-                  v-for="d in weekDays"
-                  :key="d.value"
-                  :value="d.value"
-                />
-              </XhDatePickerWeekRow>
-            </XhDatePickerGridHead>
-            <XhDatePickerGridBody>
-              <XhDatePickerWeekRow v-for="week in panel.weeks" :key="week[0].value">
-                <!-- index 必须给：同一天会同时出现在两个面板里，是不是本月要连着面板一起判 -->
-                <XhDatePickerCell
-                  v-for="day in week"
-                  :key="day.value"
-                  :value="day.value"
-                  :index="panel.index"
-                >
-                  <XhDatePickerCellTrigger>{{ day.day }}</XhDatePickerCellTrigger>
-                </XhDatePickerCell>
-              </XhDatePickerWeekRow>
-            </XhDatePickerGridBody>
-          </XhDatePickerGrid>
-        </XhDatePickerCalendar>
-      </XhDatePickerContent>
-    </XhDatePickerPositioner>
-  </XhDatePickerRoot>
+  <div style="display: flex; flex-direction: column; gap: 20px">
+    <XhDatePickerRoot
+      v-for="k in kinds"
+      :key="k.key"
+      v-slot="{ panels, weekDays }"
+      v-model:value="values[k.key]"
+      :translations="translations"
+      :view="k.view"
+      :week-selection="k.week"
+      selection-mode="range"
+      locale="zh-CN"
+    >
+      <XhDatePickerLabel>{{ k.label }}</XhDatePickerLabel>
+      <XhDatePickerControl>
+        <!-- 组号定这组段位认领哪一端：0 起点、1 终点 -->
+        <XhDatePickerInput v-for="end in 2" :key="end" :index="end - 1">
+          <template v-for="i in k.segments" :key="i">
+            <span v-if="i > 1">-</span>
+            <XhDatePickerSegment :index="i - 1" />
+          </template>
+        </XhDatePickerInput>
+        <XhDatePickerClearTrigger>✕</XhDatePickerClearTrigger>
+      </XhDatePickerControl>
+      <XhDatePickerPositioner>
+        <XhDatePickerContent>
+          <XhDatePickerCalendar v-for="panel in panels" :key="panel.index">
+            <XhDatePickerHeader>
+              <!-- 往前只在最左那张、往后只在最右那张：整窗一起走 -->
+              <XhDatePickerPrevYearTrigger v-if="panel.index === 0" aria-label="快退">
+                «
+              </XhDatePickerPrevYearTrigger>
+              <XhDatePickerPrevTrigger v-if="panel.index === 0" aria-label="上一页">
+                ‹
+              </XhDatePickerPrevTrigger>
+              <XhDatePickerHeading :index="panel.index" />
+              <XhDatePickerNextTrigger v-if="panel.index === panels.length - 1" aria-label="下一页">
+                ›
+              </XhDatePickerNextTrigger>
+              <XhDatePickerNextYearTrigger
+                v-if="panel.index === panels.length - 1"
+                aria-label="快进"
+              >
+                »
+              </XhDatePickerNextYearTrigger>
+            </XhDatePickerHeader>
+            <XhDatePickerGrid :index="panel.index">
+              <template v-if="k.view === 'day'">
+                <XhDatePickerGridHead>
+                  <XhDatePickerWeekRow>
+                    <XhDatePickerWeekDay v-for="d in weekDays" :key="d.value" :value="d.value" />
+                  </XhDatePickerWeekRow>
+                </XhDatePickerGridHead>
+                <XhDatePickerGridBody>
+                  <XhDatePickerWeekRow v-for="week in panel.weeks" :key="week[0].value">
+                    <!-- index 必须给：同一天会同时出现在两个面板里 -->
+                    <XhDatePickerCell
+                      v-for="day in week"
+                      :key="day.value"
+                      :value="day.value"
+                      :index="panel.index"
+                    >
+                      <XhDatePickerCellTrigger>{{ day.day }}</XhDatePickerCellTrigger>
+                    </XhDatePickerCell>
+                  </XhDatePickerWeekRow>
+                </XhDatePickerGridBody>
+              </template>
+              <XhDatePickerCell
+                v-for="cell in panel.cells"
+                v-else
+                :key="cell.value"
+                :value="cell.value"
+                :index="panel.index"
+              >
+                <XhDatePickerCellTrigger>{{ cell.label }}</XhDatePickerCellTrigger>
+              </XhDatePickerCell>
+            </XhDatePickerGrid>
+          </XhDatePickerCalendar>
+        </XhDatePickerContent>
+      </XhDatePickerPositioner>
 
-  <span style="font-size: 13px">已选区间：{{ text }}</span>
+      <span style="font-size: 13px">{{ text(values[k.key]) }}</span>
+    </XhDatePickerRoot>
+  </div>
 </template>
