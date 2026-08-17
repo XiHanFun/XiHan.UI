@@ -20,6 +20,8 @@ import { MachineController } from '../runtime/machine-controller'
  * @csspart thumb - 滑块
  * @attr {string} name - 表单字段名；给了 hidden-input 才参与提交
  * @csspart hidden-input - type=hidden 的表单出口，省略该节点即不参与表单
+ * @csspart label - 可选：包住 root 与 text 的 <label>，点文字即切换
+ * @csspart text - 可选：控件旁的文字
  */
 export class XhSwitchElement extends XhElement {
   static override partContract = { anatomy: switchAnatomy, meta: switchMeta }
@@ -75,5 +77,12 @@ export class XhSwitchElement extends XhElement {
     const hidden = this.getPart('hidden-input')
     if (hidden)
       this.spreader.spread(hidden, api.getHiddenInputProps() as Record<string, unknown>)
+    // 带文字时作者自己写 <label data-part=label> 包住 root 与 <span data-part=text>
+    const label = this.getPart('label')
+    if (label)
+      this.spreader.spread(label, api.getLabelProps() as Record<string, unknown>)
+    const text = this.getPart('text')
+    if (text)
+      this.spreader.spread(text, api.getTextProps() as Record<string, unknown>)
   }
 }

@@ -57,6 +57,10 @@ export interface CheckboxApi<T extends PropTypes = PropTypes> {
   getIndicatorProps: () => T['element']
   /** 表单影子：勾上才提交，半选按未勾处理。给了 name 才带 name。 */
   getHiddenInputProps: () => T['input']
+  /** 包住方框与文字的 <label>：点文字即切换，方框的可及名从文字来。只在带文字时渲染。 */
+  getLabelProps: () => T['label']
+  /** 方框旁的文字。 */
+  getTextProps: () => T['element']
 }
 
 /** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */

@@ -37,10 +37,10 @@
 | [数字输入](./number-field) | `number-field` | 6 | 6 | 14 |
 | [分格输入](./pin-input) | `pin-input` | 4 | 6 | 11 |
 | [就地编辑](./editable) | `editable` | 9 | 3 | 6 |
-| [复选框](./checkbox) | `checkbox` | 3 | 1 | 8 |
+| [复选框](./checkbox) | `checkbox` | 5 | 1 | 8 |
 | [复选框组](./checkbox-group) | `checkbox-group` | 7 | 3 | 8 |
 | [单选组](./radio-group) | `radio-group` | 6 | 4 | 7 |
-| [开关](./switch) | `switch` | 3 | 1 | 11 |
+| [开关](./switch) | `switch` | 5 | 1 | 11 |
 | [滑块](./slider) | `slider` | 10 | 6 | 11 |
 | [评分](./rating) | `rating` | 5 | 5 | 9 |
 | [选择器](./select) | `select` | 17 | 13 | 19 |

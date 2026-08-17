@@ -84,7 +84,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="switch"`：**`root`** · `thumb` · `hidden-input`
+`data-scope="switch"`：**`root`** · `thumb` · `hidden-input` · `label` · `text`
 
 ## Props
 
@@ -120,6 +120,8 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | `getRootProps` | `() => T['button']` |  |
 | `getThumbProps` | `() => T['element']` |  |
 | `getHiddenInputProps` | `() => T['input']` | 表单影子：勾上才提交。给了 name 才带 name，不给就不参与提交。 |
+| `getLabelProps` | `() => T['label']` | 包住轨道与文字的 &lt;label&gt;：点文字即切换，轨道的可及名从文字来。只在带文字时渲染。 |
+| `getTextProps` | `() => T['element']` | 轨道旁的文字。 |
 
 ## 键盘
 

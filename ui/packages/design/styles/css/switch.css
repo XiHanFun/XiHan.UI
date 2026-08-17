@@ -92,4 +92,25 @@
     border-radius: var(--xh-shape-pill);
     animation: xh-switch-rotate var(--xh-switch-loading-duration, calc(var(--xh-duration-slow) * 2)) linear infinite;
   }
+
+  /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox-group 的条目同一副样子 —— */
+  [data-scope='switch'][data-part='label'] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-switch-label-gap, var(--xh-control-gap-md));
+    color: var(--xh-switch-label-fg, var(--xh-fg-default));
+    font-size: var(--xh-switch-label-font-size, var(--xh-text-label-size));
+    line-height: var(--xh-leading-none);
+    cursor: pointer;
+  }
+
+  [data-scope='switch'][data-part='label'][data-disabled] {
+    color: var(--xh-switch-label-fg-disabled, var(--xh-fg-disabled));
+    cursor: not-allowed;
+  }
+
+  [data-scope='switch'][data-part='text'] {
+    color: inherit;
+    user-select: none;
+  }
 }

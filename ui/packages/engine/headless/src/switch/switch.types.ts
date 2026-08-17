@@ -48,6 +48,10 @@ export interface SwitchApi<T extends PropTypes = PropTypes> {
   getThumbProps: () => T['element']
   /** 表单影子：勾上才提交。给了 name 才带 name，不给就不参与提交。 */
   getHiddenInputProps: () => T['input']
+  /** 包住轨道与文字的 <label>：点文字即切换，轨道的可及名从文字来。只在带文字时渲染。 */
+  getLabelProps: () => T['label']
+  /** 轨道旁的文字。 */
+  getTextProps: () => T['element']
 }
 
 /** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
