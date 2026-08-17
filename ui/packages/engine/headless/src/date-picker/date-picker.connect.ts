@@ -82,6 +82,48 @@ export function connectDatePicker<T extends PropTypes>(
     : []
   const timeValue = showTime && filled[0] != null ? datePickerTimePart(filled[0]) : null
 
+  /** 时间列里那一段在 'HH:mm[:ss]' 里排第几。 */
+  const timeSlotOf = (unit: DatePickerTimeUnit): number => (unit === 'hour' ? 0 : unit === 'minute' ? 1 : 2)
+
+  /**
+   * 一列此刻的 Tab 落点：选中的那一项，还没选就落头一项。
+   *
+   * 不另立「聚焦到哪一项」的状态：这几列只是选个数，落点由选中值推得出来，
+   * 焦点本身交给 DOM。列里一格都没有时给 null，那时 Tab 位归列自己。
+   */
+  const timeAnchorOf = (unit: DatePickerTimeUnit): string | null => {
+    const column = timeColumns.find(c => c.unit === unit)
+    if (!column?.options.length)
+      return null
+    const picked = timeValue?.split(':')[timeSlotOf(unit)]
+    return picked != null && column.options.includes(picked) ? picked : column.options[0]!
+  }
+
+  /** 一列里的全部选项，文档序。事件那一刻现查，不缓存节点数组。 */
+  const timeItemsIn = (column: HTMLElement | null): HTMLElement[] =>
+    column ? [...column.querySelectorAll<HTMLElement>(parts['time-item'].selector)] : []
+
+  /** 同一份浮层里露出来的那几列。收起的列（没开 showTime）不算一站。 */
+  const timeColumnsIn = (from: HTMLElement): HTMLElement[] => {
+    const content = from.closest<HTMLElement>(parts.content.selector)
+      ?? from.closest<HTMLElement>(parts.root.selector)
+    return content
+      ? [...content.querySelectorAll<HTMLElement>(parts['time-column'].selector)].filter(el => !el.hasAttribute('hidden'))
+      : []
+  }
+
+  /** 换列：落到目标列的 Tab 落点上（选中项，没有就头一项）。 */
+  const moveTimeColumn = (from: HTMLElement, intent: NavIntent): void => {
+    const live = timeColumnsIn(from)
+    const at = stepIndex(live.length, live.indexOf(from), intent, { loop: false })
+    if (at < 0)
+      return
+    const items = timeItemsIn(live[at]!)
+    const unit = live[at]!.getAttribute('data-unit') as DatePickerTimeUnit | null
+    const anchor = unit ? timeAnchorOf(unit) : null
+    focusSafely(items.find(el => el.getAttribute('data-value') === anchor) ?? items[0])
+  }
+
   /** 点时间选项：该单位写进值；还没有日期时以聚焦日起值。 */
   const pickTimeUnit = (unit: 'hour' | 'minute' | 'second', next: string): void => {
     if (!interactive)
@@ -407,17 +449,61 @@ export function connectDatePicker<T extends PropTypes>(
       'data-readonly': dataAttr(readOnly),
     }),
 
+    // 键盘在列上收口，选项只管声明自己。挂列不挂 content：同一份浮层里还有日历那张网格，
+    // 它自己吃方向键，两个处理器挂同一个节点会互相抢
     getTimeColumnProps: ({ unit }) => normalize.element({
       ...parts['time-column'].attrs,
       'role': 'listbox',
       'aria-label': unit,
+      'aria-orientation': 'vertical',
+      // 单选与否必须显式说，省略只是「没说」
+      'aria-multiselectable': 'false',
+      'aria-disabled': disabled ? 'true' : 'false',
       'data-unit': unit,
       'hidden': !showTime || undefined,
+      // 列里一格都没有时由列自己接住焦点——它是 role=listbox 且有名字，
+      // 否则这一列连一个 Tab 停靠点都没有
+      'tabindex': showTime && timeAnchorOf(unit) == null ? 0 : -1,
+      'onKeyDown': (event: KeyboardEvent) => {
+        if (disabled || event.ctrlKey || event.metaKey || event.altKey)
+          return
+        const column = event.currentTarget as HTMLElement
+        const items = timeItemsIn(column)
+        // 焦点在哪一格：事件从那一格冒上来。落在列自己身上时从头一格起步
+        const current = (event.target as HTMLElement | null)?.closest<HTMLElement>(parts['time-item'].selector) ?? null
+
+        // 上下键与 Home/End 在列内走，到头回绕——一列就是一圈数
+        const within = navIntentFromKey(event, { axis: 'vertical' })
+        if (within) {
+          event.preventDefault()
+          const at = stepIndex(items.length, current ? items.indexOf(current) : -1, within, { loop: true })
+          if (at >= 0)
+            focusSafely(items[at])
+          return
+        }
+
+        // 左右键换列，两端停住
+        const across = navIntentFromKey(event, { axis: 'horizontal', home: false })
+        if (across) {
+          event.preventDefault()
+          moveTimeColumn(column, across)
+          return
+        }
+
+        if (event.key === 'Enter' || event.key === ' ') {
+          // 焦点还在列上（这一列是空的）时没有可落的格
+          if (!current)
+            return
+          event.preventDefault()
+          const value = current.getAttribute('data-value')
+          if (value != null)
+            pickTimeUnit(unit, value)
+        }
+      },
     }),
 
     getTimeItemProps: ({ unit, value: v }) => {
-      const at = unit === 'hour' ? 0 : unit === 'minute' ? 1 : 2
-      const selected = timeValue?.split(':')[at] === v
+      const selected = timeValue?.split(':')[timeSlotOf(unit)] === v
       return normalize.element({
         ...parts['time-item'].attrs,
         'role': 'option',
@@ -425,6 +511,8 @@ export function connectDatePicker<T extends PropTypes>(
         'data-unit': unit,
         'data-value': v,
         'data-selected': dataAttr(selected),
+        // roving tabindex：每列只有落点那一格留在 Tab 序列内，其余靠方向键到达
+        'tabindex': timeAnchorOf(unit) === v ? 0 : -1,
         'onClick': () => pickTimeUnit(unit, v),
       })
     },
