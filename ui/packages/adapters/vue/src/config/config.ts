@@ -13,6 +13,11 @@ export interface XhConfig {
   /** BCP 47 语言标记，喂给日期时间系组件（calendar / date-* / time-*）。 */
   locale?: string
   translations?: XhTranslationOverrides
+  /**
+   * 浮层默认挂到哪个容器；返回 null 即挂 body。
+   * 应用级默认，实例上写了容器的以实例为准。
+   */
+  portalContainer?: () => Element | null
 }
 
 const KEY: InjectionKey<MaybeRefOrGetter<XhConfig>> = Symbol('xh-config')

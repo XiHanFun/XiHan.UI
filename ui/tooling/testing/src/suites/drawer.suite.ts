@@ -28,6 +28,30 @@ export const drawerSuite: ConformanceSuite = {
   },
   cases: [
     {
+      name: 'contained：遮罩与定位层改按容器画，三处角色节点一起报 data-contained',
+      spec: { apg: APG },
+      props: { contained: true, defaultOpen: true },
+      initial: {
+        parts: {
+          backdrop: { 'data-contained': '' },
+          positioner: { 'data-contained': '' },
+          content: { 'data-contained': '' },
+        },
+      },
+    },
+    {
+      name: '不给 contained 时一个属性都不写出来，浮层照旧铺满视口',
+      spec: { apg: APG },
+      props: { defaultOpen: true },
+      initial: {
+        parts: {
+          backdrop: { 'data-contained': null },
+          positioner: { 'data-contained': null },
+          content: { 'data-contained': null },
+        },
+      },
+    },
+    {
       // Enter / Space 由平台的按钮激活行为翻成 click，我们不自己接这两个键；
       // "click 后打开并把焦点移入 content"由本套件其它用例验
       name: 'Enter / Space 打开：trigger 是原生 <button type="button">，激活交给平台',

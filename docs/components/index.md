@@ -121,7 +121,7 @@
 | 组件 | 标识 | 部件数 | 键盘条目 | 示例 |
 | --- | --- | --- | --- | --- |
 | [对话框](./dialog) | `dialog` | 7 | 4 | 9 |
-| [抽屉](./drawer) | `drawer` | 8 | 4 | 7 |
+| [抽屉](./drawer) | `drawer` | 8 | 4 | 8 |
 | [气泡卡片](./popover) | `popover` | 7 | 4 | 11 |
 | [文字提示](./tooltip) | `tooltip` | 4 | 2 | 8 |
 | [悬浮卡片](./hover-card) | `hover-card` | 5 | 2 | 6 |

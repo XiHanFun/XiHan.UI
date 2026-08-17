@@ -8767,6 +8767,14 @@
   background: var(--xh-drawer-backdrop-bg, var(--xh-bg-overlay));
 }
 
+/* 挂在局部容器里：遮罩与定位层从视口坐标换成容器坐标，只罩住那个容器。
+   作者要给那个容器加 position（relative 之类），否则 absolute 会往上找到别的定位祖先——
+   这一条写进了示例与 props 说明 */
+[data-scope='drawer'][data-part='backdrop'][data-contained],
+[data-scope='drawer'][data-part='positioner'][data-contained] {
+  position: absolute;
+}
+
 [data-scope='drawer'][data-part='backdrop'][data-state='open'] {
   animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }

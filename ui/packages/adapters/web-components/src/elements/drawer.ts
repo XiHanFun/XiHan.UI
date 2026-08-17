@@ -24,6 +24,8 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {boolean} open - 受控开合；缺省该属性即非受控
  * @attr {boolean} default-open - 非受控初始为打开
  * @attr {boolean} modal - 模态（陷焦点、锁滚动、遮罩交互外关闭），默认 true
+ * @attr {boolean} contained - 局部抽屉：遮罩与定位层从 fixed 换成 absolute，只罩住最近的定位祖先而不是盖满整屏。
+ *   本元素是 Light DOM、作者写在哪浮层就在哪，所以「挂到哪个容器」这件事本身不需要属性——写上它是为了让皮肤按容器画
  * @attr {'top'|'right'|'bottom'|'left'} side - 从哪条边滑出，默认 right
  * @attr {'dialog'|'alertdialog'} role - 语义角色，默认 dialog
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true
@@ -49,6 +51,7 @@ export class XhDrawerElement extends XhElement {
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { type: Boolean, attribute: 'default-open' },
     modal: { converter: BOOLEAN_CONVERTER },
+    contained: { converter: BOOLEAN_CONVERTER },
     side: { converter: STRING_CONVERTER },
     closeOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-escape' },
     closeOnInteractOutside: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-interact-outside' },
@@ -61,6 +64,7 @@ export class XhDrawerElement extends XhElement {
   declare open?: boolean
   declare defaultOpen?: boolean
   declare modal?: boolean
+  declare contained?: boolean
   declare side?: DrawerSchema['props']['side']
   declare closeOnEscape?: boolean
   declare closeOnInteractOutside?: boolean
@@ -91,6 +95,7 @@ export class XhDrawerElement extends XhElement {
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       modal: this.modal,
+      contained: this.contained ?? false,
       side: this.side,
       role: (this.getAttribute('role') as DrawerSchema['props']['role']) ?? undefined,
       closeOnEscape: this.closeOnEscape,

@@ -46,6 +46,12 @@ size 落成 content 的 data-size，只改面板贴边方向上的厚度；三�
 
 <XhDemo src="drawer/07-resize" />
 
+### 局部抽屉
+
+container 给了容器就搬进去：遮罩与定位层从 fixed 换成 absolute，只罩住那块区域而不是盖满整屏
+
+<XhDemo src="drawer/08-contained" />
+
 ## 产物
 
 | 层 | 值 |
@@ -69,6 +75,7 @@ size 落成 content 的 data-size，只改面板贴边方向上的厚度；三�
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
 | `modal` | `boolean` |  |  |
+| `contained` | `boolean` |  | 浮层挂在某个局部容器里而不是视口：遮罩与定位层从 fixed 换成 absolute， 于是只罩住那个容器、不再盖满整屏。 挂到哪个容器是适配器的事（Vue 由 root 的 container 决定，WC 本就是 Light DOM、 作者写在哪就在哪），这里只表达「按局部容器画」这一件事。 |
 | `side` | `DrawerSide` |  | 从哪条边滑出，默认 'right'。只影响输出的 data-side，不参与状态转移。 |
 | `role` | `'dialog' \| 'alertdialog'` |  |  |
 | `closeOnEscape` | `boolean` |  |  |

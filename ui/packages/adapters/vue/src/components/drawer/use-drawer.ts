@@ -7,6 +7,7 @@ import { attachCssExit, createPresence } from '@xihan-ui/behavior/presence'
 import { connectDrawer, drawerMachine } from '@xihan-ui/headless'
 import { createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { createVueIdGenerator } from '../../runtime/vue-id'
@@ -17,25 +18,41 @@ export interface DrawerContext {
   rendered: Ref<boolean>
   contentRef: Ref<HTMLElement | null>
   backdropRef: Ref<HTMLElement | null>
+  /** 浮层搬到哪儿：实例给的容器 > 全局配置的 portalContainer > body。 */
+  portalTarget: ComputedRef<string | Element>
 }
 
 export function useDrawer(
   props: DrawerSchema['props'],
   onOpenChange?: DrawerSchema['props']['onOpenChange'],
+  container?: () => string | Element | null | undefined,
 ): DrawerContext {
+  // 应用级默认挂载点：kernel 的 RuntimeConfig 一直留着这个字段，这里把它真正接上
+  const xhConfig = useXhConfig()
   const contentRef = ref<HTMLElement | null>(null)
   const backdropRef = ref<HTMLElement | null>(null)
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(drawerMachine, () => ({ ...props, onOpenChange }), scope)
+  // contained 由 container 派生,在 getter 里算:在 setup 期展开 props 会把响应式冻住,
+  // 之后改 side / open 这些都推不动了
+  const service = useMachine(
+    drawerMachine,
+    // 显式写了 contained 以它为准；没写则「给了容器即局部」
+    () => ({ ...props, contained: props.contained ?? container?.() != null, onOpenChange }),
+    scope,
+  )
 
   // 初值取状态而不是 false：presence 只在有 DOM 时才建，服务端拿不到它。
   // 服务端算不出 rendered 就只发一个空占位，客户端水合时补出整棵子树 = mismatch。
   const rendered = ref(service.state.get() === 'open')
 
   if (typeof document !== 'undefined') {
-    const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
+    const config: RuntimeConfig = createRuntimeConfig({
+      scope,
+      idGenerator: idGen,
+      portalContainer: () => xhConfig.value.portalContainer?.() ?? null,
+    })
     // 只提供注册函数，入栈出栈由机器的 trackOverlay 效应按展开态驱动
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
       kind: 'modal',
@@ -78,5 +95,8 @@ export function useDrawer(
   }
 
   const api = computed(() => connectDrawer(service, vueNormalize))
-  return { service, api, rendered, contentRef, backdropRef }
+  // 实例给的容器优先；没给就问全局配置；都没有才落 body
+  const portalTarget = computed<string | Element>(() => container?.() ?? xhConfig.value.portalContainer?.() ?? 'body')
+
+  return { service, api, rendered, contentRef, backdropRef, portalTarget }
 }
