@@ -123,6 +123,8 @@ export function datePickerCalendarProps(service: Service<DatePickerSchema>): Cal
     value: withTime ? context.get('value').map(datePickerDatePart) : context.get('value'),
     focusedValue: datePickerFocusedValue(service),
     selectionMode: prop('selectionMode'),
+    view: prop('view'),
+    weekSelection: prop('weekSelection'),
     // 区间默认两个面板：起止常跨月，一个面板要来回翻页
     visibleCount: prop('visibleCount') ?? (prop('selectionMode') === 'range' ? 2 : 1),
     min: prop('min'),

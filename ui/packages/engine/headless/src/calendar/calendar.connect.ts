@@ -8,10 +8,14 @@ import { dataAttr } from '@xihan-ui/kernel'
 import { calendarAnatomy } from './calendar.anatomy'
 import {
   buildMonthGrid,
+  buildPeriodGrid,
   buildWeekDays,
   CALENDAR_LOCALE,
   calendarNavFromKey,
   calendarNavTarget,
+  calendarPageMonths,
+  calendarPeriodStart,
+  calendarWeekRange,
   parseCalendarDate,
   visibleCountOf,
 } from './calendar.grid'
@@ -56,6 +60,11 @@ export function connectCalendar<T extends PropTypes>(
   const focusedValue = anchor.toString()
   const todayValue = today(timeZone).toString()
 
+  const view = prop('view') ?? 'day'
+  // 周选只在日视图 + 区间下讲得通：它落的是两端
+  const weekSelection = !!prop('weekSelection') && view === 'day' && mode === 'range'
+  // 翻一页走多少个月：日视图一个月，月/季度一年，年视图十年
+  const pageMonths = calendarPageMonths(view)
   const visibleCount = visibleCountOf(prop('visibleCount'))
   /**
    * 视窗最左那个月。
@@ -67,29 +76,46 @@ export function connectCalendar<T extends PropTypes>(
    * 视窗要是跟着聚焦日走，每点一下就整窗往后推一个月，看着就像"点一下翻一页、选不中"。
    */
   const visibleStart = ((): CalendarDate => {
-    const target = startOfMonth(anchor)
+    // 粗粒度视图的"一页"不是一个月，视窗起点要归到跨度的头上，否则标题与格子对不齐
+    const align = (d: CalendarDate): CalendarDate => (view === 'day' ? startOfMonth(d) : calendarPeriodStart(d, view))
+    const target = align(anchor)
     const stored = parseCalendarDate(context.get('visibleStart'))
     if (!stored)
       return target
-    const first = startOfMonth(stored)
+    const first = align(stored)
     if (target.compare(first) < 0)
       return target
-    if (target.compare(first.add({ months: visibleCount - 1 })) > 0)
-      return target.subtract({ months: visibleCount - 1 })
+    if (target.compare(first.add({ months: (visibleCount - 1) * pageMonths })) > 0)
+      return target.subtract({ months: (visibleCount - 1) * pageMonths })
     return first
   })()
   const headingFormatter = new DateFormatter(locale, { year: 'numeric', month: 'long', timeZone })
   // 一个锚点铺出 N 个连续月：翻页只动锚点，整窗一起走
   const panels: CalendarPanel[] = Array.from({ length: visibleCount }, (_, index) => {
-    const start = visibleStart.add({ months: index })
-    const g = buildMonthGrid(start.toString(), { locale, fixedWeeks: !!prop('fixedWeeks') })
+    // 一页跨多少个月由视图定：日视图一个月，月/季度一年，年视图十年
+    const start = visibleStart.add({ months: index * pageMonths })
+    if (view === 'day') {
+      const g = buildMonthGrid(start.toString(), { locale, fixedWeeks: !!prop('fixedWeeks') })
+      return {
+        index,
+        year: g.year,
+        month: g.month,
+        startValue: g.monthStart,
+        weeks: g.weeks,
+        cells: [],
+        headingLabel: headingFormatter.format(start.toDate(timeZone)),
+      }
+    }
+    const g = buildPeriodGrid(start.toString(), view, { locale, timeZone })
+    const first = parseCalendarDate(g.startValue)!
     return {
       index,
-      year: g.year,
-      month: g.month,
-      startValue: g.monthStart,
-      weeks: g.weeks,
-      headingLabel: headingFormatter.format(start.toDate(timeZone)),
+      year: first.year,
+      month: first.month,
+      startValue: g.startValue,
+      weeks: [],
+      cells: g.cells,
+      headingLabel: g.headingLabel,
     }
   })
   const grid = panels[0]!
@@ -175,9 +201,9 @@ export function connectCalendar<T extends PropTypes>(
 
   // 上/下一月按不按得动只看边界：整月都落在 min 之前（或 max 之后）即不可用。
   // 用相邻月的月末/月首判，不拿聚焦日加减一个月（1 月 31 日退一月会被夹成 12 月 31 日）
-  const prevMonthEnd = endOfMonth(visibleStart.subtract({ months: 1 }))
+  const prevMonthEnd = endOfMonth(visibleStart.subtract({ months: pageMonths }))
   // 往后翻新露出来的是窗口末尾再往后一个月；单面板时 visibleCount 为 1，与从前逐字一致
-  const nextMonthStart = startOfMonth(visibleStart.add({ months: visibleCount }))
+  const nextMonthStart = startOfMonth(visibleStart.add({ months: visibleCount * pageMonths }))
   const canGoPrev = !calendarDisabled && (min == null || prevMonthEnd.compare(min) >= 0)
   const canGoNext = !calendarDisabled && (max == null || nextMonthStart.compare(max) <= 0)
 
@@ -196,14 +222,28 @@ export function connectCalendar<T extends PropTypes>(
   // 翻页：聚焦日与视窗一起走同样的量。months 带在事件上，机器据此把视窗整体挪过去——
   // 多面板下翻一页只挪一个月，落点仍在窗内，靠「走出去才挪」是推不动窗的
   const stepMonth = (amount: 1 | -1): void => {
-    send({ type: 'FOCUS.SET', value: anchor.add({ months: amount }).toString(), months: amount })
+    const months = amount * pageMonths
+    send({ type: 'FOCUS.SET', value: anchor.add({ months }).toString(), months })
+  }
+
+  /**
+   * 选中一格。周选打开时点任意一天落的是整整一周（两端一起给），
+   * 其余情形照旧只落这一天。
+   */
+  const selectAt = (value: string): void => {
+    if (weekSelection) {
+      const [from, to] = calendarWeekRange(value, locale)
+      send({ type: 'VALUE.SET', value: [from, to] })
+      return
+    }
+    send({ type: 'CELL.SELECT', value })
   }
 
   /** 确认键：选中聚焦日。只读与不可用的日子不认，禁用的日历整条不进来。 */
   const commit = (): void => {
     if (readOnly || isUnavailable(focusedValue))
       return
-    send({ type: 'CELL.SELECT', value: focusedValue })
+    selectAt(focusedValue)
   }
 
   return {
@@ -222,7 +262,7 @@ export function connectCalendar<T extends PropTypes>(
     canGoPrev,
     canGoNext,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
-    select: v => send({ type: 'CELL.SELECT', value: v }),
+    select: v => selectAt(v),
     focus: focusAt,
     goToPrevMonth: () => stepMonth(-1),
     goToNextMonth: () => stepMonth(1),
@@ -269,6 +309,8 @@ export function connectCalendar<T extends PropTypes>(
       'role': 'grid',
       'aria-labelledby': headingId(panel.index),
       'data-index': panelOf(panel).index,
+      // 皮肤按它换排布：日视图铺周行，粗粒度视图把格子直接铺进网格
+      'data-view': view,
       // 三条状态都显式给，不省略
       'aria-multiselectable': mode === 'single' ? 'false' : 'true',
       'aria-disabled': calendarDisabled ? 'true' : 'false',
@@ -358,7 +400,7 @@ export function connectCalendar<T extends PropTypes>(
           focusInGrid(item.value)
           if (readOnly || state.disabled)
             return
-          send({ type: 'CELL.SELECT', value: item.value })
+          selectAt(item.value)
         },
         // 不可用的格子获得焦点也记锚点，方向键据此起步
         'onFocus': () => focusAt(item.value),

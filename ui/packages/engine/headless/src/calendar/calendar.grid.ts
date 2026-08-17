@@ -215,3 +215,118 @@ export function visibleCountOf(count: number | undefined): number {
   const n = Math.trunc(count ?? 1)
   return Number.isFinite(n) && n >= 1 ? n : 1
 }
+
+// —— 粗粒度视图：月 / 季度 / 年 ——
+//
+// 格子的值一律是「那段时间的第一天」的 ISO 串，不另立一套值形态。
+// 这样 min/max 比较、区间逻辑、不可用判定、隐藏输入全都原样复用，
+// 显示成「2026-08」还是「2026年8月」是分段输入与作者的事。
+
+/** 面板视图：按天挑，还是按月 / 季度 / 年挑。 */
+export type CalendarView = 'day' | 'month' | 'quarter' | 'year'
+
+/** 年视图一页十年。 */
+export const CALENDAR_YEARS_PER_PAGE = 10
+
+/** 粗粒度视图里的一格。 */
+export interface CalendarPeriodCell {
+  /** 这段时间的第一天，ISO 串；选中写的就是它。 */
+  value: string
+  /** 可见文本（1月 / Q1 / 2026），按 locale 出。 */
+  label: string
+  /** 落在本面板的跨度内。年视图翻页时两端会带上邻十年的格子，它们是 false。 */
+  inView: boolean
+}
+
+/** 一个粗粒度面板。 */
+export interface CalendarPeriodGrid {
+  /** 面板跨度的第一天，ISO 串。 */
+  startValue: string
+  /** 标题文案（2026年 / 2020-2029）。 */
+  headingLabel: string
+  cells: CalendarPeriodCell[]
+}
+
+/** 一个视图翻一页走多少个月：月与季度按年翻，年按十年翻。 */
+export function calendarPageMonths(view: CalendarView): number {
+  if (view === 'month' || view === 'quarter')
+    return 12
+  if (view === 'year')
+    return CALENDAR_YEARS_PER_PAGE * 12
+  return 1
+}
+
+/** 面板跨度的起点：月/季度归到当年 1 月，年归到当个十年的头一年。 */
+export function calendarPeriodStart(anchor: CalendarDate, view: CalendarView): CalendarDate {
+  if (view === 'year') {
+    const decade = Math.floor(anchor.year / CALENDAR_YEARS_PER_PAGE) * CALENDAR_YEARS_PER_PAGE
+    return startOfMonth(anchor.set({ year: decade, month: 1, day: 1 }))
+  }
+  return startOfMonth(anchor.set({ month: 1, day: 1 }))
+}
+
+export interface CalendarPeriodGridOptions {
+  locale?: string
+  timeZone?: string
+}
+
+/**
+ * 生成月 / 季度 / 年面板。anchor 决定落在哪一页（哪一年、哪个十年）。
+ *
+ * 年视图前后各多带一格邻十年：与日视图首尾行带上邻月的日子同一套做法，
+ * 让页与页之间接得上、方向键走过去不掉格。
+ */
+export function buildPeriodGrid(
+  anchor: string,
+  view: Exclude<CalendarView, 'day'>,
+  options: CalendarPeriodGridOptions = {},
+): CalendarPeriodGrid {
+  const { locale = CALENDAR_LOCALE, timeZone = 'UTC' } = options
+  const base = parseDate(anchor)
+  const start = calendarPeriodStart(base, view)
+  const cells: CalendarPeriodCell[] = []
+
+  if (view === 'month' || view === 'quarter') {
+    const step = view === 'quarter' ? 3 : 1
+    const fmt = new DateFormatter(locale, { month: 'short', timeZone })
+    for (let i = 0; i < 12; i += step) {
+      const cell = start.add({ months: i })
+      cells.push({
+        value: cell.toString(),
+        // 季度没有现成的 Intl 字段，Q1-Q4 是通行写法，不按 locale 编
+        label: view === 'quarter' ? `Q${i / 3 + 1}` : fmt.format(cell.toDate(timeZone)),
+        inView: true,
+      })
+    }
+    return {
+      startValue: start.toString(),
+      headingLabel: new DateFormatter(locale, { year: 'numeric', timeZone }).format(start.toDate(timeZone)),
+      cells,
+    }
+  }
+
+  const yearFmt = new DateFormatter(locale, { year: 'numeric', timeZone })
+  for (let i = -1; i <= CALENDAR_YEARS_PER_PAGE; i++) {
+    const cell = start.add({ years: i })
+    cells.push({
+      value: cell.toString(),
+      label: String(cell.year),
+      inView: i >= 0 && i < CALENDAR_YEARS_PER_PAGE,
+    })
+  }
+  const last = start.add({ years: CALENDAR_YEARS_PER_PAGE - 1 })
+  return {
+    startValue: start.toString(),
+    headingLabel: `${yearFmt.format(start.toDate(timeZone))}-${yearFmt.format(last.toDate(timeZone))}`,
+    cells,
+  }
+}
+
+/**
+ * 一天所在那一周的起止（含两端），按 locale 的周首日切。
+ * 周视图选中的是整整一周，值取这两天。
+ */
+export function calendarWeekRange(value: string, locale = CALENDAR_LOCALE): [string, string] {
+  const date = parseDate(value)
+  return [startOfWeek(date, locale).toString(), endOfWeek(date, locale).toString()]
+}

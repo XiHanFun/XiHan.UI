@@ -62,6 +62,8 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `readOnly` | `boolean` |  | 只读：翻月与移动焦点照常，只是选不动值。 |
 | `weekdayFormat` | `CalendarWeekdayFormat` |  | 表头缩写粒度，默认 short。 |
 | `fixedWeeks` | `boolean` |  | 恒渲染六行，默认按当月实际周数。开着能让翻月时网格高度不跳。 |
+| `view` | `CalendarView` |  | 面板按什么粒度挑：天（默认）、月、季度、年。 格子的值一律是「那段时间的第一天」的 ISO 串，不另立一套值形态—— min/max 比较、区间逻辑、不可用判定、表单出口于是全都原样复用。 |
+| `weekSelection` | `boolean` |  | 周选：点任意一天选中它所在的整周，值落成 [周首日, 周末日]。 只在 view=day 且 selectionMode=range 下生效。 |
 | `visibleCount` | `number` |  | 并排展示几个连续月，默认 1。区间选择给 2 才好挑——起止常跨月， 一个面板要来回翻页。翻页时整窗一起走一个月，不是各翻各的。 小于 1 的写法回落到 1。 |
 | `onValueChange` | `(details: CalendarValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onFocusedValueChange` | `(details: CalendarFocusChangeDetails) => void` |  | 聚焦日变化（方向键、翻页、点了邻月的日子都会发）；受控时是唯一出口。 |

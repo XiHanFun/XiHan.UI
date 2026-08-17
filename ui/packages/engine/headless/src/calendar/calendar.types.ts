@@ -1,6 +1,6 @@
 import type { PropTypes } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
-import type { CalendarDay, CalendarWeekDay } from './calendar.grid'
+import type { CalendarDay, CalendarPeriodCell, CalendarView, CalendarWeekDay } from './calendar.grid'
 
 /**
  * 焦点模型：roving tabindex，不做 aria-activedescendant 变体。
@@ -62,13 +62,15 @@ export interface CalendarPanel {
   /** 第几个，0 起。 */
   index: number
   year: number
-  /** 1-12。 */
+  /** 1-12；粗粒度视图下是这一页跨度的首月。 */
   month: number
-  /** 月首日 ISO 串。 */
+  /** 这一页跨度首日的 ISO 串。 */
   startValue: string
-  /** 这个面板的日期矩阵。 */
+  /** 日期矩阵；view 不是 day 时为空数组。 */
   weeks: CalendarDay[][]
-  /** 这个面板的标题文案（如 2024年2月）。 */
+  /** 月 / 季度 / 年的格子；view 是 day 时为空数组。 */
+  cells: CalendarPeriodCell[]
+  /** 这个面板的标题文案（2024年2月 / 2024年 / 2020-2029）。 */
   headingLabel: string
 }
 
@@ -112,6 +114,18 @@ export interface CalendarSchema extends MachineSchema {
     weekdayFormat?: CalendarWeekdayFormat
     /** 恒渲染六行，默认按当月实际周数。开着能让翻月时网格高度不跳。 */
     fixedWeeks?: boolean
+    /**
+     * 面板按什么粒度挑：天（默认）、月、季度、年。
+     *
+     * 格子的值一律是「那段时间的第一天」的 ISO 串，不另立一套值形态——
+     * min/max 比较、区间逻辑、不可用判定、表单出口于是全都原样复用。
+     */
+    view?: CalendarView
+    /**
+     * 周选：点任意一天选中它所在的整周，值落成 [周首日, 周末日]。
+     * 只在 view=day 且 selectionMode=range 下生效。
+     */
+    weekSelection?: boolean
     /**
      * 并排展示几个连续月，默认 1。区间选择给 2 才好挑——起止常跨月，
      * 一个面板要来回翻页。翻页时整窗一起走一个月，不是各翻各的。

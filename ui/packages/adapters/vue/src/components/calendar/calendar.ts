@@ -1,4 +1,4 @@
-import type { CalendarApi, CalendarCellProps, CalendarSchema, CalendarSelectionMode, CalendarWeekdayFormat } from '@xihan-ui/headless'
+import type { CalendarApi, CalendarCellProps, CalendarSchema, CalendarSelectionMode, CalendarView, CalendarWeekdayFormat } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
@@ -47,6 +47,12 @@ export const XhCalendarRoot = defineComponent({
     readOnly: Boolean,
     weekdayFormat: { type: String as PropType<CalendarWeekdayFormat>, default: undefined },
     fixedWeeks: Boolean,
+    /** 面板粒度：天（默认）/ 月 / 季度 / 年。 */
+    view: { type: String as PropType<CalendarView>, default: undefined },
+    /** 周选：点任意一天选中它所在的整周。只在 view=day 且区间模式下生效。 */
+    weekSelection: { type: Boolean, default: undefined },
+    /** 并排展示几页，默认 1。 */
+    visibleCount: { type: Number, default: undefined },
   },
   // *-change 携带 details 对象，update:* 携带裸值；选中值恒为数组，单选时长度 ≤ 1
   emits: {

@@ -1,6 +1,6 @@
 import type { Cleanup, ControlVariant, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema, Service } from '@xihan-ui/machine'
-import type { CalendarApi, CalendarSchema, CalendarSelectionMode } from '../calendar'
+import type { CalendarApi, CalendarSchema, CalendarSelectionMode, CalendarView } from '../calendar'
 import type { DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState } from '../date-field'
 import type { TimePickerColumn, TimePickerColumnUnit } from '../time-picker'
 import type { DatePickerTimeGranularity } from './date-picker.time'
@@ -106,6 +106,13 @@ export interface DatePickerSchema extends MachineSchema {
     name?: string
     /** 区间终点那份隐藏输入的表单字段名；不给即终点不参与提交。 */
     endName?: string
+    /**
+     * 面板按什么粒度挑：天（默认）、月、季度、年。格子的值仍是 ISO 日期串
+     * （那段时间的第一天），min/max 与区间逻辑因此原样复用。
+     */
+    view?: CalendarView
+    /** 周选：点任意一天选中它所在的整周。只在 view=day 且区间模式下生效。 */
+    weekSelection?: boolean
     /**
      * 并排展示几个连续月，默认单选 1、区间 2。
      * 区间的起止常跨月，一个面板要来回翻页才挑得完,两个并排才顺手。

@@ -51,7 +51,7 @@
 | [标签输入](./tags-input) | `tags-input` | 11 | 13 | 12 |
 | [穿梭框](./transfer) | `transfer` | 14 | 11 | 8 |
 | [日期输入](./date-field) | `date-field` | 5 | 8 | 12 |
-| [日期选择器](./date-picker) | `date-picker` | 12 | 7 | 10 |
+| [日期选择器](./date-picker) | `date-picker` | 12 | 7 | 12 |
 | [时间输入](./time-field) | `time-field` | 5 | 9 | 9 |
 | [时间选择器](./time-picker) | `time-picker` | 11 | 22 | 10 |
 | [日历](./calendar) | `calendar` | 12 | 12 | 4 |
