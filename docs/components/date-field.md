@@ -102,7 +102,8 @@ value-change 每次带上整份 ISO 串，段位被清掉时它是 null
 | `max` | `string` |  | 上界，ISO 串。 |
 | `locale` | `string` |  | BCP 47 语言标记，决定年月日三段的先后。不给按 en-US（月日年）排。 |
 | `timeZone` | `string` |  | IANA 时区名，只用来取「今天」：空段上按上下键时从今天的对应位起步。 |
-| `granularity` | `DateGranularity` |  | 精度，默认 day（只有年月日三段）。 |
+| `granularity` | `DateGranularity` |  | 精度，默认 day（只有年月日三段）。给了 segments 时它不再作数。 |
+| `segments` | `DateSegmentSet` |  | 段集：这份控件由哪几块组成，给了就以它为准，granularity 让路。写 `['year', 'quarter']` 得到「2026 Q2」、`['year', 'week']` 得到「2026 33」。归一后为空（如 `[]`）视同没给。 值仍是 ISO 日期（时间）串，故段集里必须有 year，否则段位编辑得动但拼不出值。 |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
 | `invalid` | `boolean` |  |  |
@@ -119,7 +120,7 @@ value-change 每次带上整份 ISO 串，段位被清掉时它是 null
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `VALUE.CLEAR` · `SEGMENT.STEP` · `SEGMENT.TYPE` · `SEGMENT.CLEAR` · `SEGMENT.FOCUS` · `SEGMENT.BLUR` · `FORM.RESET`
+**事件**：`VALUE.SET` · `VALUE.CLEAR` · `SEGMENT.STEP` · `SEGMENT.TYPE` · `SEGMENT.CLEAR` · `SEGMENT.PERIOD` · `SEGMENT.FOCUS` · `SEGMENT.BLUR` · `FORM.RESET`
 
 **判据**：`canEdit`
 
@@ -131,7 +132,7 @@ value-change 每次带上整份 ISO 串，段位被清掉时它是 null
 | --- | --- | --- |
 | `value` | `string \| null` | ISO 串；段位没填齐时是 null。 |
 | `valueAsDate` | `Date \| null` | 同一个值的原生 Date；空值或算不出来时为 null。按 timeZone 换算。 |
-| `segments` | `DateFieldSegmentState[]` | 逐段投影，文档序即 locale 决定的段序。 |
+| `segments` | `DateFieldSegmentState[]` | 逐段投影，文档序即此刻的段序（给了 segments 就是它归一后的顺序，否则由 locale 排）。 |
 | `complete` | `boolean` | 段位填齐了（value 非 null）。 |
 | `empty` | `boolean` | 一段都没填。 |
 | `outOfRange` | `boolean` | 填齐了但落在 min/max 之外。 |
@@ -162,4 +163,5 @@ value-change 每次带上整份 ISO 串，段位被清掉时它是 null
 | `Home` | focus in a segment, not disabled | 焦点移到首段 |
 | `End` | focus in a segment, not disabled | 焦点移到末段 |
 | `Backspace` | focus in a segment, not disabled/readOnly | 清掉本段，焦点不动；整份值随之变成 null |
-| `0` / `1` / `2` / `3` / `4` / `5` / `6` / `7` / `8` / `9` | focus in a segment, not disabled/readOnly | 往本段补一位数字；补满（再补一位必溢出或位数用尽）即自动跳下一段 |
+| `0` / `1` / `2` / `3` / `4` / `5` / `6` / `7` / `8` / `9` | focus in a segment, not disabled/readOnly | 往本段补一位数字；补满（再补一位必溢出或位数用尽）即自动跳下一段。上下午段没有数字位，不收数字 |
+| `a` / `p` | focus in 上下午段, not disabled/readOnly | 直接指定上午 / 下午；上下键在两者之间翻面 |

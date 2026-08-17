@@ -15,12 +15,16 @@ import {
   dateSegmentRange,
   dateSegmentText,
   granularitySegments,
+  hasSegmentSet,
+  isoToSegments,
   localeDateOrder,
   parseBoundary,
   parseIsoSegments,
+  resolveSegmentSet,
   resolveTwoDigitYear,
   sameSegments,
   segmentsToIso,
+  segmentsToValue,
   stepSegment,
   toValueString,
   wrapSegment,
@@ -854,5 +858,342 @@ describe('connectDateField 受控与命令式出口', () => {
     expect(texts(m).slice(0, 3)).toEqual(['yyyy', 'mm', 'dd'])
     expect(m.api().value).toBeNull()
     expect(m.api().empty).toBe(true)
+  })
+})
+
+describe('段集：作者挑几块写几块', () => {
+  it('resolveSegmentSet 给了段集以它为准，没给退回 granularity 那条老路', () => {
+    // 段集按归一序排，不随 locale 变——「2026 Q2」没有别的排法
+    expect(resolveSegmentSet(['quarter', 'year'], 'en-US')).toEqual(['year', 'quarter'])
+    expect(resolveSegmentSet(['year', 'week'], 'en-US')).toEqual(['year', 'week'])
+    // 没给：老路照旧，年月日按 locale 排、时刻段按精度追加
+    expect(resolveSegmentSet(undefined, 'en-US')).toEqual(['month', 'day', 'year'])
+    expect(resolveSegmentSet(undefined, 'zh-CN', 'minute')).toEqual(['year', 'month', 'day', 'hour', 'minute'])
+  })
+
+  it('归一后为空的段集视同没给', () => {
+    expect(hasSegmentSet([])).toBe(false)
+    expect(hasSegmentSet(undefined)).toBe(false)
+    expect(hasSegmentSet(['year'])).toBe(true)
+    expect(resolveSegmentSet([], 'zh-CN')).toEqual(['year', 'month', 'day'])
+  })
+
+  it('值往返按段集在不在场分岔', () => {
+    const blocks = { set: ['year', 'quarter'] as const, locale: 'zh-CN' }
+    expect(isoToSegments('2026-08-17', blocks)).toEqual({ year: 2026, quarter: 3 })
+    expect(segmentsToValue({ year: 2026, quarter: 2 }, blocks)).toBe('2026-04-01')
+    // 没给段集：与老路的两个函数逐字一致
+    const old = { locale: 'zh-CN', granularity: 'day' as const }
+    expect(isoToSegments('2026-08-17', old)).toEqual(parseIsoSegments('2026-08-17', 'day'))
+    expect(segmentsToValue({ year: 2026, month: 8, day: 17 }, old)).toBe(segmentsToIso({ year: 2026, month: 8, day: 17 }, 'day'))
+  })
+
+  it('sameSegments 比全部九块：季度改了不许被当成没变', () => {
+    expect(sameSegments({ year: 2026, quarter: 2 }, { year: 2026, quarter: 3 })).toBe(false)
+    expect(sameSegments({ year: 2026, week: 3 }, { year: 2026, week: 4 })).toBe(false)
+    expect(sameSegments({ hour: 9, dayPeriod: 0 }, { hour: 9, dayPeriod: 1 })).toBe(false)
+    expect(sameSegments({ year: 2026, quarter: 2 }, { year: 2026, quarter: 2 })).toBe(true)
+  })
+
+  it('compareDateSegments 不看派生块：边界那边根本没有季度', () => {
+    // 只有年月日的边界与带季度的段位比，比出来的只能是年月日的先后
+    expect(compareDateSegments({ year: 2026, month: 4, day: 1, quarter: 2 }, { year: 2026, month: 4, day: 1 })).toBe(0)
+    expect(compareDateSegments({ year: 2026, month: 1, day: 1, week: 33 }, { year: 2026, month: 1, day: 1 })).toBe(0)
+  })
+
+  it('段位区间：季度四档、周随年、12 时制的小时 1-12', () => {
+    const at = (set: readonly string[]) => ({ set: set as never, locale: 'zh-CN' })
+    expect(dateSegmentRange('quarter', { year: 2026 }, at(['year', 'quarter']))).toEqual({ min: 1, max: 4 })
+    expect(dateSegmentRange('week', { year: 2026 }, at(['year', 'week']))).toEqual({ min: 1, max: 53 })
+    expect(dateSegmentRange('week', { year: 2025 }, at(['year', 'week']))).toEqual({ min: 1, max: 52 })
+    expect(dateSegmentRange('dayPeriod', {}, at(['hour', 'dayPeriod']))).toEqual({ min: 0, max: 1 })
+    expect(dateSegmentRange('hour', {}, at(['hour', 'dayPeriod']))).toEqual({ min: 1, max: 12 })
+    // 不带上下午时小时仍是 24 时制
+    expect(dateSegmentRange('hour', {}, at(['hour', 'minute']))).toEqual({ min: 0, max: 23 })
+  })
+
+  it('派生块不被 min/max 收窄：季度只定到那一季的头，收了反倒给出错觉', () => {
+    const bounds = { min: parseBoundary('2026-07-28'), max: parseBoundary('2026-09-30') }
+    expect(dateSegmentRange('quarter', { year: 2026 }, { ...bounds, set: ['year', 'quarter'], locale: 'zh-CN' }))
+      .toEqual({ min: 1, max: 4 })
+  })
+
+  it('段位文字：季度带 Q、上下午出这个语言里的写法、周只出数字', () => {
+    expect(dateSegmentText('quarter', 2, { placeholder: 'Qq' })).toBe('Q2')
+    expect(dateSegmentText('quarter', undefined, { typing: '3', placeholder: 'Qq' })).toBe('Q3')
+    expect(dateSegmentText('week', 3, { placeholder: 'ww' })).toBe('03')
+    expect(dateSegmentText('dayPeriod', 0, { placeholder: '--', locale: 'zh-CN' })).toBe('上午')
+    expect(dateSegmentText('dayPeriod', 1, { placeholder: '--', locale: 'zh-CN' })).toBe('下午')
+    // 不给 locale 时用 AM/PM，不落到运行环境默认 locale
+    expect(dateSegmentText('dayPeriod', 1, { placeholder: '--' })).toBe('PM')
+    expect(dateSegmentText('dayPeriod', undefined, { placeholder: '--', locale: 'zh-CN' })).toBe('--')
+  })
+})
+
+describe('段集在机器里', () => {
+  function service(props: Props = {}) {
+    const runtime = createVanillaRuntime()
+    const s = createService(dateFieldMachine, { props: () => props, runtime })
+    runtime.start()
+    return s
+  }
+
+  it('年 + 季度：填齐两块就出那一季的头一天', () => {
+    const onValueChange = vi.fn()
+    const s = service({ locale: 'zh-CN', segments: ['year', 'quarter'], onValueChange })
+    s.send({ type: 'VALUE.SET', value: '2026-08-17' })
+    // 段位只留段集要的两块，季度从月推出来
+    expect(s.context.get('segments')).toEqual({ year: 2026, quarter: 3 })
+    s.send({ type: 'SEGMENT.TYPE', segment: 'quarter', digit: '2' })
+    expect(s.context.get('value')).toBe('2026-04-01')
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: '2026-04-01' })
+  })
+
+  it('年 + 周：周序号落到那一周的周首日', () => {
+    const s = service({ locale: 'zh-CN', segments: ['year', 'week'] })
+    s.send({ type: 'SEGMENT.TYPE', segment: 'year', digit: '2' })
+    s.send({ type: 'SEGMENT.TYPE', segment: 'year', digit: '0' })
+    s.send({ type: 'SEGMENT.TYPE', segment: 'year', digit: '2' })
+    s.send({ type: 'SEGMENT.TYPE', segment: 'year', digit: '6' })
+    expect(s.context.get('value')).toBe('')
+    s.send({ type: 'SEGMENT.TYPE', segment: 'week', digit: '3' })
+    s.send({ type: 'SEGMENT.TYPE', segment: 'week', digit: '3' })
+    expect(s.context.get('value')).toBe('2026-08-10')
+  })
+
+  it('周序号在换年后夹回当年的周数，不许翻到下一年', () => {
+    const s = service({ locale: 'zh-CN', segments: ['year', 'week'], defaultValue: '2026-12-28' })
+    // 2026 有 53 周，末周是第 53 周
+    expect(s.context.get('segments')).toEqual({ year: 2026, week: 53 })
+    s.send({ type: 'SEGMENT.STEP', segment: 'year', delta: -1 })
+    // 2025 只有 52 周
+    expect(s.context.get('segments')).toEqual({ year: 2025, week: 52 })
+    expect(s.context.get('value')).toBe('2025-12-22')
+  })
+
+  it('上下午改写小时，段位里的小时是 12 时制的那个数', () => {
+    const s = service({
+      locale: 'zh-CN',
+      segments: ['year', 'month', 'day', 'hour', 'dayPeriod'],
+      defaultValue: '2026-08-17T21',
+    })
+    expect(s.context.get('segments')).toEqual({ year: 2026, month: 8, day: 17, hour: 9, dayPeriod: 1 })
+    s.send({ type: 'SEGMENT.PERIOD', period: 'am' })
+    expect(s.context.get('value')).toBe('2026-08-17T09')
+    s.send({ type: 'SEGMENT.PERIOD', period: 'pm' })
+    expect(s.context.get('value')).toBe('2026-08-17T21')
+  })
+
+  it('12 AM 是 0 点、12 PM 是 12 点', () => {
+    const s = service({ locale: 'zh-CN', segments: ['year', 'month', 'day', 'hour', 'dayPeriod'] })
+    s.send({ type: 'VALUE.SET', value: '2026-08-17T00' })
+    expect(s.context.get('segments')).toMatchObject({ hour: 12, dayPeriod: 0 })
+    s.send({ type: 'SEGMENT.PERIOD', period: 'pm' })
+    expect(s.context.get('value')).toBe('2026-08-17T12')
+  })
+
+  it('上下午没有独立的量：清它是空操作，值不动', () => {
+    const s = service({
+      locale: 'zh-CN',
+      segments: ['year', 'month', 'day', 'hour', 'dayPeriod'],
+      defaultValue: '2026-08-17T21',
+    })
+    s.send({ type: 'SEGMENT.CLEAR', segment: 'dayPeriod' })
+    expect(s.context.get('segments').dayPeriod).toBe(1)
+    expect(s.context.get('value')).toBe('2026-08-17T21')
+  })
+
+  it('段集里没有上下午时，SEGMENT.PERIOD 没有落点', () => {
+    const s = service({ locale: 'zh-CN', segments: ['year', 'month', 'day', 'hour'], defaultValue: '2026-08-17T21' })
+    s.send({ type: 'SEGMENT.PERIOD', period: 'am' })
+    expect(s.context.get('value')).toBe('2026-08-17T21')
+  })
+
+  it('空段上按上下键落到今天的对应位，季度与周也算得出来', () => {
+    const s = service({ locale: 'zh-CN', segments: ['year', 'quarter'], timeZone: 'UTC' })
+    s.send({ type: 'SEGMENT.STEP', segment: 'quarter', delta: 1 })
+    const now = today('UTC')
+    expect(s.context.get('segments').quarter).toBe(Math.floor((now.month - 1) / 3) + 1)
+  })
+
+  it('段集换掉时照当前值重新派生', () => {
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>({ locale: 'zh-CN', segments: ['year', 'month'], defaultValue: '2026-08-01' })
+    const s = createService(dateFieldMachine, { props: () => props.get(), runtime })
+    runtime.start()
+    expect(s.context.get('segments')).toEqual({ year: 2026, month: 8 })
+    props.set({ ...props.get(), segments: ['year', 'quarter'] })
+    // 值没动，但要哪几块变了：8 月落在第 3 季
+    expect(s.context.get('segments')).toEqual({ year: 2026, quarter: 3 })
+    expect(s.context.get('value')).toBe('2026-08-01')
+  })
+
+  it('段集换掉时小时的口径跟着换，串恰好没变也要重派生', () => {
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>({
+      locale: 'zh-CN',
+      segments: ['year', 'month', 'day', 'hour'],
+      defaultValue: '2026-08-17T21',
+    })
+    const s = createService(dateFieldMachine, { props: () => props.get(), runtime })
+    runtime.start()
+    expect(s.context.get('segments').hour).toBe(21)
+    props.set({ ...props.get(), segments: ['year', 'month', 'day', 'hour', 'dayPeriod'] })
+    // 算出来的串还是 T21，但小时该显示 09 下午了
+    expect(s.context.get('segments')).toMatchObject({ hour: 9, dayPeriod: 1 })
+    expect(s.context.get('value')).toBe('2026-08-17T21')
+  })
+
+  it('段集换掉而还没凑出值时，填了一半的段留着不抹', () => {
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>({ locale: 'zh-CN', segments: ['year', 'month'] })
+    const s = createService(dateFieldMachine, { props: () => props.get(), runtime })
+    runtime.start()
+    for (const digit of '2026') s.send({ type: 'SEGMENT.TYPE', segment: 'year', digit })
+    expect(s.context.get('segments')).toEqual({ year: 2026 })
+    expect(s.context.get('value')).toBe('')
+    props.set({ ...props.get(), segments: ['year', 'quarter'] })
+    // 年是两套段集都要的，不该因为换段集就没了
+    expect(s.context.get('segments')).toEqual({ year: 2026 })
+  })
+
+  it('同内容的段集重新传一遍不惊动同步', () => {
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<Props>({ locale: 'zh-CN', segments: ['year', 'quarter'] })
+    const s = createService(dateFieldMachine, { props: () => props.get(), runtime })
+    runtime.start()
+    s.send({ type: 'SEGMENT.TYPE', segment: 'year', digit: '2' })
+    // 作者每帧新建一个同内容的数组：段位里填了一半的年份不该被冲掉
+    props.set({ ...props.get(), segments: ['quarter', 'year'] })
+    expect(s.context.get('segments').year).toBe(2)
+  })
+})
+
+describe('connectDateField 段集渲染', () => {
+  it('段序即段集归一后的顺序，多余段位收起', () => {
+    const m = open({ locale: 'en-US', segments: ['quarter', 'year'] })
+    expect(kinds(m)).toEqual(['year', 'quarter', null, null, null, null])
+    expect(m.seg[1]!.hasAttribute('hidden')).toBe(false)
+    expect(m.seg[2]!.hasAttribute('hidden')).toBe(true)
+  })
+
+  it('占位串与填好后的文字：Qq → Q2、ww → 33、-- → 上午', () => {
+    const m = open({ locale: 'zh-CN', segments: ['year', 'quarter'] })
+    expect(texts(m).slice(0, 2)).toEqual(['yyyy', 'Qq'])
+    m.api().setValue('2026-04-01')
+    expect(texts(m).slice(0, 2)).toEqual(['2026', 'Q2'])
+
+    const week = open({ locale: 'zh-CN', segments: ['year', 'week'], defaultValue: '2026-08-10' })
+    expect(texts(week).slice(0, 2)).toEqual(['2026', '33'])
+
+    const half = open({
+      locale: 'zh-CN',
+      segments: ['year', 'month', 'day', 'hour', 'dayPeriod'],
+      defaultValue: '2026-08-17T09',
+    })
+    expect(texts(half).slice(3, 5)).toEqual(['09', '上午'])
+  })
+
+  it('季度段一位就敲满，当场跳下一段；aria 区间报的是四档', () => {
+    const m = open({ locale: 'zh-CN', segments: ['quarter', 'year'] })
+    expect(m.seg[1]!.getAttribute('aria-valuemax')).toBe('4')
+    m.seg[1]!.focus()
+    pressKey(m.seg[1]!, '2')
+    expect(texts(m)[1]).toBe('Q2')
+    // 季度只有一位，敲完没有下一段可去，焦点停在原地
+    expect(focusedIndex(m)).toBe(1)
+  })
+
+  it('周段两位敲满才跳，上界随年报给读屏', () => {
+    const m = open({ locale: 'zh-CN', segments: ['year', 'week'], defaultValue: '2026-01-05' })
+    expect(m.seg[1]!.getAttribute('aria-valuemax')).toBe('53')
+    typeDigits(m, 1, '33')
+    expect(texts(m).slice(0, 2)).toEqual(['2026', '33'])
+    expect(m.api().value).toBe('2026-08-10')
+  })
+
+  it('一路敲完年与周，隐藏输入拿到那一周的周首日', () => {
+    const m = open({ locale: 'zh-CN', segments: ['year', 'week'], name: 'week' })
+    typeDigits(m, 0, '2026')
+    expect(m.api().value).toBeNull()
+    typeDigits(m, 1, '33')
+    expect(m.hidden.value).toBe('2026-08-10')
+    expect(m.root.getAttribute('data-complete')).toBe('')
+  })
+
+  it('上下午段收 a / p，数字键不归它', () => {
+    const set = ['year', 'month', 'day', 'hour', 'dayPeriod'] as const
+    const m = open({ locale: 'zh-CN', segments: set, defaultValue: '2026-08-17T09' })
+    m.seg[4]!.focus()
+    const down = pressKey(m.seg[4]!, 'p')
+    expect(down.defaultPrevented).toBe(true)
+    expect(texts(m).slice(3, 5)).toEqual(['09', '下午'])
+    expect(m.api().value).toBe('2026-08-17T21')
+    pressKey(m.seg[4]!, 'a')
+    expect(m.api().value).toBe('2026-08-17T09')
+    // 数字键在上下午段上不作数，也不该被拦下
+    const digit = pressKey(m.seg[4]!, '1')
+    expect(digit.defaultPrevented).toBe(false)
+    expect(texts(m)[4]).toBe('上午')
+  })
+
+  it('上下午段上左右键仍能换段', () => {
+    const m = open({ locale: 'zh-CN', segments: ['year', 'hour', 'dayPeriod'] })
+    m.seg[2]!.focus()
+    pressKey(m.seg[2]!, 'ArrowLeft')
+    expect(focusedIndex(m)).toBe(1)
+  })
+
+  it('上下键在上下午两档之间翻面', () => {
+    const set = ['year', 'month', 'day', 'hour', 'dayPeriod'] as const
+    const m = open({ locale: 'zh-CN', segments: set, defaultValue: '2026-08-17T09' })
+    m.seg[4]!.focus()
+    pressKey(m.seg[4]!, 'ArrowUp')
+    expect(m.api().value).toBe('2026-08-17T21')
+    pressKey(m.seg[4]!, 'ArrowUp')
+    expect(m.api().value).toBe('2026-08-17T09')
+  })
+
+  it('只读的上下午段改不动', () => {
+    const set = ['year', 'month', 'day', 'hour', 'dayPeriod'] as const
+    const m = open({ locale: 'zh-CN', segments: set, defaultValue: '2026-08-17T09', readOnly: true })
+    m.seg[4]!.focus()
+    const event = pressKey(m.seg[4]!, 'p')
+    // 不接管就不拦
+    expect(event.defaultPrevented).toBe(false)
+    expect(m.api().value).toBe('2026-08-17T09')
+  })
+
+  it('段集里没有年时段位照样能编辑，但拼不出值——纯时刻输入归 time-field', () => {
+    // 值的形态是 ISO 日期（时间）串，没有年就落不到某一天上
+    const m = open({ locale: 'zh-CN', segments: ['hour', 'minute'] })
+    typeDigits(m, 0, '1430')
+    expect(texts(m).slice(0, 2)).toEqual(['14', '30'])
+    expect(m.api().value).toBeNull()
+  })
+
+  it('段集下的越界标注拿算出来的值比，不误报', () => {
+    // 第 3 季的头一天是 7 月 1 日，落在下界之前——该报越界
+    const late = open({ locale: 'zh-CN', segments: ['year', 'quarter'], defaultValue: '2026-07-01', min: '2026-07-28' })
+    expect(late.api().outOfRange).toBe(true)
+    // 第 4 季的头一天是 10 月 1 日，在界内——不许因为「段位里有季度而边界里没有」就误报
+    const ok = open({ locale: 'zh-CN', segments: ['year', 'quarter'], defaultValue: '2026-10-01', min: '2026-07-28' })
+    expect(ok.api().outOfRange).toBe(false)
+    expect(ok.root.hasAttribute('data-out-of-range')).toBe(false)
+  })
+
+  it('段集在场时 empty 只看段集要的那几块', () => {
+    const m = open({ locale: 'zh-CN', segments: ['year', 'quarter'] })
+    expect(m.api().empty).toBe(true)
+    typeDigits(m, 0, '2026')
+    expect(m.api().empty).toBe(false)
+    expect(m.api().value).toBeNull()
+  })
+
+  it('整组仍只占一个 Tab 位，锚点落在段集的首段', () => {
+    const m = open({ locale: 'zh-CN', segments: ['year', 'quarter'] })
+    expect(m.seg.slice(0, 3).map(el => el.getAttribute('tabindex'))).toEqual(['0', '-1', null])
+    m.seg[1]!.focus()
+    expect(m.seg.slice(0, 2).map(el => el.getAttribute('tabindex'))).toEqual(['-1', '0'])
   })
 })

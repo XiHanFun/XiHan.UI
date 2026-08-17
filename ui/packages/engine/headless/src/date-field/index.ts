@@ -3,8 +3,10 @@ export {
   applyDayPeriod,
   blockRange,
   blocksFilled,
+  blocksReference,
   blocksToDate,
   blocksToIso,
+  constrainBlocks,
   hasTimeSegment,
   isMetaSegment,
   ISO_WEEKS_MAX,
@@ -14,10 +16,12 @@ export {
   isoWeekStart,
   monthToQuarter,
   normalizeSegmentSet,
+  pickBlocks,
   QUARTERS_IN_YEAR,
   quarterToMonth,
+  splitDayPeriod,
 } from './date-field.blocks'
-export type { DateSegmentSet } from './date-field.blocks'
+export type { BlockOptions } from './date-field.blocks'
 export { connectDateField } from './date-field.connect'
 export { dateFieldKeyboard } from './date-field.keyboard'
 export {
@@ -37,18 +41,22 @@ export {
   dateSegmentRange,
   dateSegmentText,
   granularitySegments,
+  hasSegmentSet,
+  isoToSegments,
   localeDateOrder,
   parseBoundary,
   parseIsoSegments,
+  resolveSegmentSet,
   resolveTwoDigitYear,
   sameSegments,
   segmentMaxDigits,
   segmentsToIso,
+  segmentsToValue,
   stepSegment,
   todaySegments,
   toValueString,
   wrapSegment,
 } from './date-field.machine'
-export type { DateDigitResult } from './date-field.machine'
+export type { DateDigitResult, DateSegmentOptions } from './date-field.machine'
 export { dateFieldMeta } from './date-field.meta'
-export type { DateFieldApi, DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState, DateFieldTranslations, DateFieldValueChangeDetails, DateGranularity, DateSegmentRange, DateSegments, DateSegmentType, DateTypingBuffer } from './date-field.types'
+export type { DateDayPeriod, DateFieldApi, DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState, DateFieldTranslations, DateFieldValueChangeDetails, DateGranularity, DateSegmentRange, DateSegments, DateSegmentSet, DateSegmentType, DateTypingBuffer } from './date-field.types'

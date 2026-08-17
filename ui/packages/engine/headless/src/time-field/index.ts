@@ -1,3 +1,4 @@
+export { dayPeriodLabel } from '../shared/day-period'
 export { timeFieldAnatomy } from './time-field.anatomy'
 export { connectTimeField } from './time-field.connect'
 export { timeFieldKeyboard } from './time-field.keyboard'
@@ -5,7 +6,6 @@ export {
   appendSegmentDigit,
   clearTimeSegment,
   cycleTimeSegment,
-  dayPeriodLabel,
   draftFromTime,
   emptyTimeDraft,
   formatTimeValue,
