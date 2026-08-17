@@ -2,7 +2,21 @@ import type { ControlVariant, PropTypes, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 一段的身份。日期三段恒在，时间三段由 granularity 决定要不要。 */
-export type DateSegmentType = 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second'
+/**
+ * 段位是可自由拼装的小块：作者按组件需要挑几块写几块。
+ * 季度与周不另立值形态,各自派生出月与日(季度取那一季的头一个月、周取那一周的周首日)。
+ * 上下午自己不带独立的量,只改写小时。
+ */
+export type DateSegmentType
+  = | 'year'
+    | 'quarter'
+    | 'month'
+    | 'week'
+    | 'day'
+    | 'hour'
+    | 'minute'
+    | 'second'
+    | 'dayPeriod'
 
 /** 精度：决定一共有几段，也决定产出的 ISO 串截到哪一位。 */
 export type DateGranularity = 'day' | 'hour' | 'minute' | 'second'

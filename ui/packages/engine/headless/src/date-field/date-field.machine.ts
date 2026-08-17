@@ -27,27 +27,37 @@ export const DATE_FIELD_YEAR_PIVOT = 68
 /** 各段未填时的默认占位串。 */
 export const DATE_SEGMENT_PLACEHOLDER: Readonly<Record<DateSegmentType, string>> = {
   year: 'yyyy',
+  quarter: 'Qq',
   month: 'mm',
+  week: 'ww',
   day: 'dd',
   hour: 'hh',
   minute: 'mm',
   second: 'ss',
+  dayPeriod: '--',
 }
 
 /** 各段默认的读屏名字。段是 spinbutton，没有名字读屏只念得出一串数字。 */
 export const DATE_SEGMENT_LABEL: Readonly<Record<DateSegmentType, string>> = {
   year: 'year',
+  quarter: 'quarter',
   month: 'month',
+  week: 'week of year',
   day: 'day',
   hour: 'hour',
   minute: 'minute',
   second: 'second',
+  dayPeriod: 'AM/PM',
 }
 
 /** 各段最多能敲几位。年四位，其余两位。 */
 const SEGMENT_DIGITS: Readonly<Record<DateSegmentType, number>> = {
   year: 4,
+  // 季度一位（1-4），上下午不敲数字（由 a/p 或加减切换）
+  quarter: 1,
   month: 2,
+  week: 2,
+  dayPeriod: 0,
   day: 2,
   hour: 2,
   minute: 2,
@@ -93,7 +103,7 @@ export function localeDateOrder(locale: string = DATE_FIELD_LOCALE): readonly Da
     const parts = new Intl.DateTimeFormat(locale, { year: 'numeric', month: '2-digit', day: '2-digit' })
       .formatToParts(ORDER_PROBE)
     // 去重：某些日历（和历之类）会额外产出 era / relatedYear，只认这三种类型
-    const picked = [...new Set(parts.map(p => p.type).filter(isDateSegmentType))]
+    const picked = [...new Set(parts.map(p => String(p.type)).filter(isDateSegmentType))] as DateSegmentType[]
     // 排不齐三段就整份作废，退回兜底
     if (picked.length === DATE_SEGMENTS.length)
       order = picked
@@ -168,7 +178,7 @@ export function parseIsoSegments(
   try {
     // parseDateTime 同时吃 'YYYY-MM-DD' 与带 T 的串，时间位缺席按 0 补
     const dt = parseDateTime(iso)
-    const all: Record<DateSegmentType, number> = {
+    const all: Partial<Record<DateSegmentType, number>> = {
       year: dt.year,
       month: dt.month,
       day: dt.day,
@@ -177,7 +187,12 @@ export function parseIsoSegments(
       second: dt.second,
     }
     const out: Record<string, number> = {}
-    for (const key of granularitySegments(granularity)) out[key] = all[key]
+    // granularity 只会点到 ISO 串上真有的那几段；季度/周/上下午那三块由 isoToBlocks 派生
+    for (const key of granularitySegments(granularity)) {
+      const value = all[key]
+      if (value != null)
+        out[key] = value
+    }
     return out as DateSegments
   }
   catch {

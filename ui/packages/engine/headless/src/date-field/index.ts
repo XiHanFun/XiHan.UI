@@ -1,4 +1,23 @@
 export { dateFieldAnatomy } from './date-field.anatomy'
+export {
+  applyDayPeriod,
+  blockRange,
+  blocksFilled,
+  blocksToDate,
+  blocksToIso,
+  hasTimeSegment,
+  isMetaSegment,
+  ISO_WEEKS_MAX,
+  isoToBlocks,
+  isoWeekOf,
+  isoWeeksInYear,
+  isoWeekStart,
+  monthToQuarter,
+  normalizeSegmentSet,
+  QUARTERS_IN_YEAR,
+  quarterToMonth,
+} from './date-field.blocks'
+export type { DateSegmentSet } from './date-field.blocks'
 export { connectDateField } from './date-field.connect'
 export { dateFieldKeyboard } from './date-field.keyboard'
 export {
