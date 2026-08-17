@@ -5,8 +5,10 @@ import { createAnatomy } from '@xihan-ui/kernel'
 export const calendarAnatomy = createAnatomy('calendar', [
   'root',
   'header',
+  'prev-year-trigger',
   'prev-trigger',
   'next-trigger',
+  'next-year-trigger',
   'heading',
   'grid',
   'grid-head',

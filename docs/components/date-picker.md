@@ -12,7 +12,7 @@
 
 ### 区间选择
 
-默认并排两个连续月：起止常跨月，一个面板要来回翻页才挑得完。翻页整窗一起走一个月
+五种粒度都能挑区间：默认并排两个连续页，翻页整窗一起走；« » 走大步
 
 <XhDemo src="date-picker/02-range" />
 
@@ -46,11 +46,11 @@ show-time 让值升格为一体化 datetime：日历右侧多出时/分列（XhD
 
 <XhDemo src="date-picker/07-datetime" />
 
-### 按月选择
+### 五种粒度
 
-浮层里换成年份翻页加十二个月，点完写值并收起；输入行只留年、月两段
+天 / 周 / 月 / 季度 / 年一套结构走完：view 只换网格与「一页是多久」，值恒是那段时间的第一天
 
-<XhDemo src="date-picker/08-month-panel" />
+<XhDemo src="date-picker/08-granularity" />
 
 ### 三轴
 
@@ -64,24 +64,12 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 
 <XhDemo src="date-picker/10-trigger" />
 
-### 按月 / 季度 / 年挑
-
-view 只换网格与「一页是多久」；格子的值仍是那段时间的第一天，min/max 与区间逻辑原样复用
-
-<XhDemo src="date-picker/11-view" />
-
-### 按周挑
-
-week-selection 打开后，点任意一天落的是它所在的整整一周（两端一起给），周首日随 locale
-
-<XhDemo src="date-picker/12-week" />
-
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-date-picker>` |
-| Vue 组件 | `XhDatePickerCalendar` `XhDatePickerCell` `XhDatePickerCellTrigger` `XhDatePickerClearTrigger` `XhDatePickerConfirmTrigger` `XhDatePickerContent` `XhDatePickerControl` `XhDatePickerGrid` `XhDatePickerGridBody` `XhDatePickerGridHead` `XhDatePickerHeader` `XhDatePickerHeading` `XhDatePickerHiddenInput` `XhDatePickerInput` `XhDatePickerLabel` `XhDatePickerNextTrigger` `XhDatePickerPositioner` `XhDatePickerPrevTrigger` `XhDatePickerRoot` `XhDatePickerSegment` `XhDatePickerTimePanel` `XhDatePickerTrigger` `XhDatePickerWeekDay` `XhDatePickerWeekRow` |
+| Vue 组件 | `XhDatePickerCalendar` `XhDatePickerCell` `XhDatePickerCellTrigger` `XhDatePickerClearTrigger` `XhDatePickerConfirmTrigger` `XhDatePickerContent` `XhDatePickerControl` `XhDatePickerGrid` `XhDatePickerGridBody` `XhDatePickerGridHead` `XhDatePickerHeader` `XhDatePickerHeading` `XhDatePickerHiddenInput` `XhDatePickerInput` `XhDatePickerLabel` `XhDatePickerNextTrigger` `XhDatePickerNextYearTrigger` `XhDatePickerPositioner` `XhDatePickerPrevTrigger` `XhDatePickerPrevYearTrigger` `XhDatePickerRoot` `XhDatePickerSegment` `XhDatePickerTimePanel` `XhDatePickerTrigger` `XhDatePickerWeekDay` `XhDatePickerWeekRow` |
 | 组合式函数 | `useDatePicker` |
 | 状态机 | `datePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/date-picker.css` |

@@ -1,4 +1,4 @@
-<!-- 区间选择 | 五种粒度都能挑区间：默认并排两个连续页，翻页整窗一起走；« » 走大步 -->
+<!-- 五种粒度 | 天 / 周 / 月 / 季度 / 年一套结构走完：view 只换网格与「一页是多久」，值恒是那段时间的第一天 -->
 <script setup lang="ts">
 import type { CalendarView } from "@xihan-ui/headless";
 import { ref } from "vue";
@@ -27,6 +27,7 @@ import {
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
 
+// 段位渲染几段由作者定：按年挑就只留年那一段，不必把用不上的段摆出来
 const kinds = [
   { key: "day", label: "按天", view: "day" as CalendarView, week: false, segments: 3 },
   { key: "week", label: "按周", view: "day" as CalendarView, week: true, segments: 3 },
@@ -42,34 +43,23 @@ const values = ref<Record<string, string[]>>({
   quarter: [],
   year: [],
 });
-
-// 两组段位各自的读屏名字，区间模式下替掉指向 label 的那份
-const translations = { startDate: "开始", endDate: "结束" };
-
-function text(v: string[]): string {
-  if (v.length === 0) return "（未选）";
-  if (v.length === 1) return `${v[0]}（另一端待定）`;
-  return `${v[0]} → ${v[1]}`;
-}
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 20px">
+  <div style="display: flex; flex-wrap: wrap; gap: 24px">
     <XhDatePickerRoot
       v-for="k in kinds"
       :key="k.key"
       v-slot="{ panels, weekDays }"
       v-model:value="values[k.key]"
-      :translations="translations"
       :view="k.view"
       :week-selection="k.week"
-      selection-mode="range"
+      :selection-mode="k.week ? 'range' : 'single'"
       locale="zh-CN"
     >
       <XhDatePickerLabel>{{ k.label }}</XhDatePickerLabel>
       <XhDatePickerControl>
-        <!-- 组号定这组段位认领哪一端：0 起点、1 终点 -->
-        <XhDatePickerInput v-for="end in 2" :key="end" :index="end - 1">
+        <XhDatePickerInput>
           <template v-for="i in k.segments" :key="i">
             <span v-if="i > 1">-</span>
             <XhDatePickerSegment :index="i - 1" />
@@ -81,25 +71,15 @@ function text(v: string[]): string {
         <XhDatePickerContent>
           <XhDatePickerCalendar v-for="panel in panels" :key="panel.index">
             <XhDatePickerHeader>
-              <!-- 往前只在最左那张、往后只在最右那张：整窗一起走 -->
-              <XhDatePickerPrevYearTrigger v-if="panel.index === 0" aria-label="快退">
-                «
-              </XhDatePickerPrevYearTrigger>
-              <XhDatePickerPrevTrigger v-if="panel.index === 0" aria-label="上一页">
-                ‹
-              </XhDatePickerPrevTrigger>
+              <!-- « 与 » 走大步：日视图一年，粗粒度视图十页 -->
+              <XhDatePickerPrevYearTrigger aria-label="快退">«</XhDatePickerPrevYearTrigger>
+              <XhDatePickerPrevTrigger aria-label="上一页">‹</XhDatePickerPrevTrigger>
               <XhDatePickerHeading :index="panel.index" />
-              <XhDatePickerNextTrigger v-if="panel.index === panels.length - 1" aria-label="下一页">
-                ›
-              </XhDatePickerNextTrigger>
-              <XhDatePickerNextYearTrigger
-                v-if="panel.index === panels.length - 1"
-                aria-label="快进"
-              >
-                »
-              </XhDatePickerNextYearTrigger>
+              <XhDatePickerNextTrigger aria-label="下一页">›</XhDatePickerNextTrigger>
+              <XhDatePickerNextYearTrigger aria-label="快进">»</XhDatePickerNextYearTrigger>
             </XhDatePickerHeader>
             <XhDatePickerGrid :index="panel.index">
+              <!-- 日视图铺周行，粗粒度视图把格子直接铺进网格 -->
               <template v-if="k.view === 'day'">
                 <XhDatePickerGridHead>
                   <XhDatePickerWeekRow>
@@ -108,7 +88,6 @@ function text(v: string[]): string {
                 </XhDatePickerGridHead>
                 <XhDatePickerGridBody>
                   <XhDatePickerWeekRow v-for="week in panel.weeks" :key="week[0].value">
-                    <!-- index 必须给：同一天会同时出现在两个面板里 -->
                     <XhDatePickerCell
                       v-for="day in week"
                       :key="day.value"
@@ -133,8 +112,12 @@ function text(v: string[]): string {
           </XhDatePickerCalendar>
         </XhDatePickerContent>
       </XhDatePickerPositioner>
-
-      <span style="font-size: 13px">{{ text(values[k.key]) }}</span>
     </XhDatePickerRoot>
   </div>
+
+  <p style="font-size: 13px">
+    <span v-for="k in kinds" :key="k.key" style="margin-inline-end: 12px">
+      {{ k.label }}：{{ values[k.key].join(" → ") || "—" }}
+    </span>
+  </p>
 </template>

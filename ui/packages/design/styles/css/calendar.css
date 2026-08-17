@@ -37,7 +37,9 @@
     user-select: none;
   }
 
+  [data-scope='calendar'][data-part='prev-year-trigger'],
   [data-scope='calendar'][data-part='prev-trigger'],
+  [data-scope='calendar'][data-part='next-year-trigger'],
   [data-scope='calendar'][data-part='next-trigger'] {
     display: inline-flex;
     flex: none;
@@ -53,25 +55,33 @@
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
+  [data-scope='calendar'][data-part='prev-year-trigger'],
   [data-scope='calendar'][data-part='prev-trigger'][hidden],
+  [data-scope='calendar'][data-part='next-year-trigger'],
   [data-scope='calendar'][data-part='next-trigger'][hidden] {
     display: none;
   }
 
+  [data-scope='calendar'][data-part='prev-year-trigger'],
   [data-scope='calendar'][data-part='prev-trigger']:hover:not(:disabled),
+  [data-scope='calendar'][data-part='next-year-trigger'],
   [data-scope='calendar'][data-part='next-trigger']:hover:not(:disabled) {
     background: var(--xh-calendar-nav-bg-hover, var(--xh-bg-subtle-hover));
     color: var(--xh-fg-default);
   }
 
   /* 翻月是单体控件，禁用走原生 :disabled（连接层输出的正是原生 disabled） */
+  [data-scope='calendar'][data-part='prev-year-trigger'],
   [data-scope='calendar'][data-part='prev-trigger']:disabled,
+  [data-scope='calendar'][data-part='next-year-trigger'],
   [data-scope='calendar'][data-part='next-trigger']:disabled {
     color: var(--xh-fg-disabled);
     cursor: not-allowed;
   }
 
+  [data-scope='calendar'][data-part='prev-year-trigger'],
   [data-scope='calendar'][data-part='prev-trigger']:focus-visible,
+  [data-scope='calendar'][data-part='next-year-trigger'],
   [data-scope='calendar'][data-part='next-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);

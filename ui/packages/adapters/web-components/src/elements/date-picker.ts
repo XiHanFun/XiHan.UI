@@ -96,8 +96,10 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart time-item - 时间选项，须自带 value 属性（两位补零串）；点按把该单位写进值
  * @csspart confirm-trigger - showTime 的收口按钮；没开时带 hidden
  * @csspart header - 日历标题栏外壳（data-scope="calendar"）
+ * @csspart prev-year-trigger - 快速往前翻一大步（日视图一年、粗粒度十页）；可选
  * @csspart prev-trigger - 上一月；越过 min 时转原生 disabled
  * @csspart next-trigger - 下一月；越过 max 时转原生 disabled
+ * @csspart next-year-trigger - 快速往后翻一大步；可选
  * @csspart heading - 展示月标题（grid 的 aria-labelledby 目标）
  * @csspart grid - role=grid 容器，网格键盘在此收口
  * @csspart grid-head - role=rowgroup 表头组，里面套一个 week-row
@@ -418,8 +420,10 @@ export class XhDatePickerElement extends XhElement {
 
     // 内嵌日历的角色节点：行为取自本元素持有的那台日历机器
     put('header', api.calendar.getHeaderProps() as Record<string, unknown>)
+    put('prev-year-trigger', api.calendar.getPrevYearTriggerProps() as Record<string, unknown>)
     put('prev-trigger', api.calendar.getPrevTriggerProps() as Record<string, unknown>)
     put('next-trigger', api.calendar.getNextTriggerProps() as Record<string, unknown>)
+    put('next-year-trigger', api.calendar.getNextYearTriggerProps() as Record<string, unknown>)
     // 面板逐个打：下标取作者写的 index，没写就按文档序（第 N 张就是第 N 个面板）
     this.getParts('heading').forEach((el, position) => {
       this.spreader.spread(el, api.calendar.getHeadingProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)

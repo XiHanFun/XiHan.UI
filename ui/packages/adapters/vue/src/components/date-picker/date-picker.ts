@@ -309,6 +309,14 @@ export const XhDatePickerHeader = defineComponent({
   },
 })
 
+export const XhDatePickerPrevYearTrigger = defineComponent({
+  name: 'XhDatePickerPrevYearTrigger',
+  setup(_, { slots }) {
+    const ctx = useDatePickerContext()
+    return () => h('button', ctx.api.value.calendar.getPrevYearTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhDatePickerPrevTrigger = defineComponent({
   name: 'XhDatePickerPrevTrigger',
   setup(_, { slots }) {
@@ -322,6 +330,14 @@ export const XhDatePickerNextTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
     return () => h('button', ctx.api.value.calendar.getNextTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhDatePickerNextYearTrigger = defineComponent({
+  name: 'XhDatePickerNextYearTrigger',
+  setup(_, { slots }) {
+    const ctx = useDatePickerContext()
+    return () => h('button', ctx.api.value.calendar.getNextYearTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
 
