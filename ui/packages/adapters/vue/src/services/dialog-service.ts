@@ -14,14 +14,16 @@ export interface ConfirmOptions {
   content?: string
   /** 确认钮语气，默认 brand；危险操作传 danger。 */
   tone?: Tone
+  /** 标题旁的类型徽记。不给则不出徽记。 */
+  badge?: 'info' | 'success' | 'warning' | 'error'
   okText?: string
   cancelText?: string
   /** Promise 拒绝时对话框保持打开。 */
   onOk?: () => void | Promise<unknown>
 }
 
-/** 单按钮告知框的入参：没有取消钮，其余同 confirm。 */
-export type AlertOptions = Omit<ConfirmOptions, 'tone'>
+/** 单按钮告知框的入参：没有取消钮，徽记由预设档自己定，其余同 confirm。 */
+export type AlertOptions = Omit<ConfirmOptions, 'tone' | 'badge'>
 
 export interface DialogServiceOptions {
   okText?: string
@@ -209,6 +211,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
       okText: opts.okText ?? defaults.okText,
       cancelText: opts.cancelText ?? defaults.cancelText,
       showCancel: true,
+      badge: opts.badge,
       onOk: opts.onOk,
     }),
     info: alert('info', 'info'),
