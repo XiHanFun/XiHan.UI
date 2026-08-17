@@ -13,6 +13,7 @@ import {
   calendarNavFromKey,
   calendarNavTarget,
   parseCalendarDate,
+  visibleCountOf,
 } from './calendar.grid'
 
 const parts = calendarAnatomy.build()
@@ -55,10 +56,28 @@ export function connectCalendar<T extends PropTypes>(
   const focusedValue = anchor.toString()
   const todayValue = today(timeZone).toString()
 
-  const visibleStart = startOfMonth(anchor)
-  // 面板数只认 >= 1 的整数，写坏了回落到 1
-  const rawCount = Math.trunc(prop('visibleCount') ?? 1)
-  const visibleCount = Number.isFinite(rawCount) && rawCount >= 1 ? rawCount : 1
+  const visibleCount = visibleCountOf(prop('visibleCount'))
+  /**
+   * 视窗最左那个月。
+   *
+   * 机器只记"用户翻到哪儿了"，这里做最后一道推导：那个位置还看得见聚焦日就照用，
+   * 看不见（受控回写、重新展开拉回选中值、方向键走出去）就重新对齐到刚好露出它的那一端。
+   *
+   * 两件事必须分开——多面板下点第二个面板里的日子，聚焦日落到了下个月，
+   * 视窗要是跟着聚焦日走，每点一下就整窗往后推一个月，看着就像"点一下翻一页、选不中"。
+   */
+  const visibleStart = ((): CalendarDate => {
+    const target = startOfMonth(anchor)
+    const stored = parseCalendarDate(context.get('visibleStart'))
+    if (!stored)
+      return target
+    const first = startOfMonth(stored)
+    if (target.compare(first) < 0)
+      return target
+    if (target.compare(first.add({ months: visibleCount - 1 })) > 0)
+      return target.subtract({ months: visibleCount - 1 })
+    return first
+  })()
   const headingFormatter = new DateFormatter(locale, { year: 'numeric', month: 'long', timeZone })
   // 一个锚点铺出 N 个连续月：翻页只动锚点，整窗一起走
   const panels: CalendarPanel[] = Array.from({ length: visibleCount }, (_, index) => {
@@ -174,8 +193,10 @@ export function connectCalendar<T extends PropTypes>(
    * 点击也走这一路，否则翻月重画后原节点被换掉、焦点掉回 body。
    */
   const focusInGrid = (next: string): void => send({ type: 'FOCUS.SET', value: next, restoreFocus: true })
+  // 翻页：聚焦日与视窗一起走同样的量。months 带在事件上，机器据此把视窗整体挪过去——
+  // 多面板下翻一页只挪一个月，落点仍在窗内，靠「走出去才挪」是推不动窗的
   const stepMonth = (amount: 1 | -1): void => {
-    focusAt(anchor.add({ months: amount }).toString())
+    send({ type: 'FOCUS.SET', value: anchor.add({ months: amount }).toString(), months: amount })
   }
 
   /** 确认键：选中聚焦日。只读与不可用的日子不认，禁用的日历整条不进来。 */

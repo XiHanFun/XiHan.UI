@@ -209,3 +209,9 @@ export function calendarNavTarget(anchor: string, intent: CalendarNavIntent, loc
       return date.add({ years: 1 }).toString()
   }
 }
+
+/** 并排面板数归一：只认 >= 1 的整数，写坏了回落到 1。连接层与机器共用这一条。 */
+export function visibleCountOf(count: number | undefined): number {
+  const n = Math.trunc(count ?? 1)
+  return Number.isFinite(n) && n >= 1 ? n : 1
+}

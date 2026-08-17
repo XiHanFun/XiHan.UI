@@ -715,6 +715,22 @@ describe('点输入行即展开', () => {
     expect(h.state()).toBe('closed')
   })
 
+  it('段上 Enter 收起：敲出来的值不触发选完即收，得给一个我填完了的手势', async () => {
+    const h = await open({ selectionMode: 'range' })
+    expect(h.state()).toBe('open')
+    const group = h.input
+    press(group, 'Enter')
+    await tick()
+    expect(h.state()).toBe('closed')
+  })
+
+  it('收起态按 Enter 不会反手把它打开', async () => {
+    const h = mount()
+    press(h.input, 'Enter')
+    await tick()
+    expect(h.state()).toBe('closed')
+  })
+
   it('段上 Alt+ArrowDown 展开并把焦点送进浮层——触发钮是可选部件，键盘不能只靠它', async () => {
     const h = mount({ defaultValue: '2026-07-28' })
     const segment = h.segments()[0]!
