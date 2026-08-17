@@ -374,6 +374,26 @@ describe('多面板', () => {
     expect(h.api().panels.map(p => [p.year, p.month])).toEqual([[2024, 1], [2024, 2]])
   })
 
+  it('点第二个面板里的日子不挪视窗——挪了就成了「点一下翻一页、选不中」', () => {
+    const h = mount({ defaultFocusedValue: '2026-10-08', visibleCount: 2 })
+    expect(h.api().panels.map(p => [p.year, p.month])).toEqual([[2026, 10], [2026, 11]])
+    // 落在第二个面板（11 月）里的一天
+    h.api().focus('2026-11-20')
+    expect(h.api().focusedValue).toBe('2026-11-20')
+    // 视窗一动不动
+    expect(h.api().panels.map(p => [p.year, p.month])).toEqual([[2026, 10], [2026, 11]])
+  })
+
+  it('聚焦日走出视窗才重新对齐，且只挪到刚好露出它的那一端', () => {
+    const h = mount({ defaultFocusedValue: '2026-10-08', visibleCount: 2 })
+    // 往后越界：末面板贴住它
+    h.api().focus('2026-12-03')
+    expect(h.api().panels.map(p => [p.year, p.month])).toEqual([[2026, 11], [2026, 12]])
+    // 往前越界：首面板贴住它
+    h.api().focus('2026-09-03')
+    expect(h.api().panels.map(p => [p.year, p.month])).toEqual([[2026, 9], [2026, 10]])
+  })
+
   it('面板数写坏了回落到 1', () => {
     for (const bad of [0, -3, Number.NaN]) {
       const api = mount({ defaultFocusedValue: '2024-02-15', visibleCount: bad }).api()

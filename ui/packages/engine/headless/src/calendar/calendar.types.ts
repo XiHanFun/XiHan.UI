@@ -128,6 +128,14 @@ export interface CalendarSchema extends MachineSchema {
     value: string[]
     /** 聚焦日。受控（focusedValue 给定）时 cell 直读 prop；为空时由 connect 兜底。 */
     focusedValue: string | null
+    /**
+     * 视窗最左那个面板的月首日 ISO 串；null 表示还没定过，由连接层按聚焦日反推。
+     *
+     * 它与聚焦日是两件事：聚焦日只在走出视窗时才把视窗拽过去。多面板下这条尤其要紧——
+     * 点第二个面板里的日子，聚焦日落到了下个月，若视窗跟着走，整窗就会往后推一格，
+     * 看着就像「点一下翻一页、选不中」。
+     */
+    visibleStart: string | null
     /** 区间挑选的起点：已落下起点、还没落终点时非空。 */
     rangeAnchor: string | null
     /** 指针悬停的那天，只在挑区间时用来预览；不受控、不对外通知。 */
@@ -148,12 +156,12 @@ export interface CalendarSchema extends MachineSchema {
      * 只能用事件自带的这个意图，不能事后回读 activeElement：跨月重渲后旧格子已被摘掉、焦点早退回 body，
      * 而重渲发生在读 DOM 之前还是之后取决于宿主调度。
      */
-    | { type: 'FOCUS.SET', value: string, restoreFocus?: boolean }
+    | { type: 'FOCUS.SET', value: string, months?: number, restoreFocus?: boolean }
     | { type: 'HOVER.SET', value: string }
     | { type: 'HOVER.CLEAR' }
   tag: never
   guard: never
-  action: 'setValue' | 'selectCell' | 'setFocusedValue' | 'setHoveredValue' | 'clearHoveredValue' | 'focusVisibleCell'
+  action: 'setValue' | 'selectCell' | 'setFocusedValue' | 'pageVisibleStart' | 'setHoveredValue' | 'clearHoveredValue' | 'focusVisibleCell'
   effect: 'trackLiveness'
 }
 

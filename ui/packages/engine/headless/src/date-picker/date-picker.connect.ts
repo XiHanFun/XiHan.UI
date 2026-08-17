@@ -298,10 +298,20 @@ export function connectDatePicker<T extends PropTypes>(
         // 触发钮是可选部件，键盘那条入口不能只挂在它身上：Alt+ArrowDown 是下拉类控件通用的展开键。
         // 挂在分段容器而不是段位上——段位属于分段输入那份解剖，keydown 冒到这儿一样收得到
         'onKeyDown': (event: KeyboardEvent) => {
-          if (disabled || open || !event.altKey || event.key !== 'ArrowDown')
+          if (disabled)
             return
-          event.preventDefault()
-          send({ type: 'OPEN', src: 'trigger' })
+          // Alt+ArrowDown 展开：下拉类控件通用的展开键，段位原本就不认它
+          if (!open && event.altKey && event.key === 'ArrowDown') {
+            event.preventDefault()
+            send({ type: 'OPEN', src: 'trigger' })
+            return
+          }
+          // Enter 收起:段位里敲出来的值不触发"选完即收"(那时人还在打字),
+          // 于是得给一个"我填完了"的手势。触发钮是可选部件,不能指望人去点那个箭头
+          if (open && !event.altKey && event.key === 'Enter') {
+            event.preventDefault()
+            send({ type: 'CLOSE' })
+          }
         },
       })
     },

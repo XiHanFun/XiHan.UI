@@ -1,9 +1,46 @@
 import type { CalendarSchema, CalendarSelectionMode } from './calendar.types'
+import { getLocalTimeZone, startOfMonth, today } from '@internationalized/date'
 import { focusItem, itemValue, queryItems } from '@xihan-ui/behavior'
 import { setup } from '@xihan-ui/machine'
 import { calendarCellTriggerQuery } from './calendar.anatomy'
+import { parseCalendarDate, visibleCountOf } from './calendar.grid'
 
 const { createMachine } = setup<CalendarSchema>()
+
+/** 建机器时的视窗起点：与连接层的兜底同一条——聚焦日 → 首个选中值 → 今天。 */
+function initialVisibleStart(prop: (key: 'focusedValue' | 'defaultFocusedValue' | 'value' | 'defaultValue' | 'timeZone') => unknown): string {
+  const focused = parseCalendarDate(prop('focusedValue') as string | undefined)
+    ?? parseCalendarDate(prop('defaultFocusedValue') as string | undefined)
+    ?? parseCalendarDate(toValues(prop('value') as string | string[] | undefined)?.[0])
+    ?? parseCalendarDate(toValues(prop('defaultValue') as string | string[] | undefined)?.[0])
+    ?? today((prop('timeZone') as string | undefined) ?? getLocalTimeZone())
+  return startOfMonth(focused).toString()
+}
+
+/**
+ * 把视窗对齐到「刚好露出这一天」：落在窗内一动不动，走出去才挪到最近的那一端。
+ *
+ * 这是视窗唯一会自己动的规则，翻页那条另算（见 pageVisibleStart）。
+ */
+function alignVisibleStart(
+  context: { get: (key: 'visibleStart') => string | null, set: (key: 'visibleStart', value: string) => void },
+  prop: (key: 'visibleCount') => number | undefined,
+  value: string,
+): void {
+  const target = parseCalendarDate(value)
+  const start = parseCalendarDate(context.get('visibleStart'))
+  if (!target || !start)
+    return
+  const first = startOfMonth(start)
+  const month = startOfMonth(target)
+  const count = visibleCountOf(prop('visibleCount'))
+  if (month.compare(first) < 0) {
+    context.set('visibleStart', month.toString())
+    return
+  }
+  if (month.compare(first.add({ months: count - 1 })) > 0)
+    context.set('visibleStart', month.subtract({ months: count - 1 }).toString())
+}
 
 /** 裸串是单选的简写，内部一律按数组处理；undefined 要原样透传，cell 靠它区分受控与否。 */
 function toValues(input: string | string[] | undefined): string[] | undefined {
@@ -51,6 +88,12 @@ export const calendarMachine = createMachine({
           prop('onFocusedValueChange')?.({ focusedValue })
       },
     })),
+    // 视窗起点不受控、不对外通知：它是纯粹的浏览位置。
+    // 建机器时就钉住——内嵌进 date-picker 时日历的 focusedValue 是受控的，
+    // 点格子那一下宿主会先把它改成刚点的那天，懒到那时再钉就钉错了月份
+    visibleStart: cell<string | null>(() => ({
+      defaultValue: initialVisibleStart(prop),
+    })),
     // 区间起点与悬停都不受控、不对外通知
     rangeAnchor: cell<string | null>(() => ({ defaultValue: null })),
     hoveredValue: cell<string | null>(() => ({ defaultValue: null })),
@@ -67,7 +110,7 @@ export const calendarMachine = createMachine({
       on: {
         'VALUE.SET': { actions: ['setValue'] },
         'CELL.SELECT': { actions: ['selectCell'] },
-        'FOCUS.SET': { actions: ['setFocusedValue', 'focusVisibleCell'] },
+        'FOCUS.SET': { actions: ['setFocusedValue', 'pageVisibleStart', 'focusVisibleCell'] },
         'HOVER.SET': { actions: ['setHoveredValue'] },
         'HOVER.CLEAR': { actions: ['clearHoveredValue'] },
       },
@@ -117,10 +160,41 @@ export const calendarMachine = createMachine({
         context.set('rangeAnchor', null)
       },
 
-      setFocusedValue: ({ context, event }) => {
+      setFocusedValue: ({ context, prop, event }) => {
         const e = event.current()
-        if (e.type === 'FOCUS.SET')
-          context.set('focusedValue', e.value)
+        if (e.type !== 'FOCUS.SET')
+          return
+        context.set('focusedValue', e.value)
+        // 翻页那一路的视窗归 pageVisibleStart 管，这里让开：两条都动就走了双份
+        if (e.months != null)
+          return
+        // 新落点走出视窗才把视窗挪过去；落在窗内一动不动——
+        // 多面板下点第二个面板里的日子正是这一路
+        alignVisibleStart(context, prop, e.value)
+      },
+
+      /**
+       * 聚焦日走出视窗时才把视窗挪过去，挪到刚好把它露出来的那一端。
+       * 落在窗内则一动不动——多面板下点第二个面板里的日子正是这一路，
+       * 视窗要是跟着走，每点一下就整窗往后推一个月。
+       */
+      /**
+       * 翻页：视窗整体走同样的量。多面板下翻一页只挪一个月、落点仍在窗内，
+       * 靠下面那条"走出去才挪"是推不动窗的，所以单独一条。
+       *
+       * 判据是聚焦日真的走到了请求的那天：受控 focusedValue 时宿主可能不写回，
+       * 那一刻视窗也不该动，否则展示月与聚焦日就各说各话了。
+       */
+      pageVisibleStart: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'FOCUS.SET' || e.months == null)
+          return
+        if (context.get('focusedValue') !== e.value)
+          return
+        const start = parseCalendarDate(context.get('visibleStart'))
+        if (!start)
+          return
+        context.set('visibleStart', startOfMonth(start).add({ months: e.months }).toString())
       },
 
       setHoveredValue: ({ context, event }) => {

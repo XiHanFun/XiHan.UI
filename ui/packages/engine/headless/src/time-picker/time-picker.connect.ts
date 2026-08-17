@@ -345,6 +345,13 @@ export function connectTimePicker<T extends PropTypes>(
             send({ type: 'OPEN', focus: 'selected', src: 'trigger' })
             return
           }
+          // Enter 收起:段位里敲出来的值不触发"选完即收"(那时人还在打字),
+          // 于是得给一个"我填完了"的手势。触发钮是可选部件,不能指望人去点那个箭头
+          if (open && !event.altKey && event.key === 'Enter') {
+            event.preventDefault()
+            send({ type: 'CLOSE' })
+            return
+          }
           if (event.ctrlKey || event.metaKey || event.altKey)
             return
           const el = event.currentTarget as HTMLElement

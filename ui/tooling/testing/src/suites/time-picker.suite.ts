@@ -107,6 +107,32 @@ export const timePickerSuite: ConformanceSuite = {
   },
   cases: [
     {
+      name: '段上 Enter 收起：段位敲出来的值不触发「选完即收」，这是那条路的收口手势',
+      spec: { apg: APG },
+      covers: ['time-picker.kbd.segment-close'],
+      props: BASE,
+      steps: [
+        // 不用 defaultOpen 起手：那条路两个适配器的挂载落焦时序本就有差，会把这个用例的对比噪声放大
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        {
+          kind: 'raw',
+          why: '要把键派在真正可聚焦的段位上，而 key 步骤只往 activeElement 上派',
+          run: async (ctx) => {
+            const seg = ctx.doc.querySelector('[data-scope="time-picker"][data-part="input"]')
+            if (!(seg instanceof HTMLElement))
+              throw new Error('找不到段位节点')
+            seg.focus()
+            seg.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+            await ctx.flush()
+            const content = ctx.doc.querySelector('[data-scope="time-picker"][data-part="content"]')
+            if (!content?.hasAttribute('hidden'))
+              throw new Error('段上按 Enter 没能把浮层收起')
+          },
+        },
+      ],
+    },
+    {
       name: '段上 Alt+ArrowDown 展开：触发钮是可选部件，键盘那条入口不能只挂在它身上',
       spec: { apg: APG },
       covers: ['time-picker.kbd.segment-open'],

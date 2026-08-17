@@ -475,6 +475,16 @@ describe('开合', () => {
     expect(h.state()).toBe('open')
   })
 
+  it('段上 Enter 收起：敲出来的值不触发选完即收，得给一个我填完了的手势', async () => {
+    const h = open({ defaultValue: '09:30' })
+    h.trigger.click()
+    await flushFrames(3)
+    expect(h.state()).toBe('open')
+    pressKey(h.segment('hour'), 'Enter')
+    await flushFrames(1)
+    expect(h.state()).toBe('closed')
+  })
+
   it('段上 Alt+ArrowDown 展开——触发钮是可选部件，键盘不能只靠它', async () => {
     const h = open({ defaultValue: '09:30' })
     const segment = h.segment('hour')
