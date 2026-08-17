@@ -10032,6 +10032,15 @@
             },
             {
               "kind": "field",
+              "name": "contained",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "contained"
+            },
+            {
+              "kind": "field",
               "name": "side",
               "privacy": "public",
               "type": {
@@ -10246,6 +10255,14 @@
               "description": "模态（陷焦点、锁滚动、遮罩交互外关闭），默认 true",
               "name": "modal",
               "fieldName": "modal"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "局部抽屉：遮罩与定位层从 fixed 换成 absolute，只罩住最近的定位祖先而不是盖满整屏。 本元素是 Light DOM、作者写在哪浮层就在哪，所以「挂到哪个容器」这件事本身不需要属性——写上它是为了让皮肤按容器画",
+              "name": "contained",
+              "fieldName": "contained"
             },
             {
               "type": {

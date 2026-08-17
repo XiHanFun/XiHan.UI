@@ -25,6 +25,19 @@ export const XhDrawerRoot = defineComponent({
     closeOnInteractOutside: { type: Boolean, default: undefined },
     restoreFocus: { type: Boolean, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
+    /**
+     * 挂到哪个容器（CSS 选择器或元素）。给了它就是局部抽屉：
+     * 浮层搬进那个容器，遮罩与定位层从 fixed 换成 absolute，只罩住它而不是盖满整屏。
+     *
+     * 那个容器要自己带 position（relative 之类），否则 absolute 会往上找到别的定位祖先。
+     * 不给则问全局配置的 portalContainer，再没有才落 body。
+     */
+    container: { type: [String, Object] as PropType<string | Element>, default: undefined },
+    /**
+     * 只把画法改成局部（遮罩与定位层从 fixed 换成 absolute），不管搬到哪儿。
+     * 给了 container 就默认为真，不必再写一遍；两个都不给即铺满视口。
+     */
+    contained: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<DrawerProps['translations']>, default: undefined },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
@@ -40,7 +53,9 @@ export const XhDrawerRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useDrawer(withXhConfig('drawer', props) as DrawerProps, notify)
+    // 容器一处给定，两件事都从它派生：contained 交给机器（皮肤据此把遮罩与定位层
+    // 从 fixed 换成 absolute），同一个值又是 Teleport 的落点，两边不会各说各话
+    const ctx = useDrawer(withXhConfig('drawer', props) as DrawerProps, notify, () => props.container)
     provideDrawer(ctx)
     // root 是真实节点，content 会被 portal 到 body，data-side 挂在这里供页面内的部分读取
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
@@ -68,7 +83,7 @@ export const XhDrawerContent = defineComponent({
       if (!ctx.rendered.value)
         return null
       const api = ctx.api.value
-      return h(Teleport, { to: 'body' }, [
+      return h(Teleport, { to: ctx.portalTarget.value }, [
         h('div', {
           ...api.getBackdropProps() as Record<string, unknown>,
           ref: (el: unknown) => { ctx.backdropRef.value = el as HTMLElement },

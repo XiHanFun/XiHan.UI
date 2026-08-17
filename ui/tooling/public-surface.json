@@ -4990,6 +4990,7 @@
     "drawer": [
       "closeOnEscape",
       "closeOnInteractOutside",
+      "contained",
       "defaultOpen",
       "modal",
       "onOpenChange",
@@ -5908,6 +5909,7 @@
     "data-cols",
     "data-columns",
     "data-complete",
+    "data-contained",
     "data-copied",
     "data-count",
     "data-current",
@@ -8597,6 +8599,7 @@
       "attributes": [
         "close-on-escape",
         "close-on-interact-outside",
+        "contained",
         "default-open",
         "modal",
         "open",

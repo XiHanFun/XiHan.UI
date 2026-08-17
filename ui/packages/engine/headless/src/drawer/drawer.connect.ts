@@ -1,6 +1,7 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { DrawerApi, DrawerSchema, DrawerSide } from './drawer.types'
+import { dataAttr } from '@xihan-ui/kernel'
 import { drawerAnatomy } from './drawer.anatomy'
 
 const parts = drawerAnatomy.build()
@@ -17,6 +18,7 @@ export function connectDrawer<T extends PropTypes>(
   const modal = prop('modal') ?? true
   const role = prop('role') ?? 'dialog'
   const side = prop('side') ?? DRAWER_DEFAULT_SIDE
+  const contained = !!prop('contained')
   const ids = scope.ids('drawer', 'trigger', 'content', 'title', 'description')
   const stateAttr = open ? 'open' : 'closed'
 
@@ -35,6 +37,7 @@ export function connectDrawer<T extends PropTypes>(
       'data-state': stateAttr,
       'data-side': side,
       'data-size': prop('size'),
+      'data-contained': dataAttr(contained),
     }),
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
@@ -49,10 +52,13 @@ export function connectDrawer<T extends PropTypes>(
     getBackdropProps: () => normalize.element({
       ...parts.backdrop.attrs,
       'data-state': stateAttr,
+      // 局部容器里遮罩改画在容器上，铺满视口的那份 fixed 由皮肤据此让位
+      'data-contained': dataAttr(contained),
     }),
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
       'data-state': stateAttr,
+      'data-contained': dataAttr(contained),
     }),
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
@@ -67,6 +73,7 @@ export function connectDrawer<T extends PropTypes>(
       // content 被 portal 到 body 后 root 上的选择器够不着它，故自身也带 data-side / data-size
       'data-side': side,
       'data-size': prop('size'),
+      'data-contained': dataAttr(contained),
       // positioner 非必需部件，content 收起态必须自带 hidden，否则最小结构（root + content）
       // 下抽屉关不掉（WC 侧 content 常驻，尤为明显）
       'hidden': !open || undefined,
