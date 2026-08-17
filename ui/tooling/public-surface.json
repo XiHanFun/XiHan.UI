@@ -2931,6 +2931,7 @@
       "isPinComplete",
       "isTimeOutOfRange",
       "isTourLastStep",
+      "isoWeekNumber",
       "layoutAnatomy",
       "layoutKeyboard",
       "layoutMachine",

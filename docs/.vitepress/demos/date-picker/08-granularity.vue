@@ -82,12 +82,23 @@ const values = ref<Record<string, string[]>>({
               <!-- 日视图铺周行，粗粒度视图把格子直接铺进网格 -->
               <template v-if="k.view === 'day'">
                 <XhDatePickerGridHead>
-                  <XhDatePickerWeekRow>
+                  <XhDatePickerWeekRow :style="k.week ? { gridTemplateColumns: '2.25rem repeat(7, minmax(0, 1fr))' } : undefined">
+                    <!-- 周选时行首多一列周序号，表头也得空出这一格 -->
+                    <span v-if="k.week" aria-hidden="true" />
                     <XhDatePickerWeekDay v-for="d in weekDays" :key="d.value" :value="d.value" />
                   </XhDatePickerWeekRow>
                 </XhDatePickerGridHead>
                 <XhDatePickerGridBody>
-                  <XhDatePickerWeekRow v-for="week in panel.weeks" :key="week[0].value">
+                  <XhDatePickerWeekRow
+                    v-for="(week, w) in panel.weeks"
+                    :key="week[0].value"
+                    :style="k.week ? { gridTemplateColumns: '2.25rem repeat(7, minmax(0, 1fr))' } : undefined"
+                  >
+                    <!-- 周序号：挑的是第几周，光看日期看不出来 -->
+                    <span
+                      v-if="k.week"
+                      style="display: grid; place-items: center; font-size: 12px; color: var(--xh-fg-subtle)"
+                    >{{ panel.weekNumbers[w] }}</span>
                     <XhDatePickerCell
                       v-for="day in week"
                       :key="day.value"

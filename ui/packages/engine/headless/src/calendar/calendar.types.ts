@@ -68,6 +68,11 @@ export interface CalendarPanel {
   startValue: string
   /** 日期矩阵；view 不是 day 时为空数组。 */
   weeks: CalendarDay[][]
+  /**
+   * 与 weeks 逐行对应的 ISO 周序号（周一起算）。view 不是 day 时为空数组。
+   * 周选时把它渲染成行首那一列，人才看得出挑的是第几周。
+   */
+  weekNumbers: number[]
   /** 月 / 季度 / 年的格子；view 是 day 时为空数组。 */
   cells: CalendarPeriodCell[]
   /** 这个面板的标题文案（2024年2月 / 2024年 / 2020-2029）。 */

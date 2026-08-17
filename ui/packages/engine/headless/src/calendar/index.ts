@@ -13,6 +13,7 @@ export {
   calendarPageMonths,
   calendarPeriodStart,
   calendarWeekRange,
+  isoWeekNumber,
   parseCalendarDate,
 } from './calendar.grid'
 export type {

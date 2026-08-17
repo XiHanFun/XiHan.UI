@@ -16,6 +16,7 @@ import {
   calendarPageMonths,
   calendarPeriodStart,
   calendarWeekRange,
+  isoWeekNumber,
   parseCalendarDate,
   visibleCountOf,
 } from './calendar.grid'
@@ -104,6 +105,8 @@ export function connectCalendar<T extends PropTypes>(
         month: g.month,
         startValue: g.monthStart,
         weeks: g.weeks,
+        // 每行取行首那天算周序号：ISO 周一起算，行首正是周一（zh-CN）
+        weekNumbers: g.weeks.map(row => isoWeekNumber(row[0]!.value)),
         cells: [],
         headingLabel: headingFormatter.format(start.toDate(timeZone)),
       }
@@ -116,6 +119,7 @@ export function connectCalendar<T extends PropTypes>(
       month: first.month,
       startValue: g.startValue,
       weeks: [],
+      weekNumbers: [],
       cells: g.cells,
       headingLabel: g.headingLabel,
     }
@@ -142,12 +146,21 @@ export function connectCalendar<T extends PropTypes>(
   const rangeEnds = ((): [CalendarDate, CalendarDate] | null => {
     if (mode !== 'range')
       return null
-    // 周选：一格一格拉出来的区间在这里讲不通——落下去的恒是整整一周。
-    // 悬停时就整周预览，指针扫过哪一行哪一行亮，与点下去的结果对得上
+    // 周选：一格一格拉出来的区间在这里讲不通——两端恒落在整周的外缘。
+    // 挑到一半时从起点周铺到悬停那一周，都整周整周地亮，与点下去的结果对得上
     if (weekSelection) {
-      const preview = hovered ?? (rangeAnchor ? null : parseCalendarDate(value[0]))
-      if (preview) {
-        const [from, to] = calendarWeekRange(preview.toString(), locale)
+      const week = (d: CalendarDate): [string, string] => calendarWeekRange(d.toString(), locale)
+      if (rangeAnchor) {
+        const [aFrom, aTo] = week(rangeAnchor)
+        const [hFrom, hTo] = week(hovered ?? anchor)
+        return [
+          parseCalendarDate(aFrom <= hFrom ? aFrom : hFrom)!,
+          parseCalendarDate(aTo >= hTo ? aTo : hTo)!,
+        ]
+      }
+      // 还没落起点：指针扫过哪一周就整周预览那一周
+      if (hovered) {
+        const [from, to] = week(hovered)
         return [parseCalendarDate(from)!, parseCalendarDate(to)!]
       }
     }
@@ -253,12 +266,23 @@ export function connectCalendar<T extends PropTypes>(
    * 其余情形照旧只落这一天。
    */
   const selectAt = (value: string): void => {
-    if (weekSelection) {
-      const [from, to] = calendarWeekRange(value, locale)
-      send({ type: 'VALUE.SET', value: [from, to] })
+    if (!weekSelection) {
+      send({ type: 'CELL.SELECT', value })
       return
     }
-    send({ type: 'CELL.SELECT', value })
+    const [from, to] = calendarWeekRange(value, locale)
+    // 还没落起点：把这一周的首日交给区间那套，rangeAnchor 就位后悬停预览才接得上
+    if (!rangeAnchor) {
+      send({ type: 'CELL.SELECT', value: from })
+      return
+    }
+    // 已有起点：区间的两端是「起点周与终点周」各自朝外那一头，
+    // 于是选出来的恒是整周的整数倍——第 33 周到第 37 周，而不是某天到某天
+    const [anchorFrom, anchorTo] = calendarWeekRange(rangeAnchor.toString(), locale)
+    send({
+      type: 'VALUE.SET',
+      value: [anchorFrom <= from ? anchorFrom : from, anchorTo >= to ? anchorTo : to],
+    })
   }
 
   /** 确认键：选中聚焦日。只读与不可用的日子不认，禁用的日历整条不进来。 */
