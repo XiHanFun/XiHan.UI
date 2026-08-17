@@ -1,4 +1,4 @@
-<!-- 基础用法 | 段位与列写的是同一个值：段上敲、列里挑，另一边当场跟着改口 -->
+<!-- 基础用法 | 点输入行任意处即展开，不必再去点小箭头；段位与列写的是同一个值，段上敲、列里挑，另一边当场跟着改口 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
@@ -12,7 +12,6 @@ import {
   XhTimePickerItem,
   XhTimePickerPositioner,
   XhTimePickerRoot,
-  XhTimePickerTrigger,
 } from "@xihan-ui/vue";
 
 const value = ref("");
@@ -26,7 +25,6 @@ const value = ref("");
       <XhTimePickerInput segment="hour" />
       <span>:</span>
       <XhTimePickerInput segment="minute" />
-      <XhTimePickerTrigger>▾</XhTimePickerTrigger>
       <XhTimePickerClearTrigger>✕</XhTimePickerClearTrigger>
     </XhTimePickerControl>
     <!-- 表单出口：随表单提交的是完整 ISO 串 -->

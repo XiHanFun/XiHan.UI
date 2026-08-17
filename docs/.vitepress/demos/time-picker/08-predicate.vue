@@ -10,7 +10,6 @@ import {
   XhTimePickerItem,
   XhTimePickerPositioner,
   XhTimePickerRoot,
-  XhTimePickerTrigger,
 } from "@xihan-ui/vue";
 
 // 午休不接待
@@ -45,7 +44,6 @@ function snap(next: string) {
       <XhTimePickerInput segment="hour" />
       <span>:</span>
       <XhTimePickerInput segment="minute" />
-      <XhTimePickerTrigger>▾</XhTimePickerTrigger>
     </XhTimePickerControl>
     <XhTimePickerPositioner>
       <XhTimePickerContent>

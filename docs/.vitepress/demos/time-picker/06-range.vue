@@ -10,7 +10,6 @@ import {
   XhTimePickerItem,
   XhTimePickerPositioner,
   XhTimePickerRoot,
-  XhTimePickerTrigger,
 } from "@xihan-ui/vue";
 
 const value = ref("");
@@ -23,7 +22,6 @@ const value = ref("");
       <XhTimePickerInput segment="hour" />
       <span>:</span>
       <XhTimePickerInput segment="minute" />
-      <XhTimePickerTrigger>▾</XhTimePickerTrigger>
     </XhTimePickerControl>
     <XhTimePickerPositioner>
       <XhTimePickerContent>

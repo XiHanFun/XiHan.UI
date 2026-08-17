@@ -21,7 +21,6 @@ import {
   XhDatePickerRoot,
   XhDatePickerSegment,
   XhDatePickerTimePanel,
-  XhDatePickerTrigger,
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
@@ -40,7 +39,6 @@ const stamp = ref<string[]>([]);
         <span>-</span>
         <XhDatePickerSegment :index="2" />
       </XhDatePickerInput>
-      <XhDatePickerTrigger>▾</XhDatePickerTrigger>
     </XhDatePickerControl>
     <XhDatePickerPositioner>
       <XhDatePickerContent>

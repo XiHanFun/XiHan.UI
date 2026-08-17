@@ -21,7 +21,6 @@ import {
   XhDatePickerPrevTrigger,
   XhDatePickerRoot,
   XhDatePickerSegment,
-  XhDatePickerTrigger,
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
@@ -60,7 +59,6 @@ const shortcuts = [
         <XhDatePickerSegment :index="2" />
       </XhDatePickerInput>
       <XhDatePickerClearTrigger>✕</XhDatePickerClearTrigger>
-      <XhDatePickerTrigger>▾</XhDatePickerTrigger>
     </XhDatePickerControl>
     <XhDatePickerPositioner>
       <XhDatePickerContent>

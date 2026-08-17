@@ -11,7 +11,6 @@ import {
   XhTimePickerItem,
   XhTimePickerPositioner,
   XhTimePickerRoot,
-  XhTimePickerTrigger,
 } from "@xihan-ui/vue";
 
 const value = ref("");
@@ -36,7 +35,6 @@ function now() {
       <XhTimePickerInput segment="hour" />
       <span>:</span>
       <XhTimePickerInput segment="minute" />
-      <XhTimePickerTrigger>▾</XhTimePickerTrigger>
     </XhTimePickerControl>
     <XhTimePickerPositioner>
       <!-- 面板默认把列横排，改成竖排才放得下下面这一排按钮 -->

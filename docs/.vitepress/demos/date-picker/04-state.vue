@@ -18,7 +18,6 @@ import {
   XhDatePickerPrevTrigger,
   XhDatePickerRoot,
   XhDatePickerSegment,
-  XhDatePickerTrigger,
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
@@ -51,7 +50,6 @@ const states = [
           <span>-</span>
           <XhDatePickerSegment :index="2" />
         </XhDatePickerInput>
-        <XhDatePickerTrigger>▾</XhDatePickerTrigger>
       </XhDatePickerControl>
       <XhDatePickerPositioner>
         <XhDatePickerContent>

@@ -10,7 +10,6 @@ import {
   XhDatePickerPositioner,
   XhDatePickerRoot,
   XhDatePickerSegment,
-  XhDatePickerTrigger,
 } from "@xihan-ui/vue";
 
 const value = ref<string[]>([]);
@@ -32,7 +31,6 @@ function firstDay(month: number) {
         <XhDatePickerSegment :index="1" />
         <span>月</span>
       </XhDatePickerInput>
-      <XhDatePickerTrigger>▾</XhDatePickerTrigger>
     </XhDatePickerControl>
     <XhDatePickerPositioner>
       <XhDatePickerContent>

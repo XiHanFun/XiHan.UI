@@ -1,4 +1,4 @@
-<!-- 精度到秒 | granularity 同时决定输入行显示几段、浮层里排几列 -->
+<!-- 可选的触发钮 | 点输入行本来就展开，这个按钮不是必需的；要它是因为它才带 aria-haspopup / aria-expanded -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
@@ -7,25 +7,27 @@ import {
   XhTimePickerContent,
   XhTimePickerControl,
   XhTimePickerInput,
-  XhTimePickerLabel,
   XhTimePickerItem,
+  XhTimePickerLabel,
   XhTimePickerPositioner,
   XhTimePickerRoot,
+  XhTimePickerTrigger,
 } from "@xihan-ui/vue";
 
-const value = ref("");
+const value = ref("09:30");
 </script>
 
 <template>
-  <XhTimePickerRoot v-model:value="value" granularity="second">
-    <XhTimePickerLabel>执行时刻</XhTimePickerLabel>
+  <XhTimePickerRoot v-model:value="value">
+    <XhTimePickerLabel>会议开始</XhTimePickerLabel>
     <XhTimePickerControl>
       <XhTimePickerInput segment="hour" />
       <span>:</span>
       <XhTimePickerInput segment="minute" />
-      <span>:</span>
-      <XhTimePickerInput segment="second" />
       <XhTimePickerClearTrigger>✕</XhTimePickerClearTrigger>
+      <!-- 写上它多一个明写的入口；不写也照样能展开——点输入行即可，
+           键盘则在段上按 Alt+ArrowDown -->
+      <XhTimePickerTrigger aria-label="展开时间列">▾</XhTimePickerTrigger>
     </XhTimePickerControl>
     <XhTimePickerPositioner>
       <XhTimePickerContent>
@@ -33,9 +35,6 @@ const value = ref("");
           <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
         </XhTimePickerColumn>
         <XhTimePickerColumn v-slot="{ options }" unit="minute">
-          <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
-        </XhTimePickerColumn>
-        <XhTimePickerColumn v-slot="{ options }" unit="second">
           <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
         </XhTimePickerColumn>
       </XhTimePickerContent>
