@@ -48,6 +48,9 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @attr {boolean} loading - 数据在路上：root 报 aria-busy，表体为空时加载态节点显形
  * @attr {boolean} empty - 显式声明表体为空；缺省按 rows 是否为空推导，写 empty="false" 强制不空
  * @attr {boolean} sticky-header - 表头吸顶，只落 data-sticky，钉住的实现归皮肤
+ * @attr {boolean} striped - 斑马纹：表体偶数行换一层浅底
+ * @attr {boolean} borderless - 去掉外框，只留行间横线
+ * @attr {boolean} ruled - 列与列之间加竖分隔线
  * @attr {boolean} footer - 表格带脚注行：行号空间的最后一行留给它，aria-rowcount 也算上
  * @attr {boolean} loop - 上下键走到首尾回绕，默认关；写 loop="true" 打开
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义，默认 ltr
@@ -89,6 +92,9 @@ export class XhTableElement extends XhElement {
     loading: { type: Boolean },
     empty: { converter: BOOLEAN_CONVERTER },
     stickyHeader: { type: Boolean, attribute: 'sticky-header' },
+    striped: { type: Boolean },
+    borderless: { type: Boolean },
+    ruled: { type: Boolean },
     footer: { type: Boolean },
     loop: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
@@ -107,6 +113,9 @@ export class XhTableElement extends XhElement {
   declare loading?: boolean
   declare empty?: boolean
   declare stickyHeader?: boolean
+  declare striped?: boolean
+  declare borderless?: boolean
+  declare ruled?: boolean
   declare footer?: boolean
   declare loop?: boolean
   declare direction?: Direction
@@ -142,6 +151,9 @@ export class XhTableElement extends XhElement {
       loading: this.loading ?? false,
       empty: this.empty,
       stickyHeader: this.stickyHeader ?? false,
+      striped: this.striped ?? false,
+      borderless: this.borderless ?? false,
+      ruled: this.ruled ?? false,
       footer: this.footer ?? false,
       loop: this.loop,
       dir: this.direction,

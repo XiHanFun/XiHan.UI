@@ -311,11 +311,11 @@ export const tableSuite: ConformanceSuite = {
             // 可排序但没在排：报 none
             'aria-sort': 'none',
             'data-sortable': '',
-            'data-sticky': '',
+            'data-sticky': 'start',
           },
           'column-header[2]': { 'aria-colindex': '3', 'data-value': 'size', 'aria-sort': 'none' },
           'cell[0]': { 'role': 'gridcell', 'aria-colindex': '1', 'data-sticky': null, 'aria-colspan': null },
-          'cell[1]': { 'aria-colindex': '2', 'data-sticky': '' },
+          'cell[1]': { 'aria-colindex': '2', 'data-sticky': 'start' },
           'cell[2]': { 'aria-colindex': '3' },
           // 详情行那一格从第一列起铺满三列
           'cell[3]': { 'aria-colindex': '1', 'aria-colspan': '3' },

@@ -664,12 +664,12 @@ describe('connectTable 属性输出', () => {
     expect(h.columnHeader('name').style.inlineSize).toBe('')
   })
 
-  it('横向吸附与表头吸顶各管各的轴，都只落标记', () => {
+  it('横向吸附与表头吸顶各管各的轴：表头只落标记，吸附列还报出钉在哪一侧', () => {
     const h = mount({ stickyHeader: true })
     expect(h.root.getAttribute('data-sticky')).toBe('')
     expect(h.header.getAttribute('data-sticky')).toBe('')
-    expect(h.columnHeader('name').getAttribute('data-sticky')).toBe('')
-    expect(h.row('a').cells.name!.getAttribute('data-sticky')).toBe('')
+    expect(h.columnHeader('name').getAttribute('data-sticky')).toBe('start')
+    expect(h.row('a').cells.name!.getAttribute('data-sticky')).toBe('start')
     expect(h.columnHeader('size').hasAttribute('data-sticky')).toBe(false)
     expect(mount().header.hasAttribute('data-sticky')).toBe(false)
   })
@@ -1066,5 +1066,64 @@ describe('指针与表头把手', () => {
     const props = h.api().getSortTriggerProps({ value: 'select' }) as Record<string, unknown>
     expect(props.tabindex).toBe(-1)
     expect(props['aria-disabled']).toBe('true')
+  })
+})
+
+describe('吸附列的偏移与外观开关', () => {
+  const STICKY_COLUMNS: TableColumnDef[] = [
+    { id: 'select', width: 40, sticky: true },
+    { id: 'name', width: 160, sticky: 'start' },
+    { id: 'size', width: 100 },
+    { id: 'owner' },
+    { id: 'ops', width: 120, sticky: 'end' },
+  ]
+
+  it('行首侧按前面各列的数字宽度累加：第一列贴边、第二列偏 40', () => {
+    const h = mount({ columns: STICKY_COLUMNS })
+    const first = h.api().getColumnHeaderProps({ value: 'select' }) as Record<string, unknown>
+    const second = h.api().getColumnHeaderProps({ value: 'name' }) as Record<string, unknown>
+    expect(first['data-sticky']).toBe('start')
+    expect((first.style as Record<string, unknown> | undefined)?.['--xh-table-sticky-inset']).toBeUndefined()
+    expect(second['data-sticky']).toBe('start')
+    expect((second.style as Record<string, unknown>)['--xh-table-sticky-inset']).toBe('40px')
+    // 偏移与列宽同住一个 style，两者都在
+    expect((second.style as Record<string, unknown>).inlineSize).toBe('160px')
+  })
+
+  it('行尾侧从右往左累加；末列贴边', () => {
+    const h = mount({ columns: STICKY_COLUMNS })
+    const ops = h.api().getCellProps({ value: 'ops', row: 'a' }) as Record<string, unknown>
+    expect(ops['data-sticky']).toBe('end')
+    expect((ops.style as Record<string, unknown> | undefined)?.['--xh-table-sticky-inset']).toBeUndefined()
+  })
+
+  it('不吸附的列不写 data-sticky', () => {
+    const h = mount({ columns: STICKY_COLUMNS })
+    const size = h.api().getCellProps({ value: 'size', row: 'a' }) as Record<string, unknown>
+    expect(size['data-sticky']).toBeUndefined()
+  })
+
+  it('前面有一列宽度不是数字，后面同侧的吸附列算不出偏移就留空', () => {
+    const h = mount({
+      columns: [
+        { id: 'select', width: '3rem', sticky: true },
+        { id: 'name', width: 160, sticky: true },
+        { id: 'size' },
+      ],
+    })
+    const name = h.api().getColumnHeaderProps({ value: 'name' }) as Record<string, unknown>
+    expect(name['data-sticky']).toBe('start')
+    expect((name.style as Record<string, unknown> | undefined)?.['--xh-table-sticky-inset']).toBeUndefined()
+  })
+
+  it('斑马纹 / 无外框 / 竖线三个开关落到 root 上', () => {
+    const h = mount({ striped: true, borderless: true, ruled: true })
+    const root = h.api().getRootProps() as Record<string, unknown>
+    expect(root['data-striped']).toBe('')
+    expect(root['data-borderless']).toBe('')
+    expect(root['data-ruled']).toBe('')
+
+    const plain = mount().api().getRootProps() as Record<string, unknown>
+    expect(plain['data-striped']).toBeUndefined()
   })
 })

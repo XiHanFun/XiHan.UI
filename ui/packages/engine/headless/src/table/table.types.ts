@@ -47,8 +47,12 @@ export interface TableColumnDef {
   label?: string
   /** 可排序：给了才产出 aria-sort，排序把手也才认按键与点击。 */
   sortable?: boolean
-  /** 横向吸附（左右滚动时这一列钉住）。只落 data-sticky，位置由皮肤给。 */
-  sticky?: boolean
+  /**
+   * 横向吸附（左右滚动时这一列钉住）。true 等于 'start'（钉在行首侧），'end' 钉在行尾侧。
+   * 同侧有多列吸附时，连接层按前面各列的数字列宽累加出偏移，写进 --xh-table-sticky-inset；
+   * 有一列宽度不是数字就算不出来，那一侧从这列起都退回贴边。
+   */
+  sticky?: boolean | 'start' | 'end'
   /** 列宽。数字按 px 处理，字符串原样写进内联 inline-size。 */
   width?: string | number
 }
@@ -139,6 +143,12 @@ export interface TableSchema extends MachineSchema {
     empty?: boolean
     /** 表头吸顶：只落 data-sticky，钉住的实现归皮肤。 */
     stickyHeader?: boolean
+    /** 斑马纹：表体偶数行换一层浅底。 */
+    striped?: boolean
+    /** 去掉外框，只留行间横线。 */
+    borderless?: boolean
+    /** 列与列之间加竖分隔线。 */
+    ruled?: boolean
     /** 表格带脚注行。行号空间的最后一行留给它，aria-rowcount 也把它算进去。 */
     footer?: boolean
     /** 上下键走到首尾是否回绕，默认 false。 */
