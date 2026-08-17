@@ -82,6 +82,12 @@ invalid 由宿主自己判定，不必挂在表单上；标出来之后值照样
 
 <XhDemo src="number-field/13-change-timing" />
 
+### 自定义换算
+
+parse 把显示串读成数、format 把数写回显示串；两个方向必须互逆，否则按一下加号值就会漂
+
+<XhDemo src="number-field/14-parse-format" />
+
 ## 产物
 
 | 层 | 值 |
@@ -118,6 +124,8 @@ invalid 由宿主自己判定，不必挂在表单上；标出来之后值照样
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框与加减钮的底与描边怎么画。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框与加减钮的几何档位。 |
+| `parse` | `(text: string) => number` |  | 显示串 → 数。默认按 `Number()` 读（'12abc' 判为非法），给了它就换成它—— 千位分隔符、单位后缀、百分号这类都靠这条读回来。读不出数返回 `NaN`。 与 `format` 必须互逆：`format` 出来的串要能被 `parse` 读回同一个数， 否则按一下加号值就会漂。 |
+| `format` | `(value: number) => string` |  | 数 → 显示串。默认 `String(n)`。**只在组件自己改写显示时用**——步进、取端点、 失焦规范化这三处；用户正在打字时一律不碰，否则光标会被打断。 |
 | `onValueChange` | `(details: NumberFieldValueChangeDetails) => void` |  |  |
 
 ## 状态机

@@ -203,6 +203,69 @@ export const numberFieldSuite: ConformanceSuite = {
       ],
     },
     {
+      // 函数交不成 attribute，两个适配器都按 property 下发（harness 的 applyInputs 已按类型分流）
+      name: '自定义换算：千位分隔符的串照样读得出数、走得动步进',
+      spec: { apg: APG },
+      props: {
+        defaultValue: '1,234',
+        step: 1,
+        max: 2000,
+        parse: (text: string) => Number(text.replace(/,/g, '')),
+        format: (value: number) => value.toLocaleString('en-US'),
+      },
+      initial: {
+        // 读屏念的是数，不是那串带逗号的显示文本
+        parts: { input: { 'aria-valuenow': '1234', 'aria-valuemax': '2000' } },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'increment-trigger',
+          expect: { parts: { input: { 'aria-valuenow': '1235' } } },
+        },
+        {
+          kind: 'raw',
+          why: 'value 是 property；步进之后显示串该带回格式',
+          run: ({ doc }) => expectValue(doc, '1,235', '步进后应按 format 写回'),
+        },
+        { kind: 'focus', part: 'input' },
+        {
+          kind: 'raw',
+          why: '真实输入要写 value 并派发 input',
+          run: ({ doc }) => {
+            typeInto(doc, '1500')
+            expectValue(doc, '1500', '输入途中不该替用户补格式')
+          },
+        },
+        { kind: 'blur' },
+        {
+          kind: 'raw',
+          why: 'value 是 property',
+          run: ({ doc }) => expectValue(doc, '1,500', '失焦规范化同时是补格式的时机'),
+        },
+      ],
+    },
+    {
+      name: '自定义换算：越界仍先夹回区间再补格式',
+      spec: { apg: APG },
+      props: {
+        defaultValue: '1,234',
+        max: 2000,
+        parse: (text: string) => Number(text.replace(/,/g, '')),
+        format: (value: number) => value.toLocaleString('en-US'),
+      },
+      steps: [
+        { kind: 'focus', part: 'input' },
+        { kind: 'raw', why: '真实输入需要写 value 并派发 input', run: ({ doc }) => typeInto(doc, '99999') },
+        { kind: 'blur' },
+        {
+          kind: 'raw',
+          why: 'value 是 property',
+          run: ({ doc }) => expectValue(doc, '2,000', '越界应先夹到 max 再按 format 写回'),
+        },
+      ],
+    },
+    {
       name: '点加减按钮各走一步',
       spec: { apg: APG },
       props: { defaultValue: '0', step: 1 },

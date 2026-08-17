@@ -19750,6 +19750,24 @@
             },
             {
               "kind": "field",
+              "name": "parse",
+              "privacy": "public",
+              "type": {
+                "text": "(text: string) => number"
+              },
+              "description": "显示串 → 数（千位分隔符、单位后缀这类靠它读回来）；只走 property"
+            },
+            {
+              "kind": "field",
+              "name": "format",
+              "privacy": "public",
+              "type": {
+                "text": "(value: number) => string"
+              },
+              "description": "数 → 显示串，只在步进/取端点/失焦规范化时用；只走 property"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true

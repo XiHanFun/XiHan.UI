@@ -1,8 +1,15 @@
+import type { Params } from '@xihan-ui/machine'
+import type { NumberCodec } from '../shared/number'
 import type { NumberFieldSchema } from './number-field.types'
 import { resetDeclaredValue, setIntervalEffect, setTimeoutEffect, setup } from '@xihan-ui/machine'
-import { normalizeValue, parseValue, stepValue } from '../shared/number'
+import { decodeNumber, encodeNumber, normalizeValue, stepValue } from '../shared/number'
 
 const { createMachine } = setup<NumberFieldSchema>()
+
+/** 作者给的显示串换算。两个方向都缺省时就是原来的 Number() / String()。 */
+function codecOf(prop: Params<NumberFieldSchema>['prop']): NumberCodec {
+  return { parse: prop('parse'), format: prop('format') }
+}
 
 export const NUMBER_FIELD_STEP = 1
 export const NUMBER_FIELD_CHANGE_DELAY = 300
@@ -15,7 +22,7 @@ export const numberFieldMachine = createMachine({
     value: cell<string>(() => ({
       value: prop('value'),
       defaultValue: prop('defaultValue') ?? '',
-      onChange: value => prop('onValueChange')?.({ value, valueAsNumber: parseValue(value) }),
+      onChange: value => prop('onValueChange')?.({ value, valueAsNumber: decodeNumber(value, codecOf(prop)) }),
     })),
     // 按住时的方向，逐实例存在 context 里
     pressDirection: cell<1 | -1>(() => ({ defaultValue: 1 })),
@@ -63,6 +70,7 @@ export const numberFieldMachine = createMachine({
           context.set('pressDirection', e.direction)
       },
       stepValue: ({ context, prop, event }) => {
+        const codec = codecOf(prop)
         const e = event.current()
         const step = prop('step') ?? NUMBER_FIELD_STEP
         // 连发事件不带方向，用按下那一刻记下的
@@ -73,22 +81,23 @@ export const numberFieldMachine = createMachine({
           min: prop('min'),
           max: prop('max'),
           step: size,
+          ...codec,
         })
-        context.set('value', String(next))
+        context.set('value', encodeNumber(next, codec))
       },
       toMin: ({ context, prop }) => {
         const min = prop('min')
         if (min != null)
-          context.set('value', String(min))
+          context.set('value', encodeNumber(min, codecOf(prop)))
       },
       toMax: ({ context, prop }) => {
         const max = prop('max')
         if (max != null)
-          context.set('value', String(max))
+          context.set('value', encodeNumber(max, codecOf(prop)))
       },
       // 只在失焦时规范化，避免打断输入途中的中间态（如 "1."）
       normalize: ({ context, prop }) => {
-        const next = normalizeValue(context.get('value'), { min: prop('min'), max: prop('max') })
+        const next = normalizeValue(context.get('value'), { min: prop('min'), max: prop('max'), ...codecOf(prop) })
         if (next !== context.get('value'))
           context.set('value', next)
       },

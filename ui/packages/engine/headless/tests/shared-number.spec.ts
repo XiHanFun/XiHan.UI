@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
   clamp,
+  decodeNumber,
+  encodeNumber,
   isValidValue,
   normalizeValue,
   parseValue,
@@ -108,5 +110,55 @@ describe('normalizeValue', () => {
     // 抹成 '0' 会让"我还没填"和"我填了 0"变成同一件事
     expect(normalizeValue('', { min: 0 })).toBe('')
     expect(normalizeValue('abc', { min: 0 })).toBe('abc')
+  })
+})
+
+describe('自定义换算（parse / format）', () => {
+  // 千位分隔符：一对互逆的换算
+  const parse = (text: string): number => Number(text.replace(/,/g, ''))
+  const format = (value: number): string => value.toLocaleString('en-US')
+
+  it('decodeNumber 缺省走 Number()，给了 parse 就换成它', () => {
+    expect(decodeNumber('1,234')).toBeNaN()
+    expect(decodeNumber('1,234', { parse })).toBe(1234)
+  })
+
+  it('encodeNumber 缺省走 String()，给了 format 就换成它', () => {
+    expect(encodeNumber(1234)).toBe('1234')
+    expect(encodeNumber(1234, { format })).toBe('1,234')
+  })
+
+  it('作者的 parse 返回非数时按 NaN 处理，不让它污染后续计算', () => {
+    expect(decodeNumber('x', { parse: () => undefined as unknown as number })).toBeNaN()
+  })
+
+  it('作者的 format 返回非串时退回 String(value)', () => {
+    expect(encodeNumber(7, { format: () => undefined as unknown as string })).toBe('7')
+  })
+
+  it('stepValue 从带格式的串上也走得动，结果仍是数', () => {
+    expect(stepValue('1,234', 1, { step: 1, parse, format })).toBe(1235)
+    expect(stepValue('1,234', -1, { step: 100, parse, format })).toBe(1134)
+    // 界仍按数比，不按串比
+    expect(stepValue('1,234', 1, { step: 1000, max: 2000, parse, format })).toBe(2000)
+  })
+
+  it('normalizeValue 同时是"补格式"的时机：手打的 1234 在失焦时变回 1,234', () => {
+    expect(normalizeValue('1234', { parse, format })).toBe('1,234')
+    // 越界仍先夹回区间再补格式
+    expect(normalizeValue('99999', { max: 2000, parse, format })).toBe('2,000')
+    // 读不出数的串原样留着，不替作者猜
+    expect(normalizeValue('一千', { parse, format })).toBe('一千')
+  })
+
+  it('单位后缀：parse 认得出后缀，format 写得回去', () => {
+    const kg = {
+      parse: (text: string) => Number(text.replace(/\s*kg$/i, '')),
+      format: (value: number) => `${value} kg`,
+    }
+    expect(decodeNumber('12 kg', kg)).toBe(12)
+    expect(stepValue('12 kg', 1, { step: 1, ...kg })).toBe(13)
+    expect(normalizeValue('12 kg', kg)).toBe('12 kg')
+    expect(normalizeValue('12', kg)).toBe('12 kg')
   })
 })
