@@ -163,10 +163,12 @@ export function connectDatePicker<T extends PropTypes>(
     complete: raw.complete,
     empty: raw.empty,
     outOfRange: raw.outOfRange,
+    segmentOf: raw.segmentOf,
 
     getSegmentProps: (item) => {
       const base = raw.getSegmentProps(item) as Dict
-      const type = raw.segments[item.index]?.type
+      // 作者按下标还是按段名声明的都认，两条路的落点由分段输入自己算
+      const type = raw.segmentOf(item)?.type
       const onKeyDown = base.onKeyDown as ((event: KeyboardEvent) => void) | undefined
       // 精度用不上的段：分段输入不挂处理器，这里也不补
       if (type == null || onKeyDown == null)

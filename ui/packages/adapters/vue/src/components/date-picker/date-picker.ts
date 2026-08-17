@@ -8,6 +8,7 @@ import type {
   DatePickerFieldApi,
   DatePickerSchema,
   DateSegmentSet,
+  DateSegmentType,
 } from '@xihan-ui/headless'
 import type { ControlVariant, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
@@ -210,7 +211,9 @@ export const XhDatePickerSegment = defineComponent({
   name: 'XhDatePickerSegment',
   props: {
     // 段位下标，兼收字符串以支持模板里写 index="0"
-    index: { type: [Number, String] as PropType<number | string>, required: true },
+    index: { type: [Number, String] as PropType<number | string>, default: undefined },
+    /** 按段名声明这一格。段集里没有这一块时它收起；与 index 二选一，两个都写按段名算。 */
+    segment: { type: String as PropType<DateSegmentType>, default: undefined },
   },
   slots: Object as SlotsType<{
     default?: (props: DatePickerSegmentSlotProps) => VNode[]
@@ -219,16 +222,19 @@ export const XhDatePickerSegment = defineComponent({
     const ctx = useDatePickerContext()
     const group = useDatePickerInputContext()
     return () => {
-      const index = Math.trunc(Number(props.index))
       const field = fieldOf(ctx.api.value, group.index.value)
       // 非区间模式下写在终点组里的段位无处落脚，不渲染
       if (!field)
         return null
-      const state = field.segments[index]
+      // 落点由连接层算：按下标还是按段名是同一条路，适配器这边不重写一份
+      const declared = props.segment != null
+        ? { segment: props.segment }
+        : { index: Math.trunc(Number(props.index)) }
+      const state = field.segmentOf(declared)
       // 有插槽用插槽，否则渲染连接层算好的段位文本
       return h(
         'div',
-        field.getSegmentProps({ index }) as Record<string, unknown>,
+        field.getSegmentProps(declared) as Record<string, unknown>,
         slots.default ? slots.default({ segment: state }) : state?.text,
       )
     }

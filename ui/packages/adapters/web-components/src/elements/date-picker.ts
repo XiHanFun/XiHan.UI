@@ -6,6 +6,7 @@ import type {
   CalendarViewChangeDetails,
   CalendarWeekDay,
   DateFieldSchema,
+  DateFieldSegmentProps,
   DatePickerFieldApi,
   DatePickerFocusChangeDetails,
   DatePickerOpenChangeDetails,
@@ -13,6 +14,7 @@ import type {
   DatePickerServices,
   DatePickerValueChangeDetails,
   DateSegmentSet,
+  DateSegmentType,
 } from '@xihan-ui/headless'
 import type { Cleanup, ControlVariant, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
@@ -28,6 +30,30 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
+
+/** 九块段位的名字，按段名声明时照它认。 */
+const SEGMENT_TYPES: readonly DateSegmentType[] = [
+  'year',
+  'quarter',
+  'month',
+  'week',
+  'day',
+  'hour',
+  'minute',
+  'second',
+  'dayPeriod',
+]
+
+/**
+ * 作者写在段位上的那一句声明：`segment="quarter"` 按段名认，否则按下标（缺省退回组内文档序）。
+ * 段名写坏了当没写，退回下标那条路。
+ */
+function declaredSegment(el: HTMLElement, position: number): DateFieldSegmentProps {
+  const raw = el.getAttribute('segment')?.trim()
+  if (raw && (SEGMENT_TYPES as readonly string[]).includes(raw))
+    return { segment: raw as DateSegmentType }
+  return { index: declaredIndex(el, position) }
+}
 
 /** 取作者写在段位上的 index，缺席或写坏了退回组内文档序。 */
 function declaredIndex(el: HTMLElement, position: number): number {
@@ -49,7 +75,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * 网格由作者渲染，元素不生成节点：读 `weeks` / `weekDays` / `headingLabel` 三个只读属性，
  * 听 `focused-value-change` 重画。日期身份取 cell 节点上的 `value`（ISO 串），
  * cell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）；
- * 段位可自带 `index` 属性声明下标，缺省按所在 input 之内的文档序。
+ * 段位可自带 `segment` 属性按段名认领（`segment="quarter"`），或自带 `index` 属性声明下标，
+ * 两者都没写按所在 input 之内的文档序。
  *
  * 区间模式（selection-mode="range"）下 input 写两个：文档序在前的是起点、在后的是终点，
  * 各自内部写一整套段位。段位与 hidden-input 按所在 input 归组，方向键不跨组；
@@ -90,7 +117,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart label - 标题；点它把焦点送进首段。刻意不是原生 label（段位是 div，标不了）
  * @csspart control - 输入行容器，同时是浮层的定位锚点
  * @csspart input - role=group 的分段容器，段位挂在它里面；区间模式下有起止两个，data-index 区分
- * @csspart segment - 一段一个的 spinbutton 节点（data-scope="date-field"），可自带 index 属性；下标在所属 input 组内数
+ * @csspart segment - 一段一个的 spinbutton 节点（data-scope="date-field"）。可自带 segment 属性按段名认领
+ *   （segment="quarter"），或自带 index 属性声明下标（在所属 input 组内数），两者都没写按文档序
  * @csspart trigger - 展开日历的按钮，须是原生 button
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位且对读屏隐藏
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
@@ -375,9 +403,9 @@ export class XhDatePickerElement extends XhElement {
   private wireSegments(owner: HTMLElement, field: DatePickerFieldApi): void {
     // wire 跑在事件之前，换段时 data-scope/data-part 已在 DOM 上供现查
     this.partsIn(owner, 'segment').forEach((el, position) => {
-      const index = declaredIndex(el, position)
-      this.spreader.spread(el, field.getSegmentProps({ index }) as Record<string, unknown>)
-      const state = field.segments[index]
+      const declared = declaredSegment(el, position)
+      this.spreader.spread(el, field.getSegmentProps(declared) as Record<string, unknown>)
+      const state = field.segmentOf(declared)
       // 段位文字归元素写，比对后再赋值
       const text = state?.text ?? ''
       if (el.textContent !== text)

@@ -253,6 +253,8 @@ export interface DatePickerFieldApi<T extends PropTypes = PropTypes> {
   empty: boolean
   /** 填齐了但落在 min/max 之外。 */
   outOfRange: boolean
+  /** 作者的那一句声明（按下标或按段名）落在哪一段上；没有落点时缺席。 */
+  segmentOf: (props: DateFieldSegmentProps) => DateFieldSegmentState | undefined
   getSegmentProps: (props: DateFieldSegmentProps) => T['element']
   /** 表单出口：一份 type=hidden 的原生输入，值是 ISO 串。 */
   getHiddenInputProps: () => T['input']
