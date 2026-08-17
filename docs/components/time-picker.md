@@ -18,7 +18,7 @@ step=15 只裁浮层里的可选值（分列剩四格），段位上手打的分
 
 ### 12 小时制
 
-时列写的是显示值 01-12，落到哪个真实小时由输入行里的上下午段说了算
+时列写的是显示值 01-12，落到哪个真实小时由上下午说了算：输入行里敲、浮层里挑都改它
 
 <XhDemo src="time-picker/03-hour-cycle" />
 
@@ -124,6 +124,7 @@ min / max 直接把界外的格从列里裁掉；分列还会随已选的时再�
 | `focusedItem` | `string \| null` |  |
 | `canClear` | `boolean` | 清空按钮此刻可不可按。 |
 | `getSegmentText` | `(props: TimePickerInputProps) => string` | 某一段该显示的文字（空段是占位串）。两个适配器都拿它填文本，保证同构。 |
+| `getItemText` | `(props: TimePickerItemProps) => string` | 某一格该显示的文字。数字列就是格子自己的值，上下午列按 locale 给出「上午 / 下午」。 两个适配器都拿它填文本，保证同构。 |
 | `isItemSelected` | `(props: TimePickerItemProps) => boolean` |  |
 | `isItemDisabled` | `(props: TimePickerItemProps) => boolean` | 落在 min/max 之外（或整个控件禁用）：仍在列表里，但不可选、方向键跳过。 |
 | `setOpen` | `(next: boolean) => void` |  |

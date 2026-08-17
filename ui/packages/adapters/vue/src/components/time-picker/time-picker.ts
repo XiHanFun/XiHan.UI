@@ -203,17 +203,17 @@ export const XhTimePickerColumn = defineComponent({
 export const XhTimePickerItem = defineComponent({
   name: 'XhTimePickerItem',
   props: {
-    /** 两位补零的显示串（'09' / '30'），与段上的文字同一套写法。 */
+    /** 两位补零的显示串（'09' / '30'）；上下午列写 '00' / '01'。 */
     value: { type: String, required: true },
   },
   setup(props, { slots }) {
     const ctx = useTimePickerContext()
     const { unit } = useTimePickerColumnContext()
-    // 有插槽用插槽，否则显示格子自己的值
+    // 有插槽用插槽，否则显示这一格该显示的文字（上下午列按 locale 译成「上午 / 下午」）
     return () => h(
       'div',
       ctx.api.value.getItemProps({ unit: unit.value, value: props.value }) as Record<string, unknown>,
-      slots.default?.() ?? props.value,
+      slots.default?.() ?? ctx.api.value.getItemText({ unit: unit.value, value: props.value }),
     )
   },
 })

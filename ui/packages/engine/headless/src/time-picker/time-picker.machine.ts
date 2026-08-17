@@ -125,24 +125,39 @@ export function timePickerColumns(options: TimePickerColumnsOptions = {}): TimeP
       hours.push(timePickerItemValue(display))
   }
   const columns: TimePickerColumn[] = [{ unit: 'hour', options: hours }]
-  if (granularity === 'hour')
-    return columns
 
-  const minutes: string[] = []
-  for (let m = 0; m < MINUTES_IN_HOUR; m += step) {
-    if (hour == null || inRange([hour, m], lo, hi))
-      minutes.push(timePickerItemValue(m))
+  if (granularity !== 'hour') {
+    const minutes: string[] = []
+    for (let m = 0; m < MINUTES_IN_HOUR; m += step) {
+      if (hour == null || inRange([hour, m], lo, hi))
+        minutes.push(timePickerItemValue(m))
+    }
+    columns.push({ unit: 'minute', options: minutes })
   }
-  columns.push({ unit: 'minute', options: minutes })
-  if (granularity !== 'second')
-    return columns
 
-  const seconds: string[] = []
-  for (let s = 0; s < SECONDS_IN_MINUTE; s++) {
-    if (hour == null || minute == null || inRange([hour, minute, s], lo, hi))
-      seconds.push(timePickerItemValue(s))
+  if (granularity === 'second') {
+    const seconds: string[] = []
+    for (let s = 0; s < SECONDS_IN_MINUTE; s++) {
+      if (hour == null || minute == null || inRange([hour, minute, s], lo, hi))
+        seconds.push(timePickerItemValue(s))
+    }
+    columns.push({ unit: 'second', options: seconds })
   }
-  columns.push({ unit: 'second', options: seconds })
+
+  // 上下午列只在 12 小时制下存在，恒排末位：与分段输入里的段序一致，
+  // 也让数字列的下标不随小时制变动。
+  // 裁剪与时列互为对方的条件——时列按当前上下午换算成 0-23 比界，这一列则按当前的显示小时比：
+  // 小时还没填时不收窄（同分列与秒列在时未填时的做法）
+  if (hourCycle === 12) {
+    const display = hour == null ? null : to12Hour(hour).hour
+    const periods: string[] = []
+    for (const candidate of ['am', 'pm'] as const) {
+      if (display == null || inRange([to24Hour(display, candidate)], lo, hi))
+        periods.push(timePickerItemValue(candidate === 'pm' ? 1 : 0))
+    }
+    columns.push({ unit: 'dayPeriod', options: periods })
+  }
+
   return columns
 }
 

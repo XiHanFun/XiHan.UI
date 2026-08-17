@@ -33,6 +33,7 @@ export type {
   DatePickerServices,
   DatePickerTimeColumnProps,
   DatePickerTimeItemProps,
+  DatePickerTimeUnit,
   DatePickerTranslations,
   DatePickerValueChangeDetails,
   DatePickerValueSource,

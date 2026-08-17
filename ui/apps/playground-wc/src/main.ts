@@ -1907,7 +1907,8 @@ app.innerHTML = `
       下面这个是 12 小时制：时列写的是显示值 01-12，落到哪个真实小时上由上下午段说了算——
       在那一段上按 a / p 直接指定（认的是键不是那两个字，所以显示成“上午 / 下午”也照样管用），
       翻一次面段上的数字一动不动，隐藏输入里的整串却从 09:30 变成了 21:30。
-      浮层里没有上下午这一列，它只在输入行里改。分列这次是逐分钟的 60 格，正好看看列自己的滚动。
+      浮层里也排着上下午这一列（只在 12 小时制下出现），点它与在段上按 a / p 写的是同一个值。
+      分列这次是逐分钟的 60 格，正好看看列自己的滚动。
     </p>
     <div class="row">
       <xh-time-picker id="wc-time-picker-12" hour-cycle="12" locale="zh-CN">
@@ -1925,6 +1926,11 @@ app.innerHTML = `
             <div data-xh-part="content">
               <div data-xh-part="column" unit="hour" id="wc-time-picker-12-hours"></div>
               <div data-xh-part="column" unit="minute" id="wc-time-picker-12-minutes"></div>
+              <!-- 上下午列的两格写 00 / 01，显示成什么字由元素按 locale 填 -->
+              <div data-xh-part="column" unit="dayPeriod">
+                <div data-xh-part="item" value="00"></div>
+                <div data-xh-part="item" value="01"></div>
+              </div>
             </div>
           </div>
         </div>

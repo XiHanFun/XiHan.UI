@@ -2804,7 +2804,8 @@ const codeBlockPartial = `const stream = await client.chat({
         下面这个是 12 小时制：时列写的是显示值 01-12，落到哪个真实小时上由上下午段说了算——
         在那一段上按 a / p 直接指定（认的是键不是那两个字，所以显示成“上午 / 下午”也照样管用），
         翻一次面段上的数字一动不动，值却从 09:30 变成了 21:30。
-        浮层里没有上下午这一列，它只在输入行里改。分列这次是逐分钟的 60 格，正好看看列自己的滚动。
+        浮层里也排着上下午这一列（只在 12 小时制下出现），点它与在段上按 a / p 写的是同一个值。
+        分列这次是逐分钟的 60 格，正好看看列自己的滚动。
       </p>
       <div class="row">
         <XhTimePickerRoot v-model:value="timePickerHour12" :hour-cycle="12" locale="zh-CN">
@@ -2823,6 +2824,9 @@ const codeBlockPartial = `const stream = await client.chat({
                 <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
               </XhTimePickerColumn>
               <XhTimePickerColumn v-slot="{ options }" unit="minute">
+                <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
+              </XhTimePickerColumn>
+              <XhTimePickerColumn v-slot="{ options }" unit="dayPeriod">
                 <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
               </XhTimePickerColumn>
             </XhTimePickerContent>

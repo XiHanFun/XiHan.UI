@@ -1,4 +1,4 @@
-<!-- 12 小时制 | 时列写的是显示值 01-12，落到哪个真实小时由输入行里的上下午段说了算 -->
+<!-- 12 小时制 | 时列写的是显示值 01-12，落到哪个真实小时由上下午说了算：输入行里敲、浮层里挑都改它 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
@@ -24,7 +24,6 @@ const value = ref("09:30");
       <XhTimePickerInput segment="hour" />
       <span>:</span>
       <XhTimePickerInput segment="minute" />
-      <!-- 浮层里没有上下午这一列，它只在输入行里改 -->
       <XhTimePickerInput segment="dayPeriod" />
       <XhTimePickerTrigger>▾</XhTimePickerTrigger>
       <XhTimePickerClearTrigger>✕</XhTimePickerClearTrigger>
@@ -35,6 +34,10 @@ const value = ref("09:30");
           <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
         </XhTimePickerColumn>
         <XhTimePickerColumn v-slot="{ options }" unit="minute">
+          <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
+        </XhTimePickerColumn>
+        <!-- 上下午列只在 12 小时制下出现；格子上的文字由组件按 locale 填 -->
+        <XhTimePickerColumn v-slot="{ options }" unit="dayPeriod">
           <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
         </XhTimePickerColumn>
       </XhTimePickerContent>

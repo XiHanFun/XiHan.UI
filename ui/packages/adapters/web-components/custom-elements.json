@@ -19578,7 +19578,7 @@
               "name": "label"
             },
             {
-              "description": "输入框与加减钮的包裹层；皮肤把视觉盒画在它身上，两个按钮叠进框内",
+              "description": "输入框与加减钮的包裹层；皮肤把视觉盒画在它身上，减在左、加在右、输入框居中",
               "name": "control"
             },
             {
@@ -19932,6 +19932,9 @@
               "name": "--xh-number-field-gap"
             },
             {
+              "name": "--xh-number-field-input-align"
+            },
+            {
               "name": "--xh-number-field-input-bg"
             },
             {
@@ -19966,6 +19969,9 @@
             },
             {
               "name": "--xh-number-field-input-radius"
+            },
+            {
+              "name": "--xh-number-field-input-w"
             },
             {
               "name": "--xh-number-field-label-fg"
@@ -20005,6 +20011,9 @@
             },
             {
               "name": "--xh-number-field-trigger-fg"
+            },
+            {
+              "name": "--xh-number-field-trigger-fg-hover"
             },
             {
               "name": "--xh-number-field-trigger-font-size"
@@ -30174,7 +30183,7 @@
               "name": "column"
             },
             {
-              "description": "role=option 的一格，须自带 value 属性（两位补零的显示串）",
+              "description": "role=option 的一格，须自带 value 属性（两位补零的显示串；上下午列写 '00' / '01'）",
               "name": "item"
             },
             {

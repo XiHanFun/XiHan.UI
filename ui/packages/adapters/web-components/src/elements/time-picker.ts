@@ -27,7 +27,7 @@ const HOUR_CYCLE_CONVERTER = {
 }
 
 const SEGMENT_TYPES: readonly TimeSegmentType[] = ['hour', 'minute', 'second', 'dayPeriod']
-const COLUMN_UNITS: readonly TimePickerColumnUnit[] = ['hour', 'minute', 'second']
+const COLUMN_UNITS: readonly TimePickerColumnUnit[] = ['hour', 'minute', 'second', 'dayPeriod']
 
 /** 取作者写在段上的 segment，缺席或写坏了按文档序补。 */
 function declaredSegment(el: HTMLElement, position: number): TimeSegmentType {
@@ -85,7 +85,7 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - 浮层容器（消解层与焦点域的根节点），收起时带 hidden
  * @csspart column - role=listbox 的一列，可自带 unit 属性声明单位，缺省按文档序
- * @csspart item - role=option 的一格，须自带 value 属性（两位补零的显示串）
+ * @csspart item - role=option 的一格，须自带 value 属性（两位补零的显示串；上下午列写 '00' / '01'）
  * @csspart hidden-input - type=hidden 的表单出口，值是完整 ISO 串
  */
 export class XhTimePickerElement extends XhElement {
@@ -262,7 +262,7 @@ export class XhTimePickerElement extends XhElement {
       for (const itemEl of this.getParts('item').filter(el => columnEl.contains(el))) {
         const value = itemEl.getAttribute('value') ?? ''
         this.spreader.spread(itemEl, api.getItemProps({ unit, value }) as Record<string, unknown>)
-        this.fillText(itemEl, value)
+        this.fillText(itemEl, api.getItemText({ unit, value }))
       }
     })
 

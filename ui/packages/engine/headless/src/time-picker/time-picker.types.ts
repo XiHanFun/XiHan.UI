@@ -2,8 +2,11 @@ import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, Position
 import type { MachineSchema } from '@xihan-ui/machine'
 import type { TimeDayPeriod, TimeDraft, TimeGranularity, TimeHourCycle, TimeSegmentType } from '../time-field'
 
-/** 浮层里成列排布的单位。上午/下午不单独成列——它由分段输入里的那一段决定。 */
-export type TimePickerColumnUnit = 'hour' | 'minute' | 'second'
+/**
+ * 浮层里成列排布的单位，与分段输入里的段同名同域：列上挑与段上敲写的是同一个东西。
+ * dayPeriod 只在 12 小时制下成列，恒排在末位。
+ */
+export type TimePickerColumnUnit = 'hour' | 'minute' | 'second' | 'dayPeriod'
 
 /**
  * 展开那一刻焦点落在时列的哪一格：
@@ -13,9 +16,13 @@ export type TimePickerColumnUnit = 'hour' | 'minute' | 'second'
  */
 export type TimePickerFocusIntent = 'selected' | 'first' | 'last'
 
-/** 一列可选值。value 是两位补零的显示串（'09' / '30'），与段上的文字同一套写法。 */
-export interface TimePickerColumn {
-  readonly unit: TimePickerColumnUnit
+/**
+ * 一列可选值。value 是两位补零的显示串（'09' / '30'），与段上的文字同一套写法；
+ * 上下午列写的是 '00'（上午）与 '01'（下午），跟这一段在 aria-valuenow 上报的数同一个域，
+ * 显示成什么字由 getItemText 按 locale 给。
+ */
+export interface TimePickerColumn<U extends TimePickerColumnUnit = TimePickerColumnUnit> {
+  readonly unit: U
   readonly options: readonly string[]
 }
 
@@ -227,6 +234,11 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
   canClear: boolean
   /** 某一段该显示的文字（空段是占位串）。两个适配器都拿它填文本，保证同构。 */
   getSegmentText: (props: TimePickerInputProps) => string
+  /**
+   * 某一格该显示的文字。数字列就是格子自己的值，上下午列按 locale 给出「上午 / 下午」。
+   * 两个适配器都拿它填文本，保证同构。
+   */
+  getItemText: (props: TimePickerItemProps) => string
   isItemSelected: (props: TimePickerItemProps) => boolean
   /** 落在 min/max 之外（或整个控件禁用）：仍在列表里，但不可选、方向键跳过。 */
   isItemDisabled: (props: TimePickerItemProps) => boolean

@@ -19,7 +19,9 @@ import {
 type Props = TimePickerSchema['props']
 
 const ALL_SEGMENTS: TimeSegmentType[] = ['hour', 'minute', 'second', 'dayPeriod']
-const ALL_UNITS: TimePickerColumnUnit[] = ['hour', 'minute', 'second']
+const ALL_UNITS: TimePickerColumnUnit[] = ['hour', 'minute', 'second', 'dayPeriod']
+/** 上下午列的两格；24 小时制下生成函数不给这一列，夹具仍把它摆上，好让「作者写了、组件收起」也跑到。 */
+const DAY_PERIOD_OPTIONS = ['00', '01'] as const
 
 const listeners = new WeakMap<HTMLElement, Map<string, EventListener>>()
 const BOOLEAN_ATTRS = new Set(['disabled', 'hidden', 'readonly', 'required'])
@@ -131,7 +133,7 @@ function mount(initial: Partial<Props> = {}): Harness {
     const columnEl = doc.createElement('div')
     columns.set(unit, columnEl)
     content.appendChild(columnEl)
-    for (const value of grid.find(c => c.unit === unit)!.options) {
+    for (const value of grid.find(c => c.unit === unit)?.options ?? DAY_PERIOD_OPTIONS) {
       const optionEl = doc.createElement('div')
       optionEl.textContent = value
       columnEl.appendChild(optionEl)
@@ -178,6 +180,8 @@ function mount(initial: Partial<Props> = {}): Harness {
     for (const [key, el] of options) {
       const [unit, value] = key.split(':') as [TimePickerColumnUnit, string]
       spread(el, current.getItemProps({ unit, value }) as Record<string, unknown>)
+      // 两个适配器都由自己填格子上的文字（spreader 不碰文本节点），这里照做
+      el.textContent = current.getItemText({ unit, value })
     }
     spread(hiddenInput, current.getHiddenInputProps() as Record<string, unknown>)
   }
@@ -295,6 +299,32 @@ describe('可选值列表（纯函数）', () => {
     expect(timePickerColumns({ hourCycle: 12 })[0]!.options).toEqual(
       ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
     )
+  })
+
+  it('上下午成列，只在 12 小时制下出现且恒排末位', () => {
+    expect(timePickerColumns({ hourCycle: 12 }).map(c => c.unit)).toEqual(['hour', 'minute', 'dayPeriod'])
+    expect(timePickerColumns({ hourCycle: 12, granularity: 'second' }).map(c => c.unit))
+      .toEqual(['hour', 'minute', 'second', 'dayPeriod'])
+    // granularity=hour 也照给：上下午与精度无关
+    expect(timePickerColumns({ hourCycle: 12, granularity: 'hour' }).map(c => c.unit))
+      .toEqual(['hour', 'dayPeriod'])
+    // 24 小时制没有这一列
+    expect(timePickerColumns({ granularity: 'second' }).some(c => c.unit === 'dayPeriod')).toBe(false)
+  })
+
+  it('上下午两格写的是 00 / 01，与这一段上报的数同一个域', () => {
+    expect(timePickerColumns({ hourCycle: 12 }).at(-1)!.options).toEqual(['00', '01'])
+  })
+
+  it('上下午列在小时已选中且换算过去出界时才收窄', () => {
+    // 还没挑小时：两格都留着
+    expect(timePickerColumns({ hourCycle: 12, min: '09:00', max: '18:00' }).at(-1)!.options).toEqual(['00', '01'])
+    // 挑的是 9 点（显示 09）：上午 9 点在界内，下午 9 点是 21 点、出界
+    expect(timePickerColumns({ hourCycle: 12, min: '09:00', max: '18:00', hour: 9 }).at(-1)!.options).toEqual(['00'])
+    // 挑的是 15 点（显示 03）：上午 3 点在界外，只剩下午
+    expect(timePickerColumns({ hourCycle: 12, min: '09:00', max: '18:00', hour: 15 }).at(-1)!.options).toEqual(['01'])
+    // 挑的是 10 点（显示 10）：上午 10 点、下午 22 点，只剩上午
+    expect(timePickerColumns({ hourCycle: 12, min: '09:00', max: '18:00', hour: 10 }).at(-1)!.options).toEqual(['00'])
   })
 
   it('min/max 裁掉时列两端', () => {
@@ -679,6 +709,53 @@ describe('两条路写的是同一个值', () => {
     pressKey(period, 'p')
     expect(h.value()).toBe('21:30')
     expect(enabledValues(h.column('hour'))).toEqual(['01', '02', '03', '04', '05', '06', '12'])
+  })
+
+  it('浮层里挑上下午与段上按 a/p 是同一条路：都改真实小时', () => {
+    const h = open({ hourCycle: 12, defaultValue: '09:30' })
+    h.trigger.click()
+    expect(h.api().isItemSelected({ unit: 'dayPeriod', value: '00' })).toBe(true)
+    // 挑「下午」：9 点 → 21 点，段上的文字与选中态一并跟上
+    h.option('dayPeriod', '01').click()
+    expect(h.value()).toBe('21:30')
+    expect(h.api().isItemSelected({ unit: 'dayPeriod', value: '01' })).toBe(true)
+    expect(h.segment('dayPeriod').getAttribute('aria-valuenow')).toBe('1')
+    // 挑回「上午」
+    h.option('dayPeriod', '00').click()
+    expect(h.value()).toBe('09:30')
+  })
+
+  it('时还空着时挑上下午先记着，等填了时再落到真实小时上', () => {
+    const h = open({ hourCycle: 12 })
+    h.trigger.click()
+    h.option('dayPeriod', '01').click()
+    // 只挑了上下午还凑不成一个时间
+    expect(h.value()).toBe('')
+    h.option('hour', '03').click()
+    h.option('minute', '15').click()
+    expect(h.value()).toBe('15:15')
+  })
+
+  it('上下午列在 24 小时制下收起，作者写了也不显出', () => {
+    const h = open({ hourCycle: 24, defaultValue: '09:30' })
+    h.trigger.click()
+    expect(h.column('dayPeriod').hasAttribute('hidden')).toBe(true)
+    expect(h.column('hour').hasAttribute('hidden')).toBe(false)
+  })
+
+  it('上下午格上的文字按 locale 译，值仍是 00 / 01', () => {
+    const zh = open({ hourCycle: 12, locale: 'zh-CN', defaultValue: '09:30' })
+    zh.trigger.click()
+    expect(zh.option('dayPeriod', '00').textContent).toBe('上午')
+    expect(zh.option('dayPeriod', '01').textContent).toBe('下午')
+    expect(zh.option('dayPeriod', '01').getAttribute('data-value')).toBe('01')
+    // 没给 locale 时退回 AM / PM
+    const plain = open({ hourCycle: 12, defaultValue: '09:30' })
+    plain.trigger.click()
+    expect(plain.api().getItemText({ unit: 'dayPeriod', value: '00' })).toBe('AM')
+    expect(plain.api().getItemText({ unit: 'dayPeriod', value: '01' })).toBe('PM')
+    // 数字列照旧写什么显示什么
+    expect(plain.api().getItemText({ unit: 'hour', value: '09' })).toBe('09')
   })
 })
 
