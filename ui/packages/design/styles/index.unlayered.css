@@ -3826,6 +3826,10 @@
  *
  * 这两个槽用的都是固定原语而不是 --xh-fg-default：实心底本身是原语色、不随主题翻，
  * 配色若跟着主题翻，暗色下就会变成白字压在浅黄底上（实测对比度 2.70）。
+ *
+ * brand 是例外：那一族的色相归使用者，所以它的底与前景走 --xh-bg-brand / --xh-fg-on-brand
+ * 这两个语义令牌。缺省主题下它们就解析成 brand-600 与 neutral-0，与其余五族同值；
+ * 改写过品牌色的使用者只改这两个令牌，实心底与它上面的字就一起跟着走。
  */
 
 [data-tone] {
@@ -3854,9 +3858,9 @@
 }
 
 [data-tone='brand'] {
-  --xh-_tone: var(--xh-color-brand-600);
+  --xh-_tone: var(--xh-bg-brand);
   --xh-_tone-soft: var(--xh-color-brand-500);
-  --xh-_tone-on: var(--xh-color-neutral-0);
+  --xh-_tone-on: var(--xh-fg-on-brand);
   --xh-_tone-shift: var(--xh-color-neutral-950);
 }
 
@@ -14640,14 +14644,48 @@
   user-select: none;
 }
 
-/* 横向吸附：钉在滚动容器的行首侧。背景继承自行，跟着选中/高亮一起变，
-   滚过去时不会露出一块与所在行不同色的补丁 */
+/* 横向吸附：钉在滚动容器的一侧。背景继承自行，跟着选中/高亮一起变，
+   滚过去时不会露出一块与所在行不同色的补丁。
+   同侧多列时的偏移由连接层按前面各列的宽度累加好写进 --xh-table-sticky-inset */
 [data-scope='table'][data-part='column-header'][data-sticky],
 [data-scope='table'][data-part='cell'][data-sticky] {
   position: sticky;
   z-index: var(--xh-table-sticky-column-z, 1);
-  inset-inline-start: 0;
   background: inherit;
+}
+
+[data-scope='table'][data-part='column-header'][data-sticky='start'],
+[data-scope='table'][data-part='cell'][data-sticky='start'] {
+  inset-inline-start: var(--xh-table-sticky-inset, 0);
+}
+
+[data-scope='table'][data-part='column-header'][data-sticky='end'],
+[data-scope='table'][data-part='cell'][data-sticky='end'] {
+  inset-inline-end: var(--xh-table-sticky-inset, 0);
+}
+
+/* 表头行本身透明（露出表头底），吸附的列头继承到的就是透明——得自己带表头底，
+   否则横向滚动时其它列头从它下面穿过去 */
+[data-scope='table'][data-part='column-header'][data-sticky] {
+  background: var(--xh-table-header-bg, var(--xh-bg-subtle));
+}
+
+/* —— 三个可叠加的外观开关 —— */
+/* 斑马纹：表体偶数行换一层浅底；悬停与选中的底色仍按原规则盖过它 */
+[data-scope='table'][data-part='root'][data-striped] [data-scope='table'][data-part='body'] > [data-scope='table'][data-part='row']:nth-of-type(even) {
+  background: var(--xh-table-row-bg-striped, var(--xh-bg-subtle));
+}
+
+/* 无外框：只留行间横线，圆角也随之无意义 */
+[data-scope='table'][data-part='root'][data-borderless] {
+  border: 0;
+  border-radius: 0;
+}
+
+/* 竖分隔线：列与列之间一道细线，末列不画 */
+[data-scope='table'][data-part='root'][data-ruled] [data-scope='table'][data-part='column-header']:not(:last-child),
+[data-scope='table'][data-part='root'][data-ruled] [data-scope='table'][data-part='cell']:not(:last-child) {
+  border-inline-end: var(--xh-stroke-thin) solid var(--xh-table-row-border, var(--xh-border-subtle));
 }
 
 [data-scope='table'][data-part='cell'][data-disabled] {

@@ -132,6 +132,9 @@ rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自
 | `loading` | `boolean` |  | 数据在路上：root 报 aria-busy，表体为空时加载态节点显形。 |
 | `empty` | `boolean` |  | 显式声明表体为空；缺省按 rows 是否为空推导。 |
 | `stickyHeader` | `boolean` |  | 表头吸顶：只落 data-sticky，钉住的实现归皮肤。 |
+| `striped` | `boolean` |  | 斑马纹：表体偶数行换一层浅底。 |
+| `borderless` | `boolean` |  | 去掉外框，只留行间横线。 |
+| `ruled` | `boolean` |  | 列与列之间加竖分隔线。 |
 | `footer` | `boolean` |  | 表格带脚注行。行号空间的最后一行留给它，aria-rowcount 也把它算进去。 |
 | `loop` | `boolean` |  | 上下键走到首尾是否回绕，默认 false。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 |

@@ -27955,6 +27955,33 @@
             },
             {
               "kind": "field",
+              "name": "striped",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "striped"
+            },
+            {
+              "kind": "field",
+              "name": "borderless",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "borderless"
+            },
+            {
+              "kind": "field",
+              "name": "ruled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "ruled"
+            },
+            {
+              "kind": "field",
               "name": "footer",
               "privacy": "public",
               "type": {
@@ -28194,6 +28221,30 @@
               "type": {
                 "text": "boolean | undefined"
               },
+              "description": "斑马纹：表体偶数行换一层浅底",
+              "name": "striped",
+              "fieldName": "striped"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "去掉外框，只留行间横线",
+              "name": "borderless",
+              "fieldName": "borderless"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "列与列之间加竖分隔线",
+              "name": "ruled",
+              "fieldName": "ruled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
               "description": "表格带脚注行：行号空间的最后一行留给它，aria-rowcount 也算上",
               "name": "footer",
               "fieldName": "footer"
@@ -28312,6 +28363,9 @@
               "name": "--xh-table-row-bg-selected"
             },
             {
+              "name": "--xh-table-row-bg-striped"
+            },
+            {
               "name": "--xh-table-row-border"
             },
             {
@@ -28343,6 +28397,9 @@
             },
             {
               "name": "--xh-table-sticky-header-z"
+            },
+            {
+              "name": "--xh-table-sticky-inset"
             },
             {
               "name": "--xh-table-trigger-bg-checked"

@@ -101,6 +101,41 @@ export function connectTable<T extends PropTypes>(
 
   const metaOf = (value: string): TableVisibleRow | undefined => metaIndex.get(value)
   const columnOf = (value: string): TableColumnDef | undefined => columnIndexDefs.get(value)
+
+  // 吸附列：同侧多列时按数字列宽累加偏移。行首侧从左往右加、行尾侧从右往左加；
+  // 碰到宽度不是数字的列就算不下去，那一侧从这列起都退回贴边（偏移留空，皮肤按 0 处理）
+  const stickySideOf = (def: TableColumnDef | undefined): 'start' | 'end' | undefined =>
+    def?.sticky === true ? 'start' : def?.sticky === 'start' || def?.sticky === 'end' ? def.sticky : undefined
+  const stickyInset = new Map<string, number>()
+  {
+    let acc: number | null = 0
+    for (const def of columns) {
+      if (stickySideOf(def) !== 'start')
+        continue
+      if (acc != null)
+        stickyInset.set(def.id, acc)
+      acc = acc != null && typeof def.width === 'number' ? acc + def.width : null
+    }
+    acc = 0
+    for (let i = columns.length - 1; i >= 0; i--) {
+      const def = columns[i]!
+      if (stickySideOf(def) !== 'end')
+        continue
+      if (acc != null)
+        stickyInset.set(def.id, acc)
+      acc = acc != null && typeof def.width === 'number' ? acc + def.width : null
+    }
+  }
+  const stickyAttrs = (def: TableColumnDef | undefined): Record<string, unknown> => {
+    const side = stickySideOf(def)
+    if (!side)
+      return { 'data-sticky': undefined }
+    const inset = def ? stickyInset.get(def.id) : undefined
+    return {
+      'data-sticky': side,
+      ...(inset != null && inset > 0 ? { style: { '--xh-table-sticky-inset': `${inset}px` } } : {}),
+    }
+  }
   const isSelected = (value: string): boolean => tableRowSelected(selection, value)
   const isExpanded = (value: string): boolean => !!metaOf(value)?.expanded
   const isRowDisabled = (value: string): boolean => !!metaOf(value)?.disabled
@@ -228,6 +263,9 @@ export function connectTable<T extends PropTypes>(
       'data-loading': dataAttr(loading),
       'data-empty': dataAttr(isEmpty),
       'data-sticky': dataAttr(stickyHeader),
+      'data-striped': dataAttr(!!prop('striped')),
+      'data-borderless': dataAttr(!!prop('borderless')),
+      'data-ruled': dataAttr(!!prop('ruled')),
     }),
 
     getCaptionProps: () => normalize.element({
@@ -380,6 +418,7 @@ export function connectTable<T extends PropTypes>(
       const sortable = !!def?.sortable
       const direction = sortDirection(column.value)
       const size = columnSize(def?.width)
+      const sticky = stickyAttrs(def)
       return normalize.element({
         ...parts['column-header'].attrs,
         ...sortState(column.value),
@@ -391,15 +430,16 @@ export function connectTable<T extends PropTypes>(
           ? (direction === 'asc' ? 'ascending' : direction === 'desc' ? 'descending' : 'none')
           : undefined,
         'data-sortable': dataAttr(sortable),
-        'data-sticky': dataAttr(!!def?.sticky),
-        // 列宽由连接层写进内联 inline-size：那条轴归它，皮肤不再声明
-        ...(size ? { style: { inlineSize: size } } : {}),
+        ...sticky,
+        // 列宽由连接层写进内联 inline-size：那条轴归它，皮肤不再声明；吸附偏移与它同住一个 style
+        ...(size ? { style: { ...sticky.style as Record<string, unknown>, inlineSize: size } } : {}),
       })
     },
 
     getCellProps: (cell) => {
       const def = columnOf(cell.value)
       const size = columnSize(def?.width)
+      const sticky = stickyAttrs(def)
       // 跨列数只在真的跨了列时报，1 是默认值
       const colSpan = cell.colSpan != null && cell.colSpan > 1 ? cell.colSpan : undefined
       return normalize.element({
@@ -410,8 +450,8 @@ export function connectTable<T extends PropTypes>(
         // 表头与脚注的格子不给 row，也就没有选中/禁用可言
         'data-selected': cell.row != null ? dataAttr(isSelected(cell.row)) : undefined,
         'data-disabled': cell.row != null ? dataAttr(isRowDisabled(cell.row)) : undefined,
-        'data-sticky': dataAttr(!!def?.sticky),
-        ...(size ? { style: { inlineSize: size } } : {}),
+        ...sticky,
+        ...(size ? { style: { ...sticky.style as Record<string, unknown>, inlineSize: size } } : {}),
       })
     },
 
