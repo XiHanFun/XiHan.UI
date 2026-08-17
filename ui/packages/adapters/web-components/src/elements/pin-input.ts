@@ -33,7 +33,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {string} value - 受控值，逐字符摊进各格；缺省该属性即非受控
  * @attr {string} default-value - 非受控初值，同样逐字符摊开
  * @attr {number} length - 格数，默认 6
- * @attr {'numeric'|'alphanumeric'|'alphabetic'} type - 接受的字符类别，默认 numeric
+ * @attr {'numeric'|'alphanumeric'|'alphabetic'} type - 接受的字符类别，默认 numeric；同时决定移动端弹哪种键盘
+ * @attr {string} pattern - 自定义准入：一段正则源码，逐个字符整格匹配（自动加锚与 u 标志）。给了它就盖过 type 的准入表；写坏了退回 type
  * @attr {boolean} mask - 遮蔽显示：每格转 type=password
  * @attr {boolean} otp - 一次性验证码：补 autocomplete=one-time-code
  * @attr {string} placeholder - 空格子的占位字符
@@ -60,6 +61,7 @@ export class XhPinInputElement extends XhElement {
     defaultValue: { converter: ARRAY_CONVERTER, attribute: 'default-value' },
     length: { converter: NUMBER_CONVERTER },
     type: { converter: STRING_CONVERTER },
+    pattern: { converter: STRING_CONVERTER },
     mask: { type: Boolean },
     otp: { type: Boolean },
     placeholder: { converter: STRING_CONVERTER },
@@ -78,6 +80,7 @@ export class XhPinInputElement extends XhElement {
   declare defaultValue?: string[]
   declare length?: number
   declare type?: PinInputType
+  declare pattern?: string
   declare mask?: boolean
   declare otp?: boolean
   declare placeholder?: string
@@ -107,6 +110,7 @@ export class XhPinInputElement extends XhElement {
       defaultValue: this.defaultValue,
       length: this.length,
       type: this.type,
+      pattern: this.pattern,
       mask: this.mask ?? false,
       otp: this.otp ?? false,
       placeholder: this.placeholder,

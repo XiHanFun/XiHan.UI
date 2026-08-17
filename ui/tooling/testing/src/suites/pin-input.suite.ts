@@ -218,6 +218,49 @@ export const pinInputSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'pattern 盖过 type 的准入表，敲与粘贴两条路都按它收',
+      spec: { apg: APG },
+      // 十六进制：准入放宽到 A-F，键盘仍由 type 说了算，故一并改成 alphanumeric
+      props: { type: 'alphanumeric', pattern: '[0-9A-Fa-f]' },
+      initial: {
+        parts: { input: [{ inputmode: 'text' }] },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '被丢弃的字符留没留在框里，只能直接读 value property',
+          run: async (ctx) => {
+            const { doc } = ctx
+            await typeInto(ctx, 0, 'f')
+            expectBoxes(doc, ['f', '', '', '', '', ''], 'pattern 放行的字母应当收下')
+            await typeInto(ctx, 1, 'g')
+            expectBoxes(doc, ['f', '', '', '', '', ''], 'pattern 之外的字母不该进值')
+            await pasteInto(ctx, 1, '1g2A')
+            expectBoxes(doc, ['f', '1', '2', 'A', '', ''], '粘贴走同一份准入表')
+          },
+        },
+      ],
+    },
+    {
+      name: 'pattern 写坏了退回 type 的准入表，不抛也不放行一切',
+      spec: { apg: APG },
+      // 括号不闭合，编不成正则
+      props: { type: 'alphabetic', pattern: '[0-9' },
+      steps: [
+        {
+          kind: 'raw',
+          why: '过滤结果只能直接读 value property',
+          run: async (ctx) => {
+            const { doc } = ctx
+            await typeInto(ctx, 0, '7')
+            expectBoxes(doc, ['', '', '', '', '', ''], '退回 alphabetic 后数字仍被丢弃')
+            await typeInto(ctx, 0, 'x')
+            expectBoxes(doc, ['x', '', '', '', '', ''], '退回 alphabetic 后字母照收')
+          },
+        },
+      ],
+    },
+    {
       name: '粘贴整串：按格分发并拦下浏览器默认行为，超长截断',
       spec: { apg: APG },
       steps: [

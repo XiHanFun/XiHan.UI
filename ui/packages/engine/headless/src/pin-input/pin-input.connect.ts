@@ -31,6 +31,7 @@ export function connectPinInput<T extends PropTypes>(
   const { context, prop, send, scope } = service
   const length = pinLength(prop('length'))
   const type = prop('type') ?? 'numeric'
+  const pattern = prop('pattern')
   const disabled = !!prop('disabled')
   const invalid = !!prop('invalid')
   const mask = !!prop('mask')
@@ -147,7 +148,7 @@ export function connectPinInput<T extends PropTypes>(
           resync(el, index)
           return
         }
-        const chars = sanitizePin(incomingChars(raw, liveValue()[index] ?? ''), type)
+        const chars = sanitizePin(incomingChars(raw, liveValue()[index] ?? ''), type, pattern)
         if (chars === '') {
           // 敲进来的全是不接受的字符：值不动，框里也不留下它们
           resync(el, index)
@@ -160,7 +161,7 @@ export function connectPinInput<T extends PropTypes>(
         // 自己按格分发，浏览器默认会把整串塞进一格
         event.preventDefault()
         const el = event.currentTarget as HTMLInputElement
-        const chars = sanitizePin(event.clipboardData?.getData('text') ?? '', type)
+        const chars = sanitizePin(event.clipboardData?.getData('text') ?? '', type, pattern)
         if (chars === '')
           return
         fillFrom(el, index, chars)
