@@ -142,7 +142,7 @@
     display: inline-block;
     padding-inline: var(--xh-date-field-segment-px, var(--xh-space-1));
     padding-block: var(--xh-date-field-segment-py, var(--xh-space-0));
-    border-radius: var(--xh-date-field-segment-radius, var(--xh-radius-sm));
+    border-radius: var(--xh-date-field-segment-radius, var(--xh-shape-inset));
     color: inherit;
     font: inherit;
     /* 等宽数字：各位字宽不一时，上下键连按会让整行数字左右跳 */

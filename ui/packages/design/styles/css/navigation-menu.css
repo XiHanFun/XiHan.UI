@@ -1,14 +1,14 @@
 @layer xihan.motion {
   /* 面板往下探一小截再落位：纯淡入看不出它是从哪条 trigger 长出来的 */
-  @keyframes xh-navigation-menu-in {
+  @keyframes xh-pop-in {
     from {
       opacity: 0;
-      translate: 0 calc(-1 * var(--xh-motion-distance-sm));
+      scale: var(--xh-motion-scale-enter);
     }
 
     to {
       opacity: 1;
-      translate: 0 0;
+      scale: 1;
     }
   }
 }
@@ -175,7 +175,7 @@
   }
 
   [data-scope='navigation-menu'][data-part='content'][data-state='open'] {
-    animation: xh-navigation-menu-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 面板整批塞进共享外壳时，落位归外壳管，面板自己回到静态流里——
@@ -227,7 +227,7 @@
     margin: 0;
     inset-block-end: calc(var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick)) * -1);
     block-size: var(--xh-navigation-menu-indicator-thickness, var(--xh-stroke-thick));
-    border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-radius-full));
+    border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-navigation-menu-indicator-color, var(--xh-_navigation-menu-accent));
     transition:
       inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),

@@ -101,7 +101,7 @@
   [data-scope='toolbar'][data-part='separator'] {
     flex: none;
     align-self: stretch;
-    border-radius: var(--xh-toolbar-separator-radius, var(--xh-radius-full));
+    border-radius: var(--xh-toolbar-separator-radius, var(--xh-shape-pill));
     background: var(--xh-toolbar-separator-color, var(--xh-border-default));
   }
 

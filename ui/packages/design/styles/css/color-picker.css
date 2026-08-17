@@ -1,5 +1,5 @@
 @layer xihan.motion {
-  @keyframes xh-color-picker-fade-in {
+  @keyframes xh-pop-in {
     from {
       opacity: 0;
       scale: var(--xh-motion-scale-enter);
@@ -89,7 +89,7 @@
     inline-size: var(--xh-color-picker-swatch-size, 1.125rem);
     block-size: var(--xh-color-picker-swatch-size, 1.125rem);
     border: var(--xh-stroke-thin) solid var(--xh-color-picker-swatch-border, var(--xh-border-default));
-    border-radius: var(--xh-color-picker-swatch-radius, var(--xh-radius-sm));
+    border-radius: var(--xh-color-picker-swatch-radius, var(--xh-shape-inset));
   }
 
   [data-scope='color-picker'][data-part='value-text'] {
@@ -130,7 +130,7 @@
   }
 
   [data-scope='color-picker'][data-part='content'][data-state='open'] {
-    animation: xh-color-picker-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 浮层本身只是个容器（tabindex=-1 是焦点域的兜底落点），落焦时不画环 */
@@ -147,7 +147,7 @@
     position: relative;
     display: block;
     block-size: var(--xh-color-picker-area-h, 9rem);
-    border-radius: var(--xh-color-picker-area-radius, var(--xh-radius-md));
+    border-radius: var(--xh-color-picker-area-radius, var(--xh-shape-control));
     cursor: crosshair;
   }
 
@@ -391,7 +391,7 @@
     block-size: var(--xh-color-picker-swatch-item-size, 1.25rem);
     padding: 0;
     border: var(--xh-stroke-thin) solid var(--xh-color-picker-swatch-border, var(--xh-border-control));
-    border-radius: var(--xh-color-picker-swatch-radius, var(--xh-radius-sm));
+    border-radius: var(--xh-color-picker-swatch-radius, var(--xh-shape-inset));
     cursor: pointer;
   }
 

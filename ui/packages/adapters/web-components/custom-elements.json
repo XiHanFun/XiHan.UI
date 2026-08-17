@@ -2172,6 +2172,9 @@
             },
             {
               "name": "--xh-button-radius"
+            },
+            {
+              "name": "--xh-button-spin-duration"
             }
           ]
         }
@@ -9440,6 +9443,9 @@
             },
             {
               "name": "--xh-date-picker-panel-gap"
+            },
+            {
+              "name": "--xh-date-picker-time-column-gap"
             },
             {
               "name": "--xh-date-picker-time-column-h"
@@ -23327,6 +23333,9 @@
             },
             {
               "name": "--xh-radio-group-indicator-dot"
+            },
+            {
+              "name": "--xh-radio-group-indicator-size"
             },
             {
               "name": "--xh-radio-group-item-fg"

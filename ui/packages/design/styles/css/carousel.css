@@ -168,7 +168,7 @@
     /* 圆点本身没有文字，按钮里的文案（页码）交给作者，默认不显示 */
     padding: 0;
     border: 0;
-    border-radius: var(--xh-carousel-indicator-radius, var(--xh-radius-full));
+    border-radius: var(--xh-carousel-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-carousel-indicator-bg, var(--xh-border-control));
     font-size: 0;
     cursor: pointer;

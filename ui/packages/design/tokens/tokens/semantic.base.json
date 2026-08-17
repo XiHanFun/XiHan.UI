@@ -82,6 +82,10 @@
     }
   },
   "shape": {
+    "inset": {
+      "$type": "dimension",
+      "$value": "{radius.sm}"
+    },
     "control": {
       "$type": "dimension",
       "$value": "{radius.md}"

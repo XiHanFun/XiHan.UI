@@ -152,7 +152,7 @@
     display: inline-block;
     padding-inline: var(--xh-time-picker-segment-px, var(--xh-space-0_5));
     padding-block: 0;
-    border-radius: var(--xh-time-picker-segment-radius, var(--xh-radius-sm));
+    border-radius: var(--xh-time-picker-segment-radius, var(--xh-shape-inset));
     color: inherit;
     font-variant-numeric: inherit;
     text-align: center;
@@ -296,7 +296,7 @@
   }
 
   [data-scope='time-picker'][data-part='content'][data-state='open'] {
-    animation: xh-time-picker-panel-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 一列一个滚动区：列与列之间用细分隔线，视觉上"时 | 分 | 秒"三栏分明 */
@@ -410,15 +410,15 @@
 @layer xihan.motion {
   /* 浮层进场：淡入 + 轻微上浮，方向与它从输入行下方展开一致。
      关键帧写在自己文件里并带组件前缀，不去动共享的 motion.css */
-  @keyframes xh-time-picker-panel-in {
+  @keyframes xh-pop-in {
     from {
       opacity: 0;
-      translate: 0 calc(-1 * var(--xh-motion-distance-sm));
+      scale: var(--xh-motion-scale-enter);
     }
 
     to {
       opacity: 1;
-      translate: 0 0;
+      scale: 1;
     }
   }
 }

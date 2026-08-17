@@ -111,6 +111,7 @@ export const tokens = {
   "--xh-glyph-stroke-bold": "2.5px",
   "--xh-glyph-baseline-shift": "-0.125em",
   "--xh-field-py": "var(--xh-space-2)",
+  "--xh-shape-inset": "var(--xh-radius-sm)",
   "--xh-shape-control": "var(--xh-radius-md)",
   "--xh-shape-surface": "var(--xh-radius-lg)",
   "--xh-shape-pill": "var(--xh-radius-full)",

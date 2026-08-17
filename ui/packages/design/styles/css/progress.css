@@ -100,10 +100,4 @@
     visibility: hidden;
   }
 
-  /* 关掉动效的用户不该被进度条的补间晃一下；这里只管本组件 */
-  @media (prefers-reduced-motion: reduce) {
-    [data-scope='progress'][data-part='range'] {
-      transition-duration: 0.01ms;
-    }
-  }
 }

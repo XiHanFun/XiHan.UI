@@ -140,7 +140,7 @@
     display: inline-block;
     padding-inline: var(--xh-time-field-segment-px, var(--xh-space-0_5));
     padding-block: 0;
-    border-radius: var(--xh-time-field-segment-radius, var(--xh-radius-sm));
+    border-radius: var(--xh-time-field-segment-radius, var(--xh-shape-inset));
     color: inherit;
     font-variant-numeric: inherit;
     text-align: center;

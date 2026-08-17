@@ -13,7 +13,7 @@
     inline-size: var(--xh-image-w, 100%);
     block-size: var(--xh-image-h, auto);
     aspect-ratio: var(--xh-image-ratio, auto);
-    border-radius: var(--xh-image-radius, var(--xh-radius-md));
+    border-radius: var(--xh-image-radius, var(--xh-shape-control));
     background: var(--xh-image-bg, var(--xh-bg-subtle));
   }
 

@@ -104,7 +104,7 @@
   /* 展开时轻微涨开：菜单是被光标"点出来"的，纯淡入显得它一直都在
      （不设 transform-origin：那个属性没有逻辑关键字，写死方向会在 RTL 下反着涨） */
   [data-scope='context-menu'][data-part='content'][data-state='open'] {
-    animation: xh-context-menu-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   [data-scope='context-menu'][data-part='group'] {
@@ -277,7 +277,7 @@
 
 @layer xihan.motion {
   /* 自带前缀独占一个名字，不动公共的那份关键帧 */
-  @keyframes xh-context-menu-in {
+  @keyframes xh-pop-in {
     from {
       opacity: 0;
       scale: var(--xh-motion-scale-enter);

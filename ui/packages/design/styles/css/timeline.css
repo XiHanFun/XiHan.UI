@@ -92,7 +92,7 @@
     justify-content: center;
     inline-size: var(--xh-timeline-indicator-size, var(--xh-_timeline-dot-size));
     block-size: var(--xh-timeline-indicator-size, var(--xh-_timeline-dot-size));
-    border-radius: var(--xh-radius-full);
+    border-radius: var(--xh-shape-pill);
     /* 使用者令牌排在语气之前；两者都没有时退回一个中性的实心点 */
     background: var(--xh-timeline-indicator-bg, var(--xh-_tone-soft, var(--xh-fg-muted)));
     color: var(--xh-timeline-indicator-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
@@ -120,7 +120,7 @@
 
   /* —— 连线 —— */
   [data-scope='timeline'][data-part='connector'] {
-    border-radius: var(--xh-radius-full);
+    border-radius: var(--xh-shape-pill);
     background: var(--xh-timeline-connector-bg, var(--xh-border-default));
   }
 

@@ -108,6 +108,7 @@
 
   [data-scope='button'][data-part='indicator'] {
     display: inline-flex;
-    animation: xh-spin 0.6s linear infinite;
+    /* 连续旋转不归动效令牌管（那三档是给进退场与微交互的），照 spinner 那份取慢档的两倍 */
+    animation: xh-spin var(--xh-button-spin-duration, calc(var(--xh-duration-slow) * 2)) linear infinite;
   }
 }

@@ -193,7 +193,7 @@
     inline-size: var(--xh-transfer-checkbox-size, 16px);
     block-size: var(--xh-transfer-checkbox-size, 16px);
     border: var(--xh-stroke-thin) solid var(--xh-transfer-checkbox-border, var(--xh-border-control));
-    border-radius: var(--xh-transfer-checkbox-radius, var(--xh-radius-sm));
+    border-radius: var(--xh-transfer-checkbox-radius, var(--xh-shape-inset));
     background: var(--xh-transfer-checkbox-bg, var(--xh-bg-canvas));
     color: var(--xh-transfer-checkbox-fg, var(--xh-fg-on-brand));
     font-size: var(--xh-transfer-checkbox-font-size, 12px);
