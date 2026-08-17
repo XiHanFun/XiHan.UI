@@ -3,6 +3,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { mergeIntoChild } from '../../runtime/as-child'
 import { provideFileUpload, provideFileUploadItem, useFileUploadContext, useFileUploadItemContext } from './context'
 import { useFileUpload } from './use-file-upload'
 
@@ -119,9 +120,23 @@ export const XhFileUploadDropzone = defineComponent({
 
 export const XhFileUploadTrigger = defineComponent({
   name: 'XhFileUploadTrigger',
-  setup(_, { slots }) {
+  props: {
+    /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
+    asChild: Boolean,
+  },
+  setup(props, { slots }) {
     const ctx = useFileUploadContext()
-    return () => h('button', ctx.api.value.getTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => {
+      const attrs = ctx.api.value.getTriggerProps() as Record<string, unknown>
+      const children = slots.default?.()
+      // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
+      if (props.asChild) {
+        const merged = mergeIntoChild(children, attrs, 'file-upload')
+        if (merged)
+          return merged
+      }
+      return h('button', attrs, children)
+    }
   },
 })
 

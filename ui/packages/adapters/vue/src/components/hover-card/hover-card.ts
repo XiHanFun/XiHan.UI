@@ -3,6 +3,7 @@ import type { Direction, Placement, Size } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
+import { mergeIntoChild } from '../../runtime/as-child'
 import { provideHoverCard, useHoverCardContext } from './context'
 import { useHoverCard } from './use-hover-card'
 
@@ -49,12 +50,26 @@ export const XhHoverCardRoot = defineComponent({
 
 export const XhHoverCardTrigger = defineComponent({
   name: 'XhHoverCardTrigger',
-  setup(_, { slots }) {
+  props: {
+    /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
+    asChild: Boolean,
+  },
+  setup(props, { slots }) {
     const ctx = useHoverCardContext()
-    return () => h('button', {
-      ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
-      ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
-    }, slots.default?.())
+    return () => {
+      const attrs = {
+        ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
+        ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
+      }
+      const children = slots.default?.()
+      // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
+      if (props.asChild) {
+        const merged = mergeIntoChild(children, attrs, 'hover-card')
+        if (merged)
+          return merged
+      }
+      return h('button', attrs, children)
+    }
   },
 })
 
