@@ -28,7 +28,7 @@ function onValueChange(details: { valueAsNumber: number }) {
   >
     <XhNumberFieldLabel>购买数量</XhNumberFieldLabel>
     <XhNumberFieldControl>
-      <XhNumberFieldInput style="inline-size: 80px; text-align: center" />
+      <XhNumberFieldInput />
       <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
       <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
     </XhNumberFieldControl>

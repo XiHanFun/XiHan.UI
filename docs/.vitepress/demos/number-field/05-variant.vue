@@ -18,7 +18,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
       <XhNumberFieldLabel>{{ v }}</XhNumberFieldLabel>
       <XhNumberFieldControl>
         <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
-        <XhNumberFieldInput style="inline-size: 72px; text-align: center" />
+        <XhNumberFieldInput />
         <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
       </XhNumberFieldControl>
     </XhNumberFieldRoot>

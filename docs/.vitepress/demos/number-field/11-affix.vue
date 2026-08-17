@@ -16,7 +16,7 @@ import {
     <XhNumberFieldControl>
       <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
       <span style="color: var(--xh-fg-muted)">¥</span>
-      <XhNumberFieldInput style="inline-size: 96px; text-align: center" />
+      <XhNumberFieldInput />
       <span style="color: var(--xh-fg-muted)">元</span>
       <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
     </XhNumberFieldControl>
@@ -26,7 +26,7 @@ import {
     <XhNumberFieldLabel>重量</XhNumberFieldLabel>
     <XhNumberFieldControl>
       <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
-      <XhNumberFieldInput style="inline-size: 80px; text-align: center" />
+      <XhNumberFieldInput />
       <span style="color: var(--xh-fg-muted)">g</span>
       <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
     </XhNumberFieldControl>

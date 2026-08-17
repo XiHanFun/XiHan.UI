@@ -23,7 +23,7 @@ function pad() {
   <XhNumberFieldRoot v-model:value="price" :min="0" :max="999" :step="0.1">
     <XhNumberFieldLabel>单价（每档 0.1）</XhNumberFieldLabel>
     <XhNumberFieldControl>
-      <XhNumberFieldInput style="inline-size: 96px; text-align: center" @blur="pad" />
+      <XhNumberFieldInput @blur="pad" />
       <XhNumberFieldDecrementTrigger @pointerup="pad">−</XhNumberFieldDecrementTrigger>
       <XhNumberFieldIncrementTrigger @pointerup="pad">+</XhNumberFieldIncrementTrigger>
     </XhNumberFieldControl>

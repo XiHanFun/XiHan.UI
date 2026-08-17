@@ -177,6 +177,7 @@ import {
   XhNavigationMenuList,
   XhNavigationMenuRoot,
   XhNavigationMenuTrigger,
+  XhNumberFieldControl,
   XhNumberFieldDecrementTrigger,
   XhNumberFieldIncrementTrigger,
   XhNumberFieldInput,
@@ -1340,11 +1341,11 @@ const codeBlockPartial = `const stream = await client.chat({
       </p>
       <XhNumberFieldRoot v-model:value="qty" :min="0" :max="20" :step="1" name="qty">
         <XhNumberFieldLabel>数量</XhNumberFieldLabel>
-        <div class="row" style="gap: 4px;">
+        <XhNumberFieldControl>
           <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
-          <XhNumberFieldInput style="inline-size: 80px; text-align: center;" />
+          <XhNumberFieldInput />
           <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
-        </div>
+        </XhNumberFieldControl>
       </XhNumberFieldRoot>
       <span class="lead">当前值：{{ qty === '' ? '（空）' : qty }}</span>
     </section>

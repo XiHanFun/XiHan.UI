@@ -22,7 +22,7 @@ import {
     <XhNumberFieldLabel>数量（0 – 20，每档 2）</XhNumberFieldLabel>
     <XhNumberFieldControl>
       <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
-      <XhNumberFieldInput style="inline-size: 80px; text-align: center" />
+      <XhNumberFieldInput />
       <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
     </XhNumberFieldControl>
     <span>

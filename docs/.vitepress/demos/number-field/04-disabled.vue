@@ -14,7 +14,7 @@ import {
   <XhNumberFieldRoot default-value="5" disabled>
     <XhNumberFieldLabel>禁用</XhNumberFieldLabel>
     <XhNumberFieldControl>
-      <XhNumberFieldInput style="inline-size: 80px; text-align: center" />
+      <XhNumberFieldInput />
       <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
       <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
     </XhNumberFieldControl>
@@ -23,7 +23,7 @@ import {
   <XhNumberFieldRoot default-value="5" read-only>
     <XhNumberFieldLabel>只读</XhNumberFieldLabel>
     <XhNumberFieldControl>
-      <XhNumberFieldInput style="inline-size: 80px; text-align: center" />
+      <XhNumberFieldInput />
       <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
       <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
     </XhNumberFieldControl>

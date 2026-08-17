@@ -29,11 +29,7 @@ function commit() {
   <XhNumberFieldRoot v-model:value="draft" :min="1" :max="99">
     <XhNumberFieldLabel>数量</XhNumberFieldLabel>
     <XhNumberFieldControl>
-      <XhNumberFieldInput
-        style="inline-size: 80px; text-align: center"
-        @blur="commit"
-        @keydown.enter="commit"
-      />
+      <XhNumberFieldInput @blur="commit" @keydown.enter="commit" />
       <XhNumberFieldDecrementTrigger>−</XhNumberFieldDecrementTrigger>
       <XhNumberFieldIncrementTrigger>+</XhNumberFieldIncrementTrigger>
     </XhNumberFieldControl>
