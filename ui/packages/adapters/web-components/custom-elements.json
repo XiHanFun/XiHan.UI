@@ -24101,8 +24101,16 @@
               "name": "positioner"
             },
             {
-              "description": "role=listbox 容器（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden",
+              "description": "浮层外壳（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden",
               "name": "content"
+            },
+            {
+              "description": "role=listbox 本体，条目放在它里面；滚动也在这一层",
+              "name": "list"
+            },
+            {
+              "description": "浮层底部的操作区，是 list 的兄弟；不进列表框的拥有关系，方向键与连打检索也不认它",
+              "name": "footer"
             },
             {
               "description": "role=option 条目，须自带 value 属性标识身份；禁用写 aria-disabled=\"true\"",
@@ -24758,6 +24766,24 @@
             },
             {
               "name": "--xh-select-content-shadow"
+            },
+            {
+              "name": "--xh-select-footer-border"
+            },
+            {
+              "name": "--xh-select-footer-fg"
+            },
+            {
+              "name": "--xh-select-footer-font-size"
+            },
+            {
+              "name": "--xh-select-footer-gap"
+            },
+            {
+              "name": "--xh-select-footer-px"
+            },
+            {
+              "name": "--xh-select-footer-py"
             },
             {
               "name": "--xh-select-gap"

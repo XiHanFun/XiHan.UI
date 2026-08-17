@@ -57,6 +57,8 @@ interface Harness {
   trigger: HTMLButtonElement
   valueTextEl: HTMLElement
   content: HTMLElement
+  list: HTMLElement
+  footer: HTMLElement
   hiddenSelect: HTMLSelectElement
   item: (value: string) => HTMLElement
   setProps: (next: Partial<Props>) => void
@@ -96,6 +98,10 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   trigger.append(valueTextEl, indicator)
   const positioner = doc.createElement('div')
   const content = doc.createElement('div')
+  // list 是列表框本体，条目住在它里面；footer 是它的兄弟，两个适配器铺的都是这个形状
+  const list = doc.createElement('div')
+  const footer = doc.createElement('div')
+  content.append(list, footer)
   positioner.appendChild(content)
   root.append(hiddenSelect, label, trigger, positioner)
   const form = options.inForm ? doc.createElement('form') : null
@@ -116,7 +122,7 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
     text.textContent = item.text
     const mark = doc.createElement('span')
     el.append(text, mark)
-    content.appendChild(el)
+    list.appendChild(el)
     itemEls.set(item.value, el)
     textEls.set(item.value, text)
     indicatorEls.set(item.value, mark)
@@ -152,6 +158,8 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
     spread(indicator, api.getIndicatorProps() as Record<string, unknown>)
     spread(positioner, api.getPositionerProps() as Record<string, unknown>)
     spread(content, api.getContentProps() as Record<string, unknown>)
+    spread(list, api.getListProps() as Record<string, unknown>)
+    spread(footer, api.getFooterProps() as Record<string, unknown>)
     spread(hiddenSelect, api.getHiddenSelectProps() as Record<string, unknown>)
     // 影子选项按当前值补齐，与两个适配器同语义：选中态一律靠 option.selected 表达
     hiddenSelect.textContent = ''
@@ -184,6 +192,8 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
     trigger,
     valueTextEl,
     content,
+    list,
+    footer,
     hiddenSelect,
     item: v => itemEls.get(v)!,
     setProps: (next) => {
@@ -344,7 +354,7 @@ describe('selectMachine 单选', () => {
   })
 
   it('content 报 aria-multiselectable=false', () => {
-    expect(mount().content.getAttribute('aria-multiselectable')).toBe('false')
+    expect(mount().list.getAttribute('aria-multiselectable')).toBe('false')
   })
 })
 
@@ -394,7 +404,7 @@ describe('selectMachine 多选', () => {
   })
 
   it('content 报 aria-multiselectable=true', () => {
-    expect(mount({ multiple: true }).content.getAttribute('aria-multiselectable')).toBe('true')
+    expect(mount({ multiple: true }).list.getAttribute('aria-multiselectable')).toBe('true')
   })
 
   it('展开时高亮锚点落在首个选中项上', async () => {
@@ -593,17 +603,17 @@ describe('selectSelect 列表框的名字', () => {
 
   it('名字与 trigger 同源：标题 + 当前值', () => {
     const h = mount({ defaultValue: 'apple' })
-    expect(h.content.getAttribute('role')).toBe('listbox')
-    expect(h.content.getAttribute('aria-labelledby')).toBe(`${labelId(h)} ${h.valueTextEl.id}`)
-    expect(h.content.getAttribute('aria-labelledby')).toBe(h.trigger.getAttribute('aria-labelledby'))
+    expect(h.list.getAttribute('role')).toBe('listbox')
+    expect(h.list.getAttribute('aria-labelledby')).toBe(`${labelId(h)} ${h.valueTextEl.id}`)
+    expect(h.list.getAttribute('aria-labelledby')).toBe(h.trigger.getAttribute('aria-labelledby'))
   })
 
   // 指针打开不预落锚点，焦点歇在容器上：那一刻读屏只报得出它的名字与角色
   it('两个名字部件都没渲染时退回可写的兜底名，不留一个没名字的列表框', () => {
     const h = mount()
-    expect(h.content.getAttribute('aria-label')).toBe('Options')
+    expect(h.list.getAttribute('aria-label')).toBe('Options')
     h.setProps({ translations: { content: '城市' } })
-    expect(h.content.getAttribute('aria-label')).toBe('城市')
+    expect(h.list.getAttribute('aria-label')).toBe('城市')
   })
 })
 

@@ -7,6 +7,7 @@ import {
   XhSelectContent,
   XhSelectItem,
   XhSelectItemText,
+  XhSelectList,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTrigger,
@@ -49,11 +50,11 @@ function mountSelect(multiple: boolean): MountedSelect {
         default: () => [
           h(XhSelectTrigger, null, { default: () => h(XhSelectValueText) }),
           h(XhSelectPositioner, null, {
-            default: () => h(XhSelectContent, null, {
+            default: () => h(XhSelectContent, null, () => h(XhSelectList, null, {
               default: () => VALUES.map(v => h(XhSelectItem, { key: v, value: v }, {
                 default: () => h(XhSelectItemText, null, { default: () => TEXT[v] }),
               })),
-            }),
+            })),
           }),
         ],
       })

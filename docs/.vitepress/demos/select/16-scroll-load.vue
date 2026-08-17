@@ -8,6 +8,7 @@ import {
   XhSelectItemIndicator,
   XhSelectItemText,
   XhSelectLabel,
+  XhSelectList,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTrigger,
@@ -55,13 +56,15 @@ function onScroll(event: Event): void {
     </XhSelectTrigger>
     <XhSelectPositioner>
       <XhSelectContent @scroll="onScroll">
-        <XhSelectItem v-for="t in tickets" :key="t.value" :value="t.value">
-          <XhSelectItemText>{{ t.label }}</XhSelectItemText>
-          <XhSelectItemIndicator>✓</XhSelectItemIndicator>
-        </XhSelectItem>
-        <XhSelectItem v-if="loading" value="loading" disabled>
-          <XhSelectItemText>加载中…</XhSelectItemText>
-        </XhSelectItem>
+        <XhSelectList>
+          <XhSelectItem v-for="t in tickets" :key="t.value" :value="t.value">
+            <XhSelectItemText>{{ t.label }}</XhSelectItemText>
+            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+          </XhSelectItem>
+          <XhSelectItem v-if="loading" value="loading" disabled>
+            <XhSelectItemText>加载中…</XhSelectItemText>
+          </XhSelectItem>
+        </XhSelectList>
       </XhSelectContent>
     </XhSelectPositioner>
   </XhSelectRoot>

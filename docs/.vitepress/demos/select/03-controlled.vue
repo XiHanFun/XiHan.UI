@@ -8,6 +8,7 @@ import {
   XhSelectItemIndicator,
   XhSelectItemText,
   XhSelectLabel,
+  XhSelectList,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTrigger,
@@ -38,10 +39,12 @@ function onValueChange(details: { value: string[] }) {
     </XhSelectTrigger>
     <XhSelectPositioner>
       <XhSelectContent>
-        <XhSelectItem v-for="f in fruits" :key="f.value" :value="f.value">
-          <XhSelectItemText>{{ f.label }}</XhSelectItemText>
-          <XhSelectItemIndicator>✓</XhSelectItemIndicator>
-        </XhSelectItem>
+        <XhSelectList>
+          <XhSelectItem v-for="f in fruits" :key="f.value" :value="f.value">
+            <XhSelectItemText>{{ f.label }}</XhSelectItemText>
+            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+          </XhSelectItem>
+        </XhSelectList>
       </XhSelectContent>
     </XhSelectPositioner>
   </XhSelectRoot>

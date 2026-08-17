@@ -8,6 +8,7 @@ import {
   XhSelectItemIndicator,
   XhSelectItemText,
   XhSelectLabel,
+  XhSelectList,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTrigger,
@@ -45,16 +46,18 @@ const picked = ref<string[]>([]);
     </XhSelectTrigger>
     <XhSelectPositioner>
       <XhSelectContent>
-        <!-- 段标题只是普通节点，不带条目标记，导航与检索都跳过它 -->
-        <div v-for="g in groups" :key="g.id" role="group" :aria-labelledby="g.id">
-          <div :id="g.id" style="padding: 4px 8px; color: var(--xh-fg-subtle); font-size: 12px">
-            {{ g.label }}
+        <XhSelectList>
+          <!-- 段标题只是普通节点，不带条目标记，导航与检索都跳过它 -->
+          <div v-for="g in groups" :key="g.id" role="group" :aria-labelledby="g.id">
+            <div :id="g.id" style="padding: 4px 8px; color: var(--xh-fg-subtle); font-size: 12px">
+              {{ g.label }}
+            </div>
+            <XhSelectItem v-for="o in g.items" :key="o.value" :value="o.value">
+              <XhSelectItemText>{{ o.label }}</XhSelectItemText>
+              <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+            </XhSelectItem>
           </div>
-          <XhSelectItem v-for="o in g.items" :key="o.value" :value="o.value">
-            <XhSelectItemText>{{ o.label }}</XhSelectItemText>
-            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
-          </XhSelectItem>
-        </div>
+        </XhSelectList>
       </XhSelectContent>
     </XhSelectPositioner>
   </XhSelectRoot>

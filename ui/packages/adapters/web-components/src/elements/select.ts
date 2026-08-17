@@ -56,7 +56,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart tag - 多选标签，须自带 value 属性标识选中值；放触发器里是纯展示，放外面配 tag-remove 可删
  * @csspart tag-remove - 标签删除按钮，须放在 tag 里；点按摘掉所在标签的选中值，可及名走 translations.removeTag
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
- * @csspart content - role=listbox 容器（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
+ * @csspart content - 浮层外壳（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
+ * @csspart list - role=listbox 本体，条目放在它里面；滚动也在这一层
+ * @csspart footer - 浮层底部的操作区，是 list 的兄弟；不进列表框的拥有关系，方向键与连打检索也不认它
  * @csspart item - role=option 条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
  * @csspart item-text - 条目文本（连打检索与 value-text 的取字处）
  * @csspart item-indicator - 条目选中标记（aria-hidden）
@@ -300,6 +302,8 @@ export class XhSelectElement extends XhElement {
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
+    put('list', api.getListProps() as Record<string, unknown>)
+    put('footer', api.getFooterProps() as Record<string, unknown>)
 
     // 属性先落，再填显示文字
     const valueText = this.getPart('value-text')

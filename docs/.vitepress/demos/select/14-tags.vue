@@ -8,6 +8,7 @@ import {
   XhSelectItemIndicator,
   XhSelectItemText,
   XhSelectLabel,
+  XhSelectList,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTag,
@@ -50,10 +51,12 @@ const picked = ref<string[]>(["vue", "svelte", "solid"]);
     </XhSelectTrigger>
     <XhSelectPositioner>
       <XhSelectContent>
-        <XhSelectItem v-for="o in options" :key="o.value" :value="o.value">
-          <XhSelectItemText>{{ o.label }}</XhSelectItemText>
-          <XhSelectItemIndicator>✓</XhSelectItemIndicator>
-        </XhSelectItem>
+        <XhSelectList>
+          <XhSelectItem v-for="o in options" :key="o.value" :value="o.value">
+            <XhSelectItemText>{{ o.label }}</XhSelectItemText>
+            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+          </XhSelectItem>
+        </XhSelectList>
       </XhSelectContent>
     </XhSelectPositioner>
     <!-- 触发器外的可删标签行：按钮不能套按钮，删除钮只能放在这里 -->

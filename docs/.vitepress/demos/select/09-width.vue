@@ -7,6 +7,7 @@ import {
   XhSelectItemIndicator,
   XhSelectItemText,
   XhSelectLabel,
+  XhSelectList,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTrigger,
@@ -30,10 +31,12 @@ const plans = [
       </XhSelectTrigger>
       <XhSelectPositioner>
         <XhSelectContent>
-          <XhSelectItem v-for="p in plans" :key="p.value" :value="p.value">
-            <XhSelectItemText>{{ p.label }}</XhSelectItemText>
-            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
-          </XhSelectItem>
+          <XhSelectList>
+            <XhSelectItem v-for="p in plans" :key="p.value" :value="p.value">
+              <XhSelectItemText>{{ p.label }}</XhSelectItemText>
+              <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+            </XhSelectItem>
+          </XhSelectList>
         </XhSelectContent>
       </XhSelectPositioner>
     </XhSelectRoot>
@@ -50,10 +53,12 @@ const plans = [
       </XhSelectTrigger>
       <XhSelectPositioner>
         <XhSelectContent>
-          <XhSelectItem v-for="p in plans" :key="p.value" :value="p.value">
-            <XhSelectItemText>{{ p.label }}</XhSelectItemText>
-            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
-          </XhSelectItem>
+          <XhSelectList>
+            <XhSelectItem v-for="p in plans" :key="p.value" :value="p.value">
+              <XhSelectItemText>{{ p.label }}</XhSelectItemText>
+              <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+            </XhSelectItem>
+          </XhSelectList>
         </XhSelectContent>
       </XhSelectPositioner>
     </XhSelectRoot>

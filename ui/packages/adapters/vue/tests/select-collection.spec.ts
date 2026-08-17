@@ -10,6 +10,7 @@ import {
   XhSelectItemIndicator,
   XhSelectItemText,
   XhSelectLabel,
+  XhSelectList,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTrigger,
@@ -55,12 +56,12 @@ function mountFromParts(value: string[]) {
       h(XhSelectLabel, () => '水果'),
       h(XhSelectTrigger, () => [h(XhSelectValueText), h(XhSelectIndicator)]),
       h(XhSelectPositioner, () => [
-        h(XhSelectContent, () => COLLECTION.map(node =>
+        h(XhSelectContent, () => h(XhSelectList, null, () => COLLECTION.map(node =>
           h(XhSelectItem, { key: node.value, value: node.value }, () => [
             h(XhSelectItemText, () => node.label),
             h(XhSelectItemIndicator),
           ]),
-        )),
+        ))),
       ]),
     ]),
   }), { attachTo: document.body })
@@ -89,6 +90,7 @@ describe('select 的 collection', () => {
       'indicator',
       'positioner',
       'content',
+      'list',
       'item',
       'item-text',
       'item-indicator',
@@ -144,12 +146,12 @@ describe('select 的 collection', () => {
   it('条目上写的 disabled 压过数据里的', () => {
     const w = mount(defineComponent({
       setup: () => () => h(XhSelectRoot, { collection: COLLECTION }, () => [
-        h(XhSelectContent, () => [
+        h(XhSelectContent, () => h(XhSelectList, null, () => [
           // 数据里 cherry 是禁用的，这里逐条改口
           h(XhSelectItem, { value: 'cherry', disabled: false }, () => [h(XhSelectItemText, () => '樱桃')]),
           // 数据里 apple 不禁用，这里逐条禁掉
           h(XhSelectItem, { value: 'apple', disabled: true }, () => [h(XhSelectItemText, () => '苹果')]),
-        ]),
+        ])),
       ]),
     }), { attachTo: document.body })
     const flags = [...w.element.querySelectorAll('[data-part="item"]')]

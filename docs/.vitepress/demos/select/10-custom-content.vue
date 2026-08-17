@@ -11,6 +11,7 @@ import {
   XhSelectItemIndicator,
   XhSelectItemText,
   XhSelectLabel,
+  XhSelectList,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTrigger,
@@ -45,21 +46,23 @@ const current = computed(() => members.find((m) => m.value === picked.value[0]) 
     </XhSelectTrigger>
     <XhSelectPositioner>
       <XhSelectContent>
-        <XhSelectItem v-for="m in members" :key="m.value" :value="m.value">
-          <XhSelectItemText>
-            <span style="display: inline-flex; align-items: center; gap: 8px">
-              <XhAvatarRoot size="sm">
-                <XhAvatarImage />
-                <XhAvatarFallback>{{ m.initial }}</XhAvatarFallback>
-              </XhAvatarRoot>
-              <span>
-                {{ m.name }}
-                <span style="color: var(--xh-fg-muted); font-size: 12px">{{ m.team }}</span>
+        <XhSelectList>
+          <XhSelectItem v-for="m in members" :key="m.value" :value="m.value">
+            <XhSelectItemText>
+              <span style="display: inline-flex; align-items: center; gap: 8px">
+                <XhAvatarRoot size="sm">
+                  <XhAvatarImage />
+                  <XhAvatarFallback>{{ m.initial }}</XhAvatarFallback>
+                </XhAvatarRoot>
+                <span>
+                  {{ m.name }}
+                  <span style="color: var(--xh-fg-muted); font-size: 12px">{{ m.team }}</span>
+                </span>
               </span>
-            </span>
-          </XhSelectItemText>
-          <XhSelectItemIndicator>✓</XhSelectItemIndicator>
-        </XhSelectItem>
+            </XhSelectItemText>
+            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+          </XhSelectItem>
+        </XhSelectList>
       </XhSelectContent>
     </XhSelectPositioner>
   </XhSelectRoot>

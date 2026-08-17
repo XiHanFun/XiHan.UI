@@ -21,6 +21,7 @@ import {
   XhSelectContent,
   XhSelectItem,
   XhSelectItemText,
+  XhSelectList,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTrigger,
@@ -173,10 +174,10 @@ describe('hover 跟随高亮', () => {
     }, () => [
       h(XhSelectTrigger),
       h(XhSelectPositioner, null, () => [
-        h(XhSelectContent, null, () => [
+        h(XhSelectContent, null, () => h(XhSelectList, null, () => [
           h(XhSelectItem, { value: 'a' }, () => [h(XhSelectItemText, () => '甲')]),
           h(XhSelectItem, { value: 'b' }, () => [h(XhSelectItemText, () => '乙')]),
-        ]),
+        ])),
       ]),
     ]))
     await tick()
@@ -208,10 +209,10 @@ describe('hover 跟随高亮', () => {
     }, () => [
       h(XhSelectTrigger),
       h(XhSelectPositioner, null, () => [
-        h(XhSelectContent, null, () => [
+        h(XhSelectContent, null, () => h(XhSelectList, null, () => [
           h(XhSelectItem, { value: 'a' }, () => [h(XhSelectItemText, () => '甲')]),
           h(XhSelectItem, { value: 'b' }, () => [h(XhSelectItemText, () => '乙')]),
-        ]),
+        ])),
       ]),
     ]))
     await tick()
@@ -237,10 +238,10 @@ describe('hover 跟随高亮', () => {
     }, () => [
       h(XhSelectTrigger),
       h(XhSelectPositioner, null, () => [
-        h(XhSelectContent, null, () => [
+        h(XhSelectContent, null, () => h(XhSelectList, null, () => [
           h(XhSelectItem, { value: 'a' }, () => [h(XhSelectItemText, () => '甲')]),
           h(XhSelectItem, { value: 'b' }, () => [h(XhSelectItemText, () => '乙')]),
-        ]),
+        ])),
       ]),
     ]))
     await tick()
@@ -266,10 +267,10 @@ describe('hover 跟随高亮', () => {
     }, () => [
       h(XhSelectTrigger),
       h(XhSelectPositioner, null, () => [
-        h(XhSelectContent, null, () => [
+        h(XhSelectContent, null, () => h(XhSelectList, null, () => [
           h(XhSelectItem, { value: 'a' }, () => [h(XhSelectItemText, () => '甲')]),
           h(XhSelectItem, { value: 'b' }, () => [h(XhSelectItemText, () => '乙')]),
-        ]),
+        ])),
       ]),
     ]))
     await tick()

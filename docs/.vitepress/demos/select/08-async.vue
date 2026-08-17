@@ -8,6 +8,7 @@ import {
   XhSelectItemIndicator,
   XhSelectItemText,
   XhSelectLabel,
+  XhSelectList,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTrigger,
@@ -50,13 +51,15 @@ function onOpenChange(details: { open: boolean }): void {
     </XhSelectTrigger>
     <XhSelectPositioner>
       <XhSelectContent>
-        <XhSelectItem v-if="loading" value="loading" disabled>
-          <XhSelectItemText>加载中…</XhSelectItemText>
-        </XhSelectItem>
-        <XhSelectItem v-for="s in songs" :key="s.value" :value="s.value">
-          <XhSelectItemText>{{ s.label }}</XhSelectItemText>
-          <XhSelectItemIndicator>✓</XhSelectItemIndicator>
-        </XhSelectItem>
+        <XhSelectList>
+          <XhSelectItem v-if="loading" value="loading" disabled>
+            <XhSelectItemText>加载中…</XhSelectItemText>
+          </XhSelectItem>
+          <XhSelectItem v-for="s in songs" :key="s.value" :value="s.value">
+            <XhSelectItemText>{{ s.label }}</XhSelectItemText>
+            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+          </XhSelectItem>
+        </XhSelectList>
       </XhSelectContent>
     </XhSelectPositioner>
   </XhSelectRoot>

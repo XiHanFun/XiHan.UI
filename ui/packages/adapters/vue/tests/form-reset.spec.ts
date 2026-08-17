@@ -2,7 +2,7 @@
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
-import { XhCheckbox, XhRadioGroupItem, XhRadioGroupRoot, XhRatingControl, XhRatingItem, XhRatingRoot, XhSelectContent, XhSelectItem, XhSelectItemText, XhSelectPositioner, XhSelectRoot, XhSelectTrigger, XhSelectValueText, XhSwitch } from '../src'
+import { XhCheckbox, XhRadioGroupItem, XhRadioGroupRoot, XhRatingControl, XhRatingItem, XhRatingRoot, XhSelectContent, XhSelectItem, XhSelectItemText, XhSelectList, XhSelectPositioner, XhSelectRoot, XhSelectTrigger, XhSelectValueText, XhSwitch } from '../src'
 
 /**
  * 组件的值攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置什么都不会发生。
@@ -212,10 +212,10 @@ describe('几个最容易做错的组件', () => {
             default: () => [
               h(XhSelectTrigger, null, () => [h(XhSelectValueText)]),
               h(XhSelectPositioner, null, () => [
-                h(XhSelectContent, null, () => [
+                h(XhSelectContent, null, () => h(XhSelectList, null, () => [
                   h(XhSelectItem, { value: 'apple' }, () => [h(XhSelectItemText, null, () => '苹果')]),
                   h(XhSelectItem, { value: 'pear' }, () => [h(XhSelectItemText, null, () => '梨')]),
-                ]),
+                ])),
               ]),
             ],
           }),

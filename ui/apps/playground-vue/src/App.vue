@@ -222,6 +222,7 @@ import {
   XhSelectItemIndicator,
   XhSelectItemText,
   XhSelectLabel,
+  XhSelectList,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTrigger,
@@ -1261,10 +1262,12 @@ const codeBlockPartial = `const stream = await client.chat({
         </XhSelectTrigger>
         <XhSelectPositioner>
           <XhSelectContent>
-            <XhSelectItem v-for="f in fruits" :key="f.value" :value="f.value" :disabled="f.disabled">
-              <XhSelectItemText>{{ f.label }}</XhSelectItemText>
-              <XhSelectItemIndicator>✓</XhSelectItemIndicator>
-            </XhSelectItem>
+            <XhSelectList>
+              <XhSelectItem v-for="f in fruits" :key="f.value" :value="f.value" :disabled="f.disabled">
+                <XhSelectItemText>{{ f.label }}</XhSelectItemText>
+                <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+              </XhSelectItem>
+            </XhSelectList>
           </XhSelectContent>
         </XhSelectPositioner>
       </XhSelectRoot>
@@ -1281,10 +1284,12 @@ const codeBlockPartial = `const stream = await client.chat({
         </XhSelectTrigger>
         <XhSelectPositioner>
           <XhSelectContent>
-            <XhSelectItem v-for="f in fruits" :key="f.value" :value="f.value" :disabled="f.disabled">
-              <XhSelectItemText>{{ f.label }}</XhSelectItemText>
-              <XhSelectItemIndicator>✓</XhSelectItemIndicator>
-            </XhSelectItem>
+            <XhSelectList>
+              <XhSelectItem v-for="f in fruits" :key="f.value" :value="f.value" :disabled="f.disabled">
+                <XhSelectItemText>{{ f.label }}</XhSelectItemText>
+                <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+              </XhSelectItem>
+            </XhSelectList>
           </XhSelectContent>
         </XhSelectPositioner>
       </XhSelectRoot>

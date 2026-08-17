@@ -43,7 +43,7 @@
 | [开关](./switch) | `switch` | 3 | 1 | 11 |
 | [滑块](./slider) | `slider` | 10 | 6 | 11 |
 | [评分](./rating) | `rating` | 5 | 5 | 9 |
-| [选择器](./select) | `select` | 15 | 13 | 18 |
+| [选择器](./select) | `select` | 17 | 13 | 19 |
 | [列表框](./listbox) | `listbox` | 8 | 10 | 7 |
 | [组合框](./combobox) | `combobox` | 15 | 14 | 14 |
 | [级联选择](./cascader) | `cascader` | 16 | 12 | 16 |

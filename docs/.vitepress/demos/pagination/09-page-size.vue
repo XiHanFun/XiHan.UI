@@ -13,6 +13,7 @@ import {
   XhSelectItemIndicator,
   XhSelectItemText,
   XhSelectLabel,
+  XhSelectList,
   XhSelectPositioner,
   XhSelectRoot,
   XhSelectTrigger,
@@ -34,10 +35,12 @@ const pageSize = computed(() => Number(picked.value[0] ?? "10"));
       </XhSelectTrigger>
       <XhSelectPositioner>
         <XhSelectContent>
-          <XhSelectItem v-for="o in options" :key="o" :value="o">
-            <XhSelectItemText>{{ o }} 条 / 页</XhSelectItemText>
-            <XhSelectItemIndicator>✓</XhSelectItemIndicator>
-          </XhSelectItem>
+          <XhSelectList>
+            <XhSelectItem v-for="o in options" :key="o" :value="o">
+              <XhSelectItemText>{{ o }} 条 / 页</XhSelectItemText>
+              <XhSelectItemIndicator>✓</XhSelectItemIndicator>
+            </XhSelectItem>
+          </XhSelectList>
         </XhSelectContent>
       </XhSelectPositioner>
     </XhSelectRoot>

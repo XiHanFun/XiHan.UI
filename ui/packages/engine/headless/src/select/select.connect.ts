@@ -260,22 +260,11 @@ export function connectSelect<T extends PropTypes>(
         insetBlockStart: `${position?.y ?? 0}px`,
       },
     }),
-    // 键盘全在 content 上收口，条目只管声明自己。
+    // 浮层的外壳：描边、底色、阴影画在它身上，键盘也在它上面收口（条目只管声明自己）。
+    // 列表框语义与滚动都归 list——底部操作区要留在滚动之外，且 listbox 里不能塞按钮。
     // Escape 归消解层管，只有栈顶层响应。
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
-      'id': ids.content,
-      'role': 'listbox',
-      // 名字与 trigger 同源（标签 + 当前值）：无锚点时焦点歇在这儿，读屏只报得出容器的名字与角色。
-      // 作者没渲染 label / value-text 时两段都是悬空 IDREF，按 accname 规则整条落空，
-      // 名字退回下面那个可写的兜底
-      'aria-labelledby': `${ids.label} ${ids['value-text']}`,
-      'aria-label': prop('translations')?.content ?? 'Options',
-      // 多选语义显式报出，读屏据此播报「可多选」
-      'aria-multiselectable': multiple ? 'true' : 'false',
-      // 有锚点时 Tab 位归高亮条目；展开却无锚点时由容器兜底，否则列表没有任何 Tab 停靠点。
-      // 收起态不需要兜底，content 此时是 hidden。
-      'tabindex': open && highlighted == null ? 0 : -1,
       'data-state': stateAttr,
       'data-placement': placement,
       // 收起时留在 DOM 只隐藏，不卸载作者节点
@@ -312,6 +301,30 @@ export function connectSelect<T extends PropTypes>(
         if (event.key === ' ')
           activate(event)
       },
+    }),
+    // 列表框本体：滚动在这一层，底部操作区因此留在视口里不随条目滚走；
+    // role=listbox 只许拥有 option 与 group，按钮那类东西放进 footer 才不违规
+    getListProps: () => normalize.element({
+      ...parts.list.attrs,
+      'id': ids.content,
+      'role': 'listbox',
+      // 名字与 trigger 同源（标签 + 当前值）：无锚点时焦点歇在这儿，读屏只报得出容器的名字与角色。
+      // 作者没渲染 label / value-text 时两段都是悬空 IDREF，按 accname 规则整条落空，
+      // 名字退回下面那个可写的兜底
+      'aria-labelledby': `${ids.label} ${ids['value-text']}`,
+      'aria-label': prop('translations')?.content ?? 'Options',
+      // 多选语义显式报出，读屏据此播报「可多选」
+      'aria-multiselectable': multiple ? 'true' : 'false',
+      // 有锚点时 Tab 位归高亮条目；展开却无锚点时由容器兜底，否则列表没有任何 Tab 停靠点。
+      // 收起态不需要兜底，外层 content 此时是 hidden。
+      'tabindex': open && highlighted == null ? 0 : -1,
+      'data-state': stateAttr,
+    }),
+    // 浮层底部的操作区：作者往里放「新建」「全选」这类按钮。
+    // 它是 content 的子节点、list 的兄弟，故不在列表框的拥有关系里，方向键与连打检索也不认它
+    getFooterProps: () => normalize.element({
+      ...parts.footer.attrs,
+      'data-state': stateAttr,
     }),
     getItemProps: item => normalize.element({
       ...parts.item.attrs,
