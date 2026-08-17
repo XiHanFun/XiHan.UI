@@ -4539,6 +4539,14 @@
             {
               "description": "type=hidden 的表单出口，省略该节点即不参与表单",
               "name": "hidden-input"
+            },
+            {
+              "description": "可选：包住 root 与 text 的 <label>，点文字即切换",
+              "name": "label"
+            },
+            {
+              "description": "可选：控件旁的文字",
+              "name": "text"
             }
           ],
           "members": [
@@ -4738,6 +4746,18 @@
             },
             {
               "name": "--xh-checkbox-indicator-fg"
+            },
+            {
+              "name": "--xh-checkbox-label-fg"
+            },
+            {
+              "name": "--xh-checkbox-label-fg-disabled"
+            },
+            {
+              "name": "--xh-checkbox-label-font-size"
+            },
+            {
+              "name": "--xh-checkbox-label-gap"
             }
           ]
         }
@@ -27505,6 +27525,14 @@
             {
               "description": "type=hidden 的表单出口，省略该节点即不参与表单",
               "name": "hidden-input"
+            },
+            {
+              "description": "可选：包住 root 与 text 的 <label>，点文字即切换",
+              "name": "label"
+            },
+            {
+              "description": "可选：控件旁的文字",
+              "name": "text"
             }
           ],
           "members": [
@@ -27709,6 +27737,18 @@
             },
             {
               "name": "--xh-switch-bg-checked"
+            },
+            {
+              "name": "--xh-switch-label-fg"
+            },
+            {
+              "name": "--xh-switch-label-fg-disabled"
+            },
+            {
+              "name": "--xh-switch-label-font-size"
+            },
+            {
+              "name": "--xh-switch-label-gap"
             },
             {
               "name": "--xh-switch-loading-duration"

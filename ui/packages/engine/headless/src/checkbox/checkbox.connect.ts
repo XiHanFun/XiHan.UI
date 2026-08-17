@@ -57,5 +57,17 @@ export function connectCheckbox<T extends PropTypes>(
       // 单体控件用原生 disabled，禁用时不提交值
       disabled: disabled || undefined,
     }),
+    // <label> 包住 <button>：button 是 labelable 元素，点文字即激活它，可及名也从这里取
+    getLabelProps: () => normalize.label({
+      ...parts.label.attrs,
+      'data-state': stateAttr,
+      'data-size': prop('size'),
+      'data-disabled': dataAttr(disabled),
+    }),
+    getTextProps: () => normalize.element({
+      ...parts.text.attrs,
+      'data-state': stateAttr,
+      'data-disabled': dataAttr(disabled),
+    }),
   }
 }

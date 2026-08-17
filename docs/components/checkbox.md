@@ -66,7 +66,7 @@ checked 只认布尔，用一个可写 computed 在中间换一次，绑上去�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="checkbox"`：**`root`** · `indicator` · `hidden-input`
+`data-scope="checkbox"`：**`root`** · `indicator` · `hidden-input` · `label` · `text`
 
 ## Props
 
@@ -100,6 +100,8 @@ checked 只认布尔，用一个可写 computed 在中间换一次，绑上去�
 | `getRootProps` | `() => T['button']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
 | `getHiddenInputProps` | `() => T['input']` | 表单影子：勾上才提交，半选按未勾处理。给了 name 才带 name。 |
+| `getLabelProps` | `() => T['label']` | 包住方框与文字的 &lt;label&gt;：点文字即切换，方框的可及名从文字来。只在带文字时渲染。 |
+| `getTextProps` | `() => T['element']` | 方框旁的文字。 |
 
 ## 键盘
 
