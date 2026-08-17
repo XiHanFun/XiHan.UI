@@ -270,7 +270,7 @@
   /* 真的摆了两张日历才横过来。写成 :has 而不是无条件 flex 行:
      showTime 那套结构里 content 直属子节点是作者自己的包裹块与确认行,
      无条件横排会把它们并到日历旁边去 */
-  [data-scope='date-picker'][data-part='content']:has(> [data-part='calendar'] + [data-part='calendar']) {
+  [data-scope='date-picker'][data-part='content']:not([hidden]):has(> [data-part='calendar'] + [data-part='calendar']) {
     display: flex;
     align-items: flex-start;
   }
