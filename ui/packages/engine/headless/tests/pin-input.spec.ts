@@ -152,6 +152,28 @@ describe('pin-input 纯函数', () => {
     expect(sanitizePin('！@#', 'numeric')).toBe('')
   })
 
+  it('sanitizePin 的 pattern 盖过 type，作者不必自己写锚点', () => {
+    // 十六进制：type 仍是 numeric（键盘照旧弹数字），准入由 pattern 放宽
+    expect(sanitizePin('12ag3F', 'numeric', '[0-9A-Fa-f]')).toBe('12a3F')
+    // 只收这几个字，别的一概丢掉
+    expect(sanitizePin('上中下左右', 'alphanumeric', '[上下]')).toBe('上下')
+    // 自动加的是整格锚，写 `\\d` 不会匹配到多字符
+    expect(sanitizePin('1a2', 'alphabetic', '\\d')).toBe('12')
+  })
+
+  it('sanitizePin 的 pattern 写坏了退回 type 的准入表，不抛', () => {
+    // 括号不闭合，编不成正则
+    expect(() => sanitizePin('1a2', 'numeric', '[0-9')).not.toThrow()
+    expect(sanitizePin('1a2', 'numeric', '[0-9')).toBe('12')
+    expect(sanitizePin('1a2', 'alphabetic', '[0-9')).toBe('a')
+    // 空串当作没给
+    expect(sanitizePin('1a2', 'alphabetic', '')).toBe('a')
+  })
+
+  it('sanitizePin 按码点切分，pattern 匹得上代理对', () => {
+    expect(sanitizePin('a🙂b', 'alphabetic', '[a-z🙂]')).toBe('a🙂b')
+  })
+
   it('padPinValue 归一到 length，且每格只留一个字符', () => {
     expect(padPinValue(['1', '2'], 4)).toEqual(['1', '2', '', ''])
     expect(padPinValue(['1', '2', '3'], 2)).toEqual(['1', '2'])
@@ -462,6 +484,30 @@ describe('connectPinInput 粘贴', () => {
     const m = open({ length: 4, type: 'numeric' })
     paste(m.boxes[0]!, 'abc')
     expect(boxValues(m)).toEqual(['', '', '', ''])
+  })
+
+  it('pattern 放宽准入后，敲与粘贴两条路都按它收', () => {
+    const m = open({ length: 4, type: 'numeric', pattern: '[0-9A-Fa-f]' })
+    // 逐个敲：小写 f 收得下，g 收不下
+    typeInto(m.boxes[0]!, 'f')
+    typeInto(m.boxes[1]!, 'g')
+    expect(boxValues(m)).toEqual(['f', '', '', ''])
+    // 粘贴走同一份准入表
+    paste(m.boxes[1]!, '1g2A')
+    expect(boxValues(m)).toEqual(['f', '1', '2', 'A'])
+  })
+
+  it('pattern 只管收哪些字符，弹哪种键盘仍由 type 说了算', () => {
+    const m = open({ length: 2, type: 'numeric', pattern: '[0-9A-Fa-f]' })
+    expect(m.boxes[0]!.getAttribute('inputmode')).toBe('numeric')
+    const alpha = open({ length: 2, type: 'alphanumeric', pattern: '[0-9A-Fa-f]' })
+    expect(alpha.boxes[0]!.getAttribute('inputmode')).toBe('text')
+  })
+
+  it('外部 setValue 也过 pattern：不接受的字符留下空格子', () => {
+    const m = open({ length: 4, type: 'numeric', pattern: '[0-9A-Fa-f]' })
+    m.api().setValue(['a', 'z', '3', 'F'])
+    expect(boxValues(m)).toEqual(['a', '', '3', 'F'])
   })
 })
 

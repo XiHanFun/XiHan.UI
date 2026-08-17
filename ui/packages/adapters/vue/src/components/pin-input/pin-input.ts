@@ -24,6 +24,7 @@ export const XhPinInputRoot = defineComponent({
     // 缺省值由 connect 给出，这里一律 default: undefined
     length: { type: Number, default: undefined },
     type: { type: String as PropType<PinInputType>, default: undefined },
+    pattern: { type: String, default: undefined },
     mask: Boolean,
     otp: Boolean,
     placeholder: { type: String, default: undefined },

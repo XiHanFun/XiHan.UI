@@ -20570,6 +20570,15 @@
             },
             {
               "kind": "field",
+              "name": "pattern",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "pattern"
+            },
+            {
+              "kind": "field",
               "name": "mask",
               "privacy": "public",
               "type": {
@@ -20751,9 +20760,17 @@
               "type": {
                 "text": "PinInputType | undefined"
               },
-              "description": "接受的字符类别，默认 numeric",
+              "description": "接受的字符类别，默认 numeric；同时决定移动端弹哪种键盘",
               "name": "type",
               "fieldName": "type"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "自定义准入：一段正则源码，逐个字符整格匹配（自动加锚与 u 标志）。给了它就盖过 type 的准入表；写坏了退回 type",
+              "name": "pattern",
+              "fieldName": "pattern"
             },
             {
               "type": {

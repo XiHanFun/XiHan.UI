@@ -32,8 +32,18 @@ export interface PinInputSchema extends MachineSchema {
     defaultValue?: string[]
     /** 格数，默认 6。值的长度恒被归一到它。 */
     length?: number
-    /** 接受的字符类别，默认 numeric。 */
+    /** 接受的字符类别，默认 numeric。同时决定移动端弹哪种键盘。 */
     type?: PinInputType
+    /**
+     * 自定义准入：一段正则源码，逐个字符整格匹配（内部自动加首尾锚与 u 标志，
+     * 所以写 `[0-9A-Fa-f]` 即可，不必自己写 `^...$`）。给了它就盖过 type 的准入表。
+     *
+     * 弹哪种键盘仍由 type 说了算——准入放宽到字母时记得把 type 一并改掉，
+     * 否则移动端弹的还是数字键盘，用户敲不进那些字符。
+     *
+     * 写坏了（编不成正则）退回 type 的准入表，不抛。
+     */
+    pattern?: string
     /** 遮蔽显示：输入框转 type=password。 */
     mask?: boolean
     /** 一次性验证码：补 autocomplete=one-time-code，短信验证码才能被系统自动填入。 */

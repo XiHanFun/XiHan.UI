@@ -17,10 +17,29 @@ const PIN_PATTERNS: Record<PinInputType, RegExp> = {
   alphanumeric: /^[a-z0-9]$/i,
 }
 
-/** 按 type 过滤字符：不接受的直接丢弃，按码点展开后保序拼回（代理对不会被劈成半个字符）。 */
-export function sanitizePin(raw: string, type: PinInputType = 'numeric'): string {
-  const pattern = PIN_PATTERNS[type] ?? PIN_PATTERNS.numeric
-  return [...raw].filter(char => pattern.test(char)).join('')
+/**
+ * 一格接受哪些字符。给了 pattern 就用它：补上首尾锚与 u 标志后整格匹配，
+ * 于是作者写 `[0-9A-Fa-f]` 这样一段就够，不必自己写锚点。
+ * 写坏了（编不成正则）退回 type 的准入表——准入判据编不出来时收紧到默认档，
+ * 比放行一切安全。
+ */
+export function pinCharPattern(type: PinInputType = 'numeric', pattern?: string): RegExp {
+  const fallback = PIN_PATTERNS[type] ?? PIN_PATTERNS.numeric
+  if (!pattern)
+    return fallback
+  try {
+    // u 标志：sanitizePin 按码点切分，一个"字符"可能是代理对，不带 u 匹不上
+    return new RegExp(`^(?:${pattern})$`, 'u')
+  }
+  catch {
+    return fallback
+  }
+}
+
+/** 按准入表过滤字符：不接受的直接丢弃，按码点展开后保序拼回（代理对不会被劈成半个字符）。 */
+export function sanitizePin(raw: string, type: PinInputType = 'numeric', pattern?: string): string {
+  const accept = pinCharPattern(type, pattern)
+  return [...raw].filter(char => accept.test(char)).join('')
 }
 
 /** 格数归一：非正数与非整数都退回默认值。 */
@@ -118,8 +137,9 @@ export const pinInputMachine = createMachine({
           return
         const length = pinLength(params.prop('length'))
         const type = params.prop('type') ?? 'numeric'
-        // 整份替换按 type 过滤，不接受的字符留下空格子
-        const next = padPinValue(e.value, length).map(char => sanitizePin(char, type))
+        const pattern = params.prop('pattern')
+        // 整份替换按准入表过滤，不接受的字符留下空格子
+        const next = padPinValue(e.value, length).map(char => sanitizePin(char, type, pattern))
         commitValue(params, next)
       },
       fillValue: (params) => {
@@ -130,7 +150,7 @@ export const pinInputMachine = createMachine({
         const type = params.prop('type') ?? 'numeric'
         const next = padPinValue(params.context.get('value'), length)
         // 从落点起逐格铺到末格，多出来的字符丢掉
-        const chars = [...sanitizePin(e.value, type)]
+        const chars = [...sanitizePin(e.value, type, params.prop('pattern'))]
         for (let i = 0; i < chars.length && e.index + i < length; i++)
           next[e.index + i] = chars[i]!
         commitValue(params, next)
