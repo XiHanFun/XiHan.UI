@@ -325,6 +325,13 @@
     background: var(--xh-date-picker-time-item-bg-hover, var(--xh-bg-subtle));
   }
 
+  /* 键盘走到哪一格要看得见：这几列靠方向键逐格走，没有这一条就等于闭着眼挑 */
+  [data-scope='date-picker'][data-part='time-item']:focus-visible,
+  [data-scope='date-picker'][data-part='time-column']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
   [data-scope='date-picker'][data-part='time-item'][data-selected] {
     background: var(--xh-date-picker-time-item-bg-selected, var(--xh-_date-picker-accent-subtle));
     color: var(--xh-date-picker-time-item-fg-selected, var(--xh-fg-brand));

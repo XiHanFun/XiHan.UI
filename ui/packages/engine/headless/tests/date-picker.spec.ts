@@ -89,6 +89,8 @@ interface Harness {
   /** 终点那组的段位，文档序。 */
   segmentsEnd: () => HTMLElement[]
   /** 段位的可见文字，文档序。 */
+  /** 某一列的容器与逐格节点；没开 showTime 时列仍在但带 hidden。 */
+  timeColumn: (unit: string) => { col: HTMLElement, items: Map<string, HTMLElement> }
   segmentTexts: () => string[]
   /** 终点那组段位的可见文字，文档序。 */
   segmentEndTexts: () => string[]
@@ -159,6 +161,9 @@ function mount(initial: Partial<Props> = {}): Harness {
   grid.append(gridHead, gridBody)
   calendarEl.append(header, grid)
   content.appendChild(calendarEl)
+  // showTime 的时间列：作者照 timeColumns 铺，收起时由连接层打 hidden
+  const timeWrap = doc.createElement('div')
+  content.appendChild(timeWrap)
   positioner.appendChild(content)
   root.append(label, control, hiddenInput, ...(range ? [hiddenInputEnd] : []), positioner)
   doc.body.appendChild(root)
@@ -204,6 +209,8 @@ function mount(initial: Partial<Props> = {}): Harness {
   rootService.refs.set('getContentEl', () => content)
   calendarService.refs.set('getGridEl', () => grid)
 
+  const timeEls = new Map<string, { col: HTMLElement, items: Map<string, HTMLElement> }>()
+  let timePainted = ''
   const triggers = new Map<string, HTMLElement>()
   const cells = new Map<string, HTMLElement>()
   let painted = ''
@@ -255,6 +262,30 @@ function mount(initial: Partial<Props> = {}): Harness {
         spread(el, fieldEnd.getSegmentProps({ index }) as Record<string, unknown>)
         el.textContent = fieldEnd.segments[index]?.text ?? ''
       })
+    }
+    // 时间列逐列铺：列数与选项数由 granularity 决定，变了就重建
+    const timeKey = api.timeColumns.map(c => `${c.unit}:${c.options.length}`).join('|')
+    if (timeKey !== timePainted) {
+      timePainted = timeKey
+      timeWrap.textContent = ''
+      timeEls.clear()
+      for (const column of api.timeColumns) {
+        const col = doc.createElement('div')
+        const items = new Map<string, HTMLElement>()
+        for (const option of column.options) {
+          const item = doc.createElement('div')
+          item.textContent = option
+          col.appendChild(item)
+          items.set(option, item)
+        }
+        timeWrap.appendChild(col)
+        timeEls.set(column.unit, { col, items })
+      }
+    }
+    for (const [unit, { col, items }] of timeEls) {
+      spread(col, api.getTimeColumnProps({ unit }) as Record<string, unknown>)
+      for (const [value, el] of items)
+        spread(el, api.getTimeItemProps({ unit, value }) as Record<string, unknown>)
     }
     spread(positioner, api.getPositionerProps() as Record<string, unknown>)
     spread(content, api.getContentProps() as Record<string, unknown>)
@@ -320,6 +351,12 @@ function mount(initial: Partial<Props> = {}): Harness {
     setProps: (next2) => {
       props.set({ ...props.get(), ...next2 })
       render()
+    },
+    timeColumn: (unit: string) => {
+      const found = timeEls.get(unit)
+      if (!found)
+        throw new Error(`没有 ${unit} 这一列（此刻 timeColumns 是 ${[...timeEls.keys()].join()}）`)
+      return found
     },
     state: () => rootService.state.get(),
     value: () => rootService.context.get('value'),
@@ -1044,5 +1081,124 @@ describe('浮层里的标题钻取', () => {
     const h = await open({ defaultValue: '2026-02-18', onActiveViewChange })
     h.api().setActiveView('month')
     expect(onActiveViewChange).toHaveBeenLastCalledWith({ activeView: 'month' })
+  })
+})
+
+describe('showTime 的时间列：键盘走得进去', () => {
+  const AT = { showTime: true, defaultValue: '2026-08-17T09:30', timeGranularity: 'minute' as const }
+
+  it('每列只有一个 Tab 位，落在选中那一格上', async () => {
+    const h = await open(AT)
+    const hour = h.timeColumn('hour')
+    expect(hour.items.get('09')!.getAttribute('tabindex')).toBe('0')
+    expect(hour.items.get('10')!.getAttribute('tabindex')).toBe('-1')
+    // 列自己不占 Tab 位——格子里有落点
+    expect(hour.col.getAttribute('tabindex')).toBe('-1')
+    const minute = h.timeColumn('minute')
+    expect(minute.items.get('30')!.getAttribute('tabindex')).toBe('0')
+  })
+
+  it('还没选过时间时落点是头一格', async () => {
+    const h = await open({ showTime: true })
+    expect(h.timeColumn('hour').items.get('00')!.getAttribute('tabindex')).toBe('0')
+  })
+
+  it('列是 listbox，方向与单选与否都显式说了', async () => {
+    const h = await open(AT)
+    const { col } = h.timeColumn('hour')
+    expect(col.getAttribute('role')).toBe('listbox')
+    expect(col.getAttribute('aria-orientation')).toBe('vertical')
+    expect(col.getAttribute('aria-multiselectable')).toBe('false')
+    expect(h.timeColumn('hour').items.get('09')!.getAttribute('aria-selected')).toBe('true')
+    expect(h.timeColumn('hour').items.get('10')!.getAttribute('aria-selected')).toBe('false')
+  })
+
+  it('上下键在列内逐格走，到头回绕', async () => {
+    const h = await open(AT)
+    const { items } = h.timeColumn('hour')
+    items.get('09')!.focus()
+    press(items.get('09')!, 'ArrowDown')
+    expect(active()).toBe(items.get('10'))
+    press(items.get('10')!, 'ArrowUp')
+    expect(active()).toBe(items.get('09'))
+    // 头一格再往上回绕到末一格
+    items.get('00')!.focus()
+    press(items.get('00')!, 'ArrowUp')
+    expect(active()).toBe(items.get('23'))
+  })
+
+  it('home / End 到本列两头', async () => {
+    const h = await open(AT)
+    const { items } = h.timeColumn('hour')
+    items.get('09')!.focus()
+    press(items.get('09')!, 'End')
+    expect(active()).toBe(items.get('23'))
+    press(items.get('23')!, 'Home')
+    expect(active()).toBe(items.get('00'))
+  })
+
+  it('左右键换列，落到那一列的选中格上；两端停住', async () => {
+    const h = await open(AT)
+    const hour = h.timeColumn('hour')
+    const minute = h.timeColumn('minute')
+    hour.items.get('09')!.focus()
+    press(hour.items.get('09')!, 'ArrowRight')
+    // 分列的选中值是 30，落点就是它，不是头一格
+    expect(active()).toBe(minute.items.get('30'))
+    press(minute.items.get('30')!, 'ArrowLeft')
+    expect(active()).toBe(hour.items.get('09'))
+    // 首列再往左没有列可去
+    press(hour.items.get('09')!, 'ArrowLeft')
+    expect(active()).toBe(hour.items.get('09'))
+  })
+
+  it('回车选中聚焦的那一格，日期段原样留着', async () => {
+    const h = await open(AT)
+    const { items } = h.timeColumn('hour')
+    items.get('09')!.focus()
+    press(items.get('09')!, 'ArrowDown')
+    press(items.get('10')!, 'Enter')
+    expect(h.value()).toEqual(['2026-08-17T10:30'])
+  })
+
+  it('空格与回车同一条路', async () => {
+    const h = await open(AT)
+    const { items } = h.timeColumn('minute')
+    items.get('30')!.focus()
+    press(items.get('30')!, ' ')
+    expect(h.value()).toEqual(['2026-08-17T09:30'])
+  })
+
+  it('选完之后 Tab 位跟着选中值走', async () => {
+    const h = await open(AT)
+    const hour = h.timeColumn('hour')
+    click(hour.items.get('11')!)
+    expect(h.value()).toEqual(['2026-08-17T11:30'])
+    expect(hour.items.get('11')!.getAttribute('tabindex')).toBe('0')
+    expect(hour.items.get('09')!.getAttribute('tabindex')).toBe('-1')
+  })
+
+  it('禁用时列不接键盘', async () => {
+    const h = await open({ ...AT, disabled: true })
+    const { col, items } = h.timeColumn('hour')
+    expect(col.getAttribute('aria-disabled')).toBe('true')
+    items.get('09')!.focus()
+    const event = press(items.get('09')!, 'ArrowDown')
+    expect(event.defaultPrevented).toBe(false)
+  })
+
+  it('带修饰键的组合一律放行', async () => {
+    const h = await open(AT)
+    const { items } = h.timeColumn('hour')
+    items.get('09')!.focus()
+    const event = press(items.get('09')!, 'ArrowDown', { ctrlKey: true })
+    expect(event.defaultPrevented).toBe(false)
+    expect(active()).toBe(items.get('09'))
+  })
+
+  it('没开 showTime 时列收起，也不占 Tab 位', async () => {
+    const h = await open({ defaultValue: '2026-08-17' })
+    // timeColumns 为空，作者那几个节点压根没铺出来
+    expect(h.api().timeColumns).toEqual([])
   })
 })
