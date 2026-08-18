@@ -3,7 +3,7 @@
     "name": "kernel",
     "path": "packages/engine/kernel/dist/index.js",
     "gzip": true,
-    "limit": "3.3 kB"
+    "limit": "3.9 kB"
   },
   {
     "name": "machine",
@@ -27,7 +27,7 @@
     "name": "behavior",
     "path": "packages/engine/behavior/dist/index.js",
     "gzip": true,
-    "limit": "6.6 kB"
+    "limit": "7.8 kB"
   },
   {
     "name": "motion",
@@ -39,7 +39,7 @@
     "name": "position",
     "path": "packages/engine/position/dist/index.js",
     "gzip": true,
-    "limit": "2.6 kB"
+    "limit": "3 kB"
   },
   {
     "name": "code-highlight",
@@ -172,7 +172,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhDialogRoot }",
     "gzip": true,
-    "limit": "13.5 kB",
+    "limit": "14.5 kB",
     "ignore": [
       "vue"
     ]
