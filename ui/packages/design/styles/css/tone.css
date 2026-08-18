@@ -18,6 +18,10 @@
  *
  * 这两个槽用的都是固定原语而不是 --xh-fg-default：实心底本身是原语色、不随主题翻，
  * 配色若跟着主题翻，暗色下就会变成白字压在浅黄底上（实测对比度 2.70）。
+ *
+ * brand 是例外：那一族的色相归使用者，所以它的底与前景走 --xh-bg-brand / --xh-fg-on-brand
+ * 这两个语义令牌。缺省主题下它们就解析成 brand-600 与 neutral-0，与其余五族同值；
+ * 改写过品牌色的使用者只改这两个令牌，实心底与它上面的字就一起跟着走。
  */
 @layer xihan.components {
   [data-tone] {
@@ -46,9 +50,9 @@
   }
 
   [data-tone='brand'] {
-    --xh-_tone: var(--xh-color-brand-600);
+    --xh-_tone: var(--xh-bg-brand);
     --xh-_tone-soft: var(--xh-color-brand-500);
-    --xh-_tone-on: var(--xh-color-neutral-0);
+    --xh-_tone-on: var(--xh-fg-on-brand);
     --xh-_tone-shift: var(--xh-color-neutral-950);
   }
 
