@@ -73,7 +73,7 @@
     --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control));
   }
 
-  /* 无框：底与描边都透明，平时只看得见字，悬停与聚焦才浮出边界 */
+  /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
   [data-scope='text-field'][data-part='root'][data-variant='ghost'] {
     --xh-_text-field-bg: transparent;
     --xh-_text-field-border: transparent;

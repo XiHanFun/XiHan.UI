@@ -64,7 +64,7 @@
     --xh-_date-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
-  /* 无框：底与描边都透明，平时只看得见日期，悬停与聚焦才浮出边界 */
+  /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
   [data-scope='date-picker'][data-part='root'][data-variant='ghost'] {
     --xh-_date-picker-control-bg: transparent;
     --xh-_date-picker-control-border: transparent;

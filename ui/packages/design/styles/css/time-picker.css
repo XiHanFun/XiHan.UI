@@ -66,7 +66,7 @@
     --xh-_time-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
-  /* 无框：底与描边都透明，平时只看得见时间，悬停与聚焦才浮出边界 */
+  /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
   [data-scope='time-picker'][data-part='root'][data-variant='ghost'] {
     --xh-_time-picker-control-bg: transparent;
     --xh-_time-picker-control-border: transparent;

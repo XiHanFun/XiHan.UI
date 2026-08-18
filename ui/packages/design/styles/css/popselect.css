@@ -84,6 +84,7 @@
     --xh-_popselect-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
+  /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
   [data-scope='popselect'][data-part='root'][data-variant='ghost'] {
     --xh-_popselect-trigger-bg: transparent;
     --xh-_popselect-trigger-border: transparent;
