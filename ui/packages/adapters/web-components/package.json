@@ -60,7 +60,8 @@
     "cem": "cem analyze && node scripts/enrich-cem.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
-    "test:browser": "vitest run --config vitest.browser.config.ts"
+    "test:browser": "vitest run --config vitest.browser.config.ts",
+    "test:demos": "vitest run --config vitest.demos.config.ts --reporter verbose"
   },
   "peerDependencies": {
     "@xihan-ui/backgrounds": "workspace:^"
