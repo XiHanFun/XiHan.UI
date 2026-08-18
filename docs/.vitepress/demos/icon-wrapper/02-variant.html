@@ -1,0 +1,53 @@
+<!-- 形态 | 四种形态只决定底色、描边与前景怎么用，直径与形状一个字不动 -->
+<div id="icon-wrapper-variant" style="display: flex; align-items: center; gap: 12px">
+  <xh-icon-wrapper variant="solid">
+    <span data-xh-part="root">
+      <xh-icon>
+        <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
+      </xh-icon>
+    </span>
+  </xh-icon-wrapper>
+
+  <xh-icon-wrapper variant="subtle">
+    <span data-xh-part="root">
+      <xh-icon>
+        <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
+      </xh-icon>
+    </span>
+  </xh-icon-wrapper>
+
+  <xh-icon-wrapper variant="outline">
+    <span data-xh-part="root">
+      <xh-icon>
+        <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
+      </xh-icon>
+    </span>
+  </xh-icon-wrapper>
+
+  <xh-icon-wrapper variant="ghost">
+    <span data-xh-part="root">
+      <xh-icon>
+        <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
+      </xh-icon>
+    </span>
+  </xh-icon-wrapper>
+</div>
+
+<script type="module">
+  // 图标记录是对象，只走 property
+  const check = {
+    name: "check",
+    viewBox: "0 0 24 24",
+    attrs: {
+      "fill": "none",
+      "stroke": "currentColor",
+      "stroke-width": "2",
+      "stroke-linecap": "round",
+      "stroke-linejoin": "round",
+    },
+    nodes: [{ tag: "path", attrs: { d: "M4 12.5L9.5 18L20 6.5" } }],
+  };
+  for (const icon of document.getElementById("icon-wrapper-variant").querySelectorAll("xh-icon")) {
+    icon.icon = check;
+  }
+</script>

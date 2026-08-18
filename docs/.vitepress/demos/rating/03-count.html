@@ -1,0 +1,29 @@
+<!-- 自定义档数 | count 决定几颗星，星星按 1..count 逐颗写出 -->
+<xh-rating id="rating-count" value="7" count="10">
+  <div data-xh-part="root">
+    <span data-xh-part="label">推荐指数（10 档）</span>
+    <div data-xh-part="control">
+      <span data-xh-part="item" value="1">★</span>
+      <span data-xh-part="item" value="2">★</span>
+      <span data-xh-part="item" value="3">★</span>
+      <span data-xh-part="item" value="4">★</span>
+      <span data-xh-part="item" value="5">★</span>
+      <span data-xh-part="item" value="6">★</span>
+      <span data-xh-part="item" value="7">★</span>
+      <span data-xh-part="item" value="8">★</span>
+      <span data-xh-part="item" value="9">★</span>
+      <span data-xh-part="item" value="10">★</span>
+    </div>
+  </div>
+</xh-rating>
+<p>当前：<span id="rating-count-value">7</span> / 10</p>
+
+<script type="module">
+  const rating = document.getElementById("rating-count");
+  const readout = document.getElementById("rating-count-value");
+
+  rating.addEventListener("value-change", (event) => {
+    rating.value = event.detail.value;
+    readout.textContent = event.detail.value;
+  });
+</script>

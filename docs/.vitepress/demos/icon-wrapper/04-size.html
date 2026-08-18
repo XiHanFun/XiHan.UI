@@ -1,0 +1,59 @@
+<!-- 尺寸 | 三档同时换底座直径与图元直径；改形状、改直径都留了槽位 -->
+<div id="icon-wrapper-size" style="display: flex; align-items: center; gap: 12px">
+  <xh-icon-wrapper size="sm" variant="subtle" tone="brand">
+    <span data-xh-part="root">
+      <xh-icon>
+        <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
+      </xh-icon>
+    </span>
+  </xh-icon-wrapper>
+
+  <xh-icon-wrapper size="md" variant="subtle" tone="brand">
+    <span data-xh-part="root">
+      <xh-icon>
+        <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
+      </xh-icon>
+    </span>
+  </xh-icon-wrapper>
+
+  <xh-icon-wrapper size="lg" variant="subtle" tone="brand">
+    <span data-xh-part="root">
+      <xh-icon>
+        <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
+      </xh-icon>
+    </span>
+  </xh-icon-wrapper>
+
+  <!-- 方底座：形状与直径各留了一个槽位，写在节点上就换掉 -->
+  <xh-icon-wrapper variant="subtle" tone="brand">
+    <span
+      data-xh-part="root"
+      style="--xh-icon-wrapper-radius: var(--xh-radius-lg); --xh-icon-wrapper-size: 48px; --xh-icon-wrapper-glyph-size: 24px"
+    >
+      <xh-icon>
+        <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
+      </xh-icon>
+    </span>
+  </xh-icon-wrapper>
+</div>
+
+<script type="module">
+  // 图标记录是对象，只走 property
+  const folder = {
+    name: "folder",
+    viewBox: "0 0 24 24",
+    attrs: {
+      "fill": "none",
+      "stroke": "currentColor",
+      "stroke-width": "2",
+      "stroke-linecap": "round",
+      "stroke-linejoin": "round",
+    },
+    nodes: [
+      { tag: "path", attrs: { d: "M3 7.5A1.5 1.5 0 0 1 4.5 6H9l2 2.5h8.5A1.5 1.5 0 0 1 21 10v7.5A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5Z" } },
+    ],
+  };
+  for (const icon of document.getElementById("icon-wrapper-size").querySelectorAll("xh-icon")) {
+    icon.icon = folder;
+  }
+</script>

@@ -1,0 +1,41 @@
+<!-- 语气 | 在 content 上写 data-tone，确认按钮跟着换色；语气是共享的一层，不是本组件的 prop -->
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+  <xh-popconfirm size="sm">
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">brand</button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content" data-tone="brand">
+          <p data-xh-part="description">确定要执行这一步吗？</p>
+          <button data-xh-part="cancel-trigger">取消</button>
+          <button data-xh-part="confirm-trigger">确定</button>
+        </div>
+      </div>
+    </div>
+  </xh-popconfirm>
+
+  <xh-popconfirm size="sm">
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">danger</button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content" data-tone="danger">
+          <p data-xh-part="description">确定要执行这一步吗？</p>
+          <button data-xh-part="cancel-trigger">取消</button>
+          <button data-xh-part="confirm-trigger">确定</button>
+        </div>
+      </div>
+    </div>
+  </xh-popconfirm>
+
+  <xh-popconfirm size="sm">
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">warning</button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content" data-tone="warning">
+          <p data-xh-part="description">确定要执行这一步吗？</p>
+          <button data-xh-part="cancel-trigger">取消</button>
+          <button data-xh-part="confirm-trigger">确定</button>
+        </div>
+      </div>
+    </div>
+  </xh-popconfirm>
+</div>

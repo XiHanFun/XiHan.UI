@@ -1,0 +1,24 @@
+<!-- 异步提交 | 受控开关在回执到达前不落位；loading 让提交期呈现为「处理中」而非禁用——交互挂起、滑块转圈、仍可聚焦 -->
+<div style="display: flex; align-items: center; gap: 10px">
+  <xh-switch id="switch-async" checked="false">
+    <button data-xh-part="root">
+      <span data-xh-part="thumb"></span>
+    </button>
+  </xh-switch>
+  <span id="switch-async-text">已关闭</span>
+</div>
+
+<script type="module">
+  // 回执到达才写回 checked，中途开关停在旧值上
+  const host = document.getElementById("switch-async");
+  const text = document.getElementById("switch-async-text");
+  host.addEventListener("checked-change", (event) => {
+    host.loading = true;
+    text.textContent = "提交中…";
+    setTimeout(() => {
+      host.checked = event.detail.checked;
+      host.loading = false;
+      text.textContent = event.detail.checked ? "已开启" : "已关闭";
+    }, 900);
+  });
+</script>

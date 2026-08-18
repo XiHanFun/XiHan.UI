@@ -1,0 +1,26 @@
+<!-- 基础用法 | 条目以 value 标识身份，禁用项方向键跳过也选不中；删除前面隔着一道分隔线 -->
+<div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
+  <xh-menu id="menu-basic">
+    <!-- 触发器的内容归作者 -->
+    <button data-xh-part="trigger">操作</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="item" value="copy">复制</div>
+        <div data-xh-part="item" value="paste">粘贴</div>
+        <div data-xh-part="separator"></div>
+        <div data-xh-part="item" value="delete" aria-disabled="true">删除</div>
+      </div>
+    </div>
+  </xh-menu>
+
+  <span>最近选中：<span id="menu-basic-readout">（无）</span></span>
+</div>
+
+<script type="module">
+  // 选中的条目值回显在下面那行文字里
+  const menu = document.getElementById("menu-basic");
+  const readout = document.getElementById("menu-basic-readout");
+  menu.addEventListener("select", (event) => {
+    readout.textContent = event.detail.value;
+  });
+</script>

@@ -1,0 +1,76 @@
+<!-- 折行与行内 | wrap 让放不下的子项换行、行与行之间同样吃 gap；inline 让容器缩到内容宽度、能跟文字排一行 -->
+<style>
+  #flex-wrap-inline [data-track] {
+    border: 1px solid var(--xh-border-default);
+    border-radius: var(--xh-radius-md);
+    padding: 8px;
+    max-inline-size: 320px;
+  }
+  #flex-wrap-inline [data-tag] {
+    padding: 4px 10px;
+    border-radius: var(--xh-radius-full);
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-default);
+    font-size: 13px;
+  }
+  #flex-wrap-inline [data-label] {
+    font-size: 13px;
+    color: var(--xh-fg-muted);
+  }
+</style>
+
+<!-- 宿主设 display: contents，排布落在 root 上 -->
+<div id="flex-wrap-inline">
+  <xh-flex direction="column" gap="lg" style="display: contents">
+    <div data-xh-part="root">
+      <xh-flex direction="column" gap="xs" style="display: contents">
+        <div data-xh-part="root">
+          <span data-label>不折行（缺省）：全部挤在一行里，宽度不够就被压窄</span>
+          <xh-flex gap="sm" style="display: contents">
+            <div data-xh-part="root" data-track>
+              <span data-tag>前端</span>
+              <span data-tag>组件库</span>
+              <span data-tag>无障碍</span>
+              <span data-tag>设计令牌</span>
+              <span data-tag>自定义元素</span>
+              <span data-tag>键盘导航</span>
+            </div>
+          </xh-flex>
+        </div>
+      </xh-flex>
+
+      <xh-flex direction="column" gap="xs" style="display: contents">
+        <div data-xh-part="root">
+          <span data-label>wrap：换行摆，行间距同样是 gap</span>
+          <xh-flex wrap gap="sm" style="display: contents">
+            <div data-xh-part="root" data-track>
+              <span data-tag>前端</span>
+              <span data-tag>组件库</span>
+              <span data-tag>无障碍</span>
+              <span data-tag>设计令牌</span>
+              <span data-tag>自定义元素</span>
+              <span data-tag>键盘导航</span>
+            </div>
+          </xh-flex>
+        </div>
+      </xh-flex>
+
+      <xh-flex direction="column" gap="xs" style="display: contents">
+        <div data-xh-part="root">
+          <span data-label>inline：容器缩到内容宽度，跟前后文字排在同一行</span>
+          <!-- 外层留成普通块级容器：行内盒要和文字处在同一个行内格式化上下文里才看得出效果 -->
+          <div style="line-height: 2">
+            当前筛选条件为
+            <xh-flex inline align="center" gap="xs" style="display: contents">
+              <span data-xh-part="root">
+                <span data-tag>近 7 天</span>
+                <span data-tag>已完成</span>
+              </span>
+            </xh-flex>
+            ，共 24 条。
+          </div>
+        </div>
+      </xh-flex>
+    </div>
+  </xh-flex>
+</div>

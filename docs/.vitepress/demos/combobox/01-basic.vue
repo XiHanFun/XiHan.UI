@@ -1,4 +1,4 @@
-<!-- 基础用法 | 过滤由宿主自己算：组件把输入串交给 input-value，筛出哪几条交给 collection 是调用方的事 -->
+<!-- 基础用法 | 过滤由宿主自己算：组件把输入串交出来，此刻显示哪几条候选由调用方定 -->
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { XhComboboxRoot } from "@xihan-ui/vue";

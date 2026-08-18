@@ -1,4 +1,4 @@
-<!-- 自定义图案 | 星形由作者写，条目插槽还给出这颗的状态，点亮与未点亮可以画成两个字形 -->
+<!-- 自定义图案 | 星形由作者写，条目自带这颗的点亮状态，点亮与未点亮可以画成两个字形 -->
 <script setup lang="ts">
 import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/vue";
 </script>

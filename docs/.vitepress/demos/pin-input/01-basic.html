@@ -1,0 +1,13 @@
+<!-- 基础用法 | 每格都是原生输入框，敲一个字符自动跳下一格；粘贴整串会从落点那一格起按格铺开 -->
+<xh-pin-input length="4" placeholder="·">
+  <div data-xh-part="root">
+    <label data-xh-part="label">验证码</label>
+    <!-- 格间距长在格子自己身上，这层包裹只负责排成一行、不要再加 gap -->
+    <div style="display: flex">
+      <input data-xh-part="input" />
+      <input data-xh-part="input" />
+      <input data-xh-part="input" />
+      <input data-xh-part="input" />
+    </div>
+  </div>
+</xh-pin-input>

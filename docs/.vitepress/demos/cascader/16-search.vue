@@ -1,4 +1,4 @@
-<!-- 搜索 | searchable 让 XhCascaderInput 可用：输入后整条路径连缀过滤，XhCascaderSearchList 的候选替换列视图；上下键走候选、Enter 选中、Escape 先清词再收浮层。无匹配（试试输入「苏州」）时空态占位露面，文案经 translations 覆盖 -->
+<!-- 搜索 | searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表替换列视图；上下键走候选、Enter 选中、Escape 先清词再收浮层。无匹配（试试输入「苏州」）时空态占位露面，文案经 translations 覆盖 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

@@ -1,4 +1,4 @@
-<!-- 受控与切片 | 传了 page 就由宿主说了算；插槽里的 slice 按当前页从整份数据里切出这一页 -->
+<!-- 受控与切片 | 传了 page 就由宿主说了算；当前页决定从整份数据里切出哪一段 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

@@ -1,4 +1,4 @@
-<!-- 标题档位 | level 只换字号档位，标签仍由 as 决定；不传 level 即默认档 -->
+<!-- 标题档位 | level 只换字号档位，用哪个标签由作者定；不传 level 即默认档 -->
 <script setup lang="ts">
 import { XhTypographyHeading, XhTypographyRoot } from "@xihan-ui/vue";
 

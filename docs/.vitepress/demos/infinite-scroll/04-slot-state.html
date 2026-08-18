@@ -1,0 +1,84 @@
+<!-- 状态透出 | phase / loading / disabled 由组件交给宿主，加载提示与结束语都由宿主自己摆 -->
+<style>
+  #infinite-scroll-slot-state-shell [data-row] {
+    padding: 8px 12px;
+  }
+  #infinite-scroll-slot-state-shell [data-hint] {
+    margin: 0;
+    padding: 8px 12px;
+    color: var(--xh-fg-muted);
+  }
+</style>
+
+<div
+  id="infinite-scroll-slot-state-shell"
+  style="
+    block-size: 240px;
+    overflow: auto;
+    border: 1px solid var(--xh-border-default);
+    border-radius: 8px;
+  "
+>
+  <!-- 宿主设 display: contents，列表外壳落在 root 上 -->
+  <xh-infinite-scroll id="infinite-scroll-slot-state" style="display: contents">
+    <div data-xh-part="root">
+      <div data-list>
+        <div data-row>第 1 条</div>
+        <div data-row>第 2 条</div>
+        <div data-row>第 3 条</div>
+        <div data-row>第 4 条</div>
+        <div data-row>第 5 条</div>
+        <div data-row>第 6 条</div>
+        <div data-row>第 7 条</div>
+        <div data-row>第 8 条</div>
+        <div data-row>第 9 条</div>
+        <div data-row>第 10 条</div>
+      </div>
+      <p data-hint></p>
+      <div data-xh-part="sentinel"></div>
+    </div>
+  </xh-infinite-scroll>
+</div>
+
+<script type="module">
+  const host = document.getElementById("infinite-scroll-slot-state");
+  const shell = document.getElementById("infinite-scroll-slot-state-shell");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const list = host.querySelector("[data-list]");
+  const hint = host.querySelector("[data-hint]");
+
+  host.target = shell;
+
+  function append(count) {
+    const base = list.childElementCount;
+    for (let i = 1; i <= count; i += 1) {
+      const row = document.createElement("div");
+      row.setAttribute("data-row", "");
+      row.textContent = `第 ${base + i} 条`;
+      list.append(row);
+    }
+  }
+
+  // 三段状态落在 root 的 data-state 上：idle 还在等、loading 正在取、paused 已关掉
+  function renderHint() {
+    const phase = root.dataset.state;
+    if (phase === "loading") hint.textContent = "正在取下一页…";
+    else if (phase === "paused") hint.textContent = "没有更多了";
+    else hint.textContent = `继续往下滚（当前 ${phase}）`;
+  }
+
+  new MutationObserver(renderHint).observe(root, {
+    attributes: true,
+    attributeFilter: ["data-state"],
+  });
+  renderHint();
+
+  host.addEventListener("load", () => {
+    host.loading = true;
+    setTimeout(() => {
+      append(6);
+      host.loading = false;
+      host.disabled = list.childElementCount >= 28;
+    }, 400);
+  });
+</script>

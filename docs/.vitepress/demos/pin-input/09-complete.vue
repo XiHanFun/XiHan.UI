@@ -1,4 +1,4 @@
-<!-- 填满才可提交 | complete 在每格都有字时为真，作者据此点亮提交按钮；clear 一次清空整组 -->
+<!-- 填满才可提交 | 每格都有字才算填满，作者据此点亮提交按钮；重填一次清空整组 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue";

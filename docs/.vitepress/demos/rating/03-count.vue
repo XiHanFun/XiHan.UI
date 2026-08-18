@@ -1,4 +1,4 @@
-<!-- 自定义档数 | count 决定几颗星，插槽里的 items 就是 1..count 的序号表 -->
+<!-- 自定义档数 | count 决定几颗星，星星按 1..count 逐颗写出 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/vue";

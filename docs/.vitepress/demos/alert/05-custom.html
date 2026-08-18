@@ -1,0 +1,33 @@
+<!-- 自定义外观 | 描边、底色、标题色、圆角各是一个组件令牌；描边槽位换成透明就只剩淡底，尺寸不变 -->
+<div style="width: 100%; display: grid; gap: 12px">
+  <!-- 只留淡底：描边换成透明，边框盒还在，不会因为掉了一圈线而跳动 -->
+  <xh-alert tone="info" style="--xh-alert-border: transparent">
+    <div data-xh-part="root">
+      <div data-xh-part="title">无描边</div>
+      <div data-xh-part="description">底色与内边距都还在。</div>
+    </div>
+  </xh-alert>
+
+  <!-- 只留描边：底色换成透明 -->
+  <xh-alert tone="warning" style="--xh-alert-bg: transparent">
+    <div data-xh-part="root">
+      <div data-xh-part="title">无底色</div>
+      <div data-xh-part="description">剩一圈线，衬在页面本来的底色上。</div>
+    </div>
+  </xh-alert>
+
+  <!-- 语气表以外的配色逐个实例给，圆角也是一个槽位 -->
+  <xh-alert
+    style="
+      --xh-alert-bg: #f4f0ff;
+      --xh-alert-border: #c4b5fd;
+      --xh-alert-title-fg: #5b21b6;
+      --xh-alert-radius: var(--xh-radius-none);
+    "
+  >
+    <div data-xh-part="root">
+      <div data-xh-part="title">自定配色</div>
+      <div data-xh-part="description">底色、描边、标题色、圆角各占一个槽位。</div>
+    </div>
+  </xh-alert>
+</div>

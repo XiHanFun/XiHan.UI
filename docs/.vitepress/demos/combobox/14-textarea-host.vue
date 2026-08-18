@@ -1,4 +1,4 @@
-<!-- 多行输入宿主 | 输入框写 as="textarea" 即换成多行；此时不写 role 与 aria-expanded，textarea 保留它自带的 textbox 角色 -->
+<!-- 多行输入宿主 | 输入部件写成 textarea 即多行宿主；此时不写 role 与 aria-expanded，textarea 保留它自带的 textbox 角色 -->
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import {

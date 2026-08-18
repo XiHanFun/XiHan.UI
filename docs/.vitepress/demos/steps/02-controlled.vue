@@ -1,4 +1,4 @@
-<!-- 受控 | 传了 step 就由宿主说了算，组件自己不再改步序；v-model:step 是它的语法糖 -->
+<!-- 受控 | 传了 step 就由宿主说了算，组件自己不再改步序；切步意图从 step-change 出来，写回才真的切 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
