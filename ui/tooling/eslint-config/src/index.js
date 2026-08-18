@@ -28,7 +28,7 @@ export default function xihanUi(options = {}, ...userConfigs) {
     },
     {
       // 工程脚本与 .mjs CLI：允许 console/process，放宽风格
-      files: ['**/*.mjs', 'tooling/**', '*.config.*', 'apps/**/vite.config.*'],
+      files: ['**/*.mjs', 'tooling/**', '*.config.*'],
       rules: {
         'no-console': 'off',
         'node/prefer-global/process': 'off',

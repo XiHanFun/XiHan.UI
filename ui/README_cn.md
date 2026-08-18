@@ -39,13 +39,8 @@
 ```
 ui/
 ├── packages/     # 对外发布的库包
-├── tooling/      # 内部构建与质量工具
-└── apps/
-    ├── playground-vue   # Vue 适配器演示
-    └── playground-wc    # Web Components 适配器演示
+└── tooling/      # 内部构建与质量工具
 ```
-
-两个 playground 覆盖同一批组件，便于逐帧对照两套适配器的行为。
 
 ## 本地开发
 
@@ -53,7 +48,6 @@ ui/
 
 ```bash
 pnpm install --frozen-lockfile
-pnpm dev          # 启动 playground
 pnpm test         # 单元测试与跨适配器一致性测试（jsdom）
 pnpm test:browser # 真实 Chromium 里的无障碍扫描与浮层定位契约（需先 pnpm exec playwright install chromium）
 pnpm typecheck

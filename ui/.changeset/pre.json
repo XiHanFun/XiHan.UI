@@ -2,8 +2,6 @@
   "mode": "pre",
   "tag": "alpha",
   "initialVersions": {
-    "@xihan-ui/playground-vue": "0.0.0",
-    "@xihan-ui/playground-wc": "0.0.0",
     "@xihan-ui/vue": "0.0.0",
     "@xihan-ui/web-components": "0.0.0",
     "@xihan-ui/icons": "0.0.0",

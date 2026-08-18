@@ -39,13 +39,8 @@ Framework-agnostic component library. State machines and accessibility live in a
 ```
 ui/
 ├── packages/     # published libraries
-├── tooling/      # internal build & quality tooling
-└── apps/
-    ├── playground-vue   # Vue adapter demos
-    └── playground-wc    # Web Components adapter demos
+└── tooling/      # internal build & quality tooling
 ```
-
-Both playgrounds cover the same components side by side, so the two adapters can be compared frame by frame.
 
 ## Development
 
@@ -53,7 +48,6 @@ Requires Node ≥ 24 and pnpm ≥ 11.
 
 ```bash
 pnpm install --frozen-lockfile
-pnpm dev          # start the playgrounds
 pnpm test         # unit + cross-adapter conformance tests (jsdom)
 pnpm test:browser # accessibility sweep + floating position contract in real Chromium (run `pnpm exec playwright install chromium` first)
 pnpm typecheck
