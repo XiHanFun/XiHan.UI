@@ -95,7 +95,8 @@
     align-items: center;
     gap: var(--xh-tags-input-control-gap, var(--xh-_tags-input-control-gap));
     min-block-size: var(--xh-tags-input-control-h, var(--xh-_tags-input-control-h));
-    padding-block: var(--xh-tags-input-control-py, var(--xh-space-1));
+    /* 纵向只留半档：标签行加上下内距要装进控件档的高度里 */
+    padding-block: var(--xh-tags-input-control-py, var(--xh-space-0_5));
     padding-inline: var(--xh-tags-input-control-px, var(--xh-_tags-input-control-px));
     border: var(--xh-stroke-thin) solid var(--xh-tags-input-control-border, var(--xh-_tags-input-control-border));
     border-radius: var(--xh-tags-input-control-radius, var(--xh-shape-control));
@@ -156,7 +157,8 @@
     /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
     font-family: inherit;
     font-size: var(--xh-tags-input-input-font-size, var(--xh-_tags-input-input-font-size));
-    line-height: var(--xh-leading-normal);
+    /* 行盒收到标签那一行的高度以内，输入框不去顶高整个框 */
+    line-height: var(--xh-leading-tight);
   }
 
   [data-scope='tags-input'][data-part='input']::placeholder {
@@ -217,7 +219,7 @@
     align-items: center;
     gap: var(--xh-tags-input-item-gap, var(--xh-space-1));
     max-inline-size: 100%;
-    padding-block: var(--xh-tags-input-item-py, var(--xh-space-1));
+    padding-block: var(--xh-tags-input-item-py, var(--xh-space-0_5));
     padding-inline: var(--xh-tags-input-item-px, var(--xh-space-2));
     user-select: none;
   }
@@ -235,14 +237,14 @@
     text-overflow: ellipsis;
   }
 
-  /* 删除按钮画成胶囊里的小圆钮，与文字同一行、不撑高胶囊 */
+  /* 删除按钮画成胶囊里的小圆钮，与文字同一行，尺寸取控件指示件档（随密度收） */
   [data-scope='tags-input'][data-part='item-delete-trigger'] {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-tags-input-delete-size, 1rem);
-    block-size: var(--xh-tags-input-delete-size, 1rem);
+    inline-size: var(--xh-tags-input-delete-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-tags-input-delete-size, var(--xh-control-indicator-size));
     padding: 0;
     border: 0;
     border-radius: var(--xh-shape-pill);
@@ -293,7 +295,7 @@
      自己加一条 display 反而要再补一条 [hidden] 规则去抵消它 */
   [data-scope='tags-input'][data-part='item-input'] {
     max-inline-size: 100%;
-    padding-block: var(--xh-tags-input-item-py, var(--xh-space-1));
+    padding-block: var(--xh-tags-input-item-py, var(--xh-space-0_5));
     padding-inline: var(--xh-tags-input-item-px, var(--xh-space-2));
     border: var(--xh-stroke-thin) solid var(--xh-tags-input-item-input-border, var(--xh-border-control));
     border-radius: var(--xh-tags-input-item-radius, var(--xh-shape-pill));
@@ -317,14 +319,14 @@
     cursor: not-allowed;
   }
 
-  /* 清空按钮贴在框的末端，与输入框同一行 */
+  /* 清空按钮贴在框的末端，与输入框同一行，尺寸取控件指示件档（随密度收） */
   [data-scope='tags-input'][data-part='clear-trigger'] {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-tags-input-clear-size, 1.25rem);
-    block-size: var(--xh-tags-input-clear-size, 1.25rem);
+    inline-size: var(--xh-tags-input-clear-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-tags-input-clear-size, var(--xh-control-indicator-size));
     padding: 0;
     border: 0;
     border-radius: var(--xh-shape-pill);

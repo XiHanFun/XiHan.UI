@@ -32,8 +32,9 @@
   }
 
   [data-scope='mention'][data-part='root'] {
-    /* 尺寸档只换这四个私有槽，输入框与候选都从 root 继承它们，换档不必给每个部件各写一条选择器。
+    /* 尺寸档只换这五个私有槽，输入框与候选都从 root 继承它们，换档不必给每个部件各写一条选择器。
        浮层在 positioner 里、也是 root 的后代，一并继承 */
+    --xh-_mention-h: var(--xh-control-h-md);
     --xh-_mention-px: var(--xh-control-px-md);
     --xh-_mention-py: var(--xh-field-py);
     --xh-_mention-gap: var(--xh-control-gap-md);
@@ -58,6 +59,7 @@
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里 */
   [data-scope='mention'][data-part='root'][data-size='sm'] {
+    --xh-_mention-h: var(--xh-control-h-sm);
     --xh-_mention-px: var(--xh-control-px-sm);
     --xh-_mention-py: var(--xh-space-1);
     --xh-_mention-gap: var(--xh-control-gap-sm);
@@ -65,6 +67,7 @@
   }
 
   [data-scope='mention'][data-part='root'][data-size='lg'] {
+    --xh-_mention-h: var(--xh-control-h-lg);
     --xh-_mention-px: var(--xh-control-px-lg);
     --xh-_mention-py: var(--xh-space-3);
     --xh-_mention-gap: var(--xh-control-gap-lg);
@@ -98,6 +101,8 @@
   [data-scope='mention'][data-part='input'] {
     display: block;
     inline-size: 100%;
+    /* 缺省宿主是 textarea：高度按行数撑，控件档只兜住底线 */
+    min-block-size: var(--xh-mention-input-h, var(--xh-_mention-h));
     padding-block: var(--xh-mention-input-py, var(--xh-_mention-py));
     padding-inline: var(--xh-mention-input-px, var(--xh-_mention-px));
     border: var(--xh-stroke-thin) solid var(--xh-mention-input-border, var(--xh-_mention-input-border));
@@ -111,6 +116,13 @@
     /* 多行宿主只许纵向拉伸：横向拉宽会把浮层与输入框的对齐拽歪 */
     resize: vertical;
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 单行宿主定高到控件档，纵向内距归零，与并排的其他控件等高。
+     单行与多行在 DOM 上只差一个标签名，没有别的标记可选，所以按标签名分支 */
+  input[data-scope='mention'][data-part='input'] {
+    block-size: var(--xh-mention-input-h, var(--xh-_mention-h));
+    padding-block: 0;
   }
 
   [data-scope='mention'][data-part='input'][hidden] {
