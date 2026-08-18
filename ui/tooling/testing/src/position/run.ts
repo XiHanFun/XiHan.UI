@@ -213,6 +213,78 @@ export function runPositionEngine(engine: PositionEnginePort, hooks: TestHooks, 
       }
     })
 
+    hooks.it('浮层自己的包含块被独立 translate 属性劫持时仍贴合', async () => {
+      const stage = createStage()
+      try {
+        const center = viewportCenter()
+        const anchor = stage.putAnchor(center.x, center.y)
+
+        // 容器是 static，只有独立的 translate 属性把包含块劫持过去
+        const warped = document.createElement('div')
+        warped.style.cssText = 'position:static;margin:90px 0 0 120px;width:200px;height:150px;translate:60px 30px'
+        stage.root.appendChild(warped)
+        const floating = stage.putFloating(40, 24, warped)
+
+        const probe = attachProbe(engine, anchor, floating, { placement: 'bottom-start', offset: OFFSET })
+        await probe.settle()
+
+        expectPlacedAt(anchor.getBoundingClientRect(), floating.getBoundingClientRect(), 'bottom-start', OFFSET)
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+
+    hooks.it('浮层自己的包含块被独立 scale 属性劫持时仍贴合', async () => {
+      const stage = createStage()
+      try {
+        const scale = 1.2
+        const center = viewportCenter()
+        const anchor = stage.putAnchor(center.x, center.y)
+
+        // 容器是 static，只有独立的 scale 属性把包含块劫持过去；写进 left/top 的是布局像素
+        const warped = document.createElement('div')
+        warped.style.cssText = `position:static;margin:100px 0 0 140px;width:200px;height:150px;scale:${scale};transform-origin:top left`
+        stage.root.appendChild(warped)
+        const floating = stage.putFloating(40, 24, warped)
+
+        const probe = attachProbe(engine, anchor, floating, { placement: 'bottom-start', offset: OFFSET })
+        await probe.settle()
+
+        const floatRect = floating.getBoundingClientRect()
+        expectClose(floatRect.width, 40 * scale, '缩放后的浮层视觉宽度')
+        expectPlacedAt(anchor.getBoundingClientRect(), floatRect, 'bottom-start', OFFSET * scale)
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+
+    hooks.it('浮层自己的包含块被 backdrop-filter 劫持时仍贴合', async () => {
+      const stage = createStage()
+      try {
+        const center = viewportCenter()
+        const anchor = stage.putAnchor(center.x, center.y)
+
+        // 容器是 static，只有 backdrop-filter 把包含块劫持过去
+        const warped = document.createElement('div')
+        warped.style.cssText = 'position:static;margin:120px 0 0 160px;width:200px;height:150px;backdrop-filter:blur(4px)'
+        stage.root.appendChild(warped)
+        const floating = stage.putFloating(40, 24, warped)
+
+        const probe = attachProbe(engine, anchor, floating, { placement: 'bottom-start', offset: OFFSET })
+        await probe.settle()
+
+        expectPlacedAt(anchor.getBoundingClientRect(), floating.getBoundingClientRect(), 'bottom-start', OFFSET)
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+
     hooks.it('锚点被缩放时贴的是它缩放后的样子', async () => {
       const stage = createStage()
       try {

@@ -53,23 +53,25 @@ function isNone(value: string): boolean {
 
 /**
  * 这个元素会不会连固定定位后代的包含块也抢过去。
- * transform / perspective / filter / contain / will-change 对 fixed 与 absolute 一视同仁，
+ * transform 与 translate / rotate / scale 三个独立属性、perspective、filter、backdrop-filter、
+ * container-type、contain、will-change 对 fixed 与 absolute 一视同仁，
  * 只有 position 本身不算——fixed 不认祖先的 relative。
  */
 function capturesFixed(style: CSSStyleDeclaration): boolean {
-  if (!isNone(style.transform) || !isNone(style.perspective) || !isNone(style.filter))
+  if (!isNone(style.transform) || !isNone(style.translate) || !isNone(style.rotate) || !isNone(style.scale))
+    return true
+  if (!isNone(style.perspective) || !isNone(style.filter) || !isNone(style.backdropFilter))
     return true
   if (style.containerType && style.containerType !== 'normal')
     return true
   if (/paint|layout|strict|content/.test(style.contain))
     return true
-  return /transform|perspective|filter|contain/.test(style.willChange)
+  return /transform|translate|rotate|scale|perspective|backdrop-filter|filter|contain/.test(style.willChange)
 }
 
 /**
  * 这个元素会不会成为绝对定位后代的包含块。
- * 除了定位以外，transform / perspective / filter / contain / will-change 都会把包含块抢过去，
- * 哪怕它自己是 static。漏掉这几条，浮层就会整体偏掉容器的位移。
+ * 判据是 capturesFixed 再加一条任何非 static 的定位；其余属性对两种策略的效果一致。
  */
 function establishesContainingBlock(style: CSSStyleDeclaration): boolean {
   return (style.position !== '' && style.position !== 'static') || capturesFixed(style)
