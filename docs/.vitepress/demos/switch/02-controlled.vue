@@ -1,4 +1,4 @@
-<!-- 受控 | 传了 checked 就由宿主说了算，组件自己不再改状态；v-model:checked 是它的语法糖 -->
+<!-- 受控 | 传了 checked 就由宿主说了算，组件自己不再改状态；变化意图从 checked-change 出来，写回才落位 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhSwitch } from "@xihan-ui/vue";

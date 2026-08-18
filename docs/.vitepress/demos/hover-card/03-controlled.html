@@ -1,0 +1,37 @@
+<!-- 受控 | 传了 open 就由宿主说了算；悬停与 Escape 都只发意图，最终写不写由外面这颗按钮同一份状态决定 -->
+<div style="display: flex; align-items: center; gap: 16px">
+  <xh-hover-card id="hover-card-controlled" open="false" placement="bottom-start">
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">@xihan</button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="arrow"></div>
+          <strong>XiHan.UI</strong>
+          <span>卡片从不抢焦点，也不锁页面滚动。</span>
+        </div>
+      </div>
+    </div>
+  </xh-hover-card>
+
+  <xh-button id="hover-card-controlled-toggle" variant="outline">
+    <button data-xh-part="root">展开</button>
+  </xh-button>
+  <span>当前：<span id="hover-card-controlled-state">收起</span></span>
+</div>
+
+<script type="module">
+  // 展开态由这段脚本持有：组件只发意图，写回 open 才真的展开
+  const card = document.getElementById("hover-card-controlled");
+  const toggle = document.getElementById("hover-card-controlled-toggle");
+  const label = toggle.querySelector('[data-xh-part="root"]');
+  const readout = document.getElementById("hover-card-controlled-state");
+
+  function apply(open) {
+    card.open = open;
+    label.textContent = open ? "收起" : "展开";
+    readout.textContent = open ? "展开" : "收起";
+  }
+
+  toggle.addEventListener("click", () => apply(!card.open));
+  card.addEventListener("open-change", (event) => apply(event.detail.open));
+</script>

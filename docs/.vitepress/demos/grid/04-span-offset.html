@@ -1,0 +1,80 @@
+<!-- 跨列与错列 | span 让一格横跨几列；offset 让一格改从第 offset + 1 条列线起排，把它前面那几列空出来 -->
+<style>
+  #grid-span-offset [data-cell],
+  #grid-span-offset [data-mark] {
+    padding: 10px;
+    border-radius: var(--xh-radius-md);
+    text-align: center;
+  }
+  #grid-span-offset [data-cell] {
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-default);
+  }
+  #grid-span-offset [data-mark] {
+    background: var(--xh-bg-brand-subtle);
+    color: var(--xh-fg-brand-strong);
+  }
+  #grid-span-offset [data-label] {
+    font-size: 13px;
+    color: var(--xh-fg-muted);
+  }
+  #grid-span-offset [data-inner] {
+    margin-block-start: 6px;
+  }
+</style>
+
+<!-- 宿主设 display: contents，排布落在 root 上 -->
+<xh-grid id="grid-span-offset" gap="lg" style="display: contents">
+  <div data-xh-part="root">
+    <div data-xh-part="item">
+      <div data-label>span：横跨几列就占几格宽，放不下的自动挤到下一行</div>
+      <xh-grid cols="4" gap="sm" style="display: contents">
+        <div data-xh-part="root" data-inner>
+          <div data-xh-part="item" span="4" data-mark>span = 4</div>
+          <div data-xh-part="item" span="2" data-mark>span = 2</div>
+          <div data-xh-part="item" data-cell>甲</div>
+          <div data-xh-part="item" data-cell>乙</div>
+        </div>
+      </xh-grid>
+    </div>
+
+    <div data-xh-part="item">
+      <div data-label>offset：起排的列线往后挪，前面那几列空着</div>
+      <!-- 每档单独一行来看：同一行里前面已经排了东西时，空出来的是那几条列线而不是紧挨着的几格 -->
+      <xh-grid gap="sm" style="display: contents">
+        <div data-xh-part="root" data-inner>
+          <div data-xh-part="item">
+            <xh-grid cols="4" gap="sm" style="display: contents">
+              <div data-xh-part="root">
+                <div data-xh-part="item" offset="1" span="3" data-mark>offset = 1</div>
+              </div>
+            </xh-grid>
+          </div>
+          <div data-xh-part="item">
+            <xh-grid cols="4" gap="sm" style="display: contents">
+              <div data-xh-part="root">
+                <div data-xh-part="item" offset="2" span="2" data-mark>offset = 2</div>
+              </div>
+            </xh-grid>
+          </div>
+          <div data-xh-part="item">
+            <xh-grid cols="4" gap="sm" style="display: contents">
+              <div data-xh-part="root">
+                <div data-xh-part="item" offset="3" span="1" data-mark>offset = 3</div>
+              </div>
+            </xh-grid>
+          </div>
+        </div>
+      </xh-grid>
+    </div>
+
+    <div data-xh-part="item">
+      <div data-label>两者同写：从第三条列线起排，横跨两列</div>
+      <xh-grid cols="4" gap="sm" style="display: contents">
+        <div data-xh-part="root" data-inner>
+          <div data-xh-part="item" offset="2" span="2" data-mark>offset = 2，span = 2</div>
+        </div>
+      </xh-grid>
+    </div>
+  </div>
+</xh-grid>

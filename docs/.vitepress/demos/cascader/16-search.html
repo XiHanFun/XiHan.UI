@@ -1,0 +1,131 @@
+<!-- 搜索 | searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表替换列视图；上下键走候选、Enter 选中、Escape 先清词再收浮层。无匹配（试试输入「苏州」）时空态占位露面，文案经 translations 覆盖 -->
+<xh-cascader id="cascader-search" searchable placeholder="试试输入「西湖」或「苏州」">
+  <div data-xh-part="root">
+    <span data-xh-part="label">收货地区</span>
+    <button data-xh-part="trigger">
+      <span data-xh-part="value-text"></span>
+      <span data-xh-part="indicator">▾</span>
+    </button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <input data-xh-part="input" placeholder="搜索地区" />
+        <!-- 候选常挂在 DOM 里，身份用 value 属性写整条路径的 JSON 数组串，词换了由元素收起 -->
+        <div data-xh-part="search-list">
+          <div data-xh-part="search-item" value='["zhejiang","hangzhou","xihu"]'>
+            浙江 / 杭州 / 西湖区
+          </div>
+          <div
+            data-xh-part="search-item"
+            value='["zhejiang","hangzhou","binjiang"]'
+          >
+            浙江 / 杭州 / 滨江区
+          </div>
+          <div data-xh-part="search-item" value='["zhejiang","ningbo","haishu"]'>
+            浙江 / 宁波 / 海曙区
+          </div>
+          <div data-xh-part="search-item" value='["jiangsu","nanjing","xuanwu"]'>
+            江苏 / 南京 / 玄武区
+          </div>
+          <div data-xh-part="search-item" value='["jiangsu","nanjing","gulou"]'>
+            江苏 / 南京 / 鼓楼区（暂不开放）
+          </div>
+        </div>
+        <div data-xh-part="column" level="0">
+          <div data-xh-part="item" value="zhejiang">
+            <span data-xh-part="item-text">浙江</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+          <div data-xh-part="item" value="jiangsu">
+            <span data-xh-part="item-text">江苏</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+        </div>
+        <div data-xh-part="column" level="1">
+          <div data-xh-part="item" value="hangzhou">
+            <span data-xh-part="item-text">杭州</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+          <div data-xh-part="item" value="ningbo">
+            <span data-xh-part="item-text">宁波</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+          <div data-xh-part="item" value="nanjing">
+            <span data-xh-part="item-text">南京</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+        </div>
+        <div data-xh-part="column" level="2">
+          <div data-xh-part="item" value="xihu">
+            <span data-xh-part="item-text">西湖区</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+          <div data-xh-part="item" value="binjiang">
+            <span data-xh-part="item-text">滨江区</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+          <div data-xh-part="item" value="haishu">
+            <span data-xh-part="item-text">海曙区</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+          <div data-xh-part="item" value="xuanwu">
+            <span data-xh-part="item-text">玄武区</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+          <div data-xh-part="item" value="gulou">
+            <span data-xh-part="item-text">鼓楼区（暂不开放）</span>
+            <span data-xh-part="item-indicator">✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-cascader>
+<p>当前路径：<span id="cascader-search-value">（未选）</span></p>
+
+<script type="module">
+  const cascader = document.getElementById("cascader-search");
+  cascader.collection = [
+    {
+      value: "zhejiang",
+      label: "浙江",
+      children: [
+        {
+          value: "hangzhou",
+          label: "杭州",
+          children: [
+            { value: "xihu", label: "西湖区" },
+            { value: "binjiang", label: "滨江区" },
+          ],
+        },
+        {
+          value: "ningbo",
+          label: "宁波",
+          children: [{ value: "haishu", label: "海曙区" }],
+        },
+      ],
+    },
+    {
+      value: "jiangsu",
+      label: "江苏",
+      children: [
+        {
+          value: "nanjing",
+          label: "南京",
+          children: [
+            { value: "xuanwu", label: "玄武区" },
+            { value: "gulou", label: "鼓楼区（暂不开放）", disabled: true },
+          ],
+        },
+      ],
+    },
+  ];
+
+  // 读屏与空态占位的文案是对象，只走属性
+  cascader.translations = { noMatch: "未找到匹配的地区" };
+
+  const readout = document.getElementById("cascader-search-value");
+  cascader.addEventListener("value-change", (event) => {
+    const path = event.detail.value[0];
+    readout.textContent = path ? path.join(" / ") : "（未选）";
+  });
+</script>

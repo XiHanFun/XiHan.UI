@@ -1,4 +1,4 @@
-<!-- 命令式聚焦与展开 | trigger 部件渲染的就是原生按钮，模板 ref 拿到它即可 focus / blur；开合走根插槽的 setOpen -->
+<!-- 命令式聚焦与展开 | trigger 部件就是原生按钮，拿到它即可 focus / blur；开合交给宿主写 open -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

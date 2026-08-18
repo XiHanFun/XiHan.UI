@@ -1,4 +1,4 @@
-<!-- 外部写值与清空 | 根插槽给出 setValue / clear 与空、越界两个判据，按钮照它们摆 -->
+<!-- 外部写值与清空 | 值由宿主持有，按钮直接写值或清空；空与越界两个判据由组件给出，按钮照它们摆 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

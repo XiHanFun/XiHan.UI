@@ -1,0 +1,24 @@
+<!-- 禁用与越界 | 禁用整组退出 Tab 序；越界只做标注，08:00 原样留着不被改写 -->
+<div style="display: grid; gap: 16px; justify-items: start">
+  <xh-time-field default-value="13:45" disabled>
+    <div data-xh-part="root">
+      <label data-xh-part="label">禁用</label>
+      <div data-xh-part="control">
+        <span data-xh-part="segment" segment="hour"></span>
+        <span>:</span>
+        <span data-xh-part="segment" segment="minute"></span>
+      </div>
+    </div>
+  </xh-time-field>
+
+  <xh-time-field default-value="08:00" min="09:00" max="18:00">
+    <div data-xh-part="root">
+      <label data-xh-part="label">越界（09:00 – 18:00）</label>
+      <div data-xh-part="control">
+        <span data-xh-part="segment" segment="hour"></span>
+        <span>:</span>
+        <span data-xh-part="segment" segment="minute"></span>
+      </div>
+    </div>
+  </xh-time-field>
+</div>

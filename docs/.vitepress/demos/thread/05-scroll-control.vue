@@ -1,4 +1,4 @@
-<!-- 自己画回到底部的入口 | root 的作用域插槽给出 showScrollButton 与 scrollToBottom，不用内置那颗浮动按钮也能拼出一条自己的提示栏 -->
+<!-- 自己画回到底部的入口 | 在不在底、怎么滚回底部两件事外部都拿得到，不用内置那颗浮动按钮也能拼出一条自己的提示栏 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhButton, XhThreadContent, XhThreadRoot, XhThreadViewport } from "@xihan-ui/vue";

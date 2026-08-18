@@ -1,0 +1,28 @@
+<!-- 基础用法 | 与 Tooltip 的分界在于卡片本体可交互：指针停在卡片上不收起，里面的链接与按钮都点得到 -->
+<div>
+  最近这批组件由
+  <xh-hover-card placement="bottom-start">
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">@xihan</button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="arrow"></div>
+          <strong>XiHan.UI</strong>
+          <span>框架无关的设计系统运行时，Vue 与 Web Components 共用同一套无头内核。</span>
+          <xh-button size="sm" variant="outline">
+            <button data-xh-part="root" id="hover-card-basic-follow">关注</button>
+          </xh-button>
+        </div>
+      </div>
+    </div>
+  </xh-hover-card>
+  推上来。
+</div>
+
+<script type="module">
+  // 卡片里的按钮点得到：在关注与已关注之间切换
+  const follow = document.getElementById("hover-card-basic-follow");
+  follow.addEventListener("click", () => {
+    follow.textContent = follow.textContent === "关注" ? "已关注" : "关注";
+  });
+</script>

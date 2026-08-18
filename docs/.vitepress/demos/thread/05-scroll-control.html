@@ -1,0 +1,69 @@
+<!-- 自己画回到底部的入口 | 在不在底、怎么滚回底部两件事外部都拿得到，不用内置那颗浮动按钮也能拼出一条自己的提示栏 -->
+<div style="width: 100%; display: grid; gap: 12px">
+  <xh-thread id="thread-scroll-control">
+    <div data-xh-part="root" style="block-size: 220px">
+      <div data-xh-part="viewport" id="thread-scroll-control-viewport">
+        <div data-xh-part="content" id="thread-scroll-control-content">
+          <p style="margin: 0">第 1 条 · 往上滚一段，下面那条提示栏就露出来</p>
+          <p style="margin: 0">第 2 条 · 往上滚一段，下面那条提示栏就露出来</p>
+          <p style="margin: 0">第 3 条 · 往上滚一段，下面那条提示栏就露出来</p>
+          <p style="margin: 0">第 4 条 · 往上滚一段，下面那条提示栏就露出来</p>
+          <p style="margin: 0">第 5 条 · 往上滚一段，下面那条提示栏就露出来</p>
+          <p style="margin: 0">第 6 条 · 往上滚一段，下面那条提示栏就露出来</p>
+          <p style="margin: 0">第 7 条 · 往上滚一段，下面那条提示栏就露出来</p>
+          <p style="margin: 0">第 8 条 · 往上滚一段，下面那条提示栏就露出来</p>
+          <p style="margin: 0">第 9 条 · 往上滚一段，下面那条提示栏就露出来</p>
+          <p style="margin: 0">第 10 条 · 往上滚一段，下面那条提示栏就露出来</p>
+          <p style="margin: 0">第 11 条 · 往上滚一段，下面那条提示栏就露出来</p>
+          <p style="margin: 0">第 12 条 · 往上滚一段，下面那条提示栏就露出来</p>
+        </div>
+      </div>
+
+      <!-- 提示栏排在视口下面，不在底部时才出现 -->
+      <div
+        id="thread-scroll-control-bar"
+        hidden
+        style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-block: 6px"
+      >
+        <span style="font-size: 13px">在底：<span id="thread-scroll-control-at">是</span></span>
+        <xh-button id="thread-scroll-control-back" variant="outline" size="sm">
+          <button data-xh-part="root">回到最新</button>
+        </xh-button>
+      </div>
+    </div>
+  </xh-thread>
+
+  <div>
+    <xh-button id="thread-scroll-control-append" variant="solid">
+      <button data-xh-part="root">追加一条消息</button>
+    </xh-button>
+  </div>
+</div>
+
+<script type="module">
+  const host = document.getElementById("thread-scroll-control");
+  const viewport = document.getElementById("thread-scroll-control-viewport");
+  const content = document.getElementById("thread-scroll-control-content");
+  const bar = document.getElementById("thread-scroll-control-bar");
+  const at = document.getElementById("thread-scroll-control-at");
+  let nextId = 12;
+
+  // 不在底时露出提示栏
+  host.addEventListener("stick-change", (event) => {
+    at.textContent = event.detail.atBottom ? "是" : "否";
+    bar.hidden = event.detail.atBottom;
+  });
+
+  // 滚回底部阈值内那一下，粘附自己就恢复
+  document.getElementById("thread-scroll-control-back").addEventListener("click", () => {
+    viewport.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
+  });
+
+  document.getElementById("thread-scroll-control-append").addEventListener("click", () => {
+    nextId += 1;
+    const line = document.createElement("p");
+    line.style.margin = "0";
+    line.textContent = `第 ${nextId} 条 · 新来的`;
+    content.append(line);
+  });
+</script>

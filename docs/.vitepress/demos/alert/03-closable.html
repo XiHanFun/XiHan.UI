@@ -1,0 +1,26 @@
+<!-- 可关闭 | closable 开启后才渲染关闭按钮；open 受控时由宿主决定去留 -->
+<div style="width: 100%; display: grid; gap: 12px">
+  <xh-alert id="alert-closable" open closable>
+    <div data-xh-part="root">
+      <div data-xh-part="title">点右侧关闭</div>
+      <button data-xh-part="close-trigger">×</button>
+    </div>
+  </xh-alert>
+  <xh-button id="alert-closable-reopen" size="sm" style="display: none">
+    <button data-xh-part="root">再显示一次</button>
+  </xh-button>
+</div>
+
+<script type="module">
+  // 收起意图写回 open，重开按钮跟着显隐
+  const host = document.getElementById("alert-closable");
+  const reopen = document.getElementById("alert-closable-reopen");
+  host.addEventListener("open-change", (event) => {
+    host.open = event.detail.open;
+    reopen.style.display = event.detail.open ? "none" : "";
+  });
+  reopen.addEventListener("click", () => {
+    host.open = true;
+    reopen.style.display = "none";
+  });
+</script>

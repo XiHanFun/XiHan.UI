@@ -1,4 +1,4 @@
-<!-- 异步确认 | @confirm 返回 Promise 即挂起确认门：浮层等兑现才收起、确认按钮转圈且再点无效，落空（reject）留在原地；不必再手动受控拦收起 -->
+<!-- 异步确认 | 确认回调返回 Promise 即挂起确认门：浮层等兑现才收起、确认按钮转圈且再点无效，落空（reject）留在原地；不必再手动受控拦收起 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

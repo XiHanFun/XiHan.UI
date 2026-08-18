@@ -1,0 +1,17 @@
+<!-- 基础用法 | 图标、标题、说明、操作四个槽都可选，只有 root 是必须的 -->
+<xh-empty-state>
+  <div data-xh-part="root" style="inline-size: 100%">
+    <!-- 图标是装饰性的，内容由作者塞：字形、内联 svg 都行 -->
+    <span data-xh-part="icon">∅</span>
+    <p data-xh-part="title">还没有任何工单</p>
+    <p data-xh-part="description">新建一条工单，或者换个筛选条件再看看。</p>
+    <div data-xh-part="action">
+      <xh-button variant="solid">
+        <button data-xh-part="root">新建工单</button>
+      </xh-button>
+      <xh-button variant="ghost">
+        <button data-xh-part="root">清空筛选</button>
+      </xh-button>
+    </div>
+  </div>
+</xh-empty-state>

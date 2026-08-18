@@ -1,0 +1,24 @@
+<!-- 遮蔽与字符类别 | mask 把每格转成密码框，type 决定哪类字符进得来，其余按键既不进值也不留在框里 -->
+<xh-pin-input length="4" mask>
+  <div data-xh-part="root">
+    <label data-xh-part="label">支付密码（遮蔽）</label>
+    <div style="display: flex">
+      <input data-xh-part="input" />
+      <input data-xh-part="input" />
+      <input data-xh-part="input" />
+      <input data-xh-part="input" />
+    </div>
+  </div>
+</xh-pin-input>
+
+<xh-pin-input length="4" type="alphanumeric">
+  <div data-xh-part="root">
+    <label data-xh-part="label">兑换码（数字与字母）</label>
+    <div style="display: flex">
+      <input data-xh-part="input" />
+      <input data-xh-part="input" />
+      <input data-xh-part="input" />
+      <input data-xh-part="input" />
+    </div>
+  </div>
+</xh-pin-input>

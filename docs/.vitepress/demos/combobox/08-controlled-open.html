@@ -1,0 +1,76 @@
+<!-- 受控展开 | 传了 open 就由宿主说了算：组件只报展开意图，这里满两个字符才真的把浮层放出来 -->
+<xh-combobox id="combobox-controlled-open" placeholder="至少输入两个字符">
+  <div data-xh-part="root">
+    <label data-xh-part="label">城市</label>
+    <div data-xh-part="control">
+      <input data-xh-part="input" />
+      <button data-xh-part="trigger"></button>
+      <button data-xh-part="clear-trigger"></button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="item" value="beijing">
+          <span data-xh-part="item-text">Beijing 北京</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="berlin">
+          <span data-xh-part="item-text">Berlin 柏林</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="bern">
+          <span data-xh-part="item-text">Bern 伯尔尼</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="london">
+          <span data-xh-part="item-text">London 伦敦</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+      </div>
+      <div data-xh-part="empty">无匹配城市</div>
+    </div>
+  </div>
+</xh-combobox>
+<p>
+  浮层：<span id="combobox-controlled-open-state">收起</span> · 当前值：<span
+    id="combobox-controlled-open-value"
+    >（未选）</span
+  >
+</p>
+
+<script type="module">
+  const combobox = document.getElementById("combobox-controlled-open");
+  const content = combobox.querySelector('[data-xh-part="content"]');
+  const state = document.getElementById("combobox-controlled-open-state");
+  const readout = document.getElementById("combobox-controlled-open-value");
+  const all = [...content.children];
+  const labelOf = (item) => item.querySelector('[data-xh-part="item-text"]').textContent.toLowerCase();
+  let wantOpen = false;
+  let query = "";
+
+  // 写上 open 即转受控，从此展开与否只看这里的结论
+  combobox.open = false;
+
+  // 组件的展开意图与输入长度两个条件都满足才展开
+  function sync() {
+    const open = wantOpen && query.trim().length >= 2;
+    combobox.open = open;
+    state.textContent = open ? "展开" : "收起";
+  }
+
+  combobox.addEventListener("open-change", (event) => {
+    wantOpen = event.detail.open;
+    sync();
+  });
+
+  combobox.addEventListener("input-value-change", (event) => {
+    query = event.detail.inputValue;
+    const q = query.trim().toLowerCase();
+    content.replaceChildren(...all.filter((item) => labelOf(item).includes(q)));
+    sync();
+  });
+
+  combobox.addEventListener("value-change", (event) => {
+    combobox.value = event.detail.value;
+    readout.textContent = event.detail.value[0] ?? "（未选）";
+  });
+</script>

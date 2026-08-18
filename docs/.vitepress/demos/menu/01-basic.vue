@@ -1,4 +1,4 @@
-<!-- 基础用法 | collection 是条目的事实源：文本与禁用都写在数据里，trigger / positioner / content / item 由组件铺开 -->
+<!-- 基础用法 | 条目以 value 标识身份，禁用项方向键跳过也选不中；删除前面隔着一道分隔线 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhMenuRoot } from "@xihan-ui/vue";
