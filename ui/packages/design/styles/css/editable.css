@@ -34,8 +34,7 @@
     cursor: not-allowed;
   }
 
-  /* 预览区与输入框轮流上场，两者在同一处落脚：
-     area 定死最小宽高，切换形态时这一块不会忽大忽小地跳 */
+  /* 预览区与输入框轮流上场，两者在同一处落脚：area 给这一处定最小宽高 */
   [data-scope='editable'][data-part='area'] {
     display: inline-flex;
     align-items: center;
@@ -47,21 +46,23 @@
     display: none;
   }
 
-  /* 预览区的内边距与边框要和输入框对齐：只有描边是透明的，
-     否则从预览切到编辑时文字会左右挪一下 */
+  /* 预览区的高度、内边距与边框都和输入框取同一档，只有描边是透明的：
+     单行值定在控件档上，多行值才往下长 */
   [data-scope='editable'][data-part='preview'] {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     inline-size: 100%;
+    min-block-size: var(--xh-editable-preview-min-h, var(--xh-control-h-md));
     padding-inline: var(--xh-editable-preview-px, var(--xh-control-px-md));
     padding-block: 0;
     border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-editable-preview-radius, var(--xh-shape-control));
     color: var(--xh-editable-preview-fg, var(--xh-fg-default));
     font-size: var(--xh-editable-preview-font-size, var(--xh-text-body-size));
-    line-height: var(--xh-editable-preview-line-height, var(--xh-control-h-md));
-    /* 值里的换行与连续空格照原样显示，但过长的行仍要能断开 */
+    line-height: var(--xh-leading-normal);
+    /* 值里的换行与连续空格照原样显示，过长的行断开而不撑破弹性行 */
     white-space: pre-wrap;
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
   }
 
   /* 编辑态由连接层给 hidden；上面那条 display 会盖掉 UA 规则，少了这条就收不起来 */
