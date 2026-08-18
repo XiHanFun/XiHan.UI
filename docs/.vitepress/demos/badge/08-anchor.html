@@ -1,0 +1,80 @@
+<!-- 挂成角标 | 徽标本身随文排；外层套一层定位上下文，它就落到子元素的角上。计数、圆点、0 值收起、上限截断都在宿主这一侧 -->
+<div style="display: flex; align-items: center; gap: 24px">
+  <!-- 计数角标：外层给定位上下文，徽标绝对定位到右上角；偏移逐个实例写 -->
+  <span style="position: relative; display: inline-flex">
+    <xh-button variant="outline">
+      <button data-xh-part="root">消息</button>
+    </xh-button>
+    <xh-badge id="badge-anchor-count" variant="solid" tone="danger" size="sm">
+      <span
+        data-xh-part="root"
+        style="position: absolute; inset-block-start: -6px; inset-inline-end: -8px"
+      >
+        5
+      </span>
+    </xh-badge>
+  </span>
+
+  <!-- 圆点：内容留空，内边距收成 0 再给一个直径，根本来就是胶囊圆角 -->
+  <span style="position: relative; display: inline-flex">
+    <xh-button variant="outline">
+      <button data-xh-part="root">动态</button>
+    </xh-button>
+    <xh-badge variant="solid" tone="danger">
+      <span
+        data-xh-part="root"
+        style="
+          position: absolute;
+          inset-block-start: -4px;
+          inset-inline-end: -4px;
+          padding: 0;
+          inline-size: 8px;
+          block-size: 8px;
+        "
+      ></span>
+    </xh-badge>
+  </span>
+</div>
+
+<div style="display: flex; align-items: center; gap: 8px">
+  <xh-button size="sm">
+    <button data-xh-part="root" id="badge-anchor-minus">减一</button>
+  </xh-button>
+  <xh-button size="sm">
+    <button data-xh-part="root" id="badge-anchor-plus">加五十</button>
+  </xh-button>
+  <xh-button size="sm" variant="ghost">
+    <button data-xh-part="root" id="badge-anchor-reset">归零</button>
+  </xh-button>
+  <span style="font-size: 13px">
+    当前 <span id="badge-anchor-readout">5</span>：为 0 收起，超过 99 截成 99+
+  </span>
+</div>
+
+<script type="module">
+  // 计数为 0 收起徽标，超过 99 截成 99+
+  const max = 99;
+  const host = document.getElementById("badge-anchor-count");
+  const label = host.querySelector('[data-xh-part="root"]');
+  const readout = document.getElementById("badge-anchor-readout");
+  let count = 5;
+
+  function paint() {
+    host.style.display = count > 0 ? "" : "none";
+    label.textContent = count > max ? `${max}+` : String(count);
+    readout.textContent = String(count);
+  }
+
+  document.getElementById("badge-anchor-minus").addEventListener("click", () => {
+    count = Math.max(0, count - 1);
+    paint();
+  });
+  document.getElementById("badge-anchor-plus").addEventListener("click", () => {
+    count += 50;
+    paint();
+  });
+  document.getElementById("badge-anchor-reset").addEventListener("click", () => {
+    count = 0;
+    paint();
+  });
+</script>

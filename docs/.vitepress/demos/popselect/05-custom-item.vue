@@ -1,4 +1,4 @@
-<!-- 自定义条目 | 手写整棵部件树：条目里想放什么都行，行为与 collection 铺开的那一套完全一致 -->
+<!-- 自定义条目 | 条目里想放什么都行：连打检索只认 item-text，多出来的文字不参与，选中与导航照旧 -->
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import {

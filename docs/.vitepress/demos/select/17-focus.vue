@@ -1,4 +1,4 @@
-<!-- 命令式聚焦 | 在触发器上取模板 ref，实例的 $el 就是那个按钮，focus 与 blur 直接调它 -->
+<!-- 命令式聚焦 | 触发器就是你写的那个按钮，focus 与 blur 直接调它 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

@@ -1,0 +1,48 @@
+<!-- 全选与半选 | trigger 是第三态复选框，只有把全部条目的值交给 itemValues 才分得清 all 与 some -->
+<xh-checkbox-group
+  id="checkbox-group-select-all"
+  default-value="cheese"
+  item-values="cheese,bacon,corn,truffle"
+>
+  <div data-xh-part="root">
+    <span data-xh-part="label">配料</span>
+    <!-- 方框与勾号／横杠由皮肤画，这里只写文案 -->
+    <div data-xh-part="trigger">
+      <span>全选（<span id="checkbox-group-select-all-state">some</span>）</span>
+    </div>
+    <div data-xh-part="item" value="cheese">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="indicator"></span>
+      <span data-xh-part="item-text">芝士</span>
+    </div>
+    <div data-xh-part="item" value="bacon">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="indicator"></span>
+      <span data-xh-part="item-text">培根</span>
+    </div>
+    <div data-xh-part="item" value="corn">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="indicator"></span>
+      <span data-xh-part="item-text">玉米</span>
+    </div>
+    <div data-xh-part="item" value="truffle" aria-disabled="true">
+      <input data-xh-part="hidden-input" />
+      <span data-xh-part="indicator"></span>
+      <span data-xh-part="item-text">松露（禁用）</span>
+    </div>
+  </div>
+</xh-checkbox-group>
+<span>当前：<span id="checkbox-group-select-all-value">cheese</span></span>
+
+<script type="module">
+  // 全选格的三态写在它的 data-state 上，等这一轮接线落定再读
+  const group = document.getElementById("checkbox-group-select-all");
+  const trigger = group.querySelector('[data-xh-part="trigger"]');
+  const state = document.getElementById("checkbox-group-select-all-state");
+  const readout = document.getElementById("checkbox-group-select-all-value");
+  group.addEventListener("value-change", async (event) => {
+    readout.textContent = event.detail.value.join("、") || "（无）";
+    await group.updateComplete;
+    state.textContent = trigger.dataset.state;
+  });
+</script>

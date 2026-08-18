@@ -1,0 +1,15 @@
+<!-- 基础用法 | 预览与编辑两态轮流上场：点预览区或按「编辑」进编辑态，preview 不写内容、显示什么由组件填 -->
+<xh-editable default-value="曦寒" placeholder="未填写">
+  <div data-xh-part="root">
+    <label data-xh-part="label">昵称</label>
+    <div data-xh-part="area">
+      <span data-xh-part="preview"></span>
+      <input data-xh-part="input" />
+    </div>
+    <div data-xh-part="control">
+      <button data-xh-part="edit-trigger">编辑</button>
+      <button data-xh-part="submit-trigger">保存</button>
+      <button data-xh-part="cancel-trigger">取消</button>
+    </div>
+  </div>
+</xh-editable>

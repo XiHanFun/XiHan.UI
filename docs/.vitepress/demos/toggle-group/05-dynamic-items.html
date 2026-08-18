@@ -1,0 +1,61 @@
+<!-- 条目增删 | 条目集合在运行期可增可删，增删后照常接线；删掉的正好是选中项时由宿主把值收拾干净 -->
+<span style="display: inline-flex; align-items: center; gap: 10px">
+  <xh-toggle-group id="toggle-group-dynamic" value="list">
+    <div data-xh-part="root">
+      <button data-xh-part="item" value="list">列表</button>
+      <button data-xh-part="item" value="board">看板</button>
+      <button data-xh-part="item" value="chart" aria-disabled="true">图表</button>
+    </div>
+  </xh-toggle-group>
+  <span style="font-size: 13px">
+    当前：<span id="toggle-group-dynamic-value">list</span>
+  </span>
+</span>
+
+<span style="display: inline-flex; gap: 8px">
+  <button type="button" id="toggle-group-dynamic-add">加一段</button>
+  <button type="button" id="toggle-group-dynamic-remove">删末段</button>
+</span>
+
+<script type="module">
+  // 加一段就往 root 里追一个条目，删末段就摘掉最后那个
+  const host = document.getElementById("toggle-group-dynamic");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const readout = document.getElementById("toggle-group-dynamic-value");
+  let view = "list";
+  let seq = 0;
+
+  host.addEventListener("value-change", (event) => {
+    view = event.detail.value;
+    host.value = view;
+    readout.textContent = view ?? "（无选中）";
+  });
+
+  document
+    .getElementById("toggle-group-dynamic-add")
+    .addEventListener("click", () => {
+      seq += 1;
+      const item = document.createElement("button");
+      item.dataset.xhPart = "item";
+      item.setAttribute("value", `custom-${seq}`);
+      item.textContent = `视图 ${seq}`;
+      root.append(item);
+    });
+
+  document
+    .getElementById("toggle-group-dynamic-remove")
+    .addEventListener("click", () => {
+      const last = root.lastElementChild;
+      if (!last) {
+        return;
+      }
+      const removed = last.getAttribute("value");
+      last.remove();
+      // 删掉的正是当前值，选中态就没了落点，受控值得跟着清掉
+      if (removed === view) {
+        view = null;
+        host.value = null;
+        readout.textContent = "（无选中）";
+      }
+    });
+</script>

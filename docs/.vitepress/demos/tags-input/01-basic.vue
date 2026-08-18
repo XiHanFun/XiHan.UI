@@ -1,4 +1,4 @@
-<!-- 基础用法 | 框里打字按 Enter 落一个标签；标签由作者按当前值渲染，v-for 的 key 必须给 -->
+<!-- 基础用法 | 框里打字按 Enter 落一个标签；标签由作者按当前值渲染，每个标签自带 value 标识身份 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

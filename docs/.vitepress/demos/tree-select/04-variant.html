@@ -1,0 +1,133 @@
+<!-- 形态 | variant 只换触发框的描边与底色，浮层与树的长相不跟着变 -->
+<div
+  id="tree-select-variant"
+  style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start"
+>
+  <xh-tree-select variant="outline" placeholder="选一个文件">
+    <div data-xh-part="root" style="inline-size: 220px">
+      <span data-xh-part="label">outline</span>
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator">▾</span>
+      </button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="tree">
+            <div data-xh-part="branch" value="docs">
+              <div data-xh-part="branch-control">
+                <span data-xh-part="branch-trigger">▸</span>
+                <span data-xh-part="branch-text">docs</span>
+              </div>
+              <div data-xh-part="branch-content">
+                <div data-xh-part="item" value="guide">
+                  <span data-xh-part="item-indicator">✓</span>
+                  <span data-xh-part="item-text">guide.md</span>
+                </div>
+                <div data-xh-part="item" value="api">
+                  <span data-xh-part="item-indicator">✓</span>
+                  <span data-xh-part="item-text">api.md</span>
+                </div>
+              </div>
+            </div>
+            <div data-xh-part="item" value="readme">
+              <span data-xh-part="item-indicator">✓</span>
+              <span data-xh-part="item-text">README.md</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-tree-select>
+
+  <xh-tree-select variant="subtle" placeholder="选一个文件">
+    <div data-xh-part="root" style="inline-size: 220px">
+      <span data-xh-part="label">subtle</span>
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator">▾</span>
+      </button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="tree">
+            <div data-xh-part="branch" value="docs">
+              <div data-xh-part="branch-control">
+                <span data-xh-part="branch-trigger">▸</span>
+                <span data-xh-part="branch-text">docs</span>
+              </div>
+              <div data-xh-part="branch-content">
+                <div data-xh-part="item" value="guide">
+                  <span data-xh-part="item-indicator">✓</span>
+                  <span data-xh-part="item-text">guide.md</span>
+                </div>
+                <div data-xh-part="item" value="api">
+                  <span data-xh-part="item-indicator">✓</span>
+                  <span data-xh-part="item-text">api.md</span>
+                </div>
+              </div>
+            </div>
+            <div data-xh-part="item" value="readme">
+              <span data-xh-part="item-indicator">✓</span>
+              <span data-xh-part="item-text">README.md</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-tree-select>
+
+  <xh-tree-select variant="ghost" placeholder="选一个文件">
+    <div data-xh-part="root" style="inline-size: 220px">
+      <span data-xh-part="label">ghost</span>
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator">▾</span>
+      </button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="tree">
+            <div data-xh-part="branch" value="docs">
+              <div data-xh-part="branch-control">
+                <span data-xh-part="branch-trigger">▸</span>
+                <span data-xh-part="branch-text">docs</span>
+              </div>
+              <div data-xh-part="branch-content">
+                <div data-xh-part="item" value="guide">
+                  <span data-xh-part="item-indicator">✓</span>
+                  <span data-xh-part="item-text">guide.md</span>
+                </div>
+                <div data-xh-part="item" value="api">
+                  <span data-xh-part="item-indicator">✓</span>
+                  <span data-xh-part="item-text">api.md</span>
+                </div>
+              </div>
+            </div>
+            <div data-xh-part="item" value="readme">
+              <span data-xh-part="item-indicator">✓</span>
+              <span data-xh-part="item-text">README.md</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-tree-select>
+</div>
+
+<script type="module">
+  // 三份控件共用同一份树数据与同一套展开写回
+  const files = [
+    {
+      value: "docs",
+      label: "docs",
+      children: [
+        { value: "guide", label: "guide.md" },
+        { value: "api", label: "api.md" },
+      ],
+    },
+    { value: "readme", label: "README.md" },
+  ];
+  for (const el of document.getElementById("tree-select-variant").children) {
+    el.collection = files;
+    el.expandedValue = ["docs"];
+    el.addEventListener("expanded-change", (event) => (el.expandedValue = event.detail.value));
+  }
+</script>

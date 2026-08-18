@@ -1,4 +1,4 @@
-<!-- 多项展开 | multiple 允许多项并存，展开集合恒为 string[]，用 v-model:value 拿到它 -->
+<!-- 多项展开 | multiple 允许多项并存，展开集合恒为 string[]，受控绑定即可拿到它 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhAccordionRoot } from "@xihan-ui/vue";

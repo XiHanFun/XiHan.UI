@@ -1,0 +1,59 @@
+<!-- 分别固定 | 两个开关各自独立：只写 header-fixed 时侧栏照常随内容滚走，只写 sider-fixed 时侧栏钉在滚动容器上沿、头照常滚走 -->
+<div style="display: grid; gap: 16px">
+  <div
+    style="
+      block-size: 200px;
+      overflow: auto;
+      border: 1px solid var(--xh-border-default);
+      border-radius: 8px;
+    "
+  >
+    <xh-layout header-fixed bordered>
+      <div data-xh-part="root">
+        <div data-xh-part="header">只固定头</div>
+        <div data-xh-part="sider">导航会滚走</div>
+        <div data-xh-part="content">
+          <p style="margin-block-end: 12px">第 1 段正文。</p>
+          <p style="margin-block-end: 12px">第 2 段正文。</p>
+          <p style="margin-block-end: 12px">第 3 段正文。</p>
+          <p style="margin-block-end: 12px">第 4 段正文。</p>
+          <p style="margin-block-end: 12px">第 5 段正文。</p>
+          <p style="margin-block-end: 12px">第 6 段正文。</p>
+          <p style="margin-block-end: 12px">第 7 段正文。</p>
+          <p style="margin-block-end: 12px">第 8 段正文。</p>
+          <p style="margin-block-end: 12px">第 9 段正文。</p>
+          <p style="margin-block-end: 12px">第 10 段正文。</p>
+        </div>
+      </div>
+    </xh-layout>
+  </div>
+
+  <div
+    style="
+      block-size: 200px;
+      overflow: auto;
+      border: 1px solid var(--xh-border-default);
+      border-radius: 8px;
+    "
+  >
+    <!-- 头没固定，侧栏就贴滚动容器的上沿 -->
+    <xh-layout sider-fixed bordered>
+      <div data-xh-part="root" style="--xh-layout-scrollport-h: 200px">
+        <div data-xh-part="header">头会滚走</div>
+        <div data-xh-part="sider">只固定侧栏</div>
+        <div data-xh-part="content">
+          <p style="margin-block-end: 12px">第 1 段正文。</p>
+          <p style="margin-block-end: 12px">第 2 段正文。</p>
+          <p style="margin-block-end: 12px">第 3 段正文。</p>
+          <p style="margin-block-end: 12px">第 4 段正文。</p>
+          <p style="margin-block-end: 12px">第 5 段正文。</p>
+          <p style="margin-block-end: 12px">第 6 段正文。</p>
+          <p style="margin-block-end: 12px">第 7 段正文。</p>
+          <p style="margin-block-end: 12px">第 8 段正文。</p>
+          <p style="margin-block-end: 12px">第 9 段正文。</p>
+          <p style="margin-block-end: 12px">第 10 段正文。</p>
+        </div>
+      </div>
+    </xh-layout>
+  </div>
+</div>

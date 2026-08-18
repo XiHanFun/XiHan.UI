@@ -1,4 +1,4 @@
-<!-- 图标 | 默认插槽收任意内容，图标与文字之间的空隙由 --xh-toggle-gap 给；只放图标时按钮没有可见文字，名字得由 aria-label 补上 -->
+<!-- 图标 | 按钮内容随便写，图标与文字之间的空隙由 --xh-toggle-gap 给；只放图标时按钮没有可见文字，名字得由 aria-label 补上 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhIcon, XhToggle } from "@xihan-ui/vue";

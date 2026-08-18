@@ -1,4 +1,4 @@
-<!-- 基础用法 | 触发器旁弹出一个列表，选完即收起；collection 是条目的事实源，浮层里不写条目也会铺开 -->
+<!-- 基础用法 | 触发器旁弹出一个列表，选完即收起；条目按 value 标识身份，禁用的条目方向键会跳过 -->
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import {

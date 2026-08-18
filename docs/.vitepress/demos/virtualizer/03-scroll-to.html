@@ -1,0 +1,61 @@
+<!-- 滚到指定条目 | scrollToIndex 按 align 落位：start 贴上沿、center 居中、end 贴下沿，越界下标由内核夹住 -->
+<xh-virtualizer id="virtualizer-goto" count="2000" estimate-size="32">
+  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 420px">
+    <!-- 操作入口在外面，滚动的活儿交给内核 -->
+    <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-block-end: 8px">
+      <button type="button" id="virtualizer-goto-first">回到第 1 条</button>
+      <button type="button" id="virtualizer-goto-middle">第 501 条居中</button>
+      <button type="button" id="virtualizer-goto-last">末条贴底</button>
+      <span>可视区首条：<span id="virtualizer-goto-start">—</span></span>
+    </div>
+
+    <!-- 视口自带确定高度，root 就不必再定高 -->
+    <div data-xh-part="viewport" style="block-size: 220px">
+      <div data-xh-part="content"></div>
+    </div>
+  </div>
+</xh-virtualizer>
+
+<script type="module">
+  const host = document.getElementById("virtualizer-goto");
+  const content = host.querySelector('[data-xh-part="content"]');
+  const start = document.getElementById("virtualizer-goto-start");
+  const nodes = new Map();
+
+  function render(items) {
+    const live = new Set();
+    for (const item of items) {
+      live.add(item.index);
+      if (nodes.has(item.index)) continue;
+      const el = document.createElement("div");
+      el.dataset.xhPart = "item";
+      el.setAttribute("value", String(item.index));
+      el.style.cssText =
+        "display: flex; align-items: center; height: 32px; padding-inline: 12px; border-block-end: 1px solid var(--xh-border-subtle)";
+      el.textContent = `第 ${item.index + 1} 条`;
+      nodes.set(item.index, el);
+      content.append(el);
+    }
+    for (const [index, el] of nodes) {
+      if (live.has(index)) continue;
+      el.remove();
+      nodes.delete(index);
+    }
+  }
+
+  render(host.virtualItems);
+  host.addEventListener("change", (event) => {
+    render(event.detail.virtualItems);
+    start.textContent = event.detail.startIndex ?? "—";
+  });
+
+  document
+    .getElementById("virtualizer-goto-first")
+    .addEventListener("click", () => host.scrollToIndex(0));
+  document
+    .getElementById("virtualizer-goto-middle")
+    .addEventListener("click", () => host.scrollToIndex(500, { align: "center" }));
+  document
+    .getElementById("virtualizer-goto-last")
+    .addEventListener("click", () => host.scrollToIndex(9999, { align: "end" }));
+</script>

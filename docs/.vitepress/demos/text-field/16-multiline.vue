@@ -1,4 +1,4 @@
-<!-- 多行与自动长高 | XhTextFieldInput 写 as="textarea" 即多行宿主；autoSize 让高度跟内容走，对象形态钉行数上下限（顶到 maxRows 后内部滚动） -->
+<!-- 多行与自动长高 | input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，对象形态钉行数上下限（顶到 maxRows 后内部滚动） -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhTextFieldInput, XhTextFieldLabel, XhTextFieldRoot } from "@xihan-ui/vue";

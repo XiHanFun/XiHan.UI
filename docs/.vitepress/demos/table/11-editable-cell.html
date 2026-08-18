@@ -1,0 +1,117 @@
+<!-- 单元格就地编辑 | 表体的方向键与 Home/End 是挂在 body 上的冒泡监听，可编辑控件上掐断冒泡这些键就回归输入框自己 -->
+<div id="table-edit" style="width: 100%; max-width: 560px; display: grid; gap: 12px">
+  <xh-table id="table-edit-table">
+    <div data-xh-part="root">
+      <div data-xh-part="caption">采购清单</div>
+      <div data-xh-part="header">
+        <div data-xh-part="row">
+          <div data-xh-part="column-header" value="item">条目</div>
+          <div data-xh-part="column-header" value="count">数量</div>
+          <div data-xh-part="column-header" value="note">备注</div>
+        </div>
+      </div>
+      <div data-xh-part="body">
+        <div data-xh-part="row" value="l1">
+          <div data-xh-part="cell" value="item">键盘</div>
+          <div data-xh-part="cell" value="count">
+            <input
+              type="number"
+              min="0"
+              value="2"
+              aria-label="键盘 数量"
+              data-count
+              style="inline-size: 100%; min-inline-size: 0"
+            />
+          </div>
+          <div data-xh-part="cell" value="note">
+            <input
+              type="text"
+              value="机械轴"
+              placeholder="可以打空格"
+              aria-label="键盘 备注"
+              style="inline-size: 100%; min-inline-size: 0"
+            />
+          </div>
+        </div>
+        <div data-xh-part="row" value="l2">
+          <div data-xh-part="cell" value="item">鼠标</div>
+          <div data-xh-part="cell" value="count">
+            <input
+              type="number"
+              min="0"
+              value="3"
+              aria-label="鼠标 数量"
+              data-count
+              style="inline-size: 100%; min-inline-size: 0"
+            />
+          </div>
+          <div data-xh-part="cell" value="note">
+            <input
+              type="text"
+              value="无线"
+              placeholder="可以打空格"
+              aria-label="鼠标 备注"
+              style="inline-size: 100%; min-inline-size: 0"
+            />
+          </div>
+        </div>
+        <div data-xh-part="row" value="l3">
+          <div data-xh-part="cell" value="item">显示器支架</div>
+          <div data-xh-part="cell" value="count">
+            <input
+              type="number"
+              min="0"
+              value="1"
+              aria-label="显示器支架 数量"
+              data-count
+              style="inline-size: 100%; min-inline-size: 0"
+            />
+          </div>
+          <div data-xh-part="cell" value="note">
+            <input
+              type="text"
+              value=""
+              placeholder="可以打空格"
+              aria-label="显示器支架 备注"
+              style="inline-size: 100%; min-inline-size: 0"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-table>
+  <span id="table-edit-total"></span>
+</div>
+
+<script type="module">
+  const stage = document.getElementById("table-edit");
+  const table = stage.querySelector("#table-edit-table");
+  const total = stage.querySelector("#table-edit-total");
+
+  table.columns = [
+    { id: "item", label: "条目", width: "9rem" },
+    { id: "count", label: "数量", width: "6rem" },
+    { id: "note", label: "备注" },
+  ];
+  // 行序不随编辑变化，rows 给一次即可
+  table.rows = [{ id: "l1" }, { id: "l2" }, { id: "l3" }];
+
+  const counts = [...table.querySelectorAll("input[data-count]")];
+
+  function sum() {
+    total.textContent = `合计 ${counts.reduce((n, input) => n + (Number(input.value) || 0), 0)} 件`;
+  }
+
+  for (const input of table.querySelectorAll("input")) {
+    // 掐断冒泡：不然上下键与 Home/End 会被表体收走去搬焦点行
+    input.addEventListener("keydown", (event) => {
+      event.stopPropagation();
+      // Escape 把焦点交还所在行，表体的方向键随即恢复
+      if (event.key === "Escape")
+        event.currentTarget.closest('[data-xh-part="row"]').focus();
+    });
+    input.addEventListener("input", sum);
+  }
+
+  sum();
+</script>

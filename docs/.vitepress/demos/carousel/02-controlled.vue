@@ -1,4 +1,4 @@
-<!-- 受控 | 传了 page 就由宿主说了算，组件只发 page-change 不自己改页码；v-model:page 是它的语法糖 -->
+<!-- 受控 | 传了 page 就由宿主说了算，组件只发 page-change 不自己改页码，宿主写回它才动 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

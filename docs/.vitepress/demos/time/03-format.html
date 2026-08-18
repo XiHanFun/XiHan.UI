@@ -1,0 +1,31 @@
+<!-- 自定义格式串 | 记号是 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s，只改看到的文本，datetime 不跟着变 -->
+<!-- 两位记号补零，一位记号不补；记号之外的字符原样留着 -->
+<div style="display: flex; flex-direction: column; gap: 8px">
+  <div>
+    <code style="margin-inline-end: 12px">YYYY-MM-DD HH:mm:ss</code>
+    <xh-time value="2026-08-05T09:03:07" format="YYYY-MM-DD HH:mm:ss">
+      <time data-xh-part="root"></time>
+    </xh-time>
+  </div>
+
+  <div>
+    <code style="margin-inline-end: 12px">YYYY 年 M 月 D 日</code>
+    <xh-time value="2026-08-05T09:03:07" format="YYYY 年 M 月 D 日">
+      <time data-xh-part="root"></time>
+    </xh-time>
+  </div>
+
+  <div>
+    <code style="margin-inline-end: 12px">M/D H:mm</code>
+    <xh-time value="2026-08-05T09:03:07" format="M/D H:mm">
+      <time data-xh-part="root"></time>
+    </xh-time>
+  </div>
+
+  <div>
+    <code style="margin-inline-end: 12px">YY.MM.DD</code>
+    <xh-time value="2026-08-05T09:03:07" format="YY.MM.DD">
+      <time data-xh-part="root"></time>
+    </xh-time>
+  </div>
+</div>

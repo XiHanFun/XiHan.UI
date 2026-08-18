@@ -1,4 +1,4 @@
-<!-- 基础用法 | create 入队并返回 id，队列里的每条交给 XhToastRoot 渲染；退场窗口走完只收起不删，宿主在 status-change 里把它移出队列 -->
+<!-- 基础用法 | create 入队并返回 id，队列里的每条由作者渲染成一条通知；退场窗口走完只收起不删，宿主在 status-change 里把它移出队列 -->
 <script setup lang="ts">
 import {
   XhButton,

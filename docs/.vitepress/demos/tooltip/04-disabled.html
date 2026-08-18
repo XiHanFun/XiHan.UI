@@ -1,0 +1,22 @@
+<!-- 禁用 | disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦 -->
+<div style="display: flex; align-items: center; gap: 16px">
+  <xh-tooltip id="tooltip-disabled" disabled>
+    <button data-xh-part="trigger">点我（提示已关）</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">这段话不会出现</div>
+    </div>
+  </xh-tooltip>
+  <span>已点 <span id="tooltip-disabled-clicks">0</span> 次</span>
+</div>
+
+<script type="module">
+  // 触发器的点击照常到达，计数跟着走
+  const tooltip = document.getElementById("tooltip-disabled");
+  const trigger = tooltip.querySelector('[data-xh-part="trigger"]');
+  const readout = document.getElementById("tooltip-disabled-clicks");
+  let clicks = 0;
+  trigger.addEventListener("click", () => {
+    clicks += 1;
+    readout.textContent = String(clicks);
+  });
+</script>

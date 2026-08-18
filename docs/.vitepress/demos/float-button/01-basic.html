@@ -1,0 +1,22 @@
+<!-- 基础用法 | 点触发器展开一组动作，再点一下收起；收起时那组按钮退出 Tab 序列 -->
+<!-- 定位壳缺省钉在视口一角；这块面板用 contain 造出包含块，把它收在面板里 -->
+<div
+  style="
+    contain: layout;
+    block-size: 260px;
+    inline-size: 100%;
+    border: 1px solid var(--xh-border-default);
+    border-radius: 8px;
+  "
+>
+  <xh-float-button offset="16">
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">＋</button>
+      <div data-xh-part="list">
+        <button type="button" title="编辑">✎</button>
+        <button type="button" title="分享">↗</button>
+        <button type="button" title="删除">🗑</button>
+      </div>
+    </div>
+  </xh-float-button>
+</div>

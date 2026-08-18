@@ -1,0 +1,80 @@
+<!-- 按钮组 | 相邻两段共用一条边，圆角只留在两端；档位与形状写在容器上，靠自定义属性流给组内每一段 -->
+<!-- 圆角槽位在容器上收成 0，组内每段都取得到，两端的圆角再逐段补回来 -->
+<div style="display: inline-flex; --xh-button-radius: 0">
+  <!-- 外壳不参与排版，分段样式落在按钮本身 -->
+  <xh-button variant="outline" style="display: contents">
+    <button
+      data-xh-part="root"
+      style="
+        border-start-start-radius: var(--xh-shape-control);
+        border-end-start-radius: var(--xh-shape-control);
+      "
+    >
+      日
+    </button>
+  </xh-button>
+  <!-- 后一段往回挪一个描边宽度，相邻的两条边重合成一条 -->
+  <xh-button variant="outline" style="display: contents">
+    <button
+      data-xh-part="root"
+      style="margin-inline-start: calc(-1 * var(--xh-stroke-thin))"
+    >
+      周
+    </button>
+  </xh-button>
+  <xh-button variant="outline" style="display: contents">
+    <button
+      data-xh-part="root"
+      style="
+        margin-inline-start: calc(-1 * var(--xh-stroke-thin));
+        border-start-end-radius: var(--xh-shape-control);
+        border-end-end-radius: var(--xh-shape-control);
+      "
+    >
+      月
+    </button>
+  </xh-button>
+</div>
+
+<!-- 同一份配方换一档：高度、内边距、字号在容器上写一次，两端收成胶囊 -->
+<div
+  style="
+    display: inline-flex;
+    --xh-button-radius: 0;
+    --xh-button-h: var(--xh-control-h-sm);
+    --xh-button-px: var(--xh-control-px-sm);
+    --xh-button-font-size: var(--xh-font-size-sm);
+  "
+>
+  <xh-button variant="outline" style="display: contents">
+    <button
+      data-xh-part="root"
+      style="
+        border-start-start-radius: var(--xh-shape-pill);
+        border-end-start-radius: var(--xh-shape-pill);
+      "
+    >
+      日
+    </button>
+  </xh-button>
+  <xh-button variant="outline" style="display: contents">
+    <button
+      data-xh-part="root"
+      style="margin-inline-start: calc(-1 * var(--xh-stroke-thin))"
+    >
+      周
+    </button>
+  </xh-button>
+  <xh-button variant="outline" style="display: contents">
+    <button
+      data-xh-part="root"
+      style="
+        margin-inline-start: calc(-1 * var(--xh-stroke-thin));
+        border-start-end-radius: var(--xh-shape-pill);
+        border-end-end-radius: var(--xh-shape-pill);
+      "
+    >
+      月
+    </button>
+  </xh-button>
+</div>

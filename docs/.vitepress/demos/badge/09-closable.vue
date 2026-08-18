@@ -1,4 +1,4 @@
-<!-- 可关闭标签 | 根是 inline-flex 且自带间距，关闭件直接写进默认插槽跟文字并排；点击语义、Tab 停靠与回车触发由原生按钮自带 -->
+<!-- 可关闭标签 | 根是 inline-flex 且自带间距，关闭件直接写进内容里跟文字并排；点击语义、Tab 停靠与回车触发由原生按钮自带 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhBadge, XhButton } from "@xihan-ui/vue";

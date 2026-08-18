@@ -1,0 +1,64 @@
+<!-- 框内前后缀 | 前后缀压在输入框上，输入框自己让出内边距，两者共用同一份边框与底色 -->
+<xh-text-field placeholder="0.00">
+  <div data-xh-part="root">
+    <label data-xh-part="label">金额</label>
+    <!-- 这层包裹只提供定位参照，边框与底色仍长在输入框自己身上 -->
+    <div style="position: relative; display: inline-flex">
+      <input
+        data-xh-part="input"
+        style="inline-size: 200px; padding-inline: 30px 44px"
+        inputmode="decimal"
+      />
+      <!-- 不吃指针事件，点在前后缀上仍然落到输入框里 -->
+      <span
+        style="
+          position: absolute;
+          inset-block: 0;
+          inset-inline-start: 12px;
+          display: flex;
+          align-items: center;
+          color: var(--xh-fg-muted);
+          pointer-events: none;
+        "
+        >¥</span
+      >
+      <span
+        style="
+          position: absolute;
+          inset-block: 0;
+          inset-inline-end: 12px;
+          display: flex;
+          align-items: center;
+          color: var(--xh-fg-muted);
+          pointer-events: none;
+        "
+        >元</span
+      >
+    </div>
+  </div>
+</xh-text-field>
+
+<xh-text-field placeholder="170">
+  <div data-xh-part="root">
+    <label data-xh-part="label">身高</label>
+    <div style="position: relative; display: inline-flex">
+      <input
+        data-xh-part="input"
+        style="inline-size: 160px; padding-inline-end: 40px"
+        inputmode="numeric"
+      />
+      <span
+        style="
+          position: absolute;
+          inset-block: 0;
+          inset-inline-end: 12px;
+          display: flex;
+          align-items: center;
+          color: var(--xh-fg-muted);
+          pointer-events: none;
+        "
+        >cm</span
+      >
+    </div>
+  </div>
+</xh-text-field>

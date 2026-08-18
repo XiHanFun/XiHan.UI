@@ -1,4 +1,4 @@
-<!-- 局部抽屉 | container 给了容器就搬进去：遮罩与定位层从 fixed 换成 absolute，只罩住那块区域而不是盖满整屏 -->
+<!-- 局部抽屉 | 把抽屉收进某块区域：遮罩与定位层从 fixed 换成 absolute，只罩住那块区域而不是盖满整屏 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

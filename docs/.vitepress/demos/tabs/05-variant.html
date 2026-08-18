@@ -1,0 +1,54 @@
+<!-- 形态 | variant 只改选中态怎么画，切换行为与键盘操作三档一致；不写 variant 即 line 档 -->
+<div style="display: flex; flex-direction: column; gap: 24px; inline-size: 100%">
+  <!-- 第一档不写 variant，落在 line 缺省 -->
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">line（缺省）</div>
+    <xh-tabs default-value="overview">
+      <div data-xh-part="root" style="inline-size: 100%">
+        <div data-xh-part="list">
+          <button data-xh-part="trigger" value="overview">概览</button>
+          <button data-xh-part="trigger" value="usage">用法</button>
+          <button data-xh-part="trigger" value="api">API</button>
+        </div>
+
+        <div data-xh-part="content" value="overview">概览面板</div>
+        <div data-xh-part="content" value="usage">用法面板</div>
+        <div data-xh-part="content" value="api">API面板</div>
+      </div>
+    </xh-tabs>
+  </div>
+
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">card</div>
+    <xh-tabs variant="card" default-value="overview">
+      <div data-xh-part="root" style="inline-size: 100%">
+        <div data-xh-part="list">
+          <button data-xh-part="trigger" value="overview">概览</button>
+          <button data-xh-part="trigger" value="usage">用法</button>
+          <button data-xh-part="trigger" value="api">API</button>
+        </div>
+
+        <div data-xh-part="content" value="overview">概览面板</div>
+        <div data-xh-part="content" value="usage">用法面板</div>
+        <div data-xh-part="content" value="api">API面板</div>
+      </div>
+    </xh-tabs>
+  </div>
+
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">segment</div>
+    <xh-tabs variant="segment" default-value="overview">
+      <div data-xh-part="root" style="inline-size: 100%">
+        <div data-xh-part="list">
+          <button data-xh-part="trigger" value="overview">概览</button>
+          <button data-xh-part="trigger" value="usage">用法</button>
+          <button data-xh-part="trigger" value="api">API</button>
+        </div>
+
+        <div data-xh-part="content" value="overview">概览面板</div>
+        <div data-xh-part="content" value="usage">用法面板</div>
+        <div data-xh-part="content" value="api">API面板</div>
+      </div>
+    </xh-tabs>
+  </div>
+</div>

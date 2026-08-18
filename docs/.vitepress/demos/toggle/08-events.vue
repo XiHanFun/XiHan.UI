@@ -1,4 +1,4 @@
-<!-- 变化回调 | pressed-change 每次带着 details 报一次按下意图；不接 v-model 时它就是拿到新值的唯一出口 -->
+<!-- 变化回调 | pressed-change 每次带着 details 报一次按下意图；不做受控绑定时它就是拿到新值的唯一出口 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhToggle } from "@xihan-ui/vue";

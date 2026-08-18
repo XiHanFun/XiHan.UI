@@ -1,0 +1,48 @@
+<!-- 缓动与时长 | duration 定跑多久，easing 定快慢怎么分配；同一段距离四档并排跑，差别一眼可见 -->
+<div id="number-animation-easing">
+  <p>
+    linear：
+    <xh-number-animation to="10000" duration="2000" easing="linear" separator=",">
+      <span data-xh-part="root"></span>
+    </xh-number-animation>
+  </p>
+  <p>
+    ease-in：
+    <xh-number-animation to="10000" duration="2000" easing="ease-in" separator=",">
+      <span data-xh-part="root"></span>
+    </xh-number-animation>
+  </p>
+  <p>
+    ease-out：
+    <xh-number-animation to="10000" duration="2000" easing="ease-out" separator=",">
+      <span data-xh-part="root"></span>
+    </xh-number-animation>
+  </p>
+  <p>
+    ease-in-out：
+    <xh-number-animation
+      to="10000"
+      duration="2000"
+      easing="ease-in-out"
+      separator=","
+    >
+      <span data-xh-part="root"></span>
+    </xh-number-animation>
+  </p>
+
+  <xh-button variant="outline">
+    <button data-xh-part="root" id="number-animation-easing-toggle">
+      换个终点再跑一遍
+    </button>
+  </xh-button>
+</div>
+
+<script type="module">
+  // 终点在两个数之间来回换，每换一次四档都从当前数字重新走一遍
+  const stage = document.getElementById("number-animation-easing");
+  const numbers = stage.querySelectorAll("xh-number-animation");
+  const toggle = stage.querySelector("#number-animation-easing-toggle");
+  toggle.addEventListener("click", () => {
+    for (const number of numbers) number.to = number.to === 10000 ? 0 : 10000;
+  });
+</script>

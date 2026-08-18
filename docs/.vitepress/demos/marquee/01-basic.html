@@ -1,0 +1,17 @@
+<!-- 基础用法 | 窗口只露出一段，轨道在里面往左走；滚动整段在皮肤的 @keyframes 里，用的人不写动画 -->
+<xh-marquee>
+  <div data-xh-part="root" style="max-inline-size: 420px">
+    <div data-xh-part="content">
+      <!-- 一份内容包一层壳，份与份之间的空白由壳自己收尾 -->
+      <div data-xh-copy="0">
+        <span style="margin-inline-end: 32px; white-space: nowrap">
+          系统将于本周六 02:00 起停机维护两小时
+        </span>
+        <span style="margin-inline-end: 32px; white-space: nowrap">
+          新版导出支持按列脱敏
+        </span>
+        <span style="margin-inline-end: 32px; white-space: nowrap">本月账单已生成</span>
+      </div>
+    </div>
+  </div>
+</xh-marquee>

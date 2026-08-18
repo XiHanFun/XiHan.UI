@@ -1,4 +1,4 @@
-<!-- 随表单提交 | 值串的表单出口由作者自己挂：插槽把当前值递出来，一份 input[type=hidden] 就带得走；浮层就地渲染，节点始终留在 form 里 -->
+<!-- 随表单提交 | 值串的表单出口由作者自己挂：把当前值写进一份 input[type=hidden] 就带得走；浮层就地渲染，节点始终留在 form 里 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

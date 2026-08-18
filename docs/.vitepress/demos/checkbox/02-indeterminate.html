@@ -1,0 +1,17 @@
+<!-- 三态 | checked 传 "indeterminate" 表示部分选中，它不是第三个稳定态：点一下就落到 true -->
+<xh-checkbox id="checkbox-tristate" checked="indeterminate">
+  <button data-xh-part="root">
+    <span data-xh-part="indicator"></span>
+  </button>
+</xh-checkbox>
+<span>当前：<span id="checkbox-tristate-value">indeterminate</span></span>
+
+<script type="module">
+  // 受控：变更写回属性，再回显当前值
+  const checkbox = document.getElementById("checkbox-tristate");
+  const readout = document.getElementById("checkbox-tristate-value");
+  checkbox.addEventListener("checked-change", (event) => {
+    checkbox.checked = event.detail.checked;
+    readout.textContent = String(event.detail.checked);
+  });
+</script>

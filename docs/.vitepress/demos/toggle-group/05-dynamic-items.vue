@@ -1,4 +1,4 @@
-<!-- 条目来自数据 | 条目由一份数组渲染，值、文案与禁用都写在数据里；运行期增删条目也照常，删掉的正好是选中项时由宿主把值收拾干净 -->
+<!-- 条目增删 | 条目集合在运行期可增可删，增删后照常接线；删掉的正好是选中项时由宿主把值收拾干净 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhToggleGroupRoot } from "@xihan-ui/vue";

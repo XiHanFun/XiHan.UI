@@ -1,0 +1,16 @@
+<!-- 禁用 | disabled 把触发器整个关停，点击与键盘都不再改开合，已展开的内容维持原样 -->
+<div style="width: 100%; max-width: 420px; display: grid; gap: 12px">
+  <xh-collapsible disabled>
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">收起且禁用</button>
+      <div data-xh-part="content">点不开。</div>
+    </div>
+  </xh-collapsible>
+
+  <xh-collapsible default-open disabled>
+    <div data-xh-part="root">
+      <button data-xh-part="trigger">展开且禁用</button>
+      <div data-xh-part="content">内容停在展开态，收不上。</div>
+    </div>
+  </xh-collapsible>
+</div>
