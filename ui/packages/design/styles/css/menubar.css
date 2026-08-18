@@ -117,6 +117,10 @@
 
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
   [data-scope='menubar'][data-part='positioner'] {
+    /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，content 继承它限高；
+       引擎没算（尚未落位 / 无引擎）时不额外限高 */
+    --xh-_menubar-available-h: 100vh;
+
     position: fixed;
     z-index: var(--xh-layer-popover);
     /* 空壳不吃指针，交互只发生在 content 上 */
@@ -132,7 +136,10 @@
     display: flex;
     flex-direction: column;
     min-inline-size: var(--xh-menubar-menu-min-w, var(--xh-overlay-menu-min-w));
-    max-inline-size: var(--xh-menubar-menu-max-w, 20rem);
+    max-inline-size: var(--xh-menubar-menu-max-w, var(--xh-overlay-max-w));
+    /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
+       列表族的 16rem 对命令菜单偏矮，这里另给一档 */
+    max-block-size: min(var(--xh-menubar-menu-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menubar-available-h));
     padding-block: var(--xh-menubar-menu-py, var(--xh-space-1));
     padding-inline: var(--xh-menubar-menu-px, var(--xh-space-1));
     border: var(--xh-stroke-thin) solid var(--xh-menubar-menu-border, var(--xh-border-default));
@@ -140,6 +147,8 @@
     background: var(--xh-menubar-menu-bg, var(--xh-bg-surface));
     color: var(--xh-menubar-menu-fg, var(--xh-fg-default));
     box-shadow: var(--xh-menubar-menu-shadow, var(--xh-elevation-2));
+    /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着 */
+    overflow-y: auto;
     pointer-events: auto;
   }
 

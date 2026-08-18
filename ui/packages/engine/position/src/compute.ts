@@ -40,6 +40,8 @@ export interface ComputeInput {
   dir?: Direction
   /** 要箭头落点就把箭头的量交进来；不给则不算。 */
   arrow?: { size: number, padding?: number }
+  /** 要可用空间就把量交进来；不给则不算。padding 是浮层距可用区域边缘的最小距离。 */
+  size?: { padding?: number }
 }
 
 export interface ComputeOutput {
@@ -49,6 +51,11 @@ export interface ComputeOutput {
   placement: Placement
   /** 箭头中心距浮层起始缘的距离，只给交叉轴那一根；没要箭头时缺席。 */
   arrow?: { x?: number, y?: number }
+  /** 落定那一侧还剩多少空间；没要可用空间时缺席。 */
+  availableWidth?: number
+  availableHeight?: number
+  /** 锚点矩形的宽度；没要可用空间时缺席。 */
+  anchorWidth?: number
 }
 
 const OPPOSITE: Record<Side, Side> = {
@@ -158,6 +165,39 @@ function arrowOn(
   return { y: height < margin * 2 ? height / 2 : clamp(center, margin, height - margin) }
 }
 
+/** 主轴上这一侧还剩多少：从可用区域那条边量到锚点那条边，扣掉 offset 与 padding。 */
+function mainAxisSpace(input: ComputeInput, side: Side, pad: number): number {
+  const { anchor, clip, offset } = input
+  switch (side) {
+    case 'top':
+      return anchor.y - clip.top - offset - pad
+    case 'bottom':
+      return clip.bottom - (anchor.y + anchor.height) - offset - pad
+    case 'left':
+      return anchor.x - clip.left - offset - pad
+    case 'right':
+      return clip.right - (anchor.x + anchor.width) - offset - pad
+  }
+}
+
+/**
+ * 落定这一侧后的可用空间：主轴量到锚点，交叉轴按可用区域整条边算（shift 最多也就挪这么宽）。
+ * 负值归零，调用方拿它当 CSS 长度用，负长度会让整条声明失效。
+ */
+function spaceOn(
+  input: ComputeInput,
+  side: Side,
+  spec: { padding?: number },
+): { availableWidth: number, availableHeight: number } {
+  const pad = Math.max(0, spec.padding ?? 0)
+  const main = Math.max(0, mainAxisSpace(input, side, pad))
+  const crossWidth = Math.max(0, input.clip.right - input.clip.left - pad * 2)
+  const crossHeight = Math.max(0, input.clip.bottom - input.clip.top - pad * 2)
+  return isVertical(side)
+    ? { availableWidth: crossWidth, availableHeight: main }
+    : { availableWidth: main, availableHeight: crossHeight }
+}
+
 export function computePlacement(input: ComputeInput): ComputeOutput {
   const requested = splitPlacement(input.placement)
   let side = requested.side
@@ -195,7 +235,17 @@ export function computePlacement(input: ComputeInput): ComputeOutput {
   }
 
   // 箭头算在最后：side 已翻定、coords 已挪定，锚点中心减落点就是箭头该站的地方
-  return { x: coords.x, y: coords.y, placement: joinPlacement(side, align), arrow: arrowOn(input, side, coords) }
+  const output: ComputeOutput = {
+    x: coords.x,
+    y: coords.y,
+    placement: joinPlacement(side, align),
+    arrow: arrowOn(input, side, coords),
+  }
+
+  // 可用空间同样算在最后：量的必须是 side 翻定之后那一侧，按请求的那一侧算会差出整整一个面板
+  if (!input.size)
+    return output
+  return { ...output, ...spaceOn(input, side, input.size), anchorWidth: input.anchor.width }
 }
 
 /** 两个区域的交集。不相交时给出的区域宽高为负，调用方按空处理。 */

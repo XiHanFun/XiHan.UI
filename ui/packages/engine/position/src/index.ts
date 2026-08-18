@@ -29,6 +29,13 @@ function anchorBox(anchor: Anchor): PositionBox {
   return { x: rect.x, y: rect.y, width: rect.width, height: rect.height }
 }
 
+/** size 选项归一：true 即只用默认余量，关掉时不给计算层。 */
+function sizeSpec(size: PositionOptions['size']): { padding: number } | undefined {
+  if (!size)
+    return undefined
+  return { padding: (size === true ? undefined : size.padding) ?? SHIFT_PADDING }
+}
+
 export function createPositionEngine(): PositionEnginePort {
   return {
     attach(anchor: Anchor, floating: HTMLElement, options: PositionOptions, onResult: (r: PositionResult) => void) {
@@ -53,7 +60,7 @@ export function createPositionEngine(): PositionEnginePort {
         const clipViewport = clipChain
           .reduce((edges, ancestor) => intersectEdges(edges, paddingEdgesOf(ancestor)), view)
 
-        const { x, y, placement, arrow } = computePlacement({
+        const placed = computePlacement({
           anchor: boxToFrame(anchorViewport, frame),
           floating: {
             width: floatingRect.width / frame.scaleX,
@@ -67,13 +74,14 @@ export function createPositionEngine(): PositionEnginePort {
           padding: SHIFT_PADDING,
           dir: options.dir,
           arrow: options.arrow,
+          size: sizeSpec(options.size),
         })
 
         // hidden 问的是锚点还看得见吗，与浮层落在哪儿无关，因此按锚点自己的裁剪祖先算
         const anchorClip = clippingAncestors(anchorEl)
           .reduce((edges, ancestor) => intersectEdges(edges, paddingEdgesOf(ancestor)), view)
 
-        onResult({ x, y, placement, arrow, hidden: isFullyClipped(anchorViewport, anchorClip) })
+        onResult({ ...placed, hidden: isFullyClipped(anchorViewport, anchorClip) })
       }
 
       const stop = observePosition(anchorEl, floating, update)

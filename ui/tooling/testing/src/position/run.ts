@@ -8,6 +8,7 @@ import {
   expectPlacedAt,
   expectSame,
   nextFrame,
+  POSITION_TOLERANCE,
   viewportCenter,
 } from './scene'
 
@@ -133,6 +134,116 @@ export function runPositionEngine(engine: PositionEnginePort, hooks: TestHooks, 
         const rect = floating.getBoundingClientRect()
         if (rect.left >= 0)
           throw new Error(`关掉 shift 后浮层本应伸出视口左缘，实测 left=${rect.left.toFixed(2)}`)
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+  })
+
+  hooks.describe(`定位引擎：可用空间（${engineName}）`, () => {
+    /** 上下都塞不下的长面板：条目高度真实撑开，限高之后要在自己内部滚。 */
+    function putLongPanel(stage: ReturnType<typeof createStage>, items = 30): HTMLElement {
+      const el = document.createElement('div')
+      el.style.cssText = 'left:0;top:0;width:200px;margin:0;padding:0;box-sizing:border-box;overflow-y:auto'
+      for (let i = 0; i < items; i++) {
+        const item = document.createElement('div')
+        item.style.cssText = 'height:36px'
+        item.textContent = `条目 ${i}`
+        el.appendChild(item)
+      }
+      stage.root.appendChild(el)
+      return el
+    }
+
+    hooks.it('面板比视口还高时按可用空间限高：下沿不出视口，内部滚得动', async () => {
+      const stage = createStage()
+      try {
+        // 锚点摆在视口正中，上下剩下的空间一样多，翻面救不了，只能限高
+        const center = viewportCenter()
+        const anchor = stage.putAnchor(center.x, center.y)
+        const panel = putLongPanel(stage)
+
+        const probe = attachProbe(
+          engine,
+          anchor,
+          panel,
+          { placement: 'bottom-start', offset: OFFSET, strategy: 'fixed', size: true },
+          // 皮肤就是这么消费的：可用空间当上限，超出的条目交给内部滚动
+          (result, el) => { el.style.maxBlockSize = `${result.availableHeight}px` },
+        )
+        await probe.settle()
+
+        if (panel.scrollHeight <= panel.clientHeight)
+          throw new Error(`限高后面板本应在内部滚动，实测 scrollHeight=${panel.scrollHeight}、clientHeight=${panel.clientHeight}`)
+        const rect = panel.getBoundingClientRect()
+        if (rect.bottom > window.innerHeight + POSITION_TOLERANCE)
+          throw new Error(`限高后面板下沿本应留在视口内，实测 bottom=${rect.bottom.toFixed(2)}，视口高 ${window.innerHeight}`)
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+
+    hooks.it('可用空间按翻定后那一侧算：翻上去就该是上方那段', async () => {
+      const stage = createStage()
+      try {
+        // 锚点压在视口下缘：下方几乎没有空间，长面板必然翻到上方去
+        const anchor = stage.putAnchor(viewportCenter().x, window.innerHeight - 60)
+        const panel = putLongPanel(stage)
+
+        const probe = attachProbe(
+          engine,
+          anchor,
+          panel,
+          { placement: 'bottom-start', offset: OFFSET, strategy: 'fixed', size: true },
+          (result, el) => { el.style.maxBlockSize = `${result.availableHeight}px` },
+        )
+        await probe.settle()
+
+        expectSame(probe.last().placement.split('-')[0], 'top', '下方放不下时应翻到上方')
+        const rect = panel.getBoundingClientRect()
+        expectAtLeast(rect.top, 0, '限高后面板上沿应留在视口内')
+        expectPlacedAt(anchor.getBoundingClientRect(), rect, 'top-start', OFFSET)
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+
+    hooks.it('关掉 size 就不回报，既有调用方一个字段都不多', async () => {
+      const stage = createStage()
+      try {
+        const center = viewportCenter()
+        const anchor = stage.putAnchor(center.x, center.y)
+        const floating = stage.putFloating()
+        const probe = attachProbe(engine, anchor, floating, { placement: 'bottom', offset: OFFSET })
+        await probe.settle()
+
+        const result = probe.last()
+        expectSame(result.availableHeight, undefined, '没开 size 不该回报可用高度')
+        expectSame(result.availableWidth, undefined, '没开 size 不该回报可用宽度')
+        expectSame(result.anchorWidth, undefined, '没开 size 不该回报锚点宽度')
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+
+    hooks.it('锚点宽度如实回报，供面板宽度对齐触发器', async () => {
+      const stage = createStage()
+      try {
+        const center = viewportCenter()
+        const anchor = stage.putAnchor(center.x, center.y, 240, 40)
+        const floating = stage.putFloating()
+        const probe = attachProbe(engine, anchor, floating, { placement: 'bottom-start', offset: OFFSET, size: true })
+        await probe.settle()
+
+        expectClose(probe.last().anchorWidth!, 240, '锚点宽度应与触发器实测宽度一致')
         probe.stop()
       }
       finally {

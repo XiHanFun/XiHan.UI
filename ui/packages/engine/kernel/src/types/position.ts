@@ -32,6 +32,14 @@ export interface PositionResult {
   hidden: boolean
   /** 箭头落点。调用方没在 options 里要箭头时缺席，皮肤据此退回居中。 */
   arrow?: PositionArrow
+  /**
+   * 落定那一侧还剩多少空间：主轴从可用区域那条边量到锚点，交叉轴按可用区域整条边算。
+   * 与 x / y 同一套坐标。调用方没在 options 里开 size 时缺席。
+   */
+  availableWidth?: number
+  availableHeight?: number
+  /** 锚点矩形的宽度，与 x / y 同一套坐标。同样只在开了 size 时给。 */
+  anchorWidth?: number
 }
 
 /** 箭头的量。引擎量不到箭头，尺寸只用来把落点钳在浮层内，不影响指向。 */
@@ -64,6 +72,11 @@ export interface PositionOptions {
   dir?: Direction
   /** 要箭头落点就把箭头的量交进来；不给则结果里没有 arrow。 */
   arrow?: PositionArrowOptions
+  /**
+   * 要落定那一侧的可用空间就开它，结果里随之多出 availableWidth / availableHeight / anchorWidth。
+   * padding 是浮层距可用区域边缘的最小距离，从可用空间里先扣掉，缺省与 shift 贴边时的余量一致。
+   */
+  size?: boolean | { padding?: number }
 }
 
 /** 虚拟锚点（右键菜单 / 文本选区）：只需能给出矩形。 */
