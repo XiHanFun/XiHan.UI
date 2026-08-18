@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, watchPostEffect, type Component } from "vue";
+import {
+  computed,
+  defineAsyncComponent,
+  ref,
+  watchEffect,
+  watchPostEffect,
+  type Component,
+} from "vue";
 import { demoFramework, demoFrameworks, setDemoFramework } from "./demo-framework";
 
 const props = defineProps<{
@@ -7,43 +14,53 @@ const props = defineProps<{
   src: string;
 }>();
 
-// 预览与源码取自同一个文件，两者不可能对不上
-const vueModules = import.meta.glob<{ default: Component }>("../demos/**/*.vue", {
-  eager: true,
-});
+// 预览与源码取自同一个文件，两者不可能对不上。
+// 不用 eager：示例有一千多份，全量打进主题块的话每页都要下载整套
+const vueModules = import.meta.glob<{ default: Component }>("../demos/**/*.vue");
 const vueSources = import.meta.glob<string>("../demos/**/*.vue", {
-  eager: true,
   query: "?raw",
   import: "default",
 });
 const wcSources = import.meta.glob<string>("../demos/**/*.html", {
-  eager: true,
   query: "?raw",
   import: "default",
 });
 
 // 一个框架一份源码表，键是 glob 给出的文件路径。加框架时这里多一条
-const sourcesByFramework: Record<string, Record<string, string>> = {
+const sourcesByFramework: Record<string, Record<string, () => Promise<string>>> = {
   "vue": vueSources,
   "web-components": wcSources,
 };
 
-// 本示例在各框架下的源码，缺席的框架不进表
-const rawByFramework = computed(() => {
-  const out: Record<string, string> = {};
-  for (const framework of demoFrameworks) {
-    const raw = sourcesByFramework[framework.id]?.[`../demos/${props.src}${framework.ext}`];
-    if (raw !== undefined) out[framework.id] = raw;
-  }
-  return out;
+function sourceKey(framework: { id: string; ext: string }): string {
+  return `../demos/${props.src}${framework.ext}`;
+}
+
+// 哪些框架有这份示例：glob 的键是同步的，不必把文件读进来才知道
+const availableIds = computed(
+  () =>
+    new Set(
+      demoFrameworks
+        .filter((framework) => sourceKey(framework) in (sourcesByFramework[framework.id] ?? {}))
+        .map((framework) => framework.id)
+    )
+);
+
+// 当前框架这份示例的源码，加载完才有值
+const raw = ref("");
+watchEffect(async () => {
+  const framework = demoFrameworks.find((item) => item.id === demoFramework.value);
+  const load = framework && sourcesByFramework[framework.id]?.[sourceKey(framework)];
+  const requested = demoFramework.value;
+  const text = load ? await load() : "";
+  // 加载期间可能已经切走，晚到的结果不许覆盖当前框架的
+  if (demoFramework.value === requested) raw.value = text;
 });
 
 // 示例文件首行注释写「标题 | 说明」，标题与说明由生成器落成 h3 与段落，
 // 这里只负责把它从展示的源码里剔除
 const code = computed(() =>
-  (rawByFramework.value[demoFramework.value] ?? "")
-    .replace(/^(<!--[\s\S]*?-->|\/\/[^\n]*)\s*/, "")
-    .trimEnd()
+  raw.value.replace(/^(<!--[\s\S]*?-->|\/\/[^\n]*)\s*/, "").trimEnd()
 );
 
 const lang = computed(
@@ -55,14 +72,20 @@ const activeName = computed(
 // 当前框架没有这份示例时，切到有的那个
 const fallback = computed(() =>
   demoFrameworks.find(
-    (framework) => framework.id !== demoFramework.value && framework.id in rawByFramework.value
+    (framework) => framework.id !== demoFramework.value && availableIds.value.has(framework.id)
   )
 );
 
-const vueDemo = computed(() =>
-  demoFramework.value === "vue" ? vueModules[`../demos/${props.src}.vue`]?.default : undefined
+const vueDemo = computed(() => {
+  if (demoFramework.value !== "vue") return undefined;
+  const load = vueModules[`../demos/${props.src}.vue`];
+  return load ? defineAsyncComponent(load) : undefined;
+});
+const wcHtml = computed(() =>
+  demoFramework.value === "web-components" ? code.value : ""
 );
-const wcHtml = computed(() => (demoFramework.value === "web-components" ? code.value : ""));
+// 源码还在路上时不显示「暂无此框架版本」
+const missing = computed(() => !availableIds.value.has(demoFramework.value));
 
 const wcHost = ref<HTMLElement | null>(null);
 
@@ -115,7 +138,7 @@ async function copy() {
   <div class="xh-demo">
     <div class="xh-demo__stage">
       <component :is="vueDemo" v-if="vueDemo" />
-      <div v-else-if="wcHtml" ref="wcHost" class="xh-demo__wc" />
+      <div v-else-if="!missing" ref="wcHost" class="xh-demo__wc" />
       <div v-else class="xh-demo__missing">
         <p>这个示例还没有 {{ activeName }} 版：{{ src }}</p>
         <button
