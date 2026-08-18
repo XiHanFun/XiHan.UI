@@ -103,12 +103,15 @@ export function stackingCauseOf(el: HTMLElement): StackingCause | null {
 }
 
 /**
- * 从浮层往上找第一个建层叠上下文的祖先，走到 documentElement 为止。
+ * 从浮层往上找第一个建层叠上下文的祖先，走到 body 为止。
  * 撞上外层浮层的 positioner 即止步：那一层由它自己的宿主去查。
+ * body 与 documentElement 不算：页面内容与浮层同在其中，相对次序不受影响，
+ * 而滚动锁本来就会给 body 写上 position: fixed。
  */
 export function findStackingTrap(positioner: HTMLElement): StackingTrap | null {
-  const root = positioner.ownerDocument.documentElement
-  for (let node = positioner.parentElement; node && node !== root; node = node.parentElement) {
+  const doc = positioner.ownerDocument
+  const stop = doc.body ?? doc.documentElement
+  for (let node = positioner.parentElement; node && node !== stop; node = node.parentElement) {
     if (node.dataset.part === 'positioner')
       return null
     const cause = stackingCauseOf(node)
