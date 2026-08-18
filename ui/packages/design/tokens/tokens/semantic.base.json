@@ -171,6 +171,13 @@
       "$value": 0.96
     }
   },
+  "spin": {
+    "$description": "旋转指示器转一圈的周期。减弱动效由各皮肤停掉动画，不走 reduce 档重映射。",
+    "duration": {
+      "$type": "duration",
+      "$value": "640ms"
+    }
+  },
   "layer": {
     "sticky": {
       "$type": "number",

@@ -108,7 +108,13 @@
 
   [data-scope='button'][data-part='indicator'] {
     display: inline-flex;
-    /* 连续旋转不归动效令牌管（那三档是给进退场与微交互的），照 spinner 那份取慢档的两倍 */
-    animation: xh-spin var(--xh-button-spin-duration, calc(var(--xh-duration-slow) * 2)) linear infinite;
+    animation: xh-spin var(--xh-button-spin-duration, var(--xh-spin-duration)) linear infinite;
+  }
+
+  /* 减少动效：指示器停转，"还在忙"由按钮自身的挂起样式与指示器图标继续表达 */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='button'][data-part='indicator'] {
+      animation: none;
+    }
   }
 }
