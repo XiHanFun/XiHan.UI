@@ -1,7 +1,7 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ResolvedToast, ToasterApi, ToasterSchema, ToastPlacement, ToastRecord } from './toaster.types'
-import { dataAttr } from '@xihan-ui/kernel'
+import { DATA_INERT_EXEMPT, dataAttr } from '@xihan-ui/kernel'
 import { TOAST_DURATION, TOAST_REMOVE_DELAY } from '../toast'
 import { toasterAnatomy } from './toaster.anatomy'
 import {
@@ -64,6 +64,8 @@ export function connectToaster<T extends PropTypes>(
       'aria-label': prop('translations')?.region ?? 'Notifications',
       'data-count': list.length,
       'data-empty': dataAttr(list.length === 0),
+      // 模态浮层给背景施加 inert 时跳过这棵子树，通知照旧可点、读屏也读得到
+      [DATA_INERT_EXEMPT]: '',
     }),
 
     getGroupProps: (props = {}) => {
@@ -74,6 +76,8 @@ export function connectToaster<T extends PropTypes>(
         'data-placement': placement,
         'data-count': group.length,
         'data-empty': dataAttr(group.length === 0),
+        // 摞自己也带一份，单独摆在 body 下的那一摞不经 root 也能豁免
+        [DATA_INERT_EXEMPT]: '',
         // 只交间距，不做定位：怎么贴边、朝哪一侧堆叠归样式层
         'style': { gap: `${gap}px` },
       })
