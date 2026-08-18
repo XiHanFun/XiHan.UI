@@ -31,6 +31,8 @@ export const DIAGNOSTIC_CODES = {
   deprecatedPart: 'deprecated.part',
   /** 适配器与 kernel 的版本不一致，锁步发版被打破。 */
   versionMismatch: 'core.version-mismatch',
+  /** 作者给了默认插槽，但该组件不渲染插槽内容。 */
+  ignoredSlot: 'core.ignored-slot',
 } as const
 
 export type DiagnosticCode = (typeof DIAGNOSTIC_CODES)[keyof typeof DIAGNOSTIC_CODES]
