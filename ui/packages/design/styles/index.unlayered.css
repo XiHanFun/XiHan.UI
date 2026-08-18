@@ -2208,9 +2208,22 @@
   --xh-mention-skin: 1;
 }
 
-[data-scope='mention'][data-part='root'] {
-  /* 尺寸档只换这五个私有槽，输入框与候选都从 root 继承它们，换档不必给每个部件各写一条选择器。
-     浮层在 positioner 里、也是 root 的后代，一并继承 */
+/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+[data-scope='mention'][data-part='positioner'] {
+  position: fixed;
+  z-index: var(--xh-layer-popover);
+  /* 空壳不吃指针，交互只发生在 content 上 */
+  pointer-events: none;
+}
+
+/* 输入框被滚出可视区：整个浮层随之收起 */
+[data-scope='mention'][data-part='positioner'][data-hidden] {
+  visibility: hidden;
+}
+
+/* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
+[data-scope='mention']:is([data-part='root'], [data-part='positioner']) {
+  /* 尺寸档只换这五个私有槽，输入框与候选都从这两处继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_mention-h: var(--xh-control-h-md);
   --xh-_mention-px: var(--xh-control-px-md);
   --xh-_mention-py: var(--xh-field-py);
@@ -2224,7 +2237,9 @@
 
   /* 聚焦环恒用固定环色，不随语气走 */
   --xh-_mention-ring: var(--xh-ring-focus);
+}
 
+[data-scope='mention'][data-part='root'] {
   display: block;
 }
 
@@ -2235,7 +2250,7 @@
 
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
-[data-scope='mention'][data-part='root'][data-size='sm'] {
+[data-scope='mention']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
   --xh-_mention-h: var(--xh-control-h-sm);
   --xh-_mention-px: var(--xh-control-px-sm);
   --xh-_mention-py: var(--xh-space-1);
@@ -2243,7 +2258,7 @@
   --xh-_mention-font-size: var(--xh-font-size-sm);
 }
 
-[data-scope='mention'][data-part='root'][data-size='lg'] {
+[data-scope='mention']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
   --xh-_mention-h: var(--xh-control-h-lg);
   --xh-_mention-px: var(--xh-control-px-lg);
   --xh-_mention-py: var(--xh-space-3);
@@ -2254,20 +2269,20 @@
 /* —— 形态 —— */
 /* 输入类不做 solid：实心底压着可编辑的正文，读起来像块不可点的色板。
    形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
-[data-scope='mention'][data-part='root'][data-variant='outline'] {
+[data-scope='mention']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
   --xh-_mention-input-bg: var(--xh-bg-canvas);
   --xh-_mention-input-border: var(--xh-border-control);
   --xh-_mention-input-border-hover: var(--xh-border-control-hover);
 }
 
 /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
-[data-scope='mention'][data-part='root'][data-variant='subtle'] {
+[data-scope='mention']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
   --xh-_mention-input-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_mention-input-border: transparent;
   --xh-_mention-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
-[data-scope='mention'][data-part='root'][data-variant='ghost'] {
+[data-scope='mention']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
   --xh-_mention-input-bg: transparent;
   --xh-_mention-input-border: transparent;
   --xh-_mention-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -2327,19 +2342,6 @@ input[data-scope='mention'][data-part='input'] {
   /* 禁用时连拉伸把手也一并收走，免得留一个拖得动却改不了内容的角 */
   resize: none;
   cursor: not-allowed;
-}
-
-/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
-[data-scope='mention'][data-part='positioner'] {
-  position: fixed;
-  z-index: var(--xh-layer-popover);
-  /* 空壳不吃指针，交互只发生在 content 上 */
-  pointer-events: none;
-}
-
-/* 输入框被滚出可视区：整个浮层随之收起 */
-[data-scope='mention'][data-part='positioner'][data-hidden] {
-  visibility: hidden;
 }
 
 [data-scope='mention'][data-part='content'] {
@@ -2820,9 +2822,22 @@ input[data-scope='mention'][data-part='input'] {
   --xh-popselect-skin: 1;
 }
 
-[data-scope='popselect'][data-part='root'] {
-  /* 尺寸档只换这四个私有槽，触发器与条目都从 root 继承它们，换档不必给每个部件各写一条选择器。
-     浮层在 positioner 里、也是 root 的后代，一并继承 */
+/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+[data-scope='popselect'][data-part='positioner'] {
+  position: fixed;
+  z-index: var(--xh-layer-popover);
+  /* 空壳不吃指针，交互只发生在 content 上 */
+  pointer-events: none;
+}
+
+/* 锚点被滚出可视区：整个浮层随之收起 */
+[data-scope='popselect'][data-part='positioner'][data-hidden] {
+  visibility: hidden;
+}
+
+/* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
+[data-scope='popselect']:is([data-part='root'], [data-part='positioner']) {
+  /* 尺寸档只换这四个私有槽，触发器与条目都从这两处继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_popselect-h: var(--xh-control-h-md);
   --xh-_popselect-px: var(--xh-control-px-md);
   --xh-_popselect-gap: var(--xh-control-gap-md);
@@ -2838,20 +2853,22 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_popselect-ring: var(--xh-ring-focus);
   --xh-_popselect-accent: var(--xh-_tone, var(--xh-bg-brand));
   --xh-_popselect-item-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+}
 
+[data-scope='popselect'][data-part='root'] {
   display: inline-flex;
 }
 
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
-[data-scope='popselect'][data-part='root'][data-size='sm'] {
+[data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
   --xh-_popselect-h: var(--xh-control-h-sm);
   --xh-_popselect-px: var(--xh-control-px-sm);
   --xh-_popselect-gap: var(--xh-control-gap-sm);
   --xh-_popselect-font-size: var(--xh-font-size-sm);
 }
 
-[data-scope='popselect'][data-part='root'][data-size='lg'] {
+[data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
   --xh-_popselect-h: var(--xh-control-h-lg);
   --xh-_popselect-px: var(--xh-control-px-lg);
   --xh-_popselect-gap: var(--xh-control-gap-lg);
@@ -2860,21 +2877,21 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 形态 —— */
 /* 形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
-[data-scope='popselect'][data-part='root'][data-variant='outline'] {
+[data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
   --xh-_popselect-trigger-bg: var(--xh-bg-canvas);
   --xh-_popselect-trigger-border: var(--xh-border-control);
   --xh-_popselect-trigger-border-hover: var(--xh-border-control-hover);
 }
 
 /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
-[data-scope='popselect'][data-part='root'][data-variant='subtle'] {
+[data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
   --xh-_popselect-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_popselect-trigger-border: transparent;
   --xh-_popselect-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
-[data-scope='popselect'][data-part='root'][data-variant='ghost'] {
+[data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
   --xh-_popselect-trigger-bg: transparent;
   --xh-_popselect-trigger-border: transparent;
   --xh-_popselect-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -2915,19 +2932,6 @@ input[data-scope='mention'][data-part='input'] {
 /* 无选中：触发器上显示的是占位文字，画淡一档 */
 [data-scope='popselect'][data-part='trigger'][data-placeholder] {
   color: var(--xh-popselect-placeholder-fg, var(--xh-fg-subtle));
-}
-
-/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
-[data-scope='popselect'][data-part='positioner'] {
-  position: fixed;
-  z-index: var(--xh-layer-popover);
-  /* 空壳不吃指针，交互只发生在 content 上 */
-  pointer-events: none;
-}
-
-/* 锚点被滚出可视区：整个浮层随之收起 */
-[data-scope='popselect'][data-part='positioner'][data-hidden] {
-  visibility: hidden;
 }
 
 [data-scope='popselect'][data-part='content'] {
@@ -5565,11 +5569,22 @@ input[data-scope='mention'][data-part='input'] {
   --xh-cascader-skin: 1;
 }
 
-/* 解剖里没有把「触发器 + 清空按钮」裹在一起的 control 部件，一行是靠 flex-wrap 分出来的：
-   标签占满整行把后面的挤到下一行，触发器与清空按钮就并排落在同一行上。
-   这样作者少写标签、少写清空按钮，剩下的部件也不会塌 */
-[data-scope='cascader'][data-part='root'] {
-  /* 尺寸档只换这几个私有槽，触发框与列里的条目都从 root 继承它们，换档不必给每个部件各写一条选择器 */
+/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+[data-scope='cascader'][data-part='positioner'] {
+  position: fixed;
+  z-index: var(--xh-layer-popover);
+  /* 空壳不吃指针，交互只发生在 content 里 */
+  pointer-events: none;
+}
+
+/* 锚点被滚出可视区：整个浮层随之收起 */
+[data-scope='cascader'][data-part='positioner'][data-hidden] {
+  visibility: hidden;
+}
+
+/* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
+[data-scope='cascader']:is([data-part='root'], [data-part='positioner']) {
+  /* 尺寸档只换这几个私有槽，触发框与列里的条目都从这两处继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_cascader-h: var(--xh-control-h-md);
   --xh-_cascader-px: var(--xh-control-px-md);
   --xh-_cascader-gap: var(--xh-control-gap-md);
@@ -5587,7 +5602,12 @@ input[data-scope='mention'][data-part='input'] {
 
   /* 展开路径的底色：随语气走淡底，没写 data-tone 时退回品牌淡底 */
   --xh-_cascader-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+}
 
+/* 解剖里没有把「触发器 + 清空按钮」裹在一起的 control 部件，一行是靠 flex-wrap 分出来的：
+   标签占满整行把后面的挤到下一行，触发器与清空按钮就并排落在同一行上。
+   这样作者少写标签、少写清空按钮，剩下的部件也不会塌 */
+[data-scope='cascader'][data-part='root'] {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
@@ -5602,21 +5622,21 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 形态 —— */
 /* 形态只决定描边与底色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的中性配色 */
 /* outline 就是缺省那一身：描边加画布底，写出来只为让三档并列可读 */
-[data-scope='cascader'][data-part='root'][data-variant='outline'] {
+[data-scope='cascader']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
   --xh-_cascader-border: var(--xh-border-control);
   --xh-_cascader-border-hover: var(--xh-border-control-hover);
   --xh-_cascader-bg: var(--xh-bg-canvas);
 }
 
 /* subtle 是填充式：底色接过「这里能点」的表达，描边随之让位 */
-[data-scope='cascader'][data-part='root'][data-variant='subtle'] {
+[data-scope='cascader']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
   --xh-_cascader-border: transparent;
   --xh-_cascader-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_cascader-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
 }
 
 /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
-[data-scope='cascader'][data-part='root'][data-variant='ghost'] {
+[data-scope='cascader']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
   --xh-_cascader-border: transparent;
   --xh-_cascader-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_cascader-bg: transparent;
@@ -5624,7 +5644,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
-[data-scope='cascader'][data-part='root'][data-size='sm'] {
+[data-scope='cascader']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
   --xh-_cascader-h: var(--xh-control-h-sm);
   --xh-_cascader-px: var(--xh-control-px-sm);
   --xh-_cascader-gap: var(--xh-control-gap-sm);
@@ -5632,7 +5652,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_cascader-label-font-size: var(--xh-font-size-sm);
 }
 
-[data-scope='cascader'][data-part='root'][data-size='lg'] {
+[data-scope='cascader']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
   --xh-_cascader-h: var(--xh-control-h-lg);
   --xh-_cascader-px: var(--xh-control-px-lg);
   --xh-_cascader-gap: var(--xh-control-gap-lg);
@@ -5799,19 +5819,6 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-cascader-action-bg, transparent);
   color: var(--xh-fg-disabled);
   cursor: not-allowed;
-}
-
-/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
-[data-scope='cascader'][data-part='positioner'] {
-  position: fixed;
-  z-index: var(--xh-layer-popover);
-  /* 空壳不吃指针，交互只发生在 content 里 */
-  pointer-events: none;
-}
-
-/* 锚点被滚出可视区：整个浮层随之收起 */
-[data-scope='cascader'][data-part='positioner'][data-hidden] {
-  visibility: hidden;
 }
 
 /* 级联的骨架就在这一条上：列沿书写方向并排，一层一列。
@@ -7244,9 +7251,23 @@ input[data-scope='mention'][data-part='input'] {
   --xh-combobox-skin: 1;
 }
 
-[data-scope='combobox'][data-part='root'] {
-  /* 尺寸档只换这五个私有槽，输入行、标题与候选都从 root 继承它们，
-     换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承 */
+/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+[data-scope='combobox'][data-part='positioner'] {
+  position: fixed;
+  z-index: var(--xh-layer-popover);
+  /* 空壳不吃指针，交互只发生在 content 与 empty 上 */
+  pointer-events: none;
+}
+
+/* 锚点被滚出可视区：整个浮层随之收起 */
+[data-scope='combobox'][data-part='positioner'][data-hidden] {
+  visibility: hidden;
+}
+
+/* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
+[data-scope='combobox']:is([data-part='root'], [data-part='positioner']) {
+  /* 尺寸档只换这五个私有槽，输入行、标题与候选都从这两处继承它们，
+     换档不必给每个部件各写一条选择器 */
   --xh-_combobox-h: var(--xh-control-h-md);
   --xh-_combobox-px: var(--xh-control-px-md);
   --xh-_combobox-gap: var(--xh-control-gap-md);
@@ -7263,7 +7284,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_combobox-ring: var(--xh-ring-focus);
   --xh-_combobox-accent: var(--xh-_tone, var(--xh-bg-brand));
   --xh-_combobox-item-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+}
 
+[data-scope='combobox'][data-part='root'] {
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-combobox-gap, var(--xh-stack-gap-md));
@@ -7276,7 +7299,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
-[data-scope='combobox'][data-part='root'][data-size='sm'] {
+[data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
   --xh-_combobox-h: var(--xh-control-h-sm);
   --xh-_combobox-px: var(--xh-control-px-sm);
   --xh-_combobox-gap: var(--xh-control-gap-sm);
@@ -7284,7 +7307,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_combobox-label-font-size: var(--xh-font-size-sm);
 }
 
-[data-scope='combobox'][data-part='root'][data-size='lg'] {
+[data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
   --xh-_combobox-h: var(--xh-control-h-lg);
   --xh-_combobox-px: var(--xh-control-px-lg);
   --xh-_combobox-gap: var(--xh-control-gap-lg);
@@ -7295,21 +7318,21 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 形态 —— */
 /* 输入类不做 solid：实心底压着可编辑的文字，读起来像块不可点的色板。
    形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
-[data-scope='combobox'][data-part='root'][data-variant='outline'] {
+[data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
   --xh-_combobox-control-bg: var(--xh-bg-canvas);
   --xh-_combobox-control-border: var(--xh-border-control);
   --xh-_combobox-control-border-hover: var(--xh-border-control-hover);
 }
 
 /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
-[data-scope='combobox'][data-part='root'][data-variant='subtle'] {
+[data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
   --xh-_combobox-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_combobox-control-border: transparent;
   --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
-[data-scope='combobox'][data-part='root'][data-variant='ghost'] {
+[data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
   --xh-_combobox-control-bg: transparent;
   --xh-_combobox-control-border: transparent;
   --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -7496,19 +7519,6 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-combobox-action-bg, transparent);
   color: var(--xh-fg-disabled);
   cursor: not-allowed;
-}
-
-/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
-[data-scope='combobox'][data-part='positioner'] {
-  position: fixed;
-  z-index: var(--xh-layer-popover);
-  /* 空壳不吃指针，交互只发生在 content 与 empty 上 */
-  pointer-events: none;
-}
-
-/* 锚点被滚出可视区：整个浮层随之收起 */
-[data-scope='combobox'][data-part='positioner'][data-hidden] {
-  visibility: hidden;
 }
 
 [data-scope='combobox'][data-part='content'] {
@@ -7828,11 +7838,27 @@ input[data-scope='mention'][data-part='input'] {
   --xh-context-menu-skin: 1;
 }
 
-/* 根只是把触发区与浮层圈在一起做作用域，不该在作者布局里多插一层盒子 */
-[data-scope='context-menu'][data-part='root'] {
-  /* 尺寸档只换这四个私有槽，条目与分组标题都从 root 继承它们，
-     换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承
-     （display:contents 不影响继承：自定义属性沿 DOM 树传） */
+/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+[data-scope='context-menu'][data-part='positioner'] {
+  /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，content 继承它限高；
+     引擎没算（尚未落位 / 无引擎）时不额外限高 */
+  --xh-_context-menu-available-h: 100vh;
+
+  position: fixed;
+  z-index: var(--xh-layer-popover);
+  /* 空壳不吃指针，交互只发生在 content 上 */
+  pointer-events: none;
+}
+
+/* 锚点被滚出可视区：整个浮层随之收起 */
+[data-scope='context-menu'][data-part='positioner'][data-hidden] {
+  visibility: hidden;
+}
+
+/* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
+[data-scope='context-menu']:is([data-part='root'], [data-part='positioner']) {
+  /* 尺寸档只换这四个私有槽，条目与分组标题都从这两处继承它们，
+     换档不必给每个部件各写一条选择器 */
   --xh-_context-menu-item-py: var(--xh-space-1_5);
   --xh-_context-menu-item-px: var(--xh-control-px-md);
   --xh-_context-menu-item-gap: var(--xh-control-gap-md);
@@ -7844,7 +7870,10 @@ input[data-scope='mention'][data-part='input'] {
 
   /* 标记位强调色随语气走，没写 data-tone 时退回原来的取值 */
   --xh-_context-menu-accent: var(--xh-_tone, var(--xh-fg-subtle));
+}
 
+/* 根只是把触发区与浮层圈在一起做作用域，不该在作者布局里多插一层盒子 */
+[data-scope='context-menu'][data-part='root'] {
   display: contents;
 }
 
@@ -7855,14 +7884,14 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里。条目高度由 padding 撑出来：
    纵向走 space 档、行内内缩走 control-px 档（随密度轴），换档各挪一级 */
-[data-scope='context-menu'][data-part='root'][data-size='sm'] {
+[data-scope='context-menu']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
   --xh-_context-menu-item-py: var(--xh-space-1);
   --xh-_context-menu-item-px: var(--xh-control-px-sm);
   --xh-_context-menu-item-gap: var(--xh-control-gap-sm);
   --xh-_context-menu-font-size: var(--xh-font-size-sm);
 }
 
-[data-scope='context-menu'][data-part='root'][data-size='lg'] {
+[data-scope='context-menu']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
   --xh-_context-menu-item-py: var(--xh-space-2);
   --xh-_context-menu-item-px: var(--xh-control-px-lg);
   --xh-_context-menu-item-gap: var(--xh-control-gap-lg);
@@ -7879,23 +7908,6 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='context-menu'][data-part='trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
-}
-
-/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
-[data-scope='context-menu'][data-part='positioner'] {
-  /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，content 继承它限高；
-     引擎没算（尚未落位 / 无引擎）时不额外限高 */
-  --xh-_context-menu-available-h: 100vh;
-
-  position: fixed;
-  z-index: var(--xh-layer-popover);
-  /* 空壳不吃指针，交互只发生在 content 上 */
-  pointer-events: none;
-}
-
-/* 锚点被滚出可视区：整个浮层随之收起 */
-[data-scope='context-menu'][data-part='positioner'][data-hidden] {
-  visibility: hidden;
 }
 
 [data-scope='context-menu'][data-part='content'] {
@@ -8319,10 +8331,23 @@ input[data-scope='mention'][data-part='input'] {
   --xh-date-picker-skin: 1;
 }
 
-/* 与文本框、分段日期同一套堆叠：标签一行、输入行一行 */
-[data-scope='date-picker'][data-part='root'] {
-  /* 尺寸档只换这几个私有槽，标题、输入行与浮层里的部件都从 root 继承它们，
-     换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承 */
+/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+[data-scope='date-picker'][data-part='positioner'] {
+  position: fixed;
+  z-index: var(--xh-layer-popover);
+  /* 空壳不吃指针，交互只发生在 content 里 */
+  pointer-events: none;
+}
+
+/* 锚点被滚出可视区：整个浮层随之收起 */
+[data-scope='date-picker'][data-part='positioner'][data-hidden] {
+  visibility: hidden;
+}
+
+/* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
+[data-scope='date-picker']:is([data-part='root'], [data-part='positioner']) {
+  /* 尺寸档只换这几个私有槽，标题、输入行与浮层里的部件都从这两处继承它们，
+     换档不必给每个部件各写一条选择器 */
   --xh-_date-picker-control-h: var(--xh-control-h-md);
   --xh-_date-picker-control-px: var(--xh-control-px-md);
   --xh-_date-picker-font-size: var(--xh-text-body-size);
@@ -8340,7 +8365,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_date-picker-accent-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
   --xh-_date-picker-accent-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
   --xh-_date-picker-accent-subtle: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+}
 
+/* 与文本框、分段日期同一套堆叠：标签一行、输入行一行 */
+[data-scope='date-picker'][data-part='root'] {
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-date-picker-gap, var(--xh-space-1));
@@ -8348,14 +8376,14 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
-[data-scope='date-picker'][data-part='root'][data-size='sm'] {
+[data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
   --xh-_date-picker-control-h: var(--xh-control-h-sm);
   --xh-_date-picker-control-px: var(--xh-control-px-sm);
   --xh-_date-picker-font-size: var(--xh-font-size-sm);
   --xh-_date-picker-label-font-size: var(--xh-font-size-sm);
 }
 
-[data-scope='date-picker'][data-part='root'][data-size='lg'] {
+[data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
   --xh-_date-picker-control-h: var(--xh-control-h-lg);
   --xh-_date-picker-control-px: var(--xh-control-px-lg);
   --xh-_date-picker-font-size: var(--xh-font-size-lg);
@@ -8365,7 +8393,7 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 形态 —— */
 /* 输入类不做实心档：填满一个要往里打字的框，字与底就没法同时读。
    形态只决定底与描边怎么画，用哪族颜色由 data-tone 决定 */
-[data-scope='date-picker'][data-part='root'][data-variant='outline'] {
+[data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
   --xh-_date-picker-control-bg: var(--xh-bg-canvas);
   --xh-_date-picker-control-border: var(--xh-border-control);
   --xh-_date-picker-control-border-hover: var(--xh-border-control-hover);
@@ -8373,14 +8401,14 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
    与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
-[data-scope='date-picker'][data-part='root'][data-variant='subtle'] {
+[data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
   --xh-_date-picker-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_date-picker-control-border: transparent;
   --xh-_date-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
-[data-scope='date-picker'][data-part='root'][data-variant='ghost'] {
+[data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
   --xh-_date-picker-control-bg: transparent;
   --xh-_date-picker-control-border: transparent;
   --xh-_date-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -8540,19 +8568,6 @@ input[data-scope='mention'][data-part='input'] {
   cursor: not-allowed;
 }
 
-/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
-[data-scope='date-picker'][data-part='positioner'] {
-  position: fixed;
-  z-index: var(--xh-layer-popover);
-  /* 空壳不吃指针，交互只发生在 content 里 */
-  pointer-events: none;
-}
-
-/* 锚点被滚出可视区：整个浮层随之收起 */
-[data-scope='date-picker'][data-part='positioner'][data-hidden] {
-  visibility: hidden;
-}
-
 [data-scope='date-picker'][data-part='content'] {
   display: block;
   padding: var(--xh-date-picker-content-p, var(--xh-space-3));
@@ -8591,8 +8606,10 @@ input[data-scope='mention'][data-part='input'] {
    所以网格外层该有的排布得在这儿补齐（网格内部的皮仍归 calendar 那一份） */
 /* 真的摆了两张日历才横过来。写成 :has 而不是无条件 flex 行:
    showTime 那套结构里 content 直属子节点是作者自己的包裹块与确认行,
-   无条件横排会把它们并到日历旁边去 */
-[data-scope='date-picker'][data-part='content']:not([hidden]):has(> [data-part='calendar'] + [data-part='calendar']) {
+   无条件横排会把它们并到日历旁边去。
+   不加 :not([hidden])：content 收起态带 hidden 但仍在播退场动画，
+   排除掉会让它在那几帧退回 block、两张日历竖着堆一下 */
+[data-scope='date-picker'][data-part='content']:has(> [data-part='calendar'] + [data-part='calendar']) {
   display: flex;
   align-items: flex-start;
 }
@@ -11056,19 +11073,6 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 一排 trigger。主轴跟着 data-orientation 走：菜单栏本身可以横排也可以竖排 */
 [data-scope='menubar'][data-part='root'] {
-  /* 尺寸档只换这五个私有槽，trigger 与菜单里的条目都从 root 继承它们，
-     换档不必给每个部件各写一条选择器。菜单浮层在 positioner 里、也是 root 的后代，一并继承 */
-  --xh-_menubar-trigger-py: var(--xh-space-1);
-  --xh-_menubar-trigger-px: var(--xh-control-px-sm);
-  --xh-_menubar-item-py: var(--xh-space-1_5);
-  --xh-_menubar-item-px: var(--xh-control-px-md);
-  --xh-_menubar-font-size: var(--xh-text-body-size);
-
-  /* 展开着的那张菜单的 trigger 走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底。
-     悬停与键盘焦点恒中性灰轻档、不接语气槽——两档同色相的话哪张开着就认不出来了。
-     聚焦环不在其列，它恒是 --xh-ring-focus */
-  --xh-_menubar-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
-
   display: flex;
   align-items: center;
   gap: var(--xh-menubar-gap, var(--xh-space-1));
@@ -11086,25 +11090,6 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='menubar'][data-part='root'][data-orientation='vertical'] {
   flex-direction: column;
   align-items: stretch;
-}
-
-/* —— 尺寸 —— */
-/* 缺省档写在上面的基础规则里。trigger 的行内内缩缺省落在控件尺 sm 档、再往下取空间尺；
-   条目纵向走 space 档、行内内缩走 control-px 档（随密度轴），换档各挪一级 */
-[data-scope='menubar'][data-part='root'][data-size='sm'] {
-  --xh-_menubar-trigger-py: var(--xh-space-0_5);
-  --xh-_menubar-trigger-px: var(--xh-space-1_5);
-  --xh-_menubar-item-py: var(--xh-space-1);
-  --xh-_menubar-item-px: var(--xh-control-px-sm);
-  --xh-_menubar-font-size: var(--xh-font-size-sm);
-}
-
-[data-scope='menubar'][data-part='root'][data-size='lg'] {
-  --xh-_menubar-trigger-py: var(--xh-space-2);
-  --xh-_menubar-trigger-px: var(--xh-control-px-md);
-  --xh-_menubar-item-py: var(--xh-space-2);
-  --xh-_menubar-item-px: var(--xh-control-px-lg);
-  --xh-_menubar-font-size: var(--xh-font-size-lg);
 }
 
 /* root 只是 roving tabindex 的兜底落点，焦点转投给 trigger 之后就不再停留，不画环 */
@@ -11180,6 +11165,41 @@ input[data-scope='mention'][data-part='input'] {
 /* 锚点被滚出可视区：整个浮层随之收起 */
 [data-scope='menubar'][data-part='positioner'][data-hidden] {
   visibility: hidden;
+}
+
+/* —— 尺寸 —— */
+/* 尺寸档只换这五个私有槽，换档不必给每个部件各写一条选择器。
+   root 与 positioner 各起一头：trigger 从 root 继承，菜单里的条目从 positioner 继承——
+   浮层搬去了 portal 落点，不再是 root 的后代。
+   缺省档写在第一条：trigger 的行内内缩落在控件尺 sm 档、再往下取空间尺；
+   条目纵向走 space 档、行内内缩走 control-px 档（随密度轴），换档各挪一级 */
+[data-scope='menubar']:is([data-part='root'], [data-part='positioner']) {
+  --xh-_menubar-trigger-py: var(--xh-space-1);
+  --xh-_menubar-trigger-px: var(--xh-control-px-sm);
+  --xh-_menubar-item-py: var(--xh-space-1_5);
+  --xh-_menubar-item-px: var(--xh-control-px-md);
+  --xh-_menubar-font-size: var(--xh-text-body-size);
+
+  /* 展开着的那张菜单的 trigger 走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底。
+     悬停与键盘焦点恒中性灰轻档、不接语气槽——两档同色相的话哪张开着就认不出来了。
+     聚焦环不在其列，它恒是 --xh-ring-focus */
+  --xh-_menubar-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+}
+
+[data-scope='menubar'][data-size='sm']:is([data-part='root'], [data-part='positioner']) {
+  --xh-_menubar-trigger-py: var(--xh-space-0_5);
+  --xh-_menubar-trigger-px: var(--xh-space-1_5);
+  --xh-_menubar-item-py: var(--xh-space-1);
+  --xh-_menubar-item-px: var(--xh-control-px-sm);
+  --xh-_menubar-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='menubar'][data-size='lg']:is([data-part='root'], [data-part='positioner']) {
+  --xh-_menubar-trigger-py: var(--xh-space-2);
+  --xh-_menubar-trigger-px: var(--xh-control-px-md);
+  --xh-_menubar-item-py: var(--xh-space-2);
+  --xh-_menubar-item-px: var(--xh-control-px-lg);
+  --xh-_menubar-font-size: var(--xh-font-size-lg);
 }
 
 [data-scope='menubar'][data-part='content'] {
@@ -13044,9 +13064,23 @@ input[data-scope='mention'][data-part='input'] {
   --xh-select-skin: 1;
 }
 
-[data-scope='select'][data-part='root'] {
-  /* 尺寸档只换这五个私有槽，触发器、标题与条目都从 root 继承它们，
-     换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承 */
+/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+[data-scope='select'][data-part='positioner'] {
+  position: fixed;
+  z-index: var(--xh-layer-popover);
+  /* 空壳不吃指针，交互只发生在 content 上 */
+  pointer-events: none;
+}
+
+/* 锚点被滚出可视区：整个浮层随之收起 */
+[data-scope='select'][data-part='positioner'][data-hidden] {
+  visibility: hidden;
+}
+
+/* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
+[data-scope='select']:is([data-part='root'], [data-part='positioner']) {
+  /* 尺寸档只换这五个私有槽，触发器、标题与条目都从这两处继承它们，
+     换档不必给每个部件各写一条选择器 */
   --xh-_select-h: var(--xh-control-h-md);
   --xh-_select-px: var(--xh-control-px-md);
   --xh-_select-gap: var(--xh-control-gap-md);
@@ -13063,7 +13097,9 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_select-ring: var(--xh-ring-focus);
   --xh-_select-accent: var(--xh-_tone, var(--xh-bg-brand));
   --xh-_select-item-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+}
 
+[data-scope='select'][data-part='root'] {
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-select-gap, var(--xh-stack-gap-md));
@@ -13073,7 +13109,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
-[data-scope='select'][data-part='root'][data-size='sm'] {
+[data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
   --xh-_select-h: var(--xh-control-h-sm);
   --xh-_select-px: var(--xh-control-px-sm);
   --xh-_select-gap: var(--xh-control-gap-sm);
@@ -13081,7 +13117,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_select-label-font-size: var(--xh-font-size-sm);
 }
 
-[data-scope='select'][data-part='root'][data-size='lg'] {
+[data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
   --xh-_select-h: var(--xh-control-h-lg);
   --xh-_select-px: var(--xh-control-px-lg);
   --xh-_select-gap: var(--xh-control-gap-lg);
@@ -13092,21 +13128,21 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 形态 —— */
 /* 输入类不做 solid：实心底压着可编辑的值，读起来像块不可点的色板。
    形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
-[data-scope='select'][data-part='root'][data-variant='outline'] {
+[data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
   --xh-_select-trigger-bg: var(--xh-bg-canvas);
   --xh-_select-trigger-border: var(--xh-border-control);
   --xh-_select-trigger-border-hover: var(--xh-border-control-hover);
 }
 
 /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
-[data-scope='select'][data-part='root'][data-variant='subtle'] {
+[data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
   --xh-_select-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_select-trigger-border: transparent;
   --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
-[data-scope='select'][data-part='root'][data-variant='ghost'] {
+[data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
   --xh-_select-trigger-bg: transparent;
   --xh-_select-trigger-border: transparent;
   --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -13305,19 +13341,6 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='select'][data-part='indicator'][data-state='open'] {
   rotate: 180deg;
-}
-
-/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
-[data-scope='select'][data-part='positioner'] {
-  position: fixed;
-  z-index: var(--xh-layer-popover);
-  /* 空壳不吃指针，交互只发生在 content 上 */
-  pointer-events: none;
-}
-
-/* 锚点被滚出可视区：整个浮层随之收起 */
-[data-scope='select'][data-part='positioner'][data-hidden] {
-  visibility: hidden;
 }
 
 /* 浮层外壳：描边、底色、阴影与整体尺寸归它。它自己不滚——滚的是里面的 list，
@@ -15942,10 +15965,23 @@ input[data-scope='mention'][data-part='input'] {
   --xh-time-picker-skin: 1;
 }
 
-/* 与文本框、时间输入同一套堆叠：标签一行、控件一行 */
-[data-scope='time-picker'][data-part='root'] {
-  /* 尺寸档只换这几个私有槽，标题、输入行与浮层里的格子都从 root 继承它们，
-     换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承 */
+/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+[data-scope='time-picker'][data-part='positioner'] {
+  position: fixed;
+  z-index: var(--xh-layer-popover);
+  /* 空壳不吃指针，交互只发生在 content 里 */
+  pointer-events: none;
+}
+
+/* 锚点被滚出可视区：整个浮层随之收起 */
+[data-scope='time-picker'][data-part='positioner'][data-hidden] {
+  visibility: hidden;
+}
+
+/* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
+[data-scope='time-picker']:is([data-part='root'], [data-part='positioner']) {
+  /* 尺寸档只换这几个私有槽，标题、输入行与浮层里的格子都从这两处继承它们，
+     换档不必给每个部件各写一条选择器 */
   --xh-_time-picker-control-h: var(--xh-control-h-md);
   --xh-_time-picker-control-px: var(--xh-control-px-md);
   --xh-_time-picker-font-size: var(--xh-text-body-size);
@@ -15963,7 +15999,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_time-picker-accent: var(--xh-_tone, var(--xh-bg-brand));
   --xh-_time-picker-accent-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
   --xh-_time-picker-accent-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+}
 
+/* 与文本框、时间输入同一套堆叠：标签一行、控件一行 */
+[data-scope='time-picker'][data-part='root'] {
   display: inline-flex;
   flex-direction: column;
   gap: var(--xh-time-picker-gap, var(--xh-space-1));
@@ -15971,7 +16010,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
-[data-scope='time-picker'][data-part='root'][data-size='sm'] {
+[data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
   --xh-_time-picker-control-h: var(--xh-control-h-sm);
   --xh-_time-picker-control-px: var(--xh-control-px-sm);
   --xh-_time-picker-font-size: var(--xh-font-size-sm);
@@ -15979,7 +16018,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_time-picker-item-px: var(--xh-control-px-sm);
 }
 
-[data-scope='time-picker'][data-part='root'][data-size='lg'] {
+[data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
   --xh-_time-picker-control-h: var(--xh-control-h-lg);
   --xh-_time-picker-control-px: var(--xh-control-px-lg);
   --xh-_time-picker-font-size: var(--xh-font-size-lg);
@@ -15990,7 +16029,7 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 形态 —— */
 /* 输入类不做实心档：填满一个要往里打字的框，字与底就没法同时读。
    形态只决定底与描边怎么画，用哪族颜色由 data-tone 决定 */
-[data-scope='time-picker'][data-part='root'][data-variant='outline'] {
+[data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
   --xh-_time-picker-control-bg: var(--xh-bg-canvas);
   --xh-_time-picker-control-border: var(--xh-border-control);
   --xh-_time-picker-control-border-hover: var(--xh-border-control-hover);
@@ -15998,14 +16037,14 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
    与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
-[data-scope='time-picker'][data-part='root'][data-variant='subtle'] {
+[data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
   --xh-_time-picker-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_time-picker-control-border: transparent;
   --xh-_time-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
-[data-scope='time-picker'][data-part='root'][data-variant='ghost'] {
+[data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
   --xh-_time-picker-control-bg: transparent;
   --xh-_time-picker-control-border: transparent;
   --xh-_time-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -16193,19 +16232,6 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-time-picker-action-bg, transparent);
   color: var(--xh-fg-disabled);
   cursor: not-allowed;
-}
-
-/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
-[data-scope='time-picker'][data-part='positioner'] {
-  position: fixed;
-  z-index: var(--xh-layer-popover);
-  /* 空壳不吃指针，交互只发生在 content 里 */
-  pointer-events: none;
-}
-
-/* 锚点被滚出可视区：整个浮层随之收起 */
-[data-scope='time-picker'][data-part='positioner'][data-hidden] {
-  visibility: hidden;
 }
 
 /* 几列并排：整体高度由列自己撑，滚动发生在列里而不是整个面板上——
@@ -17270,9 +17296,11 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 高亮框在场时遮罩让位：暗幕已经由那圈铺满视口的投影负责，
    两层叠加会把页面压得过暗，而且洞里也会跟着变暗——洞就白挖了。
-   居中步的高亮框带 hidden，此时遮罩照常压暗（那一步本来就没有要突出的元素） */
-[data-scope='tour'][data-part='root']:has([data-scope='tour'][data-part='spotlight']:not([hidden]))
-  [data-scope='tour'][data-part='backdrop'] {
+   居中步的高亮框带 hidden，此时遮罩照常压暗（那一步本来就没有要突出的元素）。
+   两条兄弟选择器各管一个方向，谁写在前面都算数：遮罩与高亮框同为浮层落点里的兄弟，
+   不再共有 root 这个祖先 */
+[data-scope='tour'][data-part='backdrop']:has(~ [data-scope='tour'][data-part='spotlight']:not([hidden])),
+[data-scope='tour'][data-part='spotlight']:not([hidden]) ~ [data-scope='tour'][data-part='backdrop'] {
   background: transparent;
 }
 
@@ -18081,11 +18109,22 @@ input[data-scope='mention'][data-part='input'] {
   --xh-tree-select-skin: 1;
 }
 
-/* 解剖里没有把「触发器 + 清空按钮」裹在一起的 control 部件，一行是靠 flex-wrap 分出来的：
-   标签占满整行把后面的挤到下一行，触发器与清空按钮就并排落在同一行上。
-   这样作者少写标签、少写清空按钮，剩下的部件也不会塌 */
-[data-scope='tree-select'][data-part='root'] {
-  /* 尺寸档只换这几个私有槽，触发框与树里的行都从 root 继承它们，换档不必给每个部件各写一条选择器 */
+/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+[data-scope='tree-select'][data-part='positioner'] {
+  position: fixed;
+  z-index: var(--xh-layer-popover);
+  /* 空壳不吃指针，交互只发生在 content 里 */
+  pointer-events: none;
+}
+
+/* 锚点被滚出可视区：整个浮层随之收起 */
+[data-scope='tree-select'][data-part='positioner'][data-hidden] {
+  visibility: hidden;
+}
+
+/* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
+[data-scope='tree-select']:is([data-part='root'], [data-part='positioner']) {
+  /* 尺寸档只换这几个私有槽，触发框与树里的行都从这两处继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_tree-select-h: var(--xh-control-h-md);
   --xh-_tree-select-px: var(--xh-control-px-md);
   --xh-_tree-select-gap: var(--xh-control-gap-md);
@@ -18100,7 +18139,12 @@ input[data-scope='mention'][data-part='input'] {
 
   /* 选中行的文字色随语气走，没写 data-tone 时退回品牌强调色 */
   --xh-_tree-select-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+}
 
+/* 解剖里没有把「触发器 + 清空按钮」裹在一起的 control 部件，一行是靠 flex-wrap 分出来的：
+   标签占满整行把后面的挤到下一行，触发器与清空按钮就并排落在同一行上。
+   这样作者少写标签、少写清空按钮，剩下的部件也不会塌 */
+[data-scope='tree-select'][data-part='root'] {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
@@ -18115,21 +18159,21 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 形态 —— */
 /* 形态只决定描边与底色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的中性配色 */
 /* outline 就是缺省那一身：描边加画布底，写出来只为让三档并列可读 */
-[data-scope='tree-select'][data-part='root'][data-variant='outline'] {
+[data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
   --xh-_tree-select-border: var(--xh-border-control);
   --xh-_tree-select-border-hover: var(--xh-border-control-hover);
   --xh-_tree-select-bg: var(--xh-bg-canvas);
 }
 
 /* subtle 是填充式：底色接过「这里能点」的表达，描边随之让位 */
-[data-scope='tree-select'][data-part='root'][data-variant='subtle'] {
+[data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
   --xh-_tree-select-border: transparent;
   --xh-_tree-select-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_tree-select-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
 }
 
 /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
-[data-scope='tree-select'][data-part='root'][data-variant='ghost'] {
+[data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
   --xh-_tree-select-border: transparent;
   --xh-_tree-select-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_tree-select-bg: transparent;
@@ -18137,7 +18181,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
-[data-scope='tree-select'][data-part='root'][data-size='sm'] {
+[data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
   --xh-_tree-select-h: var(--xh-control-h-sm);
   --xh-_tree-select-px: var(--xh-control-px-sm);
   --xh-_tree-select-gap: var(--xh-control-gap-sm);
@@ -18145,7 +18189,7 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tree-select-label-font-size: var(--xh-font-size-sm);
 }
 
-[data-scope='tree-select'][data-part='root'][data-size='lg'] {
+[data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
   --xh-_tree-select-h: var(--xh-control-h-lg);
   --xh-_tree-select-px: var(--xh-control-px-lg);
   --xh-_tree-select-gap: var(--xh-control-gap-lg);
@@ -18309,19 +18353,6 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-tree-select-action-bg, transparent);
   color: var(--xh-fg-disabled);
   cursor: not-allowed;
-}
-
-/* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
-[data-scope='tree-select'][data-part='positioner'] {
-  position: fixed;
-  z-index: var(--xh-layer-popover);
-  /* 空壳不吃指针，交互只发生在 content 里 */
-  pointer-events: none;
-}
-
-/* 锚点被滚出可视区：整个浮层随之收起 */
-[data-scope='tree-select'][data-part='positioner'][data-hidden] {
-  visibility: hidden;
 }
 
 [data-scope='tree-select'][data-part='content'] {
