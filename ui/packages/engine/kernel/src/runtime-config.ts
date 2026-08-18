@@ -18,6 +18,8 @@ export interface RuntimeConfig {
   /** 读 prefers-reduced-motion，供 Presence 短路。 */
   readonly reducedMotion: () => boolean
   readonly layerRegistry: LayerRegistry
+  /** 滚动根解析器；返回 null 表示交给滚动锁自行探测。 */
+  readonly scrollRoot?: () => HTMLElement | null
 }
 
 /** 构造 RuntimeConfig，未提供的字段用 CSR 默认值补全（依赖 document/window，勿在 SSR 期调用）。 */
@@ -34,6 +36,7 @@ export function createRuntimeConfig(partial: Partial<RuntimeConfig> = {}): Runti
     dir: partial.dir ?? 'ltr',
     locale: partial.locale ?? 'zh-CN',
     portalContainer: partial.portalContainer ?? (() => null),
+    scrollRoot: partial.scrollRoot ?? (() => null),
     reducedMotion:
       partial.reducedMotion
       ?? (() => !isSSR() && window.matchMedia('(prefers-reduced-motion: reduce)').matches),
