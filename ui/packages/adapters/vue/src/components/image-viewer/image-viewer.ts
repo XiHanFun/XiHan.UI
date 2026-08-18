@@ -2,7 +2,7 @@ import type { imageViewerCounterText as counterTextFn, ImageViewerApi, ImageView
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { imageViewerCounterText } from '@xihan-ui/headless'
-import { defineComponent, h, Teleport } from 'vue'
+import { defineComponent, h, mergeProps, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { provideImageViewer, useImageViewerContext } from './context'
@@ -123,7 +123,9 @@ export const XhImageViewerTrigger = defineComponent({
 
 export const XhImageViewerContent = defineComponent({
   name: 'XhImageViewerContent',
-  setup(_, { slots }) {
+  // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 content 上
+  inheritAttrs: false,
+  setup(_, { slots, attrs }) {
     const ctx = useImageViewerContext()
     return () => {
       if (!ctx.rendered.value)
@@ -138,7 +140,7 @@ export const XhImageViewerContent = defineComponent({
         }),
         h('div', api.getPositionerProps() as Record<string, unknown>, [
           h('div', {
-            ...api.getContentProps() as Record<string, unknown>,
+            ...mergeProps(api.getContentProps() as Record<string, unknown>, attrs),
             ref: (el: unknown) => {
               ctx.contentRef.value = el as HTMLElement
             },

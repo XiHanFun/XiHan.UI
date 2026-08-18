@@ -2,7 +2,7 @@ import type { DrawerApi, DrawerSchema, DrawerSide } from '@xihan-ui/headless'
 import type { Size } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, Teleport } from 'vue'
+import { defineComponent, h, mergeProps, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { provideDrawer, useDrawerContext } from './context'
@@ -91,7 +91,9 @@ export const XhDrawerTrigger = defineComponent({
 
 export const XhDrawerContent = defineComponent({
   name: 'XhDrawerContent',
-  setup(_, { slots }) {
+  // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 content 上
+  inheritAttrs: false,
+  setup(_, { slots, attrs }) {
     const ctx = useDrawerContext()
     return () => {
       // presence 判定不在场则整棵不渲染，退场动画播完才翻假
@@ -105,7 +107,7 @@ export const XhDrawerContent = defineComponent({
         }),
         h('div', api.getPositionerProps() as Record<string, unknown>, [
           h('div', {
-            ...api.getContentProps() as Record<string, unknown>,
+            ...mergeProps(api.getContentProps() as Record<string, unknown>, attrs),
             ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
           }, slots.default?.()),
         ]),
