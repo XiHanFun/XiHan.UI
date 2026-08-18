@@ -131,6 +131,7 @@ export const tokens = {
   "--xh-motion-distance-sm": "var(--xh-space-1)",
   "--xh-motion-distance-md": "var(--xh-space-2)",
   "--xh-motion-scale-enter": "0.96",
+  "--xh-spin-duration": "640ms",
   "--xh-layer-sticky": "var(--xh-z-sticky)",
   "--xh-layer-drawer": "var(--xh-z-drawer)",
   "--xh-layer-modal": "var(--xh-z-modal)",

@@ -90,7 +90,7 @@
     border: var(--xh-stroke-thin) solid transparent;
     border-block-start-color: var(--xh-switch-loading-fg, var(--xh-bg-brand));
     border-radius: var(--xh-shape-pill);
-    animation: xh-switch-rotate var(--xh-switch-loading-duration, calc(var(--xh-duration-slow) * 2)) linear infinite;
+    animation: xh-switch-rotate var(--xh-switch-loading-duration, var(--xh-spin-duration)) linear infinite;
   }
 
   /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox-group 的条目同一副样子 —— */
@@ -112,5 +112,14 @@
   [data-scope='switch'][data-part='text'] {
     color: inherit;
     user-select: none;
+  }
+
+  /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好" */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='switch'][data-part='thumb'][data-loading]::after {
+      border-style: dotted;
+      border-color: var(--xh-switch-loading-fg, var(--xh-bg-brand));
+      animation: none;
+    }
   }
 }

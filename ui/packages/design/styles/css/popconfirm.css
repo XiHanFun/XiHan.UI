@@ -181,7 +181,7 @@
     border: var(--xh-stroke-thin) solid transparent;
     border-block-start-color: currentcolor;
     border-radius: var(--xh-shape-pill);
-    animation: xh-popconfirm-rotate var(--xh-popconfirm-loading-duration, calc(var(--xh-duration-slow) * 2)) linear infinite;
+    animation: xh-popconfirm-rotate var(--xh-popconfirm-loading-duration, var(--xh-spin-duration)) linear infinite;
   }
 
   [data-scope='popconfirm'][data-part='confirm-trigger']:hover {
@@ -210,5 +210,14 @@
   [data-scope='popconfirm'][data-part='cancel-trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好" */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='popconfirm'][data-part='confirm-trigger'][data-loading]::before {
+      border-style: dotted;
+      border-color: currentColor;
+      animation: none;
+    }
   }
 }
