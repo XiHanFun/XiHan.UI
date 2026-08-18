@@ -185,7 +185,7 @@
     },
     "drawer": {
       "$type": "number",
-      "$value": "{z.drawer}"
+      "$value": "{z.modal}"
     },
     "modal": {
       "$type": "number",
