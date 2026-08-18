@@ -2402,6 +2402,9 @@
    两套底色各画各的会出现"鼠标停在 A 上、回车却插进了 B" */
 [data-scope='mention'][data-part='item'][data-highlighted]:not([data-disabled]) {
   background: var(--xh-mention-item-bg-hover, var(--xh-bg-subtle));
+  /* 焦点恒在输入框，高亮条目自带内收环；列表是滚动容器，环画在外沿会被裁掉 */
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-width));
 }
 
 /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），
@@ -2734,7 +2737,7 @@
   border: var(--xh-stroke-thin) solid transparent;
   border-block-start-color: currentcolor;
   border-radius: var(--xh-shape-pill);
-  animation: xh-popconfirm-rotate var(--xh-popconfirm-loading-duration, calc(var(--xh-duration-slow) * 2)) linear infinite;
+  animation: xh-popconfirm-rotate var(--xh-popconfirm-loading-duration, var(--xh-spin-duration)) linear infinite;
 }
 
 [data-scope='popconfirm'][data-part='confirm-trigger']:hover {
@@ -2763,6 +2766,15 @@
 [data-scope='popconfirm'][data-part='cancel-trigger']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
+}
+
+/* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好" */
+@media (prefers-reduced-motion: reduce) {
+  [data-scope='popconfirm'][data-part='confirm-trigger'][data-loading]::before {
+    border-style: dotted;
+    border-color: currentColor;
+    animation: none;
+  }
 }
 
 /* styles/popselect.css */
@@ -3826,10 +3838,6 @@
  *
  * 这两个槽用的都是固定原语而不是 --xh-fg-default：实心底本身是原语色、不随主题翻，
  * 配色若跟着主题翻，暗色下就会变成白字压在浅黄底上（实测对比度 2.70）。
- *
- * brand 是例外：那一族的色相归使用者，所以它的底与前景走 --xh-bg-brand / --xh-fg-on-brand
- * 这两个语义令牌。缺省主题下它们就解析成 brand-600 与 neutral-0，与其余五族同值；
- * 改写过品牌色的使用者只改这两个令牌，实心底与它上面的字就一起跟着走。
  */
 
 [data-tone] {
@@ -3858,9 +3866,9 @@
 }
 
 [data-tone='brand'] {
-  --xh-_tone: var(--xh-bg-brand);
+  --xh-_tone: var(--xh-color-brand-600);
   --xh-_tone-soft: var(--xh-color-brand-500);
-  --xh-_tone-on: var(--xh-fg-on-brand);
+  --xh-_tone-on: var(--xh-color-neutral-0);
   --xh-_tone-shift: var(--xh-color-neutral-950);
 }
 
@@ -4883,8 +4891,14 @@
 
 [data-scope='button'][data-part='indicator'] {
   display: inline-flex;
-  /* 连续旋转不归动效令牌管（那三档是给进退场与微交互的），照 spinner 那份取慢档的两倍 */
-  animation: xh-spin var(--xh-button-spin-duration, calc(var(--xh-duration-slow) * 2)) linear infinite;
+  animation: xh-spin var(--xh-button-spin-duration, var(--xh-spin-duration)) linear infinite;
+}
+
+/* 减少动效：指示器停转，"还在忙"由按钮自身的挂起样式与指示器图标继续表达 */
+@media (prefers-reduced-motion: reduce) {
+  [data-scope='button'][data-part='indicator'] {
+    animation: none;
+  }
 }
 
 /* styles/calendar.css */
@@ -6048,6 +6062,12 @@
 
 [data-scope='cascader'][data-part='search-item']:not([data-disabled]):is(:hover, [data-highlighted]) {
   background: var(--xh-cascader-row-bg-hover, var(--xh-bg-subtle));
+}
+
+/* 焦点恒在输入框，环只跟虚拟高亮走，悬停不画；往内收，行是撑满列宽的，环画在外沿会被裁掉 */
+[data-scope='cascader'][data-part='search-item']:not([data-disabled])[data-highlighted] {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-width));
 }
 
 [data-scope='cascader'][data-part='search-item'][data-disabled] {
@@ -7563,6 +7583,9 @@
    两套底色各画各的会出现"鼠标停在 A 上、回车提交的却是 B" */
 [data-scope='combobox'][data-part='item'][data-highlighted]:not([data-disabled]) {
   background: var(--xh-combobox-item-bg-hover, var(--xh-bg-subtle));
+  /* 焦点恒在输入框，高亮条目自带内收环；列表是滚动容器，环画在外沿会被裁掉 */
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-width));
 }
 
 /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
@@ -10744,7 +10767,13 @@
   font-weight: var(--xh-listbox-item-font-weight-selected, var(--xh-font-weight-medium));
 }
 
-[data-scope='listbox'][data-part='item']:focus {
+/* 键盘落焦的条目画内收环；指针触发的聚焦不画 */
+[data-scope='listbox'][data-part='item']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-width));
+}
+
+[data-scope='listbox'][data-part='item']:focus:not(:focus-visible) {
   outline: none;
 }
 
@@ -11001,7 +11030,13 @@
   font-weight: var(--xh-menu-item-active-font-weight, var(--xh-font-weight-semibold));
 }
 
-[data-scope='menu'][data-part='item']:focus {
+/* 键盘落焦的条目画内收环；指针触发的聚焦不画 */
+[data-scope='menu'][data-part='item']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-width));
+}
+
+[data-scope='menu'][data-part='item']:focus:not(:focus-visible) {
   outline: none;
 }
 
@@ -11282,7 +11317,13 @@
   background: var(--xh-menubar-item-bg-hover, var(--xh-bg-subtle));
 }
 
-[data-scope='menubar'][data-part='item']:focus {
+/* 键盘落焦的条目画内收环；指针触发的聚焦不画 */
+[data-scope='menubar'][data-part='item']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-width));
+}
+
+[data-scope='menubar'][data-part='item']:focus:not(:focus-visible) {
   outline: none;
 }
 
@@ -14430,7 +14471,7 @@
   border: var(--xh-stroke-thin) solid transparent;
   border-block-start-color: var(--xh-switch-loading-fg, var(--xh-bg-brand));
   border-radius: var(--xh-shape-pill);
-  animation: xh-switch-rotate var(--xh-switch-loading-duration, calc(var(--xh-duration-slow) * 2)) linear infinite;
+  animation: xh-switch-rotate var(--xh-switch-loading-duration, var(--xh-spin-duration)) linear infinite;
 }
 
 /* —— 带文字的整行：<label> 包住控件与文字，与 checkbox-group 的条目同一副样子 —— */
@@ -14452,6 +14493,15 @@
 [data-scope='switch'][data-part='text'] {
   color: inherit;
   user-select: none;
+}
+
+/* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好" */
+@media (prefers-reduced-motion: reduce) {
+  [data-scope='switch'][data-part='thumb'][data-loading]::after {
+    border-style: dotted;
+    border-color: var(--xh-switch-loading-fg, var(--xh-bg-brand));
+    animation: none;
+  }
 }
 
 /* styles/table.css */
@@ -14575,7 +14625,6 @@
 [data-scope='table'][data-part='row'] {
   display: flex;
   align-items: stretch;
-  border-block-end: var(--xh-stroke-thin) solid var(--xh-table-row-border, var(--xh-border-subtle));
   /* 背景要实色：横向吸附的单元格靠 inherit 取它，透明会让滚过的内容透出来 */
   background: var(--xh-table-row-bg, var(--xh-bg-surface));
 }
@@ -14589,9 +14638,9 @@
   background: transparent;
 }
 
-/* 末行不画分隔线：容器自己有边框，两条叠在一起会显出一道粗边 */
-[data-scope='table'][data-part='body'] > [data-scope='table'][data-part='row']:last-child {
-  border-block-end: none;
+/* 行间线画在后一行的上沿，区段里第一个可见行不画：行只负责行与行之间，外边界归 root 与区段容器 */
+[data-scope='table']:is([data-part='header'], [data-part='body'], [data-part='footer']) > :not([hidden]) ~ [data-scope='table']:is([data-part='row'], [data-part='expanded-row']) {
+  border-block-start: var(--xh-stroke-thin) solid var(--xh-table-row-border, var(--xh-border-subtle));
 }
 
 /* 悬停与键盘锚点共用中性灰轻档。data-highlighted 跟的是连接层记的焦点行，
@@ -14850,11 +14899,10 @@
   outline-offset: calc(-1 * var(--xh-ring-width));
 }
 
-/* 详情行：靠 hidden 收起，不卸载作者节点。内容长在它的单元格里，行本身只画底色与分隔线 */
+/* 详情行：靠 hidden 收起，不卸载作者节点。内容长在它的单元格里，行本身只画底色 */
 [data-scope='table'][data-part='expanded-row'] {
   display: flex;
   align-items: stretch;
-  border-block-end: var(--xh-stroke-thin) solid var(--xh-table-row-border, var(--xh-border-subtle));
   background: var(--xh-table-detail-bg, var(--xh-bg-subtle));
 }
 
