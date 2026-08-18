@@ -108,9 +108,11 @@
 
   /* 高亮框在场时遮罩让位：暗幕已经由那圈铺满视口的投影负责，
      两层叠加会把页面压得过暗，而且洞里也会跟着变暗——洞就白挖了。
-     居中步的高亮框带 hidden，此时遮罩照常压暗（那一步本来就没有要突出的元素） */
-  [data-scope='tour'][data-part='root']:has([data-scope='tour'][data-part='spotlight']:not([hidden]))
-    [data-scope='tour'][data-part='backdrop'] {
+     居中步的高亮框带 hidden，此时遮罩照常压暗（那一步本来就没有要突出的元素）。
+     两条兄弟选择器各管一个方向，谁写在前面都算数：遮罩与高亮框同为浮层落点里的兄弟，
+     不再共有 root 这个祖先 */
+  [data-scope='tour'][data-part='backdrop']:has(~ [data-scope='tour'][data-part='spotlight']:not([hidden])),
+  [data-scope='tour'][data-part='spotlight']:not([hidden]) ~ [data-scope='tour'][data-part='backdrop'] {
     background: transparent;
   }
 
