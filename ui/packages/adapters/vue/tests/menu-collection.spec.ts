@@ -149,4 +149,25 @@ describe('menu 的 collection', () => {
     expect(flags).toEqual(['false', 'true'])
     w.unmount()
   })
+
+  it('triggerAsChild 让代铺那条路借用作者的节点当触发器', () => {
+    const w = mount(defineComponent({
+      setup: () => () => h('div', [
+        h(XhMenuRoot, { collection: COLLECTION, triggerAsChild: true }, {
+          trigger: () => [h('span', { class: 'mine' }, '操作')],
+        }),
+      ]),
+    }), { attachTo: document.body })
+    const trigger = w.element.querySelector('[data-part="trigger"]')!
+    expect(trigger.tagName).toBe('SPAN')
+    expect(trigger.className).toBe('mine')
+    expect(w.element.querySelectorAll('button').length).toBe(0)
+    w.unmount()
+  })
+
+  it('不给 triggerAsChild 时代铺那条路仍外包一颗 button', () => {
+    const w = mountFromCollection()
+    expect(w.element.querySelector('[data-part="trigger"]')?.tagName).toBe('BUTTON')
+    w.unmount()
+  })
 })

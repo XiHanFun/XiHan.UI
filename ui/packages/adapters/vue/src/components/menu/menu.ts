@@ -29,6 +29,11 @@ export const XhMenuRoot = defineComponent({
     openOnHover: { type: Boolean, default: undefined },
     hoverOpenDelay: { type: Number, default: undefined },
     hoverCloseDelay: { type: Number, default: undefined },
+    /**
+     * 只交 collection 时，触发器插槽给的那个节点直接当触发器用，不再外包一颗 <button>。
+     * 摆部件的写法有 XhMenuTrigger 自己的 asChild，这个 prop 是给代铺那条路的同一个能力。
+     */
+    triggerAsChild: Boolean,
   },
   // open-change 携带 { open }、select 携带 { value }，update:open 携带裸布尔
   emits: {
@@ -59,7 +64,7 @@ export const XhMenuRoot = defineComponent({
     return () => (slots.default
       ? slots.default({ open: ctx.api.value.open, setOpen: ctx.api.value.setOpen })
       : props.collection
-        ? renderDefaultTree(ctx.api.value.collection, slots.trigger?.() ?? null, slots.item)
+        ? renderDefaultTree(ctx.api.value.collection, slots.trigger?.() ?? null, slots.item, props.triggerAsChild)
         : [])
   },
 })
@@ -239,9 +244,10 @@ function renderDefaultTree(
   collection: readonly MenuNodeMeta[],
   trigger: (VNode | string)[] | null,
   itemSlot?: (node: MenuNodeMeta) => VNode[],
+  triggerAsChild?: boolean,
 ): VNode[] {
   return [
-    h(XhMenuTrigger, null, () => trigger ?? []),
+    h(XhMenuTrigger, { asChild: triggerAsChild }, () => trigger ?? []),
     h(XhMenuPositioner, null, () => [
       h(XhMenuContent, null, () => collection.flatMap((node, index) => [
         // 首条上的标记不产出分隔线：菜单开头不留一道空隔
