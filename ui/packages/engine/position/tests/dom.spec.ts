@@ -45,6 +45,14 @@ describe('getContainingBlock：absolute', () => {
     const floating = chain(block, el())
     expect(getContainingBlock(floating)).toBe(block)
   })
+
+  it('独立的 translate / rotate / scale 属性哪怕祖先是 static 也算', () => {
+    for (const css of ['translate: 60px 30px', 'rotate: 45deg', 'scale: 1.2']) {
+      document.body.innerHTML = ''
+      const block = el(css)
+      expect(getContainingBlock(chain(block, el()))).toBe(block)
+    }
+  })
 })
 
 describe('getContainingBlock：fixed', () => {
@@ -71,6 +79,22 @@ describe('getContainingBlock：fixed', () => {
     const block = el('filter: blur(1px)')
     const floating = chain(block, el())
     expect(getContainingBlock(floating, 'fixed')).toBe(block)
+  })
+
+  it('仍认独立的 translate / rotate / scale 属性', () => {
+    for (const css of ['translate: 60px 30px', 'rotate: 45deg', 'scale: 1.2']) {
+      document.body.innerHTML = ''
+      const block = el(css)
+      expect(getContainingBlock(chain(block, el()), 'fixed')).toBe(block)
+    }
+  })
+
+  it('仍认 will-change 里点名独立变换属性的祖先', () => {
+    for (const css of ['will-change: translate', 'will-change: rotate', 'will-change: scale', 'will-change: backdrop-filter']) {
+      document.body.innerHTML = ''
+      const block = el(css)
+      expect(getContainingBlock(chain(block, el()), 'fixed')).toBe(block)
+    }
   })
 
   it('relative 与 transform 同时在场时，取更近的那个能劫持 fixed 的', () => {
