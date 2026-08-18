@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-不传 open 即为非受控；内容被 portal 到 body，Esc 或点遮罩关闭，关闭后焦点回到触发按钮
+不传 open 即为非受控；Esc 或点遮罩关闭，关闭后焦点回到触发按钮
 
 <XhDemo src="dialog/01-basic" />
 

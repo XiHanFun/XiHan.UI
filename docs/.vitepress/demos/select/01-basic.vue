@@ -1,4 +1,4 @@
-<!-- 基础用法 | collection 是条目的事实源：显示文本与禁用都写在数据里，结构由组件铺开 -->
+<!-- 基础用法 | 选中值恒是数组，条目按 value 标识身份；禁用的条目方向键会跳过 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhSelectRoot } from "@xihan-ui/vue";

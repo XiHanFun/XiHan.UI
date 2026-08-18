@@ -1,6 +1,7 @@
 import { h, watch } from "vue";
 import Theme from "vitepress/theme";
 import XhDemo from "./XhDemo.vue";
+import XhFrameworkSwitch from "./XhFrameworkSwitch.vue";
 // 示例舞台隔离必须排在皮肤之前：两者选择器同权，同权时后来者胜，皮肤在后才盖得住隔离。
 import "./demo-isolation.css";
 // 组件默认皮肤：用无层版本。VitePress 自带无层的 button 重置，CSS 级联里无层
@@ -15,7 +16,10 @@ let homePageStyle: HTMLStyleElement | undefined;
 export default {
   ...Theme,
   Layout: () => {
-    return h(Theme.Layout, null, {});
+    // 框架切换器排在站点标题之后，全站一份、所有示例跟着它走
+    return h(Theme.Layout, null, {
+      "nav-bar-content-before": () => h(XhFrameworkSwitch),
+    });
   },
   enhanceApp(ctx) {
     // 先执行默认主题的 enhanceApp，注册 Badge 等全局组件（否则 <Badge> 渲染为空）

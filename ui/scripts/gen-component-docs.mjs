@@ -7,7 +7,9 @@
 // 中文名与分类归属来自 component-docs.manifest.json，需人工维护；
 // 代码里有而 manifest 里没登记的组件会让本脚本失败，不会被静默漏掉。
 //
-// 示例不在生成范围内：写在 docs/.vitepress/demos/<组件>/*.vue，本脚本只负责发现并挂上去。
+// 示例不在生成范围内：写在 docs/.vitepress/demos/<组件>/ 下，本脚本只负责发现并挂上去。
+// 同一个示例的各框架版本同名不同扩展名（01-basic.vue / 01-basic.html），按基名归并成一条，
+// 落进页面的 src 不带扩展名，由文档站按当前选中的框架取对应文件。
 // 用法：node scripts/gen-component-docs.mjs [--check]
 
 import fs from 'node:fs'
@@ -27,6 +29,12 @@ const checkOnly = process.argv.includes('--check')
 // 中文名与分类：渲染与校验都读它，声明须早于使用它的函数
 const manifest = JSON.parse(
   fs.readFileSync(path.join(here, 'component-docs.manifest.json'), 'utf8'),
+)
+
+// 示例的框架清单：id / 显示名 / 扩展名 / 语法高亮语言 / 文档站是否已接入渲染。
+// 本脚本、门禁与文档站读同一份，加一个框架只改那个文件
+const { frameworks } = JSON.parse(
+  fs.readFileSync(path.join(here, 'demo-frameworks.json'), 'utf8'),
 )
 
 /** kebab → PascalCase */
@@ -249,30 +257,42 @@ function typeMeta(id) {
 
 // ── 示例 ─────────────────────────────────────────────────────────────────────
 
+/** 取示例首行注释里的 `标题 | 说明`：标记语言写 `<!-- -->`，脚本写 `//`。 */
+function demoHead(text) {
+  return (text.match(/^<!--([\s\S]*?)-->/) ?? text.match(/^\/\/(.*)/))?.[1] ?? ''
+}
+
 function demos(id) {
   const dir = path.join(demosRoot, id)
   if (!fs.existsSync(dir))
     return []
-  return fs
-    .readdirSync(dir)
-    .filter(f => f.endsWith('.vue'))
-    .sort()
-    .map((f) => {
-      const src = `${id}/${f.replace(/\.vue$/, '')}`
-      // 示例的标题与说明写在文件首行注释里：`标题 | 说明`。
-      // 标题在这里落成 h3，右侧目录才索引得到每个示例。
-      const head
-        = fs.readFileSync(path.join(dir, f), 'utf8').match(/^<!--([\s\S]*?)-->/)?.[1] ?? ''
-      const [title, ...rest] = head.trim().split('|')
-      // 标题与说明是作者写的散文，裸的 < 会被 Vue 编译器当成缺闭合标签的元素、
-      // 让整站构建挂掉。这里统一转义，作者不必记着这条
-      const prose = x => x.replace(/</g, '&lt;')
-      return {
-        src,
-        title: title.trim() || f.replace(/\.vue$/, ''),
-        description: prose(rest.join('|').trim()),
-      }
-    })
+  // 各框架的同名文件归成一条，键是不带扩展名的基名
+  const byBase = new Map()
+  for (const file of fs.readdirSync(dir).sort()) {
+    const fw = frameworks.find(f => file.endsWith(f.ext))
+    if (!fw)
+      continue
+    const base = file.slice(0, -fw.ext.length)
+    if (!byBase.has(base))
+      byBase.set(base, new Map())
+    byBase.get(base).set(fw.id, file)
+  }
+  // 标题与说明是作者写的散文，裸的 < 会被 Vue 编译器当成缺闭合标签的元素、
+  // 让整站构建挂掉。这里统一转义，作者不必记着这条
+  const prose = x => x.replace(/</g, '&lt;')
+  return [...byBase.keys()].sort().map((base) => {
+    // 标题与说明取 Vue 那份，Vue 缺席就取存在的第一份
+    const files = byBase.get(base)
+    const file = files.get('vue') ?? [...files.values()][0]
+    // 标题在这里落成 h3，右侧目录才索引得到每个示例。
+    const head = demoHead(fs.readFileSync(path.join(dir, file), 'utf8'))
+    const [title, ...rest] = head.trim().split('|')
+    return {
+      src: `${id}/${base}`,
+      title: title.trim() || base,
+      description: prose(rest.join('|').trim()),
+    }
+  })
 }
 
 // ── 渲染 ─────────────────────────────────────────────────────────────────────

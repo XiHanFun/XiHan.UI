@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-标签清单交给 collection，default-value 指定初始选中项；面板常挂，靠 hidden 显隐
+default-value 指定初始选中项，禁用的标签方向键会跳过；面板常挂，靠 hidden 显隐
 
 <XhDemo src="tabs/01-basic" />
 
