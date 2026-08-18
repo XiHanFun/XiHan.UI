@@ -92,6 +92,7 @@
     --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
+  /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
   [data-scope='select'][data-part='root'][data-variant='ghost'] {
     --xh-_select-trigger-bg: transparent;
     --xh-_select-trigger-border: transparent;

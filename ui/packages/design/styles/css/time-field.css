@@ -55,11 +55,11 @@
     --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
-  /* 无框式：底与边都让开，可见反馈只剩聚焦那一档 */
+  /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
   [data-scope='time-field'][data-part='root'][data-variant='ghost'] {
     --xh-_time-field-control-bg: transparent;
     --xh-_time-field-control-border: transparent;
-    --xh-_time-field-control-border-hover: transparent;
+    --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
   /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */

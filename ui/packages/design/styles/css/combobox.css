@@ -95,6 +95,7 @@
     --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
+  /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
   [data-scope='combobox'][data-part='root'][data-variant='ghost'] {
     --xh-_combobox-control-bg: transparent;
     --xh-_combobox-control-border: transparent;

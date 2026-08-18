@@ -94,7 +94,7 @@
     --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control));
   }
 
-  /* 无框：底与描边都透明，平时只看得见数字，悬停与聚焦才浮出边界 */
+  /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
   [data-scope='number-field'][data-part='root'][data-variant='ghost'] {
     --xh-_number-field-bg: transparent;
     --xh-_number-field-border: transparent;
