@@ -19,6 +19,10 @@ export const DATA_SCROLL_SHARD = 'data-xh-scroll-shard'
 /** 带此属性的元素及其后代不被 hideOutside 施加 inert，其祖先只递归不整块罩住。 */
 export const DATA_INERT_EXEMPT = 'data-xh-inert-exempt'
 
+// —— 结构落点 ——
+/** body 末尾单一 portal 落点的 id。 */
+export const PORTAL_ROOT_ID = 'xh-portal-root'
+
 // —— 内部 CustomEvent 名 ——
 export const EV_ESCAPE_KEY_DOWN = 'xh.dismiss.escapeKeyDown'
 export const EV_POINTER_DOWN_OUTSIDE = 'xh.dismiss.pointerDownOutside'

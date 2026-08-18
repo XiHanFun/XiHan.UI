@@ -7,13 +7,14 @@ import { isSSR } from './guards'
 import { createCounterIdGenerator } from './id-generator'
 import { createScope } from './scope'
 import { getLayerRegistry } from './structure/layer-registry'
+import { ensurePortalRoot } from './structure/portal-root'
 
 export interface RuntimeConfig {
   readonly scope: Scope
   readonly dir: Direction
   readonly locale: string // BCP 47
   readonly idGenerator: IdGenerator
-  /** Portal 默认容器解析器；返回 null 表示用 top layer、不搬运。 */
+  /** Portal 容器解析器；默认返回 body 末尾的 portal 落点，返回 null 表示用 top layer、不搬运。 */
   readonly portalContainer: () => Element | null
   /** 读 prefers-reduced-motion，供 Presence 短路。 */
   readonly reducedMotion: () => boolean
@@ -35,7 +36,7 @@ export function createRuntimeConfig(partial: Partial<RuntimeConfig> = {}): Runti
     layerRegistry,
     dir: partial.dir ?? 'ltr',
     locale: partial.locale ?? 'zh-CN',
-    portalContainer: partial.portalContainer ?? (() => null),
+    portalContainer: partial.portalContainer ?? (doc ? () => ensurePortalRoot(doc) : () => null),
     scrollRoot: partial.scrollRoot ?? (() => null),
     reducedMotion:
       partial.reducedMotion
