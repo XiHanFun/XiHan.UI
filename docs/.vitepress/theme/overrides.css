@@ -191,3 +191,17 @@ table {
   color: inherit;
   opacity: 0.75;
 }
+
+/* 框架切换器排在搜索框之后：搜索容器默认撑满剩余宽度，切换器接在它后面会被甩到
+   导航菜单旁边，所以先取消撑满，再由切换器把菜单推回右端 */
+@media (min-width: 768px) {
+  .VPNavBar .content-body > .VPNavBarSearch {
+    order: -1;
+    flex-grow: 0;
+  }
+
+  .VPNavBar .content-body > .xh-framework {
+    margin-inline-end: auto;
+    margin-inline-start: 12px;
+  }
+}
