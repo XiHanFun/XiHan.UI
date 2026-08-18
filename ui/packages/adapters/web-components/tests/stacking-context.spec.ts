@@ -207,3 +207,19 @@ describe('浮层展开时的层叠上下文诊断', () => {
     expect(traps()).toHaveLength(0)
   })
 })
+
+describe('body 与根元素不算陷阱', () => {
+  it('滚动锁给 body 写 position: fixed 时不报', () => {
+    document.body.style.position = 'fixed'
+    const host = document.createElement('div')
+    const positioner = document.createElement('div')
+    positioner.dataset.part = 'positioner'
+    host.append(positioner)
+    document.body.append(host)
+
+    expect(findStackingTrap(positioner)).toBeNull()
+
+    document.body.style.position = ''
+    host.remove()
+  })
+})
