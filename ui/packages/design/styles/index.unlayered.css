@@ -2209,8 +2209,9 @@
 }
 
 [data-scope='mention'][data-part='root'] {
-  /* 尺寸档只换这四个私有槽，输入框与候选都从 root 继承它们，换档不必给每个部件各写一条选择器。
+  /* 尺寸档只换这五个私有槽，输入框与候选都从 root 继承它们，换档不必给每个部件各写一条选择器。
      浮层在 positioner 里、也是 root 的后代，一并继承 */
+  --xh-_mention-h: var(--xh-control-h-md);
   --xh-_mention-px: var(--xh-control-px-md);
   --xh-_mention-py: var(--xh-field-py);
   --xh-_mention-gap: var(--xh-control-gap-md);
@@ -2235,6 +2236,7 @@
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
 [data-scope='mention'][data-part='root'][data-size='sm'] {
+  --xh-_mention-h: var(--xh-control-h-sm);
   --xh-_mention-px: var(--xh-control-px-sm);
   --xh-_mention-py: var(--xh-space-1);
   --xh-_mention-gap: var(--xh-control-gap-sm);
@@ -2242,6 +2244,7 @@
 }
 
 [data-scope='mention'][data-part='root'][data-size='lg'] {
+  --xh-_mention-h: var(--xh-control-h-lg);
   --xh-_mention-px: var(--xh-control-px-lg);
   --xh-_mention-py: var(--xh-space-3);
   --xh-_mention-gap: var(--xh-control-gap-lg);
@@ -2275,6 +2278,8 @@
 [data-scope='mention'][data-part='input'] {
   display: block;
   inline-size: 100%;
+  /* 缺省宿主是 textarea：高度按行数撑，控件档只兜住底线 */
+  min-block-size: var(--xh-mention-input-h, var(--xh-_mention-h));
   padding-block: var(--xh-mention-input-py, var(--xh-_mention-py));
   padding-inline: var(--xh-mention-input-px, var(--xh-_mention-px));
   border: var(--xh-stroke-thin) solid var(--xh-mention-input-border, var(--xh-_mention-input-border));
@@ -2288,6 +2293,13 @@
   /* 多行宿主只许纵向拉伸：横向拉宽会把浮层与输入框的对齐拽歪 */
   resize: vertical;
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 单行宿主定高到控件档，纵向内距归零，与并排的其他控件等高。
+   单行与多行在 DOM 上只差一个标签名，没有别的标记可选，所以按标签名分支 */
+input[data-scope='mention'][data-part='input'] {
+  block-size: var(--xh-mention-input-h, var(--xh-_mention-h));
+  padding-block: 0;
 }
 
 [data-scope='mention'][data-part='input'][hidden] {
@@ -2861,6 +2873,7 @@
   --xh-_popselect-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
+/* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
 [data-scope='popselect'][data-part='root'][data-variant='ghost'] {
   --xh-_popselect-trigger-bg: transparent;
   --xh-_popselect-trigger-border: transparent;
@@ -3770,14 +3783,16 @@
  * 元素升级前的形态。
  *
  * 收起态由元素在 wire() 里用内联 display 做，而 data-scope / data-part 也是那一刻才打上，
- * 所以 JS 到达之前浮层子树既没有皮肤也没有收起——内容会以裸文本堆在页面流里，
+ * 所以 JS 到达之前这段子树既没有皮肤也没有收起——内容会以裸文本堆在页面流里，
  * 并被搜索引擎与读屏当作正文。SSR / SSG 直出时这段时间尤其长。
  *
  * 这里按作者写的 data-xh-part 选中，那是升级前唯一存在的标记。
+ * 名单与元素的对应由 check-undefined-guard.mjs 双向守着。
  */
 
 :where(
   xh-cascader,
+  xh-collapsible,
   xh-color-picker,
   xh-combobox,
   xh-context-menu,
@@ -3785,11 +3800,16 @@
   xh-dialog,
   xh-drawer,
   xh-hover-card,
+  xh-image-viewer,
+  xh-mention,
   xh-menu,
   xh-menubar,
   xh-navigation-menu,
+  xh-popconfirm,
   xh-popover,
+  xh-popselect,
   xh-select,
+  xh-steps,
   xh-time-picker,
   xh-tooltip,
   xh-tour,
@@ -5591,10 +5611,10 @@
   --xh-_cascader-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
 }
 
-/* ghost 无框无底，可见反馈只在聚焦时给；边框宽度仍占位，切换形态不引起布局抖动 */
+/* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
 [data-scope='cascader'][data-part='root'][data-variant='ghost'] {
   --xh-_cascader-border: transparent;
-  --xh-_cascader-border-hover: transparent;
+  --xh-_cascader-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_cascader-bg: transparent;
 }
 
@@ -7284,6 +7304,7 @@
   --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
+/* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
 [data-scope='combobox'][data-part='root'][data-variant='ghost'] {
   --xh-_combobox-control-bg: transparent;
   --xh-_combobox-control-border: transparent;
@@ -7858,6 +7879,10 @@
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='context-menu'][data-part='positioner'] {
+  /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，content 继承它限高；
+     引擎没算（尚未落位 / 无引擎）时不额外限高 */
+  --xh-_context-menu-available-h: 100vh;
+
   position: fixed;
   z-index: var(--xh-layer-popover);
   /* 空壳不吃指针，交互只发生在 content 上 */
@@ -7874,6 +7899,9 @@
   flex-direction: column;
   min-inline-size: var(--xh-context-menu-min-w, var(--xh-overlay-menu-min-w));
   max-inline-size: var(--xh-context-menu-max-w, var(--xh-overlay-max-w));
+  /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
+     列表族的 16rem 对命令菜单偏矮，这里另给一档 */
+  max-block-size: min(var(--xh-context-menu-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_context-menu-available-h));
   padding-block: var(--xh-context-menu-py, var(--xh-space-1));
   padding-inline: var(--xh-context-menu-px, var(--xh-space-1));
   border: var(--xh-stroke-thin) solid var(--xh-context-menu-border, var(--xh-border-default));
@@ -7881,6 +7909,8 @@
   background: var(--xh-context-menu-bg, var(--xh-bg-surface));
   color: var(--xh-context-menu-fg, var(--xh-fg-default));
   box-shadow: var(--xh-context-menu-shadow, var(--xh-elevation-2));
+  /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着 */
+  overflow-y: auto;
   pointer-events: auto;
 }
 
@@ -8161,11 +8191,11 @@
   --xh-_date-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
-/* 无框式：底与边都让开，可见反馈只剩聚焦那一档 */
+/* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
 [data-scope='date-field'][data-part='root'][data-variant='ghost'] {
   --xh-_date-field-control-bg: transparent;
   --xh-_date-field-control-border: transparent;
-  --xh-_date-field-control-border-hover: transparent;
+  --xh-_date-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -8375,7 +8405,7 @@
   --xh-_date-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
-/* 无框：底与描边都透明，平时只看得见日期，悬停与聚焦才浮出边界 */
+/* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
 [data-scope='date-picker'][data-part='root'][data-variant='ghost'] {
   --xh-_date-picker-control-bg: transparent;
   --xh-_date-picker-control-border: transparent;
@@ -9327,8 +9357,7 @@
   cursor: not-allowed;
 }
 
-/* 预览区与输入框轮流上场，两者在同一处落脚：
-   area 定死最小宽高，切换形态时这一块不会忽大忽小地跳 */
+/* 预览区与输入框轮流上场，两者在同一处落脚：area 给这一处定最小宽高 */
 [data-scope='editable'][data-part='area'] {
   display: inline-flex;
   align-items: center;
@@ -9340,21 +9369,23 @@
   display: none;
 }
 
-/* 预览区的内边距与边框要和输入框对齐：只有描边是透明的，
-   否则从预览切到编辑时文字会左右挪一下 */
+/* 预览区的高度、内边距与边框都和输入框取同一档，只有描边是透明的：
+   单行值定在控件档上，多行值才往下长 */
 [data-scope='editable'][data-part='preview'] {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   inline-size: 100%;
+  min-block-size: var(--xh-editable-preview-min-h, var(--xh-control-h-md));
   padding-inline: var(--xh-editable-preview-px, var(--xh-control-px-md));
   padding-block: 0;
   border: var(--xh-stroke-thin) solid transparent;
   border-radius: var(--xh-editable-preview-radius, var(--xh-shape-control));
   color: var(--xh-editable-preview-fg, var(--xh-fg-default));
   font-size: var(--xh-editable-preview-font-size, var(--xh-text-body-size));
-  line-height: var(--xh-editable-preview-line-height, var(--xh-control-h-md));
-  /* 值里的换行与连续空格照原样显示，但过长的行仍要能断开 */
+  line-height: var(--xh-leading-normal);
+  /* 值里的换行与连续空格照原样显示，过长的行断开而不撑破弹性行 */
   white-space: pre-wrap;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 /* 编辑态由连接层给 hidden；上面那条 display 会盖掉 UA 规则，少了这条就收不起来 */
@@ -10925,6 +10956,10 @@
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='menu'][data-part='positioner'] {
+  /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，content 继承它限高；
+     引擎没算（尚未落位 / 无引擎）时不额外限高 */
+  --xh-_menu-available-h: 100vh;
+
   position: fixed;
   z-index: var(--xh-layer-popover);
   /* 空壳不吃指针，交互只发生在 content 上 */
@@ -10952,6 +10987,9 @@
   flex-direction: column;
   min-inline-size: var(--xh-menu-min-w, var(--xh-overlay-menu-min-w));
   max-inline-size: var(--xh-menu-max-w, var(--xh-overlay-max-w));
+  /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
+     列表族的 16rem 对命令菜单偏矮，这里另给一档 */
+  max-block-size: min(var(--xh-menu-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menu-available-h));
   padding-block: var(--xh-menu-py, var(--xh-space-1));
   padding-inline: var(--xh-menu-px, var(--xh-space-1));
   border: var(--xh-stroke-thin) solid var(--xh-menu-border, var(--xh-border-default));
@@ -10959,6 +10997,8 @@
   background: var(--xh-menu-bg, var(--xh-bg-surface));
   color: var(--xh-menu-fg, var(--xh-fg-default));
   box-shadow: var(--xh-menu-shadow, var(--xh-elevation-2));
+  /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着 */
+  overflow-y: auto;
   pointer-events: auto;
 }
 
@@ -11213,6 +11253,10 @@
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='menubar'][data-part='positioner'] {
+  /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，content 继承它限高；
+     引擎没算（尚未落位 / 无引擎）时不额外限高 */
+  --xh-_menubar-available-h: 100vh;
+
   position: fixed;
   z-index: var(--xh-layer-popover);
   /* 空壳不吃指针，交互只发生在 content 上 */
@@ -11228,7 +11272,10 @@
   display: flex;
   flex-direction: column;
   min-inline-size: var(--xh-menubar-menu-min-w, var(--xh-overlay-menu-min-w));
-  max-inline-size: var(--xh-menubar-menu-max-w, 20rem);
+  max-inline-size: var(--xh-menubar-menu-max-w, var(--xh-overlay-max-w));
+  /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
+     列表族的 16rem 对命令菜单偏矮，这里另给一档 */
+  max-block-size: min(var(--xh-menubar-menu-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menubar-available-h));
   padding-block: var(--xh-menubar-menu-py, var(--xh-space-1));
   padding-inline: var(--xh-menubar-menu-px, var(--xh-space-1));
   border: var(--xh-stroke-thin) solid var(--xh-menubar-menu-border, var(--xh-border-default));
@@ -11236,6 +11283,8 @@
   background: var(--xh-menubar-menu-bg, var(--xh-bg-surface));
   color: var(--xh-menubar-menu-fg, var(--xh-fg-default));
   box-shadow: var(--xh-menubar-menu-shadow, var(--xh-elevation-2));
+  /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着 */
+  overflow-y: auto;
   pointer-events: auto;
 }
 
@@ -11781,7 +11830,7 @@
   --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control));
 }
 
-/* 无框：底与描边都透明，平时只看得见数字，悬停与聚焦才浮出边界 */
+/* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
 [data-scope='number-field'][data-part='root'][data-variant='ghost'] {
   --xh-_number-field-bg: transparent;
   --xh-_number-field-border: transparent;
@@ -13172,6 +13221,7 @@
   --xh-_select-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
+/* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
 [data-scope='select'][data-part='root'][data-variant='ghost'] {
   --xh-_select-trigger-bg: transparent;
   --xh-_select-trigger-border: transparent;
@@ -15202,7 +15252,8 @@
   align-items: center;
   gap: var(--xh-tags-input-control-gap, var(--xh-_tags-input-control-gap));
   min-block-size: var(--xh-tags-input-control-h, var(--xh-_tags-input-control-h));
-  padding-block: var(--xh-tags-input-control-py, var(--xh-space-1));
+  /* 纵向只留半档：标签行加上下内距要装进控件档的高度里 */
+  padding-block: var(--xh-tags-input-control-py, var(--xh-space-0_5));
   padding-inline: var(--xh-tags-input-control-px, var(--xh-_tags-input-control-px));
   border: var(--xh-stroke-thin) solid var(--xh-tags-input-control-border, var(--xh-_tags-input-control-border));
   border-radius: var(--xh-tags-input-control-radius, var(--xh-shape-control));
@@ -15263,7 +15314,8 @@
   /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
   font-family: inherit;
   font-size: var(--xh-tags-input-input-font-size, var(--xh-_tags-input-input-font-size));
-  line-height: var(--xh-leading-normal);
+  /* 行盒收到标签那一行的高度以内，输入框不去顶高整个框 */
+  line-height: var(--xh-leading-tight);
 }
 
 [data-scope='tags-input'][data-part='input']::placeholder {
@@ -15324,7 +15376,7 @@
   align-items: center;
   gap: var(--xh-tags-input-item-gap, var(--xh-space-1));
   max-inline-size: 100%;
-  padding-block: var(--xh-tags-input-item-py, var(--xh-space-1));
+  padding-block: var(--xh-tags-input-item-py, var(--xh-space-0_5));
   padding-inline: var(--xh-tags-input-item-px, var(--xh-space-2));
   user-select: none;
 }
@@ -15342,14 +15394,14 @@
   text-overflow: ellipsis;
 }
 
-/* 删除按钮画成胶囊里的小圆钮，与文字同一行、不撑高胶囊 */
+/* 删除按钮画成胶囊里的小圆钮，与文字同一行，尺寸取控件指示件档（随密度收） */
 [data-scope='tags-input'][data-part='item-delete-trigger'] {
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
-  inline-size: var(--xh-tags-input-delete-size, 1rem);
-  block-size: var(--xh-tags-input-delete-size, 1rem);
+  inline-size: var(--xh-tags-input-delete-size, var(--xh-control-indicator-size));
+  block-size: var(--xh-tags-input-delete-size, var(--xh-control-indicator-size));
   padding: 0;
   border: 0;
   border-radius: var(--xh-shape-pill);
@@ -15400,7 +15452,7 @@
    自己加一条 display 反而要再补一条 [hidden] 规则去抵消它 */
 [data-scope='tags-input'][data-part='item-input'] {
   max-inline-size: 100%;
-  padding-block: var(--xh-tags-input-item-py, var(--xh-space-1));
+  padding-block: var(--xh-tags-input-item-py, var(--xh-space-0_5));
   padding-inline: var(--xh-tags-input-item-px, var(--xh-space-2));
   border: var(--xh-stroke-thin) solid var(--xh-tags-input-item-input-border, var(--xh-border-control));
   border-radius: var(--xh-tags-input-item-radius, var(--xh-shape-pill));
@@ -15424,14 +15476,14 @@
   cursor: not-allowed;
 }
 
-/* 清空按钮贴在框的末端，与输入框同一行 */
+/* 清空按钮贴在框的末端，与输入框同一行，尺寸取控件指示件档（随密度收） */
 [data-scope='tags-input'][data-part='clear-trigger'] {
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
-  inline-size: var(--xh-tags-input-clear-size, 1.25rem);
-  block-size: var(--xh-tags-input-clear-size, 1.25rem);
+  inline-size: var(--xh-tags-input-clear-size, var(--xh-control-indicator-size));
+  block-size: var(--xh-tags-input-clear-size, var(--xh-control-indicator-size));
   padding: 0;
   border: 0;
   border-radius: var(--xh-shape-pill);
@@ -15545,7 +15597,7 @@
   --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control));
 }
 
-/* 无框：底与描边都透明，平时只看得见字，悬停与聚焦才浮出边界 */
+/* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
 [data-scope='text-field'][data-part='root'][data-variant='ghost'] {
   --xh-_text-field-bg: transparent;
   --xh-_text-field-border: transparent;
@@ -15852,11 +15904,11 @@
   --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
-/* 无框式：底与边都让开，可见反馈只剩聚焦那一档 */
+/* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
 [data-scope='time-field'][data-part='root'][data-variant='ghost'] {
   --xh-_time-field-control-bg: transparent;
   --xh-_time-field-control-border: transparent;
-  --xh-_time-field-control-border-hover: transparent;
+  --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -16068,7 +16120,7 @@
   --xh-_time-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
-/* 无框：底与描边都透明，平时只看得见时间，悬停与聚焦才浮出边界 */
+/* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
 [data-scope='time-picker'][data-part='root'][data-variant='ghost'] {
   --xh-_time-picker-control-bg: transparent;
   --xh-_time-picker-control-border: transparent;
@@ -18190,10 +18242,10 @@
   --xh-_tree-select-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
 }
 
-/* ghost 无框无底，可见反馈只在聚焦时给；边框宽度仍占位，切换形态不引起布局抖动 */
+/* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
 [data-scope='tree-select'][data-part='root'][data-variant='ghost'] {
   --xh-_tree-select-border: transparent;
-  --xh-_tree-select-border-hover: transparent;
+  --xh-_tree-select-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_tree-select-bg: transparent;
 }
 
