@@ -334,13 +334,10 @@
       "$type": "number",
       "$value": 100
     },
-    "drawer": {
-      "$type": "number",
-      "$value": 1000
-    },
     "modal": {
       "$type": "number",
-      "$value": 1100
+      "$value": 1100,
+      "$description": "遮罩式浮层共用一档：对话框、抽屉、图片查看器都在这里，先后由 portal 顺序定"
     },
     "popover": {
       "$type": "number",
