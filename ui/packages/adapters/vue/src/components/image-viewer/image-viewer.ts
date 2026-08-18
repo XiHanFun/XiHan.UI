@@ -131,7 +131,7 @@ export const XhImageViewerContent = defineComponent({
       if (!ctx.rendered.value)
         return null
       const api = ctx.api.value
-      return h(Teleport, { to: 'body' }, [
+      return h(Teleport, { to: ctx.portalTarget.value }, [
         h('div', {
           ...api.getBackdropProps() as Record<string, unknown>,
           ref: (el: unknown) => {

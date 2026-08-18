@@ -3,7 +3,7 @@ import type { Direction, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { mergeProps } from '@xihan-ui/kernel'
-import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, defineComponent, h, mergeProps as mergeVueProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { provideMenu, useMenuContext } from '../menu/context'
 import { useMenu } from '../menu/use-menu'
@@ -129,12 +129,17 @@ export const XhContextMenuTrigger = defineComponent({
 
 export const XhContextMenuPositioner = defineComponent({
   name: 'XhContextMenuPositioner',
-  setup(_, { slots }) {
+  // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
+  inheritAttrs: false,
+  setup(_, { slots, attrs }) {
     const ctx = useContextMenuContext()
-    return () => h('div', {
-      ...ctx.api.value.getPositionerProps() as Record<string, unknown>,
-      ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
-    }, slots.default?.())
+    // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
+    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+      h('div', {
+        ...mergeVueProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
+      }, slots.default?.()),
+    ])
   },
 })
 

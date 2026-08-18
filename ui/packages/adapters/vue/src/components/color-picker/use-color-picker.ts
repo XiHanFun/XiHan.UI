@@ -6,6 +6,7 @@ import { colorPickerMachine, connectColorPicker } from '@xihan-ui/headless'
 import { createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
+import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
@@ -24,12 +25,15 @@ export interface ColorPickerContext {
   areaRef: Ref<HTMLElement | null>
   /** 逐条登记通道轨道节点，由滑杆部件自报是哪一条。 */
   setChannelTrack: (channel: ColorPickerChannel, el: HTMLElement | null) => void
+  /** 浮层搬到哪儿：全局配置的 portalContainer > body。 */
+  portalTarget: ComputedRef<string | Element>
 }
 
 export function useColorPicker(
   props: ColorPickerSchema['props'],
   handlers: Pick<ColorPickerSchema['props'], 'onValueChange' | 'onOpenChange'> = {},
 ): ColorPickerContext {
+  const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
@@ -74,6 +78,8 @@ export function useColorPicker(
   const api = computed(() => connectColorPicker(service, vueNormalize))
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
   const visible = useOverlayExit({ config, isOpen: () => api.value.open, contentRef })
+  // 先问全局配置的落点，没有才落 body
+  const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
   return {
     visible,
@@ -83,6 +89,7 @@ export function useColorPicker(
     positionerRef,
     contentRef,
     areaRef,
+    portalTarget,
     setChannelTrack: (channel, el) => {
       channelTracks[channel] = el
     },

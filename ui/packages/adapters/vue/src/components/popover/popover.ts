@@ -2,7 +2,7 @@ import type { PopoverApi, PopoverSchema } from '@xihan-ui/headless'
 import type { Placement, Size } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, mergeProps, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { providePopover, usePopoverContext } from './context'
@@ -72,12 +72,17 @@ export const XhPopoverTrigger = defineComponent({
 
 export const XhPopoverPositioner = defineComponent({
   name: 'XhPopoverPositioner',
-  setup(_, { slots }) {
+  // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
+  inheritAttrs: false,
+  setup(_, { slots, attrs }) {
     const ctx = usePopoverContext()
-    return () => h('div', {
-      ...ctx.api.value.getPositionerProps() as Record<string, unknown>,
-      ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
-    }, slots.default?.())
+    // 定位层搬到 portal 落点，逃开祖先的层叠上下文
+    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+      h('div', {
+        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
+      }, slots.default?.()),
+    ])
   },
 })
 

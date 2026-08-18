@@ -7,6 +7,7 @@ import { attachCssExit, createPresence } from '@xihan-ui/behavior/presence'
 import { connectImageViewer, imageViewerMachine } from '@xihan-ui/headless'
 import { createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { createVueIdGenerator } from '../../runtime/vue-id'
@@ -14,6 +15,8 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 export interface ImageViewerContext {
   service: Service<ImageViewerSchema>
   api: ComputedRef<ImageViewerApi>
+  /** 浮层搬到哪儿：全局配置 > 单一落点。 */
+  portalTarget: ComputedRef<string | Element>
   rendered: Ref<boolean>
   contentRef: Ref<HTMLElement | null>
   backdropRef: Ref<HTMLElement | null>
@@ -34,10 +37,12 @@ export function useImageViewer(
   // 服务端算不出 rendered 就只发一个空占位，客户端水合时补出整棵子树 = mismatch。
   const rendered = ref(service.state.get() === 'open')
 
+  let config: RuntimeConfig | null = null
+
   if (typeof document !== 'undefined') {
-    const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
+    config = createRuntimeConfig({ scope, idGenerator: idGen })
     // 只提供注册函数，入栈出栈由机器的 trackOverlay 效应按展开态驱动
-    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
+    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
       kind: 'modal',
       node: () => contentRef.value,
       branches: () => [],
@@ -54,7 +59,7 @@ export function useImageViewer(
     })
     rendered.value = presence.rendered
 
-    service.refs.set('config', config)
+    service.refs.set('config', config!)
     service.refs.set('registerLayer', registerLayer)
     service.refs.set('getContentEl', () => contentRef.value)
 
@@ -75,5 +80,8 @@ export function useImageViewer(
   }
 
   const api = computed(() => connectImageViewer(service, vueNormalize))
-  return { service, api, rendered, contentRef, backdropRef }
+  const xhConfig = useXhConfig()
+  const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
+
+  return { service, api, rendered, contentRef, backdropRef, portalTarget }
 }

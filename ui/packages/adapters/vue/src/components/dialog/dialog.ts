@@ -77,7 +77,7 @@ export const XhDialogContent = defineComponent({
       if (!ctx.rendered.value)
         return null
       const api = ctx.api.value
-      return h(Teleport, { to: 'body' }, [
+      return h(Teleport, { to: ctx.portalTarget.value }, [
         api.open || ctx.rendered.value
           ? h('div', {
               ...api.getBackdropProps() as Record<string, unknown>,

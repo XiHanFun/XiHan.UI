@@ -2,7 +2,7 @@ import type { TourApi, TourSchema, TourStep } from '@xihan-ui/headless'
 import type { Placement } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, mergeProps, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideTour, useTourContext } from './context'
 import { useTour } from './use-tour'
@@ -92,31 +92,46 @@ export const XhTourRoot = defineComponent({
 
 export const XhTourBackdrop = defineComponent({
   name: 'XhTourBackdrop',
-  setup(_, { slots }) {
+  // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到遮罩上
+  inheritAttrs: false,
+  setup(_, { slots, attrs }) {
     const ctx = useTourContext()
-    return () => h('div', {
-      ...ctx.api.value.getBackdropProps() as Record<string, unknown>,
-      ref: (el: unknown) => { ctx.backdropRef.value = el as HTMLElement },
-    }, slots.default?.())
+    // 与浮层同去一个落点：遮罩留在原地就会被面板甩下，两层不再叠在一起
+    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+      h('div', {
+        ...mergeProps(ctx.api.value.getBackdropProps() as Record<string, unknown>, attrs),
+        ref: (el: unknown) => { ctx.backdropRef.value = el as HTMLElement },
+      }, slots.default?.()),
+    ])
   },
 })
 
 export const XhTourSpotlight = defineComponent({
   name: 'XhTourSpotlight',
-  setup() {
+  // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到高亮框上
+  inheritAttrs: false,
+  setup(_, { attrs }) {
     const ctx = useTourContext()
-    return () => h('div', ctx.api.value.getSpotlightProps() as Record<string, unknown>)
+    // 高亮框与遮罩是同一层暗幕的两半，必须一起搬
+    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+      h('div', mergeProps(ctx.api.value.getSpotlightProps() as Record<string, unknown>, attrs)),
+    ])
   },
 })
 
 export const XhTourPositioner = defineComponent({
   name: 'XhTourPositioner',
-  setup(_, { slots }) {
+  // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
+  inheritAttrs: false,
+  setup(_, { slots, attrs }) {
     const ctx = useTourContext()
-    return () => h('div', {
-      ...ctx.api.value.getPositionerProps() as Record<string, unknown>,
-      ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
-    }, slots.default?.())
+    // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
+    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+      h('div', {
+        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
+      }, slots.default?.()),
+    ])
   },
 })
 
