@@ -47,7 +47,10 @@ export const XhNavigationMenuRoot = defineComponent({
       const children = slotPaints(authored)
         ? authored
         : (props.collection ? renderDefaultTree(ctx.api.value.collection, slots.panel) : undefined)
-      return h('nav', ctx.api.value.getRootProps() as Record<string, unknown>, children)
+      return h('nav', {
+        ...ctx.api.value.getRootProps() as Record<string, unknown>,
+        ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
+      }, children)
     }
   },
 })

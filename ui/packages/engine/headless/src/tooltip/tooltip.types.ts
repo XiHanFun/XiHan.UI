@@ -1,4 +1,4 @@
-import type { Direction, Placement, PositionEnginePort, PositionResult, PropTypes, Size, Tone } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface TooltipOpenChangeDetails {
@@ -6,10 +6,13 @@ export interface TooltipOpenChangeDetails {
 }
 
 /**
- * 适配器在挂载前填入定位引擎与元素 getter。
- * 三项皆可缺省，缺省时机器照常转移，只是不定位。
+ * 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter。
+ * 各项皆可缺省，缺省时机器照常转移，只是不定位、不入层栈。
  */
 export interface TooltipRefs {
+  config: RuntimeConfig | null
+  /** 注册本层并返回撤销句柄，只在浮层可见期间调用。 */
+  registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
   position: PositionEnginePort | null
   /** 锚点元素（trigger）。 */
   getAnchorEl: () => HTMLElement | null
@@ -48,8 +51,11 @@ export interface TooltipSchema extends MachineSchema {
   }
   computed: Record<string, never>
   refs: TooltipRefs
-  /** opening/closing 是延时等待态：opening 时浮层仍隐藏，closing 时浮层仍可见。 */
-  state: 'closed' | 'opening' | 'open' | 'closing'
+  /**
+   * visible 是复合状态，两个子态下浮层都可见，定位与消解层挂在父状态上。
+   * opening 是展开前的等待态（浮层仍隐藏），visible.closing 是收起前的等待态（浮层仍可见）。
+   */
+  state: 'closed' | 'opening' | 'visible' | 'visible.open' | 'visible.closing'
   event:
     | { type: 'POINTER.ENTER' }
     | { type: 'POINTER.LEAVE' }
@@ -68,7 +74,7 @@ export interface TooltipSchema extends MachineSchema {
   tag: never
   guard: 'isOpenControlled' | 'isDisabled' | 'isFocusOpened'
   action: 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'markFocusOpened' | 'clearFocusOpened'
-  effect: 'waitForOpenDelay' | 'waitForCloseDelay' | 'trackPosition'
+  effect: 'waitForOpenDelay' | 'waitForCloseDelay' | 'trackPosition' | 'trackLayer'
 }
 
 export interface TooltipApi<T extends PropTypes = PropTypes> {

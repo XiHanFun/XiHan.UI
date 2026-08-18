@@ -78,7 +78,8 @@ export function connectNavigationMenu<T extends PropTypes>(
           return
         send({ type: 'DISMISS' })
       },
-      // Escape 挂在根上，覆盖焦点在面板内或仍在 trigger 上两种情形
+      // 层在场时 Escape 由消解层按层栈仲裁；这一条是没有 DOM 环境时的兜底，
+      // 覆盖焦点在面板内或仍在 trigger 上两种情形
       'onKeydown': (event: KeyboardEvent) => {
         if (event.key !== 'Escape' || value == null)
           return

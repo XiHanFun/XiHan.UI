@@ -1,5 +1,5 @@
 import type { TooltipOpenChangeDetails, TooltipSchema } from '@xihan-ui/headless'
-import type { Placement, PositionEnginePort, Size, Tone } from '@xihan-ui/kernel'
+import type { Cleanup, Layer, Placement, PositionEnginePort, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
 import { connectTooltip, tooltipAnatomy, tooltipMachine, tooltipMeta } from '@xihan-ui/headless'
@@ -76,6 +76,9 @@ export class XhTooltipElement extends XhElement {
 
   private engine: PositionEnginePort | null = null
 
+  /** 消解层与退场闸门共用一份环境包。 */
+  private config: RuntimeConfig | null = null
+
   private readonly notify = (details: TooltipOpenChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
   }
@@ -102,12 +105,35 @@ export class XhTooltipElement extends XhElement {
     }
   }
 
+  private ensureConfig(): void {
+    this.config ??= createRuntimeConfig()
+  }
+
+  // 只交注册函数、不在连接期注册：层的入栈出栈跟着可见态走（机器的 trackLayer 效应负责）。
+  // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
+  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
+    this.ensureConfig()
+    return this.config!.layerRegistry.register({
+      // 提示只参与 Escape 仲裁与栈顶判定：节点就在文档流里，不陷焦点、不锁滚动、没有遮罩
+      kind: 'inline',
+      node: () => this.getPart('content'),
+      // trigger 记为本层分支，点它算层内交互
+      branches: () => [this.getPart('trigger')].filter(Boolean) as Element[],
+      isModal: () => false,
+      setModal: () => {},
+      surfaces: () => [],
+    })
+  }
+
   // 每次(重)建机器后都要重注：refs 属于机器实例，重连时的新机器不会继承旧的。
   // service 取参数不取 this.ctrl，重建时不依赖字段已回填。
   private injectRefs(svc: Service<TooltipSchema>): void {
     // 无 DOM（SSR / 纯逻辑测试）时不建引擎，机器读到 null 会跳过定位
     if (!this.engine && typeof document !== 'undefined')
       this.engine = createPositionEngine()
+    this.ensureConfig()
+    svc.refs.set('config', this.config)
+    svc.refs.set('registerLayer', this.registerLayer)
     svc.refs.set('position', this.engine)
     svc.refs.set('getAnchorEl', () => this.getPart('trigger'))
     svc.refs.set('getFloatingEl', () => this.getPart('positioner'))
@@ -147,11 +173,11 @@ export class XhTooltipElement extends XhElement {
     // 就会盖过 UA 的 [hidden]{display:none}，收起态的提示框会永久悬在页面上。
     // 与 dialog/collapsible/popover 一致，用内联样式兜底。
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。
-    // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画。
-    // 本元素不挂消解层、没有别处要用的 config，这里就地建一份最小的（只用到 reducedMotion）
+    // 必须排在 put('content') 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     const content = this.getPart('content')
+    this.ensureConfig()
     this.exit ??= createOverlayExit({
-      config: createRuntimeConfig(),
+      config: this.config!,
       open: api.open,
       onExitComplete: () => this.requestUpdate(),
     })
@@ -166,7 +192,7 @@ export class XhTooltipElement extends XhElement {
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()
     this.exit = null
-    if (this.ctrl.service.state.get() !== 'open')
+    if (!this.ctrl.service.state.matches('visible'))
       this.setPartHidden(this.getPart('content'), true)
   }
 }

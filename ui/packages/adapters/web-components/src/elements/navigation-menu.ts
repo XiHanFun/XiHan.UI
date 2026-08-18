@@ -1,5 +1,5 @@
 import type { NavigationMenuNode, NavigationMenuSchema, NavigationMenuTranslations, NavigationMenuValueChangeDetails } from '@xihan-ui/headless'
-import type { Direction, IdGenerator, Orientation, Size, Tone } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, IdGenerator, Layer, Orientation, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { OverlayExit } from '../overlay-exit'
 import { isItemDisabled } from '@xihan-ui/behavior'
@@ -75,8 +75,8 @@ function authorDisabled(el: HTMLElement): boolean {
 export class XhNavigationMenuElement extends XhElement {
   /** 逐个 content 一份退场闸门：一个菜单一份，它们各开各的。 */
   private readonly exits = new Map<HTMLElement, OverlayExit>()
-  /** 闸门只用到 reducedMotion，本元素别处不需要 config，建一份共用即可。 */
-  private exitConfig: ReturnType<typeof createRuntimeConfig> | null = null
+  /** 退场闸门与消解层共用一份环境包。 */
+  private config: RuntimeConfig | null = null
 
   static override partContract = { anatomy: navigationMenuAnatomy, meta: navigationMenuMeta }
 
@@ -145,10 +145,33 @@ export class XhNavigationMenuElement extends XhElement {
     }
   }
 
+  private ensureConfig(): void {
+    this.config ??= createRuntimeConfig({ scope: this.menuScope, idGenerator: this.idGen })
+  }
+
+  // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开项走（机器的 syncLayer 负责）。
+  // 连接期就注册会让层与开合无关地常驻栈里，把同页其它层的 Escape 堵死。
+  private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
+    this.ensureConfig()
+    return this.config!.layerRegistry.register({
+      // 导航只参与 Escape 仲裁与栈顶判定：面板就在文档流里，不陷焦点、不锁滚动、没有遮罩
+      kind: 'inline',
+      // 整个 nav 都算层内：trigger 与面板都住在里面
+      node: () => this.getPart('root'),
+      branches: () => [],
+      isModal: () => false,
+      setModal: () => {},
+      surfaces: () => [],
+    })
+  }
+
   // onBuilt 在 ctrl 构造期就跑（此刻 this.ctrl 尚未赋值），故 service 由参数传入。
   // 惰性 getter：量测推迟到 DOM 就位之后才调它。
   private injectRefs(svc: Service<NavigationMenuSchema>): void {
+    this.ensureConfig()
     svc.refs.set('getListEl', () => this.getPart('list'))
+    svc.refs.set('config', this.config)
+    svc.refs.set('registerLayer', this.registerLayer)
   }
 
   protected wire(): void {
@@ -187,8 +210,9 @@ export class XhNavigationMenuElement extends XhElement {
       const open = props.hidden !== true
       let gate = this.exits.get(el)
       if (!gate) {
+        this.ensureConfig()
         gate = createOverlayExit({
-          config: this.exitConfig ??= createRuntimeConfig(),
+          config: this.config!,
           open,
           onExitComplete: () => this.requestUpdate(),
         })
