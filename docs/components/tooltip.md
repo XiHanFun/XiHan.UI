@@ -86,7 +86,7 @@ disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
 
 ## 状态机
 
-**状态**：`closed` · `opening` · `open` · `closing`
+**状态**：`closed` · `opening` · `visible` · `visible.open` · `visible.closing`
 
 **事件**：`POINTER.ENTER` · `POINTER.LEAVE` · `POINTER.DOWN` · `FOCUS` · `BLUR` · `ESCAPE` · `OPEN` · `CLOSE` · `after.openDelay` · `after.closeDelay` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE`
 
@@ -112,4 +112,4 @@ disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Tab` / `Shift+Tab` | not disabled | 焦点进入 trigger 立即展开、离开立即收起，都不走延时 |
-| `Escape` | focus in trigger, 展开或等待展开中 | 立即收起，不等 closeDelay |
+| `Escape` | 展开中且本层在层栈栈顶，或 focus in trigger 且等待展开中 | 立即收起，不等 closeDelay；下层浮层不受这一次按键影响 |

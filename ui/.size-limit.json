@@ -132,7 +132,7 @@
     "name": "styles",
     "path": "packages/design/styles/css/*.css",
     "gzip": true,
-    "limit": "94 kB"
+    "limit": "96 kB"
   },
   {
     "name": "icons：只用 CheckIcon",

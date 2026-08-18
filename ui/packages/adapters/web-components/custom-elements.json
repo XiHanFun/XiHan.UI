@@ -7797,6 +7797,9 @@
               "name": "--xh-context-menu-item-radius"
             },
             {
+              "name": "--xh-context-menu-max-h"
+            },
+            {
               "name": "--xh-context-menu-max-w"
             },
             {
@@ -11364,7 +11367,7 @@
               "name": "--xh-editable-preview-font-size"
             },
             {
-              "name": "--xh-editable-preview-line-height"
+              "name": "--xh-editable-preview-min-h"
             },
             {
               "name": "--xh-editable-preview-px"
@@ -17961,6 +17964,9 @@
               "name": "--xh-mention-input-font-size"
             },
             {
+              "name": "--xh-mention-input-h"
+            },
+            {
               "name": "--xh-mention-input-px"
             },
             {
@@ -18471,6 +18477,9 @@
             },
             {
               "name": "--xh-menu-item-radius"
+            },
+            {
+              "name": "--xh-menu-max-h"
             },
             {
               "name": "--xh-menu-max-w"
@@ -19060,6 +19069,9 @@
               "name": "--xh-menubar-menu-fg"
             },
             {
+              "name": "--xh-menubar-menu-max-h"
+            },
+            {
               "name": "--xh-menubar-menu-max-w"
             },
             {
@@ -19183,13 +19195,13 @@
             },
             {
               "kind": "field",
-              "name": "exitConfig",
+              "name": "config",
               "type": {
-                "text": "ReturnType<typeof createRuntimeConfig> | null"
+                "text": "RuntimeConfig | null"
               },
               "privacy": "private",
               "default": "null",
-              "description": "闸门只用到 reducedMotion，本元素别处不需要 config，建一份共用即可。"
+              "description": "退场闸门与消解层共用一份环境包。"
             },
             {
               "kind": "field",
@@ -19334,6 +19346,22 @@
                   "text": "Partial<NavigationMenuSchema['props']>"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "registerLayer",
+              "privacy": "private",
+              "readonly": true
             },
             {
               "kind": "method",
@@ -33482,6 +33510,16 @@
             },
             {
               "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "消解层与退场闸门共用一份环境包。"
+            },
+            {
+              "kind": "field",
               "name": "notify",
               "privacy": "private",
               "readonly": true
@@ -33502,6 +33540,22 @@
                   "text": "Partial<TooltipSchema['props']>"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "registerLayer",
+              "privacy": "private",
+              "readonly": true
             },
             {
               "kind": "method",
