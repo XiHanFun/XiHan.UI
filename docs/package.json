@@ -33,6 +33,7 @@
     "@xihan-ui/sound": "link:../ui/packages/features/sound",
     "@xihan-ui/styles": "link:../ui/packages/design/styles",
     "@xihan-ui/vue": "link:../ui/packages/adapters/vue",
+    "@xihan-ui/web-components": "link:../ui/packages/adapters/web-components",
     "vitepress": "^1.6.4",
     "vue": "^3.5.39"
   }

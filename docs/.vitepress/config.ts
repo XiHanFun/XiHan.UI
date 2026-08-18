@@ -305,6 +305,8 @@ export default defineConfig({
     optimizeDeps: {
       exclude: [
         "@xihan-ui/vue",
+        "@xihan-ui/web-components",
+        "@xihan-ui/web-components/define",
         "@xihan-ui/styles",
         "@xihan-ui/headless",
         "@xihan-ui/behavior",
