@@ -31,7 +31,7 @@ export interface PopselectItemProps {
   disabled?: boolean
 }
 
-/** 三个视觉轴，只落在根上；触发器与浮层都从根继承私有槽。 */
+/** 三个视觉轴同时落在根与定位层上：浮层被搬到落点后不再是根的后代，私有槽各自继承。 */
 export interface PopselectProps {
   /** 形态：outline / subtle / ghost，决定触发器的描边与底色怎么用。 */
   variant?: ControlVariant

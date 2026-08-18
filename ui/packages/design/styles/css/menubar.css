@@ -6,19 +6,6 @@
 
   /* 一排 trigger。主轴跟着 data-orientation 走：菜单栏本身可以横排也可以竖排 */
   [data-scope='menubar'][data-part='root'] {
-    /* 尺寸档只换这五个私有槽，trigger 与菜单里的条目都从 root 继承它们，
-       换档不必给每个部件各写一条选择器。菜单浮层在 positioner 里、也是 root 的后代，一并继承 */
-    --xh-_menubar-trigger-py: var(--xh-space-1);
-    --xh-_menubar-trigger-px: var(--xh-control-px-sm);
-    --xh-_menubar-item-py: var(--xh-space-1_5);
-    --xh-_menubar-item-px: var(--xh-control-px-md);
-    --xh-_menubar-font-size: var(--xh-text-body-size);
-
-    /* 展开着的那张菜单的 trigger 走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底。
-       悬停与键盘焦点恒中性灰轻档、不接语气槽——两档同色相的话哪张开着就认不出来了。
-       聚焦环不在其列，它恒是 --xh-ring-focus */
-    --xh-_menubar-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
-
     display: flex;
     align-items: center;
     gap: var(--xh-menubar-gap, var(--xh-space-1));
@@ -36,25 +23,6 @@
   [data-scope='menubar'][data-part='root'][data-orientation='vertical'] {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  /* —— 尺寸 —— */
-  /* 缺省档写在上面的基础规则里。trigger 的行内内缩缺省落在控件尺 sm 档、再往下取空间尺；
-     条目纵向走 space 档、行内内缩走 control-px 档（随密度轴），换档各挪一级 */
-  [data-scope='menubar'][data-part='root'][data-size='sm'] {
-    --xh-_menubar-trigger-py: var(--xh-space-0_5);
-    --xh-_menubar-trigger-px: var(--xh-space-1_5);
-    --xh-_menubar-item-py: var(--xh-space-1);
-    --xh-_menubar-item-px: var(--xh-control-px-sm);
-    --xh-_menubar-font-size: var(--xh-font-size-sm);
-  }
-
-  [data-scope='menubar'][data-part='root'][data-size='lg'] {
-    --xh-_menubar-trigger-py: var(--xh-space-2);
-    --xh-_menubar-trigger-px: var(--xh-control-px-md);
-    --xh-_menubar-item-py: var(--xh-space-2);
-    --xh-_menubar-item-px: var(--xh-control-px-lg);
-    --xh-_menubar-font-size: var(--xh-font-size-lg);
   }
 
   /* root 只是 roving tabindex 的兜底落点，焦点转投给 trigger 之后就不再停留，不画环 */
@@ -130,6 +98,41 @@
   /* 锚点被滚出可视区：整个浮层随之收起 */
   [data-scope='menubar'][data-part='positioner'][data-hidden] {
     visibility: hidden;
+  }
+
+  /* —— 尺寸 —— */
+  /* 尺寸档只换这五个私有槽，换档不必给每个部件各写一条选择器。
+     root 与 positioner 各起一头：trigger 从 root 继承，菜单里的条目从 positioner 继承——
+     浮层搬去了 portal 落点，不再是 root 的后代。
+     缺省档写在第一条：trigger 的行内内缩落在控件尺 sm 档、再往下取空间尺；
+     条目纵向走 space 档、行内内缩走 control-px 档（随密度轴），换档各挪一级 */
+  [data-scope='menubar']:is([data-part='root'], [data-part='positioner']) {
+    --xh-_menubar-trigger-py: var(--xh-space-1);
+    --xh-_menubar-trigger-px: var(--xh-control-px-sm);
+    --xh-_menubar-item-py: var(--xh-space-1_5);
+    --xh-_menubar-item-px: var(--xh-control-px-md);
+    --xh-_menubar-font-size: var(--xh-text-body-size);
+
+    /* 展开着的那张菜单的 trigger 走品牌淡底强档，随语气换色相；没写 data-tone 时退回品牌淡底。
+       悬停与键盘焦点恒中性灰轻档、不接语气槽——两档同色相的话哪张开着就认不出来了。
+       聚焦环不在其列，它恒是 --xh-ring-focus */
+    --xh-_menubar-active-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+  }
+
+  [data-scope='menubar'][data-size='sm']:is([data-part='root'], [data-part='positioner']) {
+    --xh-_menubar-trigger-py: var(--xh-space-0_5);
+    --xh-_menubar-trigger-px: var(--xh-space-1_5);
+    --xh-_menubar-item-py: var(--xh-space-1);
+    --xh-_menubar-item-px: var(--xh-control-px-sm);
+    --xh-_menubar-font-size: var(--xh-font-size-sm);
+  }
+
+  [data-scope='menubar'][data-size='lg']:is([data-part='root'], [data-part='positioner']) {
+    --xh-_menubar-trigger-py: var(--xh-space-2);
+    --xh-_menubar-trigger-px: var(--xh-control-px-md);
+    --xh-_menubar-item-py: var(--xh-space-2);
+    --xh-_menubar-item-px: var(--xh-control-px-lg);
+    --xh-_menubar-font-size: var(--xh-font-size-lg);
   }
 
   [data-scope='menubar'][data-part='content'] {

@@ -4,11 +4,27 @@
     --xh-context-menu-skin: 1;
   }
 
-  /* 根只是把触发区与浮层圈在一起做作用域，不该在作者布局里多插一层盒子 */
-  [data-scope='context-menu'][data-part='root'] {
-    /* 尺寸档只换这四个私有槽，条目与分组标题都从 root 继承它们，
-       换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承
-       （display:contents 不影响继承：自定义属性沿 DOM 树传） */
+  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+  [data-scope='context-menu'][data-part='positioner'] {
+    /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，content 继承它限高；
+       引擎没算（尚未落位 / 无引擎）时不额外限高 */
+    --xh-_context-menu-available-h: 100vh;
+
+    position: fixed;
+    z-index: var(--xh-layer-popover);
+    /* 空壳不吃指针，交互只发生在 content 上 */
+    pointer-events: none;
+  }
+
+  /* 锚点被滚出可视区：整个浮层随之收起 */
+  [data-scope='context-menu'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
+  [data-scope='context-menu']:is([data-part='root'], [data-part='positioner']) {
+    /* 尺寸档只换这四个私有槽，条目与分组标题都从这两处继承它们，
+       换档不必给每个部件各写一条选择器 */
     --xh-_context-menu-item-py: var(--xh-space-1_5);
     --xh-_context-menu-item-px: var(--xh-control-px-md);
     --xh-_context-menu-item-gap: var(--xh-control-gap-md);
@@ -20,7 +36,10 @@
 
     /* 标记位强调色随语气走，没写 data-tone 时退回原来的取值 */
     --xh-_context-menu-accent: var(--xh-_tone, var(--xh-fg-subtle));
+  }
 
+  /* 根只是把触发区与浮层圈在一起做作用域，不该在作者布局里多插一层盒子 */
+  [data-scope='context-menu'][data-part='root'] {
     display: contents;
   }
 
@@ -31,14 +50,14 @@
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里。条目高度由 padding 撑出来：
      纵向走 space 档、行内内缩走 control-px 档（随密度轴），换档各挪一级 */
-  [data-scope='context-menu'][data-part='root'][data-size='sm'] {
+  [data-scope='context-menu']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
     --xh-_context-menu-item-py: var(--xh-space-1);
     --xh-_context-menu-item-px: var(--xh-control-px-sm);
     --xh-_context-menu-item-gap: var(--xh-control-gap-sm);
     --xh-_context-menu-font-size: var(--xh-font-size-sm);
   }
 
-  [data-scope='context-menu'][data-part='root'][data-size='lg'] {
+  [data-scope='context-menu']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
     --xh-_context-menu-item-py: var(--xh-space-2);
     --xh-_context-menu-item-px: var(--xh-control-px-lg);
     --xh-_context-menu-item-gap: var(--xh-control-gap-lg);
@@ -55,23 +74,6 @@
   [data-scope='context-menu'][data-part='trigger']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
-  }
-
-  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
-  [data-scope='context-menu'][data-part='positioner'] {
-    /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，content 继承它限高；
-       引擎没算（尚未落位 / 无引擎）时不额外限高 */
-    --xh-_context-menu-available-h: 100vh;
-
-    position: fixed;
-    z-index: var(--xh-layer-popover);
-    /* 空壳不吃指针，交互只发生在 content 上 */
-    pointer-events: none;
-  }
-
-  /* 锚点被滚出可视区：整个浮层随之收起 */
-  [data-scope='context-menu'][data-part='positioner'][data-hidden] {
-    visibility: hidden;
   }
 
   [data-scope='context-menu'][data-part='content'] {

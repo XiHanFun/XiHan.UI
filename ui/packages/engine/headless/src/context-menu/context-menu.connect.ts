@@ -133,7 +133,7 @@ export function connectContextMenu<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': stateAttr,
-      // 视觉轴只在根上输出，条目与分组标题继承根声明的私有槽
+      // 视觉轴在根与 positioner 上各输出一次，条目与分组标题继承 positioner 声明的私有槽
       'data-tone': prop('tone'),
       'data-size': prop('size'),
     }),
@@ -194,6 +194,9 @@ export function connectContextMenu<T extends PropTypes>(
 
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
+      // 视觉轴在浮层这一侧再打一次：positioner 被搬到 portal 落点，继承不到根上的私有槽
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-state': stateAttr,
       'data-placement': placement,
       // 锚点被滚出可视区时引擎会置 hidden，样式据此收起浮层

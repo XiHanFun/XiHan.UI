@@ -31,11 +31,22 @@
     --xh-tree-select-skin: 1;
   }
 
-  /* 解剖里没有把「触发器 + 清空按钮」裹在一起的 control 部件，一行是靠 flex-wrap 分出来的：
-     标签占满整行把后面的挤到下一行，触发器与清空按钮就并排落在同一行上。
-     这样作者少写标签、少写清空按钮，剩下的部件也不会塌 */
-  [data-scope='tree-select'][data-part='root'] {
-    /* 尺寸档只换这几个私有槽，触发框与树里的行都从 root 继承它们，换档不必给每个部件各写一条选择器 */
+  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+  [data-scope='tree-select'][data-part='positioner'] {
+    position: fixed;
+    z-index: var(--xh-layer-popover);
+    /* 空壳不吃指针，交互只发生在 content 里 */
+    pointer-events: none;
+  }
+
+  /* 锚点被滚出可视区：整个浮层随之收起 */
+  [data-scope='tree-select'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
+  [data-scope='tree-select']:is([data-part='root'], [data-part='positioner']) {
+    /* 尺寸档只换这几个私有槽，触发框与树里的行都从这两处继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_tree-select-h: var(--xh-control-h-md);
     --xh-_tree-select-px: var(--xh-control-px-md);
     --xh-_tree-select-gap: var(--xh-control-gap-md);
@@ -50,7 +61,12 @@
 
     /* 选中行的文字色随语气走，没写 data-tone 时退回品牌强调色 */
     --xh-_tree-select-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+  }
 
+  /* 解剖里没有把「触发器 + 清空按钮」裹在一起的 control 部件，一行是靠 flex-wrap 分出来的：
+     标签占满整行把后面的挤到下一行，触发器与清空按钮就并排落在同一行上。
+     这样作者少写标签、少写清空按钮，剩下的部件也不会塌 */
+  [data-scope='tree-select'][data-part='root'] {
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
@@ -65,21 +81,21 @@
   /* —— 形态 —— */
   /* 形态只决定描边与底色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的中性配色 */
   /* outline 就是缺省那一身：描边加画布底，写出来只为让三档并列可读 */
-  [data-scope='tree-select'][data-part='root'][data-variant='outline'] {
+  [data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
     --xh-_tree-select-border: var(--xh-border-control);
     --xh-_tree-select-border-hover: var(--xh-border-control-hover);
     --xh-_tree-select-bg: var(--xh-bg-canvas);
   }
 
   /* subtle 是填充式：底色接过「这里能点」的表达，描边随之让位 */
-  [data-scope='tree-select'][data-part='root'][data-variant='subtle'] {
+  [data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
     --xh-_tree-select-border: transparent;
     --xh-_tree-select-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
     --xh-_tree-select-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   }
 
   /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
-  [data-scope='tree-select'][data-part='root'][data-variant='ghost'] {
+  [data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
     --xh-_tree-select-border: transparent;
     --xh-_tree-select-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
     --xh-_tree-select-bg: transparent;
@@ -87,7 +103,7 @@
 
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里 */
-  [data-scope='tree-select'][data-part='root'][data-size='sm'] {
+  [data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
     --xh-_tree-select-h: var(--xh-control-h-sm);
     --xh-_tree-select-px: var(--xh-control-px-sm);
     --xh-_tree-select-gap: var(--xh-control-gap-sm);
@@ -95,7 +111,7 @@
     --xh-_tree-select-label-font-size: var(--xh-font-size-sm);
   }
 
-  [data-scope='tree-select'][data-part='root'][data-size='lg'] {
+  [data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
     --xh-_tree-select-h: var(--xh-control-h-lg);
     --xh-_tree-select-px: var(--xh-control-px-lg);
     --xh-_tree-select-gap: var(--xh-control-gap-lg);
@@ -259,19 +275,6 @@
     background: var(--xh-tree-select-action-bg, transparent);
     color: var(--xh-fg-disabled);
     cursor: not-allowed;
-  }
-
-  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
-  [data-scope='tree-select'][data-part='positioner'] {
-    position: fixed;
-    z-index: var(--xh-layer-popover);
-    /* 空壳不吃指针，交互只发生在 content 里 */
-    pointer-events: none;
-  }
-
-  /* 锚点被滚出可视区：整个浮层随之收起 */
-  [data-scope='tree-select'][data-part='positioner'][data-hidden] {
-    visibility: hidden;
   }
 
   [data-scope='tree-select'][data-part='content'] {

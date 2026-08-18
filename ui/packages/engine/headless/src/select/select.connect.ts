@@ -140,7 +140,7 @@ export function connectSelect<T extends PropTypes>(
     setValue: next => send({ type: 'VALUE.SET', value: next }),
     clear: () => send({ type: 'VALUE.SET', value: [] }),
     deselect: v => send({ type: 'VALUE.SET', value: value.filter(x => x !== v) }),
-    // 三个视觉轴只落在根上：触发器与条目都从这里继承私有槽，子部件不重复标注
+    // 三个视觉轴打在根与 positioner 上：触发器与条目各从就近的那一处继承私有槽，其余子部件不重复标注
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': stateAttr,
@@ -250,6 +250,10 @@ export function connectSelect<T extends PropTypes>(
     }),
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
+      // 视觉轴在浮层这一侧再打一次：positioner 被搬到 portal 落点，继承不到根上的私有槽
+      'data-variant': prop('variant'),
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-state': stateAttr,
       'data-placement': placement,
       // 锚点被滚出可视区时引擎会置 hidden，样式据此收起浮层
