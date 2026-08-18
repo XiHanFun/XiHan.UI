@@ -7,8 +7,6 @@ trustPolicy: no-downgrade
 packages:
   - 'packages/*/*'
   - 'tooling/*'
-  - 'apps/*'
-
 allowBuilds:
   esbuild: true
   rs-module-lexer: true

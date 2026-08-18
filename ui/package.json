@@ -8,13 +8,12 @@
     "pnpm": ">=11.0.0"
   },
   "scripts": {
-    "boundaries": "depcruise packages tooling apps",
+    "boundaries": "depcruise packages tooling",
     "build": "turbo run build",
     "changeset": "changeset",
     "clean:build": "node scripts/clean-dist.mjs",
     "clean:lock": "node scripts/clean-lock.mjs",
     "clean:modules": "node scripts/clean-modules.mjs",
-    "dev": "turbo run dev",
     "format": "prettier --write \"**/*.{json,css,scss,md,yaml,yml}\"",
     "gate": "node tooling/scripts/check-runtime-deps.mjs && node tooling/scripts/check-exact-pins.mjs && node tooling/scripts/check-version-lock.mjs && node tooling/scripts/check-tokens-dist.mjs && node tooling/scripts/check-layer-order.mjs && node tooling/scripts/check-style-entries.mjs && node tooling/scripts/check-skin-markers.mjs && node tooling/scripts/check-hidden-override.mjs && node tooling/scripts/check-undefined-guard.mjs && node tooling/scripts/check-overlay-strategy.mjs && node tooling/scripts/check-arrow-geometry.mjs && node tooling/scripts/check-shape-scale.mjs && node tooling/scripts/check-raw-zindex.mjs && node tooling/scripts/check-control-height.mjs && node tooling/scripts/check-token-refs.mjs && node tooling/scripts/check-keyframe-refs.mjs && node tooling/scripts/check-shared-slots.mjs && node tooling/scripts/check-private-slots.mjs && node tooling/scripts/check-disabled-contrast.mjs && node tooling/scripts/check-breakpoints.mjs && node tooling/scripts/check-css-floor.mjs && node tooling/scripts/check-focus-ring.mjs && node tooling/scripts/check-part-wiring.mjs && node tooling/scripts/check-form-reset.mjs && node tooling/scripts/check-slot-types.mjs && node tooling/scripts/check-translations-slots.mjs && node tooling/scripts/check-exports.mjs && node tooling/scripts/check-package-roles.mjs && node tooling/scripts/check-wiring.mjs",
     "gate:cem": "pnpm --fail-if-no-match --filter @xihan-ui/web-components cem && git diff --exit-code packages/adapters/web-components/custom-elements.json",

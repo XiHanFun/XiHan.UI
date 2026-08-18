@@ -36,9 +36,6 @@ catalogs:
     '@types/node':
       specifier: ^24.10.0
       version: 24.13.3
-    '@vitejs/plugin-vue':
-      specifier: ^6.0.8
-      version: 6.0.8
     '@vitest/browser':
       specifier: ^4.1.10
       version: 4.1.10
@@ -90,9 +87,6 @@ catalogs:
     typescript:
       specifier: ^6.0.3
       version: 6.0.3
-    vite:
-      specifier: ^8.1.5
-      version: 8.1.5
     vitest:
       specifier: ^4.1.10
       version: 4.1.10
@@ -167,56 +161,6 @@ importers:
       vue-tsc:
         specifier: 'catalog:'
         version: 3.3.8(typescript@6.0.3)
-
-  apps/playground-vue:
-    dependencies:
-      '@xihan-ui/backgrounds':
-        specifier: workspace:*
-        version: link:../../packages/features/backgrounds
-      '@xihan-ui/styles':
-        specifier: workspace:*
-        version: link:../../packages/design/styles
-      '@xihan-ui/tokens':
-        specifier: workspace:*
-        version: link:../../packages/design/tokens
-      '@xihan-ui/vue':
-        specifier: workspace:*
-        version: link:../../packages/adapters/vue
-      vue:
-        specifier: 'catalog:'
-        version: 3.5.40(typescript@6.0.3)
-    devDependencies:
-      '@vitejs/plugin-vue':
-        specifier: 'catalog:'
-        version: 6.0.8(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0))(vue@3.5.40(typescript@6.0.3))
-      vite:
-        specifier: 'catalog:'
-        version: 8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0)
-      vue-tsc:
-        specifier: 'catalog:'
-        version: 3.3.8(typescript@6.0.3)
-
-  apps/playground-wc:
-    dependencies:
-      '@xihan-ui/backgrounds':
-        specifier: workspace:*
-        version: link:../../packages/features/backgrounds
-      '@xihan-ui/styles':
-        specifier: workspace:*
-        version: link:../../packages/design/styles
-      '@xihan-ui/tokens':
-        specifier: workspace:*
-        version: link:../../packages/design/tokens
-      '@xihan-ui/web-components':
-        specifier: workspace:*
-        version: link:../../packages/adapters/web-components
-    devDependencies:
-      typescript:
-        specifier: 'catalog:'
-        version: 6.0.3
-      vite:
-        specifier: 'catalog:'
-        version: 8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0)
 
   packages/adapters/vue:
     dependencies:
@@ -2114,13 +2058,6 @@ packages:
   '@typescript-eslint/visitor-keys@8.65.0':
     resolution: {integrity: sha512-8C71BQkGjiMmXtop7pHVJu1l2NNShFdkCyD6a2ezzs5vU/L3LRtb69EtcteFwz0mYMPzIgOw0n6OV4VBUWZd7A==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
-
-  '@vitejs/plugin-vue@6.0.8':
-    resolution: {integrity: sha512-0ZjgOg7oO6farnNGup7yvoM/YXZV84OZxHAwtflItNa/6zzQyVb5LNxyea3FEKEX2XlagIKzrlH7wwxkKgtiew==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    peerDependencies:
-      vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
-      vue: ^3.2.25
 
   '@vitest/browser-playwright@4.1.10':
     resolution: {integrity: sha512-nMoXGEiRpT7m3W7NsbvrM2aKNwiNHZf+zEpUCvMteGjZFvfT96Q9fh7QyB98dvDWXiKvrLxA7bJ1mCOOv+JQPw==}
@@ -6366,12 +6303,6 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 8.65.0
       eslint-visitor-keys: 5.0.1
-
-  '@vitejs/plugin-vue@6.0.8(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0))(vue@3.5.40(typescript@6.0.3))':
-    dependencies:
-      '@rolldown/pluginutils': 1.0.1
-      vite: 8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0)
-      vue: 3.5.40(typescript@6.0.3)
 
   '@vitest/browser-playwright@4.1.10(playwright@1.62.0)(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.6.1)(tsx@4.19.4)(yaml@2.9.0))(vitest@4.1.10)':
     dependencies:

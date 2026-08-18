@@ -37,7 +37,6 @@ export default {
         'deps',
         'release',
         // —— 应用 ——
-        'playground',
         'benchmark',
         // —— 跨切 ——
         'repo',
