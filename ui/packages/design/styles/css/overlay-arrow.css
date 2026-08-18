@@ -1,0 +1,51 @@
+/*
+ * 浮层箭头的几何，六份浮层皮肤共用一份，按 [data-part='arrow'] 匹配。
+ *
+ * 箭头是正方形转 45°，构成尖角的是哪两条物理边，所以贴边与摘边框都写物理属性。
+ * 行内轴上的中心点仍写逻辑属性：定位引擎在 RTL 下已把 arrow-x 镜像成逻辑量。
+ *
+ * 底色与描边色留在各组件皮肤，它们同时把自己的内联落点槽接到这里的统一名字上。
+ * 引入顺序排在六份浮层皮肤之后：摘边框那几条要压过各皮肤的 border 简写。
+ */
+@layer xihan.components {
+  [data-part='arrow'] {
+    position: absolute;
+    inline-size: var(--xh-_overlay-arrow-size);
+    block-size: var(--xh-_overlay-arrow-size);
+    rotate: 45deg;
+  }
+
+  /* 浮层落在锚点下方：箭头贴 content 上缘，摘掉埋进 content 的下、右两条边 */
+  [data-part='arrow'][data-placement^='bottom'] {
+    top: calc(var(--xh-_overlay-arrow-size) / -2);
+    inset-inline-start: calc(var(--xh-_overlay-arrow-x) - var(--xh-_overlay-arrow-size) / 2);
+    border-right: 0;
+    border-bottom: 0;
+  }
+
+  /* 浮层落在锚点上方：箭头贴 content 下缘，摘掉上、左两条边 */
+  [data-part='arrow'][data-placement^='top'] {
+    bottom: calc(var(--xh-_overlay-arrow-size) / -2);
+    inset-inline-start: calc(var(--xh-_overlay-arrow-x) - var(--xh-_overlay-arrow-size) / 2);
+    border-top: 0;
+    border-left: 0;
+  }
+
+  /* 浮层落在锚点右侧：箭头贴 content 左缘，摘掉上、右两条边 */
+  [data-part='arrow'][data-placement^='right'] {
+    top: calc(var(--xh-_overlay-arrow-y) - var(--xh-_overlay-arrow-size) / 2);
+    /* stylelint-disable-next-line property-disallowed-list -- 旋转是物理的，贴边跟着物理走 */
+    left: calc(var(--xh-_overlay-arrow-size) / -2);
+    border-top: 0;
+    border-right: 0;
+  }
+
+  /* 浮层落在锚点左侧：箭头贴 content 右缘，摘掉下、左两条边 */
+  [data-part='arrow'][data-placement^='left'] {
+    top: calc(var(--xh-_overlay-arrow-y) - var(--xh-_overlay-arrow-size) / 2);
+    /* stylelint-disable-next-line property-disallowed-list -- 旋转是物理的，贴边跟着物理走 */
+    right: calc(var(--xh-_overlay-arrow-size) / -2);
+    border-bottom: 0;
+    border-left: 0;
+  }
+}

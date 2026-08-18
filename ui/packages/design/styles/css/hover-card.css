@@ -138,46 +138,16 @@
     --xh-_hover-card-max-w: var(--xh-overlay-max-w-lg);
   }
 
-  /* 箭头是旋转 45° 的方块，只保留朝向锚点那两条边的描边；
+  /* 箭头的底色与描边色，几何在 overlay-arrow.css。
      交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
   [data-scope='hover-card'][data-part='arrow'] {
-    --xh-_hover-card-arrow-size: var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size));
     --xh-_hover-card-arrow-x: 50%;
     --xh-_hover-card-arrow-y: 50%;
+    --xh-_overlay-arrow-size: var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size));
+    --xh-_overlay-arrow-x: var(--xh-_hover-card-arrow-x);
+    --xh-_overlay-arrow-y: var(--xh-_hover-card-arrow-y);
 
-    position: absolute;
-    inline-size: var(--xh-_hover-card-arrow-size);
-    block-size: var(--xh-_hover-card-arrow-size);
-    border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-border-default));
     background: var(--xh-hover-card-bg, var(--xh-bg-surface));
-    rotate: 45deg;
-  }
-
-  [data-scope='hover-card'][data-part='arrow'][data-placement^='bottom'] {
-    inset-block-start: calc(var(--xh-_hover-card-arrow-size) / -2);
-    inset-inline-start: calc(var(--xh-_hover-card-arrow-x) - var(--xh-_hover-card-arrow-size) / 2);
-    border-block-end: 0;
-    border-inline-end: 0;
-  }
-
-  [data-scope='hover-card'][data-part='arrow'][data-placement^='top'] {
-    inset-block-end: calc(var(--xh-_hover-card-arrow-size) / -2);
-    inset-inline-start: calc(var(--xh-_hover-card-arrow-x) - var(--xh-_hover-card-arrow-size) / 2);
-    border-block-start: 0;
-    border-inline-start: 0;
-  }
-
-  [data-scope='hover-card'][data-part='arrow'][data-placement^='right'] {
-    inset-inline-start: calc(var(--xh-_hover-card-arrow-size) / -2);
-    inset-block-start: calc(var(--xh-_hover-card-arrow-y) - var(--xh-_hover-card-arrow-size) / 2);
-    border-block-start: 0;
-    border-inline-end: 0;
-  }
-
-  [data-scope='hover-card'][data-part='arrow'][data-placement^='left'] {
-    inset-inline-end: calc(var(--xh-_hover-card-arrow-size) / -2);
-    inset-block-start: calc(var(--xh-_hover-card-arrow-y) - var(--xh-_hover-card-arrow-size) / 2);
-    border-block-end: 0;
-    border-inline-start: 0;
+    border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-border-default));
   }
 }
