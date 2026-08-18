@@ -114,37 +114,15 @@
     --xh-_tooltip-font-size: var(--xh-font-size-md);
   }
 
-  /* 箭头是旋转 45° 的方块，按自报的落定朝向贴在 content 对侧边上；
+  /* 箭头的底色与描边色，几何在 overlay-arrow.css。
      交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
   [data-scope='tooltip'][data-part='arrow'] {
-    --xh-_tooltip-arrow-size: var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size));
     --xh-_tooltip-arrow-x: 50%;
     --xh-_tooltip-arrow-y: 50%;
+    --xh-_overlay-arrow-size: var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size));
+    --xh-_overlay-arrow-x: var(--xh-_tooltip-arrow-x);
+    --xh-_overlay-arrow-y: var(--xh-_tooltip-arrow-y);
 
-    position: absolute;
-    inline-size: var(--xh-_tooltip-arrow-size);
-    block-size: var(--xh-_tooltip-arrow-size);
     background: var(--xh-tooltip-bg, var(--xh-_tone, var(--xh-fg-default)));
-    transform: rotate(45deg);
-  }
-
-  [data-scope='tooltip'][data-part='arrow'][data-placement^='bottom'] {
-    inset-block-start: calc(var(--xh-_tooltip-arrow-size) / -2);
-    inset-inline-start: calc(var(--xh-_tooltip-arrow-x) - var(--xh-_tooltip-arrow-size) / 2);
-  }
-
-  [data-scope='tooltip'][data-part='arrow'][data-placement^='top'] {
-    inset-block-end: calc(var(--xh-_tooltip-arrow-size) / -2);
-    inset-inline-start: calc(var(--xh-_tooltip-arrow-x) - var(--xh-_tooltip-arrow-size) / 2);
-  }
-
-  [data-scope='tooltip'][data-part='arrow'][data-placement^='left'] {
-    inset-block-start: calc(var(--xh-_tooltip-arrow-y) - var(--xh-_tooltip-arrow-size) / 2);
-    inset-inline-end: calc(var(--xh-_tooltip-arrow-size) / -2);
-  }
-
-  [data-scope='tooltip'][data-part='arrow'][data-placement^='right'] {
-    inset-block-start: calc(var(--xh-_tooltip-arrow-y) - var(--xh-_tooltip-arrow-size) / 2);
-    inset-inline-start: calc(var(--xh-_tooltip-arrow-size) / -2);
   }
 }

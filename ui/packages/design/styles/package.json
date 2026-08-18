@@ -92,6 +92,7 @@
     "./navigation-menu.css": "./css/navigation-menu.css",
     "./number-animation.css": "./css/number-animation.css",
     "./number-field.css": "./css/number-field.css",
+    "./overlay-arrow.css": "./css/overlay-arrow.css",
     "./page-header.css": "./css/page-header.css",
     "./pagination.css": "./css/pagination.css",
     "./pin-input.css": "./css/pin-input.css",

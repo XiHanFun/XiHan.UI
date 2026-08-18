@@ -109,6 +109,8 @@
 @import './css/toolbar.css';
 @import './css/tooltip.css';
 @import './css/tour.css';
+/* 排在六份浮层皮肤之后：箭头几何里摘边框那几条要压过它们的 border 简写 */
+@import './css/overlay-arrow.css';
 @import './css/transfer.css';
 @import './css/tree.css';
 @import './css/tree-select.css';
