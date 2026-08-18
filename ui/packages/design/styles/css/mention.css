@@ -225,6 +225,9 @@
      两套底色各画各的会出现"鼠标停在 A 上、回车却插进了 B" */
   [data-scope='mention'][data-part='item'][data-highlighted]:not([data-disabled]) {
     background: var(--xh-mention-item-bg-hover, var(--xh-bg-subtle));
+    /* 焦点恒在输入框，高亮条目自带内收环；列表是滚动容器，环画在外沿会被裁掉 */
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
   }
 
   /* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），

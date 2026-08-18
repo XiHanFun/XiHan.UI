@@ -394,6 +394,9 @@
      两套底色各画各的会出现"鼠标停在 A 上、回车提交的却是 B" */
   [data-scope='combobox'][data-part='item'][data-highlighted]:not([data-disabled]) {
     background: var(--xh-combobox-item-bg-hover, var(--xh-bg-subtle));
+    /* 焦点恒在输入框，高亮条目自带内收环；列表是滚动容器，环画在外沿会被裁掉 */
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
   }
 
   /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
