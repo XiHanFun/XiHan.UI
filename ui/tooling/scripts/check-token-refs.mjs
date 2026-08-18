@@ -14,7 +14,7 @@ function isComponentSlot(name, declaredInStyles) {
 }
 
 const tokensCss = await readFile(TOKENS_CSS, 'utf8')
-const declared = new Set([...tokensCss.matchAll(/^\s*(--xh-[a-z0-9-]+)\s*:/gm)].map(m => m[1]))
+const declared = new Set([...tokensCss.matchAll(/^\s*(--xh-[a-z0-9_-]+)\s*:/gm)].map(m => m[1]))
 
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css'))
 const sources = new Map()
@@ -24,7 +24,7 @@ for (const f of files)
 // 皮肤自己声明过的槽位（含组件级覆盖点）不算孤儿
 const declaredInStyles = new Set()
 for (const src of sources.values()) {
-  for (const m of src.matchAll(/^\s*(--xh-[a-z0-9-]+)\s*:/gm))
+  for (const m of src.matchAll(/^\s*(--xh-[a-z0-9_-]+)\s*:/gm))
     declaredInStyles.add(m[1])
 }
 
@@ -34,7 +34,7 @@ const garbage = []
 for (const [file, src] of sources) {
   const lines = src.split(/\r?\n/)
   lines.forEach((line, i) => {
-    for (const m of line.matchAll(/var\(\s*(--xh-[a-z0-9-]+)/g)) {
+    for (const m of line.matchAll(/var\(\s*(--xh-[a-z0-9_-]+)/g)) {
       const name = m[1]
       if (declared.has(name) || isComponentSlot(name, declaredInStyles))
         continue
@@ -43,18 +43,11 @@ for (const [file, src] of sources) {
         continue
       orphans.push(`${file}:${i + 1}  ${name}`)
     }
-    // 全局令牌不许带字面量兜底。styled 已显式 @import 令牌产物，缺席就是缺陷不是降级；
-    // 留着兜底等于同一个值有两处事实源，改令牌时兜底不会跟着走
-    for (const m of line.matchAll(/var\(\s*(--xh-[a-z0-9-]+)\s*,([^;()]*)\)/g)) {
+    // 一轮扫齐两件事：全局令牌不许带字面量兜底，任何兜底里不许出现 $1 这类正则替换残留
+    for (const m of line.matchAll(/var\(\s*(--xh-[a-z0-9_-]+)\s*,([^;()]*)\)/g)) {
       const [, name, fb] = m
       if (declared.has(name) && !fb.trim().startsWith('var('))
         fallbacks.push(`${file}:${i + 1}  ${name} 的兜底「${fb.trim()}」`)
-    }
-    // $1 这类正则替换残留不是 CSS 值，整条声明会在计算期失效而不报错。
-    // 单独一轮扫：上面那条的令牌名不含下划线，扫不到 --xh-_ 开头的私有槽，
-    // 而私有槽恰恰是最容易被批量替换改坏的地方。
-    for (const m of line.matchAll(/var\(\s*(--xh-[a-z0-9_-]+)\s*,([^;()]*)\)/g)) {
-      const [, name, fb] = m
       if (/[$\\]/.test(fb))
         garbage.push(`${file}:${i + 1}  ${name} 的兜底「${fb.trim()}」`)
     }
