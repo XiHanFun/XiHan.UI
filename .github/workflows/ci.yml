@@ -87,3 +87,6 @@ jobs:
         run: pnpm build
       - name: Accessibility (real Chromium)
         run: pnpm test:browser
+      # 示例文件在 docs/ 下，不在 turbo 对 test:browser 声明的输入集里，单开一步直接起 vitest
+      - name: Web Components demos (real Chromium)
+        run: pnpm gate:demos
