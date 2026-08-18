@@ -24,7 +24,7 @@ function attributable(nodes: readonly VNode[]): VNode[] {
 }
 
 /** 子节点已带角色标记：组件节点的根由它自己渲染，元素节点看有没有写 data-scope。 */
-function carriesOwnAnatomy(node: VNode): boolean {
+export function carriesOwnAnatomy(node: VNode): boolean {
   return typeof node.type !== 'string' || node.props?.['data-scope'] != null
 }
 
