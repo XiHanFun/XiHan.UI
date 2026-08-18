@@ -14,8 +14,10 @@ export function connectTooltip<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): TooltipApi<T> {
   const { state, context, prop, send, scope } = service
-  // closing 是收起前的等待态，此时浮层仍然可见
-  const open = state.matches('open', 'closing')
+  // visible 的两个子态下浮层都可见（closing 是收起前的等待态）
+  const open = state.matches('visible')
+  // 展开等待期：浮层还没入栈，Escape 由 trigger 就地撤销
+  const pending = state.matches('opening')
   const disabled = !!prop('disabled')
   const ids = scope.ids('tooltip', 'trigger', 'content')
   const stateAttr = open ? 'open' : 'closed'
@@ -48,8 +50,9 @@ export function connectTooltip<T extends PropTypes>(
       'onPointerdown': () => send({ type: 'POINTER.DOWN' }),
       'onFocus': () => send({ type: 'FOCUS' }),
       'onBlur': () => send({ type: 'BLUR' }),
+      // 浮层可见时 Escape 归消解层按层栈仲裁；这里只管等待展开期那一段
       'onKeydown': (event: KeyboardEvent) => {
-        if (event.key === 'Escape')
+        if (event.key === 'Escape' && pending)
           send({ type: 'ESCAPE' })
       },
     }),

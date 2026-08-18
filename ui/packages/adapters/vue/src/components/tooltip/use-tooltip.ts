@@ -1,4 +1,5 @@
 import type { TooltipApi, TooltipSchema } from '@xihan-ui/headless'
+import type { Cleanup, Layer, RuntimeConfig } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ComputedRef, Ref } from 'vue'
 import { connectTooltip, tooltipMachine } from '@xihan-ui/headless'
@@ -36,18 +37,37 @@ export function useTooltip(
   // onOpenChange 由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const service = useMachine(tooltipMachine, () => ({ ...props, onOpenChange }), scope)
 
-  // 定位引擎经 refs 注入，展开态由机器的 effect 驱动；无 DOM 环境（SSR）不建引擎
-  if (typeof document !== 'undefined')
+  // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
+  let config: RuntimeConfig | null = null
+
+  if (typeof document !== 'undefined') {
+    config = createRuntimeConfig({ scope, idGenerator: idGen })
+
+    // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按可见态驱动
+    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
+      // 提示只参与 Escape 仲裁与栈顶判定：节点就在文档流里，不陷焦点、不锁滚动、没有遮罩
+      kind: 'inline',
+      node: () => contentRef.value,
+      // trigger 记为本层分支，点它算层内交互
+      branches: () => [triggerRef.value].filter(Boolean) as Element[],
+      isModal: () => false,
+      setModal: () => {},
+      surfaces: () => [],
+    })
+
+    // 定位引擎经 refs 注入，展开态由机器的 effect 驱动
+    service.refs.set('config', config)
+    service.refs.set('registerLayer', registerLayer)
     service.refs.set('position', createPositionEngine())
+  }
   service.refs.set('getAnchorEl', () => triggerRef.value)
   service.refs.set('getFloatingEl', () => positionerRef.value)
 
   const api = computed(() => connectTooltip(service, vueNormalize))
 
-  // 退场闸门：收起从跟着 open 走，改成跟着 presence 走。
-  // 本组件不挂消解层、没有别处要用的 config，这里就地建一份最小的（只用到 reducedMotion）
+  // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
   const visible = useOverlayExit({
-    config: typeof document === 'undefined' ? null : createRuntimeConfig(),
+    config,
     isOpen: () => api.value.open,
     contentRef,
   })

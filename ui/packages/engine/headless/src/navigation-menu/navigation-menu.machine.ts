@@ -1,6 +1,7 @@
 import type { Transition } from '@xihan-ui/machine'
 import type { NavigationMenuIndicatorRect, NavigationMenuSchema } from './navigation-menu.types'
-import { itemValue, queryItems } from '@xihan-ui/behavior'
+import { createDismissLayer, focusItem, itemValue, queryItems } from '@xihan-ui/behavior'
+import { contains } from '@xihan-ui/kernel'
 import { setTimeoutEffect, setup } from '@xihan-ui/machine'
 import { navigationMenuTriggerQuery } from './navigation-menu.anatomy'
 
@@ -55,15 +56,20 @@ export const navigationMenuMachine = createMachine({
   }),
   refs: () => ({
     getListEl: () => null,
+    config: null,
+    registerLayer: null,
+    layerDispose: null,
   }),
   initialState: () => 'idle',
-  // 挂载即量一次，让指示条首帧就在位
-  entry: ['measureIndicator'],
+  // 挂载即量一次，让指示条首帧就在位；初始就展开着的那一项同时入栈
+  entry: ['measureIndicator', 'syncLayer'],
+  // 停机时把还在场的层撤掉
+  exit: ['dropLayer'],
   // 窗口尺寸变化时重量指示条
   effects: ['trackResize'],
   watch: ({ track, context, action }) => {
-    // 展开项一变就重量一次
-    track([context.dep('value')], () => action(['measureIndicator']))
+    // 展开项一变就重量一次，层的进出栈也跟着这一条走
+    track([context.dep('value')], () => action(['measureIndicator', 'syncLayer']))
   },
   // 程序化改写在三个状态里都认，并收掉计时器
   on: {
@@ -146,6 +152,57 @@ export const navigationMenuMachine = createMachine({
         context.set('pendingValue', null)
       },
       clearPendingValue: ({ context }) => context.set('pendingValue', null),
+
+      /**
+       * 层的进出栈跟着展开项走：有面板展开就入栈，都收起就出栈。
+       * 常驻栈会占死栈顶、堵掉下层浮层的 Escape，所以只在展开期间在场。
+       */
+      syncLayer: ({ refs, context, scope, send, action }) => {
+        const open = (context.get('value') ?? null) != null
+        const live = refs.get('layerDispose') != null
+        if (open === live)
+          return
+        if (!open) {
+          action(['dropLayer'])
+          return
+        }
+        const config = refs.get('config')
+        const registerLayer = refs.get('registerLayer')
+        // 无 DOM 环境（纯逻辑测试 / SSR）：状态照常转移，不入栈
+        if (!config || !registerLayer)
+          return
+
+        /** 当前展开项对应的 trigger，集合现查不缓存。 */
+        const openTrigger = (): HTMLElement | null => {
+          const current = context.get('value') ?? null
+          if (current == null)
+            return null
+          return queryItems(refs.get('getListEl')(), navigationMenuTriggerQuery)
+            .find(el => itemValue(el) === current) ?? null
+        }
+
+        const { layer, dispose: disposeLayer } = registerLayer()
+        const dismiss = createDismissLayer({
+          config,
+          layer,
+          onDismiss: (reason) => {
+            // Escape 把焦点归还给刚被收起的那个 trigger，焦点本就在导航外时不去抢。
+            // 落点要在收起之前查，收起之后 value 就没了
+            const holdsFocus = contains(layer.node(), scope.getActiveElement())
+            const trigger = reason === 'escape-key' && holdsFocus ? openTrigger() : null
+            send({ type: 'DISMISS' })
+            focusItem(trigger)
+          },
+        })
+        refs.set('layerDispose', () => {
+          dismiss.dispose()
+          disposeLayer()
+        })
+      },
+      dropLayer: ({ refs }) => {
+        refs.get('layerDispose')?.()
+        refs.set('layerDispose', null)
+      },
 
       /** 量指示条；同步与推迟各量一遍，后者补上 WC 侧首帧才写入的身份标记。 */
       measureIndicator: ({ refs, prop, context, flush }) => {

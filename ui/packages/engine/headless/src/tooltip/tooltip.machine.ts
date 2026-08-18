@@ -1,6 +1,7 @@
 import type { PositionResult } from '@xihan-ui/kernel'
 import type { Transition } from '@xihan-ui/machine'
 import type { TooltipSchema } from './tooltip.types'
+import { createDismissLayer } from '@xihan-ui/behavior'
 import { setTimeoutEffect, setup } from '@xihan-ui/machine'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE } from '../shared/overlay'
 
@@ -17,9 +18,9 @@ const CLOSE_FROM_OPEN: Array<Transition<TooltipSchema>> = [
   { target: 'closed', actions: ['invokeOnClose'] },
 ]
 
-// 收起等待态被立即打断：受控退回 open（浮层保持可见）等宿主写回，非受控直接落到 closed。
+// 收起等待态被立即打断：受控退回 visible.open（浮层保持可见）等宿主写回，非受控直接落到 closed。
 const CLOSE_FROM_CLOSING: Array<Transition<TooltipSchema>> = [
-  { guard: 'isOpenControlled', target: 'open', actions: ['invokeOnClose'] },
+  { guard: 'isOpenControlled', target: 'visible.open', actions: ['invokeOnClose'] },
   { target: 'closed', actions: ['invokeOnClose'] },
 ]
 
@@ -30,7 +31,7 @@ function openNow(mark: 'markFocusOpened' | 'clearFocusOpened'): Array<Transition
   return [
     { guard: 'isDisabled', target: 'closed' },
     { guard: 'isOpenControlled', target: 'closed', actions: [mark, 'invokeOnOpen'] },
-    { target: 'open', actions: [mark, 'invokeOnOpen'] },
+    { target: 'visible.open', actions: [mark, 'invokeOnOpen'] },
   ]
 }
 
@@ -47,11 +48,13 @@ export const tooltipMachine = createMachine({
     focusOpened: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
+    config: null,
+    registerLayer: null,
     position: null,
     getAnchorEl: () => null,
     getFloatingEl: () => null,
   }),
-  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'open' : 'closed'),
+  initialState: ({ prop }) => ((prop('open') ?? prop('defaultOpen')) ? 'visible' : 'closed'),
   watch: ({ track, prop, action }) => track([() => prop('open')], () => action(['syncOpen'])),
   states: {
     closed: {
@@ -64,7 +67,7 @@ export const tooltipMachine = createMachine({
         // 聚焦与命令式展开都不走延时
         'FOCUS': OPEN_FROM_FOCUS,
         'OPEN': OPEN_FROM_POINTER,
-        'CONTROLLED.OPEN': { target: 'open' },
+        'CONTROLLED.OPEN': { target: 'visible.open' },
       },
     },
     opening: {
@@ -79,40 +82,46 @@ export const tooltipMachine = createMachine({
         'POINTER.DOWN': { target: 'closed' },
         'ESCAPE': { target: 'closed' },
         'CLOSE': { target: 'closed' },
-        'CONTROLLED.OPEN': { target: 'open' },
+        'CONTROLLED.OPEN': { target: 'visible.open' },
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
     },
-    open: {
-      effects: ['trackPosition'],
+    // 复合态：两个子态下浮层都可见，定位与消解层挂在这一层，指针在两态间来回不重挂
+    visible: {
+      initial: 'open',
+      effects: ['trackPosition', 'trackLayer'],
       on: {
-        // 移出先进等待态，指针在 trigger 与浮层之间穿行时不闪断。
-        // 聚焦打开的提示例外，由 BLUR 负责收起（无 target 即消费掉事件、原地不动）
-        'POINTER.LEAVE': [
-          { guard: 'isFocusOpened' },
-          { target: 'closing' },
-        ],
-        'BLUR': CLOSE_FROM_OPEN,
-        'ESCAPE': CLOSE_FROM_OPEN,
-        'POINTER.DOWN': CLOSE_FROM_OPEN,
-        'CLOSE': CLOSE_FROM_OPEN,
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
-    },
-    closing: {
-      // 收起等待期内浮层仍可见，定位继续跟随
-      effects: ['trackPosition', 'waitForCloseDelay'],
-      on: {
-        'after.closeDelay': CLOSE_FROM_CLOSING,
-        // 等待期内回到锚点即撤销收起
-        'POINTER.ENTER': { target: 'open' },
-        'FOCUS': { target: 'open' },
-        'BLUR': CLOSE_FROM_CLOSING,
-        'ESCAPE': CLOSE_FROM_CLOSING,
-        'POINTER.DOWN': CLOSE_FROM_CLOSING,
-        'CLOSE': CLOSE_FROM_CLOSING,
-        'CONTROLLED.OPEN': { target: 'open' },
-        'CONTROLLED.CLOSE': { target: 'closed' },
+      states: {
+        open: {
+          on: {
+            // 移出先进等待态，指针在 trigger 与浮层之间穿行时不闪断。
+            // 聚焦打开的提示例外，由 BLUR 负责收起（无 target 即消费掉事件、原地不动）
+            'POINTER.LEAVE': [
+              { guard: 'isFocusOpened' },
+              { target: 'visible.closing' },
+            ],
+            'BLUR': CLOSE_FROM_OPEN,
+            'ESCAPE': CLOSE_FROM_OPEN,
+            'POINTER.DOWN': CLOSE_FROM_OPEN,
+            'CLOSE': CLOSE_FROM_OPEN,
+          },
+        },
+        closing: {
+          effects: ['waitForCloseDelay'],
+          on: {
+            'after.closeDelay': CLOSE_FROM_CLOSING,
+            // 等待期内回到锚点即撤销收起
+            'POINTER.ENTER': { target: 'visible.open' },
+            'FOCUS': { target: 'visible.open' },
+            'BLUR': CLOSE_FROM_CLOSING,
+            'ESCAPE': CLOSE_FROM_CLOSING,
+            'POINTER.DOWN': CLOSE_FROM_CLOSING,
+            'CLOSE': CLOSE_FROM_CLOSING,
+            'CONTROLLED.OPEN': { target: 'visible.open' },
+          },
+        },
       },
     },
   },
@@ -178,6 +187,27 @@ export const tooltipMachine = createMachine({
         return () => {
           disposed = true
           stop?.()
+        }
+      },
+      /** 浮层可见期间把层压入消解栈，不建焦点域、不锁滚动。 */
+      trackLayer: ({ refs, send }) => {
+        const config = refs.get('config')
+        const registerLayer = refs.get('registerLayer')
+        // 无 DOM 环境（纯逻辑测试 / SSR）：状态机照常转移，不挂副作用
+        if (!config || !registerLayer)
+          return undefined
+
+        const { layer, dispose: disposeLayer } = registerLayer()
+
+        const dismiss = createDismissLayer({
+          config,
+          layer,
+          onDismiss: reason => send({ type: reason === 'escape-key' ? 'ESCAPE' : 'CLOSE' }),
+        })
+
+        return () => {
+          dismiss.dispose()
+          disposeLayer()
         }
       },
     },

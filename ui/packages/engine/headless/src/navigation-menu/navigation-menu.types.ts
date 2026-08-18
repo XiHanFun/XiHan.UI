@@ -1,4 +1,4 @@
-import type { Direction, Orientation, PropTypes, Size, Tone } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, Layer, Orientation, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 读屏用的文案，默认英文。 */
@@ -64,10 +64,15 @@ export interface NavigationMenuIndicatorRect {
   inlineSize: number
 }
 
-/** 适配器在挂载前填入 DOM 侧的取值口，缺省时量不到指示条的位置。 */
+/** 适配器在挂载前填入 DOM 侧的取值口，缺省时量不到指示条的位置、也不入层栈。 */
 export interface NavigationMenuRefs {
   /** trigger 集合的查询容器，同时是指示条定位的参照系。 */
   getListEl: () => HTMLElement | null
+  config: RuntimeConfig | null
+  /** 注册本层并返回撤销句柄，只在有面板展开期间调用。 */
+  registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+  /** 在场的层的撤销句柄，由 syncLayer 自行记账；没有层时为 null。 */
+  layerDispose: Cleanup | null
 }
 
 export interface NavigationMenuSchema extends MachineSchema {
@@ -141,6 +146,8 @@ export interface NavigationMenuSchema extends MachineSchema {
     | 'clearPendingValue'
     | 'clearAutoValue'
     | 'measureIndicator'
+    | 'syncLayer'
+    | 'dropLayer'
   effect: 'waitForOpenDelay' | 'waitForSkipDelay' | 'trackResize'
 }
 
