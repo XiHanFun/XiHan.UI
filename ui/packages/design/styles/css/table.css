@@ -121,7 +121,6 @@
   [data-scope='table'][data-part='row'] {
     display: flex;
     align-items: stretch;
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-table-row-border, var(--xh-border-subtle));
     /* 背景要实色：横向吸附的单元格靠 inherit 取它，透明会让滚过的内容透出来 */
     background: var(--xh-table-row-bg, var(--xh-bg-surface));
   }
@@ -135,9 +134,9 @@
     background: transparent;
   }
 
-  /* 末行不画分隔线：容器自己有边框，两条叠在一起会显出一道粗边 */
-  [data-scope='table'][data-part='body'] > [data-scope='table'][data-part='row']:last-child {
-    border-block-end: none;
+  /* 行间线画在后一行的上沿，区段里第一个可见行不画：行只负责行与行之间，外边界归 root 与区段容器 */
+  [data-scope='table']:is([data-part='header'], [data-part='body'], [data-part='footer']) > :not([hidden]) ~ [data-scope='table']:is([data-part='row'], [data-part='expanded-row']) {
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-table-row-border, var(--xh-border-subtle));
   }
 
   /* 悬停与键盘锚点共用中性灰轻档。data-highlighted 跟的是连接层记的焦点行，
@@ -396,11 +395,10 @@
     outline-offset: calc(-1 * var(--xh-ring-width));
   }
 
-  /* 详情行：靠 hidden 收起，不卸载作者节点。内容长在它的单元格里，行本身只画底色与分隔线 */
+  /* 详情行：靠 hidden 收起，不卸载作者节点。内容长在它的单元格里，行本身只画底色 */
   [data-scope='table'][data-part='expanded-row'] {
     display: flex;
     align-items: stretch;
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-table-row-border, var(--xh-border-subtle));
     background: var(--xh-table-detail-bg, var(--xh-bg-subtle));
   }
 
