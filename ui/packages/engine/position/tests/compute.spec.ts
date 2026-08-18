@@ -255,6 +255,86 @@ describe('箭头落点', () => {
   })
 })
 
+describe('可用空间', () => {
+  // 判据一律写成「量的是落定那一侧」：翻面之后还按请求的那一侧算，会差出整整一个面板的高度
+  const SIZE = { padding: 4 }
+
+  it('没要就不算，既有调用方拿到的结果一个字段都不多', () => {
+    const result = place({ placement: 'bottom' })
+    expect(result.availableHeight).toBeUndefined()
+    expect(result.availableWidth).toBeUndefined()
+    expect(result.anchorWidth).toBeUndefined()
+  })
+
+  it('主轴量到锚点：扣掉 offset 与 padding', () => {
+    // 锚点下沿在 140，可用区域下界 1000：1000 - 140 - 8 - 4
+    expect(place({ placement: 'bottom', size: SIZE }).availableHeight).toBe(848)
+    // 锚点上沿在 100，可用区域上界 0：100 - 0 - 8 - 4
+    expect(place({ placement: 'top', size: SIZE }).availableHeight).toBe(88)
+  })
+
+  it('交叉轴按可用区域整条边算，同样扣掉两侧 padding', () => {
+    // 上下两侧的交叉轴是横轴：1000 - 0 - 4 * 2
+    expect(place({ placement: 'bottom', size: SIZE }).availableWidth).toBe(992)
+    // 左右两侧的交叉轴是纵轴，主轴换成横向：锚点左沿 100 - 0 - 8 - 4
+    const horizontal = place({ placement: 'left', size: SIZE })
+    expect(horizontal.availableWidth).toBe(88)
+    expect(horizontal.availableHeight).toBe(992)
+  })
+
+  it('翻面之后按翻过去那一侧算', () => {
+    // 下方只剩 20px，上方剩 100px：浮层 60 高，必然翻到上面去
+    const result = place({
+      anchor: { x: 100, y: 108, width: 100, height: 40 },
+      floating: { width: 60, height: 60 },
+      clip: { top: 0, right: 1000, bottom: 168, left: 0 },
+      placement: 'bottom',
+      flip: true,
+      size: SIZE,
+    })
+    expect(result.placement).toBe('top')
+    // 翻定的是上侧：108 - 0 - 8 - 4，而不是下侧的 168 - 148 - 8 - 4 = 8
+    expect(result.availableHeight).toBe(96)
+  })
+
+  it('两侧都不够时不翻面，可用空间照实回报请求的那一侧', () => {
+    // 视口高 400、锚点 y=180 高 40，上下各只剩 84：对侧没有更少，守着请求的那一侧
+    const result = place({
+      anchor: { x: 100, y: 180, width: 100, height: 40 },
+      floating: { width: 60, height: 260 },
+      clip: { top: 0, right: 1000, bottom: 400, left: 0 },
+      placement: 'bottom',
+      offset: 8,
+      flip: true,
+      size: { padding: 0 },
+    })
+    expect(result.placement).toBe('bottom')
+    // 400 - 220 - 8，正是面板该被限到的高度：不限高就要伸出视口 84px
+    expect(result.availableHeight).toBe(172)
+  })
+
+  it('锚点这一侧一点空间都没有时归零，不给出负长度', () => {
+    const result = place({
+      anchor: { x: 100, y: 380, width: 100, height: 40 },
+      floating: { width: 60, height: 20 },
+      clip: { top: 0, right: 1000, bottom: 400, left: 0 },
+      placement: 'bottom',
+      flip: false,
+      size: SIZE,
+    })
+    expect(result.availableHeight).toBe(0)
+  })
+
+  it('锚点宽度原样回报，供面板宽度对齐触发器', () => {
+    expect(place({ placement: 'bottom', size: SIZE }).anchorWidth).toBe(ANCHOR.width)
+    expect(place({
+      anchor: { x: 0, y: 100, width: 240, height: 40 },
+      placement: 'top',
+      size: SIZE,
+    }).anchorWidth).toBe(240)
+  })
+})
+
 describe('placement 拆装', () => {
   it('无后缀即居中', () => {
     expect(splitPlacement('bottom')).toEqual({ side: 'bottom', align: 'center' })

@@ -229,6 +229,10 @@
       "$type": "dimension",
       "$value": "10rem"
     },
+    "menu-max-h": {
+      "$type": "dimension",
+      "$value": "20rem"
+    },
     "max-w-sm": {
       "$type": "dimension",
       "$value": "16rem"

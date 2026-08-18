@@ -25,6 +25,11 @@ import { MENUBAR_DEFAULT_PLACEMENT } from './menubar.machine'
 
 const parts = menubarAnatomy.build()
 
+/** 落定那一侧的可用高度，写成内联自定义属性；引擎没算时给空串撤掉声明，皮肤退回自己的上限。 */
+function availableHeightVar(available: number | undefined): Record<string, string> {
+  return { '--xh-_menubar-available-h': available != null ? `${available}px` : '' }
+}
+
 export function connectMenubar<T extends PropTypes>(
   service: Service<MenubarSchema>,
   normalize: NormalizeProps<T>,
@@ -263,11 +268,13 @@ export function connectMenubar<T extends PropTypes>(
         'data-placement': isOpen ? placement : undefined,
         // 锚点滚出可视区时由引擎置位
         'data-hidden': dataAttr(isOpen && position?.hidden),
-        // 坐标只发给展开的那一张
+        // 坐标与可用高度只发给展开的那一张
         'style': {
           position: 'fixed',
           left: `${(isOpen ? position?.x : undefined) ?? 0}px`,
           top: `${(isOpen ? position?.y : undefined) ?? 0}px`,
+          // content 继承这个高度上限，超出的条目在菜单内部滚
+          ...availableHeightVar(isOpen ? position?.availableHeight : undefined),
         },
       })
     },

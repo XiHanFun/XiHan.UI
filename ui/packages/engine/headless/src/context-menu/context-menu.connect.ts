@@ -26,6 +26,11 @@ const pointerHot = new WeakSet<Element>()
 /** 右键那一下的 button 值；它不算「点到别处」。 */
 const SECONDARY_BUTTON = 2
 
+/** 落定那一侧的可用高度，写成内联自定义属性；引擎没算时给空串撤掉声明，皮肤退回自己的上限。 */
+function availableHeightVar(available: number | undefined): Record<string, string> {
+  return { '--xh-_context-menu-available-h': available != null ? `${available}px` : '' }
+}
+
 export function connectContextMenu<T extends PropTypes>(
   service: Service<ContextMenuSchema>,
   normalize: NormalizeProps<T>,
@@ -198,6 +203,8 @@ export function connectContextMenu<T extends PropTypes>(
         // 引擎结果没回来之前先用光标坐标顶着；无引擎时它就是最终落位
         left: `${position?.x ?? point?.x ?? 0}px`,
         top: `${position?.y ?? point?.y ?? 0}px`,
+        // content 继承这个高度上限，超出的条目在菜单内部滚
+        ...availableHeightVar(position?.availableHeight),
       },
     }),
 

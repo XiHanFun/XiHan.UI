@@ -31,12 +31,16 @@ function rectKey(el: HTMLElement): string {
   return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}`
 }
 
-/** 接上引擎并把每次结果落到浮层样式上，与适配器的做法一致。 */
+/**
+ * 接上引擎并把每次结果落到浮层样式上，与适配器的做法一致。
+ * apply 消费坐标之外的结果，例如按可用空间限高。
+ */
 export function attachProbe(
   engine: PositionEnginePort,
   anchor: Anchor,
   floating: HTMLElement,
   options: PositionOptions,
+  apply?: (result: PositionResult, floating: HTMLElement) => void,
 ): PositionProbe {
   let last: PositionResult | null = null
   let count = 0
@@ -49,6 +53,7 @@ export function attachProbe(
     count += 1
     floating.style.left = `${result.x}px`
     floating.style.top = `${result.y}px`
+    apply?.(result, floating)
   })
 
   return {

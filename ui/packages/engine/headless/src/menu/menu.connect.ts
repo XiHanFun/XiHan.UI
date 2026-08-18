@@ -12,6 +12,11 @@ const parts = menuAnatomy.build()
 // 指针亲手点亮过的条目：pointerleave 只收自己点的漆，键盘建立的锚点被指针路过不受影响
 const pointerHot = new WeakSet<Element>()
 
+/** 落定那一侧的可用高度，写成内联自定义属性；引擎没算时给空串撤掉声明，皮肤退回自己的上限。 */
+function availableHeightVar(available: number | undefined): Record<string, string> {
+  return { '--xh-_menu-available-h': available != null ? `${available}px` : '' }
+}
+
 export function connectMenu<T extends PropTypes>(
   service: Service<MenuSchema>,
   normalize: NormalizeProps<T>,
@@ -107,6 +112,8 @@ export function connectMenu<T extends PropTypes>(
         position: 'fixed',
         left: `${position?.x ?? 0}px`,
         top: `${position?.y ?? 0}px`,
+        // content 继承这个高度上限，超出的条目在菜单内部滚
+        ...availableHeightVar(position?.availableHeight),
       },
     }),
     // 键盘在 content 上靠冒泡统一处理，Escape 由消解层负责
