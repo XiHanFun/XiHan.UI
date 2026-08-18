@@ -2,7 +2,7 @@ import type { ComboboxApi, ComboboxInputBehavior, ComboboxInputEl, ComboboxInput
 import type { ControlVariant, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { computed, defineComponent, h, onMounted, onUnmounted, onUpdated, watch } from 'vue'
+import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, Teleport, watch } from 'vue'
 import {
   provideCombobox,
   provideComboboxItem,
@@ -176,12 +176,17 @@ export const XhComboboxClearTrigger = defineComponent({
 
 export const XhComboboxPositioner = defineComponent({
   name: 'XhComboboxPositioner',
-  setup(_, { slots }) {
+  // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
+  inheritAttrs: false,
+  setup(_, { slots, attrs }) {
     const ctx = useComboboxContext()
-    return () => h('div', {
-      ...ctx.api.value.getPositionerProps() as Record<string, unknown>,
-      ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
-    }, slots.default?.())
+    // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
+    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+      h('div', {
+        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
+      }, slots.default?.()),
+    ])
   },
 })
 

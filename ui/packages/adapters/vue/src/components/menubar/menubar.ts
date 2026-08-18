@@ -4,7 +4,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { MenubarPartRegistry } from './use-menubar'
 import { createRuntimeConfig } from '@xihan-ui/kernel'
-import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import {
@@ -126,16 +126,21 @@ export const XhMenubarPositioner = defineComponent({
   props: {
     value: { type: String, required: true },
   },
-  setup(props, { slots }) {
+  // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
+  inheritAttrs: false,
+  setup(props, { slots, attrs }) {
     const ctx = useMenubarContext()
     const menu = computed<MenubarContentProps>(() => ({ value: props.value }))
     // 供内部 content 继承 value
     provideMenubarMenu({ menu })
     const setEl = useMenubarPart(ctx.registerPositioner, () => props.value)
-    return () => h('div', {
-      ...ctx.api.value.getPositionerProps(menu.value) as Record<string, unknown>,
-      ref: (el: unknown) => setEl(el as HTMLElement | null),
-    }, slots.default?.())
+    // 每张菜单各搬各的定位层到 portal 落点，逃开祖先的层叠上下文
+    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+      h('div', {
+        ...mergeProps(ctx.api.value.getPositionerProps(menu.value) as Record<string, unknown>, attrs),
+        ref: (el: unknown) => setEl(el as HTMLElement | null),
+      }, slots.default?.()),
+    ])
   },
 })
 

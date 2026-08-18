@@ -18,7 +18,7 @@ export interface DrawerContext {
   rendered: Ref<boolean>
   contentRef: Ref<HTMLElement | null>
   backdropRef: Ref<HTMLElement | null>
-  /** 浮层搬到哪儿：实例给的容器 > 全局配置的 portalContainer > body。 */
+  /** 浮层搬到哪儿：实例给的容器 > 全局配置 > 单一落点。 */
   portalTarget: ComputedRef<string | Element>
 }
 
@@ -47,14 +47,15 @@ export function useDrawer(
   // 服务端算不出 rendered 就只发一个空占位，客户端水合时补出整棵子树 = mismatch。
   const rendered = ref(service.state.get() === 'open')
 
+  let config: RuntimeConfig | null = null
+
   if (typeof document !== 'undefined') {
-    const config: RuntimeConfig = createRuntimeConfig({
+    config = createRuntimeConfig({
       scope,
       idGenerator: idGen,
-      portalContainer: () => xhConfig.value.portalContainer?.() ?? null,
     })
     // 只提供注册函数，入栈出栈由机器的 trackOverlay 效应按展开态驱动
-    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
+    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
       kind: 'modal',
       node: () => contentRef.value,
       branches: () => [],
@@ -63,7 +64,7 @@ export function useDrawer(
       surfaces: () => [backdropRef.value].filter(Boolean) as Element[],
     })
     const presence: PresenceHandle = createPresence({
-      config,
+      config: config!,
       open: service.state.get() === 'open',
       onRenderedChange: (r) => {
         rendered.value = r
@@ -71,7 +72,7 @@ export function useDrawer(
     })
     rendered.value = presence.rendered
 
-    service.refs.set('config', config)
+    service.refs.set('config', config!)
     service.refs.set('registerLayer', registerLayer)
     service.refs.set('presence', presence)
     service.refs.set('getContentEl', () => contentRef.value)
@@ -95,8 +96,8 @@ export function useDrawer(
   }
 
   const api = computed(() => connectDrawer(service, vueNormalize))
-  // 实例给的容器优先；没给就问全局配置；都没有才落 body
-  const portalTarget = computed<string | Element>(() => container?.() ?? xhConfig.value.portalContainer?.() ?? 'body')
+  // 实例给的容器优先；没给就问全局配置；都没有才落单一落点
+  const portalTarget = computed<string | Element>(() => container?.() ?? xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
   return { service, api, rendered, contentRef, backdropRef, portalTarget }
 }

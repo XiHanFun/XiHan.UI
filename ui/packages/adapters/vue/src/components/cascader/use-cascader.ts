@@ -6,6 +6,7 @@ import { cascaderMachine, connectCascader } from '@xihan-ui/headless'
 import { createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
+import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
@@ -20,12 +21,15 @@ export interface CascaderContext {
   contentRef: Ref<HTMLElement | null>
   /** 此刻该不该渲染：退场动画播完之前仍为真。 */
   visible: Ref<boolean>
+  /** 浮层搬到哪儿：全局配置的 portalContainer > body。 */
+  portalTarget: ComputedRef<string | Element>
 }
 
 export function useCascader(
   props: CascaderSchema['props'],
   handlers: Pick<CascaderSchema['props'], 'onValueChange' | 'onOpenChange'> = {},
 ): CascaderContext {
+  const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
@@ -63,6 +67,8 @@ export function useCascader(
   const api = computed(() => connectCascader(service, vueNormalize))
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
   const visible = useOverlayExit({ config, isOpen: () => api.value.open, contentRef })
+  // 先问全局配置的落点，没有才落 body
+  const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { visible, service, api, triggerRef, positionerRef, contentRef }
+  return { visible, service, api, triggerRef, positionerRef, contentRef, portalTarget }
 }

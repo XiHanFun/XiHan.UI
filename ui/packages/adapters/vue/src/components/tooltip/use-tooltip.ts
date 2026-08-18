@@ -6,6 +6,7 @@ import { connectTooltip, tooltipMachine } from '@xihan-ui/headless'
 import { createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
+import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
@@ -22,12 +23,15 @@ export interface TooltipContext {
   contentRef: Ref<HTMLElement | null>
   /** 此刻该不该可见：退场动画播完之前仍为真。 */
   visible: Ref<boolean>
+  /** 浮层搬到哪儿：全局配置的容器 > 运行时的浮层落点 > body。 */
+  portalTarget: ComputedRef<string | Element>
 }
 
 export function useTooltip(
   props: TooltipSchema['props'],
   onOpenChange?: TooltipSchema['props']['onOpenChange'],
 ): TooltipContext {
+  const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
@@ -71,6 +75,8 @@ export function useTooltip(
     isOpen: () => api.value.open,
     contentRef,
   })
+  // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
+  const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { service, api, triggerRef, positionerRef, contentRef, visible }
+  return { service, api, triggerRef, positionerRef, contentRef, visible, portalTarget }
 }

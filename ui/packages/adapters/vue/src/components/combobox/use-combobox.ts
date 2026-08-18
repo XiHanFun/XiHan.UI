@@ -6,6 +6,7 @@ import { comboboxMachine, connectCombobox } from '@xihan-ui/headless'
 import { createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, nextTick, ref } from 'vue'
+import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
@@ -24,12 +25,15 @@ export interface ComboboxContext {
   visible: Ref<boolean>
   /** 上报候选集合可能变了；同一拍里多次调用只上报一次。 */
   syncItems: () => void
+  /** 浮层搬到哪儿：全局配置的 portalContainer > body。 */
+  portalTarget: ComputedRef<string | Element>
 }
 
 export function useCombobox(
   props: ComboboxSchema['props'],
   handlers: Pick<ComboboxSchema['props'], 'onValueChange' | 'onInputValueChange' | 'onOpenChange'> = {},
 ): ComboboxContext {
+  const xhConfig = useXhConfig()
   const controlRef = ref<HTMLElement | null>(null)
   const inputRef = ref<ComboboxInputEl | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
@@ -82,6 +86,8 @@ export function useCombobox(
   const api = computed(() => connectCombobox(service, vueNormalize))
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
   const visible = useOverlayExit({ config, isOpen: () => api.value.open, contentRef })
+  // 先问全局配置的落点，没有才落 body
+  const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { visible, service, api, controlRef, inputRef, positionerRef, contentRef, syncItems }
+  return { visible, service, api, controlRef, inputRef, positionerRef, contentRef, syncItems, portalTarget }
 }

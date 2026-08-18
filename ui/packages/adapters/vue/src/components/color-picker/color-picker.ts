@@ -10,7 +10,7 @@ import type { Direction, Placement } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { colorPickerToChannel, colorPickerToInputChannel } from '@xihan-ui/headless'
-import { computed, defineComponent, h, onUnmounted } from 'vue'
+import { computed, defineComponent, h, mergeProps, onUnmounted, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
 import {
   provideColorPicker,
@@ -128,12 +128,17 @@ export const XhColorPickerSwatch = defineComponent({
 
 export const XhColorPickerPositioner = defineComponent({
   name: 'XhColorPickerPositioner',
-  setup(_, { slots }) {
+  // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
+  inheritAttrs: false,
+  setup(_, { slots, attrs }) {
     const ctx = useColorPickerContext()
-    return () => h('div', {
-      ...ctx.api.value.getPositionerProps() as Record<string, unknown>,
-      ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
-    }, slots.default?.())
+    // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
+    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+      h('div', {
+        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
+      }, slots.default?.()),
+    ])
   },
 })
 

@@ -6,6 +6,7 @@ import { connectMenubar, menubarMachine } from '@xihan-ui/headless'
 import { createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
+import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { createVueIdGenerator } from '../../runtime/vue-id'
@@ -20,6 +21,8 @@ export interface MenubarContext {
   registerTrigger: MenubarPartRegistry
   registerPositioner: MenubarPartRegistry
   registerContent: MenubarPartRegistry
+  /** 浮层搬到哪儿：全局配置的容器 > 运行时的浮层落点 > body。 */
+  portalTarget: ComputedRef<string | Element>
 }
 
 export function useMenubar(
@@ -27,6 +30,7 @@ export function useMenubar(
   onValueChange?: MenubarSchema['props']['onValueChange'],
   onSelect?: MenubarSchema['props']['onSelect'],
 ): MenubarContext {
+  const xhConfig = useXhConfig()
   const rootRef = ref<HTMLElement | null>(null)
   // 普通 Map 而非响应式，这三份表只在事件与效应里被机器读
   const triggers = new Map<string, HTMLElement>()
@@ -48,11 +52,13 @@ export function useMenubar(
     return value == null ? null : table.get(value) ?? null
   }
 
+  let config: RuntimeConfig | null = null
+
   if (typeof document !== 'undefined') {
-    const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
+    config = createRuntimeConfig({ scope, idGenerator: idGen })
 
     // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按有无菜单展开驱动
-    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
+    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
       kind: 'popover',
       node: current(contents),
       // 整条菜单栏记为本层分支，点 trigger 与掠过换菜单都算层内交互
@@ -64,7 +70,7 @@ export function useMenubar(
     })
 
     // 定位引擎由适配器注入，机器只经端口驱动
-    service.refs.set('config', config)
+    service.refs.set('config', config!)
     service.refs.set('registerLayer', registerLayer)
     service.refs.set('position', createPositionEngine())
     service.refs.set('getAnchorEl', current(triggers))
@@ -74,6 +80,9 @@ export function useMenubar(
   }
 
   const api = computed(() => connectMenubar(service, vueNormalize))
+  // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
+  const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
+
   return {
     service,
     api,
@@ -81,5 +90,6 @@ export function useMenubar(
     registerTrigger: put(triggers),
     registerPositioner: put(positioners),
     registerContent: put(contents),
+    portalTarget,
   }
 }

@@ -2,7 +2,7 @@ import type { MentionApi, MentionInputEl, MentionInputHost, MentionItemProps, Me
 import type { ControlVariant, Placement, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { computed, defineComponent, h, onMounted, onUnmounted, onUpdated, watch } from 'vue'
+import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, Teleport, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideMention, provideMentionItem, useMentionContext, useMentionItemContext } from './context'
 import { useMention } from './use-mention'
@@ -113,12 +113,17 @@ export const XhMentionInput = defineComponent({
 
 export const XhMentionPositioner = defineComponent({
   name: 'XhMentionPositioner',
-  setup(_, { slots }) {
+  // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
+  inheritAttrs: false,
+  setup(_, { slots, attrs }) {
     const ctx = useMentionContext()
-    return () => h('div', {
-      ...ctx.api.value.getPositionerProps() as Record<string, unknown>,
-      ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
-    }, slots.default?.())
+    // 定位层搬到 portal 落点，逃开祖先的层叠上下文
+    return () => h(Teleport, { to: ctx.portalTarget.value }, [
+      h('div', {
+        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
+      }, slots.default?.()),
+    ])
   },
 })
 

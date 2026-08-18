@@ -20,7 +20,7 @@ const parts = menubarAnatomy.build()
 /** 触发器集合，查询容器取 root。 */
 export const menubarTriggerQuery: ItemQuery = { scope: menubarAnatomy.name, part: 'trigger' }
 
-/** 各菜单的浮层内容，查询容器取 root。 */
+/** 各菜单的浮层内容；浮层可能被搬到 root 之外，查询容器取放浮层的那个落点。 */
 export const menubarContentQuery: ItemQuery = { scope: menubarAnatomy.name, part: 'content' }
 
 /** 菜单内的条目，查询容器取 content。 */

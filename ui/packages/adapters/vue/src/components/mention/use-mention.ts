@@ -6,6 +6,7 @@ import { connectMention, mentionMachine } from '@xihan-ui/headless'
 import { createRuntimeConfig, createScope } from '@xihan-ui/kernel'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, nextTick, ref } from 'vue'
+import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
@@ -21,6 +22,8 @@ export interface MentionContext {
   contentRef: Ref<HTMLElement | null>
   /** 此刻该不该渲染：退场动画播完之前仍为真。 */
   visible: Ref<boolean>
+  /** 浮层搬到哪儿：全局配置的容器 > 运行时的浮层落点 > body。 */
+  portalTarget: ComputedRef<string | Element>
   /** 上报候选集合可能变了；同一拍里多次调用只上报一次。 */
   syncItems: () => void
 }
@@ -29,6 +32,7 @@ export function useMention(
   props: MentionSchema['props'],
   handlers: Pick<MentionSchema['props'], 'onValueChange' | 'onQueryChange' | 'onSelect' | 'onOpenChange'> = {},
 ): MentionContext {
+  const xhConfig = useXhConfig()
   const inputRef = ref<MentionInputEl | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
@@ -79,6 +83,8 @@ export function useMention(
   const api = computed(() => connectMention(service, vueNormalize))
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
   const visible = useOverlayExit({ config, isOpen: () => api.value.open, contentRef })
+  // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
+  const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { visible, service, api, inputRef, positionerRef, contentRef, syncItems }
+  return { visible, service, api, inputRef, positionerRef, contentRef, portalTarget, syncItems }
 }
