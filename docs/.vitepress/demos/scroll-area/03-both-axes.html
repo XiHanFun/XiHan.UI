@@ -1,0 +1,28 @@
+<!-- 双轴与拐角 | 两条轴各写一条滚动条，corner 补上右下角那块空白；内容要比视口宽，横轴才量得出溢出 -->
+<xh-scroll-area id="scroll-area-both-axes" type="always">
+  <div data-xh-part="root" style="block-size: 160px; inline-size: 100%; max-inline-size: 420px">
+    <div data-xh-part="viewport">
+      <div data-xh-part="content" style="padding: 8px 12px"></div>
+    </div>
+    <div data-xh-part="scrollbar" orientation="vertical">
+      <div data-xh-part="thumb"></div>
+    </div>
+    <div data-xh-part="scrollbar" orientation="horizontal">
+      <div data-xh-part="thumb"></div>
+    </div>
+    <div data-xh-part="corner"></div>
+  </div>
+</xh-scroll-area>
+
+<script type="module">
+  // 16 行长句，不换行，横轴因此也溢出
+  const content = document
+    .getElementById("scroll-area-both-axes")
+    .querySelector('[data-xh-part="content"]');
+  for (let i = 1; i <= 16; i++) {
+    const line = document.createElement("p");
+    line.style.cssText = "margin: 0; line-height: 24px; white-space: nowrap";
+    line.textContent = `第 ${i} 行 —— 这一行故意写得很长，长到横向也需要滚动才看得完整句话`;
+    content.append(line);
+  }
+</script>

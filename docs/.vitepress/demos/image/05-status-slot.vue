@@ -1,4 +1,4 @@
-<!-- 按状态分流的回退内容 | 根插槽把 status 交出来：加载中给占位、失败给提示与重试入口，两套内容共用同一个回退部件 -->
+<!-- 按状态分流的回退内容 | 状态一落位就报出来：加载中给占位、失败给提示与重试入口，两套内容共用同一个回退部件 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/vue";

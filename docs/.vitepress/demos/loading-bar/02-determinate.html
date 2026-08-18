@@ -1,0 +1,50 @@
+<!-- 确定进度 | 传了 value 就由宿主说了算，宽度照它显示，内部爬升不再插手；loading 仍然负责露面与收起 -->
+<xh-loading-bar id="loading-bar-determinate" value="0">
+  <div data-xh-part="root">
+    <div data-xh-part="track">
+      <div data-xh-part="range"></div>
+    </div>
+  </div>
+</xh-loading-bar>
+
+<div
+  id="loading-bar-determinate-actions"
+  style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px"
+>
+  <xh-button variant="solid" data-act="start">
+    <button data-xh-part="root">开始</button>
+  </xh-button>
+  <xh-button variant="outline" data-act="advance">
+    <button data-xh-part="root">推进 25%</button>
+  </xh-button>
+  <xh-button variant="ghost" data-act="finish">
+    <button data-xh-part="root">结束</button>
+  </xh-button>
+  <span>进度：<span id="loading-bar-determinate-value">0</span>%</span>
+</div>
+
+<script type="module">
+  const bar = document.getElementById("loading-bar-determinate");
+  const actions = document.getElementById("loading-bar-determinate-actions");
+  const readout = document.getElementById("loading-bar-determinate-value");
+
+  function set(value) {
+    bar.value = value;
+    readout.textContent = String(value);
+  }
+
+  const acts = {
+    start: () => {
+      set(0);
+      bar.loading = true;
+    },
+    advance: () => set(Math.min(100, bar.value + 25)),
+    finish: () => {
+      bar.loading = false;
+    },
+  };
+
+  for (const button of actions.querySelectorAll("[data-act]")) {
+    button.addEventListener("click", () => acts[button.dataset.act]());
+  }
+</script>

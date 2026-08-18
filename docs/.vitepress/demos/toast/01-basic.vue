@@ -1,4 +1,4 @@
-<!-- 基础用法 | 单独一条通知：title 与 description 没写插槽内容时由 props 兜底；duration 给 0 即不自动消失 -->
+<!-- 基础用法 | 单独一条通知：title 与 description 两个部件留空时由属性上的文案填入；duration 给 0 即不自动消失 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

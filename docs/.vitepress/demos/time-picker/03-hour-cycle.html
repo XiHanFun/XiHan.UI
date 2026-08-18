@@ -1,0 +1,110 @@
+<!-- 12 小时制 | 时列写的是显示值 01-12，落到哪个真实小时由上下午说了算：输入行里敲、浮层里挑都改它 -->
+<xh-time-picker id="time-picker-hour-cycle" hour-cycle="12" locale="zh-CN" default-value="09:30">
+  <div data-xh-part="root">
+    <label data-xh-part="label">提醒时间</label>
+    <div data-xh-part="control">
+      <span data-xh-part="input" segment="hour"></span>
+      <span>:</span>
+      <span data-xh-part="input" segment="minute"></span>
+      <span data-xh-part="input" segment="dayPeriod"></span>
+      <button data-xh-part="clear-trigger">✕</button>
+      <button data-xh-part="trigger">▾</button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="column" unit="hour">
+          <div data-xh-part="item" value="01"></div>
+          <div data-xh-part="item" value="02"></div>
+          <div data-xh-part="item" value="03"></div>
+          <div data-xh-part="item" value="04"></div>
+          <div data-xh-part="item" value="05"></div>
+          <div data-xh-part="item" value="06"></div>
+          <div data-xh-part="item" value="07"></div>
+          <div data-xh-part="item" value="08"></div>
+          <div data-xh-part="item" value="09"></div>
+          <div data-xh-part="item" value="10"></div>
+          <div data-xh-part="item" value="11"></div>
+          <div data-xh-part="item" value="12"></div>
+        </div>
+        <div data-xh-part="column" unit="minute">
+          <div data-xh-part="item" value="00"></div>
+          <div data-xh-part="item" value="01"></div>
+          <div data-xh-part="item" value="02"></div>
+          <div data-xh-part="item" value="03"></div>
+          <div data-xh-part="item" value="04"></div>
+          <div data-xh-part="item" value="05"></div>
+          <div data-xh-part="item" value="06"></div>
+          <div data-xh-part="item" value="07"></div>
+          <div data-xh-part="item" value="08"></div>
+          <div data-xh-part="item" value="09"></div>
+          <div data-xh-part="item" value="10"></div>
+          <div data-xh-part="item" value="11"></div>
+          <div data-xh-part="item" value="12"></div>
+          <div data-xh-part="item" value="13"></div>
+          <div data-xh-part="item" value="14"></div>
+          <div data-xh-part="item" value="15"></div>
+          <div data-xh-part="item" value="16"></div>
+          <div data-xh-part="item" value="17"></div>
+          <div data-xh-part="item" value="18"></div>
+          <div data-xh-part="item" value="19"></div>
+          <div data-xh-part="item" value="20"></div>
+          <div data-xh-part="item" value="21"></div>
+          <div data-xh-part="item" value="22"></div>
+          <div data-xh-part="item" value="23"></div>
+          <div data-xh-part="item" value="24"></div>
+          <div data-xh-part="item" value="25"></div>
+          <div data-xh-part="item" value="26"></div>
+          <div data-xh-part="item" value="27"></div>
+          <div data-xh-part="item" value="28"></div>
+          <div data-xh-part="item" value="29"></div>
+          <div data-xh-part="item" value="30"></div>
+          <div data-xh-part="item" value="31"></div>
+          <div data-xh-part="item" value="32"></div>
+          <div data-xh-part="item" value="33"></div>
+          <div data-xh-part="item" value="34"></div>
+          <div data-xh-part="item" value="35"></div>
+          <div data-xh-part="item" value="36"></div>
+          <div data-xh-part="item" value="37"></div>
+          <div data-xh-part="item" value="38"></div>
+          <div data-xh-part="item" value="39"></div>
+          <div data-xh-part="item" value="40"></div>
+          <div data-xh-part="item" value="41"></div>
+          <div data-xh-part="item" value="42"></div>
+          <div data-xh-part="item" value="43"></div>
+          <div data-xh-part="item" value="44"></div>
+          <div data-xh-part="item" value="45"></div>
+          <div data-xh-part="item" value="46"></div>
+          <div data-xh-part="item" value="47"></div>
+          <div data-xh-part="item" value="48"></div>
+          <div data-xh-part="item" value="49"></div>
+          <div data-xh-part="item" value="50"></div>
+          <div data-xh-part="item" value="51"></div>
+          <div data-xh-part="item" value="52"></div>
+          <div data-xh-part="item" value="53"></div>
+          <div data-xh-part="item" value="54"></div>
+          <div data-xh-part="item" value="55"></div>
+          <div data-xh-part="item" value="56"></div>
+          <div data-xh-part="item" value="57"></div>
+          <div data-xh-part="item" value="58"></div>
+          <div data-xh-part="item" value="59"></div>
+        </div>
+        <!-- 上下午列只在 12 小时制下出现；格子上的文字由组件按 locale 填 -->
+        <div data-xh-part="column" unit="dayPeriod">
+          <div data-xh-part="item" value="00"></div>
+          <div data-xh-part="item" value="01"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-time-picker>
+
+<span style="font-size: 13px">值仍是 24 小时的串：<span id="time-picker-hour-cycle-value">09:30</span></span>
+
+<script type="module">
+  // 当前值回显在旁边那行文字里
+  const picker = document.getElementById("time-picker-hour-cycle");
+  const readout = document.getElementById("time-picker-hour-cycle-value");
+  picker.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value || "（空）";
+  });
+</script>

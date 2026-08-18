@@ -1,0 +1,31 @@
+<!-- 关掉爬升 | trickle 为 false 时条子停在起步值 minimum 不动，往前走全靠宿主收尾 -->
+<xh-loading-bar id="loading-bar-trickle" trickle="false" minimum="30" height="6">
+  <div data-xh-part="root">
+    <div data-xh-part="track">
+      <div data-xh-part="range"></div>
+    </div>
+  </div>
+</xh-loading-bar>
+
+<div
+  id="loading-bar-trickle-actions"
+  style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px"
+>
+  <xh-button variant="solid" data-loading="on">
+    <button data-xh-part="root">开始加载</button>
+  </xh-button>
+  <xh-button variant="outline" data-loading="off">
+    <button data-xh-part="root">结束加载</button>
+  </xh-button>
+  <span>开始后停在 30%，按「结束加载」才冲到 100 并淡出</span>
+</div>
+
+<script type="module">
+  const bar = document.getElementById("loading-bar-trickle");
+  const actions = document.getElementById("loading-bar-trickle-actions");
+  for (const button of actions.querySelectorAll("[data-loading]")) {
+    button.addEventListener("click", () => {
+      bar.loading = button.dataset.loading === "on";
+    });
+  }
+</script>

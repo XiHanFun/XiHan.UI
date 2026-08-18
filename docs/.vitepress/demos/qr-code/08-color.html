@@ -1,0 +1,28 @@
+<!-- 换色 | 颜色不是 props，写三个 CSS 变量即可：码点必须比底色深且对比要足，反相码一部分读码器不认 -->
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-qr-code value="https://ui.xihanfun.com" pixel-size="128">
+      <svg data-xh-part="root"></svg>
+    </xh-qr-code>
+    <span style="font-size: 12px">缺省</span>
+  </div>
+
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <!-- 只换码点色，码眼跟着走 -->
+    <xh-qr-code value="https://ui.xihanfun.com" pixel-size="128">
+      <svg data-xh-part="root" style="--xh-qr-code-fg: #1d4ed8"></svg>
+    </xh-qr-code>
+    <span style="font-size: 12px">深蓝码点</span>
+  </div>
+
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <!-- 码眼单独挑一个色，挖空矩形跟着底色走，两处必须一致 -->
+    <xh-qr-code value="https://ui.xihanfun.com" pixel-size="128" eye-shape="rounded">
+      <svg
+        data-xh-part="root"
+        style="--xh-qr-code-bg: #fff7ed; --xh-qr-code-fg: #431407; --xh-qr-code-eye-fg: #c2410c"
+      ></svg>
+    </xh-qr-code>
+    <span style="font-size: 12px">暖底 + 独立码眼色</span>
+  </div>
+</div>

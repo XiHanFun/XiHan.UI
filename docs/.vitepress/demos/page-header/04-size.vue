@@ -1,4 +1,4 @@
-<!-- 尺寸 | size 换的是标题字号与整块的上下留白，不传 size 即默认档 -->
+<!-- 尺寸 | size 换的是标题字号与整块的上下留白，不写 size 即默认档 -->
 <script setup lang="ts">
 import { XhPageHeaderRoot, XhPageHeaderSubtitle, XhPageHeaderTitle } from "@xihan-ui/vue";
 

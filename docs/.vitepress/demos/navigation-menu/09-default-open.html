@@ -1,0 +1,25 @@
+<!-- 默认展开项 | defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针移开、Escape 或点回入口都收得起来 -->
+<div style="inline-size: 100%; padding-block-end: 150px">
+  <!-- 首帧就展开「指南」，指示条也一并落在它下面 -->
+  <xh-navigation-menu default-value="guide" style="display: contents">
+    <nav data-xh-part="root">
+      <ul data-xh-part="list">
+        <li data-xh-part="item">
+          <button data-xh-part="trigger" value="guide">指南</button>
+          <div data-xh-part="content" value="guide">
+            <a data-xh-part="link" href="#/guide/install">安装</a>
+            <a data-xh-part="link" href="#/guide/quick-start">快速开始</a>
+          </div>
+        </li>
+        <li data-xh-part="item">
+          <button data-xh-part="trigger" value="components">组件</button>
+          <div data-xh-part="content" value="components">
+            <a data-xh-part="link" href="#/components/menu">菜单</a>
+            <a data-xh-part="link" href="#/components/toolbar">工具栏</a>
+          </div>
+        </li>
+        <li data-xh-part="indicator"></li>
+      </ul>
+    </nav>
+  </xh-navigation-menu>
+</div>

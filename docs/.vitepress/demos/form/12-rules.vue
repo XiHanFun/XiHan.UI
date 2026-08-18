@@ -1,4 +1,4 @@
-<!-- 声明式规则 | rules 按字段声明 required/min/max/pattern/type，一个字段多条规则首败即停；文案取 rule.message，再退 validateMessages 模板（{name}/{min}/{max} 现场代入）。组里的 Field 自取校验态：invalid/必填星号/错误文案都不用手接 -->
+<!-- 声明式规则 | rules 按字段声明 required/min/max/pattern/type，一个字段多条规则首败即停；文案取 rule.message，再退 validateMessages 模板（{name}/{min}/{max} 现场代入）。组里的字段自取校验态：invalid 与必填星号都不用手接 -->
 <script setup lang="ts">
 import type { FormRules, FormValidateMessages } from "@xihan-ui/headless";
 import { ref } from "vue";

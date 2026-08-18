@@ -1,4 +1,4 @@
-<!-- 尺寸 | size 换的是各段的内边距与标题字号，不传 size 即默认档 -->
+<!-- 尺寸 | size 换的是各段的内边距与标题字号，不写 size 即默认档 -->
 <script setup lang="ts">
 import { XhCardBody, XhCardHeader, XhCardRoot, XhCardTitle } from "@xihan-ui/vue";
 

@@ -1,4 +1,4 @@
-<!-- 分隔条里放内容 | 分隔条的默认插槽收作者写的把手，粗细由 --xh-splitter-trigger-thickness 让出位置 -->
+<!-- 分隔条里放内容 | 分隔条内可以再摆一个把手，粗细由 --xh-splitter-trigger-thickness 让出位置 -->
 <script setup lang="ts">
 import {
   XhSplitterPanel,

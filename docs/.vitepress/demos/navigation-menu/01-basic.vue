@@ -1,4 +1,4 @@
-<!-- 基础用法 | 入口写在 collection 里、面板内容走 panel 插槽；面板落在同一个 li 里、紧跟 trigger 之后，展开时按 Tab 就走得进去，里面的条目是链接不是命令，点了就跳走 -->
+<!-- 基础用法 | 面板落在同一个 li 里、紧跟 trigger 之后，展开时按 Tab 就走得进去，里面的条目是链接不是命令，点了就跳走 -->
 <script setup lang="ts">
 import { XhNavigationMenuLink, XhNavigationMenuRoot } from "@xihan-ui/vue";
 

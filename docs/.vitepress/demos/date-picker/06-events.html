@@ -1,0 +1,127 @@
+<!-- 受控展开与事件 | open 交给宿主持有，值、展开、聚焦日三条变化各自播报 -->
+<div id="date-picker-events-mount"></div>
+
+<!-- 展开态由外面这颗按钮也能改 -->
+<xh-button id="date-picker-events-toggle" size="sm" variant="outline">
+  <button data-xh-part="root">展开</button>
+</xh-button>
+
+<span style="font-size: 13px">
+  值：<span id="date-picker-events-value">（未选）</span> · 聚焦日：<span
+    id="date-picker-events-focused"
+    >（还没动过）</span
+  >
+</span>
+
+<template id="date-picker-events-template">
+  <xh-date-picker locale="zh-CN">
+    <div data-xh-part="root">
+      <span data-xh-part="label">排期</span>
+      <div data-xh-part="control">
+        <div data-xh-part="input">
+          <span data-xh-part="segment"></span>
+          <span>-</span>
+          <span data-xh-part="segment"></span>
+          <span>-</span>
+          <span data-xh-part="segment"></span>
+        </div>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="calendar">
+            <div data-xh-part="header">
+              <button data-xh-part="prev-trigger" aria-label="上个月">‹</button>
+              <div data-xh-part="heading"></div>
+              <button data-xh-part="next-trigger" aria-label="下个月">›</button>
+            </div>
+            <div data-xh-part="grid">
+              <div data-xh-part="grid-head">
+                <div data-xh-part="week-row"></div>
+              </div>
+              <div data-xh-part="grid-body"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-date-picker>
+</template>
+
+<script type="module">
+  const fragment = document
+    .getElementById("date-picker-events-template")
+    .content.cloneNode(true);
+  const picker = fragment.querySelector("xh-date-picker");
+  const heading = fragment.querySelector('[data-xh-part="heading"]');
+  const head = fragment.querySelector(
+    '[data-xh-part="grid-head"] [data-xh-part="week-row"]',
+  );
+  const body = fragment.querySelector('[data-xh-part="grid-body"]');
+
+  const toggle = document
+    .getElementById("date-picker-events-toggle")
+    .querySelector('[data-xh-part="root"]');
+  const valueOut = document.getElementById("date-picker-events-value");
+  const focusedOut = document.getElementById("date-picker-events-focused");
+
+  let month = "";
+
+  function paintHead() {
+    head.replaceChildren(
+      ...picker.weekDays.map((day) => {
+        const cell = document.createElement("span");
+        cell.dataset.xhPart = "week-day";
+        cell.setAttribute("value", day.value);
+        cell.textContent = day.label;
+        return cell;
+      }),
+    );
+  }
+
+  function paintBody() {
+    const first = picker.weeks[0][0].value;
+    if (first === month) {
+      return;
+    }
+    month = first;
+    heading.textContent = picker.headingLabel;
+    body.replaceChildren(
+      ...picker.weeks.map((week) => {
+        const row = document.createElement("div");
+        row.dataset.xhPart = "week-row";
+        for (const day of week) {
+          const cell = document.createElement("div");
+          cell.dataset.xhPart = "cell";
+          cell.setAttribute("value", day.value);
+          const trigger = document.createElement("div");
+          trigger.dataset.xhPart = "cell-trigger";
+          trigger.textContent = day.day;
+          cell.append(trigger);
+          row.append(cell);
+        }
+        return row;
+      }),
+    );
+  }
+
+  // 展开态由这段脚本持有：组件只发意图，写回它才真的展开
+  function setOpen(open) {
+    picker.open = open;
+    toggle.textContent = open ? "收起" : "展开";
+  }
+
+  document.getElementById("date-picker-events-mount").append(fragment);
+  setOpen(false);
+  paintHead();
+  paintBody();
+
+  toggle.addEventListener("click", () => setOpen(!picker.open));
+  picker.addEventListener("open-change", (event) => setOpen(event.detail.open));
+  picker.addEventListener("value-change", (event) => {
+    valueOut.textContent = event.detail.value[0] ?? "（未选）";
+  });
+  picker.addEventListener("focused-value-change", (event) => {
+    focusedOut.textContent = event.detail.focusedValue;
+    paintBody();
+  });
+</script>

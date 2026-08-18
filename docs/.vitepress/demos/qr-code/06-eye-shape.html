@@ -1,0 +1,27 @@
+<!-- 码眼形状 | 只作用于三个定位图形，7×7 的外环加内心结构保持不变，读码器靠它找码 -->
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-qr-code value="https://ui.xihanfun.com/components/qr-code" eye-shape="square" pixel-size="128">
+      <svg data-xh-part="root"></svg>
+    </xh-qr-code>
+    <span style="font-size: 12px">square</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-qr-code value="https://ui.xihanfun.com/components/qr-code" eye-shape="rounded" pixel-size="128">
+      <svg data-xh-part="root"></svg>
+    </xh-qr-code>
+    <span style="font-size: 12px">rounded</span>
+  </div>
+  <!-- 码点与码眼各挑各的，两条 path 分开出几何 -->
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-qr-code
+      value="https://ui.xihanfun.com/components/qr-code"
+      module-shape="dot"
+      eye-shape="rounded"
+      pixel-size="128"
+    >
+      <svg data-xh-part="root"></svg>
+    </xh-qr-code>
+    <span style="font-size: 12px">dot + rounded</span>
+  </div>
+</div>

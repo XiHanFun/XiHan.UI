@@ -1,0 +1,44 @@
+<!-- 回退与状态 | 地址写坏和压根没给 src 是同一个落点，status-change 把三态报出来，root 上的 data-status 也有一份 -->
+<div id="image-fallback" style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px">
+  <xh-image
+    data-case="ok"
+    src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2016%209%22%3E%3Crect%20width=%2216%22%20height=%229%22%20fill=%22%23475569%22/%3E%3Cpath%20d=%22M0%209%206%203%2016%209z%22%20fill=%22%2394a3b8%22/%3E%3C/svg%3E"
+    alt="正常加载的图"
+  >
+    <div data-xh-part="root" style="--xh-image-w: 160px; --xh-image-ratio: 16 / 9">
+      <img data-xh-part="image" />
+      <div data-xh-part="fallback">加载中</div>
+    </div>
+  </xh-image>
+
+  <xh-image data-case="broken" src="https://example.invalid/broken.png" alt="地址写坏的图">
+    <div data-xh-part="root" style="--xh-image-w: 160px; --xh-image-ratio: 16 / 9">
+      <img data-xh-part="image" />
+      <div data-xh-part="fallback">图挂了</div>
+    </div>
+  </xh-image>
+
+  <xh-image data-case="none">
+    <div data-xh-part="root" style="--xh-image-w: 160px; --xh-image-ratio: 16 / 9">
+      <img data-xh-part="image" />
+      <div data-xh-part="fallback">没有来源</div>
+    </div>
+  </xh-image>
+</div>
+
+<span id="image-fallback-readout" style="font-size: 13px">
+  状态：正常 idle · 坏地址 idle · 无 src idle
+</span>
+
+<script type="module">
+  // 三处状态字各跟着本行图片的 status-change 走
+  const readout = document.getElementById("image-fallback-readout");
+  const status = { ok: "idle", broken: "idle", none: "idle" };
+
+  for (const host of document.getElementById("image-fallback").children) {
+    host.addEventListener("status-change", (event) => {
+      status[host.dataset.case] = event.detail.status;
+      readout.textContent = `状态：正常 ${status.ok} · 坏地址 ${status.broken} · 无 src ${status.none}`;
+    });
+  }
+</script>

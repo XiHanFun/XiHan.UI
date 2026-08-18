@@ -1,0 +1,39 @@
+<!-- 挂在局部 | 条子默认贴视口顶边，改写成 absolute 再套一个相对定位的框子，它就只贴这块卡片的上沿 -->
+<div
+  style="
+    position: relative;
+    overflow: hidden;
+    inline-size: 100%;
+    max-inline-size: 420px;
+    border: 1px solid var(--xh-border-subtle);
+    border-radius: 8px;
+  "
+>
+  <xh-loading-bar id="loading-bar-container" height="3">
+    <div data-xh-part="root" style="position: absolute">
+      <div data-xh-part="track">
+        <div data-xh-part="range"></div>
+      </div>
+    </div>
+  </xh-loading-bar>
+
+  <div style="display: grid; gap: 10px; padding: 16px">
+    <span>这块卡片自己的加载条，不会跑到页面最上方</span>
+    <xh-button id="loading-bar-container-reload" size="sm" variant="outline">
+      <button data-xh-part="root">刷新本卡片</button>
+    </xh-button>
+  </div>
+</div>
+
+<script type="module">
+  // 按一下加载 1.6 秒后自行收尾
+  const bar = document.getElementById("loading-bar-container");
+  document
+    .getElementById("loading-bar-container-reload")
+    .addEventListener("click", () => {
+      bar.loading = true;
+      window.setTimeout(() => {
+        bar.loading = false;
+      }, 1600);
+    });
+</script>

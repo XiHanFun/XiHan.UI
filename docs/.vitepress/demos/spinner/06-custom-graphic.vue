@@ -1,4 +1,4 @@
-<!-- 换掉转圈图形 | 内置圆环画在伪元素上，把直径与描边归零它就不占位；自绘的图形写进默认插槽 -->
+<!-- 换掉转圈图形 | 内置圆环画在伪元素上，把直径与描边归零它就不占位；自绘的图形写进 root 里 -->
 <script setup lang="ts">
 import { XhIcon, XhSpinner, XhSpinnerLabel } from "@xihan-ui/vue";
 

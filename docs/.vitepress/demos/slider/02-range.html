@@ -1,0 +1,41 @@
+<!-- 区间选择 | 两个拇指互为对方的边界、永不交叉，minStepsBetweenThumbs 再给它们之间留出格数；getValueText 把值翻成读屏念得出的话 -->
+<xh-slider
+  id="slider-range"
+  default-value="200,600"
+  min="0"
+  max="1000"
+  step="10"
+  min-steps-between-thumbs="2"
+  name="price"
+>
+  <div data-xh-part="root" style="inline-size: 320px">
+    <label data-xh-part="label">
+      价格：¥<span id="slider-range-low">200</span> – ¥<span id="slider-range-high">600</span>
+    </label>
+    <div data-xh-part="control">
+      <div data-xh-part="track">
+        <div data-xh-part="range"></div>
+      </div>
+      <div data-xh-part="thumb" index="0">
+        <input data-xh-part="hidden-input" />
+      </div>
+      <div data-xh-part="thumb" index="1">
+        <input data-xh-part="hidden-input" />
+      </div>
+    </div>
+  </div>
+</xh-slider>
+
+<script type="module">
+  // 格式化函数只走属性；标签里的两个数字跟着值走
+  const slider = document.getElementById("slider-range");
+  slider.getValueText = ({ value, index }) =>
+    `${index === 0 ? "起价" : "止价"} ${value} 元`;
+
+  const low = document.getElementById("slider-range-low");
+  const high = document.getElementById("slider-range-high");
+  slider.addEventListener("value-change", (event) => {
+    low.textContent = event.detail.value[0];
+    high.textContent = event.detail.value[1];
+  });
+</script>

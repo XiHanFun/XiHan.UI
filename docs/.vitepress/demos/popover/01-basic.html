@@ -1,0 +1,19 @@
+<!-- 基础用法 | 点击展开，Escape 或点外部关闭；positioner 负责摆位，content 才是浮层本体 -->
+<xh-popover id="popover-basic" placement="bottom-start">
+  <button data-xh-part="trigger">订阅设置</button>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <h3 data-xh-part="title">订阅设置</h3>
+      <p data-xh-part="description">
+        role=dialog，触发器与内容四处 ARIA 互指；非模态，焦点不被陷住。
+      </p>
+      <button data-xh-part="close-trigger">✕</button>
+      <div data-xh-part="arrow"></div>
+    </div>
+  </div>
+</xh-popover>
+
+<script type="module">
+  // 文案是对象，只走 property
+  document.getElementById("popover-basic").translations = { close: "关闭" };
+</script>

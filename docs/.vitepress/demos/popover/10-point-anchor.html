@@ -1,0 +1,76 @@
+<!-- 落在指针位置 | 触发器缩成一个像素、按点击坐标固定摆放，浮层就钉在刚点到的那一点上；再点一下换个落点 -->
+<div style="inline-size: 100%; display: grid; gap: 12px">
+  <div
+    id="popover-point-area"
+    style="
+      display: grid;
+      place-items: center;
+      block-size: 200px;
+      border: 1px dashed var(--xh-border-default);
+      border-radius: 8px;
+      color: var(--xh-fg-muted);
+      cursor: crosshair;
+    "
+  >
+    在这块区域里点一下
+  </div>
+
+  <xh-popover
+    id="popover-point"
+    open="false"
+    placement="bottom-start"
+    offset="8"
+    close-on-interact-outside="false"
+  >
+    <!-- 一像素而非零像素，位移探测才武装得起来 -->
+    <button
+      data-xh-part="trigger"
+      tabindex="-1"
+      style="
+        position: fixed;
+        left: 0;
+        top: 0;
+        inline-size: 1px;
+        block-size: 1px;
+        padding: 0;
+        border: 0;
+        opacity: 0;
+        pointer-events: none;
+      "
+    ></button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <h3 data-xh-part="title">这一点</h3>
+        <p data-xh-part="description">
+          落点 <span id="popover-point-readout">0 / 0</span>，按 Escape 收起。
+        </p>
+        <button data-xh-part="close-trigger">✕</button>
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </xh-popover>
+</div>
+
+<script type="module">
+  const popover = document.getElementById("popover-point");
+  // 文案是对象，只走 property
+  popover.translations = { close: "关闭" };
+
+  const trigger = popover.querySelector('[data-xh-part="trigger"]');
+  const readout = document.getElementById("popover-point-readout");
+
+  // 指针坐标是物理坐标，锚点用 left / top 摆位
+  document
+    .getElementById("popover-point-area")
+    .addEventListener("click", (event) => {
+      trigger.style.left = `${event.clientX}px`;
+      trigger.style.top = `${event.clientY}px`;
+      readout.textContent = `${event.clientX} / ${event.clientY}`;
+      popover.open = true;
+    });
+
+  // 受控：Escape 与关闭按钮只发意图，写回 open 才真的收起
+  popover.addEventListener("open-change", (event) => {
+    popover.open = event.detail.open;
+  });
+</script>

@@ -1,4 +1,4 @@
-<!-- 直达入口 | 没有下级的去处不必套面板：数据里写了 href 的那一项铺成一条 link，它不进方向键那一组（那一组只认 trigger），按 Tab 一样到得了 -->
+<!-- 直达入口 | 没有下级的去处不必套面板：那一项直接铺成一条 link，它不进方向键那一组（那一组只认 trigger），按 Tab 一样到得了 -->
 <script setup lang="ts">
 import { XhNavigationMenuLink, XhNavigationMenuRoot } from "@xihan-ui/vue";
 
