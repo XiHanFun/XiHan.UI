@@ -57,7 +57,7 @@ export const XhContextMenuRoot = defineComponent({
     trigger?: () => VNode[]
     item?: (node: ContextMenuNodeMeta) => VNode[]
   }>,
-  setup(props, { slots, emit }) {
+  setup(props, { slots, emit, expose }) {
     const notifyOpen: ContextMenuProps['onOpenChange'] = (details) => {
       emit('open-change', details)
       emit('update:open', details.open)
@@ -65,6 +65,18 @@ export const XhContextMenuRoot = defineComponent({
     const notifySelect: ContextMenuProps['onSelect'] = details => emit('select', details)
     const ctx = useContextMenu(props as ContextMenuProps, notifyOpen, notifySelect)
     provideContextMenu(ctx)
+    // 菜单钉在坐标上，坐标只能由 openAt 交进来。默认插槽那条路从载荷里拿，
+    // 只交 collection 的那条路没有载荷，所以同一组命令也从实例上暴露一份。
+    expose({
+      openAt: (x: number, y: number) => ctx.api.value.openAt(x, y),
+      setOpen: (open: boolean) => ctx.api.value.setOpen(open),
+      get open() {
+        return ctx.api.value.open
+      },
+      get point() {
+        return ctx.api.value.point
+      },
+    })
     // 子菜单任意层级的选中都汇到根：先发根的 select 再关根，各级随父关闭级联收起
     provideContextMenuChain({
       notifySelect: (details) => {
