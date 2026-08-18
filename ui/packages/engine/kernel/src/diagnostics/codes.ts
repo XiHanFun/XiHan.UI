@@ -33,6 +33,8 @@ export const DIAGNOSTIC_CODES = {
   versionMismatch: 'core.version-mismatch',
   /** 作者给了默认插槽，但该组件不渲染插槽内容。 */
   ignoredSlot: 'core.ignored-slot',
+  /** 浮层的祖先建了层叠上下文，浮层的层号被困在其中。 */
+  overlayStackingTrap: 'overlay.stacking-trap',
 } as const
 
 export type DiagnosticCode = (typeof DIAGNOSTIC_CODES)[keyof typeof DIAGNOSTIC_CODES]

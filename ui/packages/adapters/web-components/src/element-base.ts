@@ -3,6 +3,7 @@ import type { Spreader } from './dom/spread'
 import { validatePartContract } from './dom/part-contract'
 import { containsPart, discoverParts } from './dom/parts'
 import { createSpreader } from './dom/spread'
+import { reportStackingTrap } from './dom/stacking-context'
 import { XhReactiveElement } from './reactive'
 
 let instanceSeq = 0
@@ -151,6 +152,23 @@ export abstract class XhElement extends XhReactiveElement {
     this.partMap = new Map()
   }
 
+  /** 层叠上下文那条诊断已经查过。 */
+  private stackingChecked = false
+
+  /**
+   * 浮层首次展开后查一次祖先链有没有建层叠上下文，命中即投诊断。
+   * 每个实例只查一次，重定位与后续展开不再重复。
+   */
+  private checkStackingTrap(scope: string | undefined): void {
+    if (this.stackingChecked)
+      return
+    const positioner = this.getParts('positioner').find(el => el.dataset.state === 'open')
+    if (!positioner)
+      return
+    this.stackingChecked = true
+    reportStackingTrap(positioner, scope, this.instanceId)
+  }
+
   /** 标记 wire() 正在写属性。 */
   private wiring = false
 
@@ -209,6 +227,8 @@ export abstract class XhElement extends XhReactiveElement {
         this.wiring = false
       })
     }
+    // 排在 wire() 之后：data-state 得先落进 DOM，才认得出浮层这一帧是不是展开的
+    this.checkStackingTrap(contract?.anatomy.name)
   }
 
   /** 子类实现：把 connect 产出打到角色节点上。 */
