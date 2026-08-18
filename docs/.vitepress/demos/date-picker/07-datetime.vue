@@ -1,4 +1,4 @@
-<!-- 日期加时间 | show-time 让值升格为一体化 datetime：日历右侧多出时/分列（XhDatePickerTimePanel 整组自动铺），选完日子不收起、时间列点选写值、XhDatePickerConfirmTrigger 收口 -->
+<!-- 日期加时间 | show-time 让值升格为一体化 datetime：日历右侧多出时/分两列，选完日子不收起、时间列点选写值、确认钮收口 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

@@ -1,4 +1,4 @@
-<!-- 受控值表 | 传了 values 就由宿主说了算：组件内部不再落值，只发 update:values；页面别处也能直接改这张表 -->
+<!-- 受控值表 | 传了 values 就由宿主说了算：组件内部不再落值，只发变更通知；页面别处也能直接改这张表 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

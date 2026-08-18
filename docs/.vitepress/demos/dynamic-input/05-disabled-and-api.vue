@@ -1,4 +1,4 @@
-<!-- 禁用与程序化操作 | 禁用时三类把手全按不动；插槽里还给出 add / remove / setValue，可以从外面驱动 -->
+<!-- 禁用与程序化操作 | 禁用时三类把手全按不动；从外面加一条走同一条闸门，整份替换值则不受闸门约束 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

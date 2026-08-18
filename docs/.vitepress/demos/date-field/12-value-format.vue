@@ -1,4 +1,4 @@
-<!-- 对外值换个写法 | 组件读写的恒是 ISO 串，宿主用一个双向 computed 换成自己的格式，表单也提交这一份 -->
+<!-- 对外值换个写法 | 组件读写的恒是 ISO 串，宿主在读写两头各转一次换成自己的格式，表单也提交这一份 -->
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import {

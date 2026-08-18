@@ -1,0 +1,130 @@
+<!-- 收窄成一列图标 | 竖排时面板本就从入口侧边长出来；收窄只是把文字从入口里撤掉、把它挪进面板，指针停上去才露出来 -->
+<div
+  id="navigation-menu-collapsed"
+  style="inline-size: 100%; display: flex; gap: 16px; padding-block-end: 40px"
+>
+  <xh-navigation-menu orientation="vertical" style="display: contents">
+    <nav data-xh-part="root" style="inline-size: 56px">
+      <ul data-xh-part="list">
+        <li data-xh-part="item">
+          <button data-xh-part="trigger" value="system" style="justify-content: center">
+            <xh-icon size="sm" data-glyph="users" label="系统管理">
+              <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
+            </xh-icon>
+            <span data-text hidden>系统管理</span>
+          </button>
+          <div data-xh-part="content" value="system">
+            <span data-caption style="padding: 2px 8px; color: var(--xh-fg-muted); font-size: 12px">
+              系统管理
+            </span>
+            <a data-xh-part="link" href="#/system/user">用户</a>
+            <a data-xh-part="link" href="#/system/role">角色</a>
+          </div>
+        </li>
+        <li data-xh-part="item">
+          <button data-xh-part="trigger" value="monitor" style="justify-content: center">
+            <xh-icon size="sm" data-glyph="pulse" label="运行监控">
+              <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
+            </xh-icon>
+            <span data-text hidden>运行监控</span>
+          </button>
+          <div data-xh-part="content" value="monitor">
+            <span data-caption style="padding: 2px 8px; color: var(--xh-fg-muted); font-size: 12px">
+              运行监控
+            </span>
+            <a data-xh-part="link" href="#/monitor/online">在线用户</a>
+            <a data-xh-part="link" href="#/monitor/job">定时任务</a>
+          </div>
+        </li>
+        <li data-xh-part="item">
+          <button data-xh-part="trigger" value="tool" style="justify-content: center">
+            <xh-icon size="sm" data-glyph="tool" label="系统工具">
+              <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
+            </xh-icon>
+            <span data-text hidden>系统工具</span>
+          </button>
+          <div data-xh-part="content" value="tool">
+            <span data-caption style="padding: 2px 8px; color: var(--xh-fg-muted); font-size: 12px">
+              系统工具
+            </span>
+            <a data-xh-part="link" href="#/tool/codegen">代码生成</a>
+          </div>
+        </li>
+        <li data-xh-part="indicator"></li>
+      </ul>
+    </nav>
+  </xh-navigation-menu>
+
+  <xh-button size="sm" variant="outline">
+    <button data-xh-part="root" id="navigation-menu-collapsed-toggle">展开侧栏</button>
+  </xh-button>
+</div>
+
+<script type="module">
+  // 三个图标共用一套描边呈现属性，stroke 取 currentColor
+  const strokeAttrs = {
+    "fill": "none",
+    "stroke": "currentColor",
+    "stroke-width": "2",
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+  };
+
+  const icons = {
+    users: {
+      name: "users",
+      viewBox: "0 0 24 24",
+      attrs: strokeAttrs,
+      nodes: [
+        { tag: "circle", attrs: { cx: "9", cy: "8", r: "3" } },
+        { tag: "path", attrs: { d: "M3 20A6 6 0 0 1 15 20" } },
+        { tag: "path", attrs: { d: "M17 11A3 3 0 0 0 17 5" } },
+      ],
+    },
+    pulse: {
+      name: "pulse",
+      viewBox: "0 0 24 24",
+      attrs: strokeAttrs,
+      nodes: [{ tag: "path", attrs: { d: "M3 12H7L10 5L14 19L17 12H21" } }],
+    },
+    tool: {
+      name: "tool",
+      viewBox: "0 0 24 24",
+      attrs: strokeAttrs,
+      nodes: [
+        { tag: "path", attrs: { d: "M14 6A4 4 0 1 0 18 10L20 8V4H16L14 6Z" } },
+        { tag: "path", attrs: { d: "M13 11L5 19L7 21L15 13" } },
+      ],
+    },
+  };
+
+  const scope = document.getElementById("navigation-menu-collapsed");
+  const nav = scope.querySelector('[data-xh-part="root"]');
+  const toggle = document.getElementById("navigation-menu-collapsed-toggle");
+
+  // 图标记录是对象，只走 property
+  for (const el of scope.querySelectorAll("xh-icon")) el.icon = icons[el.dataset.glyph];
+
+  let collapsed = true;
+
+  // 收窄只挪动文字：入口里的撤掉、面板里的补上，图标同时接过可及名字
+  function apply() {
+    nav.style.inlineSize = collapsed ? "56px" : "190px";
+    for (const el of scope.querySelectorAll('[data-xh-part="trigger"]'))
+      el.style.justifyContent = collapsed ? "center" : "flex-start";
+    for (const el of scope.querySelectorAll("[data-text]")) el.hidden = collapsed;
+    for (const el of scope.querySelectorAll("[data-caption]")) el.hidden = !collapsed;
+    for (const el of scope.querySelectorAll("xh-icon")) {
+      const name = el.parentElement.querySelector("[data-text]").textContent.trim();
+      if (collapsed) el.setAttribute("label", name);
+      else el.removeAttribute("label");
+    }
+    toggle.textContent = collapsed ? "展开侧栏" : "收窄侧栏";
+  }
+
+  apply();
+  toggle.addEventListener("click", () => {
+    collapsed = !collapsed;
+    apply();
+  });
+</script>

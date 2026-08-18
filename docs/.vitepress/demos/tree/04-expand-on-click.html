@@ -1,0 +1,60 @@
+<!-- 点行不展开与禁用节点 | expandOnClick 关掉后只有箭头与左右方向键能改展开态；禁用节点仍可聚焦，只是确认键不认它 -->
+<xh-tree id="tree-expand-on-click" expand-on-click="false">
+  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 320px">
+    <span data-xh-part="label">构建产物</span>
+    <div data-xh-part="tree">
+      <div data-xh-part="branch" value="build">
+        <div data-xh-part="branch-control">
+          <span data-xh-part="branch-trigger">▸</span>
+          <span data-xh-part="branch-text">build</span>
+        </div>
+        <div data-xh-part="branch-content">
+          <div data-xh-part="item" value="vite">
+            <span data-xh-part="item-indicator">✓</span>
+            <span data-xh-part="item-text">vite.config.ts</span>
+          </div>
+          <div data-xh-part="item" value="lock">
+            <span data-xh-part="item-indicator">✓</span>
+            <span data-xh-part="item-text">pnpm-lock.yaml（禁用）</span>
+          </div>
+        </div>
+      </div>
+
+      <div data-xh-part="branch" value="dist">
+        <div data-xh-part="branch-control">
+          <span data-xh-part="branch-trigger">▸</span>
+          <span data-xh-part="branch-text">dist</span>
+        </div>
+        <div data-xh-part="branch-content"></div>
+      </div>
+
+      <div data-xh-part="item" value="readme">
+        <span data-xh-part="item-indicator">✓</span>
+        <span data-xh-part="item-text">README.md</span>
+      </div>
+    </div>
+  </div>
+</xh-tree>
+
+<script type="module">
+  const tree = document.getElementById("tree-expand-on-click");
+  tree.collection = [
+    {
+      value: "build",
+      label: "build",
+      children: [
+        { value: "vite", label: "vite.config.ts" },
+        { value: "lock", label: "pnpm-lock.yaml", disabled: true },
+      ],
+    },
+    // 空数组也算分支：展得开，只是里头没有行
+    { value: "dist", label: "dist", children: [] },
+    { value: "readme", label: "README.md" },
+  ];
+
+  tree.expandedValue = ["build"];
+  tree.addEventListener(
+    "expanded-change",
+    (event) => (tree.expandedValue = event.detail.value),
+  );
+</script>

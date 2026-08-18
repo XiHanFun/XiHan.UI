@@ -1,4 +1,4 @@
-<!-- 关键词过滤 | collection 换一份树就换一棵：标记跟着数据用 v-for 渲，过滤剩下的分支顺手全展开 -->
+<!-- 关键词过滤 | collection 换一份树就换一棵：标记跟着数据重铺，过滤剩下的分支顺手全展开 -->
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import {

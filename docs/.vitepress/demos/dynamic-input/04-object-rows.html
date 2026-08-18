@@ -1,0 +1,65 @@
+<!-- 一行多个字段 | 行数据是对象，createItem 造一个空项；改字段时整份重建数组，行号不跟着变 -->
+<xh-dynamic-input id="dynamic-input-object" movable>
+  <div data-xh-part="root" style="max-inline-size: 480px">
+    <button data-xh-part="add-trigger">+ 添加请求头</button>
+  </div>
+</xh-dynamic-input>
+
+<pre id="dynamic-input-object-dump"></pre>
+
+<template id="dynamic-input-object-row">
+  <div data-xh-part="item">
+    <div data-xh-part="item-content">
+      <input data-key="name" style="inline-size: 40%" placeholder="字段名" />
+      <input data-key="value" style="inline-size: 60%" placeholder="字段值" />
+    </div>
+    <div data-xh-part="item-action">
+      <button data-xh-part="move-up-trigger">↑</button>
+      <button data-xh-part="move-down-trigger">↓</button>
+      <button data-xh-part="remove-trigger">×</button>
+    </div>
+  </div>
+</template>
+
+<script type="module">
+  const host = document.getElementById("dynamic-input-object");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const addTrigger = host.querySelector('[data-xh-part="add-trigger"]');
+  const template = document.getElementById("dynamic-input-object-row");
+  const dump = document.getElementById("dynamic-input-object-dump");
+
+  let headers = [
+    { name: "Accept", value: "application/json" },
+    { name: "X-Trace", value: "" },
+  ];
+
+  // 改一个字段就整份重建数组，行号不跟着变
+  function patch(index, key, next) {
+    headers = headers.map((row, i) => (i === index ? { ...row, [key]: next } : row));
+    host.value = headers;
+    dump.textContent = JSON.stringify(headers, null, 2);
+  }
+
+  function render() {
+    for (const row of root.querySelectorAll('[data-xh-part="item"]')) row.remove();
+    headers.forEach((value, index) => {
+      const row = template.content.firstElementChild.cloneNode(true);
+      for (const input of row.querySelectorAll("input")) {
+        input.value = value[input.dataset.key];
+        input.addEventListener("input", () => patch(index, input.dataset.key, input.value));
+      }
+      root.insertBefore(row, addTrigger);
+    });
+    dump.textContent = JSON.stringify(headers, null, 2);
+  }
+
+  host.createItem = () => ({ name: "", value: "" });
+  host.value = headers;
+  host.addEventListener("value-change", (event) => {
+    headers = event.detail.value;
+    host.value = headers;
+    render();
+  });
+
+  render();
+</script>

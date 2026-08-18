@@ -1,4 +1,4 @@
-<!-- 基础用法 | collection 是入口与条目的事实源：顶层节点铺成一排入口，它的 items 铺成那张菜单里的条目 -->
+<!-- 基础用法 | 一排入口各带一张菜单，同时只展开一张；条目以 value 标识身份，禁用项方向键跳过也选不中 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhMenubarRoot } from "@xihan-ui/vue";

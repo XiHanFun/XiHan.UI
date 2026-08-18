@@ -1,0 +1,47 @@
+<!-- 受控 | 传了 sizes 就由宿主说了算；sizes-change 拖动途中连着发，sizes-change-end 松手才发一次 -->
+<div style="inline-size: 100%; display: grid; gap: 12px">
+  <xh-splitter
+    id="splitter-controlled"
+    sizes="30,70"
+    panels='[{"id":"aside","min":20},{"id":"main","min":20}]'
+    style="display: contents"
+  >
+    <div data-xh-part="root" style="block-size: 140px">
+      <div data-xh-part="panel" index="0">
+        <p style="padding: 12px">侧栏</p>
+      </div>
+      <div data-xh-part="resize-trigger" index="0"></div>
+      <div data-xh-part="panel" index="1">
+        <p style="padding: 12px">正文</p>
+      </div>
+    </div>
+  </xh-splitter>
+
+  <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+    <button type="button" id="splitter-controlled-reset">复位到 30 / 70</button>
+    <span>当前：<span id="splitter-controlled-now">30% / 70%</span></span>
+    <span>上次收尾：<span id="splitter-controlled-end">（还没拖过）</span></span>
+  </div>
+</div>
+
+<script type="module">
+  // 拖动发来的布局写回元素，界面才跟着变
+  const splitter = document.getElementById("splitter-controlled");
+  const now = document.getElementById("splitter-controlled-now");
+  const end = document.getElementById("splitter-controlled-end");
+  const format = (sizes) => sizes.map((n) => `${Math.round(n)}%`).join(" / ");
+
+  splitter.addEventListener("sizes-change", (event) => {
+    splitter.sizes = event.detail.sizes;
+    now.textContent = format(event.detail.sizes);
+  });
+
+  splitter.addEventListener("sizes-change-end", (event) => {
+    end.textContent = `第 ${event.detail.index} 条 → ${format(event.detail.sizes)}`;
+  });
+
+  document.getElementById("splitter-controlled-reset").addEventListener("click", () => {
+    splitter.sizes = [30, 70];
+    now.textContent = format([30, 70]);
+  });
+</script>

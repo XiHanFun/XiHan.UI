@@ -1,0 +1,43 @@
+<!-- 浮层与触发器同宽 | 量出触发器的实际宽度写进 content 的行内样式，同时解掉最大宽度上限；触发器换了文案宽度也跟着走 -->
+<div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
+  <xh-popover id="popover-trigger-width" placement="bottom-start">
+    <button data-xh-part="trigger">生产环境</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <h3 data-xh-part="title">切换环境</h3>
+        <p data-xh-part="description">
+          面板宽 <span id="popover-trigger-width-readout">0</span> 像素，与触发器一致。
+        </p>
+      </div>
+    </div>
+  </xh-popover>
+
+  <xh-button id="popover-trigger-width-toggle" size="sm" variant="outline">
+    <button data-xh-part="root">换成长文案</button>
+  </xh-button>
+</div>
+
+<script type="module">
+  const popover = document.getElementById("popover-trigger-width");
+  const trigger = popover.querySelector('[data-xh-part="trigger"]');
+  const content = popover.querySelector('[data-xh-part="content"]');
+  const readout = document.getElementById("popover-trigger-width-readout");
+
+  // 行内样式压过皮肤里的 max-content；上限也得一并解掉，否则宽度被截在那一档
+  new ResizeObserver(() => {
+    const width = trigger.offsetWidth;
+    content.style.inlineSize = width ? `${width}px` : "max-content";
+    content.style.maxInlineSize = "none";
+    readout.textContent = String(width);
+  }).observe(trigger);
+
+  // 换掉触发器的文案，宽度跟着重新量一次
+  const toggle = document.getElementById("popover-trigger-width-toggle");
+  const label = toggle.querySelector('[data-xh-part="root"]');
+  let long = false;
+  toggle.addEventListener("click", () => {
+    long = !long;
+    trigger.textContent = long ? "生产环境 · 华东 1 区 · 主集群" : "生产环境";
+    label.textContent = long ? "换回短文案" : "换成长文案";
+  });
+</script>

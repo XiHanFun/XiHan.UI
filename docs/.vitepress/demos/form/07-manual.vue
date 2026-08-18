@@ -1,4 +1,4 @@
-<!-- 跨字段规则与手动入口 | validate 拿到的是整张值表，可以写两个字段互相约束的规则；插槽里的 setFieldError 与 clearErrors 随时能单独动一条 -->
+<!-- 跨字段规则与手动入口 | validate 拿到的是整张值表，可以写两个字段互相约束的规则；setFieldError 与 clearErrors 随时能单独动一条 -->
 <script setup lang="ts">
 import {
   XhButton,

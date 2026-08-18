@@ -1,0 +1,25 @@
+<!-- 只管一条轴 | orientation 关掉的那条轴滚动条恒不显形，视口那一向也不再滚，不留滚不回来的暗格 -->
+<xh-scroll-area id="scroll-area-orientation" orientation="horizontal" type="always">
+  <div data-xh-part="root" style="block-size: 110px; inline-size: 100%; max-inline-size: 420px">
+    <div data-xh-part="viewport">
+      <div data-xh-part="content" style="display: flex; gap: 10px; padding: 10px 12px"></div>
+    </div>
+    <div data-xh-part="scrollbar" orientation="horizontal">
+      <div data-xh-part="thumb"></div>
+    </div>
+  </div>
+</xh-scroll-area>
+
+<script type="module">
+  // 12 张卡片横着排，宽度加起来超过视口
+  const content = document
+    .getElementById("scroll-area-orientation")
+    .querySelector('[data-xh-part="content"]');
+  for (let i = 1; i <= 12; i++) {
+    const card = document.createElement("div");
+    card.style.cssText =
+      "flex: none; display: grid; place-items: center; inline-size: 96px; block-size: 64px; border: 1px solid var(--xh-border-subtle); border-radius: 8px";
+    card.textContent = `卡片 ${i}`;
+    content.append(card);
+  }
+</script>

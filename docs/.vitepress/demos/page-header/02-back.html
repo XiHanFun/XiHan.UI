@@ -1,0 +1,24 @@
+<!-- 返回位 | 返回位就是作者自己的按钮：组件只给身份与位置，type、可及名字与点击行为自己写 -->
+<xh-page-header id="page-header-back">
+  <div data-xh-part="root">
+    <button data-xh-part="back-trigger" type="button" aria-label="返回上一页">
+      ←
+    </button>
+    <div data-xh-part="title">订单详情</div>
+    <div data-xh-part="subtitle">
+      已点返回 <span id="page-header-back-times">0</span> 次
+    </div>
+  </div>
+</xh-page-header>
+
+<script type="module">
+  // 点击行为归作者：这里只数次数
+  const host = document.getElementById("page-header-back");
+  const trigger = host.querySelector('[data-xh-part="back-trigger"]');
+  const readout = document.getElementById("page-header-back-times");
+  let times = 0;
+  trigger.addEventListener("click", () => {
+    times += 1;
+    readout.textContent = times;
+  });
+</script>

@@ -1,0 +1,30 @@
+<!-- 展开延时 | delay-duration 是悬停多久才展开，防的是指针横穿导航时一路闪出面板；skip-delay-duration 是收起后的静默窗口，窗口内再碰任意入口直接展开 -->
+<div style="inline-size: 100%; padding-block-end: 150px">
+  <xh-navigation-menu delay-duration="600" skip-delay-duration="800" style="display: contents">
+    <nav data-xh-part="root">
+      <ul data-xh-part="list">
+        <li data-xh-part="item">
+          <button data-xh-part="trigger" value="cloud">云服务</button>
+          <div data-xh-part="content" value="cloud">
+            <a data-xh-part="link" href="#/cloud/host">云主机</a>
+            <a data-xh-part="link" href="#/cloud/storage">对象存储</a>
+          </div>
+        </li>
+        <li data-xh-part="item">
+          <button data-xh-part="trigger" value="data">数据</button>
+          <div data-xh-part="content" value="data">
+            <a data-xh-part="link" href="#/data/warehouse">数据仓库</a>
+            <a data-xh-part="link" href="#/data/pipeline">数据管道</a>
+          </div>
+        </li>
+        <li data-xh-part="item">
+          <button data-xh-part="trigger" value="ai">智能</button>
+          <div data-xh-part="content" value="ai">
+            <a data-xh-part="link" href="#/ai/agent">智能体</a>
+          </div>
+        </li>
+        <li data-xh-part="indicator"></li>
+      </ul>
+    </nav>
+  </xh-navigation-menu>
+</div>

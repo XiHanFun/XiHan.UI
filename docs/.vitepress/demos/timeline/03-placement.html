@@ -1,0 +1,99 @@
+<!-- 内容在哪一侧 | placement 决定内容落在线的哪一侧；alternate 是逐条交替，线走中间 -->
+<div style="display: flex; flex-direction: column; gap: 24px">
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">默认（内容在结束侧）</div>
+    <!-- 这一档不写 placement -->
+    <xh-timeline>
+      <ol data-xh-part="root" style="inline-size: 100%">
+        <li data-xh-part="item">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <div data-xh-part="title">立项</div>
+            <div data-xh-part="description">需求评审通过</div>
+          </div>
+        </li>
+        <li data-xh-part="item">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <div data-xh-part="title">开发</div>
+            <div data-xh-part="description">三个迭代</div>
+          </div>
+        </li>
+        <li data-xh-part="item">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <div data-xh-part="title">上线</div>
+            <div data-xh-part="description">灰度两周</div>
+          </div>
+        </li>
+      </ol>
+    </xh-timeline>
+  </div>
+
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">start（内容在起始侧）</div>
+    <xh-timeline placement="start">
+      <ol data-xh-part="root" style="inline-size: 100%">
+        <li data-xh-part="item">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <div data-xh-part="title">立项</div>
+            <div data-xh-part="description">需求评审通过</div>
+          </div>
+        </li>
+        <li data-xh-part="item">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <div data-xh-part="title">开发</div>
+            <div data-xh-part="description">三个迭代</div>
+          </div>
+        </li>
+        <li data-xh-part="item">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <div data-xh-part="title">上线</div>
+            <div data-xh-part="description">灰度两周</div>
+          </div>
+        </li>
+      </ol>
+    </xh-timeline>
+  </div>
+
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">alternate（逐条交替）</div>
+    <xh-timeline placement="alternate">
+      <ol data-xh-part="root" style="inline-size: 100%">
+        <li data-xh-part="item">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <div data-xh-part="title">立项</div>
+            <div data-xh-part="description">需求评审通过</div>
+          </div>
+        </li>
+        <li data-xh-part="item">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <div data-xh-part="title">开发</div>
+            <div data-xh-part="description">三个迭代</div>
+          </div>
+        </li>
+        <li data-xh-part="item">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <div data-xh-part="title">上线</div>
+            <div data-xh-part="description">灰度两周</div>
+          </div>
+        </li>
+      </ol>
+    </xh-timeline>
+  </div>
+</div>
