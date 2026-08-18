@@ -2,14 +2,16 @@
  * 元素升级前的形态。
  *
  * 收起态由元素在 wire() 里用内联 display 做，而 data-scope / data-part 也是那一刻才打上，
- * 所以 JS 到达之前浮层子树既没有皮肤也没有收起——内容会以裸文本堆在页面流里，
+ * 所以 JS 到达之前这段子树既没有皮肤也没有收起——内容会以裸文本堆在页面流里，
  * 并被搜索引擎与读屏当作正文。SSR / SSG 直出时这段时间尤其长。
  *
  * 这里按作者写的 data-xh-part 选中，那是升级前唯一存在的标记。
+ * 名单与元素的对应由 check-undefined-guard.mjs 双向守着。
  */
 @layer xihan.components {
   :where(
     xh-cascader,
+    xh-collapsible,
     xh-color-picker,
     xh-combobox,
     xh-context-menu,
@@ -17,11 +19,16 @@
     xh-dialog,
     xh-drawer,
     xh-hover-card,
+    xh-image-viewer,
+    xh-mention,
     xh-menu,
     xh-menubar,
     xh-navigation-menu,
+    xh-popconfirm,
     xh-popover,
+    xh-popselect,
     xh-select,
+    xh-steps,
     xh-time-picker,
     xh-tooltip,
     xh-tour,
