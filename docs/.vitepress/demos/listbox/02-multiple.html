@@ -1,0 +1,36 @@
+<!-- 多选 | multiple 下空格改成切换该条，Shift + 方向键顺手扩选，Ctrl / Cmd + A 全选或全不选 -->
+<xh-listbox id="listbox-multiple" multiple>
+  <div data-xh-part="root" style="max-inline-size: 320px">
+    <span data-xh-part="label">常去城市</span>
+    <div data-xh-part="content">
+      <div data-xh-part="item" value="beijing">
+        <span data-xh-part="item-text">Beijing 北京</span>
+        <span data-xh-part="item-indicator"></span>
+      </div>
+      <div data-xh-part="item" value="berlin">
+        <span data-xh-part="item-text">Berlin 柏林</span>
+        <span data-xh-part="item-indicator"></span>
+      </div>
+      <div data-xh-part="item" value="chengdu">
+        <span data-xh-part="item-text">Chengdu 成都</span>
+        <span data-xh-part="item-indicator"></span>
+      </div>
+      <div data-xh-part="item" value="london">
+        <span data-xh-part="item-text">London 伦敦</span>
+        <span data-xh-part="item-indicator"></span>
+      </div>
+    </div>
+  </div>
+</xh-listbox>
+<p>已选：<span id="listbox-multiple-value">beijing、london</span></p>
+
+<script type="module">
+  // 多选的选中集合是数组，只走 property：设初值、每次变更写回、再回显
+  const listbox = document.getElementById("listbox-multiple");
+  const readout = document.getElementById("listbox-multiple-value");
+  listbox.value = ["beijing", "london"];
+  listbox.addEventListener("value-change", (event) => {
+    listbox.value = event.detail.value;
+    readout.textContent = event.detail.value.join("、") || "（无）";
+  });
+</script>

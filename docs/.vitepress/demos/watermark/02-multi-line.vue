@@ -1,4 +1,4 @@
-<!-- 多行 | text 给数组就是多行，图样跟着长高；空白行不占位 -->
+<!-- 多行 | text 写成多行就是多行水印，图样跟着长高；空白行不占位 -->
 <script setup lang="ts">
 import { XhWatermarkContent, XhWatermarkRoot } from "@xihan-ui/vue";
 

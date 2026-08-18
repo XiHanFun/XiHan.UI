@@ -1,0 +1,58 @@
+<!-- 随表单提交 | 给了 name 才生出表单影子：勾上才提交，半选按未勾处理，与原生复选框一致 -->
+<form id="checkbox-form" style="display: grid; gap: 12px">
+  <label>
+    <xh-checkbox name="agree" default-checked>
+      <button data-xh-part="root">
+        <span data-xh-part="indicator"></span>
+        <input data-xh-part="hidden-input" />
+      </button>
+    </xh-checkbox>
+    已阅读条款（勾上才提交）
+  </label>
+  <label>
+    <xh-checkbox name="news">
+      <button data-xh-part="root">
+        <span data-xh-part="indicator"></span>
+        <input data-xh-part="hidden-input" />
+      </button>
+    </xh-checkbox>
+    订阅周报（没勾就整条不进 FormData）
+  </label>
+  <label>
+    <xh-checkbox name="partial" default-checked="indeterminate">
+      <button data-xh-part="root">
+        <span data-xh-part="indicator"></span>
+        <input data-xh-part="hidden-input" />
+      </button>
+    </xh-checkbox>
+    半选（按未勾处理，不提交）
+  </label>
+  <!-- 不写 hidden-input 部件就没有影子节点，既有 DOM 一个字节不变 -->
+  <label>
+    <xh-checkbox>
+      <button data-xh-part="root">
+        <span data-xh-part="indicator"></span>
+      </button>
+    </xh-checkbox>
+    不参与提交
+  </label>
+
+  <div>
+    <xh-button type="submit" size="sm">
+      <button data-xh-part="root">提交</button>
+    </xh-button>
+  </div>
+
+  <span id="checkbox-form-result"></span>
+</form>
+
+<script type="module">
+  // 提交时把 FormData 里收到的字段列出来
+  const form = document.getElementById("checkbox-form");
+  const result = document.getElementById("checkbox-form-result");
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const fields = [...new FormData(form).entries()].map(([k, v]) => `${k}=${v}`);
+    result.textContent = `表单收到：${fields.length ? fields.join("  ") : "（一个字段都没提交）"}`;
+  });
+</script>

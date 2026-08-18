@@ -1,0 +1,68 @@
+<!-- 指针拖拽 | allowPointerDrag 打开后按住轨道就能拖着走，松手落回整页；关掉则只有触摸的原生滚动 -->
+<xh-carousel
+  id="carousel-drag"
+  slide-count="4"
+  allow-pointer-drag
+  loop
+>
+  <div data-xh-part="root" style="inline-size: 100%">
+    <button data-xh-part="prev-trigger">‹</button>
+    <div data-xh-part="viewport" style="block-size: 130px">
+      <div data-xh-part="item-group">
+        <div data-xh-part="item" index="0">
+          <div style="display: grid; place-items: center; block-size: 100%">
+            拖我
+          </div>
+        </div>
+        <div data-xh-part="item" index="1">
+          <div style="display: grid; place-items: center; block-size: 100%">
+            再拖
+          </div>
+        </div>
+        <div data-xh-part="item" index="2">
+          <div style="display: grid; place-items: center; block-size: 100%">
+            还能拖
+          </div>
+        </div>
+        <div data-xh-part="item" index="3">
+          <div style="display: grid; place-items: center; block-size: 100%">
+            最后一张
+          </div>
+        </div>
+      </div>
+    </div>
+    <button data-xh-part="next-trigger">›</button>
+    <div data-xh-part="indicator-group">
+      <button data-xh-part="indicator" index="0"></button>
+      <button data-xh-part="indicator" index="1"></button>
+      <button data-xh-part="indicator" index="2"></button>
+      <button data-xh-part="indicator" index="3"></button>
+    </div>
+    <span id="carousel-drag-readout" style="flex-basis: 100%"></span>
+  </div>
+</xh-carousel>
+
+<script type="module">
+  // 拖拽态写在 root 上，页码跟着 page-change 走
+  const carousel = document.getElementById("carousel-drag");
+  const root = carousel.querySelector('[data-xh-part="root"]');
+  const readout = document.getElementById("carousel-drag-readout");
+  let page = 0;
+
+  function render() {
+    const state = root.hasAttribute("data-dragging") ? "正在拖" : "松手状态";
+    readout.textContent = `第 ${page + 1} / 4 页 · ${state}`;
+  }
+
+  carousel.addEventListener("page-change", (event) => {
+    page = event.detail.page;
+    render();
+  });
+
+  new MutationObserver(render).observe(root, {
+    attributes: true,
+    attributeFilter: ["data-dragging"],
+  });
+
+  render();
+</script>

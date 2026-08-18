@@ -1,4 +1,4 @@
-<!-- 基础用法 | 网格由作者照插槽里的 weeks / weekDays 自己渲染，组件一个节点都不替你生成 -->
+<!-- 基础用法 | 网格由作者照 weeks / weekDays 自己渲染，组件一个节点都不替你生成 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

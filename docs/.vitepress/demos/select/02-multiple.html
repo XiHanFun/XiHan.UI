@@ -1,0 +1,47 @@
+<!-- 多选 | multiple 下点中即在集合里增删该项、浮层不收起，触发器上的文本把选中项连起来 -->
+<xh-select
+  id="select-multiple"
+  multiple
+  default-value="apple"
+  placeholder="请选择"
+>
+  <div data-xh-part="root">
+    <span data-xh-part="label">水果（多选）</span>
+    <button data-xh-part="trigger">
+      <span data-xh-part="value-text"></span>
+      <span data-xh-part="indicator"></span>
+    </button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="apple">
+            <span data-xh-part="item-text">苹果</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="banana">
+            <span data-xh-part="item-text">香蕉</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="blueberry">
+            <span data-xh-part="item-text">蓝莓</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="durian">
+            <span data-xh-part="item-text">榴莲</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-select>
+<p>已选：<span id="select-multiple-value">apple</span></p>
+
+<script type="module">
+  // 选中集合回显在下面那行文字里
+  const select = document.getElementById("select-multiple");
+  const readout = document.getElementById("select-multiple-value");
+  select.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value.join("、") || "（无）";
+  });
+</script>

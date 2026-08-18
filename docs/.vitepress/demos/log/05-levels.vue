@@ -1,4 +1,4 @@
-<!-- 行的样子归作者 | line 只发身份与等宽排版，级别配色、时间戳、行内标记这些都写在插槽里 -->
+<!-- 行的样子归作者 | line 只发身份与等宽排版，级别配色、时间戳、行内标记这些都写在行里 -->
 <script setup lang="ts">
 import { XhLogContent, XhLogLine, XhLogRoot, XhLogViewport } from "@xihan-ui/vue";
 

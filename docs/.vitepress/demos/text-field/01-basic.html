@@ -1,0 +1,14 @@
+<!-- 基础用法 | root 持有状态，label 与 input 各自向它取属性；不传 value 即为非受控，组件自己维护值 -->
+<xh-text-field placeholder="请输入昵称">
+  <div data-xh-part="root">
+    <label data-xh-part="label">昵称</label>
+    <input data-xh-part="input" style="inline-size: 200px" />
+  </div>
+</xh-text-field>
+
+<xh-text-field default-value="曦寒">
+  <div data-xh-part="root">
+    <label data-xh-part="label">带初值</label>
+    <input data-xh-part="input" style="inline-size: 200px" />
+  </div>
+</xh-text-field>

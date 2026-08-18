@@ -1,4 +1,4 @@
-<!-- 逐条落位 | 单条通知自带 placement 就盖掉 toaster 的默认落位；placements 交出眼下有条目的位置，照它渲染几摞就够 -->
+<!-- 逐条落位 | 单条通知自带 placement 就盖掉 toaster 的默认落位；placements 报出眼下有条目的位置，一个位置一摞 -->
 <script setup lang="ts">
 import {
   XhButton,

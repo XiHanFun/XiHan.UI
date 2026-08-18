@@ -1,4 +1,4 @@
-<!-- 基础用法 | 交一份 collection 就够：方向键只搬焦点，Enter 或空格才落值；整组只占一个 Tab 位 -->
+<!-- 基础用法 | 方向键只搬焦点，Enter 或空格才落值；整组只占一个 Tab 位 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhListboxRoot } from "@xihan-ui/vue";

@@ -1,0 +1,91 @@
+<!-- 尺寸 | size 换的是标题栏的高度、内边距与字号，三档并排对照 -->
+<div
+  id="accordion-sizes"
+  style="
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    align-items: start;
+  "
+>
+  <xh-accordion size="sm">
+    <div data-xh-part="root">
+      <div data-xh-part="item" value="a">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>小号 sm</span>
+            <span data-xh-part="indicator"></span>
+          </button>
+        </h3>
+        <div data-xh-part="content">标题栏最矮，字号也最小。</div>
+      </div>
+      <div data-xh-part="item" value="b">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>另一项</span>
+            <span data-xh-part="indicator"></span>
+          </button>
+        </h3>
+        <div data-xh-part="content">同一档内所有标题一致。</div>
+      </div>
+    </div>
+  </xh-accordion>
+
+  <!-- 中间一档不写 size -->
+  <xh-accordion>
+    <div data-xh-part="root">
+      <div data-xh-part="item" value="a">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>缺省档</span>
+            <span data-xh-part="indicator"></span>
+          </button>
+        </h3>
+        <div data-xh-part="content">不写 size 就是这一档。</div>
+      </div>
+      <div data-xh-part="item" value="b">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>另一项</span>
+            <span data-xh-part="indicator"></span>
+          </button>
+        </h3>
+        <div data-xh-part="content">同一档内所有标题一致。</div>
+      </div>
+    </div>
+  </xh-accordion>
+
+  <xh-accordion size="lg">
+    <div data-xh-part="root">
+      <div data-xh-part="item" value="a">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>大号 lg</span>
+            <span data-xh-part="indicator"></span>
+          </button>
+        </h3>
+        <div data-xh-part="content">标题栏最高，字号也最大。</div>
+      </div>
+      <div data-xh-part="item" value="b">
+        <h3 data-xh-part="header">
+          <button data-xh-part="trigger">
+            <span>另一项</span>
+            <span data-xh-part="indicator"></span>
+          </button>
+        </h3>
+        <div data-xh-part="content">同一档内所有标题一致。</div>
+      </div>
+    </div>
+  </xh-accordion>
+</div>
+
+<script type="module">
+  // 展开集合是数组，只走 property：逐组设初值、每次变更写回
+  const grid = document.getElementById("accordion-sizes");
+  for (const accordion of grid.querySelectorAll("xh-accordion")) {
+    accordion.value = ["a"];
+    accordion.addEventListener("value-change", (event) => {
+      accordion.value = event.detail.value;
+    });
+  }
+</script>

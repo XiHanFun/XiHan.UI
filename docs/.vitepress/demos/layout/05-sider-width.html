@@ -1,0 +1,16 @@
+<!-- 侧栏宽度 | 展开与折叠各一档宽度，两档都接受任意 CSS 长度，切换时按皮肤里的过渡走 -->
+<xh-layout sider-width="220px" sider-collapsed-width="56px" bordered>
+  <div
+    data-xh-part="root"
+    style="block-size: 220px; border-radius: 8px; overflow: hidden"
+  >
+    <div data-xh-part="header">
+      <button data-xh-part="sider-trigger">切换</button>
+      <span>220px ⇄ 56px</span>
+    </div>
+    <div data-xh-part="sider">导航</div>
+    <div data-xh-part="content">
+      只写其中一档时，另一档仍取皮肤里的缺省宽度。
+    </div>
+  </div>
+</xh-layout>

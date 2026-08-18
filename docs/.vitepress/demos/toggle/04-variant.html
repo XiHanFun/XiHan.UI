@@ -1,0 +1,33 @@
+<!-- 形态 | variant 决定颜色怎么用，未按下与已按下两档一起看才完整 -->
+<div style="display: grid; gap: 8px">
+  <div style="display: flex; align-items: center; gap: 8px">
+    <span style="min-width: 64px">未按下</span>
+    <xh-toggle variant="solid">
+      <button data-xh-part="root">solid</button>
+    </xh-toggle>
+    <xh-toggle variant="subtle">
+      <button data-xh-part="root">subtle</button>
+    </xh-toggle>
+    <xh-toggle variant="outline">
+      <button data-xh-part="root">outline</button>
+    </xh-toggle>
+    <xh-toggle variant="ghost">
+      <button data-xh-part="root">ghost</button>
+    </xh-toggle>
+  </div>
+  <div style="display: flex; align-items: center; gap: 8px">
+    <span style="min-width: 64px">已按下</span>
+    <xh-toggle variant="solid" default-pressed>
+      <button data-xh-part="root">solid</button>
+    </xh-toggle>
+    <xh-toggle variant="subtle" default-pressed>
+      <button data-xh-part="root">subtle</button>
+    </xh-toggle>
+    <xh-toggle variant="outline" default-pressed>
+      <button data-xh-part="root">outline</button>
+    </xh-toggle>
+    <xh-toggle variant="ghost" default-pressed>
+      <button data-xh-part="root">ghost</button>
+    </xh-toggle>
+  </div>
+</div>

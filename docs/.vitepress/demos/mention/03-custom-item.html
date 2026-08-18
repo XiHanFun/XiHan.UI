@@ -1,0 +1,58 @@
+<!-- 候选里的自定义内容 | 手写各部件即可在候选行里放头像与职位；插回正文的那段字取自 item-text -->
+<xh-mention id="mention-custom-item">
+  <div data-xh-part="root">
+    <textarea data-xh-part="input" aria-label="正文" placeholder="输入 @ 提及同事"></textarea>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content"></div>
+    </div>
+  </div>
+</xh-mention>
+<p>正文：<span id="mention-custom-item-value">（空）</span></p>
+
+<script type="module">
+  const people = [
+    { value: "lilei", label: "李雷", role: "前端", initials: "李" },
+    { value: "hanmeimei", label: "韩梅梅", role: "设计", initials: "韩" },
+    { value: "poly", label: "Poly", role: "后端", initials: "P" },
+  ];
+
+  const mention = document.getElementById("mention-custom-item");
+  const content = mention.querySelector('[data-xh-part="content"]');
+  const readout = document.getElementById("mention-custom-item-value");
+
+  mention.translations = { content: "提及谁" };
+
+  // 只有 item-text 里的字会被插进正文，头像与职位不会跟着进去
+  function itemNode(person) {
+    const item = document.createElement("div");
+    item.dataset.xhPart = "item";
+    item.setAttribute("value", person.value);
+    item.innerHTML = `
+      <xh-avatar size="sm">
+        <span data-xh-part="root">
+          <span data-xh-part="fallback">${person.initials}</span>
+        </span>
+      </xh-avatar>
+      <span data-xh-part="item-text">${person.label}</span>
+      <span style="color: var(--xh-fg-subtle); font-size: var(--xh-font-size-xs)">
+        ${person.role}
+      </span>
+    `;
+    return item;
+  }
+
+  function render(query) {
+    const q = (query ?? "").trim().toLowerCase();
+    const matched =
+      q === ""
+        ? people
+        : people.filter((p) => p.value.includes(q) || p.label.toLowerCase().includes(q));
+    content.replaceChildren(...matched.map(itemNode));
+  }
+
+  render("");
+  mention.addEventListener("query-change", (event) => render(event.detail.query));
+  mention.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value || "（空）";
+  });
+</script>

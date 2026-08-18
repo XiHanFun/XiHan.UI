@@ -1,0 +1,153 @@
+<!-- 对齐与分布 | 工具条只定主轴与条目间距，怎么分布交给 CSS：justify-content 一改，同一条就贴尾、居中或两端摊开 -->
+<div style="display: grid; gap: 12px; inline-size: 100%">
+  <div style="display: grid; gap: 6px">
+    <span>贴尾</span>
+    <xh-toolbar>
+      <!-- 分布方式写在 root 上，条目的 DOM 顺序不动，方向键行程也就不受影响 -->
+      <div data-xh-part="root" style="justify-content: flex-end">
+        <div data-xh-part="group">
+          <button
+            type="button"
+            data-xh-part="item"
+            value="flex-end-undo"
+            style="
+              padding: 4px 10px;
+              border-radius: 6px;
+              border: 1px solid var(--xh-border-default);
+              background: var(--xh-bg-surface);
+            "
+          >
+            撤销
+          </button>
+          <button
+            type="button"
+            data-xh-part="item"
+            value="flex-end-redo"
+            style="
+              padding: 4px 10px;
+              border-radius: 6px;
+              border: 1px solid var(--xh-border-default);
+              background: var(--xh-bg-surface);
+            "
+          >
+            重做
+          </button>
+        </div>
+        <div data-xh-part="separator"></div>
+        <button
+          type="button"
+          data-xh-part="item"
+          value="flex-end-publish"
+          style="
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--xh-border-default);
+            background: var(--xh-bg-surface);
+          "
+        >
+          发布
+        </button>
+      </div>
+    </xh-toolbar>
+  </div>
+
+  <div style="display: grid; gap: 6px">
+    <span>居中</span>
+    <xh-toolbar>
+      <div data-xh-part="root" style="justify-content: center">
+        <div data-xh-part="group">
+          <button
+            type="button"
+            data-xh-part="item"
+            value="center-undo"
+            style="
+              padding: 4px 10px;
+              border-radius: 6px;
+              border: 1px solid var(--xh-border-default);
+              background: var(--xh-bg-surface);
+            "
+          >
+            撤销
+          </button>
+          <button
+            type="button"
+            data-xh-part="item"
+            value="center-redo"
+            style="
+              padding: 4px 10px;
+              border-radius: 6px;
+              border: 1px solid var(--xh-border-default);
+              background: var(--xh-bg-surface);
+            "
+          >
+            重做
+          </button>
+        </div>
+        <div data-xh-part="separator"></div>
+        <button
+          type="button"
+          data-xh-part="item"
+          value="center-publish"
+          style="
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--xh-border-default);
+            background: var(--xh-bg-surface);
+          "
+        >
+          发布
+        </button>
+      </div>
+    </xh-toolbar>
+  </div>
+
+  <div style="display: grid; gap: 6px">
+    <span>两端摊开</span>
+    <xh-toolbar>
+      <div data-xh-part="root" style="justify-content: space-between">
+        <div data-xh-part="group">
+          <button
+            type="button"
+            data-xh-part="item"
+            value="space-between-undo"
+            style="
+              padding: 4px 10px;
+              border-radius: 6px;
+              border: 1px solid var(--xh-border-default);
+              background: var(--xh-bg-surface);
+            "
+          >
+            撤销
+          </button>
+          <button
+            type="button"
+            data-xh-part="item"
+            value="space-between-redo"
+            style="
+              padding: 4px 10px;
+              border-radius: 6px;
+              border: 1px solid var(--xh-border-default);
+              background: var(--xh-bg-surface);
+            "
+          >
+            重做
+          </button>
+        </div>
+        <div data-xh-part="separator"></div>
+        <button
+          type="button"
+          data-xh-part="item"
+          value="space-between-publish"
+          style="
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--xh-border-default);
+            background: var(--xh-bg-surface);
+          "
+        >
+          发布
+        </button>
+      </div>
+    </xh-toolbar>
+  </div>
+</div>

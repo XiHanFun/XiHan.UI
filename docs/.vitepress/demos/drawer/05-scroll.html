@@ -1,0 +1,44 @@
+<!-- 内容滚动 | 面板本身定高，把中间那段设成可伸缩并开滚动，标题与底部操作就钉在两头 -->
+<xh-drawer id="drawer-scroll">
+  <div data-xh-part="root">
+    <button data-xh-part="trigger">查看操作记录</button>
+    <div data-xh-part="backdrop"></div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <h2 data-xh-part="title">操作记录</h2>
+        <p data-xh-part="description">共 24 条，往下翻。</p>
+        <div
+          id="drawer-scroll-records"
+          style="flex: 1; min-block-size: 0; overflow: auto"
+        ></div>
+        <xh-button variant="solid">
+          <button data-xh-part="root" data-dismiss>看完了</button>
+        </xh-button>
+        <button data-xh-part="close-trigger">✕</button>
+      </div>
+    </div>
+  </div>
+</xh-drawer>
+
+<script type="module">
+  const drawer = document.getElementById("drawer-scroll");
+  // 文案是对象，只走 property
+  drawer.translations = { close: "关闭" };
+
+  // 24 条记录填进那段可滚动的区域
+  const records = document.getElementById("drawer-scroll-records");
+  for (let i = 1; i <= 24; i++) {
+    const line = document.createElement("p");
+    line.style.margin = "0";
+    line.style.padding = "8px 0";
+    line.style.borderBlockEnd = "1px solid var(--xh-border-subtle)";
+    line.textContent = `第 ${i} 条操作记录`;
+    records.append(line);
+  }
+
+  // 面板里那颗按钮把关闭转交给已接线的关闭部件
+  const close = drawer.querySelector('[data-xh-part="close-trigger"]');
+  for (const button of drawer.querySelectorAll("[data-dismiss]")) {
+    button.addEventListener("click", () => close.click());
+  }
+</script>

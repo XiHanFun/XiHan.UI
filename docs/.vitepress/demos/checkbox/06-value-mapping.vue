@@ -1,4 +1,4 @@
-<!-- 业务取值 | checked 只认布尔，用一个可写 computed 在中间换一次，绑上去的就是业务值 -->
+<!-- 业务取值 | checked 只认布尔，在中间换一道，进出两头拿到的都是业务值 -->
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { XhCheckbox } from "@xihan-ui/vue";

@@ -1,0 +1,67 @@
+<!-- 禁用 | 禁用走 aria-disabled 而非原生 disabled：禁用项仍聚焦得上、仍能当方向键的起点，只是方向键路过时跳过它 -->
+<div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
+  <xh-toolbar id="toolbar-disabled">
+    <div data-xh-part="root">
+      <button
+        type="button"
+        data-xh-part="item"
+        value="cut"
+        style="
+          padding: 4px 10px;
+          border-radius: 6px;
+          border: 1px solid var(--xh-border-default);
+          background: var(--xh-bg-surface);
+        "
+      >
+        剪切
+      </button>
+      <!-- 单项禁用：整条没锁时，方向键也只跳过这一项 -->
+      <button
+        type="button"
+        data-xh-part="item"
+        value="paste"
+        aria-disabled="true"
+        style="
+          padding: 4px 10px;
+          border-radius: 6px;
+          border: 1px solid var(--xh-border-default);
+          background: var(--xh-bg-surface);
+        "
+      >
+        粘贴（禁用）
+      </button>
+      <div data-xh-part="separator"></div>
+      <button
+        type="button"
+        data-xh-part="item"
+        value="delete"
+        style="
+          padding: 4px 10px;
+          border-radius: 6px;
+          border: 1px solid var(--xh-border-default);
+          background: var(--xh-bg-surface);
+        "
+      >
+        删除
+      </button>
+    </div>
+  </xh-toolbar>
+
+  <label style="display: flex; align-items: center; gap: 8px">
+    <xh-switch id="toolbar-disabled-lock">
+      <button data-xh-part="root">
+        <span data-xh-part="thumb"></span>
+      </button>
+    </xh-switch>
+    整条禁用（方向键当场不再接管，焦点进来就停在容器上）
+  </label>
+</div>
+
+<script type="module">
+  // 整条禁用由宿主说了算
+  const toolbar = document.getElementById("toolbar-disabled");
+  const lock = document.getElementById("toolbar-disabled-lock");
+  lock.addEventListener("checked-change", (event) => {
+    toolbar.toggleAttribute("disabled", event.detail.checked);
+  });
+</script>

@@ -1,4 +1,4 @@
-<!-- 字数与上限 | 原生属性直接落到输入框上（maxlength 定上限），字数由插槽里的 value 现算 -->
+<!-- 字数与上限 | 原生属性直接落到输入框上（maxlength 定上限），字数由宿主拿当前值现算 -->
 <script setup lang="ts">
 import { XhComposerInput, XhComposerRoot, XhComposerSubmitTrigger } from "@xihan-ui/vue";
 

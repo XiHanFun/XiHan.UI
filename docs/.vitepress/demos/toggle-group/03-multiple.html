@@ -1,0 +1,34 @@
+<!-- 多选 | multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + aria-pressed，值也从字符串变成数组 -->
+<span style="display: inline-flex; align-items: center; gap: 10px">
+  <xh-toggle-group id="toggle-group-marks" multiple>
+    <div data-xh-part="root">
+      <button data-xh-part="item" value="bold">B</button>
+      <button data-xh-part="item" value="italic">I</button>
+      <button data-xh-part="item" value="underline">U</button>
+    </div>
+  </xh-toggle-group>
+  <span style="font-size: 13px">
+    当前：<span id="toggle-group-marks-value">bold</span>
+  </span>
+</span>
+
+<!-- 竖排只改视觉排布，方向键接受的轴与它无关，四个方向键恒响应 -->
+<xh-toggle-group default-value="grid" multiple orientation="vertical">
+  <div data-xh-part="root">
+    <button data-xh-part="item" value="grid">网格</button>
+    <button data-xh-part="item" value="ruler">标尺</button>
+    <button data-xh-part="item" value="guide">参考线</button>
+  </div>
+</xh-toggle-group>
+
+<script type="module">
+  // 多选的受控值是数组，属性装不下，只能走 property
+  const marks = document.getElementById("toggle-group-marks");
+  const readout = document.getElementById("toggle-group-marks-value");
+
+  marks.value = ["bold"];
+  marks.addEventListener("value-change", (event) => {
+    marks.value = event.detail.value;
+    readout.textContent = event.detail.value.join("、") || "（无选中）";
+  });
+</script>

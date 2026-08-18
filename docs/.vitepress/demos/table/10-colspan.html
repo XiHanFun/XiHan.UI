@@ -1,0 +1,44 @@
+<!-- 跨列单元格 | colspan 从它自己那一列往后算，报成 aria-colspan；1 与省略同义，所以只在真跨了列时写 -->
+<div style="width: 100%; max-width: 520px">
+  <xh-table id="table-colspan">
+    <div data-xh-part="root">
+      <div data-xh-part="caption">交付单量</div>
+      <div data-xh-part="header">
+        <div data-xh-part="row">
+          <div data-xh-part="column-header" value="team">小组</div>
+          <div data-xh-part="column-header" value="h1">上半年</div>
+          <div data-xh-part="column-header" value="h2">下半年</div>
+        </div>
+      </div>
+      <div data-xh-part="body">
+        <div data-xh-part="row" value="t1">
+          <div data-xh-part="cell" value="team">平台研发</div>
+          <div data-xh-part="cell" value="h1">42</div>
+          <div data-xh-part="cell" value="h2">51</div>
+        </div>
+        <div data-xh-part="row" value="t2">
+          <div data-xh-part="cell" value="team">前端体验</div>
+          <div data-xh-part="cell" value="h1">36</div>
+          <div data-xh-part="cell" value="h2">39</div>
+        </div>
+        <div data-xh-part="row" value="sum">
+          <div data-xh-part="cell" value="team">全年</div>
+          <!-- 从 h1 起跨两列，这一行因此只写两个格子 -->
+          <div data-xh-part="cell" value="h1" colspan="2">168</div>
+        </div>
+      </div>
+    </div>
+  </xh-table>
+</div>
+
+<script type="module">
+  const table = document.getElementById("table-colspan");
+
+  table.columns = [
+    { id: "team", label: "小组", width: "8rem" },
+    { id: "h1", label: "上半年" },
+    { id: "h2", label: "下半年" },
+  ];
+  // 汇总行也占一个行号，只是它那格横跨了两列
+  table.rows = [{ id: "t1" }, { id: "t2" }, { id: "sum" }];
+</script>

@@ -1,4 +1,4 @@
-<!-- 基础用法 | collection 是条目的事实源，结构由组件铺开；在触发区上右键（触摸端长按），菜单钉在按下去的那一点上 -->
+<!-- 基础用法 | 在触发区上右键（触摸端长按），菜单钉在按下去的那一点上 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhContextMenuRoot } from "@xihan-ui/vue";

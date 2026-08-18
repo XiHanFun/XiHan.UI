@@ -1,0 +1,50 @@
+<!-- 随表单提交 | 值串的表单出口由作者自己挂：把当前值写进一份 input[type=hidden] 就带得走；浮层就地渲染，节点始终留在 form 里 -->
+<form id="color-picker-form" style="display: grid; gap: 12px">
+  <xh-color-picker id="color-picker-form-picker" default-value="#00a98e">
+    <div data-xh-part="root">
+      <label data-xh-part="label">品牌色</label>
+      <button data-xh-part="trigger">
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="value-text"></span>
+      </button>
+      <input type="hidden" name="brandColor" value="#00a98e" />
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="area">
+            <div data-xh-part="area-thumb"></div>
+          </div>
+          <div data-xh-part="channel-slider" channel="hue">
+            <div data-xh-part="channel-slider-track"></div>
+            <div data-xh-part="channel-slider-thumb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-color-picker>
+
+  <div>
+    <xh-button type="submit" size="sm">
+      <button data-xh-part="root">提交</button>
+    </xh-button>
+  </div>
+
+  <span id="color-picker-form-result" style="display: none"></span>
+</form>
+
+<script type="module">
+  // 当前值跟着写进隐藏字段，提交时由 FormData 带走
+  const form = document.getElementById("color-picker-form");
+  const picker = document.getElementById("color-picker-form-picker");
+  const field = form.querySelector('input[name="brandColor"]');
+  const result = document.getElementById("color-picker-form-result");
+
+  picker.addEventListener("value-change", (event) => {
+    field.value = event.detail.value;
+  });
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    result.style.display = "";
+    result.textContent = `表单收到：${new FormData(form).get("brandColor") ?? ""}`;
+  });
+</script>

@@ -1,0 +1,42 @@
+<!-- 业务取值 | checked 只认布尔，在中间换一道，进出两头拿到的都是业务值 -->
+<div style="display: flex; align-items: center; gap: 24px; flex-wrap: wrap">
+  <span style="display: inline-flex; align-items: center; gap: 6px">
+    <xh-checkbox id="checkbox-status" checked>
+      <button data-xh-part="root">
+        <span data-xh-part="indicator"></span>
+      </button>
+    </xh-checkbox>
+    <span>启用（<span id="checkbox-status-text">enabled</span>）</span>
+  </span>
+
+  <span style="display: inline-flex; align-items: center; gap: 6px">
+    <xh-checkbox id="checkbox-plan" checked="false">
+      <button data-xh-part="root">
+        <span data-xh-part="indicator"></span>
+      </button>
+    </xh-checkbox>
+    <span>专业版（<span id="checkbox-plan-text">free</span>）</span>
+  </span>
+</div>
+
+<script type="module">
+  // 后端收的是两个状态码，界面上只有勾与不勾
+  let status = "enabled";
+  const statusBox = document.getElementById("checkbox-status");
+  const statusText = document.getElementById("checkbox-status-text");
+  statusBox.addEventListener("checked-change", (event) => {
+    status = event.detail.checked ? "enabled" : "disabled";
+    statusBox.checked = status === "enabled";
+    statusText.textContent = status;
+  });
+
+  // 另一份业务值同样在事件里换算后写回
+  let plan = "free";
+  const planBox = document.getElementById("checkbox-plan");
+  const planText = document.getElementById("checkbox-plan-text");
+  planBox.addEventListener("checked-change", (event) => {
+    plan = event.detail.checked ? "pro" : "free";
+    planBox.checked = plan === "pro";
+    planText.textContent = plan;
+  });
+</script>

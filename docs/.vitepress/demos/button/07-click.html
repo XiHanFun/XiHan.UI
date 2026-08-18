@@ -1,0 +1,29 @@
+<!-- 点击事件 | 处理器照常挂在组件上；载入态与禁用态的点击在根上就被拦下，作者挂的处理器也收不到 -->
+<div
+  id="button-click"
+  style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px"
+>
+  <xh-button variant="solid">
+    <button data-xh-part="root">点一下</button>
+  </xh-button>
+  <xh-button loading>
+    <button data-xh-part="root">载入中</button>
+  </xh-button>
+  <xh-button disabled>
+    <button data-xh-part="root">禁用</button>
+  </xh-button>
+  <span style="font-size: 13px">已计数 <span id="button-click-count">0</span> 次</span>
+</div>
+
+<script type="module">
+  // 三颗按钮各挂一个处理器，计数落在后面那行文字上
+  const host = document.getElementById("button-click");
+  const readout = document.getElementById("button-click-count");
+  let count = 0;
+  for (const button of host.querySelectorAll("xh-button")) {
+    button.addEventListener("click", () => {
+      count += 1;
+      readout.textContent = String(count);
+    });
+  }
+</script>

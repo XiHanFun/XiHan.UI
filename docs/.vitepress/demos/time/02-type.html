@@ -1,0 +1,25 @@
+<!-- 呈现方式 | date 只到日、datetime 到秒、relative 说成「几分钟前」；datetime 属性的精度跟着走 -->
+<!-- 参照时刻写死，示例的产出才不随打开页面的时间变 -->
+<div
+  style="
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 8px 24px;
+    justify-content: start;
+  "
+>
+  <code>date</code>
+  <xh-time value="2026-08-11T09:30:05" type="date" now="2026-08-11T12:00:00">
+    <time data-xh-part="root"></time>
+  </xh-time>
+
+  <code>datetime</code>
+  <xh-time value="2026-08-11T09:30:05" type="datetime" now="2026-08-11T12:00:00">
+    <time data-xh-part="root"></time>
+  </xh-time>
+
+  <code>relative</code>
+  <xh-time value="2026-08-11T09:30:05" type="relative" now="2026-08-11T12:00:00">
+    <time data-xh-part="root"></time>
+  </xh-time>
+</div>

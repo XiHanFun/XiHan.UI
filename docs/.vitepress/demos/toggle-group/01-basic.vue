@@ -1,4 +1,4 @@
-<!-- 基础用法 | 单选分段控件：条目由 collection 铺开，root 是 radiogroup、条目是 radio；整组只占一个 Tab 位，进组后四个方向键都能走 -->
+<!-- 基础用法 | 单选分段控件：root 是 radiogroup、条目是 radio；整组只占一个 Tab 位，进组后四个方向键都能走 -->
 <script setup lang="ts">
 import { XhToggleGroupRoot } from "@xihan-ui/vue";
 

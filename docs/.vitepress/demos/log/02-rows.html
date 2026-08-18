@@ -1,0 +1,46 @@
+<!-- 按行数定高 | rows 定的是「看得见几行」，一行有多高归皮肤，改 --xh-log-line-height 两边一起变 -->
+<div id="log-rows" style="width: 100%; display: grid; gap: 12px">
+  <xh-log rows="4">
+    <div data-xh-part="root">
+      <div data-xh-part="viewport">
+        <div data-xh-part="content"></div>
+      </div>
+    </div>
+  </xh-log>
+
+  <xh-log rows="10">
+    <div data-xh-part="root">
+      <div data-xh-part="viewport">
+        <div data-xh-part="content"></div>
+      </div>
+    </div>
+  </xh-log>
+
+  <!-- 同样 4 行，行高调宽一档，视口跟着一起长高 -->
+  <xh-log rows="4" style="--xh-log-line-height: 1.75rem">
+    <div data-xh-part="root">
+      <div data-xh-part="viewport">
+        <div data-xh-part="content"></div>
+      </div>
+    </div>
+  </xh-log>
+</div>
+
+<script type="module">
+  // 三份日志摆同一批行，行由脚本逐条写进内容层
+  const stage = document.getElementById("log-rows");
+  const lines = Array.from(
+    { length: 24 },
+    (_, i) =>
+      `12:0${Math.floor(i / 10)}:${String(i % 10).padStart(2, "0")}  http  GET /api/items/${1000 + i}  200`,
+  );
+
+  for (const content of stage.querySelectorAll('[data-xh-part="content"]')) {
+    for (const text of lines) {
+      const line = document.createElement("div");
+      line.dataset.xhPart = "line";
+      line.textContent = text;
+      content.append(line);
+    }
+  }
+</script>

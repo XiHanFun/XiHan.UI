@@ -1,4 +1,4 @@
-<!-- 框里的附加按钮 | root 里除输入与发送外还能放自己的节点；插槽给出的 value 与 setValue 让清空这类操作就在框内完成 -->
+<!-- 框里的附加按钮 | root 里除输入与发送外还能放自己的节点；值的读写归宿主，清空这类操作就在框内完成 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

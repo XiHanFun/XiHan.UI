@@ -1,0 +1,36 @@
+<!-- 撤掉与换色 | 文字空了就落 data-state="empty"，整层不画；印子的颜色走 --xh-watermark-fg，深浅主题各自跟着走 -->
+<div style="display: flex; flex-direction: column; gap: 12px">
+  <label style="display: flex; align-items: center; gap: 8px; font-size: 13px">
+    <input id="watermark-toggle" type="checkbox" checked />
+    盖上水印
+  </label>
+
+  <!-- 图样当遮罩用，颜色由这一个变量决定；写成背景图就得把颜色焊死在图里 -->
+  <xh-watermark
+    id="watermark-color"
+    text="曦寒 · 机密"
+    style="
+      display: block;
+      --xh-watermark-fg: var(--xh-fg-danger);
+      border: 1px solid var(--xh-border-default);
+      border-radius: 6px;
+    "
+  >
+    <div data-xh-part="root">
+      <div data-xh-part="content">
+        <div style="padding: 24px; block-size: 180px; line-height: 1.9">
+          <p>取消勾选后 root 落 data-state="empty"，印子那一层整层不画。</p>
+        </div>
+      </div>
+    </div>
+  </xh-watermark>
+</div>
+
+<script type="module">
+  // 勾选状态决定水印文字给不给
+  const toggle = document.getElementById("watermark-toggle");
+  const watermark = document.getElementById("watermark-color");
+  toggle.addEventListener("change", () => {
+    watermark.text = toggle.checked ? "曦寒 · 机密" : "";
+  });
+</script>

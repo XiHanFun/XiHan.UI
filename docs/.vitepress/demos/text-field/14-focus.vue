@@ -1,4 +1,4 @@
-<!-- 聚焦与选区 | input 部件渲染出来就是一个 input，拿到它的节点就能聚焦、全选、把光标挪到末尾 -->
+<!-- 聚焦与选区 | input 部件就是一个原生 input，拿到它的节点就能聚焦、全选、把光标挪到末尾 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import { XhTextFieldInput, XhTextFieldLabel, XhTextFieldRoot } from "@xihan-ui/vue";

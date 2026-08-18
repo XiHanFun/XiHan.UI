@@ -1,4 +1,4 @@
-<!-- 指示点悬停切页 | 页码由插槽交出的 setPage 说了算，指示点上补一个原生 mouseenter 就是悬停切页，点击照常翻页 -->
+<!-- 指示点悬停切页 | 指示点上补一个原生 mouseenter 就是悬停切页，组件自带的点击翻页照旧 -->
 <script setup lang="ts">
 import {
   XhCarouselIndicator,

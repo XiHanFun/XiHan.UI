@@ -1,4 +1,4 @@
-<!-- 数据驱动 | 自家字段叫什么由数据定，映射成 collection 的 value / label / disabled 即可 -->
+<!-- 数据驱动 | 自家字段叫什么由数据定，映射成条目的值、文本与禁用即可 -->
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { XhRadioGroupRoot } from "@xihan-ui/vue";

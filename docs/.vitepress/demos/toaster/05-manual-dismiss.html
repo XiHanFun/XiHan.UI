@@ -1,0 +1,91 @@
+<!-- 手动收走 | create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；dismiss 直接移出队列，不走退场窗口 -->
+<xh-toaster id="toaster-manual">
+  <div data-xh-part="root">
+    <xh-button variant="solid" data-start>
+      <button data-xh-part="root">开始导出</button>
+    </xh-button>
+    <xh-button variant="outline" data-finish disabled>
+      <button data-xh-part="root">手动收走</button>
+    </xh-button>
+    <span>
+      队列：<span id="toaster-manual-count">0</span> 条 · 记下的 id：<span
+        id="toaster-manual-id"
+        >（无）</span
+      >
+    </span>
+
+    <div data-xh-part="group"></div>
+  </div>
+</xh-toaster>
+
+<template id="toaster-manual-template">
+  <xh-toast>
+    <div data-xh-part="root">
+      <div data-xh-part="title"></div>
+      <div data-xh-part="description"></div>
+      <button data-xh-part="close-trigger">✕</button>
+    </div>
+  </xh-toast>
+</template>
+
+<script type="module">
+  const toaster = document.getElementById("toaster-manual");
+  const group = toaster.querySelector('[data-xh-part="group"]');
+  const template = document.getElementById("toaster-manual-template");
+  const count = document.getElementById("toaster-manual-count");
+  const idText = document.getElementById("toaster-manual-id");
+  const start = toaster.querySelector("[data-start]");
+  const finish = toaster.querySelector("[data-finish]");
+  const translations = { close: "关闭" };
+  let pending = "";
+
+  // 队列变了就把这一摞重铺一遍；记下的那条已经不在队列里就作废
+  function render() {
+    const list = toaster.visibleToasts;
+    const alive = new Set(list.map((toast) => toast.id));
+    for (const node of [...group.children]) {
+      if (!alive.has(node.toastId)) {
+        node.remove();
+      }
+    }
+    for (const toast of list) {
+      let node = [...group.children].find((el) => el.toastId === toast.id);
+      if (!node) {
+        node = document.importNode(template.content.firstElementChild, true);
+        node.toastId = toast.id;
+        node.translations = translations;
+        group.append(node);
+      }
+      node.titleText = toast.title;
+      node.description = toast.description;
+      node.type = toast.type;
+      node.duration = toast.duration;
+      node.removeDelay = toast.removeDelay;
+      node.closable = toast.closable;
+    }
+    if (pending && !alive.has(pending)) {
+      pending = "";
+    }
+    count.textContent = String(toaster.count);
+    idText.textContent = pending || "（无）";
+    start.toggleAttribute("disabled", !!pending);
+    finish.toggleAttribute("disabled", !pending);
+  }
+
+  toaster.addEventListener("toasts-change", render);
+
+  start.addEventListener("click", () => {
+    pending = toaster.create({
+      type: "loading",
+      title: "正在导出",
+      description: "loading 不自动消失，等宿主来收",
+    });
+    render();
+  });
+
+  finish.addEventListener("click", () => {
+    if (pending) {
+      toaster.dismiss(pending);
+    }
+  });
+</script>

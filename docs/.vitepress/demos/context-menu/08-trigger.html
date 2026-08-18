@@ -1,0 +1,76 @@
+<!-- 触发与连打 | longPressDelay 是触摸端按住多久算触发；typeahead 决定展开后的可打印字符是拿去检索还是放行给页面 -->
+<!-- 两块触发区共用一份外观，差别只由元素上那一个属性造成 -->
+<div
+  style="
+    inline-size: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  "
+>
+  <!-- 长按 300ms 就触发，比缺省的 700ms 灵敏；按住期间指针挪动超过容差算取消 -->
+  <xh-context-menu long-press-delay="300">
+    <div data-xh-part="root">
+      <div
+        data-xh-part="trigger"
+        style="
+          display: grid;
+          place-items: center;
+          min-block-size: 108px;
+          border: 1px dashed var(--xh-border-default);
+          border-radius: 8px;
+          padding: 8px;
+          text-align: center;
+        "
+      >
+        <span>触摸端按住 300ms 即弹出；展开后敲 E 跳到 Excel 那一条</span>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="item" value="pdf">
+            <span data-xh-part="item-text">PDF 预览</span>
+          </div>
+          <div data-xh-part="item" value="excel">
+            <span data-xh-part="item-text">Excel 导出</span>
+          </div>
+          <div data-xh-part="item" value="markdown">
+            <span data-xh-part="item-text">Markdown 源码</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-context-menu>
+
+  <!-- 关掉连打检索：同样敲 E，焦点不再移动，字符原样放行给页面 -->
+  <xh-context-menu typeahead="false">
+    <div data-xh-part="root">
+      <div
+        data-xh-part="trigger"
+        style="
+          display: grid;
+          place-items: center;
+          min-block-size: 108px;
+          border: 1px dashed var(--xh-border-default);
+          border-radius: 8px;
+          padding: 8px;
+          text-align: center;
+        "
+      >
+        <span>连打检索关掉：展开后敲 E 焦点不动</span>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="item" value="pdf">
+            <span data-xh-part="item-text">PDF 预览</span>
+          </div>
+          <div data-xh-part="item" value="excel">
+            <span data-xh-part="item-text">Excel 导出</span>
+          </div>
+          <div data-xh-part="item" value="markdown">
+            <span data-xh-part="item-text">Markdown 源码</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-context-menu>
+</div>

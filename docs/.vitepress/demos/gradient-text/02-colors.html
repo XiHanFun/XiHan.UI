@@ -1,0 +1,25 @@
+<!-- 两端颜色 | from 与 to 收颜色值，落成根上的 CSS 变量；写令牌或写具体色值都行 -->
+<div
+  style="display: flex; flex-direction: column; gap: 12px; font-size: 28px; font-weight: 700"
+>
+  <p>
+    <xh-gradient-text from="#ff5500" to="#ff0088">
+      <span data-xh-part="root">从 #ff5500 渐到 #ff0088</span>
+    </xh-gradient-text>
+  </p>
+  <p>
+    <xh-gradient-text from="#00b8d9" to="#6554c0">
+      <span data-xh-part="root">从 #00b8d9 渐到 #6554c0</span>
+    </xh-gradient-text>
+  </p>
+  <p>
+    <xh-gradient-text
+      from="var(--xh-color-success-500)"
+      to="var(--xh-color-info-600)"
+    >
+      <span data-xh-part="root">
+        从 var(--xh-color-success-500) 渐到 var(--xh-color-info-600)
+      </span>
+    </xh-gradient-text>
+  </p>
+</div>

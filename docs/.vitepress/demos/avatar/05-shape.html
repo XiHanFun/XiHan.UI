@@ -1,0 +1,49 @@
+<!-- 形状 | 圆角是一个组件令牌，整圆、圆角方、直角都是同一个槽位换值；图片的圆角从根继承，不用另设 -->
+<div style="display: flex; align-items: center; gap: 12px">
+  <xh-avatar src="/images/logo.png" alt="曦寒">
+    <span data-xh-part="root">
+      <img data-xh-part="image" />
+      <span data-xh-part="fallback">曦</span>
+    </span>
+  </xh-avatar>
+
+  <xh-avatar src="/images/logo.png" alt="曦寒">
+    <span data-xh-part="root" style="--xh-avatar-radius: var(--xh-radius-md)">
+      <img data-xh-part="image" />
+      <span data-xh-part="fallback">曦</span>
+    </span>
+  </xh-avatar>
+
+  <xh-avatar src="/images/logo.png" alt="曦寒">
+    <span data-xh-part="root" style="--xh-avatar-radius: var(--xh-radius-none)">
+      <img data-xh-part="image" />
+      <span data-xh-part="fallback">曦</span>
+    </span>
+  </xh-avatar>
+
+  <span style="font-size: 13px">整圆（缺省）/ 圆角方 / 直角</span>
+</div>
+
+<!-- 落回退态时形状一样成立 -->
+<div style="display: flex; align-items: center; gap: 12px">
+  <xh-avatar>
+    <span data-xh-part="root">
+      <img data-xh-part="image" />
+      <span data-xh-part="fallback">XH</span>
+    </span>
+  </xh-avatar>
+
+  <xh-avatar>
+    <span data-xh-part="root" style="--xh-avatar-radius: var(--xh-radius-md)">
+      <img data-xh-part="image" />
+      <span data-xh-part="fallback">XH</span>
+    </span>
+  </xh-avatar>
+
+  <xh-avatar>
+    <span data-xh-part="root" style="--xh-avatar-radius: var(--xh-radius-none)">
+      <img data-xh-part="image" />
+      <span data-xh-part="fallback">XH</span>
+    </span>
+  </xh-avatar>
+</div>

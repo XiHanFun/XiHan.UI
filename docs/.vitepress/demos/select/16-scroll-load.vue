@@ -1,4 +1,4 @@
-<!-- 滚动加载 | 浮层的滚动容器就是 content：@scroll 直接落在它身上，滚到底就把下一页并进选项 -->
+<!-- 滚动加载 | 浮层的滚动容器就是 content：滚动事件直接落在它身上，滚到底就把下一页并进选项 -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {

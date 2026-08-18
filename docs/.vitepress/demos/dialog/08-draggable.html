@@ -1,0 +1,77 @@
+<!-- 拖动标题栏挪窗口 | 指针按在标题上，顺着 DOM 找到 content 部件，把累计位移写进它的 translate；入场动画走的是 transform，两者互不覆盖 -->
+<xh-dialog id="dialog-draggable">
+  <button data-xh-part="trigger">打开可拖动的对话框</button>
+  <div data-xh-part="backdrop"></div>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <h2 data-xh-part="title" style="cursor: move; touch-action: none">
+        拖住这一行挪窗口
+      </h2>
+      <p data-xh-part="description">
+        位移是相对居中位置累计的，收起再打开会回到正中。
+      </p>
+      <p style="margin: 0; color: var(--xh-fg-muted)">
+        当前位移：<span id="dialog-draggable-offset">0 / 0</span>
+      </p>
+      <div style="display: flex; justify-content: flex-end">
+        <xh-button variant="solid">
+          <button data-xh-part="root" data-dismiss>关闭</button>
+        </xh-button>
+      </div>
+      <button data-xh-part="close-trigger" aria-label="关闭">✕</button>
+    </div>
+  </div>
+</xh-dialog>
+
+<script type="module">
+  const dialog = document.getElementById("dialog-draggable");
+  const handle = dialog.querySelector('[data-xh-part="title"]');
+  const close = dialog.querySelector('[data-xh-part="close-trigger"]');
+  const readout = document.getElementById("dialog-draggable-offset");
+
+  let panel = null;
+  let dragging = false;
+  let offset = { x: 0, y: 0 };
+  let startX = 0;
+  let startY = 0;
+
+  // 位移写进 content 的 translate，回显同步刷新
+  function apply() {
+    readout.textContent = `${Math.round(offset.x)} / ${Math.round(offset.y)}`;
+    if (panel) panel.style.translate = `${offset.x}px ${offset.y}px`;
+  }
+
+  handle.addEventListener("pointerdown", (event) => {
+    panel = handle.closest('[data-scope="dialog"][data-part="content"]');
+    if (!panel) return;
+    dragging = true;
+    startX = event.clientX - offset.x;
+    startY = event.clientY - offset.y;
+    handle.setPointerCapture(event.pointerId);
+  });
+
+  handle.addEventListener("pointermove", (event) => {
+    if (!dragging) return;
+    offset = { x: event.clientX - startX, y: event.clientY - startY };
+    apply();
+  });
+
+  const end = (event) => {
+    if (!dragging) return;
+    dragging = false;
+    handle.releasePointerCapture(event.pointerId);
+  };
+  handle.addEventListener("pointerup", end);
+  handle.addEventListener("pointercancel", end);
+
+  // 面板节点常挂不卸载，重新展开时把上一轮的位移抹掉
+  dialog.addEventListener("open-change", (event) => {
+    if (!event.detail.open) return;
+    offset = { x: 0, y: 0 };
+    apply();
+  });
+
+  for (const button of dialog.querySelectorAll("[data-dismiss]")) {
+    button.addEventListener("click", () => close.click());
+  }
+</script>

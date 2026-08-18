@@ -1,4 +1,4 @@
-<!-- 带图元的标签 | 根是 inline-flex 且自带间距，图标或头像直接写进默认插槽跟文字并排 -->
+<!-- 带图元的标签 | 根是 inline-flex 且自带间距，图标或头像直接写进内容里跟文字并排 -->
 <script setup lang="ts">
 import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot, XhBadge, XhIcon } from "@xihan-ui/vue";
 

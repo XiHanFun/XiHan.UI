@@ -1,0 +1,54 @@
+<!-- 尺寸 | size 换标签的高度、内边距与字号，不传 size 即默认档 -->
+<div style="display: flex; flex-direction: column; gap: 24px; inline-size: 100%">
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">小</div>
+    <xh-tabs size="sm" default-value="overview">
+      <div data-xh-part="root" style="inline-size: 100%">
+        <div data-xh-part="list">
+          <button data-xh-part="trigger" value="overview">概览</button>
+          <button data-xh-part="trigger" value="usage">用法</button>
+          <button data-xh-part="trigger" value="api">API</button>
+        </div>
+
+        <div data-xh-part="content" value="overview">概览面板</div>
+        <div data-xh-part="content" value="usage">用法面板</div>
+        <div data-xh-part="content" value="api">API面板</div>
+      </div>
+    </xh-tabs>
+  </div>
+
+  <!-- 这一档不写 size，落在默认 -->
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">默认</div>
+    <xh-tabs default-value="overview">
+      <div data-xh-part="root" style="inline-size: 100%">
+        <div data-xh-part="list">
+          <button data-xh-part="trigger" value="overview">概览</button>
+          <button data-xh-part="trigger" value="usage">用法</button>
+          <button data-xh-part="trigger" value="api">API</button>
+        </div>
+
+        <div data-xh-part="content" value="overview">概览面板</div>
+        <div data-xh-part="content" value="usage">用法面板</div>
+        <div data-xh-part="content" value="api">API面板</div>
+      </div>
+    </xh-tabs>
+  </div>
+
+  <div>
+    <div style="margin-block-end: 8px; font-size: 12px">大</div>
+    <xh-tabs size="lg" default-value="overview">
+      <div data-xh-part="root" style="inline-size: 100%">
+        <div data-xh-part="list">
+          <button data-xh-part="trigger" value="overview">概览</button>
+          <button data-xh-part="trigger" value="usage">用法</button>
+          <button data-xh-part="trigger" value="api">API</button>
+        </div>
+
+        <div data-xh-part="content" value="overview">概览面板</div>
+        <div data-xh-part="content" value="usage">用法面板</div>
+        <div data-xh-part="content" value="api">API面板</div>
+      </div>
+    </xh-tabs>
+  </div>
+</div>

@@ -1,0 +1,42 @@
+<!-- 加载状态 | status-change 在状态落位时通知，过渡态 idle 不通知；没给地址等同于取不到，直接落 error 让回退接管 -->
+<div id="avatar-status" style="display: grid; gap: 10px">
+  <div style="display: flex; align-items: center; gap: 10px">
+    <xh-avatar src="/images/logo.png" alt="曦寒">
+      <span data-xh-part="root">
+        <img data-xh-part="image" />
+        <span data-xh-part="fallback">曦</span>
+      </span>
+    </xh-avatar>
+    <span style="font-size: 13px">地址有效 → <span data-readout>等待中</span></span>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 10px">
+    <xh-avatar src="/images/does-not-exist.png" alt="取不到的图">
+      <span data-xh-part="root">
+        <img data-xh-part="image" />
+        <span data-xh-part="fallback">回退</span>
+      </span>
+    </xh-avatar>
+    <span style="font-size: 13px">地址取不到 → <span data-readout>等待中</span></span>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 10px">
+    <xh-avatar>
+      <span data-xh-part="root">
+        <img data-xh-part="image" />
+        <span data-xh-part="fallback">无图</span>
+      </span>
+    </xh-avatar>
+    <span style="font-size: 13px">没给地址 → <span data-readout>等待中</span></span>
+  </div>
+</div>
+
+<script type="module">
+  // 每行的状态字跟着本行头像的 status-change 走
+  for (const row of document.getElementById("avatar-status").children) {
+    const readout = row.querySelector("[data-readout]");
+    row.querySelector("xh-avatar").addEventListener("status-change", (event) => {
+      readout.textContent = event.detail.status;
+    });
+  }
+</script>

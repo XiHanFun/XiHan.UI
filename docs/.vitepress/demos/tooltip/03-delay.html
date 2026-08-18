@@ -1,0 +1,23 @@
+<!-- 延时 | openDelay 默认 700ms 用来防误触，closeDelay 默认 300ms 留出指针走位的余地；聚焦不走这两段等待 -->
+<div style="display: flex; flex-wrap: wrap; gap: 24px">
+  <xh-tooltip>
+    <button data-xh-part="trigger">默认（700 / 300）</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">停够 700ms 才出来</div>
+    </div>
+  </xh-tooltip>
+
+  <xh-tooltip open-delay="0" close-delay="0">
+    <button data-xh-part="trigger">无延时</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">指针一进就出，一走就收</div>
+    </div>
+  </xh-tooltip>
+
+  <xh-tooltip open-delay="1500">
+    <button data-xh-part="trigger">慢一点（1500）</button>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">用 Tab 聚焦它，立刻就出来</div>
+    </div>
+  </xh-tooltip>
+</div>

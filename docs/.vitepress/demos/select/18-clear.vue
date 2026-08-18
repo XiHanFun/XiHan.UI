@@ -1,4 +1,4 @@
-<!-- 清空按钮 | XhSelectControl 收纳触发器与清空按钮：清空钮嵌在触发器右端、悬停时替换下拉箭头；有选中才显形，点按清空全部选中、不展开浮层；可及名走 translations.clear -->
+<!-- 清空按钮 | 清空钮是触发器的兄弟节点，一起收在 control 里：嵌在触发器右端、悬停时替换下拉箭头；有选中才显形，点按清空全部选中、不展开浮层；可及名走 translations.clear -->
 <script setup lang="ts">
 import { ref } from "vue";
 import {
