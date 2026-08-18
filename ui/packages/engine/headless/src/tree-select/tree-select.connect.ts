@@ -172,7 +172,7 @@ export function connectTreeSelect<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': stateAttr,
-      // 三个视觉轴只落在根上，皮肤由此往下派发；子部件不重复标注
+      // 三个视觉轴打在根与 positioner 上，皮肤由这两处往下派发；其余子部件不重复标注
       'data-variant': prop('variant'),
       'data-tone': prop('tone'),
       'data-size': prop('size'),
@@ -271,6 +271,10 @@ export function connectTreeSelect<T extends PropTypes>(
 
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
+      // 视觉轴在浮层这一侧再打一次：positioner 被搬到 portal 落点，继承不到根上的私有槽
+      'data-variant': prop('variant'),
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-state': stateAttr,
       'data-placement': placement,
       // 锚点滚出可视区时引擎置 hidden

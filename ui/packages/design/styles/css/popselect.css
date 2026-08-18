@@ -31,9 +31,22 @@
     --xh-popselect-skin: 1;
   }
 
-  [data-scope='popselect'][data-part='root'] {
-    /* 尺寸档只换这四个私有槽，触发器与条目都从 root 继承它们，换档不必给每个部件各写一条选择器。
-       浮层在 positioner 里、也是 root 的后代，一并继承 */
+  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+  [data-scope='popselect'][data-part='positioner'] {
+    position: fixed;
+    z-index: var(--xh-layer-popover);
+    /* 空壳不吃指针，交互只发生在 content 上 */
+    pointer-events: none;
+  }
+
+  /* 锚点被滚出可视区：整个浮层随之收起 */
+  [data-scope='popselect'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
+  [data-scope='popselect']:is([data-part='root'], [data-part='positioner']) {
+    /* 尺寸档只换这四个私有槽，触发器与条目都从这两处继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_popselect-h: var(--xh-control-h-md);
     --xh-_popselect-px: var(--xh-control-px-md);
     --xh-_popselect-gap: var(--xh-control-gap-md);
@@ -49,20 +62,22 @@
     --xh-_popselect-ring: var(--xh-ring-focus);
     --xh-_popselect-accent: var(--xh-_tone, var(--xh-bg-brand));
     --xh-_popselect-item-selected-fg: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+  }
 
+  [data-scope='popselect'][data-part='root'] {
     display: inline-flex;
   }
 
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里 */
-  [data-scope='popselect'][data-part='root'][data-size='sm'] {
+  [data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
     --xh-_popselect-h: var(--xh-control-h-sm);
     --xh-_popselect-px: var(--xh-control-px-sm);
     --xh-_popselect-gap: var(--xh-control-gap-sm);
     --xh-_popselect-font-size: var(--xh-font-size-sm);
   }
 
-  [data-scope='popselect'][data-part='root'][data-size='lg'] {
+  [data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
     --xh-_popselect-h: var(--xh-control-h-lg);
     --xh-_popselect-px: var(--xh-control-px-lg);
     --xh-_popselect-gap: var(--xh-control-gap-lg);
@@ -71,21 +86,21 @@
 
   /* —— 形态 —— */
   /* 形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
-  [data-scope='popselect'][data-part='root'][data-variant='outline'] {
+  [data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
     --xh-_popselect-trigger-bg: var(--xh-bg-canvas);
     --xh-_popselect-trigger-border: var(--xh-border-control);
     --xh-_popselect-trigger-border-hover: var(--xh-border-control-hover);
   }
 
   /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
-  [data-scope='popselect'][data-part='root'][data-variant='subtle'] {
+  [data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
     --xh-_popselect-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_popselect-trigger-border: transparent;
     --xh-_popselect-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
   /* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达 */
-  [data-scope='popselect'][data-part='root'][data-variant='ghost'] {
+  [data-scope='popselect']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
     --xh-_popselect-trigger-bg: transparent;
     --xh-_popselect-trigger-border: transparent;
     --xh-_popselect-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -126,19 +141,6 @@
   /* 无选中：触发器上显示的是占位文字，画淡一档 */
   [data-scope='popselect'][data-part='trigger'][data-placeholder] {
     color: var(--xh-popselect-placeholder-fg, var(--xh-fg-subtle));
-  }
-
-  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
-  [data-scope='popselect'][data-part='positioner'] {
-    position: fixed;
-    z-index: var(--xh-layer-popover);
-    /* 空壳不吃指针，交互只发生在 content 上 */
-    pointer-events: none;
-  }
-
-  /* 锚点被滚出可视区：整个浮层随之收起 */
-  [data-scope='popselect'][data-part='positioner'][data-hidden] {
-    visibility: hidden;
   }
 
   [data-scope='popselect'][data-part='content'] {

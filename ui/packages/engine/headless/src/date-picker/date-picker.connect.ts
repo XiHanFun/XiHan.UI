@@ -279,7 +279,7 @@ export function connectDatePicker<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
-      // 三个视觉轴只落在 root，输入行、日历与浮层里的部件都从这里继承皮肤声明的私有槽
+      // 三个视觉轴打在根与 positioner 上，输入行与浮层里的部件各从就近的那一处继承皮肤声明的私有槽
       'data-variant': prop('variant'),
       'data-tone': prop('tone'),
       'data-size': prop('size'),
@@ -413,6 +413,10 @@ export function connectDatePicker<T extends PropTypes>(
 
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
+      // 视觉轴在浮层这一侧再打一次：positioner 被搬到 portal 落点，继承不到根上的私有槽
+      'data-variant': prop('variant'),
+      'data-tone': prop('tone'),
+      'data-size': prop('size'),
       'data-state': stateAttr,
       'data-placement': placement,
       // 锚点被滚出可视区时引擎会置 hidden，样式据此收起浮层

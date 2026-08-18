@@ -16,7 +16,6 @@ import {
 import { contains, dataAttr } from '@xihan-ui/kernel'
 import {
   menubarAnatomy,
-  menubarContentQuery,
   menubarItemQuery,
   menubarItemText,
   menubarTriggerQuery,
@@ -88,13 +87,16 @@ export function connectMenubar<T extends PropTypes>(
     'data-highlighted': dataAttr(focusedItem === item.value),
   })
 
-  /** 按文档序现查某一项的 content；仅在事件回调中调用。 */
-  const findContent = (root: HTMLElement | null, target: string): HTMLElement | null =>
-    queryItems(root, menubarContentQuery).find(el => itemValue(el) === target) ?? null
+  /**
+   * 这个节点算不算还在这套菜单栏里。
+   * 浮层搬去了 portal 落点、不再是 root 的后代，光问 root 会把「焦点走进菜单」当成离场。
+   */
+  const withinMenubar = (root: HTMLElement | null, node: Node | null): boolean =>
+    contains(root, node) || contains(refs.get('getFloatingEl')(), node)
 
   /** 在 trigger 之间走一步并聚焦落点，禁用项跳过但仍可作起点。 */
-  const focusTrigger = (root: HTMLElement | null, from: string | null, intent: NavIntent): void => {
-    const target = navigateItems(queryItems(root, menubarTriggerQuery), from, intent, { loop })
+  const focusTrigger = (from: string | null, intent: NavIntent): void => {
+    const target = navigateItems(queryItems(refs.get('getRootEl')(), menubarTriggerQuery), from, intent, { loop })
     const next = itemValue(target)
     if (next == null)
       return
@@ -104,8 +106,8 @@ export function connectMenubar<T extends PropTypes>(
   }
 
   /** 把焦点从 trigger 送进已经展开的那张菜单。 */
-  const focusEdgeItem = (root: HTMLElement | null, menu: string, intent: 'first' | 'last'): void => {
-    const target = navigateItems(queryItems(findContent(root, menu), menubarItemQuery), null, intent)
+  const focusEdgeItem = (intent: 'first' | 'last'): void => {
+    const target = navigateItems(queryItems(refs.get('getContentEl')(), menubarItemQuery), null, intent)
     const next = itemValue(target)
     if (next == null)
       return
@@ -176,7 +178,7 @@ export function connectMenubar<T extends PropTypes>(
       'onFocus': (event: FocusEvent) => {
         const root = event.currentTarget as HTMLElement
         // 只接管从菜单栏外进来的焦点
-        if (contains(root, event.relatedTarget as Node | null))
+        if (withinMenubar(root, event.relatedTarget as Node | null))
           return
         const triggers = queryItems(root, menubarTriggerQuery)
         // 优先落到展开项或 roving 锚点的 trigger，取不到则退回首个可停留 trigger
@@ -186,8 +188,8 @@ export function connectMenubar<T extends PropTypes>(
       },
       'onFocusOut': (event: FocusEvent) => {
         const root = event.currentTarget as HTMLElement
-        // 焦点在菜单栏内部换落点不算离场
-        if (contains(root, event.relatedTarget as Node | null))
+        // 焦点在菜单栏内部换落点不算离场，走进浮层也算内部
+        if (withinMenubar(root, event.relatedTarget as Node | null))
           return
         send({ type: 'MENUBAR.BLUR' })
       },
@@ -229,12 +231,11 @@ export function connectMenubar<T extends PropTypes>(
         'onKeyDown': (event: KeyboardEvent) => {
           if (menubarDisabled)
             return
-          const root = (event.currentTarget as HTMLElement).closest<HTMLElement>(parts.root.selector)
           // 主轴：在 trigger 之间移动，Home/End 跳首尾项
           const move = navIntentFromKey(event, { axis: orientation, dir })
           if (move) {
             event.preventDefault()
-            focusTrigger(root, item.value, move)
+            focusTrigger(item.value, move)
             return
           }
           if (triggerDisabled(item))
@@ -245,7 +246,7 @@ export function connectMenubar<T extends PropTypes>(
             event.preventDefault()
             const edge = cross === 'prev' ? 'last' : 'first'
             if (isOpen)
-              focusEdgeItem(root, item.value, edge)
+              focusEdgeItem(edge)
             else
               send({ type: 'TRIGGER.OPEN', value: item.value, focus: edge })
             return
@@ -264,6 +265,9 @@ export function connectMenubar<T extends PropTypes>(
       return normalize.element({
         ...parts.positioner.attrs,
         [ITEM_VALUE_ATTR]: item.value,
+        // 浮层不在 root 之内，语气与尺寸这两轴得在这里再打一遍
+        'data-tone': prop('tone'),
+        'data-size': prop('size'),
         'data-state': stateAttr(isOpen),
         'data-placement': isOpen ? placement : undefined,
         // 锚点滚出可视区时由引擎置位
@@ -307,7 +311,7 @@ export function connectMenubar<T extends PropTypes>(
           const across = navIntentFromKey(event, { axis: 'horizontal', dir, home: false })
           if (across) {
             event.preventDefault()
-            focusTrigger(content.closest<HTMLElement>(parts.root.selector), item.value, across)
+            focusTrigger(item.value, across)
             return
           }
           // 不拦默认行为，焦点按 Tab 序列自然离开

@@ -31,9 +31,22 @@
     --xh-mention-skin: 1;
   }
 
-  [data-scope='mention'][data-part='root'] {
-    /* 尺寸档只换这五个私有槽，输入框与候选都从 root 继承它们，换档不必给每个部件各写一条选择器。
-       浮层在 positioner 里、也是 root 的后代，一并继承 */
+  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+  [data-scope='mention'][data-part='positioner'] {
+    position: fixed;
+    z-index: var(--xh-layer-popover);
+    /* 空壳不吃指针，交互只发生在 content 上 */
+    pointer-events: none;
+  }
+
+  /* 输入框被滚出可视区：整个浮层随之收起 */
+  [data-scope='mention'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
+  [data-scope='mention']:is([data-part='root'], [data-part='positioner']) {
+    /* 尺寸档只换这五个私有槽，输入框与候选都从这两处继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_mention-h: var(--xh-control-h-md);
     --xh-_mention-px: var(--xh-control-px-md);
     --xh-_mention-py: var(--xh-field-py);
@@ -47,7 +60,9 @@
 
     /* 聚焦环恒用固定环色，不随语气走 */
     --xh-_mention-ring: var(--xh-ring-focus);
+  }
 
+  [data-scope='mention'][data-part='root'] {
     display: block;
   }
 
@@ -58,7 +73,7 @@
 
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里 */
-  [data-scope='mention'][data-part='root'][data-size='sm'] {
+  [data-scope='mention']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
     --xh-_mention-h: var(--xh-control-h-sm);
     --xh-_mention-px: var(--xh-control-px-sm);
     --xh-_mention-py: var(--xh-space-1);
@@ -66,7 +81,7 @@
     --xh-_mention-font-size: var(--xh-font-size-sm);
   }
 
-  [data-scope='mention'][data-part='root'][data-size='lg'] {
+  [data-scope='mention']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
     --xh-_mention-h: var(--xh-control-h-lg);
     --xh-_mention-px: var(--xh-control-px-lg);
     --xh-_mention-py: var(--xh-space-3);
@@ -77,20 +92,20 @@
   /* —— 形态 —— */
   /* 输入类不做 solid：实心底压着可编辑的正文，读起来像块不可点的色板。
      形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
-  [data-scope='mention'][data-part='root'][data-variant='outline'] {
+  [data-scope='mention']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
     --xh-_mention-input-bg: var(--xh-bg-canvas);
     --xh-_mention-input-border: var(--xh-border-control);
     --xh-_mention-input-border-hover: var(--xh-border-control-hover);
   }
 
   /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
-  [data-scope='mention'][data-part='root'][data-variant='subtle'] {
+  [data-scope='mention']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
     --xh-_mention-input-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_mention-input-border: transparent;
     --xh-_mention-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
-  [data-scope='mention'][data-part='root'][data-variant='ghost'] {
+  [data-scope='mention']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
     --xh-_mention-input-bg: transparent;
     --xh-_mention-input-border: transparent;
     --xh-_mention-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -150,19 +165,6 @@
     /* 禁用时连拉伸把手也一并收走，免得留一个拖得动却改不了内容的角 */
     resize: none;
     cursor: not-allowed;
-  }
-
-  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
-  [data-scope='mention'][data-part='positioner'] {
-    position: fixed;
-    z-index: var(--xh-layer-popover);
-    /* 空壳不吃指针，交互只发生在 content 上 */
-    pointer-events: none;
-  }
-
-  /* 输入框被滚出可视区：整个浮层随之收起 */
-  [data-scope='mention'][data-part='positioner'][data-hidden] {
-    visibility: hidden;
   }
 
   [data-scope='mention'][data-part='content'] {
