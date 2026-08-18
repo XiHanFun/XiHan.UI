@@ -48,10 +48,15 @@ function menubarTree(options: TreeOptions = {}): FixtureNode {
     return { part: 'item', attrs, children }
   }
 
-  const menuNodes = MENUS.flatMap((menu, index): FixtureNode[] => {
-    const triggerAttrs: Record<string, string> = { value: menu.value }
+  const trigger = (menu: MenuDecl): FixtureNode => {
+    const attrs: Record<string, string> = { value: menu.value }
     if (menu.value === disabledMenu)
-      triggerAttrs.disabled = ''
+      attrs.disabled = ''
+    // 必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦
+    return { part: 'trigger', tag: 'button', text: menu.text, attrs }
+  }
+
+  const positioner = (menu: MenuDecl, index: number): FixtureNode => {
     // 首张菜单带分组与分隔线，其余两张是扁平三条
     const body: FixtureNode[] = index === 0
       ? [
@@ -68,18 +73,19 @@ function menubarTree(options: TreeOptions = {}): FixtureNode {
           item(menu.items[2]!, true),
         ]
       : menu.items.map(i => item(i))
-    return [
-      // 必须是 button：WC 侧由 fixture 的 tag 决定，div 不可聚焦
-      { part: 'trigger', tag: 'button', text: menu.text, attrs: triggerAttrs },
-      {
-        part: 'positioner',
-        attrs: { value: menu.value },
-        children: [{ part: 'content', attrs: { value: menu.value }, children: body }],
-      },
-    ]
-  })
+    return {
+      part: 'positioner',
+      attrs: { value: menu.value },
+      children: [{ part: 'content', attrs: { value: menu.value }, children: body }],
+    }
+  }
 
-  return { part: 'root', children: menuNodes }
+  /*
+   * 一排入口排在前、三张菜单的浮层排在后，与 collection 铺开时产出的 DOM 同形。
+   * 交错写法（入口紧跟自己那张浮层）会让文档序只在一端成立：Vue 侧浮层搬去 portal 落点、
+   * 整棵排到宿主树之后，WC 侧仍就地渲染。摊成两段之后两端的文档序逐字相同。
+   */
+  return { part: 'root', children: [...MENUS.map(trigger), ...MENUS.map(positioner)] }
 }
 
 /** 指针掠过某个 trigger。Step 里没有"悬停"这一档，只能自己派事件。 */
@@ -111,6 +117,8 @@ export const menubarSuite: ConformanceSuite = {
         order: [
           'root',
           'trigger[0]',
+          'trigger[1]',
+          'trigger[2]',
           'positioner[0]',
           'content[0]',
           'group',
@@ -123,7 +131,6 @@ export const menubarSuite: ConformanceSuite = {
           'item[2]',
           'item-text[2]',
           'item-indicator',
-          'trigger[1]',
           'positioner[1]',
           'content[1]',
           'item[3]',
@@ -132,7 +139,6 @@ export const menubarSuite: ConformanceSuite = {
           'item-text[4]',
           'item[5]',
           'item-text[5]',
-          'trigger[2]',
           'positioner[2]',
           'content[2]',
           'item[6]',

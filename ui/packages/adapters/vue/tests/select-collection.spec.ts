@@ -4,6 +4,7 @@ import { mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, h } from 'vue'
 import {
+  provideXhConfig,
   XhSelectContent,
   XhSelectIndicator,
   XhSelectItem,
@@ -33,43 +34,56 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
+/** 一个实例一个 portal 落点：两棵树同时在场时，搬出去的浮层不会混在一起。 */
+function newPortal(): HTMLElement {
+  const portal = document.createElement('div')
+  document.body.appendChild(portal)
+  return portal
+}
+
 /** 只交数据，结构由组件铺开 */
-function mountFromCollection(value: string[]) {
+function mountFromCollection(value: string[], portal: HTMLElement = newPortal()) {
   return mount(defineComponent({
-    setup: () => () => h(XhSelectRoot, {
-      value,
-      collection: COLLECTION,
-      label: '水果',
-      placeholder: '请选择',
-    }),
+    setup() {
+      provideXhConfig({ portalContainer: () => portal })
+      return () => h(XhSelectRoot, {
+        value,
+        collection: COLLECTION,
+        label: '水果',
+        placeholder: '请选择',
+      })
+    },
   }), { attachTo: document.body })
 }
 
 /** 手写全套部件，条目只报 value，文本与禁用交给 collection */
-function mountFromParts(value: string[]) {
+function mountFromParts(value: string[], portal: HTMLElement = newPortal()) {
   return mount(defineComponent({
-    setup: () => () => h(XhSelectRoot, {
-      value,
-      collection: COLLECTION,
-      placeholder: '请选择',
-    }, () => [
-      h(XhSelectLabel, () => '水果'),
-      h(XhSelectTrigger, () => [h(XhSelectValueText), h(XhSelectIndicator)]),
-      h(XhSelectPositioner, () => [
-        h(XhSelectContent, () => h(XhSelectList, null, () => COLLECTION.map(node =>
-          h(XhSelectItem, { key: node.value, value: node.value }, () => [
-            h(XhSelectItemText, () => node.label),
-            h(XhSelectItemIndicator),
-          ]),
-        ))),
-      ]),
-    ]),
+    setup() {
+      provideXhConfig({ portalContainer: () => portal })
+      return () => h(XhSelectRoot, {
+        value,
+        collection: COLLECTION,
+        placeholder: '请选择',
+      }, () => [
+        h(XhSelectLabel, () => '水果'),
+        h(XhSelectTrigger, () => [h(XhSelectValueText), h(XhSelectIndicator)]),
+        h(XhSelectPositioner, () => [
+          h(XhSelectContent, () => h(XhSelectList, null, () => COLLECTION.map(node =>
+            h(XhSelectItem, { key: node.value, value: node.value }, () => [
+              h(XhSelectItemText, () => node.label),
+              h(XhSelectItemIndicator),
+            ]),
+          ))),
+        ]),
+      ])
+    },
   }), { attachTo: document.body })
 }
 
-/** 部件树：只取身份与无障碍属性，忽略由定位引擎写入的坐标 */
-function skeleton(root: Element): string[] {
-  return [...root.querySelectorAll('[data-scope="select"][data-part]')].map((el) => {
+/** 部件树：只取身份与无障碍属性，忽略由定位引擎写入的坐标。浮层已搬到落点，两处合起来才是整棵。 */
+function skeleton(...roots: Element[]): string[] {
+  return roots.flatMap(root => [...root.querySelectorAll('[data-scope="select"][data-part]')]).map((el) => {
     const attrs = ['data-part', 'role', 'aria-disabled', 'aria-selected', 'data-state', 'data-disabled']
       .map(name => (el.hasAttribute(name) ? `${name}=${el.getAttribute(name)}` : null))
       .filter(Boolean)
@@ -79,8 +93,10 @@ function skeleton(root: Element): string[] {
 
 describe('select 的 collection', () => {
   it('不写插槽时按数据铺开整套部件', () => {
-    const w = mountFromCollection([])
-    const parts = [...w.element.querySelectorAll('[data-scope="select"][data-part]')]
+    const portal = newPortal()
+    const w = mountFromCollection([], portal)
+    const parts = [w.element, portal]
+      .flatMap(root => [...root.querySelectorAll('[data-scope="select"][data-part]')])
       .map(el => el.getAttribute('data-part'))
     expect(parts).toEqual([
       'hidden-select',
@@ -105,19 +121,24 @@ describe('select 的 collection', () => {
   })
 
   it('条目文本取自 label，缺省退回 value', () => {
+    const portal = newPortal()
     const w = mount(defineComponent({
-      setup: () => () => h(XhSelectRoot, {
-        collection: [{ value: 'apple', label: '苹果' }, { value: 'plain' }],
-      }),
+      setup() {
+        provideXhConfig({ portalContainer: () => portal })
+        return () => h(XhSelectRoot, {
+          collection: [{ value: 'apple', label: '苹果' }, { value: 'plain' }],
+        })
+      },
     }), { attachTo: document.body })
-    const texts = [...w.element.querySelectorAll('[data-part="item-text"]')].map(el => el.textContent)
+    const texts = [...portal.querySelectorAll('[data-part="item-text"]')].map(el => el.textContent)
     expect(texts).toEqual(['苹果', 'plain'])
     w.unmount()
   })
 
   it('数据里的禁用落成条目的 aria-disabled', () => {
-    const w = mountFromCollection([])
-    const flags = [...w.element.querySelectorAll('[data-part="item"]')]
+    const portal = newPortal()
+    const w = mountFromCollection([], portal)
+    const flags = [...portal.querySelectorAll('[data-part="item"]')]
       .map(el => el.getAttribute('aria-disabled'))
     expect(flags).toEqual(['false', 'false', 'true'])
     w.unmount()
@@ -136,9 +157,11 @@ describe('select 的 collection', () => {
   })
 
   it('铺开的结构与手写全套部件完全一致', () => {
-    const auto = mountFromCollection(['banana'])
-    const manual = mountFromParts(['banana'])
-    expect(skeleton(auto.element)).toEqual(skeleton(manual.element))
+    const autoPortal = newPortal()
+    const manualPortal = newPortal()
+    const auto = mountFromCollection(['banana'], autoPortal)
+    const manual = mountFromParts(['banana'], manualPortal)
+    expect(skeleton(auto.element, autoPortal)).toEqual(skeleton(manual.element, manualPortal))
     auto.unmount()
     manual.unmount()
   })

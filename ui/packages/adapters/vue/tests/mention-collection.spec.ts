@@ -51,6 +51,8 @@ function mountFromParts() {
   }), { attachTo: document.body })
 }
 
+// 浮层的 positioner 搬到了 portal 落点，不再落在挂载根里，因此下面一律从整篇文档取件
+
 /** 部件树：只取身份与无障碍属性，忽略由定位引擎写入的坐标 */
 function skeleton(root: Element): string[] {
   return [...root.querySelectorAll('[data-scope="mention"][data-part]')].map((el) => {
@@ -78,9 +80,10 @@ async function type(el: HTMLTextAreaElement, text: string, caret = text.length):
 describe('mention 的 collection', () => {
   it('不写插槽时按数据铺开整套部件', () => {
     const w = mountFromCollection()
-    const parts = [...w.element.querySelectorAll('[data-scope="mention"][data-part]')]
+    const parts = [...document.body.querySelectorAll('[data-scope="mention"][data-part]')]
       .map(el => el.getAttribute('data-part'))
     expect(parts).toEqual([
+      'root',
       'input',
       'positioner',
       'content',
@@ -96,12 +99,12 @@ describe('mention 的 collection', () => {
 
   it('铺开的结构与手写部件逐字相同', () => {
     const auto = mountFromCollection()
-    const autoTree = skeleton(auto.element)
+    const autoTree = skeleton(document.body)
     auto.unmount()
     document.body.innerHTML = ''
 
     const manual = mountFromParts()
-    expect(skeleton(manual.element)).toEqual(autoTree)
+    expect(skeleton(document.body)).toEqual(autoTree)
     manual.unmount()
   })
 
@@ -111,14 +114,14 @@ describe('mention 的 collection', () => {
         collection: [{ value: 'lilei', label: '李雷' }, { value: 'plain' }],
       }),
     }), { attachTo: document.body })
-    const texts = [...w.element.querySelectorAll('[data-part="item-text"]')].map(el => el.textContent)
+    const texts = [...document.body.querySelectorAll('[data-part="item-text"]')].map(el => el.textContent)
     expect(texts).toEqual(['李雷', 'plain'])
     w.unmount()
   })
 
   it('数据里的禁用落成候选的 aria-disabled', () => {
     const w = mountFromCollection()
-    const flags = [...w.element.querySelectorAll('[data-part="item"]')]
+    const flags = [...document.body.querySelectorAll('[data-part="item"]')]
       .map(el => el.getAttribute('aria-disabled'))
     expect(flags).toEqual(['false', 'false', 'true'])
     w.unmount()
@@ -139,7 +142,7 @@ describe('mention 的 collection', () => {
       }),
     }), { attachTo: document.body })
     await type(textarea(w.element), '你好 @li')
-    expect(w.element.querySelector('[data-part="content"]')!.hasAttribute('hidden')).toBe(false)
+    expect(document.body.querySelector('[data-part="content"]')!.hasAttribute('hidden')).toBe(false)
     expect(seen.at(-1)).toBe('li')
     w.unmount()
   })
@@ -162,7 +165,7 @@ describe('mention 的 collection', () => {
     const w = mountFromCollection()
     const el = textarea(w.element)
     await type(el, '@')
-    const items = [...w.element.querySelectorAll('[data-part="item"]')]
+    const items = [...document.body.querySelectorAll('[data-part="item"]')]
     items[1]!.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
     await nextTick()
     await nextTick()

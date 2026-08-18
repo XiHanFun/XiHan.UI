@@ -70,6 +70,8 @@ function mountFromParts() {
   }), { attachTo: document.body })
 }
 
+// 各菜单的 positioner 搬到了 portal 落点、不再落在挂载根里，因此下面一律从整篇文档取件
+
 function partNames(root: Element): (string | null)[] {
   return [...root.querySelectorAll('[data-scope="menubar"][data-part]')].map(el => el.getAttribute('data-part'))
 }
@@ -90,7 +92,8 @@ function skeleton(root: Element): string[] {
 describe('menubar 的 collection', () => {
   it('不写插槽时按数据铺开整套部件', () => {
     const w = mountFromCollection()
-    expect(partNames(w.element)).toEqual([
+    expect(partNames(document.body)).toEqual([
+      'root',
       'trigger',
       'trigger',
       'positioner',
@@ -120,8 +123,8 @@ describe('menubar 的 collection', () => {
         ],
       }),
     }), { attachTo: document.body })
-    const triggers = [...w.element.querySelectorAll('[data-part="trigger"]')].map(el => el.textContent)
-    const texts = [...w.element.querySelectorAll('[data-part="item-text"]')].map(el => el.textContent)
+    const triggers = [...document.body.querySelectorAll('[data-part="trigger"]')].map(el => el.textContent)
+    const texts = [...document.body.querySelectorAll('[data-part="item-text"]')].map(el => el.textContent)
     expect(triggers).toEqual(['文件', 'bare'])
     expect(texts).toEqual(['新建', 'plain'])
     w.unmount()
@@ -129,7 +132,7 @@ describe('menubar 的 collection', () => {
 
   it('数据里的禁用落成条目的 aria-disabled', () => {
     const w = mountFromCollection()
-    const flags = [...w.element.querySelectorAll('[data-part="item"]')]
+    const flags = [...document.body.querySelectorAll('[data-part="item"]')]
       .map(el => el.getAttribute('aria-disabled'))
     expect(flags).toEqual(['false', 'false', 'true', 'false', 'false'])
     w.unmount()
@@ -144,11 +147,16 @@ describe('menubar 的 collection', () => {
   })
 
   it('铺开的结构与手写全套部件完全一致', () => {
+    // 两棵树共用一个 portal 落点，同时挂着就分不出谁是谁，改成一前一后各取一次
     const auto = mountFromCollection()
-    const manual = mountFromParts()
-    expect(skeleton(auto.element)).toEqual(skeleton(manual.element))
+    const fromCollection = skeleton(document.body)
     auto.unmount()
+    document.body.innerHTML = ''
+
+    const manual = mountFromParts()
+    const fromParts = skeleton(document.body)
     manual.unmount()
+    expect(fromCollection).toEqual(fromParts)
   })
 
   it('条目上写的 disabled 压过数据里的', () => {
@@ -164,7 +172,7 @@ describe('menubar 的 collection', () => {
         ]),
       ]),
     }), { attachTo: document.body })
-    const flags = [...w.element.querySelectorAll('[data-part="item"]')]
+    const flags = [...document.body.querySelectorAll('[data-part="item"]')]
       .map(el => el.getAttribute('aria-disabled'))
     expect(flags).toEqual(['false', 'true'])
     w.unmount()
@@ -197,9 +205,9 @@ describe('menubar 的 collection', () => {
         ]),
       ]),
     }), { attachTo: document.body })
-    expect([...w.element.querySelectorAll('[data-part="item"]')].map(el => el.getAttribute('aria-disabled')))
+    expect([...document.body.querySelectorAll('[data-part="item"]')].map(el => el.getAttribute('aria-disabled')))
       .toEqual(['false', 'true'])
-    expect(w.element.querySelector('[data-part="trigger"]')?.getAttribute('aria-disabled')).toBe('false')
+    expect(document.body.querySelector('[data-part="trigger"]')?.getAttribute('aria-disabled')).toBe('false')
     w.unmount()
   })
 })

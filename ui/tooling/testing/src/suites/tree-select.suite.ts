@@ -77,6 +77,8 @@ const FIXTURE: FixtureNode = {
       ],
     },
     { part: 'clear-trigger', tag: 'button' },
+    // 表单出口排在浮层之前：浮层可被搬到落点，宿主里剩下的部分要与就地渲染同序
+    { part: 'hidden-input', tag: 'input' },
     {
       part: 'positioner',
       children: [
@@ -99,7 +101,6 @@ const FIXTURE: FixtureNode = {
         },
       ],
     },
-    { part: 'hidden-input', tag: 'input' },
   ],
 }
 
@@ -181,6 +182,7 @@ export const treeSelectSuite: ConformanceSuite = {
           'value-text',
           'indicator',
           'clear-trigger',
+          'hidden-input',
           'positioner',
           'content',
           'tree',
@@ -214,7 +216,6 @@ export const treeSelectSuite: ConformanceSuite = {
           'item[3]',
           'item-indicator[3]',
           'item-text[3]',
-          'hidden-input',
         ],
         counts: {
           'root': 1,
