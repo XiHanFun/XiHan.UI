@@ -2,6 +2,9 @@
 import type { Scope } from '../../scope'
 import type { Cleanup } from '../../types'
 import { DATA_INERT_EXEMPT } from '../../constants'
+import { isHTMLElement } from '../../guards'
+import { getLayerRegistry } from '../../structure/layer-registry'
+import { getInertRegistry } from './inert-registry'
 
 /** 默认豁免选择器；三个 n-* 是迁移期共存的 naive 容器，删掉它们会把那些浮层一并 inert 掉。 */
 const DEFAULT_EXEMPT_SELECTORS = [
@@ -18,51 +21,70 @@ export interface HideOutsideOptions {
 
 /**
  * 把 body 下除 targets、豁免节点外的直接子元素设为 inert。
- * @param getTargets 每次施加 inert 时求值一次；必须包含所有 branch 节点与栈中位于自己之上
+ * inert 经 per-document 引用计数表施加，多层同时罩住同一元素时按计数叠加，
+ * 最后一次撤销才写回该元素被接管前的原始值，因此各层的拆除顺序不影响还原结果。
+ * @param getTargets 每次重算时求值一次；必须包含所有 branch 节点与栈中位于自己之上
  * 的层，漏传会误伤 portal 出去的嵌套浮层。晚于本次调用才挂载的节点也要能被算进来，
  * 所以取的是函数而不是数组。
- * @returns Cleanup：还原被改动的 inert 状态并停止监控。
+ * @returns Cleanup：撤销本次施加的全部 inert 要求并停止监控，重复调用只生效一次。
  */
 export function hideOutside(getTargets: () => Element[], scope: Scope, options: HideOutsideOptions = {}): Cleanup {
   const doc = scope.getDoc()
   const body = doc.body
+  const inert = getInertRegistry(doc)
   const exemptSelector = [...DEFAULT_EXEMPT_SELECTORS, ...(options.exemptSelectors ?? [])].join(',')
 
-  // 记录被改动元素的原始 inert 值，dispose 时还原。
-  const touched = new Map<HTMLElement, boolean>()
+  // 本次调用当前持有 inert 要求的元素。
+  const held = new Set<HTMLElement>()
 
-  const isTargetContainer = (el: Element): boolean =>
-    getTargets().some(t => el === t || el.contains(t) || t.contains(el))
-
-  const applyTo = (el: Element): void => {
-    if (!(el instanceof HTMLElement))
-      return
-    if (touched.has(el))
-      return
-    if (isTargetContainer(el))
-      return
-    if (el.matches(exemptSelector))
-      return
-    touched.set(el, el.inert)
-    el.inert = true
+  const shouldHide = (el: HTMLElement, targets: readonly Element[]): boolean => {
+    if (targets.some(t => el === t || el.contains(t) || t.contains(el)))
+      return false
+    return !el.matches(exemptSelector)
   }
 
-  for (const child of Array.from(body.children)) applyTo(child)
+  const acquire = (el: HTMLElement): void => {
+    if (held.has(el))
+      return
+    held.add(el)
+    inert.acquire(el)
+  }
 
-  // 监控后续新增到 body 的节点。
-  const observer = new MutationObserver((records) => {
-    for (const record of records) {
-      for (const node of Array.from(record.addedNodes)) {
-        if (node instanceof Element)
-          applyTo(node)
-      }
+  const release = (el: HTMLElement): void => {
+    if (!held.delete(el))
+      return
+    inert.release(el)
+  }
+
+  /** 按当前 targets 重算应罩住的集合，与已持有的集合做差分，多退少补。 */
+  const sync = (): void => {
+    const targets = getTargets()
+    const next = new Set<HTMLElement>()
+    for (const child of Array.from(body.children)) {
+      if (isHTMLElement(child) && shouldHide(child, targets))
+        next.add(child)
     }
-  })
-  observer.observe(body, { childList: true })
+    for (const el of Array.from(held)) {
+      if (!next.has(el))
+        release(el)
+    }
+    for (const el of next) acquire(el)
+  }
 
+  sync()
+
+  // body 增删子节点、层栈变动都重算一次，让乱序拆除后的结果收敛。
+  const observer = new MutationObserver(() => sync())
+  observer.observe(body, { childList: true })
+  const unsubscribe = getLayerRegistry(doc).subscribe(() => sync())
+
+  let disposed = false
   return () => {
+    if (disposed)
+      return
+    disposed = true
     observer.disconnect()
-    for (const [el, prev] of touched) el.inert = prev
-    touched.clear()
+    unsubscribe()
+    for (const el of Array.from(held)) release(el)
   }
 }
