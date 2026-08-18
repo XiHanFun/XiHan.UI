@@ -321,7 +321,7 @@ export function connectSideNav<T extends PropTypes>(
       // 折叠态：顶层子层是被定位的弹出面板；面板内的嵌套子层静态常开。
       // 关闭与平铺分支都显式清空定位声明（逐属性清而非摘掉整个 style），
       // 折叠开关来回切换时不残留 fixed 坐标，作者写的其他内联样式不受波及
-      const clearPosition = { position: '', insetInlineStart: '', insetBlockStart: '' }
+      const clearPosition = { position: '', left: '', top: '' }
       if (isPopoutPanel(v)) {
         const open = popoutValue === v
         return normalize.element({
@@ -334,8 +334,8 @@ export function connectSideNav<T extends PropTypes>(
           'style': open
             ? {
                 position: 'fixed',
-                insetInlineStart: `${popoutPosition?.x ?? 0}px`,
-                insetBlockStart: `${popoutPosition?.y ?? 0}px`,
+                left: `${popoutPosition?.x ?? 0}px`,
+                top: `${popoutPosition?.y ?? 0}px`,
               }
             : clearPosition,
         })

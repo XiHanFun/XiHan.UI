@@ -266,8 +266,8 @@ export function connectMenubar<T extends PropTypes>(
         // 坐标只发给展开的那一张
         'style': {
           position: 'fixed',
-          insetInlineStart: `${(isOpen ? position?.x : undefined) ?? 0}px`,
-          insetBlockStart: `${(isOpen ? position?.y : undefined) ?? 0}px`,
+          left: `${(isOpen ? position?.x : undefined) ?? 0}px`,
+          top: `${(isOpen ? position?.y : undefined) ?? 0}px`,
         },
       })
     },

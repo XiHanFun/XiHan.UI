@@ -196,8 +196,8 @@ export function connectContextMenu<T extends PropTypes>(
       'style': {
         position: 'fixed',
         // 引擎结果没回来之前先用光标坐标顶着；无引擎时它就是最终落位
-        insetInlineStart: `${position?.x ?? point?.x ?? 0}px`,
-        insetBlockStart: `${position?.y ?? point?.y ?? 0}px`,
+        left: `${position?.x ?? point?.x ?? 0}px`,
+        top: `${position?.y ?? point?.y ?? 0}px`,
       },
     }),
 

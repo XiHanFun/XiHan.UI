@@ -62,8 +62,11 @@ export function connectTooltip<T extends PropTypes>(
       'data-state': stateAttr,
       'style': {
         position: 'fixed',
-        insetInlineStart: `${position?.x ?? 0}px`,
-        insetBlockStart: `${position?.y ?? 0}px`,
+        left: `${position?.x ?? 0}px`,
+        top: `${position?.y ?? 0}px`,
+        // 皮肤给 SSR 首帧兜了一条 inset-inline-start，RTL 下它落在 right 上；
+        // 行内把 right 让开，行内轴才只由 left 一侧约束，浮层不会被拉宽
+        right: 'auto',
       },
     }),
     // 常挂 + hidden 显隐，不卸载作者写在 content 里的节点。

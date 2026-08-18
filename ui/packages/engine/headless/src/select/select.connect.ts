@@ -256,8 +256,8 @@ export function connectSelect<T extends PropTypes>(
       'data-hidden': dataAttr(position?.hidden),
       'style': {
         position: 'fixed',
-        insetInlineStart: `${position?.x ?? 0}px`,
-        insetBlockStart: `${position?.y ?? 0}px`,
+        left: `${position?.x ?? 0}px`,
+        top: `${position?.y ?? 0}px`,
       },
     }),
     // 浮层的外壳：描边、底色、阴影画在它身上，键盘也在它上面收口（条目只管声明自己）。

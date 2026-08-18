@@ -138,12 +138,12 @@ describe('tour 滚动跟随', () => {
     const t = mountTour()
     await tick()
     // spotlightPadding 默认 8：x=100 → 92px
-    expect(spotlightStyle().insetInlineStart).toBe('92px')
+    expect(spotlightStyle().left).toBe('92px')
 
     t.targets[0].getBoundingClientRect = () => rect(40, 200)
     window.dispatchEvent(new Event('scroll'))
     await tick()
-    expect(spotlightStyle().insetInlineStart).toBe('32px')
+    expect(spotlightStyle().left).toBe('32px')
     t.unmount()
   })
 
@@ -151,12 +151,12 @@ describe('tour 滚动跟随', () => {
     stubScrollIntoView()
     const t = mountTour()
     await tick()
-    expect(spotlightStyle().insetInlineStart).toBe('92px')
+    expect(spotlightStyle().left).toBe('92px')
 
     t.targets[0].getBoundingClientRect = () => rect(160, 200)
     t.handle().remeasure()
     await tick()
-    expect(spotlightStyle().insetInlineStart).toBe('152px')
+    expect(spotlightStyle().left).toBe('152px')
     t.unmount()
   })
 })

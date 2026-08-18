@@ -96,8 +96,8 @@ export function connectTour<T extends PropTypes>(
       'hidden': !open || !anchored || undefined,
       'style': {
         position: 'fixed',
-        insetInlineStart: `${spotlight?.x ?? 0}px`,
-        insetBlockStart: `${spotlight?.y ?? 0}px`,
+        left: `${spotlight?.x ?? 0}px`,
+        top: `${spotlight?.y ?? 0}px`,
         inlineSize: `${spotlight?.width ?? 0}px`,
         blockSize: `${spotlight?.height ?? 0}px`,
       },
@@ -113,8 +113,8 @@ export function connectTour<T extends PropTypes>(
       'style': {
         position: 'fixed',
         // 居中步显式写空串把上一步留下的内联坐标撤掉，不写键的话 WC 侧会留着旧值
-        insetInlineStart: anchored ? `${position?.x ?? 0}px` : '',
-        insetBlockStart: anchored ? `${position?.y ?? 0}px` : '',
+        left: anchored ? `${position?.x ?? 0}px` : '',
+        top: anchored ? `${position?.y ?? 0}px` : '',
       },
     }),
 
