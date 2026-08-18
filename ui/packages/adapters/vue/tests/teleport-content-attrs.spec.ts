@@ -35,7 +35,7 @@ async function mountOverlay(root: unknown, content: unknown, rootProps: Record<s
   await nextTick()
 }
 
-describe('Teleport 作根的 content 部件接住直通属性', () => {
+describe('teleport 作根的 content 部件接住直通属性', () => {
   it('dialog content 收下 class 与内联 style', async () => {
     await mountOverlay(XhDialogRoot, XhDialogContent, { open: true }, { class: 'my-dialog', style: 'width: 96vw' })
     const content = document.querySelector('[data-scope=\'dialog\'][data-part=\'content\']') as HTMLElement

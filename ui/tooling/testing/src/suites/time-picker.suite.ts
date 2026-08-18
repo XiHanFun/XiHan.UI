@@ -88,6 +88,8 @@ export const timePickerSuite: ConformanceSuite = {
           { part: 'clear-trigger', tag: 'button', text: '清空' },
         ],
       },
+      // 表单出口排在浮层之前：浮层可被搬到落点，宿主里剩下的部分要与就地渲染同序
+      { part: 'hidden-input', tag: 'input' },
       {
         part: 'positioner',
         children: [
@@ -102,7 +104,6 @@ export const timePickerSuite: ConformanceSuite = {
           },
         ],
       },
-      { part: 'hidden-input', tag: 'input' },
     ],
   },
   cases: [
@@ -172,6 +173,7 @@ export const timePickerSuite: ConformanceSuite = {
           DAY_PERIOD_SEG,
           'trigger',
           'clear-trigger',
+          'hidden-input',
           'positioner',
           'content',
           HOUR_COL,
@@ -188,7 +190,6 @@ export const timePickerSuite: ConformanceSuite = {
           DAY_PERIOD_COL,
           PERIOD_AM,
           PERIOD_PM,
-          'hidden-input',
         ],
         counts: { input: 4, column: 4, item: 10 },
         activeElement: null,

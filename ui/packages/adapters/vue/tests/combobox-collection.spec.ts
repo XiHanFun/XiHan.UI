@@ -74,14 +74,24 @@ function mountFromParts(value: string[]) {
   }), { attachTo: document.body })
 }
 
+/** 全文档里 root 以下的本组件部件，按文档序；positioner 搬去了 portal 落点，不在挂载树里。 */
+function partsIn(): HTMLElement[] {
+  return [...document.querySelectorAll<HTMLElement>('[data-scope="combobox"][data-part]')]
+    .filter(el => el.dataset.part !== 'root')
+}
+
 /** 部件树：只取身份与无障碍属性，忽略由定位引擎写入的坐标 */
-function skeleton(root: Element): string[] {
-  return [...root.querySelectorAll('[data-scope="combobox"][data-part]')].map((el) => {
+function skeleton(): string[] {
+  return partsIn().map((el) => {
     const attrs = ['data-part', 'role', 'aria-disabled', 'aria-selected', 'data-state', 'data-disabled', 'data-highlighted']
       .map(name => (el.hasAttribute(name) ? `${name}=${el.getAttribute(name)}` : null))
       .filter(Boolean)
     return `${attrs.join(' ')}|${el.textContent}`
   })
+}
+
+function itemFlags(): (string | null)[] {
+  return partsIn().filter(el => el.dataset.part === 'item').map(el => el.getAttribute('aria-disabled'))
 }
 
 function inputValue(root: Element): string {
@@ -91,8 +101,7 @@ function inputValue(root: Element): string {
 describe('combobox 的 collection', () => {
   it('不写插槽时按数据铺开整套部件', () => {
     const w = mountFromCollection([])
-    const parts = [...w.element.querySelectorAll('[data-scope="combobox"][data-part]')]
-      .map(el => el.getAttribute('data-part'))
+    const parts = partsIn().map(el => el.getAttribute('data-part'))
     expect(parts).toEqual([
       'label',
       'control',
@@ -121,16 +130,14 @@ describe('combobox 的 collection', () => {
         collection: [{ value: 'apple', label: '苹果' }, { value: 'plain' }],
       }),
     }), { attachTo: document.body })
-    const texts = [...w.element.querySelectorAll('[data-part="item-text"]')].map(el => el.textContent)
+    const texts = partsIn().filter(el => el.dataset.part === 'item-text').map(el => el.textContent)
     expect(texts).toEqual(['苹果', 'plain'])
     w.unmount()
   })
 
   it('数据里的禁用落成候选的 aria-disabled', () => {
     const w = mountFromCollection([])
-    const flags = [...w.element.querySelectorAll('[data-part="item"]')]
-      .map(el => el.getAttribute('aria-disabled'))
-    expect(flags).toEqual(['false', 'false', 'true'])
+    expect(itemFlags()).toEqual(['false', 'false', 'true'])
     w.unmount()
   })
 
@@ -152,12 +159,19 @@ describe('combobox 的 collection', () => {
   })
 
   it('铺开的结构与手写全套部件完全一致', async () => {
+    // 两棵树都往同一个 portal 落点搬，逐棵挂逐棵取，快照才不会掺在一起
     const auto = mountFromCollection(['banana'])
+    await nextTick()
+    const fromCollection = skeleton()
+    auto.unmount()
+    // 落点是 body 末尾的共用节点：不清掉，第二棵的 host 会排到它后面，文档序与第一棵相反
+    document.body.innerHTML = ''
+
     const manual = mountFromParts(['banana'])
     await nextTick()
-    expect(skeleton(auto.element)).toEqual(skeleton(manual.element))
-    auto.unmount()
+    const fromParts = skeleton()
     manual.unmount()
+    expect(fromCollection).toEqual(fromParts)
   })
 
   it('候选上写的 disabled 压过数据里的', () => {
@@ -171,9 +185,7 @@ describe('combobox 的 collection', () => {
         ]),
       ]),
     }), { attachTo: document.body })
-    const flags = [...w.element.querySelectorAll('[data-part="item"]')]
-      .map(el => el.getAttribute('aria-disabled'))
-    expect(flags).toEqual(['false', 'true'])
+    expect(itemFlags()).toEqual(['false', 'true'])
     w.unmount()
   })
 })
