@@ -19,7 +19,7 @@ const groups = new Map()
 for (const file of files) {
   const comp = file.replace(/\.css$/, '')
   const src = await readFile(join(STYLES_DIR, file), 'utf8')
-  for (const m of src.matchAll(/var\(\s*(--xh-[a-z0-9-]+)\s*,([^;()]*)\)/g)) {
+  for (const m of src.matchAll(/var\(\s*(--xh-[a-z0-9_-]+)\s*,([^;()]*)\)/g)) {
     const [, name, raw] = m
     const fallback = raw.trim()
     if (fallback.startsWith('var(') || NOT_A_SCALE.has(fallback))
