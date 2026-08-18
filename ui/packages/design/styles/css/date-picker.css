@@ -4,10 +4,23 @@
     --xh-date-picker-skin: 1;
   }
 
-  /* 与文本框、分段日期同一套堆叠：标签一行、输入行一行 */
-  [data-scope='date-picker'][data-part='root'] {
-    /* 尺寸档只换这几个私有槽，标题、输入行与浮层里的部件都从 root 继承它们，
-       换档不必给每个部件各写一条选择器。浮层在 positioner 里、也是 root 的后代，一并继承 */
+  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
+  [data-scope='date-picker'][data-part='positioner'] {
+    position: fixed;
+    z-index: var(--xh-layer-popover);
+    /* 空壳不吃指针，交互只发生在 content 里 */
+    pointer-events: none;
+  }
+
+  /* 锚点被滚出可视区：整个浮层随之收起 */
+  [data-scope='date-picker'][data-part='positioner'][data-hidden] {
+    visibility: hidden;
+  }
+
+  /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
+  [data-scope='date-picker']:is([data-part='root'], [data-part='positioner']) {
+    /* 尺寸档只换这几个私有槽，标题、输入行与浮层里的部件都从这两处继承它们，
+       换档不必给每个部件各写一条选择器 */
     --xh-_date-picker-control-h: var(--xh-control-h-md);
     --xh-_date-picker-control-px: var(--xh-control-px-md);
     --xh-_date-picker-font-size: var(--xh-text-body-size);
@@ -25,7 +38,10 @@
     --xh-_date-picker-accent-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
     --xh-_date-picker-accent-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
     --xh-_date-picker-accent-subtle: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+  }
 
+  /* 与文本框、分段日期同一套堆叠：标签一行、输入行一行 */
+  [data-scope='date-picker'][data-part='root'] {
     display: inline-flex;
     flex-direction: column;
     gap: var(--xh-date-picker-gap, var(--xh-space-1));
@@ -33,14 +49,14 @@
 
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里 */
-  [data-scope='date-picker'][data-part='root'][data-size='sm'] {
+  [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
     --xh-_date-picker-control-h: var(--xh-control-h-sm);
     --xh-_date-picker-control-px: var(--xh-control-px-sm);
     --xh-_date-picker-font-size: var(--xh-font-size-sm);
     --xh-_date-picker-label-font-size: var(--xh-font-size-sm);
   }
 
-  [data-scope='date-picker'][data-part='root'][data-size='lg'] {
+  [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
     --xh-_date-picker-control-h: var(--xh-control-h-lg);
     --xh-_date-picker-control-px: var(--xh-control-px-lg);
     --xh-_date-picker-font-size: var(--xh-font-size-lg);
@@ -50,7 +66,7 @@
   /* —— 形态 —— */
   /* 输入类不做实心档：填满一个要往里打字的框，字与底就没法同时读。
      形态只决定底与描边怎么画，用哪族颜色由 data-tone 决定 */
-  [data-scope='date-picker'][data-part='root'][data-variant='outline'] {
+  [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
     --xh-_date-picker-control-bg: var(--xh-bg-canvas);
     --xh-_date-picker-control-border: var(--xh-border-control);
     --xh-_date-picker-control-border-hover: var(--xh-border-control-hover);
@@ -58,14 +74,14 @@
 
   /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
      与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
-  [data-scope='date-picker'][data-part='root'][data-variant='subtle'] {
+  [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
     --xh-_date-picker-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-_date-picker-control-border: transparent;
     --xh-_date-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
   /* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
-  [data-scope='date-picker'][data-part='root'][data-variant='ghost'] {
+  [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
     --xh-_date-picker-control-bg: transparent;
     --xh-_date-picker-control-border: transparent;
     --xh-_date-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
@@ -225,19 +241,6 @@
     cursor: not-allowed;
   }
 
-  /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
-  [data-scope='date-picker'][data-part='positioner'] {
-    position: fixed;
-    z-index: var(--xh-layer-popover);
-    /* 空壳不吃指针，交互只发生在 content 里 */
-    pointer-events: none;
-  }
-
-  /* 锚点被滚出可视区：整个浮层随之收起 */
-  [data-scope='date-picker'][data-part='positioner'][data-hidden] {
-    visibility: hidden;
-  }
-
   [data-scope='date-picker'][data-part='content'] {
     display: block;
     padding: var(--xh-date-picker-content-p, var(--xh-space-3));
@@ -276,8 +279,10 @@
      所以网格外层该有的排布得在这儿补齐（网格内部的皮仍归 calendar 那一份） */
   /* 真的摆了两张日历才横过来。写成 :has 而不是无条件 flex 行:
      showTime 那套结构里 content 直属子节点是作者自己的包裹块与确认行,
-     无条件横排会把它们并到日历旁边去 */
-  [data-scope='date-picker'][data-part='content']:not([hidden]):has(> [data-part='calendar'] + [data-part='calendar']) {
+     无条件横排会把它们并到日历旁边去。
+     不加 :not([hidden])：content 收起态带 hidden 但仍在播退场动画，
+     排除掉会让它在那几帧退回 block、两张日历竖着堆一下 */
+  [data-scope='date-picker'][data-part='content']:has(> [data-part='calendar'] + [data-part='calendar']) {
     display: flex;
     align-items: flex-start;
   }

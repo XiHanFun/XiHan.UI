@@ -4,6 +4,10 @@ import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
 import {
+  XhDatePickerCalendar,
+  XhDatePickerContent,
+  XhDatePickerPositioner,
+  XhDatePickerRoot,
   XhDialogContent,
   XhDialogRoot,
   XhDialogTitle,
@@ -142,5 +146,39 @@ describe('image-viewer 退场', () => {
     expect(closing, '退场动画播完之前 content 不能被卸载').not.toBeNull()
     expect(getComputedStyle(closing!).display, 'content 收起态不能是 display:none').not.toBe('none')
     expect(getComputedStyle(closing!).animationName).toBe('xh-fade-out')
+  })
+})
+
+describe('date-picker 退场', () => {
+  /** 两张日历并排的面板：content 靠 :has 认出第二张才横排。 */
+  function mountRange(): { open: { value: boolean } } {
+    return mount(value => h(XhDatePickerRoot, { open: value }, {
+      default: () => [
+        h(XhDatePickerPositioner, null, () => [
+          h(XhDatePickerContent, null, () => [
+            h(XhDatePickerCalendar),
+            h(XhDatePickerCalendar),
+          ]),
+        ]),
+      ],
+    }))
+  }
+
+  it('展开时两张日历横排', async () => {
+    mountRange()
+    await settle()
+    expect(getComputedStyle(part('date-picker', 'content')!).display).toBe('flex')
+  })
+
+  it('退场那一帧仍横排：收起会给 content 打 hidden，横排规则不能跟着失配', async () => {
+    const open = mountRange()
+    await settle()
+
+    open.value = false
+    await settle()
+
+    const closing = part('date-picker', 'content')
+    expect(closing, '退场动画播完之前 content 不能被卸载').not.toBeNull()
+    expect(getComputedStyle(closing!).display, '退场帧若退回 block，两张日历会竖着堆起来闪一下').toBe('flex')
   })
 })
