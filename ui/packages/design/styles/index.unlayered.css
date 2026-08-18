@@ -3858,6 +3858,10 @@ input[data-scope='mention'][data-part='input'] {
  *
  * 这两个槽用的都是固定原语而不是 --xh-fg-default：实心底本身是原语色、不随主题翻，
  * 配色若跟着主题翻，暗色下就会变成白字压在浅黄底上（实测对比度 2.70）。
+ *
+ * brand 是例外：那一族的色相归使用者，所以它的底与前景走 --xh-bg-brand / --xh-fg-on-brand
+ * 这两个语义令牌。缺省主题下它们就解析成 brand-600 与 neutral-0，与其余五族同值；
+ * 改写过品牌色的使用者只改这两个令牌，实心底与它上面的字就一起跟着走。
  */
 
 [data-tone] {
@@ -3886,9 +3890,9 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-tone='brand'] {
-  --xh-_tone: var(--xh-color-brand-600);
+  --xh-_tone: var(--xh-bg-brand);
   --xh-_tone-soft: var(--xh-color-brand-500);
-  --xh-_tone-on: var(--xh-color-neutral-0);
+  --xh-_tone-on: var(--xh-fg-on-brand);
   --xh-_tone-shift: var(--xh-color-neutral-950);
 }
 
@@ -8063,51 +8067,21 @@ input[data-scope='mention'][data-part='input'] {
   display: none;
 }
 
-/* 箭头是旋转 45° 的方块，只保留朝向锚点那两条边的描边；
+/* 箭头的底色与描边色，几何在 overlay-arrow.css。
    交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
 [data-scope='context-menu'][data-part='arrow'] {
-  --xh-_context-menu-arrow-size: var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size));
   --xh-_context-menu-arrow-x: 50%;
   --xh-_context-menu-arrow-y: 50%;
+  --xh-_overlay-arrow-size: var(--xh-context-menu-arrow-size, var(--xh-overlay-arrow-size));
+  --xh-_overlay-arrow-x: var(--xh-_context-menu-arrow-x);
+  --xh-_overlay-arrow-y: var(--xh-_context-menu-arrow-y);
 
-  position: absolute;
-  inline-size: var(--xh-_context-menu-arrow-size);
-  block-size: var(--xh-_context-menu-arrow-size);
   background: var(--xh-context-menu-bg, var(--xh-bg-surface));
   border: var(--xh-stroke-thin) solid var(--xh-context-menu-border, var(--xh-border-default));
-  rotate: 45deg;
 }
 
 [data-scope='context-menu'][data-part='arrow'][hidden] {
   display: none;
-}
-
-[data-scope='context-menu'][data-part='arrow'][data-placement^='bottom'] {
-  inset-block-start: calc(var(--xh-_context-menu-arrow-size) / -2);
-  inset-inline-start: calc(var(--xh-_context-menu-arrow-x) - var(--xh-_context-menu-arrow-size) / 2);
-  border-block-end: 0;
-  border-inline-end: 0;
-}
-
-[data-scope='context-menu'][data-part='arrow'][data-placement^='top'] {
-  inset-block-end: calc(var(--xh-_context-menu-arrow-size) / -2);
-  inset-inline-start: calc(var(--xh-_context-menu-arrow-x) - var(--xh-_context-menu-arrow-size) / 2);
-  border-block-start: 0;
-  border-inline-start: 0;
-}
-
-[data-scope='context-menu'][data-part='arrow'][data-placement^='right'] {
-  inset-inline-start: calc(var(--xh-_context-menu-arrow-size) / -2);
-  inset-block-start: calc(var(--xh-_context-menu-arrow-y) - var(--xh-_context-menu-arrow-size) / 2);
-  border-block-start: 0;
-  border-inline-end: 0;
-}
-
-[data-scope='context-menu'][data-part='arrow'][data-placement^='left'] {
-  inset-inline-end: calc(var(--xh-_context-menu-arrow-size) / -2);
-  inset-block-start: calc(var(--xh-_context-menu-arrow-y) - var(--xh-_context-menu-arrow-size) / 2);
-  border-block-end: 0;
-  border-inline-start: 0;
 }
 
 /* 自带前缀独占一个名字，不动公共的那份关键帧 */
@@ -10318,47 +10292,17 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_hover-card-max-w: var(--xh-overlay-max-w-lg);
 }
 
-/* 箭头是旋转 45° 的方块，只保留朝向锚点那两条边的描边；
+/* 箭头的底色与描边色，几何在 overlay-arrow.css。
    交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
 [data-scope='hover-card'][data-part='arrow'] {
-  --xh-_hover-card-arrow-size: var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size));
   --xh-_hover-card-arrow-x: 50%;
   --xh-_hover-card-arrow-y: 50%;
+  --xh-_overlay-arrow-size: var(--xh-hover-card-arrow-size, var(--xh-overlay-arrow-size));
+  --xh-_overlay-arrow-x: var(--xh-_hover-card-arrow-x);
+  --xh-_overlay-arrow-y: var(--xh-_hover-card-arrow-y);
 
-  position: absolute;
-  inline-size: var(--xh-_hover-card-arrow-size);
-  block-size: var(--xh-_hover-card-arrow-size);
-  border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-border-default));
   background: var(--xh-hover-card-bg, var(--xh-bg-surface));
-  rotate: 45deg;
-}
-
-[data-scope='hover-card'][data-part='arrow'][data-placement^='bottom'] {
-  inset-block-start: calc(var(--xh-_hover-card-arrow-size) / -2);
-  inset-inline-start: calc(var(--xh-_hover-card-arrow-x) - var(--xh-_hover-card-arrow-size) / 2);
-  border-block-end: 0;
-  border-inline-end: 0;
-}
-
-[data-scope='hover-card'][data-part='arrow'][data-placement^='top'] {
-  inset-block-end: calc(var(--xh-_hover-card-arrow-size) / -2);
-  inset-inline-start: calc(var(--xh-_hover-card-arrow-x) - var(--xh-_hover-card-arrow-size) / 2);
-  border-block-start: 0;
-  border-inline-start: 0;
-}
-
-[data-scope='hover-card'][data-part='arrow'][data-placement^='right'] {
-  inset-inline-start: calc(var(--xh-_hover-card-arrow-size) / -2);
-  inset-block-start: calc(var(--xh-_hover-card-arrow-y) - var(--xh-_hover-card-arrow-size) / 2);
-  border-block-start: 0;
-  border-inline-end: 0;
-}
-
-[data-scope='hover-card'][data-part='arrow'][data-placement^='left'] {
-  inset-inline-end: calc(var(--xh-_hover-card-arrow-size) / -2);
-  inset-block-start: calc(var(--xh-_hover-card-arrow-y) - var(--xh-_hover-card-arrow-size) / 2);
-  border-block-end: 0;
-  border-inline-start: 0;
+  border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-border-default));
 }
 
 /* styles/icon.css */
@@ -11091,47 +11035,17 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-menu-separator-color, var(--xh-border-default));
 }
 
-/* 箭头是旋转 45° 的方块，只保留朝向锚点那两条边的描边；
+/* 箭头的底色与描边色，几何在 overlay-arrow.css。
    交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
 [data-scope='menu'][data-part='arrow'] {
-  --xh-_menu-arrow-size: var(--xh-menu-arrow-size, var(--xh-overlay-arrow-size));
   --xh-_menu-arrow-x: 50%;
   --xh-_menu-arrow-y: 50%;
+  --xh-_overlay-arrow-size: var(--xh-menu-arrow-size, var(--xh-overlay-arrow-size));
+  --xh-_overlay-arrow-x: var(--xh-_menu-arrow-x);
+  --xh-_overlay-arrow-y: var(--xh-_menu-arrow-y);
 
-  position: absolute;
-  inline-size: var(--xh-_menu-arrow-size);
-  block-size: var(--xh-_menu-arrow-size);
   background: var(--xh-menu-bg, var(--xh-bg-surface));
   border: var(--xh-stroke-thin) solid var(--xh-menu-border, var(--xh-border-default));
-  rotate: 45deg;
-}
-
-[data-scope='menu'][data-part='arrow'][data-placement^='bottom'] {
-  inset-block-start: calc(var(--xh-_menu-arrow-size) / -2);
-  inset-inline-start: calc(var(--xh-_menu-arrow-x) - var(--xh-_menu-arrow-size) / 2);
-  border-block-end: 0;
-  border-inline-end: 0;
-}
-
-[data-scope='menu'][data-part='arrow'][data-placement^='top'] {
-  inset-block-end: calc(var(--xh-_menu-arrow-size) / -2);
-  inset-inline-start: calc(var(--xh-_menu-arrow-x) - var(--xh-_menu-arrow-size) / 2);
-  border-block-start: 0;
-  border-inline-start: 0;
-}
-
-[data-scope='menu'][data-part='arrow'][data-placement^='right'] {
-  inset-inline-start: calc(var(--xh-_menu-arrow-size) / -2);
-  inset-block-start: calc(var(--xh-_menu-arrow-y) - var(--xh-_menu-arrow-size) / 2);
-  border-block-start: 0;
-  border-inline-end: 0;
-}
-
-[data-scope='menu'][data-part='arrow'][data-placement^='left'] {
-  inset-inline-end: calc(var(--xh-_menu-arrow-size) / -2);
-  inset-block-start: calc(var(--xh-_menu-arrow-y) - var(--xh-_menu-arrow-size) / 2);
-  border-block-end: 0;
-  border-inline-start: 0;
 }
 
 /* styles/menubar.css */
@@ -12558,47 +12472,17 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: var(--xh-ring-offset);
 }
 
-/* 箭头是旋转 45° 的方块，只保留朝向锚点那两条边的描边；
+/* 箭头的底色与描边色，几何在 overlay-arrow.css。
    交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
 [data-scope='popover'][data-part='arrow'] {
-  --xh-_popover-arrow-size: var(--xh-popover-arrow-size, var(--xh-overlay-arrow-size));
   --xh-_popover-arrow-x: 50%;
   --xh-_popover-arrow-y: 50%;
+  --xh-_overlay-arrow-size: var(--xh-popover-arrow-size, var(--xh-overlay-arrow-size));
+  --xh-_overlay-arrow-x: var(--xh-_popover-arrow-x);
+  --xh-_overlay-arrow-y: var(--xh-_popover-arrow-y);
 
-  position: absolute;
-  inline-size: var(--xh-_popover-arrow-size);
-  block-size: var(--xh-_popover-arrow-size);
   background: var(--xh-popover-bg, var(--xh-bg-surface));
   border: var(--xh-stroke-thin) solid var(--xh-popover-border, var(--xh-border-default));
-  rotate: 45deg;
-}
-
-[data-scope='popover'][data-part='arrow'][data-placement^='bottom'] {
-  inset-block-start: calc(var(--xh-_popover-arrow-size) / -2);
-  inset-inline-start: calc(var(--xh-_popover-arrow-x) - var(--xh-_popover-arrow-size) / 2);
-  border-block-end: 0;
-  border-inline-end: 0;
-}
-
-[data-scope='popover'][data-part='arrow'][data-placement^='top'] {
-  inset-block-end: calc(var(--xh-_popover-arrow-size) / -2);
-  inset-inline-start: calc(var(--xh-_popover-arrow-x) - var(--xh-_popover-arrow-size) / 2);
-  border-block-start: 0;
-  border-inline-start: 0;
-}
-
-[data-scope='popover'][data-part='arrow'][data-placement^='right'] {
-  inset-inline-start: calc(var(--xh-_popover-arrow-size) / -2);
-  inset-block-start: calc(var(--xh-_popover-arrow-y) - var(--xh-_popover-arrow-size) / 2);
-  border-block-start: 0;
-  border-inline-end: 0;
-}
-
-[data-scope='popover'][data-part='arrow'][data-placement^='left'] {
-  inset-inline-end: calc(var(--xh-_popover-arrow-size) / -2);
-  inset-block-start: calc(var(--xh-_popover-arrow-y) - var(--xh-_popover-arrow-size) / 2);
-  border-block-end: 0;
-  border-inline-start: 0;
 }
 
 /* styles/progress.css */
@@ -17266,38 +17150,16 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_tooltip-font-size: var(--xh-font-size-md);
 }
 
-/* 箭头是旋转 45° 的方块，按自报的落定朝向贴在 content 对侧边上；
+/* 箭头的底色与描边色，几何在 overlay-arrow.css。
    交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
 [data-scope='tooltip'][data-part='arrow'] {
-  --xh-_tooltip-arrow-size: var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size));
   --xh-_tooltip-arrow-x: 50%;
   --xh-_tooltip-arrow-y: 50%;
+  --xh-_overlay-arrow-size: var(--xh-tooltip-arrow-size, var(--xh-overlay-arrow-size));
+  --xh-_overlay-arrow-x: var(--xh-_tooltip-arrow-x);
+  --xh-_overlay-arrow-y: var(--xh-_tooltip-arrow-y);
 
-  position: absolute;
-  inline-size: var(--xh-_tooltip-arrow-size);
-  block-size: var(--xh-_tooltip-arrow-size);
   background: var(--xh-tooltip-bg, var(--xh-_tone, var(--xh-fg-default)));
-  transform: rotate(45deg);
-}
-
-[data-scope='tooltip'][data-part='arrow'][data-placement^='bottom'] {
-  inset-block-start: calc(var(--xh-_tooltip-arrow-size) / -2);
-  inset-inline-start: calc(var(--xh-_tooltip-arrow-x) - var(--xh-_tooltip-arrow-size) / 2);
-}
-
-[data-scope='tooltip'][data-part='arrow'][data-placement^='top'] {
-  inset-block-end: calc(var(--xh-_tooltip-arrow-size) / -2);
-  inset-inline-start: calc(var(--xh-_tooltip-arrow-x) - var(--xh-_tooltip-arrow-size) / 2);
-}
-
-[data-scope='tooltip'][data-part='arrow'][data-placement^='left'] {
-  inset-block-start: calc(var(--xh-_tooltip-arrow-y) - var(--xh-_tooltip-arrow-size) / 2);
-  inset-inline-end: calc(var(--xh-_tooltip-arrow-size) / -2);
-}
-
-[data-scope='tooltip'][data-part='arrow'][data-placement^='right'] {
-  inset-block-start: calc(var(--xh-_tooltip-arrow-y) - var(--xh-_tooltip-arrow-size) / 2);
-  inset-inline-start: calc(var(--xh-_tooltip-arrow-size) / -2);
 }
 
 /* styles/tour.css */
@@ -17580,51 +17442,75 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: var(--xh-ring-offset);
 }
 
-/* 箭头是旋转 45° 的方块，只保留朝向目标那两条边的描边；
-   交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中。居中步没有锚点，连接层会给它发 hidden */
+/* 箭头的底色与描边色，几何在 overlay-arrow.css。
+   交叉轴落点由定位引擎经内联自定义属性写进来，没给时退回居中 */
 [data-scope='tour'][data-part='arrow'] {
-  --xh-_tour-arrow-size: var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size));
   --xh-_tour-arrow-x: 50%;
   --xh-_tour-arrow-y: 50%;
+  --xh-_overlay-arrow-size: var(--xh-tour-arrow-size, var(--xh-overlay-arrow-size));
+  --xh-_overlay-arrow-x: var(--xh-_tour-arrow-x);
+  --xh-_overlay-arrow-y: var(--xh-_tour-arrow-y);
 
-  position: absolute;
-  inline-size: var(--xh-_tour-arrow-size);
-  block-size: var(--xh-_tour-arrow-size);
   background: var(--xh-tour-bg, var(--xh-bg-surface));
   border: var(--xh-stroke-thin) solid var(--xh-tour-border, var(--xh-border-default));
-  rotate: 45deg;
 }
 
+/* 居中步没有锚点，连接层会给箭头发 hidden */
 [data-scope='tour'][data-part='arrow'][hidden] {
   display: none;
 }
+/* 排在六份浮层皮肤之后：箭头几何里摘边框那几条要压过它们的 border 简写 */
 
-[data-scope='tour'][data-part='arrow'][data-placement^='bottom'] {
-  inset-block-start: calc(var(--xh-_tour-arrow-size) / -2);
-  inset-inline-start: calc(var(--xh-_tour-arrow-x) - var(--xh-_tour-arrow-size) / 2);
-  border-block-end: 0;
-  border-inline-end: 0;
+/* styles/overlay-arrow.css */
+/*
+ * 浮层箭头的几何，六份浮层皮肤共用一份，按 [data-part='arrow'] 匹配。
+ *
+ * 箭头是正方形转 45°，构成尖角的是哪两条物理边，所以贴边与摘边框都写物理属性。
+ * 行内轴上的中心点仍写逻辑属性：定位引擎在 RTL 下已把 arrow-x 镜像成逻辑量。
+ *
+ * 底色与描边色留在各组件皮肤，它们同时把自己的内联落点槽接到这里的统一名字上。
+ * 引入顺序排在六份浮层皮肤之后：摘边框那几条要压过各皮肤的 border 简写。
+ */
+
+[data-part='arrow'] {
+  position: absolute;
+  inline-size: var(--xh-_overlay-arrow-size);
+  block-size: var(--xh-_overlay-arrow-size);
+  rotate: 45deg;
 }
 
-[data-scope='tour'][data-part='arrow'][data-placement^='top'] {
-  inset-block-end: calc(var(--xh-_tour-arrow-size) / -2);
-  inset-inline-start: calc(var(--xh-_tour-arrow-x) - var(--xh-_tour-arrow-size) / 2);
-  border-block-start: 0;
-  border-inline-start: 0;
+/* 浮层落在锚点下方：箭头贴 content 上缘，摘掉埋进 content 的下、右两条边 */
+[data-part='arrow'][data-placement^='bottom'] {
+  top: calc(var(--xh-_overlay-arrow-size) / -2);
+  inset-inline-start: calc(var(--xh-_overlay-arrow-x) - var(--xh-_overlay-arrow-size) / 2);
+  border-right: 0;
+  border-bottom: 0;
 }
 
-[data-scope='tour'][data-part='arrow'][data-placement^='right'] {
-  inset-inline-start: calc(var(--xh-_tour-arrow-size) / -2);
-  inset-block-start: calc(var(--xh-_tour-arrow-y) - var(--xh-_tour-arrow-size) / 2);
-  border-block-start: 0;
-  border-inline-end: 0;
+/* 浮层落在锚点上方：箭头贴 content 下缘，摘掉上、左两条边 */
+[data-part='arrow'][data-placement^='top'] {
+  bottom: calc(var(--xh-_overlay-arrow-size) / -2);
+  inset-inline-start: calc(var(--xh-_overlay-arrow-x) - var(--xh-_overlay-arrow-size) / 2);
+  border-top: 0;
+  border-left: 0;
 }
 
-[data-scope='tour'][data-part='arrow'][data-placement^='left'] {
-  inset-inline-end: calc(var(--xh-_tour-arrow-size) / -2);
-  inset-block-start: calc(var(--xh-_tour-arrow-y) - var(--xh-_tour-arrow-size) / 2);
-  border-block-end: 0;
-  border-inline-start: 0;
+/* 浮层落在锚点右侧：箭头贴 content 左缘，摘掉上、右两条边 */
+[data-part='arrow'][data-placement^='right'] {
+  top: calc(var(--xh-_overlay-arrow-y) - var(--xh-_overlay-arrow-size) / 2);
+  /* stylelint-disable-next-line property-disallowed-list -- 旋转是物理的，贴边跟着物理走 */
+  left: calc(var(--xh-_overlay-arrow-size) / -2);
+  border-top: 0;
+  border-right: 0;
+}
+
+/* 浮层落在锚点左侧：箭头贴 content 右缘，摘掉下、左两条边 */
+[data-part='arrow'][data-placement^='left'] {
+  top: calc(var(--xh-_overlay-arrow-y) - var(--xh-_overlay-arrow-size) / 2);
+  /* stylelint-disable-next-line property-disallowed-list -- 旋转是物理的，贴边跟着物理走 */
+  right: calc(var(--xh-_overlay-arrow-size) / -2);
+  border-bottom: 0;
+  border-left: 0;
 }
 
 /* styles/transfer.css */
@@ -18773,10 +18659,9 @@ input[data-scope='mention'][data-part='input'] {
   isolation: isolate;
 }
 
-/* 被盖住的内容排在印子下面 */
+/* 被盖住的内容排在印子下面；这层不自建层叠上下文，里面展开的浮层按自己的层号压过印子 */
 [data-scope='watermark'][data-part='content'] {
   position: relative;
-  z-index: 0;
 }
 
 /*
