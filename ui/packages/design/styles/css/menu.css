@@ -138,7 +138,13 @@
     font-weight: var(--xh-menu-item-active-font-weight, var(--xh-font-weight-semibold));
   }
 
-  [data-scope='menu'][data-part='item']:focus {
+  /* 键盘落焦的条目画内收环；指针触发的聚焦不画 */
+  [data-scope='menu'][data-part='item']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  [data-scope='menu'][data-part='item']:focus:not(:focus-visible) {
     outline: none;
   }
 
