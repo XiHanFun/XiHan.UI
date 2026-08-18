@@ -12,10 +12,9 @@
     isolation: isolate;
   }
 
-  /* 被盖住的内容排在印子下面 */
+  /* 被盖住的内容排在印子下面；这层不自建层叠上下文，里面展开的浮层按自己的层号压过印子 */
   [data-scope='watermark'][data-part='content'] {
     position: relative;
-    z-index: 0;
   }
 
   /*
