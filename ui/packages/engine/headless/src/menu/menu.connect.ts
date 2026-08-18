@@ -105,8 +105,8 @@ export function connectMenu<T extends PropTypes>(
       'data-hidden': dataAttr(position?.hidden),
       'style': {
         position: 'fixed',
-        insetInlineStart: `${position?.x ?? 0}px`,
-        insetBlockStart: `${position?.y ?? 0}px`,
+        left: `${position?.x ?? 0}px`,
+        top: `${position?.y ?? 0}px`,
       },
     }),
     // 键盘在 content 上靠冒泡统一处理，Escape 由消解层负责

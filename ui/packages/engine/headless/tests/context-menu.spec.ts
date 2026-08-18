@@ -760,7 +760,7 @@ describe('虚拟锚点定位', () => {
     const h = mount()
     rightClick(h.trigger, 120, 80)
     const style = h.api().getPositionerProps().style as Record<string, string>
-    expect(style.insetInlineStart).toBe('120px')
-    expect(style.insetBlockStart).toBe('80px')
+    expect(style.left).toBe('120px')
+    expect(style.top).toBe('80px')
   })
 })

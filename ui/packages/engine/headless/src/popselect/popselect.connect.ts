@@ -210,8 +210,8 @@ export function connectPopselect<T extends PropTypes>(
       'data-hidden': dataAttr(position?.hidden),
       'style': {
         position: 'fixed',
-        insetInlineStart: `${position?.x ?? 0}px`,
-        insetBlockStart: `${position?.y ?? 0}px`,
+        left: `${position?.x ?? 0}px`,
+        top: `${position?.y ?? 0}px`,
       },
     }),
 
