@@ -97,8 +97,32 @@ export function connectMenubar<T extends PropTypes>(
    * 这个节点算不算还在这套菜单栏里。
    * 浮层搬去了 portal 落点、不再是 root 的后代，光问 root 会把「焦点走进菜单」当成离场。
    */
-  const withinMenubar = (root: HTMLElement | null, node: Node | null): boolean =>
-    contains(root, node) || contains(refs.get('getFloatingEl')(), node)
+  /**
+   * 顺着 aria-controls 往下找：条目开出来的子菜单也被搬去了浮层落点，
+   * 它既不是 root 的后代、也不是本菜单栏那一张浮层的后代。子菜单还能再套子菜单，
+   * 所以逐层展开找，深度设上限免得作者把 aria-controls 写成环。
+   */
+  const withinControlled = (scope: ParentNode | null, node: Node | null, depth: number): boolean => {
+    if (!scope || !node || depth > 4)
+      return false
+    const doc = (scope as Element).ownerDocument ?? (scope as Document)
+    for (const owner of scope.querySelectorAll('[aria-controls]')) {
+      const panel = doc.getElementById(owner.getAttribute('aria-controls') ?? '')
+      if (!panel)
+        continue
+      if (contains(panel, node) || withinControlled(panel, node, depth + 1))
+        return true
+    }
+    return false
+  }
+
+  const withinMenubar = (root: HTMLElement | null, node: Node | null): boolean => {
+    if (contains(root, node) || contains(refs.get('getFloatingEl')(), node))
+      return true
+    // 焦点走进子菜单不算离场，否则一进去整条菜单栏就收起
+    const floating = refs.get('getFloatingEl')()
+    return withinControlled(root, node, 0) || withinControlled(floating, node, 0)
+  }
 
   /** 在 trigger 之间走一步并聚焦落点，禁用项跳过但仍可作起点。 */
   const focusTrigger = (from: string | null, intent: NavIntent): void => {
@@ -149,7 +173,8 @@ export function connectMenubar<T extends PropTypes>(
   const activate = (event: KeyboardEvent): void => {
     const item = (event.target as HTMLElement).closest<HTMLElement>(parts.item.selector)
     const next = itemValue(item)
-    if (!item || next == null || isItemDisabled(item))
+    // 带 aria-haspopup 的是子菜单入口：它自己管展开，父层不把它当可选中的条目
+    if (!item || next == null || isItemDisabled(item) || item.hasAttribute('aria-haspopup'))
       return
     event.preventDefault()
     send({ type: 'ITEM.SELECT', value: next })
@@ -305,6 +330,9 @@ export function connectMenubar<T extends PropTypes>(
         // 收起时留在 DOM 只隐藏
         'hidden': !isOpen || undefined,
         'onKeyDown': (event: KeyboardEvent) => {
+          // 子菜单已经处理掉的键不再由本层接管：子层的收回键与 Escape 都会冒泡上来
+          if (event.defaultPrevented)
+            return
           const content = event.currentTarget as HTMLElement
           // 条目导航恒走纵轴，Home/End 跳本张菜单的首/末个可用条目
           const intent = navIntentFromKey(event, { axis: 'vertical' })
@@ -350,7 +378,10 @@ export function connectMenubar<T extends PropTypes>(
       'aria-disabled': itemDisabled(item) ? 'true' : 'false',
       // roving tabindex：一张菜单里只有锚点条目留在 Tab 序列内
       'tabindex': focusedItem === item.value ? 0 : -1,
-      'onClick': () => {
+      'onClick': (event: MouseEvent) => {
+        // 子菜单入口的点击归它自己（展开/收起），不发选中
+        if ((event.currentTarget as HTMLElement).hasAttribute('aria-haspopup'))
+          return
         if (!itemDisabled(item))
           send({ type: 'ITEM.SELECT', value: item.value })
       },
