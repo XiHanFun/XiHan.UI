@@ -186,10 +186,15 @@ export function startDeprecationScan(options: DeprecationScanOptions = {}): Clea
   if (options.stylesheets !== false)
     scanStyleSheets()
 
-  if (typeof MutationObserver !== 'function')
+  // 构造器从被观测节点自己的文档取：跨 iframe 时全局的那个来自另一个 window，
+  // 拿它去观测别的文档里的节点，回调一次都不会来。
+  // root 可能就是 Document（它自己的 ownerDocument 是 null），所以两种都认
+  const doc = root.nodeType === 9 ? (root as unknown as Document) : root.ownerDocument
+  const view = doc?.defaultView
+  if (typeof view?.MutationObserver !== 'function')
     return () => undefined
 
-  const observer = new MutationObserver((records) => {
+  const observer = new view.MutationObserver((records) => {
     for (const record of records) {
       for (const node of Array.from(record.addedNodes)) {
         if (!(node instanceof Element))

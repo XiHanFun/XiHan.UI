@@ -110,7 +110,9 @@ export function hideOutside(getTargets: () => Element[], scope: Scope, options: 
 
   // 祖先链任一层增删子节点、豁免节点增删、层栈变动都重算一次；其余链外子树要么整块已
   // inert、要么在 target 内，它们的变动改不了结果，回调里筛一遍就跳过。
-  const observer = new MutationObserver((records) => {
+  // 构造器从被观测节点自己的文档取：跨 iframe 时全局的那个来自另一个 window，
+  // 拿它去观测别的文档里的节点，回调一次都不会来
+  const observer = new (body.ownerDocument?.defaultView ?? window).MutationObserver((records) => {
     if (records.some(record =>
       walked.has(record.target) || touchesExempt(record.addedNodes) || touchesExempt(record.removedNodes),
     )) {
