@@ -97,15 +97,19 @@ function attachCanvas(host: HTMLElement, canvas: HTMLCanvasElement): () => void 
   if (settle())
     return (): void => {}
 
+  // 构造器从 host 自己的文档取：跨 iframe 时全局的那个来自另一个 window，
+  // 拿它去 observe 别的文档里的节点，回调一次都不会来
+  const view = host.ownerDocument?.defaultView
+
   // 没有 ResizeObserver 就没有第二次机会，退回「先写下兜底定位」
-  if (typeof ResizeObserver !== 'function') {
+  if (typeof view?.ResizeObserver !== 'function') {
     host.style.position = 'relative'
     host.appendChild(canvas)
     attached = true
     return (): void => {}
   }
 
-  const observer = new ResizeObserver(() => {
+  const observer = new view.ResizeObserver(() => {
     if (settle())
       observer.disconnect()
   })
@@ -447,8 +451,10 @@ export function createBackgroundSurface(
   }
 
   let observer: IntersectionObserver | null = null
-  if (options.pauseOffscreen !== false && typeof IntersectionObserver === 'function') {
-    observer = new IntersectionObserver((entries) => {
+  // 构造器同样从画布所在文档取，理由与上面那处 ResizeObserver 一致
+  const canvasView = canvas.ownerDocument?.defaultView
+  if (options.pauseOffscreen !== false && typeof canvasView?.IntersectionObserver === 'function') {
+    observer = new canvasView.IntersectionObserver((entries) => {
       visible = entries[0]?.isIntersecting ?? true
       dirty = true
     }, { rootMargin: '160px' })
