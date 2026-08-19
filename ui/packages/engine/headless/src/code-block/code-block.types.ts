@@ -7,6 +7,11 @@ export interface CodeBlockProps {
   /** 代码块是否已闭合，未闭合时按行数预撑高度。 */
   complete?: boolean
   /**
+   * 长行自动换行，默认关（长行横向滚动）。开启后缩进照旧保留，只是行尾会折下来，
+   * 窄栏与移动端读长行时不必左右拖。
+   */
+  wrap?: boolean
+  /**
    * 着色实现。不给就是纯文本，给了也允许它返回 null（语言不认识之类），同样退回纯文本。
    * 未闭合的块默认不着色，见 {@link highlightWhileStreaming}。
    */

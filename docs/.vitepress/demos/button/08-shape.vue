@@ -25,20 +25,17 @@ const SearchIcon = {
   <!-- 胶囊：只改圆角这一个槽位 -->
   <XhButton variant="solid" style="--xh-button-radius: var(--xh-shape-pill)">胶囊</XhButton>
 
-  <!-- 方形图标按钮 -->
-  <XhButton
-    variant="outline"
-    aria-label="搜索"
-    style="--xh-button-px: 0; inline-size: var(--xh-control-h-md)"
-  >
+  <!-- 方形图标按钮：icon-only 自己把内距清零、宽度跟住当前尺寸档 -->
+  <XhButton variant="outline" icon-only aria-label="搜索">
     <XhIcon :icon="SearchIcon" size="sm" />
   </XhButton>
 
   <!-- 圆形图标按钮：方形再叠上胶囊圆角 -->
   <XhButton
     variant="solid"
+    icon-only
     aria-label="搜索"
-    style="--xh-button-px: 0; --xh-button-radius: var(--xh-shape-pill); inline-size: var(--xh-control-h-md)"
+    style="--xh-button-radius: var(--xh-shape-pill)"
   >
     <XhIcon :icon="SearchIcon" size="sm" />
   </XhButton>

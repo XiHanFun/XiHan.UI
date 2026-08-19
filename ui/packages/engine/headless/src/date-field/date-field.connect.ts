@@ -10,7 +10,7 @@ import type {
   DateSegmentType,
 } from './date-field.types'
 import { getLocalTimeZone, parseDateTime } from '@internationalized/date'
-import { focusSafely, navIntentFromKey, queryItems, stepIndex } from '@xihan-ui/behavior'
+import { focusSafely, navIntentFromKey, queryItems, readDirection, stepIndex } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
 import { dateFieldAnatomy } from './date-field.anatomy'
 import { isMetaSegment } from './date-field.blocks'
@@ -289,7 +289,7 @@ export function connectDateField<T extends PropTypes>(
               }
 
               // 只认水平轴与 Home/End，上下键已在前面接走
-              const intent = navIntentFromKey(event, { axis: 'horizontal' })
+              const intent = navIntentFromKey(event, { axis: 'horizontal', dir: readDirection(event.currentTarget as Element) })
               if (!intent)
                 return
               event.preventDefault()

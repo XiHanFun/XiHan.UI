@@ -10,6 +10,13 @@ export interface ButtonProps {
   /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 */
   tone?: Tone
   size?: Size
+  /**
+   * 只有图标：左右内距清零、宽高相等。宽度跟着当前尺寸档的高度走，
+   * 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行给可及名。
+   */
+  iconOnly?: boolean
+  /** 撑满行宽：表单末尾的提交按钮与移动端常用。 */
+  fullWidth?: boolean
 }
 
 export interface ButtonApi<T extends PropTypes = PropTypes> {

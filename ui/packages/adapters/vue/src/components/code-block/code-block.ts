@@ -16,6 +16,7 @@ export const XhCodeBlock = defineComponent({
     lang: { type: String, default: undefined },
     // 三态，undefined 与 false 同样不落 data-complete
     complete: { type: Boolean, default: undefined },
+    wrap: Boolean,
     /** 换一个着色实现（典型是接 Shiki）；显式给 null 则关掉着色。 */
     highlighter: { type: Object as PropType<HighlighterPort | null>, default: undefined },
     highlightWhileStreaming: { type: Boolean, default: undefined },
@@ -26,6 +27,7 @@ export const XhCodeBlock = defineComponent({
       code: props.code,
       lang: props.lang,
       complete: props.complete,
+      wrap: props.wrap,
       highlighter: props.highlighter === null ? undefined : props.highlighter ?? defaultHighlighter,
       highlightWhileStreaming: props.highlightWhileStreaming,
     } satisfies CodeBlockProps, vueNormalize))

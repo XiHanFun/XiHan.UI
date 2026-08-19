@@ -2,7 +2,7 @@ import type { ItemQuery } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { PinInputApi, PinInputSchema } from './pin-input.types'
-import { focusSafely, navIntentFromKey, queryItems, stepIndex } from '@xihan-ui/behavior'
+import { focusSafely, navIntentFromKey, queryItems, readDirection, stepIndex } from '@xihan-ui/behavior'
 import { dataAttr, isComposingEvent } from '@xihan-ui/kernel'
 import { pinInputAnatomy } from './pin-input.anatomy'
 import { isPinComplete, padPinValue, pinLength, sanitizePin } from './pin-input.machine'
@@ -201,7 +201,7 @@ export function connectPinInput<T extends PropTypes>(
           return
         }
         // 只认水平轴，上下键放行给页面滚动
-        const intent = navIntentFromKey(event, { axis: 'horizontal' })
+        const intent = navIntentFromKey(event, { axis: 'horizontal', dir: readDirection(event.currentTarget as Element) })
         if (!intent)
           return
         // 左右键改成移格，拦下输入框默认的移动光标

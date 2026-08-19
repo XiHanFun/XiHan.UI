@@ -57,6 +57,7 @@ export const XhTimePickerRoot = defineComponent({
     granularity: { type: String as PropType<TimeGranularity>, default: undefined },
     step: { type: Number, default: undefined },
     disabled: Boolean,
+    translations: { type: Object as PropType<TimePickerProps['translations']>, default: undefined },
     readOnly: Boolean,
     invalid: Boolean,
     required: Boolean,
