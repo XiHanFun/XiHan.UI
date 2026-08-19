@@ -65,6 +65,7 @@ export function connectSideNav<T extends PropTypes>(
   // 配对 id 由 scope 派生，同页多实例不相撞
   const groupLabelId = (v: string): string => scope.partId('side-nav', `group-label-${v}`)
   const contentId = (v: string): string => scope.partId('side-nav', `content-${v}`)
+  const positionerId = (v: string): string => scope.partId('side-nav', `positioner-${v}`)
   const triggerId = (v: string): string => scope.partId('side-nav', `trigger-${v}`)
 
   const isTopLevel = (v: string): boolean => (metaOf(v)?.parent ?? null) == null
@@ -124,14 +125,34 @@ export function connectSideNav<T extends PropTypes>(
   const onNodeKeydown = (event: KeyboardEvent, v: string): void => {
     if (event.defaultPrevented)
       return
-    const root = rootElOf(event.currentTarget as HTMLElement)
-    if (!root)
-      return
     const meta = metaOf(v)
     const branch = !!meta?.branch
     // rtl 下左右方向键的展开/收起语义对调
     const expandKey = dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight'
     const collapseKey = dir === 'rtl' ? 'ArrowRight' : 'ArrowLeft'
+
+    // 折叠态：弹出面板内的行走面板内序列，收起键把面板收回（焦点归还触发按钮）。
+    // 这一段必须排在取侧栏根之前：面板已搬到浮层落点，从它里面往上找不到 root
+    if (popoutEnabled && !isTopLevel(v)) {
+      const panel = (event.currentTarget as HTMLElement).closest<HTMLElement>('[data-part="branch-content"][data-popout]')
+      if (panel) {
+        if (event.key === collapseKey) {
+          event.preventDefault()
+          send({ type: 'POPOUT.CLOSE', src: 'keyboard' })
+          return
+        }
+        const intent = navIntentFromKey(event, { axis: 'vertical', dir })
+        if (intent) {
+          event.preventDefault()
+          focusItem(navigateItems(panelRows(panel), itemValue(event.currentTarget as HTMLElement), intent, { loop: false }))
+        }
+        return
+      }
+    }
+
+    const root = rootElOf(event.currentTarget as HTMLElement)
+    if (!root)
+      return
 
     // 折叠态：顶层分支的确认/展开键弹出面板并落焦第一行，收起键收面板
     if (branch && isPopoutTrigger(v)) {
@@ -150,24 +171,6 @@ export function connectSideNav<T extends PropTypes>(
       if (event.key === collapseKey && popoutValue === v) {
         event.preventDefault()
         send({ type: 'POPOUT.CLOSE', src: 'keyboard' })
-        return
-      }
-    }
-
-    // 折叠态：弹出面板内的行走面板内序列，收起键把面板收回（焦点归还触发按钮）
-    if (popoutEnabled && !isTopLevel(v)) {
-      const panel = (event.currentTarget as HTMLElement).closest<HTMLElement>('[data-part="branch-content"][data-popout]')
-      if (panel) {
-        if (event.key === collapseKey) {
-          event.preventDefault()
-          send({ type: 'POPOUT.CLOSE', src: 'keyboard' })
-          return
-        }
-        const intent = navIntentFromKey(event, { axis: 'vertical', dir })
-        if (intent) {
-          event.preventDefault()
-          focusItem(navigateItems(panelRows(panel), itemValue(event.currentTarget as HTMLElement), intent, { loop: false }))
-        }
         return
       }
     }
@@ -317,11 +320,33 @@ export function connectSideNav<T extends PropTypes>(
       'data-state': (popoutEnabled && !isTopLevel(v)) || isExpanded(v) ? 'open' : 'closed',
     }),
 
+    isPopoutPanel,
+
+    // 定位层单独一节：坐标与层号都落在它身上，作者把它搬到浮层落点即可逃开
+    // 祖先的层叠上下文。面板本身只管内容，不再自己写 fixed 坐标
+    getPopoutPositionerProps: ({ value: v }) => {
+      const open = isPopoutPanel(v) && popoutValue === v
+      return normalize.element({
+        ...parts.positioner.attrs,
+        'id': positionerId(v),
+        'data-state': open ? 'open' : 'closed',
+        'data-placement': popoutPosition?.placement ?? (dir === 'rtl' ? 'left-start' : 'right-start'),
+        'hidden': !open || undefined,
+        'style': open
+          ? {
+              position: 'fixed',
+              left: `${popoutPosition?.x ?? 0}px`,
+              top: `${popoutPosition?.y ?? 0}px`,
+            }
+          // 逐属性清而非摘掉整个 style：折叠开关来回切换时不残留 fixed 坐标，
+          // 作者写的其他内联样式不受波及
+          : { position: '', left: '', top: '' },
+      })
+    },
+
     getBranchContentProps: ({ value: v }) => {
-      // 折叠态：顶层子层是被定位的弹出面板；面板内的嵌套子层静态常开。
-      // 关闭与平铺分支都显式清空定位声明（逐属性清而非摘掉整个 style），
-      // 折叠开关来回切换时不残留 fixed 坐标，作者写的其他内联样式不受波及
-      const clearPosition = { position: '', left: '', top: '' }
+      // 折叠态：顶层子层是弹出面板的内容层，定位归 positioner；
+      // 面板内的嵌套子层静态常开
       if (isPopoutPanel(v)) {
         const open = popoutValue === v
         return normalize.element({
@@ -329,15 +354,8 @@ export function connectSideNav<T extends PropTypes>(
           'id': contentId(v),
           'data-popout': '',
           'data-state': open ? 'open' : 'closed',
-          'data-placement': popoutPosition?.placement ?? (dir === 'rtl' ? 'left-start' : 'right-start'),
+          // 面板自己也收起：定位层已经整层让位，这条是给「只查面板」的作者与读屏留的同一个事实
           'hidden': !open || undefined,
-          'style': open
-            ? {
-                position: 'fixed',
-                left: `${popoutPosition?.x ?? 0}px`,
-                top: `${popoutPosition?.y ?? 0}px`,
-              }
-            : clearPosition,
         })
       }
       if (popoutEnabled && !isTopLevel(v)) {
@@ -352,7 +370,6 @@ export function connectSideNav<T extends PropTypes>(
         'id': contentId(v),
         'data-state': isExpanded(v) ? 'open' : 'closed',
         'hidden': !isExpanded(v) || undefined,
-        'style': isTopLevel(v) ? clearPosition : undefined,
       })
     },
 

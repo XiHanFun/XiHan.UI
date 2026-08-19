@@ -70,6 +70,7 @@ export const sideNavMachine = createMachine({
     registerLayer: null,
     position: null,
     getPopoutAnchorEl: () => null,
+    getPopoutPositionerEl: () => null,
     getPopoutContentEl: () => null,
   }),
   initialState: () => 'idle',
@@ -193,7 +194,7 @@ export const sideNavMachine = createMachine({
       },
     },
     effects: {
-      // 挂载定位引擎：锚点是触发按钮，被定位的就是子层容器本身，结果写进 context 供 connect 读
+      // 挂载定位引擎：锚点是触发按钮，被定位的是定位层（已搬到浮层落点），结果写进 context 供 connect 读
       trackPopoutPosition: ({ refs, prop, context, flush }) => {
         const engine = refs.get('position')
         if (!engine)
@@ -204,7 +205,7 @@ export const sideNavMachine = createMachine({
           if (disposed)
             return
           const anchor = refs.get('getPopoutAnchorEl')()
-          const floating = refs.get('getPopoutContentEl')()
+          const floating = refs.get('getPopoutPositionerEl')()
           if (!anchor || !floating)
             return
           stop = engine.attach(

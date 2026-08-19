@@ -2210,6 +2210,10 @@
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='mention'][data-part='positioner'] {
+  /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
+     引擎没算（尚未落位 / 无引擎）时不额外限高 */
+  --xh-_mention-available-h: 100vh;
+
   position: fixed;
   z-index: var(--xh-layer-popover);
   /* 空壳不吃指针，交互只发生在 content 上 */
@@ -2349,7 +2353,7 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
   min-inline-size: var(--xh-mention-content-min-w, var(--xh-overlay-min-w));
   max-inline-size: var(--xh-mention-content-max-w, var(--xh-overlay-max-w));
-  max-block-size: var(--xh-mention-content-max-h, var(--xh-overlay-max-h));
+  max-block-size: min(var(--xh-mention-content-max-h, var(--xh-overlay-max-h)), var(--xh-_mention-available-h));
   padding-block: var(--xh-mention-content-py, var(--xh-space-1));
   padding-inline: var(--xh-mention-content-px, var(--xh-space-1));
   border: var(--xh-stroke-thin) solid var(--xh-mention-content-border, var(--xh-border-default));
@@ -7267,6 +7271,10 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='combobox'][data-part='positioner'] {
+  /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
+     引擎没算（尚未落位 / 无引擎）时不额外限高 */
+  --xh-_combobox-available-h: 100vh;
+
   position: fixed;
   z-index: var(--xh-layer-popover);
   /* 空壳不吃指针，交互只发生在 content 与 empty 上 */
@@ -7540,7 +7548,7 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
   min-inline-size: var(--xh-combobox-content-min-w, var(--xh-overlay-min-w));
   max-inline-size: var(--xh-combobox-content-max-w, 24rem);
-  max-block-size: var(--xh-combobox-content-max-h, var(--xh-overlay-max-h));
+  max-block-size: min(var(--xh-combobox-content-max-h, var(--xh-overlay-max-h)), var(--xh-_combobox-available-h));
   padding-block: var(--xh-combobox-content-py, var(--xh-space-1));
   padding-inline: var(--xh-combobox-content-px, var(--xh-space-1));
   border: var(--xh-stroke-thin) solid var(--xh-combobox-content-border, var(--xh-border-default));
@@ -13121,6 +13129,10 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='select'][data-part='positioner'] {
+  /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
+     引擎没算（尚未落位 / 无引擎）时不额外限高 */
+  --xh-_select-available-h: 100vh;
+
   position: fixed;
   z-index: var(--xh-layer-popover);
   /* 空壳不吃指针，交互只发生在 content 上 */
@@ -13405,7 +13417,7 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
   min-inline-size: var(--xh-select-content-min-w, var(--xh-overlay-min-w));
   max-inline-size: var(--xh-select-content-max-w, var(--xh-overlay-max-w));
-  max-block-size: var(--xh-select-content-max-h, var(--xh-overlay-max-h));
+  max-block-size: min(var(--xh-select-content-max-h, var(--xh-overlay-max-h)), var(--xh-_select-available-h));
   border: var(--xh-stroke-thin) solid var(--xh-select-content-border, var(--xh-border-default));
   border-radius: var(--xh-select-content-radius, var(--xh-shape-surface));
   background: var(--xh-select-content-bg, var(--xh-bg-surface));
@@ -13716,10 +13728,18 @@ input[data-scope='mention'][data-part='input'] {
   padding-inline: 0;
 }
 
-/* 折叠态的弹出面板：贴着触发按钮旁侧的浮层卡片，坐标由连接层写在行内样式上。
+/* 弹出面板的定位层：坐标由连接层写在行内样式上，这里只管层号与命中区。
+   它被搬到浮层落点、不在侧栏子树内，所以卡片外观仍归面板本身；
+   这里不设 display，UA 的 [hidden]{display:none} 就仍然压得住收起态 */
+[data-scope='side-nav'][data-part='positioner'] {
+  position: fixed;
+  z-index: var(--xh-side-nav-popout-layer, var(--xh-layer-popover));
+  pointer-events: auto;
+}
+
+/* 折叠态的弹出面板：贴着触发按钮旁侧的浮层卡片。
    面板自己不吃子层缩进（padding 整圈盖掉），面板内的嵌套子层照常缩进 */
 [data-scope='side-nav'][data-part='branch-content'][data-popout] {
-  z-index: var(--xh-side-nav-popout-layer, var(--xh-layer-popover));
   min-inline-size: var(--xh-side-nav-popout-min-w, var(--xh-overlay-menu-min-w));
   max-inline-size: var(--xh-side-nav-popout-max-w, var(--xh-overlay-max-w));
   padding: var(--xh-side-nav-popout-p, var(--xh-space-1));
@@ -13727,7 +13747,6 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-side-nav-popout-radius, var(--xh-shape-surface));
   background: var(--xh-side-nav-popout-bg, var(--xh-bg-surface));
   box-shadow: var(--xh-side-nav-popout-shadow, var(--xh-elevation-2));
-  pointer-events: auto;
 }
 
 [data-scope='side-nav'][data-part='branch-indicator'] {
@@ -18189,6 +18208,10 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='tree-select'][data-part='positioner'] {
+  /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
+     引擎没算（尚未落位 / 无引擎）时不额外限高 */
+  --xh-_tree-select-available-h: 100vh;
+
   position: fixed;
   z-index: var(--xh-layer-popover);
   /* 空壳不吃指针，交互只发生在 content 里 */
@@ -18438,7 +18461,7 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
   min-inline-size: var(--xh-tree-select-content-min-w, var(--xh-overlay-min-w));
   max-inline-size: var(--xh-tree-select-content-max-w, var(--xh-overlay-max-w));
-  max-block-size: var(--xh-tree-select-content-max-h, var(--xh-overlay-max-h));
+  max-block-size: min(var(--xh-tree-select-content-max-h, var(--xh-overlay-max-h)), var(--xh-_tree-select-available-h));
   padding-block: var(--xh-tree-select-content-py, var(--xh-space-1));
   padding-inline: var(--xh-tree-select-content-px, var(--xh-space-1));
   border: var(--xh-stroke-thin) solid var(--xh-tree-select-content-border, var(--xh-border-default));

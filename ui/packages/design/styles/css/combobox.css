@@ -33,6 +33,10 @@
 
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
   [data-scope='combobox'][data-part='positioner'] {
+    /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
+       引擎没算（尚未落位 / 无引擎）时不额外限高 */
+    --xh-_combobox-available-h: 100vh;
+
     position: fixed;
     z-index: var(--xh-layer-popover);
     /* 空壳不吃指针，交互只发生在 content 与 empty 上 */
@@ -306,7 +310,7 @@
     flex-direction: column;
     min-inline-size: var(--xh-combobox-content-min-w, var(--xh-overlay-min-w));
     max-inline-size: var(--xh-combobox-content-max-w, 24rem);
-    max-block-size: var(--xh-combobox-content-max-h, var(--xh-overlay-max-h));
+    max-block-size: min(var(--xh-combobox-content-max-h, var(--xh-overlay-max-h)), var(--xh-_combobox-available-h));
     padding-block: var(--xh-combobox-content-py, var(--xh-space-1));
     padding-inline: var(--xh-combobox-content-px, var(--xh-space-1));
     border: var(--xh-stroke-thin) solid var(--xh-combobox-content-border, var(--xh-border-default));

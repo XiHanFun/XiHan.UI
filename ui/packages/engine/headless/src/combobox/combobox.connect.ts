@@ -359,6 +359,8 @@ export function connectCombobox<T extends PropTypes>(
         position: 'fixed',
         left: `${position?.x ?? 0}px`,
         top: `${position?.y ?? 0}px`,
+        // content 继承这个高度上限，超出的条目在浮层内部滚
+        '--xh-_combobox-available-h': position?.availableHeight != null ? `${position.availableHeight}px` : '',
       },
     }),
 

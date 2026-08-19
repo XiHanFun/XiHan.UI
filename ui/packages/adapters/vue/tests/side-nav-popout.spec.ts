@@ -79,11 +79,22 @@ function el(selector: string): HTMLElement {
 const TRIGGER = (v: string): string => `[data-scope="side-nav"][data-part="branch-trigger"][data-value="${v}"]`
 
 function panelOf(v: string): HTMLElement {
-  const trigger = el(TRIGGER(v))
-  const panel = trigger.closest('[data-part="branch"]')?.querySelector<HTMLElement>('[data-part="branch-content"]')
+  // 弹出面板的定位层被搬到浮层落点，面板不再是触发按钮的祖先子树成员，
+  // 只能全局按配对 id 找：id 由 connect 从 scope 派生，触发按钮的 aria-controls 指着它
+  const id = el(TRIGGER(v)).getAttribute('aria-controls')
+  const panel = id == null ? null : document.getElementById(id)
   if (!panel)
     throw new Error(`找不到 ${v} 的面板`)
-  return panel
+  return panel as HTMLElement
+}
+
+/** 定位层：被搬到浮层落点，按 connect 派生的配对 id 全局查。 */
+function positionerOf(v: string): HTMLElement {
+  const panel = panelOf(v)
+  const positioner = panel.closest<HTMLElement>('[data-part="positioner"]')
+  if (!positioner)
+    throw new Error(`找不到 ${v} 的定位层`)
+  return positioner
 }
 
 describe('side-nav 折叠态弹出', () => {
@@ -96,7 +107,7 @@ describe('side-nav 折叠态弹出', () => {
     const panel = panelOf('docs')
     expect(panel.hasAttribute('hidden')).toBe(false)
     expect(panel.hasAttribute('data-popout')).toBe(true)
-    expect(panel.style.position).toBe('fixed')
+    expect(positionerOf('docs').style.position).toBe('fixed')
     expect(trigger.getAttribute('aria-expanded')).toBe('true')
   })
 
