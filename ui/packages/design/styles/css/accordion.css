@@ -106,9 +106,49 @@
     rotate: 180deg;
   }
 
+  /* 这里刻意没有 [data-part='content'][hidden] { display: none }：补了动画一帧都播不出来。
+     收起由适配器在退场结束后写内联 display 落成，退场窗口内靠 connect 发的 inert 挡住焦点 */
   [data-scope='accordion'][data-part='content'] {
+    display: grid;
+    grid-template-rows: 1fr;
+    overflow: clip;
     padding-block: var(--xh-accordion-content-py, var(--xh-stack-gap-md));
     padding-inline: var(--xh-accordion-content-px, var(--xh-control-px-md));
     color: var(--xh-accordion-content-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='accordion'][data-part='content'][data-state='open'] {
+    animation: xh-accordion-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='accordion'][data-part='content'][data-state='closed'] {
+    animation: xh-accordion-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+}
+
+@layer xihan.motion {
+  /* 行高与内缩同帧动：内缩不归零的话，border-box 会把盒子钳在上下内缩之和上，收不干净 */
+  @keyframes xh-accordion-expand {
+    from {
+      grid-template-rows: 0fr;
+      padding-block: 0;
+    }
+
+    to {
+      grid-template-rows: 1fr;
+      padding-block: var(--xh-accordion-content-py, var(--xh-stack-gap-md));
+    }
+  }
+
+  @keyframes xh-accordion-collapse {
+    from {
+      grid-template-rows: 1fr;
+      padding-block: var(--xh-accordion-content-py, var(--xh-stack-gap-md));
+    }
+
+    to {
+      grid-template-rows: 0fr;
+      padding-block: 0;
+    }
   }
 }

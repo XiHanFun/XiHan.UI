@@ -101,6 +101,9 @@ export function connectAccordion<T extends PropTypes>(
       'aria-labelledby': triggerId(item.value),
       'data-state': stateAttr(item),
       'hidden': !isOpen(item.value) || undefined,
+      // 收起动画播完之前 content 还在渲染，此时 hidden 已被皮肤的 display 盖掉，
+      // 靠 inert 把这一段窗口里的内容挡在读屏与 Tab 序之外
+      'inert': !isOpen(item.value) || undefined,
     }),
     getIndicatorProps: item => normalize.element({
       ...parts.indicator.attrs,

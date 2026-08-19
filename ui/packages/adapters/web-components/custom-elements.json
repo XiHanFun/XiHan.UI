@@ -39,6 +39,47 @@
           "members": [
             {
               "kind": "field",
+              "name": "exits",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new Map<string, OverlayExit>()"
+            },
+            {
+              "kind": "field",
+              "name": "exitIdGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "exitScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "exitConfig",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "ensureExitConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "RuntimeConfig"
+                }
+              }
+            },
+            {
+              "kind": "field",
               "name": "partContract",
               "type": {
                 "text": "object"
@@ -5593,6 +5634,49 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "collapsibleScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
             {
               "kind": "field",
               "name": "partContract",
