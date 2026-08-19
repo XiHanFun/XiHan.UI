@@ -5,7 +5,7 @@ import type { PayloadOf } from '../../runtime/payload'
 import { mergeProps } from '@xihan-ui/kernel'
 import { computed, defineComponent, h, mergeProps as mergeVueProps, onBeforeUnmount, ref, Teleport, watch } from 'vue'
 import { mergeIntoChild } from '../../runtime/as-child'
-import { provideMenu, useMenuContext } from '../menu/context'
+import { provideMenu, provideMenuChain, useMenuContext } from '../menu/context'
 import { useMenu } from '../menu/use-menu'
 import {
   provideContextMenu,
@@ -234,6 +234,12 @@ export const XhContextMenuSub = defineComponent({
     loop: { type: Boolean, default: undefined },
     openOnHover: { type: Boolean, default: undefined },
     hoverOpenDelay: { type: Number, default: undefined },
+    /** 文字方向；缺省继承父层。子层被搬到浮层落点，继承不到父层的方向。 */
+    dir: { type: String as PropType<Direction>, default: undefined },
+    /** 语气；缺省继承父层。子层是浮层落点下的同级节点，CSS 私有槽继承不到。 */
+    tone: { type: String as PropType<Tone>, default: undefined },
+    /** 尺寸；缺省继承父层，理由同 tone。 */
+    size: { type: String as PropType<Size>, default: undefined },
     hoverCloseDelay: { type: Number, default: undefined },
   },
   slots: Object as SlotsType<{
@@ -243,12 +249,21 @@ export const XhContextMenuSub = defineComponent({
     const parent = useContextMenuContext()
     const chain = useContextMenuChain()
     const sub = useMenu(
-      { ...props, submenu: true },
+      {
+        ...props,
+        submenu: true,
+        dir: props.dir ?? parent.service.prop('dir'),
+        tone: props.tone ?? parent.service.prop('tone'),
+        size: props.size ?? parent.service.prop('size'),
+      },
       undefined,
       details => chain.notifySelect(details),
     )
     // 子树内的 XhMenu 系部件都归子机器
     provideMenu(sub)
+    // 子层里还能再嵌一层 XhMenuSub：那一层要往上找选中汇总的链，
+    // 而链只在 XhMenuRoot 里 provide 过，右键菜单这一支得自己接上
+    provideMenuChain({ notifySelect: details => chain.notifySelect(details) })
     provideContextMenuSub({ parent, value: props.value, disabled: props.disabled })
     // 父层收起（Escape、外点、选中）时本层跟着收，层层传导
     watch(() => parent.api.value.open, (open) => {

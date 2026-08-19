@@ -180,6 +180,12 @@ export const XhMenuSub = defineComponent({
     loop: { type: Boolean, default: undefined },
     openOnHover: { type: Boolean, default: undefined },
     hoverOpenDelay: { type: Number, default: undefined },
+    /** 文字方向；缺省继承父层。子层被搬到浮层落点，继承不到父层的方向。 */
+    dir: { type: String as PropType<Direction>, default: undefined },
+    /** 语气；缺省继承父层。子层是浮层落点下的同级节点，CSS 私有槽继承不到。 */
+    tone: { type: String as PropType<Tone>, default: undefined },
+    /** 尺寸；缺省继承父层，理由同 tone。 */
+    size: { type: String as PropType<Size>, default: undefined },
     hoverCloseDelay: { type: Number, default: undefined },
   },
   slots: Object as SlotsType<{
@@ -189,7 +195,13 @@ export const XhMenuSub = defineComponent({
     const parent = useMenuContext()
     const chain = useMenuChain()
     const ctx = useMenu(
-      { ...props, submenu: true } as MenuProps,
+      {
+        ...props,
+        submenu: true,
+        dir: props.dir ?? parent.service.prop('dir'),
+        tone: props.tone ?? parent.service.prop('tone'),
+        size: props.size ?? parent.service.prop('size'),
+      } as MenuProps,
       undefined,
       // 子层的选中汇到根：根发 select 并关根，各级随父关闭级联收起
       details => chain.notifySelect(details),
