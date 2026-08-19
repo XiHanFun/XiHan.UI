@@ -1,6 +1,25 @@
 # 对话框 <Badge type="info" text="dialog" />
 
-反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+浮在页面之上的一层，通常需要用户处理完才能回到下面。
+
+## 何时使用
+
+- 需要用户做出决定且不能忽略（确认删除、填一段必要信息）。
+- 一段独立的子任务，完成后回到原处。
+
+## 何时不用
+
+- 只是提示一条结果：用[轻提示](./toast)。
+- 内容是页面主流程的一部分：直接展开在页面里。
+- 内容很长或是一整个表单：用[抽屉](./drawer)或单独一页。
+
+## 特性
+
+- `modal` 决定是否锁住下层：非模态时下面照常可交互。
+- 焦点进入时落在 `initialFocus`，关闭后归还触发器。
+- `closeOnEscape` 与 `closeOnInteractOutside` 各自可关——填了一半的表单不该点一下外面就没了。
+- 内容区可以内部滚动，标题栏可以拖动挪窗口。
+- 另有命令式服务，业务代码一次调用即弹出。
 
 ## 示例
 
@@ -106,9 +125,18 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | --- | --- | --- | --- |
 | `XhDialogRoot` | `default` | `DialogRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `trigger` | 'open' \| 'closed' |
+| `backdrop` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -143,8 +171,65 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `Tab` | open | 在 content 内向后循环焦点 |
 | `Shift+Tab` | open | 在 content 内向前循环焦点 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-expanded` | 'true' \| 'false' |
+| `trigger` | `aria-haspopup` | 'dialog' |
+| `content` | `aria-describedby` | `description` 部件的 id |
+| `content` | `aria-labelledby` | `title` 部件的 id |
+| `content` | `aria-modal` | 'true' \| 'false' |
+| `content` | `role` | props.role |
+| `close-trigger` | `aria-label` | props.translations.close |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/dialog.css` 按部件选择：`[data-scope="dialog"][data-part="trigger"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `backdrop` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-position` | 'center' |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-size` | props.size |
+| `content` | `data-state` | 'open' \| 'closed' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-dialog-backdrop-bg` · `--xh-dialog-bg` · `--xh-dialog-description-fg` · `--xh-dialog-fg` · `--xh-dialog-gap` · `--xh-dialog-max-w` · `--xh-dialog-px` · `--xh-dialog-py` · `--xh-dialog-radius` · `--xh-dialog-shadow` · `--xh-dialog-title-fg` · `--xh-dialog-title-font-size` · `--xh-dialog-title-font-weight`
+
+## 动效
+
+关键帧 `xh-dialog-in` · `xh-dialog-out` · `xh-fade-in` · `xh-fade-out` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 内容区套[滚动区域](./scroll-area)；按钮行用[按钮组](./button-group)；确认类的轻量场景改用[弹出确认](./popconfirm)。
+
+## 最佳实践
+
+- 标题写这次要做什么，别写"提示"。
+- 确认按钮的文字写具体动作（"删除"），不写"确定"。
+- 破坏性操作用危险语气，并让取消是默认焦点。
+
+## 反模式
+
+- 对话框里再开对话框。
+- 点外面就关，而里面有未保存的输入。

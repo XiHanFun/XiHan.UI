@@ -1,6 +1,22 @@
 # 复选框组 <Badge type="info" text="checkbox-group" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一组多选项共一个值数组，附带全选与半选。
+
+## 何时使用
+
+- 从若干项里选任意多项，且要随表单提交。
+
+## 何时不用
+
+- 选项很多、需要搜索：用[选择器](./select)的多选或[穿梭框](./transfer)。
+- 选项互斥：用[单选组](./radio-group)。
+
+## 特性
+
+- `collection` 是文本与禁用的事实源；也可以逐项自己写。
+- 全选触发器自动算半选态。
+- `orientation` 换排布；也可以直接把条目放进[栅格](./grid)。
+- 值可以是数字主键，不必强转字符串。
 
 ## 示例
 
@@ -101,9 +117,15 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 | `XhCheckboxGroupRoot` | `label` | — |  |
 | `XhCheckboxGroupRoot` | `item` | `CheckboxGroupNodeMeta` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `trigger` | resolveCheckedState(value, prop('itemValues') ?? []) |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -144,8 +166,67 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 | `Space` | focus on item, group editable and item not disabled | 翻转该条目的选中态；改不动时放行按键给页面滚动 |
 | `Space` | focus on trigger, group editable | 可用条目未全选则一并勾上，已全选则一并取消；禁用条目不受影响 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-labelledby` | `label` 部件的 id |
+| `root` | `role` | 'group' |
+| `item` | `aria-checked` | 'true' \| 'false' |
+| `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `aria-invalid` | 'true' \| 'false' |
+| `item` | `aria-readonly` | 'true' \| 'false' |
+| `item` | `role` | 'checkbox' |
+| `indicator` | `aria-hidden` | 'true' |
+| `hidden-input` | `aria-hidden` | 'true' |
+| `trigger` | `aria-checked` | 'true' \| 'mixed' \| 'false' |
+| `trigger` | `aria-disabled` | 'false' \| 'true' |
+| `trigger` | `aria-labelledby` | `label` 部件的 id `trigger` 部件的 id |
+| `trigger` | `aria-readonly` | 'true' \| 'false' |
+| `trigger` | `role` | 'checkbox' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/checkbox-group.css` 按部件选择：`[data-scope="checkbox-group"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-orientation` | props.orientation |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-readonly` | ''（条件成立时才出现） |
+| `trigger` | `data-state` | resolveCheckedState(value, prop('itemValues') ?? []) |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-checkbox-group-gap` · `--xh-checkbox-group-indicator-bg` · `--xh-checkbox-group-indicator-bg-checked` · `--xh-checkbox-group-indicator-border` · `--xh-checkbox-group-indicator-border-checked` · `--xh-checkbox-group-indicator-border-hover` · `--xh-checkbox-group-indicator-border-invalid` · `--xh-checkbox-group-indicator-fg` · `--xh-checkbox-group-indicator-font-size` · `--xh-checkbox-group-indicator-radius` · `--xh-checkbox-group-indicator-size` · `--xh-checkbox-group-item-fg` · `--xh-checkbox-group-item-fg-disabled` · `--xh-checkbox-group-item-font-size` · `--xh-checkbox-group-item-gap` · `--xh-checkbox-group-item-radius` · `--xh-checkbox-group-label-fg` · `--xh-checkbox-group-label-fg-disabled` · `--xh-checkbox-group-label-font-size` · `--xh-checkbox-group-label-font-weight` · `--xh-checkbox-group-trigger-fg` · `--xh-checkbox-group-trigger-fg-disabled` · `--xh-checkbox-group-trigger-font-size` · `--xh-checkbox-group-trigger-font-weight` · `--xh-checkbox-group-trigger-gap` · `--xh-checkbox-group-trigger-radius`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## 组合
+
+- 外面套[表单字段](./field)。
+
+## 最佳实践
+
+- 超过约十项就换成带搜索的控件。
+- 选项顺序稳定，别按选中状态重排——用户会跟丢。
+
+## 反模式
+
+- 用它表达一组互斥的筛选条件。
+- 全选框放在列表最下面。

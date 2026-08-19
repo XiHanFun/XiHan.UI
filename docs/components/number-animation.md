@@ -1,6 +1,21 @@
 # 数值动画 <Badge type="info" text="number-animation" />
 
-数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+数字从一个值滚动到另一个值。
+
+## 何时使用
+
+- 仪表盘上的关键指标首次出现时，用滚动强调它在变化。
+
+## 何时不用
+
+- 数值频繁变化：每次都滚一遍，用户永远读不到稳定值。
+- 是精确的金额或编号，用户要读取而不是感知趋势。
+
+## 特性
+
+- `precision` 小数位、`separator` 千位分隔。
+- `easing` 与 `duration` 决定滚动的节奏。
+- `live` 决定读屏播报方式——通常应该只播报终值。
 
 ## 示例
 
@@ -75,9 +90,15 @@ duration 定跑多久，easing 定快慢怎么分配；同一段距离四档并�
 | --- | --- | --- | --- |
 | `XhNumberAnimation` | `default` | `NumberAnimationSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'idle' \| 'running' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `running`
 
@@ -103,8 +124,45 @@ duration 定跑多久，easing 定快慢怎么分配；同一段距离四档并�
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-live` | props.live |
+| `root` | `role` | 'status' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/number-animation.css` 按部件选择：`[data-scope="number-animation"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-size` | props.size |
+| `root` | `data-state` | 'idle' \| 'running' |
+| `root` | `data-tone` | props.tone |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-number-animation-fg` · `--xh-number-animation-font-size`
+
+## 组合
+
+- 放进[统计数值](./statistic)的值位。
+
+## 最佳实践
+
+- 时长控制在一秒以内，再长就成了等待。
+- 读屏只播报终值，别把每一帧都念出来。
+
+## 反模式
+
+- 给实时刷新的数字加滚动动画。
+- 系统开启减弱动效时仍然滚动。

@@ -1,6 +1,20 @@
 # 统计数值 <Badge type="info" text="statistic" />
 
-数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一个带标签的关键数字，可以配前后缀。
+
+## 何时使用
+
+- 仪表盘、概览页上的核心指标。
+
+## 何时不用
+
+- 多个指标需要按维度对照：用[表格](./table)。
+- 表达的是完成比例：用[进度条](./progress)。
+
+## 特性
+
+- 标签、值、前缀、后缀各占一段。
+- 数字用等宽字形，位数变化时不会左右晃。
 
 ## 示例
 
@@ -74,8 +88,35 @@ tone 决定数值与前后缀用哪族颜色，标签始终保持弱前景
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 样式
+
+默认皮肤 `@xihan-ui/styles/statistic.css` 按部件选择：`[data-scope="statistic"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-statistic-affix-fg` · `--xh-statistic-affix-font-size` · `--xh-statistic-fg` · `--xh-statistic-gap` · `--xh-statistic-label-fg` · `--xh-statistic-label-font-size` · `--xh-statistic-row-gap` · `--xh-statistic-value-fg` · `--xh-statistic-value-font-size`
+
+## 组合
+
+- 值位放[数值动画](./number-animation)；整块放进[卡片](./card)；一排指标用[栅格](./grid)。
+
+## 最佳实践
+
+- 单位写进后缀而不是揉进数字里，数字才对得齐。
+- 给出对比基准（同比、环比），单独一个数字读者判断不了好坏。
+
+## 反模式
+
+- 一屏里十几个同等大小的指标：没有重点。
+- 用它显示精确到分的金额却不给货币符号。

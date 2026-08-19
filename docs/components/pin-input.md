@@ -1,6 +1,22 @@
 # 分格输入 <Badge type="info" text="pin-input" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+把一串短码拆成几个格子，一格一个字符。
+
+## 何时使用
+
+- 一次性验证码、支付密码、邀请码这类定长的短串。
+
+## 何时不用
+
+- 长度不固定或较长：用[文本输入](./text-field)。
+- 输入的是密码：用 `type="password"` 的文本输入，密码管理器认得它。
+
+## 特性
+
+- `otp` 一开就接上平台的验证码自动填充。
+- 粘贴一整串会按格拆开填进去。
+- `mask` 遮蔽字符、`type` 与 `pattern` 限制可输入字符类别。
+- `onValueComplete` 在填满那一刻发一次，用来自动提交。
 
 ## 示例
 
@@ -126,9 +142,9 @@ pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 
 | --- | --- | --- | --- |
 | `XhPinInputRoot` | `default` | `PinInputRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -169,8 +185,65 @@ pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 
 | `Backspace` | focus in a box, not disabled | 本格有值则清本格；本格为空则退回上一格并清掉上一格 |
 | `Delete` | focus in a box, not disabled | 清掉本格，焦点不动 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-labelledby` | `label` 部件的 id |
+| `root` | `role` | 'group' |
+| `input` | `aria-invalid` | 'true' \| 'false' |
+| `input` | `aria-label` | label.input(index + 1, length) |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/pin-input.css` 按部件选择：`[data-scope="pin-input"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-complete` | ''（条件成立时才出现） |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `input` | `data-disabled` | ''（条件成立时才出现） |
+| `input` | `data-focus` | ''（条件成立时才出现） |
+| `input` | `data-index` | String(index) |
+| `input` | `data-invalid` | ''（条件成立时才出现） |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-pin-input-box-bg` · `--xh-pin-input-box-bg-disabled` · `--xh-pin-input-box-border` · `--xh-pin-input-box-border-complete` · `--xh-pin-input-box-border-focus` · `--xh-pin-input-box-border-hover` · `--xh-pin-input-box-border-invalid` · `--xh-pin-input-box-fg` · `--xh-pin-input-box-font-size` · `--xh-pin-input-box-gap` · `--xh-pin-input-box-radius` · `--xh-pin-input-box-size` · `--xh-pin-input-gap` · `--xh-pin-input-label-fg` · `--xh-pin-input-label-fg-disabled` · `--xh-pin-input-label-font-size` · `--xh-pin-input-label-font-weight` · `--xh-pin-input-placeholder-fg`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 与[表单](./form)配合，填满才允许提交。
+
+## 最佳实践
+
+- 验证码务必开 `otp`，否则短信里的码要用户手打。
+- 填满后自动提交，别让用户再找一次按钮。
+
+## 反模式
+
+- 格数超过八个：视觉上就不再是"一串短码"了。
+- 遮蔽验证码：用户看不见自己输错在哪一位。

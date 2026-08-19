@@ -1,6 +1,22 @@
 # 时间 <Badge type="info" text="time" />
 
-数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+把一个时刻渲染成文本，绝对或相对。
+
+## 何时使用
+
+- 展示创建时间、更新时间、事件发生时刻。
+- 需要"n 分钟前"这类相对表述。
+
+## 何时不用
+
+- 需要倒数剩余时长：用[倒计时](./countdown)。
+- 需要用户选一个时间：用[时间选择器](./time-picker)。
+
+## 特性
+
+- `type` 切绝对与相对；相对分四档（分 / 小时 / 天），超过三十天退回绝对日期。
+- `format` 自定义格式串，只改看到的文本，`datetime` 属性不跟着变。
+- `locale` 只换用词。
 
 ## 示例
 
@@ -53,6 +69,14 @@ date 只到日、datetime 到秒、relative 说成「几分钟前」；datetime 
 | `type` | `TimeType` |  | 呈现方式：date 只到日、datetime 到秒、relative 说成「几分钟前」，缺省 datetime。 |
 | `value` | `TimeValue` |  | 要显示的时刻。只写年月日的串按本地零点解读。 |
 
+## 状态
+
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'empty' |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
@@ -72,8 +96,36 @@ date 只到日、datetime 到秒、relative 说成「几分钟前」；datetime 
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 样式
+
+默认皮肤 `@xihan-ui/styles/time.css` 按部件选择：`[data-scope="time"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-relative` | ''（条件成立时才出现） |
+| `root` | `data-state` | 'empty' |
+| `root` | `data-type` | props.type |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-time-fg` · `--xh-time-placeholder-fg`
+
+## 组合
+
+- 放进[列表](./list)的条目、[表格](./table)的单元格、[时间线](./timeline)的时间位。
+
+## 最佳实践
+
+- 相对时间旁边给出绝对时间（提示或 `title`），"3 天前"在追查问题时不够用。
+- 时区要明确：跨时区团队里"昨天"是个含糊的说法。
+
+## 反模式
+
+- 只给相对时间且无法看到确切时刻。
+- 对很久以前的事仍用相对表述（"427 天前"）。

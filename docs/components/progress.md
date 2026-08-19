@@ -1,6 +1,23 @@
 # 进度条 <Badge type="info" text="progress" />
 
-反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+表示一件事完成了多少。线形、环形与仪表盘三种画法。
+
+## 何时使用
+
+- 上传、导出、批处理这类有确定完成度的过程。
+- 用容量、配额这类比例值。
+
+## 何时不用
+
+- 完成度未知：用[加载指示器](./spinner)或[加载条](./loading-bar)的爬升模式。
+- 表示的是步骤而不是比例：用[步骤条](./steps)。
+
+## 特性
+
+- `variant` 三档：线形、环形、仪表盘；仪表盘的缺口角度与位置可调。
+- `indeterminate` 表达"进行中但不知道还剩多少"。
+- `valueText` 决定读屏念出的是什么——"3 个文件中的第 2 个"比"66%"有用得多。
+- 环心可以放文字。
 
 ## 示例
 
@@ -94,6 +111,15 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 | `valueText` | `string` |  | 读屏播报的文字，覆盖默认的数值播报（进度不是百分比时用，如「第 3 步，共 8 步」）。 |
 | `variant` | `ProgressVariant` |  | 形态，默认 line。circle 画整环，dashboard 在环上留一个缺口。 |
 
+## 状态
+
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'indeterminate' \| 'complete' \| 'loading' |
+| `label` | 'complete' \| 'loading' |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
@@ -115,8 +141,64 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-valuemax` | String(max) |
+| `root` | `aria-valuemin` | '0' |
+| `root` | `aria-valuenow` | undefined \| String(value) |
+| `root` | `aria-valuetext` | props.valueText |
+| `root` | `role` | 'progressbar' |
+| `canvas` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/progress.css` 按部件选择：`[data-scope="progress"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-size` | props.size |
+| `root` | `data-state` | 'indeterminate' \| 'complete' \| 'loading' |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
+| `canvas` | `data-variant` | props.variant |
+| `range` | `data-empty` | ''（条件成立时才出现） |
+| `label` | `data-state` | 'complete' \| 'loading' |
+| `label` | `data-variant` | props.variant |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-progress-indeterminate-duration` · `--xh-progress-label-fg` · `--xh-progress-label-font-size` · `--xh-progress-linecap` · `--xh-progress-range` · `--xh-progress-size` · `--xh-progress-thickness` · `--xh-progress-track`
+
+## 动效
+
+关键帧 `xh-progress-indeterminate` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 与[统计数值](./statistic)并排；文件上传的每一项配一条。
+
+## 最佳实践
+
+- 长任务给出剩余时间或剩余数量，光有百分比很难判断还要等多久。
+- 到 100% 后要有明确的完成态，别停在满格不动。
+
+## 反模式
+
+- 进度会倒退。
+- 用假进度条掩盖未知的等待。

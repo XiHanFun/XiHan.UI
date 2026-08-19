@@ -1,6 +1,22 @@
 # 图片 <Badge type="info" text="image" />
 
-通用组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一张图，带加载状态与失败回退。
+
+## 何时使用
+
+- 任何需要显示远端图片、且要处理加载与失败的地方。
+
+## 何时不用
+
+- 图是纯装饰且不会失败：直接写 `<img>`。
+- 是人的形象：用[头像](./avatar)。
+- 是矢量图元：用[图标](./icon)。
+
+## 特性
+
+- 状态会回调；`fallbackDelay` 避免快速加载时闪一下回退内容。
+- 回退内容可以按状态分流：加载中与失败给不同的东西。
+- 取图时机可以由作者自己决定（懒加载）。
 
 ## 示例
 
@@ -93,9 +109,9 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 | --- | --- | --- | --- |
 | `XhImageRoot` | `default` | `ImageRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **事件**：`SRC.CHANGE` · `IMAGE.LOAD` · `IMAGE.ERROR` · `after.fallbackDelay`
 
@@ -120,8 +136,36 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 样式
+
+默认皮肤 `@xihan-ui/styles/image.css` 按部件选择：`[data-scope="image"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-status` | state.get() |
+| `image` | `data-status` | state.get() |
+| `fallback` | `data-status` | state.get() |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-image-bg` · `--xh-image-fallback-fg` · `--xh-image-fallback-font-size` · `--xh-image-fallback-min-h` · `--xh-image-fit` · `--xh-image-h` · `--xh-image-radius` · `--xh-image-ratio` · `--xh-image-w`
+
+## 组合
+
+- 与[图片预览](./image-viewer)配合点开看大图；一组图共用一个预览层。
+
+## 最佳实践
+
+- `alt` 写图里的信息，不写"图片"；纯装饰图写空 `alt`。
+- 给容器预留宽高比，否则图加载出来时整页会跳。
+
+## 反模式
+
+- 失败时什么都不显示：用户以为页面坏了。
+- 用大图当背景却不做任何降级。

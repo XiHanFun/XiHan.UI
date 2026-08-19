@@ -1,6 +1,22 @@
 # 图片预览 <Badge type="info" text="image-viewer" />
 
-通用组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+点开看大图：全屏浮层里可以缩放、旋转、翻转与翻页。
+
+## 何时使用
+
+- 图片细节重要（截图、单据、商品图）。
+- 一组图需要连续浏览。
+
+## 何时不用
+
+- 图本身已经足够大：不必再套一层。
+- 需要的是编辑（裁切、标注）：这是只读的查看器。
+
+## 特性
+
+- `items` 给整组图，`index` 决定当前哪一张，`loop` 决定是否回绕。
+- 缩放步长与上下限可调。
+- 关闭后焦点归还触发器。
 
 ## 示例
 
@@ -75,9 +91,22 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 | --- | --- | --- | --- |
 | `XhImageViewerRoot` | `default` | `ImageViewerRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `trigger` | 'open' \| 'closed' |
+| `backdrop` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+| `viewport` | 'open' \| 'closed' |
+| `image` | 'open' \| 'closed' |
+| `toolbar` | 'open' \| 'closed' |
+| `counter` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -145,8 +174,71 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 | `Home` | open | 跳到第一张 |
 | `End` | open | 跳到最后一张 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `aria-expanded` | 'true' \| 'false' |
+| `trigger` | `aria-haspopup` | 'dialog' |
+| `backdrop` | `aria-hidden` | 'true' |
+| `content` | `aria-label` | currentItem?.alt |
+| `content` | `aria-modal` | 'true' |
+| `content` | `role` | 'dialog' |
+| `toolbar` | `aria-label` | label.content |
+| `toolbar` | `role` | 'toolbar' |
+| `counter` | `aria-live` | 'polite' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/image-viewer.css` 按部件选择：`[data-scope="image-viewer"][data-part="trigger"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `backdrop` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-state` | 'open' \| 'closed' |
+| `viewport` | `data-panning` | ''（条件成立时才出现） |
+| `viewport` | `data-state` | 'open' \| 'closed' |
+| `image` | `data-panning` | ''（条件成立时才出现） |
+| `image` | `data-state` | 'open' \| 'closed' |
+| `toolbar` | `data-state` | 'open' \| 'closed' |
+| `counter` | `data-count` | String(count) |
+| `counter` | `data-index` | String(index + 1) |
+| `counter` | `data-state` | 'open' \| 'closed' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-image-viewer-backdrop-bg` · `--xh-image-viewer-chrome-bg` · `--xh-image-viewer-fg`
+
+## 动效
+
+关键帧 `xh-fade-in` · `xh-fade-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 触发器用[图片](./image)；一组[图片](./image)共用一个预览层。
+
+## 最佳实践
+
+- 显示"第几张 / 共几张"，用户才知道还有多少。
+- 工具栏按钮全部给可及名字：它们只有图标。
+
+## 反模式
+
+- 打开后 Escape 关不掉。
+- 缩放后没有复位入口。

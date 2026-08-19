@@ -1,6 +1,23 @@
 # 图标 <Badge type="info" text="icon" />
 
-通用组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+画一枚矢量图元，并把"它是装饰还是信息"这件事说清楚。
+
+## 何时使用
+
+- 给动作、状态或条目配一枚图形标记。
+- 图形本身就是唯一的信息载体（比如只有图标的按钮里那枚图元）——这时给 `label`。
+
+## 何时不用
+
+- 需要一个带底色的圆形底座：用[图标块](./icon-wrapper)。
+- 图形是照片或插画：用[图片](./image)。
+
+## 特性
+
+- 传的是图标记录本身而不是名字：按名字查表就得把整张表静态引进来，摇树全废。
+- 命名只有两态：给了非空白 `label` 就是 `role="img"` 加 `aria-label`；没给就是 `aria-hidden="true"` 的装饰件。没有第三种。
+- `size` 三档改直径、`weight` 三档改描边粗细；缺省档不落 `data-*`，皮肤的基础规则就是缺省档。
+- 图标没有底色，语气只落在前景上。
 
 ## 示例
 
@@ -85,8 +102,47 @@ size 三档改直径、weight 三档改 stroke-width；缺省档不落 data-* �
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-hidden` | 'true' \| undefined |
+| `root` | `aria-label` | props.label \| undefined |
+| `root` | `role` | undefined \| 'img' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/icon.css` 按部件选择：`[data-scope="icon"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-icon` | icon?.name |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-weight` | props.weight |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-icon-fg` · `--xh-icon-shift` · `--xh-icon-size` · `--xh-icon-stroke`
+
+## 组合
+
+- 放进[按钮](./button)的 `prefix` / `suffix`，或[图标块](./icon-wrapper)的底座里。
+
+## 最佳实践
+
+- 旁边已经有文字说明同一件事时，别给 `label`——重复的名字会被读屏念两遍。
+- 同一屏里的图标保持同一档 `weight`，粗细混用比尺寸混用更显乱。
+
+## 反模式
+
+- 给装饰性图标写 `label`，或给唯一承载语义的图标漏写 `label`：两者都会让读屏用户听到错的东西。
+- 用图标单独表达状态而不配文字或提示：图形的含义没有共识。

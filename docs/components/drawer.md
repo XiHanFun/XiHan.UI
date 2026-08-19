@@ -1,6 +1,22 @@
 # 抽屉 <Badge type="info" text="drawer" />
 
-反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+从屏幕某一边滑出的面板。
+
+## 何时使用
+
+- 内容比对话框长（一整张表单、一份详情），但仍属于当前上下文。
+- 窄屏上的导航或筛选面板。
+
+## 何时不用
+
+- 只是确认一件事：用[对话框](./dialog)或[弹出确认](./popconfirm)。
+- 内容需要与页面主体对照着看：并排展开，别遮住。
+
+## 特性
+
+- `side` 决定从哪一边出来；`contained` 让它只占据某个容器而不是整个视口。
+- 可以拖边缘改厚度。
+- 关闭前可以拦截（有未保存改动时先问一句）。
 
 ## 示例
 
@@ -101,9 +117,19 @@ size 落成 content 的 data-size，只改面板贴边方向上的厚度；三�
 | --- | --- | --- | --- |
 | `XhDrawerRoot` | `default` | `DrawerRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'open' \| 'closed' |
+| `trigger` | 'open' \| 'closed' |
+| `backdrop` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -140,8 +166,71 @@ size 落成 content 的 data-size，只改面板贴边方向上的厚度；三�
 | `Tab` | open 且 modal | 在 content 内向后循环焦点 |
 | `Shift+Tab` | open 且 modal | 在 content 内向前循环焦点 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-expanded` | 'true' \| 'false' |
+| `trigger` | `aria-haspopup` | 'dialog' |
+| `content` | `aria-describedby` | `description` 部件的 id |
+| `content` | `aria-labelledby` | `title` 部件的 id |
+| `content` | `aria-modal` | 'true' \| 'false' |
+| `content` | `role` | props.role |
+| `close-trigger` | `aria-label` | props.translations.close |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/drawer.css` 按部件选择：`[data-scope="drawer"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-contained` | ''（条件成立时才出现） |
+| `root` | `data-side` | props.side |
+| `root` | `data-size` | props.size |
+| `root` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `backdrop` | `data-contained` | ''（条件成立时才出现） |
+| `backdrop` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-contained` | ''（条件成立时才出现） |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-contained` | ''（条件成立时才出现） |
+| `content` | `data-side` | props.side |
+| `content` | `data-size` | props.size |
+| `content` | `data-state` | 'open' \| 'closed' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-drawer-backdrop-bg` · `--xh-drawer-bg` · `--xh-drawer-description-fg` · `--xh-drawer-fg` · `--xh-drawer-gap` · `--xh-drawer-px` · `--xh-drawer-py` · `--xh-drawer-radius` · `--xh-drawer-shadow` · `--xh-drawer-size` · `--xh-drawer-title-fg` · `--xh-drawer-title-font-size` · `--xh-drawer-title-font-weight` · `--xh-drawer-trigger-bg` · `--xh-drawer-trigger-bg-hover` · `--xh-drawer-trigger-bg-open` · `--xh-drawer-trigger-border` · `--xh-drawer-trigger-border-hover` · `--xh-drawer-trigger-border-open` · `--xh-drawer-trigger-fg` · `--xh-drawer-trigger-font-size` · `--xh-drawer-trigger-font-weight` · `--xh-drawer-trigger-gap` · `--xh-drawer-trigger-h` · `--xh-drawer-trigger-px` · `--xh-drawer-trigger-radius`
+
+## 动效
+
+关键帧 `xh-drawer-in-bottom` · `xh-drawer-in-left` · `xh-drawer-in-right` · `xh-drawer-in-top` · `xh-drawer-out-bottom` · `xh-drawer-out-left` · `xh-drawer-out-right` · `xh-drawer-out-top` · `xh-fade-in` · `xh-fade-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
+
+## 组合
+
+- 里面放[表单](./form)、[侧栏导航](./side-nav)；内容区套[滚动区域](./scroll-area)。
+
+## 最佳实践
+
+- 提交与取消固定在底部，别让用户滚到最下面才找得到。
+- 有未保存改动时拦下关闭。
+
+## 反模式
+
+- 抽屉里再开抽屉。
+- 在宽屏上用抽屉装本可以直接展开的内容。

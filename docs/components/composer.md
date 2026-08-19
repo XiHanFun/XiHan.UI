@@ -1,6 +1,24 @@
 # 消息编辑器 <Badge type="info" text="composer" />
 
-AI 对话组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+对话界面底部那个输入框：写内容、提交，运行中可以停止。
+
+## 何时使用
+
+- AI 对话、聊天界面的输入区。
+- 需要 Enter 提交、Shift + Enter 换行，并在生成中把提交钮换成停止钮。
+
+## 何时不用
+
+- 只是一个普通的多行输入：用[文本输入](./text-field)。
+- 是一条评论的输入框且没有运行态：文本输入加一颗按钮就够。
+
+## 特性
+
+- 三件必备：`root` · `input` · `submit-trigger`，缺一不可。
+- `runStatus` 驱动提交钮与停止钮的切换。
+- 清空发生在 `submit` 派发之后：宿主拿得到这次提交的完整内容。
+- `submitOnEnter` 可关，关掉后 Enter 只换行。
+- 输入框可随内容长高；字数上限、输入过滤、附加按钮都由作者组合。
 
 ## 示例
 
@@ -112,9 +130,15 @@ root 里除输入与发送外还能放自己的节点；值的读写归宿主，
 | --- | --- | --- | --- |
 | `XhComposerRoot` | `default` | `ComposerRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `input` | state.get() |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **事件**：`VALUE.SET` · `KEY.ENTER` · `COMPOSITION.START` · `COMPOSITION.END` · `SUBMIT` · `STOP` · `CONTROLLED.DISABLE` · `CONTROLLED.ENABLE` · `CONTROLLED.VALUE.EMPTY` · `CONTROLLED.VALUE.FILLED`
 
@@ -149,8 +173,56 @@ root 里除输入与发送外还能放自己的节点；值的读写归宿主，
 | `Enter` | 处于 IME 组合态（isComposing 为真） | 不提交：交给输入法确认候选词 |
 | `Space` / `Enter` | 焦点在发送/停止按钮上 | 按 data-mode 触发提交或停止 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `input` | `aria-label` | translations?.input |
+| `submit-trigger` | `aria-label` | translations?.stop \| translations?.send |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/composer.css` 按部件选择：`[data-scope="composer"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-status` | props.runStatus |
+| `input` | `data-state` | state.get() |
+| `submit-trigger` | `data-mode` | 'stop' \| 'send' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-composer-bg` · `--xh-composer-border` · `--xh-composer-gap` · `--xh-composer-input-fg` · `--xh-composer-input-font-size` · `--xh-composer-p` · `--xh-composer-placeholder-fg` · `--xh-composer-radius` · `--xh-composer-send-bg` · `--xh-composer-send-bg-active` · `--xh-composer-send-bg-hover` · `--xh-composer-send-fg` · `--xh-composer-stop-bg` · `--xh-composer-stop-bg-active` · `--xh-composer-stop-bg-hover` · `--xh-composer-stop-fg` · `--xh-composer-submit-font-size` · `--xh-composer-submit-font-weight` · `--xh-composer-submit-h` · `--xh-composer-submit-px` · `--xh-composer-submit-radius`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 上面接[会话线程](./thread)；框内插[提及](./mention)；附件用[文件上传](./file-upload)。
+
+## 最佳实践
+
+- 生成中一定要能停止，且停止后已生成的内容保留。
+- 提交失败要保留用户输入的内容，别清空。
+
+## 反模式
+
+- Enter 提交却没有换行方式：写多行内容的用户会被迫用别处编辑再粘进来。
+- 生成中禁用整个输入框，用户连下一句都不能先打好。

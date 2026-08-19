@@ -104,6 +104,244 @@ function elementSurface(id) {
   }
 }
 
+// ── 连接层属性面：数据属性与 ARIA ─────────────────────────────────────────────
+
+const headlessSrc = path.join(uiRoot, 'packages/engine/headless/src')
+
+/**
+ * 收集 connect 源码里的顶层 const：属性值常写成 `const stateAttr = open ? 'open' : 'closed'`
+ * 这样的中间量，不顺着查一层，表里落下的就是「stateAttr」这种对读者无意义的名字。
+ */
+function localBindings(sf) {
+  const map = new Map()
+  const visit = (node) => {
+    if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.initializer)
+      map.set(node.name.text, node)
+    ts.forEachChild(node, visit)
+  }
+  visit(sf)
+  return map
+}
+
+/** 字符串字面量联合类型 → `'a' | 'b'`；不是这种类型返回 null。 */
+function literalUnionText(typeNode, sf) {
+  const members = unionMembers(typeNode, sf)
+  return members ? members.map(m => `'${m}'`).join(' | ') : null
+}
+
+/** 把属性值表达式压成一句人读得懂的话；认不出就原样截断。 */
+function readAttrValue(node, sf, locals, seen = new Set()) {
+  if (!node)
+    return ''
+
+  if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node))
+    return `'${node.text}'`
+  if (node.kind === ts.SyntaxKind.TrueKeyword)
+    return `'true'`
+  if (node.kind === ts.SyntaxKind.FalseKeyword)
+    return `'false'`
+
+  if (ts.isParenthesizedExpression(node))
+    return readAttrValue(node.expression, sf, locals, seen)
+
+  if (ts.isConditionalExpression(node)) {
+    const a = readAttrValue(node.whenTrue, sf, locals, seen)
+    const b = readAttrValue(node.whenFalse, sf, locals, seen)
+    return a && b && a !== b ? `${a} | ${b}` : a || b
+  }
+
+  // `${ids.label} ${ids.value-text}` 这类拼接：逐段解出来再拼回去
+  if (ts.isTemplateExpression(node)) {
+    const parts = [node.head.text]
+    for (const span of node.templateSpans)
+      parts.push(readAttrValue(span.expression, sf, locals, seen), span.literal.text)
+    return parts.join('').trim()
+  }
+
+  if (ts.isPropertyAccessExpression(node)) {
+    const owner = node.expression.getText(sf)
+    // ids.content：scope.ids() 发的部件 id
+    if (owner === 'ids')
+      return `\`${node.name.text}\` 部件的 id`
+    // prop('translations')?.close：落成 props.translations.close 更好读
+    if (/^prop\('translations'\)$/.test(owner))
+      return `props.translations.${node.name.text}`
+    // position?.placement：落位是定位引擎按可用空间算出来的，不是 props 里那个首选值
+    if (owner === 'position' && node.name.text === 'placement')
+      return '定位引擎算出的实际落位'
+  }
+  if (ts.isElementAccessExpression(node)
+    && node.expression.getText(sf) === 'ids'
+    && ts.isStringLiteral(node.argumentExpression)) {
+    return `\`${node.argumentExpression.text}\` 部件的 id`
+  }
+
+  if (ts.isCallExpression(node)) {
+    const fn = node.expression.getText(sf)
+    // prop('x') 直读同名 prop；dataAttr/ariaAttr 条件为真才落到 DOM 上
+    if (fn === 'prop' && ts.isStringLiteral(node.arguments[0]))
+      return `props.${node.arguments[0].text}`
+    if (fn === 'dataAttr')
+      return `''（条件成立时才出现）`
+    if (fn === 'ariaAttr')
+      return `'true'（条件成立时才出现）`
+    // triggerId(x) / contentId(x) 一族：按名字就能认出是在发某个部件的 id
+    const idHelper = /^(\w+)Id$/.exec(fn)
+    if (idHelper)
+      return `\`${idHelper[1].replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()}\` 部件的 id`
+    // stateAttr(item) 这类本地小函数：查到声明，优先读它的返回类型，其次读函数体
+    const decl = ts.isIdentifier(node.expression) ? locals.get(fn) : null
+    const fnNode = decl?.initializer
+    if (fnNode && (ts.isArrowFunction(fnNode) || ts.isFunctionExpression(fnNode)) && !seen.has(fn)) {
+      const next = new Set(seen).add(fn)
+      const byType = literalUnionText(fnNode.type, sf)
+      if (byType)
+        return byType
+      if (ts.isArrowFunction(fnNode) && !ts.isBlock(fnNode.body))
+        return readAttrValue(fnNode.body, sf, locals, next)
+    }
+  }
+
+  if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.QuestionQuestionToken)
+    return readAttrValue(node.left, sf, locals, seen) || readAttrValue(node.right, sf, locals, seen)
+
+  // 中间量顺着查一层：const stateAttr = open ? 'open' : 'closed'
+  if (ts.isIdentifier(node) && !seen.has(node.text)) {
+    const decl = locals.get(node.text)
+    if (decl) {
+      const next = new Set(seen).add(node.text)
+      const byType = literalUnionText(decl.type, sf)
+      if (byType)
+        return byType
+      const resolved = readAttrValue(decl.initializer, sf, locals, next)
+      if (resolved)
+        return resolved
+    }
+  }
+
+  const text = typeText(node, sf)
+  return text.length > 56 ? `${text.slice(0, 53)}…` : text
+}
+
+/** getXxxProps → 部件名，驼峰段转 kebab。 */
+function getterPart(getter) {
+  return getter
+    .replace(/^get/, '')
+    .replace(/Props$/, '')
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .toLowerCase()
+}
+
+/**
+ * 从 connect 源码里把每个部件铺到 DOM 上的 data-* / aria-* / role 抓出来。
+ * 只认字面量键，动态拼出来的键抓不到——那类目前一个都没有。
+ */
+function attrSurface(id, parts, states) {
+  const file = path.join(headlessSrc, id, `${id}.connect.ts`)
+  if (!fs.existsSync(file))
+    return { data: [], aria: [] }
+  const sf = ts.createSourceFile(file, fs.readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true)
+  const locals = localBindings(sf)
+  const data = []
+  const aria = []
+  const seen = new Set()
+
+  const collect = (node, part) => {
+    if (ts.isObjectLiteralExpression(node)) {
+      for (const m of node.properties) {
+        if (!ts.isPropertyAssignment(m) || !m.name)
+          continue
+        const key = ts.isStringLiteral(m.name) || ts.isIdentifier(m.name) ? m.name.text : null
+        if (!key)
+          continue
+        const isAria = key.startsWith('aria-') || key === 'role'
+        const bucket = key.startsWith('data-') ? data : isAria ? aria : null
+        if (!bucket)
+          continue
+        const dedupe = `${part} ${key}`
+        if (seen.has(dedupe))
+          continue
+        seen.add(dedupe)
+        bucket.push({ part, attr: key, value: readAttrValue(m.initializer, sf, locals) })
+      }
+    }
+    ts.forEachChild(node, c => collect(c, part))
+  }
+
+  const visit = (node) => {
+    // 返回对象里的 getXxxProps 一支就是一个部件的属性面
+    if ((ts.isPropertyAssignment(node) || ts.isMethodDeclaration(node)) && node.name) {
+      const name = node.name.getText(sf)
+      if (/^get[A-Z]\w*Props$/.test(name)) {
+        collect(node, getterPart(name))
+        return
+      }
+    }
+    ts.forEachChild(node, visit)
+  }
+  visit(sf)
+
+  const order = new Map(parts.map((x, i) => [x, i]))
+  const sorter = (a, b) =>
+    (order.get(a.part) ?? 99) - (order.get(b.part) ?? 99) || a.attr.localeCompare(b.attr)
+  // state.get() 就是状态机的当前状态：直接落成状态全集，读者不必再翻状态机那一节
+  const stateUnion = states?.map(x => `'${x}'`).join(' | ')
+  const resolve = r => (stateUnion && r.value === 'state.get()' ? { ...r, value: stateUnion } : r)
+  return { data: data.map(resolve).sort(sorter), aria: aria.map(resolve).sort(sorter) }
+}
+
+// ── 皮肤特征：动效 / 响应式 / RTL ─────────────────────────────────────────────
+
+/** 默认皮肤里能直接读出来的几件事；没有皮肤返回 null，对应章节整个不出。 */
+function skinTraits(id) {
+  const file = path.join(uiRoot, 'packages/design/styles/css', `${id}.css`)
+  if (!fs.existsSync(file))
+    return null
+  const css = fs.readFileSync(file, 'utf8')
+  const uniq = re => [...new Set([...css.matchAll(re)].map(m => m[1].trim()))].sort()
+  return {
+    keyframes: uniq(/@keyframes\s+([\w-]+)/g),
+    layers: uniq(/@layer\s+([\w.]+)/g),
+    queries: uniq(/@(?:container|media)[^({]*\(([^)]+)\)/g).filter(
+      q => !q.includes('prefers-reduced-motion') && !q.includes('prefers-color-scheme'),
+    ),
+    transition: /^\s*transition(?:-[a-z]+)?\s*:/m.test(css),
+    reduceMotion: css.includes('prefers-reduced-motion'),
+    logical: /(?:margin|padding|inset|border)-inline|inline-(?:start|end)/.test(css),
+    dirRules: /\[dir=|:dir\(/.test(css),
+  }
+}
+
+// ── 人工文案：与组件源码同放，本脚本只负责搬运 ────────────────────────────────
+
+// 允许的小节名。写错的名字直接报错，不会静默丢掉一整段
+const PROSE_SECTIONS = ['何时使用', '何时不用', '特性', '无障碍', '响应式', 'RTL', '组合', '最佳实践', '反模式']
+
+/**
+ * 读 <id>/<id>.doc.md：首个 ## 之前是概述，其后按小节名切开。
+ * 文件缺席返回 null，页面照常生成，缺口由 --check 列出来。
+ */
+function prose(id) {
+  const file = path.join(headlessSrc, id, `${id}.doc.md`)
+  if (!fs.existsSync(file))
+    return null
+  const raw = fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n')
+  const chunks = raw.split(/^## +/m)
+  const out = { overview: chunks[0].replace(/^# .*$/m, '').trim(), sections: {} }
+  for (const chunk of chunks.slice(1)) {
+    const nl = chunk.indexOf('\n')
+    const title = (nl === -1 ? chunk : chunk.slice(0, nl)).trim()
+    if (!PROSE_SECTIONS.includes(title))
+      throw new Error(`${id}.doc.md 里有未知小节「${title}」，可用：${PROSE_SECTIONS.join(' / ')}`)
+    const body = (nl === -1 ? '' : chunk.slice(nl + 1)).trim()
+    if (body)
+      out.sections[title] = body
+  }
+  if (!out.overview)
+    throw new Error(`${id}.doc.md 缺少概述（首个 ## 之前的正文）`)
+  return out
+}
+
 // ── Vue 插槽 ──────────────────────────────────────────────────────────────────
 
 const vueComponentRoot = path.join(uiRoot, 'packages/adapters/vue/src/components')
@@ -410,147 +648,245 @@ function renderComponent(entry, category) {
   const tm = typeMeta(id)
   const ex = demos(id)
   const es = elementSurface(id)
+  const at = attrSurface(id, rt.parts, tm.states)
+  const sk = skinTraits(id)
+  const doc = prose(id)
   const required = new Set(rt.requiredParts)
 
   const L = []
-  L.push(`# ${name} <Badge type="info" text="${id}" />`, '')
-  L.push(
-    `${category.label}组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。`,
+  const push = (...xs) => L.push(...xs)
+  /** 人工小节：写了才出，没写这一节整个不出现。 */
+  const authored = title => doc?.sections[title]
+
+  push(`# ${name} <Badge type="info" text="${id}" />`, '')
+  push(
+    doc?.overview
+    ?? `${category.label}组件。这一节尚未撰写，见 packages/engine/headless/src/${id}/${id}.doc.md。`,
     '',
   )
 
-  // 示例排在最前：看的人先要能照着抄，其次才关心产物与契约。
+  for (const title of ['何时使用', '何时不用', '特性']) {
+    const text = authored(title)
+    if (text)
+      push(`## ${title}`, '', text, '')
+  }
+
+  // 示例排在契约之前：看的人先要能照着抄，其次才关心产物与契约。
   // 每个示例的标题落成 h3，右侧目录逐个索引得到。
   if (ex.length) {
-    L.push('## 示例', '')
+    push('## 示例', '')
     for (const demo of ex) {
-      L.push(`### ${demo.title}`, '')
+      push(`### ${demo.title}`, '')
       if (demo.description)
-        L.push(demo.description, '')
-      L.push(`<XhDemo src="${demo.src}" />`, '')
+        push(demo.description, '')
+      push(`<XhDemo src="${demo.src}" />`, '')
     }
   }
 
   // 产物
-  L.push('## 产物', '')
-  L.push('| 层 | 值 |', '| --- | --- |')
+  push('## 产物', '')
+  push('| 层 | 值 |', '| --- | --- |')
   if (ad.tag)
-    L.push(`| 自定义元素 | ${code(`<${ad.tag}>`)} |`)
+    push(`| 自定义元素 | ${code(`<${ad.tag}>`)} |`)
   if (ad.components.length)
-    L.push(`| Vue 组件 | ${ad.components.map(code).join(' ')} |`)
+    push(`| Vue 组件 | ${ad.components.map(code).join(' ')} |`)
   if (ad.composable)
-    L.push(`| 组合式函数 | ${code(ad.composable)} |`)
-  L.push(
-    `| 状态机 | ${tm.states ? code(`${camel(id)}Machine`) : '无，`connect` 直接由 props 算属性'} |`,
-  )
+    push(`| 组合式函数 | ${code(ad.composable)} |`)
+  push(`| 状态机 | ${tm.states ? code(`${camel(id)}Machine`) : '无，`connect` 直接由 props 算属性'} |`)
   if (ad.skin)
-    L.push(`| 皮肤 | ${code(ad.skin)} |`)
-  L.push('')
+    push(`| 皮肤 | ${code(ad.skin)} |`)
+  push('')
 
   // 解剖
-  L.push('## 解剖', '')
-  L.push(
+  push('## 解剖', '')
+  push(
     `部件名即 ${code('data-part')} 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 ${code('wc.missing-part')}）。`,
     '',
   )
-  L.push(
+  push(
     `${code(`data-scope="${id}"`)}：${
-      rt.parts.map(p => (required.has(p) ? `**${code(p)}**` : code(p))).join(' · ')}`,
+      rt.parts.map(x => (required.has(x) ? `**${code(x)}**` : code(x))).join(' · ')}`,
     '',
   )
 
   // Props
   if (tm.props.length) {
-    L.push('## Props', '')
-    L.push('| 属性 | 类型 | 必填 | 说明 |', '| --- | --- | --- | --- |')
-    for (const p of tm.props) {
-      L.push(
-        `| ${cell(p.name)} | ${cell(p.type)} | ${p.optional ? '' : '是'} | ${esc(p.doc)} |`,
-      )
-    }
-    L.push('')
+    push('## Props', '')
+    push('| 属性 | 类型 | 必填 | 说明 |', '| --- | --- | --- | --- |')
+    for (const x of tm.props)
+      push(`| ${cell(x.name)} | ${cell(x.type)} | ${x.optional ? '' : '是'} | ${esc(x.doc)} |`)
+    push('')
   }
 
-  // 事件：使用者真正要监听的那一组，与下面「状态机」里的内部事件名不是一回事
+  // 事件：使用者真正要监听的那一组，与下面「状态」里的内部事件名不是一回事
   if (es.events.length) {
-    L.push('## 事件', '')
-    L.push(
+    push('## 事件', '')
+    push(
       `自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 ${code('detail')} 上。可双向绑定的值另有 ${code('update:xxx')}，见 Props。`,
       '',
     )
-    L.push('| 事件 | 载荷 | 说明 |', '| --- | --- | --- |')
+    push('| 事件 | 载荷 | 说明 |', '| --- | --- | --- |')
     for (const e of es.events)
-      L.push(`| ${cell(e.name)} | ${cell(e.type?.text ?? '')} | ${esc(e.description ?? '')} |`)
-    L.push('')
+      push(`| ${cell(e.name)} | ${cell(e.type?.text ?? '')} | ${esc(e.description ?? '')} |`)
+    push('')
   }
 
   // 插槽：按 Vue 组件分组，只列带载荷的那些
   const slotRows = ad.components.flatMap(
-    comp => (slotsByComponent.get(comp) ?? []).map(s => ({ comp, ...s })),
+    comp => (slotsByComponent.get(comp) ?? []).map(x => ({ comp, ...x })),
   )
   if (slotRows.length) {
-    L.push('## 插槽', '')
-    L.push(
-      `作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。`,
+    push('## 插槽', '')
+    push(
+      '作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。',
       '',
     )
-    L.push('| Vue 组件 | 插槽 | 载荷 | 说明 |', '| --- | --- | --- | --- |')
-    for (const s of slotRows)
-      L.push(`| ${cell(s.comp)} | ${cell(s.name)} | ${s.payload ? cell(s.payload) : '—'} | ${esc(s.doc)} |`)
-    L.push('')
+    push('| Vue 组件 | 插槽 | 载荷 | 说明 |', '| --- | --- | --- | --- |')
+    for (const x of slotRows)
+      push(`| ${cell(x.comp)} | ${cell(x.name)} | ${x.payload ? cell(x.payload) : '—'} | ${esc(x.doc)} |`)
+    push('')
   }
 
-  // 状态机
-  if (tm.states || tm.events) {
-    L.push('## 状态机', '')
-    L.push(
-      `内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。`,
-      '',
-    )
-    if (tm.states)
-      L.push(`**状态**：${tm.states.map(code).join(' · ')}`, '')
-    if (tm.events)
-      L.push(`**事件**：${tm.events.map(code).join(' · ')}`, '')
-    if (tm.guards)
-      L.push(`**判据**：${tm.guards.map(code).join(' · ')}`, '')
+  // 状态：对外能看见的是数据属性，内部转移是状态机
+  const stateAttrs = at.data.filter(a => a.attr === 'data-state')
+  if (tm.states || tm.events || stateAttrs.length) {
+    push('## 状态', '')
+    if (stateAttrs.length) {
+      push(`对外可见的状态落在 ${code('data-state')} 上，写样式与断言都读它：`, '')
+      push('| 部件 | 取值 |', '| --- | --- |')
+      for (const a of stateAttrs)
+        push(`| ${cell(a.part)} | ${esc(a.value)} |`)
+      push('')
+    }
+    if (tm.states || tm.events) {
+      push('状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。', '')
+      if (tm.states)
+        push(`**状态**：${tm.states.map(code).join(' · ')}`, '')
+      if (tm.events)
+        push(`**事件**：${tm.events.map(code).join(' · ')}`, '')
+      if (tm.guards)
+        push(`**判据**：${tm.guards.map(code).join(' · ')}`, '')
+    }
   }
 
   // connect API
   if (tm.api.length) {
-    L.push('## connect API', '')
-    L.push(
+    push('## connect API', '')
+    push(
       `${code(ad.composable ?? 'connect')} 产出的对象。${code('getXxxProps()')} 铺到对应部件的宿主元素上，其余是可读状态与操作入口。`,
       '',
     )
-    L.push('| 成员 | 类型 | 说明 |', '| --- | --- | --- |')
-    for (const a of tm.api) {
-      L.push(`| ${cell(a.name)} | ${cell(a.type)} | ${esc(a.doc)} |`)
-    }
-    L.push('')
+    push('| 成员 | 类型 | 说明 |', '| --- | --- | --- |')
+    for (const a of tm.api)
+      push(`| ${cell(a.name)} | ${cell(a.type)} | ${esc(a.doc)} |`)
+    push('')
   }
 
   // 键盘
-  L.push('## 键盘', '')
-  L.push(`规格出处：[W3C APG](${rt.keyboard.source})`, '')
+  push('## 键盘', '')
+  push(`规格出处：[W3C APG](${rt.keyboard.source})`, '')
   if (rt.keyboard.rows.length) {
-    L.push('| 按键 | 生效条件 | 行为 |', '| --- | --- | --- |')
-    for (const r of rt.keyboard.rows) {
-      L.push(`| ${r.keys.map(code).join(' / ')} | ${esc(r.when)} | ${esc(r.does)} |`)
-    }
+    push('| 按键 | 生效条件 | 行为 |', '| --- | --- | --- |')
+    for (const r of rt.keyboard.rows)
+      push(`| ${r.keys.map(code).join(' / ')} | ${esc(r.when)} | ${esc(r.does)} |`)
   }
   else {
-    L.push('无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。')
+    push('无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。')
   }
-  L.push('')
+  push('')
+
+  // 无障碍：ARIA 由 connect 铺，作者不必手写；屏幕阅读器的实际念法另行补充
+  const a11y = authored('无障碍')
+  if (at.aria.length || a11y) {
+    push('## 无障碍', '')
+    if (at.aria.length) {
+      push(`下面这些由 ${code('connect')} 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。`, '')
+      push('| 部件 | 属性 | 值 |', '| --- | --- | --- |')
+      for (const a of at.aria)
+        push(`| ${cell(a.part)} | ${cell(a.attr)} | ${esc(a.value)} |`)
+      push('')
+    }
+    if (a11y)
+      push(a11y, '')
+  }
+
+  // 样式：皮肤怎么挂、怎么覆盖
+  if (sk && ad.skin) {
+    push('## 样式', '')
+    push(
+      `默认皮肤 ${code(ad.skin)} 按部件选择：${code(`[data-scope="${id}"][data-part="${rt.parts[0]}"]`)}。`
+      + `它落在 ${sk.layers.map(code).join(' 与 ')} 层；业务样式不写进 ${code('@layer')} 即高于全部库层，`
+      + `要按层压过来就写进 ${code('xihan.overrides')}。`,
+      '',
+    )
+  }
+
+  // 数据属性：皮肤与断言的选择面
+  if (at.data.length) {
+    push('## 数据属性', '')
+    push(`由 ${code('connect')} 产出并铺到部件上，皮肤与测试都据此选择；${code('data-disabled')} 这类无值属性在条件不成立时整个不出现。`, '')
+    push('| 部件 | 属性 | 值 |', '| --- | --- | --- |')
+    for (const a of at.data)
+      push(`| ${cell(a.part)} | ${cell(a.attr)} | ${esc(a.value)} |`)
+    push('')
+  }
 
   // 可覆盖的令牌：改这一个组件的外观从这里下手，不必去翻皮肤源码
   if (es.cssProps.length) {
-    L.push('## CSS 变量', '')
-    L.push(
-      `本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。`,
+    push('## CSS 变量', '')
+    push(
+      '本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。',
       '',
     )
-    L.push(es.cssProps.map(code).join(' · '), '')
+    push(es.cssProps.map(code).join(' · '), '')
+  }
+
+  // 动效：皮肤里实际声明了什么就写什么
+  if (sk && (sk.keyframes.length || sk.transition)) {
+    push('## 动效', '')
+    const bits = []
+    if (sk.keyframes.length)
+      bits.push(`关键帧 ${sk.keyframes.map(code).join(' · ')} 随皮肤自带，不引用别处文件里的名字`)
+    if (sk.transition)
+      bits.push(`状态切换走 ${code('transition')}`)
+    push(`${bits.join('；')}。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。`, '')
+    push(
+      sk.reduceMotion
+        ? `${code('prefers-reduced-motion: reduce')} 下本组件另有降级规则。`
+        : '系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。',
+      '',
+    )
+  }
+
+  // 响应式：皮肤里真有条件规则才出这一节
+  const responsive = authored('响应式')
+  if ((sk && sk.queries.length) || responsive) {
+    push('## 响应式', '')
+    if (sk?.queries.length)
+      push(`皮肤内置条件规则：${sk.queries.map(code).join(' · ')}。`, '')
+    if (responsive)
+      push(responsive, '')
+  }
+
+  // RTL
+  const rtl = authored('RTL')
+  if ((sk && (sk.logical || sk.dirRules)) || rtl) {
+    push('## RTL', '')
+    const bits = []
+    if (sk?.logical)
+      bits.push(`皮肤用逻辑属性排布（${code('inline-start')} 一族），${code('dir="rtl"')} 下自动镜像`)
+    if (sk?.dirRules)
+      bits.push(`另有按 ${code('dir')} 分支的规则`)
+    if (bits.length)
+      push(`${bits.join('；')}。`, '')
+    if (rtl)
+      push(rtl, '')
+  }
+
+  for (const title of ['组合', '最佳实践', '反模式']) {
+    const text = authored(title)
+    if (text)
+      push(`## ${title}`, '', text, '')
   }
 
   return L.join('\n')
@@ -565,7 +901,9 @@ function renderIndex() {
     '',
   )
   L.push(
-    '本册每个组件一页，页内固定为：产物 · 示例 · 解剖 · Props · 状态机 · connect API · 键盘。除示例外全部由组件源码生成，不会与代码对不上。',
+    '本册每个组件一页，页内小节固定：概述 · 何时使用 · 何时不用 · 特性 · 示例 · 产物 · 解剖 · Props · 事件 · 插槽 · 状态 · connect API · 键盘 · 无障碍 · 样式 · 数据属性 · CSS 变量 · 动效 · 响应式 · RTL · 组合 · 最佳实践 · 反模式。'
+    + '其中契约类的小节由组件源码、连接层与皮肤直接生成，不会与代码对不上；讲取舍的几节与组件源码同放，见各组件目录下的 doc.md。'
+    + '某一节没有内容时整节不出现，不留空标题。',
     '',
   )
   for (const c of manifest.categories) {
@@ -604,6 +942,9 @@ if (missing.length || extra.length) {
   process.exit(1)
 }
 
+// 人工文案的缺口：不拦生成，但每次都报出来，免得悄悄躺着
+const proseless = [...registered].filter(id => !prose(id))
+
 const files = new Map()
 for (const c of manifest.categories) {
   for (const entry of c.components) {
@@ -613,6 +954,10 @@ for (const c of manifest.categories) {
 files.set(path.join(outDir, 'index.md'), renderIndex())
 
 if (checkOnly) {
+  if (proseless.length) {
+    console.error(`这些组件还没写文案，请补 <id>.doc.md：${proseless.join(', ')}`)
+    process.exit(1)
+  }
   const drifted = []
   for (const [file, content] of files) {
     const current = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : null
@@ -641,4 +986,6 @@ else {
   }
   for (const [file, content] of files) fs.writeFileSync(file, content)
   console.log(`已生成 ${files.size} 个组件文档文件`)
+  if (proseless.length)
+    console.log(`其中 ${proseless.length} 个还没写人工文案：${proseless.join(', ')}`)
 }

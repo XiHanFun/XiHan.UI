@@ -1,6 +1,22 @@
 # 提及 <Badge type="info" text="mention" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+在正文里打一个前缀字符就弹出候选，选中后把引用插进文本。
+
+## 何时使用
+
+- 评论、聊天、任务描述里 @ 某个人或 # 某个条目。
+- 需要多种前缀各带一份候选。
+
+## 何时不用
+
+- 整个输入框的值就是选中项：用[组合框](./combobox)。
+- 只是补全普通词汇：用[组合框](./combobox)或原生自动补全。
+
+## 特性
+
+- 多种前缀各自映射一份候选。
+- `onQueryChange` 给出当前查询串，异步候选据此拉取。
+- 正文可受控，选中时另有回调。
 
 ## 示例
 
@@ -93,9 +109,18 @@
 | `XhMentionRoot` | `default` | `MentionRootSlotProps` |  |
 | `XhMentionRoot` | `item` | `MentionNodeMeta` | 铺开 collection 时每条候选的文本插槽。 |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'open' \| 'closed' |
+| `input` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -140,8 +165,77 @@
 | `Tab` / `Shift+Tab` | open | 收起浮层且不拦按键，焦点按 Tab 序列自然离开 |
 | `ArrowLeft` / `ArrowRight` / `Home` / `End` | 任意时候 | 一律不接管：光标照常移动，触发按新的光标位置重算，挪出查询串即收起 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `input` | `aria-activedescendant` | `item` 部件的 id \| undefined |
+| `input` | `aria-autocomplete` | 'list' |
+| `input` | `aria-controls` | `content` 部件的 id |
+| `input` | `aria-expanded` | undefined \| 'true' \| 'false' |
+| `input` | `aria-haspopup` | 'listbox' |
+| `input` | `aria-label` | props.translations.input |
+| `input` | `role` | undefined \| 'combobox' |
+| `content` | `aria-label` | props.translations.content |
+| `content` | `role` | 'listbox' |
+| `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `aria-selected` | 'true' \| 'false' |
+| `item` | `role` | 'option' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/mention.css` 按部件选择：`[data-scope="mention"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-state` | 'open' \| 'closed' |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
+| `input` | `data-disabled` | ''（条件成立时才出现） |
+| `input` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-hidden` | ''（条件成立时才出现） |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-size` | props.size |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-tone` | props.tone |
+| `positioner` | `data-variant` | props.variant |
+| `content` | `data-placement` | 定位引擎算出的实际落位 |
+| `content` | `data-state` | 'open' \| 'closed' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-mention-content-bg` · `--xh-mention-content-border` · `--xh-mention-content-fg` · `--xh-mention-content-max-h` · `--xh-mention-content-max-w` · `--xh-mention-content-min-w` · `--xh-mention-content-px` · `--xh-mention-content-py` · `--xh-mention-content-radius` · `--xh-mention-content-shadow` · `--xh-mention-input-bg` · `--xh-mention-input-bg-disabled` · `--xh-mention-input-border` · `--xh-mention-input-border-focus` · `--xh-mention-input-border-hover` · `--xh-mention-input-fg` · `--xh-mention-input-font-size` · `--xh-mention-input-h` · `--xh-mention-input-px` · `--xh-mention-input-py` · `--xh-mention-input-radius` · `--xh-mention-item-bg-hover` · `--xh-mention-item-fg` · `--xh-mention-item-font-size` · `--xh-mention-item-gap` · `--xh-mention-item-leading` · `--xh-mention-item-px` · `--xh-mention-item-py` · `--xh-mention-item-radius` · `--xh-mention-placeholder-fg`
+
+## 动效
+
+关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 输入宿主可以是[文本输入](./text-field)的多行形态，或 AI 场景里的[消息编辑器](./composer)。
+
+## 最佳实践
+
+- 候选按最近使用排序：@ 的对象高度重复。
+- 插入后的引用要能整体删除，别让用户一个字一个字退。
+
+## 反模式
+
+- 候选异步且没有在途反馈：用户以为没人可 @。
+- 前缀字符在正文里本来就常用（比如 `#` 在代码里），却不给退出方式。

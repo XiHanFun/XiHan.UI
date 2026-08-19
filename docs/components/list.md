@@ -1,6 +1,21 @@
 # 列表 <Badge type="info" text="list" />
 
-数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一列同构的条目，每条可以有媒体位、标题、描述与操作位。
+
+## 何时使用
+
+- 同构记录的纵向排列：通知、文件、成员。
+- 每条信息量适中，不需要多列对齐。
+
+## 何时不用
+
+- 每条有多个字段需要按列对照：用[表格](./table)。
+- 条目可选：用[列表框](./listbox)。
+
+## 特性
+
+- 六个部件都可选。
+- `split` 在条目之间画线，`bordered` 给外框，`hoverable` 给悬停反馈。
 
 ## 示例
 
@@ -78,8 +93,40 @@ size 换的是条目的内边距、图文间距与两行文字的字号，不传
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 样式
+
+默认皮肤 `@xihan-ui/styles/list.css` 按部件选择：`[data-scope="list"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-list-action-gap` · `--xh-list-bg` · `--xh-list-border` · `--xh-list-content-gap` · `--xh-list-description-fg` · `--xh-list-description-font-size` · `--xh-list-fg` · `--xh-list-item-bg-hover` · `--xh-list-item-gap` · `--xh-list-item-px` · `--xh-list-item-py` · `--xh-list-item-py-lg` · `--xh-list-item-py-md` · `--xh-list-item-py-sm` · `--xh-list-radius` · `--xh-list-title-fg` · `--xh-list-title-font-size` · `--xh-list-title-font-weight`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## 响应式
+
+皮肤内置条件规则：`hover: hover`。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 媒体位放[头像](./avatar)或[图标块](./icon-wrapper)；操作位放[按钮](./button)或[菜单](./menu)；下面接[分页](./pagination)或[无限滚动](./infinite-scroll)。
+
+## 最佳实践
+
+- 每条的高度尽量一致，参差不齐的列表很难扫读。
+- 整条可点时让整条进 Tab 序列，别只让标题可点。
+
+## 反模式
+
+- 用列表排一张有五六个字段的表。
+- 每条都塞三四个操作按钮。

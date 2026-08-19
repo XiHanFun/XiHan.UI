@@ -1,6 +1,21 @@
 # 颜色选择器 <Badge type="info" text="color-picker" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+选一个颜色：色域面板加通道滑块，另有预设色板与屏幕取色。
+
+## 何时使用
+
+- 用户要自由指定颜色（主题定制、标注、画布）。
+
+## 何时不用
+
+- 可选颜色是固定的几种：用[单选组](./radio-group)配色块，或[选择器](./select)。
+
+## 特性
+
+- 必备部件是 `root` · `content` · `area` · `area-thumb`，缺一个组件就不工作。
+- `format` 决定值串写法；面板里也可以让用户自己切换写法。
+- `alpha` 打开透明度通道。
+- 支持屏幕取色（依赖平台能力）与数值输入。
 
 ## 示例
 
@@ -118,9 +133,17 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | --- | --- | --- | --- |
 | `XhColorPickerRoot` | `default` | `ColorPickerRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `positioner` | 'open' \| 'closed' |
+| `eye-dropper-trigger` | 'picking' \| 'open' \| 'closed' |
+| `swatch-item` | 'checked' \| 'unchecked' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`closed` · `open` · `open.idle` · `open.dragging` · `open.picking`
 
@@ -185,8 +208,101 @@ format 只管对外的序列化：换过之后把当前值原样写回一次，�
 | `Enter` | focus in channel-input | 收下框里的字；收不了（打了一半）就复原成规范文本。一并拦住表单提交 |
 | `Escape` | open（本层在层栈顶） | 收起浮层，焦点归还触发器 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-expanded` | 'true' \| 'false' |
+| `trigger` | `aria-haspopup` | 'dialog' |
+| `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
+| `swatch` | `aria-hidden` | 'true' |
+| `content` | `aria-labelledby` | `label` 部件的 id |
+| `content` | `aria-modal` | 'false' |
+| `content` | `role` | 'dialog' |
+| `area-thumb` | `aria-disabled` | 'true' \| 'false' |
+| `area-thumb` | `aria-label` | label.area |
+| `area-thumb` | `aria-valuemax` | '100' |
+| `area-thumb` | `aria-valuemin` | '0' |
+| `area-thumb` | `aria-valuenow` | String(Math.round(hsva.s)) |
+| `area-thumb` | `aria-valuetext` | label.areaValueText(Math.round(hsva.s), Math.round(hs… |
+| `area-thumb` | `role` | 'slider' |
+| `channel-slider-thumb` | `aria-disabled` | 'true' \| 'false' |
+| `channel-slider-thumb` | `aria-label` | label.channel(channel) |
+| `channel-slider-thumb` | `aria-orientation` | 'horizontal' |
+| `channel-slider-thumb` | `aria-valuemax` | String(info.max) |
+| `channel-slider-thumb` | `aria-valuemin` | String(info.min) |
+| `channel-slider-thumb` | `aria-valuenow` | String(info.value) |
+| `channel-slider-thumb` | `aria-valuetext` | label.channelValueText(channel, info.value) |
+| `channel-slider-thumb` | `role` | 'slider' |
+| `channel-input` | `aria-invalid` | 'true' \| 'false' |
+| `channel-input` | `aria-label` | label.input(channel) |
+| `eye-dropper-trigger` | `aria-label` | label.eyeDropperTrigger |
+| `swatch-group` | `aria-label` | label.swatchGroup |
+| `swatch-group` | `role` | 'group' |
+| `swatch-item` | `aria-label` | label.swatch(swatch) |
+| `swatch-item` | `aria-pressed` | 'true' \| 'false' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/color-picker.css` 按部件选择：`[data-scope="color-picker"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `swatch` | `data-value` | context.get('value') |
+| `positioner` | `data-hidden` | ''（条件成立时才出现） |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-placement` | 定位引擎算出的实际落位 |
+| `area` | `data-dragging` | ''（条件成立时才出现） |
+| `area-thumb` | `data-dragging` | ''（条件成立时才出现） |
+| `channel-slider` | `data-channel` | channel |
+| `channel-slider` | `data-disabled` | ''（条件成立时才出现） |
+| `channel-slider` | `data-dragging` | ''（条件成立时才出现） |
+| `channel-slider-track` | `data-channel` | channel |
+| `channel-slider-track` | `data-disabled` | ''（条件成立时才出现） |
+| `channel-slider-thumb` | `data-channel` | channel |
+| `channel-slider-thumb` | `data-disabled` | ''（条件成立时才出现） |
+| `channel-slider-thumb` | `data-dragging` | ''（条件成立时才出现） |
+| `channel-input` | `data-channel` | channel |
+| `channel-input` | `data-invalid` | ''（条件成立时才出现） |
+| `eye-dropper-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `eye-dropper-trigger` | `data-state` | 'picking' \| 'open' \| 'closed' |
+| `swatch-item` | `data-disabled` | ''（条件成立时才出现） |
+| `swatch-item` | `data-state` | 'checked' \| 'unchecked' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-color-picker-action-bg` · `--xh-color-picker-action-bg-active` · `--xh-color-picker-action-bg-hover` · `--xh-color-picker-action-border` · `--xh-color-picker-action-border-active` · `--xh-color-picker-action-fg` · `--xh-color-picker-action-fg-hover` · `--xh-color-picker-action-font-size` · `--xh-color-picker-action-radius` · `--xh-color-picker-action-size` · `--xh-color-picker-area-h` · `--xh-color-picker-area-radius` · `--xh-color-picker-checker` · `--xh-color-picker-content-bg` · `--xh-color-picker-content-border` · `--xh-color-picker-content-fg` · `--xh-color-picker-content-gap` · `--xh-color-picker-content-p` · `--xh-color-picker-content-radius` · `--xh-color-picker-content-shadow` · `--xh-color-picker-content-w` · `--xh-color-picker-gap` · `--xh-color-picker-input-bg` · `--xh-color-picker-input-bg-disabled` · `--xh-color-picker-input-bg-readonly` · `--xh-color-picker-input-border` · `--xh-color-picker-input-border-focus` · `--xh-color-picker-input-border-invalid` · `--xh-color-picker-input-font-size` · `--xh-color-picker-input-h` · `--xh-color-picker-input-px` · `--xh-color-picker-input-radius` · `--xh-color-picker-label-fg` · `--xh-color-picker-label-font-size` · `--xh-color-picker-label-font-weight` · `--xh-color-picker-max-h` · `--xh-color-picker-swatch-border` · `--xh-color-picker-swatch-gap` · `--xh-color-picker-swatch-item-size` · `--xh-color-picker-swatch-radius` · `--xh-color-picker-swatch-ring` · `--xh-color-picker-swatch-size` · `--xh-color-picker-thumb-border` · `--xh-color-picker-thumb-radius` · `--xh-color-picker-thumb-scale-dragging` · `--xh-color-picker-thumb-shadow` · `--xh-color-picker-thumb-size` · `--xh-color-picker-track-radius` · `--xh-color-picker-track-thickness` · `--xh-color-picker-trigger-bg` · `--xh-color-picker-trigger-bg-disabled` · `--xh-color-picker-trigger-bg-readonly` · `--xh-color-picker-trigger-border` · `--xh-color-picker-trigger-border-hover` · `--xh-color-picker-trigger-fg` · `--xh-color-picker-trigger-font-size` · `--xh-color-picker-trigger-gap` · `--xh-color-picker-trigger-h` · `--xh-color-picker-trigger-min-w` · `--xh-color-picker-trigger-px` · `--xh-color-picker-trigger-radius` · `--xh-color-picker-value-fg` · `--xh-color-picker-value-font-size`
+
+## 动效
+
+关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
+
+## 组合
+
+- 外面套[表单字段](./field)；预设色板走 `swatches`。
+
+## 最佳实践
+
+- 提供预设色板：绝大多数用户不需要在色域里精挑。
+- 回显时同时给色块和色值串，色块用来看、值串用来复制。
+
+## 反模式
+
+- 只给色域不给数值输入：用户手上有确切色值时无处可填。
+- 在需要满足对比度的场景里放任意取色而不给对比度提示。

@@ -1,6 +1,24 @@
 # 右键菜单 <Badge type="info" text="context-menu" />
 
-导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+在触发区上右键（触摸端长按）弹出的命令菜单，钉在按下去的那一点上。
+
+## 何时使用
+
+- 一个对象上有多个针对它的命令，且界面上没有位置全部摆出来（表格行、画布节点、文件项）。
+
+## 何时不用
+
+- 命令是主要路径：右键是隐藏入口，新用户找不到。主要动作要有可见的按钮。
+- 触摸端是主要场景：长按有学习成本，且与系统手势冲突。
+- 要选一个值而不是执行命令：用[选择器](./select)或[弹出选择](./popselect)。
+
+## 特性
+
+- `offset` 默认 0——右键菜单要贴着光标。
+- 支持分组、标记位、分隔线与二级子菜单；任意层级选中都发根的 `select` 并整链关闭。
+- `typeahead` 决定展开后的可打印字符是拿去检索还是放行给页面。
+- `longPressDelay` 是触摸端按住多久算触发。
+- `root` 的插槽给出锚点坐标与 `openAt`，可以从任意位置弹出。
 
 ## 示例
 
@@ -113,9 +131,18 @@ XhContextMenuSub 在右键菜单里嵌一台子菜单：触发条目双重身份
 | `XhContextMenuRoot` | `item` | `ContextMenuNodeMeta` |  |
 | `XhContextMenuSub` | `default` | `ContextMenuSubSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'open' \| 'closed' |
+| `trigger` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`closed` · `pressing` · `open`
 
@@ -164,8 +191,76 @@ XhContextMenuSub 在右键菜单里嵌一台子菜单：触发条目双重身份
 | `Escape` | open | 关闭菜单并把焦点归还触发区 |
 | `Tab` / `Shift+Tab` | open | 关闭菜单，焦点不归还触发区，按 Tab 序列自然离开 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-haspopup` | 'menu' |
+| `trigger` | `aria-keyshortcuts` | 'Shift+F10' |
+| `content` | `aria-label` | props.translations.content |
+| `content` | `role` | 'menu' |
+| `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `role` | 'menuitem' |
+| `item-indicator` | `aria-hidden` | 'true' |
+| `separator` | `aria-orientation` | 'horizontal' |
+| `separator` | `role` | 'separator' |
+| `group` | `aria-labelledby` | `group-label` 部件的 id |
+| `group` | `role` | 'group' |
+| `arrow` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/context-menu.css` 按部件选择：`[data-scope="context-menu"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-size` | props.size |
+| `root` | `data-state` | 'open' \| 'closed' |
+| `root` | `data-tone` | props.tone |
+| `trigger` | `data-pressing` | ''（条件成立时才出现） |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-hidden` | ''（条件成立时才出现） |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-size` | props.size |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-tone` | props.tone |
+| `content` | `data-placement` | 定位引擎算出的实际落位 |
+| `content` | `data-state` | 'open' \| 'closed' |
+| `arrow` | `data-placement` | 定位引擎算出的实际落位 |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-context-menu-arrow-size` · `--xh-context-menu-bg` · `--xh-context-menu-border` · `--xh-context-menu-fg` · `--xh-context-menu-group-label-fg` · `--xh-context-menu-group-label-font-size` · `--xh-context-menu-group-label-font-weight` · `--xh-context-menu-group-label-px` · `--xh-context-menu-group-label-py` · `--xh-context-menu-item-active-font-weight` · `--xh-context-menu-item-bg-active` · `--xh-context-menu-item-bg-hover` · `--xh-context-menu-item-fg` · `--xh-context-menu-item-font-size` · `--xh-context-menu-item-gap` · `--xh-context-menu-item-indicator-fg` · `--xh-context-menu-item-indicator-size` · `--xh-context-menu-item-leading` · `--xh-context-menu-item-px` · `--xh-context-menu-item-py` · `--xh-context-menu-item-radius` · `--xh-context-menu-max-h` · `--xh-context-menu-max-w` · `--xh-context-menu-min-w` · `--xh-context-menu-px` · `--xh-context-menu-py` · `--xh-context-menu-radius` · `--xh-context-menu-separator-color` · `--xh-context-menu-separator-my` · `--xh-context-menu-separator-thickness` · `--xh-context-menu-shadow`
+
+## 动效
+
+关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 与[菜单](./menu)共用条目部件；子菜单用 `XhContextMenuSub`。
+
+## 最佳实践
+
+- 菜单里的每条命令都要在别处有可见入口，右键只是快捷方式。
+- 条目控制在十条以内，超过就分组。
+
+## 反模式
+
+- 屏蔽浏览器原生右键却不给出等价能力（复制、检查、在新标签打开）。
+- 把整页都做成右键触发区，用户再也用不了浏览器菜单。

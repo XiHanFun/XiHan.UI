@@ -1,6 +1,21 @@
 # 回到顶部 <Badge type="info" text="back-top" />
 
-导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+滚过一段距离后露面的按钮，点它滚回顶部。
+
+## 何时使用
+
+- 页面很长且没有别的快速返回方式。
+
+## 何时不用
+
+- 页面本来就不长：滚过 200px 就出现的按钮只会挡内容。
+- 需要的是一组动作而不只是回顶：用[浮动按钮](./float-button)。
+
+## 特性
+
+- `visibilityHeight` 决定滚过多少像素才露面。
+- `behavior` 决定一步跳回还是平滑滚过去。
+- `translations` 换掉读屏念出的名字。
 
 ## 示例
 
@@ -71,9 +86,9 @@ tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读
 | --- | --- | --- | --- |
 | `XhBackTopRoot` | `default` | `BackTopRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`hidden` · `visible`
 
@@ -101,8 +116,59 @@ tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读
 | `Enter` / `Space` | focus in trigger | 滚回顶部；按 behavior 决定是一步到位还是平滑滚过去 |
 | `Tab` / `Shift+Tab` | trigger 露面时 | 走到按钮上；收起时整个 root 带 hidden，按钮不在 Tab 序列里 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `aria-label` | props.translations.trigger |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/back-top.css` 按部件选择：`[data-scope="back-top"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-visible` | ''（条件成立时才出现） |
+| `trigger` | `data-visible` | ''（条件成立时才出现） |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-back-top-bg` · `--xh-back-top-bg-active` · `--xh-back-top-bg-hover` · `--xh-back-top-border` · `--xh-back-top-border-hover` · `--xh-back-top-fg` · `--xh-back-top-inset-block` · `--xh-back-top-inset-inline` · `--xh-back-top-layer` · `--xh-back-top-radius` · `--xh-back-top-trigger-size`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## 响应式
+
+皮肤内置条件规则：`hover: hover`。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 与[滚动区域](./scroll-area)配合时把滚动容器指给它，别让它盯着窗口。
+
+## 最佳实践
+
+- 位置要躲开固定工具条与移动端手势区。
+- 平滑滚动对晕动敏感的用户不友好，系统开了减弱动效时应退回一步跳回。
+
+## 反模式
+
+- 恒显：没滚动时它没有意义，只是一块遮挡。
+- 在短页面上加它。

@@ -1,6 +1,23 @@
 # 滑块 <Badge type="info" text="slider" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+在一个连续或离散的区间里拖出一个值或一段范围。
+
+## 何时使用
+
+- 用户关心的是相对位置而不是精确数字（音量、透明度、价格区间）。
+- 需要即时看到调整的效果。
+
+## 何时不用
+
+- 需要精确输入：用[数字输入](./number-field)，或两者并排。
+- 档位只有三四个：用[单选组](./radio-group)或[切换按钮组](./toggle-group)。
+
+## 特性
+
+- 单值与区间共用一套结构，区间时 `minStepsBetweenThumbs` 防止两头交叉。
+- `marks` 画刻度，`snapToMarks` 让值吸附到刻度上。
+- 两个回调：拖动途中连着发，松手发一次——写存储用后者。
+- `getValueText` 决定读屏念出的是什么，别让它只念数字。
 
 ## 示例
 
@@ -129,9 +146,9 @@ thumb 自己是定位上下文，气泡挂在它上方就跟着走位；dragging
 | `XhSliderMarks` | `mark` | `SliderMarksMarkSlotProps` |  |
 | `XhSliderRoot` | `default` | `SliderRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `dragging`
 
@@ -178,8 +195,66 @@ thumb 自己是定位上下文，气泡挂在它上方就跟着走位；dragging
 | `Home` | focus in thumb, not disabled/readOnly | 取 min；多滑块时取自己被邻居允许的下界 |
 | `End` | focus in thumb, not disabled/readOnly | 取 max；多滑块时取自己被邻居允许的上界 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `thumb` | `aria-disabled` | 'true' \| 'false' |
+| `thumb` | `aria-labelledby` | `label` 部件的 id |
+| `thumb` | `aria-orientation` | props.orientation |
+| `thumb` | `aria-valuemax` | String(thumb.max) |
+| `thumb` | `aria-valuemin` | String(thumb.min) |
+| `thumb` | `aria-valuenow` | String(thumb.value) |
+| `thumb` | `aria-valuetext` | prop('getValueText')?.({ value: thumb.value, index: t… |
+| `thumb` | `role` | 'slider' |
+| `mark` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/slider.css` 按部件选择：`[data-scope="slider"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
+| `thumb` | `data-dragging` | ''（条件成立时才出现） |
+| `thumb` | `data-index` | String(thumb.index) |
+| `mark` | `data-active` | ''（条件成立时才出现） |
+| `mark-label` | `data-active` | ''（条件成立时才出现） |
+| `hidden-input` | `data-index` | String(thumb.index) |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-slider-gap` · `--xh-slider-label-fg` · `--xh-slider-label-font-size` · `--xh-slider-label-font-weight` · `--xh-slider-mark-bg` · `--xh-slider-mark-bg-active` · `--xh-slider-mark-label-fg` · `--xh-slider-mark-label-fg-active` · `--xh-slider-mark-label-font-size` · `--xh-slider-mark-label-gap` · `--xh-slider-mark-size` · `--xh-slider-range-bg` · `--xh-slider-range-bg-invalid` · `--xh-slider-range-radius` · `--xh-slider-thumb-bg` · `--xh-slider-thumb-bg-invalid` · `--xh-slider-thumb-border` · `--xh-slider-thumb-radius` · `--xh-slider-thumb-scale-dragging` · `--xh-slider-thumb-shadow` · `--xh-slider-thumb-shadow-dragging` · `--xh-slider-thumb-size` · `--xh-slider-track-bg` · `--xh-slider-track-radius` · `--xh-slider-track-thickness` · `--xh-slider-vertical-length`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 与[数字输入](./number-field)并排，两边同步一个值。
+
+## 最佳实践
+
+- 两端标出最小与最大值，用户才知道自己在哪。
+- 拖动时用值气泡显示当前值，松手后收起。
+
+## 反模式
+
+- 区间很大却不给数字输入：拖到某个精确值几乎不可能。
+- 在移动端把滑块做得又细又短。

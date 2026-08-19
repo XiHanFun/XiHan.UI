@@ -1,6 +1,24 @@
 # 选择器 <Badge type="info" text="select" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+从一份已知清单里选一个或多个值，选项收在浮层里。
+
+## 何时使用
+
+- 选项五个以上、且都能列举出来。
+- 需要多选并把选中项显示成标签。
+
+## 何时不用
+
+- 选项二到五个且都值得同时可见：用[单选组](./radio-group)。
+- 用户需要输入自由文本或搜索候选：用[组合框](./combobox)。
+- 选项是层级的：用[级联选择](./cascader)或[树选择](./tree-select)。
+
+## 特性
+
+- `hidden-select` 承担表单参与。
+- 多选可以把选中项显示成标签，`maxTagCount` 折叠超出的部分。
+- 浮层里可以有分组、底部操作区与滚动加载。
+- 大量选项时列表可以只渲可视区。
 
 ## 示例
 
@@ -180,9 +198,23 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `XhSelectRoot` | `label` | — |  |
 | `XhSelectRoot` | `item` | `SelectNodeMeta` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'open' \| 'closed' |
+| `control` | 'open' \| 'closed' |
+| `trigger` | 'open' \| 'closed' |
+| `indicator` | 'open' \| 'closed' |
+| `clear-trigger` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+| `list` | 'open' \| 'closed' |
+| `footer` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -248,8 +280,100 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `Escape` | open | 关闭列表并把焦点归还 trigger，选中值不变 |
 | `Tab` / `Shift+Tab` | open | 关闭列表，焦点不归还 trigger，按 Tab 序列自然离开 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-expanded` | 'true' \| 'false' |
+| `trigger` | `aria-haspopup` | 'listbox' |
+| `trigger` | `aria-invalid` | 'true' \| 'false' |
+| `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
+| `indicator` | `aria-hidden` | 'true' |
+| `clear-trigger` | `aria-label` | props.translations.clear |
+| `tag-remove` | `aria-label` | (prop('translations')?.removeTag ?? 'Remove {label}')… |
+| `list` | `aria-label` | props.translations.content |
+| `list` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
+| `list` | `aria-multiselectable` | 'true' \| 'false' |
+| `list` | `role` | 'listbox' |
+| `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `aria-selected` | 'true' \| 'false' |
+| `item` | `role` | 'option' |
+| `item-indicator` | `aria-hidden` | 'true' |
+| `hidden-select` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/select.css` 按部件选择：`[data-scope="select"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-state` | 'open' \| 'closed' |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-invalid` | ''（条件成立时才出现） |
+| `control` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-invalid` | ''（条件成立时才出现） |
+| `trigger` | `data-placeholder` | ''（条件成立时才出现） |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `value-text` | `data-disabled` | ''（条件成立时才出现） |
+| `value-text` | `data-placeholder` | ''（条件成立时才出现） |
+| `indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `indicator` | `data-state` | 'open' \| 'closed' |
+| `clear-trigger` | `data-state` | 'open' \| 'closed' |
+| `tag` | `data-disabled` | ''（条件成立时才出现） |
+| `tag` | `data-value` | v |
+| `tag-remove` | `data-disabled` | ''（条件成立时才出现） |
+| `positioner` | `data-hidden` | ''（条件成立时才出现） |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-size` | props.size |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-tone` | props.tone |
+| `positioner` | `data-variant` | props.variant |
+| `content` | `data-placement` | 定位引擎算出的实际落位 |
+| `content` | `data-state` | 'open' \| 'closed' |
+| `list` | `data-state` | 'open' \| 'closed' |
+| `footer` | `data-state` | 'open' \| 'closed' |
+| `item` | `data-highlighted` | ''（条件成立时才出现） |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-select-clear-bg-hover` · `--xh-select-clear-fg` · `--xh-select-clear-fg-hover` · `--xh-select-clear-font-size` · `--xh-select-clear-size` · `--xh-select-content-bg` · `--xh-select-content-border` · `--xh-select-content-fg` · `--xh-select-content-max-h` · `--xh-select-content-max-w` · `--xh-select-content-min-w` · `--xh-select-content-px` · `--xh-select-content-py` · `--xh-select-content-radius` · `--xh-select-content-shadow` · `--xh-select-footer-border` · `--xh-select-footer-fg` · `--xh-select-footer-font-size` · `--xh-select-footer-gap` · `--xh-select-footer-px` · `--xh-select-footer-py` · `--xh-select-gap` · `--xh-select-indicator-fg` · `--xh-select-item-bg-hover` · `--xh-select-item-fg` · `--xh-select-item-fg-selected` · `--xh-select-item-font-size` · `--xh-select-item-font-weight-selected` · `--xh-select-item-gap` · `--xh-select-item-indicator-fg` · `--xh-select-item-indicator-size` · `--xh-select-item-leading` · `--xh-select-item-px` · `--xh-select-item-py` · `--xh-select-item-radius` · `--xh-select-label-fg` · `--xh-select-label-font-size` · `--xh-select-label-font-weight` · `--xh-select-placeholder-fg` · `--xh-select-tag-bg` · `--xh-select-tag-fg` · `--xh-select-tag-font-size` · `--xh-select-tag-gap` · `--xh-select-tag-px` · `--xh-select-tag-radius` · `--xh-select-tag-remove-fg` · `--xh-select-tag-remove-fg-hover` · `--xh-select-trigger-bg` · `--xh-select-trigger-border` · `--xh-select-trigger-border-hover` · `--xh-select-trigger-border-invalid` · `--xh-select-trigger-fg` · `--xh-select-trigger-font-size` · `--xh-select-trigger-gap` · `--xh-select-trigger-h` · `--xh-select-trigger-max-w` · `--xh-select-trigger-min-w` · `--xh-select-trigger-px` · `--xh-select-trigger-radius`
+
+## 动效
+
+关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 外面套[表单字段](./field)；选项文字过长时里面用[文本省略](./ellipsis)。
+
+## 最佳实践
+
+- 触发器的宽度固定，别随选中项的长度变——整行布局会跟着抖。
+- 选项超过约二十条就该加搜索，也就是换成[组合框](./combobox)。
+
+## 反模式
+
+- 用它承载动作（"导出"、"删除"）：那是[菜单](./menu)。
+- 异步加载选项时浮层里什么都不显示：给一个加载态或空态。

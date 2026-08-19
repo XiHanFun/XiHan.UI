@@ -1,6 +1,25 @@
 # 按钮 <Badge type="info" text="button" />
 
-通用组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+触发一次动作的最小控件：按下去就发生一件事。它不承载值，也不表达持续的开关态。
+
+## 何时使用
+
+- 提交表单、执行一次命令、打开浮层。
+- 一屏里有多个动作、需要把主次排出来：形态（variant）与语气（tone）是两条正交的轴，四种形态 × 六种语气都成立。
+- 只放一枚图元的紧凑动作，用 `iconOnly` 收成正方形。
+
+## 何时不用
+
+- 跳到另一个地址：那是链接。浏览器的中键新开、右键菜单与预读只对 `<a>` 生效，写成按钮加跳转全都拿不到。要的是链接外观加按钮质感时，把 `data-scope` / `data-part` 这组契约铺到 `<a>` 上，皮肤照样认。
+- 开关一个持续状态：用[切换按钮](./toggle)，它有 `aria-pressed`。
+- 在几个互斥项里选一个：用[切换按钮组](./toggle-group)或[单选组](./radio-group)。
+
+## 特性
+
+- 形态 · 语气 · 尺寸三轴正交，任意组合都成立。
+- 载入态用 `aria-disabled` 加事件拦截表达，按钮仍能聚焦，读屏也仍念得到名字。
+- `prefix` / `suffix` 两个图元部件自带 `aria-hidden`，读屏念到的只有 `label`。
+- 皮肤认的是 `data-scope` 与 `data-part`，不是标签名。
 
 ## 示例
 
@@ -98,6 +117,14 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 | `type` | `'button' \| 'submit' \| 'reset'` |  |  |
 | `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定颜色怎么用 |
 
+## 状态
+
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'loading' \| 'disabled' \| undefined |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
@@ -120,8 +147,66 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 | --- | --- | --- |
 | `Enter` / `Space` | focus in root, interactive | 激活按钮（原生行为） |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-disabled` | 'true' \| undefined |
+| `indicator` | `aria-hidden` | 'true' |
+| `prefix` | `aria-hidden` | 'true' |
+| `suffix` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/button.css` 按部件选择：`[data-scope="button"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-full-width` | ''（条件成立时才出现） |
+| `root` | `data-icon-only` | ''（条件成立时才出现） |
+| `root` | `data-loading` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-state` | 'loading' \| 'disabled' \| undefined |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-button-bg` · `--xh-button-bg-active` · `--xh-button-bg-hover` · `--xh-button-fg` · `--xh-button-font-size` · `--xh-button-font-weight` · `--xh-button-gap` · `--xh-button-h` · `--xh-button-icon-size` · `--xh-button-px` · `--xh-button-radius` · `--xh-button-spin-duration`
+
+## 动效
+
+关键帧 `xh-spin` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 连排成一条：外面套[按钮组](./button-group)，档位与形态写在容器上，组内每一段自己不重复标注。
+- 图元用 [图标](./icon)，放进 `prefix` 或 `suffix`。
+- 需要二次确认的危险动作：外面套[弹出确认](./popconfirm)。
+
+## 最佳实践
+
+- 只放图标时必须给 `aria-label`——按钮此时没有任何可见文字，名字只能由它来给。
+- 一个视图里 `solid` + `brand` 只留一个，主动作唯一才排得出主次。
+- 载入期间保留原有宽度，别让指示器把按钮撑窄或撑宽，指针会跟着跑掉。
+
+## 反模式
+
+- 用 `disabled` 表达"正在提交"：原生禁用会丢掉焦点、读屏也不再播报，用户不知道发生了什么。用 `loading`。
+- 把导航写成按钮加 `onClick` 跳转，见上。
+- 在按钮里再放一个可聚焦元素：一次点击落在哪个目标上不可预期。

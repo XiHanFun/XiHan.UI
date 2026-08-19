@@ -1,6 +1,23 @@
 # 文字提示 <Badge type="info" text="tooltip" />
 
-反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+悬停或聚焦时出现的一句纯文字说明。
+
+## 何时使用
+
+- 补充说明一个图标按钮是什么、一个截断的文字全文是什么。
+- 内容是纯文字，且没有任何可交互元素。
+
+## 何时不用
+
+- 内容里有按钮或链接：用[气泡卡片](./popover)——提示是够不着的。
+- 信息重要到不能错过：写在界面上，别藏进悬停。
+- 触摸设备是主要场景：那里没有悬停。
+
+## 特性
+
+- `openDelay` / `closeDelay` 防止指针路过时一路闪。
+- 聚焦也能触发，键盘用户拿得到。
+- 语气与尺寸两轴。
 
 ## 示例
 
@@ -100,9 +117,17 @@ disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
 | --- | --- | --- | --- |
 | `XhTooltipRoot` | `default` | `TooltipRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `trigger` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`closed` · `opening` · `visible` · `visible.open` · `visible.closing`
 
@@ -132,8 +157,62 @@ disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
 | `Tab` / `Shift+Tab` | not disabled | 焦点进入 trigger 立即展开、离开立即收起，都不走延时 |
 | `Escape` | 展开中且本层在层栈栈顶，或 focus in trigger 且等待展开中 | 立即收起，不等 closeDelay；下层浮层不受这一次按键影响 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `aria-describedby` | `content` 部件的 id \| undefined |
+| `content` | `role` | 'tooltip' |
+| `arrow` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/tooltip.css` 按部件选择：`[data-scope="tooltip"][data-part="trigger"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-hidden` | ''（条件成立时才出现） |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-size` | props.size |
+| `content` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-tone` | props.tone |
+| `arrow` | `data-placement` | 定位引擎算出的实际落位 |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-tooltip-arrow-size` · `--xh-tooltip-bg` · `--xh-tooltip-fg` · `--xh-tooltip-font-size` · `--xh-tooltip-max-w` · `--xh-tooltip-px` · `--xh-tooltip-py` · `--xh-tooltip-radius` · `--xh-tooltip-shadow` · `--xh-tooltip-trigger-gap`
+
+## 动效
+
+关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 挂在[图标](./icon)按钮、[切换按钮](./toggle)、[文本省略](./ellipsis)上。
+
+## 最佳实践
+
+- 一句话讲完，超过一行就该换别的形式。
+- 图标按钮的可及名字要写在按钮上（`aria-label`），提示只是视觉补充。
+
+## 反模式
+
+- 把唯一的操作说明放进提示：触摸用户永远看不到。
+- 提示里放链接。

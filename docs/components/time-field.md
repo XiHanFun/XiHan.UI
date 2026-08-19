@@ -1,6 +1,22 @@
 # 时间输入 <Badge type="info" text="time-field" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+分段的时间输入框：时、分、秒各占一段，方向键加减。
+
+## 何时使用
+
+- 用户知道确切时间，打字比翻列表快。
+- 需要 12 小时制并带上下午段位。
+
+## 何时不用
+
+- 需要从固定的整点或半点里挑：用[时间选择器](./time-picker)。
+- 需要日期：用[日期输入](./date-field)。
+
+## 特性
+
+- `hourCycle` 切 12 / 24 小时制，12 小时制时自动多一个上下午段位。
+- `granularity` 决定精确到分还是到秒。
+- `min` / `max` 越界时只标注不改写。
 
 ## 示例
 
@@ -113,9 +129,9 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | --- | --- | --- | --- |
 | `XhTimeFieldRoot` | `default` | `TimeFieldRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -164,8 +180,81 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | `Backspace` / `Delete` | focus in a segment, not disabled/readOnly | 清掉本段；小时被清时上下午段仍保留原来的上午/下午 |
 | `a` / `p` | focus in 上下午段, 12 小时制, not disabled/readOnly | a 取上午、p 取下午（不区分大小写） |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `control` | `aria-disabled` | 'true' \| 'false' |
+| `control` | `aria-invalid` | 'true' \| 'false' |
+| `control` | `aria-labelledby` | `label` 部件的 id |
+| `control` | `role` | 'group' |
+| `segment` | `aria-disabled` | 'true' \| 'false' |
+| `segment` | `aria-invalid` | 'true' \| 'false' |
+| `segment` | `aria-label` | prop('translations')?.[segment] |
+| `segment` | `aria-readonly` | 'true' \| 'false' |
+| `segment` | `aria-required` | 'true' \| 'false' |
+| `segment` | `aria-valuemax` | range.max |
+| `segment` | `aria-valuemin` | range.min |
+| `segment` | `aria-valuenow` | segmentNumber(draft, segment, hourCycle) |
+| `segment` | `aria-valuetext` | timeSegmentText(draft, segment, { hourCycle, locale, … |
+| `segment` | `role` | 'spinbutton' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/time-field.css` 按部件选择：`[data-scope="time-field"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-out-of-range` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-empty` | ''（条件成立时才出现） |
+| `control` | `data-invalid` | ''（条件成立时才出现） |
+| `control` | `data-readonly` | ''（条件成立时才出现） |
+| `segment` | `data-disabled` | ''（条件成立时才出现） |
+| `segment` | `data-focus` | ''（条件成立时才出现） |
+| `segment` | `data-invalid` | ''（条件成立时才出现） |
+| `segment` | `data-placeholder` | ''（条件成立时才出现） |
+| `segment` | `data-readonly` | ''（条件成立时才出现） |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-time-field-control-bg` · `--xh-time-field-control-bg-disabled` · `--xh-time-field-control-bg-readonly` · `--xh-time-field-control-border` · `--xh-time-field-control-border-focus` · `--xh-time-field-control-border-hover` · `--xh-time-field-control-border-invalid` · `--xh-time-field-control-fg` · `--xh-time-field-control-h` · `--xh-time-field-control-px` · `--xh-time-field-control-radius` · `--xh-time-field-font-size` · `--xh-time-field-gap` · `--xh-time-field-icon-size` · `--xh-time-field-label-fg` · `--xh-time-field-label-fg-disabled` · `--xh-time-field-label-font-size` · `--xh-time-field-label-font-weight` · `--xh-time-field-segment-bg-focus` · `--xh-time-field-segment-bg-hover` · `--xh-time-field-segment-fg-focus` · `--xh-time-field-segment-fg-placeholder` · `--xh-time-field-segment-px` · `--xh-time-field-segment-radius`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 外面套[表单字段](./field)；与[日期输入](./date-field)并排组成日期时间。
+
+## 最佳实践
+
+- 明确时区归属：组件处理的是墙上时间，时区换算是宿主的事。
+- 12 小时制下上下午段位不能省，否则用户输入的时间有二义。
+
+## 反模式
+
+- 用文本输入收时间再解析。

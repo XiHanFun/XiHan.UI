@@ -1,6 +1,23 @@
 # 日期输入 <Badge type="info" text="date-field" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+分段的日期输入框：年、月、日各占一段，方向键加减，不弹日历。
+
+## 何时使用
+
+- 用户已经知道确切日期（生日、证件有效期），打字比翻日历快。
+- 需要键盘全程可用。
+
+## 何时不用
+
+- 用户需要看着日历挑（选会议时间、看星期几）：用[日期选择器](./date-picker)。
+- 只要时间不要日期：用[时间输入](./time-field)。
+
+## 特性
+
+- 段序随 `locale` 变，不是写死的年月日。
+- `min` / `max` 收窄各段的加减范围；越界的初值只做标注、不被改写。
+- `granularity` 决定精确到日还是到分。
+- 段位文本、对外值的写法与段位的拼装都可以换。
 
 ## 示例
 
@@ -139,9 +156,9 @@ segments 决定这份控件由哪几块组成；段位可按段名认领，不�
 | `XhDateFieldRoot` | `default` | `DateFieldRootSlotProps` |  |
 | `XhDateFieldSegment` | `default` | `DateFieldSegmentSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -192,8 +209,82 @@ segments 决定这份控件由哪几块组成；段位可按段名认领，不�
 | `0` / `1` / `2` / `3` / `4` / `5` / `6` / `7` / `8` / `9` | focus in a segment, not disabled/readOnly | 往本段补一位数字；补满（再补一位必溢出或位数用尽）即自动跳下一段。上下午段没有数字位，不收数字 |
 | `a` / `p` | focus in 上下午段, not disabled/readOnly | 直接指定上午 / 下午；上下键在两者之间翻面 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `control` | `aria-disabled` | 'true' \| 'false' |
+| `control` | `aria-labelledby` | `label` 部件的 id |
+| `control` | `role` | 'group' |
+| `segment` | `aria-disabled` | undefined \| 'true' \| 'false' |
+| `segment` | `aria-invalid` | undefined \| 'true' \| 'false' |
+| `segment` | `aria-label` | item?.label |
+| `segment` | `aria-readonly` | undefined \| 'true' \| 'false' |
+| `segment` | `aria-required` | undefined \| 'true' \| 'false' |
+| `segment` | `aria-valuemax` | undefined \| String(item.max) |
+| `segment` | `aria-valuemin` | undefined \| String(item.min) |
+| `segment` | `aria-valuenow` | undefined \| String(item.value) |
+| `segment` | `aria-valuetext` | item?.text |
+| `segment` | `role` | undefined \| 'spinbutton' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/date-field.css` 按部件选择：`[data-scope="date-field"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-complete` | ''（条件成立时才出现） |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-out-of-range` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-invalid` | ''（条件成立时才出现） |
+| `control` | `data-readonly` | ''（条件成立时才出现） |
+| `segment` | `data-disabled` | ''（条件成立时才出现） |
+| `segment` | `data-focus` | ''（条件成立时才出现） |
+| `segment` | `data-index` | String(index) \| undefined |
+| `segment` | `data-invalid` | ''（条件成立时才出现） |
+| `segment` | `data-placeholder` | ''（条件成立时才出现） |
+| `segment` | `data-readonly` | ''（条件成立时才出现） |
+| `segment` | `data-segment` | item?.type |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-date-field-control-bg` · `--xh-date-field-control-bg-disabled` · `--xh-date-field-control-bg-readonly` · `--xh-date-field-control-border` · `--xh-date-field-control-border-focus` · `--xh-date-field-control-border-hover` · `--xh-date-field-control-border-invalid` · `--xh-date-field-control-fg` · `--xh-date-field-control-h` · `--xh-date-field-control-px` · `--xh-date-field-control-radius` · `--xh-date-field-font-size` · `--xh-date-field-gap` · `--xh-date-field-icon-size` · `--xh-date-field-label-fg` · `--xh-date-field-label-fg-disabled` · `--xh-date-field-label-font-size` · `--xh-date-field-label-font-weight` · `--xh-date-field-placeholder-fg` · `--xh-date-field-segment-bg-focus` · `--xh-date-field-segment-fg-focus` · `--xh-date-field-segment-px` · `--xh-date-field-segment-py` · `--xh-date-field-segment-radius`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 外面套[表单字段](./field)；与[日期选择器](./date-picker)共用同一套段位部件。
+
+## 最佳实践
+
+- 给出 `min` / `max`，方向键才有边界。
+- 明确对外值的写法（ISO 串还是别的），并与后端对齐。
+
+## 反模式
+
+- 用一个[文本输入](./text-field)收日期再自己解析：各地区的写法互不相同，解析出来的结果不可控。

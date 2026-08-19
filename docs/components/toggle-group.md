@@ -1,6 +1,25 @@
 # 切换按钮组 <Badge type="info" text="toggle-group" />
 
-通用组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一排连在一起的切换按钮，整组共一个值：单选时是分段控件，多选时是一排可同时按下的工具钮。
+
+## 何时使用
+
+- 在少数几个互斥项之间切换视图（日 / 周 / 月，列表 / 网格）。
+- 一排可同时开关的格式工具（加粗 / 斜体 / 下划线），此时开 `multiple`。
+
+## 何时不用
+
+- 选项超过五六个，或需要搜索：用[选择器](./select)。
+- 选项要随表单提交并需要 label 关联：用[单选组](./radio-group)。
+- 各段是动作不是选项：用[按钮组](./button-group)。
+
+## 特性
+
+- `multiple` 换的是整套 ARIA：单选时 `root` 是 `radiogroup`、条目是 `radio`；多选时 `root` 退回 `group`、条目退回按钮加 `aria-pressed`，值也从字符串变成数组。
+- roving tabindex：整组只占一个 Tab 位，进组后四个方向键都能走，与视觉排布无关。
+- `disallowEmpty` 决定能不能点成空值。
+- 条目一律 `aria-disabled` 而非原生 `disabled`：点不动但焦点落得上去，仍能当方向键的起点。
+- 给了 `collection` 就由它做显示文本与禁用的事实源，条目部件只需报 `value`。
 
 ## 示例
 
@@ -86,9 +105,15 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | --- | --- | --- |
 | `value-change` | `ToggleGroupValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| string[] \| null }`（形态跟着 multiple 走） |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `item` | 'on' \| 'off' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -123,8 +148,60 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | `End` | focus in group, 组未禁用且 rovingFocus 开启 | 焦点移到末个可停留条目 |
 | `Enter` / `Space` | focus on item, 条目未禁用 | 切换该条目；条目是原生 button，这两个键由平台翻成 click |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-orientation` | undefined \| props.orientation |
+| `root` | `role` | 'group' \| 'radiogroup' |
+| `item` | `aria-checked` | undefined \| 'true' \| 'false' |
+| `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `aria-pressed` | 'true' \| 'false' \| undefined |
+| `item` | `role` | undefined \| 'radio' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/toggle-group.css` 按部件选择：`[data-scope="toggle-group"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-orientation` | props.orientation |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-state` | 'on' \| 'off' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-toggle-group-item-bg` · `--xh-toggle-group-item-bg-active` · `--xh-toggle-group-item-bg-disabled` · `--xh-toggle-group-item-bg-hover` · `--xh-toggle-group-item-bg-on` · `--xh-toggle-group-item-bg-on-active` · `--xh-toggle-group-item-bg-on-hover` · `--xh-toggle-group-item-border` · `--xh-toggle-group-item-border-disabled` · `--xh-toggle-group-item-border-on` · `--xh-toggle-group-item-border-on-disabled` · `--xh-toggle-group-item-fg` · `--xh-toggle-group-item-fg-disabled` · `--xh-toggle-group-item-fg-on` · `--xh-toggle-group-item-fg-on-disabled` · `--xh-toggle-group-item-font-size` · `--xh-toggle-group-item-font-weight` · `--xh-toggle-group-item-gap` · `--xh-toggle-group-item-h` · `--xh-toggle-group-item-px` · `--xh-toggle-group-radius`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 与[工具栏](./toolbar)嵌套：工具栏管跨组导航，本组管组内。
+
+## 最佳实践
+
+- 段数固定在二到五段，段宽尽量等长，切换时整条不该变宽。
+- 单选组默认允许点空；表单里当必填项用时把 `disallowEmpty` 打开。
+
+## 反模式
+
+- 拿它当[标签页](./tabs)用：标签页有面板关联（`aria-controls`）与相应的读屏语义，切换按钮组没有。
+- 关掉 `rovingFocus` 却不另给导航方式：每段自成一个 Tab 停靠点，键盘用户要按很多次才能走完。

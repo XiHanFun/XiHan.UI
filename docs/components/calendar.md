@@ -1,6 +1,21 @@
 # 日历 <Badge type="info" text="calendar" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一整月（或周 / 月 / 季 / 年）的网格，格子里可以放内容。
+
+## 何时使用
+
+- 需要看见整段时间的分布：日程、排班、可预约情况。
+- 需要在格子里显示当天的事件。
+
+## 何时不用
+
+- 只是录入一个日期：用[日期选择器](./date-picker)或[日期输入](./date-field)。
+
+## 特性
+
+- 星期名由作者自己渲染，组件一个节点都不替你生成。
+- `isDateUnavailable` 与 `min` / `max` 都只挡落值不挡聚焦——键盘用户仍能走到不可选的日子上，读屏会念出它不可选。
+- 支持区间选择、整周选择、固定六行与多月并排。
 
 ## 示例
 
@@ -89,9 +104,9 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | --- | --- | --- | --- |
 | `XhCalendarRoot` | `default` | `CalendarRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -170,8 +185,85 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `Shift+PageDown` | focus in grid | 进一年；粗粒度视图里进十页 |
 | `Enter` / `Space` | focus in grid, 聚焦日可用且非只读 | 选中聚焦日：单选替换、多选切换、区间先落起点再落终点。还没钻到 view 那一档时这一下是往下钻一层 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `grid` | `aria-disabled` | 'true' \| 'false' |
+| `grid` | `aria-labelledby` | `heading` 部件的 id |
+| `grid` | `aria-multiselectable` | 'false' \| 'true' |
+| `grid` | `aria-readonly` | 'true' \| 'false' |
+| `grid` | `role` | 'grid' |
+| `grid-head` | `role` | 'rowgroup' |
+| `week-day` | `aria-label` | meta?.long |
+| `week-day` | `role` | 'columnheader' |
+| `grid-body` | `role` | 'rowgroup' |
+| `week-row` | `role` | 'row' |
+| `week-number` | `aria-hidden` | 'true' |
+| `week-number` | `role` | 'rowheader' |
+| `cell` | `aria-selected` | 'true' \| 'false' |
+| `cell` | `role` | 'gridcell' |
+| `cell-trigger` | `aria-disabled` | 'true' \| 'false' |
+| `cell-trigger` | `aria-label` | cellLabelFormatter.format(state.date.toDate(timeZone)) \| undefined |
+| `cell-trigger` | `role` | 'button' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/calendar.css` 按部件选择：`[data-scope="calendar"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `prev-year-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `next-year-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `heading` | `data-index` | panelOf(panel).index |
+| `heading` | `data-view` | context.get('activeView') |
+| `heading-year-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `heading-year-trigger` | `data-index` | panelOf(panel).index |
+| `heading-year-trigger` | `data-view` | context.get('activeView') |
+| `heading-month-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `heading-month-trigger` | `data-index` | panelOf(panel).index |
+| `heading-month-trigger` | `data-view` | context.get('activeView') |
+| `grid` | `data-disabled` | ''（条件成立时才出现） |
+| `grid` | `data-index` | panelOf(panel).index |
+| `grid` | `data-readonly` | ''（条件成立时才出现） |
+| `grid` | `data-view` | context.get('activeView') |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-calendar-cell-bg-hover` · `--xh-calendar-cell-bg-selected` · `--xh-calendar-cell-fg` · `--xh-calendar-cell-fg-outside` · `--xh-calendar-cell-fg-selected` · `--xh-calendar-cell-font-size` · `--xh-calendar-cell-gap` · `--xh-calendar-cell-radius` · `--xh-calendar-cell-size` · `--xh-calendar-gap` · `--xh-calendar-grid-gap` · `--xh-calendar-header-gap` · `--xh-calendar-heading-fg` · `--xh-calendar-heading-font-size` · `--xh-calendar-heading-font-weight` · `--xh-calendar-heading-trigger-fg-hover` · `--xh-calendar-heading-trigger-px` · `--xh-calendar-heading-trigger-radius` · `--xh-calendar-nav-bg` · `--xh-calendar-nav-bg-hover` · `--xh-calendar-nav-fg` · `--xh-calendar-nav-radius` · `--xh-calendar-nav-size` · `--xh-calendar-period-gap` · `--xh-calendar-period-py` · `--xh-calendar-range-bg` · `--xh-calendar-row-gap` · `--xh-calendar-today-border` · `--xh-calendar-week-day-fg` · `--xh-calendar-week-day-font-size` · `--xh-calendar-week-day-font-weight` · `--xh-calendar-week-day-h` · `--xh-calendar-week-number-fg` · `--xh-calendar-week-number-font-size` · `--xh-calendar-week-number-w`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 格子里放[徽标](./badge)或一小段[排印](./typography)；外面套[卡片](./card)。
+
+## 最佳实践
+
+- 今天要有明显标记，且与"选中"区分开。
+- 格子里的内容超出时收起来，别让某一行比别的行高很多。
+
+## 反模式
+
+- 不可选的日子连焦点都到不了：键盘用户无从知道那里有什么。
+- 用它当日期输入框。

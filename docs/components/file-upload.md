@@ -1,6 +1,22 @@
 # 文件上传 <Badge type="info" text="file-upload" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+选择文件、拖放文件，并把已选与已传的文件列出来。
+
+## 何时使用
+
+- 任何需要用户提交文件的地方。
+- 需要预览、限制类型与大小、或选整个目录。
+
+## 何时不用
+
+- 只是展示已有附件、不允许新增：用[列表](./list)。
+
+## 特性
+
+- `maxFiles` / `maxFileSize` / `minFileSize` 越界的当场被拒，`onFileReject` 逐个报出理由。
+- `autoUpload` 决定选完就传还是等提交。
+- `remoteFiles` 用来回显服务器上已有的附件，与本次新选的并列在同一个列表里。
+- 上传生命周期（完成、失败）各有回调；宿主还可以插入自定的准入判断。
 
 ## 示例
 
@@ -135,9 +151,9 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 | --- | --- | --- | --- |
 | `XhFileUploadRoot` | `default` | `FileUploadRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `dragging`
 
@@ -192,8 +208,82 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 | `Enter` / `Space` | focus on item-delete-trigger | 把这一条从列表里删掉（原生 button 的默认激活） |
 | `Enter` / `Space` | focus on clear-trigger，且列表非空 | 清空整份列表；列表为空时该按钮带原生 disabled，键盘根本到不了它 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `dropzone` | `aria-disabled` | 'true' \| 'false' |
+| `dropzone` | `aria-label` | label.dropzone |
+| `dropzone` | `aria-labelledby` | `label` 部件的 id |
+| `dropzone` | `role` | 'button' |
+| `item-group` | `role` | 'list' |
+| `item` | `role` | 'listitem' |
+| `item-preview` | `aria-hidden` | 'true' |
+| `item-delete-trigger` | `aria-label` | label.deleteFile(file) |
+| `clear-trigger` | `aria-label` | label.clearFiles |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/file-upload.css` 按部件选择：`[data-scope="file-upload"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-dragging` | ''（条件成立时才出现） |
+| `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `dropzone` | `data-disabled` | ''（条件成立时才出现） |
+| `dropzone` | `data-dragging` | ''（条件成立时才出现） |
+| `dropzone` | `data-invalid` | ''（条件成立时才出现） |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `item-group` | `data-disabled` | ''（条件成立时才出现） |
+| `item-group` | `data-empty` | ''（条件成立时才出现） |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-file-name` | file.name |
+| `item` | `data-file-size` | undefined \| String(file.size) \| String(file.size) |
+| `item` | `data-remote` | ''（条件成立时才出现） |
+| `item` | `data-status` | uploadOf(file)?.status |
+| `item-name` | `data-disabled` | ''（条件成立时才出现） |
+| `item-size-text` | `data-disabled` | ''（条件成立时才出现） |
+| `item-size-text` | `data-file-size` | undefined \| String(file.size) \| String(file.size) |
+| `item-preview` | `data-disabled` | ''（条件成立时才出现） |
+| `item-preview` | `data-file-type` | (isRemote(file) ? file.type ?? '' : file.type) \|\| 'un… |
+| `item-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-file-upload-clear-bg-hover` · `--xh-file-upload-clear-fg` · `--xh-file-upload-clear-fg-hover` · `--xh-file-upload-clear-font-size` · `--xh-file-upload-clear-gap` · `--xh-file-upload-clear-h` · `--xh-file-upload-clear-px` · `--xh-file-upload-clear-radius` · `--xh-file-upload-delete-bg-hover` · `--xh-file-upload-delete-fg` · `--xh-file-upload-delete-fg-hover` · `--xh-file-upload-delete-radius` · `--xh-file-upload-delete-size` · `--xh-file-upload-dropzone-bg` · `--xh-file-upload-dropzone-bg-disabled` · `--xh-file-upload-dropzone-bg-dragging` · `--xh-file-upload-dropzone-border` · `--xh-file-upload-dropzone-border-dragging` · `--xh-file-upload-dropzone-border-hover` · `--xh-file-upload-dropzone-border-invalid` · `--xh-file-upload-dropzone-fg` · `--xh-file-upload-dropzone-font-size` · `--xh-file-upload-dropzone-gap` · `--xh-file-upload-dropzone-min-h` · `--xh-file-upload-dropzone-px` · `--xh-file-upload-dropzone-py` · `--xh-file-upload-dropzone-radius` · `--xh-file-upload-gap` · `--xh-file-upload-item-bg` · `--xh-file-upload-item-border` · `--xh-file-upload-item-fg` · `--xh-file-upload-item-font-size` · `--xh-file-upload-item-gap` · `--xh-file-upload-item-inner-gap` · `--xh-file-upload-item-px` · `--xh-file-upload-item-py` · `--xh-file-upload-item-radius` · `--xh-file-upload-label-fg` · `--xh-file-upload-label-fg-disabled` · `--xh-file-upload-label-font-size` · `--xh-file-upload-label-font-weight` · `--xh-file-upload-preview-bg` · `--xh-file-upload-preview-fg` · `--xh-file-upload-preview-fg-image` · `--xh-file-upload-preview-radius` · `--xh-file-upload-preview-size` · `--xh-file-upload-size-fg` · `--xh-file-upload-size-font-size` · `--xh-file-upload-trigger-bg` · `--xh-file-upload-trigger-bg-hover` · `--xh-file-upload-trigger-border` · `--xh-file-upload-trigger-fg` · `--xh-file-upload-trigger-font-size` · `--xh-file-upload-trigger-gap` · `--xh-file-upload-trigger-h` · `--xh-file-upload-trigger-px` · `--xh-file-upload-trigger-radius`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 外面套[表单字段](./field)；缩略图墙用[图片](./image)与[图片预览](./image-viewer)。
+
+## 最佳实践
+
+- 在界面上写清楚允许的类型与大小上限，别等用户选完才拒。
+- 拒收要说明是哪个文件、为什么。
+
+## 反模式
+
+- 只拦前端不拦后端。
+- 上传中不给进度也不能取消。

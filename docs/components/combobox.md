@@ -1,6 +1,25 @@
 # 组合框 <Badge type="info" text="combobox" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+能打字过滤的选择器：输入框加候选浮层，可以只从候选里选，也可以允许自由文本。
+
+## 何时使用
+
+- 选项多到需要检索（城市、用户、商品）。
+- 候选来自远端，随输入变化。
+- 允许用户输入清单之外的值（`allowCustomValue`）。
+
+## 何时不用
+
+- 选项固定且不多：用[选择器](./select)。
+- 只是在正文里插入引用：用[提及](./mention)。
+- 输入的是标签集合：用[标签输入](./tags-input)。
+
+## 特性
+
+- `inputBehavior` 决定输入时是否自动高亮或自动补全首项。
+- 多选、分组、异步候选、选中后清空输入都是内置行为。
+- `openOnClick` 决定点击输入框是否直接展开候选。
+- 输入宿主可以换成多行。
 
 ## 示例
 
@@ -156,9 +175,21 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `XhComboboxRoot` | `empty` | — |  |
 | `XhComboboxRoot` | `item` | `ComboboxNodeMeta` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'open' \| 'closed' |
+| `control` | 'open' \| 'closed' |
+| `input` | 'open' \| 'closed' |
+| `trigger` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+| `empty` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -226,8 +257,99 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `Backspace` | multiple, 输入串为空且已有选中 | 删掉最后一个已选项 |
 | `可打印字符` | focus in input | 改写输入串并展开列表；过滤由调用方按 onInputValueChange 自己做 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `input` | `aria-activedescendant` | `item` 部件的 id \| undefined |
+| `input` | `aria-autocomplete` | 'both' \| 'list' |
+| `input` | `aria-controls` | `content` 部件的 id |
+| `input` | `aria-expanded` | undefined \| 'true' \| 'false' |
+| `input` | `aria-haspopup` | 'listbox' |
+| `input` | `aria-invalid` | 'true' \| 'false' |
+| `input` | `aria-labelledby` | `label` 部件的 id |
+| `input` | `role` | undefined \| 'combobox' |
+| `trigger` | `aria-controls` | `content` 部件的 id |
+| `clear-trigger` | `aria-hidden` | 'true' |
+| `content` | `aria-labelledby` | `label` 部件的 id |
+| `content` | `aria-multiselectable` | 'true' \| 'false' |
+| `content` | `role` | 'listbox' |
+| `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `aria-selected` | 'true' \| 'false' |
+| `item` | `role` | 'option' |
+| `item-indicator` | `aria-hidden` | 'true' |
+| `item-group` | `aria-labelledby` | `group-label` 部件的 id |
+| `item-group` | `role` | 'group' |
+| `empty` | `role` | 'status' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/combobox.css` 按部件选择：`[data-scope="combobox"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-state` | 'open' \| 'closed' |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-invalid` | ''（条件成立时才出现） |
+| `control` | `data-readonly` | ''（条件成立时才出现） |
+| `control` | `data-state` | 'open' \| 'closed' |
+| `input` | `data-disabled` | ''（条件成立时才出现） |
+| `input` | `data-invalid` | ''（条件成立时才出现） |
+| `input` | `data-multiline` | ''（条件成立时才出现） |
+| `input` | `data-readonly` | ''（条件成立时才出现） |
+| `input` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `positioner` | `data-hidden` | ''（条件成立时才出现） |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-size` | props.size |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-tone` | props.tone |
+| `positioner` | `data-variant` | props.variant |
+| `content` | `data-placement` | 定位引擎算出的实际落位 |
+| `content` | `data-state` | 'open' \| 'closed' |
+| `empty` | `data-state` | 'open' \| 'closed' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-combobox-action-bg` · `--xh-combobox-action-bg-active` · `--xh-combobox-action-bg-hover` · `--xh-combobox-action-fg` · `--xh-combobox-action-fg-hover` · `--xh-combobox-action-font-size` · `--xh-combobox-action-radius` · `--xh-combobox-action-size` · `--xh-combobox-content-bg` · `--xh-combobox-content-border` · `--xh-combobox-content-fg` · `--xh-combobox-content-max-h` · `--xh-combobox-content-max-w` · `--xh-combobox-content-min-w` · `--xh-combobox-content-px` · `--xh-combobox-content-py` · `--xh-combobox-content-radius` · `--xh-combobox-content-shadow` · `--xh-combobox-control-bg` · `--xh-combobox-control-bg-disabled` · `--xh-combobox-control-bg-readonly` · `--xh-combobox-control-border` · `--xh-combobox-control-border-focus` · `--xh-combobox-control-border-hover` · `--xh-combobox-control-border-invalid` · `--xh-combobox-control-fg` · `--xh-combobox-control-gap` · `--xh-combobox-control-h` · `--xh-combobox-control-min-w` · `--xh-combobox-control-px` · `--xh-combobox-control-radius` · `--xh-combobox-empty-bg` · `--xh-combobox-empty-border` · `--xh-combobox-empty-fg` · `--xh-combobox-empty-font-size` · `--xh-combobox-empty-px` · `--xh-combobox-empty-py` · `--xh-combobox-empty-radius` · `--xh-combobox-empty-shadow` · `--xh-combobox-gap` · `--xh-combobox-group-gap` · `--xh-combobox-group-label-fg` · `--xh-combobox-group-label-font-size` · `--xh-combobox-group-label-font-weight` · `--xh-combobox-group-label-px` · `--xh-combobox-group-label-py` · `--xh-combobox-input-font-size` · `--xh-combobox-item-bg-hover` · `--xh-combobox-item-fg` · `--xh-combobox-item-fg-selected` · `--xh-combobox-item-font-size` · `--xh-combobox-item-font-weight-selected` · `--xh-combobox-item-gap` · `--xh-combobox-item-indicator-fg` · `--xh-combobox-item-indicator-size` · `--xh-combobox-item-leading` · `--xh-combobox-item-px` · `--xh-combobox-item-py` · `--xh-combobox-item-radius` · `--xh-combobox-label-fg` · `--xh-combobox-label-font-size` · `--xh-combobox-label-font-weight` · `--xh-combobox-placeholder-fg`
+
+## 动效
+
+关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 外面套[表单字段](./field)。
+
+## 最佳实践
+
+- 异步候选要有在途与空态两种反馈，用户才知道是在找还是没有。
+- 高亮匹配片段用[文本高亮](./highlight)，让用户看清为什么这条被选出来。
+
+## 反模式
+
+- 允许自由文本却不告诉用户——他以为自己选中了一条，其实提交了一段文字。
+- 输入一个字符就发一次请求。

@@ -1,6 +1,24 @@
 # 分页 <Badge type="info" text="pagination" />
 
-导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+把一份很长的结果切成一页一页，并给出当前位置与去处。
+
+## 何时使用
+
+- 结果集很大且用户需要跳到确定的位置、或需要可分享的页码地址。
+- 需要知道一共有多少条。
+
+## 何时不用
+
+- 内容是时间流、用户只关心"再来一些"：用[无限滚动](./infinite-scroll)。
+- 结果条数很少：一次全给。
+
+## 特性
+
+- `count` 给的是总条数不是总页数。
+- 页码序列由 `root` 的插槽交出来，作者照着渲染条目与省略号；不渲染序列也行，只留上一页 / 下一页。
+- `siblingCount` 决定当前页两侧各留几页，序列长度恒定，切页时省略号左右挪、按钮不抖。
+- `dir` 只作用于排版："上一页"永远是 `page - 1`，不随书写方向翻转。
+- 换 `pageSize` 后总页数重算，越界的当前页被夹回末页。
 
 ## 示例
 
@@ -111,9 +129,9 @@ pageSize 归宿主持有；换档后总页数重算，越界的当前页被夹�
 | --- | --- | --- | --- |
 | `XhPaginationRoot` | `default` | `PaginationRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -154,8 +172,62 @@ pageSize 归宿主持有；换档后总页数重算，越界的当前页被夹�
 | `Enter` / `Space` | focus in next-trigger, 非末页 | 进下一页；末页时按钮是原生 disabled |
 | `Tab` / `Shift+Tab` | focus in root | 逐个走过每个可用按钮——分页不做 roving tabindex，用户要能 Tab 到某一页再确认；禁用的首尾按钮自动脱序 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-label` | label.root |
+| `prev-trigger` | `aria-label` | label.prevTrigger |
+| `next-trigger` | `aria-label` | label.nextTrigger |
+| `item` | `aria-current` | 'page' \| undefined |
+| `item` | `aria-label` | label.item(item.page) |
+| `ellipsis` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/pagination.css` 按部件选择：`[data-scope="pagination"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
+| `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-selected` | ''（条件成立时才出现） |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-pagination-ellipsis-fg` · `--xh-pagination-font-size` · `--xh-pagination-gap` · `--xh-pagination-item-bg` · `--xh-pagination-item-bg-active` · `--xh-pagination-item-bg-hover` · `--xh-pagination-item-bg-selected` · `--xh-pagination-item-bg-selected-active` · `--xh-pagination-item-bg-selected-hover` · `--xh-pagination-item-border-selected` · `--xh-pagination-item-border-selected-active` · `--xh-pagination-item-border-selected-hover` · `--xh-pagination-item-fg` · `--xh-pagination-item-fg-selected` · `--xh-pagination-item-font-weight` · `--xh-pagination-item-h` · `--xh-pagination-item-min-size` · `--xh-pagination-item-px` · `--xh-pagination-item-radius`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 与[表格](./table)、[列表](./list)配合；整组禁用时裹一层 `disabled` 的 `fieldset`。
+
+## 最佳实践
+
+- 把当前页写进地址，用户刷新或分享才回得到原处。
+- 数据在途时不要把分页整个卸载，否则每次翻页布局都跳一下。
+
+## 反模式
+
+- 已知总数却不显示，用户无法判断还要翻多久。
+- 把 `count` 当成总页数传进来：序列会短一大截。
