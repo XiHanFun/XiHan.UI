@@ -26,6 +26,11 @@ export interface CodeBlockProps {
 
 export interface CodeBlockApi<T extends PropTypes = PropTypes> {
   lang: string
+  /**
+   * 行数。行号栏由作者自己渲染——组件不给这个部件是有意的：
+   * 行号要与代码并排就得由 root 拿走 flex/grid 排布权，而 root 刻意不设 display，
+   * 排布归作者。拿这个数配一列 span 即可，行高与代码块共用同一个令牌。
+   */
   lineCount: number
   /**
    * 着色结果。空数组表示这一次不着色，作者按 `code` 原样渲染纯文本即可。

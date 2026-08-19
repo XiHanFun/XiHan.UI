@@ -230,6 +230,7 @@
     --xh-border-invalid: var(--xh-color-danger-600);
     --xh-border-at-limit: var(--xh-color-warning-600);
     --xh-ring-focus: var(--xh-color-brand-500);
+    --xh-ring-invalid: var(--xh-color-danger-500);
   }
 
   /* mode 轴 · 浅色显式取值块 */
@@ -269,6 +270,7 @@
     --xh-border-invalid: var(--xh-color-danger-600);
     --xh-border-at-limit: var(--xh-color-warning-600);
     --xh-ring-focus: var(--xh-color-brand-500);
+    --xh-ring-invalid: var(--xh-color-danger-500);
   }
 
   /* mode 轴 · 深色取值块（color-scheme 必须在此，嵌套深色区才能拿到深色原生控件） */
@@ -308,6 +310,7 @@
     --xh-border-invalid: var(--xh-color-danger-500);
     --xh-border-at-limit: var(--xh-color-warning-500);
     --xh-ring-focus: var(--xh-color-brand-400);
+    --xh-ring-invalid: var(--xh-color-danger-400);
   }
 
   /* contrast 轴 · 高对比档。三块全是 :where()（特指度 0），谁在后面谁赢，

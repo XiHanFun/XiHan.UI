@@ -7524,6 +7524,9 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='combobox'][data-part='control'][data-invalid] {
   border-color: var(--xh-combobox-control-border-invalid, var(--xh-border-invalid));
+
+  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+  --xh-_combobox-ring: var(--xh-ring-invalid);
 }
 
 /* 只读仍可聚焦、可复制，所以不置灰，只把底色压下去表示"改不动" */
@@ -8389,6 +8392,9 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='date-field'][data-part='control'][data-invalid] {
   border-color: var(--xh-date-field-control-border-invalid, var(--xh-border-invalid));
+
+  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+  --xh-_date-field-ring: var(--xh-ring-invalid);
 }
 
 /* 只读仍可聚焦、可换段，不置灰，只把底色压下去表示"改不动" */
@@ -8621,6 +8627,9 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='date-picker'][data-part='control'][data-invalid] {
   border-color: var(--xh-date-picker-control-border-invalid, var(--xh-border-invalid));
+
+  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+  --xh-_date-picker-ring: var(--xh-ring-invalid);
 }
 
 /* 只读仍可聚焦、日历仍能展开来看，不置灰，只把底色压下去表示"改不动" */
@@ -11981,6 +11990,9 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='number-field'][data-part='control'][data-invalid] {
   border-color: var(--xh-number-field-input-border-invalid, var(--xh-border-invalid));
+
+  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+  --xh-_number-field-ring: var(--xh-ring-invalid);
 }
 
 [data-scope='number-field'][data-part='control'][data-readonly] {
@@ -12116,6 +12128,9 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='number-field'][data-part='input'][data-invalid] {
   border-color: var(--xh-number-field-input-border-invalid, var(--xh-border-invalid));
+
+  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+  --xh-_number-field-ring: var(--xh-ring-invalid);
 }
 
 /* 只读仍可聚焦、可复制，不置灰，只把底色压下去表示"改不动" */
@@ -12474,6 +12489,9 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='pin-input'][data-part='input'][data-invalid] {
   border-color: var(--xh-pin-input-box-border-invalid, var(--xh-border-invalid));
+
+  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+  --xh-_pin-input-ring: var(--xh-ring-invalid);
 }
 
 /* 每格都是原生 disabled 的单体控件（禁用的格子不该能聚焦），所以用 :disabled */
@@ -13401,6 +13419,9 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='select'][data-part='trigger'][data-invalid] {
   border-color: var(--xh-select-trigger-border-invalid, var(--xh-border-invalid));
+
+  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+  --xh-_select-ring: var(--xh-ring-invalid);
 }
 
 /* 收纳容器：触发器与清空按钮的定位基准，触发器在里面占满一行 */
@@ -15434,6 +15455,9 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='tags-input'][data-part='control'][data-invalid] {
   border-color: var(--xh-tags-input-control-border-invalid, var(--xh-border-invalid));
+
+  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+  --xh-_tags-input-ring: var(--xh-ring-invalid);
 }
 
 /* 只读仍可聚焦、可复制，所以不置灰，只把底色压下去表示"改不动" */
@@ -15822,6 +15846,9 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='text-field'][data-part='input'][data-invalid] {
   border-color: var(--xh-text-field-input-border-invalid, var(--xh-border-invalid));
+
+  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+  --xh-_text-field-ring: var(--xh-ring-invalid);
 }
 
 /* 只读仍可聚焦、可复制，所以不置灰，只把底色压下去表示"改不动" */
@@ -16126,6 +16153,9 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='time-field'][data-part='control'][data-invalid] {
   border-color: var(--xh-time-field-control-border-invalid, var(--xh-border-invalid));
+
+  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+  --xh-_time-field-ring: var(--xh-ring-invalid);
 }
 
 /* 只读仍可聚焦、可换段，所以不置灰，只把底色压下去表示"改不动" */
@@ -16359,6 +16389,9 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='time-picker'][data-part='control'][data-invalid] {
   border-color: var(--xh-time-picker-control-border-invalid, var(--xh-border-invalid));
+
+  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+  --xh-_time-picker-ring: var(--xh-ring-invalid);
 }
 
 /* 只读仍可聚焦、可换段，所以不置灰，只把底色压下去表示"改不动" */
@@ -17392,6 +17425,8 @@ input[data-scope='mention'][data-part='input'] {
   max-inline-size: var(--xh-tooltip-max-w, var(--xh-overlay-max-w));
   padding-block: var(--xh-tooltip-py, var(--xh-_tooltip-py));
   padding-inline: var(--xh-tooltip-px, var(--xh-_tooltip-px));
+  /* 这里刻意用 control 而不是浮层那档 surface：提示气泡通常只有一行字、高度接近控件，
+     8px 圆角在这个尺寸上占比过大，看着会发胖。档位定义里为此单列了一条 */
   border-radius: var(--xh-tooltip-radius, var(--xh-shape-control));
   /* 实心底与其上的文字色随语气走。没写 data-tone 时两个槽都没被声明，退回原来的取值 */
   background: var(--xh-tooltip-bg, var(--xh-_tone, var(--xh-fg-default)));

@@ -193,7 +193,8 @@ export const tokens = {
   "--xh-border-control-hover": "var(--xh-color-neutral-500)",
   "--xh-border-invalid": "var(--xh-color-danger-600)",
   "--xh-border-at-limit": "var(--xh-color-warning-600)",
-  "--xh-ring-focus": "var(--xh-color-brand-500)"
+  "--xh-ring-focus": "var(--xh-color-brand-500)",
+  "--xh-ring-invalid": "var(--xh-color-danger-500)"
 } as const
 
 export type TokenName = keyof typeof tokens

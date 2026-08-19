@@ -128,6 +128,9 @@
 
   [data-scope='pin-input'][data-part='input'][data-invalid] {
     border-color: var(--xh-pin-input-box-border-invalid, var(--xh-border-invalid));
+
+    /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+    --xh-_pin-input-ring: var(--xh-ring-invalid);
   }
 
   /* 每格都是原生 disabled 的单体控件（禁用的格子不该能聚焦），所以用 :disabled */

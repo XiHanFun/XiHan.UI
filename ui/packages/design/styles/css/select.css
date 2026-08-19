@@ -157,6 +157,9 @@
 
   [data-scope='select'][data-part='trigger'][data-invalid] {
     border-color: var(--xh-select-trigger-border-invalid, var(--xh-border-invalid));
+
+    /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+    --xh-_select-ring: var(--xh-ring-invalid);
   }
 
   /* 收纳容器：触发器与清空按钮的定位基准，触发器在里面占满一行 */
