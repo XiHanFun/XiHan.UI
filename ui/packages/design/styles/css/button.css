@@ -28,14 +28,14 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--xh-button-gap, var(--xh-control-gap-md));
-    block-size: var(--xh-button-h, var(--xh-control-h-md));
-    padding-inline: var(--xh-button-px, var(--xh-control-px-md));
+    gap: var(--xh-button-gap, var(--xh-_button-group-gap, var(--xh-control-gap-md)));
+    block-size: var(--xh-button-h, var(--xh-_button-group-h, var(--xh-control-h-md)));
+    padding-inline: var(--xh-button-px, var(--xh-_button-group-px, var(--xh-control-px-md)));
     border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-button-radius, var(--xh-shape-control));
     background: var(--xh-_bg);
     color: var(--xh-_fg);
-    font-size: var(--xh-button-font-size, var(--xh-text-label-size));
+    font-size: var(--xh-button-font-size, var(--xh-_button-group-font-size, var(--xh-text-label-size)));
     font-weight: var(--xh-button-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
@@ -101,17 +101,17 @@
   [data-scope='button'][data-part='root'][data-size='sm'] {
     --xh-icon-size: var(--xh-button-icon-size, var(--xh-glyph-size-sm));
 
-    block-size: var(--xh-control-h-sm);
-    padding-inline: var(--xh-control-px-sm);
-    font-size: var(--xh-font-size-sm);
+    block-size: var(--xh-button-h, var(--xh-control-h-sm));
+    padding-inline: var(--xh-button-px, var(--xh-control-px-sm));
+    font-size: var(--xh-button-font-size, var(--xh-font-size-sm));
   }
 
   [data-scope='button'][data-part='root'][data-size='lg'] {
     --xh-icon-size: var(--xh-button-icon-size, var(--xh-glyph-size-lg));
 
-    block-size: var(--xh-control-h-lg);
-    padding-inline: var(--xh-control-px-lg);
-    font-size: var(--xh-font-size-lg);
+    block-size: var(--xh-button-h, var(--xh-control-h-lg));
+    padding-inline: var(--xh-button-px, var(--xh-control-px-lg));
+    font-size: var(--xh-button-font-size, var(--xh-font-size-lg));
   }
 
   /* 只有图标：左右内距清零，宽度靠比例跟住当前档的高度——换尺寸档时仍是正方形，

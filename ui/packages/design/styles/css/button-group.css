@@ -30,26 +30,27 @@
 
   /* —— 尺寸 —— */
   /* 高度、内边距、间距、字号在容器上写一次，沿继承流给组内每一段。
-     三档都写出来：自定义属性会一路继承，组里再套一组时内层不写就会沿用外层的档 */
+     三档都写出来：自定义属性会一路继承，组里再套一组时内层不写就会沿用外层的档。
+     写私有槽而非 --xh-button-*：后者是使用者的入口，组内某一枚自己写了档位时要压得住容器 */
   [data-scope='button-group'][data-part='root'][data-size='sm'] {
-    --xh-button-h: var(--xh-control-h-sm);
-    --xh-button-px: var(--xh-control-px-sm);
-    --xh-button-gap: var(--xh-control-gap-sm);
-    --xh-button-font-size: var(--xh-font-size-sm);
+    --xh-_button-group-h: var(--xh-control-h-sm);
+    --xh-_button-group-px: var(--xh-control-px-sm);
+    --xh-_button-group-gap: var(--xh-control-gap-sm);
+    --xh-_button-group-font-size: var(--xh-font-size-sm);
   }
 
   [data-scope='button-group'][data-part='root'][data-size='md'] {
-    --xh-button-h: var(--xh-control-h-md);
-    --xh-button-px: var(--xh-control-px-md);
-    --xh-button-gap: var(--xh-control-gap-md);
-    --xh-button-font-size: var(--xh-font-size-md);
+    --xh-_button-group-h: var(--xh-control-h-md);
+    --xh-_button-group-px: var(--xh-control-px-md);
+    --xh-_button-group-gap: var(--xh-control-gap-md);
+    --xh-_button-group-font-size: var(--xh-font-size-md);
   }
 
   [data-scope='button-group'][data-part='root'][data-size='lg'] {
-    --xh-button-h: var(--xh-control-h-lg);
-    --xh-button-px: var(--xh-control-px-lg);
-    --xh-button-gap: var(--xh-control-gap-lg);
-    --xh-button-font-size: var(--xh-font-size-lg);
+    --xh-_button-group-h: var(--xh-control-h-lg);
+    --xh-_button-group-px: var(--xh-control-px-lg);
+    --xh-_button-group-gap: var(--xh-control-gap-lg);
+    --xh-_button-group-font-size: var(--xh-font-size-lg);
   }
 
   /* —— 形态 —— */

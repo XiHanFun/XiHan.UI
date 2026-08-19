@@ -232,26 +232,27 @@
 
 /* —— 尺寸 —— */
 /* 高度、内边距、间距、字号在容器上写一次，沿继承流给组内每一段。
-   三档都写出来：自定义属性会一路继承，组里再套一组时内层不写就会沿用外层的档 */
+   三档都写出来：自定义属性会一路继承，组里再套一组时内层不写就会沿用外层的档。
+   写私有槽而非 --xh-button-*：后者是使用者的入口，组内某一枚自己写了档位时要压得住容器 */
 [data-scope='button-group'][data-part='root'][data-size='sm'] {
-  --xh-button-h: var(--xh-control-h-sm);
-  --xh-button-px: var(--xh-control-px-sm);
-  --xh-button-gap: var(--xh-control-gap-sm);
-  --xh-button-font-size: var(--xh-font-size-sm);
+  --xh-_button-group-h: var(--xh-control-h-sm);
+  --xh-_button-group-px: var(--xh-control-px-sm);
+  --xh-_button-group-gap: var(--xh-control-gap-sm);
+  --xh-_button-group-font-size: var(--xh-font-size-sm);
 }
 
 [data-scope='button-group'][data-part='root'][data-size='md'] {
-  --xh-button-h: var(--xh-control-h-md);
-  --xh-button-px: var(--xh-control-px-md);
-  --xh-button-gap: var(--xh-control-gap-md);
-  --xh-button-font-size: var(--xh-font-size-md);
+  --xh-_button-group-h: var(--xh-control-h-md);
+  --xh-_button-group-px: var(--xh-control-px-md);
+  --xh-_button-group-gap: var(--xh-control-gap-md);
+  --xh-_button-group-font-size: var(--xh-font-size-md);
 }
 
 [data-scope='button-group'][data-part='root'][data-size='lg'] {
-  --xh-button-h: var(--xh-control-h-lg);
-  --xh-button-px: var(--xh-control-px-lg);
-  --xh-button-gap: var(--xh-control-gap-lg);
-  --xh-button-font-size: var(--xh-font-size-lg);
+  --xh-_button-group-h: var(--xh-control-h-lg);
+  --xh-_button-group-px: var(--xh-control-px-lg);
+  --xh-_button-group-gap: var(--xh-control-gap-lg);
+  --xh-_button-group-font-size: var(--xh-font-size-lg);
 }
 
 /* —— 形态 —— */
@@ -4887,14 +4888,14 @@ input[data-scope='mention'][data-part='input'] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--xh-button-gap, var(--xh-control-gap-md));
-  block-size: var(--xh-button-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-button-px, var(--xh-control-px-md));
+  gap: var(--xh-button-gap, var(--xh-_button-group-gap, var(--xh-control-gap-md)));
+  block-size: var(--xh-button-h, var(--xh-_button-group-h, var(--xh-control-h-md)));
+  padding-inline: var(--xh-button-px, var(--xh-_button-group-px, var(--xh-control-px-md)));
   border: var(--xh-stroke-thin) solid transparent;
   border-radius: var(--xh-button-radius, var(--xh-shape-control));
   background: var(--xh-_bg);
   color: var(--xh-_fg);
-  font-size: var(--xh-button-font-size, var(--xh-text-label-size));
+  font-size: var(--xh-button-font-size, var(--xh-_button-group-font-size, var(--xh-text-label-size)));
   font-weight: var(--xh-button-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
   white-space: nowrap;
@@ -4960,17 +4961,17 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='button'][data-part='root'][data-size='sm'] {
   --xh-icon-size: var(--xh-button-icon-size, var(--xh-glyph-size-sm));
 
-  block-size: var(--xh-control-h-sm);
-  padding-inline: var(--xh-control-px-sm);
-  font-size: var(--xh-font-size-sm);
+  block-size: var(--xh-button-h, var(--xh-control-h-sm));
+  padding-inline: var(--xh-button-px, var(--xh-control-px-sm));
+  font-size: var(--xh-button-font-size, var(--xh-font-size-sm));
 }
 
 [data-scope='button'][data-part='root'][data-size='lg'] {
   --xh-icon-size: var(--xh-button-icon-size, var(--xh-glyph-size-lg));
 
-  block-size: var(--xh-control-h-lg);
-  padding-inline: var(--xh-control-px-lg);
-  font-size: var(--xh-font-size-lg);
+  block-size: var(--xh-button-h, var(--xh-control-h-lg));
+  padding-inline: var(--xh-button-px, var(--xh-control-px-lg));
+  font-size: var(--xh-button-font-size, var(--xh-font-size-lg));
 }
 
 /* 只有图标：左右内距清零，宽度靠比例跟住当前档的高度——换尺寸档时仍是正方形，
@@ -17016,15 +17017,15 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 尺寸 —— */
 [data-scope='toggle'][data-part='root'][data-size='sm'] {
-  block-size: var(--xh-control-h-sm);
-  padding-inline: var(--xh-control-px-sm);
-  font-size: var(--xh-font-size-sm);
+  block-size: var(--xh-toggle-h, var(--xh-control-h-sm));
+  padding-inline: var(--xh-toggle-px, var(--xh-control-px-sm));
+  font-size: var(--xh-toggle-font-size, var(--xh-font-size-sm));
 }
 
 [data-scope='toggle'][data-part='root'][data-size='lg'] {
-  block-size: var(--xh-control-h-lg);
-  padding-inline: var(--xh-control-px-lg);
-  font-size: var(--xh-font-size-lg);
+  block-size: var(--xh-toggle-h, var(--xh-control-h-lg));
+  padding-inline: var(--xh-toggle-px, var(--xh-control-px-lg));
+  font-size: var(--xh-toggle-font-size, var(--xh-font-size-lg));
 }
 
 /* styles/toggle-group.css */
