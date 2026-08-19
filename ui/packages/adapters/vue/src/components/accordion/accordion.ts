@@ -2,7 +2,8 @@ import type { AccordionNode, AccordionNodeMeta, AccordionSchema } from '@xihan-u
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, ref } from 'vue'
+import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { provideAccordion, provideAccordionItem, useAccordionContext, useAccordionItem } from './context'
 import { useAccordion } from './use-accordion'
 
@@ -88,7 +89,20 @@ export const XhAccordionContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useAccordionContext()
     const item = useAccordionItem()
-    return () => h('div', ctx.api.value.getContentProps(item()) as Record<string, unknown>, slots.default?.())
+    const contentRef = ref<HTMLElement | null>(null)
+    // 闸门按面板各开一个：手风琴模式下切换项时，一个进场一个退场是同时发生的
+    const visible = useOverlayExit({
+      config: ctx.config,
+      isOpen: () => ctx.api.value.isOpen(item().value),
+      contentRef,
+    })
+    return () => h('div', {
+      ...ctx.api.value.getContentProps(item()) as Record<string, unknown>,
+      // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
+      // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
+      style: visible.value ? undefined : { display: 'none' },
+      ref: (el: unknown) => { contentRef.value = el as HTMLElement },
+    }, slots.default?.())
   },
 })
 

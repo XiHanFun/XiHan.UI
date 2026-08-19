@@ -10,6 +10,7 @@
  */
 @layer xihan.components {
   :where(
+    xh-accordion,
     xh-cascader,
     xh-collapsible,
     xh-color-picker,

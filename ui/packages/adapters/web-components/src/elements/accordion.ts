@@ -1,8 +1,11 @@
 import type { AccordionItemProps, AccordionNode, AccordionSchema, AccordionValueChangeDetails } from '@xihan-ui/headless'
-import type { Direction, Orientation, Size, Tone } from '@xihan-ui/kernel'
+import type { Direction, IdGenerator, Orientation, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import { isItemDisabled } from '@xihan-ui/behavior'
 import { accordionAnatomy, accordionMachine, accordionMeta, connectAccordion } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
+import type { OverlayExit } from '../overlay-exit'
+import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/kernel'
+import { createOverlayExit } from '../overlay-exit'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
@@ -27,6 +30,17 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @csspart indicator - 展开方向指示符
  */
 export class XhAccordionElement extends XhElement {
+  // 闸门按面板各持一个：手风琴模式下切换项时，一个进场一个退场是同时发生的
+  private readonly exits = new Map<string, OverlayExit>()
+  private readonly exitIdGen: IdGenerator = createCounterIdGenerator()
+  private readonly exitScope = createScope(null, this.exitIdGen)
+  private exitConfig: RuntimeConfig | null = null
+
+  private ensureExitConfig(): RuntimeConfig {
+    this.exitConfig ??= createRuntimeConfig({ scope: this.exitScope, idGenerator: this.exitIdGen })
+    return this.exitConfig
+  }
+
   static override partContract = { anatomy: accordionAnatomy, meta: accordionMeta }
 
   static override properties = {
@@ -102,8 +116,25 @@ export class XhAccordionElement extends XhElement {
     putAll('item', item => api.getItemProps(item))
     putAll('header', item => api.getHeaderProps(item))
     putAll('trigger', item => api.getTriggerProps(item))
-    // content 收起靠 connect 给的 hidden 属性
-    putAll('content', item => api.getContentProps(item))
+    // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
+    // 就一帧都播不出来），真正的收起在动画结束后落成内联 display
+    for (const el of this.getParts('content')) {
+      const item = this.itemProps(el)
+      this.spreader.spread(el, api.getContentProps(item) as Record<string, unknown>)
+      const open = api.isOpen(item.value)
+      let exit = this.exits.get(item.value)
+      if (!exit) {
+        exit = createOverlayExit({
+          config: this.ensureExitConfig(),
+          open,
+          onExitComplete: () => this.requestUpdate(),
+        })
+        this.exits.set(item.value, exit)
+      }
+      exit.track(el)
+      exit.update(open)
+      this.setPartHidden(el, !exit.visible)
+    }
     putAll('indicator', item => api.getIndicatorProps(item))
   }
 }
