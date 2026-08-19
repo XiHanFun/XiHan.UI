@@ -135,10 +135,18 @@
     padding-inline: 0;
   }
 
-  /* 折叠态的弹出面板：贴着触发按钮旁侧的浮层卡片，坐标由连接层写在行内样式上。
+  /* 弹出面板的定位层：坐标由连接层写在行内样式上，这里只管层号与命中区。
+     它被搬到浮层落点、不在侧栏子树内，所以卡片外观仍归面板本身；
+     这里不设 display，UA 的 [hidden]{display:none} 就仍然压得住收起态 */
+  [data-scope='side-nav'][data-part='positioner'] {
+    position: fixed;
+    z-index: var(--xh-side-nav-popout-layer, var(--xh-layer-popover));
+    pointer-events: auto;
+  }
+
+  /* 折叠态的弹出面板：贴着触发按钮旁侧的浮层卡片。
      面板自己不吃子层缩进（padding 整圈盖掉），面板内的嵌套子层照常缩进 */
   [data-scope='side-nav'][data-part='branch-content'][data-popout] {
-    z-index: var(--xh-side-nav-popout-layer, var(--xh-layer-popover));
     min-inline-size: var(--xh-side-nav-popout-min-w, var(--xh-overlay-menu-min-w));
     max-inline-size: var(--xh-side-nav-popout-max-w, var(--xh-overlay-max-w));
     padding: var(--xh-side-nav-popout-p, var(--xh-space-1));
@@ -146,7 +154,6 @@
     border-radius: var(--xh-side-nav-popout-radius, var(--xh-shape-surface));
     background: var(--xh-side-nav-popout-bg, var(--xh-bg-surface));
     box-shadow: var(--xh-side-nav-popout-shadow, var(--xh-elevation-2));
-    pointer-events: auto;
   }
 
   [data-scope='side-nav'][data-part='branch-indicator'] {

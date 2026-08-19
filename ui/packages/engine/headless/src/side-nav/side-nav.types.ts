@@ -10,7 +10,9 @@ export interface SideNavRefs {
   position: PositionEnginePort | null
   /** 当前弹出分支的触发按钮（定位锚点）。 */
   getPopoutAnchorEl: () => HTMLElement | null
-  /** 当前弹出分支的子层容器（被定位的浮层，也是消解层节点）。 */
+  /** 当前弹出分支的定位层（引擎写坐标的那一层，作者已把它搬到浮层落点）。 */
+  getPopoutPositionerEl: () => HTMLElement | null
+  /** 当前弹出分支的子层容器（消解层节点与焦点域容器）。 */
   getPopoutContentEl: () => HTMLElement | null
 }
 
@@ -163,6 +165,13 @@ export interface SideNavApi<T extends PropTypes = PropTypes> {
   /** 行文字的载体：折叠成图标栏时由皮肤整个藏掉，不会裁出半个字。 */
   getBranchTextProps: () => T['element']
   getBranchIndicatorProps: (props: SideNavNodeProps) => T['element']
+  /** 该分支在折叠态下是否以浮层面板出现；决定作者要不要渲染定位层。 */
+  isPopoutPanel: (value: string) => boolean
+  /**
+   * 弹出面板的定位层。吃引擎坐标、承载层号，作者须把它搬到浮层落点，
+   * 免得祖先的层叠上下文把面板困住。非弹出分支不渲染这一层。
+   */
+  getPopoutPositionerProps: (props: SideNavNodeProps) => T['element']
   getBranchContentProps: (props: SideNavNodeProps) => T['element']
   getLinkProps: (props: SideNavNodeProps) => T['element']
   /** 链接文字的载体：折叠时由皮肤整个藏掉。 */

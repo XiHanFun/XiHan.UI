@@ -11,6 +11,7 @@ export const sideNavAnatomy = createAnatomy('side-nav', [
   'branch-trigger',
   'branch-text',
   'branch-indicator',
+  'positioner',
   'branch-content',
   'link',
   'link-text',

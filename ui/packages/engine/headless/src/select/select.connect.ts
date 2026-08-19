@@ -262,6 +262,8 @@ export function connectSelect<T extends PropTypes>(
         position: 'fixed',
         left: `${position?.x ?? 0}px`,
         top: `${position?.y ?? 0}px`,
+        // content 继承这个高度上限，超出的条目在浮层内部滚
+        '--xh-_select-available-h': position?.availableHeight != null ? `${position.availableHeight}px` : '',
       },
     }),
     // 浮层的外壳：描边、底色、阴影画在它身上，键盘也在它上面收口（条目只管声明自己）。

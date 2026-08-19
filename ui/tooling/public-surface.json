@@ -4473,6 +4473,7 @@
       "link",
       "link-text",
       "list",
+      "positioner",
       "root"
     ],
     "skeleton": [

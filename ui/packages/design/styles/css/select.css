@@ -33,6 +33,10 @@
 
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
   [data-scope='select'][data-part='positioner'] {
+    /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
+       引擎没算（尚未落位 / 无引擎）时不额外限高 */
+    --xh-_select-available-h: 100vh;
+
     position: fixed;
     z-index: var(--xh-layer-popover);
     /* 空壳不吃指针，交互只发生在 content 上 */
@@ -317,7 +321,7 @@
     flex-direction: column;
     min-inline-size: var(--xh-select-content-min-w, var(--xh-overlay-min-w));
     max-inline-size: var(--xh-select-content-max-w, var(--xh-overlay-max-w));
-    max-block-size: var(--xh-select-content-max-h, var(--xh-overlay-max-h));
+    max-block-size: min(var(--xh-select-content-max-h, var(--xh-overlay-max-h)), var(--xh-_select-available-h));
     border: var(--xh-stroke-thin) solid var(--xh-select-content-border, var(--xh-border-default));
     border-radius: var(--xh-select-content-radius, var(--xh-shape-surface));
     background: var(--xh-select-content-bg, var(--xh-bg-surface));

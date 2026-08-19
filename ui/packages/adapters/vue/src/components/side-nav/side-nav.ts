@@ -1,7 +1,7 @@
 import type { SideNavApi, SideNavNode, SideNavSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideSideNav, provideSideNavNode, useSideNavContext, useSideNavNodeContext } from './context'
 import { useSideNav } from './use-side-nav'
@@ -160,7 +160,16 @@ export const XhSideNavBranchContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useSideNavContext()
     const node = useSideNavNodeContext()
-    return () => h('ul', ctx.api.value.getBranchContentProps({ value: node.value }) as Record<string, unknown>, slots.default?.())
+    return () => {
+      const content = h('ul', ctx.api.value.getBranchContentProps({ value: node.value }) as Record<string, unknown>, slots.default?.())
+      // 平铺分支没有定位层，原地渲染
+      if (!ctx.api.value.isPopoutPanel(node.value))
+        return content
+      // 折叠态的弹出面板：定位层搬到浮层落点，逃开祖先的层叠上下文
+      return h(Teleport, { to: ctx.portalTarget.value }, [
+        h('div', ctx.api.value.getPopoutPositionerProps({ value: node.value }) as Record<string, unknown>, [content]),
+      ])
+    }
   },
 })
 
