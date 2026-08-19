@@ -25921,6 +25921,10 @@
               "name": "branch-indicator"
             },
             {
+              "description": "折叠态弹出面板的定位层，坐标写在它身上；平铺态不用渲染",
+              "name": "positioner"
+            },
+            {
               "description": "内嵌子层容器，收起时隐藏",
               "name": "branch-content"
             },

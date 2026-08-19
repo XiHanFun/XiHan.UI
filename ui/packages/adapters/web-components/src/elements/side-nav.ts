@@ -42,6 +42,7 @@ const GROUP_SELECTOR = '[data-xh-part="group"]'
  * @csspart branch-trigger - 展开/收起按钮（aria-expanded / aria-controls）
  * @csspart branch-text - 行文字载体，折叠成图标栏时隐藏
  * @csspart branch-indicator - 展开方向指示符（aria-hidden）
+ * @csspart positioner - 折叠态弹出面板的定位层，坐标写在它身上；平铺态不用渲染
  * @csspart branch-content - 内嵌子层容器，收起时隐藏
  * @csspart link - 去处链接，须自带 value 属性；选中输出 aria-current="page"
  * @csspart link-text - 链接文字载体，折叠成图标栏时隐藏
@@ -160,6 +161,7 @@ export class XhSideNavElement extends XhElement {
     svc.refs.set('position', this.positionEngine)
     svc.refs.set('getPopoutAnchorEl', () => this.findPopoutPart(svc, 'branch-trigger'))
     svc.refs.set('getPopoutContentEl', () => this.findPopoutPart(svc, 'branch-content'))
+    svc.refs.set('getPopoutPositionerEl', () => this.findPopoutPart(svc, 'positioner'))
   }
 
   private nodeOf(el: HTMLElement, selector: string): SideNavNodeProps {
@@ -199,6 +201,7 @@ export class XhSideNavElement extends XhElement {
       this.spreader.spread(el, api.getBranchTextProps() as Record<string, unknown>)
     for (const el of this.getParts('link-text'))
       this.spreader.spread(el, api.getLinkTextProps() as Record<string, unknown>)
+    putAll('positioner', BRANCH_SELECTOR, node => api.getPopoutPositionerProps(node))
     putAll('branch-content', BRANCH_SELECTOR, node => api.getBranchContentProps(node))
     putAll('link', '[data-xh-part="link"]', node => api.getLinkProps(node))
 
