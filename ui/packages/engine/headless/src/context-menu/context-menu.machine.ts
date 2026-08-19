@@ -1,9 +1,10 @@
 import type { Placement, PositionResult, VirtualAnchor } from '@xihan-ui/kernel'
 import type { ContextMenuFocusIntent, ContextMenuPoint, ContextMenuSchema } from './context-menu.types'
 import { createDismissLayer, createFocusScope, createTypeahead, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
+import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/kernel'
 import { setTimeoutEffect, setup } from '@xihan-ui/machine'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE } from '../shared/overlay'
-import { contextMenuItemQuery } from './context-menu.anatomy'
+import { contextMenuAnatomy, contextMenuItemQuery } from './context-menu.anatomy'
 
 const { createMachine } = setup<ContextMenuSchema>()
 
@@ -23,6 +24,14 @@ function samePoint(a: ContextMenuPoint | null, b: ContextMenuPoint | null | unde
   if (!a || !b)
     return false
   return a.x === b.x && a.y === b.y
+}
+
+/** 触发区的起始角。没有光标坐标时的锚点，与键盘入口（ContextMenu / Shift+F10）同一条规则。 */
+function triggerOrigin(el: HTMLElement | null): ContextMenuPoint | null {
+  if (!el)
+    return null
+  const rect = el.getBoundingClientRect()
+  return { x: rect.x, y: rect.y }
 }
 
 export const contextMenuMachine = createMachine({
@@ -154,7 +163,9 @@ export const contextMenuMachine = createMachine({
       reanchor: ({ refs }) => refs.get('reanchor')?.(),
       setPoint: ({ context, event }) => {
         const e = event.current()
-        if (e.type === 'CONTEXT.MENU' || e.type === 'OPEN')
+        if (e.type === 'CONTEXT.MENU')
+          context.set('point', { x: e.x, y: e.y })
+        else if (e.type === 'OPEN' && e.x != null && e.y != null)
           context.set('point', { x: e.x, y: e.y })
       },
       // 长按走完时手指还停在起点上：锚点取按下那一刻的坐标，不取计时到点时的
@@ -248,10 +259,22 @@ export const contextMenuMachine = createMachine({
           stop?.()
           stop = undefined
           const floating = refs.get('getFloatingEl')()
-          const point = context.get('point')
-          if (!floating || !point)
+          if (!floating)
             return
-          // 虚拟锚点：菜单钉在光标那一点上，零尺寸矩形 + offset 0 即菜单角贴着光标
+          // 受控 open、defaultOpen 直接进展开态、命令式 setOpen 未给坐标：三条路都没有光标坐标，
+          // 锚点退回触发区的起始角
+          const point = context.get('point') ?? triggerOrigin(refs.get('getTriggerEl')())
+          if (!point) {
+            reportDiagnostic({
+              code: DIAGNOSTIC_CODES.overlayMissingAnchor,
+              level: 'warn',
+              scope: contextMenuAnatomy.name,
+              message: '菜单展开了却没有锚点：既没有光标坐标，也找不到 trigger 部件。'
+                + '右键或 openAt(x, y) 交坐标进来，或者渲染一个 trigger 让菜单锚在它上面',
+            })
+            return
+          }
+          // 虚拟锚点：菜单钉在这一点上，零尺寸矩形 + offset 0 即菜单角贴着它
           const anchor: VirtualAnchor = {
             getBoundingClientRect: () => ({ x: point.x, y: point.y, width: 0, height: 0 }),
           }

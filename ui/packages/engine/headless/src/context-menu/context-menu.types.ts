@@ -152,8 +152,8 @@ export interface ContextMenuSchema extends MachineSchema {
   event:
     /** 右键（或触摸端合成的同名事件）：坐标即锚点。 */
     | { type: 'CONTEXT.MENU', x: number, y: number, focus?: ContextMenuFocusIntent }
-    /** 命令式展开到指定坐标。 */
-    | { type: 'OPEN', x: number, y: number, focus?: ContextMenuFocusIntent }
+    /** 命令式展开。给坐标即钉在该点；不给坐标即沿用最近一次锚点，从未有过就锚在触发区起始角。 */
+    | { type: 'OPEN', x?: number, y?: number, focus?: ContextMenuFocusIntent }
     | { type: 'CLOSE', src?: 'esc' | 'tab' | 'interact-outside' }
     /** 触摸端按下：开始长按计时，坐标记为长按起点。 */
     | { type: 'PRESS.START', x: number, y: number }
@@ -201,7 +201,7 @@ export interface ContextMenuApi<T extends PropTypes = PropTypes> {
   point: ContextMenuPoint | null
   /** 焦点锚点；收起时为 null。 */
   focusedValue: string | null
-  /** 收起走 CLOSE；展开落在最近一次锚点坐标上（从未打开过则是原点）。 */
+  /** 收起走 CLOSE；展开沿用最近一次锚点坐标，从未有过坐标时锚在触发区的起始角上。 */
   setOpen: (next: boolean) => void
   /** 命令式展开到指定视口坐标。 */
   openAt: (x: number, y: number) => void

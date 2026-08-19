@@ -2,7 +2,7 @@
 import type { Anchor, PositionEnginePort, PositionOptions, PositionRect } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ContextMenuApi, ContextMenuSchema } from '../src/context-menu'
-import { normalizeProps } from '@xihan-ui/kernel'
+import { normalizeProps, onDiagnostic } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -148,6 +148,9 @@ function mount(initial: Partial<Props> = {}): Harness {
   const engine = createFakeEngine()
   service.refs.set('position', engine)
   service.refs.set('getFloatingEl', () => positioner)
+  // jsdom 的 getBoundingClientRect 恒返回全零，打桩之后「锚回触发区起始角」才断言得出来
+  trigger.getBoundingClientRect = () => ({ x: 40, y: 60, width: 200, height: 24, top: 60, left: 40, right: 240, bottom: 84, toJSON: () => ({}) })
+  service.refs.set('getTriggerEl', () => trigger)
   service.refs.set('getContentEl', () => content)
   runtime.start()
 
@@ -762,5 +765,63 @@ describe('虚拟锚点定位', () => {
     const style = h.api().getPositionerProps().style as Record<string, string>
     expect(style.left).toBe('120px')
     expect(style.top).toBe('80px')
+  })
+})
+
+describe('没有光标坐标时的锚点', () => {
+  /** 触发区起始角：mount 里给 trigger 打的桩是 x 40 / y 60。 */
+  const ORIGIN = { x: 40, y: 60, width: 0, height: 0 }
+
+  it('受控 open 起步即展开：锚回触发区起始角', async () => {
+    const h = mount({ open: true })
+    await flushed()
+    expect(h.engine.calls).toHaveLength(1)
+    expect(h.engine.calls[0]!.rect).toEqual(ORIGIN)
+  })
+
+  it('defaultOpen 起步即展开：锚回触发区起始角', async () => {
+    const h = mount({ defaultOpen: true })
+    await flushed()
+    expect(h.engine.calls).toHaveLength(1)
+    expect(h.engine.calls[0]!.rect).toEqual(ORIGIN)
+  })
+
+  it('从未有过坐标时 setOpen(true)：锚回触发区起始角，不落在视口原点', async () => {
+    const h = mount()
+    h.api().setOpen(true)
+    await flushed()
+    expect(h.engine.calls).toHaveLength(1)
+    expect(h.engine.calls[0]!.rect).toEqual(ORIGIN)
+  })
+
+  it('有过坐标时 setOpen(true) 沿用那一份，不退回触发区', async () => {
+    const h = mount()
+    rightClick(h.trigger, 120, 80)
+    await flushed()
+    h.api().setOpen(false)
+    h.api().setOpen(true)
+    await flushed()
+    expect(h.engine.calls.at(-1)!.rect).toEqual({ x: 120, y: 80, width: 0, height: 0 })
+  })
+
+  it('兜底之后再右键：撤旧订阅并改锚到光标', async () => {
+    const h = mount({ open: true })
+    await flushed()
+    rightClick(h.trigger, 120, 80)
+    await flushed()
+    expect(h.engine.stopped).toBe(1)
+    expect(h.engine.calls.at(-1)!.rect).toEqual({ x: 120, y: 80, width: 0, height: 0 })
+    expect(h.api().point).toEqual({ x: 120, y: 80 })
+  })
+
+  it('坐标与触发区双缺：不挂引擎，投一条 overlay.missing-anchor', async () => {
+    const records: string[] = []
+    const off = onDiagnostic(record => void records.push(record.code))
+    const h = mount({ open: true })
+    h.service.refs.set('getTriggerEl', () => null)
+    await flushed()
+    off()
+    expect(h.engine.calls).toHaveLength(0)
+    expect(records).toContain('overlay.missing-anchor')
   })
 })
