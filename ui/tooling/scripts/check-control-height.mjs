@@ -33,6 +33,11 @@ const problems = []
 const usedOffScale = new Set()
 let governed = 0
 
+/** 每份皮肤声明过的自定义属性，第二段按全仓口径对账时要回头查。 */
+const slotsByFile = new Map()
+/** 全仓被高度属性消费到的槽。赋值点与消费点不必在同一份皮肤：子组件的档位由父容器注入是既有形状。 */
+const consumed = new Set()
+
 for (const file of files) {
   const comp = file.replace(/\.css$/, '')
   const src = (await readFile(join(STYLES_DIR, file), 'utf8')).replace(/\/\*[\s\S]*?\*\//g, '')
@@ -41,6 +46,7 @@ for (const file of files) {
   const slots = new Map()
   for (const m of src.matchAll(/(--xh-[\w-]+)\s*:\s*([^;}]+)/g))
     slots.set(m[1], [...(slots.get(m[1]) ?? []), m[2].trim()])
+  slotsByFile.set(file, slots)
 
   /** 值本身或它的组件槽回退链上出现过控件尺度令牌。 */
   const onScale = (value, depth = 0) => {
@@ -85,21 +91,27 @@ for (const file of files) {
     }
   }
 
-  // 二、用控件高度尺赋值的私有槽，必须真的被某条高度属性消费
-  const consumed = new Set()
+  // 二之一、本份皮肤里被高度属性消费到的槽并进全仓集合
   for (const decl of src.matchAll(/(?:^|;|\{)\s*([a-z-]+)\s*:\s*([^;}]+)/g)) {
     if (!HEIGHT_PROPS.has(decl[1]))
       continue
     for (const ref of decl[2].matchAll(/var\(\s*(--xh-[\w-]+)/g))
       consumed.add(ref[1])
   }
-  // Set 的迭代会走到途中追加的项，一轮即可把回退链上的槽收全
-  for (const name of consumed) {
+}
+
+// 二之二、沿全仓的回退链再展一轮。Set 的迭代会走到途中追加的项，一轮即可收全
+for (const name of consumed) {
+  for (const slots of slotsByFile.values()) {
     for (const declared of slots.get(name) ?? []) {
       for (const ref of declared.matchAll(/var\(\s*(--xh-[\w-]+)/g))
         consumed.add(ref[1])
     }
   }
+}
+
+// 二之三、用控件高度尺赋值的私有槽，必须真的被某条高度属性消费
+for (const [file, slots] of slotsByFile) {
   for (const [name, values] of slots) {
     if (!name.startsWith('--xh-_') || !values.some(v => /--xh-control-h-/.test(v)))
       continue
