@@ -131,8 +131,8 @@ export function connectContextMenu<T extends PropTypes>(
         send({ type: 'CLOSE' })
         return
       }
-      // 命令式展开没有光标坐标，落回最近一次锚点（从未打开过则是原点）；焦点端给 'none'
-      send({ type: 'OPEN', x: point?.x ?? 0, y: point?.y ?? 0, focus: 'none' })
+      // 命令式展开没有光标坐标：有过锚点就沿用，没有则由定位效应锚到触发区起始角；焦点端给 'none'
+      send({ type: 'OPEN', focus: 'none' })
     },
     openAt: (x, y) => send({ type: 'OPEN', x, y, focus: 'none' }),
 
