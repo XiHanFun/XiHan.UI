@@ -54,7 +54,7 @@ granularity=minute 在年月日后面接出时、分两段，值随之带上 T �
 
 ### 外部写值与清空
 
-根插槽给出 setValue / clear 与填齐、越界两个判据，按钮照它们摆
+值由宿主持有，按钮直接写值或清空；填齐与越界两个判据由组件给出，按钮照它们摆
 
 <XhDemo src="date-field/09-actions" />
 
@@ -72,7 +72,7 @@ value-change 每次带上整份 ISO 串，段位被清掉时它是 null
 
 ### 对外值换个写法
 
-组件读写的恒是 ISO 串，宿主用一个双向 computed 换成自己的格式，表单也提交这一份
+组件读写的恒是 ISO 串，宿主在读写两头各转一次换成自己的格式，表单也提交这一份
 
 <XhDemo src="date-field/12-value-format" />
 
@@ -122,7 +122,26 @@ segments 决定这份控件由哪几块组成；段位可按段名认领，不�
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: DateFieldValueChangeDetails) => void` |  |  |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `DateFieldValueChangeDetails` | 值变化；detail 为 `{ value: string \| null }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhDateFieldRoot` | `default` | `DateFieldRootSlotProps` |  |
+| `XhDateFieldSegment` | `default` | `DateFieldSegmentSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -172,3 +191,9 @@ segments 决定这份控件由哪几块组成；段位可按段名认领，不�
 | `Backspace` | focus in a segment, not disabled/readOnly | 清掉本段，焦点不动；整份值随之变成 null |
 | `0` / `1` / `2` / `3` / `4` / `5` / `6` / `7` / `8` / `9` | focus in a segment, not disabled/readOnly | 往本段补一位数字；补满（再补一位必溢出或位数用尽）即自动跳下一段。上下午段没有数字位，不收数字 |
 | `a` / `p` | focus in 上下午段, not disabled/readOnly | 直接指定上午 / 下午；上下键在两者之间翻面 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-date-field-control-bg` · `--xh-date-field-control-bg-disabled` · `--xh-date-field-control-bg-readonly` · `--xh-date-field-control-border` · `--xh-date-field-control-border-focus` · `--xh-date-field-control-border-hover` · `--xh-date-field-control-border-invalid` · `--xh-date-field-control-fg` · `--xh-date-field-control-h` · `--xh-date-field-control-px` · `--xh-date-field-control-radius` · `--xh-date-field-font-size` · `--xh-date-field-gap` · `--xh-date-field-icon-size` · `--xh-date-field-label-fg` · `--xh-date-field-label-fg-disabled` · `--xh-date-field-label-font-size` · `--xh-date-field-label-font-weight` · `--xh-date-field-placeholder-fg` · `--xh-date-field-segment-bg-focus` · `--xh-date-field-segment-fg-focus` · `--xh-date-field-segment-px` · `--xh-date-field-segment-py` · `--xh-date-field-segment-radius`

@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-触发器旁弹出一个列表，选完即收起；collection 是条目的事实源，浮层里不写条目也会铺开
+触发器旁弹出一个列表，选完即收起；条目按 value 标识身份，禁用的条目方向键会跳过
 
 <XhDemo src="popselect/01-basic" />
 
@@ -30,7 +30,7 @@ multiple 下落值是切换、浮层不收起，可以接着挑；收起交给 E
 
 ### 自定义条目
 
-手写整棵部件树：条目里想放什么都行，行为与 collection 铺开的那一套完全一致
+条目里想放什么都行：连打检索只认 item-text，多出来的文字不参与，选中与导航照旧
 
 <XhDemo src="popselect/05-custom-item" />
 
@@ -57,6 +57,23 @@ multiple 下落值是切换、浮层不收起，可以接着挑；收起交给 E
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定触发器高度、内边距与字号档位。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发器的描边与底色怎么用。 |
+
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `ListboxValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
+| `open-change` | `PopoverOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhPopselectRoot` | `default` | `PopselectRootSlotProps` |  |
 
 ## connect API
 
@@ -97,3 +114,9 @@ multiple 下落值是切换、浮层不收起，可以接着挑；收起交给 E
 | `Enter` / `Space` | focus in content, multiple | 切换焦点条目的选中态，浮层保持展开继续挑 |
 | `单个可打印字符` | focus in content, typeahead 未关 | 连打检索把焦点移到首字母匹配的条目，不落值 |
 | `Tab` / `Shift+Tab` | focus in content | 收起浮层并放行焦点，按 Tab 序列离开 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-popselect-content-bg` · `--xh-popselect-content-border` · `--xh-popselect-content-fg` · `--xh-popselect-content-max-h` · `--xh-popselect-content-max-w` · `--xh-popselect-content-min-w` · `--xh-popselect-content-p` · `--xh-popselect-content-radius` · `--xh-popselect-content-shadow` · `--xh-popselect-item-bg-hover` · `--xh-popselect-item-fg` · `--xh-popselect-item-fg-selected` · `--xh-popselect-item-font-size` · `--xh-popselect-item-font-weight-selected` · `--xh-popselect-item-gap` · `--xh-popselect-item-indicator-fg` · `--xh-popselect-item-indicator-size` · `--xh-popselect-item-leading` · `--xh-popselect-item-px` · `--xh-popselect-item-py` · `--xh-popselect-item-radius` · `--xh-popselect-placeholder-fg` · `--xh-popselect-trigger-bg` · `--xh-popselect-trigger-border` · `--xh-popselect-trigger-border-hover` · `--xh-popselect-trigger-fg` · `--xh-popselect-trigger-font-size` · `--xh-popselect-trigger-gap` · `--xh-popselect-trigger-h` · `--xh-popselect-trigger-px` · `--xh-popselect-trigger-radius`

@@ -54,7 +54,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 ### 填满才可提交
 
-complete 在每格都有字时为真，作者据此点亮提交按钮；clear 一次清空整组
+每格都有字才算填满，作者据此点亮提交按钮；重填一次清空整组
 
 <XhDemo src="pin-input/09-complete" />
 
@@ -109,7 +109,26 @@ pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 
 | `onValueChange` | `(details: PinInputValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onValueComplete` | `(details: PinInputValueChangeDetails) => void` |  | 每格都填满的那一刻触发；值没真变时不重复触发。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `PinInputValueChangeDetails` | 值变化；detail 为 `{ value: string[], valueAsString: string }` |
+| `value-complete` | `PinInputValueChangeDetails` | 每格都填满；detail 同上 |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhPinInputRoot` | `default` | `PinInputRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -149,3 +168,9 @@ pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 
 | `End` | focus in a box, not disabled | 焦点移到末格 |
 | `Backspace` | focus in a box, not disabled | 本格有值则清本格；本格为空则退回上一格并清掉上一格 |
 | `Delete` | focus in a box, not disabled | 清掉本格，焦点不动 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-pin-input-box-bg` · `--xh-pin-input-box-bg-disabled` · `--xh-pin-input-box-border` · `--xh-pin-input-box-border-complete` · `--xh-pin-input-box-border-focus` · `--xh-pin-input-box-border-hover` · `--xh-pin-input-box-border-invalid` · `--xh-pin-input-box-fg` · `--xh-pin-input-box-font-size` · `--xh-pin-input-box-gap` · `--xh-pin-input-box-radius` · `--xh-pin-input-box-size` · `--xh-pin-input-gap` · `--xh-pin-input-label-fg` · `--xh-pin-input-label-fg-disabled` · `--xh-pin-input-label-font-size` · `--xh-pin-input-label-font-weight` · `--xh-pin-input-placeholder-fg`

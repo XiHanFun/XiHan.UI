@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-过滤由宿主自己算：组件把输入串交给 input-value，筛出哪几条交给 collection 是调用方的事
+过滤由宿主自己算：组件把输入串交出来，此刻显示哪几条候选由调用方定
 
 <XhDemo src="combobox/01-basic" />
 
@@ -72,19 +72,19 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 
 ### 候选里的自定义内容
 
-条目内容是插槽：主文本之外还能带副标题与标记，过滤与键盘行为一点不变
+条目内容由你写：主文本之外还能带副标题与标记，过滤与键盘行为一点不变
 
 <XhDemo src="combobox/12-custom-content" />
 
 ### 随表单提交
 
-根插槽把选中值交出来：在根里补一个隐藏输入承接它，值随原生表单一并提交；浮层收起时回车留给表单
+在根里补一个隐藏输入承接选中值，值随原生表单一并提交；浮层收起时回车留给表单
 
 <XhDemo src="combobox/13-form" />
 
 ### 多行输入宿主
 
-输入框写 as="textarea" 即换成多行；此时不写 role 与 aria-expanded，textarea 保留它自带的 textbox 角色
+输入部件写成 textarea 即多行宿主；此时不写 role 与 aria-expanded，textarea 保留它自带的 textbox 角色
 
 <XhDemo src="combobox/14-textarea-host" />
 
@@ -135,7 +135,30 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `onInputValueChange` | `(details: ComboboxInputValueChangeDetails) => void` |  | 输入串变化回调：调用方据此重新过滤候选。 |
 | `onOpenChange` | `(details: ComboboxOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `ComboboxValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
+| `input-value-change` | `ComboboxInputValueChangeDetails` | 输入串变化；detail 为 `{ inputValue: string }`，作者据此过滤候选 |
+| `open-change` | `ComboboxOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhComboboxRoot` | `default` | `ComboboxRootSlotProps` |  |
+| `XhComboboxRoot` | `label` | — |  |
+| `XhComboboxRoot` | `empty` | — |  |
+| `XhComboboxRoot` | `item` | `ComboboxNodeMeta` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -202,3 +225,9 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `Tab` / `Shift+Tab` | open | 收起列表且不拦按键，焦点按 Tab 序列自然离开 |
 | `Backspace` | multiple, 输入串为空且已有选中 | 删掉最后一个已选项 |
 | `可打印字符` | focus in input | 改写输入串并展开列表；过滤由调用方按 onInputValueChange 自己做 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-combobox-action-bg` · `--xh-combobox-action-bg-active` · `--xh-combobox-action-bg-hover` · `--xh-combobox-action-fg` · `--xh-combobox-action-fg-hover` · `--xh-combobox-action-font-size` · `--xh-combobox-action-radius` · `--xh-combobox-action-size` · `--xh-combobox-content-bg` · `--xh-combobox-content-border` · `--xh-combobox-content-fg` · `--xh-combobox-content-max-h` · `--xh-combobox-content-max-w` · `--xh-combobox-content-min-w` · `--xh-combobox-content-px` · `--xh-combobox-content-py` · `--xh-combobox-content-radius` · `--xh-combobox-content-shadow` · `--xh-combobox-control-bg` · `--xh-combobox-control-bg-disabled` · `--xh-combobox-control-bg-readonly` · `--xh-combobox-control-border` · `--xh-combobox-control-border-focus` · `--xh-combobox-control-border-hover` · `--xh-combobox-control-border-invalid` · `--xh-combobox-control-fg` · `--xh-combobox-control-gap` · `--xh-combobox-control-h` · `--xh-combobox-control-min-w` · `--xh-combobox-control-px` · `--xh-combobox-control-radius` · `--xh-combobox-empty-bg` · `--xh-combobox-empty-border` · `--xh-combobox-empty-fg` · `--xh-combobox-empty-font-size` · `--xh-combobox-empty-px` · `--xh-combobox-empty-py` · `--xh-combobox-empty-radius` · `--xh-combobox-empty-shadow` · `--xh-combobox-gap` · `--xh-combobox-group-gap` · `--xh-combobox-group-label-fg` · `--xh-combobox-group-label-font-size` · `--xh-combobox-group-label-font-weight` · `--xh-combobox-group-label-px` · `--xh-combobox-group-label-py` · `--xh-combobox-input-font-size` · `--xh-combobox-item-bg-hover` · `--xh-combobox-item-fg` · `--xh-combobox-item-fg-selected` · `--xh-combobox-item-font-size` · `--xh-combobox-item-font-weight-selected` · `--xh-combobox-item-gap` · `--xh-combobox-item-indicator-fg` · `--xh-combobox-item-indicator-size` · `--xh-combobox-item-leading` · `--xh-combobox-item-px` · `--xh-combobox-item-py` · `--xh-combobox-item-radius` · `--xh-combobox-label-fg` · `--xh-combobox-label-font-size` · `--xh-combobox-label-font-weight` · `--xh-combobox-placeholder-fg`

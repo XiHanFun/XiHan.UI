@@ -66,7 +66,17 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onOpenChange` | `(details: CollapsibleOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `open-change` | `CollapsibleOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -93,3 +103,9 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Space` / `Enter` | focus in trigger, not disabled | 展开/收起 content |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-collapsible-content-fg` · `--xh-collapsible-content-py` · `--xh-collapsible-trigger-bg` · `--xh-collapsible-trigger-bg-hover` · `--xh-collapsible-trigger-fg` · `--xh-collapsible-trigger-font-size` · `--xh-collapsible-trigger-font-weight` · `--xh-collapsible-trigger-gap` · `--xh-collapsible-trigger-h` · `--xh-collapsible-trigger-px` · `--xh-collapsible-trigger-radius`

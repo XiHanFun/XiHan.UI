@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-root 留在页面原地，content 被 portal 到 body；Escape 关闭、Tab 在面板里循环，展开期间页面滚不动
+不传 open 即为非受控；Escape 关闭、Tab 在面板里循环，展开期间页面滚不动
 
 <XhDemo src="drawer/01-basic" />
 
@@ -48,7 +48,7 @@ size 落成 content 的 data-size，只改面板贴边方向上的厚度；三�
 
 ### 局部抽屉
 
-container 给了容器就搬进去：遮罩与定位层从 fixed 换成 absolute，只罩住那块区域而不是盖满整屏
+把抽屉收进某块区域：遮罩与定位层从 fixed 换成 absolute，只罩住那块区域而不是盖满整屏
 
 <XhDemo src="drawer/08-contained" />
 
@@ -85,7 +85,25 @@ container 给了容器就搬进去：遮罩与定位层从 fixed 换成 absolute
 | `translations` | `Partial<DrawerTranslations>` |  |  |
 | `onOpenChange` | `(details: DrawerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `open-change` | `DrawerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhDrawerRoot` | `default` | `DrawerRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -121,3 +139,9 @@ container 给了容器就搬进去：遮罩与定位层从 fixed 换成 absolute
 | `Escape` | open | 关闭并把焦点还给 trigger |
 | `Tab` | open 且 modal | 在 content 内向后循环焦点 |
 | `Shift+Tab` | open 且 modal | 在 content 内向前循环焦点 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-drawer-backdrop-bg` · `--xh-drawer-bg` · `--xh-drawer-description-fg` · `--xh-drawer-fg` · `--xh-drawer-gap` · `--xh-drawer-px` · `--xh-drawer-py` · `--xh-drawer-radius` · `--xh-drawer-shadow` · `--xh-drawer-size` · `--xh-drawer-title-fg` · `--xh-drawer-title-font-size` · `--xh-drawer-title-font-weight` · `--xh-drawer-trigger-bg` · `--xh-drawer-trigger-bg-hover` · `--xh-drawer-trigger-bg-open` · `--xh-drawer-trigger-border` · `--xh-drawer-trigger-border-hover` · `--xh-drawer-trigger-border-open` · `--xh-drawer-trigger-fg` · `--xh-drawer-trigger-font-size` · `--xh-drawer-trigger-font-weight` · `--xh-drawer-trigger-gap` · `--xh-drawer-trigger-h` · `--xh-drawer-trigger-px` · `--xh-drawer-trigger-radius`

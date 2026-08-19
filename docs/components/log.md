@@ -18,7 +18,7 @@ rows 定的是「看得见几行」，一行有多高归皮肤，改 --xh-log-li
 
 ### 自动跟到底部
 
-新行进来时视口自己跟着走；往上滚一段就停住跟随，root 插槽给的 atBottom / scrollToBottom 够自己画一条回到最新
+新行进来时视口自己跟着走；往上滚一段就停住跟随，组件报出的 atBottom 与 scrollToBottom 够自己画一条回到最新
 
 <XhDemo src="log/03-follow" />
 
@@ -30,7 +30,7 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
 
 ### 行的样子归作者
 
-line 只发身份与等宽排版，级别配色、时间戳、行内标记这些都写在插槽里
+line 只发身份与等宽排版，级别配色、时间戳、行内标记这些都写在行里
 
 <XhDemo src="log/05-levels" />
 
@@ -58,6 +58,22 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 | `rows` | `number` |  | 视口按多少行定高；缺省时高度由皮肤给。 |
 | `translations` | `Partial<LogTranslations>` |  |  |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `stick-change` | `ThreadStickChangeDetails` | 粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhLogRoot` | `default` | `LogRootSlotProps` |  |
+
 ## connect API
 
 `useLog` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
@@ -81,3 +97,9 @@ line 只发身份与等宽排版，级别配色、时间戳、行内标记这些
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Tab` | 焦点进入日志区 | 日志区自身可聚焦，方向键/PageUp/PageDown/Home/End 交给浏览器滚动，组件不接管 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-log-bg` · `--xh-log-border` · `--xh-log-content-px` · `--xh-log-fg` · `--xh-log-font` · `--xh-log-font-size` · `--xh-log-line-height` · `--xh-log-radius` · `--xh-log-rows` · `--xh-log-tab-size`

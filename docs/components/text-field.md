@@ -12,7 +12,7 @@ root 持有状态，label 与 input 各自向它取属性；不传 value 即为�
 
 ### 受控
 
-传了 value 就由宿主说了算，组件自己不再改状态；v-model:value 是它的语法糖
+传了 value 就由宿主说了算，组件自己不再改状态；变化经 value-change 报出来，写不写回由宿主定
 
 <XhDemo src="text-field/02-controlled" />
 
@@ -60,7 +60,7 @@ setValue 直接写值，只受禁用、只读与字数上限约束；clear 走�
 
 ### 事件
 
-值的变化走 root 的 value-change，聚焦失焦这类原生事件直接写在 input 部件上
+值的变化走组件的 value-change，聚焦失焦这类原生事件直接写在 input 部件上
 
 <XhDemo src="text-field/10-events" />
 
@@ -84,7 +84,7 @@ beforeinput 直接写在 input 部件上，非法字符进不了框，值与框�
 
 ### 聚焦与选区
 
-input 部件渲染出来就是一个 input，拿到它的节点就能聚焦、全选、把光标挪到末尾
+input 部件就是一个原生 input，拿到它的节点就能聚焦、全选、把光标挪到末尾
 
 <XhDemo src="text-field/14-focus" />
 
@@ -96,7 +96,7 @@ input 部件渲染出来就是一个 input，拿到它的节点就能聚焦、�
 
 ### 多行与自动长高
 
-XhTextFieldInput 写 as="textarea" 即多行宿主；autoSize 让高度跟内容走，对象形态钉行数上下限（顶到 maxRows 后内部滚动）
+input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，对象形态钉行数上下限（顶到 maxRows 后内部滚动）
 
 <XhDemo src="text-field/16-multiline" />
 
@@ -122,6 +122,7 @@ XhTextFieldInput 写 as="textarea" 即多行宿主；autoSize 让高度跟内容
 | --- | --- | --- | --- |
 | `value` | `string` |  | 受控值；给了就由宿主说了算，机器不自改。 |
 | `defaultValue` | `string` |  | 非受控初值。 |
+| `type` | `TextFieldType` |  | 单行宿主的输入类型，缺省 text；as 为 textarea 时不发这条属性。 |
 | `placeholder` | `string` |  |  |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
@@ -136,7 +137,25 @@ XhTextFieldInput 写 as="textarea" 即多行宿主；autoSize 让高度跟内容
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框与清空按钮的几何档位。 |
 | `onValueChange` | `(details: TextFieldValueChangeDetails) => void` |  |  |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `TextFieldValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhTextFieldRoot` | `default` | `TextFieldRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -173,3 +192,9 @@ XhTextFieldInput 写 as="textarea" 即多行宿主；autoSize 让高度跟内容
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Escape` | focus in input, clearable 且值非空, not disabled/readOnly | 清空值；三个条件缺一即不接管该键，交回给外层与浏览器 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-text-field-clear-bg` · `--xh-text-field-clear-bg-active` · `--xh-text-field-clear-bg-hover` · `--xh-text-field-clear-fg` · `--xh-text-field-clear-fg-hover` · `--xh-text-field-clear-font-size` · `--xh-text-field-clear-radius` · `--xh-text-field-clear-size` · `--xh-text-field-gap` · `--xh-text-field-icon-size` · `--xh-text-field-input-bg` · `--xh-text-field-input-bg-disabled` · `--xh-text-field-input-bg-readonly` · `--xh-text-field-input-border` · `--xh-text-field-input-border-at-limit` · `--xh-text-field-input-border-focus` · `--xh-text-field-input-border-hover` · `--xh-text-field-input-border-invalid` · `--xh-text-field-input-fg` · `--xh-text-field-input-font-size` · `--xh-text-field-input-h` · `--xh-text-field-input-px` · `--xh-text-field-input-radius` · `--xh-text-field-label-fg` · `--xh-text-field-label-fg-disabled` · `--xh-text-field-label-font-size` · `--xh-text-field-label-font-weight` · `--xh-text-field-placeholder-fg` · `--xh-text-field-textarea-py`

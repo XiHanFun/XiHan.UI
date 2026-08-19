@@ -52,6 +52,7 @@ complete 为 false 时默认不着色：半截代码的词法本来就不稳，�
 | `highlighter` | `HighlighterPort` |  | 着色实现。不给就是纯文本，给了也允许它返回 null（语言不认识之类），同样退回纯文本。 未闭合的块默认不着色，见 {@link highlightWhileStreaming}。 |
 | `highlightWhileStreaming` | `boolean` |  | 块还没闭合时也着色，默认 false。 默认关是因为半截代码的词法本来就不稳——引号、括号随时会配上， 每来一个 token 整块变一次色，看着比不着色更糟。 |
 | `lang` | `string` |  | 围栏语言标注，为空时按 plaintext 处理。 |
+| `wrap` | `boolean` |  | 长行自动换行，默认关（长行横向滚动）。开启后缩进照旧保留，只是行尾会折下来， 窄栏与移动端读长行时不必左右拖。 |
 
 ## connect API
 
@@ -75,3 +76,9 @@ complete 为 false 时默认不着色：半截代码的词法本来就不稳，�
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Tab` | 代码块在 Tab 序列中 | &lt;pre&gt; 自身可聚焦，随后方向键的横向滚动交给浏览器，组件不接管 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-code-block-bg` · `--xh-code-block-comment-fg` · `--xh-code-block-font` · `--xh-code-block-keyword-fg` · `--xh-code-block-keyword-weight` · `--xh-code-block-label-fg` · `--xh-code-block-label-font-size` · `--xh-code-block-label-px` · `--xh-code-block-label-py` · `--xh-code-block-line-height` · `--xh-code-block-number-fg` · `--xh-code-block-p` · `--xh-code-block-punctuation-fg` · `--xh-code-block-radius` · `--xh-code-block-string-fg`

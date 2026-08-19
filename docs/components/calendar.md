@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-网格由作者照插槽里的 weeks / weekDays 自己渲染，组件一个节点都不替你生成
+网格由作者照 weeks / weekDays 自己渲染，组件一个节点都不替你生成
 
 <XhDemo src="calendar/01-basic" />
 
@@ -71,7 +71,27 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `onFocusedValueChange` | `(details: CalendarFocusChangeDetails) => void` |  | 聚焦日变化（方向键、翻页、点了邻月的日子都会发）；受控时是唯一出口。 |
 | `onActiveViewChange` | `(details: CalendarViewChangeDetails) => void` |  | 面板钻到了哪一层（点标题钻上、点格子钻下都会发）；受控时是唯一出口。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `CalendarValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
+| `focused-value-change` | `CalendarFocusChangeDetails` | 聚焦日变化；detail 为 `{ focusedValue: string }` |
+| `active-view-change` | `CalendarViewChangeDetails` | 钻到了另一层；detail 为 `{ activeView: 'day'\|'month'\|'quarter'\|'year' }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhCalendarRoot` | `default` | `CalendarRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -149,3 +169,9 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `Shift+PageUp` | focus in grid | 退一年；粗粒度视图里退十页 |
 | `Shift+PageDown` | focus in grid | 进一年；粗粒度视图里进十页 |
 | `Enter` / `Space` | focus in grid, 聚焦日可用且非只读 | 选中聚焦日：单选替换、多选切换、区间先落起点再落终点。还没钻到 view 那一档时这一下是往下钻一层 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-calendar-cell-bg-hover` · `--xh-calendar-cell-bg-selected` · `--xh-calendar-cell-fg` · `--xh-calendar-cell-fg-outside` · `--xh-calendar-cell-fg-selected` · `--xh-calendar-cell-font-size` · `--xh-calendar-cell-gap` · `--xh-calendar-cell-radius` · `--xh-calendar-cell-size` · `--xh-calendar-gap` · `--xh-calendar-grid-gap` · `--xh-calendar-header-gap` · `--xh-calendar-heading-fg` · `--xh-calendar-heading-font-size` · `--xh-calendar-heading-font-weight` · `--xh-calendar-heading-trigger-fg-hover` · `--xh-calendar-heading-trigger-px` · `--xh-calendar-heading-trigger-radius` · `--xh-calendar-nav-bg` · `--xh-calendar-nav-bg-hover` · `--xh-calendar-nav-fg` · `--xh-calendar-nav-radius` · `--xh-calendar-nav-size` · `--xh-calendar-period-gap` · `--xh-calendar-period-py` · `--xh-calendar-range-bg` · `--xh-calendar-row-gap` · `--xh-calendar-today-border` · `--xh-calendar-week-day-fg` · `--xh-calendar-week-day-font-size` · `--xh-calendar-week-day-font-weight` · `--xh-calendar-week-day-h` · `--xh-calendar-week-number-fg` · `--xh-calendar-week-number-font-size` · `--xh-calendar-week-number-w`

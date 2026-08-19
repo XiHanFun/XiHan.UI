@@ -63,7 +63,16 @@ Field 的 disabled 只把 data-disabled 铺到各部件上；真正改不动还�
 | `controlId` | `string` |  | 控件 id；作者接管时以它为准。 |
 | `disabled` | `boolean` |  |  |
 | `invalid` | `boolean` |  | 校验失败态：控件上 aria-invalid=true，错误文案接入描述链并显出。 |
+| `readOnly` | `boolean` |  | 只读：控件上 aria-readonly=true。与 disabled 不同，只读仍可聚焦、仍参与提交。 |
 | `required` | `boolean` |  | 必填：控件上 aria-required=true。 |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhFieldControl` | `default` | `FieldControlSlotProps` |  |
 
 ## connect API
 
@@ -74,6 +83,7 @@ Field 的 disabled 只把 data-disabled 铺到各部件上；真正改不动还�
 | `invalid` | `boolean` |  |
 | `required` | `boolean` |  |
 | `disabled` | `boolean` |  |
+| `readOnly` | `boolean` |  |
 | `controlId` | `string` | 控件实际使用的 id，label 的 for 与它一致。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
@@ -86,3 +96,9 @@ Field 的 disabled 只把 data-disabled 铺到各部件上；真正改不动还�
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-field-control-bg` · `--xh-field-control-bg-disabled` · `--xh-field-control-border` · `--xh-field-control-border-invalid` · `--xh-field-control-fg` · `--xh-field-control-font-size` · `--xh-field-control-h` · `--xh-field-control-px` · `--xh-field-control-radius` · `--xh-field-description-fg` · `--xh-field-description-fg-disabled` · `--xh-field-description-font-size` · `--xh-field-error-fg` · `--xh-field-error-font-size` · `--xh-field-gap` · `--xh-field-label-fg` · `--xh-field-label-fg-disabled` · `--xh-field-label-font-size` · `--xh-field-label-font-weight` · `--xh-field-label-gap` · `--xh-field-label-star`

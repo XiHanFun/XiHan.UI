@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-collection 是条目的事实源：文本与禁用都写在数据里，trigger / positioner / content / item 由组件铺开
+条目以 value 标识身份，禁用项方向键跳过也选不中；删除前面隔着一道分隔线
 
 <XhDemo src="menu/01-basic" />
 
@@ -48,7 +48,7 @@ content 里可以直接放任意节点；不是 item 就不进方向键行程，
 
 ### 条目自带的属性与事件
 
-写在条目上的属性直接落到那一层 DOM：原生属性照样透传，自己的 click 与内部的选中处理并存
+条目上的原生属性照常生效，自己挂的 click 与内部的选中处理并存
 
 <XhDemo src="menu/08-item-attrs" />
 
@@ -106,7 +106,29 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | `onOpenChange` | `(details: MenuOpenChangeDetails) => void` |  | open 变化回调。 |
 | `onSelect` | `(details: MenuSelectDetails) => void` |  | 条目被选中；菜单随之关闭。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `open-change` | `MenuOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `select` | `MenuSelectDetails` | 条目被选中（菜单随之关闭）；detail 为 `{ value: string }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhMenuRoot` | `default` | `MenuRootSlotProps` |  |
+| `XhMenuRoot` | `trigger` | — |  |
+| `XhMenuRoot` | `item` | `MenuNodeMeta` |  |
+| `XhMenuSub` | `default` | `MenuSubSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -147,3 +169,9 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | `Enter` / `Space` | focus in item, not disabled | 派发选中详情并关闭菜单，焦点归还 trigger |
 | `Escape` | open | 关闭菜单并把焦点归还 trigger |
 | `Tab` / `Shift+Tab` | open | 关闭菜单，焦点不归还 trigger，按 Tab 序列自然离开 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-menu-arrow-size` · `--xh-menu-bg` · `--xh-menu-border` · `--xh-menu-fg` · `--xh-menu-item-active-font-weight` · `--xh-menu-item-bg-active` · `--xh-menu-item-bg-hover` · `--xh-menu-item-fg` · `--xh-menu-item-font-size` · `--xh-menu-item-gap` · `--xh-menu-item-leading` · `--xh-menu-item-px` · `--xh-menu-item-py` · `--xh-menu-item-radius` · `--xh-menu-max-h` · `--xh-menu-max-w` · `--xh-menu-min-w` · `--xh-menu-px` · `--xh-menu-py` · `--xh-menu-radius` · `--xh-menu-separator-color` · `--xh-menu-separator-my` · `--xh-menu-separator-thickness` · `--xh-menu-shadow`

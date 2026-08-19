@@ -30,7 +30,7 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 
 ### 禁用与程序化操作
 
-禁用时三类把手全按不动；插槽里还给出 add / remove / setValue，可以从外面驱动
+禁用时三类把手全按不动；从外面加一条走同一条闸门，整份替换值则不受闸门约束
 
 <XhDemo src="dynamic-input/05-disabled-and-api" />
 
@@ -64,7 +64,25 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | `translations` | `Partial<DynamicInputTranslations>` |  |  |
 | `onValueChange` | `(details: DynamicInputValueChangeDetails) => void` |  |  |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `DynamicInputValueChangeDetails` | 数据数组变化；detail 为 `{ value: unknown[] }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhDynamicInputRoot` | `default` | `DynamicInputRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -107,3 +125,9 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-dynamic-input-action-gap` · `--xh-dynamic-input-add-bg` · `--xh-dynamic-input-add-bg-active` · `--xh-dynamic-input-add-bg-hover` · `--xh-dynamic-input-add-border` · `--xh-dynamic-input-add-border-hover` · `--xh-dynamic-input-add-fg` · `--xh-dynamic-input-add-font-size` · `--xh-dynamic-input-add-height` · `--xh-dynamic-input-add-px` · `--xh-dynamic-input-add-radius` · `--xh-dynamic-input-content-gap` · `--xh-dynamic-input-gap` · `--xh-dynamic-input-item-gap` · `--xh-dynamic-input-item-padding` · `--xh-dynamic-input-item-radius` · `--xh-dynamic-input-remove-fg-hover` · `--xh-dynamic-input-trigger-bg` · `--xh-dynamic-input-trigger-bg-active` · `--xh-dynamic-input-trigger-bg-hover` · `--xh-dynamic-input-trigger-fg` · `--xh-dynamic-input-trigger-fg-hover` · `--xh-dynamic-input-trigger-font-size` · `--xh-dynamic-input-trigger-radius` · `--xh-dynamic-input-trigger-size`

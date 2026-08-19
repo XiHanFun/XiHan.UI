@@ -123,7 +123,27 @@ multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父�
 | `onExpandedChange` | `(details: TreeSelectExpandedChangeDetails) => void` |  | 展开集合变化意图回调；语义同上。 |
 | `onOpenChange` | `(details: TreeSelectOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `TreeSelectValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
+| `expanded-change` | `TreeSelectExpandedChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
+| `open-change` | `TreeSelectOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhTreeSelectRoot` | `default` | `TreeSelectRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -200,3 +220,9 @@ multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父�
 | `单个可打印字符` | open, focus in content | 连打检索在可见行上按 label 首字母搬焦点，不改选中值，也不展开任何分支 |
 | `Escape` | open | 收起浮层并把焦点归还 trigger，选中值与展开集合都不变 |
 | `Tab` / `Shift+Tab` | open | 收起浮层，焦点不归还 trigger，按 Tab 序列自然离开 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-tree-select-action-bg` · `--xh-tree-select-action-bg-active` · `--xh-tree-select-action-bg-hover` · `--xh-tree-select-action-fg` · `--xh-tree-select-action-fg-hover` · `--xh-tree-select-action-font-size` · `--xh-tree-select-action-radius` · `--xh-tree-select-action-size` · `--xh-tree-select-branch-indicator-fg` · `--xh-tree-select-content-bg` · `--xh-tree-select-content-border` · `--xh-tree-select-content-fg` · `--xh-tree-select-content-max-h` · `--xh-tree-select-content-max-w` · `--xh-tree-select-content-min-w` · `--xh-tree-select-content-px` · `--xh-tree-select-content-py` · `--xh-tree-select-content-radius` · `--xh-tree-select-content-shadow` · `--xh-tree-select-gap` · `--xh-tree-select-indent` · `--xh-tree-select-indicator-fg` · `--xh-tree-select-indicator-size` · `--xh-tree-select-item-indicator-fg` · `--xh-tree-select-label-fg` · `--xh-tree-select-label-font-size` · `--xh-tree-select-label-font-weight` · `--xh-tree-select-placeholder-fg` · `--xh-tree-select-row-bg-hover` · `--xh-tree-select-row-fg` · `--xh-tree-select-row-fg-selected` · `--xh-tree-select-row-font-size` · `--xh-tree-select-row-gap` · `--xh-tree-select-row-leading` · `--xh-tree-select-row-px` · `--xh-tree-select-row-py` · `--xh-tree-select-row-radius` · `--xh-tree-select-row-selected-font-weight` · `--xh-tree-select-trigger-bg` · `--xh-tree-select-trigger-bg-disabled` · `--xh-tree-select-trigger-bg-readonly` · `--xh-tree-select-trigger-border` · `--xh-tree-select-trigger-border-hover` · `--xh-tree-select-trigger-border-invalid` · `--xh-tree-select-trigger-fg` · `--xh-tree-select-trigger-font-size` · `--xh-tree-select-trigger-gap` · `--xh-tree-select-trigger-h` · `--xh-tree-select-trigger-min-w` · `--xh-tree-select-trigger-px` · `--xh-tree-select-trigger-radius` · `--xh-tree-select-value-leading`

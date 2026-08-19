@@ -54,7 +54,25 @@ active 翻假即停在当前剩余量，翻真从那里接着走；改 value 就
 | `live` | `CountdownLive` |  | 读屏播报档位，缺省 off。 |
 | `onFinish` | `(details: CountdownFinishDetails) => void` |  | 走到 0 时通知一次。中途被停掉不通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `finish` | `CountdownFinishDetails` | 走到 0；detail 为 `{ value: number }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhCountdown` | `default` | `CountdownSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `running`
 
@@ -81,3 +99,9 @@ active 翻假即停在当前剩余量，翻真从那里接着走；改 value 就
 规格出处：[W3C APG](https://www.w3.org/TR/wai-aria-1.2/#status)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-countdown-fg` · `--xh-countdown-finished-fg`

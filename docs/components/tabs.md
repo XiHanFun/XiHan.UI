@@ -12,7 +12,7 @@ default-value 指定初始选中项，禁用的标签方向键会跳过；面板
 
 ### 受控
 
-传了 value 就由宿主说了算，组件自己不再改选中值；v-model:value 是它的语法糖
+传了 value 就由宿主说了算，组件自己不再改选中值；切换意图从 value-change 出来，写回才真的切
 
 <XhDemo src="tabs/02-controlled" />
 
@@ -114,7 +114,17 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: TabsValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `TabsValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| null }` |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -149,3 +159,9 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `End` | focus in list | 焦点移到末个可停留 trigger |
 | `Enter` / `Space` | focus in trigger, not disabled | 把选中切到焦点所在 trigger（manual 模式的确认键） |
 | `Tab` / `Shift+Tab` | focus in list | 整组只有锚点 trigger 留在 Tab 序列内，一次 Tab 进出；无锚点时由 list 兜底，焦点进来后转投锚点 trigger（即选中项），锚点缺席或被禁用才落首个可停留项 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-tabs-content-fg` · `--xh-tabs-content-py` · `--xh-tabs-gap` · `--xh-tabs-list-bg` · `--xh-tabs-list-border` · `--xh-tabs-list-gap` · `--xh-tabs-list-p` · `--xh-tabs-list-radius` · `--xh-tabs-trigger-bg` · `--xh-tabs-trigger-bg-active` · `--xh-tabs-trigger-bg-active-hover` · `--xh-tabs-trigger-bg-hover` · `--xh-tabs-trigger-border` · `--xh-tabs-trigger-border-active` · `--xh-tabs-trigger-fg` · `--xh-tabs-trigger-fg-active` · `--xh-tabs-trigger-font-size` · `--xh-tabs-trigger-font-weight` · `--xh-tabs-trigger-gap` · `--xh-tabs-trigger-h` · `--xh-tabs-trigger-px` · `--xh-tabs-trigger-radius` · `--xh-tabs-trigger-shadow-active`

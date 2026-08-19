@@ -71,7 +71,25 @@ disabled 只关掉卡片本身，触发器照样可点、可聚焦，也照样�
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定卡片的内边距档位。 |
 | `onOpenChange` | `(details: HoverCardOpenChangeDetails) => void` |  | open 变化意图回调。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `open-change` | `HoverCardOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhHoverCardRoot` | `default` | `HoverCardRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`closed` · `opening` · `visible` · `visible.open` · `visible.closing`
 
@@ -101,3 +119,9 @@ disabled 只关掉卡片本身，触发器照样可点、可聚焦，也照样�
 | --- | --- | --- |
 | `Tab` / `Shift+Tab` | not disabled | 焦点进入 trigger 立即展开、离开卡片即收起，都不走延时 |
 | `Escape` | 浮层可见（含收起等待期） | 立即收起，不等 closeDelay |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-hover-card-arrow-size` · `--xh-hover-card-bg` · `--xh-hover-card-border` · `--xh-hover-card-fg` · `--xh-hover-card-font-size` · `--xh-hover-card-gap` · `--xh-hover-card-max-w` · `--xh-hover-card-px` · `--xh-hover-card-py` · `--xh-hover-card-radius` · `--xh-hover-card-shadow` · `--xh-hover-card-trigger-gap`

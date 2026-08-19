@@ -12,7 +12,7 @@ root 管段间距与最大行宽，标题与段落各自拿字号、字重、行
 
 ### 标题档位
 
-level 只换字号档位，标签仍由 as 决定；不传 level 即默认档
+level 只换字号档位，用哪个标签由作者定；不传 level 即默认档
 
 <XhDemo src="typography/02-heading-level" />
 
@@ -72,3 +72,9 @@ size 换的是整块正文的字号与段间距，不传 size 即默认档
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-typography-block-gap` · `--xh-typography-code-bg` · `--xh-typography-code-font-size` · `--xh-typography-code-px` · `--xh-typography-code-py` · `--xh-typography-code-radius` · `--xh-typography-fg` · `--xh-typography-font-size` · `--xh-typography-font-weight` · `--xh-typography-heading-fg` · `--xh-typography-heading-font-size` · `--xh-typography-heading-font-weight` · `--xh-typography-heading-gap` · `--xh-typography-heading-leading` · `--xh-typography-leading` · `--xh-typography-link-fg` · `--xh-typography-link-fg-hover` · `--xh-typography-link-radius` · `--xh-typography-link-underline-offset` · `--xh-typography-measure` · `--xh-typography-text-fg` · `--xh-typography-text-font-weight`

@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-create 入队并返回 id，队列里的每条交给 XhToastRoot 渲染；退场窗口走完只收起不删，宿主在 status-change 里把它移出队列
+create 入队并返回 id，队列里的每条由作者渲染成一条通知；退场窗口走完只收起不删，宿主在 status-change 里把它移出队列
 
 <XhDemo src="toaster/01-basic" />
 
@@ -36,7 +36,7 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 
 ### 逐条落位
 
-单条通知自带 placement 就盖掉 toaster 的默认落位；placements 交出眼下有条目的位置，照它渲染几摞就够
+单条通知自带 placement 就盖掉 toaster 的默认落位；placements 报出眼下有条目的位置，一个位置一摞
 
 <XhDemo src="toaster/06-per-toast-placement" />
 
@@ -77,7 +77,26 @@ createToastService 自带宿主与默认模板，模块作用域随处可调（�
 | `translations` | `Partial<ToasterTranslations>` |  |  |
 | `onToastsChange` | `(details: ToasterToastsChangeDetails) => void` |  |  |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `toasts-change` | `ToasterToastsChangeDetails` | 队列变化；detail 为 `{ toasts: ToastRecord[] }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhToasterGroup` | `default` | `ToasterGroupSlotProps` |  |
+| `XhToasterRoot` | `default` | `ToasterRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -105,3 +124,9 @@ createToastService 自带宿主与默认模板，模块作用域随处可调（�
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/alert/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-toaster-inset`

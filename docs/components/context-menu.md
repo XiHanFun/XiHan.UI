@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-collection 是条目的事实源，结构由组件铺开；在触发区上右键（触摸端长按），菜单钉在按下去的那一点上
+在触发区上右键（触摸端长按），菜单钉在按下去的那一点上
 
 <XhDemo src="context-menu/01-basic" />
 
@@ -93,7 +93,29 @@ XhContextMenuSub 在右键菜单里嵌一台子菜单：触发条目双重身份
 | `onOpenChange` | `(details: ContextMenuOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onSelect` | `(details: ContextMenuSelectDetails) => void` |  | 条目被选中；菜单随之关闭。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `open-change` | `ContextMenuOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `select` | `ContextMenuSelectDetails` | 条目被选中（菜单随之关闭）；detail 为 `{ value: string }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhContextMenuRoot` | `default` | `ContextMenuRootSlotProps` |  |
+| `XhContextMenuRoot` | `trigger` | — |  |
+| `XhContextMenuRoot` | `item` | `ContextMenuNodeMeta` |  |
+| `XhContextMenuSub` | `default` | `ContextMenuSubSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`closed` · `pressing` · `open`
 
@@ -141,3 +163,9 @@ XhContextMenuSub 在右键菜单里嵌一台子菜单：触发条目双重身份
 | `Enter` / `Space` | focus in item, not disabled | 派发选中详情并关闭菜单，焦点归还触发区 |
 | `Escape` | open | 关闭菜单并把焦点归还触发区 |
 | `Tab` / `Shift+Tab` | open | 关闭菜单，焦点不归还触发区，按 Tab 序列自然离开 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-context-menu-arrow-size` · `--xh-context-menu-bg` · `--xh-context-menu-border` · `--xh-context-menu-fg` · `--xh-context-menu-group-label-fg` · `--xh-context-menu-group-label-font-size` · `--xh-context-menu-group-label-font-weight` · `--xh-context-menu-group-label-px` · `--xh-context-menu-group-label-py` · `--xh-context-menu-item-active-font-weight` · `--xh-context-menu-item-bg-active` · `--xh-context-menu-item-bg-hover` · `--xh-context-menu-item-fg` · `--xh-context-menu-item-font-size` · `--xh-context-menu-item-gap` · `--xh-context-menu-item-indicator-fg` · `--xh-context-menu-item-indicator-size` · `--xh-context-menu-item-leading` · `--xh-context-menu-item-px` · `--xh-context-menu-item-py` · `--xh-context-menu-item-radius` · `--xh-context-menu-max-h` · `--xh-context-menu-max-w` · `--xh-context-menu-min-w` · `--xh-context-menu-px` · `--xh-context-menu-py` · `--xh-context-menu-radius` · `--xh-context-menu-separator-color` · `--xh-context-menu-separator-my` · `--xh-context-menu-separator-thickness` · `--xh-context-menu-shadow`

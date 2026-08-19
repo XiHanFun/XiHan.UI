@@ -18,7 +18,7 @@ allow-half 让落点分左右半边；划过只发 hover-change，评分要点�
 
 ### 自定义档数
 
-count 决定几颗星，插槽里的 items 就是 1..count 的序号表
+count 决定几颗星，星星按 1..count 逐颗写出
 
 <XhDemo src="rating/03-count" />
 
@@ -42,7 +42,7 @@ size 改星的大小与间距，不写即缺省中档
 
 ### 自定义图案
 
-星形由作者写，条目插槽还给出这颗的状态，点亮与未点亮可以画成两个字形
+星形由作者写，条目自带这颗的点亮状态，点亮与未点亮可以画成两个字形
 
 <XhDemo src="rating/07-icon" />
 
@@ -93,7 +93,27 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | `onValueChange` | `(details: RatingValueChangeDetails) => void` |  |  |
 | `onHoverChange` | `(details: RatingHoverChangeDetails) => void` |  | 悬停预览变化；指针离开时带 null。它不代表值变了。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `RatingValueChangeDetails` | 评分变化；detail 为 `{ value: number }` |
+| `hover-change` | `RatingHoverChangeDetails` | 悬停预览变化；detail 为 `{ value: number \| null }`，指针离开时带 null |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhRatingItem` | `default` | `RatingItemSlotProps` |  |
+| `XhRatingRoot` | `default` | `RatingRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -134,3 +154,9 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | `ArrowLeft` / `ArrowDown` | focus in control, not disabled/readOnly | 减一档，到底停在最小档，不会退回"还没评"；dir=rtl 时改由 ArrowRight 承担 |
 | `Home` | focus in control, not disabled/readOnly | 取最小档（allowHalf 时是半颗，否则一颗） |
 | `End` | focus in control, not disabled/readOnly | 取满分（count） |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-rating-gap` · `--xh-rating-item-fg` · `--xh-rating-item-fg-highlighted` · `--xh-rating-item-font-size` · `--xh-rating-item-gap` · `--xh-rating-item-radius` · `--xh-rating-label-fg` · `--xh-rating-label-font-size` · `--xh-rating-label-font-weight`

@@ -30,7 +30,7 @@ expandOnClick 关掉后只有箭头与左右方向键能改展开态；禁用节
 
 ### 关键词过滤
 
-collection 换一份树就换一棵：标记跟着数据用 v-for 渲，过滤剩下的分支顺手全展开
+collection 换一份树就换一棵：标记跟着数据重铺，过滤剩下的分支顺手全展开
 
 <XhDemo src="tree/05-filter" />
 
@@ -54,7 +54,7 @@ collection 换一份树就换一棵：标记跟着数据用 v-for 渲，过滤�
 
 ### 级联勾选
 
-selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；勾选框是行里的一段标记，态从插槽作用域取
+selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；勾选框是行里的一段标记，勾选态与半选态都由组件报出
 
 <XhDemo src="tree/09-checkable" />
 
@@ -100,7 +100,26 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 | `onExpandedChange` | `(details: TreeExpandedChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TreeSelectionChangeDetails) => void` |  |  |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `expanded-change` | `TreeExpandedChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
+| `selection-change` | `TreeSelectionChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhTreeRoot` | `default` | `TreeRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -156,3 +175,9 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 | `Enter` / `Space` | focus on node, 节点未禁用 | 选中焦点节点（单选替换、复选切换）；焦点在分支上且 expandOnClick 未关时顺带切换展开态 |
 | `*` | focus in tree | 展开与焦点行同一父级的全部分支（已展开与禁用的不动）；同级没有可展开的分支时不吞这个键 |
 | `单个可打印字符` | focus in tree, typeahead 未关 | 连打检索在可见行上按 label 首字母搬焦点，不改选中值，也不展开任何分支 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-tree-bg` · `--xh-tree-border` · `--xh-tree-branch-indicator-fg` · `--xh-tree-fg` · `--xh-tree-gap` · `--xh-tree-indent` · `--xh-tree-indicator-fg` · `--xh-tree-indicator-size` · `--xh-tree-label-fg` · `--xh-tree-label-font-size` · `--xh-tree-label-font-weight` · `--xh-tree-max-h` · `--xh-tree-px` · `--xh-tree-py` · `--xh-tree-radius` · `--xh-tree-row-bg-hover` · `--xh-tree-row-fg` · `--xh-tree-row-fg-selected` · `--xh-tree-row-font-size` · `--xh-tree-row-gap` · `--xh-tree-row-leading` · `--xh-tree-row-px` · `--xh-tree-row-py` · `--xh-tree-row-radius` · `--xh-tree-row-selected-font-weight`

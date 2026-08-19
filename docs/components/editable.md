@@ -79,7 +79,28 @@ edit 受控就由宿主统一调度：一个开关把整张表切进编辑，放
 | `onValueRevert` | `(details: EditableValueRevertDetails) => void` |  | 撤销那一刻发（Escape、取消按钮、不算提交的离场）。 |
 | `onEditChange` | `(details: EditableEditChangeDetails) => void` |  | 编辑态变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `EditableValueChangeDetails` | 编辑途中的值变化；detail 为 `{ value: string }` |
+| `value-commit` | `EditableValueCommitDetails` | 提交；detail 为 `{ value: string, previousValue: string }` |
+| `value-revert` | `EditableValueRevertDetails` | 撤销；detail 为 `{ value: string, discardedValue: string }` |
+| `edit-change` | `EditableEditChangeDetails` | 编辑态变化；detail 为 `{ edit: boolean }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhEditableRoot` | `default` | `EditableRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`preview` · `edit`
 
@@ -125,3 +146,9 @@ edit 受控就由宿主统一调度：一个开关把整张表切进编辑，放
 | `Enter` | focus in input, submitMode 为 enter 或 both | 提交当下的值并回到预览态；其余模式不接管该键，交回给浏览器与外层表单 |
 | `Escape` | focus in input | 撤销回上一次提交的值并回到预览态 |
 | `Tab` / `Shift+Tab` | focus in input | 按 submitMode 收尾（blur/both 提交，enter/none 撤销）；不拦默认行为，焦点照常移出 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-editable-area-min-h` · `--xh-editable-area-min-w` · `--xh-editable-control-gap` · `--xh-editable-gap` · `--xh-editable-input-bg` · `--xh-editable-input-bg-disabled` · `--xh-editable-input-bg-readonly` · `--xh-editable-input-border` · `--xh-editable-input-border-hover` · `--xh-editable-input-border-invalid` · `--xh-editable-input-fg` · `--xh-editable-input-font-size` · `--xh-editable-input-h` · `--xh-editable-input-px` · `--xh-editable-input-radius` · `--xh-editable-label-fg` · `--xh-editable-label-fg-disabled` · `--xh-editable-label-font-size` · `--xh-editable-label-font-weight` · `--xh-editable-placeholder-fg` · `--xh-editable-preview-bg-hover` · `--xh-editable-preview-fg` · `--xh-editable-preview-font-size` · `--xh-editable-preview-min-h` · `--xh-editable-preview-px` · `--xh-editable-preview-radius` · `--xh-editable-submit-bg` · `--xh-editable-submit-bg-active` · `--xh-editable-submit-bg-hover` · `--xh-editable-submit-border` · `--xh-editable-submit-border-active` · `--xh-editable-submit-border-hover` · `--xh-editable-submit-fg` · `--xh-editable-trigger-bg` · `--xh-editable-trigger-bg-active` · `--xh-editable-trigger-bg-disabled` · `--xh-editable-trigger-bg-hover` · `--xh-editable-trigger-border` · `--xh-editable-trigger-border-disabled` · `--xh-editable-trigger-border-hover` · `--xh-editable-trigger-fg` · `--xh-editable-trigger-font-size` · `--xh-editable-trigger-h` · `--xh-editable-trigger-px` · `--xh-editable-trigger-radius`

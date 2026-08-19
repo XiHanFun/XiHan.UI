@@ -86,3 +86,9 @@ size 换整条路径的字号与各层之间的间距，不传 size 即默认档
 | --- | --- | --- |
 | `Enter` | focus in link, 非当前页 | 跟随链接（原生 &lt;a href&gt; 的激活行为，面包屑自己不监听按键） |
 | `Tab` / `Shift+Tab` | focus in root | 逐条走过可点的链接；面包屑不做 roving tabindex，当前页那条带 tabindex=-1 自动脱序 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-breadcrumb-current-fg` · `--xh-breadcrumb-current-font-weight` · `--xh-breadcrumb-ellipsis-size` · `--xh-breadcrumb-fg` · `--xh-breadcrumb-font-size` · `--xh-breadcrumb-gap` · `--xh-breadcrumb-leading` · `--xh-breadcrumb-link-bg-hover` · `--xh-breadcrumb-link-fg-hover` · `--xh-breadcrumb-link-gap` · `--xh-breadcrumb-link-max-w` · `--xh-breadcrumb-link-px` · `--xh-breadcrumb-link-radius` · `--xh-breadcrumb-separator-fg` · `--xh-breadcrumb-separator-size`

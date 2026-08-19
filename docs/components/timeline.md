@@ -77,3 +77,9 @@ size 换的是圆点直径、条目间距与字号，不传 size 即默认档
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-timeline-connector-bg` · `--xh-timeline-connector-min-length` · `--xh-timeline-connector-thickness` · `--xh-timeline-description-fg` · `--xh-timeline-description-font-size` · `--xh-timeline-fg` · `--xh-timeline-gutter` · `--xh-timeline-indicator-bg` · `--xh-timeline-indicator-fg` · `--xh-timeline-indicator-font-size` · `--xh-timeline-indicator-size` · `--xh-timeline-item-gap` · `--xh-timeline-time-fg` · `--xh-timeline-time-font-size` · `--xh-timeline-title-fg` · `--xh-timeline-title-font-size` · `--xh-timeline-title-font-weight`

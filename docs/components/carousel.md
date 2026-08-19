@@ -12,7 +12,7 @@
 
 ### 受控
 
-传了 page 就由宿主说了算，组件只发 page-change 不自己改页码；v-model:page 是它的语法糖
+传了 page 就由宿主说了算，组件只发 page-change 不自己改页码，宿主写回它才动
 
 <XhDemo src="carousel/02-controlled" />
 
@@ -42,7 +42,7 @@ allowPointerDrag 打开后按住轨道就能拖着走，松手落回整页；关
 
 ### 指示点悬停切页
 
-页码由插槽交出的 setPage 说了算，指示点上补一个原生 mouseenter 就是悬停切页，点击照常翻页
+指示点上补一个原生 mouseenter 就是悬停切页，组件自带的点击翻页照旧
 
 <XhDemo src="carousel/07-indicator-hover" />
 
@@ -92,7 +92,25 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | `translations` | `Partial<CarouselTranslations>` |  |  |
 | `onPageChange` | `(details: CarouselPageChangeDetails) => void` |  | 页码变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `page-change` | `CarouselPageChangeDetails` | 页码变化；detail 为 `{ page: number }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhCarouselRoot` | `default` | `CarouselRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `playing` · `playing.running` · `playing.paused`
 
@@ -151,3 +169,9 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | `Enter` / `Space` | 焦点在指示点上 | 跳到该指示点对应的页；由原生按钮的激活行为负责 |
 | `Tab` / `Shift+Tab` | 任意时刻 | 在两端按钮与各指示点之间逐个停靠；到端点后禁用的按钮自动脱序 |
 | `方向键` | 焦点在幻灯片内的输入控件上 | 不接管：交还给控件自己做光标移动 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-carousel-duration` · `--xh-carousel-ease` · `--xh-carousel-gap` · `--xh-carousel-indicator-bg` · `--xh-carousel-indicator-bg-hover` · `--xh-carousel-indicator-bg-selected` · `--xh-carousel-indicator-gap` · `--xh-carousel-indicator-radius` · `--xh-carousel-indicator-size` · `--xh-carousel-trigger-bg` · `--xh-carousel-trigger-bg-active` · `--xh-carousel-trigger-bg-hover` · `--xh-carousel-trigger-border` · `--xh-carousel-trigger-fg` · `--xh-carousel-trigger-radius` · `--xh-carousel-trigger-size` · `--xh-carousel-viewport-radius`

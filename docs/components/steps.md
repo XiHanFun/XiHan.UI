@@ -12,7 +12,7 @@
 
 ### 受控
 
-传了 step 就由宿主说了算，组件自己不再改步序；v-model:step 是它的语法糖
+传了 step 就由宿主说了算，组件自己不再改步序；切步意图从 step-change 出来，写回才真的切
 
 <XhDemo src="steps/02-controlled" />
 
@@ -83,7 +83,25 @@ size 换序号圆点的直径与标题、说明的字号，不传 size 即默认
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onStepChange` | `(details: StepsStepChangeDetails) => void` |  | 步序变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `step-change` | `StepsStepChangeDetails` | 步序变化；detail 为 `{ step: number }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhStepsRoot` | `default` | `StepsRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -125,3 +143,9 @@ size 换序号圆点的直径与标题、说明的字号，不传 size 即默认
 | `End` | focus in list | 焦点移到末个可停留 trigger |
 | `Enter` / `Space` | focus in trigger, 未禁用且已解锁 | 把当前步切到焦点所在的那一步 |
 | `Tab` / `Shift+Tab` | focus in list | 整组只有锚点 trigger 留在 Tab 序列内，一次 Tab 进出；无锚点时由 list 兜底 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-steps-content-fg` · `--xh-steps-content-py` · `--xh-steps-description-fg` · `--xh-steps-description-font-size` · `--xh-steps-gap` · `--xh-steps-indicator-bg` · `--xh-steps-indicator-bg-completed` · `--xh-steps-indicator-border` · `--xh-steps-indicator-border-completed` · `--xh-steps-indicator-border-current` · `--xh-steps-indicator-border-disabled` · `--xh-steps-indicator-fg` · `--xh-steps-indicator-fg-completed` · `--xh-steps-indicator-fg-current` · `--xh-steps-indicator-fg-disabled` · `--xh-steps-indicator-font-size` · `--xh-steps-indicator-size` · `--xh-steps-item-gap` · `--xh-steps-list-gap` · `--xh-steps-separator-bg` · `--xh-steps-separator-bg-completed` · `--xh-steps-separator-min-length` · `--xh-steps-separator-thickness` · `--xh-steps-title-fg` · `--xh-steps-title-fg-active` · `--xh-steps-title-font-size` · `--xh-steps-title-font-weight` · `--xh-steps-trigger-bg-hover` · `--xh-steps-trigger-gap` · `--xh-steps-trigger-p` · `--xh-steps-trigger-radius`

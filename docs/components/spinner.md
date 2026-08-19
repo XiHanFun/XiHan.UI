@@ -36,7 +36,7 @@ tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到
 
 ### 换掉转圈图形
 
-内置圆环画在伪元素上，把直径与描边归零它就不占位；自绘的图形写进默认插槽
+内置圆环画在伪元素上，把直径与描边归零它就不占位；自绘的图形写进 root 里
 
 <XhDemo src="spinner/06-custom-graphic" />
 
@@ -79,3 +79,9 @@ tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/practices/live-regions/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-spinner-duration` · `--xh-spinner-fg` · `--xh-spinner-gap` · `--xh-spinner-label-fg` · `--xh-spinner-label-size` · `--xh-spinner-radius` · `--xh-spinner-size` · `--xh-spinner-thickness` · `--xh-spinner-track`

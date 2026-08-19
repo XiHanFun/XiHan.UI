@@ -55,7 +55,25 @@ tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onVisibleChange` | `(details: BackTopVisibleChangeDetails) => void` |  | 露面与否变化时回调。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `visible-change` | `BackTopVisibleChangeDetails` | 露面与否变化；detail 为 `{ visible: boolean }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhBackTopRoot` | `default` | `BackTopRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`hidden` · `visible`
 
@@ -82,3 +100,9 @@ tone 决定按钮用哪族颜色，size 换一档尺寸；translations 换掉读
 | --- | --- | --- |
 | `Enter` / `Space` | focus in trigger | 滚回顶部；按 behavior 决定是一步到位还是平滑滚过去 |
 | `Tab` / `Shift+Tab` | trigger 露面时 | 走到按钮上；收起时整个 root 带 hidden，按钮不在 Tab 序列里 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-back-top-bg` · `--xh-back-top-bg-active` · `--xh-back-top-bg-hover` · `--xh-back-top-border` · `--xh-back-top-border-hover` · `--xh-back-top-fg` · `--xh-back-top-inset-block` · `--xh-back-top-inset-inline` · `--xh-back-top-layer` · `--xh-back-top-radius` · `--xh-back-top-trigger-size`

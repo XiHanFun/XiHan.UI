@@ -36,13 +36,13 @@ checked-change 带一份 { checked }，非受控时内部翻转也照发一次
 
 ### 业务取值
 
-checked 只认布尔，用一个可写 computed 在中间换一次，绑上去的就是业务值
+checked 只认布尔，在中间换一道，进出两头拿到的都是业务值
 
 <XhDemo src="checkbox/06-value-mapping" />
 
-### 自渲外壳与命令式聚焦
+### 命令式聚焦
 
-组合式函数只给属性，节点由作者自己写，DOM 引用因此拿得到
+节点由作者自己写，DOM 引用因此拿得到：聚焦、失焦与翻转都走命令式
 
 <XhDemo src="checkbox/07-focus" />
 
@@ -75,13 +75,26 @@ checked 只认布尔，用一个可写 computed 在中间换一次，绑上去�
 | `checked` | `CheckboxCheckedState` |  |  |
 | `defaultChecked` | `CheckboxCheckedState` |  |  |
 | `disabled` | `boolean` |  |  |
+| `readOnly` | `boolean` |  | 只读：勾不动，但仍可聚焦、仍参与提交，对比度不降。 |
+| `invalid` | `boolean` |  | 校验失败：只改呈现，不挡交互。 |
+| `required` | `boolean` |  | 必填：随表单校验一起用，只发无障碍属性，不自行拦提交。 |
 | `name` | `string` |  | 表单字段名；给了 hidden-input 才带 name 并参与提交。 |
 | `value` | `string` |  | 提交出去的值，缺省 'on'，与原生复选框一致。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定选中态用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定方框边长与勾的字号档位。 |
 | `onCheckedChange` | `(details: CheckboxCheckedChangeDetails) => void` |  | checked 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `checked-change` | `CheckboxCheckedChangeDetails` | checked 状态变化；detail 为 `{ checked: boolean }` |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`off` · `on` · `indeterminate`
 
@@ -110,3 +123,9 @@ checked 只认布尔，用一个可写 computed 在中间换一次，绑上去�
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Space` / `Enter` | focus in root, not disabled | 切换 checked 状态 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-checkbox-bg` · `--xh-checkbox-bg-checked` · `--xh-checkbox-border` · `--xh-checkbox-border-checked` · `--xh-checkbox-border-invalid` · `--xh-checkbox-fg` · `--xh-checkbox-fg-invalid` · `--xh-checkbox-indicator-fg` · `--xh-checkbox-label-fg` · `--xh-checkbox-label-fg-disabled` · `--xh-checkbox-label-font-size` · `--xh-checkbox-label-gap`
