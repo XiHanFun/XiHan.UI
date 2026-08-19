@@ -15,6 +15,9 @@ export const XhCheckbox = defineComponent({
     checked: { type: [Boolean, String] as PropType<CheckboxCheckedState>, default: undefined },
     defaultChecked: { type: [Boolean, String] as PropType<CheckboxCheckedState>, default: undefined },
     disabled: Boolean,
+    readOnly: Boolean,
+    invalid: Boolean,
+    required: Boolean,
     /** 表单字段名；给了 hidden-input 才带 name 并参与提交 */
     name: { type: String, default: undefined },
     value: { type: String, default: undefined },

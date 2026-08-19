@@ -6,6 +6,8 @@ export interface FieldProps {
   /** 必填：控件上 aria-required=true。 */
   required?: boolean
   disabled?: boolean
+  /** 只读：控件上 aria-readonly=true。与 disabled 不同，只读仍可聚焦、仍参与提交。 */
+  readOnly?: boolean
   /** 控件 id；作者接管时以它为准。 */
   controlId?: string
 }
@@ -14,6 +16,7 @@ export interface FieldApi<T extends PropTypes = PropTypes> {
   invalid: boolean
   required: boolean
   disabled: boolean
+  readOnly: boolean
   /** 控件实际使用的 id，label 的 for 与它一致。 */
   controlId: string
   getRootProps: () => T['element']

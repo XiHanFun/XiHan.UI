@@ -44,7 +44,6 @@ export function connectEllipsis<T extends PropTypes>(
       'style': `--xh-_ellipsis-lines: ${lines}`,
       'data-multiline': dataAttr(multiline),
       'data-expandable': dataAttr(expandable),
-      'data-expanded': dataAttr(expanded),
       'data-overflowing': dataAttr(overflowing),
       // 可展开时整块文字就是那颗按钮：读屏念得出角色、Tab 停得住、Enter / Space 按得动。
       // 不可展开时这几件一个都不写，它就还是一段普通的文字
@@ -53,6 +52,9 @@ export function connectEllipsis<T extends PropTypes>(
             'role': 'button',
             'tabindex': 0,
             'aria-expanded': expanded ? 'true' : 'false',
+            // 与全库 29 处 aria-expanded 对齐的开合编码。不可展开的那一支一个都不写：
+            // 给一个恒 closed 会让皮肤画出一个永远转不动的箭头
+            'data-state': expanded ? 'open' : 'closed',
             'onClick': () => send({ type: 'TOGGLE' }),
             'onKeydown': (event: KeyboardEvent) => {
               if (event.key !== 'Enter' && event.key !== ' ')

@@ -44,7 +44,7 @@
      用逻辑属性，RTL 下自动换到右侧 */
   [data-scope='form'][data-part='field-group'][data-invalid] {
     padding-inline-start: var(--xh-form-field-invalid-px, var(--xh-space-2));
-    border-inline-start: var(--xh-stroke-thick) solid var(--xh-form-field-invalid-border, var(--xh-color-danger-500));
+    border-inline-start: var(--xh-stroke-thick) solid var(--xh-form-field-invalid-border, var(--xh-border-invalid));
   }
 
   /* 容器带着 tabindex=-1：控件全禁用时焦点会落在它自己身上，
@@ -61,7 +61,7 @@
     gap: var(--xh-form-summary-gap, var(--xh-space-1_5));
     padding-block: var(--xh-form-summary-py, var(--xh-space-3));
     padding-inline: var(--xh-form-summary-px, var(--xh-control-px-md));
-    border: var(--xh-stroke-thin) solid var(--xh-form-summary-border, var(--xh-color-danger-500));
+    border: var(--xh-stroke-thin) solid var(--xh-form-summary-border, var(--xh-border-invalid));
     border-radius: var(--xh-form-summary-radius, var(--xh-shape-surface));
     background: var(--xh-form-summary-bg, var(--xh-bg-surface));
     color: var(--xh-form-summary-fg, var(--xh-fg-danger));

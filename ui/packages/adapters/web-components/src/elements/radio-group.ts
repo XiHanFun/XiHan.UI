@@ -17,6 +17,9 @@ import { MachineController } from '../runtime/machine-controller'
  * @attr {string} value - 受控选中值；缺省该属性即非受控
  * @attr {string} default-value - 非受控初始选中值
  * @attr {boolean} disabled - 整组禁用
+ * @attr {boolean} read-only - 只读：选不动，方向键照常移焦点
+ * @attr {boolean} invalid - 校验失败态
+ * @attr {boolean} required - 必填
  * @attr {'horizontal'|'vertical'} orientation - 视觉排布，默认 vertical
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义，默认 ltr
  * @attr {string} name - 表单字段名；给定后隐藏输入才带 name 并参与提交
@@ -40,6 +43,9 @@ export class XhRadioGroupElement extends XhElement {
     value: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     defaultValue: { attribute: 'default-value' },
     disabled: { type: Boolean },
+    readOnly: { type: Boolean, attribute: 'read-only' },
+    invalid: { type: Boolean },
+    required: { type: Boolean },
     orientation: {},
     direction: { attribute: 'dir' },
     name: {},
@@ -51,6 +57,9 @@ export class XhRadioGroupElement extends XhElement {
   declare value?: string
   declare defaultValue?: string
   declare disabled?: boolean
+  declare readOnly?: boolean
+  declare invalid?: boolean
+  declare required?: boolean
   declare orientation?: Orientation
   declare direction?: Direction
   declare name?: string
@@ -74,6 +83,9 @@ export class XhRadioGroupElement extends XhElement {
       value: this.value,
       defaultValue: this.defaultValue ?? null,
       disabled: this.disabled ?? false,
+      readOnly: this.readOnly ?? false,
+      invalid: this.invalid ?? false,
+      required: this.required ?? false,
       orientation: this.orientation,
       dir: this.direction,
       name: this.name,

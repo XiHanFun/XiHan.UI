@@ -139,7 +139,8 @@ export function connectCascader<T extends PropTypes>(
   const itemState = (v: string): Record<string, string | undefined> => {
     const meta = metaOf(v)
     return {
-      'data-selected': dataAttr(isSelected(v)),
+      // 与其余 role=option 组件同一套选中编码
+      'data-state': isSelected(v) ? 'checked' : 'unchecked',
       'data-indeterminate': dataAttr(isIndeterminate(v)),
       'data-disabled': dataAttr(!!meta && isDisabled(meta)),
       // 焦点所在与选中互相独立
@@ -490,6 +491,7 @@ export function connectCascader<T extends PropTypes>(
         'role': 'option',
         'aria-selected': selectedKeys.has(key) ? 'true' : 'false',
         'aria-disabled': result?.disabled ? 'true' : 'false',
+        'data-state': selectedKeys.has(key) ? 'checked' : 'unchecked',
         // 不在当前候选里（词换了）整个藏掉：WC 的候选节点常驻 DOM，靠这条过滤
         'hidden': !searching || index < 0 || undefined,
         'data-highlighted': dataAttr(index >= 0 && index === searchHighlightIndex),

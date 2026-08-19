@@ -126,6 +126,15 @@ export function connectImageViewer<T extends PropTypes>(
           event.preventDefault()
           send({ type: 'INDEX.NEXT' })
         }
+        // 两端直达，与同为序列翻页的 carousel 一致；不受 loop 影响
+        else if (event.key === 'Home') {
+          event.preventDefault()
+          send({ type: 'INDEX.SET', index: 0 })
+        }
+        else if (event.key === 'End') {
+          event.preventDefault()
+          send({ type: 'INDEX.SET', index: count - 1 })
+        }
       },
     }),
 

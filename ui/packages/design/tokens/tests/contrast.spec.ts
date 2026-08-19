@@ -200,7 +200,13 @@ const BORDER_RATCHET: ReadonlyArray<[keyof typeof themes, string, string, number
 ]
 
 // 高对比档（data-contrast='more'）的判据：每条边界对两种底都不低于正文 AA 的那条线。
-const MORE_BORDERS = ['border.default', 'border.subtle', 'border.strong', 'border.control', 'border.control-hover']
+// 名单从两份覆盖文件里取并集，不手写：手写的名单只钉住写下那天存在的令牌，
+// 往 .more 里新加一条不会有任何检查响，而这一档的判据本来就是「每条边界」。
+const MORE_BORDERS = [...new Set(
+  ['semantic.light.more.json', 'semantic.dark.more.json']
+    .flatMap(name => Object.keys((loadJson(name).border ?? {}) as object))
+    .map(token => `border.${token}`),
+)].sort()
 
 describe('文字对比度（WCAG 1.4.3 AA，4.5:1）', () => {
   for (const [theme, fg, bg] of TEXT_PAIRS) {

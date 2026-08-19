@@ -28,7 +28,7 @@ export type { HoverIntentOptions, HoverPoint, HoverRect } from './hover-intent'
 export { acquireScrollLock } from './scroll-lock'
 
 export type { ScrollLockHandle, ScrollLockOptions } from './scroll-lock'
-export { createScrollTracker, createViewportEntry, readViewportRect, scrollBlockTo } from './scroll-position'
+export { createScrollTracker, createViewportEntry, readViewportRect, resolveScrollBehavior, scrollBlockTo } from './scroll-position'
 export type {
   ScrollMetrics,
   ScrollTrackerHandle,

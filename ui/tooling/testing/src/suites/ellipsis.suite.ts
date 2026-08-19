@@ -63,7 +63,7 @@ function assertTitle(expected: string | null): StepWithExpect {
       const el = partEl(doc, 'root')
       const actual = el.getAttribute('title')
       if (actual !== expected)
-        throw new Error(`title 期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}（expanded=${el.getAttribute('data-expanded')} overflowing=${el.getAttribute('data-overflowing')} scrollW=${el.scrollWidth} clientW=${el.clientWidth}）`)
+        throw new Error(`title 期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}（state=${el.getAttribute('data-state')} overflowing=${el.getAttribute('data-overflowing')} scrollW=${el.scrollWidth} clientW=${el.clientWidth}）`)
     },
   }
 }
@@ -85,7 +85,7 @@ export const ellipsisSuite: ConformanceSuite = {
             'data-lines': '1',
             'data-multiline': null,
             'data-expandable': null,
-            'data-expanded': null,
+            'data-state': null,
             'data-overflowing': null,
             // 不可展开时这几件一个都不写，它就还是一段普通的文字
             'role': null,
@@ -137,7 +137,7 @@ export const ellipsisSuite: ConformanceSuite = {
             'tabindex': '0',
             'aria-expanded': 'false',
             'data-expandable': '',
-            'data-expanded': null,
+            'data-state': 'closed',
           },
         },
       },
@@ -153,14 +153,14 @@ export const ellipsisSuite: ConformanceSuite = {
           kind: 'key',
           key: 'Enter',
           expect: {
-            parts: { root: { 'aria-expanded': 'true', 'data-expanded': '' } },
+            parts: { root: { 'aria-expanded': 'true', 'data-state': 'open' } },
           },
         },
         {
           kind: 'key',
           key: 'Space',
           expect: {
-            parts: { root: { 'aria-expanded': 'false', 'data-expanded': null } },
+            parts: { root: { 'aria-expanded': 'false', 'data-state': 'closed' } },
           },
         },
       ],
@@ -176,7 +176,7 @@ export const ellipsisSuite: ConformanceSuite = {
           part: 'root',
           expect: {
             // 铺开后不再重量：结论留着上一次的，供作者判断收回去会不会又被裁
-            parts: { root: { 'data-expanded': '', 'data-overflowing': '' } },
+            parts: { root: { 'data-state': 'open', 'data-overflowing': '' } },
           },
         },
       ],
@@ -205,15 +205,15 @@ export const ellipsisSuite: ConformanceSuite = {
           kind: 'click',
           part: 'root',
           expect: {
-            parts: { root: { 'data-expanded': null, 'aria-expanded': 'false' } },
+            parts: { root: { 'data-state': 'closed', 'aria-expanded': 'false' } },
           },
         },
         { kind: 'setProps', props: { expanded: true } },
         {
           kind: 'settle',
-          until: { attr: { part: 'root', name: 'data-expanded', value: '' } },
+          until: { attr: { part: 'root', name: 'data-state', value: 'open' } },
           expect: {
-            parts: { root: { 'data-expanded': '', 'aria-expanded': 'true' } },
+            parts: { root: { 'data-state': 'open', 'aria-expanded': 'true' } },
           },
         },
       ],

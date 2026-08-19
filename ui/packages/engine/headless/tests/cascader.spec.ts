@@ -1006,9 +1006,9 @@ describe('roving tabindex 与 ARIA 骨架', () => {
   it('条目一系共用同一份状态标记，样式层各处对得上', () => {
     const h = mount({ defaultOpen: true, defaultValue: ['macau'] })
     const macau = h.item('macau')
-    expect(macau.item.getAttribute('data-selected')).toBe('')
-    expect(macau.text.getAttribute('data-selected')).toBe('')
-    expect(macau.indicator.getAttribute('data-selected')).toBe('')
+    expect(macau.item.getAttribute('data-state')).toBe('checked')
+    expect(macau.text.getAttribute('data-state')).toBe('checked')
+    expect(macau.indicator.getAttribute('data-state')).toBe('checked')
     expect(macau.indicator.getAttribute('aria-hidden')).toBe('true')
   })
 })

@@ -128,7 +128,7 @@
   [data-scope='scroll-area'][data-part='thumb'] {
     position: absolute;
     border-radius: var(--xh-scroll-area-thumb-radius, var(--xh-shape-pill));
-    background: var(--xh-scroll-area-thumb-bg, var(--xh-color-neutral-400));
+    background: var(--xh-scroll-area-thumb-bg, var(--xh-fg-scrollbar-thumb));
     cursor: default;
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -146,12 +146,12 @@
   }
 
   [data-scope='scroll-area'][data-part='thumb']:hover {
-    background: var(--xh-scroll-area-thumb-bg-hover, var(--xh-color-neutral-500));
+    background: var(--xh-scroll-area-thumb-bg-hover, var(--xh-fg-scrollbar-thumb-hover));
   }
 
   /* 手正按在这条轴的滑块上时才变深：两条轴各有一个滑块，全打上标记就分不出手在哪一个上 */
   [data-scope='scroll-area'][data-part='thumb'][data-dragging] {
-    background: var(--xh-scroll-area-thumb-bg-dragging, var(--xh-color-neutral-600));
+    background: var(--xh-scroll-area-thumb-bg-dragging, var(--xh-fg-scrollbar-thumb-active));
   }
 
   /* 两条滚动条同时在场时，右下角那个交叉口谁都盖不住，留着会露出底下的内容。

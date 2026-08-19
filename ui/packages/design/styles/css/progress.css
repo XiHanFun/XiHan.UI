@@ -1,3 +1,17 @@
+@layer xihan.motion {
+  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+  @keyframes xh-progress-indeterminate {
+    from {
+      inset-inline-start: -40%;
+    }
+
+    to {
+      inset-inline-start: 100%;
+    }
+  }
+}
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='progress'] {
@@ -95,6 +109,29 @@
     transition: stroke-dashoffset var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
+  /* 进度未知：线形条改为一小段来回扫。宽度交给动画，连接层算出的 inline-size 与
+     那条过渡都得让开，否则每帧都在跟动画抢同一个属性 */
+  [data-scope='progress'][data-part='track'][data-state='indeterminate'] {
+    position: relative;
+    overflow: hidden;
+  }
+
+  [data-scope='progress'][data-part='range'][data-state='indeterminate'] {
+    position: absolute;
+    inline-size: 40%;
+    transition: none;
+    animation: xh-progress-indeterminate var(--xh-progress-indeterminate-duration, 1.2s) var(--xh-ease-standard) infinite;
+  }
+
+  /* 减弱动效档：不来回扫，改成一条铺满的静态条——进度仍然未知，只是不再动 */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='progress'][data-part='range'][data-state='indeterminate'] {
+      position: static;
+      inline-size: 100%;
+      opacity: 0.5;
+      animation: none;
+    }
+  }
   /* 零进度：圆角端点会在长度为 0 处画出一个圆点，收掉它 */
   [data-scope='progress'][data-part='range'][data-empty] {
     visibility: hidden;

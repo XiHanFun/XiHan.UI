@@ -66,7 +66,7 @@ export function connectTextField<T extends PropTypes>(
       ...parts.input.attrs,
       'id': ids.input,
       // textarea 没有 type 属性
-      'type': (input.as ?? 'input') === 'textarea' ? undefined : 'text',
+      'type': (input.as ?? 'input') === 'textarea' ? undefined : (prop('type') ?? 'text'),
       'name': prop('name'),
       'value': value,
       'placeholder': prop('placeholder'),

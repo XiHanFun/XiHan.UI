@@ -146,7 +146,7 @@
   }
 
   [data-scope='editable'][data-part='input'][data-invalid] {
-    border-color: var(--xh-editable-input-border-invalid, var(--xh-color-danger-500));
+    border-color: var(--xh-editable-input-border-invalid, var(--xh-border-invalid));
   }
 
   /* 只读仍可聚焦、可复制，不置灰，只把底色压下去表示"改不动" */

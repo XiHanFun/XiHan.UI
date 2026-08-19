@@ -1,4 +1,4 @@
-import type { TextFieldSchema, TextFieldValueChangeDetails } from '@xihan-ui/headless'
+import type { TextFieldSchema, TextFieldType, TextFieldValueChangeDetails } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import { autoSizeTextarea, connectTextField, textFieldAnatomy, textFieldMachine, textFieldMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -25,6 +25,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @customElement xh-text-field
  * @attr {string} value - 受控值；缺省该属性即非受控
  * @attr {string} default-value - 非受控初值
+ * @attr {'text'|'password'|'email'|'tel'|'url'|'search'} type - 单行输入类型，缺省 text；宿主写成 textarea 时该属性不发
  * @attr {string} placeholder - 占位文案
  * @attr {boolean} disabled - 禁用：不可聚焦、写不进
  * @attr {boolean} read-only - 只读：仍可聚焦与复制，写不进
@@ -50,6 +51,7 @@ export class XhTextFieldElement extends XhElement {
   static override properties = {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
+    type: { converter: STRING_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
@@ -66,6 +68,7 @@ export class XhTextFieldElement extends XhElement {
 
   declare value?: string
   declare defaultValue?: string
+  declare type?: TextFieldType
   declare placeholder?: string
   declare disabled?: boolean
   declare readOnly?: boolean
@@ -90,6 +93,7 @@ export class XhTextFieldElement extends XhElement {
     return {
       value: this.value,
       defaultValue: this.defaultValue,
+      type: this.type,
       placeholder: this.placeholder,
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,

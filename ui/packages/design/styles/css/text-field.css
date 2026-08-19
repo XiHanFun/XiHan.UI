@@ -141,11 +141,11 @@
   /* 顶到字数上限：再敲进不去，边框先给个提示。放在 invalid 之前，
      两者同时成立时按源序让 invalid 赢——真出错比"写满了"要紧 */
   [data-scope='text-field'][data-part='input'][data-at-limit] {
-    border-color: var(--xh-text-field-input-border-at-limit, var(--xh-color-warning-600));
+    border-color: var(--xh-text-field-input-border-at-limit, var(--xh-border-at-limit));
   }
 
   [data-scope='text-field'][data-part='input'][data-invalid] {
-    border-color: var(--xh-text-field-input-border-invalid, var(--xh-color-danger-500));
+    border-color: var(--xh-text-field-input-border-invalid, var(--xh-border-invalid));
   }
 
   /* 只读仍可聚焦、可复制，所以不置灰，只把底色压下去表示"改不动" */

@@ -134,7 +134,7 @@ const FIXTURE: FixtureNode = {
 function itemsSelected(...values: readonly string[]): readonly AttrExpectation[] {
   return ITEM_ORDER.map(v => ({
     'aria-selected': values.includes(v) ? 'true' : 'false',
-    'data-selected': values.includes(v) ? '' : null,
+    'data-state': values.includes(v) ? 'checked' : 'unchecked',
   }))
 }
 
@@ -274,7 +274,7 @@ export const cascaderSuite: ConformanceSuite = {
           'item[4]': { 'hidden': '', 'data-level': '1', 'data-value': 'hangzhou' },
           'item[6]': { 'hidden': '', 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null },
           'item[8]': { 'hidden': '', 'data-level': '2', 'data-value': 'xihu' },
-          'item-indicator[0]': { 'aria-hidden': 'true', 'data-selected': null },
+          'item-indicator[0]': { 'aria-hidden': 'true', 'data-state': 'unchecked' },
           'item': itemsShown('zhejiang', 'jiangsu', 'taiwan', 'macau'),
         },
         activeElement: null,
@@ -629,7 +629,7 @@ export const cascaderSuite: ConformanceSuite = {
             parts: {
               'column': columnsShown(3),
               'item': itemsActive('zhejiang', 'hangzhou', 'xihu'),
-              'item[8]': { 'tabindex': '0', 'aria-selected': 'true', 'data-selected': '' },
+              'item[8]': { 'tabindex': '0', 'aria-selected': 'true', 'data-state': 'checked' },
             },
           },
         },
@@ -719,7 +719,7 @@ export const cascaderSuite: ConformanceSuite = {
           expect: {
             parts: {
               'item': itemsSelected('macau'),
-              'item-indicator[3]': { 'data-selected': '' },
+              'item-indicator[3]': { 'data-state': 'checked' },
               'content': { hidden: null },
             },
             events: [{ type: 'value-change', detail: { value: [['macau']] } }],

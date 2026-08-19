@@ -7,7 +7,7 @@
   [data-scope='list'][data-part='root'] {
     /* 一个尺寸档只换这几个私有槽，条目与两行文字都从根上继承它们，
        换档不必给每个部件各写一条选择器 */
-    --xh-_list-item-py: var(--xh-space-3);
+    --xh-_list-item-py: var(--xh-list-item-py-md);
     --xh-_list-item-px: var(--xh-space-4);
     --xh-_list-item-gap: var(--xh-space-3);
     --xh-_list-title-size: var(--xh-font-size-md);
@@ -29,7 +29,7 @@
 
   /* —— 尺寸 —— */
   [data-scope='list'][data-part='root'][data-size='sm'] {
-    --xh-_list-item-py: var(--xh-space-2);
+    --xh-_list-item-py: var(--xh-list-item-py-sm);
     --xh-_list-item-px: var(--xh-space-3);
     --xh-_list-item-gap: var(--xh-space-2);
     --xh-_list-title-size: var(--xh-font-size-sm);
@@ -37,7 +37,7 @@
   }
 
   [data-scope='list'][data-part='root'][data-size='lg'] {
-    --xh-_list-item-py: var(--xh-space-4);
+    --xh-_list-item-py: var(--xh-list-item-py-lg);
     --xh-_list-item-px: var(--xh-space-5);
     --xh-_list-item-gap: var(--xh-space-4);
     --xh-_list-title-size: var(--xh-font-size-lg);

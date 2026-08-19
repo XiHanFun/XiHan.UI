@@ -179,8 +179,15 @@ theme.setPreference({ brand: brandId('acme') })
 丢掉 `@xihan-ui/styles`，只留令牌（或连令牌一起丢），组件行为一点不受影响。你需要知道的全部接口是：
 
 1. **`data-scope` + `data-part`**——结构标识，见[组件参考](../components/)里每个组件的解剖；
-2. **`data-state` / `data-disabled` / `data-orientation` / `data-highlighted` / `data-side` / `data-align`**——状态钩子；
+2. **`data-state` / `data-disabled` / `data-readonly` / `data-invalid` / `data-orientation` / `data-highlighted` / `data-side` / `data-align`**——状态钩子；
 3. 组件自己的语义属性，如 `data-variant`、`data-position`。
+
+两条贯穿全库的取值约定，写全局规则时可以依赖：
+
+- **开合**一律编成 `data-state='open'|'closed'`，与元素上的 `aria-expanded` 同步。
+- **`role='option'` 的条目**一律编成 `data-state='checked'|'unchecked'`，与 `aria-selected` 同步，条目上不再发 `data-selected`。
+- **`data-selected`** 只用于结构性选中——树节点、表格行这类既非 option、选中态又与展开/高亮各自独立的角色。
+- **布尔状态**为真时属性在场且值为空串，为假时属性整个缺席——所以选择器写 `[data-disabled]` 即可，不必写 `[data-disabled='true']`。
 
 `data-xh-*` 前缀的属性是内部标记（层栈、集合项、焦点哨兵），不承诺稳定，不要选它们。
 

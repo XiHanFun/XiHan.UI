@@ -514,7 +514,8 @@ export function connectDatePicker<T extends PropTypes>(
         'aria-selected': selected ? 'true' : 'false',
         'data-unit': unit,
         'data-value': v,
-        'data-selected': dataAttr(selected),
+        // 与其余 role=option 组件同一套选中编码
+        'data-state': selected ? 'checked' : 'unchecked',
         // roving tabindex：每列只有落点那一格留在 Tab 序列内，其余靠方向键到达
         'tabindex': timeAnchorOf(unit) === v ? 0 : -1,
         'onClick': () => pickTimeUnit(unit, v),

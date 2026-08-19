@@ -1,4 +1,4 @@
-import type { TextFieldApi, TextFieldInputHost, TextFieldSchema } from '@xihan-ui/headless'
+import type { TextFieldApi, TextFieldInputHost, TextFieldSchema, TextFieldType } from '@xihan-ui/headless'
 import type { ControlVariant, Size, Tone } from '@xihan-ui/kernel'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -21,6 +21,7 @@ export const XhTextFieldRoot = defineComponent({
     // default: undefined 表示非受控
     value: { type: String, default: undefined },
     defaultValue: { type: String, default: undefined },
+    type: { type: String as PropType<TextFieldType>, default: undefined },
     placeholder: { type: String, default: undefined },
     disabled: Boolean,
     readOnly: Boolean,

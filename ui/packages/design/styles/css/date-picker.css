@@ -145,7 +145,7 @@
   }
 
   [data-scope='date-picker'][data-part='control'][data-invalid] {
-    border-color: var(--xh-date-picker-control-border-invalid, var(--xh-color-danger-500));
+    border-color: var(--xh-date-picker-control-border-invalid, var(--xh-border-invalid));
   }
 
   /* 只读仍可聚焦、日历仍能展开来看，不置灰，只把底色压下去表示"改不动" */
@@ -344,7 +344,7 @@
     outline-offset: calc(-1 * var(--xh-ring-width));
   }
 
-  [data-scope='date-picker'][data-part='time-item'][data-selected] {
+  [data-scope='date-picker'][data-part='time-item'][data-state='checked'] {
     background: var(--xh-date-picker-time-item-bg-selected, var(--xh-_date-picker-accent-subtle));
     color: var(--xh-date-picker-time-item-fg-selected, var(--xh-fg-brand));
     font-weight: var(--xh-font-weight-medium);

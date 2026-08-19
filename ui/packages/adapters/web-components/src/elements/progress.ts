@@ -26,6 +26,7 @@ import { XhElement } from '../element-base'
  * @attr {number} stroke-width - 环的线宽（viewBox 单位），默认 6；只对 circle / dashboard 生效
  * @attr {number} gap-degree - 缺口角度，默认 75；只对 dashboard 生效
  * @attr {'top'|'right'|'bottom'|'left'} gap-position - 缺口朝向，默认 bottom；只对 dashboard 生效
+ * @attr {boolean} indeterminate - 进度未知：条子改为往复动画，读屏那侧不报数
  * @attr {string} value-text - 读屏播报的文字，覆盖默认的数值播报
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸：线形改厚度，环形改直径
@@ -45,6 +46,7 @@ export class XhProgressElement extends XhElement {
     strokeWidth: { type: Number, attribute: 'stroke-width' },
     gapDegree: { type: Number, attribute: 'gap-degree' },
     gapPosition: { attribute: 'gap-position' },
+    indeterminate: { type: Boolean },
     valueText: { attribute: 'value-text' },
     tone: {},
     size: {},
@@ -56,6 +58,7 @@ export class XhProgressElement extends XhElement {
   declare strokeWidth?: number
   declare gapDegree?: number
   declare gapPosition?: ProgressGapPosition
+  declare indeterminate?: boolean
   declare valueText?: string
   declare tone?: Tone
   declare size?: Size
@@ -68,6 +71,7 @@ export class XhProgressElement extends XhElement {
       strokeWidth: this.strokeWidth,
       gapDegree: this.gapDegree,
       gapPosition: this.gapPosition,
+      indeterminate: this.indeterminate,
       valueText: this.valueText,
       tone: this.tone,
       size: this.size,

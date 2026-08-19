@@ -28,7 +28,7 @@ const TRISTATE_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? 
  * @attr {boolean} tooltip - 真被裁了才把整段文字交给平台的原生提示
  * @fires expanded-change - 展开状态变化；detail 为 `{ expanded: boolean }`
  * @fires overflow-change - 溢出结论翻面；detail 为 `{ overflowing: boolean }`
- * @csspart root - 夹字的盒子，承载 data-lines / data-multiline / data-expandable / data-expanded / data-overflowing
+ * @csspart root - 夹字的盒子，承载 data-lines / data-multiline / data-expandable / data-state / data-overflowing
  */
 export class XhEllipsisElement extends XhElement {
   static override partContract = { anatomy: ellipsisAnatomy, meta: ellipsisMeta }

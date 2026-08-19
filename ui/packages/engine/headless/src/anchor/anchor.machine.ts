@@ -1,6 +1,6 @@
 import type { Scope } from '@xihan-ui/kernel'
 import type { AnchorIndicatorRect, AnchorSchema, AnchorTargetOffset } from './anchor.types'
-import { itemValue, queryItems } from '@xihan-ui/behavior'
+import { itemValue, queryItems, resolveScrollBehavior } from '@xihan-ui/behavior'
 import { setTimeoutEffect, setup } from '@xihan-ui/machine'
 import { anchorItemQuery } from './anchor.anatomy'
 
@@ -158,13 +158,15 @@ export const anchorMachine = createMachine({
         const offset = prop('offset') ?? ANCHOR_DEFAULT_OFFSET
         const top = target.getBoundingClientRect().top
         const container = refs.get('getScrollEl')()
+        // 减弱动效档下降成瞬移，与 back-top 走同一条归一化
+        const behavior = resolveScrollBehavior('smooth', scope)
         if (container) {
           const delta = top - container.getBoundingClientRect().top - offset
-          container.scrollTo?.({ top: container.scrollTop + delta, behavior: 'smooth' })
+          container.scrollTo?.({ top: container.scrollTop + delta, behavior })
           return
         }
         const win = scope.getWin()
-        win.scrollTo?.({ top: win.scrollY + top - offset, behavior: 'smooth' })
+        win.scrollTo?.({ top: win.scrollY + top - offset, behavior })
       },
 
       /**

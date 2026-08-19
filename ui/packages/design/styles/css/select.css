@@ -152,7 +152,7 @@
   }
 
   [data-scope='select'][data-part='trigger'][data-invalid] {
-    border-color: var(--xh-select-trigger-border-invalid, var(--xh-color-danger-500));
+    border-color: var(--xh-select-trigger-border-invalid, var(--xh-border-invalid));
   }
 
   /* 收纳容器：触发器与清空按钮的定位基准，触发器在里面占满一行 */

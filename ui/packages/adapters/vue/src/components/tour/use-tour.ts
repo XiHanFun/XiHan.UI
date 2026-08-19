@@ -9,6 +9,7 @@ import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
+import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface TourContext {
@@ -17,6 +18,8 @@ export interface TourContext {
   backdropRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
+  /** 此刻该不该可见：收起那一帧押后到退场动画播完。 */
+  visible: Ref<boolean>
   /** 浮层搬到哪儿：全局配置的容器 > 运行时的浮层落点 > body。 */
   portalTarget: ComputedRef<string | Element>
 }
@@ -62,8 +65,9 @@ export function useTour(
   }
 
   const api = computed(() => connectTour(service, vueNormalize))
+  const visible = useOverlayExit({ config, isOpen: () => api.value.open, contentRef })
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { service, api, backdropRef, positionerRef, contentRef, portalTarget }
+  return { service, api, backdropRef, positionerRef, contentRef, visible, portalTarget }
 }

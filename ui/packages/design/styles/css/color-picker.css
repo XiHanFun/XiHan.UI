@@ -342,7 +342,7 @@
 
   /* 打到一半的串：框里留着草稿，但值没动——描边提示"这串还没被收下" */
   [data-scope='color-picker'][data-part='channel-input'][data-invalid] {
-    border-color: var(--xh-color-picker-input-border-invalid, var(--xh-color-danger-500));
+    border-color: var(--xh-color-picker-input-border-invalid, var(--xh-border-invalid));
   }
 
   [data-scope='color-picker'][data-part='channel-input'][data-readonly] {

@@ -129,10 +129,10 @@ export function connectTable<T extends PropTypes>(
   const stickyAttrs = (def: TableColumnDef | undefined): Record<string, unknown> => {
     const side = stickySideOf(def)
     if (!side)
-      return { 'data-sticky': undefined }
+      return { 'data-frozen': undefined }
     const inset = def ? stickyInset.get(def.id) : undefined
     return {
-      'data-sticky': side,
+      'data-frozen': side,
       ...(inset != null && inset > 0 ? { style: { '--xh-table-sticky-inset': `${inset}px` } } : {}),
     }
   }

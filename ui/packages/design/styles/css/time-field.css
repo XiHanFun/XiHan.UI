@@ -119,7 +119,7 @@
   }
 
   [data-scope='time-field'][data-part='control'][data-invalid] {
-    border-color: var(--xh-time-field-control-border-invalid, var(--xh-color-danger-500));
+    border-color: var(--xh-time-field-control-border-invalid, var(--xh-border-invalid));
   }
 
   /* 只读仍可聚焦、可换段，所以不置灰，只把底色压下去表示"改不动" */
