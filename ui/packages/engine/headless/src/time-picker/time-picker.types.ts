@@ -130,6 +130,12 @@ export interface TimePickerSchema extends MachineSchema {
     dir?: Direction
     offset?: number
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
+    /**
+     * 逐值可选性。收两位补零的值与它所属的列——同一个 '30' 在分钟列与秒列不是一回事。
+     * 与 min/max 裁掉的值同等对待：判真的格子仍可聚焦，只是选不中。
+     * 连续区间用 min/max 表达即可，这条留给「每隔 15 分钟才可约」这类离散规则。
+     */
+    isTimeUnavailable?: (value: string, unit: TimePickerColumnUnit) => boolean
     /** 段位读屏名的覆盖；不给就用内置英文语义名。 */
     translations?: Partial<TimePickerTranslations>
     onValueChange?: (details: TimePickerValueChangeDetails) => void

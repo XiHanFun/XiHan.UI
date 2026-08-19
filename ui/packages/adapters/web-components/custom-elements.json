@@ -2202,6 +2202,9 @@
               "name": "--xh-button-h"
             },
             {
+              "name": "--xh-button-icon-size"
+            },
+            {
               "name": "--xh-button-px"
             },
             {
@@ -8767,6 +8770,9 @@
             },
             {
               "name": "--xh-date-field-gap"
+            },
+            {
+              "name": "--xh-date-field-icon-size"
             },
             {
               "name": "--xh-date-field-label-fg"
@@ -20596,6 +20602,9 @@
               "name": "--xh-number-field-gap"
             },
             {
+              "name": "--xh-number-field-icon-size"
+            },
+            {
               "name": "--xh-number-field-input-align"
             },
             {
@@ -29876,6 +29885,9 @@
               "name": "--xh-tags-input-gap"
             },
             {
+              "name": "--xh-tags-input-icon-size"
+            },
+            {
               "name": "--xh-tags-input-input-basis"
             },
             {
@@ -30319,6 +30331,9 @@
             },
             {
               "name": "--xh-text-field-gap"
+            },
+            {
+              "name": "--xh-text-field-icon-size"
             },
             {
               "name": "--xh-text-field-input-bg"
@@ -31083,6 +31098,9 @@
               "name": "--xh-time-field-gap"
             },
             {
+              "name": "--xh-time-field-icon-size"
+            },
+            {
               "name": "--xh-time-field-label-fg"
             },
             {
@@ -31313,6 +31331,14 @@
               "privacy": "public",
               "type": {
                 "text": "TimePickerSchema['props']['translations'] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "isTimeUnavailable",
+              "privacy": "public",
+              "type": {
+                "text": "TimePickerSchema['props']['isTimeUnavailable'] | undefined"
               }
             },
             {

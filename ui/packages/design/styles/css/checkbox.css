@@ -85,7 +85,8 @@
     font-size: var(--xh-_checkbox-glyph);
   }
 
-  [data-scope='checkbox'][data-part='indicator']::before {
+  /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
+  [data-scope='checkbox'][data-part='indicator']:empty::before {
     content: '✓';
   }
 

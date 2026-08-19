@@ -7,6 +7,9 @@
   /* root 只负责纵向堆叠：标题一行、控件一行。可见的那个"框"长在 control 上，
      因为标签、输入框、清空按钮都在它里面，边框必须把三者一起圈住 */
   [data-scope='tags-input'][data-part='root'] {
+    /* 作者塞进来的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
+    --xh-icon-size: var(--xh-tags-input-icon-size, var(--xh-glyph-size-md));
+
     /* 尺寸档只换这六个私有槽，标题、框、输入框与标签都从 root 继承它们，
        换档不必给每个部件各写一条选择器 */
     --xh-_tags-input-control-h: var(--xh-control-h-md);
@@ -60,6 +63,7 @@
 
   /* —— 尺寸 —— */
   [data-scope='tags-input'][data-part='root'][data-size='sm'] {
+    --xh-icon-size: var(--xh-tags-input-icon-size, var(--xh-glyph-size-sm));
     --xh-_tags-input-control-h: var(--xh-control-h-sm);
     --xh-_tags-input-control-px: var(--xh-control-px-sm);
     --xh-_tags-input-input-font-size: var(--xh-font-size-sm);
@@ -68,6 +72,7 @@
   }
 
   [data-scope='tags-input'][data-part='root'][data-size='lg'] {
+    --xh-icon-size: var(--xh-tags-input-icon-size, var(--xh-glyph-size-lg));
     --xh-_tags-input-control-h: var(--xh-control-h-lg);
     --xh-_tags-input-control-px: var(--xh-control-px-lg);
     --xh-_tags-input-control-gap: var(--xh-control-gap-lg);

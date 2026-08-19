@@ -4412,7 +4412,8 @@ input[data-scope='mention'][data-part='input'] {
   transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-[data-scope='accordion'][data-part='indicator']::before {
+/* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
+[data-scope='accordion'][data-part='indicator']:empty::before {
   content: '⌄';
 }
 
@@ -4836,6 +4837,10 @@ input[data-scope='mention'][data-part='input'] {
   --xh-_bg-active: var(--xh-button-bg-active, var(--xh-bg-subtle-active));
   --xh-_fg: var(--xh-button-fg, var(--xh-fg-default));
 
+  /* 作者塞进来的图标跟着按钮的尺寸档走：xh-icon 的直径读的就是这个继承槽，
+     它自己显式写了 size 时特异性更高，仍以作者写的为准 */
+  --xh-icon-size: var(--xh-button-icon-size, var(--xh-glyph-size-md));
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -4910,12 +4915,16 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 尺寸 —— */
 [data-scope='button'][data-part='root'][data-size='sm'] {
+  --xh-icon-size: var(--xh-button-icon-size, var(--xh-glyph-size-sm));
+
   block-size: var(--xh-control-h-sm);
   padding-inline: var(--xh-control-px-sm);
   font-size: var(--xh-font-size-sm);
 }
 
 [data-scope='button'][data-part='root'][data-size='lg'] {
+  --xh-icon-size: var(--xh-button-icon-size, var(--xh-glyph-size-lg));
+
   block-size: var(--xh-control-h-lg);
   padding-inline: var(--xh-control-px-lg);
   font-size: var(--xh-font-size-lg);
@@ -6260,7 +6269,8 @@ input[data-scope='mention'][data-part='input'] {
   font-size: var(--xh-_checkbox-glyph);
 }
 
-[data-scope='checkbox'][data-part='indicator']::before {
+/* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
+[data-scope='checkbox'][data-part='indicator']:empty::before {
   content: '✓';
 }
 
@@ -6421,7 +6431,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* 勾号由皮肤补，作者不必自己往 indicator 里塞字符 */
-[data-scope='checkbox-group'][data-part='indicator'][data-state='checked']::before {
+[data-scope='checkbox-group'][data-part='indicator'][data-state='checked']:empty::before {
   content: '✓';
 }
 
@@ -8168,6 +8178,9 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 与文本框、数字框同一套堆叠：标签一行、分段框一行 */
 [data-scope='date-field'][data-part='root'] {
+  /* 作者塞进来的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
+  --xh-icon-size: var(--xh-date-field-icon-size, var(--xh-glyph-size-md));
+
   /* 尺寸档只换这四个私有槽，标题与分段框都从 root 继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_date-field-control-h: var(--xh-control-h-md);
   --xh-_date-field-control-px: var(--xh-control-px-md);
@@ -8189,6 +8202,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 尺寸 —— */
 [data-scope='date-field'][data-part='root'][data-size='sm'] {
+  --xh-icon-size: var(--xh-date-field-icon-size, var(--xh-glyph-size-sm));
   --xh-_date-field-control-h: var(--xh-control-h-sm);
   --xh-_date-field-control-px: var(--xh-control-px-sm);
   --xh-_date-field-font-size: var(--xh-font-size-sm);
@@ -8196,6 +8210,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='date-field'][data-part='root'][data-size='lg'] {
+  --xh-icon-size: var(--xh-date-field-icon-size, var(--xh-glyph-size-lg));
   --xh-_date-field-control-h: var(--xh-control-h-lg);
   --xh-_date-field-control-px: var(--xh-control-px-lg);
   --xh-_date-field-font-size: var(--xh-font-size-lg);
@@ -11719,6 +11734,9 @@ input[data-scope='mention'][data-part='input'] {
    减在左、加在右、输入框居中，前后缀图标/文字可直接流式插在框内。
    不写 control 时退回旧式三件并排的观感（下方 input / 按钮的基础规则原样生效） */
 [data-scope='number-field'][data-part='root'] {
+  /* 作者塞进来的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
+  --xh-icon-size: var(--xh-number-field-icon-size, var(--xh-glyph-size-md));
+
   /* 尺寸档只换这几个私有槽，标题、输入框与加减钮都从 root 继承它们，
      换档不必给每个部件各写一条选择器 */
   --xh-_number-field-h: var(--xh-control-h-md);
@@ -11760,6 +11778,7 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
 [data-scope='number-field'][data-part='root'][data-size='sm'] {
+  --xh-icon-size: var(--xh-number-field-icon-size, var(--xh-glyph-size-sm));
   --xh-_number-field-h: var(--xh-control-h-sm);
   --xh-_number-field-px: var(--xh-control-px-sm);
   --xh-_number-field-font-size: var(--xh-font-size-sm);
@@ -11768,6 +11787,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='number-field'][data-part='root'][data-size='lg'] {
+  --xh-icon-size: var(--xh-number-field-icon-size, var(--xh-glyph-size-lg));
   --xh-_number-field-h: var(--xh-control-h-lg);
   --xh-_number-field-px: var(--xh-control-px-lg);
   --xh-_number-field-font-size: var(--xh-font-size-lg);
@@ -15168,6 +15188,9 @@ input[data-scope='mention'][data-part='input'] {
 /* root 只负责纵向堆叠：标题一行、控件一行。可见的那个"框"长在 control 上，
    因为标签、输入框、清空按钮都在它里面，边框必须把三者一起圈住 */
 [data-scope='tags-input'][data-part='root'] {
+  /* 作者塞进来的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
+  --xh-icon-size: var(--xh-tags-input-icon-size, var(--xh-glyph-size-md));
+
   /* 尺寸档只换这六个私有槽，标题、框、输入框与标签都从 root 继承它们，
      换档不必给每个部件各写一条选择器 */
   --xh-_tags-input-control-h: var(--xh-control-h-md);
@@ -15221,6 +15244,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 尺寸 —— */
 [data-scope='tags-input'][data-part='root'][data-size='sm'] {
+  --xh-icon-size: var(--xh-tags-input-icon-size, var(--xh-glyph-size-sm));
   --xh-_tags-input-control-h: var(--xh-control-h-sm);
   --xh-_tags-input-control-px: var(--xh-control-px-sm);
   --xh-_tags-input-input-font-size: var(--xh-font-size-sm);
@@ -15229,6 +15253,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='tags-input'][data-part='root'][data-size='lg'] {
+  --xh-icon-size: var(--xh-tags-input-icon-size, var(--xh-glyph-size-lg));
   --xh-_tags-input-control-h: var(--xh-control-h-lg);
   --xh-_tags-input-control-px: var(--xh-control-px-lg);
   --xh-_tags-input-control-gap: var(--xh-control-gap-lg);
@@ -15536,6 +15561,9 @@ input[data-scope='mention'][data-part='input'] {
    输入框与清空按钮中间那层包裹是作者自己写的、不在角色表里，
    所以尺寸与间距一律长在各自的角色节点上，不去假设那层存在 */
 [data-scope='text-field'][data-part='root'] {
+  /* 作者塞进来的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
+  --xh-icon-size: var(--xh-text-field-icon-size, var(--xh-glyph-size-md));
+
   /* 尺寸档只换这几个私有槽，标题、输入框与清空按钮都从 root 继承它们，
      换档不必给每个部件各写一条选择器 */
   --xh-_text-field-h: var(--xh-control-h-md);
@@ -15567,6 +15595,7 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
 [data-scope='text-field'][data-part='root'][data-size='sm'] {
+  --xh-icon-size: var(--xh-text-field-icon-size, var(--xh-glyph-size-sm));
   --xh-_text-field-h: var(--xh-control-h-sm);
   --xh-_text-field-px: var(--xh-control-px-sm);
   --xh-_text-field-font-size: var(--xh-font-size-sm);
@@ -15575,6 +15604,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='text-field'][data-part='root'][data-size='lg'] {
+  --xh-icon-size: var(--xh-text-field-icon-size, var(--xh-glyph-size-lg));
   --xh-_text-field-h: var(--xh-control-h-lg);
   --xh-_text-field-px: var(--xh-control-px-lg);
   --xh-_text-field-font-size: var(--xh-font-size-lg);
@@ -15859,6 +15889,9 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 与文本框、数字框同一套堆叠：标签一行、控件一行 */
 [data-scope='time-field'][data-part='root'] {
+  /* 作者塞进来的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
+  --xh-icon-size: var(--xh-time-field-icon-size, var(--xh-glyph-size-md));
+
   /* 尺寸档只换这四个私有槽，标题与控件都从 root 继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_time-field-control-h: var(--xh-control-h-md);
   --xh-_time-field-control-px: var(--xh-control-px-md);
@@ -15880,6 +15913,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* —— 尺寸 —— */
 [data-scope='time-field'][data-part='root'][data-size='sm'] {
+  --xh-icon-size: var(--xh-time-field-icon-size, var(--xh-glyph-size-sm));
   --xh-_time-field-control-h: var(--xh-control-h-sm);
   --xh-_time-field-control-px: var(--xh-control-px-sm);
   --xh-_time-field-font-size: var(--xh-font-size-sm);
@@ -15887,6 +15921,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='time-field'][data-part='root'][data-size='lg'] {
+  --xh-icon-size: var(--xh-time-field-icon-size, var(--xh-glyph-size-lg));
   --xh-_time-field-control-h: var(--xh-control-h-lg);
   --xh-_time-field-control-px: var(--xh-control-px-lg);
   --xh-_time-field-font-size: var(--xh-font-size-lg);

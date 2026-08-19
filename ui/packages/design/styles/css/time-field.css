@@ -6,6 +6,9 @@
 
   /* 与文本框、数字框同一套堆叠：标签一行、控件一行 */
   [data-scope='time-field'][data-part='root'] {
+    /* 作者塞进来的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
+    --xh-icon-size: var(--xh-time-field-icon-size, var(--xh-glyph-size-md));
+
     /* 尺寸档只换这四个私有槽，标题与控件都从 root 继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_time-field-control-h: var(--xh-control-h-md);
     --xh-_time-field-control-px: var(--xh-control-px-md);
@@ -27,6 +30,7 @@
 
   /* —— 尺寸 —— */
   [data-scope='time-field'][data-part='root'][data-size='sm'] {
+    --xh-icon-size: var(--xh-time-field-icon-size, var(--xh-glyph-size-sm));
     --xh-_time-field-control-h: var(--xh-control-h-sm);
     --xh-_time-field-control-px: var(--xh-control-px-sm);
     --xh-_time-field-font-size: var(--xh-font-size-sm);
@@ -34,6 +38,7 @@
   }
 
   [data-scope='time-field'][data-part='root'][data-size='lg'] {
+    --xh-icon-size: var(--xh-time-field-icon-size, var(--xh-glyph-size-lg));
     --xh-_time-field-control-h: var(--xh-control-h-lg);
     --xh-_time-field-control-px: var(--xh-control-px-lg);
     --xh-_time-field-font-size: var(--xh-font-size-lg);

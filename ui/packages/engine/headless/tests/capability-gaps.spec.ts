@@ -11,6 +11,7 @@ import { connectButton } from '../src/button'
 import { connectProgress } from '../src/progress'
 import { connectTextField, textFieldMachine } from '../src/text-field'
 import { connectTimeField, timeFieldMachine } from '../src/time-field'
+import { connectTimePicker, timePickerMachine } from '../src/time-picker'
 
 function textField(props: Partial<TextFieldSchema['props']>) {
   const runtime = createVanillaRuntime()
@@ -138,5 +139,44 @@ describe('时间分段的读屏名可本地化', () => {
   it('只覆盖一部分时，其余段位仍退回内置名', () => {
     const seg = timeField({ translations: { hour: '小时' } })().getSegmentProps({ segment: 'second' }) as Record<string, unknown>
     expect(seg['aria-label']).toBe('second')
+  })
+})
+
+describe('TimePicker 的逐值可选性', () => {
+  function picker(props: Record<string, unknown>) {
+    const runtime = createVanillaRuntime()
+    const service = createService(timePickerMachine, { props: () => ({ defaultOpen: true, ...props }), runtime })
+    runtime.start()
+    return () => connectTimePicker(service, normalizeProps)
+  }
+
+  it('判真的格子转 aria-disabled，与界外同等对待', () => {
+    const get = picker({ isTimeUnavailable: (v, unit) => unit === 'minute' && v !== '00' })
+    const ok = get().getItemProps({ unit: 'minute', value: '00' }) as Record<string, unknown>
+    const no = get().getItemProps({ unit: 'minute', value: '30' }) as Record<string, unknown>
+    expect(ok['aria-disabled']).toBe('false')
+    expect(no['aria-disabled']).toBe('true')
+    expect(no['data-disabled']).toBe('')
+  })
+
+  it('只作用于指定的列：同一个值在别的列不受影响', () => {
+    const get = picker({ isTimeUnavailable: (v, unit) => unit === 'minute' && v === '30' })
+    const hour = get().getItemProps({ unit: 'hour', value: '13' }) as Record<string, unknown>
+    expect(hour['aria-disabled']).toBe('false')
+  })
+
+  it('不可选的格子点不动，但仍可聚焦', () => {
+    const get = picker({ isTimeUnavailable: () => true })
+    const before = get().value
+    const item = get().getItemProps({ unit: 'hour', value: '13' }) as Record<string, unknown>
+    ;(item.onClick as () => void)()
+    expect(get().value).toBe(before)
+    // 焦点是事实不是许可：禁用格照样记锚点
+    expect(item.onFocus).toBeTypeOf('function')
+  })
+
+  it('不给钩子时一切照旧', () => {
+    const item = picker({})().getItemProps({ unit: 'hour', value: '13' }) as Record<string, unknown>
+    expect(item['aria-disabled']).toBe('false')
   })
 })

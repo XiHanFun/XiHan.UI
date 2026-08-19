@@ -21,6 +21,10 @@
     --xh-_bg-active: var(--xh-button-bg-active, var(--xh-bg-subtle-active));
     --xh-_fg: var(--xh-button-fg, var(--xh-fg-default));
 
+    /* 作者塞进来的图标跟着按钮的尺寸档走：xh-icon 的直径读的就是这个继承槽，
+       它自己显式写了 size 时特异性更高，仍以作者写的为准 */
+    --xh-icon-size: var(--xh-button-icon-size, var(--xh-glyph-size-md));
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -95,12 +99,16 @@
 
   /* —— 尺寸 —— */
   [data-scope='button'][data-part='root'][data-size='sm'] {
+    --xh-icon-size: var(--xh-button-icon-size, var(--xh-glyph-size-sm));
+
     block-size: var(--xh-control-h-sm);
     padding-inline: var(--xh-control-px-sm);
     font-size: var(--xh-font-size-sm);
   }
 
   [data-scope='button'][data-part='root'][data-size='lg'] {
+    --xh-icon-size: var(--xh-button-icon-size, var(--xh-glyph-size-lg));
+
     block-size: var(--xh-control-h-lg);
     padding-inline: var(--xh-control-px-lg);
     font-size: var(--xh-font-size-lg);

@@ -9,6 +9,9 @@
      减在左、加在右、输入框居中，前后缀图标/文字可直接流式插在框内。
      不写 control 时退回旧式三件并排的观感（下方 input / 按钮的基础规则原样生效） */
   [data-scope='number-field'][data-part='root'] {
+    /* 作者塞进来的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
+    --xh-icon-size: var(--xh-number-field-icon-size, var(--xh-glyph-size-md));
+
     /* 尺寸档只换这几个私有槽，标题、输入框与加减钮都从 root 继承它们，
        换档不必给每个部件各写一条选择器 */
     --xh-_number-field-h: var(--xh-control-h-md);
@@ -50,6 +53,7 @@
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里 */
   [data-scope='number-field'][data-part='root'][data-size='sm'] {
+    --xh-icon-size: var(--xh-number-field-icon-size, var(--xh-glyph-size-sm));
     --xh-_number-field-h: var(--xh-control-h-sm);
     --xh-_number-field-px: var(--xh-control-px-sm);
     --xh-_number-field-font-size: var(--xh-font-size-sm);
@@ -58,6 +62,7 @@
   }
 
   [data-scope='number-field'][data-part='root'][data-size='lg'] {
+    --xh-icon-size: var(--xh-number-field-icon-size, var(--xh-glyph-size-lg));
     --xh-_number-field-h: var(--xh-control-h-lg);
     --xh-_number-field-px: var(--xh-control-px-lg);
     --xh-_number-field-font-size: var(--xh-font-size-lg);
