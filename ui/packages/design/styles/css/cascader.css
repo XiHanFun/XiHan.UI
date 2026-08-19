@@ -149,7 +149,7 @@
   }
 
   [data-scope='cascader'][data-part='trigger'][data-invalid] {
-    border-color: var(--xh-cascader-trigger-border-invalid, var(--xh-color-danger-500));
+    border-color: var(--xh-cascader-trigger-border-invalid, var(--xh-border-invalid));
   }
 
   /* 只读仍可聚焦、浮层仍展得开、列仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */
@@ -371,7 +371,7 @@
 
   /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色强档归展开路径、轻档归悬停，
      三者因此能同时看见 */
-  [data-scope='cascader'][data-part='item'][data-selected] {
+  [data-scope='cascader']:is([data-part='item'], [data-part='search-item'])[data-state='checked'] {
     color: var(--xh-cascader-row-fg-selected, var(--xh-_cascader-selected-fg));
     font-weight: var(--xh-cascader-row-selected-font-weight, var(--xh-font-weight-medium));
   }
@@ -439,7 +439,7 @@
     content: '✓';
   }
 
-  [data-scope='cascader'][data-part='item-indicator'][data-selected] {
+  [data-scope='cascader'][data-part='item-indicator'][data-state='checked'] {
     visibility: visible;
   }
 
@@ -449,7 +449,7 @@
     visibility: visible;
   }
 
-  [data-scope='cascader'][data-part='item-indicator'][data-indeterminate]:not([data-selected]):empty::before {
+  [data-scope='cascader'][data-part='item-indicator'][data-indeterminate]:not([data-state='checked']):empty::before {
     content: '−';
     font-weight: var(--xh-font-weight-semibold);
   }

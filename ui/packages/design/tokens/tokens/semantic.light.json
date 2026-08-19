@@ -11,7 +11,8 @@
     "brand-hover": { "$type": "color", "$value": "{color.brand.700}" },
     "brand-active": { "$type": "color", "$value": "{color.brand.800}" },
     "brand-subtle": { "$type": "color", "$value": "{color.brand.100}" },
-    "overlay": { "$type": "color", "$value": "oklch(0 0 0 / 0.45)" }
+    "overlay": { "$type": "color", "$value": "oklch(0 0 0 / 0.45)" },
+    "scrollbar-track": { "$type": "color", "$value": "{color.neutral.100}" }
   },
   "fg": {
     "default": { "$type": "color", "$value": "{color.neutral.950}" },
@@ -23,14 +24,19 @@
     "brand-strong": { "$type": "color", "$value": "{color.brand.700}" },
     "success": { "$type": "color", "$value": "{color.success.700}" },
     "danger": { "$type": "color", "$value": "{color.danger.600}" },
-    "danger-hover": { "$type": "color", "$value": "{color.danger.700}" }
+    "danger-hover": { "$type": "color", "$value": "{color.danger.700}" },
+    "scrollbar-thumb": { "$type": "color", "$value": "{color.neutral.400}" },
+    "scrollbar-thumb-hover": { "$type": "color", "$value": "{color.neutral.500}" },
+    "scrollbar-thumb-active": { "$type": "color", "$value": "{color.neutral.600}" }
   },
   "border": {
     "default": { "$type": "color", "$value": "{color.neutral.200}" },
     "subtle": { "$type": "color", "$value": "{color.neutral.100}" },
     "strong": { "$type": "color", "$value": "{color.neutral.300}" },
     "control": { "$type": "color", "$value": "{color.neutral.450}" },
-    "control-hover": { "$type": "color", "$value": "{color.neutral.500}" }
+    "control-hover": { "$type": "color", "$value": "{color.neutral.500}" },
+    "invalid": { "$type": "color", "$value": "{color.danger.600}" },
+    "at-limit": { "$type": "color", "$value": "{color.warning.600}" }
   },
   "ring": {
     "focus": { "$type": "color", "$value": "{color.brand.500}" }

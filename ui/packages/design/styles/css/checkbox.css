@@ -41,6 +41,20 @@
     background: var(--xh-checkbox-bg-checked, var(--xh-_checkbox-accent));
   }
 
+  /* 校验失败：方框描边转警示色。未勾时只有描边，勾上后填充仍走语气色，
+     两者不打架——描边压在 checked 规则之后，选择器同特指度靠书写顺序取胜 */
+  [data-scope='checkbox'][data-part='root'][data-invalid],
+  [data-scope='checkbox'][data-part='root'][data-state='checked'][data-invalid],
+  [data-scope='checkbox'][data-part='root'][data-state='indeterminate'][data-invalid] {
+    border-color: var(--xh-checkbox-border-invalid, var(--xh-border-invalid));
+  }
+
+  /* 文字随方框一起转警示色：给了默认插槽时外层是 <label>，方框自己的描边够不到那段文字 */
+  [data-scope='checkbox'][data-part='label'][data-invalid],
+  [data-scope='checkbox'][data-part='text'][data-invalid] {
+    color: var(--xh-checkbox-fg-invalid, var(--xh-fg-danger));
+  }
+
   [data-scope='checkbox'][data-part='root'][data-disabled] {
     cursor: not-allowed;
     opacity: var(--xh-state-disabled-opacity);

@@ -84,6 +84,12 @@
     border-color: var(--xh-radio-group-indicator-border-checked, var(--xh-_radio-group-accent));
   }
 
+  /* 校验失败：圆圈描边转警示色，压在 checked 规则之后 */
+  [data-scope='radio-group'][data-part='indicator'][data-invalid],
+  [data-scope='radio-group'][data-part='indicator'][data-state='checked'][data-invalid] {
+    border-color: var(--xh-radio-group-indicator-border-invalid, var(--xh-border-invalid));
+  }
+
   /* 圆点用 scale 收放，选中态切换不引起布局抖动。
      直径取指示器的一半：换尺寸档时圈与点一起走，比例不散 */
   [data-scope='radio-group'][data-part='indicator']::before {

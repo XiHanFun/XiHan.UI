@@ -27,7 +27,7 @@
   [data-scope='table'][data-part='root'] {
     /* 密度档只换这两个私有槽：单元格与列标题从 root 继承前者，字号靠 font-size 本身继承下去，
        换档不必给每个部件各写一条选择器，列宽那套算法也一点不碰 */
-    --xh-_table-cell-py: var(--xh-space-2);
+    --xh-_table-cell-py: var(--xh-table-cell-py-md);
     --xh-_table-font-size: var(--xh-text-body-size);
 
     display: flex;
@@ -55,12 +55,12 @@
   /* —— 密度 —— */
   /* 中间档不写规则，缺省即中档 */
   [data-scope='table'][data-part='root'][data-size='sm'] {
-    --xh-_table-cell-py: var(--xh-space-1);
+    --xh-_table-cell-py: var(--xh-table-cell-py-sm);
     --xh-_table-font-size: var(--xh-font-size-sm);
   }
 
   [data-scope='table'][data-part='root'][data-size='lg'] {
-    --xh-_table-cell-py: var(--xh-space-3);
+    --xh-_table-cell-py: var(--xh-table-cell-py-lg);
     --xh-_table-font-size: var(--xh-font-size-lg);
   }
 
@@ -192,26 +192,26 @@
   /* 横向吸附：钉在滚动容器的一侧。背景继承自行，跟着选中/高亮一起变，
      滚过去时不会露出一块与所在行不同色的补丁。
      同侧多列时的偏移由连接层按前面各列的宽度累加好写进 --xh-table-sticky-inset */
-  [data-scope='table'][data-part='column-header'][data-sticky],
-  [data-scope='table'][data-part='cell'][data-sticky] {
+  [data-scope='table'][data-part='column-header'][data-frozen],
+  [data-scope='table'][data-part='cell'][data-frozen] {
     position: sticky;
     z-index: var(--xh-table-sticky-column-z, 1);
     background: inherit;
   }
 
-  [data-scope='table'][data-part='column-header'][data-sticky='start'],
-  [data-scope='table'][data-part='cell'][data-sticky='start'] {
+  [data-scope='table'][data-part='column-header'][data-frozen='start'],
+  [data-scope='table'][data-part='cell'][data-frozen='start'] {
     inset-inline-start: var(--xh-table-sticky-inset, 0);
   }
 
-  [data-scope='table'][data-part='column-header'][data-sticky='end'],
-  [data-scope='table'][data-part='cell'][data-sticky='end'] {
+  [data-scope='table'][data-part='column-header'][data-frozen='end'],
+  [data-scope='table'][data-part='cell'][data-frozen='end'] {
     inset-inline-end: var(--xh-table-sticky-inset, 0);
   }
 
   /* 表头行本身透明（露出表头底），吸附的列头继承到的就是透明——得自己带表头底，
      否则横向滚动时其它列头从它下面穿过去 */
-  [data-scope='table'][data-part='column-header'][data-sticky] {
+  [data-scope='table'][data-part='column-header'][data-frozen] {
     background: var(--xh-table-header-bg, var(--xh-bg-subtle));
   }
 

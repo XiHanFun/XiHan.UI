@@ -668,9 +668,9 @@ describe('connectTable 属性输出', () => {
     const h = mount({ stickyHeader: true })
     expect(h.root.getAttribute('data-sticky')).toBe('')
     expect(h.header.getAttribute('data-sticky')).toBe('')
-    expect(h.columnHeader('name').getAttribute('data-sticky')).toBe('start')
-    expect(h.row('a').cells.name!.getAttribute('data-sticky')).toBe('start')
-    expect(h.columnHeader('size').hasAttribute('data-sticky')).toBe(false)
+    expect(h.columnHeader('name').getAttribute('data-frozen')).toBe('start')
+    expect(h.row('a').cells.name!.getAttribute('data-frozen')).toBe('start')
+    expect(h.columnHeader('size').hasAttribute('data-frozen')).toBe(false)
     expect(mount().header.hasAttribute('data-sticky')).toBe(false)
   })
 
@@ -1082,9 +1082,9 @@ describe('吸附列的偏移与外观开关', () => {
     const h = mount({ columns: STICKY_COLUMNS })
     const first = h.api().getColumnHeaderProps({ value: 'select' }) as Record<string, unknown>
     const second = h.api().getColumnHeaderProps({ value: 'name' }) as Record<string, unknown>
-    expect(first['data-sticky']).toBe('start')
+    expect(first['data-frozen']).toBe('start')
     expect((first.style as Record<string, unknown> | undefined)?.['--xh-table-sticky-inset']).toBeUndefined()
-    expect(second['data-sticky']).toBe('start')
+    expect(second['data-frozen']).toBe('start')
     expect((second.style as Record<string, unknown>)['--xh-table-sticky-inset']).toBe('40px')
     // 偏移与列宽同住一个 style，两者都在
     expect((second.style as Record<string, unknown>).inlineSize).toBe('160px')
@@ -1093,14 +1093,14 @@ describe('吸附列的偏移与外观开关', () => {
   it('行尾侧从右往左累加；末列贴边', () => {
     const h = mount({ columns: STICKY_COLUMNS })
     const ops = h.api().getCellProps({ value: 'ops', row: 'a' }) as Record<string, unknown>
-    expect(ops['data-sticky']).toBe('end')
+    expect(ops['data-frozen']).toBe('end')
     expect((ops.style as Record<string, unknown> | undefined)?.['--xh-table-sticky-inset']).toBeUndefined()
   })
 
-  it('不吸附的列不写 data-sticky', () => {
+  it('不吸附的列不写 data-frozen', () => {
     const h = mount({ columns: STICKY_COLUMNS })
     const size = h.api().getCellProps({ value: 'size', row: 'a' }) as Record<string, unknown>
-    expect(size['data-sticky']).toBeUndefined()
+    expect(size['data-frozen']).toBeUndefined()
   })
 
   it('前面有一列宽度不是数字，后面同侧的吸附列算不出偏移就留空', () => {
@@ -1112,7 +1112,7 @@ describe('吸附列的偏移与外观开关', () => {
       ],
     })
     const name = h.api().getColumnHeaderProps({ value: 'name' }) as Record<string, unknown>
-    expect(name['data-sticky']).toBe('start')
+    expect(name['data-frozen']).toBe('start')
     expect((name.style as Record<string, unknown> | undefined)?.['--xh-table-sticky-inset']).toBeUndefined()
   })
 

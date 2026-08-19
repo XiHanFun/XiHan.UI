@@ -18,6 +18,7 @@ export const XhFieldRoot = defineComponent({
     invalid: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
     // 控件节点的 id，不占用根节点自己的 DOM id
     controlId: { type: String, default: undefined },
   },
@@ -34,6 +35,9 @@ export const XhFieldRoot = defineComponent({
       },
       get disabled() {
         return props.disabled ?? (form && handle ? form.api.value.disabled : undefined)
+      },
+      get readOnly() {
+        return props.readOnly ?? (form && handle ? form.api.value.readOnly : undefined)
       },
       get controlId() {
         return props.controlId

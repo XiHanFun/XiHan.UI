@@ -10,6 +10,12 @@ export interface SwitchSchema extends MachineSchema {
     checked?: boolean
     defaultChecked?: boolean
     disabled?: boolean
+    /** 只读：拨不动，但仍可聚焦、仍参与提交，对比度不降。 */
+    readOnly?: boolean
+    /** 校验失败：只改呈现，不挡交互。 */
+    invalid?: boolean
+    /** 必填：随表单校验一起用，只发无障碍属性，不自行拦提交。 */
+    required?: boolean
     /** 提交中：交互挂起、滑块转圈，但不呈现为禁用（仍可聚焦、对比度不降）。 */
     loading?: boolean
     /** 表单字段名；给了 hidden-input 才带 name 并参与提交。 */

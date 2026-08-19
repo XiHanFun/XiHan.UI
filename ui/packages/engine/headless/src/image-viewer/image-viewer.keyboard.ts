@@ -12,5 +12,7 @@ export const imageViewerKeyboard: KeyboardTable = {
     { id: 'image-viewer.kbd.shift-tab', keys: ['Shift+Tab'], when: 'open', does: '在 content 内向前循环焦点' },
     { id: 'image-viewer.kbd.prev', keys: ['ArrowLeft'], when: 'open', does: '上一张' },
     { id: 'image-viewer.kbd.next', keys: ['ArrowRight'], when: 'open', does: '下一张' },
+    { id: 'image-viewer.kbd.first', keys: ['Home'], when: 'open', does: '跳到第一张' },
+    { id: 'image-viewer.kbd.last', keys: ['End'], when: 'open', does: '跳到最后一张' },
   ],
 }

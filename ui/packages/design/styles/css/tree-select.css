@@ -172,7 +172,7 @@
   }
 
   [data-scope='tree-select'][data-part='trigger'][data-invalid] {
-    border-color: var(--xh-tree-select-trigger-border-invalid, var(--xh-color-danger-500));
+    border-color: var(--xh-tree-select-trigger-border-invalid, var(--xh-border-invalid));
   }
 
   /* 只读仍可聚焦、浮层仍展得开、树仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */

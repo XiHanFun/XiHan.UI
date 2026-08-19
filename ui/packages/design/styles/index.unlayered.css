@@ -758,7 +758,7 @@
 }
 
 /* 铺开：裁剪整个撤掉。写在两档之后，压得住上面同权重的那两条 */
-[data-scope='ellipsis'][data-part='root'][data-expanded] {
+[data-scope='ellipsis'][data-part='root'][data-state='open'] {
   display: block;
   overflow: visible;
   white-space: normal;
@@ -1808,7 +1808,7 @@
 [data-scope='list'][data-part='root'] {
   /* 一个尺寸档只换这几个私有槽，条目与两行文字都从根上继承它们，
      换档不必给每个部件各写一条选择器 */
-  --xh-_list-item-py: var(--xh-space-3);
+  --xh-_list-item-py: var(--xh-list-item-py-md);
   --xh-_list-item-px: var(--xh-space-4);
   --xh-_list-item-gap: var(--xh-space-3);
   --xh-_list-title-size: var(--xh-font-size-md);
@@ -1830,7 +1830,7 @@
 
 /* —— 尺寸 —— */
 [data-scope='list'][data-part='root'][data-size='sm'] {
-  --xh-_list-item-py: var(--xh-space-2);
+  --xh-_list-item-py: var(--xh-list-item-py-sm);
   --xh-_list-item-px: var(--xh-space-3);
   --xh-_list-item-gap: var(--xh-space-2);
   --xh-_list-title-size: var(--xh-font-size-sm);
@@ -1838,7 +1838,7 @@
 }
 
 [data-scope='list'][data-part='root'][data-size='lg'] {
-  --xh-_list-item-py: var(--xh-space-4);
+  --xh-_list-item-py: var(--xh-list-item-py-lg);
   --xh-_list-item-px: var(--xh-space-5);
   --xh-_list-item-gap: var(--xh-space-4);
   --xh-_list-title-size: var(--xh-font-size-lg);
@@ -5714,7 +5714,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='cascader'][data-part='trigger'][data-invalid] {
-  border-color: var(--xh-cascader-trigger-border-invalid, var(--xh-color-danger-500));
+  border-color: var(--xh-cascader-trigger-border-invalid, var(--xh-border-invalid));
 }
 
 /* 只读仍可聚焦、浮层仍展得开、列仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */
@@ -5936,7 +5936,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色强档归展开路径、轻档归悬停，
    三者因此能同时看见 */
-[data-scope='cascader'][data-part='item'][data-selected] {
+[data-scope='cascader']:is([data-part='item'], [data-part='search-item'])[data-state='checked'] {
   color: var(--xh-cascader-row-fg-selected, var(--xh-_cascader-selected-fg));
   font-weight: var(--xh-cascader-row-selected-font-weight, var(--xh-font-weight-medium));
 }
@@ -6004,7 +6004,7 @@ input[data-scope='mention'][data-part='input'] {
   content: '✓';
 }
 
-[data-scope='cascader'][data-part='item-indicator'][data-selected] {
+[data-scope='cascader'][data-part='item-indicator'][data-state='checked'] {
   visibility: visible;
 }
 
@@ -6014,7 +6014,7 @@ input[data-scope='mention'][data-part='input'] {
   visibility: visible;
 }
 
-[data-scope='cascader'][data-part='item-indicator'][data-indeterminate]:not([data-selected]):empty::before {
+[data-scope='cascader'][data-part='item-indicator'][data-indeterminate]:not([data-state='checked']):empty::before {
   content: '−';
   font-weight: var(--xh-font-weight-semibold);
 }
@@ -6199,6 +6199,20 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='checkbox'][data-part='root'][data-state='indeterminate'] {
   border-color: var(--xh-checkbox-border-checked, var(--xh-_checkbox-accent));
   background: var(--xh-checkbox-bg-checked, var(--xh-_checkbox-accent));
+}
+
+/* 校验失败：方框描边转警示色。未勾时只有描边，勾上后填充仍走语气色，
+   两者不打架——描边压在 checked 规则之后，选择器同特指度靠书写顺序取胜 */
+[data-scope='checkbox'][data-part='root'][data-invalid],
+[data-scope='checkbox'][data-part='root'][data-state='checked'][data-invalid],
+[data-scope='checkbox'][data-part='root'][data-state='indeterminate'][data-invalid] {
+  border-color: var(--xh-checkbox-border-invalid, var(--xh-border-invalid));
+}
+
+/* 文字随方框一起转警示色：给了默认插槽时外层是 <label>，方框自己的描边够不到那段文字 */
+[data-scope='checkbox'][data-part='label'][data-invalid],
+[data-scope='checkbox'][data-part='text'][data-invalid] {
+  color: var(--xh-checkbox-fg-invalid, var(--xh-fg-danger));
 }
 
 [data-scope='checkbox'][data-part='root'][data-disabled] {
@@ -6409,7 +6423,7 @@ input[data-scope='mention'][data-part='input'] {
 /* 校验失败标在每个方框上：root 上的 data-invalid 是唯一出处，条目自己不带这个属性 */
 [data-scope='checkbox-group'][data-part='root'][data-invalid]
   [data-scope='checkbox-group'][data-part='indicator'] {
-  border-color: var(--xh-checkbox-group-indicator-border-invalid, var(--xh-color-danger-500));
+  border-color: var(--xh-checkbox-group-indicator-border-invalid, var(--xh-border-invalid));
 }
 
 [data-scope='checkbox-group'][data-part='item-text'] {
@@ -7102,7 +7116,7 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 打到一半的串：框里留着草稿，但值没动——描边提示"这串还没被收下" */
 [data-scope='color-picker'][data-part='channel-input'][data-invalid] {
-  border-color: var(--xh-color-picker-input-border-invalid, var(--xh-color-danger-500));
+  border-color: var(--xh-color-picker-input-border-invalid, var(--xh-border-invalid));
 }
 
 [data-scope='color-picker'][data-part='channel-input'][data-readonly] {
@@ -7384,7 +7398,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='combobox'][data-part='control'][data-invalid] {
-  border-color: var(--xh-combobox-control-border-invalid, var(--xh-color-danger-500));
+  border-color: var(--xh-combobox-control-border-invalid, var(--xh-border-invalid));
 }
 
 /* 只读仍可聚焦、可复制，所以不置灰，只把底色压下去表示"改不动" */
@@ -8244,7 +8258,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='date-field'][data-part='control'][data-invalid] {
-  border-color: var(--xh-date-field-control-border-invalid, var(--xh-color-danger-500));
+  border-color: var(--xh-date-field-control-border-invalid, var(--xh-border-invalid));
 }
 
 /* 只读仍可聚焦、可换段，不置灰，只把底色压下去表示"改不动" */
@@ -8472,7 +8486,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='date-picker'][data-part='control'][data-invalid] {
-  border-color: var(--xh-date-picker-control-border-invalid, var(--xh-color-danger-500));
+  border-color: var(--xh-date-picker-control-border-invalid, var(--xh-border-invalid));
 }
 
 /* 只读仍可聚焦、日历仍能展开来看，不置灰，只把底色压下去表示"改不动" */
@@ -8671,7 +8685,7 @@ input[data-scope='mention'][data-part='input'] {
   outline-offset: calc(-1 * var(--xh-ring-width));
 }
 
-[data-scope='date-picker'][data-part='time-item'][data-selected] {
+[data-scope='date-picker'][data-part='time-item'][data-state='checked'] {
   background: var(--xh-date-picker-time-item-bg-selected, var(--xh-_date-picker-accent-subtle));
   color: var(--xh-date-picker-time-item-fg-selected, var(--xh-fg-brand));
   font-weight: var(--xh-font-weight-medium);
@@ -9460,7 +9474,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='editable'][data-part='input'][data-invalid] {
-  border-color: var(--xh-editable-input-border-invalid, var(--xh-color-danger-500));
+  border-color: var(--xh-editable-input-border-invalid, var(--xh-border-invalid));
 }
 
 /* 只读仍可聚焦、可复制，不置灰，只把底色压下去表示"改不动" */
@@ -9639,7 +9653,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='field'][data-part='control'][data-invalid] {
-  border-color: var(--xh-field-control-border-invalid, var(--xh-color-danger-500));
+  border-color: var(--xh-field-control-border-invalid, var(--xh-border-invalid));
 }
 
 /* 禁用由作者在控件上落原生 disabled，样式统一走 data-disabled */
@@ -9742,7 +9756,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='file-upload'][data-part='dropzone'][data-invalid] {
-  border-color: var(--xh-file-upload-dropzone-border-invalid, var(--xh-color-danger-500));
+  border-color: var(--xh-file-upload-dropzone-border-invalid, var(--xh-border-invalid));
 }
 
 /* 投放区是 div，没有原生 disabled 可用，禁用态只能靠 data-disabled 表达，写 :disabled 永远不命中 */
@@ -10017,7 +10031,7 @@ input[data-scope='mention'][data-part='input'] {
    用逻辑属性，RTL 下自动换到右侧 */
 [data-scope='form'][data-part='field-group'][data-invalid] {
   padding-inline-start: var(--xh-form-field-invalid-px, var(--xh-space-2));
-  border-inline-start: var(--xh-stroke-thick) solid var(--xh-form-field-invalid-border, var(--xh-color-danger-500));
+  border-inline-start: var(--xh-stroke-thick) solid var(--xh-form-field-invalid-border, var(--xh-border-invalid));
 }
 
 /* 容器带着 tabindex=-1：控件全禁用时焦点会落在它自己身上，
@@ -10034,7 +10048,7 @@ input[data-scope='mention'][data-part='input'] {
   gap: var(--xh-form-summary-gap, var(--xh-space-1_5));
   padding-block: var(--xh-form-summary-py, var(--xh-space-3));
   padding-inline: var(--xh-form-summary-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid var(--xh-form-summary-border, var(--xh-color-danger-500));
+  border: var(--xh-stroke-thin) solid var(--xh-form-summary-border, var(--xh-border-invalid));
   border-radius: var(--xh-form-summary-radius, var(--xh-shape-surface));
   background: var(--xh-form-summary-bg, var(--xh-bg-surface));
   color: var(--xh-form-summary-fg, var(--xh-fg-danger));
@@ -11817,7 +11831,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='number-field'][data-part='control'][data-invalid] {
-  border-color: var(--xh-number-field-input-border-invalid, var(--xh-color-danger-500));
+  border-color: var(--xh-number-field-input-border-invalid, var(--xh-border-invalid));
 }
 
 [data-scope='number-field'][data-part='control'][data-readonly] {
@@ -11952,7 +11966,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='number-field'][data-part='input'][data-invalid] {
-  border-color: var(--xh-number-field-input-border-invalid, var(--xh-color-danger-500));
+  border-color: var(--xh-number-field-input-border-invalid, var(--xh-border-invalid));
 }
 
 /* 只读仍可聚焦、可复制，不置灰，只把底色压下去表示"改不动" */
@@ -12310,7 +12324,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='pin-input'][data-part='input'][data-invalid] {
-  border-color: var(--xh-pin-input-box-border-invalid, var(--xh-color-danger-500));
+  border-color: var(--xh-pin-input-box-border-invalid, var(--xh-border-invalid));
 }
 
 /* 每格都是原生 disabled 的单体控件（禁用的格子不该能聚焦），所以用 :disabled */
@@ -12506,6 +12520,18 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 /* styles/progress.css */
+/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+@keyframes xh-progress-indeterminate {
+  from {
+    inset-inline-start: -40%;
+  }
+
+  to {
+    inset-inline-start: 100%;
+  }
+}
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='progress'] {
   --xh-progress-skin: 1;
@@ -12602,6 +12628,29 @@ input[data-scope='mention'][data-part='input'] {
   transition: stroke-dashoffset var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
+/* 进度未知：线形条改为一小段来回扫。宽度交给动画，连接层算出的 inline-size 与
+   那条过渡都得让开，否则每帧都在跟动画抢同一个属性 */
+[data-scope='progress'][data-part='track'][data-state='indeterminate'] {
+  position: relative;
+  overflow: hidden;
+}
+
+[data-scope='progress'][data-part='range'][data-state='indeterminate'] {
+  position: absolute;
+  inline-size: 40%;
+  transition: none;
+  animation: xh-progress-indeterminate var(--xh-progress-indeterminate-duration, 1.2s) var(--xh-ease-standard) infinite;
+}
+
+/* 减弱动效档：不来回扫，改成一条铺满的静态条——进度仍然未知，只是不再动 */
+@media (prefers-reduced-motion: reduce) {
+  [data-scope='progress'][data-part='range'][data-state='indeterminate'] {
+    position: static;
+    inline-size: 100%;
+    opacity: 0.5;
+    animation: none;
+  }
+}
 /* 零进度：圆角端点会在长度为 0 处画出一个圆点，收掉它 */
 [data-scope='progress'][data-part='range'][data-empty] {
   visibility: hidden;
@@ -12691,6 +12740,12 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='radio-group'][data-part='indicator'][data-state='checked'] {
   border-color: var(--xh-radio-group-indicator-border-checked, var(--xh-_radio-group-accent));
+}
+
+/* 校验失败：圆圈描边转警示色，压在 checked 规则之后 */
+[data-scope='radio-group'][data-part='indicator'][data-invalid],
+[data-scope='radio-group'][data-part='indicator'][data-state='checked'][data-invalid] {
+  border-color: var(--xh-radio-group-indicator-border-invalid, var(--xh-border-invalid));
 }
 
 /* 圆点用 scale 收放，选中态切换不引起布局抖动。
@@ -12988,7 +13043,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='scroll-area'][data-part='thumb'] {
   position: absolute;
   border-radius: var(--xh-scroll-area-thumb-radius, var(--xh-shape-pill));
-  background: var(--xh-scroll-area-thumb-bg, var(--xh-color-neutral-400));
+  background: var(--xh-scroll-area-thumb-bg, var(--xh-fg-scrollbar-thumb));
   cursor: default;
   transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -13006,12 +13061,12 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='scroll-area'][data-part='thumb']:hover {
-  background: var(--xh-scroll-area-thumb-bg-hover, var(--xh-color-neutral-500));
+  background: var(--xh-scroll-area-thumb-bg-hover, var(--xh-fg-scrollbar-thumb-hover));
 }
 
 /* 手正按在这条轴的滑块上时才变深：两条轴各有一个滑块，全打上标记就分不出手在哪一个上 */
 [data-scope='scroll-area'][data-part='thumb'][data-dragging] {
-  background: var(--xh-scroll-area-thumb-bg-dragging, var(--xh-color-neutral-600));
+  background: var(--xh-scroll-area-thumb-bg-dragging, var(--xh-fg-scrollbar-thumb-active));
 }
 
 /* 两条滚动条同时在场时，右下角那个交叉口谁都盖不住，留着会露出底下的内容。
@@ -13185,7 +13240,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='select'][data-part='trigger'][data-invalid] {
-  border-color: var(--xh-select-trigger-border-invalid, var(--xh-color-danger-500));
+  border-color: var(--xh-select-trigger-border-invalid, var(--xh-border-invalid));
 }
 
 /* 收纳容器：触发器与清空按钮的定位基准，触发器在里面占满一行 */
@@ -14378,6 +14433,11 @@ input[data-scope='mention'][data-part='input'] {
   background: var(--xh-switch-bg-checked, var(--xh-_switch-accent));
 }
 
+/* 校验失败：轨道描一圈警示色。轨道本身没有边框，这里补出来 */
+[data-scope='switch'][data-part='root'][data-invalid] {
+  box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-switch-border-invalid, var(--xh-border-invalid));
+}
+
 [data-scope='switch'][data-part='root'][data-disabled] {
   cursor: not-allowed;
   opacity: var(--xh-state-disabled-opacity);
@@ -14488,7 +14548,7 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='table'][data-part='root'] {
   /* 密度档只换这两个私有槽：单元格与列标题从 root 继承前者，字号靠 font-size 本身继承下去，
      换档不必给每个部件各写一条选择器，列宽那套算法也一点不碰 */
-  --xh-_table-cell-py: var(--xh-space-2);
+  --xh-_table-cell-py: var(--xh-table-cell-py-md);
   --xh-_table-font-size: var(--xh-text-body-size);
 
   display: flex;
@@ -14516,12 +14576,12 @@ input[data-scope='mention'][data-part='input'] {
 /* —— 密度 —— */
 /* 中间档不写规则，缺省即中档 */
 [data-scope='table'][data-part='root'][data-size='sm'] {
-  --xh-_table-cell-py: var(--xh-space-1);
+  --xh-_table-cell-py: var(--xh-table-cell-py-sm);
   --xh-_table-font-size: var(--xh-font-size-sm);
 }
 
 [data-scope='table'][data-part='root'][data-size='lg'] {
-  --xh-_table-cell-py: var(--xh-space-3);
+  --xh-_table-cell-py: var(--xh-table-cell-py-lg);
   --xh-_table-font-size: var(--xh-font-size-lg);
 }
 
@@ -14653,26 +14713,26 @@ input[data-scope='mention'][data-part='input'] {
 /* 横向吸附：钉在滚动容器的一侧。背景继承自行，跟着选中/高亮一起变，
    滚过去时不会露出一块与所在行不同色的补丁。
    同侧多列时的偏移由连接层按前面各列的宽度累加好写进 --xh-table-sticky-inset */
-[data-scope='table'][data-part='column-header'][data-sticky],
-[data-scope='table'][data-part='cell'][data-sticky] {
+[data-scope='table'][data-part='column-header'][data-frozen],
+[data-scope='table'][data-part='cell'][data-frozen] {
   position: sticky;
   z-index: var(--xh-table-sticky-column-z, 1);
   background: inherit;
 }
 
-[data-scope='table'][data-part='column-header'][data-sticky='start'],
-[data-scope='table'][data-part='cell'][data-sticky='start'] {
+[data-scope='table'][data-part='column-header'][data-frozen='start'],
+[data-scope='table'][data-part='cell'][data-frozen='start'] {
   inset-inline-start: var(--xh-table-sticky-inset, 0);
 }
 
-[data-scope='table'][data-part='column-header'][data-sticky='end'],
-[data-scope='table'][data-part='cell'][data-sticky='end'] {
+[data-scope='table'][data-part='column-header'][data-frozen='end'],
+[data-scope='table'][data-part='cell'][data-frozen='end'] {
   inset-inline-end: var(--xh-table-sticky-inset, 0);
 }
 
 /* 表头行本身透明（露出表头底），吸附的列头继承到的就是透明——得自己带表头底，
    否则横向滚动时其它列头从它下面穿过去 */
-[data-scope='table'][data-part='column-header'][data-sticky] {
+[data-scope='table'][data-part='column-header'][data-frozen] {
   background: var(--xh-table-header-bg, var(--xh-bg-subtle));
 }
 
@@ -15189,11 +15249,11 @@ input[data-scope='mention'][data-part='input'] {
 /* 顶到上限：再加进不去，边框先给个提示。放在 invalid 之前，
    两者同时成立时按源序让 invalid 赢——真出错比"装满了"要紧 */
 [data-scope='tags-input'][data-part='control'][data-at-max] {
-  border-color: var(--xh-tags-input-control-border-at-max, var(--xh-color-warning-600));
+  border-color: var(--xh-tags-input-control-border-at-max, var(--xh-border-at-limit));
 }
 
 [data-scope='tags-input'][data-part='control'][data-invalid] {
-  border-color: var(--xh-tags-input-control-border-invalid, var(--xh-color-danger-500));
+  border-color: var(--xh-tags-input-control-border-invalid, var(--xh-border-invalid));
 }
 
 /* 只读仍可聚焦、可复制，所以不置灰，只把底色压下去表示"改不动" */
@@ -15572,11 +15632,11 @@ input[data-scope='mention'][data-part='input'] {
 /* 顶到字数上限：再敲进不去，边框先给个提示。放在 invalid 之前，
    两者同时成立时按源序让 invalid 赢——真出错比"写满了"要紧 */
 [data-scope='text-field'][data-part='input'][data-at-limit] {
-  border-color: var(--xh-text-field-input-border-at-limit, var(--xh-color-warning-600));
+  border-color: var(--xh-text-field-input-border-at-limit, var(--xh-border-at-limit));
 }
 
 [data-scope='text-field'][data-part='input'][data-invalid] {
-  border-color: var(--xh-text-field-input-border-invalid, var(--xh-color-danger-500));
+  border-color: var(--xh-text-field-input-border-invalid, var(--xh-border-invalid));
 }
 
 /* 只读仍可聚焦、可复制，所以不置灰，只把底色压下去表示"改不动" */
@@ -15875,7 +15935,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='time-field'][data-part='control'][data-invalid] {
-  border-color: var(--xh-time-field-control-border-invalid, var(--xh-color-danger-500));
+  border-color: var(--xh-time-field-control-border-invalid, var(--xh-border-invalid));
 }
 
 /* 只读仍可聚焦、可换段，所以不置灰，只把底色压下去表示"改不动" */
@@ -16108,7 +16168,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='time-picker'][data-part='control'][data-invalid] {
-  border-color: var(--xh-time-picker-control-border-invalid, var(--xh-color-danger-500));
+  border-color: var(--xh-time-picker-control-border-invalid, var(--xh-border-invalid));
 }
 
 /* 只读仍可聚焦、可换段，所以不置灰，只把底色压下去表示"改不动" */
@@ -17224,6 +17284,19 @@ input[data-scope='mention'][data-part='input'] {
   }
 }
 
+/* 退场原路收回去，与进场同一条轴 */
+@keyframes xh-tour-content-out {
+  from {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  to {
+    opacity: 0;
+    translate: 0 var(--xh-motion-distance-sm);
+  }
+}
+
 /* 高亮框落定时那一下呼吸：换步时视线要跟着它走，纯位移太容易被漏看 */
 @keyframes xh-tour-spotlight-in {
   from {
@@ -17265,7 +17338,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='tour'][data-part='backdrop'][data-state='closed'] {
-  animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit);
+  animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 挖洞的高亮框。位置与尺寸由连接层量出来写进内联 style（position/inset/尺寸那几条轴归它），
@@ -17343,10 +17416,9 @@ input[data-scope='mention'][data-part='input'] {
   pointer-events: auto;
 }
 
-/* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位 */
-[data-scope='tour'][data-part='content'][hidden] {
-  display: none;
-}
+/* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 popover 一致：
+   收起态连接层会给 content 打 hidden，补上这条退场动画就一帧都播不出来。
+   真正的收起由退场闸门落成内联 display，节点始终留在原地。 */
 
 /* 焦点落在气泡本身（Enter/Space 归"下一步"管），但它是纯容器，不画焦点环 */
 [data-scope='tour'][data-part='content']:focus-visible {
@@ -17355,6 +17427,12 @@ input[data-scope='mention'][data-part='input'] {
 
 [data-scope='tour'][data-part='content'][data-state='open'] {
   animation: xh-tour-content-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+}
+
+/* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
+   免得动画结束到收起落下来之间闪一下原样 */
+[data-scope='tour'][data-part='content'][data-state='closed'] {
+  animation: xh-tour-content-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 [data-scope='tour'][data-part='title'] {
@@ -18250,7 +18328,7 @@ input[data-scope='mention'][data-part='input'] {
 }
 
 [data-scope='tree-select'][data-part='trigger'][data-invalid] {
-  border-color: var(--xh-tree-select-trigger-border-invalid, var(--xh-color-danger-500));
+  border-color: var(--xh-tree-select-trigger-border-invalid, var(--xh-border-invalid));
 }
 
 /* 只读仍可聚焦、浮层仍展得开、树仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */

@@ -9,6 +9,12 @@ export interface TextFieldValueChangeDetails {
 /** 输入框渲染成哪个标签：单行 input（缺省）或多行 textarea。 */
 export type TextFieldInputHost = 'input' | 'textarea'
 
+/**
+ * 单行宿主的输入类型。只收文本类的那几种：
+ * checkbox / radio / file / range 这些有自己的值语义与部件，不由本组件承担。
+ */
+export type TextFieldType = 'text' | 'password' | 'email' | 'tel' | 'url' | 'search'
+
 /** 自动高度的行数界限；不给即完全跟内容走。 */
 export interface TextFieldAutoSize {
   minRows?: number
@@ -27,6 +33,8 @@ export interface TextFieldSchema extends MachineSchema {
     value?: string
     /** 非受控初值。 */
     defaultValue?: string
+    /** 单行宿主的输入类型，缺省 text；as 为 textarea 时不发这条属性。 */
+    type?: TextFieldType
     placeholder?: string
     disabled?: boolean
     readOnly?: boolean

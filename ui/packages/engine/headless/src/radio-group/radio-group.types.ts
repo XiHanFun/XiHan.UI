@@ -42,6 +42,12 @@ export interface RadioGroupSchema extends MachineSchema {
     value?: string | null
     defaultValue?: string | null
     disabled?: boolean
+    /** 只读：选不动，但仍可聚焦、方向键照常移焦点，对比度不降。 */
+    readOnly?: boolean
+    /** 校验失败：只改呈现，不挡交互。 */
+    invalid?: boolean
+    /** 必填：随表单校验一起用，只发无障碍属性，不自行拦提交。 */
+    required?: boolean
     orientation?: Orientation
     /** 文字方向，缺省 'ltr'。 */
     dir?: Direction

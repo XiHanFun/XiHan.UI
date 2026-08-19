@@ -12,6 +12,9 @@ import { MachineController } from '../runtime/machine-controller'
  * @attr {boolean|'indeterminate'} checked - 受控选中；写 indeterminate 为半选，缺省该属性即非受控
  * @attr {boolean|'indeterminate'} default-checked - 非受控初值
  * @attr {boolean} disabled - 禁用
+ * @attr {boolean} read-only - 只读：勾不动，但仍可聚焦、仍参与提交
+ * @attr {boolean} invalid - 校验失败态
+ * @attr {boolean} required - 必填
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires checked-change - checked 状态变化；detail 为 `{ checked: boolean }`
@@ -30,6 +33,9 @@ export class XhCheckboxElement extends XhElement {
     checked: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v === 'indeterminate' ? 'indeterminate' : v !== 'false') } },
     defaultChecked: { attribute: 'default-checked', converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v === 'indeterminate' ? 'indeterminate' : v !== 'false') } },
     disabled: { type: Boolean },
+    readOnly: { type: Boolean, attribute: 'read-only' },
+    invalid: { type: Boolean },
+    required: { type: Boolean },
     name: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     value: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     tone: {},
@@ -39,6 +45,9 @@ export class XhCheckboxElement extends XhElement {
   declare checked?: CheckboxCheckedState
   declare defaultChecked?: CheckboxCheckedState
   declare disabled?: boolean
+  declare readOnly?: boolean
+  declare invalid?: boolean
+  declare required?: boolean
   declare name?: string
   declare value?: string
   declare tone?: Tone
@@ -55,6 +64,9 @@ export class XhCheckboxElement extends XhElement {
       checked: this.checked,
       defaultChecked: this.defaultChecked ?? false,
       disabled: this.disabled ?? false,
+      readOnly: this.readOnly ?? false,
+      invalid: this.invalid ?? false,
+      required: this.required ?? false,
       tone: this.tone,
       size: this.size,
       name: this.name,

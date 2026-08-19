@@ -40,6 +40,11 @@
     background: var(--xh-switch-bg-checked, var(--xh-_switch-accent));
   }
 
+  /* 校验失败：轨道描一圈警示色。轨道本身没有边框，这里补出来 */
+  [data-scope='switch'][data-part='root'][data-invalid] {
+    box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-switch-border-invalid, var(--xh-border-invalid));
+  }
+
   [data-scope='switch'][data-part='root'][data-disabled] {
     cursor: not-allowed;
     opacity: var(--xh-state-disabled-opacity);

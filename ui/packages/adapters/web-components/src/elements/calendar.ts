@@ -20,6 +20,13 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
+/** 作者写的面板下标；写坏了或没写按 0 算。 */
+function declaredIndex(el: Element | null | undefined, fallback = 0): number {
+  const raw = el?.getAttribute('index')?.trim()
+  const n = raw == null || raw === '' ? Number.NaN : Number(raw)
+  return Number.isFinite(n) && n >= 0 ? Math.trunc(n) : fallback
+}
+
 /**
  * `<xh-calendar>` —— 日历行为宿主。
  *
@@ -68,13 +75,6 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart cell - role=gridcell 日期格，承载 aria-selected；须自带 value 属性（ISO 串）标明是哪一天
  * @csspart cell-trigger - 可点可聚焦层，承载 aria-disabled 与 roving tabindex
  */
-
-/** 作者写的面板下标；写坏了或没写按 0 算。 */
-function declaredIndex(el: Element | null | undefined, fallback = 0): number {
-  const raw = el?.getAttribute('index')?.trim()
-  const n = raw == null || raw === '' ? Number.NaN : Number(raw)
-  return Number.isFinite(n) && n >= 0 ? Math.trunc(n) : fallback
-}
 export class XhCalendarElement extends XhElement {
   static override partContract = { anatomy: calendarAnatomy, meta: calendarMeta }
 

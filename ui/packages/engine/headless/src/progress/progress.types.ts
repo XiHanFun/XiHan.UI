@@ -9,6 +9,11 @@ export type ProgressGapPosition = 'top' | 'right' | 'bottom' | 'left'
 export interface ProgressProps {
   /** 当前进度值，越界会被夹到 [0, max]；非有限值按 0 处理。 */
   value?: number
+  /**
+   * 进度未知：条子改为往复动画，读屏那侧不报数。
+   * 置真时 aria-valuenow 整个不发——ARIA 规定不确定进度以该属性缺席表达。
+   */
+  indeterminate?: boolean
   /** 满值上限，默认 100；非有限值或不为正时回落 100。 */
   max?: number
   /** 形态，默认 line。circle 画整环，dashboard 在环上留一个缺口。 */

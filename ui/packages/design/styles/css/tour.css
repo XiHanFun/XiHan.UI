@@ -34,6 +34,19 @@
     }
   }
 
+  /* 退场原路收回去，与进场同一条轴 */
+  @keyframes xh-tour-content-out {
+    from {
+      opacity: 1;
+      translate: 0 0;
+    }
+
+    to {
+      opacity: 0;
+      translate: 0 var(--xh-motion-distance-sm);
+    }
+  }
+
   /* 高亮框落定时那一下呼吸：换步时视线要跟着它走，纯位移太容易被漏看 */
   @keyframes xh-tour-spotlight-in {
     from {
@@ -77,7 +90,7 @@
   }
 
   [data-scope='tour'][data-part='backdrop'][data-state='closed'] {
-    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit);
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 挖洞的高亮框。位置与尺寸由连接层量出来写进内联 style（position/inset/尺寸那几条轴归它），
@@ -155,10 +168,9 @@
     pointer-events: auto;
   }
 
-  /* display 会盖掉 hidden 属性的 UA 规则，收起态显式让位 */
-  [data-scope='tour'][data-part='content'][hidden] {
-    display: none;
-  }
+  /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 popover 一致：
+     收起态连接层会给 content 打 hidden，补上这条退场动画就一帧都播不出来。
+     真正的收起由退场闸门落成内联 display，节点始终留在原地。 */
 
   /* 焦点落在气泡本身（Enter/Space 归"下一步"管），但它是纯容器，不画焦点环 */
   [data-scope='tour'][data-part='content']:focus-visible {
@@ -167,6 +179,12 @@
 
   [data-scope='tour'][data-part='content'][data-state='open'] {
     animation: xh-tour-content-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
+     免得动画结束到收起落下来之间闪一下原样 */
+  [data-scope='tour'][data-part='content'][data-state='closed'] {
+    animation: xh-tour-content-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   [data-scope='tour'][data-part='title'] {

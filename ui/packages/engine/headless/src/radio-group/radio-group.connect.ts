@@ -32,6 +32,9 @@ export function connectRadioGroup<T extends PropTypes>(
   const value = context.get('value') ?? null
   const focusedValue = context.get('focusedValue') ?? null
   const groupDisabled = !!prop('disabled')
+  const readOnly = !!prop('readOnly')
+  const invalid = !!prop('invalid')
+  const required = !!prop('required')
   const orientation = prop('orientation') ?? 'vertical'
   const dir = prop('dir') ?? 'ltr'
   const name = prop('name')
@@ -59,10 +62,12 @@ export function connectRadioGroup<T extends PropTypes>(
   const stateAttrs = (item: RadioGroupItemProps): Record<string, string | undefined> => ({
     'data-state': isChecked(item) ? 'checked' : 'unchecked',
     'data-disabled': dataAttr(isDisabled(item)),
+    'data-readonly': dataAttr(readOnly),
+    'data-invalid': dataAttr(invalid),
   })
 
   const select = (item: RadioGroupItemProps): void => {
-    if (!isDisabled(item))
+    if (!isDisabled(item) && !readOnly)
       send({ type: 'ITEM.SELECT', value: item.value })
   }
 
@@ -81,6 +86,13 @@ export function connectRadioGroup<T extends PropTypes>(
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(groupDisabled),
+      // role=radiogroup 本身接受这三条，不必像 role=group 那样下放到条目
+      'aria-readonly': readOnly ? 'true' : 'false',
+      'aria-invalid': invalid ? 'true' : 'false',
+      'aria-required': required ? 'true' : 'false',
+      'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(invalid),
+      'data-required': dataAttr(required),
       // 焦点在组外时容器可 Tab，进入后让位给条目。
       // 判据只能用 focusedValue：anchor 可能指向一个已不存在的值，那时没有条目认领 tabindex=0
       'tabindex': focusedValue == null ? 0 : -1,
@@ -113,9 +125,10 @@ export function connectRadioGroup<T extends PropTypes>(
         const next = itemValue(target)
         if (next == null)
           return
-        // 方向键移动焦点的同时选中
+        // 方向键移动焦点的同时选中；只读时焦点照走，只是不落值
         focusItem(target)
-        send({ type: 'ITEM.SELECT', value: next })
+        if (!readOnly)
+          send({ type: 'ITEM.SELECT', value: next })
       },
     }),
     getLabelProps: () => normalize.element({ ...parts.label.attrs, id: ids.label }),

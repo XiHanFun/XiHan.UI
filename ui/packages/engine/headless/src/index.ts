@@ -175,7 +175,7 @@ export type { TabsActivationMode, TabsApi, TabsContentProps, TabsNode, TabsNodeM
 export { appendTags, connectTagsInput, isAtMax, isOverflow, normalizeTag, normalizeTags, sameTags, splitTags, TAGS_INPUT_DELIMITER, tagsDelimiter, tagsInputAnatomy, tagsInputEditInputId, tagsInputKeyboard, tagsInputMachine, tagsInputMeta } from './tags-input'
 export type { TagsAppendOptions, TagsAppendResult, TagsInputApi, TagsInputBlurBehavior, TagsInputInputValueChangeDetails, TagsInputItemProps, TagsInputSchema, TagsInputTranslations, TagsInputValueChangeDetails } from './tags-input'
 export { autoSizeTextarea, clampToMaxLength, connectTextField, isAtLimit, textFieldAnatomy, textFieldKeyboard, textFieldMachine, textFieldMeta } from './text-field'
-export type { TextFieldApi, TextFieldAutoSize, TextFieldInputHost, TextFieldInputProps, TextFieldSchema, TextFieldTranslations, TextFieldValueChangeDetails } from './text-field'
+export type { TextFieldApi, TextFieldAutoSize, TextFieldInputHost, TextFieldInputProps, TextFieldSchema, TextFieldTranslations, TextFieldType, TextFieldValueChangeDetails } from './text-field'
 export { connectThread, threadAnatomy, threadKeyboard, threadMachine, threadMeta } from './thread'
 export type { ThreadApi, ThreadRefs, ThreadSchema, ThreadStatus, ThreadStickChangeDetails, ThreadTranslations } from './thread'
 export { connectTime, formatRelativeTime, formatTimePattern, TIME_RELATIVE_LIMIT, timeAnatomy, timeKeyboard, timeMachineStamp, timeMeta, toTimeDate } from './time'

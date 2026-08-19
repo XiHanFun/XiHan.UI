@@ -10,6 +10,7 @@ export const XhProgress = defineComponent({
   name: 'XhProgress',
   props: {
     value: { type: Number, default: 0 },
+    indeterminate: Boolean,
     max: { type: Number, default: 100 },
     // 缺省值都在 connect 里收口，这边一律不预设
     variant: { type: String as PropType<ProgressVariant>, default: undefined },

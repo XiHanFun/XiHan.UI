@@ -81,6 +81,34 @@
       "$value": "{space.2}"
     }
   },
+  "list": {
+    "item-py-sm": {
+      "$type": "dimension",
+      "$value": "{space.2}"
+    },
+    "item-py-md": {
+      "$type": "dimension",
+      "$value": "{space.3}"
+    },
+    "item-py-lg": {
+      "$type": "dimension",
+      "$value": "{space.4}"
+    }
+  },
+  "table": {
+    "cell-py-sm": {
+      "$type": "dimension",
+      "$value": "{space.1}"
+    },
+    "cell-py-md": {
+      "$type": "dimension",
+      "$value": "{space.2}"
+    },
+    "cell-py-lg": {
+      "$type": "dimension",
+      "$value": "{space.3}"
+    }
+  },
   "shape": {
     "inset": {
       "$type": "dimension",

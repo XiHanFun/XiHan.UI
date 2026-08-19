@@ -70,7 +70,7 @@
   }
 
   [data-scope='field'][data-part='control'][data-invalid] {
-    border-color: var(--xh-field-control-border-invalid, var(--xh-color-danger-500));
+    border-color: var(--xh-field-control-border-invalid, var(--xh-border-invalid));
   }
 
   /* 禁用由作者在控件上落原生 disabled，样式统一走 data-disabled */

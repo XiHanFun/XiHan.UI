@@ -14,6 +14,9 @@ export function connectSwitch<T extends PropTypes>(
   const checked = state.get() === 'on'
   const disabled = !!prop('disabled')
   const loading = !!prop('loading')
+  const readOnly = !!prop('readOnly')
+  const invalid = !!prop('invalid')
+  const required = !!prop('required')
   const stateAttr = checked ? 'checked' : 'unchecked'
 
   const setChecked = (next: boolean): void => {
@@ -33,13 +36,20 @@ export function connectSwitch<T extends PropTypes>(
       // 提交中不算禁用：仍可聚焦，读屏经 aria-busy 知道在忙
       'aria-busy': loading ? 'true' : undefined,
       'disabled': disabled || undefined,
+      // 只读不能用原生 disabled 表达：那会连焦点一起拿掉，且不再提交值
+      'aria-readonly': readOnly ? 'true' : 'false',
+      'aria-invalid': invalid ? 'true' : 'false',
+      'aria-required': required ? 'true' : 'false',
       'data-state': stateAttr,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
       'data-loading': dataAttr(loading),
+      'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(invalid),
+      'data-required': dataAttr(required),
       'onClick': () => {
-        if (!disabled && !loading)
+        if (!disabled && !loading && !readOnly)
           send({ type: 'TOGGLE' })
       },
     }),

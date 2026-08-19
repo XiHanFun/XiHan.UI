@@ -12,6 +12,9 @@ import { MachineController } from '../runtime/machine-controller'
  * @attr {boolean} checked - 受控开合；缺省该属性即非受控
  * @attr {boolean} default-checked - 非受控初始为选中
  * @attr {boolean} disabled - 禁用
+ * @attr {boolean} read-only - 只读：拨不动，但仍可聚焦、仍参与提交
+ * @attr {boolean} invalid - 校验失败态
+ * @attr {boolean} required - 必填
  * @attr {boolean} loading - 提交中：交互挂起、滑块转圈，仍可聚焦（aria-busy）
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -30,6 +33,9 @@ export class XhSwitchElement extends XhElement {
     checked: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
     defaultChecked: { type: Boolean, attribute: 'default-checked' },
     disabled: { type: Boolean },
+    readOnly: { type: Boolean, attribute: 'read-only' },
+    invalid: { type: Boolean },
+    required: { type: Boolean },
     loading: { type: Boolean },
     name: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     value: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
@@ -40,6 +46,9 @@ export class XhSwitchElement extends XhElement {
   declare checked?: boolean
   declare defaultChecked?: boolean
   declare disabled?: boolean
+  declare readOnly?: boolean
+  declare invalid?: boolean
+  declare required?: boolean
   declare loading?: boolean
   declare name?: string
   declare value?: string
@@ -57,6 +66,9 @@ export class XhSwitchElement extends XhElement {
       checked: this.checked,
       defaultChecked: this.defaultChecked ?? false,
       disabled: this.disabled ?? false,
+      readOnly: this.readOnly ?? false,
+      invalid: this.invalid ?? false,
+      required: this.required ?? false,
       loading: this.loading ?? false,
       tone: this.tone,
       size: this.size,

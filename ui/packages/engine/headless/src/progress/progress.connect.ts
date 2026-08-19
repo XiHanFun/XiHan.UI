@@ -1,5 +1,6 @@
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { ProgressApi, ProgressProps } from './progress.types'
+import { dataAttr } from '@xihan-ui/kernel'
 import { progressAnatomy } from './progress.anatomy'
 import { PROGRESS_VIEW, progressRing, resolveMax, resolveValue } from './progress.geometry'
 
@@ -14,7 +15,11 @@ export function connectProgress<T extends PropTypes>(
   const value = resolveValue(props.value, max)
   const ratio = value / max
   const percent = Math.round(ratio * 100)
-  const complete = value >= max
+  const indeterminate = !!props.indeterminate
+  // 进度未知时谈不上完成
+  const complete = !indeterminate && value >= max
+
+  const stateAttr = indeterminate ? 'indeterminate' : complete ? 'complete' : 'loading'
 
   const variant = props.variant ?? 'line'
   const isRing = variant !== 'line'
@@ -29,7 +34,7 @@ export function connectProgress<T extends PropTypes>(
   /** 三个子部件共用的形态与状态标记，皮肤据此分线形与环形两套画法。 */
   const shared = {
     'data-variant': variant,
-    'data-state': complete ? 'complete' : 'loading',
+    'data-state': stateAttr,
   }
 
   return {
@@ -43,11 +48,12 @@ export function connectProgress<T extends PropTypes>(
       'role': 'progressbar',
       'aria-valuemin': '0',
       'aria-valuemax': String(max),
-      'aria-valuenow': String(value),
+      // 不确定态一律不发：ARIA 以该属性缺席表达「进度未知」
+      'aria-valuenow': indeterminate ? undefined : String(value),
       // 进度不是百分比时（第几步、多少件）由作者给一句人话，读屏念它而不是念数字
       'aria-valuetext': props.valueText,
       'data-variant': variant,
-      'data-state': complete ? 'complete' : 'loading',
+      'data-state': stateAttr,
       'data-tone': props.tone,
       'data-size': props.size,
     }),
@@ -86,7 +92,7 @@ export function connectProgress<T extends PropTypes>(
       ...parts.range.attrs,
       ...shared,
       // 零进度另作标记：圆角端点在长度为 0 时会画出一个圆点，皮肤据此收掉
-      'data-empty': ratio === 0 ? '' : undefined,
+      'data-empty': dataAttr(ratio === 0),
       ...(ring
         ? {
             cx: PROGRESS_VIEW / 2,

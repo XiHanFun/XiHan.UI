@@ -14,6 +14,9 @@ export function connectCheckbox<T extends PropTypes>(
   const current = state.get()
   const checked: CheckboxCheckedState = current === 'indeterminate' ? 'indeterminate' : current === 'on'
   const disabled = !!prop('disabled')
+  const readOnly = !!prop('readOnly')
+  const invalid = !!prop('invalid')
+  const required = !!prop('required')
   const stateAttr = current === 'indeterminate' ? 'indeterminate' : current === 'on' ? 'checked' : 'unchecked'
 
   // 半选态下 TOGGLE 只表达得了「走向全选」，所以命令式设值走 CHECK / UNCHECK
@@ -32,12 +35,19 @@ export function connectCheckbox<T extends PropTypes>(
       // 三态：勾了一部分的父项报 mixed，读屏才念得出「部分选中」
       'aria-checked': checked === 'indeterminate' ? 'mixed' : checked ? 'true' : 'false',
       'disabled': disabled || undefined,
+      // 只读不能用原生 disabled 表达：那会连焦点一起拿掉，且不再提交值
+      'aria-readonly': readOnly ? 'true' : 'false',
+      'aria-invalid': invalid ? 'true' : 'false',
+      'aria-required': required ? 'true' : 'false',
       'data-state': stateAttr,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(invalid),
+      'data-required': dataAttr(required),
       'onClick': () => {
-        if (!disabled)
+        if (!disabled && !readOnly)
           send({ type: 'TOGGLE' })
       },
     }),
@@ -63,11 +73,14 @@ export function connectCheckbox<T extends PropTypes>(
       'data-state': stateAttr,
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
+      'data-invalid': dataAttr(invalid),
     }),
     getTextProps: () => normalize.element({
       ...parts.text.attrs,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
+      'data-invalid': dataAttr(invalid),
     }),
   }
 }

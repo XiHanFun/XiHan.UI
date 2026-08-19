@@ -27,7 +27,7 @@
   }
 
   /* 铺开：裁剪整个撤掉。写在两档之后，压得住上面同权重的那两条 */
-  [data-scope='ellipsis'][data-part='root'][data-expanded] {
+  [data-scope='ellipsis'][data-part='root'][data-state='open'] {
     display: block;
     overflow: visible;
     white-space: normal;

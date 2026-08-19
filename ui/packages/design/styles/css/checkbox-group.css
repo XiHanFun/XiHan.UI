@@ -132,7 +132,7 @@
   /* 校验失败标在每个方框上：root 上的 data-invalid 是唯一出处，条目自己不带这个属性 */
   [data-scope='checkbox-group'][data-part='root'][data-invalid]
     [data-scope='checkbox-group'][data-part='indicator'] {
-    border-color: var(--xh-checkbox-group-indicator-border-invalid, var(--xh-color-danger-500));
+    border-color: var(--xh-checkbox-group-indicator-border-invalid, var(--xh-border-invalid));
   }
 
   [data-scope='checkbox-group'][data-part='item-text'] {

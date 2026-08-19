@@ -14,6 +14,7 @@ export function connectField<T extends PropTypes>(
   const invalid = !!props.invalid
   const required = !!props.required
   const disabled = !!props.disabled
+  const readOnly = !!props.readOnly
   const ids = scope.ids('field', 'label', 'control', 'description', 'error-text')
   // 作者接管 id 时以作者的为准，label 的 for 随之改写
   const controlId = props.controlId ?? ids.control
@@ -24,10 +25,12 @@ export function connectField<T extends PropTypes>(
     invalid,
     required,
     disabled,
+    readOnly,
     controlId,
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
       'data-required': dataAttr(required),
     }),
@@ -37,6 +40,7 @@ export function connectField<T extends PropTypes>(
       'id': ids.label,
       'for': controlId,
       'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
     }),
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
@@ -48,7 +52,9 @@ export function connectField<T extends PropTypes>(
       // 显式 true/false，不靠属性缺席表达
       'aria-invalid': invalid ? 'true' : 'false',
       'aria-required': required ? 'true' : 'false',
+      'aria-readonly': readOnly ? 'true' : 'false',
       'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
     }),
     getDescriptionProps: () => normalize.element({

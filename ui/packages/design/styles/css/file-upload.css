@@ -72,7 +72,7 @@
   }
 
   [data-scope='file-upload'][data-part='dropzone'][data-invalid] {
-    border-color: var(--xh-file-upload-dropzone-border-invalid, var(--xh-color-danger-500));
+    border-color: var(--xh-file-upload-dropzone-border-invalid, var(--xh-border-invalid));
   }
 
   /* 投放区是 div，没有原生 disabled 可用，禁用态只能靠 data-disabled 表达，写 :disabled 永远不命中 */

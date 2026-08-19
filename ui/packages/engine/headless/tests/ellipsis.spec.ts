@@ -190,7 +190,7 @@ describe('ellipsis 展开', () => {
     ;(rig.rootProps().onClick as () => void)()
     await settle()
     expect(rig.api().expanded).toBe(true)
-    expect(rig.rootProps()['data-expanded']).toBe('')
+    expect(rig.rootProps()['data-state']).toBe('open')
     expect(rig.rootProps()['aria-expanded']).toBe('true')
 
     // 裁剪已经撤掉，这时量出来的恒是"装得下"，所以铺开态原地留住上一次的结论

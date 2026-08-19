@@ -127,7 +127,7 @@
   }
 
   [data-scope='pin-input'][data-part='input'][data-invalid] {
-    border-color: var(--xh-pin-input-box-border-invalid, var(--xh-color-danger-500));
+    border-color: var(--xh-pin-input-box-border-invalid, var(--xh-border-invalid));
   }
 
   /* 每格都是原生 disabled 的单体控件（禁用的格子不该能聚焦），所以用 :disabled */

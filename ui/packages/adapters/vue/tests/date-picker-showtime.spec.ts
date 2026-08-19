@@ -122,7 +122,7 @@ describe('date-picker showTime', () => {
     min30.click()
     await tick()
     expect(m.change).toHaveBeenLastCalledWith({ value: [`${day}T09:30`] })
-    expect(hour9.hasAttribute('data-selected')).toBe(true)
+    expect(hour9.getAttribute('data-state')).toBe('checked')
 
     el('[data-part="confirm-trigger"]').click()
     await tick()

@@ -48,7 +48,8 @@ export interface TableColumnDef {
   /** 可排序：给了才产出 aria-sort，排序把手也才认按键与点击。 */
   sortable?: boolean
   /**
-   * 横向吸附（左右滚动时这一列钉住）。true 等于 'start'（钉在行首侧），'end' 钉在行尾侧。
+   * 横向冻结（左右滚动时这一列钉住），落成条目上的 data-frozen。true 等于 'start'（钉在行首侧），'end' 钉在行尾侧。
+   * 与表头吸顶的 data-sticky 是两件事：那个是布尔，这个带方向，同名会让 [data-sticky] 一条选择器命中两种语义。
    * 同侧有多列吸附时，连接层按前面各列的数字列宽累加出偏移，写进 --xh-table-sticky-inset；
    * 有一列宽度不是数字就算不出来，那一侧从这列起都退回贴边。
    */
@@ -141,7 +142,7 @@ export interface TableSchema extends MachineSchema {
     loading?: boolean
     /** 显式声明表体为空；缺省按 rows 是否为空推导。 */
     empty?: boolean
-    /** 表头吸顶：只落 data-sticky，钉住的实现归皮肤。 */
+    /** 表头吸顶：只落 data-sticky（布尔），钉住的实现归皮肤。列冻结走 data-frozen，两者不同名。 */
     stickyHeader?: boolean
     /** 斑马纹：表体偶数行换一层浅底。 */
     striped?: boolean
