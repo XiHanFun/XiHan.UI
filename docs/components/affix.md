@@ -52,7 +52,25 @@ affix-change 报吸住与松开；默认插槽也把 affixed 透出来
 | `offsetBottom` | `number` |  | 吸住后距滚动容器可视区下边的距离（px）；给了它就改贴下边。 |
 | `onAffixChange` | `(details: AffixChangeDetails) => void` |  | 吸附状态变化回调。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `affix-change` | `AffixChangeDetails` | 吸附状态变化；detail 为 `{ affixed: boolean }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhAffixRoot` | `default` | `AffixRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`released` · `affixed`
 
@@ -75,3 +93,9 @@ affix-change 报吸住与松开；默认插槽也把 affixed 透出来
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-affix-layer`

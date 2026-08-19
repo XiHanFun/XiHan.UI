@@ -30,7 +30,7 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="side-nav"`：**`root`** · **`list`** · `group` · `group-label` · `branch` · `branch-trigger` · `branch-text` · `branch-indicator` · `branch-content` · **`link`** · `link-text`
+`data-scope="side-nav"`：**`root`** · **`list`** · `group` · `group-label` · `branch` · `branch-trigger` · `branch-text` · `branch-indicator` · `positioner` · `branch-content` · **`link`** · `link-text`
 
 ## Props
 
@@ -51,7 +51,26 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | `onValueChange` | `(details: SideNavValueChangeDetails) => void` |  | 选中意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onExpandedChange` | `(details: SideNavExpandedChangeDetails) => void` |  | 展开集合变化意图回调；语义同上。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `SideNavValueChangeDetails` | 选中变化；detail 为 `{ value: string \| null }` |
+| `expanded-change` | `SideNavExpandedChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhSideNavRoot` | `default` | `SideNavRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `popout`
 
@@ -88,6 +107,8 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | `getBranchTriggerProps` | `(props: SideNavNodeProps) => T['button']` |  |
 | `getBranchTextProps` | `() => T['element']` | 行文字的载体：折叠成图标栏时由皮肤整个藏掉，不会裁出半个字。 |
 | `getBranchIndicatorProps` | `(props: SideNavNodeProps) => T['element']` |  |
+| `isPopoutPanel` | `(value: string) => boolean` | 该分支在折叠态下是否以浮层面板出现；决定作者要不要渲染定位层。 |
+| `getPopoutPositionerProps` | `(props: SideNavNodeProps) => T['element']` | 弹出面板的定位层。吃引擎坐标、承载层号，作者须把它搬到浮层落点， 免得祖先的层叠上下文把面板困住。非弹出分支不渲染这一层。 |
 | `getBranchContentProps` | `(props: SideNavNodeProps) => T['element']` |  |
 | `getLinkProps` | `(props: SideNavNodeProps) => T['element']` |  |
 | `getLinkTextProps` | `() => T['element']` | 链接文字的载体：折叠时由皮肤整个藏掉。 |
@@ -108,3 +129,9 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | `End` | focus in 行 | 最后一可见行 |
 | `ArrowRight` / `Enter` / `Space` | focus in 折叠态顶层分支行 | 弹出子级面板并落焦第一行（RTL 与 ArrowLeft 对调） |
 | `ArrowLeft` / `Escape` | focus in 弹出面板 | 收回面板，焦点还给触发按钮（RTL 与 ArrowRight 对调；Escape 归消解层） |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-side-nav-collapsed-w` · `--xh-side-nav-fg` · `--xh-side-nav-gap` · `--xh-side-nav-indent` · `--xh-side-nav-p` · `--xh-side-nav-popout-bg` · `--xh-side-nav-popout-border` · `--xh-side-nav-popout-layer` · `--xh-side-nav-popout-max-w` · `--xh-side-nav-popout-min-w` · `--xh-side-nav-popout-p` · `--xh-side-nav-popout-radius` · `--xh-side-nav-popout-shadow` · `--xh-side-nav-w`

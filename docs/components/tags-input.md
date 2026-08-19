@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-框里打字按 Enter 落一个标签；标签由作者按当前值渲染，v-for 的 key 必须给
+框里打字按 Enter 落一个标签；标签由作者按当前值渲染，每个标签自带 value 标识身份
 
 <XhDemo src="tags-input/01-basic" />
 
@@ -118,7 +118,26 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `onValueChange` | `(details: TagsInputValueChangeDetails) => void` |  |  |
 | `onInputValueChange` | `(details: TagsInputInputValueChangeDetails) => void` |  |  |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `TagsInputValueChangeDetails` | 标签集合变化；detail 为 `{ value: string[] }` |
+| `input-value-change` | `TagsInputInputValueChangeDetails` | 输入文本变化；detail 为 `{ inputValue: string }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhTagsInputRoot` | `default` | `TagsInputRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `navigating` · `editing`
 
@@ -182,3 +201,9 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `Enter` | 已有标签被高亮, editable 开着 | 就地编辑这个标签，焦点进编辑框并整段选中 |
 | `Enter` | focus in item-input（就地编辑中） | 提交改写；改成空白等于删掉这个标签，改成另一个已有标签则并成一个。焦点交回输入框 |
 | `Escape` | focus in item-input（就地编辑中） | 撤销这次改写，标签保持原样，焦点交回输入框 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-tags-input-clear-bg` · `--xh-tags-input-clear-bg-active` · `--xh-tags-input-clear-bg-hover` · `--xh-tags-input-clear-fg` · `--xh-tags-input-clear-fg-hover` · `--xh-tags-input-clear-font-size` · `--xh-tags-input-clear-size` · `--xh-tags-input-control-bg` · `--xh-tags-input-control-bg-disabled` · `--xh-tags-input-control-bg-readonly` · `--xh-tags-input-control-border` · `--xh-tags-input-control-border-at-max` · `--xh-tags-input-control-border-hover` · `--xh-tags-input-control-border-invalid` · `--xh-tags-input-control-fg` · `--xh-tags-input-control-gap` · `--xh-tags-input-control-h` · `--xh-tags-input-control-px` · `--xh-tags-input-control-py` · `--xh-tags-input-control-radius` · `--xh-tags-input-delete-bg` · `--xh-tags-input-delete-bg-active` · `--xh-tags-input-delete-bg-hover` · `--xh-tags-input-delete-fg` · `--xh-tags-input-delete-fg-highlight` · `--xh-tags-input-delete-fg-hover` · `--xh-tags-input-delete-font-size` · `--xh-tags-input-delete-size` · `--xh-tags-input-gap` · `--xh-tags-input-icon-size` · `--xh-tags-input-input-basis` · `--xh-tags-input-input-font-size` · `--xh-tags-input-input-min-w` · `--xh-tags-input-item-bg` · `--xh-tags-input-item-bg-highlight` · `--xh-tags-input-item-fg` · `--xh-tags-input-item-fg-highlight` · `--xh-tags-input-item-font-size` · `--xh-tags-input-item-gap` · `--xh-tags-input-item-input-bg` · `--xh-tags-input-item-input-border` · `--xh-tags-input-item-input-fg` · `--xh-tags-input-item-px` · `--xh-tags-input-item-py` · `--xh-tags-input-item-radius` · `--xh-tags-input-label-fg` · `--xh-tags-input-label-fg-disabled` · `--xh-tags-input-label-font-size` · `--xh-tags-input-label-font-weight` · `--xh-tags-input-placeholder-fg`

@@ -24,7 +24,7 @@
 
 ### 受控正文与选中回调
 
-正文由父持有，select 事件报回插进去的是哪一条，用来攒收件人名单
+正文由宿主持有，select 事件报回插进去的是哪一条，用来攒收件人名单
 
 <XhDemo src="mention/04-controlled" />
 
@@ -73,7 +73,29 @@
 | `onSelect` | `(details: MentionSelectDetails) => void` |  | 候选被插进正文时回调，带上是哪一条。 |
 | `onOpenChange` | `(details: MentionOpenChangeDetails) => void` |  | 浮层开合回调。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `MentionValueChangeDetails` | 正文变化；detail 为 `{ value: string }` |
+| `query-change` | `MentionQueryChangeDetails` | 查询串变化；detail 为 `{ query, prefix }`，作者据此过滤候选；收起时报 null |
+| `select` | `MentionSelectDetails` | 候选被插进正文；detail 为 `{ value, label, prefix }` |
+| `open-change` | `MentionOpenChangeDetails` | 浮层开合；detail 为 `{ open: boolean }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhMentionRoot` | `default` | `MentionRootSlotProps` |  |
+| `XhMentionRoot` | `item` | `MentionNodeMeta` | 铺开 collection 时每条候选的文本插槽。 |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -117,3 +139,9 @@
 | `Escape` | open | 收起浮层且正文不变；光标不离开这个触发点就不再自动展开 |
 | `Tab` / `Shift+Tab` | open | 收起浮层且不拦按键，焦点按 Tab 序列自然离开 |
 | `ArrowLeft` / `ArrowRight` / `Home` / `End` | 任意时候 | 一律不接管：光标照常移动，触发按新的光标位置重算，挪出查询串即收起 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-mention-content-bg` · `--xh-mention-content-border` · `--xh-mention-content-fg` · `--xh-mention-content-max-h` · `--xh-mention-content-max-w` · `--xh-mention-content-min-w` · `--xh-mention-content-px` · `--xh-mention-content-py` · `--xh-mention-content-radius` · `--xh-mention-content-shadow` · `--xh-mention-input-bg` · `--xh-mention-input-bg-disabled` · `--xh-mention-input-border` · `--xh-mention-input-border-focus` · `--xh-mention-input-border-hover` · `--xh-mention-input-fg` · `--xh-mention-input-font-size` · `--xh-mention-input-h` · `--xh-mention-input-px` · `--xh-mention-input-py` · `--xh-mention-input-radius` · `--xh-mention-item-bg-hover` · `--xh-mention-item-fg` · `--xh-mention-item-font-size` · `--xh-mention-item-gap` · `--xh-mention-item-leading` · `--xh-mention-item-px` · `--xh-mention-item-py` · `--xh-mention-item-radius` · `--xh-mention-placeholder-fg`

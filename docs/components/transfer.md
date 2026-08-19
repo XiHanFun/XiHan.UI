@@ -86,7 +86,26 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | `onValueChange` | `(details: TransferValueChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TransferSelectionChangeDetails) => void` |  |  |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `TransferValueChangeDetails` | 落在右侧的值变化；detail 为 `{ value: string[] }` |
+| `selection-change` | `TransferSelectionChangeDetails` | 勾选集合变化；detail 为 `{ selected: string[] }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhTransferRoot` | `default` | `TransferRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -148,3 +167,9 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | `ArrowRight` / `ArrowLeft` | focus in a list, 该方向指向对面且对面搬得动 | 把本侧勾中的条目搬到对面（dir=rtl 时左右语义对调）；搬完焦点落到目的地那一侧的列表上。方向指向本侧、或此刻搬不动时这个键放行给页面 |
 | `Enter` / `Space` | focus on to-target-trigger / to-source-trigger | 把对面勾中的条目搬过来（原生按钮的激活行为）；搬完按钮多半随即变禁用，焦点改落到目的地那一侧的列表上 |
 | `Enter` / `Space` | focus on select-all-trigger | 全选/取消全选该侧可操作条目（原生按钮的激活行为）；三态经 aria-checked 上报，半选时是 mixed |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-transfer-checkbox-bg` · `--xh-transfer-checkbox-bg-checked` · `--xh-transfer-checkbox-bg-disabled` · `--xh-transfer-checkbox-border` · `--xh-transfer-checkbox-border-checked` · `--xh-transfer-checkbox-border-disabled` · `--xh-transfer-checkbox-fg` · `--xh-transfer-checkbox-font-size` · `--xh-transfer-checkbox-radius` · `--xh-transfer-checkbox-size` · `--xh-transfer-count-fg` · `--xh-transfer-count-font-size` · `--xh-transfer-fg` · `--xh-transfer-gap` · `--xh-transfer-header-gap` · `--xh-transfer-header-px` · `--xh-transfer-header-py` · `--xh-transfer-item-bg-hover` · `--xh-transfer-item-fg` · `--xh-transfer-item-font-size` · `--xh-transfer-item-gap` · `--xh-transfer-item-leading` · `--xh-transfer-item-px` · `--xh-transfer-item-py` · `--xh-transfer-item-radius` · `--xh-transfer-list-max-h` · `--xh-transfer-list-min-h` · `--xh-transfer-list-px` · `--xh-transfer-list-py` · `--xh-transfer-panel-bg` · `--xh-transfer-panel-bg-disabled` · `--xh-transfer-panel-border` · `--xh-transfer-panel-radius` · `--xh-transfer-search-bg` · `--xh-transfer-search-border` · `--xh-transfer-search-fg` · `--xh-transfer-search-font-size` · `--xh-transfer-search-h` · `--xh-transfer-search-px` · `--xh-transfer-select-all-fg` · `--xh-transfer-select-all-font-size` · `--xh-transfer-select-all-gap` · `--xh-transfer-select-all-radius` · `--xh-transfer-title-fg` · `--xh-transfer-title-font-size` · `--xh-transfer-title-font-weight` · `--xh-transfer-trigger-bg` · `--xh-transfer-trigger-bg-active` · `--xh-transfer-trigger-bg-hover` · `--xh-transfer-trigger-border` · `--xh-transfer-trigger-fg` · `--xh-transfer-trigger-font-size` · `--xh-transfer-trigger-px` · `--xh-transfer-trigger-radius` · `--xh-transfer-trigger-size`

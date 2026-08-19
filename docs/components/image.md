@@ -30,13 +30,13 @@ fallback-delay 决定回退内容多久才露面，Infinity 表示加载期间�
 
 ### 按状态分流的回退内容
 
-根插槽把 status 交出来：加载中给占位、失败给提示与重试入口，两套内容共用同一个回退部件
+状态一落位就报出来：加载中给占位、失败给提示与重试入口，两套内容共用同一个回退部件
 
 <XhDemo src="image/05-status-slot" />
 
 ### 点开看大图
 
-缩略图的点击与键盘由属性透传自己接，放大层是一个对话框，里面再放一份独立的图片实例
+缩略图的点击与键盘自己接，放大层是一个对话框，里面再放一份独立的图片实例
 
 <XhDemo src="image/06-preview" />
 
@@ -77,7 +77,25 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 | `fallbackDelay` | `number` |  | 加载超过这么久（毫秒）才让回退内容露面，默认 0（立刻露面）。 Infinity 表示加载期间永不显示回退内容，只有失败才显。 |
 | `onStatusChange` | `(details: ImageStatusChangeDetails) => void` |  | 状态每次真正落位时通知一次；过渡态 idle 不通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `status-change` | `ImageStatusChangeDetails` | 加载状态变化；detail 为 `{ status: 'loading' \| 'loaded' \| 'error' }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhImageRoot` | `default` | `ImageRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **事件**：`SRC.CHANGE` · `IMAGE.LOAD` · `IMAGE.ERROR` · `after.fallbackDelay`
 
@@ -101,3 +119,9 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-image-bg` · `--xh-image-fallback-fg` · `--xh-image-fallback-font-size` · `--xh-image-fallback-min-h` · `--xh-image-fit` · `--xh-image-h` · `--xh-image-radius` · `--xh-image-ratio` · `--xh-image-w`

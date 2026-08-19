@@ -36,7 +36,7 @@ size 只改内边距与字号，不写就是缺省档
 
 ### 带图元的标签
 
-根是 inline-flex 且自带间距，图标或头像直接写进默认插槽跟文字并排
+根是 inline-flex 且自带间距，图标或头像直接写进内容里跟文字并排
 
 <XhDemo src="badge/06-with-glyph" />
 
@@ -54,7 +54,7 @@ size 只改内边距与字号，不写就是缺省档
 
 ### 可关闭标签
 
-根是 inline-flex 且自带间距，关闭件直接写进默认插槽跟文字并排；点击语义、Tab 停靠与回车触发由原生按钮自带
+根是 inline-flex 且自带间距，关闭件直接写进内容里跟文字并排；点击语义、Tab 停靠与回车触发由原生按钮自带
 
 <XhDemo src="badge/09-closable" />
 
@@ -94,3 +94,9 @@ size 只改内边距与字号，不写就是缺省档
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-badge-bg` · `--xh-badge-fg` · `--xh-badge-font-size` · `--xh-badge-font-weight`

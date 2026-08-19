@@ -18,7 +18,7 @@ variant 只改描边、底色与投影怎么用，各段的排版三档一致
 
 ### 尺寸
 
-size 换的是各段的内边距与标题字号，不传 size 即默认档
+size 换的是各段的内边距与标题字号，不写 size 即默认档
 
 <XhDemo src="card/03-size" />
 
@@ -77,3 +77,9 @@ segmented 在段与段之间画一条分隔线；hoverable 只在能用指针的
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-card-bg` · `--xh-card-border` · `--xh-card-fg` · `--xh-card-radius` · `--xh-card-title-font-size`

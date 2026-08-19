@@ -18,7 +18,7 @@ blur 与 change 两种模式下 validate 仍整表跑（校验可能带跨字段
 
 ### 受控值表
 
-传了 values 就由宿主说了算：组件内部不再落值，只发 update:values；页面别处也能直接改这张表
+传了 values 就由宿主说了算：组件内部不再落值，只发变更通知；页面别处也能直接改这张表
 
 <XhDemo src="form/03-controlled" />
 
@@ -42,7 +42,7 @@ disabled 把提交、重置、写值三条路一起封死；read-only 只封写�
 
 ### 跨字段规则与手动入口
 
-validate 拿到的是整张值表，可以写两个字段互相约束的规则；插槽里的 setFieldError 与 clearErrors 随时能单独动一条
+validate 拿到的是整张值表，可以写两个字段互相约束的规则；setFieldError 与 clearErrors 随时能单独动一条
 
 <XhDemo src="form/07-manual" />
 
@@ -72,7 +72,7 @@ validate 拿到的是整张值表，可以写两个字段互相约束的规则�
 
 ### 声明式规则
 
-rules 按字段声明 required/min/max/pattern/type，一个字段多条规则首败即停；文案取 rule.message，再退 validateMessages 模板（{name}/{min}/{max} 现场代入）。组里的 Field 自取校验态：invalid/必填星号/错误文案都不用手接
+rules 按字段声明 required/min/max/pattern/type，一个字段多条规则首败即停；文案取 rule.message，再退 validateMessages 模板（{name}/{min}/{max} 现场代入）。组里的字段自取校验态：invalid 与必填星号都不用手接
 
 <XhDemo src="form/12-rules" />
 
@@ -120,7 +120,31 @@ layout 三档：vertical 竖排（默认）、horizontal 标签左置两列（la
 | `onSubmit` | `(details: FormSubmitDetails) => void` |  | 校验通过才调。 |
 | `onInvalid` | `(details: FormInvalidDetails) => void` |  | 校验不通过时调，带上拦下来的整张错误表。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `values-change` | `FormValuesChangeDetails` | 值表变化；detail 为 `{ values }` |
+| `errors-change` | `FormErrorsChangeDetails` | 错误表变化；detail 为 `{ errors }` |
+| `submit` | `FormSubmitDetails` | 校验通过才派发；detail 为 `{ values }` |
+| `invalid` | `FormInvalidDetails` | 校验不通过时派发；detail 为 `{ errors, values }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhFormErrorSummary` | `default` | `FormErrorSummarySlotProps` |  |
+| `XhFormErrorSummaryItem` | `default` | `FormErrorSummaryItemSlotProps` |  |
+| `XhFormFieldGroup` | `default` | `FormFieldGroupSlotProps` |  |
+| `XhFormRoot` | `default` | `FormRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `invalid`
 
@@ -167,3 +191,9 @@ layout 三档：vertical 竖排（默认）、horizontal 标签左置两列（la
 规格出处：[W3C APG](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#implicit-submission)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-form-field-gap` · `--xh-form-field-invalid-border` · `--xh-form-field-invalid-px` · `--xh-form-gap` · `--xh-form-inline-gap` · `--xh-form-submit-bg` · `--xh-form-submit-bg-active` · `--xh-form-submit-bg-hover` · `--xh-form-submit-border` · `--xh-form-submit-border-active` · `--xh-form-submit-border-hover` · `--xh-form-submit-fg` · `--xh-form-summary-bg` · `--xh-form-summary-border` · `--xh-form-summary-fg` · `--xh-form-summary-font-size` · `--xh-form-summary-gap` · `--xh-form-summary-item-fg-hover` · `--xh-form-summary-item-font-size` · `--xh-form-summary-px` · `--xh-form-summary-py` · `--xh-form-summary-radius` · `--xh-form-summary-shadow` · `--xh-form-trigger-bg` · `--xh-form-trigger-bg-active` · `--xh-form-trigger-bg-disabled` · `--xh-form-trigger-bg-hover` · `--xh-form-trigger-border` · `--xh-form-trigger-border-disabled` · `--xh-form-trigger-border-hover` · `--xh-form-trigger-fg` · `--xh-form-trigger-font-size` · `--xh-form-trigger-h` · `--xh-form-trigger-px` · `--xh-form-trigger-radius`

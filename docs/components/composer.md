@@ -30,13 +30,13 @@ disabled 罩住整框并走原生 disabled；输入为空或只有空白时发�
 
 ### 框里的附加按钮
 
-root 里除输入与发送外还能放自己的节点；插槽给出的 value 与 setValue 让清空这类操作就在框内完成
+root 里除输入与发送外还能放自己的节点；值的读写归宿主，清空这类操作就在框内完成
 
 <XhDemo src="composer/05-clear" />
 
 ### 字数与上限
 
-原生属性直接落到输入框上（maxlength 定上限），字数由插槽里的 value 现算
+原生属性直接落到输入框上（maxlength 定上限），字数由宿主拿当前值现算
 
 <XhDemo src="composer/06-count" />
 
@@ -54,7 +54,7 @@ root 里除输入与发送外还能放自己的节点；插槽给出的 value �
 
 ### 聚焦与选中
 
-输入部件渲染出来就是一个 textarea，拿到它的节点就能聚焦、全选、失焦；发完一条把焦点送回去，接着敲下一条
+输入部件就是一个原生 textarea，拿到它的节点就能聚焦、全选、失焦；发完一条把焦点送回去，接着敲下一条
 
 <XhDemo src="composer/09-focus" />
 
@@ -94,7 +94,27 @@ root 里除输入与发送外还能放自己的节点；插槽给出的 value �
 | `onSubmit` | `(details: ComposerSubmitDetails) => void` |  |  |
 | `onStop` | `() => void` |  |  |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `ComposerValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
+| `submit` | `ComposerSubmitDetails` | 提交；detail 为 `{ value: string }`，清空发生在派发之后。 与原生表单提交同名，故不冒泡，请直接在 `&lt;xh-composer&gt;` 元素上监听 |
+| `stop` | `` | 流式期间按下停止；无 detail |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhComposerRoot` | `default` | `ComposerRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **事件**：`VALUE.SET` · `KEY.ENTER` · `COMPOSITION.START` · `COMPOSITION.END` · `SUBMIT` · `STOP` · `CONTROLLED.DISABLE` · `CONTROLLED.ENABLE` · `CONTROLLED.VALUE.EMPTY` · `CONTROLLED.VALUE.FILLED`
 
@@ -128,3 +148,9 @@ root 里除输入与发送外还能放自己的节点；插槽给出的 value �
 | `Shift+Enter` | 焦点在输入框 | 不归组件管：原样放行，浏览器插入换行 |
 | `Enter` | 处于 IME 组合态（isComposing 为真） | 不提交：交给输入法确认候选词 |
 | `Space` / `Enter` | 焦点在发送/停止按钮上 | 按 data-mode 触发提交或停止 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-composer-bg` · `--xh-composer-border` · `--xh-composer-gap` · `--xh-composer-input-fg` · `--xh-composer-input-font-size` · `--xh-composer-p` · `--xh-composer-placeholder-fg` · `--xh-composer-radius` · `--xh-composer-send-bg` · `--xh-composer-send-bg-active` · `--xh-composer-send-bg-hover` · `--xh-composer-send-fg` · `--xh-composer-stop-bg` · `--xh-composer-stop-bg-active` · `--xh-composer-stop-bg-hover` · `--xh-composer-stop-fg` · `--xh-composer-submit-font-size` · `--xh-composer-submit-font-weight` · `--xh-composer-submit-h` · `--xh-composer-submit-px` · `--xh-composer-submit-radius`

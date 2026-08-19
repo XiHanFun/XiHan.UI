@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-collection 是条目的事实源，交一组数据即铺开整组；组内只有一个 Tab 停靠点，进组后四个方向键都能切换
+组内只有一个 Tab 停靠点，进组后四个方向键都能切换
 
 <XhDemo src="radio-group/01-basic" />
 
@@ -42,7 +42,7 @@ size 改条目间距与字号，不写即缺省中档
 
 ### 数据驱动
 
-自家字段叫什么由数据定，映射成 collection 的 value / label / disabled 即可
+自家字段叫什么由数据定，映射成条目的值、文本与禁用即可
 
 <XhDemo src="radio-group/07-options" />
 
@@ -70,6 +70,9 @@ size 改条目间距与字号，不写即缺省中档
 | `value` | `string \| null` |  |  |
 | `defaultValue` | `string \| null` |  |  |
 | `disabled` | `boolean` |  |  |
+| `readOnly` | `boolean` |  | 只读：选不动，但仍可聚焦、方向键照常移焦点，对比度不降。 |
+| `invalid` | `boolean` |  | 校验失败：只改呈现，不挡交互。 |
+| `required` | `boolean` |  | 必填：随表单校验一起用，只发无障碍属性，不自行拦提交。 |
 | `orientation` | `Orientation` |  |  |
 | `dir` | `Direction` |  | 文字方向，缺省 'ltr'。 |
 | `name` | `string` |  | 表单字段名。 |
@@ -77,7 +80,17 @@ size 改条目间距与字号，不写即缺省中档
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: RadioGroupValueChangeDetails) => void` |  | value 变化回调。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `RadioGroupValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| null }` |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -110,3 +123,9 @@ size 改条目间距与字号，不写即缺省中档
 | `ArrowDown` / `ArrowRight` | focus in group, group not disabled | 焦点移到下一个可停留条目并选中，末项回绕到首项；dir=rtl 时改由 ArrowLeft 承担 |
 | `ArrowUp` / `ArrowLeft` | focus in group, group not disabled | 焦点移到上一个可停留条目并选中，首项回绕到末项；dir=rtl 时改由 ArrowRight 承担 |
 | `Space` | focus on item, item not disabled | 选中当前条目 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-radio-group-gap` · `--xh-radio-group-indicator-bg` · `--xh-radio-group-indicator-border` · `--xh-radio-group-indicator-border-checked` · `--xh-radio-group-indicator-border-invalid` · `--xh-radio-group-indicator-dot` · `--xh-radio-group-indicator-size` · `--xh-radio-group-item-fg` · `--xh-radio-group-item-fg-disabled` · `--xh-radio-group-item-font-size` · `--xh-radio-group-item-gap` · `--xh-radio-group-item-radius` · `--xh-radio-group-label-fg` · `--xh-radio-group-label-font-size` · `--xh-radio-group-label-font-weight`

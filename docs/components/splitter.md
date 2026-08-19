@@ -36,7 +36,7 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 
 ### 分隔条里放内容
 
-分隔条的默认插槽收作者写的把手，粗细由 --xh-splitter-trigger-thickness 让出位置
+分隔条内可以再摆一个把手，粗细由 --xh-splitter-trigger-thickness 让出位置
 
 <XhDemo src="splitter/06-trigger-content" />
 
@@ -71,7 +71,26 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 | `onSizesChange` | `(details: SplitterSizesChangeDetails) => void` |  | 每次尺寸变化都发；拖动过程中会连续发很多次。 |
 | `onSizesChangeEnd` | `(details: SplitterSizesChangeEndDetails) => void` |  | 只在一次操作结束时发一次，适合拿来存布局。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `sizes-change` | `SplitterSizesChangeDetails` | 布局变化（拖动途中会连发）；detail 为 `{ sizes: number[] }` |
+| `sizes-change-end` | `SplitterSizesChangeEndDetails` | 一次拖拽收尾发一次；detail 为 `{ sizes: number[], index: number }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhSplitterRoot` | `default` | `SplitterRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `dragging`
 
@@ -111,3 +130,9 @@ disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键
 | `Home` | focus in resize-trigger, not disabled | 把前一块面板收到它眼下能到的最小尺寸 |
 | `End` | focus in resize-trigger, not disabled | 把前一块面板撑到它眼下能到的最大尺寸 |
 | `Enter` | focus in resize-trigger 且它调整的面板 collapsible，not disabled | 折叠 / 展开该面板；展开回到折叠前的尺寸。面板不可折叠时不接这个键 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-splitter-radius` · `--xh-splitter-trigger-bg` · `--xh-splitter-trigger-bg-disabled` · `--xh-splitter-trigger-bg-dragging` · `--xh-splitter-trigger-bg-hover` · `--xh-splitter-trigger-thickness`

@@ -90,6 +90,8 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `disabled` | `boolean` |  |  |
+| `fullWidth` | `boolean` |  | 撑满行宽：表单末尾的提交按钮与移动端常用。 |
+| `iconOnly` | `boolean` |  | 只有图标：左右内距清零、宽高相等。宽度跟着当前尺寸档的高度走， 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行给可及名。 |
 | `loading` | `boolean` |  | 加载态：用 aria-disabled + 拦截事件表达，保留焦点。 |
 | `size` | `Size` |  |  |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
@@ -117,3 +119,9 @@ tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气�
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` / `Space` | focus in root, interactive | 激活按钮（原生行为） |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-button-bg` · `--xh-button-bg-active` · `--xh-button-bg-hover` · `--xh-button-fg` · `--xh-button-font-size` · `--xh-button-font-weight` · `--xh-button-gap` · `--xh-button-h` · `--xh-button-icon-size` · `--xh-button-px` · `--xh-button-radius` · `--xh-button-spin-duration`

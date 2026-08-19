@@ -48,7 +48,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 
 ### 外部写值与清空
 
-根插槽给出 setValue / clear 与空、越界两个判据，按钮照它们摆
+值由宿主持有，按钮直接写值或清空；空与越界两个判据由组件给出，按钮照它们摆
 
 <XhDemo src="time-field/08-actions" />
 
@@ -94,9 +94,28 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定描边与底色怎么用。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `onValueChange` | `(details: TimeFieldValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `translations` | `Partial<TimeFieldTranslations>` |  | 段位读屏名的覆盖；不给就用内置英文语义名。 |
+| `onValueChange` | `(details: TimeFieldValueChangeDetails) => void` |  |  |
+
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `TimeFieldValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhTimeFieldRoot` | `default` | `TimeFieldRootSlotProps` |  |
 
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -144,3 +163,9 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | `0-9` | focus in a 数字段, not disabled/readOnly | 把数字并进本段；本段再吃不下第二位时自动跳到下一段 |
 | `Backspace` / `Delete` | focus in a segment, not disabled/readOnly | 清掉本段；小时被清时上下午段仍保留原来的上午/下午 |
 | `a` / `p` | focus in 上下午段, 12 小时制, not disabled/readOnly | a 取上午、p 取下午（不区分大小写） |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-time-field-control-bg` · `--xh-time-field-control-bg-disabled` · `--xh-time-field-control-bg-readonly` · `--xh-time-field-control-border` · `--xh-time-field-control-border-focus` · `--xh-time-field-control-border-hover` · `--xh-time-field-control-border-invalid` · `--xh-time-field-control-fg` · `--xh-time-field-control-h` · `--xh-time-field-control-px` · `--xh-time-field-control-radius` · `--xh-time-field-font-size` · `--xh-time-field-gap` · `--xh-time-field-icon-size` · `--xh-time-field-label-fg` · `--xh-time-field-label-fg-disabled` · `--xh-time-field-label-font-size` · `--xh-time-field-label-font-weight` · `--xh-time-field-segment-bg-focus` · `--xh-time-field-segment-bg-hover` · `--xh-time-field-segment-fg-focus` · `--xh-time-field-segment-fg-placeholder` · `--xh-time-field-segment-px` · `--xh-time-field-segment-radius`

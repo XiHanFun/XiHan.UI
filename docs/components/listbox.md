@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-交一份 collection 就够：方向键只搬焦点，Enter 或空格才落值；整组只占一个 Tab 位
+方向键只搬焦点，Enter 或空格才落值；整组只占一个 Tab 位
 
 <XhDemo src="listbox/01-basic" />
 
@@ -78,7 +78,27 @@ selection-mode 直接指定三种模式，extended 是「单击换一条、Ctrl 
 | `typeahead` | `boolean` |  | 连打检索，默认开。 |
 | `onValueChange` | `(details: ListboxValueChangeDetails) => void` |  | value 变化意图回调。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `ListboxValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhListboxRoot` | `default` | `ListboxRootSlotProps` |  |
+| `XhListboxRoot` | `label` | — |  |
+| `XhListboxRoot` | `item` | `ListboxNodeMeta` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -124,3 +144,9 @@ selection-mode 直接指定三种模式，extended 是「单击换一条、Ctrl 
 | `Shift+ArrowDown` / `Shift+ArrowUp` | focus in listbox, 可多选 | 焦点移到相邻条目并切换它的选中态；往回走即把刚扩进来的那个摘掉 |
 | `Ctrl+A` / `Cmd+A` | focus in listbox, 可多选 | 选中全部可选条目；已经全选则把它们一并取消（禁用但已选中的不动） |
 | `单个可打印字符` | focus in listbox, typeahead 未关 | 连打检索把焦点移到首字母匹配的条目，不改选中值 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-listbox-content-bg` · `--xh-listbox-content-border` · `--xh-listbox-content-fg` · `--xh-listbox-content-max-h` · `--xh-listbox-content-px` · `--xh-listbox-content-py` · `--xh-listbox-content-radius` · `--xh-listbox-gap` · `--xh-listbox-group-gap` · `--xh-listbox-group-label-fg` · `--xh-listbox-group-label-font-size` · `--xh-listbox-group-label-font-weight` · `--xh-listbox-group-label-px` · `--xh-listbox-group-label-py` · `--xh-listbox-item-bg-hover` · `--xh-listbox-item-fg` · `--xh-listbox-item-fg-selected` · `--xh-listbox-item-font-size` · `--xh-listbox-item-font-weight-selected` · `--xh-listbox-item-gap` · `--xh-listbox-item-indicator-fg` · `--xh-listbox-item-indicator-size` · `--xh-listbox-item-leading` · `--xh-listbox-item-px` · `--xh-listbox-item-py` · `--xh-listbox-item-radius` · `--xh-listbox-label-fg` · `--xh-listbox-label-font-size` · `--xh-listbox-label-font-weight`

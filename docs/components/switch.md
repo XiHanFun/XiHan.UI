@@ -12,7 +12,7 @@
 
 ### 受控
 
-传了 checked 就由宿主说了算，组件自己不再改状态；v-model:checked 是它的语法糖
+传了 checked 就由宿主说了算，组件自己不再改状态；变化意图从 checked-change 出来，写回才落位
 
 <XhDemo src="switch/02-controlled" />
 
@@ -48,7 +48,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 
 ### 轨道内文案与滑块标记
 
-自渲外壳时子节点全由作者决定，data-state 同时打在轨道与滑块上
+轨道的子节点全由作者决定，data-state 同时打在轨道与滑块上
 
 <XhDemo src="switch/08-content" />
 
@@ -93,6 +93,9 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | `checked` | `boolean` |  |  |
 | `defaultChecked` | `boolean` |  |  |
 | `disabled` | `boolean` |  |  |
+| `readOnly` | `boolean` |  | 只读：拨不动，但仍可聚焦、仍参与提交，对比度不降。 |
+| `invalid` | `boolean` |  | 校验失败：只改呈现，不挡交互。 |
+| `required` | `boolean` |  | 必填：随表单校验一起用，只发无障碍属性，不自行拦提交。 |
 | `loading` | `boolean` |  | 提交中：交互挂起、滑块转圈，但不呈现为禁用（仍可聚焦、对比度不降）。 |
 | `name` | `string` |  | 表单字段名；给了 hidden-input 才带 name 并参与提交。 |
 | `value` | `string` |  | 提交出去的值，缺省 'on'，与原生复选框一致。 |
@@ -100,7 +103,17 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定轨道与滑块的几何档位。 |
 | `onCheckedChange` | `(details: SwitchCheckedChangeDetails) => void` |  | checked 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `checked-change` | `SwitchCheckedChangeDetails` | checked 状态变化；detail 为 `{ checked: boolean }` |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`off` · `on`
 
@@ -130,3 +143,9 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Space` / `Enter` | focus in root, not disabled | 切换 checked 状态 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-switch-bg` · `--xh-switch-bg-checked` · `--xh-switch-border-invalid` · `--xh-switch-label-fg` · `--xh-switch-label-fg-disabled` · `--xh-switch-label-font-size` · `--xh-switch-label-gap` · `--xh-switch-loading-duration` · `--xh-switch-loading-fg` · `--xh-switch-thumb`

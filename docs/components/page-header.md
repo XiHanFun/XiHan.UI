@@ -24,7 +24,7 @@ extra 贴在整行的末尾，里面放什么按钮由作者决定
 
 ### 尺寸
 
-size 换的是标题字号与整块的上下留白，不传 size 即默认档
+size 换的是标题字号与整块的上下留白，不写 size 即默认档
 
 <XhDemo src="page-header/04-size" />
 
@@ -74,3 +74,9 @@ bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-page-header-border` · `--xh-page-header-column-gap` · `--xh-page-header-extra-gap` · `--xh-page-header-fg` · `--xh-page-header-footer-fg` · `--xh-page-header-footer-font-size` · `--xh-page-header-py` · `--xh-page-header-row-gap` · `--xh-page-header-subtitle-fg` · `--xh-page-header-subtitle-font-size` · `--xh-page-header-title-fg` · `--xh-page-header-title-font-size` · `--xh-page-header-title-font-weight`

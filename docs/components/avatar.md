@@ -89,7 +89,17 @@ status-change 在状态落位时通知，过渡态 idle 不通知；没给地址
 | `size` | `Size` |  | 尺寸：sm / md / lg，缺省 md；缺省档不输出 data-size |
 | `onStatusChange` | `(details: AvatarStatusChangeDetails) => void` |  | 状态落位时通知，过渡态 idle 不通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `status-change` | `AvatarStatusChangeDetails` | 加载状态变化；detail 为 `{ status: 'loading' \| 'loaded' \| 'error' }` |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **事件**：`SRC.CHANGE` · `IMAGE.LOAD` · `IMAGE.ERROR`
 
@@ -112,3 +122,9 @@ status-change 在状态落位时通知，过渡态 idle 不通知；没给地址
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-avatar-bg` · `--xh-avatar-fg` · `--xh-avatar-font-size` · `--xh-avatar-font-weight` · `--xh-avatar-radius` · `--xh-avatar-size`

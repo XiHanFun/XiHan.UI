@@ -72,7 +72,17 @@ size 只换整条的内边距与条目间的间距，条目自身的高度与字
 | `disabled` | `boolean` |  | 整条禁用：条目全部转 aria-disabled，方向键不再接管。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。工具条是布局容器，只换排布尺寸，不带语气。 |
 
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhToolbarRoot` | `default` | `ToolbarRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -105,3 +115,9 @@ size 只换整条的内边距与条目间的间距，条目自身的高度与字
 | `Home` | 焦点在条内且未整条禁用 | 焦点移到首个可停留条目 |
 | `End` | 焦点在条内且未整条禁用 | 焦点移到末个可停留条目 |
 | `交叉轴的两个方向键` | 焦点在条内（横排按上下、竖排按左右） | 不归工具条管：原样放行给页面滚动与读屏，绝不 preventDefault |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-toolbar-bg` · `--xh-toolbar-bg-disabled` · `--xh-toolbar-border` · `--xh-toolbar-fg` · `--xh-toolbar-gap` · `--xh-toolbar-group-gap` · `--xh-toolbar-px` · `--xh-toolbar-py` · `--xh-toolbar-radius` · `--xh-toolbar-separator-color` · `--xh-toolbar-separator-gap` · `--xh-toolbar-separator-inset` · `--xh-toolbar-separator-radius` · `--xh-toolbar-separator-thickness`

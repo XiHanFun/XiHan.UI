@@ -82,6 +82,106 @@ const vueExports = new Set([
 const wcDefine = fs.readFileSync(path.join(uiRoot, 'packages/adapters/web-components/src/define.ts'), 'utf8')
 const wcTags = new Set([...wcDefine.matchAll(/['"`](xh-[a-z0-9-]+)['"`]/g)].map(m => m[1]))
 
+// 自定义元素清单：公开事件与可覆盖令牌都已由 cem 采集，按标签名取用即可，
+// 不必在这里再解析一遍源码。
+const cem = JSON.parse(
+  fs.readFileSync(path.join(uiRoot, 'packages/adapters/web-components/custom-elements.json'), 'utf8'),
+)
+const cemByTag = new Map()
+for (const mod of cem.modules ?? []) {
+  for (const decl of mod.declarations ?? []) {
+    if (decl.tagName)
+      cemByTag.set(decl.tagName, decl)
+  }
+}
+
+/** 公开事件与组件级令牌。没有自定义元素的组件（纯 Vue 产物）两样都空。 */
+function elementSurface(id) {
+  const decl = cemByTag.get(`xh-${id}`)
+  return {
+    events: decl?.events ?? [],
+    cssProps: (decl?.cssProperties ?? []).map(p => p.name).sort(),
+  }
+}
+
+// ── Vue 插槽 ──────────────────────────────────────────────────────────────────
+
+const vueComponentRoot = path.join(uiRoot, 'packages/adapters/vue/src/components')
+
+/** components/ 下的全部 .ts，含直接挂在根上的单文件组件。 */
+function vueComponentFiles(dir) {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((d) => {
+    const full = path.join(dir, d.name)
+    if (d.isDirectory())
+      return vueComponentFiles(full)
+    return d.isFile() && d.name.endsWith('.ts') ? [full] : []
+  })
+}
+
+const slotFiles = vueComponentFiles(vueComponentRoot)
+const slotProgram = ts.createProgram(slotFiles, {
+  target: ts.ScriptTarget.ESNext,
+  module: ts.ModuleKind.ESNext,
+  moduleResolution: ts.ModuleResolutionKind.Bundler,
+  skipLibCheck: true,
+  strict: false,
+})
+
+/**
+ * Vue 组件名 → 它声明的插槽。
+ *
+ * 只收 `slots: Object as SlotsType<{…}>` 这一种写法——门禁要求带载荷的插槽都这么写，
+ * 所以这里列出的就是「作者能拿到载荷」的那些；纯转发内容的 default 插槽不声明，也不必列。
+ */
+const slotsByComponent = new Map()
+for (const sf of slotProgram.getSourceFiles()) {
+  if (!slotFiles.includes(path.normalize(sf.fileName)))
+    continue
+  ts.forEachChild(sf, (node) => {
+    if (!ts.isVariableStatement(node))
+      return
+    for (const decl of node.declarationList.declarations) {
+      const compName = decl.name.getText(sf)
+      const init = decl.initializer
+      if (!compName.startsWith('Xh') || !init || !ts.isCallExpression(init))
+        continue
+      const arg = init.arguments[0]
+      if (!arg || !ts.isObjectLiteralExpression(arg))
+        continue
+      const slotsProp = arg.properties.find(
+        p => ts.isPropertyAssignment(p) && p.name.getText(sf) === 'slots',
+      )
+      // 形态是 `Object as SlotsType<{…}>`：取 as 后面那个类型的第一个类型实参
+      const asExpr = slotsProp?.initializer
+      if (!asExpr || !ts.isAsExpression(asExpr))
+        continue
+      const ref = asExpr.type
+      if (!ts.isTypeReferenceNode(ref) || ref.typeName.getText(sf) !== 'SlotsType')
+        continue
+      const lit = ref.typeArguments?.[0]
+      if (!lit || !ts.isTypeLiteralNode(lit))
+        continue
+      const rows = []
+      for (const m of lit.members) {
+        if (!ts.isPropertySignature(m) || !m.type)
+          continue
+        // 值恒为函数类型，它的首个形参就是载荷；无形参即不带载荷
+        const payload = ts.isFunctionTypeNode(m.type) && m.type.parameters.length
+          ? typeText(m.type.parameters[0].type, sf)
+          : ''
+        rows.push({
+          name: m.name.getText(sf).replace(/^['"]|['"]$/g, ''),
+          optional: !!m.questionToken,
+          payload,
+          doc: jsdoc(m, sf),
+        })
+      }
+      if (rows.length)
+        slotsByComponent.set(compName, rows)
+    }
+  })
+}
+
 function adapterArtifacts(id) {
   const P = pascal(id)
   // XhSwitch 与 XhSwitchThumb 都算 switch 的产物，但 XhSwitchGroup 不是——
@@ -309,6 +409,7 @@ function renderComponent(entry, category) {
   const ad = adapterArtifacts(id)
   const tm = typeMeta(id)
   const ex = demos(id)
+  const es = elementSurface(id)
   const required = new Set(rt.requiredParts)
 
   const L = []
@@ -370,9 +471,42 @@ function renderComponent(entry, category) {
     L.push('')
   }
 
+  // 事件：使用者真正要监听的那一组，与下面「状态机」里的内部事件名不是一回事
+  if (es.events.length) {
+    L.push('## 事件', '')
+    L.push(
+      `自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 ${code('detail')} 上。可双向绑定的值另有 ${code('update:xxx')}，见 Props。`,
+      '',
+    )
+    L.push('| 事件 | 载荷 | 说明 |', '| --- | --- | --- |')
+    for (const e of es.events)
+      L.push(`| ${cell(e.name)} | ${cell(e.type?.text ?? '')} | ${esc(e.description ?? '')} |`)
+    L.push('')
+  }
+
+  // 插槽：按 Vue 组件分组，只列带载荷的那些
+  const slotRows = ad.components.flatMap(
+    comp => (slotsByComponent.get(comp) ?? []).map(s => ({ comp, ...s })),
+  )
+  if (slotRows.length) {
+    L.push('## 插槽', '')
+    L.push(
+      `作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。`,
+      '',
+    )
+    L.push('| Vue 组件 | 插槽 | 载荷 | 说明 |', '| --- | --- | --- | --- |')
+    for (const s of slotRows)
+      L.push(`| ${cell(s.comp)} | ${cell(s.name)} | ${s.payload ? cell(s.payload) : '—'} | ${esc(s.doc)} |`)
+    L.push('')
+  }
+
   // 状态机
   if (tm.states || tm.events) {
     L.push('## 状态机', '')
+    L.push(
+      `内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。`,
+      '',
+    )
     if (tm.states)
       L.push(`**状态**：${tm.states.map(code).join(' · ')}`, '')
     if (tm.events)
@@ -408,6 +542,16 @@ function renderComponent(entry, category) {
     L.push('无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。')
   }
   L.push('')
+
+  // 可覆盖的令牌：改这一个组件的外观从这里下手，不必去翻皮肤源码
+  if (es.cssProps.length) {
+    L.push('## CSS 变量', '')
+    L.push(
+      `本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。`,
+      '',
+    )
+    L.push(es.cssProps.map(code).join(' · '), '')
+  }
 
   return L.join('\n')
 }

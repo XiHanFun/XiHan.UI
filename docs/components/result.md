@@ -30,7 +30,7 @@ size 换的是留白、图标框与标题字号，不传 size 即默认档
 
 ### 图标由作者塞
 
-库不带插画资产，图标槽收任意内容：字形、XhIcon、手写的内联 svg 都行
+库不带插画资产，图标位收任意内容：字形、图标组件、手写的内联 svg 都行
 
 <XhDemo src="result/05-icon" />
 
@@ -73,3 +73,9 @@ size 换的是留白、图标框与标题字号，不传 size 即默认档
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-result-action-gap` · `--xh-result-description-fg` · `--xh-result-description-font-size` · `--xh-result-description-leading` · `--xh-result-description-max-w` · `--xh-result-fg` · `--xh-result-gap` · `--xh-result-icon-fg` · `--xh-result-icon-font-size` · `--xh-result-icon-size` · `--xh-result-px` · `--xh-result-py` · `--xh-result-title-fg` · `--xh-result-title-font-size` · `--xh-result-title-font-weight` · `--xh-result-title-leading`

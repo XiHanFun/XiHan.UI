@@ -84,3 +84,9 @@ size 三档改直径、weight 三档改 stroke-width；缺省档不落 data-* �
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-icon-fg` · `--xh-icon-shift` · `--xh-icon-size` · `--xh-icon-stroke`

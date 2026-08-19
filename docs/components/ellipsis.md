@@ -56,7 +56,26 @@ expandable 让整块文字变成一颗按钮，Enter / Space 也按得动
 | `onExpandedChange` | `(details: EllipsisExpandedChangeDetails) => void` |  | expanded 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 | `onOverflowChange` | `(details: EllipsisOverflowChangeDetails) => void` |  | 量出来的溢出结论翻面时回调。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `expanded-change` | `EllipsisExpandedChangeDetails` | 展开状态变化；detail 为 `{ expanded: boolean }` |
+| `overflow-change` | `EllipsisOverflowChangeDetails` | 溢出结论翻面；detail 为 `{ overflowing: boolean }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhEllipsis` | `default` | `EllipsisSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`collapsed` · `expanded`
 

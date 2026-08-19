@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-根默认渲染成 ul、条目默认渲染成 li；条目里只写用得上的那几个位
+根与条目的标签由使用者定，这里写成 ul 与 li；条目里只写用得上的那几个位
 
 <XhDemo src="list/01-basic" />
 
@@ -77,3 +77,9 @@ size 换的是条目的内边距、图文间距与两行文字的字号，不传
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-list-action-gap` · `--xh-list-bg` · `--xh-list-border` · `--xh-list-content-gap` · `--xh-list-description-fg` · `--xh-list-description-font-size` · `--xh-list-fg` · `--xh-list-item-bg-hover` · `--xh-list-item-gap` · `--xh-list-item-px` · `--xh-list-item-py` · `--xh-list-item-py-lg` · `--xh-list-item-py-md` · `--xh-list-item-py-sm` · `--xh-list-radius` · `--xh-list-title-fg` · `--xh-list-title-font-size` · `--xh-list-title-font-weight`

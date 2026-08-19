@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-根默认渲染成 dl，标签渲染成 dt、取值渲染成 dd；不传 columns 即每行一组
+标签与取值的配对靠 dl / dt / dd 表达，组件只给身份与排版；不传 columns 即每行一组
 
 <XhDemo src="descriptions/01-basic" />
 
@@ -74,3 +74,9 @@ size 换的是每格的内边距、组与组的间距与整体字号，不传 si
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-descriptions-bg` · `--xh-descriptions-border` · `--xh-descriptions-fg` · `--xh-descriptions-font-size` · `--xh-descriptions-gap` · `--xh-descriptions-item-px` · `--xh-descriptions-item-py` · `--xh-descriptions-label-fg` · `--xh-descriptions-label-font-weight` · `--xh-descriptions-label-gap` · `--xh-descriptions-label-w` · `--xh-descriptions-pair-gap` · `--xh-descriptions-radius` · `--xh-descriptions-value-fg`

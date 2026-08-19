@@ -114,7 +114,30 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 | `onUploadComplete` | `(details: FileUploadCompleteDetails) => void` |  | 单个文件传完（upload 的 Promise 兑现）。 |
 | `onUploadError` | `(details: FileUploadErrorDetails) => void` |  | 单个文件传败（upload 的 Promise 拒绝）；中止不算失败不发。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `files-change` | `FileUploadFilesChangeDetails` | 列表变化；detail 为 `{ files: File[] }` |
+| `remote-files-change` | `FileUploadRemoteFilesChangeDetails` | 远程附件列表变化；detail 为 `{ files: FileUploadRemoteFile[] }` |
+| `upload-complete` | `FileUploadCompleteDetails` | 单个文件传完；detail 为 `{ file, url? }` |
+| `upload-error` | `FileUploadErrorDetails` | 单个文件传败；detail 为 `{ file, error }` |
+| `file-accept` | `FileUploadFileAcceptDetails` | 本次收下了哪些；detail 为 `{ files: File[] }` |
+| `file-reject` | `FileUploadFileRejectDetails` | 本次拒了哪些、各自为什么；detail 为 `{ files: { file, reasons }[] }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhFileUploadRoot` | `default` | `FileUploadRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `dragging`
 
@@ -168,3 +191,9 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 | `Enter` / `Space` | focus on trigger | 打开系统文件选择框（原生 button 的默认激活） |
 | `Enter` / `Space` | focus on item-delete-trigger | 把这一条从列表里删掉（原生 button 的默认激活） |
 | `Enter` / `Space` | focus on clear-trigger，且列表非空 | 清空整份列表；列表为空时该按钮带原生 disabled，键盘根本到不了它 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-file-upload-clear-bg-hover` · `--xh-file-upload-clear-fg` · `--xh-file-upload-clear-fg-hover` · `--xh-file-upload-clear-font-size` · `--xh-file-upload-clear-gap` · `--xh-file-upload-clear-h` · `--xh-file-upload-clear-px` · `--xh-file-upload-clear-radius` · `--xh-file-upload-delete-bg-hover` · `--xh-file-upload-delete-fg` · `--xh-file-upload-delete-fg-hover` · `--xh-file-upload-delete-radius` · `--xh-file-upload-delete-size` · `--xh-file-upload-dropzone-bg` · `--xh-file-upload-dropzone-bg-disabled` · `--xh-file-upload-dropzone-bg-dragging` · `--xh-file-upload-dropzone-border` · `--xh-file-upload-dropzone-border-dragging` · `--xh-file-upload-dropzone-border-hover` · `--xh-file-upload-dropzone-border-invalid` · `--xh-file-upload-dropzone-fg` · `--xh-file-upload-dropzone-font-size` · `--xh-file-upload-dropzone-gap` · `--xh-file-upload-dropzone-min-h` · `--xh-file-upload-dropzone-px` · `--xh-file-upload-dropzone-py` · `--xh-file-upload-dropzone-radius` · `--xh-file-upload-gap` · `--xh-file-upload-item-bg` · `--xh-file-upload-item-border` · `--xh-file-upload-item-fg` · `--xh-file-upload-item-font-size` · `--xh-file-upload-item-gap` · `--xh-file-upload-item-inner-gap` · `--xh-file-upload-item-px` · `--xh-file-upload-item-py` · `--xh-file-upload-item-radius` · `--xh-file-upload-label-fg` · `--xh-file-upload-label-fg-disabled` · `--xh-file-upload-label-font-size` · `--xh-file-upload-label-font-weight` · `--xh-file-upload-preview-bg` · `--xh-file-upload-preview-fg` · `--xh-file-upload-preview-fg-image` · `--xh-file-upload-preview-radius` · `--xh-file-upload-preview-size` · `--xh-file-upload-size-fg` · `--xh-file-upload-size-font-size` · `--xh-file-upload-trigger-bg` · `--xh-file-upload-trigger-bg-hover` · `--xh-file-upload-trigger-border` · `--xh-file-upload-trigger-fg` · `--xh-file-upload-trigger-font-size` · `--xh-file-upload-trigger-gap` · `--xh-file-upload-trigger-h` · `--xh-file-upload-trigger-px` · `--xh-file-upload-trigger-radius`

@@ -90,7 +90,17 @@ size 换条目的字号与左右内边距，不传 size 即默认档
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: AnchorValueChangeDetails) => void` |  | value 变化意图回调。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `AnchorValueChangeDetails` | 激活项变化；detail 为 `{ value: string \| null }` |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `scrolling`
 
@@ -121,3 +131,9 @@ size 换条目的字号与左右内边距，不传 size 即默认档
 | --- | --- | --- |
 | `Enter` | focus in link | 跳到目标区块：smooth 关时由原生 &lt;a href="#id"&gt; 跳转，开时组件拦下并平滑滚动（两种情况都当场把激活项切过去，不等观察器） |
 | `Tab` / `Shift+Tab` | focus in root | 逐条走过目录里的链接；锚点导航不做 roving tabindex，每一条都是独立的 Tab 停靠点 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-anchor-fg` · `--xh-anchor-font-size` · `--xh-anchor-gap` · `--xh-anchor-gap-horizontal` · `--xh-anchor-indicator-color` · `--xh-anchor-indicator-radius` · `--xh-anchor-indicator-thickness` · `--xh-anchor-leading` · `--xh-anchor-link-fg-active` · `--xh-anchor-link-fg-hover` · `--xh-anchor-link-font-weight-active` · `--xh-anchor-link-max-w` · `--xh-anchor-link-px` · `--xh-anchor-link-py` · `--xh-anchor-link-radius` · `--xh-anchor-track`

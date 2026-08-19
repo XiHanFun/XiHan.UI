@@ -85,11 +85,30 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `closeOnEscape` | `boolean` |  |  |
 | `closeOnInteractOutside` | `boolean` |  |  |
 | `restoreFocus` | `boolean` |  |  |
+| `initialFocus` | `string` |  | 展开后先聚焦到 content 内匹配此选择器的元素；选择器不匹配时回落默认聚焦顺序。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。只换 content 的最大宽度，落在 content 上（本组件没有 root 部件）。 |
 | `translations` | `Partial<DialogTranslations>` |  |  |
 | `onOpenChange` | `(details: DialogOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `open-change` | `DialogOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhDialogRoot` | `default` | `DialogRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -123,3 +142,9 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `Escape` | open | 关闭并把焦点还给 trigger |
 | `Tab` | open | 在 content 内向后循环焦点 |
 | `Shift+Tab` | open | 在 content 内向前循环焦点 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-dialog-backdrop-bg` · `--xh-dialog-bg` · `--xh-dialog-description-fg` · `--xh-dialog-fg` · `--xh-dialog-gap` · `--xh-dialog-max-w` · `--xh-dialog-px` · `--xh-dialog-py` · `--xh-dialog-radius` · `--xh-dialog-shadow` · `--xh-dialog-title-fg` · `--xh-dialog-title-font-size` · `--xh-dialog-title-font-weight`

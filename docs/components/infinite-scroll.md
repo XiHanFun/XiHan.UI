@@ -22,9 +22,9 @@ distance 把可视区沿块轴向外扩，哨兵还没露头就先取下一页
 
 <XhDemo src="infinite-scroll/03-disabled" />
 
-### 默认插槽透出状态
+### 状态透出
 
-phase / loading / disabled 从插槽拿，加载提示与结束语都由宿主自己摆
+phase / loading / disabled 由组件交给宿主，加载提示与结束语都由宿主自己摆
 
 <XhDemo src="infinite-scroll/04-slot-state" />
 
@@ -53,7 +53,25 @@ phase / loading / disabled 从插槽拿，加载提示与结束语都由宿主�
 | `loading` | `boolean` |  | 正在取数：其间不观察、不重复触发。取完由宿主写回 false。 |
 | `onLoad` | `() => void` |  | 该取下一页了。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `load` | `` | 该取下一页了 |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhInfiniteScrollRoot` | `default` | `InfiniteScrollRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **事件**：`SENTINEL.ENTER` · `MODE.SYNC`
 
@@ -76,3 +94,9 @@ phase / loading / disabled 从插槽拿，加载提示与结束语都由宿主�
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-infinite-scroll-sentinel-size`

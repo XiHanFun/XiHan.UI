@@ -46,7 +46,7 @@ min / max 直接把界外的格从列里裁掉；分列还会随已选的时再�
 
 <XhDemo src="time-picker/07-actions" />
 
-### 按谓词裁可选值
+### 自定可选格
 
 列里渲染哪几格由作者决定，午休两格整段拿掉；手打进段位的时被吸到下一个可约小时
 
@@ -105,10 +105,32 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `placement` | `Placement` |  |  |
 | `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
-| `onValueChange` | `(details: TimePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `isTimeUnavailable` | `(value: string, unit: TimePickerColumnUnit) => boolean` |  | 逐值可选性。收两位补零的值与它所属的列——同一个 '30' 在分钟列与秒列不是一回事。 与 min/max 裁掉的值同等对待：判真的格子仍可聚焦，只是选不中。 连续区间用 min/max 表达即可，这条留给「每隔 15 分钟才可约」这类离散规则。 |
+| `translations` | `Partial<TimePickerTranslations>` |  | 段位读屏名的覆盖；不给就用内置英文语义名。 |
+| `onValueChange` | `(details: TimePickerValueChangeDetails) => void` |  |  |
 | `onOpenChange` | `(details: TimePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `TimePickerValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
+| `open-change` | `TimePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhTimePickerColumn` | `default` | `TimePickerColumnSlotProps` |  |
+| `XhTimePickerRoot` | `default` | `TimePickerRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -185,3 +207,9 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `a` / `p` | focus in 上下午段, 12 小时制, not disabled/readOnly | a 取上午、p 取下午（不区分大小写） |
 | `Alt+ArrowDown` | focus in 某一段, closed, not disabled | 展开浮层并把焦点送进去；触发钮是可选部件，键盘那条入口不能只挂在它身上 |
 | `Enter` | focus in 某一段, open | 收起浮层。段位里敲出来的值不触发「选完即收」（那时人还在打字），这是那条路的收口手势 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-time-picker-action-bg` · `--xh-time-picker-action-bg-active` · `--xh-time-picker-action-bg-hover` · `--xh-time-picker-action-fg` · `--xh-time-picker-action-fg-hover` · `--xh-time-picker-action-font-size` · `--xh-time-picker-action-radius` · `--xh-time-picker-action-size` · `--xh-time-picker-column-divider` · `--xh-time-picker-column-gap` · `--xh-time-picker-column-max-h` · `--xh-time-picker-column-min-w` · `--xh-time-picker-column-px` · `--xh-time-picker-content-bg` · `--xh-time-picker-content-border` · `--xh-time-picker-content-fg` · `--xh-time-picker-content-p` · `--xh-time-picker-content-radius` · `--xh-time-picker-content-shadow` · `--xh-time-picker-control-bg` · `--xh-time-picker-control-bg-disabled` · `--xh-time-picker-control-bg-readonly` · `--xh-time-picker-control-border` · `--xh-time-picker-control-border-focus` · `--xh-time-picker-control-border-hover` · `--xh-time-picker-control-border-invalid` · `--xh-time-picker-control-fg` · `--xh-time-picker-control-gap` · `--xh-time-picker-control-h` · `--xh-time-picker-control-px` · `--xh-time-picker-control-radius` · `--xh-time-picker-font-size` · `--xh-time-picker-gap` · `--xh-time-picker-item-bg-checked` · `--xh-time-picker-item-bg-checked-hover` · `--xh-time-picker-item-bg-hover` · `--xh-time-picker-item-fg` · `--xh-time-picker-item-fg-checked` · `--xh-time-picker-item-font-size` · `--xh-time-picker-item-px` · `--xh-time-picker-item-py` · `--xh-time-picker-item-radius` · `--xh-time-picker-item-weight-checked` · `--xh-time-picker-label-fg` · `--xh-time-picker-label-fg-disabled` · `--xh-time-picker-label-font-size` · `--xh-time-picker-label-font-weight` · `--xh-time-picker-segment-bg-focus` · `--xh-time-picker-segment-bg-hover` · `--xh-time-picker-segment-fg-focus` · `--xh-time-picker-segment-fg-placeholder` · `--xh-time-picker-segment-px` · `--xh-time-picker-segment-radius`

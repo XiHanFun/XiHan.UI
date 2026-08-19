@@ -30,7 +30,7 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 
 ### 异步确认
 
-@confirm 返回 Promise 即挂起确认门：浮层等兑现才收起、确认按钮转圈且再点无效，落空（reject）留在原地；不必再手动受控拦收起
+确认回调返回 Promise 即挂起确认门：浮层等兑现才收起、确认按钮转圈且再点无效，落空（reject）留在原地；不必再手动受控拦收起
 
 <XhDemo src="popconfirm/05-async-confirm" />
 
@@ -66,6 +66,24 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | `placement` | `Placement` |  |  |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定面板的内边距档位。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `open-change` | `PopoverOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `confirm` | `` | 点了确认按钮；随后浮层收起。异步门走 confirmAction 属性： 事件拿不到监听函数的返回值，给元素赋 `confirmAction = () =&gt; Promise` 即挂起确认门 （浮层等兑现才收、确认按钮转圈，落空留在原地），confirm 事件照发只作通知 |
+| `cancel` | `` | 点了取消按钮；随后浮层收起 |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhPopconfirmRoot` | `default` | `PopconfirmRootSlotProps` |  |
+
 ## connect API
 
 `usePopconfirm` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
@@ -96,3 +114,9 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | `Enter` / `Space` | focus in confirm-trigger | 发确认意图并收起浮层 |
 | `Enter` / `Space` | focus in cancel-trigger | 发取消意图并收起浮层 |
 | `Escape` | open | 收起浮层并把焦点还给 trigger；不发确认也不发取消 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-popconfirm-bg` · `--xh-popconfirm-border` · `--xh-popconfirm-cancel-bg` · `--xh-popconfirm-cancel-fg` · `--xh-popconfirm-confirm-bg` · `--xh-popconfirm-confirm-fg` · `--xh-popconfirm-description-fg` · `--xh-popconfirm-fg` · `--xh-popconfirm-gap` · `--xh-popconfirm-loading-duration` · `--xh-popconfirm-max-w` · `--xh-popconfirm-px` · `--xh-popconfirm-py` · `--xh-popconfirm-radius` · `--xh-popconfirm-shadow` · `--xh-popconfirm-title-fg` · `--xh-popconfirm-title-font-size` · `--xh-popconfirm-title-font-weight`

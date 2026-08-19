@@ -30,7 +30,7 @@ stick-change 报到底，宿主据此去取下一页；先往上滚一段再滚�
 
 ### 自己画回到底部的入口
 
-root 的作用域插槽给出 showScrollButton 与 scrollToBottom，不用内置那颗浮动按钮也能拼出一条自己的提示栏
+在不在底、怎么滚回底部两件事外部都拿得到，不用内置那颗浮动按钮也能拼出一条自己的提示栏
 
 <XhDemo src="thread/05-scroll-control" />
 
@@ -77,7 +77,25 @@ root 的作用域插槽给出 showScrollButton 与 scrollToBottom，不用内置
 | `translations` | `Partial<ThreadTranslations>` |  |  |
 | `onStickChange` | `(details: ThreadStickChangeDetails) => void` |  | 粘底状态变化时通知宿主。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `stick-change` | `ThreadStickChangeDetails` | 粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhThreadRoot` | `default` | `ThreadRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -108,3 +126,9 @@ root 的作用域插槽给出 showScrollButton 与 scrollToBottom，不用内置
 | --- | --- | --- |
 | `Tab` | 焦点进入消息区 | 消息区自身可聚焦，方向键/PageUp/PageDown 交给浏览器滚动，组件不接管 |
 | `Space` / `Enter` | 焦点在"回到底部"按钮上 | 滚回底部并重新粘附 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-thread-content-gap` · `--xh-thread-content-py` · `--xh-thread-scroll-button-bg` · `--xh-thread-scroll-button-bg-active` · `--xh-thread-scroll-button-bg-hover` · `--xh-thread-scroll-button-border` · `--xh-thread-scroll-button-fg` · `--xh-thread-scroll-button-font-size` · `--xh-thread-scroll-button-font-weight` · `--xh-thread-scroll-button-gap` · `--xh-thread-scroll-button-h` · `--xh-thread-scroll-button-inset` · `--xh-thread-scroll-button-px` · `--xh-thread-scroll-button-radius` · `--xh-thread-scroll-button-shadow`

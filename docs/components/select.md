@@ -60,7 +60,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 ### 选项里的自定义内容
 
-条目与触发器显示都是插槽：内容想写什么写什么，选中与键盘行为不变
+条目与触发器显示的内容都由你写：想写什么写什么，选中与键盘行为不变
 
 <XhDemo src="select/10-custom-content" />
 
@@ -96,19 +96,19 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 ### 滚动加载
 
-浮层的滚动容器就是 content：@scroll 直接落在它身上，滚到底就把下一页并进选项
+浮层的滚动容器就是 content：滚动事件直接落在它身上，滚到底就把下一页并进选项
 
 <XhDemo src="select/16-scroll-load" />
 
 ### 命令式聚焦
 
-在触发器上取模板 ref，实例的 $el 就是那个按钮，focus 与 blur 直接调它
+触发器就是你写的那个按钮，focus 与 blur 直接调它
 
 <XhDemo src="select/17-focus" />
 
 ### 清空按钮
 
-XhSelectControl 收纳触发器与清空按钮：清空钮嵌在触发器右端、悬停时替换下拉箭头；有选中才显形，点按清空全部选中、不展开浮层；可及名走 translations.clear
+清空钮是触发器的兄弟节点，一起收在 control 里：嵌在触发器右端、悬停时替换下拉箭头；有选中才显形，点按清空全部选中、不展开浮层；可及名走 translations.clear
 
 <XhDemo src="select/18-clear" />
 
@@ -161,7 +161,28 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `onValueChange` | `(details: SelectValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onOpenChange` | `(details: SelectOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `SelectValueChangeDetails` | 选中值变化；detail 为 `{ value: string[] }` |
+| `open-change` | `SelectOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhSelectRoot` | `default` | `SelectRootSlotProps` |  |
+| `XhSelectRoot` | `label` | — |  |
+| `XhSelectRoot` | `item` | `SelectNodeMeta` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -226,3 +247,9 @@ footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打�
 | `Enter` / `Space` | open, 多选, 高亮条目未禁用 | 切换高亮条目的选中态，列表不收起、焦点留在条目上 |
 | `Escape` | open | 关闭列表并把焦点归还 trigger，选中值不变 |
 | `Tab` / `Shift+Tab` | open | 关闭列表，焦点不归还 trigger，按 Tab 序列自然离开 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-select-clear-bg-hover` · `--xh-select-clear-fg` · `--xh-select-clear-fg-hover` · `--xh-select-clear-font-size` · `--xh-select-clear-size` · `--xh-select-content-bg` · `--xh-select-content-border` · `--xh-select-content-fg` · `--xh-select-content-max-h` · `--xh-select-content-max-w` · `--xh-select-content-min-w` · `--xh-select-content-px` · `--xh-select-content-py` · `--xh-select-content-radius` · `--xh-select-content-shadow` · `--xh-select-footer-border` · `--xh-select-footer-fg` · `--xh-select-footer-font-size` · `--xh-select-footer-gap` · `--xh-select-footer-px` · `--xh-select-footer-py` · `--xh-select-gap` · `--xh-select-indicator-fg` · `--xh-select-item-bg-hover` · `--xh-select-item-fg` · `--xh-select-item-fg-selected` · `--xh-select-item-font-size` · `--xh-select-item-font-weight-selected` · `--xh-select-item-gap` · `--xh-select-item-indicator-fg` · `--xh-select-item-indicator-size` · `--xh-select-item-leading` · `--xh-select-item-px` · `--xh-select-item-py` · `--xh-select-item-radius` · `--xh-select-label-fg` · `--xh-select-label-font-size` · `--xh-select-label-font-weight` · `--xh-select-placeholder-fg` · `--xh-select-tag-bg` · `--xh-select-tag-fg` · `--xh-select-tag-font-size` · `--xh-select-tag-gap` · `--xh-select-tag-px` · `--xh-select-tag-radius` · `--xh-select-tag-remove-fg` · `--xh-select-tag-remove-fg-hover` · `--xh-select-trigger-bg` · `--xh-select-trigger-border` · `--xh-select-trigger-border-hover` · `--xh-select-trigger-border-invalid` · `--xh-select-trigger-fg` · `--xh-select-trigger-font-size` · `--xh-select-trigger-gap` · `--xh-select-trigger-h` · `--xh-select-trigger-max-w` · `--xh-select-trigger-min-w` · `--xh-select-trigger-px` · `--xh-select-trigger-radius`

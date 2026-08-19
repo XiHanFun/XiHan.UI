@@ -42,13 +42,13 @@ size 只改高度、内边距与字号，不写就是缺省档
 
 ### 图标
 
-默认插槽收任意内容，图标与文字之间的空隙由 --xh-toggle-gap 给；只放图标时按钮没有可见文字，名字得由 aria-label 补上
+按钮内容随便写，图标与文字之间的空隙由 --xh-toggle-gap 给；只放图标时按钮没有可见文字，名字得由 aria-label 补上
 
 <XhDemo src="toggle/07-icon" />
 
 ### 变化回调
 
-pressed-change 每次带着 details 报一次按下意图；不接 v-model 时它就是拿到新值的唯一出口
+pressed-change 每次带着 details 报一次按下意图；不做受控绑定时它就是拿到新值的唯一出口
 
 <XhDemo src="toggle/08-events" />
 
@@ -86,7 +86,17 @@ pressed-change 每次带着 details 报一次按下意图；不接 v-model 时�
 | `size` | `Size` |  | 尺寸：sm / md / lg |
 | `onPressedChange` | `(details: TogglePressedChangeDetails) => void` |  | pressed 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `pressed-change` | `TogglePressedChangeDetails` | pressed 状态变化；detail 为 `{ pressed: boolean }` |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`off` · `on`
 
@@ -111,3 +121,9 @@ pressed-change 每次带着 details 报一次按下意图；不接 v-model 时�
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Space` / `Enter` | focus in root, not disabled | 切换 pressed 状态 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-toggle-bg` · `--xh-toggle-bg-hover` · `--xh-toggle-bg-pressed` · `--xh-toggle-fg` · `--xh-toggle-fg-pressed` · `--xh-toggle-font-size` · `--xh-toggle-font-weight` · `--xh-toggle-gap` · `--xh-toggle-h` · `--xh-toggle-px` · `--xh-toggle-radius`

@@ -78,7 +78,7 @@ collection 只认 value / label / disabled / children 这几个名字，后端�
 
 ### 级联勾选与回显策略
 
-multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；对外值按 checked-strategy 收敛（默认只收叶），半选标记从插槽作用域的 isIndeterminate 取
+multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；对外值按 checked-strategy 收敛（默认只收叶），半选标记由条目自报的半选态出面
 
 <XhDemo src="cascader/13-cascade-check" />
 
@@ -90,13 +90,13 @@ content 的子节点全由作者写：列装进一层横排容器，底栏与它
 
 ### 命令式聚焦与展开
 
-trigger 部件渲染的就是原生按钮，模板 ref 拿到它即可 focus / blur；开合走根插槽的 setOpen
+trigger 部件就是原生按钮，拿到它即可 focus / blur；开合交给宿主写 open
 
 <XhDemo src="cascader/15-imperative-focus" />
 
 ### 搜索
 
-searchable 让 XhCascaderInput 可用：输入后整条路径连缀过滤，XhCascaderSearchList 的候选替换列视图；上下键走候选、Enter 选中、Escape 先清词再收浮层。无匹配（试试输入「苏州」）时空态占位露面，文案经 translations 覆盖
+searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表替换列视图；上下键走候选、Enter 选中、Escape 先清词再收浮层。无匹配（试试输入「苏州」）时空态占位露面，文案经 translations 覆盖
 
 <XhDemo src="cascader/16-search" />
 
@@ -147,7 +147,27 @@ searchable 让 XhCascaderInput 可用：输入后整条路径连缀过滤，XhCa
 | `onValueChange` | `(details: CascaderValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onOpenChange` | `(details: CascaderOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `CascaderValueChangeDetails` | 选中路径集合变化；detail 为 `{ value: string[][] }` |
+| `open-change` | `CascaderOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhCascaderRoot` | `default` | `CascaderRootSlotProps` |  |
+| `XhCascaderSearchList` | `item` | `CascaderSearchListItemSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -226,3 +246,9 @@ searchable 让 XhCascaderInput 可用：输入后整条路径连缀过滤，XhCa
 | `Enter` / `Space` | open, 焦点条目未禁用 | 叶子：落值并收起浮层、焦点归还 trigger。分支：展开它的子列且浮层不收起，changeOnSelect 打开时同时落值 |
 | `Escape` | open | 收起浮层并把焦点归还 trigger，选中值不变 |
 | `Tab` / `Shift+Tab` | open | 收起浮层，焦点不归还 trigger，按 Tab 序列自然离开 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-cascader-action-bg` · `--xh-cascader-action-bg-active` · `--xh-cascader-action-bg-hover` · `--xh-cascader-action-fg` · `--xh-cascader-action-fg-hover` · `--xh-cascader-action-font-size` · `--xh-cascader-action-radius` · `--xh-cascader-action-size` · `--xh-cascader-branch-arrow-fg` · `--xh-cascader-branch-arrow-size` · `--xh-cascader-column-divider` · `--xh-cascader-column-h` · `--xh-cascader-column-min-w` · `--xh-cascader-column-px` · `--xh-cascader-column-py` · `--xh-cascader-content-bg` · `--xh-cascader-content-border` · `--xh-cascader-content-fg` · `--xh-cascader-content-max-w` · `--xh-cascader-content-radius` · `--xh-cascader-content-shadow` · `--xh-cascader-empty-fg` · `--xh-cascader-empty-min-h` · `--xh-cascader-empty-p` · `--xh-cascader-gap` · `--xh-cascader-indicator-fg` · `--xh-cascader-input-font-size` · `--xh-cascader-input-px` · `--xh-cascader-input-py` · `--xh-cascader-item-indicator-fg` · `--xh-cascader-item-indicator-size` · `--xh-cascader-label-fg` · `--xh-cascader-label-font-size` · `--xh-cascader-label-font-weight` · `--xh-cascader-placeholder-fg` · `--xh-cascader-row-active-font-weight` · `--xh-cascader-row-bg-active` · `--xh-cascader-row-bg-hover` · `--xh-cascader-row-fg` · `--xh-cascader-row-fg-selected` · `--xh-cascader-row-font-size` · `--xh-cascader-row-gap` · `--xh-cascader-row-leading` · `--xh-cascader-row-max-w` · `--xh-cascader-row-px` · `--xh-cascader-row-py` · `--xh-cascader-row-radius` · `--xh-cascader-row-selected-font-weight` · `--xh-cascader-search-max-h` · `--xh-cascader-search-p` · `--xh-cascader-trigger-bg` · `--xh-cascader-trigger-bg-disabled` · `--xh-cascader-trigger-bg-readonly` · `--xh-cascader-trigger-border` · `--xh-cascader-trigger-border-hover` · `--xh-cascader-trigger-border-invalid` · `--xh-cascader-trigger-fg` · `--xh-cascader-trigger-font-size` · `--xh-cascader-trigger-gap` · `--xh-cascader-trigger-h` · `--xh-cascader-trigger-min-w` · `--xh-cascader-trigger-px` · `--xh-cascader-trigger-radius`

@@ -83,7 +83,27 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 | `orientation` | `Orientation` |  | 视觉排布，默认 vertical。只出 data-orientation，不出 aria-orientation。 |
 | `onValueChange` | `(details: CheckboxGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `CheckboxGroupValueChangeDetails` | 选中值变化；detail 为 `{ value: string[] }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhCheckboxGroupRoot` | `default` | `CheckboxGroupRootSlotProps` |  |
+| `XhCheckboxGroupRoot` | `label` | — |  |
+| `XhCheckboxGroupRoot` | `item` | `CheckboxGroupNodeMeta` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -123,3 +143,9 @@ orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 ar
 | `Tab` / `Shift+Tab` | focus enters or leaves the group | 组内有几个条目就有几个 Tab 停靠点（禁用条目也留一个），容器自己不占位；单选组的"整组一个停靠点"在这里不成立 |
 | `Space` | focus on item, group editable and item not disabled | 翻转该条目的选中态；改不动时放行按键给页面滚动 |
 | `Space` | focus on trigger, group editable | 可用条目未全选则一并勾上，已全选则一并取消；禁用条目不受影响 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-checkbox-group-gap` · `--xh-checkbox-group-indicator-bg` · `--xh-checkbox-group-indicator-bg-checked` · `--xh-checkbox-group-indicator-border` · `--xh-checkbox-group-indicator-border-checked` · `--xh-checkbox-group-indicator-border-hover` · `--xh-checkbox-group-indicator-border-invalid` · `--xh-checkbox-group-indicator-fg` · `--xh-checkbox-group-indicator-font-size` · `--xh-checkbox-group-indicator-radius` · `--xh-checkbox-group-indicator-size` · `--xh-checkbox-group-item-fg` · `--xh-checkbox-group-item-fg-disabled` · `--xh-checkbox-group-item-font-size` · `--xh-checkbox-group-item-gap` · `--xh-checkbox-group-item-radius` · `--xh-checkbox-group-label-fg` · `--xh-checkbox-group-label-fg-disabled` · `--xh-checkbox-group-label-font-size` · `--xh-checkbox-group-label-font-weight` · `--xh-checkbox-group-trigger-fg` · `--xh-checkbox-group-trigger-fg-disabled` · `--xh-checkbox-group-trigger-font-size` · `--xh-checkbox-group-trigger-font-weight` · `--xh-checkbox-group-trigger-gap` · `--xh-checkbox-group-trigger-radius`

@@ -59,7 +59,17 @@ type 为 scroll 时滚动条停手后不立刻收起，scrollHideDelay 决定还
 | `orientation` | `ScrollAreaOrientation` |  | 哪几条轴归本组件管，默认 both。 |
 | `dir` | `Direction` |  | 排版方向，默认随文档。只影响横轴：RTL 下滚动量的正负、指针位移的方向都要翻一次。 必须显式给：组件不读计算样式，看不见从 RTL 祖先继承来的方向。 |
 
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhScrollAreaRoot` | `default` | `ScrollAreaRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`hidden` · `visible` · `hiding` · `dragging`
 
@@ -97,3 +107,9 @@ type 为 scroll 时滚动条停手后不立刻收起，scrollHideDelay 决定还
 | `ArrowUp` / `ArrowDown` / `ArrowLeft` / `ArrowRight` | focus in viewport | 逐行/逐列滚动；组件不监听、不拦截 |
 | `Home` / `End` | focus in viewport | 滚到内容两端；组件不监听、不拦截 |
 | `Space` / `Shift+Space` | focus in viewport | 整屏翻页；组件不监听、不拦截 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-scroll-area-bar-bg` · `--xh-scroll-area-bar-padding` · `--xh-scroll-area-bar-size` · `--xh-scroll-area-corner-bg` · `--xh-scroll-area-thumb-bg` · `--xh-scroll-area-thumb-bg-dragging` · `--xh-scroll-area-thumb-bg-hover` · `--xh-scroll-area-thumb-radius`

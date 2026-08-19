@@ -30,7 +30,7 @@ placement 是请求值，空间不够时定位引擎会自动翻面；offset 调
 
 ### 确认气泡
 
-标题、说明与两颗按钮拼成一次就地确认；两颗按钮都只调 setOpen 收起浮层
+标题、说明与两颗按钮拼成一次就地确认；两颗按钮按下后都只是把浮层收起
 
 <XhDemo src="popover/05-confirm" />
 
@@ -102,7 +102,25 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定面板的内边距档位。 |
 | `onOpenChange` | `(details: PopoverOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `open-change` | `PopoverOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhPopoverRoot` | `default` | `PopoverRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -136,3 +154,9 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 | `Escape` | open | 关闭并把焦点还给 trigger |
 | `Tab` | open 且 modal | 在 content 内向后循环焦点 |
 | `Shift+Tab` | open 且 modal | 在 content 内向前循环焦点 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-popover-arrow-size` · `--xh-popover-bg` · `--xh-popover-border` · `--xh-popover-description-fg` · `--xh-popover-fg` · `--xh-popover-gap` · `--xh-popover-max-w` · `--xh-popover-px` · `--xh-popover-py` · `--xh-popover-radius` · `--xh-popover-shadow` · `--xh-popover-title-fg` · `--xh-popover-title-font-size` · `--xh-popover-title-font-weight`

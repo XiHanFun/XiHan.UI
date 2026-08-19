@@ -18,7 +18,7 @@
 
 ### 受控与文案
 
-v-model:open 与 v-model:index 双受控；translations 换工具条的可及名与计数文案
+open 与 index 双受控；translations 换工具条的可及名与计数文案
 
 <XhDemo src="image-viewer/03-controlled" />
 
@@ -58,7 +58,26 @@ v-model:open 与 v-model:index 双受控；translations 换工具条的可及名
 | `onOpenChange` | `(details: ImageViewerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onIndexChange` | `(details: ImageViewerIndexChangeDetails) => void` |  | 下标变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `open-change` | `ImageViewerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `index-change` | `ImageViewerIndexChangeDetails` | 下标变化；detail 为 `{ index: number }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhImageViewerRoot` | `default` | `ImageViewerRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -123,3 +142,11 @@ v-model:open 与 v-model:index 双受控；translations 换工具条的可及名
 | `Shift+Tab` | open | 在 content 内向前循环焦点 |
 | `ArrowLeft` | open | 上一张 |
 | `ArrowRight` | open | 下一张 |
+| `Home` | open | 跳到第一张 |
+| `End` | open | 跳到最后一张 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-image-viewer-backdrop-bg` · `--xh-image-viewer-chrome-bg` · `--xh-image-viewer-fg`

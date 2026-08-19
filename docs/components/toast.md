@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-单独一条通知：title 与 description 没写插槽内容时由 props 兜底；duration 给 0 即不自动消失
+单独一条通知：title 与 description 两个部件留空时由属性上的文案填入；duration 给 0 即不自动消失
 
 <XhDemo src="toast/01-basic" />
 
@@ -30,7 +30,7 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 
 ### 图标与自定义排版
 
-卡片里排什么由作者定：图标与标题排成一行，标题、描述两个部件都接受插槽内容
+卡片里排什么由作者定：图标与标题排成一行，标题、描述两个部件的内容都归作者写
 
 <XhDemo src="toast/05-icon" />
 
@@ -66,7 +66,26 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | `onStatusChange` | `(details: ToastStatusChangeDetails) => void` |  | 生命周期落位时通知：dismissing 与 unmounted 各一次。宿主据此把条目移出队列。 |
 | `onAction` | `(details: ToastActionDetails) => void` |  | 操作按钮被按下。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `status-change` | `ToastStatusChangeDetails` | 生命周期落位；detail 为 `{ id: string, status: 'dismissing'\|'unmounted' }` |
+| `action` | `ToastActionDetails` | 操作按钮被按下；detail 为 `{ id: string }` |
+
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhToastRoot` | `default` | `ToastRootSlotProps` |  |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`visible` · `visible.running` · `visible.paused` · `dismissing` · `unmounted`
 
@@ -105,3 +124,9 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | --- | --- | --- |
 | `Enter` / `Space` | focus 在 close-trigger 上且 closable | 立即进入 dismissing，走完 removeDelay 后转 unmounted |
 | `Enter` / `Space` | focus 在 action-trigger 上 | 触发 onAction 并进入 dismissing |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-toast-accent` · `--xh-toast-accent-width` · `--xh-toast-action-bg` · `--xh-toast-action-bg-active` · `--xh-toast-action-bg-hover` · `--xh-toast-action-border` · `--xh-toast-action-fg` · `--xh-toast-action-font-weight` · `--xh-toast-action-h` · `--xh-toast-action-px` · `--xh-toast-action-radius` · `--xh-toast-bg` · `--xh-toast-border` · `--xh-toast-close-bg-hover` · `--xh-toast-close-fg` · `--xh-toast-close-fg-hover` · `--xh-toast-close-radius` · `--xh-toast-close-size` · `--xh-toast-description-fg` · `--xh-toast-description-font-size` · `--xh-toast-fg` · `--xh-toast-font-size` · `--xh-toast-gap` · `--xh-toast-leading` · `--xh-toast-px` · `--xh-toast-py` · `--xh-toast-radius` · `--xh-toast-shadow` · `--xh-toast-title-fg` · `--xh-toast-title-font-size` · `--xh-toast-title-font-weight` · `--xh-toast-title-leading` · `--xh-toast-w`

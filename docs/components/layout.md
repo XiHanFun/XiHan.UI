@@ -76,7 +76,17 @@ header-fixed 让头钉在滚动容器上沿，sider-fixed 让侧栏跟着钉住�
 | `bordered` | `boolean` |  | 在头、侧栏、脚与内容之间画分隔线。 |
 | `onSiderCollapsedChange` | `(details: LayoutSiderCollapsedChangeDetails) => void` |  | 折叠态变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `sider-collapsed-change` | `LayoutSiderCollapsedChangeDetails` | 折叠态变化；detail 为 `{ collapsed: boolean }` |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`expanded` · `collapsed`
 
@@ -106,3 +116,9 @@ header-fixed 让头钉在滚动容器上沿，sider-fixed 让侧栏跟着钉住�
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Space` / `Enter` | focus in sider-trigger | 折叠/展开 sider |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-layout-bg` · `--xh-layout-border` · `--xh-layout-fg` · `--xh-layout-footer-bg` · `--xh-layout-header-bg` · `--xh-layout-header-h` · `--xh-layout-header-layer` · `--xh-layout-scrollport-h` · `--xh-layout-sider-bg` · `--xh-layout-sider-collapsed-width` · `--xh-layout-sider-trigger-bg` · `--xh-layout-sider-trigger-bg-hover` · `--xh-layout-sider-trigger-fg` · `--xh-layout-sider-trigger-radius` · `--xh-layout-sider-width`

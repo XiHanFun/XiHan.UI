@@ -64,3 +64,9 @@
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-avatar-group-font-size` · `--xh-avatar-group-font-weight` · `--xh-avatar-group-overflow-bg` · `--xh-avatar-group-overflow-fg` · `--xh-avatar-group-overlap` · `--xh-avatar-group-radius` · `--xh-avatar-group-ring` · `--xh-avatar-group-size`

@@ -6,13 +6,13 @@
 
 ### 基础用法
 
-入口写在 collection 里、面板内容走 panel 插槽；面板落在同一个 li 里、紧跟 trigger 之后，展开时按 Tab 就走得进去，里面的条目是链接不是命令，点了就跳走
+面板落在同一个 li 里、紧跟 trigger 之后，展开时按 Tab 就走得进去，里面的条目是链接不是命令，点了就跳走
 
 <XhDemo src="navigation-menu/01-basic" />
 
 ### 受控
 
-传了 value 就由宿主说了算，null 表示都收起；v-model:value 是它的语法糖
+传了 value 就由宿主说了算，null 表示都收起
 
 <XhDemo src="navigation-menu/02-controlled" />
 
@@ -42,7 +42,7 @@ size 一档换掉入口的高度、内边距与字号，写在 root 上、面板
 
 ### 直达入口
 
-没有下级的去处不必套面板：数据里写了 href 的那一项铺成一条 link，它不进方向键那一组（那一组只认 trigger），按 Tab 一样到得了
+没有下级的去处不必套面板：那一项直接铺成一条 link，它不进方向键那一组（那一组只认 trigger），按 Tab 一样到得了
 
 <XhDemo src="navigation-menu/07-link-item" />
 
@@ -97,7 +97,17 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: NavigationMenuValueChangeDetails) => void` |  | value 变化回调。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `NavigationMenuValueChangeDetails` | 展开项变化；detail 为 `{ value: string \| null }` |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `opening` · `skipping`
 
@@ -138,3 +148,9 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | `Enter` / `Space` | focus in trigger, not disabled | 立即展开对应面板（不走 delayDuration）；面板是自动弹出来的那一次不收起，再按一次才收起 |
 | `Escape` | open | 收起面板并把焦点归还对应 trigger；静默窗口内这一次归还不会把面板重新弹出来 |
 | `Tab` / `Shift+Tab` | open, focus in trigger | 走进展开的面板：面板就在 trigger 之后，收起的面板带 hidden 因而被整个跳过 |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-navigation-menu-content-bg` · `--xh-navigation-menu-content-border` · `--xh-navigation-menu-content-gap` · `--xh-navigation-menu-content-min-w` · `--xh-navigation-menu-content-offset` · `--xh-navigation-menu-content-p` · `--xh-navigation-menu-content-radius` · `--xh-navigation-menu-content-shadow` · `--xh-navigation-menu-fg` · `--xh-navigation-menu-font-size` · `--xh-navigation-menu-gap` · `--xh-navigation-menu-indicator-color` · `--xh-navigation-menu-indicator-radius` · `--xh-navigation-menu-indicator-thickness` · `--xh-navigation-menu-link-bg-hover` · `--xh-navigation-menu-link-fg` · `--xh-navigation-menu-link-fg-current` · `--xh-navigation-menu-link-font-size` · `--xh-navigation-menu-link-font-weight-current` · `--xh-navigation-menu-link-px` · `--xh-navigation-menu-link-py` · `--xh-navigation-menu-link-radius` · `--xh-navigation-menu-trigger-bg-hover` · `--xh-navigation-menu-trigger-fg` · `--xh-navigation-menu-trigger-fg-open` · `--xh-navigation-menu-trigger-font-weight` · `--xh-navigation-menu-trigger-gap` · `--xh-navigation-menu-trigger-h` · `--xh-navigation-menu-trigger-px` · `--xh-navigation-menu-trigger-radius`

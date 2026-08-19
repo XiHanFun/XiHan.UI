@@ -6,7 +6,7 @@
 
 ### 基础用法
 
-单选分段控件：条目由 collection 铺开，root 是 radiogroup、条目是 radio；整组只占一个 Tab 位，进组后四个方向键都能走
+单选分段控件：root 是 radiogroup、条目是 radio；整组只占一个 Tab 位，进组后四个方向键都能走
 
 <XhDemo src="toggle-group/01-basic" />
 
@@ -28,9 +28,9 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 
 <XhDemo src="toggle-group/04-disabled" />
 
-### 条目来自数据
+### 条目增删
 
-条目由一份数组渲染，值、文案与禁用都写在数据里；运行期增删条目也照常，删掉的正好是选中项时由宿主把值收拾干净
+条目集合在运行期可增可删，增删后照常接线；删掉的正好是选中项时由宿主把值收拾干净
 
 <XhDemo src="toggle-group/05-dynamic-items" />
 
@@ -78,7 +78,17 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | `rovingFocus` | `boolean` |  | roving tabindex，默认开启：整组只占一个 Tab 位，组内靠方向键走。 关掉后每个条目自成一个 Tab 停靠点，方向键不再接管。 |
 | `onValueChange` | `(details: ToggleGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 
+## 事件
+
+自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `ToggleGroupValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| string[] \| null }`（形态跟着 multiple 走） |
+
 ## 状态机
+
+内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -112,3 +122,9 @@ multiple 换的是整套 ARIA：root 退回 group、条目退回原生按钮 + a
 | `Home` | focus in group, 组未禁用且 rovingFocus 开启 | 焦点移到首个可停留条目 |
 | `End` | focus in group, 组未禁用且 rovingFocus 开启 | 焦点移到末个可停留条目 |
 | `Enter` / `Space` | focus on item, 条目未禁用 | 切换该条目；条目是原生 button，这两个键由平台翻成 click |
+
+## CSS 变量
+
+本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
+
+`--xh-toggle-group-item-bg` · `--xh-toggle-group-item-bg-active` · `--xh-toggle-group-item-bg-disabled` · `--xh-toggle-group-item-bg-hover` · `--xh-toggle-group-item-bg-on` · `--xh-toggle-group-item-bg-on-active` · `--xh-toggle-group-item-bg-on-hover` · `--xh-toggle-group-item-border` · `--xh-toggle-group-item-border-disabled` · `--xh-toggle-group-item-border-on` · `--xh-toggle-group-item-border-on-disabled` · `--xh-toggle-group-item-fg` · `--xh-toggle-group-item-fg-disabled` · `--xh-toggle-group-item-fg-on` · `--xh-toggle-group-item-fg-on-disabled` · `--xh-toggle-group-item-font-size` · `--xh-toggle-group-item-font-weight` · `--xh-toggle-group-item-gap` · `--xh-toggle-group-item-h` · `--xh-toggle-group-item-px` · `--xh-toggle-group-radius`

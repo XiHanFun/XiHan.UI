@@ -20,7 +20,7 @@
 | [图标](./icon) | `icon` | 2 | 0 | 6 |
 | [图标块](./icon-wrapper) | `icon-wrapper` | 1 | 0 | 4 |
 | [图片](./image) | `image` | 3 | 0 | 8 |
-| [图片预览](./image-viewer) | `image-viewer` | 18 | 6 | 3 |
+| [图片预览](./image-viewer) | `image-viewer` | 18 | 8 | 3 |
 | [分隔线](./separator) | `separator` | 1 | 0 | 4 |
 | [切换按钮](./toggle) | `toggle` | 1 | 1 | 9 |
 | [切换按钮组](./toggle-group) | `toggle-group` | 2 | 6 | 7 |
@@ -108,7 +108,7 @@
 | [导航菜单](./navigation-menu) | `navigation-menu` | 8 | 7 | 10 |
 | [页头](./page-header) | `page-header` | 6 | 0 | 5 |
 | [分页](./pagination) | `pagination` | 5 | 4 | 10 |
-| [侧栏导航](./side-nav) | `side-nav` | 11 | 10 | 2 |
+| [侧栏导航](./side-nav) | `side-nav` | 12 | 10 | 2 |
 | [步骤条](./steps) | `steps` | 9 | 6 | 8 |
 | [标签页](./tabs) | `tabs` | 4 | 6 | 13 |
 | [工具栏](./toolbar) | `toolbar` | 4 | 6 | 7 |
