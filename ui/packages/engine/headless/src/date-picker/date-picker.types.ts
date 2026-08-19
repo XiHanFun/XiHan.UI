@@ -116,6 +116,9 @@ export interface DatePickerSchema extends MachineSchema {
     /**
      * 面板此刻钻到了哪一层。给定即受控；缺省跟着 view，每次展开都回到 view 那一档。
      * 点标题里的年 / 月会改它。
+     *
+     * 没有配套的 defaultActiveView：面板每次展开都会重置这一档，非受控初值没有生效的时刻，
+     * 发出去也观察不到任何效果。要改初始层级请用 view。
      */
     activeView?: CalendarView
     /**

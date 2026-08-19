@@ -39,6 +39,7 @@
     "at-limit": { "$type": "color", "$value": "{color.warning.600}" }
   },
   "ring": {
-    "focus": { "$type": "color", "$value": "{color.brand.500}" }
+    "focus": { "$type": "color", "$value": "{color.brand.500}" },
+    "invalid": { "$type": "color", "$value": "{color.danger.500}" }
   }
 }

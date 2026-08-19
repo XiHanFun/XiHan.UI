@@ -273,3 +273,20 @@ describe('高对比档（data-contrast=\'more\'）：每条边界都不低于 4.
     }
   })
 })
+
+// 三轴里的 tone 不改聚焦环，是因为 success / warning / info 对白底够不着对比度；
+// invalid 只有 danger 一种，那条理由在它身上不成立，所以两件事分开定。
+describe('校验失败的聚焦环', () => {
+  for (const theme of ['light', 'dark'] as const) {
+    // 环是图形不是文字，WCAG 1.4.11 要的是 3:1
+    it(`${theme}：对画布与卡面都够到非文本那条线`, () => {
+      expect(round(contrast(theme, 'ring.invalid', 'bg.canvas'))).toBeGreaterThanOrEqual(3)
+      expect(round(contrast(theme, 'ring.invalid', 'bg.surface'))).toBeGreaterThanOrEqual(3)
+    })
+
+    it(`${theme}：与常规聚焦环取值不同，否则这条规则等于没写`, () => {
+      expect(contrast(theme, 'ring.invalid', 'bg.canvas'))
+        .not.toBe(contrast(theme, 'ring.focus', 'bg.canvas'))
+    })
+  }
+})

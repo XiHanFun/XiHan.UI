@@ -80,6 +80,8 @@
     max-inline-size: var(--xh-tooltip-max-w, var(--xh-overlay-max-w));
     padding-block: var(--xh-tooltip-py, var(--xh-_tooltip-py));
     padding-inline: var(--xh-tooltip-px, var(--xh-_tooltip-px));
+    /* 这里刻意用 control 而不是浮层那档 surface：提示气泡通常只有一行字、高度接近控件，
+       8px 圆角在这个尺寸上占比过大，看着会发胖。档位定义里为此单列了一条 */
     border-radius: var(--xh-tooltip-radius, var(--xh-shape-control));
     /* 实心底与其上的文字色随语气走。没写 data-tone 时两个槽都没被声明，退回原来的取值 */
     background: var(--xh-tooltip-bg, var(--xh-_tone, var(--xh-fg-default)));

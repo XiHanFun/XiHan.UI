@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // 门禁：圆角只走语义档，不许直接下探到 primitive。
 //
-// 语义档四级：inset(4px 嵌在控件里的小标记) · control(6px 控件本体) ·
-// surface(8px 浮层与卡片) · pill(胶囊与圆点)。
+// 语义档四级：inset(4px 嵌在控件里的小标记) · control(6px 控件本体，以及尺寸接近控件的
+// 小浮层——tooltip 那种一行字的气泡按这档走) · surface(8px 成面的浮层与卡片) ·
+// pill(胶囊与圆点)。
 //
 // 这条是补出来的：审计时查到 20 份皮肤在 border-radius 上写 var(--xh-radius-sm|md|full)，
 // 绕过整个语义层。原因不是谁偷懒，是语义层当时缺 4px 那一档——小内嵌方块没处可去，

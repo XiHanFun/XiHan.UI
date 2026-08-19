@@ -135,6 +135,9 @@
 
   [data-scope='tags-input'][data-part='control'][data-invalid] {
     border-color: var(--xh-tags-input-control-border-invalid, var(--xh-border-invalid));
+
+    /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+    --xh-_tags-input-ring: var(--xh-ring-invalid);
   }
 
   /* 只读仍可聚焦、可复制，所以不置灰，只把底色压下去表示"改不动" */
