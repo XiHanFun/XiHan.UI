@@ -1,6 +1,23 @@
 # 就地编辑 <Badge type="info" text="editable" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一段文本平时是只读的展示，点一下就地变成输入框。
+
+## 何时使用
+
+- 标题、备注这类偶尔才改的单值，不值得为它单开一个表单。
+- 表格单元格的快速修改。
+
+## 何时不用
+
+- 一次要改很多字段：打开表单或[对话框](./dialog)。
+- 值需要复杂校验或多步确认。
+
+## 特性
+
+- `submitMode` 决定回车、失焦还是显式按钮提交。
+- `activationMode` 决定单击、双击还是只能按编辑按钮进编辑态。
+- 三个回调分开：提交、还原、编辑态变化。
+- `autoResize` 让输入框跟着内容长。
 
 ## 示例
 
@@ -98,9 +115,23 @@ edit 受控就由宿主统一调度：一个开关把整张表切进编辑，放
 | --- | --- | --- | --- |
 | `XhEditableRoot` | `default` | `EditableRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'edit' \| 'preview' |
+| `label` | 'edit' \| 'preview' |
+| `area` | 'edit' \| 'preview' |
+| `preview` | 'edit' \| 'preview' |
+| `input` | 'edit' \| 'preview' |
+| `edit-trigger` | 'edit' \| 'preview' |
+| `submit-trigger` | 'edit' \| 'preview' |
+| `cancel-trigger` | 'edit' \| 'preview' |
+| `control` | 'edit' \| 'preview' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`preview` · `edit`
 
@@ -147,8 +178,84 @@ edit 受控就由宿主统一调度：一个开关把整张表切进编辑，放
 | `Escape` | focus in input | 撤销回上一次提交的值并回到预览态 |
 | `Tab` / `Shift+Tab` | focus in input | 按 submitMode 收尾（blur/both 提交，enter/none 撤销）；不拦默认行为，焦点照常移出 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-labelledby` | `label` 部件的 id |
+| `root` | `role` | 'group' |
+| `preview` | `aria-disabled` | 'true' \| 'false' |
+| `input` | `aria-invalid` | 'true' \| 'false' |
+| `input` | `aria-labelledby` | `label` 部件的 id |
+| `edit-trigger` | `aria-controls` | `input` 部件的 id |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/editable.css` 按部件选择：`[data-scope="editable"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-state` | 'edit' \| 'preview' |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `label` | `data-state` | 'edit' \| 'preview' |
+| `area` | `data-disabled` | ''（条件成立时才出现） |
+| `area` | `data-invalid` | ''（条件成立时才出现） |
+| `area` | `data-state` | 'edit' \| 'preview' |
+| `preview` | `data-activation-mode` | props.activationMode |
+| `preview` | `data-disabled` | ''（条件成立时才出现） |
+| `preview` | `data-invalid` | ''（条件成立时才出现） |
+| `preview` | `data-placeholder` | ''（条件成立时才出现） |
+| `preview` | `data-readonly` | ''（条件成立时才出现） |
+| `preview` | `data-state` | 'edit' \| 'preview' |
+| `input` | `data-auto-resize` | ''（条件成立时才出现） |
+| `input` | `data-disabled` | ''（条件成立时才出现） |
+| `input` | `data-invalid` | ''（条件成立时才出现） |
+| `input` | `data-state` | 'edit' \| 'preview' |
+| `edit-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `edit-trigger` | `data-state` | 'edit' \| 'preview' |
+| `submit-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `submit-trigger` | `data-state` | 'edit' \| 'preview' |
+| `cancel-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `cancel-trigger` | `data-state` | 'edit' \| 'preview' |
+| `control` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-state` | 'edit' \| 'preview' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-editable-area-min-h` · `--xh-editable-area-min-w` · `--xh-editable-control-gap` · `--xh-editable-gap` · `--xh-editable-input-bg` · `--xh-editable-input-bg-disabled` · `--xh-editable-input-bg-readonly` · `--xh-editable-input-border` · `--xh-editable-input-border-hover` · `--xh-editable-input-border-invalid` · `--xh-editable-input-fg` · `--xh-editable-input-font-size` · `--xh-editable-input-h` · `--xh-editable-input-px` · `--xh-editable-input-radius` · `--xh-editable-label-fg` · `--xh-editable-label-fg-disabled` · `--xh-editable-label-font-size` · `--xh-editable-label-font-weight` · `--xh-editable-placeholder-fg` · `--xh-editable-preview-bg-hover` · `--xh-editable-preview-fg` · `--xh-editable-preview-font-size` · `--xh-editable-preview-min-h` · `--xh-editable-preview-px` · `--xh-editable-preview-radius` · `--xh-editable-submit-bg` · `--xh-editable-submit-bg-active` · `--xh-editable-submit-bg-hover` · `--xh-editable-submit-border` · `--xh-editable-submit-border-active` · `--xh-editable-submit-border-hover` · `--xh-editable-submit-fg` · `--xh-editable-trigger-bg` · `--xh-editable-trigger-bg-active` · `--xh-editable-trigger-bg-disabled` · `--xh-editable-trigger-bg-hover` · `--xh-editable-trigger-border` · `--xh-editable-trigger-border-disabled` · `--xh-editable-trigger-border-hover` · `--xh-editable-trigger-fg` · `--xh-editable-trigger-font-size` · `--xh-editable-trigger-h` · `--xh-editable-trigger-px` · `--xh-editable-trigger-radius`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 放进[表格](./table)的单元格；与[表单](./form)配合做整表进出编辑态。
+
+## 最佳实践
+
+- 展示态要有可编辑的暗示（悬停时的底色或一枚铅笔），否则没人知道能点。
+- Escape 一定要能取消，且还原成原值。
+
+## 反模式
+
+- 失焦即提交却没有撤销：用户点到别处就把改动落库了。
+- 展示态和编辑态的行高不一样，进出编辑时整行跳动。

@@ -1,6 +1,22 @@
 # 时间选择器 <Badge type="info" text="time-picker" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+带浮层的时间录入：浮层里按时、分、秒分列滚动挑选。
+
+## 何时使用
+
+- 可选时间是离散的（每 15 分钟一档）。
+- 需要限制可选时段（营业时间、可预约时段）。
+
+## 何时不用
+
+- 任意时间都可以、用户会直接打字：用[时间输入](./time-field)。
+
+## 特性
+
+- `step` 分列设定各列的步长。
+- `max` 直接把界外的格从列里裁掉；分列还会随已选的时再裁一遍。
+- `isTimeUnavailable` 逐格判断可选性。
+- 浮层里可以放"此刻"与确认按钮。
 
 ## 示例
 
@@ -128,9 +144,21 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `XhTimePickerColumn` | `default` | `TimePickerColumnSlotProps` |  |
 | `XhTimePickerRoot` | `default` | `TimePickerRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'open' \| 'closed' |
+| `control` | 'open' \| 'closed' |
+| `trigger` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+| `column` | 'open' \| 'closed' |
+| `item` | 'checked' \| 'unchecked' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -208,8 +236,115 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `Alt+ArrowDown` | focus in 某一段, closed, not disabled | 展开浮层并把焦点送进去；触发钮是可选部件，键盘那条入口不能只挂在它身上 |
 | `Enter` | focus in 某一段, open | 收起浮层。段位里敲出来的值不触发「选完即收」（那时人还在打字），这是那条路的收口手势 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `control` | `aria-disabled` | 'true' \| 'false' |
+| `control` | `aria-invalid` | 'true' \| 'false' |
+| `control` | `aria-labelledby` | `label` 部件的 id |
+| `control` | `role` | 'group' |
+| `input` | `aria-disabled` | 'true' \| 'false' |
+| `input` | `aria-invalid` | 'true' \| 'false' |
+| `input` | `aria-label` | prop('translations')?.[segment] |
+| `input` | `aria-readonly` | 'true' \| 'false' |
+| `input` | `aria-required` | 'true' \| 'false' |
+| `input` | `aria-valuemax` | range.max |
+| `input` | `aria-valuemin` | range.min |
+| `input` | `aria-valuenow` | segmentNumber(draft, segment, hourCycle) |
+| `input` | `aria-valuetext` | timeSegmentText(draft, segment, { hourCycle, locale }) |
+| `input` | `role` | 'spinbutton' |
+| `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-expanded` | 'true' \| 'false' |
+| `trigger` | `aria-haspopup` | 'dialog' |
+| `trigger` | `aria-labelledby` | `label` 部件的 id |
+| `clear-trigger` | `aria-hidden` | 'true' |
+| `content` | `aria-labelledby` | `label` 部件的 id |
+| `content` | `aria-modal` | 'false' |
+| `content` | `role` | 'dialog' |
+| `column` | `aria-disabled` | 'true' \| 'false' |
+| `column` | `aria-label` | prop('translations')?.[unit] |
+| `column` | `aria-multiselectable` | 'false' |
+| `column` | `aria-orientation` | 'vertical' |
+| `column` | `role` | 'listbox' |
+| `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `aria-selected` | 'true' \| 'false' |
+| `item` | `role` | 'option' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/time-picker.css` 按部件选择：`[data-scope="time-picker"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-out-of-range` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-state` | 'open' \| 'closed' |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-empty` | ''（条件成立时才出现） |
+| `control` | `data-invalid` | ''（条件成立时才出现） |
+| `control` | `data-readonly` | ''（条件成立时才出现） |
+| `control` | `data-state` | 'open' \| 'closed' |
+| `input` | `data-disabled` | ''（条件成立时才出现） |
+| `input` | `data-focus` | ''（条件成立时才出现） |
+| `input` | `data-invalid` | ''（条件成立时才出现） |
+| `input` | `data-placeholder` | ''（条件成立时才出现） |
+| `input` | `data-readonly` | ''（条件成立时才出现） |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `positioner` | `data-hidden` | ''（条件成立时才出现） |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-size` | props.size |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-tone` | props.tone |
+| `positioner` | `data-variant` | props.variant |
+| `content` | `data-placement` | 定位引擎算出的实际落位 |
+| `content` | `data-state` | 'open' \| 'closed' |
+| `column` | `data-disabled` | ''（条件成立时才出现） |
+| `column` | `data-state` | 'open' \| 'closed' |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-highlighted` | ''（条件成立时才出现） |
+| `item` | `data-state` | 'checked' \| 'unchecked' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-time-picker-action-bg` · `--xh-time-picker-action-bg-active` · `--xh-time-picker-action-bg-hover` · `--xh-time-picker-action-fg` · `--xh-time-picker-action-fg-hover` · `--xh-time-picker-action-font-size` · `--xh-time-picker-action-radius` · `--xh-time-picker-action-size` · `--xh-time-picker-column-divider` · `--xh-time-picker-column-gap` · `--xh-time-picker-column-max-h` · `--xh-time-picker-column-min-w` · `--xh-time-picker-column-px` · `--xh-time-picker-content-bg` · `--xh-time-picker-content-border` · `--xh-time-picker-content-fg` · `--xh-time-picker-content-p` · `--xh-time-picker-content-radius` · `--xh-time-picker-content-shadow` · `--xh-time-picker-control-bg` · `--xh-time-picker-control-bg-disabled` · `--xh-time-picker-control-bg-readonly` · `--xh-time-picker-control-border` · `--xh-time-picker-control-border-focus` · `--xh-time-picker-control-border-hover` · `--xh-time-picker-control-border-invalid` · `--xh-time-picker-control-fg` · `--xh-time-picker-control-gap` · `--xh-time-picker-control-h` · `--xh-time-picker-control-px` · `--xh-time-picker-control-radius` · `--xh-time-picker-font-size` · `--xh-time-picker-gap` · `--xh-time-picker-item-bg-checked` · `--xh-time-picker-item-bg-checked-hover` · `--xh-time-picker-item-bg-hover` · `--xh-time-picker-item-fg` · `--xh-time-picker-item-fg-checked` · `--xh-time-picker-item-font-size` · `--xh-time-picker-item-px` · `--xh-time-picker-item-py` · `--xh-time-picker-item-radius` · `--xh-time-picker-item-weight-checked` · `--xh-time-picker-label-fg` · `--xh-time-picker-label-fg-disabled` · `--xh-time-picker-label-font-size` · `--xh-time-picker-label-font-weight` · `--xh-time-picker-segment-bg-focus` · `--xh-time-picker-segment-bg-hover` · `--xh-time-picker-segment-fg-focus` · `--xh-time-picker-segment-fg-placeholder` · `--xh-time-picker-segment-px` · `--xh-time-picker-segment-radius`
+
+## 动效
+
+关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 与[日期选择器](./date-picker)配合组成日期时间选择。
+
+## 最佳实践
+
+- 把不可选的时段裁掉而不是置灰，列会短很多、也更快找到。
+- 打开时把浮层滚到当前值那一格。
+
+## 反模式
+
+- 步长设成 1 分钟：一列六十格，滚起来没有尽头。

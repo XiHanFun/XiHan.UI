@@ -1,6 +1,23 @@
 # 表格 <Badge type="info" text="table" />
 
-数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+多行同构记录按列排开，支持排序、选择、展开与吸顶。
+
+## 何时使用
+
+- 每条记录有多个字段需要按列对照。
+- 需要排序、筛选、批量选择。
+
+## 何时不用
+
+- 每条只有标题和一句描述：用[列表](./list)，表格的列头是额外负担。
+- 移动端窄屏：横滚的表格很难用，考虑换成卡片列表。
+
+## 特性
+
+- 排序、选择、展开三套状态各自可受控。
+- 表头吸顶与列吸附、条纹、密度、边框都是开关。
+- 支持多行表头与表头分组、跨列单元格、树形表格、单元格就地编辑、列过滤、拖拽调列宽。
+- 行数很大时只渲窗口内的行。
 
 ## 示例
 
@@ -161,9 +178,16 @@ rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自
 | --- | --- | --- | --- |
 | `XhTableRoot` | `default` | `TableRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `select-all-trigger` | tableSelectionState(selection, selectableIds) |
+| `expanded-row` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -236,8 +260,109 @@ rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自
 | `Enter` / `Space` | focus on sort-trigger, 该列 sortable | 排序方向按 升序 → 降序 → 不排序 循环；按住 Shift 是追加到排序链而不是替换整条链 |
 | `Enter` / `Space` | focus on select-all-trigger, selectionMode=multiple | 当前可选行全选中就整段清空，否则整段选上；三态由 aria-checked 报出（半选为 mixed） |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-busy` | 'true' \| 'false' |
+| `root` | `aria-colcount` | columns.length \|\| undefined |
+| `root` | `aria-labelledby` | `caption` 部件的 id |
+| `root` | `aria-multiselectable` | 'true' \| 'false' |
+| `root` | `aria-rowcount` | HEADER_ROW_COUNT + visibleRows.length + (hasFooter ? … |
+| `root` | `role` | 'treegrid' \| 'grid' |
+| `header` | `role` | 'rowgroup' |
+| `body` | `role` | 'rowgroup' |
+| `footer` | `role` | 'rowgroup' |
+| `row` | `aria-controls` | `detail` 部件的 id \| undefined |
+| `row` | `aria-disabled` | 'true' \| 'false' |
+| `row` | `aria-expanded` | 'true' \| 'false' \| undefined |
+| `row` | `aria-level` | 1 \| undefined |
+| `row` | `aria-posinset` | rowPosition.get(row.value) \| undefined |
+| `row` | `aria-rowindex` | dataRowIndex.get(row.value) |
+| `row` | `aria-selected` | 'true' \| 'false' \| undefined |
+| `row` | `aria-setsize` | dataRows.length \| undefined |
+| `row` | `role` | 'row' |
+| `column-header` | `aria-colindex` | columnIndex.get(column.value) |
+| `column-header` | `aria-sort` | 'ascending' \| 'descending' \| 'none' \| undefined |
+| `column-header` | `role` | 'columnheader' |
+| `cell` | `aria-colindex` | columnIndex.get(cell.value) |
+| `cell` | `aria-colspan` | cell.colSpan \| undefined |
+| `cell` | `role` | 'gridcell' |
+| `select-all-trigger` | `aria-checked` | 'true' \| 'mixed' \| 'false' |
+| `select-all-trigger` | `aria-disabled` | 'false' \| 'true' |
+| `select-all-trigger` | `role` | 'checkbox' |
+| `row-select-trigger` | `aria-hidden` | 'true' |
+| `sort-trigger` | `aria-disabled` | 'false' \| 'true' |
+| `sort-trigger` | `role` | 'button' |
+| `expand-trigger` | `aria-hidden` | 'true' |
+| `expanded-row` | `aria-level` | 2 \| undefined |
+| `expanded-row` | `aria-posinset` | 1 \| undefined |
+| `expanded-row` | `aria-rowindex` | detailRowIndex.get(row.value) |
+| `expanded-row` | `aria-setsize` | 1 \| undefined |
+| `expanded-row` | `role` | 'row' |
+| `header-row` | `aria-rowindex` | 1 |
+| `footer-row` | `aria-rowindex` | HEADER_ROW_COUNT + visibleRows.length + (hasFooter ? … \| undefined |
+| `header-row` | `role` | 'row' |
+| `footer-row` | `role` | 'row' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/table.css` 按部件选择：`[data-scope="table"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-borderless` | ''（条件成立时才出现） |
+| `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-loading` | ''（条件成立时才出现） |
+| `root` | `data-ruled` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-sticky` | ''（条件成立时才出现） |
+| `root` | `data-striped` | ''（条件成立时才出现） |
+| `header` | `data-sticky` | ''（条件成立时才出现） |
+| `body` | `data-empty` | ''（条件成立时才出现） |
+| `row` | `data-section` | 'body' |
+| `column-header` | `data-sortable` | ''（条件成立时才出现） |
+| `cell` | `data-disabled` | ''（条件成立时才出现） \| undefined |
+| `cell` | `data-selected` | ''（条件成立时才出现） \| undefined |
+| `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `select-all-trigger` | `data-state` | tableSelectionState(selection, selectableIds) |
+| `sort-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `expanded-row` | `data-state` | 'open' \| 'closed' |
+| `header-row` | `data-section` | 'header' |
+| `footer-row` | `data-section` | 'footer' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-table-bg` · `--xh-table-border` · `--xh-table-caption-fg` · `--xh-table-caption-font-size` · `--xh-table-caption-font-weight` · `--xh-table-caption-px` · `--xh-table-caption-py` · `--xh-table-cell-gap` · `--xh-table-cell-min-w` · `--xh-table-cell-px` · `--xh-table-cell-py` · `--xh-table-cell-py-lg` · `--xh-table-cell-py-md` · `--xh-table-cell-py-sm` · `--xh-table-column-fg` · `--xh-table-column-font-weight` · `--xh-table-detail-bg` · `--xh-table-detail-px` · `--xh-table-detail-py` · `--xh-table-expand-fg` · `--xh-table-fg` · `--xh-table-font-size` · `--xh-table-footer-bg` · `--xh-table-footer-font-weight` · `--xh-table-header-bg` · `--xh-table-max-h` · `--xh-table-radius` · `--xh-table-row-bg` · `--xh-table-row-bg-hover` · `--xh-table-row-bg-selected` · `--xh-table-row-bg-striped` · `--xh-table-row-border` · `--xh-table-sort-fg` · `--xh-table-sort-fg-active` · `--xh-table-sort-gap` · `--xh-table-state-fg` · `--xh-table-state-gap` · `--xh-table-state-min-h` · `--xh-table-state-px` · `--xh-table-state-py` · `--xh-table-sticky-column-z` · `--xh-table-sticky-header-z` · `--xh-table-sticky-inset` · `--xh-table-trigger-bg-checked` · `--xh-table-trigger-border` · `--xh-table-trigger-border-checked` · `--xh-table-trigger-fg` · `--xh-table-trigger-radius` · `--xh-table-trigger-size`
+
+## 动效
+
+关键帧 `xh-table-loading-pulse` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
+
+## 组合
+
+- 单元格里放[就地编辑](./editable)、[徽标](./badge)、[头像](./avatar)；下面接[分页](./pagination)；空态用[空状态](./empty-state)。
+
+## 最佳实践
+
+- 列宽尽量固定，别让内容长度决定列宽——翻页时整张表会重排。
+- 批量选择要显示已选条数，并在跨页时说明选中范围。
+
+## 反模式
+
+- 列多到必须横滚却不吸附首列：滚过去就不知道哪一行是哪一行。
+- 用表格做页面布局。

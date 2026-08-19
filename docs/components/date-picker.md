@@ -1,6 +1,23 @@
 # 日期选择器 <Badge type="info" text="date-picker" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+带日历浮层的日期录入：输入框可以打字，浮层里可以挑。
+
+## 何时使用
+
+- 用户需要看着日历判断（星期几、离今天多远、区间有多长）。
+- 需要选区间，或需要日期加时间。
+
+## 何时不用
+
+- 用户已经知道确切日期且只想打字：用[日期输入](./date-field)。
+- 只要时间：用[时间选择器](./time-picker)。
+
+## 特性
+
+- 五种粒度（周 / 月 / 季度 / 年 / 日）走同一套结构。
+- `selectionMode` 支持单选与区间；区间的两端各有自己的 `name`。
+- `isDateUnavailable` 逐日判断可选性。
+- 浮层里可以放快捷选项与确认按钮，`closeOnSelect` 决定选完就关还是等确认。
 
 ## 示例
 
@@ -140,9 +157,21 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `XhDatePickerRoot` | `default` | `DatePickerRootSlotProps` |  |
 | `XhDatePickerSegment` | `default` | `DatePickerSegmentSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'open' \| 'closed' |
+| `control` | 'open' \| 'closed' |
+| `trigger` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+| `calendar` | 'open' \| 'closed' |
+| `time-item` | 'checked' \| 'unchecked' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -204,8 +233,106 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `Alt+ArrowDown` | focus in 某一段, closed, not disabled | 展开浮层并把焦点送进去；触发钮是可选部件，键盘那条入口不能只挂在它身上 |
 | `Enter` | focus in 某一段, open | 收起浮层。段位里敲出来的值不触发「选完即收」（那时人还在打字），这是那条路的收口手势 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `input` | `aria-disabled` | 'true' \| 'false' |
+| `input` | `aria-label` | label.endDate \| label.startDate \| undefined |
+| `input` | `aria-labelledby` | undefined \| `label` 部件的 id |
+| `input` | `role` | 'group' |
+| `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-expanded` | 'true' \| 'false' |
+| `trigger` | `aria-haspopup` | 'dialog' |
+| `trigger` | `aria-labelledby` | `label` 部件的 id |
+| `clear-trigger` | `aria-hidden` | 'true' |
+| `content` | `aria-labelledby` | `label` 部件的 id |
+| `content` | `aria-modal` | 'false' |
+| `content` | `role` | 'dialog' |
+| `time-column` | `aria-disabled` | 'true' \| 'false' |
+| `time-column` | `aria-label` | live[at]!.getAttribute('data-unit') as DatePickerTime… |
+| `time-column` | `aria-multiselectable` | 'false' |
+| `time-column` | `aria-orientation` | 'vertical' |
+| `time-column` | `role` | 'listbox' |
+| `time-item` | `aria-selected` | 'true' \| 'false' |
+| `time-item` | `role` | 'option' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/date-picker.css` 按部件选择：`[data-scope="date-picker"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-state` | 'open' \| 'closed' |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-invalid` | ''（条件成立时才出现） |
+| `control` | `data-readonly` | ''（条件成立时才出现） |
+| `control` | `data-state` | 'open' \| 'closed' |
+| `input` | `data-complete` | ''（条件成立时才出现） |
+| `input` | `data-disabled` | ''（条件成立时才出现） |
+| `input` | `data-empty` | ''（条件成立时才出现） |
+| `input` | `data-index` | String(index) |
+| `input` | `data-invalid` | ''（条件成立时才出现） |
+| `input` | `data-out-of-range` | ''（条件成立时才出现） |
+| `input` | `data-readonly` | ''（条件成立时才出现） |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `positioner` | `data-hidden` | ''（条件成立时才出现） |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-size` | props.size |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-tone` | props.tone |
+| `positioner` | `data-variant` | props.variant |
+| `content` | `data-placement` | 定位引擎算出的实际落位 |
+| `content` | `data-state` | 'open' \| 'closed' |
+| `calendar` | `data-disabled` | ''（条件成立时才出现） |
+| `calendar` | `data-readonly` | ''（条件成立时才出现） |
+| `calendar` | `data-state` | 'open' \| 'closed' |
+| `time-column` | `data-unit` | live[at]!.getAttribute('data-unit') as DatePickerTime… |
+| `time-item` | `data-state` | 'checked' \| 'unchecked' |
+| `time-item` | `data-unit` | live[at]!.getAttribute('data-unit') as DatePickerTime… |
+| `time-item` | `data-value` | v |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-date-picker-action-bg` · `--xh-date-picker-action-bg-active` · `--xh-date-picker-action-bg-hover` · `--xh-date-picker-action-fg` · `--xh-date-picker-action-fg-hover` · `--xh-date-picker-action-font-size` · `--xh-date-picker-action-radius` · `--xh-date-picker-action-size` · `--xh-date-picker-calendar-gap` · `--xh-date-picker-confirm-bg` · `--xh-date-picker-confirm-bg-hover` · `--xh-date-picker-confirm-fg` · `--xh-date-picker-content-bg` · `--xh-date-picker-content-border` · `--xh-date-picker-content-fg` · `--xh-date-picker-content-p` · `--xh-date-picker-content-radius` · `--xh-date-picker-content-shadow` · `--xh-date-picker-control-bg` · `--xh-date-picker-control-bg-disabled` · `--xh-date-picker-control-bg-readonly` · `--xh-date-picker-control-border` · `--xh-date-picker-control-border-focus` · `--xh-date-picker-control-border-hover` · `--xh-date-picker-control-border-invalid` · `--xh-date-picker-control-fg` · `--xh-date-picker-control-gap` · `--xh-date-picker-control-h` · `--xh-date-picker-control-min-w` · `--xh-date-picker-control-px` · `--xh-date-picker-control-radius` · `--xh-date-picker-font-size` · `--xh-date-picker-gap` · `--xh-date-picker-label-fg` · `--xh-date-picker-label-fg-disabled` · `--xh-date-picker-label-font-size` · `--xh-date-picker-label-font-weight` · `--xh-date-picker-max-h` · `--xh-date-picker-panel-divider` · `--xh-date-picker-panel-gap` · `--xh-date-picker-time-column-gap` · `--xh-date-picker-time-column-h` · `--xh-date-picker-time-item-bg-hover` · `--xh-date-picker-time-item-bg-selected` · `--xh-date-picker-time-item-fg-selected`
+
+## 动效
+
+关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 外面套[表单字段](./field)；快捷选项用[按钮](./button)。
+
+## 最佳实践
+
+- 区间选择要显示已选天数，用户在挑的往往是"多长"而不是"哪两天"。
+- 不可选的日子要给出原因（已约满、超出范围），只置灰用户会反复点。
+
+## 反模式
+
+- 默认值是今天却不告诉用户这是默认——他会以为自己已经选过了。
+- 浮层一打开就盖住输入框，用户看不见自己输了什么。

@@ -1,6 +1,22 @@
 # 警告提示 <Badge type="info" text="alert" />
 
-反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+页面里常驻的一条提示：说明一件与当前上下文有关的事。
+
+## 何时使用
+
+- 表单顶部的整体错误、页面级的状态说明、功能公告。
+- 信息需要一直在，直到用户处理或关闭。
+
+## 何时不用
+
+- 只是一次操作的结果反馈：用[轻提示](./toast)——它会自己消失。
+- 需要用户当场做决定并阻断流程：用[对话框](./dialog)。
+- 是一个字段的错误：用[表单字段](./field)的错误文本。
+
+## 特性
+
+- 语气决定用哪族颜色，图标由作者放。
+- `closable` 给出关闭按钮，关闭态可受控。
 
 ## 示例
 
@@ -68,9 +84,15 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 | --- | --- | --- |
 | `open-change` | `AlertOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -102,8 +124,54 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 | --- | --- | --- |
 | `Enter` / `Space` | focus 在 close-trigger 上且 closable | 收起提示并通知 open=false |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-atomic` | 'true' |
+| `root` | `aria-describedby` | `description` 部件的 id |
+| `root` | `aria-labelledby` | `title` 部件的 id |
+| `root` | `aria-live` | live |
+| `root` | `role` | role |
+| `icon` | `aria-hidden` | 'true' |
+| `close-trigger` | `aria-label` | props.translations.close |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/alert.css` 按部件选择：`[data-scope="alert"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-state` | 'open' \| 'closed' |
+| `root` | `data-tone` | props.tone |
+| `close-trigger` | `data-disabled` | ''（条件成立时才出现） |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-alert-bg` · `--xh-alert-border` · `--xh-alert-close-fg` · `--xh-alert-close-fg-hover` · `--xh-alert-close-radius` · `--xh-alert-close-size` · `--xh-alert-description-fg` · `--xh-alert-description-font-size` · `--xh-alert-fg` · `--xh-alert-font-size` · `--xh-alert-gap` · `--xh-alert-icon-fg` · `--xh-alert-icon-size` · `--xh-alert-leading` · `--xh-alert-px` · `--xh-alert-py` · `--xh-alert-radius` · `--xh-alert-title-fg` · `--xh-alert-title-font-size` · `--xh-alert-title-font-weight` · `--xh-alert-title-leading`
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 图标用[图标](./icon)；里面的行动入口用[按钮](./button)。
+
+## 最佳实践
+
+- 说清楚发生了什么、影响是什么、用户能做什么，三样缺一不可。
+- 语气别只靠颜色，标题文字本身就要说明严重程度。
+
+## 反模式
+
+- 一屏堆好几条提示：用户会全部略过。
+- 用它做营销位。

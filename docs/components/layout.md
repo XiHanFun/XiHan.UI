@@ -1,6 +1,24 @@
 # 布局 <Badge type="info" text="layout" />
 
-布局组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一整页的骨架：头与脚各横贯一行，侧栏与内容并排占中间那一行。少写一段就少一行或少一列。
+
+## 何时使用
+
+- 搭一个应用外壳：管理后台、控制台、文档站。
+- 侧栏需要折叠，且折叠时节点仍在（只改宽度，不卸载）。
+
+## 何时不用
+
+- 只是把几个块并排：用[弹性布局](./flex)或[栅格](./grid)。
+- 两块区域之间要由用户拖动分配空间：用[分栏](./splitter)。
+- 侧栏本身是一棵可展开的导航树：布局只出壳，树交给[侧栏导航](./side-nav)。
+
+## 特性
+
+- 六个部件都可选，只写用得上的那几段。
+- 折叠只改宽度，侧栏节点一直在：里面的滚动位置与焦点不会丢。
+- 展开与折叠各一档宽度，两档都接受任意 CSS 长度。
+- `headerFixed` 与 `siderFixed` 各自独立；两个一起用时侧栏自动让开头的高度。
 
 ## 示例
 
@@ -84,9 +102,16 @@ header-fixed 让头钉在滚动容器上沿，sider-fixed 让侧栏跟着钉住�
 | --- | --- | --- |
 | `sider-collapsed-change` | `LayoutSiderCollapsedChangeDetails` | 折叠态变化；detail 为 `{ collapsed: boolean }` |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `sider` | 'collapsed' \| 'expanded' |
+| `sider-trigger` | 'collapsed' \| 'expanded' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`expanded` · `collapsed`
 
@@ -117,8 +142,62 @@ header-fixed 让头钉在滚动容器上沿，sider-fixed 让侧栏跟着钉住�
 | --- | --- | --- |
 | `Space` / `Enter` | focus in sider-trigger | 折叠/展开 sider |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `sider-trigger` | `aria-controls` | `sider` 部件的 id |
+| `sider-trigger` | `aria-expanded` | 'false' \| 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/layout.css` 按部件选择：`[data-scope="layout"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-bordered` | ''（条件成立时才出现） |
+| `root` | `data-header-fixed` | ''（条件成立时才出现） |
+| `root` | `data-sider-collapsed` | ''（条件成立时才出现） |
+| `root` | `data-sider-fixed` | ''（条件成立时才出现） |
+| `root` | `data-sider-placement` | props.siderPlacement |
+| `header` | `data-fixed` | ''（条件成立时才出现） |
+| `sider` | `data-fixed` | ''（条件成立时才出现） |
+| `sider` | `data-placement` | props.siderPlacement |
+| `sider` | `data-state` | 'collapsed' \| 'expanded' |
+| `sider-trigger` | `data-state` | 'collapsed' \| 'expanded' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-layout-bg` · `--xh-layout-border` · `--xh-layout-fg` · `--xh-layout-footer-bg` · `--xh-layout-header-bg` · `--xh-layout-header-h` · `--xh-layout-header-layer` · `--xh-layout-scrollport-h` · `--xh-layout-sider-bg` · `--xh-layout-sider-collapsed-width` · `--xh-layout-sider-trigger-bg` · `--xh-layout-sider-trigger-bg-hover` · `--xh-layout-sider-trigger-fg` · `--xh-layout-sider-trigger-radius` · `--xh-layout-sider-width`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- `sider` 里放[侧栏导航](./side-nav)，`header` 里放[菜单栏](./menubar)或[工具栏](./toolbar)，`content` 里放[页头](./page-header)。
+
+## 最佳实践
+
+- 内容区自己定高、内部滚动，别让整页滚动——吸顶的头与侧栏才立得住。
+- 折叠态的宽度要放得下图标加内边距，否则图标会被裁。
+
+## 反模式
+
+- 折叠时把侧栏整个卸载再挂回来：展开的分支、滚动位置、焦点全部重置。
+- 头和侧栏都不吸附却给它们设了 `position: fixed`：占位没了，内容会被盖住。

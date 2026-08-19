@@ -1,6 +1,21 @@
 # 弹出选择 <Badge type="info" text="popselect" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一个触发器加一张选项浮层：比选择器轻，没有输入框也不参与表单。
+
+## 何时使用
+
+- 就地切换一个视图参数（排序方式、显示密度），不属于任何表单。
+- 触发器本身就是当前值的显示位（一段文字、一个图标按钮）。
+
+## 何时不用
+
+- 值要随表单提交：用[选择器](./select)。
+- 条目是命令：用[菜单](./menu)。
+
+## 特性
+
+- 单选与多选都支持，条目带标记位。
+- 形态、语气、尺寸三轴与其余选择类组件同源。
 
 ## 示例
 
@@ -75,6 +90,17 @@ multiple 下落值是切换、浮层不收起，可以接着挑；收起交给 E
 | --- | --- | --- | --- |
 | `XhPopselectRoot` | `default` | `PopselectRootSlotProps` |  |
 
+## 状态
+
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'open' \| 'closed' |
+| `trigger` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+
 ## connect API
 
 `usePopselect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
@@ -115,8 +141,76 @@ multiple 下落值是切换、浮层不收起，可以接着挑；收起交给 E
 | `单个可打印字符` | focus in content, typeahead 未关 | 连打检索把焦点移到首字母匹配的条目，不落值 |
 | `Tab` / `Shift+Tab` | focus in content | 收起浮层并放行焦点，按 Tab 序列离开 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-expanded` | 'true' \| 'false' |
+| `trigger` | `aria-haspopup` | 'listbox' |
+| `content` | `aria-disabled` | 'true' \| 'false' |
+| `content` | `aria-labelledby` | `trigger` 部件的 id |
+| `content` | `aria-multiselectable` | 'true' \| 'false' |
+| `content` | `role` | 'listbox' |
+| `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `aria-selected` | 'true' \| 'false' |
+| `item` | `role` | 'option' |
+| `item-indicator` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/popselect.css` 按部件选择：`[data-scope="popselect"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-state` | 'open' \| 'closed' |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-placeholder` | ''（条件成立时才出现） |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-hidden` | ''（条件成立时才出现） |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-size` | props.size |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-tone` | props.tone |
+| `positioner` | `data-variant` | props.variant |
+| `content` | `data-placement` | 定位引擎算出的实际落位 |
+| `content` | `data-state` | 'open' \| 'closed' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-popselect-content-bg` · `--xh-popselect-content-border` · `--xh-popselect-content-fg` · `--xh-popselect-content-max-h` · `--xh-popselect-content-max-w` · `--xh-popselect-content-min-w` · `--xh-popselect-content-p` · `--xh-popselect-content-radius` · `--xh-popselect-content-shadow` · `--xh-popselect-item-bg-hover` · `--xh-popselect-item-fg` · `--xh-popselect-item-fg-selected` · `--xh-popselect-item-font-size` · `--xh-popselect-item-font-weight-selected` · `--xh-popselect-item-gap` · `--xh-popselect-item-indicator-fg` · `--xh-popselect-item-indicator-size` · `--xh-popselect-item-leading` · `--xh-popselect-item-px` · `--xh-popselect-item-py` · `--xh-popselect-item-radius` · `--xh-popselect-placeholder-fg` · `--xh-popselect-trigger-bg` · `--xh-popselect-trigger-border` · `--xh-popselect-trigger-border-hover` · `--xh-popselect-trigger-fg` · `--xh-popselect-trigger-font-size` · `--xh-popselect-trigger-gap` · `--xh-popselect-trigger-h` · `--xh-popselect-trigger-px` · `--xh-popselect-trigger-radius`
+
+## 动效
+
+关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 触发器用[按钮](./button)；放进[工具栏](./toolbar)。
+
+## 最佳实践
+
+- 触发器上显示当前值，别只显示一个名词。
+- 选项控制在十项以内，多了就换[选择器](./select)。
+
+## 反模式
+
+- 拿它做表单字段：没有 `name`，也没有标签关联。

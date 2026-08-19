@@ -1,6 +1,22 @@
 # 二维码 <Badge type="info" text="qr-code" />
 
-数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+把一段文本画成二维码。
+
+## 何时使用
+
+- 跨设备传递地址、配对码、票据。
+
+## 何时不用
+
+- 用户就在这台设备上：给一条可点的链接。
+- 内容很长：二维码会密到扫不出来，改成短链。
+
+## 特性
+
+- `level` 四档纠错（L / M / Q / H）：越高越能容忍污损，同样的内容也因此占更多模块。
+- `moduleShape` 与 `eyeShape` 换码点与码眼的形状；三种形状的墨都盖住每个模块的格心，读码器按格心取样。
+- `margin` 是静区，`pixelSize` 是边长。
+- 中心可以放 logo，配色可换。
 
 ## 示例
 
@@ -80,6 +96,14 @@ square / dot / rounded；三种形状的墨都盖住每个模块的格心，读�
 | `pixelSize` | `number` |  | 像素边长，缺省 160；写成根上的内联宽高。 |
 | `value` | `string` |  | 要编码的内容，按 UTF-8 取字节走字节模式；空串不画码。 |
 
+## 状态
+
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'empty' |
+
 ## connect API
 
 `connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
@@ -107,8 +131,49 @@ square / dot / rounded；三种形状的墨都盖住每个模块的格心，读�
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-hidden` | 'true' \| undefined |
+| `root` | `aria-label` | undefined \| props.label |
+| `root` | `role` | undefined \| 'img' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/qr-code.css` 按部件选择：`[data-scope="qr-code"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-level` | props.level |
+| `root` | `data-logo` | ''（条件成立时才出现） |
+| `root` | `data-modules` | undefined \| String(count) |
+| `root` | `data-state` | 'empty' |
+| `root` | `data-version` | undefined \| String(version) |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-qr-code-bg` · `--xh-qr-code-eye-fg` · `--xh-qr-code-fg` · `--xh-qr-code-placeholder-bg` · `--xh-qr-code-placeholder-border` · `--xh-qr-code-radius`
+
+## 组合
+
+- 外面套[卡片](./card)；旁边配[剪贴板](./clipboard)给出文本形式的同一内容。
+
+## 最佳实践
+
+- 放 logo 就把纠错级别提到 Q 或 H，否则遮住的模块补不回来。
+- 静区不能省，贴边的二维码扫不出来。
+- 旁边同时给出文本或链接：不是所有人都能扫。
+
+## 反模式
+
+- 深色主题下直接反色：读码器默认深码点浅底，反色的码很多设备扫不出来。
+- 二维码印得太小。

@@ -1,6 +1,24 @@
 # 表单 <Badge type="info" text="form" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一整张表的值、校验与提交：字段各自录入，表单负责汇总、校验和拦下不合格的提交。
+
+## 何时使用
+
+- 多个字段需要一起提交，且存在跨字段规则。
+- 需要统一的校验时机与错误汇总。
+
+## 何时不用
+
+- 只有一两个立即生效的开关：直接改，别包表单。
+- 只是要一格标签加控件：用[表单字段](./field)。
+
+## 特性
+
+- `validateOn` 决定何时校验：输入时、失焦时还是提交时。
+- 支持异步校验、跨字段规则与手动触发入口。
+- 嵌套模型走路径字段名，字段值表与业务模型形状一致。
+- 错误汇总（`error-summary`）把所有错误列在一处，每条都能点回对应字段。
+- "提醒但不拦下"是一档独立行为：警告级的问题不阻断提交。
 
 ## 示例
 
@@ -142,9 +160,16 @@ layout 三档：vertical 竖排（默认）、horizontal 标签左置两列（la
 | `XhFormFieldGroup` | `default` | `FormFieldGroupSlotProps` |  |
 | `XhFormRoot` | `default` | `FormRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'invalid' \| 'idle' |
+| `error-summary` | 'invalid' \| 'idle' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `invalid`
 
@@ -192,8 +217,65 @@ layout 三档：vertical 竖排（默认）、horizontal 标签左置两列（la
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `error-summary` | `role` | 'alert' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/form.css` 按部件选择：`[data-scope="form"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-label-align` | props.labelAlign |
+| `root` | `data-layout` | props.layout |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-state` | 'invalid' \| 'idle' |
+| `field-group` | `data-disabled` | ''（条件成立时才出现） |
+| `field-group` | `data-invalid` | ''（条件成立时才出现） |
+| `field-group` | `data-readonly` | ''（条件成立时才出现） |
+| `error-summary` | `data-count` | String(errorCount) |
+| `error-summary` | `data-state` | 'invalid' \| 'idle' |
+| `error-summary-item` | `data-invalid` | ''（条件成立时才出现） |
+| `submit-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `reset-trigger` | `data-disabled` | ''（条件成立时才出现） |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-form-field-gap` · `--xh-form-field-invalid-border` · `--xh-form-field-invalid-px` · `--xh-form-gap` · `--xh-form-inline-gap` · `--xh-form-submit-bg` · `--xh-form-submit-bg-active` · `--xh-form-submit-bg-hover` · `--xh-form-submit-border` · `--xh-form-submit-border-active` · `--xh-form-submit-border-hover` · `--xh-form-submit-fg` · `--xh-form-summary-bg` · `--xh-form-summary-border` · `--xh-form-summary-fg` · `--xh-form-summary-font-size` · `--xh-form-summary-gap` · `--xh-form-summary-item-fg-hover` · `--xh-form-summary-item-font-size` · `--xh-form-summary-px` · `--xh-form-summary-py` · `--xh-form-summary-radius` · `--xh-form-summary-shadow` · `--xh-form-trigger-bg` · `--xh-form-trigger-bg-active` · `--xh-form-trigger-bg-disabled` · `--xh-form-trigger-bg-hover` · `--xh-form-trigger-border` · `--xh-form-trigger-border-disabled` · `--xh-form-trigger-border-hover` · `--xh-form-trigger-fg` · `--xh-form-trigger-font-size` · `--xh-form-trigger-h` · `--xh-form-trigger-px` · `--xh-form-trigger-radius`
+
+## 动效
+
+关键帧 `xh-form-summary-enter` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 每格用[表单字段](./field)；分步表单与[步骤条](./steps)配合；行数可变的段落用[动态录入](./dynamic-input)。
+
+## 最佳实践
+
+- 首次校验放在失焦而不是输入时：边打字边报红会让用户觉得自己一直在犯错。
+- 提交失败后把焦点移到错误汇总或第一个出错字段。
+
+## 反模式
+
+- 提交按钮长期禁用直到全部合法：用户不知道还差什么。让他按下去，然后告诉他哪里不对。
+- 校验规则只写在前端。

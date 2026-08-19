@@ -1,6 +1,24 @@
 # 会话线程 <Badge type="info" text="thread" />
 
-AI 对话组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+对话消息的滚动容器：新消息来了自动跟到底部，用户往上翻时停住。
+
+## 何时使用
+
+- AI 对话、聊天记录的消息区。
+- 消息是流式追加的，需要粘底行为。
+
+## 何时不用
+
+- 是普通的长列表：用[滚动区域](./scroll-area)加[虚拟滚动](./virtualizer)。
+- 内容不会追加。
+
+## 特性
+
+- 三层必备：`root` · `viewport` · `content`。
+- `threshold` 决定离底多近还算"粘着"；用户往上翻即脱离，回到底部自动恢复。
+- `status` 驱动读屏播报（`live-region`）：流式生成时不能每个字都播报。
+- 内置"回到底部"入口，也可以自己画。
+- 支持向上加载更早的消息，加载后保持视觉位置不跳。
 
 ## 示例
 
@@ -93,9 +111,15 @@ stick-change 报到底，宿主据此去取下一页；先往上滚一段再滚�
 | --- | --- | --- | --- |
 | `XhThreadRoot` | `default` | `ThreadRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `scroll-button` | 'visible' \| 'hidden' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -127,8 +151,60 @@ stick-change 报到底，宿主据此去取下一页；先往上滚一段再滚�
 | `Tab` | 焦点进入消息区 | 消息区自身可聚焦，方向键/PageUp/PageDown 交给浏览器滚动，组件不接管 |
 | `Space` / `Enter` | 焦点在"回到底部"按钮上 | 滚回底部并重新粘附 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `viewport` | `aria-label` | label.log |
+| `viewport` | `aria-live` | 'off' |
+| `viewport` | `role` | 'log' |
+| `scroll-button` | `aria-label` | label.scrollToBottom |
+| `live-region` | `aria-atomic` | 'true' |
+| `live-region` | `aria-live` | 'polite' |
+| `live-region` | `role` | 'status' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/thread.css` 按部件选择：`[data-scope="thread"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-status` | props.status |
+| `viewport` | `data-status` | props.status |
+| `scroll-button` | `data-state` | 'visible' \| 'hidden' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-thread-content-gap` · `--xh-thread-content-py` · `--xh-thread-scroll-button-bg` · `--xh-thread-scroll-button-bg-active` · `--xh-thread-scroll-button-bg-hover` · `--xh-thread-scroll-button-border` · `--xh-thread-scroll-button-fg` · `--xh-thread-scroll-button-font-size` · `--xh-thread-scroll-button-font-weight` · `--xh-thread-scroll-button-gap` · `--xh-thread-scroll-button-h` · `--xh-thread-scroll-button-inset` · `--xh-thread-scroll-button-px` · `--xh-thread-scroll-button-radius` · `--xh-thread-scroll-button-shadow`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 下面接[消息编辑器](./composer)；消息里放[代码块](./code-block)与 `@xihan-ui/markdown`。
+
+## 最佳实践
+
+- 用户往上翻时绝不要强行拉回底部。
+- 向上加载更早消息后要补偿滚动位置，否则视野会突然跳走。
+
+## 反模式
+
+- 流式生成时每个增量都播报给读屏：用户什么也听不清。
+- 新消息到达时无条件滚到底，哪怕用户正在上面读。

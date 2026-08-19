@@ -1,6 +1,21 @@
 # 走马灯 <Badge type="info" text="carousel" />
 
-数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+在同一块区域里轮播若干张内容，一次显示一屏。
+
+## 何时使用
+
+- 首屏的营销位、图片画廊这类"内容并列且用户不急着全看"的场景。
+
+## 何时不用
+
+- 每一张都重要、都需要被看到：并排铺开或做成[列表](./list)——轮播里第二张之后的点击率极低。
+- 内容是导航入口。
+
+## 特性
+
+- `slidesPerPage` 与 `slidesPerMove` 分开：可以一屏三张、一次挪一张。
+- 支持纵向轨道、指针拖拽、回绕与自动播放。
+- 指示点可以做成悬停即切页。
 
 ## 示例
 
@@ -108,9 +123,9 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | --- | --- | --- | --- |
 | `XhCarouselRoot` | `default` | `CarouselRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `playing` · `playing.running` · `playing.paused`
 
@@ -170,8 +185,80 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | `Tab` / `Shift+Tab` | 任意时刻 | 在两端按钮与各指示点之间逐个停靠；到端点后禁用的按钮自动脱序 |
 | `方向键` | 焦点在幻灯片内的输入控件上 | 不接管：交还给控件自己做光标移动 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-label` | label.root |
+| `root` | `aria-roledescription` | 'carousel' |
+| `root` | `role` | 'region' |
+| `viewport` | `aria-atomic` | 'false' |
+| `viewport` | `aria-live` | 'off' \| 'polite' |
+| `item` | `aria-label` | label.item(index + 1, slideCount) |
+| `item` | `aria-roledescription` | 'slide' |
+| `item` | `role` | 'group' |
+| `prev-trigger` | `aria-controls` | `viewport` 部件的 id |
+| `prev-trigger` | `aria-label` | label.prevTrigger |
+| `next-trigger` | `aria-controls` | `viewport` 部件的 id |
+| `next-trigger` | `aria-label` | label.nextTrigger |
+| `indicator-group` | `aria-label` | label.indicatorGroup |
+| `indicator-group` | `role` | 'group' |
+| `indicator` | `aria-current` | 'true' \| 'false' |
+| `indicator` | `aria-label` | label.indicator(index + 1) |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/carousel.css` 按部件选择：`[data-scope="carousel"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-autoplay` | ''（条件成立时才出现） |
+| `root` | `data-dragging` | ''（条件成立时才出现） |
+| `root` | `data-orientation` | props.orientation |
+| `root` | `data-paused` | ''（条件成立时才出现） |
+| `viewport` | `data-dragging` | ''（条件成立时才出现） |
+| `viewport` | `data-orientation` | props.orientation |
+| `item-group` | `data-dragging` | ''（条件成立时才出现） |
+| `item-group` | `data-orientation` | props.orientation |
+| `item` | `data-index` | String(index) |
+| `item` | `data-inview` | ''（条件成立时才出现） |
+| `item` | `data-orientation` | props.orientation |
+| `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `prev-trigger` | `data-orientation` | props.orientation |
+| `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `next-trigger` | `data-orientation` | props.orientation |
+| `indicator-group` | `data-orientation` | props.orientation |
+| `indicator` | `data-index` | String(index) |
+| `indicator` | `data-selected` | ''（条件成立时才出现） |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-carousel-duration` · `--xh-carousel-ease` · `--xh-carousel-gap` · `--xh-carousel-indicator-bg` · `--xh-carousel-indicator-bg-hover` · `--xh-carousel-indicator-bg-selected` · `--xh-carousel-indicator-gap` · `--xh-carousel-indicator-radius` · `--xh-carousel-indicator-size` · `--xh-carousel-trigger-bg` · `--xh-carousel-trigger-bg-active` · `--xh-carousel-trigger-bg-hover` · `--xh-carousel-trigger-border` · `--xh-carousel-trigger-fg` · `--xh-carousel-trigger-radius` · `--xh-carousel-trigger-size` · `--xh-carousel-viewport-radius`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+
+## 组合
+
+- 每一张放[图片](./image)或[卡片](./card)。
+
+## 最佳实践
+
+- 自动播放要能暂停，且指针悬停或焦点进入时自动暂停。
+- 指示点要能看出总共几屏、当前第几屏。
+
+## 反模式
+
+- 自动播放且不能暂停：读得慢的人永远读不完一张。
+- 把关键信息或唯一的行动入口放在第三张之后。

@@ -1,6 +1,23 @@
 # 复选框 <Badge type="info" text="checkbox" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一个可以选中、不选中、也可以处于半选的独立开关。
+
+## 何时使用
+
+- 表单里的单项同意、单项开关，且要随表单提交。
+- 需要表达"部分选中"（全选框对应下面几项只勾了一部分）。
+
+## 何时不用
+
+- 开关立即生效、且是一项设置：用[开关](./switch)。
+- 几个互斥项里选一个：用[单选组](./radio-group)。
+- 一组多选项：用[复选框组](./checkbox-group)，它管值的汇总。
+
+## 特性
+
+- 三态：选中、未选中、半选（`indeterminate`）。
+- `hidden-input` 承担表单参与，`name` / `value` 照常提交。
+- `readOnly` 与 `disabled` 不同：只读仍能聚焦、仍被提交。
 
 ## 示例
 
@@ -92,9 +109,18 @@ checked 只认布尔，在中间换一道，进出两头拿到的都是业务值
 | --- | --- | --- |
 | `checked-change` | `CheckboxCheckedChangeDetails` | checked 状态变化；detail 为 `{ checked: boolean }` |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'indeterminate' \| 'checked' \| 'unchecked' |
+| `indicator` | 'indeterminate' \| 'checked' \| 'unchecked' |
+| `label` | 'indeterminate' \| 'checked' \| 'unchecked' |
+| `text` | 'indeterminate' \| 'checked' \| 'unchecked' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`off` · `on` · `indeterminate`
 
@@ -124,8 +150,68 @@ checked 只认布尔，在中间换一道，进出两头拿到的都是业务值
 | --- | --- | --- |
 | `Space` / `Enter` | focus in root, not disabled | 切换 checked 状态 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-checked` | 'mixed' \| 'true' \| 'false' |
+| `root` | `aria-invalid` | 'true' \| 'false' |
+| `root` | `aria-readonly` | 'true' \| 'false' |
+| `root` | `aria-required` | 'true' \| 'false' |
+| `root` | `role` | 'checkbox' |
+| `indicator` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/checkbox.css` 按部件选择：`[data-scope="checkbox"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
+| `root` | `data-tone` | props.tone |
+| `indicator` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `label` | `data-invalid` | ''（条件成立时才出现） |
+| `label` | `data-readonly` | ''（条件成立时才出现） |
+| `label` | `data-size` | props.size |
+| `label` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
+| `text` | `data-disabled` | ''（条件成立时才出现） |
+| `text` | `data-invalid` | ''（条件成立时才出现） |
+| `text` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-checkbox-bg` · `--xh-checkbox-bg-checked` · `--xh-checkbox-border` · `--xh-checkbox-border-checked` · `--xh-checkbox-border-invalid` · `--xh-checkbox-fg` · `--xh-checkbox-fg-invalid` · `--xh-checkbox-indicator-fg` · `--xh-checkbox-label-fg` · `--xh-checkbox-label-fg-disabled` · `--xh-checkbox-label-font-size` · `--xh-checkbox-label-gap`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## 组合
+
+- 外面套[表单字段](./field)；成组时用[复选框组](./checkbox-group)；在[表格](./table)里做行选择。
+
+## 最佳实践
+
+- 标签点得动——把文字放进 `label` 部件，别只让方框可点。
+- 半选只用来表达"下级部分选中"，不要拿它当第三种业务状态。
+
+## 反模式
+
+- 用单个复选框表达二选一（是 / 否）：用[单选组](./radio-group)，两个选项都要能被读出来。
+- 勾上就立刻发请求却不给反馈。

@@ -1,6 +1,23 @@
 # 单选组 <Badge type="info" text="radio-group" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一组互斥选项共一个值，所有选项同时可见。单个单选钮是这里的 `item` 部件，不另立组件——它脱离组既没有互斥对象，也无法取消选中。
+
+## 何时使用
+
+- 二到五个互斥选项，且各选项的文字值得同时摊开让用户比较。
+
+## 何时不用
+
+- 选项超过五六个：用[选择器](./select)。
+- 选项是并列的视图切换：用[切换按钮组](./toggle-group)或[标签页](./tabs)。
+- 可以多选：用[复选框组](./checkbox-group)。
+
+## 特性
+
+- 整组只占一个 Tab 位，组内靠方向键走——这是原生单选组的行为。
+- `hidden-input` 承担表单参与。
+- `collection` 可数据驱动，也可以逐项写。
+- 与[复选框](./checkbox)的不对称是有意的：一个复选框自己就成立（勾选同意条款），一个单选钮自己不成立，所以复选框另有独立组件、单选钮没有。
 
 ## 示例
 
@@ -88,9 +105,9 @@ size 改条目间距与字号，不写即缺省中档
 | --- | --- | --- |
 | `value-change` | `RadioGroupValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| null }` |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -124,8 +141,64 @@ size 改条目间距与字号，不写即缺省中档
 | `ArrowUp` / `ArrowLeft` | focus in group, group not disabled | 焦点移到上一个可停留条目并选中，首项回绕到末项；dir=rtl 时改由 ArrowRight 承担 |
 | `Space` | focus on item, item not disabled | 选中当前条目 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-invalid` | 'true' \| 'false' |
+| `root` | `aria-labelledby` | `label` 部件的 id |
+| `root` | `aria-orientation` | props.orientation |
+| `root` | `aria-readonly` | 'true' \| 'false' |
+| `root` | `aria-required` | 'true' \| 'false' |
+| `root` | `role` | 'radiogroup' |
+| `item` | `aria-checked` | 'true' \| 'false' |
+| `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `role` | 'radio' |
+| `indicator` | `aria-hidden` | 'true' |
+| `hidden-input` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/radio-group.css` 按部件选择：`[data-scope="radio-group"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-orientation` | props.orientation |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-radio-group-gap` · `--xh-radio-group-indicator-bg` · `--xh-radio-group-indicator-border` · `--xh-radio-group-indicator-border-checked` · `--xh-radio-group-indicator-border-invalid` · `--xh-radio-group-indicator-dot` · `--xh-radio-group-indicator-size` · `--xh-radio-group-item-fg` · `--xh-radio-group-item-fg-disabled` · `--xh-radio-group-item-font-size` · `--xh-radio-group-item-gap` · `--xh-radio-group-item-radius` · `--xh-radio-group-label-fg` · `--xh-radio-group-label-font-size` · `--xh-radio-group-label-font-weight`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## 组合
+
+- 外面套[表单字段](./field)；每项下面的补充说明放进选项内容里。
+
+## 最佳实践
+
+- 给出默认选中项，除非"未选"本身有意义。
+- 选项文字写完整，别靠共同前缀省略。
+
+## 反模式
+
+- 单选组只有一个选项：用户选不了别的，等于什么都没问。
+- 选项能被取消选中：单选组一旦选中就不该回到空值，需要空值就加一项"不指定"。

@@ -1,6 +1,22 @@
 # 动态录入 <Badge type="info" text="dynamic-input" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一组行数可变的录入行：可以加一行、删一行、换顺序。
+
+## 何时使用
+
+- 联系方式、规格参数、收件人这类"数量由用户决定"的重复字段。
+
+## 何时不用
+
+- 行数固定：直接写几行。
+- 每一行是一个短词：用[标签输入](./tags-input)。
+
+## 特性
+
+- `min` / `max` 约束行数，到下限时删除按钮不可用。
+- `movable` 给出上移下移。
+- `createItem` 决定新增一行时的初值。
+- 一行里可以放多个字段。
 
 ## 示例
 
@@ -80,9 +96,9 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 | --- | --- | --- | --- |
 | `XhDynamicInputRoot` | `default` | `DynamicInputRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -126,8 +142,62 @@ movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `add-trigger` | `aria-disabled` | 'false' \| 'true' |
+| `remove-trigger` | `aria-disabled` | 'false' \| 'true' |
+| `remove-trigger` | `aria-label` | label.removeTrigger(item.index + 1, count) |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/dynamic-input.css` 按部件选择：`[data-scope="dynamic-input"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-at-max` | ''（条件成立时才出现） |
+| `root` | `data-at-min` | ''（条件成立时才出现） |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-movable` | ''（条件成立时才出现） |
+| `item` | `data-first` | ''（条件成立时才出现） |
+| `item` | `data-last` | ''（条件成立时才出现） |
+| `add-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `remove-trigger` | `data-disabled` | ''（条件成立时才出现） |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-dynamic-input-action-gap` · `--xh-dynamic-input-add-bg` · `--xh-dynamic-input-add-bg-active` · `--xh-dynamic-input-add-bg-hover` · `--xh-dynamic-input-add-border` · `--xh-dynamic-input-add-border-hover` · `--xh-dynamic-input-add-fg` · `--xh-dynamic-input-add-font-size` · `--xh-dynamic-input-add-height` · `--xh-dynamic-input-add-px` · `--xh-dynamic-input-add-radius` · `--xh-dynamic-input-content-gap` · `--xh-dynamic-input-gap` · `--xh-dynamic-input-item-gap` · `--xh-dynamic-input-item-padding` · `--xh-dynamic-input-item-radius` · `--xh-dynamic-input-remove-fg-hover` · `--xh-dynamic-input-trigger-bg` · `--xh-dynamic-input-trigger-bg-active` · `--xh-dynamic-input-trigger-bg-hover` · `--xh-dynamic-input-trigger-fg` · `--xh-dynamic-input-trigger-fg-hover` · `--xh-dynamic-input-trigger-font-size` · `--xh-dynamic-input-trigger-radius` · `--xh-dynamic-input-trigger-size`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 每行里放[表单字段](./field)与各类录入组件；整体放进[表单](./form)。
+
+## 最佳实践
+
+- 新增一行后把焦点移到这一行的第一个输入框。
+- 删除按钮要说明删的是哪一行（`aria-label` 带上行号或内容）。
+
+## 反模式
+
+- 删除不给撤销，误删只能重填。
+- 行数上限只在提交时才提示。

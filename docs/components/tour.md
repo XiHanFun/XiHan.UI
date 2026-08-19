@@ -1,6 +1,22 @@
 # 引导 <Badge type="info" text="tour" />
 
-导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一串聚光灯步骤，逐个指向界面上的元素并解释它。
+
+## 何时使用
+
+- 新功能上线、首次进入复杂界面时的一次性介绍。
+
+## 何时不用
+
+- 界面本身不好懂：改界面，别用引导补丁。
+- 用户需要随时查阅的说明：写进帮助或[文字提示](./tooltip)。
+
+## 特性
+
+- 聚光灯把目标从遮罩里挖出来，`spotlightPadding` 决定挖多大。
+- `autoScroll` 把目标滚进视野。
+- 可以有居中的无目标步（开场与结束）。
+- 步序与展开都可受控，另有完成与跳过两个回调。
 
 ## 示例
 
@@ -80,9 +96,22 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | --- | --- | --- | --- |
 | `XhTourRoot` | `default` | `TourRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'open' \| 'closed' |
+| `backdrop` | 'open' \| 'closed' |
+| `spotlight` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+| `prev-trigger` | 'open' \| 'closed' |
+| `next-trigger` | 'open' \| 'closed' |
+| `skip-trigger` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -135,8 +164,77 @@ steps 是唯一事实源，组件只按下标取用；每步的 target 是一个
 | `ArrowUp` / `ArrowDown` / `ArrowLeft` / `ArrowRight` | open | 一概不接管：既不换步也不阻止默认行为，留给页面滚动与读屏浏览 |
 | `Tab` / `Shift+Tab` | open | 焦点陷在 content 内循环，跑出去会被拉回来 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `backdrop` | `aria-hidden` | 'true' |
+| `spotlight` | `aria-hidden` | 'true' |
+| `content` | `aria-describedby` | `description` 部件的 id |
+| `content` | `aria-labelledby` | `title` 部件的 id |
+| `content` | `aria-modal` | 'true' |
+| `content` | `role` | 'dialog' |
+| `progress-text` | `aria-live` | 'polite' |
+| `close-trigger` | `aria-label` | translations?.close |
+| `arrow` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/tour.css` 按部件选择：`[data-scope="tour"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-state` | 'open' \| 'closed' |
+| `root` | `data-step` | String(step) |
+| `backdrop` | `data-state` | 'open' \| 'closed' |
+| `spotlight` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-position` | 'anchored' \| 'center' |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-placement` | 定位引擎算出的实际落位 |
+| `content` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-step` | String(step) |
+| `progress-text` | `data-step` | String(step) |
+| `prev-trigger` | `data-state` | 'open' \| 'closed' |
+| `next-trigger` | `data-last` | ''（条件成立时才出现） |
+| `next-trigger` | `data-state` | 'open' \| 'closed' |
+| `skip-trigger` | `data-state` | 'open' \| 'closed' |
+| `arrow` | `data-placement` | 定位引擎算出的实际落位 |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-tour-arrow-size` · `--xh-tour-backdrop-bg` · `--xh-tour-backdrop-z` · `--xh-tour-bg` · `--xh-tour-border` · `--xh-tour-description-fg` · `--xh-tour-fg` · `--xh-tour-gap` · `--xh-tour-max-w` · `--xh-tour-next-bg` · `--xh-tour-next-bg-hover` · `--xh-tour-next-fg` · `--xh-tour-positioner-z` · `--xh-tour-progress-fg` · `--xh-tour-progress-font-size` · `--xh-tour-px` · `--xh-tour-py` · `--xh-tour-radius` · `--xh-tour-shadow` · `--xh-tour-spotlight-radius` · `--xh-tour-spotlight-ring` · `--xh-tour-spotlight-shroud` · `--xh-tour-spotlight-z` · `--xh-tour-title-fg` · `--xh-tour-title-font-size` · `--xh-tour-title-font-weight`
+
+## 动效
+
+关键帧 `xh-fade-in` · `xh-fade-out` · `xh-tour-content-in` · `xh-tour-content-out` · `xh-tour-spotlight-in` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 与[对话框](./dialog)配合做开场；结束后引导用户去[结果页](./result)或具体功能。
+
+## 最佳实践
+
+- 步数压到三到五步，多了没人走完。
+- 跳过入口从第一步就要有，且要显眼。
+- 只讲一次，记住用户已经看过。
+
+## 反模式
+
+- 强制走完不许跳过。
+- 引导目标在当前视口里不存在（还没渲染出来），聚光灯挖了个空。

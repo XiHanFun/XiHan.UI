@@ -1,6 +1,21 @@
 # 加载条 <Badge type="info" text="loading-bar" />
 
-反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+页面顶部那条细进度线：表示"正在去往别处"或"正在取数据"。
+
+## 何时使用
+
+- 路由切换、整页数据刷新这类用户无需等待具体百分比的过程。
+
+## 何时不用
+
+- 进度是确定的且用户关心具体数值：用[进度条](./progress)。
+- 局部区域在加载：用[骨架屏](./skeleton)或[加载指示器](./spinner)。
+
+## 特性
+
+- 不给确定进度时自动爬升（`trickle`）：先快后慢，永远不到 100%，收到完成信号才补满。
+- `minimum` 是起跳位置，让用户立刻看到反应。
+- 可以挂在局部容器上而不只是页面顶部。
 
 ## 示例
 
@@ -89,9 +104,17 @@ tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里
 | --- | --- | --- | --- |
 | `XhLoadingBarRoot` | `default` | `LoadingBarRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | state.get() |
+| `track` | state.get() |
+| `range` | state.get() |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **事件**：`LOADING.START` · `LOADING.END` · `TRICKLE.SYNC` · `after.trickleSpeed` · `after.fadeDuration`
 
@@ -115,8 +138,60 @@ tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-label` | props.translations.root |
+| `root` | `aria-valuemax` | String(LOADING_BAR_MAX) |
+| `root` | `aria-valuemin` | '0' |
+| `root` | `aria-valuenow` | String(value) \| undefined |
+| `root` | `role` | 'progressbar' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/loading-bar.css` 按部件选择：`[data-scope="loading-bar"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-indeterminate` | ''（条件成立时才出现） |
+| `root` | `data-state` | state.get() |
+| `root` | `data-tone` | props.tone |
+| `track` | `data-state` | state.get() |
+| `range` | `data-state` | state.get() |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-loading-bar-fade` · `--xh-loading-bar-layer` · `--xh-loading-bar-range` · `--xh-loading-bar-speed` · `--xh-loading-bar-track`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 与路由守卫配合：进入时启动，完成或失败时收掉。
+
+## 最佳实践
+
+- 失败也要收掉：留在页面上的半截进度条比什么都没有更糟。
+- 极快的请求可以延迟一点再显示，否则只会闪一下。
+
+## 反模式
+
+- 爬升到 100% 却还没加载完：用户以为卡死了。
+- 同时挂好几条。

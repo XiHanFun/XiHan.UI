@@ -3,20 +3,8 @@
     {
       "id": "general",
       "label": "通用",
-      "description": "不承载表单值、也不管理浮层的基础件。",
+      "description": "最小粒度的原子件：触发一个动作、显示一个图标、排好一段文字。不组织数据，也不划分版面。",
       "components": [
-        {
-          "id": "avatar",
-          "name": "头像"
-        },
-        {
-          "id": "avatar-group",
-          "name": "头像组"
-        },
-        {
-          "id": "badge",
-          "name": "徽标"
-        },
         {
           "id": "button",
           "name": "按钮"
@@ -26,12 +14,16 @@
           "name": "按钮组"
         },
         {
-          "id": "clipboard",
-          "name": "剪贴板"
+          "id": "float-button",
+          "name": "浮动按钮"
         },
         {
-          "id": "code-block",
-          "name": "代码块"
+          "id": "toggle",
+          "name": "切换按钮"
+        },
+        {
+          "id": "toggle-group",
+          "name": "切换按钮组"
         },
         {
           "id": "icon",
@@ -42,24 +34,118 @@
           "name": "图标块"
         },
         {
-          "id": "image",
-          "name": "图片"
+          "id": "clipboard",
+          "name": "剪贴板"
         },
         {
-          "id": "image-viewer",
-          "name": "图片预览"
+          "id": "typography",
+          "name": "排印"
+        },
+        {
+          "id": "ellipsis",
+          "name": "文本省略"
+        },
+        {
+          "id": "gradient-text",
+          "name": "渐变文字"
+        }
+      ]
+    },
+    {
+      "id": "layout",
+      "label": "布局",
+      "description": "只分配空间、不承载内容语义的容器。",
+      "components": [
+        {
+          "id": "layout",
+          "name": "布局"
+        },
+        {
+          "id": "flex",
+          "name": "弹性布局"
+        },
+        {
+          "id": "grid",
+          "name": "栅格"
         },
         {
           "id": "separator",
           "name": "分隔线"
         },
         {
-          "id": "toggle",
-          "name": "切换按钮"
+          "id": "splitter",
+          "name": "分栏"
         },
         {
-          "id": "toggle-group",
-          "name": "切换按钮组"
+          "id": "scroll-area",
+          "name": "滚动区域"
+        },
+        {
+          "id": "watermark",
+          "name": "水印"
+        }
+      ]
+    },
+    {
+      "id": "navigation",
+      "label": "导航",
+      "description": "在页面与视图之间移动的组件。",
+      "components": [
+        {
+          "id": "affix",
+          "name": "固钉"
+        },
+        {
+          "id": "anchor",
+          "name": "锚点"
+        },
+        {
+          "id": "back-top",
+          "name": "回到顶部"
+        },
+        {
+          "id": "breadcrumb",
+          "name": "面包屑"
+        },
+        {
+          "id": "context-menu",
+          "name": "右键菜单"
+        },
+        {
+          "id": "menu",
+          "name": "菜单"
+        },
+        {
+          "id": "menubar",
+          "name": "菜单栏"
+        },
+        {
+          "id": "navigation-menu",
+          "name": "导航菜单"
+        },
+        {
+          "id": "page-header",
+          "name": "页头"
+        },
+        {
+          "id": "pagination",
+          "name": "分页"
+        },
+        {
+          "id": "side-nav",
+          "name": "侧栏导航"
+        },
+        {
+          "id": "steps",
+          "name": "步骤条"
+        },
+        {
+          "id": "tabs",
+          "name": "标签页"
+        },
+        {
+          "id": "toolbar",
+          "name": "工具栏"
         }
       ]
     },
@@ -68,10 +154,6 @@
       "label": "数据录入",
       "description": "承载表单值的组件，统一走受控/非受控两态与 name 表单集成。",
       "components": [
-        {
-          "id": "calendar",
-          "name": "日历"
-        },
         {
           "id": "cascader",
           "name": "级联选择"
@@ -189,11 +271,27 @@
     {
       "id": "data-display",
       "label": "数据展示",
-      "description": "把数据摆出来的组件：表格、树、折叠、虚拟滚动。",
+      "description": "把已有的数据摆出来：集合、媒体、身份标记与度量。",
       "components": [
         {
           "id": "accordion",
           "name": "手风琴"
+        },
+        {
+          "id": "avatar",
+          "name": "头像"
+        },
+        {
+          "id": "avatar-group",
+          "name": "头像组"
+        },
+        {
+          "id": "badge",
+          "name": "徽标"
+        },
+        {
+          "id": "calendar",
+          "name": "日历"
         },
         {
           "id": "card",
@@ -202,6 +300,10 @@
         {
           "id": "carousel",
           "name": "走马灯"
+        },
+        {
+          "id": "code-block",
+          "name": "代码块"
         },
         {
           "id": "collapsible",
@@ -224,6 +326,14 @@
           "name": "文本高亮"
         },
         {
+          "id": "image",
+          "name": "图片"
+        },
+        {
+          "id": "image-viewer",
+          "name": "图片预览"
+        },
+        {
           "id": "infinite-scroll",
           "name": "无限滚动"
         },
@@ -236,28 +346,16 @@
           "name": "日志"
         },
         {
+          "id": "marquee",
+          "name": "跑马灯"
+        },
+        {
           "id": "number-animation",
           "name": "数值动画"
         },
         {
           "id": "qr-code",
           "name": "二维码"
-        },
-        {
-          "id": "result",
-          "name": "结果页"
-        },
-        {
-          "id": "scroll-area",
-          "name": "滚动区域"
-        },
-        {
-          "id": "skeleton",
-          "name": "骨架屏"
-        },
-        {
-          "id": "splitter",
-          "name": "分栏"
         },
         {
           "id": "statistic",
@@ -276,6 +374,10 @@
           "name": "时间线"
         },
         {
+          "id": "tour",
+          "name": "引导"
+        },
+        {
           "id": "tree",
           "name": "树"
         },
@@ -286,85 +388,49 @@
       ]
     },
     {
-      "id": "navigation",
-      "label": "导航",
-      "description": "在页面与视图之间移动的组件。",
-      "components": [
-        {
-          "id": "affix",
-          "name": "固钉"
-        },
-        {
-          "id": "anchor",
-          "name": "锚点"
-        },
-        {
-          "id": "back-top",
-          "name": "回到顶部"
-        },
-        {
-          "id": "breadcrumb",
-          "name": "面包屑"
-        },
-        {
-          "id": "context-menu",
-          "name": "右键菜单"
-        },
-        {
-          "id": "float-button",
-          "name": "浮动按钮"
-        },
-        {
-          "id": "menu",
-          "name": "菜单"
-        },
-        {
-          "id": "menubar",
-          "name": "菜单栏"
-        },
-        {
-          "id": "navigation-menu",
-          "name": "导航菜单"
-        },
-        {
-          "id": "page-header",
-          "name": "页头"
-        },
-        {
-          "id": "pagination",
-          "name": "分页"
-        },
-        {
-          "id": "side-nav",
-          "name": "侧栏导航"
-        },
-        {
-          "id": "steps",
-          "name": "步骤条"
-        },
-        {
-          "id": "tabs",
-          "name": "标签页"
-        },
-        {
-          "id": "toolbar",
-          "name": "工具栏"
-        },
-        {
-          "id": "tour",
-          "name": "引导"
-        }
-      ]
-    },
-    {
       "id": "feedback",
-      "label": "反馈与浮层",
-      "description": "向用户反馈状态、或浮在页面之上的组件。",
+      "label": "反馈",
+      "description": "报告系统状态：正在进行、已经完成、出了错。",
       "components": [
         {
           "id": "alert",
           "name": "警告提示"
         },
+        {
+          "id": "loading-bar",
+          "name": "加载条"
+        },
+        {
+          "id": "progress",
+          "name": "进度条"
+        },
+        {
+          "id": "result",
+          "name": "结果页"
+        },
+        {
+          "id": "skeleton",
+          "name": "骨架屏"
+        },
+        {
+          "id": "spinner",
+          "name": "加载指示器"
+        },
+        {
+          "id": "toast",
+          "name": "轻提示"
+        },
+        {
+          "id": "toaster",
+          "name": "轻提示容器"
+        }
+      ]
+    },
+    {
+      "id": "overlay",
+      "label": "浮层",
+      "description": "portal 到统一落点、由定位引擎摆位的一层，共用浮层容器与焦点归还契约。",
+      "components": [
         {
           "id": "dialog",
           "name": "对话框"
@@ -378,32 +444,12 @@
           "name": "悬浮卡片"
         },
         {
-          "id": "loading-bar",
-          "name": "加载条"
-        },
-        {
           "id": "popconfirm",
           "name": "弹出确认"
         },
         {
           "id": "popover",
           "name": "气泡卡片"
-        },
-        {
-          "id": "progress",
-          "name": "进度条"
-        },
-        {
-          "id": "spinner",
-          "name": "加载指示器"
-        },
-        {
-          "id": "toast",
-          "name": "轻提示"
-        },
-        {
-          "id": "toaster",
-          "name": "轻提示容器"
         },
         {
           "id": "tooltip",
@@ -423,45 +469,6 @@
         {
           "id": "thread",
           "name": "会话线程"
-        }
-      ]
-    },
-    {
-      "id": "layout",
-      "label": "布局",
-      "description": "不承载状态的排版容器，只把常用的一段 CSS 收成带默认皮肤的组件。",
-      "components": [
-        {
-          "id": "ellipsis",
-          "name": "文本省略"
-        },
-        {
-          "id": "flex",
-          "name": "弹性布局"
-        },
-        {
-          "id": "gradient-text",
-          "name": "渐变文字"
-        },
-        {
-          "id": "grid",
-          "name": "栅格"
-        },
-        {
-          "id": "layout",
-          "name": "布局"
-        },
-        {
-          "id": "marquee",
-          "name": "跑马灯"
-        },
-        {
-          "id": "typography",
-          "name": "排印"
-        },
-        {
-          "id": "watermark",
-          "name": "水印"
         }
       ]
     }

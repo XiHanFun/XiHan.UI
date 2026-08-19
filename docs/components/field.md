@@ -1,6 +1,22 @@
 # 表单字段 <Badge type="info" text="field" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+把标签、控件、说明与错误文本绑成一组，并把 `id` 与 ARIA 关联接好。
+
+## 何时使用
+
+- 任何一个需要标签的表单控件——这是所有录入组件的外壳。
+- 需要说明文字或错误提示与控件正确关联时。
+
+## 何时不用
+
+- 控件在工具栏或表格里、没有可见标签：给控件本身写 `aria-label`。
+- 需要整表的值管理与校验：外面再套[表单](./form)，字段只管一格。
+
+## 特性
+
+- 标签的 `for`、说明与错误文本的 `aria-describedby`、无效态的 `aria-invalid` 全部自动接上，作者不写 `id`。
+- `disabled` / `readOnly` / `invalid` / `required` 沿字段流给里面的控件。
+- 有错误文本时说明文字不会被顶掉，两者可以同时在。
 
 ## 示例
 
@@ -97,8 +113,60 @@ Field 的 disabled 只把 data-disabled 铺到各部件上；真正改不动还�
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `control` | `aria-describedby` | `description` 部件的 id `error-text` 部件的 id \| `description` 部件的 id |
+| `control` | `aria-invalid` | 'true' \| 'false' |
+| `control` | `aria-labelledby` | `label` 部件的 id |
+| `control` | `aria-readonly` | 'true' \| 'false' |
+| `control` | `aria-required` | 'true' \| 'false' |
+| `error-text` | `role` | 'alert' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/field.css` 按部件选择：`[data-scope="field"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `label` | `data-readonly` | ''（条件成立时才出现） |
+| `control` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-invalid` | ''（条件成立时才出现） |
+| `control` | `data-readonly` | ''（条件成立时才出现） |
+| `description` | `data-disabled` | ''（条件成立时才出现） |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-field-control-bg` · `--xh-field-control-bg-disabled` · `--xh-field-control-border` · `--xh-field-control-border-invalid` · `--xh-field-control-fg` · `--xh-field-control-font-size` · `--xh-field-control-h` · `--xh-field-control-px` · `--xh-field-control-radius` · `--xh-field-description-fg` · `--xh-field-description-fg-disabled` · `--xh-field-description-font-size` · `--xh-field-error-fg` · `--xh-field-error-font-size` · `--xh-field-gap` · `--xh-field-label-fg` · `--xh-field-label-fg-disabled` · `--xh-field-label-font-size` · `--xh-field-label-font-weight` · `--xh-field-label-gap` · `--xh-field-label-star`
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 里面放任何一个录入组件；外面用[栅格](./grid)排成两列。
+
+## 最佳实践
+
+- 标签写完整的名词短语，别写占位符当标签——占位符一输入就消失。
+- 错误文本说清楚怎么改，不只说"格式不对"。
+
+## 反模式
+
+- 用占位符代替标签。
+- 自己手写 `aria-describedby`，与组件生成的那份互相覆盖。

@@ -1,6 +1,21 @@
 # 轻提示容器 <Badge type="info" text="toaster" />
 
-反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+管理一摞轻提示：落位、上限、排队与移除。
+
+## 何时使用
+
+- 应用里只要用到[轻提示](./toast)就需要它——挂一次，全局共用。
+
+## 何时不用
+
+- 不需要单独考虑：它是轻提示的必备宿主。
+
+## 特性
+
+- `placement` 决定这一摞落在哪一角；也可以按条逐个指定落位。
+- `max` 限制同时显示几条，超出的排队。
+- 已经在显示的提示可以就地改写（同一个 id 覆盖内容），用来做"上传中 → 上传完成"。
+- 支持手动收走与一键清空。
 
 ## 示例
 
@@ -94,9 +109,9 @@ createToastService 自带宿主与默认模板，模块作用域随处可调（�
 | `XhToasterGroup` | `default` | `ToasterGroupSlotProps` |  |
 | `XhToasterRoot` | `default` | `ToasterRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -125,8 +140,51 @@ createToastService 自带宿主与默认模板，模块作用域随处可调（�
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-label` | props.translations.region |
+| `root` | `role` | 'region' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/toaster.css` 按部件选择：`[data-scope="toaster"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-count` | list.length |
+| `root` | `data-empty` | ''（条件成立时才出现） |
+| `group` | `data-count` | group.length |
+| `group` | `data-empty` | ''（条件成立时才出现） |
+| `group` | `data-placement` | props.placement |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-toaster-inset`
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 与全局服务配合：业务代码不接触组件，直接调服务。
+
+## 最佳实践
+
+- 整个应用只挂一个，挂在最外层。
+- 落位躲开固定的操作条与移动端手势区。
+
+## 反模式
+
+- 每个页面各挂一个：多摞提示互相盖。
+- `max` 设得太大，一屏被提示占满。

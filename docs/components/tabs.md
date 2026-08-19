@@ -1,6 +1,24 @@
 # 标签页 <Badge type="info" text="tabs" />
 
-导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+在同一块区域里切换几组并列的内容，同时只显示一组。
+
+## 何时使用
+
+- 内容属于同一个对象的不同侧面（详情 / 权限 / 日志），用户会来回看。
+- 各组内容量相当，且不需要同时对照。
+
+## 何时不用
+
+- 各组需要同时看见或互相对照：并排摆，别切换。
+- 有先后顺序、必须走完：用[步骤条](./steps)。
+- 只是切换一个显示开关：用[切换按钮组](./toggle-group)。
+
+## 特性
+
+- `activationMode` 决定方向键移动焦点时是否顺带切换：内容加载昂贵时改 `manual`，方向键只搬焦点、按 Enter 才切。
+- `variant` 三档（`line` / `card` / `segment`）只改选中态怎么画，切换行为与键盘操作三档一致。
+- 面板常挂，靠 `hidden` 显隐。
+- `root` 按书写顺序渲染子节点：把面板写在标签栏前面，标签栏就落到内容之后。
 
 ## 示例
 
@@ -122,9 +140,16 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | --- | --- | --- |
 | `value-change` | `TabsValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| null }` |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `trigger` | 'active' \| 'inactive' |
+| `content` | 'active' \| 'inactive' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -160,8 +185,65 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `Enter` / `Space` | focus in trigger, not disabled | 把选中切到焦点所在 trigger（manual 模式的确认键） |
 | `Tab` / `Shift+Tab` | focus in list | 整组只有锚点 trigger 留在 Tab 序列内，一次 Tab 进出；无锚点时由 list 兜底，焦点进来后转投锚点 trigger（即选中项），锚点缺席或被禁用才落首个可停留项 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `list` | `aria-orientation` | props.orientation |
+| `list` | `role` | 'tablist' |
+| `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-disabled` | 'true' \| 'false' |
+| `trigger` | `aria-selected` | 'true' \| 'false' |
+| `trigger` | `role` | 'tab' |
+| `content` | `aria-labelledby` | `trigger` 部件的 id |
+| `content` | `role` | 'tabpanel' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/tabs.css` 按部件选择：`[data-scope="tabs"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-orientation` | props.orientation |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-state` | 'active' \| 'inactive' |
+| `content` | `data-state` | 'active' \| 'inactive' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-tabs-content-fg` · `--xh-tabs-content-py` · `--xh-tabs-gap` · `--xh-tabs-list-bg` · `--xh-tabs-list-border` · `--xh-tabs-list-gap` · `--xh-tabs-list-p` · `--xh-tabs-list-radius` · `--xh-tabs-trigger-bg` · `--xh-tabs-trigger-bg-active` · `--xh-tabs-trigger-bg-active-hover` · `--xh-tabs-trigger-bg-hover` · `--xh-tabs-trigger-border` · `--xh-tabs-trigger-border-active` · `--xh-tabs-trigger-fg` · `--xh-tabs-trigger-fg-active` · `--xh-tabs-trigger-font-size` · `--xh-tabs-trigger-font-weight` · `--xh-tabs-trigger-gap` · `--xh-tabs-trigger-h` · `--xh-tabs-trigger-px` · `--xh-tabs-trigger-radius` · `--xh-tabs-trigger-shadow-active`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 与[卡片](./card)配合；标签多到一行放不下时把标签栏装进自建的横滚容器。
+
+## 最佳实践
+
+- 标签数控制在七个以内，超过就该换成[侧栏导航](./side-nav)。
+- 把当前标签写进地址，刷新后才回得到原处。
+
+## 反模式
+
+- 标签页里再套标签页：用户分不清哪一层在切。
+- 面板高度随内容剧烈变化，切换时整页跳动。

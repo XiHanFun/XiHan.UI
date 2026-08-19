@@ -1,6 +1,22 @@
 # 树选择 <Badge type="info" text="tree-select" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+浮层里放一棵树的选择器：层级不规整、深浅不一时用它。
+
+## 何时使用
+
+- 选项是任意形状的树（组织架构、目录、权限节点）。
+- 需要在浮层里展开、勾选，并把选中项回显在触发器上。
+
+## 何时不用
+
+- 层级规整、层数固定：[级联选择](./cascader)的分列展开更快。
+- 树本身就是页面主体：用[树](./tree)。
+
+## 特性
+
+- 选中与展开两套值各自可受控。
+- `cascade` 与 `checkedStrategy` 决定勾选是否带子级、回显给哪一层。
+- 支持只挑叶子不挑分支、浮层内关键词过滤、子节点异步加载。
 
 ## 示例
 
@@ -141,9 +157,20 @@ multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父�
 | --- | --- | --- | --- |
 | `XhTreeSelectRoot` | `default` | `TreeSelectRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'open' \| 'closed' |
+| `trigger` | 'open' \| 'closed' |
+| `indicator` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+| `tree` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -221,8 +248,98 @@ multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父�
 | `Escape` | open | 收起浮层并把焦点归还 trigger，选中值与展开集合都不变 |
 | `Tab` / `Shift+Tab` | open | 收起浮层，焦点不归还 trigger，按 Tab 序列自然离开 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `aria-controls` | `tree` 部件的 id |
+| `trigger` | `aria-expanded` | 'true' \| 'false' |
+| `trigger` | `aria-haspopup` | 'tree' |
+| `trigger` | `aria-invalid` | 'true' \| 'false' |
+| `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
+| `trigger` | `aria-readonly` | 'true' \| 'false' |
+| `trigger` | `role` | 'combobox' |
+| `indicator` | `aria-hidden` | 'true' |
+| `clear-trigger` | `aria-hidden` | 'true' |
+| `tree` | `aria-disabled` | 'true' \| 'false' |
+| `tree` | `aria-label` | props.translations.tree |
+| `tree` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
+| `tree` | `aria-multiselectable` | 'true' \| 'false' |
+| `tree` | `role` | 'tree' |
+| `item-indicator` | `aria-hidden` | 'true' |
+| `branch` | `aria-expanded` | 'true' \| 'false' |
+| `branch` | `aria-label` | metaOf(node.value)?.label |
+| `branch-trigger` | `aria-hidden` | 'true' |
+| `branch-indicator` | `aria-hidden` | 'true' |
+| `branch-content` | `role` | 'group' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/tree-select.css` 按部件选择：`[data-scope="tree-select"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-state` | 'open' \| 'closed' |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-invalid` | ''（条件成立时才出现） |
+| `trigger` | `data-placeholder` | ''（条件成立时才出现） |
+| `trigger` | `data-readonly` | ''（条件成立时才出现） |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `value-text` | `data-disabled` | ''（条件成立时才出现） |
+| `value-text` | `data-placeholder` | ''（条件成立时才出现） |
+| `indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `indicator` | `data-state` | 'open' \| 'closed' |
+| `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `positioner` | `data-hidden` | ''（条件成立时才出现） |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-size` | props.size |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-tone` | props.tone |
+| `positioner` | `data-variant` | props.variant |
+| `content` | `data-placement` | 定位引擎算出的实际落位 |
+| `content` | `data-state` | 'open' \| 'closed' |
+| `tree` | `data-disabled` | ''（条件成立时才出现） |
+| `tree` | `data-state` | 'open' \| 'closed' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-tree-select-action-bg` · `--xh-tree-select-action-bg-active` · `--xh-tree-select-action-bg-hover` · `--xh-tree-select-action-fg` · `--xh-tree-select-action-fg-hover` · `--xh-tree-select-action-font-size` · `--xh-tree-select-action-radius` · `--xh-tree-select-action-size` · `--xh-tree-select-branch-indicator-fg` · `--xh-tree-select-content-bg` · `--xh-tree-select-content-border` · `--xh-tree-select-content-fg` · `--xh-tree-select-content-max-h` · `--xh-tree-select-content-max-w` · `--xh-tree-select-content-min-w` · `--xh-tree-select-content-px` · `--xh-tree-select-content-py` · `--xh-tree-select-content-radius` · `--xh-tree-select-content-shadow` · `--xh-tree-select-gap` · `--xh-tree-select-indent` · `--xh-tree-select-indicator-fg` · `--xh-tree-select-indicator-size` · `--xh-tree-select-item-indicator-fg` · `--xh-tree-select-label-fg` · `--xh-tree-select-label-font-size` · `--xh-tree-select-label-font-weight` · `--xh-tree-select-placeholder-fg` · `--xh-tree-select-row-bg-hover` · `--xh-tree-select-row-fg` · `--xh-tree-select-row-fg-selected` · `--xh-tree-select-row-font-size` · `--xh-tree-select-row-gap` · `--xh-tree-select-row-leading` · `--xh-tree-select-row-px` · `--xh-tree-select-row-py` · `--xh-tree-select-row-radius` · `--xh-tree-select-row-selected-font-weight` · `--xh-tree-select-trigger-bg` · `--xh-tree-select-trigger-bg-disabled` · `--xh-tree-select-trigger-bg-readonly` · `--xh-tree-select-trigger-border` · `--xh-tree-select-trigger-border-hover` · `--xh-tree-select-trigger-border-invalid` · `--xh-tree-select-trigger-fg` · `--xh-tree-select-trigger-font-size` · `--xh-tree-select-trigger-gap` · `--xh-tree-select-trigger-h` · `--xh-tree-select-trigger-min-w` · `--xh-tree-select-trigger-px` · `--xh-tree-select-trigger-radius` · `--xh-tree-select-value-leading`
+
+## 动效
+
+关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
+
+## 组合
+
+- 外面套[表单字段](./field)。
+
+## 最佳实践
+
+- 大树一定要开浮层内过滤，逐级展开找一个节点非常慢。
+- 明确"只能选叶子"还是"分支也能选"，并在界面上让分支看起来点得动或点不动。
+
+## 反模式
+
+- 一次把整棵大树塞进浮层：首屏就卡住。
+- 勾选策略与后端理解不一致。

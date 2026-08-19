@@ -1,6 +1,21 @@
 # 头像 <Badge type="info" text="avatar" />
 
-通用组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一个人或一个组织的圆形标识：优先显示图片，取不到就回退到文字或图标。
+
+## 何时使用
+
+- 列表、评论、成员选择里标识身份。
+
+## 何时不用
+
+- 标识的是一个功能或分类：用[图标块](./icon-wrapper)。
+- 就是一张图：用[图片](./image)。
+
+## 特性
+
+- 加载状态会回调；失败时自动落到 `fallback`。
+- 直径与配色都是组件令牌，可以逐实例覆盖。
+- 状态点与角标由作者挂在外面，组件不预设。
 
 ## 示例
 
@@ -97,9 +112,9 @@ status-change 在状态落位时通知，过渡态 idle 不通知；没给地址
 | --- | --- | --- |
 | `status-change` | `AvatarStatusChangeDetails` | 加载状态变化；detail 为 `{ status: 'loading' \| 'loaded' \| 'error' }` |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **事件**：`SRC.CHANGE` · `IMAGE.LOAD` · `IMAGE.ERROR`
 
@@ -123,8 +138,37 @@ status-change 在状态落位时通知，过渡态 idle 不通知；没给地址
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 样式
+
+默认皮肤 `@xihan-ui/styles/avatar.css` 按部件选择：`[data-scope="avatar"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-size` | props.size |
+| `root` | `data-status` | state.get() |
+| `image` | `data-status` | state.get() |
+| `fallback` | `data-status` | state.get() |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-avatar-bg` · `--xh-avatar-fg` · `--xh-avatar-font-size` · `--xh-avatar-font-weight` · `--xh-avatar-radius` · `--xh-avatar-size`
+
+## 组合
+
+- 成组时套[头像组](./avatar-group)；角标用[徽标](./badge)。
+
+## 最佳实践
+
+- 回退内容要有意义：姓名缩写比一个通用小人图标信息量大得多。
+- `alt` 写人名，别写"头像"。
+
+## 反模式
+
+- 只靠图片、不给回退：图挂了就是一个空洞。
+- 用头像颜色编码身份而不给文字。

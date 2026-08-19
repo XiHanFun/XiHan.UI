@@ -1,6 +1,22 @@
 # 列表框 <Badge type="info" text="listbox" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一份直接铺在页面上的可选列表，不带浮层。
+
+## 何时使用
+
+- 选项需要常驻可见（穿梭框的两侧、设置面板的左栏）。
+- 需要多选、范围选（Shift）与全选（Cmd + A）。
+
+## 何时不用
+
+- 选项要收起来：用[选择器](./select)。
+- 列表只是展示、不可选：用[列表](./list)。
+
+## 特性
+
+- 三种选择模式：单选、多选、以及带 Shift 范围扩展的模式。
+- `typeahead` 连打检索。
+- 定高滚动与空态都有对应部件。
 
 ## 示例
 
@@ -96,9 +112,9 @@ selection-mode 直接指定三种模式，extended 是「单击换一条、Ctrl 
 | `XhListboxRoot` | `label` | — |  |
 | `XhListboxRoot` | `item` | `ListboxNodeMeta` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -145,8 +161,68 @@ selection-mode 直接指定三种模式，extended 是「单击换一条、Ctrl 
 | `Ctrl+A` / `Cmd+A` | focus in listbox, 可多选 | 选中全部可选条目；已经全选则把它们一并取消（禁用但已选中的不动） |
 | `单个可打印字符` | focus in listbox, typeahead 未关 | 连打检索把焦点移到首字母匹配的条目，不改选中值 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `content` | `aria-disabled` | 'true' \| 'false' |
+| `content` | `aria-labelledby` | `label` 部件的 id |
+| `content` | `aria-multiselectable` | 'true' \| 'false' |
+| `content` | `aria-orientation` | props.orientation |
+| `content` | `role` | 'listbox' |
+| `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `aria-selected` | 'true' \| 'false' |
+| `item` | `role` | 'option' |
+| `item-indicator` | `aria-hidden` | 'true' |
+| `item-group` | `aria-labelledby` | `group-label` 部件的 id |
+| `item-group` | `role` | 'group' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/listbox.css` 按部件选择：`[data-scope="listbox"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-orientation` | props.orientation |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `content` | `data-disabled` | ''（条件成立时才出现） |
+| `content` | `data-orientation` | props.orientation |
+| `item-group` | `data-disabled` | ''（条件成立时才出现） |
+| `item-group-label` | `data-disabled` | ''（条件成立时才出现） |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-listbox-content-bg` · `--xh-listbox-content-border` · `--xh-listbox-content-fg` · `--xh-listbox-content-max-h` · `--xh-listbox-content-px` · `--xh-listbox-content-py` · `--xh-listbox-content-radius` · `--xh-listbox-gap` · `--xh-listbox-group-gap` · `--xh-listbox-group-label-fg` · `--xh-listbox-group-label-font-size` · `--xh-listbox-group-label-font-weight` · `--xh-listbox-group-label-px` · `--xh-listbox-group-label-py` · `--xh-listbox-item-bg-hover` · `--xh-listbox-item-fg` · `--xh-listbox-item-fg-selected` · `--xh-listbox-item-font-size` · `--xh-listbox-item-font-weight-selected` · `--xh-listbox-item-gap` · `--xh-listbox-item-indicator-fg` · `--xh-listbox-item-indicator-size` · `--xh-listbox-item-leading` · `--xh-listbox-item-px` · `--xh-listbox-item-py` · `--xh-listbox-item-radius` · `--xh-listbox-label-fg` · `--xh-listbox-label-font-size` · `--xh-listbox-label-font-weight`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 作为[穿梭框](./transfer)、[弹出选择](./popselect)的内层；长列表配[虚拟滚动](./virtualizer)。
+
+## 最佳实践
+
+- 多选时给出"已选 N 项"的回显，否则滚动后用户不知道选了多少。
+- 定高，别让列表把页面撑到需要整页滚动。
+
+## 反模式
+
+- 用它承载命令：列表框的条目是选项不是动作。
+- 选项超过几百条却不虚拟化。

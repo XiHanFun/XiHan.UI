@@ -1,6 +1,21 @@
 # 图标块 <Badge type="info" text="icon-wrapper" />
 
-通用组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+给图元配一个定直径的底座：圆形或圆角方形，图元恒在正中。
+
+## 何时使用
+
+- 需要把图标从背景里托出来：功能入口、结果页的状态徽记、列表项的分类标记。
+- 一组图标要在视觉上等宽等高，不受各自图形轮廓影响。
+
+## 何时不用
+
+- 只要一枚裸图元：直接用[图标](./icon)。
+- 底座里放的是人或组织的形象：用[头像](./avatar)。
+
+## 特性
+
+- 底座直径与里面图元的直径同一个 `size` 档一起换。
+- 四种形态只决定底色、描边与前景怎么用，直径与形状一个字不动。
 
 ## 示例
 
@@ -65,8 +80,35 @@
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 样式
+
+默认皮肤 `@xihan-ui/styles/icon-wrapper.css` 按部件选择：`[data-scope="icon-wrapper"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-icon-wrapper-bg` · `--xh-icon-wrapper-fg` · `--xh-icon-wrapper-glyph-size` · `--xh-icon-wrapper-radius` · `--xh-icon-wrapper-size`
+
+## 组合
+
+- 里面放[图标](./icon)；外面常与[结果页](./result)、[空状态](./empty-state)、[列表](./list)一起用。
+
+## 最佳实践
+
+- 一组图标块保持同一档尺寸与同一种形态，只让语气变化。
+- 它本身不可点：要点击就把它放进[按钮](./button)里，别给底座挂事件。
+
+## 反模式
+
+- 用它替代[徽标](./badge)表达计数：底座是容器，不是数值载体。

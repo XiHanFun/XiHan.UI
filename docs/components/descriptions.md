@@ -1,6 +1,21 @@
 # 描述列表 <Badge type="info" text="descriptions" />
 
-数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+成对的标签与值，按列排开。
+
+## 何时使用
+
+- 详情页的属性列表：订单信息、设备参数、用户资料。
+
+## 何时不用
+
+- 数据是多行同构的记录：用[表格](./table)。
+- 只有一两对：直接写。
+
+## 特性
+
+- 语义是 `dt` / `dd`，组件只给身份与排版。
+- `columns` 决定每行几组，不传即每行一组。
+- 标签位置可以在值的上方或左侧；`bordered` 给出外框。
 
 ## 示例
 
@@ -75,8 +90,30 @@ size 换的是每格的内边距、组与组的间距与整体字号，不传 si
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 样式
+
+默认皮肤 `@xihan-ui/styles/descriptions.css` 按部件选择：`[data-scope="descriptions"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-descriptions-bg` · `--xh-descriptions-border` · `--xh-descriptions-fg` · `--xh-descriptions-font-size` · `--xh-descriptions-gap` · `--xh-descriptions-item-px` · `--xh-descriptions-item-py` · `--xh-descriptions-label-fg` · `--xh-descriptions-label-font-weight` · `--xh-descriptions-label-gap` · `--xh-descriptions-label-w` · `--xh-descriptions-pair-gap` · `--xh-descriptions-radius` · `--xh-descriptions-value-fg`
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 放进[卡片](./card)或[页头](./page-header)的页脚。
+
+## 最佳实践
+
+- 值为空时写"—"，别留空白——用户分不清是没有还是没加载出来。
+- 标签左置时给它们统一宽度，值才对得齐。
+
+## 反模式
+
+- 用它排版一张表格。
+- 标签写得比值还长。

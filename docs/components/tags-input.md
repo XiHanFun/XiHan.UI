@@ -1,6 +1,23 @@
 # 标签输入 <Badge type="info" text="tags-input" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+在一个输入框里录入一串标签：回车或分隔符成词，每个词是一枚可删的标签。
+
+## 何时使用
+
+- 关键词、收件人、技能这类数量不定的短词集合。
+- 需要粘贴一整串自动拆分。
+
+## 何时不用
+
+- 值来自固定清单：用[选择器](./select)的多选。
+- 需要从候选里检索着选：用[组合框](./combobox)的多选。
+
+## 特性
+
+- `delimiter` 与 `addOnPaste` 一起处理粘贴拆分。
+- `editable` 让已有标签双击就地改。
+- `max` 与 `allowOverflow` 一对：超出上限是拒收还是标红。
+- 标签的值可以是对象，不必是字符串。
 
 ## 示例
 
@@ -135,9 +152,9 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | --- | --- | --- | --- |
 | `XhTagsInputRoot` | `default` | `TagsInputRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `navigating` · `editing`
 
@@ -202,8 +219,66 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `Enter` | focus in item-input（就地编辑中） | 提交改写；改成空白等于删掉这个标签，改成另一个已有标签则并成一个。焦点交回输入框 |
 | `Escape` | focus in item-input（就地编辑中） | 撤销这次改写，标签保持原样，焦点交回输入框 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `control` | `aria-disabled` | 'true' \| 'false' |
+| `control` | `aria-labelledby` | `label` 部件的 id |
+| `control` | `role` | 'group' |
+| `input` | `aria-invalid` | 'true' \| 'false' |
+| `input` | `aria-labelledby` | `label` 部件的 id |
+| `item-delete-trigger` | `aria-label` | label.deleteTagTrigger(item.value) |
+| `item-input` | `aria-label` | label.editTagInput(item.value) |
+| `clear-trigger` | `aria-label` | label.clearTrigger |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/tags-input.css` 按部件选择：`[data-scope="tags-input"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `input` | `data-disabled` | ''（条件成立时才出现） |
+| `input` | `data-invalid` | ''（条件成立时才出现） |
+| `input` | `data-readonly` | ''（条件成立时才出现） |
+| `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-tags-input-clear-bg` · `--xh-tags-input-clear-bg-active` · `--xh-tags-input-clear-bg-hover` · `--xh-tags-input-clear-fg` · `--xh-tags-input-clear-fg-hover` · `--xh-tags-input-clear-font-size` · `--xh-tags-input-clear-size` · `--xh-tags-input-control-bg` · `--xh-tags-input-control-bg-disabled` · `--xh-tags-input-control-bg-readonly` · `--xh-tags-input-control-border` · `--xh-tags-input-control-border-at-max` · `--xh-tags-input-control-border-hover` · `--xh-tags-input-control-border-invalid` · `--xh-tags-input-control-fg` · `--xh-tags-input-control-gap` · `--xh-tags-input-control-h` · `--xh-tags-input-control-px` · `--xh-tags-input-control-py` · `--xh-tags-input-control-radius` · `--xh-tags-input-delete-bg` · `--xh-tags-input-delete-bg-active` · `--xh-tags-input-delete-bg-hover` · `--xh-tags-input-delete-fg` · `--xh-tags-input-delete-fg-highlight` · `--xh-tags-input-delete-fg-hover` · `--xh-tags-input-delete-font-size` · `--xh-tags-input-delete-size` · `--xh-tags-input-gap` · `--xh-tags-input-icon-size` · `--xh-tags-input-input-basis` · `--xh-tags-input-input-font-size` · `--xh-tags-input-input-min-w` · `--xh-tags-input-item-bg` · `--xh-tags-input-item-bg-highlight` · `--xh-tags-input-item-fg` · `--xh-tags-input-item-fg-highlight` · `--xh-tags-input-item-font-size` · `--xh-tags-input-item-gap` · `--xh-tags-input-item-input-bg` · `--xh-tags-input-item-input-border` · `--xh-tags-input-item-input-fg` · `--xh-tags-input-item-px` · `--xh-tags-input-item-py` · `--xh-tags-input-item-radius` · `--xh-tags-input-label-fg` · `--xh-tags-input-label-fg-disabled` · `--xh-tags-input-label-font-size` · `--xh-tags-input-label-font-weight` · `--xh-tags-input-placeholder-fg`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 外面套[表单字段](./field)；候选词一键添加时旁边摆一排[按钮](./button)。
+
+## 最佳实践
+
+- 入库前统一改写（去空白、转小写），否则同一个词会出现好几份。
+- 说明用什么键成词，否则用户会一直打空格。
+
+## 反模式
+
+- 不去重：同一个标签能加很多次。
+- 标签不能删。

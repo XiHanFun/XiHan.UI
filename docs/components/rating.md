@@ -1,6 +1,21 @@
 # 评分 <Badge type="info" text="rating" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+用一排图案表示一个离散的分值。
+
+## 何时使用
+
+- 收集或展示满意度、星级这类小范围的主观分值。
+
+## 何时不用
+
+- 分值范围大（0 到 100）：用[滑块](./slider)或[数字输入](./number-field)。
+- 只是展示一个数值：用[统计数值](./statistic)。
+
+## 特性
+
+- `allowHalf` 支持半档，`allowClear` 允许再点一次清空。
+- 悬停预览与实际值分开，`onHoverChange` 单独回调。
+- 图案与颜色都可以换。
 
 ## 示例
 
@@ -111,9 +126,15 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | `XhRatingItem` | `default` | `RatingItemSlotProps` |  |
 | `XhRatingRoot` | `default` | `RatingRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `item` | 'checked' \| 'unchecked' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -155,8 +176,76 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | `Home` | focus in control, not disabled/readOnly | 取最小档（allowHalf 时是半颗，否则一颗） |
 | `End` | focus in control, not disabled/readOnly | 取满分（count） |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `control` | `aria-disabled` | 'true' \| 'false' |
+| `control` | `aria-labelledby` | `label` 部件的 id |
+| `control` | `aria-orientation` | 'horizontal' |
+| `control` | `aria-readonly` | 'true' \| 'false' |
+| `control` | `aria-required` | 'true' \| 'false' |
+| `control` | `role` | 'radiogroup' |
+| `item` | `aria-checked` | 'true' \| 'false' |
+| `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `aria-posinset` | item.value |
+| `item` | `aria-setsize` | ratingMax(prop('count')) |
+| `item` | `role` | 'radio' |
+| `hidden-input` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/rating.css` 按部件选择：`[data-scope="rating"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-readonly` | ''（条件成立时才出现） |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-half` | ''（条件成立时才出现） |
+| `item` | `data-highlighted` | ''（条件成立时才出现） |
+| `item` | `data-readonly` | ''（条件成立时才出现） |
+| `item` | `data-state` | 'checked' \| 'unchecked' |
+| `hidden-input` | `data-disabled` | ''（条件成立时才出现） |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-rating-gap` · `--xh-rating-item-fg` · `--xh-rating-item-fg-highlighted` · `--xh-rating-item-font-size` · `--xh-rating-item-gap` · `--xh-rating-item-radius` · `--xh-rating-label-fg` · `--xh-rating-label-font-size` · `--xh-rating-label-font-weight`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+另有按 `dir` 分支的规则。
+
+## 组合
+
+- 外面套[表单字段](./field)；只读展示时与[统计数值](./statistic)并列。
+
+## 最佳实践
+
+- 档数固定在五档：更多档用户分辨不出差别。
+- 只读展示时把数值也写出来（4.2 / 5），图案本身读不出精确值。
+
+## 反模式
+
+- 用它展示进度：那是[进度条](./progress)。
+- 不允许清空却也没有默认值，用户误点后改不回来。

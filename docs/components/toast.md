@@ -1,6 +1,22 @@
 # 轻提示 <Badge type="info" text="toast" />
 
-反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一条会自己消失的短反馈。
+
+## 何时使用
+
+- 一次操作的结果："已保存"、"已复制"、"发送失败"。
+- 反馈重要但不需要打断用户。
+
+## 何时不用
+
+- 用户必须知道并处理：用[警告提示](./alert)让它常驻，或用[对话框](./dialog)阻断。
+- 内容较长或包含表单：轻提示会在读完之前消失。
+
+## 特性
+
+- `duration` 决定停留时长，指针悬停或页面失焦时计时暂停。
+- 可以带一个操作按钮（撤销、查看详情）。
+- `type` 决定语气，排版与图标可自定。
 
 ## 示例
 
@@ -83,9 +99,15 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | --- | --- | --- | --- |
 | `XhToastRoot` | `default` | `ToastRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | toStatus(state.get()) |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`visible` · `visible.running` · `visible.paused` · `dismissing` · `unmounted`
 
@@ -125,8 +147,61 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | `Enter` / `Space` | focus 在 close-trigger 上且 closable | 立即进入 dismissing，走完 removeDelay 后转 unmounted |
 | `Enter` / `Space` | focus 在 action-trigger 上 | 触发 onAction 并进入 dismissing |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-atomic` | 'true' |
+| `root` | `aria-describedby` | `description` 部件的 id |
+| `root` | `aria-labelledby` | `title` 部件的 id |
+| `root` | `aria-live` | 'assertive' \| 'polite' |
+| `root` | `role` | 'alert' \| 'status' |
+| `close-trigger` | `aria-label` | props.translations.close |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/toast.css` 按部件选择：`[data-scope="toast"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-paused` | ''（条件成立时才出现） |
+| `root` | `data-state` | toStatus(state.get()) |
+| `root` | `data-tone` | toneOf(type) |
+| `root` | `data-type` | props.type |
+| `close-trigger` | `data-disabled` | ''（条件成立时才出现） |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-toast-accent` · `--xh-toast-accent-width` · `--xh-toast-action-bg` · `--xh-toast-action-bg-active` · `--xh-toast-action-bg-hover` · `--xh-toast-action-border` · `--xh-toast-action-fg` · `--xh-toast-action-font-weight` · `--xh-toast-action-h` · `--xh-toast-action-px` · `--xh-toast-action-radius` · `--xh-toast-bg` · `--xh-toast-border` · `--xh-toast-close-bg-hover` · `--xh-toast-close-fg` · `--xh-toast-close-fg-hover` · `--xh-toast-close-radius` · `--xh-toast-close-size` · `--xh-toast-description-fg` · `--xh-toast-description-font-size` · `--xh-toast-fg` · `--xh-toast-font-size` · `--xh-toast-gap` · `--xh-toast-leading` · `--xh-toast-px` · `--xh-toast-py` · `--xh-toast-radius` · `--xh-toast-shadow` · `--xh-toast-title-fg` · `--xh-toast-title-font-size` · `--xh-toast-title-font-weight` · `--xh-toast-title-leading` · `--xh-toast-w`
+
+## 动效
+
+关键帧 `xh-toast-in` · `xh-toast-out` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 必须放进[轻提示容器](./toaster)；容器另有全局服务形态，业务代码一行调用即可。
+
+## 最佳实践
+
+- 破坏性操作配"撤销"按钮，比事前确认对话框体验好得多。
+- 错误类的提示停留久一点，或干脆不自动消失。
+
+## 反模式
+
+- 把错误详情放进轻提示：用户还没读完就没了。
+- 同一个动作连发好几条。

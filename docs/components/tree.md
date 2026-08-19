@@ -1,6 +1,24 @@
 # 树 <Badge type="info" text="tree" />
 
-数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+层级数据的展开与选择：分支可展开，节点可选。
+
+## 何时使用
+
+- 文件目录、组织架构、权限节点这类任意深度的层级数据。
+- 需要在树上多选并处理父子级联。
+
+## 何时不用
+
+- 树只是为了选一个值：用[树选择](./tree-select)，它把树收进浮层。
+- 层级规整、层数固定且只为选值：用[级联选择](./cascader)。
+- 数据是平的：用[列表](./list)或[表格](./table)。
+
+## 特性
+
+- 展开集合与选中集合两套值各自可受控。
+- `cascade` 与 `checkedStrategy` 决定勾父带不带子、以及回显给哪一层。
+- 支持只让叶子进选中集合、关键词过滤、子节点异步加载、拖放换父。
+- `expandOnClick` 决定点整行是否展开。
 
 ## 示例
 
@@ -117,9 +135,9 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 | --- | --- | --- | --- |
 | `XhTreeRoot` | `default` | `TreeRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -176,8 +194,63 @@ selection-mode="multiple" 加 cascade 内建父子传导：点分支整枝勾上
 | `*` | focus in tree | 展开与焦点行同一父级的全部分支（已展开与禁用的不动）；同级没有可展开的分支时不吞这个键 |
 | `单个可打印字符` | focus in tree, typeahead 未关 | 连打检索在可见行上按 label 首字母搬焦点，不改选中值，也不展开任何分支 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `tree` | `aria-disabled` | 'true' \| 'false' |
+| `tree` | `aria-labelledby` | `label` 部件的 id |
+| `tree` | `aria-multiselectable` | 'true' \| 'false' |
+| `tree` | `role` | 'tree' |
+| `item-indicator` | `aria-hidden` | 'true' |
+| `branch` | `aria-expanded` | 'true' \| 'false' |
+| `branch` | `aria-label` | metaOf(node.value)?.label |
+| `branch-trigger` | `aria-hidden` | 'true' |
+| `branch-indicator` | `aria-hidden` | 'true' |
+| `branch-content` | `role` | 'group' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/tree.css` 按部件选择：`[data-scope="tree"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `tree` | `data-disabled` | ''（条件成立时才出现） |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-tree-bg` · `--xh-tree-border` · `--xh-tree-branch-indicator-fg` · `--xh-tree-fg` · `--xh-tree-gap` · `--xh-tree-indent` · `--xh-tree-indicator-fg` · `--xh-tree-indicator-size` · `--xh-tree-label-fg` · `--xh-tree-label-font-size` · `--xh-tree-label-font-weight` · `--xh-tree-max-h` · `--xh-tree-px` · `--xh-tree-py` · `--xh-tree-radius` · `--xh-tree-row-bg-hover` · `--xh-tree-row-fg` · `--xh-tree-row-fg-selected` · `--xh-tree-row-font-size` · `--xh-tree-row-gap` · `--xh-tree-row-leading` · `--xh-tree-row-px` · `--xh-tree-row-py` · `--xh-tree-row-radius` · `--xh-tree-row-selected-font-weight`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
+
+## 组合
+
+- 前缀放[图标](./icon)，行尾放[菜单](./menu)；放进[分栏](./splitter)的一侧。
+
+## 最佳实践
+
+- 大树一定要虚拟化或按需加载，一次展开全部会卡住。
+- 级联勾选的策略要与后端约定一致。
+
+## 反模式
+
+- 展开状态不持久：用户每次进来都要重新展开一路。
+- 拖放换父没有落点提示。

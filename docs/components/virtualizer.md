@@ -1,6 +1,22 @@
 # 虚拟滚动 <Badge type="info" text="virtualizer" />
 
-数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+只渲染窗口内的条目，列表再长也只画那几十个。
+
+## 何时使用
+
+- 条目上千甚至上万。
+- 首屏卡顿的根源是 DOM 节点太多。
+
+## 何时不用
+
+- 条目只有几十上百条：虚拟化带来的复杂度不值得。
+- 需要浏览器的页内查找命中所有条目：没渲染的条目搜不到。
+
+## 特性
+
+- 支持动态高度（量出来而不是猜）、横向列表与多列。
+- `overscan` 决定窗口外多渲几个，滚动时不露白。
+- 可以滚到指定条目。
 
 ## 示例
 
@@ -76,9 +92,9 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 | --- | --- | --- | --- |
 | `XhVirtualizerRoot` | `default` | `VirtualizerRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `scrolling`
 
@@ -110,3 +126,39 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 规格出处：[W3C APG](https://www.w3.org/WAI/WCAG21/Techniques/general/G202)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/virtualizer.css` 按部件选择：`[data-scope="virtualizer"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `root` | `data-scrolling` | ''（条件成立时才出现） |
+| `viewport` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `content` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `item` | `data-index` | props.index |
+| `item` | `data-lane` | item.lane \| undefined |
+| `item` | `data-orientation` | 'horizontal' \| 'vertical' |
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 与[列表](./list)、[表格](./table)、[选择器](./select)的长选项列表、[穿梭框](./transfer)配合。
+
+## 最佳实践
+
+- 条目高度差异大时用动态高度模式，别用估值硬撑。
+- 提供"滚到某条"的入口，否则用户永远找不回刚才看的位置。
+
+## 反模式
+
+- 在虚拟列表里放高度会突变的内容（图片没预留宽高比），滚动时位置乱跳。
+- 依赖 Ctrl + F 查找。

@@ -1,6 +1,23 @@
 # 手风琴 <Badge type="info" text="accordion" />
 
-数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一列可展开的区块，标题常驻、内容按需展开。
+
+## 何时使用
+
+- 常见问题、设置分组这类"标题足以判断要不要看"的内容。
+- 内容很长，一次全铺开会让页面失去结构。
+
+## 何时不用
+
+- 只有一块内容：用[折叠区域](./collapsible)。
+- 各块内容需要对照着看：直接铺开。
+- 各块是并列视图、同时只看一个：用[标签页](./tabs)。
+
+## 特性
+
+- `multiple` 决定能不能同时展开多项，`collapsible` 决定能不能全部收起。
+- 指示器可以放前也可以放后，图形自定。
+- 可以嵌套；触发区大小由作者决定。
 
 ## 示例
 
@@ -109,9 +126,19 @@ indicator 是可选部件，不渲染它就没有默认字形；标记由作者�
 | --- | --- | --- |
 | `value-change` | `AccordionValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `item` | 'open' \| 'closed' |
+| `header` | 'open' \| 'closed' |
+| `trigger` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+| `indicator` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -147,8 +174,70 @@ indicator 是可选部件，不渲染它就没有默认字形；标记由作者�
 | `End` | focus in trigger | 焦点移到末个 trigger |
 | `Tab` / `Shift+Tab` | focus in trigger | 按文档序进出：每个 trigger 都是独立 Tab 停靠点，无 roving tabindex |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `header` | `aria-level` | 3 |
+| `header` | `role` | 'heading' |
+| `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-disabled` | 'true' \| 'false' |
+| `trigger` | `aria-expanded` | 'true' \| 'false' |
+| `content` | `aria-labelledby` | `trigger` 部件的 id |
+| `content` | `role` | 'region' |
+| `indicator` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/accordion.css` 按部件选择：`[data-scope="accordion"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-orientation` | props.orientation |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-state` | 'open' \| 'closed' |
+| `header` | `data-disabled` | ''（条件成立时才出现） |
+| `header` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-state` | 'open' \| 'closed' |
+| `indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `indicator` | `data-state` | 'open' \| 'closed' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-accordion-content-fg` · `--xh-accordion-content-px` · `--xh-accordion-content-py` · `--xh-accordion-item-border` · `--xh-accordion-trigger-bg` · `--xh-accordion-trigger-bg-hover` · `--xh-accordion-trigger-fg` · `--xh-accordion-trigger-font-size` · `--xh-accordion-trigger-font-weight` · `--xh-accordion-trigger-gap` · `--xh-accordion-trigger-h` · `--xh-accordion-trigger-px` · `--xh-accordion-trigger-radius`
+
+## 动效
+
+关键帧 `xh-accordion-collapse` · `xh-accordion-expand` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 标题栏里可以挂附加信息（计数、状态[徽标](./badge)）。
+
+## 最佳实践
+
+- 标题写清楚里面是什么，用户不该靠展开来发现。
+- 默认展开第一项，让用户看见内容长什么样。
+
+## 反模式
+
+- 把关键信息藏进折叠：用户不会逐个点开。
+- 展开时页面下方内容大幅跳动而没有滚动补偿。

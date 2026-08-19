@@ -1,6 +1,24 @@
 # 气泡卡片 <Badge type="info" text="popover" />
 
-反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+由点击触发、贴着触发器的一小块浮层，里面可以放任意内容与交互。
+
+## 何时使用
+
+- 补充信息或一小组操作，不值得为它开对话框。
+- 内容里有可聚焦元素（按钮、输入框）——这是它与[文字提示](./tooltip)的分界线。
+
+## 何时不用
+
+- 只是一句纯文字说明：用[文字提示](./tooltip)。
+- 悬停即出、不需要点击：用[悬浮卡片](./hover-card)。
+- 内容是一列命令：用[菜单](./menu)。
+
+## 特性
+
+- `placement` 只是首选位，空间不够时定位引擎自动翻面。
+- `modal` 可选：需要锁住下层时打开。
+- 可以与触发器同宽，也可以落在指针位置。
+- `end` 这类对齐是逻辑方向，跟着书写方向走，不是左右。
 
 ## 示例
 
@@ -118,9 +136,17 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 | --- | --- | --- | --- |
 | `XhPopoverRoot` | `default` | `PopoverRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `trigger` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -155,8 +181,67 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 | `Tab` | open 且 modal | 在 content 内向后循环焦点 |
 | `Shift+Tab` | open 且 modal | 在 content 内向前循环焦点 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-expanded` | 'true' \| 'false' |
+| `trigger` | `aria-haspopup` | 'dialog' |
+| `content` | `aria-describedby` | `description` 部件的 id |
+| `content` | `aria-labelledby` | `title` 部件的 id |
+| `content` | `aria-modal` | 'true' \| 'false' |
+| `content` | `role` | 'dialog' |
+| `close-trigger` | `aria-label` | props.translations.close |
+| `arrow` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/popover.css` 按部件选择：`[data-scope="popover"][data-part="trigger"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-hidden` | ''（条件成立时才出现） |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-placement` | 定位引擎算出的实际落位 |
+| `content` | `data-size` | props.size |
+| `content` | `data-state` | 'open' \| 'closed' |
+| `arrow` | `data-placement` | 定位引擎算出的实际落位 |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-popover-arrow-size` · `--xh-popover-bg` · `--xh-popover-border` · `--xh-popover-description-fg` · `--xh-popover-fg` · `--xh-popover-gap` · `--xh-popover-max-h` · `--xh-popover-max-w` · `--xh-popover-px` · `--xh-popover-py` · `--xh-popover-radius` · `--xh-popover-shadow` · `--xh-popover-title-fg` · `--xh-popover-title-font-size` · `--xh-popover-title-font-weight`
+
+## 动效
+
+关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 触发器用[按钮](./button)；长内容套[滚动区域](./scroll-area)。
+
+## 最佳实践
+
+- 打开后焦点进浮层，Escape 关闭并归还焦点。
+- 内容控制在一屏内，需要滚动就说明该换[抽屉](./drawer)了。
+
+## 反模式
+
+- 悬停触发却里面有按钮：指针移过去的路上就关了。
+- 气泡里再弹气泡。

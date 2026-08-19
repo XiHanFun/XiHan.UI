@@ -1,6 +1,23 @@
 # 步骤条 <Badge type="info" text="steps" />
 
-导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+把一件事拆成有先后的几步，并标出走到哪一步了。
+
+## 何时使用
+
+- 多步表单、开通流程、安装向导，步数固定且顺序明确。
+- 需要让用户看见"还剩几步"。
+
+## 何时不用
+
+- 各段之间没有先后、可以随便切：那是[标签页](./tabs)。
+- 展示已经发生的事件序列：用[时间线](./timeline)。
+
+## 特性
+
+- `count` 是步序的上界，也是读屏"第 k 步，共 n 步"的分母。
+- `linear` 只拦界面上的乱跳（未解锁的入口一律禁用），逐步前进的方法照常可用。
+- 方向键只搬焦点，按 Enter 或空格才切步。
+- "这一步出错了"是宿主自己的数据：在那一步上换掉标记与颜色令牌即可。
 
 ## 示例
 
@@ -99,9 +116,21 @@ size 换序号圆点的直径与标题、说明的字号，不传 size 即默认
 | --- | --- | --- | --- |
 | `XhStepsRoot` | `default` | `StepsRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `item` | s.status |
+| `trigger` | s.status |
+| `indicator` | getItemState(item).status |
+| `title` | getItemState(item).status |
+| `description` | getItemState(item).status |
+| `separator` | getItemState(item).status |
+| `content` | getItemState(item).status |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -144,8 +173,82 @@ size 换序号圆点的直径与标题、说明的字号，不传 size 即默认
 | `Enter` / `Space` | focus in trigger, 未禁用且已解锁 | 把当前步切到焦点所在的那一步 |
 | `Tab` / `Shift+Tab` | focus in list | 整组只有锚点 trigger 留在 Tab 序列内，一次 Tab 进出；无锚点时由 list 兜底 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `list` | `aria-disabled` | 'true' \| 'false' |
+| `list` | `aria-orientation` | props.orientation |
+| `list` | `role` | 'tablist' |
+| `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-current` | 'step' \| undefined |
+| `trigger` | `aria-disabled` | 'true' \| 'false' |
+| `trigger` | `aria-posinset` | item.index + 1 \| undefined |
+| `trigger` | `aria-selected` | 'true' \| 'false' |
+| `trigger` | `aria-setsize` | normalizeStepCount(prop('count')) \| undefined |
+| `trigger` | `role` | 'tab' |
+| `indicator` | `aria-hidden` | 'true' |
+| `separator` | `aria-hidden` | 'true' |
+| `content` | `aria-labelledby` | `trigger` 部件的 id |
+| `content` | `role` | 'tabpanel' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/steps.css` 按部件选择：`[data-scope="steps"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-complete` | ''（条件成立时才出现） |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-orientation` | props.orientation |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
+| `list` | `data-orientation` | props.orientation |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-orientation` | props.orientation |
+| `item` | `data-state` | s.status |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-state` | s.status |
+| `indicator` | `data-state` | getItemState(item).status |
+| `title` | `data-state` | getItemState(item).status |
+| `description` | `data-state` | getItemState(item).status |
+| `separator` | `data-orientation` | props.orientation |
+| `separator` | `data-state` | getItemState(item).status |
+| `content` | `data-state` | getItemState(item).status |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-steps-content-fg` · `--xh-steps-content-py` · `--xh-steps-description-fg` · `--xh-steps-description-font-size` · `--xh-steps-gap` · `--xh-steps-indicator-bg` · `--xh-steps-indicator-bg-completed` · `--xh-steps-indicator-border` · `--xh-steps-indicator-border-completed` · `--xh-steps-indicator-border-current` · `--xh-steps-indicator-border-disabled` · `--xh-steps-indicator-fg` · `--xh-steps-indicator-fg-completed` · `--xh-steps-indicator-fg-current` · `--xh-steps-indicator-fg-disabled` · `--xh-steps-indicator-font-size` · `--xh-steps-indicator-size` · `--xh-steps-item-gap` · `--xh-steps-list-gap` · `--xh-steps-separator-bg` · `--xh-steps-separator-bg-completed` · `--xh-steps-separator-min-length` · `--xh-steps-separator-thickness` · `--xh-steps-title-fg` · `--xh-steps-title-fg-active` · `--xh-steps-title-font-size` · `--xh-steps-title-font-weight` · `--xh-steps-trigger-bg-hover` · `--xh-steps-trigger-gap` · `--xh-steps-trigger-p` · `--xh-steps-trigger-radius`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 与[表单](./form)配合做分步表单；每步的内容放进 `content` 部件。
+
+## 最佳实践
+
+- 步数控制在三到五步，多了就把相邻两步合并。
+- 每步的标题写用户要做的事，不写"第一步"。
+
+## 反模式
+
+- 步数会变：用户刚看到"共 3 步"，走到一半变成 5 步。
+- 用它表达进度百分比：那是[进度条](./progress)。

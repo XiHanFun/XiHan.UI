@@ -1,6 +1,21 @@
 # 折叠区域 <Badge type="info" text="collapsible" />
 
-数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一块可以展开收起的内容，只有一块。
+
+## 何时使用
+
+- 高级选项、补充说明这类默认不需要看见的单块内容。
+
+## 何时不用
+
+- 有好几块并列的可折叠内容：用[手风琴](./accordion)，它管互斥与整组语义。
+- 内容需要浮在页面之上：用[气泡卡片](./popover)。
+
+## 特性
+
+- 触发器与内容通过 `aria-controls` 与 `aria-expanded` 关联。
+- 展开动画由皮肤给，内容高度由组件量出来。
+- 展开标记的图形自定。
 
 ## 示例
 
@@ -74,9 +89,17 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 | --- | --- | --- |
 | `open-change` | `CollapsibleOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'open' \| 'closed' |
+| `trigger` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -104,8 +127,57 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 | --- | --- | --- |
 | `Space` / `Enter` | focus in trigger, not disabled | 展开/收起 content |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-expanded` | 'true' \| 'false' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/collapsible.css` 按部件选择：`[data-scope="collapsible"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-state` | 'open' \| 'closed' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-collapsible-content-fg` · `--xh-collapsible-content-py` · `--xh-collapsible-trigger-bg` · `--xh-collapsible-trigger-bg-hover` · `--xh-collapsible-trigger-fg` · `--xh-collapsible-trigger-font-size` · `--xh-collapsible-trigger-font-weight` · `--xh-collapsible-trigger-gap` · `--xh-collapsible-trigger-h` · `--xh-collapsible-trigger-px` · `--xh-collapsible-trigger-radius`
+
+## 动效
+
+关键帧 `xh-collapsible-collapse` · `xh-collapsible-expand` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 放进[卡片](./card)、[表单](./form)的高级选项区。
+
+## 最佳实践
+
+- 触发器文字说明里面是什么，别只写"展开"。
+- 收起时内容退出 Tab 序列，别让焦点落到看不见的地方。
+
+## 反模式
+
+- 把必填字段藏进折叠区：用户提交失败也不知道错在哪。

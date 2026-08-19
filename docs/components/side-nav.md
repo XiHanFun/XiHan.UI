@@ -1,6 +1,24 @@
 # 侧栏导航 <Badge type="info" text="side-nav" />
 
-导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+后台侧边那棵导航树：分支可展开，选中落在叶子上并一路点亮祖先枝。
+
+## 何时使用
+
+- 管理后台、控制台的主导航，层级两到三层。
+- 侧栏需要折叠成图标栏，且折叠后仍要能进到子级。
+
+## 何时不用
+
+- 导航只有一层：用一列链接就够。
+- 是内容树而不是导航树（文件、组织架构）：用[树](./tree)。
+- 顶部横向导航：用[导航菜单](./navigation-menu)。
+
+## 特性
+
+- `collection` 是层级与文本的唯一事实源。
+- `accordion` 让同层只开一枝；不开即可多开。
+- 折叠成图标栏时内嵌展开整体收起、文字由皮肤藏掉；顶层分支换装浮层弹出，悬停 / 点按 / 右方向键在旁侧弹出子级面板，面板内选中即落值收起。
+- 方向键上下走行、左右管层级。
 
 ## 示例
 
@@ -68,9 +86,19 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | --- | --- | --- | --- |
 | `XhSideNavRoot` | `default` | `SideNavRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `branch` | 'open' \| 'closed' |
+| `branch-trigger` | 'open' \| 'closed' |
+| `branch-indicator` | 'open' \| 'closed' |
+| `branch-content` | 'open' \| 'closed' |
+| `popout-positioner` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `popout`
 
@@ -130,8 +158,78 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | `ArrowRight` / `Enter` / `Space` | focus in 折叠态顶层分支行 | 弹出子级面板并落焦第一行（RTL 与 ArrowLeft 对调） |
 | `ArrowLeft` / `Escape` | focus in 弹出面板 | 收回面板，焦点还给触发按钮（RTL 与 ArrowRight 对调；Escape 归消解层） |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-label` | translations?.root |
+| `root` | `role` | 'navigation' |
+| `group` | `aria-labelledby` | `group-label` 部件的 id |
+| `group` | `role` | 'group' |
+| `branch-trigger` | `aria-controls` | `content` 部件的 id |
+| `branch-trigger` | `aria-expanded` | 'true' \| 'false' |
+| `branch-indicator` | `aria-hidden` | 'true' |
+| `link` | `aria-current` | 'page' \| undefined |
+| `link` | `aria-disabled` | 'true' \| undefined |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/side-nav.css` 按部件选择：`[data-scope="side-nav"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-collapsed` | ''（条件成立时才出现） |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `list` | `data-collapsed` | ''（条件成立时才出现） |
+| `group-label` | `data-collapsed` | ''（条件成立时才出现） |
+| `branch` | `data-active` | ''（条件成立时才出现） |
+| `branch` | `data-disabled` | ''（条件成立时才出现） |
+| `branch` | `data-state` | 'open' \| 'closed' |
+| `branch-trigger` | `data-active` | ''（条件成立时才出现） |
+| `branch-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `branch-trigger` | `data-state` | 'open' \| 'closed' |
+| `branch-trigger` | `data-value` | itemValue(el) |
+| `branch-indicator` | `data-state` | 'open' \| 'closed' |
+| `branch-content` | `data-popout` | '' |
+| `branch-content` | `data-state` | 'open' \| 'closed' |
+| `link` | `data-disabled` | ''（条件成立时才出现） |
+| `link` | `data-selected` | ''（条件成立时才出现） |
+| `link` | `data-value` | itemValue(el) |
+| `popout-positioner` | `data-placement` | popoutPosition?.placement |
+| `popout-positioner` | `data-state` | 'open' \| 'closed' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-side-nav-collapsed-w` · `--xh-side-nav-fg` · `--xh-side-nav-gap` · `--xh-side-nav-indent` · `--xh-side-nav-p` · `--xh-side-nav-popout-bg` · `--xh-side-nav-popout-border` · `--xh-side-nav-popout-layer` · `--xh-side-nav-popout-max-h` · `--xh-side-nav-popout-max-w` · `--xh-side-nav-popout-min-w` · `--xh-side-nav-popout-p` · `--xh-side-nav-popout-radius` · `--xh-side-nav-popout-shadow` · `--xh-side-nav-w`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 放进[布局](./layout)的 `sider`，折叠开关接布局的折叠态。
+
+## 最佳实践
+
+- 层级压到两级，第三级开始用户就记不住路径了。
+- 折叠态一定要留 `collapsedPopout`，否则图标栏进不去子级。
+
+## 反模式
+
+- 把每个叶子都做成分支（点开只有一项）。
+- 折叠时把整棵树卸载：展开状态与滚动位置全丢。

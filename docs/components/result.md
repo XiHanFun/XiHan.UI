@@ -1,6 +1,21 @@
 # 结果页 <Badge type="info" text="result" />
 
-数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一次操作或一段流程结束后的整页反馈：成功、失败或某个状态码。
+
+## 何时使用
+
+- 提交成功、支付完成、权限不足、页面不存在。
+- 用户需要在这里决定下一步去哪。
+
+## 何时不用
+
+- 只是一次轻量操作的反馈：用[轻提示](./toast)。
+- 列表里没有数据：用[空状态](./empty-state)。
+
+## 特性
+
+- `status` 决定这一页并进哪一族语气色。
+- 图标由作者塞，标题、描述与操作槽各占一段。
 
 ## 示例
 
@@ -74,8 +89,47 @@ size 换的是留白、图标框与标题字号，不传 size 即默认档
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `icon` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/result.css` 按部件选择：`[data-scope="result"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-size` | props.size |
+| `root` | `data-status` | props.status |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-result-action-gap` · `--xh-result-description-fg` · `--xh-result-description-font-size` · `--xh-result-description-leading` · `--xh-result-description-max-w` · `--xh-result-fg` · `--xh-result-gap` · `--xh-result-icon-fg` · `--xh-result-icon-font-size` · `--xh-result-icon-size` · `--xh-result-px` · `--xh-result-py` · `--xh-result-title-fg` · `--xh-result-title-font-size` · `--xh-result-title-font-weight` · `--xh-result-title-leading`
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 图标用[图标块](./icon-wrapper)；操作槽里放[按钮](./button)与[按钮组](./button-group)。
+
+## 最佳实践
+
+- 每一页都给回退出口：回首页、重试、联系支持。403 与 500 尤其需要。
+- 失败页要给可追溯的标识（请求号、时间），用户报障时用得上。
+
+## 反模式
+
+- 只写"出错了"却不说是什么错，也不给下一步。
+- 成功页没有任何后续入口，用户卡在原地。

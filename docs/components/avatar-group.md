@@ -1,6 +1,20 @@
 # 头像组 <Badge type="info" text="avatar-group" />
 
-通用组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+把若干头像叠成一排，超出上限的收成一个计数。
+
+## 何时使用
+
+- 表示"这几个人参与了这件事"，且个体身份不需要逐一确认。
+
+## 何时不用
+
+- 需要逐个识别或操作：排成[列表](./list)。
+- 只有一个人。
+
+## 特性
+
+- `max` 决定显示几个，其余落进 `overflow` 计数。
+- 尺寸写在组上，组内头像一并跟着换。
 
 ## 示例
 
@@ -65,8 +79,30 @@
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 样式
+
+默认皮肤 `@xihan-ui/styles/avatar-group.css` 按部件选择：`[data-scope="avatar-group"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-avatar-group-font-size` · `--xh-avatar-group-font-weight` · `--xh-avatar-group-overflow-bg` · `--xh-avatar-group-overflow-fg` · `--xh-avatar-group-overlap` · `--xh-avatar-group-radius` · `--xh-avatar-group-ring` · `--xh-avatar-group-size`
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 里面放[头像](./avatar)；溢出计数点开可以是一张[气泡卡片](./popover)里的完整名单。
+
+## 最佳实践
+
+- 溢出计数要能点开看到完整名单。
+- 每个头像都配[文字提示](./tooltip)给出姓名。
+
+## 反模式
+
+- 叠得太密以致看不出有几个人。
+- 上限设得太大，一排头像占满整行。

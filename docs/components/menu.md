@@ -1,6 +1,24 @@
 # 菜单 <Badge type="info" text="menu" />
 
-导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+由一个触发器弹出的一列命令。选中一条即执行并收起。
+
+## 何时使用
+
+- 一组动作放不下、或不值得全部摆在界面上（更多操作、账户菜单）。
+- 需要二级子菜单的命令树。
+
+## 何时不用
+
+- 要选一个值并保留选中态：那是[选择器](./select)——菜单的条目是命令，选完就关，不留选中。
+- 只有一两个动作：直接摆[按钮](./button)。
+- 是站点的主导航：用[导航菜单](./navigation-menu)，它的条目是链接。
+
+## 特性
+
+- 悬停触发有安全三角：指针斜穿赶往浮层不会误收，走岔或停滞才收起；延时可调。
+- 条目以 `value` 标识身份，禁用项方向键跳过也选不中。
+- `content` 里可以直接放任意节点；不是 `item` 就不进方向键行程，也选不中。
+- 子菜单触发条目双重身份：父层方向键照常走、右方向键进子层、子层左方向键退回。
 
 ## 示例
 
@@ -126,9 +144,18 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | `XhMenuRoot` | `item` | `MenuNodeMeta` |  |
 | `XhMenuSub` | `default` | `MenuSubSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `trigger` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+| `submenu-trigger` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -170,8 +197,77 @@ XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照�
 | `Escape` | open | 关闭菜单并把焦点归还 trigger |
 | `Tab` / `Shift+Tab` | open | 关闭菜单，焦点不归还 trigger，按 Tab 序列自然离开 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-expanded` | 'true' \| 'false' |
+| `trigger` | `aria-haspopup` | 'menu' |
+| `content` | `aria-labelledby` | `trigger` 部件的 id |
+| `content` | `role` | 'menu' |
+| `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `role` | 'menuitem' |
+| `separator` | `aria-orientation` | 'horizontal' |
+| `separator` | `role` | 'separator' |
+| `arrow` | `aria-hidden` | 'true' |
+| `submenu-trigger` | `aria-controls` | `content` 部件的 id |
+| `submenu-trigger` | `aria-disabled` | 'true' \| 'false' |
+| `submenu-trigger` | `aria-expanded` | 'true' \| 'false' |
+| `submenu-trigger` | `aria-haspopup` | 'menu' |
+| `submenu-trigger` | `role` | 'menuitem' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/menu.css` 按部件选择：`[data-scope="menu"][data-part="trigger"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-hidden` | ''（条件成立时才出现） |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-placement` | 定位引擎算出的实际落位 |
+| `content` | `data-size` | props.size |
+| `content` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-tone` | props.tone |
+| `item` | `data-disabled` | ''（条件成立时才出现） |
+| `arrow` | `data-placement` | 定位引擎算出的实际落位 |
+| `submenu-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `submenu-trigger` | `data-state` | 'open' \| 'closed' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-menu-arrow-size` · `--xh-menu-bg` · `--xh-menu-border` · `--xh-menu-fg` · `--xh-menu-item-active-font-weight` · `--xh-menu-item-bg-active` · `--xh-menu-item-bg-hover` · `--xh-menu-item-fg` · `--xh-menu-item-font-size` · `--xh-menu-item-gap` · `--xh-menu-item-leading` · `--xh-menu-item-px` · `--xh-menu-item-py` · `--xh-menu-item-radius` · `--xh-menu-max-h` · `--xh-menu-max-w` · `--xh-menu-min-w` · `--xh-menu-px` · `--xh-menu-py` · `--xh-menu-radius` · `--xh-menu-separator-color` · `--xh-menu-separator-my` · `--xh-menu-separator-thickness` · `--xh-menu-shadow`
+
+## 动效
+
+关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 触发器用[按钮](./button)；与[按钮组](./button-group)组合成分裂按钮；与[面包屑](./breadcrumb)组合做层级切换。
+
+## 最佳实践
+
+- 破坏性命令与其余条目之间隔一道[分隔线](./separator)，并放在最后。
+- 悬停触发只在指针环境有意义，触摸与键盘恒靠点击那条路径。
+
+## 反模式
+
+- 用菜单做单选：读屏用户听到的是"菜单项"，不是"选项"，选完也不知道当前值是什么。
+- 条目文字写成一句话：菜单项应是动宾短语。

@@ -1,6 +1,23 @@
 # 菜单栏 <Badge type="info" text="menubar" />
 
-导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一排入口各带一张菜单，同时只展开一张——桌面应用顶部那条。
+
+## 何时使用
+
+- 功能密集的编辑器类界面，命令多到需要按"文件 / 编辑 / 视图"分门别类。
+
+## 何时不用
+
+- 站点导航：那是[导航菜单](./navigation-menu)或[侧栏导航](./side-nav)。
+- 只有一个入口：直接用[菜单](./menu)。
+- 移动端：这排入口在窄屏上放不下，且悬停切换无从谈起。
+
+## 特性
+
+- `value` 是当前展开的那一项，`null` 表示都收起。
+- 一张菜单展开后，指针移到相邻入口即直接换张展开，不必先关再开。
+- 禁用走 `aria-disabled` 而非原生 `disabled`：禁用的入口仍聚焦得上、仍是方向键的起点。
+- `orientation` 竖排时上下键在入口之间走，左右键改为展开本项的菜单。
 
 ## 示例
 
@@ -111,9 +128,18 @@ orientation 决定主轴：竖排时上下键在入口之间走，左右键改�
 | `XhMenubarRoot` | `default` | `MenubarRootSlotProps` |  |
 | `XhMenubarRoot` | `item` | `MenubarNodeMeta` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'open' \| 'closed' |
+| `trigger` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `open`
 
@@ -169,8 +195,81 @@ orientation 决定主轴：竖排时上下键在入口之间走，左右键改�
 | `Escape` | open | 收起菜单并把焦点留在 trigger 上 |
 | `Tab` / `Shift+Tab` | open | 收起菜单，焦点不被抢回 trigger，按 Tab 序列自然离开 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-disabled` | 'true' \| 'false' |
+| `root` | `aria-orientation` | props.orientation |
+| `root` | `role` | 'menubar' |
+| `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-disabled` | 'true' \| 'false' |
+| `trigger` | `aria-expanded` | 'true' \| 'false' |
+| `trigger` | `aria-haspopup` | 'menu' |
+| `trigger` | `role` | 'menuitem' |
+| `content` | `aria-labelledby` | `trigger` 部件的 id |
+| `content` | `role` | 'menu' |
+| `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `role` | 'menuitem' |
+| `item-indicator` | `aria-hidden` | 'true' |
+| `separator` | `aria-orientation` | 'horizontal' |
+| `separator` | `role` | 'separator' |
+| `group` | `aria-labelledby` | `group-label` 部件的 id |
+| `group` | `role` | 'group' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/menubar.css` 按部件选择：`[data-scope="menubar"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-orientation` | props.orientation |
+| `root` | `data-size` | props.size |
+| `root` | `data-state` | 'open' \| 'closed' |
+| `root` | `data-tone` | props.tone |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-hidden` | ''（条件成立时才出现） |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位 \| undefined |
+| `positioner` | `data-size` | props.size |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-tone` | props.tone |
+| `content` | `data-placement` | 定位引擎算出的实际落位 \| undefined |
+| `content` | `data-state` | 'open' \| 'closed' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-menubar-bg` · `--xh-menubar-fg` · `--xh-menubar-gap` · `--xh-menubar-group-label-fg` · `--xh-menubar-group-label-font-size` · `--xh-menubar-group-label-font-weight` · `--xh-menubar-group-label-px` · `--xh-menubar-group-label-py` · `--xh-menubar-item-bg-hover` · `--xh-menubar-item-fg` · `--xh-menubar-item-font-size` · `--xh-menubar-item-gap` · `--xh-menubar-item-indicator-fg` · `--xh-menubar-item-indicator-size` · `--xh-menubar-item-leading` · `--xh-menubar-item-px` · `--xh-menubar-item-py` · `--xh-menubar-item-radius` · `--xh-menubar-menu-bg` · `--xh-menubar-menu-border` · `--xh-menubar-menu-fg` · `--xh-menubar-menu-max-h` · `--xh-menubar-menu-max-w` · `--xh-menubar-menu-min-w` · `--xh-menubar-menu-px` · `--xh-menubar-menu-py` · `--xh-menubar-menu-radius` · `--xh-menubar-menu-shadow` · `--xh-menubar-px` · `--xh-menubar-py` · `--xh-menubar-radius` · `--xh-menubar-separator-color` · `--xh-menubar-separator-my` · `--xh-menubar-separator-thickness` · `--xh-menubar-trigger-bg-active` · `--xh-menubar-trigger-bg-hover` · `--xh-menubar-trigger-font-size` · `--xh-menubar-trigger-gap` · `--xh-menubar-trigger-px` · `--xh-menubar-trigger-py` · `--xh-menubar-trigger-radius`
+
+## 动效
+
+关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 装不下时由宿主观测容器宽度，一次收起一个入口到"更多"里，收起的菜单在"更多"中各占一组。
+
+## 最佳实践
+
+- 入口名用单个名词，宽度尽量接近，避免展开时整排跳动。
+- 常用命令在菜单里也标出快捷键，否则用户学不会绕开菜单栏。
+
+## 反模式
+
+- 入口超过七八个：找一条命令比翻文档还慢。
+- 在菜单栏里放选项而不是命令。

@@ -1,6 +1,23 @@
 # 文本输入 <Badge type="info" text="text-field" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+单行或多行的自由文本输入。
+
+## 何时使用
+
+- 姓名、标题、描述、搜索词这类没有固定候选的文本。
+
+## 何时不用
+
+- 值来自一份已知清单：用[选择器](./select)或[组合框](./combobox)。
+- 输入的是数字并需要加减：用[数字输入](./number-field)。
+- 输入的是日期或时间：用[日期输入](./date-field)、[时间输入](./time-field)。
+
+## 特性
+
+- `type` 覆盖 `text` / `password` / `email` / `tel` / `url` / `search`。
+- `clearable` 给出清空按钮，`maxLength` 给出字数上限。
+- 多行时可自动长高。
+- 框内前后缀、输入组、限制可输入字符都由作者组合，组件不预设。
 
 ## 示例
 
@@ -153,9 +170,9 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | --- | --- | --- | --- |
 | `XhTextFieldRoot` | `default` | `TextFieldRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -193,8 +210,68 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | --- | --- | --- |
 | `Escape` | focus in input, clearable 且值非空, not disabled/readOnly | 清空值；三个条件缺一即不接管该键，交回给外层与浏览器 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `input` | `aria-invalid` | 'true' \| 'false' |
+| `input` | `aria-labelledby` | `label` 部件的 id |
+| `clear-trigger` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/text-field.css` 按部件选择：`[data-scope="text-field"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-at-limit` | ''（条件成立时才出现） |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `input` | `data-at-limit` | ''（条件成立时才出现） |
+| `input` | `data-autosize` | ''（条件成立时才出现） |
+| `input` | `data-disabled` | ''（条件成立时才出现） |
+| `input` | `data-invalid` | ''（条件成立时才出现） |
+| `input` | `data-multiline` | ''（条件成立时才出现） |
+| `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-text-field-clear-bg` · `--xh-text-field-clear-bg-active` · `--xh-text-field-clear-bg-hover` · `--xh-text-field-clear-fg` · `--xh-text-field-clear-fg-hover` · `--xh-text-field-clear-font-size` · `--xh-text-field-clear-radius` · `--xh-text-field-clear-size` · `--xh-text-field-gap` · `--xh-text-field-icon-size` · `--xh-text-field-input-bg` · `--xh-text-field-input-bg-disabled` · `--xh-text-field-input-bg-readonly` · `--xh-text-field-input-border` · `--xh-text-field-input-border-at-limit` · `--xh-text-field-input-border-focus` · `--xh-text-field-input-border-hover` · `--xh-text-field-input-border-invalid` · `--xh-text-field-input-fg` · `--xh-text-field-input-font-size` · `--xh-text-field-input-h` · `--xh-text-field-input-px` · `--xh-text-field-input-radius` · `--xh-text-field-label-fg` · `--xh-text-field-label-fg-disabled` · `--xh-text-field-label-font-size` · `--xh-text-field-label-font-weight` · `--xh-text-field-placeholder-fg` · `--xh-text-field-textarea-py`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 外面套[表单字段](./field)拿标签与错误文本；与[按钮](./button)拼成输入组。
+
+## 最佳实践
+
+- `type` 要写对：移动端的软键盘按它切换，写错会让用户多按很多次。
+- 密码框的明暗切换按钮要有可及名字，并在切换后更新它。
+
+## 反模式
+
+- 用它收集固定格式的分段值（日期、验证码）：用[日期输入](./date-field)、[分格输入](./pin-input)。
+- 输入时就报格式错误。

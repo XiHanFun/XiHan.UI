@@ -1,6 +1,22 @@
 # 导航菜单 <Badge type="info" text="navigation-menu" />
 
-导航组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+站点的主导航：一排入口，展开后是一整块去处面板，面板里是链接不是命令。
+
+## 何时使用
+
+- 门户、营销站、文档站的顶部导航，每个板块下还有若干去处。
+
+## 何时不用
+
+- 条目是命令（执行一次动作）：用[菜单](./menu)。
+- 后台的层级导航：用[侧栏导航](./side-nav)。
+
+## 特性
+
+- 面板落在同一个 `li` 里、紧跟入口之后，展开时按 Tab 就走得进去。
+- `delayDuration` 防的是指针横穿导航时一路闪出面板；`skipDelayDuration` 是收起后的静默窗口，窗口内再碰任意入口直接展开。
+- 没有下级的去处不必套面板：那一项直接铺成一条 `link`，它不进方向键那一组，按 Tab 一样到得了。
+- 面板整批塞进 `viewport` 后落位归外壳管：几个入口的面板落在同一处，宽窄不同也不再各贴各的入口。
 
 ## 示例
 
@@ -105,9 +121,19 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | --- | --- | --- |
 | `value-change` | `NavigationMenuValueChangeDetails` | 展开项变化；detail 为 `{ value: string \| null }` |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'open' \| 'closed' |
+| `trigger` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+| `indicator` | 'open' \| 'closed' |
+| `viewport` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `opening` · `skipping`
 
@@ -149,8 +175,74 @@ defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针�
 | `Escape` | open | 收起面板并把焦点归还对应 trigger；静默窗口内这一次归还不会把面板重新弹出来 |
 | `Tab` / `Shift+Tab` | open, focus in trigger | 走进展开的面板：面板就在 trigger 之后，收起的面板带 hidden 因而被整个跳过 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-label` | props.translations.root |
+| `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-disabled` | 'true' \| 'false' |
+| `trigger` | `aria-expanded` | 'true' \| 'false' |
+| `content` | `aria-labelledby` | `trigger` 部件的 id |
+| `content` | `role` | 'group' |
+| `link` | `aria-current` | 'page' \| undefined |
+| `indicator` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/navigation-menu.css` 按部件选择：`[data-scope="navigation-menu"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-orientation` | props.orientation |
+| `root` | `data-size` | props.size |
+| `root` | `data-state` | 'open' \| 'closed' |
+| `root` | `data-tone` | props.tone |
+| `list` | `data-orientation` | props.orientation |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-orientation` | props.orientation |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-orientation` | props.orientation |
+| `content` | `data-state` | 'open' \| 'closed' |
+| `link` | `data-current` | ''（条件成立时才出现） |
+| `indicator` | `data-orientation` | props.orientation |
+| `indicator` | `data-state` | 'open' \| 'closed' |
+| `indicator` | `data-value` | context.get('value') |
+| `viewport` | `data-orientation` | props.orientation |
+| `viewport` | `data-state` | 'open' \| 'closed' |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-navigation-menu-content-bg` · `--xh-navigation-menu-content-border` · `--xh-navigation-menu-content-gap` · `--xh-navigation-menu-content-min-w` · `--xh-navigation-menu-content-offset` · `--xh-navigation-menu-content-p` · `--xh-navigation-menu-content-radius` · `--xh-navigation-menu-content-shadow` · `--xh-navigation-menu-fg` · `--xh-navigation-menu-font-size` · `--xh-navigation-menu-gap` · `--xh-navigation-menu-indicator-color` · `--xh-navigation-menu-indicator-radius` · `--xh-navigation-menu-indicator-thickness` · `--xh-navigation-menu-link-bg-hover` · `--xh-navigation-menu-link-fg` · `--xh-navigation-menu-link-fg-current` · `--xh-navigation-menu-link-font-size` · `--xh-navigation-menu-link-font-weight-current` · `--xh-navigation-menu-link-px` · `--xh-navigation-menu-link-py` · `--xh-navigation-menu-link-radius` · `--xh-navigation-menu-trigger-bg-hover` · `--xh-navigation-menu-trigger-fg` · `--xh-navigation-menu-trigger-fg-open` · `--xh-navigation-menu-trigger-font-weight` · `--xh-navigation-menu-trigger-gap` · `--xh-navigation-menu-trigger-h` · `--xh-navigation-menu-trigger-px` · `--xh-navigation-menu-trigger-radius`
+
+## 动效
+
+关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 与[布局](./layout)的头部配合；窄屏时整体换成[抽屉](./drawer)里的[侧栏导航](./side-nav)。
+
+## 最佳实践
+
+- 面板里的链接分组并加组标题，一整块无结构的链接墙没人看得下去。
+- 延时保留默认值：调到 0 会让导航在指针路过时不停闪。
+
+## 反模式
+
+- 面板里混进需要提交的表单或命令按钮。
+- 悬停即刻展开且没有静默窗口：指针横穿时面板一路弹出。

@@ -1,6 +1,21 @@
 # 跑马灯 <Badge type="info" text="marquee" />
 
-布局组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+内容沿一条轴循环滚动。
+
+## 何时使用
+
+- 公告条、合作方 logo 墙这类"内容多、位置窄、且不要求逐条读完"的展示。
+
+## 何时不用
+
+- 内容重要且必须读到：滚动的文字读起来很费力，且会滚走。
+- 是一条需要用户处理的通知：用[警告提示](./alert)。
+
+## 特性
+
+- `autoFill` 自动重复内容铺满容器，接缝处不留空。
+- `direction` 换方向，`speed` 调速度。
+- `pauseOnHover` 悬停暂停。
 
 ## 示例
 
@@ -68,8 +83,40 @@ speed 是每秒像素；pauseOnHover 在指针停下或焦点落进窗口时停�
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 样式
+
+默认皮肤 `@xihan-ui/styles/marquee.css` 按部件选择：`[data-scope="marquee"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-marquee-block-size` · `--xh-marquee-gap` · `--xh-marquee-span` · `--xh-marquee-speed`
+
+## 动效
+
+关键帧 `xh-marquee-x` · `xh-marquee-y` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+
+## 响应式
+
+皮肤内置条件规则：`hover: hover`。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 里面放[图片](./image)做 logo 墙，或[徽标](./badge)做标签流。
+
+## 最佳实践
+
+- 一定要能暂停：悬停暂停是最低要求。
+- 系统开启减弱动效时应当停下来。
+
+## 反模式
+
+- 用它承载唯一的重要信息（故障公告、截止时间）。
+- 速度快到读不完一句话。

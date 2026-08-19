@@ -1,6 +1,23 @@
 # 排印 <Badge type="info" text="typography" />
 
-布局组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+一块正文的排版容器：管住段间距与最大行宽，标题、段落与行内文字各自拿自己的字号、字重与行高。
+
+## 何时使用
+
+- 渲染一段较长的正文：文章、说明、条款、AI 回复。
+- 需要标题层级与段落节奏一致，而不想逐处写字号。
+
+## 何时不用
+
+- 只是一行标签或一句提示：直接写文本，别套整套排版。
+- 要把长文本裁成几行：用[文本省略](./ellipsis)。
+- 要渲染 Markdown：用 `@xihan-ui/markdown`，它产出的节点再交给本组件排版。
+
+## 特性
+
+- `root` 管段间距与最大行宽；`level` 只换标题字号档位，用哪个标签由作者定。
+- 行内文字三种形态：`muted` 弱化、`strong` 加重、`code` 等宽；与语气是两条轴，可以一起写。
+- `link` 是一个独立部件，链接样式不必另写。
 
 ## 示例
 
@@ -73,8 +90,45 @@ size 换的是整块正文的字号与段间距，不传 size 即默认档
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 样式
+
+默认皮肤 `@xihan-ui/styles/typography.css` 按部件选择：`[data-scope="typography"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-size` | props.size |
+| `heading` | `data-level` | levelAttr(heading.level) |
+| `text` | `data-tone` | text.tone |
+| `text` | `data-variant` | text.variant |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-typography-block-gap` · `--xh-typography-code-bg` · `--xh-typography-code-font-size` · `--xh-typography-code-px` · `--xh-typography-code-py` · `--xh-typography-code-radius` · `--xh-typography-fg` · `--xh-typography-font-size` · `--xh-typography-font-weight` · `--xh-typography-heading-fg` · `--xh-typography-heading-font-size` · `--xh-typography-heading-font-weight` · `--xh-typography-heading-gap` · `--xh-typography-heading-leading` · `--xh-typography-leading` · `--xh-typography-link-fg` · `--xh-typography-link-fg-hover` · `--xh-typography-link-radius` · `--xh-typography-link-underline-offset` · `--xh-typography-measure` · `--xh-typography-text-fg` · `--xh-typography-text-font-weight`
+
+## 响应式
+
+皮肤内置条件规则：`hover: hover`。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 与[文本高亮](./highlight)配合做检索命中标记；与[代码块](./code-block)配合放整段代码。
+
+## 最佳实践
+
+- 最大行宽交给 `root`，别让正文横贯整个宽屏——一行超过约四十个汉字就很难回到下一行的行首。
+- 标题层级按文档结构选标签，视觉大小用 `level` 单独调，两件事分开。
+
+## 反模式
+
+- 为了字大就用 `<h1>`：读屏用户按标题跳转时会撞见错的结构。
+- 在正文块里塞交互控件却不留间距，点击目标会挤在一起。

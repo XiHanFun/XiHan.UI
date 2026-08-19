@@ -1,6 +1,23 @@
 # 数字输入 <Badge type="info" text="number-field" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+带加减与区间约束的数值输入。
+
+## 何时使用
+
+- 数量、价格、百分比这类需要精确到某一位的数值。
+- 需要步进（键盘上下键、加减钮）。
+
+## 何时不用
+
+- 用户更关心相对位置而非精确值：用[滑块](./slider)。
+- 值实际是编号或电话（不参与运算）：用[文本输入](./text-field)，数字输入的千分位与步进会碍事。
+
+## 特性
+
+- `step` 与 `largeStep` 分别对应方向键和 PageUp / PageDown。
+- 长按加减钮连续步进，首跳延时与间隔都可调。
+- `parse` / `format` 一对，用来接固定小数位、千分位、货币符号或自定义换算。
+- 越界的值在提交时机被夹回区间。
 
 ## 示例
 
@@ -144,9 +161,9 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 | --- | --- | --- | --- |
 | `XhNumberFieldRoot` | `default` | `NumberFieldRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle` · `spinning`
 
@@ -191,8 +208,71 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 | `Home` | focus in input, 指定了 min | 取 min；未指定 min 时不动 |
 | `End` | focus in input, 指定了 max | 取 max；未指定 max 时不动 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `input` | `aria-invalid` | 'true' \| 'false' |
+| `input` | `aria-labelledby` | `label` 部件的 id |
+| `input` | `aria-valuemax` | props.max |
+| `input` | `aria-valuemin` | props.min |
+| `input` | `aria-valuenow` | undefined \| decodeNumber(value, { parse: prop('parse'), format: p… |
+| `input` | `role` | 'spinbutton' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/number-field.css` 按部件选择：`[data-scope="number-field"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-invalid` | ''（条件成立时才出现） |
+| `control` | `data-readonly` | ''（条件成立时才出现） |
+| `input` | `data-disabled` | ''（条件成立时才出现） |
+| `input` | `data-invalid` | ''（条件成立时才出现） |
+| `increment-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `decrement-trigger` | `data-disabled` | ''（条件成立时才出现） |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-number-field-gap` · `--xh-number-field-icon-size` · `--xh-number-field-input-align` · `--xh-number-field-input-bg` · `--xh-number-field-input-bg-disabled` · `--xh-number-field-input-bg-readonly` · `--xh-number-field-input-border` · `--xh-number-field-input-border-focus` · `--xh-number-field-input-border-hover` · `--xh-number-field-input-border-invalid` · `--xh-number-field-input-fg` · `--xh-number-field-input-font-size` · `--xh-number-field-input-h` · `--xh-number-field-input-px` · `--xh-number-field-input-radius` · `--xh-number-field-input-w` · `--xh-number-field-label-fg` · `--xh-number-field-label-fg-disabled` · `--xh-number-field-label-font-size` · `--xh-number-field-label-font-weight` · `--xh-number-field-placeholder-fg` · `--xh-number-field-trigger-bg` · `--xh-number-field-trigger-bg-active` · `--xh-number-field-trigger-bg-disabled` · `--xh-number-field-trigger-bg-hover` · `--xh-number-field-trigger-border` · `--xh-number-field-trigger-border-disabled` · `--xh-number-field-trigger-border-hover` · `--xh-number-field-trigger-fg` · `--xh-number-field-trigger-fg-hover` · `--xh-number-field-trigger-font-size` · `--xh-number-field-trigger-radius` · `--xh-number-field-trigger-size`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 外面套[表单字段](./field)；单位与货币符号放进框内前后缀。
+
+## 最佳实践
+
+- 给出 `min` / `max`，让键盘用户按住方向键时有个尽头。
+- 显示格式与提交值分开：显示可以带千分位，提交的是纯数值。
+
+## 反模式
+
+- 加减钮做得太小：这是移动端最常见的误触来源。
+- 用它输入年份、邮编、身份证号。

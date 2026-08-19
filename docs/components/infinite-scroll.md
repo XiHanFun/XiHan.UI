@@ -1,6 +1,21 @@
 # 无限滚动 <Badge type="info" text="infinite-scroll" />
 
-数据展示组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+滚到接近底部时触发一次加载。
+
+## 何时使用
+
+- 时间流、消息列表这类用户只关心"再来一些"的内容。
+
+## 何时不用
+
+- 用户需要跳到确定位置或分享某一页：用[分页](./pagination)。
+- 页面有页脚需要够得着：无限滚动会让页脚永远追不上。
+
+## 特性
+
+- `distance` 是提前量：距底部还有这么远就触发，用户感觉不到等待。
+- `loading` 与 `disabled` 由组件交给宿主，加载提示与结束语都由宿主自己摆。
+- 取完之后关掉即可，不会再触发。
 
 ## 示例
 
@@ -69,9 +84,16 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 | --- | --- | --- | --- |
 | `XhInfiniteScrollRoot` | `default` | `InfiniteScrollRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | state.get() |
+| `sentinel` | state.get() |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **事件**：`SENTINEL.ENTER` · `MODE.SYNC`
 
@@ -95,8 +117,46 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-busy` | 'true' \| undefined |
+| `sentinel` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/infinite-scroll.css` 按部件选择：`[data-scope="infinite-scroll"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-loading` | ''（条件成立时才出现） |
+| `root` | `data-state` | state.get() |
+| `sentinel` | `data-state` | state.get() |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-infinite-scroll-sentinel-size`
+
+## 组合
+
+- 与[列表](./list)、[虚拟滚动](./virtualizer)、[骨架屏](./skeleton)配合。
+
+## 最佳实践
+
+- 明确的结束提示："没有更多了"比无声停止好。
+- 加载失败要能重试，别静默停在那里。
+
+## 反模式
+
+- 页面底部有重要内容（页脚、版权、联系方式）却用无限滚动。
+- 不给结束提示，用户一直往下滚。

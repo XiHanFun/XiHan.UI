@@ -1,6 +1,25 @@
 # 级联选择 <Badge type="info" text="cascader" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+按层逐列展开的选择器：一列选完展开下一列，值是一条路径。
+
+## 何时使用
+
+- 选项是规整的多层分类且层数固定（省市区、商品类目）。
+- 用户按层缩小范围比一次性搜索更自然。
+
+## 何时不用
+
+- 层级不规整、深浅不一：用[树选择](./tree-select)。
+- 只有一层：用[选择器](./select)。
+- 用户更习惯直接搜：给它开 `searchable`，或换[组合框](./combobox)。
+
+## 特性
+
+- `changeOnSelect` 决定中间层能不能直接作为结果。
+- `expandTrigger` 可改成悬停展开。
+- 多选时 `cascade` 与 `checkedStrategy` 一对：前者决定勾父带不带子，后者决定回显给出哪一层。
+- 子节点可按需加载；长列表只渲可视区。
+- 后端字段名不一致时在进组件前转一道，组件只认 `label` / `value` / `children`。
 
 ## 示例
 
@@ -165,9 +184,21 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | `XhCascaderRoot` | `default` | `CascaderRootSlotProps` |  |
 | `XhCascaderSearchList` | `item` | `CascaderSearchListItemSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'open' \| 'closed' |
+| `trigger` | 'open' \| 'closed' |
+| `indicator` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+| `search-item` | 'checked' \| 'unchecked' |
+| `column` | 'open' \| 'closed' |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`open` · `closed`
 
@@ -247,8 +278,114 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | `Escape` | open | 收起浮层并把焦点归还 trigger，选中值不变 |
 | `Tab` / `Shift+Tab` | open | 收起浮层，焦点不归还 trigger，按 Tab 序列自然离开 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-expanded` | 'true' \| 'false' |
+| `trigger` | `aria-haspopup` | 'listbox' |
+| `trigger` | `aria-invalid` | 'true' \| 'false' |
+| `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
+| `trigger` | `aria-readonly` | 'true' \| 'false' |
+| `trigger` | `role` | 'combobox' |
+| `indicator` | `aria-hidden` | 'true' |
+| `clear-trigger` | `aria-hidden` | 'true' |
+| `input` | `aria-activedescendant` | `search-item` 部件的 id \| undefined |
+| `input` | `aria-autocomplete` | 'list' |
+| `input` | `aria-controls` | `search-list` 部件的 id |
+| `search-list` | `role` | 'listbox' |
+| `search-item` | `aria-disabled` | 'true' \| 'false' |
+| `search-item` | `aria-selected` | 'true' \| 'false' |
+| `search-item` | `role` | 'option' |
+| `column` | `aria-disabled` | 'true' \| 'false' |
+| `column` | `aria-label` | translations.column \| undefined |
+| `column` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `item` 部件的 id |
+| `column` | `aria-multiselectable` | 'true' \| 'false' |
+| `column` | `aria-orientation` | 'vertical' |
+| `column` | `role` | 'listbox' |
+| `item` | `aria-checked` | 'true' \| 'mixed' \| 'false' \| undefined |
+| `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `aria-haspopup` | 'listbox' \| undefined |
+| `item` | `aria-selected` | 'true' \| 'false' |
+| `item` | `role` | 'option' |
+| `item-indicator` | `aria-hidden` | 'true' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/cascader.css` 按部件选择：`[data-scope="cascader"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-state` | 'open' \| 'closed' |
+| `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
+| `label` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `trigger` | `data-invalid` | ''（条件成立时才出现） |
+| `trigger` | `data-placeholder` | ''（条件成立时才出现） |
+| `trigger` | `data-readonly` | ''（条件成立时才出现） |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `value-text` | `data-disabled` | ''（条件成立时才出现） |
+| `value-text` | `data-placeholder` | ''（条件成立时才出现） |
+| `indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `indicator` | `data-state` | 'open' \| 'closed' |
+| `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `positioner` | `data-hidden` | ''（条件成立时才出现） |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-size` | props.size |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-tone` | props.tone |
+| `positioner` | `data-variant` | props.variant |
+| `content` | `data-empty` | ''（条件成立时才出现） |
+| `content` | `data-placement` | 定位引擎算出的实际落位 |
+| `content` | `data-searching` | ''（条件成立时才出现） |
+| `content` | `data-state` | 'open' \| 'closed' |
+| `search-list` | `data-empty` | ''（条件成立时才出现） |
+| `search-item` | `data-disabled` | ''（条件成立时才出现） |
+| `search-item` | `data-highlighted` | ''（条件成立时才出现） |
+| `search-item` | `data-state` | 'checked' \| 'unchecked' |
+| `column` | `data-level` | String(column.level) |
+| `column` | `data-state` | 'open' \| 'closed' |
+| `item` | `data-branch` | ''（条件成立时才出现） |
+| `item` | `data-level` | String(meta.level) \| undefined |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-cascader-action-bg` · `--xh-cascader-action-bg-active` · `--xh-cascader-action-bg-hover` · `--xh-cascader-action-fg` · `--xh-cascader-action-fg-hover` · `--xh-cascader-action-font-size` · `--xh-cascader-action-radius` · `--xh-cascader-action-size` · `--xh-cascader-branch-arrow-fg` · `--xh-cascader-branch-arrow-size` · `--xh-cascader-column-divider` · `--xh-cascader-column-h` · `--xh-cascader-column-min-w` · `--xh-cascader-column-px` · `--xh-cascader-column-py` · `--xh-cascader-content-bg` · `--xh-cascader-content-border` · `--xh-cascader-content-fg` · `--xh-cascader-content-max-w` · `--xh-cascader-content-radius` · `--xh-cascader-content-shadow` · `--xh-cascader-empty-fg` · `--xh-cascader-empty-min-h` · `--xh-cascader-empty-p` · `--xh-cascader-gap` · `--xh-cascader-indicator-fg` · `--xh-cascader-input-font-size` · `--xh-cascader-input-px` · `--xh-cascader-input-py` · `--xh-cascader-item-indicator-fg` · `--xh-cascader-item-indicator-size` · `--xh-cascader-label-fg` · `--xh-cascader-label-font-size` · `--xh-cascader-label-font-weight` · `--xh-cascader-placeholder-fg` · `--xh-cascader-row-active-font-weight` · `--xh-cascader-row-bg-active` · `--xh-cascader-row-bg-hover` · `--xh-cascader-row-fg` · `--xh-cascader-row-fg-selected` · `--xh-cascader-row-font-size` · `--xh-cascader-row-gap` · `--xh-cascader-row-leading` · `--xh-cascader-row-max-w` · `--xh-cascader-row-px` · `--xh-cascader-row-py` · `--xh-cascader-row-radius` · `--xh-cascader-row-selected-font-weight` · `--xh-cascader-search-max-h` · `--xh-cascader-search-p` · `--xh-cascader-trigger-bg` · `--xh-cascader-trigger-bg-disabled` · `--xh-cascader-trigger-bg-readonly` · `--xh-cascader-trigger-border` · `--xh-cascader-trigger-border-hover` · `--xh-cascader-trigger-border-invalid` · `--xh-cascader-trigger-fg` · `--xh-cascader-trigger-font-size` · `--xh-cascader-trigger-gap` · `--xh-cascader-trigger-h` · `--xh-cascader-trigger-min-w` · `--xh-cascader-trigger-px` · `--xh-cascader-trigger-radius`
+
+## 动效
+
+关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
+
+## 组合
+
+- 外面套[表单字段](./field)；浮层底部可以加操作栏。
+
+## 最佳实践
+
+- 层数控制在三层，第四层开始用户就迷路了。
+- 回显要给完整路径，不只给末级名字——"朝阳区"在好几个省都有。
+
+## 反模式
+
+- 每层都要一次网络往返却不给加载反馈。
+- 多选时不说明 `checkedStrategy`：后端收到的是父节点还是所有叶子，两边理解不一致就会出事。

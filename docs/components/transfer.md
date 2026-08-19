@@ -1,6 +1,22 @@
 # 穿梭框 <Badge type="info" text="transfer" />
 
-数据录入组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+左右两栏，把条目从一边搬到另一边。
+
+## 何时使用
+
+- 从一份候选里挑出一个子集，且用户需要同时看见"没选的"和"已选的"。
+- 已选项的顺序或数量需要一目了然（分配权限、选人）。
+
+## 何时不用
+
+- 候选很少：用[复选框组](./checkbox-group)。
+- 只需要选中不需要对照：用[选择器](./select)的多选。
+
+## 特性
+
+- 两栏都可搜索，`filter` 可自定义匹配规则。
+- `oneWay` 单向搬运：只能往目标搬，搬完不再退回。
+- 一万条时只渲可视区。
 
 ## 示例
 
@@ -103,9 +119,15 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | --- | --- | --- | --- |
 | `XhTransferRoot` | `default` | `TransferRootSlotProps` |  |
 
-## 状态机
+## 状态
 
-内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `select-all-trigger` | checkStates[panel.side] |
+
+状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
 
 **状态**：`idle`
 
@@ -168,8 +190,83 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 | `Enter` / `Space` | focus on to-target-trigger / to-source-trigger | 把对面勾中的条目搬过来（原生按钮的激活行为）；搬完按钮多半随即变禁用，焦点改落到目的地那一侧的列表上 |
 | `Enter` / `Space` | focus on select-all-trigger | 全选/取消全选该侧可操作条目（原生按钮的激活行为）；三态经 aria-checked 上报，半选时是 mixed |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `search` | `aria-controls` | listId[panel.side] |
+| `search` | `aria-labelledby` | titleId[panel.side] |
+| `list` | `aria-disabled` | 'true' \| 'false' |
+| `list` | `aria-labelledby` | titleId[panel.side] |
+| `list` | `aria-multiselectable` | 'true' \| 'false' |
+| `list` | `role` | 'listbox' |
+| `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `aria-selected` | 'true' \| 'false' |
+| `item` | `role` | 'option' |
+| `item-checkbox` | `aria-hidden` | 'true' |
+| `to-target-trigger` | `aria-controls` | listId.target |
+| `to-source-trigger` | `aria-controls` | listId.source |
+| `select-all-trigger` | `aria-checked` | 'true' \| 'mixed' \| 'false' |
+| `select-all-trigger` | `aria-controls` | listId[panel.side] |
+| `select-all-trigger` | `role` | 'checkbox' |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/transfer.css` 按部件选择：`[data-scope="transfer"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-one-way` | ''（条件成立时才出现） |
+| `panel-header` | `data-disabled` | ''（条件成立时才出现） |
+| `panel-header` | `data-side` | panel.side |
+| `panel-title` | `data-side` | panel.side |
+| `panel-count` | `data-checked-count` | String(checked[panel.side].length) |
+| `panel-count` | `data-count` | String(visible[panel.side].length) |
+| `panel-count` | `data-side` | panel.side |
+| `search` | `data-side` | panel.side |
+| `list` | `data-disabled` | ''（条件成立时才出现） |
+| `list` | `data-side` | panel.side |
+| `to-target-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `to-source-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `select-all-trigger` | `data-side` | panel.side |
+| `select-all-trigger` | `data-state` | checkStates[panel.side] |
+| `panel` | `data-disabled` | ''（条件成立时才出现） |
+| `panel` | `data-side` | panel.side |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-transfer-checkbox-bg` · `--xh-transfer-checkbox-bg-checked` · `--xh-transfer-checkbox-bg-disabled` · `--xh-transfer-checkbox-border` · `--xh-transfer-checkbox-border-checked` · `--xh-transfer-checkbox-border-disabled` · `--xh-transfer-checkbox-fg` · `--xh-transfer-checkbox-font-size` · `--xh-transfer-checkbox-radius` · `--xh-transfer-checkbox-size` · `--xh-transfer-count-fg` · `--xh-transfer-count-font-size` · `--xh-transfer-fg` · `--xh-transfer-gap` · `--xh-transfer-header-gap` · `--xh-transfer-header-px` · `--xh-transfer-header-py` · `--xh-transfer-item-bg-hover` · `--xh-transfer-item-fg` · `--xh-transfer-item-font-size` · `--xh-transfer-item-gap` · `--xh-transfer-item-leading` · `--xh-transfer-item-px` · `--xh-transfer-item-py` · `--xh-transfer-item-radius` · `--xh-transfer-list-max-h` · `--xh-transfer-list-min-h` · `--xh-transfer-list-px` · `--xh-transfer-list-py` · `--xh-transfer-panel-bg` · `--xh-transfer-panel-bg-disabled` · `--xh-transfer-panel-border` · `--xh-transfer-panel-radius` · `--xh-transfer-search-bg` · `--xh-transfer-search-border` · `--xh-transfer-search-fg` · `--xh-transfer-search-font-size` · `--xh-transfer-search-h` · `--xh-transfer-search-px` · `--xh-transfer-select-all-fg` · `--xh-transfer-select-all-font-size` · `--xh-transfer-select-all-gap` · `--xh-transfer-select-all-radius` · `--xh-transfer-title-fg` · `--xh-transfer-title-font-size` · `--xh-transfer-title-font-weight` · `--xh-transfer-trigger-bg` · `--xh-transfer-trigger-bg-active` · `--xh-transfer-trigger-bg-hover` · `--xh-transfer-trigger-border` · `--xh-transfer-trigger-fg` · `--xh-transfer-trigger-font-size` · `--xh-transfer-trigger-px` · `--xh-transfer-trigger-radius` · `--xh-transfer-trigger-size`
+
+## 动效
+
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 内层是[列表框](./listbox)；长列表配[虚拟滚动](./virtualizer)。
+
+## 最佳实践
+
+- 两栏都显示计数，用户才知道还剩多少没挑。
+- 候选很大时把搜索做成远端过滤，别把全量灌进前端。
+
+## 反模式
+
+- 在窄屏上用它：两栏加中间的按钮列放不下。
+- 搬运后不保留滚动位置，用户每搬一条都要重新找位置。

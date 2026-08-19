@@ -1,6 +1,20 @@
 # 弹出确认 <Badge type="info" text="popconfirm" />
 
-反馈与浮层组件。三层同源：无头内核给出解剖与状态机，Vue 组件与自定义元素只是它的两层外壳，行为完全一致。
+贴着触发器的一句确认：比对话框轻，但仍拦住一次误操作。
+
+## 何时使用
+
+- 影响有限、可撤销的删除或清空，且触发器就在近处。
+
+## 何时不用
+
+- 后果严重不可逆：用[对话框](./dialog)，并让用户读到完整说明。
+- 操作可以撤销：干脆直接做，配一条带"撤销"的[轻提示](./toast)——那比事前确认体验好。
+
+## 特性
+
+- 确认按钮支持异步：在途期间进 pending 并拦住关闭，失败保持打开。
+- 位置、尺寸、语气三轴。
 
 ## 示例
 
@@ -84,6 +98,17 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | --- | --- | --- | --- |
 | `XhPopconfirmRoot` | `default` | `PopconfirmRootSlotProps` |  |
 
+## 状态
+
+对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'open' \| 'closed' |
+| `trigger` | 'open' \| 'closed' |
+| `positioner` | 'open' \| 'closed' |
+| `content` | 'open' \| 'closed' |
+
 ## connect API
 
 `usePopconfirm` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
@@ -115,8 +140,66 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | `Enter` / `Space` | focus in cancel-trigger | 发取消意图并收起浮层 |
 | `Escape` | open | 收起浮层并把焦点还给 trigger；不发确认也不发取消 |
 
+## 无障碍
+
+下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `trigger` | `aria-controls` | `content` 部件的 id |
+| `trigger` | `aria-expanded` | 'true' \| 'false' |
+| `trigger` | `aria-haspopup` | 'dialog' |
+| `content` | `aria-describedby` | `description` 部件的 id |
+| `content` | `aria-labelledby` | `title` 部件的 id |
+| `content` | `role` | 'alertdialog' |
+| `confirm-trigger` | `aria-busy` | 'true' \| undefined |
+
+## 样式
+
+默认皮肤 `@xihan-ui/styles/popconfirm.css` 按部件选择：`[data-scope="popconfirm"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+
+## 数据属性
+
+由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-state` | 'open' \| 'closed' |
+| `positioner` | `data-hidden` | ''（条件成立时才出现） |
+| `positioner` | `data-placement` | 定位引擎算出的实际落位 |
+| `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-placement` | 定位引擎算出的实际落位 |
+| `content` | `data-size` | props.size |
+| `content` | `data-state` | 'open' \| 'closed' |
+| `confirm-trigger` | `data-loading` | ''（条件成立时才出现） |
+
 ## CSS 变量
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
 `--xh-popconfirm-bg` · `--xh-popconfirm-border` · `--xh-popconfirm-cancel-bg` · `--xh-popconfirm-cancel-fg` · `--xh-popconfirm-confirm-bg` · `--xh-popconfirm-confirm-fg` · `--xh-popconfirm-description-fg` · `--xh-popconfirm-fg` · `--xh-popconfirm-gap` · `--xh-popconfirm-loading-duration` · `--xh-popconfirm-max-w` · `--xh-popconfirm-px` · `--xh-popconfirm-py` · `--xh-popconfirm-radius` · `--xh-popconfirm-shadow` · `--xh-popconfirm-title-fg` · `--xh-popconfirm-title-font-size` · `--xh-popconfirm-title-font-weight`
+
+## 动效
+
+关键帧 `xh-pop-in` · `xh-pop-out` · `xh-popconfirm-rotate` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
+
+## RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+
+## 组合
+
+- 触发器用[按钮](./button)；放进[表格](./table)的行操作、[菜单](./menu)的条目旁。
+
+## 最佳实践
+
+- 标题直接问那件事（"删除这条记录？"），描述写清后果。
+- 确认按钮写动作名，并对破坏性操作用危险语气。
+
+## 反模式
+
+- 每一个操作都要确认：用户会条件反射地点确认，确认就失去意义了。
+- 确认框里没说清楚要删的是哪一条。
