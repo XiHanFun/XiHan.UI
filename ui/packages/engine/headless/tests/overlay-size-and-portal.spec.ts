@@ -8,6 +8,7 @@ import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { describe, expect, it } from 'vitest'
 import { connectSelect, selectMachine } from '../src/select'
+import { connectHoverCard, hoverCardMachine } from '../src/hover-card'
 import { connectSideNav, sideNavMachine } from '../src/side-nav'
 
 function select(props: Partial<SelectSchema['props']>) {
@@ -15,6 +16,13 @@ function select(props: Partial<SelectSchema['props']>) {
   const service = createService(selectMachine, { props: () => props, runtime })
   runtime.start()
   return { service, api: () => connectSelect(service, normalizeProps) }
+}
+
+function hoverCard(props: Record<string, unknown>) {
+  const runtime = createVanillaRuntime()
+  const service = createService(hoverCardMachine, { props: () => props, runtime })
+  runtime.start()
+  return { service, api: () => connectHoverCard(service, normalizeProps) }
 }
 
 function sideNav(props: Partial<SideNavSchema['props']>) {
@@ -111,5 +119,21 @@ describe('side-nav 弹出面板的定位层', () => {
     expect((positioner.style as Record<string, string>).position).toBe('')
     expect(positioner.hidden).toBe(true)
     expect((api().getBranchContentProps({ value: 'docs' }) as Record<string, unknown>).hidden).toBe(true)
+  })
+})
+
+describe('hover-card 的可用高度', () => {
+  it('引擎给了就写成私有槽——机器没开 size 通道时这里恒空，皮肤的 min() 会变成死代码', () => {
+    const { service, api } = hoverCard({ defaultOpen: true })
+    service.context.set('position', { x: 10, y: 20, placement: 'bottom', availableHeight: 300 })
+    const style = (api().getPositionerProps() as Record<string, unknown>).style as Record<string, string>
+    expect(style['--xh-_hover-card-available-h']).toBe('300px')
+  })
+
+  it('贴边归零当作没算出来', () => {
+    const { service, api } = hoverCard({ defaultOpen: true })
+    service.context.set('position', { x: 0, y: 0, placement: 'bottom', availableHeight: 0 })
+    const style = (api().getPositionerProps() as Record<string, unknown>).style as Record<string, string>
+    expect(style['--xh-_hover-card-available-h']).toBe('')
   })
 })
