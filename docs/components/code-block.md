@@ -77,7 +77,7 @@ complete 为 false 时默认不着色：半截代码的词法本来就不稳，�
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `lang` | `string` |  |
-| `lineCount` | `number` |  |
+| `lineCount` | `number` | 行数。行号栏由作者自己渲染——组件不给这个部件是有意的： 行号要与代码并排就得由 root 拿走 flex/grid 排布权，而 root 刻意不设 display， 排布归作者。拿这个数配一列 span 即可，行高与代码块共用同一个令牌。 |
 | `tokens` | `readonly CodeToken[]` | 着色结果。空数组表示这一次不着色，作者按 `code` 原样渲染纯文本即可。 非空时逐个记号渲成元素，`getTokenProps` 给出该带的属性。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLangLabelProps` | `() => T['element']` |  |

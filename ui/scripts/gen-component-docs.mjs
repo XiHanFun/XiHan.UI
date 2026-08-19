@@ -906,6 +906,7 @@ function renderIndex() {
     + '某一节没有内容时整节不出现，不留空标题。',
     '',
   )
+  L.push('不是组件、但同样由本库提供的东西——全局配置、命令式的对话框与轻提示、流式 Markdown 渲染、代码着色——收在[服务与运行时](../runtime/)。', '')
   for (const c of manifest.categories) {
     L.push(`## ${c.label}`, '')
     L.push(c.description, '')

@@ -109,6 +109,20 @@ function enName(id: string): string {
     .join(" ");
 }
 
+const runtimeSidebar: DefaultTheme.SidebarItem[] = [
+  {
+    text: "服务与运行时",
+    collapsed: false,
+    items: [
+      { text: "这一册收什么", link: "/runtime/" },
+      { text: "全局配置", link: "/runtime/config" },
+      { text: "命令式服务", link: "/runtime/services" },
+      { text: "流式 Markdown", link: "/runtime/markdown" },
+      { text: "代码着色", link: "/runtime/code-highlight" },
+    ],
+  },
+];
+
 const componentsSidebar: DefaultTheme.SidebarItem[] = [
   { text: "组件总览", link: "/components/" },
   ...componentManifest.categories.map((category) => ({
@@ -129,6 +143,7 @@ const sidebar: DefaultTheme.Sidebar = {
   "/guide/": guideSidebar,
   "/adapters/": adaptersSidebar,
   "/components/": componentsSidebar,
+  "/runtime/": runtimeSidebar,
   "/": startSidebar,
 };
 
@@ -142,6 +157,7 @@ const nav: DefaultTheme.NavItem[] = [
   { text: "核心概念", link: "/guide/anatomy", activeMatch: "/guide/" },
   { text: "适配器", link: "/adapters/vue", activeMatch: "/adapters/" },
   { text: "组件参考", link: "/components/", activeMatch: "/components/" },
+  { text: "服务与运行时", link: "/runtime/", activeMatch: "/runtime/" },
   {
     text: "探索未知",
     items: [
