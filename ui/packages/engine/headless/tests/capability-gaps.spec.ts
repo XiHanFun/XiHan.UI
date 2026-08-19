@@ -7,8 +7,10 @@ import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { describe, expect, it } from 'vitest'
 import { connectImageViewer, imageViewerMachine } from '../src/image-viewer'
+import { connectButton } from '../src/button'
 import { connectProgress } from '../src/progress'
 import { connectTextField, textFieldMachine } from '../src/text-field'
+import { connectTimeField, timeFieldMachine } from '../src/time-field'
 
 function textField(props: Partial<TextFieldSchema['props']>) {
   const runtime = createVanillaRuntime()
@@ -91,5 +93,50 @@ describe('ImageViewer 的两端直达', () => {
     const get = imageViewer({ items, defaultOpen: true })
     ;((get().getContentProps() as Record<string, unknown>).onKeydown as (e: KeyboardEvent) => void)(keyEvent('ArrowRight').event)
     expect(get().index).toBe(1)
+  })
+})
+
+describe('Button 的图标态与撑满态', () => {
+  it('iconOnly 落成 data 标记，交给皮肤清内距并把宽度跟住高度', () => {
+    const root = connectButton({ iconOnly: true }, normalizeProps).getRootProps() as Record<string, unknown>
+    expect(root['data-icon-only']).toBe('')
+    expect(root['data-full-width']).toBeUndefined()
+  })
+
+  it('fullWidth 独立于 iconOnly，两者可各自开关', () => {
+    const root = connectButton({ fullWidth: true }, normalizeProps).getRootProps() as Record<string, unknown>
+    expect(root['data-full-width']).toBe('')
+    expect(root['data-icon-only']).toBeUndefined()
+  })
+
+  it('两个都不给时一个标记都不发', () => {
+    const root = connectButton({}, normalizeProps).getRootProps() as Record<string, unknown>
+    expect(root['data-icon-only']).toBeUndefined()
+    expect(root['data-full-width']).toBeUndefined()
+  })
+})
+
+describe('时间分段的读屏名可本地化', () => {
+  function timeField(props: Record<string, unknown>) {
+    const runtime = createVanillaRuntime()
+    const service = createService(timeFieldMachine, { props: () => props, runtime })
+    runtime.start()
+    return () => connectTimeField(service, normalizeProps)
+  }
+
+  it('不给 translations 时用内置英文语义名', () => {
+    const seg = timeField({})().getSegmentProps({ segment: 'hour' }) as Record<string, unknown>
+    expect(seg['aria-label']).toBe('hour')
+  })
+
+  it('给了就用作者的文案', () => {
+    const get = timeField({ translations: { hour: '小时', minute: '分钟' } })
+    expect((get().getSegmentProps({ segment: 'hour' }) as Record<string, unknown>)['aria-label']).toBe('小时')
+    expect((get().getSegmentProps({ segment: 'minute' }) as Record<string, unknown>)['aria-label']).toBe('分钟')
+  })
+
+  it('只覆盖一部分时，其余段位仍退回内置名', () => {
+    const seg = timeField({ translations: { hour: '小时' } })().getSegmentProps({ segment: 'second' }) as Record<string, unknown>
+    expect(seg['aria-label']).toBe('second')
   })
 })

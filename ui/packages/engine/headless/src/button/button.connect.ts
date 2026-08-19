@@ -30,6 +30,8 @@ export function connectButton<T extends PropTypes>(
       'data-size': props.size,
       'data-disabled': dataAttr(disabled),
       'data-loading': dataAttr(loading),
+      'data-icon-only': dataAttr(!!props.iconOnly),
+      'data-full-width': dataAttr(!!props.fullWidth),
       'onClick': (e: Event) => {
         if (interactive)
           return

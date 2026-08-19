@@ -1560,6 +1560,7 @@
       "pointInPolygon",
       "prefersReducedMotion",
       "queryItems",
+      "readDirection",
       "readViewportRect",
       "removeLinks",
       "resolveScrollBehavior",
@@ -4792,6 +4793,8 @@
     ],
     "button": [
       "disabled",
+      "fullWidth",
+      "iconOnly",
       "loading",
       "size",
       "tone",
@@ -4913,7 +4916,8 @@
       "complete",
       "highlightWhileStreaming",
       "highlighter",
-      "lang"
+      "lang",
+      "wrap"
     ],
     "collapsible": [
       "defaultOpen",
@@ -5071,6 +5075,7 @@
       "closeOnEscape",
       "closeOnInteractOutside",
       "defaultOpen",
+      "initialFocus",
       "modal",
       "onOpenChange",
       "open",
@@ -5787,6 +5792,7 @@
       "required",
       "size",
       "tone",
+      "translations",
       "value",
       "variant"
     ],
@@ -5812,6 +5818,7 @@
       "size",
       "step",
       "tone",
+      "translations",
       "value",
       "variant"
     ],
@@ -6033,6 +6040,7 @@
     "data-focus",
     "data-focused",
     "data-frozen",
+    "data-full-width",
     "data-gap",
     "data-gutter",
     "data-half",
@@ -6041,6 +6049,7 @@
     "data-highlighted",
     "data-hoverable",
     "data-icon",
+    "data-icon-only",
     "data-in-range",
     "data-indeterminate",
     "data-index",
@@ -8434,6 +8443,8 @@
     "xh-button": {
       "attributes": [
         "disabled",
+        "full-width",
+        "icon-only",
         "loading",
         "size",
         "tone",
@@ -8571,7 +8582,8 @@
         "code",
         "code-lang",
         "complete",
-        "highlight-while-streaming"
+        "highlight-while-streaming",
+        "wrap"
       ],
       "events": []
     },
@@ -8754,6 +8766,7 @@
       "attributes": [
         "close-on-escape",
         "default-open",
+        "initial-focus",
         "modal",
         "open",
         "restore-focus",

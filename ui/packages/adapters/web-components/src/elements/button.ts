@@ -10,6 +10,8 @@ import { XhElement } from '../element-base'
  * @customElement xh-button
  * @attr {'button'|'submit'|'reset'} type - 原生按钮类型，默认 button
  * @attr {boolean} disabled - 禁用（原生 disabled，丢焦点）
+ * @attr {boolean} icon-only - 只有图标：左右内距清零、宽高相等；作者须自行给可及名
+ * @attr {boolean} full-width - 撑满行宽
  * @attr {boolean} loading - 加载中（aria-disabled，保留焦点并拦截点击）
  * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
@@ -22,6 +24,8 @@ export class XhButtonElement extends XhElement {
   static override properties = {
     type: {},
     disabled: { type: Boolean },
+    iconOnly: { type: Boolean, attribute: 'icon-only' },
+    fullWidth: { type: Boolean, attribute: 'full-width' },
     loading: { type: Boolean },
     variant: {},
     tone: {},
@@ -30,6 +34,8 @@ export class XhButtonElement extends XhElement {
 
   declare type?: 'button' | 'submit' | 'reset'
   declare disabled?: boolean
+  declare iconOnly?: boolean
+  declare fullWidth?: boolean
   declare loading?: boolean
   declare variant?: ActionVariant
   declare tone?: Tone

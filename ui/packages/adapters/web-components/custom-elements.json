@@ -2041,6 +2041,24 @@
             },
             {
               "kind": "field",
+              "name": "iconOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "icon-only"
+            },
+            {
+              "kind": "field",
+              "name": "fullWidth",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "full-width"
+            },
+            {
+              "kind": "field",
               "name": "loading",
               "privacy": "public",
               "type": {
@@ -2102,6 +2120,22 @@
               "description": "禁用（原生 disabled，丢焦点）",
               "name": "disabled",
               "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只有图标：左右内距清零、宽高相等；作者须自行给可及名",
+              "name": "icon-only",
+              "fieldName": "iconOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "撑满行宽",
+              "name": "full-width",
+              "fieldName": "fullWidth"
             },
             {
               "type": {
@@ -5348,6 +5382,15 @@
             },
             {
               "kind": "field",
+              "name": "wrap",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "wrap"
+            },
+            {
+              "kind": "field",
               "name": "complete",
               "privacy": "public",
               "type": {
@@ -5433,6 +5476,14 @@
               "description": "围栏语言标注，空白时按 plaintext 处理",
               "name": "code-lang",
               "fieldName": "codeLang"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "长行自动换行，默认关（长行横向滚动）",
+              "name": "wrap",
+              "fieldName": "wrap"
             },
             {
               "type": {
@@ -10098,6 +10149,15 @@
             },
             {
               "kind": "field",
+              "name": "initialFocus",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "initial-focus"
+            },
+            {
+              "kind": "field",
               "name": "size",
               "privacy": "public",
               "type": {
@@ -10291,6 +10351,14 @@
               "description": "关闭后把焦点归还触发元素，默认 true",
               "name": "restore-focus",
               "fieldName": "restoreFocus"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "展开后先聚焦到 content 内匹配此选择器的元素",
+              "name": "initial-focus",
+              "fieldName": "initialFocus"
             },
             {
               "type": {
@@ -30702,6 +30770,14 @@
             },
             {
               "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "TimeFieldSchema['props']['translations'] | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "required",
               "privacy": "public",
               "type": {
@@ -31230,6 +31306,14 @@
                 "text": "boolean | undefined"
               },
               "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "TimePickerSchema['props']['translations'] | undefined"
+              }
             },
             {
               "kind": "field",

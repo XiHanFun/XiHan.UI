@@ -23,6 +23,8 @@ export const XhButton = defineComponent({
     type: { type: String as PropType<'button' | 'submit' | 'reset'>, default: 'button' },
     disabled: Boolean,
     loading: Boolean,
+    iconOnly: Boolean,
+    fullWidth: Boolean,
     variant: String,
     tone: String,
     size: String,

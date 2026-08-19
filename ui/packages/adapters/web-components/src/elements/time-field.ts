@@ -74,6 +74,7 @@ export class XhTimeFieldElement extends XhElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
+    translations: { attribute: false },
     required: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     placeholder: { converter: STRING_CONVERTER },
@@ -92,6 +93,7 @@ export class XhTimeFieldElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
+  declare translations?: TimeFieldSchema['props']['translations']
   declare required?: boolean
   declare name?: string
   declare placeholder?: string
@@ -118,6 +120,7 @@ export class XhTimeFieldElement extends XhElement {
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,
       invalid: this.invalid ?? false,
+      translations: this.translations,
       required: this.required ?? false,
       name: this.name,
       placeholder: this.placeholder,

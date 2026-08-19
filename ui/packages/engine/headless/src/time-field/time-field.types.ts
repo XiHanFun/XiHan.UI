@@ -71,6 +71,8 @@ export interface TimeFieldSchema extends MachineSchema {
     /** 尺寸：sm / md / lg。 */
     size?: Size
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
+    /** 段位读屏名的覆盖；不给就用内置英文语义名。 */
+    translations?: Partial<TimeFieldTranslations>
     onValueChange?: (details: TimeFieldValueChangeDetails) => void
   }
   context: {
@@ -149,4 +151,13 @@ export interface TimeFieldApi<T extends PropTypes = PropTypes> {
 }
 
 /** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
-export interface TimeFieldTranslations {}
+export interface TimeFieldTranslations {
+  /** 小时段的可及名。 */
+  hour: string
+  /** 分钟段的可及名。 */
+  minute: string
+  /** 秒段的可及名。 */
+  second: string
+  /** 上午下午段的可及名。 */
+  dayPeriod: string
+}

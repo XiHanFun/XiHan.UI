@@ -2,7 +2,7 @@ import type { ItemQuery, NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { TimeFieldApi, TimeFieldSchema, TimeSegmentType } from './time-field.types'
-import { focusSafely, ITEM_VALUE_ATTR, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/behavior'
+import { focusSafely, ITEM_VALUE_ATTR, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
 import { timeFieldAnatomy } from './time-field.anatomy'
 import {
@@ -23,8 +23,9 @@ const parts = timeFieldAnatomy.build()
 const SEGMENT_QUERY: ItemQuery = { scope: timeFieldAnatomy.name, part: 'segment' }
 
 /**
- * 段的读屏名字。写死英文语义名，不走 Intl.DisplayNames：
+ * 段的读屏名字的兜底。写死英文语义名，不走 Intl.DisplayNames：
  * 后者依赖运行环境的默认 locale 与 ICU 数据完整度，同一份代码会产出不同 DOM。
+ * 要本地化就经 translations 交进来。
  */
 const SEGMENT_LABELS: Record<TimeSegmentType, string> = {
   hour: 'hour',
@@ -152,7 +153,7 @@ export function connectTimeField<T extends PropTypes>(
         'role': 'spinbutton',
         // 导航与聚焦都以此为段的身份（事件那一刻现查 DOM 时按它定位）
         [ITEM_VALUE_ATTR]: segment,
-        'aria-label': SEGMENT_LABELS[segment],
+        'aria-label': (prop('translations')?.[segment] ?? SEGMENT_LABELS[segment]),
         'aria-valuemin': range.min,
         'aria-valuemax': range.max,
         // 空段没有当前值，此时不写 aria-valuenow，写 0 会被念成零点
@@ -185,7 +186,7 @@ export function connectTimeField<T extends PropTypes>(
           const key = event.key
 
           // 段间移动只认水平轴与 Home/End，上下键归加减
-          const intent = navIntentFromKey(event, { axis: 'horizontal' })
+          const intent = navIntentFromKey(event, { axis: 'horizontal', dir: readDirection(event.currentTarget as Element) })
           if (intent) {
             // 左右键在可聚焦元素上可能滚动页面，必须拦下
             event.preventDefault()

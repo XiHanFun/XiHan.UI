@@ -106,6 +106,17 @@
     font-size: var(--xh-font-size-lg);
   }
 
+  /* 只有图标：左右内距清零，宽度靠比例跟住当前档的高度——换尺寸档时仍是正方形，
+     不必把档位抄进行内样式。写在尺寸档之后，压得住三档各自的 padding-inline */
+  [data-scope='button'][data-part='root'][data-icon-only] {
+    padding-inline: 0;
+    aspect-ratio: 1;
+  }
+
+  [data-scope='button'][data-part='root'][data-full-width] {
+    inline-size: 100%;
+  }
+
   [data-scope='button'][data-part='indicator'] {
     display: inline-flex;
     animation: xh-spin var(--xh-button-spin-duration, var(--xh-spin-duration)) linear infinite;

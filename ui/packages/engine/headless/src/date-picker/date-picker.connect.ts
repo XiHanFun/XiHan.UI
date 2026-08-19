@@ -10,7 +10,7 @@ import type {
   DatePickerTimeUnit,
   DatePickerTranslations,
 } from './date-picker.types'
-import { focusSafely, navIntentFromKey, stepIndex } from '@xihan-ui/behavior'
+import { focusSafely, navIntentFromKey, readDirection, stepIndex } from '@xihan-ui/behavior'
 import { dataAttr, normalizeProps } from '@xihan-ui/kernel'
 import { connectCalendar } from '../calendar'
 import {
@@ -230,7 +230,7 @@ export function connectDatePicker<T extends PropTypes>(
             return
           }
           // 只认水平轴与 Home/End；上下键是改值，已由分段输入接走
-          const intent = navIntentFromKey(event, { axis: 'horizontal' })
+          const intent = navIntentFromKey(event, { axis: 'horizontal', dir: readDirection(event.currentTarget as Element) })
           if (intent)
             moveSegment(el, intent)
         },
@@ -487,7 +487,7 @@ export function connectDatePicker<T extends PropTypes>(
         }
 
         // 左右键换列，两端停住
-        const across = navIntentFromKey(event, { axis: 'horizontal', home: false })
+        const across = navIntentFromKey(event, { axis: 'horizontal', home: false, dir: readDirection(event.currentTarget as Element) })
         if (across) {
           event.preventDefault()
           moveTimeColumn(column, across)

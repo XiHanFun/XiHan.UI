@@ -4921,6 +4921,17 @@ input[data-scope='mention'][data-part='input'] {
   font-size: var(--xh-font-size-lg);
 }
 
+/* 只有图标：左右内距清零，宽度靠比例跟住当前档的高度——换尺寸档时仍是正方形，
+   不必把档位抄进行内样式。写在尺寸档之后，压得住三档各自的 padding-inline */
+[data-scope='button'][data-part='root'][data-icon-only] {
+  padding-inline: 0;
+  aspect-ratio: 1;
+}
+
+[data-scope='button'][data-part='root'][data-full-width] {
+  inline-size: 100%;
+}
+
 [data-scope='button'][data-part='indicator'] {
   display: inline-flex;
   animation: xh-spin var(--xh-button-spin-duration, var(--xh-spin-duration)) linear infinite;
@@ -6671,6 +6682,13 @@ input[data-scope='mention'][data-part='input'] {
 [data-scope='code-block'][data-part='code'] {
   font-family: var(--xh-code-block-font, var(--xh-font-family-mono));
   white-space: pre;
+}
+
+/* 开了换行：pre-wrap 仍保留缩进与连续空白，只是允许行尾折下来；
+   anywhere 让没有空格的长串（url、base64）也能断，否则照样撑出横向滚动 */
+[data-scope='code-block'][data-part='code'][data-wrap] {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 /* 语法配色。令牌集里没有语法色这一类，所以就地声明成可覆盖的变量：

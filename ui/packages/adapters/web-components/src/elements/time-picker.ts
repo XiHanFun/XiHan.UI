@@ -111,6 +111,7 @@ export class XhTimePickerElement extends XhElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
+    translations: { attribute: false },
     required: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     variant: { converter: STRING_CONVERTER },
@@ -133,6 +134,7 @@ export class XhTimePickerElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
+  declare translations?: TimePickerSchema['props']['translations']
   declare required?: boolean
   declare name?: string
   declare variant?: ControlVariant
@@ -178,6 +180,7 @@ export class XhTimePickerElement extends XhElement {
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,
       invalid: this.invalid ?? false,
+      translations: this.translations,
       required: this.required ?? false,
       name: this.name,
       variant: this.variant,

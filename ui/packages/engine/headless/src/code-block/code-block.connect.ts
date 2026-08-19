@@ -44,6 +44,7 @@ export function connectCodeBlock<T extends PropTypes>(
       // 提供 Tab 停靠点，横向滚动交给浏览器
       'tabindex': 0,
       'data-complete': complete,
+      'data-wrap': dataAttr(!!props.wrap),
       // 按行数预撑高度；写成 style 而非 CSS 自定义属性，WC 侧的属性铺设写不进 --* 变量
       'style': { minBlockSize: `calc(var(--xh-code-block-line-height, 1.5rem) * ${lineCount})` },
     }),
@@ -51,6 +52,7 @@ export function connectCodeBlock<T extends PropTypes>(
     getCodeProps: () => normalize.element({
       ...parts.code.attrs,
       'data-lang': lang,
+      'data-wrap': dataAttr(!!props.wrap),
     }),
 
     // 记号只带种类，配色全交给皮肤按 data-kind 选择器给

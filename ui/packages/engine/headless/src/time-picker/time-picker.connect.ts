@@ -3,16 +3,7 @@ import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { TimeSegmentType } from '../time-field'
 import type { TimePickerApi, TimePickerColumnUnit, TimePickerSchema } from './time-picker.types'
-import {
-  focusItem,
-  focusSafely,
-  isItemDisabled,
-  ITEM_VALUE_ATTR,
-  itemValue,
-  navigateItems,
-  navIntentFromKey,
-  queryItems,
-} from '@xihan-ui/behavior'
+import { focusItem, focusSafely, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
 import {
   appendSegmentDigit,
@@ -315,7 +306,7 @@ export function connectTimePicker<T extends PropTypes>(
         'role': 'spinbutton',
         // 导航与聚焦都以此为段的身份（事件那一刻现查 DOM 时按它定位）
         [ITEM_VALUE_ATTR]: segment,
-        'aria-label': SEGMENT_LABELS[segment],
+        'aria-label': (prop('translations')?.[segment] ?? SEGMENT_LABELS[segment]),
         'aria-valuemin': range.min,
         'aria-valuemax': range.max,
         // 空段没有当前值，此时不写 aria-valuenow，写 0 会被念成零点
@@ -364,7 +355,7 @@ export function connectTimePicker<T extends PropTypes>(
           const key = event.key
 
           // 段间移动只认水平轴与 Home/End，上下键归加减
-          const intent = navIntentFromKey(event, { axis: 'horizontal' })
+          const intent = navIntentFromKey(event, { axis: 'horizontal', dir: readDirection(event.currentTarget as Element) })
           if (intent) {
             // 左右键在可聚焦元素上可能滚动页面，必须拦下
             event.preventDefault()
@@ -532,7 +523,7 @@ export function connectTimePicker<T extends PropTypes>(
           return
         }
         // 左右键换列
-        const across = navIntentFromKey(event, { axis: 'horizontal', home: false })
+        const across = navIntentFromKey(event, { axis: 'horizontal', home: false, dir: readDirection(event.currentTarget as Element) })
         if (across) {
           event.preventDefault()
           moveColumn(content, across)
@@ -552,7 +543,7 @@ export function connectTimePicker<T extends PropTypes>(
         // 换列时按它定位（事件那一刻现查 DOM）
         [ITEM_VALUE_ATTR]: unit,
         'role': 'listbox',
-        'aria-label': SEGMENT_LABELS[unit],
+        'aria-label': (prop('translations')?.[unit] ?? SEGMENT_LABELS[unit]),
         'aria-orientation': 'vertical',
         // 单选与否必须显式说，省略只是没说
         'aria-multiselectable': 'false',

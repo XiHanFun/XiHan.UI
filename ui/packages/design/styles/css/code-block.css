@@ -50,6 +50,13 @@
     white-space: pre;
   }
 
+  /* 开了换行：pre-wrap 仍保留缩进与连续空白，只是允许行尾折下来；
+     anywhere 让没有空格的长串（url、base64）也能断，否则照样撑出横向滚动 */
+  [data-scope='code-block'][data-part='code'][data-wrap] {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
   /* 语法配色。令牌集里没有语法色这一类，所以就地声明成可覆盖的变量：
      注释与标点复用既有语义色，只有三种真需要色相的走 light-dark()。
      每条先写浅色兜底再写 light-dark()：不认后者的旧引擎由级联保留前一条，退化成单色代码。 */

@@ -11,12 +11,8 @@
 </xh-button>
 
 <!-- 方形图标按钮 -->
-<xh-button variant="outline">
-  <button
-    data-xh-part="root"
-    aria-label="搜索"
-    style="--xh-button-px: 0; inline-size: var(--xh-control-h-md)"
-  >
+<xh-button variant="outline" icon-only>
+  <button data-xh-part="root" aria-label="搜索">
     <xh-icon id="button-shape-square" size="sm">
       <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
     </xh-icon>
@@ -24,15 +20,11 @@
 </xh-button>
 
 <!-- 圆形图标按钮：方形再叠上胶囊圆角 -->
-<xh-button variant="solid">
+<xh-button variant="solid" icon-only>
   <button
     data-xh-part="root"
     aria-label="搜索"
-    style="
-      --xh-button-px: 0;
-      --xh-button-radius: var(--xh-shape-pill);
-      inline-size: var(--xh-control-h-md);
-    "
+    style="--xh-button-radius: var(--xh-shape-pill)"
   >
     <xh-icon id="button-shape-round" size="sm">
       <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>

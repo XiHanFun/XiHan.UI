@@ -130,6 +130,8 @@ export interface TimePickerSchema extends MachineSchema {
     dir?: Direction
     offset?: number
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
+    /** 段位读屏名的覆盖；不给就用内置英文语义名。 */
+    translations?: Partial<TimePickerTranslations>
     onValueChange?: (details: TimePickerValueChangeDetails) => void
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: TimePickerOpenChangeDetails) => void
@@ -274,4 +276,13 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
 }
 
 /** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
-export interface TimePickerTranslations {}
+export interface TimePickerTranslations {
+  /** 小时段的可及名。 */
+  hour: string
+  /** 分钟段的可及名。 */
+  minute: string
+  /** 秒段的可及名。 */
+  second: string
+  /** 上午下午段的可及名。 */
+  dayPeriod: string
+}

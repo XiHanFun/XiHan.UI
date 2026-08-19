@@ -28,6 +28,7 @@ export const XhTimeFieldRoot = defineComponent({
     hourCycle: { type: Number as PropType<TimeHourCycle>, default: undefined },
     granularity: { type: String as PropType<TimeGranularity>, default: undefined },
     disabled: Boolean,
+    translations: { type: Object as PropType<TimeFieldProps['translations']>, default: undefined },
     readOnly: Boolean,
     invalid: Boolean,
     required: Boolean,
