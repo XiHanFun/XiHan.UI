@@ -63,6 +63,10 @@
 
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
   [data-scope='hover-card'][data-part='positioner'] {
+    /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
+    --xh-_hover-card-available-h: 100vh;
+
     position: fixed;
     z-index: var(--xh-layer-popover);
     /* 空壳不吃指针：trigger 与 content 之间那段间隙要能点得穿，
@@ -90,6 +94,9 @@
     gap: var(--xh-hover-card-gap, var(--xh-space-2));
     inline-size: max-content;
     max-inline-size: var(--xh-hover-card-max-w, var(--xh-_hover-card-max-w));
+    /* 内容由作者给，长度不可预知：不限高就整块伸出视口且滚不到 */
+    max-block-size: min(var(--xh-hover-card-max-h, var(--xh-overlay-max-h)), var(--xh-_hover-card-available-h));
+    overflow-y: auto;
     padding-block: var(--xh-hover-card-py, var(--xh-_hover-card-py));
     padding-inline: var(--xh-hover-card-px, var(--xh-_hover-card-px));
     border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-border-default));

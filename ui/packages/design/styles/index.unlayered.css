@@ -2828,6 +2828,10 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='popselect'][data-part='positioner'] {
+  /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时退回自己那档静态上限 */
+  --xh-_popselect-available-h: 100vh;
+
   position: fixed;
   z-index: var(--xh-layer-popover);
   /* 空壳不吃指针，交互只发生在 content 上 */
@@ -2943,7 +2947,7 @@ input[data-scope='mention'][data-part='input'] {
   flex-direction: column;
   min-inline-size: var(--xh-popselect-content-min-w, var(--xh-overlay-min-w));
   max-inline-size: var(--xh-popselect-content-max-w, var(--xh-overlay-max-w));
-  max-block-size: var(--xh-popselect-content-max-h, var(--xh-overlay-max-h));
+  max-block-size: min(var(--xh-popselect-content-max-h, var(--xh-overlay-max-h)), var(--xh-_popselect-available-h));
   padding: var(--xh-popselect-content-p, var(--xh-space-1));
   border: var(--xh-stroke-thin) solid var(--xh-popselect-content-border, var(--xh-border-default));
   border-radius: var(--xh-popselect-content-radius, var(--xh-shape-surface));
@@ -10289,6 +10293,10 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='hover-card'][data-part='positioner'] {
+  /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
+  --xh-_hover-card-available-h: 100vh;
+
   position: fixed;
   z-index: var(--xh-layer-popover);
   /* 空壳不吃指针：trigger 与 content 之间那段间隙要能点得穿，
@@ -10316,6 +10324,9 @@ input[data-scope='mention'][data-part='input'] {
   gap: var(--xh-hover-card-gap, var(--xh-space-2));
   inline-size: max-content;
   max-inline-size: var(--xh-hover-card-max-w, var(--xh-_hover-card-max-w));
+  /* 内容由作者给，长度不可预知：不限高就整块伸出视口且滚不到 */
+  max-block-size: min(var(--xh-hover-card-max-h, var(--xh-overlay-max-h)), var(--xh-_hover-card-available-h));
+  overflow-y: auto;
   padding-block: var(--xh-hover-card-py, var(--xh-_hover-card-py));
   padding-inline: var(--xh-hover-card-px, var(--xh-_hover-card-px));
   border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-border-default));
@@ -12437,6 +12448,10 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
 [data-scope='popover'][data-part='positioner'] {
+  /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
+  --xh-_popover-available-h: 100vh;
+
   position: fixed;
   z-index: var(--xh-layer-popover);
   /* 空壳不吃指针，交互只发生在 content 上 */
@@ -12461,6 +12476,9 @@ input[data-scope='mention'][data-part='input'] {
   gap: var(--xh-popover-gap, var(--xh-space-2));
   inline-size: max-content;
   max-inline-size: var(--xh-popover-max-w, var(--xh-_popover-max-w));
+  /* 内容由作者给，长度不可预知：不限高就整块伸出视口且滚不到 */
+  max-block-size: min(var(--xh-popover-max-h, var(--xh-overlay-max-h)), var(--xh-_popover-available-h));
+  overflow-y: auto;
   padding-block: var(--xh-popover-py, var(--xh-_popover-py));
   padding-inline: var(--xh-popover-px, var(--xh-_popover-px));
   border: var(--xh-stroke-thin) solid var(--xh-popover-border, var(--xh-border-default));
@@ -13770,6 +13788,10 @@ input[data-scope='mention'][data-part='input'] {
    它被搬到浮层落点、不在侧栏子树内，所以卡片外观仍归面板本身；
    这里不设 display，UA 的 [hidden]{display:none} 就仍然压得住收起态 */
 [data-scope='side-nav'][data-part='positioner'] {
+  /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，面板继承它限高；
+     引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
+  --xh-_side-nav-available-h: 100vh;
+
   position: fixed;
   z-index: var(--xh-side-nav-popout-layer, var(--xh-layer-popover));
   pointer-events: auto;
@@ -13785,6 +13807,10 @@ input[data-scope='mention'][data-part='input'] {
   border-radius: var(--xh-side-nav-popout-radius, var(--xh-shape-surface));
   background: var(--xh-side-nav-popout-bg, var(--xh-bg-surface));
   box-shadow: var(--xh-side-nav-popout-shadow, var(--xh-elevation-2));
+
+  /* 子导航条目数没有上限，矮视口下不限高就整块伸出视口且滚不到 */
+  max-block-size: min(var(--xh-side-nav-popout-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_side-nav-available-h));
+  overflow-y: auto;
 }
 
 [data-scope='side-nav'][data-part='branch-indicator'] {

@@ -124,4 +124,4 @@ disabled 只关掉卡片本身，触发器照样可点、可聚焦，也照样�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-hover-card-arrow-size` · `--xh-hover-card-bg` · `--xh-hover-card-border` · `--xh-hover-card-fg` · `--xh-hover-card-font-size` · `--xh-hover-card-gap` · `--xh-hover-card-max-w` · `--xh-hover-card-px` · `--xh-hover-card-py` · `--xh-hover-card-radius` · `--xh-hover-card-shadow` · `--xh-hover-card-trigger-gap`
+`--xh-hover-card-arrow-size` · `--xh-hover-card-bg` · `--xh-hover-card-border` · `--xh-hover-card-fg` · `--xh-hover-card-font-size` · `--xh-hover-card-gap` · `--xh-hover-card-max-h` · `--xh-hover-card-max-w` · `--xh-hover-card-px` · `--xh-hover-card-py` · `--xh-hover-card-radius` · `--xh-hover-card-shadow` · `--xh-hover-card-trigger-gap`
