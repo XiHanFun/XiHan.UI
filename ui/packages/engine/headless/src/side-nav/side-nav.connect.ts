@@ -12,6 +12,17 @@ const parts = sideNavAnatomy.build()
 // 悬停弹出的延时句柄：整页同时只有一个指针，单句柄即可
 let popoutHoverTimer: ReturnType<typeof setTimeout> | undefined
 
+// 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，
+// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
+const AVAILABLE_H_FLOOR = 96
+
+function availableHeightVar(available: number | undefined): Record<string, string> {
+  return {
+    '--xh-_side-nav-available-h':
+      available != null && available >= AVAILABLE_H_FLOOR ? `${available}px` : '',
+  }
+}
+
 export function connectSideNav<T extends PropTypes>(
   service: Service<SideNavSchema>,
   normalize: NormalizeProps<T>,
@@ -337,10 +348,11 @@ export function connectSideNav<T extends PropTypes>(
               position: 'fixed',
               left: `${popoutPosition?.x ?? 0}px`,
               top: `${popoutPosition?.y ?? 0}px`,
+              ...availableHeightVar(popoutPosition?.availableHeight),
             }
           // 逐属性清而非摘掉整个 style：折叠开关来回切换时不残留 fixed 坐标，
           // 作者写的其他内联样式不受波及
-          : { position: '', left: '', top: '' },
+          : { 'position': '', 'left': '', 'top': '', '--xh-_side-nav-available-h': '' },
       })
     },
 

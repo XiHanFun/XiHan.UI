@@ -34,6 +34,10 @@
 
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
   [data-scope='popover'][data-part='positioner'] {
+    /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
+    --xh-_popover-available-h: 100vh;
+
     position: fixed;
     z-index: var(--xh-layer-popover);
     /* 空壳不吃指针，交互只发生在 content 上 */
@@ -58,6 +62,9 @@
     gap: var(--xh-popover-gap, var(--xh-space-2));
     inline-size: max-content;
     max-inline-size: var(--xh-popover-max-w, var(--xh-_popover-max-w));
+    /* 内容由作者给，长度不可预知：不限高就整块伸出视口且滚不到 */
+    max-block-size: min(var(--xh-popover-max-h, var(--xh-overlay-max-h)), var(--xh-_popover-available-h));
+    overflow-y: auto;
     padding-block: var(--xh-popover-py, var(--xh-_popover-py));
     padding-inline: var(--xh-popover-px, var(--xh-_popover-px));
     border: var(--xh-stroke-thin) solid var(--xh-popover-border, var(--xh-border-default));

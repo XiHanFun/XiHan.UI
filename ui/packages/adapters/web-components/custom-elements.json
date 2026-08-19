@@ -14937,6 +14937,9 @@
               "name": "--xh-hover-card-gap"
             },
             {
+              "name": "--xh-hover-card-max-h"
+            },
+            {
               "name": "--xh-hover-card-max-w"
             },
             {
@@ -22346,6 +22349,9 @@
               "name": "--xh-popover-gap"
             },
             {
+              "name": "--xh-popover-max-h"
+            },
+            {
               "name": "--xh-popover-max-w"
             },
             {
@@ -26220,6 +26226,9 @@
             },
             {
               "name": "--xh-side-nav-popout-layer"
+            },
+            {
+              "name": "--xh-side-nav-popout-max-h"
             },
             {
               "name": "--xh-side-nav-popout-max-w"

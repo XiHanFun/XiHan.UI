@@ -110,6 +110,9 @@ export const popoverMachine = createMachine({
               dir: prop('dir'),
               // 引擎量不到箭头，尺寸与让开圆角的余量由这里交进去
               arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
+              // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高。
+              // 这台机器由 popconfirm 与 popselect 共用，落不落槽各自的 connect 说了算
+              size: true,
             },
             result => context.set('position', result),
           )

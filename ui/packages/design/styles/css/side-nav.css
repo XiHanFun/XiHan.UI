@@ -139,6 +139,10 @@
      它被搬到浮层落点、不在侧栏子树内，所以卡片外观仍归面板本身；
      这里不设 display，UA 的 [hidden]{display:none} 就仍然压得住收起态 */
   [data-scope='side-nav'][data-part='positioner'] {
+    /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，面板继承它限高；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
+    --xh-_side-nav-available-h: 100vh;
+
     position: fixed;
     z-index: var(--xh-side-nav-popout-layer, var(--xh-layer-popover));
     pointer-events: auto;
@@ -154,6 +158,10 @@
     border-radius: var(--xh-side-nav-popout-radius, var(--xh-shape-surface));
     background: var(--xh-side-nav-popout-bg, var(--xh-bg-surface));
     box-shadow: var(--xh-side-nav-popout-shadow, var(--xh-elevation-2));
+
+    /* 子导航条目数没有上限，矮视口下不限高就整块伸出视口且滚不到 */
+    max-block-size: min(var(--xh-side-nav-popout-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_side-nav-available-h));
+    overflow-y: auto;
   }
 
   [data-scope='side-nav'][data-part='branch-indicator'] {

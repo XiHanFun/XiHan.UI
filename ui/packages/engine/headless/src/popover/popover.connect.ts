@@ -6,6 +6,17 @@ import { popoverAnatomy } from './popover.anatomy'
 
 const parts = popoverAnatomy.build()
 
+// 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，
+// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
+const AVAILABLE_H_FLOOR = 96
+
+function availableHeightVar(available: number | undefined): Record<string, string> {
+  return {
+    '--xh-_popover-available-h':
+      available != null && available >= AVAILABLE_H_FLOOR ? `${available}px` : '',
+  }
+}
+
 export function connectPopover<T extends PropTypes>(
   service: Service<PopoverSchema>,
   normalize: NormalizeProps<T>,
@@ -49,6 +60,7 @@ export function connectPopover<T extends PropTypes>(
         position: 'fixed',
         left: `${position?.x ?? 0}px`,
         top: `${position?.y ?? 0}px`,
+        ...availableHeightVar(position?.availableHeight),
       },
     }),
     getContentProps: () => normalize.element({

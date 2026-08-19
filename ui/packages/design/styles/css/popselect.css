@@ -33,6 +33,10 @@
 
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
   [data-scope='popselect'][data-part='positioner'] {
+    /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时退回自己那档静态上限 */
+    --xh-_popselect-available-h: 100vh;
+
     position: fixed;
     z-index: var(--xh-layer-popover);
     /* 空壳不吃指针，交互只发生在 content 上 */
@@ -148,7 +152,7 @@
     flex-direction: column;
     min-inline-size: var(--xh-popselect-content-min-w, var(--xh-overlay-min-w));
     max-inline-size: var(--xh-popselect-content-max-w, var(--xh-overlay-max-w));
-    max-block-size: var(--xh-popselect-content-max-h, var(--xh-overlay-max-h));
+    max-block-size: min(var(--xh-popselect-content-max-h, var(--xh-overlay-max-h)), var(--xh-_popselect-available-h));
     padding: var(--xh-popselect-content-p, var(--xh-space-1));
     border: var(--xh-stroke-thin) solid var(--xh-popselect-content-border, var(--xh-border-default));
     border-radius: var(--xh-popselect-content-radius, var(--xh-shape-surface));

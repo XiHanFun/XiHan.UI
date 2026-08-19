@@ -215,6 +215,8 @@ export const sideNavMachine = createMachine({
               placement: prop('dir') === 'rtl' ? 'left-start' : 'right-start',
               strategy: 'fixed',
               dir: prop('dir'),
+              // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
+              size: true,
             },
             result => context.set('popoutPosition', result),
           )

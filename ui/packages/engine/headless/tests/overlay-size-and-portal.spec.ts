@@ -76,6 +76,35 @@ describe('side-nav 弹出面板的定位层', () => {
     expect(positioner.hidden).toBeUndefined()
   })
 
+  it('可用高度写成私有槽，交给面板限高', () => {
+    const { service, api } = sideNav({ collection, collapsed: true })
+    service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
+    service.context.set('popoutPosition', { x: 56, y: 12, placement: 'right-start', availableHeight: 320 })
+    const style = (api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>).style as Record<string, string>
+    expect(style['--xh-_side-nav-available-h']).toBe('320px')
+  })
+
+  it('贴边时引擎回报 0，当作没算出来——写进 min() 会把面板压成零高', () => {
+    const { service, api } = sideNav({ collection, collapsed: true })
+    service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
+    service.context.set('popoutPosition', { x: 56, y: 12, placement: 'right-start', availableHeight: 0 })
+    const style = (api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>).style as Record<string, string>
+    expect(style['--xh-_side-nav-available-h']).toBe('')
+  })
+
+  it('小到放不下几个条目也退回皮肤那档，不给一条缝', () => {
+    const { service, api } = sideNav({ collection, collapsed: true })
+    service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
+    service.context.set('popoutPosition', { x: 56, y: 12, placement: 'right-start', availableHeight: 40 })
+    const style = (api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>).style as Record<string, string>
+    expect(style['--xh-_side-nav-available-h']).toBe('')
+  })
+
+  it('收起时把高度槽一并清掉，折叠开关来回切不残留限高', () => {
+    const { api } = sideNav({ collection, collapsed: true })
+    const style = (api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>).style as Record<string, string>
+    expect(style['--xh-_side-nav-available-h']).toBe('')
+  })
   it('收起时定位层逐属性清坐标，不残留 fixed', () => {
     const { api } = sideNav({ collection, collapsed: true })
     const positioner = api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>
