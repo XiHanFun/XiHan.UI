@@ -15,6 +15,17 @@ const WC = 'packages/adapters/web-components/src/elements'
 /** 只在某一端存在的角色节点，逐条写明理由。 */
 const EXEMPT = {}
 
+/**
+ * getter 名与 part 名对不上的，逐条登记。
+ *
+ * 判据靠「part 名派生 getter 名」找承诺，名字对不上就整段跳过——那个 part 于是
+ * 一道检查都不过。side-nav 的定位层就这么漏了：connect 叫 getPopoutPositionerProps，
+ * 派生出来的是 getPositionerProps，两边对不上，WC 适配器整个没接它也没人报错。
+ */
+const GETTER_ALIAS = {
+  'side-nav': { positioner: 'getPopoutPositionerProps' },
+}
+
 async function read(path) {
   try {
     return await readFile(path, 'utf8')
@@ -48,7 +59,7 @@ for (const entry of entries) {
   const wc = (await read(join(WC, `${comp}.ts`))) ?? ''
 
   for (const part of parts) {
-    const getter = `get${pascal(part)}Props`
+    const getter = GETTER_ALIAS[comp]?.[part] ?? `get${pascal(part)}Props`
     if (!connect.includes(getter))
       continue
     if (EXEMPT[comp]?.includes(part))
