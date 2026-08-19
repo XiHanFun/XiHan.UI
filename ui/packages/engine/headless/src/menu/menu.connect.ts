@@ -12,9 +12,15 @@ const parts = menuAnatomy.build()
 // 指针亲手点亮过的条目：pointerleave 只收自己点的漆，键盘建立的锚点被指针路过不受影响
 const pointerHot = new WeakSet<Element>()
 
-/** 落定那一侧的可用高度，写成内联自定义属性；引擎没算时给空串撤掉声明，皮肤退回自己的上限。 */
+// 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，
+// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
+const AVAILABLE_H_FLOOR = 96
+
 function availableHeightVar(available: number | undefined): Record<string, string> {
-  return { '--xh-_menu-available-h': available != null ? `${available}px` : '' }
+  return {
+    '--xh-_menu-available-h':
+      available != null && available >= AVAILABLE_H_FLOOR ? `${available}px` : '',
+  }
 }
 
 export function connectMenu<T extends PropTypes>(

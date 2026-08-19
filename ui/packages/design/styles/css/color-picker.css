@@ -115,6 +115,10 @@
 
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
   [data-scope='color-picker'][data-part='positioner'] {
+    /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，内容层继承它限高；
+       引擎没算（尚未落位 / 无引擎 / 贴边归零）时不额外限高 */
+    --xh-_color-picker-available-h: 100vh;
+
     position: fixed;
     z-index: var(--xh-layer-popover);
     /* 空壳不吃指针，交互只发生在 content 上 */
@@ -132,6 +136,9 @@
     gap: var(--xh-color-picker-content-gap, var(--xh-space-3));
     inline-size: var(--xh-color-picker-content-w, 15rem);
     padding: var(--xh-color-picker-content-p, var(--xh-space-3));
+    /* 色板是 flex-wrap，色值条目数没有上限，高度随数据线性增长 */
+    max-block-size: min(var(--xh-color-picker-max-h, var(--xh-overlay-max-h)), var(--xh-_color-picker-available-h));
+    overflow-y: auto;
     border: var(--xh-stroke-thin) solid var(--xh-color-picker-content-border, var(--xh-border-default));
     border-radius: var(--xh-color-picker-content-radius, var(--xh-shape-surface));
     background: var(--xh-color-picker-content-bg, var(--xh-bg-surface));

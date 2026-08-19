@@ -6409,6 +6409,9 @@
               "name": "--xh-color-picker-label-font-weight"
             },
             {
+              "name": "--xh-color-picker-max-h"
+            },
+            {
               "name": "--xh-color-picker-swatch-border"
             },
             {
@@ -9844,6 +9847,9 @@
             },
             {
               "name": "--xh-date-picker-label-font-weight"
+            },
+            {
+              "name": "--xh-date-picker-max-h"
             },
             {
               "name": "--xh-date-picker-panel-divider"

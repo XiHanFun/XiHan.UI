@@ -386,6 +386,8 @@ export const colorPickerMachine = createMachine({
               strategy: 'fixed',
               // start / end 是逻辑对齐，RTL 下行内轴要翻过来
               dir: prop('dir'),
+              // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
+              size: true,
             },
             result => context.set('position', result),
           )

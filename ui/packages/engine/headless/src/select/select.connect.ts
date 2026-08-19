@@ -25,6 +25,17 @@ const HIDDEN_SELECT_STYLE = {
   whiteSpace: 'nowrap',
 }
 
+// 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，
+// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
+const AVAILABLE_H_FLOOR = 96
+
+function availableHeightVar(available: number | undefined): Record<string, string> {
+  return {
+    '--xh-_select-available-h':
+      available != null && available >= AVAILABLE_H_FLOOR ? `${available}px` : '',
+  }
+}
+
 export function connectSelect<T extends PropTypes>(
   service: Service<SelectSchema>,
   normalize: NormalizeProps<T>,
@@ -263,7 +274,7 @@ export function connectSelect<T extends PropTypes>(
         left: `${position?.x ?? 0}px`,
         top: `${position?.y ?? 0}px`,
         // content 继承这个高度上限，超出的条目在浮层内部滚
-        '--xh-_select-available-h': position?.availableHeight != null ? `${position.availableHeight}px` : '',
+        ...availableHeightVar(position?.availableHeight),
       },
     }),
     // 浮层的外壳：描边、底色、阴影画在它身上，键盘也在它上面收口（条目只管声明自己）。
