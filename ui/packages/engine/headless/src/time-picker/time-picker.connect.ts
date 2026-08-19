@@ -134,9 +134,10 @@ export function connectTimePicker<T extends PropTypes>(
   const itemSelected = ({ unit, value: option }: { unit: TimePickerColumnUnit, value: string }): boolean =>
     selectedIn(unit) === option
 
-  // 落在 min/max 之外的值不在生成列表里；整个控件禁用时全列都不可选
+  // 落在 min/max 之外的值不在生成列表里；整个控件禁用时全列都不可选；
+  // 离散的不可选值由作者的钩子判，与界外同等对待
   const itemDisabled = ({ unit, value: option }: { unit: TimePickerColumnUnit, value: string }): boolean =>
-    disabled || !optionsOf(unit).includes(option)
+    disabled || !optionsOf(unit).includes(option) || (prop('isTimeUnavailable')?.(option, unit) ?? false)
 
   const segmentTextOf = (segment: TimeSegmentType): string =>
     timeSegmentText(draft, segment, { hourCycle, locale })

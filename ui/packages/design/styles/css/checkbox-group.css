@@ -115,7 +115,7 @@
   }
 
   /* 勾号由皮肤补，作者不必自己往 indicator 里塞字符 */
-  [data-scope='checkbox-group'][data-part='indicator'][data-state='checked']::before {
+  [data-scope='checkbox-group'][data-part='indicator'][data-state='checked']:empty::before {
     content: '✓';
   }
 

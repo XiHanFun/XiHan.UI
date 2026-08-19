@@ -97,7 +97,8 @@
     transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='accordion'][data-part='indicator']::before {
+  /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
+  [data-scope='accordion'][data-part='indicator']:empty::before {
     content: '⌄';
   }
 

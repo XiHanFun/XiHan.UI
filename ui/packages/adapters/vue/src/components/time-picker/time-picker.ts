@@ -58,6 +58,7 @@ export const XhTimePickerRoot = defineComponent({
     step: { type: Number, default: undefined },
     disabled: Boolean,
     translations: { type: Object as PropType<TimePickerProps['translations']>, default: undefined },
+    isTimeUnavailable: { type: Function as PropType<(value: string, unit: TimePickerColumnUnit) => boolean>, default: undefined },
     readOnly: Boolean,
     invalid: Boolean,
     required: Boolean,
