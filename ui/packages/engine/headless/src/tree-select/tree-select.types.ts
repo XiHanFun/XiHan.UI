@@ -1,5 +1,5 @@
 import type { CascadeStrategy, Typeahead } from '@xihan-ui/behavior'
-import type { Cleanup, ControlVariant, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
+import type { Cleanup, ControlVariant, Direction, Layer, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 import type { TreeNode, TreeVisibleNode } from '../tree'
 
@@ -34,6 +34,11 @@ export interface TreeSelectRefs {
 
 export interface TreeSelectOpenChangeDetails {
   open: boolean
+  /**
+   * 这一次是怎么关的；展开时不带。
+   * 用它区分「用户主动取消」与「选完自动收起」，前者常要回滚草稿。
+   */
+  reason?: OverlayCloseReason
 }
 
 export interface TreeSelectValueChangeDetails {

@@ -136,7 +136,8 @@ export function connectPopselect<T extends PropTypes>(
   const pick = (v: string): void => {
     listbox.send(multiple ? { type: 'ITEM.TOGGLE', value: v } : { type: 'ITEM.SELECT', value: v })
     if (!multiple)
-      popover.send({ type: 'CLOSE' })
+      // 挑中一项自动收起，与代码调 setOpen(false) 不是一回事
+      popover.send({ type: 'CLOSE', src: 'selection' })
   }
 
   /** 确认键：作用于焦点所在的非禁用条目。 */

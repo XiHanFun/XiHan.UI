@@ -586,7 +586,7 @@ describe('选中与关闭', () => {
     onOpenChange.mockClear()
     click(h.item('delete'))
     expect(onSelect).toHaveBeenCalledExactlyOnceWith({ value: 'delete' })
-    expect(onOpenChange).toHaveBeenCalledExactlyOnceWith({ open: false })
+    expect(onOpenChange).toHaveBeenCalledExactlyOnceWith({ open: false, reason: 'selection' })
     expect(h.state()).toBe('closed')
     // 收起即清锚点
     expect(h.api().focusedValue).toBeNull()

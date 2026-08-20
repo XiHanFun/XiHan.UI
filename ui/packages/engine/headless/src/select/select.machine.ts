@@ -1,3 +1,4 @@
+import { closeReasonOf } from '../shared/close-reason'
 import type { Placement, PositionResult } from '@xihan-ui/kernel'
 import type { SelectFocusIntent, SelectSchema } from './select.types'
 import { createDismissLayer, createFocusScope, createTypeahead, isItemDisabled, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
@@ -138,7 +139,7 @@ export const selectMachine = createMachine({
       },
 
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
+      invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
       setValue: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type === 'VALUE.SET') {

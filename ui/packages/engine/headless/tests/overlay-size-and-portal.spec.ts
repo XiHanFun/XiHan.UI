@@ -169,6 +169,13 @@ describe('引导气泡的可用高度', () => {
     expect(style['--xh-_tour-available-h']).toBe('')
   })
 
+  it('只够放下骨架、放不下正文时也退回静态档', () => {
+    const { service, api } = tour(0)
+    service.context.set('position', { x: 0, y: 0, placement: 'bottom', availableHeight: 120 })
+    const style = (api().getPositionerProps() as Record<string, unknown>).style as Record<string, string>
+    expect(style['--xh-_tour-available-h']).toBe('')
+  })
+
   it('贴边归零当作没算出来', () => {
     const { service, api } = tour(0)
     service.context.set('position', { x: 0, y: 0, placement: 'bottom', availableHeight: 0 })

@@ -70,7 +70,7 @@ export { createPerDocumentRegistry } from './structure/per-document-registry'
 // 结构：portal 落点
 export { ensurePortalRoot } from './structure/portal-root'
 // 类型与生命周期
-export type { ActionVariant, Cleanup, ControlVariant, Dict, Direction, Disposable, MaybeBooleanish, Orientation, Size, Tone } from './types'
+export type { ActionVariant, Cleanup, ControlVariant, Dict, Direction, Disposable, MaybeBooleanish, Orientation, OverlayCloseReason, Size, Tone } from './types'
 export { toCleanup } from './types'
 
 // 端口类型

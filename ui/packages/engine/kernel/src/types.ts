@@ -28,6 +28,29 @@ export type Orientation = 'horizontal' | 'vertical'
 /** ARIA 布尔值：真时输出 'true'，假时省略（返回 undefined）。 */
 export type MaybeBooleanish = boolean | undefined
 
+/**
+ * 浮层这一次是怎么关的。
+ *
+ * 原因在机器里早就算出来了（消解层回报 escape-key 还是 interact-outside、
+ * 关闭按钮与 Tab 各自带 src），此前只用来决定要不要归还焦点，没有交到使用者手上。
+ * 拿它可以区分「用户主动取消」与「选完自动收起」，前者常常要回滚草稿。
+ */
+export type OverlayCloseReason =
+  /** Escape 键。 */
+  | 'esc'
+  /** 关闭按钮。 */
+  | 'close-trigger'
+  /** 点在浮层之外。 */
+  | 'interact-outside'
+  /** 焦点被 Tab 带离。 */
+  | 'tab'
+  /** 选中了某一项后自动收起。 */
+  | 'selection'
+  /** 指针移开（悬停型浮层）。 */
+  | 'hover'
+  /** 代码调用，非用户操作。 */
+  | 'programmatic'
+
 // —— 三条视觉轴 ——
 //
 // 取值不是设计出来的，是从 108 份皮肤里的选择器数出来的：写了 [data-tone='x'] 的才算数。

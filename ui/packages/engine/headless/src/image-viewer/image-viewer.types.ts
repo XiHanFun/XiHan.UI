@@ -1,4 +1,4 @@
-import type { Cleanup, Layer, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
+import type { Cleanup, Layer, OverlayCloseReason, PropTypes, RuntimeConfig } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 一张待看的图。 */
@@ -47,6 +47,11 @@ export interface ImageViewerRefs {
 
 export interface ImageViewerOpenChangeDetails {
   open: boolean
+  /**
+   * 这一次是怎么关的；展开时不带。
+   * 用它区分「用户主动取消」与「选完自动收起」，前者常要回滚草稿。
+   */
+  reason?: OverlayCloseReason
 }
 
 export interface ImageViewerIndexChangeDetails {

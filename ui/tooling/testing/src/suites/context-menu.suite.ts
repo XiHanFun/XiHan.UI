@@ -272,7 +272,7 @@ export const contextMenuSuite: ConformanceSuite = {
               trigger: { 'data-state': 'closed' },
               content: { 'hidden': '', 'data-state': 'closed' },
             },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'interact-outside' } }],
           },
         },
       ],
@@ -495,7 +495,7 @@ export const contextMenuSuite: ConformanceSuite = {
             // 先选中详情、后开合意图
             events: [
               { type: 'select', detail: { value: 'delete' } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },
@@ -524,7 +524,7 @@ export const contextMenuSuite: ConformanceSuite = {
             },
             events: [
               { type: 'select', detail: { value: 'copy' } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },
@@ -561,7 +561,7 @@ export const contextMenuSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'Escape',
-          expect: { events: [{ type: 'open-change', detail: { open: false } }] },
+          expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'esc' } }] },
         },
         {
           kind: 'settle',
@@ -593,7 +593,7 @@ export const contextMenuSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'Escape',
-          expect: { events: [{ type: 'open-change', detail: { open: false } }] },
+          expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'esc' } }] },
         },
         {
           kind: 'settle',
@@ -618,7 +618,7 @@ export const contextMenuSuite: ConformanceSuite = {
               trigger: { 'data-state': 'closed' },
               content: { 'data-state': 'closed', 'hidden': '' },
             },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'tab' } }],
           },
         },
         {

@@ -1,4 +1,4 @@
-import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, Layer, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 展开时的落焦端：'first'/'last' 从集合两端进，'none' 不预先挑锚点。 */
@@ -21,6 +21,11 @@ export interface MenuRefs {
 
 export interface MenuOpenChangeDetails {
   open: boolean
+  /**
+   * 这一次是怎么关的；展开时不带。
+   * 用它区分「用户主动取消」与「选完自动收起」，前者常要回滚草稿。
+   */
+  reason?: OverlayCloseReason
 }
 
 export interface MenuSelectDetails {

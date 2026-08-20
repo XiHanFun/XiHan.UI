@@ -598,7 +598,7 @@ export const cascaderSuite: ConformanceSuite = {
             // 先值后开合
             events: [
               { type: 'value-change', detail: { value: [['zhejiang', 'hangzhou', 'xihu']] } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },
@@ -755,7 +755,7 @@ export const cascaderSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'Escape',
-          expect: { events: [{ type: 'open-change', detail: { open: false } }] },
+          expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'esc' } }] },
         },
         {
           kind: 'settle',
@@ -794,7 +794,7 @@ export const cascaderSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'Escape',
-          expect: { events: [{ type: 'open-change', detail: { open: false } }] },
+          expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'esc' } }] },
         },
         {
           kind: 'settle',
@@ -815,7 +815,7 @@ export const cascaderSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'Tab',
-          expect: { events: [{ type: 'open-change', detail: { open: false } }] },
+          expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'tab' } }] },
         },
         {
           kind: 'settle',
@@ -1012,7 +1012,7 @@ export const cascaderSuite: ConformanceSuite = {
             },
             events: [
               { type: 'value-change', detail: { value: [['taiwan']] } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },

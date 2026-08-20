@@ -136,7 +136,7 @@ export const popconfirmSuite: ConformanceSuite = {
           kind: 'click',
           part: 'confirm-trigger',
           // confirm 事件不入跨适配器事件流；收起这件事经 open-change 如实上报
-          expect: { events: [{ type: 'open-change', detail: { open: false } }] },
+          expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }] },
         },
         {
           kind: 'settle',
@@ -165,7 +165,7 @@ export const popconfirmSuite: ConformanceSuite = {
         {
           kind: 'click',
           part: 'cancel-trigger',
-          expect: { events: [{ type: 'open-change', detail: { open: false } }] },
+          expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }] },
         },
         {
           kind: 'settle',
@@ -261,7 +261,7 @@ export const popconfirmSuite: ConformanceSuite = {
               root: { 'data-state': 'open' },
               content: { 'data-state': 'open', 'hidden': null },
             },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }],
           },
         },
       ],

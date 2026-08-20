@@ -1,4 +1,4 @@
-import type { Cleanup, Direction, Layer, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size } from '@xihan-ui/kernel'
+import type { Cleanup, Direction, Layer, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface PopoverTranslations {
@@ -28,6 +28,11 @@ export interface PopoverRefs {
 
 export interface PopoverOpenChangeDetails {
   open: boolean
+  /**
+   * 这一次是怎么关的；展开时不带。
+   * 用它区分「用户主动取消」（esc / interact-outside）与「选完自动收起」，前者常要回滚草稿。
+   */
+  reason?: OverlayCloseReason
 }
 
 export interface PopoverSchema extends MachineSchema {
@@ -60,7 +65,7 @@ export interface PopoverSchema extends MachineSchema {
   event:
     | { type: 'OPEN' }
     | { type: 'TOGGLE' }
-    | { type: 'CLOSE', src?: 'esc' | 'close-trigger' | 'interact-outside' | 'tab' }
+    | { type: 'CLOSE', src?: 'esc' | 'close-trigger' | 'interact-outside' | 'tab' | 'selection' }
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
