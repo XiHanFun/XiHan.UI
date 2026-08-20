@@ -1,9 +1,23 @@
+import { closeReasonOf } from '../shared/close-reason'
 import type { DialogSchema } from './dialog.types'
 import { acquireScrollLock, createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
-import { hideOutside } from '@xihan-ui/kernel'
+import { hideOutside, warn } from '@xihan-ui/kernel'
 import { setup } from '@xihan-ui/machine'
 
 const { createMachine } = setup<DialogSchema>()
+
+// 选择器写错时不让异常穿出 rAF 回调，回 null 走默认聚焦顺序
+function queryInContent(content: HTMLElement | null, selector: string): HTMLElement | null {
+  if (!content)
+    return null
+  try {
+    return content.querySelector<HTMLElement>(selector)
+  }
+  catch {
+    warn(false, `dialog: initialFocus 不是合法的选择器：${selector}`)
+    return null
+  }
+}
 
 export const dialogMachine = createMachine({
   name: 'dialog',
@@ -55,7 +69,7 @@ export const dialogMachine = createMachine({
     },
     actions: {
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
+      invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
       // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
       syncOpen: ({ prop, send }) => {
         const open = prop('open')
@@ -108,9 +122,15 @@ export const dialogMachine = createMachine({
           container: getContentEl,
           trapped: () => modal,
           loop: modal,
-          // alertdialog 焦点落在 content 容器本身，不预选按钮；
-          // 普通 dialog 交给 tabbable 探测选首个可聚焦元素
-          initialFocus: () => (role === 'alertdialog' ? getContentEl() : null),
+          initialFocus: () => {
+            const selector = prop('initialFocus')
+            // 给了选择器就只认它；还没匹配上回 null，把机会留给下一帧重试
+            if (selector !== undefined)
+              return queryInContent(getContentEl(), selector)
+            // alertdialog 焦点落在 content 容器本身，不预选按钮；
+            // 普通 dialog 交给 tabbable 探测选首个可聚焦元素
+            return role === 'alertdialog' ? getContentEl() : null
+          },
           restoreFocus: () => prop('restoreFocus') ?? true,
         })
         disposers.push(() => focus.dispose())

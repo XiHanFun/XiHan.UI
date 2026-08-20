@@ -1,5 +1,5 @@
 import type { PresenceHandle } from '@xihan-ui/behavior/presence'
-import type { Cleanup, Layer, PropTypes, RuntimeConfig, Size } from '@xihan-ui/kernel'
+import type { Cleanup, Layer, OverlayCloseReason, PropTypes, RuntimeConfig, Size } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 export interface DialogTranslations {
@@ -19,6 +19,11 @@ export interface DialogRefs {
 
 export interface DialogOpenChangeDetails {
   open: boolean
+  /**
+   * 这一次是怎么关的；展开时不带。
+   * 用它区分「用户主动取消」与「确认后收起」，前者常要回滚草稿。
+   */
+  reason?: OverlayCloseReason
 }
 
 export interface DialogSchema extends MachineSchema {
@@ -30,6 +35,8 @@ export interface DialogSchema extends MachineSchema {
     closeOnEscape?: boolean
     closeOnInteractOutside?: boolean
     restoreFocus?: boolean
+    /** 展开后先聚焦到 content 内匹配此选择器的元素；选择器不匹配时回落默认聚焦顺序。 */
+    initialFocus?: string
     /** 尺寸：sm / md / lg。只换 content 的最大宽度，落在 content 上（本组件没有 root 部件）。 */
     size?: Size
     translations?: Partial<DialogTranslations>
