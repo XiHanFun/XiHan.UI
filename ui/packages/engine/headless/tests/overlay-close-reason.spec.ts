@@ -7,6 +7,7 @@ import { normalizeProps } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { describe, expect, it, vi } from 'vitest'
+import { dialogMachine } from '../src/dialog'
 import { connectPopover, popoverMachine } from '../src/popover'
 
 function popover() {
@@ -56,5 +57,55 @@ describe('关闭原因交到使用者手上', () => {
     service.send({ type: 'OPEN' })
     const opened = onOpenChange.mock.calls.map(c => c[0] as PopoverOpenChangeDetails).filter(d => d.open)
     expect(opened.at(-1)?.reason).toBeUndefined()
+  })
+})
+
+// 对话框走同一套助手：它是遮罩式浮层，关法比锚定浮层少一种（没有 hover），
+// 但多一条——点触发器把它关掉也算 close-trigger。
+describe('对话框的关闭原因', () => {
+  function dialog() {
+    const runtime = createVanillaRuntime()
+    const onOpenChange = vi.fn<(d: { open: boolean, reason?: string }) => void>()
+    const service = createService(dialogMachine, {
+      props: () => ({ defaultOpen: true, onOpenChange }),
+      runtime,
+    })
+    runtime.start()
+    return { service, onOpenChange }
+  }
+
+  function lastCloseReason(fn: ReturnType<typeof vi.fn>): unknown {
+    const calls = fn.mock.calls.filter(c => (c[0] as { open: boolean }).open === false)
+    return (calls.at(-1)?.[0] as { reason?: string } | undefined)?.reason
+  }
+
+  it('Escape 关的报 esc', () => {
+    const { service, onOpenChange } = dialog()
+    service.send({ type: 'CLOSE', src: 'esc' })
+    expect(lastCloseReason(onOpenChange)).toBe('esc')
+  })
+
+  it('点遮罩外关的报 interact-outside', () => {
+    const { service, onOpenChange } = dialog()
+    service.send({ type: 'CLOSE', src: 'interact-outside' })
+    expect(lastCloseReason(onOpenChange)).toBe('interact-outside')
+  })
+
+  it('关闭按钮报 close-trigger', () => {
+    const { service, onOpenChange } = dialog()
+    service.send({ type: 'CLOSE', src: 'close-trigger' })
+    expect(lastCloseReason(onOpenChange)).toBe('close-trigger')
+  })
+
+  it('点触发器收起也算 close-trigger，不是代码调的', () => {
+    const { service, onOpenChange } = dialog()
+    service.send({ type: 'TOGGLE' })
+    expect(lastCloseReason(onOpenChange)).toBe('close-trigger')
+  })
+
+  it('代码调用没有来源，报 programmatic', () => {
+    const { service, onOpenChange } = dialog()
+    service.send({ type: 'CLOSE' })
+    expect(lastCloseReason(onOpenChange)).toBe('programmatic')
   })
 })
