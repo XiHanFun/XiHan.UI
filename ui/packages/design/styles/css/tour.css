@@ -132,6 +132,10 @@
   /* 空壳不吃指针，交互只发生在 content 上。
      锚定步的坐标由定位引擎写进内联 style，这里不碰那两条轴 */
   [data-scope='tour'][data-part='positioner'] {
+    /* 落定那一侧的可用高度，由定位引擎经内联自定义属性写进来，气泡继承它限高；
+       居中步与尚未落位时不额外限高 */
+    --xh-_tour-available-h: 100vh;
+
     z-index: var(--xh-tour-positioner-z, var(--xh-layer-popover));
     pointer-events: none;
   }
@@ -160,6 +164,8 @@
     max-inline-size: var(--xh-tour-max-w, 22rem);
     padding-block: var(--xh-tour-py, var(--xh-space-4));
     padding-inline: var(--xh-tour-px, var(--xh-control-px-lg));
+    /* 引导步骤的正文长度由作者定，矮视口下不限高气泡会整块伸出视口 */
+    max-block-size: min(var(--xh-tour-max-h, var(--xh-overlay-max-h)), var(--xh-_tour-available-h));
     border: var(--xh-stroke-thin) solid var(--xh-tour-border, var(--xh-border-default));
     border-radius: var(--xh-tour-radius, var(--xh-shape-surface));
     background: var(--xh-tour-bg, var(--xh-bg-surface));
@@ -316,5 +322,14 @@
   /* 居中步没有锚点，连接层会给箭头发 hidden */
   [data-scope='tour'][data-part='arrow'][hidden] {
     display: none;
+  }
+}
+
+@layer xihan.components {
+  /* 气泡限高之后只让正文让步：标题与上下步按钮滚出视线就点不到了 */
+  [data-scope='tour'][data-part='description'] {
+    flex: 1 1 auto;
+    min-block-size: 0;
+    overflow-y: auto;
   }
 }
