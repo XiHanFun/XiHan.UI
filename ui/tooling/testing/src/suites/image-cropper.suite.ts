@@ -133,6 +133,22 @@ export const imageCropperSuite: ConformanceSuite = {
       },
     },
     {
+      name: '替代文本由根上的 alt 写进 image 部件，不给时落空串',
+      spec: { adr: 'a11y-name' },
+      props: { alt: '一张示例图' },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'alt 不进归一化快照（只采 aria- / data- 与结构属性），只有直接读 DOM 才验得到它落在了 image 上',
+          run: ({ doc }) => {
+            const image = findPart(doc, 'image')
+            if (image.getAttribute('alt') !== '一张示例图')
+              throw new Error(`image 的 alt 期望「一张示例图」，实际 ${image.getAttribute('alt')}`)
+          },
+        },
+      ],
+    },
+    {
       name: '图片加载完成才量得出尺寸：没给初值时取整张图',
       spec: { adr: 'controlled-uncontrolled' },
       props: { name: 'avatar' },

@@ -51,6 +51,11 @@ export interface ImageCropperSchema extends MachineSchema {
     /** 图片地址，原样写到 image 部件的 src 上。 */
     src?: string
     /**
+     * 被裁切那张图的替代文本，原样写到 image 部件的 alt 上。
+     * 不给时 image 部件落 `alt=""`：读屏就此跳过这张图，不去念地址。
+     */
+    alt?: string
+    /**
      * 宽高比（宽 ÷ 高）。给了它，改尺寸时另一条边跟着算；null 与不给都表示不锁比例。
      * 非有限数与非正数按不锁处理。
      */

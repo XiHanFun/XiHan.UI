@@ -14,15 +14,27 @@ import { afterEach, describe, expect, it } from 'vitest'
 // 直接指向组件目录：包主入口的导出由接线一并补，测试不等它
 import {
   buildHeatmapGrid,
+  buildHeatmapMatrixGrid,
+  buildHeatmapMonthGrid,
   buildHeatmapThresholds,
   connectHeatmap,
+  heatmapActiveCell,
+  heatmapActiveSource,
+  heatmapActiveTip,
+  heatmapDetailsOf,
   heatmapLevelOf,
   heatmapLevelPercent,
   heatmapMachine,
+  heatmapMatrixKey,
+  heatmapMatrixNavTarget,
+  heatmapMonthNavTarget,
   heatmapNavIntentFromKey,
   heatmapNavTarget,
   heatmapStatsOf,
+  heatmapTipPlacement,
   parseHeatmapDate,
+  resolveHeatmapTip,
+  sameHeatmapTip,
 } from '../src/heatmap'
 
 type Props = HeatmapSchema['props']
@@ -202,9 +214,9 @@ describe('heatmap 分档', () => {
 
   it('区间外的日期单独查也给 0 档 0 计数，与网格里查不到那一格的取值一致', () => {
     const options = { ...RANGE, value: [...VALUE, { date: '2024-06-01', count: 99 }] }
-    expect(heatmapStatsOf(options, '2024-01-02')).toEqual({ count: 10, level: 4 })
-    expect(heatmapStatsOf(options, '2024-06-01')).toEqual({ count: 0, level: 0 })
-    expect(heatmapStatsOf(options, '不是日期')).toEqual({ count: 0, level: 0 })
+    expect(heatmapStatsOf(options, '2024-01-02')).toEqual({ count: 10, level: 4, levels: 5 })
+    expect(heatmapStatsOf(options, '2024-06-01')).toEqual({ count: 0, level: 0, levels: 5 })
+    expect(heatmapStatsOf(options, '不是日期')).toEqual({ count: 0, level: 0, levels: 5 })
   })
 
   it('给了 thresholds 就以它为准，档数随之定死，levels 不再起作用', () => {
@@ -289,16 +301,16 @@ describe('buildHeatmapGrid 摊网格', () => {
 
 describe('heatmap 方向键落点', () => {
   it('列是周、行是天：左右键走相邻的周，上下键走相邻的一天', () => {
-    expect(heatmapNavIntentFromKey({ key: 'ArrowRight' })).toBe('week.next')
-    expect(heatmapNavIntentFromKey({ key: 'ArrowLeft' })).toBe('week.prev')
-    expect(heatmapNavIntentFromKey({ key: 'ArrowDown' })).toBe('day.next')
-    expect(heatmapNavIntentFromKey({ key: 'ArrowUp' })).toBe('day.prev')
+    expect(heatmapNavIntentFromKey({ key: 'ArrowRight' })).toBe('inline.next')
+    expect(heatmapNavIntentFromKey({ key: 'ArrowLeft' })).toBe('inline.prev')
+    expect(heatmapNavIntentFromKey({ key: 'ArrowDown' })).toBe('block.next')
+    expect(heatmapNavIntentFromKey({ key: 'ArrowUp' })).toBe('block.prev')
   })
 
   it('rtl 下左右键语义对调，上下键不受影响', () => {
-    expect(heatmapNavIntentFromKey({ key: 'ArrowRight' }, 'rtl')).toBe('week.prev')
-    expect(heatmapNavIntentFromKey({ key: 'ArrowLeft' }, 'rtl')).toBe('week.next')
-    expect(heatmapNavIntentFromKey({ key: 'ArrowDown' }, 'rtl')).toBe('day.next')
+    expect(heatmapNavIntentFromKey({ key: 'ArrowRight' }, 'rtl')).toBe('inline.prev')
+    expect(heatmapNavIntentFromKey({ key: 'ArrowLeft' }, 'rtl')).toBe('inline.next')
+    expect(heatmapNavIntentFromKey({ key: 'ArrowDown' }, 'rtl')).toBe('block.next')
   })
 
   it('ctrl/Meta 只配 Home/End；带 Alt 或 Shift 的组合一律不归导航管', () => {
@@ -314,17 +326,17 @@ describe('heatmap 方向键落点', () => {
 
   it('走出区间就给 null，让焦点原地不动', () => {
     const grid = buildHeatmapGrid(RANGE)
-    expect(heatmapNavTarget(grid, '2024-01-01', 'week.next')).toBe('2024-01-08')
-    expect(heatmapNavTarget(grid, '2024-01-01', 'day.next')).toBe('2024-01-02')
-    expect(heatmapNavTarget(grid, '2024-01-01', 'day.prev')).toBeNull()
-    expect(heatmapNavTarget(grid, '2024-01-29', 'week.next')).toBeNull()
+    expect(heatmapNavTarget(grid, '2024-01-01', 'inline.next')).toBe('2024-01-08')
+    expect(heatmapNavTarget(grid, '2024-01-01', 'block.next')).toBe('2024-01-02')
+    expect(heatmapNavTarget(grid, '2024-01-01', 'block.prev')).toBeNull()
+    expect(heatmapNavTarget(grid, '2024-01-29', 'inline.next')).toBeNull()
     // 行首行尾按本行实际有的格子取，不按日历上的周界取
     expect(heatmapNavTarget(grid, '2024-01-17', 'row.start')).toBe('2024-01-03')
     expect(heatmapNavTarget(grid, '2024-01-17', 'row.end')).toBe('2024-01-31')
     expect(heatmapNavTarget(grid, '2024-01-17', 'grid.start')).toBe('2024-01-01')
     expect(heatmapNavTarget(grid, '2024-01-17', 'grid.end')).toBe('2024-01-28')
     // 起点不在网格里时无从起步
-    expect(heatmapNavTarget(grid, '2023-12-31', 'day.next')).toBeNull()
+    expect(heatmapNavTarget(grid, '2023-12-31', 'block.next')).toBeNull()
   })
 })
 
@@ -492,7 +504,7 @@ describe('connectHeatmap 键盘走格', () => {
     const harness = mount({ ...RANGE, value: VALUE })
     harness.cell('2024-01-02').focus()
     harness.render()
-    expect(harness.focuses).toEqual([{ date: '2024-01-02', count: 10, level: 4 }])
+    expect(harness.focuses).toEqual([{ date: '2024-01-02', row: '', column: '', count: 10, level: 4, percent: 100 }])
 
     harness.cell('2024-01-02').focus()
     harness.render()
@@ -500,12 +512,12 @@ describe('connectHeatmap 键盘走格', () => {
 
     press(harness, 'ArrowDown')
     expect(harness.focuses).toHaveLength(2)
-    expect(harness.focuses[1]).toEqual({ date: '2024-01-03', count: 0, level: 0 })
+    expect(harness.focuses[1]).toEqual({ date: '2024-01-03', row: '', column: '', count: 0, level: 0, percent: 0 })
   })
 
   it('程序化挪锚点只改锚点，不报「焦点落到了这一天」：DOM 焦点根本没动', () => {
     const harness = mount({ ...RANGE, value: VALUE })
-    harness.service.send({ type: 'FOCUS.SET', date: '2024-01-02' })
+    harness.service.send({ type: 'FOCUS.SET', cell: { date: '2024-01-02' } })
     harness.render()
     expect(apiOf(harness.service).focusedDate).toBe('2024-01-02')
     expect(harness.focuses).toEqual([])
@@ -513,7 +525,7 @@ describe('connectHeatmap 键盘走格', () => {
     // 焦点真的落上去才通知
     harness.cell('2024-01-01').focus()
     harness.render()
-    expect(harness.focuses).toEqual([{ date: '2024-01-01', count: 1, level: 1 }])
+    expect(harness.focuses).toEqual([{ date: '2024-01-01', row: '', column: '', count: 1, level: 1, percent: 25 }])
   })
 
   it('区间换掉后锚点悬空，Tab 位退回文档序头一格：不然一个停靠点都没有，键盘再也进不来', () => {
@@ -524,11 +536,672 @@ describe('connectHeatmap 键盘走格', () => {
 
     // 焦点那天已不在新区间里
     const later = mount({ startDate: '2024-03-01', endDate: '2024-03-31' })
-    later.service.send({ type: 'FOCUS.SET', date: '2024-01-31' })
+    later.service.send({ type: 'FOCUS.SET', cell: { date: '2024-01-31' } })
     later.render()
     const api = apiOf(later.service)
     expect(api.focusedDate).toBe('2024-01-31')
     expect(api.anchorDate).toBe(later.cell('2024-03-04').getAttribute('data-value'))
     expect(later.cell('2024-03-04').getAttribute('tabindex')).toBe('0')
+  })
+})
+
+// ── 月历形态 ──
+
+describe('buildHeatmapMonthGrid 月历网格', () => {
+  it('一个自然月一块，1 号落在它真实的星期几上', () => {
+    // 2024-02-01 是星期四，周首日是星期一，于是它落在第 3 列，首周行前面空 3 格
+    const grid = buildHeatmapMonthGrid({ startDate: '2024-02-01', endDate: '2024-03-31' })
+    expect(grid.blocks.map(block => block.value)).toEqual(['2024-02', '2024-03'])
+    const first = grid.blocks[0]!.weeks[0]!
+    expect(first.offset).toBe(3)
+    expect(first.cells[0]!.date).toBe('2024-02-01')
+    expect(first.cells[0]!.weekDay).toBe(3)
+    // 2024-03-01 是星期五
+    expect(grid.blocks[1]!.weeks[0]!.offset).toBe(4)
+  })
+
+  it('行号在整张网格里连着排，读屏报的行号不会每块从头来一遍', () => {
+    const grid = buildHeatmapMonthGrid({ startDate: '2024-01-01', endDate: '2024-02-29' })
+    expect(grid.weeks.map(row => row.rowIndex)).toEqual(grid.weeks.map((_, index) => index))
+    expect(grid.blocks[1]!.weeks[0]!.rowIndex).toBe(grid.blocks[0]!.weeks.length)
+  })
+
+  it('区间只覆盖半个月时只铺那半个月，不补区间外的日子', () => {
+    const grid = buildHeatmapMonthGrid({ startDate: '2024-01-20', endDate: '2024-02-05' })
+    expect(grid.firstDate).toBe('2024-01-20')
+    expect(grid.lastDate).toBe('2024-02-05')
+    expect(grid.cells.has('2024-01-19')).toBe(false)
+    expect(grid.cells.has('2024-02-06')).toBe(false)
+    expect(grid.blocks[0]!.weeks[0]!.cells[0]!.date).toBe('2024-01-20')
+  })
+
+  it('与日历形态共用同一套分档：同样的数据同样的档位', () => {
+    const options = { startDate: '2024-01-01', endDate: '2024-01-31', value: VALUE }
+    const month = buildHeatmapMonthGrid(options)
+    const calendar = buildHeatmapGrid(options)
+    expect(month.levels).toBe(calendar.levels)
+    expect(month.thresholds).toEqual(calendar.thresholds)
+    expect(month.cells.get('2024-01-02')!.level).toBe(calendar.cells.get('2024-01-02')!.level)
+  })
+
+  it('区间非法给一张空网格', () => {
+    const grid = buildHeatmapMonthGrid({ startDate: '2024-03-10', endDate: '2024-01-01' })
+    expect(grid.blocks).toEqual([])
+    expect(grid.firstDate).toBeNull()
+  })
+})
+
+describe('heatmapMonthNavTarget 月历落点', () => {
+  const grid = buildHeatmapMonthGrid({ startDate: '2024-01-01', endDate: '2024-03-31' })
+
+  it('横着走一天、竖着走一周：两条轴与日历形态正好对调', () => {
+    expect(heatmapMonthNavTarget(grid, '2024-01-10', 'inline.next')).toBe('2024-01-11')
+    expect(heatmapMonthNavTarget(grid, '2024-01-10', 'inline.prev')).toBe('2024-01-09')
+    expect(heatmapMonthNavTarget(grid, '2024-01-10', 'block.next')).toBe('2024-01-17')
+    expect(heatmapMonthNavTarget(grid, '2024-01-10', 'block.prev')).toBe('2024-01-03')
+  })
+
+  it('走到月末会落进下一块，不会困在一块里', () => {
+    expect(heatmapMonthNavTarget(grid, '2024-01-31', 'inline.next')).toBe('2024-02-01')
+    expect(heatmapMonthNavTarget(grid, '2024-02-01', 'inline.prev')).toBe('2024-01-31')
+    // 竖着跨块同理：1 月 29 日往下一周就是 2 月 5 日
+    expect(heatmapMonthNavTarget(grid, '2024-01-29', 'block.next')).toBe('2024-02-05')
+  })
+
+  it('home/End 走本周行在本月里的首末格，跨不出这一块', () => {
+    // 2024-02-01 是星期四，它那一周在 2 月里只有 4 号到 1 号这几天
+    expect(heatmapMonthNavTarget(grid, '2024-02-02', 'row.start')).toBe('2024-02-01')
+    expect(heatmapMonthNavTarget(grid, '2024-02-02', 'row.end')).toBe('2024-02-04')
+    expect(heatmapMonthNavTarget(grid, '2024-02-07', 'row.start')).toBe('2024-02-05')
+  })
+
+  it('两头走出区间给 null，Ctrl 加持的两键跳到整段区间的两端', () => {
+    expect(heatmapMonthNavTarget(grid, '2024-01-01', 'inline.prev')).toBeNull()
+    expect(heatmapMonthNavTarget(grid, '2024-03-31', 'inline.next')).toBeNull()
+    expect(heatmapMonthNavTarget(grid, '2024-02-02', 'grid.start')).toBe('2024-01-01')
+    expect(heatmapMonthNavTarget(grid, '2024-02-02', 'grid.end')).toBe('2024-03-31')
+  })
+})
+
+// ── 矩阵形态 ──
+
+const MATRIX_ROWS = ['周一', '周二', '周三']
+const MATRIX_COLUMNS = ['上午', '下午', '夜里']
+const MATRIX_VALUE = [
+  { row: '周一', column: '上午', value: 2 },
+  { row: '周一', column: '上午', value: 3 },
+  { row: '周二', column: '夜里', value: 10 },
+  // 轴上没有的行，写了也不该进网格
+  { row: '周日', column: '上午', value: 99 },
+]
+
+describe('buildHeatmapMatrixGrid 矩阵网格', () => {
+  it('行列的身份与顺序全按作者给的来，重复的与空的丢掉', () => {
+    const grid = buildHeatmapMatrixGrid({
+      rows: ['b', 'a', 'b', ''],
+      columns: [{ value: 'x', label: '横' }, 'y'],
+    })
+    expect(grid.rows.map(row => row.value)).toEqual(['b', 'a'])
+    expect(grid.columns.map(column => column.label)).toEqual(['横', 'y'])
+    expect(grid.columns[0]!.index).toBe(0)
+  })
+
+  it('同一格出现多次即累加，轴外的数据既不进网格也不把标尺顶高', () => {
+    const grid = buildHeatmapMatrixGrid({ rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: MATRIX_VALUE })
+    expect(grid.cells.get(heatmapMatrixKey('周一', '上午'))!.count).toBe(5)
+    expect(grid.cells.get(heatmapMatrixKey('周三', '夜里'))!.count).toBe(0)
+    expect(grid.cells.has(heatmapMatrixKey('周日', '上午'))).toBe(false)
+    expect(grid.max).toBe(10)
+  })
+
+  it('整张网格铺满行 × 列，文档序的两端也报得出来', () => {
+    const grid = buildHeatmapMatrixGrid({ rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: MATRIX_VALUE })
+    expect(grid.cells.size).toBe(9)
+    expect(grid.firstCell).toMatchObject({ row: '周一', column: '上午' })
+    expect(grid.lastCell).toMatchObject({ row: '周三', column: '夜里' })
+  })
+
+  it('一条轴都没给就是一张空网格', () => {
+    const grid = buildHeatmapMatrixGrid({ rows: MATRIX_ROWS })
+    expect(grid.cells.size).toBe(0)
+    expect(grid.firstCell).toBeNull()
+  })
+})
+
+describe('heatmapMatrixNavTarget 矩阵落点', () => {
+  const grid = buildHeatmapMatrixGrid({ rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: MATRIX_VALUE })
+
+  it('横着走一列、竖着走一行', () => {
+    expect(heatmapMatrixNavTarget(grid, { row: '周二', column: '下午' }, 'inline.next'))
+      .toEqual({ row: '周二', column: '夜里' })
+    expect(heatmapMatrixNavTarget(grid, { row: '周二', column: '下午' }, 'inline.prev'))
+      .toEqual({ row: '周二', column: '上午' })
+    expect(heatmapMatrixNavTarget(grid, { row: '周二', column: '下午' }, 'block.next'))
+      .toEqual({ row: '周三', column: '下午' })
+    expect(heatmapMatrixNavTarget(grid, { row: '周二', column: '下午' }, 'block.prev'))
+      .toEqual({ row: '周一', column: '下午' })
+  })
+
+  it('四面到边就停住，不绕回另一头', () => {
+    expect(heatmapMatrixNavTarget(grid, { row: '周一', column: '上午' }, 'inline.prev')).toBeNull()
+    expect(heatmapMatrixNavTarget(grid, { row: '周一', column: '上午' }, 'block.prev')).toBeNull()
+    expect(heatmapMatrixNavTarget(grid, { row: '周三', column: '夜里' }, 'inline.next')).toBeNull()
+    expect(heatmapMatrixNavTarget(grid, { row: '周三', column: '夜里' }, 'block.next')).toBeNull()
+  })
+
+  it('home/End 走本行的首末列，Ctrl 加持的两键跳到整张网格的两端', () => {
+    expect(heatmapMatrixNavTarget(grid, { row: '周二', column: '下午' }, 'row.start'))
+      .toEqual({ row: '周二', column: '上午' })
+    expect(heatmapMatrixNavTarget(grid, { row: '周二', column: '下午' }, 'row.end'))
+      .toEqual({ row: '周二', column: '夜里' })
+    expect(heatmapMatrixNavTarget(grid, { row: '周二', column: '下午' }, 'grid.start'))
+      .toEqual({ row: '周一', column: '上午' })
+    expect(heatmapMatrixNavTarget(grid, { row: '周二', column: '下午' }, 'grid.end'))
+      .toEqual({ row: '周三', column: '夜里' })
+  })
+
+  it('起点不在网格里时哪儿也去不了', () => {
+    expect(heatmapMatrixNavTarget(grid, { row: '周日', column: '上午' }, 'inline.next')).toBeNull()
+  })
+})
+
+describe('heatmapDetailsOf 一格的全部数据', () => {
+  it('日期形态报日期、计数、档位与色阶位置', () => {
+    const details = heatmapDetailsOf({ startDate: '2024-01-01', endDate: '2024-01-31', value: VALUE }, { date: '2024-01-02' })
+    expect(details).toEqual({ date: '2024-01-02', row: '', column: '', count: 10, level: 4, percent: 100 })
+  })
+
+  it('矩阵形态报行列身份，日期是空串', () => {
+    const details = heatmapDetailsOf(
+      { variant: 'matrix', rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: MATRIX_VALUE },
+      { row: '周一', column: '上午' },
+    )
+    expect(details).toMatchObject({ date: '', row: '周一', column: '上午', count: 5 })
+  })
+
+  it('网格里没有这一格时给 0，不是报错', () => {
+    const details = heatmapDetailsOf(
+      { variant: 'matrix', rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: MATRIX_VALUE },
+      { row: '周日', column: '上午' },
+    )
+    expect(details.count).toBe(0)
+    expect(details.level).toBe(0)
+  })
+})
+
+describe('详情条的几何', () => {
+  const host = { left: 100, top: 50, width: 400, height: 200 }
+  const cell = { left: 160, top: 90, width: 10, height: 10 }
+
+  it('ltr 下从起始缘往后量，横向滚过的距离要加回去', () => {
+    expect(resolveHeatmapTip(host, cell, 0, 0, false)).toEqual({
+      inlineStart: 60,
+      blockStart: 40,
+      inlineSize: 10,
+      blockSize: 10,
+    })
+    expect(resolveHeatmapTip(host, cell, 30, 5, false).inlineStart).toBe(90)
+    expect(resolveHeatmapTip(host, cell, 30, 5, false).blockStart).toBe(45)
+  })
+
+  it('rtl 下从末缘往回量，滚动量的符号跟着反过来', () => {
+    // 承载盒右缘 500，格子右缘 170，起始缘距离 330
+    expect(resolveHeatmapTip(host, cell, 0, 0, true).inlineStart).toBe(330)
+    expect(resolveHeatmapTip(host, cell, -30, 0, true).inlineStart).toBe(360)
+  })
+
+  it('两次量到同一个结果就不该算作变更', () => {
+    const rect = resolveHeatmapTip(host, cell, 0, 0, false)
+    expect(sameHeatmapTip(rect, resolveHeatmapTip(host, cell, 0, 0, false))).toBe(true)
+    expect(sameHeatmapTip(rect, resolveHeatmapTip(host, cell, 1, 0, false))).toBe(false)
+    expect(sameHeatmapTip(null, null)).toBe(true)
+  })
+
+  it('落在下半的格子把详情条摆到上边，免得压出网格外', () => {
+    expect(heatmapTipPlacement(0, 7)).toBe('block-end')
+    expect(heatmapTipPlacement(3, 7)).toBe('block-end')
+    expect(heatmapTipPlacement(4, 7)).toBe('block-start')
+    expect(heatmapTipPlacement(6, 7)).toBe('block-start')
+    // 一行都没有时不至于算出别的花样
+    expect(heatmapTipPlacement(0, 0)).toBe('block-end')
+  })
+})
+
+/** 月历形态的活 DOM：root > grid > 月块（标题 + 星期名轴 + 逐周一行），外加一条详情条。 */
+function mountMonth(initial: Props = {}): MultiHarness {
+  return mountVariant({ ...initial, variant: 'month' }, (api, doc) => {
+    const grid = doc.grid
+    const monthGrid = api.monthGrid!
+    for (const block of monthGrid.blocks) {
+      const blockEl = document.createElement('div')
+      doc.spread(blockEl, api.getMonthBlockProps({ value: block.value }))
+      const title = document.createElement('span')
+      doc.spread(title, api.getMonthLabelProps({ value: block.value }))
+      blockEl.append(title)
+
+      const axis = document.createElement('div')
+      doc.spread(axis, api.getRowProps({}))
+      for (const day of monthGrid.weekDays) {
+        const label = document.createElement('span')
+        doc.spread(label, api.getWeekDayLabelProps({ weekDay: day.weekDay }))
+        axis.append(label)
+      }
+      blockEl.append(axis)
+
+      for (const row of block.weeks) {
+        const rowEl = document.createElement('div')
+        doc.spread(rowEl, api.getRowProps({ month: block.value, week: row.week }))
+        for (const meta of row.cells) {
+          const cellEl = document.createElement('div')
+          doc.cells.set(meta.date, cellEl)
+          rowEl.append(cellEl)
+        }
+        blockEl.append(rowEl)
+      }
+      grid.append(blockEl)
+    }
+    for (const [date, el] of doc.cells)
+      doc.spread(el, api.getCellProps({ date }))
+  })
+}
+
+/** 矩阵形态的活 DOM：root > grid > 表头行（角落占位 + 列名）+ 逐行（行名 + 逐列一格）。 */
+function mountMatrix(initial: Props = {}): MultiHarness {
+  return mountVariant({ ...initial, variant: 'matrix' }, (api, doc) => {
+    const matrix = api.matrixGrid!
+    const header = document.createElement('div')
+    doc.spread(header, api.getRowProps({}))
+    const corner = document.createElement('span')
+    doc.spread(corner, api.getRowLabelProps({}))
+    header.append(corner)
+    for (const column of matrix.columns) {
+      const label = document.createElement('span')
+      doc.spread(label, api.getColumnLabelProps({ value: column.value }))
+      header.append(label)
+    }
+    doc.grid.append(header)
+
+    for (const row of matrix.rows) {
+      const rowEl = document.createElement('div')
+      doc.spread(rowEl, api.getRowProps({ row: row.value }))
+      const label = document.createElement('span')
+      doc.spread(label, api.getRowLabelProps({ value: row.value }))
+      rowEl.append(label)
+      for (const column of matrix.columns) {
+        const cellEl = document.createElement('div')
+        doc.cells.set(`${row.value}/${column.value}`, cellEl)
+        doc.spread(cellEl, api.getCellProps({ row: row.value, column: column.value }))
+        rowEl.append(cellEl)
+      }
+      doc.grid.append(rowEl)
+    }
+  })
+}
+
+interface MultiHarness {
+  service: Service<HeatmapSchema>
+  root: HTMLElement
+  grid: HTMLElement
+  tooltip: HTMLElement
+  cell: (key: string) => HTMLElement
+  render: () => void
+  /** 换一份 props 并触发一轮 tracker：props 装在裸 signal 里，写它才通知得到。 */
+  setProps: (next: Partial<Props>) => void
+  focuses: HeatmapCellFocusDetails[]
+  actives: (HeatmapCellFocusDetails | null)[]
+}
+
+interface BuildDoc {
+  grid: HTMLElement
+  cells: Map<string, HTMLElement>
+  spread: (el: HTMLElement, props: unknown) => void
+}
+
+/** 月历与矩阵共用的挂载：结构由 build 铺，属性每次 render 全量重打。 */
+function mountVariant(
+  initial: Props,
+  build: (api: ReturnType<typeof apiOf>, doc: BuildDoc) => void,
+): MultiHarness {
+  const focuses: HeatmapCellFocusDetails[] = []
+  const actives: (HeatmapCellFocusDetails | null)[] = []
+  const props: Props = {
+    ...initial,
+    onCellFocus: details => focuses.push(details),
+    onCellActive: details => actives.push(details),
+  }
+  const runtime = createVanillaRuntime()
+  const propsSignal = runtime.signal<Props>(props)
+  const service = createService(heatmapMachine, { props: () => propsSignal.get(), runtime })
+  runtime.start()
+
+  const root = document.createElement('div')
+  const grid = document.createElement('div')
+  const tooltip = document.createElement('div')
+  root.append(grid, tooltip)
+  document.body.append(root)
+
+  const cells = new Map<string, HTMLElement>()
+  const put = (el: HTMLElement, p: unknown): void => spread(el, p as Record<string, unknown>)
+  build(apiOf(service), { grid, cells, spread: put })
+
+  const render = (): void => {
+    const api = apiOf(service)
+    put(root, api.getRootProps())
+    put(grid, api.getGridProps())
+    put(tooltip, api.getTooltipProps())
+    for (const [key, el] of cells) {
+      const parts = key.split('/')
+      put(el, parts.length === 2 ? api.getCellProps({ row: parts[0], column: parts[1] }) : api.getCellProps({ date: key }))
+    }
+  }
+  render()
+
+  const setProps = (next: Partial<Props>): void => {
+    propsSignal.set({ ...propsSignal.get(), ...next })
+    render()
+  }
+
+  return { service, root, grid, tooltip, cell: key => cells.get(key)!, render, setProps, focuses, actives }
+}
+
+/** 给一格按上一份固定的量测：jsdom 里所有盒子都是零，不打桩两路量测分不出来。 */
+function stubRect(el: HTMLElement, top: number): void {
+  el.getBoundingClientRect = () => ({
+    left: 0,
+    top,
+    right: 12,
+    bottom: top + 12,
+    width: 12,
+    height: 12,
+    x: 0,
+    y: top,
+    toJSON: () => ({}),
+  })
+}
+
+/** 派一次指针进出；jsdom 没有 PointerEvent 构造器，处理器只用 currentTarget，普通事件够用。 */
+function point(el: HTMLElement, type: 'pointerenter' | 'pointerleave'): void {
+  el.dispatchEvent(new Event(type))
+}
+
+describe('connectHeatmap 月历形态', () => {
+  const RANGE_MONTH: Props = { startDate: '2024-01-01', endDate: '2024-02-29' }
+
+  it('网格报的行数是所有月块的周行之和，列数恒是七', () => {
+    const harness = mountMonth(RANGE_MONTH)
+    expect(harness.grid.getAttribute('role')).toBe('grid')
+    expect(harness.grid.getAttribute('aria-colcount')).toBe('7')
+    const weeks = apiOf(harness.service).monthGrid!.weeks.length
+    expect(harness.grid.getAttribute('aria-rowcount')).toBe(String(weeks))
+  })
+
+  it('月块是 rowgroup 并带月份的长名字，块里的星期名轴整条藏起来', () => {
+    const api = apiOf(mountMonth(RANGE_MONTH).service)
+    const block = api.getMonthBlockProps({ value: '2024-01' }) as Record<string, unknown>
+    expect(block.role).toBe('rowgroup')
+    expect(String(block['aria-label'])).toContain('1')
+    const axis = api.getRowProps({}) as Record<string, unknown>
+    expect(axis['aria-hidden']).toBe('true')
+    expect(axis.role).toBeUndefined()
+  })
+
+  it('周行带连着排的行号与本周的错列数', () => {
+    const api = apiOf(mountMonth(RANGE_MONTH).service)
+    const first = api.getRowProps({ month: '2024-01', week: 0 }) as Record<string, unknown>
+    expect(first.role).toBe('row')
+    expect(first['aria-rowindex']).toBe(1)
+    // 2024-01-01 正好是星期一，首周不错列
+    expect((first.style as Record<string, string>)['--xh-_heatmap-row-offset']).toBe('0')
+    // 2024-02-01 是星期四
+    const february = api.getRowProps({ month: '2024-02', week: 0 }) as Record<string, unknown>
+    expect((february.style as Record<string, string>)['--xh-_heatmap-row-offset']).toBe('3')
+  })
+
+  it('格子的列号是星期几，可及名字仍带完整日期', () => {
+    const harness = mountMonth({ ...RANGE_MONTH, value: [{ date: '2024-01-04', count: 6 }] })
+    const cell = harness.cell('2024-01-04')
+    expect(cell.getAttribute('role')).toBe('gridcell')
+    // 星期四，周首日是星期一，列号 4
+    expect(cell.getAttribute('aria-colindex')).toBe('4')
+    expect(cell.getAttribute('aria-label')).toBe('6 on 2024-01-04')
+  })
+
+  it('方向键横着走一天、竖着走一周，走到月末落进下一块', () => {
+    const harness = mountMonth(RANGE_MONTH)
+    harness.cell('2024-01-30').focus()
+    harness.render()
+    expect(press(harness as unknown as Harness, 'ArrowRight')).toBe(true)
+    expect(document.activeElement).toBe(harness.cell('2024-01-31'))
+    press(harness as unknown as Harness, 'ArrowRight')
+    expect(document.activeElement).toBe(harness.cell('2024-02-01'))
+    press(harness as unknown as Harness, 'ArrowDown')
+    expect(document.activeElement).toBe(harness.cell('2024-02-08'))
+    press(harness as unknown as Harness, 'ArrowUp')
+    expect(document.activeElement).toBe(harness.cell('2024-02-01'))
+  })
+})
+
+describe('connectHeatmap 矩阵形态', () => {
+  const MATRIX: Props = { rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: MATRIX_VALUE }
+
+  it('行列数把两条表头也算进去，表头行是真正的第一行', () => {
+    const harness = mountMatrix(MATRIX)
+    expect(harness.grid.getAttribute('aria-rowcount')).toBe('4')
+    expect(harness.grid.getAttribute('aria-colcount')).toBe('4')
+    const api = apiOf(harness.service)
+    const header = api.getRowProps({}) as Record<string, unknown>
+    expect(header.role).toBe('row')
+    expect(header['aria-rowindex']).toBe(1)
+    const row = api.getRowProps({ row: '周二' }) as Record<string, unknown>
+    expect(row['aria-rowindex']).toBe(3)
+  })
+
+  it('行名是 rowheader、列名是 columnheader，角落占位不进读屏', () => {
+    const api = apiOf(mountMatrix(MATRIX).service)
+    const corner = api.getRowLabelProps({}) as Record<string, unknown>
+    expect(corner['aria-hidden']).toBe('true')
+    expect(corner.role).toBeUndefined()
+    const rowLabel = api.getRowLabelProps({ value: '周一' }) as Record<string, unknown>
+    expect(rowLabel.role).toBe('rowheader')
+    expect(rowLabel['aria-colindex']).toBe(1)
+    const columnLabel = api.getColumnLabelProps({ value: '夜里' }) as Record<string, unknown>
+    expect(columnLabel.role).toBe('columnheader')
+    expect(columnLabel['aria-colindex']).toBe(4)
+  })
+
+  it('一格的身份是「行 + 列」两个属性，可及名字走矩阵那条文案', () => {
+    const harness = mountMatrix(MATRIX)
+    const cell = harness.cell('周一/上午')
+    expect(cell.getAttribute('data-value')).toBe('上午')
+    expect(cell.getAttribute('data-row')).toBe('周一')
+    expect(cell.getAttribute('aria-colindex')).toBe('2')
+    expect(cell.getAttribute('aria-label')).toBe('5 at 周一 上午')
+    expect(cell.getAttribute('tabindex')).toBe('0')
+  })
+
+  it('文案整条可换，档位按矩阵自己的最大值分', () => {
+    const harness = mountMatrix({
+      ...MATRIX,
+      translations: { matrixCellLabel: details => `${details.row} 的 ${details.column}：${details.count}` },
+    })
+    expect(harness.cell('周二/夜里').getAttribute('aria-label')).toBe('周二 的 夜里：10')
+    expect(harness.cell('周二/夜里').getAttribute('data-level')).toBe('4')
+    expect(harness.cell('周三/夜里').getAttribute('data-level')).toBe('0')
+  })
+
+  it('方向键按行列走，四面到边就停住', () => {
+    const harness = mountMatrix(MATRIX)
+    harness.cell('周一/上午').focus()
+    harness.render()
+    press(harness as unknown as Harness, 'ArrowRight')
+    expect(document.activeElement).toBe(harness.cell('周一/下午'))
+    press(harness as unknown as Harness, 'ArrowDown')
+    expect(document.activeElement).toBe(harness.cell('周二/下午'))
+    press(harness as unknown as Harness, 'End')
+    expect(document.activeElement).toBe(harness.cell('周二/夜里'))
+    // 已在末列，再往右不动，但按键照样拦下
+    expect(press(harness as unknown as Harness, 'ArrowRight')).toBe(true)
+    expect(document.activeElement).toBe(harness.cell('周二/夜里'))
+  })
+
+  it('矩阵形态不谈日期：焦点日期与锚点日期恒为 null', () => {
+    const harness = mountMatrix(MATRIX)
+    harness.cell('周二/下午').focus()
+    harness.render()
+    const api = apiOf(harness.service)
+    expect(api.focusedDate).toBeNull()
+    expect(api.anchorDate).toBeNull()
+    expect(api.anchorCell).toEqual({ row: '周二', column: '下午' })
+  })
+})
+
+describe('connectHeatmap 悬停详情', () => {
+  const RANGE_TIP: Props = { startDate: '2024-01-01', endDate: '2024-01-31', value: VALUE }
+
+  it('不写 variant 时 root 上不产出 data-variant：默认那一档的行为逐字不变', () => {
+    const harness = mount(RANGE_TIP)
+    expect(harness.root.getAttribute('data-variant')).toBeNull()
+    expect(apiOf(harness.service).variant).toBe('calendar')
+  })
+
+  it('内容与落点取自同一路：heatmapActiveCell 与 heatmapActiveTip 挑的是同一格', () => {
+    const hoverTip = { inlineStart: 1, blockStart: 2, inlineSize: 12, blockSize: 12 }
+    const focusTip = { inlineStart: 3, blockStart: 4, inlineSize: 12, blockSize: 12 }
+    const both = {
+      hoveredCell: { date: '2024-01-01' },
+      focusedCell: { date: '2024-01-02' },
+      focusWithin: true,
+      dismissed: false,
+    }
+    expect(heatmapActiveSource(both)).toBe('hovered')
+    expect(heatmapActiveCell(both)).toEqual({ date: '2024-01-01' })
+    expect(heatmapActiveTip({ ...both, hoverTip, focusTip })).toBe(hoverTip)
+
+    const onlyFocus = { ...both, hoveredCell: null }
+    expect(heatmapActiveSource(onlyFocus)).toBe('focused')
+    expect(heatmapActiveCell(onlyFocus)).toEqual({ date: '2024-01-02' })
+    expect(heatmapActiveTip({ ...onlyFocus, hoverTip, focusTip })).toBe(focusTip)
+
+    const dismissed = { ...both, dismissed: true }
+    expect(heatmapActiveSource(dismissed)).toBeNull()
+    expect(heatmapActiveCell(dismissed)).toBeNull()
+    expect(heatmapActiveTip({ ...dismissed, hoverTip, focusTip })).toBeNull()
+  })
+
+  it('指针进到某一格就把详情打开，离开即收起', () => {
+    const harness = mountMonth(RANGE_TIP)
+    expect(harness.tooltip.hasAttribute('hidden')).toBe(true)
+
+    point(harness.cell('2024-01-02'), 'pointerenter')
+    harness.render()
+    expect(harness.tooltip.hasAttribute('hidden')).toBe(false)
+    expect(apiOf(harness.service).activeCell).toMatchObject({ date: '2024-01-02', count: 10, level: 4 })
+
+    point(harness.cell('2024-01-02'), 'pointerleave')
+    harness.render()
+    expect(harness.tooltip.hasAttribute('hidden')).toBe(true)
+  })
+
+  it('键盘聚焦同样打开详情，焦点走出网格才收起', () => {
+    const harness = mountMonth(RANGE_TIP)
+    harness.cell('2024-01-02').focus()
+    harness.render()
+    expect(harness.tooltip.hasAttribute('hidden')).toBe(false)
+    expect(apiOf(harness.service).activeCell).toMatchObject({ date: '2024-01-02' })
+
+    // 网格内换一格不算离场
+    harness.cell('2024-01-03').focus()
+    harness.render()
+    expect(harness.tooltip.hasAttribute('hidden')).toBe(false)
+
+    harness.grid.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: document.body }))
+    harness.render()
+    expect(harness.tooltip.hasAttribute('hidden')).toBe(true)
+    // 锚点留着，Tab 回来还落在原处
+    expect(apiOf(harness.service).anchorDate).toBe('2024-01-03')
+  })
+
+  it('escape 收起详情，焦点不动；再走一格详情重新打开', () => {
+    const harness = mountMonth(RANGE_TIP)
+    harness.cell('2024-01-02').focus()
+    harness.render()
+    expect(harness.tooltip.hasAttribute('hidden')).toBe(false)
+
+    press(harness as unknown as Harness, 'Escape')
+    harness.render()
+    expect(harness.tooltip.hasAttribute('hidden')).toBe(true)
+    expect(document.activeElement).toBe(harness.cell('2024-01-02'))
+
+    press(harness as unknown as Harness, 'ArrowRight')
+    harness.render()
+    expect(harness.tooltip.hasAttribute('hidden')).toBe(false)
+  })
+
+  it('详情落点与摆放方向都写在条上：位置是量出来的，方向按行序算', () => {
+    const harness = mountMatrix({ rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: MATRIX_VALUE })
+    point(harness.cell('周一/上午'), 'pointerenter')
+    harness.render()
+    // 第 0 行落在上半，条摆下边
+    expect(harness.tooltip.getAttribute('data-placement')).toBe('block-end')
+    expect(harness.tooltip.style.getPropertyValue('--xh-_heatmap-tip-x')).toBe('0px')
+
+    point(harness.cell('周三/夜里'), 'pointerenter')
+    harness.render()
+    expect(harness.tooltip.getAttribute('data-placement')).toBe('block-start')
+  })
+
+  it('详情换了一格才通知一次，同一格上反复进出不重复派', () => {
+    const harness = mountMatrix({ rows: MATRIX_ROWS, columns: MATRIX_COLUMNS, value: MATRIX_VALUE })
+    point(harness.cell('周一/上午'), 'pointerenter')
+    point(harness.cell('周一/上午'), 'pointerenter')
+    harness.render()
+    expect(harness.actives).toHaveLength(1)
+    expect(harness.actives[0]).toMatchObject({ row: '周一', column: '上午', count: 5 })
+
+    point(harness.cell('周一/上午'), 'pointerleave')
+    harness.render()
+    expect(harness.actives).toHaveLength(2)
+    expect(harness.actives[1]).toBeNull()
+  })
+
+  it('指针停着不动同时用键盘走格：条上的数与条的位置说的是同一格', () => {
+    const harness = mountMonth(RANGE_TIP)
+    stubRect(harness.cell('2024-01-01'), 40)
+    stubRect(harness.cell('2024-01-02'), 90)
+
+    point(harness.cell('2024-01-01'), 'pointerenter')
+    harness.render()
+    expect(apiOf(harness.service).activeCell).toMatchObject({ date: '2024-01-01' })
+    expect(harness.tooltip.style.getPropertyValue('--xh-_heatmap-tip-y')).toBe('40px')
+
+    // 指针没动，键盘另聚焦一格：详情仍归指针那一路，落点不能跟着焦点跑
+    harness.cell('2024-01-02').focus()
+    harness.render()
+    expect(apiOf(harness.service).activeCell).toMatchObject({ date: '2024-01-01' })
+    expect(harness.tooltip.style.getPropertyValue('--xh-_heatmap-tip-y')).toBe('40px')
+
+    // 指针离开后详情退回聚焦那一格，落点也一并退回去
+    point(harness.cell('2024-01-01'), 'pointerleave')
+    harness.render()
+    expect(apiOf(harness.service).activeCell).toMatchObject({ date: '2024-01-02' })
+    expect(harness.tooltip.style.getPropertyValue('--xh-_heatmap-tip-y')).toBe('90px')
+  })
+
+  it('活跃格没换而数据换了：详情照样重派一次，条上不会留着旧数字', () => {
+    const harness = mountMonth(RANGE_TIP)
+    point(harness.cell('2024-01-02'), 'pointerenter')
+    harness.render()
+    expect(harness.actives.at(-1)).toMatchObject({ date: '2024-01-02', count: 10 })
+
+    harness.setProps({ value: [{ date: '2024-01-02', count: 3 }] })
+    expect(harness.actives.at(-1)).toMatchObject({ date: '2024-01-02', count: 3 })
+    expect(apiOf(harness.service).activeCell).toMatchObject({ date: '2024-01-02', count: 3 })
+  })
+
+  it('详情条不进读屏：同一份信息已经写在每格的可及名字里', () => {
+    const api = apiOf(mountMonth(RANGE_TIP).service)
+    expect((api.getTooltipProps() as Record<string, unknown>)['aria-hidden']).toBe('true')
+    // 没量过就不给 style 这个键，免得把作者写在条上的内联样式整条删掉
+    expect('style' in (api.getTooltipProps() as Record<string, unknown>)).toBe(false)
   })
 })

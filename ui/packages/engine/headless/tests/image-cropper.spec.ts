@@ -433,6 +433,14 @@ describe('connectImageCropper 属性表', () => {
     expect(area.transformOrigin).toBe('100% 100%')
   })
 
+  it('替代文本落在 image 部件上，不给时是空串', () => {
+    const described = api(makeService({ src: 'a.png', alt: '一张示例图' })).getImageProps() as Dict
+    expect(described.alt).toBe('一张示例图')
+
+    const bare = api(makeService({ src: 'a.png' })).getImageProps() as Dict
+    expect(bare.alt).toBe('')
+  })
+
   it('表单出口把矩形序列化成 x,y,width,height；禁用时不提交', () => {
     const service = makeService({ name: 'avatar', defaultValue: { x: 1, y: 2, width: 3, height: 4 } })
     const input = api(service).getHiddenInputProps() as Dict

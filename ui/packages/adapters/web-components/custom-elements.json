@@ -15493,7 +15493,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-heatmap>` —— Light-DOM 行为宿主：作者写 root、grid、若干 row 与 cell 角色节点，\n元素跑 heatmap 机器并把 connect 产出打上去。\n\n角色节点的身份一律取作者写在节点上的 value 属性：row 与 week-day-label 上是行序 0-6\n（不写即网格之外那条月份行与它的行首占位），cell 上是 ISO 日期，month-label 上是 YYYY-MM，\nlegend-item 上是档位。\n\n数据、档位下界与文案只能走 property（`el.value = [...]`）：HTML 属性装不下数组与函数。",
+          "description": "`<xh-heatmap>` —— Light-DOM 行为宿主：作者写 root、grid、若干 row 与 cell 角色节点，\n元素跑 heatmap 机器并把 connect 产出打上去。\n\n角色节点的身份一律取作者写在节点上的 value 属性，怎么解释由 variant 决定：\n日历形态里 row 与 week-day-label 上是行序 0-6（不写即网格之外那条月份行与它的行首占位）、\ncell 上是 ISO 日期、month-label 上是 YYYY-MM；月历形态里 month-block 上是 YYYY-MM、\nrow 上是月内周序（不写即块内那条星期名坐标轴）；矩阵形态里 row 与 row-label 上是行身份\n（不写即表头行与角落占位）、column-label 与 cell 上是列身份，格子的行身份从所在的行取。\nlegend-item 上是档位。\n\n数据、行列、档位下界与文案只能走 property（`el.value = [...]`）：HTML 属性装不下数组与函数。",
           "name": "XhHeatmapElement",
           "cssParts": [
             {
@@ -15505,20 +15505,36 @@
               "name": "grid"
             },
             {
-              "description": "一行；写了 value 即网格里的星期行，不写即网格之外的月份行",
+              "description": "月历形态里的一个自然月块",
+              "name": "month-block"
+            },
+            {
+              "description": "一行；写了 value 即数据行，不写即坐标轴那一行",
               "name": "row"
             },
             {
-              "description": "行首的星期名，只给眼睛看",
+              "description": "星期名，只给眼睛看",
               "name": "week-day-label"
             },
             {
-              "description": "月份名，宽度按它占的列数算",
+              "description": "月份名",
               "name": "month-label"
             },
             {
-              "description": "一天一格，身份取写在节点上的 value（ISO 日期）",
+              "description": "矩阵的行名；不写 value 即表头行行首的角落占位",
+              "name": "row-label"
+            },
+            {
+              "description": "矩阵的列名",
+              "name": "column-label"
+            },
+            {
+              "description": "一格，身份取写在节点上的 value",
               "name": "cell"
+            },
+            {
+              "description": "悬停或聚焦时显示的详情条，位置由元素量好写成内联样式",
+              "name": "tooltip"
             },
             {
               "description": "色阶对照条",
@@ -15544,7 +15560,23 @@
               "name": "value",
               "privacy": "public",
               "type": {
-                "text": "HeatmapDatum[] | undefined"
+                "text": "HeatmapValue[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "rows",
+              "privacy": "public",
+              "type": {
+                "text": "HeatmapAxisInput[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "columns",
+              "privacy": "public",
+              "type": {
+                "text": "HeatmapAxisInput[] | undefined"
               }
             },
             {
@@ -15562,6 +15594,15 @@
               "type": {
                 "text": "Partial<HeatmapTranslations> | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "HeatmapVariant | undefined"
+              },
+              "attribute": "variant"
             },
             {
               "kind": "field",
@@ -15637,7 +15678,13 @@
             },
             {
               "kind": "field",
-              "name": "notify",
+              "name": "notifyFocus",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyActive",
               "privacy": "private",
               "readonly": true
             },
@@ -15660,6 +15707,31 @@
             },
             {
               "kind": "method",
+              "name": "rowProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HeatmapRowProps"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "variant",
+                  "type": {
+                    "text": "HeatmapVariant"
+                  }
+                }
+              ],
+              "description": "作者写在行上的身份，按形态翻成连接层认得的那一组坐标。"
+            },
+            {
+              "kind": "method",
               "name": "wire",
               "privacy": "protected",
               "return": {
@@ -15671,14 +15743,29 @@
           ],
           "events": [
             {
-              "description": "焦点落到某一天；detail 为 `{ date, count, level }`",
+              "description": "焦点落到某一格；detail 为 `{ date, row, column, count, level, percent }`",
               "name": "cell-focus",
               "type": {
                 "text": "HeatmapCellFocusDetails"
               }
+            },
+            {
+              "description": "详情该显示哪一格（悬停或聚焦）；收起时 detail 为 null",
+              "name": "cell-active",
+              "type": {
+                "text": "HeatmapCellDetails"
+              }
             }
           ],
           "attributes": [
+            {
+              "type": {
+                "text": "HeatmapVariant | undefined"
+              },
+              "description": "形态；缺省 calendar",
+              "name": "variant",
+              "fieldName": "variant"
+            },
             {
               "type": {
                 "text": "string | undefined"
@@ -15752,6 +15839,12 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-heatmap-block-gap"
+            },
+            {
+              "name": "--xh-heatmap-block-inner-gap"
+            },
+            {
               "name": "--xh-heatmap-cell-border"
             },
             {
@@ -15759,6 +15852,9 @@
             },
             {
               "name": "--xh-heatmap-cell-size"
+            },
+            {
+              "name": "--xh-heatmap-column-w"
             },
             {
               "name": "--xh-heatmap-empty"
@@ -15792,6 +15888,36 @@
             },
             {
               "name": "--xh-heatmap-row-gap"
+            },
+            {
+              "name": "--xh-heatmap-row-h"
+            },
+            {
+              "name": "--xh-heatmap-title-fg"
+            },
+            {
+              "name": "--xh-heatmap-tooltip-bg"
+            },
+            {
+              "name": "--xh-heatmap-tooltip-fg"
+            },
+            {
+              "name": "--xh-heatmap-tooltip-font-size"
+            },
+            {
+              "name": "--xh-heatmap-tooltip-max-w"
+            },
+            {
+              "name": "--xh-heatmap-tooltip-px"
+            },
+            {
+              "name": "--xh-heatmap-tooltip-py"
+            },
+            {
+              "name": "--xh-heatmap-tooltip-radius"
+            },
+            {
+              "name": "--xh-heatmap-tooltip-shadow"
             }
           ]
         }
@@ -17075,7 +17201,7 @@
               "name": "viewport"
             },
             {
-              "description": "源图，须是原生 `<img>`；自然尺寸与加载完成都由它报出来",
+              "description": "源图，须是原生 `<img>`；自然尺寸与加载完成都由它报出来，src / alt 由宿主写入（作者别自己写，会被覆盖或清掉）",
               "name": "image"
             },
             {
@@ -17113,6 +17239,15 @@
                 "text": "string | undefined"
               },
               "attribute": "src"
+            },
+            {
+              "kind": "field",
+              "name": "alt",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "alt"
             },
             {
               "kind": "field",
@@ -17344,6 +17479,14 @@
               "description": "图片地址，原样写到 image 部件上",
               "name": "src",
               "fieldName": "src"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "图片替代文本，原样写到 image 部件上；不给即落空串，读屏跳过这张图",
+              "name": "alt",
+              "fieldName": "alt"
             },
             {
               "type": {

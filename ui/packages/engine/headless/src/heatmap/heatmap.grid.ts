@@ -24,6 +24,9 @@ export const HEATMAP_LOCALE = 'zh-CN'
 /** 缺省周首日，1 = 星期一（网格的第一行）。 */
 export const HEATMAP_FIRST_DAY_OF_WEEK = 1
 
+/** 三种形态：连续周列的日历、按自然月分块的月历、行列由作者给的矩阵。 */
+export type HeatmapVariant = 'calendar' | 'month' | 'matrix'
+
 /** 一天的数据。 */
 export interface HeatmapDatum {
   /** ISO 日期串 YYYY-MM-DD。 */
@@ -32,13 +35,43 @@ export interface HeatmapDatum {
   count: number
 }
 
+/** 矩阵形态的一格数据，按行列定位而不按日期。 */
+export interface HeatmapMatrixDatum {
+  /** 行身份，与 rows 里的取值对应。 */
+  row: string
+  /** 列身份，与 columns 里的取值对应。 */
+  column: string
+  /** 该格的值；负数与非数字按 0 计。 */
+  value: number
+}
+
+/** 两种数据形状之一，按有没有 date 分辨。 */
+export type HeatmapValue = HeatmapDatum | HeatmapMatrixDatum
+
+/** 作者给的一条轴项：只写身份，或身份与显示文本分开写。 */
+export type HeatmapAxisInput = string | { value: string, label?: string }
+
+/** 归一化后的一条轴项。 */
+export interface HeatmapAxisMeta {
+  value: string
+  label: string
+  /** 在这条轴上排第几，0 起。 */
+  index: number
+}
+
 export interface HeatmapGridOptions {
+  /** 形态；缺省 calendar。 */
+  variant?: HeatmapVariant
   /** 区间起点（含）。 */
   startDate?: string
   /** 区间终点（含）。 */
   endDate?: string
-  /** 数据；同一天出现多次即累加。 */
-  value?: readonly HeatmapDatum[]
+  /** 数据；同一格出现多次即累加。 */
+  value?: readonly HeatmapValue[]
+  /** 矩阵的行，顺序即渲染顺序。 */
+  rows?: readonly HeatmapAxisInput[]
+  /** 矩阵的列，顺序即渲染顺序。 */
+  columns?: readonly HeatmapAxisInput[]
   /** 档数，缺省 5；给了 thresholds 则档数由它定。 */
   levels?: number
   /** 各档的下界，升序；给了它 levels 不再起作用。 */
@@ -47,6 +80,11 @@ export interface HeatmapGridOptions {
   firstDayOfWeek?: number
   /** 月份名与星期名的书写 locale。 */
   locale?: string
+}
+
+/** 是不是按日期写的那一种数据。 */
+function isDateDatum(item: HeatmapValue): item is HeatmapDatum {
+  return typeof (item as HeatmapDatum).date === 'string'
 }
 
 /** 网格里的一格，一格就是一天。 */
@@ -92,10 +130,11 @@ export interface HeatmapWeekDayMeta {
   long: string
 }
 
-/** 一天的计数与档位。 */
+/** 一格的计数与档位，附带当时的档数（算色阶位置要用）。 */
 export interface HeatmapCellStats {
   count: number
   level: number
+  levels: number
 }
 
 /** 档位标尺。 */
@@ -197,10 +236,15 @@ function dateFormatter(locale: string, tag: string, options: Intl.DateTimeFormat
   return made
 }
 
-/** 把数据摊成「日期 → 计数」；同一天出现多次即累加，日期串不合法的条目丢掉。 */
-export function heatmapCountsOf(value: readonly HeatmapDatum[] | undefined): Map<string, number> {
+/**
+ * 把数据摊成「日期 → 计数」；同一天出现多次即累加，日期串不合法的条目丢掉。
+ * 按行列写的那一种数据不属于日期形态，一并跳过。
+ */
+export function heatmapCountsOf(value: readonly HeatmapValue[] | undefined): Map<string, number> {
   const out = new Map<string, number>()
   for (const item of value ?? []) {
+    if (!isDateDatum(item))
+      continue
     if (parseHeatmapDate(item.date) == null)
       continue
     const count = Number.isFinite(item.count) ? Math.max(0, item.count) : 0
@@ -244,24 +288,20 @@ export function heatmapLevelPercent(level: number, levels: number): number {
   return Math.round((clamped / top) * 100)
 }
 
-/** 档位标尺：给了 thresholds 就以它为准（档数随之定死），否则按区间内的最大值均分。 */
-export function heatmapScaleOf(options: HeatmapGridOptions, counts: Map<string, number>): HeatmapScale {
-  const startTime = parseHeatmapDate(options.startDate)
-  const endTime = parseHeatmapDate(options.endDate)
+/**
+ * 由一串数值定出档位标尺：给了 thresholds 就以它为准（档数随之定死），否则按最大值均分。
+ * 三种形态共用这一处，只是喂进来的数值来路不同。
+ */
+export function heatmapScaleOfValues(
+  options: Pick<HeatmapGridOptions, 'levels' | 'thresholds'>,
+  values: Iterable<number>,
+): HeatmapScale {
   let max = 0
   let total = 0
-  for (const [date, count] of counts) {
-    const time = parseHeatmapDate(date)
-    if (time == null)
-      continue
-    // 区间外的数据既不进网格，也不该把标尺顶高
-    if (startTime != null && time < startTime)
-      continue
-    if (endTime != null && time > endTime)
-      continue
-    total += count
-    if (count > max)
-      max = count
+  for (const value of values) {
+    total += value
+    if (value > max)
+      max = value
   }
   const declared = options.thresholds
   if (declared && declared.length > 0) {
@@ -276,11 +316,31 @@ export function heatmapScaleOf(options: HeatmapGridOptions, counts: Map<string, 
   return { levels, thresholds: buildHeatmapThresholds(max, levels), max, total }
 }
 
+/** 档位标尺：只把落在区间内的那些天喂给标尺，区间外的数据不该把标尺顶高。 */
+export function heatmapScaleOf(options: HeatmapGridOptions, counts: Map<string, number>): HeatmapScale {
+  const startTime = parseHeatmapDate(options.startDate)
+  const endTime = parseHeatmapDate(options.endDate)
+  const inRange: number[] = []
+  for (const [date, count] of counts) {
+    const time = parseHeatmapDate(date)
+    if (time == null)
+      continue
+    if (startTime != null && time < startTime)
+      continue
+    if (endTime != null && time > endTime)
+      continue
+    inRange.push(count)
+  }
+  return heatmapScaleOfValues(options, inRange)
+}
+
 /**
  * 单独查一天的计数与档位，不建整张网格：焦点回调只要这两个数。
  * 区间外的日期一律给 0 档 0 计数，与网格里查不到那一格的取值一致。
  */
 export function heatmapStatsOf(options: HeatmapGridOptions, date: string): HeatmapCellStats {
+  const counts = heatmapCountsOf(options.value)
+  const scale = heatmapScaleOf(options, counts)
   const time = parseHeatmapDate(date)
   const startTime = parseHeatmapDate(options.startDate)
   const endTime = parseHeatmapDate(options.endDate)
@@ -290,11 +350,9 @@ export function heatmapStatsOf(options: HeatmapGridOptions, date: string): Heatm
     || time < startTime
     || time > endTime
   if (outside)
-    return { count: 0, level: 0 }
-  const counts = heatmapCountsOf(options.value)
-  const scale = heatmapScaleOf(options, counts)
+    return { count: 0, level: 0, levels: scale.levels }
   const count = counts.get(date) ?? 0
-  return { count, level: heatmapLevelOf(count, scale.thresholds) }
+  return { count, level: heatmapLevelOf(count, scale.thresholds), levels: scale.levels }
 }
 
 /** 七行的星期名，行序相对周首日。 */
@@ -416,12 +474,16 @@ export function buildHeatmapGrid(options: HeatmapGridOptions = {}): HeatmapGrid 
   }
 }
 
-/** 方向键与 Home/End 的落点意图。 */
+/**
+ * 方向键与 Home/End 的落点意图，按两条轴命名而不按日历名词命名：
+ * inline 是横着走一格，block 是竖着走一格。三种形态的按键映射一样，
+ * 一格是「一周」还是「一天」还是「一列」由各自的落点函数解释。
+ */
 export type HeatmapNavIntent
-  = | 'day.prev'
-    | 'day.next'
-    | 'week.prev'
-    | 'week.next'
+  = | 'inline.prev'
+    | 'inline.next'
+    | 'block.prev'
+    | 'block.next'
     | 'row.start'
     | 'row.end'
     | 'grid.start'
@@ -436,12 +498,20 @@ export interface HeatmapNavKeyEventLike {
   shiftKey?: boolean
 }
 
-/** 四个方向键各走一步的天数：列是周，行是天。 */
-const NAV_STEP: Record<'day.prev' | 'day.next' | 'week.prev' | 'week.next', number> = {
-  'day.prev': -1,
-  'day.next': 1,
-  'week.prev': -HEATMAP_WEEK_LENGTH,
-  'week.next': HEATMAP_WEEK_LENGTH,
+/** 日历形态四个方向键各走一步的天数：列是周（横），行是天（竖）。 */
+const CALENDAR_STEP: Record<'inline.prev' | 'inline.next' | 'block.prev' | 'block.next', number> = {
+  'inline.prev': -HEATMAP_WEEK_LENGTH,
+  'inline.next': HEATMAP_WEEK_LENGTH,
+  'block.prev': -1,
+  'block.next': 1,
+}
+
+/** 月历形态两条轴对调：一行是一周（横着走一天），一列是一个星期几（竖着走一周）。 */
+const MONTH_STEP: Record<'inline.prev' | 'inline.next' | 'block.prev' | 'block.next', number> = {
+  'inline.prev': -1,
+  'inline.next': 1,
+  'block.prev': -HEATMAP_WEEK_LENGTH,
+  'block.next': HEATMAP_WEEK_LENGTH,
 }
 
 /**
@@ -459,14 +529,14 @@ export function heatmapNavIntentFromKey(event: HeatmapNavKeyEventLike, dir: Dire
   if (stepped)
     return null
   if (event.key === 'ArrowUp')
-    return 'day.prev'
+    return 'block.prev'
   if (event.key === 'ArrowDown')
-    return 'day.next'
-  // 列沿 inline 轴排开，视觉次序随书写方向翻转，左右键的语义跟着翻
+    return 'block.next'
+  // 横轴沿 inline 排开，视觉次序随书写方向翻转，左右键的语义跟着翻
   if (event.key === 'ArrowLeft')
-    return dir === 'rtl' ? 'week.next' : 'week.prev'
+    return dir === 'rtl' ? 'inline.next' : 'inline.prev'
   if (event.key === 'ArrowRight')
-    return dir === 'rtl' ? 'week.prev' : 'week.next'
+    return dir === 'rtl' ? 'inline.prev' : 'inline.next'
   return null
 }
 
@@ -484,6 +554,487 @@ export function heatmapNavTarget(grid: HeatmapGrid, from: string, intent: Heatma
     const target = intent === 'row.start' ? cells[0] : cells[cells.length - 1]
     return target?.date ?? null
   }
-  const next = addHeatmapDays(from, NAV_STEP[intent])
+  const next = addHeatmapDays(from, CALENDAR_STEP[intent])
   return next != null && grid.cells.has(next) ? next : null
+}
+
+// ── 月历形态：按自然月分块，每块是一张真正的月历 ──
+
+/** 月历块里的一行，一行是这个月里的一周。 */
+export interface HeatmapMonthWeekMeta {
+  /** 所属月份，YYYY-MM。 */
+  month: string
+  /** 月内第几周，0 起。 */
+  week: number
+  /** 全网格连续行号，0 起；读屏报的行号按它给。 */
+  rowIndex: number
+  /** 行首空出的列数：这一周里排在首个格子之前的那几个星期几。 */
+  offset: number
+  /** 该行的格子，按星期几升序。 */
+  cells: HeatmapCellMeta[]
+}
+
+/** 一个自然月占的那一块。 */
+export interface HeatmapMonthBlockMeta {
+  /** 月份身份，YYYY-MM。 */
+  value: string
+  /** 可见的短标题。 */
+  label: string
+  /** 长标题，给读屏念。 */
+  long: string
+  weeks: HeatmapMonthWeekMeta[]
+}
+
+/** 一整张月历网格。 */
+export interface HeatmapMonthGrid {
+  startDate: string
+  endDate: string
+  firstDayOfWeek: number
+  levels: number
+  thresholds: number[]
+  max: number
+  total: number
+  /** 各个月块，按时间升序。 */
+  blocks: HeatmapMonthBlockMeta[]
+  /** 全部周行摊平，顺序即 rowIndex。 */
+  weeks: HeatmapMonthWeekMeta[]
+  weekDays: HeatmapWeekDayMeta[]
+  /** 日期 → 格子；weekIndex 是月内周序，weekDay 是列序。 */
+  cells: Map<string, HeatmapCellMeta>
+  /** 日期 → 它所在的那一周行，Home/End 要用。 */
+  rowOf: Map<string, HeatmapMonthWeekMeta>
+  firstDate: string | null
+  lastDate: string | null
+}
+
+/** 某个时间戳所在月份的身份串 YYYY-MM。 */
+function monthValueOf(time: number): string {
+  const at = new Date(time)
+  return `${String(at.getUTCFullYear()).padStart(4, '0')}-${String(at.getUTCMonth() + 1).padStart(2, '0')}`
+}
+
+/** 某个时间戳所在月份的下个月一号。 */
+function nextMonthStart(time: number): number {
+  const at = new Date(time)
+  return Date.UTC(at.getUTCFullYear(), at.getUTCMonth() + 1, 1)
+}
+
+/**
+ * 生成月历网格。
+ *
+ * 与日历形态用同一段区间、同一套分档，只是摊法不同：一个自然月一块，块内一行是一周、
+ * 一列是一个星期几，1 号落在它真实的星期几上（行首空出的列数写在行的 offset 里）。
+ * 区间只覆盖半个月时也只铺那半个月，不补区间外的日子。
+ */
+export function buildHeatmapMonthGrid(options: HeatmapGridOptions = {}): HeatmapMonthGrid {
+  const locale = options.locale ?? HEATMAP_LOCALE
+  const firstDayOfWeek = normalizeFirstDay(options.firstDayOfWeek)
+  const counts = heatmapCountsOf(options.value)
+  const scale = heatmapScaleOf(options, counts)
+  const weekDays = buildHeatmapWeekDays(firstDayOfWeek, locale)
+  const startTime = parseHeatmapDate(options.startDate)
+  const endTime = parseHeatmapDate(options.endDate)
+
+  const base = {
+    firstDayOfWeek,
+    levels: scale.levels,
+    thresholds: scale.thresholds,
+    max: scale.max,
+    total: scale.total,
+    weekDays,
+  }
+
+  if (startTime == null || endTime == null || endTime < startTime) {
+    return {
+      ...base,
+      startDate: '',
+      endDate: '',
+      blocks: [],
+      weeks: [],
+      cells: new Map(),
+      rowOf: new Map(),
+      firstDate: null,
+      lastDate: null,
+    }
+  }
+
+  const shortMonth = dateFormatter(locale, 'month-short', { month: 'short' })
+  const longMonth = dateFormatter(locale, 'month-long', { year: 'numeric', month: 'long' })
+
+  const cells = new Map<string, HeatmapCellMeta>()
+  const rowOf = new Map<string, HeatmapMonthWeekMeta>()
+  const blocks: HeatmapMonthBlockMeta[] = []
+  const weeks: HeatmapMonthWeekMeta[] = []
+
+  let cursor = startTime
+  while (cursor <= endTime) {
+    const value = monthValueOf(cursor)
+    const blockEnd = Math.min(nextMonthStart(cursor) - DAY_MS, endTime)
+    // 块内的第 0 列：本块首个日子所在那一周的周首日，1 号因此落回它真实的星期几
+    const blockGridStart = cursor - weekDayOf(cursor, firstDayOfWeek) * DAY_MS
+    const block: HeatmapMonthBlockMeta = {
+      value,
+      label: shortMonth ? shortMonth.format(new Date(cursor)) : value,
+      long: longMonth ? longMonth.format(new Date(cursor)) : value,
+      weeks: [],
+    }
+    for (let time = cursor; time <= blockEnd; time += DAY_MS) {
+      const week = Math.floor(Math.round((time - blockGridStart) / DAY_MS) / HEATMAP_WEEK_LENGTH)
+      const weekDay = weekDayOf(time, firstDayOfWeek)
+      let row = block.weeks[block.weeks.length - 1]
+      if (!row || row.week !== week) {
+        row = { month: value, week, rowIndex: weeks.length, offset: weekDay, cells: [] }
+        block.weeks.push(row)
+        weeks.push(row)
+      }
+      const date = formatHeatmapDate(time)
+      const count = counts.get(date) ?? 0
+      const meta: HeatmapCellMeta = {
+        date,
+        count,
+        level: heatmapLevelOf(count, scale.thresholds),
+        weekIndex: week,
+        weekDay,
+      }
+      row.cells.push(meta)
+      cells.set(date, meta)
+      rowOf.set(date, row)
+    }
+    blocks.push(block)
+    cursor = nextMonthStart(cursor)
+  }
+
+  return {
+    ...base,
+    startDate: formatHeatmapDate(startTime),
+    endDate: formatHeatmapDate(endTime),
+    blocks,
+    weeks,
+    cells,
+    rowOf,
+    firstDate: formatHeatmapDate(startTime),
+    lastDate: formatHeatmapDate(endTime),
+  }
+}
+
+/**
+ * 月历形态的落点：横着走一天、竖着走一周，两头都在整段区间上算，
+ * 因此走到月末会自然落进下一块，不会困在一块里。
+ */
+export function heatmapMonthNavTarget(grid: HeatmapMonthGrid, from: string, intent: HeatmapNavIntent): string | null {
+  if (intent === 'grid.start')
+    return grid.firstDate
+  if (intent === 'grid.end')
+    return grid.lastDate
+  if (!grid.cells.has(from))
+    return null
+  if (intent === 'row.start' || intent === 'row.end') {
+    const cells = grid.rowOf.get(from)?.cells ?? []
+    const target = intent === 'row.start' ? cells[0] : cells[cells.length - 1]
+    return target?.date ?? null
+  }
+  const next = addHeatmapDays(from, MONTH_STEP[intent])
+  return next != null && grid.cells.has(next) ? next : null
+}
+
+// ── 矩阵形态：行列都由作者给，数据按 (row, column) 定位 ──
+
+/** 矩阵里的一格。 */
+export interface HeatmapMatrixCellMeta {
+  row: string
+  column: string
+  count: number
+  level: number
+  rowIndex: number
+  columnIndex: number
+}
+
+/** 一整张矩阵。 */
+export interface HeatmapMatrixGrid {
+  rows: HeatmapAxisMeta[]
+  columns: HeatmapAxisMeta[]
+  levels: number
+  thresholds: number[]
+  max: number
+  total: number
+  /** heatmapMatrixKey(row, column) → 格子。 */
+  cells: Map<string, HeatmapMatrixCellMeta>
+  /** 文档序的头一格与末一格；一格都没有时为 null。 */
+  firstCell: HeatmapMatrixCellMeta | null
+  lastCell: HeatmapMatrixCellMeta | null
+}
+
+/** 单元分隔符：拼行列身份用，作者写得出的标识里不会出现它。 */
+const KEY_SEP = '\u001F'
+
+/** 行列两个身份拼成查表用的键。 */
+export function heatmapMatrixKey(row: string, column: string): string {
+  return `${row}${KEY_SEP}${column}`
+}
+
+/** 归一化一条轴：只写身份的补上同名文本，身份为空串或重复的丢掉。 */
+export function buildHeatmapAxis(input: readonly HeatmapAxisInput[] | undefined): HeatmapAxisMeta[] {
+  const out: HeatmapAxisMeta[] = []
+  const seen = new Set<string>()
+  for (const item of input ?? []) {
+    const value = typeof item === 'string' ? item : item.value
+    if (typeof value !== 'string' || value === '' || seen.has(value))
+      continue
+    seen.add(value)
+    const label = typeof item === 'string' ? item : (item.label ?? item.value)
+    out.push({ value, label, index: out.length })
+  }
+  return out
+}
+
+/** 把矩阵数据摊成「行列键 → 值」；同一格出现多次即累加。 */
+export function heatmapMatrixValuesOf(value: readonly HeatmapValue[] | undefined): Map<string, number> {
+  const out = new Map<string, number>()
+  for (const item of value ?? []) {
+    if (isDateDatum(item))
+      continue
+    if (typeof item.row !== 'string' || typeof item.column !== 'string')
+      continue
+    const amount = Number.isFinite(item.value) ? Math.max(0, item.value) : 0
+    const key = heatmapMatrixKey(item.row, item.column)
+    out.set(key, (out.get(key) ?? 0) + amount)
+  }
+  return out
+}
+
+/**
+ * 生成矩阵网格。行列的身份与顺序全由作者给，组件一个都不猜；
+ * 轴上没有的行列，数据里写了也不进网格、也不把标尺顶高。
+ */
+export function buildHeatmapMatrixGrid(options: HeatmapGridOptions = {}): HeatmapMatrixGrid {
+  const rows = buildHeatmapAxis(options.rows)
+  const columns = buildHeatmapAxis(options.columns)
+  const values = heatmapMatrixValuesOf(options.value)
+
+  const inGrid: number[] = []
+  for (const row of rows) {
+    for (const column of columns)
+      inGrid.push(values.get(heatmapMatrixKey(row.value, column.value)) ?? 0)
+  }
+  const scale = heatmapScaleOfValues(options, inGrid)
+
+  const cells = new Map<string, HeatmapMatrixCellMeta>()
+  let firstCell: HeatmapMatrixCellMeta | null = null
+  let lastCell: HeatmapMatrixCellMeta | null = null
+  for (const row of rows) {
+    for (const column of columns) {
+      const key = heatmapMatrixKey(row.value, column.value)
+      const count = values.get(key) ?? 0
+      const meta: HeatmapMatrixCellMeta = {
+        row: row.value,
+        column: column.value,
+        count,
+        level: heatmapLevelOf(count, scale.thresholds),
+        rowIndex: row.index,
+        columnIndex: column.index,
+      }
+      cells.set(key, meta)
+      firstCell ??= meta
+      lastCell = meta
+    }
+  }
+
+  return {
+    rows,
+    columns,
+    levels: scale.levels,
+    thresholds: scale.thresholds,
+    max: scale.max,
+    total: scale.total,
+    cells,
+    firstCell,
+    lastCell,
+  }
+}
+
+/** 矩阵里一格的身份。 */
+export interface HeatmapMatrixRef {
+  row: string
+  column: string
+}
+
+/** 矩阵形态的落点：横着走一列、竖着走一行，走到边界给 null（焦点原地不动）。 */
+export function heatmapMatrixNavTarget(
+  grid: HeatmapMatrixGrid,
+  from: HeatmapMatrixRef,
+  intent: HeatmapNavIntent,
+): HeatmapMatrixRef | null {
+  const pick = (cell: HeatmapMatrixCellMeta | null): HeatmapMatrixRef | null =>
+    cell ? { row: cell.row, column: cell.column } : null
+  if (intent === 'grid.start')
+    return pick(grid.firstCell)
+  if (intent === 'grid.end')
+    return pick(grid.lastCell)
+  const at = grid.cells.get(heatmapMatrixKey(from.row, from.column))
+  if (!at)
+    return null
+  if (intent === 'row.start' || intent === 'row.end') {
+    const column = intent === 'row.start' ? grid.columns[0] : grid.columns[grid.columns.length - 1]
+    return column ? { row: at.row, column: column.value } : null
+  }
+  const step = intent === 'inline.prev' || intent === 'block.prev' ? -1 : 1
+  if (intent === 'inline.prev' || intent === 'inline.next') {
+    const column = grid.columns[at.columnIndex + step]
+    return column ? { row: at.row, column: column.value } : null
+  }
+  const row = grid.rows[at.rowIndex + step]
+  return row ? { row: row.value, column: at.column } : null
+}
+
+// ── 一格的身份与它的全部数据（三种形态共用一处出口）──
+
+/** 定位一格：日期形态给 date，矩阵形态给 row 与 column。 */
+export interface HeatmapCellRef {
+  date?: string
+  row?: string
+  column?: string
+}
+
+/** 一格的全部数据：身份、原始值、档位，以及档位在色阶上的位置。 */
+export interface HeatmapCellDetails {
+  /** ISO 日期；矩阵形态下是空串。 */
+  date: string
+  /** 行身份；日期形态下是空串。 */
+  row: string
+  /** 列身份；日期形态下是空串。 */
+  column: string
+  /** 原始值：日期形态是当天计数，矩阵形态是该格的值。 */
+  count: number
+  /** 0 到 levels-1；0 表示这一格没有数据。 */
+  level: number
+  /** 档位在色阶上的位置，0-100。 */
+  percent: number
+}
+
+/** 一格的身份摊成一个串，用来判「还是不是同一格」。 */
+export function heatmapCellKey(ref: HeatmapCellRef): string {
+  return ref.date != null && ref.date !== ''
+    ? ref.date
+    : heatmapMatrixKey(ref.row ?? '', ref.column ?? '')
+}
+
+/** 两个身份是不是同一格。 */
+export function sameHeatmapCell(a: HeatmapCellRef | null | undefined, b: HeatmapCellRef | null | undefined): boolean {
+  if (a == null || b == null)
+    return a == null && b == null
+  return a.date === b.date && a.row === b.row && a.column === b.column
+}
+
+/** 单独查矩阵里一格的值与档位，不建整张网格。 */
+export function heatmapMatrixStatsOf(options: HeatmapGridOptions, row: string, column: string): HeatmapCellStats {
+  const rows = buildHeatmapAxis(options.rows)
+  const columns = buildHeatmapAxis(options.columns)
+  const values = heatmapMatrixValuesOf(options.value)
+  const inGrid: number[] = []
+  for (const rowItem of rows) {
+    for (const columnItem of columns)
+      inGrid.push(values.get(heatmapMatrixKey(rowItem.value, columnItem.value)) ?? 0)
+  }
+  const scale = heatmapScaleOfValues(options, inGrid)
+  const known = rows.some(item => item.value === row) && columns.some(item => item.value === column)
+  if (!known)
+    return { count: 0, level: 0, levels: scale.levels }
+  const count = values.get(heatmapMatrixKey(row, column)) ?? 0
+  return { count, level: heatmapLevelOf(count, scale.thresholds), levels: scale.levels }
+}
+
+/**
+ * 一格的全部数据。三种形态收在这一处：机器与连接层都调它，
+ * 悬停与聚焦看到的数字因此不会各算各的。
+ */
+export function heatmapDetailsOf(options: HeatmapGridOptions, ref: HeatmapCellRef): HeatmapCellDetails {
+  if ((options.variant ?? 'calendar') === 'matrix') {
+    const row = ref.row ?? ''
+    const column = ref.column ?? ''
+    const stats = heatmapMatrixStatsOf(options, row, column)
+    return {
+      date: '',
+      row,
+      column,
+      count: stats.count,
+      level: stats.level,
+      percent: heatmapLevelPercent(stats.level, stats.levels),
+    }
+  }
+  const date = ref.date ?? ''
+  const stats = heatmapStatsOf(options, date)
+  return {
+    date,
+    row: '',
+    column: '',
+    count: stats.count,
+    level: stats.level,
+    percent: heatmapLevelPercent(stats.level, stats.levels),
+  }
+}
+
+// ── 详情条的几何：不引浮层引擎，位置由适配器在事件那一刻量出来回写 ──
+
+/** 一个矩形，只取定位要用的四个数。 */
+export interface HeatmapBox {
+  left: number
+  top: number
+  width: number
+  height: number
+}
+
+/** 详情条落点，相对承载它的那个盒子的内边距盒，按逻辑方向给。 */
+export interface HeatmapTipRect {
+  inlineStart: number
+  blockStart: number
+  inlineSize: number
+  blockSize: number
+}
+
+/**
+ * 由承载盒与目标格的盒子算出详情条该落在哪。
+ *
+ * 起始缘按逻辑方向算：rtl 下从右缘往左量，样式侧因此只写一条 inset-inline-start 就两向通用。
+ * 承载盒会横向滚动，绝对定位的偏移相对未滚动的内容算，两向都要把滚动量加回去
+ * （rtl 下 scrollLeft 往内容末尾方向走是负值，符号因此相反）。
+ *
+ * @param host 承载盒的内边距盒
+ * @param cell 目标格的盒子
+ * @param scrollInline 承载盒的 scrollLeft
+ * @param scrollBlock 承载盒的 scrollTop
+ * @param rtl 文字方向是否从右往左
+ */
+export function resolveHeatmapTip(
+  host: HeatmapBox,
+  cell: HeatmapBox,
+  scrollInline: number,
+  scrollBlock: number,
+  rtl: boolean,
+): HeatmapTipRect {
+  return {
+    inlineStart: rtl
+      ? (host.left + host.width) - (cell.left + cell.width) - scrollInline
+      : (cell.left - host.left) + scrollInline,
+    blockStart: (cell.top - host.top) + scrollBlock,
+    inlineSize: cell.width,
+    blockSize: cell.height,
+  }
+}
+
+/** 两次量测是否一样：不给它，每次量测都是新对象，版本号会一直空转自增。 */
+export function sameHeatmapTip(a: HeatmapTipRect | null, b: HeatmapTipRect | null | undefined): boolean {
+  if (a == null || b == null)
+    return a === b
+  return a.inlineStart === b.inlineStart && a.blockStart === b.blockStart
+    && a.inlineSize === b.inlineSize && a.blockSize === b.blockSize
+}
+
+/**
+ * 详情条摆在格子的上边还是下边：格子落在网格的下半时摆上边，否则摆下边。
+ * 按行序算而不按像素算，两个适配器与无布局环境给出的结论一致。
+ */
+export function heatmapTipPlacement(rowIndex: number, rowCount: number): 'block-start' | 'block-end' {
+  if (rowCount <= 0)
+    return 'block-end'
+  return rowIndex >= Math.ceil(rowCount / 2) ? 'block-start' : 'block-end'
 }

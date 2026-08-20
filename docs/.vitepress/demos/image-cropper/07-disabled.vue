@@ -18,12 +18,13 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 <template>
   <XhImageCropperRoot
     :src="photo"
+    alt="只读示例"
     read-only
     :default-value="crop"
     style="inline-size: 240px"
   >
     <XhImageCropperViewport>
-      <XhImageCropperImage alt="只读示例" />
+      <XhImageCropperImage />
       <XhImageCropperCropArea>
         <XhImageCropperCropHandle
           v-for="position in handles"
@@ -35,12 +36,13 @@ const handles = ["nw", "ne", "se", "sw"] as const;
   </XhImageCropperRoot>
   <XhImageCropperRoot
     :src="photo"
+    alt="禁用示例"
     disabled
     :default-value="crop"
     style="inline-size: 240px"
   >
     <XhImageCropperViewport>
-      <XhImageCropperImage alt="禁用示例" />
+      <XhImageCropperImage />
       <XhImageCropperCropArea>
         <XhImageCropperCropHandle
           v-for="position in handles"

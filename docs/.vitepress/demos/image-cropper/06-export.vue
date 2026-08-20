@@ -37,11 +37,12 @@ function exportCrop(rect: {
     id="cropper-export"
     v-slot="{ getCropRect }"
     :src="photo"
+    alt="示例图片"
     :min-width="40"
     style="inline-size: 360px"
   >
     <XhImageCropperViewport>
-      <XhImageCropperImage alt="示例图片" />
+      <XhImageCropperImage />
       <XhImageCropperCropArea>
         <XhImageCropperCropHandle
           v-for="position in handles"

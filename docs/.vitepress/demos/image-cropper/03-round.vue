@@ -17,13 +17,14 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 <template>
   <XhImageCropperRoot
     :src="photo"
+    alt="示例图片"
     shape="round"
     :aspect-ratio="1"
     :min-width="48"
     style="inline-size: 360px"
   >
     <XhImageCropperViewport>
-      <XhImageCropperImage alt="示例图片" />
+      <XhImageCropperImage />
       <XhImageCropperCropArea>
         <XhImageCropperCropHandle
           v-for="position in handles"

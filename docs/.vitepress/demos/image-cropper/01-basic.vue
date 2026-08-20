@@ -20,12 +20,13 @@ const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"] as const;
   <!-- 不传 value 即非受控；图片加载完成时自动取整张图当初值 -->
   <XhImageCropperRoot
     :src="photo"
+    alt="示例图片"
     :min-width="40"
     :min-height="40"
     style="inline-size: 360px"
   >
     <XhImageCropperViewport>
-      <XhImageCropperImage alt="示例图片" />
+      <XhImageCropperImage />
       <XhImageCropperCropArea>
         <XhImageCropperGrid />
         <XhImageCropperCropHandle
