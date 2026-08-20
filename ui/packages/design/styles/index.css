@@ -1,11 +1,4 @@
 /* 层序声明必须最先：级联层的先后由首次出现定死，layers.css 打头才立得住序。 */
-@import './css/download-trigger.css';
-@import './css/fieldset.css';
-@import './css/floating-panel.css';
-@import './css/heatmap.css';
-@import './css/hotkeys.css';
-@import './css/image-cropper.css';
-@import './css/json-viewer.css';
 @import './css/layers.css';
 
 /* 令牌先于一切：皮肤里不写兜底值，令牌缺席就是缺陷，不是降级。
@@ -19,15 +12,22 @@
 @import './css/button-group.css';
 @import './css/countdown.css';
 @import './css/descriptions.css';
+@import './css/download-trigger.css';
 @import './css/dynamic-input.css';
 @import './css/ellipsis.css';
+@import './css/fieldset.css';
 @import './css/flex.css';
 @import './css/float-button.css';
+@import './css/floating-panel.css';
 @import './css/gradient-text.css';
 @import './css/grid.css';
+@import './css/heatmap.css';
 @import './css/highlight.css';
+@import './css/hotkeys.css';
 @import './css/icon-wrapper.css';
+@import './css/image-cropper.css';
 @import './css/infinite-scroll.css';
+@import './css/json-viewer.css';
 @import './css/layout.css';
 @import './css/list.css';
 @import './css/log.css';
