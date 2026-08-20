@@ -1,5 +1,5 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
-import { buildHeatmapGrid, heatmapAnatomy, heatmapKeyboard } from '@xihan-ui/headless'
+import { buildHeatmapGrid, buildHeatmapMonthGrid, heatmapAnatomy, heatmapKeyboard } from '@xihan-ui/headless'
 import { singleTabStop } from './shared/native-activation'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/grid/'
@@ -70,6 +70,145 @@ function buildFixture(): FixtureNode {
         })),
       },
     ],
+  }
+}
+
+/**
+ * 月历形态挑一段跨月的短区间：2024-01-29 是星期一，2 月 1 日是星期四，
+ * 两个月块各只有一行，既演得出跨块走格，节点又少得能逐个断言。
+ */
+const MONTH_RANGE = { variant: 'month', startDate: '2024-01-29', endDate: '2024-02-04', firstDayOfWeek: 1, locale: 'zh-CN' } as const
+
+const MONTH_GRID = buildHeatmapMonthGrid(MONTH_RANGE)
+/** 月历形态文档序的全部日期；下标即 cell 的 part 下标。 */
+const MONTH_DAYS = MONTH_GRID.weeks.flatMap(row => row.cells.map(cell => cell.date))
+
+function monthAt(date: string): number {
+  const index = MONTH_DAYS.indexOf(date)
+  if (index < 0)
+    throw new Error(`${date} 不在 ${MONTH_RANGE.startDate} 到 ${MONTH_RANGE.endDate} 的月历里`)
+  return index
+}
+
+/** 矩阵形态：行列都由作者给，两行三列足够演出行列走格与两条表头。 */
+const MATRIX_RANGE = {
+  variant: 'matrix',
+  rows: ['甲', '乙'],
+  columns: ['上午', '下午', '夜里'],
+  value: [
+    { row: '甲', column: '上午', value: 2 },
+    { row: '乙', column: '夜里', value: 8 },
+  ],
+} as const
+
+/** 矩阵里一格的 part 下标：整张网格铺满，行优先。 */
+function matrixAt(row: string, column: string): number {
+  const r = MATRIX_RANGE.rows.indexOf(row as never)
+  const c = MATRIX_RANGE.columns.indexOf(column as never)
+  if (r < 0 || c < 0)
+    throw new Error(`${row} × ${column} 不在矩阵的行列里`)
+  return r * MATRIX_RANGE.columns.length + c
+}
+
+/** 色阶对照条：三种形态共用同一段结构。 */
+function legendNode(levels: number): FixtureNode {
+  return {
+    part: 'legend',
+    children: Array.from({ length: levels }, (_, level) => ({
+      part: 'legend-item',
+      tag: 'span',
+      attrs: { value: String(level) },
+    })),
+  }
+}
+
+/**
+ * 月历形态的树：网格里一个自然月一块，块内先一条星期名坐标轴，再逐周一行。
+ * 块的月份身份写在 month-block 的 value 上，块里的行只写月内周序。
+ */
+function buildMonthFixture(): FixtureNode {
+  return {
+    part: 'root',
+    children: [
+      {
+        part: 'grid',
+        children: MONTH_GRID.blocks.map(block => ({
+          part: 'month-block',
+          attrs: { value: block.value },
+          children: [
+            { part: 'month-label', tag: 'span', attrs: { value: block.value }, text: block.label },
+            {
+              part: 'row',
+              children: MONTH_GRID.weekDays.map(day => ({
+                part: 'week-day-label',
+                tag: 'span',
+                attrs: { value: String(day.weekDay) },
+                text: day.label,
+              })),
+            },
+            ...block.weeks.map(row => ({
+              part: 'row',
+              attrs: { value: String(row.week) },
+              children: row.cells.map(cell => ({ part: 'cell', attrs: { value: cell.date } })),
+            })),
+          ],
+        })),
+      },
+      { part: 'tooltip' },
+      legendNode(MONTH_GRID.levels),
+    ],
+  }
+}
+
+/** 矩阵形态的树：头一行是角落占位加列名，其余每行行首一个行名、其后逐列一格。 */
+function buildMatrixFixture(): FixtureNode {
+  return {
+    part: 'root',
+    children: [
+      {
+        part: 'grid',
+        children: [
+          {
+            part: 'row',
+            children: [
+              { part: 'row-label', tag: 'span' },
+              ...MATRIX_RANGE.columns.map(column => ({
+                part: 'column-label',
+                tag: 'span',
+                attrs: { value: column },
+                text: column,
+              })),
+            ],
+          },
+          ...MATRIX_RANGE.rows.map(row => ({
+            part: 'row',
+            attrs: { value: row },
+            children: [
+              { part: 'row-label', tag: 'span', attrs: { value: row }, text: row },
+              ...MATRIX_RANGE.columns.map(column => ({ part: 'cell', attrs: { value: column } })),
+            ],
+          })),
+        ],
+      },
+      { part: 'tooltip' },
+      legendNode(5),
+    ],
+  }
+}
+
+/** 日历形态的树末尾再挂一条详情条：不写 tooltip 部件时整棵树与从前逐字一致。 */
+function withTooltip(base: FixtureNode): FixtureNode {
+  return { ...base, children: [...(base.children ?? []), { part: 'tooltip' }] }
+}
+
+/** 指针进出没有对应的步骤类型，只能直接派事件；处理器只用 currentTarget，普通事件够用。 */
+function pointer(index: number, type: 'pointerenter' | 'pointerleave') {
+  return (ctx: { doc: Document }): void => {
+    const cells = ctx.doc.querySelectorAll<HTMLElement>('[data-scope="heatmap"][data-part="cell"]')
+    const cell = cells[index]
+    if (!cell)
+      throw new Error(`第 ${index} 格不在文档里`)
+    cell.dispatchEvent(new Event(type))
   }
 }
 
@@ -313,6 +452,302 @@ export const heatmapSuite: ConformanceSuite = {
           'grid': { 'data-tone': null, 'data-size': null },
           'cell[0]': { 'data-tone': null, 'data-size': null },
         },
+      },
+    },
+    {
+      name: '月历形态：一个自然月一块，块是 rowgroup，块内的星期名坐标轴整条藏起来',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: buildMonthFixture,
+      props: MONTH_RANGE,
+      initial: {
+        counts: {
+          'root': 1,
+          'grid': 1,
+          'month-block': 2,
+          // 每块一条星期名轴加它自己的周行
+          'row': 4,
+          'week-day-label': 14,
+          'month-label': 2,
+          'cell': 7,
+          'tooltip': 1,
+          'legend': 1,
+          'legend-item': 5,
+        },
+        parts: {
+          'root': { 'data-variant': 'month' },
+          // 行数是所有月块的周行之和，列数恒是七
+          'grid': { 'role': 'grid', 'aria-readonly': 'true', 'aria-rowcount': '2', 'aria-colcount': '7' },
+          'month-block[0]': { 'role': 'rowgroup', 'data-value': '2024-01' },
+          // 块里的星期名轴：整条藏起来，读屏看到的这一块就只剩合法的几行
+          'row[0]': { 'aria-hidden': 'true', 'role': null },
+          'row[1]': { 'role': 'row', 'aria-rowindex': '1' },
+          'row[3]': { 'role': 'row', 'aria-rowindex': '2' },
+          'month-label[0]': { 'aria-hidden': 'true', 'data-value': '2024-01' },
+        },
+      },
+    },
+    {
+      name: '月历形态：格子的列号是星期几，1 号那一行按它真实的星期几往后错列',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: buildMonthFixture,
+      props: { ...MONTH_RANGE, value: [{ date: '2024-02-01', count: 4 }] },
+      initial: {
+        parts: {
+          // 2024-01-29 是星期一
+          [`cell[${monthAt('2024-01-29')}]`]: { 'aria-colindex': '1', 'aria-label': '0 on 2024-01-29', 'tabindex': '0' },
+          // 2024-02-01 是星期四
+          [`cell[${monthAt('2024-02-01')}]`]: { 'aria-colindex': '4', 'aria-label': '4 on 2024-02-01' },
+        },
+      },
+    },
+    {
+      name: '月历形态：横着走一天、竖着走一周，走到月末落进下一块',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['heatmap.kbd.prev-week', 'heatmap.kbd.next-week', 'heatmap.kbd.prev-day', 'heatmap.kbd.next-day'],
+      fixture: buildMonthFixture,
+      props: MONTH_RANGE,
+      steps: [
+        { kind: 'focus', part: `cell[${monthAt('2024-01-31')}]` },
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          expect: { activeElement: { part: `cell[${monthAt('2024-02-01')}]`, exact: true } },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowLeft',
+          expect: { activeElement: { part: `cell[${monthAt('2024-01-31')}]`, exact: true } },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          // 竖着一步是一周：1 月 31 日往下就是 2 月 7 日，已出区间，原地不动
+          expect: { activeElement: { part: `cell[${monthAt('2024-01-31')}]`, exact: true } },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowUp',
+          expect: { activeElement: { part: `cell[${monthAt('2024-01-31')}]`, exact: true } },
+        },
+      ],
+    },
+    {
+      name: '月历形态：Home/End 走本周行在本块里的首末格，Ctrl 加持的两键跳到整段区间两端',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['heatmap.kbd.row-start', 'heatmap.kbd.row-end', 'heatmap.kbd.grid-start', 'heatmap.kbd.grid-end'],
+      fixture: buildMonthFixture,
+      props: MONTH_RANGE,
+      steps: [
+        { kind: 'focus', part: `cell[${monthAt('2024-02-02')}]` },
+        {
+          kind: 'key',
+          key: 'Home',
+          expect: { activeElement: { part: `cell[${monthAt('2024-02-01')}]`, exact: true } },
+        },
+        {
+          kind: 'key',
+          key: 'End',
+          expect: { activeElement: { part: `cell[${monthAt('2024-02-04')}]`, exact: true } },
+        },
+        {
+          kind: 'key',
+          key: 'Home',
+          modifiers: ['Control'],
+          expect: { activeElement: { part: `cell[${monthAt('2024-01-29')}]`, exact: true } },
+        },
+        {
+          kind: 'key',
+          key: 'End',
+          modifiers: ['Control'],
+          expect: { activeElement: { part: `cell[${monthAt('2024-02-04')}]`, exact: true } },
+        },
+      ],
+    },
+    {
+      name: '矩阵形态：行名是 rowheader、列名是 columnheader，角落占位不进读屏',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: buildMatrixFixture,
+      props: MATRIX_RANGE,
+      initial: {
+        counts: {
+          'root': 1,
+          'grid': 1,
+          // 表头行加两条数据行
+          'row': 3,
+          // 角落占位加两个行名
+          'row-label': 3,
+          'column-label': 3,
+          'cell': 6,
+          'tooltip': 1,
+          'legend': 1,
+          'legend-item': 5,
+        },
+        parts: {
+          'root': { 'data-variant': 'matrix' },
+          // 两条表头也算进行列总数，读屏报的行列号才对得上
+          'grid': { 'role': 'grid', 'aria-readonly': 'true', 'aria-rowcount': '3', 'aria-colcount': '4' },
+          'row[0]': { 'role': 'row', 'aria-rowindex': '1' },
+          'row[1]': { 'role': 'row', 'aria-rowindex': '2', 'data-value': '甲' },
+          'row-label[0]': { 'aria-hidden': 'true', 'role': null },
+          'row-label[1]': { 'role': 'rowheader', 'aria-colindex': '1', 'data-value': '甲' },
+          'column-label[2]': { 'role': 'columnheader', 'aria-colindex': '4', 'data-value': '夜里' },
+        },
+      },
+    },
+    {
+      name: '矩阵形态：一格的身份是行加列两个属性，可及名字走矩阵那条文案',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/' },
+      fixture: buildMatrixFixture,
+      props: MATRIX_RANGE,
+      initial: {
+        parts: {
+          [`cell[${matrixAt('甲', '上午')}]`]: {
+            'role': 'gridcell',
+            'aria-label': '2 at 甲 上午',
+            'aria-colindex': '2',
+            'data-value': '上午',
+            'data-row': '甲',
+            'data-level': '2',
+            'tabindex': '0',
+          },
+          [`cell[${matrixAt('乙', '夜里')}]`]: {
+            'aria-label': '8 at 乙 夜里',
+            'aria-colindex': '4',
+            'data-row': '乙',
+            'data-level': '4',
+            'tabindex': '-1',
+          },
+          [`cell[${matrixAt('乙', '下午')}]`]: { 'aria-label': '0 at 乙 下午', 'data-level': '0' },
+        },
+      },
+    },
+    {
+      name: '矩阵形态：方向键按行列走，四面到边就停住但按键照样拦下',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['heatmap.kbd.prev-week', 'heatmap.kbd.next-week', 'heatmap.kbd.prev-day', 'heatmap.kbd.next-day', 'heatmap.kbd.row-start', 'heatmap.kbd.row-end'],
+      fixture: buildMatrixFixture,
+      props: MATRIX_RANGE,
+      steps: [
+        { kind: 'focus', part: `cell[${matrixAt('甲', '上午')}]` },
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          expect: { activeElement: { part: `cell[${matrixAt('甲', '下午')}]`, exact: true } },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          expect: { activeElement: { part: `cell[${matrixAt('乙', '下午')}]`, exact: true } },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          expect: { activeElement: { part: `cell[${matrixAt('乙', '下午')}]`, exact: true } },
+        },
+        {
+          kind: 'key',
+          key: 'End',
+          expect: { activeElement: { part: `cell[${matrixAt('乙', '夜里')}]`, exact: true } },
+        },
+        {
+          kind: 'key',
+          key: 'Home',
+          expect: { activeElement: { part: `cell[${matrixAt('乙', '上午')}]`, exact: true } },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowLeft',
+          expect: { activeElement: { part: `cell[${matrixAt('乙', '上午')}]`, exact: true } },
+        },
+      ],
+    },
+    {
+      name: '详情条：指针进到某一格就打开，离开即收起',
+      spec: { adr: 'visual-axes' },
+      fixture: withTooltip,
+      props: { ...RANGE, value: [{ date: '2024-01-02', count: 9 }] },
+      initial: {
+        // 没有活跃的格子时整条收起，落点与摆放方向都不写
+        parts: { tooltip: { 'hidden': '', 'aria-hidden': 'true', 'data-placement': null } },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '指针进出没有对应的步骤类型，只能直接派事件',
+          run: pointer(at('2024-01-02'), 'pointerenter'),
+          expect: { parts: { tooltip: { 'hidden': null, 'data-placement': 'block-end' } } },
+        },
+        {
+          kind: 'raw',
+          why: '同上：指针离开也只能直接派事件',
+          run: pointer(at('2024-01-02'), 'pointerleave'),
+          expect: { parts: { tooltip: { hidden: '' } } },
+        },
+      ],
+    },
+    {
+      name: '详情条：键盘聚焦一样打开，焦点走出网格才收起',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      fixture: withTooltip,
+      props: RANGE,
+      steps: [
+        {
+          kind: 'focus',
+          part: `cell[${at('2024-01-02')}]`,
+          expect: { parts: { tooltip: { hidden: null } } },
+        },
+        {
+          // 网格内换一格不算离场，详情跟着焦点继续显示
+          kind: 'key',
+          key: 'ArrowDown',
+          expect: {
+            activeElement: { part: `cell[${at('2024-01-03')}]`, exact: true },
+            parts: { tooltip: { hidden: null } },
+          },
+        },
+        {
+          // 焦点整个离开网格：详情收起，锚点留着
+          kind: 'blur',
+          expect: { parts: { tooltip: { hidden: '' } } },
+        },
+      ],
+    },
+    {
+      name: '详情条：Escape 收起但焦点不动，再走一格又打开',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['heatmap.kbd.dismiss'],
+      fixture: withTooltip,
+      props: RANGE,
+      steps: [
+        {
+          kind: 'focus',
+          part: `cell[${at('2024-01-02')}]`,
+          expect: { parts: { tooltip: { hidden: null } } },
+        },
+        {
+          kind: 'key',
+          key: 'Escape',
+          expect: {
+            parts: { tooltip: { hidden: '' } },
+            activeElement: { part: `cell[${at('2024-01-02')}]`, exact: true },
+          },
+        },
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          expect: {
+            activeElement: { part: `cell[${at('2024-01-03')}]`, exact: true },
+            parts: { tooltip: { hidden: null } },
+          },
+        },
+      ],
+    },
+    {
+      name: '不写 variant 时 root 上不产出 data-variant：默认那一档的行为逐字不变',
+      spec: { adr: 'visual-axes' },
+      props: RANGE,
+      initial: {
+        parts: { root: { 'data-variant': null } },
       },
     },
   ],

@@ -146,6 +146,8 @@ export function connectImageCropper<T extends PropTypes>(
       // 原生图片拖拽会顶掉指针拖动，一按下就变成拖一张图出去
       draggable: 'false',
       src: prop('src'),
+      // 没给替代文本就落空串：不写这个属性的话读屏会改念图片地址
+      alt: prop('alt') ?? '',
       style: { transform },
       // 自然尺寸只有这里问得到；换 src 后浏览器会再派一次，尺寸随之更新
       onLoad: (event: Event) => {

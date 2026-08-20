@@ -1929,13 +1929,20 @@
   --xh-heatmap-skin: 1;
 }
 
-/* 上下两条横排：月份行在网格之外（它只是一条对齐用的坐标轴），网格里是七行星期。
-   格子一律是固定尺寸的方块，列与列之间靠尺寸对齐，不必另立网格轨道。 */
+/* 缺省的 calendar 形态：上下两条横排，月份行在网格之外（它只是一条对齐用的坐标轴），
+   网格里是七行星期。格子一律是固定尺寸的方块，列与列之间靠尺寸对齐，不必另立网格轨道。
+   另外两种形态只在下面的 [data-variant] 段里改摆法，这里的取值一概不动。 */
 [data-scope='heatmap'][data-part='root'] {
   /* 尺寸档只换这里的私有槽，各部件从 root 继承它们，换档不必给每个部件各写一条选择器。
      格宽在这一处就把使用者令牌解析掉：错列与月份名的宽度都按它算，
      各处分头读会让作者改宽格子后错列与月份名对不上 */
   --xh-_heatmap-cell-size: var(--xh-heatmap-cell-size, var(--xh-space-2_5));
+  /* 矩阵形态的行高。格宽那把尺是给「一天一个小方块」定的，矩阵一行左边还挂着行名，
+     格子照那把尺定高就矮过行名，行高由行名的字定、格子在行里摊成一条。
+     这里取格宽尺的两倍：三档一起走，且每一档都高过行名那行字。
+     不接控件高度那把尺——它是给可点可输的控件在一行里排齐用的，矩阵格子不可交互，
+     接上去密度档一换矩阵就跟着变形 */
+  --xh-_heatmap-row-h: var(--xh-heatmap-row-h, var(--xh-space-5));
   /* 格间距等于聚焦环占的宽度（偏移 + 环宽）：环因此落在格子之间的空当里，
      不压在相邻格子上，各档格子的深浅都不影响环的对比度 */
   --xh-_heatmap-gap: calc(var(--xh-ring-offset) + var(--xh-ring-width));
@@ -1945,6 +1952,8 @@
   --xh-_heatmap-empty: var(--xh-heatmap-empty, var(--xh-bg-subtle));
   --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-bg-brand));
 
+  /* 详情条按内边距盒绝对定位，参照系就是它 */
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--xh-heatmap-gap, var(--xh-space-2));
@@ -1967,11 +1976,13 @@
 /* 缺省的 md 档写在上面的基础规则里 */
 [data-scope='heatmap'][data-part='root'][data-size='sm'] {
   --xh-_heatmap-cell-size: var(--xh-heatmap-cell-size, var(--xh-space-2));
+  --xh-_heatmap-row-h: var(--xh-heatmap-row-h, var(--xh-space-4));
   --xh-_heatmap-gutter: var(--xh-space-6);
 }
 
 [data-scope='heatmap'][data-part='root'][data-size='lg'] {
   --xh-_heatmap-cell-size: var(--xh-heatmap-cell-size, var(--xh-space-3));
+  --xh-_heatmap-row-h: var(--xh-heatmap-row-h, var(--xh-space-6));
 }
 
 [data-scope='heatmap'][data-part='grid'] {
@@ -1987,7 +1998,8 @@
 }
 
 [data-scope='heatmap'][data-part='row'] {
-  /* 区间起点不在周首日时，排在它前面的几行没有第 0 列的格子，连接层把错列数写进这个槽 */
+  /* 行首空出的列数由连接层写进这个槽：日历形态是区间起点不在周首日时的错列，
+     月历形态是这一周里 1 号之前的那几个星期几 */
   --xh-_heatmap-row-offset: 0;
 
   display: flex;
@@ -2054,6 +2066,106 @@
   outline-offset: var(--xh-ring-offset);
 }
 
+/* —— 月历形态：一个自然月一块，块内一行是一周、一列是一个星期几 —— */
+[data-scope='heatmap'][data-part='root'][data-variant='month'] [data-scope='heatmap'][data-part='grid'] {
+  flex-flow: row wrap;
+  gap: var(--xh-heatmap-block-gap, var(--xh-_heatmap-gutter));
+}
+
+[data-scope='heatmap'][data-part='month-block'] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-heatmap-block-inner-gap, var(--xh-_heatmap-gap));
+}
+
+/* 块里的星期名是一排列头，宽度改成格宽才对得上下面的格子 */
+[data-scope='heatmap'][data-part='root'][data-variant='month'] [data-scope='heatmap'][data-part='week-day-label'] {
+  inline-size: var(--xh-_heatmap-cell-size);
+  text-align: center;
+}
+
+/* 块的标题占整块宽，不再横跨若干列 */
+[data-scope='heatmap'][data-part='root'][data-variant='month'] [data-scope='heatmap'][data-part='month-label'] {
+  inline-size: auto;
+  color: var(--xh-heatmap-title-fg, var(--xh-fg-default));
+}
+
+/* —— 矩阵形态：行列都由作者给，行名与列名是两条真表头 —— */
+[data-scope='heatmap'][data-part='row-label'] {
+  display: block;
+  flex: 0 0 auto;
+  inline-size: var(--xh-heatmap-gutter, var(--xh-_heatmap-gutter));
+  overflow: hidden;
+  color: var(--xh-heatmap-label-fg, var(--xh-fg-subtle));
+  white-space: nowrap;
+  text-align: end;
+}
+
+/* 列名与它下面那一列的格子同宽：标签长就把列宽整体调大，别只调标签。
+   两处的兜底都是行高，不写列宽时矩阵格子就是正方块 */
+[data-scope='heatmap'][data-part='column-label'] {
+  display: block;
+  flex: 0 0 auto;
+  inline-size: var(--xh-heatmap-column-w, var(--xh-_heatmap-row-h));
+  overflow: hidden;
+  color: var(--xh-heatmap-label-fg, var(--xh-fg-subtle));
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* 矩阵的格子两向都不走日方块那把尺：宽跟列走，高跟行走 */
+[data-scope='heatmap'][data-part='root'][data-variant='matrix'] [data-scope='heatmap'][data-part='cell'] {
+  inline-size: var(--xh-heatmap-column-w, var(--xh-_heatmap-row-h));
+  block-size: var(--xh-_heatmap-row-h);
+}
+
+/* —— 详情条 —— */
+/* 位置由连接层在事件那一刻量好写成内联样式（它量得到，样式表量不到）；
+   这四个是还没量到时的落点，量到即被内联样式盖过。四个都带长度单位：
+   下面 block-start 那一档要把它们放进 calc(100% - …)，无单位的 0 会让整条声明作废。
+   不引浮层引擎：它按 root 的内边距盒绝对定位，跟着 root 一起横向滚动，
+   摆上边还是摆下边由连接层按行序给出，因此始终压在网格自己身上，不会被 root 的滚动裁掉 */
+[data-scope='heatmap'][data-part='tooltip'] {
+  --xh-_heatmap-tip-x: 0px;
+  --xh-_heatmap-tip-y: 0px;
+  --xh-_heatmap-tip-w: 0px;
+  --xh-_heatmap-tip-h: 0px;
+
+  position: absolute;
+  display: block;
+  inset-inline-start: var(--xh-_heatmap-tip-x);
+  inset-block-start: var(--xh-_heatmap-tip-y);
+  /* 至少与格子同宽，一两个字的详情也不会瘦成一条 */
+  min-inline-size: var(--xh-_heatmap-tip-w);
+  max-inline-size: var(--xh-heatmap-tooltip-max-w, var(--xh-overlay-max-w));
+  padding-block: var(--xh-heatmap-tooltip-py, var(--xh-space-1));
+  padding-inline: var(--xh-heatmap-tooltip-px, var(--xh-space-2));
+  border-radius: var(--xh-heatmap-tooltip-radius, var(--xh-shape-control));
+  background: var(--xh-heatmap-tooltip-bg, var(--xh-fg-default));
+  color: var(--xh-heatmap-tooltip-fg, var(--xh-bg-surface));
+  font-size: var(--xh-heatmap-tooltip-font-size, var(--xh-font-size-xs));
+  line-height: var(--xh-leading-normal);
+  white-space: nowrap;
+  box-shadow: var(--xh-heatmap-tooltip-shadow, var(--xh-elevation-2));
+  /* 详情条不接指针：压在格子上时指针要能穿过去，否则一进条里就算离开了格子，
+     详情自己把自己收起来，来回闪 */
+  pointer-events: none;
+}
+
+/* 摆在格子下边：从格子的下沿再让开一个格间距 */
+[data-scope='heatmap'][data-part='tooltip'][data-placement='block-end'] {
+  inset-block-start: calc(
+    var(--xh-_heatmap-tip-y) + var(--xh-_heatmap-tip-h) + var(--xh-_heatmap-gap)
+  );
+}
+
+/* 摆在格子上边：按末缘定位，条自己多高都贴着格子的上沿。
+   两头都写就是过约束，起始缘要先让开 */
+[data-scope='heatmap'][data-part='tooltip'][data-placement='block-start'] {
+  inset-block-start: auto;
+  inset-block-end: calc(100% - var(--xh-_heatmap-tip-y) + var(--xh-_heatmap-gap));
+}
+
 [data-scope='heatmap'][data-part='legend'] {
   display: flex;
   align-items: center;
@@ -2078,13 +2190,17 @@
 }
 
 /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
-   不补的话作者给节点加 hidden 后它照样显示。
+   不补的话作者给节点加 hidden 后它照样显示。详情条收起靠的正是这一条。
    格子没有声明 display，UA 那条兜得住，不必列在这里 */
 [data-scope='heatmap'][data-part='root'][hidden],
 [data-scope='heatmap'][data-part='grid'][hidden],
+[data-scope='heatmap'][data-part='month-block'][hidden],
 [data-scope='heatmap'][data-part='row'][hidden],
 [data-scope='heatmap'][data-part='week-day-label'][hidden],
 [data-scope='heatmap'][data-part='month-label'][hidden],
+[data-scope='heatmap'][data-part='row-label'][hidden],
+[data-scope='heatmap'][data-part='column-label'][hidden],
+[data-scope='heatmap'][data-part='tooltip'][hidden],
 [data-scope='heatmap'][data-part='legend'][hidden],
 [data-scope='heatmap'][data-part='legend-item'][hidden] {
   display: none;

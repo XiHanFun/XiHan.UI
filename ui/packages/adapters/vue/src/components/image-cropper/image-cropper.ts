@@ -26,6 +26,7 @@ export const XhImageCropperRoot = defineComponent({
   // 全部 default: undefined，缺省值由 connect 与机器决定
   props: {
     src: { type: String, default: undefined },
+    alt: { type: String, default: undefined },
     aspectRatio: { type: Number as PropType<number | null>, default: undefined },
     value: { type: Object as PropType<ImageCropperRect>, default: undefined },
     defaultValue: { type: Object as PropType<ImageCropperRect>, default: undefined },
@@ -104,7 +105,7 @@ export const XhImageCropperImage = defineComponent({
   name: 'XhImageCropperImage',
   setup() {
     const ctx = useImageCropperContext()
-    // 用原生 img：自然尺寸与 load 事件都归它。alt 由作者写在标签上，透传落到这里
+    // 用原生 img：自然尺寸与 load 事件都归它。src 与 alt 由根上的同名 prop 写进来
     return () => h('img', ctx.api.value.getImageProps() as Record<string, unknown>)
   },
 })

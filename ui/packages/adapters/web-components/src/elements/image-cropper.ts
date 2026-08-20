@@ -61,6 +61,7 @@ const HANDLE_POSITIONS: Record<ImageCropperHandlePosition, true> = {
  *
  * @customElement xh-image-cropper
  * @attr {string} src - 图片地址，原样写到 image 部件上
+ * @attr {string} alt - 图片替代文本，原样写到 image 部件上；不给即落空串，读屏跳过这张图
  * @attr {string} value - 受控裁切矩形，写成 "x,y,width,height"；缺省该属性即非受控
  * @attr {string} default-value - 非受控初值，同样是四个逗号分隔的数；缺省时图片加载完取整张图
  * @attr {number} aspect-ratio - 宽高比（宽 ÷ 高）；不写即不锁比例
@@ -78,7 +79,7 @@ const HANDLE_POSITIONS: Record<ImageCropperHandlePosition, true> = {
  * @fires zoom-change - 缩放倍率变化；detail 为 `{ zoom: number }`
  * @csspart root - 承载 data-disabled / data-readonly / data-dragging / data-resizing / data-shape 的容器
  * @csspart viewport - 量坐标的那个盒子，图片铺满它、裁切框绝对定位在它里面
- * @csspart image - 源图，须是原生 `<img>`；自然尺寸与加载完成都由它报出来
+ * @csspart image - 源图，须是原生 `<img>`；自然尺寸与加载完成都由它报出来，src / alt 由宿主写入（作者别自己写，会被覆盖或清掉）
  * @csspart crop-area - role=application 的裁切框，可聚焦，方向键平移
  * @csspart crop-handle - 改尺寸的把手，须是原生 `<button>` 并自带 position 属性标识方位
  * @csspart grid - 裁切框里的构图参考线，纯装饰
@@ -90,6 +91,7 @@ export class XhImageCropperElement extends XhElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     src: { converter: STRING_CONVERTER },
+    alt: { converter: STRING_CONVERTER },
     value: { converter: RECT_CONVERTER },
     defaultValue: { converter: RECT_CONVERTER, attribute: 'default-value' },
     aspectRatio: { converter: NUMBER_CONVERTER, attribute: 'aspect-ratio' },
@@ -107,6 +109,7 @@ export class XhImageCropperElement extends XhElement {
   }
 
   declare src?: string
+  declare alt?: string
   declare value?: ImageCropperRect
   declare defaultValue?: ImageCropperRect
   declare aspectRatio?: number
@@ -143,6 +146,7 @@ export class XhImageCropperElement extends XhElement {
   private machineProps(): Partial<ImageCropperSchema['props']> {
     return {
       src: this.src,
+      alt: this.alt,
       value: this.value,
       defaultValue: this.defaultValue,
       aspectRatio: this.aspectRatio,

@@ -368,8 +368,8 @@ export { provideGrid, useGridContext } from './components/grid/context'
 export type { GridContext } from './components/grid/context'
 export { XhGridItem, XhGridRoot } from './components/grid/grid'
 export { useHeatmapContext } from './components/heatmap/context'
-export { XhHeatmapCell, XhHeatmapGrid, XhHeatmapLegend, XhHeatmapLegendItem, XhHeatmapMonthLabel, XhHeatmapRoot, XhHeatmapRow, XhHeatmapWeekDayLabel } from './components/heatmap/heatmap'
-export type { HeatmapRootSlotProps } from './components/heatmap/heatmap'
+export { XhHeatmapCell, XhHeatmapColumnLabel, XhHeatmapGrid, XhHeatmapLegend, XhHeatmapLegendItem, XhHeatmapMonthBlock, XhHeatmapMonthLabel, XhHeatmapRoot, XhHeatmapRow, XhHeatmapRowLabel, XhHeatmapTooltip, XhHeatmapWeekDayLabel } from './components/heatmap/heatmap'
+export type { HeatmapCellSlotProps, HeatmapRootSlotProps } from './components/heatmap/heatmap'
 export { useHeatmap } from './components/heatmap/use-heatmap'
 export type { HeatmapContext } from './components/heatmap/use-heatmap'
 export { XhHighlight } from './components/highlight/highlight'
@@ -491,6 +491,8 @@ export {
 export type { MenuRootSlotProps, MenuSubSlotProps } from './components/menu/menu'
 export { useMenu } from './components/menu/use-menu'
 export type { MenuContext } from './components/menu/use-menu'
+export { provideMenubarChain, provideMenubarSub, useMenubarChain, useMenubarSubContext } from './components/menubar/context'
+export type { MenubarChain, MenubarSubHandle } from './components/menubar/context'
 export {
   XhMenubarContent,
   XhMenubarGroup,
@@ -506,8 +508,6 @@ export {
   XhMenubarTrigger,
 } from './components/menubar/menubar'
 export type { MenubarRootSlotProps, MenubarSubSlotProps } from './components/menubar/menubar'
-export { provideMenubarChain, provideMenubarSub, useMenubarChain, useMenubarSubContext } from './components/menubar/context'
-export type { MenubarChain, MenubarSubHandle } from './components/menubar/context'
 export { useMenubar } from './components/menubar/use-menubar'
 export type { MenubarContext, MenubarPartRegistry } from './components/menubar/use-menubar'
 export {

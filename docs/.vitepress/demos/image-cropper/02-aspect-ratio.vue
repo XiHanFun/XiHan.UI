@@ -19,12 +19,13 @@ const handles = ["nw", "ne", "se", "sw"] as const;
   <!-- 16:9 的封面图：只放四个角的把手，边上的把手在锁比例时能做的事一样 -->
   <XhImageCropperRoot
     :src="photo"
+    alt="示例图片"
     :aspect-ratio="16 / 9"
     :min-width="80"
     style="inline-size: 360px"
   >
     <XhImageCropperViewport>
-      <XhImageCropperImage alt="示例图片" />
+      <XhImageCropperImage />
       <XhImageCropperCropArea>
         <XhImageCropperGrid />
         <XhImageCropperCropHandle

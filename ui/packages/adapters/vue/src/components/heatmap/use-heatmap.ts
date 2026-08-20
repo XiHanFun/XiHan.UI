@@ -16,8 +16,9 @@ export interface HeatmapContext {
 export function useHeatmap(
   props: HeatmapSchema['props'],
   onCellFocus?: HeatmapSchema['props']['onCellFocus'],
+  onCellActive?: HeatmapSchema['props']['onCellActive'],
 ): HeatmapContext {
-  const service = useMachine(heatmapMachine, () => ({ ...props, onCellFocus }))
+  const service = useMachine(heatmapMachine, () => ({ ...props, onCellFocus, onCellActive }))
   const api = computed(() => connectHeatmap(service, vueNormalize))
   return { api, service }
 }

@@ -21,12 +21,13 @@ const handles = ["nw", "ne", "se", "sw"] as const;
   <XhImageCropperRoot
     v-model:zoom="zoom"
     :src="photo"
+    alt="示例图片"
     :rotation="rotation"
     :min-width="40"
     style="inline-size: 360px"
   >
     <XhImageCropperViewport>
-      <XhImageCropperImage alt="示例图片" />
+      <XhImageCropperImage />
       <XhImageCropperCropArea>
         <XhImageCropperCropHandle
           v-for="position in handles"
