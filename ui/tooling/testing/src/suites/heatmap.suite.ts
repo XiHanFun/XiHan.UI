@@ -61,14 +61,7 @@ function buildFixture(): FixtureNode {
           ],
         })),
       },
-      {
-        part: 'legend',
-        children: Array.from({ length: GRID.levels }, (_, level) => ({
-          part: 'legend-item',
-          tag: 'span',
-          attrs: { value: String(level) },
-        })),
-      },
+      legendNode(GRID.levels),
     ],
   }
 }
@@ -110,15 +103,19 @@ function matrixAt(row: string, column: string): number {
   return r * MATRIX_RANGE.columns.length + c
 }
 
-/** 色阶对照条：三种形态共用同一段结构。 */
+/** 色阶对照条：三种形态共用同一段结构，两端各一个字。 */
 function legendNode(levels: number): FixtureNode {
   return {
     part: 'legend',
-    children: Array.from({ length: levels }, (_, level) => ({
-      part: 'legend-item',
-      tag: 'span',
-      attrs: { value: String(level) },
-    })),
+    children: [
+      { part: 'legend-label', tag: 'span', attrs: { value: 'low' }, text: '少' },
+      ...Array.from({ length: levels }, (_, level) => ({
+        part: 'legend-item',
+        tag: 'span',
+        attrs: { value: String(level) },
+      })),
+      { part: 'legend-label', tag: 'span', attrs: { value: 'high' }, text: '多' },
+    ],
   }
 }
 
@@ -233,6 +230,8 @@ export const heatmapSuite: ConformanceSuite = {
           'month-label': 1,
           'cell': 31,
           'legend': 1,
+          // 两端各一个字
+          'legend-label': 2,
           'legend-item': 5,
         },
         parts: {
@@ -245,15 +244,18 @@ export const heatmapSuite: ConformanceSuite = {
             'tabindex': '-1',
           },
           // 月份行在网格之外，既无 role 也无行号
-          'row[0]': { 'role': null, 'aria-rowindex': null, 'data-week-day': null },
-          'row[1]': { 'role': 'row', 'aria-rowindex': '1', 'data-week-day': '0' },
-          'row[7]': { 'role': 'row', 'aria-rowindex': '7', 'data-week-day': '6' },
+          'row[0]': { 'role': null, 'aria-rowindex': null, 'data-week-day': null, 'aria-label': null },
+          // 星期名是隔行画的，哪一行是星期几改由行自己念出来
+          'row[1]': { 'role': 'row', 'aria-rowindex': '1', 'data-week-day': '0', 'aria-label': '星期一' },
+          'row[7]': { 'role': 'row', 'aria-rowindex': '7', 'data-week-day': '6', 'aria-label': '星期日' },
           // 星期名与月份名都是给眼睛看的坐标轴，一律藏起来
           'week-day-label[0]': { 'aria-hidden': 'true', 'data-week-day': null },
           'week-day-label[1]': { 'aria-hidden': 'true', 'data-week-day': '0' },
           'month-label[0]': { 'aria-hidden': 'true', 'data-value': '2024-01' },
-          // 图例容器不藏：作者写在色块旁的方向说明要念得到；藏起来的是色块本身
-          'legend': { 'aria-hidden': null },
+          // 图例容器不藏：两端那两个字要念得到，藏起来的是色块本身
+          'legend': { 'aria-hidden': null, 'role': 'group', 'aria-label': 'Activity level' },
+          'legend-label[0]': { 'aria-hidden': null, 'data-bound': 'low' },
+          'legend-label[1]': { 'aria-hidden': null, 'data-bound': 'high' },
           'legend-item[2]': { 'aria-hidden': 'true', 'data-level': '2' },
         },
         activeElement: null,
@@ -304,12 +306,15 @@ export const heatmapSuite: ConformanceSuite = {
         translations: {
           gridLabel: '活跃度',
           cellLabel: (details: { date: string, count: number }) => `${details.date} 共 ${details.count} 次`,
+          legendLabel: '活跃度色阶',
         },
       },
       initial: {
         parts: {
           grid: { 'aria-label': '活跃度' },
           [`cell[${at('2024-01-01')}]`]: { 'aria-label': '2024-01-01 共 3 次' },
+          // 一排色块的名字也从文案出：作者不换它，读屏听到的就是英文缺省
+          legend: { 'aria-label': '活跃度色阶' },
         },
       },
     },
@@ -471,6 +476,8 @@ export const heatmapSuite: ConformanceSuite = {
           'cell': 7,
           'tooltip': 1,
           'legend': 1,
+          // 两端各一个字
+          'legend-label': 2,
           'legend-item': 5,
         },
         parts: {
@@ -580,6 +587,8 @@ export const heatmapSuite: ConformanceSuite = {
           'cell': 6,
           'tooltip': 1,
           'legend': 1,
+          // 两端各一个字
+          'legend-label': 2,
           'legend-item': 5,
         },
         parts: {

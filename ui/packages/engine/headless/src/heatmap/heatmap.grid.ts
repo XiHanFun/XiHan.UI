@@ -24,6 +24,12 @@ export const HEATMAP_LOCALE = 'zh-CN'
 /** 缺省周首日，1 = 星期一（网格的第一行）。 */
 export const HEATMAP_FIRST_DAY_OF_WEEK = 1
 
+/**
+ * 色阶对照条两端的缺省文字。
+ * 它是写进界面的可见文本，与月份名、星期名同类，因此按缺省 locale 写而不是英文。
+ */
+export const HEATMAP_LEGEND_TEXT: { low: string, high: string } = { low: '少', high: '多' }
+
 /** 三种形态：连续周列的日历、按自然月分块的月历、行列由作者给的矩阵。 */
 export type HeatmapVariant = 'calendar' | 'month' | 'matrix'
 
@@ -159,6 +165,13 @@ export interface HeatmapGrid {
   thresholds: number[]
   max: number
   total: number
+  /**
+   * 值为 0 的格子数：没有数据的日子与写了 0 的日子都算。
+   * 格子总数从 `cells.size` 读，两个数一比就是空白占比。
+   * 数的只是 0，不是色阶的第 0 档——给了 `thresholds` 时第 0 档还会收进
+   * 低于首个下界的那些非零值，两个数不相等。
+   */
+  emptyCount: number
   /** 七行，行序相对周首日；每行的格子可能为空（区间不足一周时）。 */
   rows: HeatmapRowMeta[]
   months: HeatmapMonthMeta[]
@@ -400,6 +413,7 @@ export function buildHeatmapGrid(options: HeatmapGridOptions = {}): HeatmapGrid 
       thresholds: scale.thresholds,
       max: scale.max,
       total: scale.total,
+      emptyCount: 0,
       rows: [],
       months: [],
       weekDays,
@@ -416,6 +430,7 @@ export function buildHeatmapGrid(options: HeatmapGridOptions = {}): HeatmapGrid 
 
   const cells = new Map<string, HeatmapCellMeta>()
   const rows: HeatmapRowMeta[] = []
+  let emptyCount = 0
   for (let weekDay = 0; weekDay < HEATMAP_WEEK_LENGTH; weekDay++) {
     // 排在起点星期之前的那几行，第 0 列那一天早于起点，整行往后错一列
     const offset = weekDay < startWeekDay ? 1 : 0
@@ -427,6 +442,8 @@ export function buildHeatmapGrid(options: HeatmapGridOptions = {}): HeatmapGrid 
       const date = formatHeatmapDate(time)
       const count = counts.get(date) ?? 0
       const meta: HeatmapCellMeta = { date, count, level: heatmapLevelOf(count, scale.thresholds), weekIndex, weekDay }
+      if (count === 0)
+        emptyCount += 1
       rowCells.push(meta)
       cells.set(date, meta)
     }
@@ -435,9 +452,16 @@ export function buildHeatmapGrid(options: HeatmapGridOptions = {}): HeatmapGrid 
 
   const months: HeatmapMonthMeta[] = []
   for (let weekIndex = 0; weekIndex < weekCount; weekIndex++) {
-    // 一列归哪个月：取这一列里落在区间内的头一天所在的月，连着同月的列并成一段
-    const columnStart = Math.max(gridStart + weekIndex * HEATMAP_WEEK_LENGTH * DAY_MS, startTime)
-    const at = new Date(columnStart)
+    // 一列归哪个月：取这一列里落在区间内的末一天所在的月，连着同月的列并成一段。
+    // 取末一天而不是头一天，一列跨两个月时就归后一个月，月份名因此落在
+    // 「这个月头一天所在的那一列」上；取头一天会让 1 号不在周首日的月份整体晚一列
+    const columnEnd = Math.min(
+      gridStart + (weekIndex * HEATMAP_WEEK_LENGTH + HEATMAP_WEEK_LENGTH - 1) * DAY_MS,
+      endTime,
+    )
+    // 第 0 列改按区间首日所在的月归：只有这一列可能只露出上个月末尾那几天，
+    // 跟着末一天走会让整段区间的头一个月一个名字都不出（近 365 天这类起点常落在月末）
+    const at = new Date(weekIndex === 0 ? startTime : columnEnd)
     const value = `${String(at.getUTCFullYear()).padStart(4, '0')}-${String(at.getUTCMonth() + 1).padStart(2, '0')}`
     const last = months[months.length - 1]
     if (last && last.value === value) {
@@ -465,6 +489,7 @@ export function buildHeatmapGrid(options: HeatmapGridOptions = {}): HeatmapGrid 
     thresholds: scale.thresholds,
     max: scale.max,
     total: scale.total,
+    emptyCount,
     rows,
     months,
     weekDays,
@@ -594,6 +619,11 @@ export interface HeatmapMonthGrid {
   thresholds: number[]
   max: number
   total: number
+  /**
+   * 值为 0 的格子数；格子总数从 `cells.size` 读，两个数一比就是空白占比。
+   * 数的只是 0，不是色阶的第 0 档——给了 `thresholds` 时两个数不相等。
+   */
+  emptyCount: number
   /** 各个月块，按时间升序。 */
   blocks: HeatmapMonthBlockMeta[]
   /** 全部周行摊平，顺序即 rowIndex。 */
@@ -649,6 +679,7 @@ export function buildHeatmapMonthGrid(options: HeatmapGridOptions = {}): Heatmap
       ...base,
       startDate: '',
       endDate: '',
+      emptyCount: 0,
       blocks: [],
       weeks: [],
       cells: new Map(),
@@ -665,6 +696,7 @@ export function buildHeatmapMonthGrid(options: HeatmapGridOptions = {}): Heatmap
   const rowOf = new Map<string, HeatmapMonthWeekMeta>()
   const blocks: HeatmapMonthBlockMeta[] = []
   const weeks: HeatmapMonthWeekMeta[] = []
+  let emptyCount = 0
 
   let cursor = startTime
   while (cursor <= endTime) {
@@ -696,6 +728,8 @@ export function buildHeatmapMonthGrid(options: HeatmapGridOptions = {}): Heatmap
         weekIndex: week,
         weekDay,
       }
+      if (count === 0)
+        emptyCount += 1
       row.cells.push(meta)
       cells.set(date, meta)
       rowOf.set(date, row)
@@ -708,6 +742,7 @@ export function buildHeatmapMonthGrid(options: HeatmapGridOptions = {}): Heatmap
     ...base,
     startDate: formatHeatmapDate(startTime),
     endDate: formatHeatmapDate(endTime),
+    emptyCount,
     blocks,
     weeks,
     cells,
@@ -757,6 +792,11 @@ export interface HeatmapMatrixGrid {
   thresholds: number[]
   max: number
   total: number
+  /**
+   * 值为 0 的格子数；格子总数从 `cells.size` 读，两个数一比就是空白占比。
+   * 数的只是 0，不是色阶的第 0 档——给了 `thresholds` 时两个数不相等。
+   */
+  emptyCount: number
   /** heatmapMatrixKey(row, column) → 格子。 */
   cells: Map<string, HeatmapMatrixCellMeta>
   /** 文档序的头一格与末一格；一格都没有时为 null。 */
@@ -821,6 +861,7 @@ export function buildHeatmapMatrixGrid(options: HeatmapGridOptions = {}): Heatma
   const cells = new Map<string, HeatmapMatrixCellMeta>()
   let firstCell: HeatmapMatrixCellMeta | null = null
   let lastCell: HeatmapMatrixCellMeta | null = null
+  let emptyCount = 0
   for (const row of rows) {
     for (const column of columns) {
       const key = heatmapMatrixKey(row.value, column.value)
@@ -833,6 +874,8 @@ export function buildHeatmapMatrixGrid(options: HeatmapGridOptions = {}): Heatma
         rowIndex: row.index,
         columnIndex: column.index,
       }
+      if (count === 0)
+        emptyCount += 1
       cells.set(key, meta)
       firstCell ??= meta
       lastCell = meta
@@ -846,6 +889,7 @@ export function buildHeatmapMatrixGrid(options: HeatmapGridOptions = {}): Heatma
     thresholds: scale.thresholds,
     max: scale.max,
     total: scale.total,
+    emptyCount,
     cells,
     firstCell,
     lastCell,
@@ -989,6 +1033,11 @@ export interface HeatmapTipRect {
   blockStart: number
   inlineSize: number
   blockSize: number
+  /**
+   * 条从格子的哪一缘长出去，取两侧空间大的那一边。
+   * 给 'end' 时条从格子的末缘往回长，不再越过滚动容器的末缘。
+   */
+  inlineAnchor: 'start' | 'end'
 }
 
 /**
@@ -1011,13 +1060,23 @@ export function resolveHeatmapTip(
   scrollBlock: number,
   rtl: boolean,
 ): HeatmapTipRect {
+  // 格子此刻在可视区里的起始缘（还没把滚动量加回去的那一半），条往哪一缘长按它定
+  const visibleStart = rtl
+    ? (host.left + host.width) - (cell.left + cell.width)
+    : cell.left - host.left
+  // 条比一格宽得多，伸出滚动容器就会被裁掉，还会把横向滚动条撑长。
+  // 条的宽这里量不到（渲染前拿不到、收起时是 display:none），改按两侧的空间判：
+  // 从格子末缘往回长有 visibleStart + 格宽 那么多地方，从起始缘往后长有 host.width - visibleStart，
+  // 挑大的那一侧，条能摆得下的情形一概摆得下。
+  // 条比大的那一侧还宽时（容器很窄配很长的文案）仍会裁掉一截，两侧都摆不下是没有解的
+  const before = visibleStart + cell.width
+  const after = host.width - visibleStart
   return {
-    inlineStart: rtl
-      ? (host.left + host.width) - (cell.left + cell.width) - scrollInline
-      : (cell.left - host.left) + scrollInline,
+    inlineStart: rtl ? visibleStart - scrollInline : visibleStart + scrollInline,
     blockStart: (cell.top - host.top) + scrollBlock,
     inlineSize: cell.width,
     blockSize: cell.height,
+    inlineAnchor: before > after ? 'end' : 'start',
   }
 }
 
@@ -1027,6 +1086,7 @@ export function sameHeatmapTip(a: HeatmapTipRect | null, b: HeatmapTipRect | nul
     return a === b
   return a.inlineStart === b.inlineStart && a.blockStart === b.blockStart
     && a.inlineSize === b.inlineSize && a.blockSize === b.blockSize
+    && a.inlineAnchor === b.inlineAnchor
 }
 
 /**

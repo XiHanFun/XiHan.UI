@@ -18,6 +18,7 @@ import {
   buildHeatmapGrid,
   buildHeatmapMatrixGrid,
   buildHeatmapMonthGrid,
+  HEATMAP_LEGEND_TEXT,
   heatmapDetailsOf,
   heatmapLevelPercent,
   heatmapMatrixKey,
@@ -100,6 +101,10 @@ export function connectHeatmap<T extends PropTypes>(
     ?? ((details: HeatmapCellDetails) => `${details.count} on ${details.date}`)
   const matrixCellLabel = translations?.matrixCellLabel
     ?? ((details: HeatmapCellDetails) => `${details.count} at ${details.row} ${details.column}`)
+  const legendLabel = translations?.legendLabel ?? 'Activity level'
+  // 对照条两端是写进界面的可见文字，缺省跟着月份名、星期名那条 locale 的缺省走
+  const legendLow = translations?.legendLow ?? HEATMAP_LEGEND_TEXT.low
+  const legendHigh = translations?.legendHigh ?? HEATMAP_LEGEND_TEXT.high
 
   const monthOf = new Map(grid.months.map(month => [month.value, month]))
   const monthBlockOf = new Map((monthGrid?.blocks ?? []).map(block => [block.value, block]))
@@ -223,6 +228,7 @@ export function connectHeatmap<T extends PropTypes>(
     anchorDate: matrixGrid ? null : (anchorCell?.date ?? null),
     activeCell,
     detailOpen: activeRef != null,
+    legendText: { low: legendLow, high: legendHigh },
     cellAt: date => (monthGrid?.cells ?? grid.cells).get(date) ?? null,
     setFocusedCell: cell => send({ type: 'FOCUS.SET', cell }),
     setFocusedDate: date => send({ type: 'FOCUS.SET', cell: date == null ? null : { date } }),
@@ -348,6 +354,11 @@ export function connectHeatmap<T extends PropTypes>(
         ...parts.row.attrs,
         // 星期行进网格语义；月份行在网格之外，它只是一条对齐用的横排，不该冒充表格行
         'role': row.weekDay == null ? undefined : 'row',
+        // 这一行是星期几由行自己说：行首那一列星期名是隔行画的，被跳过的那几行
+        // 肉眼靠上下文补得出来，读屏补不出来。可见文字与可及名字因此各走各的。
+        // 名字取的是坐标轴上那个词，跟 locale 走、不进 translations：
+        // 它与轴上写的必须逐字一致，两处各有出处就会对不上（月块的名字同理）
+        'aria-label': row.weekDay == null ? undefined : grid.weekDays[row.weekDay]?.long,
         'aria-rowindex': row.weekDay == null ? undefined : row.weekDay + 1,
         'data-week-day': row.weekDay == null ? undefined : String(row.weekDay),
         // 区间起点不在周首日时，排在它前面的几行没有第 0 列的格子，整行往后错一列。
@@ -464,6 +475,10 @@ export function connectHeatmap<T extends PropTypes>(
       // 收起时靠 hidden 属性，皮肤的 [hidden] 兜底把它藏掉
       'hidden': activeRef == null || undefined,
       'data-placement': activeRef == null ? undefined : tipPlacement,
+      // 条往格子的哪一缘长：量测那一刻定的，取格子两侧空间大的那一边。
+      // 不叫 data-inline：flex 与 space 用那个名字当「横排」开关，同名一布尔一枚举，
+      // 使用者写 [data-inline] 这条全局规则会同时命中两种语义
+      'data-inline-anchor': activeRef == null || tip == null ? undefined : tip.inlineAnchor,
       // 量过才给这个键：给 undefined 会把作者写在条上的整条内联样式删掉
       ...(tip == null
         ? {}
@@ -477,9 +492,19 @@ export function connectHeatmap<T extends PropTypes>(
           }),
     }),
 
-    // 图例本身不藏：作者要在色块旁写「少 → 多」这句方向说明，落点就在这里，
-    // 整块藏起来那句话对读屏用户就没了
-    getLegendProps: () => normalize.element({ ...parts.legend.attrs }),
+    // 图例本身不藏：两端那两个字说明的是色阶朝哪个方向深，
+    // 整块藏起来这句话对读屏用户就没了。名字自己给一份：一排色块说不出这是干什么用的
+    getLegendProps: () => normalize.element({
+      ...parts.legend.attrs,
+      'role': 'group',
+      'aria-label': legendLabel,
+    }),
+
+    // 两端那两个字是真文字，不藏：深色代表多还是少是约定俗成，不是自明的
+    getLegendLabelProps: label => normalize.element({
+      ...parts['legend-label'].attrs,
+      'data-bound': label.bound,
+    }),
 
     getLegendItemProps: item => normalize.element({
       ...parts['legend-item'].attrs,

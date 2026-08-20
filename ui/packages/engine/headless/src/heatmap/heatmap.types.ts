@@ -80,7 +80,24 @@ export interface HeatmapLegendItemProps {
   level: number
 }
 
-/** 读屏用的文案，默认英文。 */
+/** 对照条的哪一端：low 是色阶起点（少），high 是终点（多）。 */
+export type HeatmapLegendBound = 'high' | 'low'
+
+/** 对照条两端那两个字自报家门。 */
+export interface HeatmapLegendLabelProps {
+  /** 挂在哪一端。 */
+  bound: HeatmapLegendBound
+}
+
+/**
+ * 文案。
+ * 只念给读屏的那几条默认英文，与其余组件同一口径；
+ * 写进界面的可见文字（对照条两端的那两个字）跟月份名、星期名一样，按缺省 locale（zh-CN）写。
+ *
+ * 两条名字不收在这里，因为它们念的就是坐标轴上那几个词，与轴上写的必须逐字一致：
+ * 星期行的可及名字（`星期一` 这种）与月块的可及名字（`一月` 这种）都由 `locale` 定，
+ * 改 `locale` 两处一起变，改 `translations` 一处都不变。
+ */
 export interface HeatmapTranslations {
   /** 网格的可及名字：一片方格子自己说不出这是什么图。 */
   gridLabel: string
@@ -88,6 +105,12 @@ export interface HeatmapTranslations {
   cellLabel: (details: HeatmapCellDetails) => string
   /** 矩阵形态每格的可及名字：行列身份与数值都要念出来。 */
   matrixCellLabel: (details: HeatmapCellDetails) => string
+  /** 对照条整体的可及名字：一排色块自己说不出这是干什么用的。 */
+  legendLabel: string
+  /** 对照条起点那一端的可见文字，缺省「少」。 */
+  legendLow: string
+  /** 对照条终点那一端的可见文字，缺省「多」。 */
+  legendHigh: string
 }
 
 export interface HeatmapSchema extends MachineSchema {
@@ -190,6 +213,11 @@ export interface HeatmapApi<T extends PropTypes = PropTypes> {
   activeCell: HeatmapCellDetails | null
   /** 详情条此刻是不是显示着。 */
   detailOpen: boolean
+  /**
+   * 对照条两端要写的那两个字，作者照它渲染 legend-label 部件。
+   * 与 `getLegendLabelProps` 同源，改 translations 两处一起变。
+   */
+  legendText: { low: string, high: string }
   /** 按日期取一格；不在区间内给 null。矩阵形态下恒为 null。 */
   cellAt: (date: string) => HeatmapCellMeta | null
   /**
@@ -210,5 +238,6 @@ export interface HeatmapApi<T extends PropTypes = PropTypes> {
   getCellProps: (props: HeatmapCellProps) => T['element']
   getTooltipProps: () => T['element']
   getLegendProps: () => T['element']
+  getLegendLabelProps: (props: HeatmapLegendLabelProps) => T['element']
   getLegendItemProps: (props: HeatmapLegendItemProps) => T['element']
 }

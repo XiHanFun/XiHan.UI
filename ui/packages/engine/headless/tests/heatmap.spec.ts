@@ -297,6 +297,43 @@ describe('buildHeatmapGrid 摊网格', () => {
     expect(total).toBe(grid.weekCount)
     expect(grid.months[0]!.weekIndex).toBe(0)
   })
+
+  it('整年十二段，每段起在这个月头一天所在的那一列上', () => {
+    const grid = buildHeatmapGrid({ startDate: '2024-01-01', endDate: '2024-12-31' })
+    expect(grid.weekCount).toBe(53)
+    expect(grid.months).toHaveLength(12)
+    for (const month of grid.months) {
+      // 1 号不在周首日时它落在上个月尾巴那一列里，月份名要跟着落在同一列
+      const first = grid.cells.get(`${month.value}-01`)
+      expect(first?.weekIndex).toBe(month.weekIndex)
+    }
+    expect(grid.months.reduce((sum, month) => sum + month.weeks, 0)).toBe(grid.weekCount)
+  })
+
+  it('区间起点在月中时，头一段仍从第 0 列起', () => {
+    // 2024-01-15 是星期一，1 月只剩半个月，2 月 1 日（星期四）落在 1-29 那一列
+    const grid = buildHeatmapGrid({ startDate: '2024-01-15', endDate: '2024-03-31' })
+    expect(grid.months.map(month => month.value)).toEqual(['2024-01', '2024-02', '2024-03'])
+    expect(grid.months[0]!.weekIndex).toBe(0)
+    expect(grid.months[1]!.weekIndex).toBe(grid.cells.get('2024-02-01')!.weekIndex)
+    expect(grid.months[2]!.weekIndex).toBe(grid.cells.get('2024-03-01')!.weekIndex)
+  })
+
+  it('起点落在月末时，头一个月照样有名字', () => {
+    // 2024-01-29 是星期一，第 0 列是 01-29..02-04，跨 1 月与 2 月两个月
+    const grid = buildHeatmapGrid({ startDate: '2024-01-29', endDate: '2024-02-25' })
+    expect(grid.months.map(month => month.value)).toEqual(['2024-01', '2024-02'])
+    // 第 0 列归 1 月，2 月从第 1 列起：这一列里 1 月只露出 29/30/31 三天
+    expect(grid.months[0]!.weeks).toBe(1)
+    expect(grid.months[1]!.weekIndex).toBe(1)
+    expect(grid.months.reduce((sum, month) => sum + month.weeks, 0)).toBe(grid.weekCount)
+  })
+
+  it('第 0 列不跨月时不另起一段', () => {
+    // 2024-02-01 是星期四，第 0 列里落在区间内的日子全是 2 月
+    const grid = buildHeatmapGrid({ startDate: '2024-02-01', endDate: '2024-02-25' })
+    expect(grid.months.map(month => month.value)).toEqual(['2024-02'])
+  })
 })
 
 describe('heatmap 方向键落点', () => {
@@ -415,7 +452,8 @@ describe('connectHeatmap 网格与格子的属性', () => {
   it('月份名的宽度按它占的列数给出，图例的色块与格子共用同一条色阶', () => {
     const api = apiOf(mount({ startDate: '2024-01-01', endDate: '2024-02-29' }).service)
     const label = api.getMonthLabelProps({ value: '2024-01' }) as Record<string, unknown>
-    expect((label.style as Record<string, string>)['--xh-_heatmap-month-weeks']).toBe('5')
+    // 1 月占 0-3 四列：1-29 那一列里已经有 2 月 1 日，它归 2 月
+    expect((label.style as Record<string, string>)['--xh-_heatmap-month-weeks']).toBe('4')
     const legendItem = api.getLegendItemProps({ level: 2 }) as Record<string, unknown>
     expect(legendItem['data-level']).toBe('2')
     expect((legendItem.style as Record<string, string>)['--xh-_heatmap-level']).toBe('50%')
@@ -739,9 +777,25 @@ describe('详情条的几何', () => {
       blockStart: 40,
       inlineSize: 10,
       blockSize: 10,
+      inlineAnchor: 'start',
     })
     expect(resolveHeatmapTip(host, cell, 30, 5, false).inlineStart).toBe(90)
     expect(resolveHeatmapTip(host, cell, 30, 5, false).blockStart).toBe(45)
+  })
+
+  it('条往两侧空间大的那一边长；滚动量不参与这个判断', () => {
+    // 承载盒 400 宽，格子起始缘在 60：末缘之前只有 70，起始缘之后还有 340
+    expect(resolveHeatmapTip(host, cell, 0, 0, false).inlineAnchor).toBe('start')
+    expect(resolveHeatmapTip(host, cell, 300, 0, false).inlineAnchor).toBe('start')
+    // 格子挪到后段：末缘之前 250、起始缘之后 60，再往后长就伸出容器被裁掉
+    const late = { ...cell, left: 340 }
+    expect(resolveHeatmapTip(host, late, 0, 0, false).inlineAnchor).toBe('end')
+    // 分界线把格子自己那一格算进末缘之前：起始缘 195 时两侧各 205 与 205，还不翻
+    expect(resolveHeatmapTip(host, { ...cell, left: 295 }, 0, 0, false).inlineAnchor).toBe('start')
+    expect(resolveHeatmapTip(host, { ...cell, left: 296 }, 0, 0, false).inlineAnchor).toBe('end')
+    // rtl 下起始缘从右往左量，判断的是同一件事
+    expect(resolveHeatmapTip(host, { ...cell, left: 120 }, 0, 0, true).inlineAnchor).toBe('end')
+    expect(resolveHeatmapTip(host, late, 0, 0, true).inlineAnchor).toBe('start')
   })
 
   it('rtl 下从末缘往回量，滚动量的符号跟着反过来', () => {
@@ -1065,8 +1119,8 @@ describe('connectHeatmap 悬停详情', () => {
   })
 
   it('内容与落点取自同一路：heatmapActiveCell 与 heatmapActiveTip 挑的是同一格', () => {
-    const hoverTip = { inlineStart: 1, blockStart: 2, inlineSize: 12, blockSize: 12 }
-    const focusTip = { inlineStart: 3, blockStart: 4, inlineSize: 12, blockSize: 12 }
+    const hoverTip = { inlineStart: 1, blockStart: 2, inlineSize: 12, blockSize: 12, inlineAnchor: 'start' } as const
+    const focusTip = { inlineStart: 3, blockStart: 4, inlineSize: 12, blockSize: 12, inlineAnchor: 'start' } as const
     const both = {
       hoveredCell: { date: '2024-01-01' },
       focusedCell: { date: '2024-01-02' },
@@ -1203,5 +1257,131 @@ describe('connectHeatmap 悬停详情', () => {
     expect((api.getTooltipProps() as Record<string, unknown>)['aria-hidden']).toBe('true')
     // 没量过就不给 style 这个键，免得把作者写在条上的内联样式整条删掉
     expect('style' in (api.getTooltipProps() as Record<string, unknown>)).toBe(false)
+  })
+})
+
+describe('色阶对照条的文案', () => {
+  it('两端各给一个字，缺省是「少」「多」，对照条自己带名字', () => {
+    const api = apiOf(mount(RANGE).service)
+    expect(api.legendText).toEqual({ low: '少', high: '多' })
+    const legend = api.getLegendProps() as Record<string, unknown>
+    expect(legend.role).toBe('group')
+    expect(legend['aria-label']).toBe('Activity level')
+  })
+
+  it('两端那两个字不藏起来：色阶朝哪个方向深要说得出口', () => {
+    const api = apiOf(mount(RANGE).service)
+    const low = api.getLegendLabelProps({ bound: 'low' }) as Record<string, unknown>
+    const high = api.getLegendLabelProps({ bound: 'high' }) as Record<string, unknown>
+    expect(low['data-bound']).toBe('low')
+    expect(high['data-bound']).toBe('high')
+    expect('aria-hidden' in low).toBe(false)
+    // 色块本身仍然是藏的：每格自己念得出计数，档位念一遍没有信息量
+    expect((api.getLegendItemProps({ level: 1 }) as Record<string, unknown>)['aria-hidden']).toBe('true')
+  })
+
+  it('三条文案整条可换', () => {
+    const api = apiOf(mount({
+      ...RANGE,
+      translations: { legendLabel: '活跃度色阶', legendLow: 'Less', legendHigh: 'More' },
+    }).service)
+    expect(api.legendText).toEqual({ low: 'Less', high: 'More' })
+    expect((api.getLegendProps() as Record<string, unknown>)['aria-label']).toBe('活跃度色阶')
+  })
+})
+
+describe('星期名隔行画之后每一行自己报星期几', () => {
+  it('日历形态的数据行带这一行星期几的全称，月份行不带', () => {
+    const api = apiOf(mount({ ...RANGE, locale: 'zh-CN' }).service)
+    const first = api.getRowProps({ weekDay: 0 }) as Record<string, unknown>
+    const last = api.getRowProps({ weekDay: 6 }) as Record<string, unknown>
+    const months = api.getRowProps({}) as Record<string, unknown>
+    expect(first['aria-label']).toBe('星期一')
+    expect(last['aria-label']).toBe('星期日')
+    expect(months['aria-label']).toBeUndefined()
+  })
+
+  it('行的名字跟着 locale 与周首日走，与那个字画不画出来无关', () => {
+    const api = apiOf(mount({ ...RANGE, locale: 'en-US', firstDayOfWeek: 0 }).service)
+    expect((api.getRowProps({ weekDay: 0 }) as Record<string, unknown>)['aria-label']).toBe('Sunday')
+  })
+
+  it('行的名字不进 translations：它念的就是坐标轴上那个词，只由 locale 定', () => {
+    const api = apiOf(mount({
+      ...RANGE,
+      translations: { gridLabel: 'Grid', cellLabel: () => 'Cell', legendLabel: 'Legend' },
+    }).service)
+    expect((api.getRowProps({ weekDay: 0 }) as Record<string, unknown>)['aria-label']).toBe('星期一')
+  })
+})
+
+describe('网格自带的空白格计数', () => {
+  it('日历形态：没有数据的日子与写了 0 的日子都算空白', () => {
+    const grid = buildHeatmapGrid({
+      startDate: '2024-01-01',
+      endDate: '2024-01-07',
+      value: [{ date: '2024-01-01', count: 3 }, { date: '2024-01-02', count: 0 }],
+    })
+    expect(grid.cells.size).toBe(7)
+    expect(grid.emptyCount).toBe(6)
+    expect(grid.total).toBe(3)
+    expect(grid.max).toBe(3)
+  })
+
+  it('区间不合法时是一张空网格，空白格也是 0 不是负数', () => {
+    expect(buildHeatmapGrid({ startDate: '2024-01-08', endDate: '2024-01-01' }).emptyCount).toBe(0)
+  })
+
+  it('月历形态与日历形态同一口径', () => {
+    const grid = buildHeatmapMonthGrid({
+      startDate: '2024-01-29',
+      endDate: '2024-02-04',
+      value: [{ date: '2024-01-29', count: 2 }],
+    })
+    expect(grid.cells.size).toBe(7)
+    expect(grid.emptyCount).toBe(6)
+  })
+
+  it('数的只是 0：给了 thresholds 之后色阶第 0 档还多收几格', () => {
+    const grid = buildHeatmapGrid({
+      startDate: '2024-01-01',
+      endDate: '2024-01-07',
+      thresholds: [5, 10, 20],
+      value: [
+        { date: '2024-01-02', count: 2 },
+        { date: '2024-01-03', count: 3 },
+        { date: '2024-01-04', count: 7 },
+        { date: '2024-01-05', count: 12 },
+      ],
+    })
+    // 三格是真的 0；第 0 档还收进 2 与 3 这两个够不到首个下界的非零值，两个数因此不相等
+    expect(grid.emptyCount).toBe(3)
+    expect([...grid.cells.values()].filter(cell => cell.level === 0)).toHaveLength(5)
+  })
+
+  it('不给 thresholds 时首个下界恒为 1，两个数才恰好相等', () => {
+    const grid = buildHeatmapGrid({
+      startDate: '2024-01-01',
+      endDate: '2024-01-07',
+      value: [
+        { date: '2024-01-02', count: 2 },
+        { date: '2024-01-03', count: 3 },
+        { date: '2024-01-04', count: 7 },
+        { date: '2024-01-05', count: 12 },
+      ],
+    })
+    expect(grid.thresholds[0]).toBe(1)
+    expect(grid.emptyCount).toBe(3)
+    expect([...grid.cells.values()].filter(cell => cell.level === 0)).toHaveLength(3)
+  })
+
+  it('矩阵形态：轴上有而数据里没有的格子都算空白', () => {
+    const grid = buildHeatmapMatrixGrid({
+      rows: ['甲', '乙'],
+      columns: ['上午', '下午', '夜里'],
+      value: [{ row: '甲', column: '上午', value: 2 }],
+    })
+    expect(grid.cells.size).toBe(6)
+    expect(grid.emptyCount).toBe(5)
   })
 })

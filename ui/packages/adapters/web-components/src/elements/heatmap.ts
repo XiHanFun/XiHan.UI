@@ -2,6 +2,9 @@ import type {
   HeatmapAxisInput,
   HeatmapCellDetails,
   HeatmapCellFocusDetails,
+  HeatmapGrid,
+  HeatmapMatrixGrid,
+  HeatmapMonthGrid,
   HeatmapRowProps,
   HeatmapSchema,
   HeatmapTranslations,
@@ -9,7 +12,7 @@ import type {
   HeatmapVariant,
 } from '@xihan-ui/headless'
 import type { Direction, Size, Tone } from '@xihan-ui/kernel'
-import { connectHeatmap, heatmapAnatomy, heatmapMachine, heatmapMeta } from '@xihan-ui/headless'
+import { buildHeatmapGrid, connectHeatmap, HEATMAP_LEGEND_TEXT, heatmapAnatomy, heatmapMachine, heatmapMeta } from '@xihan-ui/headless'
 import { DATA_PART, DATA_SCOPE } from '@xihan-ui/kernel'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -47,12 +50,16 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
  * `<xh-heatmap>` —— Light-DOM 行为宿主：作者写 root、grid、若干 row 与 cell 角色节点，
  * 元素跑 heatmap 机器并把 connect 产出打上去。
  *
+ * 网格由作者渲染，元素不生成节点：铺一整年不必手写三百多个格子，读 `grid` / `monthGrid` /
+ * `matrixGrid` 三个只读属性，照推导出来的行、列、月份段循环生成即可（三种形态各读其中一个）。
+ * 每读一次都重算一遍，取一次存下来用。
+ *
  * 角色节点的身份一律取作者写在节点上的 value 属性，怎么解释由 variant 决定：
  * 日历形态里 row 与 week-day-label 上是行序 0-6（不写即网格之外那条月份行与它的行首占位）、
  * cell 上是 ISO 日期、month-label 上是 YYYY-MM；月历形态里 month-block 上是 YYYY-MM、
  * row 上是月内周序（不写即块内那条星期名坐标轴）；矩阵形态里 row 与 row-label 上是行身份
  * （不写即表头行与角落占位）、column-label 与 cell 上是列身份，格子的行身份从所在的行取。
- * legend-item 上是档位。
+ * legend-item 上是档位、legend-label 上是 low 或 high（两端那两个字，文案读 `legendText`）。
  *
  * 数据、行列、档位下界与文案只能走 property（`el.value = [...]`）：HTML 属性装不下数组与函数。
  *
@@ -79,6 +86,7 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
  * @csspart cell - 一格，身份取写在节点上的 value
  * @csspart tooltip - 悬停或聚焦时显示的详情条，位置由元素量好写成内联样式
  * @csspart legend - 色阶对照条
+ * @csspart legend-label - 对照条一端的那个字，value 是 low 或 high
  * @csspart legend-item - 对照条里的一格，value 是档位
  */
 export class XhHeatmapElement extends XhElement {
@@ -151,6 +159,31 @@ export class XhHeatmapElement extends XhElement {
     }
   }
 
+  /**
+   * 日历网格：七行星期 × 若干周列，另带月份段、星期名与档位标尺，作者照它铺节点。
+   * 其余形态下是一张空网格。机器尚未建起时同样给空网格。
+   */
+  get grid(): HeatmapGrid {
+    return this.ctrl.service ? connectHeatmap(this.ctrl.service, wcNormalize).grid : buildHeatmapGrid()
+  }
+
+  /** 月历网格：按自然月分块，块里逐周一行；不是 month 形态时为 null。 */
+  get monthGrid(): HeatmapMonthGrid | null {
+    return this.ctrl.service ? connectHeatmap(this.ctrl.service, wcNormalize).monthGrid : null
+  }
+
+  /** 矩阵网格：行列由作者给；不是 matrix 形态时为 null。 */
+  get matrixGrid(): HeatmapMatrixGrid | null {
+    return this.ctrl.service ? connectHeatmap(this.ctrl.service, wcNormalize).matrixGrid : null
+  }
+
+  /** 对照条两端要写的那两个字，照它填 legend-label 节点的文字。 */
+  get legendText(): { low: string, high: string } {
+    return this.ctrl.service
+      ? connectHeatmap(this.ctrl.service, wcNormalize).legendText
+      : HEATMAP_LEGEND_TEXT
+  }
+
   /** 作者写在行上的身份，按形态翻成连接层认得的那一组坐标。 */
   private rowProps(el: HTMLElement, variant: HeatmapVariant): HeatmapRowProps {
     if (variant === 'matrix')
@@ -201,6 +234,10 @@ export class XhHeatmapElement extends XhElement {
         : { date: el.getAttribute('value') ?? '' }
       this.spreader.spread(el, api.getCellProps(props) as Record<string, unknown>)
     }
+
+    // 两端那两个字：value 写 low 或 high，不写即当起点那一端
+    for (const el of this.getParts('legend-label'))
+      this.spreader.spread(el, api.getLegendLabelProps({ bound: stringOf(el) === 'high' ? 'high' : 'low' }) as Record<string, unknown>)
 
     for (const el of this.getParts('legend-item'))
       this.spreader.spread(el, api.getLegendItemProps({ level: numberOf(el) ?? 0 }) as Record<string, unknown>)

@@ -3,6 +3,7 @@ import type {
   HeatmapAxisInput,
   HeatmapCellDetails,
   HeatmapCellMeta,
+  HeatmapLegendBound,
   HeatmapMatrixCellMeta,
   HeatmapMatrixGrid,
   HeatmapMonthGrid,
@@ -259,6 +260,19 @@ export const XhHeatmapLegend = defineComponent({
   },
 })
 
+/** 对照条一端的那个字：value 写 low 或 high，文字从 api.legendText 取。 */
+export const XhHeatmapLegendLabel = defineComponent({
+  name: 'XhHeatmapLegendLabel',
+  props: {
+    /** 挂在哪一端：low 是色阶起点，high 是终点。 */
+    value: { type: String as PropType<HeatmapLegendBound>, required: true },
+  },
+  setup(props, { slots }) {
+    const ctx = useHeatmapContext()
+    return () => h('span', ctx.api.value.getLegendLabelProps({ bound: props.value }) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 /** 对照条里的一格，与网格里同档的格子同色。 */
 export const XhHeatmapLegendItem = defineComponent({
   name: 'XhHeatmapLegendItem',
@@ -283,13 +297,18 @@ function renderDefaultTree(
   cellSlot?: (node: HeatmapCellSlotProps) => VNode[],
   tooltipSlot?: (details: HeatmapCellDetails | null) => VNode[],
 ): VNode[] {
+  // 两端各一个字：一排色块自己说不出哪头是多
   const legend = h(
     XhHeatmapLegend,
     null,
-    () => Array.from(
-      { length: api.monthGrid?.levels ?? api.matrixGrid?.levels ?? api.grid.levels },
-      (_, level) => h(XhHeatmapLegendItem, { key: level, value: level }),
-    ),
+    () => [
+      h(XhHeatmapLegendLabel, { value: 'low' }, () => api.legendText.low),
+      ...Array.from(
+        { length: api.monthGrid?.levels ?? api.matrixGrid?.levels ?? api.grid.levels },
+        (_, level) => h(XhHeatmapLegendItem, { key: level, value: level }),
+      ),
+      h(XhHeatmapLegendLabel, { value: 'high' }, () => api.legendText.high),
+    ],
   )
   const tooltip = tooltipSlot
     ? [h(XhHeatmapTooltip, null, () => tooltipSlot(api.activeCell))]
