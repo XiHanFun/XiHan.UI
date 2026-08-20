@@ -467,7 +467,7 @@ describe('开合与受控', () => {
 
     click(h.trigger)
     expect(h.state()).toBe('closed')
-    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false })
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false, reason: 'close-trigger' })
   })
 
   it('受控 open：点 trigger 只发意图不自改状态，宿主写回后才转移', () => {
@@ -812,7 +812,7 @@ describe('选中：叶子落值收起，分支看 changeOnSelect', () => {
     expect(h.value()).toEqual([['zhejiang', 'hangzhou', 'xihu']])
     expect(h.state()).toBe('closed')
     expect(onValueChange).toHaveBeenLastCalledWith({ value: [['zhejiang', 'hangzhou', 'xihu']] })
-    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false })
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false, reason: 'selection' })
   })
 
   it('点叶子与 Enter 同语义', () => {

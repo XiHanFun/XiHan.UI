@@ -1,3 +1,4 @@
+import { closeReasonOf } from '../shared/close-reason'
 import type { PositionResult } from '@xihan-ui/kernel'
 import type { PopoverSchema } from './popover.types'
 import { createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
@@ -64,7 +65,11 @@ export const popoverMachine = createMachine({
     },
     actions: {
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
+      // 关闭原因在事件里现成：消解层回报的 src，没有 src 的走 programmatic
+      invokeOnClose: ({ prop, event }) => {
+        const e = event.current()
+        prop('onOpenChange')?.({ open: false, reason: closeReasonOf(e) })
+      },
       // Tab 与层外交互是「焦点已经去别处了」，再抢回触发器会把用户拽回来；其余出口一律归还
       setReturnFocus: ({ context, event }) => {
         const e = event.current()

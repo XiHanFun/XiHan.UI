@@ -63,7 +63,8 @@ export function connectPopconfirm<T extends PropTypes>(
       )
       return
     }
-    send({ type: 'CLOSE' })
+    // 点的是确认按钮，不是代码调的
+    send({ type: 'CLOSE', src: 'close-trigger' })
   }
 
   const cancel = (): void => {
@@ -72,7 +73,7 @@ export function connectPopconfirm<T extends PropTypes>(
     if (pending)
       props.onPendingChange?.(false)
     props.onCancel?.()
-    send({ type: 'CLOSE' })
+    send({ type: 'CLOSE', src: 'close-trigger' })
   }
 
   return {

@@ -1,5 +1,5 @@
 import type { PresenceHandle } from '@xihan-ui/behavior/presence'
-import type { Cleanup, Layer, PropTypes, RuntimeConfig, Size } from '@xihan-ui/kernel'
+import type { Cleanup, Layer, OverlayCloseReason, PropTypes, RuntimeConfig, Size } from '@xihan-ui/kernel'
 import type { MachineSchema } from '@xihan-ui/machine'
 
 /** 抽屉贴住的那条视口边，也是滑入方向的来源。 */
@@ -22,6 +22,11 @@ export interface DrawerRefs {
 
 export interface DrawerOpenChangeDetails {
   open: boolean
+  /**
+   * 这一次是怎么关的；展开时不带。
+   * 用它区分「用户主动取消」与「选完自动收起」，前者常要回滚草稿。
+   */
+  reason?: OverlayCloseReason
 }
 
 export interface DrawerSchema extends MachineSchema {

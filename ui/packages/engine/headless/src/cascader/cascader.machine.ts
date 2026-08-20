@@ -1,3 +1,4 @@
+import { closeReasonOf } from '../shared/close-reason'
 import type { Placement, PositionResult } from '@xihan-ui/kernel'
 import type { CascaderFocusIntent, CascaderNodeMeta, CascaderSchema, CascaderValue } from './cascader.types'
 import { cascadeToggle, collapseChecked, createDismissLayer, createFocusScope, itemValue, queryItems } from '@xihan-ui/behavior'
@@ -176,7 +177,7 @@ export const cascaderMachine = createMachine({
     },
     actions: {
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
+      invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
 
       setInputValue: ({ context, event }) => {
         const e = event.current()

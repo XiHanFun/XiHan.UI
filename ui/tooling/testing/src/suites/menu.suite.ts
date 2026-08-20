@@ -283,7 +283,7 @@ export const menuSuite: ConformanceSuite = {
             // 先选中详情、后开合意图
             events: [
               { type: 'select', detail: { value: 'paste' } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },
@@ -312,7 +312,7 @@ export const menuSuite: ConformanceSuite = {
             },
             events: [
               { type: 'select', detail: { value: 'copy' } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },
@@ -349,7 +349,7 @@ export const menuSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'Escape',
-          expect: { events: [{ type: 'open-change', detail: { open: false } }] },
+          expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'esc' } }] },
         },
         {
           kind: 'settle',
@@ -384,7 +384,7 @@ export const menuSuite: ConformanceSuite = {
               trigger: { 'aria-expanded': 'false', 'data-state': 'closed' },
               content: { 'data-state': 'closed', 'hidden': '' },
             },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'tab' } }],
           },
         },
         {

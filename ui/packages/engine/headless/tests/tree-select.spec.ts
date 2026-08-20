@@ -342,7 +342,7 @@ describe('treeSelectMachine 开合与受控', () => {
     click(h.trigger)
     expect(h.state()).toBe('closed')
     expect(h.content.hasAttribute('hidden')).toBe(true)
-    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false })
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false, reason: 'close-trigger' })
   })
 
   it('受控 open：点 trigger 只发意图不自改状态，宿主写回后才转移', () => {

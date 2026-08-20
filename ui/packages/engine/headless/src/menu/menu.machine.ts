@@ -1,3 +1,4 @@
+import { closeReasonOf } from '../shared/close-reason'
 import type { Placement, PositionResult } from '@xihan-ui/kernel'
 import type { MenuFocusIntent, MenuSchema } from './menu.types'
 import { createDismissLayer, createFocusScope, itemValue, navigateItems, queryItems, trackHoverIntent } from '@xihan-ui/behavior'
@@ -88,7 +89,7 @@ export const menuMachine = createMachine({
     },
     actions: {
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
+      invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
       invokeOnSelect: ({ prop, event }) => {
         const e = event.current()
         if (e.type === 'ITEM.SELECT')

@@ -342,7 +342,7 @@ export const popselectSuite: ConformanceSuite = {
             // 先落值再收起：两件事各发各的意图回调
             events: [
               { type: 'value-change', detail: { value: ['apple'] } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },
@@ -424,7 +424,7 @@ export const popselectSuite: ConformanceSuite = {
               trigger: { 'aria-expanded': 'false', 'data-state': 'closed' },
               content: { 'data-state': 'closed', 'hidden': '' },
             },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'tab' } }],
           },
         },
         // Tab 是「焦点已经去别处了」，收起后不该把它拽回触发器；
@@ -457,7 +457,7 @@ export const popselectSuite: ConformanceSuite = {
             },
             events: [
               { type: 'value-change', detail: { value: ['cherry'] } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },
@@ -478,7 +478,7 @@ export const popselectSuite: ConformanceSuite = {
             parts: { item: selected('apple') },
             events: [
               { type: 'value-change', detail: { value: ['cherry'] } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },

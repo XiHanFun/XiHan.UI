@@ -1,3 +1,4 @@
+import { closeReasonOf } from '../shared/close-reason'
 import type { Placement, PositionResult, VirtualAnchor } from '@xihan-ui/kernel'
 import type { ContextMenuFocusIntent, ContextMenuPoint, ContextMenuSchema } from './context-menu.types'
 import { createDismissLayer, createFocusScope, createTypeahead, itemValue, navigateItems, queryItems } from '@xihan-ui/behavior'
@@ -146,7 +147,7 @@ export const contextMenuMachine = createMachine({
     },
     actions: {
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
+      invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
       invokeOnSelect: ({ prop, event }) => {
         const e = event.current()
         if (e.type === 'ITEM.SELECT')

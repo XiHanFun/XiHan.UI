@@ -1,3 +1,4 @@
+import { closeReasonOf } from '../shared/close-reason'
 import type { DrawerSchema } from './drawer.types'
 import { acquireScrollLock, createDismissLayer, createFocusScope } from '@xihan-ui/behavior'
 import { hideOutside } from '@xihan-ui/kernel'
@@ -55,7 +56,7 @@ export const drawerMachine = createMachine({
     },
     actions: {
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
+      invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
       // 只在受控（open 为布尔）时回写；open 变回 undefined 表示转非受控，不强制关闭
       syncOpen: ({ prop, send }) => {
         const open = prop('open')

@@ -446,7 +446,7 @@ export const selectSuite: ConformanceSuite = {
             // 先值后开合
             events: [
               { type: 'value-change', detail: { value: ['banana'] } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },
@@ -530,7 +530,7 @@ export const selectSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'Tab',
-          expect: { events: [{ type: 'open-change', detail: { open: false } }] },
+          expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'tab' } }] },
         },
         {
           kind: 'settle',
@@ -572,7 +572,7 @@ export const selectSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'Escape',
-          expect: { events: [{ type: 'open-change', detail: { open: false } }] },
+          expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'esc' } }] },
         },
         {
           kind: 'settle',
@@ -592,7 +592,7 @@ export const selectSuite: ConformanceSuite = {
         {
           kind: 'key',
           key: 'Escape',
-          expect: { events: [{ type: 'open-change', detail: { open: false } }] },
+          expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'esc' } }] },
         },
         {
           kind: 'settle',
@@ -678,7 +678,7 @@ export const selectSuite: ConformanceSuite = {
             },
             events: [
               { type: 'value-change', detail: { value: ['cherry'] } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },

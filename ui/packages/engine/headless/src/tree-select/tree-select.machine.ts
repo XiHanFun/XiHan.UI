@@ -1,3 +1,4 @@
+import { closeReasonOf } from '../shared/close-reason'
 import type { Placement, PositionResult } from '@xihan-ui/kernel'
 import type { TreeVisibleNode } from '../tree'
 import type { TreeSelectFocusIntent, TreeSelectSchema } from './tree-select.types'
@@ -170,7 +171,7 @@ export const treeSelectMachine = createMachine({
       resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
 
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
+      invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
 
       // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
       syncOpen: ({ prop, send }) => {
