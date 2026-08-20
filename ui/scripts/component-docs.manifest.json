@@ -56,6 +56,10 @@
         {
           "id": "typography",
           "name": "排印"
+        },
+        {
+          "id": "watermark",
+          "name": "水印"
         }
       ]
     },
@@ -95,10 +99,6 @@
         {
           "id": "splitter",
           "name": "分栏"
-        },
-        {
-          "id": "watermark",
-          "name": "水印"
         }
       ]
     },
@@ -162,6 +162,10 @@
         {
           "id": "toolbar",
           "name": "工具栏"
+        },
+        {
+          "id": "tour",
+          "name": "引导"
         }
       ]
     },
@@ -424,10 +428,6 @@
         {
           "id": "timer",
           "name": "计时器"
-        },
-        {
-          "id": "tour",
-          "name": "引导"
         },
         {
           "id": "tree",
