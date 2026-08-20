@@ -1,0 +1,89 @@
+<!-- 间距档位 | gap 收的是档位名不是像素：xs / sm / md / lg / xl 逐档指向一个间距令牌，缺省 md -->
+<style>
+  #space-gap [data-box] {
+    padding: 6px 12px;
+    border-radius: var(--xh-radius-md);
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-default);
+  }
+  #space-gap [data-label] {
+    font-size: 13px;
+    color: var(--xh-fg-muted);
+    inline-size: 96px;
+  }
+  #space-gap [data-row] {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+</style>
+
+<div id="space-gap" style="display: flex; flex-direction: column; gap: 8px">
+  <div data-row>
+    <span data-label>gap = xs</span>
+    <!-- 宿主设 display: contents，排布落在 root 上 -->
+    <xh-space gap="xs" style="display: contents">
+      <div data-xh-part="root">
+        <span data-box>甲</span>
+        <span data-box>乙</span>
+        <span data-box>丙</span>
+      </div>
+    </xh-space>
+  </div>
+
+  <div data-row>
+    <span data-label>gap = sm</span>
+    <xh-space gap="sm" style="display: contents">
+      <div data-xh-part="root">
+        <span data-box>甲</span>
+        <span data-box>乙</span>
+        <span data-box>丙</span>
+      </div>
+    </xh-space>
+  </div>
+
+  <div data-row>
+    <span data-label>gap = md</span>
+    <xh-space gap="md" style="display: contents">
+      <div data-xh-part="root">
+        <span data-box>甲</span>
+        <span data-box>乙</span>
+        <span data-box>丙</span>
+      </div>
+    </xh-space>
+  </div>
+
+  <div data-row>
+    <span data-label>gap = lg</span>
+    <xh-space gap="lg" style="display: contents">
+      <div data-xh-part="root">
+        <span data-box>甲</span>
+        <span data-box>乙</span>
+        <span data-box>丙</span>
+      </div>
+    </xh-space>
+  </div>
+
+  <div data-row>
+    <span data-label>gap = xl</span>
+    <xh-space gap="xl" style="display: contents">
+      <div data-xh-part="root">
+        <span data-box>甲</span>
+        <span data-box>乙</span>
+        <span data-box>丙</span>
+      </div>
+    </xh-space>
+  </div>
+
+  <div data-row>
+    <span data-label>槽位覆盖</span>
+    <!-- 档位不够用时，直接给使用者槽位写值，它排在所有档位之前 -->
+    <xh-space gap="xs" style="display: contents">
+      <div data-xh-part="root" style="--xh-space-gap: 40px">
+        <span data-box>甲</span>
+        <span data-box>乙</span>
+        <span data-box>丙</span>
+      </div>
+    </xh-space>
+  </div>
+</div>

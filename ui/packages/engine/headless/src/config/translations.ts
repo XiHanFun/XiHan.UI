@@ -30,31 +30,39 @@ import type { CountdownTranslations } from '../countdown/countdown.types'
 import type { DatePickerTranslations } from '../date-picker/date-picker.types'
 import type { DescriptionsTranslations } from '../descriptions/descriptions.types'
 import type { DialogTranslations } from '../dialog/dialog.types'
+import type { DownloadTriggerTranslations } from '../download-trigger/download-trigger.types'
 import type { DrawerTranslations } from '../drawer/drawer.types'
 import type { DynamicInputTranslations } from '../dynamic-input/dynamic-input.types'
 import type { EditableTranslations } from '../editable/editable.types'
 import type { EllipsisTranslations } from '../ellipsis/ellipsis.types'
 import type { EmptyStateTranslations } from '../empty-state/empty-state.types'
 import type { FieldTranslations } from '../field/field.types'
+import type { FieldsetTranslations } from '../fieldset/fieldset.types'
 import type { FileUploadTranslations } from '../file-upload/file-upload.types'
 import type { FlexTranslations } from '../flex/flex.types'
 import type { FloatButtonTranslations } from '../float-button/float-button.types'
+import type { FloatingPanelTranslations } from '../floating-panel/floating-panel.types'
 import type { FormTranslations } from '../form/form.types'
 import type { GradientTextTranslations } from '../gradient-text/gradient-text.types'
 import type { GridTranslations } from '../grid/grid.types'
+import type { HeatmapTranslations } from '../heatmap/heatmap.types'
 import type { HighlightTranslations } from '../highlight/highlight.types'
+import type { HotkeysTranslations } from '../hotkeys/hotkeys.types'
 import type { HoverCardTranslations } from '../hover-card/hover-card.types'
 import type { IconWrapperTranslations } from '../icon-wrapper/icon-wrapper.types'
 import type { IconTranslations } from '../icon/icon.types'
+import type { ImageCropperTranslations } from '../image-cropper/image-cropper.types'
 import type { ImageViewerTranslations } from '../image-viewer/image-viewer.types'
 import type { ImageTranslations } from '../image/image.types'
 import type { InfiniteScrollTranslations } from '../infinite-scroll/infinite-scroll.types'
+import type { JsonViewerTranslations } from '../json-viewer/json-viewer.types'
 import type { LayoutTranslations } from '../layout/layout.types'
 import type { ListTranslations } from '../list/list.types'
 import type { ListboxTranslations } from '../listbox/listbox.types'
 import type { LoadingBarTranslations } from '../loading-bar/loading-bar.types'
 import type { LogTranslations } from '../log/log.types'
 import type { MarqueeTranslations } from '../marquee/marquee.types'
+import type { MasonryTranslations } from '../masonry/masonry.types'
 import type { MentionTranslations } from '../mention/mention.types'
 import type { MenuTranslations } from '../menu/menu.types'
 import type { MenubarTranslations } from '../menubar/menubar.types'
@@ -63,6 +71,7 @@ import type { NumberAnimationTranslations } from '../number-animation/number-ani
 import type { NumberFieldTranslations } from '../number-field/number-field.types'
 import type { PageHeaderTranslations } from '../page-header/page-header.types'
 import type { PaginationTranslations } from '../pagination/pagination.types'
+import type { PasswordInputTranslations } from '../password-input/password-input.types'
 import type { PinInputTranslations } from '../pin-input/pin-input.types'
 import type { PopconfirmTranslations } from '../popconfirm/popconfirm.types'
 import type { PopoverTranslations } from '../popover/popover.types'
@@ -73,11 +82,14 @@ import type { RadioGroupTranslations } from '../radio-group/radio-group.types'
 import type { RatingTranslations } from '../rating/rating.types'
 import type { ResultTranslations } from '../result/result.types'
 import type { ScrollAreaTranslations } from '../scroll-area/scroll-area.types'
+import type { SegmentedTranslations } from '../segmented/segmented.types'
 import type { SelectTranslations } from '../select/select.types'
 import type { SeparatorTranslations } from '../separator/separator.types'
 import type { SideNavTranslations } from '../side-nav/side-nav.types'
+import type { SignaturePadTranslations } from '../signature-pad/signature-pad.types'
 import type { SkeletonTranslations } from '../skeleton/skeleton.types'
 import type { SliderTranslations } from '../slider/slider.types'
+import type { SpaceTranslations } from '../space/space.types'
 import type { SpinnerTranslations } from '../spinner/spinner.types'
 import type { SplitterTranslations } from '../splitter/splitter.types'
 import type { StatisticTranslations } from '../statistic/statistic.types'
@@ -85,6 +97,7 @@ import type { StepsTranslations } from '../steps/steps.types'
 import type { SwitchTranslations } from '../switch/switch.types'
 import type { TableTranslations } from '../table/table.types'
 import type { TabsTranslations } from '../tabs/tabs.types'
+import type { TagTranslations } from '../tag/tag.types'
 import type { TagsInputTranslations } from '../tags-input/tags-input.types'
 import type { TextFieldTranslations } from '../text-field/text-field.types'
 import type { ThreadTranslations } from '../thread/thread.types'
@@ -92,6 +105,7 @@ import type { TimeFieldTranslations } from '../time-field/time-field.types'
 import type { TimePickerTranslations } from '../time-picker/time-picker.types'
 import type { TimeTranslations } from '../time/time.types'
 import type { TimelineTranslations } from '../timeline/timeline.types'
+import type { TimerTranslations } from '../timer/timer.types'
 import type { ToastTranslations } from '../toast/toast.types'
 import type { ToasterTranslations } from '../toaster/toaster.types'
 import type { ToggleGroupTranslations } from '../toggle-group/toggle-group.types'
@@ -137,31 +151,39 @@ export interface XhTranslationOverrides {
   'date-picker'?: Partial<DatePickerTranslations>
   'descriptions'?: Partial<DescriptionsTranslations>
   'dialog'?: Partial<DialogTranslations>
+  'download-trigger'?: Partial<DownloadTriggerTranslations>
   'drawer'?: Partial<DrawerTranslations>
   'dynamic-input'?: Partial<DynamicInputTranslations>
   'editable'?: Partial<EditableTranslations>
   'ellipsis'?: Partial<EllipsisTranslations>
   'empty-state'?: Partial<EmptyStateTranslations>
   'field'?: Partial<FieldTranslations>
+  'fieldset'?: Partial<FieldsetTranslations>
   'file-upload'?: Partial<FileUploadTranslations>
   'flex'?: Partial<FlexTranslations>
   'float-button'?: Partial<FloatButtonTranslations>
+  'floating-panel'?: Partial<FloatingPanelTranslations>
   'form'?: Partial<FormTranslations>
   'gradient-text'?: Partial<GradientTextTranslations>
   'grid'?: Partial<GridTranslations>
+  'heatmap'?: Partial<HeatmapTranslations>
   'highlight'?: Partial<HighlightTranslations>
+  'hotkeys'?: Partial<HotkeysTranslations>
   'hover-card'?: Partial<HoverCardTranslations>
   'icon'?: Partial<IconTranslations>
   'icon-wrapper'?: Partial<IconWrapperTranslations>
   'image'?: Partial<ImageTranslations>
+  'image-cropper'?: Partial<ImageCropperTranslations>
   'image-viewer'?: Partial<ImageViewerTranslations>
   'infinite-scroll'?: Partial<InfiniteScrollTranslations>
+  'json-viewer'?: Partial<JsonViewerTranslations>
   'layout'?: Partial<LayoutTranslations>
   'list'?: Partial<ListTranslations>
   'listbox'?: Partial<ListboxTranslations>
   'loading-bar'?: Partial<LoadingBarTranslations>
   'log'?: Partial<LogTranslations>
   'marquee'?: Partial<MarqueeTranslations>
+  'masonry'?: Partial<MasonryTranslations>
   'mention'?: Partial<MentionTranslations>
   'menu'?: Partial<MenuTranslations>
   'menubar'?: Partial<MenubarTranslations>
@@ -170,6 +192,7 @@ export interface XhTranslationOverrides {
   'number-field'?: Partial<NumberFieldTranslations>
   'page-header'?: Partial<PageHeaderTranslations>
   'pagination'?: Partial<PaginationTranslations>
+  'password-input'?: Partial<PasswordInputTranslations>
   'pin-input'?: Partial<PinInputTranslations>
   'popconfirm'?: Partial<PopconfirmTranslations>
   'popover'?: Partial<PopoverTranslations>
@@ -180,11 +203,14 @@ export interface XhTranslationOverrides {
   'rating'?: Partial<RatingTranslations>
   'result'?: Partial<ResultTranslations>
   'scroll-area'?: Partial<ScrollAreaTranslations>
+  'segmented'?: Partial<SegmentedTranslations>
   'select'?: Partial<SelectTranslations>
   'separator'?: Partial<SeparatorTranslations>
   'side-nav'?: Partial<SideNavTranslations>
+  'signature-pad'?: Partial<SignaturePadTranslations>
   'skeleton'?: Partial<SkeletonTranslations>
   'slider'?: Partial<SliderTranslations>
+  'space'?: Partial<SpaceTranslations>
   'spinner'?: Partial<SpinnerTranslations>
   'splitter'?: Partial<SplitterTranslations>
   'statistic'?: Partial<StatisticTranslations>
@@ -192,6 +218,7 @@ export interface XhTranslationOverrides {
   'switch'?: Partial<SwitchTranslations>
   'table'?: Partial<TableTranslations>
   'tabs'?: Partial<TabsTranslations>
+  'tag'?: Partial<TagTranslations>
   'tags-input'?: Partial<TagsInputTranslations>
   'text-field'?: Partial<TextFieldTranslations>
   'thread'?: Partial<ThreadTranslations>
@@ -199,6 +226,7 @@ export interface XhTranslationOverrides {
   'time-field'?: Partial<TimeFieldTranslations>
   'time-picker'?: Partial<TimePickerTranslations>
   'timeline'?: Partial<TimelineTranslations>
+  'timer'?: Partial<TimerTranslations>
   'toast'?: Partial<ToastTranslations>
   'toaster'?: Partial<ToasterTranslations>
   'toggle'?: Partial<ToggleTranslations>

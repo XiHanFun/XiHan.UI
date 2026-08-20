@@ -6,6 +6,1151 @@
 
 /* 层序声明必须最先：级联层的先后由首次出现定死，layers.css 打头才立得住序。 */
 
+/* styles/download-trigger.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='download-trigger'] {
+  --xh-download-trigger-skin: 1;
+}
+
+/*
+ * 触发器就是这一个原生按钮，两个适配器都由组件自己渲染它，
+ * 所以外观得由设计系统给出一份完整的中性按钮：底色、描边、高度、字号都上令牌，
+ * 要换成品牌样式的作者改 --xh-download-trigger-* 这一族槽位，或直接写自己的类名。
+ */
+[data-scope='download-trigger'][data-part='root'] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--xh-download-trigger-gap, var(--xh-control-gap-md));
+  block-size: var(--xh-download-trigger-h, var(--xh-control-h-md));
+  padding-inline: var(--xh-download-trigger-px, var(--xh-control-px-md));
+  padding-block: 0;
+  border: var(--xh-stroke-thin) solid var(--xh-download-trigger-border, var(--xh-border-control));
+  border-radius: var(--xh-download-trigger-radius, var(--xh-shape-control));
+  background: var(--xh-download-trigger-bg, var(--xh-bg-canvas));
+  color: var(--xh-download-trigger-fg, var(--xh-fg-default));
+  /* 表单控件不继承页面字体，只给字号会让按钮用 UA 默认字族 */
+  font-family: inherit;
+  font-size: var(--xh-download-trigger-font-size, var(--xh-text-label-size));
+  font-weight: var(--xh-download-trigger-font-weight, var(--xh-text-label-weight));
+  line-height: var(--xh-leading-none);
+  white-space: nowrap;
+  cursor: pointer;
+  /* 导出键常被连点，触屏上默认会当成双击缩放 */
+  user-select: none;
+  touch-action: manipulation;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
+[data-scope='download-trigger'][data-part='root'][hidden] {
+  display: none;
+}
+
+[data-scope='download-trigger'][data-part='root']:hover {
+  border-color: var(--xh-download-trigger-border-hover, var(--xh-border-control-hover));
+  background: var(--xh-download-trigger-bg-hover, var(--xh-bg-subtle-hover));
+}
+
+[data-scope='download-trigger'][data-part='root']:active {
+  background: var(--xh-download-trigger-bg-active, var(--xh-bg-subtle-active));
+}
+
+[data-scope='download-trigger'][data-part='root']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+/* 取数在途：按钮留在原地不动，只换指针形状——位置一变，正要再点的人就点空了 */
+[data-scope='download-trigger'][data-part='root'][data-state='preparing'] {
+  cursor: progress;
+}
+
+/*
+ * 单体原生控件的禁用走 :disabled。前景与底色一起换，禁用前后两侧都由令牌管着；
+ * 用了 fg-disabled 就不再叠 opacity——两样一起用会压到读不出来。
+ * 这条排在悬停与按下之后，特异度相同、后写的赢。
+ * 描边仍按可操作区那一档：这是一颗独立按钮，四周没有别的结构标出它的位置，
+ * 描边一压下去整颗按钮在页面上就没影了。
+ */
+[data-scope='download-trigger'][data-part='root']:disabled {
+  border-color: var(--xh-download-trigger-border-disabled, var(--xh-border-control));
+  background: var(--xh-download-trigger-bg-disabled, var(--xh-bg-muted));
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+/* styles/fieldset.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='fieldset'] {
+  --xh-fieldset-skin: 1;
+}
+
+/* 抹掉 UA 给 <fieldset> 的边框、内外边距与 min-content 下限，间距全部改由令牌给。
+   display 落在 fieldset 的匿名内容盒上：首个 <legend> 不在这个盒子里，
+   所以 gap 只作用于组内各块，legend 与内容之间的留白由 legend 自己的下外边距给。 */
+[data-scope='fieldset'][data-part='root'] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-fieldset-gap, var(--xh-space-4));
+  margin: 0;
+  border: 0;
+  padding: 0;
+  min-inline-size: 0;
+}
+
+[data-scope='fieldset'][data-part='root'][hidden] {
+  display: none;
+}
+
+[data-scope='fieldset'][data-part='legend'] {
+  padding: 0;
+  margin-block-end: var(--xh-fieldset-legend-gap, var(--xh-space-2));
+  color: var(--xh-fieldset-legend-fg, var(--xh-fg-default));
+  font-size: var(--xh-fieldset-legend-font-size, var(--xh-text-label-size));
+  font-weight: var(--xh-fieldset-legend-font-weight, var(--xh-text-label-weight));
+  line-height: var(--xh-leading-tight);
+}
+
+/* 整组无效时组标题转警示色：没渲染错误文案的字段集上，这是屏幕上唯一变化的东西 */
+[data-scope='fieldset'][data-part='root'][data-invalid] > [data-scope='fieldset'][data-part='legend'] {
+  color: var(--xh-fieldset-legend-fg-invalid, var(--xh-fg-danger));
+}
+
+/* 整组禁用时组标题跟着变淡；组内控件由原生 fieldset[disabled] 各自呈现禁用态。
+   选择器与上一条同权重且排在后面，禁用与无效同时为真时以禁用为准。 */
+[data-scope='fieldset'][data-part='root'] > [data-scope='fieldset'][data-part='legend'][data-disabled] {
+  color: var(--xh-fieldset-legend-fg-disabled, var(--xh-fg-subtle));
+}
+
+/* 必填星号：跟着根上的 data-required 亮，选填不标 */
+[data-scope='fieldset'][data-part='root'][data-required] > [data-scope='fieldset'][data-part='legend']::after {
+  content: '*';
+  margin-inline-start: var(--xh-space-1);
+  color: var(--xh-fieldset-legend-star, var(--xh-fg-danger));
+}
+
+[data-scope='fieldset'][data-part='helper-text'] {
+  margin: 0;
+  color: var(--xh-fieldset-helper-fg, var(--xh-fg-muted));
+  font-size: var(--xh-fieldset-helper-font-size, var(--xh-font-size-sm));
+  line-height: var(--xh-leading-normal);
+}
+
+[data-scope='fieldset'][data-part='helper-text'][data-disabled] {
+  color: var(--xh-fieldset-helper-fg-disabled, var(--xh-fg-subtle));
+}
+
+/* 不 invalid 时节点带 hidden：此处不声明 display，交给浏览器的 [hidden] 规则收起 */
+[data-scope='fieldset'][data-part='error-text'] {
+  margin: 0;
+  color: var(--xh-fieldset-error-fg, var(--xh-fg-danger));
+  font-size: var(--xh-fieldset-error-font-size, var(--xh-font-size-sm));
+  line-height: var(--xh-leading-normal);
+}
+
+/* styles/floating-panel.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='floating-panel'] {
+  --xh-floating-panel-skin: 1;
+}
+
+/* 分工：**面板的落位与尺寸**由连接层每帧写进 positioner 的内联样式
+   （position / left / top / width / height）。这份皮肤一条都不碰那五个属性——
+   内联优先级高于样式表，写了不但是死声明，还会在切换形态的那一帧跟连接层抢位置。
+   皮肤只管层级、配色、圆角、阴影、把手的摆放与状态表现。 */
+
+[data-scope='floating-panel'][data-part='root'] {
+  /* 面板本身是 fixed 定位，root 只是作者那棵树里的容器，不参与排布 */
+  display: contents;
+}
+
+[data-scope='floating-panel'][data-part='root'][hidden] {
+  display: none;
+}
+
+[data-scope='floating-panel'][data-part='trigger'] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  block-size: var(--xh-floating-panel-trigger-h, var(--xh-control-h-md));
+  padding-inline: var(--xh-floating-panel-trigger-px, var(--xh-control-px-md));
+  border: var(--xh-stroke-thin) solid var(--xh-floating-panel-trigger-border, var(--xh-border-control));
+  border-radius: var(--xh-floating-panel-trigger-radius, var(--xh-shape-control));
+  background: var(--xh-floating-panel-trigger-bg, var(--xh-bg-surface));
+  color: var(--xh-floating-panel-trigger-fg, var(--xh-fg-default));
+  font-size: var(--xh-text-label-size);
+  cursor: pointer;
+}
+
+[data-scope='floating-panel'][data-part='trigger'][hidden] {
+  display: none;
+}
+
+[data-scope='floating-panel'][data-part='trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+/* 把手的粗细：八个把手共用这两档，声明在这里往下继承。 */
+[data-scope='floating-panel'][data-part='positioner'] {
+  --xh-_floating-panel-handle: var(--xh-floating-panel-handle-size, var(--xh-space-2));
+  --xh-_floating-panel-corner: var(--xh-floating-panel-corner-size, var(--xh-space-4));
+
+  position: fixed;
+  /* 与抽屉同一档：面板要盖住吸顶栏，又该被随后打开的弹窗与浮层压住 */
+  z-index: var(--xh-layer-drawer);
+  display: block;
+}
+
+[data-scope='floating-panel'][data-part='positioner'][hidden] {
+  display: none;
+}
+
+[data-scope='floating-panel'][data-part='content'] {
+  position: relative;
+  block-size: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* 面板底下没有遮罩，压着的是任意页面内容：这条描边是它与背景之间唯一的边界，
+     取 border-default 与同样无遮罩的气泡卡片一档，别退到更淡的 border-subtle */
+  border: var(--xh-stroke-thin) solid var(--xh-floating-panel-border, var(--xh-border-default));
+  border-radius: var(--xh-floating-panel-radius, var(--xh-shape-surface));
+  background: var(--xh-floating-panel-bg, var(--xh-bg-surface));
+  color: var(--xh-floating-panel-fg, var(--xh-fg-default));
+  box-shadow: var(--xh-floating-panel-shadow, var(--xh-elevation-3));
+}
+
+[data-scope='floating-panel'][data-part='content'][hidden] {
+  display: none;
+}
+
+/* 面板本体不接收焦点，只是键盘事件的收口点，画环反而像是选中了整块 */
+[data-scope='floating-panel'][data-part='content']:focus-visible {
+  outline: none;
+}
+
+/* 跟手期间整块不许选中文字：手在标题栏上来回蹭时会顺带把正文刷成高亮 */
+[data-scope='floating-panel'][data-part='content'][data-dragging],
+[data-scope='floating-panel'][data-part='content'][data-resizing] {
+  user-select: none;
+}
+
+[data-scope='floating-panel'][data-part='header'] {
+  display: flex;
+  align-items: center;
+  gap: var(--xh-floating-panel-header-gap, var(--xh-control-gap-sm));
+  padding-block: var(--xh-floating-panel-header-py, var(--xh-space-2));
+  padding-inline: var(--xh-floating-panel-header-px, var(--xh-space-3));
+  border-block-end: var(--xh-stroke-thin) solid var(--xh-floating-panel-header-border, var(--xh-border-subtle));
+  background: var(--xh-floating-panel-header-bg, var(--xh-bg-subtle));
+}
+
+[data-scope='floating-panel'][data-part='header'][hidden] {
+  display: none;
+}
+
+[data-scope='floating-panel'][data-part='title'] {
+  margin: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  font-size: var(--xh-floating-panel-title-font-size, var(--xh-text-label-size));
+  font-weight: var(--xh-floating-panel-title-font-weight, var(--xh-text-label-weight));
+  line-height: var(--xh-leading-tight);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--xh-floating-panel-title-fg, var(--xh-fg-default));
+}
+
+/* 拖拽把手铺满标题栏剩下的横向空间：只给一小块纹理的话很难抓住 */
+[data-scope='floating-panel'][data-part='drag-trigger'] {
+  flex: 1 1 auto;
+  align-self: stretch;
+  min-inline-size: var(--xh-space-6);
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: grab;
+}
+
+[data-scope='floating-panel'][data-part='drag-trigger'][data-dragging] {
+  cursor: grabbing;
+}
+
+[data-scope='floating-panel'][data-part='drag-trigger'][data-disabled] {
+  cursor: default;
+}
+
+[data-scope='floating-panel'][data-part='drag-trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-offset));
+}
+
+/* —— 改尺把手 ——
+   这一段刻意用物理的 inset / width / height：面板的坐标是屏幕坐标（连接层写的是
+   left/top），指针位移与方向键推动的也是屏幕方向。改成逻辑属性后，RTL 下 inset-inline-start
+   会翻到另一侧，守着「西边」的把手会长在东边，手往右拖却从左边收——把手与它推的那条边脱钩。 */
+[data-scope='floating-panel'][data-part='resize-trigger'] {
+  position: absolute;
+  border: 0;
+  padding: 0;
+  /* 把手是透明的命中区：看不见但要摸得着，嫌小就调 --xh-floating-panel-handle-size */
+  background: transparent;
+}
+
+/* 只换指针形状，不摘 pointer-events：点击守卫在连接层，摘掉会让"键盘还在、指针没了"
+   这两套禁用语义对不上 */
+[data-scope='floating-panel'][data-part='resize-trigger'][data-disabled] {
+  cursor: default;
+}
+
+[data-scope='floating-panel'][data-part='resize-trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-offset));
+}
+
+[data-scope='floating-panel'][data-part='resize-trigger'][data-edge='n'] {
+  inset: 0 0 auto 0;
+  height: var(--xh-_floating-panel-handle);
+  cursor: ns-resize;
+}
+
+[data-scope='floating-panel'][data-part='resize-trigger'][data-edge='s'] {
+  inset: auto 0 0 0;
+  height: var(--xh-_floating-panel-handle);
+  cursor: ns-resize;
+}
+
+[data-scope='floating-panel'][data-part='resize-trigger'][data-edge='w'] {
+  inset: 0 auto 0 0;
+  width: var(--xh-_floating-panel-handle);
+  cursor: ew-resize;
+}
+
+[data-scope='floating-panel'][data-part='resize-trigger'][data-edge='e'] {
+  inset: 0 0 0 auto;
+  width: var(--xh-_floating-panel-handle);
+  cursor: ew-resize;
+}
+
+/* 四个角排在四条边之后，命中区大一圈：角上要同时抓住两条边 */
+[data-scope='floating-panel'][data-part='resize-trigger'][data-edge='nw'] {
+  inset: 0 auto auto 0;
+  width: var(--xh-_floating-panel-corner);
+  height: var(--xh-_floating-panel-corner);
+  cursor: nwse-resize;
+}
+
+[data-scope='floating-panel'][data-part='resize-trigger'][data-edge='ne'] {
+  inset: 0 0 auto auto;
+  width: var(--xh-_floating-panel-corner);
+  height: var(--xh-_floating-panel-corner);
+  cursor: nesw-resize;
+}
+
+[data-scope='floating-panel'][data-part='resize-trigger'][data-edge='se'] {
+  inset: auto 0 0 auto;
+  width: var(--xh-_floating-panel-corner);
+  height: var(--xh-_floating-panel-corner);
+  cursor: nwse-resize;
+}
+
+[data-scope='floating-panel'][data-part='resize-trigger'][data-edge='sw'] {
+  inset: auto auto 0 0;
+  width: var(--xh-_floating-panel-corner);
+  height: var(--xh-_floating-panel-corner);
+  cursor: nesw-resize;
+}
+
+/* —— 标题栏上的按钮 —— */
+[data-scope='floating-panel'][data-part='stage-trigger'],
+[data-scope='floating-panel'][data-part='close-trigger'] {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--xh-control-action-size);
+  block-size: var(--xh-control-action-size);
+  border: 0;
+  border-radius: var(--xh-floating-panel-action-radius, var(--xh-shape-inset));
+  background: transparent;
+  color: var(--xh-floating-panel-action-fg, var(--xh-fg-muted));
+  cursor: pointer;
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='floating-panel'][data-part='stage-trigger'][hidden],
+[data-scope='floating-panel'][data-part='close-trigger'][hidden] {
+  display: none;
+}
+
+[data-scope='floating-panel'][data-part='stage-trigger']:hover,
+[data-scope='floating-panel'][data-part='close-trigger']:hover {
+  background: var(--xh-floating-panel-action-bg-hover, var(--xh-bg-subtle-hover));
+  color: var(--xh-floating-panel-action-fg-hover, var(--xh-fg-default));
+}
+
+/* 当前形态的那个按钮压着不放，用户一眼看得出面板正处于哪一档。
+   按下态的前景取 fg-default 而不是品牌色：品牌色压在这块底上只有 3.4:1（深色皮肤 2.9:1），
+   按钮里通常就一个字形，够不着文字该有的对比度。 */
+[data-scope='floating-panel'][data-part='stage-trigger'][data-state='on'] {
+  background: var(--xh-floating-panel-action-bg-active, var(--xh-bg-subtle-active));
+  color: var(--xh-floating-panel-action-fg-active, var(--xh-fg-default));
+}
+
+/* 只换前景不叠 opacity：叠了之后禁用文字的对比度会掉到读不出来 */
+[data-scope='floating-panel'][data-part='stage-trigger'][data-disabled] {
+  background: transparent;
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+[data-scope='floating-panel'][data-part='stage-trigger']:focus-visible,
+[data-scope='floating-panel'][data-part='close-trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope='floating-panel'][data-part='body'] {
+  flex: 1 1 auto;
+  display: block;
+  overflow: auto;
+  padding-block: var(--xh-floating-panel-body-py, var(--xh-space-3));
+  padding-inline: var(--xh-floating-panel-body-px, var(--xh-space-3));
+}
+
+/* 收拢时连接层给正文打 hidden，这里把 UA 的 [hidden] 还回来（上面那条 display 盖掉了它） */
+[data-scope='floating-panel'][data-part='body'][hidden] {
+  display: none;
+}
+
+/* styles/heatmap.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='heatmap'] {
+  --xh-heatmap-skin: 1;
+}
+
+/* 上下两条横排：月份行在网格之外（它只是一条对齐用的坐标轴），网格里是七行星期。
+   格子一律是固定尺寸的方块，列与列之间靠尺寸对齐，不必另立网格轨道。 */
+[data-scope='heatmap'][data-part='root'] {
+  /* 尺寸档只换这里的私有槽，各部件从 root 继承它们，换档不必给每个部件各写一条选择器。
+     格宽在这一处就把使用者令牌解析掉：错列与月份名的宽度都按它算，
+     各处分头读会让作者改宽格子后错列与月份名对不上 */
+  --xh-_heatmap-cell-size: var(--xh-heatmap-cell-size, var(--xh-space-2_5));
+  /* 格间距等于聚焦环占的宽度（偏移 + 环宽）：环因此落在格子之间的空当里，
+     不压在相邻格子上，各档格子的深浅都不影响环的对比度 */
+  --xh-_heatmap-gap: calc(var(--xh-ring-offset) + var(--xh-ring-width));
+  --xh-_heatmap-gutter: var(--xh-space-8);
+  --xh-_heatmap-font-size: var(--xh-font-size-xs);
+  /* 色阶的两端：0 档的空格底与满档的实心底。没写 data-tone 时就是这里的取值 */
+  --xh-_heatmap-empty: var(--xh-heatmap-empty, var(--xh-bg-subtle));
+  --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-bg-brand));
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-heatmap-gap, var(--xh-space-2));
+  /* 一整年五十几列，一屏放不下就自己横着滚。横向滚动会把纵向也变成 auto，
+     上下留出一圈聚焦环的余量，最上一行与最下一行的环才不会被裁掉 */
+  padding-block: var(--xh-heatmap-py, calc(var(--xh-ring-offset) + var(--xh-ring-width)));
+  overflow-x: auto;
+  color: var(--xh-heatmap-fg, var(--xh-fg-muted));
+  font-size: var(--xh-heatmap-font-size, var(--xh-_heatmap-font-size));
+  line-height: var(--xh-leading-none);
+}
+
+/* —— 语气 —— */
+/* 选择器带 [data-tone] 限定：不限定的话，放在语气容器里的热力图会跟着改色 */
+[data-scope='heatmap'][data-part='root'][data-tone] {
+  --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-_tone, var(--xh-bg-brand)));
+}
+
+/* —— 尺寸 —— */
+/* 缺省的 md 档写在上面的基础规则里 */
+[data-scope='heatmap'][data-part='root'][data-size='sm'] {
+  --xh-_heatmap-cell-size: var(--xh-heatmap-cell-size, var(--xh-space-2));
+  --xh-_heatmap-gutter: var(--xh-space-6);
+}
+
+[data-scope='heatmap'][data-part='root'][data-size='lg'] {
+  --xh-_heatmap-cell-size: var(--xh-heatmap-cell-size, var(--xh-space-3));
+}
+
+[data-scope='heatmap'][data-part='grid'] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-heatmap-grid-gap, var(--xh-_heatmap-gap));
+}
+
+/* 网格自己只在没有格子可落焦点时才占 Tab 位，那几帧里也该看得出焦点在哪 */
+[data-scope='heatmap'][data-part='grid']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope='heatmap'][data-part='row'] {
+  /* 区间起点不在周首日时，排在它前面的几行没有第 0 列的格子，连接层把错列数写进这个槽 */
+  --xh-_heatmap-row-offset: 0;
+
+  display: flex;
+  align-items: center;
+  gap: var(--xh-heatmap-row-gap, var(--xh-_heatmap-gap));
+}
+
+/* 行首的星期名。月份行行首那个占位也是它，宽度一样，月份才对得上列 */
+[data-scope='heatmap'][data-part='week-day-label'] {
+  display: block;
+  flex: 0 0 auto;
+  inline-size: var(--xh-heatmap-gutter, var(--xh-_heatmap-gutter));
+  overflow: hidden;
+  color: var(--xh-heatmap-label-fg, var(--xh-fg-subtle));
+  white-space: nowrap;
+  text-align: end;
+}
+
+/* 月份名横跨这个月占的那几列：列宽加列间距，末尾少算一个间距（它由行的 gap 补上） */
+[data-scope='heatmap'][data-part='month-label'] {
+  --xh-_heatmap-month-weeks: 1;
+
+  display: block;
+  flex: 0 0 auto;
+  inline-size: calc(
+    var(--xh-_heatmap-month-weeks) * (var(--xh-_heatmap-cell-size) + var(--xh-_heatmap-gap))
+    - var(--xh-_heatmap-gap)
+  );
+  overflow: hidden;
+  color: var(--xh-heatmap-label-fg, var(--xh-fg-subtle));
+  white-space: nowrap;
+}
+
+/* 一天一格。档位是连着的百分比，档数随便改都不必再写一条选择器 */
+[data-scope='heatmap'][data-part='cell'] {
+  --xh-_heatmap-level: 0%;
+
+  flex: 0 0 auto;
+  inline-size: var(--xh-_heatmap-cell-size);
+  block-size: var(--xh-_heatmap-cell-size);
+  border-radius: var(--xh-heatmap-cell-radius, var(--xh-shape-inset));
+  background: var(
+    --xh-heatmap-cell-bg,
+    color-mix(in oklab, var(--xh-_heatmap-ink) var(--xh-_heatmap-level), var(--xh-_heatmap-empty))
+  );
+  /* 空格与浅档在浅色底上几乎没有边界，描一圈极淡的线把方格勾出来。
+     这一档不能取 border-subtle：它与空格底色 bg-subtle 是同一个原色，描了等于没描 */
+  box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-heatmap-cell-border, var(--xh-border-default));
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 错列打在本行第一个格子上：打在行上会连行首的星期名一起往后推，
+   左侧那一列星期名就变成锯齿。两条选择器合起来正好是「本行第一个格子」，
+   行里写不写星期名都成立 */
+[data-scope='heatmap'][data-part='row'] > [data-scope='heatmap'][data-part='cell']:first-child,
+[data-scope='heatmap'][data-part='week-day-label'] + [data-scope='heatmap'][data-part='cell'] {
+  margin-inline-start: calc(
+    var(--xh-_heatmap-row-offset) * (var(--xh-_heatmap-cell-size) + var(--xh-_heatmap-gap))
+  );
+}
+
+[data-scope='heatmap'][data-part='cell']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope='heatmap'][data-part='legend'] {
+  display: flex;
+  align-items: center;
+  gap: var(--xh-heatmap-legend-gap, var(--xh-_heatmap-gap));
+  color: var(--xh-heatmap-label-fg, var(--xh-fg-subtle));
+}
+
+/* 对照条里的一格与网格里同档的格子同色，两处共用同一条色阶 */
+[data-scope='heatmap'][data-part='legend-item'] {
+  --xh-_heatmap-level: 0%;
+
+  display: block;
+  flex: 0 0 auto;
+  inline-size: var(--xh-_heatmap-cell-size);
+  block-size: var(--xh-_heatmap-cell-size);
+  border-radius: var(--xh-heatmap-cell-radius, var(--xh-shape-inset));
+  background: var(
+    --xh-heatmap-cell-bg,
+    color-mix(in oklab, var(--xh-_heatmap-ink) var(--xh-_heatmap-level), var(--xh-_heatmap-empty))
+  );
+  box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-heatmap-cell-border, var(--xh-border-default));
+}
+
+/* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
+   不补的话作者给节点加 hidden 后它照样显示。
+   格子没有声明 display，UA 那条兜得住，不必列在这里 */
+[data-scope='heatmap'][data-part='root'][hidden],
+[data-scope='heatmap'][data-part='grid'][hidden],
+[data-scope='heatmap'][data-part='row'][hidden],
+[data-scope='heatmap'][data-part='week-day-label'][hidden],
+[data-scope='heatmap'][data-part='month-label'][hidden],
+[data-scope='heatmap'][data-part='legend'][hidden],
+[data-scope='heatmap'][data-part='legend-item'][hidden] {
+  display: none;
+}
+
+/* styles/hotkeys.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='hotkeys'] {
+  --xh-hotkeys-skin: 1;
+}
+
+/* 一排键帽连着连接符。整块不换行：一组组合被折成两行就读不出是一组了 */
+[data-scope='hotkeys'][data-part='root'] {
+  /* 尺寸档只换这两个私有槽，键帽从 root 继承它们，换档不必给每个部件各写一条选择器 */
+  --xh-_hotkeys-font-size: var(--xh-font-size-sm);
+  --xh-_hotkeys-key-px: var(--xh-space-1);
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--xh-hotkeys-gap, var(--xh-space-0_5));
+  color: var(--xh-hotkeys-fg, var(--xh-fg-muted));
+  font-size: var(--xh-hotkeys-font-size, var(--xh-_hotkeys-font-size));
+  line-height: var(--xh-leading-none);
+  white-space: nowrap;
+}
+
+/* 一枚键帽：等宽字，带描边与一层薄阴影凑出按键的样子。
+   min-inline-size 保证单个字母的键帽不至于窄成一条 */
+[data-scope='hotkeys'][data-part='key'] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: var(--xh-hotkeys-key-min-w, var(--xh-control-indicator-size));
+  padding-block: var(--xh-hotkeys-key-py, var(--xh-space-0_5));
+  padding-inline: var(--xh-hotkeys-key-px, var(--xh-_hotkeys-key-px));
+  border: var(--xh-stroke-thin) solid var(--xh-hotkeys-key-border, var(--xh-border-subtle));
+  border-radius: var(--xh-hotkeys-key-radius, var(--xh-shape-inset));
+  background: var(--xh-hotkeys-key-bg, var(--xh-bg-surface));
+  box-shadow: var(--xh-hotkeys-key-shadow, var(--xh-elevation-1));
+  color: var(--xh-hotkeys-key-fg, var(--xh-fg-default));
+  /* kbd 的 UA 字体是等宽，但字号会被压小；两者都显式接过来，档位才归尺寸轴管 */
+  font-family: var(--xh-hotkeys-key-font, var(--xh-font-family-mono));
+  font-size: inherit;
+  font-weight: var(--xh-hotkeys-key-font-weight, var(--xh-font-weight-medium));
+  line-height: var(--xh-leading-none);
+}
+
+/* 修饰键多是符号，与主键的字母混排时字宽差得远，单独留一档给使用者调 */
+[data-scope='hotkeys'][data-part='key'][data-modifier] {
+  color: var(--xh-hotkeys-key-fg-modifier, var(--xh-fg-muted));
+}
+
+/* 连接符是排版符号，不参与键帽的盒子 */
+[data-scope='hotkeys'][data-part='separator'] {
+  color: var(--xh-hotkeys-separator-fg, var(--xh-fg-subtle));
+  user-select: none;
+}
+
+/* 监听关掉时组合按不出来，整块转成不可用的样子：键帽换成暗底、去掉阴影，前景压到 fg-subtle。
+   这块是 role=img 的说明性文字而不是失效控件，读者仍要认出按的是哪几枚键，
+   所以前景不用 fg-disabled（那一档压在 muted 底上只有 2.36:1 / 1.94:1），也不叠 opacity */
+[data-scope='hotkeys'][data-part='root'][data-disabled] {
+  color: var(--xh-fg-subtle);
+}
+
+[data-scope='hotkeys'][data-part='root'][data-disabled] [data-scope='hotkeys'][data-part='key'] {
+  background: var(--xh-hotkeys-key-bg-disabled, var(--xh-bg-muted));
+  box-shadow: none;
+  color: var(--xh-fg-subtle);
+}
+
+[data-scope='hotkeys'][data-part='root'][data-disabled] [data-scope='hotkeys'][data-part='separator'] {
+  color: var(--xh-fg-subtle);
+}
+
+/* —— 尺寸 —— */
+/* 缺省的 md 档写在上面的基础规则里 */
+[data-scope='hotkeys'][data-part='root'][data-size='sm'] {
+  --xh-_hotkeys-font-size: var(--xh-font-size-xs);
+  --xh-_hotkeys-key-px: var(--xh-space-0_5);
+}
+
+[data-scope='hotkeys'][data-part='root'][data-size='lg'] {
+  --xh-_hotkeys-font-size: var(--xh-font-size-md);
+  --xh-_hotkeys-key-px: var(--xh-space-1_5);
+}
+
+/* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
+   不补的话作者给节点加 hidden 后它照样显示。Mac 写法下连接符恒带 hidden，靠这条收起 */
+[data-scope='hotkeys'][data-part='root'][hidden],
+[data-scope='hotkeys'][data-part='key'][hidden],
+[data-scope='hotkeys'][data-part='separator'][hidden] {
+  display: none;
+}
+
+/* styles/image-cropper.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='image-cropper'] {
+  --xh-image-cropper-skin: 1;
+}
+
+/* 定位分工：裁切框在视口里的 left / top / width / height，以及图片与裁切框的
+   transform，由连接层每帧写进内联样式——那四个数是图片像素换算出来的百分比，
+   只有连接层算得出来。这份皮肤一个都不碰，写了不但是死声明，还会跟内联值抢位置。
+
+   私有槽两个，都挂在 root 上靠继承发下去：
+   handle-size 是把手的边长，zoom 是当前缩放倍率——裁切框整体被 scale 放大，
+   把手与描边要按倍率反向缩回去，否则放到 3 倍时把手也变成三倍大、描边变成三像素粗。 */
+[data-scope='image-cropper'][data-part='root'] {
+  --xh-_image-cropper-handle-size: var(--xh-image-cropper-handle-size, var(--xh-control-indicator-size));
+  --xh-_image-cropper-zoom: 1;
+
+  position: relative;
+  display: block;
+  inline-size: var(--xh-image-cropper-w, 100%);
+}
+
+/* 量坐标的那个盒子。里面装的是图片像素坐标，不是文字：裁切框与把手的落点一律写物理属性，
+   不依赖这里的文字方向。overflow 收口：放大后的图片与遮罩都靠它裁掉。 */
+[data-scope='image-cropper'][data-part='viewport'] {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: var(--xh-image-cropper-radius, var(--xh-shape-surface));
+  background: var(--xh-image-cropper-bg, var(--xh-bg-muted));
+  user-select: none;
+}
+
+/* 图片铺满视口、高度自适应：视口的高度因此由图片撑出来，
+   裁切框的百分比坐标才与图片的像素一一对应。 */
+[data-scope='image-cropper'][data-part='image'] {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+}
+
+/* 裁切框。遮罩用一圈超大的实心投影把框外压暗——不必再摆四块遮罩节点，
+   圆形裁切时投影也自动跟着圆角走。描边按倍率缩回去，放大时仍是一根细线。 */
+[data-scope='image-cropper'][data-part='crop-area'] {
+  position: absolute;
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: calc(var(--xh-stroke-thin) / var(--xh-_image-cropper-zoom));
+  border-color: var(--xh-image-cropper-crop-border, var(--xh-bg-surface));
+  box-shadow: 0 0 0 9999px var(--xh-image-cropper-mask, var(--xh-bg-overlay));
+  cursor: move;
+}
+
+/* 圆形裁切的这一档只能写 50%：shape 那四档给的是固定长度，
+   裁切框的宽高由数据决定、两边通常不等长，固定长度画出来是胶囊不是椭圆。 */
+[data-scope='image-cropper'][data-part='crop-area'][data-shape='round'] {
+  border-radius: 50%;
+}
+
+[data-scope='image-cropper'][data-part='crop-area'][data-dragging] {
+  cursor: grabbing;
+}
+
+[data-scope='image-cropper'][data-part='crop-area'][data-readonly] {
+  cursor: default;
+}
+
+[data-scope='image-cropper'][data-part='crop-area'][data-disabled] {
+  cursor: not-allowed;
+}
+
+[data-scope='image-cropper'][data-part='crop-area']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+/* 三分构图参考线：两条竖线、两条横线，落点写死在三分处，不占节点、不吃指针。
+   停靠点逐条写全而不用 repeating-：重复单元从 0 起算会在框的两条边缘上各多画一根，
+   那两根与裁切框的描边叠在一起，看着像描边加粗了一倍。
+   线宽跟着裁切框的倍率缩回去，与描边同一口径。
+   圆形裁切时参考线没有意义，收起来。 */
+[data-scope='image-cropper'][data-part='grid'] {
+  --xh-_image-cropper-grid-w: calc(var(--xh-stroke-thin) / var(--xh-_image-cropper-zoom));
+
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(
+      to right,
+      transparent 0 33.3333%,
+      var(--xh-image-cropper-grid-line, var(--xh-border-subtle)) 33.3333% calc(33.3333% + var(--xh-_image-cropper-grid-w)),
+      transparent calc(33.3333% + var(--xh-_image-cropper-grid-w)) 66.6667%,
+      var(--xh-image-cropper-grid-line, var(--xh-border-subtle)) 66.6667% calc(66.6667% + var(--xh-_image-cropper-grid-w)),
+      transparent calc(66.6667% + var(--xh-_image-cropper-grid-w)) 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0 33.3333%,
+      var(--xh-image-cropper-grid-line, var(--xh-border-subtle)) 33.3333% calc(33.3333% + var(--xh-_image-cropper-grid-w)),
+      transparent calc(33.3333% + var(--xh-_image-cropper-grid-w)) 66.6667%,
+      var(--xh-image-cropper-grid-line, var(--xh-border-subtle)) 66.6667% calc(66.6667% + var(--xh-_image-cropper-grid-w)),
+      transparent calc(66.6667% + var(--xh-_image-cropper-grid-w)) 100%
+    );
+  pointer-events: none;
+}
+
+[data-scope='image-cropper'][data-part='grid'][data-shape='round'] {
+  background-image: none;
+}
+
+/* 把手钉在裁切框的角与边上。落点写物理 left / top：裁切框的坐标是图片像素，
+   连接层写进内联样式的也是物理 left / top，把手跟着走才不会与框错开一侧。
+   translate 把方块的中心挪到点上；scale 按倍率缩回去，缩放时把手看着大小不变。 */
+[data-scope='image-cropper'][data-part='crop-handle'] {
+  position: absolute;
+  display: block;
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: calc(var(--xh-stroke-thin) / var(--xh-_image-cropper-zoom));
+  border-color: var(--xh-image-cropper-handle-border, var(--xh-border-strong));
+  border-radius: var(--xh-image-cropper-handle-radius, var(--xh-shape-inset));
+  background: var(--xh-image-cropper-handle-bg, var(--xh-bg-surface));
+  inline-size: var(--xh-_image-cropper-handle-size);
+  block-size: var(--xh-_image-cropper-handle-size);
+  translate: -50% -50%;
+  scale: calc(1 / var(--xh-_image-cropper-zoom));
+}
+
+/* 看得见的方块比手指小：另铺一层不可见的命中区，把它撑到最小可点尺寸。
+   inset 取负值即向四面外扩，方块本身更大时这个值转正、命中区仍是方块那么大。 */
+[data-scope='image-cropper'][data-part='crop-handle']::before {
+  position: absolute;
+  inset: calc((var(--xh-_image-cropper-handle-size) - var(--xh-control-action-size)) / 2);
+  content: '';
+}
+
+[data-scope='image-cropper'][data-part='crop-handle']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope='image-cropper'][data-part='crop-handle'][data-resizing] {
+  background: var(--xh-image-cropper-handle-bg-resizing, var(--xh-bg-brand));
+}
+
+/* —— 八个方位：落点 + 光标 —— */
+[data-scope='image-cropper'][data-part='crop-handle'][data-position='nw'] {
+  top: 0;
+  /* stylelint-disable-next-line property-disallowed-list -- 裁切框的坐标是图片像素，落点跟着物理方向走 */
+  left: 0;
+  cursor: nwse-resize;
+}
+
+[data-scope='image-cropper'][data-part='crop-handle'][data-position='n'] {
+  top: 0;
+  /* stylelint-disable-next-line property-disallowed-list -- 同上 */
+  left: 50%;
+  cursor: ns-resize;
+}
+
+[data-scope='image-cropper'][data-part='crop-handle'][data-position='ne'] {
+  top: 0;
+  /* stylelint-disable-next-line property-disallowed-list -- 同上 */
+  left: 100%;
+  cursor: nesw-resize;
+}
+
+[data-scope='image-cropper'][data-part='crop-handle'][data-position='e'] {
+  top: 50%;
+  /* stylelint-disable-next-line property-disallowed-list -- 同上 */
+  left: 100%;
+  cursor: ew-resize;
+}
+
+[data-scope='image-cropper'][data-part='crop-handle'][data-position='se'] {
+  top: 100%;
+  /* stylelint-disable-next-line property-disallowed-list -- 同上 */
+  left: 100%;
+  cursor: nwse-resize;
+}
+
+[data-scope='image-cropper'][data-part='crop-handle'][data-position='s'] {
+  top: 100%;
+  /* stylelint-disable-next-line property-disallowed-list -- 同上 */
+  left: 50%;
+  cursor: ns-resize;
+}
+
+[data-scope='image-cropper'][data-part='crop-handle'][data-position='sw'] {
+  top: 100%;
+  /* stylelint-disable-next-line property-disallowed-list -- 同上 */
+  left: 0;
+  cursor: nesw-resize;
+}
+
+[data-scope='image-cropper'][data-part='crop-handle'][data-position='w'] {
+  top: 50%;
+  /* stylelint-disable-next-line property-disallowed-list -- 同上 */
+  left: 0;
+  cursor: ew-resize;
+}
+
+/* 只读与禁用的光标排在八个方位之后：那八条每条都写了 cursor，特异性又完全相同，
+   排在前面会被逐条盖掉，整条规则等于没写。 */
+[data-scope='image-cropper'][data-part='crop-handle'][data-readonly] {
+  cursor: default;
+}
+
+[data-scope='image-cropper'][data-part='crop-handle'][data-disabled] {
+  cursor: not-allowed;
+}
+
+/* 禁用的整体压暗只做一次，落在最外层：视口、裁切框、把手各自再叠一层会越叠越黑。
+   这里只用 opacity、不换前景色：框里是图像，没有文字可换。 */
+[data-scope='image-cropper'][data-part='root'][data-disabled] {
+  cursor: not-allowed;
+  opacity: var(--xh-state-disabled-opacity);
+}
+
+/* hidden-input 是 type=hidden 的原生输入，浏览器本就不渲染它，
+   这里一条声明都不给：给了 display / 尺寸反而会把它拽回布局里撑出一块空白。 */
+
+/* display 会盖掉 UA 的 [hidden]{display:none}，凡是被赋了 display 的角色节点都要显式让位。
+   这条必须排在全部 display 声明之后。 */
+[data-scope='image-cropper'][data-part='root'][hidden],
+[data-scope='image-cropper'][data-part='viewport'][hidden],
+[data-scope='image-cropper'][data-part='image'][hidden],
+[data-scope='image-cropper'][data-part='crop-handle'][hidden] {
+  display: none;
+}
+
+/* styles/json-viewer.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='json-viewer'] {
+  --xh-json-viewer-skin: 1;
+}
+
+/* 缺省态（md 档）。等宽字体让层级缩进与值的长度对得齐。
+   逐类型配色：令牌集里没有 JSON 语法色这一类，就地声明成可覆盖的变量，
+   取值与代码块的记号色同源。每条先写浅色兜底再写 light-dark()：
+   不认后者的旧引擎由级联保留前一条，退化成单色。 */
+[data-scope='json-viewer'][data-part='root'] {
+  --xh-_json-viewer-font-size: var(--xh-font-size-sm);
+  --xh-_json-viewer-row-py: var(--xh-space-0_5);
+  --xh-_json-viewer-indent: var(--xh-space-4);
+  --xh-json-viewer-key-fg: var(--xh-fg-brand-strong);
+  --xh-json-viewer-punctuation-fg: var(--xh-fg-subtle);
+  --xh-json-viewer-null-fg: var(--xh-fg-subtle);
+  --xh-json-viewer-string-fg: #0a7f5f;
+  --xh-json-viewer-string-fg: light-dark(#0a7f5f, #7ee2b8);
+  --xh-json-viewer-number-fg: #9a5b00;
+  --xh-json-viewer-number-fg: light-dark(#9a5b00, #f0b866);
+  --xh-json-viewer-boolean-fg: #8250df;
+  --xh-json-viewer-boolean-fg: light-dark(#8250df, #d2a8ff);
+
+  display: block;
+  color: var(--xh-json-viewer-fg, var(--xh-fg-default));
+  font-family: var(--xh-json-viewer-font, var(--xh-font-family-mono));
+  font-size: var(--xh-json-viewer-font-size, var(--xh-_json-viewer-font-size));
+  line-height: var(--xh-leading-normal);
+}
+
+/* 写了 display 就会盖掉 UA 的 [hidden]{display:none}，这里补回 */
+[data-scope='json-viewer'][data-part='root'][hidden] {
+  display: none;
+}
+
+/* 尺寸轴只换私有槽，部件从 root 继承 */
+[data-scope='json-viewer'][data-part='root'][data-size='sm'] {
+  --xh-_json-viewer-font-size: var(--xh-font-size-xs);
+  --xh-_json-viewer-row-py: var(--xh-space-0);
+  --xh-_json-viewer-indent: var(--xh-space-3);
+}
+
+[data-scope='json-viewer'][data-part='root'][data-size='lg'] {
+  --xh-_json-viewer-font-size: var(--xh-font-size-md);
+  --xh-_json-viewer-row-py: var(--xh-space-1);
+  --xh-_json-viewer-indent: var(--xh-space-5);
+}
+
+/* 常驻容器不是浮层：两轴都可能溢出——深层缩进往行首方向推、长字符串往行尾伸 */
+[data-scope='json-viewer'][data-part='tree'] {
+  display: flex;
+  flex-direction: column;
+  max-block-size: var(--xh-json-viewer-max-h, 26rem);
+  padding-block: var(--xh-json-viewer-py, var(--xh-space-2));
+  padding-inline: var(--xh-json-viewer-px, var(--xh-space-2));
+  border: var(--xh-stroke-thin) solid var(--xh-json-viewer-border, var(--xh-border-default));
+  border-radius: var(--xh-json-viewer-radius, var(--xh-shape-surface));
+  background: var(--xh-json-viewer-bg, var(--xh-bg-surface));
+  overflow: auto;
+}
+
+[data-scope='json-viewer'][data-part='tree'][hidden] {
+  display: none;
+}
+
+/* 焦点在树外时容器自己进 Tab 序列兜底，落焦不画环：环永远长在行上 */
+[data-scope='json-viewer'][data-part='tree']:focus-visible {
+  outline: none;
+}
+
+/* 焦点落在 branch 上（它才是 treeitem），但环画在它自己那一行上：
+   整棵子层套一圈描边会把展开的层级全框进去 */
+[data-scope='json-viewer'][data-part='branch']:focus-visible {
+  outline: none;
+}
+
+[data-scope='json-viewer'][data-part='branch']:focus-visible > [data-scope='json-viewer'][data-part='branch-control'] {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  /* 往内收：行是撑满宽度的，环画在外沿会被容器裁掉 */
+  outline-offset: calc(-1 * var(--xh-ring-width));
+}
+
+/* 行：标量与分支共用同一套盒子，两种行在视觉上必须齐平 */
+[data-scope='json-viewer'][data-part='item'],
+[data-scope='json-viewer'][data-part='branch-control'] {
+  display: flex;
+  align-items: baseline;
+  gap: var(--xh-json-viewer-row-gap, var(--xh-space-1));
+  padding-block: var(--xh-json-viewer-row-py, var(--xh-_json-viewer-row-py));
+  padding-inline: var(--xh-json-viewer-row-px, var(--xh-space-1));
+  border-radius: var(--xh-json-viewer-row-radius, var(--xh-shape-inset));
+  white-space: nowrap;
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='json-viewer'][data-part='item'][hidden],
+[data-scope='json-viewer'][data-part='branch-control'][hidden] {
+  display: none;
+}
+
+/* 悬停与键盘锚点共用中性灰轻档：data-highlighted 跟的是连接层记的焦点行，
+   键盘落焦另有聚焦环标记位置 */
+[data-scope='json-viewer'][data-part='item']:is(:hover, [data-highlighted]),
+[data-scope='json-viewer'][data-part='branch-control']:is(:hover, [data-highlighted]) {
+  background: var(--xh-json-viewer-row-bg-hover, var(--xh-bg-subtle));
+}
+
+/* 分支那一行是唯一的点击目标：点它切换展开态 */
+[data-scope='json-viewer'][data-part='branch-control'] {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 标量行的焦点环直接画在行上：它自己就是 treeitem */
+[data-scope='json-viewer'][data-part='item']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-width));
+}
+
+/* 键名不参与压缩：它短且必须完整可读，被挤掉的应该是值 */
+[data-scope='json-viewer'][data-part='item-key'],
+[data-scope='json-viewer'][data-part='branch-text'] {
+  flex: none;
+  color: var(--xh-json-viewer-key-fg);
+  font-weight: var(--xh-json-viewer-key-font-weight, var(--xh-font-weight-medium));
+}
+
+/* 键名与值之间的冒号由皮肤画：它是排版符号，进不了可及名字反而更清爽 */
+[data-scope='json-viewer'][data-part='item-key']::after,
+[data-scope='json-viewer'][data-part='branch-text']::after {
+  content: ':';
+  color: var(--xh-json-viewer-punctuation-fg);
+}
+
+/* 弹性子项默认最小尺寸是内容尺寸，不归零则长字符串把行撑破、省略号轮不上 */
+[data-scope='json-viewer'][data-part='item-value'] {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+[data-scope='json-viewer'][data-part='item-value'][data-type='string'] {
+  color: var(--xh-json-viewer-string-fg);
+}
+
+[data-scope='json-viewer'][data-part='item-value'][data-type='number'] {
+  color: var(--xh-json-viewer-number-fg);
+}
+
+[data-scope='json-viewer'][data-part='item-value'][data-type='boolean'] {
+  color: var(--xh-json-viewer-boolean-fg);
+}
+
+[data-scope='json-viewer'][data-part='item-value'][data-type='null'] {
+  color: var(--xh-json-viewer-null-fg);
+}
+
+/* 空对象与空数组只剩一对括号，跟标点同色 */
+[data-scope='json-viewer'][data-part='item-value'][data-type='array'],
+[data-scope='json-viewer'][data-part='item-value'][data-type='object'] {
+  color: var(--xh-json-viewer-punctuation-fg);
+}
+
+/* 循环引用与截断占位不是真数据，排在语气之外用弱化字重表达 */
+[data-scope='json-viewer'][data-part='item-value'][data-circular],
+[data-scope='json-viewer'][data-part='item-value'][data-truncated] {
+  color: var(--xh-fg-muted);
+  font-style: italic;
+}
+
+/* 展开箭头与勾选标记同宽，两种行的文字起点才对得齐 */
+[data-scope='json-viewer'][data-part='branch-trigger'] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--xh-json-viewer-indicator-size, var(--xh-control-indicator-size));
+  color: var(--xh-json-viewer-indicator-fg, var(--xh-fg-subtle));
+}
+
+[data-scope='json-viewer'][data-part='branch-trigger'][hidden] {
+  display: none;
+}
+
+[data-scope='json-viewer'][data-part='branch-indicator'] {
+  display: inline-block;
+  line-height: var(--xh-leading-none);
+  transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='json-viewer'][data-part='branch-indicator'][hidden] {
+  display: none;
+}
+
+/* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
+[data-scope='json-viewer'][data-part='branch-indicator']:empty::before {
+  content: '▸';
+}
+
+/* 收起时朝向行首、展开时转向下方，与逻辑书写方向一致：
+   rtl 下 inline-start 在右侧，箭头因此要反着转 */
+[data-scope='json-viewer'][data-part='branch-indicator'][data-state='open'] {
+  rotate: 90deg;
+}
+
+[dir='rtl'] [data-scope='json-viewer'][data-part='branch-indicator'] {
+  rotate: 180deg;
+}
+
+[dir='rtl'] [data-scope='json-viewer'][data-part='branch-indicator'][data-state='open'] {
+  rotate: 90deg;
+}
+
+/* 收起摘要不参与选中：框选整块 JSON 时不该把它一起复制走 */
+[data-scope='json-viewer'][data-part='preview'] {
+  flex: none;
+  color: var(--xh-json-viewer-preview-fg, var(--xh-fg-muted));
+  font-size: var(--xh-json-viewer-preview-font-size, var(--xh-font-size-xs));
+  user-select: none;
+}
+
+/* 层级缩进靠子层容器自己顶：分支物理嵌套着子层，每深一层就多缩一格，
+   无需把层级号写进内联样式，也就不必在两个适配器里各写一遍 */
+[data-scope='json-viewer'][data-part='branch-content'] {
+  display: flex;
+  flex-direction: column;
+  padding-inline-start: var(--xh-json-viewer-indent, var(--xh-_json-viewer-indent));
+}
+
+[data-scope='json-viewer'][data-part='branch-content'][hidden] {
+  display: none;
+}
+
 /* styles/layers.css */
 /* 库层序单一真源：级联顺序由首次声明决定，与 @import 顺序解耦。 */
 
@@ -2178,6 +3323,69 @@
   }
 }
 
+/* styles/masonry.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='masonry'] {
+  --xh-masonry-skin: 1;
+}
+
+[data-scope='masonry'][data-part='root'] {
+  display: flex;
+  /* 各列按自己的内容收高，不被最高的那列拉平——列不等高正是瀑布流的样子 */
+  align-items: flex-start;
+  gap: var(--xh-_masonry-gap);
+
+  /* 列间距与列内的项间距共用这一份取值，声明在根上、由列继承下去；
+     不写 gap 档位就不留间距。使用者槽位排在档位之前，写死一个值即盖过所有档 */
+  --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-0));
+}
+
+/* 声明了 display 就盖掉了 UA 的 [hidden] 规则，这里还回去 */
+[data-scope='masonry'][data-part='root'][hidden] {
+  display: none;
+}
+
+[data-scope='masonry'][data-part='column'] {
+  display: flex;
+  flex-direction: column;
+  /* 各列等宽；下限写 0 而不是 auto，一段长内容才不会把自己那列撑宽 */
+  flex: 1 1 0;
+  min-inline-size: 0;
+  gap: var(--xh-_masonry-gap);
+}
+
+/* 当前档位用不上的那几列由适配器收起；这条兜住作者自己写 hidden 的情形 */
+[data-scope='masonry'][data-part='column'][hidden] {
+  display: none;
+}
+
+/* 项不发话，高度由内容定；只兜住一件事——不被列的弹性压缩，压缩了量到的高度就不是它真实的高度 */
+[data-scope='masonry'][data-part='item'] {
+  flex: none;
+}
+
+/* —— 间距档位 —— */
+/* 每一档指向一个间距令牌，列之间与列内项之间吃同一份间距 */
+[data-scope='masonry'][data-part='root'][data-gap='xs'] {
+  --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-1));
+}
+
+[data-scope='masonry'][data-part='root'][data-gap='sm'] {
+  --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-2));
+}
+
+[data-scope='masonry'][data-part='root'][data-gap='md'] {
+  --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-3));
+}
+
+[data-scope='masonry'][data-part='root'][data-gap='lg'] {
+  --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-4));
+}
+
+[data-scope='masonry'][data-part='root'][data-gap='xl'] {
+  --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-6));
+}
+
 /* styles/mention.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
@@ -2575,6 +3783,337 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-page-header-footer-fg, var(--xh-fg-muted));
   font-size: var(--xh-page-header-footer-font-size, var(--xh-font-size-sm));
   line-height: var(--xh-leading-normal);
+}
+
+/* styles/password-input.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='password-input'] {
+  --xh-password-input-skin: 1;
+}
+
+/* root 只负责纵向堆叠：标签一行、输入行一行。
+   输入框、切换钮与大写锁定提示收进 control 部件即得一体式：视觉盒画在 control 上，
+   框内三件都退成透明分段，整枚控件从头到尾只有一道描边。
+   不写 control 时退回三件并排的观感（下面 input 与按钮的基础规则原样生效） */
+[data-scope='password-input'][data-part='root'] {
+  /* 作者塞进来的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
+  --xh-icon-size: var(--xh-password-input-icon-size, var(--xh-glyph-size-md));
+
+  /* 尺寸档只换这几个私有槽，标题、输入框、切换钮与提示都从 root 继承它们，
+     换档不必给每个部件各写一条选择器 */
+  --xh-_password-input-h: var(--xh-control-h-md);
+  --xh-_password-input-px: var(--xh-control-px-md);
+  --xh-_password-input-font-size: var(--xh-text-body-size);
+  --xh-_password-input-label-font-size: var(--xh-text-label-size);
+  /* 提示与切换钮里的字形都比正文小一档，三个尺寸档各自换过，不是一个恒等的中转 */
+  --xh-_password-input-hint-font-size: var(--xh-font-size-sm);
+  --xh-_password-input-trigger-font-size: var(--xh-font-size-sm);
+
+  /* 盒子的圆角与盒内分段的圆角：分段贴在描边里侧，圆角要减去描边自己占的那一道，
+     写同一个值会让分段的底色顶到圆角外面去 */
+  --xh-_password-input-radius: var(--xh-password-input-input-radius, var(--xh-shape-control));
+  --xh-_password-input-seg-radius: calc(var(--xh-_password-input-radius) - var(--xh-stroke-thin));
+
+  /* 形态档只换这三个私有槽：底、常态描边、悬停描边 */
+  --xh-_password-input-bg: var(--xh-bg-canvas);
+  --xh-_password-input-border: var(--xh-border-control);
+  --xh-_password-input-border-hover: var(--xh-border-control-hover);
+
+  /* 聚焦这一处的两个取值。语气只改描边，环恒用 --xh-ring-focus：
+     环要在各种底上都读得出来，跟着语气走会掉到 warning 那种够不着对比度的档上 */
+  --xh-_password-input-border-focus: var(--xh-border-control);
+  --xh-_password-input-ring: var(--xh-ring-focus);
+
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--xh-password-input-gap, var(--xh-space-1));
+}
+
+/* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+[data-scope='password-input'][data-part='root'][hidden] {
+  display: none;
+}
+
+/* —— 尺寸 —— */
+/* 缺省档写在上面的基础规则里 */
+[data-scope='password-input'][data-part='root'][data-size='sm'] {
+  --xh-icon-size: var(--xh-password-input-icon-size, var(--xh-glyph-size-sm));
+  --xh-_password-input-h: var(--xh-control-h-sm);
+  --xh-_password-input-px: var(--xh-control-px-sm);
+  --xh-_password-input-font-size: var(--xh-font-size-sm);
+  --xh-_password-input-label-font-size: var(--xh-font-size-sm);
+  --xh-_password-input-hint-font-size: var(--xh-font-size-xs);
+  --xh-_password-input-trigger-font-size: var(--xh-font-size-xs);
+}
+
+[data-scope='password-input'][data-part='root'][data-size='lg'] {
+  --xh-icon-size: var(--xh-password-input-icon-size, var(--xh-glyph-size-lg));
+  --xh-_password-input-h: var(--xh-control-h-lg);
+  --xh-_password-input-px: var(--xh-control-px-lg);
+  --xh-_password-input-font-size: var(--xh-font-size-lg);
+  --xh-_password-input-label-font-size: var(--xh-font-size-lg);
+  --xh-_password-input-hint-font-size: var(--xh-font-size-md);
+  --xh-_password-input-trigger-font-size: var(--xh-font-size-md);
+}
+
+/* —— 形态 —— */
+/* 形态只决定底与描边怎么画；用哪族颜色由 data-tone 决定。
+   输入框没有实心档：填满一个要往里打字的框，字与底就没法同时读 */
+[data-scope='password-input'][data-part='root'][data-variant='outline'] {
+  --xh-_password-input-bg: var(--xh-bg-canvas);
+  --xh-_password-input-border: var(--xh-border-control);
+  --xh-_password-input-border-hover: var(--xh-border-control-hover);
+}
+
+/* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
+   与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
+[data-scope='password-input'][data-part='root'][data-variant='subtle'] {
+  --xh-_password-input-bg: var(--xh-bg-subtle);
+  --xh-_password-input-border: transparent;
+  --xh-_password-input-border-hover: var(--xh-border-control-hover);
+}
+
+/* 无框：底与常态描边透明，悬停与聚焦浮出描边 */
+[data-scope='password-input'][data-part='root'][data-variant='ghost'] {
+  --xh-_password-input-bg: transparent;
+  --xh-_password-input-border: transparent;
+  --xh-_password-input-border-hover: var(--xh-border-control-hover);
+}
+
+/* —— 语气 —— */
+/* 必须带 [data-tone] 限定：语气槽是沿继承流下来的，不限定的话，
+   放进带语气的容器（提示条、通知）里的密码框会跟着一起改色，作者根本没写过 tone */
+[data-scope='password-input'][data-part='root'][data-tone] {
+  --xh-_password-input-border-focus: var(--xh-_tone);
+}
+
+[data-scope='password-input'][data-part='root'][data-variant='subtle'][data-tone] {
+  --xh-_password-input-bg: var(--xh-_tone-subtle);
+  --xh-_password-input-border-hover: var(--xh-_tone-border);
+}
+
+[data-scope='password-input'][data-part='root'][data-variant='ghost'][data-tone] {
+  --xh-_password-input-border-hover: var(--xh-_tone-border);
+}
+
+/* —— 标题 —— */
+[data-scope='password-input'][data-part='label'] {
+  color: var(--xh-password-input-label-fg, var(--xh-fg-default));
+  font-size: var(--xh-password-input-label-font-size, var(--xh-_password-input-label-font-size));
+  font-weight: var(--xh-password-input-label-font-weight, var(--xh-text-label-weight));
+  line-height: var(--xh-leading-none);
+}
+
+[data-scope='password-input'][data-part='label'][data-disabled] {
+  color: var(--xh-password-input-label-fg-disabled, var(--xh-fg-subtle));
+}
+
+/* —— 一体式 control：输入框、切换钮与提示同框 —— */
+/* control 是唯一的视觉盒：描边、底色、圆角、聚焦环全画在它身上。
+   :focus-within 而不是 :focus——盒里有两个 Tab 停靠点，输入框与切换钮各占一个 */
+[data-scope='password-input'][data-part='control'] {
+  display: inline-flex;
+  /* 居中而不是拉伸：提示是一行文字，被拉满整框高度后字会贴着框顶。
+     要占满整框高度的只有 input 与切换钮，它们各自明写 */
+  align-items: center;
+  block-size: var(--xh-password-input-control-h, var(--xh-_password-input-h));
+  border: var(--xh-stroke-thin) solid var(--xh-password-input-control-border, var(--xh-_password-input-border));
+  border-radius: var(--xh-_password-input-radius);
+  background: var(--xh-password-input-control-bg, var(--xh-_password-input-bg));
+  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='password-input'][data-part='control'][hidden] {
+  display: none;
+}
+
+/* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
+[data-scope='password-input'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
+  border-color: var(--xh-password-input-control-border-hover, var(--xh-_password-input-border-hover));
+}
+
+[data-scope='password-input'][data-part='control']:focus-within {
+  border-color: var(--xh-password-input-control-border-focus, var(--xh-_password-input-border-focus));
+  outline: var(--xh-ring-width) solid var(--xh-_password-input-ring);
+  outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope='password-input'][data-part='control'][data-invalid] {
+  border-color: var(--xh-password-input-control-border-invalid, var(--xh-border-invalid));
+
+  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
+  --xh-_password-input-ring: var(--xh-ring-invalid);
+}
+
+/* 只读仍可聚焦、可复制，所以不置灰，只把底色压下去表示"改不动" */
+[data-scope='password-input'][data-part='control'][data-readonly] {
+  background: var(--xh-password-input-control-bg-readonly, var(--xh-bg-subtle));
+}
+
+[data-scope='password-input'][data-part='control'][data-disabled] {
+  background: var(--xh-password-input-control-bg-disabled, var(--xh-bg-subtle));
+  cursor: not-allowed;
+}
+
+/* —— 输入框 —— */
+/* 不写 control 时它自己就是那个框：描边、圆角、底都长在它身上 */
+[data-scope='password-input'][data-part='input'] {
+  block-size: var(--xh-password-input-input-h, var(--xh-_password-input-h));
+  padding-inline: var(--xh-password-input-input-px, var(--xh-_password-input-px));
+  padding-block: 0;
+  border: var(--xh-stroke-thin) solid var(--xh-password-input-input-border, var(--xh-_password-input-border));
+  border-radius: var(--xh-_password-input-radius);
+  background: var(--xh-password-input-input-bg, var(--xh-_password-input-bg));
+  color: var(--xh-password-input-input-fg, var(--xh-fg-default));
+  /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
+  font-family: inherit;
+  font-size: var(--xh-password-input-input-font-size, var(--xh-_password-input-font-size));
+  line-height: var(--xh-leading-normal);
+  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='password-input'][data-part='input']::placeholder {
+  color: var(--xh-password-input-placeholder-fg, var(--xh-fg-subtle));
+}
+
+[data-scope='password-input'][data-part='input']:hover:not(:disabled, [data-invalid]) {
+  border-color: var(--xh-password-input-input-border-hover, var(--xh-_password-input-border-hover));
+}
+
+[data-scope='password-input'][data-part='input']:focus-visible {
+  border-color: var(--xh-password-input-input-border-focus, var(--xh-_password-input-border-focus));
+  outline: var(--xh-ring-width) solid var(--xh-_password-input-ring);
+  outline-offset: var(--xh-ring-offset);
+}
+
+[data-scope='password-input'][data-part='input'][data-invalid] {
+  border-color: var(--xh-password-input-input-border-invalid, var(--xh-border-invalid));
+
+  --xh-_password-input-ring: var(--xh-ring-invalid);
+}
+
+[data-scope='password-input'][data-part='input'][readonly] {
+  background: var(--xh-password-input-input-bg-readonly, var(--xh-bg-subtle));
+}
+
+/* input 是单体表单控件，禁用走原生 disabled */
+[data-scope='password-input'][data-part='input']:disabled {
+  background: var(--xh-password-input-input-bg-disabled, var(--xh-bg-subtle));
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+/* 盒内 input：无边框无底无圆角，观感全归 control；它自己不画聚焦环，
+   盒子已经在 :focus-within 上画了一圈，再画一圈就成了两道 */
+[data-scope='password-input'][data-part='control'] [data-part='input'] {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  block-size: 100%;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+[data-scope='password-input'][data-part='control'] [data-part='input']:hover:not(:disabled, [data-invalid]) {
+  border-color: transparent;
+}
+
+[data-scope='password-input'][data-part='control'] [data-part='input']:focus-visible {
+  border-color: transparent;
+  outline: none;
+}
+
+[data-scope='password-input'][data-part='control'] [data-part='input'][data-invalid] {
+  border-color: transparent;
+}
+
+[data-scope='password-input'][data-part='control'] [data-part='input']:disabled,
+[data-scope='password-input'][data-part='control'] [data-part='input'][readonly] {
+  background: transparent;
+}
+
+/* —— 明暗切换钮 —— */
+/* 与框等高的方钮，常态只剩符号：自带一块底色会把一个盒子读成两块拼起来的 */
+[data-scope='password-input'][data-part='visibility-trigger'] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--xh-password-input-trigger-size, var(--xh-_password-input-h));
+  block-size: var(--xh-password-input-trigger-size, var(--xh-_password-input-h));
+  padding: 0;
+  border: 0;
+  border-radius: var(--xh-_password-input-seg-radius);
+  background: var(--xh-password-input-trigger-bg, transparent);
+  color: var(--xh-password-input-trigger-fg, var(--xh-fg-muted));
+  font-family: inherit;
+  font-size: var(--xh-password-input-trigger-font-size, var(--xh-_password-input-trigger-font-size));
+  line-height: var(--xh-leading-none);
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='password-input'][data-part='visibility-trigger'][hidden] {
+  display: none;
+}
+
+[data-scope='password-input'][data-part='visibility-trigger']:hover:not(:disabled) {
+  background: var(--xh-password-input-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  color: var(--xh-password-input-trigger-fg-hover, var(--xh-fg-default));
+}
+
+[data-scope='password-input'][data-part='visibility-trigger']:active:not(:disabled) {
+  background: var(--xh-password-input-trigger-bg-active, var(--xh-bg-subtle-active));
+}
+
+/* 不写 control 时它自成一件，落焦要有自己的环 */
+[data-scope='password-input'][data-part='visibility-trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-_password-input-ring);
+  outline-offset: var(--xh-ring-offset);
+}
+
+/* 盒里有两个 Tab 停靠点，盒子在 :focus-within 上画的那一圈两者完全一样，
+   分不出焦点在框里还是在钮上，所以钮上再画一圈自己的环。
+   环往内收，压在按钮自己的方框里，不与盒子外面那一圈叠在一起。
+   指示焦点只能用环不能用底色：可用的几档底色压在盒底上都到不了 3:1，
+   换了色也等于没画 */
+[data-scope='password-input'][data-part='control'] [data-part='visibility-trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-_password-input-ring);
+  outline-offset: calc(-1 * var(--xh-ring-offset));
+}
+
+[data-scope='password-input'][data-part='visibility-trigger']:disabled {
+  background: var(--xh-password-input-trigger-bg, transparent);
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+/* —— 大写锁定提示 —— */
+/* 贴在切换钮之前的一小块提示，字号比正文小一档，颜色取次级前景：
+   它是提示不是报错，抢不过框里正在输入的内容 */
+[data-scope='password-input'][data-part='caps-lock-indicator'] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--xh-password-input-hint-gap, var(--xh-space-1));
+  padding-inline: var(--xh-password-input-hint-px, var(--xh-space-1));
+  color: var(--xh-password-input-hint-fg, var(--xh-fg-muted));
+  font-size: var(--xh-password-input-hint-font-size, var(--xh-_password-input-hint-font-size));
+  line-height: var(--xh-leading-none);
+}
+
+/* 作者自己给这个节点写 hidden 时照样收起；上面那条 display 会把 UA 规则盖掉，
+   少了这条它就一直杵在那儿 */
+[data-scope='password-input'][data-part='caps-lock-indicator'][hidden] {
+  display: none;
+}
+
+/* 没开大写锁定时只把这块收成零宽，不用 display / visibility 撤掉它：
+   播报区一旦从渲染树里消失就不再是活区域，重新出现时读屏当作插入了个新节点，多数不念。
+   此时区内文字是空串，留着的只有一个不占位的空盒 */
+[data-scope='password-input'][data-part='caps-lock-indicator'][data-state='hidden'] {
+  padding-inline: 0;
 }
 
 /* styles/popconfirm.css */
@@ -3249,6 +4788,455 @@ input[data-scope='mention'][data-part='input'] {
   gap: var(--xh-result-action-gap, var(--xh-space-2));
 }
 
+/* styles/segmented.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='segmented'] {
+  --xh-segmented-skin: 1;
+}
+
+/* 一条轨道装着若干段，指示器在轨道里滑。指示器是绝对定位的，
+   root 必须是它的定位参照系；段与段之间不留缝，所以不设 gap */
+[data-scope='segmented'][data-part='root'] {
+  /* 尺寸档只换这四个私有槽，段与文字从 root 继承它们，换档不必给每个部件各写一条选择器 */
+  --xh-_segmented-h: var(--xh-control-h-md);
+  --xh-_segmented-px: var(--xh-control-px-md);
+  --xh-_segmented-gap: var(--xh-control-gap-md);
+  --xh-_segmented-font-size: var(--xh-text-label-size);
+  /* 指示器底色与选中段的文字色；没写 data-tone 时就是这里的取值 */
+  --xh-_segmented-indicator-bg: var(--xh-bg-surface);
+  --xh-_segmented-fg-selected: var(--xh-fg-default);
+
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+  padding: var(--xh-segmented-track-padding, var(--xh-space-0_5));
+  border: var(--xh-stroke-thin) solid var(--xh-segmented-border, var(--xh-border-subtle));
+  border-radius: var(--xh-segmented-radius, var(--xh-shape-control));
+  background: var(--xh-segmented-bg, var(--xh-bg-subtle));
+  font-size: var(--xh-segmented-font-size, var(--xh-_segmented-font-size));
+}
+
+[data-scope='segmented'][data-part='root'][data-orientation='horizontal'] {
+  flex-direction: row;
+}
+
+[data-scope='segmented'][data-part='root'][data-orientation='vertical'] {
+  flex-direction: column;
+}
+
+/* 撑满行宽：各段等分剩余空间，长短不一的文字也排得齐 */
+[data-scope='segmented'][data-part='root'][data-block] {
+  display: flex;
+  inline-size: 100%;
+}
+
+/* 等分只在横排成立：竖排的主轴是块轴，flex-basis: 0 会顶掉段自己的高度档，
+   段高改由「等分容器高度」决定，三档控件高度从此对它没有作用。
+   竖排下段本来就靠上面那条 inline-size: 100% 与 align-items: stretch 撑满宽度 */
+[data-scope='segmented'][data-part='root'][data-block][data-orientation='horizontal']
+  > [data-scope='segmented'][data-part='item'] {
+  flex: 1 1 0;
+}
+
+/* root 会短暂拿到 tabindex=0，但它的 onFocus 立刻把焦点转投给段，
+   在它身上画环只会闪一下就跳走，高亮要长在段上 */
+[data-scope='segmented'][data-part='root']:focus-visible {
+  outline: none;
+}
+
+[data-scope='segmented'][data-part='root'][data-invalid] {
+  border-color: var(--xh-segmented-border-invalid, var(--xh-border-invalid));
+}
+
+[data-scope='segmented'][data-part='root'][data-disabled] {
+  background: var(--xh-segmented-bg-disabled, var(--xh-bg-muted));
+  cursor: not-allowed;
+}
+
+/* 整组禁用时指示器落回轨道平面（不再浮起），但底色一点不兑淡：
+   它上面压着选中段的文字，往 muted 兑哪怕一成，brand 的对比度就从 5.08 掉到 4.24 */
+[data-scope='segmented'][data-part='root'][data-disabled]
+  [data-scope='segmented'][data-part='indicator'] {
+  box-shadow: var(--xh-segmented-indicator-shadow-disabled, none);
+}
+
+/* —— 语气 —— */
+/* 选择器带 [data-tone] 限定：不限定的话，放在语气容器里的分段控件会跟着改色 */
+[data-scope='segmented'][data-part='root'][data-tone] {
+  --xh-_segmented-indicator-bg: var(--xh-_tone, var(--xh-bg-surface));
+  --xh-_segmented-fg-selected: var(--xh-_tone-on, var(--xh-fg-default));
+}
+
+/* —— 尺寸 —— */
+/* 缺省的 md 档写在上面的基础规则里 */
+[data-scope='segmented'][data-part='root'][data-size='sm'] {
+  --xh-_segmented-h: var(--xh-control-h-sm);
+  --xh-_segmented-px: var(--xh-control-px-sm);
+  --xh-_segmented-gap: var(--xh-control-gap-sm);
+  --xh-_segmented-font-size: var(--xh-font-size-sm);
+}
+
+[data-scope='segmented'][data-part='root'][data-size='lg'] {
+  --xh-_segmented-h: var(--xh-control-h-lg);
+  --xh-_segmented-px: var(--xh-control-px-lg);
+  --xh-_segmented-gap: var(--xh-control-gap-lg);
+  --xh-_segmented-font-size: var(--xh-font-size-lg);
+}
+
+/* 段自己也定位，于是与绝对定位的指示器按文档序比高低：
+   指示器写在段之前，段与它的焦点环便压在指示器上面，不必动层号 */
+[data-scope='segmented'][data-part='item'] {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--xh-segmented-item-gap, var(--xh-_segmented-gap));
+  block-size: var(--xh-segmented-item-h, var(--xh-_segmented-h));
+  padding-inline: var(--xh-segmented-item-px, var(--xh-_segmented-px));
+  border: 0;
+  border-radius: var(--xh-segmented-item-radius, var(--xh-shape-inset));
+  background: transparent;
+  color: var(--xh-segmented-item-fg, var(--xh-fg-muted));
+  /* 按钮不继承宿主字体，尺寸档在 root 上，两者都要显式接过来 */
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: var(--xh-segmented-item-font-weight, var(--xh-text-label-weight));
+  line-height: var(--xh-leading-none);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 选中态：单选是 role=radio + aria-checked，样式一律读 data-state，不读 ARIA。
+   文字色也要跟着变——指示器是可选部件，作者不渲染它时"当前是哪一段"仍然要看得出来 */
+[data-scope='segmented'][data-part='item'][data-state='checked'] {
+  color: var(--xh-segmented-item-fg-checked, var(--xh-_segmented-fg-selected));
+}
+
+/* 悬停只提亮未选中的那几段：选中段的底下压着指示器，再变色就成了两套强调 */
+[data-scope='segmented'][data-part='item']:not([data-disabled]):not([data-state='checked']):hover {
+  color: var(--xh-segmented-item-fg-hover, var(--xh-fg-default));
+}
+
+/* 只读：值改不动，但对比度不降，光标也不摆出"禁止"的样子 */
+[data-scope='segmented'][data-part='item'][data-readonly] {
+  cursor: default;
+}
+
+/* 集合条目一律 aria-disabled 而非原生 disabled（禁用段仍要能当方向键的起点），
+   所以这里读 data-disabled，写 :disabled 永远不命中。
+   用了 fg-disabled 就不再叠 opacity：半透明会把底下的指示器透出来 */
+[data-scope='segmented'][data-part='item'][data-disabled] {
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+/* 禁用且选中的那一段不换文字色：它压着的是指示器的实心底，换成 fg-disabled 后
+   六族语气实测只剩 1.04–3.01 的对比度，「当前选的是哪一段」当场看不见。
+   禁用由轨道底色、未选中段的文字色与光标表达，选中段保持可读 */
+[data-scope='segmented'][data-part='item'][data-disabled][data-state='checked'] {
+  color: var(--xh-segmented-item-fg-checked-disabled, var(--xh-_segmented-fg-selected));
+}
+
+/* 焦点环往内收一格：段贴着轨道内缘，往外画会被 root 的描边切掉一半 */
+[data-scope='segmented'][data-part='item']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(-1 * var(--xh-ring-offset));
+}
+
+[data-scope='segmented'][data-part='item-text'] {
+  color: inherit;
+  user-select: none;
+}
+
+[data-scope='segmented'][data-part='indicator'] {
+  /* 位置与尺寸由连接层量好写成内联样式（它量得到，样式表量不到）；
+     这四个是还没量到时的落点，量到即被内联样式盖过 */
+  --xh-_segmented-indicator-x: 0;
+  --xh-_segmented-indicator-y: 0;
+  --xh-_segmented-indicator-w: 0;
+  --xh-_segmented-indicator-h: 0;
+
+  position: absolute;
+  display: block;
+  inset-inline-start: var(--xh-_segmented-indicator-x);
+  inset-block-start: var(--xh-_segmented-indicator-y);
+  inline-size: var(--xh-_segmented-indicator-w);
+  block-size: var(--xh-_segmented-indicator-h);
+  border-radius: var(--xh-segmented-indicator-radius, var(--xh-shape-inset));
+  background: var(--xh-segmented-indicator-bg, var(--xh-_segmented-indicator-bg));
+  box-shadow: var(--xh-segmented-indicator-shadow, var(--xh-elevation-1));
+  /* 段压在它上面，点击一律交给段；作者把它写在段之后时也不至于吞掉点击 */
+  pointer-events: none;
+  transition:
+    inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
+    inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
+    inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
+    block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+}
+
+/* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
+   不补的话作者给节点加 hidden 后它照样显示 */
+[data-scope='segmented'][data-part='root'][hidden],
+[data-scope='segmented'][data-part='item'][hidden],
+[data-scope='segmented'][data-part='indicator'][hidden] {
+  display: none;
+}
+
+/* styles/signature-pad.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='signature-pad'] {
+  --xh-signature-pad-skin: 1;
+}
+
+/* position 是给表单影子做定位基准的：那份输入被连接层内联写成绝对定位，
+   根上不留基准它就会贴到更外层的定位祖先上，原生校验提示跟着飘到页面别处。 */
+[data-scope='signature-pad'][data-part='root'] {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--xh-signature-pad-gap, var(--xh-stack-gap-md));
+}
+
+[data-scope='signature-pad'][data-part='label'] {
+  color: var(--xh-signature-pad-label-fg, var(--xh-fg-muted));
+  font-size: var(--xh-signature-pad-label-font-size, var(--xh-text-label-size));
+  font-weight: var(--xh-signature-pad-label-font-weight, var(--xh-text-label-weight));
+  line-height: var(--xh-leading-none);
+}
+
+[data-scope='signature-pad'][data-part='label'][data-disabled] {
+  color: var(--xh-fg-subtle);
+}
+
+/* 画布是块状的写字区：宽度铺满外层，高度由宽高比决定。
+   控件行高那把尺量的是一行控件，一块要写字的面积用不上它。
+   touch-action 由连接层内联写死，触摸落笔才不会被页面滚动抢走。 */
+[data-scope='signature-pad'][data-part='control'] {
+  display: block;
+  inline-size: 100%;
+  aspect-ratio: var(--xh-signature-pad-aspect-ratio, 5 / 2);
+  border: var(--xh-stroke-thin) solid var(--xh-signature-pad-border, var(--xh-border-control));
+  border-radius: var(--xh-signature-pad-radius, var(--xh-shape-surface));
+  background: var(--xh-signature-pad-bg, var(--xh-bg-surface));
+  cursor: crosshair;
+  /* 一划就会把画布连同旁边的文字一起刷成选中态 */
+  user-select: none;
+}
+
+[data-scope='signature-pad'][data-part='control'][data-invalid] {
+  border-color: var(--xh-border-invalid);
+}
+
+/* 落笔期间把描边压深一档。border-strong 是装饰梯度里的一档，比 border-control 更淡，
+   用在这儿会让描边在落笔时反而变弱 */
+[data-scope='signature-pad'][data-part='control'][data-drawing] {
+  border-color: var(--xh-signature-pad-border-drawing, var(--xh-border-control-hover));
+}
+
+/* 只读仍看得见签名，只是改不动：收掉手型，别暗示"在这儿能写" */
+[data-scope='signature-pad'][data-part='control'][data-readonly] {
+  cursor: default;
+}
+
+[data-scope='signature-pad'][data-part='control'][data-disabled] {
+  background: var(--xh-signature-pad-bg-disabled, var(--xh-bg-muted));
+  cursor: not-allowed;
+}
+
+/* 基准线：位置由连接层按百分比给出，这里只管它长什么样。
+   它是"请在这条线上签"的功能性提示，不是装饰，颜色走控件描边那一档才看得见 */
+[data-scope='signature-pad'][data-part='guide'] {
+  stroke: var(--xh-signature-pad-guide-stroke, var(--xh-border-control));
+  stroke-width: var(--xh-stroke-thin);
+  stroke-dasharray: 6 6;
+}
+
+/* 笔迹是一条填充路径（每一笔是它的一条子路径），不是描边：
+   粗细要随压感变，而 stroke-width 全线只有一个值 */
+[data-scope='signature-pad'][data-part='segment'] {
+  fill: var(--xh-signature-pad-ink, var(--xh-fg-default));
+  stroke: none;
+}
+
+[data-scope='signature-pad'][data-part='clear-trigger'] {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  justify-content: center;
+  gap: var(--xh-signature-pad-clear-gap, var(--xh-control-gap-sm));
+  block-size: var(--xh-signature-pad-clear-h, var(--xh-control-h-sm));
+  padding-inline: var(--xh-signature-pad-clear-px, var(--xh-control-px-sm));
+  border: var(--xh-stroke-thin) solid var(--xh-signature-pad-clear-border, var(--xh-border-control));
+  border-radius: var(--xh-signature-pad-clear-radius, var(--xh-shape-control));
+  background: var(--xh-signature-pad-clear-bg, var(--xh-bg-surface));
+  color: var(--xh-signature-pad-clear-fg, var(--xh-fg-default));
+  font-size: var(--xh-text-label-size);
+  line-height: var(--xh-leading-none);
+  cursor: pointer;
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='signature-pad'][data-part='clear-trigger']:hover {
+  background: var(--xh-signature-pad-clear-bg-hover, var(--xh-bg-subtle-hover));
+}
+
+[data-scope='signature-pad'][data-part='clear-trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+/* 空画布时按钮照常可按（收起它会让焦点掉回 body），只把它压淡一档 */
+[data-scope='signature-pad'][data-part='clear-trigger'][data-empty] {
+  color: var(--xh-fg-muted);
+}
+
+/* 单体原生控件走 :disabled；集合条目那套 [data-disabled] 在这里命不中。
+   禁用只换前景色，不再叠 opacity——两样一起上会把文字压到看不见 */
+[data-scope='signature-pad'][data-part='clear-trigger']:disabled {
+  background: var(--xh-signature-pad-clear-bg-disabled, var(--xh-bg-muted));
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+/* 签没签的那句话。读屏靠它播报，看得见的人也用得上，因此不做视觉隐藏 */
+[data-scope='signature-pad'][data-part='status'] {
+  color: var(--xh-signature-pad-status-fg, var(--xh-fg-muted));
+  font-size: var(--xh-signature-pad-status-font-size, var(--xh-text-label-size));
+  line-height: var(--xh-leading-none);
+}
+
+/* 表单影子的视觉隐藏（绝对定位 + 1px + clip-path）连接层内联给全了，这里不重复也不覆盖，
+   只掐掉指针命中：那个 1px 的框压在画布上会截走本该落到画布上的落笔。 */
+[data-scope='signature-pad'][data-part='hidden-input'] {
+  pointer-events: none;
+}
+
+/* display 会盖掉 UA 的 [hidden]{display:none}，凡是被赋了 display 的角色节点都要显式让位 */
+[data-scope='signature-pad'][data-part='root'][hidden],
+[data-scope='signature-pad'][data-part='control'][hidden],
+[data-scope='signature-pad'][data-part='clear-trigger'][hidden] {
+  display: none;
+}
+
+/* styles/space.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='space'] {
+  --xh-space-skin: 1;
+}
+
+[data-scope='space'][data-part='root'] {
+  display: flex;
+  flex-wrap: nowrap;
+  /* 不写档位也按 md 留白，这是与裸弹性容器的分野；使用者槽位排在档位之前，写死一个值即盖过所有档 */
+  gap: var(--xh-space-gap, var(--xh-space-3));
+}
+
+/* 声明了 display 就盖掉了 UA 的 [hidden] 规则，这里还回去 */
+[data-scope='space'][data-part='root'][hidden] {
+  display: none;
+}
+
+/* 行内盒：宽度收到内容，能和文字排在同一行 */
+[data-scope='space'][data-part='root'][data-inline]:not([hidden]) {
+  display: inline-flex;
+}
+
+/* 分隔符：夹在两个子项之间的装饰件，样子由放进去的内容决定。
+   这里只兜住两件事——不被主轴挤扁（一条 1px 的竖线会被弹性收缩吃没），
+   交叉轴上不单独发话，跟着容器的对齐走：横排随中线、竖排随拉伸 */
+[data-scope='space'][data-part='split'] {
+  flex: none;
+}
+
+/* —— 方向与缺省对齐 —— */
+/* 横排时按中线对齐：一排里混着文字、按钮、标签，高度本就不齐，居中最不容易看出错位 */
+[data-scope='space'][data-part='root'][data-orientation='horizontal'] {
+  flex-direction: row;
+  align-items: center;
+}
+
+/* 竖排时拉伸：一列里的块级子项该占满容器宽度 */
+[data-scope='space'][data-part='root'][data-orientation='vertical'] {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* —— 折行 —— */
+[data-scope='space'][data-part='root'][data-wrap] {
+  flex-wrap: wrap;
+}
+
+/* —— 交叉轴对齐 —— */
+/* 排在方向之后：两者特指度相同，写了 align 就该压过随方向来的那份缺省 */
+[data-scope='space'][data-part='root'][data-align='start'] {
+  align-items: flex-start;
+}
+
+[data-scope='space'][data-part='root'][data-align='center'] {
+  align-items: center;
+}
+
+[data-scope='space'][data-part='root'][data-align='end'] {
+  align-items: flex-end;
+}
+
+[data-scope='space'][data-part='root'][data-align='stretch'] {
+  align-items: stretch;
+}
+
+[data-scope='space'][data-part='root'][data-align='baseline'] {
+  align-items: baseline;
+}
+
+/* —— 主轴分布 —— */
+[data-scope='space'][data-part='root'][data-justify='start'] {
+  justify-content: flex-start;
+}
+
+[data-scope='space'][data-part='root'][data-justify='center'] {
+  justify-content: center;
+}
+
+[data-scope='space'][data-part='root'][data-justify='end'] {
+  justify-content: flex-end;
+}
+
+[data-scope='space'][data-part='root'][data-justify='between'] {
+  justify-content: space-between;
+}
+
+[data-scope='space'][data-part='root'][data-justify='around'] {
+  justify-content: space-around;
+}
+
+[data-scope='space'][data-part='root'][data-justify='evenly'] {
+  justify-content: space-evenly;
+}
+
+/* —— 间距档位 —— */
+/* 每一档指向一个间距令牌，折行时行与行之间也吃这份间距 */
+[data-scope='space'][data-part='root'][data-gap='xs'] {
+  gap: var(--xh-space-gap, var(--xh-space-1));
+}
+
+[data-scope='space'][data-part='root'][data-gap='sm'] {
+  gap: var(--xh-space-gap, var(--xh-space-2));
+}
+
+[data-scope='space'][data-part='root'][data-gap='md'] {
+  gap: var(--xh-space-gap, var(--xh-space-3));
+}
+
+[data-scope='space'][data-part='root'][data-gap='lg'] {
+  gap: var(--xh-space-gap, var(--xh-space-4));
+}
+
+[data-scope='space'][data-part='root'][data-gap='xl'] {
+  gap: var(--xh-space-gap, var(--xh-space-6));
+}
+
 /* styles/statistic.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='statistic'] {
@@ -3319,6 +5307,160 @@ input[data-scope='mention'][data-part='input'] {
   font-variant-numeric: tabular-nums;
   font-weight: var(--xh-font-weight-regular);
   line-height: var(--xh-leading-tight);
+}
+
+/* styles/tag.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='tag'] {
+  --xh-tag-skin: 1;
+}
+
+/* 缺省态：md 档、无语气。三轴规则只在它之上叠加，不改这一条 */
+[data-scope='tag'][data-part='root'] {
+  /* 尺寸档只换这四个私有槽，下面的声明从它们取值 */
+  --xh-_tag-gap: var(--xh-space-1);
+  --xh-_tag-px: var(--xh-space-2);
+  --xh-_tag-py: var(--xh-space-0_5);
+  --xh-_tag-font-size: var(--xh-font-size-xs);
+
+  display: inline-flex;
+  align-items: center;
+  /* 一行放不下时标签自己截断，而不是把整行撑破 */
+  max-inline-size: 100%;
+  gap: var(--xh-tag-gap, var(--xh-_tag-gap));
+  padding-inline: var(--xh-tag-px, var(--xh-_tag-px));
+  padding-block: var(--xh-tag-py, var(--xh-_tag-py));
+  border: var(--xh-stroke-thin) solid transparent;
+  border-radius: var(--xh-tag-radius, var(--xh-shape-control));
+  background: var(--xh-tag-bg, var(--xh-bg-subtle));
+  color: var(--xh-tag-fg, var(--xh-fg-default));
+  font-size: var(--xh-tag-font-size, var(--xh-_tag-font-size));
+  font-weight: var(--xh-tag-font-weight, var(--xh-font-weight-medium));
+  line-height: var(--xh-leading-none);
+  /* 随文排时与正文基线对齐 */
+  vertical-align: middle;
+}
+
+/* 收起态连接层给的是 hidden 属性，而上面声明了 display——
+   漏掉这条，摘掉的标签还会一直摊在页面上 */
+[data-scope='tag'][data-part='root'][hidden] {
+  display: none;
+}
+
+/* 文字过长时截断，关闭钮才始终留在标签里 */
+[data-scope='tag'][data-part='label'] {
+  overflow: hidden;
+  min-inline-size: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-scope='tag'][data-part='close-trigger'] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  /* 命中区取行内动作按钮的标准尺寸，不随标签档位缩小：叉本来就是最难点中的那一个 */
+  block-size: var(--xh-tag-close-size, var(--xh-control-action-size));
+  inline-size: var(--xh-tag-close-size, var(--xh-control-action-size));
+  /* 命中区比字形大一圈，往内收一格才不会在标签右缘留出一块空白 */
+  margin-inline-end: calc(-1 * var(--xh-space-1));
+  border: 0;
+  border-radius: var(--xh-tag-close-radius, var(--xh-shape-inset));
+  background: transparent;
+  /* 叉取标签自己的文字色：实心底上是浅字、淡底上是深字，不必逐形态各写一遍 */
+  color: var(--xh-tag-close-fg, currentColor);
+  /* 按钮不继承字族字号，不接回来的话标签里会突然冒出一段系统 UI 字体 */
+  font: inherit;
+  line-height: var(--xh-leading-none);
+  cursor: pointer;
+}
+
+/* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半 */
+[data-scope='tag'][data-part='close-trigger'][hidden] {
+  display: none;
+}
+
+/* 悬停只加一层同色薄底，实心与淡底两种形态上都成立 */
+[data-scope='tag'][data-part='close-trigger']:hover:not(:disabled) {
+  background: color-mix(in oklab, currentColor 14%, transparent);
+}
+
+[data-scope='tag'][data-part='close-trigger']:disabled {
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+[data-scope='tag'][data-part='close-trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  /* 环往内收：命中区贴着标签内缘，往外画会被相邻标签压住 */
+  outline-offset: calc(-1 * var(--xh-ring-offset));
+}
+
+/* —— 形态 —— */
+/* 形态只决定颜色怎么用。每个形态拆成两条：先是没写语气时的基线配色，
+   再是写了语气时的覆盖。语气槽会沿继承流下来，覆盖那条必须带 [data-tone] 限定，
+   否则一枚没写语气的标签只要落在带 data-tone 的容器里（警告提示、吐司、按钮内）
+   就会跟着染色 */
+[data-scope='tag'][data-part='root'][data-variant='solid'] {
+  border-color: transparent;
+  background: var(--xh-tag-bg, var(--xh-bg-brand));
+  color: var(--xh-tag-fg, var(--xh-fg-on-brand));
+}
+
+[data-scope='tag'][data-part='root'][data-variant='solid'][data-tone] {
+  background: var(--xh-tag-bg, var(--xh-_tone, var(--xh-bg-brand)));
+  color: var(--xh-tag-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+}
+
+[data-scope='tag'][data-part='root'][data-variant='subtle'] {
+  border-color: transparent;
+  background: var(--xh-tag-bg, var(--xh-bg-subtle));
+  color: var(--xh-tag-fg, var(--xh-fg-default));
+}
+
+[data-scope='tag'][data-part='root'][data-variant='subtle'][data-tone] {
+  background: var(--xh-tag-bg, var(--xh-_tone-subtle, var(--xh-bg-subtle)));
+  color: var(--xh-tag-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
+}
+
+[data-scope='tag'][data-part='root'][data-variant='outline'] {
+  border-color: var(--xh-tag-border, var(--xh-border-default));
+  background: transparent;
+  color: var(--xh-tag-fg, var(--xh-fg-default));
+}
+
+[data-scope='tag'][data-part='root'][data-variant='outline'][data-tone] {
+  border-color: var(--xh-tag-border, var(--xh-_tone-border, var(--xh-border-default)));
+  color: var(--xh-tag-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
+}
+
+/* —— 尺寸 —— */
+/* 标签是随文排的标记，不占控件行高，档位走间距与字号而不是 control-h */
+[data-scope='tag'][data-part='root'][data-size='sm'] {
+  --xh-_tag-gap: var(--xh-space-0_5);
+  --xh-_tag-px: var(--xh-space-1_5);
+  --xh-_tag-py: var(--xh-space-0);
+}
+
+[data-scope='tag'][data-part='root'][data-size='lg'] {
+  --xh-_tag-gap: var(--xh-space-1_5);
+  --xh-_tag-px: var(--xh-space-3);
+  --xh-_tag-py: var(--xh-space-1);
+  --xh-_tag-font-size: var(--xh-font-size-sm);
+}
+
+/* —— 禁用 —— */
+/* 排在形态之后，靠源序压过形态给的配色。第二条选择器专为写了语气的标签而设：
+   语气覆盖那几条比第一条多一个属性，不把 [data-tone] 一起写上，
+   禁用的标签会留着语气实心底、只有文字变灰，底上几乎看不见字。
+   用了 fg-disabled 就不再叠 opacity */
+[data-scope='tag'][data-part='root'][data-disabled],
+[data-scope='tag'][data-part='root'][data-tone][data-disabled] {
+  border-color: var(--xh-tag-border-disabled, var(--xh-border-subtle));
+  background: var(--xh-tag-bg-disabled, var(--xh-bg-muted));
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
 }
 
 /* styles/time.css */
@@ -3635,6 +5777,124 @@ input[data-scope='mention'][data-part='input'] {
   line-height: var(--xh-leading-normal);
 }
 
+/* styles/timer.css */
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='timer'] {
+  --xh-timer-skin: 1;
+}
+
+/* 三个尺寸档只换这几个私有槽，各部件从 root 继承它们，换档不必给每个部件各写一条选择器 */
+[data-scope='timer'][data-part='root'] {
+  --xh-_timer-digit-size: var(--xh-font-size-2xl);
+  --xh-_timer-gap: var(--xh-space-3);
+  --xh-_timer-control-h: var(--xh-control-h-md);
+  --xh-_timer-control-px: var(--xh-control-px-md);
+  --xh-_timer-control-gap: var(--xh-control-gap-md);
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--xh-timer-gap, var(--xh-_timer-gap));
+  color: var(--xh-timer-fg, var(--xh-fg-default));
+}
+
+/* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
+[data-scope='timer'][data-part='root'][hidden] {
+  display: none;
+}
+
+/* —— 尺寸 —— */
+[data-scope='timer'][data-part='root'][data-size='sm'] {
+  --xh-_timer-digit-size: var(--xh-font-size-xl);
+  --xh-_timer-gap: var(--xh-space-2);
+  --xh-_timer-control-h: var(--xh-control-h-sm);
+  --xh-_timer-control-px: var(--xh-control-px-sm);
+  --xh-_timer-control-gap: var(--xh-control-gap-sm);
+}
+
+[data-scope='timer'][data-part='root'][data-size='lg'] {
+  --xh-_timer-digit-size: var(--xh-font-size-3xl);
+  --xh-_timer-gap: var(--xh-space-4);
+  --xh-_timer-control-h: var(--xh-control-h-lg);
+  --xh-_timer-control-px: var(--xh-control-px-lg);
+  --xh-_timer-control-gap: var(--xh-control-gap-lg);
+}
+
+/* —— 时间区 —— */
+/* 等宽数字：逐位宽度一致，秒数换位时分隔符与后面的段都不会左右挪动。
+   direction 钉成 ltr：每段是一个独立的 flex 项，主轴方向跟着文字方向走，
+   不钉住的话 rtl 页面上时分秒会整体倒过来排——时间串的读序两个方向都一样。 */
+[data-scope='timer'][data-part='area'] {
+  display: inline-flex;
+  align-items: baseline;
+  direction: ltr;
+  color: var(--xh-timer-area-fg, var(--xh-fg-default));
+  font-size: var(--xh-timer-digit-font-size, var(--xh-_timer-digit-size));
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--xh-font-weight-semibold);
+  line-height: var(--xh-leading-tight);
+}
+
+[data-scope='timer'][data-part='area'][hidden] {
+  display: none;
+}
+
+/* 走完之后这串数字不再是活的信息，退一档；暂停在半路的仍是要盯着看的数，不退 */
+[data-scope='timer'][data-part='area'][data-state='completed'] {
+  color: var(--xh-timer-completed-fg, var(--xh-fg-muted));
+}
+
+/* 记号只是排版，比数字弱一档、两侧留一点气口 */
+[data-scope='timer'][data-part='separator'] {
+  padding-inline: var(--xh-timer-separator-px, var(--xh-space-0_5));
+  color: var(--xh-timer-separator-fg, var(--xh-fg-subtle));
+  font-weight: var(--xh-font-weight-regular);
+}
+
+/* —— 起停按钮 —— */
+[data-scope='timer'][data-part='control'] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--xh-timer-control-gap, var(--xh-_timer-control-gap));
+  block-size: var(--xh-timer-control-h, var(--xh-_timer-control-h));
+  padding-inline: var(--xh-timer-control-px, var(--xh-_timer-control-px));
+  border: var(--xh-stroke-thin) solid var(--xh-timer-control-border, var(--xh-border-control));
+  border-radius: var(--xh-timer-control-radius, var(--xh-shape-control));
+  background: var(--xh-timer-control-bg, var(--xh-bg-surface));
+  color: var(--xh-timer-control-fg, var(--xh-fg-default));
+  font-size: var(--xh-text-label-size);
+  font-weight: var(--xh-text-label-weight);
+  line-height: var(--xh-leading-none);
+  cursor: pointer;
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='timer'][data-part='control'][hidden] {
+  display: none;
+}
+
+[data-scope='timer'][data-part='control']:hover {
+  border-color: var(--xh-timer-control-border-hover, var(--xh-border-control-hover));
+  background: var(--xh-timer-control-bg-hover, var(--xh-bg-subtle-hover));
+}
+
+[data-scope='timer'][data-part='control']:active {
+  background: var(--xh-timer-control-bg-active, var(--xh-bg-subtle-active));
+}
+
+[data-scope='timer'][data-part='control']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+/* 作者把按钮禁掉时的样子。文字改用 fg-disabled 就不再叠 opacity，两条一起上会掉到读不出来 */
+[data-scope='timer'][data-part='control']:disabled {
+  border-color: var(--xh-timer-control-border-disabled, var(--xh-border-subtle));
+  background: var(--xh-timer-control-bg-disabled, var(--xh-bg-muted));
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
 /* styles/typography.css */
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='typography'] {
@@ -3813,6 +6073,7 @@ input[data-scope='mention'][data-part='input'] {
   xh-date-picker,
   xh-dialog,
   xh-drawer,
+  xh-floating-panel,
   xh-hover-card,
   xh-image-viewer,
   xh-mention,

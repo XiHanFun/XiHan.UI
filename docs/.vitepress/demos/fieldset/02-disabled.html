@@ -1,0 +1,23 @@
+<!-- 整组禁用 | disabled 落成原生 fieldset[disabled]，组内每个控件一并停掉，不必逐个写 disabled -->
+<div style="display: flex; flex-direction: column; gap: 12px; inline-size: 320px">
+  <label style="display: flex; gap: 8px; align-items: center">
+    <input id="fieldset-lock" type="checkbox" checked />
+    锁定这段设置
+  </label>
+  <xh-fieldset id="fieldset-billing" disabled>
+    <fieldset data-xh-part="root">
+      <legend data-xh-part="legend">发票抬头</legend>
+      <input type="text" placeholder="公司名称" style="inline-size: 100%" />
+      <input type="text" placeholder="纳税人识别号" style="inline-size: 100%" />
+      <p data-xh-part="helper-text">锁定期间这两个输入框既不能聚焦，也不参与提交</p>
+    </fieldset>
+  </xh-fieldset>
+</div>
+
+<script type="module">
+  const lock = document.getElementById("fieldset-lock");
+  const billing = document.getElementById("fieldset-billing");
+  lock.addEventListener("change", () => {
+    billing.disabled = lock.checked;
+  });
+</script>

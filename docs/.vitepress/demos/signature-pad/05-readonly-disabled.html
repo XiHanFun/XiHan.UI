@@ -1,0 +1,23 @@
+<!-- 只读与禁用 | 只读画好的还看得见但改不动，禁用连清空按钮都按不动；两者都走原生 disabled，不是灰一层了事 -->
+<div style="display: flex; flex-direction: column; gap: 16px; max-inline-size: 22rem">
+  <xh-signature-pad read-only>
+    <div data-xh-part="root">
+      <span data-xh-part="label">只读</span>
+      <svg data-xh-part="control">
+        <line data-xh-part="guide"></line>
+        <path data-xh-part="segment"></path>
+      </svg>
+      <button data-xh-part="clear-trigger">清空</button>
+    </div>
+  </xh-signature-pad>
+  <xh-signature-pad disabled>
+    <div data-xh-part="root">
+      <span data-xh-part="label">禁用</span>
+      <svg data-xh-part="control">
+        <line data-xh-part="guide"></line>
+        <path data-xh-part="segment"></path>
+      </svg>
+      <button data-xh-part="clear-trigger">清空</button>
+    </div>
+  </xh-signature-pad>
+</div>

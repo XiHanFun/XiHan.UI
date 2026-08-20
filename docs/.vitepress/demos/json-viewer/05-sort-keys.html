@@ -1,0 +1,13 @@
+<!-- 键排序 | sortKeys 让对象键按字典序排，数组顺序不动；接口返回的字段顺序不稳定时用它 -->
+<xh-json-viewer id="json-sort-keys" default-expanded-depth="2" sort-keys>
+  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 420px"></div>
+</xh-json-viewer>
+
+<script type="module">
+  document.getElementById("json-sort-keys").value = {
+    zone: "cn-east-1",
+    action: "deploy",
+    meta: { retries: 2, at: "2026-08-20", by: "ci" },
+    steps: ["build", "test", "publish"],
+  };
+</script>

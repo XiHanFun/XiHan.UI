@@ -28,30 +28,38 @@ import { dateFieldSuite } from './date-field.suite'
 import { datePickerSuite } from './date-picker.suite'
 import { descriptionsSuite } from './descriptions.suite'
 import { dialogSuite } from './dialog.suite'
+import { downloadTriggerSuite } from './download-trigger.suite'
 import { drawerSuite } from './drawer.suite'
 import { dynamicInputSuite } from './dynamic-input.suite'
 import { editableSuite } from './editable.suite'
 import { ellipsisSuite } from './ellipsis.suite'
 import { emptyStateSuite } from './empty-state.suite'
 import { fieldSuite } from './field.suite'
+import { fieldsetSuite } from './fieldset.suite'
 import { fileUploadSuite } from './file-upload.suite'
 import { flexSuite } from './flex.suite'
 import { floatButtonSuite } from './float-button.suite'
+import { floatingPanelSuite } from './floating-panel.suite'
 import { formSuite } from './form.suite'
 import { gradientTextSuite } from './gradient-text.suite'
 import { gridSuite } from './grid.suite'
+import { heatmapSuite } from './heatmap.suite'
 import { highlightSuite } from './highlight.suite'
+import { hotkeysSuite } from './hotkeys.suite'
 import { hoverCardSuite } from './hover-card.suite'
 import { iconWrapperSuite } from './icon-wrapper.suite'
 import { iconSuite } from './icon.suite'
+import { imageCropperSuite } from './image-cropper.suite'
 import { imageSuite } from './image.suite'
 import { infiniteScrollSuite } from './infinite-scroll.suite'
+import { jsonViewerSuite } from './json-viewer.suite'
 import { layoutSuite } from './layout.suite'
 import { listSuite } from './list.suite'
 import { listboxSuite } from './listbox.suite'
 import { loadingBarSuite } from './loading-bar.suite'
 import { logSuite } from './log.suite'
 import { marqueeSuite } from './marquee.suite'
+import { masonrySuite } from './masonry.suite'
 import { mentionSuite } from './mention.suite'
 import { menuSuite } from './menu.suite'
 import { menubarSuite } from './menubar.suite'
@@ -60,6 +68,7 @@ import { numberAnimationSuite } from './number-animation.suite'
 import { numberFieldSuite } from './number-field.suite'
 import { pageHeaderSuite } from './page-header.suite'
 import { paginationSuite } from './pagination.suite'
+import { passwordInputSuite } from './password-input.suite'
 import { pinInputSuite } from './pin-input.suite'
 import { popconfirmSuite } from './popconfirm.suite'
 import { popoverSuite } from './popover.suite'
@@ -70,10 +79,13 @@ import { radioGroupSuite } from './radio-group.suite'
 import { ratingSuite } from './rating.suite'
 import { resultSuite } from './result.suite'
 import { scrollAreaSuite } from './scroll-area.suite'
+import { segmentedSuite } from './segmented.suite'
 import { selectSuite } from './select.suite'
 import { separatorSuite } from './separator.suite'
+import { signaturePadSuite } from './signature-pad.suite'
 import { skeletonSuite } from './skeleton.suite'
 import { sliderSuite } from './slider.suite'
+import { spaceSuite } from './space.suite'
 import { spinnerSuite } from './spinner.suite'
 import { splitterSuite } from './splitter.suite'
 import { statisticSuite } from './statistic.suite'
@@ -81,6 +93,7 @@ import { stepsSuite } from './steps.suite'
 import { switchSuite } from './switch.suite'
 import { tableSuite } from './table.suite'
 import { tabsSuite } from './tabs.suite'
+import { tagSuite } from './tag.suite'
 import { tagsInputSuite } from './tags-input.suite'
 import { textFieldSuite } from './text-field.suite'
 import { threadSuite } from './thread.suite'
@@ -88,6 +101,7 @@ import { timeFieldSuite } from './time-field.suite'
 import { timePickerSuite } from './time-picker.suite'
 import { timeSuite } from './time.suite'
 import { timelineSuite } from './timeline.suite'
+import { timerSuite } from './timer.suite'
 import { toastSuite } from './toast.suite'
 import { toasterSuite } from './toaster.suite'
 import { toggleGroupSuite } from './toggle-group.suite'
@@ -133,30 +147,38 @@ export const allSuites: readonly ConformanceSuite[] = [
   datePickerSuite,
   descriptionsSuite,
   dialogSuite,
+  downloadTriggerSuite,
   drawerSuite,
   dynamicInputSuite,
   editableSuite,
   ellipsisSuite,
   emptyStateSuite,
   fieldSuite,
+  fieldsetSuite,
   fileUploadSuite,
   flexSuite,
   floatButtonSuite,
+  floatingPanelSuite,
   formSuite,
   gradientTextSuite,
   gridSuite,
+  heatmapSuite,
   highlightSuite,
+  hotkeysSuite,
   hoverCardSuite,
   iconSuite,
   iconWrapperSuite,
   imageSuite,
+  imageCropperSuite,
   infiniteScrollSuite,
+  jsonViewerSuite,
   layoutSuite,
   listSuite,
   listboxSuite,
   loadingBarSuite,
   logSuite,
   marqueeSuite,
+  masonrySuite,
   mentionSuite,
   menuSuite,
   menubarSuite,
@@ -165,6 +187,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   numberFieldSuite,
   pageHeaderSuite,
   paginationSuite,
+  passwordInputSuite,
   pinInputSuite,
   popconfirmSuite,
   popoverSuite,
@@ -175,10 +198,13 @@ export const allSuites: readonly ConformanceSuite[] = [
   ratingSuite,
   resultSuite,
   scrollAreaSuite,
+  segmentedSuite,
   selectSuite,
   separatorSuite,
+  signaturePadSuite,
   skeletonSuite,
   sliderSuite,
+  spaceSuite,
   spinnerSuite,
   splitterSuite,
   statisticSuite,
@@ -186,6 +212,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   switchSuite,
   tableSuite,
   tabsSuite,
+  tagSuite,
   tagsInputSuite,
   textFieldSuite,
   threadSuite,
@@ -193,6 +220,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   timeFieldSuite,
   timePickerSuite,
   timelineSuite,
+  timerSuite,
   toastSuite,
   toasterSuite,
   toggleSuite,

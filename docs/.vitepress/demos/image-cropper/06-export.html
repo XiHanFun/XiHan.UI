@@ -1,0 +1,58 @@
+<!-- 导出裁切结果 | 出图不归组件管：拿 getCropRect() 的矩形喂给 cropToCanvas，画出来的是一张新画布 -->
+<xh-image-cropper
+  id="cropper-export"
+  src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23c7d2fe'/%3E%3Ccircle cx='150' cy='120' r='72' fill='%23f9a8d4'/%3E%3Crect x='250' y='160' width='180' height='120' rx='16' fill='%2334d399'/%3E%3C/svg%3E"
+  min-width="40"
+>
+  <div data-xh-part="root" style="inline-size: 360px">
+    <div data-xh-part="viewport">
+      <img data-xh-part="image" alt="示例图片" />
+      <div data-xh-part="crop-area">
+        <button data-xh-part="crop-handle" position="nw"></button>
+        <button data-xh-part="crop-handle" position="ne"></button>
+        <button data-xh-part="crop-handle" position="se"></button>
+        <button data-xh-part="crop-handle" position="sw"></button>
+      </div>
+    </div>
+    <button id="cropper-export-run" type="button">导出这一块</button>
+  </div>
+</xh-image-cropper>
+<div id="cropper-export-preview" style="min-block-size: 40px"></div>
+
+<script type="module">
+  // 示例台不能 import 包，这里把 cropToCanvas 做的事等价地写一遍；
+  // 应用里直接用 @xihan-ui/headless 导出的那个函数即可。
+  const cropper = document.getElementById("cropper-export");
+  const preview = document.getElementById("cropper-export-preview");
+  let rect = { x: 0, y: 0, width: 0, height: 0 };
+
+  cropper.addEventListener("value-change", (event) => {
+    rect = event.detail.value;
+  });
+
+  document
+    .getElementById("cropper-export-run")
+    .addEventListener("click", () => {
+      const image = cropper.querySelector('img[data-part="image"]');
+      if (!image || rect.width <= 0 || rect.height <= 0) return;
+      const width = 160;
+      const height = Math.round((width * rect.height) / rect.width);
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.drawImage(
+        image,
+        rect.x,
+        rect.y,
+        rect.width,
+        rect.height,
+        0,
+        0,
+        width,
+        height,
+      );
+      preview.replaceChildren(canvas);
+    });
+</script>

@@ -10527,6 +10527,219 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/download-trigger.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-download-trigger>` —— Light-DOM 行为宿主，跑 download-trigger 机器并把 connect 产出打到 root 角色节点。\n\n下载走临时地址加一次隐藏链接点击：点下去先进 preparing，数据交给浏览器后回 idle 并派\n`download-complete`，取数失败同样回 idle 并派 `download-error`。\n\nBlob 与取数函数只能走 property（`el.data = blob`）：HTML 属性只装得下一个字符串。",
+          "name": "XhDownloadTriggerElement",
+          "cssParts": [
+            {
+              "description": "触发下载的按钮，须是原生 `<button>`（承载 data-state / aria-busy）",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: downloadTriggerAnatomy, meta: downloadTriggerMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "data",
+              "privacy": "public",
+              "type": {
+                "text": "DownloadTriggerData | undefined"
+              },
+              "attribute": "data"
+            },
+            {
+              "kind": "field",
+              "name": "fileName",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "file-name"
+            },
+            {
+              "kind": "field",
+              "name": "mimeType",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "mime-type"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "notifyComplete",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyError",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<DownloadTriggerSchema>(this, downloadTriggerMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<DownloadTriggerSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "数据已交给浏览器；detail 为 `{ fileName }`",
+              "name": "download-complete",
+              "type": {
+                "text": "DownloadTriggerCompleteDetails"
+              }
+            },
+            {
+              "description": "取数失败或造不出下载；detail 为 `{ error, fileName }`，此刻状态已经回到 idle",
+              "name": "download-error",
+              "type": {
+                "text": "DownloadTriggerErrorDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "DownloadTriggerData | undefined"
+              },
+              "description": "要下载的文本；Blob 与取数函数只能经 property 交进来",
+              "name": "data",
+              "fieldName": "data"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "写出的文件名；缺省或空串退回内建名 download",
+              "name": "file-name",
+              "fieldName": "fileName"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "内容类型；给了它就以它为准，连 Blob 自带的类型也照它重包",
+              "name": "mime-type",
+              "fieldName": "mimeType"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用，按钮不可聚焦也点不动",
+              "name": "disabled",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-download-trigger",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-download-trigger-bg"
+            },
+            {
+              "name": "--xh-download-trigger-bg-active"
+            },
+            {
+              "name": "--xh-download-trigger-bg-disabled"
+            },
+            {
+              "name": "--xh-download-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-download-trigger-border"
+            },
+            {
+              "name": "--xh-download-trigger-border-disabled"
+            },
+            {
+              "name": "--xh-download-trigger-border-hover"
+            },
+            {
+              "name": "--xh-download-trigger-fg"
+            },
+            {
+              "name": "--xh-download-trigger-font-size"
+            },
+            {
+              "name": "--xh-download-trigger-font-weight"
+            },
+            {
+              "name": "--xh-download-trigger-gap"
+            },
+            {
+              "name": "--xh-download-trigger-h"
+            },
+            {
+              "name": "--xh-download-trigger-px"
+            },
+            {
+              "name": "--xh-download-trigger-radius"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhDownloadTriggerElement",
+          "declaration": {
+            "name": "XhDownloadTriggerElement",
+            "module": "src/elements/download-trigger.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/drawer.ts",
       "declarations": [
         {
@@ -12463,6 +12676,194 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/fieldset.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-fieldset>` —— Light-DOM 行为宿主，无状态机，把 connectFieldset 产出的属性打到\nroot/legend/helper-text/error-text 角色节点上：说明与错误文案的 id 自动接进 root 的描述链。\n\nroot 必须是原生 `<fieldset>`、legend 必须是原生 `<legend>` 且写成 root 的首个子节点——\n整组禁用连坐组内控件与\"legend 即组名\"都是浏览器给的，写成 div 两样都静默失效。\n\n每个实例自带一份 scope 派生 part id，同页多个字段集各出各的 id。",
+          "name": "XhFieldsetElement",
+          "cssParts": [
+            {
+              "description": "原生 `<fieldset>`，承载原生 disabled 与 data-disabled/data-invalid/data-required",
+              "name": "root"
+            },
+            {
+              "description": "原生 `<legend>`，这一组的名字；须是 root 的首个子节点",
+              "name": "legend"
+            },
+            {
+              "description": "常驻说明文案，恒在 root 的描述链里",
+              "name": "helper-text"
+            },
+            {
+              "description": "错误文案（role=alert）；非 invalid 时带 hidden 收起，节点不卸载",
+              "name": "error-text"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: fieldsetAnatomy, meta: fieldsetMeta, tags: { root: ['fieldset'], legend: ['legend'] }, }"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<FieldsetTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "fieldsetScope",
+              "type": {
+                "text": "Scope"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#checkLegendPosition",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "legend 不是 fieldset 首个子节点时报一条诊断。标签名由 partContract 校，位置它校不到，\n而位置错了组名与\"首个 legend 内的控件不被禁用连坐\"一起静默失效，控制台不会有任何动静。"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "整组禁用：root 落原生 disabled，组内表单控件一并停掉",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败态：错误文案接入描述链并显出",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填标记，只落 data-required 供皮肤给组标题加星号",
+              "name": "required",
+              "fieldName": "required"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-fieldset",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-fieldset-error-fg"
+            },
+            {
+              "name": "--xh-fieldset-error-font-size"
+            },
+            {
+              "name": "--xh-fieldset-gap"
+            },
+            {
+              "name": "--xh-fieldset-helper-fg"
+            },
+            {
+              "name": "--xh-fieldset-helper-fg-disabled"
+            },
+            {
+              "name": "--xh-fieldset-helper-font-size"
+            },
+            {
+              "name": "--xh-fieldset-legend-fg"
+            },
+            {
+              "name": "--xh-fieldset-legend-fg-disabled"
+            },
+            {
+              "name": "--xh-fieldset-legend-fg-invalid"
+            },
+            {
+              "name": "--xh-fieldset-legend-font-size"
+            },
+            {
+              "name": "--xh-fieldset-legend-font-weight"
+            },
+            {
+              "name": "--xh-fieldset-legend-gap"
+            },
+            {
+              "name": "--xh-fieldset-legend-star"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhFieldsetElement",
+          "declaration": {
+            "name": "XhFieldsetElement",
+            "module": "src/elements/fieldset.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/file-upload.ts",
       "declarations": [
         {
@@ -13691,6 +14092,562 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/floating-panel.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-floating-panel>` —— Light-DOM 行为宿主：作者写 root / positioner / content 等角色节点，\n元素跑 floating-panel 机器并把 connect 产出打上去。\n\n面板的落位与尺寸由元素每帧写进 positioner 的内联样式（position/left/top/width/height），\n作者的样式表不要再碰这五个属性。收起态用内联 display 收住 positioner，正文收拢时同样收住。\n\n改尺把手要在节点上写明守哪条边（`edge=\"se\"`），形态按钮要写明切到哪个形态（`stage=\"minimized\"`），\n与 Vue 侧的 `:edge` / `:stage` 是同一份声明。\n\n位置与尺寸的属性形式是逗号分隔的一对数（`default-position=\"24,24\"`、`default-size=\"360,240\"`）；\n也可以直接喂 property（`el.position = { x: 24, y: 24 }`）。",
+          "name": "XhFloatingPanelElement",
+          "cssParts": [
+            {
+              "description": "面板与触发器共同的容器",
+              "name": "root"
+            },
+            {
+              "description": "打开面板的按钮",
+              "name": "trigger"
+            },
+            {
+              "description": "承载落位与尺寸的定位容器，收起时被内联 display 收住",
+              "name": "positioner"
+            },
+            {
+              "description": "role=dialog 的面板本体（Esc 收口所在）",
+              "name": "content"
+            },
+            {
+              "description": "标题栏：标题、拖拽把手与几个按钮排在这里",
+              "name": "header"
+            },
+            {
+              "description": "标题（aria-labelledby 目标）",
+              "name": "title"
+            },
+            {
+              "description": "拖拽把手，须是原生 `<button>`",
+              "name": "drag-trigger"
+            },
+            {
+              "description": "改尺把手，自带 edge 属性；接线后是 `role=\"separator\"`，别写成 `<button>`",
+              "name": "resize-trigger"
+            },
+            {
+              "description": "形态按钮，须是原生 `<button>` 并自带 stage 属性",
+              "name": "stage-trigger"
+            },
+            {
+              "description": "关闭按钮",
+              "name": "close-trigger"
+            },
+            {
+              "description": "正文，收拢时带 hidden",
+              "name": "body"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: floatingPanelAnatomy, meta: floatingPanelMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "defaultOpen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-open"
+            },
+            {
+              "kind": "field",
+              "name": "position",
+              "privacy": "public",
+              "type": {
+                "text": "FloatingPanelPosition | undefined"
+              },
+              "attribute": "position"
+            },
+            {
+              "kind": "field",
+              "name": "defaultPosition",
+              "privacy": "public",
+              "type": {
+                "text": "FloatingPanelPosition | undefined"
+              },
+              "attribute": "default-position"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "FloatingPanelSize | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "defaultSize",
+              "privacy": "public",
+              "type": {
+                "text": "FloatingPanelSize | undefined"
+              },
+              "attribute": "default-size"
+            },
+            {
+              "kind": "field",
+              "name": "minSize",
+              "privacy": "public",
+              "type": {
+                "text": "FloatingPanelSize | undefined"
+              },
+              "attribute": "min-size"
+            },
+            {
+              "kind": "field",
+              "name": "maxSize",
+              "privacy": "public",
+              "type": {
+                "text": "FloatingPanelSize | undefined"
+              },
+              "attribute": "max-size"
+            },
+            {
+              "kind": "field",
+              "name": "stage",
+              "privacy": "public",
+              "type": {
+                "text": "FloatingPanelStage | undefined"
+              },
+              "attribute": "stage"
+            },
+            {
+              "kind": "field",
+              "name": "defaultStage",
+              "privacy": "public",
+              "type": {
+                "text": "FloatingPanelStage | undefined"
+              },
+              "attribute": "default-stage"
+            },
+            {
+              "kind": "field",
+              "name": "panelDraggable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "panel-draggable"
+            },
+            {
+              "kind": "field",
+              "name": "resizable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "resizable"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "FloatingPanelSchema['props']['translations'] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "panelScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyOpen",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyPosition",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifySize",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyStage",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<FloatingPanelSchema>( this, floatingPanelMachine, () => this.machineProps(), { scope: this.panelScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<FloatingPanelSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<FloatingPanelSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "edgeOf",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "FloatingPanelResizeEdge"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "把手自报守的是哪条边；没写或写错时按右下角处理，那是最常见的那一个。"
+            },
+            {
+              "kind": "method",
+              "name": "stageOf",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "FloatingPanelStage"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "形态按钮自报切到哪个形态；没写或写错时按常规处理。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "展开态变化；detail 为 `{ open: boolean }`",
+              "name": "open-change",
+              "type": {
+                "text": "FloatingPanelOpenChangeDetails"
+              }
+            },
+            {
+              "description": "落点变化（拖动途中会连发）；detail 为 `{ position: { x, y } }`",
+              "name": "position-change",
+              "type": {
+                "text": "FloatingPanelPositionChangeDetails"
+              }
+            },
+            {
+              "description": "尺寸变化（改尺途中会连发）；detail 为 `{ size: { width, height } }`",
+              "name": "size-change",
+              "type": {
+                "text": "FloatingPanelSizeChangeDetails"
+              }
+            },
+            {
+              "description": "形态变化；detail 为 `{ stage: 'default' | 'minimized' | 'maximized' }`",
+              "name": "stage-change",
+              "type": {
+                "text": "FloatingPanelStageChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控开合；缺省该属性即非受控",
+              "name": "open",
+              "fieldName": "open"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始为展开",
+              "name": "default-open",
+              "fieldName": "defaultOpen"
+            },
+            {
+              "type": {
+                "text": "FloatingPanelPosition | undefined"
+              },
+              "description": "受控落点，写成 \"x,y\"（px，相对视口）",
+              "name": "position",
+              "fieldName": "position"
+            },
+            {
+              "type": {
+                "text": "FloatingPanelPosition | undefined"
+              },
+              "description": "非受控初始落点，默认 \"24,24\"",
+              "name": "default-position",
+              "fieldName": "defaultPosition"
+            },
+            {
+              "type": {
+                "text": "FloatingPanelSize | undefined"
+              },
+              "description": "受控尺寸，写成 \"宽,高\"（px）",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "FloatingPanelSize | undefined"
+              },
+              "description": "非受控初始尺寸，默认 \"360,240\"",
+              "name": "default-size",
+              "fieldName": "defaultSize"
+            },
+            {
+              "type": {
+                "text": "FloatingPanelSize | undefined"
+              },
+              "description": "尺寸下限，默认 \"160,120\"",
+              "name": "min-size",
+              "fieldName": "minSize"
+            },
+            {
+              "type": {
+                "text": "FloatingPanelSize | undefined"
+              },
+              "description": "尺寸上限，不写即不封顶",
+              "name": "max-size",
+              "fieldName": "maxSize"
+            },
+            {
+              "type": {
+                "text": "FloatingPanelStage | undefined"
+              },
+              "description": "受控形态",
+              "name": "stage",
+              "fieldName": "stage"
+            },
+            {
+              "type": {
+                "text": "FloatingPanelStage | undefined"
+              },
+              "description": "非受控初始形态，默认 default",
+              "name": "default-stage",
+              "fieldName": "defaultStage"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "允不允许搬动面板，默认开启；铺满形态下恒不可搬。不叫 draggable：那是 HTML 全局属性，写上去宿主会变成原生拖放源",
+              "name": "panel-draggable",
+              "fieldName": "panelDraggable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "允不允许改尺寸，默认开启；只有常规形态下才改得动",
+              "name": "resizable",
+              "fieldName": "resizable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用：搬不动、改不了尺寸、切不了形态；开合与关闭不受影响",
+              "name": "disabled",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-floating-panel",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-floating-panel-action-bg-active"
+            },
+            {
+              "name": "--xh-floating-panel-action-bg-hover"
+            },
+            {
+              "name": "--xh-floating-panel-action-fg"
+            },
+            {
+              "name": "--xh-floating-panel-action-fg-active"
+            },
+            {
+              "name": "--xh-floating-panel-action-fg-hover"
+            },
+            {
+              "name": "--xh-floating-panel-action-radius"
+            },
+            {
+              "name": "--xh-floating-panel-bg"
+            },
+            {
+              "name": "--xh-floating-panel-body-px"
+            },
+            {
+              "name": "--xh-floating-panel-body-py"
+            },
+            {
+              "name": "--xh-floating-panel-border"
+            },
+            {
+              "name": "--xh-floating-panel-corner-size"
+            },
+            {
+              "name": "--xh-floating-panel-fg"
+            },
+            {
+              "name": "--xh-floating-panel-handle-size"
+            },
+            {
+              "name": "--xh-floating-panel-header-bg"
+            },
+            {
+              "name": "--xh-floating-panel-header-border"
+            },
+            {
+              "name": "--xh-floating-panel-header-gap"
+            },
+            {
+              "name": "--xh-floating-panel-header-px"
+            },
+            {
+              "name": "--xh-floating-panel-header-py"
+            },
+            {
+              "name": "--xh-floating-panel-radius"
+            },
+            {
+              "name": "--xh-floating-panel-shadow"
+            },
+            {
+              "name": "--xh-floating-panel-title-fg"
+            },
+            {
+              "name": "--xh-floating-panel-title-font-size"
+            },
+            {
+              "name": "--xh-floating-panel-title-font-weight"
+            },
+            {
+              "name": "--xh-floating-panel-trigger-bg"
+            },
+            {
+              "name": "--xh-floating-panel-trigger-border"
+            },
+            {
+              "name": "--xh-floating-panel-trigger-fg"
+            },
+            {
+              "name": "--xh-floating-panel-trigger-h"
+            },
+            {
+              "name": "--xh-floating-panel-trigger-px"
+            },
+            {
+              "name": "--xh-floating-panel-trigger-radius"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhFloatingPanelElement",
+          "declaration": {
+            "name": "XhFloatingPanelElement",
+            "module": "src/elements/floating-panel.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/form.ts",
       "declarations": [
         {
@@ -14532,6 +15489,326 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/heatmap.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-heatmap>` —— Light-DOM 行为宿主：作者写 root、grid、若干 row 与 cell 角色节点，\n元素跑 heatmap 机器并把 connect 产出打上去。\n\n角色节点的身份一律取作者写在节点上的 value 属性：row 与 week-day-label 上是行序 0-6\n（不写即网格之外那条月份行与它的行首占位），cell 上是 ISO 日期，month-label 上是 YYYY-MM，\nlegend-item 上是档位。\n\n数据、档位下界与文案只能走 property（`el.value = [...]`）：HTML 属性装不下数组与函数。",
+          "name": "XhHeatmapElement",
+          "cssParts": [
+            {
+              "description": "承载三轴的最外层节点",
+              "name": "root"
+            },
+            {
+              "description": "role=grid 的网格容器，键盘在它身上收口",
+              "name": "grid"
+            },
+            {
+              "description": "一行；写了 value 即网格里的星期行，不写即网格之外的月份行",
+              "name": "row"
+            },
+            {
+              "description": "行首的星期名，只给眼睛看",
+              "name": "week-day-label"
+            },
+            {
+              "description": "月份名，宽度按它占的列数算",
+              "name": "month-label"
+            },
+            {
+              "description": "一天一格，身份取写在节点上的 value（ISO 日期）",
+              "name": "cell"
+            },
+            {
+              "description": "色阶对照条",
+              "name": "legend"
+            },
+            {
+              "description": "对照条里的一格，value 是档位",
+              "name": "legend-item"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: heatmapAnatomy, meta: heatmapMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "HeatmapDatum[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "thresholds",
+              "privacy": "public",
+              "type": {
+                "text": "number[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<HeatmapTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "startDate",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "start-date"
+            },
+            {
+              "kind": "field",
+              "name": "endDate",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "end-date"
+            },
+            {
+              "kind": "field",
+              "name": "levels",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "levels"
+            },
+            {
+              "kind": "field",
+              "name": "firstDayOfWeek",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "first-day-of-week"
+            },
+            {
+              "kind": "field",
+              "name": "locale",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<HeatmapSchema>(this, heatmapMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<HeatmapSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "焦点落到某一天；detail 为 `{ date, count, level }`",
+              "name": "cell-focus",
+              "type": {
+                "text": "HeatmapCellFocusDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "区间起点（含），ISO YYYY-MM-DD",
+              "name": "start-date",
+              "fieldName": "startDate"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "区间终点（含）",
+              "name": "end-date",
+              "fieldName": "endDate"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "档数，缺省 5；给了 thresholds 则档数由它定",
+              "name": "levels",
+              "fieldName": "levels"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "周首日，0 = 星期日，缺省 1",
+              "name": "first-day-of-week",
+              "fieldName": "firstDayOfWeek"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "月份名与星期名的书写 locale，缺省 zh-CN",
+              "name": "locale",
+              "fieldName": "locale"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向；只作显式覆盖，不写时方向从 DOM 现读",
+              "name": "dir",
+              "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-heatmap",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-heatmap-cell-border"
+            },
+            {
+              "name": "--xh-heatmap-cell-radius"
+            },
+            {
+              "name": "--xh-heatmap-cell-size"
+            },
+            {
+              "name": "--xh-heatmap-empty"
+            },
+            {
+              "name": "--xh-heatmap-fg"
+            },
+            {
+              "name": "--xh-heatmap-font-size"
+            },
+            {
+              "name": "--xh-heatmap-gap"
+            },
+            {
+              "name": "--xh-heatmap-grid-gap"
+            },
+            {
+              "name": "--xh-heatmap-gutter"
+            },
+            {
+              "name": "--xh-heatmap-ink"
+            },
+            {
+              "name": "--xh-heatmap-label-fg"
+            },
+            {
+              "name": "--xh-heatmap-legend-gap"
+            },
+            {
+              "name": "--xh-heatmap-py"
+            },
+            {
+              "name": "--xh-heatmap-row-gap"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhHeatmapElement",
+          "declaration": {
+            "name": "XhHeatmapElement",
+            "module": "src/elements/heatmap.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/highlight.ts",
       "declarations": [
         {
@@ -14682,6 +15959,341 @@
           "declaration": {
             "name": "XhHighlightElement",
             "module": "src/elements/highlight.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/hotkeys.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-hotkeys>` —— Light-DOM 行为宿主：作者写一个空的行内容器当 root，\n元素把 keys 翻成当前平台的写法铺成一排键帽，并在 document 或父节点上接住这组组合。\n\n键帽与连接符出多少枚由 keys 与平台决定，作者写不出来，故 root 的内容整份由本元素接管，\n写在里面的东西会被替换掉。\n\n`Mod` 在 Mac 上是 ⌘、其余平台是 Ctrl，同一份 keys 两边都对。平台缺省测出来的那个，\n显式写 `platform` 即以它为准。\n\n命中后默认拦下浏览器的默认动作；组合里除 Shift 外没有别的修饰键时，\n落在输入框、文本域、可编辑区里的按键一律让给输入。",
+          "name": "XhHotkeysElement",
+          "cssParts": [
+            {
+              "description": "键帽的容器（承载 role=img 与整组组合的名字）",
+              "name": "root"
+            },
+            {
+              "description": "一枚键帽，由元素铺进 root",
+              "name": "key"
+            },
+            {
+              "description": "两枚键帽之间的连接符，由元素铺进 root；Mac 的写法里收起",
+              "name": "separator"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: hotkeysAnatomy, meta: hotkeysMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "keys",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              },
+              "attribute": "keys"
+            },
+            {
+              "kind": "field",
+              "name": "platform",
+              "privacy": "public",
+              "type": {
+                "text": "HotkeysPlatform | undefined"
+              },
+              "attribute": "platform"
+            },
+            {
+              "kind": "field",
+              "name": "target",
+              "privacy": "public",
+              "type": {
+                "text": "HotkeysTarget | undefined"
+              },
+              "attribute": "target"
+            },
+            {
+              "kind": "field",
+              "name": "preventDefault",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "prevent-default"
+            },
+            {
+              "kind": "field",
+              "name": "enabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "enabled"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<HotkeysTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#detected",
+              "privacy": "private",
+              "type": {
+                "text": "HotkeysPlatform"
+              },
+              "default": "'auto'",
+              "description": "接进文档后测出来的平台；测出来之前是 auto，connect 按非 Mac 出。"
+            },
+            {
+              "kind": "field",
+              "name": "#bound",
+              "privacy": "private",
+              "type": {
+                "text": "EventTarget | null"
+              },
+              "default": "null",
+              "description": "当前挂着监听的节点。"
+            },
+            {
+              "kind": "field",
+              "name": "#stopConfig",
+              "privacy": "private",
+              "type": {
+                "text": "() => void | undefined"
+              },
+              "description": "退订全局配置变更。"
+            },
+            {
+              "kind": "field",
+              "name": "#notify",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HotkeysApi"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#onKeyDown",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#syncListener",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "HotkeysTarget"
+                  }
+                }
+              ],
+              "description": "监听装在文档或父节点上；节点没换就不重挂。"
+            },
+            {
+              "kind": "field",
+              "name": "#painted",
+              "privacy": "private",
+              "type": {
+                "text": "{ host: Element, key: string } | undefined"
+              },
+              "description": "上一次往哪个 root 铺过哪一排键帽。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#paint",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "HotkeysApi"
+                  }
+                }
+              ],
+              "description": "把键帽与连接符铺进 root。\n这一排没变就不重铺——每帧重建节点会把用户正在拖的选区弄没。"
+            }
+          ],
+          "events": [
+            {
+              "description": "组合被按出来；detail 为 `{ keys: string[], event: KeyboardEvent }`",
+              "name": "hot-key",
+              "type": {
+                "text": "HotkeysTriggerDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string[] | undefined"
+              },
+              "description": "组合里的各枚键，逗号分隔，如 `Mod,S`；逗号本身这枚主键写不进属性，那种组合走 property 传数组",
+              "name": "keys",
+              "fieldName": "keys"
+            },
+            {
+              "type": {
+                "text": "HotkeysPlatform | undefined"
+              },
+              "description": "按哪个平台的写法显示与解析，缺省测出来的那个",
+              "name": "platform",
+              "fieldName": "platform"
+            },
+            {
+              "type": {
+                "text": "HotkeysTarget | undefined"
+              },
+              "description": "监听装在哪儿，缺省 document",
+              "name": "target",
+              "fieldName": "target"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "命中后拦下浏览器的默认动作，默认开启",
+              "name": "prevent-default",
+              "fieldName": "preventDefault"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "监听是否生效，默认开启",
+              "name": "enabled",
+              "fieldName": "enabled"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-hotkeys",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-hotkeys-fg"
+            },
+            {
+              "name": "--xh-hotkeys-font-size"
+            },
+            {
+              "name": "--xh-hotkeys-gap"
+            },
+            {
+              "name": "--xh-hotkeys-key-bg"
+            },
+            {
+              "name": "--xh-hotkeys-key-bg-disabled"
+            },
+            {
+              "name": "--xh-hotkeys-key-border"
+            },
+            {
+              "name": "--xh-hotkeys-key-fg"
+            },
+            {
+              "name": "--xh-hotkeys-key-fg-modifier"
+            },
+            {
+              "name": "--xh-hotkeys-key-font"
+            },
+            {
+              "name": "--xh-hotkeys-key-font-weight"
+            },
+            {
+              "name": "--xh-hotkeys-key-min-w"
+            },
+            {
+              "name": "--xh-hotkeys-key-px"
+            },
+            {
+              "name": "--xh-hotkeys-key-py"
+            },
+            {
+              "name": "--xh-hotkeys-key-radius"
+            },
+            {
+              "name": "--xh-hotkeys-key-shadow"
+            },
+            {
+              "name": "--xh-hotkeys-separator-fg"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhHotkeysElement",
+          "declaration": {
+            "name": "XhHotkeysElement",
+            "module": "src/elements/hotkeys.ts"
           }
         }
       ]
@@ -15441,6 +17053,445 @@
           "declaration": {
             "name": "XhIconElement",
             "module": "src/elements/icon.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/image-cropper.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-image-cropper>` —— Light-DOM 行为宿主：作者写 root/viewport/image/crop-area\n与可选的 crop-handle、grid、hidden-input 角色节点，元素跑 image-cropper 机器并把 connect 产出打上去。\n\n裁切矩形以源图的自然像素记录，坐标换算取 viewport 的矩形——矩形在指针事件发生的那一刻才量，\n连接期一律不碰 DOM；自然尺寸由 image 部件的 load 事件报进来，所以图片必须写成原生 `<img>`。\n视口的尺寸要由图片撑出来（图片铺满视口），裁切框的百分比坐标才对得上。\n\n每个把手必须用 position 属性写明自己拉的是哪个方位（`position=\"se\"`），八个合法值是\n`nw|n|ne|e|se|s|sw|w`；写不出合法方位的把手不接行为，控制台留一条诊断。\n缩放与旋转同时作用在图片与裁切框上，两者始终贴合。",
+          "name": "XhImageCropperElement",
+          "cssParts": [
+            {
+              "description": "承载 data-disabled / data-readonly / data-dragging / data-resizing / data-shape 的容器",
+              "name": "root"
+            },
+            {
+              "description": "量坐标的那个盒子，图片铺满它、裁切框绝对定位在它里面",
+              "name": "viewport"
+            },
+            {
+              "description": "源图，须是原生 `<img>`；自然尺寸与加载完成都由它报出来",
+              "name": "image"
+            },
+            {
+              "description": "role=application 的裁切框，可聚焦，方向键平移",
+              "name": "crop-area"
+            },
+            {
+              "description": "改尺寸的把手，须是原生 `<button>` 并自带 position 属性标识方位",
+              "name": "crop-handle"
+            },
+            {
+              "description": "裁切框里的构图参考线，纯装饰",
+              "name": "grid"
+            },
+            {
+              "description": "表单影子（须是原生 input）",
+              "name": "hidden-input"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: imageCropperAnatomy, meta: imageCropperMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "src",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "src"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "ImageCropperRect | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "ImageCropperRect | undefined"
+              },
+              "attribute": "default-value"
+            },
+            {
+              "kind": "field",
+              "name": "aspectRatio",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "aspect-ratio"
+            },
+            {
+              "kind": "field",
+              "name": "minWidth",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "min-width"
+            },
+            {
+              "kind": "field",
+              "name": "minHeight",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "min-height"
+            },
+            {
+              "kind": "field",
+              "name": "zoom",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "zoom"
+            },
+            {
+              "kind": "field",
+              "name": "defaultZoom",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "default-zoom"
+            },
+            {
+              "kind": "field",
+              "name": "rotation",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "rotation"
+            },
+            {
+              "kind": "field",
+              "name": "shape",
+              "privacy": "public",
+              "type": {
+                "text": "ImageCropperShape | undefined"
+              },
+              "attribute": "shape"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "ImageCropperSchema['props']['translations'] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "notifyValue",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyValueEnd",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyZoom",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<ImageCropperSchema>( this, imageCropperMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<ImageCropperSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<ImageCropperSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "handlePosition",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "ImageCropperHandlePosition | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "把手自报的方位。作者在节点上写 position=\"se\"，与 Vue 侧的 `:position` 是同一份声明；\n写不出合法方位（没写、写错）时返回 null，由调用方决定怎么处理。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "裁切矩形变化（拖动途中会连发）；detail 为 `{ value: { x, y, width, height } }`",
+              "name": "value-change",
+              "type": {
+                "text": "ImageCropperValueChangeDetails"
+              }
+            },
+            {
+              "description": "一次指针拖动松手发一次，一次方向键微调也发一次；detail 为 `{ value: { x, y, width, height } }`",
+              "name": "value-change-end",
+              "type": {
+                "text": "ImageCropperValueChangeEndDetails"
+              }
+            },
+            {
+              "description": "缩放倍率变化；detail 为 `{ zoom: number }`",
+              "name": "zoom-change",
+              "type": {
+                "text": "ImageCropperZoomChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "图片地址，原样写到 image 部件上",
+              "name": "src",
+              "fieldName": "src"
+            },
+            {
+              "type": {
+                "text": "ImageCropperRect | undefined"
+              },
+              "description": "受控裁切矩形，写成 \"x,y,width,height\"；缺省该属性即非受控",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "ImageCropperRect | undefined"
+              },
+              "description": "非受控初值，同样是四个逗号分隔的数；缺省时图片加载完取整张图",
+              "name": "default-value",
+              "fieldName": "defaultValue"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "宽高比（宽 ÷ 高）；不写即不锁比例",
+              "name": "aspect-ratio",
+              "fieldName": "aspectRatio"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "裁切框最小宽度，自然像素，默认 0",
+              "name": "min-width",
+              "fieldName": "minWidth"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "裁切框最小高度，自然像素，默认 0",
+              "name": "min-height",
+              "fieldName": "minHeight"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "受控缩放倍率；缺省该属性即非受控",
+              "name": "zoom",
+              "fieldName": "zoom"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "非受控初始缩放倍率，默认 1",
+              "name": "default-zoom",
+              "fieldName": "defaultZoom"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "显示旋转角度，单位度，默认 0",
+              "name": "rotation",
+              "fieldName": "rotation"
+            },
+            {
+              "type": {
+                "text": "ImageCropperShape | undefined"
+              },
+              "description": "裁切框外形，默认 rect",
+              "name": "shape",
+              "fieldName": "shape"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用：裁切框与把手退出 Tab 序列、改不动、不参与表单提交",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只读：仍可聚焦与被读屏念出，改不动",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "表单字段名；给了才参与提交，值序列化成 \"x,y,width,height\"",
+              "name": "name",
+              "fieldName": "name"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-image-cropper",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-image-cropper-bg"
+            },
+            {
+              "name": "--xh-image-cropper-crop-border"
+            },
+            {
+              "name": "--xh-image-cropper-grid-line"
+            },
+            {
+              "name": "--xh-image-cropper-handle-bg"
+            },
+            {
+              "name": "--xh-image-cropper-handle-bg-resizing"
+            },
+            {
+              "name": "--xh-image-cropper-handle-border"
+            },
+            {
+              "name": "--xh-image-cropper-handle-radius"
+            },
+            {
+              "name": "--xh-image-cropper-handle-size"
+            },
+            {
+              "name": "--xh-image-cropper-mask"
+            },
+            {
+              "name": "--xh-image-cropper-radius"
+            },
+            {
+              "name": "--xh-image-cropper-w"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhImageCropperElement",
+          "declaration": {
+            "name": "XhImageCropperElement",
+            "module": "src/elements/image-cropper.ts"
           }
         }
       ]
@@ -16298,6 +18349,479 @@
           "declaration": {
             "name": "XhInfiniteScrollElement",
             "module": "src/elements/infinite-scroll.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/json-viewer.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-json-viewer>` —— Light-DOM 行为宿主：作者只写一个 root 角色节点，\n元素跑 json-viewer 机器，把 value 摊成的每一行铺进 root 里。\n\n行是按数据算出来的，作者写不出也不必写：树容器与每一行由本元素建，\nroot 的内容整份由本元素接管（写在里面的东西会被替换掉）。\n\n收起的分支整棵子层不进 DOM——一份大 JSON 全铺出来会把页面压住。\n\n属性里的 value 是一段 JSON 文本（解析不了就当一个字符串值展示）；\n直接喂对象走 property（`el.value = { … }`）。\nexpandedValue / defaultExpandedValue / translations 没有对应属性，只能走 property。",
+          "name": "XhJsonViewerElement",
+          "cssParts": [
+            {
+              "description": "组件根容器，由作者写出；承载 data-size",
+              "name": "root"
+            },
+            {
+              "description": "role=tree 的树容器（键盘在此收口，焦点在树外时它兜底占 Tab 位）",
+              "name": "tree"
+            },
+            {
+              "description": "标量行，role=treeitem，带 data-type",
+              "name": "item"
+            },
+            {
+              "description": "标量行的键名",
+              "name": "item-key"
+            },
+            {
+              "description": "标量行的值",
+              "name": "item-value"
+            },
+            {
+              "description": "对象/数组行，role=treeitem，带 aria-expanded 与 data-state",
+              "name": "branch"
+            },
+            {
+              "description": "分支那一行本身（点它切换展开态）",
+              "name": "branch-control"
+            },
+            {
+              "description": "展开箭头（aria-hidden，不占 Tab 位）",
+              "name": "branch-trigger"
+            },
+            {
+              "description": "箭头字形，随 data-state 转向",
+              "name": "branch-indicator"
+            },
+            {
+              "description": "分支的键名",
+              "name": "branch-text"
+            },
+            {
+              "description": "收起摘要（如 `{…} 3`），对读屏隐藏",
+              "name": "preview"
+            },
+            {
+              "description": "role=group 的子层容器，只在展开时存在",
+              "name": "branch-content"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: jsonViewerAnatomy, meta: jsonViewerMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "unknown | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "expandedValue",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultExpandedValue",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "defaultExpandedDepth",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "default-expanded-depth"
+            },
+            {
+              "kind": "field",
+              "name": "maxStringLength",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-string-length"
+            },
+            {
+              "kind": "field",
+              "name": "maxItems",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "max-items"
+            },
+            {
+              "kind": "field",
+              "name": "sortKeys",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "sort-keys"
+            },
+            {
+              "kind": "field",
+              "name": "loop",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<JsonViewerTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<JsonViewerSchema>(this, jsonViewerMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<JsonViewerSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "treeEl",
+              "type": {
+                "text": "HTMLElement | undefined"
+              },
+              "privacy": "private",
+              "description": "树容器与每一行都归本元素建，按路径留着复用。"
+            },
+            {
+              "kind": "field",
+              "name": "rows",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new Map<string, JsonRow>()"
+            },
+            {
+              "kind": "method",
+              "name": "onPartsReleased",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "nodes",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
+                  }
+                }
+              ],
+              "description": "root 被移出本宿主时，铺在它里面的行也一并离场。浏览器此时不派 focusout，\n机器会一直认为焦点还在树内，行重新铺回来时高亮仍挂在那一行上。\n这里替 DOM 把焦点离场如实上报（锚点留着，重新铺回来时仍落回那一行）。"
+            },
+            {
+              "kind": "method",
+              "name": "makeRow",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "JsonRow"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "node",
+                  "type": {
+                    "text": "JsonViewerNode"
+                  }
+                },
+                {
+                  "name": "shape",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "paint",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "container",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "nodes",
+                  "type": {
+                    "text": "readonly JsonViewerNode[]"
+                  }
+                },
+                {
+                  "name": "children",
+                  "type": {
+                    "text": "Map<string | null, JsonViewerNode[]>"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "JsonViewerApi"
+                  }
+                },
+                {
+                  "name": "alive",
+                  "type": {
+                    "text": "Set<string>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "展开集合变化；detail 为 `{ value: string[] }`",
+              "name": "expanded-change",
+              "type": {
+                "text": "JsonViewerExpandedChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "unknown | undefined"
+              },
+              "description": "要展示的值，写成一段 JSON 文本；对象与数组走 property",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "初始展开到第几层，默认 1（只展开根行）",
+              "name": "default-expanded-depth",
+              "fieldName": "defaultExpandedDepth"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "字符串值超过这么多字符就截断",
+              "name": "max-string-length",
+              "fieldName": "maxStringLength"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "同一层最多摊出这么多成员，其余收成一行占位",
+              "name": "max-items",
+              "fieldName": "maxItems"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "对象键按字典序排列",
+              "name": "sort-keys",
+              "fieldName": "sortKeys"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "上下键走到首尾回绕，默认关闭",
+              "name": "loop",
+              "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，只对调左右方向键的展开/收起语义；不写即从 DOM 现读",
+              "name": "dir",
+              "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-json-viewer",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-json-viewer-bg"
+            },
+            {
+              "name": "--xh-json-viewer-boolean-fg"
+            },
+            {
+              "name": "--xh-json-viewer-border"
+            },
+            {
+              "name": "--xh-json-viewer-fg"
+            },
+            {
+              "name": "--xh-json-viewer-font"
+            },
+            {
+              "name": "--xh-json-viewer-font-size"
+            },
+            {
+              "name": "--xh-json-viewer-indent"
+            },
+            {
+              "name": "--xh-json-viewer-indicator-fg"
+            },
+            {
+              "name": "--xh-json-viewer-indicator-size"
+            },
+            {
+              "name": "--xh-json-viewer-key-fg"
+            },
+            {
+              "name": "--xh-json-viewer-key-font-weight"
+            },
+            {
+              "name": "--xh-json-viewer-max-h"
+            },
+            {
+              "name": "--xh-json-viewer-null-fg"
+            },
+            {
+              "name": "--xh-json-viewer-number-fg"
+            },
+            {
+              "name": "--xh-json-viewer-preview-fg"
+            },
+            {
+              "name": "--xh-json-viewer-preview-font-size"
+            },
+            {
+              "name": "--xh-json-viewer-punctuation-fg"
+            },
+            {
+              "name": "--xh-json-viewer-px"
+            },
+            {
+              "name": "--xh-json-viewer-py"
+            },
+            {
+              "name": "--xh-json-viewer-radius"
+            },
+            {
+              "name": "--xh-json-viewer-row-bg-hover"
+            },
+            {
+              "name": "--xh-json-viewer-row-gap"
+            },
+            {
+              "name": "--xh-json-viewer-row-px"
+            },
+            {
+              "name": "--xh-json-viewer-row-py"
+            },
+            {
+              "name": "--xh-json-viewer-row-radius"
+            },
+            {
+              "name": "--xh-json-viewer-string-fg"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhJsonViewerElement",
+          "declaration": {
+            "name": "XhJsonViewerElement",
+            "module": "src/elements/json-viewer.ts"
           }
         }
       ]
@@ -17915,6 +20439,223 @@
           "declaration": {
             "name": "XhMarqueeElement",
             "module": "src/elements/marquee.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/masonry.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-masonry>` —— Light-DOM 行为宿主，无状态机。作者写一个 root、若干 column 空容器，\n以及一批 item；元素量出容器宽度与每一项的高度，算出各项落在第几列，再把项搬进对应的列里。\n\n列由作者写，因为元素不生成结构：请按最宽那一档需要的列数写足 column 节点，\n当前档位用不上的那几列会被收起。项写在 root 里即可，写在哪儿都会被搬进列里，\n所以 column 节点必须是空容器，别在里面另放内容。\n\n项的先后取「首次见到的顺序」——静态标记就是作者写的顺序；运行期新增的项排在末尾，\n需要精确插到中间时请整块重建这批项。\n\n浏览器没有 ResizeObserver 时只在每次接线那一刻量，之后不再跟随尺寸变化。",
+          "name": "XhMasonryElement",
+          "cssParts": [
+            {
+              "description": "排布容器，承载 data-gap / data-sequential",
+              "name": "root"
+            },
+            {
+              "description": "一列，承载 data-index；须是空容器，项由元素搬进来",
+              "name": "column"
+            },
+            {
+              "description": "一项，承载 data-index（作者写的原序）与 data-column（落在第几列）",
+              "name": "item"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: masonryAnatomy, meta: masonryMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "columns",
+              "privacy": "public",
+              "type": {
+                "text": "MasonryColumns | undefined"
+              },
+              "attribute": "columns"
+            },
+            {
+              "kind": "field",
+              "name": "gap",
+              "privacy": "public",
+              "type": {
+                "text": "MasonryProps['gap'] | undefined"
+              },
+              "attribute": "gap"
+            },
+            {
+              "kind": "field",
+              "name": "sequential",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "sequential"
+            },
+            {
+              "kind": "field",
+              "name": "seen",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, number>()",
+              "description": "每一项首次被看到时的序号，重排后 DOM 序等于列序，原序只剩它认得出来。"
+            },
+            {
+              "kind": "field",
+              "name": "nextSeq",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "observer",
+              "type": {
+                "text": "ResizeObserver | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "observed",
+              "type": {
+                "text": "readonly HTMLElement[]"
+              },
+              "privacy": "private",
+              "default": "[]",
+              "description": "当前挂着尺寸观察器的节点，与新一轮比对后才决定要不要重挂。"
+            },
+            {
+              "kind": "method",
+              "name": "orderedItems",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "description": "按首次见到的先后排好当前在场的项。"
+            },
+            {
+              "kind": "method",
+              "name": "place",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "columns",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
+                  }
+                },
+                {
+                  "name": "items",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
+                  }
+                },
+                {
+                  "name": "assign",
+                  "type": {
+                    "text": "readonly number[]"
+                  }
+                }
+              ],
+              "description": "把项按落格结果搬进各列。位置已经对的节点原地不动，免得每次接线都产生一堆变更记录。"
+            },
+            {
+              "kind": "method",
+              "name": "observeSizes",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "nodes",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
+                  }
+                }
+              ],
+              "description": "把尺寸观察器挂到这一批节点上。节点没变就不重挂：重挂会白白多跑一轮回调。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "MasonryColumns | undefined"
+              },
+              "description": "分几列，不写按三列；写 JSON 对象则逐档给列数（base / sm / md / lg / xl），按容器自身宽度换档",
+              "name": "columns",
+              "fieldName": "columns"
+            },
+            {
+              "type": {
+                "text": "MasonryProps['gap'] | undefined"
+              },
+              "description": "列与列、项与项之间的间距档位，逐档对应一个间距令牌",
+              "name": "gap",
+              "fieldName": "gap"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "按文档序逐列填，不写则最短列优先",
+              "name": "sequential",
+              "fieldName": "sequential"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-masonry",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-masonry-gap"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhMasonryElement",
+          "declaration": {
+            "name": "XhMasonryElement",
+            "module": "src/elements/masonry.ts"
           }
         }
       ]
@@ -21258,6 +23999,489 @@
           "declaration": {
             "name": "XhPaginationElement",
             "module": "src/elements/pagination.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/password-input.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-password-input>` —— Light-DOM 行为宿主：作者写 root/label/control/input/\nvisibility-trigger/caps-lock-indicator 六类角色节点，元素跑 password-input 机器并把 connect 产出打上去。\n\nlabel 的 `for` 恒写向 input 的 id，所以 label 角色节点必须是原生 `<label>`、input 角色节点必须是原生\n`<input>`；切换钮必须是原生 `<button>`，Enter / Space 的激活由平台负责。\n\n明暗只改 input 的 type：隐藏态 password、显示态 text。切换之后焦点留在按钮上，\n框里的光标与选中范围由机器放回原处。\n\n大写锁定靠按键事件里的 getModifierState 判定——平台没有\"现在查一下修饰键\"的接口，\n所以提示要等用户按下第一个键才亮，焦点离开输入框即熄灭。提示节点作者写空壳，\n里面的文字由元素写入。",
+          "name": "XhPasswordInputElement",
+          "cssParts": [
+            {
+              "description": "承载三个视觉轴与 data-disabled / data-readonly / data-invalid / data-empty 的容器",
+              "name": "root"
+            },
+            {
+              "description": "标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动",
+              "name": "label"
+            },
+            {
+              "description": "视觉盒：描边、底色与聚焦环画在它身上，框内三件都是透明分段",
+              "name": "control"
+            },
+            {
+              "description": "真正的输入框，须是原生 `<input>`；type 随明暗在 password / text 之间换",
+              "name": "input"
+            },
+            {
+              "description": "明暗切换钮，须是原生 `<button>`；名字随状态换，里面放图标即可",
+              "name": "visibility-trigger"
+            },
+            {
+              "description": "大写锁定提示；节点留空即可，文字由元素写入，是 role=status 的活区域",
+              "name": "caps-lock-indicator"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: passwordInputAnatomy, meta: passwordInputMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "default-value"
+            },
+            {
+              "kind": "field",
+              "name": "visible",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "visible"
+            },
+            {
+              "kind": "field",
+              "name": "defaultVisible",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-visible"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "placeholder",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "autoComplete",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "auto-complete"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<PasswordInputTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "notifyValue",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyVisibility",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<PasswordInputSchema>(this, passwordInputMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<PasswordInputSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "值变化；detail 为 `{ value: string }`",
+              "name": "value-change",
+              "type": {
+                "text": "PasswordInputValueChangeDetails"
+              }
+            },
+            {
+              "description": "明暗变化；detail 为 `{ visible: boolean }`",
+              "name": "visibility-change",
+              "type": {
+                "text": "PasswordInputVisibilityChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "受控值；缺省该属性即非受控",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "非受控初值",
+              "name": "default-value",
+              "fieldName": "defaultValue"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控的明暗态；缺省该属性即非受控",
+              "name": "visible",
+              "fieldName": "visible"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控的初始明暗态，缺省隐藏",
+              "name": "default-visible",
+              "fieldName": "defaultVisible"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用：输入与明暗切换都推不动",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只读：值写不进，明暗照切",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填标注",
+              "name": "required",
+              "fieldName": "required"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败标注",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "表单字段名；给了才参与提交",
+              "name": "name",
+              "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "占位文案",
+              "name": "placeholder",
+              "fieldName": "placeholder"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "落到 input 上的 autocomplete，缺省 current-password；注册表单要写 new-password",
+              "name": "auto-complete",
+              "fieldName": "autoComplete"
+            },
+            {
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "description": "视觉变体",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-password-input",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-password-input-control-bg"
+            },
+            {
+              "name": "--xh-password-input-control-bg-disabled"
+            },
+            {
+              "name": "--xh-password-input-control-bg-readonly"
+            },
+            {
+              "name": "--xh-password-input-control-border"
+            },
+            {
+              "name": "--xh-password-input-control-border-focus"
+            },
+            {
+              "name": "--xh-password-input-control-border-hover"
+            },
+            {
+              "name": "--xh-password-input-control-border-invalid"
+            },
+            {
+              "name": "--xh-password-input-control-h"
+            },
+            {
+              "name": "--xh-password-input-gap"
+            },
+            {
+              "name": "--xh-password-input-hint-fg"
+            },
+            {
+              "name": "--xh-password-input-hint-font-size"
+            },
+            {
+              "name": "--xh-password-input-hint-gap"
+            },
+            {
+              "name": "--xh-password-input-hint-px"
+            },
+            {
+              "name": "--xh-password-input-icon-size"
+            },
+            {
+              "name": "--xh-password-input-input-bg"
+            },
+            {
+              "name": "--xh-password-input-input-bg-disabled"
+            },
+            {
+              "name": "--xh-password-input-input-bg-readonly"
+            },
+            {
+              "name": "--xh-password-input-input-border"
+            },
+            {
+              "name": "--xh-password-input-input-border-focus"
+            },
+            {
+              "name": "--xh-password-input-input-border-hover"
+            },
+            {
+              "name": "--xh-password-input-input-border-invalid"
+            },
+            {
+              "name": "--xh-password-input-input-fg"
+            },
+            {
+              "name": "--xh-password-input-input-font-size"
+            },
+            {
+              "name": "--xh-password-input-input-h"
+            },
+            {
+              "name": "--xh-password-input-input-px"
+            },
+            {
+              "name": "--xh-password-input-input-radius"
+            },
+            {
+              "name": "--xh-password-input-label-fg"
+            },
+            {
+              "name": "--xh-password-input-label-fg-disabled"
+            },
+            {
+              "name": "--xh-password-input-label-font-size"
+            },
+            {
+              "name": "--xh-password-input-label-font-weight"
+            },
+            {
+              "name": "--xh-password-input-placeholder-fg"
+            },
+            {
+              "name": "--xh-password-input-trigger-bg"
+            },
+            {
+              "name": "--xh-password-input-trigger-bg-active"
+            },
+            {
+              "name": "--xh-password-input-trigger-bg-hover"
+            },
+            {
+              "name": "--xh-password-input-trigger-fg"
+            },
+            {
+              "name": "--xh-password-input-trigger-fg-hover"
+            },
+            {
+              "name": "--xh-password-input-trigger-font-size"
+            },
+            {
+              "name": "--xh-password-input-trigger-size"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhPasswordInputElement",
+          "declaration": {
+            "name": "XhPasswordInputElement",
+            "module": "src/elements/password-input.ts"
           }
         }
       ]
@@ -24911,6 +28135,504 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/segmented.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-segmented>` —— Light-DOM 行为宿主：作者写 root 与若干 item 角色节点，\n元素跑 segmented 机器并把 connect 产出打上去。段须是原生 `<button>`\n（Enter/Space 的激活由平台负责），身份取写在段上的 value 属性，禁用由段自报 aria-disabled。\n\n一排互斥选项就是单选组：root 是 radiogroup，每段 role=radio 并显式报 aria-checked。\nindicator 是那块会滑动的选中标记，位置由机器量好写成内联样式里的四个私有槽；\n它绝对定位，必须写在段之前，靠文档序让段压在它上面。",
+          "name": "XhSegmentedElement",
+          "cssParts": [
+            {
+              "description": "role=radiogroup 的容器（承载键盘收口与 Tab 兜底位）",
+              "name": "root"
+            },
+            {
+              "description": "一段，须是原生 `<button>` 并自带 value 属性标识身份",
+              "name": "item"
+            },
+            {
+              "description": "段内文本",
+              "name": "item-text"
+            },
+            {
+              "description": "会滑动的选中标记，对读屏隐藏；无选中项时收起",
+              "name": "indicator"
+            },
+            {
+              "description": "表单影子输入（必须是原生 input），整组只需一份；给了 name 却没写它，就没有任何东西参与提交",
+              "name": "hidden-input"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: segmentedAnatomy, meta: segmentedMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "collection",
+              "privacy": "public",
+              "type": {
+                "text": "SegmentedNode[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "default-value"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "orientation",
+              "privacy": "public",
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "attribute": "orientation"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "loop",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loop"
+            },
+            {
+              "kind": "field",
+              "name": "block",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "block"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "declaredDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()"
+            },
+            {
+              "kind": "field",
+              "name": "wasGroupDisabled",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false",
+              "description": "上一帧是否整组禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<SegmentedSchema>( this, segmentedMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<SegmentedSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<SegmentedSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "onPartsReleased",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "nodes",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
+                  }
+                }
+              ],
+              "description": "承载焦点的段被移出 DOM 时浏览器不派 focusout，焦点锚点会停在一个已消失的值上：\n容器判自己\"焦点在组内\"退出 Tab 序列，又没有段认领得了这个锚点，\n整组零个 Tab 停靠点，键盘用户再也进不来。这里替 DOM 把焦点离场如实上报。"
+            },
+            {
+              "kind": "field",
+              "name": "declaredItemDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "description": "作者声明的段禁用，只认首见那一份；没写即 undefined，交给 collection 定夺"
+            },
+            {
+              "kind": "method",
+              "name": "itemProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "SegmentedItemProps"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "partsIn",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "item",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "选中值变化；detail 为 `{ value: string | null }`",
+              "name": "value-change",
+              "type": {
+                "text": "SegmentedValueChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "受控选中值；缺省该属性即非受控",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "非受控的初始选中值",
+              "name": "default-value",
+              "fieldName": "defaultValue"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "整组禁用",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只读：选不动，方向键照常移焦点",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败态",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填",
+              "name": "required",
+              "fieldName": "required"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "表单字段名；给定后隐藏输入才带 name 并参与提交",
+              "name": "name",
+              "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "description": "视觉排布，默认 horizontal；方向键四个恒响应，与它无关",
+              "name": "orientation",
+              "fieldName": "orientation"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，只改写左右方向键语义与指示器的起始缘；不写即从 DOM 现读祖先链上的方向",
+              "name": "dir",
+              "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "方向键走到尽头回绕，默认开启",
+              "name": "loop",
+              "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "撑满行宽，各段等分剩余空间",
+              "name": "block",
+              "fieldName": "block"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-segmented",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-segmented-bg"
+            },
+            {
+              "name": "--xh-segmented-bg-disabled"
+            },
+            {
+              "name": "--xh-segmented-border"
+            },
+            {
+              "name": "--xh-segmented-border-invalid"
+            },
+            {
+              "name": "--xh-segmented-font-size"
+            },
+            {
+              "name": "--xh-segmented-indicator-bg"
+            },
+            {
+              "name": "--xh-segmented-indicator-radius"
+            },
+            {
+              "name": "--xh-segmented-indicator-shadow"
+            },
+            {
+              "name": "--xh-segmented-indicator-shadow-disabled"
+            },
+            {
+              "name": "--xh-segmented-item-fg"
+            },
+            {
+              "name": "--xh-segmented-item-fg-checked"
+            },
+            {
+              "name": "--xh-segmented-item-fg-checked-disabled"
+            },
+            {
+              "name": "--xh-segmented-item-fg-hover"
+            },
+            {
+              "name": "--xh-segmented-item-font-weight"
+            },
+            {
+              "name": "--xh-segmented-item-gap"
+            },
+            {
+              "name": "--xh-segmented-item-h"
+            },
+            {
+              "name": "--xh-segmented-item-px"
+            },
+            {
+              "name": "--xh-segmented-item-radius"
+            },
+            {
+              "name": "--xh-segmented-radius"
+            },
+            {
+              "name": "--xh-segmented-track-padding"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhSegmentedElement",
+          "declaration": {
+            "name": "XhSegmentedElement",
+            "module": "src/elements/segmented.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/select.ts",
       "declarations": [
         {
@@ -26358,6 +30080,397 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/signature-pad.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-signature-pad>` —— Light-DOM 行为宿主：作者写 root / control / segment 三个必需角色节点\n（可再写 label、guide、clear-trigger 与 hidden-input），元素跑 signature-pad 机器并把 connect 产出打上去。\n\ncontrol 必须是 `<svg>`，guide 是它里面的 `<line>`、segment 是它里面的 `<path>`：\n笔迹是一条填充轮廓，粗细随压感变，描边给不出这个效果。viewBox 由元素按第一笔落下时\n量到的画布尺寸写上去，作者不要自己写。\n\n画布本身不接键盘。签名天然依赖指针，要求签名的流程必须另给一条不依赖指针的替代路径。\n\n笔迹外形（drawing）与读屏文案（translations）是对象，只走 property。\n清空与取 SVG 另有 `clear()` / `toSvg()` 两个方法。",
+          "name": "XhSignaturePadElement",
+          "cssParts": [
+            {
+              "description": "承载 data-disabled / data-readonly / data-invalid / data-empty / data-drawing 的外壳",
+              "name": "root"
+            },
+            {
+              "description": "画布标题（aria-labelledby 目标）",
+              "name": "label"
+            },
+            {
+              "description": "role=img 的画布，必须是 `<svg>`，指针落笔全在它身上",
+              "name": "control"
+            },
+            {
+              "description": "基准线，必须是 control 里的 `<line>`；落位由连接层按百分比给出",
+              "name": "guide"
+            },
+            {
+              "description": "全部笔迹，必须是 control 里的 `<path>`；每一笔是它的一条子路径",
+              "name": "segment"
+            },
+            {
+              "description": "清空按钮，必须是原生 `<button>`",
+              "name": "clear-trigger"
+            },
+            {
+              "description": "签没签的活区域（role=status）；节点里没写字时由元素填内建文案",
+              "name": "status"
+            },
+            {
+              "description": "表单影子输入（必须是原生 input），提交的是一份独立 SVG 文档",
+              "name": "hidden-input"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: signaturePadAnatomy, meta: signaturePadMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "drawing",
+              "privacy": "public",
+              "type": {
+                "text": "SignaturePadDrawingOptions | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<SignaturePadTranslations> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "notifyDraw",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyDrawEnd",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<SignaturePadSchema>( this, signaturePadMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<SignaturePadSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<SignaturePadSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "commands",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "SignaturePadApi"
+                }
+              },
+              "description": "命令式入口共用的取法；机器要到进文档（hostConnected）才建，未建则抛。"
+            },
+            {
+              "kind": "method",
+              "name": "clear",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "抹掉全部笔迹，与点清空按钮同一条路径（照样发 draw / draw-end）。"
+            },
+            {
+              "kind": "method",
+              "name": "toSvg",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "description": "当前签名的独立 SVG 文档，与表单影子提交的是同一份；空签名为空串。"
+            },
+            {
+              "kind": "field",
+              "name": "empty",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "一笔都没画。提交前拦空签名读它。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ownsText",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()",
+              "description": "状态文本是否归元素填：节点非空即判为作者自己写了内容。\n首次见到时定死，之后不再回读——回读分不出内容是作者写的还是上一帧自己写的。"
+            },
+            {
+              "kind": "method",
+              "name": "fillText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "笔迹变了就通知一次（含清空与表单重置）；detail 为 `{ paths: string[], path: string }`",
+              "name": "draw",
+              "type": {
+                "text": "SignaturePadDrawDetails"
+              }
+            },
+            {
+              "description": "签名定稿时通知一次（抬笔、清空、表单重置）；detail 为 `{ paths: string[], svg: string }`，svg 可直接落库",
+              "name": "draw-end",
+              "type": {
+                "text": "SignaturePadDrawEndDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "整块不可交互：落笔不认，清空按钮也按不动",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只读：画好的签名照常显示，但改不动",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填标注；表单影子据此参与原生校验",
+              "name": "required",
+              "fieldName": "required"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验未通过的标记，只改外观与表单影子上的 aria-invalid",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "表单字段名；给了表单影子才带 name 并参与提交",
+              "name": "name",
+              "fieldName": "name"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-signature-pad",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-signature-pad-aspect-ratio"
+            },
+            {
+              "name": "--xh-signature-pad-bg"
+            },
+            {
+              "name": "--xh-signature-pad-bg-disabled"
+            },
+            {
+              "name": "--xh-signature-pad-border"
+            },
+            {
+              "name": "--xh-signature-pad-border-drawing"
+            },
+            {
+              "name": "--xh-signature-pad-clear-bg"
+            },
+            {
+              "name": "--xh-signature-pad-clear-bg-disabled"
+            },
+            {
+              "name": "--xh-signature-pad-clear-bg-hover"
+            },
+            {
+              "name": "--xh-signature-pad-clear-border"
+            },
+            {
+              "name": "--xh-signature-pad-clear-fg"
+            },
+            {
+              "name": "--xh-signature-pad-clear-gap"
+            },
+            {
+              "name": "--xh-signature-pad-clear-h"
+            },
+            {
+              "name": "--xh-signature-pad-clear-px"
+            },
+            {
+              "name": "--xh-signature-pad-clear-radius"
+            },
+            {
+              "name": "--xh-signature-pad-gap"
+            },
+            {
+              "name": "--xh-signature-pad-guide-stroke"
+            },
+            {
+              "name": "--xh-signature-pad-ink"
+            },
+            {
+              "name": "--xh-signature-pad-label-fg"
+            },
+            {
+              "name": "--xh-signature-pad-label-font-size"
+            },
+            {
+              "name": "--xh-signature-pad-label-font-weight"
+            },
+            {
+              "name": "--xh-signature-pad-radius"
+            },
+            {
+              "name": "--xh-signature-pad-status-fg"
+            },
+            {
+              "name": "--xh-signature-pad-status-font-size"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhSignaturePadElement",
+          "declaration": {
+            "name": "XhSignaturePadElement",
+            "module": "src/elements/signature-pad.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/skeleton.ts",
       "declarations": [
         {
@@ -27063,6 +31176,188 @@
           "declaration": {
             "name": "XhSliderElement",
             "module": "src/elements/slider.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/space.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-space>` —— Light-DOM 行为宿主，无状态机，把 connectSpace 产出打到 root 角色节点。\n排布参数原样落成 data-*，排布规则写在皮肤里。\n\n方向与间距恒有值：不写也留 md 间距，这是本组件与 `<xh-flex>` 的分野。\n\n分隔符是一个角色节点：作者把它写在 root 里、夹在两个子项中间，元素替它打上 aria-hidden。\n本元素不生成任何结构，也就没法替作者复制节点；Vue 版的 split 插槽是同一件事的另一种写法，\n铺开后的 DOM 形状一致。\n\n根上不写 role：容器只做排布，里面装的是列表还是一组按钮由作者自己声明。",
+          "name": "XhSpaceElement",
+          "cssParts": [
+            {
+              "description": "排布容器，承载 data-orientation / data-gap / data-align / data-justify / data-wrap / data-inline",
+              "name": "root"
+            },
+            {
+              "description": "夹在两个子项之间的分隔符，作者逐个写在 root 里；元素替它打上 aria-hidden",
+              "name": "split"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: spaceAnatomy, meta: spaceMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "SpaceProps['direction'] | undefined"
+              },
+              "attribute": "direction"
+            },
+            {
+              "kind": "field",
+              "name": "gap",
+              "privacy": "public",
+              "type": {
+                "text": "SpaceProps['gap'] | undefined"
+              },
+              "attribute": "gap"
+            },
+            {
+              "kind": "field",
+              "name": "align",
+              "privacy": "public",
+              "type": {
+                "text": "SpaceProps['align'] | undefined"
+              },
+              "attribute": "align"
+            },
+            {
+              "kind": "field",
+              "name": "justify",
+              "privacy": "public",
+              "type": {
+                "text": "SpaceProps['justify'] | undefined"
+              },
+              "attribute": "justify"
+            },
+            {
+              "kind": "field",
+              "name": "wrap",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "wrap"
+            },
+            {
+              "kind": "field",
+              "name": "inline",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "inline"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "SpaceProps['direction'] | undefined"
+              },
+              "description": "排布方向，缺省 horizontal",
+              "name": "direction",
+              "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "SpaceProps['gap'] | undefined"
+              },
+              "description": "子项间距档位，缺省 md，逐档对应一个间距令牌",
+              "name": "gap",
+              "fieldName": "gap"
+            },
+            {
+              "type": {
+                "text": "SpaceProps['align'] | undefined"
+              },
+              "description": "交叉轴对齐",
+              "name": "align",
+              "fieldName": "align"
+            },
+            {
+              "type": {
+                "text": "SpaceProps['justify'] | undefined"
+              },
+              "description": "主轴分布",
+              "name": "justify",
+              "fieldName": "justify"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "一行放不下时折行",
+              "name": "wrap",
+              "fieldName": "wrap"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "容器按行内盒排版，宽度收到内容",
+              "name": "inline",
+              "fieldName": "inline"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-space",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-space-1"
+            },
+            {
+              "name": "--xh-space-2"
+            },
+            {
+              "name": "--xh-space-3"
+            },
+            {
+              "name": "--xh-space-4"
+            },
+            {
+              "name": "--xh-space-6"
+            },
+            {
+              "name": "--xh-space-gap"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhSpaceElement",
+          "declaration": {
+            "name": "XhSpaceElement",
+            "module": "src/elements/space.ts"
           }
         }
       ]
@@ -29418,6 +33713,273 @@
           "declaration": {
             "name": "XhTabsElement",
             "module": "src/elements/tabs.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/tag.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-tag>` —— Light-DOM 行为宿主：作者写 root、label、close-trigger 角色节点，\n元素跑 tag 机器并把 connect 产出打上去。关闭钮须是原生 `<button>`\n（Enter/Space 的激活由平台负责），收起时用内联 style.display 隐藏 root。",
+          "name": "XhTagElement",
+          "cssParts": [
+            {
+              "description": "标签根容器",
+              "name": "root"
+            },
+            {
+              "description": "标签文字",
+              "name": "label"
+            },
+            {
+              "description": "关闭钮，须是原生 `<button>`",
+              "name": "close-trigger"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: tagAnatomy, meta: tagMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "TagVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "closable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "closable"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "defaultOpen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-open"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "TagSchema['props']['translations'] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<TagSchema>(this, tagMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<TagSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "open 状态变化；detail 为 `{ open: boolean }`",
+              "name": "open-change",
+              "type": {
+                "text": "TagOpenChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "TagVariant | undefined"
+              },
+              "description": "形态，决定颜色怎么用",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气，决定用哪族颜色",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "是否给出关闭钮，缺省为假；为假时该钮同时被禁用与收起",
+              "name": "closable",
+              "fieldName": "closable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "标签禁用，关闭钮留在原地但按不动",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控显隐；缺省该属性即非受控",
+              "name": "open",
+              "fieldName": "open"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始显隐，缺省为显示",
+              "name": "default-open",
+              "fieldName": "defaultOpen"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-tag",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-tag-bg"
+            },
+            {
+              "name": "--xh-tag-bg-disabled"
+            },
+            {
+              "name": "--xh-tag-border"
+            },
+            {
+              "name": "--xh-tag-border-disabled"
+            },
+            {
+              "name": "--xh-tag-close-fg"
+            },
+            {
+              "name": "--xh-tag-close-radius"
+            },
+            {
+              "name": "--xh-tag-close-size"
+            },
+            {
+              "name": "--xh-tag-fg"
+            },
+            {
+              "name": "--xh-tag-font-size"
+            },
+            {
+              "name": "--xh-tag-font-weight"
+            },
+            {
+              "name": "--xh-tag-gap"
+            },
+            {
+              "name": "--xh-tag-px"
+            },
+            {
+              "name": "--xh-tag-py"
+            },
+            {
+              "name": "--xh-tag-radius"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhTagElement",
+          "declaration": {
+            "name": "XhTagElement",
+            "module": "src/elements/tag.ts"
           }
         }
       ]
@@ -32401,6 +36963,348 @@
           "declaration": {
             "name": "XhTimelineElement",
             "module": "src/elements/timeline.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/timer.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-timer>` —— Light-DOM 行为宿主：作者写 root、area、若干 item 与 separator，\n需要起停就再写一个 control。元素跑 timer 机器，把 connect 产出打到角色节点上，\n并把每一段的数字写进对应的 item。\n\n时间只从单调时钟的两个时刻相减而来，一拍都不累加；`interval` 只决定数字多久跳一次，\n到点另有一个精确落在终点上的定时器判定，终点不落在整拍上也不会走过头。\n\n每个 item 用 `unit` 属性声明自己是哪一段（days / hours / minutes / seconds / milliseconds）。\n它是作者的声明、不是机器写回的状态，改它本身不会另排一次接线——停着时改完要等下一次\n属性变更或起跑才生效。\n\ncontrol 里的文字归作者写（多半是个图标），元素只按当前状态换它的 `data-action` 与读屏名字。",
+          "name": "XhTimerElement",
+          "cssParts": [
+            {
+              "description": "组件根容器（承载 data-state / data-size / data-countdown）",
+              "name": "root"
+            },
+            {
+              "description": "时间区，role=timer 并带着整段时间的读屏名字",
+              "name": "area"
+            },
+            {
+              "description": "一段数字，须自带 unit 属性说明它是哪一段；文字归元素写",
+              "name": "item"
+            },
+            {
+              "description": "段与段之间的记号，对读屏隐藏",
+              "name": "separator"
+            },
+            {
+              "description": "起停按钮，须是原生 `<button>`；按当前状态换 data-action",
+              "name": "control"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: timerAnatomy, meta: timerMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "startMs",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "start-ms"
+            },
+            {
+              "kind": "field",
+              "name": "targetMs",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "target-ms"
+            },
+            {
+              "kind": "field",
+              "name": "countdown",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "countdown"
+            },
+            {
+              "kind": "field",
+              "name": "autoStart",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "auto-start"
+            },
+            {
+              "kind": "field",
+              "name": "interval",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "interval"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "TimerSchema['props']['translations'] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "notifyTick",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyComplete",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<TimerSchema>(this, timerMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<TimerSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "run",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "TimerSchema['event']"
+                  }
+                }
+              ],
+              "description": "没进 DOM 时机器还没起来，此刻谈不上起停，送过去只会被丢弃并在开发期报一声。"
+            },
+            {
+              "kind": "method",
+              "name": "start",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "起停四个动作也给到元素上，作者不必自己去点那个按钮。"
+            },
+            {
+              "kind": "method",
+              "name": "pause",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "resume",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "reset",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "走过一拍；detail 为 `{ value: number, elapsed: number }`",
+              "name": "tick",
+              "type": {
+                "text": "TimerTickDetails"
+              }
+            },
+            {
+              "description": "走到终点；detail 为 `{ value: number, elapsed: number }`",
+              "name": "complete",
+              "type": {
+                "text": "TimerCompleteDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "起始值毫秒，缺省 0；正着走从它往上，倒着走从它往下",
+              "name": "start-ms",
+              "fieldName": "startMs"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "终点值毫秒；倒计时缺省 0，正计时不写即没有终点",
+              "name": "target-ms",
+              "fieldName": "targetMs"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "倒着走，缺省关闭",
+              "name": "countdown",
+              "fieldName": "countdown"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "挂载即开跑，缺省关闭；只在挂载那一刻读一次",
+              "name": "auto-start",
+              "fieldName": "autoStart"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "刷新间隔毫秒，缺省 1000，下限一帧",
+              "name": "interval",
+              "fieldName": "interval"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-timer",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-timer-area-fg"
+            },
+            {
+              "name": "--xh-timer-completed-fg"
+            },
+            {
+              "name": "--xh-timer-control-bg"
+            },
+            {
+              "name": "--xh-timer-control-bg-active"
+            },
+            {
+              "name": "--xh-timer-control-bg-disabled"
+            },
+            {
+              "name": "--xh-timer-control-bg-hover"
+            },
+            {
+              "name": "--xh-timer-control-border"
+            },
+            {
+              "name": "--xh-timer-control-border-disabled"
+            },
+            {
+              "name": "--xh-timer-control-border-hover"
+            },
+            {
+              "name": "--xh-timer-control-fg"
+            },
+            {
+              "name": "--xh-timer-control-gap"
+            },
+            {
+              "name": "--xh-timer-control-h"
+            },
+            {
+              "name": "--xh-timer-control-px"
+            },
+            {
+              "name": "--xh-timer-control-radius"
+            },
+            {
+              "name": "--xh-timer-digit-font-size"
+            },
+            {
+              "name": "--xh-timer-fg"
+            },
+            {
+              "name": "--xh-timer-gap"
+            },
+            {
+              "name": "--xh-timer-separator-fg"
+            },
+            {
+              "name": "--xh-timer-separator-px"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhTimerElement",
+          "declaration": {
+            "name": "XhTimerElement",
+            "module": "src/elements/timer.ts"
           }
         }
       ]
