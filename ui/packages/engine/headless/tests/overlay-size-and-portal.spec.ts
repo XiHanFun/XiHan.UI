@@ -9,6 +9,7 @@ import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { describe, expect, it } from 'vitest'
 import { connectSelect, selectMachine } from '../src/select'
 import { connectHoverCard, hoverCardMachine } from '../src/hover-card'
+import { connectTour, tourMachine } from '../src/tour'
 import { connectSideNav, sideNavMachine } from '../src/side-nav'
 
 function select(props: Partial<SelectSchema['props']>) {
@@ -135,5 +136,43 @@ describe('hover-card 的可用高度', () => {
     service.context.set('position', { x: 0, y: 0, placement: 'bottom', availableHeight: 0 })
     const style = (api().getPositionerProps() as Record<string, unknown>).style as Record<string, string>
     expect(style['--xh-_hover-card-available-h']).toBe('')
+  })
+})
+
+describe('引导气泡的可用高度', () => {
+  const steps = [
+    { id: 'a', target: () => document.body, title: '第一步', description: '正文' },
+    { id: 'b', title: '居中步', description: '没有锚点' },
+  ]
+
+  function tour(index: number) {
+    const runtime = createVanillaRuntime()
+    const service = createService(tourMachine, {
+      props: () => ({ steps, defaultStep: index, defaultOpen: true }),
+      runtime,
+    })
+    runtime.start()
+    return { service, api: () => connectTour(service, normalizeProps) }
+  }
+
+  it('锚定步把可用高度写成私有槽', () => {
+    const { service, api } = tour(0)
+    service.context.set('position', { x: 10, y: 20, placement: 'bottom', availableHeight: 400 })
+    const style = (api().getPositionerProps() as Record<string, unknown>).style as Record<string, string>
+    expect(style['--xh-_tour-available-h']).toBe('400px')
+  })
+
+  it('居中步没有引擎结果，发空串把上一步的高度撤掉', () => {
+    const { service, api } = tour(1)
+    service.context.set('position', { x: 10, y: 20, placement: 'bottom', availableHeight: 400 })
+    const style = (api().getPositionerProps() as Record<string, unknown>).style as Record<string, string>
+    expect(style['--xh-_tour-available-h']).toBe('')
+  })
+
+  it('贴边归零当作没算出来', () => {
+    const { service, api } = tour(0)
+    service.context.set('position', { x: 0, y: 0, placement: 'bottom', availableHeight: 0 })
+    const style = (api().getPositionerProps() as Record<string, unknown>).style as Record<string, string>
+    expect(style['--xh-_tour-available-h']).toBe('')
   })
 })

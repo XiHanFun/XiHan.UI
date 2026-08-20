@@ -13,6 +13,17 @@ const parts = tourAnatomy.build()
  */
 const INTERACTIVE = 'button, a[href], input, select, textarea, [role="button"], [contenteditable="true"]'
 
+// 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把气泡压成零高，
+// 所以低于这个下限就当作没算出来：空串撤掉声明，退回皮肤 positioner 上那档 100vh
+const AVAILABLE_H_FLOOR = 96
+
+function availableHeightVar(available: number | undefined): Record<string, string> {
+  return {
+    '--xh-_tour-available-h':
+      available != null && available >= AVAILABLE_H_FLOOR ? `${available}px` : '',
+  }
+}
+
 export function connectTour<T extends PropTypes>(
   service: Service<TourSchema>,
   normalize: NormalizeProps<T>,
@@ -115,6 +126,8 @@ export function connectTour<T extends PropTypes>(
         // 居中步显式写空串把上一步留下的内联坐标撤掉，不写键的话 WC 侧会留着旧值
         left: anchored ? `${position?.x ?? 0}px` : '',
         top: anchored ? `${position?.y ?? 0}px` : '',
+        // 居中步没有引擎结果，同样发空串把上一步的高度撤掉
+        ...availableHeightVar(anchored ? position?.availableHeight : undefined),
       },
     }),
 

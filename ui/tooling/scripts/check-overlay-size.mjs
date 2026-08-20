@@ -34,7 +34,6 @@ const SIZE_EXEMPT = {
   'time-picker': '每列各自限高自滚；整面板滚会让时列与分列一起走，反而不能对齐着挑',
   'popconfirm': '定长栅格，没有可滚的正文部件，高度上界由一句说明文案决定',
   'tooltip': 'role=tooltip 不可聚焦，内部滚动区键盘用户够不到，加滚动是制造无障碍陷阱',
-  'tour': '气泡随引导步骤走，限高与让位策略要一起定，另行处理',
   'navigation-menu': '不接定位引擎，展开面板由皮肤排布',
   'floating-panel': '尺寸是用户自己拖出来的，由 minSize/maxSize 夹取，不从锚点下的可用空间推',
 }
