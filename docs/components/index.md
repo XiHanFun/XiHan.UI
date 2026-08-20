@@ -25,6 +25,7 @@
 | [切换按钮](./toggle) | `toggle` | 1 | 1 | 9 |
 | [切换按钮组](./toggle-group) | `toggle-group` | 2 | 6 | 7 |
 | [排印](./typography) | `typography` | 5 | 0 | 5 |
+| [水印](./watermark) | `watermark` | 2 | 0 | 4 |
 
 ## 布局
 
@@ -40,7 +41,6 @@
 | [分隔线](./separator) | `separator` | 1 | 0 | 4 |
 | [间距](./space) | `space` | 2 | 0 | 5 |
 | [分栏](./splitter) | `splitter` | 3 | 7 | 6 |
-| [水印](./watermark) | `watermark` | 2 | 0 | 4 |
 
 ## 导航
 
@@ -62,6 +62,7 @@
 | [步骤条](./steps) | `steps` | 9 | 6 | 8 |
 | [标签页](./tabs) | `tabs` | 4 | 6 | 13 |
 | [工具栏](./toolbar) | `toolbar` | 4 | 6 | 7 |
+| [引导](./tour) | `tour` | 13 | 4 | 3 |
 
 ## 数据录入
 
@@ -138,7 +139,6 @@
 | [时间](./time) | `time` | 1 | 0 | 4 |
 | [时间线](./timeline) | `timeline` | 8 | 0 | 5 |
 | [计时器](./timer) | `timer` | 5 | 1 | 6 |
-| [引导](./tour) | `tour` | 13 | 4 | 3 |
 | [树](./tree) | `tree` | 12 | 10 | 10 |
 | [虚拟滚动](./virtualizer) | `virtualizer` | 4 | 0 | 4 |
 
