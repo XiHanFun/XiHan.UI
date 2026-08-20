@@ -1,0 +1,42 @@
+<!-- 每一拍与到点 | tick 每过一个 interval 发一次，complete 只在走到终点那一刻发一次；到点那一拍不再发 tick -->
+<xh-timer id="timer-notify" countdown start-ms="5000">
+  <div data-xh-part="root">
+    <div data-xh-part="area">
+      <span data-xh-part="item" unit="minutes"></span>
+      <span data-xh-part="separator">:</span>
+      <span data-xh-part="item" unit="seconds"></span>
+    </div>
+    <button data-xh-part="control" id="timer-notify-control">起停</button>
+  </div>
+</xh-timer>
+
+<p id="timer-notify-log">已经跳了 0 拍</p>
+
+<script type="module">
+  const timer = document.getElementById("timer-notify");
+  const log = document.getElementById("timer-notify-log");
+  const control = document.getElementById("timer-notify-control");
+  let ticks = 0;
+  let done = false;
+
+  const paint = () => {
+    log.textContent = `已经跳了 ${ticks} 拍${done ? "，到点了" : ""}`;
+  };
+
+  timer.addEventListener("tick", () => {
+    ticks += 1;
+    paint();
+  });
+
+  timer.addEventListener("complete", () => {
+    done = true;
+    paint();
+  });
+
+  // 按钮本身归组件管起停，这里只把计数一起归零
+  control.addEventListener("click", () => {
+    ticks = 0;
+    done = false;
+    paint();
+  });
+</script>

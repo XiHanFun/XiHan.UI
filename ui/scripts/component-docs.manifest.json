@@ -14,16 +14,28 @@
           "name": "按钮组"
         },
         {
+          "id": "clipboard",
+          "name": "剪贴板"
+        },
+        {
+          "id": "download-trigger",
+          "name": "下载触发器"
+        },
+        {
+          "id": "ellipsis",
+          "name": "文本省略"
+        },
+        {
           "id": "float-button",
           "name": "浮动按钮"
         },
         {
-          "id": "toggle",
-          "name": "切换按钮"
+          "id": "gradient-text",
+          "name": "渐变文字"
         },
         {
-          "id": "toggle-group",
-          "name": "切换按钮组"
+          "id": "hotkeys",
+          "name": "快捷键"
         },
         {
           "id": "icon",
@@ -34,20 +46,16 @@
           "name": "图标块"
         },
         {
-          "id": "clipboard",
-          "name": "剪贴板"
+          "id": "toggle",
+          "name": "切换按钮"
+        },
+        {
+          "id": "toggle-group",
+          "name": "切换按钮组"
         },
         {
           "id": "typography",
           "name": "排印"
-        },
-        {
-          "id": "ellipsis",
-          "name": "文本省略"
-        },
-        {
-          "id": "gradient-text",
-          "name": "渐变文字"
         }
       ]
     },
@@ -57,10 +65,6 @@
       "description": "只分配空间、不承载内容语义的容器。",
       "components": [
         {
-          "id": "layout",
-          "name": "布局"
-        },
-        {
           "id": "flex",
           "name": "弹性布局"
         },
@@ -69,16 +73,28 @@
           "name": "栅格"
         },
         {
-          "id": "separator",
-          "name": "分隔线"
+          "id": "layout",
+          "name": "布局"
         },
         {
-          "id": "splitter",
-          "name": "分栏"
+          "id": "masonry",
+          "name": "瀑布流"
         },
         {
           "id": "scroll-area",
           "name": "滚动区域"
+        },
+        {
+          "id": "separator",
+          "name": "分隔线"
+        },
+        {
+          "id": "space",
+          "name": "间距"
+        },
+        {
+          "id": "splitter",
+          "name": "分栏"
         },
         {
           "id": "watermark",
@@ -195,12 +211,20 @@
           "name": "表单字段"
         },
         {
+          "id": "fieldset",
+          "name": "字段集"
+        },
+        {
           "id": "file-upload",
           "name": "文件上传"
         },
         {
           "id": "form",
           "name": "表单"
+        },
+        {
+          "id": "image-cropper",
+          "name": "图片裁切"
         },
         {
           "id": "listbox",
@@ -213,6 +237,10 @@
         {
           "id": "number-field",
           "name": "数字输入"
+        },
+        {
+          "id": "password-input",
+          "name": "密码输入"
         },
         {
           "id": "pin-input",
@@ -231,8 +259,16 @@
           "name": "评分"
         },
         {
+          "id": "segmented",
+          "name": "分段控制器"
+        },
+        {
           "id": "select",
           "name": "选择器"
+        },
+        {
+          "id": "signature-pad",
+          "name": "签名板"
         },
         {
           "id": "slider",
@@ -322,6 +358,10 @@
           "name": "空状态"
         },
         {
+          "id": "heatmap",
+          "name": "热力图"
+        },
+        {
           "id": "highlight",
           "name": "文本高亮"
         },
@@ -336,6 +376,10 @@
         {
           "id": "infinite-scroll",
           "name": "无限滚动"
+        },
+        {
+          "id": "json-viewer",
+          "name": "JSON 视图"
         },
         {
           "id": "list",
@@ -366,12 +410,20 @@
           "name": "表格"
         },
         {
+          "id": "tag",
+          "name": "标签"
+        },
+        {
           "id": "time",
           "name": "时间"
         },
         {
           "id": "timeline",
           "name": "时间线"
+        },
+        {
+          "id": "timer",
+          "name": "计时器"
         },
         {
           "id": "tour",
@@ -438,6 +490,10 @@
         {
           "id": "drawer",
           "name": "抽屉"
+        },
+        {
+          "id": "floating-panel",
+          "name": "浮动面板"
         },
         {
           "id": "hover-card",

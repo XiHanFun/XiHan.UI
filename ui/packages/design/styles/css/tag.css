@@ -1,0 +1,154 @@
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='tag'] {
+    --xh-tag-skin: 1;
+  }
+
+  /* 缺省态：md 档、无语气。三轴规则只在它之上叠加，不改这一条 */
+  [data-scope='tag'][data-part='root'] {
+    /* 尺寸档只换这四个私有槽，下面的声明从它们取值 */
+    --xh-_tag-gap: var(--xh-space-1);
+    --xh-_tag-px: var(--xh-space-2);
+    --xh-_tag-py: var(--xh-space-0_5);
+    --xh-_tag-font-size: var(--xh-font-size-xs);
+
+    display: inline-flex;
+    align-items: center;
+    /* 一行放不下时标签自己截断，而不是把整行撑破 */
+    max-inline-size: 100%;
+    gap: var(--xh-tag-gap, var(--xh-_tag-gap));
+    padding-inline: var(--xh-tag-px, var(--xh-_tag-px));
+    padding-block: var(--xh-tag-py, var(--xh-_tag-py));
+    border: var(--xh-stroke-thin) solid transparent;
+    border-radius: var(--xh-tag-radius, var(--xh-shape-control));
+    background: var(--xh-tag-bg, var(--xh-bg-subtle));
+    color: var(--xh-tag-fg, var(--xh-fg-default));
+    font-size: var(--xh-tag-font-size, var(--xh-_tag-font-size));
+    font-weight: var(--xh-tag-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-leading-none);
+    /* 随文排时与正文基线对齐 */
+    vertical-align: middle;
+  }
+
+  /* 收起态连接层给的是 hidden 属性，而上面声明了 display——
+     漏掉这条，摘掉的标签还会一直摊在页面上 */
+  [data-scope='tag'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 文字过长时截断，关闭钮才始终留在标签里 */
+  [data-scope='tag'][data-part='label'] {
+    overflow: hidden;
+    min-inline-size: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [data-scope='tag'][data-part='close-trigger'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    /* 命中区取行内动作按钮的标准尺寸，不随标签档位缩小：叉本来就是最难点中的那一个 */
+    block-size: var(--xh-tag-close-size, var(--xh-control-action-size));
+    inline-size: var(--xh-tag-close-size, var(--xh-control-action-size));
+    /* 命中区比字形大一圈，往内收一格才不会在标签右缘留出一块空白 */
+    margin-inline-end: calc(-1 * var(--xh-space-1));
+    border: 0;
+    border-radius: var(--xh-tag-close-radius, var(--xh-shape-inset));
+    background: transparent;
+    /* 叉取标签自己的文字色：实心底上是浅字、淡底上是深字，不必逐形态各写一遍 */
+    color: var(--xh-tag-close-fg, currentColor);
+    /* 按钮不继承字族字号，不接回来的话标签里会突然冒出一段系统 UI 字体 */
+    font: inherit;
+    line-height: var(--xh-leading-none);
+    cursor: pointer;
+  }
+
+  /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半 */
+  [data-scope='tag'][data-part='close-trigger'][hidden] {
+    display: none;
+  }
+
+  /* 悬停只加一层同色薄底，实心与淡底两种形态上都成立 */
+  [data-scope='tag'][data-part='close-trigger']:hover:not(:disabled) {
+    background: color-mix(in oklab, currentColor 14%, transparent);
+  }
+
+  [data-scope='tag'][data-part='close-trigger']:disabled {
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='tag'][data-part='close-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    /* 环往内收：命中区贴着标签内缘，往外画会被相邻标签压住 */
+    outline-offset: calc(-1 * var(--xh-ring-offset));
+  }
+
+  /* —— 形态 —— */
+  /* 形态只决定颜色怎么用。每个形态拆成两条：先是没写语气时的基线配色，
+     再是写了语气时的覆盖。语气槽会沿继承流下来，覆盖那条必须带 [data-tone] 限定，
+     否则一枚没写语气的标签只要落在带 data-tone 的容器里（警告提示、吐司、按钮内）
+     就会跟着染色 */
+  [data-scope='tag'][data-part='root'][data-variant='solid'] {
+    border-color: transparent;
+    background: var(--xh-tag-bg, var(--xh-bg-brand));
+    color: var(--xh-tag-fg, var(--xh-fg-on-brand));
+  }
+
+  [data-scope='tag'][data-part='root'][data-variant='solid'][data-tone] {
+    background: var(--xh-tag-bg, var(--xh-_tone, var(--xh-bg-brand)));
+    color: var(--xh-tag-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+  }
+
+  [data-scope='tag'][data-part='root'][data-variant='subtle'] {
+    border-color: transparent;
+    background: var(--xh-tag-bg, var(--xh-bg-subtle));
+    color: var(--xh-tag-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='tag'][data-part='root'][data-variant='subtle'][data-tone] {
+    background: var(--xh-tag-bg, var(--xh-_tone-subtle, var(--xh-bg-subtle)));
+    color: var(--xh-tag-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
+  }
+
+  [data-scope='tag'][data-part='root'][data-variant='outline'] {
+    border-color: var(--xh-tag-border, var(--xh-border-default));
+    background: transparent;
+    color: var(--xh-tag-fg, var(--xh-fg-default));
+  }
+
+  [data-scope='tag'][data-part='root'][data-variant='outline'][data-tone] {
+    border-color: var(--xh-tag-border, var(--xh-_tone-border, var(--xh-border-default)));
+    color: var(--xh-tag-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
+  }
+
+  /* —— 尺寸 —— */
+  /* 标签是随文排的标记，不占控件行高，档位走间距与字号而不是 control-h */
+  [data-scope='tag'][data-part='root'][data-size='sm'] {
+    --xh-_tag-gap: var(--xh-space-0_5);
+    --xh-_tag-px: var(--xh-space-1_5);
+    --xh-_tag-py: var(--xh-space-0);
+  }
+
+  [data-scope='tag'][data-part='root'][data-size='lg'] {
+    --xh-_tag-gap: var(--xh-space-1_5);
+    --xh-_tag-px: var(--xh-space-3);
+    --xh-_tag-py: var(--xh-space-1);
+    --xh-_tag-font-size: var(--xh-font-size-sm);
+  }
+
+  /* —— 禁用 —— */
+  /* 排在形态之后，靠源序压过形态给的配色。第二条选择器专为写了语气的标签而设：
+     语气覆盖那几条比第一条多一个属性，不把 [data-tone] 一起写上，
+     禁用的标签会留着语气实心底、只有文字变灰，底上几乎看不见字。
+     用了 fg-disabled 就不再叠 opacity */
+  [data-scope='tag'][data-part='root'][data-disabled],
+  [data-scope='tag'][data-part='root'][data-tone][data-disabled] {
+    border-color: var(--xh-tag-border-disabled, var(--xh-border-subtle));
+    background: var(--xh-tag-bg-disabled, var(--xh-bg-muted));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+}

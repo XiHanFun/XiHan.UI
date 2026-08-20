@@ -1,0 +1,236 @@
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='json-viewer'] {
+    --xh-json-viewer-skin: 1;
+  }
+
+  /* 缺省态（md 档）。等宽字体让层级缩进与值的长度对得齐。
+     逐类型配色：令牌集里没有 JSON 语法色这一类，就地声明成可覆盖的变量，
+     取值与代码块的记号色同源。每条先写浅色兜底再写 light-dark()：
+     不认后者的旧引擎由级联保留前一条，退化成单色。 */
+  [data-scope='json-viewer'][data-part='root'] {
+    --xh-_json-viewer-font-size: var(--xh-font-size-sm);
+    --xh-_json-viewer-row-py: var(--xh-space-0_5);
+    --xh-_json-viewer-indent: var(--xh-space-4);
+    --xh-json-viewer-key-fg: var(--xh-fg-brand-strong);
+    --xh-json-viewer-punctuation-fg: var(--xh-fg-subtle);
+    --xh-json-viewer-null-fg: var(--xh-fg-subtle);
+    --xh-json-viewer-string-fg: #0a7f5f;
+    --xh-json-viewer-string-fg: light-dark(#0a7f5f, #7ee2b8);
+    --xh-json-viewer-number-fg: #9a5b00;
+    --xh-json-viewer-number-fg: light-dark(#9a5b00, #f0b866);
+    --xh-json-viewer-boolean-fg: #8250df;
+    --xh-json-viewer-boolean-fg: light-dark(#8250df, #d2a8ff);
+
+    display: block;
+    color: var(--xh-json-viewer-fg, var(--xh-fg-default));
+    font-family: var(--xh-json-viewer-font, var(--xh-font-family-mono));
+    font-size: var(--xh-json-viewer-font-size, var(--xh-_json-viewer-font-size));
+    line-height: var(--xh-leading-normal);
+  }
+
+  /* 写了 display 就会盖掉 UA 的 [hidden]{display:none}，这里补回 */
+  [data-scope='json-viewer'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /* 尺寸轴只换私有槽，部件从 root 继承 */
+  [data-scope='json-viewer'][data-part='root'][data-size='sm'] {
+    --xh-_json-viewer-font-size: var(--xh-font-size-xs);
+    --xh-_json-viewer-row-py: var(--xh-space-0);
+    --xh-_json-viewer-indent: var(--xh-space-3);
+  }
+
+  [data-scope='json-viewer'][data-part='root'][data-size='lg'] {
+    --xh-_json-viewer-font-size: var(--xh-font-size-md);
+    --xh-_json-viewer-row-py: var(--xh-space-1);
+    --xh-_json-viewer-indent: var(--xh-space-5);
+  }
+
+  /* 常驻容器不是浮层：两轴都可能溢出——深层缩进往行首方向推、长字符串往行尾伸 */
+  [data-scope='json-viewer'][data-part='tree'] {
+    display: flex;
+    flex-direction: column;
+    max-block-size: var(--xh-json-viewer-max-h, 26rem);
+    padding-block: var(--xh-json-viewer-py, var(--xh-space-2));
+    padding-inline: var(--xh-json-viewer-px, var(--xh-space-2));
+    border: var(--xh-stroke-thin) solid var(--xh-json-viewer-border, var(--xh-border-default));
+    border-radius: var(--xh-json-viewer-radius, var(--xh-shape-surface));
+    background: var(--xh-json-viewer-bg, var(--xh-bg-surface));
+    overflow: auto;
+  }
+
+  [data-scope='json-viewer'][data-part='tree'][hidden] {
+    display: none;
+  }
+
+  /* 焦点在树外时容器自己进 Tab 序列兜底，落焦不画环：环永远长在行上 */
+  [data-scope='json-viewer'][data-part='tree']:focus-visible {
+    outline: none;
+  }
+
+  /* 焦点落在 branch 上（它才是 treeitem），但环画在它自己那一行上：
+     整棵子层套一圈描边会把展开的层级全框进去 */
+  [data-scope='json-viewer'][data-part='branch']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='json-viewer'][data-part='branch']:focus-visible > [data-scope='json-viewer'][data-part='branch-control'] {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    /* 往内收：行是撑满宽度的，环画在外沿会被容器裁掉 */
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  /* 行：标量与分支共用同一套盒子，两种行在视觉上必须齐平 */
+  [data-scope='json-viewer'][data-part='item'],
+  [data-scope='json-viewer'][data-part='branch-control'] {
+    display: flex;
+    align-items: baseline;
+    gap: var(--xh-json-viewer-row-gap, var(--xh-space-1));
+    padding-block: var(--xh-json-viewer-row-py, var(--xh-_json-viewer-row-py));
+    padding-inline: var(--xh-json-viewer-row-px, var(--xh-space-1));
+    border-radius: var(--xh-json-viewer-row-radius, var(--xh-shape-inset));
+    white-space: nowrap;
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='json-viewer'][data-part='item'][hidden],
+  [data-scope='json-viewer'][data-part='branch-control'][hidden] {
+    display: none;
+  }
+
+  /* 悬停与键盘锚点共用中性灰轻档：data-highlighted 跟的是连接层记的焦点行，
+     键盘落焦另有聚焦环标记位置 */
+  [data-scope='json-viewer'][data-part='item']:is(:hover, [data-highlighted]),
+  [data-scope='json-viewer'][data-part='branch-control']:is(:hover, [data-highlighted]) {
+    background: var(--xh-json-viewer-row-bg-hover, var(--xh-bg-subtle));
+  }
+
+  /* 分支那一行是唯一的点击目标：点它切换展开态 */
+  [data-scope='json-viewer'][data-part='branch-control'] {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* 标量行的焦点环直接画在行上：它自己就是 treeitem */
+  [data-scope='json-viewer'][data-part='item']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  /* 键名不参与压缩：它短且必须完整可读，被挤掉的应该是值 */
+  [data-scope='json-viewer'][data-part='item-key'],
+  [data-scope='json-viewer'][data-part='branch-text'] {
+    flex: none;
+    color: var(--xh-json-viewer-key-fg);
+    font-weight: var(--xh-json-viewer-key-font-weight, var(--xh-font-weight-medium));
+  }
+
+  /* 键名与值之间的冒号由皮肤画：它是排版符号，进不了可及名字反而更清爽 */
+  [data-scope='json-viewer'][data-part='item-key']::after,
+  [data-scope='json-viewer'][data-part='branch-text']::after {
+    content: ':';
+    color: var(--xh-json-viewer-punctuation-fg);
+  }
+
+  /* 弹性子项默认最小尺寸是内容尺寸，不归零则长字符串把行撑破、省略号轮不上 */
+  [data-scope='json-viewer'][data-part='item-value'] {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  [data-scope='json-viewer'][data-part='item-value'][data-type='string'] {
+    color: var(--xh-json-viewer-string-fg);
+  }
+
+  [data-scope='json-viewer'][data-part='item-value'][data-type='number'] {
+    color: var(--xh-json-viewer-number-fg);
+  }
+
+  [data-scope='json-viewer'][data-part='item-value'][data-type='boolean'] {
+    color: var(--xh-json-viewer-boolean-fg);
+  }
+
+  [data-scope='json-viewer'][data-part='item-value'][data-type='null'] {
+    color: var(--xh-json-viewer-null-fg);
+  }
+
+  /* 空对象与空数组只剩一对括号，跟标点同色 */
+  [data-scope='json-viewer'][data-part='item-value'][data-type='array'],
+  [data-scope='json-viewer'][data-part='item-value'][data-type='object'] {
+    color: var(--xh-json-viewer-punctuation-fg);
+  }
+
+  /* 循环引用与截断占位不是真数据，排在语气之外用弱化字重表达 */
+  [data-scope='json-viewer'][data-part='item-value'][data-circular],
+  [data-scope='json-viewer'][data-part='item-value'][data-truncated] {
+    color: var(--xh-fg-muted);
+    font-style: italic;
+  }
+
+  /* 展开箭头与勾选标记同宽，两种行的文字起点才对得齐 */
+  [data-scope='json-viewer'][data-part='branch-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-json-viewer-indicator-size, var(--xh-control-indicator-size));
+    color: var(--xh-json-viewer-indicator-fg, var(--xh-fg-subtle));
+  }
+
+  [data-scope='json-viewer'][data-part='branch-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='json-viewer'][data-part='branch-indicator'] {
+    display: inline-block;
+    line-height: var(--xh-leading-none);
+    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='json-viewer'][data-part='branch-indicator'][hidden] {
+    display: none;
+  }
+
+  /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
+  [data-scope='json-viewer'][data-part='branch-indicator']:empty::before {
+    content: '▸';
+  }
+
+  /* 收起时朝向行首、展开时转向下方，与逻辑书写方向一致：
+     rtl 下 inline-start 在右侧，箭头因此要反着转 */
+  [data-scope='json-viewer'][data-part='branch-indicator'][data-state='open'] {
+    rotate: 90deg;
+  }
+
+  [dir='rtl'] [data-scope='json-viewer'][data-part='branch-indicator'] {
+    rotate: 180deg;
+  }
+
+  [dir='rtl'] [data-scope='json-viewer'][data-part='branch-indicator'][data-state='open'] {
+    rotate: 90deg;
+  }
+
+  /* 收起摘要不参与选中：框选整块 JSON 时不该把它一起复制走 */
+  [data-scope='json-viewer'][data-part='preview'] {
+    flex: none;
+    color: var(--xh-json-viewer-preview-fg, var(--xh-fg-muted));
+    font-size: var(--xh-json-viewer-preview-font-size, var(--xh-font-size-xs));
+    user-select: none;
+  }
+
+  /* 层级缩进靠子层容器自己顶：分支物理嵌套着子层，每深一层就多缩一格，
+     无需把层级号写进内联样式，也就不必在两个适配器里各写一遍 */
+  [data-scope='json-viewer'][data-part='branch-content'] {
+    display: flex;
+    flex-direction: column;
+    padding-inline-start: var(--xh-json-viewer-indent, var(--xh-_json-viewer-indent));
+  }
+
+  [data-scope='json-viewer'][data-part='branch-content'][hidden] {
+    display: none;
+  }
+}

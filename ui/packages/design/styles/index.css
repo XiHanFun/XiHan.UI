@@ -1,4 +1,11 @@
 /* 层序声明必须最先：级联层的先后由首次出现定死，layers.css 打头才立得住序。 */
+@import './css/download-trigger.css';
+@import './css/fieldset.css';
+@import './css/floating-panel.css';
+@import './css/heatmap.css';
+@import './css/hotkeys.css';
+@import './css/image-cropper.css';
+@import './css/json-viewer.css';
 @import './css/layers.css';
 
 /* 令牌先于一切：皮肤里不写兜底值，令牌缺席就是缺陷，不是降级。
@@ -25,17 +32,24 @@
 @import './css/list.css';
 @import './css/log.css';
 @import './css/marquee.css';
+@import './css/masonry.css';
 @import './css/mention.css';
 @import './css/number-animation.css';
 @import './css/page-header.css';
+@import './css/password-input.css';
 @import './css/popconfirm.css';
 @import './css/popselect.css';
 @import './css/qr-code.css';
 @import './css/reset.css';
 @import './css/result.css';
+@import './css/segmented.css';
+@import './css/signature-pad.css';
+@import './css/space.css';
 @import './css/statistic.css';
+@import './css/tag.css';
 @import './css/time.css';
 @import './css/timeline.css';
+@import './css/timer.css';
 @import './css/typography.css';
 @import './css/undefined.css';
 @import './css/visually-hidden.css';

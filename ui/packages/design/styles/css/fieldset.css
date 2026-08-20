@@ -1,0 +1,69 @@
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='fieldset'] {
+    --xh-fieldset-skin: 1;
+  }
+
+  /* 抹掉 UA 给 <fieldset> 的边框、内外边距与 min-content 下限，间距全部改由令牌给。
+     display 落在 fieldset 的匿名内容盒上：首个 <legend> 不在这个盒子里，
+     所以 gap 只作用于组内各块，legend 与内容之间的留白由 legend 自己的下外边距给。 */
+  [data-scope='fieldset'][data-part='root'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-fieldset-gap, var(--xh-space-4));
+    margin: 0;
+    border: 0;
+    padding: 0;
+    min-inline-size: 0;
+  }
+
+  [data-scope='fieldset'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='fieldset'][data-part='legend'] {
+    padding: 0;
+    margin-block-end: var(--xh-fieldset-legend-gap, var(--xh-space-2));
+    color: var(--xh-fieldset-legend-fg, var(--xh-fg-default));
+    font-size: var(--xh-fieldset-legend-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-fieldset-legend-font-weight, var(--xh-text-label-weight));
+    line-height: var(--xh-leading-tight);
+  }
+
+  /* 整组无效时组标题转警示色：没渲染错误文案的字段集上，这是屏幕上唯一变化的东西 */
+  [data-scope='fieldset'][data-part='root'][data-invalid] > [data-scope='fieldset'][data-part='legend'] {
+    color: var(--xh-fieldset-legend-fg-invalid, var(--xh-fg-danger));
+  }
+
+  /* 整组禁用时组标题跟着变淡；组内控件由原生 fieldset[disabled] 各自呈现禁用态。
+     选择器与上一条同权重且排在后面，禁用与无效同时为真时以禁用为准。 */
+  [data-scope='fieldset'][data-part='root'] > [data-scope='fieldset'][data-part='legend'][data-disabled] {
+    color: var(--xh-fieldset-legend-fg-disabled, var(--xh-fg-subtle));
+  }
+
+  /* 必填星号：跟着根上的 data-required 亮，选填不标 */
+  [data-scope='fieldset'][data-part='root'][data-required] > [data-scope='fieldset'][data-part='legend']::after {
+    content: '*';
+    margin-inline-start: var(--xh-space-1);
+    color: var(--xh-fieldset-legend-star, var(--xh-fg-danger));
+  }
+
+  [data-scope='fieldset'][data-part='helper-text'] {
+    margin: 0;
+    color: var(--xh-fieldset-helper-fg, var(--xh-fg-muted));
+    font-size: var(--xh-fieldset-helper-font-size, var(--xh-font-size-sm));
+    line-height: var(--xh-leading-normal);
+  }
+
+  [data-scope='fieldset'][data-part='helper-text'][data-disabled] {
+    color: var(--xh-fieldset-helper-fg-disabled, var(--xh-fg-subtle));
+  }
+
+  /* 不 invalid 时节点带 hidden：此处不声明 display，交给浏览器的 [hidden] 规则收起 */
+  [data-scope='fieldset'][data-part='error-text'] {
+    margin: 0;
+    color: var(--xh-fieldset-error-fg, var(--xh-fg-danger));
+    font-size: var(--xh-fieldset-error-font-size, var(--xh-font-size-sm));
+    line-height: var(--xh-leading-normal);
+  }
+}

@@ -1,0 +1,77 @@
+<!-- 对齐、折行与行内 | align 改交叉轴对齐，wrap 让放不下的子项换行、行间距同样吃 gap，inline 让容器缩到内容宽度 -->
+<style>
+  #space-align-wrap [data-track] {
+    border: 1px solid var(--xh-border-default);
+    border-radius: var(--xh-radius-md);
+    padding: 8px;
+    max-inline-size: 320px;
+  }
+  #space-align-wrap [data-box] {
+    padding: 6px 12px;
+    border-radius: var(--xh-radius-md);
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-default);
+  }
+  #space-align-wrap [data-tall] {
+    padding-block: 18px;
+  }
+  #space-align-wrap [data-tag] {
+    padding: 4px 10px;
+    border-radius: var(--xh-radius-full);
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-default);
+    font-size: 13px;
+  }
+  #space-align-wrap [data-label] {
+    font-size: 13px;
+    color: var(--xh-fg-muted);
+  }
+  #space-align-wrap [data-stack] {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+</style>
+
+<div id="space-align-wrap" style="display: flex; flex-direction: column; gap: 24px">
+  <div data-stack>
+    <span data-label>align = start：高矮不齐时顶端对齐（不写时横排按中线对齐）</span>
+    <!-- 宿主设 display: contents，排布落在 root 上 -->
+    <xh-space align="start" style="display: contents">
+      <div data-xh-part="root" data-track>
+        <span data-box>甲</span>
+        <span data-box data-tall>乙（更高）</span>
+        <span data-box>丙</span>
+      </div>
+    </xh-space>
+  </div>
+
+  <div data-stack>
+    <span data-label>wrap：换行摆，行与行之间同样是 gap</span>
+    <xh-space wrap gap="sm" style="display: contents">
+      <div data-xh-part="root" data-track>
+        <span data-tag>前端</span>
+        <span data-tag>组件库</span>
+        <span data-tag>无障碍</span>
+        <span data-tag>设计令牌</span>
+        <span data-tag>自定义元素</span>
+        <span data-tag>键盘导航</span>
+      </div>
+    </xh-space>
+  </div>
+
+  <div data-stack>
+    <span data-label>inline：容器缩到内容宽度，跟前后文字排在同一行</span>
+    <!-- 外层留成普通块级容器：行内盒要和文字处在同一个行内格式化上下文里才看得出效果 -->
+    <div style="line-height: 2">
+      当前筛选条件为
+      <xh-space inline gap="xs" style="display: contents">
+        <span data-xh-part="root">
+          <span data-tag>近 7 天</span>
+          <span data-tag>已完成</span>
+        </span>
+      </xh-space>
+      ，共 24 条。
+    </div>
+  </div>
+</div>

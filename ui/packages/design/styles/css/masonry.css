@@ -1,0 +1,63 @@
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='masonry'] {
+    --xh-masonry-skin: 1;
+  }
+
+  [data-scope='masonry'][data-part='root'] {
+    display: flex;
+    /* 各列按自己的内容收高，不被最高的那列拉平——列不等高正是瀑布流的样子 */
+    align-items: flex-start;
+    gap: var(--xh-_masonry-gap);
+
+    /* 列间距与列内的项间距共用这一份取值，声明在根上、由列继承下去；
+       不写 gap 档位就不留间距。使用者槽位排在档位之前，写死一个值即盖过所有档 */
+    --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-0));
+  }
+
+  /* 声明了 display 就盖掉了 UA 的 [hidden] 规则，这里还回去 */
+  [data-scope='masonry'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='masonry'][data-part='column'] {
+    display: flex;
+    flex-direction: column;
+    /* 各列等宽；下限写 0 而不是 auto，一段长内容才不会把自己那列撑宽 */
+    flex: 1 1 0;
+    min-inline-size: 0;
+    gap: var(--xh-_masonry-gap);
+  }
+
+  /* 当前档位用不上的那几列由适配器收起；这条兜住作者自己写 hidden 的情形 */
+  [data-scope='masonry'][data-part='column'][hidden] {
+    display: none;
+  }
+
+  /* 项不发话，高度由内容定；只兜住一件事——不被列的弹性压缩，压缩了量到的高度就不是它真实的高度 */
+  [data-scope='masonry'][data-part='item'] {
+    flex: none;
+  }
+
+  /* —— 间距档位 —— */
+  /* 每一档指向一个间距令牌，列之间与列内项之间吃同一份间距 */
+  [data-scope='masonry'][data-part='root'][data-gap='xs'] {
+    --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-1));
+  }
+
+  [data-scope='masonry'][data-part='root'][data-gap='sm'] {
+    --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-2));
+  }
+
+  [data-scope='masonry'][data-part='root'][data-gap='md'] {
+    --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-3));
+  }
+
+  [data-scope='masonry'][data-part='root'][data-gap='lg'] {
+    --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-4));
+  }
+
+  [data-scope='masonry'][data-part='root'][data-gap='xl'] {
+    --xh-_masonry-gap: var(--xh-masonry-gap, var(--xh-space-6));
+  }
+}

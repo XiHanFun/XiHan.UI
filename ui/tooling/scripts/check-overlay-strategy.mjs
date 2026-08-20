@@ -13,6 +13,7 @@ const HEADLESS = 'packages/engine/headless/src'
 const NOT_ENGINE_POSITIONED = {
   'dialog': '居中由皮肤的 inset + flex 排布，不问引擎要坐标',
   'drawer': '贴边由皮肤的 inset 排布，不问引擎要坐标',
+  'floating-panel': '位置由用户拖出来、存在机器里，不问引擎要坐标',
   'image-viewer': '全屏居中由皮肤的 inset + flex 排布，不问引擎要坐标',
 }
 

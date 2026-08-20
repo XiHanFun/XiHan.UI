@@ -31,31 +31,39 @@ import { XhDateFieldElement } from './elements/date-field'
 import { XhDatePickerElement } from './elements/date-picker'
 import { XhDescriptionsElement } from './elements/descriptions'
 import { XhDialogElement } from './elements/dialog'
+import { XhDownloadTriggerElement } from './elements/download-trigger'
 import { XhDrawerElement } from './elements/drawer'
 import { XhDynamicInputElement } from './elements/dynamic-input'
 import { XhEditableElement } from './elements/editable'
 import { XhEllipsisElement } from './elements/ellipsis'
 import { XhEmptyStateElement } from './elements/empty-state'
 import { XhFieldElement } from './elements/field'
+import { XhFieldsetElement } from './elements/fieldset'
 import { XhFileUploadElement } from './elements/file-upload'
 import { XhFlexElement } from './elements/flex'
 import { XhFloatButtonElement } from './elements/float-button'
+import { XhFloatingPanelElement } from './elements/floating-panel'
 import { XhFormElement } from './elements/form'
 import { XhGradientTextElement } from './elements/gradient-text'
 import { XhGridElement } from './elements/grid'
+import { XhHeatmapElement } from './elements/heatmap'
 import { XhHighlightElement } from './elements/highlight'
+import { XhHotkeysElement } from './elements/hotkeys'
 import { XhHoverCardElement } from './elements/hover-card'
 import { XhIconElement } from './elements/icon'
 import { XhIconWrapperElement } from './elements/icon-wrapper'
 import { XhImageElement } from './elements/image'
+import { XhImageCropperElement } from './elements/image-cropper'
 import { XhImageViewerElement } from './elements/image-viewer'
 import { XhInfiniteScrollElement } from './elements/infinite-scroll'
+import { XhJsonViewerElement } from './elements/json-viewer'
 import { XhLayoutElement } from './elements/layout'
 import { XhListElement } from './elements/list'
 import { XhListboxElement } from './elements/listbox'
 import { XhLoadingBarElement } from './elements/loading-bar'
 import { XhLogElement } from './elements/log'
 import { XhMarqueeElement } from './elements/marquee'
+import { XhMasonryElement } from './elements/masonry'
 import { XhMentionElement } from './elements/mention'
 import { XhMenuElement } from './elements/menu'
 import { XhMenubarElement } from './elements/menubar'
@@ -64,6 +72,7 @@ import { XhNumberAnimationElement } from './elements/number-animation'
 import { XhNumberFieldElement } from './elements/number-field'
 import { XhPageHeaderElement } from './elements/page-header'
 import { XhPaginationElement } from './elements/pagination'
+import { XhPasswordInputElement } from './elements/password-input'
 import { XhPinInputElement } from './elements/pin-input'
 import { XhPopconfirmElement } from './elements/popconfirm'
 import { XhPopoverElement } from './elements/popover'
@@ -74,11 +83,14 @@ import { XhRadioGroupElement } from './elements/radio-group'
 import { XhRatingElement } from './elements/rating'
 import { XhResultElement } from './elements/result'
 import { XhScrollAreaElement } from './elements/scroll-area'
+import { XhSegmentedElement } from './elements/segmented'
 import { XhSelectElement } from './elements/select'
 import { XhSeparatorElement } from './elements/separator'
 import { XhSideNavElement } from './elements/side-nav'
+import { XhSignaturePadElement } from './elements/signature-pad'
 import { XhSkeletonElement } from './elements/skeleton'
 import { XhSliderElement } from './elements/slider'
+import { XhSpaceElement } from './elements/space'
 import { XhSpinnerElement } from './elements/spinner'
 import { XhSplitterElement } from './elements/splitter'
 import { XhStatisticElement } from './elements/statistic'
@@ -86,6 +98,7 @@ import { XhStepsElement } from './elements/steps'
 import { XhSwitchElement } from './elements/switch'
 import { XhTableElement } from './elements/table'
 import { XhTabsElement } from './elements/tabs'
+import { XhTagElement } from './elements/tag'
 import { XhTagsInputElement } from './elements/tags-input'
 import { XhTextFieldElement } from './elements/text-field'
 import { XhThreadElement } from './elements/thread'
@@ -93,6 +106,7 @@ import { XhTimeElement } from './elements/time'
 import { XhTimeFieldElement } from './elements/time-field'
 import { XhTimePickerElement } from './elements/time-picker'
 import { XhTimelineElement } from './elements/timeline'
+import { XhTimerElement } from './elements/timer'
 import { XhToastElement } from './elements/toast'
 import { XhToasterElement } from './elements/toaster'
 import { XhToggleElement } from './elements/toggle'
@@ -117,28 +131,40 @@ export function defineXhElements(): void {
   defineElement('xh-button-group', XhButtonGroupElement, VERSION)
   defineElement('xh-countdown', XhCountdownElement, VERSION)
   defineElement('xh-descriptions', XhDescriptionsElement, VERSION)
+  defineElement('xh-download-trigger', XhDownloadTriggerElement, VERSION)
   defineElement('xh-dynamic-input', XhDynamicInputElement, VERSION)
   defineElement('xh-ellipsis', XhEllipsisElement, VERSION)
   defineElement('xh-empty-state', XhEmptyStateElement, VERSION)
+  defineElement('xh-fieldset', XhFieldsetElement, VERSION)
   defineElement('xh-flex', XhFlexElement, VERSION)
   defineElement('xh-float-button', XhFloatButtonElement, VERSION)
+  defineElement('xh-floating-panel', XhFloatingPanelElement, VERSION)
   defineElement('xh-gradient-text', XhGradientTextElement, VERSION)
   defineElement('xh-grid', XhGridElement, VERSION)
+  defineElement('xh-heatmap', XhHeatmapElement, VERSION)
   defineElement('xh-highlight', XhHighlightElement, VERSION)
+  defineElement('xh-hotkeys', XhHotkeysElement, VERSION)
   defineElement('xh-icon-wrapper', XhIconWrapperElement, VERSION)
+  defineElement('xh-image-cropper', XhImageCropperElement, VERSION)
   defineElement('xh-infinite-scroll', XhInfiniteScrollElement, VERSION)
+  defineElement('xh-json-viewer', XhJsonViewerElement, VERSION)
   defineElement('xh-layout', XhLayoutElement, VERSION)
   defineElement('xh-list', XhListElement, VERSION)
   defineElement('xh-log', XhLogElement, VERSION)
   defineElement('xh-marquee', XhMarqueeElement, VERSION)
+  defineElement('xh-masonry', XhMasonryElement, VERSION)
   defineElement('xh-mention', XhMentionElement, VERSION)
   defineElement('xh-number-animation', XhNumberAnimationElement, VERSION)
   defineElement('xh-page-header', XhPageHeaderElement, VERSION)
+  defineElement('xh-password-input', XhPasswordInputElement, VERSION)
   defineElement('xh-popconfirm', XhPopconfirmElement, VERSION)
   defineElement('xh-popselect', XhPopselectElement, VERSION)
   defineElement('xh-qr-code', XhQrCodeElement, VERSION)
   defineElement('xh-result', XhResultElement, VERSION)
+  defineElement('xh-segmented', XhSegmentedElement, VERSION)
+  defineElement('xh-signature-pad', XhSignaturePadElement, VERSION)
   defineElement('xh-skeleton', XhSkeletonElement, VERSION)
+  defineElement('xh-space', XhSpaceElement, VERSION)
   defineElement('xh-spinner', XhSpinnerElement, VERSION)
   defineElement('xh-accordion', XhAccordionElement, VERSION)
   defineElement('xh-anchor', XhAnchorElement, VERSION)
@@ -194,6 +220,7 @@ export function defineXhElements(): void {
   defineElement('xh-switch', XhSwitchElement, VERSION)
   defineElement('xh-table', XhTableElement, VERSION)
   defineElement('xh-tabs', XhTabsElement, VERSION)
+  defineElement('xh-tag', XhTagElement, VERSION)
   defineElement('xh-tags-input', XhTagsInputElement, VERSION)
   defineElement('xh-text-field', XhTextFieldElement, VERSION)
   defineElement('xh-thread', XhThreadElement, VERSION)
@@ -201,6 +228,7 @@ export function defineXhElements(): void {
   defineElement('xh-time-field', XhTimeFieldElement, VERSION)
   defineElement('xh-time-picker', XhTimePickerElement, VERSION)
   defineElement('xh-timeline', XhTimelineElement, VERSION)
+  defineElement('xh-timer', XhTimerElement, VERSION)
   defineElement('xh-toast', XhToastElement, VERSION)
   defineElement('xh-toaster', XhToasterElement, VERSION)
   defineElement('xh-toggle', XhToggleElement, VERSION)
@@ -250,45 +278,59 @@ export {
   XhDateFieldElement,
   XhDatePickerElement,
   XhDialogElement,
+  XhDownloadTriggerElement,
   XhDrawerElement,
   XhEditableElement,
   XhEmptyStateElement,
   XhFieldElement,
+  XhFieldsetElement,
   XhFileUploadElement,
+  XhFloatingPanelElement,
   XhFormElement,
+  XhHeatmapElement,
+  XhHotkeysElement,
   XhHoverCardElement,
   XhIconElement,
+  XhImageCropperElement,
   XhImageElement,
   XhImageViewerElement,
+  XhJsonViewerElement,
   XhListboxElement,
   XhLoadingBarElement,
+  XhMasonryElement,
   XhMenubarElement,
   XhMenuElement,
   XhNavigationMenuElement,
   XhNumberFieldElement,
   XhPaginationElement,
+  XhPasswordInputElement,
   XhPinInputElement,
   XhPopoverElement,
   XhProgressElement,
   XhRadioGroupElement,
   XhRatingElement,
   XhScrollAreaElement,
+  XhSegmentedElement,
   XhSelectElement,
   XhSeparatorElement,
   XhSideNavElement,
+  XhSignaturePadElement,
   XhSkeletonElement,
   XhSliderElement,
+  XhSpaceElement,
   XhSpinnerElement,
   XhSplitterElement,
   XhStepsElement,
   XhSwitchElement,
   XhTableElement,
   XhTabsElement,
+  XhTagElement,
   XhTagsInputElement,
   XhTextFieldElement,
   XhThreadElement,
   XhTimeFieldElement,
   XhTimePickerElement,
+  XhTimerElement,
   XhToastElement,
   XhToasterElement,
   XhToggleElement,

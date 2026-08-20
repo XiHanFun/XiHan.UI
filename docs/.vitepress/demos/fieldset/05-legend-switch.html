@@ -1,0 +1,31 @@
+<!-- 总开关放进 legend | 按 HTML 规范，首个 legend 里的控件不受 fieldset[disabled] 连坐，总开关因此始终可点 -->
+<xh-fieldset id="fieldset-backup" disabled>
+  <fieldset data-xh-part="root" style="inline-size: 320px">
+    <legend data-xh-part="legend">
+      <label style="display: flex; gap: 8px; align-items: center">
+        <input id="fieldset-backup-toggle" type="checkbox" />
+        启用自动备份
+      </label>
+    </legend>
+    <label style="display: flex; gap: 8px; align-items: center">
+      备份频率
+      <select>
+        <option>每天</option>
+        <option>每周</option>
+      </select>
+    </label>
+    <label style="display: flex; gap: 8px; align-items: center">
+      <input type="checkbox" />
+      失败时发通知
+    </label>
+    <p data-xh-part="helper-text">关掉总开关，下面两项跟着停用，唯独总开关自己还能点</p>
+  </fieldset>
+</xh-fieldset>
+
+<script type="module">
+  const backup = document.getElementById("fieldset-backup");
+  const toggle = document.getElementById("fieldset-backup-toggle");
+  toggle.addEventListener("change", () => {
+    backup.disabled = !toggle.checked;
+  });
+</script>

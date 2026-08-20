@@ -1,0 +1,276 @@
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='floating-panel'] {
+    --xh-floating-panel-skin: 1;
+  }
+
+  /* 分工：**面板的落位与尺寸**由连接层每帧写进 positioner 的内联样式
+     （position / left / top / width / height）。这份皮肤一条都不碰那五个属性——
+     内联优先级高于样式表，写了不但是死声明，还会在切换形态的那一帧跟连接层抢位置。
+     皮肤只管层级、配色、圆角、阴影、把手的摆放与状态表现。 */
+
+  [data-scope='floating-panel'][data-part='root'] {
+    /* 面板本身是 fixed 定位，root 只是作者那棵树里的容器，不参与排布 */
+    display: contents;
+  }
+
+  [data-scope='floating-panel'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='floating-panel'][data-part='trigger'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    block-size: var(--xh-floating-panel-trigger-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-floating-panel-trigger-px, var(--xh-control-px-md));
+    border: var(--xh-stroke-thin) solid var(--xh-floating-panel-trigger-border, var(--xh-border-control));
+    border-radius: var(--xh-floating-panel-trigger-radius, var(--xh-shape-control));
+    background: var(--xh-floating-panel-trigger-bg, var(--xh-bg-surface));
+    color: var(--xh-floating-panel-trigger-fg, var(--xh-fg-default));
+    font-size: var(--xh-text-label-size);
+    cursor: pointer;
+  }
+
+  [data-scope='floating-panel'][data-part='trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='floating-panel'][data-part='trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 把手的粗细：八个把手共用这两档，声明在这里往下继承。 */
+  [data-scope='floating-panel'][data-part='positioner'] {
+    --xh-_floating-panel-handle: var(--xh-floating-panel-handle-size, var(--xh-space-2));
+    --xh-_floating-panel-corner: var(--xh-floating-panel-corner-size, var(--xh-space-4));
+
+    position: fixed;
+    /* 与抽屉同一档：面板要盖住吸顶栏，又该被随后打开的弹窗与浮层压住 */
+    z-index: var(--xh-layer-drawer);
+    display: block;
+  }
+
+  [data-scope='floating-panel'][data-part='positioner'][hidden] {
+    display: none;
+  }
+
+  [data-scope='floating-panel'][data-part='content'] {
+    position: relative;
+    block-size: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* 面板底下没有遮罩，压着的是任意页面内容：这条描边是它与背景之间唯一的边界，
+       取 border-default 与同样无遮罩的气泡卡片一档，别退到更淡的 border-subtle */
+    border: var(--xh-stroke-thin) solid var(--xh-floating-panel-border, var(--xh-border-default));
+    border-radius: var(--xh-floating-panel-radius, var(--xh-shape-surface));
+    background: var(--xh-floating-panel-bg, var(--xh-bg-surface));
+    color: var(--xh-floating-panel-fg, var(--xh-fg-default));
+    box-shadow: var(--xh-floating-panel-shadow, var(--xh-elevation-3));
+  }
+
+  [data-scope='floating-panel'][data-part='content'][hidden] {
+    display: none;
+  }
+
+  /* 面板本体不接收焦点，只是键盘事件的收口点，画环反而像是选中了整块 */
+  [data-scope='floating-panel'][data-part='content']:focus-visible {
+    outline: none;
+  }
+
+  /* 跟手期间整块不许选中文字：手在标题栏上来回蹭时会顺带把正文刷成高亮 */
+  [data-scope='floating-panel'][data-part='content'][data-dragging],
+  [data-scope='floating-panel'][data-part='content'][data-resizing] {
+    user-select: none;
+  }
+
+  [data-scope='floating-panel'][data-part='header'] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-floating-panel-header-gap, var(--xh-control-gap-sm));
+    padding-block: var(--xh-floating-panel-header-py, var(--xh-space-2));
+    padding-inline: var(--xh-floating-panel-header-px, var(--xh-space-3));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-floating-panel-header-border, var(--xh-border-subtle));
+    background: var(--xh-floating-panel-header-bg, var(--xh-bg-subtle));
+  }
+
+  [data-scope='floating-panel'][data-part='header'][hidden] {
+    display: none;
+  }
+
+  [data-scope='floating-panel'][data-part='title'] {
+    margin: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+    font-size: var(--xh-floating-panel-title-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-floating-panel-title-font-weight, var(--xh-text-label-weight));
+    line-height: var(--xh-leading-tight);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--xh-floating-panel-title-fg, var(--xh-fg-default));
+  }
+
+  /* 拖拽把手铺满标题栏剩下的横向空间：只给一小块纹理的话很难抓住 */
+  [data-scope='floating-panel'][data-part='drag-trigger'] {
+    flex: 1 1 auto;
+    align-self: stretch;
+    min-inline-size: var(--xh-space-6);
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: grab;
+  }
+
+  [data-scope='floating-panel'][data-part='drag-trigger'][data-dragging] {
+    cursor: grabbing;
+  }
+
+  [data-scope='floating-panel'][data-part='drag-trigger'][data-disabled] {
+    cursor: default;
+  }
+
+  [data-scope='floating-panel'][data-part='drag-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-offset));
+  }
+
+  /* —— 改尺把手 ——
+     这一段刻意用物理的 inset / width / height：面板的坐标是屏幕坐标（连接层写的是
+     left/top），指针位移与方向键推动的也是屏幕方向。改成逻辑属性后，RTL 下 inset-inline-start
+     会翻到另一侧，守着「西边」的把手会长在东边，手往右拖却从左边收——把手与它推的那条边脱钩。 */
+  [data-scope='floating-panel'][data-part='resize-trigger'] {
+    position: absolute;
+    border: 0;
+    padding: 0;
+    /* 把手是透明的命中区：看不见但要摸得着，嫌小就调 --xh-floating-panel-handle-size */
+    background: transparent;
+  }
+
+  /* 只换指针形状，不摘 pointer-events：点击守卫在连接层，摘掉会让"键盘还在、指针没了"
+     这两套禁用语义对不上 */
+  [data-scope='floating-panel'][data-part='resize-trigger'][data-disabled] {
+    cursor: default;
+  }
+
+  [data-scope='floating-panel'][data-part='resize-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-offset));
+  }
+
+  [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='n'] {
+    inset: 0 0 auto 0;
+    height: var(--xh-_floating-panel-handle);
+    cursor: ns-resize;
+  }
+
+  [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='s'] {
+    inset: auto 0 0 0;
+    height: var(--xh-_floating-panel-handle);
+    cursor: ns-resize;
+  }
+
+  [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='w'] {
+    inset: 0 auto 0 0;
+    width: var(--xh-_floating-panel-handle);
+    cursor: ew-resize;
+  }
+
+  [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='e'] {
+    inset: 0 0 0 auto;
+    width: var(--xh-_floating-panel-handle);
+    cursor: ew-resize;
+  }
+
+  /* 四个角排在四条边之后，命中区大一圈：角上要同时抓住两条边 */
+  [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='nw'] {
+    inset: 0 auto auto 0;
+    width: var(--xh-_floating-panel-corner);
+    height: var(--xh-_floating-panel-corner);
+    cursor: nwse-resize;
+  }
+
+  [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='ne'] {
+    inset: 0 0 auto auto;
+    width: var(--xh-_floating-panel-corner);
+    height: var(--xh-_floating-panel-corner);
+    cursor: nesw-resize;
+  }
+
+  [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='se'] {
+    inset: auto 0 0 auto;
+    width: var(--xh-_floating-panel-corner);
+    height: var(--xh-_floating-panel-corner);
+    cursor: nwse-resize;
+  }
+
+  [data-scope='floating-panel'][data-part='resize-trigger'][data-edge='sw'] {
+    inset: auto auto 0 0;
+    width: var(--xh-_floating-panel-corner);
+    height: var(--xh-_floating-panel-corner);
+    cursor: nesw-resize;
+  }
+
+  /* —— 标题栏上的按钮 —— */
+  [data-scope='floating-panel'][data-part='stage-trigger'],
+  [data-scope='floating-panel'][data-part='close-trigger'] {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-control-action-size);
+    block-size: var(--xh-control-action-size);
+    border: 0;
+    border-radius: var(--xh-floating-panel-action-radius, var(--xh-shape-inset));
+    background: transparent;
+    color: var(--xh-floating-panel-action-fg, var(--xh-fg-muted));
+    cursor: pointer;
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='floating-panel'][data-part='stage-trigger'][hidden],
+  [data-scope='floating-panel'][data-part='close-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='floating-panel'][data-part='stage-trigger']:hover,
+  [data-scope='floating-panel'][data-part='close-trigger']:hover {
+    background: var(--xh-floating-panel-action-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-floating-panel-action-fg-hover, var(--xh-fg-default));
+  }
+
+  /* 当前形态的那个按钮压着不放，用户一眼看得出面板正处于哪一档。
+     按下态的前景取 fg-default 而不是品牌色：品牌色压在这块底上只有 3.4:1（深色皮肤 2.9:1），
+     按钮里通常就一个字形，够不着文字该有的对比度。 */
+  [data-scope='floating-panel'][data-part='stage-trigger'][data-state='on'] {
+    background: var(--xh-floating-panel-action-bg-active, var(--xh-bg-subtle-active));
+    color: var(--xh-floating-panel-action-fg-active, var(--xh-fg-default));
+  }
+
+  /* 只换前景不叠 opacity：叠了之后禁用文字的对比度会掉到读不出来 */
+  [data-scope='floating-panel'][data-part='stage-trigger'][data-disabled] {
+    background: transparent;
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='floating-panel'][data-part='stage-trigger']:focus-visible,
+  [data-scope='floating-panel'][data-part='close-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  [data-scope='floating-panel'][data-part='body'] {
+    flex: 1 1 auto;
+    display: block;
+    overflow: auto;
+    padding-block: var(--xh-floating-panel-body-py, var(--xh-space-3));
+    padding-inline: var(--xh-floating-panel-body-px, var(--xh-space-3));
+  }
+
+  /* 收拢时连接层给正文打 hidden，这里把 UA 的 [hidden] 还回来（上面那条 display 盖掉了它） */
+  [data-scope='floating-panel'][data-part='body'][hidden] {
+    display: none;
+  }
+}

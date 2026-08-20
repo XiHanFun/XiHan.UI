@@ -36,6 +36,7 @@ const SIZE_EXEMPT = {
   'tooltip': 'role=tooltip 不可聚焦，内部滚动区键盘用户够不到，加滚动是制造无障碍陷阱',
   'tour': '气泡随引导步骤走，限高与让位策略要一起定，另行处理',
   'navigation-menu': '不接定位引擎，展开面板由皮肤排布',
+  'floating-panel': '尺寸是用户自己拖出来的，由 minSize/maxSize 夹取，不从锚点下的可用空间推',
 }
 
 async function read(path) {

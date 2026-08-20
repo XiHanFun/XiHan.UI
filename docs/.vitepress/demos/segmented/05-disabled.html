@@ -1,0 +1,35 @@
+<!-- 禁用 | 单段禁用仍可聚焦、仍是方向键的起点，只是走不到它上面；整组禁用则谁都改不动 -->
+<!-- 段的禁用由作者写 aria-disabled 声明，不用原生 disabled：原生禁用的按钮不可聚焦，当不成方向键的起点 -->
+<div style="display: flex; gap: 24px; flex-wrap: wrap">
+  <xh-segmented default-value="free">
+    <div data-xh-part="root" aria-label="套餐">
+      <span data-xh-part="indicator"></span>
+      <button data-xh-part="item" value="free">
+        <span data-xh-part="item-text">免费版</span>
+      </button>
+      <button data-xh-part="item" value="pro">
+        <span data-xh-part="item-text">专业版</span>
+      </button>
+      <button data-xh-part="item" value="enterprise" aria-disabled="true">
+        <span data-xh-part="item-text">企业版</span>
+      </button>
+      <input data-xh-part="hidden-input" />
+    </div>
+  </xh-segmented>
+  <!-- 两组用的是同一份选项，末段照样自报禁用；整组禁用是叠在它之上的另一层 -->
+  <xh-segmented disabled default-value="pro">
+    <div data-xh-part="root" aria-label="套餐（整组禁用）">
+      <span data-xh-part="indicator"></span>
+      <button data-xh-part="item" value="free">
+        <span data-xh-part="item-text">免费版</span>
+      </button>
+      <button data-xh-part="item" value="pro">
+        <span data-xh-part="item-text">专业版</span>
+      </button>
+      <button data-xh-part="item" value="enterprise" aria-disabled="true">
+        <span data-xh-part="item-text">企业版</span>
+      </button>
+      <input data-xh-part="hidden-input" />
+    </div>
+  </xh-segmented>
+</div>

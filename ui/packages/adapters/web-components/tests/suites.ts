@@ -2,7 +2,7 @@
 // 若干组件的 fixture 与 Vue 侧不同构，需在此改写后再喂给运行方。
 // jsdom 一致性与浏览器无障碍扫描共用这一份，两边跑的是同一批组件。
 import type { ConformanceSuite, FixtureNode } from '@xihan-ui/testing'
-import { accordionSuite, affixSuite, alertSuite, anchorSuite, avatarGroupSuite, avatarSuite, backTopSuite, badgeSuite, breadcrumbSuite, buttonGroupSuite, buttonSuite, calendarSuite, cardSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, codeBlockSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, composerSuite, contextMenuSuite, countdownSuite, dateFieldSuite, datePickerSuite, descriptionsSuite, dynamicInputSuite, editableSuite, ellipsisSuite, emptyStateSuite, fieldSuite, fileUploadSuite, flexSuite, floatButtonSuite, formSuite, gradientTextSuite, gridSuite, highlightSuite, hoverCardSuite, iconSuite, iconWrapperSuite, imageSuite, infiniteScrollSuite, layoutSuite, listboxSuite, listSuite, loadingBarSuite, logSuite, marqueeSuite, mentionSuite, menubarSuite, menuSuite, navigationMenuSuite, numberAnimationSuite, numberFieldSuite, pageHeaderSuite, paginationSuite, pinInputSuite, popconfirmSuite, popoverSuite, popselectSuite, progressSuite, qrCodeSuite, radioGroupSuite, ratingSuite, resultSuite, scrollAreaSuite, selectSuite, separatorSuite, skeletonSuite, sliderSuite, spinnerSuite, splitterSuite, statisticSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, textFieldSuite, threadSuite, timeFieldSuite, timelineSuite, timePickerSuite, timeSuite, toasterSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, typographySuite, virtualizerSuite, watermarkSuite } from '@xihan-ui/testing'
+import { accordionSuite, affixSuite, alertSuite, anchorSuite, avatarGroupSuite, avatarSuite, backTopSuite, badgeSuite, breadcrumbSuite, buttonGroupSuite, buttonSuite, calendarSuite, cardSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, codeBlockSuite, collapsibleSuite, colorPickerSuite, comboboxSuite, composerSuite, contextMenuSuite, countdownSuite, dateFieldSuite, datePickerSuite, descriptionsSuite, downloadTriggerSuite, dynamicInputSuite, editableSuite, ellipsisSuite, emptyStateSuite, fieldsetSuite, fieldSuite, fileUploadSuite, flexSuite, floatButtonSuite, floatingPanelSuite, formSuite, gradientTextSuite, gridSuite, heatmapSuite, highlightSuite, hotkeysSuite, hoverCardSuite, iconSuite, iconWrapperSuite, imageCropperSuite, imageSuite, infiniteScrollSuite, jsonViewerSuite, layoutSuite, listboxSuite, listSuite, loadingBarSuite, logSuite, marqueeSuite, masonrySuite, mentionSuite, menubarSuite, menuSuite, navigationMenuSuite, numberAnimationSuite, numberFieldSuite, pageHeaderSuite, paginationSuite, passwordInputSuite, pinInputSuite, popconfirmSuite, popoverSuite, popselectSuite, progressSuite, qrCodeSuite, radioGroupSuite, ratingSuite, resultSuite, scrollAreaSuite, segmentedSuite, selectSuite, separatorSuite, signaturePadSuite, skeletonSuite, sliderSuite, spaceSuite, spinnerSuite, splitterSuite, statisticSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagsInputSuite, tagSuite, textFieldSuite, threadSuite, timeFieldSuite, timelineSuite, timePickerSuite, timerSuite, timeSuite, toasterSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, typographySuite, virtualizerSuite, watermarkSuite } from '@xihan-ui/testing'
 
 // switch 无 portal/presence 分歧，复用共享用例、只把 fixture 换成 WC 行为宿主形态
 // （用户显式写 root/thumb 角色节点，Vue 版 XhSwitch 是内部渲染 thumb）。
@@ -225,6 +225,23 @@ const wcHoverCardSuite: ConformanceSuite = {
   ...hoverCardSuite,
 }
 
+// segmented 的段是集合条目，禁用声明与 tabs/radio-group 同因改用 aria-disabled。
+const wcSegmentedSuite = authorDisabled(segmentedSuite)
+
+// masonry 的列与项在 Vue 版由组件铺出来，WC 版元素不生成结构：作者写 root、若干空的
+// column 容器与一批 item，元素只负责把 item 搬进 column。故只换 fixture，用例整份复用。
+// 三列对三项，缺省档位下每项各占一列。
+const wcMasonrySuite: ConformanceSuite = {
+  ...masonrySuite,
+  fixture: {
+    part: 'root',
+    children: [
+      ...[0, 1, 2].map((): FixtureNode => ({ part: 'column' })),
+      ...['甲', '乙', '丙'].map((text): FixtureNode => ({ part: 'item', text })),
+    ],
+  },
+}
+
 // 同一份规格喂给 WC 适配器实现，逐帧核对。separator/badge 无状态无受控，整份复用。
 // 三个集合类组件的受控值是字符串/数组（不像布尔那样表达不了 undefined），受控用例可原样跑。
 
@@ -335,4 +352,18 @@ export const wcSuites: readonly ConformanceSuite[]
     timeSuite,
     watermarkSuite,
     wcMentionSuite,
+    spaceSuite,
+    tagSuite,
+    wcSegmentedSuite,
+    wcMasonrySuite,
+    passwordInputSuite,
+    fieldsetSuite,
+    jsonViewerSuite,
+    timerSuite,
+    heatmapSuite,
+    downloadTriggerSuite,
+    hotkeysSuite,
+    imageCropperSuite,
+    signaturePadSuite,
+    floatingPanelSuite,
   ]

@@ -1,0 +1,231 @@
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='image-cropper'] {
+    --xh-image-cropper-skin: 1;
+  }
+
+  /* 定位分工：裁切框在视口里的 left / top / width / height，以及图片与裁切框的
+     transform，由连接层每帧写进内联样式——那四个数是图片像素换算出来的百分比，
+     只有连接层算得出来。这份皮肤一个都不碰，写了不但是死声明，还会跟内联值抢位置。
+
+     私有槽两个，都挂在 root 上靠继承发下去：
+     handle-size 是把手的边长，zoom 是当前缩放倍率——裁切框整体被 scale 放大，
+     把手与描边要按倍率反向缩回去，否则放到 3 倍时把手也变成三倍大、描边变成三像素粗。 */
+  [data-scope='image-cropper'][data-part='root'] {
+    --xh-_image-cropper-handle-size: var(--xh-image-cropper-handle-size, var(--xh-control-indicator-size));
+    --xh-_image-cropper-zoom: 1;
+
+    position: relative;
+    display: block;
+    inline-size: var(--xh-image-cropper-w, 100%);
+  }
+
+  /* 量坐标的那个盒子。里面装的是图片像素坐标，不是文字：裁切框与把手的落点一律写物理属性，
+     不依赖这里的文字方向。overflow 收口：放大后的图片与遮罩都靠它裁掉。 */
+  [data-scope='image-cropper'][data-part='viewport'] {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: var(--xh-image-cropper-radius, var(--xh-shape-surface));
+    background: var(--xh-image-cropper-bg, var(--xh-bg-muted));
+    user-select: none;
+  }
+
+  /* 图片铺满视口、高度自适应：视口的高度因此由图片撑出来，
+     裁切框的百分比坐标才与图片的像素一一对应。 */
+  [data-scope='image-cropper'][data-part='image'] {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* 裁切框。遮罩用一圈超大的实心投影把框外压暗——不必再摆四块遮罩节点，
+     圆形裁切时投影也自动跟着圆角走。描边按倍率缩回去，放大时仍是一根细线。 */
+  [data-scope='image-cropper'][data-part='crop-area'] {
+    position: absolute;
+    box-sizing: border-box;
+    border-style: solid;
+    border-width: calc(var(--xh-stroke-thin) / var(--xh-_image-cropper-zoom));
+    border-color: var(--xh-image-cropper-crop-border, var(--xh-bg-surface));
+    box-shadow: 0 0 0 9999px var(--xh-image-cropper-mask, var(--xh-bg-overlay));
+    cursor: move;
+  }
+
+  /* 圆形裁切的这一档只能写 50%：shape 那四档给的是固定长度，
+     裁切框的宽高由数据决定、两边通常不等长，固定长度画出来是胶囊不是椭圆。 */
+  [data-scope='image-cropper'][data-part='crop-area'][data-shape='round'] {
+    border-radius: 50%;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-area'][data-dragging] {
+    cursor: grabbing;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-area'][data-readonly] {
+    cursor: default;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-area'][data-disabled] {
+    cursor: not-allowed;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-area']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 三分构图参考线：两条竖线、两条横线，落点写死在三分处，不占节点、不吃指针。
+     停靠点逐条写全而不用 repeating-：重复单元从 0 起算会在框的两条边缘上各多画一根，
+     那两根与裁切框的描边叠在一起，看着像描边加粗了一倍。
+     线宽跟着裁切框的倍率缩回去，与描边同一口径。
+     圆形裁切时参考线没有意义，收起来。 */
+  [data-scope='image-cropper'][data-part='grid'] {
+    --xh-_image-cropper-grid-w: calc(var(--xh-stroke-thin) / var(--xh-_image-cropper-zoom));
+
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(
+        to right,
+        transparent 0 33.3333%,
+        var(--xh-image-cropper-grid-line, var(--xh-border-subtle)) 33.3333% calc(33.3333% + var(--xh-_image-cropper-grid-w)),
+        transparent calc(33.3333% + var(--xh-_image-cropper-grid-w)) 66.6667%,
+        var(--xh-image-cropper-grid-line, var(--xh-border-subtle)) 66.6667% calc(66.6667% + var(--xh-_image-cropper-grid-w)),
+        transparent calc(66.6667% + var(--xh-_image-cropper-grid-w)) 100%
+      ),
+      linear-gradient(
+        to bottom,
+        transparent 0 33.3333%,
+        var(--xh-image-cropper-grid-line, var(--xh-border-subtle)) 33.3333% calc(33.3333% + var(--xh-_image-cropper-grid-w)),
+        transparent calc(33.3333% + var(--xh-_image-cropper-grid-w)) 66.6667%,
+        var(--xh-image-cropper-grid-line, var(--xh-border-subtle)) 66.6667% calc(66.6667% + var(--xh-_image-cropper-grid-w)),
+        transparent calc(66.6667% + var(--xh-_image-cropper-grid-w)) 100%
+      );
+    pointer-events: none;
+  }
+
+  [data-scope='image-cropper'][data-part='grid'][data-shape='round'] {
+    background-image: none;
+  }
+
+  /* 把手钉在裁切框的角与边上。落点写物理 left / top：裁切框的坐标是图片像素，
+     连接层写进内联样式的也是物理 left / top，把手跟着走才不会与框错开一侧。
+     translate 把方块的中心挪到点上；scale 按倍率缩回去，缩放时把手看着大小不变。 */
+  [data-scope='image-cropper'][data-part='crop-handle'] {
+    position: absolute;
+    display: block;
+    box-sizing: border-box;
+    border-style: solid;
+    border-width: calc(var(--xh-stroke-thin) / var(--xh-_image-cropper-zoom));
+    border-color: var(--xh-image-cropper-handle-border, var(--xh-border-strong));
+    border-radius: var(--xh-image-cropper-handle-radius, var(--xh-shape-inset));
+    background: var(--xh-image-cropper-handle-bg, var(--xh-bg-surface));
+    inline-size: var(--xh-_image-cropper-handle-size);
+    block-size: var(--xh-_image-cropper-handle-size);
+    translate: -50% -50%;
+    scale: calc(1 / var(--xh-_image-cropper-zoom));
+  }
+
+  /* 看得见的方块比手指小：另铺一层不可见的命中区，把它撑到最小可点尺寸。
+     inset 取负值即向四面外扩，方块本身更大时这个值转正、命中区仍是方块那么大。 */
+  [data-scope='image-cropper'][data-part='crop-handle']::before {
+    position: absolute;
+    inset: calc((var(--xh-_image-cropper-handle-size) - var(--xh-control-action-size)) / 2);
+    content: '';
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-resizing] {
+    background: var(--xh-image-cropper-handle-bg-resizing, var(--xh-bg-brand));
+  }
+
+  /* —— 八个方位：落点 + 光标 —— */
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='nw'] {
+    top: 0;
+    /* stylelint-disable-next-line property-disallowed-list -- 裁切框的坐标是图片像素，落点跟着物理方向走 */
+    left: 0;
+    cursor: nwse-resize;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='n'] {
+    top: 0;
+    /* stylelint-disable-next-line property-disallowed-list -- 同上 */
+    left: 50%;
+    cursor: ns-resize;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='ne'] {
+    top: 0;
+    /* stylelint-disable-next-line property-disallowed-list -- 同上 */
+    left: 100%;
+    cursor: nesw-resize;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='e'] {
+    top: 50%;
+    /* stylelint-disable-next-line property-disallowed-list -- 同上 */
+    left: 100%;
+    cursor: ew-resize;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='se'] {
+    top: 100%;
+    /* stylelint-disable-next-line property-disallowed-list -- 同上 */
+    left: 100%;
+    cursor: nwse-resize;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='s'] {
+    top: 100%;
+    /* stylelint-disable-next-line property-disallowed-list -- 同上 */
+    left: 50%;
+    cursor: ns-resize;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='sw'] {
+    top: 100%;
+    /* stylelint-disable-next-line property-disallowed-list -- 同上 */
+    left: 0;
+    cursor: nesw-resize;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='w'] {
+    top: 50%;
+    /* stylelint-disable-next-line property-disallowed-list -- 同上 */
+    left: 0;
+    cursor: ew-resize;
+  }
+
+  /* 只读与禁用的光标排在八个方位之后：那八条每条都写了 cursor，特异性又完全相同，
+     排在前面会被逐条盖掉，整条规则等于没写。 */
+  [data-scope='image-cropper'][data-part='crop-handle'][data-readonly] {
+    cursor: default;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-disabled] {
+    cursor: not-allowed;
+  }
+
+  /* 禁用的整体压暗只做一次，落在最外层：视口、裁切框、把手各自再叠一层会越叠越黑。
+     这里只用 opacity、不换前景色：框里是图像，没有文字可换。 */
+  [data-scope='image-cropper'][data-part='root'][data-disabled] {
+    cursor: not-allowed;
+    opacity: var(--xh-state-disabled-opacity);
+  }
+
+  /* hidden-input 是 type=hidden 的原生输入，浏览器本就不渲染它，
+     这里一条声明都不给：给了 display / 尺寸反而会把它拽回布局里撑出一块空白。 */
+
+  /* display 会盖掉 UA 的 [hidden]{display:none}，凡是被赋了 display 的角色节点都要显式让位。
+     这条必须排在全部 display 声明之后。 */
+  [data-scope='image-cropper'][data-part='root'][hidden],
+  [data-scope='image-cropper'][data-part='viewport'][hidden],
+  [data-scope='image-cropper'][data-part='image'][hidden],
+  [data-scope='image-cropper'][data-part='crop-handle'][hidden] {
+    display: none;
+  }
+}

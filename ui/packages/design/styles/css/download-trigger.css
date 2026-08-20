@@ -1,0 +1,76 @@
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='download-trigger'] {
+    --xh-download-trigger-skin: 1;
+  }
+
+  /*
+   * 触发器就是这一个原生按钮，两个适配器都由组件自己渲染它，
+   * 所以外观得由设计系统给出一份完整的中性按钮：底色、描边、高度、字号都上令牌，
+   * 要换成品牌样式的作者改 --xh-download-trigger-* 这一族槽位，或直接写自己的类名。
+   */
+  [data-scope='download-trigger'][data-part='root'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-download-trigger-gap, var(--xh-control-gap-md));
+    block-size: var(--xh-download-trigger-h, var(--xh-control-h-md));
+    padding-inline: var(--xh-download-trigger-px, var(--xh-control-px-md));
+    padding-block: 0;
+    border: var(--xh-stroke-thin) solid var(--xh-download-trigger-border, var(--xh-border-control));
+    border-radius: var(--xh-download-trigger-radius, var(--xh-shape-control));
+    background: var(--xh-download-trigger-bg, var(--xh-bg-canvas));
+    color: var(--xh-download-trigger-fg, var(--xh-fg-default));
+    /* 表单控件不继承页面字体，只给字号会让按钮用 UA 默认字族 */
+    font-family: inherit;
+    font-size: var(--xh-download-trigger-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-download-trigger-font-weight, var(--xh-text-label-weight));
+    line-height: var(--xh-leading-none);
+    white-space: nowrap;
+    cursor: pointer;
+    /* 导出键常被连点，触屏上默认会当成双击缩放 */
+    user-select: none;
+    touch-action: manipulation;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 上面声明了 display，会盖掉 UA 的 [hidden] 规则，收起态要在这里接回来 */
+  [data-scope='download-trigger'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='download-trigger'][data-part='root']:hover {
+    border-color: var(--xh-download-trigger-border-hover, var(--xh-border-control-hover));
+    background: var(--xh-download-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  [data-scope='download-trigger'][data-part='root']:active {
+    background: var(--xh-download-trigger-bg-active, var(--xh-bg-subtle-active));
+  }
+
+  [data-scope='download-trigger'][data-part='root']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  /* 取数在途：按钮留在原地不动，只换指针形状——位置一变，正要再点的人就点空了 */
+  [data-scope='download-trigger'][data-part='root'][data-state='preparing'] {
+    cursor: progress;
+  }
+
+  /*
+   * 单体原生控件的禁用走 :disabled。前景与底色一起换，禁用前后两侧都由令牌管着；
+   * 用了 fg-disabled 就不再叠 opacity——两样一起用会压到读不出来。
+   * 这条排在悬停与按下之后，特异度相同、后写的赢。
+   * 描边仍按可操作区那一档：这是一颗独立按钮，四周没有别的结构标出它的位置，
+   * 描边一压下去整颗按钮在页面上就没影了。
+   */
+  [data-scope='download-trigger'][data-part='root']:disabled {
+    border-color: var(--xh-download-trigger-border-disabled, var(--xh-border-control));
+    background: var(--xh-download-trigger-bg-disabled, var(--xh-bg-muted));
+    color: var(--xh-fg-disabled);
+    cursor: not-allowed;
+  }
+}

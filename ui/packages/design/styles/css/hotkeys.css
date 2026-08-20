@@ -1,0 +1,90 @@
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='hotkeys'] {
+    --xh-hotkeys-skin: 1;
+  }
+
+  /* 一排键帽连着连接符。整块不换行：一组组合被折成两行就读不出是一组了 */
+  [data-scope='hotkeys'][data-part='root'] {
+    /* 尺寸档只换这两个私有槽，键帽从 root 继承它们，换档不必给每个部件各写一条选择器 */
+    --xh-_hotkeys-font-size: var(--xh-font-size-sm);
+    --xh-_hotkeys-key-px: var(--xh-space-1);
+
+    display: inline-flex;
+    align-items: center;
+    gap: var(--xh-hotkeys-gap, var(--xh-space-0_5));
+    color: var(--xh-hotkeys-fg, var(--xh-fg-muted));
+    font-size: var(--xh-hotkeys-font-size, var(--xh-_hotkeys-font-size));
+    line-height: var(--xh-leading-none);
+    white-space: nowrap;
+  }
+
+  /* 一枚键帽：等宽字，带描边与一层薄阴影凑出按键的样子。
+     min-inline-size 保证单个字母的键帽不至于窄成一条 */
+  [data-scope='hotkeys'][data-part='key'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: var(--xh-hotkeys-key-min-w, var(--xh-control-indicator-size));
+    padding-block: var(--xh-hotkeys-key-py, var(--xh-space-0_5));
+    padding-inline: var(--xh-hotkeys-key-px, var(--xh-_hotkeys-key-px));
+    border: var(--xh-stroke-thin) solid var(--xh-hotkeys-key-border, var(--xh-border-subtle));
+    border-radius: var(--xh-hotkeys-key-radius, var(--xh-shape-inset));
+    background: var(--xh-hotkeys-key-bg, var(--xh-bg-surface));
+    box-shadow: var(--xh-hotkeys-key-shadow, var(--xh-elevation-1));
+    color: var(--xh-hotkeys-key-fg, var(--xh-fg-default));
+    /* kbd 的 UA 字体是等宽，但字号会被压小；两者都显式接过来，档位才归尺寸轴管 */
+    font-family: var(--xh-hotkeys-key-font, var(--xh-font-family-mono));
+    font-size: inherit;
+    font-weight: var(--xh-hotkeys-key-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-leading-none);
+  }
+
+  /* 修饰键多是符号，与主键的字母混排时字宽差得远，单独留一档给使用者调 */
+  [data-scope='hotkeys'][data-part='key'][data-modifier] {
+    color: var(--xh-hotkeys-key-fg-modifier, var(--xh-fg-muted));
+  }
+
+  /* 连接符是排版符号，不参与键帽的盒子 */
+  [data-scope='hotkeys'][data-part='separator'] {
+    color: var(--xh-hotkeys-separator-fg, var(--xh-fg-subtle));
+    user-select: none;
+  }
+
+  /* 监听关掉时组合按不出来，整块转成不可用的样子：键帽换成暗底、去掉阴影，前景压到 fg-subtle。
+     这块是 role=img 的说明性文字而不是失效控件，读者仍要认出按的是哪几枚键，
+     所以前景不用 fg-disabled（那一档压在 muted 底上只有 2.36:1 / 1.94:1），也不叠 opacity */
+  [data-scope='hotkeys'][data-part='root'][data-disabled] {
+    color: var(--xh-fg-subtle);
+  }
+
+  [data-scope='hotkeys'][data-part='root'][data-disabled] [data-scope='hotkeys'][data-part='key'] {
+    background: var(--xh-hotkeys-key-bg-disabled, var(--xh-bg-muted));
+    box-shadow: none;
+    color: var(--xh-fg-subtle);
+  }
+
+  [data-scope='hotkeys'][data-part='root'][data-disabled] [data-scope='hotkeys'][data-part='separator'] {
+    color: var(--xh-fg-subtle);
+  }
+
+  /* —— 尺寸 —— */
+  /* 缺省的 md 档写在上面的基础规则里 */
+  [data-scope='hotkeys'][data-part='root'][data-size='sm'] {
+    --xh-_hotkeys-font-size: var(--xh-font-size-xs);
+    --xh-_hotkeys-key-px: var(--xh-space-0_5);
+  }
+
+  [data-scope='hotkeys'][data-part='root'][data-size='lg'] {
+    --xh-_hotkeys-font-size: var(--xh-font-size-md);
+    --xh-_hotkeys-key-px: var(--xh-space-1_5);
+  }
+
+  /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
+     不补的话作者给节点加 hidden 后它照样显示。Mac 写法下连接符恒带 hidden，靠这条收起 */
+  [data-scope='hotkeys'][data-part='root'][hidden],
+  [data-scope='hotkeys'][data-part='key'][hidden],
+  [data-scope='hotkeys'][data-part='separator'][hidden] {
+    display: none;
+  }
+}

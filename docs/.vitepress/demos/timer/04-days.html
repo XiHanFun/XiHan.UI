@@ -1,0 +1,14 @@
+<!-- 带天数的长计时 | 时满 24 会进位到天，超过一天的计时要自己写一段 days，只写时分秒会把整天数丢掉 -->
+<xh-timer countdown start-ms="259200000" auto-start>
+  <div data-xh-part="root">
+    <div data-xh-part="area">
+      <span data-xh-part="item" unit="days"></span>
+      <span data-xh-part="separator">天</span>
+      <span data-xh-part="item" unit="hours"></span>
+      <span data-xh-part="separator">:</span>
+      <span data-xh-part="item" unit="minutes"></span>
+      <span data-xh-part="separator">:</span>
+      <span data-xh-part="item" unit="seconds"></span>
+    </div>
+  </div>
+</xh-timer>

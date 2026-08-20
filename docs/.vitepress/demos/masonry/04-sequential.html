@@ -1,0 +1,32 @@
+<!-- 逐列填 | 打开 sequential 后项按文档序成段落进各列，读起来是「先走完左列，再走下一列」 -->
+<style>
+  #masonry-sequential [data-card] {
+    padding: 12px;
+    border-radius: var(--xh-radius-md);
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-default);
+  }
+</style>
+
+<!-- 宿主设 display: contents，排布落在 root 上 -->
+<!-- item 只做承重的盒子，卡片样式落在它的子节点上，与 Vue 版铺出来的结构一致 -->
+<xh-masonry
+  id="masonry-sequential"
+  columns="3"
+  gap="md"
+  sequential
+  style="display: contents"
+>
+  <div data-xh-part="root">
+    <div data-xh-part="column"></div>
+    <div data-xh-part="column"></div>
+    <div data-xh-part="column"></div>
+
+    <div data-xh-part="item"><div data-card style="block-size: 70px">1</div></div>
+    <div data-xh-part="item"><div data-card style="block-size: 120px">2</div></div>
+    <div data-xh-part="item"><div data-card style="block-size: 60px">3</div></div>
+    <div data-xh-part="item"><div data-card style="block-size: 100px">4</div></div>
+    <div data-xh-part="item"><div data-card style="block-size: 80px">5</div></div>
+    <div data-xh-part="item"><div data-card style="block-size: 110px">6</div></div>
+  </div>
+</xh-masonry>

@@ -1,0 +1,6 @@
+export { tagAnatomy } from './tag.anatomy'
+export { connectTag } from './tag.connect'
+export { tagKeyboard } from './tag.keyboard'
+export { tagMachine } from './tag.machine'
+export { tagMeta } from './tag.meta'
+export type { TagApi, TagOpenChangeDetails, TagSchema, TagTranslations, TagVariant } from './tag.types'

@@ -1,0 +1,19 @@
+<!-- 标题、基准线与清空 | 基准线是纯画面（带 aria-hidden），清空按钮是原生 button，读屏念的是 translations 里那句 -->
+<xh-signature-pad id="xh-signature-guide">
+  <div data-xh-part="root" style="max-inline-size: 22rem">
+    <span data-xh-part="label">请在下方签名</span>
+    <svg data-xh-part="control">
+      <line data-xh-part="guide"></line>
+      <path data-xh-part="segment"></path>
+    </svg>
+    <button data-xh-part="clear-trigger">清空</button>
+  </div>
+</xh-signature-pad>
+
+<script type="module">
+  // 文案是对象，只走 property；属性装不下它
+  document.getElementById("xh-signature-guide").translations = {
+    label: "手写签名",
+    clearTrigger: "清空签名",
+  };
+</script>

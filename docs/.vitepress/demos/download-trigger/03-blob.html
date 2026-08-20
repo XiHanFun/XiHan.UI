@@ -1,0 +1,16 @@
+<!-- Blob 内容 | 结构化与二进制内容交 Blob，它自带的类型就是写出去的类型；显式写了 mime-type 则以 mime-type 为准 -->
+<xh-download-trigger id="download-trigger-blob" file-name="profile.json">
+  <button data-xh-part="root">导出配置</button>
+</xh-download-trigger>
+
+<script type="module">
+  // Blob 属性装不下，只能走 property
+  const host = document.getElementById("download-trigger-blob");
+
+  host.data = () => {
+    const profile = { name: "曦寒 UI", version: "1.0.0", locale: "zh-CN" };
+    return new Blob([JSON.stringify(profile, null, 2)], {
+      type: "application/json",
+    });
+  };
+</script>

@@ -1,0 +1,72 @@
+<!-- 动态增删 | 项增删后重新量高、重新落格；新项排在末尾，摘掉一项后其余项会补位 -->
+<style>
+  #masonry-dynamic-demo [data-card] {
+    padding: 12px;
+    border-radius: var(--xh-radius-md);
+    background: var(--xh-bg-subtle);
+    color: var(--xh-fg-default);
+  }
+
+  #masonry-dynamic-demo [data-action] {
+    padding: 4px 10px;
+    border: 1px solid var(--xh-border-default);
+    border-radius: var(--xh-radius-sm);
+    background: transparent;
+    color: var(--xh-fg-default);
+  }
+</style>
+
+<div id="masonry-dynamic-demo" style="display: flex; flex-direction: column; gap: 12px">
+  <div style="display: flex; gap: 8px">
+    <button type="button" data-action value="add">添加一项</button>
+    <button type="button" data-action value="remove">摘掉末项</button>
+  </div>
+
+  <!-- 宿主设 display: contents，排布落在 root 上 -->
+  <!-- item 只做承重的盒子，卡片样式落在它的子节点上，与 Vue 版铺出来的结构一致 -->
+  <xh-masonry id="masonry-dynamic" columns="3" gap="md" style="display: contents">
+    <div data-xh-part="root">
+      <div data-xh-part="column"></div>
+      <div data-xh-part="column"></div>
+      <div data-xh-part="column"></div>
+
+      <div data-xh-part="item"><div data-card style="block-size: 90px">1</div></div>
+      <div data-xh-part="item"><div data-card style="block-size: 140px">2</div></div>
+      <div data-xh-part="item"><div data-card style="block-size: 60px">3</div></div>
+    </div>
+  </xh-masonry>
+</div>
+
+<script type="module">
+  const root = document.querySelector("#masonry-dynamic [data-xh-part='root']");
+  let seq = 4;
+
+  // 新项写进 root 就行，元素会把它搬进某一列；先来后到即项的原序
+  // item 只做承重的盒子，卡片是它的子节点，与 Vue 版铺出来的结构一致
+  function add() {
+    const id = seq++;
+    const item = document.createElement("div");
+    item.dataset.xhPart = "item";
+    const card = document.createElement("div");
+    card.setAttribute("data-card", "");
+    card.style.blockSize = `${60 + ((id * 37) % 100)}px`;
+    card.textContent = String(id);
+    item.append(card);
+    root.append(item);
+  }
+
+  // DOM 序等于列序，末项要按 data-index（作者写的原序）找
+  function removeLast() {
+    const items = [...root.querySelectorAll("[data-xh-part='item']")];
+    if (!items.length) return;
+    items.sort((a, b) => Number(a.dataset.index) - Number(b.dataset.index));
+    items[items.length - 1].remove();
+  }
+
+  for (const button of document.querySelectorAll("#masonry-dynamic-demo [data-action]")) {
+    button.addEventListener("click", () => {
+      if (button.value === "add") add();
+      else removeLast();
+    });
+  }
+</script>
