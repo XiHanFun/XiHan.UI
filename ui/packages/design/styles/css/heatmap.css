@@ -21,14 +21,25 @@
     /* 格间距等于聚焦环占的宽度（偏移 + 环宽）：环因此落在格子之间的空当里，
        不压在相邻格子上，各档格子的深浅都不影响环的对比度 */
     --xh-_heatmap-gap: calc(var(--xh-ring-offset) + var(--xh-ring-width));
-    --xh-_heatmap-gutter: var(--xh-space-8);
+    --xh-_heatmap-gutter: var(--xh-heatmap-gutter, var(--xh-space-8));
     --xh-_heatmap-font-size: var(--xh-font-size-xs);
+    /* 星期名隔行画：第 0/2/4/6 行那个字的颜色。缺省透明——只是字不上色，
+       盒子、底色与命中区都还在，钉住那一列的实色底不缺一块，七行的悬停行为也一致。
+       改写这个槽为一个看得见的颜色（`var(--xh-heatmap-label-fg, var(--xh-fg-subtle))`）即七行全画。
+       周首日是星期一时留下的是二 / 四 / 六，是星期日时留下的是一 / 三 / 五 */
+    --xh-_heatmap-week-day-skip: var(--xh-heatmap-week-day-skip, transparent);
     /* 色阶的两端：0 档的空格底与满档的实心底。没写 data-tone 时就是这里的取值 */
     --xh-_heatmap-empty: var(--xh-heatmap-empty, var(--xh-bg-subtle));
     --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-bg-brand));
+    /* 钉住的行首那一列自带的底色：格子从它下面滚过去时不能透出来。
+       整块摆在别的底色上（卡片、分区）时改写 --xh-heatmap-bg，否则那一列会是一块补丁 */
+    --xh-_heatmap-surface: var(--xh-heatmap-bg, var(--xh-bg-surface));
 
     /* 详情条按内边距盒绝对定位，参照系就是它 */
     position: relative;
+    /* 自建层叠上下文：钉住那一列与详情条的层号只跟组件里的兄弟比，
+       不写这条它们是拿去跟页面同层的元素比，热力图会压住页面上后来的定位元素 */
+    isolation: isolate;
     display: flex;
     flex-direction: column;
     gap: var(--xh-heatmap-gap, var(--xh-space-2));
@@ -36,6 +47,9 @@
        上下留出一圈聚焦环的余量，最上一行与最下一行的环才不会被裁掉 */
     padding-block: var(--xh-heatmap-py, calc(var(--xh-ring-offset) + var(--xh-ring-width)));
     overflow-x: auto;
+    /* 键盘走到视口外的格子时 scrollIntoView 会把它滚进来，落点要让开钉住的那一列，
+       否则往回走的那一格正好停在行首星期名底下 */
+    scroll-padding-inline-start: calc(var(--xh-_heatmap-gutter) + var(--xh-_heatmap-gap));
     color: var(--xh-heatmap-fg, var(--xh-fg-muted));
     font-size: var(--xh-heatmap-font-size, var(--xh-_heatmap-font-size));
     line-height: var(--xh-leading-none);
@@ -52,7 +66,7 @@
   [data-scope='heatmap'][data-part='root'][data-size='sm'] {
     --xh-_heatmap-cell-size: var(--xh-heatmap-cell-size, var(--xh-space-2));
     --xh-_heatmap-row-h: var(--xh-heatmap-row-h, var(--xh-space-4));
-    --xh-_heatmap-gutter: var(--xh-space-6);
+    --xh-_heatmap-gutter: var(--xh-heatmap-gutter, var(--xh-space-6));
   }
 
   [data-scope='heatmap'][data-part='root'][data-size='lg'] {
@@ -78,19 +92,50 @@
     --xh-_heatmap-row-offset: 0;
 
     display: flex;
+    /* 行至少要有内容那么宽。行是列方向 flex 的子项，缺省会被拉成容器的宽（一屏那么宽），
+       行首钉住的那一列只能在自己这一行的盒子里钉——盒子只有一屏宽，滚过一屏它就跟着走了 */
+    min-inline-size: max-content;
     align-items: center;
     gap: var(--xh-heatmap-row-gap, var(--xh-_heatmap-gap));
   }
 
-  /* 行首的星期名。月份行行首那个占位也是它，宽度一样，月份才对得上列 */
+  /* 数据行的高度只由格子定。行首那一列星期名的字（12px）比格子（10px）高，让它撑开行
+     会在纵向多挤出两像素，同一张图的横向格距与纵向格距就不一样宽。
+     钉死成格高之后星期名的字仍照常画，只是溢出到行外——那几行隔行留白，撞不到东西 */
+  [data-scope='heatmap'][data-part='row'][data-week-day],
+  [data-scope='heatmap'][data-part='row'][data-week] {
+    block-size: var(--xh-_heatmap-cell-size);
+  }
+
+  /* 行首的星期名。月份行行首那个占位也是它，宽度一样，月份才对得上列。
+     一整年放不下时网格横着滚，这一列钉在滚动容器的起始缘：跟着滚走的话，
+     滚过头一屏就再也认不出哪一行是星期几。底色必须实色，格子从它下面滚过去不能透出来 */
   [data-scope='heatmap'][data-part='week-day-label'] {
+    position: sticky;
+    /* 层号收在 root 建的层叠上下文里，只跟组件内的兄弟比 */
+    z-index: var(--xh-heatmap-sticky-z, 1);
+    inset-inline-start: 0;
     display: block;
     flex: 0 0 auto;
-    inline-size: var(--xh-heatmap-gutter, var(--xh-_heatmap-gutter));
+    inline-size: var(--xh-_heatmap-gutter);
     overflow: hidden;
+    background: var(--xh-_heatmap-surface);
     color: var(--xh-heatmap-label-fg, var(--xh-fg-subtle));
     white-space: nowrap;
     text-align: end;
+  }
+
+  /* 隔行画：这几行只是字不上色，节点、文字、盒子与底色都还在。
+     不能用 visibility 关：那会连盒子一起不画，钉住那一列的实色底跟着缺四行，
+     格子从行首透出来，且这四行不再参与命中测试——鼠标划过行首会弹出看不见那一格的详情条。
+     一行只有 10px 高，七个 12px 的字挨着写会上下叠在一起；隔一行之后每个留下来的字
+     有两行的高度（2 × 格高 + 格距）可用。哪一行是星期几由行自己的可及名字念出来，
+     可见文字与可及名字是两件事，读屏这边一行都没少 */
+  [data-scope='heatmap'][data-part='week-day-label'][data-week-day='0'],
+  [data-scope='heatmap'][data-part='week-day-label'][data-week-day='2'],
+  [data-scope='heatmap'][data-part='week-day-label'][data-week-day='4'],
+  [data-scope='heatmap'][data-part='week-day-label'][data-week-day='6'] {
+    color: var(--xh-_heatmap-week-day-skip);
   }
 
   /* 月份名横跨这个月占的那几列：列宽加列间距，末尾少算一个间距（它由行的 gap 补上） */
@@ -153,9 +198,28 @@
     gap: var(--xh-heatmap-block-inner-gap, var(--xh-_heatmap-gap));
   }
 
-  /* 块里的星期名是一排列头，宽度改成格宽才对得上下面的格子 */
+  /* 月历形态的月块是换行排开的，没有钉住的那一列，滚动落点也不必让开 */
+  [data-scope='heatmap'][data-part='root'][data-variant='month'] {
+    /* 这里的星期名是一排列头，七个一个都不能少：隔行不上色就有四列认不出是星期几 */
+    --xh-_heatmap-week-day-skip: var(--xh-heatmap-label-fg, var(--xh-fg-subtle));
+
+    /* 月块换行排开，宽度永不超过容器，这一档不当滚动容器：留着 overflow-x: auto 的话，
+       下面那排列头（12px 的字装在 10px 的列里）往外溢的那点行盒会算进可滚动宽度，
+       2px 的溢出就换来一条常驻的横向滚动条，白吃掉十几像素高。
+       clip 只裁不滚，再放出一个格距的余量让列头两端那点溢出照常画出来 */
+    overflow-x: clip;
+    overflow-clip-margin: var(--xh-_heatmap-gap);
+    scroll-padding-inline-start: 0;
+  }
+
+  /* 块里的星期名是一排列头，宽度改成格宽才对得上下面的格子，也不再钉住。
+     字比一格宽，不裁：裁掉就是七个缺角的字，让它往两边的列间距里溢出去，
+     相邻两个各溢出一点也还差着一段空白 */
   [data-scope='heatmap'][data-part='root'][data-variant='month'] [data-scope='heatmap'][data-part='week-day-label'] {
+    position: static;
     inline-size: var(--xh-_heatmap-cell-size);
+    overflow: visible;
+    background: none;
     text-align: center;
   }
 
@@ -166,11 +230,16 @@
   }
 
   /* —— 矩阵形态：行列都由作者给，行名与列名是两条真表头 —— */
+  /* 行名与日历的星期名同一个位置、同一件事：列多到放不下时钉在起始缘 */
   [data-scope='heatmap'][data-part='row-label'] {
+    position: sticky;
+    z-index: var(--xh-heatmap-sticky-z, 1);
+    inset-inline-start: 0;
     display: block;
     flex: 0 0 auto;
-    inline-size: var(--xh-heatmap-gutter, var(--xh-_heatmap-gutter));
+    inline-size: var(--xh-_heatmap-gutter);
     overflow: hidden;
+    background: var(--xh-_heatmap-surface);
     color: var(--xh-heatmap-label-fg, var(--xh-fg-subtle));
     white-space: nowrap;
     text-align: end;
@@ -207,6 +276,8 @@
     --xh-_heatmap-tip-h: 0px;
 
     position: absolute;
+    /* 排在钉住的行首那一列之上：条从末缘往回长时会盖到那一列上，它不该把条切掉 */
+    z-index: var(--xh-heatmap-tooltip-z, 2);
     display: block;
     inset-inline-start: var(--xh-_heatmap-tip-x);
     inset-block-start: var(--xh-_heatmap-tip-y);
@@ -225,6 +296,14 @@
     /* 详情条不接指针：压在格子上时指针要能穿过去，否则一进条里就算离开了格子，
        详情自己把自己收起来，来回闪 */
     pointer-events: none;
+  }
+
+  /* 从格子的末缘往回长：条比一格宽得多，格子后面的地方比前面少时往后长会伸出滚动容器被裁掉，
+     还会把横向滚动条撑长。按末缘定位，条自己多宽都贴着格子的末沿。
+     百分比是内边距盒的宽，在这条 calc 里前后抵消，横向滚到哪里都成立 */
+  [data-scope='heatmap'][data-part='tooltip'][data-inline-anchor='end'] {
+    inset-inline-start: auto;
+    inset-inline-end: calc(100% - var(--xh-_heatmap-tip-x) - var(--xh-_heatmap-tip-w));
   }
 
   /* 摆在格子下边：从格子的下沿再让开一个格间距 */
@@ -246,6 +325,13 @@
     align-items: center;
     gap: var(--xh-heatmap-legend-gap, var(--xh-_heatmap-gap));
     color: var(--xh-heatmap-label-fg, var(--xh-fg-subtle));
+  }
+
+  /* 对照条两端的那两个字。与色块同一行、同一档颜色，不换行：
+     「少」「多」断成两行就跟色块对不上了 */
+  [data-scope='heatmap'][data-part='legend-label'] {
+    flex: 0 0 auto;
+    white-space: nowrap;
   }
 
   /* 对照条里的一格与网格里同档的格子同色，两处共用同一条色阶 */

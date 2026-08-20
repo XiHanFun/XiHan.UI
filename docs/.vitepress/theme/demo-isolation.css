@@ -29,3 +29,12 @@
   display: revert;
   overflow: revert;
 }
+
+/*
+ * 热力图钉住的那一列自带实色底，缺省取 --xh-bg-surface；示例舞台的底色是 VitePress 的
+ * --vp-c-bg，深色态下两者不是同一个色，那一列会显出一块补丁。
+ * 把令牌接到舞台自己的底色上，整年的那几份示例一处管住。
+ */
+.xh-demo__stage {
+  --xh-heatmap-bg: var(--vp-c-bg);
+}

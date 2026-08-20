@@ -61,7 +61,7 @@ describe('矩阵格子的几何', () => {
 
   it('块向尺寸不随行名的字高走：字调大，格子不跟着变形', () => {
     const base = probe(null)
-    const bigger = probe(null, { '--xh-heatmap-label-font-size': '24px' })
+    const bigger = probe(null, { '--xh-heatmap-font-size': '24px' })
     expect(bigger.block).toBeCloseTo(base.block, 1)
   })
 

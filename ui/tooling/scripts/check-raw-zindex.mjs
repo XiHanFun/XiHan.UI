@@ -15,6 +15,7 @@ const STYLES_DIR = 'packages/design/styles/css'
 const IN_COMPONENT_STACKING = {
   'avatar-group.css': '头像相互压边，靠悬停项抬一层盖住相邻头像',
   'button-group.css': '相邻段的边框重叠，靠悬停段抬一层盖住邻段边框',
+  'heatmap.css': '行首那一列钉住时抬到格子之上，详情条再抬一层压住它，收在 root 自建的层叠上下文里',
   'image-viewer.css': '工具条压在图上，浮层内部的两层',
   'scroll-area.css': '角块压在两条滚动条之上，不依赖作者写的源序',
   'table.css': '粘性列抬到普通单元格之上，表内的列间层序',

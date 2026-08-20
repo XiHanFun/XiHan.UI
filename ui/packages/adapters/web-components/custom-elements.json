@@ -15493,7 +15493,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-heatmap>` —— Light-DOM 行为宿主：作者写 root、grid、若干 row 与 cell 角色节点，\n元素跑 heatmap 机器并把 connect 产出打上去。\n\n角色节点的身份一律取作者写在节点上的 value 属性，怎么解释由 variant 决定：\n日历形态里 row 与 week-day-label 上是行序 0-6（不写即网格之外那条月份行与它的行首占位）、\ncell 上是 ISO 日期、month-label 上是 YYYY-MM；月历形态里 month-block 上是 YYYY-MM、\nrow 上是月内周序（不写即块内那条星期名坐标轴）；矩阵形态里 row 与 row-label 上是行身份\n（不写即表头行与角落占位）、column-label 与 cell 上是列身份，格子的行身份从所在的行取。\nlegend-item 上是档位。\n\n数据、行列、档位下界与文案只能走 property（`el.value = [...]`）：HTML 属性装不下数组与函数。",
+          "description": "`<xh-heatmap>` —— Light-DOM 行为宿主：作者写 root、grid、若干 row 与 cell 角色节点，\n元素跑 heatmap 机器并把 connect 产出打上去。\n\n网格由作者渲染，元素不生成节点：铺一整年不必手写三百多个格子，读 `grid` / `monthGrid` /\n`matrixGrid` 三个只读属性，照推导出来的行、列、月份段循环生成即可（三种形态各读其中一个）。\n每读一次都重算一遍，取一次存下来用。\n\n角色节点的身份一律取作者写在节点上的 value 属性，怎么解释由 variant 决定：\n日历形态里 row 与 week-day-label 上是行序 0-6（不写即网格之外那条月份行与它的行首占位）、\ncell 上是 ISO 日期、month-label 上是 YYYY-MM；月历形态里 month-block 上是 YYYY-MM、\nrow 上是月内周序（不写即块内那条星期名坐标轴）；矩阵形态里 row 与 row-label 上是行身份\n（不写即表头行与角落占位）、column-label 与 cell 上是列身份，格子的行身份从所在的行取。\nlegend-item 上是档位、legend-label 上是 low 或 high（两端那两个字，文案读 `legendText`）。\n\n数据、行列、档位下界与文案只能走 property（`el.value = [...]`）：HTML 属性装不下数组与函数。",
           "name": "XhHeatmapElement",
           "cssParts": [
             {
@@ -15539,6 +15539,10 @@
             {
               "description": "色阶对照条",
               "name": "legend"
+            },
+            {
+              "description": "对照条一端的那个字，value 是 low 或 high",
+              "name": "legend-label"
             },
             {
               "description": "对照条里的一格，value 是档位",
@@ -15706,6 +15710,42 @@
               }
             },
             {
+              "kind": "field",
+              "name": "grid",
+              "type": {
+                "text": "HeatmapGrid"
+              },
+              "description": "日历网格：七行星期 × 若干周列，另带月份段、星期名与档位标尺，作者照它铺节点。\n其余形态下是一张空网格。机器尚未建起时同样给空网格。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "monthGrid",
+              "type": {
+                "text": "HeatmapMonthGrid | null"
+              },
+              "description": "月历网格：按自然月分块，块里逐周一行；不是 month 形态时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "matrixGrid",
+              "type": {
+                "text": "HeatmapMatrixGrid | null"
+              },
+              "description": "矩阵网格：行列由作者给；不是 matrix 形态时为 null。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "legendText",
+              "type": {
+                "text": "{ low: string, high: string }"
+              },
+              "description": "对照条两端要写的那两个字，照它填 legend-label 节点的文字。",
+              "readonly": true
+            },
+            {
               "kind": "method",
               "name": "rowProps",
               "privacy": "private",
@@ -15839,6 +15879,9 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-heatmap-bg"
+            },
+            {
               "name": "--xh-heatmap-block-gap"
             },
             {
@@ -15893,6 +15936,9 @@
               "name": "--xh-heatmap-row-h"
             },
             {
+              "name": "--xh-heatmap-sticky-z"
+            },
+            {
               "name": "--xh-heatmap-title-fg"
             },
             {
@@ -15918,6 +15964,12 @@
             },
             {
               "name": "--xh-heatmap-tooltip-shadow"
+            },
+            {
+              "name": "--xh-heatmap-tooltip-z"
+            },
+            {
+              "name": "--xh-heatmap-week-day-skip"
             }
           ]
         }
