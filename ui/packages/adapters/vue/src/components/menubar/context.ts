@@ -1,4 +1,4 @@
-import type { MenubarContentProps, MenubarGroupProps, MenubarItemProps } from '@xihan-ui/headless'
+import type { MenubarContentProps, MenubarGroupProps, MenubarItemProps, MenubarSelectDetails } from '@xihan-ui/headless'
 import type { ComputedRef, InjectionKey } from 'vue'
 import type { MenubarContext } from './use-menubar'
 import { inject, provide } from 'vue'
@@ -63,4 +63,42 @@ export function useMenubarGroupContext(): MenubarGroupContext {
   if (!ctx)
     throw new Error('[xh] Menubar 分组标题必须用在 XhMenubarGroup 内')
   return ctx
+}
+
+/** 选中链：子菜单任意层级的选中都汇到根——先发根的 select，再关根，各级随父关闭级联收起。 */
+export interface MenubarChain {
+  notifySelect: (details: MenubarSelectDetails) => void
+}
+
+const CHAIN_KEY: InjectionKey<MenubarChain> = Symbol('xh-menubar-chain')
+
+export function provideMenubarChain(chain: MenubarChain): void {
+  provide(CHAIN_KEY, chain)
+}
+
+export function useMenubarChain(): MenubarChain {
+  const chain = inject(CHAIN_KEY, null)
+  if (!chain)
+    throw new Error('[xh] MenubarSub 必须用在 XhMenubarRoot 内')
+  return chain
+}
+
+/** 子菜单触发条目要同时够到父菜单栏与本子菜单，这里存父层句柄与它在父层里的身份。 */
+export interface MenubarSubHandle {
+  parent: MenubarContext
+  value: string
+  disabled?: boolean
+}
+
+const SUB_KEY: InjectionKey<MenubarSubHandle> = Symbol('xh-menubar-sub')
+
+export function provideMenubarSub(handle: MenubarSubHandle): void {
+  provide(SUB_KEY, handle)
+}
+
+export function useMenubarSubContext(): MenubarSubHandle {
+  const handle = inject(SUB_KEY, null)
+  if (!handle)
+    throw new Error('[xh] MenubarSubTrigger 必须用在 XhMenubarSub 内')
+  return handle
 }

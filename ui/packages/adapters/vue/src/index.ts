@@ -501,9 +501,13 @@ export {
   XhMenubarPositioner,
   XhMenubarRoot,
   XhMenubarSeparator,
+  XhMenubarSub,
+  XhMenubarSubTrigger,
   XhMenubarTrigger,
 } from './components/menubar/menubar'
-export type { MenubarRootSlotProps } from './components/menubar/menubar'
+export type { MenubarRootSlotProps, MenubarSubSlotProps } from './components/menubar/menubar'
+export { provideMenubarChain, provideMenubarSub, useMenubarChain, useMenubarSubContext } from './components/menubar/context'
+export type { MenubarChain, MenubarSubHandle } from './components/menubar/context'
 export { useMenubar } from './components/menubar/use-menubar'
 export type { MenubarContext, MenubarPartRegistry } from './components/menubar/use-menubar'
 export {

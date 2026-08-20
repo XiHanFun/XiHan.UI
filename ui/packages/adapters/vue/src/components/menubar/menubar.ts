@@ -9,14 +9,20 @@ import { mergeIntoChild } from '../../runtime/as-child'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import {
   provideMenubar,
+  provideMenubarChain,
   provideMenubarGroup,
   provideMenubarItem,
   provideMenubarMenu,
+  provideMenubarSub,
+  useMenubarChain,
   useMenubarContext,
   useMenubarGroupContext,
   useMenubarItemContext,
   useMenubarMenuContext,
+  useMenubarSubContext,
 } from './context'
+import { provideMenu, provideMenuChain, useMenuContext } from '../menu/context'
+import { useMenu } from '../menu/use-menu'
 import { useMenubar } from './use-menubar'
 
 type MenubarProps = MenubarSchema['props']
@@ -76,6 +82,14 @@ export const XhMenubarRoot = defineComponent({
     const notifySelect: MenubarProps['onSelect'] = details => emit('select', details)
     const ctx = useMenubar(props as MenubarProps, notifyValue, notifySelect)
     provideMenubar(ctx)
+    // 子菜单任意层级的选中都汇到这里：先发根的 select，再关掉整条菜单栏。
+    // 关根用 setValue(null) —— 菜单栏是「当前展开哪一项」的模型，没有 setOpen
+    provideMenubarChain({
+      notifySelect: (details) => {
+        emit('select', details)
+        ctx.api.value.setValue(null)
+      },
+    })
     return () => h('div', {
       ...ctx.api.value.getRootProps() as Record<string, unknown>,
       ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
@@ -289,3 +303,86 @@ function renderDefaultTree(
     ),
   ]
 }
+
+/** XhMenubarSub 默认插槽拿到的东西。 */
+export interface MenubarSubSlotProps {
+  open: boolean
+  setOpen: (next: boolean) => void
+}
+
+export const XhMenubarSub = defineComponent({
+  name: 'XhMenubarSub',
+  props: {
+    /** 它在所属那张菜单里的条目身份。 */
+    value: { type: String, required: true },
+    disabled: { type: Boolean, default: undefined },
+    placement: { type: String as PropType<Placement>, default: undefined },
+    offset: { type: Number, default: undefined },
+    loop: { type: Boolean, default: undefined },
+    openOnHover: { type: Boolean, default: undefined },
+    hoverOpenDelay: { type: Number, default: undefined },
+    hoverCloseDelay: { type: Number, default: undefined },
+    /** 文字方向；缺省继承父层。子层被搬到浮层落点，继承不到父层的方向。 */
+    dir: { type: String as PropType<Direction>, default: undefined },
+    /** 语气；缺省继承父层。子层是浮层落点下的同级节点，CSS 私有槽继承不到。 */
+    tone: { type: String as PropType<Tone>, default: undefined },
+    /** 尺寸；缺省继承父层，理由同 tone。 */
+    size: { type: String as PropType<Size>, default: undefined },
+  },
+  slots: Object as SlotsType<{
+    default?: (props: MenubarSubSlotProps) => VNode[]
+  }>,
+  setup(props, { slots }) {
+    const parent = useMenubarContext()
+    const owner = useMenubarMenuContext()
+    if (!owner)
+      throw new Error('[xh] MenubarSub 必须用在 XhMenubarPositioner 内')
+    const chain = useMenubarChain()
+    // 子层跑的是一台子菜单模式的 menu 机器：菜单栏那台是单机器单锚点，装不下第二层
+    const sub = useMenu(
+      {
+        ...props,
+        submenu: true,
+        dir: props.dir ?? parent.service.prop('dir'),
+        tone: props.tone ?? parent.service.prop('tone'),
+        size: props.size ?? parent.service.prop('size'),
+      },
+      undefined,
+      // 菜单栏的选中要带菜单身份，子层只知道条目值，在这里补上
+      details => chain.notifySelect({ menu: owner.menu.value.value, value: details.value }),
+    )
+    // 子树内的 XhMenu 系部件都归子机器
+    provideMenu(sub)
+    // 子层里还能再嵌一层 XhMenuSub：那一层要往上找选中汇总的链
+    provideMenuChain({
+      notifySelect: details => chain.notifySelect({ menu: owner.menu.value.value, value: details.value }),
+    })
+    provideMenubarSub({ parent, value: props.value, disabled: props.disabled })
+    // 所属那张菜单收起时本层跟着收，层层传导
+    watch(() => parent.api.value.isOpen(owner.menu.value.value), (open) => {
+      if (!open)
+        sub.api.value.setOpen(false)
+    })
+    return () => slots.default?.({ open: sub.api.value.open, setOpen: sub.api.value.setOpen })
+  },
+})
+
+export const XhMenubarSubTrigger = defineComponent({
+  name: 'XhMenubarSubTrigger',
+  setup(_, { slots }) {
+    const handle = useMenubarSubContext()
+    const sub = useMenuContext()
+    return () => h('div', {
+      // 合并序=子先父后：父层的 data-scope/data-part 胜出，菜单栏的方向键与选中照常认它。
+      // 反过来写会让节点带上 data-scope="menu"，菜单栏按自己的 scope 查条目就一条都找不到
+      ...mergeProps(
+        sub.api.value.getSubmenuTriggerProps({ value: handle.value, disabled: handle.disabled }) as Record<string, unknown>,
+        handle.parent.api.value.getItemProps({ value: handle.value, disabled: handle.disabled }) as Record<string, unknown>,
+      ),
+      // 子菜单的定位锚点就是这一条
+      ref: (el: unknown) => {
+        sub.triggerRef.value = el as HTMLElement
+      },
+    }, slots.default?.())
+  },
+})
