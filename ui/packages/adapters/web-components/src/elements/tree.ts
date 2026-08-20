@@ -44,8 +44,10 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @csspart tree - role=tree 容器，键盘在此收口，也是 roving tabindex 的兜底位
  * @csspart item - role=treeitem 叶子，须自带 value 属性标识身份
  * @csspart item-text - 叶子文本
+ * @csspart item-checkbox - 叶子的勾选把手，点它只勾选、不触发点行；可选
  * @csspart item-indicator - 叶子选中标记（aria-hidden）
  * @csspart branch - role=treeitem 分支，须自带 value 属性；它裹着自己的 branch-content
+ * @csspart branch-checkbox - 分支的勾选把手，点它只勾选、不展开这一枝；可选
  * @csspart branch-control - 分支可点行（选中 + 按 expand-on-click 切换展开）
  * @csspart branch-trigger - 展开箭头（aria-hidden 且不占 Tab 位，只切换展开态）
  * @csspart branch-indicator - 展开方向指示符（aria-hidden）
@@ -174,8 +176,10 @@ export class XhTreeElement extends XhElement {
     }
     putAll('item', ITEM_SELECTOR, node => api.getItemProps(node))
     putAll('item-text', ITEM_SELECTOR, node => api.getItemTextProps(node))
+    putAll('item-checkbox', ITEM_SELECTOR, node => api.getItemCheckboxProps(node))
     putAll('item-indicator', ITEM_SELECTOR, node => api.getItemIndicatorProps(node))
     putAll('branch', BRANCH_SELECTOR, node => api.getBranchProps(node))
+    putAll('branch-checkbox', BRANCH_SELECTOR, node => api.getBranchCheckboxProps(node))
     putAll('branch-control', BRANCH_SELECTOR, node => api.getBranchControlProps(node))
     putAll('branch-trigger', BRANCH_SELECTOR, node => api.getBranchTriggerProps(node))
     putAll('branch-indicator', BRANCH_SELECTOR, node => api.getBranchIndicatorProps(node))

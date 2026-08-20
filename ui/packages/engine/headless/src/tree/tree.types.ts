@@ -185,8 +185,11 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   getTreeProps: () => T['element']
   getItemProps: (props: TreeNodeProps) => T['element']
   getItemTextProps: (props: TreeNodeProps) => T['element']
+  /** 勾选把手：把「勾这一项」与「点这一行」分成两个可点区域，不给它就没有独立把手。 */
+  getItemCheckboxProps: (props: TreeNodeProps) => T['element']
   getItemIndicatorProps: (props: TreeNodeProps) => T['element']
   getBranchProps: (props: TreeNodeProps) => T['element']
+  getBranchCheckboxProps: (props: TreeNodeProps) => T['element']
   getBranchControlProps: (props: TreeNodeProps) => T['element']
   getBranchTriggerProps: (props: TreeNodeProps) => T['element']
   getBranchIndicatorProps: (props: TreeNodeProps) => T['element']
