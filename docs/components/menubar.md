@@ -75,12 +75,18 @@ orientation 决定主轴：竖排时上下键在入口之间走，左右键改�
 
 <XhDemo src="menubar/09-overflow" />
 
+### 二级子菜单
+
+XhMenubarSub 在菜单栏的一张菜单里再嵌一层：触发条目双重身份（菜单栏的方向键照常走、右方向键进子层），子层内用 XhMenu 系部件，选中带上所属菜单的身份汇到根并关掉整条菜单栏
+
+<XhDemo src="menubar/10-submenu" />
+
 ## 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-menubar>` |
-| Vue 组件 | `XhMenubarContent` `XhMenubarGroup` `XhMenubarGroupLabel` `XhMenubarItem` `XhMenubarItemIndicator` `XhMenubarItemText` `XhMenubarPositioner` `XhMenubarRoot` `XhMenubarSeparator` `XhMenubarTrigger` |
+| Vue 组件 | `XhMenubarContent` `XhMenubarGroup` `XhMenubarGroupLabel` `XhMenubarItem` `XhMenubarItemIndicator` `XhMenubarItemText` `XhMenubarPositioner` `XhMenubarRoot` `XhMenubarSeparator` `XhMenubarSub` `XhMenubarSubTrigger` `XhMenubarTrigger` |
 | 组合式函数 | `useMenubar` |
 | 状态机 | `menubarMachine` |
 | 皮肤 | `@xihan-ui/styles/menubar.css` |
@@ -127,6 +133,7 @@ orientation 决定主轴：竖排时上下键在入口之间走，左右键改�
 | --- | --- | --- | --- |
 | `XhMenubarRoot` | `default` | `MenubarRootSlotProps` |  |
 | `XhMenubarRoot` | `item` | `MenubarNodeMeta` |  |
+| `XhMenubarSub` | `default` | `MenubarSubSlotProps` |  |
 
 ## 状态
 
