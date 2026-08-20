@@ -144,6 +144,24 @@ export const XhTreeItemText = defineComponent({
   },
 })
 
+export const XhTreeItemCheckbox = defineComponent({
+  name: 'XhTreeItemCheckbox',
+  setup(_, { slots }) {
+    const ctx = useTreeContext()
+    const { node } = useTreeNodeContext()
+    return () => h('span', ctx.api.value.getItemCheckboxProps(node.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhTreeBranchCheckbox = defineComponent({
+  name: 'XhTreeBranchCheckbox',
+  setup(_, { slots }) {
+    const ctx = useTreeContext()
+    const { node } = useTreeNodeContext()
+    return () => h('span', ctx.api.value.getBranchCheckboxProps(node.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhTreeItemIndicator = defineComponent({
   name: 'XhTreeItemIndicator',
   setup(_, { slots }) {

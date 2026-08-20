@@ -929,12 +929,14 @@ export { useTreeSelect } from './components/tree-select/use-tree-select'
 export type { TreeSelectContext } from './components/tree-select/use-tree-select'
 export {
   XhTreeBranch,
+  XhTreeBranchCheckbox,
   XhTreeBranchContent,
   XhTreeBranchControl,
   XhTreeBranchIndicator,
   XhTreeBranchText,
   XhTreeBranchTrigger,
   XhTreeItem,
+  XhTreeItemCheckbox,
   XhTreeItemIndicator,
   XhTreeItemText,
   XhTreeLabel,

@@ -39822,6 +39822,9 @@
               "name": "--xh-tour-gap"
             },
             {
+              "name": "--xh-tour-max-h"
+            },
+            {
               "name": "--xh-tour-max-w"
             },
             {
@@ -41269,12 +41272,20 @@
               "name": "item-text"
             },
             {
+              "description": "叶子的勾选把手，点它只勾选、不触发点行；可选",
+              "name": "item-checkbox"
+            },
+            {
               "description": "叶子选中标记（aria-hidden）",
               "name": "item-indicator"
             },
             {
               "description": "role=treeitem 分支，须自带 value 属性；它裹着自己的 branch-content",
               "name": "branch"
+            },
+            {
+              "description": "分支的勾选把手，点它只勾选、不展开这一枝；可选",
+              "name": "branch-checkbox"
             },
             {
               "description": "分支可点行（选中 + 按 expand-on-click 切换展开）",
@@ -41600,6 +41611,30 @@
             },
             {
               "name": "--xh-tree-branch-indicator-fg"
+            },
+            {
+              "name": "--xh-tree-checkbox-bg"
+            },
+            {
+              "name": "--xh-tree-checkbox-bg-checked"
+            },
+            {
+              "name": "--xh-tree-checkbox-border"
+            },
+            {
+              "name": "--xh-tree-checkbox-border-checked"
+            },
+            {
+              "name": "--xh-tree-checkbox-border-disabled"
+            },
+            {
+              "name": "--xh-tree-checkbox-fg"
+            },
+            {
+              "name": "--xh-tree-checkbox-radius"
+            },
+            {
+              "name": "--xh-tree-checkbox-size"
             },
             {
               "name": "--xh-tree-fg"

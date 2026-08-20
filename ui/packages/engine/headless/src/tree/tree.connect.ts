@@ -354,6 +354,37 @@ export function connectTree<T extends PropTypes>(
       'onFocus': () => send({ type: 'NODE.FOCUS', value: node.value }),
     }),
 
+    // 勾选把手：把「勾这一项」与「点这一行」分成两个可点区域。
+    // 点行的语义（单选替换、分支展开）归 item / branch-control，把手只管勾选。
+    getItemCheckboxProps: node => normalize.element({
+      ...parts['item-checkbox'].attrs,
+      ...itemState(node.value),
+      // 勾选态由所在的 treeitem 用 aria-selected / aria-checked 报，把手自己不重复一遍
+      'aria-hidden': 'true',
+      'tabindex': -1,
+      'onClick': (event: MouseEvent) => {
+        // 把手长在条目里面，不掐断冒泡会再跑一遍点行
+        event.stopPropagation()
+        if (isDisabled(node.value))
+          return
+        send({ type: 'NODE.SELECT', value: node.value })
+      },
+    }),
+
+    getBranchCheckboxProps: node => normalize.element({
+      ...parts['branch-checkbox'].attrs,
+      ...branchState(node.value),
+      'aria-hidden': 'true',
+      'tabindex': -1,
+      'onClick': (event: MouseEvent) => {
+        // 不掐断冒泡会顺带把这一枝展开或收起
+        event.stopPropagation()
+        if (isDisabled(node.value))
+          return
+        send({ type: 'NODE.SELECT', value: node.value })
+      },
+    }),
+
     getBranchControlProps: node => normalize.element({
       ...parts['branch-control'].attrs,
       ...branchState(node.value),

@@ -102,6 +102,49 @@
     background: var(--xh-tree-row-bg-hover, var(--xh-bg-subtle));
   }
 
+  /* 勾选把手：勾选态只画在它身上，不碰行底色——底色那条通道归高亮 */
+  [data-scope='tree'][data-part='item-checkbox'],
+  [data-scope='tree'][data-part='branch-checkbox'] {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    inline-size: var(--xh-tree-checkbox-size, var(--xh-control-indicator-size));
+    block-size: var(--xh-tree-checkbox-size, var(--xh-control-indicator-size));
+    border: var(--xh-stroke-thin) solid var(--xh-tree-checkbox-border, var(--xh-border-control));
+    border-radius: var(--xh-tree-checkbox-radius, var(--xh-shape-inset));
+    background: var(--xh-tree-checkbox-bg, var(--xh-bg-canvas));
+    color: var(--xh-tree-checkbox-fg, var(--xh-fg-on-brand));
+  }
+
+  [data-scope='tree'][data-part='item-checkbox'][data-selected],
+  [data-scope='tree'][data-part='branch-checkbox'][data-selected] {
+    border-color: var(--xh-tree-checkbox-border-checked, var(--xh-bg-brand));
+    background: var(--xh-tree-checkbox-bg-checked, var(--xh-bg-brand));
+  }
+
+  /* 半选：级联勾选下「子树勾了一部分」的第三态，此前发了 data-indeterminate 却没人画 */
+  [data-scope='tree'][data-part='item-checkbox'][data-indeterminate]:not([data-selected]),
+  [data-scope='tree'][data-part='branch-checkbox'][data-indeterminate]:not([data-selected]) {
+    border-color: var(--xh-tree-checkbox-border-checked, var(--xh-bg-brand));
+    background: var(--xh-tree-checkbox-bg-checked, var(--xh-bg-brand));
+  }
+
+  /* 没写内容就由皮肤画；作者往把手里塞了自己的图形，这条规则即不命中 */
+  [data-scope='tree'][data-part='item-checkbox'][data-selected]:empty::before,
+  [data-scope='tree'][data-part='branch-checkbox'][data-selected]:empty::before {
+    content: '✓';
+  }
+
+  [data-scope='tree'][data-part='item-checkbox'][data-indeterminate]:not([data-selected]):empty::before,
+  [data-scope='tree'][data-part='branch-checkbox'][data-indeterminate]:not([data-selected]):empty::before {
+    content: '−';
+  }
+
+  [data-scope='tree'][data-part='item-checkbox'][data-disabled],
+  [data-scope='tree'][data-part='branch-checkbox'][data-disabled] {
+    border-color: var(--xh-tree-checkbox-border-disabled, var(--xh-border-subtle));
+  }
+
   /* 选中只换文字色与字重，配合行尾的 ✓ 标记；底色整条通道留给高亮，
      两者因此能同时看见 */
   [data-scope='tree'][data-part='item'][data-selected],
