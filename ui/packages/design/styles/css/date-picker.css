@@ -358,8 +358,8 @@
     user-select: none;
   }
 
-  /* 悬停与键盘锚点共用中性轻档，命中那一条才走品牌淡底——两档靠色相分家 */
-  [data-scope='date-picker'][data-part='preset']:hover {
+  /* 悬停与键盘锚点共用中性轻档，命中那一条才走品牌淡底——两档靠色相分家；禁用的不响应悬停 */
+  [data-scope='date-picker'][data-part='preset']:hover:not([data-disabled]) {
     background: var(--xh-date-picker-preset-bg-hover, var(--xh-bg-subtle));
   }
 

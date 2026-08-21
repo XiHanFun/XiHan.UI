@@ -6,7 +6,7 @@ import type { TimePickerColumn, TimePickerColumnUnit } from '../time-picker'
 import type { DatePickerTimeGranularity } from './date-picker.time'
 
 /**
- * 值的来源；只有 calendar 一路参与「选完即收起」判定。
+ * 值的来源；calendar 与 preset 两路参与「选完即收起」判定。
  * field 是起点那组段位，field-end 是终点那组（只在区间模式下有）。
  */
 export type DatePickerValueSource = 'calendar' | 'preset' | 'field' | 'field-end' | 'api'
@@ -40,7 +40,12 @@ export interface DatePickerPreset {
 export interface DatePickerPresetState extends DatePickerPreset {
   /** 拆开的日期，长度 1 是单日、2 是区间。 */
   dates: string[]
-  /** 当前选中集合与它逐位相同。 */
+  /**
+   * 按不下去：作者标了 disabled、日期数与选择模式不配（单选给了区间）、
+   * 或有哪一天落在 min/max 之外 / 被 isDateUnavailable 判掉。
+   */
+  disabled: boolean
+  /** 当前选中集合的日期段与它逐位相同；showTime 下不看时间段。 */
   selected: boolean
 }
 
@@ -161,6 +166,8 @@ export interface DatePickerSchema extends MachineSchema {
     /**
      * 快捷选项（「今天」「近 7 天」这类）。给了就在浮层里多出一列，点一下整份写进选中值。
      * 日子要算好再传：连接层每帧求值，把 `today()` 放进渲染期会跨零点算出两个答案。
+     * 与 selectionMode 不配（单选给了区间）、落在 min/max 之外或被 isDateUnavailable 判掉的那条
+     * 自动按不下去；showTime 下写进去的日期带上此刻已挑的时间。
      */
     presets?: DatePickerPreset[]
     /**

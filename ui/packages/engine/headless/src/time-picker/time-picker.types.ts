@@ -103,7 +103,11 @@ export interface TimePickerPreset {
 
 /** 一条快捷选项此刻的样子，连接层算好后透出，两个适配器照它渲染。 */
 export interface TimePickerPresetState extends TimePickerPreset {
-  /** 当前值与它相同。 */
+  /** 归一成组件值形状的时刻（'9:00' → '09:00'）；解析不了为 null。 */
+  time: string | null
+  /** 按不下去：作者标了 disabled、解析不了、或落在 min/max 之外。step 只裁列表，不限制它。 */
+  disabled: boolean
+  /** 当前值与它相同（按归一后的串比）。 */
   selected: boolean
 }
 
@@ -135,6 +139,7 @@ export interface TimePickerSchema extends MachineSchema {
     /**
      * 快捷选项（「此刻」「上午 9 点」这类）。给了就在浮层里多出一列，点一下整份写进值并收起。
      * 时刻要算好再传：连接层每帧求值，把`此刻`放进渲染期会每帧算出一个新答案。
+     * 解析不了或落在 min/max 之外的那条自动按不下去；带秒的时刻按 granularity 归一后再比对与写入。
      */
     presets?: TimePickerPreset[]
     /** 禁用：分段输入整组退出 Tab 序列、触发器用原生 disabled，隐藏输入不参与提交。 */

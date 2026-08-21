@@ -74,11 +74,18 @@ const PRESETS = [
   { value: '10:30', label: '茶歇' },
 ] as const
 
+/** 一条作者禁用、一条落在 min/max 之外、一条写成带秒的同一时刻：前两条按不下去，末一条与 09:00 是同一条。 */
+const PRESETS_MIXED = [
+  { value: '08:30', label: '开工', disabled: true },
+  { value: '23:00', label: '界外' },
+  { value: '09:00:30', label: '早会' },
+] as const
+
 /** 快捷选项列排在时分秒那几列前面，只有用到它的那条用例派生这一份。 */
-function presetsFixture(base: FixtureNode): FixtureNode {
+function presetsFixture(base: FixtureNode, presets: readonly { value: string, label: string }[] = PRESETS): FixtureNode {
   const list: FixtureNode = {
     part: 'presets',
-    children: PRESETS.map(preset => ({
+    children: presets.map(preset => ({
       part: 'preset',
       attrs: { value: preset.value },
       text: preset.label,
@@ -178,6 +185,40 @@ export const timePickerSuite: ConformanceSuite = {
             const content = ctx.doc.querySelector(`${SCOPE}[data-part="content"]`)
             if (!content?.hasAttribute('hidden'))
               throw new Error('快捷选项给的是整份时间，写完该收起浮层')
+          },
+        },
+      ],
+    },
+    {
+      name: '按不下去的快捷选项：方向键停得上去，Enter 与点按都不写值；带秒的时刻按精度归一后算命中',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['time-picker.kbd.preset-move', 'time-picker.kbd.preset-pick'],
+      fixture: base => presetsFixture(base, PRESETS_MIXED),
+      props: { ...BASE, defaultValue: '09:00', min: '08:00', max: '18:00', presets: [...PRESETS_MIXED] },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        {
+          kind: 'raw',
+          why: '条目按 data-value 认，不进快照；禁用与越界两种「按不下去」要逐条看属性',
+          run: async (ctx) => {
+            const items = presetItems(ctx.doc)
+            const states = items.map(el => [el.getAttribute('aria-selected'), el.getAttribute('aria-disabled'), el.getAttribute('tabindex')].join('|'))
+            const want = ['false|true|-1', 'false|true|-1', 'true|false|0']
+            if (states.join(',') !== want.join(','))
+              throw new Error(`快捷选项的状态应为 ${want.join(' ')}，实际 ${states.join(' ')}`)
+            items[2]!.focus()
+            await pressOnPreset(ctx, items[2]!, 'ArrowUp')
+            if (ctx.doc.activeElement !== items[1])
+              throw new Error('上键应能停到越界的那一条上')
+            await pressOnPreset(ctx, items[1]!, 'Enter')
+            expectHidden(ctx.doc, '09:00', 'Enter 按在越界那条上不该写值')
+            items[0]!.click()
+            await ctx.flush()
+            expectHidden(ctx.doc, '09:00', '点禁用那条不该写值')
+            const content = ctx.doc.querySelector(`${SCOPE}[data-part="content"]`)
+            if (content?.hasAttribute('hidden'))
+              throw new Error('没写值就不该收起浮层')
           },
         },
       ],

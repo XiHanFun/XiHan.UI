@@ -1202,3 +1202,59 @@ describe('showTime 的时间列：键盘走得进去', () => {
     expect(h.api().timeColumns).toEqual([])
   })
 })
+
+describe('快捷选项', () => {
+  const pick = (h: Harness, value: string): void => {
+    (h.api().getPresetProps({ value }) as { onClick: () => void }).onClick()
+  }
+
+  it('单日、区间各写各的；与模式不配的那条按不下去', () => {
+    const single = mount({ defaultOpen: true, presets: [{ value: '2026-07-10', label: '某日' }, { value: '2026-07-01/2026-07-31', label: '整月' }] })
+    expect(single.api().presets.map(p => p.disabled)).toEqual([false, true])
+    pick(single, '2026-07-01/2026-07-31')
+    expect(single.value()).toEqual([])
+    pick(single, '2026-07-10')
+    expect(single.value()).toEqual(['2026-07-10'])
+    expect(single.state()).toBe('closed')
+
+    const range = mount({ defaultOpen: true, selectionMode: 'range', presets: [{ value: '2026-07-10', label: '某日' }, { value: '2026-07-01/2026-07-31', label: '整月' }] })
+    expect(range.api().presets.map(p => p.disabled)).toEqual([true, false])
+    pick(range, '2026-07-01/2026-07-31')
+    expect(range.value()).toEqual(['2026-07-01', '2026-07-31'])
+    expect(range.state()).toBe('closed')
+  })
+
+  it('落在 min/max 之外或被作者判不可用的，按不下去', () => {
+    const h = mount({
+      min: '2026-07-05',
+      max: '2026-07-25',
+      isDateUnavailable: v => v === '2026-07-15',
+      presets: [
+        { value: '2026-07-01', label: '界外' },
+        { value: '2026-07-15', label: '不可用' },
+        { value: '2026-07-20', label: '可用' },
+      ],
+    })
+    expect(h.api().presets.map(p => p.disabled)).toEqual([true, true, false])
+    pick(h, '2026-07-01')
+    expect(h.value()).toEqual([])
+  })
+
+  it('showTime：写日期时带上此刻的时间段，没有就零点；选中判定只看日期段', () => {
+    const h = mount({ showTime: true, defaultValue: '2026-07-28T09:30', presets: [{ value: '2026-07-10', label: '某日' }, { value: '2026-07-28', label: '同日' }] })
+    expect(h.api().presets.map(p => p.selected)).toEqual([false, true])
+    pick(h, '2026-07-10')
+    expect(h.value()).toEqual(['2026-07-10T09:30'])
+
+    const empty = mount({ showTime: true, presets: [{ value: '2026-07-10', label: '某日' }] })
+    pick(empty, '2026-07-10')
+    expect(empty.value()).toEqual(['2026-07-10T00:00'])
+  })
+
+  it('空值那条不算命中当前值；Tab 落点落在命中且可按的那条上', () => {
+    const h = mount({ presets: [{ value: '', label: '空' }, { value: '2026-07-10', label: '某日', disabled: true }, { value: '2026-07-20', label: '可用' }] })
+    expect(h.api().presets.map(p => p.selected)).toEqual([false, false, false])
+    const tabs = h.api().presets.map(p => (h.api().getPresetProps({ value: p.value }) as { tabindex: number }).tabindex)
+    expect(tabs).toEqual([-1, -1, 0])
+  })
+})
