@@ -5148,7 +5148,10 @@ input[data-scope='mention'][data-part='input'] {
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
-  transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 选中态：单选是 role=radio + aria-checked，样式一律读 data-state，不读 ARIA。
@@ -5157,9 +5160,17 @@ input[data-scope='mention'][data-part='input'] {
   color: var(--xh-segmented-item-fg-checked, var(--xh-_segmented-fg-selected));
 }
 
-/* 悬停只提亮未选中的那几段：选中段的底下压着指示器，再变色就成了两套强调 */
+/* 悬停只提亮未选中的那几段：选中段的底下压着指示器，再变色就成了两套强调。
+   底色用中性的悬停档——它是「指哪一段」的轻反馈，不表达选中 */
 [data-scope='segmented'][data-part='item']:not([data-disabled]):not([data-state='checked']):hover {
+  background-color: var(--xh-segmented-item-bg-hover, var(--xh-bg-subtle-hover));
   color: var(--xh-segmented-item-fg-hover, var(--xh-fg-default));
+}
+
+/* 按下去要有回应：整段轻微下压，松手即弹回。选中段也压——按在已选段上同样是一次点击。
+   只读段不压：它本来就不接受改值，压下去等于骗人 */
+[data-scope='segmented'][data-part='item']:not([data-disabled]):not([data-readonly]):active {
+  scale: var(--xh-segmented-item-press-scale, var(--xh-motion-scale-press));
 }
 
 /* 只读：值改不动，但对比度不降，光标也不摆出"禁止"的样子 */
@@ -5212,11 +5223,13 @@ input[data-scope='mention'][data-part='input'] {
   box-shadow: var(--xh-segmented-indicator-shadow, var(--xh-elevation-1));
   /* 段压在它上面，点击一律交给段；作者把它写在段之后时也不至于吞掉点击 */
   pointer-events: none;
+  /* 用标准曲线而不是进场那条：滑块是被推过去的，起步就该有速度，
+     纯减速曲线看着像自己飘过去。四个几何量同时走，段宽不等时才不会先变形再挪位 */
   transition:
-    inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
-    inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
-    inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
-    block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    inset-inline-start var(--xh-motion-duration-enter) var(--xh-ease-standard),
+    inset-block-start var(--xh-motion-duration-enter) var(--xh-ease-standard),
+    inline-size var(--xh-motion-duration-enter) var(--xh-ease-standard),
+    block-size var(--xh-motion-duration-enter) var(--xh-ease-standard);
 }
 
 /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
