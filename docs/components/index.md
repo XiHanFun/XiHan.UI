@@ -37,7 +37,7 @@
 | [栅格](./grid) | `grid` | 2 | 0 | 7 |
 | [布局](./layout) | `layout` | 6 | 1 | 7 |
 | [瀑布流](./masonry) | `masonry` | 3 | 0 | 5 |
-| [滚动区域](./scroll-area) | `scroll-area` | 6 | 5 | 5 |
+| [滚动区域](./scroll-area) | `scroll-area` | 4 | 5 | 5 |
 | [滚动条](./scrollbar) | `scrollbar` | 4 | 7 | 4 |
 | [分隔线](./separator) | `separator` | 1 | 0 | 4 |
 | [间距](./space) | `space` | 2 | 0 | 5 |
@@ -135,13 +135,13 @@
 | [数值动画](./number-animation) | `number-animation` | 1 | 0 | 4 |
 | [二维码](./qr-code) | `qr-code` | 2 | 0 | 8 |
 | [统计数值](./statistic) | `statistic` | 5 | 0 | 5 |
-| [表格](./table) | `table` | 15 | 10 | 16 |
+| [表格](./table) | `table` | 15 | 10 | 17 |
 | [标签](./tag) | `tag` | 3 | 1 | 6 |
 | [时间](./time) | `time` | 1 | 0 | 4 |
 | [时间线](./timeline) | `timeline` | 8 | 0 | 5 |
 | [计时器](./timer) | `timer` | 5 | 1 | 6 |
 | [树](./tree) | `tree` | 14 | 10 | 10 |
-| [虚拟滚动](./virtualizer) | `virtualizer` | 4 | 0 | 4 |
+| [虚拟滚动](./virtualizer) | `virtualizer` | 4 | 0 | 5 |
 
 ## 反馈
 

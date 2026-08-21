@@ -18,7 +18,9 @@
 
   [data-scope='virtualizer'][data-part='root'] {
     display: block;
-    /* 作者给 root 定了尺寸后，长列表不该漫出这个框 */
+    /* 作者给 root 定了尺寸后，长列表不该漫出这个框；
+       自建定位上下文，作者往里挂的 scrollbar 贴的是这个框 */
+    position: relative;
     overflow: hidden;
   }
 

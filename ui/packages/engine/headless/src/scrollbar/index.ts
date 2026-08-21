@@ -4,6 +4,7 @@ export { scrollbarKeyboard } from './scrollbar.keyboard'
 export {
   SCROLLBAR_DEFAULT_TYPE,
   SCROLLBAR_HIDE_DELAY,
+  SCROLLBAR_HOST_ATTR,
   SCROLLBAR_SCROLL_END_DELAY,
   SCROLLBAR_STEP,
   scrollbarMachine,

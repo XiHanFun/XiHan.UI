@@ -33,6 +33,21 @@ export const SCROLLBAR_SCROLL_END_DELAY = 120
 const EMPTY_METRICS: ScrollAxisMetrics = { viewport: 0, content: 0, scroll: 0, track: 0 }
 
 /**
+ * 挂了自绘滚动条的容器带这个标记，皮肤据此藏掉原生滚动条的外观。
+ * 值是挂在它身上的滚动条数：横竖两条共用一个容器，最后一条拆走才撤标记。
+ * 交给了原生滚动的那条（触屏且没开 forceVisible）不打标记——原生滚动条得留着。
+ */
+export const SCROLLBAR_HOST_ATTR = 'data-xh-scrollbar'
+
+function markHost(el: HTMLElement, delta: 1 | -1): void {
+  const next = Number(el.getAttribute(SCROLLBAR_HOST_ATTR) ?? 0) + delta
+  if (next > 0)
+    el.setAttribute(SCROLLBAR_HOST_ATTR, String(next))
+  else
+    el.removeAttribute(SCROLLBAR_HOST_ATTR)
+}
+
+/**
  * 收起延时。缺省用默认值，负数按立即收起。
  * 非有限值（Infinity 就是「永不收起」的写法）返回 null，由调用方跳过排期——
  * 直接喂给定时器会在 dev 下当场抛。
@@ -129,6 +144,7 @@ export const scrollbarMachine = createMachine({
     scrolling: cell<boolean>(() => ({ defaultValue: false })),
     coarse: cell<boolean>(() => ({ defaultValue: false })),
     scrollableId: cell<string | null>(() => ({ defaultValue: null })),
+    rootMounted: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({
     getScrollableEl: () => null,
@@ -308,13 +324,45 @@ export const scrollbarMachine = createMachine({
        * 推迟一拍首次挂：挂载这一刻作者未必已经把容器交上来。
        *
        * 指针进出同时挂在滚动容器与滚动条根上：hover 档要的是「手还在这一片」，
-       * 只听滚动条的话，那条 10px 宽的窄条几乎碰不到。
+       * 只听滚动条的话，那条 10px 宽的窄条几乎碰不到。根节点也可能条件渲染，监听跟着它走。
        */
-      trackScrollable: ({ refs, send, scope, flush, track, context }) => {
+      trackScrollable: ({ refs, send, scope, flush, track, context, prop }) => {
         let disposed = false
         // undefined 是还没对过；null 是对过但没有容器
         let attached: HTMLElement | null | undefined
         let detach: (() => void) | undefined
+        /** 此刻打了标记的容器；容器换了或交给原生滚动时撤掉 */
+        let marked: HTMLElement | null = null
+
+        const onEnter = (): void => send({ type: 'POINTER.ENTER' })
+        const onLeave = (): void => send({ type: 'POINTER.LEAVE' })
+        /** 此刻挂着指针监听的根节点；作者换了节点（条件渲染出另一条）就挪过去 */
+        let attachedRoot: HTMLElement | null = null
+
+        const syncRoot = (): void => {
+          const next = refs.get('getRootEl')()
+          context.set('rootMounted', next != null)
+          if (next === attachedRoot)
+            return
+          attachedRoot?.removeEventListener('pointerenter', onEnter)
+          attachedRoot?.removeEventListener('pointerleave', onLeave)
+          next?.addEventListener('pointerenter', onEnter)
+          next?.addEventListener('pointerleave', onLeave)
+          attachedRoot = next
+        }
+
+        const syncMark = (): void => {
+          // 交给原生滚动的、禁用的（恒不显形）都不藏原生滚动条，容器得留着滚动指示
+          const native = context.get('coarse') && !prop('forceVisible')
+          const want = !native && !prop('disabled') && attached ? attached : null
+          if (want === marked)
+            return
+          if (marked)
+            markHost(marked, -1)
+          if (want)
+            markHost(want, 1)
+          marked = want
+        }
 
         const attach = (scrollable: HTMLElement): (() => void) => {
           const win = scope.getWin()
@@ -332,14 +380,9 @@ export const scrollbarMachine = createMachine({
           // 不拦滚动、不 preventDefault，用 passive 监听
           scrollable.addEventListener('scroll', onScroll, { passive: true })
 
-          const onEnter = (): void => send({ type: 'POINTER.ENTER' })
-          const onLeave = (): void => send({ type: 'POINTER.LEAVE' })
           // 这两个事件不冒泡，只在指针进出各自边界时来一次
           scrollable.addEventListener('pointerenter', onEnter)
           scrollable.addEventListener('pointerleave', onLeave)
-          const root = refs.get('getRootEl')()
-          root?.addEventListener('pointerenter', onEnter)
-          root?.addEventListener('pointerleave', onLeave)
 
           // 无布局环境没有 ResizeObserver：不再跟随尺寸变化，滚动与显式 measure() 仍会重量
           const resize = typeof win.ResizeObserver === 'function'
@@ -372,8 +415,6 @@ export const scrollbarMachine = createMachine({
             scrollable.removeEventListener('scroll', onScroll)
             scrollable.removeEventListener('pointerenter', onEnter)
             scrollable.removeEventListener('pointerleave', onLeave)
-            root?.removeEventListener('pointerenter', onEnter)
-            root?.removeEventListener('pointerleave', onLeave)
             resize?.disconnect()
             mutate?.disconnect()
           }
@@ -383,13 +424,17 @@ export const scrollbarMachine = createMachine({
         const sync = (): void => {
           if (disposed)
             return
+          syncRoot()
           const next = refs.get('getScrollableEl')()
-          if (next === attached)
+          if (next === attached) {
+            syncMark()
             return
+          }
           detach?.()
           detach = undefined
           attached = next
           if (!next) {
+            syncMark()
             context.set('scrollableId', null)
             reportDiagnostic({
               code: DIAGNOSTIC_CODES.scrollbarMissingScrollable,
@@ -401,18 +446,32 @@ export const scrollbarMachine = createMachine({
           }
           detach = attach(next)
           context.set('scrollableId', next.id || null)
+          syncMark()
           send({ type: 'MEASURE' })
         }
 
         flush(sync)
         // 容器节点是谁由作者的 props 决定，变了就挪监听；尺寸一变也顺手对一眼，
-        // 这样容器后到时作者调 measure() 就能接上
-        track([() => refs.get('getScrollableEl')(), context.dep('metrics')], sync)
+        // 这样容器后到时作者调 measure() 就能接上；指针类型或 forceVisible 变了要重打标记
+        track([
+          () => refs.get('getScrollableEl')(),
+          () => refs.get('getRootEl')(),
+          context.dep('metrics'),
+          context.dep('coarse'),
+          () => prop('forceVisible'),
+          () => prop('disabled'),
+        ], sync)
 
         return () => {
           disposed = true
           detach?.()
           detach = undefined
+          attachedRoot?.removeEventListener('pointerenter', onEnter)
+          attachedRoot?.removeEventListener('pointerleave', onLeave)
+          attachedRoot = null
+          if (marked)
+            markHost(marked, -1)
+          marked = null
         }
       },
 

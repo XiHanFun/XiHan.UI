@@ -14,10 +14,11 @@
 
 ## 特性
 
-- 挂在作者给的滚动容器上，与它是不是本组件的后代无关。
-- 四种露面时机（`auto` / `always` / `scroll` / `hover`），带收起延时。
+- 挂在作者给的滚动容器上，与它是不是本组件的后代无关；挂上后容器带 `data-xh-scrollbar`，原生滚动条的外观自动藏起来。
+- 四种露面时机（`auto` / `always` / `scroll` / `hover`），带收起延时；露出与收起都淡变。
 - 拖滑块、点轨道跳转、RTL 双向换算、滑块像素下限都在库里。
 - `focusable` 打开后滑块进 Tab 序并报 `role="scrollbar"`，方向键与翻页键可用。
+- 触屏（粗指针）上默认交给原生滚动，`forceVisible` 打开才画。
 
 ## 示例
 
@@ -131,6 +132,7 @@ auto 溢出就露、always 恒露、scroll 滚动时露、hover 指针进入才�
 | `overflow` | `boolean` | 内容比可视区长。不溢出时 auto 档整条不显形。 |
 | `visible` | `boolean` | 这一刻该不该显形（已把 type、disabled 与触屏原生那一路都算进去）。 |
 | `native` | `boolean` | 交给了原生滚动：粗指针设备且没开 forceVisible，整条不显形。 |
+| `hover` | `boolean` | 指针此刻在滚动容器或滚动条上。 |
 | `dragging` | `boolean` | 手正按在滑块上。 |
 | `scrolling` | `boolean` | 这一段滚动还在进行中。 |
 | `thumbSize` | `number` | 滑块长度占轨道的比例，0-1。 |
@@ -208,7 +210,7 @@ auto 溢出就露、always 恒露、scroll 滚动时露、hover 指针进入才�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-scrollbar-gutter` · `--xh-scrollbar-thickness-lg` · `--xh-scrollbar-thickness-md` · `--xh-scrollbar-thickness-sm` · `--xh-scrollbar-thumb-bg` · `--xh-scrollbar-thumb-bg-active` · `--xh-scrollbar-thumb-bg-disabled` · `--xh-scrollbar-thumb-bg-hover` · `--xh-scrollbar-thumb-radius` · `--xh-scrollbar-track-bg`
+`--xh-scrollbar-corner-bg` · `--xh-scrollbar-gutter` · `--xh-scrollbar-thickness-lg` · `--xh-scrollbar-thickness-md` · `--xh-scrollbar-thickness-sm` · `--xh-scrollbar-thumb-bg` · `--xh-scrollbar-thumb-bg-active` · `--xh-scrollbar-thumb-bg-disabled` · `--xh-scrollbar-thumb-bg-hover` · `--xh-scrollbar-thumb-radius` · `--xh-scrollbar-track-bg`
 
 ## 动效
 
@@ -222,8 +224,9 @@ auto 溢出就露、always 恒露、scroll 滚动时露、hover 指针进入才�
 
 ## 组合
 
-- 与[滚动区域](./scroll-area)共用同一套几何换算与厚度令牌，两处放在一起长得一样。
-- 两条轴各摆一个即可；交叉口那块补丁归容器自己。
+- [滚动区域](./scroll-area)就是视口加两条本组件的组装：它的轨道、滑块与交叉口戴的正是本组件的 scope。
+- [表格](./table)放进滚动区即可滚；[虚拟滚动](./virtualizer)的视口给个 id，用 `controls` 挂上即可。
+- 两条轴各摆一个，都打开 `gutter` 让出交叉口，`corner` 写在其中一条里补上那一格。
 
 ## 最佳实践
 

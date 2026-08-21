@@ -47,6 +47,15 @@
     display: none;
   }
 
+  /* 放进滚动区的表格：滚动交给滚动区的视口，表格自己不再定高、不再滚；
+     吸顶表头与吸附列钉的是最近的滚动容器，于是也就钉在视口上。
+     自定义元素那条路上 <xh-table> 宿主夹在内容层与表格根之间，两种嵌法都认 */
+  [data-scope='scroll-area'][data-part='content'] > [data-scope='table'][data-part='root'],
+  [data-scope='scroll-area'][data-part='content'] > xh-table > [data-scope='table'][data-part='root'] {
+    max-block-size: none;
+    overflow: visible;
+  }
+
   /* 纯容器：焦点落它身上不画环，高亮永远长在行上 */
   [data-scope='table'][data-part='root']:focus-visible {
     outline: none;

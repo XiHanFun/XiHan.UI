@@ -5,6 +5,7 @@ import {
   XhScrollAreaRoot,
   XhScrollAreaScrollbar,
   XhScrollAreaThumb,
+  XhScrollAreaTrack,
   XhScrollAreaViewport,
 } from "@xihan-ui/vue";
 
@@ -37,7 +38,9 @@ const cards = Array.from({ length: 12 }, (_, i) => `卡片 ${i + 1}`);
       </XhScrollAreaContent>
     </XhScrollAreaViewport>
     <XhScrollAreaScrollbar orientation="horizontal">
-      <XhScrollAreaThumb />
+      <XhScrollAreaTrack>
+        <XhScrollAreaThumb />
+      </XhScrollAreaTrack>
     </XhScrollAreaScrollbar>
   </XhScrollAreaRoot>
 </template>

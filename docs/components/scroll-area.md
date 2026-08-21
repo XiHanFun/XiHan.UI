@@ -15,8 +15,9 @@
 
 ## 特性
 
+- 它是视口加两条[滚动条](./scrollbar)的组装：`scrollbar` 挂载点同时是那条滚动条的根，里面照滚动条的写法摆轨道、滑块与交叉口；显隐、拖动、几何全是滚动条那一套。
 - `root` 要有确定高度，视口才量得出溢出。
-- `type` 决定滚动条什么时候露面：`hover` 指针进来才露，`always` 恒露，`scroll` 滚动时露、停手后收起。
+- `type` 决定滚动条什么时候露面：`hover` 指针进来才露，`auto` 溢出就露，`always` 恒露，`scroll` 滚动时露、停手后收起。
 - `orientation` 关掉的那条轴滚动条恒不显形，视口那一向也不再滚，不留滚不回来的暗格。
 - `dir` 必须显式给：组件不读计算样式，看不见从 RTL 祖先继承来的方向。
 
@@ -57,25 +58,27 @@ type 为 scroll 时滚动条停手后不立刻收起，hideDelay 决定还留多
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-scroll-area>` |
-| Vue 组件 | `XhScrollAreaContent` `XhScrollAreaCorner` `XhScrollAreaRoot` `XhScrollAreaScrollbar` `XhScrollAreaThumb` `XhScrollAreaViewport` |
+| Vue 组件 | `XhScrollAreaContent` `XhScrollAreaCorner` `XhScrollAreaRoot` `XhScrollAreaScrollbar` `XhScrollAreaThumb` `XhScrollAreaTrack` `XhScrollAreaViewport` |
 | 组合式函数 | `useScrollArea` |
-| 状态机 | `scrollAreaMachine` |
+| 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/scroll-area.css` |
 
 ## 解剖
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="scroll-area"`：**`root`** · **`viewport`** · **`content`** · `scrollbar` · `thumb` · `corner`
+`data-scope="scroll-area"`：**`root`** · **`viewport`** · **`content`** · `scrollbar`
 
 ## Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `type` | `ScrollAreaType` |  | 滚动条露面的时机，默认 hover。 |
+| `dir` | `Direction` |  | 排版方向，默认随文档。只影响横轴：RTL 下滚动量的正负、指针位移的方向都要翻一次。 必须显式给：组件不读计算样式，看不见从 RTL 祖先继承来的方向。 |
+| `forceVisible` | `boolean` |  | 触屏（粗指针）上也画自绘滚动条，默认 false：缺省交给原生滚动。 |
 | `hideDelay` | `number` |  | 收起前的等待毫秒（type 为 scroll / hover 时生效），默认 600。 |
 | `orientation` | `ScrollAreaOrientation` |  | 哪几条轴归本组件管，默认 both。 |
-| `dir` | `Direction` |  | 排版方向，默认随文档。只影响横轴：RTL 下滚动量的正负、指针位移的方向都要翻一次。 必须显式给：组件不读计算样式，看不见从 RTL 祖先继承来的方向。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，换的是滚动条厚度。 |
+| `type` | `ScrollbarType` |  | 滚动条露面的时机，默认 hover。 |
 
 ## 插槽
 
@@ -92,16 +95,7 @@ type 为 scroll 时滚动条停手后不立刻收起，hideDelay 决定还留多
 | 部件 | 取值 |
 | --- | --- |
 | `scrollbar` | 'visible' \| 'hidden' |
-| `thumb` | 'visible' \| 'hidden' |
 | `corner` | 'visible' \| 'hidden' |
-
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
-
-**状态**：`hidden` · `visible` · `hiding` · `dragging`
-
-**事件**：`MEASURE` · `SCROLL` · `POINTER.ENTER` · `POINTER.LEAVE` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `TRACK.CLICK` · `after.hideDelay`
-
-**判据**：`isHoverType` · `isScrollType` · `staysVisible`
 
 ## connect API
 
@@ -109,7 +103,7 @@ type 为 scroll 时滚动条停手后不立刻收起，hideDelay 决定还留多
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `type` | `ScrollAreaType` |  |
+| `type` | `ScrollbarType` |  |
 | `orientation` | `ScrollAreaOrientation` |  |
 | `vertical` | `ScrollAreaAxisState` |  |
 | `horizontal` | `ScrollAreaAxisState` |  |
@@ -118,9 +112,10 @@ type 为 scroll 时滚动条停手后不立刻收起，hideDelay 决定还留多
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
-| `getScrollbarProps` | `(props: ScrollAreaScrollbarProps) => T['element']` |  |
+| `getScrollbarProps` | `(props: ScrollAreaScrollbarProps) => T['element']` | 某条轴的滚动条挂载点，同时充当那条 scrollbar 的根节点。 |
+| `getTrackProps` | `(props: ScrollAreaScrollbarProps) => T['element']` |  |
 | `getThumbProps` | `(props: ScrollAreaScrollbarProps) => T['element']` |  |
-| `getCornerProps` | `() => T['element']` |  |
+| `getCornerProps` | `() => T['element']` | 交叉口补丁，写在竖条的挂载点里；只有两条都在场时才显形。 |
 
 ## 键盘
 
@@ -141,11 +136,10 @@ type 为 scroll 时滚动条停手后不立刻收起，hideDelay 决定还留多
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `scrollbar` | `aria-hidden` | 'true' |
-| `corner` | `aria-hidden` | 'true' |
 
 ## 样式
 
-默认皮肤 `@xihan-ui/styles/scroll-area.css` 按部件选择：`[data-scope="scroll-area"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+默认皮肤 `@xihan-ui/styles/scroll-area.css` 按部件选择：`[data-scope="scroll-area"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
 
 ## 数据属性
 
@@ -155,27 +149,27 @@ type 为 scroll 时滚动条停手后不立刻收起，hideDelay 决定还留多
 | --- | --- | --- |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
+| `root` | `data-size` | props.size |
 | `root` | `data-type` | props.type |
+| `viewport` | `data-lane-horizontal` | ''（条件成立时才出现） |
+| `viewport` | `data-lane-vertical` | ''（条件成立时才出现） |
+| `viewport` | `data-native` | ''（条件成立时才出现） |
 | `viewport` | `data-orientation` | props.orientation |
 | `content` | `data-orientation` | props.orientation |
 | `scrollbar` | `data-dragging` | ''（条件成立时才出现） |
 | `scrollbar` | `data-gutter` | ''（条件成立时才出现） |
-| `scrollbar` | `data-orientation` | bar.orientation |
+| `scrollbar` | `data-hover` | ''（条件成立时才出现） |
+| `scrollbar` | `data-native` | ''（条件成立时才出现） |
+| `scrollbar` | `data-orientation` | axis |
+| `scrollbar` | `data-scrolling` | ''（条件成立时才出现） |
+| `scrollbar` | `data-size` | props.size |
 | `scrollbar` | `data-state` | 'visible' \| 'hidden' |
-| `thumb` | `data-dragging` | ''（条件成立时才出现） |
-| `thumb` | `data-orientation` | bar.orientation |
-| `thumb` | `data-state` | 'visible' \| 'hidden' |
+| `scrollbar` | `data-type` | props.type |
 | `corner` | `data-state` | 'visible' \| 'hidden' |
-
-## CSS 变量
-
-本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
-
-`--xh-scroll-area-bar-bg` · `--xh-scroll-area-bar-padding` · `--xh-scroll-area-bar-size` · `--xh-scroll-area-corner-bg` · `--xh-scroll-area-thumb-bg` · `--xh-scroll-area-thumb-bg-dragging` · `--xh-scroll-area-thumb-bg-hover` · `--xh-scroll-area-thumb-radius`
 
 ## 动效
 
-关键帧 `xh-scroll-area-bar-in` 随皮肤自带，不引用别处文件里的名字；状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+状态切换走 `transition`。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -186,10 +180,11 @@ type 为 scroll 时滚动条停手后不立刻收起，hideDelay 决定还留多
 ## 组合
 
 - 放进[分栏](./splitter)的面板、[对话框](./dialog)的内容区、[菜单](./menu)的长条目列表。
+- 把[表格](./table)放进视口：表格不再自己定高与滚，吸顶表头与吸附列钉在视口上，两条滚动条照常工作。
 
 ## 最佳实践
 
-- 触摸设备上不要用 `hover`：那里没有悬停，滚动条会一直不出现。
+- 触屏（粗指针）上默认交给原生滚动、不画自绘滚动条；`forceVisible` 打开才画，那时别用 `hover`：那里没有悬停。
 - 内容可滚时给出可见提示（渐隐边缘或恒显滚动条），否则用户不知道下面还有东西。
 
 ## 反模式

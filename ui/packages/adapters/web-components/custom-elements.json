@@ -28294,31 +28294,35 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-scroll-area>` —— Light-DOM 行为宿主：作者写 root/viewport/content/scrollbar/thumb/corner\n角色节点，元素跑 scroll-area 机器并把 connect 产出打上去。\n\n滚动本身一概不接管：viewport 是真正 overflow:auto 的那层，键盘（PageUp/PageDown、方向键、\nHome/End）与滚轮全部走浏览器原生通路，元素只是把原生滚动条藏起来另画一套。\n自绘的 scrollbar/thumb 对读屏隐藏——同一件事没必要报两遍。\n\n滑块的位置与长度按视口/内容/滚动量算出来后写进内联样式：竖向是 inset-block-start + block-size，\n横向是 inset-inline-start + inline-size（逻辑属性，RTL 下自动换向）。\n尺寸在机器的效应里量：挂载后推迟一拍量一次，此后跟着 scroll 事件与 ResizeObserver 走。\n\n每条滚动条用 orientation 属性写明自己管哪条轴（不写即 vertical），\n滑块按所在滚动条的轴向取几何，不必另写。",
+          "description": "`<xh-scroll-area>` —— Light-DOM 行为宿主：作者写 root/viewport/content 与两条 scrollbar\n角色节点，元素按轴各跑一台 scrollbar 机器并把 connect 产出打上去。\n\n滚动区没有自己的机器，它是视口加两条 scrollbar 的组装：scrollbar 角色节点是那条\nscrollbar 的挂载点、同时充当它的根，里面照 scrollbar 那套写 track / thumb / corner\n（它们戴 data-scope=\"scrollbar\"），两个组件共用同一份滚动条。\n\n滚动本身一概不接管：viewport 是真正 overflow:auto 的那层，键盘（PageUp/PageDown、方向键、\nHome/End）与滚轮全部走浏览器原生通路，元素只是把原生滚动条藏起来另画一套。\n自绘的滚动条对读屏隐藏——同一件事没必要报两遍。\n\n每条滚动条用 orientation 属性写明自己管哪条轴（不写即 vertical），\n轨道与滑块按所在滚动条的轴向取几何，不必另写。这是挂载时的静态声明：运行期要换轴，换节点。",
           "name": "XhScrollAreaElement",
           "cssParts": [
             {
-              "description": "组件根容器（承载 data-orientation / data-type / data-dragging），指针进出的判据挂在它身上",
+              "description": "组件根容器（承载 data-orientation / data-type / data-dragging），定位上下文",
               "name": "root"
             },
             {
-              "description": "真正 overflow:auto 的那层，带 tabindex=0 让键盘用户落得进来",
+              "description": "真正 overflow:auto 的那层，带 tabindex=0 让键盘用户落得进来；承载 data-lane-vertical / data-lane-horizontal",
               "name": "viewport"
             },
             {
-              "description": "内容包裹层，横向溢出靠它撑出宽度，尺寸变化也观察它",
+              "description": "内容包裹层，横向溢出靠它撑出宽度",
               "name": "content"
             },
             {
-              "description": "自绘滚动条轨道，须用 orientation 属性写明轴向；收起时带 hidden",
+              "description": "某条轴的滚动条挂载点，须用 orientation 属性写明轴向；同时是那条 scrollbar 的根，承载 data-state / data-hover / data-gutter / data-native",
               "name": "scrollbar"
             },
             {
-              "description": "滑块，位置与长度由内联逻辑属性给出；按住可拖",
+              "description": "轨道（data-scope=\"scrollbar\"），点空白处把滑块中心挪过去",
+              "name": "track"
+            },
+            {
+              "description": "滑块（data-scope=\"scrollbar\"），位置与长度由内联逻辑属性给出；按住可拖",
               "name": "thumb"
             },
             {
-              "description": "两条滚动条同时在场时右下角那块补丁；只有一条时带 hidden",
+              "description": "交叉口补丁（data-scope=\"scrollbar\"），写在竖条的挂载点里；只有两条都在场时显形",
               "name": "corner"
             }
           ],
@@ -28330,14 +28334,14 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: scrollAreaAnatomy, meta: scrollAreaMeta }"
+              "default": "{ anatomy: scrollAreaAnatomy, meta: scrollAreaMeta, delegates: [scrollbarAnatomy], }"
             },
             {
               "kind": "field",
               "name": "type",
               "privacy": "public",
               "type": {
-                "text": "ScrollAreaType | undefined"
+                "text": "ScrollbarType | undefined"
               },
               "attribute": "type"
             },
@@ -28361,12 +28365,30 @@
             },
             {
               "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
               "name": "direction",
               "privacy": "public",
               "type": {
                 "text": "Direction | undefined"
               },
               "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "forceVisible",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "force-visible"
             },
             {
               "kind": "field",
@@ -28379,24 +28401,31 @@
             },
             {
               "kind": "field",
-              "name": "scrollAreaScope",
+              "name": "areaScope",
               "privacy": "private",
               "readonly": true
             },
             {
               "kind": "field",
-              "name": "ctrl",
+              "name": "verticalCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<ScrollAreaSchema>( this, scrollAreaMachine, () => this.machineProps(), { scope: this.scrollAreaScope, onBuilt: svc => this.injectRefs(svc) }, )"
+              "default": "new MachineController<ScrollbarSchema>( this, scrollbarMachine, () => scrollAreaScrollbarProps(this.areaProps(), 'vertical'), { scope: this.areaScope, onBuilt: svc => this.injectRefs(svc, 'vertical') }, )"
+            },
+            {
+              "kind": "field",
+              "name": "horizontalCtrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<ScrollbarSchema>( this, scrollbarMachine, () => scrollAreaScrollbarProps(this.areaProps(), 'horizontal'), { scope: this.areaScope, onBuilt: svc => this.injectRefs(svc, 'horizontal') }, )"
             },
             {
               "kind": "method",
-              "name": "machineProps",
+              "name": "areaProps",
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "Partial<ScrollAreaSchema['props']>"
+                  "text": "ScrollAreaProps"
                 }
               }
             },
@@ -28421,21 +28450,22 @@
             },
             {
               "kind": "method",
-              "name": "injectRefs",
+              "name": "barEl",
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "void"
+                  "text": "HTMLElement | null"
                 }
               },
               "parameters": [
                 {
-                  "name": "svc",
+                  "name": "axis",
                   "type": {
-                    "text": "Service<ScrollAreaSchema>"
+                    "text": "Orientation"
                   }
                 }
-              ]
+              ],
+              "description": "某条轴的挂载点：按轴现查而不是缓存，作者随时可能增删一条轴的滚动条。"
             },
             {
               "kind": "method",
@@ -28450,13 +28480,37 @@
                 {
                   "name": "owner",
                   "type": {
-                    "text": "HTMLElement"
+                    "text": "HTMLElement | null"
                   }
                 },
                 {
                   "name": "name",
                   "type": {
                     "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<ScrollbarSchema>"
+                  }
+                },
+                {
+                  "name": "axis",
+                  "type": {
+                    "text": "Orientation"
                   }
                 }
               ]
@@ -28475,7 +28529,7 @@
           "attributes": [
             {
               "type": {
-                "text": "ScrollAreaType | undefined"
+                "text": "ScrollbarType | undefined"
               },
               "description": "滚动条露面的时机，默认 hover",
               "name": "type",
@@ -28499,11 +28553,27 @@
             },
             {
               "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸档，换的是滚动条厚度",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
                 "text": "Direction | undefined"
               },
               "description": "排版方向，只改写横轴的滚动量正负与指针位移方向",
               "name": "dir",
               "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "触屏（粗指针）上也画自绘滚动条；缺省交给原生滚动",
+              "name": "force-visible",
+              "fieldName": "forceVisible"
             }
           ],
           "superclass": {
@@ -28511,33 +28581,7 @@
             "module": "/src/element-base"
           },
           "tagName": "xh-scroll-area",
-          "customElement": true,
-          "cssProperties": [
-            {
-              "name": "--xh-scroll-area-bar-bg"
-            },
-            {
-              "name": "--xh-scroll-area-bar-padding"
-            },
-            {
-              "name": "--xh-scroll-area-bar-size"
-            },
-            {
-              "name": "--xh-scroll-area-corner-bg"
-            },
-            {
-              "name": "--xh-scroll-area-thumb-bg"
-            },
-            {
-              "name": "--xh-scroll-area-thumb-bg-dragging"
-            },
-            {
-              "name": "--xh-scroll-area-thumb-bg-hover"
-            },
-            {
-              "name": "--xh-scroll-area-thumb-radius"
-            }
-          ]
+          "customElement": true
         }
       ],
       "exports": [

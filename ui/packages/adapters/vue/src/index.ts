@@ -621,6 +621,7 @@ export {
   XhScrollAreaRoot,
   XhScrollAreaScrollbar,
   XhScrollAreaThumb,
+  XhScrollAreaTrack,
   XhScrollAreaViewport,
 } from './components/scroll-area/scroll-area'
 export type { ScrollAreaRootSlotProps } from './components/scroll-area/scroll-area'

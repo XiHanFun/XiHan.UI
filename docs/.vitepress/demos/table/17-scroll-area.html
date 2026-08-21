@@ -1,0 +1,77 @@
+<!-- 放进滚动区 | 表格交给滚动区的视口滚，两条自绘滚动条与吸顶表头、吸附列一起工作；表格自己不再定高 -->
+<!-- 滚动区定高，表格不再自己滚；两条轴各写一条滚动条，交叉口写在竖条里。
+     嵌套的 xh-* 元素各管各的角色节点：xh-table 的部件不会被 xh-scroll-area 接线 -->
+<xh-scroll-area type="auto">
+  <div data-xh-part="root" style="block-size: 260px; inline-size: 100%; max-inline-size: 420px">
+    <div data-xh-part="viewport">
+      <div data-xh-part="content">
+        <xh-table id="table-scroll-area" sticky-header>
+          <div data-xh-part="root">
+            <div data-xh-part="header">
+              <div data-xh-part="row">
+                <div data-xh-part="column-header" value="name">姓名</div>
+                <div data-xh-part="column-header" value="dept">部门</div>
+                <div data-xh-part="column-header" value="city">城市</div>
+                <div data-xh-part="column-header" value="ext">分机</div>
+                <div data-xh-part="column-header" value="mail">邮箱</div>
+              </div>
+            </div>
+            <div data-xh-part="body"></div>
+          </div>
+        </xh-table>
+      </div>
+    </div>
+    <div data-xh-part="scrollbar" orientation="vertical">
+      <div data-xh-part="track">
+        <div data-xh-part="thumb"></div>
+      </div>
+      <div data-xh-part="corner"></div>
+    </div>
+    <div data-xh-part="scrollbar" orientation="horizontal">
+      <div data-xh-part="track">
+        <div data-xh-part="thumb"></div>
+      </div>
+    </div>
+  </div>
+</xh-scroll-area>
+
+<script type="module">
+  const table = document.getElementById("table-scroll-area");
+  const body = table.querySelector('[data-xh-part="body"]');
+
+  table.columns = [
+    { id: "name", label: "姓名", width: "7rem", sticky: true },
+    { id: "dept", label: "部门", width: "9rem" },
+    { id: "city", label: "城市", width: "7rem" },
+    { id: "ext", label: "分机", width: "7rem" },
+    { id: "mail", label: "邮箱", width: "13rem" },
+  ];
+
+  const depts = ["平台研发", "前端体验", "基础架构", "质量保障"];
+  const cities = ["杭州", "上海", "北京", "成都"];
+
+  const members = Array.from({ length: 24 }, (_, i) => ({
+    id: `u${i + 1}`,
+    name: `员工 ${i + 1}`,
+    dept: depts[i % depts.length],
+    city: cities[i % cities.length],
+    ext: `8${(100 + i).toString()}`,
+    mail: `member${i + 1}@example.com`,
+  }));
+
+  for (const member of members) {
+    const row = document.createElement("div");
+    row.dataset.xhPart = "row";
+    row.setAttribute("value", member.id);
+    for (const id of ["name", "dept", "city", "ext", "mail"]) {
+      const cell = document.createElement("div");
+      cell.dataset.xhPart = "cell";
+      cell.setAttribute("value", id);
+      cell.textContent = member[id];
+      row.append(cell);
+    }
+    body.append(row);
+  }
+
+  table.rows = members.map((m) => ({ id: m.id }));
+</script>
