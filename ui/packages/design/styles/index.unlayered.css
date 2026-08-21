@@ -11396,8 +11396,8 @@ input[data-scope='mention'][data-part='input'] {
   user-select: none;
 }
 
-/* 悬停与键盘锚点共用中性轻档，命中那一条才走品牌淡底——两档靠色相分家 */
-[data-scope='date-picker'][data-part='preset']:hover {
+/* 悬停与键盘锚点共用中性轻档，命中那一条才走品牌淡底——两档靠色相分家；禁用的不响应悬停 */
+[data-scope='date-picker'][data-part='preset']:hover:not([data-disabled]) {
   background: var(--xh-date-picker-preset-bg-hover, var(--xh-bg-subtle));
 }
 
@@ -19360,8 +19360,8 @@ input[data-scope='mention'][data-part='input'] {
   user-select: none;
 }
 
-/* 悬停与键盘锚点共用中性轻档，命中那一条才走品牌淡底 */
-[data-scope='time-picker'][data-part='preset']:hover {
+/* 悬停与键盘锚点共用中性轻档，命中那一条才走品牌底；禁用的不响应悬停 */
+[data-scope='time-picker'][data-part='preset']:hover:not([data-disabled]) {
   background: var(--xh-time-picker-preset-bg-hover, var(--xh-bg-subtle));
 }
 
@@ -19373,9 +19373,13 @@ input[data-scope='mention'][data-part='input'] {
 
 /* 命中的那一条与选中的格子同一副实心底：同一份浮层里两种「选中」不该长成两个样 */
 [data-scope='time-picker'][data-part='preset'][data-state='checked'] {
-  background: var(--xh-time-picker-preset-bg-selected, var(--xh-_time-picker-accent));
-  color: var(--xh-time-picker-preset-fg-selected, var(--xh-_time-picker-accent-fg));
+  background: var(--xh-time-picker-preset-bg-checked, var(--xh-_time-picker-accent));
+  color: var(--xh-time-picker-preset-fg-checked, var(--xh-_time-picker-accent-fg));
   font-weight: var(--xh-font-weight-medium);
+}
+
+[data-scope='time-picker'][data-part='preset'][data-state='checked']:hover:not([data-disabled]) {
+  background: var(--xh-time-picker-preset-bg-checked-hover, var(--xh-_time-picker-accent-hover));
 }
 
 [data-scope='time-picker'][data-part='preset'][data-disabled] {

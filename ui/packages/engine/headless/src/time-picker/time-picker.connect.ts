@@ -9,7 +9,10 @@ import { overlayPositioned } from '../shared/overlay'
 import {
   appendSegmentDigit,
   dayPeriodLabel,
+  draftFromTime,
+  formatTimeValue,
   isTimeOutOfRange,
+  parseTimeValue,
   resolveHourCycle,
   resolveTimeDraft,
   segmentNumber,
@@ -134,14 +137,33 @@ export function connectTimePicker<T extends PropTypes>(
   }
 
   // —— 快捷选项：一条选项就是一次整份写值，写完收起 ——
-  const presets: readonly TimePickerPresetState[] = (prop('presets') ?? [])
-    .map(preset => ({ ...preset, selected: preset.value === value && value !== '' }))
+  /**
+   * 作者写的时刻归一成组件自己的值形状（'9:00' → '09:00'，多出的秒按精度截掉），
+   * 命中判定与写值都用归一后的串；解析不了的为 null。
+   */
+  const normalizeTime = (raw: string): string | null => {
+    const time = parseTimeValue(raw)
+    if (!time)
+      return null
+    const text = formatTimeValue(draftFromTime(time), granularity)
+    return text === '' ? null : text
+  }
+  // step 只裁列表里排哪些格，不限制值本身（段位里照样能敲出 14:37），快捷选项因此不看它
+  const presets: readonly TimePickerPresetState[] = (prop('presets') ?? []).map((preset) => {
+    const time = normalizeTime(preset.value)
+    // 解析不了、落在 min/max 之外的，按下不写值
+    const presetDisabled = !!preset.disabled || time == null || isTimeOutOfRange(time, prop('min'), prop('max'))
+    return { ...preset, time, disabled: presetDisabled, selected: time != null && time === value }
+  })
 
   /**
-   * 这一列此刻的 Tab 落点：命中的那一条，没命中就落头一条。
+   * 这一列此刻的 Tab 落点：命中且按得下的那一条，没命中就落头一条按得下的。
    * 不另立「聚焦到哪一条」的状态——落点由当前值推得出来，焦点本身交给 DOM。
    */
-  const presetAnchor = presets.find(preset => preset.selected)?.value ?? presets[0]?.value ?? null
+  const presetAnchor = presets.find(preset => preset.selected && !preset.disabled)?.value
+    ?? presets.find(preset => !preset.disabled)?.value
+    ?? presets[0]?.value
+    ?? null
 
   /** 快捷选项列里的全部条目，文档序。事件那一刻现查，不缓存节点数组。 */
   const presetItemsIn = (from: HTMLElement): HTMLElement[] =>
@@ -149,9 +171,9 @@ export function connectTimePicker<T extends PropTypes>(
 
   const pickPreset = (next: string): void => {
     const preset = presets.find(p => p.value === next)
-    if (!editable || !preset || preset.disabled)
+    if (!editable || !preset || preset.disabled || preset.time == null)
       return
-    send({ type: 'VALUE.SET', value: preset.value, src: 'preset' })
+    send({ type: 'VALUE.SET', value: preset.time, src: 'preset' })
   }
 
   const itemSelected = ({ unit, value: option }: { unit: TimePickerColumnUnit, value: string }): boolean =>
@@ -582,7 +604,6 @@ export function connectTimePicker<T extends PropTypes>(
       // 单选与否必须显式说，省略只是没说
       'aria-multiselectable': 'false',
       'aria-disabled': disabled ? 'true' : 'false',
-      'data-state': stateAttr,
       'hidden': presets.length === 0 || undefined,
       // 一条都没有时由列自己接住焦点——它是 role=listbox 且有名字
       'tabindex': presetAnchor == null ? 0 : -1,
@@ -592,11 +613,11 @@ export function connectTimePicker<T extends PropTypes>(
         const items = presetItemsIn(event.currentTarget as HTMLElement)
         const current = (event.target as HTMLElement | null)?.closest<HTMLElement>(parts.preset.selector) ?? null
 
-        // 上下键与 Home/End 在列内走，到头回绕——一列就是一圈选项
+        // 上下键与 Home/End 在列内走，到头回绕——一列就是一圈选项；禁用的也停得上去，只是按下不写
         const within = navIntentFromKey(event, { axis: 'vertical' })
         if (within) {
           event.preventDefault()
-          focusSafely(navigateItems(items, current ? itemValue(current) : null, within, { loop: true }))
+          focusSafely(navigateItems(items, current ? itemValue(current) : null, within, { loop: true, focusDisabled: true }))
           return
         }
 

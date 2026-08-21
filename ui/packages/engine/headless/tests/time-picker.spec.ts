@@ -941,3 +941,35 @@ describe('受控值', () => {
     expect(h.value()).toBe('09:05')
   })
 })
+
+describe('快捷选项', () => {
+  const pick = (h: Harness, value: string): void => {
+    (h.api().getPresetProps({ value }) as { onClick: () => void }).onClick()
+  }
+
+  it('作者写的时刻归一成组件的值形状：精度到分时 09:00:30 与 09:00 是同一条', () => {
+    const h = mount({ defaultValue: '09:00', presets: [{ value: '09:00:30', label: '上班' }, { value: '13:45:30', label: '午后' }] })
+    expect(h.api().presets.map(p => [p.time, p.selected])).toEqual([['09:00', true], ['13:45', false]])
+    pick(h, '13:45:30')
+    expect(h.value()).toBe('13:45')
+  })
+
+  it('越界、解析不了的按不下去；step 只裁列表，不拦快捷选项', () => {
+    const h = mount({ min: '08:00', max: '18:00', step: 15, presets: [
+      { value: '07:00', label: '界外' },
+      { value: 'noon', label: '解析不了' },
+      { value: '09:07', label: '不在步进上也能按' },
+    ] })
+    expect(h.api().presets.map(p => p.disabled)).toEqual([true, true, false])
+    pick(h, '07:00')
+    expect(h.value()).toBe('')
+    pick(h, '09:07')
+    expect(h.value()).toBe('09:07')
+  })
+
+  it('Tab 落点落在命中且按得下的那条上', () => {
+    const h = mount({ presets: [{ value: '09:00', label: '上班', disabled: true }, { value: '18:00', label: '下班' }] })
+    const tabs = h.api().presets.map(p => (h.api().getPresetProps({ value: p.value }) as { tabindex: number }).tabindex)
+    expect(tabs).toEqual([-1, 0])
+  })
+})

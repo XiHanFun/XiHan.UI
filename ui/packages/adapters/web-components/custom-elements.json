@@ -37364,16 +37364,19 @@
               "name": "--xh-time-picker-label-font-weight"
             },
             {
+              "name": "--xh-time-picker-preset-bg-checked"
+            },
+            {
+              "name": "--xh-time-picker-preset-bg-checked-hover"
+            },
+            {
               "name": "--xh-time-picker-preset-bg-hover"
             },
             {
-              "name": "--xh-time-picker-preset-bg-selected"
+              "name": "--xh-time-picker-preset-fg-checked"
             },
             {
               "name": "--xh-time-picker-preset-fg-disabled"
-            },
-            {
-              "name": "--xh-time-picker-preset-fg-selected"
             },
             {
               "name": "--xh-time-picker-preset-px"

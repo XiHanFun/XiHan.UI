@@ -145,10 +145,17 @@ export function connectDatePicker<T extends PropTypes>(
   }
 
   // —— 快捷选项：一条选项就是一次整份写值 ——
+  /** 这条选项带的日期数与选择模式合不合：单选恰一条、区间恰两条、多选至少一条。 */
+  const fitsSelection = (dates: readonly string[]): boolean =>
+    selectionMode === 'single' ? dates.length === 1 : selectionMode === 'range' ? dates.length === 2 : dates.length >= 1
   const presetInput = prop('presets') ?? []
   const presets: readonly DatePickerPresetState[] = presetInput.map((preset) => {
     const dates = datePickerPresetDates(preset.value)
-    return { ...preset, dates, selected: sameDates(filled, dates) }
+    // 与模式不配、或有哪一天落在 min/max 之外 / 被作者判为不可用的，按下不写值；
+    // 选中判定只看日期段：showTime 下值里带着时间
+    const presetDisabled = !!preset.disabled || !fitsSelection(dates) || dates.some(d => calendar.isUnavailable(d))
+    const selected = dates.length > 0 && sameDates(filled.map(datePickerDatePart), dates)
+    return { ...preset, dates, disabled: presetDisabled, selected }
   })
 
   /** 一列里的全部选项，文档序。事件那一刻现查，不缓存节点数组。 */
@@ -161,14 +168,23 @@ export function connectDatePicker<T extends PropTypes>(
    * 这一列此刻的 Tab 落点：命中的那一条，没命中就落头一条。
    * 不另立「聚焦到哪一条」的状态——落点由选中值推得出来，焦点本身交给 DOM。
    */
-  const presetAnchor = presets.find(p => p.selected)?.value ?? presets[0]?.value ?? null
+  const presetAnchor = presets.find(p => p.selected && !p.disabled)?.value
+    ?? presets.find(p => !p.disabled)?.value
+    ?? presets[0]?.value
+    ?? null
 
-  /** 点快捷选项：整份日期一次写进去，收不收浮层由 closeOnSelect 那条守卫决定。 */
+  /**
+   * 点快捷选项：整份日期一次写进去，收不收浮层由 closeOnSelect 那条守卫决定。
+   * showTime 下日期要拼上此刻的时间段（还没有就零点），不然会把已挑好的时间抹掉。
+   */
   const pickPreset = (value: string): void => {
     const preset = presets.find(p => p.value === value)
     if (!interactive || !preset || preset.disabled)
       return
-    send({ type: 'VALUE.SET', value: preset.dates, src: 'preset' })
+    const next = showTime
+      ? preset.dates.map(date => datePickerJoinDateTime(date, timeValue, timeGranularity))
+      : preset.dates
+    send({ type: 'VALUE.SET', value: next, src: 'preset' })
   }
 
   /** 点时间选项：该单位写进值；还没有日期时以聚焦日起值。 */

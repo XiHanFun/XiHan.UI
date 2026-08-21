@@ -217,11 +217,19 @@ function rangeFixture(base: FixtureNode): FixtureNode {
   }
 }
 
+/** 末一条禁用、中间一条与模式不配（单选给了区间）：两者都该停得上去、按不下去。 */
+const PRESETS_MIXED = [
+  { value: '2024-02-01', label: '月初' },
+  { value: '2024-02-01/2024-02-29', label: '整月' },
+  { value: '2024-02-15', label: '锚点日' },
+  { value: '2024-02-29', label: '月末', disabled: true },
+] as const
+
 /** 快捷选项列排在日历前面，只有用到它的那条用例派生这一份。 */
-function presetsFixture(base: FixtureNode): FixtureNode {
+function presetsFixture(base: FixtureNode, presets: readonly { value: string, label: string }[] = PRESETS): FixtureNode {
   const list: FixtureNode = {
     part: 'presets',
-    children: PRESETS.map(preset => ({
+    children: presets.map(preset => ({
       part: 'preset',
       attrs: { value: preset.value },
       text: preset.label,
@@ -469,6 +477,42 @@ export const datePickerSuite: ConformanceSuite = {
               { type: 'value-change', detail: { value: ['2024-02-29'] } },
               { type: 'open-change', detail: { open: false } },
             ],
+          },
+        },
+      ],
+    },
+    {
+      name: '按不下去的快捷选项：方向键停得上去，Enter 与点按都不写值；命中当前值的那条报 aria-selected',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/listbox/#keyboardinteraction' },
+      covers: ['date-picker.kbd.preset-move', 'date-picker.kbd.preset-pick'],
+      fixture: base => presetsFixture(base, PRESETS_MIXED),
+      props: { ...BASE_PROPS, presets: [...PRESETS_MIXED] },
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { activeElement: 'calendar' } },
+        {
+          kind: 'raw',
+          why: '条目按 data-value 认，不进快照；禁用与模式不配两种「按不下去」要逐条看属性',
+          run: async (ctx) => {
+            const items = presetItems(ctx.doc)
+            const states = items.map(el => [el.getAttribute('aria-selected'), el.getAttribute('aria-disabled'), el.getAttribute('tabindex')].join('|'))
+            const want = ['false|false|-1', 'false|true|-1', 'true|false|0', 'false|true|-1']
+            if (states.join(',') !== want.join(','))
+              throw new Error(`快捷选项的状态应为 ${want.join(' ')}，实际 ${states.join(' ')}`)
+            items[2]!.focus()
+            await pressOnPreset(ctx, items[2]!, 'ArrowDown')
+            if (ctx.doc.activeElement !== items[3])
+              throw new Error('下键应能停到禁用的那一条上')
+            await pressOnPreset(ctx, items[3]!, 'Enter')
+            expectHidden(ctx.doc, ANCHOR, 'Enter 按在禁用那条上不该写值')
+            items[1]!.click()
+            await ctx.flush()
+            expectHidden(ctx.doc, ANCHOR, '点与模式不配的那条不该写值')
+          },
+          expect: {
+            parts: { content: { hidden: null } },
+            events: [],
           },
         },
       ],
