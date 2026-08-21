@@ -1,3 +1,4 @@
+import { overlayUnplaced } from '../shared/overlay'
 import type { NormalizeProps, Placement, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { TooltipApi, TooltipSchema } from './tooltip.types'
@@ -61,7 +62,8 @@ export function connectTooltip<T extends PropTypes>(
       // 落定后的朝向（可能被引擎翻转），供动画方向使用
       'data-placement': placement,
       // 锚点被滚出可视区时置位，样式据此隐藏浮层
-      'data-hidden': dataAttr(position?.hidden),
+      // 展开那一帧引擎还没量完，坐标是兜底的 0——不藏的话浮层会先在视口左上角闪一下
+      'data-hidden': dataAttr(overlayUnplaced(open, position)),
       'data-state': stateAttr,
       'style': {
         position: 'fixed',
