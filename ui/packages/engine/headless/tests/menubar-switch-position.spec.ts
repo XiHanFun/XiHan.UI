@@ -26,7 +26,7 @@ function menubar(props: Partial<MenubarSchema['props']> = {}) {
 
 function positionerOf(api: ReturnType<typeof menubar>['api'], menu: string) {
   const props = api().getPositionerProps({ value: menu }) as Record<string, unknown>
-  return { hidden: props['data-hidden'], style: props.style as Record<string, string> }
+  return { positioned: props['data-positioned'], style: props.style as Record<string, string> }
 }
 
 /** 引擎回报了「文件」的坐标：写进共享份与它名下的那份，与 trackPosition 的回填一致。 */
@@ -61,14 +61,14 @@ describe('收起中的菜单留在原地', () => {
   })
 })
 
-describe('新展开的菜单藏到拿到新坐标为止', () => {
+describe('新展开的菜单落位前不带落位信号', () => {
   it('名下无账就藏着，不借上一张的坐标', () => {
     const { service, api } = menubar({ defaultValue: 'file' })
     placeFile(service)
     service.send({ type: 'TRIGGER.OPEN', value: 'edit' })
 
     const opening = positionerOf(api, 'edit')
-    expect(opening.hidden).toBe('')
+    expect(opening.positioned).toBeUndefined()
   })
 
   it('重开同一张也重新来过：上次的坐标可能已过时（页面滚过、窗口变过）', () => {
@@ -76,7 +76,7 @@ describe('新展开的菜单藏到拿到新坐标为止', () => {
     placeFile(service)
     service.send({ type: 'VALUE.SET', value: null })
     service.send({ type: 'TRIGGER.OPEN', value: 'file' })
-    expect(positionerOf(api, 'file').hidden).toBe('')
+    expect(positionerOf(api, 'file').positioned).toBeUndefined()
   })
 
   it('引擎回报后就露出来、按新坐标摆', () => {
@@ -86,7 +86,7 @@ describe('新展开的菜单藏到拿到新坐标为止', () => {
     service.context.set('placements', { ...service.context.get('placements'), edit: { x: 408, y: 464, placement: 'bottom-start' } })
 
     const opened = positionerOf(api, 'edit')
-    expect(opened.hidden).toBeUndefined()
+    expect(opened.positioned).toBe('')
     expect(opened.style.left).toBe('408px')
   })
 })

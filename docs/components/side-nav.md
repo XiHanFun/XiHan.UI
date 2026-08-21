@@ -201,8 +201,8 @@ accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整
 | `link` | `data-disabled` | ''（条件成立时才出现） |
 | `link` | `data-selected` | ''（条件成立时才出现） |
 | `link` | `data-value` | itemValue(el) |
-| `popout-positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `popout-positioner` | `data-placement` | popoutPosition?.placement |
+| `popout-positioner` | `data-positioned` | ''（条件成立时才出现） |
 | `popout-positioner` | `data-state` | 'open' \| 'closed' |
 
 ## CSS 变量

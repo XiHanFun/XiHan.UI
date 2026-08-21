@@ -502,6 +502,9 @@ export const timePickerMachine = createMachine({
     effects: {
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读
       trackPosition: ({ refs, prop, context, flush }) => {
+        // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
+        // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
+        context.set('position', null)
         const engine = refs.get('position')
         // 无引擎（纯逻辑测试 / 无布局环境 / SSR）：不定位，其余照常
         if (!engine)

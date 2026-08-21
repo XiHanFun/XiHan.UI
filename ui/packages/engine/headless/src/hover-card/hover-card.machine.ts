@@ -158,6 +158,9 @@ export const hoverCardMachine = createMachine({
         setTimeoutEffect(() => send({ type: 'after.closeDelay' }), prop('closeDelay') ?? CLOSE_DELAY),
       // 位置结果写进 context 供 connect 读
       trackPosition: ({ refs, prop, context, flush }) => {
+        // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
+        // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
+        context.set('position', null)
         const engine = refs.get('position')
         if (!engine)
           return undefined

@@ -197,8 +197,8 @@ describe('side-nav 换枝不闪旧位置', () => {
 
     service.send({ type: 'POPOUT.OPEN', value: 'blog', focus: 'none' })
     const positioner = api().getPopoutPositionerProps({ value: 'blog' }) as Record<string, unknown>
-    // 坐标已作废：不藏的话它会在 docs 那一枝的位置画一帧
-    expect(positioner['data-hidden']).toBe('')
+    // 坐标已作废：落位信号撤掉，皮肤基线据此藏着——否则它会在 docs 那一枝的位置画一帧
+    expect(positioner['data-positioned']).toBeUndefined()
     // 收起那一枝即时藏，不存在原地退场
     expect((api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>).hidden).toBe(true)
   })
@@ -209,6 +209,6 @@ describe('side-nav 换枝不闪旧位置', () => {
     service.context.set('popoutPosition', { x: 56, y: 12, placement: 'right-start' })
     service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
     const positioner = api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>
-    expect(positioner['data-hidden']).toBeUndefined()
+    expect(positioner['data-positioned']).toBe('')
   })
 })

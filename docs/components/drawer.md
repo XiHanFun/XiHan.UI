@@ -199,6 +199,7 @@ size 落成 content 的 data-size，只改面板贴边方向上的厚度；三�
 | `backdrop` | `data-contained` | ''（条件成立时才出现） |
 | `backdrop` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-contained` | ''（条件成立时才出现） |
+| `positioner` | `data-positioned` | '' |
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-contained` | ''（条件成立时才出现） |
 | `content` | `data-side` | props.side |

@@ -1,4 +1,4 @@
-import { overlayUnplaced } from '../shared/overlay'
+import { overlayPositioned } from '../shared/overlay'
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
@@ -343,8 +343,8 @@ export function connectSideNav<T extends PropTypes>(
         'id': positionerId(v),
         'data-state': open ? 'open' : 'closed',
         'data-placement': popoutPosition?.placement ?? (dir === 'rtl' ? 'left-start' : 'right-start'),
-        // 展开或换枝那一帧引擎还没量完，坐标是兜底的 0 或上一枝的——藏到拿到新坐标为止
-        'data-hidden': dataAttr(overlayUnplaced(open, popoutPosition)),
+        // 落位才露：展开或换枝后坐标已清，引擎量完之前藏着
+        'data-positioned': dataAttr(overlayPositioned(popoutPosition)),
         'hidden': !open || undefined,
         'style': open
           ? {

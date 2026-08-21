@@ -22,7 +22,7 @@ import {
   parseBoundary,
   segmentMaxDigits,
 } from '../date-field'
-import { overlayUnplaced } from '../shared/overlay'
+import { overlayPositioned } from '../shared/overlay'
 import { timePickerColumns } from '../time-picker'
 import { datePickerAnatomy } from './date-picker.anatomy'
 import { DATE_PICKER_DEFAULT_PLACEMENT } from './date-picker.machine'
@@ -473,8 +473,10 @@ export function connectDatePicker<T extends PropTypes>(
       'data-state': stateAttr,
       'data-placement': placement,
       // 锚点被滚出可视区时引擎会置 hidden，样式据此收起浮层
-      // 展开那一帧引擎还没量完，坐标是兜底的 0——不藏的话浮层会先在视口左上角闪一下
-      'data-hidden': dataAttr(overlayUnplaced(open, position)),
+      // 锚点被滚出可视区时引擎置 hidden，样式据此收起浮层
+      'data-hidden': dataAttr(position?.hidden),
+      // 落位才露：皮肤基线把定位层藏着，带这个才显示。展开那几帧坐标还没算出来时就是藏的
+      'data-positioned': dataAttr(overlayPositioned(position)),
       'style': {
         position: 'fixed',
         left: `${position?.x ?? 0}px`,

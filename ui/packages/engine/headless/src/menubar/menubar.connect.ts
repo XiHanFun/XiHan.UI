@@ -1,4 +1,4 @@
-import { overlayUnplaced } from '../shared/overlay'
+import { overlayPositioned } from '../shared/overlay'
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, Orientation, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
@@ -308,9 +308,10 @@ export function connectMenubar<T extends PropTypes>(
         'data-size': prop('size'),
         'data-state': stateAttr(isOpen),
         'data-placement': isOpen ? placement : undefined,
-        // 展开那一帧引擎还没量完（展开前本菜单的旧账已清），藏到拿到新坐标为止；
-        // 锚点滚出可视区时引擎置 hidden，同样藏
-        'data-hidden': dataAttr(overlayUnplaced(isOpen, placed)),
+        // 锚点被滚出可视区时引擎置 hidden
+        'data-hidden': dataAttr(placed?.hidden),
+        // 落位才露：按本菜单名下那份判。收起中的留着账，退场可见；展开前清过账，先藏
+        'data-positioned': dataAttr(overlayPositioned(placed)),
         'style': {
           position: 'fixed',
           left: `${placed?.x ?? 0}px`,
