@@ -38,7 +38,7 @@ export class XhResultElement extends XhElement {
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
     const props: ResultProps = { status: this.status, size: this.size }
-    const api = connectResult(props, wcNormalize)
+    const api = connectResult(this.configured('result', props), wcNormalize)
 
     const put = (name: string, attrs: Record<string, unknown>): void => {
       const el = this.getPart(name)

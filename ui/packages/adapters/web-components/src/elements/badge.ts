@@ -47,7 +47,7 @@ export class XhBadgeElement extends XhElement {
     if (!root)
       return
     // 读响应式 property，不回读 DOM 特性
-    const api = connectBadge({
+    const api = connectBadge(this.configured('badge', {
       variant: this.variant,
       tone: this.tone,
       size: this.size,
@@ -56,7 +56,7 @@ export class XhBadgeElement extends XhElement {
       showZero: this.showZero,
       dot: this.dot,
       label: this.label,
-    } as BadgeProps, wcNormalize)
+    } as BadgeProps), wcNormalize)
     this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
     // 作者自己写了内容就不动它，空着才把算好的计数填进去
     if (api.text && !root.textContent?.trim())

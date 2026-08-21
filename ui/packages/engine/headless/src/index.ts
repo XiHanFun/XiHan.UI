@@ -47,6 +47,8 @@ export { COMBOBOX_DEFAULT_PLACEMENT, comboboxAnatomy, comboboxItemQuery, combobo
 export type { ComboboxApi, ComboboxFocusIntent, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxInputProps, ComboboxInputValueChangeDetails, ComboboxItemGroupProps, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxOpenChangeDetails, ComboboxRefs, ComboboxSchema, ComboboxTranslations, ComboboxValueChangeDetails } from './combobox'
 export { composerAnatomy, composerKeyboard, composerMachine, composerMeta, connectComposer } from './composer'
 export type { ComposerApi, ComposerRunStatus, ComposerSchema, ComposerState, ComposerSubmitDetails, ComposerTranslations, ComposerValueChangeDetails } from './composer'
+export { componentTranslations, fillXhConfigDefaults, mergeTranslations, mergeXhConfig, SIZE_IS_NOT_AXIS, withXhConfigBase } from './config/config-merge'
+export type { XhConfigBase } from './config/config-merge'
 export type { XhTranslationOverrides } from './config/translations'
 export { connectContextMenu, CONTEXT_MENU_DEFAULT_OFFSET, CONTEXT_MENU_DEFAULT_PLACEMENT, CONTEXT_MENU_LONG_PRESS_DELAY, CONTEXT_MENU_MOVE_TOLERANCE, contextMenuAnatomy, contextMenuItemQuery, contextMenuItemText, contextMenuKeyboard, contextMenuMachine, contextMenuMeta } from './context-menu'
 export type { ContextMenuApi, ContextMenuFocusIntent, ContextMenuGroupProps, ContextMenuItemProps, ContextMenuNode, ContextMenuNodeMeta, ContextMenuOpenChangeDetails, ContextMenuPoint, ContextMenuRefs, ContextMenuSchema, ContextMenuSelectDetails, ContextMenuTranslations } from './context-menu'

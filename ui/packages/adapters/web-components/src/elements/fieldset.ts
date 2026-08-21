@@ -59,7 +59,7 @@ export class XhFieldsetElement extends XhElement {
       required: this.required,
       translations: this.translations,
     }
-    const api = connectFieldset(props, this.fieldsetScope, wcNormalize)
+    const api = connectFieldset(this.configured('fieldset', props), this.fieldsetScope, wcNormalize)
 
     this.#checkLegendPosition()
 

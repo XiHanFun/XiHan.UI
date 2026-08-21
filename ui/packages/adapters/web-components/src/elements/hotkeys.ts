@@ -1,7 +1,6 @@
 import type { HotkeysApi, HotkeysPlatform, HotkeysProps, HotkeysTarget, HotkeysTranslations, HotkeysTriggerDetails } from '@xihan-ui/headless'
 import type { Size } from '@xihan-ui/kernel'
 import { connectHotkeys, detectHotkeysPlatform, hotkeysAnatomy, hotkeysMeta } from '@xihan-ui/headless'
-import { onXhConfigChange, withXhConfig } from '../config'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
@@ -68,16 +67,13 @@ export class XhHotkeysElement extends XhElement {
   /** 当前挂着监听的节点。 */
   #bound: EventTarget | null = null
 
-  /** 退订全局配置变更。 */
-  #stopConfig?: () => void
-
   #notify = (details: HotkeysTriggerDetails): void => {
     this.dispatchEvent(new CustomEvent('hot-key', { detail: details, bubbles: true, composed: true }))
   }
 
   // 每次按键都现建一份：接不接这次按键的判据随 property 走，缓存下来会停在旧值上
   #api(): HotkeysApi {
-    const props = withXhConfig('hotkeys', {
+    const props = this.configured('hotkeys', {
       keys: this.keys,
       // 作者显式写了平台就以他为准，写 auto 或没写才用实测值
       platform: this.platform && this.platform !== 'auto' ? this.platform : this.#detected,
@@ -109,14 +105,10 @@ export class XhHotkeysElement extends XhElement {
     // 先测平台再交给基类排更新：反过来的话首帧铺的会是「还没测出来」的那套写法
     this.#detected = detectHotkeysPlatform()
     super.connectedCallback()
-    // 切语言后重铺一遍：文案只经 property 与全局配置进来，配置一变得重算 aria-label
-    this.#stopConfig = onXhConfigChange(() => this.requestUpdate())
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
-    this.#stopConfig?.()
-    this.#stopConfig = undefined
     this.#bound?.removeEventListener('keydown', this.#onKeyDown)
     this.#bound = null
   }

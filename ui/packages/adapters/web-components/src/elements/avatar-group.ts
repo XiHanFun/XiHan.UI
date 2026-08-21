@@ -31,10 +31,10 @@ export class XhAvatarGroupElement extends XhElement {
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
-    const api = connectAvatarGroup({
+    const api = connectAvatarGroup(this.configured('avatar-group', {
       max: this.max,
       size: this.size,
-    } satisfies AvatarGroupProps, wcNormalize)
+    } satisfies AvatarGroupProps), wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {
       const el = this.getPart(name)

@@ -81,7 +81,7 @@ export class XhIconElement extends XhElement {
       weight: this.weight,
       tone: this.tone,
     }
-    const api = connectIcon(props, wcNormalize)
+    const api = connectIcon(this.configured('icon', props), wcNormalize)
 
     const root = this.getPart('root')
     const glyph = this.getPart('glyph')

@@ -42,12 +42,12 @@ export class XhDescriptionsElement extends XhElement {
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
-    const api = connectDescriptions({
+    const api = connectDescriptions(this.configured('descriptions', {
       columns: this.columns,
       bordered: this.bordered ?? false,
       placement: this.placement,
       size: this.size,
-    } satisfies DescriptionsProps, wcNormalize)
+    } satisfies DescriptionsProps), wcNormalize)
 
     const root = this.getPart('root')
     if (root)

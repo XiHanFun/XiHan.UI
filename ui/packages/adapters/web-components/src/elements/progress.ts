@@ -64,7 +64,7 @@ export class XhProgressElement extends XhElement {
   declare size?: Size
 
   protected wire(): void {
-    const api = connectProgress({
+    const api = connectProgress(this.configured('progress', {
       value: this.value,
       max: this.max,
       variant: this.variant,
@@ -75,7 +75,7 @@ export class XhProgressElement extends XhElement {
       valueText: this.valueText,
       tone: this.tone,
       size: this.size,
-    }, wcNormalize)
+    }), wcNormalize)
 
     const put = (name: 'root' | 'canvas' | 'track' | 'range' | 'label', props: unknown): void => {
       const el = this.getPart(name)

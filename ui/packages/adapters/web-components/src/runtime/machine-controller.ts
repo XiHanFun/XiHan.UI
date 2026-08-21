@@ -4,7 +4,7 @@ import type { ReactiveController, ReactiveControllerHost } from '../reactive'
 import type { LitRuntime } from './lit-runtime'
 import { createFormResetBridge } from '@xihan-ui/behavior'
 import { createService, declaresFormReset, FORM_RESET_EVENT } from '@xihan-ui/machine'
-import { onXhConfigChange, withXhConfig } from '../config'
+import { withXhConfig } from '../config'
 
 import { createLitRuntime } from './lit-runtime'
 
@@ -22,7 +22,6 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
   private formReset: Disposable | undefined
 
   private readonly props: () => Partial<T['props']>
-  private stopConfigWatch: (() => void) | undefined
 
   constructor(
     private readonly host: ReactiveControllerHost,
@@ -49,7 +48,6 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
       this.build()
       this.started = true
     }
-    this.stopConfigWatch ??= onXhConfigChange(() => this.host.requestUpdate())
     this.runtime!.mount()
     // 必须在 mount 之后：桥一挂就可能送事件进来，而 mount 之前送会撞上 SEND_BEFORE_MOUNT
     this.attachFormReset()
@@ -76,8 +74,6 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
   }
 
   hostDisconnected(): void {
-    this.stopConfigWatch?.()
-    this.stopConfigWatch = undefined
     this.formReset?.dispose()
     this.formReset = undefined
     this.runtime?.unmount()
