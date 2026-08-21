@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 //
 // 滚动条挂的是作者的滚动容器，而模板 ref 在挂载那一拍才有值。
-// 这里钉住「用模板 ref 交容器」这条最常见的写法真能接上——机器只在挂载那一拍挂一次监听器，
-// 早一步查就永远是 null，症状是滚动条一动不动而控制台一声不吭。
+// 这里钉住两件事：「用模板 ref 交容器」这条最常见的写法真能接上；
+// 容器换了、props 改了，挂载后的滚动条也跟着变。
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, defineComponent, h, nextTick, ref } from 'vue'
 import { XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from '../src'
@@ -72,6 +72,92 @@ describe('滚动条与作者的滚动容器', () => {
     box.value!.dispatchEvent(new Event('scroll'))
     await nextTick()
     // 150/300 × (1 − 0.25) = 0.375
+    expect(thumb.style.insetBlockStart).toBe('37.5%')
+  })
+
+  it('挂载后改 type 与 disabled：根的 data-type 与显隐跟着变', async () => {
+    const host = document.createElement('div')
+    document.body.appendChild(host)
+
+    const box = ref<HTMLElement | null>(null)
+    const type = ref<'hover' | 'always'>('hover')
+    const disabled = ref(false)
+    const app = createApp(defineComponent({
+      setup: () => () => [
+        h('div', { ref: box }, '一段很长的内容'),
+        h(XhScrollbarRoot, { scrollable: box.value, type: type.value, disabled: disabled.value }, () => [
+          h(XhScrollbarTrack, () => [h(XhScrollbarThumb)]),
+        ]),
+      ],
+    }))
+    app.mount(host)
+    unmount = () => {
+      app.unmount()
+      host.remove()
+    }
+    stubBox(box.value!)
+    stubTrack(host.querySelector<HTMLElement>('[data-part="track"]')!)
+    await nextTick()
+    await new Promise<void>(resolve => queueMicrotask(resolve))
+    await nextTick()
+
+    const root = host.querySelector<HTMLElement>('[data-part="root"]')!
+    expect(root.getAttribute('data-type')).toBe('hover')
+    expect(root.hasAttribute('hidden')).toBe(true)
+
+    type.value = 'always'
+    await nextTick()
+    expect(root.getAttribute('data-type')).toBe('always')
+    expect(root.hasAttribute('hidden')).toBe(false)
+
+    disabled.value = true
+    await nextTick()
+    expect(root.hasAttribute('data-disabled')).toBe(true)
+    expect(root.hasAttribute('hidden')).toBe(true)
+  })
+
+  it('容器换成另一个节点：监听挪过去，新容器的滚动反映到滑块', async () => {
+    const host = document.createElement('div')
+    document.body.appendChild(host)
+
+    const first = ref<HTMLElement | null>(null)
+    const second = ref<HTMLElement | null>(null)
+    const useSecond = ref(false)
+    const app = createApp(defineComponent({
+      setup: () => () => [
+        h('div', { ref: first }, '第一个盒子'),
+        h('div', { ref: second }, '第二个盒子'),
+        h(XhScrollbarRoot, { scrollable: useSecond.value ? second.value : first.value, type: 'always' }, () => [
+          h(XhScrollbarTrack, () => [h(XhScrollbarThumb)]),
+        ]),
+      ],
+    }))
+    app.mount(host)
+    unmount = () => {
+      app.unmount()
+      host.remove()
+    }
+    stubBox(first.value!)
+    stubBox(second.value!)
+    stubTrack(host.querySelector<HTMLElement>('[data-part="track"]')!)
+    await nextTick()
+    await new Promise<void>(resolve => queueMicrotask(resolve))
+    await nextTick()
+
+    useSecond.value = true
+    await nextTick()
+    await nextTick()
+
+    const thumb = host.querySelector<HTMLElement>('[data-part="thumb"]')!
+    second.value!.scrollTop = 150
+    second.value!.dispatchEvent(new Event('scroll'))
+    await nextTick()
+    expect(thumb.style.insetBlockStart).toBe('37.5%')
+
+    // 旧容器的滚动不再算数
+    first.value!.scrollTop = 0
+    first.value!.dispatchEvent(new Event('scroll'))
+    await nextTick()
     expect(thumb.style.insetBlockStart).toBe('37.5%')
   })
 })

@@ -630,7 +630,7 @@ export { provideScrollbar, useScrollbarContext } from './components/scrollbar/co
 export { XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from './components/scrollbar/scrollbar'
 export type { ScrollbarRootSlotProps } from './components/scrollbar/scrollbar'
 export { useScrollbar } from './components/scrollbar/use-scrollbar'
-export type { ScrollbarContext, ScrollbarTarget } from './components/scrollbar/use-scrollbar'
+export type { ScrollbarContext, ScrollbarSource, ScrollbarTarget } from './components/scrollbar/use-scrollbar'
 export { useSegmentedContext, useSegmentedItemContext } from './components/segmented/context'
 export type { SegmentedItemContext } from './components/segmented/context'
 export { XhSegmentedHiddenInput, XhSegmentedIndicator, XhSegmentedItem, XhSegmentedItemText, XhSegmentedRoot } from './components/segmented/segmented'

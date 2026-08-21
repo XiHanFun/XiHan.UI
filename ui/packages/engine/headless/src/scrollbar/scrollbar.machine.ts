@@ -301,33 +301,20 @@ export const scrollbarMachine = createMachine({
     effects: {
       /**
        * 滚动容器的 scroll 事件与尺寸变化，只能在 DOM 上观察，因此落在效应里。
-       * 推迟一拍再挂：挂载这一刻作者未必已经把容器交上来，量到的尺寸会全是 0；
-       * disposed 兜住还没挂上就被卸载那一路，否则监听器会挂到已停掉的机器上。
+       * 容器归作者，它可能条件渲染、可能换成另一个盒子：这里盯着「此刻解析到的节点」，
+       * 变了就把监听从旧节点挪到新节点；解析不到时投一条诊断，不静默。
+       * 推迟一拍首次挂：挂载这一刻作者未必已经把容器交上来。
        *
        * 指针进出同时挂在滚动容器与滚动条根上：hover 档要的是「手还在这一片」，
        * 只听滚动条的话，那条 10px 宽的窄条几乎碰不到。
        */
-      trackScrollable: ({ refs, send, scope, flush }) => {
+      trackScrollable: ({ refs, send, scope, flush, track, context }) => {
         let disposed = false
-        let stop: (() => void) | undefined
+        // undefined 是还没对过；null 是对过但没有容器
+        let attached: HTMLElement | null | undefined
+        let detach: (() => void) | undefined
 
-        flush(() => {
-          if (disposed)
-            return
-          const scrollable = refs.get('getScrollableEl')()
-          // 挂载这一刻查不到就一直查不到：监听器只在这里挂一次。
-          // 这是本组件的一条硬约定——滚动容器归作者，它得在滚动条挂载时已经在 DOM 里；
-          // 静默不工作最难查，所以这里明确投一条诊断
-          if (!scrollable) {
-            reportDiagnostic({
-              code: DIAGNOSTIC_CODES.scrollbarMissingScrollable,
-              level: 'warn',
-              scope: 'scrollbar',
-              message: '滚动条找不到它要管的滚动容器：给 scrollable 一个节点，或给 controls 一个能查到节点的 id，并确保它在滚动条挂载时已经在 DOM 里',
-            })
-            return
-          }
-
+        const attach = (scrollable: HTMLElement): (() => void) => {
           const win = scope.getWin()
           let idle: ReturnType<typeof setTimeout> | undefined
           const onScroll = (): void => {
@@ -377,9 +364,7 @@ export const scrollbarMachine = createMachine({
             : null
           mutate?.observe(scrollable, { childList: true, subtree: true, characterData: true })
 
-          send({ type: 'MEASURE' })
-
-          stop = () => {
+          return () => {
             if (idle !== undefined)
               win.clearTimeout(idle)
             scrollable.removeEventListener('scroll', onScroll)
@@ -390,11 +375,40 @@ export const scrollbarMachine = createMachine({
             resize?.disconnect()
             mutate?.disconnect()
           }
-        })
+        }
+
+        /** 对一眼此刻的容器：同一个就不动；换了先拆旧的再挂新的；没有就投诊断。 */
+        const sync = (): void => {
+          if (disposed)
+            return
+          const next = refs.get('getScrollableEl')()
+          if (next === attached)
+            return
+          detach?.()
+          detach = undefined
+          attached = next
+          if (!next) {
+            reportDiagnostic({
+              code: DIAGNOSTIC_CODES.scrollbarMissingScrollable,
+              level: 'warn',
+              scope: 'scrollbar',
+              message: '滚动条找不到它要管的滚动容器：给 scrollable 一个节点，或给 controls 一个能查到节点的 id；容器后到时调一次 measure()',
+            })
+            return
+          }
+          detach = attach(next)
+          send({ type: 'MEASURE' })
+        }
+
+        flush(sync)
+        // 容器节点是谁由作者的 props 决定，变了就挪监听；尺寸一变也顺手对一眼，
+        // 这样容器后到时作者调 measure() 就能接上
+        track([() => refs.get('getScrollableEl')(), context.dep('metrics')], sync)
 
         return () => {
           disposed = true
-          stop?.()
+          detach?.()
+          detach = undefined
         }
       },
 

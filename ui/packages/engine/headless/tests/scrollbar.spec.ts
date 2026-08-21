@@ -2,7 +2,7 @@
 import type { Orientation } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ScrollbarApi, ScrollbarSchema } from '../src/scrollbar'
-import { normalizeProps } from '@xihan-ui/kernel'
+import { DIAGNOSTIC_CODES, normalizeProps, onDiagnostic, resetDiagnostics } from '@xihan-ui/kernel'
 import { createService } from '@xihan-ui/machine'
 import { createVanillaRuntime } from '@xihan-ui/machine/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -79,6 +79,8 @@ interface Rig {
   thumb: HTMLElement
   api: () => ScrollbarApi
   setProps: (next: Props) => void
+  /** 把滚动容器换成另一个节点，模拟作者条件渲染出新盒子。 */
+  swapScrollable: (next: HTMLElement) => void
   stop: () => void
 }
 
@@ -110,7 +112,8 @@ function makeRig(initial: Props = {}, size: BoxSize = { clientH: 100, clientW: 1
   stubBox(scrollable, size)
   stubTrack(track, 100, axis)
 
-  service.refs.set('getScrollableEl', () => scrollable)
+  let current: HTMLElement = scrollable
+  service.refs.set('getScrollableEl', () => current)
   service.refs.set('getTrackEl', () => track)
   service.refs.set('getRootEl', () => root)
 
@@ -124,6 +127,9 @@ function makeRig(initial: Props = {}, size: BoxSize = { clientH: 100, clientW: 1
     thumb,
     api: () => connectScrollbar(service, normalizeProps),
     setProps: next => props.set({ ...props.get(), ...next }),
+    swapScrollable: (next) => {
+      current = next
+    },
     stop: () => {
       runtime.stop()
       root.remove()
@@ -184,6 +190,70 @@ describe('挂在别人的滚动容器上', () => {
     const r = rig({ type: 'auto' }, { clientH: 400, clientW: 400, scrollH: 400, scrollW: 400 })
     await settle()
     expect(r.api().overflow).toBe(false)
+    expect(r.api().visible).toBe(false)
+  })
+})
+
+describe('容器换了', () => {
+  it('监听挪到新容器：新的滚得到，旧的不再算数', async () => {
+    const r = rig({ type: 'always' })
+    await settle()
+    const next = document.createElement('div')
+    document.body.append(next)
+    stubBox(next, { clientH: 100, clientW: 100, scrollH: 800, scrollW: 800 })
+    r.swapScrollable(next)
+    // 节点换了由依赖比对发现；测试运行时只在信号写入时比对，measure() 就是那一次写入
+    r.api().measure()
+    await settle()
+    expect(r.api().max).toBe(700)
+
+    next.scrollTop = 200
+    next.dispatchEvent(new Event('scroll'))
+    expect(r.api().scroll).toBe(200)
+
+    r.scrollable.scrollTop = 50
+    r.scrollable.dispatchEvent(new Event('scroll'))
+    expect(r.api().scroll).toBe(200)
+    next.remove()
+  })
+
+  it('挂载时查不到容器：投诊断，后到的容器经 measure() 接上', async () => {
+    resetDiagnostics()
+    const codes: string[] = []
+    const off = onDiagnostic(record => void codes.push(record.code))
+    const r = rig({ type: 'always' })
+    const real = r.scrollable
+    r.swapScrollable(null as unknown as HTMLElement)
+    await settle()
+    off()
+    expect(codes).toContain(DIAGNOSTIC_CODES.scrollbarMissingScrollable)
+    expect(r.api().overflow).toBe(false)
+
+    r.swapScrollable(real)
+    r.api().measure()
+    await settle()
+    expect(r.api().overflow).toBe(true)
+    scrollTo(r, 30)
+    expect(r.api().scroll).toBe(30)
+  })
+})
+
+describe('运行期改 props', () => {
+  it('type 从 hover 改成 always：立刻显形', async () => {
+    const r = rig({ type: 'hover' })
+    await settle()
+    expect(r.api().visible).toBe(false)
+    r.setProps({ type: 'always' })
+    expect(r.api().visible).toBe(true)
+  })
+
+  it('运行期禁用：按下滑块不再进拖动态', async () => {
+    const r = rig({ type: 'always' })
+    await settle()
+    r.setProps({ disabled: true })
+    ;(r.api().getThumbProps() as Dict & { onPointerDown: (e: PointerEvent) => void })
+      .onPointerDown(pointer('pointerdown', { clientY: 0 }))
+    expect(r.api().dragging).toBe(false)
     expect(r.api().visible).toBe(false)
   })
 })
@@ -372,6 +442,20 @@ describe('从右往左排版的横轴', () => {
     r.api().scrollTo(120)
     expect(r.scrollable.scrollLeft).toBe(-120)
     expect(r.api().scroll).toBe(120)
+  })
+
+  it('左右键按排版方向解释：ArrowLeft 往前走，ArrowRight 往回走', async () => {
+    const r = rig({ type: 'always', orientation: 'horizontal', dir: 'rtl', focusable: true, step: 40 })
+    await settle()
+    const press = (key: string): void => {
+      (r.api().getThumbProps() as Dict & { onKeyDown: (e: KeyboardEvent) => void })
+        .onKeyDown(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
+    }
+    press('ArrowLeft')
+    expect(r.api().scroll).toBe(40)
+    expect(r.scrollable.scrollLeft).toBe(-40)
+    press('ArrowRight')
+    expect(r.api().scroll).toBe(0)
   })
 })
 
