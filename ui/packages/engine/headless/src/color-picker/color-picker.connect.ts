@@ -1,3 +1,4 @@
+import { overlayUnplaced } from '../shared/overlay'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { ColorPickerChannel, ColorPickerInputChannel } from './color-picker.color'
@@ -233,7 +234,8 @@ export function connectColorPicker<T extends PropTypes>(
       'data-state': stateAttr,
       'data-placement': placement,
       // 锚点被滚出可视区时引擎会置 hidden，样式据此收起浮层
-      'data-hidden': dataAttr(position?.hidden),
+      // 展开那一帧引擎还没量完，坐标是兜底的 0——不藏的话浮层会先在视口左上角闪一下
+      'data-hidden': dataAttr(overlayUnplaced(open, position)),
       'style': {
         position: 'fixed',
         left: `${position?.x ?? 0}px`,
