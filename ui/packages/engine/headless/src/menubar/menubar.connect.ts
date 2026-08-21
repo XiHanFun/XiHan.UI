@@ -302,6 +302,8 @@ export function connectMenubar<T extends PropTypes>(
       const placed = placements[item.value]
       return normalize.element({
         ...parts.positioner.attrs,
+        // 定位层被搬到 portal 落点，继承不到作者子树上的方向；作者没给就不写，交给落点处的继承
+        'dir': prop('dir'),
         [ITEM_VALUE_ATTR]: item.value,
         // 浮层不在 root 之内，语气与尺寸这两轴得在这里再打一遍
         'data-tone': prop('tone'),

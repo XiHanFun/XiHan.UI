@@ -74,3 +74,20 @@ describe('落到浮层上', () => {
     expect((api().getPositionerProps() as Record<string, unknown>)['data-positioned']).toBeUndefined()
   })
 })
+
+describe('定位层带方向', () => {
+  function menu(dir?: 'ltr' | 'rtl') {
+    const runtime = createVanillaRuntime()
+    const service = createService(menuMachine, { props: () => ({ defaultOpen: true, dir }), runtime })
+    runtime.start()
+    return connectMenu(service, normalizeProps).getPositionerProps() as Record<string, unknown>
+  }
+
+  it('作者给了 dir 就打在 positioner 上：定位层被搬到 portal 落点，继承不到作者子树上的方向', () => {
+    expect(menu('rtl').dir).toBe('rtl')
+  })
+
+  it('没给就不写：写死 ltr 会切断落点处本来的继承', () => {
+    expect(menu().dir).toBeUndefined()
+  })
+})

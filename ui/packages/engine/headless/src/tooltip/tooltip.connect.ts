@@ -59,6 +59,8 @@ export function connectTooltip<T extends PropTypes>(
     }),
     getPositionerProps: () => normalize.element({
       ...parts.positioner.attrs,
+      // 定位层被搬到 portal 落点，继承不到作者子树上的方向；作者没给就不写，交给落点处的继承
+      'dir': prop('dir'),
       // 落定后的朝向（可能被引擎翻转），供动画方向使用
       'data-placement': placement,
       // 锚点被滚出可视区时置位，样式据此隐藏浮层
