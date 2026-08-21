@@ -23,6 +23,7 @@ export const XhDialogRoot = defineComponent({
     closeOnEscape: { type: Boolean, default: true },
     closeOnInteractOutside: { type: Boolean, default: undefined },
     restoreFocus: { type: Boolean, default: true },
+    initialFocus: { type: String, default: undefined },
     size: { type: String as PropType<Size>, default: undefined },
     translations: { type: Object as PropType<DialogProps['translations']>, default: undefined },
   },

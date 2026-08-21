@@ -25,6 +25,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'dialog'|'alertdialog'} role - 语义角色，默认 dialog
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true
  * @attr {boolean} restore-focus - 关闭后把焦点归还触发元素，默认 true
+ * @attr {string} initial-focus - 展开后先聚焦到 content 内匹配此选择器的元素
  * @attr {'sm'|'md'|'lg'} size - 尺寸：只换 content 的最大宽度，落在 content 上
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart trigger - 触发按钮
@@ -45,6 +46,7 @@ export class XhDialogElement extends XhElement {
     modal: { converter: BOOLEAN_CONVERTER },
     closeOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-escape' },
     restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
+    initialFocus: { converter: STRING_CONVERTER, attribute: 'initial-focus' },
     size: { converter: STRING_CONVERTER },
   }
 
@@ -53,6 +55,7 @@ export class XhDialogElement extends XhElement {
   declare modal?: boolean
   declare closeOnEscape?: boolean
   declare restoreFocus?: boolean
+  declare initialFocus?: string
   declare size?: Size
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
@@ -81,6 +84,7 @@ export class XhDialogElement extends XhElement {
       role: (this.getAttribute('role') as DialogSchema['props']['role']) ?? undefined,
       closeOnEscape: this.closeOnEscape,
       restoreFocus: this.restoreFocus,
+      initialFocus: this.initialFocus,
       size: this.size,
       onOpenChange: this.notify,
     }
