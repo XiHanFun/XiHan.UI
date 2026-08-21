@@ -113,7 +113,7 @@
 | [手风琴](./accordion) | `accordion` | 6 | 6 | 11 |
 | [头像](./avatar) | `avatar` | 3 | 0 | 10 |
 | [头像组](./avatar-group) | `avatar-group` | 2 | 0 | 4 |
-| [徽标](./badge) | `badge` | 1 | 0 | 9 |
+| [徽标](./badge) | `badge` | 1 | 0 | 8 |
 | [日历](./calendar) | `calendar` | 17 | 12 | 4 |
 | [卡片](./card) | `card` | 7 | 0 | 5 |
 | [走马灯](./carousel) | `carousel` | 8 | 10 | 9 |
