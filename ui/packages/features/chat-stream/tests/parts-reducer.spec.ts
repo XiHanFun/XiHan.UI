@@ -209,6 +209,30 @@ describe('终止事件收尾', () => {
     expect(state.openBlocks.size).toBe(0)
     expect(state.openTools.size).toBe(0)
   })
+
+  it('abort 把入参已到、还在等结果的工具收成 output-error', () => {
+    const state = apply(
+      createReduceState('m1'),
+      { kind: 'tool-input-start', toolCallId: 't1', toolName: 'search', receivedTime: T },
+      { kind: 'tool-input-available', toolCallId: 't1', input: { q: '曦寒' }, receivedTime: T },
+      { kind: 'abort', reason: '用户取消', receivedTime: T },
+    )
+    expect(state.message.parts[0]).toMatchObject({ type: 'tool', state: 'output-error' })
+    expect((state.message.parts[0] as ToolPart).errorText).toBeUndefined()
+    expect((state.message.parts[0] as ToolPart).input).toEqual({ q: '曦寒' })
+    expect(state.openTools.size).toBe(0)
+  })
+
+  it('已出结果的工具不被终止事件改写', () => {
+    const state = apply(
+      createReduceState('m1'),
+      { kind: 'tool-input-start', toolCallId: 't1', toolName: 'search', receivedTime: T },
+      { kind: 'tool-input-available', toolCallId: 't1', input: {}, receivedTime: T },
+      { kind: 'tool-output', toolCallId: 't1', output: { hit: 1 }, receivedTime: T },
+      { kind: 'abort', reason: '用户取消', receivedTime: T },
+    )
+    expect(state.message.parts[0]).toMatchObject({ type: 'tool', state: 'output-available' })
+  })
 })
 
 describe('不变量 3：transient 隔离', () => {

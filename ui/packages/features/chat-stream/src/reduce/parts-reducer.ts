@@ -100,10 +100,11 @@ function closeAllBlocks(state: ReduceState): ReduceState {
     if (part !== undefined && (part.type === 'text' || part.type === 'reasoning'))
       parts[index] = { ...part, streaming: false }
   }
-  // 入参未吐完的工具调用标成 output-error，且不写 errorText
+  // 没等到结果的工具调用一律标成 output-error，且不写 errorText。
+  // 开放表清空后再没有事件能改写它们，漏掉任何一态都会让徽标永远停在运行中
   for (const index of state.openTools.values()) {
     const part = parts[index]
-    if (part !== undefined && part.type === 'tool' && part.state === 'input-streaming')
+    if (part !== undefined && part.type === 'tool' && part.state !== 'output-available' && part.state !== 'output-error')
       parts[index] = { ...part, state: 'output-error' }
   }
   return {
