@@ -1,7 +1,9 @@
 <!-- 树形表格 | rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自报，缩进落在首格的内边距上 -->
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import { ChevronRightIcon } from "@xihan-ui/icons";
 import {
+  XhIcon,
   XhTableBody,
   XhTableCell,
   XhTableColumnHeader,
@@ -150,7 +152,10 @@ const twistyStyle = {
               :style="twistyStyle"
               @click="toggle(row.id)"
             >
-              {{ row.open ? "▾" : "▸" }}
+              <XhIcon
+                :icon="ChevronRightIcon"
+                :style="{ rotate: row.open ? '90deg' : '0deg' }"
+              />
             </span>
             <span v-else aria-hidden="true" :style="twistyStyle" />
             {{ row.label }}

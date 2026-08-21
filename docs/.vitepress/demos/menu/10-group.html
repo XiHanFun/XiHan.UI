@@ -14,7 +14,7 @@
             <span>紧凑</span>
           </div>
           <div data-xh-part="item" value="comfortable">
-            <span style="flex: none; inline-size: 14px">✓</span>
+            <span style="flex: none; inline-size: 14px"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5L9.5 18L20 6"/></svg></span>
             <span>宽松</span>
           </div>
         </div>
@@ -26,7 +26,7 @@
             面板
           </div>
           <div data-xh-part="item" value="sidebar">
-            <span style="flex: none; inline-size: 14px">✓</span>
+            <span style="flex: none; inline-size: 14px"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5L9.5 18L20 6"/></svg></span>
             <span>侧栏</span>
           </div>
           <div data-xh-part="item" value="inspector">
@@ -49,9 +49,12 @@
   const densityLabels = { compact: "紧凑", comfortable: "宽松" };
   const panelValues = ["sidebar", "inspector"];
 
+  const checkSvg =
+    '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5L9.5 18L20 6"/></svg>';
+
   function mark(value, on) {
     const item = menu.querySelector(`[data-xh-part="item"][value="${value}"]`);
-    item.firstElementChild.textContent = on ? "✓" : "";
+    item.firstElementChild.innerHTML = on ? checkSvg : "";
   }
 
   let density = "comfortable";

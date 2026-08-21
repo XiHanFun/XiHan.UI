@@ -1,10 +1,12 @@
 <!-- 图标 | icon 部件排在标题前面，颜色取当前语气的强调色；内容由作者塞，字形与内联 svg 都行 -->
 <script setup lang="ts">
+import { CheckIcon } from "@xihan-ui/icons";
 import {
   XhAlertDescription,
   XhAlertIcon,
   XhAlertRoot,
   XhAlertTitle,
+  XhIcon,
 } from "@xihan-ui/vue";
 </script>
 
@@ -12,7 +14,7 @@ import {
   <div style="width: 100%; display: grid; gap: 12px">
     <!-- 一个字形就够：图标是纯装饰，读屏不会念它 -->
     <XhAlertRoot tone="success">
-      <XhAlertIcon>✓</XhAlertIcon>
+      <XhAlertIcon><XhIcon :icon="CheckIcon" /></XhAlertIcon>
       <XhAlertTitle>发布完成</XhAlertTitle>
       <XhAlertDescription>三个节点都已切到新版本。</XhAlertDescription>
     </XhAlertRoot>

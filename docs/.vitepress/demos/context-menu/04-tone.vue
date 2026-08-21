@@ -4,9 +4,9 @@ import { XhContextMenuRoot } from "@xihan-ui/vue";
 
 const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as const;
 
-// 标记位的强调色也随语气走，这一处不必悬停就能看出来
+// 标记位的强调色也随语气走，这一处不必悬停就能看出来；indicator 留空串即由皮肤画勾
 const commands = [
-  { value: "star", label: "标记", indicator: "✓" },
+  { value: "star", label: "标记", indicator: "" },
   { value: "rename", label: "重命名" },
   { value: "delete", label: "删除", separatorBefore: true },
 ];

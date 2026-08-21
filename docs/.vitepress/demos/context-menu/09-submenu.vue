@@ -1,5 +1,6 @@
 <!-- 二级子菜单 | XhContextMenuSub 在右键菜单里嵌一台子菜单：触发条目双重身份（父层方向键照常走、右方向键进子层），子层内用 XhMenu 系部件，任意层级选中都发根的 select 并整链关闭 -->
 <script setup lang="ts">
+import { ChevronRightIcon } from "@xihan-ui/icons";
 import { ref } from "vue";
 import {
   XhContextMenuContent,
@@ -10,6 +11,7 @@ import {
   XhContextMenuSub,
   XhContextMenuSubTrigger,
   XhContextMenuTrigger,
+  XhIcon,
   XhMenuContent,
   XhMenuItem,
   XhMenuPositioner,
@@ -35,7 +37,7 @@ const picked = ref("（还没选）");
         <XhContextMenuSub value="share">
           <XhContextMenuSubTrigger>
             发送到…
-            <span aria-hidden="true" style="margin-inline-start: auto">›</span>
+            <XhIcon :icon="ChevronRightIcon" style="margin-inline-start: auto" />
           </XhContextMenuSubTrigger>
           <XhMenuPositioner>
             <XhMenuContent>

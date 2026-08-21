@@ -37,12 +37,12 @@ const filtered = computed(() => {
       <XhTextFieldLabel>搜索</XhTextFieldLabel>
       <XhTextFieldInput />
     </XhTextFieldRoot>
-    <XhListboxRoot v-slot="{ isSelected }" v-model:value="picked">
+    <XhListboxRoot v-model:value="picked">
       <XhListboxLabel>成员</XhListboxLabel>
       <XhListboxContent :hidden="filtered.length === 0">
         <XhListboxItem v-for="m in filtered" :key="m.value" :value="m.value">
           <XhListboxItemText>{{ m.label }}</XhListboxItemText>
-          <XhListboxItemIndicator>{{ isSelected(m.value) ? "✓" : "" }}</XhListboxItemIndicator>
+          <XhListboxItemIndicator />
         </XhListboxItem>
       </XhListboxContent>
       <!-- 空态节点常挂、靠 hidden 收起，它自带的活区才播报得到这次筛空 -->

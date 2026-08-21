@@ -1,6 +1,7 @@
 <!-- 轨道内文案与滑块标记 | 轨道的子节点全由作者决定，data-state 同时打在轨道与滑块上 -->
 <script setup lang="ts">
-import { useSwitch } from "@xihan-ui/vue";
+import { XhIcon, useSwitch } from "@xihan-ui/vue";
+import { CheckIcon, XIcon } from "@xihan-ui/icons";
 
 const { api: trackApi } = useSwitch({ defaultChecked: true });
 const { api: markApi } = useSwitch({});
@@ -32,7 +33,7 @@ const { api: markApi } = useSwitch({});
         v-bind="markApi.getThumbProps()"
         style="display: inline-flex; align-items: center; justify-content: center; font-size: 11px"
       >
-        {{ markApi.checked ? "✓" : "✕" }}
+        <XhIcon :icon="markApi.checked ? CheckIcon : XIcon" />
       </span>
     </button>
   </div>

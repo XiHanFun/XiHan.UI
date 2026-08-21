@@ -61,13 +61,9 @@ const sizes: Size[] = ["sm", "md", "lg"];
           <XhDatePickerContent>
             <XhDatePickerCalendar>
               <XhDatePickerHeader>
-                <XhDatePickerPrevTrigger aria-label="上个月"
-                  >‹</XhDatePickerPrevTrigger
-                >
+                <XhDatePickerPrevTrigger aria-label="上个月" />
                 <XhDatePickerHeading />
-                <XhDatePickerNextTrigger aria-label="下个月"
-                  >›</XhDatePickerNextTrigger
-                >
+                <XhDatePickerNextTrigger aria-label="下个月" />
               </XhDatePickerHeader>
               <XhDatePickerGrid>
                 <XhDatePickerGridHead>

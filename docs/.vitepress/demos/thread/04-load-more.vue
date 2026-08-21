@@ -1,7 +1,9 @@
 <!-- 触底加载更多 | stick-change 报到底，宿主据此去取下一页；先往上滚一段再滚回底部，取回来的消息追加在后面 -->
 <script setup lang="ts">
 import { ref } from "vue";
+import { ArrowDownIcon } from "@xihan-ui/icons";
 import {
+  XhIcon,
   XhThreadContent,
   XhThreadRoot,
   XhThreadScrollButton,
@@ -47,7 +49,7 @@ function onStickChange(details: { atBottom: boolean; sticking: boolean }): void 
           <p v-else-if="page >= maxPage" style="margin: 0">没有更多了</p>
         </XhThreadContent>
       </XhThreadViewport>
-      <XhThreadScrollButton>↓ 回到底部</XhThreadScrollButton>
+      <XhThreadScrollButton><XhIcon :icon="ArrowDownIcon" /> 回到底部</XhThreadScrollButton>
     </XhThreadRoot>
 
     <span>已加载 {{ messages.length }} 条 · 第 {{ page }} / {{ maxPage }} 页</span>

@@ -11,8 +11,10 @@ import {
   XhMenuItem,
   XhMenuPositioner,
   XhMenuRoot,
+  XhIcon,
   XhMenuTrigger,
 } from "@xihan-ui/vue";
+import { ChevronDownIcon } from "@xihan-ui/icons";
 
 const projects = [
   { value: "web", label: "官网" },
@@ -37,7 +39,8 @@ function onSelect(details: { value: string }): void {
         <!-- 这一层不是链接而是一组可切换的去处 -->
         <XhMenuRoot @select="onSelect">
           <XhMenuTrigger>
-            {{ projects.find((p) => p.value === current)?.label }} ▾
+            {{ projects.find((p) => p.value === current)?.label }}
+            <XhIcon :icon="ChevronDownIcon" />
           </XhMenuTrigger>
           <XhMenuPositioner>
             <XhMenuContent>

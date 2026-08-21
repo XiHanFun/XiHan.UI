@@ -131,13 +131,13 @@
         const branch = part("div", "branch");
         branch.setAttribute("value", region.value);
         const control = part("div", "branch-control");
-        control.append(part("span", "branch-trigger", "▸"), part("span", "branch-text", region.label));
+        control.append(part("span", "branch-trigger"), part("span", "branch-text", region.label));
         const content = part("div", "branch-content");
         content.append(
           ...region.children.map((city) => {
             const item = part("div", "item");
             item.setAttribute("value", city.value);
-            item.append(part("span", "item-indicator", "✓"), part("span", "item-text", city.label));
+            item.append(part("span", "item-indicator"), part("span", "item-text", city.label));
             return item;
           }),
         );

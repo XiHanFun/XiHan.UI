@@ -7524,6 +7524,23 @@ input[data-scope='mention'][data-part='input'] {
   cursor: default;
 }
 
+/* 没写内容就由皮肤画兜底字形（向前的尖角）；作者写了斜杠或自己的图形，这条即不命中 */
+[data-scope='breadcrumb'][data-part='separator']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+}
+
+/* 从右往左排版时「向前」在左边 */
+[dir='rtl'] [data-scope='breadcrumb'][data-part='separator']:empty::before {
+  rotate: 180deg;
+}
+
 /* styles/button.css */
 /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
    动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */

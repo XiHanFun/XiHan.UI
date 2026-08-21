@@ -5,7 +5,9 @@ import {
   XhCollapsibleContent,
   XhCollapsibleRoot,
   XhCollapsibleTrigger,
+  XhIcon,
 } from "@xihan-ui/vue";
+import { ChevronDownIcon } from "@xihan-ui/icons";
 
 const open = ref(false);
 </script>
@@ -16,7 +18,10 @@ const open = ref(false);
       <XhCollapsibleTrigger>
         <span>高级筛选</span>
         <!-- 标记跟着 open 换字形，触发器里放什么全归作者 -->
-        <span style="font-size: 12px">{{ open ? "收起 ▴" : "展开 ▾" }}</span>
+        <span style="font-size: 12px; display: inline-flex; align-items: center; gap: 2px">
+          {{ open ? "收起" : "展开" }}
+          <XhIcon :icon="ChevronDownIcon" :style="{ rotate: open ? '180deg' : '0deg' }" />
+        </span>
       </XhCollapsibleTrigger>
       <XhCollapsibleContent>
         创建时间、负责人、标签这些不常用的条件收在这里。

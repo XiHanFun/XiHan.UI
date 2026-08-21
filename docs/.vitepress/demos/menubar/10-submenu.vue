@@ -1,7 +1,9 @@
 <!-- 二级子菜单 | XhMenubarSub 在菜单栏的一张菜单里再嵌一层：触发条目双重身份（菜单栏的方向键照常走、右方向键进子层），子层内用 XhMenu 系部件，选中带上所属菜单的身份汇到根并关掉整条菜单栏 -->
 <script setup lang="ts">
+import { ChevronRightIcon } from "@xihan-ui/icons";
 import { ref } from "vue";
 import {
+  XhIcon,
   XhMenuContent,
   XhMenuItem,
   XhMenuPositioner,
@@ -35,7 +37,7 @@ function onSelect(details: { menu: string; value: string }): void {
           <XhMenubarSub value="share">
             <XhMenubarSubTrigger>
               发送到…
-              <span aria-hidden="true" style="margin-inline-start: auto">›</span>
+              <XhIcon :icon="ChevronRightIcon" style="margin-inline-start: auto" />
             </XhMenubarSubTrigger>
             <XhMenuPositioner>
               <XhMenuContent>

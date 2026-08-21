@@ -54,7 +54,6 @@
     text.textContent = labelOf(value);
     const remove = document.createElement("button");
     remove.dataset.xhPart = "item-delete-trigger";
-    remove.textContent = "×";
     preview.append(text, remove);
     item.append(preview);
     return item;

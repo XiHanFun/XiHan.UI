@@ -1,5 +1,6 @@
 <!-- 图标由作者塞 | 库不带插画资产，图标位收任意内容：字形、图标组件、手写的内联 svg 都行 -->
 <script setup lang="ts">
+import { CheckIcon } from "@xihan-ui/icons";
 import {
   XhIcon,
   XhResultDescription,
@@ -30,7 +31,7 @@ const CheckCircleIcon = {
   <div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px">
     <!-- 一个字形 -->
     <XhResultRoot status="success" size="sm" style="inline-size: 200px">
-      <XhResultIcon>✓</XhResultIcon>
+      <XhResultIcon><XhIcon :icon="CheckIcon" /></XhResultIcon>
       <XhResultTitle>字形</XhResultTitle>
       <XhResultDescription>字号跟着图标框走。</XhResultDescription>
     </XhResultRoot>

@@ -1,7 +1,9 @@
 <!-- 基础用法 | 图标、标题、说明、操作四段按需摆，只有 root 必须写 -->
 <script setup lang="ts">
+import { CheckIcon } from "@xihan-ui/icons";
 import {
   XhButton,
+  XhIcon,
   XhResultAction,
   XhResultDescription,
   XhResultIcon,
@@ -12,7 +14,7 @@ import {
 
 <template>
   <XhResultRoot status="success">
-    <XhResultIcon>✓</XhResultIcon>
+    <XhResultIcon><XhIcon :icon="CheckIcon" /></XhResultIcon>
     <XhResultTitle>订单已提交</XhResultTitle>
     <XhResultDescription>
       单号 2026-0810-3312，两个工作日内发货，物流单号会发到你的手机上。

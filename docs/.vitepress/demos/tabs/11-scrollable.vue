@@ -3,11 +3,13 @@
 import { ref } from "vue";
 import {
   XhButton,
+  XhIcon,
   XhTabsContent,
   XhTabsList,
   XhTabsRoot,
   XhTabsTrigger,
 } from "@xihan-ui/vue";
+import { ChevronLeftIcon, ChevronRightIcon } from "@xihan-ui/icons";
 
 const tabs = Array.from({ length: 12 }, (_, i) => ({
   value: `module-${i + 1}`,
@@ -30,7 +32,7 @@ function scrollStrip(delta: number): void {
         aria-label="向前滚动"
         @click="scrollStrip(-200)"
       >
-        ‹
+        <XhIcon :icon="ChevronLeftIcon" />
       </XhButton>
 
       <!-- 滚动视口是 list 外面的一层普通容器：条目查询只以 list 为界，键盘与切换都不受它影响 -->
@@ -49,7 +51,7 @@ function scrollStrip(delta: number): void {
         aria-label="向后滚动"
         @click="scrollStrip(200)"
       >
-        ›
+        <XhIcon :icon="ChevronRightIcon" />
       </XhButton>
     </div>
 

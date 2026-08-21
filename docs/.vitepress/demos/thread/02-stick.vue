@@ -1,8 +1,10 @@
 <!-- 粘底与回到底部 | 内容长高时自动跟到底；往上滚一下当场撒手，回到底部按钮随即露出，滚回阈值内又自动粘上 -->
 <script setup lang="ts">
 import { ref } from "vue";
+import { ArrowDownIcon } from "@xihan-ui/icons";
 import {
   XhButton,
+  XhIcon,
   XhThreadContent,
   XhThreadRoot,
   XhThreadScrollButton,
@@ -52,7 +54,7 @@ function onStickChange(details: { atBottom: boolean; sticking: boolean }): void 
           </p>
         </XhThreadContent>
       </XhThreadViewport>
-      <XhThreadScrollButton>↓ 回到底部</XhThreadScrollButton>
+      <XhThreadScrollButton><XhIcon :icon="ArrowDownIcon" /> 回到底部</XhThreadScrollButton>
     </XhThreadRoot>
 
     <div>

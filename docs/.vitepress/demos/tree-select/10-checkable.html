@@ -13,23 +13,34 @@
     line-height: 1;
   }
 
-  /* 勾选态与半选态都写在节点自己身上，方框只按这两个标记显字 */
+  /* 勾选态与半选态都写在节点自己身上，方框按这两个标记用令牌里的字形蒙版画勾与横杠 */
+  #tree-select-checkable [data-demo-box]::after {
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  }
+
   #tree-select-checkable
     [data-part="branch"][data-selected]
     > [data-part="branch-control"]
     > [data-demo-box]::after {
-    content: "✓";
+    content: "";
   }
 
   #tree-select-checkable
     [data-part="branch"][data-indeterminate]
     > [data-part="branch-control"]
     > [data-demo-box]::after {
-    content: "–";
+    content: "";
+    -webkit-mask-image: var(--xh-glyph-mark-minus);
+    mask-image: var(--xh-glyph-mark-minus);
   }
 
   #tree-select-checkable [data-part="item"][data-selected] > [data-demo-box]::after {
-    content: "✓";
+    content: "";
   }
 </style>
 

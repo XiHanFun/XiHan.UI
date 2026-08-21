@@ -16,14 +16,14 @@ import {
       <XhBreadcrumbItem>
         <XhBreadcrumbLink href="#/">首页</XhBreadcrumbLink>
       </XhBreadcrumbItem>
-      <XhBreadcrumbSeparator>›</XhBreadcrumbSeparator>
+      <XhBreadcrumbSeparator />
       <XhBreadcrumbItem>
         <XhBreadcrumbLink href="#/docs">文档</XhBreadcrumbLink>
       </XhBreadcrumbItem>
-      <XhBreadcrumbSeparator>›</XhBreadcrumbSeparator>
+      <XhBreadcrumbSeparator />
       <!-- 被折叠掉的那几层，只是视觉占位，不参与列表项计数 -->
       <XhBreadcrumbEllipsis>…</XhBreadcrumbEllipsis>
-      <XhBreadcrumbSeparator>›</XhBreadcrumbSeparator>
+      <XhBreadcrumbSeparator />
       <XhBreadcrumbItem>
         <XhBreadcrumbLink href="#/docs/deep/current" current>
           当前页
