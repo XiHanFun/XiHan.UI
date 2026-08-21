@@ -136,8 +136,8 @@
     gap: var(--xh-color-picker-content-gap, var(--xh-space-3));
     inline-size: var(--xh-color-picker-content-w, 15rem);
     padding: var(--xh-color-picker-content-p, var(--xh-space-3));
-    /* 色板是 flex-wrap，色值条目数没有上限，高度随数据线性增长 */
-    max-block-size: min(var(--xh-color-picker-max-h, var(--xh-overlay-max-h)), var(--xh-_color-picker-available-h));
+    /* 取色区与滑轨都是定尺寸，套静态档会把它们压扁。只留可用高度这一道 */
+    max-block-size: var(--xh-color-picker-max-h, var(--xh-_color-picker-available-h));
     overflow-y: auto;
     border: var(--xh-stroke-thin) solid var(--xh-color-picker-content-border, var(--xh-border-default));
     border-radius: var(--xh-color-picker-content-radius, var(--xh-shape-surface));

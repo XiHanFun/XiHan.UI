@@ -255,8 +255,9 @@
     border-radius: var(--xh-date-picker-content-radius, var(--xh-shape-surface));
     background: var(--xh-date-picker-content-bg, var(--xh-bg-surface));
     color: var(--xh-date-picker-content-fg, var(--xh-fg-default));
-    /* 面板高度由日历行数与是否带时间列决定，矮视口下不限高就整块伸出视口且滚不到 */
-    max-block-size: min(var(--xh-date-picker-max-h, var(--xh-overlay-max-h)), var(--xh-_date-picker-available-h));
+    /* 日历是定高结构：六行日期加表头本来就有固定高度，套上菜单那档 16rem 会当场压出滚动条。
+       这里只留可用高度这一道——视口真放不下时才让步 */
+    max-block-size: var(--xh-date-picker-max-h, var(--xh-_date-picker-available-h));
     overflow-y: auto;
     box-shadow: var(--xh-date-picker-content-shadow, var(--xh-elevation-2));
     pointer-events: auto;
