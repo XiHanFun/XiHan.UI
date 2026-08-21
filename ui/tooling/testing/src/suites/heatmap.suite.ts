@@ -448,14 +448,14 @@ export const heatmapSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '三轴只落在 root 上，子部件不重复标注',
+      name: '三轴与色板轴只落在 root 上，子部件不重复标注',
       spec: { adr: 'visual-axes' },
-      props: { ...RANGE, tone: 'success', size: 'lg' },
+      props: { ...RANGE, tone: 'success', size: 'lg', palette: 'green' },
       initial: {
         parts: {
-          'root': { 'data-tone': 'success', 'data-size': 'lg' },
-          'grid': { 'data-tone': null, 'data-size': null },
-          'cell[0]': { 'data-tone': null, 'data-size': null },
+          'root': { 'data-tone': 'success', 'data-size': 'lg', 'data-palette': 'green' },
+          'grid': { 'data-tone': null, 'data-size': null, 'data-palette': null },
+          'cell[0]': { 'data-tone': null, 'data-size': null, 'data-palette': null },
         },
       },
     },

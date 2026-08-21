@@ -92,12 +92,13 @@
 
   /* 主色本体在各自的底上有两族够不到 3:1：黄在白底上只有 2.70，中性在深色底上只有 2.54。
      语气色是固定原语、不随主题翻，所以这两族只能按主题各兜一次。
-     浅色是缺省态（不写 data-theme 也算浅色），深色靠属性选择器压过它 */
+     浅色是缺省态（不写 data-theme 也算浅色），深色靠属性选择器压过它。
+     data-theme 写在语气容器自己身上还是写在祖先上都算，两种用法都成立 */
   [data-tone='warning'] {
     --xh-_tone-border-control: var(--xh-color-warning-700);
   }
 
-  [data-theme='dark'] [data-tone='warning'] {
+  :is([data-theme='dark'] *, [data-theme='dark'])[data-tone='warning'] {
     --xh-_tone-border-control: var(--xh-color-warning-600);
   }
 
@@ -105,7 +106,7 @@
     --xh-_tone-border-control: var(--xh-color-neutral-600);
   }
 
-  [data-theme='dark'] [data-tone='neutral'] {
+  :is([data-theme='dark'] *, [data-theme='dark'])[data-tone='neutral'] {
     --xh-_tone-border-control: var(--xh-color-neutral-550);
   }
 }
