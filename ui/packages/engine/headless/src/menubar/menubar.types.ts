@@ -127,6 +127,17 @@ export interface MenubarSchema extends MachineSchema {
     value: string | null
     /** 定位引擎回填的最新结果。 */
     position: PositionResult | null
+    /**
+     * 逐菜单记住最后一次定位结果。一排入口共用一台机器一份 position，换菜单时它立刻归
+     * 新菜单所有——正在收起的那张若从共享份取坐标会当场归零，退场动画就在视口左上角播。
+     */
+    placements: Record<string, PositionResult>
+    /**
+     * 正在一排入口间换张。原生菜单栏的成规：首次展开有进场、末次收起有退场，
+     * 相邻切换瞬时换张——快速掠过时若每张都播进出场，一串交叉淡变读起来就是闪烁；
+     * 且退场关键帧从不透明度 1 起跳，打断未播完的进场还会亮一下。
+     */
+    switching: boolean
     /** trigger 的 roving 锚点，焦点离开菜单栏即清空。 */
     focusedValue: string | null
     /** 展开菜单内持有焦点的条目；换项与收起都清空。 */

@@ -183,3 +183,32 @@ describe('引导气泡的可用高度', () => {
     expect(style['--xh-_tour-available-h']).toBe('')
   })
 })
+
+describe('side-nav 换枝不闪旧位置', () => {
+  const collection = [
+    { value: 'docs', label: 'Docs', children: [{ value: 'guide', label: 'Guide' }] },
+    { value: 'blog', label: 'Blog', children: [{ value: 'news', label: 'News' }] },
+  ]
+
+  it('换枝时旧坐标作废，新面板藏到拿到新坐标为止', () => {
+    const { service, api } = sideNav({ collection, collapsed: true })
+    service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
+    service.context.set('popoutPosition', { x: 56, y: 12, placement: 'right-start' })
+
+    service.send({ type: 'POPOUT.OPEN', value: 'blog', focus: 'none' })
+    const positioner = api().getPopoutPositionerProps({ value: 'blog' }) as Record<string, unknown>
+    // 坐标已作废：不藏的话它会在 docs 那一枝的位置画一帧
+    expect(positioner['data-hidden']).toBe('')
+    // 收起那一枝即时藏，不存在原地退场
+    expect((api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>).hidden).toBe(true)
+  })
+
+  it('重开同一枝不作废——坐标还是它自己的', () => {
+    const { service, api } = sideNav({ collection, collapsed: true })
+    service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
+    service.context.set('popoutPosition', { x: 56, y: 12, placement: 'right-start' })
+    service.send({ type: 'POPOUT.OPEN', value: 'docs', focus: 'none' })
+    const positioner = api().getPopoutPositionerProps({ value: 'docs' }) as Record<string, unknown>
+    expect(positioner['data-hidden']).toBeUndefined()
+  })
+})
