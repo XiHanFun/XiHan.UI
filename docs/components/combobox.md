@@ -311,6 +311,7 @@ invalid 让输入行报 aria-invalid、描边转告警色；选出值后判定�
 | `input` | `data-multiline` | ''（条件成立时才出现） |
 | `input` | `data-readonly` | ''（条件成立时才出现） |
 | `input` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-clearable` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |

@@ -300,6 +300,7 @@ multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父�
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `value-text` | `data-disabled` | ''（条件成立时才出现） |
 | `value-text` | `data-placeholder` | ''（条件成立时才出现） |
+| `indicator` | `data-clearable` | ''（条件成立时才出现） |
 | `indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'open' \| 'closed' |
 | `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |

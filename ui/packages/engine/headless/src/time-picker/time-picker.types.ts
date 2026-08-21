@@ -89,6 +89,29 @@ export interface TimePickerItemProps {
   value: string
 }
 
+/**
+ * 一条快捷选项。value 是整份 ISO 时间串（`'09:00'` / `'13:45:30'`），同时是这一项的身份。
+ * 时刻由作者算好传进来，`timePickerPresetNow` 备着「此刻」那一条。
+ */
+export interface TimePickerPreset {
+  value: string
+  /** 显示文案，同时是这一项的可及名字。 */
+  label: string
+  /** 禁用这一项：方向键仍能停上去，但按下不写值。 */
+  disabled?: boolean
+}
+
+/** 一条快捷选项此刻的样子，连接层算好后透出，两个适配器照它渲染。 */
+export interface TimePickerPresetState extends TimePickerPreset {
+  /** 当前值与它相同。 */
+  selected: boolean
+}
+
+/** 选项自报自己是哪一条（值即身份）。 */
+export interface TimePickerPresetProps {
+  value: string
+}
+
 export interface TimePickerSchema extends MachineSchema {
   props: {
     /** 受控值，ISO 时间串。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 */
@@ -109,6 +132,11 @@ export interface TimePickerSchema extends MachineSchema {
     granularity?: TimeGranularity
     /** 分列的步进（分钟），默认 1。只影响浮层里的可选值，不限制手打进去的分数。 */
     step?: number
+    /**
+     * 快捷选项（「此刻」「上午 9 点」这类）。给了就在浮层里多出一列，点一下整份写进值并收起。
+     * 时刻要算好再传：连接层每帧求值，把`此刻`放进渲染期会每帧算出一个新答案。
+     */
+    presets?: TimePickerPreset[]
     /** 禁用：分段输入整组退出 Tab 序列、触发器用原生 disabled，隐藏输入不参与提交。 */
     disabled?: boolean
     /** 只读：浮层照常展开、列表照常浏览，但值改不动也清不掉。 */
@@ -182,8 +210,8 @@ export interface TimePickerSchema extends MachineSchema {
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
-    /** 整份替换（外部 setValue）；解析不了的串等同于清空。 */
-    | { type: 'VALUE.SET', value: string }
+    /** 整份替换（外部 setValue 与快捷选项）；解析不了的串等同于清空。src 为 preset 时顺手收起浮层。 */
+    | { type: 'VALUE.SET', value: string, src?: 'preset' }
     /** 清空所有段。 */
     | { type: 'VALUE.CLEAR' }
     /** 上下键：把某一段加减一格，越界回绕。 */
@@ -202,7 +230,7 @@ export interface TimePickerSchema extends MachineSchema {
     | { type: 'ITEM.SELECT', unit: TimePickerColumnUnit, value: string }
     | { type: 'FORM.RESET' }
   tag: never
-  guard: 'isOpenControlled' | 'canEdit'
+  guard: 'isOpenControlled' | 'canEdit' | 'closesOnPreset'
   action:
     | 'invokeOnOpen'
     | 'invokeOnClose'
@@ -251,6 +279,8 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
   columns: TimePickerColumn[]
   focusedColumn: TimePickerColumnUnit | null
   focusedItem: string | null
+  /** 快捷选项逐条的样子，数据顺序。没给 presets 时为空数组。 */
+  presets: readonly TimePickerPresetState[]
   /** 清空按钮此刻可不可按。 */
   canClear: boolean
   /** 某一段该显示的文字（空段是占位串）。两个适配器都拿它填文本，保证同构。 */
@@ -275,6 +305,10 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
   getClearTriggerProps: () => T['button']
   getPositionerProps: () => T['element']
   getContentProps: () => T['element']
+  /** 快捷选项列（role=listbox）；没给 presets 时带 hidden。 */
+  getPresetsProps: () => T['element']
+  /** 一条快捷选项（role=option）：点按把整份时间写进值并收起浮层。 */
+  getPresetProps: (props: TimePickerPresetProps) => T['element']
   getColumnProps: (props: TimePickerColumnProps) => T['element']
   getItemProps: (props: TimePickerItemProps) => T['element']
   /** 表单出口：一份 type=hidden 的原生输入，随表单提交 ISO 串。 */
@@ -291,4 +325,6 @@ export interface TimePickerTranslations {
   second: string
   /** 上午下午段的可及名。 */
   dayPeriod: string
+  /** 快捷选项那一列的名字。 */
+  presets: string
 }

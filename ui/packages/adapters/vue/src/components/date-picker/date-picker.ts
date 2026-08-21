@@ -6,6 +6,8 @@ import type {
   DateFieldSegmentState,
   DatePickerApi,
   DatePickerFieldApi,
+  DatePickerPreset,
+  DatePickerPresetState,
   DatePickerSchema,
   DateSegmentSet,
   DateSegmentType,
@@ -15,6 +17,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h, mergeProps, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { slotPaints } from '../../runtime/slot-content'
 import {
   provideDatePicker,
   provideDatePickerCell,
@@ -66,6 +69,11 @@ export interface DatePickerSegmentSlotProps {
   segment: DateFieldSegmentState | undefined
 }
 
+/** 快捷选项列默认插槽的载荷：逐条的投影，作者据此自己铺条目。 */
+export interface DatePickerPresetsSlotProps {
+  presets: readonly DatePickerPresetState[]
+}
+
 export const XhDatePickerRoot = defineComponent({
   name: 'XhDatePickerRoot',
   // 有 connect / machine 兜底的 prop 一律 default: undefined
@@ -89,6 +97,8 @@ export const XhDatePickerRoot = defineComponent({
     weekSelection: { type: Boolean, default: undefined },
     /** 并排展示几页；缺省单选 1、区间 2。 */
     visibleCount: { type: Number, default: undefined },
+    /** 快捷选项；给了就在浮层里多出一列，日子要在自己的 computed 里算好再传。 */
+    presets: { type: Array as PropType<DatePickerPreset[]>, default: undefined },
     isDateUnavailable: { type: Function as PropType<(value: string) => boolean>, default: undefined },
     disabled: Boolean,
     readOnly: Boolean,
@@ -295,6 +305,56 @@ export const XhDatePickerCalendar = defineComponent({
     const ctx = useDatePickerContext()
     // 内嵌日历的挂载点，同时是日历的根节点
     return () => h('div', ctx.api.value.getCalendarProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+export const XhDatePickerPresets = defineComponent({
+  name: 'XhDatePickerPresets',
+  slots: Object as SlotsType<{
+    /** 自己铺条目；不写就按 presets 数据自动铺，两者产出的 DOM 一致。 */
+    default?: (props: DatePickerPresetsSlotProps) => VNode[]
+  }>,
+  setup(_, { slots }) {
+    const ctx = useDatePickerContext()
+    return () => {
+      const api = ctx.api.value
+      const authored = slots.default?.({ presets: api.presets })
+      return h(
+        'div',
+        api.getPresetsProps() as Record<string, unknown>,
+        slotPaints(authored)
+          ? authored
+          : api.presets.map(preset => h(
+              'div',
+              { ...api.getPresetProps({ value: preset.value }) as Record<string, unknown>, key: preset.value },
+              preset.label,
+            )),
+      )
+    }
+  },
+})
+
+export const XhDatePickerPreset = defineComponent({
+  name: 'XhDatePickerPreset',
+  props: {
+    /** 这一条的身份，与 presets 数据里的 value 逐字对上。 */
+    value: { type: String, required: true },
+  },
+  slots: Object as SlotsType<{
+    /** 条目内容；不写就用数据里的 label。 */
+    default?: () => VNode[]
+  }>,
+  setup(props, { slots }) {
+    const ctx = useDatePickerContext()
+    return () => {
+      const api = ctx.api.value
+      const authored = slots.default?.()
+      return h(
+        'div',
+        api.getPresetProps({ value: props.value }) as Record<string, unknown>,
+        slotPaints(authored) ? authored : api.presets.find(p => p.value === props.value)?.label,
+      )
+    }
   },
 })
 

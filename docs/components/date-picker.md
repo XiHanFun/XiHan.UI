@@ -17,7 +17,8 @@
 - 五种粒度（周 / 月 / 季度 / 年 / 日）走同一套结构。
 - `selectionMode` 支持单选与区间；区间的两端各有自己的 `name`。
 - `isDateUnavailable` 逐日判断可选性。
-- 浮层里可以放快捷选项与确认按钮，`closeOnSelect` 决定选完就关还是等确认。
+- `presets` 在浮层里排出一列快捷选项（今天 / 近 7 天 / 本月），点一下整份写进去。
+- `closeOnSelect` 决定选完就关还是等确认。
 
 ## 示例
 
@@ -45,9 +46,9 @@
 
 <XhDemo src="date-picker/04-state" />
 
-### 浮层里的快捷选项
+### 快捷选项
 
-日历下面这排按钮是作者自己的节点，点它把值写下、把浮层一并收起
+presets 在浮层里排出一列，点一条整份写进去并收起；日子在组件外算好再传
 
 <XhDemo src="date-picker/05-shortcuts" />
 
@@ -86,7 +87,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-date-picker>` |
-| Vue 组件 | `XhDatePickerCalendar` `XhDatePickerCell` `XhDatePickerCellTrigger` `XhDatePickerClearTrigger` `XhDatePickerConfirmTrigger` `XhDatePickerContent` `XhDatePickerControl` `XhDatePickerGrid` `XhDatePickerGridBody` `XhDatePickerGridHead` `XhDatePickerHeader` `XhDatePickerHeading` `XhDatePickerHeadingMonthTrigger` `XhDatePickerHeadingYearTrigger` `XhDatePickerHiddenInput` `XhDatePickerInput` `XhDatePickerLabel` `XhDatePickerNextTrigger` `XhDatePickerNextYearTrigger` `XhDatePickerPositioner` `XhDatePickerPrevTrigger` `XhDatePickerPrevYearTrigger` `XhDatePickerRoot` `XhDatePickerSegment` `XhDatePickerTimePanel` `XhDatePickerTrigger` `XhDatePickerWeekDay` `XhDatePickerWeekNumber` `XhDatePickerWeekRow` |
+| Vue 组件 | `XhDatePickerCalendar` `XhDatePickerCell` `XhDatePickerCellTrigger` `XhDatePickerClearTrigger` `XhDatePickerConfirmTrigger` `XhDatePickerContent` `XhDatePickerControl` `XhDatePickerGrid` `XhDatePickerGridBody` `XhDatePickerGridHead` `XhDatePickerHeader` `XhDatePickerHeading` `XhDatePickerHeadingMonthTrigger` `XhDatePickerHeadingYearTrigger` `XhDatePickerHiddenInput` `XhDatePickerInput` `XhDatePickerLabel` `XhDatePickerNextTrigger` `XhDatePickerNextYearTrigger` `XhDatePickerPositioner` `XhDatePickerPreset` `XhDatePickerPresets` `XhDatePickerPrevTrigger` `XhDatePickerPrevYearTrigger` `XhDatePickerRoot` `XhDatePickerSegment` `XhDatePickerTimePanel` `XhDatePickerTrigger` `XhDatePickerWeekDay` `XhDatePickerWeekNumber` `XhDatePickerWeekRow` |
 | 组合式函数 | `useDatePicker` |
 | 状态机 | `datePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/date-picker.css` |
@@ -95,7 +96,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 
 部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
 
-`data-scope="date-picker"`：`root` · `label` · **`control`** · `input` · `trigger` · `clear-trigger` · `positioner` · **`content`** · **`calendar`** · `time-column` · `time-item` · `confirm-trigger`
+`data-scope="date-picker"`：`root` · `label` · **`control`** · `input` · `trigger` · `clear-trigger` · `positioner` · **`content`** · `presets` · `preset` · **`calendar`** · `time-column` · `time-item` · `confirm-trigger`
 
 ## Props
 
@@ -121,6 +122,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `activeView` | `CalendarView` |  | 面板此刻钻到了哪一层。给定即受控；缺省跟着 view，每次展开都回到 view 那一档。 点标题里的年 / 月会改它。 没有配套的 defaultActiveView：面板每次展开都会重置这一档，非受控初值没有生效的时刻， 发出去也观察不到任何效果。要改初始层级请用 view。 |
 | `segments` | `DateSegmentSet` |  | 输入行铺哪几段。不给就按 view 推：按月挑出「2026-05」、按季度出「2026-Q2」、 按年出「2026」、周选出「2026-33」，按天挑则按 locale 排年月日。 |
 | `weekSelection` | `boolean` |  | 周选：点任意一天选中它所在的整周。只在 view=day 且区间模式下生效。 |
+| `presets` | `DatePickerPreset[]` |  | 快捷选项（「今天」「近 7 天」这类）。给了就在浮层里多出一列，点一下整份写进选中值。 日子要算好再传：连接层每帧求值，把 `today()` 放进渲染期会跨零点算出两个答案。 |
 | `visibleCount` | `number` |  | 并排展示几个连续月，默认单选 1、区间 2。 区间的起止常跨月，一个面板要来回翻页才挑得完,两个并排才顺手。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色怎么用。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 |
@@ -154,6 +156,8 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
+| `XhDatePickerPreset` | `default` | — | 条目内容；不写就用数据里的 label。 |
+| `XhDatePickerPresets` | `default` | `DatePickerPresetsSlotProps` | 自己铺条目；不写就按 presets 数据自动铺，两者产出的 DOM 一致。 |
 | `XhDatePickerRoot` | `default` | `DatePickerRootSlotProps` |  |
 | `XhDatePickerSegment` | `default` | `DatePickerSegmentSlotProps` |  |
 
@@ -168,6 +172,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `trigger` | 'open' \| 'closed' |
 | `positioner` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
+| `preset` | 'checked' \| 'unchecked' |
 | `calendar` | 'open' \| 'closed' |
 | `time-item` | 'checked' \| 'unchecked' |
 
@@ -200,6 +205,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `setValue` | `(next: string[]) => void` |  |
 | `clear` | `() => void` |  |
 | `setActiveView` | `(next: CalendarView) => void` | 直接钻到某一层。 |
+| `presets` | `readonly DatePickerPresetState[]` | 快捷选项逐条的样子，数据顺序。没给 presets 时为空数组。 |
 | `showTime` | `boolean` | showTime 生效（开了且是单选模式）。 |
 | `timeColumns` | `readonly TimePickerColumn<DatePickerTimeUnit>[]` | 时间列（时/分[/秒]）；没开 showTime 时为空数组。 |
 | `timeValue` | `string \| null` | 当前时间段（'HH:mm[:ss]'）；还没有值时为 null。 |
@@ -214,6 +220,8 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `getClearTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
+| `getPresetsProps` | `() => T['element']` | 快捷选项列（role=listbox）；没给 presets 时带 hidden。 |
+| `getPresetProps` | `(props: DatePickerPresetProps) => T['element']` | 一条快捷选项（role=option）：点按把整份日期写进选中值。 |
 | `getCalendarProps` | `() => T['element']` | 内嵌日历的挂载点，同时充当日历的根节点。 |
 | `getTimeColumnProps` | `(props: DatePickerTimeColumnProps) => T['element']` | 时间列容器（时/分[/秒]各一列）；没开 showTime 时带 hidden。 |
 | `getTimeItemProps` | `(props: DatePickerTimeItemProps) => T['element']` | 时间选项：点按把该单位写进值（没有日期时以聚焦日为日期段起值）。 |
@@ -230,6 +238,8 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `Escape` | open | 收起浮层并把焦点还给展开前那个控件（通常是 trigger），选中值不变 |
 | `Tab` / `Shift+Tab` | open | 不拦按键：焦点按 Tab 序列自然离开，浮层随即收起且不抢回焦点 |
 | `Enter` / `Space` | open, focus in grid | 选中聚焦日（由日历完成）；closeOnSelect 时收起浮层——区间要两端都落定才算选完 |
+| `ArrowUp` / `ArrowDown` / `Home` / `End` | open, focus in 快捷选项列 | 在快捷选项之间移动焦点，到头回绕；不写值 |
+| `Enter` / `Space` | open, focus in 某条快捷选项 | 把这条快捷选项整份写进选中值；closeOnSelect 时收起浮层 |
 | `Alt+ArrowDown` | focus in 某一段, closed, not disabled | 展开浮层并把焦点送进去；触发钮是可选部件，键盘那条入口不能只挂在它身上 |
 | `Enter` | focus in 某一段, open | 收起浮层。段位里敲出来的值不触发「选完即收」（那时人还在打字），这是那条路的收口手势 |
 
@@ -251,6 +261,14 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `content` | `aria-labelledby` | `label` 部件的 id |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |
+| `presets` | `aria-disabled` | 'true' \| 'false' |
+| `presets` | `aria-label` | label.presets |
+| `presets` | `aria-multiselectable` | 'false' |
+| `presets` | `aria-orientation` | 'vertical' |
+| `presets` | `role` | 'listbox' |
+| `preset` | `aria-disabled` | 'true' \| 'false' |
+| `preset` | `aria-selected` | 'true' \| 'false' |
+| `preset` | `role` | 'option' |
 | `time-column` | `aria-disabled` | 'true' \| 'false' |
 | `time-column` | `aria-label` | live[at]!.getAttribute('data-unit') as DatePickerTime… |
 | `time-column` | `aria-multiselectable` | 'false' |
@@ -288,6 +306,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `input` | `data-invalid` | ''（条件成立时才出现） |
 | `input` | `data-out-of-range` | ''（条件成立时才出现） |
 | `input` | `data-readonly` | ''（条件成立时才出现） |
+| `trigger` | `data-clearable` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -299,6 +318,9 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 | `positioner` | `data-variant` | props.variant |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `preset` | `data-disabled` | ''（条件成立时才出现） |
+| `preset` | `data-state` | 'checked' \| 'unchecked' |
+| `preset` | `data-value` | v |
 | `calendar` | `data-disabled` | ''（条件成立时才出现） |
 | `calendar` | `data-readonly` | ''（条件成立时才出现） |
 | `calendar` | `data-state` | 'open' \| 'closed' |
@@ -311,7 +333,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 
 本组件皮肤读的组件级令牌，写在组件自身或任意祖先上都生效。缺省值来自[设计令牌](../guide/theme)，不设即按缺省走。
 
-`--xh-date-picker-action-bg` · `--xh-date-picker-action-bg-active` · `--xh-date-picker-action-bg-hover` · `--xh-date-picker-action-fg` · `--xh-date-picker-action-fg-hover` · `--xh-date-picker-action-font-size` · `--xh-date-picker-action-radius` · `--xh-date-picker-action-size` · `--xh-date-picker-calendar-gap` · `--xh-date-picker-confirm-bg` · `--xh-date-picker-confirm-bg-hover` · `--xh-date-picker-confirm-fg` · `--xh-date-picker-content-bg` · `--xh-date-picker-content-border` · `--xh-date-picker-content-fg` · `--xh-date-picker-content-p` · `--xh-date-picker-content-radius` · `--xh-date-picker-content-shadow` · `--xh-date-picker-control-bg` · `--xh-date-picker-control-bg-disabled` · `--xh-date-picker-control-bg-readonly` · `--xh-date-picker-control-border` · `--xh-date-picker-control-border-focus` · `--xh-date-picker-control-border-hover` · `--xh-date-picker-control-border-invalid` · `--xh-date-picker-control-fg` · `--xh-date-picker-control-gap` · `--xh-date-picker-control-h` · `--xh-date-picker-control-min-w` · `--xh-date-picker-control-px` · `--xh-date-picker-control-radius` · `--xh-date-picker-font-size` · `--xh-date-picker-gap` · `--xh-date-picker-label-fg` · `--xh-date-picker-label-fg-disabled` · `--xh-date-picker-label-font-size` · `--xh-date-picker-label-font-weight` · `--xh-date-picker-max-h` · `--xh-date-picker-panel-divider` · `--xh-date-picker-panel-gap` · `--xh-date-picker-time-column-gap` · `--xh-date-picker-time-column-h` · `--xh-date-picker-time-item-bg-hover` · `--xh-date-picker-time-item-bg-selected` · `--xh-date-picker-time-item-fg-selected`
+`--xh-date-picker-action-bg` · `--xh-date-picker-action-bg-active` · `--xh-date-picker-action-bg-hover` · `--xh-date-picker-action-fg` · `--xh-date-picker-action-fg-hover` · `--xh-date-picker-action-font-size` · `--xh-date-picker-action-radius` · `--xh-date-picker-action-size` · `--xh-date-picker-calendar-gap` · `--xh-date-picker-confirm-bg` · `--xh-date-picker-confirm-bg-hover` · `--xh-date-picker-confirm-fg` · `--xh-date-picker-content-bg` · `--xh-date-picker-content-border` · `--xh-date-picker-content-fg` · `--xh-date-picker-content-p` · `--xh-date-picker-content-radius` · `--xh-date-picker-content-shadow` · `--xh-date-picker-control-bg` · `--xh-date-picker-control-bg-disabled` · `--xh-date-picker-control-bg-readonly` · `--xh-date-picker-control-border` · `--xh-date-picker-control-border-focus` · `--xh-date-picker-control-border-hover` · `--xh-date-picker-control-border-invalid` · `--xh-date-picker-control-fg` · `--xh-date-picker-control-gap` · `--xh-date-picker-control-h` · `--xh-date-picker-control-min-w` · `--xh-date-picker-control-px` · `--xh-date-picker-control-radius` · `--xh-date-picker-font-size` · `--xh-date-picker-gap` · `--xh-date-picker-label-fg` · `--xh-date-picker-label-fg-disabled` · `--xh-date-picker-label-font-size` · `--xh-date-picker-label-font-weight` · `--xh-date-picker-max-h` · `--xh-date-picker-panel-divider` · `--xh-date-picker-panel-gap` · `--xh-date-picker-preset-bg-hover` · `--xh-date-picker-preset-bg-selected` · `--xh-date-picker-preset-fg-disabled` · `--xh-date-picker-preset-fg-selected` · `--xh-date-picker-presets-gap` · `--xh-date-picker-presets-h` · `--xh-date-picker-time-column-gap` · `--xh-date-picker-time-column-h` · `--xh-date-picker-time-item-bg-hover` · `--xh-date-picker-time-item-bg-selected` · `--xh-date-picker-time-item-fg-selected`
 
 ## 动效
 
@@ -325,7 +347,7 @@ variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几�
 
 ## 组合
 
-- 外面套[表单字段](./field)；快捷选项用[按钮](./button)。
+- 外面套[表单字段](./field)。
 
 ## 最佳实践
 

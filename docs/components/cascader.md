@@ -338,6 +338,7 @@ searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `value-text` | `data-disabled` | ''（条件成立时才出现） |
 | `value-text` | `data-placeholder` | ''（条件成立时才出现） |
+| `indicator` | `data-clearable` | ''（条件成立时才出现） |
 | `indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `indicator` | `data-state` | 'open' \| 'closed' |
 | `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |

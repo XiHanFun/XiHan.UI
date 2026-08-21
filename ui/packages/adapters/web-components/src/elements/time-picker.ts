@@ -3,6 +3,7 @@ import type {
   TimeHourCycle,
   TimePickerColumnUnit,
   TimePickerOpenChangeDetails,
+  TimePickerPreset,
   TimePickerSchema,
   TimePickerValueChangeDetails,
   TimeSegmentType,
@@ -69,6 +70,7 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @attr {'12'|'24'} hour-cycle - 小时制；不写则按 locale 推断，再没有就用 24
  * @attr {'hour'|'minute'|'second'} granularity - 值精确到哪一段，默认 minute
  * @attr {number} step - 分列的步进（分钟），默认 1
+ * @prop {TimePickerPreset[]} presets - 快捷选项（数组只走 property）：给了就在浮层里多出一列
  * @attr {boolean} disabled - 禁用：段整组退出 Tab 序列，触发器用原生 disabled，隐藏输入不参与提交
  * @attr {boolean} read-only - 只读：浮层照常展开与浏览，但值改不动也清不掉
  * @attr {boolean} invalid - 校验失败标注
@@ -89,6 +91,8 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位且对读屏隐藏
  * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
  * @csspart content - 浮层容器（消解层与焦点域的根节点），收起时带 hidden
+ * @csspart presets - 快捷选项列（role=listbox）；没给 presets 时带 hidden
+ * @csspart preset - 一条快捷选项（role=option），须自带 value 属性（与 presets 数据里的 value 逐字对上）
  * @csspart column - role=listbox 的一列，可自带 unit 属性声明单位，缺省按文档序
  * @csspart item - role=option 的一格，须自带 value 属性（两位补零的显示串；上下午列写 '00' / '01'）
  * @csspart hidden-input - type=hidden 的表单出口，值是完整 ISO 串
@@ -108,6 +112,8 @@ export class XhTimePickerElement extends XhElement {
     hourCycle: { converter: HOUR_CYCLE_CONVERTER, attribute: 'hour-cycle' },
     granularity: { converter: STRING_CONVERTER },
     step: { converter: NUMBER_CONVERTER },
+    // 快捷选项是数组，只能走 property
+    presets: { attribute: false },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
@@ -132,6 +138,7 @@ export class XhTimePickerElement extends XhElement {
   declare hourCycle?: TimeHourCycle
   declare granularity?: TimeGranularity
   declare step?: number
+  declare presets?: TimePickerPreset[]
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
@@ -179,6 +186,7 @@ export class XhTimePickerElement extends XhElement {
       hourCycle: this.hourCycle,
       granularity: this.granularity,
       step: this.step,
+      presets: this.presets,
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,
       invalid: this.invalid ?? false,
@@ -266,6 +274,11 @@ export class XhTimePickerElement extends XhElement {
     put('positioner', api.getPositionerProps() as Record<string, unknown>)
     put('content', api.getContentProps() as Record<string, unknown>)
     put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
+    put('presets', api.getPresetsProps() as Record<string, unknown>)
+
+    // 快捷选项是多实例 part：条目自报 value
+    for (const el of this.getParts('preset'))
+      this.spreader.spread(el, api.getPresetProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
 
     // 段逐个打；wire 跑在事件之前，换段与自动跳段时 data-scope/data-part/data-value 已在 DOM 上
     this.getParts('input').forEach((el, position) => {

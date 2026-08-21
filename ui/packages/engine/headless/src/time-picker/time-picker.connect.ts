@@ -1,11 +1,11 @@
-import { overlayUnplaced } from '../shared/overlay'
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
 import type { TimeSegmentType } from '../time-field'
-import type { TimePickerApi, TimePickerColumnUnit, TimePickerSchema } from './time-picker.types'
+import type { TimePickerApi, TimePickerColumnUnit, TimePickerPresetState, TimePickerSchema } from './time-picker.types'
 import { focusItem, focusSafely, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/behavior'
 import { dataAttr } from '@xihan-ui/kernel'
+import { overlayUnplaced } from '../shared/overlay'
 import {
   appendSegmentDigit,
   dayPeriodLabel,
@@ -24,6 +24,7 @@ import {
   timePickerColumnQuery,
   timePickerInputQuery,
   timePickerItemQuery,
+  timePickerPresetQuery,
 } from './time-picker.anatomy'
 import {
   resolveTimeStep,
@@ -132,6 +133,27 @@ export function connectTimePicker<T extends PropTypes>(
     return selected != null && options.includes(selected) ? selected : null
   }
 
+  // —— 快捷选项：一条选项就是一次整份写值，写完收起 ——
+  const presets: readonly TimePickerPresetState[] = (prop('presets') ?? [])
+    .map(preset => ({ ...preset, selected: preset.value === value && value !== '' }))
+
+  /**
+   * 这一列此刻的 Tab 落点：命中的那一条，没命中就落头一条。
+   * 不另立「聚焦到哪一条」的状态——落点由当前值推得出来，焦点本身交给 DOM。
+   */
+  const presetAnchor = presets.find(preset => preset.selected)?.value ?? presets[0]?.value ?? null
+
+  /** 快捷选项列里的全部条目，文档序。事件那一刻现查，不缓存节点数组。 */
+  const presetItemsIn = (from: HTMLElement): HTMLElement[] =>
+    queryItems(from.closest<HTMLElement>(parts.presets.selector), timePickerPresetQuery)
+
+  const pickPreset = (next: string): void => {
+    const preset = presets.find(p => p.value === next)
+    if (!editable || !preset || preset.disabled)
+      return
+    send({ type: 'VALUE.SET', value: preset.value, src: 'preset' })
+  }
+
   const itemSelected = ({ unit, value: option }: { unit: TimePickerColumnUnit, value: string }): boolean =>
     selectedIn(unit) === option
 
@@ -224,6 +246,7 @@ export function connectTimePicker<T extends PropTypes>(
     columns,
     focusedColumn,
     focusedItem,
+    presets,
     canClear,
     getSegmentText: ({ segment }) => segmentTextOf(segment),
     getItemText: itemTextOf,
@@ -523,6 +546,10 @@ export function connectTimePicker<T extends PropTypes>(
           send({ type: 'CLOSE', src: 'tab' })
           return
         }
+        // 快捷选项列自己吃方向键与 Enter（它是另一套集合，不是时分秒那几列）。
+        // 不早退的话上下键会跑去动时列、Enter 会把焦点格提交成另一个值
+        if ((event.target as HTMLElement | null)?.closest(parts.presets.selector))
+          return
         // 上下键与 Home/End 在列内走
         const within = navIntentFromKey(event, { axis: 'vertical' })
         if (within) {
@@ -543,6 +570,63 @@ export function connectTimePicker<T extends PropTypes>(
         }
       },
     }),
+
+    // 键盘挂在这一列自己身上：content 的处理器管的是时分秒那几列，两套集合不能共用一个处理器
+    getPresetsProps: () => normalize.element({
+      ...parts.presets.attrs,
+      'role': 'listbox',
+      'aria-label': prop('translations')?.presets ?? 'Shortcuts',
+      'aria-orientation': 'vertical',
+      // 单选与否必须显式说，省略只是没说
+      'aria-multiselectable': 'false',
+      'aria-disabled': disabled ? 'true' : 'false',
+      'data-state': stateAttr,
+      'hidden': presets.length === 0 || undefined,
+      // 一条都没有时由列自己接住焦点——它是 role=listbox 且有名字
+      'tabindex': presetAnchor == null ? 0 : -1,
+      'onKeyDown': (event: KeyboardEvent) => {
+        if (disabled || event.ctrlKey || event.metaKey || event.altKey)
+          return
+        const items = presetItemsIn(event.currentTarget as HTMLElement)
+        const current = (event.target as HTMLElement | null)?.closest<HTMLElement>(parts.preset.selector) ?? null
+
+        // 上下键与 Home/End 在列内走，到头回绕——一列就是一圈选项
+        const within = navIntentFromKey(event, { axis: 'vertical' })
+        if (within) {
+          event.preventDefault()
+          focusSafely(navigateItems(items, current ? itemValue(current) : null, within, { loop: true }))
+          return
+        }
+
+        if (event.key === 'Enter' || event.key === ' ') {
+          // 焦点还在列上（这一列是空的）时没有可落的条目
+          if (!current)
+            return
+          event.preventDefault()
+          pickPreset(itemValue(current) ?? '')
+        }
+      },
+    }),
+
+    getPresetProps: ({ value: option }) => {
+      const preset = presets.find(p => p.value === option)
+      const presetDisabled = disabled || !!preset?.disabled
+      return normalize.element({
+        ...parts.preset.attrs,
+        // 导航与选中都以此为选项身份
+        [ITEM_VALUE_ATTR]: option,
+        'role': 'option',
+        // listbox 的选中语义是 aria-selected；未选中也要显式输出 false
+        'aria-selected': preset?.selected ? 'true' : 'false',
+        // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、不派 click
+        'aria-disabled': presetDisabled ? 'true' : 'false',
+        'data-state': preset?.selected ? 'checked' : 'unchecked',
+        'data-disabled': dataAttr(presetDisabled),
+        // roving tabindex：只有落点那一条留在 Tab 序列内，其余靠方向键到达
+        'tabindex': presetAnchor === option ? 0 : -1,
+        'onClick': () => pickPreset(option),
+      })
+    },
 
     getColumnProps: ({ unit }) => {
       const active = columns.some(column => column.unit === unit)

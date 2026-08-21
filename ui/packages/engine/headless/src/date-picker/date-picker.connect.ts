@@ -1,4 +1,3 @@
-import { overlayUnplaced } from '../shared/overlay'
 import type { NavIntent } from '@xihan-ui/behavior'
 import type { Dict, NormalizeProps, PropTypes } from '@xihan-ui/kernel'
 import type { Service } from '@xihan-ui/machine'
@@ -7,6 +6,7 @@ import type { TimePickerColumn } from '../time-picker'
 import type {
   DatePickerApi,
   DatePickerFieldApi,
+  DatePickerPresetState,
   DatePickerServices,
   DatePickerTimeUnit,
   DatePickerTranslations,
@@ -22,9 +22,11 @@ import {
   parseBoundary,
   segmentMaxDigits,
 } from '../date-field'
+import { overlayUnplaced } from '../shared/overlay'
 import { timePickerColumns } from '../time-picker'
 import { datePickerAnatomy } from './date-picker.anatomy'
 import { DATE_PICKER_DEFAULT_PLACEMENT } from './date-picker.machine'
+import { datePickerPresetDates } from './date-picker.presets'
 import { datePickerDatePart, datePickerJoinDateTime, datePickerSetTimeUnit, datePickerTimePart } from './date-picker.time'
 
 const parts = datePickerAnatomy.build()
@@ -41,7 +43,13 @@ function resolveTranslations(input: Partial<DatePickerTranslations> | undefined)
   return {
     startDate: input?.startDate ?? 'Start date',
     endDate: input?.endDate ?? 'End date',
+    presets: input?.presets ?? 'Shortcuts',
   }
+}
+
+/** 选中集合与这条快捷选项逐位相同（长度也要一样，只落了起点的区间不算选中）。 */
+function sameDates(a: readonly string[], b: readonly string[]): boolean {
+  return a.length === b.length && a.every((v, i) => v === b[i])
 }
 
 // 落定那一侧的可用高度。贴边时引擎会回报 0，直接写进 min() 会把面板压成零高，
@@ -134,6 +142,33 @@ export function connectDatePicker<T extends PropTypes>(
     const unit = live[at]!.getAttribute('data-unit') as DatePickerTimeUnit | null
     const anchor = unit ? timeAnchorOf(unit) : null
     focusSafely(items.find(el => el.getAttribute('data-value') === anchor) ?? items[0])
+  }
+
+  // —— 快捷选项：一条选项就是一次整份写值 ——
+  const presetInput = prop('presets') ?? []
+  const presets: readonly DatePickerPresetState[] = presetInput.map((preset) => {
+    const dates = datePickerPresetDates(preset.value)
+    return { ...preset, dates, selected: sameDates(filled, dates) }
+  })
+
+  /** 一列里的全部选项，文档序。事件那一刻现查，不缓存节点数组。 */
+  const presetItemsIn = (from: HTMLElement): HTMLElement[] => {
+    const list = from.closest<HTMLElement>(parts.presets.selector)
+    return list ? [...list.querySelectorAll<HTMLElement>(parts.preset.selector)] : []
+  }
+
+  /**
+   * 这一列此刻的 Tab 落点：命中的那一条，没命中就落头一条。
+   * 不另立「聚焦到哪一条」的状态——落点由选中值推得出来，焦点本身交给 DOM。
+   */
+  const presetAnchor = presets.find(p => p.selected)?.value ?? presets[0]?.value ?? null
+
+  /** 点快捷选项：整份日期一次写进去，收不收浮层由 closeOnSelect 那条守卫决定。 */
+  const pickPreset = (value: string): void => {
+    const preset = presets.find(p => p.value === value)
+    if (!interactive || !preset || preset.disabled)
+      return
+    send({ type: 'VALUE.SET', value: preset.dates, src: 'preset' })
   }
 
   /** 点时间选项：该单位写进值；还没有日期时以聚焦日起值。 */
@@ -275,6 +310,7 @@ export function connectDatePicker<T extends PropTypes>(
     readOnly,
     invalid,
     canClear,
+    presets,
     showTime,
     timeColumns,
     timeValue,
@@ -462,6 +498,66 @@ export function connectDatePicker<T extends PropTypes>(
       // 收起时留在 DOM 只隐藏，不卸载作者节点
       'hidden': !open || undefined,
     }),
+
+    // 键盘挂在这一列自己身上，不挂 content：同一份浮层里还有日历那张网格与时间列，
+    // 它们各吃各的方向键，两个处理器挂同一个节点会互相抢
+    getPresetsProps: () => normalize.element({
+      ...parts.presets.attrs,
+      'role': 'listbox',
+      'aria-label': label.presets,
+      'aria-orientation': 'vertical',
+      // 单选与否必须显式说，省略只是「没说」
+      'aria-multiselectable': 'false',
+      'aria-disabled': disabled ? 'true' : 'false',
+      'hidden': presets.length === 0 || undefined,
+      // 一条都没有时由列自己接住焦点——它是 role=listbox 且有名字
+      'tabindex': presetAnchor == null ? 0 : -1,
+      'onKeyDown': (event: KeyboardEvent) => {
+        if (disabled || hasModifier(event))
+          return
+        const items = presetItemsIn(event.currentTarget as HTMLElement)
+        const current = (event.target as HTMLElement | null)?.closest<HTMLElement>(parts.preset.selector) ?? null
+
+        // 上下键与 Home/End 在列内走，到头回绕——一列就是一圈选项
+        const within = navIntentFromKey(event, { axis: 'vertical' })
+        if (within) {
+          event.preventDefault()
+          const at = stepIndex(items.length, current ? items.indexOf(current) : -1, within, { loop: true })
+          if (at >= 0)
+            focusSafely(items[at])
+          return
+        }
+
+        if (event.key === 'Enter' || event.key === ' ') {
+          // 焦点还在列上（这一列是空的）时没有可落的条目
+          if (!current)
+            return
+          event.preventDefault()
+          const value = current.getAttribute('data-value')
+          if (value != null)
+            pickPreset(value)
+        }
+      },
+    }),
+
+    getPresetProps: ({ value: v }) => {
+      const preset = presets.find(p => p.value === v)
+      const presetDisabled = disabled || !!preset?.disabled
+      return normalize.element({
+        ...parts.preset.attrs,
+        'role': 'option',
+        // listbox 的选中语义是 aria-selected；未选中也要显式输出 false
+        'aria-selected': preset?.selected ? 'true' : 'false',
+        // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、不派 click
+        'aria-disabled': presetDisabled ? 'true' : 'false',
+        'data-value': v,
+        'data-state': preset?.selected ? 'checked' : 'unchecked',
+        'data-disabled': dataAttr(presetDisabled),
+        // roving tabindex：只有落点那一条留在 Tab 序列内，其余靠方向键到达
+        'tabindex': presetAnchor === v ? 0 : -1,
+        'onClick': () => pickPreset(v),
+      })
+    },
 
     // 内嵌日历的挂载点，同时充当日历的根节点：日历自己的 root 部件在这里由它承担，
     // 状态标记照日历那份抄一遍，皮肤两边写法一致

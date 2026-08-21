@@ -5,6 +5,7 @@ export {
   timePickerColumnQuery,
   timePickerInputQuery,
   timePickerItemQuery,
+  timePickerPresetQuery,
 } from './time-picker.anatomy'
 export { connectTimePicker } from './time-picker.connect'
 export { timePickerKeyboard } from './time-picker.keyboard'
@@ -18,4 +19,5 @@ export {
   timePickerMachine,
 } from './time-picker.machine'
 export { timePickerMeta } from './time-picker.meta'
-export type { TimePickerApi, TimePickerColumn, TimePickerColumnProps, TimePickerColumnsOptions, TimePickerColumnUnit, TimePickerFocusIntent, TimePickerInputProps, TimePickerItemProps, TimePickerOpenChangeDetails, TimePickerRefs, TimePickerSchema, TimePickerTranslations, TimePickerValueChangeDetails } from './time-picker.types'
+export { timePickerPresetNow } from './time-picker.presets'
+export type { TimePickerApi, TimePickerColumn, TimePickerColumnProps, TimePickerColumnsOptions, TimePickerColumnUnit, TimePickerFocusIntent, TimePickerInputProps, TimePickerItemProps, TimePickerOpenChangeDetails, TimePickerPreset, TimePickerPresetProps, TimePickerPresetState, TimePickerRefs, TimePickerSchema, TimePickerTranslations, TimePickerValueChangeDetails } from './time-picker.types'

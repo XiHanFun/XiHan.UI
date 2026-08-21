@@ -249,6 +249,8 @@ export {
   XhDatePickerNextTrigger,
   XhDatePickerNextYearTrigger,
   XhDatePickerPositioner,
+  XhDatePickerPreset,
+  XhDatePickerPresets,
   XhDatePickerPrevTrigger,
   XhDatePickerPrevYearTrigger,
   XhDatePickerRoot,
@@ -259,7 +261,7 @@ export {
   XhDatePickerWeekNumber,
   XhDatePickerWeekRow,
 } from './components/date-picker/date-picker'
-export type { DatePickerRootSlotProps, DatePickerSegmentSlotProps } from './components/date-picker/date-picker'
+export type { DatePickerPresetsSlotProps, DatePickerRootSlotProps, DatePickerSegmentSlotProps } from './components/date-picker/date-picker'
 export { useDatePicker } from './components/date-picker/use-date-picker'
 export type { DatePickerContext } from './components/date-picker/use-date-picker'
 export { provideDescriptions, useDescriptionsContext } from './components/descriptions/context'
@@ -806,10 +808,12 @@ export {
   XhTimePickerItem,
   XhTimePickerLabel,
   XhTimePickerPositioner,
+  XhTimePickerPreset,
+  XhTimePickerPresets,
   XhTimePickerRoot,
   XhTimePickerTrigger,
 } from './components/time-picker/time-picker'
-export type { TimePickerColumnSlotProps, TimePickerRootSlotProps } from './components/time-picker/time-picker'
+export type { TimePickerColumnSlotProps, TimePickerPresetsSlotProps, TimePickerRootSlotProps } from './components/time-picker/time-picker'
 export { useTimePicker } from './components/time-picker/use-time-picker'
 export type { TimePickerContext } from './components/time-picker/use-time-picker'
 export { XhTime } from './components/time/time'

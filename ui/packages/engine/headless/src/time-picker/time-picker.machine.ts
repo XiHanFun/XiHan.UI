@@ -32,7 +32,8 @@ import {
 } from '../time-field'
 import { findTimePickerColumn, findTimePickerItem } from './time-picker.anatomy'
 
-const { createMachine } = setup<TimePickerSchema>()
+const { createMachine, guards } = setup<TimePickerSchema>()
+const { and } = guards
 
 /** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
 export const TIME_PICKER_DEFAULT_PLACEMENT: Placement = 'bottom-start'
@@ -297,6 +298,20 @@ export const timePickerMachine = createMachine({
         'OPTION.FOCUS': { actions: ['setFocusedItem'] },
         // 选中不收起：时分秒是分列挑的，挑完一列还得接着挑下一列
         'ITEM.SELECT': { guard: 'canEdit', actions: ['selectItem'] },
+        // 快捷选项给的是整份时间，写完就该收；命令式 setValue（无 src）照旧不收。
+        // 受控的是 open 不是值，两条分支都照落值
+        'VALUE.SET': [
+          {
+            guard: and('closesOnPreset', 'isOpenControlled'),
+            actions: ['setValue', 'setReturnFocus', 'invokeOnClose'],
+          },
+          {
+            guard: 'closesOnPreset',
+            target: 'closed',
+            actions: ['setValue', 'setReturnFocus', 'invokeOnClose'],
+          },
+          { actions: ['setValue'] },
+        ],
         'CONTROLLED.CLOSE': { target: 'closed' },
       },
     },
@@ -306,6 +321,11 @@ export const timePickerMachine = createMachine({
       isOpenControlled: ({ prop }) => prop('open') !== undefined,
       // 只读仍可展开、可在列里走，只是改不动值
       canEdit: ({ prop }) => !prop('disabled') && !prop('readOnly'),
+      /** 这一次写值来自快捷选项：整份时间已经定了，浮层该收起。 */
+      closesOnPreset: ({ event }) => {
+        const e = event.current()
+        return e.type === 'VALUE.SET' && e.src === 'preset'
+      },
     },
     actions: {
       resetToDefault: (params) => {

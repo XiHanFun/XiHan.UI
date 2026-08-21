@@ -109,6 +109,15 @@ checked 只认布尔，在中间换一道，进出两头拿到的都是业务值
 | --- | --- | --- |
 | `checked-change` | `CheckboxCheckedChangeDetails` | checked 状态变化；detail 为 `{ checked: boolean }` |
 
+## 插槽
+
+作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhCheckbox` | `default` | — | 方框旁的文字；不写就只有一个方框。 |
+| `XhCheckbox` | `indicator` | — | 方框里的图形；不写由皮肤画勾。 |
+
 ## 状态
 
 对外可见的状态落在 `data-state` 上，写样式与断言都读它：
